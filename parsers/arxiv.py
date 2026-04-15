@@ -44,6 +44,25 @@ def fetch_arxiv_metadata(arxiv_id: str, timeout: int = 30) -> Paper:
     except Exception:
         primary_cat = ""
 
+    # All categories as comma-separated string
+    all_cats = ""
+    try:
+        tags = getattr(e, "tags", []) or []
+        cats = [t.get("term", "") for t in tags if t.get("term")]
+        if cats:
+            all_cats = ", ".join(cats)
+    except Exception:
+        all_cats = ""
+
+    # Author comment (pages, version, etc.)
+    comment = (getattr(e, "arxiv_comment", None) or "").replace("\n", " ").strip()
+
+    # Journal reference (e.g. "Nature 2023")
+    journal_ref = (getattr(e, "journal_ref", None) or "").replace("\n", " ").strip()
+
+    # DOI (if present)
+    doi = (getattr(e, "arxiv_doi", None) or "").strip()
+
     return Paper(
         source="arxiv",
         uid=arxiv_id,
@@ -55,4 +74,8 @@ def fetch_arxiv_metadata(arxiv_id: str, timeout: int = 30) -> Paper:
         abs_url=abs_url,
         pdf_url=pdf_url,
         primary_category=primary_cat or "",
+        categories=all_cats,
+        comment=comment,
+        journal_ref=journal_ref,
+        doi=doi,
     )

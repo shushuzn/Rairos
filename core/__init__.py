@@ -23,6 +23,16 @@ class Paper:
     abs_url: str  # landing page
     pdf_url: str  # direct pdf when known
     primary_category: str = ""
+    # --- extended fields (all optional) ---
+    journal: str = ""  # journal / container title
+    volume: str = ""
+    issue: str = ""
+    page: str = ""
+    doi: str = ""  # DOI when source is arxiv
+    comment: str = ""  # arXiv author comment (e.g. page count, v1/v2)
+    journal_ref: str = ""  #正式发表期刊引用
+    categories: str = ""  # comma-separated full category list
+    reference_count: int = 0  # citation / reference count
 
 
 def today_iso() -> str:
