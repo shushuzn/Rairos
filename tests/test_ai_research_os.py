@@ -354,10 +354,17 @@ class TestUpsertLinkUnderHeading:
         assert "[[Test Paper]]" in result
 
     def test_updates_existing_heading_section(self):
-        md = "# Intro\n## References\n- Old link"
-        result = airo.upsert_link_under_heading(md, "## References", "- New link")
-        assert "New link" in result
-        assert "Old link" not in result
+        md = "# Intro\n## References\n- [[Old Paper]]"
+        result = airo.upsert_link_under_heading(md, "## References", "- [[New Paper]]")
+        assert "[[New Paper]]" in result
+        assert "[[Old Paper]]" not in result
+
+    def test_preserves_non_wikilink_lines(self):
+        md = "# Intro\n## References\n- [[Old Paper]]\n- Some manual note I added"
+        result = airo.upsert_link_under_heading(md, "## References", "- [[New Paper]]")
+        assert "[[New Paper]]" in result
+        assert "[[Old Paper]]" not in result
+        assert "Some manual note I added" in result
 
     def test_preserves_other_content(self):
         md = "# Intro\nSome content.\n## References\n- Existing"

@@ -1075,9 +1075,10 @@ def upsert_link_under_heading(md: str, heading: str, link_line: str) -> str:
     # Extract current section content (skip the leading \n from after the heading)
     section_content = md[insert_pos:section_end].lstrip("\n")
 
-    # Remove ALL link lines under this heading (any format: wikilinks or plain)
-    # Match: line starting with -, optional space, any content
-    cleaned = re.sub(r"^-\s*\S.*$", "", section_content, flags=re.M).strip("\n")
+    # Remove existing wikilink lines under this heading.
+    # Only removes lines that are wikilinks: "- [[...]]" or "- [[...]] text"
+    # Preserves any manual bullet lines the user may have added.
+    cleaned = re.sub(r"^-\s*\[\[[^\]]+\]\](?:[^\n]*)?\n?", "", section_content, flags=re.M).strip("\n")
     section_content = cleaned.strip("\n")
     new_section = link_line.rstrip() + "\n" + section_content if section_content.strip() else link_line.rstrip()
 
@@ -1103,11 +1104,15 @@ def pick_top3_pnotes_for_tag(tag: str, tag_map: Dict[str, List[Tuple[str, Path]]
 
 def mnote_filename(tag: str, a: Path, b: Path, c: Path) -> str:
     def short(stem: str, n: int = 24) -> str:
-        s = stem
-        s = re.sub(r"^P\s*-\s*\d{4}\s*-\s*", "", s).strip()
-        if len(s) > n:
-            s = s[:n].rstrip("-_ ")
-        return s
+        s = re.sub(r"^P\s*-\s*\d{4}\s*-\s*", "", stem).strip()
+        if len(s) <= n:
+            return s
+        # Truncate but preserve word boundary when possible, then add
+        # short hash to prevent collision when two titles differ only
+        # after position n.
+        truncated = s[:n].rstrip("-_ ")
+        suffix = format(hash(s) % 100000, "05d")
+        return f"{truncated}~{suffix}"
 
     A = short(a.stem)
     B = short(b.stem)
