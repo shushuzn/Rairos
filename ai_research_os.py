@@ -157,13 +157,17 @@ def is_probably_doi(s: str) -> bool:
     return bool(re.search(r"(https?://(dx\.)?doi\.org/)?10\.\d{4,9}/\S+", s, flags=re.I))
 
 
-def normalize_doi(s: str) -> str:
+def normalize_doi(s: str) -> Optional[str]:
+    if not s:
+        return None
     s = s.strip()
     s = re.sub(r"^https?://(dx\.)?doi\.org/", "", s, flags=re.I)
     return s.strip().rstrip(".")
 
 
 def normalize_arxiv_id(s: str) -> Optional[str]:
+    if not s:
+        return None
     s = s.strip()
 
     # arXiv URL formats
