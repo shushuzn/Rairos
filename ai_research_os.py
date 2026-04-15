@@ -596,6 +596,7 @@ def call_llm_chat_completions(
     base_url: str = "https://api.openai.com/v1",
     api_key: Optional[str] = None,
     timeout: int = 180,
+    system_prompt: Optional[str] = None,
 ) -> str:
     api_key = api_key or os.getenv("OPENAI_API_KEY", "")
     if not api_key:
@@ -606,13 +607,16 @@ def call_llm_chat_completions(
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
     }
+    msgs = messages[:]
+    if system_prompt:
+        msgs = [{"role": "system", "content": system_prompt}] + msgs
     payload = {
         "model": model,
         "temperature": 0.2,
-        "messages": messages,
+        "messages": msgs,
     }
     if user_prompt:
-        payload["messages"] = messages + [{"role": "user", "content": user_prompt}]
+        payload["messages"] = msgs + [{"role": "user", "content": user_prompt}]
 
     r = requests.post(url, headers=headers, data=json.dumps(payload), timeout=timeout)
     r.raise_for_status()
