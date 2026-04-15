@@ -2,7 +2,7 @@
 Comprehensive test suite for ai_research_os.py
 Run with: uv run --with requests,feedparser,pyyaml pytest tests/ -v
 """
-import pytest, tempfile, os, re, sys
+import pytest, tempfile, os, re, sys, json
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 from io import StringIO
@@ -111,6 +111,10 @@ class TestSlugifyTitle:
         # slugify_title returns 'Paper' for empty input (fallback behavior)
         assert airo.slugify_title("") == "Paper"
 
+    def test_handles_none(self):
+        # slugify_title returns 'Paper' for None input (fallback behavior)
+        assert airo.slugify_title(None) == "Paper"
+
     def test_no_change_for_valid_slug_chars(self):
         # Numbers in version-like suffixes (v1.0) get parsed as floats, so v1.0 -> 1.0 -> 1.0 -> '1.0'
         assert airo.slugify_title("Hello-World_v1.0") == "Hello-World_v10"
@@ -193,6 +197,12 @@ class TestNormalizeDoi:
         result = airo.normalize_doi("https://dx.doi.org/10.1234/test")
         assert result.startswith("10.1234")
 
+    def test_returns_none_for_none(self):
+        assert airo.normalize_doi(None) is None
+
+    def test_returns_none_for_empty_string(self):
+        assert airo.normalize_doi("") is None
+
 # ---------------------------------------------------------------------------
 # normalize_arxiv_id
 # ---------------------------------------------------------------------------
@@ -229,6 +239,12 @@ class TestNormalizeArxivId:
         result = airo.normalize_arxiv_id("http://arxiv.org/abs/2301.00001v1")
         # Version is NOT stripped
         assert result == "2301.00001v1"
+
+    def test_returns_none_for_none(self):
+        assert airo.normalize_arxiv_id(None) is None
+
+    def test_returns_none_for_empty_string(self):
+        assert airo.normalize_arxiv_id("") is None
 
 # ---------------------------------------------------------------------------
 # today_iso
@@ -269,6 +285,16 @@ class TestLooksLikeHeading:
 
     def test_empty_line_rejected(self):
         assert not airo.looks_like_heading("")
+
+    def test_accepts_single_level_numeric_outline(self):
+        # "1. Abstract" should match as a heading (was broken before the \.? fix)
+        assert airo.looks_like_heading("1. Abstract")
+        assert airo.looks_like_heading("1. Introduction")
+        assert airo.looks_like_heading("2. Methods")
+
+    def test_accepts_multi_level_numeric_outline(self):
+        assert airo.looks_like_heading("1.1 Method")
+        assert airo.looks_like_heading("2.3.1 Details")
 
 # ---------------------------------------------------------------------------
 # segment_into_sections
@@ -993,3 +1019,59 @@ class TestCallLlmChatCompletions:
                 api_key=None  # should use env
             )
             assert "Env key response" in result
+
+    def test_injects_system_prompt(self, monkeypatch):
+        """system_prompt is injected as first system message"""
+        monkeypatch.setenv("API_KEY", "test-key")
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "choices": [{"message": {"role": "assistant", "content": "Response"}}]
+        }
+
+        with patch("requests.post", return_value=mock_response) as mock_post:
+            result = airo.call_llm_chat_completions(
+                [{"role": "user", "content": "Hello"}],
+                "gpt-4o-mini",
+                "Say hi",
+                base_url="https://api.openai.com/v1",
+                api_key="test-key",
+                system_prompt="You are helpful."
+            )
+            assert "Response" in result
+            call_kwargs = mock_post.call_args.kwargs
+            payload = json.loads(call_kwargs["data"])
+            messages = payload["messages"]
+            # First message should be system with system_prompt content
+            assert messages[0]["role"] == "system"
+            assert messages[0]["content"] == "You are helpful."
+            # Original user message should still be present
+            assert any(m["role"] == "user" and "Hello" in m["content"] for m in messages)
+
+    def test_system_prompt_none_not_injected(self, monkeypatch):
+        """When system_prompt is None, no extra system message is added"""
+        monkeypatch.setenv("API_KEY", "test-key")
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "choices": [{"message": {"role": "assistant", "content": "Response"}}]
+        }
+
+        with patch("requests.post", return_value=mock_response) as mock_post:
+            result = airo.call_llm_chat_completions(
+                [{"role": "user", "content": "Hello"}],
+                "gpt-4o-mini",
+                "Say hi",
+                base_url="https://api.openai.com/v1",
+                api_key="test-key",
+                system_prompt=None
+            )
+            call_kwargs = mock_post.call_args.kwargs
+            payload = json.loads(call_kwargs["data"])
+            messages = payload["messages"]
+            # No system message prepended when system_prompt=None
+            assert not any(m["role"] == "system" for m in messages)
+            # Original user message + the user_prompt should be present
+            assert len(messages) == 2
+            assert messages[0]["content"] == "Hello"
+            assert messages[1]["content"] == "Say hi"
