@@ -508,7 +508,7 @@ def looks_like_heading(line: str) -> bool:
     if len(s) < 3 or len(s) > 120:
         return False
 
-    if re.match(r"^(\d+(\.\d+)*)\s+[A-Za-z].{2,}$", s):
+    if re.match(r"^(\d+(\.\d+)*)\.?\s+[A-Za-z].{2,}$", s):
         return True
     if re.match(r"^(I|II|III|IV|V|VI|VII|VIII|IX|X)\.?\s+[A-Za-z].{2,}$", s):
         return True
