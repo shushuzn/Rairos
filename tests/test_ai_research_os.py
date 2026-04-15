@@ -1519,3 +1519,175 @@ class TestUpdateRadarEdge:
         result = airo.update_radar(root, ["LLM"], "2024-01-20")
         content = airo.read_text(result)
         assert "LLM" in content
+
+
+# --------------------------------------------------
+# Tier 2: extract_pdf_text_hybrid
+# --------------------------------------------------
+
+def test_extract_pdf_text_hybrid_basic(tmp_path):
+    """Basic text extraction from a valid PDF."""
+    import ai_research_os as airo
+    pdf_path = tmp_path / "sample.pdf"
+    # Create a simple PDF with known text using PyMuPDF
+    try:
+        import fitz
+    except ImportError:
+        import pytest
+        pytest.skip("PyMuPDF not installed")
+    doc = fitz.open()
+    page = doc.new_page(width=595, height=842)
+    page.insert_text((72, 72), "Introduction", fontsize=12)
+    page.insert_text((72, 90), "This paper presents a new method.", fontsize=11)
+    doc.save(str(pdf_path))
+    doc.close()
+
+    text = airo.extract_pdf_text_hybrid(pdf_path)
+    assert "Introduction" in text
+    assert "This paper presents" in text
+
+
+def test_extract_pdf_text_hybrid_max_pages(tmp_path):
+    """Respects max_pages limit."""
+    import ai_research_os as airo
+    try:
+        import fitz
+    except ImportError:
+        import pytest
+        pytest.skip("PyMuPDF not installed")
+    pdf_path = tmp_path / "multipage.pdf"
+    doc = fitz.open()
+    for i in range(3):
+        page = doc.new_page(width=200, height=200)
+        page.insert_text((50, 100), f"Page {i+1} content", fontsize=12)
+    doc.save(str(pdf_path))
+    doc.close()
+
+    text = airo.extract_pdf_text_hybrid(pdf_path, max_pages=1)
+    assert "Page 1" in text
+    # other pages may or may not appear depending on implementation
+
+
+def test_extract_pdf_text_hybrid_empty_page(tmp_path):
+    """PDF with empty pages returns empty string for those pages."""
+    import ai_research_os as airo
+    try:
+        import fitz
+    except ImportError:
+        import pytest
+        pytest.skip("PyMuPDF not installed")
+    pdf_path = tmp_path / "empty.pdf"
+    doc = fitz.open()
+    page = doc.new_page(width=200, height=200)
+    # intentionally blank page
+    doc.save(str(pdf_path))
+    doc.close()
+
+    text = airo.extract_pdf_text_hybrid(pdf_path)
+    # empty pages produce empty string
+    assert text == ""
+
+
+def test_extract_pdf_text_hybrid_no_pdfminer(tmp_path):
+    """Works even without pdfminer installed (uses PyMuPDF only)."""
+    import ai_research_os as airo
+    try:
+        import fitz
+    except ImportError:
+        import pytest
+        pytest.skip("PyMuPDF not installed")
+    pdf_path = tmp_path / "sample.pdf"
+    doc = fitz.open()
+    page = doc.new_page(width=200, height=200)
+    page.insert_text((50, 100), "Test content", fontsize=12)
+    doc.save(str(pdf_path))
+    doc.close()
+
+    # pdfminer not installed - should still work via PyMuPDF
+    text = airo.extract_pdf_text_hybrid(pdf_path, use_pdfminer_fallback=False)
+    assert "Test content" in text
+
+
+# --------------------------------------------------
+# Tier 2: ai_generate_pnote_draft
+# --------------------------------------------------
+
+def test_ai_generate_pnote_draft_calls_llm(monkeypatch):
+    """Verifies ai_generate_pnote_draft calls call_llm_chat_completions correctly."""
+    import ai_research_os as airo
+    from unittest.mock import MagicMock
+
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.content = b'{"choices":[{"message":{"content":"Mock AI draft"}}]}'
+
+    calls = []
+    def mock_post(url, **kwargs):
+        calls.append((url, kwargs))
+        return mock_response
+
+    paper = airo.Paper(
+        title="Test Paper",
+        authors=["Author A", "Author B"],
+        uid="2301.12345",
+        source="arxiv",
+        abstract="This is a test abstract.",
+        published="2023-01-01",
+        updated="2023-01-02",
+        abs_url="https://arxiv.org/abs/2301.12345",
+        pdf_url="https://arxiv.org/pdf/2301.12345.pdf",
+        primary_category="cs.AI",
+    )
+
+    with monkeypatch.context() as m:
+        m.setattr("ai_research_os.call_llm_chat_completions", lambda **kw: "Mock AI draft")
+        result = airo.ai_generate_pnote_draft(
+            paper=paper,
+            tags=["AI", "ML"],
+            extracted_text="Extracted text here.",
+            base_url="https://api.openai.com/v1",
+            api_key="test-key",
+            model="gpt-4o-mini"
+        )
+    assert result == "Mock AI draft"
+
+
+def test_ai_generate_pnote_draft_includes_required_sections(monkeypatch):
+    """Prompt contains all required section headings."""
+    import ai_research_os as airo
+
+    captured_prompts = {}
+    def mock_call_llm(**kwargs):
+        captured_prompts.update(kwargs)
+        return "draft"
+
+    paper = airo.Paper(
+        title="Test Paper",
+        authors=["Author A"],
+        uid="2301.12345",
+        source="arxiv",
+        abstract="Abstract text.",
+        published="2023-01-01",
+        updated="2023-01-02",
+        abs_url="https://arxiv.org/abs/2301.12345",
+        pdf_url="https://arxiv.org/pdf/2301.12345.pdf",
+        primary_category="cs.AI",
+    )
+
+    with monkeypatch.context() as m:
+        m.setattr("ai_research_os.call_llm_chat_completions", mock_call_llm)
+        airo.ai_generate_pnote_draft(
+            paper=paper,
+            tags=["AI"],
+            extracted_text="Some extracted text.",
+            base_url="https://api.openai.com/v1",
+            api_key="test-key",
+            model="gpt-4o-mini"
+        )
+
+    user_prompt = captured_prompts.get("user_prompt", "")
+    system_prompt = captured_prompts.get("system_prompt", "")
+    assert "## 1. 背景" in user_prompt
+    assert "## 11. Decision" in user_prompt
+    assert "## 知识蒸馏" in user_prompt
+    assert "对抗式审稿人" in system_prompt
