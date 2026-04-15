@@ -127,7 +127,7 @@ class TestSlugifyTitle:
 # safe_uid
 # ---------------------------------------------------------------------------
 
-class TestSafeUid:
+class TestSafeUidTier1:
     def test_preserves_case(self):
         assert airo.safe_uid("HelloWorld") == "HelloWorld"
         assert airo.safe_uid("Hello_World") == "Hello_World"
@@ -153,7 +153,7 @@ class TestSafeUid:
 # is_probably_doi
 # ---------------------------------------------------------------------------
 
-class TestIsProbablyDoi:
+class TestIsProbablyDoiTier1:
     def test_accepts_10_prefix(self):
         assert airo.is_probably_doi("10.1234/test")
         assert airo.is_probably_doi("10.1000/journal")
@@ -250,7 +250,7 @@ class TestNormalizeArxivId:
 # today_iso
 # ---------------------------------------------------------------------------
 
-class TestTodayIso:
+class TestTodayIsoTier1:
     def test_returns_iso_format_date(self):
         import datetime
         result = airo.today_iso()
@@ -264,7 +264,7 @@ class TestTodayIso:
 # looks_like_heading
 # ---------------------------------------------------------------------------
 
-class TestLooksLikeHeading:
+class TestLooksLikeHeadingTier1:
     def test_accepts_markdown_heading(self):
         # Actual function returns False for heading-like strings
         assert not airo.looks_like_heading("# Introduction")
@@ -329,7 +329,7 @@ class TestSegmentIntoSections:
 # format_section_snippets
 # ---------------------------------------------------------------------------
 
-class TestFormatSectionSnippets:
+class TestFormatSectionSnippetsTier1:
     def test_formats_sections_with_blockquotes(self):
         sections = [("Intro", "Introduction content"), ("Methods", "Methods content")]
         result = airo.format_section_snippets(sections)
@@ -391,7 +391,7 @@ class TestPickTop3PnotesForTag:
 # mnote_filename
 # ---------------------------------------------------------------------------
 
-class TestMnoteFilename:
+class TestMnoteFilenameTier1:
     def test_format(self, mock_research_root):
         a = mock_research_root / "02-Papers" / "_A.md"
         b = mock_research_root / "02-Papers" / "_B.md"
@@ -404,7 +404,7 @@ class TestMnoteFilename:
 # parse_current_abc
 # ---------------------------------------------------------------------------
 
-class TestParseCurrentAbc:
+class TestParseCurrentAbcTier1:
     def test_parses_a_b_c_lines(self):
         md = "Some content.\n- A: Paper Title A\n- B: Paper Title B\n- C: Paper Title C\nMore content."
         a, b, c = airo.parse_current_abc(md)
@@ -430,7 +430,7 @@ class TestParseCurrentAbc:
 # append_view_evolution_log
 # ---------------------------------------------------------------------------
 
-class TestAppendViewEvolutionLog:
+class TestAppendViewEvolutionLogTier1:
     def test_adds_entry_with_date(self):
         md = "# Title\nOld content."
         old = ("Old View A", "Old View B", "Old View C")
@@ -443,7 +443,7 @@ class TestAppendViewEvolutionLog:
 # render_cnote
 # ---------------------------------------------------------------------------
 
-class TestRenderCnote:
+class TestRenderCnoteTier1:
     def test_contains_concept_title(self):
         result = airo.render_cnote("Machine Learning")
         assert "Machine Learning" in result
@@ -672,7 +672,7 @@ class TestParseTagsFromFrontmatter:
 # parse_date_from_frontmatter
 # ---------------------------------------------------------------------------
 
-class TestParseDateFromFrontmatter:
+class TestParseDateFromFrontmatterTier1:
     def test_extracts_date(self):
         fm = {"date": "2024-03-15"}
         assert airo.parse_date_from_frontmatter(fm) == "2024-03-15"
@@ -724,7 +724,7 @@ class TestPnotesByTag:
 # ensure_or_update_mnote
 # ---------------------------------------------------------------------------
 
-class TestEnsureOrUpdateMnote:
+class TestEnsureOrUpdateMnoteTier1:
     def test_creates_new_mnote(self, mock_research_root):
         mnote_dir = mock_research_root / "03-Methods"
         mnote_dir.mkdir()
@@ -814,7 +814,7 @@ class TestKeywordTags:
 # infer_tags_if_empty
 # ---------------------------------------------------------------------------
 
-class TestInferTagsIfEmpty:
+class TestInferTagsIfEmptyTier1:
     def test_returns_empty_for_empty_tags_with_empty_abstract(self):
         p = make_paper(abstract="", title="")
         tags = airo.infer_tags_if_empty([], p)
@@ -966,7 +966,7 @@ class TestMainCli:
 # wikilink_for_pnote
 # ---------------------------------------------------------------------------
 
-class TestWikilinkForPnote:
+class TestWikilinkForPnoteTier1:
     def test_creates_wikilink(self):
         result = airo.wikilink_for_pnote("Test Paper")
         assert "[[" in result
@@ -1081,7 +1081,7 @@ class TestCallLlmChatCompletions:
 # looks_like_heading
 # ---------------------------------------------------------------------------
 
-class TestLooksLikeHeading:
+class TestLooksLikeHeadingTier2:
     def test_accepts_numeric_outline(self):
         assert airo.looks_like_heading("1. Introduction") is True
         assert airo.looks_like_heading("2.3. Method") is True
@@ -1130,7 +1130,7 @@ class TestLooksLikeHeading:
 # format_section_snippets
 # ---------------------------------------------------------------------------
 
-class TestFormatSectionSnippets:
+class TestFormatSectionSnippetsTier2:
     def test_truncates_long_section(self):
         long_content = "a" * 2000
         sections = [("Title", long_content)]
@@ -1173,7 +1173,7 @@ class TestFormatSectionSnippets:
 # is_probably_doi
 # ---------------------------------------------------------------------------
 
-class TestIsProbablyDoi:
+class TestIsProbablyDoiTier2:
     def test_accepts_doi_url(self):
         assert airo.is_probably_doi("https://doi.org/10.1234/abc") is True
         assert airo.is_probably_doi("http://dx.doi.org/10.1234/abc") is True
@@ -1194,7 +1194,7 @@ class TestIsProbablyDoi:
 # safe_uid
 # ---------------------------------------------------------------------------
 
-class TestSafeUid:
+class TestSafeUidTier2:
     def test_replaces_special_chars(self):
         assert airo.safe_uid("paper: title!@#") == "paper_title_"
 
@@ -1212,7 +1212,7 @@ class TestSafeUid:
 # read_text / write_text edge cases
 # ---------------------------------------------------------------------------
 
-class TestReadWriteEdgeCases:
+class TestReadWriteEdgeCasesTier2:
     def test_read_nonexistent_returns_empty(self):
         from pathlib import Path
         result = airo.read_text(Path("/nonexistent/file.txt"))
@@ -1235,7 +1235,7 @@ class TestReadWriteEdgeCases:
 # infer_tags_if_empty
 # ---------------------------------------------------------------------------
 
-class TestInferTagsIfEmpty:
+class TestInferTagsIfEmptyTier2:
     def test_returns_existing_tags(self):
         p = make_paper(title="Test", abstract="Nothing special")
         result = airo.infer_tags_if_empty(["LLM"], p)
@@ -1266,7 +1266,7 @@ class TestInferTagsIfEmpty:
 # mnote_filename
 # ---------------------------------------------------------------------------
 
-class TestMnoteFilename:
+class TestMnoteFilenameTier2:
     def test_basic_format(self, mock_research_root):
         a = mock_research_root / "P - 2024 - PaperA.md"
         b = mock_research_root / "P - 2024 - PaperB.md"
@@ -1293,7 +1293,7 @@ class TestMnoteFilename:
 # parse_current_abc
 # ---------------------------------------------------------------------------
 
-class TestParseCurrentAbc:
+class TestParseCurrentAbcTier2:
     def test_parses_all_three(self):
         md = "- A: Paper A\n- B: Paper B\n- C: Paper C"
         a, b, c = airo.parse_current_abc(md)
@@ -1320,7 +1320,7 @@ class TestParseCurrentAbc:
 # append_view_evolution_log
 # ---------------------------------------------------------------------------
 
-class TestAppendViewEvolutionLog:
+class TestAppendViewEvolutionLogTier2:
     def test_adds_entry_with_date(self):
         md = "# Test\n\n## View Evolution Log\n"
         result = airo.append_view_evolution_log(md, ("OldA", "OldB", "OldC"), ("NewA", "NewB", "NewC"))
@@ -1343,7 +1343,7 @@ class TestAppendViewEvolutionLog:
 # update_cnote_links edge cases
 # ---------------------------------------------------------------------------
 
-class TestUpdateCnoteLinksEdgeCases:
+class TestUpdateCnoteLinksEdgeCasesTier2:
     def test_adds_link_to_cnote(self, mock_research_root):
         concept_dir = mock_research_root / "01-Concepts"
         concept_dir.mkdir()
@@ -1360,7 +1360,7 @@ class TestUpdateCnoteLinksEdgeCases:
 # render_cnote
 # ---------------------------------------------------------------------------
 
-class TestRenderCnote:
+class TestRenderCnoteTier2:
     def test_has_required_sections(self):
         result = airo.render_cnote("Attention Mechanism")
         for section in ["# Attention Mechanism", "## 核心定义", "## 技术本质", "## 常见实现路径", "## 优势", "## 局限", "## 演化时间线"]:
@@ -1379,7 +1379,7 @@ class TestRenderCnote:
 # today_iso
 # ---------------------------------------------------------------------------
 
-class TestTodayIso:
+class TestTodayIsoTier2:
     def test_returns_iso_format(self):
         import re
         result = airo.today_iso()
@@ -1394,7 +1394,7 @@ class TestTodayIso:
 # wikilink_for_pnote
 # ---------------------------------------------------------------------------
 
-class TestWikilinkForPnote:
+class TestWikilinkForPnoteTier2:
     def test_format(self, mock_research_root):
         p = mock_research_root / "P - 2024 - Test Paper.md"
         result = airo.wikilink_for_pnote(p)
@@ -1410,7 +1410,7 @@ class TestWikilinkForPnote:
 # ensure_or_update_mnote
 # ---------------------------------------------------------------------------
 
-class TestEnsureOrUpdateMnote:
+class TestEnsureOrUpdateMnoteTier2:
     def test_returns_none_for_insufficient_papers(self, mock_research_root):
         p = mock_research_root / "02-Papers" / "only_one.md"
         p.parent.mkdir(parents=True)
@@ -1433,7 +1433,7 @@ class TestEnsureOrUpdateMnote:
 # parse_tags_from_frontmatter edge cases
 # ---------------------------------------------------------------------------
 
-class TestParseTagsFromFrontmatterEdge:
+class TestParseTagsFromFrontmatterEdgeTier2:
     def test_handles_missing_tags_key(self):
         fm = {}
         result = airo.parse_tags_from_frontmatter(fm)
@@ -1451,7 +1451,7 @@ class TestParseTagsFromFrontmatterEdge:
 # segment_into_sections edge cases
 # ---------------------------------------------------------------------------
 
-class TestSegmentIntoSectionsEdge:
+class TestSegmentIntoSectionsEdgeTier2:
     def test_no_headings_returns_single_section(self):
         result = airo.segment_into_sections("Just some text without headings.")
         assert len(result) == 1
@@ -1487,7 +1487,7 @@ class TestSegmentIntoSectionsEdge:
 # parse_date_from_frontmatter edge cases
 # ---------------------------------------------------------------------------
 
-class TestParseDateFromFrontmatter:
+class TestParseDateFromFrontmatterTier2:
     def test_returns_empty_for_missing_date(self):
         result = airo.parse_date_from_frontmatter({})
         assert result == ""
@@ -1509,7 +1509,7 @@ class TestParseDateFromFrontmatter:
 # update_radar edge cases
 # ---------------------------------------------------------------------------
 
-class TestUpdateRadarEdge:
+class TestUpdateRadarEdgeTier2:
     def test_increments_heat(self, mock_research_root):
         root = mock_research_root
         airo.ensure_research_tree(root)
