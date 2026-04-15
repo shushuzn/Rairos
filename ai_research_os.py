@@ -123,6 +123,8 @@ def ensure_research_tree(root: Path) -> None:
 
 
 def slugify_title(title: str, max_len: int = 80) -> str:
+    if not title:
+        return "Paper"
     t = title.strip()
     t = re.sub(r"\s+", " ", t)
     t = re.sub(r"[^\w\s\-]", "", t, flags=re.UNICODE)
