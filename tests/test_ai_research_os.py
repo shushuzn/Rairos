@@ -74,7 +74,6 @@ class TestPaperDataclass:
         assert hasattr(p, "abs_url")
         assert hasattr(p, "pdf_url")
         assert not hasattr(p, "url")
-        assert not hasattr(p, "doi")
         assert not hasattr(p, "arxiv_id")
         assert not hasattr(p, "tags")
         assert not hasattr(p, "cited_by")

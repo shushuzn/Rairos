@@ -117,6 +117,13 @@ def fetch_crossref_metadata(doi: str, timeout: int = 30) -> Tuple[Paper, Optiona
 
         maybe_arxiv = _try_find_arxiv_id_in_crossref(item, doi)
 
+        # Journal info
+        journal = (item.get("container-title") or [""])[0] or ""
+        volume = item.get("volume") or ""
+        issue = item.get("issue") or ""
+        page = item.get("page") or ""
+        ref_count = item.get("is-referenced-by-count") or 0
+
         p = Paper(
             source="doi",
             uid=doi,
@@ -128,6 +135,11 @@ def fetch_crossref_metadata(doi: str, timeout: int = 30) -> Tuple[Paper, Optiona
             abs_url=abs_url,
             pdf_url=pdf_url,
             primary_category="",
+            journal=journal,
+            volume=volume,
+            issue=issue,
+            page=page,
+            reference_count=ref_count,
         )
         return p, maybe_arxiv
 
