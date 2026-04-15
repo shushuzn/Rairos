@@ -865,7 +865,7 @@ type: concept
 status: evergreen
 -----------------
 
-# {concept}
+# {concept.replace("#", "\\#")}
 
 ## 核心定义
 
@@ -1006,10 +1006,14 @@ def parse_tags_from_frontmatter(fm: Dict[str, Any]) -> List[str]:
 
 
 def parse_date_from_frontmatter(fm: Dict[str, str]) -> str:
+    import warnings
     d = fm.get("date", "").strip()
+    if not d:
+        return ""
     if re.fullmatch(r"\d{4}-\d{2}-\d{2}", d):
         return d
-    return ""
+    warnings.warn(f"Unrecognized date format in frontmatter: {d!r}")
+    return d
 
 
 def collect_pnotes(root: Path) -> List[Path]:
@@ -1103,14 +1107,13 @@ def pick_top3_pnotes_for_tag(tag: str, tag_map: Dict[str, List[Tuple[str, Path]]
 
 
 def mnote_filename(tag: str, a: Path, b: Path, c: Path) -> str:
-    def short(stem: str, n: int = 24) -> str:
+    def short(stem: str, n: int = 19) -> str:
         s = re.sub(r"^P\s*-\s*\d{4}\s*-\s*", "", stem).strip()
         if len(s) <= n:
             return s
-        # Truncate but preserve word boundary when possible, then add
-        # short hash to prevent collision when two titles differ only
-        # after position n.
-        truncated = s[:n].rstrip("-_ ")
+        # Truncate to n-5 to make room for 5-char hash suffix, preventing
+        # collision when two titles differ only after position n.
+        truncated = s[: n - 5].rstrip("-_ ")
         suffix = format(hash(s) % 100000, "05d")
         return f"{truncated}~{suffix}"
 

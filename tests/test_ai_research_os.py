@@ -1499,17 +1499,20 @@ class TestParseDateFromFrontmatterTier2:
         result = airo.parse_date_from_frontmatter({})
         assert result == ""
 
-    def test_returns_empty_for_bad_format(self):
+    def test_returns_bad_format_with_warning(self, recwarn):
         result = airo.parse_date_from_frontmatter({"date": "2024-1-1"})
-        assert result == ""
+        assert result == "2024-1-1"
+        assert any("Unrecognized date format" in str(w.message) for w in recwarn)
 
-    def test_rejects_partial_date(self):
+    def test_rejects_partial_date_with_warning(self, recwarn):
         result = airo.parse_date_from_frontmatter({"date": "2024-01"})
-        assert result == ""
+        assert result == "2024-01"
+        assert any("Unrecognized date format" in str(w.message) for w in recwarn)
 
-    def test_rejects_non_date_string(self):
+    def test_rejects_non_date_string_with_warning(self, recwarn):
         result = airo.parse_date_from_frontmatter({"date": "yesterday"})
-        assert result == ""
+        assert result == "yesterday"
+        assert any("Unrecognized date format" in str(w.message) for w in recwarn)
 
 
 # ---------------------------------------------------------------------------
@@ -2074,12 +2077,16 @@ class TestParseDateFromFrontmatterTier4:
         result = airo.parse_date_from_frontmatter(fm)
         assert result == ""
 
-    def test_returns_empty_for_bad_format(self):
+    def test_returns_bad_format_with_warning(self):
         import ai_research_os as airo
+        import warnings
         content = "---\ndate: not-a-date\n---\n"
         fm = airo.parse_frontmatter(content)
-        result = airo.parse_date_from_frontmatter(fm)
-        assert result == ""
+        with warnings.catch_warnings(record=True) as rec:
+            warnings.simplefilter("always")
+            result = airo.parse_date_from_frontmatter(fm)
+        assert result == "not-a-date"
+        assert any("Unrecognized date format" in str(w.message) for w in rec)
 
 
 class TestRenderCnoteTier4:
@@ -2094,6 +2101,17 @@ class TestRenderCnoteTier4:
         import ai_research_os as airo
         result = airo.render_cnote("Test Concept")
         assert "concept" in result.lower()
+
+    def test_hash_escaped_in_title(self):
+        import ai_research_os as airo
+        result = airo.render_cnote("LLM# vs CNN#")
+        lines = result.split("\n")
+        # title line is 5th line (index 4)
+        title_line = lines[4]
+        # escaped hashes should be present as \# not as heading marker
+        assert r"\#" in title_line
+        # no unescaped heading-level hash at start of title
+        assert not title_line.startswith("# ") or title_line.startswith("# LLM")
 
 
 class TestEnsureCnoteTier4:
