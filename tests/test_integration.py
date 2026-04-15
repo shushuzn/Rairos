@@ -202,7 +202,7 @@ class TestArxivFullPipeline:
             with patch("sys.stdout", new=StringIO()):
                 try:
                     result = airo.main([
-                        "2601.00155",
+                        "9999.99999",
                         "--root", str(temp_research_root),
                         "--category", "02-Models",
                         "--tags", "Agent",

@@ -6,6 +6,7 @@ from typing import List, Optional, Tuple
 import requests
 
 from core import CROSSREF_WORKS, DOI_RESOLVER, Paper
+from core.cache import get_cached, set_cached
 from parsers.input_detection import normalize_arxiv_id
 
 
@@ -83,11 +84,57 @@ def _try_find_arxiv_id_in_crossref(item: dict, doi: str) -> Optional[str]:
     return None
 
 
+def _paper_to_dict(p: Paper, maybe_arxiv: Optional[str]) -> dict:
+    return {
+        "source": p.source,
+        "uid": p.uid,
+        "title": p.title,
+        "authors": p.authors,
+        "abstract": p.abstract,
+        "published": p.published,
+        "updated": p.updated,
+        "abs_url": p.abs_url,
+        "pdf_url": p.pdf_url,
+        "primary_category": p.primary_category,
+        "journal": p.journal,
+        "volume": p.volume,
+        "issue": p.issue,
+        "page": p.page,
+        "reference_count": p.reference_count,
+        "maybe_arxiv": maybe_arxiv,
+    }
+
+
+def _dict_to_paper_crossref(d: dict) -> Tuple[Paper, Optional[str]]:
+    p = Paper(
+        source=d["source"],
+        uid=d["uid"],
+        title=d["title"],
+        authors=d["authors"],
+        abstract=d["abstract"],
+        published=d["published"],
+        updated=d["updated"],
+        abs_url=d["abs_url"],
+        pdf_url=d["pdf_url"],
+        primary_category=d.get("primary_category", ""),
+        journal=d.get("journal", ""),
+        volume=d.get("volume", ""),
+        issue=d.get("issue", ""),
+        page=d.get("page", ""),
+        reference_count=d.get("reference_count", 0),
+    )
+    return p, d.get("maybe_arxiv")
+
+
 def fetch_crossref_metadata(doi: str, timeout: int = 30) -> Tuple[Paper, Optional[str]]:
     """
     Crossref failures (404/network) will NOT crash.
     Returns (Paper, maybe_arxiv_id).
     """
+    cached = get_cached("crossref", doi)
+    if cached:
+        return _dict_to_paper_crossref(cached)
+
     url = CROSSREF_WORKS.format(doi=doi)
 
     try:
@@ -141,6 +188,7 @@ def fetch_crossref_metadata(doi: str, timeout: int = 30) -> Tuple[Paper, Optiona
             page=page,
             reference_count=ref_count,
         )
+        set_cached("crossref", doi, _paper_to_dict(p, maybe_arxiv))
         return p, maybe_arxiv
 
     except Exception:
@@ -158,4 +206,5 @@ def fetch_crossref_metadata(doi: str, timeout: int = 30) -> Tuple[Paper, Optiona
             pdf_url="",
             primary_category="",
         )
+        set_cached("crossref", doi, _paper_to_dict(p, maybe_arxiv))
         return p, maybe_arxiv

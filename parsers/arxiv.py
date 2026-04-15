@@ -6,9 +6,14 @@ import feedparser
 import requests
 
 from core import ARXIV_API, Paper
+from core.cache import get_cached, set_cached
 
 
 def fetch_arxiv_metadata(arxiv_id: str, timeout: int = 30) -> Paper:
+    cached = get_cached("arxiv", arxiv_id)
+    if cached:
+        return _dict_to_paper(cached)
+
     url = ARXIV_API.format(arxiv_id=arxiv_id)
     r = requests.get(url, timeout=timeout)
     r.raise_for_status()
@@ -63,6 +68,24 @@ def fetch_arxiv_metadata(arxiv_id: str, timeout: int = 30) -> Paper:
     # DOI (if present)
     doi = (getattr(e, "arxiv_doi", None) or "").strip()
 
+    paper_dict = {
+        "source": "arxiv",
+        "uid": arxiv_id,
+        "title": title,
+        "authors": authors,
+        "abstract": abstract,
+        "published": published or "",
+        "updated": updated or "",
+        "abs_url": abs_url,
+        "pdf_url": pdf_url,
+        "primary_category": primary_cat or "",
+        "categories": all_cats,
+        "comment": comment,
+        "journal_ref": journal_ref,
+        "doi": doi,
+    }
+    set_cached("arxiv", arxiv_id, paper_dict)
+
     return Paper(
         source="arxiv",
         uid=arxiv_id,
@@ -78,4 +101,23 @@ def fetch_arxiv_metadata(arxiv_id: str, timeout: int = 30) -> Paper:
         comment=comment,
         journal_ref=journal_ref,
         doi=doi,
+    )
+
+
+def _dict_to_paper(d: dict) -> Paper:
+    return Paper(
+        source=d["source"],
+        uid=d["uid"],
+        title=d["title"],
+        authors=d["authors"],
+        abstract=d["abstract"],
+        published=d["published"],
+        updated=d["updated"],
+        abs_url=d["abs_url"],
+        pdf_url=d["pdf_url"],
+        primary_category=d.get("primary_category", ""),
+        categories=d.get("categories", ""),
+        comment=d.get("comment", ""),
+        journal_ref=d.get("journal_ref", ""),
+        doi=d.get("doi", ""),
     )
