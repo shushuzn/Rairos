@@ -13,11 +13,11 @@ AI Research OS (Full Flow) — AI 自动初稿版（P + C + M + Radar + Timeline
   pip install pdfminer.six
 
 运行示例：
-  py .\ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM,RAG
-  py .\ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM,RAG --ai
+  py ./ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM,RAG
+  py ./ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM,RAG --ai
 
   # 付费/订阅论文：先人工下载 PDF，再喂给脚本
-  py .\ai_research_os.py "10.test/test" --tags LLM --pdf "D:\papers\paper.pdf" --ocr --ai
+  py ./ai_research_os.py "10.test/test" --tags LLM --pdf "D:/papers/paper.pdf" --ocr --ai
 """
 
 import argparse
@@ -30,10 +30,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-# ============ 代理配置 (Clash) ============
-PROXY_ADDR = "http://127.0.0.1:7897"
-os.environ["HTTP_PROXY"] = PROXY_ADDR
-os.environ["HTTPS_PROXY"] = PROXY_ADDR
+# ============ 代理配置（可选） ============
+# 取消注释并修改为你自己的代理地址，或通过环境变量传入。
+# 本地 arXiv / Crossref API 访问不需要代理，直接注释掉即可。
+# 如果确实需要代理（访问受限网络），取消下面三行并填入地址。
+# ==========================================
+# import os
+# PROXY_ADDR = "http://127.0.0.1:7897"
+# os.environ["HTTP_PROXY"] = PROXY_ADDR
+# os.environ["HTTPS_PROXY"] = PROXY_ADDR
 # ==========================================
 
 import requests
