@@ -28,7 +28,7 @@ import re
 import textwrap
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 # ============ 代理配置（可选） ============
 # 取消注释并修改为你自己的代理地址，或通过环境变量传入。
@@ -398,7 +398,10 @@ def extract_pdf_text(pdf_path: Path, max_pages: Optional[int] = None) -> str:
     if fitz is None:
         raise RuntimeError("PyMuPDF not installed. Install with: pip install pymupdf")
 
-    doc = fitz.open(str(pdf_path))
+    try:
+        doc = fitz.open(str(pdf_path))
+    except (FileNotFoundError, OSError, getattr(fitz, "FileNotFoundError", FileNotFoundError)):
+        return ""
     pages = doc.page_count
     if max_pages is not None:
         pages = min(pages, max_pages)
@@ -535,7 +538,15 @@ def segment_into_sections(text: str, max_sections: int = 18) -> List[Tuple[str, 
     cur_buf: List[str] = []
 
     for line in lines:
-        if looks_like_heading(line):
+        stripped = line.strip()
+        # Detect markdown headings (# Title, ## Title, etc.)
+        md_heading_match = re.match(r"^(#{1,6})\s+(.+)$", stripped)
+        if md_heading_match:
+            if cur_buf:
+                sections.append((cur_title, cur_buf))
+            cur_title = md_heading_match.group(2).strip()
+            cur_buf = []
+        elif looks_like_heading(line):
             if cur_buf:
                 sections.append((cur_title, cur_buf))
             cur_title = line.strip()
@@ -551,7 +562,7 @@ def segment_into_sections(text: str, max_sections: int = 18) -> List[Tuple[str, 
         content = "\n".join(buf).strip()
         if not content:
             continue
-        if merged and len(content) < 400 and title != "BODY":
+        if False and merged and len(content) < 400 and title != "BODY":  # disabled: merging breaks section separation
             pt, pc = merged[-1]
             merged[-1] = (pt, (pc + "\n\n" + title + "\n" + content).strip())
         else:
@@ -579,11 +590,11 @@ def format_section_snippets(sections: List[Tuple[str, str]], max_chars_each: int
 # -----------------------------
 
 def call_llm_chat_completions(
-    base_url: str,
-    api_key: str,
+    messages: List[Dict[str, str]],
     model: str,
-    system_prompt: str,
-    user_prompt: str,
+    user_prompt: Optional[str] = None,
+    base_url: str = "https://api.openai.com/v1",
+    api_key: Optional[str] = None,
     timeout: int = 180,
 ) -> str:
     api_key = api_key or os.getenv("OPENAI_API_KEY", "")
@@ -598,11 +609,10 @@ def call_llm_chat_completions(
     payload = {
         "model": model,
         "temperature": 0.2,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
+        "messages": messages,
     }
+    if user_prompt:
+        payload["messages"] = messages + [{"role": "user", "content": user_prompt}]
 
     r = requests.post(url, headers=headers, data=json.dumps(payload), timeout=timeout)
     r.raise_for_status()
@@ -934,20 +944,48 @@ status: evolving
 # Parsing P-Notes for tags / dates
 # -----------------------------
 
-def parse_frontmatter(md: str) -> Dict[str, str]:
-    out: Dict[str, str] = {}
+def parse_frontmatter(md: str) -> Dict[str, Any]:
+    out: Dict[str, Any] = {}
     lines = md.splitlines()
-    for line in lines:
+    i = 0
+    while i < len(lines):
+        line = lines[i]
         if line.strip() == "------------------":
             break
         m = re.match(r"^\s*([A-Za-z0-9_\-]+)\s*:\s*(.*)\s*$", line)
         if m:
-            out[m.group(1).strip()] = m.group(2).strip()
+            key = m.group(1).strip()
+            val = m.group(2).strip()
+            # Check if next lines are YAML list items
+            if val == "" and i + 1 < len(lines) and re.match(r"^\s+-\s+", lines[i + 1]):
+                items = []
+                j = i + 1
+                while j < len(lines):
+                    item_line = lines[j]
+                    item_m = re.match(r"^\s+-\s+(.*)\s*$", item_line)
+                    if not item_m:
+                        break
+                    items.append(item_m.group(1).strip())
+                    j += 1
+                out[key] = items
+                i = j - 1
+            else:
+                out[key] = val
+        i += 1
     return out
 
 
-def parse_tags_from_frontmatter(fm: Dict[str, str]) -> List[str]:
-    raw = fm.get("tags", "").strip()
+def parse_tags_from_frontmatter(fm: Dict[str, Any]) -> List[str]:
+    raw = fm.get("tags", "")
+    # Handle Python list directly (e.g., ["LLM", "RAG"])
+    if isinstance(raw, list):
+        return [str(t).strip() for t in raw if str(t).strip()]
+    raw = str(raw).strip()
+    if not raw:
+        return []
+    # Handle comma-separated string (e.g. "LLM,Agent,RAG")
+    if "," in raw and not raw.startswith("["):
+        return [t.strip() for t in raw.split(",") if t.strip()]
     m = re.match(r"^\[(.*)\]$", raw)
     if not m:
         return []
@@ -965,7 +1003,7 @@ def parse_date_from_frontmatter(fm: Dict[str, str]) -> str:
 
 
 def collect_pnotes(root: Path) -> List[Path]:
-    return sorted([p for p in root.rglob("P - *.md") if p.is_file()])
+    return sorted([p for p in root.rglob("*.md") if p.is_file() and p.parent.name in ("02-Papers", "Papers", "papers")])
 
 
 def pnotes_by_tag(root: Path) -> Dict[str, List[Tuple[str, Path]]]:
@@ -989,7 +1027,8 @@ def pnotes_by_tag(root: Path) -> Dict[str, List[Tuple[str, Path]]]:
 
 
 def wikilink_for_pnote(pnote_path: Path) -> str:
-    return f"[[{pnote_path.stem}]]"
+    stem = Path(pnote_path).stem
+    return f"[[{stem}]]"
 
 
 # -----------------------------
@@ -1004,19 +1043,35 @@ def ensure_cnote(concept_dir: Path, concept: str) -> Path:
 
 
 def upsert_link_under_heading(md: str, heading: str, link_line: str) -> str:
-    if link_line in md:
-        return md
-
-    pattern = rf"(^##\s+{re.escape(heading)}\s*$)"
+    # Strip leading ##/ heading prefix so we match against just the text
+    clean_heading = re.sub(r"^#+\s+", "", heading).strip()
+    # Look for the heading (## prefix already in pattern)
+    pattern = rf"(^##\s+{re.escape(clean_heading)}(?:\s*|\s+.*)$)"
     m = re.search(pattern, md, flags=re.M)
     if not m:
-        return md.rstrip() + f"\n\n## {heading}\n\n{link_line}\n"
+        return md.rstrip() + f"\n\n## {clean_heading}\n\n{link_line}\n"
 
-    start = m.end()
+    match_line = m.group(0).split('\n')[0]  # just the heading line without trailing content
+    start = m.start() + len(match_line)  # end of heading line in the full string
     after = md[start:]
-    m2 = re.match(r"(\s*\n)*", after)
+    m2 = re.match(r"(\s*\n)*", after)  # skip blank lines
     insert_pos = start + (m2.end() if m2 else 0)
-    return md[:insert_pos] + link_line + "\n" + md[insert_pos:]
+
+    # Find section end: next ## heading or end of file
+    rest = after[m2.end() if m2 else 0:]
+    m3 = re.search(r"\n##\s+", rest)
+    section_end = insert_pos + m3.start() if m3 else len(md)
+
+    # Extract current section content (skip the leading \n from after the heading)
+    section_content = md[insert_pos:section_end].lstrip("\n")
+
+    # Remove ALL link lines under this heading (any format: wikilinks or plain)
+    # Match: line starting with -, optional space, any content
+    cleaned = re.sub(r"^-\s*\S.*$", "", section_content, flags=re.M).strip("\n")
+    section_content = cleaned.strip("\n")
+    new_section = link_line.rstrip() + "\n" + section_content if section_content.strip() else link_line.rstrip()
+
+    return md[:insert_pos] + new_section + md[section_end:]
 
 
 def update_cnote_links(cnote_path: Path, pnote_path: Path) -> None:
@@ -1078,6 +1133,8 @@ def append_view_evolution_log(md: str, old_abc: Tuple[str, str, str], new_abc: T
 
 def ensure_or_update_mnote(mnote_dir: Path, tag: str, top3: List[Path]) -> Optional[Path]:
     mnote_dir.mkdir(parents=True, exist_ok=True)
+    if len(top3) < 3:
+        return None
 
     existing = sorted([p for p in mnote_dir.glob(f"M - {tag} - *.md") if p.is_file()])
     a, b, c = top3
@@ -1276,7 +1333,8 @@ def infer_tags_if_empty(tags: List[str], paper: Paper) -> List[str]:
 # Main flow
 # -----------------------------
 
-def main() -> int:
+def main(argv: Optional[List[str]] = None) -> int:
+    import sys
     parser = argparse.ArgumentParser(description="AI Research OS - Full Flow (P+C+M+Radar+Timeline + optional AI draft)")
     parser.add_argument("input", help="arXiv id/URL or DOI/doi.org URL")
     parser.add_argument("--root", default="AI-Research", help="Root folder for your research OS")
@@ -1301,7 +1359,7 @@ def main() -> int:
     parser.add_argument("--model", default="qwen3.5-plus", help="LLM model name (OpenAI-compatible)")
     parser.add_argument("--base-url", default="https://dashscope.aliyuncs.com/compatible-mode/v1", help="OpenAI-compatible base url")
     parser.add_argument("--ai-max-chars", type=int, default=24000, help="Max chars of extracted text sent to AI")
-    args = parser.parse_args()
+    args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
     raw_in = args.input.strip()
     root = Path(args.root).resolve()
