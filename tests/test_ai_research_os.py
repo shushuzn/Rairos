@@ -1691,3 +1691,241 @@ def test_ai_generate_pnote_draft_includes_required_sections(monkeypatch):
     assert "## 11. Decision" in user_prompt
     assert "## 知识蒸馏" in user_prompt
     assert "对抗式审稿人" in system_prompt
+
+
+# --------------------------------------------------
+# Tier 3: segment_into_sections + format_section_snippets
+# --------------------------------------------------
+
+def test_segment_into_sections_basic():
+    import ai_research_os as airo
+    # "Method details here" triggers looks_like_heading (keyword "method"), so use a safe heading
+    text = "# Introduction\n\nSome intro content.\n\n## Key Contributions\n\nActual method content here."
+    sections = airo.segment_into_sections(text)
+    assert len(sections) == 2
+    assert sections[0][0] == "Introduction"
+    assert "intro content" in sections[0][1]
+    assert sections[1][0] == "Key Contributions"
+
+
+def test_segment_into_sections_no_headings():
+    import ai_research_os as airo
+    text = "Just plain text\n\nwith multiple lines\n\nno headings here."
+    sections = airo.segment_into_sections(text)
+    assert len(sections) == 1
+    assert sections[0][0] == "BODY"
+
+
+def test_segment_into_sections_truncates_above_max():
+    import ai_research_os as airo
+    text = "\n\n".join(f"# Section {i}\nContent" for i in range(25))
+    sections = airo.segment_into_sections(text, max_sections=5)
+    assert len(sections) == 6  # 5 + TRUNCATED
+    assert sections[-1][0] == "TRUNCATED"
+
+
+def test_segment_into_sections_strips_empty():
+    import ai_research_os as airo
+    text = "# A\n\n\n\n   \n# B\n\n"
+    sections = airo.segment_into_sections(text)
+    assert all(content.strip() for _, content in sections)
+
+
+def test_format_section_snippets_basic():
+    import ai_research_os as airo
+    sections = [("Introduction", "This is the intro content."), ("Methods", "Method details.")]
+    result = airo.format_section_snippets(sections)
+    assert "### Introduction" in result
+    assert "### Methods" in result
+    assert "> This is the intro" in result
+
+
+def test_format_section_snippets_truncates_long():
+    import ai_research_os as airo
+    long_content = "x" * 3000
+    sections = [("Long", long_content)]
+    result = airo.format_section_snippets(sections, max_chars_each=500)
+    assert "…" in result
+    assert len(result) < 3000
+
+
+# --------------------------------------------------
+# Tier 3: mnote_filename + parse_current_abc
+# --------------------------------------------------
+
+def test_mnote_filename_basic(tmp_path):
+    import ai_research_os as airo
+    a = tmp_path / "P - 2024 - Long Title Here12345.md"
+    b = tmp_path / "P - 2024 - Another Title67890.md"
+    c = tmp_path / "P - 2024 - Third Title11111.md"
+    a.touch()
+    b.touch()
+    c.touch()
+    fname = airo.mnote_filename("RAG", a, b, c)
+    assert fname.startswith("M - RAG - ")
+    assert fname.endswith(".md")
+
+
+def test_mnote_filename_strips_prefix(tmp_path):
+    import ai_research_os as airo
+    a = tmp_path / "P - 2024 - Very Long Stem That Exceeds Twenty Four Characters.md"
+    b = tmp_path / "P - 2024 - Short.md"
+    c = tmp_path / "P - 2024 - Tiny.md"
+    a.touch()
+    b.touch()
+    c.touch()
+    fname = airo.mnote_filename("Agent", a, b, c)
+    # prefix stripped, and truncated to 24 chars
+    assert "P - 2024 - " not in fname
+    assert fname.endswith(".md")
+
+
+def test_parse_current_abc_basic():
+    import ai_research_os as airo
+    md = "# M Note\n\n- A: TitleA\n- B: TitleB\n- C: TitleC\n"
+    a, b, c = airo.parse_current_abc(md)
+    assert a == "TitleA"
+    assert b == "TitleB"
+    assert c == "TitleC"
+
+
+def test_parse_current_abc_missing_fields():
+    import ai_research_os as airo
+    md = "- A: OnlyA\n"
+    a, b, c = airo.parse_current_abc(md)
+    assert a == "OnlyA"
+    assert b is None
+    assert c is None
+
+
+def test_parse_current_abc_no_match():
+    import ai_research_os as airo
+    md = "No ABC here"
+    a, b, c = airo.parse_current_abc(md)
+    assert a is None
+    assert b is None
+    assert c is None
+
+
+# --------------------------------------------------
+# Tier 3: append_view_evolution_log
+# --------------------------------------------------
+
+def test_append_view_evolution_log_new_section():
+    import ai_research_os as airo
+    md = "# M Note\n\nOld content."
+    result = airo.append_view_evolution_log(md, ("OldA", "OldB", "OldC"), ("NewA", "NewB", "NewC"))
+    assert "## View Evolution Log" in result
+    assert "NewA" in result
+    assert "OldA" in result
+
+
+def test_append_view_evolution_log_existing_section():
+    import ai_research_os as airo
+    md = "# M Note\n\n## View Evolution Log\n\nExisting log."
+    result = airo.append_view_evolution_log(md, ("OA", "OB", "OC"), ("NA", "NB", "NC"))
+    assert result.count("View Evolution Log") == 1
+    assert "NA" in result
+
+
+# --------------------------------------------------
+# Tier 3: parse_radar_table
+# --------------------------------------------------
+
+def test_parse_radar_table_basic():
+    import ai_research_os as airo
+    md = """# Radar
+
+| 主题 | 热度 | 证据质量 | 成本变化 | 我的信心 | 最近更新 |
+| -- | -- | ---- | ---- | ---- | ---- |
+| RAG | 5 | High | Stable | 4 | 2024-01-01 |
+"""
+    header, rows = airo.parse_radar_table(md)
+    assert "RAG" in rows[0]["主题"]
+    assert rows[0]["热度"] == "5"
+    assert rows[0]["最近更新"] == "2024-01-01"
+
+
+def test_parse_radar_table_no_table():
+    import ai_research_os as airo
+    md = "# Radar\n\nNo table here."
+    header, rows = airo.parse_radar_table(md)
+    assert rows == []
+    assert "Radar" in header
+
+
+# --------------------------------------------------
+# Tier 3: infer_tags_if_empty
+# --------------------------------------------------
+
+def test_infer_tags_if_empty_returns_existing():
+    import ai_research_os as airo
+    paper = airo.Paper(source="arxiv", uid="2301.00001", title="Test", authors=[], abstract="", published="", updated="", abs_url="", pdf_url="", primary_category="")
+    tags = ["CustomTag"]
+    result = airo.infer_tags_if_empty(tags, paper)
+    assert result == ["CustomTag"]
+
+
+def test_infer_tags_if_empty_infers_agent():
+    import ai_research_os as airo
+    paper = airo.Paper(source="arxiv", uid="2301.00001", title="Agent Tools", authors=[], abstract="An agent uses tools.", published="", updated="", abs_url="", pdf_url="", primary_category="")
+    result = airo.infer_tags_if_empty([], paper)
+    assert "Agent" in result
+
+
+def test_infer_tags_if_empty_infers_rag():
+    import ai_research_os as airo
+    paper = airo.Paper(source="arxiv", uid="2301.00001", title="RAG System", authors=[], abstract="Retrieval augmented generation.", published="", updated="", abs_url="", pdf_url="", primary_category="")
+    result = airo.infer_tags_if_empty([], paper)
+    assert "RAG" in result
+
+
+def test_infer_tags_if_empty_returns_unsorted():
+    import ai_research_os as airo
+    paper = airo.Paper(source="arxiv", uid="2301.00001", title="Foo Bar", authors=[], abstract="Nothing matching.", published="", updated="", abs_url="", pdf_url="", primary_category="")
+    result = airo.infer_tags_if_empty([], paper)
+    assert result == ["Unsorted"]
+
+
+# --------------------------------------------------
+# Tier 3: upsert_link_under_heading
+# --------------------------------------------------
+
+def test_upsert_link_under_heading_basic():
+    import ai_research_os as airo
+    md = "# C Note\n\n## 关联笔记\n\n"
+    result = airo.upsert_link_under_heading(md, "关联笔记", "[[P - 2024 - Test]]")
+    assert "[[P - 2024 - Test]]" in result
+
+
+def test_upsert_link_under_heading_no_section():
+    import ai_research_os as airo
+    md = "# C Note\n\nNo section."
+    result = airo.upsert_link_under_heading(md, "关联笔记", "[[P - 2024 - Test]]")
+    # Should add the heading section
+    assert "## 关联笔记" in result
+
+
+def test_upsert_link_under_heading_idempotent():
+    import ai_research_os as airo
+    md = "# C Note\n\n## 关联笔记\n\n"
+    # First call: adds link
+    r1 = airo.upsert_link_under_heading(md, "关联笔记", "- [[P - 2024 - Test]]")
+    assert "[[P - 2024 - Test]]" in r1
+    # Second call: replaces existing link (dedup by ^-\s*\S.*$ pattern)
+    r2 = airo.upsert_link_under_heading(r1, "关联笔记", "- [[P - 2024 - Test]]")
+    assert r2.count("[[P - 2024 - Test]]") == 1
+
+
+# --------------------------------------------------
+# Tier 3: render_mnote
+# --------------------------------------------------
+
+def test_render_mnote_basic():
+    import ai_research_os as airo
+    result = airo.render_mnote("RAG", "PaperA", "PaperB", "PaperC")
+    assert "RAG" in result
+    assert "PaperA" in result
+    assert "PaperB" in result
+    assert "PaperC" in result
+    assert "## 当前 A/B/C" in result
