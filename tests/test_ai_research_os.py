@@ -1699,7 +1699,7 @@ def test_ai_generate_pnote_draft_includes_required_sections(monkeypatch):
     assert "## 1. 背景" in user_prompt
     assert "## 11. Decision" in user_prompt
     assert "## 知识蒸馏" in user_prompt
-    assert "对抗式审稿人" in system_prompt
+    assert "评分量表" in system_prompt
 
 
 # --------------------------------------------------
