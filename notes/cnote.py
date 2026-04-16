@@ -51,3 +51,139 @@ def update_cnote_links(cnote_path: Path, pnote_path: Path) -> None:
     md = read_text(cnote_path)
     md2 = upsert_link_under_heading(md, "关联笔记", wikilink_for_pnote(pnote_path))
     write_text(cnote_path, md2)
+
+
+def _section_is_empty(md: str, section: str) -> bool:
+    """Check if a section has meaningful content (not just placeholder text)."""
+    # Match the section heading and capture content until next ## heading or end
+    pattern = rf"(?:^|\n)(##\s+{re.escape(section)}\s*\n)(.*?)(?=\n##\s+|\Z)"
+    m = re.search(pattern, md, flags=re.DOTALL)
+    if not m:
+        return True
+    content = m.group(2).strip()
+    # Empty, or only placeholder dashes/comments
+    if not content or re.match(r"^[-–—\s]+$", content):
+        return True
+    # Only the template placeholder text (short, no sentence-ending punctuation)
+    if len(content) < 20 and not re.search(r"[.。?！]", content):
+        return True
+    return False
+
+
+def _fill_cnote_section(md: str, section: str, new_content: str) -> str:
+    """Replace a section's placeholder content with new_content, preserving the heading."""
+    pattern = rf"((?:^|\n)(##\s+{re.escape(section)}\s*\n))(.*?)(?=\n##\s+|\Z)"
+    m = re.search(pattern, md, flags=re.DOTALL)
+    if not m:
+        # Section doesn't exist; append it
+        return md.rstrip() + f"\n\n## {section}\n\n{new_content.strip()}\n"
+    heading = m.group(1)  # includes trailing newlines
+    return md[:m.start()] + heading + new_content.strip() + md[m.end():]
+
+
+def _parse_cnote_sections(draft: str) -> dict:
+    """Parse a C-note draft into section_name -> content dict."""
+    sections = {}
+    current_section = None
+    current_content = []
+
+    for line in draft.split("\n"):
+        m = re.match(r"^(##\s+.+)$", line)
+        if m:
+            if current_section:
+                sections[current_section] = "\n".join(current_content).strip()
+            current_section = m.group(1).replace("##", "").strip()
+            current_content = []
+        else:
+            if current_section is not None:
+                current_content.append(line)
+
+    if current_section:
+        sections[current_section] = "\n".join(current_content).strip()
+    return sections
+
+
+def auto_fill_cnotes_with_ai(
+    root: Path,
+    api_key: str,
+    base_url: str,
+    model: str,
+    min_papers: int = 1,
+) -> list:
+    """
+    Scan P-notes by tag, generate AI C-note drafts, and fill empty sections.
+
+    Args:
+        root: Research OS root (contains 01-Foundations/, 02-Papers/, etc.)
+        api_key: LLM API key
+        base_url: OpenAI-compatible base URL
+        model: Model name
+        min_papers: Minimum P-notes needed to trigger AI draft (default 1)
+
+    Returns:
+        List of (concept, status) tuples: status is 'filled' | 'skipped' | 'no-papers'
+    """
+    import ai_research_os as airo
+    from notes.pnotes import pnotes_by_tag, read_pnote_metadata
+
+    # Import here to avoid circular dependency
+    ai_generate_cnote_draft = airo.ai_generate_cnote_draft
+
+    results = []
+    tag_map = pnotes_by_tag(root)
+    concept_dir = root / "01-Foundations"
+
+    for concept, pnote_entries in tag_map.items():
+        # pnote_entries: List[Tuple[str, Path]] sorted by date desc
+        pnote_paths = [p for _, p in pnote_entries]
+
+        if len(pnote_paths) < min_papers:
+            results.append((concept, "skipped"))
+            continue
+
+        cnote_path = concept_dir / f"C - {concept}.md"
+
+        # Read existing C-note content
+        if cnote_path.exists():
+            md = read_text(cnote_path)
+        else:
+            from renderers.cnote import render_cnote
+            md = render_cnote(concept)
+            write_text(cnote_path, md)
+
+        # Check if any section is empty (meaning we should generate)
+        core_empty = _section_is_empty(md, "核心定义")
+        bg_empty = _section_is_empty(md, "产生背景")
+        tech_empty = _section_is_empty(md, "技术本质")
+
+        if not (core_empty or bg_empty or tech_empty):
+            # All major sections have content; skip to avoid overwriting manual work
+            results.append((concept, "skipped"))
+            continue
+
+        # Collect P-note metadata
+        pnotes_meta = [read_pnote_metadata(p) for p in pnote_paths]
+
+        try:
+            draft = ai_generate_cnote_draft(
+                concept=concept,
+                pnotes=pnotes_meta,
+                api_key=api_key,
+                base_url=base_url,
+                model=model,
+            )
+        except Exception as e:
+            print(f"  [WARN] C-note AI draft failed for {concept}: {e}")
+            results.append((concept, "failed"))
+            continue
+
+        # Parse generated sections and fill only empty ones
+        parsed = _parse_cnote_sections(draft)
+        for section, content in parsed.items():
+            if content.strip():
+                md = _fill_cnote_section(md, section, content)
+
+        write_text(cnote_path, md)
+        results.append((concept, "filled"))
+
+    return results

@@ -19,7 +19,7 @@ from renderers.cnote import render_cnote
 from renderers.mnote import render_mnote
 from notes.frontmatter import parse_frontmatter, parse_tags_from_frontmatter, parse_date_from_frontmatter
 from notes.pnotes import collect_pnotes, pnotes_by_tag, wikilink_for_pnote, read_pnote_metadata
-from notes.cnote import ensure_cnote, upsert_link_under_heading, update_cnote_links
+from notes.cnote import ensure_cnote, upsert_link_under_heading, update_cnote_links, auto_fill_cnotes_with_ai
 from notes.mnote import (
     pick_top3_pnotes_for_tag,
     mnote_filename,
@@ -48,7 +48,7 @@ __all__ = [
     # notes
     "parse_frontmatter", "parse_tags_from_frontmatter", "parse_date_from_frontmatter",
     "collect_pnotes", "pnotes_by_tag", "wikilink_for_pnote", "read_pnote_metadata",
-    "ensure_cnote", "upsert_link_under_heading", "update_cnote_links",
+    "ensure_cnote", "upsert_link_under_heading", "update_cnote_links", "auto_fill_cnotes_with_ai",
     "pick_top3_pnotes_for_tag", "mnote_filename", "parse_current_abc", "append_view_evolution_log", "ensure_or_update_mnote",
     "KEYWORD_TAGS", "infer_tags_if_empty",
     # updaters

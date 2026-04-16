@@ -3,6 +3,7 @@
 """AI Research OS CLI entry point."""
 
 import argparse
+import os
 import sys
 from pathlib import Path
 from typing import List, Optional
@@ -10,7 +11,7 @@ from typing import List, Optional
 from core import DOI_RESOLVER, Paper, today_iso
 from core.basics import ensure_research_tree, safe_uid, slugify_title
 from llm.generate import ai_generate_pnote_draft
-from notes.cnote import ensure_cnote, update_cnote_links
+from notes.cnote import auto_fill_cnotes_with_ai, ensure_cnote, update_cnote_links
 from notes.frontmatter import parse_date_from_frontmatter, parse_frontmatter, parse_tags_from_frontmatter
 from notes.mnote import ensure_or_update_mnote, pick_top3_pnotes_for_tag
 from notes.pnotes import pnotes_by_tag
@@ -74,11 +75,32 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # AI draft options
     parser.add_argument("--ai", action="store_true", help="Use AI to draft-fill P-Note sections (adds an AI draft block)")
+    parser.add_argument("--ai-cnote", action="store_true", help="AI-fill all C-Notes from existing P-Notes (standalone mode; skips paper processing)")
+    parser.add_argument("--ai-max-papers", type=int, default=10, help="Max P-notes to feed per C-note (default: 10)")
     parser.add_argument("--api-key", default="", help="LLM API key (or set OPENAI_API_KEY env)")
     parser.add_argument("--model", default="qwen3.5-plus", help="LLM model name (OpenAI-compatible)")
     parser.add_argument("--base-url", default="https://dashscope.aliyuncs.com/compatible-mode/v1", help="OpenAI-compatible base url")
     parser.add_argument("--ai-max-chars", type=int, default=24000, help="Max chars of extracted text sent to AI")
     args = parser.parse_args(argv if argv is not None else sys.argv[1:])
+
+    # Standalone C-note AI fill mode (no paper processing needed)
+    if args.ai_cnote:
+        api_key = args.api_key or os.environ.get("OPENAI_API_KEY", "")
+        if not api_key:
+            print("ERROR: --api-key or OPENAI_API_KEY required for --ai-cnote")
+            return 1
+        root = Path(args.root).resolve()
+        results = auto_fill_cnotes_with_ai(
+            root=root,
+            api_key=api_key,
+            base_url=args.base_url,
+            model=args.model,
+            min_papers=1,
+        )
+        print(f"OK: C-note AI fill done ({len(results)} concepts)")
+        for concept, status in results:
+            print(f"  - {concept}: {status}")
+        return 0
 
     raw_in = args.input.strip()
     root = Path(args.root).resolve()
