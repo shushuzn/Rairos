@@ -5,6 +5,7 @@ on:
     branches: [main, fix-ci-runner, fix-ci-v2, final-ci-fix]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   lint:
