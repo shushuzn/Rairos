@@ -912,6 +912,99 @@ class TestFetchArxivMetadata:
             with pytest.raises(Exception):
                 airo.fetch_arxiv_metadata("invalid-id-that-does-not-exist", timeout=30)
 
+
+class TestFetchArxivMetadataBatch:
+    def test_batch_returns_ordered_papers(self):
+        """Batch returns papers in same order as input IDs."""
+        mock_feed = """<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <title>Paper Two</title>
+    <author><name>Carol White</name></author>
+    <summary>Abstract two.</summary>
+    <published>2024-02-01</published>
+    <updated>2024-02-02</updated>
+    <id>http://arxiv.org/abs/2302.00001</id>
+    <link href="https://arxiv.org/abs/2302.00001" type="text/html"/>
+    <link title="pdf" href="https://arxiv.org/pdf/2302.00001.pdf" type="application/pdf"/>
+    <arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="cs.CL"/>
+  </entry>
+  <entry>
+    <title>Paper One</title>
+    <author><name>Alice Smith</name></author>
+    <summary>Abstract one.</summary>
+    <published>2024-01-15</published>
+    <updated>2024-01-20</updated>
+    <id>http://arxiv.org/abs/2301.00001</id>
+    <link href="https://arxiv.org/abs/2301.00001" type="text/html"/>
+    <link title="pdf" href="https://arxiv.org/pdf/2301.00001.pdf" type="application/pdf"/>
+    <arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="cs.AI"/>
+  </entry>
+</feed>"""
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = mock_feed
+        mock_response.headers = {"content-type": "application/atom+xml"}
+
+        with patch("requests.get", return_value=mock_response):
+            with patch("parsers.arxiv.get_cached", return_value=None):
+                with patch("parsers.arxiv.set_cached"):
+                    papers = airo.fetch_arxiv_metadata_batch(
+                        ["2301.00001", "2302.00001"], timeout=60
+                    )
+
+        assert len(papers) == 2
+        assert papers[0].uid == "2301.00001"
+        assert papers[0].title == "Paper One"
+        assert papers[1].uid == "2302.00001"
+        assert papers[1].title == "Paper Two"
+
+    def test_batch_empty_input(self):
+        papers = airo.fetch_arxiv_metadata_batch([])
+        assert papers == []
+
+    def test_batch_all_cached(self):
+        cached_paper = {
+            "source": "arxiv", "uid": "2301.00001", "title": "Cached Paper",
+            "authors": ["Cached Author"], "abstract": "Cached abstract.",
+            "published": "2024-01-15", "updated": "2024-01-20",
+            "abs_url": "https://arxiv.org/abs/2301.00001",
+            "pdf_url": "https://arxiv.org/pdf/2301.00001.pdf",
+            "primary_category": "cs.AI", "categories": "cs.AI",
+            "comment": "", "journal_ref": "", "doi": "",
+        }
+        with patch("parsers.arxiv.get_cached", return_value=cached_paper):
+            papers = airo.fetch_arxiv_metadata_batch(["2301.00001"])
+        assert len(papers) == 1
+        assert papers[0].title == "Cached Paper"
+
+    def test_batch_fallback_to_individual_on_error(self):
+        """When batch request fails, falls back to individual fetch_arxiv_metadata."""
+        cached_paper = {
+            "source": "arxiv", "uid": "2301.00001", "title": "Fallback Paper",
+            "authors": ["Fallback Author"], "abstract": "Fallback abstract.",
+            "published": "2024-01-15", "updated": "2024-01-20",
+            "abs_url": "https://arxiv.org/abs/2301.00001",
+            "pdf_url": "https://arxiv.org/pdf/2301.00001.pdf",
+            "primary_category": "cs.AI", "categories": "cs.AI",
+            "comment": "", "journal_ref": "", "doi": "",
+        }
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "not xml at all"
+        mock_response.headers = {"content-type": "text/plain"}
+
+        def get_cached_mock_ns(ns, aid):
+            return cached_paper if aid == "2301.00001" else None
+
+        with patch("requests.get", return_value=mock_response):
+            with patch("parsers.arxiv.get_cached", side_effect=get_cached_mock_ns):
+                with patch("parsers.arxiv.set_cached"):
+                    papers = airo.fetch_arxiv_metadata_batch(["2301.00001"], timeout=60)
+        assert len(papers) == 1
+        assert papers[0].uid == "2301.00001"
+
 # ---------------------------------------------------------------------------
 # fetch_crossref_metadata (mocked)
 # ---------------------------------------------------------------------------
