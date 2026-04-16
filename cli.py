@@ -17,9 +17,9 @@ from notes.pnotes import pnotes_by_tag
 from parsers.arxiv import fetch_arxiv_metadata
 from parsers.crossref import fetch_crossref_metadata
 from parsers.input_detection import is_probably_doi, normalize_arxiv_id, normalize_doi
-from pdf.extract import download_pdf, extract_pdf_text_hybrid
+from pdf.extract import download_pdf, extract_pdf_text_hybrid, extract_pdf_structured
 from renderers.pnote import render_pnote
-from sections.segment import format_section_snippets, segment_into_sections
+from sections.segment import format_section_snippets, segment_into_sections, segment_structured, format_tables_markdown, format_math_markdown
 from updaters.radar import update_radar
 from updaters.timeline import update_timeline
 
@@ -68,6 +68,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--ocr-lang", default="chi_sim+eng", help="Tesseract language (default: chi_sim+eng).")
     parser.add_argument("--ocr-zoom", type=float, default=2.0, help="OCR render zoom (default: 2.0).")
     parser.add_argument("--no-pdfminer", action="store_true", help="Disable pdfminer fallback.")
+
+    # Structured PDF extraction
+    parser.add_argument("--structured", action="store_true", help="Use structured PDF extraction (tables/math separated).")
 
     # AI draft options
     parser.add_argument("--ai", action="store_true", help="Use AI to draft-fill P-Note sections (adds an AI draft block)")
@@ -142,6 +145,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     extracted_sections_md = ""
     extracted_text_for_ai = ""
     pdf_downloaded = False
+    table_md = ""
+    math_md = ""
 
     if args.pdf:
         pdf_path = Path(args.pdf).expanduser().resolve()
@@ -162,19 +167,35 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if pdf_downloaded:
         try:
-            txt = extract_pdf_text_hybrid(
-                pdf_path,
-                max_pages=args.max_pages,
-                ocr=args.ocr,
-                ocr_lang=args.ocr_lang,
-                ocr_zoom=args.ocr_zoom,
-                use_pdfminer_fallback=(not args.no_pdfminer),
-            )
-            extracted_text_for_ai = txt
-            sections = segment_into_sections(txt)
-            extracted_sections_md = format_section_snippets(sections)
+            if args.structured:
+                sdoc = extract_pdf_structured(
+                    pdf_path,
+                    max_pages=args.max_pages,
+                )
+                sections = segment_structured(sdoc)
+                extracted_sections_md = format_section_snippets(sections)
+                table_md = format_tables_markdown(sdoc)
+                math_md = format_math_markdown(sdoc)
+                # Provide text to AI draft
+                extracted_text_for_ai = "\n".join(b.text for b in sdoc.text_blocks)
+            else:
+                txt = extract_pdf_text_hybrid(
+                    pdf_path,
+                    max_pages=args.max_pages,
+                    ocr=args.ocr,
+                    ocr_lang=args.ocr_lang,
+                    ocr_zoom=args.ocr_zoom,
+                    use_pdfminer_fallback=(not args.no_pdfminer),
+                )
+                extracted_text_for_ai = txt
+                sections = segment_into_sections(txt)
+                extracted_sections_md = format_section_snippets(sections)
+                table_md = ""
+                math_md = ""
         except Exception as e:
             extracted_sections_md = f"_PDF 抽取失败：{e}_"
+            table_md = ""
+            math_md = ""
 
     # AI draft generation (optional)
     ai_draft_md = ""
@@ -198,7 +219,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             )
 
     from core.basics import write_text
-    write_text(pnote_path, render_pnote(paper, tags, extracted_sections_md, ai_draft_md=ai_draft_md))
+    write_text(pnote_path, render_pnote(paper, tags, extracted_sections_md, ai_draft_md=ai_draft_md, table_md=table_md, math_md=math_md))
 
     # C-Notes create/update + link P-Note
     cnote_paths = []

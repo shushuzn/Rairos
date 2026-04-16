@@ -5,14 +5,19 @@ from typing import List
 from core import Paper, today_iso
 
 
-def render_pnote(p: Paper, tags: List[str], extracted_sections_md: str, ai_draft_md: str = "") -> str:
+def render_pnote(p: Paper, tags: List[str], extracted_sections_md: str, ai_draft_md: str = "",
+                 table_md: str = "", math_md: str = "") -> str:
     date_for_note = p.published or today_iso()
     authors_line = ", ".join(p.authors) if p.authors else "Unknown"
     tags_list = ", ".join(tags)
 
     src_line = f"{p.source.upper()}: {p.uid}"
     abstract_md = ("> **Abstract（原文）**  \n> " + p.abstract) if p.abstract else "_（未获取到 abstract，可手动补充）_"
-    ai_block = f"\n\n---\n\n## AI 自动初稿（待核验）\n\n{ai_draft_md.strip()}\n" if ai_draft_md.strip() else ""
+    ai_block = (f"\n\n---\n\n## AI 自动初稿（待核验）\n\n{ai_draft_md.strip()}\n") if ai_draft_md.strip() else ""
+    table_md_section = (f"\n\n---\n\n## 附：PDF 表格（结构化抽取）\n\n{table_md.strip()}\n") if table_md.strip() else ""
+    math_md_section = (f"\n\n---\n\n## 附：PDF 公式（结构化抽取）\n\n{math_md.strip()}\n") if math_md.strip() else ""
+
+    sections_block = extracted_sections_md if extracted_sections_md else "_（未能从 PDF 抽取到可用文本）_"
 
     md = f"""\
 type: paper
@@ -159,6 +164,6 @@ tags: [{tags_list}]
 
 ## 附：PDF 章节粗拆（自动抽取 · 供快速定位）
 
-{extracted_sections_md if extracted_sections_md else "_（未能从 PDF 抽取到可用文本）_"}
+{sections_block}{table_md_section}{math_md_section}
 """
     return textwrap.dedent(md).strip() + "\n"
