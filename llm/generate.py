@@ -1,4 +1,8 @@
-"""AI draft generation for P-Notes and C-Notes."""
+"""AI draft generation for P-Notes and C-Notes.
+
+Output format: Markdown sections (human-readable) + XML rubric block (machine-parseable).
+Section headings MUST match the P-note template numbering so content can be injected directly.
+"""
 from typing import List
 
 from core import Paper
@@ -27,7 +31,7 @@ def ai_generate_pnote_draft(
 4. 每个栏目开头：> AI Draft（可编辑，需人工核验）
 5. 只输出指定栏目，不输出额外解释
 
-评分量表 Rubric（"评分量表"栏目必须应用）：
+评分量表 Rubric（在 # 评分量表 栏目末尾必须嵌入 XML 注释）：
 
 Novelty（原创性）:
   1=增量改进/复现；2=组合已有方法；3=新任务/新视角；4=新范式突破；5=开创性/里程碑
@@ -63,26 +67,66 @@ Adoption Signal（采纳信号）:
 
 {extracted_text}
 
-请按以下栏目生成初稿，每栏用 ## 二级标题：
+请按以下栏目生成初稿，## 二级标题必须严格使用给出的编号和名称（内容直接填入对应栏目）：
 
-## 背景
+## 1. 背景
 一句话：这篇论文要解决什么问题？（引用摘要）
 
-## 核心方法
+## 2. 核心问题
 这篇论文的核心技术方案是什么？（引用正文片段，用 > 引用；不确定的加 [推测]）
 
-## 关键实验
-主要实验设置、主要结果、与最强基线的对比。（找不到写"[无原文支撑]"，禁止捏造）
+## 3. 方法结构
+### 3.1 架构拆解
+### 3.2 算法逻辑
+### 3.3 关键组件
 
-## 对抗式审稿
+## 4. 关键创新
+一句话总结最大创新点。
+
+## 5. 实验分析
+### 5.1 数据集
+### 5.2 基线对比
+### 5.3 消融实验
+### 5.4 成本分析
+
+## 6. 对抗式审稿
 列出3个最强质疑点：（1）逻辑/假设漏洞；（2）实验覆盖不足之处；（3）泛化性/复现风险。（加 [推测] 标注）
 
-## 评分量表
-必须包含：Novelty / Leverage / Evidence / Cost / Moat / Adoption Signal / Overall Judgment
+## 7. 优势
+这篇论文的主要优势。（引用参考论文的实验/分析结果支撑）
+
+## 8. 局限
+这篇论文的主要局限。（引用参考论文的讨论，加 [推测]）
+
+## 9. 本质抽象
+一句话抽象出这篇论文的本质。
+
+## 10. 与其他方法对比
+与同类方法的核心差异。
+
+## 11. Decision（决策）
+是否值得深入关注？使用场景？
+
+## 12. 知识蒸馏
+### Facts
+### Principles
+### Insights
+
+## 13. 认知升级
+长期价值、规模效应、技术护城河、是否范式转移。
+
+## 14. 评分量表
+必须包含：Novelty / Leverage / Evidence / Cost / Moat / Adoption Signal
 每项格式：`* Novelty (1-5): N`
-Overall Judgment：一句话总结是否值得深入关注
+Overall Judgment：一句话总结
 
 （严禁捏造实验数据；引用格式："> 原文片段"）
+
+<!--
+<RUBRIC>
+{{"novelty": <INT 1-5>, "leverage": <INT 1-5>, "evidence": <INT 1-5>, "cost": <INT 1-5>, "moat": <INT 1-5>, "adoption": <INT 1-5>, "overall": "<one sentence judgment>"}}
+</RUBRIC>
+-->
 """
 
     return call_llm_chat_completions(
@@ -97,7 +141,6 @@ Overall Judgment：一句话总结是否值得深入关注
 # =============================================================================
 # C-Note AI draft generation
 # =============================================================================
-
 _CNOTE_SYSTEM_PROMPT = """你是一个严谨的 AI 研究助理，擅长概念分析和知识图谱构建。
 
 任务：为用户的 Research OS C-Note（概念笔记）生成"可编辑初稿"。

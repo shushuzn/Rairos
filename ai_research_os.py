@@ -14,6 +14,7 @@ from pdf.extract import download_pdf, extract_pdf_text, extract_pdf_text_hybrid
 from sections.segment import looks_like_heading, segment_into_sections, format_section_snippets
 from llm.client import call_llm_chat_completions
 from llm.generate import ai_generate_pnote_draft, ai_generate_cnote_draft
+from llm.parse import parse_ai_pnote_draft
 from renderers.pnote import render_pnote
 from renderers.cnote import render_cnote
 from renderers.mnote import render_mnote

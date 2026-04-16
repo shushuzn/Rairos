@@ -221,11 +221,13 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # AI draft generation (optional)
     ai_draft_md = ""
+    parsed_ai = None
     if args.ai:
         ctx = extracted_text_for_ai.strip() or (paper.abstract or "")
         ctx = ctx[: max(1000, args.ai_max_chars)]
         try:
-            ai_draft_md = ai_generate_pnote_draft(
+            from llm.parse import parse_ai_pnote_draft
+            raw_draft = ai_generate_pnote_draft(
                 paper=paper,
                 tags=tags,
                 extracted_text=ctx[: args.ai_max_chars],
@@ -233,6 +235,9 @@ def main(argv: Optional[List[str]] = None) -> int:
                 api_key=args.api_key,
                 model=args.model,
             )
+            sections_dict, rubric_dict, raw_draft = parse_ai_pnote_draft(raw_draft)
+            ai_draft_md = raw_draft  # full raw output for reference
+            parsed_ai = (sections_dict, rubric_dict)
         except Exception as e:
             ai_draft_md = (
                 "> AI Draft（生成失败，需人工核验）\n\n"
@@ -241,7 +246,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             )
 
     from core.basics import write_text
-    write_text(pnote_path, render_pnote(paper, tags, extracted_sections_md, ai_draft_md=ai_draft_md, table_md=table_md, math_md=math_md))
+    write_text(pnote_path, render_pnote(paper, tags, extracted_sections_md, ai_draft_md=ai_draft_md, table_md=table_md, math_md=math_md, parsed_ai=parsed_ai))
 
     # C-Notes create/update + link P-Note
     cnote_paths = []
