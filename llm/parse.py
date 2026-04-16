@@ -80,15 +80,29 @@ def _parse_rubric(raw: str) -> dict[str, Any]:
         return _parse_rubric_json(m.group(0))
 
     # Fallback: individual score lines
-    # For each keyword, find its line and take the last digit on that line
-    # (avoids matching digits in "(1-5)" range descriptor)
+    # For each keyword, find the score on that line.
+    # Take the FIRST integer after the colon (the actual score).
+    # Handles "novelty: 3 (1-5)" → 3, "novelty: 3" → 3.
+    # Also handles single-quoted JSON: "key": '3'
     for key in ["novelty", "leverage", "evidence", "cost", "moat", "adoption"]:
         for line in raw.split('\n'):
-            if key.lower() in line.lower():
-                digits = re.findall(r'\d+', line)
-                if digits:
-                    rubric[key] = int(digits[-1])
-                    break
+            if key.lower() not in line.lower():
+                continue
+            # Extract first integer after key-specific colon (handles "leverage": "4" on same line as "novelty": '3')
+            m = re.search(rf'"{key}"\s*:\s*[\"\']?(\d)[\"\']?', line, re.IGNORECASE)
+            if m:
+                rubric[key] = int(m.group(1))
+                break
+            # Fallback: digit after ) and colon (handles "* Novelty (1-5): 5")
+            m2 = re.search(rf'\)\s*:\s*(\d)', line)
+            if m2:
+                rubric[key] = int(m2.group(1))
+                break
+            # Fallback: first integer after colon (handles "novelty: 3 (1-5)")
+            m3 = re.search(r':\s*(\d)', line)
+            if m3:
+                rubric[key] = int(m3.group(1))
+                break
 
     overall_m = re.search(r'overall.*?judgment[:：]\s*(.{5,100})', raw, re.IGNORECASE)
     if overall_m:
@@ -111,7 +125,7 @@ def _parse_rubric_json(json_str: str) -> dict[str, Any]:
     # Try extracting individual values
     rubric: dict[str, Any] = {}
     for key in ["novelty", "leverage", "evidence", "cost", "moat", "adoption"]:
-        m = re.search(rf'"{key}"\s*:\s*"?(\d)"?', json_str, re.IGNORECASE)
+        m = re.search(rf'"{key}"\s*:\s*["\']?(\d)["\']?', json_str, re.IGNORECASE)
         if m:
             rubric[key] = int(m.group(1))
 
