@@ -1789,11 +1789,11 @@ def test_ai_generate_pnote_draft_includes_required_sections(monkeypatch):
 
     user_prompt = captured_prompts.get("user_prompt", "")
     system_prompt = captured_prompts.get("system_prompt", "")
-    assert "## 背景" in user_prompt
-    assert "## 核心方法" in user_prompt
-    assert "## 关键实验" in user_prompt
-    assert "## 对抗式审稿" in user_prompt
-    assert "## 评分量表" in user_prompt
+    assert "## 1. 背景" in user_prompt
+    assert "## 2. 核心问题" in user_prompt
+    assert "## 5. 实验分析" in user_prompt
+    assert "## 6. 对抗式审稿" in user_prompt
+    assert "## 14. 评分量表" in user_prompt
     assert "评分量表" in system_prompt
 
 
@@ -2565,3 +2565,189 @@ class TestAiGenerateCnoteDraft:
         assert "Paper B" in captured_prompts["user"]
         assert "2301.00001" in captured_prompts["user"]
         assert "2401.00002" in captured_prompts["user"]
+
+
+# --------------------------------------------------
+# Tier 3: parse_ai_pnote_draft + render_pnote with parsed_ai
+# --------------------------------------------------
+
+def test_parse_ai_pnote_draft_basic():
+    import ai_research_os as airo
+    raw = """## 1. 背景
+Some background content here.
+
+## 2. 核心问题
+Core problem content.
+
+## 14. 评分量表
+* Novelty (1-5): 3
+* Leverage (1-5): 4
+* Evidence (1-5): 3
+* Cost (1-5): 4
+* Moat (1-5): 2
+* Adoption Signal (1-5): 3
+Overall Judgment: Solid incremental work.
+
+<!--
+<RUBRIC>
+{"novelty": 3, "leverage": 4, "evidence": 3, "cost": 4, "moat": 2, "adoption": 3, "overall": "Solid incremental work."}
+</RUBRIC>
+-->
+"""
+    sections, rubric, raw_md = airo.parse_ai_pnote_draft(raw)
+    assert sections["## 1. 背景"] == "Some background content here."
+    assert sections["## 2. 核心问题"] == "Core problem content."
+    assert rubric["novelty"] == 3
+    assert rubric["leverage"] == 4
+    assert rubric["overall"] == "Solid incremental work."
+    assert raw_md == raw
+
+
+def test_parse_ai_pnote_draft_missing_rubric():
+    import ai_research_os as airo
+    raw = """## 1. 背景
+Content without rubric.
+"""
+    sections, rubric, raw_md = airo.parse_ai_pnote_draft(raw)
+    assert "## 1. 背景" in sections
+    assert rubric == {}
+
+
+def test_parse_ai_pnote_draft_rubric_fallback():
+    """No XML block but has score lines — fallback regex picks them up."""
+    import ai_research_os as airo
+    raw = """## 1. 背景
+Content.
+
+## 14. 评分量表
+* Novelty (1-5): 5
+* Leverage (1-5): 4
+* Evidence (1-5): 3
+* Cost (1-5): 2
+* Moat (1-5): 1
+* Adoption Signal (1-5): 2
+"""
+    _, rubric, _ = airo.parse_ai_pnote_draft(raw)
+    assert rubric["novelty"] == 5
+    assert rubric["leverage"] == 4
+    assert rubric["evidence"] == 3
+
+
+def test_parse_ai_pnote_draft_subsections():
+    import ai_research_os as airo
+    raw = """## 3. 方法结构
+### 3.1 架构拆解
+Architecture content here.
+
+### 3.2 算法逻辑
+Algorithm logic here.
+"""
+    sections, _, _ = airo.parse_ai_pnote_draft(raw)
+    assert sections["## 3.1 架构拆解"] == "Architecture content here."
+    assert sections["## 3.2 算法逻辑"] == "Algorithm logic here."
+
+
+def test_parse_ai_pnote_draft_raw_unchanged():
+    import ai_research_os as airo
+    raw = "## 1. 背景\nContent here.\n"
+    _, _, raw_md = airo.parse_ai_pnote_draft(raw)
+    assert raw_md is raw  # same object, not a copy
+
+
+def test_render_pnote_with_parsed_ai_injects_sections():
+    import ai_research_os as airo
+    p = airo.Paper(
+        title="Test Paper",
+        authors=["Author A"],
+        uid="2301.12345",
+        source="arxiv",
+        abstract="Test abstract.",
+        published="2023-01-01",
+        updated="2023-01-02",
+        abs_url="https://arxiv.org/abs/2301.12345",
+        pdf_url="https://arxiv.org/pdf/2301.12345.pdf",
+        primary_category="cs.AI",
+    )
+    parsed_ai = (
+        {
+            "## 1. 背景": "AI background content.",
+            "## 2. 核心问题": "AI core problem.",
+            "## 3.1 架构拆解": "AI architecture.",
+            "## 4. 关键创新": "AI innovation.",
+            "## 14. 评分量表": "Scores here.",
+        },
+        {"novelty": 3, "leverage": 4, "evidence": 3, "overall": "Good work."},
+    )
+    result = airo.render_pnote(
+        p,
+        tags=["AI"],
+        extracted_sections_md="",
+        parsed_ai=parsed_ai,
+    )
+    assert "## 1. 背景" in result
+    assert "AI background content." in result
+    assert "## 2. 核心问题" in result
+    assert "AI core problem." in result
+    # frontmatter should have rubric scores
+    assert "novelty: 3" in result
+    assert "leverage: 4" in result
+    assert 'overall: "Good work."' in result
+    assert "ai_generated: true" in result
+    # no old-style ## AI 自动初稿 block
+    assert "## AI 自动初稿" not in result
+
+
+def test_render_pnote_without_parsed_ai_uses_ai_draft_md():
+    import ai_research_os as airo
+    p = airo.Paper(
+        title="Test Paper",
+        authors=["Author A"],
+        uid="2301.12345",
+        source="arxiv",
+        abstract="Test abstract.",
+        published="2023-01-01",
+        updated="2023-01-02",
+        abs_url="https://arxiv.org/abs/2301.12345",
+        pdf_url="https://arxiv.org/pdf/2301.12345.pdf",
+        primary_category="cs.AI",
+    )
+    result = airo.render_pnote(
+        p,
+        tags=["AI"],
+        extracted_sections_md="",
+        ai_draft_md="## AI 自动初稿\nAI draft content here.",
+    )
+    assert "## AI 自动初稿" in result
+    assert "AI draft content here." in result
+    assert "ai_generated: true" not in result  # only rubric: draft-ai
+    assert "rubric: draft-ai" in result
+
+
+def test_render_pnote_parsed_ai_with_missing_sections():
+    import ai_research_os as airo
+    p = airo.Paper(
+        title="Test Paper",
+        authors=["Author A"],
+        uid="2301.12345",
+        source="arxiv",
+        abstract="Test abstract.",
+        published="2023-01-01",
+        updated="2023-01-02",
+        abs_url="https://arxiv.org/abs/2301.12345",
+        pdf_url="https://arxiv.org/pdf/2301.12345.pdf",
+        primary_category="cs.AI",
+    )
+    # Only provide section for ## 1. 背景, others missing
+    parsed_ai = (
+        {"## 1. 背景": "Only this section."},
+        {"novelty": 3},
+    )
+    result = airo.render_pnote(
+        p,
+        tags=["AI"],
+        extracted_sections_md="",
+        parsed_ai=parsed_ai,
+    )
+    assert "Only this section." in result
+    # Missing sections render as empty under their heading
+
