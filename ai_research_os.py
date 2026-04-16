@@ -13,12 +13,12 @@ from parsers.crossref import fetch_crossref_metadata
 from pdf.extract import download_pdf, extract_pdf_text, extract_pdf_text_hybrid
 from sections.segment import looks_like_heading, segment_into_sections, format_section_snippets
 from llm.client import call_llm_chat_completions
-from llm.generate import ai_generate_pnote_draft
+from llm.generate import ai_generate_pnote_draft, ai_generate_cnote_draft
 from renderers.pnote import render_pnote
 from renderers.cnote import render_cnote
 from renderers.mnote import render_mnote
 from notes.frontmatter import parse_frontmatter, parse_tags_from_frontmatter, parse_date_from_frontmatter
-from notes.pnotes import collect_pnotes, pnotes_by_tag, wikilink_for_pnote
+from notes.pnotes import collect_pnotes, pnotes_by_tag, wikilink_for_pnote, read_pnote_metadata
 from notes.cnote import ensure_cnote, upsert_link_under_heading, update_cnote_links
 from notes.mnote import (
     pick_top3_pnotes_for_tag,
@@ -42,12 +42,12 @@ __all__ = [
     # sections
     "looks_like_heading", "segment_into_sections", "format_section_snippets",
     # llm
-    "call_llm_chat_completions", "ai_generate_pnote_draft",
+    "call_llm_chat_completions", "ai_generate_pnote_draft", "ai_generate_cnote_draft",
     # renderers
     "render_pnote", "render_cnote", "render_mnote",
     # notes
     "parse_frontmatter", "parse_tags_from_frontmatter", "parse_date_from_frontmatter",
-    "collect_pnotes", "pnotes_by_tag", "wikilink_for_pnote",
+    "collect_pnotes", "pnotes_by_tag", "wikilink_for_pnote", "read_pnote_metadata",
     "ensure_cnote", "upsert_link_under_heading", "update_cnote_links",
     "pick_top3_pnotes_for_tag", "mnote_filename", "parse_current_abc", "append_view_evolution_log", "ensure_or_update_mnote",
     "KEYWORD_TAGS", "infer_tags_if_empty",
