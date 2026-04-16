@@ -75,4 +75,12 @@ jobs:
         run: pip install pytest requests feedparser pymupdf
 
       - name: Run pytest
-        run: python -m pytest tests/ -q
+        run: python -m pytest tests/ -q --tb=short 2>&1 | tee pytest_output.txt
+
+      - name: Upload test output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-output
+          path: pytest_output.txt
+          retention-days: 1
