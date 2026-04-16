@@ -435,6 +435,11 @@ class TestExtractPdfTextHybrid:
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
+        try:
+            import pdfminer  # noqa: F401
+        except ImportError:
+            pytest.skip("pdfminer not installed")
+
         pdf_path = make_minimal_pdf(tmp_path, [{"text": "Short"}])
 
         # Mock pdfminer to return much longer text
