@@ -1,4 +1,4 @@
-"""AI draft generation for P-Notes."""
+"""AI draft generation for P-Notes and C-Notes."""
 from typing import List
 
 from core import Paper
@@ -90,5 +90,105 @@ Overall Judgment：一句话总结是否值得深入关注
         api_key=api_key,
         model=model,
         system_prompt=system_prompt,
+        user_prompt=user_prompt,
+    )
+
+
+# =============================================================================
+# C-Note AI draft generation
+# =============================================================================
+
+_CNOTE_SYSTEM_PROMPT = """你是一个严谨的 AI 研究助理，擅长概念分析和知识图谱构建。
+
+任务：为用户的 Research OS C-Note（概念笔记）生成"可编辑初稿"。
+
+硬规则（违反直接输出 [违规]）：
+1. 每项 Claims 必须引用原文（用 > 块引用格式），否则写 "[无原文支撑]"，禁止捏造
+2. 你的判断/推测必须加 [推测] 标注，不能伪装成事实
+3. 输出必须是中文 Markdown
+4. 每个栏目开头：> AI Draft（可编辑，需人工核验）
+5. 只输出指定栏目，不输出额外解释
+"""
+
+
+def ai_generate_cnote_draft(
+    concept: str,
+    pnotes: List[dict],
+    api_key: str,
+    base_url: str,
+    model: str,
+) -> str:
+    """
+    Generate a C-Note draft for a concept using referenced P-Notes as context.
+
+    Args:
+        concept: The concept name (e.g. "RAG", "Agent")
+        pnotes: List of dicts with keys: title, abstract, authors, year, source, tags
+        api_key: LLM API key
+        base_url: OpenAI-compatible base URL
+        model: Model name
+    """
+    import ai_research_os as airo
+    call_llm_chat_completions = airo.call_llm_chat_completions
+
+    pnotes_text = ""
+    for i, p in enumerate(pnotes, 1):
+        pnotes_text += f"""\
+---
+论文 {i}：
+标题：{p.get('title', 'N/A')}
+作者：{', '.join(p.get('authors', [])) or 'Unknown'}
+年份：{p.get('year', 'N/A')}
+来源：{p.get('source', 'N/A')}:{p.get('uid', 'N/A')}
+标签：{', '.join(p.get('tags', []))}
+摘要：{p.get('abstract', '(无)') or '(无)'}
+"""
+
+    user_prompt = f"""\
+概念：{concept}
+
+参考论文（共 {len(pnotes)} 篇）：
+{pnotes_text}
+
+请按以下栏目生成 C-Note 初稿，每栏用 ## 二级标题：
+
+## 核心定义
+一句话定义这个概念。（引用参考论文中的定义，没有原话则综合推断并加 [推测]）
+
+## 产生背景
+这个概念是在什么研究背景下产生的？解决了什么问题？（引用参考论文，没有则 [推测]）
+
+## 技术本质
+这个概念的核心技术机制是什么？（引用参考论文，加 [推测] 如需推断）
+
+## 常见实现路径
+列出该概念的典型实现方式。（引用参考论文中的实现，加 [推测]）
+
+## 优势
+这个概念的主要优势。（引用参考论文的实验/分析结果支撑）
+
+## 局限
+这个概念的主要局限。（引用参考论文的讨论，加 [推测]）
+
+## 与其他思想的关系
+与其他相关概念的关系和区别。（综合多篇参考论文，加 [推测]）
+
+## 代表论文
+从参考论文中选取最能代表该概念的论文，给出选择理由。
+
+## 演化时间线
+基于参考论文，推断该概念的演化路径。（加 [推测]）
+
+## 未来趋势
+基于参考论文的讨论，预测该概念的未来发展方向。（加 [推测]）
+
+（严禁捏造论文数据；引用格式："> 原文片段"）
+"""
+
+    return call_llm_chat_completions(
+        base_url=base_url,
+        api_key=api_key,
+        model=model,
+        system_prompt=_CNOTE_SYSTEM_PROMPT,
         user_prompt=user_prompt,
     )

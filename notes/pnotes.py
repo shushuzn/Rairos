@@ -35,3 +35,37 @@ def pnotes_by_tag(root: Path) -> Dict[str, List[Tuple[str, Path]]]:
 def wikilink_for_pnote(pnote_path: Path) -> str:
     stem = Path(pnote_path).stem
     return f"[[{stem}]]"
+
+
+def read_pnote_metadata(pnote_path: Path) -> dict:
+    """Read a P-Note and return a dict suitable for C-Note AI draft generation."""
+    md = read_text(pnote_path)
+    fm = parse_frontmatter(md)
+    tags = parse_tags_from_frontmatter(fm)
+    date = parse_date_from_frontmatter(fm) or ""
+    # Extract year from date (YYYY-MM-DD)
+    year = date[:4] if len(date) >= 4 else ""
+
+    # Extract title from markdown heading (# Title)
+    title_match = re.search(r"^#\s+(.+)$", md, re.MULTILINE)
+    title = title_match.group(1).strip() if title_match else pnote_path.stem
+
+    # Source/uid from content: "**Source:** ARXIV: XXXXX"
+    src = fm.get("source", "arxiv").lower()
+    uid = ""
+    source_match = re.search(r"\*\*Source:\*\*\s+(\w+):\s+(\S+)", md)
+    if source_match:
+        src = source_match.group(1).lower()
+        uid = source_match.group(2)
+
+    return {
+        "title": title,
+        "authors": [],  # not stored in frontmatter; would need PDF metadata
+        "year": year,
+        "date": date,
+        "source": src,
+        "uid": uid,
+        "abstract": "",  # P-note body may have abstract
+        "tags": tags,
+        "path": str(pnote_path),
+    }
