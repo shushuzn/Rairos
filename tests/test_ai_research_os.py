@@ -2751,3 +2751,405 @@ def test_render_pnote_parsed_ai_with_missing_sections():
     assert "Only this section." in result
     # Missing sections render as empty under their heading
 
+
+# =============================================================================
+# Tier 3: llm/parse.py — parse_ai_pnote_draft
+# =============================================================================
+
+class TestParseSections:
+    """Section extraction from raw LLM markdown output."""
+
+    def test_basic_section_extraction(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 1. 背景
+这里是背景内容。
+
+## 2. 核心问题
+这里是核心问题。
+"""
+        sections, rubric, _ = parse_ai_pnote_draft(raw)
+        assert sections["## 1. 背景"] == "这里是背景内容。"
+        assert sections["## 2. 核心问题"] == "这里是核心问题。"
+
+    def test_all_14_sections(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = "\n".join(f"## {i}. Section {i}\nContent for section {i}." for i in range(1, 15))
+        sections, _, _ = parse_ai_pnote_draft(raw)
+        assert len(sections) == 14
+        for i in range(1, 15):
+            assert sections[f"## {i}. Section {i}"] == f"Content for section {i}."
+
+    def test_subsection_extraction_removes_from_parent(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 3. 方法结构
+
+这是父节的主体内容，包含背景介绍。
+
+### 3.1 架构拆解
+架构内容在这里。
+
+### 3.2 算法逻辑
+算法内容在这里。
+
+## 4. 关键创新
+创新内容。
+"""
+        sections, _, _ = parse_ai_pnote_draft(raw)
+        # Subsections extracted as separate keys
+        assert "## 3.1 架构拆解" in sections
+        assert "## 3.2 算法逻辑" in sections
+        # Parent content has subsections removed
+        parent = sections["## 3. 方法结构"]
+        assert "3.1 架构拆解" not in parent
+        assert "3.2 算法逻辑" not in parent
+        assert "这是父节的主体内容" in parent
+
+    def test_multiple_subsections_in_order(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 5. 实验分析
+
+### 5.1 数据集
+数据集描述。
+
+### 5.2 基线对比
+基线对比描述。
+
+### 5.3 消融实验
+消融实验描述。
+
+### 5.4 成本分析
+成本分析描述。
+
+## 6. 对抗式审稿
+审稿内容。
+"""
+        sections, _, _ = parse_ai_pnote_draft(raw)
+        assert sections["## 5.1 数据集"] == "数据集描述。"
+        assert sections["## 5.2 基线对比"] == "基线对比描述。"
+        assert sections["## 5.3 消融实验"] == "消融实验描述。"
+        assert sections["## 5.4 成本分析"] == "成本分析描述。"
+        assert "5.1 数据集" not in sections["## 5. 实验分析"]
+
+    def test_section_with_no_heading_body(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 1. 背景
+
+## 2. 核心问题
+有内容的节。
+"""
+        sections, _, _ = parse_ai_pnote_draft(raw)
+        assert sections["## 1. 背景"] == ""
+        assert sections["## 2. 核心问题"] == "有内容的节。"
+
+    def test_section_titles_with_chinese_punctuation(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 11. Decision（决策）
+决策内容。
+
+## 12. 知识蒸馏
+蒸馏内容。
+"""
+        sections, _, _ = parse_ai_pnote_draft(raw)
+        assert "## 11. Decision（决策）" in sections
+        assert "## 12. 知识蒸馏" in sections
+
+    def test_section_with_long_content(self):
+        from llm.parse import parse_ai_pnote_draft
+        long = "x" * 5000
+        raw = f"""## 1. 背景
+{long}
+"""
+        sections, _, _ = parse_ai_pnote_draft(raw)
+        assert sections["## 1. 背景"] == long
+
+    def test_section_content_with_numbered_pattern_not_heading(self):
+        from llm.parse import parse_ai_pnote_draft
+        # Numbers in content should NOT be treated as headings
+        raw = """## 1. 背景
+我们在实验中发现 3.1 版本表现最好，在 5.2 场景下有显著提升。
+"""
+        sections, _, _ = parse_ai_pnote_draft(raw)
+        parent = sections["## 1. 背景"]
+        assert "3.1 版本" in parent
+        assert "5.2 场景" in parent
+        assert "## 3.1" not in sections
+        assert "## 5.2" not in sections
+
+    def test_empty_subsection(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 3. 方法结构
+
+### 3.1 架构拆解
+Architecture described above.
+"""
+        sections, _, _ = parse_ai_pnote_draft(raw)
+        assert sections["## 3.1 架构拆解"] == "Architecture described above."
+        assert sections["## 3. 方法结构"] == ""
+
+
+class TestParseRubric:
+    """Rubric score extraction from XML/JSON/line formats."""
+
+    def test_full_json_rubric(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 1. 背景
+Content.
+
+<!--
+<RUBRIC>
+{
+  "novelty": 4,
+  "leverage": 3,
+  "evidence": 5,
+  "cost": 2,
+  "moat": 3,
+  "adoption": 4,
+  "overall": "Strong paper with good experiments."
+}
+</RUBRIC>
+-->
+"""
+        _, rubric, _ = parse_ai_pnote_draft(raw)
+        assert rubric["novelty"] == 4
+        assert rubric["leverage"] == 3
+        assert rubric["evidence"] == 5
+        assert rubric["cost"] == 2
+        assert rubric["moat"] == 3
+        assert rubric["adoption"] == 4
+        assert rubric["overall"] == "Strong paper with good experiments."
+
+    def test_partial_json_rubric(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 1. 背景
+Content.
+
+<!--
+<RUBRIC>
+{"novelty": 3, "leverage": 4, "evidence": 3}
+</RUBRIC>
+-->
+"""
+        _, rubric, _ = parse_ai_pnote_draft(raw)
+        assert rubric["novelty"] == 3
+        assert rubric["leverage"] == 4
+        assert rubric["evidence"] == 3
+        assert "cost" not in rubric
+
+    def test_json_trailing_comma(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 1. 背景
+Content.
+
+<!--
+<RUBRIC>
+{"novelty": 4, "leverage": 3, "evidence": 5,}
+</RUBRIC>
+-->
+"""
+        _, rubric, _ = parse_ai_pnote_draft(raw)
+        assert rubric["novelty"] == 4
+        assert rubric["leverage"] == 3
+        assert rubric["evidence"] == 5
+
+    def test_json_single_quoted_values(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 1. 背景
+Content.
+
+<RUBRIC>
+{"novelty": '3', "leverage": "4"}
+</RUBRIC>
+"""
+        _, rubric, _ = parse_ai_pnote_draft(raw)
+        assert rubric["novelty"] == 3
+        assert rubric["leverage"] == 4
+
+    def test_rubric_fallback_line_by_line_avoids_range_digits(self):
+        from llm.parse import parse_ai_pnote_draft
+        # LLM writes "novelty: 3 (1-5)" — must take 5, not 3
+        raw = """## 1. 背景
+Content.
+
+评分：
+novelty: 3 (1-5) — 创新程度
+leverage: 4 (1-5) — 杠杆效应
+evidence: 2 (1-5) — 证据质量
+"""
+        _, rubric, _ = parse_ai_pnote_draft(raw)
+        assert rubric["novelty"] == 3
+        assert rubric["leverage"] == 4
+        assert rubric["evidence"] == 2
+
+    def test_rubric_with_scores_out_of_range(self):
+        from llm.parse import parse_ai_pnote_draft, extract_rubric_scores
+        raw = """## 1. 背景
+Content.
+
+novelty: 6 (1-5)
+leverage: 0 (1-5)
+evidence: 3
+cost: 2
+"""
+        _, rubric, _ = parse_ai_pnote_draft(raw)
+        scores = extract_rubric_scores(rubric)
+        # out-of-range scores should be filtered out
+        assert "novelty" not in scores  # 6 > 5
+        assert "leverage" not in scores  # 0 < 1
+        assert scores["evidence"] == 3
+        assert scores["cost"] == 2
+
+    def test_rubric_overall_text_extraction(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 1. 背景
+Content.
+
+Overall Judgment: 这篇论文提出了一个有效的方法，在多个数据集上取得了 SOTA 结果。
+"""
+        _, rubric, _ = parse_ai_pnote_draft(raw)
+        assert "SOTA" in rubric["overall"]
+        assert "有效的方法" in rubric["overall"]
+
+    def test_empty_rubric(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 1. 背景
+Content only, no rubric.
+"""
+        _, rubric, _ = parse_ai_pnote_draft(raw)
+        assert rubric == {}
+
+    def test_rubric_malformed_json_falls_back_to_lines(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 1. 背景
+Content.
+
+novelty: 4
+leverage: 3
+evidence: 5
+cost: 2
+moat: 3
+adoption: 4
+"""
+        _, rubric, _ = parse_ai_pnote_draft(raw)
+        assert rubric["novelty"] == 4
+        assert rubric["leverage"] == 3
+        assert rubric["evidence"] == 5
+
+
+class TestParseIntegration:
+    """Realistic LLM output with mixed content."""
+
+    def test_realistic_llm_output(self):
+        from llm.parse import parse_ai_pnote_draft, extract_rubric_scores
+        raw = """## 1. 背景
+本文研究了大语言模型在推理任务中的幻觉问题。
+
+## 2. 核心问题
+如何降低 LLM 在数学推理中的幻觉率？
+
+## 3. 方法结构
+
+### 3.1 架构拆解
+提出了一个验证器网络来检查中间推理步骤。
+
+### 3.2 算法逻辑
+使用强化学习训练验证器，对每一步推理打分。
+
+## 4. 关键创新
+1. 验证器网络设计
+2. 两阶段训练流程
+
+## 5. 实验分析
+
+### 5.1 数据集
+GSM8K, MATH, SVAMP
+
+### 5.2 基线对比
+相比 Chain-of-Thought 提示，提升 12%。
+
+## 6. 对抗式审稿
+可能的攻击方式：对验证器进行对抗扰动。
+
+## 7. 优势
+方法简洁，易于集成到现有系统。
+
+## 8. 局限
+计算开销增加约 15%。
+
+## 9. 本质抽象
+将 LLM 推理视为一个博弈过程。
+
+## 10. 与其他方法对比
+比 Self-Consistency 方法更好，比 ReAct 效率更高。
+
+## 11. Decision（决策）
+值得发表，建议 minor revision。
+
+## 12. 知识蒸馏
+ Facts: 幻觉率降低 23%
+ Principles: 验证器需要单独训练
+ Insights: 推理过程可以模块化
+
+## 13. 认知升级
+理解了大语言模型推理的新范式。
+
+## 14. 评分量表
+
+<!--
+<RUBRIC>
+{
+  "novelty": 4,
+  "leverage": 5,
+  "evidence": 4,
+  "cost": 3,
+  "moat": 3,
+  "adoption": 5,
+  "overall": "Strong contribution — significant improvement over baselines with clear motivation."
+}
+</RUBRIC>
+-->
+"""
+        sections, rubric, raw_out = parse_ai_pnote_draft(raw)
+        # All sections present
+        assert "## 1. 背景" in sections
+        assert "## 3.1 架构拆解" in sections
+        assert "## 5.1 数据集" in sections
+        assert "## 12. 知识蒸馏" in sections
+        # Rubric extracted
+        assert rubric["novelty"] == 4
+        assert rubric["leverage"] == 5
+        assert rubric["overall"] == "Strong contribution — significant improvement over baselines with clear motivation."
+        # Scores in valid range
+        scores = extract_rubric_scores(rubric)
+        assert len(scores) == 6
+        # Raw unchanged
+        assert raw_out == raw
+
+    def test_section_content_with_code_blocks(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 3. 方法结构
+
+```python
+def verify(step):
+    return model.predict(step)
+```
+
+### 3.1 架构拆解
+架构如上图所示。
+"""
+        sections, _, _ = parse_ai_pnote_draft(raw)
+        assert "```python" in sections["## 3. 方法结构"]
+        assert sections["## 3.1 架构拆解"] == "架构如上图所示。"
+
+    def test_section_content_with_markdown_links(self):
+        from llm.parse import parse_ai_pnote_draft
+        raw = """## 1. 背景
+参考 [Smith et al., 2023](https://example.com/paper.pdf) 的工作。
+
+## 2. 核心问题
+详见[论文主页](https://homepage.example.com)。
+"""
+        sections, _, _ = parse_ai_pnote_draft(raw)
+        assert "[Smith et al., 2023]" in sections["## 1. 背景"]
+        assert "https://example.com/paper.pdf" in sections["## 1. 背景"]
+        assert "[论文主页]" in sections["## 2. 核心问题"]
+
