@@ -1048,8 +1048,8 @@ class TestInferTagsIfEmpty:
 # _run_search CSV format
 # ─────────────────────────────────────────────────────────────────────────────
 
-class TestRunSearchCsv:
-    """Test _run_search with CSV format."""
+class TestRunSearchCsvFormat:
+    """Test _run_search with CSV format (additional tests)."""
 
     @patch("cli.Database")
     def test_csv_format_prints_header_and_row(self, mock_db_cls, capsys):
