@@ -1,6 +1,6 @@
 # Phase 2 Specification: Search & Discovery
 
-## Status: PLANNED
+## Status: COMPLETED
 
 ## Motivation
 
@@ -189,15 +189,15 @@ tests/
 
 ## 7. TODO
 
-- [ ] Add FTS5 virtual table + triggers to `Database.init()`
-- [ ] Implement `search_papers()` with BM25 ranking + filters
-- [ ] Implement `list_papers()` with sort + filters
-- [ ] Add `SearchResult` dataclass
-- [ ] Add `snippet()` helper for FTS5 result highlighting
-- [ ] Wire `search` command into `cli.py`
-- [ ] Write `tests/test_search.py` (unit + integration)
-- [ ] Add `rebuild_fts_index()` for existing data migration
-- [ ] Update docs/usage.md with search examples
+- [x] Add FTS5 virtual table + triggers to `Database.init()`
+- [x] Implement `search_papers()` with BM25 ranking + filters
+- [x] Implement `list_papers()` with sort + filters
+- [x] Add `SearchResult` dataclass
+- [x] Add `snippet()` helper for FTS5 result highlighting
+- [x] Wire `search` command into `cli.py`
+- [x] Write `tests/test_search.py` (unit + integration)
+- [x] Add `rebuild_fts_index()` for existing data migration
+- [x] Update docs/usage.md with search examples
 
 ---
 
