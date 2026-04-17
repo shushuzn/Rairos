@@ -32,7 +32,6 @@ jobs:
         run: |
           npx commitlint --from=main --verbose 2>&1 | head -50 || true
 
-  
   lint-and-crossref:
     runs-on: ubuntu-22.04
     steps:
@@ -92,17 +91,3 @@ jobs:
           name: coverage-report-${{ matrix.python-version }}
           path: coverage.json
           retention-days: 3
-
-      - name: Generate coverage badge
-        if: github.ref == 'refs/heads/main' && matrix.python-version == '3.12'
-        run: python .github/workflows/generate-badge.py
-
-      - name: Commit coverage badge
-        if: github.ref == 'refs/heads/main' && matrix.python-version == '3.12'
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git add coverage-badge.svg
-          git diff --cached --stat
-          git commit -m "ci: update coverage badge" || echo "No badge changes to commit"
-          git push
