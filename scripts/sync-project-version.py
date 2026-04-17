@@ -6,7 +6,7 @@ import re
 import sys
 from pathlib import Path
 
-NEW_VERSION = os.environ.get("CZ_NEW_VERSION")
+NEW_VERSION = os.environ.get("CZ_POST_CURRENT_VERSION")
 if not NEW_VERSION:
     sys.exit(0)
 
