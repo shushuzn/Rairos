@@ -129,10 +129,31 @@ CREATE INDEX IF NOT EXISTS idx_papers_source ON papers(source);
 CREATE INDEX IF NOT EXISTS idx_papers_added_at ON papers(added_at);
 CREATE INDEX IF NOT EXISTS idx_parse_history_paper_id ON parse_history(paper_id);
 CREATE INDEX IF NOT EXISTS idx_job_queue_status ON job_queue(status);
+
+CREATE TABLE IF NOT EXISTS citations (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    source_id   TEXT NOT NULL,
+    target_id   TEXT NOT NULL,
+    created_at  TEXT NOT NULL,
+    FOREIGN KEY (source_id)  REFERENCES papers(id)  ON DELETE CASCADE,
+    FOREIGN KEY (target_id)  REFERENCES papers(id)  ON DELETE CASCADE,
+    UNIQUE(source_id, target_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_citations_source ON citations(source_id);
+CREATE INDEX IF NOT EXISTS idx_citations_target ON citations(target_id);
 """
 
 
 # ─── Search Data Classes ────────────────────────────────────────────────────────
+
+
+@dataclass
+class CitationRecord:
+    id: int
+    source_id: str
+    target_id: str
+    created_at: str
 
 
 @dataclass
@@ -1323,6 +1344,95 @@ class Database:
             """,
         )
         return [dict(row) for row in cur.fetchall()]
+
+    # ── Citations ────────────────────────────────────────────────────────────────
+
+    def add_citation(self, source_id: str, target_id: str) -> bool:
+        """Insert one citation pair. Returns True if inserted, False if duplicate."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute(
+                "INSERT OR IGNORE INTO citations (source_id, target_id, created_at) VALUES (?, ?, ?)",
+                (source_id, target_id, _utcnow()),
+            )
+            self.conn.commit()
+            return cur.rowcount > 0
+        except sqlite3.Error as e:
+            raise DatabaseError(f"add_citation failed: {e}") from e
+
+    def add_citations_batch(self, source_id: str, target_ids: list[str]) -> int:
+        """Bulk insert citation pairs. Returns count of newly inserted rows."""
+        if not target_ids:
+            return 0
+        try:
+            cur = self.conn.cursor()
+            now = _utcnow()
+            rows = [(source_id, tid, now) for tid in target_ids]
+            cur.executemany(
+                "INSERT OR IGNORE INTO citations (source_id, target_id, created_at) VALUES (?, ?, ?)",
+                rows,
+            )
+            self.conn.commit()
+            return cur.rowcount
+        except sqlite3.Error as e:
+            raise DatabaseError(f"add_citations_batch failed: {e}") from e
+
+    def get_citations(
+        self, paper_id: str, direction: Literal["from", "to", "both"] = "both"
+    ) -> List[CitationRecord]:
+        """Fetch citations for a paper.
+
+        direction='from'  — papers cited by paper_id (backward citations / references)
+        direction='to'    — papers that cite paper_id (forward citations)
+        direction='both'  — union of the above
+        """
+        try:
+            cur = self.conn.cursor()
+            if direction == "from":
+                cur.execute(
+                    "SELECT id, source_id, target_id, created_at FROM citations WHERE source_id = ?",
+                    (paper_id,),
+                )
+            elif direction == "to":
+                cur.execute(
+                    "SELECT id, source_id, target_id, created_at FROM citations WHERE target_id = ?",
+                    (paper_id,),
+                )
+            else:
+                cur.execute(
+                    "SELECT id, source_id, target_id, created_at FROM citations "
+                    "WHERE source_id = ? OR target_id = ?",
+                    (paper_id, paper_id),
+                )
+            return [CitationRecord(**dict(row)) for row in cur.fetchall()]
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_citations failed: {e}") from e
+
+    def get_citation_count(self, paper_id: str) -> dict[str, int]:
+        """Return {'forward': N, 'backward': M} counts."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute(
+                "SELECT COUNT(*) FROM citations WHERE target_id = ?", (paper_id,)
+            )
+            forward = cur.fetchone()[0]
+            cur.execute(
+                "SELECT COUNT(*) FROM citations WHERE source_id = ?", (paper_id,)
+            )
+            backward = cur.fetchone()[0]
+            return {"forward": forward, "backward": backward}
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_citation_count failed: {e}") from e
+
+    def get_paper_title(self, paper_id: str) -> str:
+        """Return title for a paper, or '' if not found."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute("SELECT title FROM papers WHERE id = ?", (paper_id,))
+            row = cur.fetchone()
+            return row[0] if row else ""
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_paper_title failed: {e}") from e
 
     # ── Helpers ────────────────────────────────────────────────────────────────
 

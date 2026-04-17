@@ -7,7 +7,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Literal, Optional, Tuple
 
 from db import Database
 from db.database import SearchResult
@@ -485,6 +485,88 @@ def _run_queue(args: argparse.Namespace) -> int:
     return 0
 
 
+def _build_citations_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "citations",
+        help="Show citation relationships for a paper",
+    )
+    p.add_argument(
+        "--from",
+        metavar="PAPER_ID",
+        dest="citation_from",
+        help="Show papers cited by PAPER_ID (backward citations)",
+    )
+    p.add_argument(
+        "--to",
+        metavar="PAPER_ID",
+        dest="citation_to",
+        help="Show papers that cite PAPER_ID (forward citations)",
+    )
+    p.add_argument(
+        "--format",
+        choices=["text", "csv"],
+        default="text",
+        help="Output format (default: text)",
+    )
+    return p
+
+
+def _run_citations(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+
+    paper_id = args.citation_from or args.citation_to
+    direction: Literal["from", "to", "both"] = (
+        "from" if args.citation_from else "to"
+    )
+
+    citations = db.get_citations(paper_id, direction)
+    source_title = db.get_paper_title(paper_id)
+
+    if args.format == "csv":
+        print("direction,source_id,source_title,target_id,target_title")
+        for c in citations:
+            src = c.source_id
+            tgt = c.target_id
+            src_t = db.get_paper_title(src) if direction == "both" else source_title
+            tgt_t = db.get_paper_title(tgt)
+            print(f"{c.source_id},{c.target_id},{src_t},{tgt_t}")
+        return 0
+
+    # Text output
+    if not citations:
+        print(f"No citations found for {paper_id}")
+        return 0
+
+    if direction == "from":
+        print(f"BACKWARD CITATIONS — papers cited by {paper_id}")
+        print(f"({len(citations)} references)")
+        print()
+        for c in citations:
+            title = db.get_paper_title(c.target_id)
+            print(f"  {c.target_id}  {title or '(unknown)'}")
+    elif direction == "to":
+        print(f"FORWARD CITATIONS — papers citing {paper_id}")
+        print(f"({len(citations)} citing papers)")
+        print()
+        for c in citations:
+            title = db.get_paper_title(c.source_id)
+            print(f"  {c.source_id}  {title or '(unknown)'}")
+    else:
+        print(f"ALL CITATIONS for {paper_id}")
+        print(f"({len(citations)} total)")
+        print()
+        for c in citations:
+            if c.source_id == paper_id:
+                title = db.get_paper_title(c.target_id)
+                print(f"  -> {c.target_id}  {title or '(unknown)'}")
+            else:
+                title = db.get_paper_title(c.source_id)
+                print(f"  <- {c.source_id}  {title or '(unknown)'}")
+
+    return 0
+
+
 def _build_cache_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("cache", help="Manage paper cache")
     p.add_argument("--get", metavar="UID", help="Get cached paper by UID")
@@ -539,12 +621,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     _build_stats_parser(subparsers)
     _build_import_parser(subparsers)
     _build_export_parser(subparsers)
+    _build_citations_parser(subparsers)
 
     # Check if first arg is a known subcommand
     raw_args = argv if argv is not None else sys.argv[1:]
     first = raw_args[0] if raw_args else ""
 
-    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export"}
+    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations"}
 
     if first in SUBCOMMANDS:
         # New subcommand flow
@@ -560,6 +643,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         _build_stats_parser(subparsers)
         _build_import_parser(subparsers)
         _build_export_parser(subparsers)
+        _build_citations_parser(subparsers)
         args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
         if args.subcmd == "search":
@@ -582,6 +666,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             return _run_import(args)
         elif args.subcmd == "export":
             return _run_export(args)
+        elif args.subcmd == "citations":
+            return _run_citations(args)
         return 0
     else:
         # Legacy flow (arxiv ID / DOI as first positional arg)
