@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, main
+from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, main
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1003,13 +1003,13 @@ class TestRunCacheEdgeCases:
         out = capsys.readouterr().out
         assert "No cache entry for not-exist" in out, f"Expected 'No cache entry' message in: {out}"
 
-    def test_cache_set_shows_unimplemented(self, capsys):
-        """--set is now implemented, but verify else branch for unknown cache action."""
-        args = make_args(stats=False, clear=False, get=None, set_=None)
+    def test_cache_set_shows_error_on_missing_file(self, capsys):
+        """--set with a missing file returns an error."""
+        args = make_args(stats=False, clear=False, get=None, set=["uid123", "/nonexistent/cache/file.json"])
         result = _run_cache(args)
         out = capsys.readouterr().out
-        assert "Use --stats" in out
-        assert result == 0
+        assert "not found" in out or "error" in out or "Failed" in out
+        assert result == 1
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1139,15 +1139,196 @@ class TestRunStatusEdgeCases:
 # main() routing: merge subcommand → legacy
 # ─────────────────────────────────────────────────────────────────────────────
 
-class TestMainMergeRouting:
-    """Test main() routes 'merge' to legacy (merge is not a subcommand)."""
+class TestMainDedupRouting:
+    """Test main() routes 'dedup' to _run_dedup."""
 
-    @patch("cli._main_legacy")
-    def test_main_merge_routes_to_legacy(self, mock_legacy):
-        mock_legacy.return_value = 0
-        result = main(["merge", "uid1", "uid2"])
-        mock_legacy.assert_called_once_with(["merge", "uid1", "uid2"])
+    @patch("cli._run_dedup")
+    @patch("cli._build_dedup_parser")
+    @patch("cli.argparse.ArgumentParser")
+    def test_main_dedup_routes_to_run_dedup(self, mock_argparse, mock_build, mock_run, capsys):
+        mock_parser = MagicMock()
+        mock_parser.parse_args.return_value = make_args(subcmd="dedup")
+        mock_argparse.return_value = mock_parser
+        mock_build.return_value = None
+        mock_run.return_value = 0
+
+        result = main(["dedup"])
+
         assert result == 0
+
+    def test_main_dedup_not_legacy(self):
+        """dedup must be a subcommand, not fall through to legacy."""
+        with patch("cli._build_dedup_parser"):
+            with patch("cli._run_dedup", return_value=0) as mock_run:
+                with patch("cli._build_merge_parser"):
+                    with patch("cli._build_queue_parser"):
+                        with patch("cli._build_cache_parser"):
+                            with patch("cli._build_status_parser"):
+                                with patch("cli._build_list_parser"):
+                                    with patch("cli._build_search_parser"):
+                                        # Patch argparse so it doesn't fail
+                                        with patch("cli.argparse.ArgumentParser") as mock_ap:
+                                            mock_parser = MagicMock()
+                                            mock_parser.parse_args.return_value = make_args(subcmd="dedup")
+                                            mock_ap.return_value = mock_parser
+                                            main(["dedup"])
+        # If it routed to legacy instead, _run_dedup wouldn't be called
+        assert mock_run.called
+
+
+class TestMainMergeRouting:
+    """Test main() routes 'merge' to _run_merge (not legacy)."""
+
+    @patch("cli._run_merge")
+    @patch("cli._build_merge_parser")
+    @patch("cli.argparse.ArgumentParser")
+    def test_main_merge_routes_to_run_merge(self, mock_argparse, mock_build, mock_run, capsys):
+        mock_parser = MagicMock()
+        mock_parser.parse_args.return_value = make_args(subcmd="merge", target_id="uid1", duplicate_id="uid2")
+        mock_argparse.return_value = mock_parser
+        mock_build.return_value = None
+        mock_run.return_value = 0
+
+        result = main(["merge", "uid1", "uid2"])
+
+        assert result == 0
+
+    def test_main_merge_not_legacy(self):
+        """merge must be a subcommand, not fall through to legacy."""
+        with patch("cli._build_dedup_parser"):
+            with patch("cli._run_merge", return_value=0) as mock_run:
+                with patch("cli._build_merge_parser"):
+                    with patch("cli._build_queue_parser"):
+                        with patch("cli._build_cache_parser"):
+                            with patch("cli._build_status_parser"):
+                                with patch("cli._build_list_parser"):
+                                    with patch("cli._build_search_parser"):
+                                        with patch("cli.argparse.ArgumentParser") as mock_ap:
+                                            mock_parser = MagicMock()
+                                            mock_parser.parse_args.return_value = make_args(subcmd="merge", target_id="uid1", duplicate_id="uid2")
+                                            mock_ap.return_value = mock_parser
+                                            main(["merge", "uid1", "uid2"])
+        assert mock_run.called
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_dedup tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunDedup:
+    """Test _run_dedup behavior."""
+
+    @patch("cli.Database")
+    def test_dedup_no_duplicates(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.find_duplicates.return_value = []
+        mock_db_cls.return_value = mock_db
+
+        result = _run_dedup(make_args(dry_run=False))
+
+        assert result == 0
+        assert "No duplicates found" in capsys.readouterr().out
+
+    @patch("cli.Database")
+    def test_dedup_with_duplicates(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        p1 = MagicMock()
+        p1.id = "uid1"
+        p1.title = "Attention Is All You Need"
+        p1.doi = "10.1234/abc"
+        p2 = MagicMock()
+        p2.id = "uid2"
+        p2.title = "Attention Is All You Need"
+        p2.doi = "10.1234/abc"
+        mock_db.find_duplicates.return_value = [(p1, p2)]
+        mock_db_cls.return_value = mock_db
+
+        result = _run_dedup(make_args(dry_run=False))
+
+        out = capsys.readouterr().out
+        assert "uid1" in out
+        assert "uid2" in out
+        assert "Attention Is All You Need" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_dedup_dry_run_shows_count(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        p1 = MagicMock()
+        p1.id = "uid1"
+        p1.title = "Test Paper"
+        p1.doi = ""
+        p2 = MagicMock()
+        p2.id = "uid2"
+        p2.title = "Test Paper"
+        p2.doi = ""
+        mock_db.find_duplicates.return_value = [(p1, p2)]
+        mock_db_cls.return_value = mock_db
+
+        result = _run_dedup(make_args(dry_run=True))
+
+        out = capsys.readouterr().out
+        assert "1 duplicate pair(s)" in out
+        assert "dry-run" in out
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_merge tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunMerge:
+    """Test _run_merge behavior."""
+
+    @patch("cli.Database")
+    def test_merge_target_not_found(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_paper.return_value = None
+        mock_db_cls.return_value = mock_db
+
+        result = _run_merge(make_args(target_id="uid1", duplicate_id="uid2"))
+
+        out = capsys.readouterr().out
+        assert "not found" in out
+        assert result == 1
+
+    @patch("cli.Database")
+    def test_merge_duplicate_not_found(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_paper.side_effect = [MagicMock(), None]
+        mock_db_cls.return_value = mock_db
+
+        result = _run_merge(make_args(target_id="uid1", duplicate_id="uid2"))
+
+        out = capsys.readouterr().out
+        assert "not found" in out
+        assert result == 1
+
+    @patch("cli.Database")
+    def test_merge_success(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_paper.side_effect = [MagicMock(), MagicMock()]
+        mock_db.merge_papers.return_value = True
+        mock_db_cls.return_value = mock_db
+
+        result = _run_merge(make_args(target_id="uid1", duplicate_id="uid2"))
+
+        out = capsys.readouterr().out
+        assert "Merged uid2 into uid1" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_merge_db_returns_false(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_paper.side_effect = [MagicMock(), MagicMock()]
+        mock_db.merge_papers.return_value = False
+        mock_db_cls.return_value = mock_db
+
+        result = _run_merge(make_args(target_id="uid1", duplicate_id="uid2"))
+
+        out = capsys.readouterr().out
+        assert "Merge failed" in out
+        assert result == 1
 
 
 # ─────────────────────────────────────────────────────────────────────────────

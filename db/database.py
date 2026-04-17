@@ -1092,8 +1092,117 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"vacuum failed: {e}") from e
 
+    # ── Deduplication & Merge ─────────────────────────────────────────────────
 
-# ─── Helpers ──────────────────────────────────────────────────────────────────
+    def find_duplicates(self) -> List[Tuple[PaperRecord, PaperRecord]]:
+        """
+        Find pairs of papers that are likely duplicates.
+        Two papers are duplicates if:
+          - They share the same DOI (non-empty), OR
+          - Their titles are identical and neither title is empty
+        Returns a list of (older, newer) PaperRecord pairs.
+        """
+        try:
+            cur = self.conn.cursor()
+            # Find candidate pairs: same DOI (both non-empty) or same title (both non-empty)
+            cur.execute(
+                """
+                SELECT a.id AS a_id, b.id AS b_id
+                FROM papers a
+                JOIN papers b ON
+                    (a.doi != '' AND a.doi = b.doi AND a.id < b.id)
+                    OR
+                    (a.doi = '' AND b.doi = ''
+                     AND a.title = b.title
+                     AND a.id < b.id
+                     AND a.title != '')
+                ORDER BY a.id
+                """,
+            )
+            pairs: List[Tuple[PaperRecord, PaperRecord]] = []
+            for row in cur.fetchall():
+                a_id, b_id = row["a_id"], row["b_id"]
+                cur.execute("SELECT * FROM papers WHERE id = ?", (a_id,))
+                a_row = cur.fetchone()
+                cur.execute("SELECT * FROM papers WHERE id = ?", (b_id,))
+                b_row = cur.fetchone()
+                if a_row and b_row:
+                    pairs.append((PaperRecord.from_row(a_row), PaperRecord.from_row(b_row)))
+            return pairs
+        except sqlite3.Error as e:
+            raise DatabaseError(f"find_duplicates failed: {e}") from e
+
+    def merge_papers(self, target_id: str, duplicate_id: str) -> bool:
+        """
+        Merge duplicate_id into target_id:
+          - Copies paper_tags from duplicate to target (skipping conflicts)
+          - Copies parse data (plain_text, latex_blocks, table_count, figure_count,
+            word_count, page_count, pnote_path, cnote_path, mnote_path) if target is empty
+          - Transfers pending/running jobs from duplicate to target
+          - Deletes the duplicate paper and its FTS entry
+        Returns True if the duplicate was found and deleted.
+        """
+        try:
+            with self.transaction():
+                cur = self.conn.cursor()
+
+                # Make sure both papers exist
+                cur.execute("SELECT id FROM papers WHERE id = ?", (duplicate_id,))
+                if cur.fetchone() is None:
+                    return False
+
+                # Transfer tags (insert ignore — skip if target already has the tag)
+                cur.execute(
+                    """
+                    INSERT OR IGNORE INTO paper_tags (paper_id, tag_id)
+                    SELECT ?, tag_id FROM paper_tags WHERE paper_id = ?
+                    """,
+                    (target_id, duplicate_id),
+                )
+
+                # Fill empty parse fields on target from duplicate
+                parse_fields = [
+                    ("plain_text", "papers.plain_text = COALESCE(NULLIF(papers.plain_text, ''), excluded.plain_text)"),
+                    ("latex_blocks", "papers.latex_blocks = CASE WHEN papers.latex_blocks = '[]' THEN excluded.latex_blocks ELSE papers.latex_blocks END"),
+                    ("table_count", "papers.table_count = CASE WHEN papers.table_count = 0 THEN excluded.table_count ELSE papers.table_count END"),
+                    ("figure_count", "papers.figure_count = CASE WHEN papers.figure_count = 0 THEN excluded.figure_count ELSE papers.figure_count END"),
+                    ("word_count", "papers.word_count = CASE WHEN papers.word_count = 0 THEN excluded.word_count ELSE papers.word_count END"),
+                    ("page_count", "papers.page_count = CASE WHEN papers.page_count = 0 THEN excluded.page_count ELSE papers.page_count END"),
+                    ("pnote_path", "papers.pnote_path = CASE WHEN papers.pnote_path = '' THEN excluded.pnote_path ELSE papers.pnote_path END"),
+                    ("cnote_path", "papers.cnote_path = CASE WHEN papers.cnote_path = '' THEN excluded.cnote_path ELSE papers.cnote_path END"),
+                    ("mnote_path", "papers.mnote_path = CASE WHEN papers.mnote_path = '' THEN excluded.mnote_path ELSE papers.mnote_path END"),
+                ]
+                for field, _ in parse_fields:
+                    cur.execute(f"SELECT {field} FROM papers WHERE id = ?", (duplicate_id,))
+                    val = cur.fetchone()[field] if cur.fetchone() else None
+                    if val is not None and val != "" and val != 0 and val != "[]":
+                        cur.execute(
+                            f"UPDATE papers SET {field} = ? WHERE id = ? AND ({field} = '' OR {field} = '[]' OR {field} = 0)",
+                            (val, target_id),
+                        )
+
+                # Transfer jobs from duplicate to target (only queued jobs)
+                cur.execute(
+                    "UPDATE job_queue SET paper_id = ? WHERE paper_id = ? AND status = 'queued'",
+                    (target_id, duplicate_id),
+                )
+
+                # Update updated_at on target
+                cur.execute(
+                    "UPDATE papers SET updated_at = ? WHERE id = ?",
+                    (_utcnow(), target_id),
+                )
+
+                # Delete duplicate FTS entry
+                cur.execute("DELETE FROM papers_fts WHERE paper_id = ?", (duplicate_id,))
+                # Delete duplicate paper
+                cur.execute("DELETE FROM papers WHERE id = ?", (duplicate_id,))
+
+            return True
+        except sqlite3.Error as e:
+            raise DatabaseError(f"merge_papers({target_id!r}, {duplicate_id!r}) failed: {e}") from e
+
+    # ── Helpers ────────────────────────────────────────────────────────────────
 
 
 def _utcnow() -> str:

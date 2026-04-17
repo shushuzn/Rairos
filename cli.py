@@ -178,6 +178,57 @@ def _build_queue_parser(subparsers) -> argparse.ArgumentParser:
     return p
 
 
+def _build_dedup_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser("dedup", help="Find duplicate papers in the database")
+    p.add_argument("--dry-run", action="store_true", help="Show duplicates without merging")
+    return p
+
+
+def _run_dedup(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+    pairs = db.find_duplicates()
+    if not pairs:
+        print("No duplicates found")
+        return 0
+    for older, newer in pairs:
+        print(f"Duplicate pair: {older.id} / {newer.id}")
+        print(f"  Title: {older.title[:80]}")
+        print(f"  DOI: {older.doi or '(none)'}")
+    if args.dry_run:
+        print(f"\n({len(pairs)} duplicate pair(s), dry-run — no changes made)")
+    else:
+        print(f"\nUse 'paper-cli merge TARGET_ID DUPLICATE_ID' to merge each pair")
+    return 0
+
+
+def _build_merge_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser("merge", help="Merge a duplicate paper into a target paper")
+    p.add_argument("target_id", metavar="TARGET_ID", help="ID of the paper to keep")
+    p.add_argument("duplicate_id", metavar="DUPLICATE_ID", help="ID of the duplicate paper to absorb and delete")
+    return p
+
+
+def _run_merge(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+    target = db.get_paper(args.target_id)
+    if target is None:
+        print(f"Target paper {args.target_id} not found")
+        return 1
+    duplicate = db.get_paper(args.duplicate_id)
+    if duplicate is None:
+        print(f"Duplicate paper {args.duplicate_id} not found")
+        return 1
+    ok = db.merge_papers(args.target_id, args.duplicate_id)
+    if ok:
+        print(f"Merged {args.duplicate_id} into {args.target_id}")
+        return 0
+    else:
+        print(f"Merge failed")
+        return 1
+
+
 def _run_queue(args: argparse.Namespace) -> int:
     db = Database()
     db.init()
@@ -232,7 +283,7 @@ def _run_cache(args: argparse.Namespace) -> int:
             print(json.dumps(cached, indent=2, ensure_ascii=False))
         else:
             print(f"No cache entry for {args.get}")
-    elif args.set:
+    elif getattr(args, "set", None):
         uid, path = args.set
         try:
             with open(path, encoding="utf-8") as f:
@@ -257,12 +308,14 @@ def main(argv: Optional[List[str]] = None) -> int:
     _build_status_parser(subparsers)
     _build_queue_parser(subparsers)
     _build_cache_parser(subparsers)
+    _build_dedup_parser(subparsers)
+    _build_merge_parser(subparsers)
 
     # Check if first arg is a known subcommand
     raw_args = argv if argv is not None else sys.argv[1:]
     first = raw_args[0] if raw_args else ""
 
-    SUBCOMMANDS = {"search", "list", "status", "queue", "cache"}
+    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge"}
 
     if first in SUBCOMMANDS:
         # New subcommand flow
@@ -273,6 +326,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         _build_status_parser(subparsers)
         _build_queue_parser(subparsers)
         _build_cache_parser(subparsers)
+        _build_dedup_parser(subparsers)
+        _build_merge_parser(subparsers)
         args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
         if args.subcmd == "search":
@@ -285,6 +340,10 @@ def main(argv: Optional[List[str]] = None) -> int:
             return _run_queue(args)
         elif args.subcmd == "cache":
             return _run_cache(args)
+        elif args.subcmd == "dedup":
+            return _run_dedup(args)
+        elif args.subcmd == "merge":
+            return _run_merge(args)
         return 0
     else:
         # Legacy flow (arxiv ID / DOI as first positional arg)
