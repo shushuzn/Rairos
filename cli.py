@@ -174,6 +174,7 @@ def _build_queue_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--add", metavar="UID", help="Add a paper UID to the queue")
     p.add_argument("--list", action="store_true", help="List pending jobs")
     p.add_argument("--dequeue", action="store_true", help="Pop next job from queue")
+    p.add_argument("--cancel", metavar="JOB_ID", type=int, help="Cancel a queued job by id")
     return p
 
 
@@ -196,8 +197,14 @@ def _run_queue(args: argparse.Namespace) -> int:
     elif args.add:
         db.enqueue_job(args.add, "parse")
         print(f"Added {args.add} to queue")
+    elif args.cancel is not None:
+        removed = db.cancel_job(args.cancel)
+        if removed:
+            print(f"Cancelled job {args.cancel}")
+        else:
+            print(f"No such job {args.cancel}")
     else:
-        print("Use --list, --dequeue, or --add UID")
+        print("Use --list, --dequeue, --add UID, or --cancel JOB_ID")
     return 0
 
 

@@ -683,6 +683,15 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"queue_depth failed: {e}") from e
 
+    def cancel_job(self, job_id: int) -> bool:
+        """Remove a job from the queue by job id. Returns True if a row was deleted."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute("DELETE FROM job_queue WHERE id = ?", (job_id,))
+            return cur.rowcount > 0
+        except sqlite3.Error as e:
+            raise DatabaseError(f"cancel_job({job_id}) failed: {e}") from e
+
     # ── Settings ─────────────────────────────────────────────────────────────
 
     def set_setting(self, key: str, value: str) -> None:

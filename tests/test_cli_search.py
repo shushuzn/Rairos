@@ -451,7 +451,7 @@ class TestRunQueueList:
         ]
         mock_db_cls.return_value = mock_db
 
-        args = make_args(list=True, dequeue=False, add=None)
+        args = make_args(list=True, dequeue=False, add=None, cancel=None)
         result = _run_queue(args)
 
         captured = capsys.readouterr().out
@@ -468,7 +468,7 @@ class TestRunQueueList:
         mock_db.get_papers.return_value = [FakePaper(uid="2301.00001", parse_status="done")]
         mock_db_cls.return_value = mock_db
 
-        args = make_args(list=True, dequeue=False, add=None)
+        args = make_args(list=True, dequeue=False, add=None, cancel=None)
         result = _run_queue(args)
 
         captured = capsys.readouterr().out
@@ -488,7 +488,7 @@ class TestRunQueueDequeue:
         mock_db.dequeue_job.return_value = mock_job
         mock_db_cls.return_value = mock_db
 
-        args = make_args(list=False, dequeue=True, add=None)
+        args = make_args(list=False, dequeue=True, add=None, cancel=None)
         result = _run_queue(args)
 
         captured = capsys.readouterr().out
@@ -503,7 +503,7 @@ class TestRunQueueDequeue:
         mock_db.dequeue_job.return_value = None
         mock_db_cls.return_value = mock_db
 
-        args = make_args(list=False, dequeue=True, add=None)
+        args = make_args(list=False, dequeue=True, add=None, cancel=None)
         result = _run_queue(args)
 
         captured = capsys.readouterr().out
@@ -520,7 +520,7 @@ class TestRunQueueAdd:
         mock_db.init.return_value = None
         mock_db_cls.return_value = mock_db
 
-        args = make_args(list=False, dequeue=False, add="2301.99999")
+        args = make_args(list=False, dequeue=False, add="2301.99999", cancel=None)
         result = _run_queue(args)
 
         mock_db.enqueue_job.assert_called_once_with("2301.99999", "parse")
@@ -538,11 +538,45 @@ class TestRunQueueNoArgs:
         mock_db.init.return_value = None
         mock_db_cls.return_value = mock_db
 
-        args = make_args(list=False, dequeue=False, add=None)
+        args = make_args(list=False, dequeue=False, add=None, cancel=None)
         result = _run_queue(args)
 
         captured = capsys.readouterr().out
-        assert "Use --list" in captured or "--dequeue" in captured
+        assert "--list" in captured or "--dequeue" in captured
+        assert result == 0
+
+
+class TestRunQueueCancel:
+    """Test queue --cancel JOB_ID."""
+
+    @patch("cli.Database")
+    def test_cancel_removes_job(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.cancel_job.return_value = True
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(list=False, dequeue=False, add=None, cancel=42)
+        result = _run_queue(args)
+
+        mock_db.cancel_job.assert_called_once_with(42)
+        captured = capsys.readouterr().out
+        assert "Cancelled job 42" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_cancel_nonexistent_job(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.cancel_job.return_value = False
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(list=False, dequeue=False, add=None, cancel=99)
+        result = _run_queue(args)
+
+        mock_db.cancel_job.assert_called_once_with(99)
+        captured = capsys.readouterr().out
+        assert "No such job 99" in captured
         assert result == 0
 
 
@@ -724,7 +758,7 @@ class TestMainRouting:
     @patch("cli._run_queue")
     def test_main_routes_to_queue(self, mock_run):
         mock_run.return_value = 0
-        args = make_args(subcmd="queue", list=True, dequeue=False, add=None)
+        args = make_args(subcmd="queue", list=True, dequeue=False, add=None, cancel=None)
         with patch("argparse.ArgumentParser.parse_args", return_value=args):
             result = main(["queue", "--list"])
         mock_run.assert_called_once()
