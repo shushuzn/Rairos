@@ -5,6 +5,7 @@
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Mac%20%7C%20Linux-lightgrey)](#)
 [![Tests](https://img.shields.io/badge/Tests-372%20passing-brightgreen)](#-testing)
+[![Coverage](https://raw.githubusercontent.com/shushuzn/ai_research_os/main/coverage-badge.svg)](#)
 [![LLM](https://img.shields.io/badge/LLM-OpenAI%20Compatible-orange)](#-ai-assisted-draft)
 [![License](https://img.shields.io/badge/License-Research--Only-purple)](#-license)
 

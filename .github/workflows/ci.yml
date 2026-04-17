@@ -88,3 +88,20 @@ jobs:
           name: coverage-report
           path: coverage.json
           retention-days: 3
+
+      - name: Generate coverage badge
+        if: github.ref == 'refs/heads/main'
+        uses: dorny/coverage-badge@v1
+        with:
+          coverageResultsPath: coverage.json
+          outputFilePath: coverage-badge.svg
+
+      - name: Commit coverage badge
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add coverage-badge.svg
+          git diff --cached --stat
+          git commit -m "ci: update coverage badge" || echo "No badge changes to commit"
+          git push
