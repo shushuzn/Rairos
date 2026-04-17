@@ -30,7 +30,6 @@ def write_text(p: Path, content: str) -> None:
 
 
 def ensure_research_tree(root: Path) -> None:
-    from pathlib import Path
     dirs = [
         "00-Radar",
         "01-Foundations",

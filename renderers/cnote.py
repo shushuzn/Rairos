@@ -3,12 +3,13 @@ import textwrap
 
 
 def render_cnote(concept: str) -> str:
+    escaped = concept.replace("#", "\\#")
     md = f"""\
 type: concept
 status: evergreen
 -----------------
 
-# {concept.replace("#", "\\#")}
+# {escaped}
 
 ## 核心定义
 ## 产生背景

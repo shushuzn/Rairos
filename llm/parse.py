@@ -94,7 +94,7 @@ def _parse_rubric(raw: str) -> dict[str, Any]:
                 rubric[key] = int(m.group(1))
                 break
             # Fallback: digit after ) and colon (handles "* Novelty (1-5): 5")
-            m2 = re.search(rf'\)\s*:\s*(\d)', line)
+            m2 = re.search(r'\)\s*:\s*(\d)', line)
             if m2:
                 rubric[key] = int(m2.group(1))
                 break

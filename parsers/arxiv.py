@@ -1,5 +1,4 @@
 """arXiv API metadata fetching."""
-import re
 from typing import List
 
 import feedparser

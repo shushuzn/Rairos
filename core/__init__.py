@@ -1,6 +1,5 @@
 """Core data structures and constants."""
 from dataclasses import dataclass
-from pathlib import Path
 from typing import List
 
 ARXIV_API = "https://export.arxiv.org/api/query?id_list={arxiv_id}"

@@ -2,7 +2,7 @@
 import re
 from typing import List, Tuple
 
-from pdf.extract import BlockType, MathBlock, StructuredPdfContent, TableBlock, TextBlock
+from pdf.extract import MathBlock, StructuredPdfContent, TableBlock, TextBlock
 
 
 def looks_like_heading(line: str) -> bool:

@@ -338,7 +338,7 @@ def extract_pdf_structured(
             if block.get("type") != 0:  # only care about text blocks
                 continue
 
-            block_bbox = block.get("bbox", (0, 0, 0, 0))
+            _block_bbox = block.get("bbox", (0, 0, 0, 0))
 
             for line in block.get("lines", []):
                 line_text_parts = []

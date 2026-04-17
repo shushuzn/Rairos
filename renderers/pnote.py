@@ -87,11 +87,11 @@ def render_pnote(
 
 # {p.title}
 
-**Source:** {src_line}  
-**Authors:** {authors_line}  
-**Published:** {p.published or "N/A"}  | **Updated:** {p.updated or "N/A"}  
-**Landing:** {p.abs_url}  
-**PDF:** {p.pdf_url or "N/A"}  
+**Source:** {src_line}
+**Authors:** {authors_line}
+**Published:** {p.published or "N/A"} | **Updated:** {p.updated or "N/A"}
+**Landing:** {p.abs_url}
+**PDF:** {p.pdf_url or "N/A"}
 **Primary Category:** {p.primary_category or "N/A"}
 
 ---
@@ -107,7 +107,7 @@ def render_pnote(
 
 ## 1. 背景
 
-> **Abstract（原文）**  
+> **Abstract（原文）**
 > {p.abstract or "(未获取到 abstract，可手动补充)"}
 
 {injected_sections_md.get("## 1. 背景", "")}
