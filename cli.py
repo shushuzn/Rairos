@@ -7,7 +7,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, List, Optional, Tuple
 
 from db import Database
 from db.database import SearchResult
@@ -182,7 +182,14 @@ def _build_dedup_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("dedup", help="Find duplicate papers in the database")
     g = p.add_mutually_exclusive_group()
     g.add_argument("--dry-run", action="store_true", help="Show duplicates without merging")
-    g.add_argument("--auto", action="store_true", help="Automatically merge each duplicate pair (older kept, newer deleted)")
+    g.add_argument("--auto", action="store_true", help="Automatically merge each duplicate pair")
+    p.add_argument(
+        "--keep",
+        choices=["older", "newer", "parsed"],
+        default="older",
+        help="Which paper to keep: 'older' (default, keeps paper with earlier added_at), "
+             "'newer' (keeps paper with later added_at), or 'parsed' (keeps paper with better parse_status)",
+    )
     return p
 
 
@@ -203,16 +210,36 @@ def _run_dedup(args: argparse.Namespace) -> int:
     if args.auto:
         merged = 0
         for older, newer in pairs:
-            ok = db.merge_papers(older.id, newer.id)
+            target, duplicate = _pick_keep(older, newer, args.keep)
+            ok = db.merge_papers(target.id, duplicate.id)
             if ok:
-                print(f"Auto-merged {newer.id} into {older.id}")
+                print(f"Auto-merged {duplicate.id} into {target.id} (--keep={args.keep})")
                 merged += 1
             else:
-                print(f"Failed to merge {newer.id} into {older.id}")
+                print(f"Failed to merge {duplicate.id} into {target.id}")
         print(f"\nAuto-merged {merged}/{len(pairs)} pair(s)")
         return 0
     print(f"\nUse 'paper-cli merge TARGET_ID DUPLICATE_ID' to merge each pair")
     return 0
+
+
+def _pick_keep(older: Any, newer: Any, strategy: str) -> Tuple[Any, Any]:
+    """Return (target, duplicate) based on keep strategy."""
+    if strategy == "older":
+        return (older, newer)
+    if strategy == "newer":
+        return (newer, older)
+    # "parsed": keep the one with better parse_status
+    # Ranking: completed > running > pending > failed
+    status_rank = {"completed": 4, "running": 3, "pending": 2, "failed": 1}
+    rank = lambda p: status_rank.get(p.parse_status, 0)
+    p1, p2 = older, newer
+    if rank(p1) > rank(p2):
+        return (p1, p2)
+    if rank(p2) > rank(p1):
+        return (p2, p1)
+    # tie: prefer older by added_at
+    return (older, newer)
 
 
 def _build_merge_parser(subparsers) -> argparse.ArgumentParser:
