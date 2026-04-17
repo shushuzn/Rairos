@@ -7,6 +7,7 @@
 [![Tests](https://github.com/shushuzn/ai_research_os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/ai_research_os/actions)
 [![Coverage](https://img.shields.io/badge/coverage-94%25-brightgreen)](#testing)
 [![LLM](https://img.shields.io/badge/LLM-OpenAI%20Compatible-orange)](#-ai-assisted-draft)
+[![Docs](https://img.shields.io/badge/Docs-GitHub%20Pages-blueviolet)](https://shushuzn.github.io/ai_research_os/)
 [![License](https://img.shields.io/badge/License-Research--Only-purple)](#-license)
 
 ---
