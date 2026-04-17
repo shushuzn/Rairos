@@ -1224,7 +1224,7 @@ class TestRunDedup:
         mock_db.find_duplicates.return_value = []
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False))
+        result = _run_dedup(make_args(dry_run=False, auto=False))
 
         assert result == 0
         assert "No duplicates found" in capsys.readouterr().out
@@ -1243,7 +1243,7 @@ class TestRunDedup:
         mock_db.find_duplicates.return_value = [(p1, p2)]
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False))
+        result = _run_dedup(make_args(dry_run=False, auto=False))
 
         out = capsys.readouterr().out
         assert "uid1" in out
@@ -1265,11 +1265,78 @@ class TestRunDedup:
         mock_db.find_duplicates.return_value = [(p1, p2)]
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=True))
+        result = _run_dedup(make_args(dry_run=True, auto=False))
 
         out = capsys.readouterr().out
         assert "1 duplicate pair(s)" in out
         assert "dry-run" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_dedup_auto_merges_all_pairs(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        p1 = MagicMock()
+        p1.id = "uid1"
+        p1.title = "Paper A"
+        p1.doi = "10.1234/a"
+        p2 = MagicMock()
+        p2.id = "uid2"
+        p2.title = "Paper A"
+        p2.doi = "10.1234/a"
+        p3 = MagicMock()
+        p3.id = "uid3"
+        p3.title = "Paper B"
+        p3.doi = "10.1234/b"
+        p4 = MagicMock()
+        p4.id = "uid4"
+        p4.title = "Paper B"
+        p4.doi = "10.1234/b"
+        mock_db.find_duplicates.return_value = [(p1, p2), (p3, p4)]
+        mock_db.merge_papers.return_value = True
+        mock_db_cls.return_value = mock_db
+
+        result = _run_dedup(make_args(dry_run=False, auto=True))
+
+        out = capsys.readouterr().out
+        assert mock_db.merge_papers.call_count == 2
+        assert "Auto-merged uid2 into uid1" in out
+        assert "Auto-merged uid4 into uid3" in out
+        assert "Auto-merged 2/2 pair(s)" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_dedup_auto_partial_failure(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        p1 = MagicMock()
+        p1.id = "uid1"
+        p1.title = "Paper"
+        p1.doi = "10.1234/x"
+        p2 = MagicMock()
+        p2.id = "uid2"
+        p2.title = "Paper"
+        p2.doi = "10.1234/x"
+        mock_db.find_duplicates.return_value = [(p1, p2)]
+        # First call succeeds, second would be called if there were more pairs
+        mock_db.merge_papers.side_effect = [True]
+        mock_db_cls.return_value = mock_db
+
+        result = _run_dedup(make_args(dry_run=False, auto=True))
+
+        out = capsys.readouterr().out
+        assert "Auto-merged 1/1 pair(s)" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_dedup_auto_no_pairs(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.find_duplicates.return_value = []
+        mock_db_cls.return_value = mock_db
+
+        result = _run_dedup(make_args(dry_run=False, auto=True))
+
+        out = capsys.readouterr().out
+        assert "No duplicates found" in out
+        assert not mock_db.merge_papers.called
         assert result == 0
 
 

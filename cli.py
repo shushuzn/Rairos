@@ -181,6 +181,7 @@ def _build_queue_parser(subparsers) -> argparse.ArgumentParser:
 def _build_dedup_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("dedup", help="Find duplicate papers in the database")
     p.add_argument("--dry-run", action="store_true", help="Show duplicates without merging")
+    p.add_argument("--auto", action="store_true", help="Automatically merge each duplicate pair (older kept, newer deleted)")
     return p
 
 
@@ -197,8 +198,19 @@ def _run_dedup(args: argparse.Namespace) -> int:
         print(f"  DOI: {older.doi or '(none)'}")
     if args.dry_run:
         print(f"\n({len(pairs)} duplicate pair(s), dry-run — no changes made)")
-    else:
-        print(f"\nUse 'paper-cli merge TARGET_ID DUPLICATE_ID' to merge each pair")
+        return 0
+    if args.auto:
+        merged = 0
+        for older, newer in pairs:
+            ok = db.merge_papers(older.id, newer.id)
+            if ok:
+                print(f"Auto-merged {newer.id} into {older.id}")
+                merged += 1
+            else:
+                print(f"Failed to merge {newer.id} into {older.id}")
+        print(f"\nAuto-merged {merged}/{len(pairs)} pair(s)")
+        return 0
+    print(f"\nUse 'paper-cli merge TARGET_ID DUPLICATE_ID' to merge each pair")
     return 0
 
 
