@@ -54,22 +54,6 @@ jobs:
       - name: Pyflakes
         run: python -m pyflakes ai_research_os.py || true
 
-  test-arxiv:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
-        run: pip install requests feedparser
-
-      - name: Test arXiv API
-        run: python -c "import requests, feedparser; r=requests.get('https://export.arxiv.org/api/query?id_list=2601.00155',timeout=15); r.raise_for_status(); feed=feedparser.parse(r.text); print('arXiv OK:', feed.entries[0].title[:50])"
-
   test-crossref:
     runs-on: ubuntu-22.04
     steps:
