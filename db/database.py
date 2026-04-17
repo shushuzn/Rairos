@@ -1434,6 +1434,15 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"get_paper_title failed: {e}") from e
 
+    def paper_exists(self, paper_id: str) -> bool:
+        """Return True if paper_id exists in the papers table."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute("SELECT 1 FROM papers WHERE id = ?", (paper_id,))
+            return cur.fetchone() is not None
+        except sqlite3.Error:
+            return False
+
     # ── Helpers ────────────────────────────────────────────────────────────────
 
 

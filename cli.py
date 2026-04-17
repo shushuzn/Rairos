@@ -575,6 +575,135 @@ def _run_citations(args: argparse.Namespace) -> int:
     return 0
 
 
+# ── Citation import ──────────────────────────────────────────────────────────
+
+def _build_cite_import_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "cite-import",
+        help="Import citation links from a JSON file or inline JSON",
+    )
+    p.add_argument(
+        "json_input",
+        nargs="?",
+        help="JSON string or @filename (file prefixed with @) containing citation data",
+    )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be imported without writing to DB",
+    )
+    p.add_argument(
+        "--skip-missing",
+        action="store_true",
+        help="Skip source/target papers that don't exist in the DB",
+    )
+    return p
+
+
+def _run_cite_import(args: argparse.Namespace) -> int:
+    raw = args.json_input
+    if not raw:
+        print("Error: json_input required (JSON string or @filepath)", file=sys.stderr)
+        return 1
+
+    # Load JSON
+    if raw.startswith("@"):
+        path = raw[1:]
+        try:
+            with open(path, encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception as e:
+            print(f"Error: cannot read {path}: {e}", file=sys.stderr)
+            return 1
+    else:
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError as e:
+            print(f"Error: invalid JSON: {e}", file=sys.stderr)
+            return 1
+
+    # Normalise to list
+    if isinstance(data, dict):
+        data = [data]
+    elif not isinstance(data, list):
+        print("Error: JSON must be a list of objects or a single object", file=sys.stderr)
+        return 1
+
+    db = Database()
+    db.init()
+
+    total_new = 0
+    total_skip_dup = 0
+    total_skip_missing = 0
+    errors = []
+
+    for i, item in enumerate(data):
+        if not isinstance(item, dict):
+            errors.append(f"[{i}] item is not an object, skipping")
+            continue
+        source = str(item.get("source") or item.get("source_id") or "")
+        targets = item.get("targets") or item.get("target_ids") or []
+        if not isinstance(targets, list):
+            targets = [targets]
+        if not source:
+            errors.append(f"[{i}] missing 'source' field, skipping")
+            continue
+        if not targets:
+            errors.append(f"[{i}] empty 'targets' for source={source}, skipping")
+            continue
+
+        # Check source exists
+        if not db.paper_exists(source):
+            msg = f"source paper {source!r} not in DB"
+            if args.skip_missing:
+                total_skip_missing += 1
+                if args.dry_run:
+                    print(f"  [dry-run] skip (missing): {source}")
+                else:
+                    print(f"Error: {msg}", file=sys.stderr)
+            else:
+                errors.append(f"[{i}] {msg}")
+            continue
+
+        valid_targets = []
+        for tgt in targets:
+            tgt = str(tgt)
+            if not db.paper_exists(tgt):
+                msg = f"target paper {tgt!r} not in DB"
+                if args.skip_missing:
+                    total_skip_missing += 1
+                    if args.dry_run:
+                        print(f"  [dry-run] skip (missing): {tgt}")
+                    else:
+                        print(f"Error: {msg}", file=sys.stderr)
+                else:
+                    errors.append(f"[{i}] {msg}")
+                continue
+            valid_targets.append(tgt)
+
+        if args.dry_run:
+            for tgt in valid_targets:
+                print(f"  [dry-run] add citation: {source} -> {tgt}")
+            total_new += len(valid_targets)
+        else:
+            n = db.add_citations_batch(source, valid_targets)
+            total_new += n
+
+    # Summary
+    print(f"Import complete.")
+    print(f"  new citations : {total_new}")
+    print(f"  skipped (missing papers): {total_skip_missing}")
+    if errors and not args.dry_run:
+        print(f"  warnings/errors : {len(errors)}")
+        for e in errors[:10]:
+            print(f"    - {e}")
+        if len(errors) > 10:
+            print(f"    ... and {len(errors) - 10} more")
+        return 1
+
+    return 0
+
+
 def _build_cache_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("cache", help="Manage paper cache")
     p.add_argument("--get", metavar="UID", help="Get cached paper by UID")
@@ -630,12 +759,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     _build_import_parser(subparsers)
     _build_export_parser(subparsers)
     _build_citations_parser(subparsers)
+    _build_cite_import_parser(subparsers)
 
     # Check if first arg is a known subcommand
     raw_args = argv if argv is not None else sys.argv[1:]
     first = raw_args[0] if raw_args else ""
 
-    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations"}
+    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations", "cite-import"}
 
     if first in SUBCOMMANDS:
         # New subcommand flow
@@ -652,6 +782,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         _build_import_parser(subparsers)
         _build_export_parser(subparsers)
         _build_citations_parser(subparsers)
+        _build_cite_import_parser(subparsers)
         args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
         if args.subcmd == "search":
@@ -676,6 +807,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             return _run_export(args)
         elif args.subcmd == "citations":
             return _run_citations(args)
+        elif args.subcmd == "cite-import":
+            return _run_cite_import(args)
         return 0
     else:
         # Legacy flow (arxiv ID / DOI as first positional arg)
