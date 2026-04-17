@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.0.2 (2026-04-17)
+
+### Bug Fixes
+- Correct pyproject.toml after web UI corruption ([#49](https://github.com/shushuzn/ai_research_os/pull/49))
+- Add get_cached/set_cached mocks to prevent test cache pollution
+
+### CI
+- Upload pytest output as artifact for debugging
+- Add workflow_dispatch trigger for manual CI runs
+
+### Documentation
+- Bilingual README (English + Chinese)
+
+## v1.0.1 (2026-04-17)
+
+### Features
+- Add GitHub Actions PyPI release workflow
+- Add pyproject.toml for PyPI packaging
+
+### CI
+- Fix CI artifact upload after web UI corruption
+
+### Documentation
+- Add CHANGELOG.md for v1.0.0
+
 ## v1.0.0 (2026-04-16)
 
 ### Features
@@ -14,6 +39,7 @@ All notable changes to this project will be documented in this file.
 - Improve P-note AI prompt with scoring rubric and citation requirements
 - Extend Paper dataclass with journal, volume, issue, page, doi, comment, journal_ref, categories, reference_count
 - PDF structured extraction + C-note AI draft + P-note metadata reader
+- CLI shell completions (bash, zsh, fish)
 
 ### Bug Fixes
 - Rubric extraction: key-anchored regex + multi-format support
