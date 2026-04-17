@@ -288,6 +288,12 @@ def _pick_keep(older: Any, newer: Any, strategy: str) -> Tuple[Any, Any]:
 
 def _build_merge_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("merge", help="Merge a duplicate paper into a target paper")
+    p.add_argument(
+        "--keep",
+        choices=["older", "newer", "parsed"],
+        default="older",
+        help="Which paper to keep: 'older' (default), 'newer', or 'parsed' (better parse_status)",
+    )
     p.add_argument("target_id", metavar="TARGET_ID", help="ID of the paper to keep")
     p.add_argument("duplicate_id", metavar="DUPLICATE_ID", help="ID of the duplicate paper to absorb and delete")
     return p
@@ -304,9 +310,14 @@ def _run_merge(args: argparse.Namespace) -> int:
     if duplicate is None:
         print(f"Duplicate paper {args.duplicate_id} not found")
         return 1
-    ok = db.merge_papers(args.target_id, args.duplicate_id)
+    # Build fake "older/newer" objects for _pick_keep based on added_at
+    older = target if target.added_at <= duplicate.added_at else duplicate
+    newer = duplicate if target.added_at <= duplicate.added_at else target
+    keep, drop = _pick_keep(older, newer, args.keep)
+    ok = db.merge_papers(keep.id, drop.id)
     if ok:
-        print(f"Merged {args.duplicate_id} into {args.target_id}")
+        db.log_dedup(keep.id, drop.id, args.keep)
+        print(f"Merged {drop.id} into {keep.id} (--keep={args.keep})")
         return 0
     else:
         print(f"Merge failed")

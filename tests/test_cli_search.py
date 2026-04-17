@@ -1679,3 +1679,84 @@ class TestRunDedupBatch:
         captured = capsys.readouterr().out
         assert "No duplicates found" in captured
         assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_merge tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunMerge:
+    """Test _run_merge manual paper merging."""
+
+    @patch("cli.Database")
+    def test_merge_target_not_found(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_paper.side_effect = [None, MagicMock(id="dup")]
+        mock_db_cls.return_value = mock_db
+        args = make_args(target_id="uid1", duplicate_id="uid2", keep="older")
+        result = _run_merge(args)
+        captured = capsys.readouterr().out
+        assert "uid1" in captured and "not found" in captured
+        assert result == 1
+
+    @patch("cli.Database")
+    def test_merge_duplicate_not_found(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_paper.side_effect = [MagicMock(id="uid1"), None]
+        mock_db_cls.return_value = mock_db
+        args = make_args(target_id="uid1", duplicate_id="uid2", keep="older")
+        result = _run_merge(args)
+        captured = capsys.readouterr().out
+        assert "uid2" in captured and "not found" in captured
+        assert result == 1
+
+    @patch("cli.Database")
+    def test_merge_keep_older(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        older = MagicMock(id="uid1", added_at="2024-01-01", parse_status="pending")
+        newer = MagicMock(id="uid2", added_at="2024-06-01", parse_status="completed")
+        mock_db.get_paper.side_effect = [older, newer]
+        mock_db.merge_papers.return_value = True
+        mock_db_cls.return_value = mock_db
+        # older is uid1 (target), newer is uid2 (duplicate)
+        args = make_args(target_id="uid1", duplicate_id="uid2", keep="older")
+        result = _run_merge(args)
+        captured = capsys.readouterr().out
+        mock_db.merge_papers.assert_called_once_with("uid1", "uid2")
+        mock_db.log_dedup.assert_called_once_with("uid1", "uid2", "older")
+        assert "Merged uid2 into uid1" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_merge_keep_newer(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        older = MagicMock(id="uid1", added_at="2024-01-01", parse_status="pending")
+        newer = MagicMock(id="uid2", added_at="2024-06-01", parse_status="completed")
+        mock_db.get_paper.side_effect = [older, newer]
+        mock_db.merge_papers.return_value = True
+        mock_db_cls.return_value = mock_db
+        args = make_args(target_id="uid1", duplicate_id="uid2", keep="newer")
+        result = _run_merge(args)
+        captured = capsys.readouterr().out
+        # --keep newer means uid2 is kept, uid1 is dropped
+        mock_db.merge_papers.assert_called_once_with("uid2", "uid1")
+        mock_db.log_dedup.assert_called_once_with("uid2", "uid1", "newer")
+        assert "Merged uid1 into uid2" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_merge_keep_parsed(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        older = MagicMock(id="uid1", added_at="2024-01-01", parse_status="pending")
+        newer = MagicMock(id="uid2", added_at="2024-06-01", parse_status="completed")
+        mock_db.get_paper.side_effect = [older, newer]
+        mock_db.merge_papers.return_value = True
+        mock_db_cls.return_value = mock_db
+        # --keep parsed means the one with better parse_status wins
+        args = make_args(target_id="uid1", duplicate_id="uid2", keep="parsed")
+        result = _run_merge(args)
+        captured = capsys.readouterr().out
+        mock_db.merge_papers.assert_called_once_with("uid2", "uid1")
+        mock_db.log_dedup.assert_called_once_with("uid2", "uid1", "parsed")
+        assert "Merged uid1 into uid2" in captured
+        assert result == 0
