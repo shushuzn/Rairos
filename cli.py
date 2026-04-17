@@ -645,16 +645,13 @@ def _arxiv_doi_to_openalex(arxiv_id: str) -> Optional[str]:
     return None
 
 
-def _get_openalex_references(openalex_id: str) -> list[str]:
-    """Get list of OpenAlex work IDs that this paper references (backward citations)."""
-    # openalex_id is full URL like https://openalex.org/W2626778328
+def _get_openalex_references(openalex_id: str) -> Tuple[List[str], int]:
+    """Fetch referenced works for an OpenAlex work. Returns (work_ids, total_count)."""
     oid = openalex_id.rstrip("/").split("/")[-1]
-    try:
-        d = _openalex_request(f"/works/{oid}")
-        refs = d.get("referenced_works", []) or []
-        return refs
-    except Exception:
-        return []
+    data = _openalex_request(f"/works/{oid}")
+    refs = data.get("referenced_works") or []
+    count = data.get("referenced_works_count", len(refs))
+    return refs, count
 
 
 def _get_openalex_citing(openalex_id: str, per_page: int = 200) -> Tuple[list[dict], int]:
@@ -727,6 +724,7 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
     direction = args.direction
     dry_run = args.dry_run
     skip_external = args.skip_external
+    max_per_paper = args.max_per_paper
 
     # Collect papers to process
     paper_ids: list[str]
@@ -737,14 +735,15 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
         paper_ids = [args.paper_id]
     else:
         # Process all papers
-        all_papers = db.list_papers()
+        all_papers, _total = db.list_papers()
         paper_ids = [p.id for p in all_papers]
         if not paper_ids:
             print("No papers in database. Nothing to do.")
             return 0
 
     # Build set of known paper IDs for fast lookup
-    known_ids: set[str] = {p.id for p in db.list_papers()}
+    all_papers, _total = db.list_papers()
+    known_ids: set[str] = {p.id for p in all_papers}
 
     total_added = 0
     total_skipped_external = 0
@@ -762,69 +761,56 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
 
         # Step 2: Fetch backward citations (papers this paper references)
         if direction in ("from", "both"):
-            refs = _get_openalex_references(openalex_id)
-            if delay > 0:
-                time.sleep(delay)
-
-            for ref_openalex_id in refs:
-                if args.max_per_paper > 0 and total_added >= args.max_per_paper:
-                    break
-                try:
-                    ref_work = _openalex_request(f"/works/{ref_openalex_id.rstrip('/').split('/')[-1]}")
-                    ref_arxiv_id = _work_to_arxiv_id(ref_work)
-                    if not ref_arxiv_id:
-                        if skip_external:
+            referenced_works, ref_count = _get_openalex_references(openalex_id)
+            if dry_run:
+                # Just show count without fetching individual references
+                print(f"  [dry-run] backward: {ref_count} referenced works", file=sys.stderr)
+            else:
+                for ref_openalex_id in (referenced_works[:max_per_paper] if max_per_paper > 0 else referenced_works):
+                    try:
+                        ref_work = _openalex_request(f"/works/{ref_openalex_id.rstrip('/').split('/')[-1]}")
+                        ref_arxiv_id = _work_to_arxiv_id(ref_work)
+                        if not ref_arxiv_id:
                             total_skipped_external += 1
                             continue
-                        # Don't add external references unless user wants them
-                        total_skipped_external += 1
-                        continue
-                    if ref_arxiv_id not in known_ids:
-                        total_skipped_external += 1
-                        continue
-                    if dry_run:
-                        print(f"  [dry-run] would add: {paper_id} -> {ref_arxiv_id} (backward)", file=sys.stderr)
-                    else:
+                        if ref_arxiv_id not in known_ids:
+                            total_skipped_external += 1
+                            continue
                         added = db.add_citation(paper_id, ref_arxiv_id)
                         if added:
                             total_added += 1
-                except Exception as e:
-                    total_errors += 1
-                    print(f"  [error] fetching ref {ref_openalex_id}: {e}", file=sys.stderr)
+                    except Exception as e:
+                        total_errors += 1
+                        print(f"  [error] fetching ref {ref_openalex_id}: {e}", file=sys.stderr)
+            if delay > 0:
+                time.sleep(delay)
 
         # Step 3: Fetch forward citations (papers citing this paper)
         if direction in ("to", "both"):
             citing_works, citing_count = _get_openalex_citing(openalex_id)
             total_cited_by_count += citing_count
-            cited_count = 0
-
-            for citing_work in citing_works:
-                if args.max_per_paper > 0 and cited_count >= args.max_per_paper:
-                    break
-                citing_arxiv_id = _work_to_arxiv_id(citing_work)
-                if not citing_arxiv_id:
-                    if skip_external:
+            if dry_run:
+                print(f"  [dry-run] forward: {citing_count} citing works", file=sys.stderr)
+            else:
+                cited_count = 0
+                for citing_work in citing_works:
+                    if max_per_paper > 0 and cited_count >= max_per_paper:
+                        break
+                    citing_arxiv_id = _work_to_arxiv_id(citing_work)
+                    if not citing_arxiv_id:
                         total_skipped_external += 1
-                    else:
-                        total_skipped_external += 1  # don't import external
-                    cited_count += 1
-                    continue
-                if citing_arxiv_id not in known_ids:
-                    total_skipped_external += 1
-                    cited_count += 1
-                    continue
-                if dry_run:
-                    print(f"  [dry-run] would add: {citing_arxiv_id} -> {paper_id} (forward)", file=sys.stderr)
-                else:
+                        cited_count += 1
+                        continue
+                    if citing_arxiv_id not in known_ids:
+                        total_skipped_external += 1
+                        cited_count += 1
+                        continue
                     added = db.add_citation(citing_arxiv_id, paper_id)
                     if added:
                         total_added += 1
-                cited_count += 1
+                    cited_count += 1
                 if delay > 0:
                     time.sleep(delay)
-
-        if delay > 0 and direction == "from":
-            time.sleep(delay)
 
     # Summary
     print(f"\nSummary:", file=sys.stderr)
