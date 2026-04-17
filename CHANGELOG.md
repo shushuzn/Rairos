@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.0 (2026-04-18)
+
+### Features
+
+- `citations` — Citation graph CLI for tracking paper reference relationships
+  - `--from PAPER_ID`: Show papers cited by PAPER_ID (backward citations / references)
+  - `--to PAPER_ID`: Show papers that cite PAPER_ID (forward citations / bibliography)
+  - `--format csv`: CSV output with direction, source_id, source_title, target_id, target_title
+  - New `citations` table in DB: `(source_id, target_id)` edges with FK to `papers` + CASCADE delete
+  - New `CitationRecord` dataclass
+  - `add_citation()` / `add_citations_batch()` / `get_citations()` / `get_citation_count()` / `get_paper_title()` DB methods
+
 ## v1.3.0 (2026-04-18)
 
 ### Features
