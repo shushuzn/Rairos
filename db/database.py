@@ -1443,6 +1443,115 @@ class Database:
         except sqlite3.Error:
             return False
 
+    # ── Embeddings (semantic dedup) ────────────────────────────────────────────
+
+    EMBEDDING_DIM = 768  # nomic-embed-text
+
+    def set_embedding(self, paper_id: str, vector: List[float]) -> bool:
+        """Store an embedding vector (list of floats) for a paper."""
+        try:
+            import struct
+
+            blob = struct.pack(f"{len(vector)}f", *vector)
+            cur = self.conn.cursor()
+            cur.execute(
+                "UPDATE papers SET embed_vector = ? WHERE id = ?",
+                (blob, paper_id),
+            )
+            self.conn.commit()
+            return cur.rowcount > 0
+        except Exception as e:
+            logger.error(f"set_embedding failed: {e}")
+            return False
+
+    def get_embedding(self, paper_id: str) -> Optional[List[float]]:
+        """Retrieve the embedding vector for a paper, or None if not set."""
+        try:
+            import struct
+
+            cur = self.conn.cursor()
+            cur.execute("SELECT embed_vector FROM papers WHERE id = ?", (paper_id,))
+            row = cur.fetchone()
+            if not row or row[0] is None:
+                return None
+            blob = row[0]
+            count = len(blob) // 4
+            return list(struct.unpack(f"{count}f", blob))
+        except Exception as e:
+            logger.error(f"get_embedding failed: {e}")
+            return None
+
+    def get_papers_without_embeddings(self, limit: int = 1000) -> List["PaperRecord"]:
+        """Return papers that have a title but no embedding yet."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute(
+                "SELECT * FROM papers WHERE embed_vector IS NULL AND title != '' LIMIT ?",
+                (limit,),
+            )
+            return [PaperRecord.from_row(r) for r in cur.fetchall()]
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_papers_without_embeddings failed: {e}") from e
+
+    def find_similar(
+        self, paper_id: str, threshold: float = 0.85, limit: int = 20
+    ) -> List[Tuple["PaperRecord", float]]:
+        """
+        Find papers similar to paper_id using cosine similarity of embeddings.
+        Returns list of (PaperRecord, similarity_score) sorted by score descending.
+        Only papers with similarity >= threshold are returned.
+        """
+        try:
+            import struct
+
+            query_emb = self.get_embedding(paper_id)
+            if query_emb is None:
+                return []
+
+            cur = self.conn.cursor()
+            cur.execute(
+                "SELECT id, embed_vector FROM papers WHERE id != ? AND embed_vector IS NOT NULL",
+                (paper_id,),
+            )
+            results: List[Tuple[PaperRecord, float]] = []
+            q_vec = query_emb
+            q_norm = sum(x * x for x in q_vec) ** 0.5
+            if q_norm == 0:
+                return []
+
+            for row in cur.fetchall():
+                pid, blob = row["id"], row["embed_vector"]
+                c_count = len(blob) // 4
+                c_vec = list(struct.unpack(f"{c_count}f", blob))
+                c_norm = sum(x * x for x in c_vec) ** 0.5
+                if c_norm == 0:
+                    continue
+                dot = sum(a * b for a, b in zip(q_vec, c_vec))
+                sim = dot / (q_norm * c_norm)
+                if sim >= threshold:
+                    cur2 = self.conn.cursor()
+                    cur2.execute("SELECT * FROM papers WHERE id = ?", (pid,))
+                    prow = cur2.fetchone()
+                    if prow:
+                        results.append((PaperRecord.from_row(prow), sim))
+
+            results.sort(key=lambda x: x[1], reverse=True)
+            return results[:limit]
+        except sqlite3.Error as e:
+            raise DatabaseError(f"find_similar failed: {e}") from e
+
+    def get_embedding_stats(self) -> dict:
+        """Return embedding coverage stats."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute("SELECT COUNT(*) FROM papers WHERE embed_vector IS NOT NULL")
+            with_emb = cur.fetchone()[0]
+            cur.execute("SELECT COUNT(*) FROM papers WHERE title != ''")
+            total_with_text = cur.fetchone()[0]
+            return {"with_embedding": with_emb, "total_with_text": total_with_text}
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_embedding_stats failed: {e}") from e
+
     # ── Helpers ────────────────────────────────────────────────────────────────
 
 

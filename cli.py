@@ -389,6 +389,141 @@ def _run_dedup(args: argparse.Namespace) -> int:
     return 0
 
 
+def _build_dedup_semantic_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "dedup-semantic",
+        help="Find near-duplicate papers using semantic embeddings",
+    )
+    p.add_argument(
+        "--threshold",
+        type=float,
+        default=0.85,
+        help="Minimum cosine similarity threshold (default: 0.85)",
+    )
+    p.add_argument(
+        "--limit",
+        type=int,
+        default=20,
+        help="Maximum similar papers to find per query (default: 20)",
+    )
+    p.add_argument(
+        "--paper",
+        metavar="PAPER_ID",
+        help="Check similarity for a specific paper only",
+    )
+    p.add_argument(
+        "--generate",
+        action="store_true",
+        help="Generate embeddings for papers that don't have them yet",
+    )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would happen without making changes",
+    )
+    p.add_argument(
+        "--stats",
+        action="store_true",
+        help="Show embedding coverage statistics",
+    )
+    return p
+
+
+def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optional[List[float]]:
+    """Fetch embedding from local Ollama. Returns None on failure."""
+    try:
+        req = urllib.request.Request(
+            "http://localhost:11434/api/embeddings",
+            data=json.dumps({"model": model, "prompt": text}).encode(),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read().decode())
+            return data.get("embedding")
+    except Exception as e:
+        print(f"  [WARN] Ollama embedding failed: {e}", file=sys.stderr)
+        return None
+
+
+def _generate_missing_embeddings(db: "Database", delay: float = 0.1) -> Tuple[int, int]:
+    """Generate embeddings for papers missing them. Returns (generated, failed)."""
+    papers = db.get_papers_without_embeddings(limit=1000)
+    generated, failed = 0, 0
+    for paper in papers:
+        text = paper.title or ""
+        if paper.abstract:
+            text += "\n\n" + paper.abstract
+        if not text.strip():
+            continue
+        emb = _get_ollama_embedding(text)
+        if emb is not None:
+            db.set_embedding(paper.id, emb)
+            generated += 1
+        else:
+            failed += 1
+        time.sleep(delay)
+    return generated, failed
+
+
+def _run_dedup_semantic(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+
+    if args.stats:
+        s = db.get_embedding_stats()
+        print("Embedding coverage:")
+        print(f"  Papers with embedding : {s['with_embedding']}")
+        print(f"  Papers with text     : {s['total_with_text']}")
+        if s["total_with_text"] > 0:
+            pct = s["with_embedding"] / s["total_with_text"] * 100
+            print(f"  Coverage             : {pct:.1f}%")
+        return 0
+
+    if args.generate:
+        print("Generating missing embeddings...")
+        gen, fail = _generate_missing_embeddings(db)
+        print(f"Generated: {gen}, Failed: {fail}")
+        return 0
+
+    if args.paper:
+        if not db.paper_exists(args.paper):
+            print(f"Paper '{args.paper}' not found")
+            return 1
+        sims = db.find_similar(args.paper, threshold=args.threshold, limit=args.limit)
+        if not sims:
+            print(f"No similar papers found for '{args.paper}' (threshold={args.threshold})")
+            return 0
+        print(f"Similar papers for '{args.paper}' (threshold={args.threshold}):")
+        for sim_paper, score in sims:
+            print(f"  [{score:.4f}] {sim_paper.id}  {sim_paper.title[:70]}")
+        return 0
+
+    # Global: check all papers
+    papers, _total = db.list_papers(limit=10000)
+    found = 0
+    seen: set = set()
+    for paper in papers:
+        if paper.id in seen or not paper.title:
+            continue
+        sims = db.find_similar(paper.id, threshold=args.threshold, limit=5)
+        for sim_paper, score in sims:
+            pair_key = tuple(sorted([paper.id, sim_paper.id]))
+            if pair_key in seen:
+                continue
+            seen.add(pair_key)
+            print(f"[{score:.4f}] {paper.id} <-> {sim_paper.id}")
+            print(f"  A: {paper.title[:70]}")
+            print(f"  B: {sim_paper.title[:70]}")
+            print()
+            found += 1
+    if found == 0:
+        print("No duplicate pairs found")
+    else:
+        print(f"({found} duplicate pair(s) found, threshold={args.threshold})")
+    return 0
+
+
 def _pick_keep(older: Any, newer: Any, strategy: str) -> Tuple[Any, Any]:
     """Return (target, duplicate) based on keep strategy."""
     if strategy == "older":
@@ -1135,12 +1270,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     _build_cite_import_parser(subparsers)
     _build_cite_fetch_parser(subparsers)
     _build_cite_stats_parser(subparsers)
+    _build_dedup_semantic_parser(subparsers)
 
     # Check if first arg is a known subcommand
     raw_args = argv if argv is not None else sys.argv[1:]
     first = raw_args[0] if raw_args else ""
 
-    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations", "cite-import", "cite-fetch", "cite-stats"}
+    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations", "cite-import", "cite-fetch", "cite-stats", "dedup-semantic"}
 
     if first in SUBCOMMANDS:
         # New subcommand flow
@@ -1160,6 +1296,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         _build_cite_import_parser(subparsers)
         _build_cite_fetch_parser(subparsers)
         _build_cite_stats_parser(subparsers)
+        _build_dedup_semantic_parser(subparsers)
         args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
         if args.subcmd == "search":
@@ -1190,6 +1327,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             return _run_cite_fetch(args)
         elif args.subcmd == "cite-stats":
             return _run_cite_stats(args)
+        elif args.subcmd == "dedup-semantic":
+            return _run_dedup_semantic(args)
         return 0
     else:
         # Legacy flow (arxiv ID / DOI as first positional arg)
