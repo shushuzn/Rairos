@@ -68,10 +68,10 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install pytest requests feedparser pymupdf
+        run: pip install pytest pytest-cov requests feedparser pymupdf
 
-      - name: Run pytest
-        run: python -m pytest tests/ -q --tb=short 2>&1 | tee pytest_output.txt
+      - name: Run pytest with coverage
+        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing --cov-report=json 2>&1 | tee pytest_output.txt
 
       - name: Upload test output
         if: always()
@@ -80,3 +80,11 @@ jobs:
           name: pytest-output
           path: pytest_output.txt
           retention-days: 1
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.json
+          retention-days: 3
