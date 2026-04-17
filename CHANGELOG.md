@@ -34,6 +34,15 @@ All notable changes to this project will be documented in this file.
   - Per-paper view: `--paper PAPER_ID` shows backward (cites) and forward (cited-by) counts
   - CSV output: `--format csv` emits `paper_id,title,cites,cited_by`
 
+- `dedup-semantic` — Find near-duplicate papers using semantic embeddings via Ollama
+  - `--stats`: Show embedding coverage (papers with/without embeddings)
+  - `--generate`: Generate embeddings for papers missing them via `nomic-embed-text`
+  - `--paper PAPER_ID`: Find similar papers for a specific paper
+  - `--threshold 0.85`: Cosine similarity threshold (default 0.85)
+  - `--limit 20`: Max similar papers returned per query
+  - New DB methods: `set_embedding()`, `get_embedding()`, `get_papers_without_embeddings()`, `find_similar()`, `get_embedding_stats()`
+  - Embeddings stored as binary blob in `papers.embed_vector` (768-dim float, nomic-embed-text)
+
 ## v1.3.0 (2026-04-18)
 
 ### Features
