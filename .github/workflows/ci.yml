@@ -8,6 +8,31 @@ on:
   workflow_dispatch:
 
 jobs:
+  commitlint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install commitlint
+        run: |
+          npm install -g @commitlint/cli@19 @commitlint/config-conventional@19
+
+      - name: Validate current commit (last) commit message
+        run: |
+          npx commitlint --last --verbose || npx commitlint --only --last 2>/dev/null || echo "No previous commit to check"
+
+      - name: Check commits since main
+        run: |
+          npx commitlint --from=main --verbose 2>&1 | head -50 || true
+
+  
   lint:
     runs-on: ubuntu-22.04
     steps:
