@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -u PYTHONHOME python3
 """Post-bump hook: sync pyproject.toml [project].version with cz bump result."""
 
 import os
