@@ -23,6 +23,17 @@ All notable changes to this project will be documented in this file.
   - Bypasses Windows proxy SSL issues via custom SSL context
   - Resolves arXiv paper → OpenAlex ID via DOI lookup, then fetches `referenced_works` and `cites:` filter
 
+- `cite-import` — Bulk import citation edges from JSON
+  - `--file FILE`: Read JSON from file (default: stdin)
+  - `--dry-run`: Validate input without writing to DB
+  - `--skip-missing`: Skip edges where source or target paper is not in local DB
+  - JSON format: `[{"source": "PAPER_ID", "targets": ["TARGET_ID", ...]}, ...]`
+
+- `cite-stats` — Show citation statistics
+  - Global view: total edges, unique citing papers, cited papers, avg citations per paper
+  - Per-paper view: `--paper PAPER_ID` shows backward (cites) and forward (cited-by) counts
+  - CSV output: `--format csv` emits `paper_id,title,cites,cited_by`
+
 ## v1.3.0 (2026-04-18)
 
 ### Features
