@@ -1224,7 +1224,7 @@ class TestRunDedup:
         mock_db.find_duplicates.return_value = []
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=False, keep="older", report=False))
+        result = _run_dedup(make_args(dry_run=False, auto=False, keep="older", batch=False, report=False))
 
         assert result == 0
         assert "No duplicates found" in capsys.readouterr().out
@@ -1247,7 +1247,7 @@ class TestRunDedup:
         mock_db.find_duplicates.return_value = [(p1, p2)]
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=False, keep="older", report=False))
+        result = _run_dedup(make_args(dry_run=False, auto=False, keep="older", batch=False, report=False))
 
         out = capsys.readouterr().out
         assert "uid1" in out
@@ -1587,4 +1587,95 @@ class TestDedupReport:
         assert "uid2" in captured
         assert "keep=older" in captured
         assert "keep=parsed" in captured
+        assert result == 0
+
+
+class TestRunDedupBatch:
+    """Test dedup --batch mode."""
+
+    @patch("cli.Database")
+    def test_batch_both_same_doi(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        p1 = MagicMock(id="uid1", title="Attention Is All You Need",
+                       doi="10.1234/abc", parse_status="completed",
+                       added_at="2026-01-01T00:00:00")
+        p2 = MagicMock(id="uid2", title="Attention Is All You Need",
+                       doi="10.1234/abc", parse_status="pending",
+                       added_at="2026-01-02T00:00:00")
+        mock_db.find_duplicates.return_value = [(p1, p2)]
+        mock_db.merge_papers.return_value = True
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(dry_run=False, auto=False, batch=True, keep="older", report=False)
+        result = _run_dedup(args)
+
+        captured = capsys.readouterr().out
+        assert "[batch] Merged uid2 -> uid1" in captured
+        assert "Batch: 1 merged, 0 skipped" in captured
+        mock_db.log_dedup.assert_called_once_with("uid1", "uid2", "older")
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_batch_different_doi(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        p1 = MagicMock(id="uid1", title="Attention Is All You Need",
+                       doi="10.1234/abc", parse_status="completed",
+                       added_at="2026-01-01T00:00:00")
+        p2 = MagicMock(id="uid2", title="Attention Is All You Need",
+                       doi="10.9999/xyz", parse_status="pending",
+                       added_at="2026-01-02T00:00:00")
+        mock_db.find_duplicates.return_value = [(p1, p2)]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(dry_run=False, auto=False, batch=True, keep="older", report=False)
+        result = _run_dedup(args)
+
+        captured = capsys.readouterr().out
+        assert "[batch] Skipped uid1/uid2" in captured
+        assert "Batch: 0 merged, 1 skipped" in captured
+        mock_db.merge_papers.assert_not_called()
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_batch_mixed_pairs(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        # Pair 1: same DOI → auto-merged
+        p1 = MagicMock(id="uid1", title="Paper A", doi="10.1234/a",
+                       parse_status="completed", added_at="2026-01-01T00:00:00")
+        p2 = MagicMock(id="uid2", title="Paper A", doi="10.1234/a",
+                       parse_status="pending", added_at="2026-01-02T00:00:00")
+        # Pair 2: different DOI → skipped
+        p3 = MagicMock(id="uid3", title="Paper B", doi="10.9999/b",
+                       parse_status="completed", added_at="2026-01-01T00:00:00")
+        p4 = MagicMock(id="uid4", title="Paper B", doi=None,
+                       parse_status="completed", added_at="2026-01-02T00:00:00")
+        mock_db.find_duplicates.return_value = [(p1, p2), (p3, p4)]
+        mock_db.merge_papers.return_value = True
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(dry_run=False, auto=False, batch=True, keep="older", report=False)
+        result = _run_dedup(args)
+
+        captured = capsys.readouterr().out
+        assert "[batch] Merged uid2 -> uid1" in captured
+        assert "[batch] Skipped uid3/uid4" in captured
+        assert "Batch: 1 merged, 1 skipped" in captured
+        mock_db.merge_papers.assert_called_once_with("uid1", "uid2")
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_batch_no_duplicates(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.find_duplicates.return_value = []
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(dry_run=False, auto=False, batch=True, keep="older", report=False)
+        result = _run_dedup(args)
+
+        captured = capsys.readouterr().out
+        assert "No duplicates found" in captured
         assert result == 0

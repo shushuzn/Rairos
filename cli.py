@@ -182,7 +182,8 @@ def _build_dedup_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("dedup", help="Find duplicate papers in the database")
     g = p.add_mutually_exclusive_group()
     g.add_argument("--dry-run", action="store_true", help="Show duplicates without merging")
-    g.add_argument("--auto", action="store_true", help="Automatically merge each duplicate pair")
+    g.add_argument("--auto", action="store_true", help="Automatically merge every duplicate pair")
+    g.add_argument("--batch", action="store_true", help="Auto-merge safe pairs (same DOI), skip the rest")
     p.add_argument(
         "--keep",
         choices=["older", "newer", "parsed"],
@@ -243,6 +244,24 @@ def _run_dedup(args: argparse.Namespace) -> int:
             else:
                 print(f"Failed to merge {duplicate.id} into {target.id}")
         print(f"\nAuto-merged {merged}/{len(pairs)} pair(s)")
+        return 0
+    if args.batch:
+        merged, skipped = 0, 0
+        for older, newer in pairs:
+            if older.doi and older.doi == newer.doi:
+                target, duplicate = _pick_keep(older, newer, args.keep)
+                ok = db.merge_papers(target.id, duplicate.id)
+                if ok:
+                    db.log_dedup(target.id, duplicate.id, args.keep)
+                    print(f"[batch] Merged {duplicate.id} -> {target.id} (same DOI)")
+                    merged += 1
+                else:
+                    print(f"[batch] Failed: {duplicate.id} -> {target.id}")
+                    skipped += 1
+            else:
+                print(f"[batch] Skipped {older.id}/{newer.id} (no matching DOI)")
+                skipped += 1
+        print(f"\nBatch: {merged} merged, {skipped} skipped ({len(pairs)} total pairs)")
         return 0
     print(f"Use 'paper-cli merge TARGET_ID DUPLICATE_ID' to merge each pair")
     return 0
