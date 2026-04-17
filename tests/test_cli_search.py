@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, main
+from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, main, _pick_keep
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1295,11 +1295,12 @@ class TestRunDedup:
         mock_db.merge_papers.return_value = True
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=True))
+        result = _run_dedup(make_args(dry_run=False, auto=True, keep="older"))
 
         out = capsys.readouterr().out
         assert mock_db.merge_papers.call_count == 2
         assert "Auto-merged uid2 into uid1" in out
+        assert "(--keep=older)" in out
         assert "Auto-merged uid4 into uid3" in out
         assert "Auto-merged 2/2 pair(s)" in out
         assert result == 0
@@ -1320,7 +1321,7 @@ class TestRunDedup:
         mock_db.merge_papers.side_effect = [True]
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=True))
+        result = _run_dedup(make_args(dry_run=False, auto=True, keep="older"))
 
         out = capsys.readouterr().out
         assert "Auto-merged 1/1 pair(s)" in out
@@ -1332,11 +1333,94 @@ class TestRunDedup:
         mock_db.find_duplicates.return_value = []
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=True))
+        result = _run_dedup(make_args(dry_run=False, auto=True, keep="older"))
 
         out = capsys.readouterr().out
         assert "No duplicates found" in out
         assert not mock_db.merge_papers.called
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_dedup_auto_keep_newer(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        p1 = MagicMock()
+        p1.id = "uid1"
+        p1.title = "Paper"
+        p1.doi = "10.1234/x"
+        p1.parse_status = "pending"
+        p1.added_at = "2024-01-01T00:00:00"
+        p2 = MagicMock()
+        p2.id = "uid2"
+        p2.title = "Paper"
+        p2.doi = "10.1234/x"
+        p2.parse_status = "completed"
+        p2.added_at = "2024-06-01T00:00:00"
+        mock_db.find_duplicates.return_value = [(p1, p2)]
+        mock_db.merge_papers.return_value = True
+        mock_db_cls.return_value = mock_db
+
+        result = _run_dedup(make_args(dry_run=False, auto=True, keep="newer"))
+
+        out = capsys.readouterr().out
+        # With --keep=newer, newer paper (uid2) is target, older (uid1) is deleted
+        mock_db.merge_papers.assert_called_once_with("uid2", "uid1")
+        assert "Auto-merged uid1 into uid2" in out
+        assert "(--keep=newer)" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_dedup_auto_keep_parsed_prefers_completed(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        p1 = MagicMock()
+        p1.id = "uid1"
+        p1.title = "Paper"
+        p1.doi = "10.1234/x"
+        p1.parse_status = "pending"
+        p1.added_at = "2024-01-01T00:00:00"
+        p2 = MagicMock()
+        p2.id = "uid2"
+        p2.title = "Paper"
+        p2.doi = "10.1234/x"
+        p2.parse_status = "completed"
+        p2.added_at = "2024-06-01T00:00:00"
+        mock_db.find_duplicates.return_value = [(p1, p2)]
+        mock_db.merge_papers.return_value = True
+        mock_db_cls.return_value = mock_db
+
+        result = _run_dedup(make_args(dry_run=False, auto=True, keep="parsed"))
+
+        out = capsys.readouterr().out
+        # With --keep=parsed, completed paper (uid2) is kept
+        mock_db.merge_papers.assert_called_once_with("uid2", "uid1")
+        assert "Auto-merged uid1 into uid2" in out
+        assert "(--keep=parsed)" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_dedup_auto_keep_parsed_tie_uses_older(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        p1 = MagicMock()
+        p1.id = "uid1"
+        p1.title = "Paper"
+        p1.doi = "10.1234/x"
+        p1.parse_status = "completed"
+        p1.added_at = "2024-01-01T00:00:00"
+        p2 = MagicMock()
+        p2.id = "uid2"
+        p2.title = "Paper"
+        p2.doi = "10.1234/x"
+        p2.parse_status = "completed"
+        p2.added_at = "2024-06-01T00:00:00"
+        mock_db.find_duplicates.return_value = [(p1, p2)]
+        mock_db.merge_papers.return_value = True
+        mock_db_cls.return_value = mock_db
+
+        result = _run_dedup(make_args(dry_run=False, auto=True, keep="parsed"))
+
+        out = capsys.readouterr().out
+        # Same parse_status, tie → older kept
+        mock_db.merge_papers.assert_called_once_with("uid1", "uid2")
+        assert "Auto-merged uid2 into uid1" in out
         assert result == 0
 
 
