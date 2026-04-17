@@ -27,27 +27,7 @@ jobs:
       - name: Install MkDocs and material theme
         run: pip install mkdocs mkdocs-material
 
-      - name: Build docs
-        run: mkdocs build --strict --site-dir build
-
       - name: Deploy to GitHub Pages
-        run: |
-          # Configure git
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          # Clone gh-pages into temp dir, or init if first deploy
-          if git ls-remote --heads origin gh-pages | grep -q gh-pages; then
-            git clone --branch gh-pages --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} /tmp/gh-pages
-          else
-            mkdir -p /tmp/gh-pages && cd /tmp/gh-pages && git init && git checkout -b gh-pages
-          fi
-
-          # Copy built site to gh-pages repo
-          cp -r build/* /tmp/gh-pages/
-          cd /tmp/gh-pages
-
-          # Commit and push
-          git add -A
-          git commit -m "Deploy docs: ${{ github.sha }}" || true
-          git push -f origin gh-pages
+        run: mkdocs gh-deploy --strict --remote-branch gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
