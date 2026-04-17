@@ -426,6 +426,12 @@ def _build_dedup_semantic_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Show embedding coverage statistics",
     )
+    p.add_argument(
+        "--format",
+        choices=["text", "csv"],
+        default="text",
+        help="Output format: 'text' (default) or 'csv'",
+    )
     return p
 
 
@@ -490,19 +496,27 @@ def _run_dedup_semantic(args: argparse.Namespace) -> int:
         if not db.paper_exists(args.paper):
             print(f"Paper '{args.paper}' not found")
             return 1
+        paper = db.get_paper(args.paper)
         sims = db.find_similar(args.paper, threshold=args.threshold, limit=args.limit)
         if not sims:
             print(f"No similar papers found for '{args.paper}' (threshold={args.threshold})")
             return 0
-        print(f"Similar papers for '{args.paper}' (threshold={args.threshold}):")
-        for sim_paper, score in sims:
-            print(f"  [{score:.4f}] {sim_paper.id}  {sim_paper.title[:70]}")
+        if args.format == "csv":
+            print("paper_a,paper_b,similarity,title_a,title_b")
+            for sim_paper, score in sims:
+                print(f"{args.paper},{sim_paper.id},{score:.4f},\"{paper.title.replace('\"', '\"\"')}\",\"{sim_paper.title.replace('\"', '\"\"')}\"")
+        else:
+            print(f"Similar papers for '{args.paper}' (threshold={args.threshold}):")
+            for sim_paper, score in sims:
+                print(f"  [{score:.4f}] {sim_paper.id}  {sim_paper.title[:70]}")
         return 0
 
     # Global: check all papers
     papers, _total = db.list_papers(limit=10000)
     found = 0
     seen: set = set()
+    if args.format == "csv":
+        print("paper_a,paper_b,similarity,title_a,title_b")
     for paper in papers:
         if paper.id in seen or not paper.title:
             continue
@@ -512,15 +526,22 @@ def _run_dedup_semantic(args: argparse.Namespace) -> int:
             if pair_key in seen:
                 continue
             seen.add(pair_key)
-            print(f"[{score:.4f}] {paper.id} <-> {sim_paper.id}")
-            print(f"  A: {paper.title[:70]}")
-            print(f"  B: {sim_paper.title[:70]}")
-            print()
+            if args.format == "csv":
+                print(f"{paper.id},{sim_paper.id},{score:.4f},\"{paper.title.replace('\"', '\"\"')}\",\"{sim_paper.title.replace('\"', '\"\"')}\"")
+            else:
+                print(f"[{score:.4f}] {paper.id} <-> {sim_paper.id}")
+                print(f"  A: {paper.title[:70]}")
+                print(f"  B: {sim_paper.title[:70]}")
+                print()
             found += 1
     if found == 0:
-        print("No duplicate pairs found")
+        if args.format != "csv":
+            print("No duplicate pairs found")
     else:
-        print(f"({found} duplicate pair(s) found, threshold={args.threshold})")
+        if args.format != "csv":
+            print(f"({found} duplicate pair(s) found, threshold={args.threshold})")
+        else:
+            print(f"# {found} duplicate pair(s) found, threshold={args.threshold}")
     return 0
 
 
