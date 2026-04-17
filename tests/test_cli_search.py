@@ -1133,3 +1133,40 @@ class TestRunStatusEdgeCases:
         captured = capsys.readouterr().out
         assert "By source:" in captured
         assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# main() routing: merge subcommand → legacy
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestMainMergeRouting:
+    """Test main() routes 'merge' to legacy (merge is not a subcommand)."""
+
+    @patch("cli._main_legacy")
+    def test_main_merge_routes_to_legacy(self, mock_legacy):
+        mock_legacy.return_value = 0
+        result = main(["merge", "uid1", "uid2"])
+        mock_legacy.assert_called_once_with(["merge", "uid1", "uid2"])
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_queue else branch (no list/dequeue/add/cancel)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunQueueElseBranch:
+    """Test _run_queue when none of list/dequeue/add/cancel are set."""
+
+    @patch("cli.Database")
+    def test_queue_no_flags_shows_usage(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(list=False, dequeue=False, add=None, cancel=None)
+        result = _run_queue(args)
+
+        captured = capsys.readouterr().out
+        # The else branch says: "Use --list, --dequeue, --add UID, or --cancel JOB_ID"
+        assert "--list" in captured or "--add" in captured or "--cancel" in captured
+        assert result == 0
