@@ -190,12 +190,24 @@ def _build_dedup_parser(subparsers) -> argparse.ArgumentParser:
         help="Which paper to keep: 'older' (default, keeps paper with earlier added_at), "
              "'newer' (keeps paper with later added_at), or 'parsed' (keeps paper with better parse_status)",
     )
+    p.add_argument("--report", action="store_true", help="Show dedup history log")
     return p
 
 
 def _run_dedup(args: argparse.Namespace) -> int:
     db = Database()
     db.init()
+    if args.report:
+        logs = db.get_dedup_log()
+        if not logs:
+            print("No dedup history")
+            return 0
+        print(f"Dedup history ({len(logs)} record(s)):")
+        for r in logs:
+            print(f"  [{r['id']}] {r['logged_at']}  keep={r['keep_policy']}  kept={r['target_id']}  merged={r['duplicate_id']}")
+            print(f"    kept title:   {r['target_title'][:70]}")
+            print(f"    merged title: {r['duplicate_title'][:70]}")
+        return 0
     pairs = db.find_duplicates()
     if not pairs:
         print("No duplicates found")
@@ -225,6 +237,7 @@ def _run_dedup(args: argparse.Namespace) -> int:
             target, duplicate = _pick_keep(older, newer, args.keep)
             ok = db.merge_papers(target.id, duplicate.id)
             if ok:
+                db.log_dedup(target.id, duplicate.id, args.keep)
                 print(f"Auto-merged {duplicate.id} into {target.id} (--keep={args.keep})")
                 merged += 1
             else:

@@ -114,6 +114,16 @@ CREATE TABLE IF NOT EXISTS paper_cache (
     cached_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS dedup_log (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    target_id   TEXT NOT NULL,
+    duplicate_id TEXT NOT NULL,
+    keep_policy TEXT NOT NULL,
+    logged_at   TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (target_id)   REFERENCES papers(id) ON DELETE CASCADE,
+    FOREIGN KEY (duplicate_id) REFERENCES papers(id) ON DELETE CASCADE
+);
+
 CREATE INDEX IF NOT EXISTS idx_papers_parse_status ON papers(parse_status);
 CREATE INDEX IF NOT EXISTS idx_papers_source ON papers(source);
 CREATE INDEX IF NOT EXISTS idx_papers_added_at ON papers(added_at);
@@ -1201,6 +1211,33 @@ class Database:
             return True
         except sqlite3.Error as e:
             raise DatabaseError(f"merge_papers({target_id!r}, {duplicate_id!r}) failed: {e}") from e
+
+    def log_dedup(self, target_id: str, duplicate_id: str, keep_policy: str) -> None:
+        """Record a dedup merge in the dedup_log table."""
+        try:
+            with self.transaction():
+                cur = self.conn.cursor()
+                cur.execute(
+                    "INSERT INTO dedup_log (target_id, duplicate_id, keep_policy) VALUES (?, ?, ?)",
+                    (target_id, duplicate_id, keep_policy),
+                )
+        except sqlite3.Error as e:
+            raise DatabaseError(f"log_dedup failed: {e}") from e
+
+    def get_dedup_log(self) -> List[Dict[str, Any]]:
+        """Return dedup history ordered by most recent first."""
+        cur = self.conn.cursor()
+        cur.execute(
+            """
+            SELECT d.id, d.target_id, d.duplicate_id, d.keep_policy, d.logged_at,
+                   p1.title AS target_title, p2.title AS duplicate_title
+            FROM dedup_log d
+            JOIN papers p1 ON p1.id = d.target_id
+            JOIN papers p2 ON p2.id = d.duplicate_id
+            ORDER BY d.id DESC
+            """,
+        )
+        return [dict(row) for row in cur.fetchall()]
 
     # ── Helpers ────────────────────────────────────────────────────────────────
 

@@ -1224,7 +1224,7 @@ class TestRunDedup:
         mock_db.find_duplicates.return_value = []
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=False))
+        result = _run_dedup(make_args(dry_run=False, auto=False, keep="older", report=False))
 
         assert result == 0
         assert "No duplicates found" in capsys.readouterr().out
@@ -1247,7 +1247,7 @@ class TestRunDedup:
         mock_db.find_duplicates.return_value = [(p1, p2)]
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=False))
+        result = _run_dedup(make_args(dry_run=False, auto=False, keep="older", report=False))
 
         out = capsys.readouterr().out
         assert "uid1" in out
@@ -1273,7 +1273,7 @@ class TestRunDedup:
         mock_db.find_duplicates.return_value = [(p1, p2)]
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=True, auto=False, keep="older"))
+        result = _run_dedup(make_args(dry_run=True, auto=False, keep="older", report=False))
 
         out = capsys.readouterr().out
         assert "1 duplicate pair(s)" in out
@@ -1318,7 +1318,7 @@ class TestRunDedup:
         mock_db.merge_papers.return_value = True
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=True, keep="older"))
+        result = _run_dedup(make_args(dry_run=False, auto=True, keep="older", report=False))
 
         out = capsys.readouterr().out
         assert mock_db.merge_papers.call_count == 2
@@ -1348,7 +1348,7 @@ class TestRunDedup:
         mock_db.merge_papers.side_effect = [True]
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=True, keep="older"))
+        result = _run_dedup(make_args(dry_run=False, auto=True, keep="older", report=False))
 
         out = capsys.readouterr().out
         assert "Auto-merged 1/1 pair(s)" in out
@@ -1360,7 +1360,7 @@ class TestRunDedup:
         mock_db.find_duplicates.return_value = []
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=True, keep="older"))
+        result = _run_dedup(make_args(dry_run=False, auto=True, keep="older", report=False))
 
         out = capsys.readouterr().out
         assert "No duplicates found" in out
@@ -1386,7 +1386,7 @@ class TestRunDedup:
         mock_db.merge_papers.return_value = True
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=True, keep="newer"))
+        result = _run_dedup(make_args(dry_run=False, auto=True, keep="newer", report=False))
 
         out = capsys.readouterr().out
         # With --keep=newer, newer paper (uid2) is target, older (uid1) is deleted
@@ -1414,7 +1414,7 @@ class TestRunDedup:
         mock_db.merge_papers.return_value = True
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=True, keep="parsed"))
+        result = _run_dedup(make_args(dry_run=False, auto=True, keep="parsed", report=False))
 
         out = capsys.readouterr().out
         # With --keep=parsed, completed paper (uid2) is kept
@@ -1442,7 +1442,7 @@ class TestRunDedup:
         mock_db.merge_papers.return_value = True
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=True, keep="parsed"))
+        result = _run_dedup(make_args(dry_run=False, auto=True, keep="parsed", report=False))
 
         out = capsys.readouterr().out
         # Same parse_status, tie → older kept
@@ -1528,4 +1528,63 @@ class TestRunQueueElseBranch:
         captured = capsys.readouterr().out
         # The else branch says: "Use --list, --dequeue, --add UID, or --cancel JOB_ID"
         assert "--list" in captured or "--add" in captured or "--cancel" in captured
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# dedup --report
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestDedupReport:
+    """Test dedup --report flag."""
+
+    @patch("cli.Database")
+    def test_report_empty(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_dedup_log.return_value = []
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(dry_run=False, auto=False, keep="older", report=True)
+        result = _run_dedup(args)
+
+        captured = capsys.readouterr().out
+        assert "No dedup history" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_report_with_records(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_dedup_log.return_value = [
+            {
+                "id": 5,
+                "target_id": "uid1",
+                "duplicate_id": "uid2",
+                "keep_policy": "older",
+                "logged_at": "2026-04-17T10:00:00",
+                "target_title": "Attention Is All You Need",
+                "duplicate_title": "Attention Is All You Need (2)",
+            },
+            {
+                "id": 4,
+                "target_id": "uid3",
+                "duplicate_id": "uid4",
+                "keep_policy": "parsed",
+                "logged_at": "2026-04-16T08:00:00",
+                "target_title": "BERT: Pre-training of Deep Bidirectional",
+                "duplicate_title": "BERT preprint v2",
+            },
+        ]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(dry_run=False, auto=False, keep="older", report=True)
+        result = _run_dedup(args)
+
+        captured = capsys.readouterr().out
+        assert "Dedup history" in captured
+        assert "uid1" in captured
+        assert "uid2" in captured
+        assert "keep=older" in captured
+        assert "keep=parsed" in captured
         assert result == 0
