@@ -1,0 +1,20 @@
+{
+  "commitizen": {
+    "name": "cz_json",
+    "version": "1.0.0",
+    "tag_format": "$version"
+  },
+  "cz_json": {
+    "message": [
+      "{{prefix}}: {{subject}}",
+      "{{body}}"
+    ]
+  },
+  "increment_by": "version",
+  "files": [
+    {
+      "path": "VERSION"
+    }
+  ],
+  "name": "cz_v1"
+}
