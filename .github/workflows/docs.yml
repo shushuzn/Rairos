@@ -15,7 +15,7 @@ jobs:
     permissions:
       pages: write
       id-token: write
-      contents: read
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -30,17 +30,24 @@ jobs:
       - name: Build docs
         run: mkdocs build --strict --site-dir build
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: build
-
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build
-          publish_branch: gh-pages
+        run: |
+          # Configure git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Clone gh-pages into temp dir, or init if first deploy
+          if git ls-remote --heads origin gh-pages | grep -q gh-pages; then
+            git clone --branch gh-pages --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} /tmp/gh-pages
+          else
+            mkdir -p /tmp/gh-pages && cd /tmp/gh-pages && git init && git checkout -b gh-pages
+          fi
+
+          # Copy built site to gh-pages repo
+          cp -r build/* /tmp/gh-pages/
+          cd /tmp/gh-pages
+
+          # Commit and push
+          git add -A
+          git commit -m "Deploy docs: ${{ github.sha }}" || true
+          git push -f origin gh-pages
