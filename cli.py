@@ -512,6 +512,10 @@ def _build_citations_parser(subparsers) -> argparse.ArgumentParser:
 
 
 def _run_citations(args: argparse.Namespace) -> int:
+    if not args.citation_from and not args.citation_to:
+        print("Error: must specify --from or --to", file=sys.stderr)
+        return 1
+
     db = Database()
     db.init()
 
@@ -525,35 +529,39 @@ def _run_citations(args: argparse.Namespace) -> int:
 
     if args.format == "csv":
         print("direction,source_id,source_title,target_id,target_title")
+        dir_label = "backward" if direction == "from" else "forward"
         for c in citations:
             src = c.source_id
             tgt = c.target_id
             src_t = db.get_paper_title(src) if direction == "both" else source_title
             tgt_t = db.get_paper_title(tgt)
-            print(f"{c.source_id},{c.target_id},{src_t},{tgt_t}")
+            print(f"{dir_label},{src},{src_t},{tgt},{tgt_t}")
         return 0
 
     # Text output
+    if not source_title:
+        print(f"Error: paper {paper_id} not found in the database")
+        return 1
     if not citations:
         print(f"No citations found for {paper_id}")
         return 0
 
     if direction == "from":
-        print(f"BACKWARD CITATIONS — papers cited by {paper_id}")
+        print(f"BACKWARD CITATIONS — {paper_id}: {source_title}")
         print(f"({len(citations)} references)")
         print()
         for c in citations:
-            title = db.get_paper_title(c.target_id)
-            print(f"  {c.target_id}  {title or '(unknown)'}")
+            t = db.get_paper_title(c.target_id)
+            print(f"  {c.target_id}  {t or '(unknown)'}")
     elif direction == "to":
-        print(f"FORWARD CITATIONS — papers citing {paper_id}")
+        print(f"FORWARD CITATIONS — {paper_id}: {source_title}")
         print(f"({len(citations)} citing papers)")
         print()
         for c in citations:
             title = db.get_paper_title(c.source_id)
             print(f"  {c.source_id}  {title or '(unknown)'}")
     else:
-        print(f"ALL CITATIONS for {paper_id}")
+        print(f"ALL CITATIONS for {paper_id}: {source_title}")
         print(f"({len(citations)} total)")
         print()
         for c in citations:
