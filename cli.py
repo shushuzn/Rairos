@@ -201,11 +201,23 @@ def _run_dedup(args: argparse.Namespace) -> int:
         print("No duplicates found")
         return 0
     for older, newer in pairs:
+        keep_older = newer.parse_status == older.parse_status and newer.added_at == older.added_at
+        parsed_rank = {"completed": 4, "running": 3, "pending": 2, "failed": 1}
+        rank = lambda p: parsed_rank.get(p.parse_status, 0)
+        parsed_winner = older if rank(older) >= rank(newer) else newer
         print(f"Duplicate pair: {older.id} / {newer.id}")
         print(f"  Title: {older.title[:80]}")
         print(f"  DOI: {older.doi or '(none)'}")
+        print(f"  [{older.id}] status={older.parse_status:<10} added_at={older.added_at}")
+        print(f"  [{newer.id}] status={newer.parse_status:<10} added_at={newer.added_at}")
+        if args.dry_run:
+            # Show keep decision for current --keep setting
+            target, dup = _pick_keep(older, newer, args.keep)
+            print(f"  --> would keep [{target.id}], merge [{dup.id}] (--keep={args.keep})")
+            print(f"  --> parsed winner: [{parsed_winner.id}] (status={parsed_winner.parse_status})")
+        print()
     if args.dry_run:
-        print(f"\n({len(pairs)} duplicate pair(s), dry-run — no changes made)")
+        print(f"({len(pairs)} duplicate pair(s), dry-run — no changes made)")
         return 0
     if args.auto:
         merged = 0
@@ -219,7 +231,7 @@ def _run_dedup(args: argparse.Namespace) -> int:
                 print(f"Failed to merge {duplicate.id} into {target.id}")
         print(f"\nAuto-merged {merged}/{len(pairs)} pair(s)")
         return 0
-    print(f"\nUse 'paper-cli merge TARGET_ID DUPLICATE_ID' to merge each pair")
+    print(f"Use 'paper-cli merge TARGET_ID DUPLICATE_ID' to merge each pair")
     return 0
 
 

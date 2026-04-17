@@ -1240,6 +1240,10 @@ class TestRunDedup:
         p2.id = "uid2"
         p2.title = "Attention Is All You Need"
         p2.doi = "10.1234/abc"
+        p1.parse_status = "completed"
+        p1.added_at = "2024-01-01T00:00:00"
+        p2.parse_status = "pending"
+        p2.added_at = "2024-06-01T00:00:00"
         mock_db.find_duplicates.return_value = [(p1, p2)]
         mock_db_cls.return_value = mock_db
 
@@ -1258,18 +1262,29 @@ class TestRunDedup:
         p1.id = "uid1"
         p1.title = "Test Paper"
         p1.doi = ""
+        p1.parse_status = "completed"
+        p1.added_at = "2024-01-01T00:00:00"
         p2 = MagicMock()
         p2.id = "uid2"
         p2.title = "Test Paper"
         p2.doi = ""
+        p2.parse_status = "pending"
+        p2.added_at = "2024-06-01T00:00:00"
         mock_db.find_duplicates.return_value = [(p1, p2)]
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=True, auto=False))
+        result = _run_dedup(make_args(dry_run=True, auto=False, keep="older"))
 
         out = capsys.readouterr().out
         assert "1 duplicate pair(s)" in out
         assert "dry-run" in out
+        assert "uid1" in out
+        assert "uid2" in out
+        assert "completed" in out
+        assert "pending" in out
+        # Shows keep decision for current --keep
+        assert "would keep [uid1]" in out
+        assert "parsed winner" in out
         assert result == 0
 
     @patch("cli.Database")
@@ -1291,6 +1306,14 @@ class TestRunDedup:
         p4.id = "uid4"
         p4.title = "Paper B"
         p4.doi = "10.1234/b"
+        p1.parse_status = "completed"
+        p1.added_at = "2024-01-01T00:00:00"
+        p2.parse_status = "pending"
+        p2.added_at = "2024-06-01T00:00:00"
+        p3.parse_status = "failed"
+        p3.added_at = "2024-02-01T00:00:00"
+        p4.parse_status = "running"
+        p4.added_at = "2024-07-01T00:00:00"
         mock_db.find_duplicates.return_value = [(p1, p2), (p3, p4)]
         mock_db.merge_papers.return_value = True
         mock_db_cls.return_value = mock_db
@@ -1316,6 +1339,10 @@ class TestRunDedup:
         p2.id = "uid2"
         p2.title = "Paper"
         p2.doi = "10.1234/x"
+        p1.parse_status = "pending"
+        p1.added_at = "2024-01-01T00:00:00"
+        p2.parse_status = "completed"
+        p2.added_at = "2024-06-01T00:00:00"
         mock_db.find_duplicates.return_value = [(p1, p2)]
         # First call succeeds, second would be called if there were more pairs
         mock_db.merge_papers.side_effect = [True]
