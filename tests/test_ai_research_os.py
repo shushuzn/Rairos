@@ -899,10 +899,12 @@ class TestFetchArxivMetadata:
         mock_response.text = mock_feed
         mock_response.headers = {"content-type": "application/atom+xml"}
         
-        with patch("requests.get", return_value=mock_response):
-            paper = airo.fetch_arxiv_metadata("2301.00001", timeout=30)
-            
-            assert paper.title == "Test Paper Title"
+        with patch("parsers.arxiv.get_cached", return_value=None):
+            with patch("parsers.arxiv.set_cached"):
+                with patch("requests.get", return_value=mock_response):
+                    paper = airo.fetch_arxiv_metadata("2301.00001", timeout=30)
+                    
+                    assert paper.title == "Test Paper Title"
             assert "Alice Smith" in paper.authors
             assert "Bob Jones" in paper.authors
             assert "Test abstract" in paper.abstract
@@ -1022,10 +1024,12 @@ class TestFetchCrossrefMetadata:
             }
         }
         
-        with patch("requests.get", return_value=mock_response):
-            paper, updated = airo.fetch_crossref_metadata("10.1234/test", timeout=30)
+        with patch("parsers.crossref.get_cached", return_value=None):
+            with patch("parsers.crossref.set_cached"):
+                with patch("requests.get", return_value=mock_response):
+                    paper, updated = airo.fetch_crossref_metadata("10.1234/test", timeout=30)
             
-            assert paper.title == "Crossref Test Paper"
+                    assert paper.title == "Crossref Test Paper"
             assert "Alice Smith" in paper.authors or "Alice" in paper.authors
             assert "Test abstract" in paper.abstract
 
