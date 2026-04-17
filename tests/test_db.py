@@ -115,9 +115,10 @@ class TestSearch:
     def test_search_papers(self, db):
         db.upsert_paper("2301.00001", "arxiv", title="Attention Is All You Need")
         db.upsert_paper("2301.00002", "arxiv", title="BERT Pre-training")
-        results = db.search_papers("attention")
-        assert len(results) >= 1
-        assert any(r.id == "2301.00001" for r in results)
+        results, total = db.search_papers("attention")
+        assert total >= 1
+        assert any("attention" in r.title.lower() for r in results)
+        assert all(isinstance(r.paper_id, str) for r in results)
 
 
 class TestSettings:

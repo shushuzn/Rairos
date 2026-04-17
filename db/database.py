@@ -18,7 +18,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Generator, Iterator, List, Optional
+from typing import Any, Generator, Iterator, List, Optional, Tuple
 
 from core.exceptions import DatabaseError
 
@@ -113,6 +113,38 @@ CREATE INDEX IF NOT EXISTS idx_papers_source ON papers(source);
 CREATE INDEX IF NOT EXISTS idx_papers_added_at ON papers(added_at);
 CREATE INDEX IF NOT EXISTS idx_parse_history_paper_id ON parse_history(paper_id);
 CREATE INDEX IF NOT EXISTS idx_job_queue_status ON job_queue(status);
+"""
+
+
+# ─── Search Data Classes ────────────────────────────────────────────────────────
+
+
+@dataclass
+class SearchResult:
+    paper_id: str
+    title: str
+    authors: List[str]
+    published: str
+    primary_category: str
+    score: float
+    snippet: str
+    parse_status: str
+    source: str
+    abs_url: str
+    pdf_url: str
+
+
+# ─── FTS5 Schema ───────────────────────────────────────────────────────────────
+
+
+_FTS_SCHEMA = """
+CREATE VIRTUAL TABLE IF NOT EXISTS papers_fts USING fts5(
+    paper_id UNINDEXED,
+    title,
+    abstract,
+    plain_text,
+    tokenize='porter unicode61'
+);
 """
 
 
@@ -221,6 +253,7 @@ class Database:
         try:
             with self.conn as conn:
                 conn.executescript(_SCHEMA)
+                conn.executescript(_FTS_SCHEMA)
             self._init_done = True
             logger.info("Database initialized at %s", self.db_path)
         except sqlite3.Error as e:
@@ -329,6 +362,8 @@ class Database:
                     "pdf_hash": pdf_hash,
                 },
             )
+            # Sync FTS index after insert/update
+            self._sync_fts(paper_id, title, abstract)
         return self.get_paper(paper_id)
 
     def get_paper(self, paper_id: str) -> Optional[PaperRecord]:
@@ -343,30 +378,7 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"get_paper({paper_id!r}) failed: {e}") from e
 
-    def list_papers(
-        self,
-        status: Optional[str] = None,
-        source: Optional[str] = None,
-        limit: int = 100,
-        offset: int = 0,
-    ) -> List[PaperRecord]:
-        """List papers with optional filters."""
-        try:
-            cur = self.conn.cursor()
-            sql = "SELECT * FROM papers"
-            params: list[Any] = []
-            if status:
-                sql += " WHERE parse_status = ?"
-                params.append(status)
-            if source:
-                sql += (" WHERE" if not status else " AND") + " source = ?"
-                params.append(source)
-            sql += " ORDER BY added_at DESC LIMIT ? OFFSET ?"
-            params.extend([limit, offset])
-            cur.execute(sql, params)
-            return [PaperRecord.from_row(row) for row in cur.fetchall()]
-        except sqlite3.Error as e:
-            raise DatabaseError(f"list_papers failed: {e}") from e
+    # list_papers is defined in the Search section above (with filters + sort)
 
     def update_parse_status(
         self,
@@ -421,6 +433,11 @@ class Database:
                         "updated_at": _utcnow(),
                     },
                 )
+                # Sync FTS after plain_text update
+                cur.execute("SELECT title, abstract FROM papers WHERE id = ?", (paper_id,))
+                row = cur.fetchone()
+                if row:
+                    self._sync_fts(paper_id, row["title"] or "", row["abstract"] or "")
         except sqlite3.Error as e:
             raise DatabaseError(f"update_parse_status({paper_id!r}) failed: {e}") from e
 
@@ -683,28 +700,329 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"get_setting failed: {e}") from e
 
+    # ── Delete ────────────────────────────────────────────────────────────────
+
+    def delete_paper(self, paper_id: str) -> bool:
+        """Delete a paper and its FTS entry. Returns True if a row was deleted."""
+        try:
+            with self.transaction():
+                cur = self.conn.cursor()
+                cur.execute("DELETE FROM papers_fts WHERE paper_id = ?", (paper_id,))
+                cur.execute("DELETE FROM papers WHERE id = ?", (paper_id,))
+            return cur.rowcount > 0
+        except sqlite3.Error as e:
+            raise DatabaseError(f"delete_paper({paper_id!r}) failed: {e}") from e
+
+    # ── FTS Sync ─────────────────────────────────────────────────────────────
+
+    def _sync_fts(self, paper_id: str, title: str, abstract: str) -> None:
+        """Insert or replace a paper's FTS entry. Idempotent — safe to call on every upsert."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute("DELETE FROM papers_fts WHERE paper_id = ?", (paper_id,))
+            cur.execute(
+                "INSERT INTO papers_fts(paper_id, title, abstract, plain_text) VALUES (?, ?, ?, '')",
+                (paper_id, title or "", abstract or ""),
+            )
+        except sqlite3.Error:
+            pass  # FTS sync is best-effort
+
     # ── Search ────────────────────────────────────────────────────────────────
 
-    def search_papers(self, query: str, limit: int = 20) -> List[PaperRecord]:
+    def search_papers(
+        self,
+        query: str,
+        limit: int = 20,
+        offset: int = 0,
+        source: Optional[str] = None,
+        category: Optional[str] = None,
+        date_from: Optional[str] = None,
+        date_to: Optional[str] = None,
+        parse_status: Optional[str] = None,
+    ) -> Tuple[List[SearchResult], int]:
         """
-        Simple full-text search on title and abstract.
-        Uses SQLite FTS5 if available, falls back to LIKE.
+        Full-text search with BM25 ranking.
+        FTS returns paper_ids; full paper data is looked up from papers table.
+        Returns (results, total_count).
+        Falls back to LIKE when FTS5 is not available.
         """
         try:
             cur = self.conn.cursor()
-            q = f"%{query}%"
-            cur.execute(
-                """
-                SELECT * FROM papers
-                WHERE title LIKE ? OR abstract LIKE ? OR categories LIKE ?
-                ORDER BY added_at DESC
-                LIMIT ?
-                """,
-                (q, q, q, limit),
-            )
-            return [PaperRecord.from_row(row) for row in cur.fetchall()]
+
+            # Build WHERE conditions for papers table join
+            join_where = ""
+            count_where = ""
+            params: List[Any] = []
+            count_params: List[Any] = []
+
+            if source:
+                join_where += " AND p.source = ?"
+                count_where += " AND p.source = ?"
+                params.append(source)
+                count_params.append(source)
+            if category:
+                join_where += " AND p.primary_category = ?"
+                count_where += " AND p.primary_category = ?"
+                params.append(category)
+                count_params.append(category)
+            if parse_status:
+                join_where += " AND p.parse_status = ?"
+                count_where += " AND p.parse_status = ?"
+                params.append(parse_status)
+                count_params.append(parse_status)
+            if date_from:
+                join_where += " AND p.published >= ?"
+                count_where += " AND p.published >= ?"
+                params.append(date_from)
+                count_params.append(date_from)
+            if date_to:
+                join_where += " AND p.published <= ?"
+                count_where += " AND p.published <= ?"
+                params.append(date_to)
+                count_params.append(date_to)
+
+            fts_query = f'"{query}"'
+
+            # Count total matches (after all filters)
+            count_sql = f"""
+                SELECT COUNT(*) FROM papers_fts fts
+                JOIN papers p ON p.id = fts.paper_id
+                WHERE papers_fts MATCH ?{count_where}
+            """
+            cur.execute(count_sql, [fts_query] + count_params)
+            total = cur.fetchone()[0]
+
+            # Search: FTS returns paper_id, title, abstract, score, snippet
+            search_sql = f"""
+                SELECT
+                    fts.paper_id,
+                    fts.title,
+                    fts.abstract,
+                    bm25(papers_fts) AS score,
+                    snippet(papers_fts, 2, '**', '**', '...', 30) AS snippet
+                FROM papers_fts
+                JOIN papers p ON p.id = papers_fts.paper_id
+                WHERE papers_fts MATCH ?{join_where}
+                ORDER BY score
+                LIMIT ? OFFSET ?
+            """
+            cur.execute(search_sql, [fts_query] + params + [limit, offset])
+            fts_rows = cur.fetchall()
+
+            if not fts_rows:
+                return [], total
+
+            # Look up full paper data from papers table
+            paper_ids = [r["paper_id"] for r in fts_rows]
+            placeholders = ",".join("?" * len(paper_ids))
+            cur.execute(f"SELECT * FROM papers WHERE id IN ({placeholders})", paper_ids)
+            paper_map = {row["id"]: row for row in cur.fetchall()}
+
+            results = []
+            for fts_row in fts_rows:
+                pid = fts_row["paper_id"]
+                paper = paper_map.get(pid)
+                if paper is None:
+                    continue
+                try:
+                    authors = json.loads(paper["authors"]) if paper["authors"] else []
+                except Exception:
+                    authors = []
+                results.append(
+                    SearchResult(
+                        paper_id=paper["id"],
+                        title=paper["title"] or "",
+                        authors=authors,
+                        published=paper["published"] or "",
+                        primary_category=paper["primary_category"] or "",
+                        score=float(fts_row["score"]),
+                        snippet=fts_row["snippet"] or "",
+                        parse_status=paper["parse_status"] or "",
+                        source=paper["source"] or "",
+                        abs_url=paper["abs_url"] or "",
+                        pdf_url=paper["pdf_url"] or "",
+                    )
+                )
+
+            return results, total
+
+        except sqlite3.OperationalError:
+            return self._search_like(query, limit, offset, source, category, date_from, date_to, parse_status)
         except sqlite3.Error as e:
             raise DatabaseError(f"search_papers failed: {e}") from e
+
+    def _apply_search_filters(
+        self,
+        results: List[SearchResult],
+        source: Optional[str],
+        category: Optional[str],
+        date_from: Optional[str],
+        date_to: Optional[str],
+        parse_status: Optional[str],
+    ) -> List[SearchResult]:
+        """Apply post-filter conditions to search results."""
+        filtered = []
+        for r in results:
+            if source and r.source != source:
+                continue
+            if category and r.primary_category != category:
+                continue
+            if date_from and r.published < date_from:
+                continue
+            if date_to and r.published > date_to:
+                continue
+            if parse_status and r.parse_status != parse_status:
+                continue
+            filtered.append(r)
+        return filtered
+
+    def _search_like(
+        self,
+        query: str,
+        limit: int = 20,
+        offset: int = 0,
+        source: Optional[str] = None,
+        category: Optional[str] = None,
+        date_from: Optional[str] = None,
+        date_to: Optional[str] = None,
+        parse_status: Optional[str] = None,
+    ) -> Tuple[List[SearchResult], int]:
+        """Fallback LIKE-based search when FTS5 is unavailable."""
+        try:
+            cur = self.conn.cursor()
+            q = f"%{query}%"
+
+            where = "WHERE (title LIKE ? OR abstract LIKE ? OR plain_text LIKE ?)"
+            params: list[Any] = [q, q, q]
+
+            if source:
+                where += " AND source = ?"
+                params.append(source)
+            if category:
+                where += " AND primary_category = ?"
+                params.append(category)
+            if date_from:
+                where += " AND published >= ?"
+                params.append(date_from)
+            if date_to:
+                where += " AND published <= ?"
+                params.append(date_to)
+            if parse_status:
+                where += " AND parse_status = ?"
+                params.append(parse_status)
+
+            # Count
+            cur.execute(f"SELECT COUNT(*) FROM papers {where}", params)
+            total = cur.fetchone()[0]
+
+            # Search
+            sql = f"""
+                SELECT id, title, authors, published, primary_category,
+                       source, parse_status, abs_url, pdf_url
+                FROM papers
+                {where}
+                ORDER BY added_at DESC
+                LIMIT ? OFFSET ?
+            """
+            params.extend([limit, offset])
+            cur.execute(sql, params)
+
+            results = []
+            for row in cur.fetchall():
+                try:
+                    authors = json.loads(row["authors"]) if row["authors"] else []
+                except Exception:
+                    authors = []
+                results.append(
+                    SearchResult(
+                        paper_id=row["id"],
+                        title=row["title"] or "",
+                        authors=authors,
+                        published=row["published"] or "",
+                        primary_category=row["primary_category"] or "",
+                        score=0.0,
+                        snippet=f"...{query}...",
+                        parse_status=row["parse_status"] or "",
+                        source=row["source"] or "",
+                        abs_url=row["abs_url"] or "",
+                        pdf_url=row["pdf_url"] or "",
+                    )
+                )
+            return results, total
+
+        except sqlite3.Error as e:
+            raise DatabaseError(f"_search_like failed: {e}") from e
+
+    def list_papers(
+        self,
+        limit: int = 20,
+        offset: int = 0,
+        source: Optional[str] = None,
+        category: Optional[str] = None,
+        date_from: Optional[str] = None,
+        date_to: Optional[str] = None,
+        parse_status: Optional[str] = None,
+        sort_by: str = "added_at",
+        sort_order: str = "desc",
+    ) -> Tuple[List[PaperRecord], int]:
+        """Filtered list with sort. Returns (papers, total_count)."""
+        try:
+            cur = self.conn.cursor()
+            where_parts: list[str] = []
+            params: list[Any] = []
+
+            if source:
+                where_parts.append("source = ?")
+                params.append(source)
+            if category:
+                where_parts.append("primary_category = ?")
+                params.append(category)
+            if date_from:
+                where_parts.append("published >= ?")
+                params.append(date_from)
+            if date_to:
+                where_parts.append("published <= ?")
+                params.append(date_to)
+            if parse_status:
+                where_parts.append("parse_status = ?")
+                params.append(parse_status)
+
+            where = "WHERE " + " AND ".join(where_parts) if where_parts else ""
+
+            # Validate sort
+            allowed_sort = {"added_at", "published", "title"}
+            if sort_by not in allowed_sort:
+                sort_by = "added_at"
+            sort_order = "DESC" if sort_order.lower() == "desc" else "ASC"
+
+            # Count
+            cur.execute(f"SELECT COUNT(*) FROM papers {where}", params)
+            total = cur.fetchone()[0]
+
+            # List
+            sql = f"SELECT * FROM papers {where} ORDER BY {sort_by} {sort_order} LIMIT ? OFFSET ?"
+            params.extend([limit, offset])
+            cur.execute(sql, params)
+
+            return [PaperRecord.from_row(row) for row in cur.fetchall()], total
+
+        except sqlite3.Error as e:
+            raise DatabaseError(f"list_papers failed: {e}") from e
+
+    def rebuild_fts_index(self) -> int:
+        """Rebuild FTS index from all existing papers. Returns count of indexed papers."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute("DELETE FROM papers_fts")
+            cur.execute("""
+                INSERT INTO papers_fts(paper_id, title, abstract, plain_text)
+                SELECT id, title, abstract, COALESCE(plain_text, '') FROM papers
+            """)
+            count = cur.rowcount
+            logger.info("FTS index rebuilt: %d papers indexed", count)
+            return count
+        except sqlite3.Error as e:
+            raise DatabaseError(f"rebuild_fts_index failed: {e}") from e
 
     # ── Utilities ────────────────────────────────────────────────────────────
 

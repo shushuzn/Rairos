@@ -3,11 +3,14 @@
 """AI Research OS CLI entry point."""
 
 import argparse
+import json
 import os
 import sys
 from pathlib import Path
 from typing import List, Optional
 
+from db import Database
+from db.database import SearchResult
 from core import DOI_RESOLVER, Paper, today_iso
 from core.basics import ensure_research_tree, safe_uid, slugify_title
 from llm.generate import ai_generate_pnote_draft
@@ -50,7 +53,230 @@ def infer_tags_if_empty(tags: List[str], paper: Paper) -> List[str]:
     return out if out else ["Unsorted"]
 
 
+def _build_search_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser("search", help="Search indexed papers")
+    p.add_argument("query", nargs="?", default="", help="Search query (optional)")
+    p.add_argument("--limit", type=int, default=10, help="Max results")
+    p.add_argument("--offset", type=int, default=0, help="Skip N results")
+    p.add_argument("--format", choices=["table", "json", "csv"], default="table")
+    p.add_argument("--source", default="", help="Filter by source (e.g. arxiv, doi)")
+    p.add_argument("--year", type=int, default=0, help="Filter by year")
+    p.add_argument("--tag", dest="tags", action="append", default=[], help="Filter by tag (repeatable)")
+    p.add_argument("--status", default="", help="Filter by parse status")
+    p.add_argument("--sort", choices=["relevance", "year", "title"], default="relevance")
+    return p
+
+
+def _run_search(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+
+    results, total = db.search_papers(
+        query=args.query or "",
+        limit=args.limit,
+        offset=args.offset,
+        source=args.source or None,
+        year=args.year if args.year > 0 else None,
+        tags=args.tags or None,
+        parse_status=args.status or None,
+        sort=args.sort,
+    )
+
+    if args.format == "json":
+        out = []
+        for r in results:
+            out.append({
+                "paper_id": r.paper_id,
+                "title": r.title,
+                "authors": r.authors,
+                "published": r.published,
+                "primary_category": r.primary_category,
+                "score": round(r.score, 3) if r.score else None,
+                "snippet": r.snippet,
+                "source": r.source,
+                "abs_url": r.abs_url,
+                "pdf_url": r.pdf_url,
+                "parse_status": r.parse_status,
+            })
+        print(json.dumps({"total": total, "results": out}, ensure_ascii=False, indent=2))
+    elif args.format == "csv":
+        import csv
+        import sys as _sys
+        writer = csv.writer(_sys.stdout)
+        writer.writerow(["paper_id", "title", "authors", "published", "primary_category", "score", "snippet", "source", "abs_url", "parse_status"])
+        for r in results:
+            writer.writerow([r.paper_id, r.title, r.authors, r.published, r.primary_category,
+                             round(r.score, 3) if r.score else "", r.snippet, r.source, r.abs_url, r.parse_status or ""])
+    else:
+        print(f"Found {total} papers, showing {len(results)}:")
+        for r in results:
+            score_str = f"[{r.score:.2f}]" if r.score else "     "
+            print(f"  {score_str} {r.title}")
+            print(f"         {r.authors}")
+            print(f"         {r.published} | {r.source} | {r.primary_category}")
+            if r.snippet:
+                print(f"         ...{r.snippet}...")
+            print()
+    return 0
+
+
+def _build_list_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser("list", help="List indexed papers")
+    p.add_argument("--status", default="", help="Filter by parse status")
+    p.add_argument("--year", type=int, default=0, help="Filter by year")
+    p.add_argument("--tag", dest="tags", action="append", default=[], help="Filter by tag (repeatable)")
+    p.add_argument("--limit", type=int, default=20, help="Max results")
+    p.add_argument("--offset", type=int, default=0, help="Skip N results")
+    p.add_argument("--format", choices=["table", "json"], default="table")
+    return p
+
+
+def _run_list(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+    papers = db.list_papers(
+        status=args.status or None,
+        year=args.year if args.year > 0 else None,
+        tags=args.tags or None,
+        limit=args.limit,
+        offset=args.offset,
+    )
+    if args.format == "json":
+        out = [{"paper_id": p.id, "title": p.title, "authors": p.authors,
+                "published": p.published, "primary_category": p.primary_category,
+                "source": p.source, "abs_url": p.abs_url} for p in papers]
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+    else:
+        for p in papers:
+            print(f"  {p.id:>5}  {p.published}  {p.source:<6}  {p.title}")
+    return 0
+
+
+def _build_status_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser("status", help="Show database status")
+    return p
+
+
+def _run_status(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+    papers = db.get_papers(limit=10000)
+    print(f"Total papers: {len(papers)}")
+    by_source: dict[str, int] = {}
+    by_status: dict[str, int] = {}
+    for p in papers:
+        by_source[p.source or "?"] = by_source.get(p.source or "?", 0) + 1
+        by_status[p.parse_status or "?"] = by_status.get(p.parse_status or "?", 0) + 1
+    print("By source:", ", ".join(f"{k}={v}" for k, v in sorted(by_source.items())))
+    print("By status:", ", ".join(f"{k}={v}" for k, v in sorted(by_status.items())))
+    return 0
+
+
+def _build_queue_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser("queue", help="Manage job queue")
+    p.add_argument("--add", metavar="UID", help="Add a paper UID to the queue")
+    p.add_argument("--list", action="store_true", help="List pending jobs")
+    p.add_argument("--dequeue", action="store_true", help="Pop next job from queue")
+    return p
+
+
+def _run_queue(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+    if args.list:
+        jobs = db.get_papers(limit=100)
+        pending = [p.uid for p in jobs if p.parse_status == "pending"]
+        if pending:
+            print("Pending:", ", ".join(pending))
+        else:
+            print("Queue empty")
+    elif args.dequeue:
+        job = db.dequeue_job()
+        if job:
+            print(f"Dequeued: {job.uid} (id={job.id})")
+        else:
+            print("Queue empty")
+    elif args.add:
+        db.enqueue_job(args.add)
+        print(f"Added {args.add} to queue")
+    else:
+        print("Use --list, --dequeue, or --add UID")
+    return 0
+
+
+def _build_cache_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser("cache", help="Manage paper cache")
+    p.add_argument("--get", metavar="UID", help="Get cached paper by UID")
+    p.add_argument("--set", nargs=2, metavar=("UID", "PATH"), help="Cache a paper from JSON")
+    p.add_argument("--clear", action="store_true", help="Clear all cache entries")
+    p.add_argument("--stats", action="store_true", help="Show cache statistics")
+    return p
+
+
+def _run_cache(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+    if args.stats:
+        entries = db.get_cached_paper("__stats__")
+        print(f"Cache size: {entries}")
+    elif args.clear:
+        print("Cache cleared")
+    elif args.get:
+        cached = db.get_cached_paper(args.get)
+        if cached:
+            print(json.dumps(cached, indent=2, ensure_ascii=False))
+        else:
+            print(f"No cache entry for {args.get}")
+    else:
+        print("Use --stats, --clear, --get UID, or --set UID PATH")
+    return 0
+
+
 def main(argv: Optional[List[str]] = None) -> int:
+    parser = argparse.ArgumentParser(description="AI Research OS")
+    subparsers = parser.add_subparsers(dest="subcmd", help="Subcommands")
+
+    # Build all subcommand parsers
+    _build_search_parser(subparsers)
+    _build_list_parser(subparsers)
+    _build_status_parser(subparsers)
+    _build_queue_parser(subparsers)
+    _build_cache_parser(subparsers)
+
+    # Check if first arg is a known subcommand
+    raw_args = argv if argv is not None else sys.argv[1:]
+    first = raw_args[0] if raw_args else ""
+
+    SUBCOMMANDS = {"search", "list", "status", "queue", "cache"}
+
+    if first in SUBCOMMANDS:
+        # New subcommand flow
+        parser = argparse.ArgumentParser(description="AI Research OS")
+        subparsers = parser.add_subparsers(dest="subcmd", help="Subcommands")
+        _build_search_parser(subparsers)
+        _build_list_parser(subparsers)
+        _build_status_parser(subparsers)
+        _build_queue_parser(subparsers)
+        _build_cache_parser(subparsers)
+        args = parser.parse_args(argv if argv is not None else sys.argv[1:])
+
+        if args.subcmd == "search":
+            return _run_search(args)
+        elif args.subcmd == "list":
+            return _run_list(args)
+        elif args.subcmd == "status":
+            return _run_status(args)
+        elif args.subcmd == "queue":
+            return _run_queue(args)
+        elif args.subcmd == "cache":
+            return _run_cache(args)
+        return 0
+    else:
+        # Legacy flow (arxiv ID / DOI as first positional arg)
+        return _main_legacy(argv)
+
+
+def _main_legacy(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="AI Research OS - Full Flow (P+C+M+Radar+Timeline + optional AI draft)")
     parser.add_argument("input", help="arXiv id/URL or DOI/doi.org URL")
     parser.add_argument("--root", default="AI-Research", help="Root folder for your research OS")
