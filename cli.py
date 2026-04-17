@@ -954,6 +954,129 @@ def _run_cite_import(args: argparse.Namespace) -> int:
     return 0
 
 
+# ── Citation stats ─────────────────────────────────────────────────────────
+
+def _build_cite_stats_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "cite-stats",
+        help="Show citation statistics for papers in the database",
+    )
+    p.add_argument(
+        "--paper",
+        metavar="PAPER_ID",
+        dest="stats_paper",
+        help="Show stats for a specific paper (forward/backward counts)",
+    )
+    p.add_argument(
+        "--top",
+        type=int,
+        metavar="N",
+        help="Show top N most-cited papers (by forward citations)",
+    )
+    p.add_argument(
+        "--format",
+        choices=["text", "csv"],
+        default="text",
+        help="Output format (default: text)",
+    )
+    return p
+
+
+def _run_cite_stats(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+
+    # Single-paper view
+    if args.stats_paper:
+        paper_id = args.stats_paper
+        title = db.get_paper_title(paper_id)
+        if db.paper_exists(paper_id) is False:
+            print(f"Error: paper {paper_id!r} not found in database", file=sys.stderr)
+            return 1
+        counts = db.get_citation_count(paper_id)
+        print(f"Paper: {paper_id}")
+        print(f"Title : {title or '(no title)'}")
+        print(f"Cites  (backward): {counts['backward']} papers")
+        print(f"CitedBy (forward) : {counts['forward']} papers")
+        return 0
+
+    # Global stats
+    cur = db.conn.cursor()
+
+    # Total citation pairs
+    cur.execute("SELECT COUNT(*) FROM citations")
+    total_citations = cur.fetchone()[0]
+
+    # Papers that have any citation data
+    cur.execute("SELECT COUNT(DISTINCT source_id) FROM citations")
+    citing_papers = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(DISTINCT target_id) FROM citations")
+    cited_papers = cur.fetchone()[0]
+
+    # Papers with no citation data (orphans)
+    cur.execute("SELECT COUNT(*) FROM papers")
+    total_papers = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(DISTINCT id) FROM papers WHERE id IN (SELECT source_id FROM citations UNION SELECT target_id FROM citations)")
+    papers_with_any = cur.fetchone()[0]
+    orphan_papers = total_papers - papers_with_any
+
+    if args.format == "csv":
+        print("metric,value")
+        print(f"total_citations,{total_citations}")
+        print(f"papers_with_any_citation,{papers_with_any}")
+        print(f"orphan_papers,{orphan_papers}")
+        print(f"citing_papers,{citing_papers}")
+        print(f"cited_papers,{cited_papers}")
+        return 0
+
+    print("=== Citation Statistics ===")
+    print(f"Total citation pairs   : {total_citations}")
+    print(f"Papers with citation  : {papers_with_any} / {total_papers}")
+    print(f"  - citing (backward): {citing_papers}")
+    print(f"  - cited  (forward) : {cited_papers}")
+    print(f"Orphan papers (no refs): {orphan_papers}")
+
+    # Graph density
+    if total_papers > 1:
+        max_edges = total_papers * (total_papers - 1)
+        density = (total_citations / max_edges) * 100 if max_edges > 0 else 0
+        print(f"Graph density          : {density:.4f}%")
+
+    # Top cited (most cited by others = forward citations)
+    if args.top:
+        n = args.top
+        cur.execute("""
+            SELECT target_id, COUNT(*) as cnt, p.title
+            FROM citations c
+            JOIN papers p ON p.id = c.target_id
+            GROUP BY target_id
+            ORDER BY cnt DESC, target_id
+            LIMIT ?
+        """, (n,))
+        rows = cur.fetchall()
+        print(f"\n=== Top {n} Most Cited (forward citations) ===")
+        for i, (paper_id, cnt, title) in enumerate(rows, 1):
+            title_short = (title or "(no title)")[:60]
+            print(f"  {i:2}. [{cnt:4}x] {paper_id}  {title_short}")
+
+        # Top citing (most references to others = backward citations)
+        cur.execute("""
+            SELECT source_id, COUNT(*) as cnt, p.title
+            FROM citations c
+            JOIN papers p ON p.id = c.source_id
+            GROUP BY source_id
+            ORDER BY cnt DESC, source_id
+            LIMIT ?
+        """, (n,))
+        rows = cur.fetchall()
+        print(f"\n=== Top {n} Most Citing (backward citations) ===")
+        for i, (paper_id, cnt, title) in enumerate(rows, 1):
+            title_short = (title or "(no title)")[:60]
+            print(f"  {i:2}. [{cnt:4}x] {paper_id}  {title_short}")
+
+    return 0
+
+
 def _build_cache_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("cache", help="Manage paper cache")
     p.add_argument("--get", metavar="UID", help="Get cached paper by UID")
@@ -1011,12 +1134,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     _build_citations_parser(subparsers)
     _build_cite_import_parser(subparsers)
     _build_cite_fetch_parser(subparsers)
+    _build_cite_stats_parser(subparsers)
 
     # Check if first arg is a known subcommand
     raw_args = argv if argv is not None else sys.argv[1:]
     first = raw_args[0] if raw_args else ""
 
-    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations", "cite-import", "cite-fetch"}
+    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations", "cite-import", "cite-fetch", "cite-stats"}
 
     if first in SUBCOMMANDS:
         # New subcommand flow
@@ -1035,6 +1159,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         _build_citations_parser(subparsers)
         _build_cite_import_parser(subparsers)
         _build_cite_fetch_parser(subparsers)
+        _build_cite_stats_parser(subparsers)
         args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
         if args.subcmd == "search":
@@ -1063,6 +1188,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             return _run_cite_import(args)
         elif args.subcmd == "cite-fetch":
             return _run_cite_fetch(args)
+        elif args.subcmd == "cite-stats":
+            return _run_cite_stats(args)
         return 0
     else:
         # Legacy flow (arxiv ID / DOI as first positional arg)
