@@ -547,9 +547,9 @@ def _build_merge_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("merge", help="Merge a duplicate paper into a target paper")
     p.add_argument(
         "--keep",
-        choices=["older", "newer", "parsed"],
+        choices=["older", "newer", "parsed", "semantic"],
         default="older",
-        help="Which paper to keep: 'older' (default), 'newer', or 'parsed' (better parse_status)",
+        help="Which paper to keep: 'older' (default), 'newer', 'parsed' (better parse_status), or 'semantic' (high similarity + parse_status)",
     )
     p.add_argument(
         "--dry-run",
@@ -575,10 +575,18 @@ def _run_merge(args: argparse.Namespace) -> int:
     # Build fake "older/newer" objects for _pick_keep based on added_at
     older = target if target.added_at <= duplicate.added_at else duplicate
     newer = duplicate if target.added_at <= duplicate.added_at else target
-    keep, drop = _pick_keep(older, newer, args.keep)
-
-    # Show semantic similarity if embeddings exist
     sim = db.get_similarity(target.id, duplicate.id)
+    if args.keep == "semantic":
+        # Auto-select based on cosine similarity
+        if sim is None or sim < 0.8:
+            print(f"Note: low similarity, falling back to 'parsed' (similarity: {f'{sim:.3f}' if sim is not None else 'N/A'})")
+            keep, drop = _pick_keep(target, duplicate, "parsed")
+        else:
+            # Both are likely the same paper — prefer better parse_status
+            print(f"Auto-selected: similarity {sim:.3f} >= 0.8")
+            keep, drop = _pick_keep(target, duplicate, "parsed")
+    else:
+        keep, drop = _pick_keep(older, newer, args.keep)
 
     if args.dry_run:
         print(f"Would merge {drop.id} into {keep.id} (--keep={args.keep})")
