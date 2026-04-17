@@ -180,8 +180,9 @@ def _build_queue_parser(subparsers) -> argparse.ArgumentParser:
 
 def _build_dedup_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("dedup", help="Find duplicate papers in the database")
-    p.add_argument("--dry-run", action="store_true", help="Show duplicates without merging")
-    p.add_argument("--auto", action="store_true", help="Automatically merge each duplicate pair (older kept, newer deleted)")
+    g = p.add_mutually_exclusive_group()
+    g.add_argument("--dry-run", action="store_true", help="Show duplicates without merging")
+    g.add_argument("--auto", action="store_true", help="Automatically merge each duplicate pair (older kept, newer deleted)")
     return p
 
 
