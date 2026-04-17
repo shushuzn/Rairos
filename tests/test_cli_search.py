@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from cli import _run_search, _run_list, _run_status
+from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, main
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -48,6 +48,7 @@ class FakePaper:
     def __init__(
         self,
         id="2301.00001",
+        uid="2301.00001",
         title="Attention Is All You Need",
         authors="Vaswani et al.",
         published="2017-06-12",
@@ -58,6 +59,7 @@ class FakePaper:
         parse_status="done",
     ):
         self.id = id
+        self.uid = uid
         self.title = title
         self.authors = authors
         self.published = published
@@ -428,4 +430,271 @@ class TestRunStatus:
 
         args = make_args()
         result = _run_status(args)
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_queue tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunQueueList:
+    """Test queue --list."""
+
+    @patch("cli.Database")
+    def test_queue_list_shows_pending(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_papers.return_value = [
+            FakePaper(uid="2301.00001", parse_status="pending"),
+            FakePaper(uid="2301.00002", parse_status="done"),
+            FakePaper(uid="2301.00003", parse_status="pending"),
+        ]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(list=True, dequeue=False, add=None)
+        result = _run_queue(args)
+
+        captured = capsys.readouterr().out
+        assert "Pending:" in captured
+        assert "2301.00001" in captured
+        assert "2301.00003" in captured
+        assert "2301.00002" not in captured  # not pending
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_queue_list_empty(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_papers.return_value = [FakePaper(uid="2301.00001", parse_status="done")]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(list=True, dequeue=False, add=None)
+        result = _run_queue(args)
+
+        captured = capsys.readouterr().out
+        assert "Queue empty" in captured
+        assert result == 0
+
+
+class TestRunQueueDequeue:
+    """Test queue --dequeue."""
+
+    @patch("cli.Database")
+    def test_dequeue_returns_job(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_job = MagicMock()
+        mock_job.uid = "2301.00001"
+        mock_job.id = 42
+        mock_db.dequeue_job.return_value = mock_job
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(list=False, dequeue=True, add=None)
+        result = _run_queue(args)
+
+        captured = capsys.readouterr().out
+        assert "Dequeued: 2301.00001" in captured
+        assert "id=42" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_dequeue_empty_queue(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.dequeue_job.return_value = None
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(list=False, dequeue=True, add=None)
+        result = _run_queue(args)
+
+        captured = capsys.readouterr().out
+        assert "Queue empty" in captured
+        assert result == 0
+
+
+class TestRunQueueAdd:
+    """Test queue --add UID."""
+
+    @patch("cli.Database")
+    def test_enqueue_adds_paper(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(list=False, dequeue=False, add="2301.99999")
+        result = _run_queue(args)
+
+        mock_db.enqueue_job.assert_called_once_with("2301.99999")
+        captured = capsys.readouterr().out
+        assert "Added 2301.99999 to queue" in captured
+        assert result == 0
+
+
+class TestRunQueueNoArgs:
+    """Test queue with no arguments."""
+
+    @patch("cli.Database")
+    def test_queue_no_args_shows_usage(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(list=False, dequeue=False, add=None)
+        result = _run_queue(args)
+
+        captured = capsys.readouterr().out
+        assert "Use --list" in captured or "--dequeue" in captured
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_cache tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunCacheStats:
+    """Test cache --stats."""
+
+    @patch("cli.Database")
+    def test_cache_stats_shows_size(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_cached_paper.return_value = 7
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats=True, clear=False, get=None, set=None)
+        result = _run_cache(args)
+
+        captured = capsys.readouterr().out
+        assert "Cache size: 7" in captured
+        assert result == 0
+
+
+class TestRunCacheGet:
+    """Test cache --get UID."""
+
+    @patch("cli.Database")
+    def test_cache_get_returns_cached(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_cached_paper.return_value = {"title": "Attention Is All You Need"}
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats=False, clear=False, get="2301.00001", set=None)
+        result = _run_cache(args)
+
+        mock_db.get_cached_paper.assert_called_with("2301.00001")
+        captured = capsys.readouterr().out
+        assert "Attention Is All You Need" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_cache_get_not_found(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_cached_paper.return_value = None
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats=False, clear=False, get="nonexistent", set=None)
+        result = _run_cache(args)
+
+        captured = capsys.readouterr().out
+        assert "No cache entry" in captured
+        assert result == 0
+
+
+class TestRunCacheClear:
+    """Test cache --clear."""
+
+    @patch("cli.Database")
+    def test_cache_clear(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats=False, clear=True, get=None, set=None)
+        result = _run_cache(args)
+
+        captured = capsys.readouterr().out
+        assert "Cache cleared" in captured
+        assert result == 0
+
+
+class TestRunCacheNoArgs:
+    """Test cache with no arguments."""
+
+    @patch("cli.Database")
+    def test_cache_no_args_shows_usage(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats=False, clear=False, get=None, set=None)
+        result = _run_cache(args)
+
+        captured = capsys.readouterr().out
+        assert "--stats" in captured or "Use --stats" in captured or "--get" in captured
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# main() routing tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestMainRouting:
+    """Test main() routes to correct subcommand handler."""
+
+    @patch("cli._run_search")
+    @patch("cli._build_search_parser")
+    def test_main_routes_to_search(self, mock_build, mock_run, capsys):
+        mock_run.return_value = 0
+
+        args = make_args(subcmd="search", query="attention", limit=10, offset=0,
+                         format="table", source="", year=0, tags=[], status="", sort="relevance")
+        with patch("argparse.ArgumentParser.parse_args", return_value=args):
+            result = main(["search", "attention"])
+
+        mock_run.assert_called_once()
+        assert result == 0
+
+    @patch("cli._run_list")
+    def test_main_routes_to_list(self, mock_run):
+        mock_run.return_value = 0
+        args = make_args(subcmd="list", status="", year=0, tags=[], limit=20, offset=0, format="table")
+        with patch("argparse.ArgumentParser.parse_args", return_value=args):
+            result = main(["list"])
+        mock_run.assert_called_once()
+        assert result == 0
+
+    @patch("cli._run_status")
+    def test_main_routes_to_status(self, mock_run):
+        mock_run.return_value = 0
+        args = make_args(subcmd="status")
+        with patch("argparse.ArgumentParser.parse_args", return_value=args):
+            result = main(["status"])
+        mock_run.assert_called_once()
+        assert result == 0
+
+    @patch("cli._run_queue")
+    def test_main_routes_to_queue(self, mock_run):
+        mock_run.return_value = 0
+        args = make_args(subcmd="queue", list=True, dequeue=False, add=None)
+        with patch("argparse.ArgumentParser.parse_args", return_value=args):
+            result = main(["queue", "--list"])
+        mock_run.assert_called_once()
+        assert result == 0
+
+    @patch("cli._run_cache")
+    def test_main_routes_to_cache(self, mock_run):
+        mock_run.return_value = 0
+        args = make_args(subcmd="cache", stats=True, clear=False, get=None, set=None)
+        with patch("argparse.ArgumentParser.parse_args", return_value=args):
+            result = main(["cache", "--stats"])
+        mock_run.assert_called_once()
+        assert result == 0
+
+    @patch("cli._main_legacy")
+    def test_main_routes_to_legacy_for_arxiv_id(self, mock_legacy):
+        mock_legacy.return_value = 0
+        result = main(["2301.00001"])
+        mock_legacy.assert_called_once_with(["2301.00001"])
         assert result == 0
