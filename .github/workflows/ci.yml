@@ -58,46 +58,50 @@ jobs:
 
   test-pytest:
     runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
           cache: 'pip'
 
       - name: Install dependencies
         run: pip install pytest pytest-cov requests feedparser pymupdf
 
       - name: Run pytest with coverage
-        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing --cov-report=json 2>&1 | tee pytest_output.txt
+        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing --cov-report=json 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt
 
       - name: Upload test output
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pytest-output
-          path: pytest_output.txt
+          name: pytest-output-${{ matrix.python-version }}
+          path: pytest_output_${{ matrix.python-version }}.txt
           retention-days: 1
 
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: coverage-report-${{ matrix.python-version }}
           path: coverage.json
           retention-days: 3
 
       - name: Generate coverage badge
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && matrix.python-version == '3.12'
         uses: dorny/coverage-badge@v1
         with:
           coverageResultsPath: coverage.json
           outputFilePath: coverage-badge.svg
 
       - name: Commit coverage badge
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && matrix.python-version == '3.12'
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
