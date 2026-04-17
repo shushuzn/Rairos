@@ -557,6 +557,9 @@ def main(argv: Optional[List[str]] = None) -> int:
         _build_cache_parser(subparsers)
         _build_dedup_parser(subparsers)
         _build_merge_parser(subparsers)
+        _build_stats_parser(subparsers)
+        _build_import_parser(subparsers)
+        _build_export_parser(subparsers)
         args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
         if args.subcmd == "search":
