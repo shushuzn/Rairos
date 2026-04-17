@@ -14,6 +14,15 @@ All notable changes to this project will be documented in this file.
   - New `CitationRecord` dataclass
   - `add_citation()` / `add_citations_batch()` / `get_citations()` / `get_citation_count()` / `get_paper_title()` DB methods
 
+- `cite-fetch` — Fetch citation data from OpenAlex for papers in the database
+  - `cite-fetch [PAPER_ID]`: Fetch for specific paper or all papers in DB
+  - `--direction from|to|both`: Which citations to fetch (default: both)
+  - `--dry-run`: Preview what would be imported without writing to DB
+  - `--skip-external`: Only import citations where both source and target are in local DB
+  - `--delay 0.11`: Rate-limit to ~9 req/s (default: 0.11s)
+  - Bypasses Windows proxy SSL issues via custom SSL context
+  - Resolves arXiv paper → OpenAlex ID via DOI lookup, then fetches `referenced_works` and `cites:` filter
+
 ## v1.3.0 (2026-04-18)
 
 ### Features
