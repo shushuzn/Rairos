@@ -33,7 +33,7 @@ jobs:
           npx commitlint --from=main --verbose 2>&1 | head -50 || true
 
   
-  lint:
+  lint-and-crossref:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -42,30 +42,16 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: 'pip'
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pyflakes 2>/dev/null || pip install pyflakes
+        run: pip install pyflakes requests
 
       - name: Syntax check
         run: python -m py_compile ai_research_os.py
 
       - name: Pyflakes
         run: python -m pyflakes ai_research_os.py || true
-
-  test-crossref:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
-        run: pip install requests
 
       - name: Test Crossref API
         run: python -c "import requests; r=requests.get('https://api.crossref.org/works/10.1038/nature12373',timeout=15,headers={'User-Agent':'AI-Research-OS/1.0'}); r.raise_for_status(); print('Crossref OK:', r.json()['message']['title'][0][:50])"
@@ -79,6 +65,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: 'pip'
 
       - name: Install dependencies
         run: pip install pytest requests feedparser pymupdf
