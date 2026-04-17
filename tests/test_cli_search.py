@@ -697,4 +697,236 @@ class TestMainRouting:
         mock_legacy.return_value = 0
         result = main(["2301.00001"])
         mock_legacy.assert_called_once_with(["2301.00001"])
+
+    def test_main_no_args_routes_to_legacy(self):
+        """No args falls through to legacy parser."""
+        with patch("cli._main_legacy") as mock_legacy:
+            mock_legacy.return_value = 0
+            result = main([])
+            mock_legacy.assert_called_once()
+
+    def test_main_unknown_subcommand_routes_to_legacy(self):
+        """Unknown subcommand (not in SUBCOMMANDS set) falls through to legacy."""
+        with patch("cli._main_legacy") as mock_legacy:
+            mock_legacy.return_value = 0
+            result = main(["some-random-input"])
+            mock_legacy.assert_called_once_with(["some-random-input"])
+
+    def test_main_doi_input_routes_to_legacy(self):
+        """DOI input routes to legacy."""
+        with patch("cli._main_legacy") as mock_legacy:
+            mock_legacy.return_value = 0
+            result = main(["10.1234/some"])
+            mock_legacy.assert_called_once_with(["10.1234/some"])
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_status aggregation edge cases
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunStatusAggregation:
+    """Test _run_status by_source / by_status aggregation."""
+
+    @patch("cli.Database")
+    def test_status_aggregates_multiple_sources(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_papers.return_value = [
+            FakePaper(id="1", source="arxiv", parse_status="done"),
+            FakePaper(id="2", source="arxiv", parse_status="done"),
+            FakePaper(id="3", source="doi", parse_status="pending"),
+        ]
+        mock_db_cls.return_value = mock_db
+        args = make_args()
+        _run_status(args)
+        out = capsys.readouterr().out
+        assert "arxiv=2" in out, f"Expected 'arxiv=2' in: {out}"
+        assert "doi=1" in out, f"Expected 'doi=1' in: {out}"
+
+    @patch("cli.Database")
+    def test_status_aggregates_multiple_statuses(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_papers.return_value = [
+            FakePaper(id="1", source="arxiv", parse_status="done"),
+            FakePaper(id="2", source="arxiv", parse_status="done"),
+            FakePaper(id="3", source="arxiv", parse_status="pending"),
+        ]
+        mock_db_cls.return_value = mock_db
+        args = make_args()
+        _run_status(args)
+        out = capsys.readouterr().out
+        assert "done=2" in out, f"Expected 'done=2' in: {out}"
+        assert "pending=1" in out, f"Expected 'pending=1' in: {out}"
+
+    @patch("cli.Database")
+    def test_status_handles_none_source(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_papers.return_value = [
+            FakePaper(id="1", source=None, parse_status="done"),
+        ]
+        mock_db_cls.return_value = mock_db
+        args = make_args()
+        _run_status(args)
+        out = capsys.readouterr().out
+        # source=None should be grouped as "?"
+        assert "?" in out, f"Expected '?' for None source in: {out}"
+
+    @patch("cli.Database")
+    def test_status_handles_none_status(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_papers.return_value = [
+            FakePaper(id="1", source="arxiv", parse_status=None),
+        ]
+        mock_db_cls.return_value = mock_db
+        args = make_args()
+        _run_status(args)
+        out = capsys.readouterr().out
+        # parse_status=None should be grouped as "?"
+        assert "?" in out, f"Expected '?' for None status in: {out}"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_list / _run_search filter mapping
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunListFilters:
+    """Test _run_list filter arguments are passed correctly to db.list_papers."""
+
+    @patch("cli.Database")
+    def test_list_passes_year_as_date_from(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.list_papers.return_value = ([], 0)
+        mock_db_cls.return_value = mock_db
+        args = make_args(status="", year=2023, tags=[], limit=20, offset=0, format="table")
+        _run_list(args)
+        mock_db.list_papers.assert_called_once()
+        call_kwargs = mock_db.list_papers.call_args.kwargs
+        assert call_kwargs.get("date_from") == "2023-01-01", f"Expected date_from='2023-01-01', got {call_kwargs}"
+
+    @patch("cli.Database")
+    def test_list_passes_status_filter(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.list_papers.return_value = ([], 0)
+        mock_db_cls.return_value = mock_db
+        args = make_args(status="done", year=0, tags=[], limit=20, offset=0, format="table")
+        _run_list(args)
+        call_kwargs = mock_db.list_papers.call_args.kwargs
+        assert call_kwargs.get("parse_status") == "done", f"Expected parse_status='done', got {call_kwargs}"
+
+    @patch("cli.Database")
+    def test_list_zero_year_no_date_filter(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.list_papers.return_value = ([], 0)
+        mock_db_cls.return_value = mock_db
+        args = make_args(status="", year=0, tags=[], limit=20, offset=0, format="table")
+        _run_list(args)
+        call_kwargs = mock_db.list_papers.call_args.kwargs
+        assert call_kwargs.get("date_from") is None, f"Expected date_from=None for year=0, got {call_kwargs}"
+
+
+class TestRunSearchFilters:
+    """Test _run_search filter arguments are passed correctly to db.search_papers."""
+
+    @patch("cli.Database")
+    def test_search_passes_year_as_date_from(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.search_papers.return_value = ([], 0)
+        mock_db_cls.return_value = mock_db
+        args = make_args(
+            query="attention", limit=10, offset=0, format="table",
+            source="", year=2024, tags=[], status="", sort="relevance"
+        )
+        _run_search(args)
+        call_kwargs = mock_db.search_papers.call_args.kwargs
+        assert call_kwargs.get("date_from") == "2024-01-01", f"Expected date_from='2024-01-01', got {call_kwargs}"
+
+    @patch("cli.Database")
+    def test_search_zero_year_no_date_filter(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.search_papers.return_value = ([], 0)
+        mock_db_cls.return_value = mock_db
+        args = make_args(
+            query="attention", limit=10, offset=0, format="table",
+            source="", year=0, tags=[], status="", sort="relevance"
+        )
+        _run_search(args)
+        call_kwargs = mock_db.search_papers.call_args.kwargs
+        assert call_kwargs.get("date_from") is None, f"Expected date_from=None for year=0, got {call_kwargs}"
+
+    @patch("cli.Database")
+    def test_search_passes_source_filter(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.search_papers.return_value = ([], 0)
+        mock_db_cls.return_value = mock_db
+        args = make_args(
+            query="attention", limit=10, offset=0, format="table",
+            source="doi", year=0, tags=[], status="", sort="relevance"
+        )
+        _run_search(args)
+        call_kwargs = mock_db.search_papers.call_args.kwargs
+        assert call_kwargs.get("source") == "doi", f"Expected source='doi', got {call_kwargs}"
+
+    @patch("cli.Database")
+    def test_search_passes_status_filter(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.search_papers.return_value = ([], 0)
+        mock_db_cls.return_value = mock_db
+        args = make_args(
+            query="attention", limit=10, offset=0, format="table",
+            source="", year=0, tags=[], status="done", sort="relevance"
+        )
+        _run_search(args)
+        call_kwargs = mock_db.search_papers.call_args.kwargs
+        assert call_kwargs.get("parse_status") == "done", f"Expected parse_status='done', got {call_kwargs}"
+
+    @patch("cli.Database")
+    def test_search_empty_query_allowed(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.search_papers.return_value = ([], 0)
+        mock_db_cls.return_value = mock_db
+        args = make_args(
+            query="", limit=10, offset=0, format="table",
+            source="", year=0, tags=[], status="", sort="relevance"
+        )
+        result = _run_search(args)
+        assert result == 0
+        mock_db.search_papers.assert_called_once()
+        call_kwargs = mock_db.search_papers.call_args.kwargs
+        assert call_kwargs.get("query") == ""
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_cache edge cases
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunCacheEdgeCases:
+    """Test _run_cache --stats and --set edge cases."""
+
+    @patch("cli.Database")
+    def test_cache_stats_shows_zero_when_none(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_cached_paper.return_value = None
+        mock_db_cls.return_value = mock_db
+        args = make_args(stats=True, clear=False, get=None, set_=None)
+        _run_cache(args)
+        out = capsys.readouterr().out
+        # None should print "Cache size: None"
+        assert "Cache size: None" in out, f"Expected 'Cache size: None' in: {out}"
+
+    @patch("cli.Database")
+    def test_cache_get_not_found_message(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_cached_paper.return_value = None
+        mock_db_cls.return_value = mock_db
+        args = make_args(stats=False, clear=False, get="not-exist", set_=None)
+        _run_cache(args)
+        out = capsys.readouterr().out
+        assert "No cache entry for not-exist" in out, f"Expected 'No cache entry' message in: {out}"
+
+    def test_cache_set_shows_unimplemented(self, capsys):
+        """--set is defined in the parser but not handled in _run_cache."""
+        args = make_args(stats=False, clear=False, get=None, set_=["UID", "/path"])
+        result = _run_cache(args)
+        out = capsys.readouterr().out
+        # Should fall through to the else branch: "Use --stats, --clear, --get UID, or --set UID PATH"
+        assert "--set" in out or "Use" in out, f"Expected usage message, got: {out}"
         assert result == 0
