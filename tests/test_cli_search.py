@@ -71,8 +71,16 @@ class FakePaper:
 
 
 def make_args(**kwargs):
+    defaults = dict(
+        sort="added_at", order="desc",
+        since="", clear=False, dry_run=False, keep="older", report=False,
+        source="import", skip_existing=False,
+        format="table", limit=0, out=None, json=False,
+        set_=None,
+    )
+    defaults.update(kwargs)
     ns = argparse.Namespace()
-    for k, v in kwargs.items():
+    for k, v in defaults.items():
         setattr(ns, k, v)
     return ns
 

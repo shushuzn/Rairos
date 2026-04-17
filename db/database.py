@@ -18,7 +18,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Generator, Iterator, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from core.exceptions import DatabaseError
 
@@ -1082,6 +1082,75 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"clear_cache failed: {e}") from e
 
+    def clear_jobs(self, status: str = "queued") -> int:
+        """Delete all jobs in the queue with the given status. Returns count deleted."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute("DELETE FROM job_queue WHERE status = ?", (status,))
+            return cur.rowcount
+        except sqlite3.Error as e:
+            raise DatabaseError(f"clear_jobs failed: {e}") from e
+
+    def get_papers(self, limit: int = 10000, offset: int = 0) -> List[PaperRecord]:
+        """Return all papers (no filters), newest first."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute(
+                "SELECT * FROM papers ORDER BY added_at DESC LIMIT ? OFFSET ?",
+                (limit, offset),
+            )
+            return [PaperRecord.from_row(row) for row in cur.fetchall()]
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_papers failed: {e}") from e
+
+    def get_stats(self) -> dict[str, Any]:
+        """Return a summary dict of database statistics."""
+        try:
+            cur = self.conn.cursor()
+            stats: dict[str, Any] = {}
+            # Papers
+            cur.execute("SELECT COUNT(*) FROM papers")
+            stats["total_papers"] = cur.fetchone()[0]
+            # By source
+            cur.execute("SELECT source, COUNT(*) FROM papers GROUP BY source")
+            stats["by_source"] = {r[0]: r[1] for r in cur.fetchall()}
+            # By status
+            cur.execute("SELECT parse_status, COUNT(*) FROM papers GROUP BY parse_status")
+            stats["by_status"] = {r[0] or "none": r[1] for r in cur.fetchall()}
+            # Queue
+            cur.execute("SELECT COUNT(*) FROM job_queue WHERE status = 'queued'")
+            stats["queue_queued"] = cur.fetchone()[0]
+            cur.execute("SELECT COUNT(*) FROM job_queue WHERE status = 'running'")
+            stats["queue_running"] = cur.fetchone()[0]
+            # Cache
+            cur.execute("SELECT COUNT(*) FROM paper_cache")
+            stats["cache_entries"] = cur.fetchone()[0]
+            # Dedup log
+            cur.execute("SELECT COUNT(*) FROM dedup_log")
+            stats["dedup_records"] = cur.fetchone()[0]
+            return stats
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_stats failed: {e}") from e
+
+    def export_papers(self, format: str = "csv", limit: int = 0) -> Tuple[str, List[Dict[str, Any]]]:
+        """Export all papers as CSV or JSON. Returns (header_row_or_fields, rows)."""
+        try:
+            cur = self.conn.cursor()
+            fields = [
+                "id", "source", "title", "authors", "abstract", "published",
+                "doi", "primary_category", "parse_status", "added_at",
+            ]
+            sql = f"SELECT {','.join(fields)} FROM papers ORDER BY added_at DESC"
+            if limit > 0:
+                sql += f" LIMIT {limit}"
+            cur.execute(sql)
+            rows = []
+            for row in cur.fetchall():
+                rows.append({f: row[i] for i, f in enumerate(fields)})
+            return (fields, rows)
+        except sqlite3.Error as e:
+            raise DatabaseError(f"export_papers failed: {e}") from e
+
     # ── Utilities ────────────────────────────────────────────────────────────
 
     def close(self) -> None:
@@ -1104,30 +1173,34 @@ class Database:
 
     # ── Deduplication & Merge ─────────────────────────────────────────────────
 
-    def find_duplicates(self) -> List[Tuple[PaperRecord, PaperRecord]]:
+    def find_duplicates(self, since: str | None = None) -> List[Tuple[PaperRecord, PaperRecord]]:
         """
         Find pairs of papers that are likely duplicates.
         Two papers are duplicates if:
           - They share the same DOI (non-empty), OR
           - Their titles are identical and neither title is empty
+        If `since` is given (YYYY-MM-DD), only papers added on or after that date are considered.
         Returns a list of (older, newer) PaperRecord pairs.
         """
         try:
             cur = self.conn.cursor()
-            # Find candidate pairs: same DOI (both non-empty) or same title (both non-empty)
+            where_since = " AND a.added_at >= ? " if since else " "
             cur.execute(
-                """
+                f"""
                 SELECT a.id AS a_id, b.id AS b_id
                 FROM papers a
                 JOIN papers b ON
-                    (a.doi != '' AND a.doi = b.doi AND a.id < b.id)
-                    OR
-                    (a.doi = '' AND b.doi = ''
-                     AND a.title = b.title
-                     AND a.id < b.id
-                     AND a.title != '')
-                ORDER BY a.id
+                    a.id < b.id
+                    AND (
+                        (a.doi IS NOT NULL AND a.doi = b.doi AND a.doi != '')
+                        OR
+                        (a.title IS NOT NULL AND a.title != '' AND a.title = b.title)
+                    )
+                WHERE 1=1
+                {where_since}
+                ORDER BY a.added_at DESC
                 """,
+                ([since] if since else []),
             )
             pairs: List[Tuple[PaperRecord, PaperRecord]] = []
             for row in cur.fetchall():

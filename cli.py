@@ -125,7 +125,14 @@ def _build_list_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--tag", dest="tags", action="append", default=[], help="Filter by tag (repeatable)")
     p.add_argument("--limit", type=int, default=20, help="Max results")
     p.add_argument("--offset", type=int, default=0, help="Skip N results")
-    p.add_argument("--format", choices=["table", "json"], default="table")
+    p.add_argument("--format", choices=["table", "json", "csv"], default="table")
+    p.add_argument(
+        "--sort",
+        choices=["added_at", "published", "title", "parse_status"],
+        default="added_at",
+        help="Sort field (default: added_at)",
+    )
+    p.add_argument("--order", choices=["asc", "desc"], default="desc", help="Sort order")
     return p
 
 
@@ -137,8 +144,18 @@ def _run_list(args: argparse.Namespace) -> int:
         limit=args.limit,
         offset=args.offset,
         date_from=f"{args.year}-01-01" if args.year > 0 else None,
+        sort_by=args.sort,
+        sort_order=args.order,
     )
-    if args.format == "json":
+    if args.format == "csv":
+        import csv
+        import sys as _sys
+        writer = csv.writer(_sys.stdout)
+        writer.writerow(["id", "title", "authors", "published", "source", "primary_category", "parse_status", "added_at"])
+        for p in papers:
+            writer.writerow([p.id, p.title, p.authors, p.published, p.source,
+                             p.primary_category, p.parse_status or "", p.added_at])
+    elif args.format == "json":
         out = [{"paper_id": p.id, "title": p.title, "authors": p.authors,
                 "published": p.published, "primary_category": p.primary_category,
                 "source": p.source, "abs_url": p.abs_url} for p in papers]
@@ -169,12 +186,110 @@ def _run_status(args: argparse.Namespace) -> int:
     return 0
 
 
+def _build_stats_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser("stats", help="Show database statistics summary")
+    p.add_argument("--json", action="store_true", help="Output as JSON")
+    return p
+
+
+def _run_stats(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+    s = db.get_stats()
+    if args.json:
+        print(json.dumps(s, indent=2, ensure_ascii=False))
+    else:
+        print("Papers:")
+        print(f"  total : {s['total_papers']}")
+        print(f"  by source : {', '.join(f'{k}={v}' for k, v in sorted(s['by_source'].items()))}")
+        print(f"  by status : {', '.join(f'{k}={v}' for k, v in sorted(s['by_status'].items()))}")
+        print("Queue:")
+        print(f"  queued  : {s['queue_queued']}")
+        print(f"  running : {s['queue_running']}")
+        print("Cache:")
+        print(f"  entries : {s['cache_entries']}")
+    print("Dedup:")
+    print(f"  records : {s['dedup_records']}")
+    return 0
+
+
+def _build_import_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser("import", help="Add papers to the database by ID")
+    p.add_argument("ids", nargs="+", metavar="ID", help="arXiv IDs, DOIs, or paper UIDs to add")
+    p.add_argument("--source", default="import", help="Source label (default: import)")
+    p.add_argument("--skip-existing", action="store_true", help="Skip IDs already in database")
+    return p
+
+
+def _run_import(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+    added, skipped, failed = 0, 0, 0
+    for paper_id in args.ids:
+        p = db.get_paper(paper_id)
+        if p is not None:
+            if args.skip_existing:
+                skipped += 1
+                print(f"Skipped (exists): {paper_id}")
+                continue
+            else:
+                skipped += 1
+                print(f"Skipped (exists): {paper_id}")
+                continue
+        # Attempt to upsert — use raw arXiv ID or DOI as id
+        try:
+            paper_id_clean = paper_id.strip()
+            db.upsert_paper({
+                "id": paper_id_clean,
+                "source": args.source,
+            })
+            added += 1
+            print(f"Added: {paper_id_clean}")
+        except Exception as e:
+            failed += 1
+            print(f"Failed: {paper_id} — {e}")
+    print(f"\nImport done: {added} added, {skipped} skipped, {failed} failed")
+    return 0
+
+
+def _build_export_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser("export", help="Export all papers to CSV or JSON")
+    p.add_argument("--format", choices=["csv", "json"], default="csv", help="Output format (default: csv)")
+    p.add_argument("--limit", type=int, default=0, help="Limit number of papers (0 = all)")
+    p.add_argument("--out", metavar="FILE", help="Write to file instead of stdout")
+    return p
+
+
+def _run_export(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+    fields, rows = db.export_papers(format=args.format, limit=args.limit)
+    import csv as _csv
+    import io as _io
+    output = _io.StringIO()
+    if args.format == "csv":
+        writer = _csv.DictWriter(output, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+        content = output.getvalue()
+    else:
+        import json as _json
+        content = _json.dumps(rows, ensure_ascii=False, indent=2)
+    if args.out:
+        Path(args.out).write_text(content, encoding="utf-8")
+        print(f"Exported {len(rows)} papers to {args.out}")
+    else:
+        print(content)
+    return 0
+
+
 def _build_queue_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("queue", help="Manage job queue")
     p.add_argument("--add", metavar="UID", help="Add a paper UID to the queue")
     p.add_argument("--list", action="store_true", help="List pending jobs")
     p.add_argument("--dequeue", action="store_true", help="Pop next job from queue")
     p.add_argument("--cancel", metavar="JOB_ID", type=int, help="Cancel a queued job by id")
+    p.add_argument("--clear", action="store_true", help="Clear all queued jobs")
     return p
 
 
@@ -192,6 +307,12 @@ def _build_dedup_parser(subparsers) -> argparse.ArgumentParser:
              "'newer' (keeps paper with later added_at), or 'parsed' (keeps paper with better parse_status)",
     )
     p.add_argument("--report", action="store_true", help="Show dedup history log")
+    p.add_argument(
+        "--since",
+        metavar="YYYY-MM-DD",
+        default="",
+        help="Only consider papers added on or after this date",
+    )
     return p
 
 
@@ -209,7 +330,7 @@ def _run_dedup(args: argparse.Namespace) -> int:
             print(f"    kept title:   {r['target_title'][:70]}")
             print(f"    merged title: {r['duplicate_title'][:70]}")
         return 0
-    pairs = db.find_duplicates()
+    pairs = db.find_duplicates(since=args.since or None)
     if not pairs:
         print("No duplicates found")
         return 0
@@ -294,6 +415,11 @@ def _build_merge_parser(subparsers) -> argparse.ArgumentParser:
         default="older",
         help="Which paper to keep: 'older' (default), 'newer', or 'parsed' (better parse_status)",
     )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be merged without making changes",
+    )
     p.add_argument("target_id", metavar="TARGET_ID", help="ID of the paper to keep")
     p.add_argument("duplicate_id", metavar="DUPLICATE_ID", help="ID of the duplicate paper to absorb and delete")
     return p
@@ -314,6 +440,11 @@ def _run_merge(args: argparse.Namespace) -> int:
     older = target if target.added_at <= duplicate.added_at else duplicate
     newer = duplicate if target.added_at <= duplicate.added_at else target
     keep, drop = _pick_keep(older, newer, args.keep)
+    if args.dry_run:
+        print(f"Would merge {drop.id} into {keep.id} (--keep={args.keep})")
+        print(f"  keeping : [{keep.id}] {keep.title[:70]}")
+        print(f"  deleting: [{drop.id}] {drop.title[:70]}")
+        return 0
     ok = db.merge_papers(keep.id, drop.id)
     if ok:
         db.log_dedup(keep.id, drop.id, args.keep)
@@ -349,8 +480,11 @@ def _run_queue(args: argparse.Namespace) -> int:
             print(f"Cancelled job {args.cancel}")
         else:
             print(f"No such job {args.cancel}")
+    elif args.clear:
+        n = db.clear_jobs()
+        print(f"Cleared {n} queued job(s)")
     else:
-        print("Use --list, --dequeue, --add UID, or --cancel JOB_ID")
+        print("Use --list, --dequeue, --add UID, --cancel JOB_ID, or --clear")
     return 0
 
 
@@ -405,12 +539,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     _build_cache_parser(subparsers)
     _build_dedup_parser(subparsers)
     _build_merge_parser(subparsers)
+    _build_stats_parser(subparsers)
+    _build_import_parser(subparsers)
+    _build_export_parser(subparsers)
 
     # Check if first arg is a known subcommand
     raw_args = argv if argv is not None else sys.argv[1:]
     first = raw_args[0] if raw_args else ""
 
-    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge"}
+    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export"}
 
     if first in SUBCOMMANDS:
         # New subcommand flow
@@ -439,6 +576,12 @@ def main(argv: Optional[List[str]] = None) -> int:
             return _run_dedup(args)
         elif args.subcmd == "merge":
             return _run_merge(args)
+        elif args.subcmd == "stats":
+            return _run_stats(args)
+        elif args.subcmd == "import":
+            return _run_import(args)
+        elif args.subcmd == "export":
+            return _run_export(args)
         return 0
     else:
         # Legacy flow (arxiv ID / DOI as first positional arg)
