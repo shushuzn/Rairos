@@ -5,7 +5,11 @@
 import argparse
 import json
 import os
+import ssl
 import sys
+import time
+import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, List, Literal, Optional, Tuple
 
@@ -575,6 +579,266 @@ def _run_citations(args: argparse.Namespace) -> int:
     return 0
 
 
+# ── Citation fetch from OpenAlex ───────────────────────────────────────────────
+
+# Rate-limit: 10 requests/second with polite pool
+_OPENALEX_BASE = "https://api.openalex.org"
+_OPENALEX_EMAIL = "ai-research-os@example.com"
+
+
+def _openalex_get(path: str, timeout: int = 15) -> dict:
+    """Fetch a path from OpenAlex API with SSL bypass for Windows proxy."""
+    url = f"{_OPENALEX_BASE}{path}"
+    # Windows proxy interferes with OpenAlex SSL — bypass it
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    proxy_handler = urllib.request.ProxyHandler({})
+    opener = urllib.request.build_opener(proxy_handler, urllib.request.HTTPSHandler(context=ctx))
+    req = urllib.request.Request(url, headers={
+        "User-Agent": f"ai_research_os/1.0 (mailto:{_OPENALEX_EMAIL})",
+        "Accept": "application/json",
+    })
+    try:
+        with opener.open(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception as e:
+        raise RuntimeError(f"OpenAlex request failed for {path}: {e}") from e
+
+
+def _build_openalex_ctx() -> ssl.SSLContext:
+    """Create SSL context that bypasses Windows proxy for API calls."""
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+
+
+def _openalex_request(path: str, timeout: int = 15) -> dict:
+    """Fetch a path from OpenAlex API, bypassing Windows proxy SSL issues."""
+    url = f"{_OPENALEX_BASE}{path}"
+    ctx = _build_openalex_ctx()
+    proxy_handler = urllib.request.ProxyHandler({})
+    opener = urllib.request.build_opener(proxy_handler, urllib.request.HTTPSHandler(context=ctx))
+    req = urllib.request.Request(url, headers={
+        "User-Agent": f"ai_research_os/1.0 (mailto:{_OPENALEX_EMAIL})",
+        "Accept": "application/json",
+    })
+    try:
+        with opener.open(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception as e:
+        raise RuntimeError(f"OpenAlex request failed for {path}: {e}") from e
+
+
+def _arxiv_doi_to_openalex(arxiv_id: str) -> Optional[str]:
+    """Query OpenAlex for a paper by arXiv ID, return OpenAlex ID or None."""
+    # OpenAlex DOI format: https://doi.org/10.48550/arXiv.YYMM.NNNNN
+    doi = f"10.48550/arXiv.{arxiv_id}"
+    try:
+        d = _openalex_request(f"/works?filter=doi:{doi}&per-page=1")
+        results = d.get("results", [])
+        if results:
+            return results[0]["id"]  # e.g. https://openalex.org/W2626778328
+    except Exception:
+        pass
+    return None
+
+
+def _get_openalex_references(openalex_id: str) -> list[str]:
+    """Get list of OpenAlex work IDs that this paper references (backward citations)."""
+    # openalex_id is full URL like https://openalex.org/W2626778328
+    oid = openalex_id.rstrip("/").split("/")[-1]
+    try:
+        d = _openalex_request(f"/works/{oid}")
+        refs = d.get("referenced_works", []) or []
+        return refs
+    except Exception:
+        return []
+
+
+def _get_openalex_citing(openalex_id: str, per_page: int = 200) -> Tuple[list[dict], int]:
+    """Get all papers citing this paper (forward citations). Returns (list of work dicts, total count)."""
+    oid = openalex_id.rstrip("/").split("/")[-1]
+    try:
+        d = _openalex_request(f"/works?filter=cites:{oid}&per-page={per_page}&mailto={_OPENALEX_EMAIL}")
+        return d.get("results", []) or [], d.get("meta", {}).get("count", 0)
+    except Exception:
+        return [], 0
+
+
+def _work_to_arxiv_id(work: dict) -> Optional[str]:
+    """Extract arXiv ID from OpenAlex work IDs dict. Returns None if not an arXiv paper."""
+    ids = work.get("ids", {}) or {}
+    doi = ids.get("doi", "") or ""
+    # DOI format: https://doi.org/10.48550/arXiv.2301.00001
+    if "/arXiv." in doi:
+        return doi.split("/arXiv.")[-1]
+    return None
+
+
+def _build_cite_fetch_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "cite-fetch",
+        help="Fetch citation data from OpenAlex for papers in the database",
+    )
+    p.add_argument(
+        "paper_id",
+        nargs="?",
+        help="arXiv paper ID (e.g. 2301.00001). If omitted, processes all papers.",
+    )
+    p.add_argument(
+        "--direction",
+        choices=["from", "to", "both"],
+        default="both",
+        help="Which citations to fetch: 'from'=references, 'to'=citing papers, 'both'=all (default: both)",
+    )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be fetched and imported without writing to DB",
+    )
+    p.add_argument(
+        "--skip-external",
+        action="store_true",
+        help="Only import citations where both source and target are in the local DB",
+    )
+    p.add_argument(
+        "--delay",
+        type=float,
+        default=0.11,
+        help="Delay between API requests in seconds (default: 0.11 = ~9 req/s)",
+    )
+    p.add_argument(
+        "--max-per-paper",
+        type=int,
+        default=0,
+        help="Max citations to fetch per paper (0 = unlimited, default: 0)",
+    )
+    return p
+
+
+def _run_cite_fetch(args: argparse.Namespace) -> int:
+    """Fetch citation data from OpenAlex and populate the citations table."""
+    db = Database()
+    db.init()
+
+    delay = max(0, args.delay)
+    direction = args.direction
+    dry_run = args.dry_run
+    skip_external = args.skip_external
+
+    # Collect papers to process
+    paper_ids: list[str]
+    if args.paper_id:
+        if not db.paper_exists(args.paper_id):
+            print(f"Error: paper {args.paper_id!r} not found in database", file=sys.stderr)
+            return 1
+        paper_ids = [args.paper_id]
+    else:
+        # Process all papers
+        all_papers = db.list_papers()
+        paper_ids = [p.id for p in all_papers]
+        if not paper_ids:
+            print("No papers in database. Nothing to do.")
+            return 0
+
+    # Build set of known paper IDs for fast lookup
+    known_ids: set[str] = {p.id for p in db.list_papers()}
+
+    total_added = 0
+    total_skipped_external = 0
+    total_errors = 0
+    total_cited_by_count = 0  # forward citations found (may not all be imported)
+
+    for paper_id in paper_ids:
+        print(f"Processing {paper_id}...", file=sys.stderr)
+
+        # Step 1: Get OpenAlex ID for this paper
+        openalex_id = _arxiv_doi_to_openalex(paper_id)
+        if not openalex_id:
+            print(f"  [skip] {paper_id}: not found in OpenAlex", file=sys.stderr)
+            continue
+
+        # Step 2: Fetch backward citations (papers this paper references)
+        if direction in ("from", "both"):
+            refs = _get_openalex_references(openalex_id)
+            if delay > 0:
+                time.sleep(delay)
+
+            for ref_openalex_id in refs:
+                if args.max_per_paper > 0 and total_added >= args.max_per_paper:
+                    break
+                try:
+                    ref_work = _openalex_request(f"/works/{ref_openalex_id.rstrip('/').split('/')[-1]}")
+                    ref_arxiv_id = _work_to_arxiv_id(ref_work)
+                    if not ref_arxiv_id:
+                        if skip_external:
+                            total_skipped_external += 1
+                            continue
+                        # Don't add external references unless user wants them
+                        total_skipped_external += 1
+                        continue
+                    if ref_arxiv_id not in known_ids:
+                        total_skipped_external += 1
+                        continue
+                    if dry_run:
+                        print(f"  [dry-run] would add: {paper_id} -> {ref_arxiv_id} (backward)", file=sys.stderr)
+                    else:
+                        added = db.add_citation(paper_id, ref_arxiv_id)
+                        if added:
+                            total_added += 1
+                except Exception as e:
+                    total_errors += 1
+                    print(f"  [error] fetching ref {ref_openalex_id}: {e}", file=sys.stderr)
+
+        # Step 3: Fetch forward citations (papers citing this paper)
+        if direction in ("to", "both"):
+            citing_works, citing_count = _get_openalex_citing(openalex_id)
+            total_cited_by_count += citing_count
+            cited_count = 0
+
+            for citing_work in citing_works:
+                if args.max_per_paper > 0 and cited_count >= args.max_per_paper:
+                    break
+                citing_arxiv_id = _work_to_arxiv_id(citing_work)
+                if not citing_arxiv_id:
+                    if skip_external:
+                        total_skipped_external += 1
+                    else:
+                        total_skipped_external += 1  # don't import external
+                    cited_count += 1
+                    continue
+                if citing_arxiv_id not in known_ids:
+                    total_skipped_external += 1
+                    cited_count += 1
+                    continue
+                if dry_run:
+                    print(f"  [dry-run] would add: {citing_arxiv_id} -> {paper_id} (forward)", file=sys.stderr)
+                else:
+                    added = db.add_citation(citing_arxiv_id, paper_id)
+                    if added:
+                        total_added += 1
+                cited_count += 1
+                if delay > 0:
+                    time.sleep(delay)
+
+        if delay > 0 and direction == "from":
+            time.sleep(delay)
+
+    # Summary
+    print(f"\nSummary:", file=sys.stderr)
+    if dry_run:
+        print(f"  [dry-run mode — nothing written]", file=sys.stderr)
+    print(f"  Citations added to DB: {total_added}", file=sys.stderr)
+    print(f"  Skipped (not in DB or external): {total_skipped_external}", file=sys.stderr)
+    print(f"  Errors: {total_errors}", file=sys.stderr)
+    if direction in ("to", "both"):
+        print(f"  Note: {total_cited_by_count} forward citations found in OpenAlex (some may be outside DB)", file=sys.stderr)
+
+    return 0
+
+
 # ── Citation import ──────────────────────────────────────────────────────────
 
 def _build_cite_import_parser(subparsers) -> argparse.ArgumentParser:
@@ -760,12 +1024,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     _build_export_parser(subparsers)
     _build_citations_parser(subparsers)
     _build_cite_import_parser(subparsers)
+    _build_cite_fetch_parser(subparsers)
 
     # Check if first arg is a known subcommand
     raw_args = argv if argv is not None else sys.argv[1:]
     first = raw_args[0] if raw_args else ""
 
-    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations", "cite-import"}
+    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations", "cite-import", "cite-fetch"}
 
     if first in SUBCOMMANDS:
         # New subcommand flow
@@ -783,6 +1048,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         _build_export_parser(subparsers)
         _build_citations_parser(subparsers)
         _build_cite_import_parser(subparsers)
+        _build_cite_fetch_parser(subparsers)
         args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
         if args.subcmd == "search":
@@ -809,6 +1075,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             return _run_citations(args)
         elif args.subcmd == "cite-import":
             return _run_cite_import(args)
+        elif args.subcmd == "cite-fetch":
+            return _run_cite_fetch(args)
         return 0
     else:
         # Legacy flow (arxiv ID / DOI as first positional arg)
