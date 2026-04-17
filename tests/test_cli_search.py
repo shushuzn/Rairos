@@ -48,7 +48,6 @@ class FakePaper:
     def __init__(
         self,
         id="2301.00001",
-        uid="2301.00001",
         title="Attention Is All You Need",
         authors="Vaswani et al.",
         published="2017-06-12",
@@ -59,7 +58,6 @@ class FakePaper:
         parse_status="done",
     ):
         self.id = id
-        self.uid = uid
         self.title = title
         self.authors = authors
         self.published = published
@@ -453,9 +451,9 @@ class TestRunQueueList:
         mock_db = MagicMock()
         mock_db.init.return_value = None
         mock_db.get_papers.return_value = [
-            FakePaper(uid="2301.00001", parse_status="pending"),
-            FakePaper(uid="2301.00002", parse_status="done"),
-            FakePaper(uid="2301.00003", parse_status="pending"),
+            FakePaper(id="2301.00001", parse_status="pending"),
+            FakePaper(id="2301.00002", parse_status="done"),
+            FakePaper(id="2301.00003", parse_status="pending"),
         ]
         mock_db_cls.return_value = mock_db
 
@@ -473,7 +471,7 @@ class TestRunQueueList:
     def test_queue_list_empty(self, mock_db_cls, capsys):
         mock_db = MagicMock()
         mock_db.init.return_value = None
-        mock_db.get_papers.return_value = [FakePaper(uid="2301.00001", parse_status="done")]
+        mock_db.get_papers.return_value = [FakePaper(id="2301.00001", parse_status="done")]
         mock_db_cls.return_value = mock_db
 
         args = make_args(list=True, dequeue=False, add=None, cancel=None)

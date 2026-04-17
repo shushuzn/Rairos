@@ -239,10 +239,7 @@ def _run_import(args: argparse.Namespace) -> int:
         # Attempt to upsert — use raw arXiv ID or DOI as id
         try:
             paper_id_clean = paper_id.strip()
-            db.upsert_paper({
-                "id": paper_id_clean,
-                "source": args.source,
-            })
+            db.upsert_paper(paper_id_clean, args.source)
             added += 1
             print(f"Added: {paper_id_clean}")
         except Exception as e:
@@ -460,7 +457,7 @@ def _run_queue(args: argparse.Namespace) -> int:
     db.init()
     if args.list:
         jobs = db.get_papers(limit=100)
-        pending = [p.uid for p in jobs if p.parse_status == "pending"]
+        pending = [p.id for p in jobs if p.parse_status == "pending"]
         if pending:
             print("Pending:", ", ".join(pending))
         else:
