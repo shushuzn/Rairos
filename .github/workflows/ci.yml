@@ -95,10 +95,7 @@ jobs:
 
       - name: Generate coverage badge
         if: github.ref == 'refs/heads/main' && matrix.python-version == '3.12'
-        run: |
-          COVERAGE=$(python -c "import json; d=json.load(open('coverage.json')); print(round(d['totals']['percent_covered'], 1)))")
-          curl -s --noproxy "*" -o coverage-badge.svg "https://img.shields.io/badge/coverage-${COVERAGE}%25-brightgreen"
-          echo "Badge generated: ${COVERAGE}%"
+        run: python .github/workflows/generate-badge.py
 
       - name: Commit coverage badge
         if: github.ref == 'refs/heads/main' && matrix.python-version == '3.12'
