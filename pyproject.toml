@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-research-os"
-version = "1.0.0"
+version = "1.0.1"
 description = "A Structured Research Operating System for Serious AI Researchers"
 readme = "README.md"
-license = {text = "Research-Only"}
+license = {text = "LicenseRef-ResearchOnly"}
 requires-python = ">=3.9"
 authors = [
     {name = "shushuzn", email = "shushuzn@example.com"}
@@ -16,18 +16,19 @@ keywords = ["research", "ai", "papers", "arxiv", "notes", "zettelkasten"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
-    "License :: Free for Research Use",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-]
+    "Programmming Language :: Python :: 3.11",
+    "Programmming Language :: Python :: 3.12",
+    "Programmming Language :: Python :: 3.12",
+
 dependencies = [
     "requests>=2.25.0",
     "feedparser>=6.0.0",
     "pymupdf>=1.23.0",
 ]
+
 
 [project.optional-dependencies]
 ocr = ["pytesseract>=0.3.0", "pillow>=9.0.0"]
@@ -36,26 +37,13 @@ dev = ["pytest>=7.0.0", "pytest-cov>=4.0.0"]
 all = ["pytesseract>=0.3.0", "pillow>=9.0.0", "openai>=1.0.0", "pytest>=7.0.0", "pytest-cov>=4.0.0"]
 
 [project.scripts]
-airos = "ai_research_os:main"
+airos = "ai_research_os::main"
 
 [project.urls]
-Homepage = "https://github.com/shushuzn/ai_research_os"
-Documentation = "https://github.com/shushuzn/ai_research_os#readme"
+Homepage = "https://github.com/shushuzn/ai_research_os"Documentation = "https://github.com/shushuzn/ai_research_os#readme"
 Repository = "https://github.com/shushuzn/ai_research_os"
 Issues = "https://github.com/shushuzn/ai_research_os/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["core*", "llm*", "notes*", "parsers*", "pdf*", "renderers*", "sections*", "updaters*"]
-
-[tool.setuptools.package-data]
-completions = ["bash", "zsh", "fish"]
-
-[tool.setuptools.package-dir]
-"" = "."
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"]
-python_functions = ["test_*"]
-addopts = "-q"
