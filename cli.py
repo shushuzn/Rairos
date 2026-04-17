@@ -76,10 +76,8 @@ def _run_search(args: argparse.Namespace) -> int:
         limit=args.limit,
         offset=args.offset,
         source=args.source or None,
-        year=args.year if args.year > 0 else None,
-        tags=args.tags or None,
         parse_status=args.status or None,
-        sort=args.sort,
+        date_from=f"{args.year}-01-01" if args.year > 0 else None,
     )
 
     if args.format == "json":
@@ -134,12 +132,11 @@ def _build_list_parser(subparsers) -> argparse.ArgumentParser:
 def _run_list(args: argparse.Namespace) -> int:
     db = Database()
     db.init()
-    papers = db.list_papers(
-        status=args.status or None,
-        year=args.year if args.year > 0 else None,
-        tags=args.tags or None,
+    papers, total = db.list_papers(
+        parse_status=args.status or None,
         limit=args.limit,
         offset=args.offset,
+        date_from=f"{args.year}-01-01" if args.year > 0 else None,
     )
     if args.format == "json":
         out = [{"paper_id": p.id, "title": p.title, "authors": p.authors,
