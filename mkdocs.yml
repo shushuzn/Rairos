@@ -1,11 +1,15 @@
 site_name: AI Research OS
 site_description: A Structured Research Operating System for Serious AI Researchers
 site_url: https://shushuzn.github.io/ai_research_os/
+site_author: shushuzn
 repo_name: shushuzn/ai_research_os
 repo_url: https://github.com/shushuzn/ai_research_os
+copyright: Copyright &copy; 2026 shushuzn
 
 theme:
   name: material
+  logo: assets/logo.svg
+  favicon: assets/favicon.svg
   palette:
     - scheme: default
       primary: indigo
@@ -24,6 +28,11 @@ theme:
     - navigation.tracking
     - navigation.tabs
     - content.code.copy
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/shushuzn
 
 nav:
   - Home: index.md
