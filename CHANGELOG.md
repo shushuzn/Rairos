@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.3.0 (2026-04-18)
+
+### Features
+
+- `stats` — DB overview: total papers, breakdown by source, parse_status, job_queue size, dedup_log count, HTTP cache size
+- `import` — Batch add papers by arXiv UID / DOI / URL with `--source` flag and `--skip-existing` flag
+- `export` — Full DB export to CSV or JSON with `--out FILE`; includes all 11 Paper fields
+- `queue --list` — List pending papers with their IDs, arXiv IDs, titles, and added_at timestamps
+- `queue --clear` — Reset all papers with parse_status=pending back to idle, clearing the queue
+- `list --sort` — Sort papers by `published` / `title` / `parse_status` / `added_at` with `--order asc|desc`
+- `list --format csv` — Emit CSV with 8 columns: id, arxiv_id, title, published, source, parse_status, added_at, cached_at
+- `dedup --since YYYY-MM-DD` — Limit deduplication scan to papers added on or after the given date
+- `merge --dry-run` — Preview keep/drop decisions for each duplicate pair before executing the merge
+
+### Bug Fixes
+
+- Fix `queue --list` and `--clear` semantics: `--list` reads `papers.parse_status`, `--clear` resets `papers.parse_status` (not `job_queue` table)
+- Fix CLI subcommand parser: `stats`, `import`, `export` now correctly registered in the new subcommand parser flow
+- Fix `PaperRecord` attribute: use `.id` instead of non-existent `.uid` throughout `_run_queue`
+
+### CI
+
+- Fix PyPI release: add `skip_existing: true` to prevent 400 "File already exists" errors
+- Fix GitHub Release: use `github.ref_name || inputs.tag` so workflow_dispatch creates correct tag; add `contents: write` permission for `softprops/action-gh-release`
+
+### Refactor
+
+- Add `clear_pending_papers()` to `db/database.py` — resets `parse_status` to idle for all pending papers
+- Split CLI into dual parser flow: legacy flow (positional arXiv ID/DOI) and new subcommand flow (no positional args)
+
 ## v1.0.2 (2026-04-17)
 
 ### Bug Fixes
