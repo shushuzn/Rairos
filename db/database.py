@@ -1091,6 +1091,18 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"clear_jobs failed: {e}") from e
 
+    def clear_pending_papers(self) -> int:
+        """Reset parse_status of all pending papers to 'idle'. Returns count cleared."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute(
+                "UPDATE papers SET parse_status = 'idle' WHERE parse_status = 'pending'"
+            )
+            self.conn.commit()
+            return cur.rowcount
+        except sqlite3.Error as e:
+            raise DatabaseError(f"clear_pending_papers failed: {e}") from e
+
     def get_papers(self, limit: int = 10000, offset: int = 0) -> List[PaperRecord]:
         """Return all papers (no filters), newest first."""
         try:

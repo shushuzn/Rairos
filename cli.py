@@ -478,8 +478,8 @@ def _run_queue(args: argparse.Namespace) -> int:
         else:
             print(f"No such job {args.cancel}")
     elif args.clear:
-        n = db.clear_jobs()
-        print(f"Cleared {n} queued job(s)")
+        n = db.clear_pending_papers()
+        print(f"Cleared {n} pending paper(s)")
     else:
         print("Use --list, --dequeue, --add UID, --cancel JOB_ID, or --clear")
     return 0
