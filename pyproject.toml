@@ -50,3 +50,9 @@ include = ["core*", "parsers*", "notes*", "pdf*", "sections*", "llm*", "renderer
 
 [tool.setuptools.package-data]
 completions = ["bash", "zsh", "fish"]
+
+[tool.commitizen]
+name = "cz_v1"
+version = "1.0.2"
+tag_format = "$version"
+version_files = ["pyproject.toml"]
