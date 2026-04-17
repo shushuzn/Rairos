@@ -190,11 +190,11 @@ def _run_queue(args: argparse.Namespace) -> int:
     elif args.dequeue:
         job = db.dequeue_job()
         if job:
-            print(f"Dequeued: {job.uid} (id={job.id})")
+            print(f"Dequeued: {job['paper_id']} (id={job['id']})")
         else:
             print("Queue empty")
     elif args.add:
-        db.enqueue_job(args.add)
+        db.enqueue_job(args.add, "parse")
         print(f"Added {args.add} to queue")
     else:
         print("Use --list, --dequeue, or --add UID")

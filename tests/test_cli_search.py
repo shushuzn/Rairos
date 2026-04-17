@@ -484,8 +484,7 @@ class TestRunQueueDequeue:
         mock_db = MagicMock()
         mock_db.init.return_value = None
         mock_job = MagicMock()
-        mock_job.uid = "2301.00001"
-        mock_job.id = 42
+        mock_job.__getitem__ = lambda self, key: {"paper_id": "2301.00001", "id": 42}[key]
         mock_db.dequeue_job.return_value = mock_job
         mock_db_cls.return_value = mock_db
 
@@ -524,7 +523,7 @@ class TestRunQueueAdd:
         args = make_args(list=False, dequeue=False, add="2301.99999")
         result = _run_queue(args)
 
-        mock_db.enqueue_job.assert_called_once_with("2301.99999")
+        mock_db.enqueue_job.assert_called_once_with("2301.99999", "parse")
         captured = capsys.readouterr().out
         assert "Added 2301.99999 to queue" in captured
         assert result == 0
