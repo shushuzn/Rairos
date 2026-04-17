@@ -971,10 +971,132 @@ class TestRunCacheEdgeCases:
         assert "No cache entry for not-exist" in out, f"Expected 'No cache entry' message in: {out}"
 
     def test_cache_set_shows_unimplemented(self, capsys):
-        """--set is defined in the parser but not handled in _run_cache."""
-        args = make_args(stats=False, clear=False, get=None, set_=["UID", "/path"])
+        """--set is now implemented, but verify else branch for unknown cache action."""
+        args = make_args(stats=False, clear=False, get=None, set_=None)
         result = _run_cache(args)
         out = capsys.readouterr().out
-        # Should fall through to the else branch: "Use --stats, --clear, --get UID, or --set UID PATH"
-        assert "--set" in out or "Use" in out, f"Expected usage message, got: {out}"
+        assert "Use --stats" in out
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# infer_tags_if_empty tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+from cli import infer_tags_if_empty
+from core import Paper
+
+
+class TestInferTagsIfEmpty:
+    """Test keyword tag inference."""
+
+    def test_existing_tags_unchanged(self):
+        paper = Paper(source="arxiv", uid="t", title="t", authors=[], abstract="", published="", updated="", abs_url="", pdf_url="", primary_category="")
+        tags = ["Agent", "RAG"]
+        assert infer_tags_if_empty(tags, paper) == ["Agent", "RAG"]
+
+    def test_infers_agent_from_title(self):
+        paper = Paper(source="arxiv", uid="t", title="Tool Use in LLM Agents", authors=[], abstract="", published="", updated="", abs_url="", pdf_url="", primary_category="")
+        tags = []
+        assert "Agent" in infer_tags_if_empty(tags, paper)
+
+    def test_infers_rag_from_abstract(self):
+        paper = Paper(source="arxiv", uid="t", title="Foo", authors=[], abstract="retrieval augmented generation", published="", updated="", abs_url="", pdf_url="", primary_category="")
+        tags = []
+        assert "RAG" in infer_tags_if_empty(tags, paper)
+
+    def test_unsorted_when_no_match(self):
+        paper = Paper(source="arxiv", uid="t", title="Foo Bar Baz", authors=[], abstract="", published="", updated="", abs_url="", pdf_url="", primary_category="")
+        tags = []
+        assert infer_tags_if_empty(tags, paper) == ["Unsorted"]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_search CSV format
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunSearchCsv:
+    """Test _run_search with CSV format."""
+
+    @patch("cli.Database")
+    def test_csv_format_prints_header_and_row(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.search_papers.return_value = ([FakeSearchResult()], 1)
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(
+            query="attention",
+            limit=10,
+            offset=0,
+            format="csv",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+        )
+        result = _run_search(args)
+        captured = capsys.readouterr().out
+        assert "paper_id,title,authors" in captured
+        assert "Attention Is All You Need" in captured
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_list JSON format
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunListJson:
+    """Test _run_list with JSON format."""
+
+    @patch("cli.Database")
+    def test_json_format_prints_papers(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.list_papers.return_value = ([FakePaper()], 1)
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(
+            status="",
+            year=0,
+            tags=[],
+            limit=20,
+            offset=0,
+            format="json",
+        )
+        result = _run_list(args)
+        captured = capsys.readouterr().out
+        assert "Attention Is All You Need" in captured
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_status edge cases
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunStatusEdgeCases:
+    """Test _run_status with empty/unusual data."""
+
+    @patch("cli.Database")
+    def test_status_with_empty_papers(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_papers.return_value = []
+        mock_db_cls.return_value = mock_db
+
+        args = make_args()
+        result = _run_status(args)
+        captured = capsys.readouterr().out
+        assert "Total papers: 0" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_status_with_none_source(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        fake = FakePaper()
+        fake.source = None
+        mock_db.get_papers.return_value = [fake]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args()
+        result = _run_status(args)
+        captured = capsys.readouterr().out
+        assert "By source:" in captured
         assert result == 0
