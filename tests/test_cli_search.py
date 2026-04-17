@@ -636,6 +636,54 @@ class TestRunCacheNoArgs:
         assert result == 0
 
 
+class TestRunCacheSet:
+    """Test cache --set UID PATH."""
+
+    @patch("cli.Database")
+    def test_cache_set_caches_json_file(self, mock_db_cls, capsys, tmp_path):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db_cls.return_value = mock_db
+
+        json_file = tmp_path / "paper.json"
+        json_file.write_text('{"title": "Test Paper", "abstract": "Test abstract"}', encoding="utf-8")
+
+        args = make_args(stats=False, clear=False, get=None, set=["uid123", str(json_file)])
+        result = _run_cache(args)
+
+        mock_db.set_cached_paper.assert_called_once_with("uid123", {"title": "Test Paper", "abstract": "Test abstract"})
+        captured = capsys.readouterr().out
+        assert "Cached uid123" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_cache_set_returns_error_on_bad_json(self, mock_db_cls, capsys, tmp_path):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db_cls.return_value = mock_db
+
+        bad_file = tmp_path / "bad.json"
+        bad_file.write_text("not json{", encoding="utf-8")
+
+        args = make_args(stats=False, clear=False, get=None, set=["uid123", str(bad_file)])
+        result = _run_cache(args)
+
+        assert "Failed to cache" in capsys.readouterr().out
+        assert result == 1
+
+    @patch("cli.Database")
+    def test_cache_set_returns_error_on_missing_file(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats=False, clear=False, get=None, set=["uid123", "/nonexistent/path.json"])
+        result = _run_cache(args)
+
+        assert "Failed to cache" in capsys.readouterr().out
+        assert result == 1
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # main() routing tests
 # ─────────────────────────────────────────────────────────────────────────────

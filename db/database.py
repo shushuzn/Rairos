@@ -108,6 +108,12 @@ CREATE TABLE IF NOT EXISTS settings (
     value TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS paper_cache (
+    uid  TEXT PRIMARY KEY,
+    data TEXT NOT NULL,
+    cached_at TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_papers_parse_status ON papers(parse_status);
 CREATE INDEX IF NOT EXISTS idx_papers_source ON papers(source);
 CREATE INDEX IF NOT EXISTS idx_papers_added_at ON papers(added_at);
@@ -1023,6 +1029,39 @@ class Database:
             return count
         except sqlite3.Error as e:
             raise DatabaseError(f"rebuild_fts_index failed: {e}") from e
+
+    def get_cached_paper(self, uid: str) -> Optional[Any]:
+        """Get a cached paper by UID, or a stats counter if uid=='__stats__'."""
+        try:
+            cur = self.conn.cursor()
+            if uid == "__stats__":
+                cur.execute("SELECT COUNT(*) FROM paper_cache")
+                return cur.fetchone()[0]
+            cur.execute("SELECT data FROM paper_cache WHERE uid = ?", (uid,))
+            row = cur.fetchone()
+            return json.loads(row[0]) if row else None
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_cached_paper failed: {e}") from e
+
+    def set_cached_paper(self, uid: str, data: Any) -> None:
+        """Cache a paper JSON blob by UID."""
+        try:
+            with self.conn as c:
+                c.execute(
+                    "INSERT OR REPLACE INTO paper_cache (uid, data, cached_at) VALUES (?, ?, ?)",
+                    (uid, json.dumps(data), _utcnow()),
+                )
+        except sqlite3.Error as e:
+            raise DatabaseError(f"set_cached_paper failed: {e}") from e
+
+    def clear_cache(self) -> int:
+        """Clear all cache entries. Returns count deleted."""
+        try:
+            with self.conn as c:
+                c.execute("DELETE FROM paper_cache")
+            return c.total_changes
+        except sqlite3.Error as e:
+            raise DatabaseError(f"clear_cache failed: {e}") from e
 
     # ── Utilities ────────────────────────────────────────────────────────────
 

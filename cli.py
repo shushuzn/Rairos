@@ -217,13 +217,24 @@ def _run_cache(args: argparse.Namespace) -> int:
         entries = db.get_cached_paper("__stats__")
         print(f"Cache size: {entries}")
     elif args.clear:
-        print("Cache cleared")
+        deleted = db.clear_cache()
+        print(f"Cache cleared ({deleted} entries)")
     elif args.get:
         cached = db.get_cached_paper(args.get)
         if cached:
             print(json.dumps(cached, indent=2, ensure_ascii=False))
         else:
             print(f"No cache entry for {args.get}")
+    elif args.set:
+        uid, path = args.set
+        try:
+            with open(path, encoding="utf-8") as f:
+                data = json.load(f)
+            db.set_cached_paper(uid, data)
+            print(f"Cached {uid} from {path}")
+        except Exception as e:
+            print(f"Failed to cache {uid}: {e}")
+            return 1
     else:
         print("Use --stats, --clear, --get UID, or --set UID PATH")
     return 0
