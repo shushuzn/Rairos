@@ -576,15 +576,25 @@ def _run_merge(args: argparse.Namespace) -> int:
     older = target if target.added_at <= duplicate.added_at else duplicate
     newer = duplicate if target.added_at <= duplicate.added_at else target
     keep, drop = _pick_keep(older, newer, args.keep)
+
+    # Show semantic similarity if embeddings exist
+    sim = db.get_similarity(target.id, duplicate.id)
+
     if args.dry_run:
         print(f"Would merge {drop.id} into {keep.id} (--keep={args.keep})")
         print(f"  keeping : [{keep.id}] {keep.title[:70]}")
         print(f"  deleting: [{drop.id}] {drop.title[:70]}")
+        if sim is not None:
+            print(f"  semantic similarity: {sim:.3f}")
+        else:
+            print(f"  semantic similarity: no embeddings available")
         return 0
     ok = db.merge_papers(keep.id, drop.id)
     if ok:
         db.log_dedup(keep.id, drop.id, args.keep)
         print(f"Merged {drop.id} into {keep.id} (--keep={args.keep})")
+        if sim is not None:
+            print(f"  semantic similarity: {sim:.3f}")
         return 0
     else:
         print(f"Merge failed")

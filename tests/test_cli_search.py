@@ -1492,6 +1492,7 @@ class TestRunMerge:
     def test_merge_success(self, mock_db_cls, capsys):
         mock_db = MagicMock()
         mock_db.get_paper.side_effect = [MagicMock(), MagicMock()]
+        mock_db.get_similarity.return_value = None
         mock_db.merge_papers.return_value = True
         mock_db_cls.return_value = mock_db
 
@@ -1505,6 +1506,7 @@ class TestRunMerge:
     def test_merge_db_returns_false(self, mock_db_cls, capsys):
         mock_db = MagicMock()
         mock_db.get_paper.side_effect = [MagicMock(), MagicMock()]
+        mock_db.get_similarity.return_value = None
         mock_db.merge_papers.return_value = False
         mock_db_cls.return_value = mock_db
 
@@ -1722,6 +1724,7 @@ class TestRunMerge:
         older = MagicMock(id="uid1", added_at="2024-01-01", parse_status="pending")
         newer = MagicMock(id="uid2", added_at="2024-06-01", parse_status="completed")
         mock_db.get_paper.side_effect = [older, newer]
+        mock_db.get_similarity.return_value = None
         mock_db.merge_papers.return_value = True
         mock_db_cls.return_value = mock_db
         # older is uid1 (target), newer is uid2 (duplicate)
@@ -1739,6 +1742,7 @@ class TestRunMerge:
         older = MagicMock(id="uid1", added_at="2024-01-01", parse_status="pending")
         newer = MagicMock(id="uid2", added_at="2024-06-01", parse_status="completed")
         mock_db.get_paper.side_effect = [older, newer]
+        mock_db.get_similarity.return_value = None
         mock_db.merge_papers.return_value = True
         mock_db_cls.return_value = mock_db
         args = make_args(target_id="uid1", duplicate_id="uid2", keep="newer")
@@ -1756,6 +1760,7 @@ class TestRunMerge:
         older = MagicMock(id="uid1", added_at="2024-01-01", parse_status="pending")
         newer = MagicMock(id="uid2", added_at="2024-06-01", parse_status="completed")
         mock_db.get_paper.side_effect = [older, newer]
+        mock_db.get_similarity.return_value = None
         mock_db.merge_papers.return_value = True
         mock_db_cls.return_value = mock_db
         # --keep parsed means the one with better parse_status wins

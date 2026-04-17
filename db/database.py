@@ -1540,6 +1540,27 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"find_similar failed: {e}") from e
 
+    def get_similarity(self, paper_id1: str, paper_id2: str) -> float | None:
+        """
+        Compute cosine similarity between two papers by their embeddings.
+        Returns None if either paper lacks an embedding.
+        """
+        try:
+            import struct
+
+            emb1 = self.get_embedding(paper_id1)
+            emb2 = self.get_embedding(paper_id2)
+            if emb1 is None or emb2 is None:
+                return None
+            norm1 = sum(x * x for x in emb1) ** 0.5
+            norm2 = sum(x * x for x in emb2) ** 0.5
+            if norm1 == 0 or norm2 == 0:
+                return None
+            dot = sum(a * b for a, b in zip(emb1, emb2))
+            return dot / (norm1 * norm2)
+        except Exception as e:
+            raise DatabaseError(f"get_similarity failed: {e}") from e
+
     def get_embedding_stats(self) -> dict:
         """Return embedding coverage stats."""
         try:
