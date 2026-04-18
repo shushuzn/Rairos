@@ -876,6 +876,11 @@ def _build_cite_graph_parser(subparsers) -> argparse.ArgumentParser:
         help="Build graph directly from plain text (extract references without DB import). "
              "Useful for papers not yet in the DB.",
     )
+    p.add_argument(
+        "--fetch-metadata", action="store_true",
+        help="Fetch paper titles from arXiv/CrossRef APIs for plain-text mode. "
+             "Implies --plain-text. Adds titles to graph nodes.",
+    )
     return p
 
 
@@ -887,8 +892,18 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
     plain_text = getattr(args, "plain_text", None)
 
     # ── Plain-text mode: extract references from raw text ─────────────────────
-    if plain_text is not None:
-        result = _extract_references_from_text(root_id, plain_text)
+    fetch_meta = getattr(args, "fetch_metadata", False)
+    if plain_text is not None or fetch_meta:
+        # If --fetch-metadata but no --plain-text provided, require an arXiv root ID
+        if fetch_meta and plain_text is None:
+            print("Error: --fetch-metadata requires --plain-text", file=sys.stderr)
+            return 1
+
+        if plain_text is not None:
+            result = _extract_references_from_text(root_id, plain_text)
+        else:
+            result = {"arxiv_ids": [], "dois": []}
+
         arxiv_ids = result["arxiv_ids"]
         dois = result["dois"]
 
@@ -917,13 +932,32 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
                 edges.append((root_id, did, "backward"))
             ref_ids.append(did)
 
-        # JSON and mermaid: pure output, no text summary
+        # ── Metadata fetch: populate titles from arXiv / CrossRef ────────────────────
+        if fetch_meta:
+            items = [(pid, n) for pid, n in nodes.items() if not n.title and n.depth > 0]
+            for i, (pid, node) in enumerate(items):
+                if pid.startswith("arXiv:"):
+                    aid = pid[6:]
+                    title = _fetch_arxiv_title(aid)
+                    if title:
+                        nodes[pid].title = title
+                elif pid.startswith("doi:"):
+                    doi_str = pid[4:]
+                    title = _fetch_doi_title(doi_str)
+                    if title:
+                        nodes[pid].title = title
+                # Rate-limit: sleep between requests (0.3s), skip after last
+                if i < len(items) - 1:
+                    time.sleep(0.3)
+
+        # JSON: include title in node output
         if args.format == "json":
             out = {
                 "root": root_id,
                 "mode": "plain-text",
+                "metadata_fetched": fetch_meta,
                 "nodes": [
-                    {"id": pid, "depth": n.depth, "direction": n.direction}
+                    {"id": pid, "title": n.title, "depth": n.depth, "direction": n.direction}
                     for pid, n in nodes.items()
                 ],
                 "edges": [
@@ -933,6 +967,7 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
                     "total_refs": len(ref_ids),
                     "arxiv_count": len(arxiv_ids),
                     "doi_count": len(dois),
+                    "titles_fetched": sum(1 for n in nodes.values() if n.title and n.depth > 0),
                 },
             }
             print(json.dumps(out, ensure_ascii=False, indent=2))
@@ -964,8 +999,9 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
             print(f"  DOIs ({len(dois)}): {', '.join(dois[:10])}")
             if len(dois) > 10:
                 print(f"  ... and {len(dois) - 10} more")
+        meta_status = " (metadata fetched)" if fetch_meta else ""
         print()
-        print(f"CITATION GRAPH (plain-text mode) — {root_id}")
+        print(f"CITATION GRAPH (plain-text mode){meta_status} — {root_id}")
         print(f"References: {len(ref_ids)}  |  arXiv: {len(arxiv_ids)}  |  DOI: {len(dois)}")
         print()
         print(f"  {root_id}  (ROOT)")
@@ -973,7 +1009,8 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
         print(f"  CITES ({len(ref_ids)} references)  ──")
         for rid in sorted(ref_ids, key=lambda x: x[0]):
             n = nodes[rid]
-            print(f"    ●──? {rid}")
+            title_str = f" — {n.title[:45]}" if n.title else ""
+            print(f"    ●──? {rid}{title_str}")
         print()
         print(f"[{len(nodes)} nodes, {len(edges)} edges]")
         return 0
@@ -1146,6 +1183,47 @@ def _build_openalex_ctx() -> ssl.SSLContext:
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
     return ctx
+
+
+def _fetch_arxiv_title(arxiv_id: str, timeout: int = 15) -> Optional[str]:
+    """
+    Fetch paper title from arXiv API using urllib + SSL bypass.
+    Returns title string or None on failure.
+    """
+    url = f"http://export.arxiv.org/api/query?id_list={arxiv_id}"
+    ctx = _build_openalex_ctx()
+    proxy_handler = urllib.request.ProxyHandler({})
+    opener = urllib.request.build_opener(proxy_handler, urllib.request.HTTPSHandler(context=ctx))
+    req = urllib.request.Request(url, headers={"User-Agent": "ai_research_os/1.0"})
+    try:
+        with opener.open(req, timeout=timeout) as resp:
+            data = resp.read().decode("utf-8")
+        import xml.etree.ElementTree as ET
+        root = ET.fromstring(data)
+        ns = {"atom": "http://www.w3.org/2005/Atom"}
+        entries = root.findall("atom:entry", ns)
+        if entries:
+            title_el = entries[0].find("atom:title", ns)
+            if title_el is not None and title_el.text:
+                return title_el.text.replace("\n", " ").strip()
+    except Exception:
+        pass
+    return None
+
+
+def _fetch_doi_title(doi: str, timeout: int = 15) -> Optional[str]:
+    """
+    Fetch paper title from CrossRef API using urllib + SSL bypass.
+    Returns title string or None on failure.
+    """
+    from parsers.crossref import fetch_crossref_metadata
+    try:
+        p, _ = fetch_crossref_metadata(doi, timeout=timeout)
+        if p.title and p.title != doi:
+            return p.title
+    except Exception:
+        pass
+    return None
 
 
 def _openalex_request(path: str, timeout: int = 15) -> dict:

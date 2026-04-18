@@ -410,3 +410,131 @@ class TestCiteGraphPlainText:
         # Should be 3 nodes (root + 2 unique refs), not 4
         assert "3 nodes, 2 edges" in out
 
+
+class TestCiteGraphFetchMetadata:
+    """Tests for --fetch-metadata flag."""
+
+    def test_fetch_metadata_arxiv(self, capsys, monkeypatch):
+        """--fetch-metadata fetches title from arXiv API for arXiv references."""
+        fetched_calls: list[tuple] = []
+
+        def mock_fetch_arxiv(aid, timeout=15):
+            fetched_calls.append(aid)
+            return f"Title for {aid}"
+
+        def mock_fetch_doi(doi, timeout=15):
+            return None
+
+        monkeypatch.setattr("cli._fetch_arxiv_title", mock_fetch_arxiv)
+        monkeypatch.setattr("cli._fetch_doi_title", mock_fetch_doi)
+
+        text = "We build on arXiv:2401.11111 and arXiv:2401.22222."
+        args = make_args(paper="2401.00001", plain_text=text, format="text",
+                         fetch_metadata=True)
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        # Titles should appear in output
+        assert "Title for 2401.11111" in out
+        assert "Title for 2401.22222" in out
+        # Status line should show metadata was fetched
+        assert "metadata fetched" in out
+        assert fetched_calls == ["2401.11111", "2401.22222"]
+
+    def test_fetch_metadata_doi(self, capsys, monkeypatch):
+        """--fetch-metadata fetches title from CrossRef for DOI references."""
+        def mock_fetch_arxiv(aid, timeout=15):
+            return None
+
+        def mock_fetch_doi(doi, timeout=15):
+            return f"Paper Title from DOI {doi}"
+
+        monkeypatch.setattr("cli._fetch_arxiv_title", mock_fetch_arxiv)
+        monkeypatch.setattr("cli._fetch_doi_title", mock_fetch_doi)
+
+        text = "See doi:10.1000/xyz123 for background."
+        args = make_args(paper="2401.00001", plain_text=text, format="text",
+                         fetch_metadata=True)
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "Paper Title from DOI 10.1000/xyz123" in out
+        assert "metadata fetched" in out
+
+    def test_fetch_metadata_json_format(self, capsys, monkeypatch):
+        """JSON output includes title field and metadata_fetched flag."""
+        def mock_fetch_arxiv(aid, timeout=15):
+            return f"Fetched Title {aid}"
+
+        def mock_fetch_doi(doi, timeout=15):
+            return None
+
+        monkeypatch.setattr("cli._fetch_arxiv_title", mock_fetch_arxiv)
+        monkeypatch.setattr("cli._fetch_doi_title", mock_fetch_doi)
+
+        text = "Based on arXiv:2401.11111."
+        args = make_args(paper="2401.00001", plain_text=text, format="json",
+                         fetch_metadata=True)
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        data = json.loads(capsys.readouterr().out)
+        assert data["metadata_fetched"] is True
+        assert data["stats"]["titles_fetched"] == 1
+        # Node for the reference should have title
+        ref_node = next(n for n in data["nodes"] if n["id"] == "arXiv:2401.11111")
+        assert ref_node["title"] == "Fetched Title 2401.11111"
+
+    def test_fetch_metadata_mixed_refs(self, capsys, monkeypatch):
+        """Handles both arXiv IDs and DOIs in same run."""
+        def mock_fetch_arxiv(aid, timeout=15):
+            return f"ArXiv Paper {aid}"
+
+        def mock_fetch_doi(doi, timeout=15):
+            return f"DOI Paper {doi}"
+
+        monkeypatch.setattr("cli._fetch_arxiv_title", mock_fetch_arxiv)
+        monkeypatch.setattr("cli._fetch_doi_title", mock_fetch_doi)
+
+        text = "We cite arXiv:2401.11111 and doi:10.1000/abc456."
+        args = make_args(paper="2401.00001", plain_text=text, format="text",
+                         fetch_metadata=True)
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "ArXiv Paper 2401.11111" in out
+        assert "DOI Paper 10.1000/abc456" in out
+
+    def test_fetch_metadata_without_plain_text_shows_error(self, capsys):
+        """--fetch-metadata without --plain-text shows error."""
+        args = make_args(paper="2401.00001", fetch_metadata=True, format="text")
+        rc = _run_cite_graph(args)
+        assert rc == 1
+        err = capsys.readouterr().err
+        assert "--fetch-metadata requires --plain-text" in err
+
+    def test_fetch_metadata_rate_limit_sleep(self, monkeypatch):
+        """Fetches sleep 0.3s between requests, not after last."""
+        import time
+        sleep_times: list[float] = []
+        original_sleep = time.sleep
+
+        def track_sleep(delay):
+            sleep_times.append(delay)
+
+        def mock_fetch_arxiv(aid, timeout=15):
+            return f"Title {aid}"
+
+        def mock_fetch_doi(doi, timeout=15):
+            return None
+
+        monkeypatch.setattr(time, "sleep", track_sleep)
+        monkeypatch.setattr("cli._fetch_arxiv_title", mock_fetch_arxiv)
+        monkeypatch.setattr("cli._fetch_doi_title", mock_fetch_doi)
+
+        text = "arXiv:2401.11111 and arXiv:2401.22222 and arXiv:2401.33333"
+        args = make_args(paper="2401.00001", plain_text=text, format="text",
+                         fetch_metadata=True)
+        _run_cite_graph(args)
+        # Should sleep 0.3s between requests, but NOT after the last one
+        assert sleep_times == [0.3, 0.3], f"Expected 2 sleeps, got {sleep_times}"
+
