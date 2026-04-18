@@ -310,3 +310,103 @@ class TestCiteGraphMaxNodes:
         # Each paper appears in its own line (not counting header/group label lines)
         assert fwd_count <= 3
         assert bwd_count <= 3
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test: cite-graph --plain-text mode
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestCiteGraphPlainText:
+    """Test _run_cite_graph with --plain-text option."""
+
+    def test_plain_text_arxiv_only(self, capsys):
+        """Plain-text mode extracts arXiv IDs from raw text."""
+        text = (
+            "This paper builds on arXiv:2301.11111 and arXiv:2302.22222.\n"
+            "References\n"
+            "[1] Smith et al. 2023.\n"
+            "[2] Jones et al. arXiv:2303.33333.\n"
+        )
+        args = make_args(paper="2301.00001", plain_text=text, format="text")
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "2301.11111" in out
+        assert "2302.22222" in out
+        assert "2303.33333" in out
+        assert "[4 nodes, 3 edges]" in out  # root + 3 refs
+
+    def test_plain_text_doi_only(self, capsys):
+        """Plain-text mode extracts DOIs from raw text."""
+        text = (
+            "Prior work includes DOI:10.1000/abc123 and "
+            "https://doi.org/10.1001/journal.xy. References section below.\n"
+        )
+        args = make_args(paper="2301.00001", plain_text=text, format="text")
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "10.1000/abc123" in out
+        assert "10.1001/journal.xy" in out
+        assert "arXiv: 0" in out
+
+    def test_plain_text_mixed(self, capsys):
+        """Plain-text mode handles arXiv IDs and DOIs together."""
+        text = (
+            "We cite arXiv:2401.99999 and DOI:10.1126/science.123456.\n"
+        )
+        args = make_args(paper="2401.00001", plain_text=text, format="text")
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "arXiv:2401.99999" in out
+        assert "doi:10.1126/science.123456" in out
+
+    def test_plain_text_no_refs(self, capsys):
+        """Plain-text mode returns 0 when no references found."""
+        text = "This paper has no references section."
+        args = make_args(paper="2301.00001", plain_text=text, format="text")
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "No references found" in out
+
+    def test_plain_text_json_format(self, capsys):
+        """Plain-text mode outputs correct JSON structure."""
+        text = "See arXiv:2401.11111 for related work."
+        args = make_args(paper="2401.00001", plain_text=text, format="json")
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        data = json.loads(out)
+        assert data["root"] == "2401.00001"
+        assert data["mode"] == "plain-text"
+        assert data["stats"]["arxiv_count"] == 1
+        assert len(data["nodes"]) == 2
+        assert len(data["edges"]) == 1
+
+    def test_plain_text_mermaid_format(self, capsys):
+        """Plain-text mode outputs valid mermaid syntax."""
+        text = "Related to arXiv:2401.22222 and arXiv:2401.33333."
+        args = make_args(paper="2401.00001", plain_text=text, format="mermaid")
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "```mermaid" in out
+        assert "graph TD" in out
+        assert "2401_00001" in out  # sanitized root ID
+        assert "-->" in out  # edge arrow
+
+    def test_plain_text_duplicate_refs_deduped(self, capsys):
+        """Same reference appearing twice is deduplicated in graph."""
+        text = (
+            "We cite arXiv:2401.11111 and again arXiv:2401.11111 here.\n"
+            "Also see arXiv:2401.22222.\n"
+        )
+        args = make_args(paper="2401.00001", plain_text=text, format="text")
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        # Should be 3 nodes (root + 2 unique refs), not 4
+        assert "3 nodes, 2 edges" in out
+

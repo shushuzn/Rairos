@@ -871,6 +871,11 @@ def _build_cite_graph_parser(subparsers) -> argparse.ArgumentParser:
         "--format", choices=["text", "mermaid", "json"], default="text",
         help="Output format (default: text)",
     )
+    p.add_argument(
+        "--plain-text", metavar="TEXT",
+        help="Build graph directly from plain text (extract references without DB import). "
+             "Useful for papers not yet in the DB.",
+    )
     return p
 
 
@@ -879,6 +884,101 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
     db.init()
 
     root_id = args.paper
+    plain_text = getattr(args, "plain_text", None)
+
+    # ── Plain-text mode: extract references from raw text ─────────────────────
+    if plain_text is not None:
+        result = _extract_references_from_text(root_id, plain_text)
+        arxiv_ids = result["arxiv_ids"]
+        dois = result["dois"]
+
+        if not arxiv_ids and not dois:
+            print(f"No references found in plain text for {root_id!r}")
+            return 0
+
+        # Build in-memory graph from extracted references
+        nodes: Dict[str, CiteGraphNode] = {}
+        edges: List[Tuple[str, str, str]] = []
+
+        nodes[root_id] = CiteGraphNode(root_id, root_id, 0, "root")
+
+        ref_ids: list[str] = []
+        for aid in arxiv_ids:
+            rid = f"arXiv:{aid}"
+            if rid not in nodes:
+                nodes[rid] = CiteGraphNode(rid, "", 1, "backward")
+                edges.append((root_id, rid, "backward"))
+            ref_ids.append(rid)
+
+        for doi in dois:
+            did = f"doi:{doi}"
+            if did not in nodes:
+                nodes[did] = CiteGraphNode(did, "", 1, "backward")
+                edges.append((root_id, did, "backward"))
+            ref_ids.append(did)
+
+        # JSON and mermaid: pure output, no text summary
+        if args.format == "json":
+            out = {
+                "root": root_id,
+                "mode": "plain-text",
+                "nodes": [
+                    {"id": pid, "depth": n.depth, "direction": n.direction}
+                    for pid, n in nodes.items()
+                ],
+                "edges": [
+                    {"from": f, "to": t, "direction": d} for f, t, d in edges
+                ],
+                "stats": {
+                    "total_refs": len(ref_ids),
+                    "arxiv_count": len(arxiv_ids),
+                    "doi_count": len(dois),
+                },
+            }
+            print(json.dumps(out, ensure_ascii=False, indent=2))
+            return 0
+
+        if args.format == "mermaid":
+            print("```mermaid")
+            print("graph TD")
+            for pid, n in nodes.items():
+                safe_id = pid.replace("-", "_").replace(".", "_").replace(":", "_")
+                label = n.title[:40] + ("..." if len(n.title) > 40 else "") if n.title else pid
+                print(f'    {safe_id}["{label}"]')
+            print()
+            for f, t, d in edges:
+                sf = f.replace("-", "_").replace(".", "_").replace(":", "_")
+                st = t.replace("-", "_").replace(".", "_").replace(":", "_")
+                arrow = "-->"
+                print(f"    {sf} {arrow} {st}")
+            print("```")
+            return 0
+
+        # Text format: show summary header, then graph
+        print(f"References extracted from {root_id!r}:")
+        if arxiv_ids:
+            print(f"  arXiv IDs ({len(arxiv_ids)}): {', '.join(arxiv_ids[:20])}")
+            if len(arxiv_ids) > 20:
+                print(f"  ... and {len(arxiv_ids) - 20} more")
+        if dois:
+            print(f"  DOIs ({len(dois)}): {', '.join(dois[:10])}")
+            if len(dois) > 10:
+                print(f"  ... and {len(dois) - 10} more")
+        print()
+        print(f"CITATION GRAPH (plain-text mode) — {root_id}")
+        print(f"References: {len(ref_ids)}  |  arXiv: {len(arxiv_ids)}  |  DOI: {len(dois)}")
+        print()
+        print(f"  {root_id}  (ROOT)")
+        print()
+        print(f"  CITES ({len(ref_ids)} references)  ──")
+        for rid in sorted(ref_ids, key=lambda x: x[0]):
+            n = nodes[rid]
+            print(f"    ●──? {rid}")
+        print()
+        print(f"[{len(nodes)} nodes, {len(edges)} edges]")
+        return 0
+
+    # ── DB mode: build graph from citation edges in DB ──────────────────────
     if not db.paper_exists(root_id):
         print(f"Error: paper {root_id!r} not found in database", file=sys.stderr)
         return 1
@@ -1269,18 +1369,20 @@ _ARXIV_PAT = re.compile(
     r"(?i)\barxiv:?\.?\s*(\d{4}\.\d{4,5}(?:v\d+)?)\b"
 )
 _DOI_PAT = re.compile(
-    r"(?i)\b(?:doi|https?://(?:dx\.)?doi\.org)/?(10\.\d{4,}(?:/\S+)?)\b"
+    r"(?i)(?:doi:|https?://(?:dx\.)?doi\.org/)(10\.\d{4,}/\S+)"
 )
 _NUM_BRACKET_PAT = re.compile(r"\[\d+\]")
 
 
 def _extract_references_from_text(paper_id: str, text: str) -> dict[str, list[str]]:
     """
-    Extract arXiv IDs and DOIs from the references section of a paper's plain text.
+    Extract arXiv IDs and DOIs from the plain text of a paper.
 
-    Returns dict with keys "arxiv_ids" and "dois", each a list of unique IDs found.
+    Returns dict with keys "arxiv_ids" and "dois", each a list of unique IDs found
+    in the references section (or the whole text if no section header is found).
     Returns empty lists if no references section is found or the text is empty.
     """
+
     if not text or not text.strip():
         return {"arxiv_ids": [], "dois": []}
 
@@ -1291,14 +1393,15 @@ def _extract_references_from_text(paper_id: str, text: str) -> dict[str, list[st
     else:
         refs_text = text  # fall back to whole text
 
-    # Extract arXiv IDs
+    # Extract arXiv IDs (search the whole text, not just refs section,
+    # so inline citations in body text are also captured)
     arxiv_ids: set[str] = set()
-    for m in _ARXIV_PAT.finditer(refs_text):
+    for m in _ARXIV_PAT.finditer(text):
         arxiv_ids.add(m.group(1))
 
     # Extract DOIs (strip leading doi: or https://doi.org/)
     dois: set[str] = set()
-    for m in _DOI_PAT.finditer(refs_text):
+    for m in _DOI_PAT.finditer(text):
         raw = m.group(1).rstrip(" .")
         if raw.startswith("10."):
             dois.add(raw)
