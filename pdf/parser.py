@@ -477,15 +477,25 @@ class PDFParser:
                 }
         except Exception as e:
             logger.warning("[parser] pdfminer fallback failed: %s", e)
+            return {
+                "text": "",
+                "latex_blocks": [],
+                "tables": [],
+                "figures": [],
+                "page_count": 0,
+                "warnings": [],
+                "errors": [f"All extraction methods failed: {e}"],
+            }
 
+        # pdfminer returned empty text
         return {
             "text": "",
             "latex_blocks": [],
             "tables": [],
             "figures": [],
             "page_count": 0,
-            "warnings": [],
-            "errors": [f"All extraction methods failed: {e}"],
+            "warnings": ["Used pdfminer fallback"],
+            "errors": [],
         }
 
     # ─── Helpers ────────────────────────────────────────────────────────────
