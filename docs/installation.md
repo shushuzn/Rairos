@@ -5,42 +5,42 @@
 - Python 3.9+
 - pip
 
-## Core Dependencies
+## Install
 
 ```bash
-pip install requests feedparser pymupdf
+pip install -e .
 ```
 
-## Optional Dependencies
+This installs the `ai_research-os` package and the `ai-research-os` CLI entry point.
 
-For scanned PDFs (OCR support):
+## Initialize Database
 
 ```bash
-pip install pymupdf  # already included
+python -m ai_research_os init
 ```
 
-For AI-assisted drafting:
+Creates the SQLite database at `~/.ai_research_os/papers.db`.
+
+## Ollama (Optional — for Semantic Dedup)
+
+For `dedup-semantic` command, install [Ollama](https://ollama.com) and pull the embedding model:
 
 ```bash
-pip install openai  # or your preferred OpenAI-compatible client
+ollama pull nomic-embed-text
 ```
 
-## API Keys
+The CLI will automatically use `http://localhost:11434` for embeddings.
 
-Set your API key as an environment variable:
+## Verify
 
 ```bash
-export OPENAI_API_KEY="sk-..."
+python -m ai_research_os --help
+python -m ai_research_os status   # shows database stats
 ```
 
-Or pass it via command line (not recommended for security):
+## Uninstall
 
 ```bash
-python ai_research_os.py ... --api-key "sk-..."
-```
-
-## Verification
-
-```bash
-python ai_research_os.py --help
+pip uninstall ai-research-os
+rm -rf ~/.ai_research_os   # remove database and cache
 ```

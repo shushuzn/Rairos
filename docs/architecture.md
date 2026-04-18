@@ -3,65 +3,79 @@
 ## Overview
 
 ```
-Input (arXiv/DOI/PDF)
-       │
-       ▼
-  parsers/           # Parse input → structured paper metadata
-       │
-       ▼
-  core/              # Business logic
-       │
-  ┌───┼───┬─────────┐
-  ▼   ▼   ▼         ▼
-pdf/  llm/  sections/  renderers/
-  │   │       │           │
-  ▼   ▼       ▼           ▼
- OCR  AI    P-Note    Output files
-    draft  C-Note
-           Radar
-           Timeline
-                │
-                ▼
-            updaters/     # Write to data stores
+CLI (cli.py)
+    │
+    ├── parsers/        # arXiv, DOI, OpenAlex API
+    ├── database.py     # SQLite + FTS5
+    ├── embed.py        # Ollama embedding client
+    └── citation.py     # OpenAlex citation API
 ```
 
 ## Modules
 
-### `ai_research_os.py`
-Main entry point. CLI argument parsing and orchestrator.
+### `cli.py`
+Main entry point. 13 subcommands registered in two parser flows:
+- **Legacy flow**: `main()` dispatches on `sys.argv[0]` (used by direct invocation)
+- **Subcommand flow**: `main(subcommand, args)` (used by `python -m ai_research_os`)
 
-### `core/`
-Shared utilities — date helpers, slug generators, cache.
+### `database.py`
+SQLite wrapper with FTS5 full-text search.
 
-### `parsers/`
-- `arxiv.py` — arXiv ID/URL extraction and API fetching
-- `doi.py` — DOI resolution via CrossRef
-- `pdf.py` — Local PDF metadata extraction
+Schema:
+- `papers` — one row per unique paper (id, title, authors, abstract, published, source, category, parse_status, etc.)
+- `papers_fts` — FTS5 virtual table for full-text search
+- `papers_embeddings` — paper_id → 768-dim embedding vector (for semantic dedup)
+- `citations` — (source_id, target_id) citation edges
 
-### `pdf/`
-- `extract.py` — MuPDF text extraction
-- `ocr.py` — OCR for scanned PDFs via pymupdf
+Key methods:
+- `upsert_paper(paper_id, source, ...)` — insert or update
+- `search_papers(query, category, ...)` — FTS5 with BM25 ranking
+- `set_embedding(paper_id, embedding)` / `find_similar(paper_id, threshold, limit)` — semantic dedup
+- `add_citation(source_id, target_id)` / `get_citations(paper_id, direction)` — citation graph
 
-### `sections/`
-- `pnote.py` — Paper Note structure
-- `cnote.py` — Critical Note structure
-- `radar.py` — Radar entry structure
-- `timeline.py` — Timeline entry structure
+### `embed.py`
+Ollama embedding client. Uses `http://localhost:11434/api/embeddings` with `nomic-embed-text` model. Returns 768-dim vectors.
 
-### `llm/`
-- `parse.py` — AI-assisted structured drafting
+### `citation.py`
+OpenAlex API client. Fetches citation data via:
+- `https://api.openalex.org/works?filter=doi:{doi}` — resolve arXiv ID → OpenAlex work ID
+- `https://api.openalex.org/works/{openalex_id}/references` — backward citations (cited works)
+- `https://api.openalex.org/works?filter=cites:{openalex_id}` — forward citations (citing works)
 
-### `renderers/`
-- `pnote.py`, `cnote.py`, `radar.py`, `timeline.py` — Output formatting
-
-### `updaters/`
-- `radar.py`, `timeline.py` — Append to YAML data stores
+Bypasses Windows proxy SSL issues via custom SSL context.
 
 ## Data Flow
 
-1. **Parse** — Extract paper metadata from input
-2. **Fetch** — Get full text via arXiv/DOI/MuPDF
-3. **Structure** — Build P-Note + C-Note in memory
-4. **Optionally draft** — AI generates structured draft (待核验)
-5. **Render** — Write formatted output files
-6. **Update** — Append to radar.yaml and timeline.yaml
+```
+import PAPER_ID
+    │
+    ▼
+parse_arXiv_or_DOI(paper_id)
+    │
+    ▼
+upsert_paper() → papers table
+    │
+    ▼
+index_paper() → papers_fts (FTS5)
+
+search QUERY
+    │
+    ▼
+FTS5 BM25(query) → ranked results
+
+dedup-semantic --generate
+    │
+    ▼
+embed.py → Ollama /api/embeddings → papers_embeddings
+
+cite-fetch PAPER_ID
+    │
+    ▼
+citation.py → OpenAlex API → add_citation() → citations table
+```
+
+## Database Location
+
+Default: `~/.ai_research_os/papers.db`
+
+Override with `AI_RESEARCH_OS_DB` environment variable.

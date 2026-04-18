@@ -1,54 +1,47 @@
-# AI Research OS
+# AI Research OS — CLI Reference
 
-**A Structured Research Operating System for Serious AI Researchers**
+**Local-first paper management CLI with SQLite FTS5 search, semantic deduplication, and citation graph.**
 
 ## What It Does
 
-Feed it a paper (arXiv URL, DOI, or PDF). Get back a **P-Note**, **C-Note**, **Radar entry**, and **Timeline entry** — all structured, tagged, and cross-linked.
-
-```bash
-# One paper
-python ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM,Agent
-
-# With AI draft (requires API key)
-python ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM --ai
-```
-
-This is **not a PDF manager**. It is a **Cognitive Upgrade System** that enforces structured thinking, explicit reasoning, and long-term research tracking.
-
-## Input / Output
-
-| Input | Output |
-|-------|--------|
-| arXiv URL/ID | P-Note + C-Note + Radar + Timeline |
-| DOI | P-Note + C-Note + Radar + Timeline |
-| Local PDF | P-Note + C-Note + Radar + Timeline |
-| Scanned PDF | Same (via OCR) |
-| `--ai` flag | + AI-structured draft (待核验) |
+Manage a local database of AI/ML papers. Import from arXiv/DOI, search with full-text search, find near-duplicates with semantic embeddings, and build a citation graph.
 
 ## Quick Start
 
 ```bash
-pip install requests feedparser pymupdf
-python ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM
+pip install -e .
+python -m ai_research_os init          # create ~/.ai_research_os/papers.db
+python -m ai_research_os import 2601.00155
+python -m ai_research_os list
+python -m ai_research_os search "attention mechanism"
+python -m ai_research_os status
 ```
 
-## Project Structure
+## CLI Subcommands
 
-```
-ai_research_os/
-  ai_research_os.py      # Main entry point
-  core/                   # Core logic
-  parsers/                # Input parsing (arXiv, DOI, PDF)
-  pdf/                    # PDF extraction + OCR
-  sections/               # Output sections (pnote, cnote, radar, timeline)
-  llm/                    # AI-assisted drafting
-  renderers/              # Output rendering
-  updaters/               # Data store updates
-  docs/                   # Documentation (MkDocs)
-  tests/                  # Test suite
-```
+| Command | Description |
+|---------|-------------|
+| `import [IDS...]` | Import papers by arXiv ID or DOI |
+| `list` | List papers in database |
+| `search [QUERY]` | Full-text search with FTS5 BM25 ranking |
+| `stats` | Show database statistics |
+| `export` | Export papers as BibTeX or JSON |
+| `queue` | Show or clear pending papers |
+| `merge` | Merge duplicate papers |
+| `dedup-semantic` | Find near-duplicates via Ollama embeddings |
+| `cite-fetch` | Fetch citation data from OpenAlex |
+| `cite-import` | Bulk import citation edges from JSON |
+| `cite-stats` | Show citation statistics |
 
-## License
+## Project Status
 
-Research-Only. See [LICENSE](https://github.com/shushuzn/ai_research_os/blob/main/LICENSE).
+- **Tests**: 795 passing, 1 skipped
+- **Version**: 1.3.0
+- **Python**: 3.9+
+
+## Links
+
+- [Installation](installation.md)
+- [Usage Reference](usage.md)
+- [Changelog](../CHANGELOG.md)
+- [GitHub](https://github.com/shushuzn/ai_research_os)

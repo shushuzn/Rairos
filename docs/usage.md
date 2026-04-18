@@ -1,94 +1,189 @@
 # Usage
 
-## Basic Usage
+## Initialize
 
 ```bash
-python ai_research_os.py <input> [options]
+python -m ai_research_os init
 ```
 
-## Input Types
+## Import Papers
 
-### arXiv URL
 ```bash
-python ai_research_os.py https://arxiv.org/abs/2601.00155
-python ai_research_os.py https://arxiv.org/pdf/2601.00155.pdf
-python ai_research_os.py 2601.00155
+# Single paper by arXiv ID
+python -m ai_research_os import 2601.00155
+
+# Multiple papers
+python -m ai_research_os import 2601.00155 2301.12345 10.1038/nature12373
+
+# Batch from file (one ID per line)
+python -m ai_research_os import --file ids.txt
 ```
 
-### DOI
+## List Papers
+
 ```bash
-python ai_research_os.py 10.1038/nature12373
+# List all papers
+python -m ai_research_os list
+
+# Filter by status
+python -m ai_research_os list --status pending
+python -m ai_research_os list --status done
+
+# Filter by source
+python -m ai_research_os list --source arxiv
 ```
 
-### Local PDF
-```bash
-python ai_research_os.py ./papers/my-paper.pdf
-```
-
-## Options
-
-| Option | Description |
-|--------|-------------|
-| `--tags` | Comma-separated research tags |
-| `--ai` | Generate AI-assisted draft |
-| `--api-key` | API key for AI drafting |
-| `--output-dir` | Output directory (default: current) |
-
-## Examples
+## Search
 
 ```bash
-# With tags
-python ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM,Agent
-
-# With AI draft
-python ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM --ai
-
-# Custom output directory
-python ai_research_os.py 10.1038/nature12373 --tags NLP --output-dir ./research
-```
-
-## Search Commands
-
-The `search` and `list` subcommands provide full-text search across indexed papers using SQLite FTS5 with BM25 ranking.
-
-```bash
-# Full-text search
-python ai_research_os.py search "transformer attention"
+# Full-text search (FTS5 with BM25 ranking)
+python -m ai_research_os search "transformer attention"
 
 # Filter by category and date
-python ai_research_os.py search --category cs.LG --date-from 2024-01-01
+python -m ai_research_os search --category cs.LG --date-from 2024-01-01
 
 # Filter by parse status and sort by date
-python ai_research_os.py search --status done --sort date
+python -m ai_research_os search --status done --sort date
 
-# List recent papers (no query = list mode)
-python ai_research_os.py list
-
-# List papers by status
-python ai_research_os.py list --status pending
-
-# Show database statistics
-python ai_research_os.py status
+# Limit results
+python -m ai_research_os search "LLM" --limit 50
 ```
 
-### Search Options
+## Database Statistics
 
-| Option | Description |
-|--------|-------------|
-| `--category` | Filter by primary category (e.g. `cs.LG`, `cs.CL`) |
-| `--source` | Filter by source (e.g. `arxiv`, `doi`) |
-| `--status` | Filter by parse status (`pending`, `done`, `failed`) |
-| `--date-from` | Filter papers published on or after this date |
-| `--date-to` | Filter papers published on or before this date |
-| `--sort` | Sort by `relevance` (default for search) or `date` |
-| `--limit` | Max results to return (default: 20) |
-| `--offset` | Pagination offset |
+```bash
+python -m ai_research_os status
+python -m ai_research_os stats
+```
 
-## Output Files
+## Export
 
-Each run generates:
+```bash
+# BibTeX (default)
+python -m ai_research_os export > papers.bib
 
-- `P-NOTE-*.md` — Paper note
-- `C-NOTE-*.md` — Critical note
-- `radar.yaml` — Radar entry
-- `timeline.yaml` — Timeline entry
+# JSON
+python -m ai_research_os export --format json > papers.json
+```
+
+## Queue
+
+```bash
+# Show pending papers
+python -m ai_research_os queue --list
+
+# Clear pending papers
+python -m ai_research_os queue --clear
+```
+
+## Merge Duplicates
+
+```bash
+# Dry run — preview what would merge
+python -m ai_research_os merge --dry-run
+
+# Auto-merge high-similarity pairs (>= 0.95)
+python -m ai_research_os merge --auto --dry-run
+
+# Auto-merge for real
+python -m ai_research_os merge --auto
+
+# Keep specific paper when merging
+python -m ai_research_os merge --keep newer 2301.00001 --dry-run
+
+# Auto with semantic preference (0.8+ sim + matching titles)
+python -m ai_research_os merge --keep semantic --auto --dry-run
+```
+
+## Semantic Deduplication
+
+Requires Ollama with `nomic-embed-text` model.
+
+```bash
+# Check embedding coverage
+python -m ai_research_os dedup-semantic --stats
+
+# Generate embeddings for papers missing them
+python -m ai_research_os dedup-semantic --generate
+
+# Find similar papers for a specific paper
+python -m ai_research_os dedup-semantic --paper 2601.00155
+
+# Custom threshold
+python -m ai_research_os dedup-semantic --paper 2601.00155 --threshold 0.85
+
+# CSV output for pipeline integration
+python -m ai_research_os dedup-semantic --generate --format csv
+```
+
+## Citation Graph
+
+### Fetch Citations from OpenAlex
+
+```bash
+# Fetch for all papers in DB
+python -m ai_research_os cite-fetch
+
+# Fetch for specific paper
+python -m ai_research_os cite-fetch 2601.00155
+
+# Dry run — preview what would be imported
+python -m ai_research_os cite-fetch --dry-run
+
+# Only import citations where both papers are in local DB
+python -m ai_research_os cite-fetch --skip-external
+
+# Fetch only backward citations (papers cited by this paper)
+python -m ai_research_os cite-fetch 2601.00155 --direction from
+
+# Fetch only forward citations (papers citing this paper)
+python -m ai_research_os cite-fetch 2601.00155 --direction to
+
+# Rate limit (~9 req/s)
+python -m ai_research_os cite-fetch --delay 0.11
+```
+
+### Bulk Import Citations from JSON
+
+```bash
+# From stdin
+cat citations.json | python -m ai_research_os cite-import
+
+# From file
+python -m ai_research_os cite-import --file citations.json
+
+# Dry run
+python -m ai_research_os cite-import --file citations.json --dry-run
+
+# Skip edges where source/target is not in DB
+python -m ai_research_os cite-import --file citations.json --skip-missing
+```
+
+JSON format:
+```json
+[
+  {
+    "source": "2601.00155",
+    "targets": ["2301.09876", "2305.12345"]
+  }
+]
+```
+
+### Citation Statistics
+
+```bash
+# Global stats — total edges, unique citing/cited, avg per paper
+python -m ai_research_os cite-stats
+
+# Per-paper stats
+python -m ai_research_os cite-stats --paper 2601.00155
+
+# Sort by citing papers (papers that cite most others)
+python -m ai_research_os cite-stats --by citing
+
+# Sort by cited-by (most cited papers)
+python -m ai_research_os cite-stats --by cited
+
+# CSV output
+python -m ai_research_os cite-stats --format csv
+```
