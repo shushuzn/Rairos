@@ -219,17 +219,42 @@ def _run_stats(args: argparse.Namespace) -> int:
 
 def _build_import_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("import", help="Add papers to the database by ID")
-    p.add_argument("ids", nargs="+", metavar="ID", help="arXiv IDs, DOIs, or paper UIDs to add")
+    p.add_argument("ids", nargs="*", metavar="ID", help="arXiv IDs, DOIs, or paper UIDs to add")
     p.add_argument("--source", default="import", help="Source label (default: import)")
     p.add_argument("--skip-existing", action="store_true", help="Skip IDs already in database")
+    p.add_argument("--file", metavar="FILE", help="Read IDs from file (one per line), or '-' for stdin")
     return p
 
 
 def _run_import(args: argparse.Namespace) -> int:
     db = Database()
     db.init()
+
+    # Resolve paper IDs: from file or positional args
+    _has_file = bool(getattr(args, "file", None))
+    if _has_file:
+        import io as _io
+        if args.file == "-":
+            _source = _io.StringIO(sys.stdin.read())
+        else:
+            _source = open(args.file, encoding="utf-8")
+        try:
+            raw = _source.read()
+        finally:
+            if _source is not sys.stdin:
+                _source.close()
+        paper_ids = [line.strip() for line in raw.splitlines() if line.strip()]
+    else:
+        paper_ids = getattr(args, "ids", []) or []
+
+    if not paper_ids:
+        if not _has_file and not getattr(args, "ids", []):
+            print("Error: no IDs provided (use positional IDs, --file, or pipe into stdin)", file=sys.stderr)
+            return 1
+        # file provided but empty — not an error, just nothing to do
+
     added, skipped, failed = 0, 0, 0
-    for paper_id in args.ids:
+    for paper_id in paper_ids:
         p = db.get_paper(paper_id)
         if p is not None:
             if args.skip_existing:
