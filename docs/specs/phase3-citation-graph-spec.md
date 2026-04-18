@@ -144,13 +144,9 @@ COMPLETED:
 4. `cite graph` with text/json/mermaid formats and DB/plaintext modes
 5. `cite fetch` via OpenAlex API
 6. `cite import` for arXiv/PMID/ISBN
-7. `cite dedup` with exact and semantic strategies
-8. `cite merge` for database merging
-9. `cite stats` for citation statistics
-10. Tests for all commands
+7. `--from <id> --to <id>` bidirectional bridge mode for `citations` command (PR #172)
 
 PLANNED / IN PROGRESS:
-- `--from <id> --to <id>` filter for `cite list` (show only local DB papers)
 - Crossref priority boost in data source fallback chain
 - arXiv/Crossref metadata extraction improvements (`<arxiv:doi>`, `<arxiv:journal_ref>`)
 
