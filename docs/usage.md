@@ -157,7 +157,7 @@ python -m ai_research_os cite-import --extract --paper 2601.00155 --dry-run
 # Import with duplicate reporting (uses upsert mode)
 python -m ai_research_os cite-import --extract --paper 2601.00155 --dedup
 ```
-Extract mode finds arXiv IDs, DOIs, PMIDs, and ISBNs in the paper's plain text and prints them. PMIDs and ISBNs are shown but cannot be linked to local DB papers (only arXiv IDs are imported as citation edges).
+Extract mode finds arXiv IDs, DOIs, PMIDs, and ISBNs in the paper's plain text and prints them. PMIDs and ISBNs are shown as-is; DOIs are resolved to titles via CrossRef. Only arXiv IDs can be linked as citation edges.
 
 ### Bulk Import Citations from JSON
 
@@ -203,3 +203,38 @@ python -m ai_research_os cite-stats --by cited
 # CSV output
 python -m ai_research_os cite-stats --format csv
 ```
+
+### Citation Graph (plain-text)
+```bash
+# Extract references from a plain-text file and print as citation graph
+python -m ai_research_os cite-graph --plain-text --paper 2601.00155
+python -m ai_research_os cite-graph --plain-text --file ./paper.txt
+python -m ai_research_os cite-graph --plain-text --file ./paper.txt --verbose
+```
+
+Plain-text mode reads a paper's plain text, extracts all arXiv IDs, DOIs, PMIDs, and ISBNs, and prints them as a citation list. Verbose mode shows the context around each identifier. DOI/PMID/ISBN are shown but cannot be linked as citation edges (only arXiv IDs are linked).
+
+### Citation Graph (database)
+```bash
+# Graph centered on a paper (depth=1 by default)
+python -m ai_research_os cite-graph --paper 2601.00155
+python -m ai_research_os cite-graph --paper 2601.00155 --depth 2
+python -m ai_research_os cite-graph --paper 2601.00155 --max-nodes 50
+
+# Output formats
+python -m ai_research_os cite-graph --paper 2601.00155 --format json
+python -m ai_research_os cite-graph --paper 2601.00155 --format mermaid
+python -m ai_research_os cite-graph --paper 2601.00155 --format text
+```
+
+### Deduplicate Papers
+```bash
+# Deduplicate by exact arXiv ID match
+python -m ai_research_os dedup
+
+# Deduplicate by semantic similarity (embedding-based)
+python -m ai_research_os dedup-semantic
+python -m ai_research_os dedup-semantic --paper 2601.00155
+python -m ai_research_os dedup-semantic --paper 2601.00155 --threshold 0.85 --limit 5
+```
+`dedup` removes duplicate papers from the database using exact match. `dedup-semantic` finds papers with similar abstracts using embeddings; `--threshold` controls similarity cutoff (0.0-1.0, default 0.8), `--limit` caps results per paper.
