@@ -311,6 +311,48 @@ class TestDedupSemanticPaper:
             assert "P2" in out
             assert rc == 0
 
+    def test_threshold_and_limit_passed_to_find_similar(self, monkeypatch):
+        """--threshold and --limit values are forwarded to db.find_similar."""
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli import _run_dedup_semantic
+        with patch("cli.Database") as MockDB:
+            mock_db = MagicMock()
+            mock_db.paper_exists.return_value = True
+            mock_db.get_paper.return_value = FakePaper(id="P1", title="Test Paper")
+            mock_db.find_similar.return_value = []
+            MockDB.return_value = mock_db
+            captured = StringIO()
+            with patch("sys.stdout", captured):
+                rc = _run_dedup_semantic(FakeArgs(
+                    stats=False, generate=False, paper="P1",
+                    dry_run=False, threshold=0.92, limit=5, format="text"))
+            mock_db.find_similar.assert_called_once_with("P1", threshold=0.92, limit=5)
+            assert rc == 0
+
+    def test_custom_threshold_shows_only_above_threshold(self, monkeypatch):
+        """find_similar returns only results >= threshold; CLI displays all it receives."""
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli import _run_dedup_semantic
+        with patch("cli.Database") as MockDB:
+            mock_db = MagicMock()
+            mock_db.paper_exists.return_value = True
+            mock_db.get_paper.return_value = FakePaper(id="P1", title="Test Paper")
+            # Only P2 (0.95) passes threshold=0.90; P3 (0.87) is filtered by db
+            p2 = FakePaper(id="P2", title="Very Similar")
+            mock_db.find_similar.return_value = [(p2, 0.95)]
+            MockDB.return_value = mock_db
+            captured = StringIO()
+            with patch("sys.stdout", captured):
+                rc = _run_dedup_semantic(FakeArgs(
+                    stats=False, generate=False, paper="P1",
+                    dry_run=False, threshold=0.90, limit=20, format="text"))
+            out = captured.getvalue()
+            assert "P2" in out
+            assert "P3" not in out
+            assert rc == 0
+
     def test_paper_csv_format(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
