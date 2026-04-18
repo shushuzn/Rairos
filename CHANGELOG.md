@@ -44,6 +44,30 @@ All notable changes to this project will be documented in this file.
   - New DB methods: `set_embedding()`, `get_embedding()`, `get_papers_without_embeddings()`, `find_similar()`, `get_embedding_stats()`
   - Embeddings stored as binary blob in `papers.embed_vector` (768-dim float, nomic-embed-text)
 
+- `cite-graph` — Citation graph visualization subcommand for exploring paper reference networks
+  - `--from PAPER_ID`: Show papers cited by PAPER_ID (backward citations / references)
+  - `--to PAPER_ID`: Show papers that cite PAPER_ID (forward citations / bibliography)
+  - `--format {text,csv,mermaid,ascii}`: Output format — `text` (default), `csv`, `mermaid` (live-reload graph), `ascii` (unicode box art)
+  - `--dry-run`: Preview graph without writing to DB
+  - `--skip-missing`: Skip edges where source or target paper is not in local DB
+  - `--plain-text`: Extract references directly from raw text without DB storage; supports arXiv IDs, DOIs, PMIDs, and ISBNs with regex extraction and DOI-to-arXiv CrossRef fallback
+  - `--fetch-metadata`: Fetch and display title, authors, year, venue for each paper in the graph via CrossRef API
+  - New DB method: `upsert_citations()` for idempotent citation edge insertion
+
+- `cite-import` — Bulk import citation edges from JSON (extended)
+  - `--extract --paper PAPER_ID`: Parse arXiv IDs, DOIs, PMIDs, and ISBNs from the References section of a paper's plain_text and create citation edges for references already in the DB
+  - `--dedup`: Use `upsert_citations()` for idempotent insertion, reporting duplicate edge count
+
+### Tests
+
+- Add `test_cli_cite_graph.py` with 16+ tests covering cite-graph --from/--to, --format, --dry-run, --skip-missing, --plain-text, --fetch-metadata
+- Add 2 tests for `dedup-semantic --threshold` and `--limit` coverage
+
+### Documentation
+
+- Update cite-* toolchain usage guide in `docs/usage.md` with cite-graph, --extract, --dedup documentation
+- Add PMID/ISBN extraction and dedup-semantic --threshold/--limit to `docs/index.md` and `docs/usage.md`
+
 ## v1.3.0 (2026-04-18)
 
 ### Features
