@@ -298,15 +298,17 @@ class Database:
 
     @contextmanager
     def transaction(self) -> Generator[None, None, None]:
-        """Context manager for explicit transactions."""
-        conn = self.conn
-        cur = conn.cursor()
+        """Context manager for explicit transactions.
+
+        Uses Python's implicit transaction management (with conn:) which handles
+        nesting correctly under WAL mode. Safe to call within operations that
+        have already started an implicit transaction.
+        """
         try:
-            cur.execute("BEGIN")
-            yield
-            cur.execute("COMMIT")
+            with self.conn as _conn:
+                yield
         except Exception:
-            cur.execute("ROLLBACK")
+            self.conn.rollback()
             raise
 
     # ── Papers ────────────────────────────────────────────────────────────────
@@ -1302,7 +1304,7 @@ class Database:
                 ]
                 for field, _ in parse_fields:
                     cur.execute(f"SELECT {field} FROM papers WHERE id = ?", (duplicate_id,))
-                    val = cur.fetchone()[field] if cur.fetchone() else None
+                    row = cur.fetchone(); val = row[field] if row else None
                     if val is not None and val != "" and val != 0 and val != "[]":
                         cur.execute(
                             f"UPDATE papers SET {field} = ? WHERE id = ? AND ({field} = '' OR {field} = '[]' OR {field} = 0)",

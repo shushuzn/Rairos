@@ -139,3 +139,204 @@ class TestParseHistory:
 
 
 
+
+class TestUpdateParseStatus:
+    def test_update_parse_status_success(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Test Paper")
+        db.update_parse_status("2301.00001", status="success", plain_text="Full text", latex_blocks=["b1","b2"], table_count=3, figure_count=5, word_count=1000, page_count=10)
+        paper = db.get_paper("2301.00001")
+        assert paper.parse_status == "success"
+        assert paper.plain_text == "Full text"
+        assert paper.latex_blocks == ["b1","b2"]
+        assert paper.table_count == 3
+        assert paper.figure_count == 5
+        assert paper.word_count == 1000
+        assert paper.page_count == 10
+        assert paper.parse_version == 1
+
+    def test_update_parse_status_increments_version(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Test Paper")
+        db.update_parse_status("2301.00001", status="success", plain_text="v1")
+        db.update_parse_status("2301.00001", status="success", plain_text="v2")
+        paper = db.get_paper("2301.00001")
+        assert paper.parse_version == 2
+        assert paper.plain_text == "v2"
+
+    def test_update_parse_status_failure(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Test Paper")
+        db.update_parse_status("2301.00001", status="failed", error="PDF unreadable")
+        paper = db.get_paper("2301.00001")
+        assert paper.parse_status == "failed"
+        assert paper.parse_error == "PDF unreadable"
+
+    def test_update_parse_status_nonexistent_paper(self, db):
+        db.update_parse_status("does-not-exist", status="success")
+
+    def test_update_parse_status_with_empty_latex(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Test Paper")
+        db.update_parse_status("2301.00001", status="success", latex_blocks=[])
+        paper = db.get_paper("2301.00001")
+        assert paper.latex_blocks == []
+
+
+class TestMergePapers:
+    def test_merge_papers_basic(self, db):
+        db.upsert_paper("target-001", "arxiv", title="Target Paper", doi="10.1234/test")
+        db.upsert_paper("dup-001", "arxiv", title="Duplicate Paper", doi="10.1234/test")
+        db.add_tag("dup-001", "vision")
+        db.enqueue_job("dup-001", "parse")
+        result = db.merge_papers("target-001", "dup-001")
+        assert result is True
+        assert db.get_paper("target-001") is not None
+        assert db.get_paper("dup-001") is None
+        tags = db.get_tags("target-001")
+        assert "vision" in tags
+        assert db.queue_depth("queued") == 1
+
+    def test_merge_papers_fills_empty_parse_fields(self, db):
+        db.upsert_paper("target-001", "arxiv", title="Target Paper")
+        db.upsert_paper("dup-001", "arxiv", title="Dup Paper")
+        db.update_parse_status("dup-001", status="success", plain_text="Full text", word_count=500)
+        db.merge_papers("target-001", "dup-001")
+        paper = db.get_paper("target-001")
+        assert paper.plain_text == "Full text"
+        assert paper.word_count == 500
+
+    def test_merge_papers_does_not_overwrite_filled_fields(self, db):
+        db.upsert_paper("target-001", "arxiv", title="Target Paper")
+        db.update_parse_status("target-001", status="success", plain_text="Original text")
+        db.upsert_paper("dup-001", "arxiv", title="Dup Paper")
+        db.update_parse_status("dup-001", status="success", plain_text="New text")
+        db.merge_papers("target-001", "dup-001")
+        paper = db.get_paper("target-001")
+        assert paper.plain_text == "Original text"
+
+    def test_merge_papers_nonexistent_duplicate(self, db):
+        db.upsert_paper("target-001", "arxiv", title="Target Paper")
+        result = db.merge_papers("target-001", "nonexistent-dup")
+        assert result is False
+
+    def test_merge_papers_preserves_target_tags(self, db):
+        db.upsert_paper("target-001", "arxiv", title="Target Paper")
+        db.upsert_paper("dup-001", "arxiv", title="Dup Paper")
+        db.add_tag("target-001", "nlp")
+        db.add_tag("dup-001", "vision")
+        db.merge_papers("target-001", "dup-001")
+        tags = db.get_tags("target-001")
+        assert "nlp" in tags
+        assert "vision" in tags
+
+
+class TestGetPapersBulk:
+    def test_get_papers_bulk_empty(self, db):
+        result = db.get_papers_bulk([])
+        assert result == {}
+
+    def test_get_papers_bulk_single(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Paper One")
+        result = db.get_papers_bulk(["2301.00001"])
+        assert len(result) == 1
+        assert result["2301.00001"].title == "Paper One"
+
+    def test_get_papers_bulk_multiple(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Paper One")
+        db.upsert_paper("2301.00002", "arxiv", title="Paper Two")
+        db.upsert_paper("2301.00003", "arxiv", title="Paper Three")
+        result = db.get_papers_bulk(["2301.00001", "2301.00003"])
+        assert len(result) == 2
+        assert "2301.00001" in result
+        assert "2301.00003" in result
+        assert "2301.00002" not in result
+
+    def test_get_papers_bulk_missing_ids(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Paper One")
+        result = db.get_papers_bulk(["2301.00001", "nonexistent"])
+        assert len(result) == 1
+        assert "2301.00001" in result
+        assert "nonexistent" not in result
+
+
+class TestListPapers:
+    def test_list_papers_default(self, db):
+        for i in range(5):
+            db.upsert_paper("2301.{i:05d}".format(i=i), "arxiv", title="Paper {i}".format(i=i))
+        papers, total = db.list_papers()
+        assert total == 5
+        assert len(papers) == 5
+
+    def test_list_papers_limit_offset(self, db):
+        for i in range(5):
+            db.upsert_paper("2301.{i:05d}".format(i=i), "arxiv", title="Paper {i}".format(i=i))
+        papers, total = db.list_papers(limit=2, offset=1)
+        assert total == 5
+        assert len(papers) == 2
+
+    def test_list_papers_filter_by_source(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="ArXiv Paper")
+        db.upsert_paper("2301.00002", "semantic", title="Semantic Paper")
+        papers, total = db.list_papers(source="arxiv")
+        assert total == 1
+        assert papers[0].source == "arxiv"
+
+    def test_list_papers_filter_by_parse_status(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Paper 1")
+        db.upsert_paper("2301.00002", "arxiv", title="Paper 2")
+        db.update_parse_status("2301.00001", status="success", plain_text="done")
+        papers, total = db.list_papers(parse_status="success")
+        assert total == 1
+        assert papers[0].id == "2301.00001"
+
+    def test_list_papers_filter_by_category(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Paper 1", primary_category="cs.AI")
+        db.upsert_paper("2301.00002", "arxiv", title="Paper 2", primary_category="cs.LG")
+        papers, total = db.list_papers(category="cs.AI")
+        assert total == 1
+        assert papers[0].primary_category == "cs.AI"
+
+    def test_list_papers_sort_order(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Alpha")
+        db.upsert_paper("2301.00002", "arxiv", title="Beta")
+        papers_asc, _ = db.list_papers(sort_by="title", sort_order="asc")
+        papers_desc, _ = db.list_papers(sort_by="title", sort_order="desc")
+        assert papers_asc[0].title == "Alpha"
+        assert papers_desc[0].title == "Beta"
+
+    def test_list_papers_empty(self, db):
+        papers, total = db.list_papers()
+        assert total == 0
+        assert papers == []
+
+
+class TestGetStats:
+    def test_get_stats_empty(self, db):
+        stats = db.get_stats()
+        assert stats["total_papers"] == 0
+        assert stats["by_source"] == {}
+        assert stats["by_status"] == {}
+
+    def test_get_stats_basic(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Paper 1")
+        db.upsert_paper("2301.00002", "semantic", title="Paper 2")
+        db.update_parse_status("2301.00001", status="success", plain_text="text")
+        stats = db.get_stats()
+        assert stats["total_papers"] == 2
+        assert stats["by_source"]["arxiv"] == 1
+        assert stats["by_source"]["semantic"] == 1
+        assert stats["by_status"]["success"] == 1
+        assert stats["by_status"]["pending"] == 1
+
+    def test_get_stats_queue(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="P1")
+        db.upsert_paper("2301.00002", "arxiv", title="P2")
+        db.enqueue_job("2301.00001", "parse")
+        db.enqueue_job("2301.00002", "parse")
+        stats = db.get_stats()
+        assert stats["queue_queued"] == 2
+        assert stats["queue_running"] == 0
+
+    def test_get_stats_cache_and_dedup(self, db):
+        db.set_cached_paper("uid1", {"data": "test"})
+        db.upsert_paper("target", "arxiv", title="T")
+        stats = db.get_stats()
+        assert stats["cache_entries"] == 1
+        assert stats["dedup_records"] == 0
