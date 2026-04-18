@@ -110,11 +110,10 @@ ai_research_os/
 ├── pdf/               # download, extract (PyMuPDF + OCR + pdfminer)
 ├── sections/          # section segmentation + formatting
 ├── llm/               # OpenAI-compatible client, AI draft generation
-├── renderers/         # P-Note, C-Note, M-Note rendering
+├── cli.py             # CLI entry point + argparse (13 subcommands)
 ├── notes/             # frontmatter, tag inference, note collection
 ├── updaters/          # Radar heat tracking, Timeline
-├── cli.py             # CLI entry point + argparse
-└── tests/             # 372 tests
+└── tests/             # 795 tests
 ```
 
 ---
@@ -154,8 +153,11 @@ Paper → P-Note (paper note)
 
 ## CLI Reference
 
+### Paper Processing (main flow)
+
 | Argument | Description | Default |
 |----------|-------------|---------|
+| `input` | arXiv ID/URL or DOI/doi.org URL | (required) |
 | `--pdf <path>` | Use local PDF | - |
 | `--ocr` | Enable OCR fallback | off |
 | `--ocr-lang <lang>` | OCR language | `chi_sim+eng` |
@@ -166,16 +168,49 @@ Paper → P-Note (paper note)
 | `--api-key <key>` | API key | env `OPENAI_API_KEY` |
 | `--tags <t1,t2>` | Comma-separated tags | auto-inferred |
 
+### CLI Subcommands
+
+| Command | Description |
+|---------|-------------|
+| `stats` | DB overview: total papers, status breakdown, queue size |
+| `import [ID ...]` | Batch add papers by arXiv ID / DOI / URL |
+| `import --file FILE` | Batch add from file (one ID per line) |
+| `export` | Export DB to CSV or JSON |
+| `search [QUERY]` | Full-text search with filters |
+| `list` | List papers with sort/filter |
+| `queue --list` | List pending papers |
+| `queue --clear` | Reset pending papers to idle |
+| `dedup [--dry-run]` | Find exact duplicates by DOI/title |
+| `dedup-semantic [--generate]` | Semantic dedup via Ollama embeddings |
+| `dedup-semantic --stats` | Show embedding coverage stats |
+| `merge TARGET_ID DUPLICATE_ID` | Merge two duplicate papers |
+| `merge --keep semantic --auto` | Auto-merge high-similarity pairs |
+| `citations --from ID` | Show papers cited by ID (backward) |
+| `citations --to ID` | Show papers citing ID (forward) |
+| `cite-fetch [PAPER_ID]` | Fetch citations from OpenAlex API |
+| `cite-import [--file FILE]` | Bulk import citation edges from JSON |
+| `cite-stats` | Citation graph statistics |
+| `cite-stats --top 10` | Top cited papers |
+
+### Ollama (semantic dedup)
+
+```bash
+# Start Ollama locally (required for dedup-semantic)
+ollama serve
+
+# Pull embedding model (one-time)
+ollama pull nomic-embed-text
+```
+
 ---
 
 ## Testing
 
 ```bash
-PYTHONHOME=/c/Users/adm/AppData/Local/Programs/Python/Python312 \
-  .venv/Scripts/python.exe -m pytest tests/ -q
+python -B -m pytest tests/ -q
 ```
 
-**Current**: 372 tests passing, 1 skipped.
+**Current**: 795 tests passing, 1 skipped.
 
 ---
 
@@ -205,12 +240,14 @@ This system enforces:
 
 ## Roadmap
 
-- Citation graph extraction
-- Auto experiment table parsing
-- Embedding-based search
-- Knowledge graph building
-- Trend prediction
-- Research momentum scoring
+- [x] Citation graph extraction (cite-fetch, cite-import, cite-stats)
+- [x] Semantic deduplication (dedup-semantic with Ollama embeddings)
+- [x] Batch import (import --file)
+- [x] Smart merge (--keep semantic --auto)
+- [ ] Auto experiment table parsing
+- [ ] Knowledge graph building
+- [ ] Trend prediction
+- [ ] Research momentum scoring
 
 ---
 
@@ -325,10 +362,10 @@ ai_research_os/
 ├── sections/          # 章节切分 + 格式化
 ├── llm/               # OpenAI 兼容客户端、AI 草稿生成
 ├── renderers/         # P-Note、C-Note、M-Note 渲染
+├── cli.py             # CLI 入口 + argparse（13 个子命令）
 ├── notes/             # frontmatter、标签推理、笔记聚合
 ├── updaters/          # Radar 热度追踪、Timeline
-├── cli.py             # CLI 入口 + argparse
-└── tests/             # 372 个测试
+└── tests/             # 795 个测试
 ```
 
 ---
@@ -368,8 +405,11 @@ ai_research_os/
 
 ## CLI 参数参考
 
+### 论文处理（主流程）
+
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
+| `input` | arXiv ID/URL 或 DOI/doi.org URL | （必填） |
 | `--pdf <path>` | 使用本地 PDF | - |
 | `--ocr` | 启用 OCR 备选方案 | 关闭 |
 | `--ocr-lang <lang>` | OCR 语言 | `chi_sim+eng` |
@@ -380,16 +420,49 @@ ai_research_os/
 | `--api-key <key>` | API key | 环境变量 `OPENAI_API_KEY` |
 | `--tags <t1,t2>` | 逗号分隔的标签 | 自动推理 |
 
+### CLI 子命令
+
+| 命令 | 说明 |
+|------|------|
+| `stats` | 数据库概览：论文总数、状态分布、队列大小 |
+| `import [ID ...]` | 批量添加论文（arXiv ID / DOI / URL） |
+| `import --file FILE` | 从文件批量添加（每行一个 ID） |
+| `export` | 导出数据库为 CSV 或 JSON |
+| `search [QUERY]` | 全文搜索，支持筛选 |
+| `list` | 列出论文，支持排序/筛选 |
+| `queue --list` | 列出等待中的论文 |
+| `queue --clear` | 重置等待中论文状态为 idle |
+| `dedup [--dry-run]` | 按 DOI/title 精确查重 |
+| `dedup-semantic [--generate]` | 通过 Ollama embedding 语义查重 |
+| `dedup-semantic --stats` | 显示 embedding 覆盖率 |
+| `merge TARGET_ID DUPLICATE_ID` | 合并两篇重复论文 |
+| `merge --keep semantic --auto` | 自动合并高相似度论文对 |
+| `citations --from ID` | 显示 ID 引用的论文（后向引用） |
+| `citations --to ID` | 显示引用了 ID 的论文（前向引用） |
+| `cite-fetch [PAPER_ID]` | 从 OpenAlex API 获取引用数据 |
+| `cite-import [--file FILE]` | 批量导入引用边（JSON） |
+| `cite-stats` | 引用图统计 |
+| `cite-stats --top 10` | 引用最多的论文 |
+
+### Ollama（语义查重）
+
+```bash
+# 本地启动 Ollama（dedup-semantic 需要）
+ollama serve
+
+# 拉取 embedding 模型（一次性）
+ollama pull nomic-embed-text
+```
+
 ---
 
 ## 测试
 
 ```bash
-PYTHONHOME=/c/Users/adm/AppData/Local/Programs/Python/Python312 \
-  .venv/Scripts/python.exe -m pytest tests/ -q
+python -B -m pytest tests/ -q
 ```
 
-**当前状态**: 372 测试通过，1 跳过。
+**当前状态**: 795 测试通过，1 跳过。
 
 ---
 
@@ -419,12 +492,14 @@ PYTHONHOME=/c/Users/adm/AppData/Local/Programs/Python/Python312 \
 
 ## 路线图
 
-- 引用图提取
-- 自动实验表格解析
-- 基于 Embedding 的搜索
-- 知识图谱构建
-- 趋势预测
-- 研究势能评分
+- [x] 引用图提取（cite-fetch、cite-import、cite-stats）
+- [x] 语义查重（dedup-semantic，基于 Ollama embeddings）
+- [x] 批量导入（import --file）
+- [x] 智能合并（--keep semantic --auto）
+- [ ] 自动实验表格解析
+- [ ] 知识图谱构建
+- [ ] 趋势预测
+- [ ] 研究势能评分
 
 ---
 
