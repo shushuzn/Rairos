@@ -29,13 +29,14 @@ python -m ai_research_os status
 | `queue` | Show or clear pending papers |
 | `merge` | Merge duplicate papers |
 | `dedup-semantic` | Find near-duplicates via Ollama embeddings |
+| `cite-graph` | Visualize local citation subgraph (1-2 hops) |
 | `cite-fetch` | Fetch citation data from OpenAlex |
-| `cite-import` | Bulk import citation edges from JSON |
+| `cite-import` | Bulk import citation edges from JSON (or extract from plain text) |
 | `cite-stats` | Show citation statistics |
 
 ## Project Status
 
-- **Tests**: 795 passing, 1 skipped
+- **Tests**: 880 passing, 1 skipped
 - **Version**: 1.3.0
 - **Python**: 3.9+
 

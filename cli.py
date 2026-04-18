@@ -902,12 +902,14 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
         if plain_text is not None:
             result = _extract_references_from_text(root_id, plain_text)
         else:
-            result = {"arxiv_ids": [], "dois": []}
+            result = {"arxiv_ids": [], "dois": [], "pmids": [], "isbns": []}
 
         arxiv_ids = result["arxiv_ids"]
         dois = result["dois"]
+        pmids = result["pmids"]
+        isbns = result["isbns"]
 
-        if not arxiv_ids and not dois:
+        if not arxiv_ids and not dois and not pmids and not isbns:
             print(f"No references found in plain text for {root_id!r}")
             return 0
 
@@ -932,7 +934,21 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
                 edges.append((root_id, did, "backward"))
             ref_ids.append(did)
 
-        # ── Metadata fetch: populate titles from arXiv / CrossRef ────────────────────
+        for pmid in pmids:
+            pid = f"pmid:{pmid}"
+            if pid not in nodes:
+                nodes[pid] = CiteGraphNode(pid, "", 1, "backward")
+                edges.append((root_id, pid, "backward"))
+            ref_ids.append(pid)
+
+        for isbn in isbns:
+            iid = f"isbn:{isbn}"
+            if iid not in nodes:
+                nodes[iid] = CiteGraphNode(iid, "", 1, "backward")
+                edges.append((root_id, iid, "backward"))
+            ref_ids.append(iid)
+
+        # ── Metadata fetch: populate titles from arXiv / CrossRef / PubMed / ISBN ─────────
         if fetch_meta:
             items = [(pid, n) for pid, n in nodes.items() if not n.title and n.depth > 0]
             for i, (pid, node) in enumerate(items):
@@ -944,6 +960,16 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
                 elif pid.startswith("doi:"):
                     doi_str = pid[4:]
                     title = _fetch_doi_title(doi_str)
+                    if title:
+                        nodes[pid].title = title
+                elif pid.startswith("pmid:"):
+                    pmid_str = pid[5:]
+                    title = _fetch_pmid_title(pmid_str)
+                    if title:
+                        nodes[pid].title = title
+                elif pid.startswith("isbn:"):
+                    isbn_str = pid[5:]
+                    title = _fetch_isbn_title(isbn_str)
                     if title:
                         nodes[pid].title = title
                 # Rate-limit: sleep between requests (0.3s), skip after last
@@ -967,6 +993,8 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
                     "total_refs": len(ref_ids),
                     "arxiv_count": len(arxiv_ids),
                     "doi_count": len(dois),
+                    "pmid_count": len(pmids),
+                    "isbn_count": len(isbns),
                     "titles_fetched": sum(1 for n in nodes.values() if n.title and n.depth > 0),
                 },
             }
@@ -999,10 +1027,18 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
             print(f"  DOIs ({len(dois)}): {', '.join(dois[:10])}")
             if len(dois) > 10:
                 print(f"  ... and {len(dois) - 10} more")
+        if pmids:
+            print(f"  PMIDs ({len(pmids)}): {', '.join(pmids[:10])}")
+            if len(pmids) > 10:
+                print(f"  ... and {len(pmids) - 10} more")
+        if isbns:
+            print(f"  ISBNs ({len(isbns)}): {', '.join(isbns[:10])}")
+            if len(isbns) > 10:
+                print(f"  ... and {len(isbns) - 10} more")
         meta_status = " (metadata fetched)" if fetch_meta else ""
         print()
         print(f"CITATION GRAPH (plain-text mode){meta_status} — {root_id}")
-        print(f"References: {len(ref_ids)}  |  arXiv: {len(arxiv_ids)}  |  DOI: {len(dois)}")
+        print(f"References: {len(ref_ids)}  |  arXiv: {len(arxiv_ids)}  |  DOI: {len(dois)}  |  PMID: {len(pmids)}  |  ISBN: {len(isbns)}")
         print()
         print(f"  {root_id}  (ROOT)")
         print()
@@ -1221,6 +1257,56 @@ def _fetch_doi_title(doi: str, timeout: int = 15) -> Optional[str]:
         p, _ = fetch_crossref_metadata(doi, timeout=timeout)
         if p.title and p.title != doi:
             return p.title
+    except Exception:
+        pass
+    return None
+
+
+def _fetch_pmid_title(pmid: str, timeout: int = 15) -> Optional[str]:
+    """
+    Fetch paper title from NCBI Entrez API (E-utilities) using urllib + SSL bypass.
+    Returns title string or None on failure.
+    """
+    url = (
+        f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi"
+        f"?db=pubmed&id={pmid}&retmode=json"
+    )
+    ctx = _build_openalex_ctx()
+    proxy_handler = urllib.request.ProxyHandler({})
+    opener = urllib.request.build_opener(proxy_handler, urllib.request.HTTPSHandler(context=ctx))
+    req = urllib.request.Request(url, headers={"User-Agent": "ai_research_os/1.0"})
+    try:
+        with opener.open(req, timeout=timeout) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        result = data.get("result", {})
+        pmid_data = result.get(pmid, {})
+        title = pmid_data.get("title", "")
+        if title:
+            return title
+    except Exception:
+        pass
+    return None
+
+
+def _fetch_isbn_title(isbn: str, timeout: int = 15) -> Optional[str]:
+    """
+    Fetch book title from Open Library API using urllib + SSL bypass.
+    Returns title string or None on failure.
+    """
+    url = f"https://openlibrary.org/api/books?bibkeys=ISBN:{isbn}&format=json&jscmd=data"
+    ctx = _build_openalex_ctx()
+    proxy_handler = urllib.request.ProxyHandler({})
+    opener = urllib.request.build_opener(proxy_handler, urllib.request.HTTPSHandler(context=ctx))
+    req = urllib.request.Request(url, headers={"User-Agent": "ai_research_os/1.0"})
+    try:
+        with opener.open(req, timeout=timeout) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        key = f"ISBN:{isbn}"
+        if key in data:
+            book_data = data[key]
+            title = book_data.get("title", "")
+            if title:
+                return title
     except Exception:
         pass
     return None
@@ -1449,20 +1535,27 @@ _ARXIV_PAT = re.compile(
 _DOI_PAT = re.compile(
     r"(?i)(?:doi:|https?://(?:dx\.)?doi\.org/)(10\.\d{4,}/\S+)"
 )
+_PMID_PAT = re.compile(
+    r"\b(?:PMID|pmid)[:\s]*(\d{6,9})\b"
+)
+_ISBN_PAT = re.compile(
+    r"(?i)\b(?:ISBN)[:\s]*([0-9\-X]+)\b"
+)
 _NUM_BRACKET_PAT = re.compile(r"\[\d+\]")
 
 
 def _extract_references_from_text(paper_id: str, text: str) -> dict[str, list[str]]:
     """
-    Extract arXiv IDs and DOIs from the plain text of a paper.
+    Extract arXiv IDs, DOIs, PMIDs, and ISBNs from the plain text of a paper.
 
-    Returns dict with keys "arxiv_ids" and "dois", each a list of unique IDs found
-    in the references section (or the whole text if no section header is found).
-    Returns empty lists if no references section is found or the text is empty.
+    Returns dict with keys "arxiv_ids", "dois", "pmids", and "isbns", each a list
+    of unique IDs found in the references section (or the whole text if no
+    section header is found). Returns empty lists if no references section is
+    found or the text is empty.
     """
 
     if not text or not text.strip():
-        return {"arxiv_ids": [], "dois": []}
+        return {"arxiv_ids": [], "dois": [], "pmids": [], "isbns": []}
 
     # Try to isolate the references section
     match = _REFS_SECTION_PAT.search(text)
@@ -1484,7 +1577,27 @@ def _extract_references_from_text(paper_id: str, text: str) -> dict[str, list[st
         if raw.startswith("10."):
             dois.add(raw)
 
-    return {"arxiv_ids": sorted(arxiv_ids), "dois": sorted(dois)}
+    # Extract PMIDs
+    pmids: set[str] = set()
+    for m in _PMID_PAT.finditer(text):
+        pmids.add(m.group(1))
+
+    # Extract ISBNs (13-digit and 10-digit, normalize by removing hyphens/spaces)
+    isbns: set[str] = set()
+    for m in _ISBN_PAT.finditer(text):
+        raw = m.group(1).replace("-", "").replace(" ", "")
+        if len(raw) == 13 or len(raw) == 10:
+            if len(raw) == 10:
+                # Normalize 10-digit ISBN to uppercase
+                raw = raw.upper()
+            isbns.add(raw)
+
+    return {
+        "arxiv_ids": sorted(arxiv_ids),
+        "dois": sorted(dois),
+        "pmids": sorted(pmids),
+        "isbns": sorted(isbns),
+    }
 
 
 def _build_cite_import_parser(subparsers) -> argparse.ArgumentParser:
@@ -1518,6 +1631,11 @@ def _build_cite_import_parser(subparsers) -> argparse.ArgumentParser:
         dest="extract_paper",
         help="Paper ID for --extract mode (extract references from this paper's plain_text)",
     )
+    p.add_argument(
+        "--dedup",
+        action="store_true",
+        help="Use upsert mode to report duplicate citation edges instead of silently skipping them",
+    )
     return p
 
 
@@ -1544,8 +1662,10 @@ def _run_cite_import(args: argparse.Namespace) -> int:
         result = _extract_references_from_text(paper_id, paper.plain_text)
         arxiv_ids = result["arxiv_ids"]
         dois = result["dois"]
+        pmid_ids = result["pmids"]
+        isbn_ids = result["isbns"]
 
-        if not arxiv_ids and not dois:
+        if not arxiv_ids and not dois and not pmid_ids and not isbn_ids:
             print(f"No references found in {paper_id!r}")
             return 0
 
@@ -1554,6 +1674,10 @@ def _run_cite_import(args: argparse.Namespace) -> int:
             print(f"  arXiv IDs ({len(arxiv_ids)}): {', '.join(arxiv_ids)}")
         if dois:
             print(f"  DOIs ({len(dois)}): {', '.join(dois)}")
+        if pmid_ids:
+            print(f"  PMIDs ({len(pmid_ids)}): {', '.join(pmid_ids)}")
+        if isbn_ids:
+            print(f"  ISBNs ({len(isbn_ids)}): {', '.join(isbn_ids)}")
 
         # Build citation edge list (source paper cites each reference)
         # arXiv IDs that exist in DB become citation edges
@@ -1571,8 +1695,12 @@ def _run_cite_import(args: argparse.Namespace) -> int:
                 print(f"\n[dry-run] Would import {len(db_ids)} citation edge(s):")
                 print(f"  {paper_id} --> {db_ids}")
             else:
-                n = db.add_citations_batch(paper_id, db_ids)
-                print(f"\nImported {n} citation edge(s) from arXiv IDs ({len(missing)} not in DB)")
+                if getattr(args, "dedup", False):
+                    new_n, dup_n = db.upsert_citations(paper_id, db_ids)
+                    print(f"\nImported {new_n} new edge(s), {dup_n} duplicate(s) skipped")
+                else:
+                    n = db.add_citations_batch(paper_id, db_ids)
+                    print(f"\nImported {n} citation edge(s) from arXiv IDs ({len(missing)} not in DB)")
         else:
             print(f"\n0 arXiv IDs found in DB (all {len(missing)} references are new papers)")
             return 0

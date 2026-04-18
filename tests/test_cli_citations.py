@@ -19,7 +19,8 @@ def make_args(**kwargs):
         citation_from=None, citation_to=None,
         paper_id=None, direction="both", dry_run=False, skip_external=False,
         delay=0.11, max_per_paper=0,
-        json_input=None, skip_missing=False,
+        json_input=None, skip_missing=False, dedup=False,
+        extract=False, extract_paper=None,
         stats_paper=None, top=None,
         ids=None, file=None,
     )
@@ -409,6 +410,50 @@ class TestRunCiteImport:
 
         captured = capsys.readouterr().out
         assert "dry" in captured.lower() or "skip" in captured.lower()
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_cite_import_dedup_flag_extract_mode(self, mock_db_cls, capsys):
+        """--dedup in --extract mode calls upsert_citations and reports duplicate count."""
+        mock_db = MagicMock()
+        mock_paper = MagicMock()
+        mock_paper.plain_text = "References\n1. Attention Is All You Need. arXiv: 1706.03762\n"
+        mock_db.get_paper.return_value = mock_paper
+        mock_db.paper_exists.return_value = True
+        mock_db.upsert_citations.return_value = (0, 1)  # 0 new, 1 duplicate
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(subcmd="cite-import", extract=True, extract_paper="2301.00001", dedup=True)
+        result = _run_cite_import(args)
+
+        mock_db.upsert_citations.assert_called_once()
+        captured = capsys.readouterr().out
+        assert "0 new edge" in captured
+        assert "1 duplicate" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_cite_import_extract_mode_with_pmid_isbn(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_paper = MagicMock()
+        mock_paper.plain_text = (
+            "References\n"
+            "1. PMID: 12345678\n"
+            "2. ISBN: 978-0-13-468599-1\n"
+            "3. Attention Is All You Need. arXiv: 1706.03762\n"
+        )
+        mock_db.get_paper.return_value = mock_paper
+        mock_db.paper_exists.side_effect = lambda pid: pid == "arXiv:1706.03762"
+        mock_db.add_citations_batch.return_value = 1
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(subcmd="cite-import", extract=True, extract_paper="2301.00001")
+        result = _run_cite_import(args)
+
+        captured = capsys.readouterr().out
+        assert "PMID" in captured
+        assert "ISBN" in captured
+        assert "12345678" in captured
         assert result == 0
 
 

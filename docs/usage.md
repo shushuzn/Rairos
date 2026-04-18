@@ -109,8 +109,11 @@ python -m ai_research_os dedup-semantic --generate
 # Find similar papers for a specific paper
 python -m ai_research_os dedup-semantic --paper 2601.00155
 
-# Custom threshold
-python -m ai_research_os dedup-semantic --paper 2601.00155 --threshold 0.85
+# Custom similarity threshold (higher = stricter match, default: 0.85)
+python -m ai_research_os dedup-semantic --paper 2601.00155 --threshold 0.90
+
+# Limit number of similar papers returned
+python -m ai_research_os dedup-semantic --paper 2601.00155 --limit 5
 
 # CSV output for pipeline integration
 python -m ai_research_os dedup-semantic --generate --format csv
@@ -142,6 +145,19 @@ python -m ai_research_os cite-fetch 2601.00155 --direction to
 # Rate limit (~9 req/s)
 python -m ai_research_os cite-fetch --delay 0.11
 ```
+
+### Extract References from Paper (plain-text)
+```bash
+# Extract references from a paper's plain text and print them
+python -m ai_research_os cite-import --extract --paper 2601.00155
+
+# Same, plus import citation edges into DB (arXiv IDs that exist in DB)
+python -m ai_research_os cite-import --extract --paper 2601.00155 --dry-run
+
+# Import with duplicate reporting (uses upsert mode)
+python -m ai_research_os cite-import --extract --paper 2601.00155 --dedup
+```
+Extract mode finds arXiv IDs, DOIs, PMIDs, and ISBNs in the paper's plain text and prints them. PMIDs and ISBNs are shown but cannot be linked to local DB papers (only arXiv IDs are imported as citation edges).
 
 ### Bulk Import Citations from JSON
 

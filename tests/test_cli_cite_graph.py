@@ -410,6 +410,77 @@ class TestCiteGraphPlainText:
         # Should be 3 nodes (root + 2 unique refs), not 4
         assert "3 nodes, 2 edges" in out
 
+    def test_plain_text_pmid_only(self, capsys):
+        """Plain-text mode extracts PMIDs from raw text."""
+        text = "Prior work includes PMID:12345678 and pmid:87654321.\n"
+        args = make_args(paper="2301.00001", plain_text=text, format="text")
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "12345678" in out
+        assert "87654321" in out
+        assert "pmid:12345678" in out
+        assert "pmid:87654321" in out
+
+    def test_plain_text_isbn_only(self, capsys):
+        """Plain-text mode extracts ISBNs from raw text."""
+        text = "Book references include ISBN:978-0-123-45678-9 and isbn:0123456789.\n"
+        args = make_args(paper="2301.00001", plain_text=text, format="text")
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        # ISBN-13 normalized
+        assert "9780123456789" in out
+        # 10-digit ISBN normalized to uppercase
+        assert "0123456789" in out or "012345678X" in out
+        assert "isbn:" in out
+
+    def test_plain_text_all_id_types(self, capsys):
+        """Plain-text mode handles arXiv, DOI, PMID, and ISBN together."""
+        text = (
+            "We cite arXiv:2401.99999, DOI:10.1126/science.123456, "
+            "PMID:12345678, and ISBN:978-0-123-45678-9.\n"
+        )
+        args = make_args(paper="2401.00001", plain_text=text, format="text")
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "arXiv:2401.99999" in out
+        assert "doi:10.1126/science.123456" in out
+        assert "pmid:12345678" in out
+        assert "isbn:9780123456789" in out
+
+    def test_plain_text_pmid_json_format(self, capsys):
+        """Plain-text mode includes PMIDs in JSON output with correct stats."""
+        text = "See PMID:123456789 for related work."
+        args = make_args(paper="2401.00001", plain_text=text, format="json")
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        data = json.loads(out)
+        assert data["mode"] == "plain-text"
+        assert data["stats"]["pmid_count"] == 1
+        assert data["stats"]["arxiv_count"] == 0
+        assert data["stats"]["doi_count"] == 0
+        pmid_nodes = [n for n in data["nodes"] if n["id"].startswith("pmid:")]
+        assert len(pmid_nodes) == 1
+        assert pmid_nodes[0]["id"] == "pmid:123456789"
+
+    def test_plain_text_isbn_json_format(self, capsys):
+        """Plain-text mode includes ISBNs in JSON output with correct stats."""
+        text = "Book reference: ISBN:978-0-13-468599-1."
+        args = make_args(paper="2401.00001", plain_text=text, format="json")
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        data = json.loads(out)
+        assert data["mode"] == "plain-text"
+        assert data["stats"]["isbn_count"] == 1
+        isbn_nodes = [n for n in data["nodes"] if n["id"].startswith("isbn:")]
+        assert len(isbn_nodes) == 1
+        # ISBN-13 should be normalized (no hyphens)
+        assert isbn_nodes[0]["id"] == "isbn:9780134685991"
+
 
 class TestCiteGraphFetchMetadata:
     """Tests for --fetch-metadata flag."""
@@ -503,6 +574,71 @@ class TestCiteGraphFetchMetadata:
         out = capsys.readouterr().out
         assert "ArXiv Paper 2401.11111" in out
         assert "DOI Paper 10.1000/abc456" in out
+
+    def test_fetch_metadata_pmid(self, capsys, monkeypatch):
+        """--fetch-metadata fetches title from NCBI Entrez API for PMID references."""
+        def mock_fetch_pmid(pmid, timeout=15):
+            return f"PubMed Paper {pmid}"
+
+        monkeypatch.setattr("cli._fetch_pmid_title", mock_fetch_pmid)
+
+        text = "See PMID:12345678 for background."
+        args = make_args(paper="2401.00001", plain_text=text, format="text",
+                         fetch_metadata=True)
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "PubMed Paper 12345678" in out
+        assert "metadata fetched" in out
+
+    def test_fetch_metadata_isbn(self, capsys, monkeypatch):
+        """--fetch-metadata fetches title from Open Library API for ISBN references."""
+        def mock_fetch_isbn(isbn, timeout=15):
+            return f"Book Title for ISBN {isbn}"
+
+        monkeypatch.setattr("cli._fetch_isbn_title", mock_fetch_isbn)
+
+        text = "Reference: ISBN:978-0-13-468599-1."
+        args = make_args(paper="2401.00001", plain_text=text, format="text",
+                         fetch_metadata=True)
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "Book Title for ISBN 9780134685991" in out
+        assert "metadata fetched" in out
+
+    def test_fetch_metadata_all_id_types(self, capsys, monkeypatch):
+        """--fetch-metadata fetches titles for all ID types in same run."""
+        def mock_fetch_arxiv(aid, timeout=15):
+            return f"ArXiv Paper {aid}"
+
+        def mock_fetch_doi(doi, timeout=15):
+            return f"DOI Paper {doi}"
+
+        def mock_fetch_pmid(pmid, timeout=15):
+            return f"PubMed Paper {pmid}"
+
+        def mock_fetch_isbn(isbn, timeout=15):
+            return f"Book {isbn}"
+
+        monkeypatch.setattr("cli._fetch_arxiv_title", mock_fetch_arxiv)
+        monkeypatch.setattr("cli._fetch_doi_title", mock_fetch_doi)
+        monkeypatch.setattr("cli._fetch_pmid_title", mock_fetch_pmid)
+        monkeypatch.setattr("cli._fetch_isbn_title", mock_fetch_isbn)
+
+        text = (
+            "We cite arXiv:2401.11111, doi:10.1000/abc456, "
+            "PMID:12345678, and ISBN:978-0-13-468599-1."
+        )
+        args = make_args(paper="2401.00001", plain_text=text, format="text",
+                         fetch_metadata=True)
+        rc = _run_cite_graph(args)
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "ArXiv Paper 2401.11111" in out
+        assert "DOI Paper 10.1000/abc456" in out
+        assert "PubMed Paper 12345678" in out
+        assert "Book 9780134685991" in out
 
     def test_fetch_metadata_without_plain_text_shows_error(self, capsys):
         """--fetch-metadata without --plain-text shows error."""
