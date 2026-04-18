@@ -340,3 +340,111 @@ class TestGetStats:
         stats = db.get_stats()
         assert stats["cache_entries"] == 1
         assert stats["dedup_records"] == 0
+
+
+class TestPaperCount:
+    def test_paper_count_with_status(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Paper 1")
+        db.upsert_paper("2301.00002", "arxiv", title="Paper 2")
+        db.update_parse_status("2301.00001", status="success", plain_text="text")
+        assert db.paper_count() == 2
+        assert db.paper_count(status="success") == 1
+        assert db.paper_count(status="pending") == 1
+        assert db.paper_count(status="failed") == 0
+
+    def test_paper_count_nonexistent_status(self, db):
+        assert db.paper_count(status="nonexistent_status") == 0
+
+
+class TestSearchEdgeCases:
+    def test_search_papers_empty_results(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Attention Is All You Need")
+        results, total = db.search_papers("xyznonexistentquery123")
+        assert results == []
+        assert total == 0
+
+    def test_search_papers_filter_by_source(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="ArXiv Paper")
+        db.upsert_paper("2301.00002", "semantic", title="Semantic Paper")
+        db.upsert_paper("2301.00003", "arxiv", title="Another ArXiv Paper")
+        results, total = db.search_papers("paper", source="arxiv")
+        assert total == 2
+        assert all(r.source == "arxiv" for r in results)
+
+    def test_search_papers_filter_by_category(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="AI Paper", primary_category="cs.AI")
+        db.upsert_paper("2301.00002", "arxiv", title="LG Paper", primary_category="cs.LG")
+        results, total = db.search_papers("paper", category="cs.AI")
+        assert total == 1
+        assert results[0].primary_category == "cs.AI"
+
+    def test_search_papers_filter_by_parse_status(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Parsed Paper")
+        db.upsert_paper("2301.00002", "arxiv", title="Unparsed Paper")
+        db.update_parse_status("2301.00001", status="success", plain_text="done")
+        results, total = db.search_papers("paper", parse_status="success")
+        assert total == 1
+        assert results[0].paper_id == "2301.00001"
+
+    def test_search_papers_date_range(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Paper 2023", published="2023-01-01")
+        db.upsert_paper("2301.00002", "arxiv", title="Paper 2024", published="2024-01-01")
+        db.upsert_paper("2301.00003", "arxiv", title="Paper 2025", published="2025-01-01")
+        results, total = db.search_papers("paper", date_from="2024-01-01", date_to="2024-12-31")
+        assert total == 1
+        assert results[0].paper_id == "2301.00002"
+
+    def test_search_papers_date_from_only(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Old Paper", published="2023-01-01")
+        db.upsert_paper("2301.00002", "arxiv", title="New Paper", published="2025-01-01")
+        results, total = db.search_papers("paper", date_from="2024-01-01")
+        assert total == 1
+        assert results[0].paper_id == "2301.00002"
+
+    def test_search_papers_date_to_only(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Old Paper", published="2023-01-01")
+        db.upsert_paper("2301.00002", "arxiv", title="New Paper", published="2025-01-01")
+        results, total = db.search_papers("paper", date_to="2024-01-01")
+        assert total == 1
+        assert results[0].paper_id == "2301.00001"
+
+
+class TestListPapersEdgeCases:
+    def test_list_papers_filter_by_source(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="ArXiv Paper")
+        db.upsert_paper("2301.00002", "semantic", title="Semantic Paper")
+        papers, total = db.list_papers(source="arxiv")
+        assert total == 1
+        assert papers[0].source == "arxiv"
+
+    def test_list_papers_filter_by_parse_status(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Parsed")
+        db.upsert_paper("2301.00002", "arxiv", title="Unparsed")
+        db.update_parse_status("2301.00001", status="success", plain_text="done")
+        papers, total = db.list_papers(parse_status="success")
+        assert total == 1
+        assert papers[0].id == "2301.00001"
+
+    def test_list_papers_filter_by_category(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="AI Paper", primary_category="cs.AI")
+        db.upsert_paper("2301.00002", "arxiv", title="LG Paper", primary_category="cs.LG")
+        papers, total = db.list_papers(category="cs.AI")
+        assert total == 1
+        assert papers[0].primary_category == "cs.AI"
+
+
+class TestJobQueueEdgeCases:
+    def test_dequeue_job_no_queue(self, db):
+        assert db.dequeue_job() is None
+
+    def test_dequeue_job_leaves_pending(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="P1")
+        db.upsert_paper("2301.00002", "arxiv", title="P2")
+        db.enqueue_job("2301.00001", "parse")
+        db.enqueue_job("2301.00002", "parse")
+        db.dequeue_job()
+        assert db.queue_depth() == 1
+
+    def test_complete_job_nonexistent(self, db):
+        db.complete_job(99999, "done")
+        # Should not raise
