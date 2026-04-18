@@ -415,6 +415,18 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"get_paper({paper_id!r}) failed: {e}") from e
 
+    def get_papers_bulk(self, paper_ids: list[str]) -> Dict[str, PaperRecord]:
+        """Return a dict of {paper_id: PaperRecord} for the given IDs. O(n) query."""
+        if not paper_ids:
+            return {}
+        try:
+            placeholders = ",".join("?" * len(paper_ids))
+            cur = self.conn.cursor()
+            cur.execute(f"SELECT * FROM papers WHERE id IN ({placeholders})", paper_ids)
+            return {row["id"]: PaperRecord.from_row(row) for row in cur.fetchall()}
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_papers_bulk failed: {e}") from e
+
     # list_papers is defined in the Search section above (with filters + sort)
 
     def update_parse_status(

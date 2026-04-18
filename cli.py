@@ -11,6 +11,7 @@ import time
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
+from dataclasses import dataclass
 from typing import Any, List, Literal, Optional, Tuple
 
 from db import Database
@@ -838,6 +839,179 @@ def _run_citations(args: argparse.Namespace) -> int:
     return 0
 
 
+# ── Citation graph ─────────────────────────────────────────────────────────────────
+
+@dataclass
+class CiteGraphNode:
+    paper_id: str
+    title: str
+    depth: int  # 0 = root, 1 = direct, 2 = 2-hop
+    direction: str  # "root", "forward" (papers citing it), "backward" (papers it cites)
+
+
+def _build_cite_graph_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "cite-graph",
+        help="Visualize the local citation subgraph around a paper (1-2 hops)",
+    )
+    p.add_argument(
+        "--paper", required=True, metavar="PAPER_ID",
+        help="Root paper for the citation graph",
+    )
+    p.add_argument(
+        "--depth", type=int, default=2, choices=[1, 2],
+        help="Traversal depth: 1 = direct citations only, 2 = +2-hop (default: 2)",
+    )
+    p.add_argument(
+        "--max-nodes", type=int, default=30,
+        help="Maximum nodes per direction to show (default: 30)",
+    )
+    p.add_argument(
+        "--format", choices=["text", "mermaid", "json"], default="text",
+        help="Output format (default: text)",
+    )
+    return p
+
+
+def _run_cite_graph(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+
+    root_id = args.paper
+    if not db.paper_exists(root_id):
+        print(f"Error: paper {root_id!r} not found in database", file=sys.stderr)
+        return 1
+
+    root_title = db.get_paper_title(root_id)
+    depth = args.depth
+    max_nodes = args.max_nodes
+
+    # BFS: collect nodes by depth
+    nodes: Dict[str, CiteGraphNode] = {}
+    edges: List[Tuple[str, str, str]] = []
+
+    def add_node(paper_id: str, title: str, node_depth: int, direction: str) -> None:
+        if paper_id not in nodes and len(nodes) < max_nodes * 3:
+            nodes[paper_id] = CiteGraphNode(paper_id, title, node_depth, direction)
+
+    add_node(root_id, root_title, 0, "root")
+
+    # Depth 0 → 1: direct forward (papers citing root) and backward (papers root cites)
+    forward_1 = db.get_citations(root_id, "to")  # papers that cite root
+    backward_1 = db.get_citations(root_id, "from")  # papers root cites
+
+    for c in forward_1[:max_nodes]:
+        add_node(c.source_id, "", 1, "forward")
+        edges.append((c.source_id, root_id, "forward"))
+
+    for c in backward_1[:max_nodes]:
+        add_node(c.target_id, "", 1, "backward")
+        edges.append((root_id, c.target_id, "backward"))
+
+    # Depth 1 → 2: expand each depth-1 node
+    if depth >= 2:
+        depth1_ids = [pid for pid, n in nodes.items() if n.depth == 1]
+        for d1_id in depth1_ids:
+            if len(nodes) >= max_nodes * 3:
+                break
+            # forward 1-hop: papers that cite this node
+            for c in db.get_citations(d1_id, "to")[:3]:
+                if c.source_id not in nodes:
+                    add_node(c.source_id, "", 2, "forward")
+                    edges.append((c.source_id, d1_id, "forward"))
+            # backward 1-hop: papers this node cites
+            for c in db.get_citations(d1_id, "from")[:3]:
+                if c.target_id not in nodes:
+                    add_node(c.target_id, "", 2, "backward")
+                    edges.append((d1_id, c.target_id, "backward"))
+
+    # Batch-fetch titles for all nodes (excluding root which already has title)
+    all_ids = list(nodes.keys())
+    papers_map = db.get_papers_bulk(all_ids)
+    for pid, node in nodes.items():
+        if pid in papers_map:
+            nodes[pid].title = papers_map[pid].title or ""
+
+    if args.format == "json":
+        out = {
+            "root": root_id,
+            "title": root_title,
+            "nodes": [
+                {"id": pid, "title": n.title, "depth": n.depth, "direction": n.direction}
+                for pid, n in nodes.items()
+            ],
+            "edges": [
+                {"from": f, "to": t, "direction": d} for f, t, d in edges
+            ],
+        }
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.format == "mermaid":
+        print("```mermaid")
+        print("graph TD")
+        for pid, n in nodes.items():
+            safe_id = pid.replace("-", "_").replace(".", "_")
+            label = n.title[:40] + ("..." if len(n.title) > 40 else "") if n.title else pid
+            print(f'    {safe_id}["{label}"]')
+        print()
+        for f, t, d in edges:
+            sf = f.replace("-", "_").replace(".", "_")
+            st = t.replace("-", "_").replace(".", "_")
+            arrow = "-->" if d == "forward" else "-.->"
+            print(f"    {sf} {arrow} {st}")
+        print("```")
+        return 0
+
+    # ── Text / ASCII output ───────────────────────────────────────────────────
+    print(f"CITATION GRAPH — {root_id}: {root_title}")
+    print(f"Depth: {depth}  |  Nodes: {len(nodes)}  |  Edges: {len(edges)}")
+    print()
+
+    # Show root
+    print(f"  {root_id}  (ROOT)")
+    if root_title:
+        print(f"    {root_title[:60]}")
+    print()
+
+    # Group nodes by direction and depth
+    depth1_forward = [(pid, n) for pid, n in nodes.items() if n.depth == 1 and n.direction == "forward"]
+    depth1_backward = [(pid, n) for pid, n in nodes.items() if n.depth == 1 and n.direction == "backward"]
+    depth2_forward = [(pid, n) for pid, n in nodes.items() if n.depth == 2 and n.direction == "forward"]
+    depth2_backward = [(pid, n) for pid, n in nodes.items() if n.depth == 2 and n.direction == "backward"]
+
+    if depth1_forward:
+        print(f"  CITED BY ({len(depth1_forward)} papers citing ROOT)  ──")
+        for pid, n in sorted(depth1_forward, key=lambda x: x[0]):
+            title_str = f" — {n.title[:45]}" if n.title else ""
+            print(f"    ●──? {pid}{title_str}")
+        print()
+
+    if depth1_backward:
+        print(f"  CITES ({len(depth1_backward)} papers cited by ROOT)  ──")
+        for pid, n in sorted(depth1_backward, key=lambda x: x[0]):
+            title_str = f" — {n.title[:45]}" if n.title else ""
+            print(f"    ●──? {pid}{title_str}")
+        print()
+
+    if depth2_forward and depth >= 2:
+        print(f"  2-HOP CITED BY ({len(depth2_forward)} papers citing depth-1)  ──")
+        for pid, n in sorted(depth2_forward, key=lambda x: x[0]):
+            title_str = f" — {n.title[:40]}" if n.title else ""
+            print(f"    ?──? {pid}{title_str}")
+        print()
+
+    if depth2_backward and depth >= 2:
+        print(f"  2-HOP CITES ({len(depth2_backward)} papers cited by depth-1)  ──")
+        for pid, n in sorted(depth2_backward, key=lambda x: x[0]):
+            title_str = f" — {n.title[:40]}" if n.title else ""
+            print(f"    ?──? {pid}{title_str}")
+        print()
+
+    print(f"[{len(nodes)} nodes, {len(edges)} edges, depth={depth}]")
+    return 0
+
+
 # ── Citation fetch from OpenAlex ───────────────────────────────────────────────
 
 # Rate-limit: 10 requests/second with polite pool
@@ -1391,6 +1565,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     _build_import_parser(subparsers)
     _build_export_parser(subparsers)
     _build_citations_parser(subparsers)
+    _build_cite_graph_parser(subparsers)
     _build_cite_import_parser(subparsers)
     _build_cite_fetch_parser(subparsers)
     _build_cite_stats_parser(subparsers)
@@ -1400,7 +1575,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     raw_args = argv if argv is not None else sys.argv[1:]
     first = raw_args[0] if raw_args else ""
 
-    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations", "cite-import", "cite-fetch", "cite-stats", "dedup-semantic"}
+    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations", "cite-graph", "cite-import", "cite-fetch", "cite-stats", "dedup-semantic"}
 
     if first in SUBCOMMANDS:
         # New subcommand flow
@@ -1417,6 +1592,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         _build_import_parser(subparsers)
         _build_export_parser(subparsers)
         _build_citations_parser(subparsers)
+        _build_cite_graph_parser(subparsers)
         _build_cite_import_parser(subparsers)
         _build_cite_fetch_parser(subparsers)
         _build_cite_stats_parser(subparsers)
@@ -1445,6 +1621,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             return _run_export(args)
         elif args.subcmd == "citations":
             return _run_citations(args)
+        elif args.subcmd == "cite-graph":
+            return _run_cite_graph(args)
         elif args.subcmd == "cite-import":
             return _run_cite_import(args)
         elif args.subcmd == "cite-fetch":
