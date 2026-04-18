@@ -207,6 +207,130 @@ class TestRunCitations:
         assert "No citations" in captured
         assert result == 0
 
+    @patch("cli.Database")
+    def test_citations_bidirectional_direct_edge(self, mock_db_cls, capsys):
+        """citations --from A --to B finds a direct citation A->B."""
+        mock_db = MagicMock()
+        mock_db.get_paper_title.side_effect = lambda pid: {
+            "2301.00001": "Attention Is All You Need",
+            "2306.00001": "BERT",
+        }.get(pid, "")
+        # A's backward citations include B directly
+        mock_db.get_citations.side_effect = [
+            [MagicMock(target_id="2306.00001")],  # backward from A
+            [],  # forward to B
+        ]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(subcmd="citations", citation_from="2301.00001", citation_to="2306.00001", format="text")
+        result = _run_citations(args)
+
+        captured = capsys.readouterr().out
+        assert "CITATION BRIDGE" in captured
+        assert "DIRECT" in captured
+        assert "2301.00001" in captured
+        assert "2306.00001" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_citations_bidirectional_indirect_via(self, mock_db_cls, capsys):
+        """citations --from A --to B finds indirect A->X->B via intermediate paper X."""
+        mock_db = MagicMock()
+        mock_db.get_paper_title.side_effect = lambda pid: {
+            "2301.00001": "Attention Is All You Need",
+            "2306.00001": "BERT",
+            "2309.99999": "Intermediate Paper",
+        }.get(pid, "")
+        # A cites X (backward from A)
+        mock_db.get_citations.side_effect = [
+            [MagicMock(target_id="2309.99999")],  # backward from A
+            [MagicMock(source_id="2309.99999")],  # forward to B: X cites B
+        ]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(subcmd="citations", citation_from="2301.00001", citation_to="2306.00001", format="text")
+        result = _run_citations(args)
+
+        captured = capsys.readouterr().out
+        assert "CITATION BRIDGE" in captured
+        assert "INDIRECT" in captured
+        assert "2309.99999" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_citations_bidirectional_no_path(self, mock_db_cls, capsys):
+        """citations --from A --to B with no connection reports no path."""
+        mock_db = MagicMock()
+        mock_db.get_paper_title.side_effect = lambda pid: {
+            "2301.00001": "Attention Is All You Need",
+            "2306.00001": "BERT",
+        }.get(pid, "")
+        mock_db.get_citations.side_effect = [
+            [MagicMock(target_id="9999.99999")],  # A cites something unrelated
+            [],  # nothing cites B
+        ]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(subcmd="citations", citation_from="2301.00001", citation_to="2306.00001", format="text")
+        result = _run_citations(args)
+
+        captured = capsys.readouterr().out
+        assert "CITATION BRIDGE" in captured
+        assert "No citation path" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_citations_bidirectional_csv(self, mock_db_cls, capsys):
+        """citations --from A --to B --format csv outputs connection type."""
+        mock_db = MagicMock()
+        mock_db.get_paper_title.side_effect = lambda pid: {
+            "2301.00001": "Attention Is All You Need",
+            "2306.00001": "BERT",
+        }.get(pid, "")
+        mock_db.get_citations.side_effect = [
+            [MagicMock(target_id="2306.00001")],
+            [],
+        ]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(subcmd="citations", citation_from="2301.00001", citation_to="2306.00001", format="csv")
+        result = _run_citations(args)
+
+        captured = capsys.readouterr().out
+        lines = captured.strip().split("\n")
+        assert "from_id" in lines[0].lower()
+        assert "direct" in lines[1]
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_citations_bidirectional_from_not_found(self, mock_db_cls, capsys):
+        """citations --from A --to B with --from not in DB returns error."""
+        mock_db = MagicMock()
+        mock_db.get_paper_title.return_value = None  # from paper not found
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(subcmd="citations", citation_from="nonexistent", citation_to="2306.00001", format="text")
+        result = _run_citations(args)
+
+        captured = capsys.readouterr().out
+        assert "not found" in captured
+        assert result == 1
+
+    @patch("cli.Database")
+    def test_citations_bidirectional_to_not_found(self, mock_db_cls, capsys):
+        """citations --from A --to B with --to not in DB returns error."""
+        mock_db = MagicMock()
+        # First call returns a title (from paper found), second call returns None (to paper not found)
+        mock_db.get_paper_title.side_effect = ["Attention", None]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(subcmd="citations", citation_from="2301.00001", citation_to="nonexistent", format="text")
+        result = _run_citations(args)
+
+        captured = capsys.readouterr().out
+        assert "not found" in captured
+        assert result == 1
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_cite_stats tests
