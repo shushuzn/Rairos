@@ -56,6 +56,7 @@ class FakePaper:
         abs_url="https://arxiv.org/abs/1706.03762",
         pdf_url="https://arxiv.org/1706.03762.pdf",
         parse_status="done",
+        added_at="2026-04-01",
     ):
         self.id = id
         self.title = title
@@ -66,6 +67,7 @@ class FakePaper:
         self.abs_url = abs_url
         self.pdf_url = pdf_url
         self.parse_status = parse_status
+        self.added_at = added_at
 
 
 def make_args(**kwargs):
@@ -384,6 +386,36 @@ class TestRunList:
         args = make_args(status="", year=0, tags=[], limit=20, offset=0, format="table")
         result = _run_list(args)
         assert result == 0
+
+    @patch("cli.Database")
+    def test_list_csv_output(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.list_papers.return_value = ([FakePaper(), FakePaper()], 2)
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(status="", year=0, tags=[], limit=20, offset=0, format="csv")
+        _run_list(args)
+
+        captured = capsys.readouterr().out.replace("\r", "")
+        lines = captured.strip().split("\n")
+        assert lines[0] == "id,title,authors,published,source,primary_category,parse_status,added_at"
+        assert "2301.00001" in lines[1]
+        assert "Attention Is All You Need" in lines[1]
+        assert "Vaswani et al." in lines[1]
+
+    @patch("cli.Database")
+    def test_list_csv_empty(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.list_papers.return_value = ([], 0)
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(status="", year=0, tags=[], limit=20, offset=0, format="csv")
+        _run_list(args)
+
+        captured = capsys.readouterr().out.replace("\r", "")
+        lines = captured.strip().split("\n")
+        assert lines[0] == "id,title,authors,published,source,primary_category,parse_status,added_at"
+        assert len(lines) == 1  # only header, no data rows
 
 
 # ─────────────────────────────────────────────────────────────────────────────
