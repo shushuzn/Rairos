@@ -784,6 +784,57 @@ def _run_citations(args: argparse.Namespace) -> int:
     db = Database()
     db.init()
 
+    # Bidirectional filter: --from A --to B shows papers connecting A and B
+    if args.citation_from and args.citation_to:
+        paper_from = args.citation_from
+        paper_to = args.citation_to
+        from_title = db.get_paper_title(paper_from)
+        to_title = db.get_paper_title(paper_to)
+
+        if not from_title:
+            print(f"Error: paper {paper_from} not found in the database")
+            return 1
+        if not to_title:
+            print(f"Error: paper {paper_to} not found in the database")
+            return 1
+
+        # Papers cited by A (A's backward citations)
+        backward_from = db.get_citations(paper_from, "from")
+        # Papers that cite B (B's forward citations)
+        forward_to = db.get_citations(paper_to, "to")
+
+        # Check for direct edge: A -> B
+        direct = any(c.target_id == paper_to for c in backward_from)
+
+        # Papers that A cites AND that also have forward citations to B
+        forward_to_sources = {c.source_id for c in forward_to}
+        via_papers = [c for c in backward_from if c.target_id in forward_to_sources]
+
+        if args.format == "csv":
+            print("from_id,from_title,to_id,to_title,type")
+            if direct:
+                print(f"{paper_from},{from_title},{paper_to},{to_title},direct")
+            for c in via_papers:
+                t = db.get_paper_title(c.target_id)
+                print(f"{paper_from},{from_title},{c.target_id},{t or ''},via")
+        else:
+            print(f"CITATION BRIDGE: {paper_from} <-> {paper_to}")
+            print(f"  {paper_from}: {from_title}")
+            print(f"  {paper_to}: {to_title}")
+            print()
+            if direct:
+                print(f"  DIRECT: {paper_from} cites {paper_to}")
+            if via_papers:
+                print(f"  INDIRECT ({len(via_papers)} connections):")
+                for c in via_papers:
+                    t = db.get_paper_title(c.target_id)
+                    print(f"    {paper_from} -> {c.target_id} ({t or '?'}) -> {paper_to}")
+            if not direct and not via_papers:
+                print("  No citation path found between these papers.")
+
+        return 0
+
+    # Single-direction mode
     paper_id = args.citation_from or args.citation_to
     direction: Literal["from", "to", "both"] = (
         "from" if args.citation_from else "to"
