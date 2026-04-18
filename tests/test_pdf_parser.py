@@ -229,6 +229,7 @@ class TestPDFParser:
         p1 = tmp_path / "a.pdf"
         p1.write_bytes(b"content A")
         p2 = tmp_path / "b.pdf"
+        p2.write_bytes(b"content B")
         assert parser._hash_file(p1) != parser._hash_file(p2)
 
 
