@@ -40,6 +40,7 @@ All notable changes to this project will be documented in this file.
   - `--paper PAPER_ID`: Find similar papers for a specific paper
   - `--threshold 0.85`: Cosine similarity threshold (default 0.85)
   - `--limit 20`: Max similar papers returned per query
+  - `--format {text,csv}`: Output format — `text` (default) or `csv` with columns `id1,title1,id2,title2,similarity`
   - New DB methods: `set_embedding()`, `get_embedding()`, `get_papers_without_embeddings()`, `find_similar()`, `get_embedding_stats()`
   - Embeddings stored as binary blob in `papers.embed_vector` (768-dim float, nomic-embed-text)
 
