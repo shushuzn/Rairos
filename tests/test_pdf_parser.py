@@ -266,3 +266,83 @@ class TestPDFParserCache:
 
         r2 = parser.parse(pdf_new, paper_id="2301.00001", use_cache=True)
         assert r2.pdf_hash != hash1
+
+
+# ─── Additional coverage tests ────────────────────────────────────────────────
+
+
+class TestCleanText:
+    """Cover pdf/parser.py: _clean_text (line 584)."""
+
+    def test_clean_text_basic(self):
+        from pdf.parser import _clean_text
+        result = _clean_text("  hello   world  ")
+        assert result == "hello   world"
+
+    def test_clean_text_newlines(self):
+        from pdf.parser import _clean_text
+        result = _clean_text("a\n\n\n\nb")
+        assert result == "a\n\nb"
+
+    def test_clean_text_trailing_whitespace(self):
+        from pdf.parser import _clean_text
+        result = _clean_text("  hello  \n\n  ")
+        assert result == "hello"
+
+
+class TestIsDisplayMath:
+    """Cover pdf/parser.py: _is_display_math (line 168)."""
+
+    def test_is_display_math_double_dollar_with_content(self):
+        from pdf.parser import _is_display_math
+        assert _is_display_math("$$ E = mc^2 $$")
+
+    def test_is_display_math_brackets_with_content(self):
+        from pdf.parser import _is_display_math
+        assert _is_display_math("\\[ x = y + z \\]")
+
+    def test_is_display_math_begin_align(self):
+        from pdf.parser import _is_display_math
+        assert _is_display_math("\\begin{align} x &= 1 \\\\ y &= 2 \\end{align}")
+
+    def test_is_display_math_false_for_inline(self):
+        from pdf.parser import _is_display_math
+        assert not _is_display_math("$x^2$")
+
+    def test_is_display_math_false_for_empty(self):
+        from pdf.parser import _is_display_math
+        assert not _is_display_math("")
+
+    def test_is_display_math_false_for_plain_text(self):
+        from pdf.parser import _is_display_math
+        assert not _is_display_math("This is plain text.")
+
+
+class TestParsedPaperMethods:
+    """Cover ParsedPaper.to_cache_dict (line 139) and to_dict (line 142)."""
+
+    def test_to_cache_dict(self, sample_pdf):
+        parser = PDFParser()
+        parser.db = None
+        result = parser.parse(sample_pdf, paper_id="2301.00001", use_cache=False)
+        d = result.to_cache_dict()
+        assert d["paper_id"] == "2301.00001"
+        assert "text" in d
+        assert "pdf_hash" in d
+
+    def test_to_cache_dict(self, sample_pdf):
+        parser = PDFParser()
+        parser.db = None
+        result = parser.parse(sample_pdf, paper_id="2301.00001", use_cache=False)
+        d = result.to_cache_dict()
+        assert d["paper_id"] == "2301.00001"
+        assert "text" in d
+        assert "pdf_hash" in d
+        assert "latex_blocks" in d
+        assert "tables" in d
+
+    def test_parsed_paper_parse_version(self, sample_pdf):
+        parser = PDFParser()
+        parser.db = None
+        result = parser.parse(sample_pdf, paper_id="2301.00001", use_cache=False)
+        assert result.parse_version == 1
