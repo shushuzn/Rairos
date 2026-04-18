@@ -346,3 +346,142 @@ class TestParsedPaperMethods:
         parser.db = None
         result = parser.parse(sample_pdf, paper_id="2301.00001", use_cache=False)
         assert result.parse_version == 1
+
+
+class TestCheckFileCache:
+    """Edge cases for _save_db_cache (lines 302-322)."""
+
+    def test_save_succeeds(self, tmp_path):
+        import sqlite3
+        db_path = tmp_path / "research5.db"
+        conn = sqlite3.connect(str(db_path))
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS papers ("
+            "  id TEXT PRIMARY KEY, source TEXT NOT NULL, title TEXT DEFAULT '',"
+            "  authors TEXT DEFAULT '[]', abstract TEXT DEFAULT '', published TEXT DEFAULT '',"
+            "  updated TEXT DEFAULT '', abs_url TEXT DEFAULT '', pdf_url TEXT DEFAULT '',"
+            "  primary_category TEXT DEFAULT '', journal TEXT DEFAULT '', volume TEXT DEFAULT '',"
+            "  issue TEXT DEFAULT '', page TEXT DEFAULT '', doi TEXT DEFAULT '',"
+            "  categories TEXT DEFAULT '', reference_count INTEGER DEFAULT 0,"
+            "  added_at TEXT NOT NULL, updated_at TEXT NOT NULL,"
+            "  pdf_path TEXT DEFAULT '', pdf_hash TEXT DEFAULT '',"
+            "  parse_status TEXT DEFAULT 'pending', parse_error TEXT DEFAULT '',"
+            "  parse_version INTEGER DEFAULT 0, plain_text TEXT DEFAULT '',"
+            "  latex_blocks TEXT DEFAULT '[]', table_count INTEGER DEFAULT 0,"
+            "  figure_count INTEGER DEFAULT 0, word_count INTEGER DEFAULT 0,"
+            "  page_count INTEGER DEFAULT 0, pnote_path TEXT DEFAULT '',"
+            "  cnote_path TEXT DEFAULT '', mnote_path TEXT DEFAULT '',"
+            "  embed_vector BLOB DEFAULT NULL)"
+        )
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA foreign_keys=ON")
+        conn.execute(
+            "INSERT INTO papers (id, source, added_at, updated_at) "
+            "VALUES ('2301.00001', 'arxiv', '2023-01-01', '2023-01-01')"
+        )
+        conn.commit()
+        class _FakeDB:
+            def update_parse_status(self, paper_id, status, error="", plain_text="",
+                                    latex_blocks=None, table_count=0, figure_count=0,
+                                    word_count=0, page_count=0):
+                cur = conn.cursor()
+                cur.execute("SELECT parse_version FROM papers WHERE id = ?", (paper_id,))
+                row = cur.fetchone()
+                version = (row[0] if row else 0) + 1
+                cur.execute(
+                    "UPDATE papers SET parse_status=?, parse_error=?, plain_text=?, "
+                    "latex_blocks=?, table_count=?, figure_count=?, word_count=?, "
+                    "page_count=?, parse_version=? WHERE id=?",
+                    (status, error, plain_text, "[]" if latex_blocks is None else
+                     (latex_blocks if isinstance(latex_blocks, str) else "[]"),
+                     table_count, figure_count, word_count, page_count, version, paper_id)
+                )
+                conn.commit()
+        db = _FakeDB()
+        parser = PDFParser(db=db)
+        paper = ParsedPaper(paper_id="2301.00001", text="Test content", latex_blocks=[],
+                            tables=[], figures=[], page_count=1, word_count=2,
+                            parse_version=1, pdf_hash="xyz", title="Test",
+                            authors=[], abstract="", published="", warnings=[], errors=[])
+        # Should not raise
+        parser._save_db_cache(paper)
+        conn.close()
+
+
+class TestCheckFileCache:
+    """Edge cases for _check_file_cache (lines 326-335)."""
+
+    def test_returns_none_when_file_missing(self, tmp_path):
+        parser = PDFParser(cache_dir=tmp_path / "nonexistent")
+        result = parser._check_file_cache("nonexistent", "somehash")
+        assert result is None
+
+    def test_returns_none_when_hash_mismatches(self, tmp_path, sample_pdf):
+        cache_dir = tmp_path / "parsed"
+        parser = PDFParser(cache_dir=cache_dir)
+        # First parse to create cache
+        parser.db = None
+        r1 = parser.parse(sample_pdf, paper_id="2301.00001", use_cache=True)
+        # Now check with wrong hash
+        result = parser._check_file_cache("2301.00001", "wrong_hash")
+        assert result is None
+
+    def test_returns_none_on_corrupt_json(self, tmp_path):
+        cache_dir = tmp_path / "parsed"
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        bad_file = cache_dir / "2301.00001.json"
+        bad_file.write_text("{ bad json", encoding="utf-8")
+        parser = PDFParser(cache_dir=cache_dir)
+        result = parser._check_file_cache("2301.00001", "somehash")
+        assert result is None
+
+    def test_returns_parsed_paper_on_hit(self, tmp_path, sample_pdf):
+        cache_dir = tmp_path / "parsed2"
+        parser = PDFParser(cache_dir=cache_dir)
+        parser.db = None
+        r1 = parser.parse(sample_pdf, paper_id="2301.00001", use_cache=True)
+        result = parser._check_file_cache("2301.00001", r1.pdf_hash)
+        assert result is not None
+        assert result.paper_id == "2301.00001"
+
+
+class TestParsedPaperReprEq:
+    """Test ParsedPaper.__repr__ and __eq__ (lines 139-155)."""
+
+    def test_repr_returns_string(self):
+        paper = ParsedPaper(paper_id="2301.00001", text="Hello")
+        r = repr(paper)
+        assert isinstance(r, str)
+        assert "2301.00001" in r
+
+    def test_eq_true_for_identical(self):
+        p1 = ParsedPaper(paper_id="2301.00001", text="Hello", latex_blocks=[],
+                          tables=[], figures=[], page_count=1, word_count=1,
+                          parse_version=1, pdf_hash="abc", title="T",
+                          authors=[], abstract="", published="", warnings=[], errors=[])
+        p2 = ParsedPaper(paper_id="2301.00001", text="Hello", latex_blocks=[],
+                          tables=[], figures=[], page_count=1, word_count=1,
+                          parse_version=1, pdf_hash="abc", title="T",
+                          authors=[], abstract="", published="", warnings=[], errors=[])
+        assert p1 == p2
+
+    def test_eq_false_for_different(self):
+        p1 = ParsedPaper(paper_id="2301.00001", text="Hello", latex_blocks=[],
+                          tables=[], figures=[], page_count=1, word_count=1,
+                          parse_version=1, pdf_hash="abc", title="T",
+                          authors=[], abstract="", published="", warnings=[], errors=[])
+        p2 = ParsedPaper(paper_id="2301.00002", text="Hello", latex_blocks=[],
+                          tables=[], figures=[], page_count=1, word_count=1,
+                          parse_version=1, pdf_hash="abc", title="T",
+                          authors=[], abstract="", published="", warnings=[], errors=[])
+        assert p1 != p2
+
+
+class TestParseErrorPath:
+    """Test parse error and fallback paths."""
+
+    def test_raises_pdf_parse_error_when_file_missing(self):
+        from pathlib import Path
+        parser = PDFParser()
+        with pytest.raises(Exception):
+            parser.parse(Path("/nonexistent/pdf.paper"), paper_id="2301.00001")
