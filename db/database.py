@@ -1389,6 +1389,32 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"add_citations_batch failed: {e}") from e
 
+    def upsert_citations(self, source_id: str, target_ids: list[str]) -> Tuple[int, int]:
+        """Bulk upsert citation pairs. Returns (new_count, duplicate_count)."""
+        if not target_ids:
+            return 0, 0
+        try:
+            cur = self.conn.cursor()
+            now = _utcnow()
+            new_count = 0
+            dup_count = 0
+            for tid in target_ids:
+                try:
+                    cur.execute(
+                        "INSERT OR IGNORE INTO citations (source_id, target_id, created_at) VALUES (?, ?, ?)",
+                        (source_id, tid, now),
+                    )
+                    if cur.rowcount > 0:
+                        new_count += 1
+                    else:
+                        dup_count += 1
+                except sqlite3.Error:
+                    dup_count += 1
+            self.conn.commit()
+            return new_count, dup_count
+        except sqlite3.Error as e:
+            raise DatabaseError(f"upsert_citations failed: {e}") from e
+
     def get_citations(
         self, paper_id: str, direction: Literal["from", "to", "both"] = "both"
     ) -> List[CitationRecord]:

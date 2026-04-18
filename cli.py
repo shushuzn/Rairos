@@ -5,6 +5,7 @@
 import argparse
 import json
 import os
+import re
 import ssl
 import sys
 import time
@@ -1258,7 +1259,52 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
     return 0
 
 
-# ── Citation import ──────────────────────────────────────────────────────────
+# ── Citation reference extraction ──────────────────────────────────────────────
+
+_REFS_SECTION_PAT = re.compile(
+    r"(?i)\n(?:references|bibliography|works cited|literature cited)\s*\n",
+    re.M,
+)
+_ARXIV_PAT = re.compile(
+    r"(?i)\barxiv:?\.?\s*(\d{4}\.\d{4,5}(?:v\d+)?)\b"
+)
+_DOI_PAT = re.compile(
+    r"(?i)\b(?:doi|https?://(?:dx\.)?doi\.org)/?(10\.\d{4,}(?:/\S+)?)\b"
+)
+_NUM_BRACKET_PAT = re.compile(r"\[\d+\]")
+
+
+def _extract_references_from_text(paper_id: str, text: str) -> dict[str, list[str]]:
+    """
+    Extract arXiv IDs and DOIs from the references section of a paper's plain text.
+
+    Returns dict with keys "arxiv_ids" and "dois", each a list of unique IDs found.
+    Returns empty lists if no references section is found or the text is empty.
+    """
+    if not text or not text.strip():
+        return {"arxiv_ids": [], "dois": []}
+
+    # Try to isolate the references section
+    match = _REFS_SECTION_PAT.search(text)
+    if match:
+        refs_text = text[match.start() :]
+    else:
+        refs_text = text  # fall back to whole text
+
+    # Extract arXiv IDs
+    arxiv_ids: set[str] = set()
+    for m in _ARXIV_PAT.finditer(refs_text):
+        arxiv_ids.add(m.group(1))
+
+    # Extract DOIs (strip leading doi: or https://doi.org/)
+    dois: set[str] = set()
+    for m in _DOI_PAT.finditer(refs_text):
+        raw = m.group(1).rstrip(" .")
+        if raw.startswith("10."):
+            dois.add(raw)
+
+    return {"arxiv_ids": sorted(arxiv_ids), "dois": sorted(dois)}
+
 
 def _build_cite_import_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser(
@@ -1280,16 +1326,89 @@ def _build_cite_import_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Skip source/target papers that don't exist in the DB",
     )
+    p.add_argument(
+        "--extract",
+        action="store_true",
+        help="Extract citation references from a paper's plain_text (requires --paper)",
+    )
+    p.add_argument(
+        "--paper",
+        metavar="PAPER_ID",
+        dest="extract_paper",
+        help="Paper ID for --extract mode (extract references from this paper's plain_text)",
+    )
     return p
 
 
 def _run_cite_import(args: argparse.Namespace) -> int:
+    # ── --extract mode ───────────────────────────────────────────────────────
+    if getattr(args, "extract", False):
+        paper_id = getattr(args, "extract_paper", None)
+        if not paper_id:
+            print("Error: --paper PAPER_ID required with --extract", file=sys.stderr)
+            return 1
+
+        db = Database()
+        db.init()
+
+        paper = db.get_paper(paper_id)
+        if not paper:
+            print(f"Error: paper {paper_id!r} not found in DB", file=sys.stderr)
+            return 1
+
+        if not paper.plain_text:
+            print(f"Error: paper {paper_id!r} has no plain_text to extract from", file=sys.stderr)
+            return 1
+
+        result = _extract_references_from_text(paper_id, paper.plain_text)
+        arxiv_ids = result["arxiv_ids"]
+        dois = result["dois"]
+
+        if not arxiv_ids and not dois:
+            print(f"No references found in {paper_id!r}")
+            return 0
+
+        print(f"Extracted from {paper_id!r}:")
+        if arxiv_ids:
+            print(f"  arXiv IDs ({len(arxiv_ids)}): {', '.join(arxiv_ids)}")
+        if dois:
+            print(f"  DOIs ({len(dois)}): {', '.join(dois)}")
+
+        # Build citation edge list (source paper cites each reference)
+        # arXiv IDs that exist in DB become citation edges
+        db_ids: list[str] = []
+        missing: list[str] = []
+        for aid in arxiv_ids:
+            full = f"arXiv:{aid}"
+            if db.paper_exists(full):
+                db_ids.append(full)
+            else:
+                missing.append(aid)
+
+        if db_ids:
+            if args.dry_run:
+                print(f"\n[dry-run] Would import {len(db_ids)} citation edge(s):")
+                print(f"  {paper_id} --> {db_ids}")
+            else:
+                n = db.add_citations_batch(paper_id, db_ids)
+                print(f"\nImported {n} citation edge(s) from arXiv IDs ({len(missing)} not in DB)")
+        else:
+            print(f"\n0 arXiv IDs found in DB (all {len(missing)} references are new papers)")
+            return 0
+
+        if missing:
+            print(f"  Missing (not in DB): {', '.join(missing[:20])}")
+            if len(missing) > 20:
+                print(f"  ... and {len(missing) - 20} more")
+
+        return 0
+
+    # ── JSON import mode ─────────────────────────────────────────────────────
     raw = args.json_input
     if not raw:
         print("Error: json_input required (JSON string or @filepath)", file=sys.stderr)
         return 1
 
-    # Load JSON
     if raw.startswith("@"):
         path = raw[1:]
         try:
@@ -1316,7 +1435,6 @@ def _run_cite_import(args: argparse.Namespace) -> int:
     db.init()
 
     total_new = 0
-    total_skip_dup = 0
     total_skip_missing = 0
     errors = []
 
@@ -1364,6 +1482,10 @@ def _run_cite_import(args: argparse.Namespace) -> int:
                 continue
             valid_targets.append(tgt)
 
+        if not valid_targets:
+            continue
+
+        # Upsert
         if args.dry_run:
             for tgt in valid_targets:
                 print(f"  [dry-run] add citation: {source} -> {tgt}")
@@ -1372,11 +1494,7 @@ def _run_cite_import(args: argparse.Namespace) -> int:
             n = db.add_citations_batch(source, valid_targets)
             total_new += n
 
-    # Summary
-    print(f"Import complete.")
-    print(f"  new citations : {total_new}")
-    print(f"  skipped (missing papers): {total_skip_missing}")
-    if errors and not args.dry_run:
+    if errors:
         print(f"  warnings/errors : {len(errors)}")
         for e in errors[:10]:
             print(f"    - {e}")
@@ -1384,8 +1502,10 @@ def _run_cite_import(args: argparse.Namespace) -> int:
             print(f"    ... and {len(errors) - 10} more")
         return 1
 
+    print(f"Import complete.")
+    print(f"  new citations : {total_new}")
+    print(f"  skipped (missing papers): {total_skip_missing}")
     return 0
-
 
 # ── Citation stats ─────────────────────────────────────────────────────────
 
