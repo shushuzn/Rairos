@@ -534,10 +534,7 @@ class TestExtractPdfTextHybrid:
         def mock_pdfminer_extract(path):
             raise RuntimeError("pdfminer failed")
 
-        monkeypatch.setattr(
-            "airo.pdfminer.high_level.extract_text",
-            mock_pdfminer_extract
-        )
+        monkeypatch.setattr("pdfminer.high_level.extract_text", mock_pdfminer_extract)
 
         # Should not raise; pdfminer exception is caught and text remains ""
         text = airo.extract_pdf_text_hybrid(pdf_path, use_pdfminer_fallback=True)
