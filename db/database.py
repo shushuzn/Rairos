@@ -492,37 +492,6 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"update_parse_status({paper_id!r}) failed: {e}") from e
 
-    def update_note_paths(
-        self,
-        paper_id: str,
-        pnote_path: str = "",
-        cnote_path: str = "",
-        mnote_path: str = "",
-    ) -> None:
-        """Update generated note file paths."""
-        try:
-            with self.transaction():
-                cur = self.conn.cursor()
-                cur.execute(
-                    """
-                    UPDATE papers SET
-                        pnote_path = COALESCE(NULLIF(:pnote, ''), pnote_path),
-                        cnote_path = COALESCE(NULLIF(:cnote, ''), cnote_path),
-                        mnote_path = COALESCE(NULLIF(:mnote, ''), mnote_path),
-                        updated_at  = :updated_at
-                    WHERE id = :id
-                    """,
-                    {
-                        "id": paper_id,
-                        "pnote": pnote_path,
-                        "cnote": cnote_path,
-                        "mnote": mnote_path,
-                        "updated_at": _utcnow(),
-                    },
-                )
-        except sqlite3.Error as e:
-            raise DatabaseError(f"update_note_paths({paper_id!r}) failed: {e}") from e
-
     def paper_count(self, status: Optional[str] = None) -> int:
         """Return total paper count, optionally filtered by parse status."""
         try:
