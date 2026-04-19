@@ -181,6 +181,7 @@ Paper → P-Note (paper note)
 | `export` | Export DB to CSV or JSON |
 | `search [QUERY]` | Full-text search with filters |
 | `list` | List papers with sort/filter |
+| `similar PAPER_ID [--threshold N] [--limit N]` | Find semantically similar papers via embeddings |
 | `queue --list` | List pending papers |
 | `queue --clear` | Reset pending papers to idle |
 | `dedup [--dry-run]` | Find exact duplicates by DOI/title |
@@ -435,6 +436,7 @@ ai_research_os/
 | `export` | 导出数据库为 CSV 或 JSON |
 | `search [QUERY]` | 全文搜索，支持筛选 |
 | `list` | 列出论文，支持排序/筛选 |
+| `similar PAPER_ID [--threshold N] [--limit N]` | 通过 embedding 找语义相似论文 |
 | `queue --list` | 列出等待中的论文 |
 | `queue --clear` | 重置等待中论文状态为 idle |
 | `dedup [--dry-run]` | 按 DOI/title 精确查重 |
