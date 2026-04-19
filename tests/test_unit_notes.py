@@ -421,7 +421,6 @@ class TestEnsureOrUpdateMnoteABCUpdate:
     def test_updates_abc_and_appends_view_evolution_log(self, tmp_path):
         """When existing mnote has curA/B/C that differ from new top3, re.sub + evolution log."""
         import ai_research_os as airo
-        from pathlib import Path
 
         mnote_dir = tmp_path / "notes"
         mnote_dir.mkdir(parents=True)
@@ -475,7 +474,6 @@ class TestEnsureOrUpdateMnoteABCUpdate:
     def test_abc_all_missing_appends_section(self, tmp_path):
         """Lines 81-84: when existing mnote has no A/B/C at all, appends the section."""
         import ai_research_os as airo
-        from pathlib import Path
 
         mnote_dir = tmp_path / "notes"
         mnote_dir.mkdir(parents=True)

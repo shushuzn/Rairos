@@ -53,10 +53,10 @@ jobs:
         run: pip install ruff
 
       - name: Ruff check
-        run: ruff check . || true
+        run: ruff check .
 
       - name: Pyflakes
-        run: python -m pyflakes ai_research_os.py || true
+        run: python -m pyflakes ai_research_os.py
 
       - name: Test Crossref API
         run: python -c "import requests; r=requests.get('https://api.crossref.org/works/10.1038/nature12373',timeout=15,headers={'User-Agent':'AI-Research-OS/1.0'}); r.raise_for_status(); print('Crossref OK:', r.json()['message']['title'][0][:50])"

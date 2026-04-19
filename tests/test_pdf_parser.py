@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import sqlite3
 
 import pytest
 
@@ -672,7 +671,6 @@ class TestExtractStructuredExceptions:
         parser.db = None
 
         # Patch find_tables to raise
-        orig_open = fitz.open
         class FakeDoc:
             page_count = 1
             def load_page(self, i):
@@ -1002,7 +1000,6 @@ class TestHashFileOSError:
 
     def test_hash_file_raises_oserror_propagates(self, sample_pdf, monkeypatch):
         """Line 220: OSError from _hash_file is not caught and propagates from parse()."""
-        import fitz
         parser = PDFParser()
 
         # Patch the file read inside _hash_file to raise OSError
