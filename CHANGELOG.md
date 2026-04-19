@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.5.0 (2026-04-19)
+
+### Test Infrastructure
+
+- Freeze time to 2026-06-15 for all Tier 4 date-dependent tests via conftest.py autouse fixture
+- Centralize shared fixtures into tests/conftest.py: mock_research_root, sample_pdf, tmp_db
+- Strengthen Tier 4 tmpdir assertions: verify file existence before assertions, check exact sort order, verify exact counts
+
+### Bug Fixes
+
+- Fix TestOcrPage mock_import signature: accept variadic positional args (*args) instead of **kw; save _real_import reference to avoid infinite recursion
+- Add paper_exists(), citations(), dedup_log(), delete_paper() test coverage
+
+### Developer Experience
+
+- Add justfile with 10 recipes: test, test-cov, test-tier4, test FILE, lint, lint-fix, fmt, check, install, run, ci
+- F841 (unused variable) noqa cleanup across test_ai_research_os.py, test_cli_search.py, test_integration.py, test_sections_segment.py, test_pdf_extract.py
+
 ## v1.4.0 (2026-04-18)
 
 ### Features
