@@ -321,10 +321,12 @@ class TestOcrPage:
             pytest.skip("PyMuPDF not installed")
 
         # Simulate missing tesseract / PIL
-        def mock_import(name, **kw):
+        _real_import = builtins.__import__
+
+        def mock_import(name, *args):
             if name in ("pytesseract", "PIL"):
                 raise ImportError(f"No module named '{name}'")
-            return __import__(name, **kw)
+            return _real_import(name, *args)
 
         monkeypatch.setattr(builtins, "__import__", mock_import)
 
