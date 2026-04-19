@@ -458,6 +458,82 @@ def _build_dedup_semantic_parser(subparsers) -> argparse.ArgumentParser:
     return p
 
 
+def _build_similar_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "similar",
+        help="Find papers similar to a given paper using embedding similarity",
+    )
+    p.add_argument(
+        "paper_id",
+        nargs="?",
+        default="",
+        help="Paper ID (e.g. 2301.001)",
+    )
+    p.add_argument(
+        "--threshold", type=float, default=0.85,
+        help="Minimum cosine similarity (default: 0.85)",
+    )
+    p.add_argument(
+        "--limit", type=int, default=10,
+        help="Max similar papers to return (default: 10)",
+    )
+    p.add_argument(
+        "--format", choices=["table", "json"], default="table",
+        help="Output format (default: table)",
+    )
+    return p
+
+
+def _run_similar(args: argparse.Namespace) -> int:
+    db = Database()
+    db.init()
+
+    if not args.paper_id:
+        stats = db.get_embedding_stats()
+        papers_without_emb = stats.get("total_with_text", 0) - stats.get("with_embedding", 0)
+        print("Semantic similarity search requires embeddings.")
+        print(f"Database stats: {stats.get('with_embedding', 0)} papers have embeddings "
+              f"({papers_without_emb} still need them).")
+        print()
+        print("To generate embeddings for papers without them, use:")
+        print("  ai_research_os import --embed <paper_id>")
+        print("Or run the embedding pipeline on your research root.")
+        return 0
+
+    sims = db.find_similar(args.paper_id, threshold=args.threshold, limit=args.limit)
+
+    if not sims:
+        print(f"No papers found with similarity >= {args.threshold} to '{args.paper_id}'.")
+        return 0
+
+    if args.format == "json":
+        out = []
+        for paper, score in sims:
+            out.append({
+                "paper_id": paper.paper_id,
+                "title": paper.title,
+                "authors": paper.authors,
+                "published": paper.published,
+                "similarity": round(score, 4),
+                "source": paper.source,
+                "primary_category": paper.primary_category,
+            })
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+    else:
+        print(f"Found {len(sims)} papers similar to '{args.paper_id}' (threshold={args.threshold}):\n")
+        for paper, score in sims:
+            bar_len = int(score * 10)
+            bar = "=" * bar_len + "-" * (10 - bar_len)
+            print(f"  [{score:.3f}] {bar}  {paper.paper_id}")
+            print(f"         {paper.title}")
+            if paper.authors:
+                print(f"         {paper.authors[:60]}")
+            print(f"         {paper.published or 'n.d.'} | {paper.source or ''} | {paper.primary_category or ''}")
+            print()
+
+    return 0
+
+
 def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optional[List[float]]:
     """Fetch embedding from local Ollama. Returns None on failure."""
     try:
@@ -2077,6 +2153,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         _build_cite_fetch_parser(subparsers)
         _build_cite_stats_parser(subparsers)
         _build_dedup_semantic_parser(subparsers)
+        _build_similar_parser(subparsers)
         args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
         if args.subcmd == "search":
@@ -2111,6 +2188,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             return _run_cite_stats(args)
         elif args.subcmd == "dedup-semantic":
             return _run_dedup_semantic(args)
+        elif args.subcmd == "similar":
+            return _run_similar(args)
         return 0
     else:
         # Legacy flow (arxiv ID / DOI as first positional arg)
