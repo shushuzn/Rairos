@@ -46,7 +46,7 @@ text = "LicenseRef-ResearchOnly"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["core*", "parsers*", "notes*", "pdf*", "sections*", "llm*", "renderers*", "updaters*", "completions*", "db*", "rankers*", "research_loop*"]
+include = ["core*", "parsers*", "notes*", "pdf*", "sections*", "llm*", "renderers*", "updaters*", "completions*", "db*", "rankers*", "research_loop"]
 
 [tool.setuptools.package-data]
 completions = ["bash", "zsh", "fish"]
