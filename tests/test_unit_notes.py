@@ -262,11 +262,15 @@ class TestCollectPnotesTier4:
         import ai_research_os as airo
         root = tmp_path / "notes"
         root.mkdir()
-        (root / "P - 2024-01-01 - A.md").write_text("---\npublished: 2024-01-01\n---\n", encoding="utf-8")
-        (root / "P - 2024-06-01 - B.md").write_text("---\npublished: 2024-06-01\n---\n", encoding="utf-8")
+        f1 = root / "P - 2024-01-01 - A.md"
+        f2 = root / "P - 2024-06-01 - B.md"
+        f1.write_text("---\npublished: 2024-01-01\n---\n", encoding="utf-8")
+        f2.write_text("---\npublished: 2024-06-01\n---\n", encoding="utf-8")
+        assert f1.exists() and f2.exists()  # setup verification
         result = airo.collect_pnotes(root)
         dates = [p.stem[:10] for p in result]
         assert dates == sorted(dates, reverse=True)
+        assert dates == ["2024-06-01", "2024-01-01"]  # verify correct order
 
 
 class TestPnotesByTagTier4:
@@ -276,10 +280,14 @@ class TestPnotesByTagTier4:
         root.mkdir()
         papers_dir = root / "02-Papers"
         papers_dir.mkdir(parents=True)
-        (papers_dir / "P - 2024-01-01 - A.md").write_text("---\npublished: 2024-01-01\ntags:\n  - Agent\n---\n", encoding="utf-8")
-        (papers_dir / "P - 2024-02-01 - B.md").write_text("---\npublished: 2024-02-01\ntags:\n  - Agent\n---\n", encoding="utf-8")
+        f1 = papers_dir / "P - 2024-01-01 - A.md"
+        f2 = papers_dir / "P - 2024-02-01 - B.md"
+        f1.write_text("---\npublished: 2024-01-01\ntags:\n  - Agent\n---\n", encoding="utf-8")
+        f2.write_text("---\npublished: 2024-02-01\ntags:\n  - Agent\n---\n", encoding="utf-8")
+        assert f1.exists() and f2.exists()  # setup verification
         result = airo.pnotes_by_tag(root)
         assert "Agent" in result
+        assert len(result["Agent"]) == 2  # verify both files grouped
 
 
 class TestPickTop3PnotesForTagTier4:
@@ -301,12 +309,19 @@ class TestPickTop3PnotesForTagTier4:
         root.mkdir()
         papers_dir = root / "02-Papers"
         papers_dir.mkdir(parents=True)
+        files = []
         for i in range(5):
-            (papers_dir / f"P - 2024-0{i+1}-01 - {i}.md").write_text(f"---\npublished: 2024-0{i+1}-01\ntags:\n  - Agent\n---\n", encoding="utf-8")
+            f = papers_dir / f"P - 2024-0{i+1}-01 - {i}.md"
+            f.write_text(f"---\npublished: 2024-0{i+1}-01\ntags:\n  - Agent\n---\n", encoding="utf-8")
+            files.append(f)
+        assert all(f.exists() for f in files)  # setup verification
         tag_map = airo.pnotes_by_tag(root)
         result = airo.pick_top3_pnotes_for_tag("Agent", tag_map)
         assert result is not None
         assert len(result) == 3
+        # Verify they are the 3 oldest (earliest dates)
+        result_stems = sorted(p.stem[:10] for p in result)
+        assert result_stems == ["2024-01-01", "2024-02-01", "2024-03-01"]  # oldest 3
 
     def test_returns_none_for_unknown_tag(self, tmp_path):
         import ai_research_os as airo
