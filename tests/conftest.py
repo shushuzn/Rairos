@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-
 # Frozen date constants used across Tier 4 tests
 FROZEN_DATE = "2024-06-15"
 FROZEN_DATE_ISO = "2024-06-15"
@@ -104,7 +103,17 @@ def sample_pdf(tmp_path):
         b"BT /F1 12 Tf 100 700 Td (Hello World) Tj ET\n"
         b"endstream endobj\n"
         b"5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\n"
-        b"xref\n0 6\n0000000000 65535 f\n0000000009 00000 n\n0000000058 00000 n\n0000000115 00000 n\n0000000270 00000 n\n0000000350 00000 n\ntrailer<</Size 6/Root 1 0 R>>\nstartxref\n427\n%%EOF"
+        b"xref\n0 6\n"
+        b"0000000000 65535 f\n"
+        b"0000000009 00000 n\n"
+        b"0000000058 00000 n\n"
+        b"0000000115 00000 n\n"
+        b"0000000270 00000 n\n"
+        b"0000000350 00000 n\n"
+        b"trailer<</Size 6/Root 1 0 R>>\n"
+        b"startxref\n"
+        b"427\n"
+        b"%%EOF"
     )
     return pdf_path
 
@@ -156,47 +165,62 @@ def tmp_db(tmp_path):
     conn.execute("PRAGMA foreign_keys=ON")
     conn.commit()
 
-    # Wrap in a minimal Database-like object
+    def get_embedding(paper_id):
+        cur = conn.cursor()
+        cur.execute("SELECT embed_vector FROM papers WHERE id = ?", (paper_id,))
+        row = cur.fetchone()
+        if row is None or row["embed_vector"] is None:
+            return None
+        import struct
+
+        blob = row["embed_vector"]
+        count = len(blob) // 4
+        return list(struct.unpack(f"{count}f", blob))
+
+    def get_paper(paper_id):
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM papers WHERE id = ?", (paper_id,))
+        row = cur.fetchone()
+        if row is None:
+            return None
+        columns = [desc[0] for desc in cur.description]
+        return dict(zip(columns, row))
+
+    def update_parse_status(
+        paper_id,
+        status,
+        error="",
+        plain_text="",
+        latex_blocks=None,
+        table_count=0,
+        figure_count=0,
+        word_count=0,
+        page_count=0,
+    ):
+        latex_json = json.dumps(latex_blocks or []) if not isinstance(latex_blocks, str) else latex_blocks
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT parse_version FROM papers WHERE id = ?",
+            (paper_id,),
+        )
+        row = cur.fetchone()
+        version = (row["parse_version"] if row else 0) + 1
+        cur.execute(
+            "UPDATE papers SET parse_status=?, parse_error=?, plain_text=?, "
+            "latex_blocks=?, table_count=?, figure_count=?, word_count=?, "
+            "page_count=?, parse_version=? WHERE id=?",
+            (
+                status, error, plain_text, latex_json,
+                table_count, figure_count, word_count, page_count,
+                version, paper_id,
+            ),
+        )
+        conn.commit()
+
     class _FakeDB:
-        def get_paper(self, paper_id):
-            cur = conn.cursor()
-            cur.execute("SELECT * FROM papers WHERE id = ?", (paper_id,))
-            row = cur.fetchone()
-            if row is None:
-                return None
-            columns = [desc[0] for desc in cur.description]
-            return dict(zip(columns, row))
+        pass
 
-        def update_parse_status(
-            self,
-            paper_id,
-            status,
-            error="",
-            plain_text="",
-            latex_blocks=None,
-            table_count=0,
-            figure_count=0,
-            word_count=0,
-            page_count=0,
-        ):
-            latex_json = json.dumps(latex_blocks or []) if not isinstance(latex_blocks, str) else latex_blocks
-            cur = conn.cursor()
-            cur.execute(
-                "SELECT parse_version FROM papers WHERE id = ?",
-                (paper_id,),
-            )
-            row = cur.fetchone()
-            version = (row["parse_version"] if row else 0) + 1
-            cur.execute(
-                "UPDATE papers SET parse_status=?, parse_error=?, plain_text=?, "
-                "latex_blocks=?, table_count=?, figure_count=?, word_count=?, "
-                "page_count=?, parse_version=? WHERE id=?",
-                (
-                    status, error, plain_text, latex_json,
-                    table_count, figure_count, word_count, page_count,
-                    version, paper_id,
-                ),
-            )
-            conn.commit()
-
+    _FakeDB.get_embedding = staticmethod(get_embedding)
+    _FakeDB.get_paper = staticmethod(get_paper)
+    _FakeDB.update_parse_status = staticmethod(update_parse_status)
     return _FakeDB()

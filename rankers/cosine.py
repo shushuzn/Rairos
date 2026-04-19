@@ -54,6 +54,8 @@ class CosineSimilarityRanker(Ranker):
         results: List[RankedResult] = []
         for row in cur.fetchall():
             pid, blob = row["id"], row["embed_vector"]
+            if blob is None:
+                continue
             c_count = len(blob) // 4
             c_vec = list(struct.unpack(f"{c_count}f", blob))
             c_norm = sum(x * x for x in c_vec) ** 0.5
