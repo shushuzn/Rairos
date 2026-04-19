@@ -122,36 +122,44 @@ jobs:
         with:
           name: coverage-data-3.9
           path: cc-3.9
+          merge-multiple: true
 
       - name: Rename coverage file 3.9
-        run: mv cc-3.9/.coverage.3.9 cc-3.9/.coverage
+        run: |
+          if [ -f "cc-3.9/.coverage.3.9" ]; then mv cc-3.9/.coverage.3.9 cc-3.9/.coverage; ls -la cc-3.9/; else echo "cc-3.9 content:"; ls cc-3.9/ 2>/dev/null || echo "(empty)"; fi
 
       - name: Download coverage 3.10
         uses: actions/download-artifact@v4
         with:
           name: coverage-data-3.10
           path: cc-3.10
+          merge-multiple: true
 
       - name: Rename coverage file 3.10
-        run: mv cc-3.10/.coverage.3.10 cc-3.10/.coverage
+        run: |
+          if [ -f "cc-3.10/.coverage.3.10" ]; then mv cc-3.10/.coverage.3.10 cc-3.10/.coverage; ls -la cc-3.10/; else echo "cc-3.10 content:"; ls cc-3.10/ 2>/dev/null || echo "(empty)"; fi
 
       - name: Download coverage 3.11
         uses: actions/download-artifact@v4
         with:
           name: coverage-data-3.11
           path: cc-3.11
+          merge-multiple: true
 
       - name: Rename coverage file 3.11
-        run: mv cc-3.11/.coverage.3.11 cc-3.11/.coverage
+        run: |
+          if [ -f "cc-3.11/.coverage.3.11" ]; then mv cc-3.11/.coverage.3.11 cc-3.11/.coverage; ls -la cc-3.11/; else echo "cc-3.11 content:"; ls cc-3.11/ 2>/dev/null || echo "(empty)"; fi
 
       - name: Download coverage 3.12
         uses: actions/download-artifact@v4
         with:
           name: coverage-data-3.12
           path: cc-3.12
+          merge-multiple: true
 
       - name: Rename coverage file 3.12
-        run: mv cc-3.12/.coverage.3.12 cc-3.12/.coverage
+        run: |
+          if [ -f "cc-3.12/.coverage.3.12" ]; then mv cc-3.12/.coverage.3.12 cc-3.12/.coverage; ls -la cc-3.12/; else echo "cc-3.12 content:"; ls cc-3.12/ 2>/dev/null || echo "(empty)"; fi
 
       - name: Combine coverage
         run: python -m coverage combine cc-3.9 cc-3.10 cc-3.11 cc-3.12
