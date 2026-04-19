@@ -79,8 +79,14 @@ jobs:
       - name: Install dependencies
         run: pip install pytest pytest-cov requests feedparser pymupdf freezegun
 
-      - name: Run pytest with coverage
-        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt
+      - name: Upload coverage artifact
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          PV: ${{ matrix.python-version }}
+        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt && python .github/workflows/upload_coverage.py
 
       - name: Upload test output
         if: always()
@@ -89,18 +95,6 @@ jobs:
           name: pytest-output-${{ matrix.python-version }}
           path: pytest_output_${{ matrix.python-version }}.txt
           retention-days: 1
-
-      - name: Copy coverage file
-        if: always()
-        run: cp .coverage .coverage.${{ matrix.python-version }}
-
-      - name: Upload coverage data
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-data-${{ matrix.python-version }}
-          path: .coverage.${{ matrix.python-version }}
-          retention-days: 3
 
   coverage-report:
     needs: [test-pytest]
