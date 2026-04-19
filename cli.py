@@ -27,6 +27,7 @@ from parsers.arxiv import fetch_arxiv_metadata
 from parsers.crossref import fetch_crossref_metadata
 from parsers.input_detection import is_probably_doi, normalize_arxiv_id, normalize_doi
 from pdf.extract import download_pdf, extract_pdf_text_hybrid, extract_pdf_structured
+from research_loop import run_research
 from renderers.pnote import render_pnote
 from sections.segment import format_section_snippets, segment_into_sections, segment_structured, format_tables_markdown, format_math_markdown
 from updaters.radar import update_radar
@@ -55,6 +56,93 @@ def infer_tags_if_empty(tags: List[str], paper: Paper) -> List[str]:
         if re.search(pat, text, flags=re.I):
             out.append(tg)
     return out if out else ["Unsorted"]
+
+
+def _build_research_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "research",
+        help="Autonomous research loop: search arXiv → download → extract → AI summarize",
+    )
+    p.add_argument("query", nargs="?", default="", help="Research topic or keyword")
+    p.add_argument("--limit", type=int, default=5, help="Max papers to process (default 5)")
+    p.add_argument(
+        "--output",
+        type=str,
+        default="",
+        help="Output directory (default: ~/ai_research/<query-slug>/)",
+    )
+    p.add_argument(
+        "--no-ai",
+        dest="no_ai",
+        action="store_true",
+        default=False,
+        help="Skip AI draft generation (metadata only)",
+    )
+    p.add_argument(
+        "--no-pdf",
+        dest="no_pdf",
+        action="store_true",
+        default=False,
+        help="Skip PDF download (use abstract only)",
+    )
+    p.add_argument("--tag", dest="tags", action="append", default=[], help="Tags to assign (repeatable)")
+    p.add_argument(
+        "--model",
+        type=str,
+        default="gpt-4o-mini",
+        help="LLM model for AI drafts (default gpt-4o-mini)",
+    )
+    p.add_argument(
+        "--base-url",
+        type=str,
+        default="",
+        help="LLM API base URL (default: OPENAI_BASE_URL env var)",
+    )
+    p.add_argument(
+        "--api-key",
+        type=str,
+        default="",
+        help="LLM API key (default: OPENAI_API_KEY env var)",
+    )
+    p.add_argument(
+        "--no-skip",
+        dest="no_skip",
+        action="store_true",
+        default=False,
+        help="Re-generate even if note already exists",
+    )
+    p.add_argument("-v", "--verbose", action="store_true", default=False, help="Verbose output")
+    return p
+
+
+def _run_research_cmd(args: argparse.Namespace) -> int:
+    from pathlib import Path
+
+    output_dir = Path(args.output) if args.output else None
+    tags = args.tags if args.tags else []
+    skip_existing = not args.no_skip
+
+    paths = run_research(
+        query=args.query,
+        limit=args.limit,
+        output_dir=output_dir,
+        download_pdfs=not args.no_pdf,
+        skip_existing=skip_existing,
+        tags=tags,
+        model=args.model,
+        base_url=args.base_url or None,
+        api_key=(args.api_key or None) if not args.no_ai else "",
+        verbose=args.verbose,
+    )
+
+    if not paths:
+        print("No notes generated.")
+        return 1
+
+    print(f"\nGenerated {len(paths)} note(s):")
+    for p in paths:
+        print(f"  {p}")
+    return 0
 
 
 def _build_search_parser(subparsers) -> argparse.ArgumentParser:
@@ -2115,6 +2203,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # Build all subcommand parsers
     _build_search_parser(subparsers)
+    _build_research_parser(subparsers)
     _build_list_parser(subparsers)
     _build_status_parser(subparsers)
     _build_queue_parser(subparsers)
@@ -2135,13 +2224,14 @@ def main(argv: Optional[List[str]] = None) -> int:
     raw_args = argv if argv is not None else sys.argv[1:]
     first = raw_args[0] if raw_args else ""
 
-    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations", "cite-graph", "cite-import", "cite-fetch", "cite-stats", "dedup-semantic"}
+    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations", "cite-graph", "cite-import", "cite-fetch", "cite-stats", "dedup-semantic", "research"}
 
     if first in SUBCOMMANDS:
         # New subcommand flow
         parser = argparse.ArgumentParser(description="AI Research OS")
         subparsers = parser.add_subparsers(dest="subcmd", help="Subcommands")
         _build_search_parser(subparsers)
+        _build_research_parser(subparsers)
         _build_list_parser(subparsers)
         _build_status_parser(subparsers)
         _build_queue_parser(subparsers)
@@ -2192,6 +2282,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             return _run_cite_stats(args)
         elif args.subcmd == "dedup-semantic":
             return _run_dedup_semantic(args)
+        elif args.subcmd == "research":
+            return _run_research_cmd(args)
         elif args.subcmd == "similar":
             return _run_similar(args)
         return 0
