@@ -19,7 +19,7 @@ if not pv:
     print("[ERROR] Python version required as argument")
     sys.exit(1)
 
-artifact_name = f"pytest-output-{pv}"
+artifact_name = f"coverage-data-{pv}"
 out_dir = pathlib.Path(f"cc-{pv}")
 out_dir.mkdir(exist_ok=True)
 zip_path = out_dir / "coverage.zip"
