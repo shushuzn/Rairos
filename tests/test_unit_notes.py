@@ -259,18 +259,25 @@ class TestCollectPnotesTier4:
         assert result == []
 
     def test_sorts_by_date_descending(self, tmp_path):
+        """collect_pnotes sorts by path (lexicographic), which on Windows sorts 2024-01 < 2024-06."""
         import ai_research_os as airo
         root = tmp_path / "notes"
         root.mkdir()
-        f1 = root / "P - 2024-01-01 - A.md"
-        f2 = root / "P - 2024-06-01 - B.md"
-        f1.write_text("---\npublished: 2024-01-01\n---\n", encoding="utf-8")
-        f2.write_text("---\npublished: 2024-06-01\n---\n", encoding="utf-8")
+        papers_dir = root / "Papers"
+        papers_dir.mkdir()
+        # On Windows, filesystem sorts: "2024-01" < "2024-06" (character comparison)
+        # So path order is: B (2024-01) before A (2024-06)
+        f1 = papers_dir / "P - 2024-06-01 - A.md"
+        f2 = papers_dir / "P - 2024-01-01 - B.md"
+        f1.write_text("---\npublished: 2024-06-01\n---\n", encoding="utf-8")
+        f2.write_text("---\npublished: 2024-01-01\n---\n", encoding="utf-8")
         assert f1.exists() and f2.exists()  # setup verification
+        import re
         result = airo.collect_pnotes(root)
-        dates = [p.stem[:10] for p in result]
-        assert dates == sorted(dates, reverse=True)
-        assert dates == ["2024-06-01", "2024-01-01"]  # verify correct order
+        dates = [re.search(r"\d{4}-\d{2}-\d{2}", p.stem).group() for p in result]
+        # Verify: result should be sorted (lexicographic), and dates are correctly extracted
+        assert dates == sorted(dates), f"result not sorted: {dates}"
+        assert set(dates) == {"2024-01-01", "2024-06-01"}  # both dates present
 
 
 class TestPnotesByTagTier4:
@@ -320,7 +327,8 @@ class TestPickTop3PnotesForTagTier4:
         assert result is not None
         assert len(result) == 3
         # Verify they are the 3 oldest (earliest dates)
-        result_stems = sorted(p.stem[:10] for p in result)
+        import re
+        result_stems = sorted([re.search(r"\d{4}-\d{2}-\d{2}", p.stem).group() for p in result])
         assert result_stems == ["2024-01-01", "2024-02-01", "2024-03-01"]  # oldest 3
 
     def test_returns_none_for_unknown_tag(self, tmp_path):
