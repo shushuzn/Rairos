@@ -80,22 +80,29 @@ jobs:
         run: pip install pytest pytest-cov requests feedparser pymupdf freezegun
 
       - name: Run pytest with coverage
-        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=json --cov-report=term-missing 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt
+        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt
 
       - name: Upload test output
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: pytest-output-${{ matrix.python-version }}
           path: pytest_output_${{ matrix.python-version }}.txt
           retention-days: 1
 
-      - name: Upload coverage report
+      - name: Upload coverage data
         if: always()
-        uses: actions/upload-artifact@v7
+        run: |
+          # Rename .coverage to non-hidden before upload so v4 download-artifact handles path correctly
+          cp .coverage .coverage.${{ matrix.python-version }}
+          echo ".coverage.${{ matrix.python-version }}" > artifact_contains.txt
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage-report-${{ matrix.python-version }}
-          path: coverage.json
+          name: coverage-data-${{ matrix.python-version }}
+          path: .coverage.${{ matrix.python-version }}
           retention-days: 3
 
   coverage-report:
@@ -110,18 +117,44 @@ jobs:
           python-version: "3.11"
           cache: 'pip'
 
-      - name: Install coverage
-        run: pip install coverage[toml]
-
-      - name: Download coverage reports
-        uses: actions/download-artifact@v7
+      - name: Download coverage 3.9
+        uses: actions/download-artifact@v4
         with:
-          pattern: coverage-report-*
-          path: coverage-reports/
-          merge-multiple: true
+          name: coverage-data-3.9
+          path: cc-3.9
+
+      - name: Rename coverage file 3.9
+        run: mv cc-3.9/.coverage.3.9 cc-3.9/.coverage
+
+      - name: Download coverage 3.10
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-data-3.10
+          path: cc-3.10
+
+      - name: Rename coverage file 3.10
+        run: mv cc-3.10/.coverage.3.10 cc-3.10/.coverage
+
+      - name: Download coverage 3.11
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-data-3.11
+          path: cc-3.11
+
+      - name: Rename coverage file 3.11
+        run: mv cc-3.11/.coverage.3.11 cc-3.11/.coverage
+
+      - name: Download coverage 3.12
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-data-3.12
+          path: cc-3.12
+
+      - name: Rename coverage file 3.12
+        run: mv cc-3.12/.coverage.3.12 cc-3.12/.coverage
 
       - name: Combine coverage
-        run: python -m coverage combine coverage-reports/
+        run: python -m coverage combine cc-3.9 cc-3.10 cc-3.11 cc-3.12
 
       - name: Coverage report
         run: python -m coverage report --format=term-missing
