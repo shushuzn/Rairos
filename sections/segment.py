@@ -179,7 +179,7 @@ def format_section_snippets(
     out: List[Tuple[str, str, int]] = []  # (title, content, priority)
     budget = max_chars_total
 
-    for idx, title, content in indexed:
+    for _idx, title, content in indexed:
         if budget <= 0:
             break
         raw = content.strip()

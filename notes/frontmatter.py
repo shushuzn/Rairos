@@ -61,5 +61,5 @@ def parse_date_from_frontmatter(fm: Dict[str, str]) -> str:
         return ""
     if re.fullmatch(r"\d{4}-\d{2}-\d{2}", d):
         return d
-    warnings.warn(f"Unrecognized date format in frontmatter: {d!r}")
+    warnings.warn(f"Unrecognized date format in frontmatter: {d!r}", stacklevel=2)
     return d

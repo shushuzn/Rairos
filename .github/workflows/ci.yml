@@ -49,6 +49,12 @@ jobs:
       - name: Syntax check
         run: python -m py_compile ai_research_os.py
 
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Ruff check
+        run: ruff check . || true
+
       - name: Pyflakes
         run: python -m pyflakes ai_research_os.py || true
 

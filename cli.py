@@ -630,7 +630,7 @@ def _run_merge(args: argparse.Namespace) -> int:
             if paper.id in seen or not paper.title:
                 continue
             sims = db.find_similar(paper.id, threshold=0.95, limit=10)
-            for sim_paper, score in sims:
+            for sim_paper, _score in sims:
                 pair_key = tuple(sorted([paper.id, sim_paper.id]))
                 if pair_key in seen:
                     continue
@@ -1003,7 +1003,7 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
         # ── Metadata fetch: populate titles from arXiv / CrossRef / PubMed / ISBN ─────────
         if fetch_meta:
             items = [(pid, n) for pid, n in nodes.items() if not n.title and n.depth > 0]
-            for i, (pid, node) in enumerate(items):
+            for i, (pid, _node) in enumerate(items):
                 if pid.startswith("arXiv:"):
                     aid = pid[6:]
                     title = _fetch_arxiv_title(aid)
@@ -1061,7 +1061,7 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
                 label = n.title[:40] + ("..." if len(n.title) > 40 else "") if n.title else pid
                 print(f'    {safe_id}["{label}"]')
             print()
-            for f, t, d in edges:
+            for f, t, _d in edges:
                 sf = f.replace("-", "_").replace(".", "_").replace(":", "_")
                 st = t.replace("-", "_").replace(".", "_").replace(":", "_")
                 arrow = "-->"
@@ -1154,7 +1154,7 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
     # Batch-fetch titles for all nodes (excluding root which already has title)
     all_ids = list(nodes.keys())
     papers_map = db.get_papers_bulk(all_ids)
-    for pid, node in nodes.items():
+    for pid, _node in nodes.items():
         if pid in papers_map:
             nodes[pid].title = papers_map[pid].title or ""
 

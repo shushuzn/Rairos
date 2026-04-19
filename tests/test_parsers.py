@@ -433,7 +433,7 @@ class TestArxivDictToPaperErrors:
         }
         try:
             arxiv_parser._dict_to_paper(d)
-            assert False, "Expected KeyError"
+            raise AssertionError("Expected KeyError")
         except KeyError as e:
             assert "uid" in str(e) or "key" in str(e).lower()
 
