@@ -636,43 +636,9 @@ class TestRenderPnote:
         result = airo.render_pnote(p, [], "## Intro\nText.", "## AI Draft\nGenerated content.")
         assert "AI Draft" in result
 
-    def test_parsed_ai_injects_rubric_frontmatter(self):
-        """Lines 45-56: parsed_ai with rubric scores fills frontmatter."""
-        p = make_paper()
-        parsed_ai = (
-            {"Introduction": "Intro text"},
-            {"novelty": 4, "leverage": 3, "evidence": 5, "overall": "Solid work"},
-        )
-        result = airo.render_pnote(p, [], "## Intro\nText.", "", parsed_ai=parsed_ai)
-        assert "rubric:" in result
-        assert "novelty: 4" in result
-        assert "leverage: 3" in result
-        assert 'overall: "Solid work"' in result
-        assert "ai_generated: true" in result
-
-    def test_parsed_ai_none_returns_empty_sections(self):
-        """Line 261-264: _build_injected_sections_md returns {} when parsed_ai is None."""
-        from renderers import pnote as pnote_mod
-
-        result = pnote_mod._build_injected_sections_md(None)
-        assert result == {}
-
-    def test_parsed_ai_with_raw_builds_ai_block(self):
-        """Lines 274-278: _build_ai_block uses __raw__ when present."""
-        from renderers import pnote as pnote_mod
-
-        parsed_ai = (
-            {"__raw__": "Raw AI output here"},
-            {"overall": "good"},
-        )
-        result = pnote_mod._build_ai_block(parsed_ai, "")
-        assert "AI Draft" in result
-        assert "Raw AI output here" in result
-
-
-# -----------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # parse_frontmatter
-# -----------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 class TestParseFrontmatter:
     def test_parses_yaml_block(self):

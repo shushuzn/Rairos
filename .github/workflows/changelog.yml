@@ -1,0 +1,57 @@
+name: Changelog
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  generate-changelog:
+    runs-on: ubuntu-22.04
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install commitizen
+        run: pip install commitizen
+
+      - name: Generate changelog
+        run: |
+          cz changelog --dry-run --yes 2>&1 | head -5 || true
+          cz changelog --yes 2>&1 | tail -20
+
+      - name: Check diff
+        id: diff
+        run: |
+          git diff --stat CHANGELOG.md
+          if [ -z "$(git diff --name-only CHANGELOG.md)" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changelog changes"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create PR if changed
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          BRANCH="chore/update-changelog-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$BRANCH"
+          git add CHANGELOG.md
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git commit -m "docs: update CHANGELOG.md"
+          git push -u origin "$BRANCH" --force
+
+          RESP=$(curl --noproxy "*" -s -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls \
+            -d "{\"title\":\"docs: update CHANGELOG.md\",\"body\":\"Auto-generated changelog update\",\"head\":\"$BRANCH\",\"base\":\"main\"}")
+          echo "$RESP" | python -c "import sys,json; d=json.load(sys.stdin); print('PR:', d.get('html_url', d.get('message','')))"
