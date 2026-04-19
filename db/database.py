@@ -1508,46 +1508,16 @@ class Database:
     ) -> List[Tuple["PaperRecord", float]]:
         """
         Find papers similar to paper_id using cosine similarity of embeddings.
+
         Returns list of (PaperRecord, similarity_score) sorted by score descending.
         Only papers with similarity >= threshold are returned.
         """
         try:
-            import struct
+            from rankers.cosine import CosineSimilarityRanker
 
-            query_emb = self.get_embedding(paper_id)
-            if query_emb is None:
-                return []
-
-            cur = self.conn.cursor()
-            cur.execute(
-                "SELECT id, embed_vector FROM papers WHERE id != ? AND embed_vector IS NOT NULL",
-                (paper_id,),
-            )
-            results: List[Tuple[PaperRecord, float]] = []
-            q_vec = query_emb
-            q_norm = sum(x * x for x in q_vec) ** 0.5
-            if q_norm == 0:
-                return []
-
-            for row in cur.fetchall():
-                pid, blob = row["id"], row["embed_vector"]
-                c_count = len(blob) // 4
-                c_vec = list(struct.unpack(f"{c_count}f", blob))
-                c_norm = sum(x * x for x in c_vec) ** 0.5
-                if c_norm == 0:
-                    continue
-                dot = sum(a * b for a, b in zip(q_vec, c_vec))
-                sim = dot / (q_norm * c_norm)
-                if sim >= threshold:
-                    cur2 = self.conn.cursor()
-                    cur2.execute("SELECT * FROM papers WHERE id = ?", (pid,))
-                    prow = cur2.fetchone()
-                    if prow:
-                        results.append((PaperRecord.from_row(prow), sim))
-
-            results.sort(key=lambda x: x[1], reverse=True)
-            return results[:limit]
-        except sqlite3.Error as e:
+            ranker = CosineSimilarityRanker(self)
+            return ranker.rank(paper_id, threshold=threshold, limit=limit)
+        except Exception as e:
             raise DatabaseError(f"find_similar failed: {e}") from e
 
     def get_similarity(self, paper_id1: str, paper_id2: str) -> float | None:
