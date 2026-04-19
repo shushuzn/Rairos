@@ -125,50 +125,7 @@ jobs:
           set -e
           for pv in 3.9 3.10 3.11 3.12; do
             echo "=== Python $pv ==="
-            # Find the test-pytest job for this Python version
-            job_id=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
-              "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/jobs" | \
-              python -c "import sys,json; jobs=[j for j in json.load(sys.stdin)['jobs'] if j['name']==f'test-pytest ($pv)']; print(jobs[0]['id'] if jobs else '')")
-
-            if [ -z "$job_id" ]; then
-              echo "[ERROR] No test-pytest job found for Python $pv"
-              continue
-            fi
-
-            # Get artifact info
-            artifact_info=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
-              "https://api.github.com/repos/$REPO/actions/jobs/$job_id/artifacts")
-
-            archive_url=$(echo "$artifact_info" | python -c "import sys,json; arts=json.load(sys.stdin)['artifacts']; print(next((a['archive_url'] for a in arts if a['name']=='coverage-data'),'')")
-
-            if [ -z "$archive_url" ]; then
-              echo "[ERROR] No coverage-data artifact found for Python $pv"
-              continue
-            fi
-
-            # Download artifact zip with Authorization header (follows redirects)
-            mkdir -p "cc-$pv"
-            curl -s -L -H "Authorization: Bearer $GH_TOKEN" \
-              "$archive_url" -o "cc-$pv/coverage.zip"
-
-            # Extract .coverage.* from zip
-            python -c "
-import zipfile, os, sys
-pv='$pv'
-with zipfile.ZipFile(f'cc-{pv}/coverage.zip', 'r') as zf:
-    for name in zf.namelist():
-        if name.endswith(f'.coverage.{pv}'):
-            zf.extract(name, f'cc-{pv}')
-            os.rename(f'cc-{pv}/{name}', f'cc-{pv}/.coverage.{pv}')
-            print(f'Extracted .coverage.$pv ({os.path.getsize(f\"cc-{pv}/.coverage.$pv\")} bytes)')
-            break
-    else:
-        print('[ERROR] .coverage.$pv not found in zip')
-        print('Files:', zf.namelist())
-"
-
-            rm -f "cc-$pv/coverage.zip"
-            echo "Done: cc-$pv/.coverage.$pv"
+            python .github/workflows/download_coverage.py "$pv"
           done
 
       - name: Combine coverage
