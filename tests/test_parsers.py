@@ -277,6 +277,188 @@ class TestArxivParseEntry:
 
 
 # =============================================================================
+# parsers/arxiv.py — error / edge paths
+# =============================================================================
+class TestArxivParseEntryErrors:
+    def test_empty_title_and_abstract(self):
+        e = Mock()
+        e.id = "https://arxiv.org/abs/2301.99999"
+        e.title = None
+        e.summary = None
+        e.authors = []
+        e.published = ""
+        e.updated = ""
+        e.link = ""
+        e.links = []
+        e.arxiv_primary_category = None
+        e.tags = None
+        e.arxiv_comment = None
+        e.journal_ref = None
+        e.arxiv_doi = None
+
+        result = arxiv_parser._parse_entry(e)
+
+        assert result["title"] == ""
+        assert result["abstract"] == ""
+        assert result["authors"] == []
+        assert result["primary_category"] == ""
+        assert result["categories"] == ""
+
+    def test_tags_with_none_raises_attribute_error(self):
+        # When the tags list itself contains None, t.get('term') raises AttributeError
+        # because None.has no .get() method. This is caught and all_cats becomes "".
+        e = Mock()
+        e.id = "https://arxiv.org/abs/2301.99999"
+        e.title = "T\n"
+        e.summary = "A\n"
+        e.authors = []
+        e.published = "2023-01-01T00:00:00Z"
+        e.updated = ""
+        e.link = ""
+        e.links = []
+        e.arxiv_primary_category = {"term": "cs.AI"}
+        e.tags = [{"term": "cs.AI"}, None]  # None crashes t.get('term')
+        e.arxiv_comment = ""
+        e.journal_ref = ""
+        e.arxiv_doi = ""
+
+        result = arxiv_parser._parse_entry(e)
+
+        # The exception is caught → all_cats = ""
+        assert result["categories"] == ""
+
+    def test_author_object_with_empty_name_skipped(self):
+        # Note: this is a known limitation — the code uses getattr(a, 'name', '')
+        # on a feedparser author object. When 'name' exists as an attribute on the Mock,
+        # Mock returns a new Mock rather than the string value. In production,
+        # feedparser returns a real string so empty/whitespace names are correctly skipped.
+        class _Auth:
+            def __init__(self, n):
+                self.name = n
+
+        e = Mock()
+        e.id = "https://arxiv.org/abs/2301.99999"
+        e.title = "T\n"
+        e.summary = "A\n"
+        e.authors = [_Auth("  "), _Auth(""), _Auth("John Doe")]
+        e.published = "2023-01-01T00:00:00Z"
+        e.updated = ""
+        e.link = ""
+        e.links = []
+        e.arxiv_primary_category = {}
+        e.tags = []
+        e.arxiv_comment = ""
+        e.journal_ref = ""
+        e.arxiv_doi = ""
+
+        result = arxiv_parser._parse_entry(e)
+
+        assert result["authors"] == ["John Doe"]
+
+    def test_empty_id_falls_back_to_abs_url(self):
+        e = Mock()
+        e.id = ""
+        e.title = "T\n"
+        e.summary = "A\n"
+        e.authors = []
+        e.published = "2023-01-01T00:00:00Z"
+        e.updated = ""
+        e.link = ""
+        e.links = []
+        e.arxiv_primary_category = {}
+        e.tags = []
+        e.arxiv_comment = ""
+        e.journal_ref = ""
+        e.arxiv_doi = ""
+
+        result = arxiv_parser._parse_entry(e)
+
+        # Empty id → split yields empty string → pdf fallback url uses empty string
+        assert "arxiv.org/pdf/.pdf" in result["pdf_url"] or ".pdf" in result["pdf_url"]
+
+    def test_arxiv_primary_category_raises_exception(self):
+        e = Mock()
+        e.id = "https://arxiv.org/abs/2301.99999"
+        e.title = "T\n"
+        e.summary = "A\n"
+        e.authors = []
+        e.published = "2023-01-01T00:00:00Z"
+        e.updated = ""
+        e.link = ""
+        e.links = []
+        # AttributeError or TypeError when accessing arxiv_primary_category
+        del e.arxiv_primary_category
+        e.tags = []
+        e.arxiv_comment = ""
+        e.journal_ref = ""
+        e.arxiv_doi = ""
+
+        result = arxiv_parser._parse_entry(e)
+
+        assert result["primary_category"] == ""
+
+    def test_tags_raises_exception(self):
+        e = Mock()
+        e.id = "https://arxiv.org/abs/2301.99999"
+        e.title = "T\n"
+        e.summary = "A\n"
+        e.authors = []
+        e.published = "2023-01-01T00:00:00Z"
+        e.updated = ""
+        e.link = ""
+        e.links = []
+        e.arxiv_primary_category = {}
+        del e.tags  # raises AttributeError
+        e.arxiv_comment = ""
+        e.journal_ref = ""
+        e.arxiv_doi = ""
+
+        result = arxiv_parser._parse_entry(e)
+
+        assert result["categories"] == ""
+
+
+class TestArxivDictToPaperErrors:
+    def test_missing_required_key_raises_keyerror(self):
+        d = {
+            "source": "arxiv",
+            # "uid" missing
+            "title": "Test",
+            "authors": [],
+            "abstract": "",
+            "published": "",
+            "updated": "",
+            "abs_url": "",
+            "pdf_url": "",
+        }
+        try:
+            arxiv_parser._dict_to_paper(d)
+            assert False, "Expected KeyError"
+        except KeyError as e:
+            assert "uid" in str(e) or "key" in str(e).lower()
+
+    def test_dict_to_paper_optional_missing_keys_use_defaults(self):
+        d = {
+            "source": "arxiv",
+            "uid": "2301.12345",
+            "title": "T",
+            "authors": [],
+            "abstract": "",
+            "published": "",
+            "updated": "",
+            "abs_url": "",
+            "pdf_url": "",
+            # no primary_category, categories, comment, journal_ref, doi
+        }
+        p = arxiv_parser._dict_to_paper(d)
+        assert p.primary_category == ""
+        assert p.categories == ""
+        assert p.comment == ""
+        assert p.journal_ref == ""
+        assert p.doi == ""
+
+
+# =============================================================================
 # parsers/crossref.py — helper functions
 # =============================================================================
 class TestCrossrefBestEffortDate:

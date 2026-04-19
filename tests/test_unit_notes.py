@@ -415,3 +415,111 @@ class TestReadPnoteMetadataTier4:
         assert result["uid"] == ""  # no Source line in body, uid stays empty
 
 
+class TestEnsureOrUpdateMnoteABCUpdate:
+    """Cover mnote.py lines 86-92: curA/B/C exist but need updating."""
+
+    def test_updates_abc_and_appends_view_evolution_log(self, tmp_path):
+        """When existing mnote has curA/B/C that differ from new top3, re.sub + evolution log."""
+        import ai_research_os as airo
+        from pathlib import Path
+
+        mnote_dir = tmp_path / "notes"
+        mnote_dir.mkdir(parents=True)
+
+        # mnote_filename strips "P - XXXX - " prefix then truncates to 19 chars.
+        # "P - 2024-06-15 - OldPaperA" → "OldPaperA" (strip prefix, length ≤ 19)
+        # "P - 2024-06-15 - NewPaperA" → "NewPaperA"
+        # Both share the same {tag} = "Agent".
+        existing_fname = "M - Agent - OldPaperA vs OldPaperB vs OldPaperC.md"
+        existing_content = (
+            "---\n"
+            "type: comparison\n"
+            "date: 2024-06-01\n"
+            "---\n"
+            "------------------\n"
+            "\n"
+            "# Agent: PaperA vs PaperB vs PaperC\n"
+            "\n"
+            "## 当前 A/B/C（自动补齐）\n"
+            "\n"
+            "- A: P - 2024-06-15 - OldPaperA\n"
+            "- B: P - 2024-06-14 - OldPaperB\n"
+            "- C: P - 2024-06-13 - OldPaperC\n"
+        )
+        existing_file = mnote_dir / existing_fname
+        existing_file.write_text(existing_content, encoding="utf-8")
+
+        # New top3 paths with different stems
+        top3_dir = tmp_path / "papers"
+        top3_dir.mkdir()
+        a_path = top3_dir / "P - 2024-06-15 - NewPaperA.md"
+        b_path = top3_dir / "P - 2024-06-14 - NewPaperB.md"
+        c_path = top3_dir / "P - 2024-06-13 - NewPaperC.md"
+        a_path.write_text("---\n", encoding="utf-8")
+        b_path.write_text("---\n", encoding="utf-8")
+        c_path.write_text("---\n", encoding="utf-8")
+
+        result = airo.ensure_or_update_mnote(mnote_dir, "Agent", [a_path, b_path, c_path])
+
+        assert result is not None
+        updated = result.read_text(encoding="utf-8")
+        # A/B/C lines should be updated to new stems
+        assert "- A: P - 2024-06-15 - NewPaperA" in updated
+        assert "- B: P - 2024-06-14 - NewPaperB" in updated
+        assert "- C: P - 2024-06-13 - NewPaperC" in updated
+        # View Evolution Log should be appended
+        assert "View Evolution Log" in updated
+        assert "旧观点" in updated
+        assert "新证据" in updated
+
+    def test_abc_all_missing_appends_section(self, tmp_path):
+        """Lines 81-84: when existing mnote has no A/B/C at all, appends the section."""
+        import ai_research_os as airo
+        from pathlib import Path
+
+        mnote_dir = tmp_path / "notes"
+        mnote_dir.mkdir(parents=True)
+
+        # Existing mnote with NO A/B/C lines at all.
+        # Use stems that don't have "P - XXXX - " prefix so short() is identity.
+        # "OldAlpha" (9 chars) < 19, no truncation, no prefix strip.
+        existing_fname = "M - Agent - OldAlpha vs OldBeta vs OldGamma.md"
+        existing_content = (
+            "---\n"
+            "type: comparison\n"
+            "---\n"
+            "------------------\n"
+            "\n"
+            "# Agent Comparison\n"
+            "\n"
+            "Some content without A/B/C markers.\n"
+        )
+        existing_file = mnote_dir / existing_fname
+        existing_file.write_text(existing_content, encoding="utf-8")
+
+        # New top3 paths with different stems
+        # short("P - 2024-06-15 - NewAlpha") → strips prefix → "NewAlpha"
+        # short("P - 2024-06-15 - NewBeta")  → strips prefix → "NewBeta"
+        # short("P - 2024-06-15 - NewGamma") → strips prefix → "NewGamma"
+        top3_dir = tmp_path / "papers"
+        top3_dir.mkdir()
+        a_path = top3_dir / "P - 2024-06-15 - NewAlpha.md"
+        b_path = top3_dir / "P - 2024-06-14 - NewBeta.md"
+        c_path = top3_dir / "P - 2024-06-13 - NewGamma.md"
+        a_path.write_text("---\n", encoding="utf-8")
+        b_path.write_text("---\n", encoding="utf-8")
+        c_path.write_text("---\n", encoding="utf-8")
+
+        result = airo.ensure_or_update_mnote(mnote_dir, "Agent", [a_path, b_path, c_path])
+
+        assert result is not None
+        updated = result.read_text(encoding="utf-8")
+        # Should append the A/B/C section (lines 82-83)
+        # The stems get the "P - XXXX - " prefix stripped by short()
+        # so curA/B/C are None (no "- A: ..." lines exist) → lines 82-83 run
+        # The append uses full stems (a.stem = "P - 2024-06-15 - NewAlpha")
+        assert "- A: P - 2024-06-15 - NewAlpha" in updated
+        assert "- B: P - 2024-06-14 - NewBeta" in updated
+        assert "- C: P - 2024-06-13 - NewGamma" in updated
+
+

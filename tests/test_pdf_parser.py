@@ -122,6 +122,73 @@ class TestPDFParser:
 class TestPDFParserEdgeCases:
     """Cover pdf/parser.py edge-case branches (lines 241, 264, 345)."""
 
+    # ── _pdfminer_fallback ──────────────────────────────────────────────────
+
+    def test_pdfminer_fallback_empty_text(self, sample_pdf, monkeypatch):
+        """Lines 465, 488-497: pdfminer returns whitespace-only → text='',
+        falls through to bottom return with 'Used pdfminer fallback' warning."""
+        try:
+            import pdfminer  # noqa: F401
+        except ImportError:
+            pytest.skip("pdfminer not installed")
+
+        parser = PDFParser()
+        monkeypatch.setattr("pdfminer.high_level.extract_text", lambda p: "   \n\t  ")
+
+        result = parser._pdfminer_fallback(sample_pdf)
+        assert result["text"] == ""
+        assert "Used pdfminer fallback" in result["warnings"]
+
+    def test_pdfminer_fallback_exception(self, sample_pdf, monkeypatch):
+        """Lines 476-486: pdfminer raises → returns text='', errors contain
+        'All extraction methods failed'."""
+        try:
+            import pdfminer  # noqa: F401
+        except ImportError:
+            pytest.skip("pdfminer not installed")
+
+        parser = PDFParser()
+
+        def raise_on_extract(path):
+            raise RuntimeError("pdfminer broken")
+
+        monkeypatch.setattr("pdfminer.high_level.extract_text", raise_on_extract)
+
+        result = parser._pdfminer_fallback(sample_pdf)
+        assert result["text"] == ""
+        assert any("All extraction methods failed" in e for e in result["errors"])
+
+    # ── _find_caption_near ─────────────────────────────────────────────────
+
+    def test_find_caption_near_no_caption(self, sample_pdf):
+        """Line 559: no blocks match caption pattern → returns ''."""
+        import fitz
+        parser = PDFParser()
+        doc = fitz.open(str(sample_pdf))
+        page = doc[0]
+        # Page only has "Hello World" text - no figure/table caption
+        bbox = (200, 300, 400, 400)
+        caption = parser._find_caption_near(page, bbox, page_idx=0, search_radius=50.0)
+        assert caption == ""
+
+    # ── _extract_latex_blocks_from_text ────────────────────────────────────
+
+    def test_extract_latex_blocks_empty(self):
+        """Empty string → empty list."""
+        parser = PDFParser()
+        blocks = parser._extract_latex_blocks_from_text("", page_idx=0)
+        assert blocks == []
+
+    def test_extract_latex_blocks_no_math(self):
+        """Plain text with no LaTeX math → empty list."""
+        parser = PDFParser()
+        blocks = parser._extract_latex_blocks_from_text(
+            "This is a plain paragraph with no math at all.", page_idx=0
+        )
+        assert blocks == []
+
+    # ── existing timeout test ────────────────────────────────────────────────
+
     def test_parse_timeout_raises(self, sample_pdf, monkeypatch):
         """Line 241: raises ParseTimeoutError when elapsed > max_parse_time."""
         from pdf.parser import ParseTimeoutError
@@ -595,6 +662,638 @@ class TestParsedPaperReprEq:
         assert paper != "not a paper"
 
 
+class TestExtractStructuredExceptions:
+    """Cover exception paths inside _extract_structured."""
+
+    def test_table_detection_exception_appends_warning(self, sample_pdf, monkeypatch):
+        """Lines 376-377: table detection exception → warning appended."""
+        import fitz
+        parser = PDFParser()
+        parser.db = None
+
+        # Patch find_tables to raise
+        orig_open = fitz.open
+        class FakeDoc:
+            page_count = 1
+            def load_page(self, i):
+                return FakePage()
+            def close(self):
+                pass
+
+        class FakePage:
+            def find_tables(self):
+                raise RuntimeError("table detection unavailable")
+            def get_images(self, full=True):
+                return []
+            def get_text(self, kind="dict", flags=0):
+                return {"blocks": []}
+
+        monkeypatch.setattr(fitz, "open", lambda p: FakeDoc())
+
+        result = parser.parse(sample_pdf, paper_id="t", use_cache=False)
+        # Should not raise; should return result with warning
+        assert "Table detection failed" in str(result.warnings)
+
+    def test_figure_detection_exception_appends_warning(self, sample_pdf, monkeypatch):
+        """Lines 393-394: figure detection exception → warning appended."""
+        import fitz
+        parser = PDFParser()
+        parser.db = None
+
+        class FakeDoc:
+            page_count = 1
+            def load_page(self, i):
+                return FakePage()
+            def close(self):
+                pass
+
+        class FakePage:
+            def find_tables(self):
+                class FakeTableBrowse:
+                    def __iter__(self):
+                        return iter([])
+                return FakeTableBrowse()
+            def get_images(self, full=True):
+                raise RuntimeError("image detection unavailable")
+            def get_text(self, kind="dict", flags=0):
+                return {"blocks": []}
+
+        monkeypatch.setattr(fitz, "open", lambda p: FakeDoc())
+
+        result = parser.parse(sample_pdf, paper_id="t", use_cache=False)
+        assert "Figure detection failed" in str(result.warnings)
+
+    def test_get_text_exception_sets_empty_dict(self, sample_pdf, monkeypatch):
+        """Lines 399-400: get_text exception → page_dict = {}."""
+        import fitz
+        parser = PDFParser()
+        parser.db = None
+
+        class FakeDoc:
+            page_count = 1
+            def load_page(self, i):
+                return FakePage()
+            def close(self):
+                pass
+
+        class FakePage:
+            def find_tables(self):
+                class FakeTableBrowse:
+                    def __iter__(self):
+                        return iter([])
+                return FakeTableBrowse()
+            def get_images(self, full=True):
+                return []
+            def get_text(self, kind="dict", flags=0):
+                raise RuntimeError("text extraction unavailable")
+
+        monkeypatch.setattr(fitz, "open", lambda p: FakeDoc())
+
+        result = parser.parse(sample_pdf, paper_id="t", use_cache=False)
+        # Should not raise; text may be empty but no crash
+        assert isinstance(result.text, str)
+
+    def test_pymupdf_exception_with_pdfminer_recovery_adds_warning(self, sample_pdf, monkeypatch):
+        """Line 236: PyMuPDF exception + pdfminer non-empty → warning includes PyMuPDF failure."""
+        parser = PDFParser()
+        parser.db = None
+
+        def bad_extract(path):
+            raise RuntimeError("PyMuPDF destroyed")
+
+        def pdfminer_recovery(path):
+            return {
+                "text": "Recovered text from pdfminer",
+                "latex_blocks": [],
+                "tables": [],
+                "figures": [],
+                "page_count": 1,
+                "warnings": ["Used pdfminer fallback"],
+                "errors": [],
+            }
+
+        monkeypatch.setattr(parser, "_extract_structured", bad_extract)
+        monkeypatch.setattr(parser, "_pdfminer_fallback", pdfminer_recovery)
+
+        result = parser.parse(sample_pdf, paper_id="2301.00001", use_cache=False)
+        assert result.text == "Recovered text from pdfminer"
+        # Warning about PyMuPDF failure appended (line 236)
+        assert any("PyMuPDF failed" in w for w in result.warnings)
+
+
+class TestIsDisplayMath:
+    """Cover _is_display_math function."""
+
+    def test_non_math_line_returns_false(self):
+        from pdf.parser import _is_display_math
+        assert _is_display_math("This is plain text") is False
+        assert _is_display_math("") is False
+
+    def test_inline_math_not_display(self):
+        from pdf.parser import _is_display_math
+        assert _is_display_math("$x^2$") is False
+        assert _is_display_math("\\($y$\\)") is False
+
+    def test_display_math_patterns_return_true(self):
+        from pdf.parser import _is_display_math
+        assert _is_display_math("$$x^2$$") is True
+        assert _is_display_math("$$ formula $$") is True
+        assert _is_display_math("\\[ formula \\]") is True
+        assert _is_display_math("\\begin{align}a\\end{align}") is True
+
+
+class TestExtractLatexBlocksFromText:
+    """Cover _extract_latex_blocks_from_text (lines 563-586)."""
+
+    def test_extracts_inline_math(self):
+        from pdf.parser import PDFParser
+        parser = PDFParser()
+        text = "Let $x$ be a variable"
+        blocks = parser._extract_latex_blocks_from_text(text, page_idx=0)
+        assert len(blocks) >= 1
+        assert any(not b.is_display for b in blocks)
+
+    def test_extracts_from_multiline_text(self):
+        from pdf.parser import PDFParser
+        parser = PDFParser()
+        text = "Line one\nLine two\nLine three"
+        blocks = parser._extract_latex_blocks_from_text(text, page_idx=0)
+        # Just ensure no crash and returns a list
+        assert isinstance(blocks, list)
+
+
+class TestFindCaptionNear:
+    """Cover _find_caption_near exception path."""
+
+    def test_returns_empty_on_exception(self):
+        from pdf.parser import PDFParser
+        parser = PDFParser()
+        # Pass a non-fitz page object to trigger exception
+        class FakePage:
+            def get_text(self, kind="dict"):
+                raise RuntimeError("get_text unavailable")
+        result = parser._find_caption_near(FakePage(), (10, 20, 30, 40), page_idx=0)
+        assert result == ""
+
+
+class TestPdfminerFallback:
+    """Cover pdf/parser.py lines 457-497: pdfminer fallback branches."""
+
+    def test_pdfminer_fallback_returns_text(self, sample_pdf, monkeypatch):
+        """Lines 466-475: pdfminer returns non-empty text → returned as fallback."""
+        parser = PDFParser()
+        parser.db = None
+
+        def fake_pdfminer_fallback(path):
+            return {
+                "text": "Recovered via pdfminer fallback",
+                "latex_blocks": [],
+                "tables": [],
+                "figures": [],
+                "page_count": 1,
+                "warnings": ["Used pdfminer fallback"],
+                "errors": [],
+            }
+
+        def bad_extract(path):
+            raise RuntimeError("pymupdf broken")
+
+        monkeypatch.setattr(parser, "_extract_structured", bad_extract)
+        monkeypatch.setattr(parser, "_pdfminer_fallback", fake_pdfminer_fallback)
+
+        result = parser.parse(sample_pdf, paper_id="2301.00001", use_cache=False)
+        assert result.text == "Recovered via pdfminer fallback"
+        assert "Used pdfminer fallback" in result.warnings
+
+    def test_pdfminer_fallback_returns_empty_dict_raises_pdfparse_error(self, sample_pdf, monkeypatch):
+        """Lines 233-235: _extract_structured raises, pdfminer returns empty dict → PDFParseError."""
+        parser = PDFParser()
+        parser.db = None
+
+        def empty_fallback(path):
+            return {
+                "text": "",
+                "latex_blocks": [],
+                "tables": [],
+                "figures": [],
+                "page_count": 0,
+                "warnings": [],
+                "errors": ["pdfminer extraction failed"],
+            }
+
+        def bad_extract(path):
+            raise RuntimeError("pymupdf broken")
+
+        monkeypatch.setattr(parser, "_extract_structured", bad_extract)
+        monkeypatch.setattr(parser, "_pdfminer_fallback", empty_fallback)
+
+        from core.exceptions import PDFParseError
+        with pytest.raises(PDFParseError, match="All PDF extraction methods failed"):
+            parser.parse(sample_pdf, paper_id="2301.00001", use_cache=False)
+
+    def test_pdfminer_fallback_returns_empty_text(self, sample_pdf, monkeypatch):
+        """Lines 488-497: pdfminer returns empty text (text == "") → PDFParseError."""
+        parser = PDFParser()
+        parser.db = None
+
+        def empty_text_fallback(path):
+            return {
+                "text": "",
+                "latex_blocks": [],
+                "tables": [],
+                "figures": [],
+                "page_count": 0,
+                "warnings": ["Used pdfminer fallback"],
+                "errors": [],
+            }
+
+        def bad_extract(path):
+            raise RuntimeError("pymupdf broken")
+
+        monkeypatch.setattr(parser, "_extract_structured", bad_extract)
+        monkeypatch.setattr(parser, "_pdfminer_fallback", empty_text_fallback)
+
+        from core.exceptions import PDFParseError
+        with pytest.raises(PDFParseError, match="All PDF extraction methods failed"):
+            parser.parse(sample_pdf, paper_id="2301.00001", use_cache=False)
+
+    def test_extract_structured_returns_empty_text_still_succeeds(self, sample_pdf, monkeypatch):
+        """When _extract_structured succeeds but returns empty text (no exception), parse succeeds."""
+        parser = PDFParser()
+        parser.db = None
+
+        def empty_extract(path):
+            return {
+                "text": "",
+                "latex_blocks": [],
+                "tables": [],
+                "figures": [],
+                "page_count": 0,
+                "warnings": ["No text extracted"],
+                "errors": [],
+            }
+
+        monkeypatch.setattr(parser, "_extract_structured", empty_extract)
+
+        result = parser.parse(sample_pdf, paper_id="2301.00001", use_cache=False)
+        assert result.text == ""
+        assert "No text extracted" in result.warnings
+
+    def test_pdfminer_fallback_returns_empty_on_empty_text(self, sample_pdf, monkeypatch):
+        """Lines 462-489: pdfminer returns "" (empty string) → _pdfminer_fallback returns empty dict."""
+        try:
+            import fitz  # noqa: F401
+        except ImportError:
+            pytest.skip("PyMuPDF not installed")
+
+        try:
+            import pdfminer  # noqa: F401
+        except ImportError:
+            pytest.skip("pdfminer not installed")
+
+        parser = PDFParser()
+        parser.db = None
+
+        # Mock pdfminer.extract_text to return empty string
+        def mock_extract_text(path):
+            return ""
+
+        monkeypatch.setattr(
+            "pdfminer.high_level.extract_text",
+            mock_extract_text
+        )
+
+        result = parser._pdfminer_fallback(sample_pdf)
+        # When text is "", the function falls through to the bottom
+        # and returns a dict with text="" and "Used pdfminer fallback" warning
+        assert result["text"] == ""
+        assert "Used pdfminer fallback" in result["warnings"]
+
+    def test_pdfminer_fallback_returns_empty_on_none_text(self, sample_pdf, monkeypatch):
+        """Lines 462-465: pdfminer returns None → treated as empty string → empty dict returned."""
+        try:
+            import fitz  # noqa: F401
+        except ImportError:
+            pytest.skip("PyMuPDF not installed")
+
+        try:
+            import pdfminer  # noqa: F401
+        except ImportError:
+            pytest.skip("pdfminer not installed")
+
+        parser = PDFParser()
+        parser.db = None
+
+        # Mock pdfminer.extract_text to return None (or)
+        def mock_extract_text(path):
+            return None
+
+        monkeypatch.setattr(
+            "pdfminer.high_level.extract_text",
+            mock_extract_text
+        )
+
+        result = parser._pdfminer_fallback(sample_pdf)
+        assert result["text"] == ""
+
+
+class TestHashFileOSError:
+    """Cover lines 220 / 224-227: _hash_file raises OSError → propagates from parse()."""
+
+    def test_hash_file_raises_oserror_propagates(self, sample_pdf, monkeypatch):
+        """Line 220: OSError from _hash_file is not caught and propagates from parse()."""
+        import fitz
+        parser = PDFParser()
+
+        # Patch the file read inside _hash_file to raise OSError
+        orig_open = open
+        def bad_open(path, mode="r", *a, **k):
+            if mode == "rb" and "sample" in str(path):
+                raise OSError("Permission denied")
+            return orig_open(path, mode, *a, **k)
+
+        monkeypatch.setattr("builtins.open", bad_open)
+
+        with pytest.raises(OSError, match="Permission denied"):
+            parser.parse(sample_pdf, paper_id="t", use_cache=False)
+
+
+class TestSaveFileCacheOSError:
+    """Cover line 264 and lines 344-345: _save_file_cache write_text raises OSError."""
+
+    def test_save_file_cache_write_text_oserror(self, sample_pdf, tmp_path, monkeypatch):
+        """Line 264 / 344-345: OSError in cache_file.write_text is caught with warning."""
+        cache_dir = tmp_path / "parsed"
+        parser = PDFParser(cache_dir=cache_dir)
+        parser.db = None
+
+        # Patch the specific write_text call to raise OSError
+        import pathlib
+        orig_write_text = pathlib.Path.write_text
+
+        def bad_write_text(self, *a, **k):
+            if "parsed" in str(self) and ".json" in str(self):
+                raise OSError("No space left on device")
+            return orig_write_text(self, *a, **k)
+
+        monkeypatch.setattr(pathlib.Path, "write_text", bad_write_text)
+
+        # Should NOT raise — OSError is caught inside _save_file_cache
+        result = parser.parse(sample_pdf, paper_id="t", use_cache=False)
+        assert isinstance(result, ParsedPaper)
+
+
+class TestEmptyTextBlockSkip:
+    """Cover line 411: empty / len(line_text) < 2 blocks are skipped."""
+
+    def test_empty_span_in_block_is_skipped(self, sample_pdf, monkeypatch):
+        """Line 410-411: block with empty span text is skipped (no crash)."""
+        import fitz
+        parser = PDFParser()
+        parser.db = None
+
+        class FakeDoc:
+            page_count = 1
+            def load_page(self, i):
+                return FakePage()
+            def close(self):
+                pass
+
+        class FakePage:
+            def find_tables(self):
+                class FakeTableBrowse:
+                    def __iter__(self):
+                        return iter([])
+                return FakeTableBrowse()
+            def get_images(self, full=True):
+                return []
+            def get_text(self, kind="dict", flags=0):
+                # Block with a span whose text is empty string
+                return {
+                    "blocks": [{
+                        "type": 0,
+                        "bbox": (0, 0, 100, 20),
+                        "lines": [{
+                            "lines": [],
+                            "spans": [{"text": ""}],
+                            "bbox": (0, 0, 100, 20)
+                        }]
+                    }, {
+                        "type": 0,
+                        "bbox": (0, 30, 100, 50),
+                        "lines": [{
+                            "lines": [],
+                            "spans": [{"text": "x"}],
+                            "bbox": (0, 30, 100, 50)
+                        }]
+                    }]
+                }
+
+        monkeypatch.setattr(fitz, "open", lambda p: FakeDoc())
+
+        # Should not raise; empty and single-char spans are skipped
+        result = parser.parse(sample_pdf, paper_id="t", use_cache=False)
+        assert isinstance(result, ParsedPaper)
+        # The "x" single-char block is also skipped (len < 2)
+        assert result.text == ""
+
+
+class TestTableToStructuredEdgeCases:
+    """Cover lines 509-535: _table_to_structured edge cases."""
+
+    def test_empty_rows_returns_none(self):
+        """Lines 520-521: empty rows list → returns None."""
+        from pdf.parser import PDFParser
+        parser = PDFParser()
+
+        class FakeTable:
+            rows = []
+            bbox = (0, 0, 100, 100)
+
+        result = parser._table_to_structured(FakeTable(), page_idx=0)
+        assert result is None
+
+    def test_single_row_returns_none(self):
+        """Lines 520-521: rows with only header (len=1) → returns None."""
+        from pdf.parser import PDFParser
+        parser = PDFParser()
+
+        class FakeRow:
+            def __init__(self, texts):
+                self._texts = texts
+            def __iter__(self):
+                class Cell:
+                    def __init__(self, t):
+                        self.text = t
+                return iter([Cell(t) for t in self._texts])
+
+        class FakeTable:
+            rows = [FakeRow(["Header1", "Header2"])]
+            bbox = (0, 0, 100, 100)
+
+        result = parser._table_to_structured(FakeTable(), page_idx=0)
+        assert result is None
+
+    def test_two_rows_produces_table(self):
+        """Lines 523-532: two rows (header + data) → TableData returned."""
+        from pdf.parser import PDFParser
+        parser = PDFParser()
+
+        class FakeCell:
+            def __init__(self, t):
+                self.text = t
+
+        class FakeRow:
+            def __init__(self, texts):
+                self._texts = texts
+            def __iter__(self):
+                return iter([FakeCell(t) for t in self._texts])
+
+        class FakeTable:
+            rows = [
+                FakeRow(["ColA", "ColB"]),
+                FakeRow(["val1", "val2"]),
+            ]
+            bbox = (10, 20, 30, 40)
+
+        result = parser._table_to_structured(FakeTable(), page_idx=1)
+        assert result is not None
+        assert result.headers == ["ColA", "ColB"]
+        assert result.rows == [["val1", "val2"]]
+        assert result.page == 1
+
+    def test_no_bbox_attribute_uses_default(self):
+        """Line 526: tbl.bbox missing → uses (0,0,0,0)."""
+        from pdf.parser import PDFParser
+        parser = PDFParser()
+
+        class FakeCell:
+            def __init__(self, t):
+                self.text = t
+
+        class FakeRow:
+            def __init__(self, texts):
+                self._texts = texts
+            def __iter__(self):
+                return iter([FakeCell(t) for t in self._texts])
+
+        class FakeTable:
+            rows = [FakeRow(["H"]), FakeRow(["D"])]
+            bbox = None  # missing bbox
+
+        result = parser._table_to_structured(FakeTable(), page_idx=0)
+        assert result is not None
+        assert result.bbox == (0, 0, 0, 0)
+
+
+class TestFindCaptionNearEmpty:
+    """Cover line 548: _find_caption_near returns '' when no caption found."""
+
+    def test_returns_empty_when_no_caption_matches(self):
+        """Line 559: no matching caption → returns ''."""
+        from pdf.parser import PDFParser
+        parser = PDFParser()
+
+        class FakeSpan:
+            def __init__(self, text):
+                self.text = text
+
+        class FakeLine:
+            def __init__(self, spans_texts):
+                self._spans_texts = spans_texts
+
+            def get(self, key, default=None):
+                if key == "spans":
+                    return [FakeSpan(t) for t in self._spans_texts]
+                return default
+
+        class FakeBlock:
+            def __init__(self, btype, bbox, lines):
+                self._type = btype
+                self._bbox = bbox
+                self._lines = lines
+
+            def get(self, key, default=None):
+                if key == "type":
+                    return self._type
+                if key == "bbox":
+                    return self._bbox
+                if key == "lines":
+                    return self._lines
+                return default
+
+        class FakePage:
+            def get_text(self, kind="dict"):
+                return {
+                    "blocks": [
+                        FakeBlock(0, (0, 0, 100, 20), [["Not a caption", "just text"]]),
+                        FakeBlock(0, (0, 30, 100, 50), [["Another line"]]),
+                    ]
+                }
+
+        result = parser._find_caption_near(FakePage(), (50, 75, 150, 125), page_idx=0)
+        assert result == ""
+
+
+class TestExtractLatexBlocksEmptyInput:
+    """Cover lines 575-578: _extract_latex_blocks_from_text with empty/no display math."""
+
+    def test_empty_string_returns_empty_list(self):
+        """Lines 569-586: empty input → returns []. """
+        from pdf.parser import PDFParser
+        parser = PDFParser()
+        result = parser._extract_latex_blocks_from_text("", page_idx=0)
+        assert result == []
+
+    def test_no_display_math_only_inline(self):
+        """Line 580-581: inline math found but no display math → inline returned."""
+        from pdf.parser import PDFParser
+        parser = PDFParser()
+        text = "Equation $x = 1$ and $y = 2$"
+        blocks = parser._extract_latex_blocks_from_text(text, page_idx=0)
+        assert len(blocks) == 2
+        assert all(not b.is_display for b in blocks)
+
+
+class TestPdfminerFallbackExceptions:
+    """Cover lines 467-478: _pdfminer_fallback exception path and empty text."""
+
+    def test_pdfminer_exception_returns_error_dict(self, sample_pdf, monkeypatch):
+        """Lines 476-486: pdfminer raises Exception → returns error dict."""
+        try:
+            import pdfminer  # noqa: F401
+        except ImportError:
+            pytest.skip("pdfminer not installed")
+
+        parser = PDFParser()
+        parser.db = None
+
+        def raise_on_extract(path):
+            raise RuntimeError("pdfminer broken")
+
+        monkeypatch.setattr("pdfminer.high_level.extract_text", raise_on_extract)
+
+        result = parser._pdfminer_fallback(sample_pdf)
+        assert result["text"] == ""
+        assert "All extraction methods failed" in result["errors"][0]
+
+    def test_pdfminer_returns_empty_string(self, sample_pdf, monkeypatch):
+        """Lines 465, 488-497: pdfminer returns "" → bottom return with text=""."""
+        try:
+            import pdfminer  # noqa: F401
+        except ImportError:
+            pytest.skip("pdfminer not installed")
+
+        parser = PDFParser()
+        parser.db = None
+
+        monkeypatch.setattr("pdfminer.high_level.extract_text", lambda p: "")
+
+        result = parser._pdfminer_fallback(sample_pdf)
+        # text is "" → falls through to bottom return
+        assert result["text"] == ""
+
+
 class TestParseErrorPath:
     """Tests for parse error handling path."""
 
@@ -645,3 +1344,202 @@ class TestParseErrorPath:
         result = parser.parse(sample_pdf, paper_id="2301.00001", use_cache=False)
         assert result.text == "Recovered via pdfminer"
         assert "Used pdfminer fallback" in result.warnings
+
+
+# ---------------------------------------------------------------------------
+# Additional tests for uncovered _extract_structured paths
+# ---------------------------------------------------------------------------
+
+
+class TestExtractStructuredTableWithRows:
+    """Cover _extract_structured with tables containing actual rows."""
+
+    def test_extract_structured_with_real_table_rows(self, sample_pdf, monkeypatch):
+        """Tables with actual rows flow through _table_to_structured to completion."""
+        import fitz
+        parser = PDFParser()
+        parser.db = None
+
+        class FakeCell:
+            def __init__(self, t):
+                self.text = t
+
+        class FakeRow:
+            def __init__(self, texts):
+                self._texts = texts
+
+            def __iter__(self):
+                return iter([FakeCell(t) for t in self._texts])
+
+        class FakeTable:
+            def __init__(self, rows_texts, bbox):
+                self._rows_texts = rows_texts
+                self.bbox = bbox
+
+            @property
+            def rows(self):
+                return [FakeRow(r) for r in self._rows_texts]
+
+        class FakePage:
+            def find_tables(self):
+                # Return a table with header + 2 data rows
+                return iter([FakeTable(
+                    [["ColA", "ColB"], ["v1", "v2"], ["v3", "v4"]],
+                    bbox=(10, 20, 30, 40)
+                )])
+
+            def get_images(self, full=True):
+                return []
+
+            def get_text(self, kind="dict", flags=0):
+                return {"blocks": []}
+
+        class FakeDoc:
+            page_count = 1
+
+            def load_page(self, i):
+                return FakePage()
+
+            def close(self):
+                pass
+
+        monkeypatch.setattr(fitz, "open", lambda p: FakeDoc())
+
+        result = parser.parse(sample_pdf, paper_id="t", use_cache=False)
+        assert len(result.tables) == 1
+        assert result.tables[0].headers == ["ColA", "ColB"]
+        assert result.tables[0].rows == [["v1", "v2"], ["v3", "v4"]]
+
+
+class TestTableToStructuredCellAccess:
+    """Cover _table_to_structured exception during cell text access."""
+
+    def test_cell_text_attribute_raises(self):
+        """Line 516: cell.text raises AttributeError → caught, returns None."""
+        from pdf.parser import PDFParser
+
+        parser = PDFParser()
+
+        class BadCell:
+            """Cell whose .text attribute itself raises."""
+            text = property(lambda self: (_ for _ in ()).throw(AttributeError("no text")))
+
+        class FakeRow:
+            def __init__(self, cells):
+                self._cells = cells
+
+            def __iter__(self):
+                return iter(self._cells)
+
+        class FakeTable:
+            rows = [FakeRow([BadCell(), BadCell()])]
+            bbox = (0, 0, 100, 100)
+
+        result = parser._table_to_structured(FakeTable(), page_idx=0)
+        assert result is None
+
+
+class TestExtractStructuredShortLineSkipped:
+    """Cover line 410-411: line_text < 2 chars is skipped silently."""
+
+    @pytest.mark.no_freeze
+    def test_short_line_skipped_in_extract_structured(self, sample_pdf, monkeypatch):
+        """Line 410-411: single-char line_text is skipped (continues, no crash)."""
+        import fitz
+        parser = PDFParser()
+        parser.db = None
+
+        class FakeDoc:
+            page_count = 1
+
+            def load_page(self, i):
+                return FakePage()
+
+            def close(self):
+                pass
+
+        class FakePage:
+            def find_tables(self):
+                class Empty:
+                    def __iter__(self):
+                        return iter([])
+                return Empty()
+
+            def get_images(self, full=True):
+                return []
+
+            def get_text(self, kind="dict", flags=0):
+                # Block with a 1-char span and a 2-char span
+                return {
+                    "blocks": [{
+                        "type": 0,
+                        "bbox": (0, 0, 100, 20),
+                        "lines": [{
+                            "spans": [{"text": "x"}],
+                            "bbox": (0, 0, 100, 20)
+                        }]
+                    }, {
+                        "type": 0,
+                        "bbox": (0, 30, 100, 50),
+                        "lines": [{
+                            "spans": [{"text": "ab"}],
+                            "bbox": (0, 30, 100, 50)
+                        }]
+                    }]
+                }
+
+        monkeypatch.setattr(fitz, "open", lambda p: FakeDoc())
+
+        result = parser.parse(sample_pdf, paper_id="t", use_cache=False)
+        # "x" is len=1 < 2 → skipped; "ab" is kept
+        assert result.text == "ab"
+
+
+class TestFindCaptionNearNoCaption:
+    """Cover _find_caption_near when no caption matches (line 559 returns '')."""
+
+    def test_find_caption_near_returns_empty_when_blocks_do_not_match(self):
+        """Line 559: no caption block within search_radius → returns ''."""
+        from pdf.parser import PDFParser
+
+        parser = PDFParser()
+
+        # Image bbox is far from the single text block → no caption found
+        class FakePage:
+            def get_text(self, kind="dict"):
+                return {
+                    "blocks": [{
+                        "type": 0,
+                        "bbox": (0, 0, 100, 20),  # block at y=10 (center)
+                        "lines": [{
+                            "spans": [{"text": "Some regular text"}],
+                            "bbox": (0, 0, 100, 20)
+                        }]
+                    }]
+                }
+
+        # Image at y_center=500, block at y_center=10, distance=490 > search_radius=50
+        result = parser._find_caption_near(FakePage(), (0, 490, 100, 510), page_idx=0)
+        assert result == ""
+
+
+class TestExtractLatexBlocksFromTextEmptyInput:
+    """Cover _extract_latex_blocks_from_text with empty input (lines 569-578)."""
+
+    def test_extract_latex_blocks_empty_text(self):
+        """Lines 569-586: empty string input → returns []. No display math buffer."""
+        from pdf.parser import PDFParser
+
+        parser = PDFParser()
+        result = parser._extract_latex_blocks_from_text("", page_idx=0)
+        assert result == []
+
+    def test_extract_latex_blocks_no_display_math_no_buffer(self):
+        """Lines 573-583: text with no display math, buffer stays empty → final block not appended."""
+        from pdf.parser import PDFParser
+
+        parser = PDFParser()
+        # Plain text, no display math, no inline math → empty list
+        result = parser._extract_latex_blocks_from_text("Just plain text", page_idx=0)
+        assert result == []
+

@@ -628,6 +628,75 @@ class TestRenderPnote:
         result = airo.render_pnote(p, [], "## Intro\nText.", "## AI Draft\nGenerated content.")
         assert "AI Draft" in result
 
+    def test_parsed_ai_with_rubric_scores_and_ai_generated(self):
+        """Lines 44-56: parsed_ai is not None → rubric scores + ai_generated in frontmatter."""
+        p = make_paper()
+        sections_dict = {
+            "## 1. 背景": "Background content",
+            "__raw__": "Raw AI output here",
+        }
+        rubric_dict = {
+            "novelty": 4,
+            "leverage": 5,
+            "evidence": 3,
+            "cost": 2,
+            "moat": 4,
+            "adoption": 3,
+            "overall": "Strong paper with good evidence",
+        }
+        parsed_ai = (sections_dict, rubric_dict)
+        result = airo.render_pnote(
+            p, ["LLM"], "## Intro\nText.", parsed_ai=parsed_ai
+        )
+        # rubric: lines should be in frontmatter
+        assert "rubric:" in result
+        assert "novelty: 4" in result
+        assert "leverage: 5" in result
+        assert "evidence: 3" in result
+        assert "cost: 2" in result
+        assert "moat: 4" in result
+        assert "adoption: 3" in result
+        # overall with double-quotes (escaped)
+        assert 'overall: "Strong paper with good evidence"' in result
+        # ai_generated: true
+        assert "ai_generated: true" in result
+        # Injected sections should appear
+        assert "Background content" in result
+
+    def test_parsed_ai_with_only_overall_no_scores(self):
+        """parsed_ai with overall but no valid integer scores → scores absent, ai_generated still true."""
+        p = make_paper()
+        sections_dict = {"## 1. 背景": "BG"}
+        rubric_dict = {"overall": "OK paper"}  # no novelty/leverage/etc scores
+        parsed_ai = (sections_dict, rubric_dict)
+        result = airo.render_pnote(
+            p, ["AI"], "## Intro\nText.", parsed_ai=parsed_ai
+        )
+        # scores dict is empty → rubric: block with individual scores is NOT added
+        # overall is only added inside the `if scores:` block → also NOT added
+        # But ai_generated: true is still added (outside the scores block)
+        assert "ai_generated: true" in result
+        # Injected section content appears
+        assert "BG" in result
+
+    def test_ai_draft_md_strip_triggers_rubric_draft_ai(self):
+        """Lines 57-58: elif ai_draft_md.strip() → rubric: draft-ai added."""
+        p = make_paper()
+        result = airo.render_pnote(
+            p, [], "## Intro\nText.", ai_draft_md="## AI Draft\nSome generated content."
+        )
+        assert "rubric: draft-ai" in result
+        # AI draft block should be present
+        assert "AI Draft" in result
+
+    def test_parsed_ai_none_and_empty_ai_draft(self):
+        """Neither parsed_ai nor ai_draft_md.strip() → no rubric, no ai_generated."""
+        p = make_paper()
+        result = airo.render_pnote(p, [], "## Intro\nText.")
+        assert "rubric:" not in result
+        assert "ai_generated:" not in result
+        assert "draft-ai" not in result
+
 # ---------------------------------------------------------------------------
 # parse_frontmatter
 # ---------------------------------------------------------------------------

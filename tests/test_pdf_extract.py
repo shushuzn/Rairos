@@ -71,6 +71,30 @@ class TestIsGibberishOrTooShort:
         s = "a" * 100 + "\ue000" * 5
         assert _is_gibberish_or_too_short(s) is True
 
+    def test_bad_char_ratio_printable_too_low(self):
+        # Line 58-59: printable ratio < 0.9 → True.
+        # 80 printable + 20 non-printable in 100 chars = 80% → < 90% threshold
+        s = "a" * 80 + "\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09" * 2
+        assert _is_gibberish_or_too_short(s) is True
+
+    def test_bad_char_ratio_exactly_at_90_percent(self):
+        # Exactly 90% printable (just at boundary, not below) → passes printable check.
+        # Combined with < 120 chars → still flagged as too short.
+        # Need >= 120 chars AND >= 90% printable to pass.
+        s = "a" * 108 + "\x00" * 12  # 108/120 = 90% exactly
+        assert _is_gibberish_or_too_short(s) is True
+
+    def test_bad_char_ratio_just_above_threshold(self):
+        # Just above 90% printable → passes that check, but must also be >= 120 chars.
+        s = "a" * 110 + "\x00" * 10  # 110/120 ≈ 91.7% → passes printable
+        assert _is_gibberish_or_too_short(s) is True  # still < 120 → too short
+
+    def test_bad_char_ratio_high_private_use_chars(self):
+        # Lines 60-62: >2% bad private-use chars (0xE000-0xF8FF) → True.
+        # 3% private-use chars: 120 * 0.03 = 3.6 → use 4 chars in 120 total
+        s = "a" * 116 + "\ue000" * 4
+        assert _is_gibberish_or_too_short(s) is True
+
     def test_valid_text_long_enough(self):
         # Must be >= 120 chars to not be flagged as "too short"
         s = "This is a perfectly normal English sentence with standard characters that makes sense and is readable and also this particular one is long enough to pass the threshold."
@@ -133,11 +157,24 @@ class TestDetectBlockType:
     def test_algorithm_caption(self):
         assert _detect_block_type("Algorithm 1: Training Loop", BlockType.BODY, 0) == BlockType.CAPTION
 
+    def test_algorithm_caption_abbr(self):
+        # Line 218: "Alg." abbreviation followed by number → CAPTION
+        assert _detect_block_type("Alg. 1: caption", BlockType.BODY, 0) == BlockType.CAPTION
+
+    def test_figure_caption_fig_number(self):
+        # Line 218: "Fig. 2" (no colon) → CAPTION
+        assert _detect_block_type("Fig. 2", BlockType.BODY, 0) == BlockType.CAPTION
+
     def test_footnote_bracket(self):
         assert _detect_block_type("[1]", BlockType.BODY, 0) == BlockType.FOOTNOTE
 
     def test_footnote_caret(self):
         assert _detect_block_type("^42", BlockType.BODY, 0) == BlockType.FOOTNOTE
+
+    def test_footnote_caret_bare(self):
+        # "^*" does NOT match ^\d+$ (needs at least one digit), so it returns BODY.
+        # This documents the current behavior rather than expected FOOTNOTE.
+        assert _detect_block_type("^*", BlockType.BODY, 0) == BlockType.BODY
 
     def test_list_item_dash(self):
         assert _detect_block_type("- first item", BlockType.BODY, 0) == BlockType.LIST_ITEM
@@ -310,6 +347,20 @@ class TestExtractPdfText:
         # Should have at most double newlines
         assert "\n\n\n" not in text
 
+    def test_extract_pdf_text_raises_when_fitz_missing(self, tmp_path, monkeypatch):
+        """RuntimeError when PyMuPDF is not installed at all."""
+        _real_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name in ("fitz", "pymupdf"):
+                raise ImportError(f"No module named '{name}'")
+            return _real_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        with pytest.raises(RuntimeError, match="PyMuPDF not installed"):
+            airo.extract_pdf_text(tmp_path / "nonexistent.pdf")
+
 
 # ─── _ocr_page ───────────────────────────────────────────────────────────────
 
@@ -451,6 +502,63 @@ class TestExtractPdfTextHybrid:
         # pdfminer result should be chosen since it's 1.2x+ longer
         assert len(text) >= 1000 or text  # at least something returned
 
+    def test_raises_when_fitz_missing(self, tmp_path, monkeypatch):
+        """RuntimeError when PyMuPDF is not installed at all."""
+        _real_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name in ("fitz", "pymupdf"):
+                raise ImportError(f"No module named '{name}'")
+            return _real_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        with pytest.raises(RuntimeError, match="PyMuPDF not installed"):
+            airo.extract_pdf_text_hybrid(tmp_path / "nonexistent.pdf")
+
+    def test_pdfminer_extraction_exception_handled(self, tmp_path, monkeypatch):
+        """pdfminer extraction exception is caught and returns empty string (line 124)."""
+        try:
+            import fitz  # noqa: F401
+        except ImportError:
+            pytest.skip("PyMuPDF not installed")
+
+        pdf_path = make_minimal_pdf(tmp_path, [{"text": "Normal content"}])
+
+        # Make pdfminer.extract_text raise an exception
+        def mock_pdfminer_extract(path):
+            raise RuntimeError("pdfminer failed")
+
+        monkeypatch.setattr(
+            "pdfminer.high_level.extract_text",
+            mock_pdfminer_extract
+        )
+
+        # Should not raise; pdfminer exception is caught and text remains ""
+        text = airo.extract_pdf_text_hybrid(pdf_path, use_pdfminer_fallback=True)
+        # fitz text should still be extracted
+        assert "Normal content" in text
+
+    def test_ocr_page_exception_caught_silently(self, tmp_path, monkeypatch):
+        """Line 142: exception in _ocr_page is caught silently — extraction continues."""
+        try:
+            import fitz  # noqa: F401
+        except ImportError:
+            pytest.skip("PyMuPDF not installed")
+
+        # Create a PDF with short text that will trigger OCR
+        pdf_path = make_minimal_pdf(tmp_path, [{"text": "x" * 50}])
+
+        def bad_ocr(page, ocr_lang="chi_sim+eng", zoom=2.0):
+            raise RuntimeError("OCR engine crashed")
+
+        monkeypatch.setattr("pdf.extract._ocr_page", bad_ocr)
+
+        # Should NOT raise; the exception in _ocr_page is caught (line 142)
+        text = airo.extract_pdf_text_hybrid(pdf_path, ocr=True)
+        # The underlying short text should still be returned (or empty)
+        assert isinstance(text, str)
+
 
 # ─── extract_pdf_structured ──────────────────────────────────────────────────
 
@@ -546,3 +654,97 @@ class TestExtractPdfStructured:
 
         display_math = [b for b in content.math_blocks if b.is_display]
         assert len(display_math) >= 0  # detection is best-effort
+
+    def test_raises_when_fitz_missing(self, tmp_path, monkeypatch):
+        """RuntimeError when PyMuPDF is not installed at all (line 279)."""
+        _real_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name in ("fitz", "pymupdf"):
+                raise ImportError(f"No module named '{name}'")
+            return _real_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        with pytest.raises(RuntimeError, match="PyMuPDF not installed"):
+            extract_pdf_structured(tmp_path / "nonexistent.pdf")
+
+    def test_table_detection_exception_handled(self, tmp_path, monkeypatch):
+        """Table detection exception is caught silently (line 328-329)."""
+        try:
+            import fitz  # noqa: F401
+        except ImportError:
+            pytest.skip("PyMuPDF not installed")
+
+        pdf_path = make_minimal_pdf(tmp_path, [{"text": "Some text here"}])
+
+        # Make find_tables() raise an exception
+        class FakePage:
+            def find_tables(self):
+                raise RuntimeError("table detection failed")
+            def get_text(self, *args, **kwargs):
+                return {"blocks": []}
+
+        monkeypatch.setattr(fitz.Document, "load_page", lambda self, idx: FakePage())
+
+        # Should not raise; table exception is caught
+        content = extract_pdf_structured(pdf_path)
+        assert isinstance(content, StructuredPdfContent)
+
+    def test_page_get_text_dict_exception_handled(self, tmp_path, monkeypatch):
+        """page.get_text('dict') exception is caught and returns {} (line 334-335)."""
+        try:
+            import fitz  # noqa: F401
+        except ImportError:
+            pytest.skip("PyMuPDF not installed")
+
+        pdf_path = make_minimal_pdf(tmp_path, [{"text": "Content"}])
+
+        class FakePage:
+            def find_tables(self):
+                class FakeTableBrowse:
+                    def __iter__(self):
+                        return iter([])
+                return FakeTableBrowse()
+            def get_text(self, format, flags=0):
+                if format == "dict":
+                    raise RuntimeError("get_text dict failed")
+                return {"blocks": []}
+
+        monkeypatch.setattr(fitz.Document, "load_page", lambda self, idx: FakePage())
+
+        # Should not raise; exception is caught
+        content = extract_pdf_structured(pdf_path)
+        assert isinstance(content, StructuredPdfContent)
+
+    def test_page_get_text_text_exception_handled(self, tmp_path, monkeypatch):
+        """page.get_text('text') exception for display math is caught (line 375-376)."""
+        try:
+            import fitz  # noqa: F401
+        except ImportError:
+            pytest.skip("PyMuPDF not installed")
+
+        pdf_path = make_minimal_pdf(tmp_path, [{"text": "Content"}])
+
+        call_count = [0]
+
+        class FakePage:
+            def find_tables(self):
+                class FakeTableBrowse:
+                    def __iter__(self):
+                        return iter([])
+                return FakeTableBrowse()
+            def get_text(self, format, flags=0):
+                if format == "dict":
+                    return {"blocks": []}
+                # Second call for "text" raises
+                call_count[0] += 1
+                if call_count[0] > 1:
+                    raise RuntimeError("get_text text failed")
+                return ""
+
+        monkeypatch.setattr(fitz.Document, "load_page", lambda self, idx: FakePage())
+
+        # Should not raise; exception is caught
+        content = extract_pdf_structured(pdf_path)
+        assert isinstance(content, StructuredPdfContent)
