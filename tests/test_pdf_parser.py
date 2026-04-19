@@ -284,6 +284,7 @@ class TestPDFParserEdgeCases:
         parser = PDFParser()
         parser.db = None
         monkeypatch.setattr(parser, "_extract_structured", lambda p: (_ for _ in ()).throw(RuntimeError("pymupdf broken")))
+        monkeypatch.setattr(parser, "_pdfminer_fallback", lambda p: {"text": "", "warnings": [], "errors": []})
         from core.exceptions import PDFParseError
         with pytest.raises(PDFParseError, match="All PDF extraction methods failed"):
             parser.parse(sample_pdf, paper_id="t", use_cache=False)
