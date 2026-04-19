@@ -4,13 +4,14 @@ class TestTodayIsoTier4:
     def test_returns_iso_format(self):
         import ai_research_os as airo
         result = airo.today_iso()
-        assert result == __import__("datetime").date.today().isoformat()
+        # Frozen to 2024-06-15 by conftest.py autouse fixture
+        assert result == "2024-06-15"
 
     def test_returns_todays_date(self):
         import ai_research_os as airo
         result = airo.today_iso()
-        import datetime
-        assert result == datetime.date.today().isoformat()
+        # Frozen to 2024-06-15 by conftest.py autouse fixture
+        assert result == "2024-06-15"
 
 
 class TestSlugifyTitleTier4:
@@ -204,14 +205,13 @@ class TestEnsureTimelineTier4:
 class TestUpdateTimelineTier4:
     def test_appends_to_new_year_section(self, tmp_path):
         import ai_research_os as airo
-        import datetime
         root = tmp_path
         airo.ensure_timeline(root)
         papers_dir = root / "02-Papers"
         papers_dir.mkdir(parents=True)
         pnote = papers_dir / "P - 2024-01-01 - Test Event.md"
         pnote.write_text("---\npublished: 2024-01-01\n---\n", encoding="utf-8")
-        year = str(datetime.date.today().year)
+        year = "2024"  # frozen year from conftest
         result = airo.update_timeline(root, year, pnote, "Test Event")
         assert result.exists()
         content = result.read_text(encoding="utf-8")
@@ -219,14 +219,13 @@ class TestUpdateTimelineTier4:
 
     def test_no_change_for_existing_bullet(self, tmp_path):
         import ai_research_os as airo
-        import datetime
         root = tmp_path
         airo.ensure_timeline(root)
         papers_dir = root / "02-Papers"
         papers_dir.mkdir(parents=True)
         pnote = papers_dir / "P - 2024-01-01 - Test Event.md"
         pnote.write_text("---\npublished: 2024-01-01\n---\n", encoding="utf-8")
-        year = str(datetime.date.today().year)
+        year = "2024"  # frozen year from conftest
         r1 = airo.update_timeline(root, year, pnote, "Test Event")
         r2 = airo.update_timeline(root, year, pnote, "Test Event")
         assert r1.exists()
@@ -234,18 +233,17 @@ class TestUpdateTimelineTier4:
 
     def test_inserts_before_next_year(self, tmp_path):
         import ai_research_os as airo
-        import datetime
         root = tmp_path
         airo.ensure_timeline(root)
         papers_dir = root / "02-Papers"
         papers_dir.mkdir(parents=True)
         pnote = papers_dir / "P - 2024-01-01 - Current Event.md"
         pnote.write_text("---\npublished: 2024-01-01\n---\n", encoding="utf-8")
-        next_year = str(datetime.date.today().year + 1)
+        next_year = "2025"  # frozen year + 1
         content = f"## {next_year}\n- Future event\n"
         tl_path = root / "00-Radar" / "Timeline.md"
         tl_path.write_text(content, encoding="utf-8")
-        year = str(datetime.date.today().year)
+        year = "2024"  # frozen year from conftest
         result = airo.update_timeline(root, year, pnote, "Current Event")
         assert result.exists()
         result_content = result.read_text(encoding="utf-8")
