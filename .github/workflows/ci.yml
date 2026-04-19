@@ -90,22 +90,10 @@ jobs:
           path: pytest_output_${{ matrix.python-version }}.txt
           retention-days: 1
 
-      - name: Debug coverage
-        if: always()
-        run: |
-          echo "=== Python ${{ matrix.python-version }} ==="
-          ls -la .coverage* 2>&1 || echo "No .coverage files found"
-          echo "pwd=$(pwd)"
-          echo "---"
-
       - name: Upload coverage data
         if: always()
         run: |
-          # Rename .coverage to non-hidden before upload so v4 handles path correctly
           cp .coverage .coverage.${{ matrix.python-version }}
-
-      - name: Upload coverage artifact
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-data-${{ matrix.python-version }}
