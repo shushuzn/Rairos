@@ -3,7 +3,6 @@ Comprehensive test suite for ai_research_os.py
 Run with: uv run --with requests,feedparser,pyyaml pytest tests/ -v
 """
 import pytest
-import tempfile
 import os
 import re
 import sys
@@ -45,13 +44,6 @@ def make_paper(
         pdf_url=pdf_url,
         primary_category=primary_category,
     )
-
-@pytest.fixture
-def mock_research_root():
-    with tempfile.TemporaryDirectory() as d:
-        root = Path(d)
-        airo.ensure_research_tree(root)
-        yield root
 
 # ---------------------------------------------------------------------------
 # Paper dataclass
@@ -827,7 +819,7 @@ class TestKeywordTags:
 class TestInferTagsIfEmptyTier1:
     def test_returns_empty_for_empty_tags_with_empty_abstract(self):
         p = make_paper(abstract="", title="")
-        tags = airo.infer_tags_if_empty([], p)  # noqa: F841
+        _ = airo.infer_tags_if_empty([], p)
         # May or may not infer depending on implementation
 
     def test_does_not_modify_existing_tags(self):
@@ -1051,21 +1043,20 @@ class TestMainCli:
     def test_main_accepts_arxiv_id(self, mock_research_root, monkeypatch):
         monkeypatch.chdir(mock_research_root)
 
-        mock_paper = make_paper()  # noqa: F841
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.text = '<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Test</title><author><name>Alice</name></author><summary>Abstract.</summary><published>2024-01-01</published><updated>2024-01-01</updated><id>http://arxiv.org/abs/2301.00001</id><link href="https://arxiv.org/abs/2301.00001" type="text/html"/><link title="pdf" href="https://arxiv.org/pdf/2301.00001.pdf" type="application/pdf"/><arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="cs.AI"/></entry></feed>'
         mock_response.headers = {"content-type": "application/atom+xml"}
 
         with patch("requests.get", return_value=mock_response):
-            with patch("sys.stdout", new=StringIO()) as out:  # noqa: F841
+            with patch("sys.stdout", new=StringIO()) as _:
                 try:
                     airo.main(["arxiv-id", "2301.00001"])
                 except SystemExit:
                     pass  # main may call sys.exit
 
     def test_main_with_help(self, monkeypatch):
-        with patch("sys.stdout", new=StringIO()) as out:  # noqa: F841
+        with patch("sys.stdout", new=StringIO()) as _:
             with pytest.raises(SystemExit):
                 airo.main(["--help"])
 
@@ -1165,7 +1156,7 @@ class TestCallLlmChatCompletions:
         }
 
         with patch("requests.post", return_value=mock_response) as mock_post:
-            result = airo.call_llm_chat_completions(  # noqa: F841
+            _ = airo.call_llm_chat_completions(
                 [{"role": "user", "content": "Hello"}],
                 "gpt-4o-mini",
                 "Say hi",
@@ -1268,7 +1259,7 @@ class TestFormatSectionSnippetsTier2:
 
     def test_empty_content_skipped(self):
         sections = [("Test", "   ")]
-        result = airo.format_section_snippets(sections)  # noqa: F841
+        _ = airo.format_section_snippets(sections)
         # empty sections are filtered out by segment_into_sections upstream
 
     def test_returns_empty_string_for_empty_input(self):
@@ -1688,7 +1679,7 @@ def test_extract_pdf_text_hybrid_empty_page(tmp_path):
         pytest.skip("PyMuPDF not installed")
     pdf_path = tmp_path / "empty.pdf"
     doc = fitz.open()
-    page = doc.new_page(width=200, height=200)  # noqa: F841
+    doc.new_page(width=200, height=200)
     # intentionally blank page
     doc.save(str(pdf_path))
     doc.close()

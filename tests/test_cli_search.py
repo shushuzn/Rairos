@@ -811,28 +811,28 @@ class TestMainRouting:
     @patch("cli._main_legacy")
     def test_main_routes_to_legacy_for_arxiv_id(self, mock_legacy):
         mock_legacy.return_value = 0
-        result = main(["2301.00001"])  # noqa: F841
+        _ = main(["2301.00001"])
         mock_legacy.assert_called_once_with(["2301.00001"])
 
     def test_main_no_args_routes_to_legacy(self):
         """No args falls through to legacy parser."""
         with patch("cli._main_legacy") as mock_legacy:
             mock_legacy.return_value = 0
-            result = main([])  # noqa: F841
+            _ = main([])
             mock_legacy.assert_called_once()
 
     def test_main_unknown_subcommand_routes_to_legacy(self):
         """Unknown subcommand (not in SUBCOMMANDS set) falls through to legacy."""
         with patch("cli._main_legacy") as mock_legacy:
             mock_legacy.return_value = 0
-            result = main(["some-random-input"])  # noqa: F841
+            _ = main(["some-random-input"])
             mock_legacy.assert_called_once_with(["some-random-input"])
 
     def test_main_doi_input_routes_to_legacy(self):
         """DOI input routes to legacy."""
         with patch("cli._main_legacy") as mock_legacy:
             mock_legacy.return_value = 0
-            result = main(["10.1234/some"])  # noqa: F841
+            _ = main(["10.1234/some"])
             mock_legacy.assert_called_once_with(["10.1234/some"])
 
 

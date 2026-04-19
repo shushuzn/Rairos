@@ -408,8 +408,6 @@ class TestRunCiteStats:
 
         args = make_args(subcmd="cite-stats", stats_paper=None, format="text")
         result = _run_cite_stats(args)
-
-        captured = capsys.readouterr().out  # noqa: F841
         assert result == 0
 
 
@@ -516,8 +514,6 @@ class TestRunCiteImport:
 
         args = make_args(subcmd="cite-import", json_input='{"source": "2301.00001", "targets": []}')
         result = _run_cite_import(args)
-
-        captured = capsys.readouterr().out  # noqa: F841
         assert result == 1
 
     @patch("cli.Database")

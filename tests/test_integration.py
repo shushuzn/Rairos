@@ -84,10 +84,6 @@ def make_mock_crossref_response(doi="10.1234/test",
                                 reference_count=42):
     if authors is None:
         authors = [{"given": "Bob", "family": "Jones"}]
-    author_xml = "".join(  # noqa: F841
-        f"<author><given>{a.get('given','')}</given><family>{a.get('family','')}</family></author>"
-        for a in authors
-    )
     payload = {
         "message": {
             "DOI": doi,
@@ -130,7 +126,6 @@ class TestArxivFullPipeline:
         title = "RAG with Agent Tools in Long Context"
         abstract = "Retrieval augmented generation with agent tools for long context."
         published = "2024-01-15"
-        tags = ["Agent", "RAG"]  # noqa: F841
 
         mock_arxiv = make_mock_arxiv_response(
             uid=uid, title=title, abstract=abstract,
@@ -227,14 +222,14 @@ class TestArxivFullPipeline:
         with patch("requests.get", return_value=mock_resp):
             with patch("sys.stdout", new=StringIO()):
                 try:
-                    result = airo.main([
+                    airo.main([
                         "9999.99999",
                         "--root", str(temp_research_root),
                         "--category", "02-Models",
                         "--tags", "Agent",
                     ])
                 except Exception:
-                    result = 1  # noqa: F841
+                    pass
 
 
 # ---------------------------------------------------------------------------
@@ -370,7 +365,7 @@ class TestTagInferencePipeline:
         pnote_dir = temp_research_root / "02-Models"
         pnote_files = list(pnote_dir.glob("P - 2024 - *.md"))
         assert len(pnote_files) == 1
-        pnote_content = pnote_files[0].read_text(encoding="utf-8")  # noqa: F841
+        _ = pnote_files[0].read_text(encoding="utf-8")
 
         # Tag-inferred C-notes should exist
         cnote_dir = temp_research_root / "01-Foundations"
