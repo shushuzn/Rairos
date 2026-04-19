@@ -1,7 +1,7 @@
 """Tier 2 unit tests — research_loop.py, pure functions + mocked I/O."""
 import tempfile
 from pathlib import Path
-from unittest.mock import ANY, Mock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -267,7 +267,6 @@ class TestRunResearch:
         mock_draft.return_value = "Fresh draft."
 
         # Pre-create old note
-        slug = sample_paper.title[:60].replace(" ", "-")
         uid = sample_paper.uid
         note_path = tmp_output_dir / f"{uid}_note.md"
         note_path.write_text("Old content", encoding="utf-8")
