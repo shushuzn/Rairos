@@ -4,12 +4,14 @@
 
 import argparse
 import json
+import logging
 import os
 import re
 import ssl
 import sys
 import time
 import urllib.request
+import warnings
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional, Tuple
@@ -1370,8 +1372,8 @@ def _fetch_arxiv_title(arxiv_id: str, timeout: int = 15) -> Optional[str]:
             title_el = entries[0].find("atom:title", ns)
             if title_el is not None and title_el.text:
                 return title_el.text.replace("\n", " ").strip()
-    except Exception:
-        pass
+    except Exception as e:
+        warnings.warn(f"arXiv title fetch failed for {arxiv_id}: {e}", stacklevel=2)
     return None
 
 
@@ -1385,8 +1387,8 @@ def _fetch_doi_title(doi: str, timeout: int = 15) -> Optional[str]:
         p, _ = fetch_crossref_metadata(doi, timeout=timeout)
         if p.title and p.title != doi:
             return p.title
-    except Exception:
-        pass
+    except Exception as e:
+        warnings.warn(f"CrossRef title fetch failed for {doi}: {e}", stacklevel=2)
     return None
 
 
@@ -1411,8 +1413,8 @@ def _fetch_pmid_title(pmid: str, timeout: int = 15) -> Optional[str]:
         title = pmid_data.get("title", "")
         if title:
             return title
-    except Exception:
-        pass
+    except Exception as e:
+        warnings.warn(f"PMID title fetch failed for {pmid}: {e}", stacklevel=2)
     return None
 
 
@@ -1435,8 +1437,8 @@ def _fetch_isbn_title(isbn: str, timeout: int = 15) -> Optional[str]:
             title = book_data.get("title", "")
             if title:
                 return title
-    except Exception:
-        pass
+    except Exception as e:
+        warnings.warn(f"ISBN title fetch failed for {isbn}: {e}", stacklevel=2)
     return None
 
 
@@ -1466,8 +1468,8 @@ def _arxiv_doi_to_openalex(arxiv_id: str) -> Optional[str]:
         results = d.get("results", [])
         if results:
             return results[0]["id"]  # e.g. https://openalex.org/W2626778328
-    except Exception:
-        pass
+    except Exception as e:
+        warnings.warn(f"arXiv DOI to OpenAlex lookup failed for {arxiv_id}: {e}", stacklevel=2)
     return None
 
 
@@ -1486,7 +1488,8 @@ def _get_openalex_citing(openalex_id: str, per_page: int = 200) -> Tuple[list[di
     try:
         d = _openalex_request(f"/works?filter=cites:{oid}&per-page={per_page}&mailto={_OPENALEX_EMAIL}")
         return d.get("results", []) or [], d.get("meta", {}).get("count", 0)
-    except Exception:
+    except Exception as e:
+        warnings.warn(f"OpenAlex citing lookup failed for {openalex_id}: {e}", stacklevel=2)
         return [], 0
 
 
@@ -2106,6 +2109,7 @@ def _run_cache(args: argparse.Namespace) -> int:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
+    logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
     parser = argparse.ArgumentParser(description="AI Research OS")
     subparsers = parser.add_subparsers(dest="subcmd", help="Subcommands")
 
