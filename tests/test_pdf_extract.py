@@ -523,6 +523,11 @@ class TestExtractPdfTextHybrid:
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
+        try:
+            import pdfminer  # noqa: F401
+        except ImportError:
+            pytest.skip("pdfminer not installed")
+
         pdf_path = make_minimal_pdf(tmp_path, [{"text": "Normal content"}])
 
         # Make pdfminer.extract_text raise an exception
@@ -530,7 +535,7 @@ class TestExtractPdfTextHybrid:
             raise RuntimeError("pdfminer failed")
 
         monkeypatch.setattr(
-            "pdfminer.high_level.extract_text",
+            "airo.pdfminer.high_level.extract_text",
             mock_pdfminer_extract
         )
 
