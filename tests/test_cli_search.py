@@ -4,7 +4,8 @@ import json
 from unittest.mock import MagicMock, patch
 
 
-from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, main
+from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, infer_tags_if_empty, main
+from core import Paper
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1050,10 +1051,6 @@ class TestRunCacheEdgeCases:
 # ─────────────────────────────────────────────────────────────────────────────
 # infer_tags_if_empty tests
 # ─────────────────────────────────────────────────────────────────────────────
-
-from cli import infer_tags_if_empty
-from core import Paper
-
 
 class TestInferTagsIfEmpty:
     """Test keyword tag inference."""

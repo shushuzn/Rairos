@@ -11,7 +11,7 @@ except (FileNotFoundError, KeyError, json.JSONDecodeError) as e:
     print(f"Error reading coverage: {e}", file=sys.stderr)
     sys.exit(1)
 
-svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="110" height="20">
+svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="110" height="20">  # noqa: E501
 <linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient>
 <linearGradient id="a" x1="0" y1="0" x2="0" y2="100%"><stop stop-color="#4c1"/><stop offset="1" stop-color="#4c1"/></linearGradient>
 <g ry="3">

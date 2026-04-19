@@ -35,9 +35,9 @@ def fetch_arxiv_metadata(arxiv_id: str, timeout: int = 30) -> Paper:
     abs_url = getattr(e, "link", "") or f"https://arxiv.org/abs/{arxiv_id}"
 
     pdf_url = ""
-    for l in getattr(e, "links", []) or []:
-        if getattr(l, "type", "") == "application/pdf":
-            pdf_url = l.href
+    for link_item in getattr(e, "links", []) or []:
+        if getattr(link_item, "type", "") == "application/pdf":
+            pdf_url = link_item.href
             break
     if not pdf_url:
         pdf_url = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
@@ -138,9 +138,9 @@ def _parse_entry(e) -> dict:
     abs_url = getattr(e, "link", "") or f"https://arxiv.org/abs/{e.id.split('/')[-1]}"
 
     pdf_url = ""
-    for l in getattr(e, "links", []) or []:
-        if getattr(l, "type", "") == "application/pdf":
-            pdf_url = l.href
+    for link_item in getattr(e, "links", []) or []:
+        if getattr(link_item, "type", "") == "application/pdf":
+            pdf_url = link_item.href
             break
     if not pdf_url:
         aid = e.id.split("/")[-1]

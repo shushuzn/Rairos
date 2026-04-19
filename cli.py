@@ -360,8 +360,8 @@ def _run_dedup(args: argparse.Namespace) -> int:
         return 0
     for older, newer in pairs:
         parsed_rank = {"completed": 4, "running": 3, "pending": 2, "failed": 1}
-        def rank(p):
-            return parsed_rank.get(p.parse_status, 0)
+        def rank(p, _rank=parsed_rank):
+            return _rank.get(p.parse_status, 0)
         parsed_winner = older if rank(older) >= rank(newer) else newer
         print(f"Duplicate pair: {older.id} / {newer.id}")
         print(f"  Title: {older.title[:80]}")
