@@ -72,6 +72,7 @@ class TestCircuitBreaker:
         with pytest.raises(CircuitOpen):
             cb.call(lambda: "ok")
 
+    @pytest.mark.no_freeze
     def test_half_open_after_recovery_timeout(self):
         cb = CircuitBreaker(failure_threshold=2, recovery_timeout=0.5)
         for _ in range(2):

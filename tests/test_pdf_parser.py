@@ -152,17 +152,10 @@ class TestPDFParserEdgeCases:
             return orig_mkdir(self, *a, **k)
         monkeypatch.setattr(pathlib.Path, "mkdir", staticmethod(bad_mkdir))
 
-    def test_parse_timeout_raises(self, sample_pdf, monkeypatch):  # noqa: F811
+    @pytest.mark.no_freeze
+    def test_parse_timeout_raises(self, sample_pdf):  # noqa: F811
         from pdf.parser import ParseTimeoutError
-        # Override elapsed directly on the parser after extraction completes
         parser = PDFParser()
-        original_extract = parser._extract_structured
-        def slow_extract(path):
-            result = original_extract(path)
-            # Manually advance elapsed time by patching the parser's state
-            parser._last_elapsed = 999.0  # arbitrary large value
-            return result
-        monkeypatch.setattr(parser, "_extract_structured", slow_extract)
         with pytest.raises(ParseTimeoutError):
             parser.parse(sample_pdf, paper_id="t", use_cache=False, max_parse_time=0.001)
 

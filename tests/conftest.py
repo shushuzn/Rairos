@@ -37,16 +37,24 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "freeze_time: freeze datetime to 2024-06-15 (uses freezegun)",
     )
+    config.addinivalue_line(
+        "markers",
+        "no_freeze: opt out of the autouse freeze_time for this test",
+    )
 
 
 @pytest.fixture(autouse=True)
-def freeze_time_fixture():
+def freeze_time_fixture(request: pytest.FixtureRequest):
     """Automatically freeze time to 2024-06-15 for every test in the session.
 
-    This ensures date/time-dependent tests are deterministic regardless of when
-    they run. Tests that need to verify date-related logic should hardcode the
-    expected frozen value (e.g. assert result == "2024-06-15").
+    Tests sensitive to wall-clock time (perf_counter, sleep) can opt out by
+    decorating with @pytest.mark.no_freeze.
     """
+    # Check if this test/class is marked to skip freezing
+    if request.node.get_closest_marker("no_freeze") is not None:
+        yield  # run without freezing
+        return
+
     from freezegun import freeze_time as _freeze_time
 
     with _freeze_time(FROZEN_DATE):
