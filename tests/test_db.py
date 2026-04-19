@@ -607,3 +607,158 @@ class TestClearPendingPapers:
 class TestVacuum:
     def test_vacuum_does_not_raise(self, db):
         db.vacuum()  # Should not raise
+
+
+import struct
+
+V3 = [0.1, 0.2, 0.3]  # 3-float test vector
+
+
+def make_blob(vec):
+    return struct.pack(f"{len(vec)}f", *vec)
+
+
+class TestEmbeddings:
+    def test_set_and_get_embedding_roundtrip(self, db):
+        db.upsert_paper("P1", "arxiv", title="Paper 1")
+        ok = db.set_embedding("P1", V3)
+        assert ok is True
+        emb = db.get_embedding("P1")
+        assert emb is not None
+        assert len(emb) == 3
+        assert emb == pytest.approx(V3)
+
+    def test_get_embedding_missing_paper(self, db):
+        assert db.get_embedding("no-such") is None
+
+    def test_get_embedding_not_set(self, db):
+        db.upsert_paper("P1", "arxiv", title="No Embed")
+        assert db.get_embedding("P1") is None
+
+    def test_set_embedding_nonexistent_paper(self, db):
+        ok = db.set_embedding("ghost", V3)
+        assert ok is False
+
+    def test_get_embedding_stats(self, db):
+        db.upsert_paper("P1", "arxiv", title="Has Embed")
+        db.upsert_paper("P2", "arxiv", title="No Embed")
+        db.upsert_paper("P3", "arxiv", title="")  # empty title, excluded
+        db.set_embedding("P1", V3)
+        stats = db.get_embedding_stats()
+        assert stats["with_embedding"] == 1
+        assert stats["total_with_text"] == 2
+
+    def test_get_embedding_stats_empty(self, db):
+        stats = db.get_embedding_stats()
+        assert stats["with_embedding"] == 0
+        assert stats["total_with_text"] == 0
+
+    def test_get_papers_without_embeddings(self, db):
+        db.upsert_paper("P1", "arxiv", title="Needs Embed")
+        db.upsert_paper("P2", "arxiv", title="Has Embed")
+        db.upsert_paper("P3", "arxiv", title="")  # empty title excluded
+        db.set_embedding("P2", V3)
+        papers = db.get_papers_without_embeddings(limit=10)
+        assert len(papers) == 1
+        assert papers[0].id == "P1"
+
+    def test_get_papers_without_embeddings_respects_limit(self, db):
+        for i in range(5):
+            db.upsert_paper(f"P{i}", "arxiv", title=f"Paper {i}")
+        papers = db.get_papers_without_embeddings(limit=3)
+        assert len(papers) == 3
+
+    def test_get_similarity_both_have_embedding(self, db):
+        db.upsert_paper("A", "arxiv", title="Paper A")
+        db.upsert_paper("B", "arxiv", title="Paper B")
+        db.set_embedding("A", [1.0, 0.0, 0.0])
+        db.set_embedding("B", [1.0, 0.0, 0.0])
+        sim = db.get_similarity("A", "B")
+        assert sim is not None
+        assert 0.999 < sim <= 1.0  # ~1.0 for identical vectors
+
+    def test_get_similarity_opposite_vectors(self, db):
+        db.upsert_paper("A", "arxiv", title="Paper A")
+        db.upsert_paper("B", "arxiv", title="Paper B")
+        db.set_embedding("A", [1.0, 0.0, 0.0])
+        db.set_embedding("B", [-1.0, 0.0, 0.0])
+        sim = db.get_similarity("A", "B")
+        assert sim is not None
+        assert sim < -0.999  # ~-1.0 for opposite vectors
+
+    def test_get_similarity_one_missing(self, db):
+        db.upsert_paper("A", "arxiv", title="Paper A")
+        db.upsert_paper("B", "arxiv", title="Paper B")
+        db.set_embedding("A", V3)
+        assert db.get_similarity("A", "B") is None
+        assert db.get_similarity("B", "A") is None
+
+    def test_get_similarity_nonexistent(self, db):
+        db.upsert_paper("A", "arxiv", title="Paper A")
+        db.set_embedding("A", V3)
+        assert db.get_similarity("A", "ghost") is None
+        assert db.get_similarity("ghost", "A") is None
+
+    def test_find_similar_basic(self, db):
+        db.upsert_paper("Q", "arxiv", title="Query")
+        db.upsert_paper("A", "arxiv", title="Similar A")
+        db.upsert_paper("B", "arxiv", title="Not Similar B")
+        db.set_embedding("Q", [1.0, 0.0, 0.0])
+        db.set_embedding("A", [0.99, 0.01, 0.01])
+        db.set_embedding("B", [0.0, 1.0, 0.0])
+        results = db.find_similar("Q", threshold=0.8, limit=5)
+        ids = [r[0].id for r in results]
+        assert "A" in ids
+        assert "B" not in ids
+        assert results[0][1] >= 0.8
+
+    def test_find_similar_no_embedding_returns_empty(self, db):
+        db.upsert_paper("Q", "arxiv", title="No Embed Query")
+        assert db.find_similar("Q") == []
+
+    def test_find_similar_threshold_excludes_all(self, db):
+        db.upsert_paper("Q", "arxiv", title="Query")
+        db.upsert_paper("X", "arxiv", title="X")
+        db.set_embedding("Q", [1.0, 0.0, 0.0])
+        db.set_embedding("X", [0.0, 1.0, 0.0])  # orthogonal, sim=0
+        results = db.find_similar("Q", threshold=0.9)
+        assert results == []
+
+    def test_find_similar_respects_limit(self, db):
+        db.upsert_paper("Q", "arxiv", title="Query")
+        for i in range(10):
+            db.upsert_paper(f"S{i}", "arxiv", title=f"Similar {i}")
+            db.set_embedding(f"S{i}", [0.9, 0.0, float(i) * 0.01])
+        db.set_embedding("Q", [1.0, 0.0, 0.0])
+        results = db.find_similar("Q", threshold=0.0, limit=3)
+        assert len(results) == 3
+
+    def test_find_similar_sorted_by_score(self, db):
+        db.upsert_paper("Q", "arxiv", title="Query")
+        db.upsert_paper("S1", "arxiv", title="S1")
+        db.upsert_paper("S2", "arxiv", title="S2")
+        db.upsert_paper("S3", "arxiv", title="S3")
+        db.set_embedding("Q", [1.0, 0.0, 0.0])
+        db.set_embedding("S1", [0.5, 0.0, 0.0])   # sim ~0.5
+        db.set_embedding("S2", [0.9, 0.0, 0.0])   # sim ~0.9
+        db.set_embedding("S3", [0.7, 0.0, 0.0])   # sim ~0.7
+        results = db.find_similar("Q", threshold=0.0)
+        scores = [r[1] for r in results]
+        assert scores == sorted(scores, reverse=True)
+
+
+class TestGetPapers:
+    def test_get_papers_default_limit(self, db):
+        for i in range(25):
+            db.upsert_paper(f"P{i}", "arxiv", title=f"Paper {i}")
+        papers = db.get_papers()
+        assert len(papers) == 25
+
+    def test_get_papers_offset(self, db):
+        for i in range(10):
+            db.upsert_paper(f"P{i}", "arxiv", title=f"Paper {i}")
+        papers = db.get_papers(limit=5, offset=5)
+        assert len(papers) == 5
+
+    def test_get_papers_empty(self, db):
+        assert db.get_papers() == []
