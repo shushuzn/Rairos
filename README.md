@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Mac%20%7C%20Linux-lightgrey)](#)
 [![Tests](https://github.com/shushuzn/ai_research_os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/ai_research_os/actions)
-[![Coverage](https://img.shields.io/badge/coverage-94%25-brightgreen)](#testing)
+[![Coverage](https://img.shields.io/badge/coverage-82%25-brightgreen)](#testing)
 [![LLM](https://img.shields.io/badge/LLM-OpenAI%20Compatible-orange)](#-ai-assisted-draft)
 [![Docs](https://img.shields.io/badge/Docs-GitHub%20Pages-blueviolet)](https://shushuzn.github.io/ai_research_os/)
 [![License](https://img.shields.io/badge/License-Research--Only-purple)](#-license)
@@ -105,15 +105,16 @@ python ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM --ai
 
 ```
 ai_research_os/
-├── core/              # Paper dataclass, constants, today_iso
+├── core/              # Paper dataclass, retry, cache, exceptions
 ├── parsers/           # arXiv fetch, Crossref fetch, DOI/arXiv detection
 ├── pdf/               # download, extract (PyMuPDF + OCR + pdfminer)
 ├── sections/          # section segmentation + formatting
 ├── llm/               # OpenAI-compatible client, AI draft generation
-├── cli.py             # CLI entry point + argparse (13 subcommands)
+├── renderers/         # P-Note, C-Note, M-Note rendering
 ├── notes/             # frontmatter, tag inference, note collection
 ├── updaters/          # Radar heat tracking, Timeline
-└── tests/             # 795 tests
+├── cli.py             # CLI entry point + argparse (13 subcommands)
+└── tests/             # 1034 tests
 ```
 
 ---
@@ -173,6 +174,8 @@ Paper → P-Note (paper note)
 | Command | Description |
 |---------|-------------|
 | `stats` | DB overview: total papers, status breakdown, queue size |
+| `status` | Show current processing status and queue summary |
+| `cache --stats\|--clear\|--get UID\|--set UID PATH` | Manage paper cache |
 | `import [ID ...]` | Batch add papers by arXiv ID / DOI / URL |
 | `import --file FILE` | Batch add from file (one ID per line) |
 | `export` | Export DB to CSV or JSON |
@@ -210,7 +213,7 @@ ollama pull nomic-embed-text
 python -B -m pytest tests/ -q
 ```
 
-**Current**: 795 tests passing, 1 skipped.
+**Current**: 1034 tests passing, 1 skipped.
 
 ---
 
@@ -356,16 +359,16 @@ python ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM --ai
 
 ```
 ai_research_os/
-├── core/              # Paper 数据类、常量、today_iso
+├── core/              # Paper 数据类、重试、缓存、异常
 ├── parsers/           # arXiv 获取、Crossref 获取、DOI/arXiv 检测
 ├── pdf/               # 下载、提取（PyMuPDF + OCR + pdfminer）
 ├── sections/          # 章节切分 + 格式化
 ├── llm/               # OpenAI 兼容客户端、AI 草稿生成
 ├── renderers/         # P-Note、C-Note、M-Note 渲染
-├── cli.py             # CLI 入口 + argparse（13 个子命令）
 ├── notes/             # frontmatter、标签推理、笔记聚合
 ├── updaters/          # Radar 热度追踪、Timeline
-└── tests/             # 795 个测试
+├── cli.py             # CLI 入口 + argparse（13 个子命令）
+└── tests/             # 1034 个测试
 ```
 
 ---
@@ -425,6 +428,8 @@ ai_research_os/
 | 命令 | 说明 |
 |------|------|
 | `stats` | 数据库概览：论文总数、状态分布、队列大小 |
+| `status` | 显示当前处理状态和队列摘要 |
+| `cache --stats\|--clear\|--get UID\|--set UID PATH` | 管理论文缓存 |
 | `import [ID ...]` | 批量添加论文（arXiv ID / DOI / URL） |
 | `import --file FILE` | 从文件批量添加（每行一个 ID） |
 | `export` | 导出数据库为 CSV 或 JSON |
