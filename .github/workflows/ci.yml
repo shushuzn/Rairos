@@ -86,7 +86,7 @@ jobs:
           REPO: ${{ github.repository }}
           RUN_ID: ${{ github.run_id }}
           PV: ${{ matrix.python-version }}
-        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt && python .github/workflows/upload_coverage.py
+        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt; status=${PIPESTATUS[0]}; python .github/workflows/upload_coverage.py; exit $status
 
       - name: Upload test output
         if: always()
