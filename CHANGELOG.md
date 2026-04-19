@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.5.1 (2026-04-19)
+
+### Test Infrastructure
+
+- Add freezegun autouse fixture in tests/conftest.py: freeze_time("2026-06-15") applied globally via pytest_collection_modifyitems; opt-out with `@pytest.mark.no_freeze`
+- Add no_freeze marker: tests that need real time (OCR, retry timeout) opt out of freezegun autouse via `@pytest.mark.no_freeze`
+- Strengthen Tier 4 tmpdir assertions: verify file existence before assertions, check exact sort order and exact counts
+- Tier 4 sort test: fix expected order to match `collect_pnotes` lexicographic sort (`paper-[01-10]` paths sorted as strings, not by number)
+
+### CI/CD
+
+- Add ruff lint gate to CI: `uv run ruff check .` now runs in CI and blocks on errors
+- Remove 9 unused imports across test_pdf_parser.py and test_unit_notes.py (sqlite3, fitz, pathlib.Path x2, etc.)
+- Add tool.coverage configuration to pyproject.toml: source=[".\\"'], omit patterns, report/show_contexts settings
+- Fix conftest.py: `autouse=True` + pytest_collection_modifyitems opt-out pattern for freezegun
+
+### Bug Fixes
+
+- Fix TestOcrPage mock_import signature: accept variadic positional args (`*args`) instead of `**kw`; save `_real_import` reference to avoid infinite recursion
+- Fix TestRetryTier4 `test_parse_timeout_raises`: properly mock `time.sleep` and `Thread.is_alive` with freezegun
+
+### Developer Experience
+
+- Add justfile with 10 recipes: test, test-cov, test-tier4, test FILE, lint, lint-fix, fmt, check, install, run, ci
+- Add justfile recipe: `test-cov` runs pytest with coverage, `test-tier4` runs only Tier 4 tests
+- F841 (unused variable) noqa cleanup across test_ai_research_os.py, test_cli_search.py, test_integration.py, test_sections_segment.py, test_pdf_extract.py
+- Remove tracked `__pycache__/*.pyc` files from repo (were tracked before .gitignore existed)
+- Update README: coverage badge 82%, test count 1034+, cache/status CLI subcommands, correct project structure with renderers/
+
 ## v1.5.0 (2026-04-19)
 
 ### Test Infrastructure
