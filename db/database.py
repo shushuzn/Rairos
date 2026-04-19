@@ -13,7 +13,9 @@ from __future__ import annotations
 import json
 import logging
 import sqlite3
+import struct
 import threading
+import warnings
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -234,10 +236,12 @@ class PaperRecord:
         try:
             authors = json.loads(authors_raw) if authors_raw else []
         except Exception:
+            warnings.warn(f"PaperRecord.from_row: failed to parse authors JSON for paper {d.get('id', '?')}: {authors_raw[:50]!r}", stacklevel=2)
             authors = []
         try:
             latex_blocks = json.loads(latex_raw) if latex_raw else []
         except Exception:
+            warnings.warn(f"PaperRecord.from_row: failed to parse latex_blocks JSON for paper {d.get('id', '?')}", stacklevel=2)
             latex_blocks = []
         tags = cls._get_tags_for_paper(d["id"])
         return cls(authors=authors, latex_blocks=latex_blocks, tags=tags, **d)
@@ -308,6 +312,7 @@ class Database:
             with self.conn as _conn:
                 yield
         except Exception:
+            warnings.warn(f"Transaction failed, rolling back: {e}", stacklevel=2)
             self.conn.rollback()
             raise
 
@@ -856,6 +861,7 @@ class Database:
                 try:
                     authors = json.loads(paper["authors"]) if paper["authors"] else []
                 except Exception:
+                    warnings.warn(f"search_papers: failed to parse authors JSON for paper {paper['id']}", stacklevel=2)
                     authors = []
                 results.append(
                     SearchResult(
@@ -879,31 +885,6 @@ class Database:
             return self._search_like(query, limit, offset, source, category, date_from, date_to, parse_status)
         except sqlite3.Error as e:
             raise DatabaseError(f"search_papers failed: {e}") from e
-
-    def _apply_search_filters(
-        self,
-        results: List[SearchResult],
-        source: Optional[str],
-        category: Optional[str],
-        date_from: Optional[str],
-        date_to: Optional[str],
-        parse_status: Optional[str],
-    ) -> List[SearchResult]:
-        """Apply post-filter conditions to search results."""
-        filtered = []
-        for r in results:
-            if source and r.source != source:
-                continue
-            if category and r.primary_category != category:
-                continue
-            if date_from and r.published < date_from:
-                continue
-            if date_to and r.published > date_to:
-                continue
-            if parse_status and r.parse_status != parse_status:
-                continue
-            filtered.append(r)
-        return filtered
 
     def _search_like(
         self,
@@ -961,6 +942,7 @@ class Database:
                 try:
                     authors = json.loads(row["authors"]) if row["authors"] else []
                 except Exception:
+                    warnings.warn(f"_search_like: failed to parse authors JSON for paper {row['id']}", stacklevel=2)
                     authors = []
                 results.append(
                     SearchResult(
@@ -1175,7 +1157,7 @@ class Database:
             try:
                 self._local.conn.close()
             except Exception:
-                pass
+                warnings.warn("Database.close: failed to close connection", stacklevel=2)
             self._local.conn = None
 
     def vacuum(self) -> None:
@@ -1460,8 +1442,6 @@ class Database:
     def set_embedding(self, paper_id: str, vector: List[float]) -> bool:
         """Store an embedding vector (list of floats) for a paper."""
         try:
-            import struct
-
             blob = struct.pack(f"{len(vector)}f", *vector)
             cur = self.conn.cursor()
             cur.execute(
@@ -1471,14 +1451,11 @@ class Database:
             self.conn.commit()
             return cur.rowcount > 0
         except Exception as e:
-            logger.error(f"set_embedding failed: {e}")
-            return False
+            raise DatabaseError(f"set_embedding({paper_id!r}) failed: {e}") from e
 
     def get_embedding(self, paper_id: str) -> Optional[List[float]]:
         """Retrieve the embedding vector for a paper, or None if not set."""
         try:
-            import struct
-
             cur = self.conn.cursor()
             cur.execute("SELECT embed_vector FROM papers WHERE id = ?", (paper_id,))
             row = cur.fetchone()
@@ -1488,8 +1465,7 @@ class Database:
             count = len(blob) // 4
             return list(struct.unpack(f"{count}f", blob))
         except Exception as e:
-            logger.error(f"get_embedding failed: {e}")
-            return None
+            raise DatabaseError(f"get_embedding({paper_id!r}) failed: {e}") from e
 
     def get_papers_without_embeddings(self, limit: int = 1000) -> List["PaperRecord"]:
         """Return papers that have a title but no embedding yet."""
