@@ -43,14 +43,22 @@ jobs:
           python-version: "3.11"
           cache: 'pip'
 
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install ruff
+        run: pip install ruff
+
       - name: Install dependencies
-        run: pip install pyflakes requests
+        run: pip install pytest pytest-cov requests feedparser pymupdf
 
       - name: Syntax check
         run: python -m py_compile ai_research_os.py
 
-      - name: Pyflakes
-        run: python -m pyflakes ai_research_os.py || true
+      - name: Ruff lint
+        run: ruff check .
 
       - name: Test Crossref API
         run: python -c "import requests; r=requests.get('https://api.crossref.org/works/10.1038/nature12373',timeout=15,headers={'User-Agent':'AI-Research-OS/1.0'}); r.raise_for_status(); print('Crossref OK:', r.json()['message']['title'][0][:50])"
