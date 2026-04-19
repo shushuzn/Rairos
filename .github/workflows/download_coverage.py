@@ -39,7 +39,7 @@ with urllib.request.urlopen(req) as resp:
 archive_url = None
 for artifact in artifacts_data.get("artifacts", []):
     if artifact["name"] == artifact_name:
-        archive_url = artifact["archive_url"]
+        archive_url = artifact["archive_download_url"]
         print(f"Found artifact: {artifact['name']} (id={artifact['id']})")
         break
 
