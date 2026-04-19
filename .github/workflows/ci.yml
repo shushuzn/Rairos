@@ -80,7 +80,7 @@ jobs:
         run: pip install pytest pytest-cov requests feedparser pymupdf
 
       - name: Run pytest with coverage
-        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing --cov-report=json 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt
+        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=json --cov-report=term-missing 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt
 
       - name: Upload test output
         if: always()
@@ -97,3 +97,38 @@ jobs:
           name: coverage-report-${{ matrix.python-version }}
           path: coverage.json
           retention-days: 3
+
+  coverage-report:
+    needs: [test-pytest]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install coverage
+        run: pip install coverage[toml]
+
+      - name: Download coverage reports
+        uses: actions/download-artifact@v7
+        with:
+          pattern: coverage-report-*
+          path: coverage-reports/
+          merge-multiple: true
+
+      - name: Combine coverage
+        run: python -m coverage combine coverage-reports/
+
+      - name: Coverage report
+        run: python -m coverage report --format=term-missing
+
+      - name: Coverage summary
+        run: |
+          python -m coverage report --format=term-missing | tail -3
+          echo ""
+          echo "Branch coverage:"
+          python -m coverage report --format=term-missing | grep "^TOTAL"
