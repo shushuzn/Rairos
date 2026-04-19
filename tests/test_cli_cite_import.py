@@ -1,9 +1,6 @@
 """Unit tests for cite-import CLI subcommand."""
 
-import pytest
-from unittest.mock import MagicMock
 from io import StringIO
-import sys
 
 from cli import main as cli_main
 

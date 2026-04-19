@@ -1,12 +1,9 @@
 """Tests for db/database.py — reflects actual API."""
 from __future__ import annotations
 
-import sqlite3
-from pathlib import Path
 
 import pytest
 
-from core.exceptions import DatabaseError
 from db import Database
 
 

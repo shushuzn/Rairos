@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 from core.basics import read_text, write_text
-from notes.pnotes import wikilink_for_pnote
 from renderers.mnote import render_mnote
 
 

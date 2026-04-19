@@ -3,12 +3,14 @@ Integration tests for ai_research_os CLI full flows.
 Run with: PYTHONHOME=/c/Users/adm/AppData/Local/Programs/Python/Python312 \
   .venv/Scripts/python.exe -m pytest tests/test_integration.py -v
 """
-import pytest, tempfile, os, re, sys, json
+import pytest
+import tempfile
+import re
+import sys
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 from io import StringIO
 
-import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import ai_research_os as airo
 
@@ -82,7 +84,7 @@ def make_mock_crossref_response(doi="10.1234/test",
                                 reference_count=42):
     if authors is None:
         authors = [{"given": "Bob", "family": "Jones"}]
-    author_xml = "".join(
+    author_xml = "".join(  # noqa: F841
         f"<author><given>{a.get('given','')}</given><family>{a.get('family','')}</family></author>"
         for a in authors
     )
@@ -128,7 +130,7 @@ class TestArxivFullPipeline:
         title = "RAG with Agent Tools in Long Context"
         abstract = "Retrieval augmented generation with agent tools for long context."
         published = "2024-01-15"
-        tags = ["Agent", "RAG"]
+        tags = ["Agent", "RAG"]  # noqa: F841
 
         mock_arxiv = make_mock_arxiv_response(
             uid=uid, title=title, abstract=abstract,
@@ -232,7 +234,7 @@ class TestArxivFullPipeline:
                         "--tags", "Agent",
                     ])
                 except Exception:
-                    result = 1
+                    result = 1  # noqa: F841
 
 
 # ---------------------------------------------------------------------------
@@ -368,7 +370,7 @@ class TestTagInferencePipeline:
         pnote_dir = temp_research_root / "02-Models"
         pnote_files = list(pnote_dir.glob("P - 2024 - *.md"))
         assert len(pnote_files) == 1
-        pnote_content = pnote_files[0].read_text(encoding="utf-8")
+        pnote_content = pnote_files[0].read_text(encoding="utf-8")  # noqa: F841
 
         # Tag-inferred C-notes should exist
         cnote_dir = temp_research_root / "01-Foundations"

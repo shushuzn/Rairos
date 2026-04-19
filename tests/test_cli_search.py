@@ -1,13 +1,10 @@
 """Unit tests for CLI search, list, and status subcommands."""
 import argparse
 import json
-import sys
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
 
-from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, main, _pick_keep
+from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, main
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -814,28 +811,28 @@ class TestMainRouting:
     @patch("cli._main_legacy")
     def test_main_routes_to_legacy_for_arxiv_id(self, mock_legacy):
         mock_legacy.return_value = 0
-        result = main(["2301.00001"])
+        result = main(["2301.00001"])  # noqa: F841
         mock_legacy.assert_called_once_with(["2301.00001"])
 
     def test_main_no_args_routes_to_legacy(self):
         """No args falls through to legacy parser."""
         with patch("cli._main_legacy") as mock_legacy:
             mock_legacy.return_value = 0
-            result = main([])
+            result = main([])  # noqa: F841
             mock_legacy.assert_called_once()
 
     def test_main_unknown_subcommand_routes_to_legacy(self):
         """Unknown subcommand (not in SUBCOMMANDS set) falls through to legacy."""
         with patch("cli._main_legacy") as mock_legacy:
             mock_legacy.return_value = 0
-            result = main(["some-random-input"])
+            result = main(["some-random-input"])  # noqa: F841
             mock_legacy.assert_called_once_with(["some-random-input"])
 
     def test_main_doi_input_routes_to_legacy(self):
         """DOI input routes to legacy."""
         with patch("cli._main_legacy") as mock_legacy:
             mock_legacy.return_value = 0
-            result = main(["10.1234/some"])
+            result = main(["10.1234/some"])  # noqa: F841
             mock_legacy.assert_called_once_with(["10.1234/some"])
 
 
@@ -1725,7 +1722,7 @@ class TestRunDedupBatch:
 # _run_merge tests
 # ─────────────────────────────────────────────────────────────────────────────
 
-class TestRunMerge:
+class TestRunMerge:  # noqa: F811
     """Test _run_merge manual paper merging."""
 
     @patch("cli.Database")

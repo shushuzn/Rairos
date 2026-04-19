@@ -10,13 +10,11 @@ import ssl
 import sys
 import time
 import urllib.request
-from datetime import datetime, timezone
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Any, List, Literal, Optional, Tuple
+from typing import Any, Dict, List, Literal, Optional, Tuple
 
 from db import Database
-from db.database import SearchResult
 from core import DOI_RESOLVER, Paper, today_iso
 from core.basics import ensure_research_tree, safe_uid, slugify_title
 from llm.generate import ai_generate_pnote_draft
@@ -44,8 +42,6 @@ KEYWORD_TAGS = [
     (r"\blong context\b|context length", "LongContext"),
     (r"\bsafety\b|jailbreak|red teaming", "Safety"),
 ]
-
-import re
 
 
 def infer_tags_if_empty(tags: List[str], paper: Paper) -> List[str]:
@@ -363,9 +359,9 @@ def _run_dedup(args: argparse.Namespace) -> int:
         print("No duplicates found")
         return 0
     for older, newer in pairs:
-        keep_older = newer.parse_status == older.parse_status and newer.added_at == older.added_at
         parsed_rank = {"completed": 4, "running": 3, "pending": 2, "failed": 1}
-        rank = lambda p: parsed_rank.get(p.parse_status, 0)
+        def rank(p):
+            return parsed_rank.get(p.parse_status, 0)
         parsed_winner = older if rank(older) >= rank(newer) else newer
         print(f"Duplicate pair: {older.id} / {newer.id}")
         print(f"  Title: {older.title[:80]}")
@@ -412,7 +408,7 @@ def _run_dedup(args: argparse.Namespace) -> int:
                 skipped += 1
         print(f"\nBatch: {merged} merged, {skipped} skipped ({len(pairs)} total pairs)")
         return 0
-    print(f"Use 'paper-cli merge TARGET_ID DUPLICATE_ID' to merge each pair")
+    print("Use 'paper-cli merge TARGET_ID DUPLICATE_ID' to merge each pair")
     return 0
 
 
@@ -531,7 +527,9 @@ def _run_dedup_semantic(args: argparse.Namespace) -> int:
         if args.format == "csv":
             print("paper_a,paper_b,similarity,title_a,title_b")
             for sim_paper, score in sims:
-                print(f"{args.paper},{sim_paper.id},{score:.4f},\"{paper.title.replace('\"', '\"\"')}\",\"{sim_paper.title.replace('\"', '\"\"')}\"")
+                t1 = paper.title.replace('"', '""')
+                t2 = sim_paper.title.replace('"', '""')
+                print(f"{args.paper},{sim_paper.id},{score:.4f},\"{t1}\",\"{t2}\"")
         else:
             print(f"Similar papers for '{args.paper}' (threshold={args.threshold}):")
             for sim_paper, score in sims:
@@ -554,7 +552,9 @@ def _run_dedup_semantic(args: argparse.Namespace) -> int:
                 continue
             seen.add(pair_key)
             if args.format == "csv":
-                print(f"{paper.id},{sim_paper.id},{score:.4f},\"{paper.title.replace('\"', '\"\"')}\",\"{sim_paper.title.replace('\"', '\"\"')}\"")
+                t1 = paper.title.replace('"', '""')
+                t2 = sim_paper.title.replace('"', '""')
+                print(f"{paper.id},{sim_paper.id},{score:.4f},\"{t1}\",\"{t2}\"")
             else:
                 print(f"[{score:.4f}] {paper.id} <-> {sim_paper.id}")
                 print(f"  A: {paper.title[:70]}")
@@ -581,7 +581,8 @@ def _pick_keep(older: Any, newer: Any, strategy: str) -> Tuple[Any, Any]:
     # "parsed": keep the one with better parse_status
     # Ranking: completed > running > pending > failed
     status_rank = {"completed": 4, "running": 3, "pending": 2, "failed": 1}
-    rank = lambda p: status_rank.get(p.parse_status, 0)
+    def rank(p):
+        return status_rank.get(p.parse_status, 0)
     p1, p2 = older, newer
     if rank(p1) > rank(p2):
         return (p1, p2)
@@ -703,7 +704,7 @@ def _run_merge(args: argparse.Namespace) -> int:
         if sim is not None:
             print(f"  semantic similarity: {sim:.3f}")
         else:
-            print(f"  semantic similarity: no embeddings available")
+            print("  semantic similarity: no embeddings available")
         return 0
     ok = db.merge_papers(keep.id, drop.id)
     if ok:
@@ -713,7 +714,7 @@ def _run_merge(args: argparse.Namespace) -> int:
             print(f"  semantic similarity: {sim:.3f}")
         return 0
     else:
-        print(f"Merge failed")
+        print("Merge failed")
         return 1
 
 
@@ -1472,7 +1473,6 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
     delay = max(0, args.delay)
     direction = args.direction
     dry_run = args.dry_run
-    skip_external = args.skip_external
     max_per_paper = args.max_per_paper
 
     # Collect papers to process
@@ -1562,9 +1562,9 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
                     time.sleep(delay)
 
     # Summary
-    print(f"\nSummary:", file=sys.stderr)
+    print("\nSummary:", file=sys.stderr)
     if dry_run:
-        print(f"  [dry-run mode — nothing written]", file=sys.stderr)
+        print("  [dry-run mode — nothing written]", file=sys.stderr)
     print(f"  Citations added to DB: {total_added}", file=sys.stderr)
     print(f"  Skipped (not in DB or external): {total_skipped_external}", file=sys.stderr)
     print(f"  Errors: {total_errors}", file=sys.stderr)
@@ -1611,9 +1611,9 @@ def _extract_references_from_text(paper_id: str, text: str) -> dict[str, list[st
     # Try to isolate the references section
     match = _REFS_SECTION_PAT.search(text)
     if match:
-        refs_text = text[match.start() :]
+        refs_text = text[match.start() :]  # noqa: F841
     else:
-        refs_text = text  # fall back to whole text
+        pass  # refs_text = text  # fall back to whole text
 
     # Extract arXiv IDs (search the whole text, not just refs section,
     # so inline citations in body text are also captured)
@@ -1862,7 +1862,7 @@ def _run_cite_import(args: argparse.Namespace) -> int:
             print(f"    ... and {len(errors) - 10} more")
         return 1
 
-    print(f"Import complete.")
+    print("Import complete.")
     print(f"  new citations : {total_new}")
     print(f"  skipped (missing papers): {total_skip_missing}")
     return 0

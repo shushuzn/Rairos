@@ -204,7 +204,7 @@ class TestEnsureTimelineTier4:
 class TestUpdateTimelineTier4:
     def test_appends_to_new_year_section(self, tmp_path):
         import ai_research_os as airo
-        import datetime, pathlib
+        import datetime
         root = tmp_path
         airo.ensure_timeline(root)
         papers_dir = root / "02-Papers"
@@ -219,7 +219,7 @@ class TestUpdateTimelineTier4:
 
     def test_no_change_for_existing_bullet(self, tmp_path):
         import ai_research_os as airo
-        import datetime, pathlib
+        import datetime
         root = tmp_path
         airo.ensure_timeline(root)
         papers_dir = root / "02-Papers"
@@ -234,14 +234,13 @@ class TestUpdateTimelineTier4:
 
     def test_inserts_before_next_year(self, tmp_path):
         import ai_research_os as airo
-        import datetime, pathlib
+        import datetime
         root = tmp_path
         airo.ensure_timeline(root)
         papers_dir = root / "02-Papers"
         papers_dir.mkdir(parents=True)
         pnote = papers_dir / "P - 2024-01-01 - Current Event.md"
         pnote.write_text("---\npublished: 2024-01-01\n---\n", encoding="utf-8")
-        import datetime
         next_year = str(datetime.date.today().year + 1)
         content = f"## {next_year}\n- Future event\n"
         tl_path = root / "00-Radar" / "Timeline.md"

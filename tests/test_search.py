@@ -1,5 +1,8 @@
 """Tests for FTS5 full-text search in database.py"""
-import pytest, tempfile, os, sys
+import pytest
+import tempfile
+import os
+import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))

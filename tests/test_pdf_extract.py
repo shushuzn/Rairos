@@ -1,5 +1,4 @@
 """Tests for pdf/extract.py — PDF download, extraction, and structured parsing."""
-import re
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -13,10 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pdf.extract import (  # type: ignore[attr-defined]
     BlockType,
-    MathBlock,
     StructuredPdfContent,
-    TableBlock,
-    TextBlock,
     _detect_block_type,
     _extract_inline_math,
     _is_display_math,
@@ -24,8 +20,6 @@ from pdf.extract import (  # type: ignore[attr-defined]
     _ocr_page,
     download_pdf,
     extract_pdf_structured,
-    extract_pdf_text,
-    extract_pdf_text_hybrid,
 )
 import ai_research_os as airo  # for the public API (download_pdf, extract_pdf_text, ...)
 
@@ -271,7 +265,7 @@ class TestDownloadPdf:
 class TestExtractPdfText:
     def test_extracts_text_from_pdf(self, tmp_path):
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
@@ -286,7 +280,7 @@ class TestExtractPdfText:
 
     def test_max_pages_limits_extraction(self, tmp_path):
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
@@ -306,7 +300,7 @@ class TestExtractPdfText:
 
     def test_collapse_multiple_newlines(self, tmp_path):
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
@@ -322,7 +316,7 @@ class TestExtractPdfText:
 class TestOcrPage:
     def test_raises_when_tesseract_missing(self, monkeypatch):
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
@@ -355,7 +349,7 @@ class TestOcrPage:
 class TestExtractPdfTextHybrid:
     def test_basic_extraction(self, tmp_path):
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
@@ -365,7 +359,7 @@ class TestExtractPdfTextHybrid:
 
     def test_max_pages(self, tmp_path):
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
@@ -393,7 +387,7 @@ class TestExtractPdfTextHybrid:
 
     def test_no_pdfminer_still_works(self, tmp_path, monkeypatch):
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
@@ -404,14 +398,14 @@ class TestExtractPdfTextHybrid:
     def test_ocr_flag_calls_ocr_when_gibberish(self, tmp_path, monkeypatch):
         """When ocr=True and text is gibberish, _ocr_page is called."""
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
         pdf_path = make_minimal_pdf(tmp_path, [{"text": "x" * 50}])  # too short
 
         ocr_called = False
-        original_ocr = _ocr_page
+        original_ocr = _ocr_page  # noqa: F841
 
         def mock_ocr(page, ocr_lang="chi_sim+eng", zoom=2.0):
             nonlocal ocr_called
@@ -431,7 +425,7 @@ class TestExtractPdfTextHybrid:
     def test_pdfminer_fallback_used_when_longer(self, tmp_path, monkeypatch):
         """When pdfminer text is >1.2x fitz text, pdfminer wins."""
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
@@ -461,7 +455,7 @@ class TestExtractPdfTextHybrid:
 class TestExtractPdfStructured:
     def test_returns_structured_content(self, tmp_path):
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
@@ -475,7 +469,7 @@ class TestExtractPdfStructured:
 
     def test_text_blocks_have_correct_type(self, tmp_path):
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
@@ -495,7 +489,7 @@ class TestExtractPdfStructured:
 
     def test_max_pages_limits(self, tmp_path):
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
@@ -510,7 +504,7 @@ class TestExtractPdfStructured:
 
     def test_inline_math_extracted(self, tmp_path):
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
@@ -523,7 +517,7 @@ class TestExtractPdfStructured:
     def test_table_detection_runs(self, tmp_path):
         """Table detection is best-effort; verify it doesn't crash."""
         try:
-            import fitz
+            import fitz  # noqa: F401
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 

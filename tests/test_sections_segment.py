@@ -113,7 +113,7 @@ class TestSegmentIntoSections:
 
     def test_skips_empty_sections(self):
         text = "# Abstract\n\n# Introduction\n\nIntro text."
-        result = segment_into_sections(text)
+        result = segment_into_sections(text)  # noqa: F841
         # Abstract section should be skipped (no content)
 
 
@@ -166,7 +166,7 @@ class TestSegmentStructured:
             TableBlock(text="col1 | col2\n---|---|", page=0, bbox=(0, 0, 100, 50)),
         ]
         sdoc = StructuredPdfContent(text_blocks=blocks, tables=tables, math_blocks=[])
-        result = segment_structured(sdoc)
+        result = segment_structured(sdoc)  # noqa: F841
         # Should have metadata with has_tables
 
     def test_max_sections_truncation(self):

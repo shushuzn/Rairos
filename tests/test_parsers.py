@@ -1,9 +1,7 @@
 """Tier 2 parser unit tests — pure functions, no I/O, no network."""
 import datetime as dt
-from pathlib import Path
 from unittest.mock import Mock
 
-import pytest
 
 import ai_research_os as airo
 from core import Paper

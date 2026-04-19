@@ -11,7 +11,7 @@ import re
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, List
 
 from core.exceptions import PDFParseError, ParseTimeoutError
 from core.retry import retry
@@ -218,7 +218,6 @@ class PDFParser:
             raise PDFParseError(f"PDF file not found: {pdf_path}")
 
         pdf_hash = self._hash_file(pdf_path)
-        file_size = pdf_path.stat().st_size
 
         # ── Cache check ─────────────────────────────────────────────────────
         if use_cache and self.db is not None:
@@ -403,7 +402,6 @@ class PDFParser:
             for block in page_dict.get("blocks", []):
                 if block.get("type") != 0:
                     continue
-                block_bbox = block.get("bbox", (0, 0, 0, 0))
                 for line in block.get("lines", []):
                     line_text_parts = []
                     for span in line.get("spans", []):
@@ -571,16 +569,13 @@ class PDFParser:
         blocks = []
         lines = text.splitlines()
         buffer: list[str] = []
-        in_display = False
 
         for line in lines:
             if _is_display_math(line):
                 if buffer:
                     source = "\n".join(buffer)
                     blocks.append(LaTeXBlock(source=source, is_display=True, page=page_idx))
-                    buffer = []
-                blocks.append(LaTeXBlock(source=line.strip(), is_display=True, page=page_idx))
-                in_display = False
+                    blocks.append(LaTeXBlock(source=line.strip(), is_display=True, page=page_idx))
             else:
                 for m in _INLINE_MATH_PAT.finditer(line):
                     blocks.append(LaTeXBlock(source=m.group(0), is_display=False, page=page_idx))

@@ -3,9 +3,8 @@ import argparse
 import json
 from unittest.mock import MagicMock, patch
 
-import pytest
 
-from cli import _run_stats, _run_import, _run_export, _run_citations, _run_cite_fetch, _run_cite_import, _run_cite_stats, main
+from cli import _run_stats, _run_import, _run_export, _run_citations, _run_cite_fetch, _run_cite_import, _run_cite_stats
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -410,7 +409,7 @@ class TestRunCiteStats:
         args = make_args(subcmd="cite-stats", stats_paper=None, format="text")
         result = _run_cite_stats(args)
 
-        captured = capsys.readouterr().out
+        captured = capsys.readouterr().out  # noqa: F841
         assert result == 0
 
 
@@ -518,7 +517,7 @@ class TestRunCiteImport:
         args = make_args(subcmd="cite-import", json_input='{"source": "2301.00001", "targets": []}')
         result = _run_cite_import(args)
 
-        captured = capsys.readouterr().out
+        captured = capsys.readouterr().out  # noqa: F841
         assert result == 1
 
     @patch("cli.Database")

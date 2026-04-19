@@ -1,8 +1,6 @@
 """Unit tests for dedup and dedup-semantic CLI subcommands."""
-import sys
 from io import StringIO
 from unittest.mock import patch, MagicMock
-import pytest
 
 
 class FakeArgs:
@@ -383,7 +381,7 @@ class TestDedupSemanticGenerate:
     def test_generate_calls_ollama(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
-        from cli import _run_dedup_semantic, _generate_missing_embeddings
+        from cli import _run_dedup_semantic
         with patch("cli.Database") as MockDB:
             mock_db = MagicMock()
             paper = FakePaper(id="P1", title="Test Paper\n\nAbstract text")

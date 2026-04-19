@@ -1,8 +1,6 @@
 """Unit tests for merge CLI subcommand."""
-import sys
 from io import StringIO
-from unittest.mock import patch, MagicMock
-import pytest
+from unittest.mock import patch
 
 
 class FakeArgs:

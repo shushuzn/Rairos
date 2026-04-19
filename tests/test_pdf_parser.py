@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from pathlib import Path
 
 import pytest
 
@@ -266,9 +265,8 @@ class TestPDFParserEdgeCases:
             return orig_mkdir(self, *a, **k)
         monkeypatch.setattr(pathlib.Path, "mkdir", staticmethod(bad_mkdir))
 
-    def test_parse_timeout_raises(self, sample_pdf, monkeypatch):
+    def test_parse_timeout_raises(self, sample_pdf, monkeypatch):  # noqa: F811
         from pdf.parser import ParseTimeoutError
-        import time
         # Override elapsed directly on the parser after extraction completes
         parser = PDFParser()
         original_extract = parser._extract_structured
@@ -346,7 +344,6 @@ class TestCheckDBCache:
 
     def test_returns_none_when_pdf_hash_mismatches(self, tmp_db, tmp_path):
         # Insert paper with different hash
-        from tests.test_pdf_parser import tmp_db as _  # fixture
         import sqlite3
         db_path = tmp_path / "research.db"
         conn = sqlite3.connect(str(db_path))

@@ -4,16 +4,15 @@ Covers: ensure_cnote, upsert_link_under_heading, update_cnote_links,
         _section_is_empty, _fill_cnote_section, _parse_cnote_sections,
         auto_fill_cnotes_with_ai
 """
-import pytest, tempfile, re
+import re
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from notes.cnote import (
     ensure_cnote,
     upsert_link_under_heading,
-    update_cnote_links,
     _section_is_empty,
     _fill_cnote_section,
     _parse_cnote_sections,

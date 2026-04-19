@@ -5,7 +5,7 @@ import logging
 import time
 import threading
 from functools import wraps
-from typing import Callable, Sequence, Type
+from typing import Callable, Sequence
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +132,7 @@ class CircuitBreaker:
             result = fn(*args, **kwargs)
             self.record_success()
             return result
-        except self.expected_exception as e:
+        except self.expected_exception as e:  # noqa: F841
             self.record_failure()
             raise
 

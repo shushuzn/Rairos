@@ -18,7 +18,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Generator, List, Literal, Optional, Tuple
 
 from core.exceptions import DatabaseError
 
@@ -1304,7 +1304,8 @@ class Database:
                 ]
                 for field, _ in parse_fields:
                     cur.execute(f"SELECT {field} FROM papers WHERE id = ?", (duplicate_id,))
-                    row = cur.fetchone(); val = row[field] if row else None
+                    row = cur.fetchone()
+                    val = row[field] if row else None
                     if val is not None and val != "" and val != 0 and val != "[]":
                         cur.execute(
                             f"UPDATE papers SET {field} = ? WHERE id = ? AND ({field} = '' OR {field} = '[]' OR {field} = 0)",
@@ -1586,8 +1587,6 @@ class Database:
         Returns None if either paper lacks an embedding.
         """
         try:
-            import struct
-
             emb1 = self.get_embedding(paper_id1)
             emb2 = self.get_embedding(paper_id2)
             if emb1 is None or emb2 is None:

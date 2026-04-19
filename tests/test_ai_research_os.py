@@ -2,7 +2,12 @@
 Comprehensive test suite for ai_research_os.py
 Run with: uv run --with requests,feedparser,pyyaml pytest tests/ -v
 """
-import pytest, tempfile, os, re, sys, json
+import pytest
+import tempfile
+import os
+import re
+import sys
+import json
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 from io import StringIO
@@ -11,7 +16,6 @@ from io import StringIO
 # Test helpers
 # ---------------------------------------------------------------------------
 
-import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import ai_research_os as airo
 
@@ -597,7 +601,7 @@ class TestUpdateCnoteLinks:
         pnote = mock_research_root / "02-Papers" / "test.md"
         pnote.parent.mkdir(parents=True, exist_ok=True)
         pnote.write_text("# Test Paper")
-        
+
         airo.update_cnote_links(cnote, pnote)
         content = airo.read_text(cnote)
         assert "[[test]]" in content or "test" in content
@@ -698,7 +702,7 @@ class TestCollectPnotes:
         (papers_dir / "paper1.md").write_text("---\ntype: paper\n---\n# Paper 1")
         (papers_dir / "paper2.md").write_text("---\ntype: paper\n---\n# Paper 2")
         (mock_research_root / "00-Radar" / "radar.md").write_text("# Radar")
-        
+
         pnotes = airo.collect_pnotes(mock_research_root)
         assert len(pnotes) >= 2
 
@@ -715,13 +719,13 @@ class TestPnotesByTag:
     def test_groups_by_tag(self, mock_research_root):
         papers_dir = mock_research_root / "02-Papers"
         papers_dir.mkdir()
-        
+
         p1 = papers_dir / "paper1.md"
         p1.write_text("---\ntype: paper\ntitle: Paper1\ntags:\n  - LLM\n---\n# Paper1")
-        
+
         p2 = papers_dir / "paper2.md"
         p2.write_text("---\ntype: paper\ntitle: Paper2\ntags:\n  - RAG\n---\n# Paper2")
-        
+
         result = airo.pnotes_by_tag(mock_research_root)
         assert "LLM" in result
         assert "RAG" in result
@@ -740,7 +744,7 @@ class TestEnsureOrUpdateMnoteTier1:
         for p in [p1, p2, p3]:
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text("# Paper")
-        
+
         result = airo.ensure_or_update_mnote(mnote_dir, "LLM", [p1, p2, p3])
         assert result is not None
         assert result.exists()
@@ -751,7 +755,7 @@ class TestEnsureOrUpdateMnoteTier1:
         p1 = mock_research_root / "02-Papers" / "p1.md"
         p1.parent.mkdir(parents=True)
         p1.write_text("# Paper")
-        
+
         result = airo.ensure_or_update_mnote(mnote_dir, "LLM", [p1])
         assert result is None
 
@@ -790,7 +794,7 @@ class TestTimeline:
         pnote = mock_research_root / "02-Papers" / "test.md"
         pnote.parent.mkdir(parents=True)
         pnote.write_text("# Test")
-        
+
         result = airo.update_timeline(mock_research_root, "2024", pnote, "Test Paper Title")
         assert result.exists()
         content = airo.read_text(result)
@@ -823,7 +827,7 @@ class TestKeywordTags:
 class TestInferTagsIfEmptyTier1:
     def test_returns_empty_for_empty_tags_with_empty_abstract(self):
         p = make_paper(abstract="", title="")
-        tags = airo.infer_tags_if_empty([], p)
+        tags = airo.infer_tags_if_empty([], p)  # noqa: F841
         # May or may not infer depending on implementation
 
     def test_does_not_modify_existing_tags(self):
@@ -843,7 +847,7 @@ class TestDownloadPdf:
         mock_response.status_code = 200
         mock_response.content = b"%PDF-1.4 fake pdf content"
         mock_response.headers = {}
-        
+
         with patch("requests.get", return_value=mock_response) as mock_get:
             airo.download_pdf("https://example.com/paper.pdf", out_path, timeout=60)
             mock_get.assert_called_once()
@@ -858,7 +862,7 @@ class TestExtractPdfText:
         pdf_path = mock_research_root / "test.pdf"
         # Write minimal PDF content
         pdf_path.write_bytes(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
-        
+
         # Should not crash even on minimal PDF
         try:
             text = airo.extract_pdf_text(pdf_path, max_pages=1)
@@ -893,17 +897,17 @@ class TestFetchArxivMetadata:
     <arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="cs.AI"/>
   </entry>
 </feed>"""
-        
+
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.text = mock_feed
         mock_response.headers = {"content-type": "application/atom+xml"}
-        
+
         with patch("parsers.arxiv.get_cached", return_value=None):
             with patch("parsers.arxiv.set_cached"):
                 with patch("requests.get", return_value=mock_response):
                     paper = airo.fetch_arxiv_metadata("2301.00001", timeout=30)
-                    
+
                     assert paper.title == "Test Paper Title"
             assert "Alice Smith" in paper.authors
             assert "Bob Jones" in paper.authors
@@ -1023,12 +1027,12 @@ class TestFetchCrossrefMetadata:
                 "published": {"date-parts": [[2024, 1, 15]]},
             }
         }
-        
+
         with patch("parsers.crossref.get_cached", return_value=None):
             with patch("parsers.crossref.set_cached"):
                 with patch("requests.get", return_value=mock_response):
                     paper, updated = airo.fetch_crossref_metadata("10.1234/test", timeout=30)
-            
+
                     assert paper.title == "Crossref Test Paper"
             assert "Alice Smith" in paper.authors or "Alice" in paper.authors
             assert "Test abstract" in paper.abstract
@@ -1046,22 +1050,22 @@ class TestFetchCrossrefMetadata:
 class TestMainCli:
     def test_main_accepts_arxiv_id(self, mock_research_root, monkeypatch):
         monkeypatch.chdir(mock_research_root)
-        
-        mock_paper = make_paper()
+
+        mock_paper = make_paper()  # noqa: F841
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.text = '<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Test</title><author><name>Alice</name></author><summary>Abstract.</summary><published>2024-01-01</published><updated>2024-01-01</updated><id>http://arxiv.org/abs/2301.00001</id><link href="https://arxiv.org/abs/2301.00001" type="text/html"/><link title="pdf" href="https://arxiv.org/pdf/2301.00001.pdf" type="application/pdf"/><arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="cs.AI"/></entry></feed>'
         mock_response.headers = {"content-type": "application/atom+xml"}
-        
+
         with patch("requests.get", return_value=mock_response):
-            with patch("sys.stdout", new=StringIO()) as out:
+            with patch("sys.stdout", new=StringIO()) as out:  # noqa: F841
                 try:
                     airo.main(["arxiv-id", "2301.00001"])
                 except SystemExit:
                     pass  # main may call sys.exit
 
     def test_main_with_help(self, monkeypatch):
-        with patch("sys.stdout", new=StringIO()) as out:
+        with patch("sys.stdout", new=StringIO()) as out:  # noqa: F841
             with pytest.raises(SystemExit):
                 airo.main(["--help"])
 
@@ -1093,7 +1097,7 @@ class TestCallLlmChatCompletions:
         mock_response.json.return_value = {
             "choices": [{"message": {"role": "assistant", "content": "Test response"}}]
         }
-        
+
         with patch("requests.post", return_value=mock_response) as mock_post:
             result = airo.call_llm_chat_completions(
                 [{"role": "user", "content": "Hello"}],
@@ -1113,7 +1117,7 @@ class TestCallLlmChatCompletions:
         mock_response.json.return_value = {
             "choices": [{"message": {"role": "assistant", "content": "Env key response"}}]
         }
-        
+
         with patch("requests.post", return_value=mock_response):
             result = airo.call_llm_chat_completions(
                 [{"role": "user", "content": "Hi"}],
@@ -1161,7 +1165,7 @@ class TestCallLlmChatCompletions:
         }
 
         with patch("requests.post", return_value=mock_response) as mock_post:
-            result = airo.call_llm_chat_completions(
+            result = airo.call_llm_chat_completions(  # noqa: F841
                 [{"role": "user", "content": "Hello"}],
                 "gpt-4o-mini",
                 "Say hi",
@@ -1264,7 +1268,7 @@ class TestFormatSectionSnippetsTier2:
 
     def test_empty_content_skipped(self):
         sections = [("Test", "   ")]
-        result = airo.format_section_snippets(sections)
+        result = airo.format_section_snippets(sections)  # noqa: F841
         # empty sections are filtered out by segment_into_sections upstream
 
     def test_returns_empty_string_for_empty_input(self):
@@ -1684,7 +1688,7 @@ def test_extract_pdf_text_hybrid_empty_page(tmp_path):
         pytest.skip("PyMuPDF not installed")
     pdf_path = tmp_path / "empty.pdf"
     doc = fitz.open()
-    page = doc.new_page(width=200, height=200)
+    page = doc.new_page(width=200, height=200)  # noqa: F841
     # intentionally blank page
     doc.save(str(pdf_path))
     doc.close()
@@ -2041,28 +2045,8 @@ def test_render_mnote_basic():
 # ================================================================
 # Tier 4: additional coverage for date/title utils and notes
 # (Moved to tests/test_unit_notes.py)
-from tests.test_unit_notes import (
-    TestTodayIsoTier4,
-    TestSlugifyTitleTier4,
-    TestIsProbablyDoiTier4,
-    TestNormalizeDoiTier4,
-    TestNormalizeArxivIdTier4,
-    TestParseFrontmatterTier4,
-    TestParseDateFromFrontmatterTier4,
-    TestRenderCnoteTier4,
-    TestEnsureCnoteTier4,
-    TestEnsureTimelineTier4,
-    TestUpdateTimelineTier4,
-    TestCollectPnotesTier4,
-    TestPnotesByTagTier4,
-    TestPickTop3PnotesForTagTier4,
-    TestWikilinkForPnoteTier4,
-    TestUpsertLinkUnderHeadingTier4,
-    TestReadPnoteMetadataTier4,
-)
 
 
-from tests.test_unit_ai import TestAiGenerateCnoteDraft
 
 
 class TestParseSections:
