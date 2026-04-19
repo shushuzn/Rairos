@@ -445,3 +445,165 @@ class TestJobQueueEdgeCases:
     def test_complete_job_nonexistent(self, db):
         db.complete_job(99999, "done")
         # Should not raise
+
+
+class TestPaperExists:
+    def test_paper_exists_true(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Test")
+        assert db.paper_exists("2301.00001") is True
+
+    def test_paper_exists_false(self, db):
+        assert db.paper_exists("does-not-exist") is False
+
+    def test_paper_exists_after_delete(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Test")
+        db.delete_paper("2301.00001")
+        assert db.paper_exists("2301.00001") is False
+
+
+class TestGetPaperTitle:
+    def test_get_paper_title_found(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Attention Is All You Need")
+        assert db.get_paper_title("2301.00001") == "Attention Is All You Need"
+
+    def test_get_paper_title_missing(self, db):
+        assert db.get_paper_title("does-not-exist") == ""
+
+    def test_get_paper_title_empty_string(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="")
+        assert db.get_paper_title("2301.00001") == ""
+
+
+class TestDeletePaper:
+    def test_delete_paper_removes_row(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="To Delete")
+        assert db.paper_exists("2301.00001") is True
+        deleted = db.delete_paper("2301.00001")
+        assert deleted is True
+        assert db.paper_exists("2301.00001") is False
+
+    def test_delete_paper_nonexistent(self, db):
+        result = db.delete_paper("does-not-exist")
+        assert result is False
+
+    def test_delete_paper_removes_fts(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="FTS Test", abstract="Abstract")
+        # FTS entry exists
+        results, _ = db.search_papers("FTS")
+        assert any(r.paper_id == "2301.00001" for r in results)
+        db.delete_paper("2301.00001")
+        results, _ = db.search_papers("FTS")
+        assert not any(r.paper_id == "2301.00001" for r in results)
+
+
+class TestCitations:
+    def test_add_citation_inserts(self, db):
+        db.upsert_paper("A", "arxiv", title="Paper A")
+        db.upsert_paper("B", "arxiv", title="Paper B")
+        result = db.add_citation("A", "B")
+        assert result is True
+        cites = db.get_citations("A", "from")
+        assert len(cites) == 1
+        assert cites[0].source_id == "A"
+        assert cites[0].target_id == "B"
+
+    def test_add_citation_duplicate_returns_false(self, db):
+        db.upsert_paper("A", "arxiv", title="Paper A")
+        db.upsert_paper("B", "arxiv", title="Paper B")
+        db.add_citation("A", "B")
+        result = db.add_citation("A", "B")
+        assert result is False
+
+    def test_add_citations_batch(self, db):
+        db.upsert_paper("A", "arxiv", title="Paper A")
+        db.upsert_paper("B", "arxiv", title="Paper B")
+        db.upsert_paper("C", "arxiv", title="Paper C")
+        count = db.add_citations_batch("A", ["B", "C"])
+        assert count == 2
+        cites = db.get_citations("A", "from")
+        assert len(cites) == 2
+
+    def test_add_citations_batch_empty(self, db):
+        count = db.add_citations_batch("A", [])
+        assert count == 0
+
+    def test_upsert_citations_new_and_dup(self, db):
+        db.upsert_paper("A", "arxiv", title="Paper A")
+        db.upsert_paper("B", "arxiv", title="Paper B")
+        db.upsert_paper("C", "arxiv", title="Paper C")
+        new, dup = db.upsert_citations("A", ["B", "C"])
+        assert new == 2
+        assert dup == 0
+        new2, dup2 = db.upsert_citations("A", ["B", "C"])
+        assert new2 == 0
+        assert dup2 == 2
+
+    def test_get_citations_from(self, db):
+        db.upsert_paper("A", "arxiv", title="Paper A")
+        db.upsert_paper("B", "arxiv", title="Paper B")
+        db.add_citation("A", "B")
+        cites = db.get_citations("A", "from")
+        assert len(cites) == 1
+        assert cites[0].target_id == "B"
+
+    def test_get_citations_to(self, db):
+        db.upsert_paper("A", "arxiv", title="Paper A")
+        db.upsert_paper("B", "arxiv", title="Paper B")
+        db.add_citation("A", "B")
+        cites = db.get_citations("B", "to")
+        assert len(cites) == 1
+        assert cites[0].source_id == "A"
+
+    def test_get_citations_both(self, db):
+        db.upsert_paper("A", "arxiv", title="Paper A")
+        db.upsert_paper("B", "arxiv", title="Paper B")
+        db.upsert_paper("C", "arxiv", title="Paper C")
+        db.add_citation("A", "B")
+        db.add_citation("C", "A")
+        cites = db.get_citations("A", "both")
+        ids = {c.source_id if c.source_id != "A" else c.target_id for c in cites}
+        assert ids == {"B", "C"}
+
+    def test_get_citations_count(self, db):
+        db.upsert_paper("A", "arxiv", title="Paper A")
+        db.upsert_paper("B", "arxiv", title="Paper B")
+        db.upsert_paper("C", "arxiv", title="Paper C")
+        db.add_citation("A", "B")
+        db.add_citation("C", "A")
+        counts = db.get_citation_count("A")
+        assert counts["forward"] == 1
+        assert counts["backward"] == 1
+
+    def test_get_citations_count_none(self, db):
+        counts = db.get_citation_count("orphan")
+        assert counts["forward"] == 0
+        assert counts["backward"] == 0
+
+
+class TestDedupLog:
+    def test_log_dedup_and_get(self, db):
+        db.upsert_paper("target", "arxiv", title="Target")
+        db.upsert_paper("dup", "arxiv", title="Duplicate")
+        db.log_dedup("target", "dup", "keep_newer")
+        log = db.get_dedup_log()
+        assert len(log) == 1
+        assert log[0]["target_id"] == "target"
+        assert log[0]["duplicate_id"] == "dup"
+        assert log[0]["keep_policy"] == "keep_newer"
+
+
+class TestClearPendingPapers:
+    def test_clear_pending_papers(self, db):
+        db.upsert_paper("P1", "arxiv", title="P1")
+        db.upsert_paper("P2", "arxiv", title="P2")
+        db.update_parse_status("P1", "pending")
+        db.update_parse_status("P2", "pending")
+        count = db.clear_pending_papers()
+        assert count == 2
+        papers, _ = db.list_papers(parse_status="pending")
+        assert len(papers) == 0
+
+
+class TestVacuum:
+    def test_vacuum_does_not_raise(self, db):
+        db.vacuum()  # Should not raise
