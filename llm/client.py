@@ -1,5 +1,4 @@
 """LLM API client."""
-import json
 import os
 from typing import Dict, List, Optional
 

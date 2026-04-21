@@ -180,18 +180,6 @@ class ExperimentTableRecord:
     bbox_x1: float
     bbox_y1: float
     created_at: str
-
-
-@dataclass
-class ExperimentTableRecord:
-    id: int
-    paper_id: str
-    table_caption: str
-    page: int
-    headers: List[str]
-    rows: List[List[str]]
-    bbox_x0: float
-    bbox_y0: float
     bbox_x1: float
     bbox_y1: float
     created_at: str

@@ -1,6 +1,5 @@
 """Internationalization support for CLI output."""
 import os
-from typing import Callable
 
 LANG = os.environ.get("AI_RESEARCH_LANG", "zh").lower()
 _in_lang: str = LANG

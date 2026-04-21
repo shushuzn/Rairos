@@ -10,6 +10,7 @@ import requests
 
 def download_pdf(pdf_url: str, out_path: Path, timeout: int = 60) -> None:
     """Download PDF with resume support. Overwrites out_path on success."""
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     resume_path = out_path.with_suffix(".part")
     existing_size = 0
     headers = {}

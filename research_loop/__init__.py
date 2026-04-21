@@ -21,7 +21,6 @@ from typing import List, Optional, Tuple
 
 from core import Paper
 from core.basics import ensure_research_tree, safe_uid, slugify_title
-from core.i18n import _
 from llm.generate import ai_generate_pnote_draft
 from llm.parse import parse_ai_pnote_draft, extract_rubric_scores
 from notes.cnote import ensure_cnote, update_cnote_links
@@ -241,12 +240,13 @@ def run_research(
             futures = {ex.submit(_process_one_paper, item): item for item in work_items}
             for future in as_completed(futures):
                 note_path, _, err = future.result()
-                if err:
-                    failed += 1
-                    error_reasons[err] = error_reasons.get(err, 0) + 1
-                elif note_path:
-                    processed += 1
+                if note_path:
                     output_paths.append(note_path)
+                    if err:
+                        failed += 1
+                        error_reasons[err] = error_reasons.get(err, 0) + 1
+                    else:
+                        processed += 1
         # Summary report
         total = len(papers)
         print(f"\n[research] Done: {processed}/{total} processed, {failed} failed, {skipped} skipped")
