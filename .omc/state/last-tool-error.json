@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cd \\\"D:\\\\OpenClaw\\\\workspace\\\\80-PROJECTS\\\\ai_research_os\\\" && python -c \\\"\\nfrom unittest.mock import patch\\nfrom pathlib import Path\\nimport tempfile, shutil\\n\\ntmp = Path(tempfile.mkdte...",
+  "error": "Exit code 1\nTraceback (most recent call last):\r\n  File \"<string>\", line 18, in <module>\r\n  File \"C:\\Users\\adm\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\unittest\\mock.py\", line 1458, in __enter__\r\n    original, local = self.get_original()\r\n                      ^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\adm\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\unittest\\mock.py\", line 1431, in get_original\r\n    raise AttributeError(\r\nAttributeError: <module 'notes.cnote' from 'D:\\\\OpenClaw\\\\workspace\\\\80-PROJE...",
+  "timestamp": "2026-04-21T06:31:33.113Z",
+  "retry_count": 1
+}

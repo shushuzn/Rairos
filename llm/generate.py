@@ -16,9 +16,7 @@ def ai_generate_pnote_draft(
     api_key: str,
     model: str,
 ) -> str:
-    # Lazy import so test can monkeypatch ai_research_os.call_llm_chat_completions
     import ai_research_os as airo
-    call_llm_chat_completions = airo.call_llm_chat_completions
 
     system_prompt = """你是一个严谨的 AI 研究助理，擅长对抗式审稿。
 
@@ -129,7 +127,7 @@ Overall Judgment：一句话总结
 -->
 """
 
-    return call_llm_chat_completions(
+    return airo.call_llm_chat_completions(
         base_url=base_url,
         api_key=api_key,
         model=model,
@@ -172,7 +170,6 @@ def ai_generate_cnote_draft(
         model: Model name
     """
     import ai_research_os as airo
-    call_llm_chat_completions = airo.call_llm_chat_completions
 
     pnotes_text = ""
     for i, p in enumerate(pnotes, 1):
@@ -228,7 +225,7 @@ def ai_generate_cnote_draft(
 （严禁捏造论文数据；引用格式："> 原文片段"）
 """
 
-    return call_llm_chat_completions(
+    return airo.call_llm_chat_completions(
         base_url=base_url,
         api_key=api_key,
         model=model,

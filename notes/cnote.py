@@ -123,11 +123,8 @@ def auto_fill_cnotes_with_ai(
     Returns:
         List of (concept, status) tuples: status is 'filled' | 'skipped' | 'no-papers'
     """
-    import ai_research_os as airo
+    from llm.generate import ai_generate_cnote_draft
     from notes.pnotes import pnotes_by_tag, read_pnote_metadata
-
-    # Import here to avoid circular dependency
-    ai_generate_cnote_draft = airo.ai_generate_cnote_draft
 
     results = []
     tag_map = pnotes_by_tag(root)
