@@ -82,19 +82,17 @@ jobs:
       - name: Run pytest
         run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt; exit ${PIPESTATUS[0]}
 
-      - name: Upload coverage artifact
+      - name: Upload coverage data
         if: always()
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-          RUN_ID: ${{ github.run_id }}
-          PV: ${{ matrix.python-version }}
-        run: python .github/workflows/upload_coverage.py
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data-${{ matrix.python-version }}
+          path: .coverage
+          retention-days: 3
 
       - name: Upload test output
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: pytest-output-${{ matrix.python-version }}
           path: pytest_output_${{ matrix.python-version }}.txt
@@ -112,20 +110,35 @@ jobs:
           python-version: "3.11"
           cache: 'pip'
 
-      - name: Download coverage artifacts from test-pytest jobs
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RUN_ID: ${{ github.run_id }}
-          REPO: ${{ github.repository }}
-        run: |
-          set -e
-          for pv in 3.9 3.10 3.11 3.12; do
-            echo "=== Python $pv ==="
-            python .github/workflows/download_coverage.py "$pv"
-          done
+      - name: Install coverage
+        run: pip install coverage[toml]
+
+      - name: Download coverage data 3.9
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-data-3.9
+          path: coverage-reports/3.9
+
+      - name: Download coverage data 3.10
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-data-3.10
+          path: coverage-reports/3.10
+
+      - name: Download coverage data 3.11
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-data-3.11
+          path: coverage-reports/3.11
+
+      - name: Download coverage data 3.12
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-data-3.12
+          path: coverage-reports/3.12
 
       - name: Combine coverage
-        run: python -m coverage combine cc-3.9 cc-3.10 cc-3.11 cc-3.12
+        run: python -m coverage combine coverage-reports/
 
       - name: Coverage report
         run: python -m coverage report --format=term-missing
