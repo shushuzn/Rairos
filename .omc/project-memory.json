@@ -298,14 +298,20 @@
   "hotPaths": [
     {
       "path": "tests\\test_notes_cnote.py",
-      "accessCount": 71,
-      "lastAccessed": 1776753189624,
+      "accessCount": 91,
+      "lastAccessed": 1776757235983,
       "type": "file"
     },
     {
       "path": "cli.py",
       "accessCount": 57,
       "lastAccessed": 1776745842132,
+      "type": "file"
+    },
+    {
+      "path": "llm\\generate.py",
+      "accessCount": 29,
+      "lastAccessed": 1776757081528,
       "type": "file"
     },
     {
@@ -321,27 +327,21 @@
       "type": "directory"
     },
     {
+      "path": "tests/test_notes_cnote.py",
+      "accessCount": 11,
+      "lastAccessed": 1776756426428,
+      "type": "directory"
+    },
+    {
       "path": "research_loop\\__init__.py",
       "accessCount": 10,
       "lastAccessed": 1776745534359,
       "type": "file"
     },
     {
-      "path": "tests/test_notes_cnote.py",
-      "accessCount": 10,
-      "lastAccessed": 1776748809868,
-      "type": "directory"
-    },
-    {
-      "path": "llm\\generate.py",
-      "accessCount": 8,
-      "lastAccessed": 1776752590688,
-      "type": "file"
-    },
-    {
       "path": "notes\\cnote.py",
-      "accessCount": 7,
-      "lastAccessed": 1776749491833,
+      "accessCount": 8,
+      "lastAccessed": 1776757188802,
       "type": "file"
     },
     {
@@ -468,6 +468,12 @@
       "path": "tests\\debug_mock_test.py",
       "accessCount": 1,
       "lastAccessed": 1776753134909,
+      "type": "file"
+    },
+    {
+      "path": "tests\\test_unit_ai.py",
+      "accessCount": 1,
+      "lastAccessed": 1776757030933,
       "type": "file"
     }
   ],

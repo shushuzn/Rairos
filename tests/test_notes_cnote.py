@@ -320,7 +320,7 @@ class TestAutoFillCnotesWithAi:
 
         with patch("notes.pnotes.pnotes_by_tag", return_value={"concept": [("2024-01-01", pnote)]}):
             with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "Concept"}):
-                with patch("llm.generate.ai_generate_cnote_draft", return_value=generated_draft) as mock_gen:
+                with patch("ai_research_os.call_llm_chat_completions", return_value=generated_draft) as mock_gen:
                     results = auto_fill_cnotes_with_ai(
                         root=tmp_path,
                         api_key="fake-key",
@@ -348,7 +348,7 @@ class TestAutoFillCnotesWithAi:
         with patch("notes.pnotes.pnotes_by_tag", return_value={"fail": [("2024-01-01", pnote)]}):
             with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "Fail"}):
                 with patch(
-                    "llm.generate.ai_generate_cnote_draft",
+                    "ai_research_os.call_llm_chat_completions",
                     side_effect=RuntimeError("API error"),
                 ):
                     results = auto_fill_cnotes_with_ai(
@@ -377,7 +377,7 @@ class TestAutoFillCnotesWithAi:
         with patch("notes.pnotes.pnotes_by_tag", return_value={"existing": [("2024-01-01", pnote)]}):
             with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "Existing"}):
                 with patch(
-                    "llm.generate.ai_generate_cnote_draft",
+                    "ai_research_os.call_llm_chat_completions",
                     return_value="## 核心定义\nNew core.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech.",
                 ):
                     results = auto_fill_cnotes_with_ai(
@@ -403,7 +403,7 @@ class TestAutoFillCnotesWithAi:
         with patch("notes.pnotes.pnotes_by_tag", return_value={"new": [("2024-01-01", pnote)]}):
             with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "New"}):
                 with patch(
-                    "llm.generate.ai_generate_cnote_draft",
+                    "ai_research_os.call_llm_chat_completions",
                     return_value="## 核心定义\nCore.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech.",
                 ):
                     results = auto_fill_cnotes_with_ai(
