@@ -38,7 +38,7 @@ def retry(
             for attempt in range(1, max_attempts + 1):
                 try:
                     return fn(*args, **kwargs)
-                except exceptions:
+                except exceptions as e:
                     last_exc = e
                     if attempt == max_attempts:
                         break
