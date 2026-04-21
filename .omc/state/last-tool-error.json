@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"sleep 30 && gh pr view 239 --json status,mergeable,headRefName,headSha 2>&1\"}",
-  "error": "Exit code 1\nfailed to migrate config: cowardly refusing to continue with multi account migration: couldn't get user name for \"github.com\" please visit https://github.com/cli/cli/issues/8441 for help: non-200 OK status code: 401 Unauthorized body: \"{\\r\\n  \\\"message\\\": \\\"Bad credentials\\\",\\r\\n  \\\"documentation_url\\\": \\\"https://docs.github.com/rest\\\",\\r\\n  \\\"status\\\": \\\"401\\\"\\r\\n}\"",
-  "timestamp": "2026-04-21T10:19:02.849Z",
-  "retry_count": 1
+  "tool_input_preview": "{\"command\":\"git push origin refs/heads/main:refs/heads/main 2>&1\"}",
+  "error": "Exit code 1\nremote: error: GH006: Protected branch update failed for refs/heads/main.        \nremote: \nremote: - Changes must be made through a pull request.        \nTo https://github.com/shushuzn/ai_research_os.git\n ! [remote rejected] main -> main (protected branch hook declined)\nerror: failed to push some refs to 'https://github.com/shushuzn/ai_research_os.git'",
+  "timestamp": "2026-04-21T10:39:45.601Z",
+  "retry_count": 2
 }
