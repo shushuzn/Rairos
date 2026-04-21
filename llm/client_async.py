@@ -9,6 +9,18 @@ from core.retry import circuit_breaker
 
 ProgressCallback = Optional[Callable[[str], None]]
 
+# Module-level session for connection pooling — created lazily on first use
+_connector = aiohttp.TCPConnector(limit=10, keepalive_timeout=30)
+_timeout_cfg = aiohttp.ClientTimeout(total=180)
+_session: Optional[aiohttp.ClientSession] = None
+
+
+async def _get_session() -> aiohttp.ClientSession:
+    global _session
+    if _session is None or _session.closed:
+        _session = aiohttp.ClientSession(connector=_connector, timeout=_timeout_cfg)
+    return _session
+
 
 @circuit_breaker(failure_threshold=5, recovery_timeout=60.0)
 async def call_llm_chat_completions_async(
@@ -43,18 +55,15 @@ async def call_llm_chat_completions_async(
     if user_prompt:
         payload["messages"] = msgs + [{"role": "user", "content": user_prompt}]
 
-    connector = aiohttp.TCPConnector(limit=10, keepalive_timeout=30)
-    timeout_cfg = aiohttp.ClientTimeout(total=timeout)
-
-    async with aiohttp.ClientSession(headers=headers, connector=connector, timeout=timeout_cfg) as session:
-        async with session.post(url, json=payload) as r:
-            r.raise_for_status()
-            if stream:
-                if progress_callback:
-                    return await _stream_to_string_with_callback_async(session, r, progress_callback)
-                return await _stream_to_string_async(session, r)
-            data = await r.json()
-            return data["choices"][0]["message"]["content"]
+    session = await _get_session()
+    async with session.post(url, json=payload) as r:
+        r.raise_for_status()
+        if stream:
+            if progress_callback:
+                return await _stream_to_string_with_callback_async(session, r, progress_callback)
+            return await _stream_to_string_async(session, r)
+        data = await r.json()
+        return data["choices"][0]["message"]["content"]
 
 
 async def _stream_to_string_async(session: aiohttp.ClientSession, response: aiohttp.ClientResponse) -> str:
@@ -102,3 +111,11 @@ async def _stream_to_string_with_callback_async(
             parts.append(content)
             callback(content)
     return "".join(parts)
+
+
+async def close_session() -> None:
+    """Close the module-level aiohttp session. Call on app shutdown."""
+    global _session
+    if _session is not None and not _session.closed:
+        await _session.close()
+        _session = None
