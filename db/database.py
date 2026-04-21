@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any, Dict, Generator, List, Literal, Optional, Tuple
 
 from core.exceptions import DatabaseError
+from db.migrate import run_migrations
 
 logger = logging.getLogger(__name__)
 
@@ -320,16 +321,16 @@ class Database:
         return self._local.conn
 
     def init(self) -> None:
-        """Create tables if they don't exist. Idempotent."""
+        """Create tables and run migrations. Idempotent."""
         if self._init_done:
             return
-        # Verify the directory is writable before creating tables
         if not self.db_path.parent.exists():
             raise DatabaseError(f"Database directory does not exist and cannot be created: {self.db_path.parent}")
         try:
             with self.conn as conn:
                 conn.executescript(_SCHEMA)
                 conn.executescript(_FTS_SCHEMA)
+                run_migrations(conn)
             self._init_done = True
             logger.info("Database initialized at %s", self.db_path)
         except sqlite3.Error as e:

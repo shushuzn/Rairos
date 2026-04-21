@@ -35,11 +35,17 @@ _SECTION_SUBSECTIONS = {
 # Subsections under "12. 知识蒸馏"
 _KNOWLEDGE_DISTRACTION_SUBSECTIONS = ["Facts", "Principles", "Insights"]
 
-# Regex patterns for rubric extraction
+# JSON code block pattern (new primary format)
+_RUBRIC_JSON_CODE_BLOCK_RE = re.compile(
+    r'```json\s*\n(\{.*?\})\s*\n```',
+    re.DOTALL,
+)
+# XML comment block (legacy fallback)
 _RUBRIC_BLOCK_RE = re.compile(
     r'<!--\s*\n<RUBRIC>\s*\n(.*?)\n</RUBRIC>\s*\n-->',
     re.DOTALL,
 )
+# Loose JSON object with novelty key
 _RUBRIC_JSON_RE = re.compile(
     r'\{[^{}]*"novelty"[^{}]*"leverage"[^{}]*"evidence"[^{}]*\}',
     re.DOTALL,
@@ -65,23 +71,33 @@ def parse_ai_pnote_draft(raw: str) -> tuple[dict[str, str], dict[str, Any], str]
 
 
 def _parse_rubric(raw: str) -> dict[str, Any]:
-    """Extract rubric dict from XML comment block."""
+    """Extract rubric dict with prioritized extraction strategies.
+
+    Extraction order (highest priority first):
+    1. JSON code block  - primary format (```json ... ```)
+    2. XML comment block - legacy fallback (<!-- <RUBRIC>...</RUBRIC> -->)
+    3. Loose JSON object - anywhere in raw text
+    4. Line-by-line fallback - last resort
+    """
     rubric: dict[str, Any] = {}
 
-    # Try full XML block first
+    # 1. JSON code block (primary format)
+    m = _RUBRIC_JSON_CODE_BLOCK_RE.search(raw)
+    if m:
+        return _parse_rubric_json(m.group(1).strip())
+
+    # 2. XML comment block (legacy fallback)
     m = _RUBRIC_BLOCK_RE.search(raw)
     if m:
         json_str = m.group(1).strip()
         return _parse_rubric_json(json_str)
 
-    # Fallback: search for JSON object anywhere
+    # 3. Loose JSON object anywhere in raw text
     m = _RUBRIC_JSON_RE.search(raw)
     if m:
         return _parse_rubric_json(m.group(0))
 
-    # Fallback: individual score lines
-    # Single pass: scan each line once, extract all matching keys
-    # Reduces O(keys × lines) nested loop to O(lines)
+    # 4. Line-by-line fallback: scan each line once, extract all matching keys
     line_scores: dict[str, int] = {}
     for line in raw.split('\n'):
         line_lower = line.lower()
@@ -90,7 +106,7 @@ def _parse_rubric(raw: str) -> dict[str, Any]:
                 continue  # already found this key in an earlier line
             if key not in line_lower:
                 continue
-            m = re.search(rf'"{key}"\s*:\s*[\"\']?(\d)[\"\']?', line, re.IGNORECASE)
+            m = re.search(rf'"{key}"\s*:\s*["\']?(\d)["\']?', line, re.IGNORECASE)
             if m:
                 line_scores[key] = int(m.group(1))
                 continue

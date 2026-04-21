@@ -114,31 +114,72 @@ def _build_research_parser(subparsers) -> argparse.ArgumentParser:
     )
     p.add_argument("-v", "--verbose", action="store_true", default=False, help="Verbose output")
     p.add_argument("--lang", type=str, default="zh", choices=["en", "zh", "e", "z"], help="Output language (default: zh)")
+    p.add_argument(
+        "--async",
+        dest="async_mode",
+        action="store_true",
+        default=False,
+        help="Use async I/O for concurrent PDF download and LLM streaming",
+    )
+    p.add_argument(
+        "--progress",
+        dest="progress",
+        action="store_true",
+        default=False,
+        help="Print LLM streaming tokens in real time (implies --async)",
+    )
     return p
 
 
 def _run_research_cmd(args: argparse.Namespace) -> int:
+    import asyncio
+    import sys
+
     from core.i18n import set_lang
-    from pathlib import Path
+    from research_loop import arun_research
 
     set_lang(args.lang)
+
+    # --progress implies --async
+    if args.progress:
+        args.async_mode = True
 
     output_dir = Path(args.output) if args.output else None
     tags = args.tags if args.tags else []
     skip_existing = not args.no_skip
 
-    paths = run_research(
-        query=args.query,
-        limit=args.limit,
-        output_dir=output_dir,
-        download_pdfs=not args.no_pdf,
-        skip_existing=skip_existing,
-        tags=tags,
-        model=args.model,
-        base_url=args.base_url or None,
-        api_key=(args.api_key or None) if not args.no_ai else "",
-        verbose=args.verbose,
-    )
+    # progress_callback prints each streaming chunk to stdout
+    progress_cb = sys.stdout.write if args.progress else None
+
+    if args.async_mode:
+        paths = asyncio.run(
+            arun_research(
+                query=args.query,
+                limit=args.limit,
+                output_dir=output_dir,
+                download_pdfs=not args.no_pdf,
+                skip_existing=skip_existing,
+                tags=tags,
+                model=args.model,
+                base_url=args.base_url or None,
+                api_key=(args.api_key or None) if not args.no_ai else "",
+                verbose=args.verbose,
+                progress_callback=progress_cb,
+            )
+        )
+    else:
+        paths = run_research(
+            query=args.query,
+            limit=args.limit,
+            output_dir=output_dir,
+            download_pdfs=not args.no_pdf,
+            skip_existing=skip_existing,
+            tags=tags,
+            model=args.model,
+            base_url=args.base_url or None,
+            api_key=(args.api_key or None) if not args.no_ai else "",
+            verbose=args.verbose,
+        )
 
     if not paths:
         print("No notes generated.")

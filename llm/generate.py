@@ -175,11 +175,11 @@ Overall Judgment：一句话总结
 
 （严禁捏造实验数据；引用格式："> 原文片段"）
 
-<!--
-<RUBRIC>
-{{"novelty": <INT 1-5>, "leverage": <INT 1-5>, "evidence": <INT 1-5>, "cost": <INT 1-5>, "moat": <INT 1-5>, "adoption": <INT 1-5>, "overall": "<one sentence judgment>"}}
-</RUBRIC>
--->
+在以上 Markdown 内容之后，单独输出以下格式的 JSON（不要放在 XML 注释中，不要加.md后缀）：
+
+```json
+{{"novelty": 3, "leverage": 4, "evidence": 3, "cost": 2, "moat": 2, "adoption": 3, "overall": "一句话评价"}}
+```
 """
 
     return airo.call_llm_chat_completions(
