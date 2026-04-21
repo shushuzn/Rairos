@@ -349,7 +349,7 @@ class Database:
         try:
             with self.conn as _conn:
                 yield
-        except Exception:
+        except Exception as e:
             warnings.warn(f"Transaction failed, rolling back: {e}", stacklevel=2)
             self.conn.rollback()
             raise

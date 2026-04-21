@@ -1846,6 +1846,8 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
     total_errors = [0]
     total_cited_by_count = [0]
 
+    from concurrent.futures import ThreadPoolExecutor
+
     def _fetch_ref(ref_oid: str, paper_id: str):
         try:
             oid = ref_oid.rstrip("/").split("/")[-1]
