@@ -5,6 +5,7 @@ Section headings MUST match the P-note template numbering so content can be inje
 """
 from typing import Dict, List, Tuple
 
+import ai_research_os as _airo
 from core import Paper
 
 # ------------------------------------------------------------------
@@ -71,8 +72,6 @@ def ai_generate_pnote_draft(
     stream: bool = False,
     verbose: bool = False,
 ) -> str:
-    import ai_research_os as airo
-
     system_prompt = """你是一个严谨的 AI 研究助理，擅长对抗式审稿。
 
 任务：为用户的 Research OS P-Note 生成"可编辑初稿"。
@@ -182,7 +181,7 @@ Overall Judgment：一句话总结
 ```
 """
 
-    return airo.call_llm_chat_completions(
+    return _airo.call_llm_chat_completions(
         base_url=base_url,
         api_key=api_key,
         model=model,
@@ -228,10 +227,8 @@ def ai_generate_cnote_draft(
         call_llm: Callable to use instead of the default call_llm_chat_completions.
                   Allows dependency injection for testing.
     """
-    import ai_research_os as airo
-
     if call_llm is None:
-        call_llm = airo.call_llm_chat_completions
+        call_llm = _airo.call_llm_chat_completions
 
     pnotes_chunks = [
         f"""\

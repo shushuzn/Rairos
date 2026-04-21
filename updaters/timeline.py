@@ -1,4 +1,5 @@
 """Timeline page management."""
+import re
 import textwrap
 from pathlib import Path
 
@@ -35,7 +36,6 @@ def update_timeline(root: Path, year: str, pnote_path: Path, title: str) -> Path
     if bullet in md:
         return p
 
-    import re
     pattern = rf"^##\s+{re.escape(year)}\s*$"
     m = re.search(pattern, md, flags=re.M)
     if not m:

@@ -19,6 +19,7 @@ import warnings
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Generator, List, Literal, Optional, Tuple
 
@@ -26,6 +27,15 @@ from core.exceptions import DatabaseError
 from db.migrate import run_migrations
 
 logger = logging.getLogger(__name__)
+
+
+@lru_cache(maxsize=4096)
+def _parse_authors_cached(raw: str) -> List[str]:
+    """Parse authors JSON with caching to avoid repeated json.loads in N+1 loops."""
+    try:
+        return json.loads(raw) if raw else []
+    except Exception:
+        return []
 
 # ─── Schema ────────────────────────────────────────────────────────────────────
 
@@ -267,7 +277,7 @@ class PaperRecord:
         authors_raw = d.pop("authors", "[]")
         latex_raw = d.pop("latex_blocks", "[]")
         try:
-            authors = json.loads(authors_raw) if authors_raw else []
+            authors = _parse_authors_cached(authors_raw)
         except Exception:
             warnings.warn(f"PaperRecord.from_row: failed to parse authors JSON for paper {d.get('id', '?')}: {authors_raw[:50]!r}", stacklevel=2)
             authors = []
@@ -276,12 +286,7 @@ class PaperRecord:
         except Exception:
             warnings.warn(f"PaperRecord.from_row: failed to parse latex_blocks JSON for paper {d.get('id', '?')}", stacklevel=2)
             latex_blocks = []
-        tags = cls._get_tags_for_paper(d["id"])
-        return cls(authors=authors, latex_blocks=latex_blocks, tags=tags, **d)
-
-    @staticmethod
-    def _get_tags_for_paper(paper_id: str) -> List[str]:
-        return []  # filled by Database.get_paper
+        return cls(authors=authors, latex_blocks=latex_blocks, tags=[], **d)
 
 
 # ─── Database ─────────────────────────────────────────────────────────────────
@@ -923,7 +928,7 @@ class Database:
                 if paper is None:
                     continue
                 try:
-                    authors = json.loads(paper["authors"]) if paper["authors"] else []
+                    authors = _parse_authors_cached(paper["authors"])
                 except Exception:
                     warnings.warn(f"search_papers: failed to parse authors JSON for paper {paper['id']}", stacklevel=2)
                     authors = []
@@ -1004,7 +1009,7 @@ class Database:
             results = []
             for row in cur.fetchall():
                 try:
-                    authors = json.loads(row["authors"]) if row["authors"] else []
+                    authors = _parse_authors_cached(row["authors"])
                 except Exception:
                     warnings.warn(f"_search_like: failed to parse authors JSON for paper {row['id']}", stacklevel=2)
                     authors = []

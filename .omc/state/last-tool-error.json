@@ -1,7 +1,7 @@
 {
   "tool_name": "Read",
-  "tool_input_preview": "{\"file_path\":\"D:\\\\OpenClaw\\\\workspace\\\\80-PROJECTS\\\\ai_research_os\\\\research_loop\\\\retry.py\"}",
-  "error": "File does not exist. Note: your current working directory is D:\\OpenClaw\\workspace\\80-PROJECTS\\ai_research_os.",
-  "timestamp": "2026-04-21T11:50:45.885Z",
-  "retry_count": 2
+  "tool_input_preview": "{\"file_path\":\"D:\\\\OpenClaw\\\\workspace\\\\80-PROJECTS\\\\ai_research_os\\\\cli.py\"}",
+  "error": "File content (26301 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.",
+  "timestamp": "2026-04-21T13:25:27.946Z",
+  "retry_count": 1
 }

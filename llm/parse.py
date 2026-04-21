@@ -52,6 +52,29 @@ _RUBRIC_JSON_RE = re.compile(
     re.DOTALL,
 )
 
+# ------------------------------------------------------------------
+# Precompiled patterns for rubric line-by-line parsing
+# ------------------------------------------------------------------
+_RUBRIC_KEY_PATTERNS = {
+    key: re.compile(rf'"{key}"\s*:\s*["\']?(\d)["\']?', re.IGNORECASE)
+    for key in ("novelty", "leverage", "evidence", "cost", "moat", "adoption")
+}
+_RE_PAREN_COLON_NUM = re.compile(r'\)\s*:\s*(\d)')
+_RE_COLON_NUM = re.compile(r':\s*(\d)')
+_RE_OVERALL_JUDGMENT = re.compile(r'overall.*?judgment[:：]\s*(.{5,100})', re.IGNORECASE)
+
+# ------------------------------------------------------------------
+# Precompiled patterns for rubric JSON parsing
+# ------------------------------------------------------------------
+_RE_TRAILING_COMMA = re.compile(r',(\s*})')
+_RE_OVERALL_QUOTED = re.compile(r'"overall"\s*:\s*"(.*?)"', re.DOTALL)
+
+# ------------------------------------------------------------------
+# Precompiled patterns for section parsing
+# ------------------------------------------------------------------
+_RE_H2 = re.compile(r'^##\s+(.+)$', re.MULTILINE)
+_RE_H3 = re.compile(r'^###\s+(.+)$', re.MULTILINE)
+
 
 def parse_ai_pnote_draft(raw: str) -> tuple[dict[str, str], dict[str, Any], str]:
     """
@@ -102,25 +125,25 @@ def _parse_rubric(raw: str) -> dict[str, Any]:
     line_scores: dict[str, int] = {}
     for line in raw.split('\n'):
         line_lower = line.lower()
-        for key in ["novelty", "leverage", "evidence", "cost", "moat", "adoption"]:
+        for key in ("novelty", "leverage", "evidence", "cost", "moat", "adoption"):
             if key in line_scores:
                 continue  # already found this key in an earlier line
             if key not in line_lower:
                 continue
-            m = re.search(rf'"{key}"\s*:\s*["\']?(\d)["\']?', line, re.IGNORECASE)
+            m = _RUBRIC_KEY_PATTERNS[key].search(line)
             if m:
                 line_scores[key] = int(m.group(1))
                 continue
-            m2 = re.search(r'\)\s*:\s*(\d)', line)
+            m2 = _RE_PAREN_COLON_NUM.search(line)
             if m2:
                 line_scores[key] = int(m2.group(1))
                 continue
-            m3 = re.search(r':\s*(\d)', line)
+            m3 = _RE_COLON_NUM.search(line)
             if m3:
                 line_scores[key] = int(m3.group(1))
     rubric = dict(line_scores)
 
-    overall_m = re.search(r'overall.*?judgment[:：]\s*(.{5,100})', raw, re.IGNORECASE)
+    overall_m = _RE_OVERALL_JUDGMENT.search(raw)
     if overall_m:
         rubric["overall"] = overall_m.group(1).strip()
 
@@ -130,7 +153,7 @@ def _parse_rubric(raw: str) -> dict[str, Any]:
 def _parse_rubric_json(json_str: str) -> dict[str, Any]:
     """Parse rubric JSON, handling common LLM mistakes."""
     # Remove trailing comma before }
-    json_str = re.sub(r',(\s*})', r'\1', json_str)
+    json_str = _RE_TRAILING_COMMA.sub(r'\1', json_str)
     # Try to fix unquoted keys
     try:
         return json.loads(json_str)
@@ -139,12 +162,12 @@ def _parse_rubric_json(json_str: str) -> dict[str, Any]:
 
     # Try extracting individual values
     rubric: dict[str, Any] = {}
-    for key in ["novelty", "leverage", "evidence", "cost", "moat", "adoption"]:
-        m = re.search(rf'"{key}"\s*:\s*["\']?(\d)["\']?', json_str, re.IGNORECASE)
+    for key in ("novelty", "leverage", "evidence", "cost", "moat", "adoption"):
+        m = _RUBRIC_KEY_PATTERNS[key].search(json_str)
         if m:
             rubric[key] = int(m.group(1))
 
-    overall_m = re.search(r'"overall"\s*:\s*"(.*?)"', json_str, re.DOTALL)
+    overall_m = _RE_OVERALL_QUOTED.search(json_str)
     if overall_m:
         rubric["overall"] = overall_m.group(1).strip()
 
@@ -161,7 +184,7 @@ def _parse_sections(raw: str) -> dict[str, str]:
 
     # Find all ## headings with their positions
     heading_positions: list[tuple[int, str]] = []
-    for m in re.finditer(r'^##\s+(.+)$', raw, re.MULTILINE):
+    for m in _RE_H2.finditer(raw):
         heading_positions.append((m.start(), m.group(1).strip()))
 
     if not heading_positions:
@@ -176,7 +199,7 @@ def _parse_sections(raw: str) -> dict[str, str]:
 
         # Extract ### subsections as separate keys
         subsection_positions: list[tuple[int, str]] = []
-        for sm in re.finditer(r'^###\s+(.+)$', content, re.MULTILINE):
+        for sm in _RE_H3.finditer(content):
             subsection_positions.append((sm.start(), sm.group(1).strip()))
 
         subsection_content_blocks: dict[str, str] = {}

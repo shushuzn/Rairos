@@ -4,6 +4,9 @@ import re
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+_RE_TITLE = re.compile(r"^#\s+(.+)$", re.MULTILINE)
+_RE_SOURCE = re.compile(r"\*\*Source:\*\*\s+(\w+):\s+(\S+)")
+
 from core.basics import read_text
 from notes.frontmatter import parse_date_from_frontmatter, parse_frontmatter, parse_tags_from_frontmatter
 
@@ -47,13 +50,13 @@ def read_pnote_metadata(pnote_path: Path) -> dict:
     year = date[:4] if len(date) >= 4 else ""
 
     # Extract title from markdown heading (# Title)
-    title_match = re.search(r"^#\s+(.+)$", md, re.MULTILINE)
+    title_match = _RE_TITLE.search(md)
     title = title_match.group(1).strip() if title_match else pnote_path.stem
 
     # Source/uid from content: "**Source:** ARXIV: XXXXX"
     src = fm.get("source", "arxiv").lower()
     uid = ""
-    source_match = re.search(r"\*\*Source:\*\*\s+(\w+):\s+(\S+)", md)
+    source_match = _RE_SOURCE.search(md)
     if source_match:
         src = source_match.group(1).lower()
         uid = source_match.group(2)

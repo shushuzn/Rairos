@@ -2,6 +2,14 @@
 import re
 from pathlib import Path
 
+_RE_LEADING_HASHES = re.compile(r"^#+\s+")
+_RE_BLANK_LINES = re.compile(r"(\s*\n)*")
+_RE_SECTION_END = re.compile(r"\n##\s+")
+_RE_WIKILINK_LINE = re.compile(r"^-\s*\[\[[^\]]+\]\](?:[^\n]*)?\n?", re.MULTILINE)
+_RE_PLACEHOLDER_DASHES = re.compile(r"^[-–—\s]+$")
+_RE_PUNCTUATION = re.compile(r"[.。?！]")
+_RE_H2_LINE = re.compile(r"^(##\s+.+)$")
+
 import ai_research_os as airo
 from core.basics import get_default_concept_dir, read_text, write_text
 from llm.generate import ai_generate_cnote_draft
@@ -18,7 +26,7 @@ def ensure_cnote(concept_dir: Path, concept: str) -> Path:
 
 def upsert_link_under_heading(md: str, heading: str, link_line: str) -> str:
     # Strip leading ##/ heading prefix so we match against just the text
-    clean_heading = re.sub(r"^#+\s+", "", heading).strip()
+    clean_heading = _RE_LEADING_HASHES.sub("", heading).strip()
     # Look for the heading (## prefix already in pattern)
     pattern = rf"(^##\s+{re.escape(clean_heading)}(?:\s*|\s+.*)$)"
     m = re.search(pattern, md, flags=re.M)
@@ -28,12 +36,12 @@ def upsert_link_under_heading(md: str, heading: str, link_line: str) -> str:
     match_line = m.group(0).split('\n')[0]  # just the heading line without trailing content
     start = m.start() + len(match_line)  # end of heading line in the full string
     after = md[start:]
-    m2 = re.match(r"(\s*\n)*", after)  # skip blank lines
+    m2 = _RE_BLANK_LINES.match(after)  # skip blank lines
     insert_pos = start + (m2.end() if m2 else 0)
 
     # Find section end: next ## heading or end of file
     rest = after[m2.end() if m2 else 0:]
-    m3 = re.search(r"\n##\s+", rest)
+    m3 = _RE_SECTION_END.search(rest)
     section_end = insert_pos + m3.start() if m3 else len(md)
 
     # Extract current section content (skip the leading \n from after the heading)
@@ -42,7 +50,7 @@ def upsert_link_under_heading(md: str, heading: str, link_line: str) -> str:
     # Remove existing wikilink lines under this heading.
     # Only removes lines that are wikilinks: "- [[...]]" or "- [[...]] text"
     # Preserves any manual bullet lines the user may have added.
-    cleaned = re.sub(r"^-\s*\[\[[^\]]+\]\](?:[^\n]*)?\n?", "", section_content, flags=re.M).strip("\n")
+    cleaned = _RE_WIKILINK_LINE.sub("", section_content).strip("\n")
     section_content = cleaned.strip("\n")
     new_section = link_line.rstrip() + "\n" + section_content if section_content.strip() else link_line.rstrip()
 
@@ -64,10 +72,10 @@ def _section_is_empty(md: str, section: str) -> bool:
         return True
     content = m.group(2).strip()
     # Empty, or only placeholder dashes/comments
-    if not content or re.match(r"^[-–—\s]+$", content):
+    if not content or _RE_PLACEHOLDER_DASHES.match(content):
         return True
     # Only the template placeholder text (short, no sentence-ending punctuation)
-    if len(content) < 20 and not re.search(r"[.。?！]", content):
+    if len(content) < 20 and not _RE_PUNCTUATION.search(content):
         return True
     return False
 
@@ -90,7 +98,7 @@ def _parse_cnote_sections(draft: str) -> dict:
     current_content = []
 
     for line in draft.split("\n"):
-        m = re.match(r"^(##\s+.+)$", line)
+        m = _RE_H2_LINE.match(line)
         if m:
             if current_section:
                 sections[current_section] = "\n".join(current_content).strip()

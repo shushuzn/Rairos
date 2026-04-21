@@ -298,14 +298,14 @@
   "hotPaths": [
     {
       "path": "cli.py",
-      "accessCount": 155,
-      "lastAccessed": 1776772387233,
+      "accessCount": 157,
+      "lastAccessed": 1776777967351,
       "type": "file"
     },
     {
       "path": "research_loop\\__init__.py",
-      "accessCount": 121,
-      "lastAccessed": 1776777576760,
+      "accessCount": 123,
+      "lastAccessed": 1776777957406,
       "type": "file"
     },
     {
@@ -316,20 +316,20 @@
     },
     {
       "path": "db\\database.py",
-      "accessCount": 74,
-      "lastAccessed": 1776777435444,
+      "accessCount": 86,
+      "lastAccessed": 1776778212955,
       "type": "file"
     },
     {
       "path": "llm\\generate.py",
-      "accessCount": 51,
-      "lastAccessed": 1776772223654,
+      "accessCount": 60,
+      "lastAccessed": 1776778160518,
       "type": "file"
     },
     {
       "path": "",
-      "accessCount": 39,
-      "lastAccessed": 1776772275300,
+      "accessCount": 40,
+      "lastAccessed": 1776777944868,
       "type": "directory"
     },
     {
@@ -339,15 +339,15 @@
       "type": "file"
     },
     {
-      "path": "notes\\cnote.py",
-      "accessCount": 21,
-      "lastAccessed": 1776777068363,
+      "path": "llm\\parse.py",
+      "accessCount": 30,
+      "lastAccessed": 1776778115397,
       "type": "file"
     },
     {
-      "path": "llm\\parse.py",
-      "accessCount": 20,
-      "lastAccessed": 1776772399762,
+      "path": "notes\\cnote.py",
+      "accessCount": 29,
+      "lastAccessed": 1776778193101,
       "type": "file"
     },
     {
@@ -381,15 +381,15 @@
       "type": "directory"
     },
     {
-      "path": "core\\retry.py",
-      "accessCount": 8,
-      "lastAccessed": 1776772245896,
+      "path": "updaters\\radar.py",
+      "accessCount": 11,
+      "lastAccessed": 1776777957100,
       "type": "file"
     },
     {
-      "path": "updaters\\radar.py",
+      "path": "core\\retry.py",
       "accessCount": 8,
-      "lastAccessed": 1776777476078,
+      "lastAccessed": 1776772245896,
       "type": "file"
     },
     {
