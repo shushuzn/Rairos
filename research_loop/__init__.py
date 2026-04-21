@@ -10,6 +10,7 @@ This module orchestrates the core research workflow:
 Inspired by karpathy/autoresearch but adapted for the paper-management workflow
 already present in ai_research_os.
 """
+import datetime as dt
 import os
 import sys
 import time  # noqa: F401  # tests mock research_loop.time.sleep
@@ -19,11 +20,15 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 from core import Paper
-from parsers.arxiv_search import search_arxiv
-from pdf.extract import download_pdf as _download_pdf, extract_pdf_text
+from core.basics import ensure_research_tree, safe_uid, slugify_title
+from core.i18n import _
 from llm.generate import ai_generate_pnote_draft
 from llm.parse import parse_ai_pnote_draft, extract_rubric_scores
-from core.basics import safe_uid, slugify_title
+from notes.cnote import ensure_cnote, update_cnote_links
+from parsers.arxiv_search import search_arxiv
+from pdf.extract import download_pdf as _download_pdf, extract_pdf_text
+from updaters.radar import update_radar
+from updaters.timeline import update_timeline
 
 
 # Default: max papers to process in one run
@@ -42,6 +47,7 @@ def run_research(
     download_pdfs: bool = True,
     skip_existing: bool = True,
     verbose: bool = False,
+    root: Optional[Path] = None,
 ) -> List[Path]:
     """
     Run the autonomous research loop for a keyword query.
@@ -59,6 +65,8 @@ def run_research(
         download_pdfs: Whether to download PDFs (default True)
         skip_existing: Skip papers whose note already exists (default True)
         verbose: Print progress (default False)
+        root: If provided, research OS root is used to integrate notes into
+              the research tree (C-notes, Radar, Timeline). Default None (standalone).
 
     Returns:
         List of output markdown file paths created
@@ -104,10 +112,10 @@ def run_research(
 
     # --- Step 2: Process each paper in parallel ---
     def _process_one_paper(
-        args: Tuple[Paper, int, int, Path, bool, bool, int, str, str, str, List[str]],
-    ) -> Tuple[Optional[Path], Optional[Path]]:
-        """Worker: download → extract → LLM → write note. Returns (note_path, pdf_path)."""
-        paper, i, total, out_dir, do_download, do_skip, max_txt, b_url, a_key, mod, tgs = args
+        args: Tuple[Paper, int, int, Path, bool, bool, int, str, str, str, List[str], Optional[Path]],
+    ) -> Tuple[Optional[Path], Optional[Path], Optional[str]]:
+        """Worker: download → extract → LLM → write note. Returns (note_path, pdf_path, error_reason)."""
+        paper, i, total, out_dir, do_download, do_skip, max_txt, b_url, a_key, mod, tgs, rl_root = args
         title_short = paper.title[:60] + ("..." if len(paper.title) > 60 else "")
         if verbose:
             print(f"[research] [{i}/{total}] {paper.uid}: {title_short}")
@@ -118,26 +126,33 @@ def run_research(
         if do_skip and note_path.exists():
             if verbose:
                 print(f"  [skip] Already exists: {note_path.name}")
-            return note_path, None
+            return note_path, None, None  # skip
 
         pdf_path: Optional[Path] = None
         extracted_text = ""
+        err: Optional[str] = None
 
         if do_download and paper.pdf_url:
-            try:
-                pdf_path = Path(f"/tmp/{safe_uid(paper.uid)}.pdf")
-                _download_pdf(paper.pdf_url, pdf_path, timeout=60)
-                if verbose:
-                    print(f"  [pdf] Downloaded: {pdf_path.name} ({pdf_path.stat().st_size / 1024:.0f} KB)")
-
-                extracted_text = extract_pdf_text(pdf_path, max_pages=15)
-                if len(extracted_text) > max_txt:
-                    extracted_text = extracted_text[:max_txt] + "\n\n[... truncated ...]"
-                if verbose and extracted_text:
-                    print(f"  [text] Extracted {len(extracted_text)} chars")
-            except Exception as e:
-                warnings.warn(f"PDF download/extract failed for {paper.uid}: {e}", stacklevel=2)
-                extracted_text = ""
+            extracted_text = ""
+            for attempt in range(2):
+                try:
+                    pdf_path = Path(f"/tmp/{safe_uid(paper.uid)}.pdf")
+                    _download_pdf(paper.pdf_url, pdf_path, timeout=60)
+                    if verbose:
+                        print(f"  [pdf] Downloaded: {pdf_path.name} ({pdf_path.stat().st_size / 1024:.0f} KB)")
+                    extracted_text = extract_pdf_text(pdf_path, max_pages=15)
+                    if len(extracted_text) > max_txt:
+                        extracted_text = extracted_text[:max_txt] + "\n\n[... truncated ...]"
+                    if verbose and extracted_text:
+                        print(f"  [text] Extracted {len(extracted_text)} chars")
+                    break  # success
+                except Exception as e:
+                    extracted_text = ""
+                    if attempt == 0:
+                        time.sleep(1)  # brief pause before retry
+                        continue  # retry once
+                    err = "pdf_failed"
+                    warnings.warn(f"PDF download/extract failed for {paper.uid} after retry: {e}", stacklevel=2)
 
         note_tags = tgs or []
         draft = ""
@@ -161,6 +176,7 @@ def run_research(
             except Exception as e:
                 warnings.warn(f"LLM draft generation failed for {paper.uid}: {e}", stacklevel=2)
                 draft = ""
+                err = err or "llm_failed"
         elif not a_key:
             if verbose:
                 print("  [skip] No API key — metadata-only note")
@@ -171,6 +187,13 @@ def run_research(
         note_content = _build_research_note(paper, draft, rubric, note_tags)
         note_path.write_text(note_content, encoding="utf-8")
 
+        # --- Integrate into research tree ---
+        if rl_root:
+            try:
+                _integrate_into_tree(rl_root, note_path, paper, note_tags)
+            except Exception as e:
+                warnings.warn(f"Failed to integrate into research tree: {e}", stacklevel=2)
+
         if verbose:
             rubric_scores = extract_rubric_scores(rubric)
             print(
@@ -178,26 +201,57 @@ def run_research(
                 + (f" [novelty={rubric_scores.get('novelty', '?')}]" if rubric_scores else "")
             )
 
-        return note_path, pdf_path
+        return note_path, pdf_path, err
+
+    def _integrate_into_tree(root: Path, note_path: Path, paper: Paper, note_tags: List[str]) -> None:
+        """Add a newly-created research note into the research OS tree."""
+        ensure_research_tree(root)
+
+        # Timeline: append under the paper's year
+        year = paper.published[:4] if paper.published else dt.date.today().isoformat()[:4]
+        update_timeline(root, year, note_path, paper.title)
+
+        # For each tag: create/verify C-note and link it
+        for tag in note_tags:
+            concept_dir = root / "01-Foundations"
+            cpath = ensure_cnote(concept_dir, tag)
+            update_cnote_links(cpath, note_path)
+
+        # Radar: bump the topic rows
+        if note_tags:
+            update_radar(root, note_tags, year)
 
     # Build work items (filter skipped before spawning threads)
-    work_items: List[Tuple[Paper, int, int, Path, bool, bool, int, str, str, str, List[str]]] = []
+    work_items: List[Tuple[Paper, int, int, Path, bool, bool, int, str, str, str, List[str], Optional[Path]]] = []
     for i, paper in enumerate(papers, 1):
         slug = slugify_title(paper.title)[:60]
         note_path = output_dir / f"{safe_uid(paper.uid)}_{slug}.md"
         if skip_existing and note_path.exists():
             output_paths.append(note_path)
             continue
-        work_items.append((paper, i, len(papers), output_dir, download_pdfs, skip_existing, max_text_len, base_url, api_key, model, tags or []))
+        work_items.append((paper, i, len(papers), output_dir, download_pdfs, skip_existing, max_text_len, base_url, api_key, model, tags or [], root))
 
     if work_items:
+        processed = 0
+        failed = 0
+        error_reasons: dict[str, int] = {}
+        skipped = len(papers) - len(work_items)
         # Parallel: up to 3 papers simultaneously (PDF downloads are the bottleneck)
         with ThreadPoolExecutor(max_workers=3) as ex:
             futures = {ex.submit(_process_one_paper, item): item for item in work_items}
             for future in as_completed(futures):
-                note_path, _ = future.result()
-                if note_path:
+                note_path, _, err = future.result()
+                if err:
+                    failed += 1
+                    error_reasons[err] = error_reasons.get(err, 0) + 1
+                elif note_path:
+                    processed += 1
                     output_paths.append(note_path)
+        # Summary report
+        total = len(papers)
+        print(f"\n[research] Done: {processed}/{total} processed, {failed} failed, {skipped} skipped")
+        for reason, count in error_reasons.items():
+            print(f"  [{reason}] {count} paper(s)")
 
     return output_paths
 
@@ -274,6 +328,6 @@ def _build_research_note(
         lines.append("")
 
     lines.append("---")
-    lines.append("_Generated by ai-research-os on 2026-06-15_")
+    lines.append(f"_Generated by ai-research-os on {dt.date.today().isoformat()}_")
 
     return "\n".join(lines)

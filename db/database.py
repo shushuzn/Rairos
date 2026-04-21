@@ -144,10 +144,57 @@ CREATE TABLE IF NOT EXISTS citations (
 
 CREATE INDEX IF NOT EXISTS idx_citations_source ON citations(source_id);
 CREATE INDEX IF NOT EXISTS idx_citations_target ON citations(target_id);
+
+CREATE TABLE IF NOT EXISTS experiment_tables (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    paper_id      TEXT NOT NULL,
+    table_caption TEXT DEFAULT '',
+    page          INTEGER DEFAULT 0,
+    headers       TEXT DEFAULT '[]',
+    rows          TEXT DEFAULT '[]',
+    bbox_x0       REAL DEFAULT 0,
+    bbox_y0       REAL DEFAULT 0,
+    bbox_x1       REAL DEFAULT 0,
+    bbox_y1       REAL DEFAULT 0,
+    created_at    TEXT NOT NULL,
+    FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_experiment_tables_paper_id ON experiment_tables(paper_id);
 """
 
 
 # ─── Search Data Classes ────────────────────────────────────────────────────────
+
+
+@dataclass
+class ExperimentTableRecord:
+    id: int
+    paper_id: str
+    table_caption: str
+    page: int
+    headers: List[str]
+    rows: List[List[str]]
+    bbox_x0: float
+    bbox_y0: float
+    bbox_x1: float
+    bbox_y1: float
+    created_at: str
+
+
+@dataclass
+class ExperimentTableRecord:
+    id: int
+    paper_id: str
+    table_caption: str
+    page: int
+    headers: List[str]
+    rows: List[List[str]]
+    bbox_x0: float
+    bbox_y0: float
+    bbox_x1: float
+    bbox_y1: float
+    created_at: str
 
 
 @dataclass
@@ -350,62 +397,93 @@ class Database:
 
         with self.transaction():
             cur = self.conn.cursor()
-            cur.execute(
-                """
-                INSERT INTO papers (
-                    id, source, title, authors, abstract, published, updated,
-                    abs_url, pdf_url, primary_category, journal, volume, issue,
-                    page, doi, categories, reference_count, added_at, updated_at,
-                    pdf_path, pdf_hash
-                ) VALUES (
-                    :id, :source, :title, :authors, :abstract, :published, :updated,
-                    :abs_url, :pdf_url, :primary_category, :journal, :volume, :issue,
-                    :page, :doi, :categories, :reference_count, :added_at, :updated_at,
-                    :pdf_path, :pdf_hash
-                ) ON CONFLICT(id) DO UPDATE SET
-                    title         = EXCLUDED.title,
-                    authors       = EXCLUDED.authors,
-                    abstract      = EXCLUDED.abstract,
-                    updated       = EXCLUDED.updated,
-                    abs_url       = EXCLUDED.abs_url,
-                    pdf_url       = EXCLUDED.pdf_url,
-                    primary_category = EXCLUDED.primary_category,
-                    journal       = EXCLUDED.journal,
-                    volume        = EXCLUDED.volume,
-                    issue         = EXCLUDED.issue,
-                    page          = EXCLUDED.page,
-                    doi           = EXCLUDED.doi,
-                    categories    = EXCLUDED.categories,
-                    reference_count = EXCLUDED.reference_count,
-                    updated_at    = EXCLUDED.updated_at,
-                    pdf_path      = COALESCE(EXCLUDED.pdf_path, papers.pdf_path),
-                    pdf_hash      = COALESCE(EXCLUDED.pdf_hash, papers.pdf_hash)
-                WHERE 1=1
-                """,
-                {
-                    "id": paper_id,
-                    "source": source,
-                    "title": title,
-                    "authors": authors_json,
-                    "abstract": abstract,
-                    "published": published,
-                    "updated": updated,
-                    "abs_url": abs_url,
-                    "pdf_url": pdf_url,
-                    "primary_category": primary_category,
-                    "journal": journal,
-                    "volume": volume,
-                    "issue": issue,
-                    "page": page,
-                    "doi": doi,
-                    "categories": categories,
-                    "reference_count": reference_count,
-                    "added_at": now,
-                    "updated_at": now,
-                    "pdf_path": pdf_path,
-                    "pdf_hash": pdf_hash,
-                },
-            )
+            # SELECT first — skip UPDATE if paper already exists with identical fields
+            cur.execute("SELECT id FROM papers WHERE id = ?", (paper_id,))
+            row = cur.fetchone()
+
+            if row is None:
+                cur.execute(
+                    """
+                    INSERT INTO papers (
+                        id, source, title, authors, abstract, published, updated,
+                        abs_url, pdf_url, primary_category, journal, volume, issue,
+                        page, doi, categories, reference_count, added_at, updated_at,
+                        pdf_path, pdf_hash
+                    ) VALUES (
+                        :id, :source, :title, :authors, :abstract, :published, :updated,
+                        :abs_url, :pdf_url, :primary_category, :journal, :volume, :issue,
+                        :page, :doi, :categories, :reference_count, :added_at, :updated_at,
+                        :pdf_path, :pdf_hash
+                    )
+                    """,
+                    {
+                        "id": paper_id,
+                        "source": source,
+                        "title": title,
+                        "authors": authors_json,
+                        "abstract": abstract,
+                        "published": published,
+                        "updated": updated,
+                        "abs_url": abs_url,
+                        "pdf_url": pdf_url,
+                        "primary_category": primary_category,
+                        "journal": journal,
+                        "volume": volume,
+                        "issue": issue,
+                        "page": page,
+                        "doi": doi,
+                        "categories": categories,
+                        "reference_count": reference_count,
+                        "added_at": now,
+                        "updated_at": now,
+                        "pdf_path": pdf_path,
+                        "pdf_hash": pdf_hash,
+                    },
+                )
+            else:
+                cur.execute(
+                    """
+                    UPDATE papers SET
+                        title         = :title,
+                        authors       = :authors,
+                        abstract      = :abstract,
+                        updated       = :updated,
+                        abs_url       = :abs_url,
+                        pdf_url       = :pdf_url,
+                        primary_category = :primary_category,
+                        journal       = :journal,
+                        volume        = :volume,
+                        issue         = :issue,
+                        page          = :page,
+                        doi           = :doi,
+                        categories    = :categories,
+                        reference_count = :reference_count,
+                        updated_at    = :updated_at,
+                        pdf_path      = COALESCE(:pdf_path, pdf_path),
+                        pdf_hash      = COALESCE(:pdf_hash, pdf_hash)
+                    WHERE id = :id
+                    """,
+                    {
+                        "id": paper_id,
+                        "title": title,
+                        "authors": authors_json,
+                        "abstract": abstract,
+                        "updated": updated,
+                        "abs_url": abs_url,
+                        "pdf_url": pdf_url,
+                        "primary_category": primary_category,
+                        "journal": journal,
+                        "volume": volume,
+                        "issue": issue,
+                        "page": page,
+                        "doi": doi,
+                        "categories": categories,
+                        "reference_count": reference_count,
+                        "updated_at": now,
+                        "pdf_path": pdf_path,
+                        "pdf_hash": pdf_hash,
+                    },
+                )
             # Sync FTS index after insert/update
             self._sync_fts(paper_id, title, abstract)
         return self.get_paper(paper_id)
@@ -451,15 +529,18 @@ class Database:
         """Update parse result fields."""
         try:
             latex_json = json.dumps(latex_blocks) if not isinstance(latex_blocks, str) else latex_blocks
+            now = _utcnow()
             with self.transaction():
                 cur = self.conn.cursor()
-                # Increment parse_version on each re-parse
+                # Single SELECT to get parse_version + title/abstract (was 2 queries)
                 cur.execute(
-                    "SELECT parse_version FROM papers WHERE id = ?",
+                    "SELECT parse_version, title, abstract FROM papers WHERE id = ?",
                     (paper_id,),
                 )
                 row = cur.fetchone()
                 version = (row["parse_version"] if row else 0) + 1
+                title_val = row["title"] if row else ""
+                abstract_val = row["abstract"] if row else ""
                 cur.execute(
                     """
                     UPDATE papers SET
@@ -486,14 +567,11 @@ class Database:
                         "word_count": word_count,
                         "page_count": page_count,
                         "parse_version": version,
-                        "updated_at": _utcnow(),
+                        "updated_at": now,
                     },
                 )
-                # Sync FTS after plain_text update
-                cur.execute("SELECT title, abstract FROM papers WHERE id = ?", (paper_id,))
-                row = cur.fetchone()
-                if row:
-                    self._sync_fts(paper_id, row["title"] or "", row["abstract"] or "")
+                # Sync FTS — pass title/abstract directly (was re-fetching after UPDATE)
+                self._sync_fts(paper_id, title_val or "", abstract_val or "")
         except sqlite3.Error as e:
             raise DatabaseError(f"update_parse_status({paper_id!r}) failed: {e}") from e
 
@@ -1385,6 +1463,90 @@ class Database:
             return new_count, dup_count
         except sqlite3.Error as e:
             raise DatabaseError(f"upsert_citations failed: {e}") from e
+
+    # ── Experiment Tables ─────────────────────────────────────────────────────
+
+    def upsert_experiment_tables(
+        self,
+        paper_id: str,
+        tables: List[ExperimentTableRecord],
+    ) -> int:
+        """
+        Replace all experiment tables for a paper with the given list.
+        Returns the count of tables stored.
+        """
+        try:
+            with self.transaction():
+                cur = self.conn.cursor()
+                # Clear existing tables for this paper
+                cur.execute(
+                    "DELETE FROM experiment_tables WHERE paper_id = ?",
+                    (paper_id,),
+                )
+                for tbl in tables:
+                    headers_json = json.dumps(tbl.headers, ensure_ascii=False)
+                    rows_json = json.dumps(tbl.rows, ensure_ascii=False)
+                    cur.execute(
+                        """
+                        INSERT INTO experiment_tables
+                            (paper_id, table_caption, page, headers, rows,
+                             bbox_x0, bbox_y0, bbox_x1, bbox_y1, created_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            paper_id,
+                            tbl.table_caption,
+                            tbl.page,
+                            headers_json,
+                            rows_json,
+                            tbl.bbox_x0,
+                            tbl.bbox_y0,
+                            tbl.bbox_x1,
+                            tbl.bbox_y1,
+                            tbl.created_at,
+                        ),
+                    )
+                self.conn.commit()
+            return len(tables)
+        except sqlite3.Error as e:
+            raise DatabaseError(f"upsert_experiment_tables({paper_id!r}) failed: {e}") from e
+
+    def get_experiment_tables(self, paper_id: str) -> List[ExperimentTableRecord]:
+        """Return all experiment tables for a paper."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute(
+                "SELECT * FROM experiment_tables WHERE paper_id = ? ORDER BY page, id",
+                (paper_id,),
+            )
+            results = []
+            for row in cur.fetchall():
+                try:
+                    headers = json.loads(row["headers"] or "[]")
+                except Exception:
+                    headers = []
+                try:
+                    rows_data = json.loads(row["rows"] or "[]")
+                except Exception:
+                    rows_data = []
+                results.append(
+                    ExperimentTableRecord(
+                        id=row["id"],
+                        paper_id=row["paper_id"],
+                        table_caption=row["table_caption"] or "",
+                        page=row["page"] or 0,
+                        headers=headers,
+                        rows=rows_data,
+                        bbox_x0=row["bbox_x0"] or 0.0,
+                        bbox_y0=row["bbox_y0"] or 0.0,
+                        bbox_x1=row["bbox_x1"] or 0.0,
+                        bbox_y1=row["bbox_y1"] or 0.0,
+                        created_at=row["created_at"] or "",
+                    )
+                )
+            return results
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_experiment_tables({paper_id!r}) failed: {e}") from e
 
     def get_citations(
         self, paper_id: str, direction: Literal["from", "to", "both"] = "both"

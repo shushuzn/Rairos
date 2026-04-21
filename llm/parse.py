@@ -80,29 +80,28 @@ def _parse_rubric(raw: str) -> dict[str, Any]:
         return _parse_rubric_json(m.group(0))
 
     # Fallback: individual score lines
-    # For each keyword, find the score on that line.
-    # Take the FIRST integer after the colon (the actual score).
-    # Handles "novelty: 3 (1-5)" → 3, "novelty: 3" → 3.
-    # Also handles single-quoted JSON: "key": '3'
-    for key in ["novelty", "leverage", "evidence", "cost", "moat", "adoption"]:
-        for line in raw.split('\n'):
-            if key.lower() not in line.lower():
+    # Single pass: scan each line once, extract all matching keys
+    # Reduces O(keys × lines) nested loop to O(lines)
+    line_scores: dict[str, int] = {}
+    for line in raw.split('\n'):
+        line_lower = line.lower()
+        for key in ["novelty", "leverage", "evidence", "cost", "moat", "adoption"]:
+            if key in line_scores:
+                continue  # already found this key in an earlier line
+            if key not in line_lower:
                 continue
-            # Extract first integer after key-specific colon (handles "leverage": "4" on same line as "novelty": '3')
             m = re.search(rf'"{key}"\s*:\s*[\"\']?(\d)[\"\']?', line, re.IGNORECASE)
             if m:
-                rubric[key] = int(m.group(1))
-                break
-            # Fallback: digit after ) and colon (handles "* Novelty (1-5): 5")
+                line_scores[key] = int(m.group(1))
+                continue
             m2 = re.search(r'\)\s*:\s*(\d)', line)
             if m2:
-                rubric[key] = int(m2.group(1))
-                break
-            # Fallback: first integer after colon (handles "novelty: 3 (1-5)")
+                line_scores[key] = int(m2.group(1))
+                continue
             m3 = re.search(r':\s*(\d)', line)
             if m3:
-                rubric[key] = int(m3.group(1))
-                break
+                line_scores[key] = int(m3.group(1))
+    rubric = dict(line_scores)
 
     overall_m = re.search(r'overall.*?judgment[:：]\s*(.{5,100})', raw, re.IGNORECASE)
     if overall_m:

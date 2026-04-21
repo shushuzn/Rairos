@@ -177,9 +177,8 @@ def ai_generate_cnote_draft(
     if call_llm is None:
         call_llm = airo.call_llm_chat_completions
 
-    pnotes_text = ""
-    for i, p in enumerate(pnotes, 1):
-        pnotes_text += f"""\
+    pnotes_chunks = [
+        f"""\
 ---
 论文 {i}：
 标题：{p.get('title', 'N/A')}
@@ -189,6 +188,9 @@ def ai_generate_cnote_draft(
 标签：{', '.join(p.get('tags', []))}
 摘要：{p.get('abstract', '(无)') or '(无)'}
 """
+        for i, p in enumerate(pnotes, 1)
+    ]
+    pnotes_text = "\n".join(pnotes_chunks)
 
     user_prompt = f"""\
 概念：{concept}

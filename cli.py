@@ -17,6 +17,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional, Tuple
 
 from db import Database
+from db.database import ExperimentTableRecord
 from core import DOI_RESOLVER, Paper, today_iso
 from core.basics import ensure_research_tree, safe_uid, slugify_title
 from llm.generate import ai_generate_pnote_draft
@@ -112,11 +113,15 @@ def _build_research_parser(subparsers) -> argparse.ArgumentParser:
         help="Re-generate even if note already exists",
     )
     p.add_argument("-v", "--verbose", action="store_true", default=False, help="Verbose output")
+    p.add_argument("--lang", type=str, default="zh", choices=["en", "zh", "e", "z"], help="Output language (default: zh)")
     return p
 
 
 def _run_research_cmd(args: argparse.Namespace) -> int:
+    from core.i18n import set_lang
     from pathlib import Path
+
+    set_lang(args.lang)
 
     output_dir = Path(args.output) if args.output else None
     tags = args.tags if args.tags else []
@@ -2576,6 +2581,33 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
                 extracted_sections_md = format_section_snippets(sections)
                 table_md = format_tables_markdown(sdoc)
                 math_md = format_math_markdown(sdoc)
+                # Save tables to DB
+                if sdoc.tables:
+                    db = Database()
+                    db.init()
+                    table_records = []
+                    for tbl in sdoc.tables:
+                        lines = [l for l in tbl.text.split("\n") if l.strip() and "---" not in l]
+                        header_cells = [c.strip() for c in lines[0].split("|") if c.strip()] if lines else []
+                        data_rows = []
+                        for row_line in lines[1:]:
+                            cells = [c.strip() for c in row_line.split("|") if c.strip()]
+                            if cells:
+                                data_rows.append(cells)
+                        table_records.append(ExperimentTableRecord(
+                            id=0,
+                            paper_id=paper.uid,
+                            table_caption="",
+                            page=tbl.page,
+                            headers=header_cells,
+                            rows=data_rows,
+                            bbox_x0=tbl.bbox[0] if tbl.bbox else 0,
+                            bbox_y0=tbl.bbox[1] if tbl.bbox else 0,
+                            bbox_x1=tbl.bbox[2] if tbl.bbox else 0,
+                            bbox_y1=tbl.bbox[3] if tbl.bbox else 0,
+                            created_at=__import__("datetime").datetime.utcnow().isoformat(),
+                        ))
+                    db.upsert_experiment_tables(paper.uid, table_records)
                 # Provide text to AI draft
                 extracted_text_for_ai = "\n".join(b.text for b in sdoc.text_blocks)
             else:

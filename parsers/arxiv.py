@@ -1,4 +1,5 @@
 """arXiv API metadata fetching."""
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List
 
 import feedparser
@@ -6,8 +7,10 @@ import requests
 
 from core import ARXIV_API, Paper
 from core.cache import get_cached, set_cached
+from core.retry import circuit_breaker
 
 
+@circuit_breaker(failure_threshold=5, recovery_timeout=60.0)
 def fetch_arxiv_metadata(arxiv_id: str, timeout: int = 30) -> Paper:
     cached = get_cached("arxiv", arxiv_id)
     if cached:
@@ -239,14 +242,16 @@ def fetch_arxiv_metadata_batch(arxiv_ids: List[str], timeout: int = 60) -> List[
     except Exception:
         missing_ids = ids_to_fetch
 
-    # Fallback: individual fetches for missing IDs
-    for aid in missing_ids:
-        try:
-            paper = fetch_arxiv_metadata(aid, timeout=timeout)
-            papers.append(paper)
-        except Exception:
-            # Last resort: return what we have
-            pass
+    # Fallback: parallel individual fetches for missing IDs
+    if missing_ids:
+        with ThreadPoolExecutor(max_workers=min(len(missing_ids), 8)) as executor:
+            futures = {executor.submit(fetch_arxiv_metadata, aid, timeout): aid for aid in missing_ids}
+            for future in as_completed(futures):
+                try:
+                    paper = future.result()
+                    papers.append(paper)
+                except Exception:
+                    pass  # Circuit open or network error — return what we have
 
     # Sort by original input order
     uid_to_paper = {p.uid: p for p in papers}

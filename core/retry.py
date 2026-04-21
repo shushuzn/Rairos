@@ -139,3 +139,67 @@ class CircuitBreaker:
 
 class CircuitOpen(Exception):
     """Raised when a circuit breaker is open."""
+
+
+# ─── Circuit Breaker Decorator ────────────────────────────────────────────────
+
+
+def circuit_breaker(
+    _fn: Callable | None = None,
+    *,
+    failure_threshold: int = 5,
+    recovery_timeout: float = 60.0,
+    expected_exception: type[Exception] = Exception,
+) -> Callable:
+    """
+    Decorator that wraps a function with a circuit breaker.
+
+    Usage:
+        @circuit_breaker()
+        def my_func():
+            ...
+
+        # or with options:
+        @circuit_breaker(failure_threshold=3, recovery_timeout=30.0)
+        def my_func():
+            ...
+
+    Thread-safe. Each decorated function gets its own CircuitBreaker instance.
+    """
+    _breakers: dict[str, CircuitBreaker] = {}
+    _breakers_lock = threading.Lock()
+
+    def decorator(fn: Callable) -> Callable:
+        key = f"{fn.__module__}.{fn.__qualname__}"
+
+        def get_breaker() -> CircuitBreaker:
+            with _breakers_lock:
+                if key not in _breakers:
+                    _breakers[key] = CircuitBreaker(
+                        failure_threshold=failure_threshold,
+                        recovery_timeout=recovery_timeout,
+                        expected_exception=expected_exception,
+                    )
+                return _breakers[key]
+
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            breaker = get_breaker()
+            if breaker.state == CircuitBreaker.OPEN:
+                raise CircuitOpen(
+                    f"[circuit_breaker] {fn.__qualname__} is OPEN. "
+                    f"Retry after {breaker.recovery_timeout:.0f}s."
+                )
+            try:
+                result = fn(*args, **kwargs)
+                breaker.record_success()
+                return result
+            except expected_exception:
+                breaker.record_failure()
+                raise
+
+        return wrapper
+
+    if _fn is not None:
+        return decorator(_fn)
+    return decorator

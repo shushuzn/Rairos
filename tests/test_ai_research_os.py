@@ -1158,7 +1158,7 @@ class TestCallLlmChatCompletions:
             "choices": [{"message": {"role": "assistant", "content": "Test response"}}]
         }
 
-        with patch("requests.post", return_value=mock_response) as mock_post:
+        with patch("requests.Session.post", return_value=mock_response) as mock_post:
             result = airo.call_llm_chat_completions(
                 [{"role": "user", "content": "Hello"}],
                 "gpt-4o-mini",
@@ -1178,7 +1178,7 @@ class TestCallLlmChatCompletions:
             "choices": [{"message": {"role": "assistant", "content": "Env key response"}}]
         }
 
-        with patch("requests.post", return_value=mock_response):
+        with patch("requests.Session.post", return_value=mock_response):
             result = airo.call_llm_chat_completions(
                 [{"role": "user", "content": "Hi"}],
                 "gpt-4o-mini",
@@ -1196,7 +1196,7 @@ class TestCallLlmChatCompletions:
             "choices": [{"message": {"role": "assistant", "content": "Response"}}]
         }
 
-        with patch("requests.post", return_value=mock_response) as mock_post:
+        with patch("requests.Session.post", return_value=mock_response) as mock_post:
             result = airo.call_llm_chat_completions(
                 [{"role": "user", "content": "Hello"}],
                 "gpt-4o-mini",
@@ -1207,7 +1207,7 @@ class TestCallLlmChatCompletions:
             )
             assert "Response" in result
             call_kwargs = mock_post.call_args.kwargs
-            payload = json.loads(call_kwargs["data"])
+            payload = call_kwargs["json"]
             messages = payload["messages"]
             # First message should be system with system_prompt content
             assert messages[0]["role"] == "system"
@@ -1224,7 +1224,7 @@ class TestCallLlmChatCompletions:
             "choices": [{"message": {"role": "assistant", "content": "Response"}}]
         }
 
-        with patch("requests.post", return_value=mock_response) as mock_post:
+        with patch("requests.Session.post", return_value=mock_response) as mock_post:
             _ = airo.call_llm_chat_completions(
                 [{"role": "user", "content": "Hello"}],
                 "gpt-4o-mini",
@@ -1234,7 +1234,7 @@ class TestCallLlmChatCompletions:
                 system_prompt=None
             )
             call_kwargs = mock_post.call_args.kwargs
-            payload = json.loads(call_kwargs["data"])
+            payload = call_kwargs["json"]
             messages = payload["messages"]
             # No system message prepended when system_prompt=None
             assert not any(m["role"] == "system" for m in messages)
