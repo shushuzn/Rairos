@@ -81,17 +81,7 @@ jobs:
 
       - name: Run pytest
         run: |
-          python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt; exit ${PIPESTATUS[0]}
-
-      - name: Show failed tests
-        if: failure()
-        run: |
-          echo "=== Failed test list ==="
-          python -m pytest tests/ --co -q 2>/dev/null | head -5 || true
-          echo "=== Last lines of output ==="
-          tail -20 pytest_output_${{ matrix.python-version }}.txt 2>/dev/null || echo "No output file"
-          echo "=== Exit code check ==="
-          python -m pytest tests/ -x --tb=line 2>&1 | tail -30 || true
+          python -m pytest tests/ -q --tb=short 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt; exit ${PIPESTATUS[0]}
 
       - name: Upload test output
         if: always()
