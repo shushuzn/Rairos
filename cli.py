@@ -1961,9 +1961,7 @@ def _extract_references_from_text(paper_id: str, text: str) -> dict[str, list[st
     # Try to isolate the references section
     match = _REFS_SECTION_PAT.search(text)
     if match:
-        refs_text = text[match.start() :]  # noqa: F841
-    else:
-        pass  # refs_text = text  # fall back to whole text
+        text = text[match.start():]
 
     # Extract arXiv IDs (search the whole text, not just refs section,
     # so inline citations in body text are also captured)

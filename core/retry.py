@@ -38,7 +38,7 @@ def retry(
             for attempt in range(1, max_attempts + 1):
                 try:
                     return fn(*args, **kwargs)
-                except exceptions as e:  # noqa: PERF203
+                except exceptions:
                     last_exc = e
                     if attempt == max_attempts:
                         break
@@ -132,7 +132,7 @@ class CircuitBreaker:
             result = fn(*args, **kwargs)
             self.record_success()
             return result
-        except self.expected_exception as e:  # noqa: F841
+        except self.expected_exception:
             self.record_failure()
             raise
 
