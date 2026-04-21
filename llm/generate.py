@@ -3,9 +3,62 @@
 Output format: Markdown sections (human-readable) + XML rubric block (machine-parseable).
 Section headings MUST match the P-note template numbering so content can be injected directly.
 """
-from typing import List
+from typing import Dict, List, Tuple
 
 from core import Paper
+
+# ------------------------------------------------------------------
+# Cost estimation helpers
+# ------------------------------------------------------------------
+
+# Token price per 1M tokens (approximate, OpenAI-compatible APIs)
+_MODEL_PRICES = {
+    # model_prefix -> (input_per_1M, output_per_1M)
+    "gpt-4o": (2.5, 10.0),
+    "gpt-4o-mini": (0.15, 0.6),
+    "gpt-4-turbo": (10.0, 30.0),
+    "gpt-3.5-turbo": (0.5, 1.5),
+    "o1-preview": (15.0, 60.0),
+    "o1-mini": (3.0, 12.0),
+    "qwen3.5-plus": (0.1, 0.3),
+    "qwen3.5": (0.1, 0.3),
+    "qwen2.5": (0.1, 0.3),
+    "deepseek-chat": (0.14, 0.28),
+    "claude-3-5-sonnet": (3.0, 15.0),
+    "claude-3-5-haiku": (0.8, 4.0),
+    "default": (1.0, 4.0),
+}
+
+
+def estimate_tokens(text: str) -> int:
+    """Estimate token count (≈ chars / 4 for Chinese + English mix)."""
+    if not text:
+        return 0
+    return max(1, len(text) // 4)
+
+
+def get_model_price(model: str) -> Tuple[float, float]:
+    """Return (input_per_1M, output_per_1M) for a model."""
+    model_lower = model.lower()
+    for prefix, price in _MODEL_PRICES.items():
+        if prefix in model_lower:
+            return price
+    return _MODEL_PRICES["default"]
+
+
+def estimate_cost(model: str, input_text: str, output_text: str) -> Dict[str, float]:
+    """Estimate cost in USD for a single LLM call."""
+    in_per_1m, out_per_1m = get_model_price(model)
+    in_toks = estimate_tokens(input_text)
+    out_toks = estimate_tokens(output_text)
+    return {
+        "input_tokens": in_toks,
+        "output_tokens": out_toks,
+        "total_tokens": in_toks + out_toks,
+        "input_cost_usd": round(in_toks / 1_000_000 * in_per_1m, 6),
+        "output_cost_usd": round(out_toks / 1_000_000 * out_per_1m, 6),
+        "total_cost_usd": round((in_toks / 1_000_000 * in_per_1m) + (out_toks / 1_000_000 * out_per_1m), 6),
+    }
 
 
 def ai_generate_pnote_draft(
@@ -15,6 +68,8 @@ def ai_generate_pnote_draft(
     base_url: str,
     api_key: str,
     model: str,
+    stream: bool = False,
+    verbose: bool = False,
 ) -> str:
     import ai_research_os as airo
 
@@ -133,6 +188,7 @@ Overall Judgment：一句话总结
         model=model,
         system_prompt=system_prompt,
         user_prompt=user_prompt,
+        stream=stream,
     )
 
 

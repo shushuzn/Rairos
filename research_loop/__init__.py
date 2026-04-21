@@ -13,6 +13,7 @@ already present in ai_research_os.
 import datetime as dt
 import os
 import sys
+import tempfile
 import time  # noqa: F401  # tests mock research_loop.time.sleep
 import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -20,8 +21,8 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 from core import Paper
-from core.basics import ensure_research_tree, safe_uid, slugify_title
-from llm.generate import ai_generate_pnote_draft
+from core.basics import ensure_research_tree, get_default_concept_dir, safe_uid, slugify_title
+from llm.generate import ai_generate_pnote_draft, estimate_cost
 from llm.parse import parse_ai_pnote_draft, extract_rubric_scores
 from notes.cnote import ensure_cnote, update_cnote_links
 from parsers.arxiv_search import search_arxiv
@@ -135,7 +136,7 @@ def run_research(
             extracted_text = ""
             for attempt in range(2):
                 try:
-                    pdf_path = Path(f"/tmp/{safe_uid(paper.uid)}.pdf")
+                    pdf_path = Path(tempfile.gettempdir()) / f"{safe_uid(paper.uid)}.pdf"
                     _download_pdf(paper.pdf_url, pdf_path, timeout=60)
                     if verbose:
                         print(f"  [pdf] Downloaded: {pdf_path.name} ({pdf_path.stat().st_size / 1024:.0f} KB)")
@@ -156,11 +157,13 @@ def run_research(
         note_tags = tgs or []
         draft = ""
         rubric = {}
+        cost_info: dict = {}
 
         if a_key and extracted_text:
             try:
                 if verbose:
-                    print("  [llm] Generating draft...")
+                    print("  [llm] Generating draft (streaming)...")
+                input_for_llm = f"Title: {paper.title}\nAbstract: {paper.abstract or ''}\n\nExtracted text:\n{extracted_text[:8000]}"
                 draft = ai_generate_pnote_draft(
                     paper=paper,
                     tags=note_tags,
@@ -168,10 +171,17 @@ def run_research(
                     base_url=b_url,
                     api_key=a_key,
                     model=mod,
+                    stream=True,
+                    verbose=verbose,
                 )
                 sections, rubric, _ = parse_ai_pnote_draft(draft)
+                cost_info = estimate_cost(mod, input_for_llm, draft)
                 if verbose:
-                    print(f"  [llm] Draft generated ({len(draft)} chars)")
+                    print(
+                        f"  [llm] Draft generated ({len(draft)} chars, "
+                        f"≈{cost_info.get('total_tokens', 0)} tokens, "
+                        f"${cost_info.get('total_cost_usd', 0):.4f})"
+                    )
             except Exception as e:
                 warnings.warn(f"LLM draft generation failed for {paper.uid}: {e}", stacklevel=2)
                 draft = ""
@@ -212,7 +222,7 @@ def run_research(
 
         # For each tag: create/verify C-note and link it
         for tag in note_tags:
-            concept_dir = root / "01-Foundations"
+            concept_dir = root / get_default_concept_dir()
             cpath = ensure_cnote(concept_dir, tag)
             update_cnote_links(cpath, note_path)
 

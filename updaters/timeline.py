@@ -2,12 +2,12 @@
 import textwrap
 from pathlib import Path
 
-from core.basics import read_text, write_text
+from core.basics import get_default_radar_dir, read_text, write_text
 from notes.pnotes import wikilink_for_pnote
 
 
 def ensure_timeline(root: Path) -> Path:
-    p = root / "00-Radar" / "Timeline.md"
+    p = root / get_default_radar_dir() / "Timeline.md"
     if p.exists():
         return p
     md = """\

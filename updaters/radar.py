@@ -3,11 +3,11 @@ import textwrap
 from pathlib import Path
 from typing import Dict, List
 
-from core.basics import read_text, write_text
+from core.basics import get_default_radar_dir, read_text, write_text
 
 
 def ensure_radar(root: Path) -> Path:
-    p = root / "00-Radar" / "Radar.md"
+    p = root / get_default_radar_dir() / "Radar.md"
     if p.exists():
         return p
 

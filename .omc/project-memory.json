@@ -298,8 +298,8 @@
   "hotPaths": [
     {
       "path": "cli.py",
-      "accessCount": 117,
-      "lastAccessed": 1776765917314,
+      "accessCount": 136,
+      "lastAccessed": 1776769900955,
       "type": "file"
     },
     {
@@ -310,8 +310,8 @@
     },
     {
       "path": "research_loop\\__init__.py",
-      "accessCount": 70,
-      "lastAccessed": 1776766603826,
+      "accessCount": 86,
+      "lastAccessed": 1776769704217,
       "type": "file"
     },
     {
@@ -322,14 +322,14 @@
     },
     {
       "path": "llm\\generate.py",
-      "accessCount": 38,
-      "lastAccessed": 1776765028302,
+      "accessCount": 46,
+      "lastAccessed": 1776769720343,
       "type": "file"
     },
     {
       "path": "",
-      "accessCount": 26,
-      "lastAccessed": 1776765558129,
+      "accessCount": 27,
+      "lastAccessed": 1776768951279,
       "type": "directory"
     },
     {
@@ -357,33 +357,33 @@
       "type": "file"
     },
     {
+      "path": "notes\\cnote.py",
+      "accessCount": 13,
+      "lastAccessed": 1776769038994,
+      "type": "file"
+    },
+    {
       "path": "tests/test_notes_cnote.py",
       "accessCount": 11,
       "lastAccessed": 1776756426428,
       "type": "directory"
     },
     {
-      "path": "notes\\cnote.py",
-      "accessCount": 9,
-      "lastAccessed": 1776762170392,
+      "path": "llm\\client.py",
+      "accessCount": 11,
+      "lastAccessed": 1776769635331,
       "type": "file"
     },
     {
-      "path": "llm\\client.py",
+      "path": "llm\\parse.py",
       "accessCount": 8,
-      "lastAccessed": 1776766469620,
+      "lastAccessed": 1776769547642,
       "type": "file"
     },
     {
       "path": "core\\retry.py",
       "accessCount": 7,
       "lastAccessed": 1776765141380,
-      "type": "file"
-    },
-    {
-      "path": "llm\\parse.py",
-      "accessCount": 7,
-      "lastAccessed": 1776765365905,
       "type": "file"
     },
     {
@@ -429,6 +429,12 @@
       "type": "directory"
     },
     {
+      "path": "updaters\\radar.py",
+      "accessCount": 4,
+      "lastAccessed": 1776769100436,
+      "type": "file"
+    },
+    {
       "path": "tests\\test_cli_import.py",
       "accessCount": 3,
       "lastAccessed": 1776743954909,
@@ -462,12 +468,6 @@
       "path": "parsers\\arxiv_search.py",
       "accessCount": 2,
       "lastAccessed": 1776765184746,
-      "type": "file"
-    },
-    {
-      "path": "updaters\\radar.py",
-      "accessCount": 1,
-      "lastAccessed": 1776744248018,
       "type": "file"
     },
     {

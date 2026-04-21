@@ -19,7 +19,7 @@ from typing import Any, Dict, List, Literal, Optional, Tuple
 from db import Database
 from db.database import ExperimentTableRecord
 from core import DOI_RESOLVER, Paper, today_iso
-from core.basics import ensure_research_tree, safe_uid, slugify_title
+from core.basics import ensure_research_tree, get_default_concept_dir, get_default_radar_dir, safe_uid, slugify_title
 from llm.generate import ai_generate_pnote_draft
 from notes.cnote import auto_fill_cnotes_with_ai, ensure_cnote, update_cnote_links
 from notes.mnote import ensure_or_update_mnote, pick_top3_pnotes_for_tag
@@ -2340,10 +2340,21 @@ def _run_cache(args: argparse.Namespace) -> int:
 
 def main(argv: Optional[List[str]] = None) -> int:
     logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
+
+    SUBCOMMANDS = {
+        "search", "list", "status", "queue", "cache", "dedup", "merge", "stats",
+        "import", "export", "citations", "cite-graph", "cite-import", "cite-fetch",
+        "cite-stats", "dedup-semantic", "research", "similar",
+    }
+    raw_args = argv if argv is not None else sys.argv[1:]
+    first = raw_args[0] if raw_args else ""
+
+    if first not in SUBCOMMANDS:
+        return _main_legacy(argv)
+
     parser = argparse.ArgumentParser(description="AI Research OS")
     subparsers = parser.add_subparsers(dest="subcmd", help="Subcommands")
 
-    # Build all subcommand parsers
     _build_search_parser(subparsers)
     _build_research_parser(subparsers)
     _build_list_parser(subparsers)
@@ -2361,77 +2372,47 @@ def main(argv: Optional[List[str]] = None) -> int:
     _build_cite_fetch_parser(subparsers)
     _build_cite_stats_parser(subparsers)
     _build_dedup_semantic_parser(subparsers)
+    _build_similar_parser(subparsers)
 
-    # Check if first arg is a known subcommand
-    raw_args = argv if argv is not None else sys.argv[1:]
-    first = raw_args[0] if raw_args else ""
+    args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
-    SUBCOMMANDS = {"search", "list", "status", "queue", "cache", "dedup", "merge", "stats", "import", "export", "citations", "cite-graph", "cite-import", "cite-fetch", "cite-stats", "dedup-semantic", "research"}
-
-    if first in SUBCOMMANDS:
-        # New subcommand flow
-        parser = argparse.ArgumentParser(description="AI Research OS")
-        subparsers = parser.add_subparsers(dest="subcmd", help="Subcommands")
-        _build_search_parser(subparsers)
-        _build_research_parser(subparsers)
-        _build_list_parser(subparsers)
-        _build_status_parser(subparsers)
-        _build_queue_parser(subparsers)
-        _build_cache_parser(subparsers)
-        _build_dedup_parser(subparsers)
-        _build_merge_parser(subparsers)
-        _build_stats_parser(subparsers)
-        _build_import_parser(subparsers)
-        _build_export_parser(subparsers)
-        _build_citations_parser(subparsers)
-        _build_cite_graph_parser(subparsers)
-        _build_cite_import_parser(subparsers)
-        _build_cite_fetch_parser(subparsers)
-        _build_cite_stats_parser(subparsers)
-        _build_dedup_semantic_parser(subparsers)
-        _build_similar_parser(subparsers)
-        args = parser.parse_args(argv if argv is not None else sys.argv[1:])
-
-        if args.subcmd == "search":
-            return _run_search(args)
-        elif args.subcmd == "list":
-            return _run_list(args)
-        elif args.subcmd == "status":
-            return _run_status(args)
-        elif args.subcmd == "queue":
-            return _run_queue(args)
-        elif args.subcmd == "cache":
-            return _run_cache(args)
-        elif args.subcmd == "dedup":
-            return _run_dedup(args)
-        elif args.subcmd == "merge":
-            return _run_merge(args)
-        elif args.subcmd == "stats":
-            return _run_stats(args)
-        elif args.subcmd == "import":
-            return _run_import(args)
-        elif args.subcmd == "export":
-            return _run_export(args)
-        elif args.subcmd == "citations":
-            return _run_citations(args)
-        elif args.subcmd == "cite-graph":
-            return _run_cite_graph(args)
-        elif args.subcmd == "cite-import":
-            return _run_cite_import(args)
-        elif args.subcmd == "cite-fetch":
-            return _run_cite_fetch(args)
-        elif args.subcmd == "cite-stats":
-            return _run_cite_stats(args)
-        elif args.subcmd == "dedup-semantic":
-            return _run_dedup_semantic(args)
-        elif args.subcmd == "research":
-            return _run_research_cmd(args)
-        elif args.subcmd == "similar":
-            return _run_similar(args)
-        return 0
-    else:
-        # Legacy flow (arxiv ID / DOI as first positional arg)
-        return _main_legacy(argv)
+    if args.subcmd == "search":
+        return _run_search(args)
+    elif args.subcmd == "list":
+        return _run_list(args)
+    elif args.subcmd == "status":
+        return _run_status(args)
+    elif args.subcmd == "queue":
+        return _run_queue(args)
+    elif args.subcmd == "cache":
+        return _run_cache(args)
+    elif args.subcmd == "dedup":
+        return _run_dedup(args)
+    elif args.subcmd == "merge":
+        return _run_merge(args)
+    elif args.subcmd == "stats":
+        return _run_stats(args)
+    elif args.subcmd == "import":
+        return _run_import(args)
+    elif args.subcmd == "export":
+        return _run_export(args)
+    elif args.subcmd == "citations":
+        return _run_citations(args)
+    elif args.subcmd == "cite-graph":
+        return _run_cite_graph(args)
+    elif args.subcmd == "cite-import":
+        return _run_cite_import(args)
+    elif args.subcmd == "cite-fetch":
+        return _run_cite_fetch(args)
+    elif args.subcmd == "cite-stats":
+        return _run_cite_stats(args)
+    elif args.subcmd == "dedup-semantic":
+        return _run_dedup_semantic(args)
+    elif args.subcmd == "research":
+        return _run_research_cmd(args)
+    elif args.subcmd == "similar":
+        return _run_similar(args)
+    return 0
 
 
 def _main_legacy(argv: Optional[List[str]] = None) -> int:
@@ -2440,8 +2421,8 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--root", default="AI-Research", help="Root folder for your research OS")
     parser.add_argument("--category", default="02-Models", help="Folder under root to place P-Note")
     parser.add_argument("--tags", default="", help="Comma-separated tags (recommended), e.g. LLM,Agent,RAG")
-    parser.add_argument("--concept-dir", default="01-Foundations", help="Folder under root to place C-Notes")
-    parser.add_argument("--comparison-dir", default="00-Radar", help="Folder under root to place M-Notes")
+    parser.add_argument("--concept-dir", default=get_default_concept_dir(), help="Folder under root to place C-Notes")
+    parser.add_argument("--comparison-dir", default=get_default_radar_dir(), help="Folder under root to place M-Notes")
     parser.add_argument("--max-pages", type=int, default=None, help="Max PDF pages to extract")
 
     # Local PDF (paywalled/subscription papers)

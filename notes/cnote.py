@@ -2,7 +2,7 @@
 import re
 from pathlib import Path
 
-from core.basics import read_text, write_text
+from core.basics import get_default_concept_dir, read_text, write_text
 from notes.pnotes import wikilink_for_pnote
 from renderers.cnote import render_cnote
 
@@ -135,7 +135,7 @@ def auto_fill_cnotes_with_ai(
 
     results = []
     tag_map = pnotes_by_tag(root)
-    concept_dir = root / "01-Foundations"
+    concept_dir = root / get_default_concept_dir()
 
     for concept, pnote_entries in tag_map.items():
         # pnote_entries: List[Tuple[str, Path]] sorted by date desc
