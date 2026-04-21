@@ -39,10 +39,6 @@ async def call_llm_chat_completions_async(
         raise ValueError("Missing API key. Provide --api-key or set OPENAI_API_KEY.")
 
     url = base_url.rstrip("/") + "/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-    }
     msgs = list(messages)
     if system_prompt:
         msgs = [{"role": "system", "content": system_prompt}] + msgs
