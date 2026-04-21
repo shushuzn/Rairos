@@ -193,7 +193,7 @@ class TestSearchArxiv:
         entry.arxiv_doi = "10.48550/arXiv.1706.03762"
         return entry
 
-    @patch("parsers.arxiv_search.requests.get")
+    @patch("parsers.arxiv_search._http.get")
     @patch("parsers.arxiv_search.feedparser.parse")
     def test_returns_papers_sorted_by_relevance(self, mock_fp_parse, mock_get, mock_feed):
         mock_response = Mock()
@@ -218,7 +218,7 @@ class TestSearchArxiv:
         assert "max_results=5" in call_url
         assert "sortBy=relevance" in call_url
 
-    @patch("parsers.arxiv_search.requests.get")
+    @patch("parsers.arxiv_search._http.get")
     @patch("parsers.arxiv_search.feedparser.parse")
     def test_returns_empty_list_when_no_entries(self, mock_fp_parse, mock_get):
         mock_response = Mock()
@@ -233,7 +233,7 @@ class TestSearchArxiv:
 
         assert result == []
 
-    @patch("parsers.arxiv_search.requests.get")
+    @patch("parsers.arxiv_search._http.get")
     def test_raises_runtime_error_on_http_failure(self, mock_get):
         import requests
 
@@ -246,14 +246,14 @@ class TestSearchArxiv:
         with pytest.raises(RuntimeError, match="arXiv search failed"):
             search_arxiv("test query")
 
-    @patch("parsers.arxiv_search.requests.get")
+    @patch("parsers.arxiv_search._http.get")
     def test_raises_runtime_error_on_timeout(self, mock_get):
         mock_get.side_effect = TimeoutError("Connection timed out")
 
         with pytest.raises(RuntimeError, match="arXiv search failed"):
             search_arxiv("test query")
 
-    @patch("parsers.arxiv_search.requests.get")
+    @patch("parsers.arxiv_search._http.get")
     @patch("parsers.arxiv_search.feedparser.parse")
     def test_passes_timeout_to_requests(self, mock_fp_parse, mock_get):
         mock_response = Mock()

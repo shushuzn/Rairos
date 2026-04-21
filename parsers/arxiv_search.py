@@ -6,6 +6,9 @@ import requests
 
 from core import Paper
 
+# Module-level session for connection reuse
+_http = requests.Session()
+
 
 def search_arxiv(query: str, max_results: int = 5, timeout: int = 30) -> List[Paper]:
     """
@@ -36,7 +39,7 @@ def search_arxiv(query: str, max_results: int = 5, timeout: int = 30) -> List[Pa
     )
 
     try:
-        r = requests.get(url, timeout=timeout)
+        r = _http.get(url, timeout=timeout)
         r.raise_for_status()
     except Exception as e:
         raise RuntimeError(f"arXiv search failed for query '{query}': {e}") from e

@@ -2,8 +2,10 @@
 import re
 from pathlib import Path
 
+import ai_research_os as airo
 from core.basics import get_default_concept_dir, read_text, write_text
-from notes.pnotes import wikilink_for_pnote
+from llm.generate import ai_generate_cnote_draft
+from notes.pnotes import pnotes_by_tag, read_pnote_metadata, wikilink_for_pnote
 from renderers.cnote import render_cnote
 
 
@@ -126,10 +128,6 @@ def auto_fill_cnotes_with_ai(
     Returns:
         List of (concept, status) tuples: status is 'filled' | 'skipped' | 'no-papers'
     """
-    import ai_research_os as airo
-    from llm.generate import ai_generate_cnote_draft
-    from notes.pnotes import pnotes_by_tag, read_pnote_metadata
-
     if call_llm is None:
         call_llm = airo.call_llm_chat_completions
 
@@ -151,7 +149,6 @@ def auto_fill_cnotes_with_ai(
         if cnote_path.exists():
             md = read_text(cnote_path)
         else:
-            from renderers.cnote import render_cnote
             md = render_cnote(concept)
             write_text(cnote_path, md)
 

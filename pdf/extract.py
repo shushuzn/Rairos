@@ -7,6 +7,10 @@ from typing import List, Optional
 
 import requests
 
+# Pre-compiled regex for text cleanup
+_RE_CLEAN_WHITESPACE = re.compile(r"[ \t]+\n")
+_RE_COLLAPSE_BLANK_LINES = re.compile(r"\n{3,}")
+
 
 def download_pdf(pdf_url: str, out_path: Path, timeout: int = 60) -> None:
     """Download PDF with resume support. Overwrites out_path on success."""
@@ -79,8 +83,8 @@ def extract_pdf_text(pdf_path: Path, max_pages: Optional[int] = None) -> str:
 
     raw = "\n".join(chunks)
     raw = raw.replace("\r", "\n")
-    raw = re.sub(r"[ \t]+\n", "\n", raw)
-    raw = re.sub(r"\n{3,}", "\n\n", raw)
+    raw = _RE_CLEAN_WHITESPACE.sub("\n", raw)
+    raw = _RE_COLLAPSE_BLANK_LINES.sub("\n\n", raw)
     return raw.strip()
 
 
@@ -186,8 +190,8 @@ def extract_pdf_text_hybrid(
     if miner_text and len(miner_text) > len(best) * 1.2:
         best = miner_text
 
-    best = re.sub(r"[ \t]+\n", "\n", best)
-    best = re.sub(r"\n{3,}", "\n\n", best)
+    best = _RE_CLEAN_WHITESPACE.sub("\n", best)
+    best = _RE_COLLAPSE_BLANK_LINES.sub("\n\n", best)
     return best.strip()
 
 
