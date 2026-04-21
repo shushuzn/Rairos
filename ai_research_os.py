@@ -8,7 +8,7 @@ from core.basics import (
     write_text,
 )
 from parsers.input_detection import is_probably_doi, normalize_doi, normalize_arxiv_id
-from parsers.arxiv import fetch_arxiv_metadata, fetch_arxiv_metadata_batch  # noqa: F401
+from parsers.arxiv import fetch_arxiv_metadata, fetch_arxiv_metadata_batch
 from parsers.crossref import fetch_crossref_metadata
 from pdf.extract import download_pdf, extract_pdf_text, extract_pdf_text_hybrid
 from sections.segment import looks_like_heading, segment_into_sections, format_section_snippets

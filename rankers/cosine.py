@@ -18,7 +18,7 @@ class CosineSimilarityRanker(Ranker):
 
     name = "cosine"
 
-    def __init__(self, db: "Database") -> None:  # noqa: F821
+    def __init__(self, db: "Database") -> None:
         self._db = db
 
     def rank(

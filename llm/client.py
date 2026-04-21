@@ -77,7 +77,4 @@ def call_llm_chat_completions(
 
 
 def _stream_to_string(r: requests.Response) -> str:
-    parts: List[str] = []
-    for chunk in _parse_sse_stream(r):
-        parts.append(chunk)
-    return "".join(parts)
+    return "".join(_parse_sse_stream(r))
