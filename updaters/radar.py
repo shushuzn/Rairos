@@ -1,8 +1,7 @@
 """Radar page management."""
-import datetime as dt
 import textwrap
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from core.basics import get_default_radar_dir, read_text, write_text
 
