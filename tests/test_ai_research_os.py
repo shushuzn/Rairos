@@ -1844,7 +1844,7 @@ def test_ai_generate_pnote_draft_includes_required_sections(monkeypatch):
     )
 
     with monkeypatch.context() as m:
-        m.setattr("ai_research_os.call_llm_chat_completions", mock_call_llm)
+        m.setattr("llm.generate.call_llm_chat_completions", mock_call_llm)
         airo.ai_generate_pnote_draft(
             paper=paper,
             tags=["AI"],
