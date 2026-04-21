@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"gh auth status 2>&1\"}",
+  "tool_input_preview": "{\"command\":\"sleep 30 && gh pr view 239 --json status,mergeable,headRefName,headSha 2>&1\"}",
   "error": "Exit code 1\nfailed to migrate config: cowardly refusing to continue with multi account migration: couldn't get user name for \"github.com\" please visit https://github.com/cli/cli/issues/8441 for help: non-200 OK status code: 401 Unauthorized body: \"{\\r\\n  \\\"message\\\": \\\"Bad credentials\\\",\\r\\n  \\\"documentation_url\\\": \\\"https://docs.github.com/rest\\\",\\r\\n  \\\"status\\\": \\\"401\\\"\\r\\n}\"",
-  "timestamp": "2026-04-21T10:09:03.629Z",
-  "retry_count": 2
+  "timestamp": "2026-04-21T10:19:02.849Z",
+  "retry_count": 1
 }

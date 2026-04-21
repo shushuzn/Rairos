@@ -80,7 +80,8 @@ jobs:
         run: pip install pytest pytest-cov requests feedparser pymupdf freezegun numpy
 
       - name: Run pytest
-        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt; exit ${PIPESTATUS[0]}
+        run: |
+          python -m pytest tests/ -q --tb=short 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt; exit ${PIPESTATUS[0]}
 
       - name: Upload test output
         if: always()
