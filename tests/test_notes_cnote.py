@@ -283,8 +283,8 @@ class TestAutoFillCnotesWithAi:
         concept_dir.mkdir(parents=True)
         pnote_dir = tmp_path / "02-Papers"
         pnote_dir.mkdir(parents=True)
-        # C-note with all sections filled
-        cnote = concept_dir / "C - Filled.md"
+        # C-note with all sections filled (note: filename uses lowercase 'filled' to match tag)
+        cnote = concept_dir / "C - filled.md"
         cnote.write_text(
             "## 核心定义\nMeaningful content.\n\n"
             "## 产生背景\nBackground info.\n\n"
@@ -301,6 +301,7 @@ class TestAutoFillCnotesWithAi:
                     base_url="https://api.example.com",
                     model="test-model",
                     min_papers=1,
+                    call_llm=lambda **kwargs: "## 核心定义\nFilled.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech.",
                 )
         assert ("filled", "skipped") in results
 
@@ -320,17 +321,16 @@ class TestAutoFillCnotesWithAi:
 
         with patch("notes.pnotes.pnotes_by_tag", return_value={"concept": [("2024-01-01", pnote)]}):
             with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "Concept"}):
-                with patch("ai_research_os.call_llm_chat_completions", return_value=generated_draft) as mock_gen:
-                    results = auto_fill_cnotes_with_ai(
-                        root=tmp_path,
-                        api_key="fake-key",
-                        base_url="https://api.example.com",
-                        model="test-model",
-                        min_papers=1,
-                    )
+                results = auto_fill_cnotes_with_ai(
+                    root=tmp_path,
+                    api_key="fake-key",
+                    base_url="https://api.example.com",
+                    model="test-model",
+                    min_papers=1,
+                    call_llm=lambda **kwargs: generated_draft,
+                )
 
         assert ("concept", "filled") in results
-        mock_gen.assert_called_once()
 
         # Verify C-note was updated
         cnote_path = concept_dir / "C - concept.md"
@@ -347,17 +347,14 @@ class TestAutoFillCnotesWithAi:
 
         with patch("notes.pnotes.pnotes_by_tag", return_value={"fail": [("2024-01-01", pnote)]}):
             with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "Fail"}):
-                with patch(
-                    "ai_research_os.call_llm_chat_completions",
-                    side_effect=RuntimeError("API error"),
-                ):
-                    results = auto_fill_cnotes_with_ai(
-                        root=tmp_path,
-                        api_key="fake-key",
-                        base_url="https://api.example.com",
-                        model="test-model",
-                        min_papers=1,
-                    )
+                results = auto_fill_cnotes_with_ai(
+                    root=tmp_path,
+                    api_key="fake-key",
+                    base_url="https://api.example.com",
+                    model="test-model",
+                    min_papers=1,
+                    call_llm=lambda **kwargs: (_ for _ in ()).throw(RuntimeError("API error")),
+                )
         assert ("fail", "failed") in results
 
     def test_existing_cnote_read_before_ai_call(self, tmp_path):
@@ -371,22 +368,19 @@ class TestAutoFillCnotesWithAi:
         # All sections short and without sentence-ending punctuation -> considered empty
         # -> AI draft should be triggered and C-note updated
         existing_content = "## 核心定义\nExisting."  # short, no ending punctuation
-        cnote = concept_dir / "C - Existing.md"
+        cnote = concept_dir / "C - existing.md"
         cnote.write_text(existing_content, encoding="utf-8")
 
         with patch("notes.pnotes.pnotes_by_tag", return_value={"existing": [("2024-01-01", pnote)]}):
             with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "Existing"}):
-                with patch(
-                    "ai_research_os.call_llm_chat_completions",
-                    return_value="## 核心定义\nNew core.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech.",
-                ):
-                    results = auto_fill_cnotes_with_ai(
-                        root=tmp_path,
-                        api_key="fake-key",
-                        base_url="https://api.example.com",
-                        model="test-model",
-                        min_papers=1,
-                    )
+                results = auto_fill_cnotes_with_ai(
+                    root=tmp_path,
+                    api_key="fake-key",
+                    base_url="https://api.example.com",
+                    model="test-model",
+                    min_papers=1,
+                    call_llm=lambda **kwargs: "## 核心定义\nNew core.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech.",
+                )
 
         assert ("existing", "filled") in results
 
@@ -402,17 +396,14 @@ class TestAutoFillCnotesWithAi:
 
         with patch("notes.pnotes.pnotes_by_tag", return_value={"new": [("2024-01-01", pnote)]}):
             with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "New"}):
-                with patch(
-                    "ai_research_os.call_llm_chat_completions",
-                    return_value="## 核心定义\nCore.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech.",
-                ):
-                    results = auto_fill_cnotes_with_ai(
-                        root=tmp_path,
-                        api_key="fake-key",
-                        base_url="https://api.example.com",
-                        model="test-model",
-                        min_papers=1,
-                    )
+                results = auto_fill_cnotes_with_ai(
+                    root=tmp_path,
+                    api_key="fake-key",
+                    base_url="https://api.example.com",
+                    model="test-model",
+                    min_papers=1,
+                    call_llm=lambda **kwargs: "## 核心定义\nCore.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech.",
+                )
 
         # Should succeed even though 01-Foundations didn't exist
         assert ("new", "filled") in results

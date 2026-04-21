@@ -158,6 +158,7 @@ def ai_generate_cnote_draft(
     api_key: str,
     base_url: str,
     model: str,
+    call_llm=None,
 ) -> str:
     """
     Generate a C-Note draft for a concept using referenced P-Notes as context.
@@ -168,8 +169,13 @@ def ai_generate_cnote_draft(
         api_key: LLM API key
         base_url: OpenAI-compatible base URL
         model: Model name
+        call_llm: Callable to use instead of the default call_llm_chat_completions.
+                  Allows dependency injection for testing.
     """
     import ai_research_os as airo
+
+    if call_llm is None:
+        call_llm = airo.call_llm_chat_completions
 
     pnotes_text = ""
     for i, p in enumerate(pnotes, 1):
@@ -225,7 +231,7 @@ def ai_generate_cnote_draft(
 （严禁捏造论文数据；引用格式："> 原文片段"）
 """
 
-    return airo.call_llm_chat_completions(
+    return call_llm(
         base_url=base_url,
         api_key=api_key,
         model=model,

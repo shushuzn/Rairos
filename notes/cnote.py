@@ -109,6 +109,7 @@ def auto_fill_cnotes_with_ai(
     base_url: str,
     model: str,
     min_papers: int = 1,
+    call_llm=None,
 ) -> list:
     """
     Scan P-notes by tag, generate AI C-note drafts, and fill empty sections.
@@ -119,12 +120,18 @@ def auto_fill_cnotes_with_ai(
         base_url: OpenAI-compatible base URL
         model: Model name
         min_papers: Minimum P-notes needed to trigger AI draft (default 1)
+        call_llm: Callable to use for LLM generation (default: call_llm_chat_completions).
+                  Allows dependency injection for testing.
 
     Returns:
         List of (concept, status) tuples: status is 'filled' | 'skipped' | 'no-papers'
     """
+    import ai_research_os as airo
     from llm.generate import ai_generate_cnote_draft
     from notes.pnotes import pnotes_by_tag, read_pnote_metadata
+
+    if call_llm is None:
+        call_llm = airo.call_llm_chat_completions
 
     results = []
     tag_map = pnotes_by_tag(root)
@@ -168,6 +175,7 @@ def auto_fill_cnotes_with_ai(
                 api_key=api_key,
                 base_url=base_url,
                 model=model,
+                call_llm=call_llm,
             )
         except Exception as e:
             print(f"  [WARN] C-note AI draft failed for {concept}: {e}")
