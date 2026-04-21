@@ -14,23 +14,18 @@ from llm.client import call_llm_chat_completions
 # Cost estimation helpers
 # ------------------------------------------------------------------
 
-# Token price per 1M tokens (approximate, OpenAI-compatible APIs)
-_MODEL_PRICES = {
-    # model_prefix -> (input_per_1M, output_per_1M)
-    "gpt-4o": (2.5, 10.0),
-    "gpt-4o-mini": (0.15, 0.6),
-    "gpt-4-turbo": (10.0, 30.0),
-    "gpt-3.5-turbo": (0.5, 1.5),
-    "o1-preview": (15.0, 60.0),
-    "o1-mini": (3.0, 12.0),
-    "qwen3.5-plus": (0.1, 0.3),
-    "qwen3.5": (0.1, 0.3),
-    "qwen2.5": (0.1, 0.3),
-    "deepseek-chat": (0.14, 0.28),
-    "claude-3-5-sonnet": (3.0, 15.0),
-    "claude-3-5-haiku": (0.8, 4.0),
-    "default": (1.0, 4.0),
-}
+def get_model_price(model: str) -> Tuple[float, float]:
+    """Return (input_per_1M, output_per_1M) for a model.
+
+    Prices are loaded from ``config.MODEL_PRICES``, which merges the built-in
+    table with any overrides from the ``AIROS_MODEL_PRICES`` env var.
+    """
+    from config import MODEL_PRICES as _prices
+    model_lower = model.lower()
+    for prefix, price in _prices.items():
+        if prefix in model_lower:
+            return price
+    return _prices["default"]
 
 
 def estimate_tokens(text: str) -> int:
@@ -38,15 +33,6 @@ def estimate_tokens(text: str) -> int:
     if not text:
         return 0
     return max(1, len(text) // 4)
-
-
-def get_model_price(model: str) -> Tuple[float, float]:
-    """Return (input_per_1M, output_per_1M) for a model."""
-    model_lower = model.lower()
-    for prefix, price in _MODEL_PRICES.items():
-        if prefix in model_lower:
-            return price
-    return _MODEL_PRICES["default"]
 
 
 def estimate_cost(model: str, input_text: str, output_text: str) -> Dict[str, float]:

@@ -1,13 +1,14 @@
 """HTTP response cache for arXiv and Crossref API calls."""
 import json
+import os
 import time
 from pathlib import Path
 from typing import Optional
 
-_CACHE_DIR = Path.home() / ".cache" / "ai_research_os"
+_CACHE_DIR = Path(os.getenv("AIROS_CACHE_DIR", str(Path.home() / ".cache" / "ai_research_os")))
 _ARXIV_CACHE_DIR = _CACHE_DIR / "arxiv"
 _CROSSREF_CACHE_DIR = _CACHE_DIR / "crossref"
-_TTL_SECONDS = 24 * 3600
+_TTL_SECONDS: int = int(os.getenv("AIROS_CACHE_TTL_SECONDS", str(24 * 3600)))
 
 
 def _cache_dir(source: str) -> Path:

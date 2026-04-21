@@ -1,4 +1,5 @@
 """PDF download and text extraction."""
+import json
 import re
 from dataclasses import dataclass, field
 from enum import Enum
@@ -6,6 +7,8 @@ from pathlib import Path
 from typing import List, Optional
 
 import requests
+
+from db.database import ExperimentTableRecord
 
 # Pre-compiled regex for text cleanup
 _RE_CLEAN_WHITESPACE = re.compile(r"[ \t]+\n")
@@ -417,3 +420,186 @@ def extract_pdf_structured(
                 ))
 
     return content
+
+
+# ─── Experiment Table Extraction ───────────────────────────────────────────────
+
+
+def _tables_from_text(text: str, page: int = 0) -> List[ExperimentTableRecord]:
+    """
+    Simple text-based table detector: finds lines with consistent separators
+    (tab, '|', or 2+ spaces) and at least one row of numerical data.
+    Returns list of ExperimentTableRecord (bbox left as zeros — no position info).
+    """
+    lines = text.splitlines()
+    records: List[ExperimentTableRecord] = []
+
+    for i, raw_line in enumerate(lines):
+        line = raw_line.strip()
+        if not line:
+            continue
+
+        # Determine separator
+        if "\t" in line:
+            sep = "\t"
+        elif line.startswith("|") and line.endswith("|"):
+            sep = "|"
+        else:
+            # Multiple spaces — require at least 2 consecutive spaces
+            if "  " not in line:
+                continue
+            sep = "  "
+
+        # Split and validate: header + at least one data row
+        parts = [c.strip() for c in line.split(sep)]
+        parts = [c for c in parts if c != "" and c != "---"]
+        if len(parts) < 2:
+            continue
+
+        # Gather consecutive lines that share the same column count
+        col_count = len(parts)
+        row_lines = [line]
+        for nxt in lines[i + 1 : i + 10]:
+            nxt_stripped = nxt.strip()
+            if not nxt_stripped:
+                break
+            nxt_parts = [c.strip() for c in nxt_stripped.split(sep)]
+            nxt_parts = [c for c in nxt_parts if c != "" and c != "---"]
+            if len(nxt_parts) == col_count:
+                row_lines.append(nxt_stripped)
+            else:
+                break
+
+        # Require at least header + 2 data rows with numbers
+        if len(row_lines) < 3:
+            continue
+
+        # Check for numerical data (at least one cell per row has digits)
+        has_number = any(re.search(r"\d", "".join(l.split(sep)[:col_count])) for l in row_lines)
+        if not has_number:
+            continue
+
+        headers = [c.strip() for c in row_lines[0].split(sep)]
+        headers = [h for h in headers if h and h != "---"]
+        rows_data: List[List[str]] = []
+        for rl in row_lines[1:]:
+            row = [c.strip() for c in rl.split(sep)]
+            row = [c for c in row if c and c != "---"]
+            if len(row) == col_count:
+                rows_data.append(row)
+
+        if not rows_data:
+            continue
+
+        records.append(
+            ExperimentTableRecord(
+                id=0,
+                paper_id="",
+                table_caption="",
+                page=page,
+                headers=headers,
+                rows=rows_data,
+                bbox_x0=0.0,
+                bbox_y0=0.0,
+                bbox_x1=0.0,
+                bbox_y1=0.0,
+                created_at="",
+            )
+        )
+
+    return records
+
+
+def extract_tables(
+    pdf_path: Path,
+    page_start: int = 0,
+    page_end: Optional[int] = None,
+) -> List[ExperimentTableRecord]:
+    """
+    Extract experiment results tables from a PDF.
+
+    Uses PyMuPDF's built-in table detection when available, falling back to
+    a simple text-pattern detector for plain-text extracted pages.
+
+    Returns a list of ExperimentTableRecord objects with headers and rows filled in.
+    Paper_id, table_caption, bbox, and created_at are left as defaults
+    (populate paper_id and caption via db.upsert_experiment_tables after calling this).
+    """
+    try:
+        import fitz
+    except Exception:
+        fitz = None
+
+    records: List[ExperimentTableRecord] = []
+
+    if fitz is not None:
+        try:
+            doc = fitz.open(str(pdf_path))
+        except Exception:
+            doc = None
+
+        if doc is not None:
+            end = page_end if page_end is not None else doc.page_count
+            for page_idx in range(page_start, min(end, doc.page_count)):
+                page = doc[page_idx]
+
+                # Try PyMuPDF's native table detection first
+                try:
+                    table_browse = page.find_tables()
+                    for tbl in table_browse:
+                        rows: List[List[str]] = []
+                        for row in tbl.rows:
+                            cells = [(cell.text or "").strip() for cell in row]
+                            if any(cells):
+                                rows.append(cells)
+
+                        if len(rows) < 2:
+                            continue
+
+                        # Only keep tables with numerical data
+                        has_number = any(re.search(r"\d", "".join(r)) for r in rows)
+                        if not has_number:
+                            continue
+
+                        headers = rows[0]
+                        rows_data = rows[1:]
+
+                        bbox = tbl.bbox if hasattr(tbl, "bbox") else (0.0, 0.0, 0.0, 0.0)
+                        records.append(
+                            ExperimentTableRecord(
+                                id=0,
+                                paper_id="",
+                                table_caption="",
+                                page=page_idx,
+                                headers=headers,
+                                rows=rows_data,
+                                bbox_x0=bbox[0],
+                                bbox_y0=bbox[1],
+                                bbox_x1=bbox[2],
+                                bbox_y1=bbox[3],
+                                created_at="",
+                            )
+                        )
+                except Exception:
+                    pass
+
+                # Fallback: text-pattern tables on this page
+                page_text = (page.get_text("text") or "").strip()
+                if page_text:
+                    text_records = _tables_from_text(page_text, page=page_idx)
+                    for rec in text_records:
+                        if rec not in records:  # avoid dupes when PyMuPDF also found it
+                            records.append(rec)
+
+            doc.close()
+            return records
+
+    # Final fallback: extract plain text from all pages and scan for tables
+    try:
+        plain = extract_pdf_text(pdf_path)
+        if plain:
+            records.extend(_tables_from_text(plain))
+    except Exception:
+        pass
+
+    return records

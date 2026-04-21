@@ -922,15 +922,24 @@ class Database:
             paper_map = {row["id"]: row for row in cur.fetchall()}
 
             results = []
-            for fts_row in fts_rows:
+            # Batch-parse all author JSONs at once to avoid N individual calls.
+            raw_author_list: List[Optional[str]] = [
+                paper_map.get(r["paper_id"])["authors"]
+                if paper_map.get(r["paper_id"]) is not None else None
+                for r in fts_rows
+            ]
+            for fts_row, raw_authors in zip(fts_rows, raw_author_list):
                 pid = fts_row["paper_id"]
                 paper = paper_map.get(pid)
                 if paper is None:
                     continue
-                try:
-                    authors = _parse_authors_cached(paper["authors"])
-                except Exception:
-                    warnings.warn(f"search_papers: failed to parse authors JSON for paper {paper['id']}", stacklevel=2)
+                if raw_authors is not None:
+                    try:
+                        authors = _parse_authors_cached(raw_authors)
+                    except Exception:
+                        warnings.warn(f"search_papers: failed to parse authors JSON for paper {paper['id']}", stacklevel=2)
+                        authors = []
+                else:
                     authors = []
                 results.append(
                     SearchResult(
@@ -1252,9 +1261,33 @@ class Database:
         try:
             cur = self.conn.cursor()
             where_since = " AND a.added_at >= ? " if since else " "
+            # Single query: join papers with itself and fetch all needed columns at once.
             cur.execute(
                 f"""
-                SELECT a.id AS a_id, b.id AS b_id
+                SELECT a.id      AS a_id,
+                       b.id      AS b_id,
+                       a.source  AS a_source,  a.title      AS a_title,
+                       a.authors AS a_authors, a.abstract   AS a_abstract,
+                       a.published    AS a_published,    a.updated      AS a_updated,
+                       a.abs_url      AS a_abs_url,      a.pdf_url      AS a_pdf_url,
+                       a.primary_category AS a_primary_category,
+                       a.journal  AS a_journal,  a.volume    AS a_volume,
+                       a.issue    AS a_issue,    a.page      AS a_page,
+                       a.doi      AS a_doi,      a.categories AS a_categories,
+                       a.parse_status   AS a_parse_status,
+                       a.embed_vector  AS a_embed_vector,
+                       a.added_at AS a_added_at, a.updated_at AS a_updated_at,
+                       b.source  AS b_source,  b.title      AS b_title,
+                       b.authors AS b_authors, b.abstract   AS b_abstract,
+                       b.published    AS b_published,    b.updated      AS b_updated,
+                       b.abs_url      AS b_abs_url,      b.pdf_url      AS b_pdf_url,
+                       b.primary_category AS b_primary_category,
+                       b.journal  AS b_journal,  b.volume    AS b_volume,
+                       b.issue    AS b_issue,    b.page      AS b_page,
+                       b.doi      AS b_doi,      b.categories AS b_categories,
+                       b.parse_status   AS b_parse_status,
+                       b.embed_vector  AS b_embed_vector,
+                       b.added_at AS b_added_at, b.updated_at AS b_updated_at
                 FROM papers a
                 JOIN papers b ON
                     a.id < b.id
@@ -1270,38 +1303,34 @@ class Database:
                 ([since] if since else []),
             )
             pairs: List[Tuple[PaperRecord, PaperRecord]] = []
-            all_ids = []
             for row in cur.fetchall():
-                all_ids.extend([row["a_id"], row["b_id"]])
-            if not all_ids:
-                return []
-            # Bulk fetch all paper records in a single query
-            placeholders = ",".join("?" * len(all_ids))
-            cur.execute(f"SELECT * FROM papers WHERE id IN ({placeholders})", all_ids)
-            paper_map = {row["id"]: row for row in cur.fetchall()}
-            # Re-collect pairs using cached records
-            cur.execute(
-                f"""
-                SELECT a.id AS a_id, b.id AS b_id
-                FROM papers a
-                JOIN papers b ON
-                    a.id < b.id
-                    AND (
-                        (a.doi IS NOT NULL AND a.doi = b.doi AND a.doi != '')
-                        OR
-                        (a.title IS NOT NULL AND a.title != '' AND a.title = b.title)
-                    )
-                WHERE 1=1
-                {where_since}
-                ORDER BY a.added_at DESC
-                """,
-                ([since] if since else []),
-            )
-            for row in cur.fetchall():
-                a_row = paper_map.get(row["a_id"])
-                b_row = paper_map.get(row["b_id"])
-                if a_row and b_row:
-                    pairs.append((PaperRecord.from_row(a_row), PaperRecord.from_row(b_row)))
+                a_record = PaperRecord(
+                    id=row["a_id"], source=row["a_source"], title=row["a_title"],
+                    authors=row["a_authors"], abstract=row["a_abstract"],
+                    published=row["a_published"], updated=row["a_updated"],
+                    abs_url=row["a_abs_url"], pdf_url=row["a_pdf_url"],
+                    primary_category=row["a_primary_category"],
+                    journal=row["a_journal"], volume=row["a_volume"],
+                    issue=row["a_issue"], page=row["a_page"],
+                    doi=row["a_doi"], categories=row["a_categories"],
+                    parse_status=row["a_parse_status"],
+                    embed_vector=row["a_embed_vector"],
+                    added_at=row["a_added_at"], updated_at=row["a_updated_at"],
+                )
+                b_record = PaperRecord(
+                    id=row["b_id"], source=row["b_source"], title=row["b_title"],
+                    authors=row["b_authors"], abstract=row["b_abstract"],
+                    published=row["b_published"], updated=row["b_updated"],
+                    abs_url=row["b_abs_url"], pdf_url=row["b_pdf_url"],
+                    primary_category=row["b_primary_category"],
+                    journal=row["b_journal"], volume=row["b_volume"],
+                    issue=row["b_issue"], page=row["b_page"],
+                    doi=row["b_doi"], categories=row["b_categories"],
+                    parse_status=row["b_parse_status"],
+                    embed_vector=row["b_embed_vector"],
+                    added_at=row["b_added_at"], updated_at=row["b_updated_at"],
+                )
+                pairs.append((a_record, b_record))
             return pairs
         except sqlite3.Error as e:
             raise DatabaseError(f"find_duplicates failed: {e}") from e
@@ -1607,7 +1636,13 @@ class Database:
 
     # ── Embeddings (semantic dedup) ────────────────────────────────────────────
 
-    EMBEDDING_DIM = 768  # nomic-embed-text
+    # Provide EMBEDDING_DIM as a class-level alias so existing call sites
+    # (e.g. code that reads cls.EMBEDDING_DIM) keep working.
+    # Actual value is loaded from the config module at runtime.
+    @property
+    def EMBEDDING_DIM(self) -> int:  # type: ignore[override]
+        from config import EMBEDDING_DIM as _d
+        return _d
 
     def set_embedding(self, paper_id: str, vector: List[float]) -> bool:
         """Store an embedding vector (list of floats) for a paper."""

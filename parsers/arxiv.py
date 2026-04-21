@@ -1,5 +1,6 @@
 """arXiv API metadata fetching."""
 import logging
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List
 
@@ -12,6 +13,37 @@ logger = logging.getLogger(__name__)
 from core.cache import get_cached, set_cached
 from core.retry import circuit_breaker
 
+# ─── Rate limiting ────────────────────────────────────────────────────────────
+# arXiv API guidelines: < 1 request per 3 seconds
+_ARXIV_RATE_LIMIT_DELAY = 3.0  # seconds between requests
+_last_arxiv_request_time = 0.0
+
+
+def _rate_limit() -> None:
+    """Enforce ~1 request per 3 seconds for the arXiv API."""
+    global _last_arxiv_request_time
+    now = time.monotonic()
+    elapsed = now - _last_arxiv_request_time
+    if elapsed < _ARXIV_RATE_LIMIT_DELAY:
+        time.sleep(_ARXIV_RATE_LIMIT_DELAY - elapsed)
+    _last_arxiv_request_time = time.monotonic()
+
+
+def _fetch_with_rate_limit_and_backoff(url: str, timeout: int) -> requests.Response:
+    """GET url with rate limiting + exponential backoff on 429."""
+    _rate_limit()
+    r = requests.get(url, timeout=timeout)
+    if r.status_code == 429:
+        # Exponential backoff: try 2, 4, 8 seconds
+        for delay in [2.0, 4.0, 8.0]:
+            logger.warning("arXiv API rate-limited (429). Retrying in %.1fs.", delay)
+            time.sleep(delay)
+            r = requests.get(url, timeout=timeout)
+            if r.status_code != 429:
+                break
+    r.raise_for_status()
+    return r
+
 
 @circuit_breaker(failure_threshold=5, recovery_timeout=60.0)
 def fetch_arxiv_metadata(arxiv_id: str, timeout: int = 30) -> Paper:
@@ -20,8 +52,7 @@ def fetch_arxiv_metadata(arxiv_id: str, timeout: int = 30) -> Paper:
         return _dict_to_paper(cached)
 
     url = ARXIV_API.format(arxiv_id=arxiv_id)
-    r = requests.get(url, timeout=timeout)
-    r.raise_for_status()
+    r = _fetch_with_rate_limit_and_backoff(url, timeout=timeout)
     feed = feedparser.parse(r.text)
     if not feed.entries:
         raise ValueError(f"arXiv API returned no entries for id: {arxiv_id}")
@@ -227,8 +258,7 @@ def fetch_arxiv_metadata_batch(arxiv_ids: List[str], timeout: int = 60) -> List[
     url = f"https://export.arxiv.org/api/query?id_list={id_list_str}"
 
     try:
-        r = requests.get(url, timeout=timeout)
-        r.raise_for_status()
+        r = _fetch_with_rate_limit_and_backoff(url, timeout=timeout)
         feed = feedparser.parse(r.text)
 
         found_ids = set()

@@ -117,11 +117,11 @@ def _build_research_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("-v", "--verbose", action="store_true", default=False, help="Verbose output")
     p.add_argument("--lang", type=str, default="zh", choices=["en", "zh", "e", "z"], help="Output language (default: zh)")
     p.add_argument(
-        "--async",
-        dest="async_mode",
+        "--sync",
+        dest="sync_mode",
         action="store_true",
         default=False,
-        help="Use async I/O for concurrent PDF download and LLM streaming",
+        help="Use synchronous I/O (async is the default)",
     )
     p.add_argument(
         "--progress",
@@ -142,18 +142,31 @@ def _run_research_cmd(args: argparse.Namespace) -> int:
 
     set_lang(args.lang)
 
-    # --progress implies --async
+    # --progress implies --async (progress only works with async mode)
     if args.progress:
-        args.async_mode = True
+        args.sync_mode = False
 
     output_dir = Path(args.output) if args.output else None
     tags = args.tags if args.tags else []
     skip_existing = not args.no_skip
 
-    # progress_callback prints each streaming chunk to stdout
-    progress_cb = sys.stdout.write if args.progress else None
+    # progress_callback prints each streaming chunk to stdout (only works with async)
+    progress_cb = sys.stdout.write if args.progress and not args.sync_mode else None
 
-    if args.async_mode:
+    if args.sync_mode:
+        paths = run_research(
+            query=args.query,
+            limit=args.limit,
+            output_dir=output_dir,
+            download_pdfs=not args.no_pdf,
+            skip_existing=skip_existing,
+            tags=tags,
+            model=args.model,
+            base_url=args.base_url or None,
+            api_key=(args.api_key or None) if not args.no_ai else "",
+            verbose=args.verbose,
+        )
+    else:
         paths = asyncio.run(
             arun_research(
                 query=args.query,
@@ -168,19 +181,6 @@ def _run_research_cmd(args: argparse.Namespace) -> int:
                 verbose=args.verbose,
                 progress_callback=progress_cb,
             )
-        )
-    else:
-        paths = run_research(
-            query=args.query,
-            limit=args.limit,
-            output_dir=output_dir,
-            download_pdfs=not args.no_pdf,
-            skip_existing=skip_existing,
-            tags=tags,
-            model=args.model,
-            base_url=args.base_url or None,
-            api_key=(args.api_key or None) if not args.no_ai else "",
-            verbose=args.verbose,
         )
 
     if not paths:
@@ -2419,6 +2419,14 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
+    # Resolve model default from config when not explicitly provided on the CLI
+    if getattr(args, "model", None) is None:
+        try:
+            from config import DEFAULT_LLM_MODEL_CLI as _cli_default
+            args.model = _cli_default  # type: ignore[attr-defined]
+        except Exception:
+            args.model = "qwen3.5-plus"  # historical hardcoded fallback  # type: ignore[attr-defined]
+
     if args.subcmd == "search":
         return _run_search(args)
     elif args.subcmd == "list":
@@ -2485,7 +2493,7 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--ai-cnote", action="store_true", help="AI-fill all C-Notes from existing P-Notes (standalone mode; skips paper processing)")
     parser.add_argument("--ai-max-papers", type=int, default=10, help="Max P-notes to feed per C-note (default: 10)")
     parser.add_argument("--api-key", default="", help="LLM API key (or set OPENAI_API_KEY env)")
-    parser.add_argument("--model", default="qwen3.5-plus", help="LLM model name (OpenAI-compatible)")
+    parser.add_argument("--model", default=None, help="LLM model name (OpenAI-compatible; defaults to AIROS_DEFAULT_MODEL_CLI env var)")
     parser.add_argument("--base-url", default="https://dashscope.aliyuncs.com/compatible-mode/v1", help="OpenAI-compatible base url")
     parser.add_argument("--ai-max-chars", type=int, default=24000, help="Max chars of extracted text sent to AI")
     args = parser.parse_args(argv if argv is not None else sys.argv[1:])

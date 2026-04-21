@@ -38,6 +38,13 @@ from updaters.timeline import update_timeline
 # Default: max papers to process in one run
 DEFAULT_LIMIT = 5
 
+# Default LLM model — loaded from config to stay in sync with env var
+try:
+    from config import DEFAULT_LLM_MODEL_RESEARCH as _DEFAULT_MODEL
+except Exception:
+    _DEFAULT_MODEL = "gpt-4o-mini"
+DEFAULT_LLM_MODEL = _DEFAULT_MODEL
+
 
 def run_research(
     query: str,
@@ -46,7 +53,7 @@ def run_research(
     max_text_len: int = 8000,
     base_url: Optional[str] = None,
     api_key: Optional[str] = None,
-    model: str = "gpt-4o-mini",
+    model: str = DEFAULT_LLM_MODEL,
     tags: Optional[List[str]] = None,
     download_pdfs: bool = True,
     skip_existing: bool = True,
@@ -364,7 +371,7 @@ async def arun_research(
     max_text_len: int = 8000,
     base_url: Optional[str] = None,
     api_key: Optional[str] = None,
-    model: str = "gpt-4o-mini",
+    model: str = DEFAULT_LLM_MODEL,
     tags: Optional[List[str]] = None,
     download_pdfs: bool = True,
     skip_existing: bool = True,
@@ -436,7 +443,6 @@ async def arun_research(
         return output_paths
 
     sem = asyncio.Semaphore(3)
-    loop = asyncio.get_running_loop()
 
     async def _process_one(
         paper: Paper,
@@ -461,10 +467,8 @@ async def arun_research(
                         await download_pdf_async(paper.pdf_url, pdf_path, timeout=60)
                         if verbose:
                             print(f"  [pdf] Downloaded: {pdf_path.name} ({pdf_path.stat().st_size / 1024:.0f} KB)")
-                        # CPU-bound: run in executor to avoid blocking the event loop
-                        extracted_text = await loop.run_in_executor(
-                            None, lambda: extract_pdf_text(pdf_path, max_pages=15)
-                        )
+                        # CPU-bound: run in thread pool to avoid blocking the event loop
+                        extracted_text = await asyncio.to_thread(extract_pdf_text, pdf_path, max_pages=15)
                         if len(extracted_text) > max_text_len:
                             extracted_text = extracted_text[:max_text_len] + "\n\n[... truncated ...]"
                         if verbose and extracted_text:
