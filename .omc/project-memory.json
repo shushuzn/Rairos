@@ -298,8 +298,14 @@
   "hotPaths": [
     {
       "path": "cli.py",
-      "accessCount": 136,
-      "lastAccessed": 1776769900955,
+      "accessCount": 155,
+      "lastAccessed": 1776772387233,
+      "type": "file"
+    },
+    {
+      "path": "research_loop\\__init__.py",
+      "accessCount": 103,
+      "lastAccessed": 1776772359830,
       "type": "file"
     },
     {
@@ -309,33 +315,33 @@
       "type": "file"
     },
     {
-      "path": "research_loop\\__init__.py",
-      "accessCount": 86,
-      "lastAccessed": 1776769704217,
-      "type": "file"
-    },
-    {
       "path": "db\\database.py",
-      "accessCount": 63,
-      "lastAccessed": 1776766461039,
+      "accessCount": 72,
+      "lastAccessed": 1776772419043,
       "type": "file"
     },
     {
       "path": "llm\\generate.py",
-      "accessCount": 46,
-      "lastAccessed": 1776769720343,
+      "accessCount": 51,
+      "lastAccessed": 1776772223654,
       "type": "file"
     },
     {
       "path": "",
-      "accessCount": 27,
-      "lastAccessed": 1776768951279,
+      "accessCount": 39,
+      "lastAccessed": 1776772275300,
       "type": "directory"
     },
     {
       "path": "pdf\\extract.py",
-      "accessCount": 24,
-      "lastAccessed": 1776766526905,
+      "accessCount": 28,
+      "lastAccessed": 1776772224089,
+      "type": "file"
+    },
+    {
+      "path": "llm\\parse.py",
+      "accessCount": 20,
+      "lastAccessed": 1776772399762,
       "type": "file"
     },
     {
@@ -352,14 +358,20 @@
     },
     {
       "path": "parsers\\arxiv.py",
-      "accessCount": 15,
-      "lastAccessed": 1776765346567,
+      "accessCount": 16,
+      "lastAccessed": 1776772235192,
       "type": "file"
     },
     {
       "path": "notes\\cnote.py",
+      "accessCount": 16,
+      "lastAccessed": 1776772371584,
+      "type": "file"
+    },
+    {
+      "path": "llm\\client.py",
       "accessCount": 13,
-      "lastAccessed": 1776769038994,
+      "lastAccessed": 1776772223890,
       "type": "file"
     },
     {
@@ -369,21 +381,9 @@
       "type": "directory"
     },
     {
-      "path": "llm\\client.py",
-      "accessCount": 11,
-      "lastAccessed": 1776769635331,
-      "type": "file"
-    },
-    {
-      "path": "llm\\parse.py",
-      "accessCount": 8,
-      "lastAccessed": 1776769547642,
-      "type": "file"
-    },
-    {
       "path": "core\\retry.py",
-      "accessCount": 7,
-      "lastAccessed": 1776765141380,
+      "accessCount": 8,
+      "lastAccessed": 1776772245896,
       "type": "file"
     },
     {
@@ -412,8 +412,14 @@
     },
     {
       "path": "pyproject.toml",
-      "accessCount": 4,
-      "lastAccessed": 1776762184256,
+      "accessCount": 5,
+      "lastAccessed": 1776771243880,
+      "type": "file"
+    },
+    {
+      "path": "updaters\\radar.py",
+      "accessCount": 5,
+      "lastAccessed": 1776772235344,
       "type": "file"
     },
     {
@@ -429,12 +435,6 @@
       "type": "directory"
     },
     {
-      "path": "updaters\\radar.py",
-      "accessCount": 4,
-      "lastAccessed": 1776769100436,
-      "type": "file"
-    },
-    {
       "path": "tests\\test_cli_import.py",
       "accessCount": 3,
       "lastAccessed": 1776743954909,
@@ -445,6 +445,12 @@
       "accessCount": 3,
       "lastAccessed": 1776765171474,
       "type": "directory"
+    },
+    {
+      "path": "parsers\\arxiv_search.py",
+      "accessCount": 3,
+      "lastAccessed": 1776772223955,
+      "type": "file"
     },
     {
       "path": "pdf",
@@ -465,9 +471,15 @@
       "type": "directory"
     },
     {
-      "path": "parsers\\arxiv_search.py",
+      "path": "core\\cache.py",
       "accessCount": 2,
-      "lastAccessed": 1776765184746,
+      "lastAccessed": 1776772245681,
+      "type": "file"
+    },
+    {
+      "path": "tests\\conftest.py",
+      "accessCount": 2,
+      "lastAccessed": 1776772275536,
       "type": "file"
     },
     {
@@ -487,12 +499,6 @@
       "accessCount": 1,
       "lastAccessed": 1776746732386,
       "type": "directory"
-    },
-    {
-      "path": "tests\\conftest.py",
-      "accessCount": 1,
-      "lastAccessed": 1776746985583,
-      "type": "file"
     },
     {
       "path": "llm/client.py",
@@ -583,12 +589,6 @@
       "accessCount": 1,
       "lastAccessed": 1776765137260,
       "type": "directory"
-    },
-    {
-      "path": "core\\cache.py",
-      "accessCount": 1,
-      "lastAccessed": 1776765151170,
-      "type": "file"
     },
     {
       "path": "C:\\Users\\adm\\.claude\\projects\\D--OpenClaw-workspace\\memory\\rules_memory_limit.md",

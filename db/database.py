@@ -181,9 +181,6 @@ class ExperimentTableRecord:
     bbox_x1: float
     bbox_y1: float
     created_at: str
-    bbox_x1: float
-    bbox_y1: float
-    created_at: str
 
 
 @dataclass

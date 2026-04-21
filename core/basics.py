@@ -2,6 +2,7 @@
 import json
 import os
 import re
+from functools import lru_cache
 from pathlib import Path
 
 # Canonical research tree directory names (in display order)
@@ -26,6 +27,7 @@ def _get_config_path() -> Path:
     return Path(os.path.expanduser("~/.ai_research_os/categories.json"))
 
 
+@lru_cache(maxsize=8)
 def get_research_dirs() -> list:
     """
     Return the list of research tree directory names.
@@ -64,14 +66,19 @@ def get_default_radar_dir() -> str:
     return dirs[0] if dirs else "00-Radar"
 
 
+_RE_SPACES = re.compile(r" {2,}")
+_RE_NONWORD = re.compile(r"[^\w\s\-]")
+_RE_DASHES = re.compile(r"-{2,}")
+
+
 def slugify_title(title: str, max_len: int = 80) -> str:
     if not title:
         return "Paper"
     t = title.strip()
-    t = re.sub(r"\s+", " ", t)
-    t = re.sub(r"[^\w\s\-]", "", t, flags=re.UNICODE)
+    t = _RE_SPACES.sub(" ", t)
+    t = _RE_NONWORD.sub("", t)
     t = t.replace(" ", "-")
-    t = re.sub(r"-{2,}", "-", t).strip("-_")
+    t = _RE_DASHES.sub("-", t).strip("-_")
     if len(t) > max_len:
         t = t[:max_len].rstrip("-_")
     return t or "Paper"

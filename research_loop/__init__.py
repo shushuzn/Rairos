@@ -375,7 +375,7 @@ async def arun_research(
 
     # Resolve API credentials
     api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
-    base_url = base_url or os.environ.get("OPEN_BASE_URL", "https://api.openai.com/v1")
+    base_url = base_url or os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
 
     if not api_key:
         warnings.warn(

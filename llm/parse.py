@@ -5,6 +5,7 @@ Extracts:
 - rubric: dict with novelty/leverage/evidence/cost/moat/adoption/overall
 - raw_md: the full raw output (unchanged, for direct rendering)
 """
+import json
 import re
 from typing import Any
 
@@ -132,7 +133,6 @@ def _parse_rubric_json(json_str: str) -> dict[str, Any]:
     json_str = re.sub(r',(\s*})', r'\1', json_str)
     # Try to fix unquoted keys
     try:
-        import json
         return json.loads(json_str)
     except Exception:
         pass

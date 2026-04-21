@@ -34,17 +34,17 @@ from sections.segment import format_section_snippets, segment_into_sections, seg
 from updaters.radar import update_radar
 from updaters.timeline import update_timeline
 
-KEYWORD_TAGS = [
-    (r"\bagent(s)?\b|tool\s*use|function\s*calling", "Agent"),
-    (r"\brag\b|retrieval\-augmented|retrieval augmented", "RAG"),
-    (r"\bmoe\b|mixture of experts", "MoE"),
-    (r"\brlhf\b|preference optimization|dpo\b", "Alignment"),
-    (r"\bevaluation\b|benchmark", "Evaluation"),
-    (r"\bcompiler\b|kernel|cuda|inference", "Infrastructure"),
-    (r"\bmultimodal\b|vision|audio", "Multimodal"),
-    (r"\bcompression\b|quantization|distillation", "Optimization"),
-    (r"\blong context\b|context length", "LongContext"),
-    (r"\bsafety\b|jailbreak|red teaming", "Safety"),
+_KEYWORD_TAG_PATTERNS = [
+    (re.compile(r"\bagent(s)?\b|tool\s*use|function\s*calling", re.I), "Agent"),
+    (re.compile(r"\brag\b|retrieval\-augmented|retrieval augmented", re.I), "RAG"),
+    (re.compile(r"\bmoe\b|mixture of experts", re.I), "MoE"),
+    (re.compile(r"\brlhf\b|preference optimization|dpo\b", re.I), "Alignment"),
+    (re.compile(r"\bevaluation\b|benchmark", re.I), "Evaluation"),
+    (re.compile(r"\bcompiler\b|kernel|cuda|inference", re.I), "Infrastructure"),
+    (re.compile(r"\bmultimodal\b|vision|audio", re.I), "Multimodal"),
+    (re.compile(r"\bcompression\b|quantization|distillation", re.I), "Optimization"),
+    (re.compile(r"\blong context\b|context length", re.I), "LongContext"),
+    (re.compile(r"\bsafety\b|jailbreak|red teaming", re.I), "Safety"),
 ]
 
 
@@ -53,8 +53,8 @@ def infer_tags_if_empty(tags: List[str], paper: Paper) -> List[str]:
         return tags
     text = f"{paper.title}\n{paper.abstract}".lower()
     out = []
-    for pat, tg in KEYWORD_TAGS:
-        if re.search(pat, text, flags=re.I):
+    for pat, tg in _KEYWORD_TAG_PATTERNS:
+        if pat.search(text):
             out.append(tg)
     return out if out else ["Unsorted"]
 
