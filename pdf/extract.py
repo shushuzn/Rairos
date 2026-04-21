@@ -1,5 +1,4 @@
 """PDF download and text extraction."""
-import json
 import re
 from dataclasses import dataclass, field
 from enum import Enum

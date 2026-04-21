@@ -1,7 +1,6 @@
 """Tests for updaters module (timeline and radar)."""
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -54,7 +53,7 @@ class TestUpdateTimeline:
     def test_adds_new_year_section(self, tmp_path):
         root = tmp_path / "research"
         root.mkdir()
-        p = ensure_timeline(root)  # create empty timeline
+        _ = ensure_timeline(root)  # create empty timeline
 
         note_path = _mkp(root, "01-Foundations/test-note.md")
 
