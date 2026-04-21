@@ -7,6 +7,7 @@ import requests
 
 from core import CROSSREF_WORKS, DOI_RESOLVER, Paper
 from core.cache import get_cached, set_cached
+from core.retry import circuit_breaker
 from parsers.input_detection import normalize_arxiv_id
 
 
@@ -126,6 +127,7 @@ def _dict_to_paper_crossref(d: dict) -> Tuple[Paper, Optional[str]]:
     return p, d.get("maybe_arxiv")
 
 
+@circuit_breaker(failure_threshold=5, recovery_timeout=60.0)
 def fetch_crossref_metadata(doi: str, timeout: int = 30) -> Tuple[Paper, Optional[str]]:
     """
     Crossref failures (404/network) will NOT crash.

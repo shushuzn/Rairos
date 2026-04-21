@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"python -c \\\"\\nfrom unittest.mock import patch\\nimport sys\\nsys.path.insert(0, '.')\\n\\n# Simulate what happens in the test\\nfrom notes.cnote import auto_fill_cnotes_with_ai\\nfrom notes impo...",
-  "error": "Exit code 1\nTraceback (most recent call last):\r\n  File \"<string>\", line 11, in <module>\r\nAttributeError: module 'notes.cnote' has no attribute 'ai_generate_cnote_draft'",
-  "timestamp": "2026-04-21T07:34:49.656Z",
-  "retry_count": 1
+  "tool_input_preview": "{\"command\":\"gh auth status 2>&1\"}",
+  "error": "Exit code 1\nfailed to migrate config: cowardly refusing to continue with multi account migration: couldn't get user name for \"github.com\" please visit https://github.com/cli/cli/issues/8441 for help: non-200 OK status code: 401 Unauthorized body: \"{\\r\\n  \\\"message\\\": \\\"Bad credentials\\\",\\r\\n  \\\"documentation_url\\\": \\\"https://docs.github.com/rest\\\",\\r\\n  \\\"status\\\": \\\"401\\\"\\r\\n}\"",
+  "timestamp": "2026-04-21T10:09:03.629Z",
+  "retry_count": 2
 }

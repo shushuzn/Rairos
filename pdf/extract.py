@@ -9,13 +9,47 @@ import requests
 
 
 def download_pdf(pdf_url: str, out_path: Path, timeout: int = 60) -> None:
+    """Download PDF with resume support. Overwrites out_path on success."""
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    with requests.get(pdf_url, stream=True, timeout=timeout, allow_redirects=True) as r:
-        r.raise_for_status()
-        with open(out_path, "wb") as f:
-            for chunk in r.iter_content(chunk_size=1024 * 1024):
-                if chunk:
-                    f.write(chunk)
+    resume_path = out_path.with_suffix(".part")
+    existing_size = 0
+    headers = {}
+    if resume_path.exists():
+        existing_size = resume_path.stat().st_size
+        if existing_size > 0:
+            headers["Range"] = f"bytes={existing_size}-"
+    try:
+        with requests.get(pdf_url, headers=headers, stream=True, timeout=timeout, allow_redirects=True) as r:
+            # Check if server supports Range
+            supports_range = r.status_code == 206 or (
+                existing_size > 0
+                and r.headers.get("Accept-Ranges", "none") != "none"
+            )
+            if supports_range and existing_size > 0:
+                # Resume: append to existing partial file
+                with open(resume_path, "ab") as f:
+                    for chunk in r.iter_content(chunk_size=1024 * 1024):
+                        if chunk:
+                            f.write(chunk)
+            else:
+                # No resume support or no partial file: overwrite
+                r.raise_for_status()
+                resume_path.unlink(missing_ok=True)
+                with open(out_path, "wb") as f:
+                    for chunk in r.iter_content(chunk_size=1024 * 1024):
+                        if chunk:
+                            f.write(chunk)
+                return
+    except requests.exceptions.HTTPError as e:
+        if e.response is not None and e.response.status_code == 416:  # Range not satisfiable
+            resume_path.unlink(missing_ok=True)
+            raise RuntimeError(f"Requested range not satisfiable for {pdf_url}") from e
+        raise
+    # Finalize: rename .part → target
+    if resume_path.exists() and resume_path.stat().st_size > 0:
+        resume_path.rename(out_path)
+    elif not out_path.exists():
+        raise RuntimeError(f"Download failed for {pdf_url}: no content received")
 
 
 def extract_pdf_text(pdf_path: Path, max_pages: Optional[int] = None) -> str:
@@ -305,22 +339,14 @@ def extract_pdf_structured(
                     rows.append(cells)
 
                 if rows:
-                    # Build markdown table
+                    # Build markdown table efficiently using str.join instead of per-cell concatenation
                     col_count = max(len(r) for r in rows) if rows else 0
                     md_lines = []
                     header = rows[0] if rows else []
-                    md_lines.append(
-                        "| "
-                        + " | ".join(header[i] if i < len(header) else "" for i in range(col_count))
-                        + " |"
-                    )
+                    md_lines.append("| " + " | ".join(header[i] if i < len(header) else "" for i in range(col_count)) + " |")
                     md_lines.append("|" + "|".join(" --- " for _ in range(col_count)) + "|")
                     for row in rows[1:]:
-                        md_lines.append(
-                            "| "
-                            + " | ".join(row[i] if i < len(row) else "" for i in range(col_count))
-                            + " |"
-                        )
+                        md_lines.append("| " + " | ".join(row[i] if i < len(row) else "" for i in range(col_count)) + " |")
 
                     table_text = "\n".join(md_lines)
                     bbox = tbl.bbox if hasattr(tbl, "bbox") else (0, 0, 0, 0)
@@ -329,6 +355,13 @@ def extract_pdf_structured(
             pass  # table detection is best-effort
 
         # ── Block-level text extraction ───────────────────────────────────────
+        # Cache full text once to avoid calling get_text twice per page
+        try:
+            _raw = page.get_text("text") or ""
+            page_text_full = _raw if isinstance(_raw, str) else ""
+        except Exception:
+            page_text_full = ""
+
         try:
             page_dict = page.get_text("dict", flags=fitz.TEXTFLAGS_BLOCKS)
         except Exception:
@@ -370,12 +403,8 @@ def extract_pdf_structured(
                     content.math_blocks.append(im)
 
         # ── Check for display math lines missed by block approach ─────────────
-        try:
-            raw_lines = page.get_text("text").splitlines()
-        except Exception:
-            raw_lines = []
-
-        for raw_line in raw_lines:
+        # Reuse page_text_full already fetched above (avoids second get_text call)
+        for raw_line in (page_text_full or "").splitlines():
             if _is_display_math(raw_line):
                 content.math_blocks.append(MathBlock(
                     text=raw_line.strip(),

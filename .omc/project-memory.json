@@ -297,34 +297,64 @@
   },
   "hotPaths": [
     {
+      "path": "cli.py",
+      "accessCount": 117,
+      "lastAccessed": 1776765917314,
+      "type": "file"
+    },
+    {
       "path": "tests\\test_notes_cnote.py",
       "accessCount": 91,
       "lastAccessed": 1776757235983,
       "type": "file"
     },
     {
-      "path": "cli.py",
-      "accessCount": 57,
-      "lastAccessed": 1776745842132,
-      "type": "file"
-    },
-    {
-      "path": "llm\\generate.py",
-      "accessCount": 29,
-      "lastAccessed": 1776757081528,
+      "path": "research_loop\\__init__.py",
+      "accessCount": 70,
+      "lastAccessed": 1776766603826,
       "type": "file"
     },
     {
       "path": "db\\database.py",
-      "accessCount": 17,
-      "lastAccessed": 1776744436271,
+      "accessCount": 63,
+      "lastAccessed": 1776766461039,
+      "type": "file"
+    },
+    {
+      "path": "llm\\generate.py",
+      "accessCount": 38,
+      "lastAccessed": 1776765028302,
       "type": "file"
     },
     {
       "path": "",
-      "accessCount": 13,
-      "lastAccessed": 1776744674279,
+      "accessCount": 26,
+      "lastAccessed": 1776765558129,
       "type": "directory"
+    },
+    {
+      "path": "pdf\\extract.py",
+      "accessCount": 24,
+      "lastAccessed": 1776766526905,
+      "type": "file"
+    },
+    {
+      "path": "tests\\test_ai_research_os.py",
+      "accessCount": 18,
+      "lastAccessed": 1776766478596,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\adm\\.claude\\projects\\D--OpenClaw-workspace\\memory\\ai_research_os_optimizations_20260421.md",
+      "accessCount": 16,
+      "lastAccessed": 1776765119522,
+      "type": "file"
+    },
+    {
+      "path": "parsers\\arxiv.py",
+      "accessCount": 15,
+      "lastAccessed": 1776765346567,
+      "type": "file"
     },
     {
       "path": "tests/test_notes_cnote.py",
@@ -333,28 +363,70 @@
       "type": "directory"
     },
     {
-      "path": "research_loop\\__init__.py",
-      "accessCount": 10,
-      "lastAccessed": 1776745534359,
-      "type": "file"
-    },
-    {
       "path": "notes\\cnote.py",
-      "accessCount": 8,
-      "lastAccessed": 1776757188802,
+      "accessCount": 9,
+      "lastAccessed": 1776762170392,
       "type": "file"
     },
     {
-      "path": "C:\\Users\\adm\\.claude\\projects\\D--OpenClaw-workspace\\memory\\ai_research_os_optimizations_20260421.md",
-      "accessCount": 6,
-      "lastAccessed": 1776744597978,
+      "path": "llm\\client.py",
+      "accessCount": 8,
+      "lastAccessed": 1776766469620,
+      "type": "file"
+    },
+    {
+      "path": "core\\retry.py",
+      "accessCount": 7,
+      "lastAccessed": 1776765141380,
+      "type": "file"
+    },
+    {
+      "path": "llm\\parse.py",
+      "accessCount": 7,
+      "lastAccessed": 1776765365905,
       "type": "file"
     },
     {
       "path": "rankers\\cosine.py",
-      "accessCount": 5,
-      "lastAccessed": 1776745413290,
+      "accessCount": 6,
+      "lastAccessed": 1776762170411,
       "type": "file"
+    },
+    {
+      "path": "ai_research_os.py",
+      "accessCount": 6,
+      "lastAccessed": 1776764593061,
+      "type": "directory"
+    },
+    {
+      "path": "db",
+      "accessCount": 5,
+      "lastAccessed": 1776764948443,
+      "type": "directory"
+    },
+    {
+      "path": "parsers\\crossref.py",
+      "accessCount": 5,
+      "lastAccessed": 1776765180024,
+      "type": "file"
+    },
+    {
+      "path": "pyproject.toml",
+      "accessCount": 4,
+      "lastAccessed": 1776762184256,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\adm\\.claude\\projects\\D--OpenClaw-workspace\\memory\\MEMORY.md",
+      "accessCount": 4,
+      "lastAccessed": 1776765256518,
+      "type": "file"
+    },
+    {
+      "path": "tests\\test_research_loop.py",
+      "accessCount": 4,
+      "lastAccessed": 1776766576742,
+      "type": "directory"
     },
     {
       "path": "tests\\test_cli_import.py",
@@ -363,21 +435,9 @@
       "type": "directory"
     },
     {
-      "path": "db",
+      "path": "llm",
       "accessCount": 3,
-      "lastAccessed": 1776744211393,
-      "type": "directory"
-    },
-    {
-      "path": "pyproject.toml",
-      "accessCount": 3,
-      "lastAccessed": 1776745740004,
-      "type": "file"
-    },
-    {
-      "path": "ai_research_os.py",
-      "accessCount": 3,
-      "lastAccessed": 1776752739095,
+      "lastAccessed": 1776765171474,
       "type": "directory"
     },
     {
@@ -387,28 +447,22 @@
       "type": "directory"
     },
     {
-      "path": "C:\\Users\\adm\\.claude\\projects\\D--OpenClaw-workspace\\memory\\MEMORY.md",
-      "accessCount": 2,
-      "lastAccessed": 1776744080913,
-      "type": "file"
-    },
-    {
       "path": "llm/generate.py",
       "accessCount": 2,
       "lastAccessed": 1776747384472,
       "type": "directory"
     },
     {
-      "path": "parsers\\arxiv_search.py",
-      "accessCount": 1,
-      "lastAccessed": 1776744014390,
-      "type": "file"
+      "path": "parsers",
+      "accessCount": 2,
+      "lastAccessed": 1776764997885,
+      "type": "directory"
     },
     {
-      "path": "llm",
-      "accessCount": 1,
-      "lastAccessed": 1776744241157,
-      "type": "directory"
+      "path": "parsers\\arxiv_search.py",
+      "accessCount": 2,
+      "lastAccessed": 1776765184746,
+      "type": "file"
     },
     {
       "path": "updaters\\radar.py",
@@ -426,12 +480,6 @@
       "path": "rankers\\base.py",
       "accessCount": 1,
       "lastAccessed": 1776745403841,
-      "type": "directory"
-    },
-    {
-      "path": "tests\\test_research_loop.py",
-      "accessCount": 1,
-      "lastAccessed": 1776745459583,
       "type": "directory"
     },
     {
@@ -474,6 +522,78 @@
       "path": "tests\\test_unit_ai.py",
       "accessCount": 1,
       "lastAccessed": 1776757030933,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 1,
+      "lastAccessed": 1776762145764,
+      "type": "file"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "accessCount": 1,
+      "lastAccessed": 1776762170084,
+      "type": "file"
+    },
+    {
+      "path": "docs\\architecture.md",
+      "accessCount": 1,
+      "lastAccessed": 1776762170467,
+      "type": "file"
+    },
+    {
+      "path": "docs\\specs\\phase1-spec.md",
+      "accessCount": 1,
+      "lastAccessed": 1776762184099,
+      "type": "file"
+    },
+    {
+      "path": "docs\\specs\\phase3-citation-graph-spec.md",
+      "accessCount": 1,
+      "lastAccessed": 1776762184236,
+      "type": "file"
+    },
+    {
+      "path": "docs\\specs\\phase2-spec.md",
+      "accessCount": 1,
+      "lastAccessed": 1776762205543,
+      "type": "file"
+    },
+    {
+      "path": "sections\\segment.py",
+      "accessCount": 1,
+      "lastAccessed": 1776763479787,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\adm\\.claude\\projects\\D--OpenClaw-workspace\\memory\\user_chinese.md",
+      "accessCount": 1,
+      "lastAccessed": 1776764462915,
+      "type": "file"
+    },
+    {
+      "path": "research_loop",
+      "accessCount": 1,
+      "lastAccessed": 1776764961804,
+      "type": "directory"
+    },
+    {
+      "path": "core",
+      "accessCount": 1,
+      "lastAccessed": 1776765137260,
+      "type": "directory"
+    },
+    {
+      "path": "core\\cache.py",
+      "accessCount": 1,
+      "lastAccessed": 1776765151170,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\adm\\.claude\\projects\\D--OpenClaw-workspace\\memory\\rules_memory_limit.md",
+      "accessCount": 1,
+      "lastAccessed": 1776765245381,
       "type": "file"
     }
   ],
