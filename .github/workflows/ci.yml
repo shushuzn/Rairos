@@ -90,10 +90,32 @@ jobs:
           path: pytest_output_${{ matrix.python-version }}.txt
           retention-days: 1
 
-  # coverage-report: disabled — artifact naming race condition across concurrent
-  # workflow_dispatch triggers causes coverage combine to fail. Re-enable once
-  # per-run artifact names (github.run_id) are stable or use artifact registry.
-  # coverage-report:
-  #   needs: [test-pytest]
-  #   runs-on: ubuntu-22.04
-  #   ...
+  coverage-report:
+    needs: [test-pytest]
+    runs-on: ubuntu-22.04
+    if: github.run_id == github.event.run_id
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install coverage
+        run: pip install coverage[toml]
+
+      - name: Download coverage data
+        uses: actions/download-artifact@v4
+        with:
+          path: coverage-reports
+          pattern: coverage-data-*
+          merge-multiple: true
+
+      - name: Combine and report
+        run: |
+          python -m coverage combine coverage-reports/ || true
+          python -m coverage report --format=term-missing || true
+          python -m coverage report --format=term-missing | tail -3 || true
+          python -m coverage report --format=term-missing | grep "^TOTAL" || true
