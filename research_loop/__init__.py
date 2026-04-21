@@ -27,7 +27,7 @@ from llm.parse import parse_ai_pnote_draft, extract_rubric_scores
 from notes.cnote import ensure_cnote, update_cnote_links
 from parsers.arxiv_search import search_arxiv
 from pdf.extract import download_pdf as _download_pdf, extract_pdf_text
-from updaters.radar import update_radar
+from updaters.radar import flush_radar, update_radar
 from updaters.timeline import update_timeline
 
 
@@ -226,9 +226,9 @@ def run_research(
             cpath = ensure_cnote(concept_dir, tag)
             update_cnote_links(cpath, note_path)
 
-        # Radar: bump the topic rows
+        # Radar: accumulate bumps in memory, caller flushes after all papers
         if note_tags:
-            update_radar(root, note_tags, year)
+            update_radar(root, note_tags, year, flush=False)
 
     # Build work items (filter skipped before spawning threads)
     work_items: List[Tuple[Paper, int, int, Path, bool, bool, int, str, str, str, List[str], Optional[Path]]] = []
@@ -262,6 +262,10 @@ def run_research(
         print(f"\n[research] Done: {processed}/{total} processed, {failed} failed, {skipped} skipped")
         for reason, count in error_reasons.items():
             print(f"  [{reason}] {count} paper(s)")
+
+    # Flush accumulated radar updates in one write
+    if root:
+        flush_radar(root)
 
     return output_paths
 
@@ -555,5 +559,8 @@ async def arun_research(
     print(f"\n[research] Done: {processed}/{total} processed, {failed} failed, {skipped} skipped")
     for reason, count in error_reasons.items():
         print(f"  [{reason}] {count} paper(s)")
+
+    if root:
+        flush_radar(root)
 
     return output_paths
