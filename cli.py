@@ -407,22 +407,26 @@ def _run_import(args: argparse.Namespace) -> int:
 
     # Parallel bulk upsert for missing papers
     if missing_ids:
-        def _upsert_one(pid: str) -> Tuple[str, bool, str]:
+        from concurrent.futures import ThreadPoolExecutor
+
+        def _upsert_one(enumerated: Tuple[int, str]) -> Tuple[int, str, bool, str]:
+            idx, pid = enumerated
             try:
                 db.upsert_paper(pid, args.source)
-                return pid, True, ""
+                return idx, pid, True, ""
             except Exception as e:
-                return pid, False, str(e)
+                return idx, pid, False, str(e)
 
-        from concurrent.futures import ThreadPoolExecutor
         with ThreadPoolExecutor(max_workers=min(len(missing_ids), 8)) as ex:
-            for pid, ok, err in ex.map(_upsert_one, missing_ids):
-                if ok:
-                    added += 1
-                    print(f"Added: {pid}")
-                else:
-                    failed += 1
-                    print(f"Failed: {pid} — {err}")
+            # Sort by index to preserve original order regardless of completion timing
+            results = sorted(ex.map(_upsert_one, enumerate(missing_ids)), key=lambda r: r[0])
+        for _, pid, ok, err in results:
+            if ok:
+                added += 1
+                print(f"Added: {pid}")
+            else:
+                failed += 1
+                print(f"Failed: {pid} — {err}")
 
     print(f"\nImport done: {added} added, {skipped} skipped, {failed} failed")
     return 0
