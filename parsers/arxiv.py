@@ -1,4 +1,5 @@
 """arXiv API metadata fetching."""
+import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List
 
@@ -6,6 +7,8 @@ import feedparser
 import requests
 
 from core import ARXIV_API, Paper
+
+logger = logging.getLogger(__name__)
 from core.cache import get_cached, set_cached
 from core.retry import circuit_breaker
 
@@ -152,7 +155,8 @@ def _parse_entry(e) -> dict:
     primary_cat = ""
     try:
         primary_cat = getattr(e, "arxiv_primary_category", {}).get("term", "")  # type: ignore
-    except Exception:
+    except AttributeError:
+        logger.debug(f"Failed to get primary category for entry {e.id}: {e}")
         primary_cat = ""
 
     all_cats = ""
@@ -161,7 +165,8 @@ def _parse_entry(e) -> dict:
         cats = [t.get("term", "") for t in tags if t.get("term")]
         if cats:
             all_cats = ", ".join(cats)
-    except Exception:
+    except AttributeError:
+        logger.debug(f"Failed to get tags for entry {e.id}: {e}")
         all_cats = ""
 
     comment = (getattr(e, "arxiv_comment", None) or "").replace("\n", " ").strip()
@@ -240,6 +245,7 @@ def fetch_arxiv_metadata_batch(arxiv_ids: List[str], timeout: int = 60) -> List[
                 missing_ids.append(aid)
 
     except Exception:
+        logger.debug("Batch fetch failed, falling back to individual fetches")
         missing_ids = ids_to_fetch
 
     # Fallback: parallel individual fetches for missing IDs
@@ -250,8 +256,8 @@ def fetch_arxiv_metadata_batch(arxiv_ids: List[str], timeout: int = 60) -> List[
                 try:
                     paper = future.result()
                     papers.append(paper)
-                except Exception:
-                    pass  # Circuit open or network error — return what we have
+                except Exception as e:
+                    logger.warning(f"Paper fetch failed for {aid}: {e}")
 
     # Sort by original input order
     uid_to_paper = {p.uid: p for p in papers}

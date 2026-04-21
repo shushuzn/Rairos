@@ -34,6 +34,8 @@ from sections.segment import format_section_snippets, segment_into_sections, seg
 from updaters.radar import update_radar
 from updaters.timeline import update_timeline
 
+logger = logging.getLogger(__name__)
+
 _KEYWORD_TAG_PATTERNS = [
     (re.compile(r"\bagent(s)?\b|tool\s*use|function\s*calling", re.I), "Agent"),
     (re.compile(r"\brag\b|retrieval\-augmented|retrieval augmented", re.I), "RAG"),
@@ -1883,7 +1885,7 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
             warnings.warn(f"citing: {e}", stacklevel=2)
 
     for paper_id in paper_ids:
-        print(f"Processing {paper_id}...", file=sys.stderr)
+        logger.debug("Processing paper", extra={"uid": paper_id})
         openalex_id = _arxiv_doi_to_openalex(paper_id)
         if not openalex_id:
             print(f"  [skip] {paper_id}: not found in OpenAlex", file=sys.stderr)

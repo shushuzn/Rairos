@@ -69,6 +69,13 @@ ignore = ["E402", "E501", "E741", "B008", "B017", "I001", "B023", "F821"]
 quote-style = "double"
 indent-style = "space"
 
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+strict = false
+
 [tool.coverage.run]
 source = ["."]
 branch = true

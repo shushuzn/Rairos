@@ -1,10 +1,13 @@
 """arXiv search by keyword query."""
+import logging
 from typing import List
 
 import feedparser
 import requests
 
 from core import Paper
+
+logger = logging.getLogger(__name__)
 
 # Module-level session for connection reuse
 _http = requests.Session()

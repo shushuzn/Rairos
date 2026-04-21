@@ -3,10 +3,12 @@
 Output format: Markdown sections (human-readable) + XML rubric block (machine-parseable).
 Section headings MUST match the P-note template numbering so content can be injected directly.
 """
-from typing import Dict, List, Tuple
+from __future__ import annotations
 
-import ai_research_os as _airo
+from typing import Any, Callable, Dict, List, Optional, Tuple, cast
+
 from core import Paper
+from llm.client import call_llm_chat_completions
 
 # ------------------------------------------------------------------
 # Cost estimation helpers
@@ -71,6 +73,7 @@ def ai_generate_pnote_draft(
     model: str,
     stream: bool = False,
     verbose: bool = False,
+    progress_callback: Optional[Callable[..., Any]] = None,
 ) -> str:
     system_prompt = """你是一个严谨的 AI 研究助理，擅长对抗式审稿。
 
@@ -181,14 +184,15 @@ Overall Judgment：一句话总结
 ```
 """
 
-    return _airo.call_llm_chat_completions(
+    return cast(str, call_llm_chat_completions(
+        messages=[],
         base_url=base_url,
         api_key=api_key,
         model=model,
         system_prompt=system_prompt,
         user_prompt=user_prompt,
         stream=stream,
-    )
+    ))
 
 
 # =============================================================================
@@ -213,7 +217,7 @@ def ai_generate_cnote_draft(
     api_key: str,
     base_url: str,
     model: str,
-    call_llm=None,
+    call_llm: Optional[Callable[..., Any]] = None,
 ) -> str:
     """
     Generate a C-Note draft for a concept using referenced P-Notes as context.
@@ -228,7 +232,7 @@ def ai_generate_cnote_draft(
                   Allows dependency injection for testing.
     """
     if call_llm is None:
-        call_llm = _airo.call_llm_chat_completions
+        call_llm = call_llm_chat_completions
 
     pnotes_chunks = [
         f"""\
@@ -286,10 +290,10 @@ def ai_generate_cnote_draft(
 （严禁捏造论文数据；引用格式："> 原文片段"）
 """
 
-    return call_llm(
+    return cast(str, call_llm(
         base_url=base_url,
         api_key=api_key,
         model=model,
         system_prompt=_CNOTE_SYSTEM_PROMPT,
         user_prompt=user_prompt,
-    )
+    ))

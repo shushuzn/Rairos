@@ -10,21 +10,25 @@ This module orchestrates the core research workflow:
 Inspired by karpathy/autoresearch but adapted for the paper-management workflow
 already present in ai_research_os.
 """
+from __future__ import annotations
+
 import datetime as dt
 import os
 import sys
 import tempfile
 import time  # tests mock research_loop.time.sleep
+import logging
 import warnings
+
+logger = logging.getLogger(__name__)
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, cast
 
 from core import Paper
 from core.basics import ensure_research_tree, get_default_concept_dir, safe_uid, slugify_title
 from llm.generate import ai_generate_pnote_draft, estimate_cost
 from llm.parse import parse_ai_pnote_draft, extract_rubric_scores
-from notes.cnote import ensure_cnote, update_cnote_links
 from parsers.arxiv_search import search_arxiv
 from pdf.extract import download_pdf as _download_pdf, extract_pdf_text
 from updaters.radar import flush_radar, update_radar
@@ -156,8 +160,8 @@ def run_research(
 
         note_tags = tgs or []
         draft = ""
-        rubric = {}
-        cost_info: dict = {}
+        rubric: Dict[str, Any] = {}
+        cost_info: Dict[str, Any] = {}
 
         if a_key and extracted_text:
             try:
@@ -214,6 +218,9 @@ def run_research(
 
     def _integrate_into_tree(root: Path, note_path: Path, paper: Paper, note_tags: List[str]) -> None:
         """Add a newly-created research note into the research OS tree."""
+        # Lazy import to avoid circular import
+        from notes.cnote import ensure_cnote, update_cnote_links
+
         ensure_research_tree(root)
 
         # Timeline: append under the paper's year
@@ -249,7 +256,7 @@ def run_research(
         with ThreadPoolExecutor(max_workers=3) as ex:
             futures = {ex.submit(_process_one_paper, item): item for item in work_items}
             for future in as_completed(futures):
-                note_path, _, err = future.result()
+                note_path, _, err = future.result()  # type: ignore[assignment]
                 if note_path:
                     output_paths.append(note_path)
                     if err:
@@ -363,7 +370,7 @@ async def arun_research(
     skip_existing: bool = True,
     verbose: bool = False,
     root: Optional[Path] = None,
-    progress_callback=None,
+    progress_callback: Optional[Callable[..., Any]] = None,
 ) -> List[Path]:
     """
     Async version of run_research. Runs PDF download, text extraction,
@@ -470,7 +477,6 @@ async def arun_research(
                             continue
                         err = "pdf_failed"
                         warnings.warn(f"PDF download/extract failed for {paper.uid} after retry: {e}", stacklevel=2)
-                    break
 
             note_tags = list(tags) if tags else []
             draft = ""
@@ -485,7 +491,7 @@ async def arun_research(
 
                     # CPU-bound LLM call: run in executor for true streaming
                     async def _generate() -> str:
-                        return await call_llm_chat_completions_async(
+                        return cast(str, await call_llm_chat_completions_async(
                             messages=[],
                             model=model,
                             user_prompt=None,
@@ -494,7 +500,7 @@ async def arun_research(
                             system_prompt=None,
                             stream=True,
                             progress_callback=progress_callback,
-                        )
+                        ))
 
                     draft = await _generate()
                     sections, rubric, _ = parse_ai_pnote_draft(draft)
@@ -521,7 +527,7 @@ async def arun_research(
 
             if root:
                 try:
-                    _integrate_into_tree(root, note_path, paper, note_tags)
+                    _integrate_into_tree(root, note_path, paper, note_tags)  # type: ignore[name-defined]
                 except Exception as e:
                     warnings.warn(f"Failed to integrate into research tree: {e}", stacklevel=2)
 
@@ -546,7 +552,7 @@ async def arun_research(
     error_reasons: dict[str, int] = {}
     skipped = len(papers) - len(work_items)
 
-    for note_path, _, err in results:
+    for note_path, _, err in results:  # type: ignore[assignment]
         if note_path:
             output_paths.append(note_path)
             if err:
@@ -564,3 +570,26 @@ async def arun_research(
         flush_radar(root)
 
     return output_paths
+
+
+# ─── Metrics ───────────────────────────────────────────────────────────────────
+
+
+class Metrics:
+    """Tracks research loop execution statistics."""
+
+    def __init__(self):
+        self.papers_processed = 0
+        self.papers_failed = 0
+        self.papers_skipped = 0
+        self.llm_calls = 0
+        self.llm_cost_usd = 0.0
+
+    def snapshot(self) -> dict:
+        return {
+            "papers_processed": self.papers_processed,
+            "papers_failed": self.papers_failed,
+            "papers_skipped": self.papers_skipped,
+            "llm_calls": self.llm_calls,
+            "llm_cost_usd": self.llm_cost_usd,
+        }
