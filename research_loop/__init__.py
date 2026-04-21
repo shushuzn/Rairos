@@ -12,7 +12,7 @@ already present in ai_research_os.
 """
 import os
 import sys
-import time
+import time  # noqa: F401  # tests mock research_loop.time.sleep
 import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path

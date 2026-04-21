@@ -18,7 +18,7 @@ PV = os.environ.get("PV", "")
 
 coverage_path = pathlib.Path(".coverage")
 if not coverage_path.exists():
-    print(f"[ERROR] .coverage not found")
+    print("[ERROR] .coverage not found")
     sys.exit(0)  # Don't fail the step
 
 print(f"Found .coverage: {coverage_path.stat().st_size} bytes")
@@ -49,7 +49,7 @@ result = subprocess.run(
 )
 try:
     create_resp = json.loads(result.stdout.decode())
-except:
+except Exception:
     print(f"[ERROR] Failed to parse create response: {result.stdout.decode()[:500]}")
     print(f"[ERROR] stderr: {result.stderr.decode()[:500]}")
     sys.exit(0)
@@ -69,7 +69,7 @@ zip_data = zip_path.read_bytes()
 upload_result = subprocess.run(
     ["curl", "-s", "-S", "-X", "POST",
      "-H", f"Authorization: Bearer {GH_TOKEN}",
-     "-H", f"Content-Type: application/zip",
+     "-H", "Content-Type: application/zip",
      "-H", f"Content-Length: {len(zip_data)}",
      "--data-binary", "@-",  # read binary from stdin
      upload_url_clean],
@@ -79,8 +79,9 @@ upload_result = subprocess.run(
 try:
     upload_resp = json.loads(upload_result.stdout.decode())
     print(f"Uploaded: {upload_resp.get('name', 'unknown')} id={upload_resp.get('id', 'unknown')}")
-except:
-    import traceback; traceback.print_exc()
+except Exception:
+    import traceback
+    traceback.print_exc()
     if upload_result.stdout:
         print(f"Upload response: {upload_result.stdout.decode()[:500]}")
     if upload_result.stderr:

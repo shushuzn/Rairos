@@ -77,16 +77,20 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install pytest pytest-cov requests feedparser pymupdf freezegun
+        run: pip install pytest pytest-cov requests feedparser pymupdf freezegun numpy
+
+      - name: Run pytest
+        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt; exit ${PIPESTATUS[0]}
 
       - name: Upload coverage artifact
         if: always()
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           RUN_ID: ${{ github.run_id }}
           PV: ${{ matrix.python-version }}
-        run: python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt; status=${PIPESTATUS[0]}; python .github/workflows/upload_coverage.py; exit $status
+        run: python .github/workflows/upload_coverage.py
 
       - name: Upload test output
         if: always()

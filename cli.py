@@ -691,7 +691,7 @@ def _get_ollama_embedding_batch(
                 embeddings = data.get("embeddings") or []
                 for j, emb in enumerate(embeddings):
                     results[i + j] = emb
-        except Exception as e:
+        except Exception:
             # Network or server error — fall back to single calls
             for j, text in enumerate(batch):
                 single = _get_ollama_embedding(text, model)
@@ -1806,24 +1806,32 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
             ref_work = _openalex_request(f"/works/{oid}")
             ref_arxiv_id = _work_to_arxiv_id(ref_work)
             if not ref_arxiv_id or ref_arxiv_id not in known_ids:
-                with lock: total_skipped_external[0] += 1
+                with lock:
+                    total_skipped_external[0] += 1
                 return
             added = db.add_citation(paper_id, ref_arxiv_id)
-            with lock: total_added[0] += 1 if added else None
+            with lock:
+                if added:
+                    total_added[0] += 1
         except Exception as e:
-            with lock: total_errors[0] += 1
+            with lock:
+                total_errors[0] += 1
             warnings.warn(f"ref {ref_oid}: {e}", stacklevel=2)
 
     def _fetch_citing(citing_work: dict, paper_id: str):
         try:
             citing_arxiv_id = _work_to_arxiv_id(citing_work)
             if not citing_arxiv_id or citing_arxiv_id not in known_ids:
-                with lock: total_skipped_external[0] += 1
+                with lock:
+                    total_skipped_external[0] += 1
                 return
             added = db.add_citation(citing_arxiv_id, paper_id)
-            with lock: total_added[0] += 1 if added else None
+            with lock:
+                if added:
+                    total_added[0] += 1
         except Exception as e:
-            with lock: total_errors[0] += 1
+            with lock:
+                total_errors[0] += 1
             warnings.warn(f"citing: {e}", stacklevel=2)
 
     for paper_id in paper_ids:
@@ -1847,7 +1855,8 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
 
         if direction in ("to", "both"):
             citing_works, citing_count = _get_openalex_citing(openalex_id)
-            with lock: total_cited_by_count[0] += citing_count
+            with lock:
+                total_cited_by_count[0] += citing_count
             if dry_run:
                 print(f"  [dry-run] forward: {citing_count} citing works", file=sys.stderr)
             elif citing_works:

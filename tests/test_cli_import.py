@@ -27,6 +27,9 @@ class FakeDatabase:
     def get_paper(self, paper_id):
         return FakePaper(paper_id) if self.papers.get(paper_id) else None
 
+    def get_papers_bulk(self, paper_ids):
+        return {pid: FakePaper(pid) for pid in paper_ids if self.papers.get(pid)}
+
     def upsert_paper(self, paper_id, source, **kwargs):
         self.upserted.append((paper_id, source))
         return FakePaper(paper_id)

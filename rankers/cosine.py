@@ -1,8 +1,9 @@
-"""Cosine similarity ranking strategy."""
+"""Cosine similarity ranking strategy — numpy-accelerated."""
 from __future__ import annotations
 
-import struct
 from typing import List
+
+import numpy as np
 
 from rankers.base import RankedResult, Ranker
 
@@ -11,7 +12,8 @@ class CosineSimilarityRanker(Ranker):
     """
     Rank papers by cosine similarity of their embedding vectors.
 
-    Inherits db reference and embedding fetch from the database layer.
+    Uses numpy for batch vector operations — O(n) scan but all similarity
+    computation happens in a single vectorized pass instead of per-row Python loops.
     """
 
     name = "cosine"
@@ -40,37 +42,68 @@ class CosineSimilarityRanker(Ranker):
         if query_emb is None:
             return []
 
-        q_vec = query_emb
-        q_norm = sum(x * x for x in q_vec) ** 0.5
+        q_vec = np.array(query_emb, dtype=np.float32)
+        q_norm = np.linalg.norm(q_vec)
         if q_norm == 0:
             return []
 
         cur = self._db.conn.cursor()
+        # Fetch embeddings + all paper columns in a single query — no per-result round-trip
         cur.execute(
-            "SELECT id, embed_vector FROM papers WHERE id != ? AND embed_vector IS NOT NULL",
+            """SELECT id, embed_vector, *
+               FROM papers
+               WHERE id != ? AND embed_vector IS NOT NULL""",
             (paper_id,),
         )
+        rows = cur.fetchall()
+        if not rows:
+            return []
 
-        results: List[RankedResult] = []
-        for row in cur.fetchall():
-            pid, blob = row["id"], row["embed_vector"]
+        col_names = [d[0] for d in cur.description]
+        idx_emb = col_names.index("embed_vector")
+
+        # Batch unpack all embeddings into a 2D numpy array
+        embeddings: List[np.ndarray] = []
+        orig_indices: List[int] = []   # maps array index → original row index
+        for i, row in enumerate(rows):
+            blob = row[idx_emb]
             if blob is None:
                 continue
-            c_count = len(blob) // 4
-            c_vec = list(struct.unpack(f"{c_count}f", blob))
-            c_norm = sum(x * x for x in c_vec) ** 0.5
-            if c_norm == 0:
-                continue
-            dot = sum(a * b for a, b in zip(q_vec, c_vec))
-            sim = dot / (q_norm * c_norm)
+            vec = np.frombuffer(blob, dtype=np.float32, count=len(blob) // 4)
+            embeddings.append(vec)
+            orig_indices.append(i)
+
+        if not embeddings:
+            return []
+
+        emb_matrix = np.stack(embeddings)                     # (N, D)
+        norms = np.linalg.norm(emb_matrix, axis=1)             # (N,)
+        nonzero = norms > 0
+
+        # Compute cosine similarities only for non-zero-norm rows
+        nz_matrix = emb_matrix[nonzero]
+        nz_norms = norms[nonzero]
+
+        # Prevent div-by-zero in similarity: q_norm is already checked above
+        nz_sims = (nz_matrix @ q_vec) / (nz_norms * q_norm)   # (M,)
+
+        # Build full (N,) sims array with -inf for zero-norm rows
+        sims = np.full(len(nonzero), -np.inf, dtype=np.float32)
+        sims[nonzero] = nz_sims
+
+        # Collect all above threshold
+        threshold_sims: List[tuple] = []  # (sim, orig_idx)
+        for j, sim in enumerate(sims):
             if sim >= threshold:
-                cur2 = self._db.conn.cursor()
-                cur2.execute("SELECT * FROM papers WHERE id = ?", (pid,))
-                prow = cur2.fetchone()
-                if prow:
-                    from db.database import PaperRecord
+                threshold_sims.append((float(sim), orig_indices[j]))
 
-                    results.append((PaperRecord.from_row(prow), sim))
+        threshold_sims.sort(key=lambda x: x[0], reverse=True)
+        top = threshold_sims[:limit]
 
-        results.sort(key=lambda x: x[1], reverse=True)
-        return results[:limit]
+        from db.database import PaperRecord
+        results: List[RankedResult] = []
+        for sim, orig_idx in top:
+            row = rows[orig_idx]
+            results.append((PaperRecord.from_row(row), sim))
+
+        return results
