@@ -342,26 +342,40 @@ def _run_import(args: argparse.Namespace) -> int:
         # file provided but empty — not an error, just nothing to do
 
     added, skipped, failed = 0, 0, 0
-    for paper_id in paper_ids:
-        p = db.get_paper(paper_id)
-        if p is not None:
-            if args.skip_existing:
-                skipped += 1
-                print(f"Skipped (exists): {paper_id}")
-                continue
-            else:
-                skipped += 1
-                print(f"Skipped (exists): {paper_id}")
-                continue
-        # Attempt to upsert — use raw arXiv ID or DOI as id
-        try:
-            paper_id_clean = paper_id.strip()
-            db.upsert_paper(paper_id_clean, args.source)
-            added += 1
-            print(f"Added: {paper_id_clean}")
-        except Exception as e:
-            failed += 1
-            print(f"Failed: {paper_id} — {e}")
+    # Bulk check which papers already exist (single query instead of N)
+    existing = db.get_papers_bulk(paper_ids)
+
+    # Separate existing vs missing
+    existing_ids = {pid for pid in paper_ids if pid.strip() in existing}
+    missing_ids = [pid.strip() for pid in paper_ids if pid.strip() not in existing]
+
+    for paper_id in existing_ids:
+        if args.skip_existing:
+            skipped += 1
+            print(f"Skipped (exists): {paper_id}")
+        else:
+            skipped += 1
+            print(f"Skipped (exists): {paper_id}")
+
+    # Parallel bulk upsert for missing papers
+    if missing_ids:
+        def _upsert_one(pid: str) -> Tuple[str, bool, str]:
+            try:
+                db.upsert_paper(pid, args.source)
+                return pid, True, ""
+            except Exception as e:
+                return pid, False, str(e)
+
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=min(len(missing_ids), 8)) as ex:
+            for pid, ok, err in ex.map(_upsert_one, missing_ids):
+                if ok:
+                    added += 1
+                    print(f"Added: {pid}")
+                else:
+                    failed += 1
+                    print(f"Failed: {pid} — {err}")
+
     print(f"\nImport done: {added} added, {skipped} skipped, {failed} failed")
     return 0
 
@@ -624,6 +638,7 @@ def _run_similar(args: argparse.Namespace) -> int:
     return 0
 
 
+
 def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optional[List[float]]:
     """Fetch embedding from local Ollama. Returns None on failure."""
     try:
@@ -641,24 +656,116 @@ def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optiona
         return None
 
 
-def _generate_missing_embeddings(db: "Database", delay: float = 0.1) -> Tuple[int, int]:
-    """Generate embeddings for papers missing them. Returns (generated, failed)."""
+def _get_ollama_embedding_batch(
+    texts: List[str],
+    model: str = "nomic-embed-text",
+    batch_size: int = 32,
+) -> List[Optional[List[float]]]:
+    """Fetch embeddings for multiple texts in one Ollama API call.
+
+    Falls back to individual /api/embeddings calls if the batch endpoint
+    returns a non-JSON response (e.g. 502 Bad Gateway from an older model
+    that does not support multi-prompt batching).
+    Returns list parallel to input; None for failed items.
+    """
+    results: List[Optional[List[float]]] = [None] * len(texts)
+    for i in range(0, len(texts), batch_size):
+        batch = texts[i : i + batch_size]
+        try:
+            req = urllib.request.Request(
+                "http://localhost:11434/api/embed",
+                data=json.dumps({"model": model, "prompt": batch}).encode(),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                raw = resp.read().decode()
+                try:
+                    data = json.loads(raw)
+                except json.JSONDecodeError:
+                    # Batch endpoint not supported (old model or 502) — fall back to single
+                    for j, text in enumerate(batch):
+                        single = _get_ollama_embedding(text, model)
+                        results[i + j] = single
+                    continue
+                embeddings = data.get("embeddings") or []
+                for j, emb in enumerate(embeddings):
+                    results[i + j] = emb
+        except Exception as e:
+            # Network or server error — fall back to single calls
+            for j, text in enumerate(batch):
+                single = _get_ollama_embedding(text, model)
+                results[i + j] = single
+    return results
+
+
+
+def _generate_missing_embeddings(
+    db: "Database",
+    delay: float = 0.0,
+    batch_size: int = 32,
+    max_workers: int = 8,
+) -> Tuple[int, int]:
+    """Generate embeddings for papers missing them using batch Ollama API.
+
+    Returns (generated, failed).
+    """
+    from concurrent.futures import ThreadPoolExecutor
+
     papers = db.get_papers_without_embeddings(limit=1000)
-    generated, failed = 0, 0
+    if not papers:
+        return 0, 0
+
+    # Prepare texts
+    paper_ids = []
+    texts = []
     for paper in papers:
-        text = paper.title or ""
-        if paper.abstract:
-            text += "\n\n" + paper.abstract
-        if not text.strip():
-            continue
-        emb = _get_ollama_embedding(text)
-        if emb is not None:
-            db.set_embedding(paper.id, emb)
-            generated += 1
-        else:
-            failed += 1
-        time.sleep(delay)
+        text = (paper.title or "") + ("\n\n" + paper.abstract if paper.abstract else "")
+        if text.strip():
+            paper_ids.append(paper.id)
+            texts.append(text)
+
+    if not texts:
+        return 0, 0
+
+    # Batch Ollama calls with thread pool for I/O parallelism
+    generated, failed = 0, 0
+    lock = __import__("threading").Lock()
+
+    def store_batch(batch_texts: List[str], batch_ids: List[str]):
+        nonlocal generated, failed
+        embeddings = _get_ollama_embedding_batch(batch_texts, batch_size=batch_size)
+        local_gen, local_fail = 0, 0
+        for pid, emb in zip(batch_ids, embeddings):
+            if emb is not None:
+                try:
+                    db.set_embedding(pid, emb)
+                    local_gen += 1
+                except Exception:
+                    local_fail += 1
+            else:
+                local_fail += 1
+        with lock:
+            generated += local_gen
+            failed += local_fail
+
+    # Split into batches for Ollama, process batches in parallel
+    for i in range(0, len(texts), batch_size * max_workers):
+        chunk_ids = paper_ids[i : i + batch_size * max_workers]
+        chunk_texts = texts[i : i + batch_size * max_workers]
+        batches = [
+            (chunk_texts[j : j + batch_size], chunk_ids[j : j + batch_size])
+            for j in range(0, len(chunk_texts), batch_size)
+        ]
+        with ThreadPoolExecutor(max_workers=min(len(batches), max_workers)) as ex:
+            for batch_texts, batch_ids in batches:
+                ex.submit(store_batch, batch_texts, batch_ids)
+        if delay > 0:
+            time.sleep(delay)
+
     return generated, failed
+
+
 
 
 def _run_dedup_semantic(args: argparse.Namespace) -> int:
@@ -981,9 +1088,14 @@ def _run_citations(args: argparse.Namespace) -> int:
             print("from_id,from_title,to_id,to_title,type")
             if direct:
                 print(f"{paper_from},{from_title},{paper_to},{to_title},direct")
-            for c in via_papers:
-                t = db.get_paper_title(c.target_id)
-                print(f"{paper_from},{from_title},{c.target_id},{t or ''},via")
+            if via_papers:
+                # Bulk fetch titles for via papers (N+1 fix)
+                via_ids = list({c.target_id for c in via_papers})
+                paper_map = db.get_papers_bulk(via_ids)
+                title_map = {pid: (paper_map[pid].title or '') for pid in via_ids if pid in paper_map}
+                for c in via_papers:
+                    t = title_map.get(c.target_id, '')
+                    print(f"{paper_from},{from_title},{c.target_id},{t},via")
         else:
             print(f"CITATION BRIDGE: {paper_from} <-> {paper_to}")
             print(f"  {paper_from}: {from_title}")
@@ -992,10 +1104,14 @@ def _run_citations(args: argparse.Namespace) -> int:
             if direct:
                 print(f"  DIRECT: {paper_from} cites {paper_to}")
             if via_papers:
+                # Bulk fetch titles for via papers (N+1 fix)
+                via_ids = list({c.target_id for c in via_papers})
+                paper_map = db.get_papers_bulk(via_ids)
+                title_map = {pid: (paper_map[pid].title or '') for pid in via_ids if pid in paper_map}
                 print(f"  INDIRECT ({len(via_papers)} connections):")
                 for c in via_papers:
-                    t = db.get_paper_title(c.target_id)
-                    print(f"    {paper_from} -> {c.target_id} ({t or '?'}) -> {paper_to}")
+                    t = title_map.get(c.target_id, '?')
+                    print(f"    {paper_from} -> {c.target_id} ({t}) -> {paper_to}")
             if not direct and not via_papers:
                 print("  No citation path found between these papers.")
 
@@ -1011,13 +1127,20 @@ def _run_citations(args: argparse.Namespace) -> int:
     source_title = db.get_paper_title(paper_id)
 
     if args.format == "csv":
+        # Bulk fetch all titles needed for CSV output
+        all_ids = set()
+        for c in citations:
+            all_ids.add(c.source_id)
+            all_ids.add(c.target_id)
+        paper_map = db.get_papers_bulk(list(all_ids))
+        title_map = {pid: (paper_map[pid].title or '') for pid in paper_map}
         print("direction,source_id,source_title,target_id,target_title")
         dir_label = "backward" if direction == "from" else "forward"
         for c in citations:
             src = c.source_id
             tgt = c.target_id
-            src_t = db.get_paper_title(src) if direction == "both" else source_title
-            tgt_t = db.get_paper_title(tgt)
+            src_t = title_map.get(src, '') if direction == "both" else source_title
+            tgt_t = title_map.get(tgt, '')
             print(f"{dir_label},{src},{src_t},{tgt},{tgt_t}")
         return 0
 
@@ -1029,19 +1152,27 @@ def _run_citations(args: argparse.Namespace) -> int:
         print(f"No citations found for {paper_id}")
         return 0
 
+    # Bulk fetch all titles needed for text output
+    all_ids = set()
+    for c in citations:
+        all_ids.add(c.source_id)
+        all_ids.add(c.target_id)
+    paper_map = db.get_papers_bulk(list(all_ids))
+    title_map = {pid: (paper_map[pid].title or '') for pid in paper_map}
+
     if direction == "from":
         print(f"BACKWARD CITATIONS — {paper_id}: {source_title}")
         print(f"({len(citations)} references)")
         print()
         for c in citations:
-            t = db.get_paper_title(c.target_id)
+            t = title_map.get(c.target_id, '')
             print(f"  {c.target_id}  {t or '(unknown)'}")
     elif direction == "to":
         print(f"FORWARD CITATIONS — {paper_id}: {source_title}")
         print(f"({len(citations)} citing papers)")
         print()
         for c in citations:
-            title = db.get_paper_title(c.source_id)
+            title = title_map.get(c.source_id, '')
             print(f"  {c.source_id}  {title or '(unknown)'}")
     else:
         print(f"ALL CITATIONS for {paper_id}: {source_title}")
@@ -1049,10 +1180,10 @@ def _run_citations(args: argparse.Namespace) -> int:
         print()
         for c in citations:
             if c.source_id == paper_id:
-                title = db.get_paper_title(c.target_id)
+                title = title_map.get(c.target_id, '')
                 print(f"  -> {c.target_id}  {title or '(unknown)'}")
             else:
-                title = db.get_paper_title(c.source_id)
+                title = title_map.get(c.source_id, '')
                 print(f"  <- {c.source_id}  {title or '(unknown)'}")
 
     return 0
@@ -1169,30 +1300,32 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
         # ── Metadata fetch: populate titles from arXiv / CrossRef / PubMed / ISBN ─────────
         if fetch_meta:
             items = [(pid, n) for pid, n in nodes.items() if not n.title and n.depth > 0]
-            for i, (pid, _node) in enumerate(items):
-                if pid.startswith("arXiv:"):
-                    aid = pid[6:]
-                    title = _fetch_arxiv_title(aid)
+            if items:
+                def _fetch_title_for_pid(pid: str) -> Tuple[str, Optional[str]]:
+                    """Fetch title for a single paper ID. Returns (pid, title)."""
+                    if pid.startswith("arXiv:"):
+                        return pid, _fetch_arxiv_title(pid[6:])
+                    elif pid.startswith("doi:"):
+                        return pid, _fetch_doi_title(pid[4:])
+                    elif pid.startswith("pmid:"):
+                        return pid, _fetch_pmid_title(pid[5:])
+                    elif pid.startswith("isbn:"):
+                        return pid, _fetch_isbn_title(pid[5:])
+                    return pid, None
+
+                # Parallel fetch — no per-request sleep; total wall time ≈ max(individual_times)
+                from concurrent.futures import ThreadPoolExecutor
+                import threading
+                lock = threading.Lock()
+                results: List[Tuple[str, Optional[str]]] = []
+                with ThreadPoolExecutor(max_workers=min(len(items), 8)) as ex:
+                    futures = {ex.submit(_fetch_title_for_pid, pid): pid for pid, _ in items}
+                    for future in futures:
+                        results.append(future.result())
+                for pid, title in results:
                     if title:
-                        nodes[pid].title = title
-                elif pid.startswith("doi:"):
-                    doi_str = pid[4:]
-                    title = _fetch_doi_title(doi_str)
-                    if title:
-                        nodes[pid].title = title
-                elif pid.startswith("pmid:"):
-                    pmid_str = pid[5:]
-                    title = _fetch_pmid_title(pmid_str)
-                    if title:
-                        nodes[pid].title = title
-                elif pid.startswith("isbn:"):
-                    isbn_str = pid[5:]
-                    title = _fetch_isbn_title(isbn_str)
-                    if title:
-                        nodes[pid].title = title
-                # Rate-limit: sleep between requests (0.3s), skip after last
-                if i < len(items) - 1:
-                    time.sleep(0.3)
+                        with lock:
+                            nodes[pid].title = title
 
         # JSON: include title in node output
         if args.format == "json":
@@ -1633,7 +1766,9 @@ def _build_cite_fetch_parser(subparsers) -> argparse.ArgumentParser:
 
 
 def _run_cite_fetch(args: argparse.Namespace) -> int:
-    """Fetch citation data from OpenAlex and populate the citations table."""
+    """Fetch citation data from OpenAlex and populate the citations table (parallel)."""
+    import threading
+
     db = Database()
     db.init()
 
@@ -1641,8 +1776,8 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
     direction = args.direction
     dry_run = args.dry_run
     max_per_paper = args.max_per_paper
+    max_workers = min(getattr(args, 'workers', 10), 20)
 
-    # Collect papers to process
     paper_ids: list[str]
     if args.paper_id:
         if not db.paper_exists(args.paper_id):
@@ -1650,94 +1785,87 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
             return 1
         paper_ids = [args.paper_id]
     else:
-        # Process all papers
         all_papers, _total = db.list_papers()
         paper_ids = [p.id for p in all_papers]
         if not paper_ids:
             print("No papers in database. Nothing to do.")
             return 0
 
-    # Build set of known paper IDs for fast lookup
     all_papers, _total = db.list_papers()
     known_ids: set[str] = {p.id for p in all_papers}
 
-    total_added = 0
-    total_skipped_external = 0
-    total_errors = 0
-    total_cited_by_count = 0  # forward citations found (may not all be imported)
+    lock = threading.Lock()
+    total_added = [0]
+    total_skipped_external = [0]
+    total_errors = [0]
+    total_cited_by_count = [0]
+
+    def _fetch_ref(ref_oid: str, paper_id: str):
+        try:
+            oid = ref_oid.rstrip("/").split("/")[-1]
+            ref_work = _openalex_request(f"/works/{oid}")
+            ref_arxiv_id = _work_to_arxiv_id(ref_work)
+            if not ref_arxiv_id or ref_arxiv_id not in known_ids:
+                with lock: total_skipped_external[0] += 1
+                return
+            added = db.add_citation(paper_id, ref_arxiv_id)
+            with lock: total_added[0] += 1 if added else None
+        except Exception as e:
+            with lock: total_errors[0] += 1
+            warnings.warn(f"ref {ref_oid}: {e}", stacklevel=2)
+
+    def _fetch_citing(citing_work: dict, paper_id: str):
+        try:
+            citing_arxiv_id = _work_to_arxiv_id(citing_work)
+            if not citing_arxiv_id or citing_arxiv_id not in known_ids:
+                with lock: total_skipped_external[0] += 1
+                return
+            added = db.add_citation(citing_arxiv_id, paper_id)
+            with lock: total_added[0] += 1 if added else None
+        except Exception as e:
+            with lock: total_errors[0] += 1
+            warnings.warn(f"citing: {e}", stacklevel=2)
 
     for paper_id in paper_ids:
         print(f"Processing {paper_id}...", file=sys.stderr)
-
-        # Step 1: Get OpenAlex ID for this paper
         openalex_id = _arxiv_doi_to_openalex(paper_id)
         if not openalex_id:
             print(f"  [skip] {paper_id}: not found in OpenAlex", file=sys.stderr)
             continue
 
-        # Step 2: Fetch backward citations (papers this paper references)
         if direction in ("from", "both"):
             referenced_works, ref_count = _get_openalex_references(openalex_id)
+            ref_ids = referenced_works[:max_per_paper] if max_per_paper > 0 else referenced_works
             if dry_run:
-                # Just show count without fetching individual references
                 print(f"  [dry-run] backward: {ref_count} referenced works", file=sys.stderr)
-            else:
-                for ref_openalex_id in (referenced_works[:max_per_paper] if max_per_paper > 0 else referenced_works):
-                    try:
-                        ref_work = _openalex_request(f"/works/{ref_openalex_id.rstrip('/').split('/')[-1]}")
-                        ref_arxiv_id = _work_to_arxiv_id(ref_work)
-                        if not ref_arxiv_id:
-                            total_skipped_external += 1
-                            continue
-                        if ref_arxiv_id not in known_ids:
-                            total_skipped_external += 1
-                            continue
-                        added = db.add_citation(paper_id, ref_arxiv_id)
-                        if added:
-                            total_added += 1
-                    except Exception as e:
-                        total_errors += 1
-                        print(f"  [error] fetching ref {ref_openalex_id}: {e}", file=sys.stderr)
-            if delay > 0:
-                time.sleep(delay)
-
-        # Step 3: Fetch forward citations (papers citing this paper)
-        if direction in ("to", "both"):
-            citing_works, citing_count = _get_openalex_citing(openalex_id)
-            total_cited_by_count += citing_count
-            if dry_run:
-                print(f"  [dry-run] forward: {citing_count} citing works", file=sys.stderr)
-            else:
-                cited_count = 0
-                for citing_work in citing_works:
-                    if max_per_paper > 0 and cited_count >= max_per_paper:
-                        break
-                    citing_arxiv_id = _work_to_arxiv_id(citing_work)
-                    if not citing_arxiv_id:
-                        total_skipped_external += 1
-                        cited_count += 1
-                        continue
-                    if citing_arxiv_id not in known_ids:
-                        total_skipped_external += 1
-                        cited_count += 1
-                        continue
-                    added = db.add_citation(citing_arxiv_id, paper_id)
-                    if added:
-                        total_added += 1
-                    cited_count += 1
+            elif ref_ids:
+                with ThreadPoolExecutor(max_workers=max_workers) as ex:
+                    for ref_oid in ref_ids:
+                        ex.submit(_fetch_ref, ref_oid, paper_id)
                 if delay > 0:
                     time.sleep(delay)
 
-    # Summary
+        if direction in ("to", "both"):
+            citing_works, citing_count = _get_openalex_citing(openalex_id)
+            with lock: total_cited_by_count[0] += citing_count
+            if dry_run:
+                print(f"  [dry-run] forward: {citing_count} citing works", file=sys.stderr)
+            elif citing_works:
+                limit = max_per_paper if max_per_paper > 0 else len(citing_works)
+                with ThreadPoolExecutor(max_workers=max_workers) as ex:
+                    for citing_work in citing_works[:limit]:
+                        ex.submit(_fetch_citing, citing_work, paper_id)
+                if delay > 0:
+                    time.sleep(delay)
+
     print("\nSummary:", file=sys.stderr)
     if dry_run:
         print("  [dry-run mode — nothing written]", file=sys.stderr)
-    print(f"  Citations added to DB: {total_added}", file=sys.stderr)
-    print(f"  Skipped (not in DB or external): {total_skipped_external}", file=sys.stderr)
-    print(f"  Errors: {total_errors}", file=sys.stderr)
+    print(f"  Citations added to DB: {total_added[0]}", file=sys.stderr)
+    print(f"  Skipped (not in DB or external): {total_skipped_external[0]}", file=sys.stderr)
+    print(f"  Errors: {total_errors[0]}", file=sys.stderr)
     if direction in ("to", "both"):
-        print(f"  Note: {total_cited_by_count} forward citations found in OpenAlex (some may be outside DB)", file=sys.stderr)
-
+        print(f"  Note: {total_cited_by_count[0]} forward citations found (some may be outside DB)", file=sys.stderr)
     return 0
 
 

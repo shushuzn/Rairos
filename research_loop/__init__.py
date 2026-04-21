@@ -14,8 +14,9 @@ import os
 import sys
 import time
 import warnings
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from core import Paper
 from parsers.arxiv_search import search_arxiv
@@ -101,49 +102,48 @@ def run_research(
 
     output_paths: List[Path] = []
 
-    # --- Step 2: Process each paper ---
-    for i, paper in enumerate(papers, 1):
+    # --- Step 2: Process each paper in parallel ---
+    def _process_one_paper(
+        args: Tuple[Paper, int, int, Path, bool, bool, int, str, str, str, List[str]],
+    ) -> Tuple[Optional[Path], Optional[Path]]:
+        """Worker: download → extract → LLM → write note. Returns (note_path, pdf_path)."""
+        paper, i, total, out_dir, do_download, do_skip, max_txt, b_url, a_key, mod, tgs = args
         title_short = paper.title[:60] + ("..." if len(paper.title) > 60 else "")
         if verbose:
-            print(f"[research] [{i}/{len(papers)}] {paper.uid}: {title_short}")
+            print(f"[research] [{i}/{total}] {paper.uid}: {title_short}")
 
         slug = slugify_title(paper.title)[:60]
-        note_path = output_dir / f"{safe_uid(paper.uid)}_{slug}.md"
+        note_path = out_dir / f"{safe_uid(paper.uid)}_{slug}.md"
 
-        # Skip existing
-        if skip_existing and note_path.exists():
+        if do_skip and note_path.exists():
             if verbose:
                 print(f"  [skip] Already exists: {note_path.name}")
-            output_paths.append(note_path)
-            continue
+            return note_path, None
 
-        # --- Step 2a: Download PDF ---
         pdf_path: Optional[Path] = None
         extracted_text = ""
 
-        if download_pdfs and paper.pdf_url:
+        if do_download and paper.pdf_url:
             try:
                 pdf_path = Path(f"/tmp/{safe_uid(paper.uid)}.pdf")
                 _download_pdf(paper.pdf_url, pdf_path, timeout=60)
                 if verbose:
                     print(f"  [pdf] Downloaded: {pdf_path.name} ({pdf_path.stat().st_size / 1024:.0f} KB)")
 
-                # --- Step 2b: Extract text ---
                 extracted_text = extract_pdf_text(pdf_path, max_pages=15)
-                if len(extracted_text) > max_text_len:
-                    extracted_text = extracted_text[:max_text_len] + "\n\n[... truncated ...]"
+                if len(extracted_text) > max_txt:
+                    extracted_text = extracted_text[:max_txt] + "\n\n[... truncated ...]"
                 if verbose and extracted_text:
                     print(f"  [text] Extracted {len(extracted_text)} chars")
             except Exception as e:
                 warnings.warn(f"PDF download/extract failed for {paper.uid}: {e}", stacklevel=2)
                 extracted_text = ""
 
-        # --- Step 2c: Generate AI draft ---
-        note_tags = tags or []
+        note_tags = tgs or []
         draft = ""
         rubric = {}
 
-        if api_key and extracted_text:
+        if a_key and extracted_text:
             try:
                 if verbose:
                     print("  [llm] Generating draft...")
@@ -151,25 +151,23 @@ def run_research(
                     paper=paper,
                     tags=note_tags,
                     extracted_text=extracted_text,
-                    base_url=base_url,
-                    api_key=api_key,
-                    model=model,
+                    base_url=b_url,
+                    api_key=a_key,
+                    model=mod,
                 )
                 sections, rubric, _ = parse_ai_pnote_draft(draft)
-                rubric_scores = extract_rubric_scores(rubric)
                 if verbose:
-                    print(f"  [llm] Draft generated ({len(draft)} chars, rubric={rubric_scores})")
+                    print(f"  [llm] Draft generated ({len(draft)} chars)")
             except Exception as e:
                 warnings.warn(f"LLM draft generation failed for {paper.uid}: {e}", stacklevel=2)
                 draft = ""
-        elif not api_key:
+        elif not a_key:
             if verbose:
                 print("  [skip] No API key — metadata-only note")
         else:
             if verbose:
                 print("  [skip] No extracted text — metadata-only note")
 
-        # --- Step 2d: Write note ---
         note_content = _build_research_note(paper, draft, rubric, note_tags)
         note_path.write_text(note_content, encoding="utf-8")
 
@@ -180,10 +178,26 @@ def run_research(
                 + (f" [novelty={rubric_scores.get('novelty', '?')}]" if rubric_scores else "")
             )
 
-        output_paths.append(note_path)
+        return note_path, pdf_path
 
-        # Rate limit: be nice to arXiv
-        time.sleep(3.0)
+    # Build work items (filter skipped before spawning threads)
+    work_items: List[Tuple[Paper, int, int, Path, bool, bool, int, str, str, str, List[str]]] = []
+    for i, paper in enumerate(papers, 1):
+        slug = slugify_title(paper.title)[:60]
+        note_path = output_dir / f"{safe_uid(paper.uid)}_{slug}.md"
+        if skip_existing and note_path.exists():
+            output_paths.append(note_path)
+            continue
+        work_items.append((paper, i, len(papers), output_dir, download_pdfs, skip_existing, max_text_len, base_url, api_key, model, tags or []))
+
+    if work_items:
+        # Parallel: up to 3 papers simultaneously (PDF downloads are the bottleneck)
+        with ThreadPoolExecutor(max_workers=3) as ex:
+            futures = {ex.submit(_process_one_paper, item): item for item in work_items}
+            for future in as_completed(futures):
+                note_path, _ = future.result()
+                if note_path:
+                    output_paths.append(note_path)
 
     return output_paths
 

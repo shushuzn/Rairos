@@ -833,7 +833,7 @@ class Database:
                     fts.title,
                     fts.abstract,
                     bm25(papers_fts) AS score,
-                    snippet(papers_fts, 2, '**', '**', '...', 30) AS snippet
+                    snippet(papers_fts, 0, '**', '**', '...', 30) AS snippet
                 FROM papers_fts
                 JOIN papers p ON p.id = papers_fts.paper_id
                 WHERE papers_fts MATCH ?{join_where}
@@ -1201,12 +1201,36 @@ class Database:
                 ([since] if since else []),
             )
             pairs: List[Tuple[PaperRecord, PaperRecord]] = []
+            all_ids = []
             for row in cur.fetchall():
-                a_id, b_id = row["a_id"], row["b_id"]
-                cur.execute("SELECT * FROM papers WHERE id = ?", (a_id,))
-                a_row = cur.fetchone()
-                cur.execute("SELECT * FROM papers WHERE id = ?", (b_id,))
-                b_row = cur.fetchone()
+                all_ids.extend([row["a_id"], row["b_id"]])
+            if not all_ids:
+                return []
+            # Bulk fetch all paper records in a single query
+            placeholders = ",".join("?" * len(all_ids))
+            cur.execute(f"SELECT * FROM papers WHERE id IN ({placeholders})", all_ids)
+            paper_map = {row["id"]: row for row in cur.fetchall()}
+            # Re-collect pairs using cached records
+            cur.execute(
+                f"""
+                SELECT a.id AS a_id, b.id AS b_id
+                FROM papers a
+                JOIN papers b ON
+                    a.id < b.id
+                    AND (
+                        (a.doi IS NOT NULL AND a.doi = b.doi AND a.doi != '')
+                        OR
+                        (a.title IS NOT NULL AND a.title != '' AND a.title = b.title)
+                    )
+                WHERE 1=1
+                {where_since}
+                ORDER BY a.added_at DESC
+                """,
+                ([since] if since else []),
+            )
+            for row in cur.fetchall():
+                a_row = paper_map.get(row["a_id"])
+                b_row = paper_map.get(row["b_id"])
                 if a_row and b_row:
                     pairs.append((PaperRecord.from_row(a_row), PaperRecord.from_row(b_row)))
             return pairs
@@ -1350,20 +1374,13 @@ class Database:
         try:
             cur = self.conn.cursor()
             now = _utcnow()
-            new_count = 0
-            dup_count = 0
-            for tid in target_ids:
-                try:
-                    cur.execute(
-                        "INSERT OR IGNORE INTO citations (source_id, target_id, created_at) VALUES (?, ?, ?)",
-                        (source_id, tid, now),
-                    )
-                    if cur.rowcount > 0:
-                        new_count += 1
-                    else:
-                        dup_count += 1
-                except sqlite3.Error:
-                    dup_count += 1
+            rows = [(source_id, tid, now) for tid in target_ids]
+            cur.executemany(
+                "INSERT OR IGNORE INTO citations (source_id, target_id, created_at) VALUES (?, ?, ?)",
+                rows,
+            )
+            new_count = cur.rowcount
+            dup_count = len(target_ids) - new_count
             self.conn.commit()
             return new_count, dup_count
         except sqlite3.Error as e:
