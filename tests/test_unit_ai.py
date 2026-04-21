@@ -10,7 +10,7 @@ class TestAiGenerateCnoteDraft:
             return "> AI Draft\n\n## 核心定义\n\nRAG 是检索增强生成。"
 
         monkeypatch.setenv("OPENAI_API_KEY", "test-key")
-        monkeypatch.setattr("ai_research_os.call_llm_chat_completions", mock_call)
+        monkeypatch.setattr("llm.generate.call_llm_chat_completions", mock_call)
 
         pnotes = [
             {
@@ -53,7 +53,7 @@ class TestAiGenerateCnoteDraft:
             return content
 
         monkeypatch.setenv("OPENAI_API_KEY", "test-key")
-        monkeypatch.setattr("ai_research_os.call_llm_chat_completions", mock_call)
+        monkeypatch.setattr("llm.generate.call_llm_chat_completions", mock_call)
 
         result = airo.ai_generate_cnote_draft(
             concept="Agent",
@@ -96,7 +96,7 @@ class TestAiGenerateCnoteDraft:
             return "> AI Draft\n\n## 核心定义\n\nMulti-paper concept."
 
         monkeypatch.setenv("OPENAI_API_KEY", "test-key")
-        monkeypatch.setattr("ai_research_os.call_llm_chat_completions", mock_call)
+        monkeypatch.setattr("llm.generate.call_llm_chat_completions", mock_call)
 
         pnotes = [
             {
