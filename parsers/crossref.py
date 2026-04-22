@@ -3,9 +3,13 @@ import datetime as dt
 import re
 from typing import List, Optional, Tuple
 
-import requests
-
 from core import CROSSREF_WORKS, DOI_RESOLVER, Paper
+
+# Reuse HTTP session from arxiv parser for connection pooling
+from parsers import arxiv as arxiv_module
+
+# Alias for convenience
+_http_session = arxiv_module._http_session
 from core.cache import get_cached, set_cached
 from core.retry import circuit_breaker
 from parsers.input_detection import normalize_arxiv_id
@@ -140,7 +144,7 @@ def fetch_crossref_metadata(doi: str, timeout: int = 30) -> Tuple[Paper, Optiona
     url = CROSSREF_WORKS.format(doi=doi)
 
     try:
-        r = requests.get(
+        r = _http_session.get(
             url,
             timeout=timeout,
             headers={"User-Agent": "AI-Research-OS/1.0"},

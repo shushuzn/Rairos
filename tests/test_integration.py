@@ -28,6 +28,18 @@ def temp_research_root():
         yield root
 
 
+def _mock_arxiv_session(mock_resp):
+    mock_session = MagicMock()
+    mock_session.get.return_value = mock_resp
+    return mock_session
+
+
+def _mock_crossref_session(mock_resp):
+    mock_session = MagicMock()
+    mock_session.get.return_value = mock_resp
+    return mock_session
+
+
 def make_mock_arxiv_response(uid="2301.00001", title="Test Paper",
                              abstract="This is a test abstract.",
                              authors=None, published="2024-01-15",
@@ -70,6 +82,7 @@ def make_mock_arxiv_response(uid="2301.00001", title="Test Paper",
     mock_resp.status_code = 200
     mock_resp.headers = {"content-type": "application/atom+xml"}
     mock_resp.text = xml
+    mock_resp.read.return_value = xml.encode("utf-8")
     return mock_resp
 
 
@@ -134,18 +147,21 @@ class TestArxivFullPipeline:
             journal_ref="arXiv:2601.00155 [cs.AI]", doi="10.48550/arXiv.2601.00155"
         )
 
-        with patch("requests.get", return_value=mock_arxiv):
-            with patch("sys.stdout", new=StringIO()):
-                # Simulate: python ai_research_os.py 2601.00155 --category 02-Models
-                # --concept-dir 01-Foundations --comparison-dir 00-Radar
-                result = airo.main([
-                    uid,
-                    "--root", str(temp_research_root),
-                    "--category", "02-Models",
-                    "--concept-dir", "01-Foundations",
-                    "--comparison-dir", "00-Radar",
-                    "--tags", "Agent,RAG",
-                ])
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_arxiv
+        with patch("parsers.arxiv._get_session", return_value=mock_session):
+            with patch("parsers.arxiv.get_cached", return_value=None):
+                with patch("sys.stdout", new=StringIO()):
+                    # Simulate: python ai_research_os.py 2601.00155 --category 02-Models
+                    # --concept-dir 01-Foundations --comparison-dir 00-Radar
+                    result = airo.main([
+                        uid,
+                        "--root", str(temp_research_root),
+                        "--category", "02-Models",
+                        "--concept-dir", "01-Foundations",
+                        "--comparison-dir", "00-Radar",
+                        "--tags", "Agent,RAG",
+                    ])
 
         assert result == 0, "main() should return 0 on success"
 
@@ -195,7 +211,9 @@ class TestArxivFullPipeline:
         mock_resp.status_code = 500
         mock_resp.raise_for_status.side_effect = Exception("Server error")
 
-        with patch("requests.get", return_value=mock_resp):
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_resp
+        with patch("parsers.arxiv._get_session", return_value=mock_session):
             with patch("sys.stdout", new=StringIO()):
                 try:
                     result = airo.main([
@@ -219,7 +237,9 @@ class TestArxivFullPipeline:
             raise Exception("Not found")
         mock_resp.raise_for_status = raise_for_status
 
-        with patch("requests.get", return_value=mock_resp):
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_resp
+        with patch("parsers.arxiv._get_session", return_value=mock_session):
             with patch("sys.stdout", new=StringIO()):
                 try:
                     airo.main([
@@ -254,16 +274,17 @@ class TestDoiFullPipeline:
         )
 
         # Crossref returns DOI paper, no arXiv fallback
-        with patch("requests.get", return_value=mock_crossref):
-            with patch("sys.stdout", new=StringIO()):
-                result = airo.main([
-                    "10.1038/nature12373",
-                    "--root", str(temp_research_root),
-                    "--category", "02-Models",
-                    "--concept-dir", "01-Foundations",
-                    "--comparison-dir", "00-Radar",
-                    "--tags", "Evaluation",
-                ])
+        with patch("parsers.crossref._http_session", _mock_crossref_session(mock_crossref)):
+            with patch("parsers.crossref.get_cached", return_value=None):
+                with patch("sys.stdout", new=StringIO()):
+                    result = airo.main([
+                        "10.1038/nature12373",
+                        "--root", str(temp_research_root),
+                        "--category", "02-Models",
+                        "--concept-dir", "01-Foundations",
+                        "--comparison-dir", "00-Radar",
+                        "--tags", "Evaluation",
+                    ])
 
         assert result == 0, "main() should return 0 on success"
         pnote_dir = temp_research_root / "02-Models"
@@ -302,20 +323,29 @@ class TestDoiFullPipeline:
         }
 
         call_count = {"count": 0}
-        def fake_get(url, **kwargs):
+        def fake_arxiv_get(url, **kwargs):
             call_count["count"] += 1
-            if "arxiv.org" in url:
-                return mock_arxiv
+            return mock_arxiv
+
+        def fake_crossref_get(url, **kwargs):
             return mock_crossref
 
-        with patch("requests.get", side_effect=fake_get):
-            with patch("sys.stdout", new=StringIO()):
-                result = airo.main([
-                    "10.48550/arXiv.2306.12345",
-                    "--root", str(temp_research_root),
-                    "--category", "02-Models",
-                    "--tags", "Agent",
-                ])
+        mock_arxiv_session = MagicMock()
+        mock_arxiv_session.get = fake_arxiv_get
+        mock_crossref_session = MagicMock()
+        mock_crossref_session.get = fake_crossref_get
+
+        with patch("parsers.arxiv._get_session", return_value=mock_arxiv_session):
+            with patch("parsers.arxiv.get_cached", return_value=None):
+                with patch("parsers.crossref._http_session", mock_crossref_session):
+                    with patch("parsers.crossref.get_cached", return_value=None):
+                        with patch("sys.stdout", new=StringIO()):
+                            result = airo.main([
+                                "10.48550/arXiv.2306.12345",
+                                "--root", str(temp_research_root),
+                                "--category", "02-Models",
+                                "--tags", "Agent",
+                            ])
 
         assert result == 0
         pnote_dir = temp_research_root / "02-Models"
@@ -350,16 +380,19 @@ class TestTagInferencePipeline:
             categories=["cs.AI", "cs.CL"]
         )
 
-        with patch("requests.get", return_value=mock_arxiv):
-            with patch("sys.stdout", new=StringIO()):
-                result = airo.main([
-                    "2401.00001",
-                    "--root", str(temp_research_root),
-                    "--category", "02-Models",
-                    "--concept-dir", "01-Foundations",
-                    "--comparison-dir", "00-Radar",
-                    # No --tags: should infer from abstract
-                ])
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_arxiv
+        with patch("parsers.arxiv._get_session", return_value=mock_session):
+            with patch("parsers.arxiv.get_cached", return_value=None):
+                with patch("sys.stdout", new=StringIO()):
+                    result = airo.main([
+                        "2401.00001",
+                        "--root", str(temp_research_root),
+                        "--category", "02-Models",
+                        "--concept-dir", "01-Foundations",
+                        "--comparison-dir", "00-Radar",
+                        # No --tags: should infer from abstract
+                    ])
 
         assert result == 0
         pnote_dir = temp_research_root / "02-Models"
@@ -387,7 +420,9 @@ class TestTagInferencePipeline:
             primary_category="cs.IT"
         )
 
-        with patch("requests.get", return_value=mock_arxiv):
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_arxiv
+        with patch("parsers.arxiv._get_session", return_value=mock_session):
             with patch("sys.stdout", new=StringIO()):
                 result = airo.main([
                     "2402.00002",
@@ -427,14 +462,17 @@ class TestPnoteContentAccuracy:
             doi="10.48550/arXiv.2305.00001"
         )
 
-        with patch("requests.get", return_value=mock_arxiv):
-            with patch("sys.stdout", new=StringIO()):
-                result = airo.main([
-                    "2305.00001",
-                    "--root", str(temp_research_root),
-                    "--category", "02-Models",
-                    "--tags", "LLM",
-                ])
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_arxiv
+        with patch("parsers.arxiv._get_session", return_value=mock_session):
+            with patch("parsers.arxiv.get_cached", return_value=None):
+                with patch("sys.stdout", new=StringIO()):
+                    result = airo.main([
+                        "2305.00001",
+                        "--root", str(temp_research_root),
+                        "--category", "02-Models",
+                        "--tags", "LLM",
+                    ])
 
         assert result == 0
         pnote_files = list((temp_research_root / "02-Models").glob("P - 2017 - *.md"))
@@ -472,7 +510,7 @@ class TestRadarTimelineUpdate:
             ("2601.00156", "RAG Paper 2602"),
         ]
 
-        def fake_get(url, **kwargs):
+        def fake_arxiv_get(url, **kwargs):
             if "arxiv.org" in url:
                 uid_match = re.search(r"(\d+\.\d+)", url)
                 uid = uid_match.group(1) if uid_match else "2601.00155"
@@ -486,7 +524,9 @@ class TestRadarTimelineUpdate:
                 )
             raise Exception(f"Unexpected URL: {url}")
 
-        with patch("requests.get", side_effect=fake_get):
+        mock_arxiv_session = MagicMock()
+        mock_arxiv_session.get = fake_arxiv_get
+        with patch("parsers.arxiv._get_session", return_value=mock_arxiv_session):
             with patch("sys.stdout", new=StringIO()):
                 airo.main([
                     paper_data[0][0], "--root", str(temp_research_root),
@@ -530,7 +570,7 @@ class TestMnoteAbcSections:
                 published="2024-01-01",
                 primary_category="cs.AI",
             )
-            with patch("requests.get", return_value=mock_arxiv):
+            with patch("parsers.arxiv._get_session", return_value=_mock_arxiv_session(mock_arxiv)):
                 with patch("sys.stdout", new=StringIO()):
                     airo.main([
                         uid,
@@ -567,7 +607,7 @@ class TestCnoteWikilinks:
             primary_category="cs.AI",
         )
 
-        with patch("requests.get", return_value=mock_arxiv):
+        with patch("parsers.arxiv._get_session", return_value=_mock_arxiv_session(mock_arxiv)):
             with patch("sys.stdout", new=StringIO()):
                 airo.main([
                     "2301.00001",

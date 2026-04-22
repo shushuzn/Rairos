@@ -1,5 +1,6 @@
 """arXiv API metadata fetching."""
 import logging
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List
@@ -13,32 +14,44 @@ logger = logging.getLogger(__name__)
 from core.cache import get_cached, set_cached
 from core.retry import circuit_breaker
 
+# ─── HTTP Session (lazy init for testability) ─────────────────────────────────
+_http_session: requests.Session = None  # type: ignore
+
+
+def _get_session() -> requests.Session:
+    global _http_session
+    if _http_session is None:
+        _http_session = requests.Session()
+    return _http_session
+
 # ─── Rate limiting ────────────────────────────────────────────────────────────
 # arXiv API guidelines: < 1 request per 3 seconds
 _ARXIV_RATE_LIMIT_DELAY = 3.0  # seconds between requests
 _last_arxiv_request_time = 0.0
+_rate_limit_lock = threading.Lock()
 
 
 def _rate_limit() -> None:
-    """Enforce ~1 request per 3 seconds for the arXiv API."""
+    """Enforce ~1 request per 3 seconds for the arXiv API (thread-safe)."""
     global _last_arxiv_request_time
-    now = time.monotonic()
-    elapsed = now - _last_arxiv_request_time
-    if elapsed < _ARXIV_RATE_LIMIT_DELAY:
-        time.sleep(_ARXIV_RATE_LIMIT_DELAY - elapsed)
-    _last_arxiv_request_time = time.monotonic()
+    with _rate_limit_lock:
+        now = time.monotonic()
+        elapsed = now - _last_arxiv_request_time
+        if elapsed < _ARXIV_RATE_LIMIT_DELAY:
+            time.sleep(_ARXIV_RATE_LIMIT_DELAY - elapsed)
+        _last_arxiv_request_time = time.monotonic()
 
 
 def _fetch_with_rate_limit_and_backoff(url: str, timeout: int) -> requests.Response:
     """GET url with rate limiting + exponential backoff on 429."""
     _rate_limit()
-    r = requests.get(url, timeout=timeout)
+    r = _get_session().get(url, timeout=timeout)
     if r.status_code == 429:
         # Exponential backoff: try 2, 4, 8 seconds
         for delay in [2.0, 4.0, 8.0]:
             logger.warning("arXiv API rate-limited (429). Retrying in %.1fs.", delay)
             time.sleep(delay)
-            r = requests.get(url, timeout=timeout)
+            r = _get_session().get(url, timeout=timeout)
             if r.status_code != 429:
                 break
     r.raise_for_status()
@@ -57,87 +70,13 @@ def fetch_arxiv_metadata(arxiv_id: str, timeout: int = 30) -> Paper:
     if not feed.entries:
         raise ValueError(f"arXiv API returned no entries for id: {arxiv_id}")
 
+    # Reuse _parse_entry instead of duplicating the parsing logic
     e = feed.entries[0]
-    title = (getattr(e, "title", "") or "").replace("\n", " ").strip()
-    abstract = (getattr(e, "summary", "") or "").replace("\n", " ").strip()
-
-    authors: List[str] = []
-    for a in getattr(e, "authors", []) or []:
-        name = getattr(a, "name", "").strip()
-        if name:
-            authors.append(name)
-
-    published = (getattr(e, "published", "") or "")[:10]
-    updated = (getattr(e, "updated", "") or "")[:10]
-    abs_url = getattr(e, "link", "") or f"https://arxiv.org/abs/{arxiv_id}"
-
-    pdf_url = ""
-    for link_item in getattr(e, "links", []) or []:
-        if getattr(link_item, "type", "") == "application/pdf":
-            pdf_url = link_item.href
-            break
-    if not pdf_url:
-        pdf_url = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
-
-    primary_cat = ""
-    try:
-        primary_cat = getattr(e, "arxiv_primary_category", {}).get("term", "")  # type: ignore
-    except Exception:
-        primary_cat = ""
-
-    # All categories as comma-separated string
-    all_cats = ""
-    try:
-        tags = getattr(e, "tags", []) or []
-        cats = [t.get("term", "") for t in tags if t.get("term")]
-        if cats:
-            all_cats = ", ".join(cats)
-    except Exception:
-        all_cats = ""
-
-    # Author comment (pages, version, etc.)
-    comment = (getattr(e, "arxiv_comment", None) or "").replace("\n", " ").strip()
-
-    # Journal reference (e.g. "Nature 2023")
-    journal_ref = (getattr(e, "journal_ref", None) or "").replace("\n", " ").strip()
-
-    # DOI (if present)
-    doi = (getattr(e, "arxiv_doi", None) or "").strip()
-
-    paper_dict = {
-        "source": "arxiv",
-        "uid": arxiv_id,
-        "title": title,
-        "authors": authors,
-        "abstract": abstract,
-        "published": published or "",
-        "updated": updated or "",
-        "abs_url": abs_url,
-        "pdf_url": pdf_url,
-        "primary_category": primary_cat or "",
-        "categories": all_cats,
-        "comment": comment,
-        "journal_ref": journal_ref,
-        "doi": doi,
-    }
+    paper_dict = _parse_entry(e)
+    paper_dict["uid"] = arxiv_id  # ensure correct UID
     set_cached("arxiv", arxiv_id, paper_dict)
 
-    return Paper(
-        source="arxiv",
-        uid=arxiv_id,
-        title=title,
-        authors=authors,
-        abstract=abstract,
-        published=published or "",
-        updated=updated or "",
-        abs_url=abs_url,
-        pdf_url=pdf_url,
-        primary_category=primary_cat or "",
-        categories=all_cats,
-        comment=comment,
-        journal_ref=journal_ref,
-        doi=doi,
-    )
+    return _dict_to_paper(paper_dict)
 
 
 def _dict_to_paper(d: dict) -> Paper:

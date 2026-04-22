@@ -963,9 +963,11 @@ class TestFetchArxivMetadata:
         mock_response.text = mock_feed
         mock_response.headers = {"content-type": "application/atom+xml"}
 
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_response
         with patch("parsers.arxiv.get_cached", return_value=None):
             with patch("parsers.arxiv.set_cached"):
-                with patch("requests.get", return_value=mock_response):
+                with patch("parsers.arxiv._get_session", return_value=mock_session):
                     paper = airo.fetch_arxiv_metadata("2301.00001", timeout=30)
 
                     assert paper.title == "Test Paper Title"
@@ -974,9 +976,12 @@ class TestFetchArxivMetadata:
             assert "Test abstract" in paper.abstract
 
     def test_raises_for_invalid_id(self):
-        with patch("requests.get", side_effect=Exception("Not found")):
-            with pytest.raises(Exception):
-                airo.fetch_arxiv_metadata("invalid-id-that-does-not-exist", timeout=30)
+        mock_session = MagicMock()
+        mock_session.get.side_effect = Exception("Not found")
+        with patch("parsers.arxiv._get_session", return_value=mock_session):
+            with patch("parsers.arxiv.get_cached", return_value=None):
+                with pytest.raises(Exception):
+                    airo.fetch_arxiv_metadata("invalid-id-that-does-not-exist", timeout=30)
 
 
 class TestFetchArxivMetadataBatch:
@@ -1013,7 +1018,9 @@ class TestFetchArxivMetadataBatch:
         mock_response.text = mock_feed
         mock_response.headers = {"content-type": "application/atom+xml"}
 
-        with patch("requests.get", return_value=mock_response):
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_response
+        with patch("parsers.arxiv._get_session", return_value=mock_session):
             with patch("parsers.arxiv.get_cached", return_value=None):
                 with patch("parsers.arxiv.set_cached"):
                     papers = airo.fetch_arxiv_metadata_batch(
@@ -1064,7 +1071,9 @@ class TestFetchArxivMetadataBatch:
         def get_cached_mock_ns(ns, aid):
             return cached_paper if aid == "2301.00001" else None
 
-        with patch("requests.get", return_value=mock_response):
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_response
+        with patch("parsers.arxiv._get_session", return_value=mock_session):
             with patch("parsers.arxiv.get_cached", side_effect=get_cached_mock_ns):
                 with patch("parsers.arxiv.set_cached"):
                     papers = airo.fetch_arxiv_metadata_batch(["2301.00001"], timeout=60)
@@ -1088,9 +1097,11 @@ class TestFetchCrossrefMetadata:
             }
         }
 
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_response
         with patch("parsers.crossref.get_cached", return_value=None):
             with patch("parsers.crossref.set_cached"):
-                with patch("requests.get", return_value=mock_response):
+                with patch("parsers.crossref._http_session", mock_session):
                     paper, updated = airo.fetch_crossref_metadata("10.1234/test", timeout=30)
 
                     assert paper.title == "Crossref Test Paper"
@@ -1098,8 +1109,9 @@ class TestFetchCrossrefMetadata:
             assert "Test abstract" in paper.abstract
 
     def test_returns_none_for_not_found(self):
-        with patch("requests.get") as mock_get:
-            mock_get.return_value = MagicMock(status_code=404)
+        mock_session = MagicMock()
+        mock_session.get.return_value = MagicMock(status_code=404)
+        with patch("parsers.crossref._http_session", mock_session):
             paper, updated = airo.fetch_crossref_metadata("10.9999/notfound", timeout=30)
             # Should return (None, None) or similar on 404
 
@@ -1116,7 +1128,9 @@ class TestMainCli:
         mock_response.text = '<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Test</title><author><name>Alice</name></author><summary>Abstract.</summary><published>2024-01-01</published><updated>2024-01-01</updated><id>http://arxiv.org/abs/2301.00001</id><link href="https://arxiv.org/abs/2301.00001" type="text/html"/><link title="pdf" href="https://arxiv.org/pdf/2301.00001.pdf" type="application/pdf"/><arxiv:primary_category xmlns:arxiv="http://arxiv.org/schemas/atom" term="cs.AI"/></entry></feed>'
         mock_response.headers = {"content-type": "application/atom+xml"}
 
-        with patch("requests.get", return_value=mock_response):
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_response
+        with patch("parsers.arxiv._get_session", return_value=mock_session):
             with patch("sys.stdout", new=StringIO()) as _:
                 try:
                     airo.main(["arxiv-id", "2301.00001"])
