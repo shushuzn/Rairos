@@ -1,104 +1,104 @@
-[build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name = "ai-research-os"
-version = "1.5.1"
-description = "A Structured Research Operating System for managing AI/ML papers, notes, and knowledge"
-readme = "README.md"
-requires-python = ">=3.9"
-authors = [
-    {name = "shushuzn", email = "shushuzn@example.com"}
-]
-keywords = ["research", "ai", "papers", "arxiv", "notes", "zettelkasten"]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Science/Research",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-]
-dependencies = [
-    "requests>=2.25.0",
-    "feedparser>=6.0.0",
-    "pymupdf>=1.23.0",
-]
-
-[project.optional-dependencies]
-ocr = ["pytesseract>=0.3.0", "pillow>=9.0.0"]
-ai = ["openai>=1.0.0"]
-dev = ["pytest>=7.0.0", "pytest-cov>=4.0.0"]
-all = ["ai-research-os[ocr,ai,dev]"]
-
-[project.scripts]
-airos = "cli:main"
-
-[project.urls]
-Homepage = "https://github.com/shushuzn/ai_research_os"
-Repository = "https://github.com/shushuzn/ai_research_os"
-Documentation = "https://github.com/shushuzn/ai_research_os#readme"
-
-[project.license]
-text = "LicenseRef-ResearchOnly"
-
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["core*", "parsers*", "notes*", "pdf*", "sections*", "llm*", "renderers*", "updaters*", "completions*", "db*", "rankers*", "research_loop"]
-
-[tool.setuptools.package-data]
-completions = ["bash", "zsh", "fish"]
-
-[tool.commitizen]
-name = "cz_v1"
-tag_format = "$version"
-version_files = ["pyproject.toml"]
-
-[tool.ruff]
-target-version = "py39"
-line-length = 100
-indent-width = 4
-
-[tool.ruff.lint]
-select = ["E4", "E7", "F", "W", "B", "I"]
-ignore = ["E402", "E501", "E741", "B008", "B017", "I001", "B023", "F821"]
-
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-
-[tool.mypy]
-python_version = "3.9"
-warn_return_any = true
-warn_unused_configs = true
-ignore_missing_imports = true
-strict = false
-
-[tool.coverage.run]
-source = ["."]
-branch = true
-omit = [
-    "*/tests/*",
-    "*/test_*.py",
-    "*/__pycache__/*",
-    "*/.venv/*",
-    "*/venv/*",
-    "*/site-packages/*",
-]
-
-[tool.coverage.report]
-show_missing = true
-skip_covered = false
-exclude_lines = [
-    "pragma: no cover",
-    "pragma: python3 only",
-    "if TYPE_CHECKING:",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
-    "@abstractmethod",
-]
-
-[tool.coverage.html]
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-research-os"
+version = "1.5.1"
+description = "A Structured Research Operating System for managing AI/ML papers, notes, and knowledge"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    {name = "shushuzn", email = "shushuzn@example.com"}
+]
+keywords = ["research", "ai", "papers", "arxiv", "notes", "zettelkasten"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "requests>=2.25.0",
+    "feedparser>=6.0.0",
+    "pymupdf>=1.23.0",
+]
+
+[project.optional-dependencies]
+ocr = ["pytesseract>=0.3.0", "pillow>=9.0.0"]
+ai = ["openai>=1.0.0"]
+dev = ["pytest>=7.0.0", "pytest-cov>=4.0.0"]
+all = ["ai-research-os[ocr,ai,dev]"]
+
+[project.scripts]
+airos = "cli:main"
+
+[project.urls]
+Homepage = "https://github.com/shushuzn/ai_research_os"
+Repository = "https://github.com/shushuzn/ai_research_os"
+Documentation = "https://github.com/shushuzn/ai_research_os#readme"
+
+[project.license]
+text = "LicenseRef-ResearchOnly"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["core*", "parsers*", "notes*", "pdf*", "sections*", "llm*", "renderers*", "updaters*", "completions*", "db*", "rankers*", "research_loop", "kg*", "viz*", "scoring*", "trends*", "extable*", "web*"]
+
+[tool.setuptools.package-data]
+completions = ["bash", "zsh", "fish"]
+
+[tool.commitizen]
+name = "cz_v1"
+tag_format = "$version"
+version_files = ["pyproject.toml"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+indent-width = 4
+
+[tool.ruff.lint]
+select = ["E4", "E7", "F", "W", "B", "I"]
+ignore = ["E402", "E501", "E741", "B008", "B017", "I001", "B023", "F821"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+strict = false
+
+[tool.coverage.run]
+source = ["."]
+branch = true
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/.venv/*",
+    "*/venv/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "pragma: python3 only",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "@abstractmethod",
+]
+
+[tool.coverage.html]
 directory = "coverage_html"
