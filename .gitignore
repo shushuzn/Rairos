@@ -9,3 +9,6 @@ build/
 .coverage
 coverage.json
 uv.lock
+.omc/
+*.jsonl
+2000
