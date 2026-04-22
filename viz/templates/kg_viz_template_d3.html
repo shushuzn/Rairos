@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AI Research OS — Knowledge Graph</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7/7/d3.min.js"></script>
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background:#1a1a2e; color:#eee; }
+    svg { width:100vw; height:100vh; }
+    .node circle { stroke:#fff; stroke-width:1.5px; cursor:pointer; }
+    .node text { font-size:11px; fill:#eee; pointer-events:none; }
+    .link { stroke:#555; stroke-opacity:0.6; }
+    #tooltip { position:fixed; background:#222; border:1px solid #555; padding:8px; border-radius:4px; font-size:12px; display:none; max-width:300px; }
+  </style>
+</head>
+<body>
+<div id="tooltip"></div>
+<svg id="graph"></svg>
+<script>
+const COLOR_MAP = {
+  Paper:   "#4A90E2", PNote:  "#50C878", CNote:  "#F4D03F",
+  MNote:   "#E74C3C", Tag:    "#9B59B6", Author: "#E67E22"
+};
+const W = window.innerWidth, H = window.innerHeight;
+
+d3.json("DATA_URL").then(data => {
+  const nodes = data.nodes.map(d => Object.assign({}, d));
+  const links = data.links.map(d => Object.assign({}, d));
+
+  const sim = d3.forceSimulation(nodes)
+    .force("link", d3.forceLink(links).id(d => d.id).distance(80))
+    .force("charge", d3.forceManyBody().strength(-200))
+    .force("center", d3.forceCenter(W/2, H/2))
+    .force("collide", d3.forceCollide(20));
+
+  const svg = d3.select("svg");
+  svg.append("defs").selectAll("marker")
+    .data(["cite","same_tag","in_comparison","has_note","about_tag"])
+    .enter().append("marker")
+      .attr("id", d => `arrow-${d}`)
+      .attr("viewBox","0 -5 10 10").attr("refX",18).attr("refY",0)
+      .attr("markerWidth",6).attr("markerHeight",6)
+      .attr("orient","auto")
+    .append("path").attr("d","M0,-5L10,0L0,5").attr("fill","#888");
+
+  const link = svg.append("g").selectAll("line").data(links).enter()
+    .append("line").attr("class","link")
+    .attr("stroke-width", d => d.weight || 1)
+    .attr("stroke", d => ({cite:"#aaa",same_tag:"#9B59B6",in_comparison:"#E74C3C",has_note:"#50C878",about_tag:"#F4D03F"}[d.relation]||"#555"))
+    .attr("marker-end", d => `url(#arrow-${d.relation})`);
+
+  const node = svg.append("g").selectAll("g").data(nodes).enter().append("g")
+    .attr("class","node").call(d3.drag()
+      .on("start", (e,d) => { if(!e.active) sim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on("drag", (e,d) => { d.fx=e.x; d.fy=e.y; })
+      .on("end", (e,d) => { if(!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; }))
+    .on("click", (e,d) => {
+      const tip = document.getElementById("tooltip");
+      tip.style.display = "block";
+      tip.style.left = (e.clientX+10)+"px";
+      tip.style.top  = (e.clientY+10)+"px";
+      tip.innerHTML = `<b>${d.type}</b><br>${d.label}<br><small>${d.entity_id || ""}</small>`;
+    });
+
+  node.append("circle").attr("r", 8)
+    .attr("fill", d => COLOR_MAP[d.type] || "#aaa");
+  node.append("text").attr("dx", 12).attr("dy", 4)
+    .text(d => (d.label||"").slice(0,30));
+
+  sim.on("tick", () => {
+    link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y)
+        .attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
+    node.attr("transform", d => `translate(${d.x},${d.y})`);
+  });
+});
+</script>
+</body>
+</html>
