@@ -12,3 +12,17 @@ uv.lock
 .omc/
 *.jsonl
 2000
+*.zip
+.cz.json
+.czrc
+make_pr.py
+pr_body.json
+pytest_310.txt
+pytest_out.zip
+pytest_output.zip
+logs.zip
+artifact_311.zip
+dict[str
+{c.target_id}
+0
+0)
