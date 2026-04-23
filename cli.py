@@ -32,6 +32,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional, Tuple
 
+from db import Database
 from core import DOI_RESOLVER, Paper, today_iso
 from core.basics import ensure_research_tree, get_default_concept_dir, get_default_radar_dir, safe_uid, slugify_title
 from parsers.input_detection import is_probably_doi, normalize_arxiv_id, normalize_doi
@@ -534,7 +535,6 @@ def _build_search_parser(subparsers) -> argparse.ArgumentParser:
 
 
 def _run_search(args: argparse.Namespace) -> int:
-    from db import Database
     db = Database()
     db.init()
 
@@ -752,7 +752,6 @@ def _build_list_parser(subparsers) -> argparse.ArgumentParser:
 
 
 def _run_list(args: argparse.Namespace) -> int:
-    from db import Database
     db = Database()
     db.init()
     papers, total = db.list_papers(
@@ -863,7 +862,6 @@ def _build_status_parser(subparsers) -> argparse.ArgumentParser:
 
 
 def _run_status(args: argparse.Namespace) -> int:
-    from db import Database
     db = Database()
     db.init()
     papers = db.get_papers(limit=10000)
@@ -912,7 +910,6 @@ def _build_stats_parser(subparsers) -> argparse.ArgumentParser:
 
 
 def _run_stats(args: argparse.Namespace) -> int:
-    from db import Database
     db = Database()
     db.init()
     s = db.get_stats()
@@ -979,7 +976,6 @@ def _build_import_parser(subparsers) -> argparse.ArgumentParser:
 
 
 def _run_import(args: argparse.Namespace) -> int:
-    from db import Database
     db = Database()
     db.init()
 
@@ -1193,7 +1189,6 @@ def _build_export_parser(subparsers) -> argparse.ArgumentParser:
 
 
 def _run_export(args: argparse.Namespace) -> int:
-    from db import Database
     db = Database()
     db.init()
     fields, rows = db.export_papers(format=args.format, limit=args.limit)
