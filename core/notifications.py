@@ -3,7 +3,8 @@ Notification System.
 
 Provides notifications for important events.
 """
-from typing import List, Optional
+from typing import List
+
 from dataclasses import dataclass
 from enum import Enum
 

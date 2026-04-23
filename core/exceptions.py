@@ -1,5 +1,6 @@
 """Exception hierarchy for AI Research OS."""
-from typing import Optional, Any, Dict
+from typing import Any, Dict
+
 
 
 class AIResearchOSError(Exception):

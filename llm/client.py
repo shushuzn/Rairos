@@ -120,7 +120,6 @@ def _stream_to_string(r: requests.Response) -> str:
 
 def clear_llm_cache() -> None:
     """Clear the LLM response cache."""
-    global _llm_cache
     _llm_cache.clear()
 
 

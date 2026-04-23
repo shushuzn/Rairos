@@ -2,7 +2,6 @@
 Data Backup System - Simple version.
 """
 import shutil
-import json
 from pathlib import Path
 from datetime import datetime
 

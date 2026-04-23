@@ -11,7 +11,8 @@ We quantify:
 - API costs saved
 - Research efficiency gains
 """
-from typing import Dict, List
+from typing import Dict
+
 from dataclasses import dataclass
 
 

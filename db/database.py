@@ -347,7 +347,7 @@ class Database:
         have already started an implicit transaction.
         """
         try:
-            with self.conn as _conn:
+            with self.conn:
                 yield
         except Exception as e:
             warnings.warn(f"Transaction failed, rolling back: {e}", stacklevel=2)
@@ -1375,8 +1375,8 @@ class Database:
                     ("cnote_path", "papers.cnote_path = CASE WHEN papers.cnote_path = '' THEN excluded.cnote_path ELSE papers.cnote_path END"),
                     ("mnote_path", "papers.mnote_path = CASE WHEN papers.mnote_path = '' THEN excluded.mnote_path ELSE papers.mnote_path END"),
                 ]
-                for field, _ in parse_fields:
-                    cur.execute(f"SELECT {field} FROM papers WHERE id = ?", (duplicate_id,))
+                for fname, _ in parse_fields:
+                    cur.execute(f"SELECT {fname} FROM papers WHERE id = ?", (duplicate_id,))
                     row = cur.fetchone()
                     val = row[field] if row else None
                     if val is not None and val != "" and val != 0 and val != "[]":

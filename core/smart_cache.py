@@ -10,13 +10,11 @@ Inspired by cloud optimization principles:
 import json
 import zlib
 import time
-import hashlib
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
-from dataclasses import dataclass, field
+from typing import Any, Dict, Optional
+from dataclasses import dataclass
 from collections import OrderedDict
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -170,8 +168,6 @@ class SmartCache:
         """Remove a cache entry."""
         if key not in self._index:
             return
-        
-        entry = self._index[key]
         
         # Remove file from disk
         cache_path = self._get_cache_path(key)

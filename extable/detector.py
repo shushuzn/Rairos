@@ -2,7 +2,8 @@
 
 import re
 from pathlib import Path
-from typing import Optional
+
+
 
 
 _METRIC_KEYWORDS = [
@@ -24,10 +25,6 @@ class TableDetector:
 
     def __init__(self):
         self._has_fitz = True
-        try:
-            import fitz  # PyMuPDF
-        except ImportError:
-            self._has_fitz = False
 
     def detect_tables(self, page_source: str | Path | int,
                      pdf_path: Path | None = None) -> list[dict]:
@@ -36,10 +33,10 @@ class TableDetector:
         page_source: page number (int) OR path to page image (for OCR fallback)
         Returns list of {bbox, rows, cols, is_experiment_table}.
         """
-        if not self._has_fitz:
+        try:
+            import fitz
+        except ImportError:
             return []
-
-        import fitz
 
         if isinstance(page_source, (int,)):
             page_num = int(page_source)
@@ -138,10 +135,10 @@ class TableDetector:
     def extract_all_tables(self, pdf_path: str | Path,
                           max_pages: int = 0) -> list[dict]:
         """Extract all experiment tables from a PDF."""
-        if not self._has_fitz:
+        try:
+            import fitz
+        except ImportError:
             return []
-
-        import fitz
         pdf_path = Path(pdf_path)
         doc = fitz.open(str(pdf_path))
         all_tables = []

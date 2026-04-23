@@ -3,8 +3,7 @@ Search Optimizer.
 
 Improves search relevance and performance.
 """
-from typing import List, Dict, Any, Optional
-import re
+from typing import List, Dict, Any
 
 
 class SearchOptimizer:

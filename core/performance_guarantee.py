@@ -12,8 +12,7 @@ We promise:
 - Resource protection guarantees
 """
 import psutil
-import time
-from typing import Dict, List, Optional
+from typing import Dict, List
 from dataclasses import dataclass
 
 

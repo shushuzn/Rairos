@@ -7,13 +7,12 @@ Inspired by cloud optimization principles:
 - Monitor resource usage (avoid resource exhaustion)
 - Efficient memory management
 """
-import os
 import time
 import psutil
 import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 
 logger = logging.getLogger(__name__)

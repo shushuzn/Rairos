@@ -1,7 +1,8 @@
 """Keyword tag inference and predefined keyword tag patterns."""
 import re
 from functools import lru_cache
-from typing import List, Dict, Tuple
+from typing import List, Tuple
+
 
 from core import Paper
 

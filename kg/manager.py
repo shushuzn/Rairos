@@ -5,7 +5,8 @@ import sqlite3
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
+
 
 
 class KGManager:

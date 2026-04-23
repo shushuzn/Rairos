@@ -11,7 +11,8 @@ We offer:
 - Ecosystem integration
 - Extensible platform
 """
-from typing import Dict, List, Optional
+from typing import Optional
+
 from dataclasses import dataclass
 
 
