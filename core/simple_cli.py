@@ -6,8 +6,6 @@ Inspired by "simplify complexity" philosophy from the tractor startup article.
 """
 import sys
 import argparse
-from pathlib import Path
-from typing import Optional
 
 
 class SimpleCLI:
@@ -68,17 +66,17 @@ class SimpleCLI:
         list_parser.add_argument("--status", choices=["all", "pending", "done"], default="all", help="按状态筛选")
         
         # Status command
-        status_parser = subparsers.add_parser("status", help="📊 查看状态")
+        subparsers.add_parser("status", help="📊 查看状态")
         
         # Stats command
-        stats_parser = subparsers.add_parser("stats", help="📈 查看统计")
+        subparsers.add_parser("stats", help="📈 查看统计")
         
         # Export command
         export_parser = subparsers.add_parser("export", help="💾 导出数据")
         export_parser.add_argument("format", choices=["json", "csv"], default="json", help="导出格式")
         
         # Help command
-        help_parser = subparsers.add_parser("help", help="❓ 显示帮助")
+        subparsers.add_parser("help", help="❓ 显示帮助")
         
         return parser
     
@@ -132,7 +130,7 @@ class SimpleCLI:
             print(f"   来源: {paper.source}")
             print()
         
-        print(f"💡 使用 'import <论文ID>' 导入论文")
+        print("💡 使用 'import <论文ID>' 导入论文")
         return 0
     
     def _handle_import(self, args):
@@ -157,7 +155,7 @@ class SimpleCLI:
         """处理列出命令"""
         from db import Database
         
-        print(f"\n📚 论文列表\n")
+        print("\n📚 论文列表\n")
         
         db = Database()
         db.init()
@@ -186,7 +184,7 @@ class SimpleCLI:
         """处理状态命令"""
         from db import Database
         
-        print(f"\n📊 系统状态\n")
+        print("\n📊 系统状态\n")
         
         db = Database()
         db.init()
@@ -197,11 +195,11 @@ class SimpleCLI:
         print(f"  按来源: {', '.join(f'{k}={v}' for k, v in s['by_source'].items())}")
         print(f"  按状态: {', '.join(f'{k}={v}' for k, v in s['by_status'].items())}")
         
-        print(f"\n队列状态:")
+        print("\n队列状态:")
         print(f"  待处理: {s['queue_queued']}")
         print(f"  运行中: {s['queue_running']}")
         
-        print(f"\n缓存:")
+        print("\n缓存:")
         print(f"  条目数: {s['cache_entries']}")
         
         return 0
@@ -210,7 +208,7 @@ class SimpleCLI:
         """处理统计命令"""
         from db import Database
         
-        print(f"\n📈 详细统计\n")
+        print("\n📈 详细统计\n")
         
         db = Database()
         db.init()
@@ -219,7 +217,7 @@ class SimpleCLI:
         
         print("论文统计:")
         print(f"  总数: {s['total_papers']}")
-        print(f"  来源分布:")
+        print("  来源分布:")
         for source, count in sorted(s['by_source'].items(), key=lambda x: -x[1]):
             pct = (count / s['total_papers'] * 100) if s['total_papers'] > 0 else 0
             print(f"    {source}: {count} ({pct:.1f}%)")

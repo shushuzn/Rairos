@@ -1,6 +1,10 @@
 """Database optimization utilities."""
+from __future__ import annotations
 import logging
-from typing import List, Tuple
+from typing import TYPE_CHECKING, List
+
+if TYPE_CHECKING:
+    from db.database import Database
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,5 @@
 """HTTP response cache for arXiv and Crossref API calls."""
 import json
-import os
 import time
 from pathlib import Path
 from typing import Optional, Dict, Tuple
@@ -48,7 +47,6 @@ def _evict_if_needed(source: str) -> None:
 
 def _evict_memory_cache_if_needed() -> None:
     """Evict oldest items from memory cache if it exceeds the limit."""
-    global _MEMORY_CACHE
     if len(_MEMORY_CACHE) > _MEMORY_CACHE_MAX_SIZE:
         # Sort items by timestamp and remove oldest 20%
         sorted_items = sorted(_MEMORY_CACHE.items(), key=lambda x: x[1][0])
@@ -103,7 +101,6 @@ def set_cached(source: str, key: str, data: dict) -> None:
 
 def clear_cache(source: str = None) -> None:
     """Clear cache for a specific source or all sources."""
-    global _MEMORY_CACHE
     
     # Clear memory cache
     if source:
