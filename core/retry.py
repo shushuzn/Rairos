@@ -2,15 +2,74 @@
 from __future__ import annotations
 
 import logging
+import random
 import time
 import threading
 from functools import wraps
-from typing import Callable, Sequence
+from typing import Callable, Sequence, Dict, Any
 
 logger = logging.getLogger(__name__)
 
 
-# ─── Retry Decorator ──────────────────────────────────────────────────────────
+# ─── Retry Statistics ────────────────────────────────────────────────────
+
+
+class RetryStats:
+    """Track retry statistics for monitoring."""
+    
+    def __init__(self):
+        self._stats: Dict[str, Dict[str, Any]] = {}
+        self._lock = threading.Lock()
+    
+    def record_attempt(self, func_name: str, attempt: int, success: bool, error: str = None):
+        """Record a retry attempt."""
+        with self._lock:
+            if func_name not in self._stats:
+                self._stats[func_name] = {
+                    "total_attempts": 0,
+                    "total_failures": 0,
+                    "total_retries": 0,
+                    "total_success": 0,
+                    "errors": {}
+                }
+            
+            self._stats[func_name]["total_attempts"] += 1
+            if not success:
+                self._stats[func_name]["total_failures"] += 1
+                self._stats[func_name]["total_retries"] += attempt
+                if error:
+                    error_type = type(error).__name__
+                    self._stats[func_name]["errors"][error_type] = \
+                        self._stats[func_name]["errors"].get(error_type, 0) + 1
+            else:
+                self._stats[func_name]["total_success"] += 1
+    
+    def get_stats(self, func_name: str = None) -> Dict[str, Any]:
+        """Get statistics for a function or all functions."""
+        with self._lock:
+            if func_name:
+                return self._stats.get(func_name, {})
+            return dict(self._stats)
+    
+    def reset(self, func_name: str = None):
+        """Reset statistics."""
+        with self._lock:
+            if func_name and func_name in self._stats:
+                del self._stats[func_name]
+            elif func_name is None:
+                self._stats.clear()
+
+
+# Global retry statistics tracker
+_retry_stats = RetryStats()
+
+
+def get_retry_stats() -> RetryStats:
+    """Get the global retry statistics tracker."""
+    return _retry_stats
+
+
+# ─── Retry Decorator ──────────────────────────────────────────────────
 
 
 def retry(
@@ -19,9 +78,11 @@ def retry(
     max_delay: float = 30.0,
     exceptions: Sequence[type[Exception]] = (Exception,),
     on_retry: Callable[[Exception, int], None] | None = None,
+    jitter: float = 0.0,
+    track_stats: bool = False,
 ) -> Callable:
     """
-    Decorator that retries a function with exponential backoff.
+    Decorator that retries a function with exponential backoff and optional jitter.
 
     Args:
         max_attempts: Maximum number of attempts (including the first).
@@ -29,20 +90,34 @@ def retry(
         max_delay: Maximum delay cap in seconds.
         exceptions: Tuple of exception types to catch and retry.
         on_retry: Optional callback fired before each retry with (exception, attempt).
+        jitter: Random jitter factor (0.0-1.0) added to delay for better distribution.
+        track_stats: Whether to track retry statistics.
     """
 
     def decorator(fn: Callable) -> Callable:
+        func_name = f"{fn.__module__}.{fn.__qualname__}"
+        
         @wraps(fn)
         def wrapper(*args, **kwargs):
             last_exc: Exception | None = None
             for attempt in range(1, max_attempts + 1):
                 try:
-                    return fn(*args, **kwargs)
+                    result = fn(*args, **kwargs)
+                    if track_stats:
+                        _retry_stats.record_attempt(func_name, attempt, success=True)
+                    return result
                 except exceptions as e:
                     last_exc = e
+                    if track_stats:
+                        _retry_stats.record_attempt(func_name, attempt, success=False, error=e)
                     if attempt == max_attempts:
                         break
                     delay = min(base_delay * (2 ** (attempt - 1)), max_delay)
+                    
+                    # Add jitter if specified
+                    if jitter > 0:
+                        delay += delay * jitter * random.random()
+                    
                     logger.warning(
                         "[retry] %s attempt %d/%d failed: %s. Retrying in %.1fs",
                         fn.__qualname__,
@@ -62,7 +137,7 @@ def retry(
     return decorator
 
 
-# ─── Circuit Breaker ──────────────────────────────────────────────────────────
+# ─── Circuit Breaker ──────────────────────────────────────────────────
 
 
 class CircuitBreaker:
@@ -70,8 +145,8 @@ class CircuitBreaker:
     Circuit breaker that prevents repeated calls to a failing service.
 
     States:
-        CLOSED  → normal operation, calls pass through
-        OPEN    → calls fail immediately (CircuitOpen)
+        CLOSED → normal operation, calls pass through
+        OPEN   → calls fail immediately (CircuitOpen)
         HALF-OPEN → one test call allowed
     """
 
@@ -141,7 +216,7 @@ class CircuitOpen(Exception):
     """Raised when a circuit breaker is open."""
 
 
-# ─── Circuit Breaker Decorator ────────────────────────────────────────────────
+# ─── Circuit Breaker Decorator ────────────────────────────────────────
 
 
 def circuit_breaker(
