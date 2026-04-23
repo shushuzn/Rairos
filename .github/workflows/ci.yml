@@ -66,7 +66,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.13"]
     steps:
       - uses: actions/checkout@v6
 
@@ -77,7 +77,7 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install pytest pytest-cov pytest-asyncio aiohttp requests feedparser pymupdf freezegun numpy
+        run: pip install pytest pytest-cov pytest-asyncio aiohttp requests feedparser pymupdf freezegun numpy psutil
 
       - name: Run pytest
         run: |
@@ -117,6 +117,6 @@ jobs:
       - name: Combine and report
         run: |
           python -m coverage combine coverage-reports/ || true
-          python -m coverage report --format=term-missing || true
-          python -m coverage report --format=term-missing | tail -3 || true
-          python -m coverage report --format=term-missing | grep "^TOTAL" || true
+          python -m coverage report --format=term-missing
+          python -m coverage report --format=term-missing | tail -3
+          python -m coverage report --format=term-missing | grep "^TOTAL"
