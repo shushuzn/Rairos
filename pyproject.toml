@@ -16,7 +16,7 @@ build-backend = "setuptools.build_meta"
 name = "ai-research-os"
 
 
-version = "1.5.1"
+version = "1.5.2"
 
 
 description = "A Structured Research Operating System for managing AI/ML papers, notes, and knowledge"
