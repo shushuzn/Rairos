@@ -1,6 +1,7 @@
 """LLM API client."""
 import json
 import os
+import hashlib
 from typing import Dict, Iterator, List, Optional
 
 import requests
@@ -10,6 +11,9 @@ from core.retry import circuit_breaker
 # Reusable session for connection pooling (avoids TCP+TLS handshake per request)
 _http_session: requests.Session | None = None
 
+# Simple in-memory cache for LLM responses
+_llm_cache: Dict[str, str] = {}
+
 
 def _get_session() -> requests.Session:
     global _http_session
@@ -17,6 +21,23 @@ def _get_session() -> requests.Session:
         _http_session = requests.Session()
         _http_session.headers.update({"Content-Type": "application/json"})
     return _http_session
+
+
+def _generate_cache_key(
+    messages: List[Dict[str, str]],
+    model: str,
+    user_prompt: Optional[str] = None,
+    system_prompt: Optional[str] = None,
+) -> str:
+    """Generate a cache key based on the request parameters."""
+    key_data = {
+        "messages": messages,
+        "model": model,
+        "user_prompt": user_prompt,
+        "system_prompt": system_prompt,
+    }
+    key_str = json.dumps(key_data, sort_keys=True, ensure_ascii=False)
+    return hashlib.md5(key_str.encode()).hexdigest()
 
 
 def _parse_sse_stream(r: requests.Response) -> Iterator[str]:
@@ -52,6 +73,13 @@ def call_llm_chat_completions(
     if not api_key:
         raise ValueError("Missing API key. Provide --api-key or set OPENAI_API_KEY.")
 
+    # Generate cache key for non-streaming requests
+    cache_key = None
+    if not stream:
+        cache_key = _generate_cache_key(messages, model, user_prompt, system_prompt)
+        if cache_key in _llm_cache:
+            return _llm_cache[cache_key]
+
     url = base_url.rstrip("/") + "/chat/completions"
     session = _get_session()
     headers = {"Authorization": f"Bearer {api_key}"}
@@ -67,14 +95,35 @@ def call_llm_chat_completions(
     if user_prompt:
         payload["messages"] = msgs + [{"role": "user", "content": user_prompt}]
 
-    r = session.post(url, headers=headers, json=payload, timeout=timeout)
-    r.raise_for_status()
+    try:
+        r = session.post(url, headers=headers, json=payload, timeout=timeout)
+        r.raise_for_status()
 
-    if stream:
-        return _stream_to_string(r)
-    data = r.json()
-    return data["choices"][0]["message"]["content"]
+        if stream:
+            result = _stream_to_string(r)
+        else:
+            data = r.json()
+            result = data["choices"][0]["message"]["content"]
+            # Cache the result for future requests
+            if cache_key:
+                _llm_cache[cache_key] = result
+        return result
+    except requests.RequestException as e:
+        raise RuntimeError(f"LLM API request failed: {str(e)}") from e
+    except (KeyError, ValueError) as e:
+        raise RuntimeError(f"LLM API response parsing failed: {str(e)}") from e
 
 
 def _stream_to_string(r: requests.Response) -> str:
     return "".join(_parse_sse_stream(r))
+
+
+def clear_llm_cache() -> None:
+    """Clear the LLM response cache."""
+    global _llm_cache
+    _llm_cache.clear()
+
+
+def get_llm_cache_size() -> int:
+    """Get the current size of the LLM response cache."""
+    return len(_llm_cache)

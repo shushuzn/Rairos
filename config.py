@@ -3,11 +3,13 @@
 All hardcoded magic numbers in the codebase must be accessed via this module
 rather than inlined.  Defaults match the historical values so the module is
 safe to import even when no .env file is present.
+
+Environment variables follow the pattern AIROS_<CONFIG_NAME> for consistency.
 """
 from __future__ import annotations
 
 import os
-from typing import Tuple
+from typing import Tuple, Dict, Any
 
 # ---------------------------------------------------------------------------
 # Embedding
@@ -20,6 +22,15 @@ EMBEDDING_DIM: int = int(os.getenv("AIROS_EMBEDDING_DIM", "768"))
 # ---------------------------------------------------------------------------
 CACHE_TTL_SECONDS: int = int(os.getenv("AIROS_CACHE_TTL_SECONDS", str(24 * 3600)))
 """How long cached arXiv / Crossref API responses live, in seconds."""
+
+CACHE_DIR: str = os.getenv("AIROS_CACHE_DIR", str(os.path.expanduser("~/.cache/ai_research_os")))
+"""Directory for disk cache storage."""
+
+MAX_CACHE_FILES: int = int(os.getenv("AIROS_MAX_CACHE_FILES", "2000"))
+"""Maximum number of cache files per directory."""
+
+MEMORY_CACHE_MAX_SIZE: int = int(os.getenv("AIROS_MEMORY_CACHE_MAX_SIZE", "1000"))
+"""Maximum number of items in memory cache."""
 
 # ---------------------------------------------------------------------------
 # LLM cost table  (input_price_per_1M, output_price_per_1M)
@@ -81,7 +92,77 @@ DEFAULT_LLM_MODEL_RESEARCH: str = os.getenv("AIROS_DEFAULT_MODEL_RESEARCH", "gpt
 """Default LLM model used by the research loop."""
 
 # ---------------------------------------------------------------------------
+# LLM API configuration
+# ---------------------------------------------------------------------------
+DEFAULT_OPENAI_BASE_URL: str = os.getenv("AIROS_DEFAULT_OPENAI_BASE_URL", "https://api.openai.com/v1")
+"""Default OpenAI-compatible API base URL."""
+
+DEFAULT_LLM_TIMEOUT: int = int(os.getenv("AIROS_LLM_TIMEOUT", "180"))
+"""Default timeout for LLM API calls in seconds."""
+
+# ---------------------------------------------------------------------------
+# PDF processing
+# ---------------------------------------------------------------------------
+PDF_MAX_PAGES: int = int(os.getenv("AIROS_PDF_MAX_PAGES", "100"))
+"""Maximum number of pages to process from a PDF."""
+
+PDF_OCR_ZOOM: float = float(os.getenv("AIROS_PDF_OCR_ZOOM", "2.0"))
+"""Zoom factor for OCR processing."""
+
+PDF_OCR_LANG: str = os.getenv("AIROS_PDF_OCR_LANG", "chi_sim+eng")
+"""Default OCR language(s)."""
+
+# ---------------------------------------------------------------------------
+# Tagging
+# ---------------------------------------------------------------------------
+MAX_TAGS: int = int(os.getenv("AIROS_MAX_TAGS", "5"))
+"""Maximum number of tags to infer for a paper."""
+
+# ---------------------------------------------------------------------------
+# Research loop
+# ---------------------------------------------------------------------------
+RESEARCH_LOOP_DEFAULT_LIMIT: int = int(os.getenv("AIROS_RESEARCH_LOOP_DEFAULT_LIMIT", "5"))
+"""Default number of papers to process in research loop."""
+
+RESEARCH_LOOP_DEFAULT_OUTPUT_DIR: str = os.getenv("AIROS_RESEARCH_LOOP_DEFAULT_OUTPUT_DIR", "")
+"""Default output directory for research loop."""
+
+# ---------------------------------------------------------------------------
 # Miscellaneous
 # ---------------------------------------------------------------------------
 MAX_PARSE_AUTHORS_CACHE_SIZE: int = int(os.getenv("AIROS_PARSE_AUTHORS_CACHE_SIZE", "4096"))
 """Maxsize passed to the ``lru_cache`` wrapping the author JSON parser."""
+
+CONCURRENT_WORKERS: int = int(os.getenv("AIROS_CONCURRENT_WORKERS", "8"))
+"""Number of concurrent workers for parallel operations."""
+
+# ---------------------------------------------------------------------------
+# Helper functions
+# ---------------------------------------------------------------------------
+def get_config() -> Dict[str, Any]:
+    """Get all configuration values as a dictionary."""
+    return {
+        "EMBEDDING_DIM": EMBEDDING_DIM,
+        "CACHE_TTL_SECONDS": CACHE_TTL_SECONDS,
+        "CACHE_DIR": CACHE_DIR,
+        "MAX_CACHE_FILES": MAX_CACHE_FILES,
+        "MEMORY_CACHE_MAX_SIZE": MEMORY_CACHE_MAX_SIZE,
+        "MODEL_PRICES": MODEL_PRICES,
+        "DEFAULT_LLM_MODEL_CLI": DEFAULT_LLM_MODEL_CLI,
+        "DEFAULT_LLM_MODEL_RESEARCH": DEFAULT_LLM_MODEL_RESEARCH,
+        "DEFAULT_OPENAI_BASE_URL": DEFAULT_OPENAI_BASE_URL,
+        "DEFAULT_LLM_TIMEOUT": DEFAULT_LLM_TIMEOUT,
+        "PDF_MAX_PAGES": PDF_MAX_PAGES,
+        "PDF_OCR_ZOOM": PDF_OCR_ZOOM,
+        "PDF_OCR_LANG": PDF_OCR_LANG,
+        "MAX_TAGS": MAX_TAGS,
+        "RESEARCH_LOOP_DEFAULT_LIMIT": RESEARCH_LOOP_DEFAULT_LIMIT,
+        "RESEARCH_LOOP_DEFAULT_OUTPUT_DIR": RESEARCH_LOOP_DEFAULT_OUTPUT_DIR,
+        "MAX_PARSE_AUTHORS_CACHE_SIZE": MAX_PARSE_AUTHORS_CACHE_SIZE,
+        "CONCURRENT_WORKERS": CONCURRENT_WORKERS,
+    }
+
+def validate_config() -> bool:
+    """Validate configuration values."""
+    # Add validation logic here if needed
+    return True

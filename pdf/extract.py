@@ -58,18 +58,25 @@ def download_pdf(pdf_url: str, out_path: Path, timeout: int = 60) -> None:
         raise RuntimeError(f"Download failed for {pdf_url}: no content received")
 
 
+# PyMuPDF dependency (lazy-loaded once)
+_fitz_pdf = None
+
+def _ensure_fitz():
+    global _fitz_pdf
+    if _fitz_pdf is None:
+        try:
+            import fitz
+            _fitz_pdf = fitz
+        except Exception:
+            raise RuntimeError("PyMuPDF not installed. Install with: pip install pymupdf")
+
 def extract_pdf_text(pdf_path: Path, max_pages: Optional[int] = None) -> str:
     """Fast text-layer extraction (PyMuPDF)."""
-    try:
-        import fitz
-    except Exception:
-        fitz = None
-    if fitz is None:
-        raise RuntimeError("PyMuPDF not installed. Install with: pip install pymupdf")
+    _ensure_fitz()
 
     try:
-        doc = fitz.open(str(pdf_path))
-    except (FileNotFoundError, OSError, getattr(fitz, "FileNotFoundError", FileNotFoundError)):
+        doc = _fitz_pdf.open(str(pdf_path))
+    except (FileNotFoundError, OSError, getattr(_fitz_pdf, "FileNotFoundError", FileNotFoundError)):
         return ""
 
     pages = doc.page_count
@@ -103,26 +110,38 @@ def _is_gibberish_or_too_short(s: str) -> bool:
     return False
 
 
+# OCR dependencies (lazy-loaded once)
+_fitz = None
+_pytesseract = None
+_Image = None
+
+def _ensure_ocr_deps():
+    global _fitz, _pytesseract, _Image
+    if _fitz is None:
+        try:
+            import fitz
+            _fitz = fitz
+        except Exception:
+            pass
+    if _pytesseract is None or _Image is None:
+        try:
+            import pytesseract
+            from PIL import Image
+            _pytesseract = pytesseract
+            _Image = Image
+        except Exception:
+            pass
+    if _pytesseract is None or _Image is None or _fitz is None:
+        raise RuntimeError("OCR deps missing. Install with: pip install pytesseract pillow pymupdf")
+
 def _ocr_page(page, ocr_lang: str = "chi_sim+eng", zoom: float = 2.0) -> str:
-    try:
-        import fitz
-    except Exception:
-        fitz = None
-    try:
-        import pytesseract
-        from PIL import Image
-    except Exception:
-        pytesseract = None
-        Image = None
-
-    if pytesseract is None or Image is None or fitz is None:
-        raise RuntimeError("OCR deps missing. Install with: pip install pytesseract pillow")
-
-    mat = fitz.Matrix(zoom, zoom)
+    _ensure_ocr_deps()
+    
+    mat = _fitz.Matrix(zoom, zoom)
     pix = page.get_pixmap(matrix=mat, alpha=False)
-    img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+    img = _Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
     img = img.convert("L")
-    txt = pytesseract.image_to_string(img, lang=ocr_lang) or ""
+    txt = _pytesseract.image_to_string(img, lang=ocr_lang) or ""
     return txt.replace("\r", "\n").strip()
 
 
@@ -140,12 +159,7 @@ def extract_pdf_text_hybrid(
     - OCR per page if too short / gibberish (optional)
     - Optional pdfminer fallback (whole doc) for weird encodings
     """
-    try:
-        import fitz
-    except Exception:
-        fitz = None
-    if fitz is None:
-        raise RuntimeError("PyMuPDF not installed. Install with: pip install pymupdf")
+    _ensure_fitz()
 
     # pdfminer fallback (optional)
     pdfminer_extract_text = None
@@ -164,7 +178,7 @@ def extract_pdf_text_hybrid(
         except Exception:
             miner_text = ""
 
-    doc = fitz.open(str(pdf_path))
+    doc = _fitz_pdf.open(str(pdf_path))
     pages = doc.page_count
     if max_pages is not None:
         pages = min(pages, max_pages)
@@ -310,17 +324,11 @@ def extract_pdf_structured(
     Uses PyMuPDF block-level extraction + table detection.
     Falls back gracefully if fitz is unavailable.
     """
-    try:
-        import fitz
-    except Exception:
-        fitz = None
-
-    if fitz is None:
-        raise RuntimeError("PyMuPDF not installed. Install with: pip install pymupdf")
+    _ensure_fitz()
 
     try:
-        doc = fitz.open(str(pdf_path))
-    except (FileNotFoundError, OSError, getattr(fitz, "FileNotFoundError", FileNotFoundError)):
+        doc = _fitz_pdf.open(str(pdf_path))
+    except (FileNotFoundError, OSError, getattr(_fitz_pdf, "FileNotFoundError", FileNotFoundError)):
         return StructuredPdfContent()
 
     pages = min(doc.page_count, max_pages or doc.page_count)
@@ -369,7 +377,7 @@ def extract_pdf_structured(
             page_text_full = ""
 
         try:
-            page_dict = page.get_text("dict", flags=fitz.TEXTFLAGS_BLOCKS)
+            page_dict = page.get_text("dict", flags=_fitz_pdf.TEXTFLAGS_BLOCKS)
         except Exception:
             page_dict = {}
 
@@ -524,74 +532,68 @@ def extract_tables(
     Paper_id, table_caption, bbox, and created_at are left as defaults
     (populate paper_id and caption via db.upsert_experiment_tables after calling this).
     """
-    try:
-        import fitz
-    except Exception:
-        fitz = None
-
     records: List[ExperimentTableRecord] = []
 
-    if fitz is not None:
-        try:
-            doc = fitz.open(str(pdf_path))
-        except Exception:
-            doc = None
+    try:
+        _ensure_fitz()
+        doc = _fitz_pdf.open(str(pdf_path))
+        
+        end = page_end if page_end is not None else doc.page_count
+        for page_idx in range(page_start, min(end, doc.page_count)):
+            page = doc[page_idx]
 
-        if doc is not None:
-            end = page_end if page_end is not None else doc.page_count
-            for page_idx in range(page_start, min(end, doc.page_count)):
-                page = doc[page_idx]
+            # Try PyMuPDF's native table detection first
+            try:
+                table_browse = page.find_tables()
+                for tbl in table_browse:
+                    rows: List[List[str]] = []
+                    for row in tbl.rows:
+                        cells = [(cell.text or "").strip() for cell in row]
+                        if any(cells):
+                            rows.append(cells)
 
-                # Try PyMuPDF's native table detection first
-                try:
-                    table_browse = page.find_tables()
-                    for tbl in table_browse:
-                        rows: List[List[str]] = []
-                        for row in tbl.rows:
-                            cells = [(cell.text or "").strip() for cell in row]
-                            if any(cells):
-                                rows.append(cells)
+                    if len(rows) < 2:
+                        continue
 
-                        if len(rows) < 2:
-                            continue
+                    # Only keep tables with numerical data
+                    has_number = any(re.search(r"\d", "".join(r)) for r in rows)
+                    if not has_number:
+                        continue
 
-                        # Only keep tables with numerical data
-                        has_number = any(re.search(r"\d", "".join(r)) for r in rows)
-                        if not has_number:
-                            continue
+                    headers = rows[0]
+                    rows_data = rows[1:]
 
-                        headers = rows[0]
-                        rows_data = rows[1:]
-
-                        bbox = tbl.bbox if hasattr(tbl, "bbox") else (0.0, 0.0, 0.0, 0.0)
-                        records.append(
-                            ExperimentTableRecord(
-                                id=0,
-                                paper_id="",
-                                table_caption="",
-                                page=page_idx,
-                                headers=headers,
-                                rows=rows_data,
-                                bbox_x0=bbox[0],
-                                bbox_y0=bbox[1],
-                                bbox_x1=bbox[2],
-                                bbox_y1=bbox[3],
-                                created_at="",
-                            )
+                    bbox = tbl.bbox if hasattr(tbl, "bbox") else (0.0, 0.0, 0.0, 0.0)
+                    records.append(
+                        ExperimentTableRecord(
+                            id=0,
+                            paper_id="",
+                            table_caption="",
+                            page=page_idx,
+                            headers=headers,
+                            rows=rows_data,
+                            bbox_x0=bbox[0],
+                            bbox_y0=bbox[1],
+                            bbox_x1=bbox[2],
+                            bbox_y1=bbox[3],
+                            created_at="",
                         )
-                except Exception:
-                    pass
+                    )
+            except Exception:
+                pass
 
-                # Fallback: text-pattern tables on this page
-                page_text = (page.get_text("text") or "").strip()
-                if page_text:
-                    text_records = _tables_from_text(page_text, page=page_idx)
-                    for rec in text_records:
-                        if rec not in records:  # avoid dupes when PyMuPDF also found it
-                            records.append(rec)
+            # Fallback: text-pattern tables on this page
+            page_text = (page.get_text("text") or "").strip()
+            if page_text:
+                text_records = _tables_from_text(page_text, page=page_idx)
+                for rec in text_records:
+                    if rec not in records:  # avoid dupes when PyMuPDF also found it
+                        records.append(rec)
 
-            doc.close()
-            return records
+        doc.close()
+        return records
+    except Exception:
+        pass
 
     # Final fallback: extract plain text from all pages and scan for tables
     try:
