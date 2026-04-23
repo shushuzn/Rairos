@@ -1,5 +1,4 @@
 """Tests for exception handling functionality."""
-import pytest
 from core.exceptions import (
     AIResearchOSError,
     PDFParseError,

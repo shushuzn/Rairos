@@ -1,5 +1,4 @@
 """Tests for internationalization (i18n) functionality."""
-import pytest
 from core.i18n import set_lang, get_lang, _, _MSGS
 
 

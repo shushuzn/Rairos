@@ -1,5 +1,4 @@
 """Tests for user-friendly error messages and helpers."""
-import pytest
 from core.user_helpers import (
     UserError,
     DatabaseError,

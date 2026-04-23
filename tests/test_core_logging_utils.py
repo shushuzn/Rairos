@@ -1,6 +1,4 @@
 """Tests for logging and monitoring utilities."""
-import pytest
-import time
 from core.logging_utils import (
     PerformanceMonitor,
     get_monitor,

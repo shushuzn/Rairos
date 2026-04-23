@@ -1,6 +1,5 @@
 """Tests for smart cache functionality."""
 import pytest
-import time
 import tempfile
 from pathlib import Path
 from core.smart_cache import SmartCache, get_smart_cache

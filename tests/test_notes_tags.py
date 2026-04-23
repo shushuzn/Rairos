@@ -1,5 +1,4 @@
 """Tests for tag inference functionality."""
-import pytest
 from core import Paper
 from notes.keyword_tags import infer_tags_if_empty
 

@@ -1,6 +1,6 @@
 """Tests for LLM client functionality."""
 import pytest
-from llm.client import call_llm_chat_completions, clear_llm_cache, get_llm_cache_size
+from llm.client import clear_llm_cache, get_llm_cache_size
 
 
 @pytest.mark.skip(reason="Requires actual LLM API access")

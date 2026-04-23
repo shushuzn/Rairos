@@ -1,7 +1,6 @@
 """Tests for extable module — detector, parser, storage."""
 from __future__ import annotations
 
-import pytest
 
 from extable.parser import ExperimentTableParser
 from extable.storage import ExperimentDB

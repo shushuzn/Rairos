@@ -1,13 +1,10 @@
 """Tests for API rate limiting functionality."""
-import pytest
-import time
 from core.rate_limiter import (
     RateLimiter,
     RateLimitConfig,
     APIRateLimitManager,
     get_rate_limit_manager,
     create_limiter,
-    rate_limit,
 )
 
 

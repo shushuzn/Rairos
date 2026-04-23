@@ -1,6 +1,4 @@
 """Tests for rankers module functionality."""
-import pytest
-from rankers.base import Ranker, RankedResult
 
 
 def test_ranked_result_type():

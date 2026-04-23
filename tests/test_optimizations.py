@@ -1,5 +1,4 @@
 """Tests for new optimization modules."""
-import pytest
 
 
 def test_backup_manager_creation():

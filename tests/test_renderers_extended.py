@@ -1,5 +1,4 @@
 """Tests for renderers module functionality."""
-import pytest
 from core import Paper
 
 

@@ -1,8 +1,6 @@
 """Tests for kg/manager.py — KGManager core CRUD and graph operations."""
 from __future__ import annotations
 
-import tempfile
-from pathlib import Path
 
 import pytest
 
@@ -198,7 +196,7 @@ class TestKGManagerGraphQueries:
         assert papers == []
 
     def test_find_mnotes_by_tag(self, kg):
-        mnote_nid = kg.add_node("M-Note", "m1", "Note about LLM", abstract="LLM is hot")
+        kg.add_node("M-Note", "m1", "Note about LLM", abstract="LLM is hot")
         papers = kg.find_mnotes_by_tag("LLM")
         assert len(papers) == 1
         assert papers[0]["entity_id"] == "m1"

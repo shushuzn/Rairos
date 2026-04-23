@@ -1,5 +1,4 @@
 """Tests for simple CLI functionality."""
-import pytest
 from core.simple_cli import SimpleCLI
 
 

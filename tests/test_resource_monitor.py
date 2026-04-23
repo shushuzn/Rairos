@@ -1,5 +1,4 @@
 """Tests for resource monitoring functionality."""
-import pytest
 from pathlib import Path
 from core.resource_monitor import (
     ResourceMonitor,
@@ -74,7 +73,6 @@ def test_get_recent_stats():
 
 def test_resource_guard_check():
     """Test resource guard check."""
-    monitor = ResourceMonitor()
     guard = ResourceGuard(
         min_disk_gb=0.001,  # Very low threshold for testing
         max_memory_percent=99.0  # Very high threshold for testing

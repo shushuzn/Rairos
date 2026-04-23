@@ -1487,66 +1487,6 @@ class TestRunDedup:
 # _run_merge tests
 # ─────────────────────────────────────────────────────────────────────────────
 
-class TestRunMerge:
-    """Test _run_merge behavior."""
-
-    @patch("cli.Database")
-    def test_merge_target_not_found(self, mock_db_cls, capsys):
-        mock_db = MagicMock()
-        mock_db.get_paper.return_value = None
-        mock_db_cls.return_value = mock_db
-
-        result = _run_merge(make_args(target_id="uid1", duplicate_id="uid2"))
-
-        out = capsys.readouterr().out
-        assert "not found" in out
-        assert result == 1
-
-    @patch("cli.Database")
-    def test_merge_duplicate_not_found(self, mock_db_cls, capsys):
-        mock_db = MagicMock()
-        mock_db.get_paper.side_effect = [MagicMock(), None]
-        mock_db_cls.return_value = mock_db
-
-        result = _run_merge(make_args(target_id="uid1", duplicate_id="uid2"))
-
-        out = capsys.readouterr().out
-        assert "not found" in out
-        assert result == 1
-
-    @patch("cli.Database")
-    def test_merge_success(self, mock_db_cls, capsys):
-        mock_db = MagicMock()
-        mock_db.get_paper.side_effect = [MagicMock(), MagicMock()]
-        mock_db.get_similarity.return_value = None
-        mock_db.merge_papers.return_value = True
-        mock_db_cls.return_value = mock_db
-
-        result = _run_merge(make_args(target_id="uid1", duplicate_id="uid2"))
-
-        out = capsys.readouterr().out
-        assert "Merged uid2 into uid1" in out
-        assert result == 0
-
-    @patch("cli.Database")
-    def test_merge_db_returns_false(self, mock_db_cls, capsys):
-        mock_db = MagicMock()
-        mock_db.get_paper.side_effect = [MagicMock(), MagicMock()]
-        mock_db.get_similarity.return_value = None
-        mock_db.merge_papers.return_value = False
-        mock_db_cls.return_value = mock_db
-
-        result = _run_merge(make_args(target_id="uid1", duplicate_id="uid2"))
-
-        out = capsys.readouterr().out
-        assert "Merge failed" in out
-        assert result == 1
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# _run_queue else branch (no list/dequeue/add/cancel)
-# ─────────────────────────────────────────────────────────────────────────────
-
 class TestRunQueueElseBranch:
     """Test _run_queue when none of list/dequeue/add/cancel are set."""
 

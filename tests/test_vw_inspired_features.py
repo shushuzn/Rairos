@@ -1,5 +1,4 @@
 """Tests for Volkswagen-inspired features."""
-import pytest
 
 
 def test_achievement_system_creation():
