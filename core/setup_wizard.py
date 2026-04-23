@@ -136,7 +136,7 @@ class SetupWizard:
             db = Database()
             db.init()
             return True
-        except:
+        except (OSError, RuntimeError):
             return False
     
     def _setup_api_key(self) -> bool:

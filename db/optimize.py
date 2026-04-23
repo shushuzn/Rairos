@@ -91,7 +91,7 @@ def get_database_stats(db: "Database") -> dict:
             try:
                 cur.execute(f"SELECT COUNT(*) FROM {table}")
                 stats[f"{table}_count"] = cur.fetchone()[0]
-            except:
+            except (OSError, RuntimeError):
                 stats[f"{table}_count"] = 0
         
         # Index count

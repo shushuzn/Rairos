@@ -74,7 +74,7 @@ class PerformanceGuaranteeSystem:
                 "memory_percent": psutil.virtual_memory().percent,
                 "disk_io_read": disk_io.read_bytes if disk_io else 0,
             }
-        except:
+        except (OSError, AttributeError):
             return {"cpu_percent": 0, "memory_percent": 0, "disk_io_read": 0}
     
     def check_guarantees(self) -> List[PerformanceGuarantee]:
@@ -89,7 +89,7 @@ class PerformanceGuaranteeSystem:
             
             self.guarantees[1].measured_impact = memory
             self.guarantees[1].status = "OK" if memory < 50 else "WARNING"
-        except:
+        except (OSError, RuntimeError):
             pass
         
         return self.guarantees
@@ -136,7 +136,7 @@ class PerformanceGuaranteeSystem:
             
             # Throttle if resources are high
             return cpu > 70 or memory > 70
-        except:
+        except (OSError, RuntimeError):
             return False
 
 
