@@ -30,7 +30,7 @@ jobs:
 
       - name: Check commits since main
         run: |
-          npx commitlint --from=main --verbose 2>&1 | head -50 || true
+          npx commitlint --from=main --verbose 2>&1 | head -50
 
   lint-and-crossref:
     runs-on: ubuntu-22.04

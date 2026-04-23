@@ -18,6 +18,7 @@ uv.lock
 make_pr.py
 pr_body.json
 pytest_310.txt
+pytest_310.zip
 pytest_out.zip
 pytest_output.zip
 logs.zip
