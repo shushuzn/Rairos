@@ -81,7 +81,7 @@ jobs:
 
       - name: Run pytest
         run: |
-          python -m pytest tests/ -q --tb=short 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt; exit ${PIPESTATUS[0]}
+          python -m pytest tests/ -q --tb=short --cov=. --cov-report=term-missing 2>&1 | tee pytest_output_${{ matrix.python-version }}.txt; exit ${PIPESTATUS[0]}
 
       - name: Upload test output
         if: always()
@@ -89,6 +89,11 @@ jobs:
         with:
           name: pytest-output-${{ matrix.python-version }}
           path: pytest_output_${{ matrix.python-version }}.txt
+      - name: Upload coverage data
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data-${{ matrix.python-version }}
+          path: .coverage
           retention-days: 1
 
   coverage-report:
@@ -116,7 +121,7 @@ jobs:
 
       - name: Combine and report
         run: |
-          python -m coverage combine coverage-reports/ || true
+          python -m coverage combine coverage-reports/
           python -m coverage report --format=term-missing
           python -m coverage report --format=term-missing | tail -3
           python -m coverage report --format=term-missing | grep "^TOTAL"
