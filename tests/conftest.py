@@ -8,6 +8,20 @@ from pathlib import Path
 
 import pytest
 
+# Module cache cleanup - reset pdf.extract fitz/tesseract caches between tests
+@pytest.fixture(autouse=True)
+def _reset_module_caches():
+    yield
+    try:
+        import pdf.extract, sys
+        pdf.extract._fitz_pdf = None
+        pdf.extract._tesseract = None
+        sys.modules.pop("fitz", None)
+        sys.modules.pop("pymupdf", None)
+    except (AttributeError, ImportError):
+        pass
+
+
 # Frozen date constants used across Tier 4 tests
 FROZEN_DATE = "2024-06-15"
 FROZEN_DATE_ISO = "2024-06-15"
