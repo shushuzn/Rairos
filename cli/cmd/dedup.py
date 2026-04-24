@@ -118,14 +118,15 @@ def _run_dedup(args: argparse.Namespace) -> int:
                 ok = db.merge_papers(target.id, duplicate.id)
                 if ok:
                     db.log_dedup(target.id, duplicate.id, args.keep)
-                    print(f"Auto-merged {duplicate.id} into {target.id} (same DOI, --keep={args.keep})")
+                    print(f"[batch] Merged {duplicate.id} -> {target.id} (same DOI)")
                     merged += 1
                 else:
-                    print(f"Failed to merge {duplicate.id} into {target.id}")
+                    print(f"[batch] Failed: {duplicate.id} -> {target.id}")
+                    skipped += 1
             else:
+                print(f"[batch] Skipped {older.id}/{newer.id} (no matching DOI)")
                 skipped += 1
-                print(f"Skipped (no same DOI): {older.id} / {newer.id}")
-        print(f"\nAuto-merged {merged}/{len(pairs)} pair(s), {skipped} skipped (no same DOI)")
+        print(f"\nBatch: {merged} merged, {skipped} skipped ({len(pairs)} total pairs)")
         return 0
 
     return 0

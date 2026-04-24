@@ -127,18 +127,28 @@ def _run_merge(args: argparse.Namespace) -> int:
             print(f"Note: low similarity, falling back to 'parsed' (similarity: {f'{sim:.3f}' if sim is not None else 'N/A'})")
             keep, drop = _pick_keep(target, duplicate, "parsed")
         else:
+            print(f"Auto-selected: similarity {sim:.3f} >= 0.8")
             keep, drop = _pick_keep(target, duplicate, args.keep)
     else:
         keep, drop = _pick_keep(target, duplicate, args.keep)
+
+    if args.dry_run:
+        print(f"Would merge {drop.id} into {keep.id} (--keep={args.keep})")
+        print(f"  keeping : [{keep.id}] {keep.title[:70]}")
+        print(f"  deleting: [{drop.id}] {drop.title[:70]}")
+        if sim is not None:
+            print(f"  semantic similarity: {sim:.3f}")
+        else:
+            print("  semantic similarity: no embeddings available")
+        return 0
 
     print(f"Merging {drop.id} into {keep.id}")
     print(f"  Keeping: [{keep.id}] {keep.title[:70]}")
     print(f"  Deleting: [{drop.id}] {drop.title[:70]}")
     if sim is not None:
         print(f"  Similarity: {sim:.3f}")
-
-    if args.dry_run:
-        return 0
+    else:
+        print("  semantic similarity: no embeddings available")
 
     ok = db.merge_papers(keep.id, drop.id)
     if ok:

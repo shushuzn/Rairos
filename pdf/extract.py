@@ -115,6 +115,15 @@ _fitz = None
 _pytesseract = None
 _Image = None
 
+
+def _reset_ocr_cache():
+    """Reset lazy-loaded OCR module cache. Used by tests to simulate fresh imports."""
+    global _fitz, _pytesseract, _Image
+    _fitz = None
+    _pytesseract = None
+    _Image = None
+
+
 def _ensure_ocr_deps():
     global _fitz, _pytesseract, _Image
     if _fitz is None:

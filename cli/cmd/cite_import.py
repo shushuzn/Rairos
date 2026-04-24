@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json as json_lib
 import sys
 import re as _re
 from typing import List
@@ -103,37 +104,108 @@ def _run_cite_import(args: argparse.Namespace) -> int:
         return 0
 
     if not args.json_input:
-        print("Error: json_input required (JSON string or @filename)", file=sys.stderr)
+        print("Error: json_input required (JSON string or @filepath)", file=sys.stderr)
         return 1
-    import json
-    data_str = args.json_input
-    if data_str.startswith("@"):
-        with open(data_str[1:], encoding="utf-8") as f:
-            data = json.load(f)
+
+    raw = args.json_input
+    if raw.startswith("@"):
+        path = raw[1:]
+        try:
+            with open(path, encoding="utf-8") as f:
+                data = json_lib.loads(f.read())
+        except Exception as e:
+            print(f"Error reading {path}: {e}", file=sys.stderr)
+            return 1
     else:
-        data = json.loads(data_str)
-    edges = data if isinstance(data, list) else data.get("citations", [])
-    if not edges:
-        print("No citation edges found in input")
-        return 0
+        try:
+            data = json_lib.loads(raw)
+        except json_lib.JSONDecodeError as e:
+            print(f"Error: invalid JSON: {e}", file=sys.stderr)
+            return 1
+
+    # Normalise to list
+    if isinstance(data, dict):
+        data = [data]
+    elif not isinstance(data, list):
+        print("Error: JSON must be a list of objects or a single object", file=sys.stderr)
+        return 1
+
     db = get_db()
     db.init()
-    if args.skip_missing:
-        source_ids = list(set(e.get("source") or e.get("from") for e in edges if e.get("source") or e.get("from")))
-        target_ids = list(set(e.get("target") or e.get("to") for e in edges if e.get("target") or e.get("to")))
-        all_ids = source_ids + target_ids
-        existing = db.get_papers_bulk(all_ids)
-        edges = [e for e in edges if (e.get("source") or e.get("from")) in existing and (e.get("target") or e.get("to")) in existing]
-    if args.dry_run:
-        print(f"[dry-run] Would import {len(edges)} citation edge(s)")
-        return 0
-    added = 0
-    for e in edges:
-        src = e.get("source") or e.get("from")
-        tgt = e.get("target") or e.get("to")
-        if src and tgt:
-            n = db.add_citation(src, tgt)
-            if n:
-                added += 1
-    print(f"Imported {added}/{len(edges)} citation edge(s)")
+
+    total_new = 0
+    total_skip_missing = 0
+    errors = []
+
+    for i, item in enumerate(data):
+        if not isinstance(item, dict):
+            errors.append(f"[{i}] item is not an object, skipping")
+            continue
+
+        source = str(item.get("source") or item.get("source_id") or "")
+        targets = item.get("targets") or item.get("target_ids") or []
+
+        if not isinstance(targets, list):
+            targets = [targets]
+
+        if not source:
+            errors.append(f"[{i}] missing 'source' field, skipping")
+            continue
+
+        if not targets:
+            errors.append(f"[{i}] empty 'targets' for source={source}, skipping")
+            continue
+
+        # Check source exists
+        if not db.paper_exists(source):
+            msg = f"source paper {source!r} not in DB"
+            if args.skip_missing:
+                total_skip_missing += 1
+                if args.dry_run:
+                    print(f"  [dry-run] skip (missing): {source}")
+                else:
+                    print(f"Error: {msg}", file=sys.stderr)
+            else:
+                errors.append(f"[{i}] {msg}")
+            continue
+
+        valid_targets = []
+        for tgt in targets:
+            tgt = str(tgt)
+            if not db.paper_exists(tgt):
+                msg = f"target paper {tgt!r} not in DB"
+                if args.skip_missing:
+                    total_skip_missing += 1
+                    if args.dry_run:
+                        print(f"  [dry-run] skip (missing): {tgt}")
+                    else:
+                        print(f"Error: {msg}", file=sys.stderr)
+                else:
+                    errors.append(f"[{i}] {msg}")
+                continue
+            valid_targets.append(tgt)
+
+        if not valid_targets:
+            continue
+
+        # Upsert
+        if args.dry_run:
+            for tgt in valid_targets:
+                print(f"  [dry-run] add citation: {source} -> {tgt}")
+            total_new += len(valid_targets)
+        else:
+            n = db.add_citations_batch(source, valid_targets)
+            total_new += n
+
+    if errors:
+        print(f"  warnings/errors : {len(errors)}")
+        for err in errors[:10]:
+            print(f"    - {err}")
+        if len(errors) > 10:
+            print(f"    ... and {len(errors) - 10} more")
+        return 1
+
+    print("Import complete.")
+    print(f"  new citations : {total_new}")
+    print(f"  skipped (missing papers): {total_skip_missing}")
     return 0

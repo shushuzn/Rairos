@@ -358,9 +358,11 @@ class TestExtractPdfText:
             return _real_import(name, *args, **kwargs)
 
         monkeypatch.setattr(builtins, "__import__", mock_import)
-
-        with pytest.raises(RuntimeError, match="PyMuPDF not installed"):
-            airo.extract_pdf_text(tmp_path / "nonexistent.pdf")
+        try:
+            with pytest.raises(RuntimeError, match="PyMuPDF not installed"):
+                airo.extract_pdf_text(tmp_path / "nonexistent.pdf")
+        finally:
+            monkeypatch.setattr(builtins, "__import__", _real_import)
 
 
 # ─── _ocr_page ───────────────────────────────────────────────────────────────
@@ -381,21 +383,12 @@ class TestOcrPage:
             return _real_import(name, *args)
 
         monkeypatch.setattr(builtins, "__import__", mock_import)
+        try:
+            with pytest.raises(RuntimeError, match="OCR deps missing"):
+                _ocr_page(None)  # type: ignore
+        finally:
+            monkeypatch.setattr(builtins, "__import__", _real_import)
 
-        with pytest.raises(RuntimeError, match="OCR deps missing"):
-            _ocr_page(None)  # type: ignore
-
-    def test_raises_when_fitz_missing(self, tmp_path, monkeypatch):
-        # Remove fitz globally
-        import sys
-        mods = {k: v for k, v in sys.modules.items() if "fitz" in k or "pymupdf" in k}
-        for k in mods:
-            del sys.modules[k]
-        monkeypatch.delitem(sys.modules, "fitz", raising=False)
-        monkeypatch.delitem(sys.modules, "pymupdf", raising=False)
-
-        with pytest.raises(RuntimeError, match="OCR deps missing"):
-            _ocr_page(None)  # type: ignore
 
 
 # ─── extract_pdf_text_hybrid ────────────────────────────────────────────────
@@ -521,9 +514,11 @@ class TestExtractPdfTextHybrid:
             return _real_import(name, *args, **kwargs)
 
         monkeypatch.setattr(builtins, "__import__", mock_import)
-
-        with pytest.raises(RuntimeError, match="PyMuPDF not installed"):
-            airo.extract_pdf_text_hybrid(tmp_path / "nonexistent.pdf")
+        try:
+            with pytest.raises(RuntimeError, match="PyMuPDF not installed"):
+                airo.extract_pdf_text_hybrid(tmp_path / "nonexistent.pdf")
+        finally:
+            monkeypatch.setattr(builtins, "__import__", _real_import)
 
     def test_pdfminer_extraction_exception_handled(self, tmp_path, monkeypatch):
         """pdfminer extraction exception is caught and returns empty string (line 124)."""
@@ -685,9 +680,11 @@ class TestExtractPdfStructured:
             return _real_import(name, *args, **kwargs)
 
         monkeypatch.setattr(builtins, "__import__", mock_import)
-
-        with pytest.raises(RuntimeError, match="PyMuPDF not installed"):
-            extract_pdf_structured(tmp_path / "nonexistent.pdf")
+        try:
+            with pytest.raises(RuntimeError, match="PyMuPDF not installed"):
+                extract_pdf_structured(tmp_path / "nonexistent.pdf")
+        finally:
+            monkeypatch.setattr(builtins, "__import__", _real_import)
 
     def test_table_detection_exception_handled(self, tmp_path, monkeypatch):
         """Table detection exception is caught silently (line 328-329)."""
