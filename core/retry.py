@@ -16,11 +16,11 @@ logger = logging.getLogger(__name__)
 
 class RetryStats:
     """Track retry statistics for monitoring."""
-    
+
     def __init__(self):
         self._stats: Dict[str, Dict[str, Any]] = {}
         self._lock = threading.Lock()
-    
+
     def record_attempt(self, func_name: str, attempt: int, success: bool, error: str = None):
         """Record a retry attempt."""
         with self._lock:
@@ -32,7 +32,7 @@ class RetryStats:
                     "total_success": 0,
                     "errors": {}
                 }
-            
+
             self._stats[func_name]["total_attempts"] += 1
             if not success:
                 self._stats[func_name]["total_failures"] += 1
@@ -43,14 +43,14 @@ class RetryStats:
                         self._stats[func_name]["errors"].get(error_type, 0) + 1
             else:
                 self._stats[func_name]["total_success"] += 1
-    
+
     def get_stats(self, func_name: str = None) -> Dict[str, Any]:
         """Get statistics for a function or all functions."""
         with self._lock:
             if func_name:
                 return self._stats.get(func_name, {})
             return dict(self._stats)
-    
+
     def reset(self, func_name: str = None):
         """Reset statistics."""
         with self._lock:
@@ -96,7 +96,7 @@ def retry(
 
     def decorator(fn: Callable) -> Callable:
         func_name = f"{fn.__module__}.{fn.__qualname__}"
-        
+
         @wraps(fn)
         def wrapper(*args, **kwargs):
             last_exc: Exception | None = None
@@ -113,11 +113,11 @@ def retry(
                     if attempt == max_attempts:
                         break
                     delay = min(base_delay * (2 ** (attempt - 1)), max_delay)
-                    
+
                     # Add jitter if specified
                     if jitter > 0:
                         delay += delay * jitter * random.random()
-                    
+
                     logger.warning(
                         "[retry] %s attempt %d/%d failed: %s. Retrying in %.1fs",
                         fn.__qualname__,

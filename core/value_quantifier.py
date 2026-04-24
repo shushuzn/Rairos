@@ -34,7 +34,7 @@ class ValueQuantifier:
     - Time value metrics
     - Cost savings
     """
-    
+
     def __init__(self):
         self.metrics = {
             "api_calls_saved": 0,
@@ -44,23 +44,23 @@ class ValueQuantifier:
             "cost_saved_usd": 0.0,
             "efficiency_gain_percent": 0.0,
         }
-    
+
     def update(self, metric: str, value: float):
         """Update a metric."""
         if metric in self.metrics:
             self.metrics[metric] = value
-    
+
     def calculate_value(self) -> Dict[str, ValueMetric]:
         """Calculate total value delivered."""
         # VW-style value calculation
         api_cost_per_call = 0.01  # Assume $0.01 per API call
         research_hour_cost = 50  # Assume $50 per research hour
-        
+
         # Calculate derived metrics
         hours_saved = self.metrics["api_calls_saved"] * 0.1  # 6 minutes per search
         cost_saved = self.metrics["api_calls_saved"] * api_cost_per_call
         research_time_value = hours_saved * research_hour_cost
-        
+
         return {
             "api_calls_saved": ValueMetric(
                 name="API调用节省",
@@ -87,11 +87,11 @@ class ValueQuantifier:
                 description="已处理的论文数量"
             ),
         }
-    
+
     def get_value_report(self) -> str:
         """Generate value report (inspired by VW's 700-900 euros)."""
         values = self.calculate_value()
-        
+
         lines = [
             "=" * 60,
             "💰 价值量化报告 (Volkswagen式收益计算)",
@@ -101,7 +101,7 @@ class ValueQuantifier:
             "",
             "-" * 60,
         ]
-        
+
         # VW-style value presentation
         for key, metric in values.items():
             if metric.value > 0:
@@ -110,13 +110,13 @@ class ValueQuantifier:
                 )
                 lines.append(f"   {metric.description}")
                 lines.append("")
-        
+
         total_value = sum(m.value for m in values.values())
         if total_value > 0:
             lines.append("-" * 60)
             lines.append(f"💵 总价值: ${total_value:.2f}")
             lines.append("-" * 60)
-            
+
             # VW-style comparison
             lines.append("")
             lines.append("Volkswagen对比:")
@@ -124,16 +124,16 @@ class ValueQuantifier:
             lines.append(f"  我们: ${total_value:.2f}（目前统计）")
             lines.append("")
             lines.append("💡 提示: 持续使用，价值累积！")
-        
+
         lines.append("=" * 60)
-        
+
         return "\n".join(lines)
-    
+
     def get_vw_comparison(self) -> str:
         """Get VW-style comparison."""
         values = self.calculate_value()
         our_value = sum(m.value for m in values.values() if m.value > 0) * 12  # Annualize
-        
+
         return f"""
 🚗 Volkswagen vs 🚀 AI Research OS
 

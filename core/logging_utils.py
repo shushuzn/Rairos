@@ -11,21 +11,21 @@ logger = logging.getLogger(__name__)
 
 class PerformanceMonitor:
     """Monitor and track performance metrics."""
-    
+
     def __init__(self):
         self.metrics: Dict[str, list] = {}
-    
+
     def record(self, name: str, value: float) -> None:
         """Record a metric value."""
         if name not in self.metrics:
             self.metrics[name] = []
         self.metrics[name].append(value)
-    
+
     def get_stats(self, name: str) -> Dict[str, float]:
         """Get statistics for a metric."""
         if name not in self.metrics or not self.metrics[name]:
             return {}
-        
+
         values = self.metrics[name]
         return {
             "count": len(values),
@@ -34,15 +34,15 @@ class PerformanceMonitor:
             "avg": sum(values) / len(values),
             "total": sum(values),
         }
-    
+
     def get_all_stats(self) -> Dict[str, Dict[str, float]]:
         """Get statistics for all metrics."""
         return {name: self.get_stats(name) for name in self.metrics}
-    
+
     def reset(self) -> None:
         """Reset all metrics."""
         self.metrics.clear()
-    
+
     def reset_metric(self, name: str) -> None:
         """Reset a specific metric."""
         if name in self.metrics:
@@ -91,7 +91,7 @@ def get_performance_report() -> str:
     stats = _monitor.get_all_stats()
     if not stats:
         return "No performance metrics recorded."
-    
+
     lines = ["=== Performance Report ===", ""]
     for name, metric_stats in stats.items():
         if metric_stats:
@@ -102,24 +102,24 @@ def get_performance_report() -> str:
             lines.append(f"  Max:   {metric_stats['max']:.3f}s")
             lines.append(f"  Total: {metric_stats['total']:.3f}s")
             lines.append("")
-    
+
     return "\n".join(lines)
 
 
 def setup_logging(level: str = "INFO", log_file: str = None) -> None:
     """Setup logging configuration."""
     log_level = getattr(logging, level.upper(), logging.INFO)
-    
+
     handlers = [logging.StreamHandler()]
     if log_file:
         handlers.append(logging.FileHandler(log_file))
-    
+
     logging.basicConfig(
         level=log_level,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         handlers=handlers
     )
-    
+
     # Set library loggers to WARNING to reduce noise
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.getLogger("requests").setLevel(logging.WARNING)

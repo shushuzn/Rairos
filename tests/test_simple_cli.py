@@ -49,17 +49,17 @@ def test_simple_cli_stats():
 def test_simple_cli_parser():
     """Test argument parser."""
     cli = SimpleCLI()
-    
+
     # Test search command
     args = cli.parser.parse_args(["search", "test"])
     assert args.command == "search"
     assert args.query == "test"
-    
+
     # Test import command
     args = cli.parser.parse_args(["import", "2301.001"])
     assert args.command == "import"
     assert args.paper_id == "2301.001"
-    
+
     # Test list command
     args = cli.parser.parse_args(["list", "-n", "10"])
     assert args.command == "list"
@@ -69,26 +69,26 @@ def test_simple_cli_parser():
 def test_simple_cli_commands():
     """Test all CLI commands are registered."""
     cli = SimpleCLI()
-    
+
     # Check all commands exist
     args = cli.parser.parse_args(["search", "test"])
     assert args.command == "search"
-    
+
     args = cli.parser.parse_args(["import", "test"])
     assert args.command == "import"
-    
+
     args = cli.parser.parse_args(["list"])
     assert args.command == "list"
-    
+
     args = cli.parser.parse_args(["status"])
     assert args.command == "status"
-    
+
     args = cli.parser.parse_args(["stats"])
     assert args.command == "stats"
-    
+
     args = cli.parser.parse_args(["export", "json"])
     assert args.command == "export"
-    
+
     args = cli.parser.parse_args(["help"])
     assert args.command == "help"
 

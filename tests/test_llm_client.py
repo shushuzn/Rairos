@@ -16,11 +16,11 @@ def test_llm_cache():
     # Clear cache before test
     clear_llm_cache()
     assert get_llm_cache_size() == 0
-    
+
     # Note: We can't actually test the full caching functionality without API access
     # But we can test the cache management functions
     assert get_llm_cache_size() >= 0
-    
+
     # Clear cache again
     clear_llm_cache()
     assert get_llm_cache_size() == 0

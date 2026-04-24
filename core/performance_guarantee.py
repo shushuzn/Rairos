@@ -34,7 +34,7 @@ class PerformanceGuaranteeSystem:
     - Robust protection systems
     - Continuous monitoring
     """
-    
+
     def __init__(self):
         self.baseline = self._measure_baseline()
         self.guarantees = [
@@ -63,7 +63,7 @@ class PerformanceGuaranteeSystem:
                 status="OK"
             ),
         ]
-    
+
     def _measure_baseline(self) -> Dict[str, float]:
         """Measure baseline resource usage."""
         try:
@@ -75,28 +75,28 @@ class PerformanceGuaranteeSystem:
             }
         except (OSError, AttributeError):
             return {"cpu_percent": 0, "memory_percent": 0, "disk_io_read": 0}
-    
+
     def check_guarantees(self) -> List[PerformanceGuarantee]:
         """Check all performance guarantees."""
         try:
             cpu = psutil.cpu_percent(interval=0.5)
             memory = psutil.virtual_memory().percent
-            
+
             # Update guarantees
             self.guarantees[0].measured_impact = cpu
             self.guarantees[0].status = "OK" if cpu < 30 else "WARNING"
-            
+
             self.guarantees[1].measured_impact = memory
             self.guarantees[1].status = "OK" if memory < 50 else "WARNING"
         except (OSError, RuntimeError):
             pass
-        
+
         return self.guarantees
-    
+
     def get_protection_report(self) -> str:
         """Generate protection report (inspired by VW's protection systems)."""
         self.check_guarantees()
-        
+
         lines = [
             "=" * 60,
             "🛡️ 性能保护报告 (Volkswagen式承诺)",
@@ -107,14 +107,14 @@ class PerformanceGuaranteeSystem:
             "",
             "-" * 60,
         ]
-        
+
         for guarantee in self.guarantees:
             status_icon = "✅" if guarantee.status == "OK" else "⚠️"
             lines.append(
                 f"{status_icon} {guarantee.name}: {guarantee.measured_impact:.1f}%"
             )
             lines.append(f"   承诺: {guarantee.promise}")
-        
+
         lines.append("-" * 60)
         lines.append("")
         lines.append("🛡️ 保护措施:")
@@ -124,15 +124,15 @@ class PerformanceGuaranteeSystem:
         lines.append("  ✅ 后台运行（最小化干扰）")
         lines.append("")
         lines.append("=" * 60)
-        
+
         return "\n".join(lines)
-    
+
     def should_throttle(self) -> bool:
         """Check if we should throttle operations."""
         try:
             cpu = psutil.cpu_percent(interval=0.5)
             memory = psutil.virtual_memory().percent
-            
+
             # Throttle if resources are high
             return cpu > 70 or memory > 70
         except (OSError, RuntimeError):

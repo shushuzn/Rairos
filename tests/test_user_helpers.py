@@ -81,7 +81,7 @@ def test_print_table():
         ["项目A", "10"],
         ["项目B", "20"]
     ]
-    
+
     # Should not raise exception
     print_table(headers, rows)
 
@@ -91,7 +91,7 @@ def test_progress_indicator():
     with ProgressIndicator(10, "测试") as progress:
         for _ in range(10):
             progress.update()
-    
+
     # Should complete without error
     assert progress.current == 10
 
@@ -100,6 +100,6 @@ def test_progress_indicator_zero_total():
     """Test progress indicator with zero total."""
     with ProgressIndicator(0, "测试") as progress:
         pass
-    
+
     # Should complete without error
     assert progress.current == 0

@@ -36,7 +36,7 @@ class AchievementSystem:
     - Cost savings metrics
     - Protection guarantees
     """
-    
+
     def __init__(self):
         self.achievements: Dict[str, Achievement] = {}
         self.total_points = 0
@@ -48,7 +48,7 @@ class AchievementSystem:
             "imports_performed": 0,
         }
         self._init_achievements()
-    
+
     def _init_achievements(self):
         """Initialize achievement definitions."""
         self.achievements = {
@@ -109,78 +109,78 @@ class AchievementSystem:
                 points=50
             ),
         }
-    
+
     def unlock_achievement(self, achievement_id: str) -> Optional[Achievement]:
         """Unlock an achievement."""
         if achievement_id not in self.achievements:
             return None
-        
+
         achievement = self.achievements[achievement_id]
         if achievement.unlocked_at is None:
             achievement.unlocked_at = datetime.now()
             self.total_points += achievement.points
             return achievement
         return None
-    
+
     def check_achievements(self) -> List[Achievement]:
         """Check and auto-unlock achievements based on stats."""
         unlocked = []
-        
+
         # Check first import
         if self.user_stats["imports_performed"] >= 1:
             result = self.unlock_achievement("first_import")
             if result:
                 unlocked.append(result)
-        
+
         # Check paper collector
         if self.user_stats["papers_processed"] >= 10:
             result = self.unlock_achievement("paper_collector")
             if result:
                 unlocked.append(result)
-        
+
         # Check researcher
         if self.user_stats["papers_processed"] >= 100:
             result = self.unlock_achievement("researcher_100")
             if result:
                 unlocked.append(result)
-        
+
         # Check API saver
         if self.user_stats["api_calls_saved"] >= 100:
             result = self.unlock_achievement("api_saver")
             if result:
                 unlocked.append(result)
-        
+
         # Check time saver
         if self.user_stats["hours_saved"] >= 10:
             result = self.unlock_achievement("time_saver")
             if result:
                 unlocked.append(result)
-        
+
         # Check speed demon
         if self.user_stats["papers_processed"] >= 50:
             result = self.unlock_achievement("speed_demon")
             if result:
                 unlocked.append(result)
-        
+
         return unlocked
-    
+
     def update_stats(self, **kwargs):
         """Update user statistics."""
         for key, value in kwargs.items():
             if key in self.user_stats:
                 self.user_stats[key] = value
-        
+
         # Auto-check achievements after stats update
         return self.check_achievements()
-    
+
     def get_unlocked_achievements(self) -> List[Achievement]:
         """Get all unlocked achievements."""
         return [a for a in self.achievements.values() if a.unlocked_at is not None]
-    
+
     def get_pending_achievements(self) -> List[Achievement]:
         """Get all pending achievements."""
         return [a for a in self.achievements.values() if a.unlocked_at is None]
-    
+
     def get_progress_report(self) -> str:
         """Generate a progress report."""
         lines = [
@@ -197,30 +197,30 @@ class AchievementSystem:
             "",
             "🏅 已解锁成就:",
         ]
-        
+
         for achievement in self.get_unlocked_achievements():
             lines.append(f"  {achievement.icon} {achievement.name} (+{achievement.points}分)")
-        
+
         if not self.get_unlocked_achievements():
             lines.append("  暂无解锁成就")
-        
+
         lines.append("\n🎯 即将解锁:")
         pending = self.get_pending_achievements()[:3]
         for achievement in pending:
             lines.append(f"  {achievement.icon} {achievement.name} ({achievement.description})")
-        
+
         lines.append("\n" + "=" * 60)
-        
+
         return "\n".join(lines)
-    
+
     def get_value_saved(self) -> Dict[str, str]:
         """Calculate value saved (inspired by VW's 700-900 euros savings)."""
         # Estimate time saved based on API calls
         hours_saved = self.user_stats["api_calls_saved"] * 0.1  # 假设每次API调用节省6分钟
-        
+
         # Estimate cost savings (假设每次API调用成本0.01美元)
         cost_saved = self.user_stats["api_calls_saved"] * 0.01
-        
+
         return {
             "hours_saved": f"{hours_saved:.1f} 小时",
             "cost_saved": f"${cost_saved:.2f}",

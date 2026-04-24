@@ -70,7 +70,7 @@ class ConfigError(AIResearchOSError):
 
 class RetryExhaustedError(AIResearchOSError):
     """Raised when all retry attempts have been exhausted."""
-    
+
     def __init__(self, message: str = "", cause: Exception = None, retries: int = 0):
         super().__init__(message, cause)
         self.retries = retries
@@ -78,12 +78,12 @@ class RetryExhaustedError(AIResearchOSError):
 
 class InvalidInputError(ValidationError):
     """Raised when input validation fails due to invalid data format or type."""
-    
+
     def __init__(self, message: str = "", field: str = None, value: Any = None):
         super().__init__(message)
         self.field = field
         self.value = value
-    
+
     def get_error_info(self) -> Dict[str, Any]:
         info = super().get_error_info()
         if self.field:
@@ -95,7 +95,7 @@ class InvalidInputError(ValidationError):
 
 class MissingDependencyError(AIResearchOSError):
     """Raised when a required dependency is not installed."""
-    
+
     def __init__(self, message: str = "", dependency: str = None):
         super().__init__(message)
         self.dependency = dependency

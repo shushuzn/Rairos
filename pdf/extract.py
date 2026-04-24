@@ -136,7 +136,7 @@ def _ensure_ocr_deps():
 
 def _ocr_page(page, ocr_lang: str = "chi_sim+eng", zoom: float = 2.0) -> str:
     _ensure_ocr_deps()
-    
+
     mat = _fitz.Matrix(zoom, zoom)
     pix = page.get_pixmap(matrix=mat, alpha=False)
     img = _Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
@@ -537,7 +537,7 @@ def extract_tables(
     try:
         _ensure_fitz()
         doc = _fitz_pdf.open(str(pdf_path))
-        
+
         end = page_end if page_end is not None else doc.page_count
         for page_idx in range(page_start, min(end, doc.page_count)):
             page = doc[page_idx]

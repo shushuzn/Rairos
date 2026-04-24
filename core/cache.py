@@ -66,7 +66,7 @@ def get_cached(source: str, key: str) -> Optional[dict]:
         else:
             # Remove expired item from memory cache
             del _MEMORY_CACHE[cache_key]
-    
+
     # Check disk cache
     p = _cache_path(source, key)
     if not p.exists():
@@ -90,7 +90,7 @@ def set_cached(source: str, key: str, data: dict) -> None:
     cache_key = (source, key)
     _MEMORY_CACHE[cache_key] = (time.time(), data)
     _evict_memory_cache_if_needed()
-    
+
     # Update disk cache
     _evict_if_needed(source)
     p = _cache_path(source, key)
@@ -101,7 +101,7 @@ def set_cached(source: str, key: str, data: dict) -> None:
 
 def clear_cache(source: str = None) -> None:
     """Clear cache for a specific source or all sources."""
-    
+
     # Clear memory cache
     if source:
         # Remove only items for the specified source
@@ -111,7 +111,7 @@ def clear_cache(source: str = None) -> None:
     else:
         # Clear all memory cache
         _MEMORY_CACHE.clear()
-    
+
     # Clear disk cache
     if source:
         cache_dir = _cache_dir(source)
@@ -139,7 +139,7 @@ def get_cache_stats() -> Dict[str, any]:
         "max_cache_files": _MAX_CACHE_FILES,
         "disk_cache_sizes": {}
     }
-    
+
     # Calculate disk cache sizes
     try:
         for subdir in _CACHE_DIR.iterdir():
@@ -148,5 +148,5 @@ def get_cache_stats() -> Dict[str, any]:
                 stats["disk_cache_sizes"][subdir.name] = len(files)
     except OSError:
         pass
-    
+
     return stats

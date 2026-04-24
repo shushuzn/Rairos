@@ -45,19 +45,19 @@ class DiskInfo:
 
 class ResourceMonitor:
     """Monitor local system resources."""
-    
+
     def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir or self._get_default_data_dir()
         self._disk_io_start = psutil.disk_io_counters()
         self._net_io_start = psutil.net_io_counters()
         self._history: List[ResourceStats] = []
         self._max_history = 1000  # Keep last 1000 samples
-    
+
     @staticmethod
     def _get_default_data_dir() -> Path:
         """Get default data directory."""
         return Path.home() / ".cache" / "ai_research_os"
-    
+
     def get_disk_info(self, path: Optional[Path] = None) -> DiskInfo:
         """Get disk usage information for a path."""
         target = path or self.data_dir
@@ -69,7 +69,7 @@ class ResourceMonitor:
             free_gb=usage.free / (1024**3),
             percent=usage.percent
         )
-    
+
     def get_memory_info(self) -> Tuple[float, float, float]:
         """Get memory information (used_mb, available_mb, percent)."""
         mem = psutil.virtual_memory()
@@ -78,14 +78,14 @@ class ResourceMonitor:
             mem.available / (1024**2),  # available_mb
             mem.percent  # percent
         )
-    
+
     def get_cpu_info(self) -> Tuple[float, int]:
         """Get CPU information (percent, count)."""
         return (
             psutil.cpu_percent(interval=0.1),
             psutil.cpu_count()
         )
-    
+
     def get_io_stats(self) -> Dict[str, int]:
         """Get disk I/O statistics."""
         try:
@@ -100,7 +100,7 @@ class ResourceMonitor:
         except Exception as e:
             logger.warning(f"Failed to get I/O stats: {e}")
             return {"read_count": 0, "write_count": 0, "read_mb": 0.0, "write_mb": 0.0}
-    
+
     def get_network_stats(self) -> Dict[str, float]:
         """Get network I/O statistics."""
         try:
@@ -113,7 +113,7 @@ class ResourceMonitor:
         except Exception as e:
             logger.warning(f"Failed to get network stats: {e}")
             return {"sent_mb": 0.0, "recv_mb": 0.0}
-    
+
     def collect_stats(self) -> ResourceStats:
         """Collect all resource statistics."""
         mem_used, mem_avail, mem_pct = self.get_memory_info()
@@ -121,7 +121,7 @@ class ResourceMonitor:
         disk_info = self.get_disk_info()
         io_stats = self.get_io_stats()
         net_stats = self.get_network_stats()
-        
+
         stats = ResourceStats(
             timestamp=time.time(),
             cpu_percent=cpu_pct,
@@ -134,24 +134,24 @@ class ResourceMonitor:
             network_sent_mb=net_stats.get("sent_mb", 0.0),
             network_recv_mb=net_stats.get("recv_mb", 0.0)
         )
-        
+
         # Store in history
         self._history.append(stats)
         if len(self._history) > self._max_history:
             self._history.pop(0)
-        
+
         return stats
-    
+
     def get_recent_stats(self, count: int = 10) -> List[ResourceStats]:
         """Get recent resource statistics."""
         return self._history[-count:]
-    
+
     def get_average_stats(self, count: int = 100) -> Dict[str, float]:
         """Get average resource statistics over recent samples."""
         samples = self._history[-count:]
         if not samples:
             return {}
-        
+
         return {
             "avg_cpu_percent": sum(s.cpu_percent for s in samples) / len(samples),
             "avg_memory_percent": sum(s.memory_percent for s in samples) / len(samples),
@@ -161,13 +161,13 @@ class ResourceMonitor:
             "total_network_sent_mb": sum(s.network_sent_mb for s in samples),
             "total_network_recv_mb": sum(s.network_recv_mb for s in samples),
         }
-    
+
     def get_resource_report(self) -> str:
         """Generate a human-readable resource report."""
         stats = self.collect_stats()
         avg_stats = self.get_average_stats()
         disk_info = self.get_disk_info()
-        
+
         lines = [
             "=== Resource Usage Report ===",
             f"Timestamp: {datetime.fromtimestamp(stats.timestamp).isoformat()}",
@@ -193,7 +193,7 @@ class ResourceMonitor:
             f"  Network Sent:    {avg_stats.get('total_network_sent_mb', 0):.2f} MB",
             f"  Network Recv:   {avg_stats.get('total_network_recv_mb', 0):.2f} MB",
         ]
-        
+
         return "\n".join(lines)
 
 
@@ -211,7 +211,7 @@ def get_resource_monitor(data_dir: Optional[Path] = None) -> ResourceMonitor:
 
 class ResourceGuard:
     """Context manager to ensure resource availability before operations."""
-    
+
     def __init__(
         self,
         min_disk_gb: float = 1.0,
@@ -221,41 +221,41 @@ class ResourceGuard:
         self.min_disk_gb = min_disk_gb
         self.max_memory_percent = max_memory_percent
         self.monitor = monitor or get_resource_monitor()
-    
+
     def check(self) -> Tuple[bool, str]:
         """Check if resources are available. Returns (ok, message)."""
         disk_info = self.monitor.get_disk_info()
         mem_used, mem_avail, mem_pct = self.monitor.get_memory_info()
-        
+
         # Check disk space
         if disk_info.free_gb < self.min_disk_gb:
             return False, f"Low disk space: only {disk_info.free_gb:.2f} GB free"
-        
+
         # Check memory
         if mem_pct > self.max_memory_percent:
             return False, f"High memory usage: {mem_pct:.1f}%"
-        
+
         return True, "Resources OK"
-    
+
     def __enter__(self):
         ok, msg = self.check()
         if not ok:
             raise ResourceWarning(msg)
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
 
 class APIBudgetTracker:
     """Track API usage and costs (inspired by minimizing cloud costs)."""
-    
+
     def __init__(self, monthly_budget_usd: float = 100.0):
         self.monthly_budget_usd = monthly_budget_usd
         self.api_calls: List[Dict] = []
         self._call_count = 0
         self._cost_estimate = 0.0
-    
+
     def record_api_call(
         self,
         provider: str,
@@ -267,7 +267,7 @@ class APIBudgetTracker:
         self._call_count += 1
         call_cost = (tokens_used / 1000) * cost_per_1k
         self._cost_estimate += call_cost
-        
+
         self.api_calls.append({
             "timestamp": time.time(),
             "provider": provider,
@@ -276,7 +276,7 @@ class APIBudgetTracker:
             "cost": call_cost,
             "total_cost": self._cost_estimate
         })
-    
+
     def get_usage_report(self) -> Dict:
         """Get usage report."""
         return {
@@ -286,7 +286,7 @@ class APIBudgetTracker:
             "budget_used_percent": (self._cost_estimate / self.monthly_budget_usd) * 100 if self.monthly_budget_usd > 0 else 0,
             "recent_calls": len(self.api_calls[-100:])  # Last 100 calls
         }
-    
+
     def should_make_api_call(self, estimated_cost: float = 0.01) -> bool:
         """Check if we should make an API call based on budget."""
         return (self._cost_estimate + estimated_cost) <= self.monthly_budget_usd

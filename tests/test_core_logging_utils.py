@@ -10,7 +10,7 @@ def test_performance_monitor_record():
     monitor = PerformanceMonitor()
     monitor.record("test_metric", 1.5)
     monitor.record("test_metric", 2.5)
-    
+
     stats = monitor.get_stats("test_metric")
     assert stats["count"] == 2
     assert stats["min"] == 1.5
@@ -30,7 +30,7 @@ def test_performance_monitor_reset():
     monitor = PerformanceMonitor()
     monitor.record("metric1", 1.0)
     monitor.record("metric2", 2.0)
-    
+
     monitor.reset()
     assert len(monitor.metrics) == 0
 
@@ -40,7 +40,7 @@ def test_performance_monitor_reset_metric():
     monitor = PerformanceMonitor()
     monitor.record("metric1", 1.0)
     monitor.record("metric2", 2.0)
-    
+
     monitor.reset_metric("metric1")
     assert "metric1" not in monitor.metrics
     assert "metric2" in monitor.metrics
@@ -58,11 +58,11 @@ def test_performance_monitor_multiple_records():
     monitor.record("op1", 1.0)
     monitor.record("op1", 2.0)
     monitor.record("op2", 3.0)
-    
+
     stats1 = monitor.get_stats("op1")
     assert stats1["count"] == 2
     assert stats1["total"] == 3.0
-    
+
     stats2 = monitor.get_stats("op2")
     assert stats2["count"] == 1
     assert stats2["total"] == 3.0
@@ -73,7 +73,7 @@ def test_performance_monitor_all_stats():
     monitor = PerformanceMonitor()
     monitor.record("operation1", 1.5)
     monitor.record("operation2", 2.5)
-    
+
     all_stats = monitor.get_all_stats()
     assert "operation1" in all_stats
     assert "operation2" in all_stats

@@ -44,7 +44,7 @@ class SmartCache:
     - Cache statistics and metrics
     - TTL-based expiration
     """
-    
+
     def __init__(
         self,
         cache_dir: Path,
@@ -58,10 +58,10 @@ class SmartCache:
         self.compression_threshold_bytes = int(compression_threshold_kb * 1024)
         self.default_ttl = default_ttl
         self.compression_level = compression_level
-        
+
         # In-memory index for fast access
         self._index: OrderedDict[str, CacheEntry] = OrderedDict()
-        
+
         # Statistics
         self._stats = {
             "hits": 0,
@@ -72,10 +72,10 @@ class SmartCache:
             "bytes_saved": 0,
             "total_writes": 0,
         }
-        
+
         # Load existing index
         self._load_index()
-    
+
     def _load_index(self):
         """Load cache index from disk."""
         index_file = self.cache_dir / ".cache_index.json"
@@ -83,7 +83,7 @@ class SmartCache:
             try:
                 with open(index_file, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                    
+
                 for key, meta in data.items():
                     # Reconstruct minimal CacheEntry
                     entry = CacheEntry(
@@ -98,11 +98,11 @@ class SmartCache:
                         ttl=meta.get("ttl")
                     )
                     self._index[key] = entry
-                    
+
                 logger.info(f"Loaded {len(self._index)} cache entries from index")
             except Exception as e:
                 logger.warning(f"Failed to load cache index: {e}")
-    
+
     def _save_index(self):
         """Save cache index to disk."""
         index_file = self.cache_dir / ".cache_index.json"
@@ -120,34 +120,34 @@ class SmartCache:
                 }
                 for key, entry in self._index.items()
             }
-            
+
             with open(index_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f)
         except Exception as e:
             logger.warning(f"Failed to save cache index: {e}")
-    
+
     def _compress(self, data: bytes) -> bytes:
         """Compress data using zlib."""
         return zlib.compress(data, self.compression_level)
-    
+
     def _decompress(self, data: bytes) -> bytes:
         """Decompress data."""
         return zlib.decompress(data)
-    
+
     def _get_cache_path(self, key: str) -> Path:
         """Get cache file path for a key."""
         # Use first 2 chars for subdirectory to avoid too many files in one dir
         subdir = key[:2]
         cache_file = self.cache_dir / subdir / f"{key}.cache"
         return cache_file
-    
+
     def _evict_if_needed(self):
         """Evict cache entries if size limit is exceeded."""
         while self._get_total_size() > self.max_size_bytes and self._index:
             # Find entry to evict (LRU + lowest priority)
             evict_key = None
             evict_score = float('inf')
-            
+
             for key, entry in self._index.items():
                 # Score = accessed_at (older = higher priority for eviction)
                 # But priority reduces eviction likelihood
@@ -155,20 +155,20 @@ class SmartCache:
                 if score < evict_score:
                     evict_score = score
                     evict_key = key
-            
+
             if evict_key:
                 self._remove_entry(evict_key)
                 self._stats["evictions"] += 1
-    
+
     def _get_total_size(self) -> int:
         """Get total size of all cache entries."""
         return sum(entry.size_bytes for entry in self._index.values())
-    
+
     def _remove_entry(self, key: str):
         """Remove a cache entry."""
         if key not in self._index:
             return
-        
+
         # Remove file from disk
         cache_path = self._get_cache_path(key)
         if cache_path.exists():
@@ -180,10 +180,10 @@ class SmartCache:
                     subdir.rmdir()
             except Exception as e:
                 logger.warning(f"Failed to remove cache file: {e}")
-        
+
         # Remove from index
         del self._index[key]
-    
+
     def set(
         self,
         key: str,
@@ -202,14 +202,14 @@ class SmartCache:
         """
         # Serialize data
         serialized = json.dumps(data, ensure_ascii=False).encode('utf-8')
-        
+
         # Check if compression is beneficial
         compressed = len(serialized) >= self.compression_threshold_bytes
         if compressed:
             serialized = self._compress(serialized)
             self._stats["compressions"] += 1
             self._stats["bytes_saved"] += len(serialized) - len(serialized)
-        
+
         # Create cache entry
         now = time.time()
         entry = CacheEntry(
@@ -223,31 +223,31 @@ class SmartCache:
             compressed=compressed,
             ttl=ttl
         )
-        
+
         # Ensure cache directory exists
         cache_path = self._get_cache_path(key)
         cache_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         # Write to disk
         try:
             with open(cache_path, 'wb') as f:
                 f.write(serialized)
-            
+
             # Update index
             self._index[key] = entry
-            
+
             # Evict if needed
             self._evict_if_needed()
-            
+
             # Periodically save index
             if self._stats["total_writes"] % 100 == 0:
                 self._save_index()
-            
+
             self._stats["total_writes"] += 1
-            
+
         except Exception as e:
             logger.error(f"Failed to write cache: {e}")
-    
+
     def get(self, key: str) -> Optional[Any]:
         """
         Retrieve data from cache.
@@ -257,69 +257,69 @@ class SmartCache:
         if key not in self._index:
             self._stats["misses"] += 1
             return None
-        
+
         entry = self._index[key]
-        
+
         # Check TTL
         ttl = entry.ttl if entry.ttl is not None else self.default_ttl
         if ttl and (time.time() - entry.created_at) > ttl:
             self._remove_entry(key)
             self._stats["misses"] += 1
             return None
-        
+
         # Read from disk
         cache_path = self._get_cache_path(key)
         if not cache_path.exists():
             self._remove_entry(key)
             self._stats["misses"] += 1
             return None
-        
+
         try:
             with open(cache_path, 'rb') as f:
                 data = f.read()
-            
+
             # Decompress if needed
             if entry.compressed:
                 data = self._decompress(data)
                 self._stats["decompressions"] += 1
-            
+
             # Deserialize
             result = json.loads(data.decode('utf-8'))
-            
+
             # Update access statistics (move to end for LRU)
             entry.accessed_at = time.time()
             entry.access_count += 1
             self._index.move_to_end(key)
-            
+
             self._stats["hits"] += 1
             return result
-            
+
         except Exception as e:
             logger.warning(f"Failed to read cache: {e}")
             self._remove_entry(key)
             self._stats["misses"] += 1
             return None
-    
+
     def delete(self, key: str):
         """Delete a cache entry."""
         self._remove_entry(key)
-    
+
     def clear(self):
         """Clear all cache entries."""
         for key in list(self._index.keys()):
             self._remove_entry(key)
         self._index.clear()
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get cache statistics."""
         total_size = self._get_total_size()
         total_entries = len(self._index)
-        
+
         hit_rate = 0.0
         total_requests = self._stats["hits"] + self._stats["misses"]
         if total_requests > 0:
             hit_rate = (self._stats["hits"] / total_requests) * 100
-        
+
         return {
             "total_entries": total_entries,
             "total_size_mb": total_size / (1024 * 1024),
@@ -334,26 +334,26 @@ class SmartCache:
             "bytes_saved": self._stats["bytes_saved"],
             "total_writes": self._stats["total_writes"],
         }
-    
+
     def cleanup_expired(self) -> int:
         """Remove all expired cache entries. Returns count of removed entries."""
         now = time.time()
         removed = 0
-        
+
         keys_to_remove = []
         for key, entry in self._index.items():
             ttl = entry.ttl if entry.ttl is not None else self.default_ttl
             if ttl and (now - entry.created_at) > ttl:
                 keys_to_remove.append(key)
-        
+
         for key in keys_to_remove:
             self._remove_entry(key)
             removed += 1
-        
+
         if removed > 0:
             logger.info(f"Cleaned up {removed} expired cache entries")
             self._save_index()
-        
+
         return removed
 
 

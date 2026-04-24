@@ -13,17 +13,17 @@ OPTIMIZATION_INDEXES = [
     ("idx_papers_published", "CREATE INDEX IF NOT EXISTS idx_papers_published ON papers(published)"),
     ("idx_papers_primary_category", "CREATE INDEX IF NOT EXISTS idx_papers_primary_category ON papers(primary_category)"),
     ("idx_papers_doi", "CREATE INDEX IF NOT EXISTS idx_papers_doi ON papers(doi) WHERE doi != ''"),
-    
+
     # Paper_tags indexes for tag-based queries
     ("idx_paper_tags_tag_id", "CREATE INDEX IF NOT EXISTS idx_paper_tags_tag_id ON paper_tags(tag_id)"),
-    
+
     # Parse history indexes for analytics
     ("idx_parse_history_status", "CREATE INDEX IF NOT EXISTS idx_parse_history_status ON parse_history(status)"),
     ("idx_parse_history_attempted_at", "CREATE INDEX IF NOT EXISTS idx_parse_history_attempted_at ON parse_history(attempted_at)"),
-    
+
     # Job queue indexes for priority queries
     ("idx_job_queue_priority", "CREATE INDEX IF NOT EXISTS idx_job_queue_priority ON job_queue(priority, status)"),
-    
+
     # Experiment tables indexes
     ("idx_experiment_tables_page", "CREATE INDEX IF NOT EXISTS idx_experiment_tables_page ON experiment_tables(paper_id, page)"),
 ]
@@ -50,7 +50,7 @@ def apply_database_optimizations(db: "Database") -> List[str]:
         List of applied optimizations
     """
     applied = []
-    
+
     # Apply PRAGMA settings
     for pragma, value in PRAGMA_SETTINGS:
         try:
@@ -59,7 +59,7 @@ def apply_database_optimizations(db: "Database") -> List[str]:
             logger.info(f"Applied PRAGMA optimization: {pragma}")
         except Exception as e:
             logger.warning(f"Failed to apply PRAGMA {pragma}: {e}")
-    
+
     # Create optimization indexes
     for idx_name, create_sql in OPTIMIZATION_INDEXES:
         try:
@@ -69,7 +69,7 @@ def apply_database_optimizations(db: "Database") -> List[str]:
             logger.info(f"Created optimization index: {idx_name}")
         except Exception as e:
             logger.warning(f"Failed to create index {idx_name}: {e}")
-    
+
     # Run ANALYZE to update statistics
     try:
         db.conn.execute("ANALYZE")
@@ -78,17 +78,17 @@ def apply_database_optimizations(db: "Database") -> List[str]:
         logger.info("Database statistics updated")
     except Exception as e:
         logger.warning(f"Failed to run ANALYZE: {e}")
-    
+
     return applied
 
 
 def get_database_stats(db: "Database") -> dict:
     """Get database statistics for performance monitoring."""
     stats = {}
-    
+
     try:
         cur = db.conn.cursor()
-        
+
         # Table sizes
         tables = ["papers", "parse_history", "paper_tags", "tags", "citations", "experiment_tables"]
         for table in tables:
@@ -97,21 +97,21 @@ def get_database_stats(db: "Database") -> dict:
                 stats[f"{table}_count"] = cur.fetchone()[0]
             except (OSError, RuntimeError):
                 stats[f"{table}_count"] = 0
-        
+
         # Index count
         cur.execute("SELECT COUNT(*) FROM sqlite_master WHERE type = 'index'")
         stats["index_count"] = cur.fetchone()[0]
-        
+
         # Database size
         cur.execute("PRAGMA page_count")
         page_count = cur.fetchone()[0]
         cur.execute("PRAGMA page_size")
         page_size = cur.fetchone()[0]
         stats["database_size_mb"] = (page_count * page_size) / (1024 * 1024)
-        
+
     except Exception as e:
         logger.error(f"Failed to get database stats: {e}")
-    
+
     return stats
 
 

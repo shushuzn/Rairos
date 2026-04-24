@@ -35,7 +35,7 @@ class Ecosystem:
     - Multiple touchpoints
     - Extensible platform
     """
-    
+
     def __init__(self):
         self.components = {
             "cli": EcosystemComponent(
@@ -105,13 +105,13 @@ class Ecosystem:
                 status="planned"
             ),
         }
-    
+
     def get_ecosystem_report(self) -> str:
         """Generate ecosystem report (inspired by VW's ecosystem)."""
         ready = [c for c in self.components.values() if c.status == "ready"]
         planned = [c for c in self.components.values() if c.status == "planned"]
         coming = [c for c in self.components.values() if c.status == "coming_soon"]
-        
+
         lines = [
             "=" * 60,
             "🌐 数字生态系统报告 (Volkswagen式生态)",
@@ -123,30 +123,30 @@ class Ecosystem:
             "我们AI Research OS生态:",
             "-" * 60,
         ]
-        
+
         lines.append("\n✅ 已就绪:")
         for component in ready:
             lines.append(f"  {component.icon} {component.name}")
             lines.append(f"     {component.description}")
             if component.url:
                 lines.append(f"     访问: {component.url}")
-        
+
         if planned:
             lines.append("\n🚧 规划中:")
             for component in planned:
                 lines.append(f"  {component.icon} {component.name}")
                 lines.append(f"     {component.description}")
-        
+
         if coming:
             lines.append("\n🔮 即将推出:")
             for component in coming:
                 lines.append(f"  {component.icon} {component.name}")
                 lines.append(f"     {component.description}")
-        
+
         lines.append("\n" + "=" * 60)
         lines.append("\n💡 Volkswagen承诺完整生态，我们提供完整工具链！")
         lines.append("=" * 60)
-        
+
         return "\n".join(lines)
 
 

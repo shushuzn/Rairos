@@ -20,7 +20,7 @@ KEYWORD_TAGS = [
     (re.compile(r"\bcompression\b|quantization|distillation|model\s*reduction", re.I), "Optimization"),
     (re.compile(r"\blong context\b|context length|extended\s*context", re.I), "LongContext"),
     (re.compile(r"\bsafety\b|jailbreak|red teaming|adversarial\s*attack", re.I), "Safety"),
-    
+
     # Additional AI research areas
     (re.compile(r"\bllm\b|large\s*language\s*model|transformer", re.I), "LLM"),
     (re.compile(r"\bgpt\b|generative\s*pre-trained", re.I), "GPT"),
@@ -66,13 +66,13 @@ def _get_keywords_signature(text: str) -> Tuple[str, ...]:
 def infer_tags_if_empty(tags: List[str], paper: Paper) -> List[str]:
     if tags:
         return tags
-    
+
     # Combine title and abstract for better tag inference
     text = f"{paper.title}\n{paper.abstract}".lower()
-    
+
     # Use cached function for better performance
     sorted_tags = list(_get_keywords_signature(text))
-    
+
     # Remove redundant tags
     final_tags = []
     for tag in sorted_tags:
@@ -87,11 +87,11 @@ def infer_tags_if_empty(tags: List[str], paper: Paper) -> List[str]:
                     break
         if not is_redundant:
             final_tags.append(tag)
-    
+
     from config import MAX_TAGS
     # Limit to maximum tags to avoid over-tagging
     final_tags = final_tags[:MAX_TAGS]
-    
+
     return final_tags if final_tags else ["Unsorted"]
 
 

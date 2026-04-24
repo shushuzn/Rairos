@@ -29,10 +29,10 @@ class BatchOptimizer:
     - Error handling
     - Resource limits
     """
-    
+
     def __init__(self, max_workers: int = 4):
         self.max_workers = max_workers
-    
+
     def process_batch(
         self,
         items: List[Any],
@@ -45,10 +45,10 @@ class BatchOptimizer:
         errors = []
         success_count = 0
         failure_count = 0
-        
+
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             futures = {executor.submit(processor, item): item for item in items}
-            
+
             for future in as_completed(futures):
                 item = futures[future]
                 try:
@@ -60,9 +60,9 @@ class BatchOptimizer:
                     errors.append(str(e))
                     if error_handler:
                         error_handler(e, item)
-        
+
         total_time = time.time() - start_time
-        
+
         return BatchResult(
             success_count=success_count,
             failure_count=failure_count,
@@ -70,7 +70,7 @@ class BatchOptimizer:
             results=results,
             errors=errors
         )
-    
+
     def process_sequential(
         self,
         items: List[Any],
@@ -83,7 +83,7 @@ class BatchOptimizer:
         errors = []
         success_count = 0
         failure_count = 0
-        
+
         for item in items:
             try:
                 result = processor(item)
@@ -94,9 +94,9 @@ class BatchOptimizer:
                 errors.append(str(e))
                 if error_handler:
                     error_handler(e, item)
-        
+
         total_time = time.time() - start_time
-        
+
         return BatchResult(
             success_count=success_count,
             failure_count=failure_count,

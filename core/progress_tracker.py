@@ -8,10 +8,10 @@ from datetime import datetime
 
 class ProgressTracker:
     """Track progress of research tasks."""
-    
+
     def __init__(self):
         self.tasks = {}
-    
+
     def add_task(self, task_id: str, description: str):
         self.tasks[task_id] = {
             "description": description,
@@ -19,12 +19,12 @@ class ProgressTracker:
             "created": datetime.now().isoformat(),
             "completed": None
         }
-    
+
     def complete_task(self, task_id: str):
         if task_id in self.tasks:
             self.tasks[task_id]["status"] = "completed"
             self.tasks[task_id]["completed"] = datetime.now().isoformat()
-    
+
     def get_progress(self) -> float:
         total = len(self.tasks)
         if total == 0:
