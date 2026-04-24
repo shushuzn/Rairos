@@ -2242,6 +2242,7 @@ def _build_kg_parser(subparsers) -> argparse.ArgumentParser:
     rp = sub.add_parser("rebuild", help="Rebuild KG from papers.json")
 
     rp.add_argument("--papers-json", default="", help="Path to papers.json (default: auto-detect)")
+    rp.add_argument("--incremental", action="store_true", help="Only process new/changed papers since last rebuild")
 
 
 
@@ -2409,7 +2410,7 @@ def _run_kg(args: argparse.Namespace) -> int:
 
         print(f"Rebuilding KG from {papers_json} ...")
 
-        integ.rebuild_from_papers_json(papers_json)
+        integ.rebuild_from_papers_json(papers_json, incremental=args.incremental)
 
         stats = kg.stats()
 

@@ -217,8 +217,17 @@ class KGIntegration:
             pnode_id = pnode["id"] if pnode else self.kg.add_node("Paper", uid, uid)
             self.kg.add_edge(pnode_id, mnote_node_id, "in_comparison", weight=1.0)
 
-    def rebuild_from_papers_json(self, papers_json_path: Union[str, Path]):
-        """Rebuild entire KG from the main papers.json database."""
+    def rebuild_from_papers_json(
+        self,
+        papers_json_path: Union[str, Path],
+        incremental: bool = False,
+    ):
+        """Rebuild entire KG from the main papers.json database.
+
+        Args:
+            papers_json_path: Path to papers.json
+            incremental: If True, only process papers not yet indexed (based on rebuild_meta).
+        """
         papers_json_path = Path(papers_json_path)
         if not papers_json_path.exists():
             logger.error(f"papers.json not found at {papers_json_path}")
@@ -228,7 +237,18 @@ class KGIntegration:
         papers = data.get("papers", {})
         citation_graph = data.get("citation_graph", {})
 
+        already_indexed: set[str] = set()
+        if incremental:
+            meta = self.kg.get_rebuild_meta()
+            already_indexed = meta["indexed_paper_uids"]
+            new_count = sum(1 for uid in papers if uid not in already_indexed)
+            logger.info(f"Incremental mode: {len(already_indexed)} already indexed, {new_count} new papers to process.")
+
+        processed_uids: list[str] = []
+
         for uid, paper_data in papers.items():
+            if incremental and uid in already_indexed:
+                continue
             tags = paper_data.get("tags", [])
             title = paper_data.get("title", uid)
             authors = paper_data.get("authors", [])
@@ -238,10 +258,15 @@ class KGIntegration:
             self.on_paper_processed(uid, pnote_path,
                 paper_title=title, paper_tags=tags,
                 paper_authors=authors, paper_year=year)
+            processed_uids.append(uid)
 
         for uid, citations in citation_graph.items():
+            if incremental and uid in already_indexed:
+                continue
             cited = citations.get("cited", [])
             citing = citations.get("citing", [])
             self.on_citations_fetched(uid, cited, citing)
 
-        logger.info(f"KG rebuild complete: {len(papers)} papers processed")
+        self.kg.set_rebuild_meta(list(papers.keys()))
+
+        logger.info(f"KG rebuild complete: {len(processed_uids)} papers processed")

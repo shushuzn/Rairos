@@ -59,6 +59,14 @@ class KGManager:
         conn.execute("CREATE INDEX IF NOT EXISTS idx_edges_source ON kg_edges(source_id)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_edges_target ON kg_edges(target_id)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_nodes_entity ON kg_nodes(type, entity_id)")
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS rebuild_meta (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                last_rebuild_at TEXT,
+                indexed_papers_json TEXT NOT NULL DEFAULT '[]'
+            )
+        """)
+        conn.execute("INSERT OR IGNORE INTO rebuild_meta (id, indexed_papers_json) VALUES (1, '[]')")
         conn.commit()
 
     def _conn(self) -> sqlite3.Connection:
@@ -340,3 +348,25 @@ class KGManager:
             "nodes_by_type": node_counts,
             "edges_by_type": edge_counts,
         }
+
+    # ─── Rebuild Metadata ─────────────────────────────────────────────
+
+    def get_rebuild_meta(self) -> dict:
+        """Return last rebuild timestamp and set of indexed paper UIDs."""
+        conn = self._conn()
+        row = conn.execute("SELECT last_rebuild_at, indexed_papers_json FROM rebuild_meta WHERE id=1").fetchone()
+        indexed = json.loads(row[1]) if row and row[1] else []
+        return {
+            "last_rebuild_at": row[0] if row else None,
+            "indexed_paper_uids": set(indexed),
+        }
+
+    def set_rebuild_meta(self, indexed_paper_uids: list[str]):
+        """Update rebuild metadata after a full rebuild."""
+        conn = self._conn()
+        now = self._now()
+        conn.execute(
+            "UPDATE rebuild_meta SET last_rebuild_at=?, indexed_papers_json=? WHERE id=1",
+            (now, json.dumps(indexed_paper_uids)),
+        )
+        conn.commit()
