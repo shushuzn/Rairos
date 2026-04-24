@@ -3,6 +3,7 @@
 Run: streamlit run web/app.py
 """
 
+import asyncio
 import sys
 
 import orjson
@@ -53,7 +54,14 @@ page = st.sidebar.radio("Go to", [
 if page == "📊 Dashboard":
     init_kg()
     kg = st.session_state["kg"]
-    stats = kg.stats()
+
+    # Run independent KG queries concurrently
+    async def fetch_dashboard_data():
+        stats_f = asyncio.to_thread(kg.stats)
+        recent_f = asyncio.to_thread(lambda: kg.get_all_nodes()[:20])
+        return await asyncio.gather(stats_f, recent_f)
+
+    stats, all_nodes = asyncio.run(fetch_dashboard_data())
 
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Total Nodes", stats["total_nodes"])
@@ -68,7 +76,6 @@ if page == "📊 Dashboard":
     st.bar_chart(stats["edges_by_type"])
 
     st.subheader("Recent Activity")
-    all_nodes = kg.get_all_nodes()[:20]
     for n in all_nodes:
         st.write(f"`{n['type']}` **{n['label'][:60]}**")
 
