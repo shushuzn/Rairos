@@ -2101,7 +2101,7 @@ def _run_similar(args: argparse.Namespace) -> int:
 
 
 
-                "paper_id": paper.paper_id,
+                "paper_id": paper.id,
 
 
 
@@ -2157,7 +2157,7 @@ def _run_similar(args: argparse.Namespace) -> int:
 
 
 
-            print(f"  [{score:.3f}] {bar}  {paper.paper_id}")
+            print(f"  [{score:.3f}] {bar}  {paper.id}")
 
 
 
@@ -8551,11 +8551,11 @@ def _run_cite_import(args: argparse.Namespace) -> int:
 
 
 
-        for e in errors[:10]:
+        for err in errors[:10]:
 
 
 
-            print(f"    - {e}")
+            print(f"    - {err}")
 
 
 

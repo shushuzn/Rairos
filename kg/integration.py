@@ -3,6 +3,7 @@
 import json
 import logging
 import re
+from typing import Any, Optional, Union
 from pathlib import Path
 
 
@@ -83,11 +84,11 @@ class KGIntegration:
         paper_uid: str,
         pnote_path: str | Path,
         cnote_paths: list[str | Path] | None = None,
-        mnote_path: str | Path | None = None,
-        paper_title: str | None = None,
+        mnote_path: Optional[Union[str, Path]] = None,
+        paper_title: Optional[str] = None,
         paper_authors: list[str] | None = None,
         paper_tags: list[str] | None = None,
-        paper_year: int | None = None,
+        paper_year: Optional[int] = None,
     ):
         """Create nodes for a processed paper and its notes."""
         pnote_path = Path(pnote_path) if pnote_path else None

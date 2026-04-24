@@ -19,7 +19,8 @@ class KGManager:
     def __init__(self, db_path: Optional[str] = None):
         if db_path is None:
             base = Path(__file__).parent.parent
-            self.db_path = str(base / "data" / "kg.db")
+            db_path = str(base / "data" / "kg.db")
+        self.db_path = db_path
         self._ensure_data_dir()
         self._init_db()
 

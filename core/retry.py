@@ -99,7 +99,7 @@ def retry(
 
         @wraps(fn)
         def wrapper(*args, **kwargs):
-            last_exc: Exception | None = None
+            last_exc: Optional[Exception] = None
             for attempt in range(1, max_attempts + 1):
                 try:
                     result = fn(*args, **kwargs)
@@ -166,7 +166,7 @@ class CircuitBreaker:
 
         self._state = self.CLOSED
         self._failure_count = 0
-        self._last_failure_time: float | None = None
+        self._last_failure_time: Optional[float] = None
         self._lock = threading.RLock()
 
     @property
@@ -220,7 +220,7 @@ class CircuitOpen(Exception):
 
 
 def circuit_breaker(
-    _fn: Callable | None = None,
+    _fn: Optional[Callable[..., Any]] = None,
     *,
     failure_threshold: int = 5,
     recovery_timeout: float = 60.0,

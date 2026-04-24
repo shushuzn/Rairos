@@ -186,7 +186,7 @@ class PDFParser:
         3. Empty with warning (scanned/image-only)
     """
 
-    def __init__(self, db: Database | None = None, cache_dir: str | Path = "~/.cache/ai_research_os/parsed"):
+    def __init__(self, db: Optional[Database] = None, cache_dir: Union[str, Path] = "~/.cache/ai_research_os/parsed"):
         self.db = db
         self.cache_dir = Path(cache_dir).expanduser()
         self.cache_dir.mkdir(parents=True, exist_ok=True)

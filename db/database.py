@@ -299,7 +299,7 @@ class Database:
     The database file is created automatically on first access.
     """
 
-    def __init__(self, db_path: str | Path = "~/.cache/ai_research_os/research.db"):
+    def __init__(self, db_path: Union[str, Path] = "~/.cache/ai_research_os/research.db"):
         self.db_path = Path(db_path).expanduser()
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._local = threading.local()
@@ -1249,7 +1249,7 @@ class Database:
 
     # ── Deduplication & Merge ─────────────────────────────────────────────────
 
-    def find_duplicates(self, since: str | None = None) -> List[Tuple[PaperRecord, PaperRecord]]:
+    def find_duplicates(self, since: Optional[str] = None) -> List[Tuple[PaperRecord, PaperRecord]]:
         """
         Find pairs of papers that are likely duplicates.
         Two papers are duplicates if:

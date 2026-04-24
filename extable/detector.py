@@ -1,6 +1,7 @@
 """PDF table detection using PyMuPDF."""
 
 import re
+from typing import Optional, Union
 from pathlib import Path
 
 
@@ -26,8 +27,8 @@ class TableDetector:
     def __init__(self):
         self._has_fitz = True
 
-    def detect_tables(self, page_source: str | Path | int,
-                     pdf_path: Path | None = None) -> list[dict]:
+    def detect_tables(self, page_source: Union[str, Path, int],
+                     pdf_path: Optional[Path] = None) -> list[dict]:
         """Detect tables on a page.
 
         page_source: page number (int) OR path to page image (for OCR fallback)

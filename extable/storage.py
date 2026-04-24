@@ -3,6 +3,7 @@
 import json
 import sqlite3
 import uuid
+from typing import Optional, Union
 from datetime import datetime
 from pathlib import Path
 
@@ -12,7 +13,7 @@ from pathlib import Path
 class ExperimentDB:
     """SQLite-backed experiment table storage."""
 
-    def __init__(self, db_path: str | None = None):
+    def __init__(self, db_path: Optional[str] = None):
         if db_path is None:
             db_path = Path("data/extable.db")
         self.db_path = str(db_path)
@@ -102,10 +103,10 @@ class ExperimentDB:
             "added_at": row[9],
         }
 
-    def search_tables(self, metric: str | None = None,
-                     dataset: str | None = None,
-                     model: str | None = None,
-                     min_value: float | None = None) -> list[dict]:
+    def search_tables(self, metric: Optional[str] = None,
+                     dataset: Optional[str] = None,
+                     model: Optional[str] = None,
+                     min_value: Optional[float] = None) -> list[dict]:
         conn = self._conn()
         rows = conn.execute("SELECT * FROM extable_tables").fetchall()
         results = []
@@ -124,7 +125,7 @@ class ExperimentDB:
             results.append(t)
         return results
 
-    def export_to_csv(self, paper_uid: str | None = None) -> str:
+    def export_to_csv(self, paper_uid: Optional[str] = None) -> str:
         conn = self._conn()
         if paper_uid:
             rows = conn.execute("SELECT * FROM extable_tables WHERE paper_uid=?", (paper_uid,)).fetchall()

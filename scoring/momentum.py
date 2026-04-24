@@ -1,6 +1,7 @@
 """Research momentum / paper importance scoring.
 
 Formula:
+from typing import Optional, Union
     score = citation_score * 0.3
           + tag_popularity * 0.25
           + recency_boost * 0.2
@@ -20,7 +21,7 @@ from kg.manager import KGManager
 class ResearchMomentum:
     """Compute research momentum scores for papers and tags."""
 
-    def __init__(self, kg: KGManager | None = None):
+    def __init__(self, kg: Optional[KGManager] = None):
         self.kg = kg or KGManager()
         self._scores_path = Path("data/momentum_scores.json")
         self._scores_path.parent.mkdir(parents=True, exist_ok=True)
@@ -141,7 +142,7 @@ class ResearchMomentum:
 
     # ─── High-level queries ────────────────────────────────────────
 
-    def get_top_papers(self, tag: str | None = None, top_n: int = 20) -> list[tuple[str, float]]:
+    def get_top_papers(self, tag: Optional[str] = None, top_n: int = 20) -> list[tuple[str, float]]:
         """Return top-N papers by momentum score, optionally filtered by tag."""
         if tag:
             paper_nodes = self.kg.find_papers_by_tag(tag)
