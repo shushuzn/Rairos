@@ -125,8 +125,21 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
                 nodes[rid] = CiteGraphNode(rid, "", 1, "backward")
                 edges.append((root_id, rid, "backward"))
 
+        for pmid in pmids:
+            rid = f"PMID:{pmid}"
+            if rid not in nodes:
+                nodes[rid] = CiteGraphNode(rid, "", 1, "backward")
+                edges.append((root_id, rid, "backward"))
+
+        for isbn in isbns:
+            rid = f"ISBN:{isbn}"
+            if rid not in nodes:
+                nodes[rid] = CiteGraphNode(rid, "", 1, "backward")
+                edges.append((root_id, rid, "backward"))
+
+        all_refs = ref_ids + [f"DOI:{d}" for d in dois] + [f"PMID:{p}" for p in pmids] + [f"ISBN:{i}" for i in isbns]
         print(f"Root: {root_id}")
-        print(f"References ({len(ref_ids)}): {', '.join(ref_ids[:args.max_nodes])}")
+        print(f"References ({len(all_refs)}): {', '.join(all_refs[:args.max_nodes])}")
         return 0
 
     # DB mode

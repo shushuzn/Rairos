@@ -387,7 +387,7 @@ class TestDedupSemanticGenerate:
             paper = FakePaper(id="P1", title="Test Paper\n\nAbstract text")
             mock_db.get_papers_without_embeddings.return_value = [paper]
             MockDB.return_value = mock_db
-            with patch("cli._get_ollama_embedding_batch", return_value=[[0.1]*768]):
+            with patch("cli.cmd.dedup_semantic._get_ollama_embedding_batch", return_value=[[0.1]*768]):
                 captured = StringIO()
                 with patch("sys.stdout", captured):
                     rc = _run_dedup_semantic(FakeArgs(
