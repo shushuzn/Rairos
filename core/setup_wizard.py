@@ -20,7 +20,7 @@ from typing import Dict
 class SetupWizard:
     """
     Quick setup wizard for new users.
-    
+
     Inspired by Volkswagen's streamlined V2G installation:
     - Quick setup (weeks → minutes)
     - Clear guidance

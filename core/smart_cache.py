@@ -36,7 +36,7 @@ class CacheEntry:
 class SmartCache:
     """
     Intelligent cache manager with compression and prioritization.
-    
+
     Features:
     - LRU + priority-based eviction
     - Automatic compression for large entries
@@ -193,7 +193,7 @@ class SmartCache:
     ):
         """
         Store data in cache.
-        
+
         Args:
             key: Cache key
             data: Data to cache (will be JSON serialized)
@@ -251,7 +251,7 @@ class SmartCache:
     def get(self, key: str) -> Optional[Any]:
         """
         Retrieve data from cache.
-        
+
         Returns None if key doesn't exist or is expired.
         """
         if key not in self._index:

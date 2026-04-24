@@ -26,7 +26,7 @@ class RateLimitConfig:
 class RateLimiter:
     """
     Token bucket rate limiter with multiple time windows.
-    
+
     Tracks requests across second, minute, and hour windows to ensure
     API calls stay within defined limits.
     """
@@ -94,11 +94,11 @@ class RateLimiter:
     def acquire(self, blocking: bool = True, timeout: Optional[float] = None) -> bool:
         """
         Acquire permission to make a request.
-        
+
         Args:
             blocking: If True, wait until a request can be made
             timeout: Maximum time to wait (None = wait forever)
-            
+
         Returns:
             True if request was allowed, False if timeout or rejected
         """
@@ -147,7 +147,7 @@ class RateLimiter:
     def wait_if_needed(self) -> float:
         """
         Wait if necessary to respect rate limits.
-        
+
         Returns:
             Time waited in seconds
         """
@@ -185,7 +185,7 @@ class RateLimiter:
 class APIRateLimitManager:
     """
     Manager for multiple API rate limiters.
-    
+
     Allows different configurations for different API endpoints.
     """
 
@@ -235,7 +235,7 @@ def get_rate_limit_manager() -> APIRateLimitManager:
 def rate_limited(endpoint: str, config: Optional[RateLimitConfig] = None):
     """
     Context manager for rate-limited API calls.
-    
+
     Usage:
         with rate_limited("arxiv"):
             # Make API call
@@ -272,7 +272,7 @@ def rate_limit(
 ) -> Callable:
     """
     Decorator to rate-limit a function.
-    
+
     Usage:
         @rate_limit("arxiv", requests_per_minute=30)
         def fetch_arxiv_data():

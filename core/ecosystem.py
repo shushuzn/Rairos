@@ -29,7 +29,7 @@ class EcosystemComponent:
 class Ecosystem:
     """
     Digital ecosystem for AI Research OS.
-    
+
     Inspired by Volkswagen's V2G ecosystem:
     - Complete integration
     - Multiple touchpoints

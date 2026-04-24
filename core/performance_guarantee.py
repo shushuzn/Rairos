@@ -28,7 +28,7 @@ class PerformanceGuarantee:
 class PerformanceGuaranteeSystem:
     """
     System to guarantee minimal performance impact.
-    
+
     Inspired by Volkswagen's battery life protection promise:
     - "will not significantly affect"
     - Robust protection systems

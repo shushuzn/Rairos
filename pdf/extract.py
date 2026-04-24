@@ -67,8 +67,8 @@ def _ensure_fitz():
         try:
             import fitz
             _fitz_pdf = fitz
-        except Exception:
-            raise RuntimeError("PyMuPDF not installed. Install with: pip install pymupdf")
+        except Exception as err:
+            raise RuntimeError("PyMuPDF not installed. Install with: pip install pymupdf") from err
 
 def extract_pdf_text(pdf_path: Path, max_pages: Optional[int] = None) -> str:
     """Fast text-layer extraction (PyMuPDF)."""

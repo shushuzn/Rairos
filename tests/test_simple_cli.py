@@ -22,7 +22,7 @@ def test_simple_cli_status():
     # Should not raise exception (may fail if DB not initialized)
     try:
         cli._handle_status(cli.parser.parse_args([]))
-    except:
+    except Exception:
         pass  # Expected if DB not initialized
 
 
@@ -32,7 +32,7 @@ def test_simple_cli_list():
     # Should not raise exception (may fail if DB not initialized)
     try:
         cli._handle_list(cli.parser.parse_args([]))
-    except:
+    except Exception:
         pass  # Expected if DB not initialized
 
 
@@ -42,7 +42,7 @@ def test_simple_cli_stats():
     # Should not raise exception (may fail if DB not initialized)
     try:
         cli._handle_stats(cli.parser.parse_args([]))
-    except:
+    except Exception:
         pass  # Expected if DB not initialized
 
 

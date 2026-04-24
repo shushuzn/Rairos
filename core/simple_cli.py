@@ -11,7 +11,7 @@ import argparse
 class SimpleCLI:
     """
     简化版命令行工具
-    
+
     提供最常用的功能，隐藏复杂性。
     """
 
@@ -27,16 +27,16 @@ class SimpleCLI:
 示例:
   # 搜索论文
   python -m core.simple_cli search "machine learning"
-  
+
   # 列出所有论文
   python -m core.simple_cli list
-  
+
   # 查看论文状态
   python -m core.simple_cli status
-  
+
   # 导入论文
   python -m core.simple_cli import 2301.001
-  
+
   # 获取帮助
   python -m core.simple_cli help
 

@@ -9,7 +9,7 @@ from typing import List, Dict, Any
 class SearchOptimizer:
     """
     Optimize search queries and results.
-    
+
     Features:
     - Query expansion
     - Relevance scoring

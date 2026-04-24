@@ -28,7 +28,7 @@ class ValueMetric:
 class ValueQuantifier:
     """
     Quantify value delivered to users.
-    
+
     Inspired by Volkswagen's value proposition:
     - 700-900 euros savings
     - Time value metrics
@@ -103,7 +103,7 @@ class ValueQuantifier:
         ]
 
         # VW-style value presentation
-        for key, metric in values.items():
+        for _key, metric in values.items():
             if metric.value > 0:
                 lines.append(
                     f"📊 {metric.name}: {metric.value:.1f} {metric.unit}"

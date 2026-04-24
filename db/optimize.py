@@ -42,10 +42,10 @@ PRAGMA_SETTINGS = [
 def apply_database_optimizations(db: "Database") -> List[str]:
     """
     Apply performance optimizations to the database.
-    
+
     Args:
         db: Database instance
-        
+
     Returns:
         List of applied optimizations
     """
@@ -118,10 +118,10 @@ def get_database_stats(db: "Database") -> dict:
 def vacuum_database(db: "Database") -> bool:
     """
     Vacuum the database to reclaim space and optimize storage.
-    
+
     Args:
         db: Database instance
-        
+
     Returns:
         True if successful, False otherwise
     """

@@ -30,7 +30,7 @@ class Achievement:
 class AchievementSystem:
     """
     User achievement system with points and badges.
-    
+
     Inspired by Volkswagen's V2G incentive system:
     - Base remuneration for participation
     - Cost savings metrics

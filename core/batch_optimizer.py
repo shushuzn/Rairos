@@ -22,7 +22,7 @@ class BatchResult:
 class BatchOptimizer:
     """
     Optimize batch operations.
-    
+
     Features:
     - Parallel execution
     - Progress tracking
