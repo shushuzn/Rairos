@@ -37,6 +37,10 @@ class TableDetector:
             import fitz
         except ImportError:
             return []
+        if not self._has_fitz:
+            return []
+        if pdf_path is None:
+            return []
 
         if isinstance(page_source, (int,)):
             page_num = int(page_source)
@@ -138,6 +142,8 @@ class TableDetector:
         try:
             import fitz
         except ImportError:
+            return []
+        if not self._has_fitz:
             return []
         pdf_path = Path(pdf_path)
         doc = fitz.open(str(pdf_path))
