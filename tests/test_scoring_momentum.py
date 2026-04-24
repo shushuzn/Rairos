@@ -135,7 +135,9 @@ class TestResearchMomentumRefresh:
         assert "p2" in rm._scores
 
     def test_save_and_load_scores(self, rm, rm_populated):
+        rm.refresh_all()  # populate _scores before saving
         rm.save_scores()
         rm2 = ResearchMomentum(kg=rm.kg)
         rm2._scores_path = rm._scores_path
+        rm2._scores = rm2._load_scores()  # re-load from the saved path
         assert "p1" in rm2._scores
