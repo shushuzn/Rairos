@@ -33,6 +33,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional, Tuple
 
 from db import Database
+from kg import KGManager
 from core import DOI_RESOLVER, Paper, today_iso
 from core.basics import ensure_research_tree, get_default_concept_dir, get_default_radar_dir, safe_uid, slugify_title
 from parsers.input_detection import is_probably_doi, normalize_arxiv_id, normalize_doi
@@ -104,13 +105,30 @@ logger = logging.getLogger(__name__)
 
 
 # Import the improved tag inference function from notes.keyword_tags
+from parsers.arxiv import fetch_arxiv_metadata
+from parsers.crossref import fetch_crossref_metadata
+from pdf.extract import download_pdf, extract_pdf_structured, extract_pdf_text_hybrid
+from sections.segment import (
+    segment_structured,
+    format_section_snippets,
+    format_tables_markdown,
+    format_math_markdown,
+    segment_into_sections,
+)
+from llm.generate import ai_generate_pnote_draft
+from renderers.pnote import render_pnote
+from db.database import ExperimentTableRecord
+from updaters.radar import update_radar
+from updaters.timeline import update_timeline
+from notes.pnotes import pnotes_by_tag
+from notes.mnote import pick_top3_pnotes_for_tag, ensure_or_update_mnote
+
 from notes.keyword_tags import infer_tags_if_empty as _infer_tags_if_empty
 
 
 def infer_tags_if_empty(tags: List[str], paper: Paper) -> List[str]:
     """Infer tags for a paper if no tags are provided."""
     return _infer_tags_if_empty(tags, paper)
-
 
 
 
@@ -2215,7 +2233,7 @@ def _build_kg_parser(subparsers) -> argparse.ArgumentParser:
 
     # kg stats
 
-    sp = sub.add_parser("stats", help="KG statistics (nodes/edges by type)")
+    sub.add_parser("stats", help="KG statistics (nodes/edges by type)")
 
 
 
@@ -2249,7 +2267,7 @@ def _run_kg(args: argparse.Namespace) -> int:
 
     kg = KGManager()
 
-    q = KGQueries(kg)
+
 
 
 
@@ -9727,6 +9745,7 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
 
 
 
+        from notes.cnote import auto_fill_cnotes_with_ai
         results = auto_fill_cnotes_with_ai(
 
 
@@ -10479,6 +10498,7 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
 
 
 
+        from notes.cnote import ensure_cnote, update_cnote_links
         cpath = ensure_cnote(concept_dir, t)
 
 
