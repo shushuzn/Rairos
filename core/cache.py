@@ -2,7 +2,7 @@
 import json
 import time
 from pathlib import Path
-from typing import Optional, Dict, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from config import CACHE_DIR, CACHE_TTL_SECONDS, MAX_CACHE_FILES, MEMORY_CACHE_MAX_SIZE
 
@@ -99,7 +99,7 @@ def set_cached(source: str, key: str, data: dict) -> None:
     except OSError:
         pass  # disk full or permission issue — non-fatal
 
-def clear_cache(source: str = None) -> None:
+def clear_cache(source: Optional[str] = None) -> None:
     """Clear cache for a specific source or all sources."""
 
     # Clear memory cache
@@ -129,7 +129,7 @@ def clear_cache(source: str = None) -> None:
         except OSError:
             pass
 
-def get_cache_stats() -> Dict[str, any]:
+def get_cache_stats() -> Dict[str, Any]:
     """Get cache statistics."""
     stats = {
         "memory_cache_size": len(_MEMORY_CACHE),

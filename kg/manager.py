@@ -16,11 +16,10 @@ class KGManager:
     Edge types: cite, derive, same_tag, in_comparison, has_note, about_tag
     """
 
-    def __init__(self, db_path: str | None = None):
+    def __init__(self, db_path: Optional[str] = None):
         if db_path is None:
             base = Path(__file__).parent.parent
-            db_path = base / "data" / "kg.db"
-        self.db_path = str(db_path)
+            self.db_path = str(base / "data" / "kg.db")
         self._ensure_data_dir()
         self._init_db()
 
@@ -196,13 +195,13 @@ class KGManager:
 
     def _row_to_edge(self, row: tuple) -> dict:
         return {
-            "id": row[0],
-            "source_id": row[1],
-            "target_id": row[2],
-            "relation_type": row[3],
-            "weight": row[4],
-            "properties": json.loads(row[5]) if row[5] else {},
-            "created_at": row[6],
+            "id": row[0] if len(row) > 0 else None,
+            "source_id": row[1] if len(row) > 1 else None,
+            "target_id": row[2] if len(row) > 2 else None,
+            "relation_type": row[3] if len(row) > 3 else None,
+            "weight": row[4] if len(row) > 4 else None,
+            "properties": json.loads(row[5]) if row[5] and len(row) > 5 else {},
+            "created_at": row[6] if len(row) > 6 else None,
         }
 
     def get_edges_by_node(
@@ -215,13 +214,13 @@ class KGManager:
         conn = self._conn()
         if direction == "out":
             clause = "source_id=? AND (? IS NULL OR relation_type=?)"
-            params = (node_id, rel_type, rel_type)
+            params = (node_id, rel_type, rel_type)  # type: ignore[assignment]
         elif direction == "in":
             clause = "target_id=? AND (? IS NULL OR relation_type=?)"
-            params = (node_id, rel_type, rel_type)
+            params = (node_id, rel_type, rel_type)  # type: ignore[assignment]
         else:
             clause = "(source_id=? OR target_id=?) AND (? IS NULL OR relation_type=?)"
-            params = (node_id, node_id, rel_type, rel_type)
+            params = (node_id, node_id, rel_type, rel_type)  # type: ignore[assignment]
 
         rows = conn.execute(
             f"SELECT * FROM kg_edges WHERE {clause}", params,

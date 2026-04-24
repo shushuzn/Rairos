@@ -74,7 +74,7 @@ def infer_tags_if_empty(tags: List[str], paper: Paper) -> List[str]:
     sorted_tags = list(_get_keywords_signature(text))
 
     # Remove redundant tags
-    final_tags = []
+    final_tags: list[str] = []
     for tag in sorted_tags:
         # Check if this tag is already covered by a more specific tag
         is_redundant = False

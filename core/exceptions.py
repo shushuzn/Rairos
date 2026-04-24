@@ -1,12 +1,12 @@
 """Exception hierarchy for AI Research OS."""
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 
 
 class AIResearchOSError(Exception):
     """Base exception for all AI Research OS errors."""
 
-    def __init__(self, message: str = "", cause: Exception = None):
+    def __init__(self, message: str = "", cause: Optional[Exception] = None):
         super().__init__(message)
         self.cause = cause
         if cause:
@@ -71,7 +71,7 @@ class ConfigError(AIResearchOSError):
 class RetryExhaustedError(AIResearchOSError):
     """Raised when all retry attempts have been exhausted."""
 
-    def __init__(self, message: str = "", cause: Exception = None, retries: int = 0):
+    def __init__(self, message: str = "", cause: Optional[Exception] = None, retries: int = 0):
         super().__init__(message, cause)
         self.retries = retries
 
@@ -79,7 +79,7 @@ class RetryExhaustedError(AIResearchOSError):
 class InvalidInputError(ValidationError):
     """Raised when input validation fails due to invalid data format or type."""
 
-    def __init__(self, message: str = "", field: str = None, value: Any = None):
+    def __init__(self, message: str = "", field: Optional[str] = None, value: Any = None):
         super().__init__(message)
         self.field = field
         self.value = value
@@ -96,7 +96,7 @@ class InvalidInputError(ValidationError):
 class MissingDependencyError(AIResearchOSError):
     """Raised when a required dependency is not installed."""
 
-    def __init__(self, message: str = "", dependency: str = None):
+    def __init__(self, message: str = "", dependency: Optional[str] = None):
         super().__init__(message)
         self.dependency = dependency
 

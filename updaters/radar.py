@@ -1,12 +1,12 @@
 """Radar page management."""
 import textwrap
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from core.basics import get_default_radar_dir, read_text, write_text
 
 # In-memory accumulation for batch updates — keyed by (root, tag)
-_pending: Dict[tuple, Dict[str, str]] = {}
+_pending: Dict[tuple, Dict[str, Any]] = {}
 
 
 def ensure_radar(root: Path) -> Path:
