@@ -1,8 +1,9 @@
 """SQLite-based Knowledge Graph Manager with adjacency list."""
 
-import json
 import sqlite3
 import uuid
+
+import orjson
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -85,7 +86,7 @@ class KGManager:
             return existing[0]  # type: ignore[no-any-return]
 
         node_id = str(uuid.uuid4())
-        props = json.dumps(properties, ensure_ascii=False)
+        props = orjson.dumps(properties).decode("utf-8")
         now = self._now()
         conn.execute(
             "INSERT INTO kg_nodes (id, type, entity_id, label, properties_json, created_at) VALUES (?, ?, ?, ?, ?, ?)",
@@ -109,9 +110,9 @@ class KGManager:
         ).fetchone()
         now = self._now()
         if existing:
-            old_props = json.loads(existing[1]) if existing[1] else {}
+            old_props = orjson.loads(existing[1]) if existing[1] else {}
             old_props.update(properties)
-            props = json.dumps(old_props, ensure_ascii=False)
+            props = orjson.dumps(old_props).decode("utf-8")
             conn.execute(
                 "UPDATE kg_nodes SET label=?, properties_json=?, created_at=? WHERE id=?",
                 (label, props, now, existing[0]),
@@ -143,7 +144,7 @@ class KGManager:
             "type": row[1],
             "entity_id": row[2],
             "label": row[3],
-            "properties": json.loads(row[4]) if row[4] else {},
+            "properties": orjson.loads(row[4]) if row[4] else {},
             "created_at": row[5],
         }
 
@@ -178,7 +179,7 @@ class KGManager:
             return existing[0]  # type: ignore[no-any-return]
 
         edge_id = str(uuid.uuid4())
-        props = json.dumps(properties, ensure_ascii=False)
+        props = orjson.dumps(properties).decode("utf-8")
         now = self._now()
         conn.execute(
             "INSERT INTO kg_edges (id, source_id, target_id, relation_type, weight, properties_json, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -201,7 +202,7 @@ class KGManager:
             "target_id": row[2] if len(row) > 2 else None,
             "relation_type": row[3] if len(row) > 3 else None,
             "weight": row[4] if len(row) > 4 else None,
-            "properties": json.loads(row[5]) if row[5] and len(row) > 5 else {},
+            "properties": orjson.loads(row[5]) if row[5] and len(row) > 5 else {},
             "created_at": row[6] if len(row) > 6 else None,
         }
 

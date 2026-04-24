@@ -1,6 +1,6 @@
 """PyVis-based interactive KG visualization."""
 
-import json
+import orjson
 
 try:
     from pyvis.network import Network
@@ -45,7 +45,7 @@ class KGVizRenderer:
             ntype = node.get("type", "Paper")
             color = _TYPE_COLORS.get(ntype, "#AAAAAA")
             label = node.get("label", "")[:60]
-            title = json.dumps(node, ensure_ascii=False)
+            title = orjson.dumps(node).decode("utf-8")
             net.add_node(node["id"], label=label, title=title,
                          color=color, type=ntype)
 

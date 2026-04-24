@@ -7,7 +7,7 @@ Inspired by cloud optimization principles:
 - Intelligent cache expiration
 - Cache prioritization (keep valuable data longer)
 """
-import json
+import orjson
 import zlib
 import time
 import logging
@@ -81,8 +81,8 @@ class SmartCache:
         index_file = self.cache_dir / ".cache_index.json"
         if index_file.exists():
             try:
-                with open(index_file, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
+                with open(index_file, 'rb') as f:
+                    data = orjson.loads(f.read())
 
                 for key, meta in data.items():
                     # Reconstruct minimal CacheEntry
@@ -121,8 +121,8 @@ class SmartCache:
                 for key, entry in self._index.items()
             }
 
-            with open(index_file, 'w', encoding='utf-8') as f:
-                json.dump(data, f)
+            with open(index_file, 'wb') as f:
+                f.write(orjson.dumps(data))
         except Exception as e:
             logger.warning(f"Failed to save cache index: {e}")
 
@@ -201,7 +201,7 @@ class SmartCache:
             priority: Cache priority (higher = keep longer)
         """
         # Serialize data
-        serialized = json.dumps(data, ensure_ascii=False).encode('utf-8')
+        serialized = orjson.dumps(data)
 
         # Check if compression is beneficial
         compressed = len(serialized) >= self.compression_threshold_bytes
@@ -284,7 +284,7 @@ class SmartCache:
                 self._stats["decompressions"] += 1
 
             # Deserialize
-            result = json.loads(data.decode('utf-8'))
+            result = orjson.loads(data)
 
             # Update access statistics (move to end for LRU)
             entry.accessed_at = time.time()

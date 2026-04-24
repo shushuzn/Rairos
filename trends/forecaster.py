@@ -5,8 +5,9 @@ and exponential smoothing (Holt's method) for prediction.
 Pure Python fallback when numpy unavailable.
 """
 
-import json
 import math
+
+import orjson
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -34,13 +35,13 @@ class TrendForecaster:
     def _load_history(self) -> dict:
         if self._history_path.exists():
             try:
-                return json.loads(self._history_path.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
+                return orjson.loads(self._history_path.read_bytes())
             except Exception:
                 pass
         return {}
 
     def save_history(self):
-        self._history_path.write_text(json.dumps(self._history, ensure_ascii=False), encoding="utf-8")
+        self._history_path.write_bytes(orjson.dumps(self._history))
 
     def record_radar_snapshot(self, radar_data: dict[str, dict]):
         """Record current radar scores as a timestamped snapshot."""
@@ -167,7 +168,7 @@ class TrendForecaster:
         for p in candidates:
             if p.exists():
                 try:
-                    data = json.loads(p.read_text(encoding="utf-8"))
+                    data = orjson.loads(p.read_bytes())
                     self.record_radar_snapshot(data)
                     return
                 except Exception:

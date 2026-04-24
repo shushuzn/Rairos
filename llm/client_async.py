@@ -1,9 +1,9 @@
 """Async LLM API client using aiohttp."""
-import json
 import os
 from typing import Any, Callable, Dict, List, Optional
 
 import aiohttp
+import orjson
 
 from core.retry import circuit_breaker
 
@@ -73,7 +73,7 @@ async def _stream_to_string_async(session: aiohttp.ClientSession, response: aioh
         if payload == "[DONE]":
             break
         try:
-            obj = json.loads(payload)
+            obj = orjson.loads(payload)
         except Exception:
             continue
         delta = obj.get("choices", [{}])[0].get("delta", {})
@@ -98,7 +98,7 @@ async def _stream_to_string_with_callback_async(
         if payload == "[DONE]":
             break
         try:
-            obj = json.loads(payload)
+            obj = orjson.loads(payload)
         except Exception:
             continue
         delta = obj.get("choices", [{}])[0].get("delta", {})

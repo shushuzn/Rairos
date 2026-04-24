@@ -1,5 +1,5 @@
 """HTTP response cache for arXiv and Crossref API calls."""
-import json
+import orjson
 import time
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
@@ -75,12 +75,12 @@ def get_cached(source: str, key: str) -> Optional[dict]:
         mtime = p.stat().st_mtime
         if time.time() - mtime > _TTL_SECONDS:
             return None
-        data = json.loads(p.read_text(encoding="utf-8"))
+        data = orjson.loads(p.read_bytes())
         # Add to memory cache
         _MEMORY_CACHE[cache_key] = (time.time(), data)
         _evict_memory_cache_if_needed()
         return data  # type: ignore[no-any-return]
-    except (OSError, json.JSONDecodeError):
+    except (OSError, orjson.JSONDecodeError):
         return None
 
 
@@ -95,7 +95,7 @@ def set_cached(source: str, key: str, data: dict) -> None:
     _evict_if_needed(source)
     p = _cache_path(source, key)
     try:
-        p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        p.write_bytes(orjson.dumps(data, option=orjson.OPT_INDENT_2))
     except OSError:
         pass  # disk full or permission issue — non-fatal
 

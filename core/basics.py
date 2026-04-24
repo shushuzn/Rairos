@@ -1,6 +1,7 @@
 """Basic utilities."""
-import json
 import os
+
+import orjson
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -37,7 +38,7 @@ def get_research_dirs() -> list:
     cfg = _get_config_path()
     if cfg.exists():
         try:
-            data = json.loads(cfg.read_text(encoding="utf-8"))
+            data = orjson.loads(cfg.read_bytes())
             if isinstance(data, list) and data:
                 return data
         except Exception:

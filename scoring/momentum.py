@@ -10,8 +10,9 @@ from typing import Optional, Union
 All components are normalised to [0, 100].
 """
 
-import json
 import math
+
+import orjson
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -31,13 +32,13 @@ class ResearchMomentum:
     def _load_scores(self) -> dict:
         if self._scores_path.exists():
             try:
-                return json.loads(self._scores_path.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
+                return orjson.loads(self._scores_path.read_bytes())
             except Exception:
                 pass
         return {}
 
     def save_scores(self):
-        self._scores_path.write_text(json.dumps(self._scores, ensure_ascii=False), encoding="utf-8")
+        self._scores_path.write_bytes(orjson.dumps(self._scores))
 
     # ─── Core scoring ───────────────────────────────────────────────
 
@@ -136,7 +137,7 @@ class ResearchMomentum:
         for p in candidates:
             if p.exists():
                 try:
-                    return json.loads(p.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
+                    return orjson.loads(p.read_bytes())
                 except Exception:
                     pass
         return {}

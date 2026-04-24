@@ -3,8 +3,9 @@
 Run: streamlit run web/app.py
 """
 
-import json
 import sys
+
+import orjson
 from pathlib import Path
 
 # Add project root to path
@@ -137,7 +138,7 @@ elif page == "📊 KG Stats":
         export = q.export_graph_json()
         st.download_button(
             "Download graph JSON",
-            json.dumps(export, ensure_ascii=False, indent=2),
+            orjson.dumps(export, option=orjson.OPT_INDENT_2),
             file_name="kg_export.json",
             mime="application/json",
         )

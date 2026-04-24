@@ -10,9 +10,10 @@ Schema:
 """
 from __future__ import annotations
 
-import json
 import logging
 import sqlite3
+
+import orjson
 import struct
 import threading
 import warnings
@@ -31,9 +32,9 @@ logger = logging.getLogger(__name__)
 
 @lru_cache(maxsize=4096)
 def _parse_authors_cached(raw: str) -> List[str]:
-    """Parse authors JSON with caching to avoid repeated json.loads in N+1 loops."""
+    """Parse authors JSON with caching to avoid repeated orjson.loads in N+1 loops."""
     try:
-        return json.loads(raw) if raw else []
+        return orjson.loads(raw) if raw else []
     except Exception:
         return []
 
@@ -282,7 +283,7 @@ class PaperRecord:
             warnings.warn(f"PaperRecord.from_row: failed to parse authors JSON for paper {d.get('id', '?')}: {authors_raw[:50]!r}", stacklevel=2)
             authors = []
         try:
-            latex_blocks = json.loads(latex_raw) if latex_raw else []
+            latex_blocks = orjson.loads(latex_raw) if latex_raw else []
         except Exception:
             warnings.warn(f"PaperRecord.from_row: failed to parse latex_blocks JSON for paper {d.get('id', '?')}", stacklevel=2)
             latex_blocks = []
@@ -382,7 +383,7 @@ class Database:
         """Insert or update a paper. Returns the record."""
         now = _utcnow()
         if isinstance(authors, list):
-            authors_json = json.dumps(authors, ensure_ascii=False)
+            authors_json = orjson.dumps(authors).decode("utf-8")
         else:
             authors_json = authors
 
@@ -519,7 +520,7 @@ class Database:
     ) -> None:
         """Update parse result fields."""
         try:
-            latex_json = json.dumps(latex_blocks) if not isinstance(latex_blocks, str) else latex_blocks
+            latex_json = orjson.dumps(latex_blocks).decode("utf-8") if not isinstance(latex_blocks, str) else latex_blocks
             now = _utcnow()
             with self.transaction():
                 cur = self.conn.cursor()
@@ -1119,7 +1120,7 @@ class Database:
                 return cur.fetchone()[0]
             cur.execute("SELECT data FROM paper_cache WHERE uid = ?", (uid,))
             row = cur.fetchone()
-            return json.loads(row[0]) if row else None
+            return orjson.loads(row[0]) if row else None
         except sqlite3.Error as e:
             raise DatabaseError(f"get_cached_paper failed: {e}") from e
 
@@ -1129,7 +1130,7 @@ class Database:
             with self.conn as c:
                 c.execute(
                     "INSERT OR REPLACE INTO paper_cache (uid, data, cached_at) VALUES (?, ?, ?)",
-                    (uid, json.dumps(data), _utcnow()),
+                    (uid, orjson.dumps(data).decode("utf-8"), _utcnow()),
                 )
         except sqlite3.Error as e:
             raise DatabaseError(f"set_cached_paper failed: {e}") from e
@@ -1501,8 +1502,8 @@ class Database:
                     (paper_id,),
                 )
                 for tbl in tables:
-                    headers_json = json.dumps(tbl.headers, ensure_ascii=False)
-                    rows_json = json.dumps(tbl.rows, ensure_ascii=False)
+                    headers_json = orjson.dumps(tbl.headers).decode("utf-8")
+                    rows_json = orjson.dumps(tbl.rows).decode("utf-8")
                     cur.execute(
                         """
                         INSERT INTO experiment_tables
@@ -1539,11 +1540,11 @@ class Database:
             results = []
             for row in cur.fetchall():
                 try:
-                    headers = json.loads(row["headers"] or "[]")
+                    headers = orjson.loads(row["headers"] or "[]")
                 except Exception:
                     headers = []
                 try:
-                    rows_data = json.loads(row["rows"] or "[]")
+                    rows_data = orjson.loads(row["rows"] or "[]")
                 except Exception:
                     rows_data = []
                 results.append(

@@ -1,7 +1,8 @@
 """Experiment Table SQLite storage."""
 
-import json
 import sqlite3
+
+import orjson
 import uuid
 from typing import Optional
 from datetime import datetime
@@ -70,12 +71,12 @@ class ExperimentDB:
             (
                 table_id, paper_uid,
                 table_struct.get("caption", ""),
-                json.dumps(table_struct.get("metrics", []), ensure_ascii=False),
-                json.dumps(table_struct.get("datasets", []), ensure_ascii=False),
-                json.dumps(table_struct.get("models", []), ensure_ascii=False),
-                json.dumps(table_struct.get("baselines", {}), ensure_ascii=False),
-                json.dumps(table_struct.get("ours_best", {}), ensure_ascii=False),
-                json.dumps(raw_table, ensure_ascii=False),
+                orjson.dumps(table_struct.get("metrics", [])).decode("utf-8"),
+                orjson.dumps(table_struct.get("datasets", [])).decode("utf-8"),
+                orjson.dumps(table_struct.get("models", [])).decode("utf-8"),
+                orjson.dumps(table_struct.get("baselines", {})).decode("utf-8"),
+                orjson.dumps(table_struct.get("ours_best", {})).decode("utf-8"),
+                orjson.dumps(raw_table).decode("utf-8"),
                 self._now(),
             ),
         )
@@ -94,12 +95,12 @@ class ExperimentDB:
             "id": row[0],
             "paper_uid": row[1],
             "caption": row[2],
-            "metrics": json.loads(row[3]) if row[3] else [],
-            "datasets": json.loads(row[4]) if row[4] else [],
-            "models": json.loads(row[5]) if row[5] else [],
-            "baselines": json.loads(row[6]) if row[6] else {},
-            "ours_best": json.loads(row[7]) if row[7] else {},
-            "raw_table": json.loads(row[8]) if row[8] else [],
+            "metrics": orjson.loads(row[3]) if row[3] else [],
+            "datasets": orjson.loads(row[4]) if row[4] else [],
+            "models": orjson.loads(row[5]) if row[5] else [],
+            "baselines": orjson.loads(row[6]) if row[6] else {},
+            "ours_best": orjson.loads(row[7]) if row[7] else {},
+            "raw_table": orjson.loads(row[8]) if row[8] else [],
             "added_at": row[9],
         }
 

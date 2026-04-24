@@ -5,8 +5,9 @@ Cache-aware. Retries on transient failures.
 from __future__ import annotations
 
 import hashlib
-import json
 import logging
+
+import orjson
 import re
 import time
 from dataclasses import dataclass, field
@@ -326,7 +327,7 @@ class PDFParser:
         if not cache_file.exists():
             return None
         try:
-            d = json.loads(cache_file.read_text(encoding="utf-8"))
+            d = orjson.loads(cache_file.read_bytes())
             if d.get("pdf_hash") == pdf_hash:
                 return ParsedPaper.from_cache_dict(d)
         except (OSError, json.JSONDecodeError):
@@ -337,9 +338,8 @@ class PDFParser:
         """Save parse result to file cache."""
         try:
             cache_file = self.cache_dir / f"{paper.paper_id}.json"
-            cache_file.write_text(
-                json.dumps(paper.to_cache_dict(), ensure_ascii=False, indent=2),
-                encoding="utf-8",
+            cache_file.write_bytes(
+                orjson.dumps(paper.to_cache_dict(), option=orjson.OPT_INDENT_2)
             )
         except OSError as e:
             logger.warning("[parser] failed to save file cache: %s", e)

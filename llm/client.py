@@ -1,9 +1,9 @@
 """LLM API client."""
-import json
-import os
 import hashlib
+import os
 from typing import Dict, Iterator, List, Optional
 
+import orjson
 import requests
 
 from core.retry import circuit_breaker
@@ -36,8 +36,8 @@ def _generate_cache_key(
         "user_prompt": user_prompt,
         "system_prompt": system_prompt,
     }
-    key_str = json.dumps(key_data, sort_keys=True, ensure_ascii=False)
-    return hashlib.md5(key_str.encode()).hexdigest()
+    key_str = orjson.dumps(key_data)
+    return hashlib.md5(key_str).hexdigest()
 
 
 def _parse_sse_stream(r: requests.Response) -> Iterator[str]:
@@ -49,7 +49,7 @@ def _parse_sse_stream(r: requests.Response) -> Iterator[str]:
         if payload == "[DONE]":
             break
         try:
-            obj = json.loads(payload)
+            obj = orjson.loads(payload)
         except Exception:
             continue
         delta = obj.get("choices", [{}])[0].get("delta", {})

@@ -1,8 +1,9 @@
 """Integration hooks for KGManager with existing ai_research_os flow."""
 
-import json
 import logging
 import re
+
+import orjson
 from typing import Optional, Union
 from pathlib import Path
 
