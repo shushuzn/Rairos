@@ -183,12 +183,14 @@ class TestRunImport:
             mock_db.upsert_paper = fail_upsert
 
             from cli import _run_import
-            captured = StringIO()
-            monkeypatch.setattr(sys, "stdout", captured)
+            captured_out = StringIO()
+            captured_err = StringIO()
+            monkeypatch.setattr(sys, "stdout", captured_out)
+            monkeypatch.setattr(sys, "stderr", captured_err)
             rc = _run_import(FakeArgs(ids=[], file=str(ids_file), skip_existing=False, source="import"))
 
         assert rc == 0
-        assert "Failed: 2301.00001" in captured.getvalue()
+        assert "Failed: 2301.00001" in captured_err.getvalue()
 
     def test_db_init_called(self, tmp_path, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")

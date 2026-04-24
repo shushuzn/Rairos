@@ -1378,10 +1378,10 @@ class Database:
                 for fname, _ in parse_fields:
                     cur.execute(f"SELECT {fname} FROM papers WHERE id = ?", (duplicate_id,))
                     row = cur.fetchone()
-                    val = row[field] if row else None
+                    val = row[fname] if row else None
                     if val is not None and val != "" and val != 0 and val != "[]":
                         cur.execute(
-                            f"UPDATE papers SET {field} = ? WHERE id = ? AND ({field} = '' OR {field} = '[]' OR {field} = 0)",
+                            f"UPDATE papers SET {fname} = ? WHERE id = ? AND ({fname} = '' OR {fname} = '[]' OR {fname} = 0)",
                             (val, target_id),
                         )
 
