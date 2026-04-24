@@ -606,6 +606,42 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"add_tag({paper_id!r}, {tag!r}) failed: {e}") from e
 
+    def add_tags_batch(self, paper_id: str, tags: List[str]) -> None:
+        """Add multiple tags to a paper in a single transaction.
+
+        Uses batch queries instead of 3 queries per tag.
+        """
+        if not tags:
+            return
+        try:
+            with self.transaction():
+                cur = self.conn.cursor()
+                # 1. Insert all missing tags at once
+                normalized = [t.lower().strip() for t in tags if t.strip()]
+                cur.executemany(
+                    "INSERT OR IGNORE INTO tags (name) VALUES (?)",
+                    [(t,) for t in normalized],
+                )
+                # 2. Fetch all tag ids in one query
+                placeholders = ",".join("?" * len(normalized))
+                cur.execute(
+                    f"SELECT id, name FROM tags WHERE name IN ({placeholders})",
+                    normalized,
+                )
+                tag_rows = {row[1]: row[0] for row in cur.fetchall()}
+                # 3. Insert paper_tag links in one query
+                paper_tag_rows = [
+                    (paper_id, tag_rows[t])
+                    for t in normalized
+                    if t in tag_rows
+                ]
+                cur.executemany(
+                    "INSERT OR IGNORE INTO paper_tags (paper_id, tag_id) VALUES (?, ?)",
+                    paper_tag_rows,
+                )
+        except sqlite3.Error as e:
+            raise DatabaseError(f"add_tags_batch({paper_id!r}, ...) failed: {e}") from e
+
     def remove_tag(self, paper_id: str, tag: str) -> None:
         """Remove a tag from a paper."""
         try:
@@ -1602,14 +1638,17 @@ class Database:
         try:
             cur = self.conn.cursor()
             cur.execute(
-                "SELECT COUNT(*) FROM citations WHERE target_id = ?", (paper_id,)
+                """
+                SELECT
+                    SUM(CASE WHEN target_id = ? THEN 1 ELSE 0 END) AS forward,
+                    SUM(CASE WHEN source_id = ? THEN 1 ELSE 0 END) AS backward
+                FROM citations
+                WHERE target_id = ? OR source_id = ?
+                """,
+                (paper_id, paper_id, paper_id, paper_id),
             )
-            forward = cur.fetchone()[0]
-            cur.execute(
-                "SELECT COUNT(*) FROM citations WHERE source_id = ?", (paper_id,)
-            )
-            backward = cur.fetchone()[0]
-            return {"forward": forward, "backward": backward}
+            row = cur.fetchone()
+            return {"forward": row[0] or 0, "backward": row[1] or 0}
         except sqlite3.Error as e:
             raise DatabaseError(f"get_citation_count failed: {e}") from e
 
@@ -1670,6 +1709,30 @@ class Database:
         except Exception as e:
             raise DatabaseError(f"get_embedding({paper_id!r}) failed: {e}") from e
 
+    def get_embeddings_bulk(self, paper_ids: List[str]) -> dict[str, Optional[List[float]]]:
+        """Fetch embeddings for multiple papers in a single query.
+
+        Returns a dict mapping paper_id -> embedding (or None if not set).
+        """
+        if not paper_ids:
+            return {}
+        try:
+            cur = self.conn.cursor()
+            placeholders = ",".join("?" * len(paper_ids))
+            cur.execute(
+                f"SELECT id, embed_vector FROM papers WHERE id IN ({placeholders})",
+                paper_ids,
+            )
+            result: dict[str, Optional[List[float]]] = {pid: None for pid in paper_ids}
+            for row in cur.fetchall():
+                pid, blob = row[0], row[1]
+                if blob is not None:
+                    count = len(blob) // 4
+                    result[pid] = list(struct.unpack(f"{count}f", blob))
+            return result
+        except Exception as e:
+            raise DatabaseError(f"get_embeddings_bulk failed: {e}") from e
+
     def get_papers_without_embeddings(self, limit: int = 1000) -> List["PaperRecord"]:
         """Return papers that have a title but no embedding yet."""
         try:
@@ -1705,8 +1768,8 @@ class Database:
         Returns None if either paper lacks an embedding.
         """
         try:
-            emb1 = self.get_embedding(paper_id1)
-            emb2 = self.get_embedding(paper_id2)
+            embs = self.get_embeddings_bulk([paper_id1, paper_id2])
+            emb1, emb2 = embs.get(paper_id1), embs.get(paper_id2)
             if emb1 is None or emb2 is None:
                 return None
             norm1 = sum(x * x for x in emb1) ** 0.5

@@ -9380,6 +9380,24 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     _build_kg_parser(subparsers)
 
+    p = subparsers.add_parser("watch", help="Watch papers.json and auto-rebuild KG on changes")
+    p.add_argument(
+        "--papers-json",
+        default="",
+        help="Path to papers.json (default: auto-detect)",
+    )
+    p.add_argument(
+        "--poll-interval",
+        type=float,
+        default=5.0,
+        help="Poll interval in seconds (default: 5)",
+    )
+    p.add_argument(
+        "--no-incremental",
+        action="store_true",
+        help="Run full rebuild instead of incremental",
+    )
+
 
 
 
@@ -9578,6 +9596,18 @@ def main(argv: Optional[List[str]] = None) -> int:
 
 
 
+    elif args.subcmd == "watch":
+
+
+
+        from core.watch_papers import watch_and_rebuild
+        papers_json = args.papers_json or None
+        watch_and_rebuild(
+            papers_json=papers_json,
+            interval=args.poll_interval,
+            incremental=not args.no_incremental,
+        )
+        return 0
     return 0
 
 
