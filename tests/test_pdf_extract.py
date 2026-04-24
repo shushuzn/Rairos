@@ -22,6 +22,7 @@ from pdf.extract import (  # type: ignore[attr-defined]
     extract_pdf_structured,
 )
 import ai_research_os as airo  # for the public API (download_pdf, extract_pdf_text, ...)
+import pdf.extract
 
 
 # ─── helpers ────────────────────────────────────────────────────────────────
@@ -503,6 +504,15 @@ class TestExtractPdfTextHybrid:
 
     def test_raises_when_fitz_missing(self, tmp_path, monkeypatch):
         """RuntimeError when PyMuPDF is not installed at all."""
+        import sys
+        # Clear _fitz_pdf cache and sys.modules so _ensure_fitz retries import
+        pdf.extract._fitz_pdf = None
+        for mod in list(sys.modules.keys()):
+            if "fitz" in mod or "pymupdf" in mod:
+                del sys.modules[mod]
+        monkeypatch.delitem(sys.modules, "fitz", raising=False)
+        monkeypatch.delitem(sys.modules, "pymupdf", raising=False)
+
         _real_import = builtins.__import__
 
         def mock_import(name, *args, **kwargs):
@@ -658,6 +668,15 @@ class TestExtractPdfStructured:
 
     def test_raises_when_fitz_missing(self, tmp_path, monkeypatch):
         """RuntimeError when PyMuPDF is not installed at all (line 279)."""
+        import sys
+        # Clear _fitz_pdf cache and sys.modules so _ensure_fitz retries import
+        pdf.extract._fitz_pdf = None
+        for mod in list(sys.modules.keys()):
+            if "fitz" in mod or "pymupdf" in mod:
+                del sys.modules[mod]
+        monkeypatch.delitem(sys.modules, "fitz", raising=False)
+        monkeypatch.delitem(sys.modules, "pymupdf", raising=False)
+
         _real_import = builtins.__import__
 
         def mock_import(name, *args, **kwargs):
