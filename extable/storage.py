@@ -19,6 +19,7 @@ class ExperimentDB:
             db_path = "data/extable.db"
         self.db_path = db_path
         Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
+        self._conn_cache: Optional[sqlite3.Connection] = None
         self._init_db()
 
     def _init_db(self):
@@ -49,7 +50,14 @@ class ExperimentDB:
         conn.commit()
 
     def _conn(self) -> sqlite3.Connection:
-        return sqlite3.connect(self.db_path, check_same_thread=False)
+        if self._conn_cache is None:
+            self._conn_cache = sqlite3.connect(self.db_path, check_same_thread=False)
+        return self._conn_cache
+
+    def close(self):
+        if self._conn_cache:
+            self._conn_cache.close()
+            self._conn_cache = None
 
     def _now(self) -> str:
         return datetime.utcnow().isoformat()
@@ -104,12 +112,21 @@ class ExperimentDB:
             "added_at": row[9],
         }
 
-    def search_tables(self, metric: Optional[str] = None,
-                     dataset: Optional[str] = None,
-                     model: Optional[str] = None,
-                     min_value: Optional[float] = None) -> list[dict]:
+    def search_tables(
+        self,
+        paper_uid: Optional[str] = None,
+        metric: Optional[str] = None,
+        dataset: Optional[str] = None,
+        model: Optional[str] = None,
+        min_value: Optional[float] = None,
+    ) -> list[dict]:
         conn = self._conn()
-        rows = conn.execute("SELECT * FROM extable_tables").fetchall()
+        if paper_uid:
+            rows = conn.execute(
+                "SELECT * FROM extable_tables WHERE paper_uid=?", (paper_uid,),
+            ).fetchall()
+        else:
+            rows = conn.execute("SELECT * FROM extable_tables").fetchall()
         results = []
         for row in rows:
             t = self._row_to_table(row)
@@ -147,6 +164,11 @@ class ExperimentDB:
 
     def stats(self) -> dict:
         conn = self._conn()
-        n_papers = conn.execute("SELECT COUNT(*) FROM extable_papers").fetchone()[0]
-        n_tables = conn.execute("SELECT COUNT(*) FROM extable_tables").fetchone()[0]
-        return {"papers": n_papers, "tables": n_tables}
+        row = conn.execute(
+            """
+            SELECT
+                (SELECT COUNT(*) FROM extable_papers) AS papers,
+                (SELECT COUNT(*) FROM extable_tables) AS tables
+            """
+        ).fetchone()
+        return {"papers": row[0], "tables": row[1]}
