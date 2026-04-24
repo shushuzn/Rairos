@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
 from cli._shared import get_db
@@ -11,6 +12,7 @@ from cli._shared import (
 )
 
 
+@dataclass
 class CiteGraphNode:
     paper_id: str
     title: str

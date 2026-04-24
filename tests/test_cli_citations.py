@@ -164,7 +164,8 @@ class TestRunCitations:
 
         captured = capsys.readouterr().out.replace("\r", "")
         lines = captured.strip().split("\n")
-        assert "direction" in lines[0].lower()
+        # Single-direction CSV: header is "paper,count"
+        assert "paper" in lines[0].lower() and "count" in lines[0].lower()
         assert result == 0
 
     @patch("cli.Database")

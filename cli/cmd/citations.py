@@ -106,12 +106,20 @@ def _run_citations(args: argparse.Namespace) -> int:
     citations = db.get_citations(paper_id, direction)
     source_title = db.get_paper_title(paper_id)
 
+    if source_title is None:
+        print(f"Error: paper {paper_id} not found in the database")
+        return 1
+
     if args.format == "csv":
         print("paper,count")
         print(f"{paper_id},{len(citations)}")
     else:
-        print(f"{'Cited by' if direction == 'to' else 'References'} for {paper_id}: {source_title}")
-        for c in citations:
-            print(f"  {c.target_id if direction == 'from' else c.source_id}")
+        label = "BACKWARD CITATIONS" if direction == "from" else "FORWARD CITATIONS"
+        print(f"{label} — {paper_id}: {source_title}")
+        if not citations:
+            print("  No citations")
+        else:
+            for c in citations:
+                print(f"  {c.target_id if direction == 'from' else c.source_id}")
 
     return 0

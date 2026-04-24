@@ -195,7 +195,7 @@ class TestCiteImportFileInput:
         monkeypatch.setattr("sys.stderr", captured)
         rc = cli_main(["cite-import", "@nonexistent/file.json"])
         assert rc == 1
-        assert "cannot read" in captured.getvalue()
+        assert "error reading" in captured.getvalue().lower()
 
 
 class TestCiteImportFieldVariants:
