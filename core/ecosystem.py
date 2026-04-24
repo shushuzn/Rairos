@@ -56,7 +56,8 @@ class Ecosystem:
                 name="Python API",
                 description="完整的Python API",
                 icon="📦",
-                status="ready"
+                status="ready",
+                url="python -c 'from ai_research_os import ...'"
             ),
             "achievements": EcosystemComponent(
                 name="成就系统",

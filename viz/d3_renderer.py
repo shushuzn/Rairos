@@ -45,29 +45,29 @@ class D3ForceGraph:
             paper_nodes = self.kg.find_papers_by_tag(tag)
             nodes = paper_nodes[:max_nodes]
             nids = {n["id"] for n in nodes}
-            edges = []
+            all_edges = self.kg.get_edges_bulk(list(nids), direction="both") if nids else []
             seen = set()
-            for nid in nids:
-                for edge in self.kg.get_edges_by_node(nid, direction="both"):
-                    if edge["id"] in seen:
-                        continue
-                    seen.add(edge["id"])
-                    if edge["source_id"] in nids and edge["target_id"] in nids:
-                        edges.append(edge)
+            edges = []
+            for edge in all_edges:
+                if edge["id"] in seen:
+                    continue
+                seen.add(edge["id"])
+                if edge["source_id"] in nids and edge["target_id"] in nids:
+                    edges.append(edge)
 
         else:
             all_nodes = self.kg.get_all_nodes()
             nodes = all_nodes[:max_nodes]
             nids = {n["id"] for n in nodes}
-            edges = []
+            all_edges = self.kg.get_edges_bulk(list(nids), direction="both") if nids else []
             seen = set()
-            for nid in nids:
-                for edge in self.kg.get_edges_by_node(nid, direction="both"):
-                    if edge["id"] in seen:
-                        continue
-                    seen.add(edge["id"])
-                    if edge["source_id"] in nids and edge["target_id"] in nids:
-                        edges.append(edge)
+            edges = []
+            for edge in all_edges:
+                if edge["id"] in seen:
+                    continue
+                seen.add(edge["id"])
+                if edge["source_id"] in nids and edge["target_id"] in nids:
+                    edges.append(edge)
 
         # D3 format
         d3_nodes = []
