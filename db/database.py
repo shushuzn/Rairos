@@ -141,6 +141,9 @@ CREATE TABLE IF NOT EXISTS dedup_log (
 CREATE INDEX IF NOT EXISTS idx_papers_parse_status ON papers(parse_status);
 CREATE INDEX IF NOT EXISTS idx_papers_source ON papers(source);
 CREATE INDEX IF NOT EXISTS idx_papers_added_at ON papers(added_at);
+CREATE INDEX IF NOT EXISTS idx_papers_published ON papers(published);
+CREATE INDEX IF NOT EXISTS idx_papers_primary_category ON papers(primary_category);
+CREATE INDEX IF NOT EXISTS idx_papers_title ON papers(title);
 CREATE INDEX IF NOT EXISTS idx_parse_history_paper_id ON parse_history(paper_id);
 CREATE INDEX IF NOT EXISTS idx_job_queue_status ON job_queue(status);
 
