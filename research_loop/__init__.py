@@ -442,7 +442,7 @@ async def arun_research(
     if not work_items:
         return output_paths
 
-    sem = asyncio.Semaphore(3)
+    sem = asyncio.Semaphore(5)
 
     async def _process_one(
         paper: Paper,

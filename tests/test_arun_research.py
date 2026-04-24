@@ -185,8 +185,8 @@ class TestArunResearch:
                     verbose=False,
                 )
 
-        # Semaphore(3) means at most 3 tasks run at the same time
-        assert max_concurrent <= 3, f"Expected <=3 concurrent, got {max_concurrent}"
+        # Semaphore(5) means at most 5 tasks run at the same time
+        assert max_concurrent <= 5, f"Expected <=5 concurrent, got {max_concurrent}"
 
     @pytest.mark.no_freeze
     @pytest.mark.asyncio
