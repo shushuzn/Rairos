@@ -1,0 +1,254 @@
+"""CLI command: cite-fetch."""
+from __future__ import annotations
+
+import argparse
+import ssl
+import sys
+import time
+import urllib.request
+import warnings
+from typing import List, Optional, Tuple
+
+import orjson as json
+
+from cli._shared import get_db
+
+_OPENALEX_BASE = "https://api.openalex.org"
+_OPENALEX_EMAIL = "ai-research-os@example.com"
+
+
+def _build_openalex_ctx() -> ssl.SSLContext:
+    """Create SSL context that bypasses Windows proxy for API calls."""
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+
+
+def _openalex_request(path: str, timeout: int = 15) -> dict:
+    """Fetch a path from OpenAlex API, bypassing Windows proxy SSL issues."""
+    url = f"{_OPENALEX_BASE}{path}"
+    ctx = _build_openalex_ctx()
+    proxy_handler = urllib.request.ProxyHandler({})
+    opener = urllib.request.build_opener(proxy_handler, urllib.request.HTTPSHandler(context=ctx))
+    req = urllib.request.Request(url, headers={
+        "User-Agent": f"ai_research_os/1.0 (mailto:{_OPENALEX_EMAIL})",
+        "Accept": "application/json",
+    })
+    try:
+        with opener.open(req, timeout=timeout) as resp:
+            return json.loads(resp.read())
+    except Exception as e:
+        raise RuntimeError(f"OpenAlex request failed for {path}: {e}") from e
+
+
+def _arxiv_doi_to_openalex(arxiv_id: str) -> Optional[str]:
+    """Query OpenAlex for a paper by arXiv ID, return OpenAlex ID or None."""
+    doi = f"10.48550/arXiv.{arxiv_id}"
+    try:
+        d = _openalex_request(f"/works?filter=doi:{doi}&per-page=1")
+        results = d.get("results", [])
+        if results:
+            return results[0]["id"]
+    except Exception as e:
+        warnings.warn(f"arXiv DOI to OpenAlex lookup failed for {arxiv_id}: {e}", stacklevel=2)
+    return None
+
+
+def _get_openalex_references(openalex_id: str) -> Tuple[List[str], int]:
+    """Fetch referenced works for an OpenAlex work. Returns (work_ids, total_count)."""
+    oid = openalex_id.rstrip("/").split("/")[-1]
+    data = _openalex_request(f"/works/{oid}")
+    refs = data.get("referenced_works") or []
+    count = data.get("referenced_works_count", len(refs))
+    return refs, count
+
+
+def _get_openalex_citing(openalex_id: str, per_page: int = 200) -> Tuple[list[dict], int]:
+    """Get all papers citing this paper (forward citations). Returns (list of work dicts, total count)."""
+    oid = openalex_id.rstrip("/").split("/")[-1]
+    try:
+        d = _openalex_request(f"/works?filter=cites:{oid}&per-page={per_page}&mailto={_OPENALEX_EMAIL}")
+        return d.get("results", []) or [], d.get("meta", {}).get("count", 0)
+    except Exception as e:
+        warnings.warn(f"OpenAlex citing lookup failed for {openalex_id}: {e}", stacklevel=2)
+        return [], 0
+
+
+def _work_to_arxiv_id(work: dict) -> Optional[str]:
+    """Extract arXiv ID from OpenAlex work IDs dict. Returns None if not an arXiv paper."""
+    ids = work.get("ids", {}) or {}
+    doi = ids.get("doi", "") or ""
+    if "/arXiv." in doi:
+        return doi.split("/arXiv.")[-1]
+    return None
+
+
+def _build_cite_fetch_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "cite-fetch",
+        help="Fetch citation data from OpenAlex for papers in the database",
+    )
+    p.add_argument(
+        "paper_id",
+        nargs="?",
+        help="arXiv paper ID (e.g. 2301.00001). If omitted, processes all papers.",
+    )
+    p.add_argument(
+        "--direction",
+        choices=["from", "to", "both"],
+        default="both",
+        help="Which citations to fetch: 'from'=references, 'to'=citing papers, 'both'=all (default: both)",
+    )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be fetched and imported without writing to DB",
+    )
+    p.add_argument(
+        "--skip-external",
+        action="store_true",
+        help="Only import citations where both source and target are in the local DB",
+    )
+    p.add_argument(
+        "--delay",
+        type=float,
+        default=0.11,
+        help="Delay between API requests in seconds (default: 0.11 = ~9 req/s)",
+    )
+    p.add_argument(
+        "--max-per-paper",
+        type=int,
+        default=0,
+        help="Max citations to fetch per paper (0 = unlimited, default: 0)",
+    )
+    return p
+
+
+def _run_cite_fetch(args: argparse.Namespace) -> int:
+    """Fetch citation data from OpenAlex and populate the citations table (parallel)."""
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+
+    db = get_db()
+    db.init()
+
+    delay = max(0, args.delay)
+    direction = args.direction
+    dry_run = args.dry_run
+    max_per_paper = args.max_per_paper
+    max_workers = min(getattr(args, 'workers', 10), 20)
+
+    paper_ids: list[str]
+
+    if args.paper_id:
+        if not db.paper_exists(args.paper_id):
+            print(f"Error: paper {args.paper_id!r} not found in database", file=sys.stderr)
+            return 1
+        paper_ids = [args.paper_id]
+    else:
+        all_papers, _total = db.list_papers()
+        paper_ids = [p.id for p in all_papers]
+        if not paper_ids:
+            print("No papers in database. Nothing to do.")
+            return 0
+
+    all_papers, _total = db.list_papers()
+    known_ids: set[str] = {p.id for p in all_papers}
+
+    lock = threading.Lock()
+    total_added = [0]
+    total_skipped_external = [0]
+    total_errors = [0]
+    total_cited_by_count = [0]
+
+    def _fetch_ref(ref_oid: str, paper_id: str):
+        try:
+            oid = ref_oid.rstrip("/").split("/")[-1]
+            ref_work = _openalex_request(f"/works/{oid}")
+            ref_arxiv_id = _work_to_arxiv_id(ref_work)
+
+            if not ref_arxiv_id or ref_arxiv_id not in known_ids:
+                with lock:
+                    total_skipped_external[0] += 1
+                return
+
+            added = db.add_citation(paper_id, ref_arxiv_id)
+            with lock:
+                if added:
+                    total_added[0] += 1
+
+        except Exception as e:
+            with lock:
+                total_errors[0] += 1
+            warnings.warn(f"ref {ref_oid}: {e}", stacklevel=2)
+
+    def _fetch_citing(citing_work: dict, paper_id: str):
+        try:
+            citing_arxiv_id = _work_to_arxiv_id(citing_work)
+
+            if not citing_arxiv_id or citing_arxiv_id not in known_ids:
+                with lock:
+                    total_skipped_external[0] += 1
+                return
+
+            added = db.add_citation(citing_arxiv_id, paper_id)
+            with lock:
+                if added:
+                    total_added[0] += 1
+
+        except Exception as e:
+            with lock:
+                total_errors[0] += 1
+            warnings.warn(f"citing: {e}", stacklevel=2)
+
+    for paper_id in paper_ids:
+        logger.debug("Processing paper", extra={"uid": paper_id})
+
+        openalex_id = _arxiv_doi_to_openalex(paper_id)
+
+        if not openalex_id:
+            print(f"  [skip] {paper_id}: not found in OpenAlex", file=sys.stderr)
+            continue
+
+        if direction in ("from", "both"):
+            referenced_works, ref_count = _get_openalex_references(openalex_id)
+            ref_ids = referenced_works[:max_per_paper] if max_per_paper > 0 else referenced_works
+
+            if dry_run:
+                print(f"  [dry-run] backward: {ref_count} referenced works", file=sys.stderr)
+            elif ref_ids:
+                with ThreadPoolExecutor(max_workers=max_workers) as ex:
+                    for ref_oid in ref_ids:
+                        ex.submit(_fetch_ref, ref_oid, paper_id)
+
+                if delay > 0:
+                    time.sleep(delay)
+
+        if direction in ("to", "both"):
+            citing_works, citing_count = _get_openalex_citing(openalex_id)
+
+            with lock:
+                total_cited_by_count[0] += citing_count
+
+            if dry_run:
+                print(f"  [dry-run] forward: {citing_count} citing works", file=sys.stderr)
+            elif citing_works:
+                limit = max_per_paper if max_per_paper > 0 else len(citing_works)
+                with ThreadPoolExecutor(max_workers=max_workers) as ex:
+                    for citing_work in citing_works[:limit]:
+                        ex.submit(_fetch_citing, citing_work, paper_id)
+
+                if delay > 0:
+                    time.sleep(delay)
+
+    print("\nSummary:", file=sys.stderr)
+    if dry_run:
+        print("  [dry-run mode — nothing written]", file=sys.stderr)
+    print(f"  Citations added to DB: {total_added[0]}", file=sys.stderr)
+    print(f"  Skipped (not in DB or external): {total_skipped_external[0]}", file=sys.stderr)
+    print(f"  Errors: {total_errors[0]}", file=sys.stderr)
+    if direction in ("to", "both"):
+        print(f"  Note: {total_cited_by_count[0]} forward citations found (some may be outside DB)", file=sys.stderr)
+
+    return 0

@@ -319,8 +319,10 @@ class Database:
                 conn = sqlite3.connect(str(self.db_path), timeout=30.0)
                 conn.row_factory = sqlite3.Row
                 conn.execute("PRAGMA journal_mode=WAL")
+                conn.execute("PRAGMA synchronous=NORMAL")  # 平衡安全与性能
                 conn.execute("PRAGMA foreign_keys=ON")
                 conn.execute("PRAGMA busy_timeout=30000")
+                conn.execute("PRAGMA cache_size=-102400")  # 100MB 页缓存
                 self._local.conn = conn
             except sqlite3.Error as e:
                 raise DatabaseError(f"Failed to connect to database: {e}") from e
