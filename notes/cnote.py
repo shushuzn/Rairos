@@ -10,7 +10,7 @@ _RE_PLACEHOLDER_DASHES = re.compile(r"^[-–—\s]+$")
 _RE_PUNCTUATION = re.compile(r"[.。?！]")
 _RE_H2_LINE = re.compile(r"^(##\s+.+)$")
 
-import ai_research_os as airo
+from llm.client import call_llm_chat_completions
 from core.basics import get_default_concept_dir, read_text, write_text
 from llm.generate import ai_generate_cnote_draft
 from notes.pnotes import pnotes_by_tag, read_pnote_metadata, wikilink_for_pnote
@@ -137,7 +137,7 @@ def auto_fill_cnotes_with_ai(
         List of (concept, status) tuples: status is 'filled' | 'skipped' | 'no-papers'
     """
     if call_llm is None:
-        call_llm = airo.call_llm_chat_completions
+        call_llm = call_llm_chat_completions
 
     results = []
     tag_map = pnotes_by_tag(root)
