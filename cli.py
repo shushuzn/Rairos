@@ -19,7 +19,7 @@
 
 
 import argparse
-import json
+import orjson as json
 import logging
 import os
 import re
@@ -635,7 +635,7 @@ def _run_search(args: argparse.Namespace) -> int:
 
 
 
-        print(json.dumps({"total": total, "results": out}, ensure_ascii=False, indent=2))
+        print(json.dumps({"total": total, "results": out}, option=json.OPT_INDENT_2).decode())
 
 
 
@@ -831,7 +831,7 @@ def _run_list(args: argparse.Namespace) -> int:
 
 
 
-        print(json.dumps(out, ensure_ascii=False, indent=2))
+        print(json.dumps(out, option=json.OPT_INDENT_2).decode())
 
 
 
@@ -932,7 +932,7 @@ def _run_stats(args: argparse.Namespace) -> int:
     db.init()
     s = db.get_stats()
     if args.json:
-        print(json.dumps(s, indent=2, ensure_ascii=False))
+        print(json.dumps(s, option=json.OPT_INDENT_2).decode())
     else:
         print_header("Papers:")
         print(f"  total : {colored(s['total_papers'], Colors.BOLD)}")
@@ -1253,7 +1253,7 @@ def _run_export(args: argparse.Namespace) -> int:
 
 
 
-        content = _json.dumps(rows, ensure_ascii=False, indent=2)
+        content = _json.dumps(rows, option=json.OPT_INDENT_2)
 
 
 
@@ -2133,7 +2133,7 @@ def _run_similar(args: argparse.Namespace) -> int:
 
 
 
-        print(json.dumps(out, ensure_ascii=False, indent=2))
+        print(json.dumps(out, option=json.OPT_INDENT_2).decode())
 
 
 
@@ -2319,7 +2319,7 @@ def _run_kg(args: argparse.Namespace) -> int:
 
             }
 
-            print(json.dumps(out, ensure_ascii=False, indent=2))
+            print(json.dumps(out, option=json.OPT_INDENT_2).decode())
 
         else:
 
@@ -2443,7 +2443,7 @@ def _run_kg(args: argparse.Namespace) -> int:
 
         if args.format == "json":
 
-            print(json.dumps(nodes, ensure_ascii=False, indent=2))
+            print(json.dumps(nodes, option=json.OPT_INDENT_2).decode())
 
         else:
 
@@ -2507,7 +2507,7 @@ def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optiona
 
 
 
-            data = json.loads(resp.read().decode())
+            data = json.loads(resp.read())
 
 
 
@@ -5307,7 +5307,7 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
 
 
 
-            print(json.dumps(out, ensure_ascii=False, indent=2))
+            print(json.dumps(out, option=json.OPT_INDENT_2).decode())
 
 
 
@@ -5787,7 +5787,7 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
 
 
 
-        print(json.dumps(out, ensure_ascii=False, indent=2))
+        print(json.dumps(out, option=json.OPT_INDENT_2).decode())
 
 
 
@@ -6147,7 +6147,7 @@ def _openalex_get(path: str, timeout: int = 15) -> dict:
 
 
 
-            return json.loads(resp.read().decode("utf-8"))
+            return json.loads(resp.read())
 
 
 
@@ -6423,7 +6423,7 @@ def _fetch_pmid_title(pmid: str, timeout: int = 15) -> Optional[str]:
 
 
 
-            data = json.loads(resp.read().decode("utf-8"))
+            data = json.loads(resp.read())
 
 
 
@@ -6515,7 +6515,7 @@ def _fetch_isbn_title(isbn: str, timeout: int = 15) -> Optional[str]:
 
 
 
-            data = json.loads(resp.read().decode("utf-8"))
+            data = json.loads(resp.read())
 
 
 
@@ -6611,7 +6611,7 @@ def _openalex_request(path: str, timeout: int = 15) -> dict:
 
 
 
-            return json.loads(resp.read().decode("utf-8"))
+            return json.loads(resp.read())
 
 
 
@@ -8219,7 +8219,7 @@ def _run_cite_import(args: argparse.Namespace) -> int:
 
 
 
-                data = json.load(f)
+                data = json.loads(f.read())
 
 
 
@@ -9171,7 +9171,7 @@ def _run_cache(args: argparse.Namespace) -> int:
 
 
 
-            print(json.dumps(cached, indent=2, ensure_ascii=False))
+            print(json.dumps(cached, option=json.OPT_INDENT_2).decode())
 
 
 
@@ -9199,7 +9199,7 @@ def _run_cache(args: argparse.Namespace) -> int:
 
 
 
-                data = json.load(f)
+                data = json.loads(f.read())
 
 
 
