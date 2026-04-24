@@ -724,22 +724,29 @@ class Database:
         """Atomically pop the highest-priority queued job. Returns the row or None."""
         try:
             cur = self.conn.cursor()
-            sql = """
-                SELECT * FROM job_queue
-                WHERE status = 'queued'
-            """
-            params: list[Any] = []
             if job_type:
-                sql += " AND job_type = ?"
-                params.append(job_type)
-            sql += " ORDER BY priority DESC, created_at ASC LIMIT 1"
-            cur.execute(sql, params)
+                sql = """
+                    UPDATE job_queue
+                    SET status='running', started_at=?
+                    WHERE id = (
+                        SELECT id FROM job_queue
+                        WHERE status = 'queued' AND job_type = ?
+                        ORDER BY priority DESC, created_at ASC LIMIT 1
+                    )
+                    RETURNING *"""
+                cur.execute(sql, (_utcnow(), job_type))
+            else:
+                sql = """
+                    UPDATE job_queue
+                    SET status='running', started_at=?
+                    WHERE id = (
+                        SELECT id FROM job_queue
+                        WHERE status = 'queued'
+                        ORDER BY priority DESC, created_at ASC LIMIT 1
+                    )
+                    RETURNING *"""
+                cur.execute(sql, (_utcnow(),))
             row = cur.fetchone()
-            if row:
-                cur.execute(
-                    "UPDATE job_queue SET status='running', started_at=? WHERE id=?",
-                    (_utcnow(), row["id"]),
-                )
             return row  # type: ignore[no-any-return]
         except sqlite3.Error as e:
             raise DatabaseError(f"dequeue_job failed: {e}") from e
@@ -854,35 +861,25 @@ class Database:
 
             # Build WHERE conditions for papers table join
             join_where = ""
-            count_where = ""
             params: List[Any] = []
-            count_params: List[Any] = []
 
             if source:
                 join_where += " AND p.source = ?"
-                count_where += " AND p.source = ?"
                 params.append(source)
-                count_params.append(source)
             if category:
                 join_where += " AND p.primary_category = ?"
-                count_where += " AND p.primary_category = ?"
                 params.append(category)
-                count_params.append(category)
             if parse_status:
                 join_where += " AND p.parse_status = ?"
-                count_where += " AND p.parse_status = ?"
                 params.append(parse_status)
-                count_params.append(parse_status)
             if date_from:
                 join_where += " AND p.published >= ?"
-                count_where += " AND p.published >= ?"
                 params.append(date_from)
-                count_params.append(date_from)
             if date_to:
                 join_where += " AND p.published <= ?"
-                count_where += " AND p.published <= ?"
                 params.append(date_to)
-                count_params.append(date_to)
+
+            count_params = list(params)  # reuse for count query
 
             fts_query = f'"{query}"'
 
@@ -890,7 +887,7 @@ class Database:
             count_sql = f"""
                 SELECT COUNT(*) FROM papers_fts fts
                 JOIN papers p ON p.id = fts.paper_id
-                WHERE papers_fts MATCH ?{count_where}
+                WHERE papers_fts MATCH ?{join_where}
             """
             cur.execute(count_sql, [fts_query] + count_params)
             total = cur.fetchone()[0]
