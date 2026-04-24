@@ -1,16 +1,16 @@
 """D3.js-compatible force graph export."""
 
 from kg.manager import KGManager
-
-
 from typing import Optional
+
+
 class D3ForceGraph:
     """Export KG as D3.js-compatible nodes+links JSON."""
 
     def __init__(self, kg: Optional[KGManager] = None):
         self.kg = kg or KGManager()
 
-    def to_json(self, paper_uids: list[str] | None = None,
+    def to_json(self, paper_uids: Optional[list[str]] = None,
                 tag: Optional[str] = None,
                 max_nodes: int = 500) -> dict:
         """Return D3.js compatible {nodes, links} dict.

@@ -137,7 +137,7 @@ class TableDetector:
             dataset_count >= 2 and numeric_cells >= 6
         )
 
-    def extract_all_tables(self, pdf_path: str | Path,
+    def extract_all_tables(self, pdf_path: Union[str, Path],
                           max_pages: int = 0) -> list[dict]:
         """Extract all experiment tables from a PDF."""
         try:

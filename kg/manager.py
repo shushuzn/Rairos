@@ -82,7 +82,7 @@ class KGManager:
             (node_type, entity_id),
         ).fetchone()
         if existing:
-            return existing[0]
+            return existing[0]  # type: ignore[no-any-return]
 
         node_id = str(uuid.uuid4())
         props = json.dumps(properties, ensure_ascii=False)
@@ -117,7 +117,7 @@ class KGManager:
                 (label, props, now, existing[0]),
             )
             conn.commit()
-            return existing[0]
+            return existing[0]  # type: ignore[no-any-return]
         return self.add_node(node_type, entity_id, label, **properties)
 
     def get_node(self, node_id: str) -> Optional[dict]:
@@ -175,7 +175,7 @@ class KGManager:
             (source_id, target_id, relation_type),
         ).fetchone()
         if existing:
-            return existing[0]
+            return existing[0]  # type: ignore[no-any-return]
 
         edge_id = str(uuid.uuid4())
         props = json.dumps(properties, ensure_ascii=False)

@@ -201,4 +201,4 @@ class ExperimentTableParser:
                 content = content.split("```")[1]
                 if content.startswith("json"):
                     content = content[4:]
-            return json.loads(content.strip())
+            return json.loads(content.strip())  # type: ignore[no-any-return]

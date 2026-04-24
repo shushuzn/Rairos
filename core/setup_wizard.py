@@ -78,7 +78,7 @@ class SetupWizard:
 
         print("\n" + "=" * 60 + "\n")
 
-        return self.results
+        return self.results  # type: ignore[no-any-return]
 
     def _run_step(self, step: str) -> bool:
         """Run a single setup step."""

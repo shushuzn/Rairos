@@ -9,7 +9,7 @@ import requests
 from core.retry import circuit_breaker
 
 # Reusable session for connection pooling (avoids TCP+TLS handshake per request)
-_http_session: requests.Session | None = None
+_http_session: Optional[requests.Session] = None
 
 # Simple in-memory cache for LLM responses
 _llm_cache: Dict[str, str] = {}

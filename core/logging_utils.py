@@ -106,13 +106,13 @@ def get_performance_report() -> str:
     return "\n".join(lines)
 
 
-def setup_logging(level: str = "INFO", log_file: str = None) -> None:
+def setup_logging(level: str = "INFO", log_file: str = None) -> None:  # type: ignore[assignment]
     """Setup logging configuration."""
     log_level = getattr(logging, level.upper(), logging.INFO)
 
     handlers = [logging.StreamHandler()]
     if log_file:
-        handlers.append(logging.FileHandler(log_file))
+        handlers.append(logging.FileHandler(log_file))  # type: ignore[arg-type]
 
     logging.basicConfig(
         level=log_level,

@@ -75,7 +75,7 @@ def extract_pdf_text(pdf_path: Path, max_pages: Optional[int] = None) -> str:
     _ensure_fitz()
 
     try:
-        doc = _fitz_pdf.open(str(pdf_path))
+        doc = _fitz_pdf.open(str(pdf_path))  # type: ignore[union-attr]
     except (FileNotFoundError, OSError, getattr(_fitz_pdf, "FileNotFoundError", FileNotFoundError)):
         return ""
 
@@ -137,11 +137,11 @@ def _ensure_ocr_deps():
 def _ocr_page(page, ocr_lang: str = "chi_sim+eng", zoom: float = 2.0) -> str:
     _ensure_ocr_deps()
 
-    mat = _fitz.Matrix(zoom, zoom)
+    mat = _fitz.Matrix(zoom, zoom)  # type: ignore[union-attr]
     pix = page.get_pixmap(matrix=mat, alpha=False)
-    img = _Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+    img = _Image.frombytes("RGB", [pix.width, pix.height], pix.samples)  # type: ignore[union-attr]
     img = img.convert("L")
-    txt = _pytesseract.image_to_string(img, lang=ocr_lang) or ""
+    txt = _pytesseract.image_to_string(img, lang=ocr_lang) or ""  # type: ignore[union-attr]
     return txt.replace("\r", "\n").strip()
 
 
@@ -178,7 +178,7 @@ def extract_pdf_text_hybrid(
         except Exception:
             miner_text = ""
 
-    doc = _fitz_pdf.open(str(pdf_path))
+    doc = _fitz_pdf.open(str(pdf_path))  # type: ignore[union-attr]
     pages = doc.page_count
     if max_pages is not None:
         pages = min(pages, max_pages)
@@ -327,7 +327,7 @@ def extract_pdf_structured(
     _ensure_fitz()
 
     try:
-        doc = _fitz_pdf.open(str(pdf_path))
+        doc = _fitz_pdf.open(str(pdf_path))  # type: ignore[union-attr]
     except (FileNotFoundError, OSError, getattr(_fitz_pdf, "FileNotFoundError", FileNotFoundError)):
         return StructuredPdfContent()
 
@@ -377,7 +377,7 @@ def extract_pdf_structured(
             page_text_full = ""
 
         try:
-            page_dict = page.get_text("dict", flags=_fitz_pdf.TEXTFLAGS_BLOCKS)
+            page_dict = page.get_text("dict", flags=_fitz_pdf.TEXTFLAGS_BLOCKS)  # type: ignore[union-attr]
         except Exception:
             page_dict = {}
 
@@ -536,7 +536,7 @@ def extract_tables(
 
     try:
         _ensure_fitz()
-        doc = _fitz_pdf.open(str(pdf_path))
+        doc = _fitz_pdf.open(str(pdf_path))  # type: ignore[union-attr]
 
         end = page_end if page_end is not None else doc.page_count
         for page_idx in range(page_start, min(end, doc.page_count)):

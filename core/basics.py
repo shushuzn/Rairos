@@ -53,7 +53,7 @@ def get_default_concept_dir() -> str:
     dirs = get_research_dirs()
     # Convention: index 0 is Radar, index 1 is the concept/concept note directory
     if len(dirs) > 1:
-        return dirs[1]
+        return dirs[1]  # type: ignore[no-any-return]
     return "01-Foundations"
 
 

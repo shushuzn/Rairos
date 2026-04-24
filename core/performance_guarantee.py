@@ -91,7 +91,7 @@ class PerformanceGuaranteeSystem:
         except (OSError, RuntimeError):
             pass
 
-        return self.guarantees
+        return self.guarantees  # type: ignore[no-any-return]
 
     def get_protection_report(self) -> str:
         """Generate protection report (inspired by VW's protection systems)."""
@@ -134,7 +134,7 @@ class PerformanceGuaranteeSystem:
             memory = psutil.virtual_memory().percent
 
             # Throttle if resources are high
-            return cpu > 70 or memory > 70
+            return cpu > 70 or memory > 70  # type: ignore[no-any-return]
         except (OSError, RuntimeError):
             return False
 

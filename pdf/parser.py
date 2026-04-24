@@ -11,7 +11,7 @@ import re
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, List
+from typing import Any, List, Optional, Union
 
 from core.exceptions import PDFParseError, ParseTimeoutError
 from core.retry import retry
@@ -269,10 +269,10 @@ class PDFParser:
 
     # ── Cache ────────────────────────────────────────────────────────────────
 
-    def _check_db_cache(self, paper_id: str, pdf_hash: str) -> ParsedPaper | None:
+    def _check_db_cache(self, paper_id: str, pdf_hash: str) -> Optional[ParsedPaper]:
         """Check if a valid cached parse exists in the database."""
         try:
-            paper = self.db.get_paper(paper_id)
+            paper = self.db.get_paper(paper_id)  # type: ignore[union-attr]
             if paper and paper.pdf_hash == pdf_hash and paper.parse_status == "done":
                 raw = {
                     "paper_id": paper.id,
@@ -299,7 +299,7 @@ class PDFParser:
     def _save_db_cache(self, paper: ParsedPaper) -> None:
         """Save parse result to the database."""
         try:
-            self.db.update_parse_status(
+            self.db.update_parse_status(  # type: ignore[union-attr]
                 paper_id=paper.paper_id,
                 status="done",
                 plain_text=paper.text,
@@ -320,7 +320,7 @@ class PDFParser:
         except Exception as e:
             logger.warning("[parser] failed to save to DB cache: %s", e)
 
-    def _check_file_cache(self, paper_id: str, pdf_hash: str) -> ParsedPaper | None:
+    def _check_file_cache(self, paper_id: str, pdf_hash: str) -> Optional[ParsedPaper]:
         """Check file-based cache (used when no DB is available)."""
         cache_file = self.cache_dir / f"{paper_id}.json"
         if not cache_file.exists():
@@ -506,7 +506,7 @@ class PDFParser:
                 h.update(chunk)
         return h.hexdigest()
 
-    def _table_to_structured(self, tbl: Any, page_idx: int) -> TableData | None:
+    def _table_to_structured(self, tbl: Any, page_idx: int) -> Optional[TableData]:
         """Convert a PyMuPDF table object to TableData."""
         try:
             rows = []

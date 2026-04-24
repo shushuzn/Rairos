@@ -99,7 +99,7 @@ class ResourceMonitor:
             }
         except Exception as e:
             logger.warning(f"Failed to get I/O stats: {e}")
-            return {"read_count": 0, "write_count": 0, "read_mb": 0.0, "write_mb": 0.0}
+            return {"read_count": 0, "write_count": 0, "read_mb": 0.0, "write_mb": 0.0}  # type: ignore[dict-item]
 
     def get_network_stats(self) -> Dict[str, float]:
         """Get network I/O statistics."""

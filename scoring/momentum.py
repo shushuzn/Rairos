@@ -1,7 +1,6 @@
 """Research momentum / paper importance scoring.
 
 Formula:
-from typing import Optional, Union
     score = citation_score * 0.3
           + tag_popularity * 0.25
           + recency_boost * 0.2
@@ -16,6 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from kg.manager import KGManager
+from typing import Optional
 
 
 class ResearchMomentum:
@@ -30,7 +30,7 @@ class ResearchMomentum:
     def _load_scores(self) -> dict:
         if self._scores_path.exists():
             try:
-                return json.loads(self._scores_path.read_text(encoding="utf-8"))
+                return json.loads(self._scores_path.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
             except Exception:
                 pass
         return {}
@@ -124,7 +124,7 @@ class ResearchMomentum:
         )
         return round(min(100.0, total), 2)
 
-    def _raw_cite_score(self, node: dict | None) -> float:
+    def _raw_cite_score(self, node: Optional[dict]) -> float:
         if node is None:
             return 0.0
         in_c = self.kg.get_edges_by_node(node["id"], direction="in", rel_type="cite")
@@ -135,7 +135,7 @@ class ResearchMomentum:
         for p in candidates:
             if p.exists():
                 try:
-                    return json.loads(p.read_text(encoding="utf-8"))
+                    return json.loads(p.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
                 except Exception:
                     pass
         return {}

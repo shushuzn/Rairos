@@ -13,7 +13,8 @@ import pytest
 def _reset_module_caches():
     yield
     try:
-        import pdf.extract, sys
+        import pdf.extract
+        import sys
         pdf.extract._fitz_pdf = None
         pdf.extract._tesseract = None
         sys.modules.pop("fitz", None)

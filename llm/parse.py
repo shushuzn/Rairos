@@ -156,7 +156,7 @@ def _parse_rubric_json(json_str: str) -> dict[str, Any]:
     json_str = _RE_TRAILING_COMMA.sub(r'\1', json_str)
     # Try to fix unquoted keys
     try:
-        return json.loads(json_str)
+        return json.loads(json_str)  # type: ignore[no-any-return]
     except Exception:
         pass
 

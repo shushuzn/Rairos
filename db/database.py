@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Literal, Optional, Tuple
+from typing import Any, Dict, Generator, List, Literal, Optional, Tuple, Union
 
 from core.exceptions import DatabaseError
 from db.migrate import run_migrations
@@ -320,7 +320,7 @@ class Database:
                 self._local.conn = conn
             except sqlite3.Error as e:
                 raise DatabaseError(f"Failed to connect to database: {e}") from e
-        return self._local.conn
+        return self._local.conn  # type: ignore[no-any-return]
 
     def init(self) -> None:
         """Create tables and run migrations. Idempotent."""
@@ -477,7 +477,7 @@ class Database:
                 )
             # Sync FTS index after insert/update
             self._sync_fts(paper_id, title, abstract)
-        return self.get_paper(paper_id)
+        return self.get_paper(paper_id)  # type: ignore[return-value]
 
     def get_paper(self, paper_id: str) -> Optional[PaperRecord]:
         """Return a paper record or None."""
@@ -577,7 +577,7 @@ class Database:
                 )
             else:
                 cur.execute("SELECT COUNT(*) FROM papers")
-            return cur.fetchone()[0]
+            return cur.fetchone()[0]  # type: ignore[no-any-return]
         except sqlite3.Error as e:
             raise DatabaseError(f"paper_count failed: {e}") from e
 
@@ -740,7 +740,7 @@ class Database:
                     "UPDATE job_queue SET status='running', started_at=? WHERE id=?",
                     (_utcnow(), row["id"]),
                 )
-            return row
+            return row  # type: ignore[no-any-return]
         except sqlite3.Error as e:
             raise DatabaseError(f"dequeue_job failed: {e}") from e
 
@@ -767,7 +767,7 @@ class Database:
                 "SELECT COUNT(*) FROM job_queue WHERE status = ?",
                 (status,),
             )
-            return cur.fetchone()[0]
+            return cur.fetchone()[0]  # type: ignore[no-any-return]
         except sqlite3.Error as e:
             raise DatabaseError(f"queue_depth failed: {e}") from e
 
@@ -924,7 +924,7 @@ class Database:
             results = []
             # Batch-parse all author JSONs at once to avoid N individual calls.
             raw_author_list: List[Optional[str]] = [
-                paper_map.get(r["paper_id"])["authors"]
+                paper_map.get(r["paper_id"])["authors"]  # type: ignore[index]
                 if paper_map.get(r["paper_id"]) is not None else None
                 for r in fts_rows
             ]
@@ -1223,7 +1223,7 @@ class Database:
             rows = []
             for row in cur.fetchall():
                 rows.append({f: row[i] for i, f in enumerate(fields)})
-            return (fields, rows)
+            return (fields, rows)  # type: ignore[return-value]
         except sqlite3.Error as e:
             raise DatabaseError(f"export_papers failed: {e}") from e
 
@@ -1701,7 +1701,7 @@ class Database:
         except Exception as e:
             raise DatabaseError(f"find_similar failed: {e}") from e
 
-    def get_similarity(self, paper_id1: str, paper_id2: str) -> float | None:
+    def get_similarity(self, paper_id1: str, paper_id2: str) -> Optional[float]:
         """
         Compute cosine similarity between two papers by their embeddings.
         Returns None if either paper lacks an embedding.
@@ -1716,7 +1716,7 @@ class Database:
             if norm1 == 0 or norm2 == 0:
                 return None
             dot = sum(a * b for a, b in zip(emb1, emb2))
-            return dot / (norm1 * norm2)
+            return dot / (norm1 * norm2)  # type: ignore[no-any-return]
         except Exception as e:
             raise DatabaseError(f"get_similarity failed: {e}") from e
 

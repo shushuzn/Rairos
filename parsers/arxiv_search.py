@@ -53,8 +53,8 @@ def search_arxiv(query: str, max_results: int = 5, timeout: int = 30) -> List[Pa
         return []
 
     papers: List[Paper] = []
-    for e in feed.entries:
-        papers.append(_entry_to_paper(e))
+    for entry in feed.entries:
+        papers.append(_entry_to_paper(entry))
 
     return papers
 

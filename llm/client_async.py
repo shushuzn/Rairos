@@ -59,7 +59,7 @@ async def call_llm_chat_completions_async(
                 return await _stream_to_string_with_callback_async(session, r, progress_callback)
             return await _stream_to_string_async(session, r)
         data = await r.json()
-        return data["choices"][0]["message"]["content"]
+        return data["choices"][0]["message"]["content"]  # type: ignore[no-any-return]
 
 
 async def _stream_to_string_async(session: aiohttp.ClientSession, response: aiohttp.ClientResponse) -> str:

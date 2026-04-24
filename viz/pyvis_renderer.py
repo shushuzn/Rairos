@@ -2,7 +2,6 @@
 
 import json
 
-from typing import Optional
 try:
     from pyvis.network import Network
     _HAS_PYVIS = True
@@ -10,6 +9,7 @@ except ImportError:
     _HAS_PYVIS = False
 
 from kg.manager import KGManager
+from typing import Optional
 
 
 # Node colour map by type
@@ -83,7 +83,7 @@ class KGVizRenderer:
             }
             """)
 
-        return net.generate_html()
+        return net.generate_html()  # type: ignore[no-any-return]
 
     def tag_graph(self, tag: str, height: str = "600px") -> "str":
         """All papers + citations for a tag as HTML string."""
@@ -96,7 +96,7 @@ class KGVizRenderer:
 
         net = self._base_net(height=height)
         self._add_nodes_from_graph(net, ecosystem)
-        return net.generate_html()
+        return net.generate_html()  # type: ignore[no-any-return]
 
     def full_graph(self, max_nodes: int = 500, height: str = "800px") -> "str":
         """Global KG graph (limited) as HTML string."""
@@ -121,7 +121,7 @@ class KGVizRenderer:
         for edge in edges:
             net.add_edge(edge["source_id"], edge["target_id"],
                          title=edge.get("relation_type", ""))
-        return net.generate_html()
+        return net.generate_html()  # type: ignore[no-any-return]
 
     # ─── Fallback (no PyVis) ─────────────────────────────────────────
 

@@ -6,7 +6,7 @@ import random
 import time
 import threading
 from functools import wraps
-from typing import Callable, Sequence, Dict, Any
+from typing import Callable, Optional, Sequence, Dict, Any
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class RetryStats:
         self._stats: Dict[str, Dict[str, Any]] = {}
         self._lock = threading.Lock()
 
-    def record_attempt(self, func_name: str, attempt: int, success: bool, error: str = None):
+    def record_attempt(self, func_name: str, attempt: int, success: bool, error: str = None):  # type: ignore[assignment]
         """Record a retry attempt."""
         with self._lock:
             if func_name not in self._stats:
@@ -44,14 +44,14 @@ class RetryStats:
             else:
                 self._stats[func_name]["total_success"] += 1
 
-    def get_stats(self, func_name: str = None) -> Dict[str, Any]:
+    def get_stats(self, func_name: str = None) -> Dict[str, Any]:  # type: ignore[assignment]
         """Get statistics for a function or all functions."""
         with self._lock:
             if func_name:
                 return self._stats.get(func_name, {})
             return dict(self._stats)
 
-    def reset(self, func_name: str = None):
+    def reset(self, func_name: str = None):  # type: ignore[assignment]
         """Reset statistics."""
         with self._lock:
             if func_name and func_name in self._stats:

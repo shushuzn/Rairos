@@ -1,7 +1,6 @@
 """Trend Forecasting using time-series analysis on Radar data.
 
 Uses simple linear regression slope for trend detection
-from typing import Optional, Union
 and exponential smoothing (Holt's method) for prediction.
 Pure Python fallback when numpy unavailable.
 """
@@ -10,6 +9,7 @@ import json
 import math
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
 
 
@@ -34,7 +34,7 @@ class TrendForecaster:
     def _load_history(self) -> dict:
         if self._history_path.exists():
             try:
-                return json.loads(self._history_path.read_text(encoding="utf-8"))
+                return json.loads(self._history_path.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
             except Exception:
                 pass
         return {}
@@ -83,7 +83,7 @@ class TrendForecaster:
             return {"predicted": None, "confidence": 0.0, "reason": "insufficient data", "trend": "unknown"}
 
         timestamps, scores = zip(*ts)
-        scores = list(scores)
+        scores = list(scores)  # type: ignore[assignment]
 
         # Holt's linear exponential smoothing
         alpha = 0.3
@@ -159,7 +159,7 @@ class TrendForecaster:
         den = sum((x[i] - x_mean) ** 2 for i in range(n))
         if den == 0:
             return 0.0
-        return num / den
+        return num / den  # type: ignore[no-any-return]
 
     def record_current_radar(self):
         """Record a snapshot from current radar.json."""

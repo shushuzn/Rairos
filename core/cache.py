@@ -79,7 +79,7 @@ def get_cached(source: str, key: str) -> Optional[dict]:
         # Add to memory cache
         _MEMORY_CACHE[cache_key] = (time.time(), data)
         _evict_memory_cache_if_needed()
-        return data
+        return data  # type: ignore[no-any-return]
     except (OSError, json.JSONDecodeError):
         return None
 
@@ -145,7 +145,7 @@ def get_cache_stats() -> Dict[str, Any]:
         for subdir in _CACHE_DIR.iterdir():
             if subdir.is_dir():
                 files = list(subdir.glob("*.json"))
-                stats["disk_cache_sizes"][subdir.name] = len(files)
+                stats["disk_cache_sizes"][subdir.name] = len(files)  # type: ignore[index]
     except OSError:
         pass
 

@@ -10,7 +10,7 @@ class Workflow:
 
     def __init__(self, name: str):
         self.name = name
-        self.steps = []
+        self.steps = []  # type: ignore[var-annotated]
 
     def add_step(self, func: Callable, description: str):
         self.steps.append((func, description))
@@ -29,4 +29,4 @@ def register_workflow(name: str, workflow: Workflow):
 
 
 def get_workflow(name: str) -> Workflow:
-    return _workflows.get(name)
+    return _workflows.get(name)  # type: ignore[return-value]

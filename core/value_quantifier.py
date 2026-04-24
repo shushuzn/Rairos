@@ -10,7 +10,8 @@ We quantify:
 - Time saved
 - API costs saved
 - Research efficiency gains
-"""
+"""from typing import cast
+
 from typing import Dict
 
 from dataclasses import dataclass
@@ -145,7 +146,7 @@ Volkswagen V2G:
 AI Research OS:
   我们节省: ${our_value:.2f}（年化）
   你的时间: 无价
-  研究效率: 提升{values.get("papers_processed", 0) * 10}%（估算）
+  研究效率: 提升{cast(int, values.get("papers_processed", 0)) * 10}%（估算）
 
 💡 两者都强调: 长期价值 > 短期成本
 """

@@ -1,6 +1,7 @@
 """High-level graph query functions built on KGManager."""
 
 from kg.manager import KGManager
+from typing import Optional
 
 
 class KGQueries:
@@ -21,7 +22,7 @@ class KGQueries:
             return {"nodes": [], "edges": [], "center": None}
 
         nodes = [paper_node]
-        edges = []
+        edges = []  # type: ignore[var-annotated]
         visited = {paper_node["id"]}
         queue = [(paper_node["id"], 0)]
 
@@ -63,17 +64,17 @@ class KGQueries:
                     edges.append(edge)
         return {"nodes": paper_nodes + mnote_nodes, "edges": edges, "tag": tag}
 
-    def export_graph_json(self, node_ids: list[str] | None = None) -> dict:
+    def export_graph_json(self, node_ids: Optional[list[str]] = None) -> dict:
         """Export subgraph as JSON-serializable dict for D3.js / PyVis."""
         if node_ids:
             nodes = [self.kg.get_node(nid) for nid in node_ids if self.kg.get_node(nid)]
         else:
-            nodes = self.kg.get_all_nodes()
+            nodes = self.kg.get_all_nodes()  # type: ignore[assignment]
 
         seen = set()
         edges = []
         for node in nodes:
-            for edge in self.kg.get_edges_by_node(node["id"], direction="both"):
+            for edge in self.kg.get_edges_by_node(node["id"], direction="both"):  # type: ignore[index]
                 if edge["id"] not in seen:
                     seen.add(edge["id"])
                     edges.append(edge)

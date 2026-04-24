@@ -3,7 +3,7 @@
 import json
 import logging
 import re
-from typing import Any, Optional, Union
+from typing import Optional, Union
 from pathlib import Path
 
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 _HAS_YAML = False
 try:
-    import yaml
+    import yaml  # type: ignore[import-untyped]
     _HAS_YAML = True
 except ImportError:
     pass
@@ -31,7 +31,7 @@ def _parse_yaml_frontmatter(text: str) -> dict:
 
 def _parse_frontmatter_regex(text: str) -> dict:
     """Fallback: parse YAML frontmatter with regex when yaml module unavailable."""
-    result = {}
+    result: dict = {}  # type: ignore[var-annotated]
     if not text.startswith("---"):
         return result
     parts = text.split("---", 2)
@@ -52,7 +52,7 @@ def _parse_frontmatter_regex(text: str) -> dict:
     return result
 
 
-def _read_pnote_frontmatter(pnote_path: Path | None) -> dict:
+def _read_pnote_frontmatter(pnote_path: Optional[Path]) -> dict:
     if pnote_path is None or not pnote_path.exists():
         return {}
     try:
@@ -82,16 +82,16 @@ class KGIntegration:
     def on_paper_processed(
         self,
         paper_uid: str,
-        pnote_path: str | Path,
-        cnote_paths: list[str | Path] | None = None,
+        pnote_path: Optional[Path],
+        cnote_paths: Optional[list[Union[str, Path]]] = None,
         mnote_path: Optional[Union[str, Path]] = None,
         paper_title: Optional[str] = None,
-        paper_authors: list[str] | None = None,
-        paper_tags: list[str] | None = None,
+        paper_authors: Optional[list[str]] = None,
+        paper_tags: Optional[list[str]] = None,
         paper_year: Optional[int] = None,
     ):
         """Create nodes for a processed paper and its notes."""
-        pnote_path = Path(pnote_path) if pnote_path else None
+        pnote_path = Path(pnote_path) if isinstance(pnote_path, str) else pnote_path
 
         if paper_title is None or paper_tags is None:
             meta = _read_pnote_frontmatter(pnote_path)
@@ -136,7 +136,7 @@ class KGIntegration:
         if mnote_path:
             self._on_mnote_file_created(Path(mnote_path), paper_uid)
 
-    def _find_cnote_path(self, pnote_path: Path, tag: str) -> Path | None:
+    def _find_cnote_path(self, pnote_path: Optional[Path], tag: str) -> Optional[Path]:
         if pnote_path is None:
             return None
         notes_dir = pnote_path.parent
@@ -152,8 +152,8 @@ class KGIntegration:
     def on_citations_fetched(
         self,
         paper_uid: str,
-        cited_uids: list[str] | None = None,
-        citing_uids: list[str] | None = None,
+        cited_uids: Optional[list[str]] = None,
+        citing_uids: Optional[list[str]] = None,
     ):
         """Create cite edges when citation data is fetched."""
         paper_node = self.kg.get_node_by_entity("Paper", paper_uid)
@@ -171,8 +171,8 @@ class KGIntegration:
 
     def on_mnote_created(
         self,
-        mnote_path: str | Path,
-        member_paper_uids: list[str] | None = None,
+        mnote_path: Union[str, Path],
+        member_paper_uids: Optional[list[str]] = None,
     ):
         """Create M-Note node and in_comparison edges for all member papers."""
         self._on_mnote_file_created(Path(mnote_path), None, member_paper_uids)
@@ -180,8 +180,8 @@ class KGIntegration:
     def _on_mnote_file_created(
         self,
         mnote_path: Path,
-        primary_paper_uid: str | None,
-        member_paper_uids: list[str] | None = None,
+        primary_paper_uid: Optional[str],
+        member_paper_uids: Optional[list[str]] = None,
     ):
         if not mnote_path.exists():
             logger.warning(f"M-Note file not found: {mnote_path}")
@@ -206,7 +206,7 @@ class KGIntegration:
 
         uids = member_paper_uids or meta.get("papers", []) or meta.get("members", [])
         if isinstance(uids, list) and uids and isinstance(uids[0], dict):
-            uids = [p.get("uid") or p.get("id") for p in uids]
+            uids = [(p.get("uid") or p.get("id")) if isinstance(p, dict) else p for p in uids]
         uids = [uid for uid in uids if uid]
         if not uids and primary_paper_uid:
             uids = [primary_paper_uid]
@@ -216,7 +216,7 @@ class KGIntegration:
             pnode_id = pnode["id"] if pnode else self.kg.add_node("Paper", uid, uid)
             self.kg.add_edge(pnode_id, mnote_node_id, "in_comparison", weight=1.0)
 
-    def rebuild_from_papers_json(self, papers_json_path: str | Path):
+    def rebuild_from_papers_json(self, papers_json_path: Union[str, Path]):
         """Rebuild entire KG from the main papers.json database."""
         papers_json_path = Path(papers_json_path)
         if not papers_json_path.exists():

@@ -3,7 +3,7 @@
 import json
 import sqlite3
 import uuid
-from typing import Optional, Union
+from typing import Optional
 from datetime import datetime
 from pathlib import Path
 
@@ -15,8 +15,8 @@ class ExperimentDB:
 
     def __init__(self, db_path: Optional[str] = None):
         if db_path is None:
-            db_path = Path("data/extable.db")
-        self.db_path = str(db_path)
+            db_path = "data/extable.db"
+        self.db_path = db_path
         Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 

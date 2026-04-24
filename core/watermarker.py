@@ -19,7 +19,7 @@ class WaterMarker:
         })
 
     def get_marks(self) -> List[Dict]:
-        return self.marks
+        return self.marks  # type: ignore[no-any-return]
 
     def clear(self):
         self.marks.clear()

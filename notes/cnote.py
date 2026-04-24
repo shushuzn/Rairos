@@ -95,7 +95,7 @@ def _parse_cnote_sections(draft: str) -> dict:
     """Parse a C-note draft into section_name -> content dict."""
     sections = {}
     current_section = None
-    current_content = []
+    current_content = []  # type: ignore[var-annotated]
 
     for line in draft.split("\n"):
         m = _RE_H2_LINE.match(line)

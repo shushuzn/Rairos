@@ -1,6 +1,9 @@
 """Composite scoring strategy combining semantic similarity + paper metadata."""
 from __future__ import annotations
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
+
+if TYPE_CHECKING:
+    from db.database import Database
 
 from rankers.base import RankedResult, Ranker
 
