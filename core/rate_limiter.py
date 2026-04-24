@@ -121,6 +121,11 @@ class RateLimiter:
                     self._total_requests += 1
                     return True
 
+                # Check timeout BEFORE calculating wait time (fast path for tiny timeouts)
+                if timeout is not None and (time.time() - start_time) >= timeout:
+                    self._total_rejected += 1
+                    return False
+
                 # Calculate wait time
                 if self._second_history:
                     wait_time = 1.0 - (now - self._second_history[0])
@@ -131,19 +136,27 @@ class RateLimiter:
 
                 wait_time = max(0.01, min(wait_time, 10.0))  # Cap wait time
 
-                # Check timeout
                 if not blocking:
                     self._total_rejected += 1
                     return False
 
-                if timeout is not None and (time.time() - start_time) >= timeout:
+                # Check timeout AGAIN after calculating wait_time to avoid oversleeping
+                elapsed = time.time() - start_time
+                if timeout is not None and elapsed >= timeout:
                     self._total_rejected += 1
                     return False
 
-            # Wait before retrying
+                # Adjust wait_time to not exceed remaining timeout
+                if timeout is not None:
+                    remaining = timeout - elapsed
+                    if remaining <= 0:
+                        self._total_rejected += 1
+                        return False
+                    wait_time = min(wait_time, remaining)
+
+            # Sleep outside the lock
             time.sleep(wait_time)
             self._total_wait_time += wait_time
-
     def wait_if_needed(self) -> float:
         """
         Wait if necessary to respect rate limits.
