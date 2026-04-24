@@ -237,59 +237,19 @@ class KGManager:
         ).fetchall()
         return [self._row_to_edge(r) for r in rows]
 
-    # ─── Graph Queries ────────────────────────────────────────────────
-
-    def find_neighbors(
-        self,
-        node_id: str,
-        depth: int = 1,
-        relation_type: Optional[str] = None,
-    ) -> list[tuple[dict, dict, int]]:
-        """BFS: return [(neighbor_node, edge, depth), ...]"""
-        result = []
-        visited = {node_id}
-        queue = [(node_id, 0)]
-
-        while queue:
-            current_id, d = queue.pop(0)
-            if d >= depth:
-                continue
-
-            edges = self.get_edges_by_node(current_id, direction="both", rel_type=relation_type)
-            for edge in edges:
-                neighbor_id = edge["target_id"] if edge["source_id"] == current_id else edge["source_id"]
-                if neighbor_id in visited:
-                    continue
-                visited.add(neighbor_id)
-                neighbor = self.get_node(neighbor_id)
-                if neighbor:
-                    result.append((neighbor, edge, d + 1))
-                    queue.append((neighbor_id, d + 1))
-
-        return result
-
-    def find_shortest_path(self, idA: str, idB: str) -> Optional[list[str]]:
-        """BFS shortest path between two nodes. Returns list of node_ids or None."""
-        if idA == idB:
-            return [idA]
-
-        visited = {idA}
-        queue = [(idA, [idA])]
-
-        while queue:
-            current_id, path = queue.pop(0)
-            edges = self.get_edges_by_node(current_id, direction="both")
-            for edge in edges:
-                neighbor_id = edge["target_id"] if edge["source_id"] == current_id else edge["source_id"]
-                if neighbor_id in visited:
-                    continue
-                new_path = path + [neighbor_id]
-                if neighbor_id == idB:
-                    return new_path
-                visited.add(neighbor_id)
-                queue.append((neighbor_id, new_path))
-
-        return None
+        """Find all Paper nodes with a given tag via same_tag edges."""
+        conn = self._conn()
+        rows = conn.execute(
+            """SELECT DISTINCT n.* FROM kg_nodes n
+               JOIN kg_edges e ON (e.target_id = n.id OR e.source_id = n.id)
+               JOIN kg_nodes tag ON (tag.id = e.target_id OR tag.id = e.source_id)
+               WHERE n.type = 'Paper'
+                 AND tag.type = 'Tag'
+                 AND tag.label = ?
+                 AND e.relation_type = 'same_tag'""",
+            (tag,),
+        ).fetchall()
+        return [self._row_to_node(r) for r in rows]
 
     def find_papers_by_tag(self, tag: str) -> list[dict]:
         """Find all Paper nodes with a given tag via same_tag edges."""
@@ -370,3 +330,111 @@ class KGManager:
             (now, orjson.dumps(indexed_paper_uids)),
         )
         conn.commit()
+
+    # ─── Bulk Fetch (avoids N+1 per-node queries in traversal) ────────────
+
+    def get_nodes_bulk(self, node_ids: list[str]) -> dict[str, Optional[dict]]:
+        """Fetch multiple nodes in a single query. Returns {id: node_or_None}."""
+        if not node_ids:
+            return {}
+        conn = self._conn()
+        placeholders = ",".join("?" * len(node_ids))
+        rows = conn.execute(
+            f"SELECT * FROM kg_nodes WHERE id IN ({placeholders})",
+            node_ids,
+        ).fetchall()
+        result = {nid: None for nid in node_ids}
+        for row in rows:
+            node = self._row_to_node(row)
+            result[node["id"]] = node
+        return result
+
+    def get_edges_bulk(
+        self,
+        node_ids: list[str],
+        direction: str = "both",
+        rel_type: Optional[str] = None,
+    ) -> list[dict]:
+        """Fetch all edges involving any of node_ids in a single query.
+
+        direction: 'both' (all edges touching any node),
+                   'outgoing' (edges where source is in node_ids),
+                   'incoming' (edges where target is in node_ids)
+        """
+        if not node_ids:
+            return []
+        conn = self._conn()
+        placeholders = ",".join("?" * len(node_ids))
+
+        if direction == "outgoing":
+            where = f"source_id IN ({placeholders})"
+            params = list(node_ids)
+        elif direction == "incoming":
+            where = f"target_id IN ({placeholders})"
+            params = list(node_ids)
+        else:
+            # "both" needs node_ids for BOTH sides of OR — pass twice
+            where = f"source_id IN ({placeholders}) OR target_id IN ({placeholders})"
+            params = list(node_ids) + list(node_ids)
+
+        if rel_type:
+            where += f" AND relation_type = ?"
+            params.append(rel_type)
+        rows = conn.execute(
+            f"SELECT * FROM kg_edges WHERE {where}",
+            params,
+        ).fetchall()
+        return [self._row_to_edge(r) for r in rows]
+
+    def find_neighbors(
+        self,
+        node_id: str,
+        depth: int = 1,
+        relation_type: Optional[str] = None,
+    ) -> list[tuple[dict, dict, int]]:
+        """BFS: return [(neighbor_node, edge, depth), ...]."""
+        result = []
+        visited = {node_id}
+        queue = [(node_id, 0)]
+
+        while queue:
+            current_id, d = queue.pop(0)
+            if d >= depth:
+                continue
+
+            edges = self.get_edges_bulk([current_id], direction="both", rel_type=relation_type)
+            for edge in edges:
+                neighbor_id = edge["target_id"] if edge["source_id"] == current_id else edge["source_id"]
+                if neighbor_id in visited:
+                    continue
+                visited.add(neighbor_id)
+                nodes = self.get_nodes_bulk([neighbor_id])
+                neighbor = nodes.get(neighbor_id)
+                if neighbor:
+                    result.append((neighbor, edge, d + 1))
+                    queue.append((neighbor_id, d + 1))
+
+        return result
+
+    def find_shortest_path(self, idA: str, idB: str) -> Optional[list[str]]:
+        """BFS shortest path between two nodes. Returns list of node_ids or None."""
+        if idA == idB:
+            return [idA]
+
+        visited = {idA}
+        queue = [(idA, [idA])]
+
+        while queue:
+            current_id, path = queue.pop(0)
+            edges = self.get_edges_bulk([current_id], direction="both")
+            for edge in edges:
+                neighbor_id = edge["target_id"] if edge["source_id"] == current_id else edge["source_id"]
+                if neighbor_id in visited:
+                    continue
+                new_path = path + [neighbor_id]
+                if neighbor_id == idB:
+                    return new_path
+                visited.add(neighbor_id)
+                queue.append((neighbor_id, new_path))
+
+        return None

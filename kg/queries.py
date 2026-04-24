@@ -22,18 +22,20 @@ class KGQueries:
             return {"nodes": [], "edges": [], "center": None}
 
         nodes = [paper_node]
-        edges = []  # type: ignore[var-annotated]
+        edges = []
         visited = {paper_node["id"]}
         queue = [(paper_node["id"], 0)]
+        seen_edge_ids = set()
 
         while queue:
             current_id, d = queue.pop(0)
             if d >= depth:
                 continue
 
-            node_edges = self.kg.get_edges_by_node(current_id, direction="both")
+            node_edges = self.kg.get_edges_bulk([current_id], direction="both")
             for edge in node_edges:
-                if edge["id"] not in [e["id"] for e in edges]:
+                if edge["id"] not in seen_edge_ids:
+                    seen_edge_ids.add(edge["id"])
                     edges.append(edge)
 
                 neighbor_id = edge["target_id"] if edge["source_id"] == current_id else edge["source_id"]
@@ -41,7 +43,8 @@ class KGQueries:
                     continue
                 visited.add(neighbor_id)
 
-                neighbor = self.kg.get_node(neighbor_id)
+                neighbors = self.kg.get_nodes_bulk([neighbor_id])
+                neighbor = neighbors.get(neighbor_id)
                 if neighbor is None:
                     continue
                 if not include_notes and neighbor["type"] in ("P-Note", "C-Note", "M-Note"):
@@ -57,26 +60,27 @@ class KGQueries:
         paper_nodes = self.kg.find_papers_by_tag(tag)
         mnote_nodes = self.kg.find_mnotes_by_tag(tag)
         node_ids = {n["id"] for n in paper_nodes + mnote_nodes}
-        edges = []
-        for nid in node_ids:
-            for edge in self.kg.get_edges_by_node(nid, direction="both"):
-                if edge["source_id"] in node_ids and edge["target_id"] in node_ids:
-                    edges.append(edge)
+        if not node_ids:
+            return {"nodes": [], "edges": [], "tag": tag}
+        # Bulk fetch all edges in one query instead of N queries
+        edges = [
+            e for e in self.kg.get_edges_bulk(list(node_ids), direction="both")
+            if e["source_id"] in node_ids and e["target_id"] in node_ids
+        ]
         return {"nodes": paper_nodes + mnote_nodes, "edges": edges, "tag": tag}
 
     def export_graph_json(self, node_ids: Optional[list[str]] = None) -> dict:
         """Export subgraph as JSON-serializable dict for D3.js / PyVis."""
         if node_ids:
-            nodes = [self.kg.get_node(nid) for nid in node_ids if self.kg.get_node(nid)]
+            nodes = [n for n in self.kg.get_nodes_bulk(node_ids).values() if n is not None]
         else:
             nodes = self.kg.get_all_nodes()  # type: ignore[assignment]
 
-        seen = set()
-        edges = []
-        for node in nodes:
-            for edge in self.kg.get_edges_by_node(node["id"], direction="both"):  # type: ignore[index]
-                if edge["id"] not in seen:
-                    seen.add(edge["id"])
-                    edges.append(edge)
+        if not nodes:
+            return {"nodes": [], "edges": []}
+
+        nid_set = {n["id"] for n in nodes}
+        all_edges = self.kg.get_edges_bulk(list(nid_set), direction="both")
+        edges = [e for e in all_edges if e["source_id"] in nid_set and e["target_id"] in nid_set]
 
         return {"nodes": nodes, "edges": edges}

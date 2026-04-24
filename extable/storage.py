@@ -121,21 +121,34 @@ class ExperimentDB:
         min_value: Optional[float] = None,
     ) -> list[dict]:
         conn = self._conn()
+        conditions = []
+        params: list = []
+
         if paper_uid:
-            rows = conn.execute(
-                "SELECT * FROM extable_tables WHERE paper_uid=?", (paper_uid,),
-            ).fetchall()
+            conditions.append("paper_uid = ?")
+            params.append(paper_uid)
+        # Push metric/dataset/model filters into SQL via JSON LIKE
+        # (case-insensitive using LOWER on both sides)
+        if metric:
+            conditions.append("LOWER(metrics_json) LIKE LOWER('%' || ? || '%')")
+            params.append(metric)
+        if dataset:
+            conditions.append("LOWER(datasets_json) LIKE LOWER('%' || ? || '%')")
+            params.append(dataset)
+        if model:
+            conditions.append("LOWER(models_json) LIKE LOWER('%' || ? || '%')")
+            params.append(model)
+
+        if conditions:
+            where = "WHERE " + " AND ".join(conditions)
+            rows = conn.execute(f"SELECT * FROM extable_tables {where}", params).fetchall()
         else:
             rows = conn.execute("SELECT * FROM extable_tables").fetchall()
+
         results = []
         for row in rows:
             t = self._row_to_table(row)
-            if metric and not any(metric.lower() in m["name"].lower() for m in t["metrics"]):
-                continue
-            if dataset and not any(dataset.lower() in d.lower() for d in t["datasets"]):
-                continue
-            if model and not any(model.lower() in m.lower() for m in t["models"]):
-                continue
+            # min_value requires parsing JSON floats — keep in Python
             if min_value is not None:
                 vals = [m["value"] for m in t["metrics"]]
                 if not any(v >= min_value for v in vals):
