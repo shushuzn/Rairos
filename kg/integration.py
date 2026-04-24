@@ -233,7 +233,7 @@ class KGIntegration:
             logger.error(f"papers.json not found at {papers_json_path}")
             return
 
-        data = json.loads(papers_json_path.read_text(encoding="utf-8"))
+        data = orjson.loads(papers_json_path.read_bytes())
         papers = data.get("papers", {})
         citation_graph = data.get("citation_graph", {})
 

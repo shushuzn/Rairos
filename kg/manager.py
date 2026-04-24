@@ -355,7 +355,7 @@ class KGManager:
         """Return last rebuild timestamp and set of indexed paper UIDs."""
         conn = self._conn()
         row = conn.execute("SELECT last_rebuild_at, indexed_papers_json FROM rebuild_meta WHERE id=1").fetchone()
-        indexed = json.loads(row[1]) if row and row[1] else []
+        indexed = orjson.loads(row[1]) if row and row[1] else []
         return {
             "last_rebuild_at": row[0] if row else None,
             "indexed_paper_uids": set(indexed),
@@ -367,6 +367,6 @@ class KGManager:
         now = self._now()
         conn.execute(
             "UPDATE rebuild_meta SET last_rebuild_at=?, indexed_papers_json=? WHERE id=1",
-            (now, json.dumps(indexed_paper_uids)),
+            (now, orjson.dumps(indexed_paper_uids)),
         )
         conn.commit()

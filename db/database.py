@@ -1537,31 +1537,31 @@ class Database:
                     "DELETE FROM experiment_tables WHERE paper_id = ?",
                     (paper_id,),
                 )
-                for tbl in tables:
-                    headers_json = orjson.dumps(tbl.headers).decode("utf-8")
-                    rows_json = orjson.dumps(tbl.rows).decode("utf-8")
-                    cur.execute(
-                        """
-                        INSERT INTO experiment_tables
-                            (paper_id, table_caption, page, headers, rows,
-                             bbox_x0, bbox_y0, bbox_x1, bbox_y1, created_at)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        """,
-                        (
-                            paper_id,
-                            tbl.table_caption,
-                            tbl.page,
-                            headers_json,
-                            rows_json,
-                            tbl.bbox_x0,
-                            tbl.bbox_y0,
-                            tbl.bbox_x1,
-                            tbl.bbox_y1,
-                            tbl.created_at,
-                        ),
+                rows = [
+                    (
+                        paper_id,
+                        tbl.table_caption,
+                        tbl.page,
+                        orjson.dumps(tbl.headers).decode("utf-8"),
+                        orjson.dumps(tbl.rows).decode("utf-8"),
+                        tbl.bbox_x0,
+                        tbl.bbox_y0,
+                        tbl.bbox_x1,
+                        tbl.bbox_y1,
+                        tbl.created_at,
                     )
+                    for tbl in tables
+                ]
+                cur.executemany(
+                    """
+                    INSERT INTO experiment_tables
+                        (paper_id, table_caption, page, headers, rows,
+                         bbox_x0, bbox_y0, bbox_x1, bbox_y1, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    rows,
+                )
                 self.conn.commit()
-            return len(tables)
         except sqlite3.Error as e:
             raise DatabaseError(f"upsert_experiment_tables({paper_id!r}) failed: {e}") from e
 
