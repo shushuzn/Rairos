@@ -1253,7 +1253,7 @@ def _run_export(args: argparse.Namespace) -> int:
 
 
 
-        content = _json.dumps(rows, option=json.OPT_INDENT_2)
+        content = _json.dumps(rows, indent=2)
 
 
 
