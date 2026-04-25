@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib
 import logging
 import sys
 from typing import List, Optional, Callable, Dict
@@ -12,81 +13,49 @@ from core.basics import get_default_concept_dir, get_default_radar_dir
 
 logger = logging.getLogger(__name__)
 
-# All available subcommands
-SUBCOMMANDS = {
-    "search", "list", "status", "queue", "cache", "dedup", "merge", "stats",
-    "import", "export", "citations", "cite-graph", "cite-import", "cite-fetch",
-    "cite-stats", "dedup-semantic", "research", "similar", "kg", "paper2code",
-    "evoskill", "rag", "visual",
-}
+# All available subcommands — derived from _SUBCOMMAND_TABLE
+_SUBCOMMAND_TABLE = [
+    ("search",         "cli.cmd.search",          "_build_search_parser"),
+    ("research",       "cli.cmd.research",         "_build_research_parser"),
+    ("list",          "cli.cmd.list",             "_build_list_parser"),
+    ("status",        "cli.cmd.status",           "_build_status_parser"),
+    ("queue",         "cli.cmd.queue",            "_build_queue_parser"),
+    ("cache",         "cli.cmd.cache",            "_build_cache_parser"),
+    ("dedup",         "cli.cmd.dedup",            "_build_dedup_parser"),
+    ("dedup-semantic","cli.cmd.dedup_semantic",   "_build_dedup_semantic_parser"),
+    ("similar",       "cli.cmd.similar",          "_build_similar_parser"),
+    ("kg",            "cli.cmd.kg",               "_build_kg_parser"),
+    ("merge",         "cli.cmd.merge",            "_build_merge_parser"),
+    ("stats",         "cli.cmd.stats",           "_build_stats_parser"),
+    ("import",        "cli.cmd.import_",          "_build_import_parser"),
+    ("export",        "cli.cmd.export",           "_build_export_parser"),
+    ("citations",      "cli.cmd.citations",         "_build_citations_parser"),
+    ("cite-graph",    "cli.cmd.cite_graph",       "_build_cite_graph_parser"),
+    ("cite-import",   "cli.cmd.cite_import",       "_build_cite_import_parser"),
+    ("cite-fetch",    "cli.cmd.cite_fetch",       "_build_cite_fetch_parser"),
+    ("cite-stats",    "cli.cmd.cite_stats",       "_build_cite_stats_parser"),
+    ("paper2code",    "cli.cmd.paper2code",       "_build_paper2code_parser"),
+    ("evoskill",      "cli.cmd.evoskill",         "_build_evoskill_parser"),
+    ("rag",           "cli.cmd.rag",              "_build_rag_parser"),
+    ("visual",        "cli.cmd.visual",           "_build_visual_parser"),
+]
+SUBCOMMANDS = {name for name, _, _ in _SUBCOMMAND_TABLE}
 
-# Lazy command registry: maps subcommand name -> (builder_fn, handler_fn)
-# Builders add subparsers, handlers execute the command
-_COMMAND_REGISTRY: Dict[str, tuple] = {}
-
-# Track whether parsers have been built (avoid re-importing 23 modules per call)
+# Track whether parsers have been built
 _PARSERS_BUILT = False
 
 
-def register_command(name: str, builder: Callable, handler: Callable) -> None:
-    """Register a command with lazy loading."""
-    _COMMAND_REGISTRY[name] = (builder, handler)
-
-
 def _build_all_parsers(subparsers) -> None:
-    """Build all subcommand parsers. Called only when needed."""
+    """Build all subcommand parsers via lazy dynamic import."""
     global _PARSERS_BUILT
     if _PARSERS_BUILT:
         return
     _PARSERS_BUILT = True
 
-    from cli.cmd.search import _build_search_parser
-    from cli.cmd.research import _build_research_parser
-    from cli.cmd.list import _build_list_parser
-    from cli.cmd.status import _build_status_parser
-    from cli.cmd.stats import _build_stats_parser
-    from cli.cmd.import_ import _build_import_parser
-    from cli.cmd.export import _build_export_parser
-    from cli.cmd.queue import _build_queue_parser
-    from cli.cmd.dedup import _build_dedup_parser
-    from cli.cmd.dedup_semantic import _build_dedup_semantic_parser
-    from cli.cmd.similar import _build_similar_parser
-    from cli.cmd.kg import _build_kg_parser
-    from cli.cmd.merge import _build_merge_parser
-    from cli.cmd.citations import _build_citations_parser
-    from cli.cmd.cite_graph import _build_cite_graph_parser
-    from cli.cmd.cite_fetch import _build_cite_fetch_parser
-    from cli.cmd.cite_import import _build_cite_import_parser
-    from cli.cmd.cite_stats import _build_cite_stats_parser
-    from cli.cmd.cache import _build_cache_parser
-    from cli.cmd.paper2code import _build_paper2code_parser
-    from cli.cmd.evoskill import _build_evoskill_parser
-    from cli.cmd.rag import _build_rag_parser
-    from cli.cmd.visual import _build_visual_parser
-
-    _build_search_parser(subparsers)
-    _build_research_parser(subparsers)
-    _build_list_parser(subparsers)
-    _build_status_parser(subparsers)
-    _build_queue_parser(subparsers)
-    _build_cache_parser(subparsers)
-    _build_dedup_parser(subparsers)
-    _build_merge_parser(subparsers)
-    _build_stats_parser(subparsers)
-    _build_import_parser(subparsers)
-    _build_export_parser(subparsers)
-    _build_citations_parser(subparsers)
-    _build_cite_graph_parser(subparsers)
-    _build_cite_import_parser(subparsers)
-    _build_cite_fetch_parser(subparsers)
-    _build_cite_stats_parser(subparsers)
-    _build_dedup_semantic_parser(subparsers)
-    _build_similar_parser(subparsers)
-    _build_kg_parser(subparsers)
-    _build_paper2code_parser(subparsers)
-    _build_evoskill_parser(subparsers)
-    _build_rag_parser(subparsers)
-    _build_visual_parser(subparsers)
+    import importlib
+    for name, module_path, builder_name in _SUBCOMMAND_TABLE:
+        mod = importlib.import_module(module_path)
+        getattr(mod, builder_name)(subparsers)
 
     # Watch command (inline)
     p = subparsers.add_parser("watch", help="Watch papers.json and auto-rebuild KG on changes")

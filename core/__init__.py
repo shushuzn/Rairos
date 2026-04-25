@@ -2,12 +2,23 @@
 from dataclasses import dataclass
 from typing import List
 
-ARXIV_API = "https://export.arxiv.org/api/query?id_list={arxiv_id}"
-CROSSREF_WORKS = "https://api.crossref.org/works/{doi}"
-DOI_RESOLVER = "https://doi.org/"
+from core._constants import (
+    ARXIV_API,
+    CROSSREF_WORKS,
+    DOI_RESOLVER,
+    RADAR_FILE,
+    TIMELINE_FILE,
+)
 
-RADAR_FILE = "Radar.md"
-TIMELINE_FILE = "Timeline.md"
+__all__ = [
+    "Paper",
+    "today_iso",
+    "ARXIV_API",
+    "CROSSREF_WORKS",
+    "DOI_RESOLVER",
+    "RADAR_FILE",
+    "TIMELINE_FILE",
+]
 
 
 @dataclass

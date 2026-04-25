@@ -3,7 +3,7 @@
 #   or: cp completions/fish ~/.config/fish/completions/ai_research_os.py.fish
 
 complete -c ai_research_os.py -l root -d "Root folder for your research OS" -r
-complete -c ai_research_os.py -l category -d "Folder under root to place P-Note" -a "00-Radar 01-Foundations 02-Models 03-Applications 04-Evaluation 05-Tools 06-Theory 07-Architecture 08-Training 09-Data 10-Applications 11-Future-Directions"
+complete -c ai_research_os.py -l category -d "Folder under root to place P-Note" -a "00-Radar 01-Foundations 02-Models 03-Training 04-Scaling 05-Alignment 06-Agents 07-Infrastructure 08-Optimization 09-Evaluation 10-Applications 11-Future-Directions"
 complete -c ai_research_os.py -l tags -d "Comma-separated tags"
 complete -c ai_research_os.py -l concept-dir -d "Folder under root to place C-Notes"
 complete -c ai_research_os.py -l comparison-dir -d "Folder under root to place M-Notes"

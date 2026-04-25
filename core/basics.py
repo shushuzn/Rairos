@@ -7,20 +7,7 @@ from functools import lru_cache
 from pathlib import Path
 
 # Canonical research tree directory names (in display order)
-DEFAULT_RESEARCH_DIRS = [
-    "00-Radar",
-    "01-Foundations",
-    "02-Models",
-    "03-Training",
-    "04-Scaling",
-    "05-Alignment",
-    "06-Agents",
-    "07-Infrastructure",
-    "08-Optimization",
-    "09-Evaluation",
-    "10-Applications",
-    "11-Future-Directions",
-]
+from core._constants import DEFAULT_RESEARCH_DIRS
 
 
 def _get_config_path() -> Path:
