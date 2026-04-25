@@ -1,4 +1,5 @@
 """Tests for API rate limiting functionality."""
+import pytest
 from core.rate_limiter import (
     RateLimiter,
     RateLimitConfig,
@@ -152,6 +153,7 @@ def test_create_limiter():
     assert stats["limits"]["burst_size"] == 3
 
 
+@pytest.mark.no_freeze
 def test_rate_limiter_timeout():
     """Test timeout behavior."""
     limiter = RateLimiter(RateLimitConfig(burst_size=1, requests_per_second=1.0))
@@ -169,6 +171,7 @@ def test_rate_limiter_timeout():
     assert isinstance(result, bool)
 
 
+@pytest.mark.no_freeze
 def test_rate_limiter_concurrent():
     """Test concurrent access."""
     import threading

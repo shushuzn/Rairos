@@ -3,10 +3,39 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import sys
 import tempfile
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Lazy-load mocking: intercept fitz/pymupdf before tests import them.
+# This avoids loading the heavy PyMuPDF/pdfminer libraries during test collection.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def pytest_configure(config: pytest.Config) -> None:
+    """Pre-import hooks: swap heavy libs with lightweight mocks at collect time."""
+    # Create mock fitz/pymupdf that satisfy basic type checks
+    mock_fitz = MagicMock(name="fitz")
+    mock_fitz.open.return_value = MagicMock(__enter__=MagicMock(return_value=mock_fitz),
+                                            __exit__=MagicMock(return_value=False),
+                                            page_count=0, tobytes=MemoryError)
+
+    # Register mocks BEFORE any test code runs
+    sys.modules["fitz"] = mock_fitz
+    sys.modules["pymupdf"] = mock_fitz
+
+    # Register pdfminer extraction mocks
+    if "pdfminer" not in sys.modules:
+        sys.modules["pdfminer"] = MagicMock(name="pdfminer")
+    if "pdfminer.extractor" not in sys.modules:
+        sys.modules["pdfminer.extractor"] = MagicMock(name="pdfminer.extractor")
+    if "pdfminer.layout" not in sys.modules:
+        sys.modules["pdfminer.layout"] = MagicMock(name="pdfminer.layout")
+
 
 # Module cache cleanup - reset pdf.extract fitz/tesseract caches between tests
 @pytest.fixture(autouse=True)
@@ -14,7 +43,6 @@ def _reset_module_caches():
     yield
     try:
         import pdf.extract
-        import sys
         pdf.extract._fitz_pdf = None
         pdf.extract._tesseract = None
         sys.modules.pop("fitz", None)

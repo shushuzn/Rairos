@@ -3,25 +3,42 @@ import logging
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List
-
-import feedparser
-import requests
+from typing import TYPE_CHECKING, List
 
 from core import ARXIV_API, Paper
+
+# Lazy imports — only load when actually needed (avoids ~0.6s test-time overhead)
+_feedparser = None
+_requests = None
+
+
+def _lazy_feedparser():
+    global _feedparser
+    if _feedparser is None:
+        import feedparser
+        _feedparser = feedparser
+    return _feedparser
+
+
+def _lazy_requests():
+    global _requests
+    if _requests is None:
+        import requests
+        _requests = requests
+    return _requests
 
 logger = logging.getLogger(__name__)
 from core.cache import get_cached, set_cached
 from core.retry import circuit_breaker
 
 # ─── HTTP Session (lazy init for testability) ─────────────────────────────────
-_http_session: requests.Session = None  # type: ignore
+_http_session = None
 
 
-def _get_session() -> requests.Session:
+def _get_session():
     global _http_session
     if _http_session is None:
-        _http_session = requests.Session()
+        _http_session = _lazy_requests().Session()
     return _http_session
 
 # ─── Rate limiting ────────────────────────────────────────────────────────────
@@ -42,7 +59,7 @@ def _rate_limit() -> None:
         _last_arxiv_request_time = time.monotonic()
 
 
-def _fetch_with_rate_limit_and_backoff(url: str, timeout: int) -> requests.Response:
+def _fetch_with_rate_limit_and_backoff(url: str, timeout: int):
     """GET url with rate limiting + exponential backoff on 429."""
     _rate_limit()
     r = _get_session().get(url, timeout=timeout)
@@ -66,7 +83,7 @@ def fetch_arxiv_metadata(arxiv_id: str, timeout: int = 30) -> Paper:
 
     url = ARXIV_API.format(arxiv_id=arxiv_id)
     r = _fetch_with_rate_limit_and_backoff(url, timeout=timeout)
-    feed = feedparser.parse(r.text)
+    feed = _lazy_feedparser().parse(r.text)
     if not feed.entries:
         raise ValueError(f"arXiv API returned no entries for id: {arxiv_id}")
 
@@ -198,7 +215,7 @@ def fetch_arxiv_metadata_batch(arxiv_ids: List[str], timeout: int = 60) -> List[
 
     try:
         r = _fetch_with_rate_limit_and_backoff(url, timeout=timeout)
-        feed = feedparser.parse(r.text)
+        feed = _lazy_feedparser().parse(r.text)
 
         found_ids = set()
         for e in feed.entries:

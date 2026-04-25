@@ -330,7 +330,7 @@ class PDFParser:
             d = orjson.loads(cache_file.read_bytes())
             if d.get("pdf_hash") == pdf_hash:
                 return ParsedPaper.from_cache_dict(d)
-        except (OSError, json.JSONDecodeError):
+        except (OSError, orjson.JSONDecodeError):
             pass
         return None
 

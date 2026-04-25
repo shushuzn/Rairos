@@ -1,8 +1,11 @@
 """PDF section segmentation."""
-import re
-from typing import List, Tuple
+from __future__ import annotations
 
-from pdf.extract import MathBlock, StructuredPdfContent, TableBlock, TextBlock
+import re
+from typing import List, Tuple, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pdf.extract import MathBlock, StructuredPdfContent, TableBlock, TextBlock
 
 
 def looks_like_heading(line: str) -> bool:
@@ -33,7 +36,7 @@ def looks_like_heading(line: str) -> bool:
     return False
 
 
-def text_blocks_to_lines(blocks: List[TextBlock]) -> List[str]:
+def text_blocks_to_lines(blocks) -> List[str]:
     """Flatten TextBlocks to raw lines for backward-compatible segmentation."""
     return [b.text for b in blocks]
 

@@ -6,6 +6,8 @@ import logging
 import sys
 from typing import List, Optional, Callable, Dict
 
+from pathlib import Path
+
 from core.basics import get_default_concept_dir, get_default_radar_dir
 
 logger = logging.getLogger(__name__)
@@ -22,6 +24,9 @@ SUBCOMMANDS = {
 # Builders add subparsers, handlers execute the command
 _COMMAND_REGISTRY: Dict[str, tuple] = {}
 
+# Track whether parsers have been built (avoid re-importing 23 modules per call)
+_PARSERS_BUILT = False
+
 
 def register_command(name: str, builder: Callable, handler: Callable) -> None:
     """Register a command with lazy loading."""
@@ -30,6 +35,11 @@ def register_command(name: str, builder: Callable, handler: Callable) -> None:
 
 def _build_all_parsers(subparsers) -> None:
     """Build all subcommand parsers. Called only when needed."""
+    global _PARSERS_BUILT
+    if _PARSERS_BUILT:
+        return
+    _PARSERS_BUILT = True
+
     from cli.cmd.search import _build_search_parser
     from cli.cmd.research import _build_research_parser
     from cli.cmd.list import _build_list_parser
@@ -189,15 +199,17 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
     """Legacy single-argument flow (arxiv ID/DOI directly)."""
     from cli._shared import print_error
     from parsers.input_detection import is_probably_doi, normalize_arxiv_id, normalize_doi
-    from pdf.extract import download_pdf, extract_pdf_structured, extract_pdf_text_hybrid
-    from sections.segment import segment_structured, format_section_snippets, format_tables_markdown, format_math_markdown, segment_into_sections
-    from llm.generate import ai_generate_pnote_draft
+    from parsers.arxiv import fetch_arxiv_metadata
+    from parsers.crossref import fetch_crossref_metadata
+    from sections.segment import segment_into_sections
     from renderers.pnote import render_pnote
     from updaters.radar import update_radar
     from updaters.timeline import update_timeline
-    from notes.mnote import pick_top3_pnotes_for_tag, ensure_or_update_mnote
+    from notes.cnote import ensure_cnote, update_cnote_links
+    from notes.mnote import ensure_or_update_mnote
+    from notes.pnotes import pnotes_by_tag
     from notes.keyword_tags import infer_tags_if_empty
-    from core import Paper, DOI_RESOLVER, today_iso
+    from core import today_iso
     from core.basics import ensure_research_tree, get_default_concept_dir, get_default_radar_dir, safe_uid, slugify_title
 
     parser = argparse.ArgumentParser(
@@ -230,10 +242,10 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
     raw = args.input.strip()
     if is_probably_doi(raw):
         doi = normalize_doi(raw)
-        paper = DOI_RESOLVER.resolve(doi)
+        paper, _ = fetch_crossref_metadata(doi)
     else:
         arxiv_id = normalize_arxiv_id(raw)
-        paper = Paper.from_arxiv(arxiv_id)
+        paper = fetch_arxiv_metadata(arxiv_id)
 
     tags = [t.strip() for t in args.tags.split(",") if t.strip()] if args.tags else []
     if not tags:
@@ -243,47 +255,87 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
     ensure_research_tree(root)
     pdf_path = Path(args.pdf) if args.pdf else None
 
+    # Compute pid early for PDF filename
+    paper.pid = safe_uid(paper.uid or paper.doi or paper.title)
+
     if not pdf_path:
-        try:
-            pdf_path = download_pdf(paper.pdf_url)
-        except Exception as e:
-            print_error(f"Failed to download PDF: {e}")
-            return 1
-
-    try:
-        if args.structured:
-            result = extract_pdf_structured(str(pdf_path), max_pages=args.max_pages)
+        # Try to download PDF if URL is available
+        if paper.pdf_url:
+            try:
+                from pdf.extract import download_pdf
+                pdf_path = root / "cache" / f"{paper.pid}.pdf"
+                download_pdf(paper.pdf_url, pdf_path)
+            except Exception as e:
+                print_error(f"Failed to download PDF: {e}")
+                # Graceful degradation: continue without PDF
+                pdf_path = None
         else:
-            result = extract_pdf_text_hybrid(
-                str(pdf_path),
-                ocr=args.ocr,
-                ocr_lang=args.ocr_lang,
-                ocr_zoom=args.ocr_zoom,
-                no_pdfminer=args.no_pdfminer,
-                max_pages=args.max_pages,
-            )
-    except Exception as e:
-        print_error(f"Failed to extract PDF: {e}")
-        return 1
+            pdf_path = None
 
-    segments = segment_into_sections(result["text"]) if args.structured else []
-    snippets = format_section_snippets(segments) if args.structured else result["text"][:500]
+    # Extract text from PDF if available
+    if pdf_path and pdf_path.exists():
+        try:
+            from pdf.extract import extract_pdf_structured, extract_pdf_text_hybrid
+            if args.structured:
+                result = extract_pdf_structured(str(pdf_path), max_pages=args.max_pages)
+            else:
+                extracted_text = extract_pdf_text_hybrid(
+                    str(pdf_path),
+                    max_pages=args.max_pages,
+                    ocr=args.ocr,
+                    ocr_lang=args.ocr_lang,
+                    ocr_zoom=args.ocr_zoom,
+                    use_pdfminer_fallback=not args.no_pdfminer,
+                )
+        except Exception as e:
+            print_error(f"Failed to extract PDF: {e}")
+            extracted_text = ""
+    else:
+        extracted_text = ""
+
+    if args.structured:
+        from sections.segment import segment_structured, format_section_snippets
+        segments = segment_structured(extracted_text) if isinstance(extracted_text, str) else []
+        snippets = format_section_snippets(segments)
+    else:
+        segments = []
+        snippets = extracted_text[:500] if extracted_text else ""
 
     paper.path = pdf_path
-    paper.pid = safe_uid(paper.arxiv_id or paper.doi or paper.title)
 
-    pnote_path = root / args.category / f"{slugify_title(paper.title)}.md"
+    # P-note filename format: "P - {year} - {slugified_title}.md"
+    year = paper.published[:4] if paper.published else today_iso()[:4]
+    pnote_path = root / args.category / f"P - {year} - {slugify_title(paper.title)}.md"
     pnote_path.parent.mkdir(parents=True, exist_ok=True)
     with open(pnote_path, "w", encoding="utf-8") as f:
-        f.write(render_pnote(paper, result["text"], snippets, tags))
+        f.write(render_pnote(paper, tags, extracted_text, parsed_ai=None))
 
-    update_radar(paper, root / args.category)
-    update_timeline(paper, root / "99-Timeline")
+    note_date = paper.published[:4] if paper.published else today_iso()
+    update_radar(root, tags, note_date)
+    update_timeline(root, year, pnote_path, paper.title)
 
     cnote_dir = root / args.concept_dir
     cnote_dir.mkdir(parents=True, exist_ok=True)
-    top_pnotes = pick_top3_pnotes_for_tag(tags[0] if tags else "", cnote_dir)
-    ensure_or_update_mnote(top_pnotes, cnote_dir, paper)
+
+    # Create C-notes for each tag
+    for tag in tags:
+        cpath = ensure_cnote(cnote_dir, tag)
+        update_cnote_links(cpath, pnote_path)
+
+    # Build tag_map from existing pnotes
+    tag_map = pnotes_by_tag(root)
+    # Add current paper's pnote to the map
+    first_tag = tags[0] if tags else ""
+    if first_tag:
+        if first_tag not in tag_map:
+            tag_map[first_tag] = []
+        tag_map[first_tag].append((paper.title, pnote_path))
+    # Pick top3 and create mnote if 3+ papers share a tag
+    top3 = None
+    if first_tag and len(tag_map.get(first_tag, [])) >= 3:
+        top3 = [p for _, p in sorted(tag_map[first_tag], key=lambda x: x[0])[:3]]
+    if top3:
+        ensure_or_update_mnote(cnote_dir, first_tag, top3)
 
     if args.ai:
         ai_generate_pnote_draft(pnote_path, paper, model=args.model)

@@ -148,11 +148,11 @@ class TestRunResearch:
             yield Path(d)
 
     @pytest.mark.no_freeze
-    @patch("research_loop.search_arxiv")
-    @patch("research_loop._download_pdf")
-    @patch("research_loop.extract_pdf_text")
-    @patch("research_loop.ai_generate_pnote_draft")
-    @patch("research_loop.time.sleep")
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core._download_pdf")
+    @patch("research_loop.core.extract_pdf_text")
+    @patch("research_loop.core.ai_generate_pnote_draft")
+    @patch("research_loop.core.time.sleep")
     def test_full_pipeline_creates_note(
         self, mock_sleep, mock_draft, mock_extract, mock_dl, mock_search, sample_paper, tmp_output_dir
     ):
@@ -179,8 +179,8 @@ class TestRunResearch:
         mock_draft.assert_called_once()
 
     @pytest.mark.no_freeze
-    @patch("research_loop.search_arxiv")
-    @patch("research_loop.time.sleep")
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core.time.sleep")
     def test_no_api_key_skips_ai_draft(
         self, mock_sleep, mock_search, sample_paper, tmp_output_dir
     ):
@@ -202,10 +202,10 @@ class TestRunResearch:
         assert "_Note: Set `OPENAI_API_KEY` to enable AI draft generation._" in note_text
 
     @pytest.mark.no_freeze
-    @patch("research_loop.search_arxiv")
-    @patch("research_loop._download_pdf")
-    @patch("research_loop.extract_pdf_text")
-    @patch("research_loop.time.sleep")
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core._download_pdf")
+    @patch("research_loop.core.extract_pdf_text")
+    @patch("research_loop.core.time.sleep")
     def test_no_extracted_text_skips_ai_draft(
         self, mock_sleep, mock_extract, mock_dl, mock_search, sample_paper, tmp_output_dir
     ):
@@ -227,8 +227,8 @@ class TestRunResearch:
         assert "_Note: Set `OPENAI_API_KEY` to enable AI draft generation._" in note_text
 
     @pytest.mark.no_freeze
-    @patch("research_loop.search_arxiv")
-    @patch("research_loop.time.sleep")
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core.time.sleep")
     def test_skip_existing_note(
         self, mock_sleep, mock_search, sample_paper, tmp_output_dir
     ):
@@ -255,11 +255,11 @@ class TestRunResearch:
         assert note_path.read_text(encoding="utf-8") == "Already exists"
 
     @pytest.mark.no_freeze
-    @patch("research_loop.search_arxiv")
-    @patch("research_loop._download_pdf")
-    @patch("research_loop.extract_pdf_text")
-    @patch("research_loop.ai_generate_pnote_draft")
-    @patch("research_loop.time.sleep")
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core._download_pdf")
+    @patch("research_loop.core.extract_pdf_text")
+    @patch("research_loop.core.ai_generate_pnote_draft")
+    @patch("research_loop.core.time.sleep")
     def test_no_skip_regenerates(
         self, mock_sleep, mock_draft, mock_extract, mock_dl, mock_search, sample_paper, tmp_output_dir
     ):
@@ -286,7 +286,7 @@ class TestRunResearch:
         assert "Old content" not in paths[0].read_text(encoding="utf-8")
 
     @pytest.mark.no_freeze
-    @patch("research_loop.search_arxiv")
+    @patch("research_loop.core.search_arxiv")
     def test_empty_result_returns_empty_list(self, mock_search, tmp_output_dir):
         mock_search.return_value = []
 
@@ -302,7 +302,7 @@ class TestRunResearch:
         assert paths == []
 
     @pytest.mark.no_freeze
-    @patch("research_loop.search_arxiv")
+    @patch("research_loop.core.search_arxiv")
     def test_search_error_returns_empty(self, mock_search, tmp_output_dir):
         mock_search.side_effect = RuntimeError("Network error")
 
@@ -316,8 +316,8 @@ class TestRunResearch:
         assert paths == []
 
     @pytest.mark.no_freeze
-    @patch("research_loop.search_arxiv")
-    @patch("research_loop.time.sleep")
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core.time.sleep")
     def test_respects_limit(self, mock_sleep, mock_search, sample_paper, tmp_output_dir):
         mock_search.return_value = [sample_paper]
 
@@ -334,11 +334,11 @@ class TestRunResearch:
         mock_search.assert_called_once_with("transformer", max_results=3)
 
     @pytest.mark.no_freeze
-    @patch("research_loop.search_arxiv")
-    @patch("research_loop._download_pdf")
-    @patch("research_loop.extract_pdf_text")
-    @patch("research_loop.ai_generate_pnote_draft")
-    @patch("research_loop.time.sleep")
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core._download_pdf")
+    @patch("research_loop.core.extract_pdf_text")
+    @patch("research_loop.core.ai_generate_pnote_draft")
+    @patch("research_loop.core.time.sleep")
     def test_download_pdfs_false_skips_download(
         self, mock_sleep, mock_draft, mock_extract, mock_dl, mock_search, sample_paper, tmp_output_dir
     ):
@@ -357,11 +357,11 @@ class TestRunResearch:
         mock_dl.assert_not_called()
 
     @pytest.mark.no_freeze
-    @patch("research_loop.search_arxiv")
-    @patch("research_loop._download_pdf")
-    @patch("research_loop.extract_pdf_text")
-    @patch("research_loop.ai_generate_pnote_draft")
-    @patch("research_loop.time.sleep")
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core._download_pdf")
+    @patch("research_loop.core.extract_pdf_text")
+    @patch("research_loop.core.ai_generate_pnote_draft")
+    @patch("research_loop.core.time.sleep")
     def test_custom_tags_passed_to_note(
         self, mock_sleep, mock_draft, mock_extract, mock_dl, mock_search, sample_paper, tmp_output_dir
     ):

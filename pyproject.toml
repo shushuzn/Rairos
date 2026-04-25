@@ -99,7 +99,7 @@ web = ["streamlit>=1.28.0"]
 ai = ["openai>=1.0.0"]
 
 
-dev = ["pytest>=7.0.0", "pytest-cov>=4.0.0", "freezegun>=1.2.0"]
+dev = ["pytest>=7.0.0", "pytest-cov>=4.0.0", "pytest-xdist>=3.5.0", "freezegun>=1.2.0"]
 
 
 all = ["ai-research-os[ocr,ai,dev]"]
@@ -308,6 +308,9 @@ exclude_lines = [
 
 
 
+
+[tool.pytest.ini_options]
+timeout = 10
 
 [tool.coverage.html]
 

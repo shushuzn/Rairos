@@ -26,6 +26,10 @@ class MockKGManager:
                 return n
         return None
 
+    def get_nodes_bulk(self, nids):
+        nids_set = set(nids)
+        return {n["id"]: n for n in self._nodes if n["id"] in nids_set}
+
     def get_all_nodes(self):
         return self._nodes
 
@@ -40,6 +44,15 @@ class MockKGManager:
 
     def find_mnotes_by_tag(self, tag):
         return [n for n in self._nodes if n.get("type") == "M-Note" and tag in n.get("tags", [])]
+
+    def get_edges_bulk(self, nids, direction="both"):
+        nids_set = set(nids)
+        if direction == "both":
+            return [e for e in self._edges if e["source_id"] in nids_set or e["target_id"] in nids_set]
+        elif direction == "out":
+            return [e for e in self._edges if e["source_id"] in nids_set]
+        else:
+            return [e for e in self._edges if e["target_id"] in nids_set]
 
     def find_neighbors(self, nid, depth=2):
         results = []
