@@ -12,12 +12,26 @@ Usage:
 """
 from __future__ import annotations
 
-# Re-export main classes for convenient imports
+# Core research loop functions
+from research_loop.core import (
+    run_research,
+    arun_research,
+    Metrics,
+    _build_research_note,
+)
+
+# Pipeline classes
 from research_loop.paper2code_integration import PaperPipeline
 from research_loop.evoskill_integration import EvoSkillPipeline
 from research_loop.rag_pipeline import RagPipeline
 
 __all__ = [
+    # Core functions
+    "run_research",
+    "arun_research",
+    "Metrics",
+    "_build_research_note",
+    # Pipeline classes
     "PaperPipeline",
     "EvoSkillPipeline",
     "RagPipeline",
