@@ -10,10 +10,10 @@
 
 ```bash
 # 处理单篇论文
-python ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM,Agent
+python -m cli https://arxiv.org/abs/2601.00155 --tags LLM,Agent
 
 # 开启 AI 草稿（需配置 API key）
-python ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM --ai
+python -m cli https://arxiv.org/abs/2601.00155 --tags LLM --ai
 ```
 
 这不是一个 **PDF 管理器**，而是一套 **认知升级系统**，强制结构化思维、显式推理和长期研究追踪。
@@ -58,7 +58,7 @@ export OPENAI_API_KEY="***"
 export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
 
 # 或直接传入参数（最高优先级）
-python ai_research_os.py <input> --api-key "sk-..." --base-url "https://..." --model "qwen3.5-plus"
+python -m cli <input> --api-key "sk-..." --base-url "https://..." --model "qwen3.5-plus"
 ```
 
 ---
@@ -68,27 +68,27 @@ python ai_research_os.py <input> --api-key "sk-..." --base-url "https://..." --m
 ### arXiv 论文
 
 ```bash
-python ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM,Agent
-python ai_research_os.py 2601.00155 --tags LLM
+python -m cli https://arxiv.org/abs/2601.00155 --tags LLM,Agent
+python -m cli 2601.00155 --tags LLM
 ```
 
 ### DOI
 
 ```bash
-python ai_research_os.py 10.48550/arXiv.2601.00155 --tags LLM
+python -m cli 10.48550/arXiv.2601.00155 --tags LLM
 ```
 
 ### 本地 PDF
 
 ```bash
-python ai_research_os.py test --pdf "paper.pdf" --tags RAG
-python ai_research_os.py test --pdf "scanned.pdf" --ocr --ocr-lang chi_sim+eng
+python -m cli test --pdf "paper.pdf" --tags RAG
+python -m cli test --pdf "scanned.pdf" --ocr --ocr-lang chi_sim+eng
 ```
 
 ### 开启 AI 草稿
 
 ```bash
-python ai_research_os.py https://arxiv.org/abs/2601.00155 --tags LLM --ai
+python -m cli https://arxiv.org/abs/2601.00155 --tags LLM --ai
 ```
 
 ---

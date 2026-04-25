@@ -6,7 +6,7 @@ Complete reference for all 23 CLI subcommands. See [README.md](README.md) for in
 
 ## Paper Processing (main flow)
 
-### `python ai_research_os.py <input> [flags]`
+### `python -m cli <input> [flags]`
 
 | Argument | Description | Default |
 |----------|-------------|---------|
@@ -36,24 +36,24 @@ Complete reference for all 23 CLI subcommands. See [README.md](README.md) for in
 DB overview: total papers, status breakdown, queue size.
 
 ```bash
-python ai_research_os.py stats
+python -m cli stats
 ```
 
 ### `status`
 Show current processing status and queue summary.
 
 ```bash
-python ai_research_os.py status
+python -m cli status
 ```
 
 ### `cache`
 Manage paper cache.
 
 ```bash
-python ai_research_os.py cache --stats     # Show cache stats
-python ai_research_os.py cache --clear     # Clear all cache
-python ai_research_os.py cache --get UID  # Get cached path for UID
-python ai_research_os.py cache --set UID PATH  # Set cached path for UID
+python -m cli cache --stats     # Show cache stats
+python -m cli cache --clear     # Clear all cache
+python -m cli cache --get UID  # Get cached path for UID
+python -m cli cache --set UID PATH  # Set cached path for UID
 ```
 
 ### `import`
@@ -61,47 +61,47 @@ Batch add papers by arXiv ID / DOI / URL.
 
 ```bash
 # One or more IDs
-python ai_research_os.py import 2601.00155 10.48550/arXiv.2601.00155
+python -m cli import 2601.00155 10.48550/arXiv.2601.00155
 
 # From file (one ID per line)
-python ai_research_os.py import --file ids.txt
+python -m cli import --file ids.txt
 
 # With checkpoint (save/resume progress)
-python ai_research_os.py import --file ids.txt --checkpoint ckpt.json
-python ai_research_os.py import --resume --checkpoint ckpt.json
+python -m cli import --file ids.txt --checkpoint ckpt.json
+python -m cli import --resume --checkpoint ckpt.json
 ```
 
 ### `export`
 Export DB to CSV or JSON.
 
 ```bash
-python ai_research_os.py export
-python ai_research_os.py export --format csv
-python ai_research_os.py export --format json
+python -m cli export
+python -m cli export --format csv
+python -m cli export --format json
 ```
 
 ### `search`
 Full-text search with filters.
 
 ```bash
-python ai_research_os.py search "scaling law"
-python ai_research_os.py search "transformer" --tag LLM --limit 20
+python -m cli search "scaling law"
+python -m cli search "transformer" --tag LLM --limit 20
 ```
 
 ### `list`
 List papers with sort/filter.
 
 ```bash
-python ai_research_os.py list
-python ai_research_os.py list --tag LLM --sort updated --limit 50
+python -m cli list
+python -m cli list --tag LLM --sort updated --limit 50
 ```
 
 ### `similar`
 Find semantically similar papers via embeddings.
 
 ```bash
-python ai_research_os.py similar PAPER_ID
-python ai_research_os.py similar PAPER_ID --threshold 0.8 --limit 10
+python -m cli similar PAPER_ID
+python -m cli similar PAPER_ID --threshold 0.8 --limit 10
 ```
 
 Requires Ollama running with `ollama serve` and `ollama pull nomic-embed-text`.
@@ -110,16 +110,16 @@ Requires Ollama running with `ollama serve` and `ollama pull nomic-embed-text`.
 Manage pending paper queue.
 
 ```bash
-python ai_research_os.py queue --list   # List pending papers
-python ai_research_os.py queue --clear  # Reset all to idle
+python -m cli queue --list   # List pending papers
+python -m cli queue --clear  # Reset all to idle
 ```
 
 ### `dedup`
 Find exact duplicates by DOI/title.
 
 ```bash
-python ai_research_os.py dedup
-python ai_research_os.py dedup --dry-run
+python -m cli dedup
+python -m cli dedup --dry-run
 ```
 
 ### `dedup-semantic`
@@ -127,13 +127,13 @@ Semantic deduplication via Ollama embeddings.
 
 ```bash
 # Generate embeddings for all papers without them
-python ai_research_os.py dedup-semantic --generate
+python -m cli dedup-semantic --generate
 
 # Show embedding coverage stats
-python ai_research_os.py dedup-semantic --stats
+python -m cli dedup-semantic --stats
 
 # Run semantic dedup (requires embeddings)
-python ai_research_os.py dedup-semantic
+python -m cli dedup-semantic
 ```
 
 Requires Ollama running (`ollama serve`) and `ollama pull nomic-embed-text`.
@@ -142,55 +142,55 @@ Requires Ollama running (`ollama serve`) and `ollama pull nomic-embed-text`.
 Merge two duplicate papers.
 
 ```bash
-python ai_research_os.py merge TARGET_ID DUPLICATE_ID
-python ai_research_os.py merge --keep semantic --auto  # Auto-merge high-similarity pairs
+python -m cli merge TARGET_ID DUPLICATE_ID
+python -m cli merge --keep semantic --auto  # Auto-merge high-similarity pairs
 ```
 
 ### `citations --from`
 Show papers cited by a paper (backward citations).
 
 ```bash
-python ai_research_os.py citations --from PAPER_ID
+python -m cli citations --from PAPER_ID
 ```
 
 ### `citations --to`
 Show papers citing a paper (forward citations).
 
 ```bash
-python ai_research_os.py citations --to PAPER_ID
+python -m cli citations --to PAPER_ID
 ```
 
 ### `cite-fetch`
 Fetch citations from OpenAlex API.
 
 ```bash
-python ai_research_os.py cite-fetch PAPER_ID
-python ai_research_os.py cite-fetch PAPER_ID1 PAPER_ID2  # Multiple
+python -m cli cite-fetch PAPER_ID
+python -m cli cite-fetch PAPER_ID1 PAPER_ID2  # Multiple
 ```
 
 ### `cite-import`
 Bulk import citation edges from JSON.
 
 ```bash
-python ai_research_os.py cite-import --file citations.json
+python -m cli cite-import --file citations.json
 ```
 
 ### `cite-stats`
 Citation graph statistics.
 
 ```bash
-python ai_research_os.py cite-stats
-python ai_research_os.py cite-stats --top 10  # Top cited papers
+python -m cli cite-stats
+python -m cli cite-stats --top 10  # Top cited papers
 ```
 
 ### `paper2code`
 Generate code implementation from paper.
 
 ```bash
-python ai_research_os.py paper2code PAPER_ID
-python ai_research_os.py paper2code PAPER_ID --mode minimal
-python ai_research_os.py paper2code PAPER_ID --mode standard
-python ai_research_os.py paper2code --rebuild PAPER_ID  # Rebuild existing
+python -m cli paper2code PAPER_ID
+python -m cli paper2code PAPER_ID --mode minimal
+python -m cli paper2code PAPER_ID --mode standard
+python -m cli paper2code --rebuild PAPER_ID  # Rebuild existing
 ```
 
 ### `evoskill`
@@ -198,48 +198,48 @@ EvoSkill benchmark evaluation.
 
 ```bash
 # Initialize benchmark task
-python ai_research_os.py evoskill --init --task TASK --dataset dataset.csv
+python -m cli evoskill --init --task TASK --dataset dataset.csv
 
 # Run benchmark evaluation
-python ai_research_os.py evoskill --benchmark
-python ai_research_os.py evoskill --benchmark --continue  # Continue previous
+python -m cli evoskill --benchmark
+python -m cli evoskill --benchmark --continue  # Continue previous
 
 # Generate evaluation report
-python ai_research_os.py evoskill --report
+python -m cli evoskill --report
 ```
 
 ### `rag`
 Run RAG pipeline (paper2code + tests + benchmark).
 
 ```bash
-python ai_research_os.py rag PAPER_ID
-python ai_research_os.py rag PAPER_ID --mode minimal
+python -m cli rag PAPER_ID
+python -m cli rag PAPER_ID --mode minimal
 ```
 
 ### `visual`
 Extract figures, formulas, tables from PDF.
 
 ```bash
-python ai_research_os.py visual PAPER_ID
-python ai_research_os.py visual PAPER_ID --output ./visuals/
+python -m cli visual PAPER_ID
+python -m cli visual PAPER_ID --output ./visuals/
 ```
 
 ### `kg`
 Build/query knowledge graph.
 
 ```bash
-python ai_research_os.py kg
-python ai_research_os.py kg --export json
-python ai_research_os.py kg --export graphml
+python -m cli kg
+python -m cli kg --export json
+python -m cli kg --export graphml
 ```
 
 ### `research`
 Run continuous research loop.
 
 ```bash
-python ai_research_os.py research
-python ai_research_os.py research --loop
-python ai_research_os.py research --limit 10
+python -m cli research
+python -m cli research --loop
+python -m cli research --limit 10
 ```
 
 ---
