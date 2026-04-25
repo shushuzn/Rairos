@@ -283,3 +283,119 @@ def ai_generate_cnote_draft(
         system_prompt=_CNOTE_SYSTEM_PROMPT,
         user_prompt=user_prompt,
     ))
+
+
+# ------------------------------------------------------------------
+# Read Queue Recommendation Explanation
+# ------------------------------------------------------------------
+
+_READ_QUEUE_EXPLANATION_SYSTEM_PROMPT = """你是一个严谨的 AI 研究助理，擅长为用户的阅读队列生成推荐解释。
+
+硬规则：
+1. 输出必须是中文 Markdown
+2. 只输出推荐解释，不输出额外解释
+3. 每个推荐解释控制在 150 字以内
+4. 不要捏造论文数据"""
+
+
+def ai_generate_reading_recommendation_explanation(
+    paper_title: str,
+    paper_authors: list[str],
+    paper_year: str,
+    paper_category: str,
+    score: float,
+    semantic_score: float,
+    citation_score: float,
+    tag_score: float,
+    recency_score: float,
+    read_papers_context: list[dict],
+    base_url: str,
+    api_key: str,
+    model: str,
+) -> str:
+    """Generate Chinese explanation for why a paper is recommended.
+
+    Args:
+        paper_title: Paper title
+        paper_authors: List of author names
+        paper_year: Publication year
+        paper_category: Paper category/field
+        score: Combined recommendation score
+        semantic_score: Semantic similarity score (0-1)
+        citation_score: Citation relationship score (0-1)
+        tag_score: Tag overlap score (0-1)
+        recency_score: Recency score (0-1)
+        read_papers_context: List of {title, authors, year, category} for read papers
+        base_url: LLM API base URL
+        api_key: LLM API key
+        model: LLM model name
+
+    Returns:
+        Chinese Markdown explanation with three sections:
+        - 推荐理由 (Recommendation reason)
+        - 与已读论文的关联 (Relation to read papers)
+        - 适合阅读的场景 (Best reading scenario)
+    """
+    authors_str = ", ".join(paper_authors) if paper_authors else "未知"
+
+    # Determine which score is highest
+    scores = {
+        "语义相似度": semantic_score,
+        "引用关系": citation_score,
+        "标签重叠": tag_score,
+        "时效性": recency_score,
+    }
+    top_signal = max(scores, key=scores.get)
+    top_value = scores[top_signal]
+
+    # Format read papers context
+    if read_papers_context:
+        read_papers_str = "\n".join(
+            f"- \"{p['title']}\" by {', '.join(p['authors']) if p['authors'] else '未知'} ({p['year']}), 领域: {p['category'] or 'N/A'}"
+            for p in read_papers_context
+        )
+    else:
+        read_papers_str = "（暂无已读论文记录）"
+
+    user_prompt = f"""## 任务
+为以下待推荐论文生成一段中文推荐解释。
+
+## 待推荐论文
+- 标题：{paper_title}
+- 作者：{authors_str}
+- 年份：{paper_year}
+- 领域/分类：{paper_category or 'N/A'}
+
+## 推荐评分详情
+- 综合得分：{score:.2f}（满分 1.0）
+- 语义相似度：{semantic_score:.2f}（权重 40%）
+- 引用关系：{citation_score:.2f}（权重 30%）
+- 标签重叠：{tag_score:.2f}（权重 20%）
+- 时效性：{recency_score:.2f}（权重 10%）
+- 最强信号：{top_signal}（{top_value:.2f}）
+
+## 用户已读论文背景
+以下是你已经阅读过的论文：
+{read_papers_str}
+
+## 输出要求
+为这篇待推荐论文生成推荐解释，必须包含以下三个部分：
+
+### 推荐理由
+（基于上述评分数据，解释这篇论文为什么被推荐，重点说明得分最高的信号：{top_signal}）
+
+### 与已读论文的关联
+（分析这篇论文与你已读论文的联系，说明它在你的研究脉络中的位置）
+
+### 适合阅读的场景
+（说明在什么情况下优先阅读这篇论文）
+
+每个部分 2-4 句话，语言精炼，专业易懂。"""
+
+    return cast(str, call_llm(
+        base_url=base_url,
+        api_key=api_key,
+        model=model,
+        system_prompt=_READ_QUEUE_EXPLANATION_SYSTEM_PROMPT,
+        user_prompt=user_prompt,
+    ))

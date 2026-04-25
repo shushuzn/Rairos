@@ -5,6 +5,9 @@ import argparse
 from dataclasses import dataclass
 from typing import Optional
 
+import os
+import warnings
+
 from cli._shared import get_db, Colors, colored, print_info
 
 
@@ -42,6 +45,23 @@ class ReadQueueScorer:
             parse_status="parsed"  # Only fully parsed papers
         )
         return results
+
+    def get_read_papers_context(self, limit: int = 10) -> list[dict]:
+        """Return list of dicts for LLM context."""
+        results, _ = self.db.search_papers(
+            query="",
+            limit=limit,
+            parse_status="parsed"
+        )
+        return [
+            {
+                "title": p.title or "",
+                "authors": list(p.authors) if p.authors else [],
+                "year": (p.published[:4] if p.published and len(p.published) >= 4 else "N/A"),
+                "category": (p.primary_category or ""),
+            }
+            for p in results
+        ]
 
     def _compute_semantic_scores(self, read_papers: list, candidates: list) -> dict:
         """Compute average similarity to read papers."""
@@ -196,6 +216,14 @@ def _build_read_queue_parser(subparsers) -> argparse.ArgumentParser:
         "--format", choices=["table", "json", "score-breakdown"], default="table",
         help="Output format (default: table)",
     )
+    p.add_argument(
+        "--explain", action="store_true",
+        help="Generate LLM explanations for why each paper is recommended",
+    )
+    p.add_argument(
+        "--explain-model", type=str, default=None,
+        help="LLM model for explanations (default: from config)",
+    )
     return p
 
 
@@ -245,6 +273,42 @@ def _run_read_queue(args: argparse.Namespace) -> int:
         print_info("No papers match your criteria. Try relaxing filters or add more papers to your library.")
         return 0
 
+    # Generate LLM explanations if requested
+    explanations = {}
+    if args.explain:
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            print_info("OPENAI_API_KEY not set. Skipping explanations. Set it to enable LLM explanations.")
+        else:
+            from config import DEFAULT_LLM_MODEL_CLI, DEFAULT_OPENAI_BASE_URL
+            from llm.generate import ai_generate_reading_recommendation_explanation
+
+            model = args.explain_model or DEFAULT_LLM_MODEL_CLI
+            base_url = DEFAULT_OPENAI_BASE_URL
+            read_context = scorer.get_read_papers_context(limit=10)
+
+            for r in results:
+                try:
+                    explanation = ai_generate_reading_recommendation_explanation(
+                        paper_title=r.title,
+                        paper_authors=r.authors,
+                        paper_year=r.published[:4] if r.published else "N/A",
+                        paper_category=r.primary_category,
+                        score=r.score,
+                        semantic_score=r.semantic_score,
+                        citation_score=r.citation_score,
+                        tag_score=r.tag_score,
+                        recency_score=r.recency_score,
+                        read_papers_context=read_context,
+                        base_url=base_url,
+                        api_key=api_key,
+                        model=model,
+                    )
+                    explanations[r.paper_id] = explanation
+                except Exception as e:
+                    warnings.warn(f"LLM explanation failed for {r.paper_id}: {e}")
+                    explanations[r.paper_id] = None
+
     if args.format == "json":
         import json
         output = [{
@@ -254,6 +318,7 @@ def _run_read_queue(args: argparse.Namespace) -> int:
             "authors": r.authors,
             "published": r.published,
             "category": r.primary_category,
+            "explanation": explanations.get(r.paper_id),
         } for r in results]
         print(json.dumps(output, indent=2, ensure_ascii=False))
     elif args.format == "score-breakdown":
@@ -268,6 +333,16 @@ def _run_read_queue(args: argparse.Namespace) -> int:
             print(f"    Sem:{r.semantic_score:.2f} Cit:{r.citation_score:.2f} Tag:{r.tag_score:.2f} New:{r.recency_score:.2f}")
             if r.published:
                 print(f"    {r.published[:4]} | {r.primary_category or 'N/A'}")
+
+            # Show LLM explanation if available
+            if args.explain and explanations.get(r.paper_id):
+                exp = explanations[r.paper_id]
+                print()
+                print(colored("    ╔═ 推荐理由 ═╗", Colors.OKBLUE))
+                for line in exp.strip().split("\n"):
+                    if line.strip():
+                        print(f"    ║ {line}")
+                print("    ╚═════════════╝")
             print()
     else:  # table format
         print(colored("=== Recommended Reading Queue ===", Colors.HEADER))
@@ -276,6 +351,17 @@ def _run_read_queue(args: argparse.Namespace) -> int:
         for i, r in enumerate(results, 1):
             score_str = colored(f"{r.score:.2f}", Colors.OKGREEN if r.score > 0.5 else Colors.WARNING)
             print(f"{i:2}.  {score_str}  {r.paper_id:<15}  {r.title[:45]}")
+
+            # Show brief LLM explanation if available
+            if args.explain and explanations.get(r.paper_id):
+                exp = explanations[r.paper_id]
+                if exp:
+                    # Extract first meaningful line
+                    lines = [l.strip() for l in exp.strip().split("\n") if l.strip() and not l.strip().startswith("#")]
+                    brief = lines[0][:80] if lines else ""
+                    if brief:
+                        print(f"       {colored('→', Colors.OKBLUE)} {brief}...")
+
         print()
         print_info(f"Showing {len(results)} of {total} candidates")
 
