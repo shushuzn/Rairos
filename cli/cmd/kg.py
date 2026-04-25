@@ -53,6 +53,15 @@ Examples:
     fp.add_argument("--type", help="Filter by node type (Paper/P-Note/C-Note/M-Note/Tag)")
     fp.add_argument("--format", choices=["table", "json"], default="table")
 
+    # kg view
+    vp = sub.add_parser("view", help="Open interactive D3.js force graph in browser")
+    vp.add_argument("--paper", help="Paper UID — show ego graph (default: full graph)")
+    vp.add_argument("--tag", help="Show all papers for a tag as graph")
+    vp.add_argument("--depth", type=int, default=2, help="BFS depth for ego graph (default 2)")
+    vp.add_argument("--max-nodes", type=int, default=300, help="Max nodes to render (default 300)")
+    vp.add_argument("--open", action="store_true", default=True, help="Open in default browser (default: on)")
+    vp.add_argument("--no-open", dest="open", action="store_false", help="Write HTML to stdout instead of opening browser")
+
     return p
 
 
@@ -153,5 +162,56 @@ def _run_kg(args: argparse.Namespace) -> int:
                 print(f"  ... and {len(nodes)-50} more")
         return 0
 
+    elif args.kg_cmd == "view":
+        return _run_kg_view(args)
+
     print(f"Unknown kg subcommand: {args.kg_cmd}")
     return 1
+
+
+def _run_kg_view(args: argparse.Namespace) -> int:
+    """Render interactive D3.js force graph and open in browser (or write to stdout)."""
+    import tempfile, json, webbrowser, os
+    from pathlib import Path
+    from viz.d3_renderer import D3ForceGraph
+
+    kg = KGManager()
+    renderer = D3ForceGraph(kg)
+
+    paper_uids = [args.paper] if args.paper else None
+    tag = args.tag if hasattr(args, "tag") else None
+
+    graph_data = renderer.to_json(
+        paper_uids=paper_uids,
+        tag=tag,
+        max_nodes=args.max_nodes,
+    )
+
+    if not graph_data["nodes"]:
+        print("No nodes found in the selected scope.", file=__import__("sys").stderr)
+        return 1
+
+    # Load template
+    template_path = Path(__file__).parent.parent.parent / "viz" / "templates" / "kg_viz_template_d3.html"
+    html_content = template_path.read_text(encoding="utf-8")
+
+    # Inject data — JSON-escape for safe JS embedding
+    nodes_json = json.dumps(graph_data["nodes"], ensure_ascii=False)
+    links_json = json.dumps(graph_data["links"], ensure_ascii=False)
+    html_content = html_content.replace('"INJECT_NODES"', nodes_json)
+    html_content = html_content.replace('"INJECT_LINKS"', links_json)
+
+    if not args.open:
+        __import__("sys").stdout.write(html_content)
+        return 0
+
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".html", delete=False, encoding="utf-8"
+    ) as f:
+        f.write(html_content)
+        tmp_path = f.name
+
+    webbrowser.open(f"file://{tmp_path}")
+    print(f"Opened {len(graph_data['nodes'])} nodes, {len(graph_data['links'])} edges in browser.")
+    print(f"(HTML also saved to: {tmp_path})")
+    return 0

@@ -1,41 +1,78 @@
 """AI Research OS CLI."""
-import argparse
-
-from db import Database
+import importlib
 from cli._registry import main, _main_legacy
-from cli._shared import (
-    Colors, colored, print_success, print_error, print_warning,
-    print_info, print_header, infer_tags_if_empty,
-)
-
-# Re-export _run_* and _build_* functions for backward compatibility with tests
-from cli.cmd.search import _run_search, _build_search_parser
-from cli.cmd.list import _run_list, _build_list_parser
-from cli.cmd.status import _run_status, _build_status_parser
-from cli.cmd.stats import _run_stats, _build_stats_parser
-from cli.cmd.import_ import _run_import, _build_import_parser
-from cli.cmd.export import _run_export, _build_export_parser
-from cli.cmd.queue import _run_queue, _build_queue_parser
-from cli.cmd.cache import _run_cache, _build_cache_parser
-from cli.cmd.dedup import _run_dedup, _build_dedup_parser
-from cli.cmd.dedup_semantic import _run_dedup_semantic, _build_dedup_semantic_parser
-from cli.cmd.similar import _run_similar, _build_similar_parser
-from cli.cmd.kg import _run_kg, _build_kg_parser
-from cli.cmd.merge import _run_merge, _build_merge_parser, _pick_keep
-from cli.cmd.citations import _run_citations, _build_citations_parser
-from cli.cmd.cite_graph import _run_cite_graph, _build_cite_graph_parser
-from cli.cmd.cite_fetch import _run_cite_fetch, _build_cite_fetch_parser
-from cli.cmd.cite_import import _run_cite_import, _build_cite_import_parser
-from cli.cmd.cite_stats import _run_cite_stats, _build_cite_stats_parser
-from cli.cmd.research import _run_research_cmd, _build_research_parser
-
-# Re-export underscore-prefixed helpers used by tests
-from cli.cmd.cite_fetch import _arxiv_doi_to_openalex
-from cli.cmd.dedup_semantic import _get_ollama_embedding_batch
-from cli._registry import _main_legacy
-
-# Alias: _extract_references_from_text resolves to cite_graph version
-# (not cite_import version, matching the original _extract_references_from_text_cite_graph behavior)
-from cli.cmd.cite_graph import _extract_references_from_text
 
 __all__ = ["main"]
+
+
+# Lazy re-exports for backward compatibility (tests and internal use).
+# Each name is imported on first access, then cached.
+_LAZY_EXPORTS = {
+    "_run_search":        ("cli.cmd.search",       "_run_search"),
+    "_build_search_parser": ("cli.cmd.search",     "_build_search_parser"),
+    "_run_list":         ("cli.cmd.list",        "_run_list"),
+    "_build_list_parser":  ("cli.cmd.list",       "_build_list_parser"),
+    "_run_status":       ("cli.cmd.status",      "_run_status"),
+    "_build_status_parser": ("cli.cmd.status",    "_build_status_parser"),
+    "_run_stats":        ("cli.cmd.stats",       "_run_stats"),
+    "_build_stats_parser":  ("cli.cmd.stats",     "_build_stats_parser"),
+    "_run_import":       ("cli.cmd.import_",     "_run_import"),
+    "_build_import_parser": ("cli.cmd.import_",   "_build_import_parser"),
+    "_run_export":       ("cli.cmd.export",      "_run_export"),
+    "_build_export_parser":  ("cli.cmd.export",   "_build_export_parser"),
+    "_run_queue":        ("cli.cmd.queue",       "_run_queue"),
+    "_build_queue_parser":  ("cli.cmd.queue",     "_build_queue_parser"),
+    "_run_cache":        ("cli.cmd.cache",       "_run_cache"),
+    "_build_cache_parser":  ("cli.cmd.cache",     "_build_cache_parser"),
+    "_run_dedup":        ("cli.cmd.dedup",      "_run_dedup"),
+    "_build_dedup_parser":  ("cli.cmd.dedup",    "_build_dedup_parser"),
+    "_run_dedup_semantic": ("cli.cmd.dedup_semantic", "_run_dedup_semantic"),
+    "_build_dedup_semantic_parser": ("cli.cmd.dedup_semantic", "_build_dedup_semantic_parser"),
+    "_run_similar":      ("cli.cmd.similar",    "_run_similar"),
+    "_build_similar_parser": ("cli.cmd.similar", "_build_similar_parser"),
+    "_run_kg":           ("cli.cmd.kg",         "_run_kg"),
+    "_build_kg_parser":   ("cli.cmd.kg",         "_build_kg_parser"),
+    "_run_merge":        ("cli.cmd.merge",       "_run_merge"),
+    "_build_merge_parser":  ("cli.cmd.merge",     "_build_merge_parser"),
+    "_pick_keep":        ("cli.cmd.merge",       "_pick_keep"),
+    "_run_citations":    ("cli.cmd.citations",   "_run_citations"),
+    "_build_citations_parser": ("cli.cmd.citations", "_build_citations_parser"),
+    "_run_cite_graph":   ("cli.cmd.cite_graph",  "_run_cite_graph"),
+    "_build_cite_graph_parser": ("cli.cmd.cite_graph", "_build_cite_graph_parser"),
+    "_run_cite_fetch":   ("cli.cmd.cite_fetch",  "_run_cite_fetch"),
+    "_build_cite_fetch_parser": ("cli.cmd.cite_fetch", "_build_cite_fetch_parser"),
+    "_run_cite_import":  ("cli.cmd.cite_import", "_run_cite_import"),
+    "_build_cite_import_parser": ("cli.cmd.cite_import", "_build_cite_import_parser"),
+    "_run_cite_stats":   ("cli.cmd.cite_stats",  "_run_cite_stats"),
+    "_build_cite_stats_parser": ("cli.cmd.cite_stats", "_build_cite_stats_parser"),
+    "_run_research_cmd": ("cli.cmd.research",    "_run_research_cmd"),
+    "_build_research_parser": ("cli.cmd.research", "_build_research_parser"),
+    "_arxiv_doi_to_openalex": ("cli.cmd.cite_fetch", "_arxiv_doi_to_openalex"),
+    "_get_ollama_embedding_batch": ("cli.cmd.dedup_semantic", "_get_ollama_embedding_batch"),
+    "_extract_references_from_text": ("cli.cmd.cite_graph", "_extract_references_from_text"),
+    "infer_tags_if_empty": ("cli._shared", "infer_tags_if_empty"),
+    "Database": ("db", "Database"),
+    # Module-level re-exports (used by tests for mock.patch)
+    "argparse": ("argparse", None),
+    "Colors": ("cli._shared", "Colors"),
+    "colored": ("cli._shared", "colored"),
+    "print_success": ("cli._shared", "print_success"),
+    "print_error": ("cli._shared", "print_error"),
+    "print_warning": ("cli._shared", "print_warning"),
+    "print_info": ("cli._shared", "print_info"),
+    "print_header": ("cli._shared", "print_header"),
+}
+
+_cache = {}
+
+
+def __getattr__(name):
+    if name in _cache:
+        return _cache[name]
+    if name in _LAZY_EXPORTS:
+        mod_path, fn_name = _LAZY_EXPORTS[name]
+        mod = importlib.import_module(mod_path)
+        val = mod if fn_name is None else getattr(mod, fn_name)
+        _cache[name] = val
+        return val
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

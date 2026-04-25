@@ -5,74 +5,89 @@
   <title>AI Research OS — Knowledge Graph</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7/7/d3.min.js"></script>
   <style>
-    body { margin:0; font-family: Arial, sans-serif; background:#1a1a2e; color:#eee; }
-    svg { width:100vw; height:100vh; }
-    .node circle { stroke:#fff; stroke-width:1.5px; cursor:pointer; }
-    .node text { font-size:11px; fill:#eee; pointer-events:none; }
-    .link { stroke:#555; stroke-opacity:0.6; }
-    #tooltip { position:fixed; background:#222; border:1px solid #555; padding:8px; border-radius:4px; font-size:12px; display:none; max-width:300px; }
+    body{margin:0;font-family:Arial,sans-serif;background:#1a1a2e;color:#eee;}
+    svg{width:100vw;height:100vh;display:block;}
+    .node circle{stroke:#fff;stroke-width:1.5px;cursor:pointer;}
+    .node text{font-size:11px;fill:#eee;pointer-events:none;}
+    .link{stroke:#555;stroke-opacity:0.6;}
+    #tooltip{position:fixed;background:#222;border:1px solid #555;padding:10px;
+             border-radius:6px;font-size:12px;display:none;max-width:320px;
+             z-index:9;box-shadow:0 4px 12px rgba(0,0,0,.5);pointer-events:none;}
+    #legend{position:fixed;top:12px;left:12px;background:#222;border:1px solid #444;
+            padding:10px 14px;border-radius:6px;font-size:12px;z-index:10;}
+    #legend span{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+    #title-bar{position:fixed;top:12px;right:12px;background:#222;border:1px solid #444;
+                padding:8px 14px;border-radius:6px;font-size:12px;z-index:10;color:#aaa;}
   </style>
 </head>
 <body>
 <div id="tooltip"></div>
+<div id="legend"></div>
+<div id="title-bar"></div>
 <svg id="graph"></svg>
 <script>
-const COLOR_MAP = {
-  Paper:   "#4A90E2", PNote:  "#50C878", CNote:  "#F4D03F",
-  MNote:   "#E74C3C", Tag:    "#9B59B6", Author: "#E67E22"
-};
-const W = window.innerWidth, H = window.innerHeight;
-
-d3.json("DATA_URL").then(data => {
-  const nodes = data.nodes.map(d => Object.assign({}, d));
-  const links = data.links.map(d => Object.assign({}, d));
-
-  const sim = d3.forceSimulation(nodes)
-    .force("link", d3.forceLink(links).id(d => d.id).distance(80))
-    .force("charge", d3.forceManyBody().strength(-200))
-    .force("center", d3.forceCenter(W/2, H/2))
-    .force("collide", d3.forceCollide(20));
-
-  const svg = d3.select("svg");
-  svg.append("defs").selectAll("marker")
-    .data(["cite","same_tag","in_comparison","has_note","about_tag"])
-    .enter().append("marker")
-      .attr("id", d => `arrow-${d}`)
-      .attr("viewBox","0 -5 10 10").attr("refX",18).attr("refY",0)
-      .attr("markerWidth",6).attr("markerHeight",6)
-      .attr("orient","auto")
-    .append("path").attr("d","M0,-5L10,0L0,5").attr("fill","#888");
-
-  const link = svg.append("g").selectAll("line").data(links).enter()
-    .append("line").attr("class","link")
-    .attr("stroke-width", d => d.weight || 1)
-    .attr("stroke", d => ({cite:"#aaa",same_tag:"#9B59B6",in_comparison:"#E74C3C",has_note:"#50C878",about_tag:"#F4D03F"}[d.relation]||"#555"))
-    .attr("marker-end", d => `url(#arrow-${d.relation})`);
-
-  const node = svg.append("g").selectAll("g").data(nodes).enter().append("g")
-    .attr("class","node").call(d3.drag()
-      .on("start", (e,d) => { if(!e.active) sim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
-      .on("drag", (e,d) => { d.fx=e.x; d.fy=e.y; })
-      .on("end", (e,d) => { if(!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; }))
-    .on("click", (e,d) => {
-      const tip = document.getElementById("tooltip");
-      tip.style.display = "block";
-      tip.style.left = (e.clientX+10)+"px";
-      tip.style.top  = (e.clientY+10)+"px";
-      tip.innerHTML = `<b>${d.type}</b><br>${d.label}<br><small>${d.entity_id || ""}</small>`;
-    });
-
-  node.append("circle").attr("r", 8)
-    .attr("fill", d => COLOR_MAP[d.type] || "#aaa");
-  node.append("text").attr("dx", 12).attr("dy", 4)
-    .text(d => (d.label||"").slice(0,30));
-
-  sim.on("tick", () => {
-    link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y)
-        .attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
-    node.attr("transform", d => `translate(${d.x},${d.y})`);
+(function(){
+  var _e=function(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;};
+  var _q=function(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
+  var COLOR_MAP={Paper:"#4A90E2",PNote:"#50C878",CNote:"#F4D03F",MNote:"#E74C3C",Tag:"#9B59B6",Author:"#E67E22",default:"#aaa"};
+  var EDGE_COLORS={cite:"#aaa",same_tag:"#9B59B6",in_comparison:"#E74C3C",has_note:"#50C878",about_tag:"#F4D03F",default:"#555"};
+  var DATA={"nodes":INJECT_NODES,"links":INJECT_LINKS};
+  var nodes=DATA.nodes.map(function(d){return Object.assign({},d);});
+  var links=DATA.links.map(function(d){return Object.assign({},d);});
+  var legend=document.getElementById("legend");
+  var typeCounts={};
+  nodes.forEach(function(n){typeCounts[n.type]=typeCounts[n.type]||0+1;});
+  var legHtml=Object.keys(typeCounts).map(function(t){
+    return '<div style="margin-bottom:4px"><span style="background:'+(COLOR_MAP[t]||COLOR_MAP.default)+';display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle"></span>'+_q(t)+' ('+typeCounts[t]+')</div>';
+  }).join("");
+  legend.innerHTML=legHtml;
+  document.getElementById("title-bar").textContent=nodes.length+' nodes · '+links.length+' edges — AI Research OS';
+  var W=window.innerWidth,H=window.innerHeight;
+  var svg=d3.select("svg");
+  Object.keys(EDGE_COLORS).forEach(function(r){
+    svg.append("defs").append("marker")
+      .attr("id","arrow-"+r).attr("viewBox","0 -5 10 10")
+      .attr("refX",20).attr("refY",0).attr("markerWidth",6).attr("markerHeight",6).attr("orient","auto")
+    .append("path").attr("d","M0,-5L10,0L0,5").attr("fill",EDGE_COLORS[r]);
   });
-});
+  var sim=d3.forceSimulation(nodes)
+    .force("link",d3.forceLink(links).id(function(d){return d.id;}).distance(90))
+    .force("charge",d3.forceManyBody().strength(-250))
+    .force("center",d3.forceCenter(W/2,H/2))
+    .force("collide",d3.forceCollide(24));
+  var link=svg.append("g").selectAll("line").data(links).enter().append("line")
+    .attr("class","link")
+    .attr("stroke-width",function(d){return d.weight||1;})
+    .attr("stroke",function(d){return EDGE_COLORS[d.relation]||EDGE_COLORS.default;})
+    .attr("marker-end",function(d){return "url(#arrow-"+d.relation+")";});
+  var node=svg.append("g").selectAll("g").data(nodes).enter().append("g")
+    .attr("class","node").call(d3.drag()
+      .on("start",function(e,d){if(!e.active)sim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y;})
+      .on("drag",function(e,d){d.fx=e.x;d.fy=e.y;})
+      .on("end",function(e,d){if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}))
+    .on("click",function(e,d){
+      var tip=document.getElementById("tooltip");
+      var typeColor=COLOR_MAP[d.type]||COLOR_MAP.default;
+      var label=typeof d.label==="string"?_e(d.label):"";
+      var entityId=typeof d.entity_id==="string"?_e(d.entity_id):"";
+      tip.innerHTML='<b style="color:'+typeColor+'">'+_q(d.type)+'</b><div style="margin-top:6px">'+label+'</div>'+
+        (entityId?'<div style="margin-top:4px;color:#888;font-size:11px">'+entityId+'</div>':"");
+      tip.style.display="block";tip.style.left=(e.clientX+14)+"px";tip.style.top=(e.clientY+14)+"px";
+    });
+  document.addEventListener("click",function(e){
+    if(!e.target.closest(".node")&&!e.target.closest("#tooltip"))
+      document.getElementById("tooltip").display="none";
+  });
+  node.append("circle").attr("r",function(d){return d.entity_id?9:7;})
+    .attr("fill",function(d){return COLOR_MAP[d.type]||COLOR_MAP.default;});
+  node.append("text").attr("dx",12).attr("dy",4)
+    .text(function(d){var l=typeof d.label==="string"?d.label:"";return l.slice(0,28);});
+  sim.on("tick",function(){
+    link.attr("x1",function(d){return d.source.x;}).attr("y1",function(d){return d.source.y;})
+        .attr("x2",function(d){return d.target.x;}).attr("y2",function(d){return d.target.y;});
+    node.attr("transform",function(d){return "translate("+d.x+","+d.y+")";});
+  });
+})();
 </script>
 </body>
 </html>

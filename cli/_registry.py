@@ -94,51 +94,24 @@ def main(argv: Optional[List[str]] = None) -> int:
         except Exception:
             args.model = "qwen3.5-plus"
 
-    # Dispatch to command handlers
-    import cli
-    if args.subcmd == "search":
-        return cli._run_search(args)
-    elif args.subcmd == "list":
-        return cli._run_list(args)
-    elif args.subcmd == "status":
-        return cli._run_status(args)
-    elif args.subcmd == "queue":
-        return cli._run_queue(args)
-    elif args.subcmd == "cache":
-        return cli._run_cache(args)
-    elif args.subcmd == "dedup":
-        return cli._run_dedup(args)
-    elif args.subcmd == "merge":
-        return cli._run_merge(args)
-    elif args.subcmd == "stats":
-        return cli._run_stats(args)
-    elif args.subcmd == "import":
-        return cli._run_import(args)
-    elif args.subcmd == "export":
-        return cli._run_export(args)
-    elif args.subcmd == "citations":
-        return cli._run_citations(args)
-    elif args.subcmd == "cite-graph":
-        return cli._run_cite_graph(args)
-    elif args.subcmd == "cite-import":
-        return cli._run_cite_import(args)
-    elif args.subcmd == "cite-fetch":
-        return cli._run_cite_fetch(args)
-    elif args.subcmd == "cite-stats":
-        return cli._run_cite_stats(args)
-    elif args.subcmd == "dedup-semantic":
-        return cli._run_dedup_semantic(args)
-    elif args.subcmd == "research":
-        return cli._run_research_cmd(args)
-    elif args.subcmd == "similar":
-        return cli._run_similar(args)
-    elif args.subcmd == "kg":
-        return cli._run_kg(args)
+    # Lazy dispatch — attribute name so test mocks on cli._run_X take effect
+    dispatch = {
+        "search": "_run_search", "list": "_run_list", "status": "_run_status",
+        "queue": "_run_queue", "cache": "_run_cache", "dedup": "_run_dedup",
+        "merge": "_run_merge", "stats": "_run_stats", "import": "_run_import",
+        "export": "_run_export", "citations": "_run_citations",
+        "cite-graph": "_run_cite_graph", "cite-import": "_run_cite_import",
+        "cite-fetch": "_run_cite_fetch", "cite-stats": "_run_cite_stats",
+        "dedup-semantic": "_run_dedup_semantic", "research": "_run_research_cmd",
+        "similar": "_run_similar", "kg": "_run_kg",
+    }
+    if args.subcmd in dispatch:
+        import cli as _cli
+        return getattr(_cli, dispatch[args.subcmd])(args)
     elif args.subcmd == "watch":
         from core.watch_papers import watch_and_rebuild
-        papers_json = args.papers_json or None
         watch_and_rebuild(
-            papers_json=papers_json,
+            papers_json=args.papers_json or None,
             interval=args.poll_interval,
             incremental=not args.no_incremental,
         )
