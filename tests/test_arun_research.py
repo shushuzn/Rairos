@@ -50,7 +50,7 @@ class TestArunResearch:
             pdf_path.write_bytes(b"%PDF-1.4 test")
             return pdf_path
 
-        with patch("research_loop.search_arxiv", return_value=[paper]), \
+        with patch("research_loop.core.search_arxiv", return_value=[paper]), \
              patch("pdf.extract.extract_pdf_text", return_value="Extracted text."), \
              patch("pdf.extract_async.download_pdf_async", side_effect=mock_download):
             from llm import client_async
@@ -76,7 +76,7 @@ class TestArunResearch:
         """Without API key, arun_research produces metadata-only notes."""
         paper = _make_paper(uid="2301.00002")
 
-        with patch("research_loop.search_arxiv", return_value=[paper]), \
+        with patch("research_loop.core.search_arxiv", return_value=[paper]), \
              patch("pdf.extract_async.download_pdf_async", new_callable=AsyncMock) as mock_dl, \
              patch("pdf.extract.extract_pdf_text", return_value="Some text"):
             mock_dl.side_effect = Exception("no pdf")
@@ -104,7 +104,7 @@ class TestArunResearch:
         note_path = tmp_output_dir / uid_filename
         note_path.write_text("Already exists", encoding="utf-8")
 
-        with patch("research_loop.search_arxiv", return_value=[paper]):
+        with patch("research_loop.core.search_arxiv", return_value=[paper]):
             paths = await arun_research(
                 query="test",
                 output_dir=tmp_output_dir,
@@ -122,7 +122,7 @@ class TestArunResearch:
     @pytest.mark.asyncio
     async def test_empty_search_returns_empty_list(self, tmp_output_dir):
         """Empty search result returns an empty list without error."""
-        with patch("research_loop.search_arxiv", return_value=[]):
+        with patch("research_loop.core.search_arxiv", return_value=[]):
             paths = await arun_research(
                 query="nonexistent query xyz",
                 output_dir=tmp_output_dir,
@@ -135,7 +135,7 @@ class TestArunResearch:
     @pytest.mark.asyncio
     async def test_search_error_returns_empty(self, tmp_output_dir):
         """RuntimeError from search_arxiv is caught and returns []."""
-        with patch("research_loop.search_arxiv", side_effect=RuntimeError("Network error")):
+        with patch("research_loop.core.search_arxiv", side_effect=RuntimeError("Network error")):
             paths = await arun_research(
                 query="test",
                 output_dir=tmp_output_dir,
@@ -170,7 +170,7 @@ class TestArunResearch:
             pdf_path.write_bytes(b"%PDF-1.4")
             return pdf_path
 
-        with patch("research_loop.search_arxiv", return_value=papers), \
+        with patch("research_loop.core.search_arxiv", return_value=papers), \
              patch("pdf.extract.extract_pdf_text", return_value="Extracted text."), \
              patch("pdf.extract_async.download_pdf_async", side_effect=mock_download):
             from llm import client_async
@@ -228,7 +228,7 @@ class TestArunResearch:
             pdf_path.write_bytes(pdf_bytes)
             return pdf_path
 
-        with patch("research_loop.search_arxiv", return_value=papers), \
+        with patch("research_loop.core.search_arxiv", return_value=papers), \
              patch("pdf.extract.extract_pdf_text", return_value="Extracted text."), \
              patch("pdf.extract_async.download_pdf_async", side_effect=flaky_download):
             from llm import client_async
@@ -270,7 +270,7 @@ class TestArunResearch:
             pdf_path.write_bytes(b"%PDF-1.4")
             return pdf_path
 
-        with patch("research_loop.search_arxiv", return_value=papers), \
+        with patch("research_loop.core.search_arxiv", return_value=papers), \
              patch("pdf.extract.extract_pdf_text", return_value="Extracted text."), \
              patch("pdf.extract_async.download_pdf_async", side_effect=mock_dl):
             from llm import client_async

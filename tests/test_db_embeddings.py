@@ -354,7 +354,7 @@ class TestRunDedupSemantic:
         mock_db = MagicMock()
         mock_db_cls.return_value = mock_db
 
-        with patch("cli._generate_missing_embeddings", return_value=(3, 1)) as mock_gen:
+        with patch("cli.cmd.dedup_semantic._generate_missing_embeddings", return_value=(3, 1)) as mock_gen:
             from cli import _run_dedup_semantic
             args = make_args(generate=True)
             result = _run_dedup_semantic(args)

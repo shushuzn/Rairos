@@ -19,7 +19,6 @@ from research_loop.core import (
     Metrics,
     _build_research_note,
 )
-
 # Pipeline classes
 from research_loop.paper2code_integration import PaperPipeline
 from research_loop.evoskill_integration import EvoSkillPipeline
