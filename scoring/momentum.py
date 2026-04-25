@@ -1,7 +1,6 @@
 """Research momentum / paper importance scoring.
 
 Formula:
-from typing import Optional, Union
     score = citation_score * 0.3
           + tag_popularity * 0.25
           + recency_boost * 0.2
