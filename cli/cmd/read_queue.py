@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 import os
 import warnings
@@ -224,26 +224,129 @@ def _build_read_queue_parser(subparsers) -> argparse.ArgumentParser:
         "--explain-model", type=str, default=None,
         help="LLM model for explanations (default: from config)",
     )
+    # Reading status management
+    p.add_argument(
+        "--start", metavar="PAPER_ID",
+        help="Start reading a paper (set status to 'reading')",
+    )
+    p.add_argument(
+        "--done", metavar="PAPER_ID",
+        help="Mark a paper as completed",
+    )
+    p.add_argument(
+        "--status", metavar="PAPER_ID", nargs="?", const="",
+        help="Check reading status of a paper, or list all reading papers",
+    )
+    p.add_argument(
+        "--reset", metavar="PAPER_ID",
+        help="Reset reading status to 'unread'",
+    )
     return p
+
+
+def _handle_status_action(args: argparse.Namespace, db) -> Optional[int]:
+    """Handle --start, --done, --status, --reset actions. Returns exit code or None to continue."""
+    from cli._shared import print_success, print_error, print_info
+
+    # --status: show status
+    if args.status is not None:
+        if args.status == "":
+            # List all reading papers
+            reading = db.get_papers_by_reading_status("reading", limit=50)
+            completed = db.get_papers_by_reading_status("completed", limit=50)
+            if not reading and not completed:
+                print_info("No papers currently reading or completed.")
+            if reading:
+                print(colored("📖 正在阅读", Colors.HEADER))
+                print("-" * 60)
+                for i, p in enumerate(reading, 1):
+                    started = p.reading_started_at or "N/A"
+                    print(f"  {i}. {p.id} — {p.title[:50]}")
+                    print(f"     开始于: {started}")
+                print()
+            if completed:
+                print(colored("✅ 已完成", Colors.HEADER))
+                print("-" * 60)
+                for i, p in enumerate(completed, 1):
+                    completed_at = p.reading_completed_at or "N/A"
+                    print(f"  {i}. {p.id} — {p.title[:50]}")
+                    print(f"     完成于: {completed_at}")
+            return 0
+        else:
+            # Show specific paper status
+            info = db.get_reading_status(args.status)
+            if info is None:
+                print_error(f"Paper not found: {args.status}")
+                return 1
+            title = db.get_paper_title(args.status)
+            status_map = {"unread": "未读", "reading": "📖 正在阅读", "completed": "✅ 已完成"}
+            status_text = status_map.get(info["status"], info["status"])
+            print(f"📄 {args.status}")
+            print(f"   标题: {title[:60] if title else 'N/A'}")
+            print(f"   状态: {status_text}")
+            if info["started_at"]:
+                print(f"   开始于: {info['started_at']}")
+            if info["completed_at"]:
+                print(f"   完成于: {info['completed_at']}")
+            return 0
+
+    # --start: begin reading
+    if args.start:
+        if not db.paper_exists(args.start):
+            print_error(f"Paper not found: {args.start}")
+            return 1
+        title = db.get_paper_title(args.start)
+        db.update_reading_status(args.start, "reading")
+        print_success(f"Started reading: {args.start}")
+        if title:
+            print(f"   {title[:60]}")
+        return 0
+
+    # --done: mark completed
+    if args.done:
+        if not db.paper_exists(args.done):
+            print_error(f"Paper not found: {args.done}")
+            return 1
+        title = db.get_paper_title(args.done)
+        db.update_reading_status(args.done, "completed")
+        print_success(f"Marked as completed: {args.done}")
+        if title:
+            print(f"   {title[:60]}")
+        return 0
+
+    # --reset: reset to unread
+    if args.reset:
+        if not db.paper_exists(args.reset):
+            print_error(f"Paper not found: {args.reset}")
+            return 1
+        title = db.get_paper_title(args.reset)
+        db.update_reading_status(args.reset, "unread")
+        print_success(f"Reset reading status: {args.reset}")
+        if title:
+            print(f"   {title[:60]}")
+        return 0
+
+    return None  # No status action taken, continue with normal flow
 
 
 def _run_read_queue(args: argparse.Namespace) -> int:
     db = get_db()
     db.init()
 
-    # Get candidate papers (unread/pending)
+    # Handle reading status actions first
+    result = _handle_status_action(args, db)
+    if result is not None:
+        return result
+
+    # Get candidate papers — exclude completed papers from reading queue
     candidates, total = db.search_papers(
         query="",
-        limit=200,  # Get candidates from DB
-        parse_status="pending"  # Not yet read
+        limit=200,
     )
 
-    if not candidates:
-        # Fall back to all papers if no pending
-        candidates, total = db.search_papers(
-            query="",
-            limit=200,
-        )
+    # Filter out completed papers from recommendations
+    completed_ids = {p.id for p in db.get_papers_by_reading_status("completed", limit=1000)}
+    candidates = [p for p in candidates if p.paper_id not in completed_ids]
 
     # Apply filters
     if args.tag:

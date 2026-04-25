@@ -274,6 +274,10 @@ class PaperRecord:
     mnote_path: str = ""
     embed_vector: Any = field(default=None)
     tags: List[str] = field(default_factory=list)
+    # Reading status fields
+    reading_status: str = "unread"
+    reading_started_at: Optional[str] = None
+    reading_completed_at: Optional[str] = None
 
     @classmethod
     def from_row(cls, row: sqlite3.Row) -> PaperRecord:
@@ -571,6 +575,71 @@ class Database:
                 self._sync_fts(paper_id, title_val or "", abstract_val or "")
         except sqlite3.Error as e:
             raise DatabaseError(f"update_parse_status({paper_id!r}) failed: {e}") from e
+
+    def update_reading_status(
+        self,
+        paper_id: str,
+        status: str,
+    ) -> bool:
+        """Update reading status and timestamps. Returns True if paper was found."""
+        valid_statuses = {"unread", "reading", "completed"}
+        if status not in valid_statuses:
+            raise DatabaseError(f"Invalid reading status: {status!r}. Must be one of {valid_statuses}")
+        now = _utcnow()
+        try:
+            with self.transaction():
+                cur = self.conn.cursor()
+                if status == "reading":
+                    cur.execute(
+                        "UPDATE papers SET reading_status=?, reading_started_at=? WHERE id=?",
+                        (status, now, paper_id),
+                    )
+                elif status == "completed":
+                    cur.execute(
+                        "UPDATE papers SET reading_status=?, reading_completed_at=? WHERE id=?",
+                        (status, now, paper_id),
+                    )
+                else:  # unread
+                    cur.execute(
+                        "UPDATE papers SET reading_status=?, reading_started_at=NULL, reading_completed_at=NULL WHERE id=?",
+                        (status, paper_id),
+                    )
+            return cur.rowcount > 0
+        except sqlite3.Error as e:
+            raise DatabaseError(f"update_reading_status({paper_id!r}) failed: {e}") from e
+
+    def get_reading_status(self, paper_id: str) -> Optional[Dict[str, Any]]:
+        """Return reading status info for a paper, or None if not found."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute(
+                "SELECT reading_status, reading_started_at, reading_completed_at FROM papers WHERE id=?",
+                (paper_id,),
+            )
+            row = cur.fetchone()
+            if row is None:
+                return None
+            return {
+                "status": row["reading_status"] or "unread",
+                "started_at": row["reading_started_at"],
+                "completed_at": row["reading_completed_at"],
+            }
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_reading_status({paper_id!r}) failed: {e}") from e
+
+    def get_papers_by_reading_status(
+        self, status: str, limit: int = 100
+    ) -> List["PaperRecord"]:
+        """Return papers with a given reading status."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute(
+                "SELECT * FROM papers WHERE reading_status=? ORDER BY reading_started_at DESC LIMIT ?",
+                (status, limit),
+            )
+            return [PaperRecord.from_row(row) for row in cur.fetchall()]
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_papers_by_reading_status({status!r}) failed: {e}") from e
 
     def paper_count(self, status: Optional[str] = None) -> int:
         """Return total paper count, optionally filtered by parse status."""

@@ -13,7 +13,7 @@ from typing import Callable, Final
 logger = logging.getLogger(__name__)
 
 # Current schema version — bump whenever you add a new migration.
-CURRENT_VERSION: Final[int] = 1
+CURRENT_VERSION: Final[int] = 2
 
 # Type alias for migration functions.
 Migration = Callable[[sqlite3.Connection], None]
@@ -61,9 +61,34 @@ def _m1_add_citations_and_tables(conn: sqlite3.Connection) -> None:
     """)
 
 
+def _m2_add_reading_status(conn: sqlite3.Connection) -> None:
+    """Migration 2: Add reading status tracking columns.
+
+    Tracks user reading progress: unread -> reading -> completed
+    """
+    try:
+        conn.execute("ALTER TABLE papers ADD COLUMN reading_status TEXT DEFAULT 'unread'")
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+    try:
+        conn.execute("ALTER TABLE papers ADD COLUMN reading_started_at TEXT")
+    except sqlite3.OperationalError:
+        pass
+    try:
+        conn.execute("ALTER TABLE papers ADD COLUMN reading_completed_at TEXT")
+    except sqlite3.OperationalError:
+        pass
+    # Create index for faster reading status queries
+    try:
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_papers_reading_status ON papers(reading_status)")
+    except sqlite3.OperationalError:
+        pass
+
+
 # Registry — key = version this migration brings you TO
 _MIGRATIONS: dict[int, Migration] = {
     1: _m1_add_citations_and_tables,
+    2: _m2_add_reading_status,
 }
 
 
