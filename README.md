@@ -1,12 +1,14 @@
 # AI Research OS
 
-**A Structured Research Operating System for Serious AI Researchers**
+**A Self-Evolving Research Operating System for AI Researchers**
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![Tests](https://github.com/shushuzn/ai_research_os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/ai_research_os/actions)
 [![License](https://img.shields.io/badge/License-Research--Only-purple)](#license)
 
 ## What It Does
+
+AI Research OS is a **self-evolving research system** that learns from your usage patterns. It's not just a paper manager — it's a research partner that grows smarter over time.
 
 Feed it a paper (arXiv URL, DOI, or PDF). Get back a **P-Note**, **C-Note**, **Radar entry**, and **Timeline entry** — all structured, tagged, and cross-linked.
 
@@ -17,7 +19,20 @@ Feed it a paper (arXiv URL, DOI, or PDF). Get back a **P-Note**, **C-Note**, **R
 | Local PDF | P-Note + C-Note + Radar + Timeline |
 | Scanned PDF | Same (via OCR) |
 
-This is **not a PDF manager**. It is a **Cognitive Upgrade System** that enforces structured thinking, explicit reasoning, and long-term research tracking.
+This is **not a PDF manager**. It is a **Self-Evolving System** that:
+- Learns from your research patterns
+- Improves answers over time
+- Adapts to your specific domain
+
+## Core Features
+
+| Feature | Description |
+|---------|-------------|
+| `airos import` | Import papers from arXiv, DOI, PDF |
+| `airos chat` | RAG-powered Q&A with your papers |
+| `airos slides` | Auto-generate presentations |
+| `airos kg` | Knowledge graph visualization |
+| Evolution | Self-improvement via Gene/Capsule patterns |
 
 ## Quick Start
 
