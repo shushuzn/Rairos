@@ -41,6 +41,7 @@ _SUBCOMMAND_TABLE = [
     ("repl",          "cli.cmd.repl",             "_build_repl_parser"),
     ("read-queue",    "cli.cmd.read_queue",       "_build_read_queue_parser"),
     ("chat",          "cli.cmd.chat",             "_build_chat_parser"),
+    ("slides",        "cli.cmd.slides",           "_build_slides_parser"),
 ]
 SUBCOMMANDS = {name for name, _, _ in _SUBCOMMAND_TABLE}
 
@@ -109,6 +110,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "similar": "_run_similar", "kg": "_run_kg",
         "read-queue": "_run_read_queue",
         "chat": "_run_chat",
+        "slides": "_run_slides",
     }
     if args.subcmd in dispatch:
         import cli as _cli
@@ -127,6 +129,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     elif args.subcmd == "rag":
         from cli.cmd.rag import rag as rag_cmd
         return rag_cmd.main(args.argv if hasattr(args, "argv") else [])
+    elif args.subcmd == "slides":
+        from cli.cmd.slides import slides as slides_cmd
+        return slides_cmd.main(args.argv if hasattr(args, "argv") else [])
     elif args.subcmd == "visual":
         from cli.cmd.visual import visual as visual_cmd
         return visual_cmd.main(args.argv if hasattr(args, "argv") else [])

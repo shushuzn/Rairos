@@ -56,6 +56,8 @@ _LAZY_EXPORTS = {
     "_build_read_queue_parser": ("cli.cmd.read_queue",     "_build_read_queue_parser"),
     "_run_chat":             ("cli.cmd.chat",              "_run_chat"),
     "_build_chat_parser":     ("cli.cmd.chat",              "_build_chat_parser"),
+    "_run_slides":           ("cli.cmd.slides",            "_run_slides"),
+    "_build_slides_parser":   ("cli.cmd.slides",            "_build_slides_parser"),
     "infer_tags_if_empty": ("cli._shared", "infer_tags_if_empty"),
     "Database": ("db", "Database"),
     # Module-level re-exports (used by tests for mock.patch)
