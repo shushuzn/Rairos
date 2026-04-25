@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 SUBCOMMANDS = {
     "search", "list", "status", "queue", "cache", "dedup", "merge", "stats",
     "import", "export", "citations", "cite-graph", "cite-import", "cite-fetch",
-    "cite-stats", "dedup-semantic", "research", "similar", "kg",
+    "cite-stats", "dedup-semantic", "research", "similar", "kg", "paper2code",
 }
 
 
@@ -55,6 +55,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     from cli.cmd.cite_import import _build_cite_import_parser
     from cli.cmd.cite_stats import _build_cite_stats_parser
     from cli.cmd.cache import _build_cache_parser
+    from cli.cmd.paper2code import _build_paper2code_parser
 
     _build_search_parser(subparsers)
     _build_research_parser(subparsers)
@@ -75,6 +76,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     _build_dedup_semantic_parser(subparsers)
     _build_similar_parser(subparsers)
     _build_kg_parser(subparsers)
+    _build_paper2code_parser(subparsers)
 
     # Watch command (inline)
     p = subparsers.add_parser("watch", help="Watch papers.json and auto-rebuild KG on changes")
