@@ -14,6 +14,7 @@ SUBCOMMANDS = {
     "search", "list", "status", "queue", "cache", "dedup", "merge", "stats",
     "import", "export", "citations", "cite-graph", "cite-import", "cite-fetch",
     "cite-stats", "dedup-semantic", "research", "similar", "kg", "paper2code",
+    "evoskill",
 }
 
 
@@ -56,6 +57,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     from cli.cmd.cite_stats import _build_cite_stats_parser
     from cli.cmd.cache import _build_cache_parser
     from cli.cmd.paper2code import _build_paper2code_parser
+    from cli.cmd.evoskill import _build_evoskill_parser
 
     _build_search_parser(subparsers)
     _build_research_parser(subparsers)
@@ -77,6 +79,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     _build_similar_parser(subparsers)
     _build_kg_parser(subparsers)
     _build_paper2code_parser(subparsers)
+    _build_evoskill_parser(subparsers)
 
     # Watch command (inline)
     p = subparsers.add_parser("watch", help="Watch papers.json and auto-rebuild KG on changes")
@@ -152,6 +155,9 @@ def main(argv: Optional[List[str]] = None) -> int:
             incremental=not args.no_incremental,
         )
         return 0
+    elif args.subcmd == "evoskill":
+        from cli.cmd.evoskill import evoskill as evoskill_cmd
+        return evoskill_cmd.main(args.argv if hasattr(args, "argv") else [])
     return 0
 
 
