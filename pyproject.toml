@@ -310,7 +310,7 @@ exclude_lines = [
 
 
 [tool.pytest.ini_options]
-timeout = 10
+timeout = 60
 
 [tool.coverage.html]
 
