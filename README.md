@@ -178,6 +178,8 @@ Paper → P-Note (paper note)
 | `cache --stats\|--clear\|--get UID\|--set UID PATH` | Manage paper cache |
 | `import [ID ...]` | Batch add papers by arXiv ID / DOI / URL |
 | `import --file FILE` | Batch add from file (one ID per line) |
+| `import --checkpoint FILE` | Save progress to checkpoint file |
+| `import --resume --checkpoint FILE` | Resume from checkpoint |
 | `export` | Export DB to CSV or JSON |
 | `search [QUERY]` | Full-text search with filters |
 | `list` | List papers with sort/filter |
@@ -195,6 +197,15 @@ Paper → P-Note (paper note)
 | `cite-import [--file FILE]` | Bulk import citation edges from JSON |
 | `cite-stats` | Citation graph statistics |
 | `cite-stats --top 10` | Top cited papers |
+| `paper2code PAPER_ID [--mode minimal\|standard]` | Generate code implementation from paper |
+| `paper2code --rebuild PAPER_ID` | Rebuild implementation for existing paper |
+| `evoskill --init --task TASK --dataset CSV` | Initialize EvoSkill benchmark |
+| `evoskill --benchmark [--continue]` | Run benchmark evaluation |
+| `evoskill --report` | Generate evaluation report |
+| `rag PAPER_ID [--mode minimal]` | Run RAG pipeline (paper2code + tests + benchmark) |
+| `visual PAPER_ID [--output DIR]` | Extract figures, formulas, tables from PDF |
+| `kg [--export FORMAT]` | Build/query knowledge graph |
+| `research [--loop] [--limit N]` | Run continuous research loop |
 
 ### Ollama (semantic dedup)
 
@@ -450,6 +461,15 @@ ai_research_os/
 | `cite-import [--file FILE]` | 批量导入引用边（JSON） |
 | `cite-stats` | 引用图统计 |
 | `cite-stats --top 10` | 引用最多的论文 |
+| `paper2code PAPER_ID [--mode minimal\|standard]` | 从论文生成代码实现 |
+| `paper2code --rebuild PAPER_ID` | 重建已有论文的实现 |
+| `evoskill --init --task TASK --dataset CSV` | 初始化 EvoSkill benchmark |
+| `evoskill --benchmark [--continue]` | 运行 benchmark 评估 |
+| `evoskill --report` | 生成评估报告 |
+| `rag PAPER_ID [--mode minimal]` | 运行 RAG 管道（论文→代码→测试→benchmark） |
+| `visual PAPER_ID [--output DIR]` | 从 PDF 提取图表、公式、表格 |
+| `kg [--export FORMAT]` | 构建/查询知识图谱 |
+| `research [--loop] [--limit N]` | 运行持续研究循环 |
 
 ### Ollama（语义查重）
 
