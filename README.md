@@ -118,6 +118,24 @@ Run `python -m cli <command> --help` for any command. Key commands:
 For the complete command reference, see [ADVANCED_COMMANDS.md](ADVANCED_COMMANDS.md).
 For Chinese documentation, see [README.zh-CN.md](README.zh-CN.md).
 
+## Shell Completions
+
+Install tab completion for your shell:
+
+```bash
+# Fish
+cp completions/fish ~/.config/fish/completions/airos.fish
+
+# Zsh
+cp completions/zsh _airos ~/.zsh/completion/_airos
+
+# Bash
+source completions/bash
+# Or: cp completions/bash /etc/bash_completion.d/airos
+```
+
+After installation, `airos <Tab>` and `python -m cli <Tab>` will show all 23 subcommands with descriptions.
+
 ## Testing
 
 ```bash

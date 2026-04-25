@@ -1,8 +1,4 @@
 #compdef airos
-
-# AI Research OS — Zsh completions
-# Install: cp completions/zsh _airos ~/.zsh/completion/_airos
-
 _airos() {
   local -a commands
   commands=(
@@ -31,16 +27,9 @@ _airos() {
     'visual:Extract figures/formulas from PDF'
     'watch:Watch papers.json and auto-rebuild KG'
   )
-
-  _arguments -C \
-    '1: :->command' \
-    '*:: :->args' && ret=0
-
+  _arguments -C '1: :->command' '*:: :->args' && ret=0
   case $state in
-    command)
-      _describe 'command' commands && ret=0
-      ;;
+    command) _describe 'command' commands && ret=0 ;;
   esac
 }
-
 _airos "$@"
