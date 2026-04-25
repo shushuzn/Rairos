@@ -4,13 +4,14 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from core.basics import get_default_radar_dir, read_text, write_text
+from core._constants import RADAR_FILE
 
 # In-memory accumulation for batch updates — keyed by (root, tag)
 _pending: Dict[tuple, Dict[str, Any]] = {}
 
 
 def ensure_radar(root: Path) -> Path:
-    p = root / get_default_radar_dir() / "Radar.md"
+    p = root / get_default_radar_dir() / RADAR_FILE
     if p.exists():
         return p
 
