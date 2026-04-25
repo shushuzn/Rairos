@@ -489,7 +489,7 @@ ollama pull nomic-embed-text
 python -B -m pytest tests/ -q
 ```
 
-**当前状态**: 795 测试通过，1 跳过。
+**当前状态**: 1034 测试通过，1 跳过。
 
 ---
 
