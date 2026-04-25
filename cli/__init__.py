@@ -50,6 +50,8 @@ _LAZY_EXPORTS = {
     "_arxiv_doi_to_openalex": ("cli.cmd.cite_fetch", "_arxiv_doi_to_openalex"),
     "_get_ollama_embedding_batch": ("cli.cmd.dedup_semantic", "_get_ollama_embedding_batch"),
     "_extract_references_from_text": ("cli.cmd.cite_graph", "_extract_references_from_text"),
+    "_run_repl":             ("cli.cmd.repl",              "_run_repl"),
+    "_build_repl_parser":    ("cli.cmd.repl",              "_build_repl_parser"),
     "infer_tags_if_empty": ("cli._shared", "infer_tags_if_empty"),
     "Database": ("db", "Database"),
     # Module-level re-exports (used by tests for mock.patch)

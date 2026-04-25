@@ -10,6 +10,7 @@ from cli._shared import get_db
 from cli._shared import (
     Colors, colored, print_success, print_error, print_warning, print_info, print_header,
 )
+from kg import KGManager
 
 
 @dataclass
@@ -47,38 +48,78 @@ def _extract_references_from_text(paper_id: str, text: str) -> dict[str, list[st
 def _build_cite_graph_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser(
         "cite-graph",
-        help="Visualize the local citation subgraph around a paper (1-2 hops)",
+        help="Citation network: text, JSON, or interactive D3.js graph view",
     )
-    p.add_argument(
+    sub = p.add_subparsers(dest="cite_subcmd", help="Citation subcommands")
+
+    # cite-graph (text/json/mermaid output)
+    p_text = sub.add_parser(
+        "run",
+        help="Text/JSON/Mermaid output of citation subgraph",
+    )
+    p_text.add_argument(
         "--paper", required=True, metavar="PAPER_ID",
         help="Root paper for the citation graph",
     )
-    p.add_argument(
+    p_text.add_argument(
         "--depth", type=int, default=2, choices=[1, 2],
         help="Traversal depth: 1 = direct citations only, 2 = +2-hop (default: 2)",
     )
-    p.add_argument(
+    p_text.add_argument(
         "--max-nodes", type=int, default=30,
         help="Maximum nodes per direction to show (default: 30)",
     )
-    p.add_argument(
+    p_text.add_argument(
         "--format", choices=["text", "mermaid", "json"], default="text",
         help="Output format (default: text)",
     )
-    p.add_argument(
+    p_text.add_argument(
         "--plain-text", metavar="TEXT",
         help="Build graph directly from plain text (extract references without DB import). "
              "Useful for papers not yet in the DB.",
     )
-    p.add_argument(
+    p_text.add_argument(
         "--fetch-metadata", action="store_true",
         help="Fetch paper titles from arXiv/CrossRef APIs for plain-text mode. "
              "Implies --plain-text. Adds titles to graph nodes.",
+    )
+
+    # cite-graph view (D3.js interactive visualization)
+    vp = sub.add_parser(
+        "view",
+        help="Open interactive D3.js citation network in browser",
+    )
+    vp.add_argument(
+        "--paper", required=True, metavar="PAPER_ID",
+        help="Root paper for the citation graph",
+    )
+    vp.add_argument(
+        "--depth", type=int, default=1, choices=[1, 2],
+        help="Traversal depth: 1 = direct citations only, 2 = +2-hop (default: 1)",
+    )
+    vp.add_argument(
+        "--max-nodes", type=int, default=50,
+        help="Maximum nodes per direction to show (default: 50)",
+    )
+    vp.add_argument(
+        "--open", action="store_true", default=True, help="Open in default browser (default: on)",
+    )
+    vp.add_argument(
+        "--no-open", dest="open", action="store_false", help="Write HTML to stdout instead of opening browser",
     )
     return p
 
 
 def _run_cite_graph(args: argparse.Namespace) -> int:
+    """Dispatch to subcommands: run (text/JSON) or view (D3.js)."""
+    subcmd = getattr(args, "cite_subcmd", "run")
+    if subcmd == "view":
+        return _run_cite_graph_view(args)
+    return _run_cite_graph_text(args)
+
+
+def _run_cite_graph_text(args: argparse.Namespace) -> int:
+    """Text/JSON/Mermaid citation subgraph output."""
     db = get_db()
     db.init()
 
@@ -163,4 +204,53 @@ def _run_cite_graph(args: argparse.Namespace) -> int:
             print(f"  {label} {n.paper_id}  {n.title[:60] if n.title else ''}")
         print(f"\n{len(nodes)} nodes, {len(edges)} edges")
 
+    return 0
+
+
+def _run_cite_graph_view(args: argparse.Namespace) -> int:
+    """Render interactive D3.js citation graph and open in browser (or write to stdout)."""
+    import tempfile, json, webbrowser, os
+    from pathlib import Path
+    from viz.d3_renderer import D3ForceGraph
+
+    kg = KGManager()
+    renderer = D3ForceGraph(kg)
+
+    graph_data = renderer.to_citation_json(
+        paper_id=args.paper,
+        depth=args.depth,
+        max_nodes=args.max_nodes,
+    )
+
+    if not graph_data["nodes"]:
+        print(f"No citation data found for '{args.paper}'. Ensure the paper is in the KG with cite edges.", file=sys.stderr)
+        return 1
+
+    # Load citation template
+    template_path = Path(__file__).parent.parent.parent / "viz" / "templates" / "cite_viz_template_d3.html"
+    html_content = template_path.read_text(encoding="utf-8")
+
+    # Inject data
+    nodes_json = json.dumps(graph_data["nodes"], ensure_ascii=False)
+    links_json = json.dumps(graph_data["links"], ensure_ascii=False)
+    html_content = html_content.replace('INJECT_NODES', nodes_json)
+    html_content = html_content.replace('INJECT_LINKS', links_json)
+    html_content = html_content.replace('INJECT_ROOT_ID', f'"{graph_data["root"]}"')
+
+    if not args.open:
+        sys.stdout.write(html_content)
+        return 0
+
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".html", delete=False, encoding="utf-8"
+    ) as f:
+        f.write(html_content)
+        tmp_path = f.name
+
+    webbrowser.open(f"file://{tmp_path}")
+    citing = len([n for n in graph_data["nodes"] if n.get("is_citing")])
+    cited_by = len([n for n in graph_data["nodes"] if n.get("is_cited_by")])
+    print(f"Opened citation graph for '{args.paper}' in browser.")
+    print(f"  {len(graph_data['nodes'])} papers · {citing} cites · {cited_by} cited by")
+    print(f"(HTML also saved to: {tmp_path})")
     return 0

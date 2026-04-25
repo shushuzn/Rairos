@@ -38,6 +38,7 @@ _SUBCOMMAND_TABLE = [
     ("evoskill",      "cli.cmd.evoskill",         "_build_evoskill_parser"),
     ("rag",           "cli.cmd.rag",              "_build_rag_parser"),
     ("visual",        "cli.cmd.visual",           "_build_visual_parser"),
+    ("repl",          "cli.cmd.repl",             "_build_repl_parser"),
 ]
 SUBCOMMANDS = {name for name, _, _ in _SUBCOMMAND_TABLE}
 
@@ -125,6 +126,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     elif args.subcmd == "visual":
         from cli.cmd.visual import visual as visual_cmd
         return visual_cmd.main(args.argv if hasattr(args, "argv") else [])
+    elif args.subcmd == "repl":
+        import cli as _cli
+        return getattr(_cli, "_run_repl")(args)
     return 0
 
 
