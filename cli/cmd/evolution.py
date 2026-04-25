@@ -6,6 +6,7 @@ Usage:
     airos evolution --stats     # 显示统计信息
     airos evolution --patterns  # 显示学习到的模式
     airos evolution --feedback # 显示最近反馈
+    airos evolution --report    # 生成学习报告
     airos evolution --clear    # 清空数据
     airos evolution --export   # 导出进化数据
 """
@@ -30,12 +31,16 @@ def _build_evolution_parser(subparsers):
     p.add_argument("--stats", "-s", action="store_true", help="显示统计信息")
     p.add_argument("--patterns", "-p", action="store_true", help="显示学习到的模式")
     p.add_argument("--feedback", "-f", action="store_true", help="显示最近反馈")
+    p.add_argument("--report", "-r", action="store_true", help="生成学习报告")
+    p.add_argument("--days", type=int, default=7, help="报告周期（天）")
     p.add_argument("--clear", "-c", action="store_true", help="清空所有进化数据")
     p.add_argument("--export", "-e", action="store_true", help="导出数据到 JSON")
     p.set_defaults(func=lambda a: evolution_main(
         show_stats=a.stats,
         show_patterns=a.patterns,
         show_feedback=a.feedback,
+        show_report=a.report,
+        report_days=a.days,
         clear=a.clear,
         export=a.export,
     ))
@@ -45,6 +50,8 @@ def evolution_main(
     show_stats: bool = False,
     show_patterns: bool = False,
     show_feedback: bool = False,
+    show_report: bool = False,
+    report_days: int = 7,
     clear: bool = False,
     export: bool = False,
 ):
@@ -64,6 +71,11 @@ def evolution_main(
     # 导出数据
     if export:
         export_evolution_data(evo)
+        return 0
+
+    # 生成报告
+    if show_report:
+        show_learning_report(evo, days=report_days)
         return 0
 
     # 显示统计
@@ -132,6 +144,59 @@ def show_dashboard(evo):
     print("    airos evolution --patterns  # 所有模式")
     print("    airos evolution --feedback  # 反馈历史")
     print()
+
+
+def show_learning_report(evo, days: int = 7):
+    """显示学习报告."""
+    from llm.evolution_report import generate_evolution_report
+
+    print_header("📊 学习报告")
+    print()
+
+    report = generate_evolution_report(days=days)
+
+    if report.total_queries == 0:
+        print_info("  暂无数据")
+        print("  使用 --chat 功能并提供反馈来积累学习数据")
+        print()
+        print("  建议:")
+        print("    airos chat '什么是 transformer？'")
+        print("    airos evolution --report --days 30")
+        return
+
+    # 周期信息
+    print(f"  📅 周期: {report.period_start[:10]} ~ {report.period_end[:10]}")
+    print(f"  💬 总问答: {report.total_queries} | 满意率: {report.positive_rate * 100:.1f}%")
+    print()
+
+    # 热门论文
+    if report.top_papers:
+        print_info("  📚 热门论文:")
+        for i, p in enumerate(report.top_papers[:3], 1):
+            print(f"    {i}. {p.title[:40]}")
+            print(f"       引用 {p.positive_count} 次 | Boost: {p.boost_score:.2f}")
+        print()
+
+    # 关键词
+    if report.top_keywords:
+        print_info("  🔑 关注热点:")
+        print(f"    " + " | ".join(report.top_keywords[:5]))
+        print()
+
+    # 探索建议
+    if report.questions_to_explore:
+        print_info("  💡 建议探索:")
+        for q in report.questions_to_explore[:3]:
+            print(f"    • {q}")
+        print()
+
+    # 进化阶段
+    print_info(f"  📍 {report.evolution_stage}")
+    print(f"     {report.progress_towards_next}")
+    print()
+
+    # 保存选项
+    print("  使用 --export 导出完整报告")
 
 
 def show_stats_view(evo):
@@ -313,6 +378,8 @@ def _run_evolution(args) -> int:
         show_stats=args.stats,
         show_patterns=args.patterns,
         show_feedback=args.feedback,
+        show_report=getattr(args, 'report', False),
+        report_days=getattr(args, 'days', 7),
         clear=args.clear,
         export=args.export,
     )

@@ -130,6 +130,9 @@ def _run_single_question(chat, args) -> int:
                 print(f"    相关度: {cite.relevance_score:.2f}")
                 print(f"    > {cite.snippet[:150]}...")
 
+        # Show suggested follow-up questions
+        _show_suggestions(result)
+
         return 0
 
     except Exception as e:
@@ -276,4 +279,23 @@ def _collect_feedback(question: str, result, chat) -> None:
 
     except Exception:
         # Silently skip feedback collection on error
+        pass
+
+
+def _show_suggestions(result) -> None:
+    """Show suggested follow-up questions based on the answer."""
+    if not result.citations:
+        return
+
+    try:
+        from llm.evolution_report import generate_evolution_report
+        report = generate_evolution_report(days=30)
+
+        if report.questions_to_explore:
+            print()
+            print(colored("💡 你可能想问：", Colors.HEADER))
+            for q in report.questions_to_explore[:3]:
+                print(f"  • {q}")
+    except Exception:
+        # Silently skip suggestions
         pass

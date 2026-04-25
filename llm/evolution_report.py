@@ -1,0 +1,329 @@
+"""
+Evolution Report Generator: Generate Learning Reports for Users
+
+双向进化的核心：系统从用户反馈中学习，同时向用户展示学习成果。
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, asdict, field
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Optional, List, Dict, Any
+from collections import Counter, defaultdict
+import re
+
+from llm.evolution import get_evolution_memory, FeedbackType
+
+
+@dataclass
+class PaperInsight:
+    """论文洞察."""
+    paper_id: str
+    title: str
+    positive_count: int = 0
+    negative_count: int = 0
+    avg_score: float = 0.0
+    related_queries: List[str] = field(default_factory=list)
+
+    @property
+    def boost_score(self) -> float:
+        """计算boost分数."""
+        total = self.positive_count + self.negative_count
+        if total == 0:
+            return 0.0
+        return (self.positive_count - self.negative_count * 0.5) / total
+
+
+@dataclass
+class QueryInsight:
+    """查询洞察."""
+    keywords: List[str]
+    avg_score: float
+    success_rate: float
+    related_papers: List[str]
+    suggestions: List[str] = field(default_factory=list)
+
+
+@dataclass
+class LearningReport:
+    """学习报告."""
+    period_start: str
+    period_end: str
+    total_queries: int
+    positive_rate: float
+    top_papers: List[PaperInsight]
+    top_keywords: List[str]
+    emerging_patterns: List[str]
+    predicted_interests: List[str]
+    questions_to_explore: List[str]
+    evolution_stage: str
+    progress_towards_next: str
+
+    def to_markdown(self) -> str:
+        """转换为Markdown格式."""
+        lines = [
+            "# 🧬 AI Research OS 学习报告",
+            "",
+            f"**周期**: {self.period_start[:10]} ~ {self.period_end[:10]}",
+            "",
+            "---",
+            "",
+            "## 📊 核心指标",
+            "",
+            f"- 总问答数: {self.total_queries}",
+            f"- 满意率: {self.positive_rate * 100:.1f}%",
+            f"- 进化阶段: {self.evolution_stage}",
+            "",
+            "---",
+            "",
+        ]
+
+        if self.top_papers:
+            lines.extend(["## 📚 热门论文", "", "这些论文在问答中被频繁引用且获得高满意度：", ""])
+            for i, p in enumerate(self.top_papers[:3], 1):
+                lines.append(f"{i}. **{p.title}**")
+                lines.append(f"   - 被引用 {p.positive_count} 次 | Boost: {p.boost_score:.2f}")
+                lines.append("")
+
+        if self.top_keywords:
+            lines.extend(["## 🔑 关注热点", "", "你最近最关心的话题：", "", "```", "  " + " | ".join(self.top_keywords[:5]), "```", ""])
+
+        if self.questions_to_explore:
+            lines.extend(["## 💡 建议探索", "", "基于你的阅读历史，系统推荐以下问题：", ""])
+            for q in self.questions_to_explore:
+                lines.append(f"- {q}")
+            lines.append("")
+
+        if self.predicted_interests:
+            lines.extend(["## 🔮 趋势预测", "", "系统预测你可能感兴趣的方向：", ""])
+            for interest in self.predicted_interests:
+                lines.append(f"- {interest}")
+            lines.append("")
+
+        lines.extend(["---", "", f"📍 {self.evolution_stage} | {self.progress_towards_next}"])
+        return "\n".join(lines)
+
+
+class EvolutionReporter:
+    """学习报告生成器."""
+
+    def __init__(self, evolution_memory=None):
+        self.evo = evolution_memory or get_evolution_memory()
+
+    def generate_report(self, days: int = 7, db=None) -> LearningReport:
+        """生成学习报告."""
+        now = datetime.now()
+        start_time = (now - timedelta(days=days)).isoformat()
+        feedbacks = self._collect_feedbacks_since(start_time)
+
+        if not feedbacks:
+            return self._empty_report(start_time, now.isoformat())
+
+        paper_insights = self._analyze_paper_insights(feedbacks)
+        suggestions = self._generate_suggestions(feedbacks, paper_insights, db)
+        predicted = self._predict_interests(feedbacks, paper_insights)
+        stats = self.evo.get_stats()
+        stage, progress = self._get_evolution_status(stats)
+
+        return LearningReport(
+            period_start=start_time,
+            period_end=now.isoformat(),
+            total_queries=len(feedbacks),
+            positive_rate=self._calc_positive_rate(feedbacks),
+            top_papers=sorted(paper_insights, key=lambda x: x.boost_score, reverse=True)[:5],
+            top_keywords=self._extract_top_keywords(feedbacks)[:5],
+            emerging_patterns=self._find_emerging_patterns(feedbacks),
+            predicted_interests=predicted,
+            questions_to_explore=suggestions,
+            evolution_stage=stage,
+            progress_towards_next=progress,
+        )
+
+    def _collect_feedbacks_since(self, start_time: str) -> List[Dict]:
+        feedbacks = []
+        try:
+            with open(self.evo.feedback_file, encoding="utf-8") as f:
+                for line in f:
+                    if line.strip():
+                        data = json.loads(line)
+                        if data.get("timestamp", "") >= start_time:
+                            feedbacks.append(data)
+        except FileNotFoundError:
+            pass
+        return feedbacks
+
+    def _analyze_paper_insights(self, feedbacks: List[Dict]) -> List[PaperInsight]:
+        paper_data = defaultdict(lambda: {"positive": 0, "negative": 0, "scores": [], "queries": []})
+        for fb in feedbacks:
+            if fb.get("command") != "chat":
+                continue
+            for paper_id in fb.get("paper_ids", []):
+                pdata = paper_data[paper_id]
+                if fb.get("type") == FeedbackType.POSITIVE.value:
+                    pdata["positive"] += 1
+                else:
+                    pdata["negative"] += 1
+                pdata["scores"].append(fb.get("score", 0.5))
+                pdata["queries"].append(fb.get("query", "")[:50])
+
+        insights = []
+        for paper_id, pdata in paper_data.items():
+            insights.append(PaperInsight(
+                paper_id=paper_id,
+                title=paper_id,
+                positive_count=pdata["positive"],
+                negative_count=pdata["negative"],
+                avg_score=sum(pdata["scores"]) / len(pdata["scores"]) if pdata["scores"] else 0,
+                related_queries=pdata["queries"][:3],
+            ))
+        return insights
+
+    def _extract_top_keywords(self, feedbacks: List[Dict]) -> List[str]:
+        all_text = " ".join([fb.get("query", "") + " " + " ".join(fb.get("paper_ids", [])) for fb in feedbacks])
+        stopwords = {"the", "is", "are", "a", "an", "what", "how", "why", "this", "that", "and", "or", "的", "是", "如何", "什么", "怎么"}
+        words = re.findall(r'[\u4e00-\u9fff]+|[a-zA-Z]{3,}', all_text.lower())
+        filtered = [w for w in words if w not in stopwords and len(w) > 2]
+        return [w for w, _ in Counter(filtered).most_common(10)]
+
+    def _find_emerging_patterns(self, feedbacks: List[Dict]) -> List[str]:
+        patterns = []
+        compare_keywords = ["vs", "versus", "比较", "区别", "diff", "对比"]
+        compare_count = sum(1 for fb in feedbacks if any(kw in fb.get("query", "").lower() for kw in compare_keywords))
+        if compare_count > len(feedbacks) * 0.2:
+            patterns.append("你开始关注论文间的比较分析")
+
+        long_queries = sum(1 for fb in feedbacks if len(fb.get("query", "")) > 30)
+        if long_queries > len(feedbacks) * 0.5:
+            patterns.append("问题变得更加深入和具体")
+
+        return patterns
+
+    def _generate_suggestions(self, feedbacks: List[Dict], paper_insights: List, db=None) -> List[str]:
+        suggestions = []
+        if paper_insights:
+            top_paper = paper_insights[0]
+            suggestions.append(f"深入探索 \"{top_paper.paper_id}\" 的相关工作")
+        keywords = self._extract_top_keywords(feedbacks)
+        if keywords:
+            suggestions.append(f"了解 {keywords[0]} 的最新研究进展")
+        suggestions.extend(["追踪你关注领域的最新论文", "定期回顾已读论文的核心贡献"])
+        return suggestions[:5]
+
+    def _predict_interests(self, feedbacks: List[Dict], paper_insights: List) -> List[str]:
+        predictions = []
+        recent_queries = [fb.get("query", "") for fb in feedbacks[-5:]]
+        recent_text = " ".join(recent_queries).lower()
+        if "llm" in recent_text or "language model" in recent_text:
+            predictions.append("LLM架构优化")
+        if "training" in recent_text or "训练" in recent_text:
+            predictions.append("模型训练技巧")
+        if "efficient" in recent_text or "高效" in recent_text:
+            predictions.append("效率优化方法")
+        return predictions[:3]
+
+    def _calc_positive_rate(self, feedbacks: List[Dict]) -> float:
+        if not feedbacks:
+            return 0.0
+        positive = sum(1 for fb in feedbacks if fb.get("type") == FeedbackType.POSITIVE.value)
+        return positive / len(feedbacks)
+
+    def _get_evolution_status(self, stats: Dict) -> tuple:
+        reliable = stats.get("reliable_patterns", 0)
+        if reliable >= 5:
+            return "🚀 进化期", "系统已具备自进化能力"
+        elif reliable >= 3:
+            return "🌲 成熟期", "扩展模式库，覆盖更多场景"
+        elif reliable >= 1:
+            return "🌳 成长期", "积累 10+ 反馈，强化现有模式"
+        return "🌱 种子期", "继续使用，系统会持续学习"
+
+    def _empty_report(self, start: str, end: str) -> LearningReport:
+        return LearningReport(
+            period_start=start, period_end=end, total_queries=0, positive_rate=0.0,
+            top_papers=[], top_keywords=[], emerging_patterns=["开始使用系统，开始你的研究之旅"],
+            predicted_interests=[], questions_to_explore=[
+                "尝试用 airos chat 问一个关于论文的问题",
+                "探索 airos search 发现新论文",
+                "用 airos slides 生成论文幻灯片",
+            ],
+            evolution_stage="🌱 种子期", progress_towards_next="开始使用，获得你的第一个满意回答",
+        )
+
+    def save_report(self, report: LearningReport, output_path: Optional[Path] = None) -> Path:
+        if output_path is None:
+            timestamp = datetime.now().strftime("%Y%m%d")
+            output_path = self.evo.memory_dir / f"report_{timestamp}.md"
+        output_path.write_text(report.to_markdown(), encoding="utf-8")
+        return output_path
+
+
+def generate_evolution_report(days: int = 7, db=None) -> LearningReport:
+    """快捷函数：生成学习报告."""
+    reporter = EvolutionReporter()
+    return reporter.generate_report(days=days, db=db)
+
+
+class AdaptiveRetrieval:
+    """自适应检索：根据反馈优化检索结果."""
+
+    def __init__(self, evolution_memory=None):
+        self.evo = evolution_memory or get_evolution_memory()
+        self.boost_file = self.evo.memory_dir / "paper_boost.json"
+        self._load_boost()
+
+    def _load_boost(self):
+        try:
+            self.boost_data = json.loads(self.boost_file.read_text(encoding="utf-8") or "{}")
+        except (json.JSONDecodeError, FileNotFoundError):
+            self.boost_data = {}
+
+    def _save_boost(self):
+        self.boost_file.write_text(json.dumps(self.boost_data, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    def record_retrieval(self, paper_id: str, query: str, was_useful: bool):
+        if paper_id not in self.boost_data:
+            self.boost_data[paper_id] = {"positive_mentions": 0, "negative_mentions": 0, "queries": []}
+        data = self.boost_data[paper_id]
+        if was_useful:
+            data["positive_mentions"] += 1
+        else:
+            data["negative_mentions"] += 1
+        data["queries"].append(query[:100])
+        if len(data["queries"]) > 20:
+            data["queries"] = data["queries"][-20:]
+        total = data["positive_mentions"] + data["negative_mentions"]
+        data["boost_score"] = (data["positive_mentions"] - data["negative_mentions"] * 0.5) / max(total, 1)
+        data["last_update"] = datetime.now().isoformat()
+        self._save_boost()
+
+    def get_boost(self, paper_id: str) -> float:
+        return self.boost_data.get(paper_id, {}).get("boost_score", 0.0)
+
+    def apply_boost(self, results: List[Dict], decay: float = 0.1) -> List[Dict]:
+        boosted = []
+        for r in results:
+            paper_id = r.get("paper_id", "")
+            boost = self.get_boost(paper_id)
+            age = self._get_boost_age(paper_id)
+            decayed_boost = boost * (decay ** (age / 30))
+            original_score = r.get("score", 0.5)
+            final_score = original_score + decayed_boost * 0.2
+            boosted.append({**r, "score": final_score, "boost": decayed_boost})
+        return sorted(boosted, key=lambda x: x["score"], reverse=True)
+
+    def _get_boost_age(self, paper_id: str) -> int:
+        data = self.boost_data.get(paper_id, {})
+        last_update = data.get("last_update", "")
+        if not last_update:
+            return 30
+        try:
+            last = datetime.fromisoformat(last_update)
+            return (datetime.now() - last).days
+        except Exception:
+            return 30
+
+
+def get_adaptive_retrieval() -> AdaptiveRetrieval:
+    return AdaptiveRetrieval()
