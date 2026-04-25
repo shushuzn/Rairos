@@ -14,7 +14,7 @@ SUBCOMMANDS = {
     "search", "list", "status", "queue", "cache", "dedup", "merge", "stats",
     "import", "export", "citations", "cite-graph", "cite-import", "cite-fetch",
     "cite-stats", "dedup-semantic", "research", "similar", "kg", "paper2code",
-    "evoskill", "rag",
+    "evoskill", "rag", "visual",
 }
 
 
@@ -59,6 +59,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     from cli.cmd.paper2code import _build_paper2code_parser
     from cli.cmd.evoskill import _build_evoskill_parser
     from cli.cmd.rag import _build_rag_parser
+    from cli.cmd.visual import _build_visual_parser
 
     _build_search_parser(subparsers)
     _build_research_parser(subparsers)
@@ -82,6 +83,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     _build_paper2code_parser(subparsers)
     _build_evoskill_parser(subparsers)
     _build_rag_parser(subparsers)
+    _build_visual_parser(subparsers)
 
     # Watch command (inline)
     p = subparsers.add_parser("watch", help="Watch papers.json and auto-rebuild KG on changes")
@@ -163,6 +165,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     elif args.subcmd == "rag":
         from cli.cmd.rag import rag as rag_cmd
         return rag_cmd.main(args.argv if hasattr(args, "argv") else [])
+    elif args.subcmd == "visual":
+        from cli.cmd.visual import visual as visual_cmd
+        return visual_cmd.main(args.argv if hasattr(args, "argv") else [])
     return 0
 
 
