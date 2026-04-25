@@ -39,6 +39,7 @@ _SUBCOMMAND_TABLE = [
     ("rag",           "cli.cmd.rag",              "_build_rag_parser"),
     ("visual",        "cli.cmd.visual",           "_build_visual_parser"),
     ("repl",          "cli.cmd.repl",             "_build_repl_parser"),
+    ("read-queue",    "cli.cmd.read_queue",       "_build_read_queue_parser"),
 ]
 SUBCOMMANDS = {name for name, _, _ in _SUBCOMMAND_TABLE}
 
@@ -105,6 +106,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "cite-fetch": "_run_cite_fetch", "cite-stats": "_run_cite_stats",
         "dedup-semantic": "_run_dedup_semantic", "research": "_run_research_cmd",
         "similar": "_run_similar", "kg": "_run_kg",
+        "read-queue": "_run_read_queue",
     }
     if args.subcmd in dispatch:
         import cli as _cli

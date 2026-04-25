@@ -52,6 +52,8 @@ _LAZY_EXPORTS = {
     "_extract_references_from_text": ("cli.cmd.cite_graph", "_extract_references_from_text"),
     "_run_repl":             ("cli.cmd.repl",              "_run_repl"),
     "_build_repl_parser":    ("cli.cmd.repl",              "_build_repl_parser"),
+    "_run_read_queue":       ("cli.cmd.read_queue",        "_run_read_queue"),
+    "_build_read_queue_parser": ("cli.cmd.read_queue",     "_build_read_queue_parser"),
     "infer_tags_if_empty": ("cli._shared", "infer_tags_if_empty"),
     "Database": ("db", "Database"),
     # Module-level re-exports (used by tests for mock.patch)
