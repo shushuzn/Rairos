@@ -78,7 +78,7 @@ dependencies = [
 
     "pymupdf>=1.23.0",
     "psutil>=5.9.0",
-    "aiohttp>=3.8.0",
+    "aiohttp>=3.13.4",
     "numpy>=1.24.0",
     "orjson>=3.9.0",
     "httpx>=0.25.0",
@@ -91,7 +91,7 @@ dependencies = [
 [project.optional-dependencies]
 
 
-ocr = ["pytesseract>=0.3.0", "pillow>=9.0.0"]
+ocr = ["pytesseract>=0.3.0", "pillow>=12.2.0"]
 
 web = ["streamlit>=1.28.0"]
 
