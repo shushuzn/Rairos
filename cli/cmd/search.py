@@ -17,7 +17,19 @@ from cli._shared import (
 
 
 def _build_search_parser(subparsers) -> argparse.ArgumentParser:
-    p = subparsers.add_parser("search", help="Search indexed papers")
+    p = subparsers.add_parser(
+        "search",
+        help="Search indexed papers",
+        prog="airos search",
+        description="Search papers by query, year, source, tag, or parse status.",
+        epilog="""\
+Examples:
+  %(prog)s "attention mechanism"                     # basic query
+  %(prog)s --year 2024 --limit 20                 # recent papers
+  %(prog)s --tag LLM --tag Agent --format json    # by tags, JSON output
+  %(prog)s --source arxiv --sort year --order desc # by source, newest first
+  %(prog)s --status parsed --format csv            # export parsed papers as CSV""",
+    )
 
     p.add_argument("query", nargs="?", default="", help="Search query (optional)")
 

@@ -15,6 +15,13 @@ def _build_citations_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser(
         "citations",
         help="Show citation relationships for a paper",
+        prog="airos citations",
+        description="View backward citations (papers this paper cites) or forward citations (papers that cite this paper).",
+        epilog="""\
+Examples:
+  %(prog)s --from 2301.00001              # show papers cited by this paper
+  %(prog)s --to 2301.00001               # show papers citing this paper
+  %(prog)s --from 2301.00001 --format json  # JSON output""",
     )
     p.add_argument(
         "--from",

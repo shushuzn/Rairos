@@ -15,6 +15,15 @@ def _build_kg_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser(
         "kg",
         help="Knowledge graph — query, visualize, and manage the research KG",
+        prog="airos kg",
+        description="Query, visualize, and manage the research knowledge graph.",
+        epilog="""\
+Examples:
+  %(prog)s graph 2301.00001 --depth 3      # ego graph with 3 hops
+  %(prog)s path 2301.00001 2301.00002     # shortest path between papers
+  %(prog)s search --tag LLM                # find all LLM-related nodes
+  %(prog)s stats                            # KG statistics
+  %(prog)s rebuild --incremental            # rebuild KG incrementally""",
     )
 
     sub = p.add_subparsers(dest="kg_cmd", help="KG subcommands")

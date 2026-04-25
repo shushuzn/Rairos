@@ -21,6 +21,15 @@ def _build_research_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser(
         "research",
         help="Autonomous research loop: search arXiv → download → extract → AI summarize",
+        prog="airos research",
+        description="Automatically search arXiv, download PDFs, extract text, and generate AI summaries.",
+        epilog="""\
+Examples:
+  %(prog)s "RLHF alignment"                       # basic research query
+  %(prog)s "vision transformer" --limit 10 --no-ai # fetch without AI draft
+  %(prog)s "RAG" --tag LLM --tag Agent --no-pdf  # tag papers, abstract only
+  %(prog)s "scaling law" --model gpt-4o          # use different model
+  %(prog)s "mixture of experts" --sync --verbose  # sync mode with verbose output""",
     )
 
     p.add_argument("query", nargs="?", default="", help="Research topic or keyword")

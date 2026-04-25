@@ -17,7 +17,19 @@ from cli._shared import (
 
 
 def _build_list_parser(subparsers) -> argparse.ArgumentParser:
-    p = subparsers.add_parser("list", help="List indexed papers")
+    p = subparsers.add_parser(
+        "list",
+        help="List indexed papers",
+        prog="airos list",
+        description="List papers with filtering, sorting, and multiple output formats.",
+        epilog="""\
+Examples:
+  %(prog)s                                    # recent 20 papers (default)
+  %(prog)s --limit 50 --sort published --order desc  # all-time newest
+  %(prog)s --year 2024 --tag LLM             # by year and tag
+  %(prog)s --format json | jq '.[] | .title' # pipe to jq
+  %(prog)s --format csv > papers.csv          # export to CSV""",
+    )
 
     p.add_argument("--status", default="", help="Filter by parse status")
 

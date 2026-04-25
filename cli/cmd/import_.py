@@ -43,7 +43,19 @@ def _save_checkpoint(checkpoint_path: Path, processed: list, failed: list, total
 
 
 def _build_import_parser(subparsers) -> argparse.ArgumentParser:
-    p = subparsers.add_parser("import", help="Add papers to the database by ID")
+    p = subparsers.add_parser(
+        "import",
+        help="Add papers to the database by ID",
+        prog="airos import",
+        description="Import papers by arXiv ID, DOI, or paper UID. Supports batch import from file.",
+        epilog="""\
+Examples:
+  %(prog)s 2301.00001 2301.00002           # import two arXiv papers
+  %(prog)s 10.1038/nature12373             # import by DOI
+  %(prog)s --file ids.txt                   # batch import from file
+  %(prog)s --file - --skip-existing         # stdin, skip existing papers
+  %(prog)s --checkpoint resume.json --resume # resume interrupted import""",
+    )
     p.add_argument("ids", nargs="*", metavar="ID", help="arXiv IDs, DOIs, or paper UIDs to add")
     p.add_argument("--source", default="import", help="Source label (default: import)")
     p.add_argument("--skip-existing", action="store_true", help="Skip IDs already in database")
