@@ -10,7 +10,7 @@ import json
 from dataclasses import dataclass, asdict, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, TYPE_CHECKING
 from collections import Counter, defaultdict
 import re
 
@@ -327,3 +327,214 @@ class AdaptiveRetrieval:
 
 def get_adaptive_retrieval() -> AdaptiveRetrieval:
     return AdaptiveRetrieval()
+
+
+# === Smart Follow-Up System ===
+class FollowUpType:
+    """追问类型."""
+    MATH = "math"           # 数学原理
+    CODE = "code"           # 代码实现
+    COMPARE = "compare"      # 历史对比
+    EVOLUTION = "evolution"  # 演进关系
+    PRACTICE = "practice"    # 实践应用
+
+
+@dataclass
+class FollowUp:
+    """追问选项."""
+    text: str           # 显示文本
+    type: str           # 追问类型
+    query: str          # 自动生成的查询
+    icon: str           # 图标
+    depth: int = 1      # 追问深度
+
+
+class SmartFollowUp:
+    """智能追问系统：基于回答内容生成追问选项."""
+
+    # 关键词映射到追问类型
+    TOPIC_KEYWORDS = {
+        FollowUpType.MATH: [
+            "attention", "score", "softmax", "matrix", "dot", "product",
+            "gradient", "loss", "optimize", "layer", "weight", "参数", "矩阵",
+            "注意力", "梯度", "优化", "计算"
+        ],
+        FollowUpType.CODE: [
+            "implement", "code", "function", "class", "api", "library",
+            "pytorch", "tensorflow", "layer", "module", "实现", "代码",
+            "函数", "模块"
+        ],
+        FollowUpType.COMPARE: [
+            "vs", "versus", "better", "worse", "compare", "different",
+            "advantage", "disadvantage", "相比", "优于", "区别", "对比"
+        ],
+        FollowUpType.EVOLUTION: [
+            "based on", "follow", "extend", "improve", "build upon",
+            "later", "previous", "next", "演进", "改进", "基于", "后续"
+        ],
+        FollowUpType.PRACTICE: [
+            "apply", "use", "application", "industry", "practical",
+            "deploy", "production", "应用", "实践", "工业", "部署"
+        ],
+    }
+
+    def __init__(self, evolution_memory=None):
+        self.evo = evolution_memory or get_evolution_memory()
+
+    def generate_options(
+        self,
+        question: str,
+        answer: str,
+        citations: List[Any] = None,
+    ) -> List[FollowUp]:
+        """基于问答内容生成追问选项."""
+        # 合并文本进行分析
+        text = f"{question} {answer}".lower()
+
+        # 检测关键词
+        detected_types = self._detect_topic_types(text)
+
+        # 为每个类型生成追问
+        options = []
+        for ftype in detected_types[:3]:  # 最多3种类型
+            followup = self._create_followup(ftype, question, answer, citations)
+            if followup:
+                options.append(followup)
+
+        # 如果没有检测到类型，生成通用追问
+        if not options:
+            options = self._generate_generic_options(question, citations)
+
+        return options
+
+    def _detect_topic_types(self, text: str) -> List[str]:
+        """检测文本中的主题类型."""
+        scores = {}
+        for ftype, keywords in self.TOPIC_KEYWORDS.items():
+            score = sum(1 for kw in keywords if kw in text)
+            if score > 0:
+                scores[ftype] = score
+
+        # 按分数排序
+        return sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
+
+    def _create_followup(
+        self,
+        ftype: str,
+        question: str,
+        answer: str,
+        citations: List[Any],
+    ) -> Optional[FollowUp]:
+        """为特定类型创建追问."""
+        templates = {
+            FollowUpType.MATH: {
+                "icon": "∫",
+                "text": "深入技术原理",
+                "query_tpl": "{q} 的数学原理和计算细节是什么？",
+            },
+            FollowUpType.CODE: {
+                "icon": "⚙",
+                "text": "查看代码实现",
+                "query_tpl": "{q} 的 PyTorch/TensorFlow 实现代码？",
+            },
+            FollowUpType.COMPARE: {
+                "icon": "📜",
+                "text": "与其他方法对比",
+                "query_tpl": "{q} 和其他方法相比有什么优缺点？",
+            },
+            FollowUpType.EVOLUTION: {
+                "icon": "🌳",
+                "text": "了解发展脉络",
+                "query_tpl": "{q} 是如何演进发展的？有哪些改进版本？",
+            },
+            FollowUpType.PRACTICE: {
+                "icon": "🏭",
+                "text": "实际应用场景",
+                "query_tpl": "{q} 在工业界有哪些实际应用？",
+            },
+        }
+
+        if ftype not in templates:
+            return None
+
+        template = templates[ftype]
+        # 提取核心概念
+        concept = self._extract_concept(question, answer)
+
+        return FollowUp(
+            text=f"{template['icon']} {template['text']}: {concept}",
+            type=ftype,
+            query=template["query_tpl"].format(q=concept),
+            icon=template["icon"],
+            depth=1,
+        )
+
+    def _extract_concept(self, question: str, answer: str) -> str:
+        """从问答中提取核心概念."""
+        # 简单策略：使用问题中的核心词
+        text = f"{question} {answer}"
+
+        # 移除常见词
+        stopwords = {
+            "what", "is", "are", "how", "why", "when", "where",
+            "the", "a", "an", "this", "that", "these", "those",
+            "的", "是", "如何", "什么", "怎么", "为什么"
+        }
+
+        words = text.split()
+        keywords = [w for w in words if w.lower() not in stopwords and len(w) > 2]
+
+        # 取前3个关键词组成概念
+        if len(keywords) >= 3:
+            concept = " ".join(keywords[:3])
+        elif keywords:
+            concept = " ".join(keywords)
+        else:
+            concept = question[:30]
+
+        return concept[:50]  # 限制长度
+
+    def _generate_generic_options(
+        self,
+        question: str,
+        citations: List[Any],
+    ) -> List[FollowUp]:
+        """生成通用追问选项."""
+        concept = self._extract_concept(question, "")
+
+        return [
+            FollowUp(
+                text=f"∫ {concept} 的核心技术原理是什么？",
+                type=FollowUpType.MATH,
+                query=f"{concept} 的技术原理详解",
+                icon="∫",
+            ),
+            FollowUp(
+                text=f"⚙ {concept} 有什么代码实现？",
+                type=FollowUpType.CODE,
+                query=f"{concept} 代码实现示例",
+                icon="⚙",
+            ),
+            FollowUp(
+                text=f"🌳 {concept} 相关的论文有哪些？",
+                type=FollowUpType.EVOLUTION,
+                query=f"{concept} 相关论文推荐",
+                icon="🌳",
+            ),
+        ]
+
+    def render_options(self, options: List[FollowUp]) -> str:
+        """渲染追问选项为可读文本."""
+        if not options:
+            return ""
+
+        lines = ["", "📌 想深入了解？选择一个追问："]
+        for i, opt in enumerate(options, 1):
+            lines.append(f"   [{i}] {opt.text}")
+        lines.append("")
+        return "\n".join(lines)
+
+
+def get_smart_followup() -> SmartFollowUp:
+    """获取智能追问实例."""
+    return SmartFollowUp()

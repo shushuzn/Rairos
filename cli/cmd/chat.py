@@ -131,7 +131,7 @@ def _run_single_question(chat, args) -> int:
                 print(f"    > {cite.snippet[:150]}...")
 
         # Show suggested follow-up questions
-        _show_suggestions(result)
+        _show_suggestions(result, question=args.question)
 
         return 0
 
@@ -223,6 +223,9 @@ def _run_interactive(chat, args) -> int:
             # Record feedback
             _collect_feedback(question, result, chat)
 
+            # Show smart follow-up suggestions
+            _show_suggestions(result, question=question)
+
             print()
 
             # Save to history
@@ -282,8 +285,31 @@ def _collect_feedback(question: str, result, chat) -> None:
         pass
 
 
-def _show_suggestions(result) -> None:
-    """Show suggested follow-up questions based on the answer."""
+def _show_suggestions(result, question: str = "") -> None:
+    """Show smart follow-up questions based on the answer content."""
+    if not result.citations and not result.answer:
+        return
+
+    try:
+        from llm.evolution_report import get_smart_followup
+        followup = get_smart_followup()
+
+        options = followup.generate_options(
+            question=question,
+            answer=result.answer or "",
+            citations=result.citations,
+        )
+
+        if options:
+            print()
+            print(colored(followup.render_options(options), Colors.HEADER))
+    except Exception:
+        # Silently skip suggestions
+        pass
+
+
+def _show_suggestions_legacy(result) -> None:
+    """Fallback: show suggested questions from learning history."""
     if not result.citations:
         return
 
