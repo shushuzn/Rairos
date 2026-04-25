@@ -49,7 +49,7 @@ def _build_rag_parser(subparsers):
 
     # run-evoskill command
     evo_p = sub.add_parser("run-evoskill", help="运行 EvoSkill 改进")
-    evo_p.add_argument("--continue", "continue_mode", action="store_true",
+    evo_p.add_argument("--continue", dest="continue_mode", action="store_true",
                        help="从 frontier 继续")
     evo_p.set_defaults(func=lambda a: rag_run_evoskill.callback(
         continue_mode=a.continue_mode))

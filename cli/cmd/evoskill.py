@@ -39,7 +39,7 @@ def _build_evoskill_parser(subparsers):
 
     # run command
     run_p = sub.add_parser("run", help="Run EvoSkill self-improvement loop")
-    run_p.add_argument("--continue", "continue_mode", action="store_true", help="Resume from frontier")
+    run_p.add_argument("--continue", dest="continue_mode", action="store_true", help="Resume from frontier")
     run_p.add_argument("--verbose", "-v", action="store_true", help="Show pass/fail details")
     run_p.set_defaults(func=lambda a: evoskill_run.callback(
         continue_mode=a.continue_mode, verbose=a.verbose))

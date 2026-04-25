@@ -4,12 +4,13 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
-from typing import List, Optional
+from typing import List, Optional, Callable, Dict
 
 from core.basics import get_default_concept_dir, get_default_radar_dir
 
 logger = logging.getLogger(__name__)
 
+# All available subcommands
 SUBCOMMANDS = {
     "search", "list", "status", "queue", "cache", "dedup", "merge", "stats",
     "import", "export", "citations", "cite-graph", "cite-import", "cite-fetch",
@@ -17,26 +18,18 @@ SUBCOMMANDS = {
     "evoskill", "rag", "visual",
 }
 
+# Lazy command registry: maps subcommand name -> (builder_fn, handler_fn)
+# Builders add subparsers, handlers execute the command
+_COMMAND_REGISTRY: Dict[str, tuple] = {}
 
-def main(argv: Optional[List[str]] = None) -> int:
-    """Main CLI entry point."""
-    logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
 
-    raw_args = argv if argv is not None else sys.argv[1:]
-    first = raw_args[0] if raw_args else ""
+def register_command(name: str, builder: Callable, handler: Callable) -> None:
+    """Register a command with lazy loading."""
+    _COMMAND_REGISTRY[name] = (builder, handler)
 
-    # Handle --help and -h before subcommand check
-    if first in ("-h", "--help") or "--help" in raw_args or "-h" in raw_args:
-        pass  # Fall through to parser building below
 
-    elif first not in SUBCOMMANDS:
-        import cli
-        return cli._main_legacy(argv)
-
-    parser = argparse.ArgumentParser(description="AI Research OS")
-    subparsers = parser.add_subparsers(dest="subcmd", help="Subcommands")
-
-    # Import builders lazily to avoid loading all commands on startup
+def _build_all_parsers(subparsers) -> None:
+    """Build all subcommand parsers. Called only when needed."""
     from cli.cmd.search import _build_search_parser
     from cli.cmd.research import _build_research_parser
     from cli.cmd.list import _build_list_parser
@@ -100,6 +93,27 @@ def main(argv: Optional[List[str]] = None) -> int:
         help="Run full rebuild instead of incremental",
     )
 
+
+def main(argv: Optional[List[str]] = None) -> int:
+    """Main CLI entry point."""
+    logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
+
+    raw_args = argv if argv is not None else sys.argv[1:]
+    first = raw_args[0] if raw_args else ""
+
+    # Handle --help and -h before subcommand check
+    if first in ("-h", "--help") or "--help" in raw_args or "-h" in raw_args:
+        pass  # Fall through to parser building below
+    elif first not in SUBCOMMANDS:
+        import cli
+        return cli._main_legacy(argv)
+
+    parser = argparse.ArgumentParser(description="AI Research OS")
+    subparsers = parser.add_subparsers(dest="subcmd", help="Subcommands")
+
+    # Build all parsers
+    _build_all_parsers(subparsers)
+
     args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
     # Resolve model default from config
@@ -110,7 +124,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         except Exception:
             args.model = "qwen3.5-plus"
 
-    # Dispatch to command handlers (use cli namespace for test mockability)
+    # Dispatch to command handlers
     import cli
     if args.subcmd == "search":
         return cli._run_search(args)
