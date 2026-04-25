@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, List, Optional, Tuple
 
 from llm.client import call_llm_chat_completions
+from llm.evolution_report import get_adaptive_retrieval
 
 
 # ─── Data Structures ──────────────────────────────────────────────────────────────
@@ -194,6 +195,9 @@ class RagChat:
                 parse_status="parsed",  # Only fully parsed papers
             )
 
+            # Apply adaptive boost based on user's positive feedback history
+            results = self._apply_adaptive_boost(results)
+
             for result in results:
                 if result.paper_id in seen_papers:
                     continue
@@ -328,6 +332,24 @@ class RagChat:
             ))
 
         return citations
+
+    def _apply_adaptive_boost(self, results: List) -> List:
+        """Apply adaptive boost to search results based on feedback history."""
+        try:
+            # Convert to dict format for apply_boost
+            result_dicts = [
+                {"paper_id": r.paper_id, "score": abs(r.score) if r.score else 0.5}
+                for r in results
+            ]
+            boosted = self._adaptive.apply_boost(result_dicts, decay=0.1)
+            # Re-sort results by boosted score
+            boosted_ids = [b["paper_id"] for b in boosted]
+            boosted_scores = {b["paper_id"]: b["score"] for b in boosted}
+            # Return original results re-sorted by boosted score
+            return sorted(results, key=lambda r: boosted_scores.get(r.paper_id, 0), reverse=True)
+        except Exception:
+            # Fallback to original order on error
+            return results
 
     def format_result(self, result: ChatResult, show_citations: bool = True) -> str:
         """Format ChatResult for terminal output."""

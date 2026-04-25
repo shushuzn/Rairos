@@ -32,6 +32,7 @@ def _build_evolution_parser(subparsers):
     p.add_argument("--patterns", "-p", action="store_true", help="显示学习到的模式")
     p.add_argument("--feedback", "-f", action="store_true", help="显示最近反馈")
     p.add_argument("--report", "-r", action="store_true", help="生成学习报告")
+    p.add_argument("--sessions", action="store_true", help="显示研究会话")
     p.add_argument("--days", type=int, default=7, help="报告周期（天）")
     p.add_argument("--clear", "-c", action="store_true", help="清空所有进化数据")
     p.add_argument("--export", "-e", action="store_true", help="导出数据到 JSON")
@@ -40,6 +41,7 @@ def _build_evolution_parser(subparsers):
         show_patterns=a.patterns,
         show_feedback=a.feedback,
         show_report=a.report,
+        show_sessions=getattr(a, 'sessions', False),
         report_days=a.days,
         clear=a.clear,
         export=a.export,
@@ -51,6 +53,7 @@ def evolution_main(
     show_patterns: bool = False,
     show_feedback: bool = False,
     show_report: bool = False,
+    show_sessions: bool = False,
     report_days: int = 7,
     clear: bool = False,
     export: bool = False,
@@ -93,9 +96,34 @@ def evolution_main(
         show_feedback_view(evo)
         return 0
 
+    # 显示会话
+    if show_sessions:
+        show_sessions_view()
+        return 0
+
     # 默认：显示完整仪表盘
     show_dashboard(evo)
     return 0
+
+
+def show_sessions_view():
+    """显示研究会话列表."""
+    from llm.research_session import get_session_tracker
+
+    print_header("📚 研究会话历史")
+    print()
+
+    tracker = get_session_tracker()
+    sessions = tracker.get_recent_sessions(days=30, limit=10)
+
+    if not sessions:
+        print_info("  暂无研究会话记录")
+        print_info("  使用 --chat 功能开始研究会话")
+        return
+
+    for session in sessions:
+        print(tracker.render_session_tree(session))
+        print()
 
 
 def show_dashboard(evo):
@@ -379,6 +407,7 @@ def _run_evolution(args) -> int:
         show_patterns=args.patterns,
         show_feedback=args.feedback,
         show_report=getattr(args, 'report', False),
+        show_sessions=getattr(args, 'sessions', False),
         report_days=getattr(args, 'days', 7),
         clear=args.clear,
         export=args.export,

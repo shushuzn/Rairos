@@ -337,6 +337,7 @@ class FollowUpType:
     COMPARE = "compare"      # 历史对比
     EVOLUTION = "evolution"  # 演进关系
     PRACTICE = "practice"    # 实践应用
+    CITATION = "citation"    # 引用论文
 
 
 @dataclass
@@ -350,19 +351,19 @@ class FollowUp:
 
 
 class SmartFollowUp:
-    """智能追问系统：基于回答内容生成追问选项."""
+    """智能追问系统：基于回答内容和论文引用生成追问选项."""
 
     # 关键词映射到追问类型
     TOPIC_KEYWORDS = {
         FollowUpType.MATH: [
             "attention", "score", "softmax", "matrix", "dot", "product",
             "gradient", "loss", "optimize", "layer", "weight", "参数", "矩阵",
-            "注意力", "梯度", "优化", "计算"
+            "注意力", "梯度", "优化", "计算", "function", "mechanism"
         ],
         FollowUpType.CODE: [
             "implement", "code", "function", "class", "api", "library",
             "pytorch", "tensorflow", "layer", "module", "实现", "代码",
-            "函数", "模块"
+            "函数", "模块", "algorithm"
         ],
         FollowUpType.COMPARE: [
             "vs", "versus", "better", "worse", "compare", "different",
@@ -370,11 +371,13 @@ class SmartFollowUp:
         ],
         FollowUpType.EVOLUTION: [
             "based on", "follow", "extend", "improve", "build upon",
-            "later", "previous", "next", "演进", "改进", "基于", "后续"
+            "later", "previous", "next", "演进", "改进", "基于", "后续",
+            "evolution", "derived", "succeed"
         ],
         FollowUpType.PRACTICE: [
             "apply", "use", "application", "industry", "practical",
-            "deploy", "production", "应用", "实践", "工业", "部署"
+            "deploy", "production", "应用", "实践", "工业", "部署",
+            "real-world", "benchmark"
         ],
     }
 
@@ -387,25 +390,99 @@ class SmartFollowUp:
         answer: str,
         citations: List[Any] = None,
     ) -> List[FollowUp]:
-        """基于问答内容生成追问选项."""
-        # 合并文本进行分析
-        text = f"{question} {answer}".lower()
+        """基于问答内容和论文引用生成追问选项."""
+        citations = citations or []
 
-        # 检测关键词
+        # 1. 优先从引用论文生成追问
+        options = self._generate_from_citations(question, answer, citations)
+
+        # 2. 补充基于关键词的追问
+        text = f"{question} {answer}".lower()
         detected_types = self._detect_topic_types(text)
 
-        # 为每个类型生成追问
-        options = []
-        for ftype in detected_types[:3]:  # 最多3种类型
+        for ftype in detected_types[:3]:
+            if len(options) >= 4:
+                break
             followup = self._create_followup(ftype, question, answer, citations)
-            if followup:
+            if followup and not self._is_duplicate(followup, options):
                 options.append(followup)
 
-        # 如果没有检测到类型，生成通用追问
-        if not options:
-            options = self._generate_generic_options(question, citations)
+        # 3. 如果没有足够选项，生成通用追问
+        if len(options) < 2:
+            generic = self._generate_generic_options(question, citations)
+            for opt in generic:
+                if not self._is_duplicate(opt, options):
+                    options.append(opt)
+
+        return options[:4]  # 最多4个选项
+
+    def _generate_from_citations(
+        self,
+        question: str,
+        answer: str,
+        citations: List[Any],
+    ) -> List[FollowUp]:
+        """从引用论文生成追问."""
+        options = []
+        if not citations:
+            return options
+
+        # 从第一篇（最相关）论文提取概念
+        primary = citations[0]
+        paper_title = getattr(primary, 'paper_title', '') or ''
+
+        # 提取论文中的技术关键词
+        tech_keywords = self._extract_technical_terms(answer)
+
+        # 生成引用导向的追问
+        if paper_title and tech_keywords:
+            # 追问这篇论文被谁引用/影响了谁
+            options.append(FollowUp(
+                text=f"📑 引用这篇论文的后续工作有哪些？",
+                type=FollowUpType.CITATION,
+                query=f"papers citing {paper_title}",
+                icon="📑",
+                depth=1,
+            ))
+
+            # 基于技术术语的追问
+            if tech_keywords:
+                main_term = tech_keywords[0]
+                options.append(FollowUp(
+                    text=f"🔗 {main_term} 在其他论文中如何应用？",
+                    type=FollowUpType.EVOLUTION,
+                    query=f"{main_term} application in other papers",
+                    icon="🔗",
+                    depth=1,
+                ))
 
         return options
+
+    def _extract_technical_terms(self, text: str) -> List[str]:
+        """从文本中提取技术术语."""
+        # 技术术语模式
+        import re
+        patterns = [
+            r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:mechanism|model|network|architecture|method|algorithm)\b',
+            r'\b(?:self-|cross-|multi-|hierarchical)\s*\w+(?:-\w+)*\b',
+            r'\b\w+(?:-\w+){1,3}\b',  # 连字符术语
+        ]
+
+        terms = []
+        for pattern in patterns:
+            matches = re.findall(pattern, text, re.IGNORECASE)
+            terms.extend([m for m in matches if len(m) > 4])
+
+        # 去重并过滤
+        seen = set()
+        unique_terms = []
+        for t in terms:
+            t_lower = t.lower()
+            if t_lower not in seen and len(t) > 5:
+                seen.add(t_lower)
+                unique_terms.append(t)
+
+        return unique_terms[:3]
 
     def _detect_topic_types(self, text: str) -> List[str]:
         """检测文本中的主题类型."""
@@ -458,7 +535,7 @@ class SmartFollowUp:
             return None
 
         template = templates[ftype]
-        # 提取核心概念
+        # 提取核心概念，优先使用技术术语
         concept = self._extract_concept(question, answer)
 
         return FollowUp(
@@ -470,15 +547,20 @@ class SmartFollowUp:
         )
 
     def _extract_concept(self, question: str, answer: str) -> str:
-        """从问答中提取核心概念."""
-        # 简单策略：使用问题中的核心词
+        """从问答中提取核心概念，优先技术术语."""
+        # 优先从回答中提取技术术语
         text = f"{question} {answer}"
+
+        # 尝试提取技术术语
+        tech_terms = self._extract_technical_terms(answer)
+        if tech_terms:
+            return tech_terms[0][:40]
 
         # 移除常见词
         stopwords = {
             "what", "is", "are", "how", "why", "when", "where",
             "the", "a", "an", "this", "that", "these", "those",
-            "的", "是", "如何", "什么", "怎么", "为什么"
+            "的", "是", "如何", "什么", "怎么", "为什么", "please", "explain"
         }
 
         words = text.split()
@@ -493,6 +575,19 @@ class SmartFollowUp:
             concept = question[:30]
 
         return concept[:50]  # 限制长度
+
+    def _is_duplicate(self, new_opt: FollowUp, options: List[FollowUp]) -> bool:
+        """检查是否与现有选项重复."""
+        for opt in options:
+            # 类型相同且查询相似
+            if opt.type == new_opt.type:
+                # 计算相似度（简单版本：检查共同词）
+                opt_words = set(opt.query.lower().split())
+                new_words = set(new_opt.query.lower().split())
+                overlap = len(opt_words & new_words)
+                if overlap >= 2:
+                    return True
+        return False
 
     def _generate_generic_options(
         self,
