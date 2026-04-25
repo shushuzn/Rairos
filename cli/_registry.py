@@ -41,17 +41,8 @@ _SUBCOMMAND_TABLE = [
 ]
 SUBCOMMANDS = {name for name, _, _ in _SUBCOMMAND_TABLE}
 
-# Track whether parsers have been built
-_PARSERS_BUILT = False
-
-
 def _build_all_parsers(subparsers) -> None:
     """Build all subcommand parsers via lazy dynamic import."""
-    global _PARSERS_BUILT
-    if _PARSERS_BUILT:
-        return
-    _PARSERS_BUILT = True
-
     import importlib
     for name, module_path, builder_name in _SUBCOMMAND_TABLE:
         mod = importlib.import_module(module_path)
