@@ -42,6 +42,7 @@ _SUBCOMMAND_TABLE = [
     ("read-queue",    "cli.cmd.read_queue",       "_build_read_queue_parser"),
     ("chat",          "cli.cmd.chat",             "_build_chat_parser"),
     ("slides",        "cli.cmd.slides",           "_build_slides_parser"),
+    ("evolution",     "cli.cmd.evolution",         "_build_evolution_parser"),
 ]
 SUBCOMMANDS = {name for name, _, _ in _SUBCOMMAND_TABLE}
 
@@ -132,6 +133,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     elif args.subcmd == "slides":
         from cli.cmd.slides import slides as slides_cmd
         return slides_cmd.main(args.argv if hasattr(args, "argv") else [])
+    elif args.subcmd == "evolution":
+        from cli.cmd.evolution import evolution_main
+        from cli.cmd.evolution import _build_evolution_parser
+        return evolution_main()
     elif args.subcmd == "visual":
         from cli.cmd.visual import visual as visual_cmd
         return visual_cmd.main(args.argv if hasattr(args, "argv") else [])

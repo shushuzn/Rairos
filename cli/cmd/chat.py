@@ -217,6 +217,9 @@ def _run_interactive(chat, args) -> int:
                     print(f"  [{i}] {cite.paper_title}")
                     print(f"      ID: {cite.paper_id} | 相关度: {cite.relevance_score:.2f}")
 
+            # Record feedback
+            _collect_feedback(question, result, chat)
+
             print()
 
             # Save to history
@@ -235,3 +238,42 @@ def _run_interactive(chat, args) -> int:
             print()
 
     return 0
+
+
+def _collect_feedback(question: str, result, chat) -> None:
+    """Collect user feedback after a chat response."""
+    try:
+        from llm.evolution import get_evolution_memory
+
+        # Get paper IDs from citations
+        paper_ids = [c.paper_id for c in result.citations] if result.citations else []
+
+        # Ask for feedback
+        print()
+        feedback = input(colored("这个回答有帮助吗？(y/n/q跳过): ", Colors.OKBLUE)).strip().lower()
+
+        if feedback == "y":
+            print(colored("  ✅ 感谢反馈！系统正在学习...", Colors.OKGREEN))
+            evo = get_evolution_memory()
+            evo.record_chat_feedback(
+                query=question,
+                paper_ids=paper_ids,
+                is_positive=True,
+                outcome="success",
+                score=0.8,
+            )
+        elif feedback == "n":
+            print(colored("  📝 记录负面反馈，系统会避免类似回答", Colors.WARNING))
+            evo = get_evolution_memory()
+            evo.record_chat_feedback(
+                query=question,
+                paper_ids=paper_ids,
+                is_positive=False,
+                outcome="partial",
+                score=0.3,
+            )
+        # else: skip (q or anything else)
+
+    except Exception:
+        # Silently skip feedback collection on error
+        pass
