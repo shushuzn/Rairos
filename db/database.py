@@ -307,7 +307,10 @@ class Database:
     The database file is created automatically on first access.
     """
 
-    def __init__(self, db_path: Union[str, Path] = "~/.cache/ai_research_os/research.db"):
+    def __init__(self, db_path: Union[str, Path] = None):
+        if db_path is None:
+            from config import CACHE_DIR
+            db_path = Path(CACHE_DIR) / "research.db"
         self.db_path = Path(db_path).expanduser()
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._local = threading.local()

@@ -34,7 +34,7 @@ EMBEDDING_DIM: int = int(os.getenv("AIROS_EMBEDDING_DIM", "768"))
 CACHE_TTL_SECONDS: int = int(os.getenv("AIROS_CACHE_TTL_SECONDS", str(24 * 3600)))
 """How long cached arXiv / Crossref API responses live, in seconds."""
 
-CACHE_DIR: str = os.getenv("AIROS_CACHE_DIR", str(os.path.expanduser("~/.cache/ai_research_os")))
+CACHE_DIR: str = os.getenv("AIROS_CACHE_DIR", str(Path(__file__).parent / "data"))
 """Directory for disk cache storage."""
 
 MAX_CACHE_FILES: int = int(os.getenv("AIROS_MAX_CACHE_FILES", "2000"))
