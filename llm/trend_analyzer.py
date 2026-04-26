@@ -144,23 +144,56 @@ class TrendAnalyzer:
         return result
 
     def _collect_papers(self, topic: str) -> List[Dict[str, Any]]:
-        """Collect papers from DB."""
+        """Collect papers from DB, with correct forward citation counts from citations table.
+
+        Falls back to reference_count if citations table is empty.
+        """
         if not self.db:
             return []
 
         papers = []
         try:
             rows, _ = self.db.search_papers(topic, limit=100)
+            paper_ids = [row.paper_id for row in rows if row.paper_id]
+
+            if not paper_ids:
+                return []
+
+            # Build forward citation count from citations table
+            placeholders = ",".join("?" * len(paper_ids))
+            cite_rows = self.db.conn.execute(
+                f"""
+                SELECT target_id, COUNT(*) AS forward_cites
+                FROM citations
+                WHERE target_id IN ({placeholders})
+                GROUP BY target_id
+                """,
+                paper_ids,
+            ).fetchall()
+            cite_map = {row[0]: row[1] for row in cite_rows}
+
             for row in rows:
+                pid = row.paper_id
+                pub = row.published or ""
+                try:
+                    year_val = int(pub[:4]) if pub else 0
+                except (ValueError, TypeError):
+                    year_val = 0
+                # Forward citations: from citations table
+                forward_cites = cite_map.get(pid, 0)
+                # Fallback: reference_count column (backward citations / references)
+                ref_count = getattr(row, 'reference_count', 0) or 0
+
                 paper = {
-                    "id": getattr(row, 'id', ''),
-                    "title": getattr(row, 'title', '') or '',
+                    "id": pid,
+                    "title": row.title or '',
                     "abstract": getattr(row, 'abstract', '') or '',
-                    "year": getattr(row, 'year', 0) or 0,
-                    "citations": getattr(row, 'citations', 0) or 0,
+                    "year": year_val,
+                    "citations": forward_cites,  # forward = papers that cite this one
+                    "reference_count": ref_count,  # backward = papers this one cites
                     "authors": getattr(row, 'authors', '') or '',
                 }
-                if paper["year"] > 2000:  # Valid year
+                if year_val > 2000:
                     papers.append(paper)
         except Exception:
             pass
