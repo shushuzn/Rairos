@@ -12,7 +12,14 @@ from notes.frontmatter import parse_date_from_frontmatter, parse_frontmatter, pa
 
 
 def collect_pnotes(root: Path) -> List[Path]:
-    return sorted([p for p in root.rglob("*.md") if p.is_file() and p.parent.name in ("02-Papers", "Papers", "papers")])
+    # Scan all research tree subdirectories (00-Radar through 11-Future-Directions)
+    # and legacy Papers/02-Papers for backwards compat
+    all_dirs = set()
+    for d in root.iterdir():
+        if d.is_dir() and d.name[0].isdigit():
+            all_dirs.add(d.name)
+    all_dirs.update(["02-Papers", "Papers", "papers"])
+    return sorted([p for p in root.rglob("*.md") if p.is_file() and p.parent.name in all_dirs])
 
 
 def pnotes_by_tag(root: Path) -> Dict[str, List[Tuple[str, Path]]]:

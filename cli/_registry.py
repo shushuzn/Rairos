@@ -10,6 +10,7 @@ from typing import List, Optional, Callable, Dict
 from pathlib import Path
 
 from core.basics import get_default_concept_dir, get_default_radar_dir
+from llm.generate import ai_generate_pnote_draft
 
 logger = logging.getLogger(__name__)
 
@@ -324,9 +325,20 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
     if first_tag and len(tag_map.get(first_tag, [])) >= 3:
         top3 = [p for _, p in sorted(tag_map[first_tag], key=lambda x: x[0])[:3]]
     if top3:
-        ensure_or_update_mnote(cnote_dir, first_tag, top3)
+        mnote_dir = root / "M-Note"
+        mnote_dir.mkdir(parents=True, exist_ok=True)
+        ensure_or_update_mnote(mnote_dir, first_tag, top3)
 
     if args.ai:
-        ai_generate_pnote_draft(pnote_path, paper, model=args.model)
+        import os
+        base_url = os.environ.get("OPENAI_BASE_URL") or os.environ.get("AIROS_DEFAULT_OPENAI_BASE_URL", "https://api.openai.com/v1")
+        api_key = os.environ.get("OPENAI_API_KEY", "")
+        if api_key:
+            ai_content = ai_generate_pnote_draft(paper, tags, extracted_text, base_url, api_key, model=args.model or "gpt-4o-mini")
+            existing = pnote_path.read_text(encoding="utf-8") if pnote_path.exists() else ""
+            updated = existing + "\n\n" + ai_content if existing else ai_content
+            pnote_path.write_text(updated, encoding="utf-8")
+        else:
+            print_warning("OPENAI_API_KEY not set, skipping AI draft")
 
     return 0
