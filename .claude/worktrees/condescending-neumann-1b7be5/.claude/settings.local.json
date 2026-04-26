@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_oh-my-claudecode_t__list_omc_skills",
+      "mcp__plugin_oh-my-claudecode_t__load_omc_skills_local",
+      "mcp__plugin_oh-my-claudecode_t__load_omc_skills_global"
+    ]
+  }
+}

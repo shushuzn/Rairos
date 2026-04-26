@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
@@ -26,7 +27,6 @@ def _extract_references_from_text(paper_id: str, text: str) -> dict[str, list[st
     if not text or not text.strip():
         return {"arxiv_ids": [], "dois": [], "pmids": [], "isbns": []}
 
-    import re
     arXiv_PAT = re.compile(r'\barXiv:\s*(\d+\.\d+\b)', re.IGNORECASE)
     DOI_PAT = re.compile(r'\b10\.\d{4,}/[^\s]+', re.IGNORECASE)
     PMID_PAT = re.compile(r'\bPMID:\s*(\d{6,})\b', re.IGNORECASE)

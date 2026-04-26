@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional, List, Dict, Any, TYPE_CHECKING
 from collections import Counter, defaultdict
+import math
 import re
 
 from llm.evolution import get_evolution_memory, FeedbackType
@@ -484,7 +485,6 @@ class AdaptiveRetrieval:
         if total == 0:
             return 0.0
         # Wilson 下界，避免小样本时评分虚高
-        import math
         p = positives / total
         z = 1.645 if confidence == 0.95 else 1.96  # z-score
         n = total
@@ -716,7 +716,6 @@ class SmartFollowUp:
     def _extract_technical_terms(self, text: str) -> List[str]:
         """从文本中提取技术术语."""
         # 技术术语模式
-        import re
         patterns = [
             r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:mechanism|model|network|architecture|method|algorithm)\b',
             r'\b(?:self-|cross-|multi-|hierarchical)\s*\w+(?:-\w+)*\b',

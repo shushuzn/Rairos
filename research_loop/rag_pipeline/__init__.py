@@ -13,6 +13,7 @@ Usage:
 
 import csv
 import json
+import re
 import subprocess
 from pathlib import Path
 from typing import Optional
@@ -117,7 +118,6 @@ class RagPipeline:
     def _parse_examples_from_readme(self, content: str) -> list[dict]:
         """从 README 解析示例"""
         test_cases = []
-        import re
 
         # 匹配代码块中的示例
         pattern = r'```(?:python|py)?\n(.*?)```'
@@ -137,7 +137,6 @@ class RagPipeline:
     def _parse_examples_from_py(self, content: str) -> list[dict]:
         """从 Python 代码解析示例"""
         test_cases = []
-        import re
 
         # 匹配 docstring 中的示例
         pattern = r'"""\s*(.*?)\s*"""'

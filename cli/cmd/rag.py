@@ -8,6 +8,7 @@ Usage:
     airos rag init-benchmark <csv_path>
 """
 
+import re
 import click
 import sys
 from pathlib import Path
@@ -80,7 +81,6 @@ def rag(arxiv_id: str, mode: str, framework: str, task_name: str):
 
 def rag_run_full(arxiv_id: str, mode: str, framework: str, task_name: str):
     """执行完整 RAG 闭环流程"""
-    import re
 
     # Clean arxiv ID from URL if needed
     match = re.search(r"(\d+\.\d+)", arxiv_id)

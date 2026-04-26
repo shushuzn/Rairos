@@ -6,6 +6,7 @@ Usage:
     airos paper2code https://arxiv.org/abs/2106.09685
 """
 
+import re
 import click
 import sys
 from pathlib import Path
@@ -45,7 +46,6 @@ def paper2code(arxiv_id: str, mode: str, framework: str, install_deps: bool):
     """Generate citation-anchored implementation from arXiv paper."""
 
     # Clean arxiv ID from URL if needed
-    import re
     match = re.search(r'(\d+\.\d+)', arxiv_id)
     if match:
         arxiv_id = match.group(1)
