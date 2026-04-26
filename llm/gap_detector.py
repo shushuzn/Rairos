@@ -155,16 +155,25 @@ class GapDetector:
         papers = []
         try:
             rows, _ = self.db.search_papers(topic, limit=20)
+            if not rows:
+                return []
+
+            # Get full paper data via bulk fetch
+            paper_ids = [r.paper_id for r in rows]
+            full_papers = self.db.get_papers_bulk(paper_ids)
+
             for row in rows:
-                # SearchResult has paper_id, not id
-                paper = {
-                    "id": getattr(row, 'paper_id', '') or getattr(row, 'id', ''),
-                    "title": getattr(row, 'title', topic) or topic,
-                    "abstract": getattr(row, 'abstract', '') or '',
-                    "year": getattr(row, 'published', '')[:4] if getattr(row, 'published', '') else '',
-                    "authors": getattr(row, 'authors', '') or '',
-                }
-                papers.append(paper)
+                paper_id = row.paper_id
+                full = full_papers.get(paper_id)
+                if full:
+                    paper = {
+                        "id": paper_id,
+                        "title": full.title or topic,
+                        "abstract": full.abstract or '',
+                        "year": full.published[:4] if full.published else '',
+                        "authors": full.authors or '',
+                    }
+                    papers.append(paper)
         except Exception:
             pass
 
