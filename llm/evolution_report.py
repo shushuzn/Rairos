@@ -266,7 +266,12 @@ def generate_evolution_report(days: int = 7, db=None) -> LearningReport:
 
 
 class AdaptiveRetrieval:
-    """自适应检索：根据反馈优化检索结果."""
+    """自适应检索：根据反馈优化检索结果，带置信度和探索多样性."""
+
+    # 置信度阈值：样本数达到此值时 boost 完全生效
+    CONFIDENCE_THRESHOLD = 5
+    # 探索多样性：同类主题最多返回比例
+    DIVERSITY_RATIO = 0.6
 
     def __init__(self, evolution_memory=None):
         self.evo = evolution_memory or get_evolution_memory()
@@ -294,24 +299,104 @@ class AdaptiveRetrieval:
         if len(data["queries"]) > 20:
             data["queries"] = data["queries"][-20:]
         total = data["positive_mentions"] + data["negative_mentions"]
-        data["boost_score"] = (data["positive_mentions"] - data["negative_mentions"] * 0.5) / max(total, 1)
+        # Wilson Score Interval - 提供置信度加权的 boost
+        data["boost_score"] = self._wilson_score(
+            data["positive_mentions"],
+            total,
+            confidence=0.95
+        )
+        data["confidence"] = min(total / self.CONFIDENCE_THRESHOLD, 1.0)
         data["last_update"] = datetime.now().isoformat()
         self._save_boost()
 
-    def get_boost(self, paper_id: str) -> float:
-        return self.boost_data.get(paper_id, {}).get("boost_score", 0.0)
+    def _wilson_score(self, positives: int, total: int, confidence: float = 0.95) -> float:
+        """Wilson Score Interval - 置信度加权的评分."""
+        if total == 0:
+            return 0.0
+        # Wilson 下界，避免小样本时评分虚高
+        import math
+        p = positives / total
+        z = 1.645 if confidence == 0.95 else 1.96  # z-score
+        n = total
+        denom = 1 + z**2 / n
+        center = p + z**2 / (2 * n)
+        margin = z * math.sqrt(p * (1 - p) / n + z**2 / (4 * n**2))
+        wilson_lower = (center - margin) / denom
+        return wilson_lower * 2 - 0.5  # 映射到 [-0.5, 1.5] 范围
+
+    def get_boost(self, paper_id: str) -> tuple:
+        """获取 boost 值和置信度."""
+        data = self.boost_data.get(paper_id, {})
+        return data.get("boost_score", 0.0), data.get("confidence", 0.0)
 
     def apply_boost(self, results: List[Dict], decay: float = 0.1) -> List[Dict]:
+        """应用 boost，支持置信度加权和探索多样性."""
         boosted = []
+        topic_counts: dict = {}
+
         for r in results:
             paper_id = r.get("paper_id", "")
-            boost = self.get_boost(paper_id)
+            boost, confidence = self.get_boost(paper_id)
             age = self._get_boost_age(paper_id)
-            decayed_boost = boost * (decay ** (age / 30))
+
+            # 置信度加权：样本少时 boost 衰减
+            confidence_weight = confidence  # 0~1，样本少时接近0
+            decayed_boost = boost * confidence_weight * (decay ** (age / 30))
+
             original_score = r.get("score", 0.5)
             final_score = original_score + decayed_boost * 0.2
-            boosted.append({**r, "score": final_score, "boost": decayed_boost})
-        return sorted(boosted, key=lambda x: x["score"], reverse=True)
+
+            # 探索多样性惩罚：同类主题过多时降权
+            topic = r.get("topic", "unknown")
+            topic_counts[topic] = topic_counts.get(topic, 0) + 1
+            diversity_penalty = self._calc_diversity_penalty(topic, topic_counts, len(results))
+
+            boosted.append({
+                **r,
+                "score": final_score * diversity_penalty,
+                "boost": decayed_boost,
+                "confidence": confidence,
+                "topic": topic,
+            })
+
+        # 先按 score 排序，再应用多样性重排
+        boosted.sort(key=lambda x: x["score"], reverse=True)
+        return self._apply_diversity_rerank(boosted)
+
+    def _calc_diversity_penalty(self, topic: str, topic_counts: dict, total: int) -> float:
+        """计算多样性惩罚，同类过多时降权."""
+        if total == 0:
+            return 1.0
+        count = topic_counts.get(topic, 0)
+        ratio = count / total
+        if ratio > self.DIVERSITY_RATIO:
+            # 超出阈值的部分应用惩罚
+            penalty = 1.0 - (ratio - self.DIVERSITY_RATIO) * 0.5
+            return max(penalty, 0.7)  # 最低不低于 0.7
+        return 1.0
+
+    def _apply_diversity_rerank(self, results: List[Dict]) -> List[Dict]:
+        """多样性重排：确保结果不会过于集中在同一主题."""
+        diverse: list = []
+        topics_seen: dict = {}
+
+        for r in results:
+            topic = r.get("topic", "unknown")
+            if len(diverse) < 3:
+                # 前3个直接加入
+                diverse.append(r)
+                topics_seen[topic] = topics_seen.get(topic, 0) + 1
+            else:
+                # 之后检查多样性：如果同类超过2个，考虑跳过
+                if topics_seen.get(topic, 0) < 2:
+                    diverse.append(r)
+                    topics_seen[topic] = topics_seen.get(topic, 0) + 1
+                else:
+                    # 放到末尾
+                    r["_diversity_deferred"] = True
+                    diverse.append(r)
+
+        return diverse
 
     def _get_boost_age(self, paper_id: str) -> int:
         data = self.boost_data.get(paper_id, {})
