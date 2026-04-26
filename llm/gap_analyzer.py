@@ -582,8 +582,9 @@ def render_combined_report(
     lines.append(f"   Papers analyzed: {gap_result.total_papers_analyzed}")
     lines.append(f"   Gaps identified: {len(gap_result.gaps)}")
     if gap_result.preference_applied:
-        preferred = gap_result.gaps[0].gap_type.value if gap_result.gaps else "your preferences"
-        lines.append(f"   🧠 Sorted by your preferences ({preferred} gaps boosted)")
+        boosted = sum(1 for g in gap_result.gaps if getattr(g, 'preference_boost', False))
+        boosted_type = gap_result.gaps[0].gap_type.value if gap_result.gaps else "preferred"
+        lines.append(f"   🧠 Sorted by your preferences ({boosted} {boosted_type} gaps boosted ✨)")
     lines.append("")
 
     # Top 3 Gaps
@@ -594,7 +595,8 @@ def render_combined_report(
             GapSeverity.MEDIUM: "🟡",
             GapSeverity.LOW: "🟢",
         }.get(gap.severity, "⚪")
-        lines.append(f"   {i}. {severity_icon} {gap.title[:60]}")
+        boost_marker = " ✨" if getattr(gap, 'preference_boost', False) else ""
+        lines.append(f"   {i}. {severity_icon} {gap.title[:60]}{boost_marker}")
     lines.append("")
 
     # Hypotheses
