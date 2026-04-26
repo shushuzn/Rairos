@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import logging
 import ssl
 import sys
 import time
@@ -12,6 +13,8 @@ from typing import List, Optional, Tuple
 import orjson as json
 
 from cli._shared import get_db
+
+logger = logging.getLogger(__name__)
 
 _OPENALEX_BASE = "https://api.openalex.org"
 _OPENALEX_EMAIL = "ai-research-os@example.com"
@@ -44,7 +47,9 @@ def _openalex_request(path: str, timeout: int = 15) -> dict:
 
 def _arxiv_doi_to_openalex(arxiv_id: str) -> Optional[str]:
     """Query OpenAlex for a paper by arXiv ID, return OpenAlex ID or None."""
-    doi = f"10.48550/arXiv.{arxiv_id}"
+    # Strip version suffix so DOI is e.g. 10.48550/arXiv.2401.15391 (not .2401.15391v1)
+    clean_id = arxiv_id.rsplit("v", 1)[0] if arxiv_id[-1] in "0123456789" else arxiv_id
+    doi = f"10.48550/arXiv.{clean_id}"
     try:
         d = _openalex_request(f"/works?filter=doi:{doi}&per-page=1")
         results = d.get("results", [])
