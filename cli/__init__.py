@@ -64,6 +64,8 @@ _LAZY_EXPORTS = {
     "_build_hypothesize_parser": ("cli.cmd.hypothesize",  "_build_hypothesize_parser"),
     "_run_story":            ("cli.cmd.story",            "_run_story"),
     "_build_story_parser":   ("cli.cmd.story",            "_build_story_parser"),
+    "_run_analyze":          ("cli.cmd.analyze",          "_run_analyze"),
+    "_build_analyze_parser":  ("cli.cmd.analyze",          "_build_analyze_parser"),
     "_run_slides":           ("cli.cmd.slides",            "_run_slides"),
     "_build_slides_parser":   ("cli.cmd.slides",            "_build_slides_parser"),
     "_run_evolution":         ("cli.cmd.evolution",          "_run_evolution"),
