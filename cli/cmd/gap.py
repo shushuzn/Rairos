@@ -86,8 +86,8 @@ def _run_gap(args: argparse.Namespace) -> int:
     db = get_db()
     db.init()
 
-    # Profile/history commands
-    if args.profile or args.history:
+    # Profile/history/stats commands
+    if args.profile or args.history or args.stats:
         return _run_profile_or_history(args)
 
     # Enhanced mode with insights (auto-enable for --hypothesis)
