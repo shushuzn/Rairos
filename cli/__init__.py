@@ -79,6 +79,8 @@ _LAZY_EXPORTS = {
     "_build_roadmap_parser":    ("cli.cmd.roadmap",           "_build_roadmap_parser"),
     "_run_experiment":          ("cli.cmd.experiment",         "_run_experiment"),
     "_build_experiment_parser": ("cli.cmd.experiment",         "_build_experiment_parser"),
+    "_run_pipeline":            ("cli.cmd.pipeline",            "_run_pipeline"),
+    "_build_pipeline_parser":   ("cli.cmd.pipeline",           "_build_pipeline_parser"),
     "_run_dashboard":           ("cli.cmd.dashboard",          "_run_dashboard"),
     "_build_dashboard_parser":  ("cli.cmd.dashboard",          "_build_dashboard_parser"),
     "_run_journal":            ("cli.cmd.journal",            "_run_journal"),
