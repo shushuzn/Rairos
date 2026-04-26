@@ -37,12 +37,33 @@ class PaperStats:
 
 
 @dataclass
+class HotPaper:
+    """A paper with high citation velocity."""
+    paper_id: str
+    title: str
+    year: int
+    velocity: float
+    forward_cites: int
+
+
+@dataclass
+class TrendKeyword:
+    """A trending keyword from the corpus."""
+    keyword: str
+    direction: str  # rising / falling / emerging / stable
+    paper_count: int
+    growth: str  # e.g. "+25%" or "-10%"
+
+
+@dataclass
 class DashboardData:
     """Aggregated dashboard data."""
     generated_at: str = ""
     questions: List[QuestionSummary] = field(default_factory=list)
     experiments: List[ExperimentSummary] = field(default_factory=list)
     papers: Optional[PaperStats] = None
+    hot_papers: List[HotPaper] = field(default_factory=list)
+    trends: List[TrendKeyword] = field(default_factory=list)
     summary: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
@@ -87,11 +108,13 @@ class Dashboard:
                 metrics_count=len(e.metrics),
             ))
 
-        # Papers
+        # Papers + extended analytics
         if include_papers and self.db:
             try:
                 self.db.init()
                 data.papers = self._collect_paper_stats()
+                data.hot_papers = self._collect_hot_papers()
+                data.trends = self._collect_trends()
             except Exception:
                 data.papers = None
 
@@ -131,6 +154,83 @@ class Dashboard:
 
         return stats
 
+    def _collect_hot_papers(self) -> List[HotPaper]:
+        """Collect top papers by citation velocity (from influence logic)."""
+        hot = []
+        try:
+            current_year = 2026
+            cur = self.db.conn.execute("""
+                SELECT p.id, p.title, p.published, COUNT(c.id) AS forward_cites
+                FROM papers p
+                LEFT JOIN citations c ON c.target_id = p.id
+                GROUP BY p.id
+                HAVING forward_cites >= 1
+            """)
+            rows = cur.fetchall()
+            scored = []
+            for row in rows:
+                paper_id, title, published, fwd = row[0], row[1] or "", row[2] or "", row[3]
+                try:
+                    year = int(published[:4])
+                except (ValueError, TypeError):
+                    continue
+                if year < 2000 or year > current_year:
+                    continue
+                age = current_year - year + 1
+                velocity = fwd / age
+                scored.append((velocity, fwd, paper_id, title, year))
+
+            scored.sort(key=lambda x: x[0], reverse=True)
+            for velocity, fwd, pid, title, year in scored[:10]:
+                hot.append(HotPaper(
+                    paper_id=pid,
+                    title=title[:60] + "…" if len(title) > 60 else title,
+                    year=year,
+                    velocity=round(velocity, 1),
+                    forward_cites=fwd,
+                ))
+        except Exception:
+            pass
+        return hot
+
+    def _collect_trends(self) -> List[TrendKeyword]:
+        """Collect keyword trends from paper corpus using TrendAnalyzer."""
+        trends = []
+        try:
+            from llm.trend_analyzer import TrendAnalyzer
+            analyzer = TrendAnalyzer(db=self.db)
+            result = analyzer.analyze("", min_papers=3)
+            direction_map = {
+                "rising": "📈 rising",
+                "falling": "📉 falling",
+                "emerging": "✨ emerging",
+                "stable": "➡️ stable",
+            }
+            for t in result.rising_trends[:5]:
+                trends.append(TrendKeyword(
+                    keyword=t.keyword,
+                    direction=direction_map.get(t.direction.value, t.direction.value),
+                    paper_count=t.current_year_count,
+                    growth=f"+{max(int(t.growth_rate), 0)}%" if t.growth_rate > 0 else f"{int(t.growth_rate)}%",
+                ))
+            for t in result.falling_trends[:3]:
+                trends.append(TrendKeyword(
+                    keyword=t.keyword,
+                    direction=direction_map.get(t.direction.value, t.direction.value),
+                    paper_count=t.current_year_count,
+                    growth=f"{int(t.growth_rate)}%",
+                ))
+            for t in result.emerging_trends[:3]:
+                trends.append(TrendKeyword(
+                    keyword=t.keyword,
+                    direction=direction_map.get(t.direction.value, t.direction.value),
+                    paper_count=t.current_year_count,
+                    growth=f"+{max(int(t.growth_rate), 0)}%" if t.growth_rate > 0 else f"{int(t.growth_rate)}%",
+                ))
+        except Exception:
+            pass
+        return trends
+
     def _build_summary(self, data: DashboardData) -> Dict[str, Any]:
         """Build summary statistics."""
         questions_by_status = {}
@@ -148,6 +248,8 @@ class Dashboard:
             "experiments_by_status": experiments_by_status,
             "total_papers": data.papers.total_papers if data.papers else 0,
             "papers_this_month": data.papers.recent_papers if data.papers else 0,
+            "hot_papers_count": len(data.hot_papers),
+            "trends_count": len(data.trends),
         }
 
     def render_text(self, data: DashboardData) -> str:
@@ -166,7 +268,32 @@ class Dashboard:
         lines.append(f"  Questions: {s.get('total_questions', 0)}")
         lines.append(f"  Experiments: {s.get('total_experiments', 0)}")
         lines.append(f"  Papers: {s.get('total_papers', 0)} (this month: {s.get('papers_this_month', 0)})")
+        if s.get('hot_papers_count', 0) > 0:
+            lines.append(f"  Hot Papers: {s['hot_papers_count']} (citation velocity > 0)")
+        if s.get('trends_count', 0) > 0:
+            lines.append(f"  Trends: {s['trends_count']} keywords tracked")
         lines.append("")
+
+        # Hot Papers
+        if data.hot_papers:
+            lines.append("## 🔥 Hot Papers (by Citation Velocity)")
+            for i, p in enumerate(data.hot_papers[:5], 1):
+                bar = "█" * min(int(p.velocity), 10)
+                lines.append(
+                    f"  {i}. {p.velocity:.1f}/y  {bar}  {p.title} ({p.year})"
+                )
+            if len(data.hot_papers) > 5:
+                lines.append(f"  ... and {len(data.hot_papers) - 5} more")
+            lines.append("")
+
+        # Research Trends
+        if data.trends:
+            lines.append("## 📈 Research Trends")
+            for t in data.trends[:10]:
+                lines.append(
+                    f"  {t.direction}  {t.keyword}  ({t.paper_count} papers, {t.growth})"
+                )
+            lines.append("")
 
         # Questions
         lines.append("## Questions")
@@ -181,7 +308,7 @@ class Dashboard:
             for status, questions in sorted(q_by_status.items()):
                 icon = {"open": "📝", "in_progress": "🔄", "resolved": "✅"}.get(status, "❓")
                 lines.append(f"  {icon} {status.upper()} ({len(questions)})")
-                for q in questions[:3]:  # Show first 3
+                for q in questions[:3]:
                     lines.append(f"    - [{q.id}] {q.question[:50]}...")
                 if len(questions) > 3:
                     lines.append(f"    ... and {len(questions) - 3} more")
@@ -231,6 +358,25 @@ class Dashboard:
         return json.dumps({
             "generated_at": data.generated_at,
             "summary": data.summary,
+            "hot_papers": [
+                {
+                    "paper_id": p.paper_id,
+                    "title": p.title,
+                    "year": p.year,
+                    "velocity": p.velocity,
+                    "forward_cites": p.forward_cites,
+                }
+                for p in data.hot_papers
+            ],
+            "trends": [
+                {
+                    "keyword": t.keyword,
+                    "direction": t.direction,
+                    "paper_count": t.paper_count,
+                    "growth": t.growth,
+                }
+                for t in data.trends
+            ],
             "questions": [
                 {
                     "id": q.id,
