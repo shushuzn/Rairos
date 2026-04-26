@@ -65,6 +65,14 @@ def _build_hypothesize_parser(subparsers) -> argparse.ArgumentParser:
         default=5,
         help="Number of hypotheses to generate (default: 5)",
     )
+    p.add_argument(
+        "--validate",
+        type=str,
+        default=None,
+        dest="validate_id",
+        metavar="HYPOTHESIS_ID",
+        help="Validate a hypothesis by ID: show experiment results and verdict",
+    )
     return p
 
 
@@ -72,6 +80,10 @@ def _run_hypothesize(args: argparse.Namespace) -> int:
     """Run hypothesis generation command."""
     db = get_db()
     db.init()
+
+    # Validate mode: check hypothesis status
+    if args.validate_id:
+        return _run_validate_hypothesis(args.validate_id)
 
     generator = HypothesisGenerator(db=db)
 
@@ -98,3 +110,77 @@ def _run_hypothesize(args: argparse.Namespace) -> int:
         print(generator.render_result(result))
 
     return 0
+
+
+def _run_validate_hypothesis(hypothesis_id: str) -> int:
+    """Validate a hypothesis by checking linked experiment outcomes."""
+    from llm.insight_evolution import EvolutionTracker, ExplorationAction
+    from llm.experiment_tracker import ExperimentTracker
+
+    ev = EvolutionTracker()
+    tracker = ExperimentTracker()
+
+    events = ev.get_hypothesis_events(hypothesis_id)
+    verdict, detail = _compute_verdict(events)
+
+    print(f"🎯 Hypothesis: {hypothesis_id}")
+    print()
+    print(f"   verdict: {verdict}")
+    print(f"  detail:  {detail}")
+    print()
+
+    # Show experiment outcomes
+    experiments = tracker.list_experiments()
+    linked = [e for e in experiments if e.hypothesis_id == hypothesis_id]
+
+    if linked:
+        print(f"  linked experiments: {len(linked)}")
+        for e in linked:
+            icon = {"running": "⚡", "completed": "✓", "failed": "✗"}.get(e.status, "?")
+            print(f"    {icon} [{e.id}] {e.name} ({e.status})")
+            if e.results:
+                for k, v in e.results.items():
+                    print(f"       {k}: {v}")
+    else:
+        print("  no linked experiments found")
+
+    print()
+
+    # Show event timeline
+    if events:
+        print(f"  event timeline:")
+        for evt in events:
+            icon = _action_icon(evt.action)
+            print(f"    {icon} {evt.action.value} — {evt.topic or '(no topic)'}")
+
+    return 0
+
+
+def _compute_verdict(events):
+    """Compute VALIDATED / REJECTED / INCONCLUSIVE from events."""
+    if not events:
+        return "INCONCLUSIVE", "no experiments recorded"
+
+    action_vals = {e.action.value if hasattr(e.action, 'value') else str(e.action) for e in events}
+    has_completed = "validated" in action_vals
+    has_failed = "rejected" in action_vals
+
+    if has_completed and has_failed:
+        return "MIXED", "both validated and rejected experiments exist"
+    if has_completed:
+        return "VALIDATED", "all experiments succeeded"
+    if has_failed:
+        return "REJECTED", "all experiments failed"
+    return "INCONCLUSIVE", "no completed experiments yet"
+
+
+def _action_icon(action):
+    val = action.value if hasattr(action, 'value') else str(action)
+    return {
+        "validated": "✅",
+        "rejected": "❌",
+        "hypothesized": "💡",
+        "viewed": "👁",
+        "accepted": "👍",
+        "expanded": "📖",
+    }.get(val, "•")

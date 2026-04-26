@@ -391,6 +391,29 @@ class EvolutionTracker:
         """Get all events for a specific topic."""
         return self.get_recent_events(topic=topic, limit=1000)
 
+    def get_hypothesis_events(self, hypothesis_id: str) -> List[EvolutionEvent]:
+        """Get all events for a specific hypothesis_id."""
+        if not self.events_file.exists():
+            return []
+        events = []
+        try:
+            with open(self.events_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    if not line.strip():
+                        continue
+                    try:
+                        data = json.loads(line)
+                        if isinstance(data.get("action"), str):
+                            data["action"] = ExplorationAction(data["action"])
+                        event = EvolutionEvent(**data)
+                        if event.hypothesis_id == hypothesis_id:
+                            events.append(event)
+                    except Exception:
+                        continue
+        except Exception:
+            pass
+        return events
+
     def get_preferred_gap_types(self, limit: int = 3) -> List[str]:
         """Get most preferred gap types based on history."""
         profile = self._load_profile()
