@@ -63,10 +63,12 @@ class GapAnalysisResultV2:
 class GapAnalyzerV2(GapDetector):
     """Enhanced gap analyzer with insight fusion and preference learning."""
 
-    def __init__(self, db=None, insight_manager=None, evolution_tracker=None):
+    def __init__(self, db=None, insight_manager=None, evolution_tracker=None,
+                 trend_analyzer=None):
         super().__init__(db)
         self.insight_manager = insight_manager
         self.evolution_tracker = evolution_tracker or EvolutionTracker()
+        self.trend_analyzer = trend_analyzer
 
     def _collect_papers(self, topic: str, limit: int = 30) -> List[Dict[str, Any]]:
         """Collect papers with full abstracts for gap analysis.
@@ -145,7 +147,10 @@ class GapAnalyzerV2(GapDetector):
         if use_insights and self.insight_manager:
             insights = self._collect_insights(topic)
 
-        # 3. Run gap detection with collected papers
+        # 3. Analyze trends for trending keyword boost
+        hot_keywords = self._analyze_trends(topic)
+
+        # 4. Run gap detection with collected papers
         # Override parent's paper collection for this call
         original_collect = self._collect_papers
         self._collect_papers = lambda t: papers  # Use same papers
@@ -161,14 +166,16 @@ class GapAnalyzerV2(GapDetector):
 
         self._collect_papers = original_collect  # Restore
 
-        # 4. Convert to enhanced format with insights
-        enhanced_gaps, preference_applied = self._convert_to_v2(base_result.gaps, insights, papers)
+        # 5. Convert to enhanced format with insights + trend boost
+        enhanced_gaps, preference_applied = self._convert_to_v2(
+            base_result.gaps, insights, papers, hot_keywords
+        )
 
-        # 5. Generate sub-questions
+        # 6. Generate sub-questions
         for gap in enhanced_gaps:
             gap.sub_questions = self._generate_sub_questions(gap)
 
-        # 6. Calculate statistics
+        # 7. Calculate statistics
         gaps_by_type = {}
         for gap in enhanced_gaps:
             gaps_by_type[gap.gap_type] = gaps_by_type.get(gap.gap_type, 0) + 1
@@ -191,13 +198,35 @@ class GapAnalyzerV2(GapDetector):
         cards = self.insight_manager.search_cards(query=topic)
         return [card.content for card in cards]
 
+    def _analyze_trends(self, topic: str) -> set:
+        """Run TrendAnalyzer to get rising/emerging keywords for a topic.
+
+        Returns a set of keyword strings that are currently rising or emerging.
+        """
+        if not self.trend_analyzer:
+            return set()
+
+        try:
+            result = self.trend_analyzer.analyze(topic, min_papers=5)
+            # Collect hot keywords from rising and emerging trends
+            hot = set()
+            for t in result.rising_trends[:10]:
+                hot.add(t.keyword.lower())
+            for t in result.emerging_trends[:10]:
+                hot.add(t.keyword.lower())
+            return hot
+        except Exception:
+            return set()
+
     def _convert_to_v2(
         self,
         gaps: List[ResearchGap],
         insights: List[str],
         papers: List,
+        hot_keywords: set = None,
     ) -> List[ResearchGapV2]:
         """Convert base gaps to enhanced V2 format with preference learning."""
+        hot_keywords = hot_keywords or set()
         enhanced = []
 
         for gap in gaps:
@@ -212,6 +241,9 @@ class GapAnalyzerV2(GapDetector):
                 gap.gap_type,
             )
 
+            # Check if gap title/description matches a hot keyword
+            trend_boost = self._matches_trending_keyword(gap, hot_keywords)
+
             enhanced.append(ResearchGapV2(
                 gap_type=gap.gap_type,
                 title=gap.description[:100] if gap.description else "Untitled Gap",
@@ -220,19 +252,35 @@ class GapAnalyzerV2(GapDetector):
                 supporting_papers=gap.evidence_papers,
                 user_insights=related_insights,
                 priority=priority,
+                novelty_score=trend_boost,  # reuse field to carry trend signal
             ))
 
-        # Sort by preference score + severity + priority
-        enhanced, preference_applied = self._apply_preference_sorting(enhanced)
+        # Sort by preference score + trend boost + severity + priority
+        enhanced, preference_applied = self._apply_preference_sorting(enhanced, hot_keywords)
 
         return enhanced, preference_applied
 
-    def _apply_preference_sorting(self, gaps: List[ResearchGapV2]) -> List[ResearchGapV2]:
-        """Apply user preference-based sorting to gaps.
+    def _matches_trending_keyword(self, gap: ResearchGap, hot_keywords: set) -> float:
+        """Check if a gap matches a trending keyword, return boost score."""
+        if not hot_keywords:
+            return 0.0
 
-        Gaps matching user preferences are boosted to appear first.
+        text = (gap.description or "").lower()
+        matched = sum(1 for kw in hot_keywords if kw in text)
+        return min(matched * 0.5, 2.0)  # Cap at +2.0 boost
+
+    def _apply_preference_sorting(
+        self,
+        gaps: List[ResearchGapV2],
+        hot_keywords: set = None,
+    ) -> List[ResearchGapV2]:
+        """Apply user preference-based sorting + trend boost to gaps.
+
+        Gaps matching user preferences or trending keywords are boosted to appear first.
         Returns both sorted gaps and whether preferences were applied.
         """
+        hot_keywords = hot_keywords or set()
+
         # Get user preferences
         preferred_types = set(self.evolution_tracker.get_preferred_gap_types(limit=5))
         disliked_types = set(self.evolution_tracker.get_disliked_gap_types(limit=3))
@@ -240,8 +288,11 @@ class GapAnalyzerV2(GapDetector):
         has_preferences = bool(preferred_types or disliked_types)
 
         def gap_preference_score(gap: ResearchGapV2) -> tuple:
-            """Calculate sorting score: (preference_score, severity_score, priority_score)."""
+            """Calculate sorting score: (trend_score, preference_score, severity_score, priority_score)."""
             gap_type_str = gap.gap_type.value
+
+            # Trend score: from novelty_score (set to trend boost in _convert_to_v2)
+            trend_score = gap.novelty_score  # 0-2 scale
 
             # Preference score: +2 for liked, -1 for disliked, 0 for neutral
             pref_score = 0
@@ -261,8 +312,8 @@ class GapAnalyzerV2(GapDetector):
             # Priority score (original calculation)
             priority_score = gap.priority
 
-            # Return tuple for multi-key sort: prefer highest preference, then severity, then priority
-            return (pref_score, severity_score, priority_score)
+            # Return tuple: trend first (highest), then preference, then severity, then priority
+            return (trend_score, pref_score, severity_score, priority_score)
 
         gaps.sort(key=gap_preference_score, reverse=True)
         return gaps, has_preferences

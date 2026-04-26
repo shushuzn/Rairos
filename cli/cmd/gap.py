@@ -152,11 +152,14 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
     # Initialize managers
     insight_manager = None if args.no_insights else InsightManager()
 
-    # Pass tracker for preference-based reordering
+    # Pass tracker for preference-based reordering + trend analyzer for trend-aware sorting
+    from llm.trend_analyzer import TrendAnalyzer
+    trend_analyzer = TrendAnalyzer(db=db)
     analyzer = GapAnalyzerV2(
         db=db,
         insight_manager=insight_manager,
         evolution_tracker=tracker,
+        trend_analyzer=trend_analyzer,
     )
 
     # Hypothesis generation mode
