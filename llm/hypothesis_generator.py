@@ -84,6 +84,7 @@ class ResearchHypothesis:
     risk_assessment: Optional[RiskAssessment] = None
     novelty_score: float = 0.5
     feasibility_score: float = 0.5
+    gap_type: str = ""  # GapType value for verdict-driven gap reordering
 
 
 @dataclass
@@ -251,6 +252,7 @@ class HypothesisGenerator:
                 hypothesis_type=template_info["type"],
                 core_statement=self._fill_template(template, topic, gap_context),
                 based_on=f"基于{gap_type.replace('_', ' ')}类型",
+                gap_type=gap_type,
                 experiment_design=ExperimentDesign(
                     baseline="待确定",
                     variables=template_info["variables"],
@@ -348,6 +350,7 @@ class HypothesisGenerator:
             hypothesis_type=HypothesisType.EXPLORATORY,
             core_statement=f"将{topic}的方法/机制应用于跨领域任务可能产生意外的效果提升",
             based_on="跨领域创新思维",
+            gap_type="cross_domain",
             experiment_design=ExperimentDesign(
                 baseline="标准方法",
                 variables=["领域迁移策略", "适配层设计", "预训练权重"],
@@ -413,6 +416,7 @@ class HypothesisGenerator:
                             hypothesis_type=HypothesisType.EXPLORATORY,
                             core_statement=parts[0].split(']')[1].strip() if ']' in parts[0] else parts[0],
                             based_on="LLM增强生成",
+                            gap_type=self._infer_gap_type(gap_context),
                             experiment_design=ExperimentDesign(
                                 baseline="待设计",
                                 variables=["待确定"],

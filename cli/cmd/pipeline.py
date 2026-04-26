@@ -149,6 +149,7 @@ def _run_pipeline(args: argparse.Namespace) -> int:
                     "evaluation_metrics": ed.evaluation_metrics,
                     "expected_results": ed.expected_results,
                     "hypothesis_type": h.hypothesis_type.value,
+                    "gap_type": h.gap_type,
                     "based_on": h.based_on,
                 },
                 tags=[args.topic, h.hypothesis_type.value],
