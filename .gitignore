@@ -28,3 +28,17 @@ dict[str
 0
 0)
 .env
+
+# Local data and research trees
+AI-Research/
+ai_research.db
+data/arxiv/
+data/research.db
+
+# Debug artifacts from interactive testing
+0x3000
+fts_query
+{[r[0]
+1
+"{[r[0]}"
+
