@@ -44,6 +44,7 @@ _SUBCOMMAND_TABLE = [
     ("path",          "cli.cmd.path",             "_build_path_parser"),
     ("gap",           "cli.cmd.gap",             "_build_gap_parser"),
     ("trend",         "cli.cmd.trend",           "_build_trend_parser"),
+    ("hypothesize",   "cli.cmd.hypothesize",     "_build_hypothesize_parser"),
     ("validate",      "cli.cmd.validate",         "_build_validate_parser"),
     ("story",         "cli.cmd.story",            "_build_story_parser"),
     ("slides",        "cli.cmd.slides",           "_build_slides_parser"),
@@ -117,6 +118,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "read-queue": "_run_read_queue",
         "chat": "_run_chat",
         "slides": "_run_slides",
+        "hypothesize": "_run_hypothesize",
     }
     if args.subcmd in dispatch:
         import cli as _cli
