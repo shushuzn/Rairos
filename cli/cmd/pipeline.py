@@ -16,6 +16,7 @@ from cli._shared import (
 )
 from llm.experiment_tracker import ExperimentTracker
 from llm.gap_analyzer import GapAnalyzerV2, render_combined_report
+from llm.insight_evolution import EvolutionTracker
 
 
 def _build_pipeline_parser(subparsers) -> argparse.ArgumentParser:
@@ -133,11 +134,18 @@ def _run_pipeline(args: argparse.Namespace) -> int:
     # Step 3: Create experiments from top hypotheses
     if not args.hypothesis_only and hypothesis_result.hypotheses:
         tracker = ExperimentTracker()
+        ev = EvolutionTracker()
         created = []
         for h in hypothesis_result.hypotheses[:args.top_hypotheses]:
             ed = h.experiment_design
             if not ed:
                 continue
+            ev.record_hypothesis_generated(
+                topic=args.topic,
+                gap_type=h.gap_type,
+                gap_title=h.title,
+                hypothesis_id=h.id,
+            )
             exp = tracker.run(
                 name=h.title,
                 description=h.core_statement,
