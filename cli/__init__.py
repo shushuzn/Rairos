@@ -58,6 +58,8 @@ _LAZY_EXPORTS = {
     "_build_chat_parser":     ("cli.cmd.chat",              "_build_chat_parser"),
     "_run_path":             ("cli.cmd.path",              "_run_path"),
     "_build_path_parser":     ("cli.cmd.path",              "_build_path_parser"),
+    "_run_gap":             ("cli.cmd.gap",              "_run_gap"),
+    "_build_gap_parser":     ("cli.cmd.gap",              "_build_gap_parser"),
     "_run_slides":           ("cli.cmd.slides",            "_run_slides"),
     "_build_slides_parser":   ("cli.cmd.slides",            "_build_slides_parser"),
     "_run_evolution":         ("cli.cmd.evolution",          "_run_evolution"),
