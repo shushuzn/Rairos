@@ -7,12 +7,24 @@ Research Session Tracker: Track research conversations and knowledge graphs
 from __future__ import annotations
 
 import json
+import re
 import time
 from dataclasses import dataclass, asdict, field
 from datetime import datetime, timedelta
+from enum import Enum
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 from collections import defaultdict
+
+
+class ResearchIntent(Enum):
+    """Research intent classification."""
+    LEARNING = "learning"      # 理解概念、学习原理
+    REPRODUCING = "reproducing"  # 复现代码、复现实验
+    IMPROVING = "improving"    # 改进方法、创新
+    COMPARING = "comparing"    # 对比分析、选型
+    EXPLORING = "exploring"     # 探索发现、找方向
+    CITING = "citing"          # 引用写作、文献整理
 
 
 @dataclass
@@ -37,6 +49,7 @@ class ResearchSession:
     ended_at: Optional[str] = None
     tags: List[str] = field(default_factory=list)  # 自动提取的标签
     insights: List[str] = field(default_factory=list)  # 会话洞察
+    intent: ResearchIntent = ResearchIntent.LEARNING  # 检测到的研究意图
 
     @property
     def duration_minutes(self) -> int:
@@ -106,7 +119,117 @@ class ResearchSessionTracker:
         # 自动提取标签
         self._extract_tags(question, paper_titles)
 
+        # 自动检测研究意图
+        intent = self._detect_intent(question)
+        self.current_session.intent = intent
+
         return query
+
+    def _detect_intent(self, question: str) -> ResearchIntent:
+        """
+        Detect research intent from question.
+
+        Uses keyword and pattern matching for fast classification.
+        """
+        q_lower = question.lower()
+
+        # Intent patterns (CN/EN) - simple alternation without capturing groups
+        patterns = {
+            ResearchIntent.REPRODUCING: [
+                r'复现|实现|copy|paste|跑通|代码|code|reproduce|implement|build',
+                r'怎么实现|如何复现|有代码吗|show me|给我代码',
+            ],
+            ResearchIntent.IMPROVING: [
+                r'改进|优化|提升|更好|improve|better|enhance|boost',
+                r'如何改进|能不能更好|超越|outperform|beat',
+            ],
+            ResearchIntent.COMPARING: [
+                r'比较|对比|差异|哪个更好|vs|versus|compare|differ',
+                r'和.*区别|相比.*如何|哪个更强',
+            ],
+            ResearchIntent.LEARNING: [
+                r'是什么|原理|如何理解|学习|了解|入门|概念|definition|learn|understand|explain',
+                r'什么意思|怎么理解|有什么用|what is|how does',
+            ],
+            ResearchIntent.EXPLORING: [
+                r'有哪些|有什么 最新 最新研究 最近 探索 发现|what are|latest|recent|discover',
+                r'有什么新|还有什么|还有什么方法',
+            ],
+            ResearchIntent.CITING: [
+                r'引用|cite|参考文献|写论文|写作|如何引用|citation|bibliography',
+                r'格式|规范|apa|ieee',
+            ],
+        }
+
+        scores = {intent: 0 for intent in ResearchIntent}
+        for intent, intent_patterns in patterns.items():
+            for pattern in intent_patterns:
+                if re.search(pattern, q_lower):
+                    scores[intent] += 1
+
+        max_score = max(scores.values())
+        if max_score == 0:
+            return ResearchIntent.LEARNING  # Default
+
+        for intent, score in scores.items():
+            if score == max_score:
+                return intent
+
+        return ResearchIntent.LEARNING
+
+    def get_research_path_suggestion(self) -> Optional[str]:
+        """
+        Suggest a research path based on current session.
+
+        Returns a path suggestion string if enough context exists.
+        """
+        if not self.current_session or len(self.current_session.queries) < 1:
+            return None
+
+        intent = getattr(self.current_session, 'intent', ResearchIntent.LEARNING)
+        topics = self.current_session.topics
+
+        if not topics:
+            return None
+
+        # Generate suggestions based on intent
+        main_topic = topics[0] if topics else "该主题"
+
+        suggestions = {
+            ResearchIntent.LEARNING: f"📚 学习路径建议: {main_topic} → 核心论文 → 变体模型 → 应用案例",
+            ResearchIntent.REPRODUCING: f"🔧 复现路径建议: 找到基准实现 → 对齐指标 → 消融实验 → 复现结果",
+            ResearchIntent.IMPROVING: f"🚀 改进路径建议: {main_topic} → 痛点分析 → 改进思路 → 验证实验",
+            ResearchIntent.COMPARING: f"⚖️ 对比路径建议: {main_topic} → 竞品分析 → 优缺点 → 选型建议",
+            ResearchIntent.EXPLORING: f"🔍 探索路径建议: 最新论文 → 开源实现 → 社区反馈 → 实际应用",
+            ResearchIntent.CITING: f"📝 引用建议: 相关工作 → 方法对比 → 贡献点 → 格式规范",
+        }
+
+        return suggestions.get(intent, f"💡 建议深入了解: {main_topic}")
+
+    def get_probing_questions(self) -> List[str]:
+        """
+        Generate probing questions based on session context.
+
+        Returns 1-2 thought-provoking questions to guide research.
+        """
+        if not self.current_session:
+            return []
+
+        questions = []
+        intent = getattr(self.current_session, 'intent', ResearchIntent.LEARNING)
+        topics = self.current_session.topics
+
+        if len(topics) == 1:
+            questions.append(f"这个 topic 和其他领域有什么联系？")
+
+        if intent == ResearchIntent.LEARNING:
+            questions.append(f"这个 topic 在实际项目中如何使用？")
+        elif intent == ResearchIntent.REPRODUCING:
+            questions.append(f"复现过程中最大的挑战是什么？")
+        elif intent == ResearchIntent.IMPROVING:
+            questions.append(f"现有方法的核心局限在哪里？")
+
+        return questions[:2]
 
     def add_follow_up(self, query_id: str, follow_up_question: str):
         """记录追问."""
@@ -150,7 +273,7 @@ class ResearchSessionTracker:
             "reinforcement", "policy", "reward", "training", "optimization",
         }
 
-        found = [tag for tag in known_tags if tag in text]
+        found = [tag for tag in known_tags if re.search(r'\b' + re.escape(tag) + r'\b', text)]
         self.current_session.tags.extend(found)
 
     def _generate_insights(self):
