@@ -60,6 +60,7 @@ _SUBCOMMAND_TABLE = [
     ("citation-chain", "cli.cmd.citation_chain",   "_build_citation_chain_parser"),
     ("compare",        "cli.cmd.compare",          "_build_compare_parser"),
     ("replicate",      "cli.cmd.replicate",        "_build_replicate_parser"),
+    ("insight",        "cli.cmd.insight",          "_build_insight_parser"),
 ]
 SUBCOMMANDS = {name for name, _, _ in _SUBCOMMAND_TABLE}
 
@@ -141,6 +142,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "citation-chain": "_run_citation_chain",
         "compare": "_run_compare",
         "replicate": "_run_replicate",
+        "insight": "_run_insight",
     }
     if args.subcmd in dispatch:
         import cli as _cli
