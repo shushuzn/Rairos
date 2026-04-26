@@ -169,7 +169,15 @@ class ExperimentTracker:
 
     def render_list(self, exps, verbose=False):
         if not exps: return "No experiments found."
-        lines, icons = [], {"running":"⚡","completed":"✓","failed":"✗"}
+
+        # Summary counts
+        by_status = {}
+        for e in exps:
+            by_status[e.status] = by_status.get(e.status, 0) + 1
+        total = len(exps)
+        summary = f"Total: {total}  |  " + "  |  ".join(f"{s}: {c}" for s, c in sorted(by_status.items()))
+
+        lines, icons = [summary, ""], {"running":"⚡","completed":"✓","failed":"✗"}
         for e in exps:
             lines.append(f"{icons.get(e.status,'?')} [{e.id}] {e.name} ({e.status})")
             if e.roadmap_milestone: lines.append(f"  Milestone: {e.roadmap_milestone}")
