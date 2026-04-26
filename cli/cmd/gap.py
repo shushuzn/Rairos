@@ -5,6 +5,7 @@ import argparse
 
 from cli._shared import get_db, print_info, print_error
 from llm.gap_detector import GapDetector
+from llm.insight_evolution import EvolutionTracker
 
 
 def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
@@ -62,6 +63,16 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Generate hypotheses from gaps",
     )
+    p.add_argument(
+        "--profile",
+        action="store_true",
+        help="Show research preference profile",
+    )
+    p.add_argument(
+        "--history",
+        action="store_true",
+        help="Show exploration history for topic",
+    )
     return p
 
 
@@ -69,6 +80,10 @@ def _run_gap(args: argparse.Namespace) -> int:
     """Run gap detection command."""
     db = get_db()
     db.init()
+
+    # Profile/history commands
+    if args.profile or args.history:
+        return _run_profile_or_history(args)
 
     # Enhanced mode with insights (auto-enable for --hypothesis)
     if args.enhanced or args.hypothesis:
@@ -99,13 +114,35 @@ def _run_gap(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_profile_or_history(args: argparse.Namespace) -> int:
+    """Show user research profile or exploration history."""
+    tracker = EvolutionTracker()
+
+    if args.profile:
+        print()
+        print(tracker.render_profile())
+        return 0
+
+    if args.history:
+        if not args.topic:
+            print_error("Error: --history requires a topic argument")
+            return 1
+        print()
+        print(tracker.render_topic_history(args.topic))
+        return 0
+
+    return 0
+
+
 def _run_gap_enhanced(args: argparse.Namespace) -> int:
     """Run enhanced gap detection with insights."""
     from llm.gap_analyzer import GapAnalyzerV2, render_gap_report, render_combined_report
     from llm.insight_cards import InsightManager
+    from llm.insight_evolution import EvolutionTracker, ExplorationAction
 
     db = get_db()
     db.init()
+    tracker = EvolutionTracker()
     print_info(f"🔬 Enhanced gap analysis for: {args.topic}")
 
     # Initialize managers
@@ -127,6 +164,24 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
             min_papers=args.min_papers,
         )
 
+        # Record hypothesis generation events
+        for gap in gap_result.gaps:
+            tracker.record_event(
+                topic=args.topic,
+                action=ExplorationAction.VIEWED,
+                gap_type=gap.gap_type.value,
+                gap_title=gap.title,
+                gap_description=gap.description,
+            )
+
+        if hypothesis_result.hypotheses:
+            tracker.record_event(
+                topic=args.topic,
+                action=ExplorationAction.HYPOTHESIZED,
+                gap_type=gap_result.gaps[0].gap_type.value if gap_result.gaps else "",
+                gap_title=gap_result.gaps[0].title if gap_result.gaps else "",
+            )
+
         if args.json:
             import json
             print(json.dumps({
@@ -147,6 +202,16 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
         model=args.model,
         min_papers=args.min_papers,
     )
+
+    # Record gap view events
+    for gap in result.gaps:
+        tracker.record_event(
+            topic=args.topic,
+            action=ExplorationAction.VIEWED,
+            gap_type=gap.gap_type.value,
+            gap_title=gap.title,
+            gap_description=gap.description,
+        )
 
     if args.json:
         import json
