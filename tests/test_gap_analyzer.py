@@ -7,6 +7,7 @@ from llm.gap_analyzer import (
     ResearchGapV2,
     GapAnalysisResultV2,
     render_gap_report,
+    render_combined_report,
 )
 from llm.gap_detector import GapType, GapSeverity
 
@@ -427,3 +428,134 @@ class TestGapConversion:
         assert result[0].severity == GapSeverity.HIGH
         assert result[1].severity == GapSeverity.MEDIUM
         assert result[2].severity == GapSeverity.LOW
+
+
+class TestHypothesisGeneration:
+    """Test hypothesis generation from gaps."""
+
+    @pytest.fixture
+    def analyzer(self):
+        return GapAnalyzerV2()
+
+    @pytest.fixture
+    def sample_gap_result(self):
+        """Create sample gap analysis result."""
+        return GapAnalysisResultV2(
+            topic="RAG",
+            gaps=[
+                ResearchGapV2(
+                    gap_type=GapType.METHOD_LIMITATION,
+                    title="Context window limitation",
+                    description="Transformers have limited context window",
+                    severity=GapSeverity.HIGH,
+                    sub_questions=["How to extend context?", "What are alternatives?"],
+                ),
+                ResearchGapV2(
+                    gap_type=GapType.EVALUATION_GAP,
+                    title="Missing benchmarks",
+                    description="No standard evaluation for long documents",
+                    severity=GapSeverity.MEDIUM,
+                    sub_questions=["What metrics to use?", "How to compare?"],
+                ),
+            ],
+            total_papers_analyzed=10,
+            total_insights_used=3,
+        )
+
+    def test_generate_hypotheses_empty(self, analyzer):
+        """Test hypothesis generation with no gaps."""
+        empty_result = GapAnalysisResultV2(topic="Test")
+        result = analyzer.generate_hypotheses(empty_result, use_llm=False)
+        assert result.topic == "Test"
+        assert len(result.hypotheses) == 0
+
+    def test_generate_hypotheses_from_gaps(self, analyzer, sample_gap_result):
+        """Test hypothesis generation from gap results."""
+        with patch("llm.hypothesis_generator.HypothesisGenerator.generate") as mock_gen:
+            from llm.hypothesis_generator import HypothesisResult, HypothesisType, ExperimentDesign
+            mock_result = HypothesisResult(topic="RAG")
+            mock_result.hypotheses = []
+            mock_gen.return_value = mock_result
+
+            result = analyzer.generate_hypotheses(sample_gap_result, use_llm=False)
+            mock_gen.assert_called_once()
+
+    def test_build_gap_context(self, analyzer, sample_gap_result):
+        """Test building context from gap results."""
+        context = analyzer._build_gap_context(sample_gap_result)
+        assert "RAG" in context
+        assert "Context window limitation" in context
+        assert "Method Limitation" in context or "method_limitation" in context
+
+    def test_analyze_with_hypotheses(self, analyzer):
+        """Test combined analysis method."""
+        with patch.object(analyzer, "analyze") as mock_analyze:
+            with patch.object(analyzer, "generate_hypotheses") as mock_hypothesis:
+                from llm.gap_analyzer import GapAnalysisResultV2
+                from llm.hypothesis_generator import HypothesisResult
+
+                mock_analyze.return_value = GapAnalysisResultV2(topic="Test")
+                mock_hypothesis.return_value = HypothesisResult(topic="Test")
+
+                gap_result, hyp_result = analyzer.analyze_with_hypotheses("Test", use_llm=False)
+                assert gap_result.topic == "Test"
+                assert hyp_result.topic == "Test"
+
+
+class TestCombinedReportRendering:
+    """Test combined report rendering."""
+
+    def test_render_combined_empty(self):
+        """Test rendering combined report with no gaps."""
+        from llm.gap_analyzer import GapAnalysisResultV2
+        from llm.hypothesis_generator import HypothesisResult
+
+        gap_result = GapAnalysisResultV2(topic="Test")
+        hyp_result = HypothesisResult(topic="Test")
+
+        output = render_combined_report(gap_result, hyp_result)
+        assert "Test" in output
+        assert "Research Pipeline" in output
+
+    def test_render_combined_with_data(self):
+        """Test rendering combined report with data."""
+        from llm.hypothesis_generator import HypothesisResult, HypothesisType, ExperimentDesign, ResearchHypothesis
+
+        gap_result = GapAnalysisResultV2(
+            topic="RAG",
+            gaps=[
+                ResearchGapV2(
+                    gap_type=GapType.METHOD_LIMITATION,
+                    title="Test Gap",
+                    description="Test description",
+                    severity=GapSeverity.HIGH,
+                )
+            ],
+            total_papers_analyzed=10,
+        )
+
+        hyp_result = HypothesisResult(topic="RAG")
+        hyp_result.hypotheses = [
+            ResearchHypothesis(
+                title="Test Hypothesis",
+                hypothesis_type=HypothesisType.CAUSAL,
+                core_statement="This is a test hypothesis",
+                based_on="Test gap",
+                experiment_design=ExperimentDesign(
+                    baseline="Test",
+                    variables=["var1"],
+                    controls=["ctrl1"],
+                    evaluation_metrics=["metric1"],
+                    expected_results="result",
+                ),
+                novelty_score=0.7,
+                feasibility_score=0.8,
+            )
+        ]
+
+        output = render_combined_report(gap_result, hyp_result)
+        assert "RAG" in output
+        assert "Test Gap" in output
+        assert "Test Hypothesis" in output or "test hypothesis" in output.lower()
+        assert "70%" in output  # novelty score
+        assert "80%" in output  # feasibility score

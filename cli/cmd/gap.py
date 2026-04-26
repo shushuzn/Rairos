@@ -57,6 +57,11 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Don't use user insights in enhanced mode",
     )
+    p.add_argument(
+        "--hypothesis", "-H",
+        action="store_true",
+        help="Generate hypotheses from gaps",
+    )
     return p
 
 
@@ -96,7 +101,7 @@ def _run_gap(args: argparse.Namespace) -> int:
 
 def _run_gap_enhanced(args: argparse.Namespace) -> int:
     """Run enhanced gap detection with insights."""
-    from llm.gap_analyzer import GapAnalyzerV2, render_gap_report
+    from llm.gap_analyzer import GapAnalyzerV2, render_gap_report, render_combined_report
     from llm.insight_cards import InsightManager
 
     print_info(f"🔬 Enhanced gap analysis for: {args.topic}")
@@ -109,6 +114,32 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
         insight_manager=insight_manager,
     )
 
+    # Hypothesis generation mode
+    if args.hypothesis:
+        print_info("💡 Generating hypotheses from gaps...")
+        gap_result, hypothesis_result = analyzer.analyze_with_hypotheses(
+            topic=args.topic,
+            use_insights=not args.no_insights,
+            use_llm=not args.no_llm,
+            model=args.model,
+            min_papers=args.min_papers,
+        )
+
+        if args.json:
+            import json
+            print(json.dumps({
+                "topic": gap_result.topic,
+                "gaps": [{"title": g.title, "type": g.gap_type.value, "severity": g.severity.name} for g in gap_result.gaps],
+                "hypotheses": [{"statement": h.core_statement, "type": h.hypothesis_type.value} for h in hypothesis_result.hypotheses],
+            }, indent=2))
+        else:
+            print()
+            print(render_combined_report(gap_result, hypothesis_result))
+            print()
+            print(analyzer.generate_hypotheses(gap_result, use_llm=not args.no_llm, model=args.model).render_result(hypothesis_result))
+        return 0
+
+    # Standard enhanced analysis
     result = analyzer.analyze(
         topic=args.topic,
         use_insights=not args.no_insights,

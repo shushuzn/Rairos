@@ -9,6 +9,13 @@ from llm.gap_detector import (
     GapType,
     GapSeverity,
 )
+from llm.hypothesis_generator import (
+    HypothesisGenerator,
+    HypothesisResult,
+    ResearchHypothesis,
+    HypothesisType,
+    ExperimentDesign,
+)
 
 
 @dataclass
@@ -246,6 +253,73 @@ class GapAnalyzerV2(GapDetector):
 
         return templates.get(gap.gap_type, ["How could this gap be addressed?"])
 
+    # ── Hypothesis Generation ────────────────────────────────
+
+    def generate_hypotheses(
+        self,
+        gap_result: GapAnalysisResultV2,
+        use_llm: bool = True,
+        model: Optional[str] = None,
+    ) -> HypothesisResult:
+        """Generate hypotheses from gap analysis results."""
+        from llm.hypothesis_generator import HypothesisGenerator
+
+        if not gap_result.gaps:
+            return HypothesisResult(topic=gap_result.topic)
+
+        # Build gap context from analysis
+        gap_context = self._build_gap_context(gap_result)
+
+        # Create generator and generate
+        generator = HypothesisGenerator(db=self.db)
+        result = generator.generate(
+            topic=gap_result.topic,
+            gap_context=gap_context,
+            use_llm=use_llm,
+            model=model,
+        )
+
+        # Enrich with gap-specific data
+        for hypothesis in result.hypotheses[:3]:
+            hypothesis.based_on = f"Gap: {gap_result.gaps[0].title[:50]}"
+
+        return result
+
+    def _build_gap_context(self, gap_result: GapAnalysisResultV2) -> str:
+        """Build context string from gap results."""
+        lines = [f"Topic: {gap_result.topic}"]
+
+        for gap in gap_result.gaps[:5]:
+            lines.append(f"- [{gap.gap_type.value}] {gap.title}")
+            lines.append(f"  {gap.description[:100]}")
+            if gap.sub_questions:
+                lines.append(f"  Questions: {'; '.join(gap.sub_questions[:2])}")
+
+        return "\n".join(lines)
+
+    def analyze_with_hypotheses(
+        self,
+        topic: str,
+        use_insights: bool = True,
+        min_papers: int = 5,
+        use_llm: bool = True,
+        model: Optional[str] = None,
+    ) -> tuple:
+        """Combined analysis: gaps + hypotheses."""
+        gap_result = self.analyze(
+            topic=topic,
+            use_insights=use_insights,
+            min_papers=min_papers,
+            use_llm=use_llm,
+            model=model,
+        )
+
+        hypothesis_result = self.generate_hypotheses(
+            gap_result, use_llm=use_llm, model=model
+        )
+
+        return gap_result, hypothesis_result
+
 
 def render_gap_report(result: GapAnalysisResultV2) -> str:
     """Render gap analysis report."""
@@ -319,6 +393,47 @@ def render_gap_report(result: GapAnalysisResultV2) -> str:
                 lines.append(f"      • {q}")
 
         lines.append("")
+
+    lines.append("=" * 70)
+    return "\n".join(lines)
+
+
+def render_combined_report(
+    gap_result: GapAnalysisResultV2,
+    hypothesis_result: HypothesisResult,
+) -> str:
+    """Render combined gap analysis and hypothesis report."""
+    lines = []
+    lines.append("=" * 70)
+    lines.append(f"🎯 {gap_result.topic} — Research Pipeline")
+    lines.append("=" * 70)
+    lines.append("")
+
+    # Gap Analysis Summary
+    lines.append("📊 Gap Analysis")
+    lines.append(f"   Papers analyzed: {gap_result.total_papers_analyzed}")
+    lines.append(f"   Gaps identified: {len(gap_result.gaps)}")
+    lines.append("")
+
+    # Top 3 Gaps
+    lines.append("🔍 Top Research Gaps:")
+    for i, gap in enumerate(gap_result.gaps[:3], 1):
+        severity_icon = {
+            GapSeverity.HIGH: "🔴",
+            GapSeverity.MEDIUM: "🟡",
+            GapSeverity.LOW: "🟢",
+        }.get(gap.severity, "⚪")
+        lines.append(f"   {i}. {severity_icon} {gap.title[:60]}")
+    lines.append("")
+
+    # Hypotheses
+    lines.append("💡 Research Hypotheses:")
+    for i, h in enumerate(hypothesis_result.hypotheses[:3], 1):
+        lines.append(f"   {i}. {h.core_statement[:60]}...")
+        lines.append(f"      Type: {h.hypothesis_type.value} | "
+                    f"Novelty: {h.novelty_score:.0%} | "
+                    f"Feasibility: {h.feasibility_score:.0%}")
+    lines.append("")
 
     lines.append("=" * 70)
     return "\n".join(lines)
