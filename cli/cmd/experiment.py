@@ -38,6 +38,10 @@ def _build_experiment_parser(subparsers):
     p_delete = sub.add_parser("delete", help="Delete experiment")
     p_delete.add_argument("id")
 
+    p_simulate = sub.add_parser("simulate", help="Simulate experiment outcome for testing feedback loop")
+    p_simulate.add_argument("id", help="Experiment ID")
+    p_simulate.add_argument("result", choices=["success", "fail"], help="Simulated outcome")
+
     return p
 
 def _run_experiment(args):
@@ -82,6 +86,22 @@ def _run_experiment(args):
     elif args.action == "delete":
         if tracker.delete(args.id): print(f"✓ Deleted [{args.id}]")
         else: print_error(f"Experiment [{args.id}] not found")
+
+    elif args.action == "simulate":
+        e = tracker.get(args.id)
+        if not e:
+            print_error(f"Experiment [{args.id}] not found")
+            return 1
+        if e.status != "running":
+            print_error(f"Experiment [{args.id}] is not running (status: {e.status})")
+            return 1
+        if args.result == "success":
+            tracker.complete(args.id, {"simulated": True, "outcome": "success"})
+            print(f"✅ Simulated success for [{args.id}]: {e.name}")
+        else:
+            tracker.fail(args.id, error="simulated failure")
+            print(f"❌ Simulated failure for [{args.id}]: {e.name}")
+        print_info("  → VALIDATED/REJECTED event written to evolution tracker")
 
     else:
         print_error("Unknown action")
