@@ -581,6 +581,9 @@ def render_combined_report(
     lines.append("📊 Gap Analysis")
     lines.append(f"   Papers analyzed: {gap_result.total_papers_analyzed}")
     lines.append(f"   Gaps identified: {len(gap_result.gaps)}")
+    if gap_result.preference_applied:
+        preferred = gap_result.gaps[0].gap_type.value if gap_result.gaps else "your preferences"
+        lines.append(f"   🧠 Sorted by your preferences ({preferred} gaps boosted)")
     lines.append("")
 
     # Top 3 Gaps
