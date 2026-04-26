@@ -119,6 +119,20 @@ class ExperimentTracker:
                 e.completed_at = datetime.now().isoformat()
                 if error: e.results["error"] = error
                 self._save(exps)
+
+                # Record REJECTED event so gap sorting learns from failed experiments
+                if e.hypothesis_id:
+                    try:
+                        from llm.insight_evolution import EvolutionTracker, ExplorationAction
+                        ev = EvolutionTracker()
+                        ev.record_event(
+                            topic="; ".join(e.tags) if e.tags else e.name,
+                            action=ExplorationAction.REJECTED,
+                            hypothesis_id=e.hypothesis_id,
+                        )
+                    except Exception:
+                        pass  # Non-fatal — experiment tracker works without evolution
+
                 return e
 
     def add_metric(self, eid, name, value, unit=""):
