@@ -95,6 +95,8 @@ class RagChat:
         self.base_url = base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
         self.model = model or os.getenv("DEFAULT_LLM_MODEL", "gpt-4o-mini")
         self._call_llm = call_llm or call_llm_chat_completions
+        # Lazy-load adaptive retrieval to avoid circular imports
+        self._adaptive = None
 
     def chat(
         self,
@@ -336,6 +338,10 @@ class RagChat:
     def _apply_adaptive_boost(self, results: List) -> List:
         """Apply adaptive boost to search results based on feedback history."""
         try:
+            # Lazy initialization to avoid circular import
+            if self._adaptive is None:
+                from llm.evolution_report import get_adaptive_retrieval
+                self._adaptive = get_adaptive_retrieval()
             # Convert to dict format for apply_boost
             result_dicts = [
                 {"paper_id": r.paper_id, "score": abs(r.score) if r.score else 0.5}
