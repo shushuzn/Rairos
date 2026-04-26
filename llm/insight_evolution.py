@@ -471,6 +471,48 @@ class EvolutionTracker:
 
         return stats
 
+    def render_stats(self) -> str:
+        """Render exploration statistics overview as text."""
+        stats = self.get_exploration_stats()
+        profile = self._load_profile()
+
+        lines = [
+            "═" * 60,
+            "📊 探索统计概览",
+            "═" * 60,
+            "",
+            f"总事件: {stats['total_events']}  |  探索主题: {stats['total_topics']}",
+            "",
+        ]
+
+        if stats.get('recent_action_breakdown'):
+            lines.append("⚡ 最近行为分布:")
+            for action, count in sorted(stats['recent_action_breakdown'].items()):
+                lines.append(f"   {action}: {count}")
+            lines.append("")
+
+        if stats.get('top_gap_types'):
+            lines.append("📈 偏好的 Gap 类型 (Top 5):")
+            for i, gt in enumerate(stats['top_gap_types'], 1):
+                score = profile.gap_type_preferences.get(gt, 0)
+                lines.append(f"   {i}. {gt} ({score:+.2f})")
+            lines.append("")
+
+        if stats.get('topic_frequency'):
+            lines.append("🔑 热门研究主题:")
+            for topic, count in list(stats['topic_frequency'].items())[:5]:
+                lines.append(f"   • {topic} ({count}次)")
+            lines.append("")
+
+        if stats.get('preference_tags'):
+            lines.append("🏷️ 偏好标签:")
+            for tag in stats['preference_tags']:
+                lines.append(f"   • {tag}")
+
+        lines.append("")
+        lines.append("═" * 60)
+        return "\n".join(lines)
+
     # ─── Recommendation Helper ───────────────────────────────────────────────────
 
     def should_prioritize_gap_type(self, gap_type: str) -> bool:

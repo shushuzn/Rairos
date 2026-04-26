@@ -73,6 +73,11 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Show exploration history for topic",
     )
+    p.add_argument(
+        "--stats",
+        action="store_true",
+        help="Show exploration statistics overview",
+    )
     return p
 
 
@@ -129,6 +134,11 @@ def _run_profile_or_history(args: argparse.Namespace) -> int:
             return 1
         print()
         print(tracker.render_topic_history(args.topic))
+        return 0
+
+    if args.stats:
+        print()
+        print(tracker.render_stats())
         return 0
 
     return 0
