@@ -45,6 +45,7 @@ _SUBCOMMAND_TABLE = [
     ("gap",           "cli.cmd.gap",             "_build_gap_parser"),
     ("trend",         "cli.cmd.trend",           "_build_trend_parser"),
     ("validate",      "cli.cmd.validate",         "_build_validate_parser"),
+    ("story",         "cli.cmd.story",            "_build_story_parser"),
     ("slides",        "cli.cmd.slides",           "_build_slides_parser"),
     ("evolution",     "cli.cmd.evolution",         "_build_evolution_parser"),
 ]
