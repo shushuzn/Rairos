@@ -105,6 +105,7 @@ class ExperimentTracker:
                             topic="; ".join(e.tags) if e.tags else e.name,
                             action=ExplorationAction.VALIDATED,
                             hypothesis_id=e.hypothesis_id,
+                            gap_type=e.config.get("hypothesis_type", ""),
                         )
                     except Exception:
                         pass  # Non-fatal — experiment tracker works without evolution
@@ -129,6 +130,7 @@ class ExperimentTracker:
                             topic="; ".join(e.tags) if e.tags else e.name,
                             action=ExplorationAction.REJECTED,
                             hypothesis_id=e.hypothesis_id,
+                            gap_type=e.config.get("hypothesis_type", ""),
                         )
                     except Exception:
                         pass  # Non-fatal — experiment tracker works without evolution

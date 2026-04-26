@@ -284,11 +284,15 @@ class EvolutionTracker:
             if event.action == ExplorationAction.ACCEPTED:
                 weight = 0.3
             elif event.action == ExplorationAction.REJECTED:
-                weight = -0.1
+                # Distinguish: gap reject (no hypothesis_id) vs experiment reject (has hypothesis_id)
+                weight = -0.3 if event.hypothesis_id else -0.1
             elif event.action == ExplorationAction.EXPANDED:
                 weight = 0.2
             elif event.action == ExplorationAction.HYPOTHESIZED:
                 weight = 0.25
+            elif event.action == ExplorationAction.VALIDATED:
+                # Experiment success: strong positive signal for this gap type
+                weight = 0.4
 
             profile.gap_type_preferences[event.gap_type] = max(0, current + weight)
 
