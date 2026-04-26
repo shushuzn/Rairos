@@ -9,7 +9,18 @@ Environment variables follow the pattern AIROS_<CONFIG_NAME> for consistency.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import Tuple, Dict, Any
+
+# Load .env file if present
+_env_file = Path(__file__).parent / ".env"
+if _env_file.exists():
+    with open(_env_file, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, _, value = line.partition("=")
+                os.environ.setdefault(key.strip(), value.strip())
 
 # ---------------------------------------------------------------------------
 # Embedding
