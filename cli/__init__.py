@@ -79,6 +79,7 @@ _LAZY_EXPORTS = {
     "_build_journal_parser":    ("cli.cmd.journal",            "_build_journal_parser"),
     "_run_digest":             ("cli.cmd.digest",             "_run_digest"),
     "_build_digest_parser":     ("cli.cmd.digest",             "_build_digest_parser"),
+    "_build_citation_chain_parser": ("cli.cmd.citation_chain", "_build_citation_chain_parser"),
     "_build_analyze_parser":  ("cli.cmd.analyze",          "_build_analyze_parser"),
     "_run_slides":           ("cli.cmd.slides",            "_run_slides"),
     "_build_slides_parser":   ("cli.cmd.slides",            "_build_slides_parser"),
