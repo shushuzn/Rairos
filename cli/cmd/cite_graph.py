@@ -11,9 +11,6 @@ from cli._shared import get_db
 from cli._shared import (
     Colors, colored, print_success, print_error, print_warning, print_info, print_header,
 )
-from kg import KGManager
-
-
 @dataclass
 class CiteGraphNode:
     paper_id: str
@@ -43,6 +40,49 @@ def _extract_references_from_text(paper_id: str, text: str) -> dict[str, list[st
     isbns = list(set(ISBN_PAT.findall(text)))
 
     return {"arxiv_ids": arxiv_ids, "dois": dois, "pmids": pmids, "isbns": isbns}
+
+
+def _db_citation_bfs(db, root_id: str, depth: int = 2, max_nodes: int = 30):
+    """BFS citation subgraph using existing DB methods.
+
+    Returns (nodes: dict[id, CiteGraphNode], edges: list[(source_id, target_id, dir)]).
+    """
+    nodes: Dict[str, CiteGraphNode] = {}
+    edges: List[Tuple[str, str, str]] = []
+
+    visited: set[str] = set()
+    queue: list[tuple[str, int]] = [(root_id, 0)]  # (paper_id, depth)
+
+    while queue:
+        pid, d = queue.pop(0)
+        if pid in visited or d > depth:
+            continue
+        visited.add(pid)
+
+        if pid not in nodes:
+            rec = db.get_paper(pid)
+            title = rec.title if rec else ""
+            direction = "root" if pid == root_id else ""
+            nodes[pid] = CiteGraphNode(pid, title, d, direction)
+
+        if d == depth:
+            continue
+
+        # Backward: papers this paper cites (source_id=pid → target_id=ref)
+        for edge in db.get_citations(pid, direction="from"):
+            tgt = edge.target_id
+            edges.append((pid, tgt, "backward"))
+            if tgt not in visited and len(nodes) < max_nodes:
+                queue.append((tgt, d + 1))
+
+        # Forward: papers citing this paper (source_id=citer → target_id=pid)
+        for edge in db.get_citations(pid, direction="to"):
+            src = edge.source_id
+            edges.append((src, pid, "forward"))
+            if src not in visited and len(nodes) < max_nodes:
+                queue.append((src, d + 1))
+
+    return nodes, edges
 
 
 def _build_cite_graph_parser(subparsers) -> argparse.ArgumentParser:
@@ -183,8 +223,8 @@ def _run_cite_graph_text(args: argparse.Namespace) -> int:
         print(f"References ({len(all_refs)}): {', '.join(all_refs[:args.max_nodes])}")
         return 0
 
-    # DB mode
-    nodes, edges = db.get_citation_subgraph(root_id, depth=args.depth, max_nodes=args.max_nodes)
+    # DB mode — BFS using existing DB methods
+    nodes, edges = _db_citation_bfs(db, root_id, depth=args.depth, max_nodes=args.max_nodes)
 
     if args.format == "mermaid":
         print("graph TD")
@@ -207,20 +247,68 @@ def _run_cite_graph_text(args: argparse.Namespace) -> int:
     return 0
 
 
+def _db_citation_view(db, root_id: str, depth: int = 1, max_nodes: int = 50) -> dict:
+    """Build D3-compatible citation graph from DB using BFS.
+
+    Returns {"nodes": [...], "links": [...], "root": root_id}.
+    """
+    nodes: dict = {}
+    links: list = []
+
+    visited: set[str] = set()
+    queue: list[tuple[str, int]] = [(root_id, 0)]
+
+    while queue:
+        pid, d = queue.pop(0)
+        if pid in visited or d > depth:
+            continue
+        visited.add(pid)
+
+        rec = db.get_paper(pid)
+        label = rec.title[:60] if rec and rec.title else pid
+        nodes[pid] = {
+            "id": pid,
+            "label": label,
+            "type": "Paper",
+            "entity_id": pid,
+            "is_root": pid == root_id,
+            "is_citing": False,
+            "is_cited_by": False,
+        }
+
+        if d == depth:
+            continue
+
+        # Backward: papers this paper cites
+        for edge in db.get_citations(pid, direction="from"):
+            tgt = edge.target_id
+            if tgt not in visited and len(nodes) < max_nodes:
+                queue.append((tgt, d + 1))
+            if tgt in nodes:
+                nodes[tgt]["is_citing"] = True
+            links.append({"source": pid, "target": tgt, "relation": "cites"})
+
+        # Forward: papers citing this paper
+        for edge in db.get_citations(pid, direction="to"):
+            src = edge.source_id
+            if src not in visited and len(nodes) < max_nodes:
+                queue.append((src, d + 1))
+            if src in nodes:
+                nodes[src]["is_cited_by"] = True
+            links.append({"source": src, "target": pid, "relation": "cited_by"})
+
+    return {"nodes": list(nodes.values()), "links": links, "root": root_id}
+
+
 def _run_cite_graph_view(args: argparse.Namespace) -> int:
     """Render interactive D3.js citation graph and open in browser (or write to stdout)."""
     import tempfile, json, webbrowser, os
     from pathlib import Path
-    from viz.d3_renderer import D3ForceGraph
 
-    kg = KGManager()
-    renderer = D3ForceGraph(kg)
+    db = get_db()
+    db.init()
 
-    graph_data = renderer.to_citation_json(
-        paper_id=args.paper,
-        depth=args.depth,
-        max_nodes=args.max_nodes,
-    )
+    graph_data = _db_citation_view(db, args.paper, depth=args.depth, max_nodes=args.max_nodes)
 
     if not graph_data["nodes"]:
         print(f"No citation data found for '{args.paper}'. Ensure the paper is in the KG with cite edges.", file=sys.stderr)

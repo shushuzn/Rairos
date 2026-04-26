@@ -84,9 +84,71 @@ def _work_to_arxiv_id(work: dict) -> Optional[str]:
     """Extract arXiv ID from OpenAlex work IDs dict. Returns None if not an arXiv paper."""
     ids = work.get("ids", {}) or {}
     doi = ids.get("doi", "") or ""
-    if "/arXiv." in doi:
-        return doi.split("/arXiv.")[-1]
+    if "/arxiv." in doi.lower():
+        return doi.lower().split("/arxiv.")[-1]
     return None
+
+
+def _work_to_paper_record(work: dict, source: str = "openalex") -> Optional["PaperRecord"]:
+    """Convert an OpenAlex work dict to a PaperRecord. Accepts any paper with an ID."""
+    from db.database import PaperRecord
+
+    ids = work.get("ids", {}) or {}
+
+    # Prefer arXiv ID; fall back to OpenAlex ID; last resort is DOI
+    paper_id = _work_to_arxiv_id(work)
+    if not paper_id:
+        openalex_id = ids.get("openalex", "")
+        if openalex_id:
+            paper_id = openalex_id.rstrip("/").split("/")[-1]
+        else:
+            doi = ids.get("doi", "") or ""
+            if doi:
+                paper_id = doi.rstrip("/").split("/")[-1]
+        if not paper_id:
+            return None
+
+    primary_location = (work.get("primary_location") or {})
+    best_oa = (primary_location.get("best_oa_location") or {})
+    landing = best_oa.get("landing_page_url") or ids.get("doi") or ""
+
+    authors = [
+        au.get("author", {}).get("display_name", "")
+        for au in (work.get("authorships") or [])
+        if au.get("author", {}).get("display_name")
+    ]
+
+    raw_date = work.get("publication_date") or ""
+    year = raw_date[:4] if raw_date else ""
+
+    topics = work.get("topics", [])
+    topic_ids = ""
+    if isinstance(topics, list):
+        topic_ids = ",".join(t.get("display_name", "") for t in topics[:10])
+    elif isinstance(topics, dict):
+        topic_ids = topics.get("display_name", "") or ""
+
+    return PaperRecord(
+        id=paper_id,
+        source=source,
+        title=work.get("title", "") or "",
+        authors=authors,
+        abstract="",
+        published=year,
+        updated="",
+        abs_url=landing,
+        pdf_url=best_oa.get("pdf_url") or "",
+        primary_category="",
+        journal=work.get("host_venue", {}).get("display_name", "") if isinstance(work.get("host_venue"), dict) else "",
+        volume="",
+        issue="",
+        page="",
+        doi=ids.get("doi", "") or "",
+        categories=topic_ids,
+        reference_count=work.get("referenced_works_count", 0),
+        pdf_path="",
+        pdf_hash="",
+    )
 
 
 def _build_cite_fetch_parser(subparsers) -> argparse.ArgumentParser:
@@ -166,17 +228,37 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
     total_skipped_external = [0]
     total_errors = [0]
     total_cited_by_count = [0]
+    total_imported = [0]
 
     def _fetch_ref(ref_oid: str, paper_id: str):
         try:
             oid = ref_oid.rstrip("/").split("/")[-1]
             ref_work = _openalex_request(f"/works/{oid}")
             ref_arxiv_id = _work_to_arxiv_id(ref_work)
-
-            if not ref_arxiv_id or ref_arxiv_id not in known_ids:
-                with lock:
-                    total_skipped_external[0] += 1
+            if not ref_arxiv_id:
                 return
+
+            pr = _work_to_paper_record(ref_work)
+            if not pr:
+                return
+
+            with lock:
+                if ref_arxiv_id not in known_ids:
+                    db.upsert_paper(
+                        paper_id=pr.id,
+                        source=pr.source,
+                        title=pr.title,
+                        authors=pr.authors,
+                        abstract=pr.abstract,
+                        published=pr.published,
+                        abs_url=pr.abs_url,
+                        pdf_url=pr.pdf_url,
+                        journal=pr.journal,
+                        doi=pr.doi,
+                        reference_count=pr.reference_count,
+                    )
+                    known_ids.add(ref_arxiv_id)
+                    total_imported[0] += 1
 
             added = db.add_citation(paper_id, ref_arxiv_id)
             with lock:
@@ -190,14 +272,29 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
 
     def _fetch_citing(citing_work: dict, paper_id: str):
         try:
-            citing_arxiv_id = _work_to_arxiv_id(citing_work)
-
-            if not citing_arxiv_id or citing_arxiv_id not in known_ids:
-                with lock:
-                    total_skipped_external[0] += 1
+            pr = _work_to_paper_record(citing_work)
+            if not pr:
                 return
 
-            added = db.add_citation(citing_arxiv_id, paper_id)
+            with lock:
+                if pr.id not in known_ids:
+                    db.upsert_paper(
+                        paper_id=pr.id,
+                        source=pr.source,
+                        title=pr.title,
+                        authors=pr.authors,
+                        abstract=pr.abstract,
+                        published=pr.published,
+                        abs_url=pr.abs_url,
+                        pdf_url=pr.pdf_url,
+                        journal=pr.journal,
+                        doi=pr.doi,
+                        reference_count=pr.reference_count,
+                    )
+                    known_ids.add(pr.id)
+                    total_imported[0] += 1
+
+            added = db.add_citation(pr.id, paper_id)
             with lock:
                 if added:
                     total_added[0] += 1
@@ -251,7 +348,7 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
     if dry_run:
         print("  [dry-run mode — nothing written]", file=sys.stderr)
     print(f"  Citations added to DB: {total_added[0]}", file=sys.stderr)
-    print(f"  Skipped (not in DB or external): {total_skipped_external[0]}", file=sys.stderr)
+    print(f"  Papers imported from OpenAlex: {total_imported[0]}", file=sys.stderr)
     print(f"  Errors: {total_errors[0]}", file=sys.stderr)
     if direction in ("to", "both"):
         print(f"  Note: {total_cited_by_count[0]} forward citations found (some may be outside DB)", file=sys.stderr)
