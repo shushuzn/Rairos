@@ -47,6 +47,16 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Interactive exploration mode",
     )
+    p.add_argument(
+        "--enhanced", "-e",
+        action="store_true",
+        help="Use enhanced analysis with user insights",
+    )
+    p.add_argument(
+        "--no-insights",
+        action="store_true",
+        help="Don't use user insights in enhanced mode",
+    )
     return p
 
 
@@ -54,6 +64,10 @@ def _run_gap(args: argparse.Namespace) -> int:
     """Run gap detection command."""
     db = get_db()
     db.init()
+
+    # Enhanced mode with insights
+    if args.enhanced:
+        return _run_gap_enhanced(args)
 
     detector = GapDetector(db=db)
 
@@ -76,6 +90,55 @@ def _run_gap(args: argparse.Namespace) -> int:
     else:
         print()
         print(detector.render_result(result))
+
+    return 0
+
+
+def _run_gap_enhanced(args: argparse.Namespace) -> int:
+    """Run enhanced gap detection with insights."""
+    from llm.gap_analyzer import GapAnalyzerV2, render_gap_report
+    from llm.insight_cards import InsightManager
+
+    print_info(f"🔬 Enhanced gap analysis for: {args.topic}")
+
+    # Initialize managers
+    insight_manager = None if args.no_insights else InsightManager()
+
+    analyzer = GapAnalyzerV2(
+        db=db,
+        insight_manager=insight_manager,
+    )
+
+    result = analyzer.analyze(
+        topic=args.topic,
+        use_insights=not args.no_insights,
+        use_llm=not args.no_llm,
+        model=args.model,
+        min_papers=args.min_papers,
+    )
+
+    if args.json:
+        import json
+        print(json.dumps({
+            "topic": result.topic,
+            "gaps": [
+                {
+                    "title": g.title,
+                    "type": g.gap_type.value,
+                    "severity": g.severity.name,
+                    "insights": g.user_insights,
+                    "priority": g.priority,
+                }
+                for g in result.gaps
+            ],
+            "stats": {
+                "papers": result.total_papers_analyzed,
+                "insights": result.total_insights_used,
+            }
+        }, indent=2))
+    else:
+        print()
+        print(render_gap_report(result))
 
     return 0
 
