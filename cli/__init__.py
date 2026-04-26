@@ -49,6 +49,8 @@ _LAZY_EXPORTS = {
     "_build_trend_parser":  ("cli.cmd.trend",       "_build_trend_parser"),
     "_run_influence":     ("cli.cmd.influence",    "_run_influence"),
     "_build_influence_parser": ("cli.cmd.influence", "_build_influence_parser"),
+    "_run_cite_backfill": ("cli.cmd.cite_backfill", "_run_cite_backfill"),
+    "_build_cite_backfill_parser": ("cli.cmd.cite_backfill", "_build_cite_backfill_parser"),
     "_run_research_cmd": ("cli.cmd.research",    "_run_research_cmd"),
     "_build_research_parser": ("cli.cmd.research", "_build_research_parser"),
     "_arxiv_doi_to_openalex": ("cli.cmd.cite_fetch", "_arxiv_doi_to_openalex"),
