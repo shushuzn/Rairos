@@ -19,7 +19,7 @@ name = "ai-research-os"
 version = "1.5.2"
 
 
-description = "A Structured Research Operating System for managing AI/ML papers, notes, and knowledge"
+description = "A Self-Evolving Research OS for AI Researchers — manage papers, detect research gaps, generate insights"
 
 
 readme = "README.md"

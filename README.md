@@ -124,9 +124,10 @@ Run `python -m cli <command> --help` for any command. Key commands:
 | `export` | Export DB to CSV or JSON |
 | `citations` | Show citation relationships |
 | `kg` | Knowledge graph query and rebuild |
-| `similar` | Find semantically similar papers (requires Ollama) |
+| `gap` | Detect research gaps and generate research questions |
+| `similar` | Find semantically similar papers |
 | `dedup` | Find exact duplicates |
-| `dedup-semantic` | Semantic deduplication (requires Ollama) |
+| `dedup-semantic` | Semantic deduplication |
 | `paper2code` | Generate code from paper |
 | `rag` | RAG pipeline (paper2code + tests + benchmark) |
 
