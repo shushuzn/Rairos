@@ -74,6 +74,15 @@ class ConfidenceScore:
 
 
 @dataclass
+class CrossPaperInsight:
+    """Cross-paper synthesis insight."""
+    insight_type: str  # "comparison", "connection", "contradiction", "evolution"
+    summary: str  # 一句话总结
+    papers: List[str]  # 涉及的论文
+    detail: str  # 详细说明
+
+
+@dataclass
 class ChatResult:
     """Result of a RAG chat interaction."""
     answer: str
@@ -83,6 +92,7 @@ class ChatResult:
     resolved_context: Optional[dict] = None  # 解析的上下文信息
     probing_questions: List[str] = field(default_factory=list)  # 智能追问建议
     confidence: Optional[ConfidenceScore] = None  # 答案可信度评分
+    cross_paper_insights: List[CrossPaperInsight] = field(default_factory=list)  # 跨论文洞察
 
 
 # ─── System Prompt ─────────────────────────────────────────────────────────────
@@ -333,7 +343,13 @@ class RagChat:
         # 5. Generate confidence score
         confidence = self._calculate_confidence(answer, contexts)
 
-        # 6. Generate probing questions (LLM-driven if available)
+        # 6. Generate cross-paper insights (if multiple papers)
+        cross_paper_insights = []
+        unique_papers = list(set(c.paper_id for c in contexts))
+        if len(unique_papers) >= 2 and self.api_key:
+            cross_paper_insights = self._synthesize_cross_paper_insights(contexts, query_type)
+
+        # 7. Generate probing questions (LLM-driven if available)
         probing_questions = []
         if session:
             session_tracker.add_query(
@@ -353,12 +369,104 @@ class RagChat:
         return ChatResult(
             answer=answer,
             citations=citations,
-            papers_used=list(set(c.paper_id for c in contexts)),
+            papers_used=unique_papers,
             session_id=session.id if session else None,
             resolved_context={"original": question, "resolved": resolved_question, "type": query_type.value},
             probing_questions=probing_questions,
             confidence=confidence,
+            cross_paper_insights=cross_paper_insights,
         )
+
+    def _synthesize_cross_paper_insights(
+        self,
+        contexts: List[ChatContext],
+        query_type: QueryType,
+    ) -> List[CrossPaperInsight]:
+        """
+        Synthesize insights from multiple papers.
+
+        Identifies:
+        - Connections between papers (same topic, complementary methods)
+        - Comparisons (different approaches to the same problem)
+        - Contradictions (conflicting findings)
+        - Evolution (building on each other)
+        """
+        if not self.api_key:
+            return []
+
+        # Build paper summaries
+        paper_summaries = {}
+        for ctx in contexts:
+            if ctx.paper_id not in paper_summaries:
+                paper_summaries[ctx.paper_id] = {
+                    "title": ctx.paper_title,
+                    "authors": ctx.authors,
+                    "year": ctx.published[:4] if ctx.published else "N/A",
+                    "snippets": [],
+                }
+            paper_summaries[ctx.paper_id]["snippets"].append(ctx.snippet[:300])
+
+        # Build LLM prompt for synthesis
+        papers_text = []
+        for pid, info in paper_summaries.items():
+            snippets = "\n".join([f"- {s}" for s in info["snippets"][:2]])
+            papers_text.append(f"【{info['title']}】({info['year']})\n{snippets}")
+
+        context_text = "\n\n".join(papers_text)
+
+        system_prompt = """你是一个研究综述助手，擅长发现论文之间的关联。
+
+分析多篇论文，找出：
+1. 共同点 (connection): 讨论相似主题或互补方法
+2. 对比 (comparison): 同一问题的不同解决方法
+3. 矛盾 (contradiction): 结论或方法冲突
+4. 演进 (evolution): 后人如何在前人基础上改进
+
+输出格式（最多3个洞察）：
+- 类型: 一句话总结 [论文1] [论文2]
+例如：
+- comparison: BERT vs GPT的预训练目标不同 [BERT] [GPT-2]
+- evolution: LoRA基于Adapter思想提出低秩更新 [Adapter] [LoRA]"""
+
+        user_prompt = f"""请分析以下论文之间的关联：
+
+{context_text}
+
+找出最重要的关联（最多3个）："""
+
+        try:
+            response = self._call_llm(
+                base_url=self.base_url,
+                api_key=self.api_key,
+                model=self.model,
+                system_prompt=system_prompt,
+                user_prompt=user_prompt,
+            )
+
+            if not response:
+                return []
+
+            # Parse response into CrossPaperInsight objects
+            insights = []
+            for line in response.strip().split('\n'):
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+
+                # Parse line like "- type: summary [Paper1] [Paper2]"
+                match = re.match(r'[-*]\s*(\w+):\s*(.+?)\s*\[([^\]]+)\]\s*\[([^\]]+)\]', line)
+                if match:
+                    insights.append(CrossPaperInsight(
+                        insight_type=match.group(1),
+                        summary=match.group(2).strip(),
+                        papers=[match.group(3), match.group(4)],
+                        detail="",
+                    ))
+
+            return insights[:3]  # Max 3 insights
+
+        except Exception:
+            return []
 
     def _calculate_confidence(self, answer: str, contexts: List[ChatContext]) -> Optional[ConfidenceScore]:
         """
@@ -830,12 +938,26 @@ class RagChat:
             # Fallback to original order on error
             return results
 
-    def format_result(self, result: ChatResult, show_citations: bool = True, show_probing: bool = True, show_confidence: bool = True) -> str:
-        """Format ChatResult for terminal output with confidence, citations and probing questions."""
+    def format_result(self, result: ChatResult, show_citations: bool = True, show_probing: bool = True, show_confidence: bool = True, show_insights: bool = True) -> str:
+        """Format ChatResult for terminal output with all enhancements."""
         output = []
         output.append("─" * 60)
         output.append(result.answer)
         output.append("─" * 60)
+
+        # Show cross-paper insights
+        if show_insights and result.cross_paper_insights:
+            output.append("\n🔗 跨论文洞察：")
+            type_emoji = {
+                "comparison": "⚖️",
+                "connection": "🔗",
+                "contradiction": "⚡",
+                "evolution": "📈",
+            }
+            for insight in result.cross_paper_insights:
+                emoji = type_emoji.get(insight.insight_type, "💡")
+                output.append(f"   {emoji} {insight.summary}")
+                output.append(f"       [{insight.papers[0]}] vs [{insight.papers[1]}]")
 
         # Show confidence score if available
         if show_confidence and result.confidence:
