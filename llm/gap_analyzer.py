@@ -1,6 +1,6 @@
 """Enhanced Gap Analyzer: Multi-source gap detection with insights fusion."""
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 
 from llm.gap_detector import (
     GapDetector,
@@ -60,9 +60,55 @@ class GapAnalyzerV2(GapDetector):
         super().__init__(db)
         self.insight_manager = insight_manager
 
-    def _collect_papers(self, topic: str, limit: int = 30) -> List:
-        """Collect papers with limit support."""
-        papers, _ = self.db.search_papers(topic, limit=limit) if self.db else ([], [])
+    def _collect_papers(self, topic: str, limit: int = 30) -> List[Dict[str, Any]]:
+        """Collect papers with full abstracts for gap analysis.
+
+        Uses search to find relevant papers, then fetches full PaperRecord
+        with abstract for deeper analysis.
+        """
+        if not self.db:
+            return []
+
+        # Try multi-word search first
+        rows, _ = self.db.search_papers(topic, limit=limit)
+        search_results = list(rows)
+
+        # If no results, try searching each word separately
+        if not search_results and topic.strip():
+            seen_ids = set()
+            for word in topic.split():
+                if word.strip():
+                    word_rows, _ = self.db.search_papers(word.strip(), limit=limit)
+                    for row in word_rows:
+                        pid = getattr(row, 'paper_id', '') or getattr(row, 'id', '')
+                        if pid not in seen_ids:
+                            seen_ids.add(pid)
+                            search_results.append(row)
+                            if len(search_results) >= limit:
+                                break
+
+        if not search_results:
+            return []
+
+        # Fetch full PaperRecord for each result (has abstract)
+        paper_ids = [
+            getattr(r, 'paper_id', '') or getattr(r, 'id', '')
+            for r in search_results
+        ]
+        paper_records = self.db.get_papers_bulk(paper_ids)
+
+        papers = []
+        for row in search_results:
+            pid = getattr(row, 'paper_id', '') or getattr(row, 'id', '')
+            record = paper_records.get(pid)
+            if record:
+                papers.append({
+                    "id": pid,
+                    "title": getattr(record, 'title', '') or getattr(row, 'title', topic),
+                    "abstract": getattr(record, 'abstract', '') or '',
+                    "year": getattr(record, 'published', '')[:4] if getattr(record, 'published', '') else '',
+                    "authors": getattr(record, 'authors', '') or '',
+                })
         return papers
 
     def analyze(
@@ -77,12 +123,12 @@ class GapAnalyzerV2(GapDetector):
     ) -> GapAnalysisResultV2:
         """Enhanced analysis with multi-source evidence."""
 
-        # 1. Collect papers
+        # 1. Collect papers using V2 method (with limit support)
         papers = self._collect_papers(topic, limit=30)
         if len(papers) < min_papers:
             return GapAnalysisResultV2(
                 topic=topic,
-                summary=f"Not enough papers found (need {min_papers})",
+                summary=f"Not enough papers found (need {min_papers}, found {len(papers)})",
             )
 
         # 2. Collect user insights (NEW)
@@ -90,7 +136,11 @@ class GapAnalyzerV2(GapDetector):
         if use_insights and self.insight_manager:
             insights = self._collect_insights(topic)
 
-        # 3. Run base gap detection
+        # 3. Run gap detection with collected papers
+        # Override parent's paper collection for this call
+        original_collect = self._collect_papers
+        self._collect_papers = lambda t: papers  # Use same papers
+
         base_result = super().analyze(
             topic=topic,
             use_llm=use_llm,
@@ -99,6 +149,8 @@ class GapAnalyzerV2(GapDetector):
             model=model,
             min_papers=min_papers,
         )
+
+        self._collect_papers = original_collect  # Restore
 
         # 4. Convert to enhanced format with insights
         enhanced_gaps = self._convert_to_v2(base_result.gaps, insights, papers)
@@ -126,10 +178,7 @@ class GapAnalyzerV2(GapDetector):
         if not self.insight_manager:
             return []
 
-        cards = self.insight_manager.search_cards(
-            query=topic,
-            limit=20,
-        )
+        cards = self.insight_manager.search_cards(query=topic)
         return [card.content for card in cards]
 
     def _convert_to_v2(

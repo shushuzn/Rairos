@@ -156,11 +156,12 @@ class GapDetector:
         try:
             rows, _ = self.db.search_papers(topic, limit=20)
             for row in rows:
+                # SearchResult has paper_id, not id
                 paper = {
-                    "id": getattr(row, 'id', ''),
+                    "id": getattr(row, 'paper_id', '') or getattr(row, 'id', ''),
                     "title": getattr(row, 'title', topic) or topic,
                     "abstract": getattr(row, 'abstract', '') or '',
-                    "year": getattr(row, 'year', 0) or 0,
+                    "year": getattr(row, 'published', '')[:4] if getattr(row, 'published', '') else '',
                     "authors": getattr(row, 'authors', '') or '',
                 }
                 papers.append(paper)
@@ -446,7 +447,10 @@ GAP_TYPE 可选：
         # Recency score
         recency_scores = []
         for p in papers:
-            year = p.get('year', 0)
+            try:
+                year = int(p.get('year', 0))
+            except (ValueError, TypeError):
+                year = 0
             if year >= 2024:
                 recency_scores.append(1.0)
             elif year >= 2022:

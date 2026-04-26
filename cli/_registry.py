@@ -134,6 +134,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "chat": "_run_chat",
         "slides": "_run_slides",
         "hypothesize": "_run_hypothesize",
+        "gap": "_run_gap",
         "analyze": "_run_analyze",
         "review": "_run_review",
         "question": "_run_question",
