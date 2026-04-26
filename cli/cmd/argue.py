@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 
 from cli._shared import get_db, print_info, print_error
+from llm.insight_evolution import EvolutionTracker, ExplorationAction
 from llm.argument_builder import ArgumentBuilder, render_argument
 
 
@@ -66,6 +67,17 @@ def _run_argue(args: argparse.Namespace) -> int:
     result = _build_argument(db, thesis, args)
 
     # Output
+    # Record NARRATED event so gap sorting learns from argument building
+    try:
+        tracker = EvolutionTracker()
+        tracker.record_event(
+            topic=thesis,
+            action=ExplorationAction.NARRATED,
+            notes=f"argued (format={args.format})",
+        )
+    except Exception:
+        pass  # Non-fatal
+
     if args.format == "json":
         import json
         print(json.dumps({
@@ -150,5 +162,15 @@ def _run_interactive(db, args: argparse.Namespace) -> int:
         print()
         print(render_argument(result))
         print()
+
+        try:
+            tracker = EvolutionTracker()
+            tracker.record_event(
+                topic=user_input,
+                action=ExplorationAction.NARRATED,
+                notes="argued (interactive)",
+            )
+        except Exception:
+            pass
 
     return 0

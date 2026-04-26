@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 
 from cli._shared import get_db, print_info
+from llm.insight_evolution import EvolutionTracker, ExplorationAction
 from llm.question_validator import QuestionValidator
 
 
@@ -70,6 +71,17 @@ def _run_validate(args: argparse.Namespace) -> int:
         model=args.model,
         depth=args.depth,
     )
+
+    # Record NARRATED event so gap sorting learns from validation activity
+    try:
+        tracker = EvolutionTracker()
+        tracker.record_event(
+            topic=args.question,
+            action=ExplorationAction.NARRATED,
+            notes=f"validated (depth={args.depth})",
+        )
+    except Exception:
+        pass  # Non-fatal
 
     if args.json:
         print(validator.render_json(result))
@@ -142,6 +154,16 @@ def _run_interactive(validator: QuestionValidator, args: argparse.Namespace) -> 
             use_llm=use_llm,
             depth=depth,
         )
+
+        try:
+            tracker = EvolutionTracker()
+            tracker.record_event(
+                topic=question,
+                action=ExplorationAction.NARRATED,
+                notes=f"validated (depth={depth})",
+            )
+        except Exception:
+            pass
 
         if use_json:
             print(validator.render_json(result))

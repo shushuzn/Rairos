@@ -74,12 +74,12 @@ class RiskAssessment:
 @dataclass
 class ResearchHypothesis:
     """A generated research hypothesis."""
-    id: str  # Unique ID for tracking experiment → hypothesis linkage
-    title: str
-    hypothesis_type: HypothesisType
-    core_statement: str  # 核心假说陈述
-    based_on: str  # 基于什么（空白、趋势、矛盾）
-    experiment_design: ExperimentDesign
+    id: str = ""  # Unique ID for tracking experiment → hypothesis linkage
+    title: str = ""
+    hypothesis_type: HypothesisType = HypothesisType.CAUSAL
+    core_statement: str = ""  # 核心假说陈述
+    based_on: str = ""  # 基于什么（空白、趋势、矛盾）
+    experiment_design: ExperimentDesign = field(default_factory=lambda: ExperimentDesign(baseline="", variables=[], controls=[], evaluation_metrics=[], expected_results=""))
     differentiations: List[DifferentiationPoint] = field(default_factory=list)
     risk_assessment: Optional[RiskAssessment] = None
     novelty_score: float = 0.5
