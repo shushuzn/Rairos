@@ -54,6 +54,26 @@ class ChatContext:
 
 
 @dataclass
+class ConfidenceScore:
+    """Confidence score for RAG answer quality."""
+    score: float              # 0-100 置信度
+    papers_count: int         # 引用的论文数
+    coverage: str            # 覆盖描述 (e.g., "3篇论文，覆盖Method章节")
+    warnings: List[str]      # 低置信度警告
+    sources: List[str]      # 主要来源章节
+
+    @property
+    def level(self) -> str:
+        """Return confidence level label."""
+        if self.score >= 80:
+            return "高"
+        elif self.score >= 50:
+            return "中"
+        else:
+            return "低"
+
+
+@dataclass
 class ChatResult:
     """Result of a RAG chat interaction."""
     answer: str
@@ -62,6 +82,7 @@ class ChatResult:
     session_id: Optional[str] = None  # 会话ID for continuity
     resolved_context: Optional[dict] = None  # 解析的上下文信息
     probing_questions: List[str] = field(default_factory=list)  # 智能追问建议
+    confidence: Optional[ConfidenceScore] = None  # 答案可信度评分
 
 
 # ─── System Prompt ─────────────────────────────────────────────────────────────
@@ -309,7 +330,10 @@ class RagChat:
         # 4. Extract citations
         citations = self._extract_citations(contexts)
 
-        # 5. Generate probing questions (LLM-driven if available)
+        # 5. Generate confidence score
+        confidence = self._calculate_confidence(answer, contexts)
+
+        # 6. Generate probing questions (LLM-driven if available)
         probing_questions = []
         if session:
             session_tracker.add_query(
@@ -333,6 +357,91 @@ class RagChat:
             session_id=session.id if session else None,
             resolved_context={"original": question, "resolved": resolved_question, "type": query_type.value},
             probing_questions=probing_questions,
+            confidence=confidence,
+        )
+
+    def _calculate_confidence(self, answer: str, contexts: List[ChatContext]) -> Optional[ConfidenceScore]:
+        """
+        Calculate confidence score for the answer based on retrieved contexts.
+
+        Factors:
+        - Number of cited papers
+        - Relevance scores of papers
+        - Section coverage (Abstract < Method < Experiments < All)
+        - Answer length vs context coverage
+        """
+        if not contexts:
+            return ConfidenceScore(
+                score=0,
+                papers_count=0,
+                coverage="无相关论文",
+                warnings=["未找到相关论文，无法验证回答准确性"],
+                sources=[],
+            )
+
+        papers_count = len(set(ctx.paper_id for ctx in contexts))
+        avg_relevance = sum(ctx.relevance_score for ctx in contexts) / len(contexts)
+
+        # Detect section coverage
+        sections = set()
+        for ctx in contexts:
+            if ctx.snippet:
+                # Heuristic: check snippet position in paper
+                if 'abstract' in ctx.snippet.lower()[:100]:
+                    sections.add('Abstract')
+                if 'introduction' in ctx.snippet.lower()[:200]:
+                    sections.add('Introduction')
+                if any(kw in ctx.snippet.lower()[:100] for kw in ['method', 'approach', 'model', 'architecture']):
+                    sections.add('Method')
+                if any(kw in ctx.snippet.lower()[:100] for kw in ['experiment', 'result', 'evaluation', 'benchmark']):
+                    sections.add('Experiments')
+
+        if not sections:
+            sections.add('General')
+
+        # Calculate score
+        score = 50.0  # Base score
+
+        # Paper count factor (max +20)
+        if papers_count >= 3:
+            score += 20
+        elif papers_count >= 2:
+            score += 15
+        elif papers_count == 1:
+            score += 10
+
+        # Relevance factor (max +20)
+        score += avg_relevance * 20
+
+        # Section coverage factor (max +10)
+        if len(sections) >= 3:
+            score += 10
+        elif len(sections) >= 2:
+            score += 7
+        else:
+            score += 3
+
+        score = min(100, max(0, int(score)))
+
+        # Generate warnings for low confidence
+        warnings = []
+        if papers_count == 1:
+            warnings.append("仅基于单篇论文，建议补充更多证据")
+        if avg_relevance < 0.6:
+            warnings.append("部分检索结果相关性较低")
+        if len(sections) == 1 and 'General' not in sections:
+            warnings.append(f"仅覆盖{sections.pop()}章节，缺少其他视角")
+        elif len(sections) == 1:
+            warnings.append("检索覆盖范围有限")
+
+        coverage = f"{papers_count}篇论文，覆盖{', '.join(list(sections)[:3])}"
+
+        return ConfidenceScore(
+            score=score,
+            papers_count=papers_count,
+            coverage=coverage,
+            warnings=warnings,
+            sources=list(sections),
         )
 
     def _retrieve(
@@ -721,12 +830,22 @@ class RagChat:
             # Fallback to original order on error
             return results
 
-    def format_result(self, result: ChatResult, show_citations: bool = True, show_probing: bool = True) -> str:
-        """Format ChatResult for terminal output with enhanced citations and probing questions."""
+    def format_result(self, result: ChatResult, show_citations: bool = True, show_probing: bool = True, show_confidence: bool = True) -> str:
+        """Format ChatResult for terminal output with confidence, citations and probing questions."""
         output = []
         output.append("─" * 60)
         output.append(result.answer)
         output.append("─" * 60)
+
+        # Show confidence score if available
+        if show_confidence and result.confidence:
+            conf = result.confidence
+            level_emoji = {"高": "🟢", "中": "🟡", "低": "🔴"}.get(conf.level, "⚪")
+            output.append(f"\n{level_emoji} 置信度: {conf.score}% ({conf.level})")
+            output.append(f"   {conf.coverage}")
+            if conf.warnings:
+                for w in conf.warnings[:2]:
+                    output.append(f"   ⚠️ {w}")
 
         # Show probing questions if available
         if show_probing and result.probing_questions:
