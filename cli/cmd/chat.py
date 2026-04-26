@@ -176,6 +176,14 @@ def _run_interactive(chat, args) -> int:
         # Handle commands
         cmd = question.lower()
         if cmd in ("q", "quit", "exit", "exit()"):
+            # 被动反馈：用户退出，记录中性信号
+            if history:
+                last = history[-1]
+                _record_passive_feedback(
+                    last["question"],
+                    [c.paper_id for c in last.get("citations", [])],
+                    "exited"
+                )
             print(colored("\n再会！记得回来继续探索你的论文库 🚀\n", Colors.OKBLUE))
             break
 
@@ -220,8 +228,12 @@ def _run_interactive(chat, args) -> int:
                     print(f"  [{i}] {cite.paper_title}")
                     print(f"      ID: {cite.paper_id} | 相关度: {cite.relevance_score:.2f}")
 
-            # Record feedback
-            _collect_feedback(question, result, chat)
+            # Record feedback - 用户继续追问说明回答有帮助
+            _record_passive_feedback(
+                question,
+                [c.paper_id for c in result.citations] if result.citations else [],
+                "continued"
+            )
 
             # Show smart follow-up suggestions
             _show_suggestions(result, question=question)
@@ -246,21 +258,30 @@ def _run_interactive(chat, args) -> int:
     return 0
 
 
-def _collect_feedback(question: str, result, chat) -> None:
-    """Collect user feedback after a chat response."""
+def _collect_feedback(question: str, result, chat, auto_mode: bool = True) -> None:
+    """Collect user feedback after a chat response.
+
+    Args:
+        auto_mode: 如果 True，不询问用户，自动推断反馈
+    """
     try:
         from llm.evolution import get_evolution_memory
+        evo = get_evolution_memory()
 
         # Get paper IDs from citations
         paper_ids = [c.paper_id for c in result.citations] if result.citations else []
 
-        # Ask for feedback
+        if auto_mode:
+            # 自动模式：推断用户是否继续追问来判断满意度
+            # 由调用方在用户继续追问时传入 "continued"
+            return
+
+        # 手动模式：询问用户
         print()
         feedback = input(colored("这个回答有帮助吗？(y/n/q跳过): ", Colors.OKBLUE)).strip().lower()
 
         if feedback == "y":
             print(colored("  ✅ 感谢反馈！系统正在学习...", Colors.OKGREEN))
-            evo = get_evolution_memory()
             evo.record_chat_feedback(
                 query=question,
                 paper_ids=paper_ids,
@@ -270,7 +291,6 @@ def _collect_feedback(question: str, result, chat) -> None:
             )
         elif feedback == "n":
             print(colored("  📝 记录负面反馈，系统会避免类似回答", Colors.WARNING))
-            evo = get_evolution_memory()
             evo.record_chat_feedback(
                 query=question,
                 paper_ids=paper_ids,
@@ -278,10 +298,24 @@ def _collect_feedback(question: str, result, chat) -> None:
                 outcome="partial",
                 score=0.3,
             )
-        # else: skip (q or anything else)
 
     except Exception:
         # Silently skip feedback collection on error
+        pass
+
+
+def _record_passive_feedback(query: str, paper_ids: List[str], action: str) -> None:
+    """Record passive feedback based on user behavior.
+
+    用户行为推断：
+    - "continued": 用户继续追问 → 正面
+    - "exited": 用户退出 → 中性
+    """
+    try:
+        from llm.evolution import get_evolution_memory
+        evo = get_evolution_memory()
+        evo.infer_passive_feedback(query, paper_ids, action)
+    except Exception:
         pass
 
 

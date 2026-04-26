@@ -152,6 +152,63 @@ class EvolutionMemory:
             score=score,
         )
 
+    # === Passive Feedback Inference ===
+
+    def infer_passive_feedback(
+        self,
+        query: str,
+        paper_ids: List[str],
+        user_action: str,
+    ) -> None:
+        """根据用户行为智能推断反馈，无需显式询问.
+
+        Args:
+            query: 用户的问题
+            paper_ids: 使用的论文 ID
+            user_action: 用户行为：
+                - "continued": 继续追问或查看引用 → 正面
+                - "copied": 复制了回答 → 正面
+                - "exited": 直接退出 → 中性
+                - "dismissed": 跳过/忽略 → 中性
+                - "repeated": 重复问类似问题 → 中性
+        """
+        action_signals = {
+            "continued": (True, 0.7, "用户继续追问"),
+            "copied": (True, 0.9, "用户复制了回答"),
+            "exited": (None, 0.5, "用户退出，未明确反馈"),
+            "dismissed": (None, 0.5, "用户跳过反馈"),
+            "repeated": (None, 0.4, "重复问题，可能回答不够好"),
+        }
+
+        if user_action not in action_signals:
+            return
+
+        is_positive, inferred_score, reason = action_signals[user_action]
+
+        if is_positive is None:
+            # 中性信号：记录但不计入正面/负面
+            fb = Feedback(
+                id=f"fb_{int(time.time()*1000)}",
+                type=FeedbackType.NEUTRAL.value,
+                command="chat",
+                query=query,
+                paper_ids=paper_ids,
+                outcome="neutral",
+                score=inferred_score,
+                note=f"[被动] {reason}",
+            )
+            self.add_feedback(fb)
+        else:
+            # 正面信号
+            self.record_chat_feedback(
+                query=query,
+                paper_ids=paper_ids,
+                is_positive=is_positive,
+                outcome="success",
+                score=inferred_score,
+                note=f"[被动] {reason}",
+            )
+
     # === Evolution Events ===
 
     def record_evolution_event(
