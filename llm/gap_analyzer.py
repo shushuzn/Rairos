@@ -73,19 +73,20 @@ class GapAnalyzerV2(GapDetector):
         rows, _ = self.db.search_papers(topic, limit=limit)
         search_results = list(rows)
 
-        # If no results, try searching each word separately
-        if not search_results and topic.strip():
-            seen_ids = set()
+        # If insufficient results, try searching each word separately
+        if len(search_results) < limit and topic.strip():
+            seen_ids = {getattr(r, 'paper_id', '') or getattr(r, 'id', '') for r in search_results}
             for word in topic.split():
-                if word.strip():
-                    word_rows, _ = self.db.search_papers(word.strip(), limit=limit)
-                    for row in word_rows:
-                        pid = getattr(row, 'paper_id', '') or getattr(row, 'id', '')
-                        if pid not in seen_ids:
-                            seen_ids.add(pid)
-                            search_results.append(row)
-                            if len(search_results) >= limit:
-                                break
+                if word.strip() and len(search_results) >= limit:
+                    break
+                word_rows, _ = self.db.search_papers(word.strip(), limit=limit)
+                for row in word_rows:
+                    pid = getattr(row, 'paper_id', '') or getattr(row, 'id', '')
+                    if pid not in seen_ids:
+                        seen_ids.add(pid)
+                        search_results.append(row)
+                        if len(search_results) >= limit:
+                            break
 
         if not search_results:
             return []
