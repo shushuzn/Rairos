@@ -3,14 +3,56 @@ from __future__ import annotations
 
 import argparse
 import re
+import ssl
 import sys
+import threading
+import urllib.request
+import warnings
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from cli._shared import get_db
 from cli._shared import (
     Colors, colored, print_success, print_error, print_warning, print_info, print_header,
 )
+
+_OPENALEX_BASE = "https://api.openalex.org"
+_OPENALEX_EMAIL = "ai-research-os@example.com"
+
+
+def _build_openalex_ctx() -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+
+
+def _openalex_request(path: str, timeout: int = 15) -> dict:
+    url = f"{_OPENALEX_BASE}{path}"
+    ctx = _build_openalex_ctx()
+    proxy_handler = urllib.request.ProxyHandler({})
+    opener = urllib.request.build_opener(proxy_handler, urllib.request.HTTPSHandler(context=ctx))
+    req = urllib.request.Request(url, headers={
+        "User-Agent": f"ai_research_os/1.0 (mailto:{_OPENALEX_EMAIL})",
+        "Accept": "application/json",
+    })
+    try:
+        import orjson as json
+        with opener.open(req, timeout=timeout) as resp:
+            return json.loads(resp.read())
+    except Exception as e:
+        raise RuntimeError(f"OpenAlex request failed for {path}: {e}") from e
+
+
+def _openalex_id_to_title(openalex_id: str) -> Optional[str]:
+    """Fetch paper title for an OpenAlex ID (W-prefixed)."""
+    try:
+        d = _openalex_request(f"/works/{openalex_id}")
+        return d.get("title") or None
+    except Exception:
+        return None
+
 @dataclass
 class CiteGraphNode:
     paper_id: str
@@ -142,6 +184,10 @@ def _build_cite_graph_parser(subparsers) -> argparse.ArgumentParser:
         help="Maximum nodes per direction to show (default: 50)",
     )
     vp.add_argument(
+        "--direction", choices=["from", "to", "both"], default="both",
+        help="Which citations: 'from'=references, 'to'=citing papers, 'both'=all (default: both)",
+    )
+    vp.add_argument(
         "--open", action="store_true", default=True, help="Open in default browser (default: on)",
     )
     vp.add_argument(
@@ -247,10 +293,17 @@ def _run_cite_graph_text(args: argparse.Namespace) -> int:
     return 0
 
 
-def _db_citation_view(db, root_id: str, depth: int = 1, max_nodes: int = 50) -> dict:
+def _db_citation_view(db, root_id: str, depth: int = 1, max_nodes: int = 50,
+                       direction: str = "both") -> dict:
     """Build D3-compatible citation graph from DB using BFS.
 
-    Returns {"nodes": [...], "links": [...], "root": root_id}.
+    Args:
+        root_id: root paper ID
+        depth: BFS depth
+        max_nodes: cap on total nodes
+        direction: 'from' (papers this cites), 'to' (papers citing this), 'both'
+    Returns:
+        {"nodes": [...], "links": [...], "root": root_id}
     """
     nodes: dict = {}
     links: list = []
@@ -279,25 +332,48 @@ def _db_citation_view(db, root_id: str, depth: int = 1, max_nodes: int = 50) -> 
         if d == depth:
             continue
 
-        # Backward: papers this paper cites
-        for edge in db.get_citations(pid, direction="from"):
-            tgt = edge.target_id
-            if tgt not in visited and len(nodes) < max_nodes:
-                queue.append((tgt, d + 1))
-            if tgt in nodes:
-                nodes[tgt]["is_citing"] = True
-            links.append({"source": pid, "target": tgt, "relation": "cites"})
+        if direction in ("from", "both"):
+            for edge in db.get_citations(pid, direction="from"):
+                tgt = edge.target_id
+                if tgt not in visited and len(nodes) < max_nodes:
+                    queue.append((tgt, d + 1))
+                if tgt in nodes:
+                    nodes[tgt]["is_citing"] = True
+                links.append({"source": pid, "target": tgt, "relation": "cites"})
 
-        # Forward: papers citing this paper
-        for edge in db.get_citations(pid, direction="to"):
-            src = edge.source_id
-            if src not in visited and len(nodes) < max_nodes:
-                queue.append((src, d + 1))
-            if src in nodes:
-                nodes[src]["is_cited_by"] = True
-            links.append({"source": src, "target": pid, "relation": "cited_by"})
+        if direction in ("to", "both"):
+            for edge in db.get_citations(pid, direction="to"):
+                src = edge.source_id
+                if src not in visited and len(nodes) < max_nodes:
+                    queue.append((src, d + 1))
+                if src in nodes:
+                    nodes[src]["is_cited_by"] = True
+                links.append({"source": src, "target": pid, "relation": "cited_by"})
+
+    # Enrich OpenAlex ID nodes (W-prefixed) with titles from the API
+    _enrich_openalex_titles(list(nodes.values()))
 
     return {"nodes": list(nodes.values()), "links": links, "root": root_id}
+
+
+def _enrich_openalex_titles(nodes: list[dict]) -> None:
+    """Concurrent title enrichment for nodes whose IDs are OpenAlex W-prefixed IDs."""
+    def fetch(nid: str) -> Tuple[str, Optional[str]]:
+        title = _openalex_id_to_title(nid)
+        return (nid, title)
+
+    openalex_ids = [n["id"] for n in nodes if n["id"].startswith("W")]
+    if not openalex_ids:
+        return
+
+    results: dict[str, Optional[str]] = {}
+    with ThreadPoolExecutor(max_workers=min(len(openalex_ids), 8)) as ex:
+        for nid, title in ex.map(fetch, openalex_ids):
+            results[nid] = title
+
+    for n in nodes:
+        if n["id"] in results and results[n["id"]]:
+            n["label"] = results[n["id"]][:60]
 
 
 def _run_cite_graph_view(args: argparse.Namespace) -> int:
@@ -308,7 +384,8 @@ def _run_cite_graph_view(args: argparse.Namespace) -> int:
     db = get_db()
     db.init()
 
-    graph_data = _db_citation_view(db, args.paper, depth=args.depth, max_nodes=args.max_nodes)
+    graph_data = _db_citation_view(db, args.paper, depth=args.depth,
+                                   max_nodes=args.max_nodes, direction=args.direction)
 
     if not graph_data["nodes"]:
         print(f"No citation data found for '{args.paper}'. Ensure the paper is in the KG with cite edges.", file=sys.stderr)
