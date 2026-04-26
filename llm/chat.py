@@ -12,6 +12,7 @@ from typing import Any, Callable, List, Optional, Tuple
 
 from llm.client import call_llm_chat_completions
 from llm.evolution_report import get_adaptive_retrieval
+from llm.research_session import get_session_tracker
 
 
 class QueryType(Enum):
@@ -52,6 +53,8 @@ class ChatResult:
     answer: str
     citations: List[Citation] = field(default_factory=list)
     papers_used: List[str] = field(default_factory=list)
+    session_id: Optional[str] = None  # 会话ID for continuity
+    resolved_context: Optional[dict] = None  # 解析的上下文信息
 
 
 # ─── System Prompt ─────────────────────────────────────────────────────────────
@@ -161,6 +164,79 @@ class RagChat:
 
         return QueryType.GENERAL
 
+    # ─── Context-Aware Multi-Turn Chat ─────────────────────────────────────────
+
+    def _resolve_pronouns(self, question: str, session: Any) -> str:
+        """
+        Resolve pronouns and references from conversation history.
+
+        Replaces pronouns like '它', '这个', '有哪些变体' with context from history.
+        """
+        if not session or not session.queries:
+            return question
+
+        resolved = question
+        last_query = session.queries[-1] if session.queries else None
+
+        if not last_query:
+            return resolved
+
+        # Pronoun resolution patterns (CN/EN)
+        pronouns = {
+            r'\b它\b': '该机制',
+            r'\b它们\b': '这些机制',
+            r'\b这个\b': '该概念',
+            r'\b这个模型\b': '该模型',
+            r'\b这篇论文\b': '上文提到的论文',
+            r'\b上述\b': '上文提到的',
+            r'\b之前?\b': '上文提到的',
+            r'\bthere\b': 'that',
+            r'\bit\b': 'that',
+            r'\bthese\b': 'those',
+            r'\bthis model\b': 'the model',
+        }
+
+        # Extract key entities from last question
+        last_q = last_query.question
+
+        # Check if this is a follow-up question
+        is_followup = any(
+            pattern.search(question.lower())
+            for pattern in [
+                re.compile(r'^(它|它们|这个|有哪些|有什么|哪个|哪些|怎么|如何|为什么|有什么不同)'),
+                re.compile(r'^(what about|and how|what are the|which ones|how about)'),
+            ]
+        )
+
+        if is_followup and last_q:
+            # Extract the main topic from last question
+            # Simple heuristic: take significant words
+            topic = self._extract_topic(last_q)
+            if topic:
+                # Add context to prompt
+                resolved = f"[上文讨论: {topic}] {question}"
+
+        return resolved
+
+    def _extract_topic(self, text: str) -> Optional[str]:
+        """Extract the main topic/entity from a question."""
+        # Remove common question patterns
+        patterns = [
+            r'是什么|什么是|请问|帮我|找找|解释|说明|介绍',
+            r'what is|what are|explain|describe|introduce',
+        ]
+        cleaned = text
+        for p in patterns:
+            cleaned = re.sub(p, '', cleaned, flags=re.I)
+
+        # Take first meaningful phrase (3-10 chars)
+        words = cleaned.split()
+        for w in words:
+            if 2 <= len(w) <= 15 and w not in {'的', '了', '是', '在', '和', 'the', 'a', 'an', 'is', 'are'}:
+                return w[:20]
+
+        return None
+
     def chat(
         self,
         question: str,
@@ -168,6 +244,7 @@ class RagChat:
         concept: Optional[str] = None,
         limit: int = 5,
         verbose: bool = False,
+        session_id: Optional[str] = None,
     ) -> ChatResult:
         """
         Answer a question using the paper corpus.
@@ -178,15 +255,23 @@ class RagChat:
             concept: Filter by concept/tag
             limit: Max papers to retrieve
             verbose: Print debug info
+            session_id: Optional session ID for multi-turn conversation
 
         Returns:
             ChatResult with answer and citations
         """
+        # Get session tracker for context-aware retrieval
+        session_tracker = get_session_tracker()
+        session = session_tracker.get_current_session()
+
         # Classify query for adaptive routing (used in verbose mode)
         query_type = self.classify_query(question)
 
+        # Resolve pronouns and context from conversation history
+        resolved_question = self._resolve_pronouns(question, session)
+
         # 1. Retrieve relevant contexts
-        contexts = self._retrieve(question, paper_id, concept, limit)
+        contexts = self._retrieve(resolved_question, paper_id, concept, limit)
 
         if not contexts:
             return ChatResult(
@@ -202,8 +287,8 @@ class RagChat:
             qtype_name = query_type.value
             print(f"[{qtype_name}] Retrieved {len(contexts)} contexts from {len(set(c.paper_id for c in contexts))} papers")
 
-        # 2. Build prompt
-        prompt = self._build_prompt(question, contexts)
+        # 2. Build prompt with resolved context
+        prompt = self._build_prompt(resolved_question, contexts)
 
         # 3. Generate answer
         answer = self._call_llm(
@@ -217,10 +302,21 @@ class RagChat:
         # 4. Extract citations
         citations = self._extract_citations(contexts)
 
+        # 5. Track in session for context continuity
+        if session:
+            session_tracker.add_query(
+                question=question,
+                answer=answer,
+                paper_ids=list(set(c.paper_id for c in contexts)),
+                paper_titles=[c.paper_title for c in contexts],
+            )
+
         return ChatResult(
             answer=answer,
             citations=citations,
             papers_used=list(set(c.paper_id for c in contexts)),
+            session_id=session.id if session else None,
+            resolved_context={"original": question, "resolved": resolved_question, "type": query_type.value},
         )
 
     def _retrieve(
