@@ -43,6 +43,7 @@ _SUBCOMMAND_TABLE = [
     ("chat",          "cli.cmd.chat",             "_build_chat_parser"),
     ("path",          "cli.cmd.path",             "_build_path_parser"),
     ("gap",           "cli.cmd.gap",             "_build_gap_parser"),
+    ("trend",         "cli.cmd.trend",           "_build_trend_parser"),
     ("slides",        "cli.cmd.slides",           "_build_slides_parser"),
     ("evolution",     "cli.cmd.evolution",         "_build_evolution_parser"),
 ]
