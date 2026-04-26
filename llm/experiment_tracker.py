@@ -27,6 +27,7 @@ class Experiment:
     name: str
     description: str = ""
     roadmap_milestone: str = ""
+    hypothesis_id: str = ""  # Links experiment back to the hypothesis it validated
     config: Dict = field(default_factory=dict)
     results: Dict = field(default_factory=dict)
     metrics: List = field(default_factory=list)
@@ -66,10 +67,11 @@ class ExperimentTracker:
         with open(self.f, 'w') as f:
             json.dump([e.to_dict() for e in exps], f, ensure_ascii=False, indent=2)
 
-    def run(self, name, description="", roadmap_milestone="", config=None, tags=None):
+    def run(self, name, description="", roadmap_milestone="", hypothesis_id="", config=None, tags=None):
         exps = self._load()
         e = Experiment(id=str(uuid.uuid4())[:8], name=name, description=description,
-                      roadmap_milestone=roadmap_milestone, config=config or {}, tags=tags or [])
+                      roadmap_milestone=roadmap_milestone, hypothesis_id=hypothesis_id,
+                      config=config or {}, tags=tags or [])
         exps.append(e)
         self._save(exps)
         return e
@@ -93,6 +95,20 @@ class ExperimentTracker:
                 e.completed_at = datetime.now().isoformat()
                 if results: e.results = results
                 self._save(exps)
+
+                # Record VALIDATED event so gap sorting learns from experiment outcomes
+                if e.hypothesis_id:
+                    try:
+                        from llm.insight_evolution import EvolutionTracker, ExplorationAction
+                        ev = EvolutionTracker()
+                        ev.record_event(
+                            topic="; ".join(e.tags) if e.tags else e.name,
+                            action=ExplorationAction.VALIDATED,
+                            hypothesis_id=e.hypothesis_id,
+                        )
+                    except Exception:
+                        pass  # Non-fatal — experiment tracker works without evolution
+
                 return e
 
     def fail(self, eid, error=""):

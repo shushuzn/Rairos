@@ -141,6 +141,7 @@ def _run_pipeline(args: argparse.Namespace) -> int:
             exp = tracker.run(
                 name=h.title,
                 description=h.core_statement,
+                hypothesis_id=h.id,
                 config={
                     "baseline": ed.baseline,
                     "variables": ed.variables,

@@ -13,6 +13,7 @@ Research Hypothesis Generator: Generate testable research hypotheses from gaps.
 from __future__ import annotations
 
 import re
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Optional, List, Dict, Any, Tuple
@@ -73,6 +74,7 @@ class RiskAssessment:
 @dataclass
 class ResearchHypothesis:
     """A generated research hypothesis."""
+    id: str  # Unique ID for tracking experiment → hypothesis linkage
     title: str
     hypothesis_type: HypothesisType
     core_statement: str  # 核心假说陈述
@@ -244,6 +246,7 @@ class HypothesisGenerator:
 
             # Fill in template with topic
             hypothesis = ResearchHypothesis(
+                id=str(uuid.uuid4())[:8],
                 title=f"假说 {i+1}: {topic} 研究",
                 hypothesis_type=template_info["type"],
                 core_statement=self._fill_template(template, topic, gap_context),
@@ -340,6 +343,7 @@ class HypothesisGenerator:
 
         # Generate cross-domain hypothesis
         return ResearchHypothesis(
+            id=str(uuid.uuid4())[:8],
             title=f"跨领域假说: {topic}",
             hypothesis_type=HypothesisType.EXPLORATORY,
             core_statement=f"将{topic}的方法/机制应用于跨领域任务可能产生意外的效果提升",
@@ -404,6 +408,7 @@ class HypothesisGenerator:
                     parts = line.split('|')
                     if len(parts) >= 1:
                         hypothesis = ResearchHypothesis(
+                            id=str(uuid.uuid4())[:8],
                             title=f"LLM生成假说",
                             hypothesis_type=HypothesisType.EXPLORATORY,
                             core_statement=parts[0].split(']')[1].strip() if ']' in parts[0] else parts[0],
