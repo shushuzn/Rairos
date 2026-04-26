@@ -10,6 +10,7 @@ from llm.gap_analyzer import (
     render_combined_report,
 )
 from llm.gap_detector import GapType, GapSeverity
+from llm.insight_evolution import ExplorationAction
 
 
 class TestGapAnalyzerV2Init:
@@ -65,7 +66,7 @@ class TestInsightCollection:
         assert "Context is key for RAG" in insights
 
     def test_collect_insights_calls_search_with_limit(self, analyzer):
-        """Test that insight collection uses correct limit."""
+        """Test that insight collection uses query parameter."""
         mock_im = MagicMock()
         mock_im.search_cards.return_value = []
         analyzer.insight_manager = mock_im
@@ -73,7 +74,7 @@ class TestInsightCollection:
         analyzer._collect_insights("test topic")
         mock_im.search_cards.assert_called_once()
         call_kwargs = mock_im.search_cards.call_args[1]
-        assert call_kwargs["limit"] == 20
+        assert call_kwargs["query"] == "test topic"
 
 
 class TestSubQuestionGeneration:
@@ -390,7 +391,7 @@ class TestGapConversion:
         insights = ["insight 1", "insight 2"]
         papers = ["paper1", "paper2"]
 
-        result = analyzer._convert_to_v2([base_gap], insights, papers)
+        result, pref_applied = analyzer._convert_to_v2([base_gap], insights, papers)
         assert len(result) == 1
         assert result[0].gap_type == GapType.METHOD_LIMITATION
         assert result[0].severity == GapSeverity.HIGH
@@ -422,12 +423,53 @@ class TestGapConversion:
             ),
         ]
 
-        result = analyzer._convert_to_v2(gaps, [], [])
+        result, pref_applied = analyzer._convert_to_v2(gaps, [], [])
         assert len(result) == 3
         # High should be first
         assert result[0].severity == GapSeverity.HIGH
         assert result[1].severity == GapSeverity.MEDIUM
         assert result[2].severity == GapSeverity.LOW
+
+    def test_preference_sorting_boosts_preferred_types(self, analyzer):
+        """Test that gaps matching user preferences are boosted."""
+        from llm.gap_detector import ResearchGap
+        from llm.insight_evolution import EvolutionTracker
+        import tempfile
+        from pathlib import Path
+
+        # Create tracker with known preferences
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tracker = EvolutionTracker(data_dir=Path(tmpdir))
+            # Record that user prefers method_limitation
+            for _ in range(3):
+                tracker.record_event(
+                    topic="RAG",
+                    action=ExplorationAction.ACCEPTED,
+                    gap_type="method_limitation",
+                )
+
+            analyzer.evolution_tracker = tracker
+
+            gaps = [
+                ResearchGap(
+                    gap_type=GapType.UNEXPLORED_APPLICATION,
+                    description="App gap",
+                    evidence_papers=["p1"],
+                    severity=GapSeverity.MEDIUM,
+                ),
+                ResearchGap(
+                    gap_type=GapType.METHOD_LIMITATION,
+                    description="Method gap",
+                    evidence_papers=["p1"],
+                    severity=GapSeverity.MEDIUM,
+                ),
+            ]
+
+            result, pref_applied = analyzer._convert_to_v2(gaps, [], [])
+            # Method limitation should be first due to preference
+            assert result[0].gap_type == GapType.METHOD_LIMITATION
+            assert result[0].preference_boost == True
+            assert pref_applied == True
 
 
 class TestHypothesisGeneration:

@@ -145,12 +145,18 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
     tracker = EvolutionTracker()
     print_info(f"🔬 Enhanced gap analysis for: {args.topic}")
 
+    # Check if user has preferences
+    profile = tracker.get_profile()
+    has_preferences = profile.total_events > 0
+
     # Initialize managers
     insight_manager = None if args.no_insights else InsightManager()
 
+    # Pass tracker for preference-based reordering
     analyzer = GapAnalyzerV2(
         db=db,
         insight_manager=insight_manager,
+        evolution_tracker=tracker,
     )
 
     # Hypothesis generation mode

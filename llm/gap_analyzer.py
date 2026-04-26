@@ -16,6 +16,7 @@ from llm.hypothesis_generator import (
     HypothesisType,
     ExperimentDesign,
 )
+from llm.insight_evolution import EvolutionTracker
 
 
 @dataclass
@@ -37,6 +38,9 @@ class ResearchGapV2:
     feasibility_score: float = 0.0
     priority: int = 0
 
+    # Preference learning
+    preference_boost: bool = False  # True if matches user preferences
+
 
 @dataclass
 class GapAnalysisResultV2:
@@ -49,16 +53,20 @@ class GapAnalysisResultV2:
     total_insights_used: int = 0
     gaps_by_type: Dict[GapType, int] = field(default_factory=dict)
 
+    # Preference learning applied
+    preference_applied: bool = False
+
     # Summary
     summary: str = ""
 
 
 class GapAnalyzerV2(GapDetector):
-    """Enhanced gap analyzer with insight fusion."""
+    """Enhanced gap analyzer with insight fusion and preference learning."""
 
-    def __init__(self, db=None, insight_manager=None):
+    def __init__(self, db=None, insight_manager=None, evolution_tracker=None):
         super().__init__(db)
         self.insight_manager = insight_manager
+        self.evolution_tracker = evolution_tracker or EvolutionTracker()
 
     def _collect_papers(self, topic: str, limit: int = 30) -> List[Dict[str, Any]]:
         """Collect papers with full abstracts for gap analysis.
@@ -154,7 +162,7 @@ class GapAnalyzerV2(GapDetector):
         self._collect_papers = original_collect  # Restore
 
         # 4. Convert to enhanced format with insights
-        enhanced_gaps = self._convert_to_v2(base_result.gaps, insights, papers)
+        enhanced_gaps, preference_applied = self._convert_to_v2(base_result.gaps, insights, papers)
 
         # 5. Generate sub-questions
         for gap in enhanced_gaps:
@@ -171,6 +179,7 @@ class GapAnalyzerV2(GapDetector):
             total_papers_analyzed=len(papers),
             total_insights_used=len(insights),
             gaps_by_type=gaps_by_type,
+            preference_applied=preference_applied,
             summary=base_result.summary,
         )
 
@@ -188,18 +197,19 @@ class GapAnalyzerV2(GapDetector):
         insights: List[str],
         papers: List,
     ) -> List[ResearchGapV2]:
-        """Convert base gaps to enhanced V2 format."""
+        """Convert base gaps to enhanced V2 format with preference learning."""
         enhanced = []
 
         for gap in gaps:
             # Find related insights
             related_insights = self._find_related_insights(gap, insights)
 
-            # Calculate priority
+            # Calculate priority with preference boost
             priority = self._calculate_priority(
                 len(gap.evidence_papers),
                 len(related_insights),
                 gap.severity,
+                gap.gap_type,
             )
 
             enhanced.append(ResearchGapV2(
@@ -212,11 +222,50 @@ class GapAnalyzerV2(GapDetector):
                 priority=priority,
             ))
 
-        # Sort by severity and priority
-        severity_order = {GapSeverity.HIGH: 3, GapSeverity.MEDIUM: 2, GapSeverity.LOW: 1}
-        enhanced.sort(key=lambda x: severity_order.get(x.severity, 0) * 1000 - x.priority, reverse=True)
+        # Sort by preference score + severity + priority
+        enhanced, preference_applied = self._apply_preference_sorting(enhanced)
 
-        return enhanced
+        return enhanced, preference_applied
+
+    def _apply_preference_sorting(self, gaps: List[ResearchGapV2]) -> List[ResearchGapV2]:
+        """Apply user preference-based sorting to gaps.
+
+        Gaps matching user preferences are boosted to appear first.
+        Returns both sorted gaps and whether preferences were applied.
+        """
+        # Get user preferences
+        preferred_types = set(self.evolution_tracker.get_preferred_gap_types(limit=5))
+        disliked_types = set(self.evolution_tracker.get_disliked_gap_types(limit=3))
+
+        has_preferences = bool(preferred_types or disliked_types)
+
+        def gap_preference_score(gap: ResearchGapV2) -> tuple:
+            """Calculate sorting score: (preference_score, severity_score, priority_score)."""
+            gap_type_str = gap.gap_type.value
+
+            # Preference score: +2 for liked, -1 for disliked, 0 for neutral
+            pref_score = 0
+            if gap_type_str in preferred_types:
+                pref_score = 2
+                gap.preference_boost = True
+            elif gap_type_str in disliked_types:
+                pref_score = -1
+                gap.preference_boost = False
+            else:
+                gap.preference_boost = False
+
+            # Severity score
+            severity_order = {GapSeverity.HIGH: 3, GapSeverity.MEDIUM: 2, GapSeverity.LOW: 1}
+            severity_score = severity_order.get(gap.severity, 0)
+
+            # Priority score (original calculation)
+            priority_score = gap.priority
+
+            # Return tuple for multi-key sort: prefer highest preference, then severity, then priority
+            return (pref_score, severity_score, priority_score)
+
+        gaps.sort(key=gap_preference_score, reverse=True)
+        return gaps, has_preferences
 
     def _find_related_insights(
         self,
@@ -248,6 +297,7 @@ class GapAnalyzerV2(GapDetector):
         paper_count: int,
         insight_count: int,
         severity: GapSeverity,
+        gap_type: GapType = None,
     ) -> int:
         """Calculate gap priority score."""
         severity_weight = {GapSeverity.HIGH: 3, GapSeverity.MEDIUM: 2, GapSeverity.LOW: 1}
@@ -376,8 +426,13 @@ class GapAnalyzerV2(GapDetector):
         return gap_result, hypothesis_result
 
 
-def render_gap_report(result: GapAnalysisResultV2) -> str:
-    """Render gap analysis report."""
+def render_gap_report(result: GapAnalysisResultV2, show_preferences: bool = True) -> str:
+    """Render gap analysis report.
+
+    Args:
+        result: The gap analysis result
+        show_preferences: Whether to show preference influence info
+    """
     if not result.gaps:
         return f"No gaps found for: {result.topic}"
 
@@ -412,7 +467,9 @@ def render_gap_report(result: GapAnalysisResultV2) -> str:
         lines.append("")
 
     # Gap details
-    lines.append("🎯 Research Gaps (sorted by priority):")
+    lines.append("🎯 Research Gaps (sorted by preference + priority):")
+    if show_preferences and hasattr(result, 'preference_applied') and result.preference_applied:
+        lines.append("   (✨ = matches your research preferences)")
     lines.append("")
 
     for i, gap in enumerate(result.gaps, 1):
@@ -421,6 +478,11 @@ def render_gap_report(result: GapAnalysisResultV2) -> str:
             GapSeverity.MEDIUM: "🟡 MEDIUM",
             GapSeverity.LOW: "🟢 LOW",
         }.get(gap.severity, "⚪")
+
+        # Preference indicator
+        pref_indicator = ""
+        if show_preferences and hasattr(gap, 'preference_boost') and gap.preference_boost:
+            pref_indicator = " ✨"
 
         type_name = {
             GapType.METHOD_LIMITATION: "Method Limitation",
