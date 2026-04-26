@@ -293,8 +293,11 @@ class EvolutionTracker:
             elif event.action == ExplorationAction.VALIDATED:
                 # Experiment success: strong positive signal for this gap type
                 weight = 0.4
+            elif event.action == ExplorationAction.NARRATED:
+                # Building arguments: positive signal for this gap type
+                weight = 0.25
 
-            profile.gap_type_preferences[event.gap_type] = max(0, current + weight)
+            profile.gap_type_preferences[event.gap_type] = current + weight
 
         # Compute preference tags
         profile.preference_tags = self._compute_preference_tags(profile)

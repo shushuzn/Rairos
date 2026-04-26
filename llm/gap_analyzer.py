@@ -288,7 +288,11 @@ class GapAnalyzerV2(GapDetector):
         has_preferences = bool(preferred_types or disliked_types)
 
         def gap_preference_score(gap: ResearchGapV2) -> tuple:
-            """Calculate sorting score: (trend_score, preference_score, severity_score, priority_score)."""
+            """Calculate sorting score: (trend_score, preference_score, severity_score, priority_score).
+
+            Higher is better. disliked/deprioritized gap types get negative pref_score
+            so they sort to the end of their trend/severity tier.
+            """
             gap_type_str = gap.gap_type.value
 
             # Trend score: from novelty_score (set to trend boost in _convert_to_v2)
@@ -299,8 +303,8 @@ class GapAnalyzerV2(GapDetector):
             if gap_type_str in preferred_types:
                 pref_score = 2
                 gap.preference_boost = True
-            elif gap_type_str in disliked_types:
-                pref_score = -1
+            elif gap_type_str in disliked_types or self.evolution_tracker.should_deprioritize_gap_type(gap_type_str):
+                pref_score = -2  # stronger penalty than before
                 gap.preference_boost = False
             else:
                 gap.preference_boost = False
