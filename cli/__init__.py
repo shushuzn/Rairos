@@ -56,6 +56,8 @@ _LAZY_EXPORTS = {
     "_build_read_queue_parser": ("cli.cmd.read_queue",     "_build_read_queue_parser"),
     "_run_chat":             ("cli.cmd.chat",              "_run_chat"),
     "_build_chat_parser":     ("cli.cmd.chat",              "_build_chat_parser"),
+    "_run_path":             ("cli.cmd.path",              "_run_path"),
+    "_build_path_parser":     ("cli.cmd.path",              "_build_path_parser"),
     "_run_slides":           ("cli.cmd.slides",            "_run_slides"),
     "_build_slides_parser":   ("cli.cmd.slides",            "_build_slides_parser"),
     "_run_evolution":         ("cli.cmd.evolution",          "_run_evolution"),

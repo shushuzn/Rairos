@@ -41,6 +41,7 @@ _SUBCOMMAND_TABLE = [
     ("repl",          "cli.cmd.repl",             "_build_repl_parser"),
     ("read-queue",    "cli.cmd.read_queue",       "_build_read_queue_parser"),
     ("chat",          "cli.cmd.chat",             "_build_chat_parser"),
+    ("path",          "cli.cmd.path",             "_build_path_parser"),
     ("slides",        "cli.cmd.slides",           "_build_slides_parser"),
     ("evolution",     "cli.cmd.evolution",         "_build_evolution_parser"),
 ]
