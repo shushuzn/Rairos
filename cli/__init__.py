@@ -75,6 +75,8 @@ _LAZY_EXPORTS = {
     "_build_experiment_parser": ("cli.cmd.experiment",         "_build_experiment_parser"),
     "_run_dashboard":           ("cli.cmd.dashboard",          "_run_dashboard"),
     "_build_dashboard_parser":  ("cli.cmd.dashboard",          "_build_dashboard_parser"),
+    "_run_journal":            ("cli.cmd.journal",            "_run_journal"),
+    "_build_journal_parser":    ("cli.cmd.journal",            "_build_journal_parser"),
     "_build_analyze_parser":  ("cli.cmd.analyze",          "_build_analyze_parser"),
     "_run_slides":           ("cli.cmd.slides",            "_run_slides"),
     "_build_slides_parser":   ("cli.cmd.slides",            "_build_slides_parser"),
