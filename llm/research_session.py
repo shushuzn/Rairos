@@ -206,15 +206,29 @@ class ResearchSessionTracker:
 
         return suggestions.get(intent, f"💡 建议深入了解: {main_topic}")
 
-    def get_probing_questions(self) -> List[str]:
+    def get_probing_questions(self, use_llm: bool = True, api_key: Optional[str] = None, base_url: Optional[str] = None, model: Optional[str] = None) -> List[str]:
         """
         Generate probing questions based on session context.
 
-        Returns 1-2 thought-provoking questions to guide research.
+        Args:
+            use_llm: Whether to use LLM for dynamic question generation
+            api_key: LLM API key (falls back to env)
+            base_url: LLM API base URL
+            model: Model name
+
+        Returns:
+            List of 1-3 thought-provoking questions
         """
         if not self.current_session:
             return []
 
+        # Try LLM-driven generation first
+        if use_llm and self.current_session.queries:
+            llm_questions = self._generate_probing_questions_llm(api_key, base_url, model)
+            if llm_questions:
+                return llm_questions
+
+        # Fallback to template-based questions
         questions = []
         intent = getattr(self.current_session, 'intent', ResearchIntent.LEARNING)
         topics = self.current_session.topics
@@ -230,6 +244,86 @@ class ResearchSessionTracker:
             questions.append(f"现有方法的核心局限在哪里？")
 
         return questions[:2]
+
+    def _generate_probing_questions_llm(
+        self,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        model: Optional[str] = None,
+    ) -> List[str]:
+        """
+        Use LLM to generate contextually relevant probing questions.
+
+        Analyzes conversation history and research intent to generate
+        personalized follow-up questions.
+        """
+        import os
+
+        api_key = api_key or os.getenv("OPENAI_API_KEY", "")
+        base_url = base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
+        model = model or os.getenv("DEFAULT_LLM_MODEL", "gpt-4o-mini")
+
+        if not api_key:
+            return []
+
+        # Build context from conversation history
+        session = self.current_session
+        history_parts = []
+        for i, q in enumerate(session.queries[-3:], 1):  # Last 3 queries
+            history_parts.append(f"Q{i}: {q.question}")
+            if q.answer_preview:
+                history_parts.append(f"A{i}: {q.answer_preview[:100]}...")
+
+        history_text = "\n".join(history_parts) if history_parts else "首次对话"
+        topics = ", ".join(session.topics[:3]) if session.topics else "未知"
+        intent_name = session.intent.value if session.intent else "learning"
+
+        system_prompt = """你是一个研究助手，擅长通过追问帮助用户深入理解研究主题。
+根据对话历史，生成2-3个有洞察力的追问，帮助用户进一步探索。
+要求：
+1. 问题要有深度，能引发思考
+2. 结合用户的研究意图
+3. 不要重复历史中已问过的问题
+4. 用中文提问
+5. 每个问题限制在20字以内
+6. 只输出问题，不要解释，每行一个"""
+
+        user_prompt = f"""对话历史：
+{history_text}
+
+研究主题：{topics}
+研究意图：{intent_name}
+
+请生成追问："""
+
+        try:
+            from llm.client import call_llm_chat_completions
+            response = call_llm_chat_completions(
+                base_url=base_url,
+                api_key=api_key,
+                model=model,
+                system_prompt=system_prompt,
+                user_prompt=user_prompt,
+            )
+
+            if response:
+                # Parse questions from response (one per line)
+                questions = []
+                for line in response.strip().split('\n'):
+                    line = line.strip()
+                    # Remove common prefixes like "1.", "-", "•", "Q:"
+                    for prefix in ['^\\d+[.、]', '^[-•*\\s]+', '^Q\\d*[:：]\\s*']:
+                        import re
+                        line = re.sub(prefix, '', line).strip()
+                    if line and len(line) <= 30:
+                        questions.append(line)
+
+                return questions[:3]
+
+        except Exception:
+            pass
+
+        return []
 
     def add_follow_up(self, query_id: str, follow_up_question: str):
         """记录追问."""

@@ -61,6 +61,7 @@ class ChatResult:
     papers_used: List[str] = field(default_factory=list)
     session_id: Optional[str] = None  # 会话ID for continuity
     resolved_context: Optional[dict] = None  # 解析的上下文信息
+    probing_questions: List[str] = field(default_factory=list)  # 智能追问建议
 
 
 # ─── System Prompt ─────────────────────────────────────────────────────────────
@@ -308,13 +309,21 @@ class RagChat:
         # 4. Extract citations
         citations = self._extract_citations(contexts)
 
-        # 5. Track in session for context continuity
+        # 5. Generate probing questions (LLM-driven if available)
+        probing_questions = []
         if session:
             session_tracker.add_query(
                 question=question,
                 answer=answer,
                 paper_ids=list(set(c.paper_id for c in contexts)),
                 paper_titles=[c.paper_title for c in contexts],
+            )
+            # Get LLM-driven probing questions
+            probing_questions = session_tracker.get_probing_questions(
+                use_llm=True,
+                api_key=self.api_key,
+                base_url=self.base_url,
+                model=self.model,
             )
 
         return ChatResult(
@@ -323,6 +332,7 @@ class RagChat:
             papers_used=list(set(c.paper_id for c in contexts)),
             session_id=session.id if session else None,
             resolved_context={"original": question, "resolved": resolved_question, "type": query_type.value},
+            probing_questions=probing_questions,
         )
 
     def _retrieve(
@@ -711,12 +721,18 @@ class RagChat:
             # Fallback to original order on error
             return results
 
-    def format_result(self, result: ChatResult, show_citations: bool = True) -> str:
-        """Format ChatResult for terminal output with enhanced citations."""
+    def format_result(self, result: ChatResult, show_citations: bool = True, show_probing: bool = True) -> str:
+        """Format ChatResult for terminal output with enhanced citations and probing questions."""
         output = []
         output.append("─" * 60)
         output.append(result.answer)
         output.append("─" * 60)
+
+        # Show probing questions if available
+        if show_probing and result.probing_questions:
+            output.append("\n💭 深入探索：")
+            for i, q in enumerate(result.probing_questions, 1):
+                output.append(f"   {i}. {q}")
 
         if show_citations and result.citations:
             output.append("\n📖 引用来源：")
