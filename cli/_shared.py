@@ -55,11 +55,6 @@ def print_info(message: str) -> None:
     print(colored(message, Colors.OKBLUE))
 
 
-def print_info(message: str) -> None:
-    """Print info message in blue."""
-    print(colored(message, Colors.OKBLUE))
-
-
 def print_header(message: str) -> None:
     """Print header message in purple."""
     print(colored(message, Colors.HEADER))
