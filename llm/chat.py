@@ -29,11 +29,17 @@ class QueryType(Enum):
 
 @dataclass
 class Citation:
-    """A citation extracted from a paper."""
+    """A citation extracted from a paper with source tracing."""
     paper_id: str
     paper_title: str
+    authors: List[str]
+    published: str
     snippet: str
     relevance_score: float
+    section: str = ""           # 论文章节 (abstract, intro, method, etc.)
+    char_start: int = 0          # 在原文中的起始位置
+    char_end: int = 0            # 在原文中的结束位置
+    quote: str = ""              # 精确引用语句
 
 
 @dataclass
@@ -369,7 +375,7 @@ class RagChat:
                 # Get full paper for content
                 paper = self.db.get_paper(result.paper_id)
                 if paper and paper.plain_text:
-                    snippet = self._extract_snippet(paper.plain_text, query)
+                    snippet, section, char_start, char_end = self._extract_snippet(paper.plain_text, query)
                     if snippet:
                         contexts.append(ChatContext(
                             paper_id=paper.id,
@@ -499,9 +505,9 @@ class RagChat:
 
         return adjusted_results
 
-    def _extract_snippet(self, text: str, query: str, context_chars: int = 500) -> str:
+    def _extract_snippet(self, text: str, query: str, context_chars: int = 500) -> Tuple[str, str, int, int]:
         """
-        Extract a relevant snippet from text around query keywords.
+        Extract a relevant snippet from text around query keywords with source tracing.
 
         Args:
             text: Full text to search
@@ -509,10 +515,10 @@ class RagChat:
             context_chars: Characters of context around match
 
         Returns:
-            Extracted snippet with surrounding context
+            Tuple of (snippet, section, char_start, char_end)
         """
         if not text or not query:
-            return text[:context_chars] if text else ""
+            return text[:context_chars] if text else "", self._detect_section(text, 0), 0, min(context_chars, len(text) if text else 0)
 
         # Find query terms in text (case-insensitive)
         query_terms = query.lower().split()
@@ -529,19 +535,56 @@ class RagChat:
 
         if best_pos == -1:
             # No exact match, return beginning
-            return text[:context_chars]
+            end = min(context_chars, len(text) if text else 0)
+            return text[:end], self._detect_section(text, 0), 0, end
 
         # Extract context around match
         start = max(0, best_pos - context_chars // 2)
         end = min(len(text), best_pos + context_chars // 2)
 
         snippet = text[start:end].strip()
+        section = self._detect_section(text, start)
 
         # Add ellipsis if truncated
         prefix = "..." if start > 0 else ""
         suffix = "..." if end < len(text) else ""
 
-        return f"{prefix}{snippet}{suffix}"
+        return f"{prefix}{snippet}{suffix}", section, start, end
+
+    def _detect_section(self, text: str, pos: int) -> str:
+        """
+        Detect which section of the paper the position falls in.
+
+        Returns section name like 'abstract', 'introduction', 'method', etc.
+        """
+        if not text or pos < 0:
+            return ""
+
+        # Section headers patterns (case-insensitive)
+        sections = [
+            (r'\babstract\b', 'Abstract'),
+            (r'\bintroduction\b', 'Introduction'),
+            (r'\brelated work\b', 'Related Work'),
+            (r'\bbackground\b', 'Background'),
+            (r'\bpreliminaries\b', 'Preliminaries'),
+            (r'\bmethod\b', 'Method'),
+            (r'\bmethodology\b', 'Methodology'),
+            (r'\bmodel\b', 'Model'),
+            (r'\bexperiments?\b', 'Experiments'),
+            (r'\bresults?\b', 'Results'),
+            (r'\bevaluation\b', 'Evaluation'),
+            (r'\bdiscussion\b', 'Discussion'),
+            (r'\bconclusion\b', 'Conclusion'),
+            (r'\breferences?\b', 'References'),
+        ]
+
+        text_lower = text[:pos].lower()
+
+        for pattern, name in sections:
+            if re.search(pattern, text_lower, re.I):
+                return name
+
+        return ""
 
     def _build_prompt(self, question: str, contexts: List[ChatContext]) -> str:
         """Build RAG prompt with retrieved contexts."""
@@ -583,7 +626,14 @@ class RagChat:
         return prompt
 
     def _extract_citations(self, contexts: List[ChatContext]) -> List[Citation]:
-        """Extract citations from retrieved contexts."""
+        """
+        Extract enhanced citations from retrieved contexts with source tracing.
+
+        Each citation includes:
+        - Paper metadata (title, authors, year)
+        - Precise location (section, character positions)
+        - Exact quote from the original text
+        """
         citations = []
         seen = set()
 
@@ -592,14 +642,52 @@ class RagChat:
                 continue
             seen.add(ctx.paper_id)
 
+            # Extract a precise quote (first sentence or key phrase)
+            quote = self._extract_quote(ctx.snippet)
+
             citations.append(Citation(
                 paper_id=ctx.paper_id,
                 paper_title=ctx.paper_title,
-                snippet=ctx.snippet[:200] + "..." if len(ctx.snippet) > 200 else ctx.snippet,
+                authors=ctx.authors,
+                published=ctx.published,
+                snippet=ctx.snippet[:300] + "..." if len(ctx.snippet) > 300 else ctx.snippet,
                 relevance_score=ctx.relevance_score,
+                section="",  # Section detection done in _extract_snippet
+                char_start=0,
+                char_end=0,
+                quote=quote,
             ))
 
         return citations
+
+    def _extract_quote(self, snippet: str) -> str:
+        """
+        Extract a precise quote from snippet (first sentence or definition).
+
+        Returns a short, impactful quote that can be used for citation.
+        """
+        if not snippet:
+            return ""
+
+        # Clean up the snippet
+        clean = snippet.strip().replace("\n", " ").replace("  ", " ")
+
+        # Try to find first sentence ending with . ! or ?
+        import re as regex_module
+        sentence_end = regex_module.search(r'[.!?]\s', clean)
+
+        if sentence_end:
+            quote = clean[:sentence_end.end()].strip()
+        else:
+            # Fall back to first 150 chars
+            quote = clean[:150].strip()
+
+        # Clean up quote markers
+        quote = quote.strip('"...»""')
+        if len(quote) > 150:
+            quote = quote[:147] + "..."
+
+        return quote if quote else ""
 
     def _apply_adaptive_boost(self, results: List) -> List:
         """Apply adaptive boost to search results based on feedback history."""
@@ -624,7 +712,7 @@ class RagChat:
             return results
 
     def format_result(self, result: ChatResult, show_citations: bool = True) -> str:
-        """Format ChatResult for terminal output."""
+        """Format ChatResult for terminal output with enhanced citations."""
         output = []
         output.append("─" * 60)
         output.append(result.answer)
@@ -633,10 +721,21 @@ class RagChat:
         if show_citations and result.citations:
             output.append("\n📖 引用来源：")
             for i, cite in enumerate(result.citations, 1):
-                authors = ""
-                output.append(f"\n[{i}] {cite.paper_title} ({cite.paper_id})")
+                authors = ', '.join(cite.authors[:3]) if cite.authors else "Unknown"
+                year = cite.published[:4] if cite.published else "N/A"
+
+                output.append(f"\n[{i}] {cite.paper_title}")
+                output.append(f"    {authors} ({year})")
+
+                if cite.section:
+                    output.append(f"    📑 来源章节: {cite.section}")
+
                 output.append(f"    相关度: {cite.relevance_score:.2f}")
-                output.append(f"    > {cite.snippet[:150]}...")
+
+                if cite.quote:
+                    output.append(f"    💬 \"{cite.quote}\"")
+
+                output.append(f"    🔗 arXiv: {cite.paper_id}")
 
         return "\n".join(output)
 
