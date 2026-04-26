@@ -73,6 +73,7 @@ _BUILTIN_MODEL_PRICES: dict[str, Tuple[float, float]] = {
     "deepseek-chat": (0.14, 0.28),
     "claude-3-5-sonnet": (3.0, 15.0),
     "claude-3-5-haiku": (0.8, 4.0),
+    "minimax-m2.7-highspeed": (0.1, 0.1),  # MiniMax M2.7 高速版
     "default": (1.0, 4.0),
 }
 

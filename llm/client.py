@@ -91,6 +91,8 @@ def call_llm_chat_completions(
         "temperature": 0.2,
         "messages": msgs,
         "stream": stream,
+        # MiniMax 思考模型需要禁用思考
+        "extra_body": {"thinking": {"type": "disabled"}},
     }
     if user_prompt:
         payload["messages"] = msgs + [{"role": "user", "content": user_prompt}]

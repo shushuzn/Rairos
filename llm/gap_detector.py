@@ -230,11 +230,11 @@ GAP_TYPE 可选：
 
         try:
             response = call_llm_chat_completions(
+                messages=[{"role": "user", "content": user_prompt}],
                 base_url=base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
                 api_key=api_key,
                 model=model or os.getenv("DEFAULT_LLM_MODEL", "gpt-4o-mini"),
                 system_prompt=system_prompt,
-                user_prompt=user_prompt,
             )
 
             return self._parse_gaps(response, topic)
@@ -261,7 +261,10 @@ GAP_TYPE 可选：
             "low": GapSeverity.LOW,
         }
 
-        for line in response.strip().split('\n'):
+        # Strip thinking tags for MiniMax/M2.7 models
+        clean_response = re.sub(r'<think>.*?</think>', '', response, flags=re.DOTALL).strip()
+
+        for line in clean_response.split('\n'):
             line = line.strip()
             if not line or line.startswith('#'):
                 continue

@@ -137,8 +137,6 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
         else:
             print()
             print(render_combined_report(gap_result, hypothesis_result))
-            print()
-            print(analyzer.generate_hypotheses(gap_result, use_llm=not args.no_llm, model=args.model).render_result(hypothesis_result))
         return 0
 
     # Standard enhanced analysis
