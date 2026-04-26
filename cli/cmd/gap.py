@@ -70,8 +70,8 @@ def _run_gap(args: argparse.Namespace) -> int:
     db = get_db()
     db.init()
 
-    # Enhanced mode with insights
-    if args.enhanced:
+    # Enhanced mode with insights (auto-enable for --hypothesis)
+    if args.enhanced or args.hypothesis:
         return _run_gap_enhanced(args)
 
     detector = GapDetector(db=db)
