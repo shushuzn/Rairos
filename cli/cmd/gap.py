@@ -183,12 +183,13 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
                 gap_description=gap.description,
             )
 
-        if hypothesis_result.hypotheses:
-            tracker.record_event(
+        # Record HYPOTHESIZED event for each hypothesis (not just the first)
+        for h in hypothesis_result.hypotheses:
+            tracker.record_hypothesis_generated(
                 topic=args.topic,
-                action=ExplorationAction.HYPOTHESIZED,
-                gap_type=gap_result.gaps[0].gap_type.value if gap_result.gaps else "",
-                gap_title=gap_result.gaps[0].title if gap_result.gaps else "",
+                gap_type=h.gap_type,
+                gap_title=h.title,
+                hypothesis_id=h.id,
             )
 
         if args.json:
