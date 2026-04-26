@@ -85,6 +85,8 @@ _LAZY_EXPORTS = {
     "_build_insight_parser":     ("cli.cmd.insight",         "_build_insight_parser"),
     "_run_ask":                  ("cli.cmd.ask",              "_run_ask"),
     "_build_ask_parser":         ("cli.cmd.ask",              "_build_ask_parser"),
+    "_build_session_parser":    ("cli.cmd.session",          "_build_session_parser"),
+    "_run_session":             ("cli.cmd.session",          "_run_session"),
     "_build_analyze_parser":  ("cli.cmd.analyze",          "_build_analyze_parser"),
     "_run_slides":           ("cli.cmd.slides",            "_run_slides"),
     "_build_slides_parser":   ("cli.cmd.slides",            "_build_slides_parser"),
