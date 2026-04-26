@@ -60,9 +60,120 @@ class LearningReport:
     questions_to_explore: List[str]
     evolution_stage: str
     progress_towards_next: str
+    # 新增：叙事数据
+    user_journey: str = ""  # 用户研究旅程描述
+    system_learned: str = ""  # 系统学会了什么
+    highlight_moment: str = ""  # 高光时刻
 
     def to_markdown(self) -> str:
-        """转换为Markdown格式."""
+        """转换为Markdown格式 - 叙事风格."""
+        lines = []
+
+        # 开场：学习伙伴的视角
+        lines.extend([
+            "# 🧬 AI Research OS 学习报告",
+            "",
+            f"*{self.period_start[:10]} ~ {self.period_end[:10]}*",
+            "",
+        ])
+
+        # 叙事开场
+        if self.user_journey:
+            lines.append(f"> {self.user_journey}")
+            lines.append("")
+
+        # 系统学会了什么
+        if self.system_learned:
+            lines.extend([
+                "## 🎯 系统学会了什么",
+                "",
+                f"_{self.system_learned}_",
+                "",
+            ])
+
+        # 核心指标 - 叙事化
+        lines.extend([
+            "## 📊 回顾这一周",
+            "",
+            f"你一共问了 **{self.total_queries}** 个问题，",
+            f"其中 **{self.positive_rate * 100:.0f}%** 让你感到满意。",
+            "",
+        ])
+
+        # 热门论文 - 带故事
+        if self.top_papers:
+            lines.extend([
+                "### 📚 你最常引用的论文",
+                "",
+            ])
+            top = self.top_papers[0]
+            lines.append(f"**{top.title}** 是你的「老朋友」——")
+            lines.append(f"你引用了 {top.positive_count} 次，每次都有收获。")
+            if len(self.top_papers) > 1:
+                lines.append("")
+                lines.append("其他你关注的论文：")
+                for p in self.top_papers[1:3]:
+                    lines.append(f"- {p.title}")
+            lines.append("")
+
+        # 关注热点 - 叙事化
+        if self.top_keywords:
+            topics = "、".join(self.top_keywords[:3])
+            lines.extend([
+                "### 🔑 你的研究焦点",
+                "",
+                f"这周你主要探索了 **{topics}**。",
+                "",
+            ])
+
+        # 探索建议 - 对话式
+        if self.questions_to_explore:
+            lines.extend([
+                "### 💡 你可能想问",
+                "",
+            ])
+            # 只显示最有价值的一个
+            if self.questions_to_explore:
+                lines.append(f"你问过类似的问题，也许可以深入一步：")
+                lines.append("")
+                lines.append(f"> 「{self.questions_to_explore[0]}」")
+            lines.append("")
+
+        # 趋势预测 - 故事化
+        if self.predicted_interests:
+            interest = self.predicted_interests[0]
+            lines.extend([
+                "### 🔮 系统预测",
+                "",
+                f"基于你的探索轨迹，我猜你接下来会感兴趣：**{interest}**。",
+                "",
+            ])
+
+        # 高光时刻
+        if self.highlight_moment:
+            lines.extend([
+                "### ⭐ 高光时刻",
+                "",
+                f"_{self.highlight_moment}_",
+                "",
+            ])
+
+        # 进化进度
+        lines.extend([
+            "---",
+            "",
+            f"📍 {self.evolution_stage}",
+            "",
+            f"**下一步**: {self.progress_towards_next}",
+            "",
+            "---",
+            "_由 AI Research OS 自进化系统生成_",
+        ])
+
+        return "\n".join(lines)
+
+    def to_markdown_classic(self) -> str:
+        """经典 Markdown 格式（数据报表风格）."""
         lines = [
             "# 🧬 AI Research OS 学习报告",
             "",
@@ -127,6 +238,11 @@ class EvolutionReporter:
         stats = self.evo.get_stats()
         stage, progress = self._get_evolution_status(stats)
 
+        # 生成叙事内容
+        user_journey = self._generate_user_journey(feedbacks, paper_insights)
+        system_learned = self._generate_system_learned(feedbacks, paper_insights, stats)
+        highlight = self._generate_highlight(feedbacks, paper_insights)
+
         return LearningReport(
             period_start=start_time,
             period_end=now.isoformat(),
@@ -139,6 +255,9 @@ class EvolutionReporter:
             questions_to_explore=suggestions,
             evolution_stage=stage,
             progress_towards_next=progress,
+            user_journey=user_journey,
+            system_learned=system_learned,
+            highlight_moment=highlight,
         )
 
     def _collect_feedbacks_since(self, start_time: str) -> List[Dict]:
@@ -238,6 +357,57 @@ class EvolutionReporter:
         elif reliable >= 1:
             return "🌳 成长期", "积累 10+ 反馈，强化现有模式"
         return "🌱 种子期", "继续使用，系统会持续学习"
+
+    def _generate_user_journey(self, feedbacks: List[Dict], paper_insights: List) -> str:
+        """生成用户研究旅程叙事."""
+        total = len(feedbacks)
+        if total == 0:
+            return ""
+
+        # 根据活跃度选择叙事
+        if total >= 20:
+            return f"这是充实的一周！你深入探索了 {total} 个问题。"
+        elif total >= 10:
+            return f"你保持了良好的研究节奏，探讨了 {total} 个有意义的问题。"
+        elif total >= 5:
+            return f"本周你提出了 {total} 个问题，研究在稳步推进。"
+        elif total >= 1:
+            return f"你开始了新的探索旅程，提出了第一个问题。"
+        return ""
+
+    def _generate_system_learned(self, feedbacks: List[Dict], paper_insights: List, stats: Dict) -> str:
+        """生成系统学会的内容叙事."""
+        reliable = stats.get("reliable_patterns", 0)
+        total = len(feedbacks)
+
+        if reliable >= 5:
+            return f"我已经学会了 {reliable} 个有效的回应模式，能够更好地帮助你理解论文。"
+        elif reliable >= 3:
+            learned_keywords = self._extract_top_keywords(feedbacks[:5])
+            kw = learned_keywords[0] if learned_keywords else "相关主题"
+            return f"我注意到你对「{kw}」很感兴趣，学会了优先推荐这类内容。"
+        elif total >= 10:
+            return "通过你的反馈，我正在学习什么是最有帮助的回答方式。"
+        elif total >= 1:
+            return "感谢你的第一个反馈！我正在学习如何更好地帮助你。"
+        return "开始使用，让我了解你的研究风格。"
+
+    def _generate_highlight(self, feedbacks: List[Dict], paper_insights: List) -> str:
+        """生成高光时刻叙事."""
+        if not paper_insights:
+            return ""
+
+        top = paper_insights[0]
+        pos_count = getattr(top, 'positive_count', 0)
+
+        if pos_count >= 5:
+            return f"「{top.title}」是你最信赖的参考资料，被引用了 {pos_count} 次！"
+        elif pos_count >= 3:
+            return f"「{top.title}」成为你的研究利器，帮你解答了多个问题。"
+        elif pos_count >= 1:
+            return f"「{top.title}」开始进入你的研究视野。"
+
+        return ""
 
     def _empty_report(self, start: str, end: str) -> LearningReport:
         return LearningReport(
