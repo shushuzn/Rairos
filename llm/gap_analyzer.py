@@ -60,6 +60,11 @@ class GapAnalyzerV2(GapDetector):
         super().__init__(db)
         self.insight_manager = insight_manager
 
+    def _collect_papers(self, topic: str, limit: int = 30) -> List:
+        """Collect papers with limit support."""
+        papers, _ = self.db.search_papers(topic, limit=limit) if self.db else ([], [])
+        return papers
+
     def analyze(
         self,
         topic: str,
@@ -72,7 +77,7 @@ class GapAnalyzerV2(GapDetector):
     ) -> GapAnalysisResultV2:
         """Enhanced analysis with multi-source evidence."""
 
-        # 1. Collect papers (use parent method)
+        # 1. Collect papers
         papers = self._collect_papers(topic, limit=30)
         if len(papers) < min_papers:
             return GapAnalysisResultV2(

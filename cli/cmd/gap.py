@@ -104,6 +104,8 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
     from llm.gap_analyzer import GapAnalyzerV2, render_gap_report, render_combined_report
     from llm.insight_cards import InsightManager
 
+    db = get_db()
+    db.init()
     print_info(f"🔬 Enhanced gap analysis for: {args.topic}")
 
     # Initialize managers

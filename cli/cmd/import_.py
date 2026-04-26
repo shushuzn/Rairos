@@ -8,12 +8,51 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple, Set
+from typing import Tuple, Set, Optional
 
 from cli._shared import get_db
-from cli._shared import print_success, print_warning, print_error
+from cli._shared import print_success, print_warning, print_error, print_info
 
 CHECKPOINT_VERSION = 1
+
+
+def _fetch_paper_metadata(paper_id: str) -> Optional[dict]:
+    """Fetch paper metadata from arXiv or DOI."""
+    from parsers.arxiv import fetch_arxiv_metadata
+    from parsers.crossref import fetch_crossref_metadata
+    from parsers.input_detection import is_probably_doi, normalize_doi
+
+    try:
+        if is_probably_doi(paper_id):
+            # DOI lookup
+            doi = normalize_doi(paper_id)
+            paper, _ = fetch_crossref_metadata(doi)
+            return {
+                "title": paper.title or "",
+                "authors": paper.authors or [],
+                "abstract": paper.abstract or "",
+                "published": paper.published or "",
+                "abs_url": f"https://doi.org/{doi}",
+                "pdf_url": "",
+                "primary_category": "",
+                "doi": doi,
+            }
+        else:
+            # arXiv lookup
+            paper = fetch_arxiv_metadata(paper_id)
+            return {
+                "title": paper.title or "",
+                "authors": paper.authors or [],
+                "abstract": paper.abstract or "",
+                "published": paper.published or "",
+                "abs_url": paper.abs_url or "",
+                "pdf_url": paper.pdf_url or "",
+                "primary_category": paper.primary_category or "",
+                "doi": paper.doi or "",
+            }
+    except Exception as e:
+        print_warning(f"Failed to fetch metadata for {paper_id}: {e}")
+        return None
 
 
 def _load_checkpoint(checkpoint_path: Path) -> dict:
@@ -124,7 +163,24 @@ def _run_import(args: argparse.Namespace) -> int:
         def _upsert_one(enumerated: Tuple[int, str]) -> Tuple[int, str, bool, str]:
             idx, pid = enumerated
             try:
-                db.upsert_paper(pid, args.source)
+                # Fetch metadata first
+                metadata = _fetch_paper_metadata(pid)
+                if metadata:
+                    db.upsert_paper(
+                        paper_id=pid,
+                        source=args.source,
+                        title=metadata.get("title", ""),
+                        authors=metadata.get("authors", []),
+                        abstract=metadata.get("abstract", ""),
+                        published=metadata.get("published", ""),
+                        abs_url=metadata.get("abs_url", ""),
+                        pdf_url=metadata.get("pdf_url", ""),
+                        primary_category=metadata.get("primary_category", ""),
+                        doi=metadata.get("doi", ""),
+                    )
+                else:
+                    # Fallback: just insert empty record
+                    db.upsert_paper(pid, args.source)
                 return idx, pid, True, ""
             except Exception as e:
                 return idx, pid, False, str(e)
