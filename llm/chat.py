@@ -330,11 +330,12 @@ class RagChat:
 
         # 3. Generate answer
         answer = self._call_llm(
+            [],
+            model=self.model,
+            user_prompt=prompt,
             base_url=self.base_url,
             api_key=self.api_key,
-            model=self.model,
             system_prompt=_RAG_SYSTEM_PROMPT,
-            user_prompt=prompt,
         )
 
         # 4. Extract citations
@@ -436,11 +437,12 @@ class RagChat:
 
         try:
             response = self._call_llm(
+                [],
+                model=self.model,
+                user_prompt=user_prompt,
                 base_url=self.base_url,
                 api_key=self.api_key,
-                model=self.model,
                 system_prompt=system_prompt,
-                user_prompt=user_prompt,
             )
 
             if not response:
@@ -599,10 +601,11 @@ class RagChat:
                 if result.paper_id in seen_papers:
                     continue
 
-                # Get full paper for content
+                # Get full paper for content — prefer plain_text, fall back to abstract
                 paper = self.db.get_paper(result.paper_id)
-                if paper and paper.plain_text:
-                    snippet, section, char_start, char_end = self._extract_snippet(paper.plain_text, query)
+                text = (paper.plain_text or paper.abstract or "") if paper else ""
+                if text:
+                    snippet, section, char_start, char_end = self._extract_snippet(text, query)
                     if snippet:
                         contexts.append(ChatContext(
                             paper_id=paper.id,
@@ -641,11 +644,10 @@ class RagChat:
         Returns:
             List of search results with scores
         """
-        # Base BM25 search
+        # Base BM25 search — include all parse statuses (abstract alone is valuable context)
         results, _ = self.db.search_papers(
             query=query,
             limit=limit,
-            parse_status="parsed",
         )
 
         # Apply query-type-specific strategies

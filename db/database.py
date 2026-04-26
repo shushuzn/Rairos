@@ -993,25 +993,53 @@ class Database:
                 join_where += " AND p.published <= ?"
                 params.append(date_to)
 
-            count_params = list(params)  # reuse for count query
+            count_params = list(params)
 
-            fts_query = f'"{query}"'
+            # Build FTS query with proper handling of hyphens and CJK text.
+            # FTS5 parses "A-B" as "A -B" (negation operator), breaking hyphenated terms.
+            # Strategy: strip hyphens within tokens, then build OR query.
+            # CJK text (no spaces): don't force into phrase quotes — use unquoted tokens.
+            def _sanitize_token(token: str) -> str:
+                """Remove FTS5 special chars; replace hyphens with underscores for tokenization."""
+                return token.replace("-", "_").replace("'", "").replace('"', "").strip()
 
-            # Count total matches (after all filters)
+            def _build_query(query: str) -> str:
+                """Build FTS5 query from natural-language input."""
+                import re
+                # Extract Latin tokens (ASCII alphanumeric) from the full query string.
+                # CJK chars in a query are intent/meaning — DB abstracts are in English.
+                latin_tokens = re.findall(r'[A-Za-z0-9_]+', query)
+                if not latin_tokens:
+                    return f'"{query}"'
+                sanitized = [_sanitize_token(t) for t in latin_tokens if t.strip()]
+                if not sanitized:
+                    return f'"{query}"'
+                if len(sanitized) == 1:
+                    return sanitized[0]
+                # OR for broad match — more useful than strict AND for chat queries
+                return " OR ".join(sanitized)
+
+            fts_query = _build_query(query)
+
             count_sql = f"""
                 SELECT COUNT(*) FROM papers_fts fts
                 JOIN papers p ON p.id = fts.paper_id
                 WHERE papers_fts MATCH ?{join_where}
             """
-            cur.execute(count_sql, [fts_query] + count_params)
-            total = cur.fetchone()[0]
+            try:
+                cur.execute(count_sql, [fts_query] + count_params)
+                total = cur.fetchone()[0]
+            except Exception:
+                total = 0
 
             # Search: FTS returns paper_id, title, abstract, score, snippet
+            # NOTE: must use full table name "papers_fts" not alias "fts" — FTS5 UNINDEXED columns
+            # conflict with JOIN aliases in SQLite, causing "no such column" errors
             search_sql = f"""
                 SELECT
-                    fts.paper_id,
-                    fts.title,
-                    fts.abstract,
+                    papers_fts.paper_id,
+                    papers_fts.title,
+                    papers_fts.abstract,
                     bm25(papers_fts) AS score,
                     snippet(papers_fts, 0, '**', '**', '...', 30) AS snippet
                 FROM papers_fts
