@@ -11,35 +11,37 @@ coverage.json
 uv.lock
 .omc/
 *.jsonl
-2000
 *.zip
-.cz.json
-.czrc
-make_pr.py
-pr_body.json
-pytest_310.txt
-pytest_310.zip
-pytest_out.zip
-pytest_output.zip
-logs.zip
-artifact_311.zip
-dict[str
-{c.target_id}
-0
-0)
-.env
-
-# Local data and research trees
+.pytest_cache/
 AI-Research/
 ai_research.db
 data/arxiv/
 data/research.db
+data/crossref/
+.env
+
+# Claude settings
+.claude/settings.local.json
 
 # Debug artifacts from interactive testing
 0x3000
 fts_query
-{[r[0]
-1
-"{[r[0]}"
+make_pr.py
+pr_body.json
+pytest_310.txt
+pytest_output.zip
+pytest_out.zip
+logs.zip
+artifact_311.zip
 
+# Misc junk files (shell completion artifacts)
+0.4
+100
+15
+48
+5
+80
+['transformer'
+any
+1
 .git-rewrite/
