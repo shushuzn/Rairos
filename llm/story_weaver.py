@@ -368,7 +368,7 @@ class StoryWeaver:
 
         # Divergence
         if any(p in b.title.lower() for p in ['instead', 'alternative', 'rather', 'unlike']):
-            return RelationshipType.DIVERGENCE, f"Proposes alternative to {a.title[:30]}..."
+            return RelationshipType.CONTRASTS, f"Proposes alternative to {a.title[:30]}..."
 
         # Contrast
         if any(p in a.title.lower() + b.title.lower() for p in ['vs', 'versus', '对比', '比较']):
