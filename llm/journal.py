@@ -49,7 +49,8 @@ class Journal:
         try:
             with open(self.f) as f:
                 return [JournalEntry.from_dict(e) for e in json.load(f)]
-        except Exception:
+        except (json.JSONDecodeError, IOError):
+            # Corrupt or missing journal file — start fresh without crashing.
             return []
 
     def _save(self, entries: List[JournalEntry]):

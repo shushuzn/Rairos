@@ -218,6 +218,7 @@ class GapAnalyzerV2(GapDetector):
                 hot.add(t.keyword.lower())
             return hot
         except Exception:
+            # Trend analysis is optional — return empty set without crashing.
             return set()
 
     def _convert_to_v2(

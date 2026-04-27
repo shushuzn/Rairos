@@ -210,6 +210,7 @@ class GapDetector:
                     }
                     papers.append(paper)
         except Exception:
+            # Paper enrichment is optional — return partial results without crashing.
             pass
 
         return papers
@@ -284,6 +285,7 @@ GAP_TYPE 可选：
             return self._parse_gaps(response, topic)
 
         except Exception:
+            # LLM gap detection failed — fall back to rule-based detection without crashing.
             return self._detect_gaps_rules(paper_summaries)
 
     def _parse_gaps(self, response: str, topic: str) -> List[ResearchGap]:
@@ -400,6 +402,7 @@ GAP_TYPE 可选：
             return self._parse_questions(response, gaps)
 
         except Exception:
+            # LLM question generation failed — fall back to rule-based generation without crashing.
             return self._generate_questions_rules(gaps)
 
     def _parse_questions(self, response: str, gaps: List[ResearchGap]) -> List[ResearchQuestion]:

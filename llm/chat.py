@@ -469,6 +469,7 @@ class RagChat:
             return insights[:3]  # Max 3 insights
 
         except Exception:
+            # Cross-paper synthesis is best-effort — return empty insights without crashing.
             return []
 
     def _calculate_confidence(self, answer: str, contexts: List[ChatContext]) -> Optional[ConfidenceScore]:
@@ -705,7 +706,8 @@ class RagChat:
                     sem_score = sim_scores.get(r.paper_id, 0.5)
                     r.score = 0.4 * bm25_score + 0.6 * sem_score
             except Exception:
-                pass  # Fall back to BM25
+                # Semantic reranking is best-effort — fall back to BM25 ranking without crashing.
+                pass
         return results
 
     def _diversity_boost(self, results: list) -> list:
@@ -938,7 +940,7 @@ class RagChat:
             # Return original results re-sorted by boosted score
             return sorted(results, key=lambda r: boosted_scores.get(r.paper_id, 0), reverse=True)
         except Exception:
-            # Fallback to original order on error
+            # Adaptive boost is best-effort — fall back to original order without crashing.
             return results
 
     def format_result(self, result: ChatResult, show_citations: bool = True, show_probing: bool = True, show_confidence: bool = True, show_insights: bool = True) -> str:

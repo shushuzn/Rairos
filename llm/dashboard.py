@@ -126,6 +126,7 @@ class Dashboard:
                 data.hot_papers = self._collect_hot_papers()
                 data.trends = self._collect_trends()
             except Exception:
+                # Paper analytics are optional — dashboard still renders without them.
                 data.papers = None
 
         # Gap type preferences
@@ -146,6 +147,7 @@ class Dashboard:
                     preferred_keywords=sorted(kw_preferred, key=lambda x: x[1], reverse=True)[:5],
                 )
         except Exception:
+            # Gap preferences are optional — dashboard still renders without them.
             pass
 
         # Summary
@@ -180,6 +182,7 @@ class Dashboard:
                 for tag in tags:
                     stats.by_tag[tag] = stats.by_tag.get(tag, 0) + 1
         except Exception:
+            # Paper stats are optional — return partial stats without crashing.
             pass
 
         return stats
@@ -220,6 +223,7 @@ class Dashboard:
                     forward_cites=fwd,
                 ))
         except Exception:
+            # Hot papers are optional — return empty list without crashing.
             pass
         return hot
 
@@ -258,6 +262,7 @@ class Dashboard:
                     growth=f"+{max(int(t.growth_rate), 0)}%" if t.growth_rate > 0 else f"{int(t.growth_rate)}%",
                 ))
         except Exception:
+            # Trend collection is optional — return empty list without crashing.
             pass
         return trends
 

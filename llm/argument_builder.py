@@ -202,6 +202,8 @@ class ArgumentBuilder:
             result = self.gap_analyzer.analyze(topic=thesis, use_llm=False)
             gaps = [gap.title for gap in result.gaps[:3]]
         except Exception:
+            # Gap analyzer is optional here — fail silently if it has issues,
+            # the argument builder still produces useful output without related gaps.
             pass
 
         return gaps
@@ -314,6 +316,7 @@ class ArgumentBuilder:
             # Parse response into sections
             return self._parse_guidance(response)
         except Exception:
+            # LLM guidance is best-effort — fall back to templates without crashing.
             return self._template_guidance(supporting, contradicting)
 
     def _parse_guidance(self, response: str) -> Dict[ArgumentSection, str]:

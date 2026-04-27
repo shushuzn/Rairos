@@ -212,6 +212,7 @@ class StoryWeaver:
                 if paper["year"] > 2000:
                     papers.append(paper)
         except Exception:
+            # Paper enrichment is optional — return partial results without crashing.
             pass
 
         # Sort by citations for importance
@@ -504,6 +505,7 @@ class StoryWeaver:
                 )
                 chapter.summary = response.strip()
             except Exception:
+                # Chapter summary generation failed — continue without crashing.
                 pass
 
         return result

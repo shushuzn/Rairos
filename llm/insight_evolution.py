@@ -389,6 +389,7 @@ class EvolutionTracker:
                     data = json.load(f)
                     return UserPreferenceProfile(**data)
             except Exception:
+                # Corrupt or missing profile file — return default profile without crashing.
                 pass
         return UserPreferenceProfile()
 
@@ -426,8 +427,10 @@ class EvolutionTracker:
                             if topic is None or event.topic == topic:
                                 events.append(event)
                         except Exception:
+                            # Skip malformed event — continue parsing without crashing.
                             continue
         except Exception:
+            # Event history loading is best-effort — return partial results without crashing.
             pass
 
         return events[-limit:]
@@ -454,8 +457,10 @@ class EvolutionTracker:
                         if event.hypothesis_id == hypothesis_id:
                             events.append(event)
                     except Exception:
+                        # Skip malformed event — continue parsing without crashing.
                         continue
         except Exception:
+            # Hypothesis event loading is best-effort — return partial results without crashing.
             pass
         return events
 

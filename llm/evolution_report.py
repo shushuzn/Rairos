@@ -452,7 +452,8 @@ class AdaptiveRetrieval:
     def _load_boost(self):
         try:
             self.boost_data = json.loads(self.boost_file.read_text(encoding="utf-8") or "{}")
-        except (json.JSONDecodeError, FileNotFoundError):
+        except (json.JSONDecodeError, IOError, FileNotFoundError):
+            # Corrupt or missing boost cache — reset to empty without crashing.
             self.boost_data = {}
 
     def _save_boost(self):
@@ -576,7 +577,8 @@ class AdaptiveRetrieval:
         try:
             last = datetime.fromisoformat(last_update)
             return (datetime.now() - last).days
-        except Exception:
+        except (ValueError, IndexError):
+            # Malformed ISO timestamp in boost data — treat as stale.
             return 30
 
 

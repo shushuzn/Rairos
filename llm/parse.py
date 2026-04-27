@@ -158,7 +158,8 @@ def _parse_rubric_json(json_str: str) -> dict[str, Any]:
     # Try to fix unquoted keys
     try:
         return orjson.loads(json_str)
-    except Exception:
+    except orjson.JSONDecodeError:
+        # Malformed rubric JSON — fall through to regex repair without crashing.
         pass
 
     # Try extracting individual values

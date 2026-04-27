@@ -189,6 +189,7 @@ class TrendAnalyzer:
                 if year_val > 2000:
                     papers.append(paper)
         except Exception:
+            # Paper enrichment failed — return partial results without crashing.
             pass
 
         return papers

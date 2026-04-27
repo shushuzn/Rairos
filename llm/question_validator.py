@@ -223,6 +223,7 @@ class QuestionValidator:
                         ))
 
         except Exception:
+            # Semantic related-work search failed — return empty list without crashing.
             pass
 
         # Sort by relevance
@@ -279,6 +280,7 @@ reasoning: 简短的评分理由"""
             return self._parse_innovation_response(response, related)
 
         except Exception:
+            # LLM innovation analysis failed — fall back to rule-based analysis without crashing.
             return self._analyze_innovation_rules(related)
 
     def _parse_innovation_response(
@@ -438,6 +440,7 @@ reasoning: 简短的评分理由"""
             return suggestions[:5]
 
         except Exception:
+            # LLM suggestion generation failed — fall back to rule-based suggestions without crashing.
             return self._generate_suggestions_rules(related)
 
     def _generate_suggestions_rules(self, related: List[RelatedWork]) -> List[str]:

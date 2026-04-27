@@ -173,6 +173,7 @@ class ResearchPathPlanner:
                             paper.cited_by.append(edge["source_id"])
                 results.append(paper)
         except Exception:
+            # Knowledge graph build failed — return partial results without crashing.
             pass
 
         return results
@@ -207,6 +208,7 @@ class ResearchPathPlanner:
                 )
                 results.append(paper)
         except Exception:
+            # DB text search failed — return partial results without crashing.
             pass
 
         return results
@@ -254,6 +256,7 @@ class ResearchPathPlanner:
                         if source and source in graph:
                             graph[paper_id].cited_by.append(source)
         except Exception:
+            # Knowledge graph citation mapping failed — continue without crashing.
             pass
 
     def _get_entity_id_from_kg_id(self, kg_id: str) -> Optional[str]:

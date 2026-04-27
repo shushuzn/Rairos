@@ -430,6 +430,7 @@ class HypothesisGenerator:
                         hypotheses.append(hypothesis)
 
         except Exception:
+            # LLM hypothesis enhancement failed — return hypotheses as-is without crashing.
             pass
 
         return hypotheses[:5]  # Limit to 5 hypotheses
@@ -475,6 +476,7 @@ class HypothesisGenerator:
                     innovation="方法/应用/评估创新",
                 ))
         except Exception:
+            # Differentiation search failed — return empty list without crashing.
             pass
 
         return differentiations

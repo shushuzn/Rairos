@@ -74,7 +74,8 @@ async def _stream_to_string_async(session: aiohttp.ClientSession, response: aioh
             break
         try:
             obj = orjson.loads(payload)
-        except Exception:
+        except orjson.JSONDecodeError:
+            # Malformed SSE data line — skip without crashing, continue streaming.
             continue
         delta = obj.get("choices", [{}])[0].get("delta", {})
         content = delta.get("content", "")
@@ -99,7 +100,8 @@ async def _stream_to_string_with_callback_async(
             break
         try:
             obj = orjson.loads(payload)
-        except Exception:
+        except orjson.JSONDecodeError:
+            # Malformed SSE data line — skip without crashing, continue streaming.
             continue
         delta = obj.get("choices", [{}])[0].get("delta", {})
         content = delta.get("content", "")

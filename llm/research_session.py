@@ -323,6 +323,7 @@ class ResearchSessionTracker:
                 return questions[:3]
 
         except Exception:
+            # Rule-based question extraction failed — return empty list without crashing.
             pass
 
         return []

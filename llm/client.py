@@ -50,7 +50,8 @@ def _parse_sse_stream(r: requests.Response) -> Iterator[str]:
             break
         try:
             obj = orjson.loads(payload)
-        except Exception:
+        except orjson.JSONDecodeError:
+            # Malformed SSE data line — skip without crashing, continue streaming.
             continue
         delta = obj.get("choices", [{}])[0].get("delta", {})
         content = delta.get("content", "")
