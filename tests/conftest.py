@@ -83,6 +83,11 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "no_freeze: opt out of the autouse freeze_time for this test",
     )
+    # Register the lean marker before collection runs
+    config.addinivalue_line(
+        "markers",
+        "lean: Lean 4 integration tests (run only when Lean is installed)",
+    )
 
 
 @pytest.fixture(autouse=True)

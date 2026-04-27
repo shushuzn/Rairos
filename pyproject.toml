@@ -312,6 +312,9 @@ exclude_lines = [
 
 [tool.pytest.ini_options]
 timeout = 60
+markers = [
+    "lean: Lean 4 integration tests (run only when Lean is installed)",
+]
 
 [tool.coverage.html]
 

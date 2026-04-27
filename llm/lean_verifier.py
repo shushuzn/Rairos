@@ -176,14 +176,12 @@ class LeanVerificationResult:
     translation_notes: str = ""
 
 
-# ── Lean installation check ──────────────────────────────────────────────────
-
 def check_lean_installed() -> tuple[LeanInstallStatus, Optional[str]]:
     """
     Check if `lean` is installed and available in PATH.
 
-    Returns:
-        (status, version_string)
+    Uses shutil.which (fast, no subprocess) for availability check.
+    subprocess call (with timeout) is only used to get version string.
     """
     lean_path = shutil.which("lean")
     if not lean_path:
@@ -194,11 +192,17 @@ def check_lean_installed() -> tuple[LeanInstallStatus, Optional[str]]:
             ["lean", "--version"],
             capture_output=True,
             text=True,
-            timeout=10,
+            encoding="utf-8",
+            timeout=30,
         )
         version = result.stdout.strip() or result.stderr.strip() or "unknown"
         return LeanInstallStatus.AVAILABLE, version
-    except (subprocess.TimeoutExpired, FileNotFoundError):
+    except subprocess.TimeoutExpired:
+        # Timeout means lean exists but is slow/warm-up — treat as available
+        return LeanInstallStatus.AVAILABLE, "Lean (timeout during version check)"
+    except FileNotFoundError:
+        return LeanInstallStatus.NOT_FOUND, None
+    except OSError:
         return LeanInstallStatus.NOT_FOUND, None
 
 
@@ -541,15 +545,16 @@ def verify_lean_code(
             ["lean", "--json", temp_path],
             capture_output=True,
             text=True,
+            encoding="utf-8",
             timeout=60,
         )
 
-        # Parse JSON output (lean outputs one JSON object per message on stderr)
+        # Parse JSON output (lean 4 outputs one JSON object per line on stdout)
         error_lines = []
         warning_lines = []
         json_messages = []
 
-        for line in proc.stderr.splitlines():
+        for line in (proc.stdout + proc.stderr).splitlines():
             line = line.strip()
             if not line:
                 continue
