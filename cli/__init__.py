@@ -86,6 +86,8 @@ _LAZY_EXPORTS = {
     "_run_journal":            ("cli.cmd.journal",            "_run_journal"),
     "_build_journal_parser":    ("cli.cmd.journal",            "_build_journal_parser"),
     "_run_digest":             ("cli.cmd.digest",             "_run_digest"),
+    "_build_lean_parser":      ("cli.cmd.lean",               "_build_lean_parser"),
+    "_run_lean":               ("cli.cmd.lean",               "_run_lean"),
     "_build_digest_parser":     ("cli.cmd.digest",             "_build_digest_parser"),
     "_build_citation_chain_parser": ("cli.cmd.citation_chain", "_build_citation_chain_parser"),
     "_build_compare_parser":      ("cli.cmd.compare",         "_build_compare_parser"),

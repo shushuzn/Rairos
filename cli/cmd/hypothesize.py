@@ -66,6 +66,16 @@ def _build_hypothesize_parser(subparsers) -> argparse.ArgumentParser:
         help="Number of hypotheses to generate (default: 5)",
     )
     p.add_argument(
+        "--lean",
+        action="store_true",
+        help="Verify each hypothesis with Lean 4 theorem prover",
+    )
+    p.add_argument(
+        "--no-llm-verify",
+        action="store_true",
+        help="Skip LLM translation in Lean verification (template only)",
+    )
+    p.add_argument(
         "--validate",
         type=str,
         default=None,
@@ -113,11 +123,18 @@ def _run_hypothesize(args: argparse.Namespace) -> int:
         creative=args.creative,
     )
 
+    # Optional: Lean 4 verification
+    lean_results = {}
+    if args.lean:
+        lean_results = _verify_hypotheses_with_lean(result.hypotheses, not args.no_llm_verify, args.model)
+
     if args.json:
         print(generator.render_json(result))
     else:
         print()
         print(generator.render_result(result))
+        if lean_results:
+            print(_render_lean_results(lean_results))
 
     return 0
 
@@ -252,3 +269,71 @@ def _action_icon(action):
         "accepted": "👍",
         "expanded": "📖",
     }.get(val, "•")
+
+
+# ── Lean 4 integration ────────────────────────────────────────────────────────
+
+def _verify_hypotheses_with_lean(
+    hypotheses,
+    use_llm: bool,
+    model: str | None,
+) -> dict:
+    """Verify each hypothesis with Lean 4. Returns {hypothesis_id: LeanVerificationResult}."""
+    from llm.lean_verifier import verify_hypothesis, LeanInstallStatus
+
+    results = {}
+    for h in hypotheses:
+        try:
+            result = verify_hypothesis(h, use_llm=use_llm, model=model)
+            results[h.id] = result
+        except Exception:
+            pass  # Skip on any error — don't break hypothesis generation
+    return results
+
+
+def _render_lean_results(results: dict) -> str:
+    """Render Lean verification results as a formatted block."""
+    if not results:
+        return ""
+
+    install_status, _ = _get_lean_install_status()
+    lines = [
+        "─" * 60,
+        "🔬 Lean 4 形式化验证",
+        "─" * 60,
+    ]
+
+    if install_status == "not_found":
+        lines.append("⚠️  Lean 4 未安装 — 跳过形式化验证")
+        lines.append("  安装: elan default leanprover/lean4:stable")
+        lines.append("─" * 60)
+        return "\n".join(lines)
+
+    for h_id, result in results.items():
+        icon = {
+            "l2_proven": "✅",
+            "l1_typecheck": "🟢",
+            "l0_syntax": "🟡",
+            "l0_failed": "❌",
+        }.get(result.level.value, "?")
+
+        lines.append(f"{icon} [{h_id}] {result.level.value}")
+        if result.translation_notes:
+            lines.append(f"    {result.translation_notes}")
+        if result.errors:
+            lines.append(f"    错误: {result.errors[0][:80]}")
+
+    lines.append("─" * 60)
+    return "\n".join(lines)
+
+
+def _get_lean_install_status():
+    """Return (status_str, version) for Lean installation."""
+    from llm.lean_verifier import check_lean_installed, LeanInstallStatus
+    status, version = check_lean_installed()
+    status_str = {
+        LeanInstallStatus.AVAILABLE: "available",
+        LeanInstallStatus.NOT_FOUND: "not_found",
+        LeanInstallStatus.VERSION_UNKNOWN: "unknown",
+    }[status]
+    return status_str, version
