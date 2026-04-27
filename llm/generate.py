@@ -50,18 +50,10 @@ def estimate_cost(model: str, input_text: str, output_text: str) -> Dict[str, fl
     }
 
 
-def ai_generate_pnote_draft(
-    paper: Paper,
-    tags: List[str],
-    extracted_text: str,
-    base_url: str,
-    api_key: str,
-    model: str,
-    stream: bool = False,
-    verbose: bool = False,
-    progress_callback: Optional[Callable[..., Any]] = None,
-) -> str:
-    system_prompt = """你是一个严谨的 AI 研究助理，擅长对抗式审稿。
+# ------------------------------------------------------------------
+# P-Note AI draft generation
+# ------------------------------------------------------------------
+_PNOTE_SYSTEM_PROMPT = """你是一个严谨的 AI 研究助理，擅长对抗式审稿。
 
 任务：为用户的 Research OS P-Note 生成"可编辑初稿"。
 
@@ -95,18 +87,18 @@ Adoption Signal（采纳信号）:
 评分行格式（机器可解析）：`* Novelty (1-5): 3`
 """
 
-    user_prompt = f"""论文标题：{paper.title}
-作者：{", ".join(paper.authors) if paper.authors else "Unknown"}
-来源：{paper.source}:{paper.uid}
-发布日期：{paper.published or "N/A"}
-标签：{", ".join(tags)}
+_PNOTE_USER_PROMPT_TEMPLATE = """论文标题：{paper_title}
+作者：{paper_authors}
+来源：{paper_source}:{paper_uid}
+发布日期：{paper_published}
+标签：{paper_tags}
 
 【Abstract】
-{paper.abstract or "(空)"}
+{paper_abstract}
 
 【抽取正文片段】（已按重要性排序，高优先级章节有更多内容）
 
-{extracted_text}
+{paper_body}
 
 请按以下栏目生成初稿，## 二级标题必须严格使用给出的编号和名称（内容直接填入对应栏目）：
 
@@ -170,12 +162,35 @@ Overall Judgment：一句话总结
 ```
 """
 
+
+def ai_generate_pnote_draft(
+    paper: Paper,
+    tags: List[str],
+    extracted_text: str,
+    base_url: str,
+    api_key: str,
+    model: str,
+    stream: bool = False,
+    verbose: bool = False,
+    progress_callback: Optional[Callable[..., Any]] = None,
+) -> str:
+    user_prompt = _PNOTE_USER_PROMPT_TEMPLATE.format(
+        paper_title=paper.title,
+        paper_authors=", ".join(paper.authors) if paper.authors else "Unknown",
+        paper_source=paper.source,
+        paper_uid=paper.uid,
+        paper_published=paper.published or "N/A",
+        paper_tags=", ".join(tags),
+        paper_abstract=paper.abstract or "(空)",
+        paper_body=extracted_text,
+    )
+
     return cast(str, call_llm_chat_completions(
         messages=[],
         base_url=base_url,
         api_key=api_key,
         model=model,
-        system_prompt=system_prompt,
+        system_prompt=_PNOTE_SYSTEM_PROMPT,
         user_prompt=user_prompt,
         stream=stream,
     ))
@@ -184,6 +199,47 @@ Overall Judgment：一句话总结
 # =============================================================================
 # C-Note AI draft generation
 # =============================================================================
+_CNOTE_USER_PROMPT_TEMPLATE = """\
+概念：{concept}
+
+参考论文（共 {num_papers} 篇）：
+{pnotes_text}
+
+请按以下栏目生成 C-Note 初稿，每栏用 ## 二级标题：
+
+## 核心定义
+一句话定义这个概念。（引用参考论文中的定义，没有原话则综合推断并加 [推测]）
+
+## 产生背景
+这个概念是在什么研究背景下产生的？解决了什么问题？（引用参考论文，没有则 [推测]）
+
+## 技术本质
+这个概念的核心技术机制是什么？（引用参考论文，加 [推测] 如需推断）
+
+## 常见实现路径
+列出该概念的典型实现方式。（引用参考论文中的实现，加 [推测]）
+
+## 优势
+这个概念的主要优势。（引用参考论文的实验/分析结果支撑）
+
+## 局限
+这个概念的主要局限。（引用参考论文的讨论，加 [推测]）
+
+## 与其他思想的关系
+与其他相关概念的关系和区别。（综合多篇参考论文，加 [推测]）
+
+## 代表论文
+从参考论文中选取最能代表该概念的论文，给出选择理由。
+
+## 演化时间线
+基于参考论文，推断该概念的演化路径。（加 [推测]）
+
+## 未来趋势
+基于参考论文的讨论，预测该概念的未来发展方向。（加 [推测]）
+
+（严禁捏造论文数据；引用格式："> 原文片段"）
+"""
+
 _CNOTE_SYSTEM_PROMPT = """你是一个严谨的 AI 研究助理，擅长概念分析和知识图谱构建。
 
 任务：为用户的 Research OS C-Note（概念笔记）生成"可编辑初稿"。
@@ -235,46 +291,11 @@ def ai_generate_cnote_draft(
     ]
     pnotes_text = "\n".join(pnotes_chunks)
 
-    user_prompt = f"""\
-概念：{concept}
-
-参考论文（共 {len(pnotes)} 篇）：
-{pnotes_text}
-
-请按以下栏目生成 C-Note 初稿，每栏用 ## 二级标题：
-
-## 核心定义
-一句话定义这个概念。（引用参考论文中的定义，没有原话则综合推断并加 [推测]）
-
-## 产生背景
-这个概念是在什么研究背景下产生的？解决了什么问题？（引用参考论文，没有则 [推测]）
-
-## 技术本质
-这个概念的核心技术机制是什么？（引用参考论文，加 [推测] 如需推断）
-
-## 常见实现路径
-列出该概念的典型实现方式。（引用参考论文中的实现，加 [推测]）
-
-## 优势
-这个概念的主要优势。（引用参考论文的实验/分析结果支撑）
-
-## 局限
-这个概念的主要局限。（引用参考论文的讨论，加 [推测]）
-
-## 与其他思想的关系
-与其他相关概念的关系和区别。（综合多篇参考论文，加 [推测]）
-
-## 代表论文
-从参考论文中选取最能代表该概念的论文，给出选择理由。
-
-## 演化时间线
-基于参考论文，推断该概念的演化路径。（加 [推测]）
-
-## 未来趋势
-基于参考论文的讨论，预测该概念的未来发展方向。（加 [推测]）
-
-（严禁捏造论文数据；引用格式："> 原文片段"）
-"""
+    user_prompt = _CNOTE_USER_PROMPT_TEMPLATE.format(
+        concept=concept,
+        pnotes_text=pnotes_text,
+        num_papers=len(pnotes),
+    )
 
     return cast(str, call_llm(
         base_url=base_url,
@@ -288,6 +309,41 @@ def ai_generate_cnote_draft(
 # ------------------------------------------------------------------
 # Read Queue Recommendation Explanation
 # ------------------------------------------------------------------
+_READ_QUEUE_EXPLANATION_USER_PROMPT_TEMPLATE = """\
+## 任务
+为以下待推荐论文生成一段中文推荐解释。
+
+## 待推荐论文
+- 标题：{paper_title}
+- 作者：{paper_authors}
+- 年份：{paper_year}
+- 领域/分类：{paper_category}
+
+## 推荐评分详情
+- 综合得分：{score:.2f}（满分 1.0）
+- 语义相似度：{semantic_score:.2f}（权重 40%）
+- 引用关系：{citation_score:.2f}（权重 30%）
+- 标签重叠：{tag_score:.2f}（权重 20%）
+- 时效性：{recency_score:.2f}（权重 10%）
+- 最强信号：{top_signal}（{top_value:.2f}）
+
+## 用户已读论文背景
+以下是你已经阅读过的论文：
+{read_papers_str}
+
+## 输出要求
+为这篇待推荐论文生成推荐解释，必须包含以下三个部分：
+
+### 推荐理由
+（基于上述评分数据，解释这篇论文为什么被推荐，重点说明得分最高的信号：{top_signal}）
+
+### 与已读论文的关联
+（分析这篇论文与你已读论文的联系，说明它在你的研究脉络中的位置）
+
+### 适合阅读的场景
+（说明在什么情况下优先阅读这篇论文）
+
+每个部分 2-4 句话，语言精炼，专业易懂。"""
 
 _READ_QUEUE_EXPLANATION_SYSTEM_PROMPT = """你是一个严谨的 AI 研究助理，擅长为用户的阅读队列生成推荐解释。
 
@@ -357,40 +413,20 @@ def ai_generate_reading_recommendation_explanation(
     else:
         read_papers_str = "（暂无已读论文记录）"
 
-    user_prompt = f"""## 任务
-为以下待推荐论文生成一段中文推荐解释。
-
-## 待推荐论文
-- 标题：{paper_title}
-- 作者：{authors_str}
-- 年份：{paper_year}
-- 领域/分类：{paper_category or 'N/A'}
-
-## 推荐评分详情
-- 综合得分：{score:.2f}（满分 1.0）
-- 语义相似度：{semantic_score:.2f}（权重 40%）
-- 引用关系：{citation_score:.2f}（权重 30%）
-- 标签重叠：{tag_score:.2f}（权重 20%）
-- 时效性：{recency_score:.2f}（权重 10%）
-- 最强信号：{top_signal}（{top_value:.2f}）
-
-## 用户已读论文背景
-以下是你已经阅读过的论文：
-{read_papers_str}
-
-## 输出要求
-为这篇待推荐论文生成推荐解释，必须包含以下三个部分：
-
-### 推荐理由
-（基于上述评分数据，解释这篇论文为什么被推荐，重点说明得分最高的信号：{top_signal}）
-
-### 与已读论文的关联
-（分析这篇论文与你已读论文的联系，说明它在你的研究脉络中的位置）
-
-### 适合阅读的场景
-（说明在什么情况下优先阅读这篇论文）
-
-每个部分 2-4 句话，语言精炼，专业易懂。"""
+    user_prompt = _READ_QUEUE_EXPLANATION_USER_PROMPT_TEMPLATE.format(
+        paper_title=paper_title,
+        paper_authors=authors_str,
+        paper_year=paper_year,
+        paper_category=paper_category or 'N/A',
+        score=score,
+        semantic_score=semantic_score,
+        citation_score=citation_score,
+        tag_score=tag_score,
+        recency_score=recency_score,
+        top_signal=top_signal,
+        top_value=top_value,
+        read_papers_str=read_papers_str,
+    )
 
     return cast(str, call_llm(
         base_url=base_url,

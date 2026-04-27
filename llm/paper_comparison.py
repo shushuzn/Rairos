@@ -37,7 +37,7 @@ class PaperComparator:
         return ComparisonColumn(
             paper_id=getattr(paper, 'uid', '') or getattr(paper, 'id', ''),
             title=getattr(paper, 'title', 'Unknown'),
-            year=int(getattr(paper, 'year', 0) or 0),
+            year=getattr(paper, 'year', 0),
             authors=self._parse_authors(paper),
             methods=self._extract_methods(paper),
             datasets=self._extract_datasets(paper),

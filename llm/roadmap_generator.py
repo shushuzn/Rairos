@@ -53,52 +53,53 @@ class ResearchRoadmap:
         self.total_weeks = sum(p.duration_weeks for p in self.phases)
 
 
+# Default phase templates
+DEFAULT_PHASES: list[dict] = [
+    {
+        "name": "问题分析",
+        "description": "深入理解问题，阅读相关工作，确定技术路线",
+        "duration_weeks": 2,
+        "milestones": [
+            {"name": "文献调研", "description": "阅读10-20篇相关论文", "duration_weeks": 1},
+            {"name": "技术方案确定", "description": "确定初步技术路线", "duration_weeks": 1},
+        ],
+    },
+    {
+        "name": "原型开发",
+        "description": "搭建baseline，实现核心算法",
+        "duration_weeks": 4,
+        "milestones": [
+            {"name": "Baseline搭建", "description": "实现简单baseline", "duration_weeks": 1},
+            {"name": "核心算法实现", "description": "实现核心改进方法", "duration_weeks": 2},
+            {"name": "初步验证", "description": "在小规模数据上验证", "duration_weeks": 1},
+        ],
+    },
+    {
+        "name": "实验验证",
+        "description": "大规模实验，对比分析",
+        "duration_weeks": 4,
+        "milestones": [
+            {"name": "实验设计", "description": "设计实验方案", "duration_weeks": 0.5},
+            {"name": "对比实验", "description": "与现有方法对比", "duration_weeks": 2},
+            {"name": "消融实验", "description": "验证各组件贡献", "duration_weeks": 1},
+            {"name": "结果分析", "description": "分析实验结果", "duration_weeks": 0.5},
+        ],
+    },
+    {
+        "name": "论文撰写",
+        "description": "撰写论文，准备投稿",
+        "duration_weeks": 3,
+        "milestones": [
+            {"name": "初稿撰写", "description": "完成论文初稿", "duration_weeks": 2},
+            {"name": "修改润色", "description": "修改完善论文", "duration_weeks": 0.5},
+            {"name": "投稿准备", "description": "准备投稿材料", "duration_weeks": 0.5},
+        ],
+    },
+]
+
+
 class RoadmapGenerator:
     """Generate structured research roadmaps."""
-
-    # Default phase templates
-    DEFAULT_PHASES = [
-        {
-            "name": "问题分析",
-            "description": "深入理解问题，阅读相关工作，确定技术路线",
-            "duration_weeks": 2,
-            "milestones": [
-                {"name": "文献调研", "description": "阅读10-20篇相关论文", "duration_weeks": 1},
-                {"name": "技术方案确定", "description": "确定初步技术路线", "duration_weeks": 1},
-            ],
-        },
-        {
-            "name": "原型开发",
-            "description": "搭建baseline，实现核心算法",
-            "duration_weeks": 4,
-            "milestones": [
-                {"name": "Baseline搭建", "description": "实现简单baseline", "duration_weeks": 1},
-                {"name": "核心算法实现", "description": "实现核心改进方法", "duration_weeks": 2},
-                {"name": "初步验证", "description": "在小规模数据上验证", "duration_weeks": 1},
-            ],
-        },
-        {
-            "name": "实验验证",
-            "description": "大规模实验，对比分析",
-            "duration_weeks": 4,
-            "milestones": [
-                {"name": "实验设计", "description": "设计实验方案", "duration_weeks": 0.5},
-                {"name": "对比实验", "description": "与现有方法对比", "duration_weeks": 2},
-                {"name": "消融实验", "description": "验证各组件贡献", "duration_weeks": 1},
-                {"name": "结果分析", "description": "分析实验结果", "duration_weeks": 0.5},
-            ],
-        },
-        {
-            "name": "论文撰写",
-            "description": "撰写论文，准备投稿",
-            "duration_weeks": 3,
-            "milestones": [
-                {"name": "初稿撰写", "description": "完成论文初稿", "duration_weeks": 2},
-                {"name": "修改润色", "description": "修改完善论文", "duration_weeks": 0.5},
-                {"name": "投稿准备", "description": "准备投稿材料", "duration_weeks": 0.5},
-            ],
-        },
-    ]
 
     def generate(
         self,
@@ -117,7 +118,7 @@ class RoadmapGenerator:
         Returns:
             ResearchRoadmap with phases and milestones
         """
-        phases = custom_phases or self.DEFAULT_PHASES
+        phases = custom_phases or DEFAULT_PHASES
         roadmap_phases = []
         milestone_counter = 1
 
