@@ -184,40 +184,6 @@ class TestEvolutionTracker:
         preferred = temp_tracker.get_preferred_gap_types(limit=2)
         assert "method_limitation" in preferred
 
-    def test_should_prioritize_gap_type(self, temp_tracker):
-        """Test gap type prioritization check."""
-        # No history yet
-        assert not temp_tracker.should_prioritize_gap_type("method_limitation")
-
-        # Add positive history
-        for _ in range(3):
-            temp_tracker.record_event(
-                topic="RAG",
-                action=ExplorationAction.ACCEPTED,
-                gap_type="method_limitation",
-            )
-
-        assert temp_tracker.should_prioritize_gap_type("method_limitation")
-
-    def test_get_recommended_gap_order(self, temp_tracker):
-        """Test reordering gaps based on preferences."""
-        # Build some preference
-        for _ in range(5):
-            temp_tracker.record_event(
-                topic="RAG",
-                action=ExplorationAction.ACCEPTED,
-                gap_type="method_limitation",
-            )
-
-        gaps = [
-            {"type": "theoretical_gap", "title": "Theory Gap"},
-            {"type": "method_limitation", "title": "Method Gap"},
-        ]
-
-        reordered = temp_tracker.get_recommended_gap_order(gaps)
-        # Method limitation should be first due to preference
-        assert reordered[0]["type"] == "method_limitation"
-
     def test_render_profile(self, temp_tracker):
         """Test profile rendering."""
         temp_tracker.record_event(

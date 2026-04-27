@@ -672,36 +672,10 @@ class EvolutionTracker:
         sorted_kws = sorted(kw_scores.items(), key=lambda x: x[1], reverse=True)
         return [kw for kw, score in sorted_kws[:limit] if score > 0.05]
 
-    def should_prioritize_gap_type(self, gap_type: str) -> bool:
-        """Check if a gap type should be prioritized for this user."""
-        score = self.get_gap_type_score(gap_type)
-        return score > 0.1  # Threshold for positive preference
-
     def should_deprioritize_gap_type(self, gap_type: str) -> bool:
         """Check if a gap type should be deprioritized."""
         score = self.get_gap_type_score(gap_type)
         return score < -0.05  # Threshold for negative preference
-
-    def get_recommended_gap_order(
-        self,
-        gaps: List[Dict[str, str]],
-    ) -> List[Dict[str, str]]:
-        """
-        Reorder gaps based on user preferences.
-
-        Args:
-            gaps: List of dicts with 'type' and 'title' keys
-
-        Returns:
-            Reordered list with preferred types first
-        """
-        profile = self._load_profile()
-
-        def gap_score(gap: Dict[str, str]) -> float:
-            gap_type = gap.get("type", "")
-            return profile.gap_type_preferences.get(gap_type, 0.0)
-
-        return sorted(gaps, key=gap_score, reverse=True)
 
     def render_gap_type_preferences_history(self) -> str:
         """Render the timeline of how gap_type_preferences evolved.
