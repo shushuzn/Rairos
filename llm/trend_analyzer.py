@@ -399,23 +399,33 @@ class TrendAnalyzer:
 
     def render_mermaid_timeline_v2(self, result: TrendAnalysisResult) -> str:
         """Render as Mermaid XYChart (if supported)."""
+        all_trends = result.emerging_trends[:2] + result.rising_trends[:2]
+        if not all_trends:
+            return ""
+
+        # Dynamically compute year range from actual data (no hardcoded years)
+        all_years = set()
+        for trend in all_trends:
+            all_years.update(trend.yearly_counts.keys())
+        if not all_years:
+            return ""
+        year_range = list(range(min(all_years), max(all_years) + 1))
+
         lines = [
             "%%{ init: { 'theme': 'base', 'themeVariables': { 'primaryColor': '#ff9900' } } }%%",
             "```mermaid",
             "xychart-beta",
             f'    title "{result.topic} - Keyword Trends"',
-            "    x-axis [2019, 2020, 2021, 2022, 2023, 2024, 2025]",
+            f"    x-axis [{', '.join(str(y) for y in year_range)}]",
             "    y-axis \"Papers\" 0 --> 50",
             "",
-            '    bar',
+            "    bar",
         ]
 
         # Add data series for top keywords
-        for trend in (result.emerging_trends[:2] + result.rising_trends[:2])[:4]:
-            years = list(range(2019, 2026))
-            counts = [trend.yearly_counts.get(y, 0) for y in years]
-            data_str = ", ".join(str(c) for c in counts)
-            lines.append(f'        "{trend.keyword}" : {data_str}')
+        for trend in all_trends[:4]:
+            counts = [trend.yearly_counts.get(y, 0) for y in year_range]
+            lines.append(f'        "{trend.keyword}" : {", ".join(str(c) for c in counts)}')
 
         lines.append("```")
         return "\n".join(lines)

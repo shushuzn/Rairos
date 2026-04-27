@@ -19,6 +19,18 @@ from llm.hypothesis_generator import (
 from llm.insight_evolution import EvolutionTracker
 from llm.text_utils import extract_keywords
 
+# Shared human-readable names for GapType enum values.
+_GAP_TYPE_NAMES: Dict[GapType, str] = {
+    GapType.METHOD_LIMITATION: "Method Limitation",
+    GapType.UNEXPLORED_APPLICATION: "Unexplored Application",
+    GapType.CONTRADICTION: "Contradiction",
+    GapType.EVALUATION_GAP: "Evaluation Gap",
+    GapType.SCALABILITY_ISSUE: "Scalability Issue",
+    GapType.THEORETICAL_GAP: "Theoretical Gap",
+    GapType.DATASET_GAP: "Dataset Gap",
+    GapType.GENERALIZATION_GAP: "Generalization Gap",
+}
+
 
 @dataclass
 class ResearchGapV2:
@@ -529,19 +541,9 @@ def render_gap_report(result: GapAnalysisResultV2, show_preferences: bool = True
 
     # Gap by type
     if result.gaps_by_type:
-        type_names = {
-            GapType.METHOD_LIMITATION: "Method Limitation",
-            GapType.UNEXPLORED_APPLICATION: "Unexplored Application",
-            GapType.CONTRADICTION: "Contradiction",
-            GapType.EVALUATION_GAP: "Evaluation Gap",
-            GapType.SCALABILITY_ISSUE: "Scalability Issue",
-            GapType.THEORETICAL_GAP: "Theoretical Gap",
-            GapType.DATASET_GAP: "Dataset Gap",
-            GapType.GENERALIZATION_GAP: "Generalization Gap",
-        }
         lines.append("📈 Gaps by Type:")
         for gtype, count in result.gaps_by_type.items():
-            lines.append(f"   {type_names.get(gtype, gtype.value)}: {count}")
+            lines.append(f"   {_GAP_TYPE_NAMES.get(gtype, gtype.value)}: {count}")
         lines.append("")
 
     # Gap details
@@ -563,16 +565,7 @@ def render_gap_report(result: GapAnalysisResultV2, show_preferences: bool = True
             score = gap.preference_score
             pref_indicator = f" (偏好 {score:+.2f})"
 
-        type_name = {
-            GapType.METHOD_LIMITATION: "Method Limitation",
-            GapType.UNEXPLORED_APPLICATION: "Unexplored Application",
-            GapType.CONTRADICTION: "Contradiction",
-            GapType.EVALUATION_GAP: "Evaluation Gap",
-            GapType.SCALABILITY_ISSUE: "Scalability Issue",
-            GapType.THEORETICAL_GAP: "Theoretical Gap",
-            GapType.DATASET_GAP: "Dataset Gap",
-            GapType.GENERALIZATION_GAP: "Generalization Gap",
-        }.get(gap.gap_type, gap.gap_type.value)
+        type_name = _GAP_TYPE_NAMES.get(gap.gap_type, gap.gap_type.value)
 
         lines.append(f"{i}. {severity_icon} [{type_name}]")
         lines.append(f"   {gap.title}")

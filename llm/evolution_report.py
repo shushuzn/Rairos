@@ -11,6 +11,8 @@ from dataclasses import dataclass, asdict, field
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional, List, Dict, Any, TYPE_CHECKING
+
+from llm.constants import SMART_FOLLOWUP_BASE
 from collections import Counter, defaultdict
 import math
 import re
@@ -614,31 +616,26 @@ class FollowUp:
 class SmartFollowUp:
     """智能追问系统：基于回答内容和论文引用生成追问选项."""
 
-    # 关键词映射到追问类型
+    # 关键词映射到追问类型。
+    # 基础词来自 constants.SMART_FOLLOWUP_BASE，各分类补充少量专有词。
+    # 不再单独维护一份与 AI_RESEARCH_KEYWORDS 大量重复的词表。
+    _BASE = list(SMART_FOLLOWUP_BASE)
+
     TOPIC_KEYWORDS = {
-        FollowUpType.MATH: [
-            "attention", "score", "softmax", "matrix", "dot", "product",
-            "gradient", "loss", "optimize", "layer", "weight", "参数", "矩阵",
-            "注意力", "梯度", "优化", "计算", "function", "mechanism"
+        FollowUpType.MATH: _BASE + [
+            "score", "参数", "矩阵", "注意力", "梯度", "优化", "计算",
         ],
-        FollowUpType.CODE: [
-            "implement", "code", "function", "class", "api", "library",
-            "pytorch", "tensorflow", "layer", "module", "实现", "代码",
-            "函数", "模块", "algorithm"
+        FollowUpType.CODE: _BASE + [
+            "实现", "代码", "函数", "模块",
         ],
-        FollowUpType.COMPARE: [
-            "vs", "versus", "better", "worse", "compare", "different",
-            "advantage", "disadvantage", "相比", "优于", "区别", "对比"
+        FollowUpType.COMPARE: _BASE + [
+            "different", "相比", "优于", "区别", "对比",
         ],
-        FollowUpType.EVOLUTION: [
-            "based on", "follow", "extend", "improve", "build upon",
-            "later", "previous", "next", "演进", "改进", "基于", "后续",
-            "evolution", "derived", "succeed"
+        FollowUpType.EVOLUTION: _BASE + [
+            "演进", "改进", "基于", "后续",
         ],
-        FollowUpType.PRACTICE: [
-            "apply", "use", "application", "industry", "practical",
-            "deploy", "production", "应用", "实践", "工业", "部署",
-            "real-world", "benchmark"
+        FollowUpType.PRACTICE: _BASE + [
+            "应用", "实践", "工业", "部署",
         ],
     }
 

@@ -688,9 +688,21 @@ class EvolutionTracker:
         Replays all events from the JSONL log to reconstruct preference values
         at key points in time, showing how the user's research tastes evolved.
         """
-        # Load all events from disk (sorted by time)
-        if not self.events_file.exists():
+        events = self._load_events()
+        if not events:
             return "暂无探索事件记录"
+
+        running, first_nonzero, first_ts, last_ts = self._compute_running_preferences(events)
+        all_gap_types = set(running.keys())
+        if not all_gap_types:
+            return "暂无 gap_type 偏好记录"
+
+        return self._render_preferences_table(events, running, first_nonzero, first_ts, last_ts)
+
+    def _load_events(self) -> List[EvolutionEvent]:
+        """Load and parse all events from the JSONL event log."""
+        if not self.events_file.exists():
+            return []
 
         events = []
         with open(self.events_file, encoding="utf-8") as f:
@@ -700,10 +712,8 @@ class EvolutionTracker:
                     continue
                 try:
                     data = json.loads(line)
-                    # Reconstruct ExplorationAction from string
-                    action_str = data.get("action", "")
                     try:
-                        action = ExplorationAction(action_str)
+                        action = ExplorationAction(data.get("action", ""))
                     except ValueError:
                         continue  # Skip unknown action types
                     events.append(EvolutionEvent(
@@ -721,71 +731,59 @@ class EvolutionTracker:
                     ))
                 except (json.JSONDecodeError, KeyError):
                     continue
+        return events
 
-        if not events:
-            return "暂无探索事件记录"
+    def _compute_running_preferences(self, events: List[EvolutionEvent]):
+        """Single-pass computation of running preference scores per gap_type.
 
-        # Compute running preferences — single pass
-        # Also tracks first_nonzero per gap_type (avoids O(n²) per-type re-scan)
+        Returns (running, first_nonzero, first_ts, last_ts).
+        """
         running: Dict[str, float] = {}
-        all_gap_types: set = set()
         first_nonzero: Dict[str, float] = {}
-
-        # First event
-        first_ts = events[0].timestamp[:10]
 
         for event in events:
             if event.gap_type:
-                all_gap_types.add(event.gap_type)
-                current = running.get(event.gap_type, 0.0)
-                weight = self._event_weight(event)
-                new_val = current + weight
+                new_val = running.get(event.gap_type, 0.0) + self._event_weight(event)
                 running[event.gap_type] = new_val
                 if new_val != 0.0 and event.gap_type not in first_nonzero:
                     first_nonzero[event.gap_type] = new_val
 
+        first_ts = events[0].timestamp[:10]
         last_ts = events[-1].timestamp[:10]
+        return running, first_nonzero, first_ts, last_ts
 
-        if not all_gap_types:
-            return "暂无 gap_type 偏好记录"
+    def _trend_arrow(self, first: float, cur: float) -> str:
+        """Compute trend arrow between initial and current preference values."""
+        if cur > first + 0.05:
+            return "↑↑"
+        elif cur > first + 0.01:
+            return "↑ "
+        elif cur < first - 0.05:
+            return "↓↓"
+        elif cur < first - 0.01:
+            return "↓ "
+        elif abs(cur) < 0.01 and abs(first) < 0.01:
+            return "  "
+        else:
+            return "~ "
 
-        # Collect all gap types that ever had non-zero score
-        active_types = [gt for gt in all_gap_types if running.get(gt, 0.0) != 0.0]
-
+    def _render_preferences_table(
+        self,
+        events: List[EvolutionEvent],
+        running: Dict[str, float],
+        first_nonzero: Dict[str, float],
+        first_ts: str,
+        last_ts: str,
+    ) -> str:
+        """Render the preferences evolution as an ASCII table."""
+        active_types = [gt for gt in running if running.get(gt, 0.0) != 0.0]
         if not active_types:
-            # All ended at zero — still show them
-            active_types = sorted(all_gap_types)
+            active_types = sorted(running.keys())
 
-        # Build columns: gap_type | first_val | ... | current_val | trend
-        header_gap = "gap_type"
-        val_width = 8
         header_width = max(len("gap_type"), max(len(gt) for gt in active_types))
-
-        current_vals = running
-
-        def trend_arrow(gt: str) -> str:
-            first = first_nonzero.get(gt, 0.0)
-            cur = current_vals.get(gt, 0.0)
-            if cur > first + 0.05:
-                return "↑↑"
-            elif cur > first + 0.01:
-                return "↑ "
-            elif cur < first - 0.05:
-                return "↓↓"
-            elif cur < first - 0.01:
-                return "↓ "
-            elif abs(cur) < 0.01 and abs(first) < 0.01:
-                return "  "  # both near zero
-            else:
-                return "~ "
-
-        def fmt_val(v: float) -> str:
-            if v == 0.0:
-                return "  .00"
-            return f"{v:>+6.2f}"
-
-        # Header
+        val_width = 8
         total_events = len(events)
+
         lines = [
             "═" * 70,
             "📈 Gap Type 偏好演化时间轴",
@@ -793,37 +791,26 @@ class EvolutionTracker:
             "",
             f"  事件总数: {total_events}  |  周期: {first_ts} ~ {last_ts}",
             "",
+            f"  {'gap_type':<{header_width}}  {'初始':>{val_width}}  {'当前':>{val_width}}  趋势",
+            f"  {'─' * header_width}  {'─' * val_width}  {'─' * val_width}  {'─' * 4}",
         ]
 
-        # Table header
-        col_gap = "gap_type"
-        col_first = "初始"
-        col_curr = "当前"
-        col_trend = "趋势"
-        lines.append(f"  {col_gap:<{header_width}}  {col_first:>{val_width}}  {col_curr:>{val_width}}  {col_trend}")
-        lines.append(f"  {'─' * header_width}  {'─' * val_width}  {'─' * val_width}  {'─' * 4}")
-
-        # Sort by current value descending
-        sorted_types = sorted(active_types, key=lambda gt: current_vals.get(gt, 0.0), reverse=True)
-
-        for gt in sorted_types:
+        for gt in sorted(active_types, key=lambda g: running.get(g, 0.0), reverse=True):
             first_v = first_nonzero.get(gt, 0.0)
-            cur_v = current_vals.get(gt, 0.0)
-            arrow = trend_arrow(gt)
-            # Color by sentiment
-            if cur_v > 0.1:
-                bar = "🟢"
-            elif cur_v < -0.05:
-                bar = "🔴"
-            else:
-                bar = "⚪"
-            lines.append(f"  {bar} {gt:<{header_width - 2}}  {fmt_val(first_v)}  {fmt_val(cur_v)}  {arrow}")
+            cur_v = running.get(gt, 0.0)
+            arrow = self._trend_arrow(first_v, cur_v)
+            bar = "🟢" if cur_v > 0.1 else ("🔴" if cur_v < -0.05 else "⚪")
+            val_str = f"{first_v:>+6.2f}" if first_v != 0.0 else "  .00"
+            cur_str = f"{cur_v:>+6.2f}" if cur_v != 0.0 else "  .00"
+            lines.append(f"  {bar} {gt:<{header_width - 2}}  {val_str}  {cur_str}  {arrow}")
 
-        lines.append("")
-        lines.append("  解释: 🟢 = 正偏好(优先)  🔴 = 负偏好(规避)  ⚪ = 中性")
-        lines.append("  趋势: ↑↑/↑ 偏好增强   ↓↓/↓ 偏好减弱   ~  稳定")
-        lines.append("")
-        lines.append("═" * 70)
+        lines.extend([
+            "",
+            "  解释: 🟢 = 正偏好(优先)  🔴 = 负偏好(规避)  ⚪ = 中性",
+            "  趋势: ↑↑/↑ 偏好增强   ↓↓/↓ 偏好减弱   ~  稳定",
+            "",
+            "═" * 70,
+        ])
         return "\n".join(lines)
 
     def _event_weight(self, event: EvolutionEvent) -> float:

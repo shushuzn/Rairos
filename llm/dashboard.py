@@ -1,6 +1,7 @@
 """
 Research Dashboard: Aggregated view of research progress.
 """
+import logging
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Tuple, Any
 from datetime import datetime
@@ -126,7 +127,7 @@ class Dashboard:
                 data.hot_papers = self._collect_hot_papers()
                 data.trends = self._collect_trends()
             except Exception:
-                # Paper analytics are optional — dashboard still renders without them.
+                logging.debug("Dashboard: failed to collect paper analytics: %s")
                 data.papers = None
 
         # Gap type preferences
@@ -147,7 +148,7 @@ class Dashboard:
                     preferred_keywords=sorted(kw_preferred, key=lambda x: x[1], reverse=True)[:5],
                 )
         except Exception:
-            # Gap preferences are optional — dashboard still renders without them.
+            logging.debug("Dashboard: failed to collect gap preferences: %s")
             pass
 
         # Summary
@@ -182,7 +183,7 @@ class Dashboard:
                 for tag in tags:
                     stats.by_tag[tag] = stats.by_tag.get(tag, 0) + 1
         except Exception:
-            # Paper stats are optional — return partial stats without crashing.
+            logging.debug("Dashboard: failed to collect paper stats: %s")
             pass
 
         return stats
@@ -223,7 +224,7 @@ class Dashboard:
                     forward_cites=fwd,
                 ))
         except Exception:
-            # Hot papers are optional — return empty list without crashing.
+            logging.debug("Dashboard: failed to collect hot papers: %s")
             pass
         return hot
 
@@ -262,7 +263,7 @@ class Dashboard:
                     growth=f"+{max(int(t.growth_rate), 0)}%" if t.growth_rate > 0 else f"{int(t.growth_rate)}%",
                 ))
         except Exception:
-            # Trend collection is optional — return empty list without crashing.
+            logging.debug("Dashboard: failed to collect trends: %s")
             pass
         return trends
 
