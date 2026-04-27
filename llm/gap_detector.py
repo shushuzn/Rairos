@@ -24,6 +24,8 @@ try:
 except ImportError:
     LLM_AVAILABLE = False
 
+from llm.constants import LLM_BASE_URL, LLM_MODEL
+
 
 class GapType(Enum):
     """Types of research gaps."""
@@ -273,9 +275,9 @@ GAP_TYPE 可选：
         try:
             response = call_llm_chat_completions(
                 messages=[{"role": "user", "content": user_prompt}],
-                base_url=base_url or os.getenv("AIROS_DEFAULT_OPENAI_BASE_URL", "https://api.openai.com/v1"),
+                base_url=base_url or LLM_BASE_URL,
                 api_key=api_key,
-                model=model or os.getenv("AIROS_DEFAULT_MODEL_CLI", "gpt-4o-mini"),
+                model=model or LLM_MODEL,
                 system_prompt=system_prompt,
             )
 
@@ -388,9 +390,9 @@ GAP_TYPE 可选：
 
         try:
             response = call_llm_chat_completions(
-                base_url=base_url or os.getenv("AIROS_DEFAULT_OPENAI_BASE_URL", "https://api.openai.com/v1"),
+                base_url=base_url or LLM_BASE_URL,
                 api_key=api_key,
-                model=model or os.getenv("AIROS_DEFAULT_MODEL_CLI", "gpt-4o-mini"),
+                model=model or LLM_MODEL,
                 system_prompt=system_prompt,
                 user_prompt=user_prompt,
             )

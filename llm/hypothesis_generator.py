@@ -18,6 +18,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Optional, List, Dict, Any, Tuple
 
+from llm.constants import LLM_BASE_URL, LLM_MODEL
+
 # Optional imports
 try:
     from llm.chat import call_llm_chat_completions
@@ -397,9 +399,9 @@ class HypothesisGenerator:
 
         try:
             response = call_llm_chat_completions(
-                base_url=base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+                base_url=base_url or LLM_BASE_URL,
                 api_key=api_key,
-                model=model or os.getenv("DEFAULT_LLM_MODEL", "gpt-4o-mini"),
+                model=model or LLM_MODEL,
                 system_prompt=system_prompt,
                 user_prompt=user_prompt,
             )

@@ -16,6 +16,8 @@ from pathlib import Path
 from typing import Optional, List, Dict, Any
 from collections import defaultdict
 
+from llm.constants import AI_RESEARCH_KEYWORDS, LLM_BASE_URL, LLM_MODEL
+
 
 class ResearchIntent(Enum):
     """Research intent classification."""
@@ -260,8 +262,8 @@ class ResearchSessionTracker:
         import os
 
         api_key = api_key or os.getenv("OPENAI_API_KEY", "")
-        base_url = base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-        model = model or os.getenv("DEFAULT_LLM_MODEL", "gpt-4o-mini")
+        base_url = base_url or LLM_BASE_URL
+        model = model or LLM_MODEL
 
         if not api_key:
             return []
@@ -359,15 +361,7 @@ class ResearchSessionTracker:
 
         text = f"{question} {' '.join(paper_titles)}".lower()
 
-        # 常见AI研究主题
-        known_tags = {
-            "transformer", "attention", "bert", "gpt", "llm", "language model",
-            "neural", "network", "embedding", "fine-tuning", "rlhf", "rag",
-            "retrieval", "generative", "diffusion", "gan", "clip", "vit",
-            "reinforcement", "policy", "reward", "training", "optimization",
-        }
-
-        found = [tag for tag in known_tags if re.search(r'\b' + re.escape(tag) + r'\b', text)]
+        found = [tag for tag in AI_RESEARCH_KEYWORDS if re.search(r'\b' + re.escape(tag) + r'\b', text)]
         self.current_session.tags.extend(found)
 
     def _generate_insights(self):

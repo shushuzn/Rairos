@@ -19,6 +19,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional, List, Dict, Any, Tuple
 
+from llm.constants import AI_RESEARCH_KEYWORDS
+
 import numpy as np
 
 
@@ -75,16 +77,7 @@ class TrendAnalyzer:
     """Analyze research trends from paper corpus."""
 
     # Common tech keywords to track
-    TECH_KEYWORDS = [
-        "transformer", "attention", "bert", "gpt", "llm", "language model",
-        "neural", "network", "embedding", "fine-tuning", "rlhf", "rag",
-        "retrieval", "generative", "diffusion", "gan", "clip", "vit",
-        "reinforcement", "policy", "reward", "training", "optimization",
-        "multimodal", "vision", "language", "speech", "audio",
-        " Scaling", "pre-training", "instruction", "alignment",
-        "constitutional", "reasoning", "chain-of-thought", "cot",
-        "synthetic data", "rl", "dpo", "ppo", "reward model",
-    ]
+    TECH_KEYWORDS = AI_RESEARCH_KEYWORDS
 
     def __init__(self, db=None):
         self.db = db

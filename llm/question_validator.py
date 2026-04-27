@@ -13,9 +13,13 @@ Research Question Validator: Validate novelty and feasibility of research questi
 from __future__ import annotations
 
 import re
+from collections import defaultdict
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 from typing import Optional, List, Dict, Any, Tuple
+
+from llm.constants import AI_RESEARCH_KEYWORDS, LLM_BASE_URL, LLM_MODEL
 
 # Optional LLM import
 try:
@@ -172,12 +176,7 @@ class QuestionValidator:
         words = [w.strip() for w in cleaned.split() if len(w.strip()) > 2]
 
         # Add key technical terms
-        tech_terms = [
-            "transformer", "neural", "network", "model", "learning",
-            "training", "optimization", "attention", "embedding",
-            "language", "vision", "multimodal", "reasoning",
-        ]
-        for term in tech_terms:
+        for term in AI_RESEARCH_KEYWORDS:
             if term in question.lower():
                 words.append(term)
 
@@ -270,9 +269,9 @@ reasoning: 简短的评分理由"""
 
         try:
             response = call_llm_chat_completions(
-                base_url=base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+                base_url=base_url or LLM_BASE_URL,
                 api_key=api_key,
-                model=model or os.getenv("DEFAULT_LLM_MODEL", "gpt-4o-mini"),
+                model=model or LLM_MODEL,
                 system_prompt=system_prompt,
                 user_prompt=user_prompt,
             )
@@ -423,9 +422,9 @@ reasoning: 简短的评分理由"""
 
         try:
             response = call_llm_chat_completions(
-                base_url=base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+                base_url=base_url or LLM_BASE_URL,
                 api_key=api_key,
-                model=model or os.getenv("DEFAULT_LLM_MODEL", "gpt-4o-mini"),
+                model=model or LLM_MODEL,
                 system_prompt=system_prompt,
                 user_prompt=user_prompt,
             )

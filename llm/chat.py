@@ -11,6 +11,7 @@ from enum import Enum
 from typing import Any, Callable, List, Optional, Tuple
 
 from llm.client import call_llm_chat_completions
+from llm.constants import LLM_BASE_URL, LLM_MODEL
 from llm.evolution_report import get_adaptive_retrieval
 from llm.research_session import get_session_tracker
 
@@ -144,8 +145,8 @@ class RagChat:
         """
         self.db = db
         self.api_key = api_key or os.getenv("OPENAI_API_KEY", "")
-        self.base_url = base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-        self.model = model or os.getenv("DEFAULT_LLM_MODEL", "gpt-4o-mini")
+        self.base_url = base_url or LLM_BASE_URL
+        self.model = model or LLM_MODEL
         self._call_llm = call_llm or call_llm_chat_completions
         # Lazy-load adaptive retrieval to avoid circular imports
         self._adaptive = None
