@@ -67,6 +67,78 @@ class TestInsightManager:
         results = manager.search_cards(insight_type="method")
         assert len(results) == 1
 
+    def test_search_case_insensitive(self, manager):
+        """Query matching should be case-insensitive."""
+        manager.add_card("p1", "Paper 1", "Deep Learning works well")
+        results = manager.search_cards(query="deep")
+        assert len(results) == 1
+        results = manager.search_cards(query="DEEP LEARNING")
+        assert len(results) == 1
+
+    def test_search_query_matches_paper_title(self, manager):
+        """Query should also search in paper_title."""
+        manager.add_card("p1", "Attention Is All You Need", "Transformer model")
+        results = manager.search_cards(query="attention")
+        assert len(results) == 1
+
+    def test_search_no_query_returns_all(self, manager):
+        """No query returns all cards regardless of content."""
+        manager.add_card("p1", "Paper 1", "Content A")
+        manager.add_card("p2", "Paper 2", "Content B")
+        results = manager.search_cards()
+        assert len(results) == 2
+
+    def test_search_no_results(self, manager):
+        """No matching cards returns empty list."""
+        manager.add_card("p1", "Paper 1", "BERT and NLP content")
+        results = manager.search_cards(query="quantum computing")
+        assert len(results) == 0
+        assert results == []
+
+    def test_search_multi_tag_or_logic(self, manager):
+        """Multiple tags use OR logic: card matches if it has ANY of the tags."""
+        manager.add_card("p1", "Paper 1", "Finding 1", tags=["nlp", "transformer"])
+        manager.add_card("p2", "Paper 2", "Finding 2", tags=["nlp"])
+        manager.add_card("p3", "Paper 3", "Finding 3", tags=["transformer"])
+        manager.add_card("p4", "Paper 4", "Finding 4", tags=["cv"])
+        results = manager.search_cards(tags=["nlp", "transformer"])
+        # OR logic: all three cards match (each has at least one of the tags)
+        assert len(results) == 3
+        paper_ids = {r.paper_id for r in results}
+        assert paper_ids == {"p1", "p2", "p3"}
+        # Card with neither tag is excluded
+        assert "p4" not in paper_ids
+
+    def test_search_combined_criteria(self, manager):
+        """Multiple filters apply together (AND between filter types)."""
+        manager.add_card("p1", "Paper 1", "BERT finding", tags=["nlp"], insight_type="finding")
+        manager.add_card("p2", "Paper 2", "BERT method", tags=["nlp"], insight_type="method")
+        manager.add_card("p3", "Paper 3", "GPT finding", tags=["nlp"], insight_type="finding")
+        results = manager.search_cards(query="BERT", tags=["nlp"], insight_type="method")
+        assert len(results) == 1
+        assert results[0].paper_id == "p2"
+
+    def test_search_by_paper_id(self, manager):
+        """Filter cards by paper_id."""
+        manager.add_card("p1", "Paper 1", "Finding from paper 1")
+        manager.add_card("p2", "Paper 2", "Finding from paper 2")
+        results = manager.search_cards(paper_id="p1")
+        assert len(results) == 1
+        assert results[0].paper_id == "p1"
+
+    def test_search_tags_empty_list(self, manager):
+        """Empty tags list returns all cards (no filter)."""
+        manager.add_card("p1", "Paper 1", "Finding 1", tags=["nlp"])
+        manager.add_card("p2", "Paper 2", "Finding 2", tags=["cv"])
+        results = manager.search_cards(tags=[])
+        assert len(results) == 2
+
+    def test_search_tags_nonexistent(self, manager):
+        """Tag not in any card returns empty."""
+        manager.add_card("p1", "Paper 1", "Finding 1", tags=["nlp"])
+        results = manager.search_cards(tags=["nonexistent_tag"])
+        assert len(results) == 0
+
     def test_add_reference(self, manager):
         """Test adding a reference between cards."""
         card1 = manager.add_card("p1", "Paper 1", "Finding 1")

@@ -372,8 +372,8 @@ class TestKeywordPreferences:
 
         profile = temp_tracker.get_profile()
         score = profile.keyword_preferences.get("robustness", 0.0)
-        # VIEWED has weight 0.1 * 0.5 = 0.05 per event, 3 events = 0.15
-        assert score > 0.1
+        # VIEWED has weight 0.05 * 0.5 = 0.025 per event, 3 events = 0.075
+        assert score > 0.05
 
 
 class TestTTLCache:

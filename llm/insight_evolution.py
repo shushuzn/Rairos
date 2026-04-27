@@ -123,6 +123,21 @@ class EvolutionTracker:
     # short enough that new events feel "live")
     _CACHE_TTL_SECONDS: int = 300
 
+    # Single source of truth for event weights.
+    # Used by _update_profile (profile persistence) and _event_weight (score cache).
+    # profile.update uses these directly; cache adds time decay on top.
+    _EVENT_WEIGHTS: Dict[ExplorationAction, float] = {
+        ExplorationAction.VIEWED: 0.05,
+        ExplorationAction.ACCEPTED: 0.30,
+        ExplorationAction.REJECTED: -0.30,   # gap reject (no hypothesis_id)
+        ExplorationAction.EXPANDED: 0.20,
+        ExplorationAction.HYPOTHESIZED: 0.40,
+        ExplorationAction.VALIDATED: 0.40,
+        ExplorationAction.NARRATED: 0.25,
+    }
+    # Gap reject (no hypothesis) gets a lighter penalty in the profile accumulator.
+    _REJECT_NO_HYPOTHESIS_PENALTY: float = -0.10
+
     def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir or Path.home() / ".ai_research_os" / "evolution"
         self.data_dir.mkdir(parents=True, exist_ok=True)
@@ -298,33 +313,17 @@ class EvolutionTracker:
         # Update gap type preferences
         if event.gap_type:
             current = profile.gap_type_preferences.get(event.gap_type, 0.0)
-            # Weight accept/reject more than view
-            weight = 0.1
-            if event.action == ExplorationAction.ACCEPTED:
-                weight = 0.3
-            elif event.action == ExplorationAction.REJECTED:
-                # Distinguish: gap reject (no hypothesis_id) vs experiment reject (has hypothesis_id)
-                weight = -0.3 if event.hypothesis_id else -0.1
-            elif event.action == ExplorationAction.EXPANDED:
-                weight = 0.2
-            elif event.action == ExplorationAction.HYPOTHESIZED:
-                weight = 0.25
-            elif event.action == ExplorationAction.VALIDATED:
-                # Experiment success: strong positive signal for this gap type
-                weight = 0.4
-            elif event.action == ExplorationAction.NARRATED:
-                # Building arguments: positive signal for this gap type
-                weight = 0.25
-
+            weight = self._EVENT_WEIGHTS.get(event.action, 0.0)
+            # Distinguish: gap reject (no hypothesis_id) vs experiment reject (has hypothesis_id)
+            if event.action == ExplorationAction.REJECTED and not event.hypothesis_id:
+                weight = self._REJECT_NO_HYPOTHESIS_PENALTY
             profile.gap_type_preferences[event.gap_type] = current + weight
 
         # Update keyword preferences from gap_title
         if event.gap_title:
             keywords = self._extract_keywords(event.gap_title)
             for kw in keywords:
-                # Apply same weight as gap_type preference
                 kw_current = profile.keyword_preferences.get(kw, 0.0)
-                # Positive actions boost keyword; negative actions penalize
                 profile.keyword_preferences[kw] = kw_current + (weight * 0.5)
 
         # Compute preference tags
@@ -544,9 +543,7 @@ class EvolutionTracker:
     def render_stats(self) -> str:
         """Render exploration statistics overview as text."""
         stats = self.get_exploration_stats()
-        profile = self._load_profile()
-
-        lines = [
+        header = [
             "═" * 60,
             "📊 探索统计概览",
             "═" * 60,
@@ -554,36 +551,95 @@ class EvolutionTracker:
             f"总事件: {stats['total_events']}  |  探索主题: {stats['total_topics']}",
             "",
         ]
+        sections = [
+            ("recent_action_breakdown", "⚡ 最近行为分布:", False, None),
+            ("top_gap_types", "📈 偏好的 Gap 类型 (Top 5):", False, 5),
+            ("topic_frequency", "🔑 热门研究主题:", False, 5),
+            ("preference_tags", "🏷️ 偏好标签:", False, None),
+        ]
+        return "\n".join(header + self._render_profile_sections(stats, sections))
 
-        if stats.get('recent_action_breakdown'):
-            lines.append("⚡ 最近行为分布:")
-            for action, count in sorted(stats['recent_action_breakdown'].items()):
-                lines.append(f"   {action}: {count}")
+    def render_profile(self) -> str:
+        """Render user preference profile as text."""
+        profile = self._load_profile()
+        stats = self.get_exploration_stats()
+        header = [
+            "═" * 60,
+            "🧠 研究偏好画像",
+            "═" * 60,
+            "",
+            f"总探索事件: {stats['total_events']}",
+            f"探索主题数: {stats['total_topics']}",
+            "",
+        ]
+        sections = [
+            ("preference_tags", "🏷️ 偏好标签:", False, None),
+            ("top_gap_types", "📊 偏好的空白类型 (Top 5):", False, None),
+            ("topic_frequency", "📚 热门研究主题:", False, None),
+            ("recent_action_breakdown", "⚡ 最近行为分布:", False, None),
+        ]
+        return "\n".join(header + self._render_profile_sections(stats, sections, profile))
+
+    def _render_profile_sections(
+        self,
+        stats: Dict[str, Any],
+        sections: List[tuple],
+        profile: Optional[UserPreferenceProfile] = None,
+    ) -> List[str]:
+        """Render preference sections into lines. Shared by render_stats/render_profile.
+
+        Args:
+            stats: from get_exploration_stats()
+            sections: list of (key, title, sort_items, limit) tuples
+                key: stats dict key
+                title: section header
+                sort_items: whether to sort items alphabetically (action breakdown)
+                limit: max items to show, or None for unlimited
+            profile: optional; used for gap_type score display
+        """
+        if profile is None:
+            profile = self._load_profile()
+        lines: List[str] = []
+        for key, title, sort_items, limit in sections:
+            raw = stats.get(key)
+            if not raw:
+                continue
+            lines.append(title)
+
+            # top_gap_types is always List[str]; handle first
+            if key == "top_gap_types":
+                display_list = list(raw)[:limit] if limit else list(raw)
+                for i, gt in enumerate(display_list, 1):
+                    score = profile.gap_type_preferences.get(gt, 0)
+                    lines.append(f"   {i}. {gt}: {score:.2f}")
+                lines.append("")
+                continue
+
+            # All other sections: dispatch by actual type (handles both old List[str]
+            # and new Dict[str, float] preference_tags from merged PRs)
+            if isinstance(raw, list):
+                # Legacy List[str] format (old persisted data)
+                display_list = list(raw)[:limit] if limit else list(raw)
+                for item in display_list:
+                    lines.append(f"   • {item}")
+            else:
+                # Dict[str, Any] format
+                items: List[tuple] = list(raw.items())
+                if sort_items:
+                    items = sorted(items)
+                if limit:
+                    items = items[:limit]
+
+                for k, v in items:
+                    if key == "preference_tags":
+                        level = "🟢" if v >= 0.6 else "🟡" if v >= 0.3 else "⚪"
+                        lines.append(f"   {level} {k} ({v:.0%})")
+                    elif key == "topic_frequency":
+                        lines.append(f"   • {k} ({v}次)")
+                    elif key == "recent_action_breakdown":
+                        lines.append(f"   {k}: {v}")
             lines.append("")
-
-        if stats.get('top_gap_types'):
-            lines.append("📈 偏好的 Gap 类型 (Top 5):")
-            for i, gt in enumerate(stats['top_gap_types'], 1):
-                score = profile.gap_type_preferences.get(gt, 0)
-                lines.append(f"   {i}. {gt} ({score:+.2f})")
-            lines.append("")
-
-        if stats.get('topic_frequency'):
-            lines.append("🔑 热门研究主题:")
-            for topic, count in list(stats['topic_frequency'].items())[:5]:
-                lines.append(f"   • {topic} ({count}次)")
-            lines.append("")
-
-        if stats.get('preference_tags'):
-            lines.append("🏷️ 偏好标签:")
-            sorted_tags = sorted(stats['preference_tags'].items(), key=lambda x: x[1], reverse=True)
-            for tag, confidence in sorted_tags:
-                level = "🟢" if confidence >= 0.6 else "🟡" if confidence >= 0.3 else "⚪"
-                lines.append(f"   {level} {tag} ({confidence:.0%})")
-
-        lines.append("")
-        lines.append("═" * 60)
-        return "\n".join(lines)
+        return lines
 
     # ─── Recommendation Helper ───────────────────────────────────────────────────
 
@@ -646,53 +702,6 @@ class EvolutionTracker:
             return profile.gap_type_preferences.get(gap_type, 0.0)
 
         return sorted(gaps, key=gap_score, reverse=True)
-
-    # ─── Rendering ──────────────────────────────────────────────────────────────
-
-    def render_profile(self) -> str:
-        """Render user preference profile as text."""
-        profile = self._load_profile()
-        stats = self.get_exploration_stats()
-
-        lines = [
-            "═" * 60,
-            "🧠 研究偏好画像",
-            "═" * 60,
-            "",
-            f"总探索事件: {stats['total_events']}",
-            f"探索主题数: {stats['total_topics']}",
-            "",
-        ]
-
-        if stats.get('preference_tags'):
-            lines.append("🏷️ 偏好标签:")
-            sorted_tags = sorted(stats['preference_tags'].items(), key=lambda x: x[1], reverse=True)
-            for tag, confidence in sorted_tags:
-                level = "🟢" if confidence >= 0.6 else "🟡" if confidence >= 0.3 else "⚪"
-                lines.append(f"   {level} {tag} ({confidence:.0%})")
-            lines.append("")
-
-        if stats.get('top_gap_types'):
-            lines.append("📊 偏好的空白类型 (Top 5):")
-            for i, gap_type in enumerate(stats['top_gap_types'], 1):
-                score = profile.gap_type_preferences.get(gap_type, 0)
-                lines.append(f"   {i}. {gap_type}: {score:.2f}")
-            lines.append("")
-
-        if stats.get('topic_frequency'):
-            lines.append("📚 热门研究主题:")
-            for topic, count in stats['topic_frequency'].items():
-                lines.append(f"   • {topic} ({count}次)")
-            lines.append("")
-
-        if stats.get('recent_action_breakdown'):
-            lines.append("⚡ 最近行为分布:")
-            for action, count in stats['recent_action_breakdown'].items():
-                lines.append(f"   • {action}: {count}")
-            lines.append("")
-
-        lines.append("═" * 60)
-        return "\n".join(lines)
 
     def render_gap_type_preferences_history(self) -> str:
         """Render the timeline of how gap_type_preferences evolved.
@@ -863,22 +872,11 @@ class EvolutionTracker:
         return "\n".join(lines)
 
     def _event_weight(self, event: EvolutionEvent) -> float:
-        """Compute preference weight for a single event (matches _update_profile)."""
-        weight = 0.1
-        if event.action == ExplorationAction.ACCEPTED:
-            weight = 0.3
-        elif event.action == ExplorationAction.REJECTED:
-            weight = -0.15
-        elif event.action == ExplorationAction.EXPANDED:
-            weight = 0.2
-        elif event.action == ExplorationAction.HYPOTHESIZED:
-            weight = 0.4
-        elif event.action == ExplorationAction.VALIDATED:
-            weight = 0.4
-        elif event.action == ExplorationAction.NARRATED:
-            weight = 0.25
-        elif event.action == ExplorationAction.VIEWED:
-            weight = 0.05
+        """Compute preference weight for a single event for the time-decay cache."""
+        weight = self._EVENT_WEIGHTS.get(event.action, 0.0)
+        # Gap reject (no hypothesis) gets lighter penalty in cache score too
+        if event.action == ExplorationAction.REJECTED and not event.hypothesis_id:
+            weight = self._REJECT_NO_HYPOTHESIS_PENALTY
         return weight
 
     def render_topic_history(self, topic: str) -> str:
