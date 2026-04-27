@@ -75,6 +75,9 @@ class UserPreferenceProfile:
     # Gap type preferences (which types user engages with)
     gap_type_preferences: Dict[str, float] = field(default_factory=dict)
 
+    # Keyword preferences (learned from gap titles user engages with)
+    keyword_preferences: Dict[str, float] = field(default_factory=dict)
+
     # Topics explored
     topics_explored: List[str] = field(default_factory=list)
     topic_frequency: Dict[str, int] = field(default_factory=dict)
@@ -299,10 +302,39 @@ class EvolutionTracker:
 
             profile.gap_type_preferences[event.gap_type] = current + weight
 
+        # Update keyword preferences from gap_title
+        if event.gap_title:
+            keywords = self._extract_keywords(event.gap_title)
+            for kw in keywords:
+                # Apply same weight as gap_type preference
+                kw_current = profile.keyword_preferences.get(kw, 0.0)
+                # Positive actions boost keyword; negative actions penalize
+                profile.keyword_preferences[kw] = kw_current + (weight * 0.5)
+
         # Compute preference tags
         profile.preference_tags = self._compute_preference_tags(profile)
 
         self._save_profile(profile)
+
+    def _extract_keywords(self, text: str) -> List[str]:
+        """Extract research-relevant keywords from text.
+
+        Returns lowercase keywords of 3+ chars, excluding common stopwords.
+        """
+        stopwords = {
+            "the", "and", "for", "are", "but", "not", "you", "all",
+            "can", "had", "her", "was", "one", "our", "out", "has",
+            "have", "been", "with", "they", "this", "that", "from",
+            "will", "would", "there", "their", "what", "about", "which",
+            "when", "make", "just", "over", "such", "into", "than",
+            "null", "none", "also", "how", "may", "can", "does",
+            "method", "approach", "gap", "issue", "problem", "limitation",
+            "study", "work", "paper", "research", "based", "using",
+        }
+        # Split on non-alphanumeric, filter short words and stopwords
+        import re
+        words = re.findall(r"[A-Za-z0-9]+", text.lower())
+        return [w for w in words if len(w) >= 3 and w not in stopwords]
 
     def _compute_preference_tags(self, profile: UserPreferenceProfile) -> List[str]:
         """Compute preference tags from profile stats."""
@@ -522,6 +554,23 @@ class EvolutionTracker:
         """Get the numeric preference score for a gap type."""
         profile = self._load_profile()
         return profile.gap_type_preferences.get(gap_type, 0.0)
+
+    def get_keyword_score(self, keyword: str) -> float:
+        """Get the numeric preference score for a keyword."""
+        profile = self._load_profile()
+        return profile.keyword_preferences.get(keyword.lower(), 0.0)
+
+    def get_top_keywords(self, limit: int = 5) -> List[str]:
+        """Get most preferred keywords based on history."""
+        profile = self._load_profile()
+        if not profile.keyword_preferences:
+            return []
+        sorted_kws = sorted(
+            profile.keyword_preferences.items(),
+            key=lambda x: x[1],
+            reverse=True,
+        )
+        return [kw for kw, score in sorted_kws[:limit] if score > 0.05]
 
     def should_prioritize_gap_type(self, gap_type: str) -> bool:
         """Check if a gap type should be prioritized for this user."""

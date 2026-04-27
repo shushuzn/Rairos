@@ -277,19 +277,31 @@ class GapAnalyzerV2(GapDetector):
     ) -> List[ResearchGapV2]:
         """Apply user preference-based sorting + trend boost to gaps.
 
-        Gaps matching user preferences or trending keywords are boosted to appear first.
-        Returns both sorted gaps and whether preferences were applied.
+        Gaps matching user preferences (gap_type or keywords) or trending keywords
+        are boosted to appear first. Returns both sorted gaps and whether
+        preferences were applied.
         """
         hot_keywords = hot_keywords or set()
 
         # Get user preferences
         preferred_types = set(self.evolution_tracker.get_preferred_gap_types(limit=5))
         disliked_types = set(self.evolution_tracker.get_disliked_gap_types(limit=3))
+        top_keywords = set(self.evolution_tracker.get_top_keywords(limit=10))
 
-        has_preferences = bool(preferred_types or disliked_types)
+        has_preferences = bool(preferred_types or disliked_types or top_keywords)
+
+        def _extract_gap_keywords(title: str) -> list:
+            """Extract research keywords from gap title."""
+            import re
+            stopwords = {
+                "the", "and", "for", "are", "but", "not", "gap", "issue",
+                "problem", "limitation", "study", "work", "paper", "research",
+            }
+            words = re.findall(r"[A-Za-z0-9]+", title.lower())
+            return [w for w in words if len(w) >= 3 and w not in stopwords]
 
         def gap_preference_score(gap: ResearchGapV2) -> tuple:
-            """Calculate sorting score: (trend_score, preference_score, severity_score, priority_score).
+            """Calculate sorting score: (trend_score, keyword_score, pref_score, severity_score, priority_score).
 
             Higher is better. disliked/deprioritized gap types get negative pref_score
             so they sort to the end of their trend/severity tier.
@@ -302,6 +314,14 @@ class GapAnalyzerV2(GapDetector):
             # Trend score: from novelty_score (set to trend boost in _convert_to_v2)
             trend_score = gap.novelty_score  # 0-2 scale
 
+            # Keyword preference score: +1 for each matching top keyword (max +3)
+            gap_kws = _extract_gap_keywords(gap.title)
+            keyword_score = sum(
+                self.evolution_tracker.get_keyword_score(kw)
+                for kw in gap_kws if kw in top_keywords
+            )
+            keyword_score = max(keyword_score, 0.0)  # clamp to non-negative
+
             # Preference score: +2 for liked, -1 for disliked, 0 for neutral
             pref_score = 0
             if gap_type_str in preferred_types:
@@ -309,7 +329,7 @@ class GapAnalyzerV2(GapDetector):
                 gap.preference_boost = True
                 gap.preference_score = numeric_score
             elif gap_type_str in disliked_types or self.evolution_tracker.should_deprioritize_gap_type(gap_type_str):
-                pref_score = -2  # stronger penalty than before
+                pref_score = -2
                 gap.preference_boost = False
                 gap.preference_score = numeric_score
             else:
@@ -323,8 +343,8 @@ class GapAnalyzerV2(GapDetector):
             # Priority score (original calculation)
             priority_score = gap.priority
 
-            # Return tuple: trend first (highest), then preference, then severity, then priority
-            return (trend_score, pref_score, severity_score, priority_score)
+            # Return tuple: trend first, then keyword match, then preference, then severity, then priority
+            return (trend_score, keyword_score, pref_score, severity_score, priority_score)
 
         gaps.sort(key=gap_preference_score, reverse=True)
         return gaps, has_preferences

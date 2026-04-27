@@ -263,3 +263,111 @@ class TestExplorationAction:
         assert ExplorationAction.REJECTED.value == "rejected"
         assert ExplorationAction.EXPANDED.value == "expanded"
         assert ExplorationAction.HYPOTHESIZED.value == "hypothesized"
+
+
+class TestKeywordPreferences:
+    """Test keyword preference learning."""
+
+    def test_extract_keywords_basic(self, temp_tracker):
+        """Test basic keyword extraction."""
+        keywords = temp_tracker._extract_keywords("Scalability issues in retrieval systems")
+        assert "scalability" in keywords
+        assert "retrieval" in keywords
+        assert "systems" in keywords
+        # Common stopwords excluded
+        assert "the" not in keywords
+        assert "in" not in keywords
+
+    def test_extract_keywords_filters_short(self, temp_tracker):
+        """Test that keywords < 3 chars are excluded."""
+        keywords = temp_tracker._extract_keywords("RAG is great for NLP tasks")
+        assert "rag" in keywords  # 3 chars ok
+        assert "nlp" in keywords  # 3 chars ok
+        assert "is" not in keywords  # 2 chars excluded
+
+    def test_keyword_preferences_updated_on_accept(self, temp_tracker):
+        """Test that keyword preferences are updated when gap with matching title is accepted."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+            gap_title="Scalability issues in retrieval",
+        )
+
+        profile = temp_tracker.get_profile()
+        assert "scalability" in profile.keyword_preferences
+        assert "retrieval" in profile.keyword_preferences
+        # ACCEPTED has weight 0.3, multiplied by 0.5 for keyword
+        assert profile.keyword_preferences["scalability"] > 0
+
+    def test_keyword_preferences_updated_on_reject(self, temp_tracker):
+        """Test that keyword preferences decrease on reject."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.REJECTED,
+            gap_type="dataset_gap",
+            gap_title="Missing domain datasets",
+        )
+
+        profile = temp_tracker.get_profile()
+        assert "datasets" in profile.keyword_preferences or "domain" in profile.keyword_preferences
+        # REJECTED has negative weight
+        kw_vals = list(profile.keyword_preferences.values())
+        assert any(v < 0 for v in kw_vals)
+
+    def test_get_keyword_score(self, temp_tracker):
+        """Test get_keyword_score returns correct value."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+            gap_title="Robustness in transformer models",
+        )
+
+        score = temp_tracker.get_keyword_score("robustness")
+        assert score > 0
+
+        # Unknown keyword returns 0
+        unknown = temp_tracker.get_keyword_score("unknownwordxyz")
+        assert unknown == 0.0
+
+    def test_get_top_keywords(self, temp_tracker):
+        """Test get_top_keywords returns highest-scoring keywords."""
+        # Record events with different keywords
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+            gap_title="Scalability analysis",
+        )
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="unexplored_application",
+            gap_title="Scalability study",  # repeat same keyword
+        )
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.VIEWED,
+            gap_type="theoretical_gap",
+            gap_title="Theoretical foundations",
+        )
+
+        top = temp_tracker.get_top_keywords(limit=3)
+        # Scalability should be top (appears twice with ACCEPTED weight)
+        assert "scalability" in top
+
+    def test_keyword_preferences_accumulates(self, temp_tracker):
+        """Test that keyword preferences accumulate over multiple events."""
+        for _ in range(3):
+            temp_tracker.record_event(
+                topic="RAG",
+                action=ExplorationAction.VIEWED,
+                gap_type="method_limitation",
+                gap_title="Robustness in models",
+            )
+
+        profile = temp_tracker.get_profile()
+        score = profile.keyword_preferences.get("robustness", 0.0)
+        # VIEWED has weight 0.1 * 0.5 = 0.05 per event, 3 events = 0.15
+        assert score > 0.1
