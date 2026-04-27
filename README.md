@@ -4,7 +4,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![Tests](https://github.com/shushuzn/ai_research_os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/ai_research_os/actions)
-[![License](https://img.shields.io/badge/License-Research--Only-purple)](#license)
+[![License](https://img.shields.io/badge/License-GPL--3.0--orange)](#license)
 
 ## What It Does
 
@@ -160,4 +160,4 @@ python -B -m pytest tests/ -q
 
 ## License {#license}
 
-Research & educational use only.
+GNU General Public License v3.0
