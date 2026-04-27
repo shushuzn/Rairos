@@ -2,7 +2,7 @@
 Research Dashboard: Aggregated view of research progress.
 """
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Tuple, Any
 from datetime import datetime
 
 
@@ -59,9 +59,9 @@ class TrendKeyword:
 class GapPreferenceStats:
     """Summary of user's gap_type and keyword preference profile."""
     total_events: int
-    preferred_types: List[Any]  # List[(gap_type: str, score: float)]
-    disliked_types: List[Any]  # List[(gap_type: str, score: float)]
-    preferred_keywords: List[Any] = field(default_factory=list)  # List[(keyword: str, score: float)]
+    preferred_types: List[Tuple[str, float]]
+    disliked_types: List[Tuple[str, float]]
+    preferred_keywords: List[Tuple[str, float]] = field(default_factory=list)
 
 
 @dataclass
