@@ -55,8 +55,11 @@ class TestRunImport:
 
         assert rc == 0
         assert len(mock_db.upserted) == 3
-        assert mock_db.upserted[0] == ("2301.00001", "import")
-        assert mock_db.upserted[2] == ("2301.00003", "import")
+        # ThreadPoolExecutor processes IDs concurrently — sort to get stable order
+        upserted_sorted = sorted(mock_db.upserted, key=lambda x: x[0])
+        assert upserted_sorted[0] == ("2301.00001", "import")
+        assert upserted_sorted[1] == ("2301.00002", "import")
+        assert upserted_sorted[2] == ("2301.00003", "import")
 
     def test_file_not_found_returns_1(self, tmp_path, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
