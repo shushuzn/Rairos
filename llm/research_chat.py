@@ -80,9 +80,9 @@ class ResearchChat:
 
     def _extract_topic(self, query: str) -> str:
         """Extract topic from query."""
-        # Tokenize
-        words = query.replace("?", "").replace("？", " ")
-        words = words.replace("，", " ").replace(",", " ").replace("。", " ").split()
+        import re
+        # Tokenize: Chinese sequences (2+ chars) and English words as atomic tokens
+        words = re.findall(r'[\u4e00-\u9fff]{2,}|[a-zA-Z]+', query)
 
         # Filter stopwords and short words
         candidates = [
