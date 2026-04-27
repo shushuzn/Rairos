@@ -56,6 +56,14 @@ class TrendKeyword:
 
 
 @dataclass
+class GapPreferenceStats:
+    """Summary of user's gap_type preference profile."""
+    total_events: int
+    preferred_types: List[Any]  # List[(gap_type: str, score: float)]
+    disliked_types: List[Any]  # List[(gap_type: str, score: float)]
+
+
+@dataclass
 class DashboardData:
     """Aggregated dashboard data."""
     generated_at: str = ""
@@ -64,6 +72,7 @@ class DashboardData:
     papers: Optional[PaperStats] = None
     hot_papers: List[HotPaper] = field(default_factory=list)
     trends: List[TrendKeyword] = field(default_factory=list)
+    gap_preferences: Optional[GapPreferenceStats] = None
     summary: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
@@ -117,6 +126,23 @@ class Dashboard:
                 data.trends = self._collect_trends()
             except Exception:
                 data.papers = None
+
+        # Gap type preferences
+        try:
+            from llm.insight_evolution import EvolutionTracker
+            tracker = EvolutionTracker()
+            profile = tracker.get_profile()
+            if profile and profile.total_events > 0:
+                prefs = profile.gap_type_preferences or {}
+                preferred = [(gt, s) for gt, s in prefs.items() if s > 0.1]
+                disliked = [(gt, s) for gt, s in prefs.items() if s < -0.05]
+                data.gap_preferences = GapPreferenceStats(
+                    total_events=profile.total_events,
+                    preferred_types=sorted(preferred, key=lambda x: x[1], reverse=True),
+                    disliked_types=sorted(disliked, key=lambda x: x[1]),
+                )
+        except Exception:
+            pass
 
         # Summary
         data.summary = self._build_summary(data)
@@ -272,6 +298,26 @@ class Dashboard:
             lines.append(f"  Hot Papers: {s['hot_papers_count']} (citation velocity > 0)")
         if s.get('trends_count', 0) > 0:
             lines.append(f"  Trends: {s['trends_count']} keywords tracked")
+
+        # Gap Type Preferences
+        gp = data.gap_preferences
+        if gp:
+            lines.append("")
+            lines.append("## 🧠 Research Gap Preferences")
+            lines.append(f"  Based on {gp.total_events} exploration events")
+            if gp.preferred_types:
+                lines.append("  🟢 Preferred types:")
+                for gt, score in gp.preferred_types[:5]:
+                    bar = "█" * min(int(score * 5), 10)
+                    lines.append(f"    {gt}: {score:+.2f} {bar}")
+            if gp.disliked_types:
+                lines.append("  🔴 Avoided types:")
+                for gt, score in gp.disliked_types[:3]:
+                    bar = "█" * min(int(abs(score) * 5), 10)
+                    lines.append(f"    {gt}: {score:+.2f} {bar}")
+            if not gp.preferred_types and not gp.disliked_types:
+                lines.append("  (no strong preferences yet — keep exploring!)")
+
         lines.append("")
 
         # Hot Papers
@@ -403,4 +449,15 @@ class Dashboard:
                 "by_year": data.papers.by_year if data.papers else {},
                 "by_tag": data.papers.by_tag if data.papers else {},
             } if data.papers else None,
+            "gap_preferences": {
+                "total_events": data.gap_preferences.total_events if data.gap_preferences else 0,
+                "preferred_types": [
+                    {"gap_type": gt, "score": float(score)}
+                    for gt, score in (data.gap_preferences.preferred_types if data.gap_preferences else [])
+                ],
+                "disliked_types": [
+                    {"gap_type": gt, "score": float(score)}
+                    for gt, score in (data.gap_preferences.disliked_types if data.gap_preferences else [])
+                ],
+            } if data.gap_preferences else None,
         }, ensure_ascii=False, indent=2)

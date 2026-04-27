@@ -518,16 +518,19 @@ class EvolutionTracker:
 
     # ─── Recommendation Helper ───────────────────────────────────────────────────
 
+    def get_gap_type_score(self, gap_type: str) -> float:
+        """Get the numeric preference score for a gap type."""
+        profile = self._load_profile()
+        return profile.gap_type_preferences.get(gap_type, 0.0)
+
     def should_prioritize_gap_type(self, gap_type: str) -> bool:
         """Check if a gap type should be prioritized for this user."""
-        profile = self._load_profile()
-        score = profile.gap_type_preferences.get(gap_type, 0.0)
+        score = self.get_gap_type_score(gap_type)
         return score > 0.1  # Threshold for positive preference
 
     def should_deprioritize_gap_type(self, gap_type: str) -> bool:
         """Check if a gap type should be deprioritized."""
-        profile = self._load_profile()
-        score = profile.gap_type_preferences.get(gap_type, 0.0)
+        score = self.get_gap_type_score(gap_type)
         return score < -0.05  # Threshold for negative preference
 
     def get_recommended_gap_order(

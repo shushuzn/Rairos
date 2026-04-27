@@ -40,6 +40,7 @@ class ResearchGapV2:
 
     # Preference learning
     preference_boost: bool = False  # True if matches user preferences
+    preference_score: float = 0.0  # Numeric score for display
 
 
 @dataclass
@@ -295,6 +296,9 @@ class GapAnalyzerV2(GapDetector):
             """
             gap_type_str = gap.gap_type.value
 
+            # Get numeric preference score for display
+            numeric_score = self.evolution_tracker.get_gap_type_score(gap_type_str)
+
             # Trend score: from novelty_score (set to trend boost in _convert_to_v2)
             trend_score = gap.novelty_score  # 0-2 scale
 
@@ -303,11 +307,14 @@ class GapAnalyzerV2(GapDetector):
             if gap_type_str in preferred_types:
                 pref_score = 2
                 gap.preference_boost = True
+                gap.preference_score = numeric_score
             elif gap_type_str in disliked_types or self.evolution_tracker.should_deprioritize_gap_type(gap_type_str):
                 pref_score = -2  # stronger penalty than before
                 gap.preference_boost = False
+                gap.preference_score = numeric_score
             else:
                 gap.preference_boost = False
+                gap.preference_score = 0.0
 
             # Severity score
             severity_order = {GapSeverity.HIGH: 3, GapSeverity.MEDIUM: 2, GapSeverity.LOW: 1}
@@ -534,10 +541,11 @@ def render_gap_report(result: GapAnalysisResultV2, show_preferences: bool = True
             GapSeverity.LOW: "🟢 LOW",
         }.get(gap.severity, "⚪")
 
-        # Preference indicator
+        # Preference indicator — show numeric score
         pref_indicator = ""
-        if show_preferences and hasattr(gap, 'preference_boost') and gap.preference_boost:
-            pref_indicator = " ✨"
+        if show_preferences and hasattr(gap, 'preference_score') and gap.preference_score != 0.0:
+            score = gap.preference_score
+            pref_indicator = f" (偏好 {score:+.2f})"
 
         type_name = {
             GapType.METHOD_LIMITATION: "Method Limitation",
