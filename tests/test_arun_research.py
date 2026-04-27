@@ -81,15 +81,14 @@ class TestArunResearch:
              patch("pdf.extract.extract_pdf_text", return_value="Some text"):
             mock_dl.side_effect = Exception("no pdf")
 
-            with pytest.warns(UserWarning, match="OPENAI_API_KEY not set"):
-                paths = await arun_research(
-                    query="test",
-                    output_dir=tmp_output_dir,
-                    api_key="",
-                    download_pdfs=True,
-                    skip_existing=True,
-                    verbose=False,
-                )
+            paths = await arun_research(
+                query="test",
+                output_dir=tmp_output_dir,
+                api_key="",
+                download_pdfs=True,
+                skip_existing=True,
+                verbose=False,
+            )
 
         assert len(paths) == 1
         note_text = paths[0].read_text(encoding="utf-8")

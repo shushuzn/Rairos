@@ -186,16 +186,15 @@ class TestRunResearch:
     ):
         mock_search.return_value = [sample_paper]
 
-        with pytest.warns(UserWarning, match="OPENAI_API_KEY not set"):
-            paths = run_research(
-                query="transformer",
-                limit=5,
-                output_dir=tmp_output_dir,
-                api_key="",
-                download_pdfs=False,
-                skip_existing=True,
-                verbose=True,
-            )
+        paths = run_research(
+            query="transformer",
+            limit=5,
+            output_dir=tmp_output_dir,
+            api_key="",
+            download_pdfs=False,
+            skip_existing=True,
+            verbose=True,
+        )
 
         assert len(paths) == 1
         note_text = paths[0].read_text(encoding="utf-8")

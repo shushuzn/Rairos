@@ -1,6 +1,6 @@
 """Tests for research dashboard."""
 import pytest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from llm.dashboard import (
     Dashboard,
@@ -21,11 +21,20 @@ class TestDashboard:
 
     def test_collect_empty(self, dashboard):
         """Test collecting with no data."""
-        data = dashboard.collect(include_papers=False)
+        # QuestionTracker and ExperimentTracker are imported into llm.dashboard
+        # from their source modules, so patch at source.
+        with patch("llm.question_tracker.QuestionTracker") as mock_qt, \
+             patch("llm.experiment_tracker.ExperimentTracker") as mock_et:
+            mock_qt_instance = mock_qt.return_value
+            mock_qt_instance.list_questions.return_value = []
+            mock_et_instance = mock_et.return_value
+            mock_et_instance.list_experiments.return_value = []
 
-        assert data.generated_at != ""
-        assert len(data.questions) == 0
-        assert len(data.experiments) == 0
+            data = dashboard.collect(include_papers=False)
+
+            assert data.generated_at != ""
+            assert len(data.questions) == 0
+            assert len(data.experiments) == 0
 
     def test_collect_empty_data(self, dashboard):
         """Test collecting with no tracker data."""
