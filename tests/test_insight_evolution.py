@@ -705,3 +705,117 @@ class TestPreferenceTagConfidence:
         merged = temp_tracker.import_profile(backup2, merge=True)
         # Should have max confidence
         assert "exploratory" in merged.preference_tags
+
+
+# =============================================================================
+# Score getters and deprioritization
+# =============================================================================
+class TestScoreGetters:
+    """Test get_gap_type_score, get_keyword_score, get_top_keywords."""
+
+    def test_get_gap_type_score_returns_zero_when_no_history(self, temp_tracker):
+        score = temp_tracker.get_gap_type_score("method_limitation")
+        assert score == 0.0
+
+    def test_get_gap_type_score_returns_positive_after_accept(self, temp_tracker):
+        temp_tracker.record_gap_accept(topic="RAG", gap_type="method_limitation", gap_title="Gap")
+        score = temp_tracker.get_gap_type_score("method_limitation")
+        assert score > 0
+
+    def test_get_gap_type_score_returns_negative_after_reject(self, temp_tracker):
+        temp_tracker.record_gap_reject(topic="RAG", gap_type="method_limitation", gap_title="Gap")
+        score = temp_tracker.get_gap_type_score("method_limitation")
+        assert score < 0
+
+    def test_get_keyword_score_returns_zero_when_no_history(self, temp_tracker):
+        score = temp_tracker.get_keyword_score("transformer")
+        assert score == 0.0
+
+    def test_get_top_keywords_returns_empty_when_no_history(self, temp_tracker):
+        kws = temp_tracker.get_top_keywords(limit=5)
+        assert kws == []
+
+    def test_should_deprioritize_returns_false_when_no_history(self, temp_tracker):
+        result = temp_tracker.should_deprioritize_gap_type("method_limitation")
+        assert result is False
+
+    def test_should_deprioritize_returns_true_after_rejection(self, temp_tracker):
+        temp_tracker.record_gap_reject(topic="RAG", gap_type="method_limitation", gap_title="Gap")
+        result = temp_tracker.should_deprioritize_gap_type("method_limitation")
+        assert result is True
+
+
+# =============================================================================
+# Keyword extraction
+# =============================================================================
+class TestExtractKeywords:
+    """Test _extract_keywords delegates to extract_keywords util."""
+
+    def test_extracts_single_word(self):
+        from llm.insight_evolution import EvolutionTracker
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tracker = EvolutionTracker(data_dir=Path(tmpdir))
+            kw = tracker._extract_keywords("transformer attention mechanism")
+            assert "transformer" in kw
+
+    def test_extracts_nothing_from_empty_string(self):
+        from llm.insight_evolution import EvolutionTracker
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tracker = EvolutionTracker(data_dir=Path(tmpdir))
+            kw = tracker._extract_keywords("")
+            assert isinstance(kw, list)
+
+
+# =============================================================================
+# Export / Import / List backups
+# =============================================================================
+class TestBackupManagement:
+    """Test export_profile, import_profile (replace mode), list_backups."""
+
+    def test_export_profile_returns_path(self, temp_tracker):
+        temp_tracker.record_gap_accept(topic="RAG", gap_type="method_limitation", gap_title="Gap")
+        path = temp_tracker.export_profile()
+        assert isinstance(path, Path)
+        assert path.exists()
+
+    def test_import_profile_replace_mode(self, tmp_path, temp_tracker):
+        """import_profile with merge=False replaces the profile entirely."""
+        temp_tracker.record_gap_accept(topic="RAG", gap_type="method_limitation", gap_title="Gap")
+        backup = tmp_path / "backup.json"
+        temp_tracker.export_profile(path=backup)
+
+        # New tracker with empty history
+        tracker2 = EvolutionTracker(data_dir=tmp_path / "other")
+        assert tracker2.get_gap_type_score("method_limitation") == 0.0
+
+        # Import with replace (merge=False)
+        imported = tracker2.import_profile(backup, merge=False)
+        assert tracker2.get_gap_type_score("method_limitation") > 0
+
+    def test_list_backups_returns_empty_when_none(self, tmp_path):
+        tracker = EvolutionTracker(data_dir=tmp_path / "empty")
+        backups = tracker.list_backups()
+        assert backups == []
+
+    def test_list_backups_finds_exports(self, tmp_path, temp_tracker):
+        """list_backups finds files matching profile_backup_*.json pattern."""
+        temp_tracker.record_gap_accept(topic="RAG", gap_type="method_limitation", gap_title="Gap")
+        temp_tracker.export_profile()
+        temp_tracker.export_profile()
+
+        backups = temp_tracker.list_backups()
+        assert len(backups) == 2
+        assert all("profile_backup_" in str(b) for b in backups)
+
+    def test_list_backups_sorted_reverse(self, tmp_path, temp_tracker):
+        """list_backups returns newest first."""
+        temp_tracker.record_gap_accept(topic="RAG", gap_type="method_limitation", gap_title="Gap")
+        temp_tracker.export_profile()
+        import time
+        time.sleep(0.01)
+        temp_tracker.export_profile()
+
+        backups = temp_tracker.list_backups()
+        assert len(backups) == 2
+        # Newest first (sorted reverse)
+        assert backups[0].stat().st_mtime >= backups[1].stat().st_mtime

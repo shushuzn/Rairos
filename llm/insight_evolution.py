@@ -889,6 +889,20 @@ class EvolutionTracker:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
+        # Also export events.jsonl so scores can be rebuilt from it on import.
+        # Read-then-write instead of shutil.copy2 to avoid WinError 32 (file locked
+        # in append mode).
+        if self.events_file.exists():
+            try:
+                with open(self.events_file, "r", encoding="utf-8") as src:
+                    content = src.read()
+                dst_events = path.parent / "events.jsonl"
+                with open(dst_events, "w", encoding="utf-8") as dst:
+                    dst.write(content)
+            except Exception:
+                # Events export is best-effort — don't fail the profile export.
+                pass
+
         return path
 
     def import_profile(
@@ -929,6 +943,11 @@ class EvolutionTracker:
         else:
             profile = UserPreferenceProfile(**data)
             self._save_profile(profile)
+            # Restore events.jsonl so _get_all_scores_cached() has real data to compute from.
+            import shutil
+            src_events = path.parent / "events.jsonl"
+            if src_events.exists():
+                shutil.copy2(src_events, self.events_file)
             self._score_cache.clear()
             self._cache_time = None
             return profile
