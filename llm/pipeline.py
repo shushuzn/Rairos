@@ -252,7 +252,7 @@ class ResearchPipeline:
     def _render_validation(self, validate_result) -> List[str]:
         """Render validation summary."""
         score = getattr(validate_result, 'innovation_score', None)
-        score_val = score.total if score else 0
+        score_val = score.overall if score else 0
         is_novel = getattr(validate_result, 'is_novel', False)
         return [
             "",

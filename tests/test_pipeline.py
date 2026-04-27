@@ -199,7 +199,7 @@ class TestResearchPipeline:
         pipeline = ResearchPipeline()
 
         class MockScore:
-            total = 7.5
+            overall = 7.5
 
         class MockValidate:
             innovation_score = MockScore()
