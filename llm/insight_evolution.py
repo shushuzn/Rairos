@@ -748,16 +748,11 @@ class EvolutionTracker:
 
         events.sort(key=lambda e: e.timestamp)
 
-        # Compute running preferences
+        # Compute running preferences — single pass
+        # Also tracks first_nonzero per gap_type (avoids O(n²) per-type re-scan)
         running: Dict[str, float] = {}
-        all_gap_types = set()
-
-        # Capture checkpoints: first event, every significant change, last event
-        checkpoints = []
-        last_snapshot: Dict[str, float] = {}
-
-        def _make_snapshot(ts: str) -> tuple:
-            return (ts, dict(running))
+        all_gap_types: set = set()
+        first_nonzero: Dict[str, float] = {}
 
         # First event
         first_ts = events[0].timestamp[:10]
@@ -767,7 +762,10 @@ class EvolutionTracker:
                 all_gap_types.add(event.gap_type)
                 current = running.get(event.gap_type, 0.0)
                 weight = self._event_weight(event)
-                running[event.gap_type] = current + weight
+                new_val = current + weight
+                running[event.gap_type] = new_val
+                if new_val != 0.0 and event.gap_type not in first_nonzero:
+                    first_nonzero[event.gap_type] = new_val
 
         last_ts = events[-1].timestamp[:10]
 
@@ -785,26 +783,6 @@ class EvolutionTracker:
         header_gap = "gap_type"
         val_width = 8
         header_width = max(len("gap_type"), max(len(gt) for gt in active_types))
-
-        # Simple format: show first (earliest non-zero) and last values + trend
-        # Find first non-zero for each type
-        first_nonzero: Dict[str, float] = {}
-        for gt in active_types:
-            running2: Dict[str, float] = {}
-            for e in events:
-                if e.gap_type == gt:
-                    current2 = running2.get(gt, 0.0)
-                    running2[gt] = current2 + self._event_weight(e)
-            # Find first non-zero
-            running3: Dict[str, float] = {}
-            first_nonzero[gt] = 0.0
-            for e in events:
-                if e.gap_type == gt:
-                    current3 = running3.get(gt, 0.0)
-                    new_val = current3 + self._event_weight(e)
-                    running3[gt] = new_val
-                    if new_val != 0.0 and first_nonzero[gt] == 0.0:
-                        first_nonzero[gt] = new_val
 
         current_vals = running
 

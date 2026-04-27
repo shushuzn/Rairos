@@ -182,10 +182,6 @@ class InsightManager:
         results.sort(key=lambda x: x.created_at, reverse=True)
         return results
 
-    def get_paper_cards(self, paper_id: str) -> List[InsightCard]:
-        """Get all cards from a paper."""
-        return self.search_cards(paper_id=paper_id)
-
     def get_tag_cloud(self) -> Dict[str, int]:
         """Get tag frequency."""
         data = self._load_cards()
