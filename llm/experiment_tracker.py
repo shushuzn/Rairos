@@ -1,7 +1,7 @@
 """
 Experiment Tracker: Track experiments for research roadmaps.
 """
-import json, uuid
+import json, logging, uuid
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from enum import Enum
@@ -61,7 +61,12 @@ class ExperimentTracker:
         try:
             with open(self.f) as f:
                 return [Experiment.from_dict(e) for e in json.load(f)]
-        except: return []
+        except (json.JSONDecodeError, IOError) as e:
+            logging.warning("Failed to load experiments from %s (%s). Returning empty list.", self.f, e)
+            return []
+        except Exception as e:
+            logging.warning("Unexpected error loading experiments from %s (%s). Returning empty list.", self.f, e)
+            return []
 
     def _save(self, exps):
         with open(self.f, 'w') as f:
@@ -108,7 +113,7 @@ class ExperimentTracker:
                             gap_type=e.config.get("hypothesis_type", ""),
                         )
                     except Exception:
-                        pass  # Non-fatal — experiment tracker works without evolution
+                        logging.debug("EvolutionTracker integration skipped: %s", e)
 
                 return e
 
@@ -132,8 +137,8 @@ class ExperimentTracker:
                             hypothesis_id=e.hypothesis_id,
                             gap_type=e.config.get("hypothesis_type", ""),
                         )
-                    except Exception:
-                        pass  # Non-fatal — experiment tracker works without evolution
+                    except Exception as e:
+                        logging.debug("EvolutionTracker integration skipped: %s", e)
 
                 return e
 

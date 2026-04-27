@@ -746,8 +746,6 @@ class EvolutionTracker:
         if not events:
             return "暂无探索事件记录"
 
-        events.sort(key=lambda e: e.timestamp)
-
         # Compute running preferences — single pass
         # Also tracks first_nonzero per gap_type (avoids O(n²) per-type re-scan)
         running: Dict[str, float] = {}
@@ -1031,13 +1029,13 @@ class EvolutionTracker:
         # recent_topics: take longer list
         base_recent = list(base.recent_topics)
         inc_recent = incoming.get("recent_topics", [])
-        seen2 = set()
-        merged_recent = []
+        seen = set()
+        merged = []
         for t in reversed(base_recent + inc_recent):
-            if t not in seen2:
-                seen2.add(t)
-                merged_recent.insert(0, t)
-        result.recent_topics = merged_recent[:10]
+            if t not in seen:
+                seen.add(t)
+                merged.append(t)
+        result.recent_topics = list(reversed(merged))[:10]
 
         return result
 
