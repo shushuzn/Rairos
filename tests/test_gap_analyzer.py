@@ -1,4 +1,7 @@
 """Tests for enhanced gap analyzer."""
+import tempfile
+from pathlib import Path
+
 import pytest
 from unittest.mock import MagicMock, patch
 
@@ -10,7 +13,24 @@ from llm.gap_analyzer import (
     render_combined_report,
 )
 from llm.gap_detector import GapType, GapSeverity
-from llm.insight_evolution import ExplorationAction
+from llm.insight_evolution import EvolutionTracker, ExplorationAction
+
+
+@pytest.fixture
+def temp_tracker():
+    """Create a tracker with temporary storage."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tracker = EvolutionTracker(data_dir=Path(tmpdir))
+        yield tracker
+
+
+@pytest.fixture
+def temp_gap_analyzer(temp_tracker):
+    """Create a gap analyzer wired to a temporary evolution tracker."""
+    analyzer = GapAnalyzerV2()
+    analyzer.insight_manager = temp_tracker
+    analyzer.evolution_tracker = temp_tracker  # Share same instance so history is visible
+    return analyzer
 
 
 class TestGapAnalyzerV2Init:
@@ -601,3 +621,154 @@ class TestCombinedReportRendering:
         assert "Test Hypothesis" in output or "test hypothesis" in output.lower()
         assert "70%" in output  # novelty score
         assert "80%" in output  # feasibility score
+
+
+class TestEvolutionDashboardIntegration:
+    """Integration tests: EvolutionTracker → GapAnalyzer → Dashboard full data flow.
+
+    Tests the full pipeline by directly invoking _apply_preference_sorting,
+    which is the core method that combines preference scores with gap rankings.
+    This bypasses paper-collection (requires DB) while testing the actual
+    preference-scoring logic end-to-end.
+    """
+
+    def test_preferred_gap_type_affects_sort_order(self, temp_gap_analyzer, temp_tracker):
+        """When a gap_type has positive preference, it sorts higher."""
+        # Build preference history
+        for _ in range(3):
+            temp_tracker.record_event(
+                topic="RAG",
+                action=ExplorationAction.ACCEPTED,
+                gap_type="method_limitation",
+                gap_title="Scalability bottleneck in RAG",
+            )
+
+        # Directly exercise the preference-sorting logic
+        gaps = [
+            ResearchGapV2(
+                gap_type=GapType.THEORETICAL_GAP,
+                title="Theory of attention",
+                description="Missing theoretical foundation",
+                severity=GapSeverity.MEDIUM,
+            ),
+            ResearchGapV2(
+                gap_type=GapType.METHOD_LIMITATION,
+                title="Scalability bottleneck in RAG",
+                description="RAG scales poorly",
+                severity=GapSeverity.MEDIUM,
+            ),
+        ]
+
+        sorted_gaps, pref_applied = temp_gap_analyzer._apply_preference_sorting(gaps)
+
+        assert pref_applied
+        # method_limitation should be first (preferred gap type)
+        assert sorted_gaps[0].gap_type == GapType.METHOD_LIMITATION
+        assert sorted_gaps[0].preference_boost is True
+
+    def test_disliked_gap_type_ranks_lower(self, temp_gap_analyzer, temp_tracker):
+        """When a gap_type has negative preference, it sorts lower."""
+        # Record rejection history for dataset_gap
+        for _ in range(3):
+            temp_tracker.record_event(
+                topic="RAG",
+                action=ExplorationAction.REJECTED,
+                gap_type="dataset_gap",
+                gap_title="Missing benchmark dataset",
+            )
+
+        gaps = [
+            ResearchGapV2(
+                gap_type=GapType.DATASET_GAP,
+                title="Missing benchmark dataset",
+                description="No benchmark for RAG",
+                severity=GapSeverity.MEDIUM,
+            ),
+            ResearchGapV2(
+                gap_type=GapType.METHOD_LIMITATION,
+                title="Scalability bottleneck",
+                description="RAG scales poorly",
+                severity=GapSeverity.MEDIUM,
+            ),
+        ]
+
+        sorted_gaps, pref_applied = temp_gap_analyzer._apply_preference_sorting(gaps)
+
+        # method_limitation should be first (neutral vs negative dataset_gap)
+        assert sorted_gaps[0].gap_type == GapType.METHOD_LIMITATION
+
+    def test_keyword_preference_affects_sort_order(self, temp_gap_analyzer, temp_tracker):
+        """When a gap title matches a preferred keyword, it ranks higher."""
+        # Record preference for "scalability" keyword
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+            gap_title="Scalability analysis",
+        )
+
+        gaps = [
+            ResearchGapV2(
+                gap_type=GapType.THEORETICAL_GAP,
+                title="Theoretical foundations of attention",
+                description="Missing theory",
+                severity=GapSeverity.MEDIUM,
+            ),
+            ResearchGapV2(
+                gap_type=GapType.METHOD_LIMITATION,
+                title="Scalability issues in retrieval",
+                description="RAG has scalability problems",
+                severity=GapSeverity.MEDIUM,
+            ),
+        ]
+
+        sorted_gaps, _ = temp_gap_analyzer._apply_preference_sorting(gaps)
+
+        # Gap with "scalability" in title should rank higher
+        assert "scalability" in sorted_gaps[0].title.lower()
+
+    def test_dashboard_shows_preference_stats(self, temp_tracker):
+        """Dashboard.collect() reads gap_preferences from EvolutionTracker."""
+        # Record some events
+        for _ in range(3):
+            temp_tracker.record_event(
+                topic="RAG",
+                action=ExplorationAction.ACCEPTED,
+                gap_type="method_limitation",
+                gap_title="Scalability issue",
+            )
+
+        # Check that preferred_types contains method_limitation
+        profile = temp_tracker.get_profile()
+        assert "method_limitation" in profile.gap_type_preferences
+        # Check render_profile shows it
+        text = temp_tracker.render_profile()
+        assert "method_limitation" in text
+
+    def test_preference_score_increases_with_history(self, temp_gap_analyzer, temp_tracker):
+        """More events for a gap_type produce higher preference_score."""
+        gap = ResearchGapV2(
+            gap_type=GapType.METHOD_LIMITATION,
+            title="Scalability in RAG",
+            description="RAG scales poorly",
+            severity=GapSeverity.MEDIUM,
+        )
+
+        # First: sort with no history
+        sorted_gaps1, _ = temp_gap_analyzer._apply_preference_sorting([gap])
+        score1 = sorted_gaps1[0].preference_score
+
+        # Add history
+        for _ in range(3):
+            temp_tracker.record_event(
+                topic="RAG",
+                action=ExplorationAction.ACCEPTED,
+                gap_type="method_limitation",
+                gap_title="Scalability issue",
+            )
+
+        # Second: sort after history — score should increase
+        sorted_gaps2, _ = temp_gap_analyzer._apply_preference_sorting([gap])
+        score2 = sorted_gaps2[0].preference_score
+
+        assert score2 > score1

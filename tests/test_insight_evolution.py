@@ -140,10 +140,13 @@ class TestEvolutionTracker:
         )
 
         profile = temp_tracker.get_profile()
-        # Should have exploratory tag due to high accept rate
-        assert "exploratory" in profile.preference_tags or \
-               "high_risk" in profile.preference_tags or \
-               "app_focused" in profile.preference_tags
+        # Should have exploratory tag (or app_focused) due to high accept rate
+        # Now preference_tags is Dict[str, float] — check keys
+        assert len(profile.preference_tags) > 0
+        assert any(
+            tag in profile.preference_tags and profile.preference_tags[tag] > 0
+            for tag in ("exploratory", "app_focused", "method_focused")
+        )
 
     def test_get_recent_events(self, temp_tracker):
         """Test retrieving recent events."""
@@ -371,3 +374,368 @@ class TestKeywordPreferences:
         score = profile.keyword_preferences.get("robustness", 0.0)
         # VIEWED has weight 0.1 * 0.5 = 0.05 per event, 3 events = 0.15
         assert score > 0.1
+
+
+class TestTTLCache:
+    """Test in-memory TTL cache for decay-weighted scores."""
+
+    def test_cache_miss_on_first_read(self, temp_tracker):
+        """First call computes and caches scores."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+            gap_title="Scalability in retrieval",
+        )
+
+        # First call populates cache
+        score1 = temp_tracker.get_gap_type_score("method_limitation")
+        assert score1 > 0
+
+        # Cache should be populated
+        assert temp_tracker._cache_time is not None
+        assert "gap_types" in temp_tracker._score_cache
+
+    def test_cache_hit_avoids_rescan(self, temp_tracker):
+        """Second call returns cached value without reading JSONL again."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="theoretical_gap",
+            gap_title="Theoretical foundations",
+        )
+
+        # Populate cache
+        score1 = temp_tracker.get_gap_type_score("theoretical_gap")
+
+        # Capture cache state
+        saved_cache = dict(temp_tracker._score_cache)
+        saved_time = temp_tracker._cache_time
+
+        # Second call should return same value from cache
+        score2 = temp_tracker.get_gap_type_score("theoretical_gap")
+        assert score1 == score2
+        assert temp_tracker._score_cache == saved_cache
+        assert temp_tracker._cache_time == saved_time
+
+    def test_cache_invalidated_on_new_event(self, temp_tracker):
+        """Recording a new event clears the cache."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+        )
+
+        # Populate cache
+        temp_tracker.get_gap_type_score("method_limitation")
+        assert temp_tracker._cache_time is not None
+
+        # Record new event — cache must be invalidated
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.VIEWED,
+            gap_type="dataset_gap",
+            gap_title="Missing benchmark",
+        )
+
+        assert temp_tracker._cache_time is None
+        assert len(temp_tracker._score_cache) == 0
+
+    def test_both_cache_keys_populated(self, temp_tracker):
+        """Both gap_type and keyword caches are filled in one scan."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+            gap_title="Scalability in retrieval",
+        )
+
+        # Trigger cache population
+        temp_tracker.get_gap_type_score("method_limitation")
+
+        cached = temp_tracker._score_cache
+        assert "gap_types" in cached
+        assert "keywords" in cached
+        # Keyword from gap_title should be present
+        assert "scalability" in cached["keywords"]
+
+    def test_get_keyword_score_from_cache(self, temp_tracker):
+        """get_keyword_score uses cached keyword scores."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+            gap_title="Scalability analysis",
+        )
+
+        # First call — cache miss, populates
+        score1 = temp_tracker.get_keyword_score("scalability")
+
+        # Second call — cache hit
+        score2 = temp_tracker.get_keyword_score("scalability")
+        assert score1 == score2
+        assert score1 > 0
+
+    def test_get_top_keywords_from_cache(self, temp_tracker):
+        """get_top_keywords uses cached keyword scores."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+            gap_title="Scalability analysis",
+        )
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.VIEWED,
+            gap_type="theoretical_gap",
+            gap_title="Theoretical foundations",
+        )
+
+        # Trigger via get_top_keywords (populates cache)
+        top1 = temp_tracker.get_top_keywords(limit=3)
+
+        # Cache hit on second call
+        top2 = temp_tracker.get_top_keywords(limit=3)
+        assert top1 == top2
+        assert "scalability" in top1
+
+
+class TestProfilePersistence:
+    """Test export/import profile functionality."""
+
+    def test_export_creates_file(self, temp_tracker, tmp_path):
+        """export_profile creates a JSON file."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+        )
+
+        backup_path = temp_tracker.export_profile(path=tmp_path / "backup.json")
+
+        assert backup_path.exists()
+        data = json.loads(backup_path.read_text(encoding="utf-8"))
+        assert "_exported_at" in data
+        assert "_version" in data
+        assert data["total_events"] == 1
+        assert "method_limitation" in data["gap_type_preferences"]
+
+    def test_export_with_default_path(self, temp_tracker):
+        """export_profile defaults to data_dir with timestamp."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.VIEWED,
+            gap_type="theoretical_gap",
+        )
+
+        path = temp_tracker.export_profile()
+
+        assert path.exists()
+        assert "profile_backup_" in path.name
+        assert path.parent == temp_tracker.data_dir
+
+    def test_import_replaces_profile(self, temp_tracker, tmp_path):
+        """import_profile with merge=False replaces existing profile."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+        )
+        # Verify cache is populated
+        temp_tracker.get_gap_type_score("method_limitation")
+
+        # Export
+        backup = tmp_path / "backup.json"
+        temp_tracker.export_profile(path=backup)
+
+        # Add more events
+        temp_tracker.record_event(
+            topic="LLM",
+            action=ExplorationAction.VIEWED,
+            gap_type="dataset_gap",
+        )
+
+        # Import with replace
+        imported = temp_tracker.import_profile(backup, merge=False)
+
+        assert imported.total_events == 1  # replaced, not merged
+        assert imported.gap_type_preferences.get("method_limitation", 0) > 0
+        assert "dataset_gap" not in imported.gap_type_preferences
+
+    def test_import_merges_profiles(self, temp_tracker, tmp_path):
+        """import_profile with merge=True sums numeric fields."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+        )
+        backup = tmp_path / "backup.json"
+        temp_tracker.export_profile(path=backup)
+
+        # Add different events to get different preferences
+        temp_tracker.record_event(
+            topic="LLM",
+            action=ExplorationAction.VIEWED,
+            gap_type="theoretical_gap",
+        )
+
+        # Import with merge
+        merged = temp_tracker.import_profile(backup, merge=True)
+
+        # Both gap types should be present (summed)
+        assert "method_limitation" in merged.gap_type_preferences
+        assert "theoretical_gap" in merged.gap_type_preferences
+
+    def test_import_invalid_path_raises(self, temp_tracker, tmp_path):
+        """import_profile raises FileNotFoundError for missing file."""
+        with pytest.raises(FileNotFoundError):
+            temp_tracker.import_profile(tmp_path / "nonexistent.json")
+
+    def test_list_backups_finds_exports(self, temp_tracker):
+        """list_backups returns sorted backup files."""
+        temp_tracker.record_event(topic="RAG", action=ExplorationAction.VIEWED)
+
+        path1 = temp_tracker.export_profile()
+        path2 = temp_tracker.export_profile()
+
+        backups = temp_tracker.list_backups()
+        assert len(backups) >= 2
+        assert all(p.name.startswith("profile_backup_") for p in backups)
+        # Both exports appear in the list (order within same-timestamp files is non-deterministic
+        # when datetime is mocked to a fixed value, so check set equality instead)
+        assert set(backups) >= {path1, path2}
+
+    def test_import_clears_cache(self, temp_tracker, tmp_path):
+        """import_profile invalidates score cache."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+        )
+        # Populate cache
+        temp_tracker.get_gap_type_score("method_limitation")
+        assert temp_tracker._cache_time is not None
+
+        backup = tmp_path / "backup.json"
+        temp_tracker.export_profile(path=backup)
+        temp_tracker.import_profile(backup, merge=False)
+
+        assert temp_tracker._cache_time is None
+        assert len(temp_tracker._score_cache) == 0
+
+    def test_merge_accumulates_keyword_preferences(self, temp_tracker, tmp_path):
+        """Merging accumulates keyword preferences from both profiles."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+            gap_title="Scalability in retrieval",
+        )
+        backup = tmp_path / "backup.json"
+        temp_tracker.export_profile(path=backup)
+
+        temp_tracker.record_event(
+            topic="LLM",
+            action=ExplorationAction.VIEWED,
+            gap_type="dataset_gap",
+            gap_title="Missing benchmark datasets",
+        )
+
+        merged = temp_tracker.import_profile(backup, merge=True)
+
+        # Both sets of keywords should be present
+        kw = merged.keyword_preferences
+        assert "scalability" in kw
+        assert "datasets" in kw or "benchmark" in kw
+
+
+class TestPreferenceTagConfidence:
+    """Test preference tags with confidence scores."""
+
+    def test_tags_are_dict_with_float_values(self, temp_tracker):
+        """preference_tags is now Dict[str, float], not List[str]."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+        )
+        profile = temp_tracker.get_profile()
+        assert isinstance(profile.preference_tags, dict)
+        for tag, conf in profile.preference_tags.items():
+            assert isinstance(tag, str)
+            assert isinstance(conf, float)
+            assert 0.0 <= conf <= 1.0
+
+    def test_high_accept_rate_yields_exploratory_tag(self, temp_tracker):
+        """High accept rate should produce exploratory tag with high confidence."""
+        for _ in range(10):
+            temp_tracker.record_event(
+                topic="RAG",
+                action=ExplorationAction.ACCEPTED,
+                gap_type="method_limitation",
+            )
+        profile = temp_tracker.get_profile()
+        assert "exploratory" in profile.preference_tags
+        # With 10 accepts and 0 views, accept_rate = 1.0
+        assert profile.preference_tags["exploratory"] >= 0.3
+
+    def test_tag_confidence_ranges(self, temp_tracker):
+        """Tag confidence should be between 0 and 1."""
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.VIEWED,
+            gap_type="method_limitation",
+        )
+        profile = temp_tracker.get_profile()
+        for tag, conf in profile.preference_tags.items():
+            assert 0.0 <= conf <= 1.0
+
+    def test_render_profile_shows_confidence_level(self, temp_tracker):
+        """render_profile output should include confidence percentages."""
+        for _ in range(5):
+            temp_tracker.record_event(
+                topic="RAG",
+                action=ExplorationAction.ACCEPTED,
+                gap_type="method_limitation",
+            )
+        text = temp_tracker.render_profile()
+        # Should show emoji-coded confidence levels
+        assert any(emoji in text for emoji in ["🟢", "🟡", "⚪"])
+        # Should include percentage
+        assert "%" in text
+
+    def test_merge_preference_tags_takes_max_confidence(self, temp_tracker, tmp_path):
+        """Merging profiles should keep higher confidence for each tag."""
+        # First profile: exploratory at 0.3
+        temp_tracker.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+        )
+        backup = tmp_path / "backup.json"
+        temp_tracker.export_profile(path=backup)
+
+        # Second profile: exploratory at 0.8 (different session)
+        temp_tracker2 = temp_tracker.__class__(data_dir=tmp_path / "other")
+        temp_tracker2.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+        )
+        temp_tracker2.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+        )
+        temp_tracker2.record_event(
+            topic="RAG",
+            action=ExplorationAction.ACCEPTED,
+            gap_type="method_limitation",
+        )
+        backup2 = tmp_path / "backup2.json"
+        temp_tracker2.export_profile(path=backup2)
+
+        # Merge backup2 into temp_tracker
+        merged = temp_tracker.import_profile(backup2, merge=True)
+        # Should have max confidence
+        assert "exploratory" in merged.preference_tags

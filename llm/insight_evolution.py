@@ -13,6 +13,7 @@ Insight Evolution 追踪 — 系统记录用户探索了哪些 gaps/hypotheses�
 from __future__ import annotations
 
 import json
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -84,8 +85,9 @@ class UserPreferenceProfile:
     topics_explored: List[str] = field(default_factory=list)
     topic_frequency: Dict[str, int] = field(default_factory=dict)
 
-    # Preference tags (computed)
-    preference_tags: List[str] = field(default_factory=list)
+    # Preference tags (computed) — tag name -> confidence [0, 1]
+    # Confidence > 0.6 = stable preference, 0.3-0.6 = emerging, < 0.3 = tentative
+    preference_tags: Dict[str, float] = field(default_factory=dict)
 
     # Recent topics (last 10)
     recent_topics: List[str] = field(default_factory=list)
@@ -117,6 +119,10 @@ class EvolutionTracker:
     3. 基于历史优化推荐
     """
 
+    # Cache TTL in seconds (5 minutes — long enough to amortize O(n) scans,
+    # short enough that new events feel "live")
+    _CACHE_TTL_SECONDS: int = 300
+
     def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir or Path.home() / ".ai_research_os" / "evolution"
         self.data_dir.mkdir(parents=True, exist_ok=True)
@@ -124,6 +130,10 @@ class EvolutionTracker:
         self.profile_file = self.data_dir / "preference_profile.json"
         self.sessions_dir = self.data_dir / "sessions"
         self.sessions_dir.mkdir(exist_ok=True)
+        # In-memory TTL cache for time-decayed score reads.
+        # Key -> (computed_value, timestamp_iso)
+        self._score_cache: Dict[str, Any] = {}
+        self._cache_time: Optional[datetime] = None
 
     def _get_timestamp(self) -> str:
         return datetime.now().isoformat()
@@ -166,6 +176,10 @@ class EvolutionTracker:
 
         # Update profile
         self._update_profile(event)
+
+        # Invalidate score cache so next read recomputes with new event
+        self._score_cache.clear()
+        self._cache_time = None
 
         return event
 
@@ -322,33 +336,39 @@ class EvolutionTracker:
         """Extract research-relevant keywords from text."""
         return extract_keywords(text)
 
-    def _compute_preference_tags(self, profile: UserPreferenceProfile) -> List[str]:
-        """Compute preference tags from profile stats."""
-        tags = []
+    def _compute_preference_tags(self, profile: UserPreferenceProfile) -> Dict[str, float]:
+        """Compute preference tags with confidence scores [0, 1]."""
+        tags: Dict[str, float] = {}
 
-        # Gap type preferences
+        # Gap type focus: confidence = proportion of events in top type
         if profile.gap_type_preferences:
             top_type = max(profile.gap_type_preferences.items(), key=lambda x: x[1])[0]
+            total_score = sum(abs(v) for v in profile.gap_type_preferences.values())
+            if total_score > 0:
+                top_confidence = min(abs(profile.gap_type_preferences[top_type]) / total_score, 1.0)
+            else:
+                top_confidence = 0.3
 
             if "method" in top_type.lower():
-                tags.append(PreferenceTag.METHOD_FOCUSED.value)
+                tags[PreferenceTag.METHOD_FOCUSED.value] = top_confidence
             elif "application" in top_type.lower() or "unexplored" in top_type.lower():
-                tags.append(PreferenceTag.APPLICATION_FOCUSED.value)
+                tags[PreferenceTag.APPLICATION_FOCUSED.value] = top_confidence
             elif "theoretical" in top_type.lower():
-                tags.append(PreferenceTag.THEORY_FOCUSED.value)
+                tags[PreferenceTag.THEORY_FOCUSED.value] = top_confidence
 
-        # Action ratios
+        # Action ratios -> behavioral tags
         total = max(profile.views, 1)
         accept_rate = profile.accepts / total
         reject_rate = profile.rejects / total
 
         if accept_rate > 0.3:
-            tags.append(PreferenceTag.EXPLORATORY.value)
+            tags[PreferenceTag.EXPLORATORY.value] = accept_rate
         if reject_rate > 0.3:
-            tags.append(PreferenceTag.LOW_RISK_TOLERANT.value)
+            tags[PreferenceTag.LOW_RISK_TOLERANT.value] = reject_rate
 
         if profile.hypothesizes > profile.views * 0.2:
-            tags.append(PreferenceTag.HIGH_RISK_TOLERANT.value)
+            hypo_rate = min(profile.hypothesizes / max(profile.views + profile.accepts, 1), 1.0)
+            tags[PreferenceTag.HIGH_RISK_TOLERANT.value] = hypo_rate
 
         # Cross-domain detection
         if len(profile.topics_explored) >= 3:
@@ -357,9 +377,10 @@ class EvolutionTracker:
             domain_indicators = ["nlp", "vision", "audio", "graph", "reinforcement", "supervised"]
             detected = sum(1 for d in domain_indicators if d in topics_str)
             if detected >= 2:
-                tags.append(PreferenceTag.CROSS_DOMAIN.value)
+                confidence = min(detected / len(domain_indicators), 1.0)
+                tags[PreferenceTag.CROSS_DOMAIN.value] = confidence
 
-        return list(set(tags))  # Deduplicate
+        return tags
 
     def _load_profile(self) -> UserPreferenceProfile:
         """Load user preference profile."""
@@ -439,16 +460,45 @@ class EvolutionTracker:
             pass
         return events
 
-    def _get_all_gap_type_scores(self) -> Dict[str, float]:
-        """Get time-decayed scores for all gap types in one pass."""
+    # ─── Cached Score Reads ─────────────────────────────────────────────────────
+
+    def _is_cache_valid(self) -> bool:
+        """Check if cached scores are still within TTL window."""
+        if self._cache_time is None:
+            return False
+        age = (datetime.now() - self._cache_time).total_seconds()
+        return age < self._CACHE_TTL_SECONDS
+
+    def _get_all_scores_cached(self) -> Dict[str, Any]:
+        """Return all pre-computed scores from cache or compute + cache them.
+
+        This is the single O(n) scan that all decay-weighted reads share.
+        Returns a dict with 'gap_types' ( Dict[str,float] ) and 'keywords'
+        ( Dict[str,float] ) so both score families are computed in one pass.
+        """
+        if self._is_cache_valid():
+            return self._score_cache
+
         events = self.get_recent_events(limit=10000)
-        scores: Dict[str, float] = {}
+
+        gap_scores: Dict[str, float] = {}
+        kw_scores: Dict[str, float] = {}
         for e in events:
+            w = self._event_weight(e)
+            decayed = self._decay_weight(w, e.timestamp)
             if e.gap_type:
-                scores[e.gap_type] = scores.get(e.gap_type, 0.0) + self._decay_weight(
-                    self._event_weight(e), e.timestamp
-                )
-        return scores
+                gap_scores[e.gap_type] = gap_scores.get(e.gap_type, 0.0) + decayed
+            if e.gap_title:
+                for kw in extract_keywords(e.gap_title):
+                    kw_scores[kw] = kw_scores.get(kw, 0.0) + decayed * 0.5
+
+        self._score_cache = {"gap_types": gap_scores, "keywords": kw_scores}
+        self._cache_time = datetime.now()
+        return self._score_cache
+
+    def _get_all_gap_type_scores(self) -> Dict[str, float]:
+        """Get time-decayed scores for all gap types (from cache or single scan)."""
+        return self._get_all_scores_cached()["gap_types"]
 
     def get_preferred_gap_types(self, limit: int = 3) -> List[str]:
         """Get most preferred gap types based on time-decayed history."""
@@ -526,8 +576,10 @@ class EvolutionTracker:
 
         if stats.get('preference_tags'):
             lines.append("🏷️ 偏好标签:")
-            for tag in stats['preference_tags']:
-                lines.append(f"   • {tag}")
+            sorted_tags = sorted(stats['preference_tags'].items(), key=lambda x: x[1], reverse=True)
+            for tag, confidence in sorted_tags:
+                level = "🟢" if confidence >= 0.6 else "🟡" if confidence >= 0.3 else "⚪"
+                lines.append(f"   {level} {tag} ({confidence:.0%})")
 
         lines.append("")
         lines.append("═" * 60)
@@ -549,40 +601,18 @@ class EvolutionTracker:
             return 0.0
 
     def get_gap_type_score(self, gap_type: str) -> float:
-        """Get the numeric preference score for a gap type with time decay.
-
-        Recent events contribute more than old ones (exponential decay).
-        """
-        events = self.get_recent_events(limit=10000)
-        score = 0.0
-        for e in events:
-            if e.gap_type == gap_type:
-                score += self._decay_weight(self._event_weight(e), e.timestamp)
-        return score
+        """Get the numeric preference score for a gap type with time decay."""
+        scores = self._get_all_scores_cached()["gap_types"]
+        return scores.get(gap_type, 0.0)
 
     def get_keyword_score(self, keyword: str) -> float:
         """Get the numeric preference score for a keyword with time decay."""
-        events = self.get_recent_events(limit=10000)
-        score = 0.0
-        for e in events:
-            if e.gap_title:
-                keywords = extract_keywords(e.gap_title)
-                if keyword.lower() in keywords:
-                    # Use half weight for keyword matching
-                    score += self._decay_weight(self._event_weight(e) * 0.5, e.timestamp)
-        return score
+        kw_scores = self._get_all_scores_cached()["keywords"]
+        return kw_scores.get(keyword.lower(), 0.0)
 
     def get_top_keywords(self, limit: int = 5) -> List[str]:
         """Get most preferred keywords based on decay-weighted history."""
-        events = self.get_recent_events(limit=10000)
-        kw_scores: Dict[str, float] = {}
-        for e in events:
-            if e.gap_title:
-                keywords = extract_keywords(e.gap_title)
-                for kw in keywords:
-                    kw_scores[kw] = kw_scores.get(kw, 0.0) + self._decay_weight(
-                        self._event_weight(e) * 0.5, e.timestamp
-                    )
+        kw_scores = self._get_all_scores_cached()["keywords"]
         sorted_kws = sorted(kw_scores.items(), key=lambda x: x[1], reverse=True)
         return [kw for kw, score in sorted_kws[:limit] if score > 0.05]
 
@@ -636,8 +666,10 @@ class EvolutionTracker:
 
         if stats.get('preference_tags'):
             lines.append("🏷️ 偏好标签:")
-            for tag in stats['preference_tags']:
-                lines.append(f"   • {tag}")
+            sorted_tags = sorted(stats['preference_tags'].items(), key=lambda x: x[1], reverse=True)
+            for tag, confidence in sorted_tags:
+                level = "🟢" if confidence >= 0.6 else "🟡" if confidence >= 0.3 else "⚪"
+                lines.append(f"   {level} {tag} ({confidence:.0%})")
             lines.append("")
 
         if stats.get('top_gap_types'):
@@ -889,3 +921,152 @@ class EvolutionTracker:
         lines.append("")
         lines.append("═" * 60)
         return "\n".join(lines)
+
+    # ─── Persistence ─────────────────────────────────────────────────────────────
+
+    def export_profile(self, path: Optional[Path] = None) -> Path:
+        """Export preference profile to a timestamped backup file.
+
+        Args:
+            path: Optional output path. If None, writes to
+                  data_dir/profile_backup_YYYY-MM-DDTHH-MM-SS.json
+
+        Returns:
+            Path to the exported file.
+        """
+        profile = self._load_profile()
+        data = profile.__dict__.copy()
+        data["_exported_at"] = self._get_timestamp()
+        data["_version"] = "1.0"
+
+        if path is None:
+            ts = self._get_timestamp().replace(":", "-").replace(".", "-")[:19]
+            uid = uuid.uuid4().hex[:6]
+            path = self.data_dir / f"profile_backup_{ts}_{uid}.json"
+
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+
+        return path
+
+    def import_profile(
+        self,
+        path: Path,
+        merge: bool = True,
+    ) -> UserPreferenceProfile:
+        """Import a preference profile from a backup file.
+
+        Args:
+            path: Path to the backup JSON file.
+            merge: If True (default), merge incoming values with existing
+                   profile (numeric fields are summed, lists are combined and
+                   deduplicated). If False, replace existing profile entirely.
+
+        Returns:
+            The resulting merged or replaced profile.
+        """
+        path = Path(path)
+        if not path.exists():
+            raise FileNotFoundError(f"Profile backup not found: {path}")
+
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        # Strip metadata fields from backup
+        data.pop("_exported_at", None)
+        data.pop("_version", None)
+
+        if merge:
+            existing = self._load_profile()
+            merged = self._merge_profiles(existing, data)
+            self._save_profile(merged)
+            # Invalidate cache so merged values are visible immediately
+            self._score_cache.clear()
+            self._cache_time = None
+            return merged
+        else:
+            profile = UserPreferenceProfile(**data)
+            self._save_profile(profile)
+            self._score_cache.clear()
+            self._cache_time = None
+            return profile
+
+    def _merge_profiles(
+        self,
+        base: UserPreferenceProfile,
+        incoming: Dict[str, Any],
+    ) -> UserPreferenceProfile:
+        """Merge incoming profile data into base profile.
+
+        Numeric fields (preferences, counts) are summed.
+        List fields (topics_explored, preference_tags) are unioned.
+        Scalar fields (total_events, etc.) use the larger value.
+        """
+        result = UserPreferenceProfile()
+
+        # Scalars: take max (event count, etc.)
+        result.total_sessions = max(base.total_sessions, incoming.get("total_sessions", 0))
+        result.total_events = max(base.total_events, incoming.get("total_events", 0))
+        result.views = max(base.views, incoming.get("views", 0))
+        result.accepts = max(base.accepts, incoming.get("accepts", 0))
+        result.rejects = max(base.rejects, incoming.get("rejects", 0))
+        result.expands = max(base.expands, incoming.get("expands", 0))
+        result.hypothesizes = max(base.hypothesizes, incoming.get("hypothesizes", 0))
+        result.last_updated = self._get_timestamp()
+
+        # Dict fields: sum numeric values
+        base_gap = dict(base.gap_type_preferences)
+        inc_gap = incoming.get("gap_type_preferences", {})
+        for k, v in inc_gap.items():
+            base_gap[k] = base_gap.get(k, 0.0) + v
+        result.gap_type_preferences = base_gap
+
+        base_kw = dict(base.keyword_preferences)
+        inc_kw = incoming.get("keyword_preferences", {})
+        for k, v in inc_kw.items():
+            base_kw[k] = base_kw.get(k, 0.0) + v
+        result.keyword_preferences = base_kw
+
+        # List fields: union + preserve order
+        seen = set()
+        for t in base.topics_explored:
+            if t not in seen:
+                seen.add(t)
+                result.topics_explored.append(t)
+        for t in incoming.get("topics_explored", []):
+            if t not in seen:
+                seen.add(t)
+                result.topics_explored.append(t)
+
+        # topic_frequency: sum
+        result.topic_frequency = dict(base.topic_frequency)
+        for k, v in incoming.get("topic_frequency", {}).items():
+            result.topic_frequency[k] = result.topic_frequency.get(k, 0) + v
+
+        # preference_tags: Dict[str, float] — take higher confidence for each tag
+        base_tags = dict(base.preference_tags)
+        inc_tags = incoming.get("preference_tags", {})
+        for k, v in inc_tags.items():
+            base_tags[k] = max(base_tags.get(k, 0.0), v)
+        result.preference_tags = base_tags
+
+        # recent_topics: take longer list
+        base_recent = list(base.recent_topics)
+        inc_recent = incoming.get("recent_topics", [])
+        seen2 = set()
+        merged_recent = []
+        for t in reversed(base_recent + inc_recent):
+            if t not in seen2:
+                seen2.add(t)
+                merged_recent.insert(0, t)
+        result.recent_topics = merged_recent[:10]
+
+        return result
+
+    def list_backups(self) -> List[Path]:
+        """List all profile backup files in data_dir."""
+        if not self.data_dir.exists():
+            return []
+        return sorted(self.data_dir.glob("profile_backup_*.json"), reverse=True)
