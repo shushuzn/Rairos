@@ -44,6 +44,39 @@ class GapSeverity(Enum):
     LOW = "low"  # 低 - 边缘问题
 
 
+# Module-level constants shared across gap detection and question generation
+# All 8 GapType values are defined here; detection only uses a subset.
+_GAP_TYPE_PATTERNS: Dict[GapType, List[str]] = {
+    GapType.UNEXPLORED_APPLICATION: [
+        r'未探索|未研究|future work|future directions|open problem',
+        r'potential application|limitation.*future|future research',
+    ],
+    GapType.METHOD_LIMITATION: [
+        r'limitation|不足|weakness|shortcoming|constraint',
+        r'does not scale|only works for|restricted to',
+    ],
+    GapType.CONTRADICTION: [
+        r'however|but|in contrast|on the contrary',
+        r'conflicting|disagree|differ|contradict',
+    ],
+    GapType.EVALUATION_GAP: [
+        r'no benchmark|lack.*evaluation|evaluation.*limited',
+        r'no standard|without baseline',
+    ],
+}
+
+_GAP_QUESTION_TEMPLATES: Dict[GapType, str] = {
+    GapType.UNEXPLORED_APPLICATION: "如何将 {topic} 应用于新场景？",
+    GapType.METHOD_LIMITATION: "如何改进 {topic} 的方法以解决局限？",
+    GapType.CONTRADICTION: "如何协调/解决 {topic} 中的矛盾发现？",
+    GapType.EVALUATION_GAP: "如何为 {topic} 建立标准化评估？",
+    GapType.SCALABILITY_ISSUE: "{topic} 如何扩展到更大规模？",
+    GapType.THEORETICAL_GAP: "如何加强 {topic} 的理论基础？",
+    GapType.DATASET_GAP: "如何构建 {topic} 的基准数据集？",
+    GapType.GENERALIZATION_GAP: "{topic} 的泛化能力如何验证？",
+}
+
+
 @dataclass
 class ResearchGap:
     """Represents a research gap."""
@@ -303,27 +336,7 @@ GAP_TYPE 可选：
         """Rule-based gap detection (fallback when LLM unavailable)."""
         gaps = []
 
-        # Check for common patterns
-        patterns = {
-            GapType.UNEXPLORED_APPLICATION: [
-                r'未探索|未研究|future work|future directions|open problem',
-                r'potential application|limitation.*future|future research',
-            ],
-            GapType.METHOD_LIMITATION: [
-                r'limitation|不足|weakness|shortcoming|constraint',
-                r'does not scale|only works for|restricted to',
-            ],
-            GapType.CONTRADICTION: [
-                r'however|but|in contrast|on the contrary',
-                r'conflicting|disagree|differ|contradict',
-            ],
-            GapType.EVALUATION_GAP: [
-                r'no benchmark|lack.*evaluation|evaluation.*limited',
-                r'no standard|without baseline',
-            ],
-        }
-
-        for gap_type, type_patterns in patterns.items():
+        for gap_type, type_patterns in _GAP_TYPE_PATTERNS.items():
             for pattern in type_patterns:
                 if re.search(pattern, paper_summaries, re.IGNORECASE):
                     gaps.append(ResearchGap(
@@ -422,20 +435,9 @@ GAP_TYPE 可选：
     def _generate_questions_rules(self, gaps: List[ResearchGap]) -> List[ResearchQuestion]:
         """Rule-based question generation."""
         questions = []
-        templates = {
-            GapType.UNEXPLORED_APPLICATION: "如何将 {topic} 应用于新场景？",
-            GapType.METHOD_LIMITATION: "如何改进 {topic} 的方法以解决局限？",
-            GapType.CONTRADICTION: "如何协调/解决 {topic} 中的矛盾发现？",
-            GapType.EVALUATION_GAP: "如何为 {topic} 建立标准化评估？",
-            GapType.SCALABILITY_ISSUE: "{topic} 如何扩展到更大规模？",
-            GapType.THEORETICAL_GAP: "如何加强 {topic} 的理论基础？",
-            GapType.DATASET_GAP: "如何构建 {topic} 的基准数据集？",
-            GapType.GENERALIZATION_GAP: "{topic} 的泛化能力如何验证？",
-        }
-
         topic = "该方法"  # Generic fallback
         for gap in gaps[:5]:  # Max 5 questions
-            template = templates.get(gap.gap_type, "如何改进 {topic}？")
+            template = _GAP_QUESTION_TEMPLATES.get(gap.gap_type, "如何改进 {topic}？")
             question_text = template.format(topic=topic)
 
             q = ResearchQuestion(
