@@ -28,6 +28,19 @@ except ImportError:
     LLM_AVAILABLE = False
 
 
+# ------------------------------------------------------------------
+# Prompt constants for LLM-based story generation
+# ------------------------------------------------------------------
+_CHAPTER_SUMMARY_SYSTEM_PROMPT = """为科研故事的一个章节生成简短的总结。
+格式：主题 + 2-3句关键内容概括"""
+
+_CHAPTER_SUMMARY_USER_PROMPT_TEMPLATE = """章节: {chapter_title}
+论文:
+{paper_texts}
+
+请生成章节总结："""
+
+
 class NarrativeRole(Enum):
     """Role a paper plays in the narrative."""
     PROTAGONIST = "protagonist"   # 主角 - 主流方法
@@ -486,21 +499,17 @@ class StoryWeaver:
                 for p in chapter.papers[:5]
             ])
 
-            system_prompt = """为科研故事的一个章节生成简短的总结。
-格式：主题 + 2-3句关键内容概括"""
-
-            user_prompt = f"""章节: {chapter.title}
-论文:
-{paper_texts}
-
-请生成章节总结："""
+            user_prompt = _CHAPTER_SUMMARY_USER_PROMPT_TEMPLATE.format(
+                chapter_title=chapter.title,
+                paper_texts=paper_texts,
+            )
 
             try:
                 response = call_llm_chat_completions(
                     base_url=base_url or LLM_BASE_URL,
                     api_key=api_key,
                     model=model or LLM_MODEL,
-                    system_prompt=system_prompt,
+                    system_prompt=_CHAPTER_SUMMARY_SYSTEM_PROMPT,
                     user_prompt=user_prompt,
                 )
                 chapter.summary = response.strip()

@@ -20,6 +20,25 @@ from typing import Optional, List, Dict, Any, Tuple
 
 from llm.constants import LLM_BASE_URL, LLM_MODEL
 
+# =============================================================================
+# Prompt templates
+# =============================================================================
+_HYPOTHESIS_ENHANCEMENT_SYSTEM_PROMPT = """基于研究空白和趋势，生成3-5个具体可验证的研究假说。
+每个假说需要包含：
+1. 核心陈述：具体可测量的假说
+2. 基于什么：空白类型、趋势方向
+3. 预期结果：如果假说成立会观察到什么
+
+输出格式：
+[假说N] 核心陈述 | 基于 | 预期结果"""
+
+_HYPOTHESIS_ENHANCEMENT_USER_PROMPT_TEMPLATE = """研究领域: {topic}
+
+上下文:
+{context}
+
+请生成具体的研究假说："""
+
 # Optional imports
 try:
     from llm.chat import call_llm_chat_completions
@@ -381,28 +400,17 @@ class HypothesisGenerator:
 
         context = f"Topic: {topic}\nGap: {gap_context[:200]}\nTrend: {trend_context[:200]}"
 
-        system_prompt = """基于研究空白和趋势，生成3-5个具体可验证的研究假说。
-每个假说需要包含：
-1. 核心陈述：具体可测量的假说
-2. 基于什么：空白类型、趋势方向
-3. 预期结果：如果假说成立会观察到什么
-
-输出格式：
-[假说N] 核心陈述 | 基于 | 预期结果"""
-
-        user_prompt = f"""研究领域: {topic}
-
-上下文:
-{context}
-
-请生成具体的研究假说："""
+        user_prompt = _HYPOTHESIS_ENHANCEMENT_USER_PROMPT_TEMPLATE.format(
+            topic=topic,
+            context=context,
+        )
 
         try:
             response = call_llm_chat_completions(
                 base_url=base_url or LLM_BASE_URL,
                 api_key=api_key,
                 model=model or LLM_MODEL,
-                system_prompt=system_prompt,
+                system_prompt=_HYPOTHESIS_ENHANCEMENT_SYSTEM_PROMPT,
                 user_prompt=user_prompt,
             )
 

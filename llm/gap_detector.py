@@ -26,6 +26,56 @@ except ImportError:
 
 from llm.constants import LLM_BASE_URL, LLM_MODEL
 
+# =============================================================================
+# Prompt templates
+# =============================================================================
+_GAP_DETECTION_SYSTEM_PROMPT = """你是一个研究空白检测专家。分析给定领域的论文列表，识别：
+1. 未充分探索的应用场景
+2. 方法的局限性
+3. 论文间的矛盾点
+4. 评估标准的缺失
+5. 可扩展性问题
+6. 理论基础薄弱之处
+7. 数据集缺失
+8. 泛化能力未验证的问题
+
+输出格式（每行一个gap）：
+[GAP_TYPE] 描述 | 证据论文 | 置信度(0-1) | 严重程度(high/medium/low)
+
+GAP_TYPE 可选：
+- unexplored_application: 未探索的应用
+- method_limitation: 方法局限
+- contradiction: 矛盾
+- evaluation_gap: 评估缺失
+- scalability_issue: 可扩展性
+- theoretical_gap: 理论空白
+- dataset_gap: 数据集缺失
+- generalization_gap: 泛化问题"""
+
+_GAP_DETECTION_USER_PROMPT_TEMPLATE = """分析领域：{topic}
+
+论文列表：
+{paper_summaries}
+
+请识别该领域的研究空白："""
+
+_QUESTION_GENERATION_SYSTEM_PROMPT = """基于研究空白，生成3-5个具体、可验证的研究问题。
+每个问题应该：
+1. 明确说明要研究什么
+2. 有清晰的研究假设
+3. 包含方法建议
+4. 说明预期影响
+
+输出格式（每行一个问题）：
+问题 | 研究假设 | 方法建议 | 预期影响 | 可行性(0-1) | 创新性(0-1)"""
+
+_QUESTION_GENERATION_USER_PROMPT_TEMPLATE = """领域：{topic}
+
+发现的研究空白：
+{gaps_text}
+
+请生成研究问题："""
+
 
 class GapType(Enum):
     """Types of research gaps."""
@@ -243,35 +293,10 @@ class GapDetector:
         if not api_key:
             return self._detect_gaps_rules(paper_summaries)
 
-        system_prompt = """你是一个研究空白检测专家。分析给定领域的论文列表，识别：
-1. 未充分探索的应用场景
-2. 方法的局限性
-3. 论文间的矛盾点
-4. 评估标准的缺失
-5. 可扩展性问题
-6. 理论基础薄弱之处
-7. 数据集缺失
-8. 泛化能力未验证的问题
-
-输出格式（每行一个gap）：
-[GAP_TYPE] 描述 | 证据论文 | 置信度(0-1) | 严重程度(high/medium/low)
-
-GAP_TYPE 可选：
-- unexplored_application: 未探索的应用
-- method_limitation: 方法局限
-- contradiction: 矛盾
-- evaluation_gap: 评估缺失
-- scalability_issue: 可扩展性
-- theoretical_gap: 理论空白
-- dataset_gap: 数据集缺失
-- generalization_gap: 泛化问题"""
-
-        user_prompt = f"""分析领域：{topic}
-
-论文列表：
-{paper_summaries}
-
-请识别该领域的研究空白："""
+        user_prompt = _GAP_DETECTION_USER_PROMPT_TEMPLATE.format(
+            topic=topic,
+            paper_summaries=paper_summaries,
+        )
 
         try:
             response = call_llm_chat_completions(
@@ -279,7 +304,7 @@ GAP_TYPE 可选：
                 base_url=base_url or LLM_BASE_URL,
                 api_key=api_key,
                 model=model or LLM_MODEL,
-                system_prompt=system_prompt,
+                system_prompt=_GAP_DETECTION_SYSTEM_PROMPT,
             )
 
             return self._parse_gaps(response, topic)
@@ -373,29 +398,17 @@ GAP_TYPE 可选：
             for g in gaps
         ])
 
-        system_prompt = """基于研究空白，生成3-5个具体、可验证的研究问题。
-每个问题应该：
-1. 明确说明要研究什么
-2. 有清晰的研究假设
-3. 包含方法建议
-4. 说明预期影响
-
-输出格式（每行一个问题）：
-问题 | 研究假设 | 方法建议 | 预期影响 | 可行性(0-1) | 创新性(0-1)"""
-
-        user_prompt = f"""领域：{topic}
-
-发现的研究空白：
-{gaps_text}
-
-请生成研究问题："""
+        user_prompt = _QUESTION_GENERATION_USER_PROMPT_TEMPLATE.format(
+            topic=topic,
+            gaps_text=gaps_text,
+        )
 
         try:
             response = call_llm_chat_completions(
                 base_url=base_url or LLM_BASE_URL,
                 api_key=api_key,
                 model=model or LLM_MODEL,
-                system_prompt=system_prompt,
+                system_prompt=_QUESTION_GENERATION_SYSTEM_PROMPT,
                 user_prompt=user_prompt,
             )
 

@@ -29,6 +29,42 @@ except ImportError:
     LLM_AVAILABLE = False
 
 
+# ------------------------------------------------------------------
+# Prompt constants for LLM-based analysis
+# ------------------------------------------------------------------
+_INNOVATION_ANALYSIS_SYSTEM_PROMPT = """分析研究问题的新颖性，从以下维度打分（0-10）：
+1. method: 方法创新性 - 是否提出了新方法/架构/技术
+2. task: 任务创新性 - 是否应用于新任务/场景/领域
+3. evaluation: 评估创新性 - 是否提出了新评估标准/基准
+
+输出格式：
+method: X
+task: X
+evaluation: X
+reasoning: 简短的评分理由"""
+
+_INNOVATION_ANALYSIS_USER_PROMPT_TEMPLATE = """研究问题: {question}
+
+相关工作:
+{related_text}
+
+请分析这个问题的创新潜力："""
+
+_SUGGESTION_SYSTEM_PROMPT = """基于研究问题和相关工作，提出3-5条具体改进建议。
+每条建议格式：[方向] 具体建议
+
+方向可选：方法、任务、评估、数据、理论"""
+
+_SUGGESTION_USER_PROMPT_TEMPLATE = """问题: {question}
+
+创新评分: 方法{ method}/10, 任务{ task}/10, 评估{ evaluation}/10
+
+相关工作:
+{related_text}
+
+请提出改进建议："""
+
+
 class NoveltyLevel(Enum):
     """Novelty level for research questions."""
     HIGH = "high"       # 高创新性
@@ -250,30 +286,17 @@ class QuestionValidator:
             for r in related
         ]) or "无相关论文"
 
-        system_prompt = """分析研究问题的新颖性，从以下维度打分（0-10）：
-1. method: 方法创新性 - 是否提出了新方法/架构/技术
-2. task: 任务创新性 - 是否应用于新任务/场景/领域
-3. evaluation: 评估创新性 - 是否提出了新评估标准/基准
-
-输出格式：
-method: X
-task: X
-evaluation: X
-reasoning: 简短的评分理由"""
-
-        user_prompt = f"""研究问题: {question}
-
-相关工作:
-{related_text}
-
-请分析这个问题的创新潜力："""
+        user_prompt = _INNOVATION_ANALYSIS_USER_PROMPT_TEMPLATE.format(
+            question=question,
+            related_text=related_text,
+        )
 
         try:
             response = call_llm_chat_completions(
                 base_url=base_url or LLM_BASE_URL,
                 api_key=api_key,
                 model=model or LLM_MODEL,
-                system_prompt=system_prompt,
+                system_prompt=_INNOVATION_ANALYSIS_SYSTEM_PROMPT,
                 user_prompt=user_prompt,
             )
 
@@ -408,26 +431,20 @@ reasoning: 简短的评分理由"""
 
         related_text = "\n".join([f"- {r.title}" for r in related[:3]]) or "无"
 
-        system_prompt = """基于研究问题和相关工作，提出3-5条具体改进建议。
-每条建议格式：[方向] 具体建议
-
-方向可选：方法、任务、评估、数据、理论"""
-
-        user_prompt = f"""问题: {question}
-
-创新评分: 方法{ innovation.method}/10, 任务{ innovation.task}/10, 评估{ innovation.evaluation}/10
-
-相关工作:
-{related_text}
-
-请提出改进建议："""
+        user_prompt = _SUGGESTION_USER_PROMPT_TEMPLATE.format(
+            question=question,
+            method=innovation.method,
+            task=innovation.task,
+            evaluation=innovation.evaluation,
+            related_text=related_text,
+        )
 
         try:
             response = call_llm_chat_completions(
                 base_url=base_url or LLM_BASE_URL,
                 api_key=api_key,
                 model=model or LLM_MODEL,
-                system_prompt=system_prompt,
+                system_prompt=_SUGGESTION_SYSTEM_PROMPT,
                 user_prompt=user_prompt,
             )
 

@@ -19,6 +19,28 @@ from collections import defaultdict
 from llm.constants import AI_RESEARCH_KEYWORDS, LLM_BASE_URL, LLM_MODEL
 
 
+# ------------------------------------------------------------------
+# Prompt constants for LLM-based follow-up question generation
+# ------------------------------------------------------------------
+_FOLLOWUP_SYSTEM_PROMPT = """你是一个研究助手，擅长通过追问帮助用户深入理解研究主题。
+根据对话历史，生成2-3个有洞察力的追问，帮助用户进一步探索。
+要求：
+1. 问题要有深度，能引发思考
+2. 结合用户的研究意图
+3. 不要重复历史中已问过的问题
+4. 用中文提问
+5. 每个问题限制在20字以内
+6. 只输出问题，不要解释，每行一个"""
+
+_FOLLOWUP_USER_PROMPT_TEMPLATE = """对话历史：
+{history_text}
+
+研究主题：{topics}
+研究意图：{intent_name}
+
+请生成追问："""
+
+
 class ResearchIntent(Enum):
     """Research intent classification."""
     LEARNING = "learning"      # 理解概念、学习原理
@@ -280,23 +302,11 @@ class ResearchSessionTracker:
         topics = ", ".join(session.topics[:3]) if session.topics else "未知"
         intent_name = session.intent.value if session.intent else "learning"
 
-        system_prompt = """你是一个研究助手，擅长通过追问帮助用户深入理解研究主题。
-根据对话历史，生成2-3个有洞察力的追问，帮助用户进一步探索。
-要求：
-1. 问题要有深度，能引发思考
-2. 结合用户的研究意图
-3. 不要重复历史中已问过的问题
-4. 用中文提问
-5. 每个问题限制在20字以内
-6. 只输出问题，不要解释，每行一个"""
-
-        user_prompt = f"""对话历史：
-{history_text}
-
-研究主题：{topics}
-研究意图：{intent_name}
-
-请生成追问："""
+        user_prompt = _FOLLOWUP_USER_PROMPT_TEMPLATE.format(
+            history_text=history_text,
+            topics=topics,
+            intent_name=intent_name,
+        )
 
         try:
             from llm.client import call_llm_chat_completions
@@ -304,7 +314,7 @@ class ResearchSessionTracker:
                 base_url=base_url,
                 api_key=api_key,
                 model=model,
-                system_prompt=system_prompt,
+                system_prompt=_FOLLOWUP_SYSTEM_PROMPT,
                 user_prompt=user_prompt,
             )
 

@@ -16,6 +16,30 @@ from llm.evolution_report import get_adaptive_retrieval
 from llm.research_session import get_session_tracker
 
 
+# ------------------------------------------------------------------
+# Prompt constants for cross-paper analysis
+# ------------------------------------------------------------------
+_CROSS_PAPER_SYSTEM_PROMPT = """你是一个研究综述助手，擅长发现论文之间的关联。
+
+分析多篇论文，找出：
+1. 共同点 (connection): 讨论相似主题或互补方法
+2. 对比 (comparison): 同一问题的不同解决方法
+3. 矛盾 (contradiction): 结论或方法冲突
+4. 演进 (evolution): 后人如何在前人基础上改进
+
+输出格式（最多3个洞察）：
+- 类型: 一句话总结 [论文1] [论文2]
+例如：
+- comparison: BERT vs GPT的预训练目标不同 [BERT] [GPT-2]
+- evolution: LoRA基于Adapter思想提出低秩更新 [Adapter] [LoRA]"""
+
+_CROSS_PAPER_USER_PROMPT_TEMPLATE = """请分析以下论文之间的关联：
+
+{context_text}
+
+找出最重要的关联（最多3个）："""
+
+
 class QueryType(Enum):
     """Query type classification for adaptive routing."""
     FACTUAL = "factual"      # Who, when, what (exact facts)
@@ -416,25 +440,9 @@ class RagChat:
 
         context_text = "\n\n".join(papers_text)
 
-        system_prompt = """你是一个研究综述助手，擅长发现论文之间的关联。
-
-分析多篇论文，找出：
-1. 共同点 (connection): 讨论相似主题或互补方法
-2. 对比 (comparison): 同一问题的不同解决方法
-3. 矛盾 (contradiction): 结论或方法冲突
-4. 演进 (evolution): 后人如何在前人基础上改进
-
-输出格式（最多3个洞察）：
-- 类型: 一句话总结 [论文1] [论文2]
-例如：
-- comparison: BERT vs GPT的预训练目标不同 [BERT] [GPT-2]
-- evolution: LoRA基于Adapter思想提出低秩更新 [Adapter] [LoRA]"""
-
-        user_prompt = f"""请分析以下论文之间的关联：
-
-{context_text}
-
-找出最重要的关联（最多3个）："""
+        user_prompt = _CROSS_PAPER_USER_PROMPT_TEMPLATE.format(
+            context_text=context_text,
+        )
 
         try:
             response = self._call_llm(
@@ -443,7 +451,7 @@ class RagChat:
                 user_prompt=user_prompt,
                 base_url=self.base_url,
                 api_key=self.api_key,
-                system_prompt=system_prompt,
+                system_prompt=_CROSS_PAPER_SYSTEM_PROMPT,
             )
 
             if not response:
