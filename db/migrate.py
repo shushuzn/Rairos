@@ -70,6 +70,8 @@ def _m2_add_reading_status(conn: sqlite3.Connection) -> None:
         conn.execute("ALTER TABLE papers ADD COLUMN reading_status TEXT DEFAULT 'unread'")
     except sqlite3.OperationalError:
         pass  # Column already exists
+    # Backfill existing rows — ALTER DEFAULT does not affect existing rows.
+    conn.execute("UPDATE papers SET reading_status = 'unread' WHERE reading_status IS NULL")
     try:
         conn.execute("ALTER TABLE papers ADD COLUMN reading_started_at TEXT")
     except sqlite3.OperationalError:
