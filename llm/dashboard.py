@@ -57,10 +57,11 @@ class TrendKeyword:
 
 @dataclass
 class GapPreferenceStats:
-    """Summary of user's gap_type preference profile."""
+    """Summary of user's gap_type and keyword preference profile."""
     total_events: int
     preferred_types: List[Any]  # List[(gap_type: str, score: float)]
     disliked_types: List[Any]  # List[(gap_type: str, score: float)]
+    preferred_keywords: List[Any] = field(default_factory=list)  # List[(keyword: str, score: float)]
 
 
 @dataclass
@@ -134,12 +135,15 @@ class Dashboard:
             profile = tracker.get_profile()
             if profile and profile.total_events > 0:
                 prefs = profile.gap_type_preferences or {}
+                kw_prefs = profile.keyword_preferences or {}
                 preferred = [(gt, s) for gt, s in prefs.items() if s > 0.1]
                 disliked = [(gt, s) for gt, s in prefs.items() if s < -0.05]
+                kw_preferred = [(kw, s) for kw, s in kw_prefs.items() if s > 0.05]
                 data.gap_preferences = GapPreferenceStats(
                     total_events=profile.total_events,
                     preferred_types=sorted(preferred, key=lambda x: x[1], reverse=True),
                     disliked_types=sorted(disliked, key=lambda x: x[1]),
+                    preferred_keywords=sorted(kw_preferred, key=lambda x: x[1], reverse=True)[:5],
                 )
         except Exception:
             pass
@@ -305,6 +309,11 @@ class Dashboard:
             lines.append("")
             lines.append("## 🧠 Research Gap Preferences")
             lines.append(f"  Based on {gp.total_events} exploration events")
+            if gp.preferred_keywords:
+                lines.append("  🔑 Preferred keywords:")
+                for kw, score in gp.preferred_keywords[:5]:
+                    bar = "█" * min(int(score * 5), 10)
+                    lines.append(f"    {kw}: {score:+.2f} {bar}")
             if gp.preferred_types:
                 lines.append("  🟢 Preferred types:")
                 for gt, score in gp.preferred_types[:5]:
@@ -315,7 +324,7 @@ class Dashboard:
                 for gt, score in gp.disliked_types[:3]:
                     bar = "█" * min(int(abs(score) * 5), 10)
                     lines.append(f"    {gt}: {score:+.2f} {bar}")
-            if not gp.preferred_types and not gp.disliked_types:
+            if not gp.preferred_types and not gp.preferred_keywords and not gp.disliked_types:
                 lines.append("  (no strong preferences yet — keep exploring!)")
 
         lines.append("")
@@ -451,6 +460,10 @@ class Dashboard:
             } if data.papers else None,
             "gap_preferences": {
                 "total_events": data.gap_preferences.total_events if data.gap_preferences else 0,
+                "preferred_keywords": [
+                    {"keyword": kw, "score": float(score)}
+                    for kw, score in (data.gap_preferences.preferred_keywords if data.gap_preferences else [])
+                ],
                 "preferred_types": [
                     {"gap_type": gt, "score": float(score)}
                     for gt, score in (data.gap_preferences.preferred_types if data.gap_preferences else [])

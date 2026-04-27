@@ -19,6 +19,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from llm.text_utils import extract_keywords
+
 
 class ExplorationAction(Enum):
     """User actions during research exploration."""
@@ -317,24 +319,8 @@ class EvolutionTracker:
         self._save_profile(profile)
 
     def _extract_keywords(self, text: str) -> List[str]:
-        """Extract research-relevant keywords from text.
-
-        Returns lowercase keywords of 3+ chars, excluding common stopwords.
-        """
-        stopwords = {
-            "the", "and", "for", "are", "but", "not", "you", "all",
-            "can", "had", "her", "was", "one", "our", "out", "has",
-            "have", "been", "with", "they", "this", "that", "from",
-            "will", "would", "there", "their", "what", "about", "which",
-            "when", "make", "just", "over", "such", "into", "than",
-            "null", "none", "also", "how", "may", "can", "does",
-            "method", "approach", "gap", "issue", "problem", "limitation",
-            "study", "work", "paper", "research", "based", "using",
-        }
-        # Split on non-alphanumeric, filter short words and stopwords
-        import re
-        words = re.findall(r"[A-Za-z0-9]+", text.lower())
-        return [w for w in words if len(w) >= 3 and w not in stopwords]
+        """Extract research-relevant keywords from text."""
+        return extract_keywords(text)
 
     def _compute_preference_tags(self, profile: UserPreferenceProfile) -> List[str]:
         """Compute preference tags from profile stats."""
@@ -453,28 +439,27 @@ class EvolutionTracker:
             pass
         return events
 
-    def get_preferred_gap_types(self, limit: int = 3) -> List[str]:
-        """Get most preferred gap types based on history."""
-        profile = self._load_profile()
-        if not profile.gap_type_preferences:
-            return []
+    def _get_all_gap_type_scores(self) -> Dict[str, float]:
+        """Get time-decayed scores for all gap types in one pass."""
+        events = self.get_recent_events(limit=10000)
+        scores: Dict[str, float] = {}
+        for e in events:
+            if e.gap_type:
+                scores[e.gap_type] = scores.get(e.gap_type, 0.0) + self._decay_weight(
+                    self._event_weight(e), e.timestamp
+                )
+        return scores
 
-        sorted_types = sorted(
-            profile.gap_type_preferences.items(),
-            key=lambda x: x[1],
-            reverse=True,
-        )
+    def get_preferred_gap_types(self, limit: int = 3) -> List[str]:
+        """Get most preferred gap types based on time-decayed history."""
+        scores = self._get_all_gap_type_scores()
+        sorted_types = sorted(scores.items(), key=lambda x: x[1], reverse=True)
         return [gt for gt, score in sorted_types[:limit] if score > 0]
 
     def get_disliked_gap_types(self, limit: int = 2) -> List[str]:
-        """Get gap types user tends to reject."""
-        profile = self._load_profile()
-        # This would require analyzing reject events specifically
-        # For now, return gap types with negative scores
-        return [
-            gt for gt, score in profile.gap_type_preferences.items()
-            if score < 0
-        ][:limit]
+        """Get gap types user tends to reject (time-decayed)."""
+        scores = self._get_all_gap_type_scores()
+        return [gt for gt, score in scores.items() if score < -0.05][:limit]
 
     def get_exploration_stats(self) -> Dict[str, Any]:
         """Get overall exploration statistics."""
@@ -550,26 +535,55 @@ class EvolutionTracker:
 
     # ─── Recommendation Helper ───────────────────────────────────────────────────
 
+    def _decay_weight(self, base_weight: float, event_timestamp: str, lambda_: float = 0.01) -> float:
+        """Apply exponential time decay to an event weight.
+
+        Recent events decay slowly; older events contribute less.
+        With lambda=0.01: ~73% at 30 days, ~37% at 90 days, ~9% at 1 year.
+        """
+        try:
+            event_time = datetime.fromisoformat(event_timestamp)
+            age_days = (datetime.now() - event_time).total_seconds() / 86400.0
+            return base_weight * (2.0 ** (-lambda_ * age_days))
+        except (ValueError, TypeError, OSError):
+            return 0.0
+
     def get_gap_type_score(self, gap_type: str) -> float:
-        """Get the numeric preference score for a gap type."""
-        profile = self._load_profile()
-        return profile.gap_type_preferences.get(gap_type, 0.0)
+        """Get the numeric preference score for a gap type with time decay.
+
+        Recent events contribute more than old ones (exponential decay).
+        """
+        events = self.get_recent_events(limit=10000)
+        score = 0.0
+        for e in events:
+            if e.gap_type == gap_type:
+                score += self._decay_weight(self._event_weight(e), e.timestamp)
+        return score
 
     def get_keyword_score(self, keyword: str) -> float:
-        """Get the numeric preference score for a keyword."""
-        profile = self._load_profile()
-        return profile.keyword_preferences.get(keyword.lower(), 0.0)
+        """Get the numeric preference score for a keyword with time decay."""
+        events = self.get_recent_events(limit=10000)
+        score = 0.0
+        for e in events:
+            if e.gap_title:
+                keywords = extract_keywords(e.gap_title)
+                if keyword.lower() in keywords:
+                    # Use half weight for keyword matching
+                    score += self._decay_weight(self._event_weight(e) * 0.5, e.timestamp)
+        return score
 
     def get_top_keywords(self, limit: int = 5) -> List[str]:
-        """Get most preferred keywords based on history."""
-        profile = self._load_profile()
-        if not profile.keyword_preferences:
-            return []
-        sorted_kws = sorted(
-            profile.keyword_preferences.items(),
-            key=lambda x: x[1],
-            reverse=True,
-        )
+        """Get most preferred keywords based on decay-weighted history."""
+        events = self.get_recent_events(limit=10000)
+        kw_scores: Dict[str, float] = {}
+        for e in events:
+            if e.gap_title:
+                keywords = extract_keywords(e.gap_title)
+                for kw in keywords:
+                    kw_scores[kw] = kw_scores.get(kw, 0.0) + self._decay_weight(
+                        self._event_weight(e) * 0.5, e.timestamp
+                    )
+        sorted_kws = sorted(kw_scores.items(), key=lambda x: x[1], reverse=True)
         return [kw for kw, score in sorted_kws[:limit] if score > 0.05]
 
     def should_prioritize_gap_type(self, gap_type: str) -> bool:

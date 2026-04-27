@@ -17,6 +17,7 @@ from llm.hypothesis_generator import (
     ExperimentDesign,
 )
 from llm.insight_evolution import EvolutionTracker
+from llm.text_utils import extract_keywords
 
 
 @dataclass
@@ -292,13 +293,7 @@ class GapAnalyzerV2(GapDetector):
 
         def _extract_gap_keywords(title: str) -> list:
             """Extract research keywords from gap title."""
-            import re
-            stopwords = {
-                "the", "and", "for", "are", "but", "not", "gap", "issue",
-                "problem", "limitation", "study", "work", "paper", "research",
-            }
-            words = re.findall(r"[A-Za-z0-9]+", title.lower())
-            return [w for w in words if len(w) >= 3 and w not in stopwords]
+            return extract_keywords(title)
 
         def gap_preference_score(gap: ResearchGapV2) -> tuple:
             """Calculate sorting score: (trend_score, keyword_score, pref_score, severity_score, priority_score).
