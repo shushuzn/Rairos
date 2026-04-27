@@ -4,7 +4,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![Tests](https://github.com/shushuzn/ai_research_os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/ai_research_os/actions)
-[![License](https://img.shields.io/badge/License-GPL--3.0--orange)](#license)
+[![License](https://img.shields.io/badge/License-GPL--3.0--or--later-orange)](#license)
 
 ## What It Does
 
