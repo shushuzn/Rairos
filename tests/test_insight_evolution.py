@@ -812,7 +812,7 @@ class TestBackupManagement:
         temp_tracker.record_gap_accept(topic="RAG", gap_type="method_limitation", gap_title="Gap")
         temp_tracker.export_profile()
         import time
-        time.sleep(0.01)
+        time.sleep(1.1)  # Windows mtime resolution is ~1 second
         temp_tracker.export_profile()
 
         backups = temp_tracker.list_backups()

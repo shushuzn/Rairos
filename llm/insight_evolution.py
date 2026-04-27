@@ -743,7 +743,9 @@ class EvolutionTracker:
 
         for event in events:
             if event.gap_type:
-                new_val = running.get(event.gap_type, 0.0) + self._event_weight(event)
+                w = self._event_weight(event)
+                decayed = self._decay_weight(w, event.timestamp)
+                new_val = running.get(event.gap_type, 0.0) + decayed
                 running[event.gap_type] = new_val
                 if new_val != 0.0 and event.gap_type not in first_nonzero:
                     first_nonzero[event.gap_type] = new_val
@@ -1028,4 +1030,4 @@ class EvolutionTracker:
         """List all profile backup files in data_dir."""
         if not self.data_dir.exists():
             return []
-        return sorted(self.data_dir.glob("profile_backup_*.json"), reverse=True)
+        return sorted(self.data_dir.glob("profile_backup_*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
