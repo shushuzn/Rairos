@@ -189,7 +189,7 @@ class TestTemplateBasedTranslation:
     def test_contains_hypothesis_title(self):
         h = self._hypothesis(title="Commutativity Theorem")
         code = _template_based_translation(h)
-        assert "Commutativity Theorem" in code
+        assert "Commutativity_Theorem" in code
 
     def test_contains_by_sorry_for_mathy(self):
         h = self._hypothesis(core_statement="∀n m, n + m = m + n")
@@ -216,10 +216,10 @@ class TestTemplateBasedTranslation:
         code = _template_based_translation(h)
         assert "mechanistic" in code.lower()
 
-    def test_based_on_included(self):
+    def test_contains_formal_claim_comment(self):
         h = self._hypothesis(based_on="prior work on commutativity")
         code = _template_based_translation(h)
-        assert "prior work" in code
+        assert "Formal claim" in code
 
 
 # =============================================================================

@@ -32,20 +32,98 @@ except ImportError:
 # ── Lean translation system prompt ────────────────────────────────────────────
 LEAN_TRANSLATION_SYSTEM = """You are a Lean 4 code generator. Translate informal research hypotheses into Lean 4 code.
 
-Rules:
-1. Output ONLY the Lean 4 code block — nothing else
-2. Use `mathlib` / `Std` conventions when possible
-3. For theorems: provide the theorem statement and a `by sorry` proof stub
-4. For definitions: provide the type signature and implementation
-5. Keep it minimal — focus on the core claim, not peripheral details
-6. If the claim cannot be formalized in Lean 4, output a comment explaining why
+## Core Conventions
 
-Format your response as:
+### Unicode Symbol Mapping (copy literally, don't replace)
+- ∀ → ∀  (typed as `\\all` or `\\forall`)
+- ∃ → ∃  (typed as `\\ex` or `\\exists`)
+- ≤ → ≤  (typed as `\\le`)
+- ≥ → ≥  (typed as `\\ge`)
+- ≠ → ≠  (typed as `\\ne`)
+- → → →  (typed as `\\r`)
+- ← → ←  (typed as `\\l`)
+- ∧ → ∧  (typed as `\\and`)
+- ∨ → ∨  (typed as `\\or`)
+- ¬ → ¬  (typed as `\\not`)
+- ∈ → ∈  (typed as `\\in`)
+- ⊆ → ⊆  (typed as `\\sub`)
+
+### Lean 4 Types & Mathlib Conventions
+- Natural numbers: `Nat` (NOT `int` or `Integer`)
+- Integers: `Int`
+- Real numbers: `Real` (from `Mathlib`)
+- Booleans: `Bool`
+- Propositions: `Prop` (implicit for theorems)
+- Sets: `Set α` (from `Std.Data.Set`)
+- Functions: `α → β` (arrow notation, NOT `function` or `func`)
+- Equality: `=` (propositional equality)
+- Negation: `¬P` (typed as `\\not P`)
+
+### Naming Conventions
+- Types: `CamelCase` (e.g., `Group`, `Vector`)
+- Variables/functions: `snake_case` (e.g., `add_comm`, `composition`)
+- Theorems: `snake_case` with descriptive name (e.g., `add_comm`, `mul_assoc`)
+- Use `∀ n : Nat` (with type annotation), not bare `∀ n`
+- Use `: Prop` for propositional theorems
+
+### Translation Patterns by Domain
+
+#### Causal / Effect Hypotheses
 ```lean
--- Level 0: syntax only (no proof)
--- Level 1: type-correct definitions
--- Level 2: theorems with `by sorry` stubs
-...
+theorem causal_effect_example
+    (T : Type) [Inhabited T]
+    (treatment : T → Bool)
+    (outcome : T → Nat)
+    : ∀ t : T, outcome t > 0  :=  by sorry
+```
+
+#### Convergence / Optimization Hypotheses
+```lean
+theorem convergence_claim
+    {E : Type} [NormedAddCommGroup E]
+    (seq : ℕ → E)
+    (cauchy : ∀ ε > 0, ∃ N, ∀ m n ≥ N, ∥seq m - seq n∥ < ε)
+    : ∃ L : E, ∀ ε > 0, ∃ N, ∀ n ≥ N, ∥seq n - L∥ < ε  :=  by sorry
+```
+
+#### Set-Theoretic / Inclusion Hypotheses
+```lean
+theorem set_inclusion_claim
+    {α : Type}
+    (A B C : Set α)
+    (hAB : A ⊆ B)
+    (hBC : B ⊆ C)
+    : A ⊆ C  :=  by sorry
+```
+
+#### Probability / Expectation Hypotheses
+```lean
+theorem expectation_bound
+    {Ω : Type} [MeasureSpace Ω]
+    (X : Ω → ℝ) [IsFiniteExpectation ℙ X]
+    : ℙ {ω | X ω ≥ 0} ≥ 0  :=  by sorry
+```
+
+#### Function / Map Hypotheses
+```lean
+theorem surjectivity_claim
+    {α β : Type}
+    (f : α → β)
+    (hf : Surjective f)
+    : ∀ b : β, ∃ a : α, f a = b  :=  by sorry
+```
+
+## Output Rules
+1. Output ONLY the Lean 4 code block — nothing else
+2. Use `by sorry` as a proof stub (level L2)
+3. Omit the proof stub if the statement cannot be proven: use `:= ?` placeholder
+4. Keep it minimal — focus on the core claim
+5. If the claim CANNOT be formalized in Lean 4, explain in a `--` comment
+
+## Format
+```lean
+-- Translate: [one-line summary]
+[Lean 4 code]
 ```
 """
 
@@ -60,10 +138,8 @@ Variables: {variables}
 Expected Result: {expected_result}
 ---
 
-Generate Lean 4 code that:
-1. Defines necessary types/structures
-2. States the theorem or definition
-3. Includes a `by sorry` proof stub
+Translate the Core Claim into Lean 4 following the conventions above.
+Output ONLY the ```lean ... ``` code block.
 """
 
 
@@ -202,8 +278,47 @@ def _extract_lean_code(response: str) -> str:
     return response.strip()
 
 
+# ── Symbol translation map ────────────────────────────────────────────────────
+_LEAN_SYMBOLS = [
+    ("∀", "∀"),
+    ("∃", "∃"),
+    ("→", "→"),
+    ("←", "←"),
+    ("≤", "≤"),
+    ("≥", "≥"),
+    ("≠", "≠"),
+    ("∧", "∧"),
+    ("∨", "∨"),
+    ("¬", "¬"),
+    ("∈", "∈"),
+    ("⊆", "⊆"),
+    ("ℝ", "ℝ"),
+    ("ℕ", "ℕ"),
+    ("ℤ", "ℤ"),
+    # ASCII fallbacks (escaped in Lean)
+    ("forall", "∀"),
+    ("exists", "∃"),
+    ("<=", "≤"),
+    (">=", "≥"),
+    (">", ">"),
+    ("<", "<"),
+    ("=>", "→"),
+    ("<=", "≤"),  # keep
+    ("->", "→"),
+    ("<-", "←"),
+]
+
+
+def _translate_symbols(text: str) -> str:
+    """Replace common math symbols with Lean-compatible Unicode."""
+    result = text
+    for old, new in _LEAN_SYMBOLS:
+        result = result.replace(old, new)
+    return result
+
+
 def _template_based_translation(hypothesis: "ResearchHypothesis") -> str:
-    """Generate Lean code from a hypothesis using templates."""
+    """Generate Lean code from a hypothesis using domain-aware templates."""
     name = hypothesis.title or hypothesis.core_statement or "H"
     safe_name = "".join(c if c.isalnum() else "_" for c in name)[:30]
     statement = hypothesis.core_statement
@@ -212,47 +327,168 @@ def _template_based_translation(hypothesis: "ResearchHypothesis") -> str:
                 if hasattr(hypothesis.hypothesis_type, 'value')
                 else str(hypothesis.hypothesis_type))
 
-    # Check if it looks mathy
-    math_indicators = [
-        "forall", "exists", "=", "≠", "≤", "≥", "<", ">",
-        "Nat", "Int", "Real", "Set", "function", "map",
-        "converge", "optimal", "minimum", "maximum",
-    ]
-    is_mathy = any(ind.lower() in statement.lower() for ind in math_indicators)
+    # Normalize statement with Lean-compatible symbols
+    statement = _translate_symbols(statement)
 
-    if is_mathy:
-        # Try to extract a formal statement
-        lean_code = f"""-- Hypothesis: {hypothesis.title}
--- Type: {hyp_type}
--- Source: {hypothesis.based_on}
+    # Detect domain indicators
+    mathy = any(w in statement for w in [
+        "∀", "∃", "→", "≤", "≥", "≠", "∧", "∨", "∈", "⊆",
+    ])
+    convergence = any(w in statement.lower() for w in [
+        "converge", "limit", "sequence", "cauchy", "tends to", "supremum", "infimum",
+    ])
+    probability = any(w in statement.lower() for w in [
+        "probability", "expectation", "measure", "random", "variance", "entropy",
+        "distribution", "bayesian", "likelihood", "posterior",
+    ])
+    causal = any(w in statement.lower() for w in [
+        "cause", "effect", "treatment", "control", "outcome", "intervention",
+        "counterfactual", "do-calculus",
+    ])
+    set_theory = any(w in statement.lower() for w in [
+        "subset", "element", "union", "intersection", "complement",
+        "partition", "equivalence", "class",
+    ])
+    functions = any(w in statement.lower() for w in [
+        "function", "injective", "surjective", "bijective", "homomorphism",
+        "isomorphism", "kernel", "image", "composition",
+    ])
 
--- Level 0: syntax check
--- Level 1: type-correct definitions
--- Level 2: theorem with `by sorry`
-
-/- Formalizing: {statement[:80]} -/
-
--- Placeholder theorem
-theorem {safe_name}_theorem
-    : True := -- TODO: formalize the claim
-  by sorry
-"""
+    # Choose domain template
+    if convergence:
+        lean_code = _FALLBACK_TEMPLATES.get(
+            "convergence",
+            _FALLBACK_TEMPLATES["mathy"],
+        ).format(safe_name=safe_name, statement=statement[:80], hyp_type=hyp_type)
+    elif probability:
+        lean_code = _FALLBACK_TEMPLATES.get(
+            "probability",
+            _FALLBACK_TEMPLATES["mathy"],
+        ).format(safe_name=safe_name, statement=statement[:80], hyp_type=hyp_type)
+    elif causal:
+        lean_code = _FALLBACK_TEMPLATES.get(
+            "causal",
+            _FALLBACK_TEMPLATES["mathy"],
+        ).format(safe_name=safe_name, statement=statement[:80], hyp_type=hyp_type)
+    elif set_theory:
+        lean_code = _FALLBACK_TEMPLATES.get(
+            "set_theory",
+            _FALLBACK_TEMPLATES["mathy"],
+        ).format(safe_name=safe_name, statement=statement[:80], hyp_type=hyp_type)
+    elif functions:
+        lean_code = _FALLBACK_TEMPLATES.get(
+            "functions",
+            _FALLBACK_TEMPLATES["mathy"],
+        ).format(safe_name=safe_name, statement=statement[:80], hyp_type=hyp_type)
+    elif mathy:
+        lean_code = _FALLBACK_TEMPLATES["mathy"].format(
+            safe_name=safe_name, statement=statement[:80], hyp_type=hyp_type,
+        )
     else:
-        lean_code = f"""-- Hypothesis: {hypothesis.title}
+        lean_code = _FALLBACK_TEMPLATES["qualitative"].format(
+            safe_name=safe_name, statement=statement[:80], hyp_type=hyp_type,
+        )
+
+    return lean_code
+
+
+# ── Domain-specific fallback templates ─────────────────────────────────────────
+_FALLBACK_TEMPLATES = {
+    "mathy": """\
+-- Hypothesis: {safe_name}
 -- Type: {hyp_type}
--- Source: {hypothesis.based_on}
+
+/- Formal claim: {statement} -/
+
+theorem {safe_name}_theorem
+    : Prop  :=  by sorry
+""",
+
+    "convergence": """\
+-- Hypothesis: {safe_name}
+-- Type: convergence/analysis
+
+/- Formal claim: {statement} -/
+
+open Nat Real
+
+theorem {safe_name}_converges
+    (ε : ℝ) (hε : ε > 0)
+    : ∃ N : ℕ, ∀ n ≥ N, True  :=  by sorry
+""",
+
+    "probability": """\
+-- Hypothesis: {safe_name}
+-- Type: probability/statistics
+
+/- Formal claim: {statement} -/
+
+open Real
+
+-- Probability space stub (replace with actual measure space)
+axiom Ω : Type
+axiom ℙ : MeasureSpace Ω
+
+theorem {safe_name}_probability
+    : ℙ = ℙ  :=  by sorry
+""",
+
+    "causal": """\
+-- Hypothesis: {safe_name}
+-- Type: causal inference
+
+/- Formal claim: {statement} -/
+
+open Bool
+
+theorem {safe_name}_causal_effect
+    (unit : Type)
+    (treatment : unit → Bool)
+    (outcome : unit → ℕ)
+    : Prop  :=  by sorry
+""",
+
+    "set_theory": """\
+-- Hypothesis: {safe_name}
+-- Type: set theory
+
+/- Formal claim: {statement} -/
+
+open Set
+
+theorem {safe_name}_set_theorem
+    {α : Type}
+    (A B C : Set α)
+    : Prop  :=  by sorry
+""",
+
+    "functions": """\
+-- Hypothesis: {safe_name}
+-- Type: function/map theory
+
+/- Formal claim: {statement} -/
+
+open Function
+
+theorem {safe_name}_function_theorem
+    {α β : Type}
+    (f : α → β)
+    : Prop  :=  by sorry
+""",
+
+    "qualitative": """\
+-- Hypothesis: {safe_name}
+-- Type: {hyp_type}
 
 -- Natural language claim:
 -- {statement}
 
--- WARNING: This hypothesis is not obviously formalizable in Lean 4.
--- Manual translation is required for full verification.
+-- WARNING: This hypothesis is qualitative and cannot be fully formalized in Lean 4.
+-- Only a syntax stub is provided for basic verification.
 
--- Minimal stub to verify Lean can parse this file
 def {safe_name}_stub : Prop := True
-"""
-
-    return lean_code
+""",
+}
 
 
 # ── Verification ─────────────────────────────────────────────────────────────
