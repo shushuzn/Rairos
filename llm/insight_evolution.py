@@ -596,6 +596,193 @@ class EvolutionTracker:
         lines.append("═" * 60)
         return "\n".join(lines)
 
+    def render_gap_type_preferences_history(self) -> str:
+        """Render the timeline of how gap_type_preferences evolved.
+
+        Replays all events from the JSONL log to reconstruct preference values
+        at key points in time, showing how the user's research tastes evolved.
+        """
+        # Load all events from disk (sorted by time)
+        if not self.events_file.exists():
+            return "暂无探索事件记录"
+
+        events = []
+        with open(self.events_file, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    data = json.loads(line)
+                    # Reconstruct ExplorationAction from string
+                    action_str = data.get("action", "")
+                    try:
+                        action = ExplorationAction(action_str)
+                    except ValueError:
+                        continue  # Skip unknown action types
+                    events.append(EvolutionEvent(
+                        timestamp=data.get("timestamp", ""),
+                        topic=data.get("topic", ""),
+                        action=action,
+                        gap_type=data.get("gap_type", ""),
+                        gap_title=data.get("gap_title", ""),
+                        gap_description=data.get("gap_description", ""),
+                        hypothesis_id=data.get("hypothesis_id", ""),
+                        question_id=data.get("question_id", ""),
+                        paper_ids=data.get("paper_ids", []),
+                        duration_seconds=data.get("duration_seconds", 0),
+                        notes=data.get("notes", ""),
+                    ))
+                except (json.JSONDecodeError, KeyError):
+                    continue
+
+        if not events:
+            return "暂无探索事件记录"
+
+        events.sort(key=lambda e: e.timestamp)
+
+        # Compute running preferences
+        running: Dict[str, float] = {}
+        all_gap_types = set()
+
+        # Capture checkpoints: first event, every significant change, last event
+        checkpoints = []
+        last_snapshot: Dict[str, float] = {}
+
+        def _make_snapshot(ts: str) -> tuple:
+            return (ts, dict(running))
+
+        # First event
+        first_ts = events[0].timestamp[:10]
+
+        for event in events:
+            if event.gap_type:
+                all_gap_types.add(event.gap_type)
+                current = running.get(event.gap_type, 0.0)
+                weight = self._event_weight(event)
+                running[event.gap_type] = current + weight
+
+        last_ts = events[-1].timestamp[:10]
+
+        if not all_gap_types:
+            return "暂无 gap_type 偏好记录"
+
+        # Collect all gap types that ever had non-zero score
+        active_types = [gt for gt in all_gap_types if running.get(gt, 0.0) != 0.0]
+
+        if not active_types:
+            # All ended at zero — still show them
+            active_types = sorted(all_gap_types)
+
+        # Build columns: gap_type | first_val | ... | current_val | trend
+        header_gap = "gap_type"
+        val_width = 8
+        header_width = max(len("gap_type"), max(len(gt) for gt in active_types))
+
+        # Simple format: show first (earliest non-zero) and last values + trend
+        # Find first non-zero for each type
+        first_nonzero: Dict[str, float] = {}
+        for gt in active_types:
+            running2: Dict[str, float] = {}
+            for e in events:
+                if e.gap_type == gt:
+                    current2 = running2.get(gt, 0.0)
+                    running2[gt] = current2 + self._event_weight(e)
+            # Find first non-zero
+            running3: Dict[str, float] = {}
+            first_nonzero[gt] = 0.0
+            for e in events:
+                if e.gap_type == gt:
+                    current3 = running3.get(gt, 0.0)
+                    new_val = current3 + self._event_weight(e)
+                    running3[gt] = new_val
+                    if new_val != 0.0 and first_nonzero[gt] == 0.0:
+                        first_nonzero[gt] = new_val
+
+        current_vals = running
+
+        def trend_arrow(gt: str) -> str:
+            first = first_nonzero.get(gt, 0.0)
+            cur = current_vals.get(gt, 0.0)
+            if cur > first + 0.05:
+                return "↑↑"
+            elif cur > first + 0.01:
+                return "↑ "
+            elif cur < first - 0.05:
+                return "↓↓"
+            elif cur < first - 0.01:
+                return "↓ "
+            elif abs(cur) < 0.01 and abs(first) < 0.01:
+                return "  "  # both near zero
+            else:
+                return "~ "
+
+        def fmt_val(v: float) -> str:
+            if v == 0.0:
+                return "  .00"
+            return f"{v:>+6.2f}"
+
+        # Header
+        total_events = len(events)
+        lines = [
+            "═" * 70,
+            "📈 Gap Type 偏好演化时间轴",
+            "═" * 70,
+            "",
+            f"  事件总数: {total_events}  |  周期: {first_ts} ~ {last_ts}",
+            "",
+        ]
+
+        # Table header
+        col_gap = "gap_type"
+        col_first = "初始"
+        col_curr = "当前"
+        col_trend = "趋势"
+        lines.append(f"  {col_gap:<{header_width}}  {col_first:>{val_width}}  {col_curr:>{val_width}}  {col_trend}")
+        lines.append(f"  {'─' * header_width}  {'─' * val_width}  {'─' * val_width}  {'─' * 4}")
+
+        # Sort by current value descending
+        sorted_types = sorted(active_types, key=lambda gt: current_vals.get(gt, 0.0), reverse=True)
+
+        for gt in sorted_types:
+            first_v = first_nonzero.get(gt, 0.0)
+            cur_v = current_vals.get(gt, 0.0)
+            arrow = trend_arrow(gt)
+            # Color by sentiment
+            if cur_v > 0.1:
+                bar = "🟢"
+            elif cur_v < -0.05:
+                bar = "🔴"
+            else:
+                bar = "⚪"
+            lines.append(f"  {bar} {gt:<{header_width - 2}}  {fmt_val(first_v)}  {fmt_val(cur_v)}  {arrow}")
+
+        lines.append("")
+        lines.append("  解释: 🟢 = 正偏好(优先)  🔴 = 负偏好(规避)  ⚪ = 中性")
+        lines.append("  趋势: ↑↑/↑ 偏好增强   ↓↓/↓ 偏好减弱   ~  稳定")
+        lines.append("")
+        lines.append("═" * 70)
+        return "\n".join(lines)
+
+    def _event_weight(self, event: EvolutionEvent) -> float:
+        """Compute preference weight for a single event (matches _update_profile)."""
+        weight = 0.1
+        if event.action == ExplorationAction.ACCEPTED:
+            weight = 0.3
+        elif event.action == ExplorationAction.REJECTED:
+            weight = -0.15
+        elif event.action == ExplorationAction.EXPANDED:
+            weight = 0.2
+        elif event.action == ExplorationAction.HYPOTHESIZED:
+            weight = 0.4
+        elif event.action == ExplorationAction.VALIDATED:
+            weight = 0.4
+        elif event.action == ExplorationAction.NARRATED:
+            weight = 0.25
+        elif event.action == ExplorationAction.VIEWED:
+            weight = 0.05
+        return weight
+
     def render_topic_history(self, topic: str) -> str:
         """Render exploration history for a topic."""
         events = self.get_topic_history(topic)

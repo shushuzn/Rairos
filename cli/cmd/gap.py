@@ -78,6 +78,11 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Show exploration statistics overview",
     )
+    p.add_argument(
+        "--prefs-history",
+        action="store_true",
+        help="Show gap_type preference evolution timeline",
+    )
     return p
 
 
@@ -86,8 +91,8 @@ def _run_gap(args: argparse.Namespace) -> int:
     db = get_db()
     db.init()
 
-    # Profile/history/stats commands
-    if args.profile or args.history or args.stats:
+    # Profile/history/stats/prefs-history commands
+    if args.profile or args.history or args.stats or args.prefs_history:
         return _run_profile_or_history(args)
 
     # Enhanced mode with insights (auto-enable for --hypothesis)
@@ -139,6 +144,11 @@ def _run_profile_or_history(args: argparse.Namespace) -> int:
     if args.stats:
         print()
         print(tracker.render_stats())
+        return 0
+
+    if args.prefs_history:
+        print()
+        print(tracker.render_gap_type_preferences_history())
         return 0
 
     return 0
