@@ -555,10 +555,8 @@ def render_gap_report(result: GapAnalysisResultV2, show_preferences: bool = True
         }.get(gap.severity, "⚪")
 
         # Preference indicator — show numeric score
-        pref_indicator = ""
         if show_preferences and hasattr(gap, 'preference_score') and gap.preference_score != 0.0:
-            score = gap.preference_score
-            pref_indicator = f" (偏好 {score:+.2f})"
+            pass  # Score tracking handled by gap_analyzer layer
 
         type_name = _GAP_TYPE_NAMES.get(gap.gap_type, gap.gap_type.value)
 

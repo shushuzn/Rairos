@@ -18,7 +18,6 @@ from typing import Optional, List, Dict, Any
 try:
     from pptx import Presentation
     from pptx.util import Inches, Pt
-    from pptx.dml.color import RGBColor
     HAS_PPTX = True
 except ImportError:
     HAS_PPTX = False
