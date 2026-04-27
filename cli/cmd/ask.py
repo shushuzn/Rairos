@@ -40,19 +40,43 @@ def _build_ask_parser(subparsers) -> argparse.ArgumentParser:
         default=10,
         help="Max papers to retrieve (default: 10)",
     )
+    p.add_argument(
+        "--route", "-r",
+        action="store_true",
+        help="Use semantic routing to delegate to specialized commands",
+    )
     return p
 
 
 def _run_ask(args: argparse.Namespace) -> int:
     """Run ask command."""
+    query = " ".join(args.query)
+
+    # Semantic routing: delegate to specialized commands instead of RAG chat
+    if args.route:
+        from llm.semantic_router import SemanticRouter
+        router = SemanticRouter()
+        try:
+            route = router.route(query)
+        except Exception as e:
+            print_error(f"Routing failed: {e}")
+            return 1
+
+        # QUESTION_ANSWER falls through to RAG chat; all others delegate
+        if route.query_type.value != "question_answer":
+            outputs = router.execute(route, query, exec_all=True)
+            for name, out in outputs.items():
+                print(f"=== {name} ===")
+                print(out if out.strip() else "[no output]")
+                print()
+            return 0
+
     db = get_db()
     db.init()
 
     insight_manager = None if args.no_insights else InsightManager()
-
     chat = ResearchChat(db=db, insight_manager=insight_manager)
 
-    query = " ".join(args.query)
     print_info(f"\n🔍 {query}\n")
 
     # Build context

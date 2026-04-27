@@ -104,6 +104,11 @@ _LAZY_EXPORTS = {
     "_build_slides_parser":   ("cli.cmd.slides",            "_build_slides_parser"),
     "_run_evolution":         ("cli.cmd.evolution",          "_run_evolution"),
     "_build_evolution_parser":("cli.cmd.evolution",          "_build_evolution_parser"),
+    "_run_insight":           ("cli.cmd.insight",           "_run_insight"),
+    "_run_narrative":          ("cli.cmd.narrative",          "_run_narrative"),
+    "_build_narrative_parser": ("cli.cmd.narrative",          "_build_narrative_parser"),
+    "_run_route":             ("cli.cmd.route",              "_run_route"),
+    "_build_route_parser":     ("cli.cmd.route",              "_build_route_parser"),
     "infer_tags_if_empty": ("cli._shared", "infer_tags_if_empty"),
     "Database": ("db", "Database"),
     # Module-level re-exports (used by tests for mock.patch)

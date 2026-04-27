@@ -107,12 +107,12 @@ class ResearchChat:
         rows, _ = self.db.search_papers(topic, limit=limit)
         return [
             PaperContext(
-                uid=r.uid,
+                uid=r.paper_id,
                 title=r.title,
                 abstract=getattr(r, "abstract", ""),
                 authors=(
-                    getattr(r, "authors", "").split(",")
-                    if hasattr(r, "authors")
+                    r.authors
+                    if hasattr(r, "authors") and isinstance(r.authors, list)
                     else []
                 ),
                 year=getattr(r, "year", 2020),

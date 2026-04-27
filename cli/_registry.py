@@ -39,6 +39,7 @@ _SUBCOMMAND_TABLE = [
     ("paper2code",    "cli.cmd.paper2code",       "_build_paper2code_parser"),
     ("evoskill",      "cli.cmd.evoskill",         "_build_evoskill_parser"),
     ("rag",           "cli.cmd.rag",              "_build_rag_parser"),
+    ("route",         "cli.cmd.route",            "_build_route_parser"),
     ("visual",        "cli.cmd.visual",           "_build_visual_parser"),
     ("repl",          "cli.cmd.repl",             "_build_repl_parser"),
     ("read-queue",    "cli.cmd.read_queue",       "_build_read_queue_parser"),
@@ -69,6 +70,7 @@ _SUBCOMMAND_TABLE = [
     ("ask",            "cli.cmd.ask",               "_build_ask_parser"),
     ("session",        "cli.cmd.session",            "_build_session_parser"),
     ("argue",          "cli.cmd.argue",              "_build_argue_parser"),
+    ("narrative",      "cli.cmd.narrative",           "_build_narrative_parser"),
 ]
 SUBCOMMANDS = {name for name, _, _ in _SUBCOMMAND_TABLE}
 
@@ -160,6 +162,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         "ask": "_run_ask",
         "session": "_run_session",
         "argue": "_run_argue",
+        "narrative": "_run_narrative",
+        "route": "_run_route",
     }
     if args.subcmd in dispatch:
         import cli as _cli

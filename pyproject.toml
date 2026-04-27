@@ -136,7 +136,7 @@ Documentation = "https://github.com/shushuzn/ai_research_os#readme"
 [project.license]
 
 
-text = "LicenseRef-ResearchOnly"
+text = "GPL-3.0-or-later"
 
 
 
