@@ -269,8 +269,8 @@ class ReplicationTracker(JsonFileStore):
         lines = ["# Replication Tracker\n"]
 
         stats = self.get_statistics()
-        lines.append(f"| Metric | Value |")
-        lines.append(f"|--------|-------|")
+        lines.append("| Metric | Value |")
+        lines.append("|--------|-------|")
         lines.append(f"| Total | {stats['total']} |")
         lines.append(f"| Success | {stats['success']} |")
         lines.append(f"| Failed | {stats['failed']} |")

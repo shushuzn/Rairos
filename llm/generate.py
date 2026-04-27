@@ -428,7 +428,7 @@ def ai_generate_reading_recommendation_explanation(
         read_papers_str=read_papers_str,
     )
 
-    return cast(str, call_llm(
+    return cast(str, call_llm_chat_completions(
         base_url=base_url,
         api_key=api_key,
         model=model,

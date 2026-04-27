@@ -13,11 +13,9 @@ Research Question Validator: Validate novelty and feasibility of research questi
 from __future__ import annotations
 
 import re
-from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime
 from enum import Enum
-from typing import Optional, List, Dict, Any, Tuple
+from typing import Optional, List
 
 from llm.constants import AI_RESEARCH_KEYWORDS, LLM_BASE_URL, LLM_MODEL
 
@@ -376,7 +374,6 @@ class QuestionValidator:
             )
 
         # High overlap = low novelty
-        avg_relevance = sum(r.relevance_score for r in related) / len(related)
         max_relevance = max(r.relevance_score for r in related)
 
         if max_relevance > 0.8:

@@ -13,8 +13,7 @@ from dataclasses import dataclass, asdict, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Optional, List, Dict, Any
-from collections import defaultdict
+from typing import Optional, List
 
 from llm.constants import AI_RESEARCH_KEYWORDS, LLM_BASE_URL, LLM_MODEL
 
@@ -221,11 +220,11 @@ class ResearchSessionTracker:
 
         suggestions = {
             ResearchIntent.LEARNING: f"📚 学习路径建议: {main_topic} → 核心论文 → 变体模型 → 应用案例",
-            ResearchIntent.REPRODUCING: f"🔧 复现路径建议: 找到基准实现 → 对齐指标 → 消融实验 → 复现结果",
+            ResearchIntent.REPRODUCING: "🔧 复现路径建议: 找到基准实现 → 对齐指标 → 消融实验 → 复现结果",
             ResearchIntent.IMPROVING: f"🚀 改进路径建议: {main_topic} → 痛点分析 → 改进思路 → 验证实验",
             ResearchIntent.COMPARING: f"⚖️ 对比路径建议: {main_topic} → 竞品分析 → 优缺点 → 选型建议",
-            ResearchIntent.EXPLORING: f"🔍 探索路径建议: 最新论文 → 开源实现 → 社区反馈 → 实际应用",
-            ResearchIntent.CITING: f"📝 引用建议: 相关工作 → 方法对比 → 贡献点 → 格式规范",
+            ResearchIntent.EXPLORING: "🔍 探索路径建议: 最新论文 → 开源实现 → 社区反馈 → 实际应用",
+            ResearchIntent.CITING: "📝 引用建议: 相关工作 → 方法对比 → 贡献点 → 格式规范",
         }
 
         return suggestions.get(intent, f"💡 建议深入了解: {main_topic}")
@@ -258,14 +257,14 @@ class ResearchSessionTracker:
         topics = self.current_session.topics
 
         if len(topics) == 1:
-            questions.append(f"这个 topic 和其他领域有什么联系？")
+            questions.append("这个 topic 和其他领域有什么联系？")
 
         if intent == ResearchIntent.LEARNING:
-            questions.append(f"这个 topic 在实际项目中如何使用？")
+            questions.append("这个 topic 在实际项目中如何使用？")
         elif intent == ResearchIntent.REPRODUCING:
-            questions.append(f"复现过程中最大的挑战是什么？")
+            questions.append("复现过程中最大的挑战是什么？")
         elif intent == ResearchIntent.IMPROVING:
-            questions.append(f"现有方法的核心局限在哪里？")
+            questions.append("现有方法的核心局限在哪里？")
 
         return questions[:2]
 

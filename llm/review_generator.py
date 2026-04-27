@@ -11,7 +11,7 @@ Generates comprehensive reviews with:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Tuple, Any
+from typing import List, Tuple, Any
 
 
 @dataclass

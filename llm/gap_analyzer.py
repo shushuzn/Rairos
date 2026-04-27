@@ -4,7 +4,6 @@ from typing import List, Optional, Dict, Any
 
 from llm.gap_detector import (
     GapDetector,
-    GapAnalysisResult,
     ResearchGap,
     GapType,
     GapSeverity,
@@ -12,9 +11,6 @@ from llm.gap_detector import (
 from llm.hypothesis_generator import (
     HypothesisGenerator,
     HypothesisResult,
-    ResearchHypothesis,
-    HypothesisType,
-    ExperimentDesign,
 )
 from llm.insight_evolution import EvolutionTracker
 from llm.text_utils import extract_keywords
@@ -457,7 +453,6 @@ class GapAnalyzerV2(GapDetector):
         model: Optional[str] = None,
     ) -> HypothesisResult:
         """Generate hypotheses from gap analysis results."""
-        from llm.hypothesis_generator import HypothesisGenerator
 
         if not gap_result.gaps:
             return HypothesisResult(topic=gap_result.topic)

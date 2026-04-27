@@ -1,12 +1,12 @@
 """
 Experiment Tracker: Track experiments for research roadmaps.
 """
-import json, logging, uuid
+import logging, uuid
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional, Dict, Any
+from typing import List, Dict
 
 from llm.tracker_base import JsonFileStore
 
@@ -179,7 +179,7 @@ class ExperimentTracker(JsonFileStore):
             lines.append(f"{icons.get(e.status,'?')} [{e.id}] {e.name} ({e.status})")
             if e.roadmap_milestone: lines.append(f"  Milestone: {e.roadmap_milestone}")
             if verbose and e.metrics:
-                lines.append(f"  Metrics: " + ", ".join(f"{m.name}={m.value}" for m in e.metrics))
+                lines.append("  Metrics: " + ", ".join(f"{m.name}={m.value}" for m in e.metrics))
         return chr(10).join(lines)
 
     def render_compare(self, comp):

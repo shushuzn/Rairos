@@ -3,7 +3,7 @@ Weekly Digest: Generate weekly research summaries.
 """
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import List
 
 
 @dataclass
@@ -80,7 +80,7 @@ class WeeklyDigest:
         """Generate a text summary."""
         lines = [
             "=" * 60,
-            f"📊 Weekly Research Digest",
+            "📊 Weekly Research Digest",
             f"   {data.start_date} ~ {data.end_date}",
             "=" * 60,
             "",
@@ -139,7 +139,7 @@ class WeeklyDigest:
     def render_markdown(self, data: WeekData) -> str:
         """Render as Markdown."""
         lines = [
-            f"# Weekly Research Digest",
+            "# Weekly Research Digest",
             f"**Period**: {data.start_date} ~ {data.end_date}",
             "",
         ]

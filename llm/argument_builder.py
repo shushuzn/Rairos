@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict
 
 # Optional imports
 try:
@@ -178,11 +178,9 @@ class ArgumentBuilder:
     def _classify_insight(self, content: str, thesis: str) -> EvidenceType:
         """Classify if insight supports or contradicts thesis."""
         # Simple keyword-based classification
-        support_keywords = ["有效", "提升", "改进", "成功", "positive", "improve", "enhance"]
         contradict_keywords = ["局限", "问题", "失败", "缺陷", "limitation", "problem", "fail"]
 
         content_lower = content.lower()
-        thesis_lower = thesis.lower()
 
         # Check for contradictions
         for kw in contradict_keywords:
@@ -394,7 +392,7 @@ def render_argument(result: ArgumentResult) -> str:
     arg = result.argument
 
     lines.append("=" * 70)
-    lines.append(f"📝 论点论证")
+    lines.append("📝 论点论证")
     lines.append("=" * 70)
     lines.append("")
     lines.append(f"论点：{arg.thesis}")

@@ -1,7 +1,6 @@
 """
 Research Journal: Track research activities and thoughts.
 """
-import json
 import uuid
 from dataclasses import dataclass, asdict, field
 from datetime import datetime, timedelta

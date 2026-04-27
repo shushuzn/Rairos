@@ -11,8 +11,8 @@ Generates structured research plans with:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict
-from datetime import datetime, timedelta
+from typing import List, Dict
+from datetime import datetime
 
 
 @dataclass

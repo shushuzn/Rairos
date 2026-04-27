@@ -12,7 +12,6 @@ from typing import Any, Callable, List, Optional, Tuple
 
 from llm.client import call_llm_chat_completions
 from llm.constants import LLM_BASE_URL, LLM_MODEL
-from llm.evolution_report import get_adaptive_retrieval
 from llm.research_session import get_session_tracker
 
 
@@ -243,21 +242,6 @@ class RagChat:
 
         if not last_query:
             return resolved
-
-        # Pronoun resolution patterns (CN/EN)
-        pronouns = {
-            r'\b它\b': '该机制',
-            r'\b它们\b': '这些机制',
-            r'\b这个\b': '该概念',
-            r'\b这个模型\b': '该模型',
-            r'\b这篇论文\b': '上文提到的论文',
-            r'\b上述\b': '上文提到的',
-            r'\b之前?\b': '上文提到的',
-            r'\bthere\b': 'that',
-            r'\bit\b': 'that',
-            r'\bthese\b': 'those',
-            r'\bthis model\b': 'the model',
-        }
 
         # Extract key entities from last question
         last_q = last_query.question
@@ -943,7 +927,6 @@ class RagChat:
             ]
             boosted = self._adaptive.apply_boost(result_dicts, decay=0.1)
             # Re-sort results by boosted score
-            boosted_ids = [b["paper_id"] for b in boosted]
             boosted_scores = {b["paper_id"]: b["score"] for b in boosted}
             # Return original results re-sorted by boosted score
             return sorted(results, key=lambda r: boosted_scores.get(r.paper_id, 0), reverse=True)

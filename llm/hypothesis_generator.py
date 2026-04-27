@@ -16,7 +16,7 @@ import re
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, List, Dict, Any, Tuple
+from typing import Optional, List
 
 from llm.constants import LLM_BASE_URL, LLM_MODEL
 
@@ -209,7 +209,6 @@ class HypothesisGenerator:
         result = HypothesisResult(topic=topic)
 
         # Determine which context is available
-        has_gap = bool(gap_context)
         has_trend = bool(trend_context)
         has_story = bool(story_context)
 
@@ -422,7 +421,7 @@ class HypothesisGenerator:
                     if len(parts) >= 1:
                         hypothesis = ResearchHypothesis(
                             id=str(uuid.uuid4())[:8],
-                            title=f"LLM生成假说",
+                            title="LLM生成假说",
                             hypothesis_type=HypothesisType.EXPLORATORY,
                             core_statement=parts[0].split(']')[1].strip() if ']' in parts[0] else parts[0],
                             based_on="LLM增强生成",
@@ -600,7 +599,7 @@ class HypothesisGenerator:
                     RiskLevel.MEDIUM: "🟡",
                     RiskLevel.HIGH: "🔴",
                 }
-                lines.append(f"风险评估:")
+                lines.append("风险评估:")
                 lines.append(f"  技术风险: {risk_icon[h.risk_assessment.technical_risk]} {h.risk_assessment.technical_reason}")
                 lines.append(f"  假设风险: {risk_icon[h.risk_assessment.hypothesis_risk]} {h.risk_assessment.hypothesis_reason}")
                 lines.append("")

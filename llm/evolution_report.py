@@ -7,10 +7,10 @@ Evolution Report Generator: Generate Learning Reports for Users
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, asdict, field
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional, List, Dict, Any, TYPE_CHECKING
+from typing import Optional, List, Dict, Any
 
 from llm.constants import SMART_FOLLOWUP_BASE
 from collections import Counter, defaultdict
@@ -137,7 +137,7 @@ class LearningReport:
             ])
             # 只显示最有价值的一个
             if self.questions_to_explore:
-                lines.append(f"你问过类似的问题，也许可以深入一步：")
+                lines.append("你问过类似的问题，也许可以深入一步：")
                 lines.append("")
                 lines.append(f"> 「{self.questions_to_explore[0]}」")
             lines.append("")
@@ -379,7 +379,7 @@ class EvolutionReporter:
         elif total >= 5:
             return f"本周你提出了 {total} 个问题，研究在稳步推进。"
         elif total >= 1:
-            return f"你开始了新的探索旅程，提出了第一个问题。"
+            return "你开始了新的探索旅程，提出了第一个问题。"
         return ""
 
     def _generate_system_learned(self, feedbacks: List[Dict], paper_insights: List, stats: Dict) -> str:
@@ -696,7 +696,7 @@ class SmartFollowUp:
         if paper_title and tech_keywords:
             # 追问这篇论文被谁引用/影响了谁
             options.append(FollowUp(
-                text=f"📑 引用这篇论文的后续工作有哪些？",
+                text="📑 引用这篇论文的后续工作有哪些？",
                 type=FollowUpType.CITATION,
                 query=f"papers citing {paper_title}",
                 icon="📑",

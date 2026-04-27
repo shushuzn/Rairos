@@ -2,7 +2,7 @@
 Key Insight Cards: Extract and manage research insights.
 """
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict
 from datetime import datetime
 from pathlib import Path
 import json

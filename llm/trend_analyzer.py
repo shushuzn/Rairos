@@ -12,7 +12,6 @@ Research Trend Analyzer: Analyze research trends over time.
 
 from __future__ import annotations
 
-import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -21,7 +20,6 @@ from typing import Optional, List, Dict, Any, Tuple
 
 from llm.constants import AI_RESEARCH_KEYWORDS
 
-import numpy as np
 
 
 class TrendDirection(Enum):

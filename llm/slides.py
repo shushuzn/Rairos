@@ -10,8 +10,6 @@ Paper → Slides: 自动从论文生成演示文稿
 
 from __future__ import annotations
 
-import os
-import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, List, Dict, Any
@@ -107,7 +105,6 @@ class PaperSlidesGenerator:
             SlidesResult: 生成结果
         """
         config = config or SlidesConfig()
-        template = self.TEMPLATES.get(config.template, self.TEMPLATES["academic"])
 
         # 1. 获取论文内容
         papers_content = self._fetch_papers_content(paper_ids)
@@ -190,7 +187,7 @@ class PaperSlidesGenerator:
         slides.append(Slide(
             title=paper["title"],
             content=f"{paper['authors']}\n{paper['year']}",
-            notes=f"开场介绍论文标题和作者",
+            notes="开场介绍论文标题和作者",
             slide_type="title",
         ))
 
@@ -226,7 +223,7 @@ class PaperSlidesGenerator:
         if results_sections:
             for title, content in results_sections[:1]:
                 slides.append(Slide(
-                    title=f"实验结果",
+                    title="实验结果",
                     content=content[:600],
                     notes="展示关键实验数据和方法对比",
                     slide_type="content",
@@ -420,7 +417,7 @@ class PaperSlidesGenerator:
     ) -> Path:
         """输出 PPTX 格式（需要 python-pptx）."""
         if not HAS_PPTX:
-            print_warning("python-pptx 未安装，将输出 Markdown 格式")
+            print("Warning: python-pptx 未安装，将输出 Markdown 格式")
             return self._write_markdown(slides, output_path.replace(".pptx", ".md"), config)
 
         prs = Presentation()

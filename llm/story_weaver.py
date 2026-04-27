@@ -15,7 +15,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, List, Dict, Any, Tuple
+from typing import Optional, List, Dict, Tuple
 from collections import defaultdict
 
 from llm.constants import LLM_BASE_URL, LLM_MODEL
@@ -336,7 +336,6 @@ class StoryWeaver:
     ) -> List[Relationship]:
         """Build relationship graph between papers."""
         relationships = []
-        texts = {n.paper_id: n.title.lower() for n in narratives}
 
         for i, narrative in enumerate(narratives):
             for j, other in enumerate(narratives[i + 1:], i + 1):

@@ -8,8 +8,6 @@ Research Path Planner: Generate optimal reading order from knowledge graph.
 
 from __future__ import annotations
 
-import re
-from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Optional, List, Dict, Set, Tuple
@@ -447,7 +445,7 @@ class ResearchPathPlanner:
 
         # Check for relationship to earlier papers
         if paper.cited_by and len(paper.cited_by) > 2:
-            return "improvement", f"被多篇后续论文引用，影响力较高"
+            return "improvement", "被多篇后续论文引用，影响力较高"
 
         if level == ReadingLevel.INTRO:
             if not year or year < 2020:
