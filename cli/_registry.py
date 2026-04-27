@@ -71,6 +71,7 @@ _SUBCOMMAND_TABLE = [
     ("session",        "cli.cmd.session",            "_build_session_parser"),
     ("argue",          "cli.cmd.argue",              "_build_argue_parser"),
     ("narrative",      "cli.cmd.narrative",           "_build_narrative_parser"),
+    ("friction",       "cli.cmd.friction",            "_build_friction_parser"),
 ]
 SUBCOMMANDS = {name for name, _, _ in _SUBCOMMAND_TABLE}
 
@@ -164,6 +165,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "argue": "_run_argue",
         "narrative": "_run_narrative",
         "route": "_run_route",
+        "friction": "_run_friction",
     }
     if args.subcmd in dispatch:
         import cli as _cli
