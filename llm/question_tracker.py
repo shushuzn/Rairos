@@ -9,13 +9,14 @@ Track research questions from:
 
 from __future__ import annotations
 
-import json
 import uuid
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import List, Optional
+
+from llm.tracker_base import JsonFileStore
 
 
 class QuestionStatus(Enum):
@@ -63,7 +64,7 @@ class ResearchQuestion:
         return cls(**data)
 
 
-class QuestionTracker:
+class QuestionTracker(JsonFileStore):
     """Track and manage research questions persistently."""
 
     def __init__(self, data_dir: Optional[Path] = None):
@@ -71,23 +72,13 @@ class QuestionTracker:
             data_dir = Path.home() / ".ai_research_os" / "questions"
         self.data_dir = Path(data_dir)
         self.data_dir.mkdir(parents=True, exist_ok=True)
-        self.questions_file = self.data_dir / "questions.json"
+        self.data_file = self.data_dir / "questions.json"
 
-    def _load(self) -> List[ResearchQuestion]:
-        """Load all questions from disk."""
-        if not self.questions_file.exists():
-            return []
-        try:
-            with open(self.questions_file, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                return [ResearchQuestion.from_dict(q) for q in data]
-        except (json.JSONDecodeError, KeyError):
-            return []
+    def _post_load(self, raw: List[dict]) -> List[ResearchQuestion]:
+        return [ResearchQuestion.from_dict(q) for q in raw]
 
-    def _save(self, questions: List[ResearchQuestion]) -> None:
-        """Save all questions to disk."""
-        with open(self.questions_file, 'w', encoding='utf-8') as f:
-            json.dump([q.to_dict() for q in questions], f, ensure_ascii=False, indent=2)
+    def _pre_save(self, questions: List[ResearchQuestion]) -> List[dict]:
+        return [q.to_dict() for q in questions]
 
     def add(
         self,

@@ -5,7 +5,8 @@ from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 from pathlib import Path
-import json
+
+from llm.tracker_base import JsonFileStore
 
 
 @dataclass
@@ -33,25 +34,19 @@ class ReplicationReport:
     recommendations: List[str] = field(default_factory=list)
 
 
-class ReplicationTracker:
+class ReplicationTracker(JsonFileStore):
     """Track paper replication attempts."""
 
     def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir or Path.home() / ".ai_research_os"
         self.data_dir.mkdir(parents=True, exist_ok=True)
-        self.file_path = self.data_dir / "replications.json"
+        self.data_file = self.data_dir / "replications.json"
 
-    def _load(self) -> List[Dict]:
-        """Load replications from file."""
-        if self.file_path.exists():
-            with open(self.file_path, "r", encoding="utf-8") as f:
-                return json.load(f)
-        return []
+    def _post_load(self, raw: List[dict]) -> List[dict]:
+        return raw
 
-    def _save(self, data: List[Dict]) -> None:
-        """Save replications to file."""
-        with open(self.file_path, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+    def _pre_save(self, data: List[dict]) -> List[dict]:
+        return data
 
     def create_attempt(
         self,

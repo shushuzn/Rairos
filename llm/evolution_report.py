@@ -267,7 +267,11 @@ class EvolutionReporter:
             with open(self.evo.feedback_file, encoding="utf-8") as f:
                 for line in f:
                     if line.strip():
-                        data = json.loads(line)
+                        try:
+                            data = json.loads(line)
+                        except (json.JSONDecodeError, ValueError):
+                            # Skip malformed JSON lines without crashing.
+                            continue
                         if data.get("timestamp", "") >= start_time:
                             feedbacks.append(data)
         except FileNotFoundError:

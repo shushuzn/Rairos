@@ -8,6 +8,8 @@ from enum import Enum
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 
+from llm.tracker_base import JsonFileStore
+
 class ExperimentStatus(Enum):
     RUNNING = "running"
     COMPLETED = "completed"
@@ -50,27 +52,17 @@ class Experiment:
             data['metrics'] = [Metric(**m) if isinstance(m, dict) else m for m in data['metrics']]
         return cls(**data)
 
-class ExperimentTracker:
+class ExperimentTracker(JsonFileStore):
     def __init__(self, data_dir=None):
         p = Path(data_dir or Path.home() / ".ai_research_os" / "experiments")
         p.mkdir(parents=True, exist_ok=True)
-        self.f = p / "experiments.json"
+        self.data_file = p / "experiments.json"
 
-    def _load(self):
-        if not self.f.exists(): return []
-        try:
-            with open(self.f) as f:
-                return [Experiment.from_dict(e) for e in json.load(f)]
-        except (json.JSONDecodeError, IOError) as e:
-            logging.warning("Failed to load experiments from %s (%s). Returning empty list.", self.f, e)
-            return []
-        except Exception as e:
-            logging.warning("Unexpected error loading experiments from %s (%s). Returning empty list.", self.f, e)
-            return []
+    def _post_load(self, raw: List[dict]) -> List[Experiment]:
+        return [Experiment.from_dict(e) for e in raw]
 
-    def _save(self, exps):
-        with open(self.f, 'w') as f:
-            json.dump([e.to_dict() for e in exps], f, ensure_ascii=False, indent=2)
+    def _pre_save(self, exps: List[Experiment]) -> List[dict]:
+        return [e.to_dict() for e in exps]
 
     def run(self, name, description="", roadmap_milestone="", hypothesis_id="", config=None, tags=None):
         exps = self._load()

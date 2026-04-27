@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Optional
 
+from llm.tracker_base import JsonFileStore
+
 
 @dataclass
 class JournalEntry:
@@ -35,27 +37,19 @@ class JournalEntry:
         return cls(**data)
 
 
-class Journal:
+class Journal(JsonFileStore):
     """Research journal for tracking activities."""
 
     def __init__(self, data_dir=None):
         p = Path(data_dir or Path.home() / ".ai_research_os" / "journal")
         p.mkdir(parents=True, exist_ok=True)
-        self.f = p / "journal.json"
+        self.data_file = p / "journal.json"
 
-    def _load(self) -> List[JournalEntry]:
-        if not self.f.exists():
-            return []
-        try:
-            with open(self.f) as f:
-                return [JournalEntry.from_dict(e) for e in json.load(f)]
-        except (json.JSONDecodeError, IOError):
-            # Corrupt or missing journal file — start fresh without crashing.
-            return []
+    def _post_load(self, raw: List[dict]) -> List[JournalEntry]:
+        return [JournalEntry.from_dict(e) for e in raw]
 
-    def _save(self, entries: List[JournalEntry]):
-        with open(self.f, 'w', encoding='utf-8') as f:
-            json.dump([e.to_dict() for e in entries], f, ensure_ascii=False, indent=2)
+    def _pre_save(self, entries: List[JournalEntry]) -> List[dict]:
+        return [e.to_dict() for e in entries]
 
     def add(
         self,
