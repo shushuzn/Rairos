@@ -772,3 +772,137 @@ class TestEvolutionDashboardIntegration:
         score2 = sorted_gaps2[0].preference_score
 
         assert score2 > score1
+
+
+# =============================================================================
+# _build_gap_context — pure string formatting
+# =============================================================================
+class TestBuildGapContext:
+    """Test _build_gap_context — pure, no I/O."""
+
+    def test_contains_topic(self):
+        analyzer = GapAnalyzerV2()
+        result = GapAnalysisResultV2(topic="Transformer")
+        ctx = analyzer._build_gap_context(result)
+        assert "Transformer" in ctx
+
+    def test_empty_gaps(self):
+        analyzer = GapAnalyzerV2()
+        result = GapAnalysisResultV2(topic="Test", gaps=[])
+        ctx = analyzer._build_gap_context(result)
+        assert "Topic: Test" in ctx
+
+    def test_includes_gap_title_and_type(self):
+        analyzer = GapAnalyzerV2()
+        result = GapAnalysisResultV2(
+            topic="RAG",
+            gaps=[
+                ResearchGapV2(
+                    gap_type=GapType.METHOD_LIMITATION,
+                    title="Context window limitation",
+                    description="Transformers have limited context",
+                    severity=GapSeverity.HIGH,
+                ),
+            ],
+        )
+        ctx = analyzer._build_gap_context(result)
+        assert "Context window limitation" in ctx
+        assert "method_limitation" in ctx
+
+    def test_includes_description_truncated(self):
+        analyzer = GapAnalyzerV2()
+        long_desc = "x" * 200
+        result = GapAnalysisResultV2(
+            topic="Test",
+            gaps=[
+                ResearchGapV2(
+                    gap_type=GapType.METHOD_LIMITATION,
+                    title="Gap",
+                    description=long_desc,
+                    severity=GapSeverity.HIGH,
+                ),
+            ],
+        )
+        ctx = analyzer._build_gap_context(result)
+        # Description should be truncated to 100 chars
+        assert len(ctx) < 300
+
+    def test_includes_sub_questions(self):
+        analyzer = GapAnalyzerV2()
+        result = GapAnalysisResultV2(
+            topic="Test",
+            gaps=[
+                ResearchGapV2(
+                    gap_type=GapType.METHOD_LIMITATION,
+                    title="Gap",
+                    description="Description",
+                    severity=GapSeverity.HIGH,
+                    sub_questions=["How to fix?", "What alternatives?"],
+                ),
+            ],
+        )
+        ctx = analyzer._build_gap_context(result)
+        assert "How to fix?" in ctx
+
+    def test_limits_to_five_gaps(self):
+        analyzer = GapAnalyzerV2()
+        gaps = [
+            ResearchGapV2(
+                gap_type=GapType.METHOD_LIMITATION,
+                title=f"Gap {i}",
+                description="Desc",
+                severity=GapSeverity.HIGH,
+            )
+            for i in range(10)
+        ]
+        result = GapAnalysisResultV2(topic="Test", gaps=gaps)
+        ctx = analyzer._build_gap_context(result)
+        # Should contain "Gap 0" through "Gap 4", not "Gap 5"
+        assert "Gap 0" in ctx
+        assert "Gap 4" in ctx
+        assert "Gap 5" not in ctx
+
+
+# =============================================================================
+# _analyze_trends — graceful fallback
+# =============================================================================
+class TestAnalyzeTrends:
+    """Test _analyze_trends — graceful empty set when no trend_analyzer."""
+
+    def test_returns_empty_when_no_trend_analyzer(self):
+        analyzer = GapAnalyzerV2()
+        trends = analyzer._analyze_trends("Transformer")
+        assert trends == set()
+
+    def test_returns_empty_when_trend_analyzer_raises(self):
+        analyzer = GapAnalyzerV2()
+        mock_ta = MagicMock()
+        mock_ta.analyze.side_effect = RuntimeError("analysis failed")
+        analyzer.trend_analyzer = mock_ta
+        trends = analyzer._analyze_trends("Transformer")
+        # Should not raise — graceful fallback
+        assert trends == set()
+
+    def test_extracts_hot_keywords(self):
+        analyzer = GapAnalyzerV2()
+        mock_ta = MagicMock()
+        mock_result = MagicMock()
+        mock_result.rising_trends = [MagicMock(keyword="RAG"), MagicMock(keyword="LLM")]
+        mock_result.emerging_trends = [MagicMock(keyword="Agent")]
+        mock_ta.analyze.return_value = mock_result
+        analyzer.trend_analyzer = mock_ta
+        trends = analyzer._analyze_trends("AI")
+        assert "rag" in trends
+        assert "llm" in trends
+        assert "agent" in trends
+
+    def test_limits_to_10_keywords(self):
+        analyzer = GapAnalyzerV2()
+        mock_ta = MagicMock()
+        mock_result = MagicMock()
+        mock_result.rising_trends = [MagicMock(keyword=f"kw{i}") for i in range(20)]
+        mock_result.emerging_trends = [MagicMock(keyword=f"em{i}") for i in range(20)]
+        mock_ta.analyze.return_value = mock_result
+        analyzer.trend_analyzer = mock_ta
+        trends = analyzer._analyze_trends("AI")
+        assert len(trends) <= 20  # 10 rising + 10 emerging

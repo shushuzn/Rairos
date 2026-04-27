@@ -224,3 +224,146 @@ class TestGapDetector:
         assert result.topic == "Test Topic"
         assert len(result.gaps) == 0
         assert len(result.questions) == 0
+
+
+# =============================================================================
+# _parse_gaps — pure string/regex parsing
+# =============================================================================
+class TestParseGaps:
+    """Test _parse_gaps — pure parsing, no I/O."""
+
+    def test_parses_well_formed_response(self):
+        detector = GapDetector()
+        response = """
+[method_limitation] Transformers have quadratic complexity | Attention Is All You Need | 0.9 | high
+[unexplored_application] RAG for code generation not explored | RAG Paper, CodeLlama Paper | 0.7 | medium
+"""
+        gaps = detector._parse_gaps(response, "Transformers")
+
+        assert len(gaps) == 2
+        assert gaps[0].gap_type == GapType.METHOD_LIMITATION
+        assert "quadratic" in gaps[0].description.lower()
+        assert gaps[0].severity == GapSeverity.HIGH
+        assert gaps[1].gap_type == GapType.UNEXPLORED_APPLICATION
+
+    def test_maps_all_gap_types(self):
+        detector = GapDetector()
+        response = """
+[method_limitation] Limitation | Paper1 | 0.8 | high
+[unexplored_application] Unexplored | Paper2 | 0.7 | medium
+[contradiction] Contradiction | Paper3 | 0.6 | high
+[evaluation_gap] No benchmark | Paper4 | 0.5 | medium
+"""
+        gaps = detector._parse_gaps(response, "Test")
+        types = {g.gap_type for g in gaps}
+        assert GapType.METHOD_LIMITATION in types
+        assert GapType.UNEXPLORED_APPLICATION in types
+        assert GapType.CONTRADICTION in types
+        assert GapType.EVALUATION_GAP in types
+
+    def test_unknown_type_defaults_to_method_limitation(self):
+        detector = GapDetector()
+        response = "[unknown_type] Some gap | Paper1 | 0.5 | medium"
+        gaps = detector._parse_gaps(response, "Test")
+        assert len(gaps) == 1
+        assert gaps[0].gap_type == GapType.METHOD_LIMITATION  # default fallback
+
+    def test_parses_evidence_papers(self):
+        detector = GapDetector()
+        response = "[method_limitation] Gap | Paper A, Paper B, Paper C | 0.8 | high"
+        gaps = detector._parse_gaps(response, "Test")
+        assert len(gaps) == 1
+        assert "Paper A" in gaps[0].evidence_papers
+        assert "Paper B" in gaps[0].evidence_papers
+        assert "Paper C" in gaps[0].evidence_papers
+
+    def test_empty_response_returns_empty_list(self):
+        detector = GapDetector()
+        gaps = detector._parse_gaps("", "Test")
+        assert gaps == []
+
+    def test_skips_comments_and_empty_lines(self):
+        detector = GapDetector()
+        response = """
+# This is a comment
+[method_limitation] Valid gap | Paper1 | 0.8 | high
+
+   # another comment
+[unexplored_application] Another | Paper2 | 0.7 | medium
+"""
+        gaps = detector._parse_gaps(response, "Test")
+        assert len(gaps) == 2
+
+
+# =============================================================================
+# _parse_questions — pure string parsing
+# =============================================================================
+class TestParseQuestions:
+    """Test _parse_questions — pure parsing, no I/O."""
+
+    def test_parses_well_formed_response(self):
+        detector = GapDetector()
+        response = """
+How to improve scalability? | Hypothesis text | Use alternative methods | High impact | 0.7 | 0.8
+What metrics to use? | Metric hypothesis | Design new metrics | Medium impact | 0.6 | 0.5
+"""
+        gaps = [ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=["p1"])]
+        questions = detector._parse_questions(response, gaps)
+
+        assert len(questions) == 2
+        assert "scalability" in questions[0].question.lower()
+        assert "metrics" in questions[1].question.lower()
+        assert questions[0].hypothesis == "Hypothesis text"
+        assert questions[0].methodology_suggestion == "Use alternative methods"
+
+    def test_parses_minimal_pipe_delimited(self):
+        detector = GapDetector()
+        response = "Just a question?"
+        gaps = [ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=[])]
+        questions = detector._parse_questions(response, gaps)
+        assert len(questions) == 1
+        assert questions[0].question == "Just a question?"
+        assert questions[0].feasibility == 0.5  # default
+        assert questions[0].novelty_score == 0.5  # default
+
+    def test_empty_response_returns_empty_list(self):
+        detector = GapDetector()
+        questions = detector._parse_questions("", [])
+        assert questions == []
+
+    def test_skips_comments_and_empty_lines(self):
+        detector = GapDetector()
+        response = """
+# This is a comment
+
+Valid question? | Hypothesis | Method | Impact | 0.7 | 0.8
+
+   # whitespace-only
+"""
+        gaps = [ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=[])]
+        questions = detector._parse_questions(response, gaps)
+        assert len(questions) == 1
+        assert questions[0].question == "Valid question?"
+
+    def test_uses_first_gap_when_no_gaps_provided(self):
+        """When gaps list is empty, default_gap is None — should not crash."""
+        detector = GapDetector()
+        response = "Question text"
+        questions = detector._parse_questions(response, [])
+        assert len(questions) == 1
+        assert questions[0].gap is None
+
+    def test_partial_pipe_fields_default(self):
+        detector = GapDetector()
+        # Two pipes: parts[0]=question, parts[1]=hypothesis, parts[2]=methodology
+        response = "Question text | Hypothesis field | Methodology field"
+        gaps = [ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=[])]
+        questions = detector._parse_questions(response, gaps)
+        assert len(questions) == 1
+        assert questions[0].question == "Question text"
+        assert questions[0].hypothesis == "Hypothesis field"
+        assert questions[0].methodology_suggestion == "Methodology field"
+        # With 3 parts, impact/feasibility/novelty get defaults
+        assert questions[0].expected_impact == ""
+        assert questions[0].feasibility == 0.5
+        assert questions[0].novelty_score == 0.5

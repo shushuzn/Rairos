@@ -1,5 +1,6 @@
 """Tests for research hypothesis generator."""
 import pytest
+from unittest.mock import MagicMock
 
 from llm.hypothesis_generator import (
     HypothesisGenerator,
@@ -441,3 +442,128 @@ class TestHypothesisGenerator:
         assert '"topic"' in output
         assert '"hypotheses"' in output
         assert "BERT Hypothesis" in output
+
+
+# =============================================================================
+# _generate_from_templates — pure, no I/O
+# =============================================================================
+class TestGenerateFromTemplates:
+    """Test _generate_from_templates — pure template-filling, no LLM or DB."""
+
+    def _make_hypothesis(self, **kwargs):
+        defaults = dict(
+            id="test-id",
+            title="Test",
+            hypothesis_type=HypothesisType.CAUSAL,
+            core_statement="X causes Y",
+            based_on="unit test",
+            experiment_design=ExperimentDesign(
+                baseline="", variables=[], controls=[],
+                evaluation_metrics=[], expected_results="",
+            ),
+        )
+        defaults.update(kwargs)
+        return ResearchHypothesis(**defaults)
+
+    def test_returns_list_of_hypotheses(self):
+        generator = HypothesisGenerator()
+        result = generator._generate_from_templates(
+            topic="Transformer",
+            gap_context="scalability issues",
+            trend_context="",
+            creative=False,
+        )
+        assert isinstance(result, list)
+        assert len(result) > 0
+
+    def test_hypothesis_has_core_statement(self):
+        generator = HypothesisGenerator()
+        results = generator._generate_from_templates(
+            topic="Attention",
+            gap_context="quadratic complexity",
+            trend_context="",
+            creative=False,
+        )
+        for h in results:
+            assert h.core_statement
+            assert len(h.core_statement) > 5
+
+    def test_hypothesis_type_from_template(self):
+        generator = HypothesisGenerator()
+        results = generator._generate_from_templates(
+            topic="RAG",
+            gap_context="method_limitation",
+            trend_context="",
+            creative=False,
+        )
+        for h in results:
+            assert h.hypothesis_type in list(HypothesisType)
+
+    def test_creative_flag_adds_one(self):
+        generator = HypothesisGenerator()
+        no_creative = generator._generate_from_templates(
+            topic="Test",
+            gap_context="scalability issues",
+            trend_context="",
+            creative=False,
+        )
+        with_creative = generator._generate_from_templates(
+            topic="Test",
+            gap_context="scalability issues",
+            trend_context="",
+            creative=True,
+        )
+        # Creative=True should produce at least as many results
+        assert len(with_creative) >= len(no_creative)
+
+    def test_gap_type_inferred_and_stored(self):
+        generator = HypothesisGenerator()
+        results = generator._generate_from_templates(
+            topic="Test",
+            gap_context="scalability issues with the method",
+            trend_context="",
+            creative=False,
+        )
+        for h in results:
+            assert h.gap_type is not None
+
+
+# =============================================================================
+# _find_differentiations — requires db (graceful fallback)
+# =============================================================================
+class TestFindDifferentiations:
+    """Test _find_differentiations — graceful empty list when no DB."""
+
+    def test_returns_empty_when_no_db(self):
+        generator = HypothesisGenerator()
+        hypothesis = ResearchHypothesis(
+            title="Test",
+            hypothesis_type=HypothesisType.CAUSAL,
+            core_statement="X causes Y",
+            based_on="test",
+            experiment_design=ExperimentDesign(
+                baseline="", variables=[], controls=[],
+                evaluation_metrics=[], expected_results="",
+            ),
+        )
+        diffs = generator._find_differentiations(hypothesis, "transformer")
+        assert diffs == []
+
+    def test_returns_empty_when_db_raises(self):
+        generator = HypothesisGenerator()
+        mock_db = MagicMock()
+        mock_db.search_papers.side_effect = RuntimeError("search failed")
+        generator.db = mock_db
+        hypothesis = ResearchHypothesis(
+            title="Test",
+            hypothesis_type=HypothesisType.CAUSAL,
+            core_statement="X causes Y",
+            based_on="test",
+            experiment_design=ExperimentDesign(
+                baseline="", variables=[], controls=[],
+                evaluation_metrics=[], expected_results="",
+            ),
+        )
+        diffs = generator._find_differentiations(hypothesis, "transformer")
+        # Should not raise — graceful fallback
+        assert diffs == []
