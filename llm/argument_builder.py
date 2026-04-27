@@ -21,7 +21,7 @@ try:
     from llm.chat import call_llm_chat_completions
     LLM_AVAILABLE = True
 except ImportError:
-    LLM_AVAILABLe = False
+    LLM_AVAILABLE = False
 
 
 class EvidenceType(Enum):
@@ -139,15 +139,18 @@ class ArgumentBuilder:
         papers, _ = self.db.search_papers(thesis, limit=10)
 
         for paper in papers:
-            # Extract key claims from paper
-            if paper.abstract:
-                evidence_list.append(Evidence(
-                    evidence_type=EvidenceType.SUPPORT,
-                    source=paper.title,
-                    content=paper.abstract[:300],
-                    citation=f"{paper.title} ({paper.year})" if paper.year else paper.title,
-                    weight=0.8,
-                ))
+            # SearchResult has 'snippet'; Paper has 'abstract'
+            abstract = getattr(paper, "abstract", None) or getattr(paper, "snippet", "")
+            if not abstract:
+                continue
+            year = getattr(paper, "year", None)
+            evidence_list.append(Evidence(
+                evidence_type=EvidenceType.SUPPORT,
+                source=paper.title,
+                content=abstract[:300],
+                citation=f"{paper.title} ({year})" if year else paper.title,
+                weight=0.8,
+            ))
 
         return evidence_list
 
@@ -157,7 +160,7 @@ class ArgumentBuilder:
             return []
 
         evidence_list = []
-        cards = self.insight_manager.search_cards(query=thesis, limit=20)
+        cards = self.insight_manager.search_cards(query=thesis)
 
         for card in cards:
             # Determine if insight supports or contradicts
