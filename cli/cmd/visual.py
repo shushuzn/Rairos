@@ -4,17 +4,20 @@ Visual Extraction CLI Command
 Usage:
     airos visual extract paper.pdf --output figures/
     airos visual extract paper.pdf --output figures/ --dpi 200
+    airos visual extract paper.pdf --save-db 2604.22754
 """
 from __future__ import annotations
 
 import argparse
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import click
 from pdf.visual import VisualExtractor
+from db.database import Database, ExperimentTableRecord
 from cli._shared import print_success, print_error, print_info
 
 
@@ -32,8 +35,10 @@ def _build_visual_parser(subparsers):
     extract_p.add_argument("--format", "-f", default="markdown",
                           choices=["markdown", "json"],
                           help="Output format for tables")
+    extract_p.add_argument("--save-db", metavar="PAPER_ID", default=None,
+                          help="Save tables to database with this paper_id")
     extract_p.set_defaults(func=lambda a: visual_extract.callback(
-        pdf=a.pdf, output=a.output, dpi=a.dpi, format=a.format))
+        pdf=a.pdf, output=a.output, dpi=a.dpi, format=a.format, save_db=a.save_db))
 
     p.set_defaults(func=lambda a: visual_status.callback())
 
@@ -42,15 +47,16 @@ def _build_visual_parser(subparsers):
 @click.argument("pdf", required=False)
 @click.option("--output", "-o", default=None)
 @click.option("--dpi", type=int, default=150)
-def visual(pdf: str, output: str, dpi: int):
+@click.option("--save-db", default=None, help="Save tables to DB with this paper_id")
+def visual(pdf: str, output: str, dpi: int, save_db: str):
     """Extract visual content from PDF."""
     if pdf:
-        visual_extract.callback(pdf, output, dpi, "markdown")
+        visual_extract.callback(pdf, output, dpi, "markdown", save_db)
     else:
         visual_status.callback()
 
 
-def visual_extract(pdf: str, output: str, dpi: int, format: str):
+def visual_extract(pdf: str, output: str, dpi: int, format: str, save_db: str = None):
     """Extract figures, formulas, and tables from PDF."""
     pdf_path = Path(pdf)
 
@@ -73,6 +79,41 @@ def visual_extract(pdf: str, output: str, dpi: int, format: str):
         print_info(f"  Figures: {len(result.figures)}")
         print_info(f"  Formulas: {len(result.rendered_formulas)}")
         print_info(f"  Tables: {len(result.tables_markdown)}")
+
+        # Save tables to database
+        if save_db and result.tables_markdown:
+            db = Database()
+
+            # Auto-create paper record if it doesn't exist
+            existing = db.get_paper(save_db)
+            if not existing:
+                db.upsert_paper(
+                    paper_id=save_db,
+                    source='visual_extract',
+                    title=f'Paper {save_db}',
+                    abstract=f'Extracted from {pdf_path.name}',
+                )
+                print_info(f"Created paper record: {save_db}")
+
+            tables = [
+                ExperimentTableRecord(
+                    id=0,  # Auto-assigned
+                    paper_id=save_db,
+                    table_caption=t.caption,
+                    page=t.page,
+                    headers=t.headers,
+                    rows=t.rows,
+                    bbox_x0=0,
+                    bbox_y0=0,
+                    bbox_x1=0,
+                    bbox_y1=0,
+                    created_at=datetime.now(timezone.utc).isoformat(),
+                )
+                for t in result.tables_markdown
+            ]
+            db.upsert_experiment_tables(save_db, tables)
+            db.close()
+            print_success(f"Saved {len(tables)} tables to database as: {save_db}")
 
         # Print tables as markdown
         if result.tables_markdown:

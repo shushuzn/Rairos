@@ -187,7 +187,7 @@ class VisualExtractor:
         display_pattern = re.compile(r'\$\$([^\$]+)\$\$')
 
         # Extract text with bbox info
-        page_dict = page.get_text("dict", flags=fitz.TEXTFLAGS_BLOCKS)
+        page_dict = page.get_text("dict", flags=_fitz.TEXTFLAGS_BLOCKS)
 
         for block in page_dict.get("blocks", []):
             if block.get("type") != 0:  # text block only
