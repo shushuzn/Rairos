@@ -894,8 +894,25 @@ class TUIChatApp(App):
         margin: 0 1;
     }
 
-    #send-btn {
+    .action-btn {
+        margin: 0 1;
+        color: #bd93f9;
+    }
+
+    .action-btn:hover {
+        color: #ff79c6;
+    }
+
+    #btn-history {
+        color: #8be9fd;
+    }
+
+    #btn-new {
         color: #50fa7b;
+    }
+
+    #btn-export {
+        color: #ffb86c;
     }
 
     /* ── Status ── */
@@ -975,6 +992,8 @@ class TUIChatApp(App):
         Binding("ctrl+e", "toggle_history", "History", show=False),
         Binding("ctrl+s", "export_session", "Export", show=False),
         Binding("f1", "help", "Help", show=False),
+        Binding("ctrl+n", "new_session", "New", show=False),
+        Binding("ctrl+k", "command_palette", "Cmd", show=False),
     ]
 
     def __init__(
@@ -1025,7 +1044,9 @@ class TUIChatApp(App):
                 id="chat-input",
                 classes="chat-input",
             )
-            yield Button("Send", id="send-btn", variant="primary")
+            yield Button("📜 历史", id="btn-history", variant="primary", classes="action-btn")
+            yield Button("🆕 新建", id="btn-new", variant="primary", classes="action-btn")
+            yield Button("💾 导出", id="btn-export", variant="primary", classes="action-btn")
         yield Static("❯ 输入问题开始对话", id="status-bar")
         # Progress bar for streaming
         yield Static("", id="progress-bar")
@@ -1045,6 +1066,16 @@ class TUIChatApp(App):
             return
         self._handle_submit(question)
         self.query_one("#chat-input").value = ""
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle quick action button clicks."""
+        btn_id = event.button.id
+        if btn_id == "btn-history":
+            self.action_toggle_history()
+        elif btn_id == "btn-new":
+            self.action_new_session()
+        elif btn_id == "btn-export":
+            self.action_export_session()
 
     def _handle_submit(self, question: str) -> None:
         """Process a user question."""
@@ -1332,6 +1363,45 @@ class TUIChatApp(App):
     def action_help(self) -> None:
         """Show help dialog."""
         self._show_help()
+
+    def action_new_session(self) -> None:
+        """Create a new chat session."""
+        import uuid
+        self.session_id = str(uuid.uuid4())[:8]
+        self.messages.clear()
+        self._chat_history.clear()
+        try:
+            self.chat.db.create_chat_session(self.session_id, "TUI对话")
+        except Exception:
+            pass
+        self._render_messages()
+        try:
+            welcome = self.query_one("#welcome")
+            self.query_one("#messages").mount(welcome)
+        except NoMatches:
+            pass
+        self._update_status(f"✅ 新建会话 [{self.session_id}]")
+
+    def action_command_palette(self) -> None:
+        """Show command palette."""
+        self.notify(
+            "🎯 命令面板\n\n"
+            "💬 发送: Enter\n"
+            "📜 历史: Ctrl+E\n"
+            "🆕 新建: Ctrl+N\n"
+            "💾 导出: Ctrl+S\n"
+            "🗑️ 清屏: Ctrl+L\n"
+            "🚪 退出: q\n\n"
+            "🔧 斜杠命令:\n"
+            "  /sessions  查看会话\n"
+            "  /load <id>  加载会话\n"
+            "  /search <k> 搜索\n"
+            "  /rename <t> 重命名\n"
+            "  /export    导出\n"
+            "  /help      帮助",
+            title="快捷操作",
+            timeout=8,
+        )
 
     # ── Session Management ─────────────────────────────────────────────────
 
