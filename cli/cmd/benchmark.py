@@ -9,7 +9,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import sys
 
 from cli._shared import get_db, print_info, print_error, print_success
 from llm.benchmark import BenchmarkComparator
@@ -44,6 +43,17 @@ def _build_benchmark_parser(subparsers) -> argparse.ArgumentParser:
     compare_p.add_argument("--metric", "-m", default=None,
                            help="Filter by metric name (e.g., 'Accuracy')")
 
+    # viz — benchmark comparison visualization
+    viz_p = sub.add_parser("viz", help="Visualize benchmark comparison as charts")
+    viz_p.add_argument("paper_ids", nargs="+", help="Paper IDs to compare")
+    viz_p.add_argument("--output", "-o", default="benchmark_chart.html",
+                       help="Output file path (default: benchmark_chart.html)")
+    viz_p.add_argument("--format", "-f", default="html",
+                       choices=["html", "svg", "json"],
+                       help="Output format (default: html)")
+    viz_p.add_argument("--metric", "-m", default=None,
+                       help="Filter by metric name (e.g., 'Accuracy')")
+
     return p
 
 
@@ -63,8 +73,11 @@ def _run_benchmark(args: argparse.Namespace) -> int:
     elif args.benchmark_cmd == "compare":
         return _run_compare(args, comparator)
 
+    elif args.benchmark_cmd == "viz":
+        return _run_viz(args, comparator)
+
     else:
-        print_error("Usage: airos benchmark {detect|list|compare} [...]")
+        print_error("Usage: airos benchmark {detect|list|compare|viz} [...]")
         return 1
 
 
@@ -174,3 +187,45 @@ def _run_compare(args: argparse.Namespace, comparator: BenchmarkComparator) -> i
         print(comparator.render_text(result))
 
     return 0
+
+
+def _run_viz(args: argparse.Namespace, comparator: BenchmarkComparator) -> int:
+    """Generate benchmark comparison visualization."""
+    paper_ids = args.paper_ids
+    output_path = args.output
+
+    print_info(f"Comparing benchmarks across {len(paper_ids)} papers for visualization...")
+
+    result = comparator.compare(paper_ids)
+
+    # Filter by metric if specified
+    if args.metric:
+        metric_lower = args.metric.lower()
+        result.matches = [
+            m for m in result.matches
+            if metric_lower in m.metric_name.lower()
+        ]
+
+    if not result.matches:
+        print_info("No matching benchmarks found to visualize.")
+        for pid, tables in result.tables_found.items():
+            print_info(f"\n  {pid}: {len(tables)} benchmark table(s)")
+            for t in tables:
+                print_info(f"    - {t.benchmark_name}: {', '.join(t.metrics[:3])}")
+        return 0
+
+    from viz.benchmark_viz import BenchmarkViz
+
+    viz = BenchmarkViz()
+
+    if args.format == "json":
+        import json as _json
+        print(_json.dumps(viz.to_json(result), indent=2, ensure_ascii=False))
+        return 0
+    elif args.format == "svg":
+        print(viz.render_svg(result))
+        return 0
+    else:
+        out = viz.render_html(result, output_path)
+        print_success(f"Chart saved to: {out}")
+        return 0
