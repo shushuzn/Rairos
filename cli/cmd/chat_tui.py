@@ -994,6 +994,7 @@ class TUIChatApp(App):
         Binding("f1", "help", "Help", show=False),
         Binding("ctrl+n", "new_session", "New", show=False),
         Binding("ctrl+k", "command_palette", "Cmd", show=False),
+        Binding("tab", "complete_command", "Tab", show=False),
     ]
 
     def __init__(
@@ -1391,6 +1392,7 @@ class TUIChatApp(App):
             "🆕 新建: Ctrl+N\n"
             "💾 导出: Ctrl+S\n"
             "🗑️ 清屏: Ctrl+L\n"
+            "↹ Tab   补全命令\n"
             "🚪 退出: q\n\n"
             "🔧 斜杠命令:\n"
             "  /sessions  查看会话\n"
@@ -1402,6 +1404,50 @@ class TUIChatApp(App):
             title="快捷操作",
             timeout=8,
         )
+
+    # ── Command Completion ────────────────────────────────────────────────────
+
+    # Available slash commands
+    SLASH_COMMANDS = [
+        ("/sessions", "查看所有会话"),
+        ("/load", "加载会话 /load <id>"),
+        ("/search", "搜索会话 /search <关键词>"),
+        ("/rename", "重命名会话 /rename <标题>"),
+        ("/delete", "删除会话 /delete <id>"),
+        ("/export", "导出会话"),
+        ("/clear", "清空对话"),
+        ("/help", "显示帮助"),
+    ]
+
+    def action_complete_command(self) -> None:
+        """Complete slash commands on Tab press."""
+        try:
+            inp = self.query_one("#chat-input")
+            current = inp.value
+
+            # Only complete if starts with /
+            if not current.startswith("/"):
+                return
+
+            # Find matching commands
+            matches = [cmd for cmd, desc in self.SLASH_COMMANDS if cmd.startswith(current)]
+
+            if not matches:
+                return
+
+            if len(matches) == 1:
+                # Single match - complete it
+                inp.value = matches[0] + " "
+                inp.cursor_position = len(inp.value)
+            else:
+                # Multiple matches - show suggestions
+                lines = ["↹ 候选命令:"]
+                for cmd, desc in self.SLASH_COMMANDS:
+                    if cmd.startswith(current):
+                        lines.append(f"  {cmd} - {desc}")
+                self.notify("\n".join(lines), title="命令补全", timeout=3)
+        except NoMatches:
+            pass
 
     # ── Session Management ─────────────────────────────────────────────────
 
