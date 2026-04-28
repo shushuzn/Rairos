@@ -29,7 +29,7 @@ import re
 import sys
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Callable, List
+from typing import Callable, Dict, List, Set
 
 # Load .env from current working directory (unified via cli._shared)
 from cli._shared import load_dotenv
@@ -65,6 +65,26 @@ class StreamConfig:
     batch_size: int = 3        # Characters per batch update
     max_line_width: int = 120  # Auto-wrap at this width
     typing_indicator: bool = True  # Show typing animation
+
+
+# ─── Message Indexer ─────────────────────────────────────────────────────────
+
+import re
+
+def tokenize(text: str) -> Set[str]:
+    """Extract searchable tokens from text (simple word tokenization)."""
+    # Lowercase, keep alphanumeric+Chinese chars, split by whitespace/punctuation
+    tokens = re.findall(r'[\w\u4e00-\u9fff]+', text.lower())
+    # Filter out very short tokens (1-2 chars often noise)
+    return {t for t in tokens if len(t) >= 2}
+
+
+def _index_message(tokens: Set[str], msg_idx: int, index: Dict[str, Set[int]]) -> None:
+    """Add message tokens to the inverted index."""
+    for token in tokens:
+        if token not in index:
+            index[token] = set()
+        index[token].add(msg_idx)
 
 
 # ─── Markdown Parser ──────────────────────────────────────────────────────────
@@ -1040,6 +1060,7 @@ class TUIChatApp(App):
         self._stream_config = StreamConfig()
         self._suggestions: List[str] = []
         self._selected_msg_idx: int = -1  # For keyboard navigation
+        self._msg_index: Dict[str, Set[int]] = {}  # Token → message indices
 
     # ── App lifecycle ──────────────────────────────────────────────────────
 
@@ -1131,6 +1152,7 @@ class TUIChatApp(App):
             timestamp=datetime.now().isoformat()
         )
         self.messages.append(user_msg)
+        _index_message(tokenize(user_msg.content), len(self.messages) - 1, self._msg_index)
         self._render_messages()
 
         # Set streaming state
@@ -1145,6 +1167,7 @@ class TUIChatApp(App):
             timestamp=datetime.now().isoformat()
         )
         self.messages.append(ai_msg)
+        _index_message(tokenize(ai_msg.content), len(self.messages) - 1, self._msg_index)
         self._render_messages()
 
         try:
@@ -1242,6 +1265,9 @@ class TUIChatApp(App):
 
         ai_msg.content = answer
         ai_msg.citations = self.chat._extract_citations(contexts)
+        # Rebuild index for assistant message (streaming content was not indexed)
+        msg_idx = self.messages.index(ai_msg)
+        _index_message(tokenize(ai_msg.content), msg_idx, self._msg_index)
 
     def _update_streaming_content(self, content: str) -> None:
         """Update streaming content with animation."""
@@ -1595,17 +1621,34 @@ class TUIChatApp(App):
         self._update_status("📝 输入 /msg <关键词> 搜索当前会话")
 
     def _search_current_messages(self, query: str) -> None:
-        """Search through current session messages for query."""
+        """Search through current session messages using tokenized index."""
         if not query or not self.messages:
             return
 
+        # Tokenize query and find candidate messages via inverted index
+        query_tokens = tokenize(query)
+        if not query_tokens:
+            self._update_status(f"🔍 未找到包含 '{query}' 的消息")
+            return
+
+        # Find candidate message indices using inverted index
+        candidate_indices: Set[int] = set()
+        for token in query_tokens:
+            if token in self._msg_index:
+                if not candidate_indices:
+                    candidate_indices = self._msg_index[token].copy()
+                else:
+                    candidate_indices &= self._msg_index[token]
+
+        # Also do exact substring search on candidates for phrase matching
         query_lower = query.lower()
         results = []
+        indices_to_check = candidate_indices if candidate_indices else range(len(self.messages))
 
-        for i, msg in enumerate(self.messages):
+        for i in indices_to_check:
+            msg = self.messages[i]
             content_lower = msg.content.lower()
             if query_lower in content_lower:
-                # Find context around the match
                 idx = content_lower.find(query_lower)
                 start = max(0, idx - 30)
                 end = min(len(msg.content), idx + len(query) + 50)
@@ -1738,6 +1781,10 @@ class TUIChatApp(App):
                     ))
                     if role == "assistant":
                         self._chat_history.append({"question": "", "answer": content, "citations": citations})
+                # Rebuild search index for loaded messages
+                self._msg_index = {}
+                for i, msg in enumerate(self.messages):
+                    _index_message(tokenize(msg.content), i, self._msg_index)
                 self._render_messages()
                 self._update_status(f"📂 已加载会话 {session_id}（{len(prev_messages)} 条消息）")
         except Exception as e:
