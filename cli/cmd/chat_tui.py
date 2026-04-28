@@ -1322,6 +1322,7 @@ class TUIChatApp(App):
             "/load": lambda: self._load_session_by_index(arg) if arg else self._show_sessions(),
             "/search": lambda: self._search_sessions(arg) if arg else self._update_status("用法: /search <关键词>"),
             "/msg": lambda: self._search_current_messages(arg) if arg else self._update_status("用法: /msg <关键词>"),
+            "/code": lambda: self._search_code(arg) if arg else self._update_status("用法: /code <关键词>"),
             "/goto": lambda: self._goto_message(arg) if arg else self._update_status("用法: /goto <编号>"),
             "/rename": lambda: self._rename_session(arg) if arg else self._update_status("用法: /rename <新标题>"),
             "/delete": lambda: self._delete_session(arg) if arg else self._update_status("用法: /delete <编号>"),
@@ -1677,6 +1678,31 @@ class TUIChatApp(App):
         lines.extend(["", "输入 /goto <编号> 跳转到对应消息"])
         self.notify("\n".join(lines), title=f"搜索: {query}", timeout=15)
 
+    def _search_code(self, query: str) -> None:
+        """Search project code using jieba tokenizer."""
+        if not query:
+            return
+
+        try:
+            from core.code_indexer import get_code_indexer
+            idx = get_code_indexer()
+            results = idx.search(query, limit=10)
+
+            if not results:
+                self._update_status(f"🔍 代码中未找到 '{query}'")
+                return
+
+            lines = [f"📂 代码搜索结果 ({len(results)} 条):", ""]
+            for i, r in enumerate(results[:10], 1):
+                lines.append(f"  {i}. {r.file}:{r.line}")
+                lines.append(f"      {r.context[:70]}...")
+            lines.append("")
+            lines.append(f"共索引 {idx.size} 个token，{idx.stats()['indexed_files']} 个文件")
+
+            self.notify("\n".join(lines), title=f"代码: {query}", timeout=15)
+        except Exception as e:
+            self._update_status(f"⚠️ 代码搜索失败: {e}")
+
     def _goto_message(self, idx_str: str) -> None:
         """Go to a specific message by index from search results."""
         try:
@@ -1710,6 +1736,7 @@ class TUIChatApp(App):
         ("/load", "加载会话 /load <id>"),
         ("/search", "搜索会话 /search <关键词>"),
         ("/msg", "搜索消息 /msg <关键词>"),
+        ("/code", "搜索代码 /code <关键词>"),
         ("/goto", "跳转到消息 /goto <编号>"),
         ("/rename", "重命名会话 /rename <标题>"),
         ("/delete", "删除会话 /delete <id>"),
