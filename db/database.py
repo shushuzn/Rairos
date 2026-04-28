@@ -1991,6 +1991,18 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"search_chat_sessions failed: {e}") from e
 
+    def update_chat_session_title(self, session_id: str, title: str) -> None:
+        """Update the title of a chat session."""
+        try:
+            now = _utcnow()
+            self.conn.execute(
+                "UPDATE chat_sessions SET title = ?, updated_at = ? WHERE id = ?",
+                (title, now, session_id),
+            )
+            self.conn.commit()
+        except sqlite3.Error as e:
+            raise DatabaseError(f"update_chat_session_title failed: {e}") from e
+
     # ── Helpers ────────────────────────────────────────────────────────────────
 
 

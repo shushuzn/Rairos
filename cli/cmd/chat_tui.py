@@ -311,6 +311,26 @@ class TUIChatApp(App):
                 self._update_status("用法: /search <关键词>")
             return
 
+        # Handle /rename command
+        if question.strip().startswith("/rename "):
+            new_title = question.strip()[8:].strip()
+            if new_title and self.session_id:
+                self._rename_session(new_title)
+            elif not self.session_id:
+                self._update_status("⚠️ 当前没有活动的会话")
+            else:
+                self._update_status("用法: /rename <新标题>")
+            return
+
+        # Handle /delete command
+        if question.strip().startswith("/delete "):
+            idx = question.strip()[8:].strip()
+            if idx:
+                self._delete_session(idx)
+            else:
+                self._update_status("用法: /delete <编号>")
+            return
+
         # Create session if not exists
         if not self.session_id:
             import uuid
@@ -578,6 +598,48 @@ class TUIChatApp(App):
             self.notify("\n".join(lines), title=f"搜索: {query}", timeout=15)
         except Exception as e:
             self._update_status(f"⚠️ 搜索失败: {e}")
+
+    def _rename_session(self, new_title: str) -> None:
+        """Rename the current session."""
+        try:
+            self.chat.db.update_chat_session_title(self.session_id, new_title)
+            self._update_status(f"✅ 已重命名为: {new_title}")
+        except Exception as e:
+            self._update_status(f"⚠️ 重命名失败: {e}")
+
+    def _delete_session(self, idx: str) -> None:
+        """Delete a session by index or ID."""
+        try:
+            sessions = self.chat.db.get_chat_sessions(limit=50)
+            if not sessions:
+                self._update_status("📂 没有可删除的会话")
+                return
+
+            session_id = None
+            try:
+                num = int(idx)
+                if 1 <= num <= len(sessions):
+                    session_id = sessions[num - 1]["id"]
+            except ValueError:
+                for s in sessions:
+                    if s["id"].startswith(idx):
+                        session_id = s["id"]
+                        break
+
+            if not session_id:
+                self._update_status(f"⚠️ 未找到会话: {idx}")
+                return
+
+            self.chat.db.delete_chat_session(session_id)
+            self._update_status(f"✅ 已删除会话")
+            # If we deleted the current session, clear it
+            if self.session_id == session_id:
+                self.session_id = None
+                self.messages.clear()
+                self._chat_history.clear()
+                self._render_messages()
+        except Exception as e:
+            self._update_status(f"⚠️ 删除失败: {e}")
 
     def action_clear(self) -> None:
         self.messages.clear()
