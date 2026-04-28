@@ -56,7 +56,11 @@ def _build_chat_parser(subparsers) -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--export", "-e", metavar="FILE",
-        help="Export chat history to Markdown file",
+        help="Export chat history (auto-detect format by extension, or use --format)",
+    )
+    p.add_argument(
+        "--format", "-f", choices=["markdown", "html", "pdf"],
+        help="Export format (default: auto-detect from extension)",
     )
     p.add_argument(
         "--session", "-s", metavar="ID",
@@ -204,7 +208,7 @@ def _run_single_question(chat, args) -> int:
                 "answer": result.answer,
                 "citations": result.citations or [],
             }]
-            export_chat_to_markdown(history, args.export)
+            export_chat(history, args.export, args.format)
             print(colored(f"✓ 已导出到 {args.export}", Colors.OKGREEN))
 
         return 0
@@ -281,17 +285,17 @@ def _run_interactive(chat, args) -> int:
                 )
                 # Auto-export if file specified
                 if args.export:
-                    export_chat_to_markdown(history, args.export)
+                    export_chat(history, args.export, args.format)
                     print(colored(f"✓ 对话已导出到 {args.export}\n", Colors.OKGREEN))
                 else:
                     # Prompt to export
                     try:
                         export_choice = input(
-                            colored("导出对话到 Markdown？(y/n): ", Colors.OKBLUE)
+                            colored("导出对话？(y/n): ", Colors.OKBLUE)
                         ).strip().lower()
                         if export_choice == "y":
-                            default_path = f"chat_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
-                            export_chat_to_markdown(history, default_path)
+                            default_path = f"chat_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+                            export_chat(history, default_path, "html")
                             print(colored(f"✓ 对话已导出到 {default_path}\n", Colors.OKGREEN))
                     except (EOFError, KeyboardInterrupt):
                         pass
@@ -596,3 +600,179 @@ def export_chat_to_markdown(history: List[dict], filepath: str) -> bool:
     except Exception as e:
         print_error(f"导出失败: {e}")
         return False
+
+
+def export_chat_to_pdf(history: List[dict], filepath: str) -> bool:
+    """Export chat history to a PDF file.
+
+    Args:
+        history: List of chat messages with question, answer, citations
+        filepath: Output file path
+
+    Returns:
+        True if export succeeded
+    """
+    import datetime
+
+    try:
+        import fitz  # PyMuPDF
+
+        doc = fitz.open()
+        page = doc.new_page(width=595, height=842)  # A4 size
+
+        y = 72  # Starting y position (1 inch from top)
+        margin_left = 72
+        margin_right = 523
+        line_height = 14
+        font_size_title = 16
+        font_size_body = 11
+
+        def write_line(text: str, size: int, bold: bool = False) -> None:
+            nonlocal y
+            text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            # Simple text wrapping
+            words = text.split()
+            line = ""
+            for word in words:
+                test = line + " " + word if line else word
+                if page.get_text_length(test, fontsize=size) < margin_right - margin_left:
+                    line = test
+                else:
+                    if line:
+                        rect = fitz.Rect(margin_left, y, margin_right, y + size + 4)
+                        page.insert_textbox(rect, line, fontsize=size, color=(0, 0, 0))
+                        y += line_height + 4
+                    line = word
+            if line:
+                rect = fitz.Rect(margin_left, y, margin_right, y + size + 4)
+                page.insert_textbox(rect, line, fontsize=size, color=(0, 0, 0))
+                y += line_height + 4
+
+        # Title
+        write_line("AI Research OS — Chat Export", font_size_title, bold=True)
+        write_line(f"导出时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", font_size_body)
+        y += 20
+
+        # Each Q&A pair
+        for i, entry in enumerate(history, 1):
+            # Check if we need a new page
+            if y > 700:
+                page = doc.new_page(width=595, height=842)
+                y = 72
+
+            write_line(f"Q{i}: {entry.get('question', '')}", font_size_body, bold=True)
+            y += 5
+
+            answer = entry.get('answer', '')
+            if answer:
+                # Truncate long answers for PDF
+                if len(answer) > 500:
+                    answer = answer[:500] + "..."
+                write_line(answer, font_size_body)
+
+            citations = entry.get('citations', [])
+            if citations:
+                y += 5
+                write_line("引用来源:", font_size_body, bold=True)
+                for j, cite in enumerate(citations[:3], 1):  # Max 3 citations per entry
+                    title = getattr(cite, 'paper_title', 'Unknown')
+                    pid = getattr(cite, 'paper_id', '')
+                    score = getattr(cite, 'relevance_score', 0)
+                    write_line(f"  [{j}] {title}", font_size_body)
+                    write_line(f"      ID: {pid} | 相关度: {score:.2f}", font_size_body - 1)
+
+            y += 20
+
+        doc.save(filepath)
+        doc.close()
+        return True
+    except ImportError:
+        print_error("PDF 导出需要 PyMuPDF: pip install pymupdf")
+        return False
+    except Exception as e:
+        print_error(f"PDF 导出失败: {e}")
+        return False
+
+
+def export_chat_to_html(history: List[dict], filepath: str) -> bool:
+    """Export chat history to an HTML file.
+
+    Args:
+        history: List of chat messages with question, answer, citations
+        filepath: Output file path
+
+    Returns:
+        True if export succeeded
+    """
+    import datetime
+
+    try:
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write("<!DOCTYPE html>\n<html lang='zh-CN'>\n<head>\n")
+            f.write("<meta charset='UTF-8'>\n")
+            f.write("<title>AI Research OS — Chat Export</title>\n")
+            f.write("<style>\n")
+            f.write("body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }\n")
+            f.write("h1 { color: #1a1a2e; border-bottom: 2px solid #4a4a8a; padding-bottom: 10px; }\n")
+            f.write(".qa-block { background: #f8f9fa; border-radius: 8px; padding: 15px; margin: 15px 0; }\n")
+            f.write(".question { color: #2a5a2a; font-weight: bold; font-size: 1.1em; }\n")
+            f.write(".answer { color: #333; margin-top: 10px; line-height: 1.6; }\n")
+            f.write(".citations { background: #e8f4f8; border-left: 3px solid #4a90a4; padding: 10px; margin-top: 10px; }\n")
+            f.write(".citation { margin: 5px 0; font-size: 0.9em; }\n")
+            f.write(".meta { color: #666; font-size: 0.85em; }\n")
+            f.write("</style>\n</head>\n<body>\n")
+            f.write("<h1>AI Research OS — Chat Export</h1>\n")
+            f.write(f"<p class='meta'>导出时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>\n")
+
+            for i, entry in enumerate(history, 1):
+                f.write(f"<div class='qa-block'>\n")
+                f.write(f"<div class='question'>Q{i}: {entry.get('question', '')}</div>\n")
+                answer = entry.get('answer', '')
+                if answer:
+                    f.write(f"<div class='answer'>{answer}</div>\n")
+
+                citations = entry.get('citations', [])
+                if citations:
+                    f.write("<div class='citations'><strong>引用来源:</strong>\n")
+                    for j, cite in enumerate(citations, 1):
+                        title = getattr(cite, 'paper_title', 'Unknown')
+                        pid = getattr(cite, 'paper_id', '')
+                        score = getattr(cite, 'relevance_score', 0)
+                        snippet = getattr(cite, 'snippet', '')[:150]
+                        f.write(f"<div class='citation'>[{j}] <strong>{title}</strong><br>\n")
+                        f.write(f"<span class='meta'>ID: {pid} | 相关度: {score:.2f}</span><br>\n")
+                        if snippet:
+                            f.write(f"<em>{snippet}...</em></div>\n")
+                    f.write("</div>\n")
+                f.write("</div>\n")
+
+            f.write("</body>\n</html>")
+        return True
+    except Exception as e:
+        print_error(f"HTML 导出失败: {e}")
+        return False
+
+
+def export_chat(history: List[dict], filepath: str, format_hint: str = None) -> bool:
+    """Export chat history to file. Auto-detects format from extension or uses hint.
+
+    Args:
+        history: List of chat messages
+        filepath: Output file path
+        format_hint: Optional format hint ('markdown', 'html', 'pdf')
+
+    Returns:
+        True if export succeeded
+    """
+    import os
+
+    # Determine format
+    ext = os.path.splitext(filepath)[1].lower()
+    fmt = format_hint or ""
+
+    if fmt == "pdf" or ext == ".pdf":
+        return export_chat_to_pdf(history, filepath)
+    elif fmt == "html" or ext in (".html", ".htm"):
+        return export_chat_to_html(history, filepath)
+    else:
+        return export_chat_to_markdown(history, filepath)
