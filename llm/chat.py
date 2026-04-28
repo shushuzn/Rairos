@@ -494,14 +494,34 @@ Rewrite as a standalone question (in the same language as the original question)
         contexts = self._retrieve(resolved_question, paper_id, concept, limit)
 
         if not contexts:
-            return ChatResult(
-                answer="⚠️ 未找到相关论文。请确保：\n"
-                       "1. 论文已添加到数据库\n"
-                       "2. 论文已解析（包含全文）\n"
-                       "3. 使用 --limit 增加检索范围",
-                citations=[],
-                papers_used=[],
-            )
+            # Fallback: use general LLM without paper context
+            if self.api_key:
+                fallback_prompt = f"""用户问题：{question}
+
+请用中文回答这个关于 AI/机器学习/深度学习相关的问题。如果问题与这些领域无关，请直接回答。
+回答要简洁、有帮助，标注信息来源（如"根据我的知识"）。"""
+                answer = self._call_llm(
+                    [],
+                    model=self.model,
+                    user_prompt=question,
+                    base_url=self.base_url,
+                    api_key=self.api_key,
+                    system_prompt="你是一个有帮助的 AI 助手。用中文简洁回答问题。",
+                )
+                return ChatResult(
+                    answer=answer,
+                    citations=[],
+                    papers_used=[],
+                )
+            else:
+                return ChatResult(
+                    answer="⚠️ 未找到相关论文，且未配置 API Key。\n"
+                           "请确保：\n"
+                           "1. 论文已添加到数据库\n"
+                           "2. 已设置 OPENAI_API_KEY 环境变量",
+                    citations=[],
+                    papers_used=[],
+                )
 
         if verbose:
             qtype_name = query_type.value
