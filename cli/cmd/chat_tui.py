@@ -316,8 +316,25 @@ class TUIChatApp(App):
                 # First retrieve contexts using rewritten question
                 contexts = self.chat._retrieve(rewritten_question, None, self.concept, self.limit)
                 if not contexts:
-                    ai_msg.content = "⚠️ 未找到相关论文"
-                    self._update_status("⚠️ 无相关论文")
+                    # Fallback: use general LLM without paper context
+                    if self.chat.api_key:
+                        self._update_status("🤖 生成回答中...")
+                        answer = ""
+                        for delta in stream_llm_chat_completions(
+                            [],
+                            model=self.chat.model,
+                            user_prompt=rewritten_question,
+                            base_url=self.chat.base_url,
+                            api_key=self.chat.api_key,
+                            system_prompt="你是一个有帮助的 AI 助手。用中文简洁回答问题。",
+                        ):
+                            answer += delta
+                            ai_msg.content = answer
+                            self._render_messages()
+                        ai_msg.content = answer
+                    else:
+                        ai_msg.content = "⚠️ 未找到相关论文，且未配置 API Key"
+                        self._update_status("⚠️ 无相关论文")
                     return
 
                 # Build prompt
