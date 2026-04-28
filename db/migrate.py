@@ -13,7 +13,7 @@ from typing import Callable, Final
 logger = logging.getLogger(__name__)
 
 # Current schema version — bump whenever you add a new migration.
-CURRENT_VERSION: Final[int] = 3
+CURRENT_VERSION: Final[int] = 5
 
 # Type alias for migration functions.
 Migration = Callable[[sqlite3.Connection], None]
@@ -88,6 +88,60 @@ def _m2_add_reading_status(conn: sqlite3.Connection) -> None:
 
 
 # Registry — key = version this migration brings you TO
+def _m5_add_literature_reviews(conn: sqlite3.Connection) -> None:
+    """Migration 5: Add literature_reviews table for incremental review tracking."""
+    conn.executescript("""
+        CREATE TABLE IF NOT EXISTS literature_reviews (
+            id              TEXT PRIMARY KEY,
+            topic           TEXT NOT NULL,
+            subscription_id TEXT,
+            file_path       TEXT,
+            paper_count     INTEGER DEFAULT 0,
+            last_updated    TEXT,
+            created_at      TEXT NOT NULL,
+            FOREIGN KEY (subscription_id) REFERENCES arxiv_subscriptions(id) ON DELETE SET NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_literature_reviews_topic ON literature_reviews(topic);
+        CREATE INDEX IF NOT EXISTS idx_literature_reviews_subscription ON literature_reviews(subscription_id);
+    """)
+
+
+def _m4_add_arxiv_subscriptions(conn: sqlite3.Connection) -> None:
+    """Migration 4: Add arXiv subscription tables for smart paper discovery."""
+    conn.executescript("""
+        CREATE TABLE IF NOT EXISTS arxiv_subscriptions (
+            id              TEXT PRIMARY KEY,
+            topic           TEXT NOT NULL,
+            keywords        TEXT DEFAULT '[]',
+            max_results     INTEGER DEFAULT 10,
+            min_score       REAL DEFAULT 0.5,
+            last_checked   TEXT,
+            last_check_id   TEXT DEFAULT '',
+            enabled         INTEGER DEFAULT 1,
+            created_at      TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS arxiv_subscription_papers (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            subscription_id TEXT NOT NULL,
+            arxiv_id        TEXT NOT NULL,
+            title           TEXT,
+            score           REAL,
+            gap_coverage    REAL,
+            semantic_sim    REAL,
+            published       TEXT,
+            notified_at     TEXT,
+            created_at      TEXT NOT NULL,
+            FOREIGN KEY (subscription_id) REFERENCES arxiv_subscriptions(id) ON DELETE CASCADE,
+            UNIQUE(subscription_id, arxiv_id)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_arxiv_subscriptions_topic ON arxiv_subscriptions(topic);
+        CREATE INDEX IF NOT EXISTS idx_arxiv_subscription_papers_sub ON arxiv_subscription_papers(subscription_id);
+    """)
+
+
 def _m3_add_chat_sessions(conn: sqlite3.Connection) -> None:
     """Migration 3: Add chat sessions for persistent conversation history."""
     conn.executescript("""
@@ -118,6 +172,8 @@ _MIGRATIONS: dict[int, Migration] = {
     1: _m1_add_citations_and_tables,
     2: _m2_add_reading_status,
     3: _m3_add_chat_sessions,
+    4: _m4_add_arxiv_subscriptions,
+    5: _m5_add_literature_reviews,
 }
 
 

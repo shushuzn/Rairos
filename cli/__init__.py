@@ -113,6 +113,10 @@ _LAZY_EXPORTS = {
     "_build_route_parser":     ("cli.cmd.route",              "_build_route_parser"),
     "_run_friction":           ("cli.cmd.friction",            "run"),
     "_build_friction_parser":  ("cli.cmd.friction",            "_build_friction_parser"),
+    "_run_subscribe":          ("cli.cmd.subscribe",           "_run_subscribe"),
+    "_build_subscribe_parser": ("cli.cmd.subscribe",           "_build_subscribe_parser"),
+    "_run_litreview":          ("cli.cmd.litreview",           "_run_litreview"),
+    "_build_litreview_parser": ("cli.cmd.litreview",           "_build_litreview_parser"),
     "infer_tags_if_empty": ("cli._shared", "infer_tags_if_empty"),
     "Database": ("db", "Database"),
     # Module-level re-exports (used by tests for mock.patch)

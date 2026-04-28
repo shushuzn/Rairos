@@ -2003,6 +2003,227 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"update_chat_session_title failed: {e}") from e
 
+    # ── arXiv Subscriptions ────────────────────────────────────────────────────
+
+    def add_arxiv_subscription(
+        self,
+        topic: str,
+        keywords: List[str] = None,
+        min_score: float = 0.5,
+        max_results: int = 10,
+    ) -> str:
+        """Add a new arXiv subscription. Returns subscription ID."""
+        import uuid
+        try:
+            sub_id = str(uuid.uuid4())[:8]
+            now = _utcnow()
+            self.conn.execute(
+                """INSERT INTO arxiv_subscriptions
+                   (id, topic, keywords, min_score, max_results, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?)""",
+                (sub_id, topic, orjson.dumps(keywords or []), min_score, max_results, now),
+            )
+            self.conn.commit()
+            return sub_id
+        except sqlite3.Error as e:
+            raise DatabaseError(f"add_arxiv_subscription failed: {e}") from e
+
+    def list_arxiv_subscriptions(self) -> List[dict]:
+        """List all arXiv subscriptions."""
+        try:
+            cur = self.conn.execute(
+                """SELECT id, topic, keywords, min_score, max_results,
+                          last_checked, last_check_id, enabled, created_at
+                   FROM arxiv_subscriptions ORDER BY created_at DESC"""
+            )
+            results = []
+            for row in cur.fetchall():
+                d = dict(row)
+                d["keywords"] = orjson.loads(d["keywords"])
+                results.append(d)
+            return results
+        except sqlite3.Error as e:
+            raise DatabaseError(f"list_arxiv_subscriptions failed: {e}") from e
+
+    def get_arxiv_subscription(self, sub_id: str) -> Optional[dict]:
+        """Get a single subscription by ID."""
+        try:
+            cur = self.conn.execute(
+                """SELECT id, topic, keywords, min_score, max_results,
+                          last_checked, last_check_id, enabled, created_at
+                   FROM arxiv_subscriptions WHERE id = ?""",
+                (sub_id,),
+            )
+            row = cur.fetchone()
+            if row:
+                d = dict(row)
+                d["keywords"] = orjson.loads(d["keywords"])
+                return d
+            return None
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_arxiv_subscription failed: {e}") from e
+
+    def delete_arxiv_subscription(self, sub_id: str) -> bool:
+        """Delete an arXiv subscription. Returns True if deleted."""
+        try:
+            cur = self.conn.execute(
+                "DELETE FROM arxiv_subscriptions WHERE id = ?", (sub_id,)
+            )
+            self.conn.commit()
+            return cur.rowcount > 0
+        except sqlite3.Error as e:
+            raise DatabaseError(f"delete_arxiv_subscription failed: {e}") from e
+
+    def update_subscription_last_check(self, sub_id: str, last_check_id: str) -> None:
+        """Update the last checked arXiv ID for a subscription."""
+        try:
+            now = _utcnow()
+            self.conn.execute(
+                "UPDATE arxiv_subscriptions SET last_check_id = ?, last_checked = ? WHERE id = ?",
+                (last_check_id, now, sub_id),
+            )
+            self.conn.commit()
+        except sqlite3.Error as e:
+            raise DatabaseError(f"update_subscription_last_check failed: {e}") from e
+
+    def record_subscription_paper(
+        self,
+        sub_id: str,
+        arxiv_id: str,
+        title: str,
+        score: float,
+        gap_coverage: float = 0.0,
+        semantic_sim: float = 0.0,
+        published: str = "",
+    ) -> None:
+        """Record a paper found for a subscription."""
+        try:
+            now = _utcnow()
+            self.conn.execute(
+                """INSERT OR REPLACE INTO arxiv_subscription_papers
+                   (subscription_id, arxiv_id, title, score, gap_coverage,
+                    semantic_sim, published, created_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                (sub_id, arxiv_id, title, score, gap_coverage, semantic_sim, published, now),
+            )
+            self.conn.commit()
+        except sqlite3.Error as e:
+            raise DatabaseError(f"record_subscription_paper failed: {e}") from e
+
+    def get_subscription_papers(
+        self, sub_id: str, limit: int = 20, since_days: int = None
+    ) -> List[dict]:
+        """Get papers for a subscription, optionally filtered by days."""
+        try:
+            query = """SELECT arxiv_id, title, score, gap_coverage, semantic_sim,
+                              published, notified_at, created_at
+                       FROM arxiv_subscription_papers
+                       WHERE subscription_id = ?"""
+            params: List[Any] = [sub_id]
+
+            if since_days:
+                query += " AND created_at >= datetime('now', ?||' days')"
+                params.append(-since_days)
+
+            query += " ORDER BY score DESC LIMIT ?"
+            params.append(limit)
+
+            cur = self.conn.execute(query, params)
+            return [dict(row) for row in cur.fetchall()]
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_subscription_papers failed: {e}") from e
+
+    # ── Literature Reviews ────────────────────────────────────────────────────────
+
+    def add_literature_review(
+        self,
+        topic: str,
+        subscription_id: str = None,
+        file_path: str = None,
+    ) -> str:
+        """Create a new literature review entry."""
+        import uuid
+        review_id = str(uuid.uuid4())[:8]
+        now = _utcnow()
+        try:
+            self.conn.execute(
+                """INSERT INTO literature_reviews
+                   (id, topic, subscription_id, file_path, paper_count, last_updated, created_at)
+                   VALUES (?, ?, ?, ?, 0, ?, ?)""",
+                (review_id, topic, subscription_id, file_path, now, now),
+            )
+            self.conn.commit()
+            return review_id
+        except sqlite3.Error as e:
+            raise DatabaseError(f"add_literature_review failed: {e}") from e
+
+    def list_literature_reviews(self) -> List[dict]:
+        """List all literature reviews."""
+        try:
+            cur = self.conn.execute(
+                """SELECT id, topic, subscription_id, file_path, paper_count,
+                          last_updated, created_at
+                   FROM literature_reviews
+                   ORDER BY last_updated DESC"""
+            )
+            return [dict(row) for row in cur.fetchall()]
+        except sqlite3.Error as e:
+            raise DatabaseError(f"list_literature_reviews failed: {e}") from e
+
+    def get_literature_review(self, review_id: str) -> Optional[dict]:
+        """Get a literature review by ID."""
+        try:
+            cur = self.conn.execute(
+                """SELECT id, topic, subscription_id, file_path, paper_count,
+                          last_updated, created_at
+                   FROM literature_reviews WHERE id = ?""",
+                (review_id,),
+            )
+            row = cur.fetchone()
+            return dict(row) if row else None
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_literature_review failed: {e}") from e
+
+    def update_literature_review(
+        self,
+        review_id: str,
+        paper_count: int = None,
+        file_path: str = None,
+    ) -> bool:
+        """Update literature review metadata."""
+        try:
+            now = _utcnow()
+            if paper_count is not None:
+                self.conn.execute(
+                    """UPDATE literature_reviews
+                       SET paper_count = ?, last_updated = ?
+                       WHERE id = ?""",
+                    (paper_count, now, review_id),
+                )
+            if file_path is not None:
+                self.conn.execute(
+                    """UPDATE literature_reviews
+                       SET file_path = ?, last_updated = ?
+                       WHERE id = ?""",
+                    (file_path, now, review_id),
+                )
+            self.conn.commit()
+            return True
+        except sqlite3.Error as e:
+            raise DatabaseError(f"update_literature_review failed: {e}") from e
+
+    def delete_literature_review(self, review_id: str) -> bool:
+        """Delete a literature review."""
+        try:
+            cur = self.conn.execute(
+                "DELETE FROM literature_reviews WHERE id = ?",
+                (review_id,),
+            )
+            self.conn.commit()
+            return cur.rowcount > 0
+        except sqlite3.Error as e:
+            raise DatabaseError(f"delete_literature_review failed: {e}") from e
+
     # ── Helpers ────────────────────────────────────────────────────────────────
 
 
