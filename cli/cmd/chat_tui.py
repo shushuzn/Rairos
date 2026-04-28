@@ -329,8 +329,10 @@ class TUIChatApp(App):
                             system_prompt="你是一个有帮助的 AI 助手。用中文简洁回答问题。",
                         ):
                             answer += delta
-                            ai_msg.content = answer
-                            self._render_messages()
+                            # Update in batches for performance
+                            if len(answer) % BATCH_SIZE < len(delta) or len(delta) >= BATCH_SIZE:
+                                ai_msg.content = answer
+                                self._render_messages()
                         ai_msg.content = answer
                     else:
                         ai_msg.content = "⚠️ 未找到相关论文，且未配置 API Key"
@@ -341,7 +343,8 @@ class TUIChatApp(App):
                 prompt = self.chat._build_prompt(rewritten_question, contexts)
                 answer = ""
 
-                # Stream the response
+                # Stream the response with batched UI updates (every 20 chars)
+                BATCH_SIZE = 20
                 for delta in stream_llm_chat_completions(
                     [],
                     model=self.chat.model,
@@ -351,9 +354,10 @@ class TUIChatApp(App):
                     system_prompt=_RAG_SYSTEM_PROMPT,
                 ):
                     answer += delta
-                    # Update display incrementally
-                    ai_msg.content = answer
-                    self._render_messages()
+                    # Update display in batches for performance
+                    if len(answer) % BATCH_SIZE < len(delta) or len(delta) >= BATCH_SIZE:
+                        ai_msg.content = answer
+                        self._render_messages()
 
                 ai_msg.content = answer
                 ai_msg.citations = self.chat._extract_citations(contexts)
