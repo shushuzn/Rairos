@@ -15,10 +15,17 @@ class TestChatTuiEnvLoading:
         env_file = tmp_path / ".env"
         env_file.write_text("OPENAI_API_KEY=test-key-123\nMINIMAX_TEST=value\n")
 
-        # Create a minimal mock of the env loading code
-        with patch.dict(os.environ, {}, clear=False):
+        # Save original values to restore after test
+        orig_key = os.environ.get("OPENAI_API_KEY")
+        orig_minimax = os.environ.get("MINIMAX_TEST")
+
+        try:
+            # Clear the specific keys we're testing (not all env)
+            os.environ.pop("OPENAI_API_KEY", None)
+            os.environ.pop("MINIMAX_TEST", None)
+
             with patch("pathlib.Path.cwd", return_value=tmp_path):
-                # Simulate the env loading from chat_tui.py
+                # Simulate the env loading from cli/_shared.py
                 _cwd_env = tmp_path / ".env"
                 if _cwd_env.exists():
                     with open(_cwd_env, encoding="utf-8") as f:
@@ -30,6 +37,16 @@ class TestChatTuiEnvLoading:
 
                 assert os.environ.get("OPENAI_API_KEY") == "test-key-123"
                 assert os.environ.get("MINIMAX_TEST") == "value"
+        finally:
+            # Restore original values
+            if orig_key is not None:
+                os.environ["OPENAI_API_KEY"] = orig_key
+            else:
+                os.environ.pop("OPENAI_API_KEY", None)
+            if orig_minimax is not None:
+                os.environ["MINIMAX_TEST"] = orig_minimax
+            else:
+                os.environ.pop("MINIMAX_TEST", None)
 
     def test_existing_env_vars_not_overwritten(self, tmp_path):
         """Existing environment variables should not be overwritten by .env."""
