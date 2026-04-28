@@ -1003,6 +1003,7 @@ class TUIChatApp(App):
         Binding("ctrl+l", "clear", "Clear", show=False),
         Binding("ctrl+e", "toggle_history", "History", show=False),
         Binding("ctrl+s", "export_session", "Export", show=False),
+        Binding("ctrl+f", "search_messages", "Search", show=False),
         Binding("f1", "help", "Help", show=False),
         Binding("ctrl+n", "new_session", "New", show=False),
         Binding("ctrl+k", "command_palette", "Cmd", show=False),
@@ -1294,6 +1295,8 @@ class TUIChatApp(App):
             "/sessions": self._show_sessions,
             "/load": lambda: self._load_session_by_index(arg) if arg else self._show_sessions(),
             "/search": lambda: self._search_sessions(arg) if arg else self._update_status("用法: /search <关键词>"),
+            "/msg": lambda: self._search_current_messages(arg) if arg else self._update_status("用法: /msg <关键词>"),
+            "/goto": lambda: self._goto_message(arg) if arg else self._update_status("用法: /goto <编号>"),
             "/rename": lambda: self._rename_session(arg) if arg else self._update_status("用法: /rename <新标题>"),
             "/delete": lambda: self._delete_session(arg) if arg else self._update_status("用法: /delete <编号>"),
             "/export": lambda: self._export_session() if self.session_id else self._update_status("⚠️ 当前没有会话"),
@@ -1412,6 +1415,7 @@ class TUIChatApp(App):
             "🎯 命令面板\n\n"
             "💬 发送: Enter\n"
             "📜 历史: Ctrl+E\n"
+            "🔍 搜索: Ctrl+F\n"
             "🆕 新建: Ctrl+N\n"
             "💾 导出: Ctrl+S\n"
             "🗑️ 清屏: Ctrl+L\n"
@@ -1423,7 +1427,9 @@ class TUIChatApp(App):
             "🔧 斜杠命令:\n"
             "  /sessions  查看会话\n"
             "  /load <id>  加载会话\n"
-            "  /search <k> 搜索\n"
+            "  /search <k> 搜索会话\n"
+            "  /msg <k>     搜索消息\n"
+            "  /goto <n>    跳转消息\n"
             "  /rename <t> 重命名\n"
             "  /export    导出\n"
             "  /help      帮助",
@@ -1564,11 +1570,94 @@ class TUIChatApp(App):
         try:
             hint = self.query_one("#nav-hint")
             if text:
-                hint.update(colored(f"❯ {text}  |  ↑↓ 选择  c=复制  e=编辑", Colors.OKBLUE))
+                hint.update(colored(f"❯ {text}  |  ↑↓ 选择  c=复制  e=编辑  Ctrl+F 搜索", Colors.OKBLUE))
             else:
-                hint.update(colored("❯ 输入问题开始对话  |  ↑↓ 选择消息  c=复制  e=编辑", Colors.WARNING))
+                hint.update(colored("❯ 输入问题开始对话  |  ↑↓ 选择  c=复制  e=编辑  Ctrl+F 搜索", Colors.WARNING))
         except NoMatches:
             pass
+
+    # ── Message Search ───────────────────────────────────────────────────
+
+    def action_search_messages(self) -> None:
+        """Search through current session messages."""
+        if not self.messages:
+            self._update_status("⚠️ 当前没有消息可搜索")
+            return
+
+        # Show search prompt
+        self.notify(
+            "🔍 搜索消息\n\n"
+            "输入 /msg <关键词> 在当前会话中搜索\n"
+            "示例: /msg transformer",
+            title="消息搜索",
+            timeout=5,
+        )
+        self._update_status("📝 输入 /msg <关键词> 搜索当前会话")
+
+    def _search_current_messages(self, query: str) -> None:
+        """Search through current session messages for query."""
+        if not query or not self.messages:
+            return
+
+        query_lower = query.lower()
+        results = []
+
+        for i, msg in enumerate(self.messages):
+            content_lower = msg.content.lower()
+            if query_lower in content_lower:
+                # Find context around the match
+                idx = content_lower.find(query_lower)
+                start = max(0, idx - 30)
+                end = min(len(msg.content), idx + len(query) + 50)
+                snippet = msg.content[start:end].strip()
+
+                results.append({
+                    "index": i,
+                    "role": msg.role,
+                    "timestamp": msg.timestamp,
+                    "snippet": snippet,
+                    "full_content": msg.content,
+                })
+
+        if not results:
+            self._update_status(f"🔍 未找到包含 '{query}' 的消息")
+            return
+
+        # Show results
+        lines = [f"🔍 搜索结果 ({len(results)} 条):", ""]
+        for i, r in enumerate(results[:10], 1):
+            role_icon = "❯" if r["role"] == "user" else "🤖"
+            ts = Timestamp.format(r["timestamp"])
+            preview = r["snippet"][:60] + "..." if len(r["snippet"]) > 60 else r["snippet"]
+            lines.append(f"  {i}. {role_icon} [{ts}] {preview}")
+
+        lines.extend(["", "输入 /goto <编号> 跳转到对应消息"])
+        self.notify("\n".join(lines), title=f"搜索: {query}", timeout=15)
+
+    def _goto_message(self, idx_str: str) -> None:
+        """Go to a specific message by index from search results."""
+        try:
+            idx = int(idx_str) - 1  # Convert to 0-based
+            if idx < 0 or idx >= len(self.messages):
+                self._update_status(f"⚠️ 无效的编号 (1-{len(self.messages)})")
+                return
+
+            msg = self.messages[idx]
+            # Select and show the message
+            self._selected_msg_idx = idx
+            self._render_messages_with_selection()
+
+            # Show content in notification for quick view
+            content = msg.content[:300] + "..." if len(msg.content) > 300 else msg.content
+            role_icon = "❯" if msg.role == "user" else "🤖"
+            ts = Timestamp.format(msg.timestamp)
+            self.notify(
+                f"{role_icon} [{ts}]\n\n{content}",
+                title=f"消息 #{idx + 1}",
+                timeout=8,
+            )
+        except ValueError:
+            self._update_status("⚠️ 无效的编号格式")
 
     # ── Command Completion ────────────────────────────────────────────────────
 
@@ -1577,6 +1666,8 @@ class TUIChatApp(App):
         ("/sessions", "查看所有会话"),
         ("/load", "加载会话 /load <id>"),
         ("/search", "搜索会话 /search <关键词>"),
+        ("/msg", "搜索消息 /msg <关键词>"),
+        ("/goto", "跳转到消息 /goto <编号>"),
         ("/rename", "重命名会话 /rename <标题>"),
         ("/delete", "删除会话 /delete <id>"),
         ("/export", "导出会话"),
