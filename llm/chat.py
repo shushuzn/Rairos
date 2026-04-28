@@ -10,9 +10,29 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable, List, Optional, Tuple
 
+import json
+import urllib.request
+from typing import List, Optional
+
 from llm.client import call_llm_chat_completions, stream_llm_chat_completions
 from llm.constants import LLM_BASE_URL, LLM_MODEL
 from llm.research_session import get_session_tracker
+
+
+def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optional[List[float]]:
+    """Fetch embedding from local Ollama. Returns None on failure."""
+    try:
+        req = urllib.request.Request(
+            "http://localhost:11434/api/embeddings",
+            data=json.dumps({"model": model, "prompt": text}).encode(),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read())
+            return data.get("embedding")
+    except Exception:
+        return None
 
 
 # ------------------------------------------------------------------
@@ -709,29 +729,54 @@ class RagChat:
 
     def _semantic_rerank(self, query: str, results: list, query_type: QueryType) -> list:
         """
-        Rerank using semantic similarity for conceptual queries.
+        Rerank using semantic similarity for ALL candidates.
+        Computes query embedding once, then compares against all candidate embeddings.
         Falls back to BM25 if embeddings not available.
         """
         # Get weights for this query type
         bm25_weight = _QUERY_WEIGHTS.get(query_type, 0.4)
         sem_weight = 1.0 - bm25_weight
 
-        # Check if we have embedding support
-        if hasattr(self.db, 'find_similar') and results:
-            # Use first result as anchor for similarity
-            anchor_id = results[0].paper_id
-            try:
-                similar = self.db.find_similar(anchor_id, limit=len(results))
-                # Create score map
-                sim_scores = {s['paper_id']: s.get('score', 0.5) for s in similar}
-                # Blend BM25 and semantic scores
-                for r in results:
-                    bm25_score = abs(r.score) if r.score else 0.5
-                    sem_score = sim_scores.get(r.paper_id, 0.5)
-                    r.score = bm25_weight * bm25_score + sem_weight * sem_score
-            except Exception:
-                # Semantic reranking is best-effort — fall back to BM25 ranking without crashing.
-                pass
+        if not results:
+            return results
+
+        try:
+            # Step 1: Get query embedding (compute once)
+            query_emb = _get_ollama_embedding(query)
+            if query_emb is None:
+                return results  # No embedding support, keep BM25 ranking
+
+            # Step 2: Fetch all candidate embeddings in one DB call
+            paper_ids = [r.paper_id for r in results]
+            embeddings = self.db.get_embeddings_bulk(paper_ids)
+
+            # Step 3: Precompute query norm for cosine similarity
+            query_norm = sum(x * x for x in query_emb) ** 0.5
+            if query_norm == 0:
+                return results
+
+            # Step 4: Compute cosine similarity for ALL candidates
+            for r in results:
+                bm25_score = abs(r.score) if r.score else 0.5
+                paper_emb = embeddings.get(r.paper_id)
+
+                if paper_emb is not None:
+                    # Cosine similarity: dot / (norm_a * norm_b)
+                    norm = sum(x * x for x in paper_emb) ** 0.5
+                    if norm > 0:
+                        dot = sum(a * b for a, b in zip(query_emb, paper_emb))
+                        sem_score = dot / (query_norm * norm)
+                    else:
+                        sem_score = 0.5
+                else:
+                    sem_score = 0.5  # No embedding = neutral
+
+                r.score = bm25_weight * bm25_score + sem_weight * sem_score
+
+        except Exception:
+            # Semantic reranking is best-effort — fall back to BM25 ranking without crashing.
+            pass
+
         return results
 
     def _diversity_boost(self, results: list) -> list:
