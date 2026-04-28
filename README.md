@@ -130,6 +130,19 @@ Run `python -m cli <command> --help` for any command. Key commands:
 | `dedup-semantic` | Semantic deduplication |
 | `paper2code` | Generate code from paper |
 | `rag` | RAG pipeline (paper2code + tests + benchmark) |
+| `benchmark` | Cross-paper benchmark comparison with D3.js/SVG charts |
+| `postprocess` | Run deep-dive analysis pipeline on papers |
+| `chat-tui` | Full-screen TUI chat with paper context sidebar |
+| `litreview` | Incremental literature review with vector search |
+| `subscribe` | Subscribe to paper feeds by tag/query |
+| `session` | Manage chat sessions |
+| `route` | Semantic routing for queries |
+| `visual` | Table/figure extraction and visualization |
+| `cite-graph` | Citation graph visualization |
+| `cite-backfill` | Backfill citation data |
+| `ask` | Quick Q&A against paper library |
+| `argue` | Debate/gap analysis between papers |
+| `narrative` | Generate narrative summaries |
 
 For the complete command reference, see [ADVANCED_COMMANDS.md](ADVANCED_COMMANDS.md).
 For Chinese documentation, see [README.zh-CN.md](README.zh-CN.md).
