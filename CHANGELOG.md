@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.5.2 (2026-04-28)
+
+### Chat Export Enhancement
+
+- Add HTML export with styled CSS (blue header, citation blocks)
+- Add PDF export using PyMuPDF for A4 format
+- Add unified export_chat() with auto-format detection from file extension
+- Add --format/-f CLI flag for explicit format selection
+
+### Chat TUI Session Management
+
+- Add /search <keyword> command to search historical sessions
+- Add /rename <title> command to rename current session
+- Add /delete <编号> command to delete sessions
+- Add update_chat_session_title() to database layer
+- Add search_chat_sessions() to database layer
+
+### Developer Experience
+
+- Update .gitignore to exclude .claude/worktrees/
+- Remove cached worktree artifacts from git tracking
+
 ## v1.5.1 (2026-04-19)
 
 ### Test Infrastructure
