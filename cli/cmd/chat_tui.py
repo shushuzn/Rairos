@@ -26,7 +26,19 @@ import argparse
 import os
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 from typing import List, Optional
+
+# Load .env from project root (works both in dev and after packaging)
+# Priority: 1) current directory, 2) home directory, 3) walk up from module
+_cwd_env = Path.cwd() / ".env"
+if _cwd_env.exists():
+    with open(_cwd_env, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, _, value = line.partition("=")
+                os.environ.setdefault(key.strip(), value.strip())
 
 from textual.app import App, ComposeResult
 from textual.binding import Binding

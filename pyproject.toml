@@ -112,7 +112,7 @@ all = ["ai-research-os[ocr,ai,dev,slides]"]
 [project.scripts]
 
 
-airos = "cli:main"
+airos-cli = "cli:main"
 
 
 
@@ -148,7 +148,13 @@ text = "GPL-3.0-or-later"
 where = ["."]
 
 
-include = ["core*", "parsers*", "notes*", "pdf*", "sections*", "llm*", "renderers*", "updaters*", "completions*", "db*", "rankers*", "research_loop", "kg*", "viz*", "scoring*", "trends*", "extable*", "web*"]
+include = ["core*", "parsers*", "notes*", "pdf*", "sections*", "llm*", "renderers*", "updaters*", "completions*", "db*", "rankers*", "research_loop", "research_loop.paper2code_integration", "research_loop.evoskill_integration", "research_loop.rag_pipeline", "kg*", "viz*", "scoring*", "trends*", "extable*", "web*", "cli", "cli.cmd"]
+
+
+
+[tool.setuptools]
+
+py-modules = ["config"]
 
 
 
