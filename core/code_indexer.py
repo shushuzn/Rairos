@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import re
 import threading
 import urllib.request
@@ -13,6 +14,10 @@ import jieba
 
 # Ollama embedding model
 DEFAULT_EMBED_MODEL = "nomic-embed-text"
+
+# Zilliz config
+ZILLIZ_URI = os.environ.get("ZILLIZ_URI")
+ZILLIZ_TOKEN = os.environ.get("ZILLIZ_TOKEN")
 
 # Code-specific stopwords
 _STOPWORDS = {
@@ -41,15 +46,30 @@ class CodeIndexer:
 
     Chunks code into functions/classes and creates embeddings
     for semantic search via cosine similarity.
+
+    Supports Zilliz Cloud for persistent storage when ZILLIZ_URI/ZILLIZ_TOKEN are set.
     """
 
-    def __init__(self, embed_model: str = DEFAULT_EMBED_MODEL):
+    def __init__(self, embed_model: str = DEFAULT_EMBED_MODEL, use_zilliz: bool = True):
         self.embed_model = embed_model
         self._chunks: List[CodeChunk] = []
         self._file_chunks: Dict[str, List[int]] = {}  # file → chunk indices
         self._embeddings_cache: Dict[str, List[float]] = {}  # chunk_id → embedding
         self._lock = threading.Lock()
         self._initialized = False
+
+        # Zilliz for persistent storage
+        self._zilliz = None
+        if use_zilliz and ZILLIZ_URI and ZILLIZ_TOKEN:
+            try:
+                from core.vector_store import ZillizStore
+                self._zilliz = ZillizStore(ZILLIZ_URI, ZILLIZ_TOKEN)
+            except Exception as e:
+                print(f"Zilliz init failed: {e}")
+
+    @property
+    def use_zilliz(self) -> bool:
+        return self._zilliz is not None
 
     def _get_embedding(self, text: str) -> Optional[List[float]]:
         """Get embedding from Ollama."""
@@ -103,6 +123,43 @@ class CodeIndexer:
 
         self._initialized = True
 
+    def index_to_zilliz(self, batch_size: int = 50) -> int:
+        """Index all chunks to Zilliz for persistent storage.
+
+        Args:
+            batch_size: Embedding batch size
+
+        Returns:
+            Total chunks indexed
+        """
+        if not self._zilliz:
+            raise RuntimeError("Zilliz not configured")
+
+        self.initialize()
+        total = 0
+
+        for i in range(0, len(self._chunks), batch_size):
+            batch = self._chunks[i:i + batch_size]
+
+            # Embed batch
+            ids, vectors, contents, files, lines = [], [], [], [], []
+            for chunk in batch:
+                emb = self._get_embedding(chunk.content[:500])
+                if emb:
+                    ids.append(chunk.id)
+                    vectors.append(emb)
+                    contents.append(chunk.content[:2000])
+                    files.append(chunk.file)
+                    lines.append(chunk.line)
+
+            if ids:
+                self._zilliz.upsert(ids, vectors, contents, files, lines)
+                total += len(ids)
+
+            print(f"Indexed {total}/{len(self._chunks)} chunks to Zilliz...")
+
+        return total
+
     def add_file(self, file_path: str, content: str) -> int:
         """Add or update a file in the index. Returns chunk count."""
         # Remove old chunks for this file
@@ -152,12 +209,20 @@ class CodeIndexer:
         return chunks
 
     def search(self, query: str, limit: int = 10, use_semantic: bool = True, top_k: int = 50) -> List[CodeChunk]:
-        """Search for query with hybrid approach: keyword filter + semantic rerank."""
+        """Search for query with hybrid approach: keyword filter + semantic rerank.
+
+        Uses Zilliz for persistent storage when available, otherwise falls back
+        to in-memory computation.
+        """
         if not self._chunks:
             self.initialize()
 
         if not use_semantic:
             return self._keyword_search(query, limit)
+
+        # Use Zilliz for fast cloud search
+        if self._zilliz:
+            return self._zilliz_search(query, limit)
 
         # Step 1: Keyword filter - get top_k candidates
         candidates = self._keyword_search(query, top_k)
@@ -180,6 +245,18 @@ class CodeIndexer:
 
         scored.sort(reverse=True)
         return [c for _, c in scored[:limit]]
+
+    def _zilliz_search(self, query: str, limit: int) -> List[CodeChunk]:
+        """Search using Zilliz cloud vector store."""
+        query_emb = self._get_embedding(query)
+        if not query_emb:
+            return []
+
+        results = self._zilliz.search(query_emb, limit)
+        return [
+            CodeChunk(r.id, r.file, r.line, r.content, None)
+            for r in results
+        ]
 
     def _keyword_search(self, query: str, limit: int) -> List[CodeChunk]:
         """Fallback keyword search using jieba."""
