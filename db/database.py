@@ -1707,6 +1707,42 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"get_experiment_tables({paper_id!r}) failed: {e}") from e
 
+    def get_all_experiment_tables(self) -> List[ExperimentTableRecord]:
+        """Return all experiment tables across all papers."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute(
+                "SELECT * FROM experiment_tables ORDER BY paper_id, page, id"
+            )
+            results = []
+            for row in cur.fetchall():
+                try:
+                    headers = orjson.loads(row["headers"] or "[]")
+                except Exception:
+                    headers = []
+                try:
+                    rows_data = orjson.loads(row["rows"] or "[]")
+                except Exception:
+                    rows_data = []
+                results.append(
+                    ExperimentTableRecord(
+                        id=row["id"],
+                        paper_id=row["paper_id"],
+                        table_caption=row["table_caption"] or "",
+                        page=row["page"] or 0,
+                        headers=headers,
+                        rows=rows_data,
+                        bbox_x0=row["bbox_x0"] or 0.0,
+                        bbox_y0=row["bbox_y0"] or 0.0,
+                        bbox_x1=row["bbox_x1"] or 0.0,
+                        bbox_y1=row["bbox_y1"] or 0.0,
+                        created_at=row["created_at"] or "",
+                    )
+                )
+            return results
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_all_experiment_tables() failed: {e}") from e
+
     def get_citations(
         self, paper_id: str, direction: Literal["from", "to", "both"] = "both"
     ) -> List[CitationRecord]:

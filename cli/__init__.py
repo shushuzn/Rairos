@@ -117,6 +117,8 @@ _LAZY_EXPORTS = {
     "_build_subscribe_parser": ("cli.cmd.subscribe",           "_build_subscribe_parser"),
     "_run_litreview":          ("cli.cmd.litreview",           "_run_litreview"),
     "_build_litreview_parser": ("cli.cmd.litreview",           "_build_litreview_parser"),
+    "_run_benchmark":           ("cli.cmd.benchmark",           "_run_benchmark"),
+    "_build_benchmark_parser":  ("cli.cmd.benchmark",           "_build_benchmark_parser"),
     "infer_tags_if_empty": ("cli._shared", "infer_tags_if_empty"),
     "Database": ("db", "Database"),
     # Module-level re-exports (used by tests for mock.patch)
