@@ -293,6 +293,7 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
             from pdf.extract import extract_pdf_structured, extract_pdf_text_hybrid
             if args.structured:
                 result = extract_pdf_structured(str(pdf_path), max_pages=args.max_pages)
+                extracted_text = result  # StructuredPdfContent object for segment_structured
             else:
                 extracted_text = extract_pdf_text_hybrid(
                     str(pdf_path),
@@ -310,11 +311,11 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
 
     if args.structured:
         from sections.segment import segment_structured, format_section_snippets
-        segments = segment_structured(extracted_text) if isinstance(extracted_text, str) else []
+        segments = segment_structured(extracted_text) if hasattr(extracted_text, 'text_blocks') else []
         snippets = format_section_snippets(segments)
     else:
         segments = []
-        snippets = extracted_text[:500] if extracted_text else ""
+        snippets = extracted_text[:500] if isinstance(extracted_text, str) and extracted_text else ""
 
     paper.path = pdf_path
 
@@ -370,7 +371,10 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
     # Runs after every paper ingestion; gracefully degrades without LLM.
     try:
         from llm.postprocess import ResearchDeepDivePipeline, make_llm_config
+        from cli._shared import get_db
 
+        db = get_db()
+        db.init()
         pipeline = ResearchDeepDivePipeline(db=db, data_dir=root)
         pl_config = make_llm_config()
         pl_result = pipeline.run(
@@ -380,6 +384,7 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
             tags=tags,
             pnote_path=pnote_path,
             llm_config=pl_config,
+            structured_content=result if args.structured else None,
         )
         if pl_result.stages_completed:
             print_info(f"Deep dive OK: {', '.join(pl_result.stages_completed)}")

@@ -457,7 +457,7 @@ class PaperAnalyzer:
     def _build_page_annotated_body(self, content: "StructuredPdfContent") -> str:
         """Build page-annotated body text for LLM context."""
         parts: List[str] = []
-        for block in content.blocks:
+        for block in content.text_blocks:
             if block.type.value in ("text", "heading"):
                 page_label = f"[Page {block.page + 1}]"
                 parts.append(f"{page_label} {block.text}")
@@ -519,7 +519,7 @@ class PaperAnalyzer:
 
         # ── Build page index ───────────────────────────────────────────
         page_blocks: Dict[int, List[tuple[int, str]]] = {}
-        for idx, block in enumerate(content.blocks):
+        for idx, block in enumerate(content.text_blocks):
             if block.page not in page_blocks:
                 page_blocks[block.page] = []
             page_blocks[block.page].append((idx, block.text))
