@@ -48,6 +48,16 @@ class QueryType(Enum):
     GENERAL = "general"       # Default fallback
 
 
+# 查询类型 → BM25权重（语义权重 = 1 - BM25权重）
+_QUERY_WEIGHTS = {
+    QueryType.FACTUAL:     0.65,  # 精确匹配权威
+    QueryType.CONCEPTUAL:  0.20,  # 语义理解主导
+    QueryType.COMPARATIVE: 0.50,  # 平衡
+    QueryType.TEMPORAL:    0.55,  # BM25 + 时效性boost
+    QueryType.GENERAL:     0.40,  # 默认
+}
+
+
 # ─── Data Structures ──────────────────────────────────────────────────────────────
 
 
@@ -666,12 +676,12 @@ class RagChat:
         if query_type == QueryType.TEMPORAL:
             # Boost newer papers for temporal queries
             results = self._temporal_boost(results)
-        elif query_type == QueryType.CONCEPTUAL:
-            # For conceptual queries, try semantic similarity if available
-            results = self._semantic_rerank(query, results)
         elif query_type == QueryType.COMPARATIVE:
             # For comparisons, include papers from different time periods
             results = self._diversity_boost(results)
+
+        # Apply semantic reranking with query-type-adaptive weights
+        results = self._semantic_rerank(query, results, query_type)
 
         # Always apply adaptive boost from feedback history
         results = self._apply_adaptive_boost(results)
@@ -697,11 +707,15 @@ class RagChat:
                     result.score = score
         return results
 
-    def _semantic_rerank(self, query: str, results: list) -> list:
+    def _semantic_rerank(self, query: str, results: list, query_type: QueryType) -> list:
         """
         Rerank using semantic similarity for conceptual queries.
         Falls back to BM25 if embeddings not available.
         """
+        # Get weights for this query type
+        bm25_weight = _QUERY_WEIGHTS.get(query_type, 0.4)
+        sem_weight = 1.0 - bm25_weight
+
         # Check if we have embedding support
         if hasattr(self.db, 'find_similar') and results:
             # Use first result as anchor for similarity
@@ -714,7 +728,7 @@ class RagChat:
                 for r in results:
                     bm25_score = abs(r.score) if r.score else 0.5
                     sem_score = sim_scores.get(r.paper_id, 0.5)
-                    r.score = 0.4 * bm25_score + 0.6 * sem_score
+                    r.score = bm25_weight * bm25_score + sem_weight * sem_score
             except Exception:
                 # Semantic reranking is best-effort — fall back to BM25 ranking without crashing.
                 pass
