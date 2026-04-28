@@ -226,8 +226,78 @@ class GapAnalyzerV2(GapDetector):
                 hot.add(t.keyword.lower())
             return hot
         except Exception:
-            # Trend analysis is optional — return empty set without crashing.
             return set()
+
+    def find_similar_papers_for_gaps(
+        self,
+        seed_paper_ids: List[str],
+        limit: int = 10,
+    ) -> List[Dict[str, Any]]:
+        """Find papers similar to existing papers for gap expansion.
+
+        Uses vector similarity to discover related papers that might
+        have been missed by keyword search. Returns papers with
+        full metadata (title, abstract, year, authors).
+        """
+        if not self.db or not seed_paper_ids:
+            return []
+
+        all_similar = []
+        seen_ids = set(seed_paper_ids)
+
+        # Find similar papers for each seed paper
+        for paper_id in seed_paper_ids[:5]:  # Limit to avoid too many queries
+            try:
+                similar = self.db.find_similar(paper_id, threshold=0.80, limit=limit)
+                for record, score in similar:
+                    pid = getattr(record, 'id', '') or paper_id
+                    if pid not in seen_ids:
+                        seen_ids.add(pid)
+                        all_similar.append({
+                            "id": pid,
+                            "title": getattr(record, 'title', '') or '',
+                            "abstract": getattr(record, 'abstract', '') or '',
+                            "year": getattr(record, 'published', '')[:4] if getattr(record, 'published', '') else '',
+                            "authors": getattr(record, 'authors', '') or '',
+                            "similarity": score,
+                            "source": f"similar_to_{paper_id[:8]}",
+                        })
+            except Exception:
+                continue
+
+        # Sort by similarity and return top results
+        all_similar.sort(key=lambda x: x.get("similarity", 0), reverse=True)
+        return all_similar[:limit]
+
+    def enrich_papers_with_similar(
+        self,
+        papers: List[Dict[str, Any]],
+        additional_limit: int = 5,
+    ) -> List[Dict[str, Any]]:
+        """Enrich paper list with vector-similar papers.
+
+        For papers that have embeddings, find semantically similar
+        papers to expand the analysis scope beyond keyword matches.
+        """
+        if not papers or not self.db:
+            return papers
+
+        # Get seed paper IDs that have embeddings
+        paper_ids = [p["id"] for p in papers if p.get("id")]
+        if not paper_ids:
+            return papers
+
+        # Find similar papers
+        similar = self.find_similar_papers_for_gaps(paper_ids, limit=additional_limit)
+
+        # Merge similar papers into result
+        existing_ids = {p["id"] for p in papers}
+        for sim_paper in similar:
+            if sim_paper["id"] not in existing_ids:
+                papers.append(sim_paper)
+                existing_ids.add(sim_paper["id"])
+
+        return papers
 
     def _convert_to_v2(
         self,

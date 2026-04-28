@@ -7,6 +7,7 @@ import os
 import re
 import threading
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -15,9 +16,10 @@ import jieba
 # Ollama embedding model
 DEFAULT_EMBED_MODEL = "nomic-embed-text"
 
-# Zilliz config
-ZILLIZ_URI = os.environ.get("ZILLIZ_URI")
-ZILLIZ_TOKEN = os.environ.get("ZILLIZ_TOKEN")
+
+def _get_zilliz_config() -> tuple:
+    """Get Zilliz config lazily (after dotenv loads)."""
+    return os.environ.get("ZILLIZ_URI"), os.environ.get("ZILLIZ_TOKEN")
 
 # Code-specific stopwords
 _STOPWORDS = {
@@ -58,17 +60,24 @@ class CodeIndexer:
         self._lock = threading.Lock()
         self._initialized = False
 
-        # Zilliz for persistent storage
+        # Zilliz for persistent storage (lazy init to wait for dotenv)
         self._zilliz = None
-        if use_zilliz and ZILLIZ_URI and ZILLIZ_TOKEN:
+        self._use_zilliz = use_zilliz
+
+    def _ensure_zilliz(self) -> None:
+        """Lazily initialize Zilliz after env vars are loaded."""
+        if self._zilliz is None and self._use_zilliz:
             try:
                 from core.vector_store import ZillizStore
-                self._zilliz = ZillizStore(ZILLIZ_URI, ZILLIZ_TOKEN)
+                uri, token = _get_zilliz_config()
+                if uri and token:
+                    self._zilliz = ZillizStore(uri, token)
             except Exception as e:
                 print(f"Zilliz init failed: {e}")
 
     @property
     def use_zilliz(self) -> bool:
+        self._ensure_zilliz()
         return self._zilliz is not None
 
     def _get_embedding(self, text: str) -> Optional[List[float]]:
@@ -123,11 +132,12 @@ class CodeIndexer:
 
         self._initialized = True
 
-    def index_to_zilliz(self, batch_size: int = 50) -> int:
+    def index_to_zilliz(self, batch_size: int = 50, workers: int = 8) -> int:
         """Index all chunks to Zilliz for persistent storage.
 
         Args:
-            batch_size: Embedding batch size
+            batch_size: Chunks per batch
+            workers: Parallel embedding requests (default 8)
 
         Returns:
             Total chunks indexed
@@ -137,20 +147,35 @@ class CodeIndexer:
 
         self.initialize()
         total = 0
+        chunks = self._chunks
 
-        for i in range(0, len(self._chunks), batch_size):
-            batch = self._chunks[i:i + batch_size]
+        def embed_chunk(chunk):
+            """Embed single chunk, return (chunk, embedding) or None."""
+            emb = self._get_embedding(chunk.content[:500])
+            return (chunk, emb) if emb else None
 
-            # Embed batch
+        for i in range(0, len(chunks), batch_size):
+            batch = chunks[i:i + batch_size]
+
+            # Parallel embedding
             ids, vectors, contents, files, lines = [], [], [], [], []
-            for chunk in batch:
-                emb = self._get_embedding(chunk.content[:500])
-                if emb:
-                    ids.append(chunk.id)
-                    vectors.append(emb)
-                    contents.append(chunk.content[:2000])
-                    files.append(chunk.file)
-                    lines.append(chunk.line)
+            with ThreadPoolExecutor(max_workers=workers) as executor:
+                futures = {executor.submit(embed_chunk, c): c for c in batch}
+                for future in as_completed(futures):
+                    result = future.result()
+                    if result:
+                        chunk, emb = result
+                        ids.append(chunk.id)
+                        vectors.append(emb)
+                        contents.append(chunk.content[:2000])
+                        files.append(chunk.file)
+                        lines.append(chunk.line)
+
+            if ids:
+                self._zilliz.upsert(ids, vectors, contents, files, lines)
+                total += len(ids)
+
+            print(f"Indexed {total}/{len(chunks)} chunks...")
 
             if ids:
                 self._zilliz.upsert(ids, vectors, contents, files, lines)
@@ -221,7 +246,7 @@ class CodeIndexer:
             return self._keyword_search(query, limit)
 
         # Use Zilliz for fast cloud search
-        if self._zilliz:
+        if self.use_zilliz:
             return self._zilliz_search(query, limit)
 
         # Step 1: Keyword filter - get top_k candidates

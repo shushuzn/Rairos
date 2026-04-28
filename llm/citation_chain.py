@@ -177,6 +177,53 @@ class CitationChainBuilder:
 
         return descendants
 
+    def find_similar_papers(
+        self,
+        paper_id: str,
+        limit: int = 10,
+        threshold: float = 0.85,
+    ) -> List[Tuple["PaperRecord", float]]:
+        """Find semantically similar papers using embeddings.
+
+        Uses vector similarity to find related work even when
+        there's no explicit citation relationship.
+        """
+        if not self.db:
+            return []
+
+        try:
+            return self.db.find_similar(paper_id, threshold=threshold, limit=limit)
+        except Exception:
+            return []
+
+    def suggest_related_work(
+        self,
+        paper_id: str,
+        limit: int = 5,
+    ) -> List[Dict]:
+        """Suggest related work not in current chain.
+
+        Returns papers similar in content that might be relevant
+        but aren't connected via explicit citations.
+        """
+        similar = self.find_similar_papers(paper_id, limit=limit + len(self.nodes))
+
+        # Filter out papers already in chain
+        existing_ids = set(self.nodes.keys())
+        suggestions = []
+        for paper, score in similar:
+            if paper.id not in existing_ids:
+                suggestions.append({
+                    "paper_id": paper.id,
+                    "title": getattr(paper, 'title', paper.id),
+                    "similarity": score,
+                    "reason": "semantic similarity",
+                })
+            if len(suggestions) >= limit:
+                break
+
+        return suggestions
+
     def render_text(self, chain: CitationChain, max_nodes: int = 20) -> str:
         """Render chain as ASCII tree."""
         if not chain.nodes:
