@@ -24,6 +24,38 @@ from llm.research_session import get_session_tracker
 _EMBEDDING_CACHE: dict[str, Optional[List[float]]] = {}
 _EMBEDDING_CACHE_MAX = 1000
 
+# Cache for retrieval results (avoids redundant DB queries)
+_RETRIEVAL_CACHE: dict[str, Tuple[float, List]] = {}  # key -> (timestamp, contexts)
+_RETRIEVAL_CACHE_TTL = 3600  # 1 hour TTL
+_RETRIEVAL_CACHE_MAX = 500
+
+
+def _get_retrieval_cache_key(query: str, concept: Optional[str], limit: int) -> str:
+    """Generate cache key for retrieval results."""
+    import time
+    return hashlib.md5(f"{query.strip()}:{concept}:{limit}".encode()).hexdigest()
+
+
+def _get_cached_retrieval(cache_key: str) -> Optional[List]:
+    """Get cached retrieval results if valid."""
+    import time
+    if cache_key in _RETRIEVAL_CACHE:
+        timestamp, contexts = _RETRIEVAL_CACHE[cache_key]
+        if time.time() - timestamp < _RETRIEVAL_CACHE_TTL:
+            return contexts
+        else:
+            del _RETRIEVAL_CACHE[cache_key]
+    return None
+
+
+def _cache_retrieval(cache_key: str, contexts: List) -> None:
+    """Cache retrieval results with LRU eviction."""
+    import time
+    while len(_RETRIEVAL_CACHE) >= _RETRIEVAL_CACHE_MAX:
+        oldest_key = min(_RETRIEVAL_CACHE, key=lambda k: _RETRIEVAL_CACHE[k][0])
+        del _RETRIEVAL_CACHE[oldest_key]
+    _RETRIEVAL_CACHE[cache_key] = (time.time(), contexts)
+
 
 def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optional[List[float]]:
     """Fetch embedding from local Ollama with LRU caching. Returns None on failure."""
@@ -774,6 +806,13 @@ Rewrite as a standalone question (in the same language as the original question)
         - TEMPORAL: BM25 + temporal boost (newer papers)
         - GENERAL: Default BM25 + adaptive boost
         """
+        # Check cache first (only for general queries, not specific paper)
+        if not paper_id:
+            cache_key = _get_retrieval_cache_key(query, concept, limit)
+            cached = _get_cached_retrieval(cache_key)
+            if cached is not None:
+                return cached
+
         # Classify query for adaptive routing
         query_type = self.classify_query(query)
 
@@ -825,8 +864,14 @@ Rewrite as a standalone question (in the same language as the original question)
 
         # Sort by relevance and deduplicate
         contexts.sort(key=lambda x: x.relevance_score, reverse=True)
+        result = contexts[:limit]
 
-        return contexts[:limit]
+        # Cache results (only for general queries, not specific paper)
+        if not paper_id:
+            cache_key = _get_retrieval_cache_key(query, concept, limit)
+            _cache_retrieval(cache_key, result)
+
+        return result
 
     def _adaptive_retrieve(
         self,
