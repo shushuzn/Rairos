@@ -59,6 +59,20 @@ def _build_visual_parser(subparsers):
                        help="Maximum number of results (default: 20)")
     list_p.set_defaults(func=lambda a: visual_list.callback(limit=a.limit))
 
+    # export command - export tables to file
+    export_p = sub.add_parser("export", help="Export stored tables to file")
+    export_p.add_argument("paper_id", help="Paper ID to export tables from")
+    export_p.add_argument("output", help="Output file path")
+    export_p.add_argument("--format", "-f", default="csv",
+                        choices=["csv", "json", "markdown"],
+                        help="Output format (default: csv)")
+    export_p.add_argument("--page", type=int, default=None,
+                         help="Filter by page number")
+    export_p.add_argument("--keyword", "-k", default=None,
+                         help="Search in table content")
+    export_p.set_defaults(func=lambda a: visual_export.callback(
+        paper_id=a.paper_id, output=a.output, format=a.format, page=a.page, keyword=a.keyword))
+
     p.set_defaults(func=lambda a: visual_status.callback())
 
 
@@ -270,6 +284,84 @@ def visual_list(limit: int):
         print("-" * 40)
         for row in rows:
             print(f"{row[0]:<15} {row[1]:<8} {row[2]}")
+
+    finally:
+        db.close()
+
+
+def visual_export(paper_id: str, output: str, format: str, page: int, keyword: str):
+    """Export stored tables to a file."""
+    db = Database()
+    try:
+        tables = db.get_experiment_tables(paper_id)
+
+        if not tables:
+            print_error(f"No tables found for paper: {paper_id}")
+            sys.exit(1)
+
+        # Filter by page if specified
+        if page is not None:
+            tables = [t for t in tables if t.page == page - 1]
+
+        # Filter by keyword if specified
+        if keyword:
+            keyword_lower = keyword.lower()
+            tables = [
+                t for t in tables
+                if keyword_lower in t.table_caption.lower()
+                or any(keyword_lower in h.lower() for h in t.headers)
+                or any(keyword_lower in str(cell).lower() for row in t.rows for cell in row)
+            ]
+
+        if not tables:
+            print_error("No tables match the query")
+            sys.exit(1)
+
+        # Generate content
+        if format == "json":
+            import json
+            content = json.dumps({
+                "paper_id": paper_id,
+                "tables": [
+                    {
+                        "id": t.id,
+                        "page": t.page + 1,
+                        "caption": t.table_caption,
+                        "headers": t.headers,
+                        "rows": t.rows,
+                    }
+                    for t in tables
+                ],
+            }, indent=2, ensure_ascii=False)
+        elif format == "csv":
+            lines = []
+            for t in tables:
+                lines.append(f"# Table {t.id} (page {t.page + 1})")
+                if t.table_caption:
+                    lines.append(f"# Caption: {t.table_caption}")
+                lines.append(",".join(f'"{h}"' for h in t.headers))
+                for row in t.rows:
+                    lines.append(",".join(f'"{c}"' for c in row))
+                lines.append("")
+            content = "\n".join(lines)
+        else:  # markdown
+            lines = []
+            for i, t in enumerate(tables):
+                lines.append(f"\n**Table {i + 1} (page {t.page + 1})**")
+                if t.table_caption:
+                    lines.append(f"*{t.table_caption}*")
+                lines.append("| " + " | ".join(t.headers) + " |")
+                lines.append("| " + " | ".join(["---"] * len(t.headers)) + " |")
+                for row in t.rows:
+                    lines.append("| " + " | ".join(str(c) for c in row) + " |")
+            content = "\n".join(lines)
+
+        # Write to file
+        Path(output).parent.mkdir(parents=True, exist_ok=True)
+        with open(output, "w", encoding="utf-8") as f:
+            f.write(content)
+
+        print_success(f"Exported {len(tables)} table(s) to: {output}")
 
     finally:
         db.close()
