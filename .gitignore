@@ -21,7 +21,10 @@ data/crossref/
 .env
 
 # Claude settings
+.claude/
+!/.claude/
 .claude/settings.local.json
+.claude/worktrees/
 
 # Debug artifacts from interactive testing
 0x3000
