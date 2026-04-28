@@ -23,6 +23,7 @@ Layout:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import sys
 from dataclasses import dataclass
@@ -228,6 +229,7 @@ class TUIChatApp(App):
         limit: int = 5,
         friction_tracker: FrictionTracker = None,
         stream: bool = True,
+        session_id: str = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -236,6 +238,7 @@ class TUIChatApp(App):
         self.limit = limit
         self.stream = stream
         self.friction = friction_tracker or FrictionTracker()
+        self.session_id = session_id
         self.messages: List[ChatMessage] = []
         self.pending_citations: List = []
         self._streaming = False
@@ -269,6 +272,9 @@ class TUIChatApp(App):
 
     def on_mount(self) -> None:
         self.query_one("#chat-input").focus()
+        # Load session if specified
+        if self.session_id:
+            self._load_session(self.session_id)
 
     # ── Input handling ───────────────────────────────────────────────────────
 
@@ -283,6 +289,28 @@ class TUIChatApp(App):
 
     def _handle_submit(self, question: str) -> None:
         """Process a user question."""
+        # Handle /sessions command
+        if question.strip() == "/sessions":
+            self._show_sessions()
+            return
+
+        # Handle /load command
+        if question.strip().startswith("/load "):
+            parts = question.strip().split()
+            if len(parts) >= 2:
+                idx = parts[1]
+                self._load_session_by_index(idx)
+            return
+
+        # Create session if not exists
+        if not self.session_id:
+            import uuid
+            self.session_id = str(uuid.uuid4())[:8]
+            try:
+                self.chat.db.create_chat_session(self.session_id, "TUI对话")
+            except Exception:
+                pass
+
         # Rewrite follow-up questions using LLM
         rewritten_question = question
         if self._chat_history:
@@ -367,6 +395,8 @@ class TUIChatApp(App):
                 "answer": ai_msg.content,
                 "citations": ai_msg.citations,
             })
+            # Persist to database
+            self._save_to_session(question, ai_msg.content, ai_msg.citations)
 
             # Also show suggestions if available
             self._show_suggestions(ai_msg.citations)
@@ -422,6 +452,101 @@ class TUIChatApp(App):
 
     def action_quit(self) -> None:
         self.exit(0)
+
+    def _load_session(self, session_id: str) -> None:
+        """Load a chat session."""
+        try:
+            prev_messages = self.chat.db.get_chat_messages(session_id)
+            if prev_messages:
+                for msg in prev_messages:
+                    role = "user" if msg["role"] == "user" else "assistant"
+                    content = msg["content"]
+                    citations = []
+                    try:
+                        from llm.chat import ChatCitation
+                        cites_data = json.loads(msg.get("citations", "[]")) if isinstance(msg.get("citations"), str) else msg.get("citations", [])
+                        for c in cites_data:
+                            citations.append(ChatCitation(
+                                paper_id=c.get("paper_id", ""),
+                                paper_title=c.get("title", ""),
+                                authors=[],
+                                published="",
+                                snippet="",
+                                relevance_score=c.get("score", 0.0),
+                            ))
+                    except Exception:
+                        pass
+                    self.messages.append(ChatMessage(role=role, content=content, citations=citations))
+                    if role == "assistant":
+                        self._chat_history.append({"question": "", "answer": content, "citations": citations})
+                self._render_messages()
+                self._update_status(f"📂 已加载会话 {session_id}（{len(prev_messages)} 条消息）")
+        except Exception as e:
+            self._update_status(f"⚠️ 无法加载会话: {e}")
+
+    def _save_to_session(self, question: str, answer: str, citations) -> None:
+        """Save a message pair to the current session."""
+        if not self.session_id:
+            return
+        try:
+            citations_data = [
+                {"paper_id": c.paper_id, "title": c.paper_title, "score": c.relevance_score}
+                for c in citations
+            ] if citations else []
+            self.chat.db.add_chat_message(self.session_id, "user", question, [])
+            self.chat.db.add_chat_message(self.session_id, "assistant", answer, citations_data)
+        except Exception:
+            pass  # Non-critical
+
+    def _show_sessions(self) -> None:
+        """Show available chat sessions."""
+        try:
+            sessions = self.chat.db.get_chat_sessions(limit=10)
+            if not sessions:
+                self._update_status("📂 没有保存的会话")
+                return
+
+            lines = ["📂 可用会话:", ""]
+            for i, s in enumerate(sessions, 1):
+                sid = s.get("id", "")[:8]
+                title = s.get("title", "无标题")[:30]
+                updated = s.get("updated_at", "")[:16]
+                lines.append(f"  {i}. [{sid}] {title}")
+                lines.append(f"      更新: {updated}")
+            lines.append("")
+            lines.append("输入 /load <编号> 加载会话")
+
+            self.notify("\n".join(lines), title="会话列表", timeout=10)
+        except Exception as e:
+            self._update_status(f"⚠️ 无法获取会话列表: {e}")
+
+    def _load_session_by_index(self, idx: str) -> None:
+        """Load a session by index number."""
+        try:
+            sessions = self.chat.db.get_chat_sessions(limit=10)
+            if not sessions:
+                self._update_status("📂 没有保存的会话")
+                return
+
+            # Try to parse as number
+            try:
+                num = int(idx)
+                if 1 <= num <= len(sessions):
+                    session_id = sessions[num - 1]["id"]
+                    self._load_session(session_id)
+                    return
+            except ValueError:
+                pass
+
+            # Try as session ID directly
+            for s in sessions:
+                if s["id"].startswith(idx):
+                    self._load_session(s["id"])
+                    return
+
+            self._update_status(f"⚠️ 未找到会话: {idx}")
+        except Exception as e:
+            self._update_status(f"⚠️ 加载失败: {e}")
 
     def action_clear(self) -> None:
         self.messages.clear()
@@ -525,6 +650,10 @@ def _build_chat_tui_parser(subparsers) -> argparse.ArgumentParser:
         "--model", type=str, default=None,
         help="LLM model to use",
     )
+    p.add_argument(
+        "--session", "-s", metavar="ID",
+        help="Continue from a saved chat session",
+    )
     return p
 
 
@@ -557,7 +686,13 @@ def run(args: argparse.Namespace) -> int:
     # Init chat
     chat = RagChat(db=db, api_key=api_key, base_url=base_url, model=model)
 
-    # Launch TUI
-    app = TUIChatApp(chat=chat, concept=args.concept, limit=args.limit, stream=True)
+    # Launch TUI with optional session
+    app = TUIChatApp(
+        chat=chat,
+        concept=args.concept,
+        limit=args.limit,
+        stream=True,
+        session_id=args.session,
+    )
     app.run()
     return 0
