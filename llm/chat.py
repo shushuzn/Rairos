@@ -240,22 +240,41 @@ class RagChat:
                 re.compile(r'\b(who|whom|whose|who\'s)\b', re.I),
                 re.compile(r'\b(when|what year|what date)\b', re.I),
                 re.compile(r'\b(which (paper|author|model))\b', re.I),
-                re.compile(r'\b(who proposed|who introduced|who published)\b', re.I),
-                # 中文模式
-                re.compile(r'(是谁|谁提出|谁发明|谁提出|谁创建|谁发明|哪篇|哪个作者|哪篇论文)'),
+                re.compile(r'\b(who proposed|who introduced|who published|who wrote|who created)\b', re.I),
+                re.compile(r'\b(where (published|presented|introduced|released))\b', re.I),
+                re.compile(r'\b(what organization|what institution|what company)\b', re.I),
+                # 中文：事实查询
+                re.compile(r'(是谁|谁提出|谁创建|谁发布|哪篇|哪个作者|哪篇论文|何时|何时发表)'),
+                re.compile(r'(哪年|哪月|哪里|哪个机构|哪家|哪个团队|谁的工作)'),
             ],
             QueryType.CONCEPTUAL: [
                 re.compile(r'\b(what is|what are|explain|describe|how does|how do|why does|why do|understand|definition|meaning)\b', re.I),
                 re.compile(r'(原理|机制|概念|解释|是什么|如何|为什么|理解|定义|工作原理)'),
+                re.compile(r'(什么意思|含义|理论基础|基本思想|核心思想|本质)'),
+                re.compile(r'(怎么做|如何实现|如何工作|是怎样|怎样)'),
             ],
             QueryType.COMPARATIVE: [
-                re.compile(r'\b(vs|versus|compared to|compared with|difference between| versus | vs\. )\b', re.I),
-                re.compile(r'\b(和.*比较|区别|差异|对比|优于|劣于)\b'),
+                re.compile(r'\b(vs|versus|compared to|compared with)\b', re.I),
+                re.compile(r'\b(difference between|differences between)\b', re.I),
+                re.compile(r'\b(compare|comparison)\b', re.I),
+                re.compile(r'\b(which is better|which is worse|which is stronger)\b', re.I),
+                re.compile(r'\b(pros and cons|pros/cons|strengths? and weaknesses?)\b', re.I),
+                # 中文：比较查询
+                re.compile(r'(和.*比较|比较.*和|对比|区别|差异)'),
+                re.compile(r'(哪个更好|哪个更差|哪个更强|孰优孰劣)'),
+                re.compile(r'(优于|劣于|胜于|强于|优势|劣势)'),
             ],
             QueryType.TEMPORAL: [
-                re.compile(r'\b(recent|latest|newest|202[0-9]|20[2-9]\d)\b', re.I),
+                re.compile(r'\b(recent|latest|newest|recently)\b', re.I),
+                re.compile(r'\b(202[0-9]|20[2-9]\d)\b', re.I),
                 re.compile(r'\b(最近|最新|新的|202[0-9]|今年|去年|明年)\b'),
                 re.compile(r'\b(published in|released in|presented in|from 20)\b', re.I),
+                re.compile(r'\b(evolution|development|history|progress)\b', re.I),
+                re.compile(r'\b(before|after|since|until|past|future)\b', re.I),
+                # 中文：时间查询
+                re.compile(r'(最近 最新 新的|今年|去年|明年|近年)'),
+                re.compile(r'(何时|什么时候|多会儿|早期|后期)'),
+                re.compile(r'(演变|发展|演进|历史|进展|进步)'),
             ],
         }
 
