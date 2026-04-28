@@ -369,6 +369,85 @@ class RagChat:
 
         return None
 
+    def _rewrite_followup(self, question: str, history: List[dict]) -> str:
+        """
+        Rewrite follow-up questions using LLM for better context understanding.
+
+        Args:
+            question: Original follow-up question
+            history: List of previous Q&A pairs
+
+        Returns:
+            Rewritten question with explicit context
+        """
+        if len(history) < 1 or not question:
+            return question
+
+        # Only rewrite if this looks like a follow-up
+        followup_patterns = [
+            r'^(它|它们|这个|那|这些|那些|有哪些|有什么|哪个|哪些|怎么|如何|为什么|有啥)',
+            r'^(what about|and how|what are|which ones|how about|and the|also|but|what if)',
+        ]
+        is_followup = any(
+            re.match(p, question.lower())
+            for p in followup_patterns
+        )
+        if not is_followup:
+            return question
+
+        # Build context from history
+        context_parts = []
+        for i, entry in enumerate(history[-3:], 1):  # Last 3 exchanges
+            q = entry.get('question', '')
+            a = entry.get('answer', '')
+            # Truncate answer to first 200 chars
+            a_short = a[:200] + "..." if len(a) > 200 else a
+            context_parts.append(f"Q{i}: {q}\nA{i}: {a_short}")
+
+        history_text = "\n\n".join(context_parts)
+
+        prompt = f"""Rewrite the follow-up question as a standalone question that includes all necessary context from the conversation history.
+
+Conversation History:
+{history_text}
+
+Follow-up Question: {question}
+
+Rewrite as a standalone question (in the same language as the original question):"""
+
+        try:
+            rewritten = call_llm_chat_completions(
+                messages=[],
+                model=self.model,
+                user_prompt=prompt,
+                base_url=self.base_url or LLM_BASE_URL,
+                api_key=self.api_key,
+                system_prompt="You are a helpful assistant that rewrites questions. Output ONLY the rewritten question, nothing else.",
+                timeout=30,
+            )
+            # Clean up response
+            rewritten = rewritten.strip()
+            # Remove quotes if present
+            if rewritten.startswith('"') and rewritten.endswith('"'):
+                rewritten = rewritten[1:-1]
+            if rewritten.startswith("'") and rewritten.endswith("'"):
+                rewritten = rewritten[1:-1]
+            return rewritten if rewritten else question
+        except Exception:
+            # Fallback to simple resolution on error
+            return self._resolve_pronouns_simple(question, history)
+
+    def _resolve_pronouns_simple(self, question: str, history: List[dict]) -> str:
+        """Simple fallback resolution without LLM."""
+        if not history or not question:
+            return question
+
+        last = history[-1]
+        topic = self._extract_topic(last.get('question', ''))
+        if topic:
+            return f"[上文讨论: {topic}] {question}"
+        return question
+
     def chat(
         self,
         question: str,
@@ -401,11 +480,15 @@ class RagChat:
         # Classify query for adaptive routing (used in verbose mode)
         query_type = self.classify_query(question)
 
-        # Resolve pronouns and context from conversation history
-        resolved_question = self._resolve_pronouns(question, session)
-
-        # 1. Retrieve relevant contexts
-        contexts = self._retrieve(resolved_question, paper_id, concept, limit)
+        # Rewrite follow-up questions using LLM for better context understanding
+        # Get recent history for context
+        history = []
+        if session and session.queries:
+            history = [
+                {"question": q.question, "answer": getattr(q, 'answer', '')}
+                for q in session.queries[-3:]
+            ]
+        resolved_question = self._rewrite_followup(question, history) if history else question
 
         if not contexts:
             return ChatResult(
