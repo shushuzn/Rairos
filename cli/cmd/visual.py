@@ -40,6 +40,25 @@ def _build_visual_parser(subparsers):
     extract_p.set_defaults(func=lambda a: visual_extract.callback(
         pdf=a.pdf, output=a.output, dpi=a.dpi, format=a.format, save_db=a.save_db))
 
+    # query command - query stored tables
+    query_p = sub.add_parser("query", help="Query stored tables from database")
+    query_p.add_argument("paper_id", help="Paper ID to query tables for")
+    query_p.add_argument("--page", type=int, default=None,
+                        help="Filter by page number")
+    query_p.add_argument("--keyword", "-k", default=None,
+                        help="Search in table content")
+    query_p.add_argument("--format", "-f", default="markdown",
+                        choices=["markdown", "json", "csv"],
+                        help="Output format")
+    query_p.set_defaults(func=lambda a: visual_query.callback(
+        paper_id=a.paper_id, page=a.page, keyword=a.keyword, format=a.format))
+
+    # list command - list papers with stored tables
+    list_p = sub.add_parser("list", help="List papers with stored tables")
+    list_p.add_argument("--limit", type=int, default=20,
+                       help="Maximum number of results (default: 20)")
+    list_p.set_defaults(func=lambda a: visual_list.callback(limit=a.limit))
+
     p.set_defaults(func=lambda a: visual_status.callback())
 
 
@@ -157,3 +176,100 @@ def visual_status():
     print_info("  Extracts: figures, LaTeX formulas, tables")
     print_info("\nUsage:")
     print_info("  airos visual extract paper.pdf --output figures/")
+    print_info("  airos visual query 2604.22754")
+    print_info("  airos visual list")
+
+
+def visual_query(paper_id: str, page: int, keyword: str, format: str):
+    """Query stored tables from database."""
+    db = Database()
+    try:
+        tables = db.get_experiment_tables(paper_id)
+
+        if not tables:
+            print_error(f"No tables found for paper: {paper_id}")
+            sys.exit(1)
+
+        # Filter by page if specified
+        if page is not None:
+            tables = [t for t in tables if t.page == page - 1]  # 0-indexed
+
+        # Filter by keyword if specified
+        if keyword:
+            keyword_lower = keyword.lower()
+            tables = [
+                t for t in tables
+                if keyword_lower in t.table_caption.lower()
+                or any(keyword_lower in h.lower() for h in t.headers)
+                or any(keyword_lower in str(cell).lower() for row in t.rows for cell in row)
+            ]
+
+        if not tables:
+            print_error(f"No tables match the query")
+            sys.exit(1)
+
+        print_success(f"Found {len(tables)} table(s) for paper: {paper_id}")
+
+        if format == "json":
+            import json
+            result = {
+                "paper_id": paper_id,
+                "tables": [
+                    {
+                        "id": t.id,
+                        "page": t.page + 1,
+                        "caption": t.table_caption,
+                        "headers": t.headers,
+                        "rows": t.rows,
+                    }
+                    for t in tables
+                ],
+            }
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+        elif format == "csv":
+            for t in tables:
+                print(f"\n# Table {t.id} (page {t.page + 1})")
+                if t.table_caption:
+                    print(f"# Caption: {t.table_caption}")
+                print(",".join(t.headers))
+                for row in t.rows:
+                    print(",".join(f'"{str(c)}"' for c in row))
+        else:  # markdown
+            for i, t in enumerate(tables):
+                print(f"\n**Table {i + 1} (page {t.page + 1})**")
+                if t.table_caption:
+                    print(f"*{t.table_caption}*")
+                print("| " + " | ".join(t.headers) + " |")
+                print("| " + " | ".join(["---"] * len(t.headers)) + " |")
+                for row in t.rows:
+                    print("| " + " | ".join(str(c) for c in row) + " |")
+
+    finally:
+        db.close()
+
+
+def visual_list(limit: int):
+    """List papers with stored tables."""
+    db = Database()
+    try:
+        cursor = db.conn.execute("""
+            SELECT paper_id, COUNT(*) as table_count, MAX(page) + 1 as max_page
+            FROM experiment_tables
+            GROUP BY paper_id
+            ORDER BY MAX(created_at) DESC
+            LIMIT ?
+        """, (limit,))
+        rows = cursor.fetchall()
+
+        if not rows:
+            print_info("No papers with stored tables found.")
+            return
+
+        print_success(f"Papers with stored tables ({len(rows)} results):\n")
+        print(f"{'Paper ID':<15} {'Tables':<8} {'Pages'}")
+        print("-" * 40)
+        for row in rows:
+            print(f"{row[0]:<15} {row[1]:<8} {row[2]}")
+
+    finally:
+        db.close()
