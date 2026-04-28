@@ -54,6 +54,9 @@ def _build_chat_parser(subparsers) -> argparse.ArgumentParser:
 
 def _run_chat(args: argparse.Namespace) -> int:
     """Run the chat command."""
+    from cli._shared import load_dotenv
+    load_dotenv()
+
     db = get_db()
     db.init()
 

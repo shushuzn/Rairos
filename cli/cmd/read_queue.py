@@ -330,6 +330,9 @@ def _handle_status_action(args: argparse.Namespace, db) -> Optional[int]:
 
 
 def _run_read_queue(args: argparse.Namespace) -> int:
+    from cli._shared import load_dotenv
+    load_dotenv()
+
     db = get_db()
     db.init()
 
