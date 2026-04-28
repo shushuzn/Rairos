@@ -283,6 +283,14 @@ class TUIChatApp(App):
 
     def _handle_submit(self, question: str) -> None:
         """Process a user question."""
+        # Rewrite follow-up questions using LLM
+        rewritten_question = question
+        if self._chat_history:
+            try:
+                rewritten_question = self.chat._rewrite_followup(question, self._chat_history)
+            except Exception:
+                pass  # Fall back to original question
+
         # Add user message
         user_msg = ChatMessage(role="user", content=question, citations=[])
         self.messages.append(user_msg)
@@ -305,15 +313,15 @@ class TUIChatApp(App):
                 from llm.client import stream_llm_chat_completions
                 from llm.chat import _RAG_SYSTEM_PROMPT
 
-                # First retrieve contexts
-                contexts = self.chat._retrieve(question, None, self.concept, self.limit)
+                # First retrieve contexts using rewritten question
+                contexts = self.chat._retrieve(rewritten_question, None, self.concept, self.limit)
                 if not contexts:
                     ai_msg.content = "⚠️ 未找到相关论文"
                     self._update_status("⚠️ 无相关论文")
                     return
 
                 # Build prompt
-                prompt = self.chat._build_prompt(question, contexts)
+                prompt = self.chat._build_prompt(rewritten_question, contexts)
                 answer = ""
 
                 # Stream the response
@@ -332,9 +340,9 @@ class TUIChatApp(App):
 
                 ai_msg.content = answer
                 ai_msg.citations = self.chat._extract_citations(contexts)
-            # Save to history for follow-up context
+            # Save to history for follow-up context (use rewritten question)
             self._chat_history.append({
-                "question": question,
+                "question": rewritten_question,
                 "answer": ai_msg.content,
                 "citations": ai_msg.citations,
             })
