@@ -123,6 +123,10 @@ class ResearchDeepDivePipeline:
         Returns:
             PostProcessingResult with per-stage outcomes.
         """
+        # Normalize extracted_text: if it's a StructuredPdfContent, extract plain text
+        if hasattr(extracted_text, 'text_blocks'):
+            structured_content = extracted_text
+            extracted_text = "\n".join(b.text for b in extracted_text.text_blocks)
         use_llm = bool(llm_config and llm_config.get("api_key"))
         if stages is None:
             stages = list(PostStage)
