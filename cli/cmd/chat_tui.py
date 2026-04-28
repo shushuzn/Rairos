@@ -203,6 +203,15 @@ class TUIChatApp(App):
         color: #6060a0;
         padding: 0 2;
     }
+
+    /* ── Suggestions ── */
+    .suggestions {
+        color: #80a0ff;
+        padding: 1 2;
+        background: #0a1525;
+        border: solid #2040a0;
+        margin: 1 0;
+    }
     """
 
     BINDINGS = [
@@ -230,6 +239,7 @@ class TUIChatApp(App):
         self.messages: List[ChatMessage] = []
         self.pending_citations: List = []
         self._streaming = False
+        self._chat_history: List[dict] = []  # For follow-up question context
 
     # ── App lifecycle ──────────────────────────────────────────────────────
 
@@ -322,16 +332,15 @@ class TUIChatApp(App):
 
                 ai_msg.content = answer
                 ai_msg.citations = self.chat._extract_citations(contexts)
-            else:
-                # Non-streaming mode
-                result = self.chat.chat(
-                    question=question,
-                    concept=self.concept,
-                    limit=self.limit,
-                    verbose=False,
-                )
-                ai_msg.content = result.answer
-                ai_msg.citations = result.citations or []
+            # Save to history for follow-up context
+            self._chat_history.append({
+                "question": question,
+                "answer": ai_msg.content,
+                "citations": ai_msg.citations,
+            })
+
+            # Also show suggestions if available
+            self._show_suggestions(ai_msg.citations)
 
             self.pending_citations = ai_msg.citations
             self._update_sidebar(ai_msg.citations)
@@ -387,6 +396,7 @@ class TUIChatApp(App):
 
     def action_clear(self) -> None:
         self.messages.clear()
+        self._chat_history.clear()
         self._render_messages()
         welcome = self.query_one("#welcome")
         self.query_one("#messages").mount(welcome)
@@ -399,6 +409,43 @@ class TUIChatApp(App):
             title="快捷键",
             timeout=5,
         )
+
+    def _show_suggestions(self, citations) -> None:
+        """Show follow-up question suggestions."""
+        if not citations:
+            return
+        try:
+            from llm.evolution_report import get_smart_followup
+            followup = get_smart_followup()
+            last_q = self._chat_history[-1]["question"] if self._chat_history else ""
+
+            # Convert citations to context
+            ctx_list = [
+                type('Ctx', (), {
+                    'paper_id': c.paper_id,
+                    'paper_title': c.paper_title,
+                    'authors': getattr(c, 'authors', []),
+                    'published': getattr(c, 'published', ''),
+                    'snippet': getattr(c, 'snippet', ''),
+                    'relevance_score': getattr(c, 'relevance_score', 0)
+                }) for c in citations
+            ]
+
+            options = followup.generate_options(
+                question=last_q,
+                answer="",
+                citations=ctx_list,
+            )
+            if options:
+                # Add suggestion widget below last message
+                container = self.query_one("#messages")
+                container.mount(Static(
+                    colored("💡 追问建议：", Colors.WARNING) +
+                    colored(followup.render_options(options), Colors.OKBLUE),
+                    classes="suggestions",
+                ))
+        except Exception:
+            pass
 
 
 class ChatBubble(Static):
