@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable, List, Optional, Tuple
 
-from llm.client import call_llm_chat_completions
+from llm.client import call_llm_chat_completions, stream_llm_chat_completions
 from llm.constants import LLM_BASE_URL, LLM_MODEL
 from llm.research_session import get_session_tracker
 
@@ -292,6 +292,7 @@ class RagChat:
         limit: int = 5,
         verbose: bool = False,
         session_id: Optional[str] = None,
+        stream: bool = False,
     ) -> ChatResult:
         """
         Answer a question using the paper corpus.
@@ -303,6 +304,7 @@ class RagChat:
             limit: Max papers to retrieve
             verbose: Print debug info
             session_id: Optional session ID for multi-turn conversation
+            stream: If True, print answer incrementally (for TUI)
 
         Returns:
             ChatResult with answer and citations
@@ -337,15 +339,31 @@ class RagChat:
         # 2. Build prompt with resolved context
         prompt = self._build_prompt(resolved_question, contexts)
 
-        # 3. Generate answer
-        answer = self._call_llm(
-            [],
-            model=self.model,
-            user_prompt=prompt,
-            base_url=self.base_url,
-            api_key=self.api_key,
-            system_prompt=_RAG_SYSTEM_PROMPT,
-        )
+        # 3. Generate answer (streaming or non-streaming)
+        if stream:
+            # For streaming, we accumulate into answer variable
+            answer = ""
+            for delta in stream_llm_chat_completions(
+                [],
+                model=self.model,
+                user_prompt=prompt,
+                base_url=self.base_url,
+                api_key=self.api_key,
+                system_prompt=_RAG_SYSTEM_PROMPT,
+            ):
+                answer += delta
+                # Print incrementally for TUI
+                print(delta, end="", flush=True)
+            print()  # Newline after streaming
+        else:
+            answer = self._call_llm(
+                [],
+                model=self.model,
+                user_prompt=prompt,
+                base_url=self.base_url,
+                api_key=self.api_key,
+                system_prompt=_RAG_SYSTEM_PROMPT,
+            )
 
         # 4. Extract citations
         citations = self._extract_citations(contexts)

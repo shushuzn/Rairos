@@ -49,6 +49,10 @@ def _build_chat_parser(subparsers) -> argparse.ArgumentParser:
         "--verbose", "-v", action="store_true",
         help="Verbose output (show retrieval debug info)",
     )
+    p.add_argument(
+        "--stream", action="store_true",
+        help="Stream the response as it generates (for interactive mode)",
+    )
     return p
 
 
@@ -109,6 +113,54 @@ def _run_chat(args: argparse.Namespace) -> int:
 def _run_single_question(chat, args) -> int:
     """Run a single question."""
     try:
+        if args.stream:
+            # Streaming mode
+            print(colored("═" * 60, Colors.OKBLUE))
+            print(colored("🔄 流式输出中...\n", Colors.WARNING))
+
+            # Retrieve contexts first
+            contexts = chat._retrieve(args.question, args.paper, args.concept, args.limit)
+            if not contexts:
+                print_error("未找到相关论文")
+                return 1
+
+            from llm.client import stream_llm_chat_completions
+            from llm.chat import _RAG_SYSTEM_PROMPT
+            from llm.constants import LLM_BASE_URL
+
+            prompt = chat._build_prompt(args.question, contexts)
+            answer = ""
+
+            for delta in stream_llm_chat_completions(
+                [],
+                model=chat.model,
+                user_prompt=prompt,
+                base_url=chat.base_url or LLM_BASE_URL,
+                api_key=chat.api_key,
+                system_prompt=_RAG_SYSTEM_PROMPT,
+            ):
+                print(delta, end="", flush=True)
+                answer += delta
+            print()
+            print(colored("═" * 60, Colors.OKBLUE))
+
+            # Extract citations
+            citations = chat._extract_citations(contexts)
+
+            # Print citations
+            if not args.no_cite and citations:
+                print()
+                print(colored("📖 引用来源", Colors.HEADER))
+                print("-" * 60)
+                for i, cite in enumerate(citations, 1):
+                    print(f"\n[{i}] {cite.paper_title}")
+                    print(f"    ID: {cite.paper_id}")
+                    print(f"    相关度: {cite.relevance_score:.2f}")
+                    print(f"    > {cite.snippet[:150]}...")
+
+            _show_suggestions_by_context(args.question, citations)
+            return 0
+
         result = chat.chat(
             question=args.question,
             paper_id=args.paper,
@@ -209,6 +261,43 @@ def _run_interactive(chat, args) -> int:
         print(colored("\n🔍 检索中...\n", Colors.WARNING))
 
         try:
+            if args.stream:
+                # Streaming mode
+                contexts = chat._retrieve(question, args.paper, args.concept, args.limit)
+                if not contexts:
+                    print_error("未找到相关论文")
+                    return
+
+                from llm.client import stream_llm_chat_completions
+                from llm.chat import _RAG_SYSTEM_PROMPT
+                from llm.constants import LLM_BASE_URL
+
+                print(colored("💡 回答：", Colors.HEADER))
+                print("─" * 60)
+
+                prompt = chat._build_prompt(question, contexts)
+                answer = ""
+
+                for delta in stream_llm_chat_completions(
+                    [],
+                    model=chat.model,
+                    user_prompt=prompt,
+                    base_url=chat.base_url or LLM_BASE_URL,
+                    api_key=chat.api_key,
+                    system_prompt=_RAG_SYSTEM_PROMPT,
+                ):
+                    print(delta, end="", flush=True)
+                    answer += delta
+                print()
+                print("─" * 60)
+
+                citations = chat._extract_citations(contexts)
+                _record_passive_feedback(question, [c.paper_id for c in citations] if citations else [], "continued")
+                _show_suggestions_by_context(question, citations)
+                print()
+                history.append({"question": question, "answer": answer, "citations": citations})
+                continue
+
             result = chat.chat(
                 question=question,
                 paper_id=args.paper,
@@ -342,6 +431,36 @@ def _show_suggestions(result, question: str = "") -> None:
             print(colored(followup.render_options(options), Colors.HEADER))
     except Exception:
         # Silently skip suggestions
+        pass
+
+
+def _show_suggestions_by_context(question: str, citations) -> None:
+    """Show suggestions from citations (for streaming mode)."""
+    if not citations:
+        return
+    try:
+        from llm.evolution_report import get_smart_followup
+        followup = get_smart_followup()
+        # Convert citations to ChatContext-like objects
+        ctx_list = [
+            type('Ctx', (), {
+                'paper_id': c.paper_id,
+                'paper_title': c.paper_title,
+                'authors': c.authors,
+                'published': c.published,
+                'snippet': c.snippet,
+                'relevance_score': c.relevance_score
+            }) for c in citations
+        ]
+        options = followup.generate_options(
+            question=question,
+            answer="",
+            citations=ctx_list,
+        )
+        if options:
+            print()
+            print(colored(followup.render_options(options), Colors.HEADER))
+    except Exception:
         pass
 
 

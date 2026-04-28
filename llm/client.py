@@ -121,6 +121,59 @@ def _stream_to_string(r: requests.Response) -> str:
     return "".join(_parse_sse_stream(r))
 
 
+def stream_llm_chat_completions(
+    messages: List[Dict[str, str]],
+    model: str,
+    user_prompt: Optional[str] = None,
+    base_url: str = "https://api.openai.com/v1",
+    api_key: Optional[str] = None,
+    timeout: int = 180,
+    system_prompt: Optional[str] = None,
+) -> Iterator[str]:
+    """Stream LLM responses as an iterator of content deltas.
+
+    Yields content deltas as they arrive from the SSE stream.
+
+    Args:
+        messages: Chat history
+        model: Model name
+        user_prompt: Additional user message
+        base_url: API base URL
+        api_key: API key
+        timeout: Request timeout
+        system_prompt: System prompt
+
+    Yields:
+        Content deltas as strings
+    """
+    api_key = api_key or os.getenv("OPENAI_API_KEY", "")
+    if not api_key:
+        raise ValueError("Missing API key. Provide --api-key or set OPENAI_API_KEY.")
+
+    url = base_url.rstrip("/") + "/chat/completions"
+    session = _get_session()
+    headers = {"Authorization": f"Bearer {api_key}"}
+    msgs = list(messages)
+    if system_prompt:
+        msgs = [{"role": "system", "content": system_prompt}] + msgs
+    payload = {
+        "model": model,
+        "temperature": 0.2,
+        "messages": msgs,
+        "stream": True,
+        "extra_body": {"thinking": {"type": "disabled"}},
+    }
+    if user_prompt:
+        payload["messages"] = msgs + [{"role": "user", "content": user_prompt}]
+
+    try:
+        r = session.post(url, headers=headers, json=payload, timeout=timeout, stream=True)
+        r.raise_for_status()
+        yield from _parse_sse_stream(r)
+    except requests.RequestException as e:
+        raise RuntimeError(f"LLM API request failed: {str(e)}") from e
+
+
 def clear_llm_cache() -> None:
     """Clear the LLM response cache."""
     _llm_cache.clear()

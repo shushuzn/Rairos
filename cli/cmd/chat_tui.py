@@ -218,12 +218,14 @@ class TUIChatApp(App):
         concept: str = None,
         limit: int = 5,
         friction_tracker: FrictionTracker = None,
+        stream: bool = True,
         **kwargs,
     ):
         super().__init__(**kwargs)
         self.chat = chat
         self.concept = concept
         self.limit = limit
+        self.stream = stream
         self.friction = friction_tracker or FrictionTracker()
         self.messages: List[ChatMessage] = []
         self.pending_citations: List = []
@@ -286,15 +288,51 @@ class TUIChatApp(App):
         self._render_messages()
 
         try:
-            result = self.chat.chat(
-                question=question,
-                concept=self.concept,
-                limit=self.limit,
-                verbose=False,
-            )
-            # Update with full response
-            ai_msg.content = result.answer
-            ai_msg.citations = result.citations or []
+            if self.stream:
+                # Streaming mode: accumulate response incrementally
+                self._update_status("🤖 生成回答中...")
+                # Import streaming function
+                from llm.client import stream_llm_chat_completions
+                from llm.chat import _RAG_SYSTEM_PROMPT
+
+                # First retrieve contexts
+                contexts = self.chat._retrieve(question, None, self.concept, self.limit)
+                if not contexts:
+                    ai_msg.content = "⚠️ 未找到相关论文"
+                    self._update_status("⚠️ 无相关论文")
+                    return
+
+                # Build prompt
+                prompt = self.chat._build_prompt(question, contexts)
+                answer = ""
+
+                # Stream the response
+                for delta in stream_llm_chat_completions(
+                    [],
+                    model=self.chat.model,
+                    user_prompt=prompt,
+                    base_url=self.chat.base_url,
+                    api_key=self.chat.api_key,
+                    system_prompt=_RAG_SYSTEM_PROMPT,
+                ):
+                    answer += delta
+                    # Update display incrementally
+                    ai_msg.content = answer
+                    self._render_messages()
+
+                ai_msg.content = answer
+                ai_msg.citations = self.chat._extract_citations(contexts)
+            else:
+                # Non-streaming mode
+                result = self.chat.chat(
+                    question=question,
+                    concept=self.concept,
+                    limit=self.limit,
+                    verbose=False,
+                )
+                ai_msg.content = result.answer
+                ai_msg.citations = result.citations or []
+
             self.pending_citations = ai_msg.citations
             self._update_sidebar(ai_msg.citations)
             self._update_status(f"✅ 回复完成 · {len(ai_msg.citations)} 篇引用")
@@ -444,6 +482,6 @@ def run(args: argparse.Namespace) -> int:
     chat = RagChat(db=db, api_key=api_key, base_url=base_url, model=model)
 
     # Launch TUI
-    app = TUIChatApp(chat=chat, concept=args.concept, limit=args.limit)
+    app = TUIChatApp(chat=chat, concept=args.concept, limit=args.limit, stream=True)
     app.run()
     return 0
