@@ -1,0 +1,423 @@
+"""
+Deep paper analysis: fills P-note blank sections with AI-generated content.
+
+Produces a PaperAnalysisResult with:
+- sections_dict: maps "## N. Title" → markdown content (matches render_pnote() keys)
+- rubric_dict: {novelty, leverage, evidence, cost, moat, adoption} each 1-5
+- extracted_methods/datasets/metrics: keyword lists
+"""
+from __future__ import annotations
+
+import json
+import logging
+import re
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+
+logger = logging.getLogger(__name__)
+
+# ── Section keys must exactly match renderers/pnote.py template ──────────────
+
+_SECTION_KEYS = [
+    "## 1. 背景",
+    "## 2. 核心问题",
+    "## 3.1 架构拆解",
+    "## 3.2 算法逻辑",
+    "## 3.3 关键组件",
+    "## 4. 关键创新",
+    "## 5.1 数据集",
+    "## 5.2 基线对比",
+    "## 5.3 消融实验",
+    "## 5.4 成本分析",
+    "## 6. 对抗式审稿",
+    "## 7. 优势",
+    "## 8. 局限",
+    "## 9. 本质抽象",
+    "## 10. 与其他方法对比",
+    "## 11. Decision（决策）",
+    "## 12. 知识蒸馏",
+    "## 13. 认知升级",
+]
+
+_RUBRIC_KEYS = ["novelty", "leverage", "evidence", "cost", "moat", "adoption"]
+
+_METHOD_KEYWORDS = [
+    "transformer", "attention", "cnn", "rnn", "lstm", "gru", "bert", "gpt",
+    "diffusion", "gan", "vae", "resnet", "unet", "mlp", "graph neural",
+    "reinforcement learning", "rl", "fine-tuning", "prompt", "instruction tuning",
+    "retrieval augmented", "rerank", "fusion", "encoder", "decoder",
+    "quantization", "distillation", "pruning", "contrastive", "adversarial",
+    "normalization", "self-supervised", "multi-modal", "multimodal",
+]
+
+_DATASET_KEYWORDS = [
+    "imagenet", "cifar", "mnist", "svhn", "squad", "glue", "superglue",
+    "mmlu", "gsm8k", "humaneval", "mbpp", "hellaswag", "arc", "truthfulqa",
+    "coco", "cityscapes", "wikitext", "librispeech", "pascal", "ade20k",
+    "sst", "cola", "mrpc", "qnli", "rte", "wnli", "boolq", "piqa",
+    "winogrande", "lambada", "enwik8", "text8",
+]
+
+_METRIC_KEYWORDS = [
+    "accuracy", "bleu", "rouge", "f1", "precision", "recall", "perplexity",
+    "wer", "cer", "map", "ndcg", "auc", "mse", "mae", "rmse",
+    "top-1", "top-5", "latency", "throughput", "params",
+]
+
+
+@dataclass
+class PaperAnalysisResult:
+    """Result of a deep paper analysis."""
+    paper_id: str
+    sections: Dict[str, str] = field(default_factory=dict)
+    rubric: Dict[str, Any] = field(default_factory=dict)
+    extracted_methods: List[str] = field(default_factory=list)
+    extracted_datasets: List[str] = field(default_factory=list)
+    extracted_metrics: List[str] = field(default_factory=list)
+    raw_llm_output: str = ""
+    llm_used: bool = False
+
+
+# ── LLM prompts ──────────────────────────────────────────────────────────────
+
+_SYSTEM_PROMPT = """你是一个严谨的 AI 研究助理，擅长对抗式审稿和深度论文分析。
+
+任务：分析论文，按指定格式输出各章节内容。
+
+硬规则：
+1. 每个章节标题必须严格使用 `## N. 标题` 格式，N 和标题必须与要求完全一致
+2. 内容必须基于论文原文；不确定的加 [推测] 标注
+3. 禁止捏造实验/数据/结果
+4. 输出中文 Markdown
+5. 每项 Claims 引用原文支撑
+6. 末尾输出 JSON 评分块（见评分量表说明）
+
+评分量表：
+- Novelty (1-5): 1=增量改进 2=组合已有 3=新任务/视角 4=新范式 5=开创性
+- Leverage (1-5): 1=难落地 2=需适配 3=可直接用 4=显著降本 5=范式级
+- Evidence (1-5): 1=无实验 2=部分 3=充分覆盖 4=强基线 5=消融完整
+- Cost (1-5): 1=极高 2=较高 3=中等 4=较低 5=极低
+- Moat (1-5): 1=无壁垒 2=代码 3=数据 4=算法/专利 5=生态
+- Adoption (1-5): 1=无 2=<100stars 3>1k/引用>10 4=工业落地 5=生态标配"""
+
+_USER_PROMPT_TEMPLATE = """论文标题：{title}
+作者：{authors}
+标签：{tags}
+
+【Abstract】
+{abstract}
+
+【抽取正文片段】
+{body}
+
+请按以下章节生成初稿，使用 `## N. 标题` 格式（N 和标题必须与以下列表完全一致）：
+
+## 1. 背景
+一句话：这篇论文要解决什么问题？（引用摘要）
+
+## 2. 核心问题
+这篇论文的核心技术方案是什么？
+
+## 3.1 架构拆解
+## 3.2 算法逻辑
+## 3.3 关键组件
+
+## 4. 关键创新
+一句话总结最大创新点。
+
+## 5.1 数据集
+## 5.2 基线对比
+## 5.3 消融实验
+## 5.4 成本分析
+
+## 6. 对抗式审稿
+列出3个最强质疑点。
+
+## 7. 优势
+## 8. 局限
+## 9. 本质抽象
+一句话抽象出本质。
+
+## 10. 与其他方法对比
+## 11. Decision（决策）
+## 12. 知识蒸馏
+### Facts
+### Principles
+### Insights
+
+## 13. 认知升级
+
+在以上 Markdown 内容之后，另起一行输出以下 JSON（不要放在代码块中）：
+
+```json
+{{"novelty": 3, "leverage": 4, "evidence": 3, "cost": 2, "moat": 2, "adoption": 3, "overall": "一句话评价"}}
+```"""
+
+
+# ── Analyzer ─────────────────────────────────────────────────────────────────
+
+
+class PaperAnalyzer:
+    """Deep analysis of a paper to fill P-note sections."""
+
+    def __init__(self, llm_config: Optional[Dict[str, Any]] = None):
+        self.llm_config = llm_config or {}
+
+    def analyze(
+        self,
+        paper_id: str,
+        title: str,
+        abstract: str,
+        body_text: str,
+        tags: Optional[List[str]] = None,
+        authors: Optional[List[str]] = None,
+        use_llm: bool = True,
+    ) -> PaperAnalysisResult:
+        """Analyze a paper and produce structured section content.
+
+        Args:
+            paper_id: Unique paper identifier.
+            title: Paper title.
+            abstract: Paper abstract.
+            body_text: Full extracted PDF text.
+            tags: Paper tags.
+            authors: Paper authors.
+            use_llm: Whether to attempt LLM-powered analysis.
+
+        Returns:
+            PaperAnalysisResult with sections, rubric, and extracted keywords.
+        """
+        if use_llm and self.llm_config.get("api_key"):
+            return self._analyze_with_llm(
+                paper_id, title, abstract, body_text, tags or [], authors,
+            )
+        return self._analyze_fallback(
+            paper_id, title, abstract, body_text, tags or [],
+        )
+
+    # ── LLM path ──────────────────────────────────────────────────────────
+
+    def _analyze_with_llm(
+        self,
+        paper_id: str,
+        title: str,
+        abstract: str,
+        body_text: str,
+        tags: List[str],
+        authors: Optional[List[str]] = None,
+    ) -> PaperAnalysisResult:
+        from llm.client import call_llm_chat_completions
+
+        cfg = self.llm_config
+        authors_str = ", ".join(authors) if authors else "Unknown"
+        tags_str = ", ".join(tags) if tags else ""
+
+        prompt = _USER_PROMPT_TEMPLATE.format(
+            title=title,
+            authors=authors_str,
+            tags=tags_str,
+            abstract=abstract or "(空)",
+            body=body_text,
+        )
+
+        raw = call_llm_chat_completions(
+            messages=[],
+            model=cfg.get("model", "gpt-4o-mini"),
+            base_url=cfg.get("base_url", "https://api.openai.com/v1"),
+            api_key=cfg["api_key"],
+            system_prompt=_SYSTEM_PROMPT,
+            user_prompt=prompt,
+            timeout=cfg.get("timeout", 300),
+        )
+
+        sections, rubric = self._parse_llm_response(raw)
+        result = PaperAnalysisResult(
+            paper_id=paper_id,
+            sections=sections,
+            rubric=rubric,
+            raw_llm_output=raw,
+            llm_used=True,
+        )
+        result.extracted_methods = self._extract_keywords(body_text, _METHOD_KEYWORDS)
+        result.extracted_datasets = self._extract_keywords(body_text, _DATASET_KEYWORDS)
+        result.extracted_metrics = self._extract_keywords(body_text, _METRIC_KEYWORDS)
+        return result
+
+    # ── No-LLM fallback ───────────────────────────────────────────────────
+
+    def _analyze_fallback(
+        self,
+        paper_id: str,
+        title: str,
+        abstract: str,
+        body_text: str,
+        tags: List[str],
+    ) -> PaperAnalysisResult:
+        needs_ai = "\n\n> _（需要 AI 分析）_"
+
+        sections: Dict[str, str] = {}
+        for key in _SECTION_KEYS:
+            sections[key] = needs_ai
+
+        sections["## 1. 背景"] = (
+            f"> **Abstract（原文）**\n> {abstract}\n\n"
+            "_（关键词匹配摘要，建议 AI 深入分析）_"
+        )
+        sections["## 2. 核心问题"] = (
+            "_基于摘要推断：_" + needs_ai
+        )
+
+        methods = self._extract_keywords(body_text, _METHOD_KEYWORDS)
+        datasets = self._extract_keywords(body_text, _DATASET_KEYWORDS)
+        metrics = self._extract_keywords(body_text, _METRIC_KEYWORDS)
+
+        if methods:
+            sections["## 3.1 架构拆解"] = (
+                f"_检测到的方法/架构关键词：{', '.join(methods)}_\n\n{needs_ai}"
+            )
+        if datasets:
+            sections["## 5.1 数据集"] = (
+                f"_检测到的数据集关键词：{', '.join(datasets)}_\n\n{needs_ai}"
+            )
+        if metrics:
+            sections["## 5.2 基线对比"] = (
+                f"_检测到的评估指标关键词：{', '.join(metrics)}_\n\n{needs_ai}"
+            )
+
+        return PaperAnalysisResult(
+            paper_id=paper_id,
+            sections=sections,
+            rubric={k: 0 for k in _RUBRIC_KEYS},
+            extracted_methods=methods,
+            extracted_datasets=datasets,
+            extracted_metrics=metrics,
+            llm_used=False,
+        )
+
+    # ── Response parsing ─────────────────────────────────────────────────
+
+    def _parse_llm_response(self, raw: str) -> tuple[Dict[str, str], Dict[str, Any]]:
+        """Parse LLM markdown output into sections dict and rubric dict.
+
+        The LLM is expected to output:
+          ## N. Title
+          content...
+          ...
+          ```json
+          {"novelty": ..., "overall": "..."}
+          ```
+
+        Returns (sections_dict, rubric_dict).
+        """
+        sections: Dict[str, str] = {}
+        rubric: Dict[str, Any] = {}
+
+        # 1. Extract rubric JSON block first (might be in code fence)
+        rubric, remaining = self._extract_rubric(raw)
+
+        # 2. Parse sections from remaining text
+        self._parse_sections(remaining, sections)
+
+        return sections, rubric
+
+    def _extract_rubric(self, text: str) -> tuple[Dict[str, Any], str]:
+        """Extract rubric JSON from the end of text. Returns (rubric, text_without_rubric)."""
+        rubric: Dict[str, Any] = {}
+
+        # Try JSON code fence first
+        pattern = r"```(?:json)?\s*\n?(\{[\s\S]*?" + '"' + r"(?:novelty|overall)[\s\S]*?\})\s*\n?```"
+        m = re.search(pattern, text, re.IGNORECASE)
+        if m:
+            try:
+                rubric = json.loads(m.group(1))
+            except json.JSONDecodeError:
+                pass
+
+        if rubric:
+            # Remove the JSON block from text for section parsing
+            remaining = text[:m.start()].rstrip() + "\n" + text[m.end():].lstrip()
+            return rubric, remaining
+
+        # Try bare JSON at end of text
+        pattern = r"(\{(?:[^{}]|(?!\s*```)[^{}]*)*\})\s*$"
+        m = re.search(pattern, text, re.DOTALL)
+        if m:
+            try:
+                data = json.loads(m.group(1))
+                if "novelty" in data or "overall" in data:
+                    rubric = data
+                    remaining = text[:m.start()].rstrip()
+                    return rubric, remaining
+            except json.JSONDecodeError:
+                pass
+
+        return rubric, text
+
+    def _parse_sections(self, text: str, sections: Dict[str, str]) -> None:
+        """Parse section content from markdown text into sections dict."""
+        # Split on any `## ` heading — captures both `## 1. 背景` and `## 背景`
+        pattern = r"^(##\s+(?:\d+(?:\.\d+)?\.?\s*)?[^\n]+)"
+
+        parts = re.split(pattern, text, flags=re.MULTILINE)
+
+        # parts[0] is text before first heading (discard)
+        # Then alternating: heading, content, heading, content...
+        for i in range(1, len(parts), 2):
+            if i + 1 >= len(parts):
+                break
+            heading = parts[i].strip()
+            content = parts[i + 1].strip()
+
+            # Normalize heading for matching
+            norm_heading = self._normalize_heading(heading)
+
+            # Try to match against known section keys
+            matched_key = self._match_section_key(norm_heading)
+            if matched_key:
+                sections[matched_key] = content
+
+        # Also store raw heading-content pairs for unmatched sections
+        # (useful for __raw__ reconstruction)
+
+    @staticmethod
+    def _normalize_heading(heading: str) -> str:
+        """Normalize a heading for matching: strip ##, normalize whitespace."""
+        h = heading.strip()
+        if h.startswith("##"):
+            h = h[2:].strip()
+        # Collapse multiple spaces
+        h = re.sub(r"\s+", " ", h)
+        return h
+
+    def _match_section_key(self, norm: str) -> Optional[str]:
+        """Try to match a normalized heading against known section keys."""
+        # Direct match
+        for key in _SECTION_KEYS:
+            if norm.lower() == self._normalize_heading(key).lower():
+                return key
+
+        # Partial match (e.g., "背景" matches "## 1. 背景")
+        for key in _SECTION_KEYS:
+            key_norm = self._normalize_heading(key)
+            # Check if the core title part matches
+            if key_norm.split(". ", 1)[-1].lower() == norm.split(". ", 1)[-1].lower():
+                return key
+            # Or if one contains the other
+            if key_norm.lower() in norm.lower() or norm.lower() in key_norm.lower():
+                return key
+
+        return None
+
+    # ── Keyword extraction ───────────────────────────────────────────────
+
+    @staticmethod
+    def _extract_keywords(text: str, keywords: List[str]) -> List[str]:
+        """Extract known keywords from text, deduplicated in order."""
+        text_lower = text.lower()
+        found = []
+        seen: set = set()
+        for kw in keywords:
+            if kw in text_lower and kw not in seen:
+                found.append(kw)
+                seen.add(kw)
+        return found
