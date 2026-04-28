@@ -490,6 +490,9 @@ Rewrite as a standalone question (in the same language as the original question)
             ]
         resolved_question = self._rewrite_followup(question, history) if history else question
 
+        # Retrieve relevant contexts
+        contexts = self._retrieve(resolved_question, paper_id, concept, limit)
+
         if not contexts:
             return ChatResult(
                 answer="⚠️ 未找到相关论文。请确保：\n"
