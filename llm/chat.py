@@ -104,6 +104,15 @@ _QUERY_WEIGHTS = {
     QueryType.GENERAL:     0.40,  # 默认
 }
 
+# 查询类型 → MMR lambda（0.7=偏重相关度，0.5=平衡，0.3=偏重多样性）
+_MMR_LAMBDA = {
+    QueryType.FACTUAL:     0.8,   # 事实查询：相关度优先
+    QueryType.CONCEPTUAL:  0.6,   # 概念查询：适度多样性
+    QueryType.COMPARATIVE: 0.5,   # 比较查询：平衡相关度与多样性
+    QueryType.TEMPORAL:    0.7,   # 时序查询：相关度优先
+    QueryType.GENERAL:     0.6,   # 默认：适度多样性
+}
+
 
 # ─── Data Structures ──────────────────────────────────────────────────────────────
 
@@ -749,6 +758,10 @@ class RagChat:
         # Apply semantic reranking with query-type-adaptive weights
         results = self._semantic_rerank(query, results, query_type)
 
+        # Apply MMR diversity reranking (query-type-specific lambda)
+        mmr_lambda = _MMR_LAMBDA.get(query_type, 0.7)
+        results = self._mmr_rerank(results, limit, lambda_param=mmr_lambda)
+
         # Always apply adaptive boost from feedback history
         results = self._apply_adaptive_boost(results)
 
@@ -851,6 +864,89 @@ class RagChat:
             adjusted_results.append(result)
 
         return adjusted_results
+
+    def _mmr_rerank(self, results: list, limit: int, lambda_param: float = 0.7) -> list:
+        """
+        MMR (Maximum Marginal Relevance) reranking for diversity.
+
+        Balances relevance vs. diversity by penalizing results that are
+        too similar to already-selected results.
+
+        Args:
+            results: List of ranked results
+            limit: Max results to return
+            lambda_param: Trade-off (0.7 = relevance, 0.3 = diversity)
+
+        Returns:
+            Re-ranked list with diversity
+        """
+        if not results or len(results) <= 1:
+            return results[:limit]
+
+        try:
+            # Get embeddings for all candidates
+            paper_ids = [r.paper_id for r in results]
+            embeddings = self.db.get_embeddings_bulk(paper_ids)
+
+            # Filter to only papers with embeddings
+            valid_indices = [i for i, r in enumerate(results) if embeddings.get(r.paper_id)]
+            if len(valid_indices) < 2:
+                return results[:limit]
+
+            # Precompute norms
+            emb_norms = {}
+            for pid, emb in embeddings.items():
+                if emb:
+                    n = sum(x * x for x in emb) ** 0.5
+                    emb_norms[pid] = n if n > 0 else 1.0
+
+            selected = []
+            remaining = list(valid_indices)
+
+            # Greedy selection: pick best MMR score at each step
+            while remaining and len(selected) < limit:
+                best_idx = None
+                best_mmr = -float('inf')
+
+                for idx in remaining:
+                    r = results[idx]
+                    paper_emb = embeddings.get(r.paper_id)
+                    if paper_emb is None:
+                        continue
+
+                    # Relevance score
+                    relevance = abs(r.score) if r.score else 0.5
+
+                    # Max similarity to already selected (diversity penalty)
+                    max_sim = 0.0
+                    if selected and emb_norms.get(r.paper_id):
+                        norm_r = emb_norms[r.paper_id]
+                        for sel_idx in selected:
+                            sel_r = results[sel_idx]
+                            sel_emb = embeddings.get(sel_r.paper_id)
+                            if sel_emb and emb_norms.get(sel_r.paper_id):
+                                norm_s = emb_norms[sel_r.paper_id]
+                                dot = sum(a * b for a, b in zip(paper_emb, sel_emb))
+                                sim = dot / (norm_r * norm_s)
+                                max_sim = max(max_sim, sim)
+
+                    # MMR = lambda * relevance - (1 - lambda) * max_sim
+                    mmr = lambda_param * relevance - (1 - lambda_param) * max_sim
+
+                    if mmr > best_mmr:
+                        best_mmr = mmr
+                        best_idx = idx
+
+                if best_idx is not None:
+                    selected.append(best_idx)
+                    remaining.remove(best_idx)
+
+            # Return selected results in original order
+            return [results[i] for i in selected] if selected else results[:limit]
+
+        except Exception:
+            # Fallback to original order on error
+            return results[:limit]
 
     def _extract_snippet(self, text: str, query: str, context_chars: int = 500) -> Tuple[str, str, int, int]:
         """
