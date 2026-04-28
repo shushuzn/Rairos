@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime
 import os
 import sys
 import warnings
@@ -52,6 +53,10 @@ def _build_chat_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument(
         "--stream", action="store_true",
         help="Stream the response as it generates (for interactive mode)",
+    )
+    p.add_argument(
+        "--export", "-e", metavar="FILE",
+        help="Export chat history to Markdown file",
     )
     return p
 
@@ -188,6 +193,16 @@ def _run_single_question(chat, args) -> int:
         # Show suggested follow-up questions
         _show_suggestions(result, question=args.question)
 
+        # Export if requested
+        if args.export:
+            history = [{
+                "question": args.question,
+                "answer": result.answer,
+                "citations": result.citations or [],
+            }]
+            export_chat_to_markdown(history, args.export)
+            print(colored(f"✓ 已导出到 {args.export}", Colors.OKGREEN))
+
         return 0
 
     except Exception as e:
@@ -239,6 +254,22 @@ def _run_interactive(chat, args) -> int:
                     [c.paper_id for c in last.get("citations", [])],
                     "exited"
                 )
+                # Auto-export if file specified
+                if args.export:
+                    export_chat_to_markdown(history, args.export)
+                    print(colored(f"✓ 对话已导出到 {args.export}\n", Colors.OKGREEN))
+                else:
+                    # Prompt to export
+                    try:
+                        export_choice = input(
+                            colored("导出对话到 Markdown？(y/n): ", Colors.OKBLUE)
+                        ).strip().lower()
+                        if export_choice == "y":
+                            default_path = f"chat_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+                            export_chat_to_markdown(history, default_path)
+                            print(colored(f"✓ 对话已导出到 {default_path}\n", Colors.OKGREEN))
+                    except (EOFError, KeyboardInterrupt):
+                        pass
             print(colored("\n再会！记得回来继续探索你的论文库 🚀\n", Colors.OKBLUE))
             break
 
@@ -481,3 +512,51 @@ def _show_suggestions_legacy(result) -> None:
     except Exception:
         # Silently skip suggestions
         pass
+
+
+def export_chat_to_markdown(history: List[dict], filepath: str) -> bool:
+    """Export chat history to a Markdown file.
+
+    Args:
+        history: List of chat messages with question, answer, citations
+        filepath: Output file path
+
+    Returns:
+        True if export succeeded
+    """
+    import datetime
+
+    try:
+        with open(filepath, "w", encoding="utf-8") as f:
+            # Header
+            f.write("# AI Research OS — Chat Export\n\n")
+            f.write(f"**导出时间**: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            f.write("---\n\n")
+
+            # Each Q&A pair
+            for i, entry in enumerate(history, 1):
+                f.write(f"## Q{i}: {entry.get('question', '')}\n\n")
+
+                answer = entry.get('answer', '')
+                if answer:
+                    f.write(f"**A**: {answer}\n\n")
+
+                citations = entry.get('citations', [])
+                if citations:
+                    f.write("### 引用来源\n\n")
+                    for j, cite in enumerate(citations, 1):
+                        title = getattr(cite, 'paper_title', 'Unknown')
+                        pid = getattr(cite, 'paper_id', '')
+                        score = getattr(cite, 'relevance_score', 0)
+                        snippet = getattr(cite, 'snippet', '')[:200]
+                        f.write(f"**[{j}] {title}**  \n")
+                        f.write(f"ID: `{pid}` | 相关度: {score:.2f}\n\n")
+                        if snippet:
+                            f.write(f"> {snippet}...\n\n")
+
+                f.write("---\n\n")
+
+        return True
+    except Exception as e:
+        print_error(f"导出失败: {e}")
+        return False
