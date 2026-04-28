@@ -18,6 +18,7 @@ ai_research.db
 data/arxiv/
 data/research.db
 data/crossref/
+data/papers/
 .env
 
 # Claude settings
