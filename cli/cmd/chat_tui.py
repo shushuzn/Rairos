@@ -302,6 +302,15 @@ class TUIChatApp(App):
                 self._load_session_by_index(idx)
             return
 
+        # Handle /search command
+        if question.strip().startswith("/search "):
+            query = question.strip()[8:].strip()
+            if query:
+                self._search_sessions(query)
+            else:
+                self._update_status("用法: /search <关键词>")
+            return
+
         # Create session if not exists
         if not self.session_id:
             import uuid
@@ -547,6 +556,28 @@ class TUIChatApp(App):
             self._update_status(f"⚠️ 未找到会话: {idx}")
         except Exception as e:
             self._update_status(f"⚠️ 加载失败: {e}")
+
+    def _search_sessions(self, query: str) -> None:
+        """Search chat sessions by keyword."""
+        try:
+            results = self.chat.db.search_chat_sessions(query, limit=10)
+            if not results:
+                self._update_status(f"🔍 未找到包含 '{query}' 的会话")
+                return
+
+            lines = [f"🔍 搜索结果 ({len(results)}):", ""]
+            for i, s in enumerate(results, 1):
+                sid = s.get("id", "")[:8]
+                title = s.get("title", "无标题")[:30]
+                updated = s.get("updated_at", "")[:16]
+                lines.append(f"  {i}. [{sid}] {title}")
+                lines.append(f"      更新: {updated}")
+            lines.append("")
+            lines.append("输入 /load <编号> 加载会话")
+
+            self.notify("\n".join(lines), title=f"搜索: {query}", timeout=15)
+        except Exception as e:
+            self._update_status(f"⚠️ 搜索失败: {e}")
 
     def action_clear(self) -> None:
         self.messages.clear()

@@ -1970,6 +1970,27 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"delete_chat_session failed: {e}") from e
 
+    def search_chat_sessions(self, query: str, limit: int = 20) -> List[dict]:
+        """Search chat sessions by keyword in session title or message content."""
+        try:
+            q = f"%{query}%"
+            cur = self.conn.execute(
+                """
+                SELECT DISTINCT s.id, s.title, s.created_at, s.updated_at,
+                       MAX(m.created_at) as last_message_at
+                FROM chat_sessions s
+                LEFT JOIN chat_messages m ON m.session_id = s.id
+                WHERE s.title LIKE ? OR m.content LIKE ?
+                GROUP BY s.id
+                ORDER BY last_message_at DESC
+                LIMIT ?
+                """,
+                (q, q, limit),
+            )
+            return [dict(row) for row in cur.fetchall()]
+        except sqlite3.Error as e:
+            raise DatabaseError(f"search_chat_sessions failed: {e}") from e
+
     # ── Helpers ────────────────────────────────────────────────────────────────
 
 
