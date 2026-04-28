@@ -1898,6 +1898,78 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"get_embedding_stats failed: {e}") from e
 
+    # ── Chat Sessions ──────────────────────────────────────────────────────────
+
+    def create_chat_session(self, session_id: str, title: str = "") -> None:
+        """Create a new chat session."""
+        try:
+            now = _utcnow()
+            self.conn.execute(
+                "INSERT OR REPLACE INTO chat_sessions (id, title, created_at, updated_at) VALUES (?, ?, ?, ?)",
+                (session_id, title, now, now),
+            )
+            self.conn.commit()
+        except sqlite3.Error as e:
+            raise DatabaseError(f"create_chat_session failed: {e}") from e
+
+    def add_chat_message(
+        self,
+        session_id: str,
+        role: str,
+        content: str,
+        citations: List[dict] = None,
+    ) -> None:
+        """Add a message to a chat session."""
+        try:
+            now = _utcnow()
+            self.conn.execute(
+                "INSERT INTO chat_messages (session_id, role, content, citations, created_at) VALUES (?, ?, ?, ?, ?)",
+                (session_id, role, content, orjson.dumps(citations or []), now),
+            )
+            self.conn.execute(
+                "UPDATE chat_sessions SET updated_at = ? WHERE id = ?",
+                (now, session_id),
+            )
+            self.conn.commit()
+        except sqlite3.Error as e:
+            raise DatabaseError(f"add_chat_message failed: {e}") from e
+
+    def get_chat_sessions(self, limit: int = 20) -> List[dict]:
+        """Get recent chat sessions."""
+        try:
+            cur = self.conn.execute(
+                "SELECT id, title, created_at, updated_at FROM chat_sessions ORDER BY updated_at DESC LIMIT ?",
+                (limit,),
+            )
+            return [dict(row) for row in cur.fetchall()]
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_chat_sessions failed: {e}") from e
+
+    def get_chat_messages(self, session_id: str) -> List[dict]:
+        """Get all messages in a chat session."""
+        try:
+            cur = self.conn.execute(
+                "SELECT role, content, citations, created_at FROM chat_messages WHERE session_id = ? ORDER BY created_at",
+                (session_id,),
+            )
+            messages = []
+            for row in cur.fetchall():
+                d = dict(row)
+                d["citations"] = orjson.loads(d["citations"])
+                messages.append(d)
+            return messages
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_chat_messages failed: {e}") from e
+
+    def delete_chat_session(self, session_id: str) -> None:
+        """Delete a chat session and its messages."""
+        try:
+            self.conn.execute("DELETE FROM chat_messages WHERE session_id = ?", (session_id,))
+            self.conn.execute("DELETE FROM chat_sessions WHERE id = ?", (session_id,))
+            self.conn.commit()
+        except sqlite3.Error as e:
+            raise DatabaseError(f"delete_chat_session failed: {e}") from e
+
     # ── Helpers ────────────────────────────────────────────────────────────────
 
 

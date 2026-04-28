@@ -58,6 +58,10 @@ def _build_chat_parser(subparsers) -> argparse.ArgumentParser:
         "--export", "-e", metavar="FILE",
         help="Export chat history to Markdown file",
     )
+    p.add_argument(
+        "--session", "-s", metavar="ID",
+        help="Continue from a saved chat session",
+    )
     return p
 
 
@@ -232,6 +236,27 @@ def _run_interactive(chat, args) -> int:
     print()
 
     history: List[dict] = []
+    session_id = args.session
+
+    # Load previous session if specified
+    if session_id:
+        try:
+            prev_messages = chat.db.get_chat_messages(session_id)
+            if prev_messages:
+                print(colored(f"📂 已加载会话 {session_id}（{len(prev_messages)} 条消息）\n", Colors.OKBLUE))
+                for msg in prev_messages:
+                    role = "❓" if msg["role"] == "user" else "🤖"
+                    print(colored(f"{role} {msg['content'][:80]}...", Colors.OKBLUE))
+                    history.append({"question": msg["content"], "answer": "", "citations": []})
+                print()
+        except Exception:
+            print(colored("⚠️ 无法加载指定会话，将创建新会话\n", Colors.WARNING))
+
+    # Create session if not loading
+    if not session_id:
+        import uuid
+        session_id = str(uuid.uuid4())[:8]
+        chat.db.create_chat_session(session_id, "新对话")
 
     while True:
         try:
@@ -369,6 +394,17 @@ def _run_interactive(chat, args) -> int:
                 "answer": result.answer,
                 "citations": result.citations,
             })
+
+            # Persist to database
+            try:
+                citations_data = [
+                    {"paper_id": c.paper_id, "title": c.paper_title, "score": c.relevance_score}
+                    for c in result.citations
+                ] if result.citations else []
+                chat.db.add_chat_message(session_id, "user", question, [])
+                chat.db.add_chat_message(session_id, "assistant", result.answer, citations_data)
+            except Exception:
+                pass  # Non-critical, don't fail on DB errors
 
         except Exception as e:
             warnings.warn(f"Chat failed: {e}")

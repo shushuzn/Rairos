@@ -13,7 +13,7 @@ from typing import Callable, Final
 logger = logging.getLogger(__name__)
 
 # Current schema version — bump whenever you add a new migration.
-CURRENT_VERSION: Final[int] = 2
+CURRENT_VERSION: Final[int] = 3
 
 # Type alias for migration functions.
 Migration = Callable[[sqlite3.Connection], None]
@@ -88,9 +88,36 @@ def _m2_add_reading_status(conn: sqlite3.Connection) -> None:
 
 
 # Registry — key = version this migration brings you TO
+def _m3_add_chat_sessions(conn: sqlite3.Connection) -> None:
+    """Migration 3: Add chat sessions for persistent conversation history."""
+    conn.executescript("""
+        CREATE TABLE IF NOT EXISTS chat_sessions (
+            id            TEXT PRIMARY KEY,
+            title         TEXT DEFAULT '',
+            created_at    TEXT NOT NULL,
+            updated_at    TEXT NOT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_chat_sessions_updated ON chat_sessions(updated_at);
+
+        CREATE TABLE IF NOT EXISTS chat_messages (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id    TEXT NOT NULL,
+            role          TEXT NOT NULL,
+            content       TEXT NOT NULL,
+            citations     TEXT DEFAULT '[]',
+            created_at    TEXT NOT NULL,
+            FOREIGN KEY (session_id) REFERENCES chat_sessions(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_chat_messages_session ON chat_messages(session_id);
+    """)
+
+
 _MIGRATIONS: dict[int, Migration] = {
     1: _m1_add_citations_and_tables,
     2: _m2_add_reading_status,
+    3: _m3_add_chat_sessions,
 }
 
 
