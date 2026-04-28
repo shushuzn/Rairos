@@ -1029,6 +1029,40 @@ class RagChat:
 
         return ""
 
+    def _compress_snippet(self, text: str, max_chars: int = 400) -> str:
+        """
+        Compress snippet to reduce token count while preserving key information.
+
+        Strategy:
+        - Remove redundant whitespace and line breaks
+        - Truncate at sentence boundaries when possible
+        - Preserve the first sentence (usually contains the key claim)
+        """
+        if not text:
+            return ""
+
+        # Strip and normalize whitespace
+        text = re.sub(r'\s+', ' ', text).strip()
+
+        # If already short enough, return as-is
+        if len(text) <= max_chars:
+            return text
+
+        # Try to truncate at sentence boundary
+        sentences = re.split(r'(?<=[。！？.!?])', text)
+        result = ""
+        for sent in sentences:
+            if len(result) + len(sent) <= max_chars:
+                result += sent
+            else:
+                break
+
+        # If no sentences fit, truncate with ellipsis
+        if not result:
+            result = text[:max_chars - 3] + "..."
+
+        return result
+
     def _build_prompt(self, question: str, contexts: List[ChatContext]) -> str:
         """Build RAG prompt with retrieved contexts."""
         # Group contexts by paper
@@ -1038,11 +1072,13 @@ class RagChat:
                 paper_contexts[ctx.paper_id] = []
             paper_contexts[ctx.paper_id].append(ctx)
 
-        # Build context text
+        # Build context text with compression
         context_parts = []
         for paper_id, ctxs in paper_contexts.items():
             ctx = ctxs[0]  # Use most relevant snippet
-            snippets = "\n\n".join([f"> {c.snippet}" for c in ctxs[:2]])
+            # Compress snippets to reduce token count
+            compressed = self._compress_snippet(ctx.snippet, max_chars=400)
+            snippets = "\n\n".join([f"> {self._compress_snippet(c.snippet, max_chars=300)}" for c in ctxs[:2]])
             context_parts.append(
                 f"【论文】{ctx.paper_title}\n"
                 f"作者：{', '.join(ctx.authors[:3]) if ctx.authors else 'Unknown'}\n"
