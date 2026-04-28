@@ -21,7 +21,10 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pdf.extract import StructuredPdfContent
 
 from core import Paper
 
@@ -101,6 +104,7 @@ class ResearchDeepDivePipeline:
         pnote_path: Optional[Path] = None,
         stages: Optional[List[PostStage]] = None,
         llm_config: Optional[Dict[str, Any]] = None,
+        structured_content: Optional["StructuredPdfContent"] = None,
     ) -> PostProcessingResult:
         """Run the post-processing pipeline.
 
@@ -114,6 +118,7 @@ class ResearchDeepDivePipeline:
             stages: Subset of stages to run (default: all).
             llm_config: LLM configuration dict with keys:
                 api_key, base_url, model, timeout.
+            structured_content: Optional structured PDF content for citation-grounded analysis.
 
         Returns:
             PostProcessingResult with per-stage outcomes.
@@ -151,7 +156,12 @@ class ResearchDeepDivePipeline:
                     tags=tags,
                     authors=authors,
                     use_llm=use_llm,
+                    structured_content=structured_content,
                 )
+
+                # Verify citation claims if structured content available
+                if structured_content and analysis.llm_used:
+                    analysis = analyzer.verify_claims(analysis, structured_content)
                 sections_dict = analysis.sections
                 rubric_dict = analysis.rubric
                 sr.success = True
