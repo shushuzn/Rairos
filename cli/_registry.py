@@ -76,6 +76,7 @@ _SUBCOMMAND_TABLE = [
     ("subscribe",      "cli.cmd.subscribe",            "_build_subscribe_parser"),
     ("litreview",      "cli.cmd.litreview",            "_build_litreview_parser"),
     ("benchmark",      "cli.cmd.benchmark",            "_build_benchmark_parser"),
+    ("postprocess",    "cli.cmd.postprocess",           "_build_postprocess_parser"),
 ]
 SUBCOMMANDS = {name for name, _, _ in _SUBCOMMAND_TABLE}
 
@@ -174,6 +175,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "subscribe": "_run_subscribe",
         "litreview": "_run_litreview",
         "benchmark": "_run_benchmark",
+        "postprocess": "_run_postprocess",
     }
     if args.subcmd in dispatch:
         import cli as _cli
@@ -210,7 +212,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
 def _main_legacy(argv: Optional[List[str]] = None) -> int:
     """Legacy single-argument flow (arxiv ID/DOI directly)."""
-    from cli._shared import print_error
+    from cli._shared import print_error, print_info, print_warning
     from parsers.input_detection import is_probably_doi, normalize_arxiv_id, normalize_doi
     from parsers.arxiv import fetch_arxiv_metadata
     from parsers.crossref import fetch_crossref_metadata
@@ -363,5 +365,29 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
             pnote_path.write_text(updated, encoding="utf-8")
         else:
             print_warning("OPENAI_API_KEY not set, skipping AI draft")
+
+    # ── Auto-trigger: post-processing pipeline ──────────────────────────
+    # Runs after every paper ingestion; gracefully degrades without LLM.
+    try:
+        from llm.postprocess import ResearchDeepDivePipeline, make_llm_config
+
+        pipeline = ResearchDeepDivePipeline(db=db, data_dir=root)
+        pl_config = make_llm_config()
+        pl_result = pipeline.run(
+            paper_id=paper.pid,
+            extracted_text=extracted_text,
+            paper=paper,
+            tags=tags,
+            pnote_path=pnote_path,
+            llm_config=pl_config,
+        )
+        if pl_result.stages_completed:
+            print_info(f"Deep dive OK: {', '.join(pl_result.stages_completed)}")
+        if pl_result.stages_failed:
+            print_warning(f"Deep dive issues: {', '.join(pl_result.stages_failed)}")
+    except ImportError:
+        pass  # postprocess module not available yet
+    except Exception as e:
+        print_warning(f"Deep dive pipeline error: {e}")
 
     return 0
