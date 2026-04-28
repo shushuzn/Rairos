@@ -10,9 +10,13 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from build.lib.pdf.extract import StructuredPdfContent, TextBlock
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +80,20 @@ class PaperAnalysisResult:
     extracted_metrics: List[str] = field(default_factory=list)
     raw_llm_output: str = ""
     llm_used: bool = False
+    # Citation-grounded analysis
+    claims: List["CitationClaim"] = field(default_factory=list)
+    unverified_claims: List["CitationClaim"] = field(default_factory=list)
+
+
+@dataclass
+class CitationClaim:
+    """A single claim in the analysis linked to source text."""
+    text: str  # The claim text
+    page: int  # 0-indexed page number in original PDF
+    block_idx: int  # Index within the page's text blocks
+    chunk_text: str  # The source text this claim refers to
+    verified: bool = False  # True if source text actually supports the claim
+    verification_note: str = ""  # Why it failed verification, if any
 
 
 # ── LLM prompts ──────────────────────────────────────────────────────────────
@@ -89,7 +107,7 @@ _SYSTEM_PROMPT = """你是一个严谨的 AI 研究助理，擅长对抗式审�
 2. 内容必须基于论文原文；不确定的加 [推测] 标注
 3. 禁止捏造实验/数据/结果
 4. 输出中文 Markdown
-5. 每项 Claims 引用原文支撑
+5. 每条关键陈述必须标注来源页码，格式为 [Page N]，N 为页码数字
 6. 末尾输出 JSON 评分块（见评分量表说明）
 
 评分量表：
@@ -107,8 +125,10 @@ _USER_PROMPT_TEMPLATE = """论文标题：{title}
 【Abstract】
 {abstract}
 
-【抽取正文片段】
+【抽取正文片段（已标注页码）】
 {body}
+
+**重要：每条关键陈述必须标注来源页码，格式为 [Page N]，如 "Transformer 使用多头注意力机制 [Page 3]"**
 
 请按以下章节生成初稿，使用 `## N. 标题` 格式（N 和标题必须与以下列表完全一致）：
 
@@ -172,6 +192,7 @@ class PaperAnalyzer:
         tags: Optional[List[str]] = None,
         authors: Optional[List[str]] = None,
         use_llm: bool = True,
+        structured_content: Optional["StructuredPdfContent"] = None,
     ) -> PaperAnalysisResult:
         """Analyze a paper and produce structured section content.
 
@@ -183,13 +204,15 @@ class PaperAnalyzer:
             tags: Paper tags.
             authors: Paper authors.
             use_llm: Whether to attempt LLM-powered analysis.
+            structured_content: Optional structured PDF content with page-annotated blocks.
 
         Returns:
-            PaperAnalysisResult with sections, rubric, and extracted keywords.
+            PaperAnalysisResult with sections, rubric, extracted keywords, and citation claims.
         """
         if use_llm and self.llm_config.get("api_key"):
             return self._analyze_with_llm(
                 paper_id, title, abstract, body_text, tags or [], authors,
+                structured_content,
             )
         return self._analyze_fallback(
             paper_id, title, abstract, body_text, tags or [],
@@ -205,6 +228,7 @@ class PaperAnalyzer:
         body_text: str,
         tags: List[str],
         authors: Optional[List[str]] = None,
+        structured_content: Optional["StructuredPdfContent"] = None,
     ) -> PaperAnalysisResult:
         from llm.client import call_llm_chat_completions
 
@@ -212,12 +236,18 @@ class PaperAnalyzer:
         authors_str = ", ".join(authors) if authors else "Unknown"
         tags_str = ", ".join(tags) if tags else ""
 
+        # Use page-annotated body if structured content is available
+        if structured_content:
+            body = self._build_page_annotated_body(structured_content)
+        else:
+            body = body_text
+
         prompt = _USER_PROMPT_TEMPLATE.format(
             title=title,
             authors=authors_str,
             tags=tags_str,
             abstract=abstract or "(空)",
-            body=body_text,
+            body=body,
         )
 
         raw = call_llm_chat_completions(
@@ -421,3 +451,145 @@ class PaperAnalyzer:
                 found.append(kw)
                 seen.add(kw)
         return found
+
+    # ── Citation grounding ───────────────────────────────────────────────
+
+    def _build_page_annotated_body(self, content: "StructuredPdfContent") -> str:
+        """Build page-annotated body text for LLM context."""
+        parts: List[str] = []
+        for block in content.blocks:
+            if block.type.value in ("text", "heading"):
+                page_label = f"[Page {block.page + 1}]"
+                parts.append(f"{page_label} {block.text}")
+        return "\n\n".join(parts)
+
+    def verify_claims(self, result: PaperAnalysisResult, content: "StructuredPdfContent") -> PaperAnalysisResult:
+        """Verify each citation claim against source text blocks.
+
+        Uses Ollama embedding (nomic-embed-text) for semantic similarity when available,
+        falls back to word-overlap scoring otherwise.
+
+        Args:
+            result: PaperAnalysisResult with sections containing [Page N] citations.
+            content: Source StructuredPdfContent to verify against.
+
+        Returns:
+            Updated PaperAnalysisResult with claims and unverified_claims populated.
+        """
+        import re, json, urllib.request
+
+        # ── Embedding helpers ──────────────────────────────────────────
+        def _get_embedding(text: str) -> Optional[List[float]]:
+            """Get embedding from Ollama nomic-embed-text, cached."""
+            cache_key = text[:200]
+            if cache_key in _embed_cache:
+                return _embed_cache[cache_key]
+            try:
+                req = urllib.request.Request(
+                    "http://localhost:11434/api/embeddings",
+                    data=json.dumps({"model": "nomic-embed-text", "prompt": text}).encode(),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                with urllib.request.urlopen(req, timeout=60) as resp:
+                    data = json.loads(resp.read())
+                    emb = data.get("embedding")
+                    if emb:
+                        _embed_cache[cache_key] = emb
+                    return emb
+            except Exception:
+                return None
+
+        def _cosine_sim(a: List[float], b: List[float]) -> float:
+            dot = sum(x * y for x, y in zip(a, b))
+            norm_a = math.sqrt(sum(x * x for x in a))
+            norm_b = math.sqrt(sum(y * y for y in b))
+            if norm_a == 0 or norm_b == 0:
+                return 0.0
+            return dot / (norm_a * norm_b)
+
+        def _word_overlap(claim: str, source: str) -> float:
+            """Return overlap ratio 0-1."""
+            claim_words = set(claim.lower().split())
+            source_words = set(source.lower().split())
+            if not claim_words:
+                return 0.0
+            overlap = claim_words & source_words
+            return len(overlap) / len(claim_words)
+
+        # ── Build page index ───────────────────────────────────────────
+        page_blocks: Dict[int, List[tuple[int, str]]] = {}
+        for idx, block in enumerate(content.blocks):
+            if block.page not in page_blocks:
+                page_blocks[block.page] = []
+            page_blocks[block.page].append((idx, block.text))
+
+        # Try to use embedding (may be unavailable — that's OK)
+        _embed_cache: Dict[str, List[float]] = {}
+        use_embedding = True
+
+        # Quick probe: try one embedding to see if Ollama is up
+        if _get_embedding("test") is None:
+            use_embedding = False
+
+        # ── Extract and verify claims ───────────────────────────────────
+        claim_pattern = re.compile(r"\[Page\s+(\d+)\]\s*([^.\n]+(?:[.\n][^.\n]+)*)")
+
+        for section_key, section_text in result.sections.items():
+            for m in claim_pattern.finditer(section_text):
+                page_ref = int(m.group(1)) - 1  # 0-indexed
+                claim_text = m.group(2).strip()
+
+                verified = False
+                matched_block_idx = -1
+                matched_chunk = ""
+                best_score = 0.0
+
+                if page_ref in page_blocks:
+                    for block_idx, block_text in page_blocks[page_ref]:
+                        if use_embedding:
+                            claim_emb = _get_embedding(claim_text[:500])
+                            source_emb = _get_embedding(block_text[:500])
+                            if claim_emb and source_emb:
+                                score = _cosine_sim(claim_emb, source_emb)
+                                if score >= 0.7:
+                                    verified = True
+                                    best_score = score
+                                    matched_block_idx = block_idx
+                                    matched_chunk = block_text[:200]
+                                    break
+                            # Fall through to word overlap below if embeddings failed
+                            overlap_score = _word_overlap(claim_text, block_text)
+                            if overlap_score >= 0.3:
+                                verified = True
+                                best_score = overlap_score
+                                matched_block_idx = block_idx
+                                matched_chunk = block_text[:200]
+                                break
+                        else:
+                            # Pure word-overlap fallback
+                            overlap_score = _word_overlap(claim_text, block_text)
+                            if overlap_score >= 0.3 or (
+                                len(set(claim_text.lower().split()) & set(block_text.lower().split())) >= 3
+                            ):
+                                verified = True
+                                best_score = overlap_score
+                                matched_block_idx = block_idx
+                                matched_chunk = block_text[:200]
+                                break
+
+                citation = CitationClaim(
+                    text=claim_text,
+                    page=page_ref,
+                    block_idx=matched_block_idx,
+                    chunk_text=matched_chunk,
+                    verified=verified,
+                    verification_note=f"Verified (score={best_score:.2f})" if verified else "No matching source text found",
+                )
+
+                if verified:
+                    result.claims.append(citation)
+                else:
+                    result.unverified_claims.append(citation)
+
+        return result
