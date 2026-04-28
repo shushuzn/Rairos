@@ -954,6 +954,18 @@ class TUIChatApp(App):
         color: #f1fa8c;
     }
 
+    /* ── Selected message ── */
+    .selected {
+        background: #2a2a44;
+        border: solid #bd93f9;
+    }
+
+    /* ── Nav hint ── */
+    #nav-hint {
+        color: #6272a4;
+        padding: 0 2;
+    }
+
     /* ── Streaming animation ── */
     .ai-msg.streaming {
         color: #8be9fd;
@@ -995,6 +1007,11 @@ class TUIChatApp(App):
         Binding("ctrl+n", "new_session", "New", show=False),
         Binding("ctrl+k", "command_palette", "Cmd", show=False),
         Binding("tab", "complete_command", "Tab", show=False),
+        Binding("up", "select_prev_message", "↑", show=False),
+        Binding("down", "select_next_message", "↓", show=False),
+        Binding("enter", "activate_message", "Enter", show=False),
+        Binding("c", "copy_selected", "Copy", show=False),
+        Binding("e", "edit_selected", "Edit", show=False),
     ]
 
     def __init__(
@@ -1021,6 +1038,7 @@ class TUIChatApp(App):
         self._loading = LoadingDots()
         self._stream_config = StreamConfig()
         self._suggestions: List[str] = []
+        self._selected_msg_idx: int = -1  # For keyboard navigation
 
     # ── App lifecycle ──────────────────────────────────────────────────────
 
@@ -1048,6 +1066,7 @@ class TUIChatApp(App):
             yield Button("📜 历史", id="btn-history", variant="primary", classes="action-btn")
             yield Button("🆕 新建", id="btn-new", variant="primary", classes="action-btn")
             yield Button("💾 导出", id="btn-export", variant="primary", classes="action-btn")
+        yield Static("❯ 输入问题开始对话  |  ↑↓ 选择消息  c=复制  e=编辑", id="nav-hint")
         yield Static("❯ 输入问题开始对话", id="status-bar")
         # Progress bar for streaming
         yield Static("", id="progress-bar")
@@ -1299,6 +1318,10 @@ class TUIChatApp(App):
             for msg in self.messages:
                 bubble = ChatBubble(msg, self._stream_config)
                 container.mount(bubble)
+
+            # Reset selection when messages change
+            self._selected_msg_idx = -1
+            self._update_nav_hint()
         except NoMatches:
             pass
 
@@ -1393,6 +1416,9 @@ class TUIChatApp(App):
             "💾 导出: Ctrl+S\n"
             "🗑️ 清屏: Ctrl+L\n"
             "↹ Tab   补全命令\n"
+            "↑↓      选择消息\n"
+            "c       复制选中\n"
+            "e       编辑选中\n"
             "🚪 退出: q\n\n"
             "🔧 斜杠命令:\n"
             "  /sessions  查看会话\n"
@@ -1404,6 +1430,145 @@ class TUIChatApp(App):
             title="快捷操作",
             timeout=8,
         )
+
+    # ── Keyboard Navigation ─────────────────────────────────────────────────
+
+    def action_select_prev_message(self) -> None:
+        """Select previous message in history."""
+        if not self.messages:
+            return
+
+        # If input has content, don't navigate (normal up arrow behavior)
+        try:
+            inp = self.query_one("#chat-input")
+            if inp.value:
+                return
+        except NoMatches:
+            pass
+
+        # Navigate through messages (AI messages only)
+        ai_msg_indices = [i for i, m in enumerate(self.messages) if m.role == "assistant"]
+
+        if not ai_msg_indices:
+            return
+
+        # Move selection
+        if self._selected_msg_idx < 0:
+            self._selected_msg_idx = len(ai_msg_indices) - 1
+        else:
+            idx_in_list = ai_msg_indices.index(self._selected_msg_idx) if self._selected_msg_idx in ai_msg_indices else 0
+            idx_in_list = max(0, idx_in_list - 1)
+            self._selected_msg_idx = ai_msg_indices[idx_in_list]
+
+        self._render_messages_with_selection()
+        self._update_nav_hint(f"已选中第 {ai_msg_indices.index(self._selected_msg_idx) + 1}/{len(ai_msg_indices)} 条回复")
+
+    def action_select_next_message(self) -> None:
+        """Select next message in history."""
+        if not self.messages:
+            return
+
+        # If input has content, don't navigate
+        try:
+            inp = self.query_one("#chat-input")
+            if inp.value:
+                return
+        except NoMatches:
+            pass
+
+        ai_msg_indices = [i for i, m in enumerate(self.messages) if m.role == "assistant"]
+
+        if not ai_msg_indices:
+            return
+
+        if self._selected_msg_idx < 0:
+            self._selected_msg_idx = ai_msg_indices[0]
+        else:
+            idx_in_list = ai_msg_indices.index(self._selected_msg_idx) if self._selected_msg_idx in ai_msg_indices else -1
+            idx_in_list = min(len(ai_msg_indices) - 1, idx_in_list + 1)
+            self._selected_msg_idx = ai_msg_indices[idx_in_list]
+
+        self._render_messages_with_selection()
+        self._update_nav_hint(f"已选中第 {ai_msg_indices.index(self._selected_msg_idx) + 1}/{len(ai_msg_indices)} 条回复")
+
+    def action_activate_message(self) -> None:
+        """Handle Enter - deselect when no selection, otherwise focus input."""
+        if self._selected_msg_idx >= 0:
+            self._selected_msg_idx = -1
+            self._render_messages()
+            self._update_nav_hint("已取消选择")
+            try:
+                self.query_one("#chat-input").focus()
+            except NoMatches:
+                pass
+
+    def action_copy_selected(self) -> None:
+        """Copy selected message content to clipboard."""
+        if self._selected_msg_idx < 0 or self._selected_msg_idx >= len(self.messages):
+            self._update_status("⚠️ 没有选中的消息 (用↑↓选择)")
+            return
+
+        msg = self.messages[self._selected_msg_idx]
+        content = msg.content[:500] + "..." if len(msg.content) > 500 else msg.content
+
+        try:
+            import pyperclip
+            pyperclip.copy(content)
+            self._update_status(f"✅ 已复制到剪贴板 ({len(content)} 字符)")
+        except ImportError:
+            # Fallback: show content in notification
+            self.notify(f"📋 消息内容:\n\n{content[:300]}...", title="复制内容", timeout=5)
+            self._update_status("📋 已显示消息内容（pyperclip未安装）")
+
+    def action_edit_selected(self) -> None:
+        """Edit selected message by copying to input."""
+        if self._selected_msg_idx < 0 or self._selected_msg_idx >= len(self.messages):
+            self._update_status("⚠️ 没有选中的消息 (用↑↓选择)")
+            return
+
+        msg = self.messages[self._selected_msg_idx]
+        if msg.role == "assistant":
+            self._update_status("⚠️ 只能编辑用户消息")
+            return
+
+        try:
+            inp = self.query_one("#chat-input")
+            inp.value = msg.content
+            inp.focus()
+            self._selected_msg_idx = -1
+            self._render_messages()
+            self._update_status("✏️ 已复制到输入框，可编辑后发送")
+        except NoMatches:
+            pass
+
+    def _render_messages_with_selection(self) -> None:
+        """Render messages with selection highlight."""
+        try:
+            container = self.query_one("#messages")
+            for w in container.query("ChatBubble"):
+                w.remove()
+
+            for i, msg in enumerate(self.messages):
+                is_streaming = (i == len(self.messages) - 1 and self._streaming)
+                bubble = ChatBubble(msg, self._stream_config, is_streaming=is_streaming)
+                if i == self._selected_msg_idx:
+                    bubble.add_class("selected")
+                container.mount(bubble)
+
+            self.scroll_messages_to_bottom()
+        except NoMatches:
+            pass
+
+    def _update_nav_hint(self, text: str = None) -> None:
+        """Update navigation hint bar."""
+        try:
+            hint = self.query_one("#nav-hint")
+            if text:
+                hint.update(colored(f"❯ {text}  |  ↑↓ 选择  c=复制  e=编辑", Colors.OKBLUE))
+            else:
+                hint.update(colored("❯ 输入问题开始对话  |  ↑↓ 选择消息  c=复制  e=编辑", Colors.WARNING))
+        except NoMatches:
+            pass
 
     # ── Command Completion ────────────────────────────────────────────────────
 
