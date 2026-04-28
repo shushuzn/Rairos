@@ -4,23 +4,36 @@ Provides natural language Q&A over your paper corpus with source citation.
 """
 from __future__ import annotations
 
+import hashlib
 import os
 import re
 from dataclasses import dataclass, field
 from enum import Enum
+from functools import lru_cache
 from typing import Any, Callable, List, Optional, Tuple
 
 import json
 import urllib.request
-from typing import List, Optional
 
 from llm.client import call_llm_chat_completions, stream_llm_chat_completions
 from llm.constants import LLM_BASE_URL, LLM_MODEL
 from llm.research_session import get_session_tracker
 
 
+# LRU cache for embedding lookups (avoids redundant Ollama API calls)
+_EMBEDDING_CACHE: dict[str, Optional[List[float]]] = {}
+_EMBEDDING_CACHE_MAX = 1000
+
+
 def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optional[List[float]]:
-    """Fetch embedding from local Ollama. Returns None on failure."""
+    """Fetch embedding from local Ollama with LRU caching. Returns None on failure."""
+    # Normalize text: lowercase, strip whitespace for consistent cache keys
+    cache_key = hashlib.md5(f"{model}:{text.strip()}".encode()).hexdigest()
+
+    # Check cache first
+    if cache_key in _EMBEDDING_CACHE:
+        return _EMBEDDING_CACHE[cache_key]
+
     try:
         req = urllib.request.Request(
             "http://localhost:11434/api/embeddings",
@@ -30,9 +43,23 @@ def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optiona
         )
         with urllib.request.urlopen(req, timeout=60) as resp:
             data = json.loads(resp.read())
-            return data.get("embedding")
+            embedding = data.get("embedding")
+            # Cache the result (with LRU eviction)
+            if len(_EMBEDDING_CACHE) >= _EMBEDDING_CACHE_MAX:
+                # Remove oldest entry (first item in dict - insertion order maintained)
+                _EMBEDDING_CACHE.pop(next(iter(_EMBEDDING_CACHE)))
+            _EMBEDDING_CACHE[cache_key] = embedding
+            return embedding
     except Exception:
+        _EMBEDDING_CACHE[cache_key] = None  # Cache failures too
         return None
+
+
+def clear_embedding_cache() -> int:
+    """Clear the embedding cache. Returns number of entries cleared."""
+    count = len(_EMBEDDING_CACHE)
+    _EMBEDDING_CACHE.clear()
+    return count
 
 
 # ------------------------------------------------------------------
