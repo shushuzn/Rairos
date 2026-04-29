@@ -5,6 +5,7 @@ import argparse
 import orjson as json
 
 from cli._shared import get_db
+from cli.warp import WarpBlocks
 
 
 def _build_cache_parser(subparsers) -> argparse.ArgumentParser:
@@ -26,17 +27,33 @@ def _run_cache(args: argparse.Namespace) -> int:
         if args.llm_clear:
             clear_llm_cache()
             reset_cache_stats()
-            print("LLM cache cleared")
+            print(WarpBlocks.panel("Cache", "[#B4FA72]✓[/] LLM response cache cleared"))
         elif args.llm:
             size = get_llm_cache_size()
             disk_stats = _cache_stats()
             hit_stats = get_cache_stats()
-            print("LLM Response Cache:")
-            print(f"  Entries:    {disk_stats.get('entries', size)}")
-            print(f"  Expired:    {disk_stats.get('expired', 0)}")
-            print(f"  Hits:       {hit_stats.get('hits', 0)}")
-            print(f"  Misses:     {hit_stats.get('misses', 0)}")
-            print(f"  Hit Rate:   {hit_stats.get('hit_rate', 0)}%")
+            entries = disk_stats.get('entries', size)
+            expired = disk_stats.get('expired', 0)
+            hits = hit_stats.get('hits', 0)
+            misses = hit_stats.get('misses', 0)
+            hit_rate = hit_stats.get('hit_rate', 0)
+
+            # Color-coded hit rate
+            if hit_rate >= 80:
+                rate_color = "[#B4FA72]✓ {hit_rate}%[/]"
+            elif hit_rate >= 50:
+                rate_color = "[#FEFDC2]⚠ {hit_rate}%[/]"
+            else:
+                rate_color = "[#FF5555]✗ {hit_rate}%[/]"
+
+            print(WarpBlocks.panel(
+                "LLM Response Cache",
+                f"""  Entries:    [#A5D5FE]{entries}[/]
+  Expired:    [#8E8E8E]{expired}[/]
+  Hits:       [#B4FA72]{hits}[/]
+  Misses:     [#FF8272]{misses}[/]
+  Hit Rate:   {rate_color.format(hit_rate=hit_rate)}"""
+            ))
         return 0
 
     db = get_db()
