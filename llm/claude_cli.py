@@ -9,7 +9,6 @@ Usage:
     response = client.chat("What is RAG?", model="claude-3-5-sonnet-latest")
 """
 import json
-import os
 import subprocess
 import sys
 from typing import Optional
@@ -114,14 +113,14 @@ class ClaudeCLIClient:
                 return output
 
         except subprocess.TimeoutExpired:
-            raise RuntimeError("Claude CLI timed out after 120 seconds")
+            raise RuntimeError("Claude CLI timed out after 120 seconds") from None
         except FileNotFoundError:
             raise RuntimeError(
                 f"Claude CLI not found at '{self.cli_path}'. "
                 "Please install Claude Code: npm i -g @anthropic-ai/claude-code"
-            )
+            ) from None
         except Exception as e:
-            raise RuntimeError(f"Claude CLI call failed: {e}")
+            raise RuntimeError(f"Claude CLI call failed: {e}") from e
 
     def is_available(self) -> bool:
         """Check if Claude CLI is available and working.

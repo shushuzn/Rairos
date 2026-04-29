@@ -1,5 +1,5 @@
 """Unit tests for similar CLI subcommand — semantic similarity search."""
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 class FakeArgs:

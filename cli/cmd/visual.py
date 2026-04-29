@@ -14,7 +14,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-import click
 from pdf.visual import VisualExtractor
 from db.database import Database, ExperimentTableRecord
 from cli._shared import print_success, print_error, print_info

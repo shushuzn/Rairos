@@ -213,7 +213,7 @@ def _build_read_queue_parser(subparsers) -> argparse.ArgumentParser:
         help="Minimum semantic similarity threshold (default: 0.0)",
     )
     p.add_argument(
-        "--format", choices=["table", "json", "score-breakdown"], default="table",
+        "--format", choices=["table", "json", "score-breakdown", "warp"], default="table",
         help="Output format (default: table)",
     )
     p.add_argument(
@@ -415,7 +415,26 @@ def _run_read_queue(args: argparse.Namespace) -> int:
                     warnings.warn(f"LLM explanation failed for {r.paper_id}: {e}", stacklevel=2)
                     explanations[r.paper_id] = None
 
-    if args.format == "json":
+    if args.format == "warp":
+        from cli.warp import WarpBlocks
+        rows = []
+        for i, r in enumerate(results, 1):
+            bar_len = int(r.score * 20)
+            bar = "█" * bar_len + "░" * (20 - bar_len)
+            rows.append([str(i), f"[{bar}] {r.score:.2f}", r.paper_id, r.title[:45]])
+        print(WarpBlocks.table(
+            ["#", "Score", "Paper ID", "Title"],
+            rows,
+            title=f"📖 Reading Queue — {len(results)} papers",
+        ))
+        if args.explain:
+            for r in results:
+                if explanations.get(r.paper_id):
+                    print(WarpBlocks.panel(
+                        f"💡 {r.paper_id} — Why read this?",
+                        explanations[r.paper_id].strip(),
+                    ))
+    elif args.format == "json":
         import json
         output = [{
             "paper_id": r.paper_id,
