@@ -8,12 +8,12 @@ import sys as _sys
 import orjson as json
 
 from cli._shared import get_db
-
 from cli._shared import (
     Colors,
     colored,
     print_success,
 )
+from cli.warp import WarpBlocks
 
 
 def _build_search_parser(subparsers) -> argparse.ArgumentParser:
@@ -37,7 +37,7 @@ Examples:
 
     p.add_argument("--offset", type=int, default=0, help="Skip N results")
 
-    p.add_argument("--format", choices=["table", "json", "csv"], default="table")
+    p.add_argument("--format", choices=["table", "json", "csv", "warp"], default="table")
 
     p.add_argument("--source", default="", help="Filter by source (e.g. arxiv, doi)")
 
@@ -90,6 +90,9 @@ def _run_search(args: argparse.Namespace) -> int:
             writer.writerow([r.paper_id, r.title, r.authors, r.published, r.primary_category,
                              round(r.score, 3) if r.score else "", r.snippet, r.source, r.abs_url, r.parse_status or ""])
 
+    elif args.format == "warp":
+        _run_search_warp(results, total)
+
     else:
         print_success(f"Found {total} papers, showing {len(results)}:")
         print()
@@ -103,3 +106,35 @@ def _run_search(args: argparse.Namespace) -> int:
             print()
 
     return 0
+
+
+def _run_search_warp(results, total) -> None:
+    """Render search results using Warp-style blocks."""
+    blocks = []
+
+    # Header with count
+    blocks.append(WarpBlocks.panel(
+        f"Search Results",
+        f"Showing {len(results)} of {total} papers",
+    ))
+
+    if not results:
+        blocks.append(WarpBlocks.section("No Results", "No papers matched your query."))
+        print("\n\n".join(blocks))
+        return
+
+    # Results as individual panels
+    for r in results:
+        score_str = f"{r.score:.2f}" if r.score else "N/A"
+        meta_lines = [
+            f"{colored(r.authors, Colors.OKBLUE)}",
+            f"{r.published} · {colored(r.source, Colors.OKGREEN)} · {r.primary_category or 'unknown'}",
+            f"Score: {colored(score_str, Colors.BOLD)}",
+        ]
+        if r.snippet:
+            meta_lines.append(f"...{r.snippet}...")
+        body = "\n".join(meta_lines)
+        blocks.append(WarpBlocks.section(r.title, body))
+
+    print("\n\n".join(blocks))
+
