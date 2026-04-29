@@ -17,6 +17,30 @@ from cli._shared import get_db, print_info, print_error, print_success, print_wa
 from llm.postprocess import ResearchDeepDivePipeline, PostStage, make_llm_config
 
 
+def _resolve_pdf_path(rec, root: Path) -> Optional[Path]:
+    """Resolve PDF path from paper record or cache."""
+    # Try explicit pdf_path field
+    pdf_path_str = getattr(rec, "pdf_path", "") or ""
+    if pdf_path_str and Path(pdf_path_str).exists():
+        return Path(pdf_path_str)
+    # Try pdf_url — download if needed
+    pdf_url = getattr(rec, "pdf_url", "") or ""
+    if pdf_url:
+        cache_dir = root / "cache"
+        cache_dir.mkdir(exist_ok=True)
+        uid = getattr(rec, "id", "")
+        cached = cache_dir / f"{uid}.pdf"
+        if cached.exists():
+            return cached
+        try:
+            from pdf.extract import download_pdf
+            download_pdf(pdf_url, cached)
+            return cached
+        except Exception:
+            pass
+    return None
+
+
 def _build_postprocess_parser(subparsers) -> argparse.ArgumentParser:
     """Build the postprocess subcommand parser."""
     p = subparsers.add_parser(
@@ -49,6 +73,10 @@ def _build_postprocess_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument(
         "--tags", default="",
         help="Comma-separated tags override (default: from DB record)",
+    )
+    p.add_argument(
+        "--structured", action="store_true",
+        help="Use structured PDF extraction (tables/math separated) for citation-grounded analysis",
     )
     return p
 
@@ -120,6 +148,29 @@ def _run_postprocess(args: argparse.Namespace) -> int:
         print_warning(f"Paper {paper_id} not in DB: {e}")
         print_info("Some stages will degrade (no DB data)")
 
+    # Structured PDF extraction (requires PDF and LLM)
+    structured_content = None
+    if args.structured:
+        if not llm_config:
+            print_warning("--structured requires LLM; falling back to plain text")
+        else:
+            pdf_path = _resolve_pdf_path(rec, root) if rec else None
+            if pdf_path and pdf_path.exists():
+                try:
+                    from pdf.extract import extract_pdf_structured
+                    print_info(f"Extracting structured PDF: {pdf_path.name}")
+                    structured_content = extract_pdf_structured(str(pdf_path))
+                    extracted_text = "\n".join(
+                        b.text for b in structured_content.text_blocks
+                    )
+                    print_success(f"Extracted {len(structured_content.text_blocks)} text blocks")
+                except Exception as e:
+                    print_warning(f"Structured extraction failed: {e}")
+                    print_info("Falling back to plain text from DB")
+            else:
+                print_warning(f"PDF not found for {paper_id}; cannot use --structured")
+                print_info("Hint: re-ingest the paper with --structured first")
+
     # Run pipeline
     pipeline = ResearchDeepDivePipeline(db=db, data_dir=root)
     result = pipeline.run(
@@ -130,6 +181,7 @@ def _run_postprocess(args: argparse.Namespace) -> int:
         pnote_path=pnote_path,
         stages=stages,
         llm_config=llm_config,
+        structured_content=structured_content if args.structured else None,
     )
 
     # Report
