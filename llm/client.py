@@ -14,7 +14,20 @@ from core.retry import circuit_breaker
 
 # ── Persistent LLM Response Cache ────────────────────────────────────────────
 _CACHE_DIR = Path("data/llm_cache")
-_CACHE_TTL_SECONDS = 7 * 24 * 3600  # 7 days default
+
+
+def _get_cache_ttl() -> int:
+    """Get cache TTL from environment variable, default 7 days."""
+    env_ttl = os.getenv("AIROS_CACHE_TTL_SECONDS", "")
+    if env_ttl:
+        try:
+            return int(env_ttl)
+        except ValueError:
+            pass
+    return 7 * 24 * 3600  # 7 days default
+
+
+_CACHE_TTL_SECONDS = _get_cache_ttl()
 
 
 def _get_cache_path(key: str) -> Path:
