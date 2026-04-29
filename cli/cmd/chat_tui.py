@@ -681,12 +681,6 @@ class TUIChatApp(App):
         padding: 0 2;
     }
 
-    /* ── Streaming animation ── */
-    .ai-msg.streaming {
-        color: #8be9fd;
-    }
-
-
     /* ── Progress indicator ── */
     #progress-bar {
         width: 100%;
