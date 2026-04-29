@@ -13,6 +13,7 @@ def render_pnote(
     table_md: str = "",
     math_md: str = "",
     parsed_ai: Optional[Tuple[Dict[str, str], Dict[str, Any]]] = None,
+    claims_data: Optional[Dict[str, Any]] = None,
 ) -> str:
     """
     Render a P-note markdown file.
@@ -27,6 +28,8 @@ def render_pnote(
         parsed_ai: Optional (sections_dict, rubric_dict) from parse_ai_pnote_draft.
                    If provided, section content is injected into the template
                    and rubric scores are written to frontmatter.
+        claims_data: Optional dict with 'claims' and 'unverified_claims' lists
+                     from PaperAnalysisResult for citation verification display.
     """
     date_for_note = p.published or today_iso()
     authors_line = ", ".join(p.authors) if p.authors else "Unknown"
@@ -80,6 +83,9 @@ def render_pnote(
 
     # Build section content from parsed_ai (for injection into template sections)
     injected_sections_md = _build_injected_sections_md(parsed_ai)
+
+    # Build citation verification claims section
+    claims_section = _build_claims_section(claims_data)
 
     md = f"""\
 {fm}
@@ -245,7 +251,9 @@ def render_pnote(
 
 ### Overall Judgment
 
-{ai_block}---
+{ai_block}
+
+{claims_section}---
 
 ## 附：PDF 章节粗拆（自动抽取 · 供快速定位）
 
@@ -290,3 +298,60 @@ def _extract_rubric_scores(rubric: Dict[str, Any]) -> Dict[str, int]:
         for v in [rubric.get(k)]
         if isinstance(v, int) and 1 <= v <= 5
     }
+
+
+def _build_claims_section(claims_data: Optional[Dict[str, Any]]) -> str:
+    """Build citation verification claims section for P-note.
+
+    Renders verified and unverified claims from PaperAnalysisResult
+    with clear visual differentiation.
+    """
+    if not claims_data:
+        return ""
+
+    claims = claims_data.get("claims", [])
+    unverified = claims_data.get("unverified_claims", [])
+
+    if not claims and not unverified:
+        return ""
+
+    parts = []
+
+    # Summary stats
+    total = len(claims) + len(unverified)
+    verified_count = len(claims)
+    unverified_count = len(unverified)
+    rate = (verified_count / total * 100) if total > 0 else 0
+
+    parts.append("## 引用验证摘要\n")
+    parts.append(f"| 状态 | 数量 | 验证率 |")
+    parts.append(f"|------|------|--------|")
+    parts.append(f"| ✅ 已验证 | {verified_count} | {rate:.0f}% |")
+    parts.append(f"| ⚠️ 未验证 | {unverified_count} | — |")
+    parts.append("")
+
+    # Verified claims
+    if claims:
+        parts.append("### ✅ 已验证 Claims\n")
+        for i, c in enumerate(claims, 1):
+            page = c.get("page", "?")
+            chunk = c.get("chunk_text", "")
+            # Truncate long source chunks
+            snippet = chunk[:120] + "..." if len(chunk) > 120 else chunk
+            parts.append(f"{i}. **[Page {page}]** {chunk}\n")
+
+    # Unverified claims - these need attention
+    if unverified:
+        parts.append("### ⚠️ 未验证 Claims（需人工核查）\n")
+        for i, c in enumerate(unverified, 1):
+            page = c.get("page", "?")
+            chunk = c.get("chunk_text", "")
+            note = c.get("verification_note", "无法在原文找到支撑文本")
+            snippet = chunk[:120] + "..." if len(chunk) > 120 else chunk
+            parts.append(
+                f"{i}. **[Page {page}]** {chunk}\n"
+                f"   > 🔍 未验证原因：{note}\n"
+            )
+
+    return "\n".join(parts)
+
