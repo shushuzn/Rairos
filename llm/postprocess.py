@@ -455,6 +455,7 @@ class ResearchDeepDivePipeline:
             extracted_sections_md=extracted_text,
             parsed_ai=(sections_with_raw, rubric_dict),
             claims_data=claims_data,
+            analysis_dir=self.analysis_dir,
         )
         pnote_path.write_text(rendered, encoding="utf-8")
         logger.info("P-note updated: %s", pnote_path)

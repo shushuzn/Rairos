@@ -1,6 +1,8 @@
 """P-Note (paper note) renderer."""
+import json
 import math
 import textwrap
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from core import Paper, today_iso
@@ -167,6 +169,7 @@ def render_pnote(
     math_md: str = "",
     parsed_ai: Optional[Tuple[Dict[str, str], Dict[str, Any]]] = None,
     claims_data: Optional[Dict[str, Any]] = None,
+    analysis_dir: Optional[Path] = None,
 ) -> str:
     """
     Render a P-note markdown file.
@@ -246,7 +249,7 @@ def render_pnote(
     injected_sections_md = _build_injected_sections_md(parsed_ai)
 
     # Build citation verification claims section
-    claims_section = _build_claims_section(claims_data)
+    claims_section = _build_claims_section(claims_data, paper_id=p.uid, analysis_dir=analysis_dir)
 
     md = f"""\
 {fm}
@@ -531,11 +534,136 @@ def _render_page_heatmap(
     return "\n".join(rows)
 
 
-def _build_claims_section(claims_data: Optional[Dict[str, Any]]) -> str:
+def _render_cross_paper_comparison(
+    paper_id: str,
+    claims_data: Optional[Dict[str, Any]],
+    analysis_dir: Optional[Path] = None,
+) -> str:
+    """Render a cross-paper citation verification rate comparison table.
+
+    Reads sibling paper_analysis.json files from analysis_dir/.analysis/
+    and compares this paper's verification rate against others.
+
+    Colour scheme:
+      current paper  → bold
+      ≥ 80% verified → 🟢
+      50-79%         → 🟡
+      < 50%          → 🔴
+    """
+    if analysis_dir is None:
+        analysis_dir = Path.cwd() / "AI-Research" / ".analysis"
+
+    # ── Aggregate per-paper verification stats ───────────────────────────────
+    papers: List[Dict[str, Any]] = []
+
+    try:
+        if not analysis_dir.is_dir():
+            return ""
+    except Exception:
+        return ""
+
+    try:
+        for json_path in sorted(analysis_dir.glob("*/paper_analysis.json")):
+            try:
+                data = json.loads(json_path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+
+            pid = data.get("paper_id", json_path.parent.name)
+            claims = data.get("claims", [])
+            unverified = data.get("unverified_claims", [])
+
+            total = len(claims) + len(unverified)
+            verified = len(claims)
+            rate = (verified / total * 100) if total > 0 else 0.0
+
+            # Build label from rubric overall field or fallback to paper_id
+            rubric = data.get("rubric", {})
+            overall = rubric.get("overall", "")
+            title = rubric.get("title", "")
+            label = (overall[:60] + "…") if len(overall) > 60 else overall
+            if not label:
+                label = title[:60] if title else pid
+
+            papers.append({
+                "paper_id": pid,
+                "label": label,
+                "verified": verified,
+                "unverified": len(unverified),
+                "total": total,
+                "rate": rate,
+                "is_current": pid == paper_id,
+            })
+    except Exception:
+        return ""
+
+    if not papers:
+        return ""
+
+    # Sort: current paper first, then by verification rate descending
+    current = [p for p in papers if p["is_current"]]
+    others = [p for p in papers if not p["is_current"]]
+    others.sort(key=lambda x: x["rate"], reverse=True)
+    sorted_papers = current + others
+
+    if len(sorted_papers) < 2:
+        return ""
+
+    # ── Render ────────────────────────────────────────────────────────────
+    rows = []
+    rows.append("")
+    rows.append("### 📊 跨论文引用验证对比\n")
+    rows.append(f"| 论文 | 已验 | 未验 | 验证率 |")
+    rows.append(f"|------|------|------|--------|")
+
+    for p in sorted_papers:
+        if p["rate"] >= 80:
+            flag = "🟢"
+        elif p["rate"] >= 50:
+            flag = "🟡"
+        else:
+            flag = "🔴"
+
+        marker = "**" if p["is_current"] else ""
+        label = p["label"] if p["is_current"] else p["paper_id"]
+        rows.append(
+            f"| {marker}{flag} {label}{marker} "
+            f"| {p['verified']} | {p['unverified']} | {p['rate']:.0f}% |"
+        )
+
+    # ── Current paper's own stats (from claims_data) ─────────────────────
+    if claims_data and not any(p["is_current"] for p in papers):
+        # No analysis file for current paper yet — use runtime claims_data
+        claims = claims_data.get("claims", [])
+        unverified = claims_data.get("unverified_claims", [])
+        total = len(claims) + len(unverified)
+        verified = len(claims)
+        rate = (verified / total * 100) if total > 0 else 0.0
+        if total > 0:
+            if rate >= 80:
+                flag = "🟢"
+            elif rate >= 50:
+                flag = "🟡"
+            else:
+                flag = "🔴"
+            rows.append(
+                f"| **{flag} {paper_id}** "
+                f"| {verified} | {len(unverified)} | {rate:.0f}% |"
+            )
+
+    return "\n".join(rows)
+
+
+def _build_claims_section(
+    claims_data: Optional[Dict[str, Any]],
+    paper_id: str = "",
+    analysis_dir: Optional[Path] = None,
+) -> str:
     """Build citation verification claims section for P-note.
 
     Renders verified and unverified claims from PaperAnalysisResult
-    with clear visual differentiation.
+    with clear visual differentiation, plus an optional cross-paper
+    comparison table.
     """
     if not claims_data:
         return ""
@@ -603,6 +731,12 @@ def _build_claims_section(claims_data: Optional[Dict[str, Any]]) -> str:
                 f"{i}. {type_str} · **[Page {page}]** 证据强度 {score:.0%}  {chunk}\n"
                 f"   > 🔍 未验证原因：{note}\n"
             )
+
+    # Cross-paper comparison (after claim lists)
+    comparison = _render_cross_paper_comparison(paper_id, claims_data, analysis_dir)
+    if comparison:
+        parts.append(comparison)
+        parts.append("")
 
     return "\n".join(parts)
 
