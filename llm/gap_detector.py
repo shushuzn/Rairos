@@ -532,53 +532,76 @@ class GapDetector:
         )
 
     def render_result(self, result: GapAnalysisResult) -> str:
-        """Render analysis result as formatted string."""
-        lines = [
-            f"🔬 《{result.topic}》研究空白分析",
-            f"   分析论文数: {result.analyzed_papers_count}",
-            f"   覆盖程度: {result.coverage_score:.0%}",
-            f"   机会评分: {result.opportunities_score:.1f}/10",
-            "",
+        """Render analysis result (WarpBlocks Rich)."""
+        from rich.console import Console
+        from cli.warp import WarpBlocks
+        c = Console()
+
+        stats_rows = [
+            ["Papers Analyzed",  f"[#A5D5FE]{result.analyzed_papers_count}[/]"],
+            ["Coverage",          f"[#A5D5FE]{result.coverage_score:.0%}[/]"],
+            ["Opportunity Score", f"[#A5D5FE]{result.opportunities_score:.1f}/10[/]"],
         ]
 
-        if result.gaps:
-            lines.append("💡 研究空白：")
-            for i, gap in enumerate(result.gaps, 1):
-                severity_icon = {
-                    GapSeverity.HIGH: "🔴",
-                    GapSeverity.MEDIUM: "🟡",
-                    GapSeverity.LOW: "🟢",
-                }.get(gap.severity, "⚪")
+        gap_type_names = {
+            GapType.UNEXPLORED_APPLICATION: "未探索应用",
+            GapType.METHOD_LIMITATION: "方法局限",
+            GapType.CONTRADICTION: "矛盾",
+            GapType.EVALUATION_GAP: "评估缺失",
+            GapType.SCALABILITY_ISSUE: "可扩展性",
+            GapType.THEORETICAL_GAP: "理论空白",
+            GapType.DATASET_GAP: "数据集缺失",
+            GapType.GENERALIZATION_GAP: "泛化问题",
+        }
 
-                gap_type_name = {
-                    GapType.UNEXPLORED_APPLICATION: "未探索应用",
-                    GapType.METHOD_LIMITATION: "方法局限",
-                    GapType.CONTRADICTION: "矛盾",
-                    GapType.EVALUATION_GAP: "评估缺失",
-                    GapType.SCALABILITY_ISSUE: "可扩展性",
-                    GapType.THEORETICAL_GAP: "理论空白",
-                    GapType.DATASET_GAP: "数据集缺失",
-                    GapType.GENERALIZATION_GAP: "泛化问题",
-                }.get(gap.gap_type, gap.gap_type.value)
+        gap_rows = []
+        for i, gap in enumerate(result.gaps, 1):
+            sev_icon = {
+                GapSeverity.HIGH: "🔴",
+                GapSeverity.MEDIUM: "🟡",
+                GapSeverity.LOW: "🟢",
+            }.get(gap.severity, "⚪")
+            type_name = gap_type_names.get(gap.gap_type, gap.gap_type.value)
+            gap_rows.append([
+                f"[#FEFDC2]{i}.[/]",
+                sev_icon,
+                f"[#D0D1FE]{type_name}[/]",
+                gap.description[:50],
+            ])
 
-                lines.append(f"  {i}. {severity_icon} [{gap_type_name}] {gap.description}")
-                if gap.evidence_papers:
-                    lines.append(f"     证据: {', '.join(gap.evidence_papers[:2])}")
-            lines.append("")
+        q_rows = []
+        for i, q in enumerate(result.questions, 1):
+            q_rows.append([
+                f"[#FEFDC2]{i}.[/]",
+                q.question[:55],
+            ])
 
-        if result.questions:
-            lines.append("📝 研究问题建议：")
-            for i, q in enumerate(result.questions, 1):
-                lines.append(f"  {i}. {q.question}")
-                if q.hypothesis:
-                    lines.append(f"     假设: {q.hypothesis[:60]}...")
-                if q.methodology_suggestion:
-                    lines.append(f"     方法: {q.methodology_suggestion[:50]}...")
-            lines.append("")
-
-        lines.append(f"📊 {result.summary}")
-
-        return "\n".join(lines)
+        parts = [
+            WarpBlocks.panel(
+                f"[#FF8272]🔬 {result.topic}[/] — Research Gap Analysis",
+                f"[#A5D5FE]{result.analyzed_papers_count} papers[/] · [#A5D5FE]{result.coverage_score:.0%}[/] coverage · [#B4FA72]{result.opportunities_score:.1f}/10[/] opportunity",
+                width=72,
+            ),
+            "",
+        ]
+        c.print(WarpBlocks.table(["Metric", "Value"], stats_rows))
+        c.print()
+        if gap_rows:
+            c.print(WarpBlocks.table(
+                ["#", "", "Type", "Gap Description"],
+                gap_rows,
+                title=f"Research Gaps ({len(gap_rows)})"
+            ))
+            c.print()
+        if q_rows:
+            c.print(WarpBlocks.table(
+                ["#", "Research Question"],
+                q_rows,
+                title=f"Suggested Questions ({len(q_rows)})"
+            ))
+            c.print()
+        parts.append(f"[#A5D5FE]📊[/] {result.summary}")
+        return "\n".join(parts)
 
     def render_json(self, result: GapAnalysisResult) -> str:
         """Render result as JSON."""
