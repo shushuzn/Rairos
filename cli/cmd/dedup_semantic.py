@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import List, Optional, Tuple
 
 from cli._shared import get_db
+from cli.warp import WarpBlocks
 
 
 def _build_dedup_semantic_parser(subparsers) -> argparse.ArgumentParser:
@@ -183,23 +184,32 @@ def _generate_missing_embeddings(
 
 
 def _run_dedup_semantic(args: argparse.Namespace) -> int:
+    from rich.console import Console
+    c = Console()
+
     db = get_db()
     db.init()
 
     if args.stats:
         s = db.get_embedding_stats()
-        print("Embedding coverage:")
-        print(f"  Papers with embedding : {s['with_embedding']}")
-        print(f"  Papers with text     : {s['total_with_text']}")
-        if s["total_with_text"] > 0:
-            pct = s["with_embedding"] / s["total_with_text"] * 100
-            print(f"  Coverage             : {pct:.1f}%")
+        total = s['total_with_text']
+        with_emb = s['with_embedding']
+        pct = (with_emb / total * 100) if total > 0 else 0
+        c.print(WarpBlocks.panel(
+            "Embedding Coverage",
+            f"[#A5D5FE]Papers with embedding:[/]  [#B4FA72]{with_emb}[/]\n"
+            f"[#A5D5FE]Papers with text:[/]      [#FF8272]{total}[/]\n"
+            f"[#A5D5FE]Coverage:[/]              [#FEFDC2]{pct:.1f}%[/]"
+        ))
         return 0
 
     if args.generate:
-        print("Generating missing embeddings...")
+        c.print("[#A5D5FE]Generating missing embeddings...[/]")
         gen, fail = _generate_missing_embeddings(db)
-        print(f"Generated: {gen}, Failed: {fail}")
+        c.print(WarpBlocks.panel(
+            "Embedding Generation",
+            f"[#B4FA72]Generated: {gen}[/]  [#FF5555]Failed: {fail}[/]"
+        ))
         return 0
 
     if args.paper:
@@ -209,7 +219,10 @@ def _run_dedup_semantic(args: argparse.Namespace) -> int:
         paper = db.get_paper(args.paper)
         sims = db.find_similar(args.paper, threshold=args.threshold, limit=args.limit)
         if not sims:
-            print(f"No similar papers found for '{args.paper}' (threshold={args.threshold})")
+            c.print(WarpBlocks.panel(
+                f"Similar Papers — {args.paper}",
+                f"[#8E8E8E]No similar papers above threshold=[#A5D5FE]{args.threshold}[/][/]"
+            ))
             return 0
         if args.format == "csv":
             print("paper_a,paper_b,similarity,title_a,title_b")
@@ -218,15 +231,32 @@ def _run_dedup_semantic(args: argparse.Namespace) -> int:
                 t2 = sim_paper.title.replace('"', '""')
                 print(f"{args.paper},{sim_paper.id},{score:.4f},\"{t1}\",\"{t2}\"")
         else:
-            print(f"Similar papers for '{args.paper}' (threshold={args.threshold}):")
+            rows = []
             for sim_paper, score in sims:
-                print(f"  [{score:.4f}] {sim_paper.id}  {sim_paper.title[:70]}")
+                sim_short = (sim_paper.title[:55] + "...") if len(sim_paper.title) > 58 else sim_paper.title
+                score_color = "[#B4FA72]" if score >= 0.95 else "[#FEFDC2]" if score >= 0.85 else "[#FF8272]"
+                rows.append([
+                    f"{score_color}{score:.4f}[/]",
+                    f"[#D0D1FE]{sim_paper.id}[/]",
+                    f"[#A5D5FE]{sim_short}[/]",
+                ])
+            c.print(WarpBlocks.panel(
+                f"Similar Papers — [#FF8272]{args.paper}[/] (threshold=[#FF8272]{args.threshold}[/])",
+                f"[#A5D5FE]{len(sims)} similar papers found[/]"
+            ))
+            if rows:
+                c.print(WarpBlocks.table(
+                    ["Similarity", "Paper ID", "Title"],
+                    rows,
+                    title=f"Similar to {args.paper} ({len(rows)})"
+                ))
         return 0
 
     # Global: check all papers
     papers, _total = db.list_papers(limit=10000)
     found = 0
     seen: set = set()
+    pair_rows = []
 
     if args.format == "csv":
         print("paper_a,paper_b,similarity,title_a,title_b")
@@ -245,17 +275,34 @@ def _run_dedup_semantic(args: argparse.Namespace) -> int:
                 t2 = sim_paper.title.replace('"', '""')
                 print(f"{paper.id},{sim_paper.id},{score:.4f},\"{t1}\",\"{t2}\"")
             else:
-                print(f"[{score:.4f}] {paper.id} <-> {sim_paper.id}")
-                print(f"  A: {paper.title[:70]}")
-                print(f"  B: {sim_paper.title[:70]}")
-                print()
+                a_short = (paper.title[:50] + "...") if len(paper.title) > 53 else paper.title
+                b_short = (sim_paper.title[:50] + "...") if len(sim_paper.title) > 53 else sim_paper.title
+                score_color = "[#B4FA72]" if score >= 0.95 else "[#FEFDC2]" if score >= 0.85 else "[#FF8272]"
+                pair_rows.append([
+                    f"{score_color}{score:.4f}[/]",
+                    f"[#FF8272]{paper.id}[/]",
+                    f"[#A5D5FE]{a_short}[/]",
+                    f"[#D0D1FE]{sim_paper.id}[/]",
+                    f"[#A5D5FE]{b_short}[/]",
+                ])
             found += 1
 
-    if found == 0:
-        if args.format != "csv":
-            print("No duplicate pairs found")
-    else:
-        if args.format != "csv":
-            print(f"Found {found} duplicate pair(s)")
+    if args.format != "csv":
+        if found == 0:
+            c.print(WarpBlocks.panel(
+                "No Duplicates Found",
+                f"[#8E8E8E]No semantic duplicates above threshold=[#A5D5FE]{args.threshold}[/][/]"
+            ))
+        else:
+            c.print(WarpBlocks.panel(
+                f"Semantic Duplicates — [#FF8272]{found}[/] pairs (threshold=[#FF8272]{args.threshold}[/])",
+                f"[#A5D5FE]{len(papers)} papers scanned[/]"
+            ))
+            if pair_rows:
+                c.print(WarpBlocks.table(
+                    ["Score", "Paper A", "Title A", "Paper B", "Title B"],
+                    pair_rows,
+                    title=f"Duplicate Pairs ({len(pair_rows)})"
+                ))
 
     return 0

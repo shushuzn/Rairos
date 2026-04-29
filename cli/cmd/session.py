@@ -5,6 +5,7 @@ import argparse
 import sys
 
 from cli._shared import get_db, print_info, print_error
+from cli.warp import WarpBlocks
 from llm.research_session import ResearchSessionTracker, ResearchIntent
 
 
@@ -76,62 +77,103 @@ def _session_start(tracker: ResearchSessionTracker, args) -> int:
 
 def _session_list(tracker: ResearchSessionTracker, args) -> int:
     """List recent sessions."""
+    from rich.console import Console
+    c = Console()
+
     sessions = tracker.get_recent_sessions(days=args.days, limit=args.limit)
 
     if not sessions:
-        print("暂无研究会话记录")
+        c.print(WarpBlocks.panel("Sessions", "[#8E8E8E]No recent sessions found[/]"))
         return 0
 
-    print(f"📚 最近 {len(sessions)} 个会话 (过去 {args.days} 天)")
-    print()
+    intent_names = {
+        ResearchIntent.LEARNING: "LEARNING",
+        ResearchIntent.EXPLORING: "EXPLORING",
+        ResearchIntent.IMPROVING: "IMPROVING",
+        ResearchIntent.COMPARING: "COMPARING",
+        ResearchIntent.REPRODUCING: "REPRODUCING",
+        ResearchIntent.CITING: "CITING",
+    }
+    intent_icons = {
+        ResearchIntent.LEARNING: "📖",
+        ResearchIntent.EXPLORING: "🔍",
+        ResearchIntent.IMPROVING: "🚀",
+        ResearchIntent.COMPARING: "⚖️",
+        ResearchIntent.REPRODUCING: "🔧",
+        ResearchIntent.CITING: "📝",
+    }
 
+    rows = []
     for s in sessions:
         date = s.started_at[:10]
-        intent_icon = {
-            ResearchIntent.LEARNING: "📖",
-            ResearchIntent.EXPLORING: "🔍",
-            ResearchIntent.IMPROVING: "🚀",
-            ResearchIntent.COMPARING: "⚖️",
-            ResearchIntent.REPRODUCING: "🔧",
-            ResearchIntent.CITING: "📝",
-        }.get(s.intent, "📚")
+        icon = intent_icons.get(s.intent, "📚")
+        intent_label = intent_names.get(s.intent, "—")
+        tags_str = ", ".join(s.tags[:3]) if s.tags else ""
+        insight_preview = (s.insights[0][:45] + "...") if s.insights else ""
+        rows.append([
+            icon,
+            f"[#FF8272]{date}[/]",
+            f"[#A5D5FE]{s.title[:40]}[/]",
+            f"[#B4FA72]{len(s.queries)} Q&A[/]",
+            f"[#D0D1FE]{s.duration_minutes}m[/]",
+            f"[#FEFDC2]{intent_label}[/]",
+        ])
 
-        print(f"{intent_icon} {date} | {s.title}")
-        print(f"   {len(s.queries)} 个问答 | {s.duration_minutes} 分钟")
-        if s.tags:
-            print(f"   标签: {', '.join(s.tags[:3])}")
-        if s.insights:
-            print(f"   💡 {s.insights[0][:50]}")
-        print()
-
+    c.print(WarpBlocks.panel(
+        f"Recent Sessions — [#FF8272]{len(sessions)}[/] (last [#FF8272]{args.days}[/] days)",
+        "[#8E8E8E]Use airos session start to begin a research session[/]"
+    ))
+    if rows:
+        c.print(WarpBlocks.table(
+            ["", "Date", "Title", "Q&A", "Min", "Intent"],
+            rows,
+            title=f"Sessions ({len(rows)})"
+        ))
+    c.print()
     return 0
 
 
 def _session_current(tracker: ResearchSessionTracker) -> int:
     """Show current session."""
+    from rich.console import Console
+    c = Console()
+
     session = tracker.get_current_session()
 
     if not session:
-        print("当前没有活跃的会话")
-        print()
-        print("使用 'airos session start' 启动新会话")
+        c.print(WarpBlocks.panel(
+            "Current Session",
+            "[#8E8E8E]No active session[/]\n\n"
+            "[#A5D5FE]Use airos session start to begin[/]"
+        ))
         return 0
 
-    print("📚 当前会话")
-    print(f"   标题: {session.title}")
-    print(f"   ID: {session.id}")
-    print(f"   时长: {session.duration_minutes} 分钟")
-    print(f"   问答: {len(session.queries)}")
-    print(f"   意图: {session.intent.value}")
+    intent_label = {
+        ResearchIntent.LEARNING: "📖 Learning",
+        ResearchIntent.EXPLORING: "🔍 Exploring",
+        ResearchIntent.IMPROVING: "🚀 Improving",
+        ResearchIntent.COMPARING: "⚖️ Comparing",
+        ResearchIntent.REPRODUCING: "🔧 Reproducing",
+        ResearchIntent.CITING: "📝 Citing",
+    }.get(session.intent, f"📚 {session.intent.value}")
 
+    body_lines = [
+        f"[#A5D5FE]Title:[/]  [#FF8272]{session.title}[/]",
+        f"[#A5D5FE]ID:[/]     [#D0D1FE][{session.id}][/]",
+        f"[#A5D5FE]Duration:[/] [#B4FA72]{session.duration_minutes} minutes[/]",
+        f"[#A5D5FE]Q&A:[/]    [#B4FA72]{len(session.queries)}[/]",
+        f"[#A5D5FE]Intent:[/] {intent_label}",
+    ]
     if session.tags:
-        print(f"   标签: {', '.join(session.tags[:5])}")
-
+        tags_str = ", ".join(session.tags[:5])
+        body_lines.append(f"[#A5D5FE]Tags:[/]   [#FEFDC2]{tags_str}[/]")
     if session.insights:
-        print("   洞察:")
+        body_lines.append("")
+        body_lines.append("[#A5D5FE]Insights:[/]")
         for insight in session.insights:
-            print(f"      • {insight}")
+            body_lines.append(f"  • [#B4FA72]{insight[:70]}[/]")
 
+    c.print(WarpBlocks.panel("Current Session", "\n".join(body_lines)))
     return 0
 
 

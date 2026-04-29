@@ -8,6 +8,7 @@ from cli._shared import get_db
 from cli._shared import (
     Colors, colored, print_success, print_error, print_warning, print_info, print_header,
 )
+from cli.warp import WarpBlocks
 
 
 def _pick_keep(older: Any, newer: Any, strategy: str) -> Tuple[Any, Any]:
@@ -52,48 +53,95 @@ def _build_dedup_parser(subparsers) -> argparse.ArgumentParser:
 
 
 def _run_dedup(args: argparse.Namespace) -> int:
+    from rich.console import Console
+    c = Console()
+
     db = get_db()
     db.init()
 
     if args.report:
         logs = db.get_dedup_log()
         if not logs:
-            print("No dedup history")
+            c.print(WarpBlocks.panel("Dedup History", "[#8E8E8E]No dedup history[/]"))
             return 0
-        print(f"Dedup history ({len(logs)} record(s)):")
+        rows = []
         for r in logs:
-            print(f"  [{r['id']}] {r['logged_at']}  keep={r['keep_policy']}  kept={r['target_id']}  merged={r['duplicate_id']}")
-            print(f"    kept title:   {r['target_title'][:70]}")
-            print(f"    merged title: {r['duplicate_title'][:70]}")
+            rows.append([
+                f"[#D0D1FE][{r['id']}][/]",
+                f"[#FF8272]{r['logged_at'][:10]}[/]",
+                f"[#FEFDC2]{r['keep_policy']}[/]",
+                f"[#A5D5FE]{r['target_id']}[/]",
+                f"[#FF8272]{r['duplicate_id']}[/]",
+                f"[#8E8E8E]{r['target_title'][:45]}[/]",
+            ])
+        c.print(WarpBlocks.panel(f"Dedup History — [#FF8272]{len(logs)}[/] record(s)", ""))
+        if rows:
+            c.print(WarpBlocks.table(
+                ["#", "Date", "Keep", "Target", "Merged", "Title"],
+                rows,
+                title=f"Dedup Log ({len(rows)})"
+            ))
         return 0
 
     pairs = db.find_duplicates(since=args.since or None)
 
     if not pairs:
-        print("No duplicates found")
+        c.print(WarpBlocks.panel("No Duplicates Found", "[#8E8E8E]No duplicate pairs in the database[/]"))
         return 0
 
-    for older, newer in pairs:
-        parsed_rank = {"completed": 4, "running": 3, "pending": 2, "failed": 1}
+    pair_rows = []
+    dry_rows = []
+    parsed_rank = {"completed": 4, "running": 3, "pending": 2, "failed": 1}
 
+    for older, newer in pairs:
         def rank(p, _rank=parsed_rank):
             return _rank.get(p.parse_status, 0)
 
         parsed_winner = older if rank(older) >= rank(newer) else newer
-        print(f"Duplicate pair: {older.id} / {newer.id}")
-        print(f"  Title: {older.title[:80]}")
-        print(f"  DOI: {older.doi or '(none)'}")
-        print(f"  [{older.id}] status={older.parse_status:<10} added_at={older.added_at}")
-        print(f"  [{newer.id}] status={newer.parse_status:<10} added_at={newer.added_at}")
+        winner_status = f"[#B4FA72]{parsed_winner.parse_status}[/]"
+        title_short = (older.title[:55] + "...") if len(older.title) > 58 else older.title
+        pair_rows.append([
+            f"[#FF8272]{older.id}[/]",
+            f"[#D0D1FE]{newer.id}[/]",
+            f"[#A5D5FE]{title_short}[/]",
+            f"[#FEFDC2]{older.doi or '(none)'}[/]",
+            winner_status,
+            f"[#8E8E8E]{older.added_at[:10]}[/]",
+        ])
 
         if args.dry_run:
             target, dup = _pick_keep(older, newer, args.keep)
-            print(f"  --> would keep [{target.id}], merge [{dup.id}] (--keep={args.keep})")
-            print(f"  --> parsed winner: [{parsed_winner.id}] (status={parsed_winner.parse_status})")
-        print()
+            dry_rows.append([
+                f"[#FF8272]{older.id}[/] / [#FF8272]{newer.id}[/]",
+                f"[#B4FA72]{target.id}[/] ← keep[/]",
+                f"[#FF5555]{dup.id}[/]",
+                f"[#A5D5FE]{args.keep}[/]",
+                f"[#8E8E8E]winner: {parsed_winner.id}[/]",
+            ])
+
+    c.print(WarpBlocks.panel(
+        f"Duplicate Pairs — [#FF8272]{len(pairs)}[/] pair(s)",
+        f"[#8E8E8E]Scanned since: {args.since or 'all'}[/]"
+    ))
+    if pair_rows:
+        c.print(WarpBlocks.table(
+            ["Older", "Newer", "Title", "DOI", "Winner", "Added"],
+            pair_rows,
+            title=f"Duplicate Pairs ({len(pair_rows)})"
+        ))
+    if args.dry_run and dry_rows:
+        c.print(WarpBlocks.table(
+            ["Pair", "Keep", "Merge", "Strategy", "Parsed Winner"],
+            dry_rows,
+            title=f"Dry Run — Would Merge ({len(dry_rows)})"
+        ))
+        c.print(WarpBlocks.panel(
+            "Dry Run",
+            f"[#FEFDC2]{len(pairs)} duplicate pair(s) — no changes made[/]"
+        ))
+    c.print()
 
     if args.dry_run:
-        print(f"({len(pairs)} duplicate pair(s), dry-run — no changes made)")
         return 0
 
     if args.auto:
@@ -103,11 +151,11 @@ def _run_dedup(args: argparse.Namespace) -> int:
             ok = db.merge_papers(target.id, duplicate.id)
             if ok:
                 db.log_dedup(target.id, duplicate.id, args.keep)
-                print(f"Auto-merged {duplicate.id} into {target.id} (--keep={args.keep})")
                 merged += 1
-            else:
-                print(f"Failed to merge {duplicate.id} into {target.id}")
-        print(f"\nAuto-merged {merged}/{len(pairs)} pair(s)")
+        c.print(WarpBlocks.panel(
+            "Auto-Merge Complete",
+            f"[#B4FA72]Merged [#FF8272]{merged}[/] / [#FF8272]{len(pairs)}[/] pair(s)"
+        ))
         return 0
 
     if args.batch:
@@ -118,15 +166,15 @@ def _run_dedup(args: argparse.Namespace) -> int:
                 ok = db.merge_papers(target.id, duplicate.id)
                 if ok:
                     db.log_dedup(target.id, duplicate.id, args.keep)
-                    print(f"[batch] Merged {duplicate.id} -> {target.id} (same DOI)")
                     merged += 1
                 else:
-                    print(f"[batch] Failed: {duplicate.id} -> {target.id}")
                     skipped += 1
             else:
-                print(f"[batch] Skipped {older.id}/{newer.id} (no matching DOI)")
                 skipped += 1
-        print(f"\nBatch: {merged} merged, {skipped} skipped ({len(pairs)} total pairs)")
+        c.print(WarpBlocks.panel(
+            "Batch Merge Complete",
+            f"[#B4FA72]Merged [#FF8272]{merged}[/]  [#FF5555]Skipped [#FEFDC2]{skipped}[/]  ([#FF8272]{len(pairs)}[/] total)"
+        ))
         return 0
 
     return 0

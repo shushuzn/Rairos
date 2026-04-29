@@ -582,71 +582,82 @@ class GapAnalyzerV2(GapDetector):
 
 
 def render_gap_report(result: GapAnalysisResultV2, show_preferences: bool = True) -> str:
-    """Render gap analysis report.
+    """Render gap analysis report (WarpBlocks Rich output)."""
+    from rich.console import Console
+    from cli.warp import WarpBlocks
+    c = Console()
 
-    Args:
-        result: The gap analysis result
-        show_preferences: Whether to show preference influence info
-    """
     if not result.gaps:
-        return f"No gaps found for: {result.topic}"
+        return WarpBlocks.panel("No Results", f"[#8E8E8E]No gaps found for: {result.topic}[/]")
 
-    lines = []
-    lines.append("=" * 70)
-    lines.append(f"🔍 {result.topic} — Research Gap Analysis")
-    lines.append("=" * 70)
-    lines.append("")
-
-    # Statistics
-    lines.append("📊 Analysis Summary")
-    lines.append(f"   Papers analyzed: {result.total_papers_analyzed}")
-    lines.append(f"   User insights used: {result.total_insights_used}")
-    lines.append(f"   Gaps identified: {len(result.gaps)}")
-    lines.append("")
+    # Summary stats
+    sum_rows = [
+        ["Papers Analyzed", f"[#A5D5FE]{result.total_papers_analyzed}[/]"],
+        ["Insights Used",  f"[#A5D5FE]{result.total_insights_used}[/]"],
+        ["Gaps Found",     f"[#B4FA72]{len(result.gaps)}[/]"],
+    ]
 
     # Gap by type
+    type_rows = []
     if result.gaps_by_type:
-        lines.append("📈 Gaps by Type:")
         for gtype, count in result.gaps_by_type.items():
-            lines.append(f"   {_GAP_TYPE_NAMES.get(gtype, gtype.value)}: {count}")
-        lines.append("")
+            type_rows.append([_GAP_TYPE_NAMES.get(gtype, gtype.value), f"[#A5D5FE]{count}[/]"])
 
     # Gap details
-    lines.append("🎯 Research Gaps (sorted by preference + priority):")
-    if show_preferences and hasattr(result, 'preference_applied') and result.preference_applied:
-        lines.append("   (✨ = matches your research preferences)")
-    lines.append("")
-
+    gap_rows = []
     for i, gap in enumerate(result.gaps, 1):
-        severity_icon = {
-            GapSeverity.HIGH: "🔴 HIGH",
-            GapSeverity.MEDIUM: "🟡 MEDIUM",
-            GapSeverity.LOW: "🟢 LOW",
+        severity_color = {
+            GapSeverity.HIGH: "[#FF5555]",
+            GapSeverity.MEDIUM: "[#FEFDC2]",
+            GapSeverity.LOW: "[#B4FA72]",
+        }.get(gap.severity, "[#8E8E8E]")
+        sev_label = {
+            GapSeverity.HIGH: "🔴",
+            GapSeverity.MEDIUM: "🟡",
+            GapSeverity.LOW: "🟢",
         }.get(gap.severity, "⚪")
-
-        # Preference indicator — show numeric score
-        if show_preferences and hasattr(gap, 'preference_score') and gap.preference_score != 0.0:
-            pass  # Score tracking handled by gap_analyzer layer
-
         type_name = _GAP_TYPE_NAMES.get(gap.gap_type, gap.gap_type.value)
+        title_short = gap.title[:55]
+        boost = " ✨" if getattr(gap, 'preference_boost', False) else ""
+        gap_rows.append([
+            f"[#FEFDC2]{i}.[/]",
+            f"{sev_label}{severity_color}{type_name}[/]",
+            f"{title_short}{boost}",
+        ])
+        # Sub-questions as sub-row
+        for q in (gap.sub_questions or [])[:2]:
+            gap_rows.append(["", "", f"   📋 {q[:65]}..."])
 
-        lines.append(f"{i}. {severity_icon} [{type_name}]")
-        lines.append(f"   {gap.title}")
-        lines.append(f"   {gap.description[:120]}...")
+    pref_note = "  ([#B4FA72]✨[/] = matches your preferences)" if (
+        show_preferences and getattr(result, 'preference_applied', False)
+    ) else ""
 
-        if gap.user_insights:
-            lines.append(f"   💡 Related Insights: {len(gap.user_insights)} found")
-            for insight in gap.user_insights[:1]:
-                lines.append(f"      → {insight[:80]}...")
+    lines = [
+        WarpBlocks.panel(
+            f"[#FF8272]{result.topic}[/] — Research Gap Analysis",
+            "\n".join([
+                f"[#A5D5FE]{len(result.gaps)} gaps[/] · {result.total_papers_analyzed} papers · {result.total_insights_used} insights{pref_note}",
+            ]),
+            width=75,
+        ),
+        "",
+    ]
 
-        if gap.sub_questions:
-            lines.append("   📋 Suggested Questions:")
-            for q in gap.sub_questions[:2]:
-                lines.append(f"      • {q}")
+    if type_rows:
+        c.print(WarpBlocks.table(
+            ["Gap Type", "Count"],
+            type_rows,
+            title="Gaps by Type"
+        ))
+        c.print()
 
-        lines.append("")
+    if gap_rows:
+        c.print(WarpBlocks.table(
+            ["#", "Type", "Gap / Question"],
+            gap_rows,
+            title=f"Research Gaps ({len(result.gaps)})"
+        ))
 
-    lines.append("=" * 70)
     return "\n".join(lines)
 
 
@@ -654,43 +665,65 @@ def render_combined_report(
     gap_result: GapAnalysisResultV2,
     hypothesis_result: HypothesisResult,
 ) -> str:
-    """Render combined gap analysis and hypothesis report."""
-    lines = []
-    lines.append("=" * 70)
-    lines.append(f"🎯 {gap_result.topic} — Research Pipeline")
-    lines.append("=" * 70)
-    lines.append("")
+    """Render combined gap + hypothesis report (WarpBlocks Rich output)."""
+    from rich.console import Console
+    from cli.warp import WarpBlocks
+    c = Console()
 
-    # Gap Analysis Summary
-    lines.append("📊 Gap Analysis")
-    lines.append(f"   Papers analyzed: {gap_result.total_papers_analyzed}")
-    lines.append(f"   Gaps identified: {len(gap_result.gaps)}")
-    if gap_result.preference_applied:
-        boosted = sum(1 for g in gap_result.gaps if getattr(g, 'preference_boost', False))
-        boosted_type = gap_result.gaps[0].gap_type.value if gap_result.gaps else "preferred"
-        lines.append(f"   🧠 Sorted by your preferences ({boosted} {boosted_type} gaps boosted ✨)")
-    lines.append("")
-
-    # Top 3 Gaps
-    lines.append("🔍 Top Research Gaps:")
-    for i, gap in enumerate(gap_result.gaps[:3], 1):
-        severity_icon = {
+    # Top gaps table
+    gap_rows = []
+    for i, gap in enumerate(gap_result.gaps[:5], 1):
+        sev_icon = {
             GapSeverity.HIGH: "🔴",
             GapSeverity.MEDIUM: "🟡",
             GapSeverity.LOW: "🟢",
         }.get(gap.severity, "⚪")
-        boost_marker = " ✨" if getattr(gap, 'preference_boost', False) else ""
-        lines.append(f"   {i}. {severity_icon} {gap.title[:60]}{boost_marker}")
-    lines.append("")
+        boost = " ✨" if getattr(gap, 'preference_boost', False) else ""
+        gap_rows.append([
+            f"[#FEFDC2]{i}.[/]",
+            sev_icon,
+            f"{gap.title[:58]}{boost}",
+        ])
 
-    # Hypotheses
-    lines.append("💡 Research Hypotheses:")
-    for i, h in enumerate(hypothesis_result.hypotheses[:3], 1):
-        lines.append(f"   {i}. {h.core_statement[:60]}...")
-        lines.append(f"      Type: {h.hypothesis_type.value} | "
-                    f"Novelty: {h.novelty_score:.0%} | "
-                    f"Feasibility: {h.feasibility_score:.0%}")
-    lines.append("")
+    # Hypotheses table
+    hypo_rows = []
+    for i, h in enumerate(hypothesis_result.hypotheses[:5], 1):
+        novelty_bar = "████████░░"[:int(h.novelty_score * 10)] + "░░░░░░░░░"[int(h.novelty_score * 10):]
+        hypo_rows.append([
+            f"[#FEFDC2]{i}.[/]",
+            h.hypothesis_type.value[:15],
+            f"[#B4FA72]{h.novelty_score:.0%}[/]",
+            f"[#A5D5FE]{h.feasibility_score:.0%}[/]",
+            h.core_statement[:38],
+        ])
 
-    lines.append("=" * 70)
-    return "\n".join(lines)
+    pref_line = ""
+    if gap_result.preference_applied:
+        boosted = sum(1 for g in gap_result.gaps if getattr(g, 'preference_boost', False))
+        pref_line = f"  [#A5D5FE]🧠 {boosted} gaps boosted by preferences ✨[/]"
+
+    parts = [
+        WarpBlocks.panel(
+            f"[#FF8272]🎯 {gap_result.topic}[/] — Research Pipeline",
+            f"[#A5D5FE]{len(gap_result.gaps)} gaps[/] · {gap_result.total_papers_analyzed} papers{pref_line}",
+            width=75,
+        ),
+        "",
+    ]
+
+    if gap_rows:
+        c.print(WarpBlocks.table(
+            ["#", "", "Top Research Gaps"],
+            gap_rows,
+            title="Gap Analysis"
+        ))
+        c.print()
+
+    if hypo_rows:
+        c.print(WarpBlocks.table(
+            ["#", "Type", "Novelty", "Feas.", "Hypothesis"],
+            hypo_rows,
+            title=f"Research Hypotheses ({len(hypothesis_result.hypotheses)})"
+        ))
+
+    return "\n".join(parts)

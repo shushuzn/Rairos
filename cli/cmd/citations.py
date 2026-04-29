@@ -9,6 +9,7 @@ from cli._shared import get_db
 from cli._shared import (
     Colors, colored, print_success, print_error, print_warning, print_info, print_header,
 )
+from cli.warp import WarpBlocks
 
 
 def _build_citations_parser(subparsers) -> argparse.ArgumentParser:
@@ -45,6 +46,9 @@ Examples:
 
 
 def _run_citations(args: argparse.Namespace) -> int:
+    from rich.console import Console
+    c = Console()
+
     if not args.citation_from and not args.citation_to:
         print("Error: must specify --from or --to", file=sys.stderr)
         return 1
@@ -69,10 +73,7 @@ def _run_citations(args: argparse.Namespace) -> int:
         backward_from = db.get_citations(paper_from, "from")
         forward_to = db.get_citations(paper_to, "to")
 
-        # Check for direct edge: A -> B
         direct = any(c.target_id == paper_to for c in backward_from)
-
-        # Papers that A cites AND that also have forward citations to B
         forward_to_sources = {c.source_id for c in forward_to}
         via_papers = [c for c in backward_from if c.target_id in forward_to_sources]
 
@@ -88,22 +89,32 @@ def _run_citations(args: argparse.Namespace) -> int:
                     t = title_map.get(c.target_id, '')
                     print(f"{paper_from},{from_title},{c.target_id},{t},via")
         else:
-            print(f"CITATION BRIDGE: {paper_from} <-> {paper_to}")
-            print(f"  {paper_from}: {from_title}")
-            print(f"  {paper_to}: {to_title}")
-            print()
+            body_lines = [
+                f"[#FF8272]{paper_from}[/]  [#8E8E8E]←[/]  [#A5D5FE]{from_title[:50]}[/]",
+                f"[#FF8272]{paper_to}[/]    [#8E8E8E]→[/]  [#A5D5FE]{to_title[:50]}[/]",
+            ]
             if direct:
-                print(f"  DIRECT: {paper_from} cites {paper_to}")
+                body_lines.append("")
+                body_lines.append("[#B4FA72]✅ DIRECT: A cites B[/]")
             if via_papers:
                 via_ids = list({c.target_id for c in via_papers})
                 paper_map = db.get_papers_bulk(via_ids)
                 title_map = {pid: (paper_map[pid].title or '') for pid in via_ids if pid in paper_map}
-                print(f"  INDIRECT ({len(via_papers)} connections):")
+                body_lines.append("")
+                body_lines.append(f"[#FEFDC2]⚡ INDIRECT ({len(via_papers)} connections):[/]")
                 for c in via_papers:
                     t = title_map.get(c.target_id, '?')
-                    print(f"    {paper_from} -> {c.target_id} ({t}) -> {paper_to}")
+                    t_short = (t[:50] + "...") if len(t) > 53 else t
+                    body_lines.append(f"  [#D0D1FE]{paper_from}[/] → [#FF8272]{c.target_id}[/] → [#FF8272]{paper_to}[/]")
+                    body_lines.append(f"    [#8E8E8E]{t_short}[/]")
             if not direct and not via_papers:
-                print("  No citation path found between these papers.")
+                body_lines.append("")
+                body_lines.append("[#8E8E8E]No citation path found between these papers[/]")
+
+            c.print(WarpBlocks.panel(
+                f"Citation Bridge — [#FF8272]{paper_from}[/] ↔ [#FF8272]{paper_to}[/]",
+                "\n".join(body_lines)
+            ))
         return 0
 
     # Single-direction mode
@@ -121,12 +132,26 @@ def _run_citations(args: argparse.Namespace) -> int:
         print("paper,count")
         print(f"{paper_id},{len(citations)}")
     else:
-        label = "BACKWARD CITATIONS" if direction == "from" else "FORWARD CITATIONS"
-        print(f"{label} — {paper_id}: {source_title}")
-        if not citations:
-            print("  No citations")
+        label = "Backward Citations" if direction == "from" else "Forward Citations"
+        citation_rows = []
+        for c in citations:
+            cid = c.target_id if direction == "from" else c.source_id
+            citation_rows.append([f"[#D0D1FE]{cid}[/]"])
+
+        c.print(WarpBlocks.panel(
+            f"{label} — [#FF8272]{paper_id}[/]",
+            f"[#A5D5FE]{source_title[:60]}[/]"
+        ))
+        if citation_rows:
+            c.print(WarpBlocks.table(
+                ["Paper ID"],
+                citation_rows,
+                title=f"{len(citation_rows)} Citation(s)"
+            ))
         else:
-            for c in citations:
-                print(f"  {c.target_id if direction == 'from' else c.source_id}")
+            c.print(WarpBlocks.panel(
+                "No Citations",
+                "[#8E8E8E]This paper has no citations in the database[/]"
+            ))
 
     return 0

@@ -546,44 +546,123 @@ class EvolutionTracker:
         return stats
 
     def render_stats(self) -> str:
-        """Render exploration statistics overview as text."""
+        """Render exploration statistics overview (WarpBlocks Rich)."""
+        from rich.console import Console
+        from cli.warp import WarpBlocks
+        c = Console()
         stats = self.get_exploration_stats()
-        header = [
-            "═" * 60,
-            "📊 探索统计概览",
-            "═" * 60,
-            "",
-            f"总事件: {stats['total_events']}  |  探索主题: {stats['total_topics']}",
+
+        overview_rows = [
+            ["Total Events",  f"[#A5D5FE]{stats['total_events']}[/]"],
+            ["Topics",        f"[#A5D5FE]{stats['total_topics']}[/]"],
+        ]
+
+        rows_action, rows_gap, rows_topic, rows_tag = [], [], [], []
+        for key, title, sort_items, limit in [
+            ("recent_action_breakdown", "⚡ Actions",      False, None),
+            ("top_gap_types",          "📈 Top Gap Types",False, 5),
+            ("topic_frequency",         "🔑 Topics",         False, 5),
+            ("preference_tags",         "🏷️ Tags",         False, 5),
+        ]:
+            raw = stats.get(key)
+            if not raw:
+                continue
+            if isinstance(raw, list):
+                items = list(raw)[:limit] if limit else list(raw)
+            else:
+                items = sorted(raw.items(), key=lambda x: -x[1] if isinstance(x[1], (int, float)) else 0)[:limit]
+            for item in items:
+                if isinstance(item, tuple):
+                    k, v = item
+                    if key == "preference_tags":
+                        level = "[#B4FA72]●[/]" if v >= 0.6 else "[#FEFDC2]●[/]" if v >= 0.3 else "[#8E8E8E]●[/]"
+                        rows_tag.append([level, k, f"[#A5D5FE]{v:.0%}[/]"])
+                    elif key == "topic_frequency":
+                        rows_topic.append([k, f"[#A5D5FE]{v}×[/]"])
+                    elif key == "recent_action_breakdown":
+                        rows_action.append([k, f"[#A5D5FE]{v}[/]"])
+                else:
+                    rows_gap.append([str(item)[:30]])
+
+        parts = [
+            WarpBlocks.panel(
+                "[#FF8272]📊 Exploration Statistics[/]",
+                f"[#A5D5FE]{stats['total_events']} events[/] · [#A5D5FE]{stats['total_topics']} topics[/]",
+                width=65,
+            ),
             "",
         ]
-        sections = [
-            ("recent_action_breakdown", "⚡ 最近行为分布:", False, None),
-            ("top_gap_types", "📈 偏好的 Gap 类型 (Top 5):", False, 5),
-            ("topic_frequency", "🔑 热门研究主题:", False, 5),
-            ("preference_tags", "🏷️ 偏好标签:", False, None),
-        ]
-        return "\n".join(header + self._render_profile_sections(stats, sections))
+        c.print(WarpBlocks.table(["Metric", "Value"], overview_rows))
+        c.print()
+        if rows_action:
+            c.print(WarpBlocks.table(["Action", "Count"], rows_action, title="Recent Actions"))
+            c.print()
+        if rows_gap:
+            c.print(WarpBlocks.table(["Gap Type"], rows_gap, title="Top Gap Types"))
+            c.print()
+        if rows_topic:
+            c.print(WarpBlocks.table(["Topic", "Count"], rows_topic, title="Top Topics"))
+            c.print()
+        if rows_tag:
+            c.print(WarpBlocks.table(["", "Tag", "Score"], rows_tag, title="Preference Tags"))
+        return "\n".join(parts)
 
     def render_profile(self) -> str:
-        """Render user preference profile as text."""
+        """Render user preference profile (WarpBlocks Rich)."""
+        from rich.console import Console
+        from cli.warp import WarpBlocks
+        c = Console()
         profile = self._load_profile()
         stats = self.get_exploration_stats()
-        header = [
-            "═" * 60,
-            "🧠 研究偏好画像",
-            "═" * 60,
-            "",
-            f"总探索事件: {stats['total_events']}",
-            f"探索主题数: {stats['total_topics']}",
+
+        # preference_tags
+        tag_rows = []
+        raw = stats.get("preference_tags")
+        if raw:
+            if isinstance(raw, list):
+                items = list(raw)
+            else:
+                items = sorted(raw.items(), key=lambda x: -x[1] if isinstance(x[1], (int, float)) else 0)
+            for item in items:
+                if isinstance(item, tuple):
+                    k, v = item
+                    level = "[#B4FA72]●[/]" if v >= 0.6 else "[#FEFDC2]●[/]" if v >= 0.3 else "[#8E8E8E]●[/]"
+                    tag_rows.append([level, k, f"[#A5D5FE]{v:.0%}[/]"])
+
+        # top_gap_types
+        gap_rows = []
+        raw = stats.get("top_gap_types")
+        if raw:
+            items = list(raw) if isinstance(raw, list) else list(raw.items())[:5]
+            for item in items:
+                score = profile.gap_type_preferences.get(str(item) if isinstance(item, str) else item[0], 0)
+                gap_rows.append([str(item)[:30] if isinstance(item, str) else item[0][:30], f"[#A5D5FE]{score:.2f}[/]"])
+
+        # topic_frequency
+        topic_rows = []
+        raw = stats.get("topic_frequency")
+        if raw:
+            items = sorted(raw.items(), key=lambda x: -x[1])[:5] if isinstance(raw, dict) else list(raw)[:5]
+            for item in items:
+                topic_rows.append([str(item[0])[:35], f"[#A5D5FE]{item[1]}×[/]"])
+
+        parts = [
+            WarpBlocks.panel(
+                "[#FF8272]🧠 Research Preference Profile[/]",
+                f"[#A5D5FE]{stats['total_events']} events[/] · [#A5D5FE]{stats['total_topics']} topics[/]",
+                width=65,
+            ),
             "",
         ]
-        sections = [
-            ("preference_tags", "🏷️ 偏好标签:", False, None),
-            ("top_gap_types", "📊 偏好的空白类型 (Top 5):", False, None),
-            ("topic_frequency", "📚 热门研究主题:", False, None),
-            ("recent_action_breakdown", "⚡ 最近行为分布:", False, None),
-        ]
-        return "\n".join(header + self._render_profile_sections(stats, sections, profile))
+        if tag_rows:
+            c.print(WarpBlocks.table(["", "Tag", "Score"], tag_rows, title="Preference Tags"))
+            c.print()
+        if gap_rows:
+            c.print(WarpBlocks.table(["Gap Type", "Score"], gap_rows, title="Top Gap Types"))
+            c.print()
+        if topic_rows:
+            c.print(WarpBlocks.table(["Topic", "Count"], topic_rows, title="Top Topics"))
+        return "\n".join(parts)
 
     def _render_profile_sections(
         self,
@@ -777,43 +856,46 @@ class EvolutionTracker:
         first_ts: str,
         last_ts: str,
     ) -> str:
-        """Render the preferences evolution as an ASCII table."""
+        """Render the preferences evolution as a WarpBlocks table."""
+        from rich.console import Console
+        from cli.warp import WarpBlocks
+        c = Console()
+
         active_types = [gt for gt in running if running.get(gt, 0.0) != 0.0]
         if not active_types:
             active_types = sorted(running.keys())
 
-        header_width = max(len("gap_type"), max(len(gt) for gt in active_types))
-        val_width = 8
         total_events = len(events)
-
-        lines = [
-            "═" * 70,
-            "📈 Gap Type 偏好演化时间轴",
-            "═" * 70,
-            "",
-            f"  事件总数: {total_events}  |  周期: {first_ts} ~ {last_ts}",
-            "",
-            f"  {'gap_type':<{header_width}}  {'初始':>{val_width}}  {'当前':>{val_width}}  趋势",
-            f"  {'─' * header_width}  {'─' * val_width}  {'─' * val_width}  {'─' * 4}",
-        ]
-
+        rows = []
         for gt in sorted(active_types, key=lambda g: running.get(g, 0.0), reverse=True):
             first_v = first_nonzero.get(gt, 0.0)
             cur_v = running.get(gt, 0.0)
             arrow = self._trend_arrow(first_v, cur_v)
-            bar = "🟢" if cur_v > 0.1 else ("🔴" if cur_v < -0.05 else "⚪")
-            val_str = f"{first_v:>+6.2f}" if first_v != 0.0 else "  .00"
-            cur_str = f"{cur_v:>+6.2f}" if cur_v != 0.0 else "  .00"
-            lines.append(f"  {bar} {gt:<{header_width - 2}}  {val_str}  {cur_str}  {arrow}")
+            bar = "[#B4FA72]●[/]" if cur_v > 0.1 else "[#FF5555]●[/]" if cur_v < -0.05 else "[#8E8E8E]●[/]"
+            val_str = f"{first_v:>+6.2f}" if first_v != 0.0 else "   —  "
+            cur_str = f"{cur_v:>+6.2f}" if cur_v != 0.0 else "   —  "
+            rows.append([bar, gt[:25], f"[#A5D5FE]{val_str.strip()}[/]", f"[#A5D5FE]{cur_str.strip()}[/]", arrow])
 
-        lines.extend([
-            "",
-            "  解释: 🟢 = 正偏好(优先)  🔴 = 负偏好(规避)  ⚪ = 中性",
-            "  趋势: ↑↑/↑ 偏好增强   ↓↓/↓ 偏好减弱   ~  稳定",
-            "",
-            "═" * 70,
-        ])
-        return "\n".join(lines)
+        header = WarpBlocks.panel(
+            "[#FF8272]📈 Gap Type Preference Evolution[/]",
+            f"[#A5D5FE]{total_events} events[/] · [#A5D5FE]{first_ts}[/] → [#A5D5FE]{last_ts}[/]",
+            width=70,
+        )
+        c.print(header)
+        c.print()
+        c.print(WarpBlocks.table(
+            ["", "Gap Type", "Initial", "Current", "Trend"],
+            rows,
+            title=f"Preference Timeline ({len(active_types)} types)"
+        ))
+        c.print()
+        c.print(WarpBlocks.section(
+            "Legend",
+            "[#B4FA72]●[/]  positive (preferred)    [#FF5555]●[/]  negative (avoided)    [#8E8E8E]●[/]  neutral",
+            "↑↑/↑  growing    ↓↓/↓  declining    ~  stable",
+            width=65,
+        ))
+        return ""
 
     def _event_weight(self, event: EvolutionEvent) -> float:
         """Compute preference weight for a single event for the time-decay cache."""
@@ -824,45 +906,57 @@ class EvolutionTracker:
         return weight
 
     def render_topic_history(self, topic: str) -> str:
-        """Render exploration history for a topic."""
+        """Render exploration history for a topic (WarpBlocks Rich)."""
+        from rich.console import Console
+        from cli.warp import WarpBlocks
+        c = Console()
         events = self.get_topic_history(topic)
 
         if not events:
-            return f"暂无 '{topic}' 的探索记录"
+            return WarpBlocks.panel("No History", f"[#8E8E8E]暂无 '{topic}' 的探索记录[/]")
 
-        lines = [
-            "═" * 60,
-            f"📖 '{topic}' 探索历史",
-            "═" * 60,
+        action_colors = {
+            ExplorationAction.VIEWED: "[#A5D5FE]",
+            ExplorationAction.ACCEPTED: "[#B4FA72]",
+            ExplorationAction.REJECTED: "[#FF5555]",
+            ExplorationAction.EXPANDED: "[#FEFDC2]",
+            ExplorationAction.HYPOTHESIZED: "[#D0D1FE]",
+        }
+        action_icons = {
+            ExplorationAction.VIEWED: "👁️",
+            ExplorationAction.ACCEPTED: "✅",
+            ExplorationAction.REJECTED: "❌",
+            ExplorationAction.EXPANDED: "📋",
+            ExplorationAction.HYPOTHESIZED: "🎯",
+        }
+
+        rows = []
+        for event in events[-30:]:
+            color = action_colors.get(event.action, "")
+            icon = action_icons.get(event.action, "•")
+            time = event.timestamp[11:16]
+            gap_short = event.gap_title[:35] if event.gap_title else "[#8E8E8E]N/A[/]"
+            rows.append([
+                f"[#8E8E8E]{time}[/]",
+                f"{color}{icon}[/]",
+                f"{color}{event.action.value}[/]",
+                gap_short,
+            ])
+
+        parts = [
+            WarpBlocks.panel(
+                f"[#FF8272]📖 '{topic}'[/] — Exploration History",
+                f"[#A5D5FE]{len(events)} events[/]",
+                width=65,
+            ),
             "",
         ]
-
-        current_date = ""
-        for event in events[-30:]:  # Last 30 events
-            date = event.timestamp[:10]
-            if date != current_date:
-                current_date = date
-                lines.append(f"\n📅 {date}")
-                lines.append("-" * 40)
-
-            action_icon = {
-                ExplorationAction.VIEWED: "👁️",
-                ExplorationAction.ACCEPTED: "✅",
-                ExplorationAction.REJECTED: "❌",
-                ExplorationAction.EXPANDED: "📋",
-                ExplorationAction.HYPOTHESIZED: "🎯",
-            }.get(event.action, "•")
-
-            time = event.timestamp[11:16]
-            gap_short = event.gap_title[:30] if event.gap_title else "N/A"
-
-            lines.append(
-                f"  {time} {action_icon} [{event.action.value}] {gap_short}"
-            )
-
-        lines.append("")
-        lines.append("═" * 60)
-        return "\n".join(lines)
+        c.print(WarpBlocks.table(
+            ["Time", "", "Action", "Gap"],
+            rows,
+            title=f"Last {min(30, len(events))} Events"
+        ))
+        return "\n".join(parts)
 
     # ─── Persistence ─────────────────────────────────────────────────────────────
 
