@@ -464,6 +464,73 @@ def _extract_rubric_scores(rubric: Dict[str, Any]) -> Dict[str, int]:
     }
 
 
+def _render_page_heatmap(
+    claims: List[Dict[str, Any]],
+    unverified: List[Dict[str, Any]],
+) -> str:
+    """Render a per-page confidence heatmap.
+
+    Aggregates claims by page number and renders a colour-coded
+    verification-rate strip — green/yellow/red per page.
+
+    Colour scheme (verification rate):
+      ≥ 80%  → 🟢  safe
+      50-79% → 🟡  caution
+      1-49%  → 🔴  risky
+      0%     → ⚪  no claims
+    """
+    page_stats: Dict[int, Dict[str, int]] = {}
+    for c in claims:
+        pg = int(c.get("page", 0) or 0)
+        page_stats.setdefault(pg, {"verified": 0, "unverified": 0})["verified"] += 1
+    for c in unverified:
+        pg = int(c.get("page", 0) or 0)
+        page_stats.setdefault(pg, {"verified": 0, "unverified": 0})["unverified"] += 1
+
+    if not page_stats:
+        return ""
+
+    pages = sorted(page_stats.keys())
+    min_pg, max_pg = min(pages), max(pages)
+    shown_pages = list(range(min_pg, max_pg + 1))
+
+    def _block(rate: float, count: int) -> str:
+        if count == 0:
+            return "⚪"
+        if rate >= 0.80:
+            return "🟢"
+        if rate >= 0.50:
+            return "🟡"
+        return "🔴"
+
+    def _label(rate: float, count: int) -> str:
+        if count == 0:
+            return "无"
+        if rate >= 0.80:
+            return "安全"
+        if rate >= 0.50:
+            return "存疑"
+        return "高危"
+
+    rows = []
+    rows.append("")
+    rows.append("### 📍 分页置信热图\n")
+    rows.append(f"| 页码 | 状态 | 验证率 | 已验 | 未验 |")
+    rows.append(f"|------|------|--------|------|------|")
+    for pg in shown_pages:
+        stats = page_stats.get(pg, {"verified": 0, "unverified": 0})
+        v = stats["verified"]
+        u = stats["unverified"]
+        total = v + u
+        rate = v / total if total > 0 else 0.0
+        flag = "⚠️" if rate < 0.50 and total > 0 else ("💡" if rate >= 0.80 else "")
+        rows.append(
+            f"| {pg} | {flag} {_block(rate, total)} {_label(rate, total)} "
+            f"| {rate:.0%} | {v} | {u} |"
+        )
+    return "\n".join(rows)
+
+
 def _build_claims_section(claims_data: Optional[Dict[str, Any]]) -> str:
     """Build citation verification claims section for P-note.
 
@@ -493,6 +560,12 @@ def _build_claims_section(claims_data: Optional[Dict[str, Any]]) -> str:
     parts.append(f"| ✅ 已验证 | {verified_count} | {rate:.0f}% |")
     parts.append(f"| ⚠️ 未验证 | {unverified_count} | — |")
     parts.append("")
+
+    # Per-page heatmap
+    heatmap = _render_page_heatmap(claims, unverified)
+    if heatmap:
+        parts.append(heatmap)
+        parts.append("")
 
     _TYPE_ICONS = {
         "numerical":   "📊",
