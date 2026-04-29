@@ -19,6 +19,7 @@ import click
 from pdf.visual import VisualExtractor
 from db.database import Database, ExperimentTableRecord
 from cli._shared import print_success, print_error, print_info
+from cli.warp import WarpBlocks
 
 
 def _build_visual_parser(subparsers):
@@ -186,12 +187,24 @@ def visual_extract(pdf: str, output: str, dpi: int, format: str, save_db: str = 
 
 def visual_status():
     """Show visual extraction capabilities."""
-    print_info("Visual Extraction Module")
-    print_info("  Extracts: figures, LaTeX formulas, tables")
-    print_info("\nUsage:")
-    print_info("  airos visual extract paper.pdf --output figures/")
-    print_info("  airos visual query 2604.22754")
-    print_info("  airos visual list")
+    from rich.console import Console
+    c = Console()
+    c.rule("[bold #FF8272]  Visual Extraction  [/]")
+    print()
+    rows = [
+        ["[#A5D5FE]✓[/]", "Figure extraction", "PNG/JPG from PDF pages"],
+        ["[#A5D5FE]✓[/]", "LaTeX rendering", "Formulas as high-DPI images"],
+        ["[#A5D5FE]✓[/]", "Table extraction", "Markdown + CSV + JSON"],
+    ]
+    c.print(WarpBlocks.table(["", "Capability", "Format"], rows, title="Supported Types"))
+    c.print()
+    print(WarpBlocks.section(
+        "Usage",
+        "[#A5D5FE]airos visual extract[/] paper.pdf --output figures/",
+        "[#A5D5FE]airos visual query[/] 2604.22754",
+        "[#A5D5FE]airos visual list[/]",
+        width=60
+    ))
 
 
 def visual_query(paper_id: str, page: int, keyword: str, format: str):
@@ -273,17 +286,29 @@ def visual_list(limit: int):
             ORDER BY MAX(created_at) DESC
             LIMIT ?
         """, (limit,))
-        rows = cursor.fetchall()
+        raw_rows = cursor.fetchall()
 
-        if not rows:
-            print_info("No papers with stored tables found.")
+        if not raw_rows:
+            from rich.console import Console
+            c = Console()
+            c.rule("[bold #FF8272]  Visual Tables  [/]")
+            c.print()
+            print(WarpBlocks.panel("No Results", "[#8E8E8E]No papers with stored tables found[/]"))
             return
 
-        print_success(f"Papers with stored tables ({len(rows)} results):\n")
-        print(f"{'Paper ID':<15} {'Tables':<8} {'Pages'}")
-        print("-" * 40)
-        for row in rows:
-            print(f"{row[0]:<15} {row[1]:<8} {row[2]}")
+        from rich.console import Console
+        c = Console()
+        c.rule("[bold #FF8272]  Visual Tables  [/]")
+        c.print()
+        rows = []
+        for row in raw_rows:
+            badge = "[#B4FA72]●[/]" if row[1] > 0 else "[#8E8E8E]○[/]"
+            rows.append([badge, row[0], str(row[1]), str(row[2])])
+        c.print(WarpBlocks.table(
+            ["", "Paper ID", "Tables", "Pages"],
+            rows,
+            title=f"Papers with Stored Tables ({len(raw_rows)})"
+        ))
 
     finally:
         db.close()
