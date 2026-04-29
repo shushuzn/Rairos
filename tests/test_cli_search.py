@@ -4,7 +4,7 @@ import json
 from unittest.mock import MagicMock, patch
 
 
-from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, _run_citations, _run_stats, _run_cite_stats, _run_dedup_semantic, infer_tags_if_empty, main
+from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, _run_citations, _run_stats, _run_cite_stats, _run_dedup_semantic, _run_kg, infer_tags_if_empty, main
 from core import Paper
 
 
@@ -2179,4 +2179,279 @@ class TestRunDedupSemantic:
                          threshold=0.85, limit=20, format="text", dedup_semantic=False)
         result = _run_dedup_semantic(args)
 
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_kg tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunKgStats:
+    """Test kg stats subcommand."""
+
+    def _kg_args(self, kg_cmd, **kwargs):
+        defaults = dict(format="text", kg_cmd=kg_cmd)
+        defaults.update(kwargs)
+        ns = argparse.Namespace()
+        for k, v in defaults.items():
+            setattr(ns, k, v)
+        return ns
+
+    def test_stats_text_format_shows_totals(self, capsys):
+        from kg import KGManager
+        mock_kg = KGManager.__new__(KGManager)
+        mock_kg.stats = MagicMock(return_value={
+            "total_nodes": 100,
+            "total_edges": 250,
+            "nodes_by_type": {"Paper": 50, "Tag": 30},
+            "edges_by_type": {"cites": 200, "has_tag": 50},
+        })
+
+        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+            args = self._kg_args("stats", format="text")
+            result = _run_kg(args)
+
+        out = capsys.readouterr().out
+        assert "Total nodes" in out or "100" in out
+        assert result == 0
+
+    def test_stats_warp_format_shows_tables(self, capsys):
+        from kg import KGManager
+        mock_kg = KGManager.__new__(KGManager)
+        mock_kg.stats = MagicMock(return_value={
+            "total_nodes": 100,
+            "total_edges": 250,
+            "nodes_by_type": {"Paper": 50, "Tag": 30},
+            "edges_by_type": {"cites": 200, "has_tag": 50},
+        })
+
+        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+            args = self._kg_args("stats", format="warp")
+            result = _run_kg(args)
+
+        out = capsys.readouterr().out
+        assert "Nodes" in out or "100" in out
+        assert result == 0
+
+
+class TestRunKgGraph:
+    """Test kg graph subcommand."""
+
+    def _kg_args(self, kg_cmd, **kwargs):
+        defaults = dict(format="text", kg_cmd=kg_cmd, depth=2)
+        defaults.update(kwargs)
+        ns = argparse.Namespace()
+        for k, v in defaults.items():
+            setattr(ns, k, v)
+        return ns
+
+    def test_graph_paper_not_found(self, capsys):
+        from kg import KGManager
+        mock_kg = KGManager.__new__(KGManager)
+        mock_kg.get_node_by_entity = MagicMock(return_value=None)
+
+        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+            args = self._kg_args("graph", paper_id="nonexistent")
+            result = _run_kg(args)
+
+        out = capsys.readouterr().out
+        assert "not found" in out
+        assert result == 1
+
+    def test_graph_text_format_shows_neighbors(self, capsys):
+        from kg import KGManager
+        mock_kg = KGManager.__new__(KGManager)
+        paper_node = {"id": "n1", "type": "Paper", "entity_id": "2301.00001", "label": "Test Paper", "properties": {}, "created_at": ""}
+        neighbors = [
+            ({"id": "n2", "type": "Paper", "entity_id": "2301.00002", "label": "Neighbor Paper", "properties": {}, "created_at": ""},
+             {"id": "e1", "source_id": "n1", "target_id": "n2", "relation_type": "cites"},
+             1),
+        ]
+        mock_kg.get_node_by_entity = MagicMock(return_value=paper_node)
+        mock_kg.find_neighbors = MagicMock(return_value=neighbors)
+
+        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+            args = self._kg_args("graph", paper_id="2301.00001", format="text", depth=2)
+            result = _run_kg(args)
+
+        out = capsys.readouterr().out
+        assert "2301.00001" in out
+        assert "neighbor" in out.lower()
+        assert result == 0
+
+    def test_graph_json_format(self, capsys):
+        from kg import KGManager
+        mock_kg = KGManager.__new__(KGManager)
+        paper_node = {"id": "n1", "type": "Paper", "entity_id": "2301.00001", "label": "Test", "properties": {}, "created_at": ""}
+        neighbors = []
+        mock_kg.get_node_by_entity = MagicMock(return_value=paper_node)
+        mock_kg.find_neighbors = MagicMock(return_value=neighbors)
+
+        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+            args = self._kg_args("graph", paper_id="2301.00001", format="json")
+            result = _run_kg(args)
+
+        out = capsys.readouterr().out
+        assert "center" in out or "2301.00001" in out
+        assert result == 0
+
+
+class TestRunKgPath:
+    """Test kg path subcommand."""
+
+    def _kg_args(self, kg_cmd, **kwargs):
+        defaults = dict(kg_cmd=kg_cmd)
+        defaults.update(kwargs)
+        ns = argparse.Namespace()
+        for k, v in defaults.items():
+            setattr(ns, k, v)
+        return ns
+
+    def test_path_node_a_not_found(self, capsys):
+        from kg import KGManager
+        mock_kg = KGManager.__new__(KGManager)
+        mock_kg.get_node_by_entity = MagicMock(return_value=None)
+        mock_kg.get_node = MagicMock(return_value=None)
+
+        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+            args = self._kg_args("path", idA="nonexistent", idB="also-none")
+            result = _run_kg(args)
+
+        out = capsys.readouterr().out
+        assert "not found" in out
+        assert result == 1
+
+    def test_path_no_path_found(self, capsys):
+        from kg import KGManager
+        mock_kg = KGManager.__new__(KGManager)
+        mock_kg.get_node_by_entity = MagicMock(side_effect=[
+            {"id": "n1", "type": "Paper", "label": "A", "entity_id": "A", "properties": {}, "created_at": ""},
+            {"id": "n2", "type": "Paper", "label": "B", "entity_id": "B", "properties": {}, "created_at": ""},
+        ])
+        mock_kg.get_node = MagicMock(return_value=None)
+        mock_kg.find_shortest_path = MagicMock(return_value=None)
+
+        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+            args = self._kg_args("path", idA="A", idB="B")
+            result = _run_kg(args)
+
+        out = capsys.readouterr().out
+        assert "No path found" in out
+        assert result == 0
+
+    def test_path_found(self, capsys):
+        from kg import KGManager
+        mock_kg = KGManager.__new__(KGManager)
+        mock_kg.get_node_by_entity = MagicMock(side_effect=[
+            {"id": "n1", "type": "Paper", "label": "Paper A", "entity_id": "A", "properties": {}, "created_at": ""},
+            {"id": "n2", "type": "Paper", "label": "Paper B", "entity_id": "B", "properties": {}, "created_at": ""},
+        ])
+        mock_kg.get_node = MagicMock(return_value=None)
+        mock_kg.find_shortest_path = MagicMock(return_value=["n1", "n3", "n2"])
+        mock_kg.get_node = MagicMock(side_effect=lambda nid: {
+            "n1": {"id": "n1", "type": "Paper", "label": "Paper A"},
+            "n3": {"id": "n3", "type": "Paper", "label": "Middle Paper"},
+            "n2": {"id": "n2", "type": "Paper", "label": "Paper B"},
+        }.get(nid))
+
+        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+            args = self._kg_args("path", idA="A", idB="B")
+            result = _run_kg(args)
+
+        out = capsys.readouterr().out
+        assert "hops" in out
+        assert "Paper A" in out or "Paper B" in out
+        assert result == 0
+
+
+class TestRunKgSearch:
+    """Test kg search subcommand."""
+
+    def _kg_args(self, kg_cmd, **kwargs):
+        defaults = dict(format="table", kg_cmd=kg_cmd, tag=None, type=None)
+        defaults.update(kwargs)
+        ns = argparse.Namespace()
+        for k, v in defaults.items():
+            setattr(ns, k, v)
+        return ns
+
+    def test_search_no_results(self, capsys):
+        from kg import KGManager
+        mock_kg = KGManager.__new__(KGManager)
+        mock_kg.find_papers_by_tag = MagicMock(return_value=[])
+        mock_kg.get_all_nodes = MagicMock(return_value=[])
+
+        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+            args = self._kg_args("search", tag="LLM", format="text")
+            result = _run_kg(args)
+
+        out = capsys.readouterr().out
+        assert "No nodes found" in out
+        assert result == 0
+
+    def test_search_by_tag_shows_results(self, capsys):
+        from kg import KGManager
+        mock_kg = KGManager.__new__(KGManager)
+        mock_kg.find_papers_by_tag = MagicMock(return_value=[
+            {"id": "n1", "type": "Paper", "label": "LLM Survey"},
+            {"id": "n2", "type": "Paper", "label": "LLM Benchmark"},
+        ])
+        mock_kg.get_all_nodes = MagicMock(return_value=[])
+
+        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+            args = self._kg_args("search", tag="LLM", format="text")
+            result = _run_kg(args)
+
+        out = capsys.readouterr().out
+        assert "LLM" in out
+        assert "LLM Survey" in out
+        assert result == 0
+
+    def test_search_by_type(self, capsys):
+        from kg import KGManager
+        mock_kg = KGManager.__new__(KGManager)
+        mock_kg.find_papers_by_tag = MagicMock(return_value=[])
+        mock_kg.get_all_nodes = MagicMock(return_value=[
+            {"id": "n1", "type": "Tag", "label": "LLM"},
+            {"id": "n2", "type": "Tag", "label": "RAG"},
+        ])
+
+        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+            args = self._kg_args("search", type="Tag", format="text")
+            result = _run_kg(args)
+
+        out = capsys.readouterr().out
+        assert "Tag" in out
+        assert result == 0
+
+    def test_search_warp_format(self, capsys):
+        from kg import KGManager
+        mock_kg = KGManager.__new__(KGManager)
+        mock_kg.find_papers_by_tag = MagicMock(return_value=[])
+        mock_kg.get_all_nodes = MagicMock(return_value=[
+            {"id": "n1", "type": "Paper", "label": "Attention Is All You Need"},
+        ])
+
+        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+            args = self._kg_args("search", format="warp")
+            result = _run_kg(args)
+
+        out = capsys.readouterr().out
+        assert "Paper" in out or "Attention" in out
+        assert result == 0
+
+    def test_search_json_format(self, capsys):
+        from kg import KGManager
+        mock_kg = KGManager.__new__(KGManager)
+        mock_kg.find_papers_by_tag = MagicMock(return_value=[])
+        mock_kg.get_all_nodes = MagicMock(return_value=[
+            {"id": "n1", "type": "Paper", "label": "Test"},
+        ])
+
+        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+            args = self._kg_args("search", format="json")
+            result = _run_kg(args)
+
+        out = capsys.readouterr().out
+        assert "n1" in out
         assert result == 0

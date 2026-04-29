@@ -111,7 +111,7 @@ def _run_kg(args: argparse.Namespace) -> int:
                 "center": paper_node,
                 "neighbors": [{"node": n, "edge": e, "depth": d} for n, e, d in neighbors],
             }
-            print(json.dumps(out, option=json.OPT_INDENT_2).decode())
+            print(json.dumps(out, indent=2))
         elif args.format == "warp":
             from rich.console import Console
             c = Console()
@@ -200,7 +200,7 @@ def _run_kg(args: argparse.Namespace) -> int:
                 print("No nodes found.")
             return 0
         if args.format == "json":
-            print(json.dumps(nodes, option=json.OPT_INDENT_2).decode())
+            print(json.dumps(nodes, indent=2))
         elif args.format == "warp":
             rows = []
             for n in nodes[:50]:
