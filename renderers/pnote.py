@@ -1,8 +1,163 @@
 """P-Note (paper note) renderer."""
+import json
+import math
 import textwrap
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from core import Paper, today_iso
+
+
+# ── Radar chart ────────────────────────────────────────────────────────────────
+
+def render_radar_chart(scores: Dict[str, int], size: int = 280) -> str:
+    """Render a 6-axis radar chart SVG from rubric scores.
+
+    Axes: Novelty · Leverage · Evidence · Cost · Moat · Adoption
+    Each score is 1-5; larger is better on all axes.
+    Cost is inverted so higher = cheaper (better).
+
+    Args:
+        scores: Dict with keys novelty/leverage/evidence/cost/moat/adoption (1-5)
+        size: SVG viewBox width/height (default 280)
+
+    Returns:
+        SVG markup string, or empty string if insufficient data.
+    """
+    AXES = [
+        ("Novelty", "创新性"),
+        ("Leverage", "杠杆效应"),
+        ("Evidence", "实验证据"),
+        ("Cost", "成本"),
+        ("Moat", "护城河"),
+        ("Adoption", "采纳信号"),
+    ]
+    n = len(AXES)
+    if n < 3:
+        return ""
+
+    # Only include axes that have valid scores
+    valid_axes = [(AXES[i][0], AXES[i][1], scores.get(AXES[i][0].lower(), 0))
+                  for i in range(n)]
+    valid_axes = [(a, b, s) for a, b, s in valid_axes if isinstance(s, (int, float)) and 1 <= s <= 5]
+    if len(valid_axes) < 3:
+        return ""
+
+    # Adjust n for valid axes only
+    n = len(valid_axes)
+    angle_step = 2 * math.pi / n
+
+    cx = cy = size / 2
+    max_radius = size / 2 - 42  # leave room for labels
+    rings = 5  # 1-5 scale
+
+    # Colour palette (professional, accessible)
+    fill_colour   = "#3b82f6"   # blue-500, ~60% opacity
+    stroke_colour = "#1d4ed8"   # blue-700
+    grid_colour   = "#94a3b8"  # slate-400
+    label_colour  = "#334155"   # slate-700
+    bg_colour     = "#f8fafc"   # slate-50
+
+    parts = [
+        f'<svg viewBox="0 0 {size} {size}" xmlns="http://www.w3.org/2000/svg" '
+        f'role="img" aria-label="论文评分雷达图">',
+        f'  <title>论文评分雷达图</title>',
+        f'  <rect width="{size}" height="{size}" fill="{bg_colour}" rx="8"/>',
+    ]
+
+    # ── Grid rings ──────────────────────────────────────────────────────────
+    for ring in range(1, rings + 1):
+        r = max_radius * ring / rings
+        ring_pts = " ".join(
+            f"{cx + r * math.sin(i * angle_step - math.pi / 2):.1f},"
+            f"{cy + r * math.cos(i * angle_step - math.pi / 2):.1f}"
+            for i in range(n)
+        )
+        parts.append(f'  <polygon points="{ring_pts}" fill="none" stroke="{grid_colour}" '
+                     f'stroke-width="0.6" stroke-dasharray="2,2"/>')
+        # Ring label (only on outermost)
+        if ring == rings:
+            parts.append(
+                f'  <text x="{cx}" y="{cy - r - 3}" text-anchor="middle" '
+                f'font-size="9" fill="{grid_colour}">5</text>'
+            )
+            parts.append(
+                f'  <text x="{cx}" y="{cy - r // 2 - 3}" text-anchor="middle" '
+                f'font-size="9" fill="{grid_colour}">{rings // 2}</text>'
+            )
+            parts.append(
+                f'  <text x="{cx}" y="{cy - 3}" text-anchor="middle" '
+                f'font-size="9" fill="{grid_colour}">1</text>'
+            )
+
+    # ── Axes (spokes) ─────────────────────────────────────────────────────
+    for i, (en, zh, _) in enumerate(valid_axes):
+        angle = i * angle_step - math.pi / 2
+        x2 = cx + max_radius * math.sin(angle)
+        y2 = cy + max_radius * math.cos(angle)
+        parts.append(f'  <line x1="{cx:.1f}" y1="{cy:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
+                     f'stroke="{grid_colour}" stroke-width="0.8"/>')
+
+    # ── Data polygon ────────────────────────────────────────────────────────
+    data_pts = " ".join(
+        f"{cx + max_radius * (s / rings) * math.sin(i * angle_step - math.pi / 2):.1f},"
+        f"{cy + max_radius * (s / rings) * math.cos(i * angle_step - math.pi / 2):.1f}"
+        for i, (_, _, s) in enumerate(valid_axes)
+    )
+    parts.append(
+        f'  <polygon points="{data_pts}" fill="{fill_colour}" fill-opacity="0.35" '
+        f'stroke="{stroke_colour}" stroke-width="1.5" stroke-linejoin="round"/>'
+    )
+
+    # ── Data point dots ─────────────────────────────────────────────────────
+    for i, (_, _, s) in enumerate(valid_axes):
+        angle = i * angle_step - math.pi / 2
+        x = cx + max_radius * (s / rings) * math.sin(angle)
+        y = cy + max_radius * (s / rings) * math.cos(angle)
+        parts.append(
+            f'  <circle cx="{x:.1f}" cy="{y:.1f}" r="3" '
+            f'fill="{stroke_colour}" stroke="{bg_colour}" stroke-width="1"/>'
+        )
+
+    # ── Axis labels ─────────────────────────────────────────────────────────
+    for i, (en, zh, s) in enumerate(valid_axes):
+        angle = i * angle_step - math.pi / 2
+        label_r = max_radius + 20
+        lx = cx + label_r * math.sin(angle)
+        ly = cy + label_r * math.cos(angle)
+        anchor = "start" if lx > cx + 10 else "end" if lx < cx - 10 else "middle"
+        parts.append(
+            f'  <text x="{lx:.1f}" y="{ly:.1f}" text-anchor="{anchor}" '
+            f'dominant-baseline="middle" font-size="10.5" font-weight="600" '
+            f'fill="{label_colour}">{zh}</text>'
+        )
+        parts.append(
+            f'  <text x="{lx:.1f}" y="{ly + 13:.1f}" text-anchor="{anchor}" '
+            f'dominant-baseline="middle" font-size="9" fill="{grid_colour}">'
+            f'{en}={s}</text>'
+        )
+
+    # ── Summary badge ───────────────────────────────────────────────────────
+    total = sum(s for _, _, s in valid_axes)
+    avg = total / n
+    badge_r = 18
+    bx, by = cx + max_radius * 0.6, cy - max_radius * 0.55
+    parts.append(
+        f'  <circle cx="{bx:.1f}" cy="{by:.1f}" r="{badge_r}" '
+        f'fill="{stroke_colour}" opacity="0.9"/>'
+    )
+    parts.append(
+        f'  <text x="{bx:.1f}" y="{by - 3}" text-anchor="middle" '
+        f'dominant-baseline="middle" font-size="11" font-weight="bold" fill="white">'
+        f'{avg:.1f}</text>'
+    )
+    parts.append(
+        f'  <text x="{bx:.1f}" y="{by + 9}" text-anchor="middle" '
+        f'dominant-baseline="middle" font-size="8" fill="white">avg</text>'
+    )
+
+    parts.append("</svg>")
+    return "\n".join(parts)
 
 
 def render_pnote(
@@ -14,6 +169,7 @@ def render_pnote(
     math_md: str = "",
     parsed_ai: Optional[Tuple[Dict[str, str], Dict[str, Any]]] = None,
     claims_data: Optional[Dict[str, Any]] = None,
+    analysis_dir: Optional[Path] = None,
 ) -> str:
     """
     Render a P-note markdown file.
@@ -62,6 +218,14 @@ def render_pnote(
 
     fm = "\n".join(frontmatter_fields)
 
+    # Build radar chart if rubric scores are available
+    radar_svg = ""
+    if parsed_ai is not None:
+        _, rubric_dict = parsed_ai
+        scores = _extract_rubric_scores(rubric_dict)
+        if scores:
+            radar_svg = render_radar_chart(scores)
+
     # Build AI draft block
     ai_block = _build_ai_block(parsed_ai, ai_draft_md)
 
@@ -85,7 +249,7 @@ def render_pnote(
     injected_sections_md = _build_injected_sections_md(parsed_ai)
 
     # Build citation verification claims section
-    claims_section = _build_claims_section(claims_data)
+    claims_section = _build_claims_section(claims_data, paper_id=p.uid, analysis_dir=analysis_dir)
 
     md = f"""\
 {fm}
@@ -242,6 +406,9 @@ def render_pnote(
 ---
 
 ## 评分量表
+
+{radar_svg}
+
 * Novelty (1-5):
 * Leverage (1-5):
 * Evidence (1-5):
@@ -300,11 +467,203 @@ def _extract_rubric_scores(rubric: Dict[str, Any]) -> Dict[str, int]:
     }
 
 
-def _build_claims_section(claims_data: Optional[Dict[str, Any]]) -> str:
+def _render_page_heatmap(
+    claims: List[Dict[str, Any]],
+    unverified: List[Dict[str, Any]],
+) -> str:
+    """Render a per-page confidence heatmap.
+
+    Aggregates claims by page number and renders a colour-coded
+    verification-rate strip — green/yellow/red per page.
+
+    Colour scheme (verification rate):
+      ≥ 80%  → 🟢  safe
+      50-79% → 🟡  caution
+      1-49%  → 🔴  risky
+      0%     → ⚪  no claims
+    """
+    page_stats: Dict[int, Dict[str, int]] = {}
+    for c in claims:
+        pg = int(c.get("page", 0) or 0)
+        page_stats.setdefault(pg, {"verified": 0, "unverified": 0})["verified"] += 1
+    for c in unverified:
+        pg = int(c.get("page", 0) or 0)
+        page_stats.setdefault(pg, {"verified": 0, "unverified": 0})["unverified"] += 1
+
+    if not page_stats:
+        return ""
+
+    pages = sorted(page_stats.keys())
+    min_pg, max_pg = min(pages), max(pages)
+    shown_pages = list(range(min_pg, max_pg + 1))
+
+    def _block(rate: float, count: int) -> str:
+        if count == 0:
+            return "⚪"
+        if rate >= 0.80:
+            return "🟢"
+        if rate >= 0.50:
+            return "🟡"
+        return "🔴"
+
+    def _label(rate: float, count: int) -> str:
+        if count == 0:
+            return "无"
+        if rate >= 0.80:
+            return "安全"
+        if rate >= 0.50:
+            return "存疑"
+        return "高危"
+
+    rows = []
+    rows.append("")
+    rows.append("### 📍 分页置信热图\n")
+    rows.append(f"| 页码 | 状态 | 验证率 | 已验 | 未验 |")
+    rows.append(f"|------|------|--------|------|------|")
+    for pg in shown_pages:
+        stats = page_stats.get(pg, {"verified": 0, "unverified": 0})
+        v = stats["verified"]
+        u = stats["unverified"]
+        total = v + u
+        rate = v / total if total > 0 else 0.0
+        flag = "⚠️" if rate < 0.50 and total > 0 else ("💡" if rate >= 0.80 else "")
+        rows.append(
+            f"| {pg} | {flag} {_block(rate, total)} {_label(rate, total)} "
+            f"| {rate:.0%} | {v} | {u} |"
+        )
+    return "\n".join(rows)
+
+
+def _render_cross_paper_comparison(
+    paper_id: str,
+    claims_data: Optional[Dict[str, Any]],
+    analysis_dir: Optional[Path] = None,
+) -> str:
+    """Render a cross-paper citation verification rate comparison table.
+
+    Reads sibling paper_analysis.json files from analysis_dir/.analysis/
+    and compares this paper's verification rate against others.
+
+    Colour scheme:
+      current paper  → bold
+      ≥ 80% verified → 🟢
+      50-79%         → 🟡
+      < 50%          → 🔴
+    """
+    if analysis_dir is None:
+        analysis_dir = Path.cwd() / "AI-Research" / ".analysis"
+
+    # ── Aggregate per-paper verification stats ───────────────────────────────
+    papers: List[Dict[str, Any]] = []
+
+    try:
+        if not analysis_dir.is_dir():
+            return ""
+    except Exception:
+        return ""
+
+    try:
+        for json_path in sorted(analysis_dir.glob("*/paper_analysis.json")):
+            try:
+                data = json.loads(json_path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+
+            pid = data.get("paper_id", json_path.parent.name)
+            claims = data.get("claims", [])
+            unverified = data.get("unverified_claims", [])
+
+            total = len(claims) + len(unverified)
+            verified = len(claims)
+            rate = (verified / total * 100) if total > 0 else 0.0
+
+            # Build label from rubric overall field or fallback to paper_id
+            rubric = data.get("rubric", {})
+            overall = rubric.get("overall", "")
+            title = rubric.get("title", "")
+            label = (overall[:60] + "…") if len(overall) > 60 else overall
+            if not label:
+                label = title[:60] if title else pid
+
+            papers.append({
+                "paper_id": pid,
+                "label": label,
+                "verified": verified,
+                "unverified": len(unverified),
+                "total": total,
+                "rate": rate,
+                "is_current": pid == paper_id,
+            })
+    except Exception:
+        return ""
+
+    if not papers:
+        return ""
+
+    # Sort: current paper first, then by verification rate descending
+    current = [p for p in papers if p["is_current"]]
+    others = [p for p in papers if not p["is_current"]]
+    others.sort(key=lambda x: x["rate"], reverse=True)
+    sorted_papers = current + others
+
+    if len(sorted_papers) < 2:
+        return ""
+
+    # ── Render ────────────────────────────────────────────────────────────
+    rows = []
+    rows.append("")
+    rows.append("### 📊 跨论文引用验证对比\n")
+    rows.append(f"| 论文 | 已验 | 未验 | 验证率 |")
+    rows.append(f"|------|------|------|--------|")
+
+    for p in sorted_papers:
+        if p["rate"] >= 80:
+            flag = "🟢"
+        elif p["rate"] >= 50:
+            flag = "🟡"
+        else:
+            flag = "🔴"
+
+        marker = "**" if p["is_current"] else ""
+        label = p["label"] if p["is_current"] else p["paper_id"]
+        rows.append(
+            f"| {marker}{flag} {label}{marker} "
+            f"| {p['verified']} | {p['unverified']} | {p['rate']:.0f}% |"
+        )
+
+    # ── Current paper's own stats (from claims_data) ─────────────────────
+    if claims_data and not any(p["is_current"] for p in papers):
+        # No analysis file for current paper yet — use runtime claims_data
+        claims = claims_data.get("claims", [])
+        unverified = claims_data.get("unverified_claims", [])
+        total = len(claims) + len(unverified)
+        verified = len(claims)
+        rate = (verified / total * 100) if total > 0 else 0.0
+        if total > 0:
+            if rate >= 80:
+                flag = "🟢"
+            elif rate >= 50:
+                flag = "🟡"
+            else:
+                flag = "🔴"
+            rows.append(
+                f"| **{flag} {paper_id}** "
+                f"| {verified} | {len(unverified)} | {rate:.0f}% |"
+            )
+
+    return "\n".join(rows)
+
+
+def _build_claims_section(
+    claims_data: Optional[Dict[str, Any]],
+    paper_id: str = "",
+    analysis_dir: Optional[Path] = None,
+) -> str:
     """Build citation verification claims section for P-note.
 
     Renders verified and unverified claims from PaperAnalysisResult
-    with clear visual differentiation.
+    with clear visual differentiation, plus an optional cross-paper
+    comparison table.
     """
     if not claims_data:
         return ""
@@ -330,15 +689,33 @@ def _build_claims_section(claims_data: Optional[Dict[str, Any]]) -> str:
     parts.append(f"| ⚠️ 未验证 | {unverified_count} | — |")
     parts.append("")
 
+    # Per-page heatmap
+    heatmap = _render_page_heatmap(claims, unverified)
+    if heatmap:
+        parts.append(heatmap)
+        parts.append("")
+
+    _TYPE_ICONS = {
+        "numerical":   "📊",
+        "methodology": "🔧",
+        "descriptive": "📝",
+    }
+
+    def _type_label(claim_type: str) -> str:
+        icon = _TYPE_ICONS.get(claim_type, "📝")
+        label = {"numerical": "数字类", "methodology": "方法论", "descriptive": "描述性"}.get(claim_type, "描述性")
+        return f"{icon} {label}"
+
     # Verified claims
     if claims:
         parts.append("### ✅ 已验证 Claims\n")
         for i, c in enumerate(claims, 1):
             page = c.get("page", "?")
             chunk = c.get("chunk_text", "")
-            # Truncate long source chunks
-            snippet = chunk[:120] + "..." if len(chunk) > 120 else chunk
-            parts.append(f"{i}. **[Page {page}]** {chunk}\n")
+            score = c.get("evidence_score", 0.0)
+            ctype = c.get("claim_type", "")
+            type_str = _type_label(ctype)
+            parts.append(f"{i}. {type_str} · **[Page {page}]** 证据强度 {score:.0%}  {chunk}\n")
 
     # Unverified claims - these need attention
     if unverified:
@@ -346,12 +723,20 @@ def _build_claims_section(claims_data: Optional[Dict[str, Any]]) -> str:
         for i, c in enumerate(unverified, 1):
             page = c.get("page", "?")
             chunk = c.get("chunk_text", "")
+            score = c.get("evidence_score", 0.0)
             note = c.get("verification_note", "无法在原文找到支撑文本")
-            snippet = chunk[:120] + "..." if len(chunk) > 120 else chunk
+            ctype = c.get("claim_type", "")
+            type_str = _type_label(ctype)
             parts.append(
-                f"{i}. **[Page {page}]** {chunk}\n"
+                f"{i}. {type_str} · **[Page {page}]** 证据强度 {score:.0%}  {chunk}\n"
                 f"   > 🔍 未验证原因：{note}\n"
             )
+
+    # Cross-paper comparison (after claim lists)
+    comparison = _render_cross_paper_comparison(paper_id, claims_data, analysis_dir)
+    if comparison:
+        parts.append(comparison)
+        parts.append("")
 
     return "\n".join(parts)
 
