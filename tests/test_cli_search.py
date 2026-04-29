@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 
 
 from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, _run_citations, _run_stats, _run_cite_stats, _run_dedup_semantic, _run_kg, _run_trend, infer_tags_if_empty, main
+from cli.cmd.cite_fetch import _work_to_arxiv_id, _work_to_paper_record
 from core import Paper
 
 
@@ -2713,3 +2714,238 @@ class TestRunTrend:
         call_kwargs = mock_analyzer.analyze.call_args.kwargs
         assert call_kwargs["year_range"] == (2021, 2024)
         assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _work_to_arxiv_id tests (pure function — no mocking needed)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestWorkToArxivId:
+    """Test _work_to_arxiv_id pure function."""
+
+    def test_arxiv_paper_standard_doi(self):
+        """DOI containing /arxiv. returns the arXiv ID suffix."""
+        work = {
+            "ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001"}
+        }
+        assert _work_to_arxiv_id(work) == "2301.00001"
+
+    def test_arxiv_paper_uppercase_doi(self):
+        """Case-insensitive match on /arxiv. in DOI."""
+        work = {
+            "ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001"}
+        }
+        assert _work_to_arxiv_id(work) == "2301.00001"
+
+    def test_non_arxiv_paper(self):
+        """DOI without /arxiv. returns None."""
+        work = {
+            "ids": {"doi": "https://doi.org/10.1234/journal.2024.001"}
+        }
+        assert _work_to_arxiv_id(work) is None
+
+    def test_none_doi(self):
+        """Missing DOI returns None."""
+        work = {"ids": {}}
+        assert _work_to_arxiv_id(work) is None
+
+    def test_null_doi(self):
+        """Explicitly null DOI is handled gracefully."""
+        work = {"ids": {"doi": None}}
+        assert _work_to_arxiv_id(work) is None
+
+    def test_empty_doi(self):
+        """Empty string DOI returns None."""
+        work = {"ids": {"doi": ""}}
+        assert _work_to_arxiv_id(work) is None
+
+    def test_no_ids_key(self):
+        """Work dict with no 'ids' key returns None."""
+        work = {"title": "Some paper"}
+        assert _work_to_arxiv_id(work) is None
+
+    def test_ids_is_none(self):
+        """'ids' key explicitly set to None is handled."""
+        work = {"ids": None}
+        assert _work_to_arxiv_id(work) is None
+
+    def test_arxiv_id_with_version(self):
+        """arXiv ID with version suffix is returned as-is."""
+        work = {
+            "ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001v2"}
+        }
+        # The function splits on /arxiv. and takes the last part, preserving version
+        assert _work_to_arxiv_id(work) == "2301.00001v2"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _work_to_paper_record tests (pure function — no mocking needed)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestWorkToPaperRecord:
+    """Test _work_to_paper_record pure function."""
+
+    def test_with_arxiv_id(self):
+        """Paper with arXiv DOI returns PaperRecord keyed by arXiv ID."""
+        work = {
+            "ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001"},
+            "title": "Attention Is All You Need",
+            "authorships": [
+                {"author": {"display_name": "Ashish Vaswani"}},
+                {"author": {"display_name": "Noam Shazeer"}},
+            ],
+            "publication_date": "2017-06-12",
+            "primary_location": {
+                "best_oa_location": {
+                    "landing_page_url": "https://arxiv.org/abs/1706.03762",
+                    "pdf_url": "https://arxiv.org/1706.03762.pdf",
+                }
+            },
+            "host_venue": {"display_name": "NeurIPS"},
+            "topics": [{"display_name": "Machine Learning"}],
+            "referenced_works_count": 50,
+        }
+        result = _work_to_paper_record(work)
+
+        assert result is not None
+        assert result.id == "2301.00001"
+        assert result.title == "Attention Is All You Need"
+        assert result.authors == ["Ashish Vaswani", "Noam Shazeer"]
+        assert result.published == "2017"
+        assert result.abs_url == "https://arxiv.org/abs/1706.03762"
+        assert result.pdf_url == "https://arxiv.org/1706.03762.pdf"
+        assert result.journal == "NeurIPS"
+        assert result.doi == "https://doi.org/10.48550/arXiv.2301.00001"
+        assert result.categories == "Machine Learning"
+        assert result.reference_count == 50
+
+    def test_with_only_openalex_id(self):
+        """Paper with no arXiv DOI falls back to OpenAlex ID as paper_id."""
+        work = {
+            "ids": {"openalex": "https://openalex.org/W1234567"},
+            "title": "A Non-ArXiv Paper",
+            "authorships": [],
+            "publication_date": "2024-01-15",
+            "primary_location": {},
+            "topics": [],
+            "referenced_works_count": 0,
+        }
+        result = _work_to_paper_record(work)
+
+        assert result is not None
+        assert result.id == "W1234567"
+        assert result.title == "A Non-ArXiv Paper"
+
+    def test_with_only_doi(self):
+        """Paper with no arXiv or OpenAlex ID falls back to DOI suffix (path after host)."""
+        work = {
+            "ids": {"doi": "https://doi.org/10.1234/journal.2024.001"},
+            "title": "Journal Paper",
+            "authorships": [],
+            "publication_date": "2024-03-01",
+            "primary_location": {},
+            "topics": [],
+            "referenced_works_count": 0,
+        }
+        result = _work_to_paper_record(work)
+
+        assert result is not None
+        # doi.rstrip("/").split("/")[-1] strips the https://doi.org/ prefix
+        assert result.id == "journal.2024.001"
+        assert result.title == "Journal Paper"
+
+    def test_missing_all_ids(self):
+        """Work with no IDs at all returns None."""
+        work = {
+            "title": "Orphan Paper",
+            "authorships": [],
+            "publication_date": "2024",
+            "primary_location": {},
+            "topics": [],
+        }
+        result = _work_to_paper_record(work)
+
+        assert result is None
+
+    def test_multiple_topics_limited_to_10(self):
+        """Topics are comma-joined, capped at 10."""
+        work = {
+            "ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001"},
+            "title": "Paper",
+            "authorships": [],
+            "publication_date": "2024-01-01",
+            "primary_location": {},
+            "topics": [{"display_name": f"Topic{i}"} for i in range(15)],
+            "referenced_works_count": 0,
+        }
+        result = _work_to_paper_record(work)
+
+        assert result is not None
+        topics = result.categories.split(",")
+        assert len(topics) == 10
+        assert topics[0] == "Topic0"
+        assert topics[9] == "Topic9"
+
+    def test_custom_source(self):
+        """source parameter is set on the PaperRecord."""
+        work = {
+            "ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001"},
+            "title": "Test",
+            "authorships": [],
+            "publication_date": "2024-01-01",
+            "primary_location": {},
+            "topics": [],
+            "referenced_works_count": 0,
+        }
+        result = _work_to_paper_record(work, source="test_source")
+
+        assert result is not None
+        assert result.source == "test_source"
+
+    def test_empty_title_defaults_to_empty_string(self):
+        """Missing title becomes empty string, not None."""
+        work = {
+            "ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001"},
+            "title": None,
+            "authorships": [],
+            "publication_date": "2024-01-01",
+            "primary_location": {},
+            "topics": [],
+            "referenced_works_count": 0,
+        }
+        result = _work_to_paper_record(work)
+
+        assert result is not None
+        assert result.title == ""
+
+    def test_year_from_partial_date(self):
+        """publication_date with only year part extracts correctly."""
+        work = {
+            "ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001"},
+            "title": "Test",
+            "authorships": [],
+            "publication_date": "2023",
+            "primary_location": {},
+            "topics": [],
+            "referenced_works_count": 0,
+        }
+        result = _work_to_paper_record(work)
+
+        assert result is not None
+        assert result.published == "2023"
+
+    def test_openalex_id_strips_prefix(self):
+        """OpenAlex ID with https://openalex.org/ prefix is stripped."""
+        work = {
+            "ids": {"openalex": "https://openalex.org/W2987654321"},
+            "title": "Test",
+            "authorships": [],
+            "publication_date": "2024",
+            "primary_location": {},
+            "topics": [],
+            "referenced_works_count": 0,
+        }
+        result = _work_to_paper_record(work)
+
+        assert result is not None
+        assert result.id == "W2987654321"
