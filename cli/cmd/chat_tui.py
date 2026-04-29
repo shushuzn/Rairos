@@ -686,16 +686,6 @@ class TUIChatApp(App):
         color: #8be9fd;
     }
 
-    .streaming::after {
-        content: " ▌";
-        animation: blink 1s step-end infinite;
-        color: #50fa7b;
-    }
-
-    @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0; }
-    }
 
     /* ── Progress indicator ── */
     #progress-bar {
