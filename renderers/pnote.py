@@ -336,9 +336,10 @@ def _build_claims_section(claims_data: Optional[Dict[str, Any]]) -> str:
         for i, c in enumerate(claims, 1):
             page = c.get("page", "?")
             chunk = c.get("chunk_text", "")
+            score = c.get("evidence_score", 0.0)
             # Truncate long source chunks
             snippet = chunk[:120] + "..." if len(chunk) > 120 else chunk
-            parts.append(f"{i}. **[Page {page}]** {chunk}\n")
+            parts.append(f"{i}. **[Page {page}]** 证据强度 {score:.0%}  {chunk}\n")
 
     # Unverified claims - these need attention
     if unverified:
@@ -346,10 +347,11 @@ def _build_claims_section(claims_data: Optional[Dict[str, Any]]) -> str:
         for i, c in enumerate(unverified, 1):
             page = c.get("page", "?")
             chunk = c.get("chunk_text", "")
+            score = c.get("evidence_score", 0.0)
             note = c.get("verification_note", "无法在原文找到支撑文本")
             snippet = chunk[:120] + "..." if len(chunk) > 120 else chunk
             parts.append(
-                f"{i}. **[Page {page}]** {chunk}\n"
+                f"{i}. **[Page {page}]** 证据强度 {score:.0%}  {chunk}\n"
                 f"   > 🔍 未验证原因：{note}\n"
             )
 
