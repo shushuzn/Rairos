@@ -75,6 +75,7 @@ def make_args(**kwargs):
         source="import", skip_existing=False,
         format="table", limit=0, out=None, json=False,
         set_=None,
+        llm=False, llm_clear=False,
     )
     defaults.update(kwargs)
     ns = argparse.Namespace()
