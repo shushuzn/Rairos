@@ -8,12 +8,12 @@ import sys as _sys
 import orjson as json
 
 from cli._shared import get_db
-
 from cli._shared import (
     Colors,
     colored,
     print_success,
 )
+from cli.warp import WarpBlocks
 
 
 def _build_list_parser(subparsers) -> argparse.ArgumentParser:
@@ -41,7 +41,7 @@ Examples:
 
     p.add_argument("--offset", type=int, default=0, help="Skip N results")
 
-    p.add_argument("--format", choices=["table", "json", "csv"], default="table")
+    p.add_argument("--format", choices=["table", "json", "csv", "warp"], default="table")
 
     p.add_argument(
         "--sort",
@@ -80,8 +80,49 @@ def _run_list(args: argparse.Namespace) -> int:
                 "source": p.source, "abs_url": p.abs_url} for p in papers]
         print(json.dumps(out, option=json.OPT_INDENT_2).decode())
 
+    elif args.format == "warp":
+        _run_list_warp(papers, total)
+
     else:
         for p in papers:
             print(f"  {p.id:>5}  {p.published}  {p.source:<6}  {p.title}")
 
     return 0
+
+
+def _run_list_warp(papers, total) -> None:
+    """Render paper list using Warp-style blocks."""
+    blocks = []
+
+    # Header panel
+    blocks.append(WarpBlocks.panel(
+        "Paper Library",
+        f"Showing {len(papers)} of {total} papers",
+    ))
+
+    if not papers:
+        blocks.append(WarpBlocks.section("No Papers", "No papers match your filters."))
+        print("\n\n".join(blocks))
+        return
+
+    # Table of papers
+    rows = []
+    for p in papers:
+        status = p.parse_status or "—"
+        cat = p.primary_category or "—"
+        rows.append([
+            p.id,
+            p.published or "—",
+            p.source or "—",
+            status,
+            cat,
+            p.title,
+        ])
+
+    blocks.append(WarpBlocks.table(
+        ["ID", "Published", "Source", "Status", "Category", "Title"],
+        rows,
+    ))
+
+    print("\n\n".join(blocks))
+
