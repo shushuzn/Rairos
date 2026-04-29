@@ -100,6 +100,7 @@ _SUBCOMMAND_TABLE = [
     ("litreview",      "cli.cmd.litreview",            "_build_litreview_parser"),
     ("benchmark",      "cli.cmd.benchmark",            "_build_benchmark_parser"),
     ("postprocess",    "cli.cmd.postprocess",           "_build_postprocess_parser"),
+    ("ingest",         "cli.cmd.ingest",               "_build_ingest_parser"),
 ]
 SUBCOMMANDS = {name for name, _, _ in _SUBCOMMAND_TABLE}
 
@@ -201,6 +202,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "litreview": "_run_litreview",
         "benchmark": "_run_benchmark",
         "postprocess": "_run_postprocess",
+        "ingest": "_run_ingest",
     }
     if args.subcmd in dispatch:
         import cli as _cli
