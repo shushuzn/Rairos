@@ -235,7 +235,6 @@ class VisualExtractor:
             # Try to use matplotlib for rendering
             try:
                 import matplotlib.pyplot as plt
-                import matplotlib.mathtext as mathtext
 
                 fig = plt.figure(figsize=(4, 0.8) if not is_display else (6, 1))
                 ax = fig.add_axes([0, 0, 1, 1])

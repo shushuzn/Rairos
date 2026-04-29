@@ -76,13 +76,17 @@ class ExperimentTracker(JsonFileStore):
 
     def get(self, eid):
         for e in self._load():
-            if e.id == eid: return e
+            if e.id == eid:
+                return e
 
     def list_experiments(self, status=None, milestone=None, tag=None):
         exps = self._load()
-        if status: exps = [e for e in exps if e.status == status]
-        if milestone: exps = [e for e in exps if e.roadmap_milestone == milestone]
-        if tag: exps = [e for e in exps if tag in e.tags]
+        if status:
+            exps = [e for e in exps if e.status == status]
+        if milestone:
+            exps = [e for e in exps if e.roadmap_milestone == milestone]
+        if tag:
+            exps = [e for e in exps if tag in e.tags]
         return sorted(exps, key=lambda x: -datetime.fromisoformat(x.created_at).timestamp())
 
     def complete(self, eid, results=None):
@@ -91,7 +95,8 @@ class ExperimentTracker(JsonFileStore):
             if e.id == eid:
                 e.status = "completed"
                 e.completed_at = datetime.now().isoformat()
-                if results: e.results = results
+                if results:
+                    e.results = results
                 self._save(exps)
 
                 # Record VALIDATED event so gap sorting learns from experiment outcomes
@@ -116,7 +121,8 @@ class ExperimentTracker(JsonFileStore):
             if e.id == eid:
                 e.status = "failed"
                 e.completed_at = datetime.now().isoformat()
-                if error: e.results["error"] = error
+                if error:
+                    e.results["error"] = error
                 self._save(exps)
 
                 # Record REJECTED event so gap sorting learns from failed experiments
@@ -146,7 +152,8 @@ class ExperimentTracker(JsonFileStore):
     def compare(self, exp_ids, metric_names=None):
         exps = [self.get(eid) for eid in exp_ids]
         exps = [e for e in exps if e]
-        if not exps: return {"error": "No experiments found"}
+        if not exps:
+            return {"error": "No experiments found"}
         if not metric_names:
             metric_names = list(set(m.name for e in exps for m in e.metrics))
         rows = []
@@ -154,7 +161,9 @@ class ExperimentTracker(JsonFileStore):
             row = {"id": e.id, "name": e.name, "status": e.status}
             for mn in metric_names:
                 for m in e.metrics:
-                    if m.name == mn: row[mn] = m.value; break
+                    if m.name == mn:
+                        row[mn] = m.value
+                        break
             rows.append(row)
         return {"metrics": metric_names, "experiments": rows}
 
@@ -162,11 +171,14 @@ class ExperimentTracker(JsonFileStore):
         exps = self._load()
         n = len(exps)
         exps = [e for e in exps if e.id != eid]
-        if len(exps) < n: self._save(exps); return True
+        if len(exps) < n:
+            self._save(exps)
+            return True
         return False
 
     def render_list(self, exps, verbose=False):
-        if not exps: return "No experiments found."
+        if not exps:
+            return "No experiments found."
 
         # Summary counts
         by_status = {}
@@ -178,13 +190,15 @@ class ExperimentTracker(JsonFileStore):
         lines, icons = [summary, ""], {"running":"⚡","completed":"✓","failed":"✗"}
         for e in exps:
             lines.append(f"{icons.get(e.status,'?')} [{e.id}] {e.name} ({e.status})")
-            if e.roadmap_milestone: lines.append(f"  Milestone: {e.roadmap_milestone}")
+            if e.roadmap_milestone:
+                lines.append(f"  Milestone: {e.roadmap_milestone}")
             if verbose and e.metrics:
                 lines.append("  Metrics: " + ", ".join(f"{m.name}={m.value}" for m in e.metrics))
         return chr(10).join(lines)
 
     def render_compare(self, comp):
-        if "error" in comp: return f"Error: {comp['error']}"
+        if "error" in comp:
+            return f"Error: {comp['error']}"
         lines = ["## Experiment Comparison", "", "| Exp | " + " | ".join(comp["metrics"]) + " |", "|---| " + "|---".join([""]*len(comp["metrics"]))]
         for r in comp["experiments"]:
             vals = [str(r.get(m, "-")) for m in comp["metrics"]]

@@ -341,7 +341,7 @@ class BenchmarkComparator:
         """
         # Step 1: Group tables by benchmark name
         all_tables: List[BenchmarkTable] = []
-        for pid, tables in tables_by_paper.items():
+        for _pid, tables in tables_by_paper.items():
             all_tables.extend(tables)
 
         name_groups: Dict[str, List[BenchmarkTable]] = defaultdict(list)

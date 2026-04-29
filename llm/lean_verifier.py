@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Optional, List
 
 try:
-    from llm.hypothesis_generator import ResearchHypothesis, HypothesisResult
+    from llm.hypothesis_generator import ResearchHypothesis
     HYPOTHESIS_AVAILABLE = True
 except ImportError:
     HYPOTHESIS_AVAILABLE = False
