@@ -1,12 +1,61 @@
-"""LLM API client."""
+"""LLM API client — supports OpenAI-compatible, Anthropic API, and Claude CLI."""
 import hashlib
 import os
+import re
 from typing import Dict, Iterator, List, Optional
 
 import orjson
 import requests
 
 from core.retry import circuit_breaker
+
+# Detect Claude CLI availability lazily
+_claude_cli_client = None
+
+
+def _get_claude_cli_client():
+    """Get Claude CLI client, lazily initialized."""
+    global _claude_cli_client
+    if _claude_cli_client is None:
+        try:
+            from llm.claude_cli import ClaudeCLIClient, is_claude_cli_available
+            if is_claude_cli_available():
+                _claude_cli_client = ClaudeCLIClient()
+        except ImportError:
+            pass
+    return _claude_cli_client
+
+
+def _use_claude_cli_fallback(model: str) -> bool:
+    """Check if we should use Claude CLI as the LLM backend.
+
+    Use Claude CLI when:
+    1. Model is Anthropic-native (claude-*)
+    2. No ANTHROPIC_API_KEY is set
+    3. Claude CLI is available
+    """
+    if not _is_anthropic_model(model):
+        return False
+    if os.getenv("ANTHROPIC_API_KEY"):
+        return False  # Use direct API if key is available
+    return _get_claude_cli_client() is not None
+
+
+# Anthropic API endpoint
+ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
+ANTHROPIC_API_VERSION = "2023-06-01"
+
+# Detect if a model is Anthropic-native (claude-*)
+_ANTHROPIC_MODELS = {"claude-3-5-sonnet-latest", "claude-3-5-sonnet-20241022", "claude-3-opus-latest", "claude-3-haiku-latest"}
+
+
+def _is_anthropic_model(model: str) -> bool:
+    """Check if model is Anthropic-native (needs Anthropic API format)."""
+    if model.startswith("claude"):
+        return True
+    if "claude" in model.lower():
+        return True
+    return False
 
 # Reusable session for connection pooling (avoids TCP+TLS handshake per request)
 _http_session: Optional[requests.Session] = None
@@ -70,9 +119,44 @@ def call_llm_chat_completions(
     system_prompt: Optional[str] = None,
     stream: bool = False,
 ) -> str:
+    # Auto-detect Anthropic API if model is Anthropic-native
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if _is_anthropic_model(model):
+        # Try Claude CLI first (zero config if available)
+        if _use_claude_cli_fallback(model):
+            cli = _get_claude_cli_client()
+            if cli:
+                # Combine messages into a single prompt
+                combined = ""
+                for msg in messages:
+                    role = msg.get("role", "user")
+                    content = msg.get("content", "")
+                    combined += f"{role.upper()}: {content}\n"
+                if user_prompt:
+                    combined += f"USER: {user_prompt}\n"
+                return cli.chat(
+                    prompt=combined,
+                    model=model,
+                    system_prompt=system_prompt,
+                )
+        # Fall back to direct API if key is available
+        if anthropic_key:
+            return _call_anthropic_api(
+                messages=messages,
+                model=model,
+                api_key=anthropic_key,
+                timeout=timeout,
+                system_prompt=system_prompt,
+                stream=stream,
+            )
+
     api_key = api_key or os.getenv("OPENAI_API_KEY", "")
     if not api_key:
-        raise ValueError("Missing API key. Provide --api-key or set OPENAI_API_KEY.")
+        raise ValueError(
+            "Missing API key. Set OPENAI_API_KEY or ANTHROPIC_API_KEY.\n"
+            "  For OpenAI-compatible: export OPENAI_API_KEY=sk-...\n"
+            "  For Anthropic Claude: export ANTHROPIC_API_KEY=sk-ant-..."
+        )
 
     # Generate cache key for non-streaming requests
     cache_key = None
@@ -121,6 +205,102 @@ def _stream_to_string(r: requests.Response) -> str:
     return "".join(_parse_sse_stream(r))
 
 
+def _call_anthropic_api(
+    messages: List[Dict[str, str]],
+    model: str,
+    api_key: str,
+    timeout: int = 180,
+    system_prompt: Optional[str] = None,
+    stream: bool = False,
+) -> str:
+    """Call Anthropic Messages API directly.
+
+    Anthropic uses a different format from OpenAI:
+    - Endpoint: /v1/messages (not /chat/completions)
+    - Auth: x-api-key header (not Bearer)
+    - System: first message in messages array
+    - Requires: max_tokens
+    """
+    session = _get_session()
+    headers = {
+        "x-api-key": api_key,
+        "anthropic-version": ANTHROPIC_API_VERSION,
+        "Content-Type": "application/json",
+    }
+
+    # Build messages array - system message goes first for Anthropic
+    anthropic_messages = []
+    if system_prompt:
+        anthropic_messages.append({"role": "user", "content": system_prompt})
+
+    # Convert messages - handle both 'user' and 'assistant' roles
+    for msg in messages:
+        role = msg.get("role", "user")
+        # Anthropic only supports 'user' and 'assistant'
+        if role == "system":
+            # Prepend to anthropic_messages if exists, else add as first user message
+            if anthropic_messages:
+                anthropic_messages.insert(0, {"role": "user", "content": msg.get("content", "")})
+            else:
+                anthropic_messages.append({"role": "user", "content": msg.get("content", "")})
+        elif role in ("user", "assistant"):
+            anthropic_messages.append({"role": role, "content": msg.get("content", "")})
+        # Skip unsupported roles like 'function'
+
+    # Build payload
+    payload = {
+        "model": model,
+        "messages": anthropic_messages,
+        "max_tokens": 4096,  # Required by Anthropic
+        "temperature": 0.2,
+    }
+
+    if stream:
+        payload["stream"] = True
+
+    try:
+        r = session.post(
+            ANTHROPIC_API_URL,
+            headers=headers,
+            json=payload,
+            timeout=timeout,
+            stream=stream,
+        )
+        r.raise_for_status()
+
+        if stream:
+            # Anthropic SSE format: "data: {"type": "content_block_delta", ...}"
+            return _stream_anthropic_to_string(r)
+        else:
+            data = r.json()
+            return data["content"][0]["text"]
+
+    except requests.RequestException as e:
+        raise RuntimeError(f"Anthropic API request failed: {str(e)}") from e
+    except (KeyError, ValueError) as e:
+        raise RuntimeError(f"Anthropic API response parsing failed: {str(e)}") from e
+
+
+def _stream_anthropic_to_string(r: requests.Response) -> str:
+    """Parse Anthropic SSE stream into a string."""
+    result = []
+    for line in r.iter_lines(decode_unicode=True):
+        if not line.startswith("data: "):
+            continue
+        payload = line[6:].strip()
+        if payload == "[DONE]":
+            break
+        try:
+            obj = orjson.loads(payload)
+            if obj.get("type") == "content_block_delta":
+                delta = obj.get("delta", {})
+                if delta.get("type") == "text_delta":
+                    result.append(delta.get("text", ""))
+        except orjson.JSONDecodeError:
+            continue
+    return "".join(result)
+
+
 def stream_llm_chat_completions(
     messages: List[Dict[str, str]],
     model: str,
@@ -146,9 +326,28 @@ def stream_llm_chat_completions(
     Yields:
         Content deltas as strings
     """
+    # Auto-detect Anthropic API if model is Anthropic-native
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if _is_anthropic_model(model) and anthropic_key:
+        # For streaming, we call and iterate
+        result = _call_anthropic_api(
+            messages=messages,
+            model=model,
+            api_key=anthropic_key,
+            timeout=timeout,
+            system_prompt=system_prompt,
+            stream=True,
+        )
+        yield result
+        return
+
     api_key = api_key or os.getenv("OPENAI_API_KEY", "")
     if not api_key:
-        raise ValueError("Missing API key. Provide --api-key or set OPENAI_API_KEY.")
+        raise ValueError(
+            "Missing API key. Set OPENAI_API_KEY or ANTHROPIC_API_KEY.\n"
+            "  For OpenAI-compatible: export OPENAI_API_KEY=sk-...\n"
+            "  For Anthropic Claude: export ANTHROPIC_API_KEY=sk-ant-..."
+        )
 
     url = base_url.rstrip("/") + "/chat/completions"
     session = _get_session()
