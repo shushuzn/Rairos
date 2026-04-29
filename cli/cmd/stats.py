@@ -17,6 +17,12 @@ from cli._shared import (
 def _build_stats_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("stats", help="Show database statistics summary")
     p.add_argument("--json", action="store_true", help="Output as JSON")
+    p.add_argument(
+        "--format", "-f",
+        choices=["table", "warp"],
+        default="table",
+        help="Output format (default: table)",
+    )
     return p
 
 
@@ -24,18 +30,51 @@ def _run_stats(args: argparse.Namespace) -> int:
     db = get_db()
     db.init()
     s = db.get_stats()
+
     if args.json:
         print(json.dumps(s, option=json.OPT_INDENT_2).decode())
-    else:
-        print_header("Papers:")
-        print(f"  total : {colored(s['total_papers'], Colors.BOLD)}")
-        print(f"  by source : {', '.join(f'{colored(k, Colors.OKBLUE)}={v}' for k, v in sorted(s['by_source'].items()))}")
-        print(f"  by status : {', '.join(f'{colored(k, Colors.OKGREEN)}={v}' for k, v in sorted(s['by_status'].items()))}")
-        print_header("Queue:")
-        print(f"  queued  : {s['queue_queued']}")
-        print(f"  running : {s['queue_running']}")
-        print_header("Cache:")
-        print(f"  entries : {s['cache_entries']}")
+        return 0
+
+    if getattr(args, 'format', 'table') == 'warp':
+        _run_stats_warp(s)
+        return 0
+
+    # Default table format
+    print_header("Papers:")
+    print(f"  total : {colored(s['total_papers'], Colors.BOLD)}")
+    print(f"  by source : {', '.join(f'{colored(k, Colors.OKBLUE)}={v}' for k, v in sorted(s['by_source'].items()))}")
+    print(f"  by status : {', '.join(f'{colored(k, Colors.OKGREEN)}={v}' for k, v in sorted(s['by_status'].items()))}")
+    print_header("Queue:")
+    print(f"  queued  : {s['queue_queued']}")
+    print(f"  running : {s['queue_running']}")
+    print_header("Cache:")
+    print(f"  entries : {s['cache_entries']}")
     print_header("Dedup:")
     print(f"  records : {s['dedup_records']}")
     return 0
+
+
+def _run_stats_warp(s) -> None:
+    """Render stats using Warp-style blocks."""
+    from cli.warp import WarpBlocks
+
+    blocks = []
+
+    # Papers overview table
+    paper_rows = [
+        ["Total", str(s['total_papers'])],
+        *[[k, str(v)] for k, v in sorted(s['by_source'].items())],
+        *[[k, str(v)] for k, v in sorted(s['by_status'].items())],
+    ]
+    blocks.append(WarpBlocks.table(["Category", "Value"], paper_rows))
+
+    # Queue + Cache panel
+    status_lines = [
+        f"Queued  : {s['queue_queued']}",
+        f"Running : {s['queue_running']}",
+        f"Cache   : {s['cache_entries']} entries",
+        f"Dedup   : {s['dedup_records']} records",
+    ]
+    blocks.append(WarpBlocks.panel("Queue & Cache", "\n".join(status_lines)))
+
+    print("\n\n".join(blocks))
