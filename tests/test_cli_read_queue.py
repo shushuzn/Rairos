@@ -1,5 +1,5 @@
 """Unit tests for read-queue CLI subcommand — smart reading priority queue."""
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 class FakeArgs:

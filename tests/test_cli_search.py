@@ -1830,7 +1830,7 @@ class TestRunCitations:
         args = make_args(citation_from="uid1", citation_to=None, format="warp")
         result = _run_citations(args)
 
-        out = capsys.readouterr().out
+        capsys.readouterr()
         assert result == 0
 
     @patch("cli.Database")
@@ -2462,8 +2462,8 @@ class TestRunKgSearch:
 # _run_stats tests
 # ─────────────────────────────────────────────────────────────────────────────
 
-class TestRunStats:
-    """Test _run_stats."""
+class TestRunStatsAndTrend:
+    """Test _run_stats extended and _run_trend."""
 
     def _stats_args(self, **kwargs):
         defaults = dict(json=False, format="table")
@@ -2551,7 +2551,7 @@ class TestRunTrend:
 
     def test_topic_with_no_results(self, capsys):
         """Topic with zero papers returns 0 and renders result."""
-        from llm.trend_analyzer import TrendAnalysisResult, TrendDirection
+        from llm.trend_analyzer import TrendAnalysisResult
 
         mock_result = TrendAnalysisResult(
             topic="nonexistent_topic_xyz",
@@ -2576,7 +2576,7 @@ class TestRunTrend:
             args = self._trend_args(topic="nonexistent_topic_xyz")
             result = _run_trend(args)
 
-        out = capsys.readouterr().out
+        capsys.readouterr()
         assert result == 0
         mock_analyzer.analyze.assert_called_once()
 
@@ -2615,7 +2615,7 @@ class TestRunTrend:
             args = self._trend_args(topic="LLM")
             result = _run_trend(args)
 
-        out = capsys.readouterr().out
+        capsys.readouterr()
         assert result == 0
         mock_analyzer.analyze.assert_called_once_with(
             topic="LLM", year_range=None, min_papers=10
@@ -2623,7 +2623,7 @@ class TestRunTrend:
 
     def test_json_flag_returns_json(self, capsys):
         """--json outputs JSON."""
-        from llm.trend_analyzer import TrendAnalysisResult, TrendDirection
+        from llm.trend_analyzer import TrendAnalysisResult
 
         mock_result = TrendAnalysisResult(
             topic="RAG",
@@ -2653,7 +2653,7 @@ class TestRunTrend:
 
     def test_mermaid_flag_renders_mermaid(self, capsys):
         """--mermaid calls render_mermaid_timeline."""
-        from llm.trend_analyzer import TrendAnalysisResult, TrendDirection
+        from llm.trend_analyzer import TrendAnalysisResult
 
         mock_result = TrendAnalysisResult(
             topic="KVCache",
@@ -2685,7 +2685,7 @@ class TestRunTrend:
 
     def test_year_range_passed_to_analyze(self, capsys):
         """--year-start/--year-end are passed as year_range tuple."""
-        from llm.trend_analyzer import TrendAnalysisResult, TrendDirection
+        from llm.trend_analyzer import TrendAnalysisResult
 
         mock_result = TrendAnalysisResult(
             topic="Attention",

@@ -230,6 +230,9 @@ def _run_dedup_semantic(args: argparse.Namespace) -> int:
                 t1 = paper.title.replace('"', '""')
                 t2 = sim_paper.title.replace('"', '""')
                 print(f"{args.paper},{sim_paper.id},{score:.4f},\"{t1}\",\"{t2}\"")
+        elif args.format == "text":
+            for sim_paper, score in sims:
+                print(f"  {score:.4f}  {sim_paper.id}  {sim_paper.title}")
         elif args.format == "warp":
             rows = []
             for sim_paper, score in sims:
@@ -257,6 +260,7 @@ def _run_dedup_semantic(args: argparse.Namespace) -> int:
     found = 0
     seen: set = set()
     pair_rows = []
+    text_pairs: list = []
 
     if args.format == "csv":
         print("paper_a,paper_b,similarity,title_a,title_b")
@@ -285,7 +289,15 @@ def _run_dedup_semantic(args: argparse.Namespace) -> int:
                     f"[#D0D1FE]{sim_paper.id}[/]",
                     f"[#A5D5FE]{b_short}[/]",
                 ])
+                text_pairs.append((score, paper.id, a_short, sim_paper.id, b_short))
             found += 1
+
+    if found == 0 and args.format == "text":
+        print("No Duplicates Found")
+    elif found > 0 and args.format == "text":
+        print(f"Found {found} duplicate pair(s):")
+        for score, pid_a, title_a, pid_b, title_b in text_pairs:
+            print(f"  {score:.4f}  {pid_a}  {title_a}  ↔  {pid_b}  {title_b}")
 
     if args.format == "warp":
         if found == 0:

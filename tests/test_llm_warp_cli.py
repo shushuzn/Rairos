@@ -146,7 +146,7 @@ class TestWarpCLIClientChat:
             )
             try:
                 client.chat("Hello")
-                assert False, "Should have raised RuntimeError"
+                raise AssertionError("Should have raised RuntimeError")
             except RuntimeError as e:
                 assert "warp: command not found" in str(e)
 
@@ -160,7 +160,7 @@ class TestWarpCLIClientChat:
             mock_run.side_effect = FileNotFoundError
             try:
                 client.chat("Hello")
-                assert False, "Should have raised RuntimeError"
+                raise AssertionError("Should have raised RuntimeError")
             except RuntimeError as e:
                 assert "not found" in str(e)
 
