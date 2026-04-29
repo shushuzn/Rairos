@@ -214,6 +214,38 @@ def _use_claude_cli_fallback(model: str) -> bool:
     return _get_claude_cli_client() is not None
 
 
+# Detect Warp CLI availability lazily
+_warp_cli_client = None
+
+
+def _get_warp_cli_client():
+    """Get Warp CLI client, lazily initialized."""
+    global _warp_cli_client
+    if _warp_cli_client is None:
+        try:
+            from llm.warp_cli import WarpCLIClient, is_warp_cli_available
+            if is_warp_cli_available():
+                _warp_cli_client = WarpCLIClient()
+        except ImportError:
+            pass
+    return _warp_cli_client
+
+
+def _use_warp_cli_fallback(model: str) -> bool:
+    """Check if we should use Warp CLI as the LLM backend.
+
+    Use Warp CLI when:
+    1. No OPENAI_API_KEY is set (Warp covers non-Anthropic models too)
+    2. No ANTHROPIC_API_KEY is set
+    3. Warp CLI is available
+    """
+    if os.getenv("OPENAI_API_KEY"):
+        return False
+    if os.getenv("ANTHROPIC_API_KEY"):
+        return False
+    return _get_warp_cli_client() is not None
+
+
 # Anthropic API endpoint
 ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
 ANTHROPIC_API_VERSION = "2023-06-01"
@@ -325,12 +357,31 @@ def call_llm_chat_completions(
                 use_cache=use_cache,
             )
 
+    # Try Warp CLI as a zero-config fallback (covers any model type)
+    if _use_warp_cli_fallback(model):
+        cli = _get_warp_cli_client()
+        if cli:
+            combined = ""
+            for msg in messages:
+                role = msg.get("role", "user")
+                content = msg.get("content", "")
+                combined += f"{role.upper()}: {content}\n"
+            if user_prompt:
+                combined += f"USER: {user_prompt}\n"
+            return cli.chat(
+                prompt=combined,
+                model=model,
+                system_prompt=system_prompt,
+            )
+
     api_key = api_key or os.getenv("OPENAI_API_KEY", "")
     if not api_key:
         raise ValueError(
             "Missing API key. Set OPENAI_API_KEY or ANTHROPIC_API_KEY.\n"
             "  For OpenAI-compatible: export OPENAI_API_KEY=sk-...\n"
-            "  For Anthropic Claude: export ANTHROPIC_API_KEY=sk-ant-..."
+            "  For Anthropic Claude: export ANTHROPIC_API_KEY=sk-ant-...\n"
+            "  Or install Claude Code CLI (npm i -g @anthropic-ai/claude-code)\n"
+            "  Or install Warp (https://warp.dev)"
         )
 
     # Generate cache key for non-streaming requests
