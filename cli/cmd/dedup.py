@@ -46,6 +46,12 @@ def _build_dedup_parser(subparsers) -> argparse.ArgumentParser:
         default="",
         help="Only consider papers added on or after this date",
     )
+    p.add_argument(
+        "--format",
+        choices=["text", "warp"],
+        default="warp",
+        help="Output format (default: warp)",
+    )
     return p
 
 
