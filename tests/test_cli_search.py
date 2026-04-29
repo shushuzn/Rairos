@@ -2056,7 +2056,7 @@ class TestRunDedupSemantic:
 
         args = make_args(
             stats=True, generate=False, paper=None, threshold=0.85,
-            limit=20, format="text", dedup_semantic=False,
+            limit=20, format="warp", dedup_semantic=False,
         )
         result = _run_dedup_semantic(args)
 
@@ -2073,7 +2073,7 @@ class TestRunDedupSemantic:
         mock_db_cls.return_value = mock_db
 
         args = make_args(stats=True, generate=False, paper=None, threshold=0.85,
-                         limit=20, format="text", dedup_semantic=False)
+                         limit=20, format="warp", dedup_semantic=False)
         result = _run_dedup_semantic(args)
 
         out = capsys.readouterr().out
@@ -2088,7 +2088,7 @@ class TestRunDedupSemantic:
         mock_db_cls.return_value = mock_db
 
         args = make_args(stats=False, generate=False, paper="nonexistent",
-                         threshold=0.85, limit=20, format="text", dedup_semantic=False)
+                         threshold=0.85, limit=20, format="warp", dedup_semantic=False)
         result = _run_dedup_semantic(args)
 
         out = capsys.readouterr().out
@@ -2105,7 +2105,7 @@ class TestRunDedupSemantic:
         mock_db_cls.return_value = mock_db
 
         args = make_args(stats=False, generate=False, paper="uid1",
-                         threshold=0.85, limit=20, format="text", dedup_semantic=False)
+                         threshold=0.85, limit=20, format="warp", dedup_semantic=False)
         result = _run_dedup_semantic(args)
 
         out = capsys.readouterr().out
@@ -2124,7 +2124,7 @@ class TestRunDedupSemantic:
         mock_db_cls.return_value = mock_db
 
         args = make_args(stats=False, generate=False, paper="uid1",
-                         threshold=0.85, limit=20, format="text", dedup_semantic=False)
+                         threshold=0.85, limit=20, format="warp", dedup_semantic=False)
         result = _run_dedup_semantic(args)
 
         out = capsys.readouterr().out
@@ -2161,7 +2161,7 @@ class TestRunDedupSemantic:
         mock_db_cls.return_value = mock_db
 
         args = make_args(stats=False, generate=False, paper=None,
-                         threshold=0.85, limit=5, format="text", dedup_semantic=False)
+                         threshold=0.85, limit=5, format="warp", dedup_semantic=False)
         result = _run_dedup_semantic(args)
 
         out = capsys.readouterr().out
@@ -2176,7 +2176,7 @@ class TestRunDedupSemantic:
         mock_db_cls.return_value = mock_db
 
         args = make_args(stats=False, generate=True, paper=None,
-                         threshold=0.85, limit=20, format="text", dedup_semantic=False)
+                         threshold=0.85, limit=20, format="warp", dedup_semantic=False)
         result = _run_dedup_semantic(args)
 
         assert result == 0
