@@ -97,13 +97,15 @@ class Dashboard:
         tracker = QuestionTracker()
         questions = tracker.list_questions()
         for q in questions:
+            hypotheses_count = len(q.hypotheses) if hasattr(q, 'hypotheses') and q.hypotheses else 0
+            roadmap_id = q.roadmap_id if hasattr(q, 'roadmap_id') and q.roadmap_id else ""
             data.questions.append(QuestionSummary(
                 id=q.id,
                 question=q.question,
                 status=q.status,
                 priority=q.priority,
-                hypotheses_count=len(q.hypotheses),
-                roadmap_id=q.roadmap_id or "",
+                hypotheses_count=hypotheses_count,
+                roadmap_id=roadmap_id,
             ))
 
         # Experiments

@@ -129,7 +129,7 @@ class TestRunCitations:
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
-        assert "BACKWARD CITATIONS" in captured
+        assert "Backward Citations" in captured
         assert "2306.00001" in captured
         assert result == 0
 
@@ -146,7 +146,7 @@ class TestRunCitations:
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
-        assert "FORWARD CITATIONS" in captured
+        assert "Forward Citations" in captured
         assert "2307.00001" in captured
         assert result == 0
 
@@ -204,7 +204,7 @@ class TestRunCitations:
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
-        assert "No citations" in captured
+        assert "No Citations" in captured
         assert result == 0
 
     @patch("cli.Database")
@@ -226,7 +226,7 @@ class TestRunCitations:
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
-        assert "CITATION BRIDGE" in captured
+        assert "Citation Bridge" in captured
         assert "DIRECT" in captured
         assert "2301.00001" in captured
         assert "2306.00001" in captured
@@ -252,7 +252,7 @@ class TestRunCitations:
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
-        assert "CITATION BRIDGE" in captured
+        assert "Citation Bridge" in captured
         assert "INDIRECT" in captured
         assert "2309.99999" in captured
         assert result == 0
@@ -275,7 +275,7 @@ class TestRunCitations:
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
-        assert "CITATION BRIDGE" in captured
+        assert "Citation Bridge" in captured
         assert "No citation path" in captured
         assert result == 0
 

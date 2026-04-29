@@ -110,7 +110,7 @@ def _run_dedup(args: argparse.Namespace) -> int:
             target, dup = _pick_keep(older, newer, args.keep)
             dry_rows.append([
                 f"[#FF8272]{older.id}[/] / [#FF8272]{newer.id}[/]",
-                f"[#B4FA72]{target.id}[/] ← keep[/]",
+                f"[#B4FA72]{target.id}[/] [yellow]← keep[/]",
                 f"[#FF5555]{dup.id}[/]",
                 f"[#A5D5FE]{args.keep}[/]",
                 f"[#8E8E8E]winner: {parsed_winner.id}[/]",
