@@ -4,7 +4,7 @@ import json
 from unittest.mock import MagicMock, patch
 
 
-from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, infer_tags_if_empty, main
+from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, _run_citations, _run_stats, infer_tags_if_empty, main
 from core import Paper
 
 
@@ -1728,4 +1728,188 @@ class TestRunMerge:  # noqa: F811
         mock_db.merge_papers.assert_called_once_with("uid2", "uid1")
         mock_db.log_dedup.assert_called_once_with("uid2", "uid1", "parsed")
         assert "Merged uid1 into uid2" in captured
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_citations tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class FakeCitation:
+    """Fake citation matching db.database.Citation."""
+    def __init__(self, source_id="uid1", target_id="uid2"):
+        self.source_id = source_id
+        self.target_id = target_id
+
+
+class TestRunCitations:
+    """Test _run_citations."""
+
+    @patch("cli.Database")
+    def test_citations_from_shows_backward(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_paper_title.return_value = "Test Paper"
+        mock_db.get_citations.return_value = [
+            FakeCitation(source_id="uid1", target_id="uid2"),
+            FakeCitation(source_id="uid1", target_id="uid3"),
+        ]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(citation_from="uid1", citation_to=None, format="text")
+        result = _run_citations(args)
+
+        out = capsys.readouterr().out
+        assert "Backward Citations" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_citations_to_shows_forward(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_paper_title.return_value = "Test Paper"
+        mock_db.get_citations.return_value = [
+            FakeCitation(source_id="uid2", target_id="uid1"),
+        ]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(citation_from=None, citation_to="uid1", format="text")
+        result = _run_citations(args)
+
+        out = capsys.readouterr().out
+        assert "Forward Citations" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_citations_csv_format(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_paper_title.return_value = "Test Paper"
+        mock_db.get_citations.return_value = [FakeCitation(source_id="uid1", target_id="uid2")]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(citation_from="uid1", citation_to=None, format="csv")
+        result = _run_citations(args)
+
+        out = capsys.readouterr().out
+        assert "paper,count" in out
+        assert "uid1" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_citations_paper_not_found(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_paper_title.return_value = None
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(citation_from="nonexistent", citation_to=None, format="text")
+        result = _run_citations(args)
+
+        out = capsys.readouterr().out
+        assert "not found" in out
+        assert result == 1
+
+    @patch("cli.Database")
+    def test_citations_no_args_error(self, mock_db_cls, capsys):
+        args = make_args(citation_from=None, citation_to=None, format="text")
+        result = _run_citations(args)
+        assert result == 1
+
+    @patch("cli.Database")
+    def test_citations_warp_format(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_paper_title.return_value = "Test Paper"
+        mock_db.get_citations.return_value = [FakeCitation(source_id="uid1", target_id="uid2")]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(citation_from="uid1", citation_to=None, format="warp")
+        result = _run_citations(args)
+
+        out = capsys.readouterr().out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_citations_bidirectional(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_paper_title.side_effect = ["Paper A", "Paper B"]
+        mock_db.get_citations.side_effect = [
+            [FakeCitation(source_id="uid1", target_id="uid2")],
+            [],
+        ]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(citation_from="uid1", citation_to="uid2", format="warp")
+        result = _run_citations(args)
+
+        out = capsys.readouterr().out
+        assert "Citation Bridge" in out or "uid1" in out
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_stats tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunStats:
+    """Test _run_stats."""
+
+    @patch("cli.Database")
+    def test_stats_table_format(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_stats.return_value = {
+            "total_papers": 10,
+            "by_source": {"arxiv": 8, "doi": 2},
+            "by_status": {"done": 5, "pending": 3, "failed": 2},
+            "queue_queued": 1,
+            "queue_running": 0,
+            "cache_entries": 20,
+            "dedup_records": 3,
+        }
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(json=False, format="table")
+        result = _run_stats(args)
+
+        out = capsys.readouterr().out
+        assert "total" in out
+        assert "10" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_stats_json_format(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_stats.return_value = {"total_papers": 5}
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(json=True, format="table")
+        result = _run_stats(args)
+
+        out = capsys.readouterr().out
+        data = json.loads(out)
+        assert data["total_papers"] == 5
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_stats_warp_format(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_stats.return_value = {
+            "total_papers": 10,
+            "by_source": {"arxiv": 10},
+            "by_status": {"done": 10},
+            "queue_queued": 0,
+            "queue_running": 0,
+            "cache_entries": 5,
+            "dedup_records": 1,
+        }
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(json=False, format="warp")
+        result = _run_stats(args)
+
+        out = capsys.readouterr().out
+        # warp output should have colored ANSI codes
+        assert "\033[" in out or "[" in out
         assert result == 0
