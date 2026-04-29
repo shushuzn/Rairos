@@ -34,3 +34,14 @@ Built by Sentient Labs.
 > Self-evolution engine for AI agents using the GEP (Genome Evolution Protocol). Analyzes runtime history to identify improvements and applies protocol-constrained evolution.
 
 ---
+
+## Warp Terminal
+
+**Source:** https://github.com/warpdotdev/warp
+**License:** MIT
+
+> Terminal emulator whose block-style UI design (box-drawing characters: `┌─┐│└┘`) inspired the WarpBlocks renderer in `cli/warp.py`. The CLI module uses similar visual patterns for code blocks, panels, and tables.
+
+Copyright (c) Warpdotdev Contributors
+
+---
