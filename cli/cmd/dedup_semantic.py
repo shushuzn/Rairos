@@ -52,9 +52,9 @@ def _build_dedup_semantic_parser(subparsers) -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--format",
-        choices=["text", "csv"],
-        default="text",
-        help="Output format: 'text' (default) or 'csv'",
+        choices=["warp", "csv"],
+        default="warp",
+        help="Output format: 'warp' (WarpBlocks-styled, default) or 'csv'",
     )
     return p
 
@@ -230,7 +230,7 @@ def _run_dedup_semantic(args: argparse.Namespace) -> int:
                 t1 = paper.title.replace('"', '""')
                 t2 = sim_paper.title.replace('"', '""')
                 print(f"{args.paper},{sim_paper.id},{score:.4f},\"{t1}\",\"{t2}\"")
-        else:
+        elif args.format == "warp":
             rows = []
             for sim_paper, score in sims:
                 sim_short = (sim_paper.title[:55] + "...") if len(sim_paper.title) > 58 else sim_paper.title
@@ -287,7 +287,7 @@ def _run_dedup_semantic(args: argparse.Namespace) -> int:
                 ])
             found += 1
 
-    if args.format != "csv":
+    if args.format == "warp":
         if found == 0:
             c.print(WarpBlocks.panel(
                 "No Duplicates Found",
