@@ -209,8 +209,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             export=args.export,
         )
     elif args.subcmd == "visual":
-        from cli.cmd.visual import visual as visual_cmd
-        return visual_cmd.main(args.argv if hasattr(args, "argv") else [])
+        from cli.cmd.visual import _show_visual_status
+        return _show_visual_status()
     elif args.subcmd == "repl":
         import cli as _cli
         return _cli._run_repl(args)
