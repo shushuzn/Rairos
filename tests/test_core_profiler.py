@@ -170,7 +170,7 @@ class TestMemoryProfiler:
     def test_track_context_manager(self):
         profiler = MemoryProfiler()
         with profiler.track("test_operation"):
-            x = [0] * 1000
+            pass
         snapshots = profiler.get_snapshots()
         assert len(snapshots) == 1
         assert snapshots[0]["name"] == "test_operation"

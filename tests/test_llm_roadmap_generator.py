@@ -191,7 +191,7 @@ class TestGenerate:
     def _generate(self, question, question_id="", custom_phases=None):
         """Replicate generate logic."""
         from llm.roadmap_generator import ResearchRoadmap, Phase, Milestone
-        gen = RoadmapGenerator()
+        RoadmapGenerator()
         phases = custom_phases or DEFAULT_PHASES
         roadmap_phases = []
         milestone_counter = 1

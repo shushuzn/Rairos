@@ -49,7 +49,7 @@ class TestBackupManager:
 
     def test_init_creates_dir(self, temp_backup_dir):
         assert temp_backup_dir.exists()
-        bm = BackupManager(backup_dir=temp_backup_dir)
+        BackupManager(backup_dir=temp_backup_dir)
         assert temp_backup_dir.exists()
 
     def test_create_backup_returns_timestamp(self, temp_backup_dir, temp_source_dir):

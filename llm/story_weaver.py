@@ -338,7 +338,7 @@ class StoryWeaver:
         relationships = []
 
         for i, narrative in enumerate(narratives):
-            for j, other in enumerate(narratives[i + 1:], i + 1):
+            for _j, other in enumerate(narratives[i + 1:], i + 1):
                 rel_type, desc = self._infer_relationship(narrative, other)
                 if rel_type:
                     relationships.append(Relationship(

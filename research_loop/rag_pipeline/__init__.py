@@ -182,7 +182,7 @@ class RagPipeline:
     def _generate_pytest_tests(self, paper_dir: Path, test_csv: Path) -> None:
         """生成 pytest 测试文件"""
         test_dir = test_csv.parent
-        test_csv_path = str(test_csv)
+        str(test_csv)
 
         # 生成 conftest.py
         conftest_content = '''"""Fixtures for generated tests."""

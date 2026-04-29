@@ -59,7 +59,7 @@ class TestJournal:
 
     def test_list_today(self, journal):
         """Test today's entries."""
-        entry = journal.add("Today's entry")
+        journal.add("Today's entry")
         entries = journal.list_entries(today=True)
         assert len(entries) == 1
 

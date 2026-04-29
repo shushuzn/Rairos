@@ -154,7 +154,7 @@ def _run_influence(args: argparse.Namespace) -> int:
 
     for i, p in enumerate(top_n, 1):
         rank_color = Colors.OKGREEN if i <= 5 else (Colors.WARNING if i <= 15 else "")
-        vel_bar = "█" * min(int(p.velocity), 20)
+        "█" * min(int(p.velocity), 20)
         title_short = p.title[:50] + "…" if len(p.title) > 50 else p.title
         line = (f"{i:>4}  "
                  f"{colored(f'{p.velocity:>7.1f}/y', rank_color)}  "

@@ -161,7 +161,7 @@ def rag_run_evoskill(continue_mode: bool):
 
     try:
         pipeline = RagPipeline()
-        result = pipeline.run_evoskill(continue_mode=continue_mode)
+        pipeline.run_evoskill(continue_mode=continue_mode)
         print_success("EvoSkill run completed")
 
     except Exception as e:

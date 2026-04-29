@@ -166,8 +166,7 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
     print_info(f"🔬 Enhanced gap analysis for: {args.topic}")
 
     # Check if user has preferences
-    profile = tracker.get_profile()
-    has_preferences = profile.total_events > 0
+    tracker.get_profile()
 
     # Initialize managers
     insight_manager = None if args.no_insights else InsightManager()

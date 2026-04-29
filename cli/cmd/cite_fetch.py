@@ -225,7 +225,6 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
 
     lock = threading.Lock()
     total_added = [0]
-    total_skipped_external = [0]
     total_errors = [0]
     total_cited_by_count = [0]
     total_imported = [0]

@@ -193,7 +193,7 @@ def _run_list_hypotheses() -> int:
     for _, verdict, detail, name, hid, n_exp in rows:
         icon = {"VALIDATED": "✅", "REJECTED": "❌", "MIXED": "⚠", "INCONCLUSIVE": "○"}.get(verdict, "?")
         name_short = (name[:40] + "...") if len(name) > 43 else name
-        detail_short = (detail[:40] + "...") if len(detail) > 43 else detail
+        (detail[:40] + "...") if len(detail) > 43 else detail
         status_rows.append([
             icon,
             f"[#FEFDC2]{verdict}[/]",

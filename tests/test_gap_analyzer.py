@@ -488,8 +488,8 @@ class TestGapConversion:
             result, pref_applied = analyzer._convert_to_v2(gaps, [], [])
             # Method limitation should be first due to preference
             assert result[0].gap_type == GapType.METHOD_LIMITATION
-            assert result[0].preference_boost == True
-            assert pref_applied == True
+            assert result[0].preference_boost
+            assert pref_applied
 
 
 class TestHypothesisGeneration:
@@ -539,7 +539,7 @@ class TestHypothesisGeneration:
             mock_result.hypotheses = []
             mock_gen.return_value = mock_result
 
-            result = analyzer.generate_hypotheses(sample_gap_result, use_llm=False)
+            analyzer.generate_hypotheses(sample_gap_result, use_llm=False)
             mock_gen.assert_called_once()
 
     def test_build_gap_context(self, analyzer, sample_gap_result):

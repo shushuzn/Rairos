@@ -655,7 +655,7 @@ class TestGenerateQuestionsRules:
 
     def test_fallback_template_for_unknown_type(self):
         """Unknown gap type uses fallback template."""
-        gap = ResearchGap(
+        ResearchGap(
             gap_type=GapType.METHOD_LIMITATION,  # will be overridden
             description="D",
             evidence_papers=[],

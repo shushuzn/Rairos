@@ -145,8 +145,8 @@ class VisualExtractor:
                     continue
 
                 # Get image metadata
-                img_width = base_image.get("width", 0)
-                img_height = base_image.get("height", 0)
+                base_image.get("width", 0)
+                base_image.get("height", 0)
                 ext = base_image.get("ext", "png")
 
                 # Save image if output_dir is set
@@ -326,7 +326,7 @@ class VisualExtractor:
         try:
             page_dict = page.get_text("dict", flags=fitz.TEXTFLAGS_BLOCKS)
 
-            x_center = (bbox[0] + bbox[2]) / 2
+            (bbox[0] + bbox[2]) / 2
             y_bottom = bbox[3]
 
             captions = []

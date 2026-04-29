@@ -591,7 +591,7 @@ def render_gap_report(result: GapAnalysisResultV2, show_preferences: bool = True
         return WarpBlocks.panel("No Results", f"[#8E8E8E]No gaps found for: {result.topic}[/]")
 
     # Summary stats
-    sum_rows = [
+    [
         ["Papers Analyzed", f"[#A5D5FE]{result.total_papers_analyzed}[/]"],
         ["Insights Used",  f"[#A5D5FE]{result.total_insights_used}[/]"],
         ["Gaps Found",     f"[#B4FA72]{len(result.gaps)}[/]"],
@@ -688,7 +688,7 @@ def render_combined_report(
     # Hypotheses table
     hypo_rows = []
     for i, h in enumerate(hypothesis_result.hypotheses[:5], 1):
-        novelty_bar = "████████░░"[:int(h.novelty_score * 10)] + "░░░░░░░░░"[int(h.novelty_score * 10):]
+        "████████░░"[:int(h.novelty_score * 10)] + "░░░░░░░░░"[int(h.novelty_score * 10):]
         hypo_rows.append([
             f"[#FEFDC2]{i}.[/]",
             h.hypothesis_type.value[:15],

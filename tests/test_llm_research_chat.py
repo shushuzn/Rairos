@@ -103,7 +103,7 @@ class TestExtractTopic:
         assert "?" not in result
 
     def test_removes_chinese_punctuation(self):
-        result = self.chat._extract_topic("transformer，是什么")
+        self.chat._extract_topic("transformer，是什么")
         # "是什么" (2+ chars) is atomic, not individually matched to STOPWORDS
 
     def test_removes_english_punctuation(self):

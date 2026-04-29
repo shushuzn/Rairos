@@ -131,7 +131,7 @@ class TestTemplateGuidance:
         builder = ArgumentBuilder()
         guidance = builder._template_guidance([], [])
 
-        for section, content in guidance.items():
+        for _section, content in guidance.items():
             assert len(content) > 10
 
 

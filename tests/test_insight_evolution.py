@@ -651,7 +651,7 @@ class TestPreferenceTagConfidence:
             gap_type="method_limitation",
         )
         profile = temp_tracker.get_profile()
-        for tag, conf in profile.preference_tags.items():
+        for _tag, conf in profile.preference_tags.items():
             assert 0.0 <= conf <= 1.0
 
     def test_render_profile_shows_confidence_level(self, temp_tracker):
@@ -785,7 +785,7 @@ class TestBackupManagement:
         assert tracker2.get_gap_type_score("method_limitation") == 0.0
 
         # Import with replace (merge=False)
-        imported = tracker2.import_profile(backup, merge=False)
+        tracker2.import_profile(backup, merge=False)
         assert tracker2.get_gap_type_score("method_limitation") > 0
 
     def test_list_backups_returns_empty_when_none(self, tmp_path):
