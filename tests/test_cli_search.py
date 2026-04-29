@@ -4,7 +4,7 @@ import json
 from unittest.mock import MagicMock, patch
 
 
-from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, _run_citations, _run_stats, _run_cite_stats, _run_dedup_semantic, _run_kg, infer_tags_if_empty, main
+from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, _run_citations, _run_stats, _run_cite_stats, _run_dedup_semantic, _run_kg, _run_trend, infer_tags_if_empty, main
 from core import Paper
 
 
@@ -2454,4 +2454,262 @@ class TestRunKgSearch:
 
         out = capsys.readouterr().out
         assert "n1" in out
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_stats tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunStats:
+    """Test _run_stats."""
+
+    def _stats_args(self, **kwargs):
+        defaults = dict(json=False, format="table")
+        defaults.update(kwargs)
+        ns = argparse.Namespace()
+        for k, v in defaults.items():
+            setattr(ns, k, v)
+        return ns
+
+    def test_stats_table_format_shows_total(self, capsys):
+        mock_stats = {
+            "total_papers": 42,
+            "by_source": {"arxiv": 30, "doi": 12},
+            "by_status": {"done": 35, "failed": 7},
+            "queue_queued": 5,
+            "queue_running": 1,
+            "cache_entries": 100,
+            "dedup_records": 20,
+        }
+        with patch("cli._shared.get_db") as mock_get:
+            mock_db = MagicMock()
+            mock_db.get_stats.return_value = mock_stats
+            mock_get.return_value = mock_db
+            args = self._stats_args(format="table")
+            _run_stats(args)
+        out = capsys.readouterr().out
+        assert "42" in out or "total" in out
+
+    def test_stats_json_format(self, capsys):
+        mock_stats = {
+            "total_papers": 10,
+            "by_source": {},
+            "by_status": {},
+            "queue_queued": 0,
+            "queue_running": 0,
+            "cache_entries": 0,
+            "dedup_records": 0,
+        }
+        with patch("cli._shared.get_db") as mock_get:
+            mock_db = MagicMock()
+            mock_db.get_stats.return_value = mock_stats
+            mock_get.return_value = mock_db
+            args = self._stats_args(json=True)
+            result = _run_stats(args)
+        out = capsys.readouterr().out
+        assert "total_papers" in out
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_trend tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunTrend:
+    """Test _run_trend."""
+
+    def _trend_args(self, **kwargs):
+        defaults = dict(
+            topic=None, year_start=None, year_end=None,
+            min_papers=10, mermaid=False, json=False, interactive=False,
+        )
+        defaults.update(kwargs)
+        ns = argparse.Namespace()
+        for k, v in defaults.items():
+            setattr(ns, k, v)
+        return ns
+
+    def test_no_topic_and_no_interactive_returns_early(self, capsys):
+        """No topic with no interactive falls through to _run_interactive (returns 0)."""
+        with patch("cli.cmd.trend.TrendAnalyzer") as mock_analyzer, \
+             patch("builtins.input", return_value="q"):
+            mock_analyzer.return_value = MagicMock()
+            args = self._trend_args(topic=None, interactive=False)
+            result = _run_trend(args)
+        assert result == 0
+
+    def test_interactive_mode_returns_zero(self, capsys):
+        """--interactive without topic returns 0 (enters interactive loop)."""
+        with patch("cli.cmd.trend.TrendAnalyzer") as mock_analyzer, \
+             patch("builtins.input", return_value="q"):
+            mock_analyzer.return_value = MagicMock()
+            args = self._trend_args(interactive=True)
+            result = _run_trend(args)
+        assert result == 0
+
+    def test_topic_with_no_results(self, capsys):
+        """Topic with zero papers returns 0 and renders result."""
+        from llm.trend_analyzer import TrendAnalysisResult, TrendDirection
+
+        mock_result = TrendAnalysisResult(
+            topic="nonexistent_topic_xyz",
+            year_range=(2020, 2025),
+            total_papers=0,
+            yearly_distribution=[],
+            rising_trends=[],
+            falling_trends=[],
+            emerging_trends=[],
+            stable_trends=[],
+            hot_keywords=[],
+            declining_keywords=[],
+            emerging_keywords=[],
+            growth_rate=0.0,
+        )
+        mock_analyzer = MagicMock()
+        mock_analyzer.analyze.return_value = mock_result
+        mock_analyzer.render_result.return_value = "No papers found for nonexistent_topic_xyz"
+
+        with patch("cli.cmd.trend.TrendAnalyzer") as mock_get_analyzer:
+            mock_get_analyzer.return_value = mock_analyzer
+            args = self._trend_args(topic="nonexistent_topic_xyz")
+            result = _run_trend(args)
+
+        out = capsys.readouterr().out
+        assert result == 0
+        mock_analyzer.analyze.assert_called_once()
+
+    def test_topic_with_results(self, capsys):
+        """Topic with results renders output and returns 0."""
+        from llm.trend_analyzer import TrendAnalysisResult, TrendDirection, TrendKeyword
+
+        mock_trend = TrendKeyword(
+            keyword="transformer",
+            direction=TrendDirection.RISING,
+            yearly_counts={2023: 50, 2024: 80},
+            growth_rate=0.8,
+            peak_year=2024,
+            current_year_count=80,
+        )
+        mock_result = TrendAnalysisResult(
+            topic="LLM",
+            year_range=(2020, 2025),
+            total_papers=50,
+            yearly_distribution=[],
+            rising_trends=[mock_trend],
+            falling_trends=[],
+            emerging_trends=[],
+            stable_trends=[],
+            hot_keywords=["transformer"],
+            declining_keywords=[],
+            emerging_keywords=[],
+            growth_rate=15.5,
+        )
+        mock_analyzer = MagicMock()
+        mock_analyzer.analyze.return_value = mock_result
+        mock_analyzer.render_result.return_value = "LLM trend analysis output"
+
+        with patch("cli.cmd.trend.TrendAnalyzer") as mock_get_analyzer:
+            mock_get_analyzer.return_value = mock_analyzer
+            args = self._trend_args(topic="LLM")
+            result = _run_trend(args)
+
+        out = capsys.readouterr().out
+        assert result == 0
+        mock_analyzer.analyze.assert_called_once_with(
+            topic="LLM", year_range=None, min_papers=10
+        )
+
+    def test_json_flag_returns_json(self, capsys):
+        """--json outputs JSON."""
+        from llm.trend_analyzer import TrendAnalysisResult, TrendDirection
+
+        mock_result = TrendAnalysisResult(
+            topic="RAG",
+            year_range=(2020, 2025),
+            total_papers=20,
+            yearly_distribution=[],
+            rising_trends=[],
+            falling_trends=[],
+            emerging_trends=[],
+            stable_trends=[],
+            hot_keywords=["retrieval"],
+            declining_keywords=[],
+            emerging_keywords=[],
+            growth_rate=25.0,
+        )
+        mock_analyzer = MagicMock()
+        mock_analyzer.analyze.return_value = mock_result
+
+        with patch("cli.cmd.trend.TrendAnalyzer") as mock_get_analyzer:
+            mock_get_analyzer.return_value = mock_analyzer
+            args = self._trend_args(topic="RAG", json=True)
+            result = _run_trend(args)
+
+        out = capsys.readouterr().out
+        assert "RAG" in out
+        assert result == 0
+
+    def test_mermaid_flag_renders_mermaid(self, capsys):
+        """--mermaid calls render_mermaid_timeline."""
+        from llm.trend_analyzer import TrendAnalysisResult, TrendDirection
+
+        mock_result = TrendAnalysisResult(
+            topic="KVCache",
+            year_range=(2020, 2025),
+            total_papers=15,
+            yearly_distribution=[],
+            rising_trends=[],
+            falling_trends=[],
+            emerging_trends=[],
+            stable_trends=[],
+            hot_keywords=[],
+            declining_keywords=[],
+            emerging_keywords=[],
+            growth_rate=0.0,
+        )
+        mock_analyzer = MagicMock()
+        mock_analyzer.analyze.return_value = mock_result
+        mock_analyzer.render_mermaid_timeline.return_value = "gantt\n  section RAG"
+
+        with patch("cli.cmd.trend.TrendAnalyzer") as mock_get_analyzer:
+            mock_get_analyzer.return_value = mock_analyzer
+            args = self._trend_args(topic="KVCache", mermaid=True)
+            result = _run_trend(args)
+
+        out = capsys.readouterr().out
+        assert "gantt" in out
+        assert result == 0
+        mock_analyzer.render_mermaid_timeline.assert_called_once()
+
+    def test_year_range_passed_to_analyze(self, capsys):
+        """--year-start/--year-end are passed as year_range tuple."""
+        from llm.trend_analyzer import TrendAnalysisResult, TrendDirection
+
+        mock_result = TrendAnalysisResult(
+            topic="Attention",
+            year_range=(2021, 2024),
+            total_papers=5,
+            yearly_distribution=[],
+            rising_trends=[],
+            falling_trends=[],
+            emerging_trends=[],
+            stable_trends=[],
+            hot_keywords=[],
+            declining_keywords=[],
+            emerging_keywords=[],
+            growth_rate=0.0,
+        )
+        mock_analyzer = MagicMock()
+        mock_analyzer.analyze.return_value = mock_result
+        mock_analyzer.render_result.return_value = "output"
+
+        with patch("cli.cmd.trend.TrendAnalyzer") as mock_get_analyzer:
+            mock_get_analyzer.return_value = mock_analyzer
+            args = self._trend_args(topic="Attention", year_start=2021, year_end=2024)
+            result = _run_trend(args)
+
+        mock_analyzer.analyze.assert_called_once()
+        call_kwargs = mock_analyzer.analyze.call_args.kwargs
+        assert call_kwargs["year_range"] == (2021, 2024)
         assert result == 0
