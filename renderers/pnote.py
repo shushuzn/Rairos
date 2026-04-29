@@ -1,8 +1,161 @@
 """P-Note (paper note) renderer."""
+import math
 import textwrap
 from typing import Any, Dict, List, Optional, Tuple
 
 from core import Paper, today_iso
+
+
+# ── Radar chart ────────────────────────────────────────────────────────────────
+
+def render_radar_chart(scores: Dict[str, int], size: int = 280) -> str:
+    """Render a 6-axis radar chart SVG from rubric scores.
+
+    Axes: Novelty · Leverage · Evidence · Cost · Moat · Adoption
+    Each score is 1-5; larger is better on all axes.
+    Cost is inverted so higher = cheaper (better).
+
+    Args:
+        scores: Dict with keys novelty/leverage/evidence/cost/moat/adoption (1-5)
+        size: SVG viewBox width/height (default 280)
+
+    Returns:
+        SVG markup string, or empty string if insufficient data.
+    """
+    AXES = [
+        ("Novelty", "创新性"),
+        ("Leverage", "杠杆效应"),
+        ("Evidence", "实验证据"),
+        ("Cost", "成本"),
+        ("Moat", "护城河"),
+        ("Adoption", "采纳信号"),
+    ]
+    n = len(AXES)
+    if n < 3:
+        return ""
+
+    # Only include axes that have valid scores
+    valid_axes = [(AXES[i][0], AXES[i][1], scores.get(AXES[i][0].lower(), 0))
+                  for i in range(n)]
+    valid_axes = [(a, b, s) for a, b, s in valid_axes if isinstance(s, (int, float)) and 1 <= s <= 5]
+    if len(valid_axes) < 3:
+        return ""
+
+    # Adjust n for valid axes only
+    n = len(valid_axes)
+    angle_step = 2 * math.pi / n
+
+    cx = cy = size / 2
+    max_radius = size / 2 - 42  # leave room for labels
+    rings = 5  # 1-5 scale
+
+    # Colour palette (professional, accessible)
+    fill_colour   = "#3b82f6"   # blue-500, ~60% opacity
+    stroke_colour = "#1d4ed8"   # blue-700
+    grid_colour   = "#94a3b8"  # slate-400
+    label_colour  = "#334155"   # slate-700
+    bg_colour     = "#f8fafc"   # slate-50
+
+    parts = [
+        f'<svg viewBox="0 0 {size} {size}" xmlns="http://www.w3.org/2000/svg" '
+        f'role="img" aria-label="论文评分雷达图">',
+        f'  <title>论文评分雷达图</title>',
+        f'  <rect width="{size}" height="{size}" fill="{bg_colour}" rx="8"/>',
+    ]
+
+    # ── Grid rings ──────────────────────────────────────────────────────────
+    for ring in range(1, rings + 1):
+        r = max_radius * ring / rings
+        ring_pts = " ".join(
+            f"{cx + r * math.sin(i * angle_step - math.pi / 2):.1f},"
+            f"{cy + r * math.cos(i * angle_step - math.pi / 2):.1f}"
+            for i in range(n)
+        )
+        parts.append(f'  <polygon points="{ring_pts}" fill="none" stroke="{grid_colour}" '
+                     f'stroke-width="0.6" stroke-dasharray="2,2"/>')
+        # Ring label (only on outermost)
+        if ring == rings:
+            parts.append(
+                f'  <text x="{cx}" y="{cy - r - 3}" text-anchor="middle" '
+                f'font-size="9" fill="{grid_colour}">5</text>'
+            )
+            parts.append(
+                f'  <text x="{cx}" y="{cy - r // 2 - 3}" text-anchor="middle" '
+                f'font-size="9" fill="{grid_colour}">{rings // 2}</text>'
+            )
+            parts.append(
+                f'  <text x="{cx}" y="{cy - 3}" text-anchor="middle" '
+                f'font-size="9" fill="{grid_colour}">1</text>'
+            )
+
+    # ── Axes (spokes) ─────────────────────────────────────────────────────
+    for i, (en, zh, _) in enumerate(valid_axes):
+        angle = i * angle_step - math.pi / 2
+        x2 = cx + max_radius * math.sin(angle)
+        y2 = cy + max_radius * math.cos(angle)
+        parts.append(f'  <line x1="{cx:.1f}" y1="{cy:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
+                     f'stroke="{grid_colour}" stroke-width="0.8"/>')
+
+    # ── Data polygon ────────────────────────────────────────────────────────
+    data_pts = " ".join(
+        f"{cx + max_radius * (s / rings) * math.sin(i * angle_step - math.pi / 2):.1f},"
+        f"{cy + max_radius * (s / rings) * math.cos(i * angle_step - math.pi / 2):.1f}"
+        for i, (_, _, s) in enumerate(valid_axes)
+    )
+    parts.append(
+        f'  <polygon points="{data_pts}" fill="{fill_colour}" fill-opacity="0.35" '
+        f'stroke="{stroke_colour}" stroke-width="1.5" stroke-linejoin="round"/>'
+    )
+
+    # ── Data point dots ─────────────────────────────────────────────────────
+    for i, (_, _, s) in enumerate(valid_axes):
+        angle = i * angle_step - math.pi / 2
+        x = cx + max_radius * (s / rings) * math.sin(angle)
+        y = cy + max_radius * (s / rings) * math.cos(angle)
+        parts.append(
+            f'  <circle cx="{x:.1f}" cy="{y:.1f}" r="3" '
+            f'fill="{stroke_colour}" stroke="{bg_colour}" stroke-width="1"/>'
+        )
+
+    # ── Axis labels ─────────────────────────────────────────────────────────
+    for i, (en, zh, s) in enumerate(valid_axes):
+        angle = i * angle_step - math.pi / 2
+        label_r = max_radius + 20
+        lx = cx + label_r * math.sin(angle)
+        ly = cy + label_r * math.cos(angle)
+        anchor = "start" if lx > cx + 10 else "end" if lx < cx - 10 else "middle"
+        parts.append(
+            f'  <text x="{lx:.1f}" y="{ly:.1f}" text-anchor="{anchor}" '
+            f'dominant-baseline="middle" font-size="10.5" font-weight="600" '
+            f'fill="{label_colour}">{zh}</text>'
+        )
+        parts.append(
+            f'  <text x="{lx:.1f}" y="{ly + 13:.1f}" text-anchor="{anchor}" '
+            f'dominant-baseline="middle" font-size="9" fill="{grid_colour}">'
+            f'{en}={s}</text>'
+        )
+
+    # ── Summary badge ───────────────────────────────────────────────────────
+    total = sum(s for _, _, s in valid_axes)
+    avg = total / n
+    badge_r = 18
+    bx, by = cx + max_radius * 0.6, cy - max_radius * 0.55
+    parts.append(
+        f'  <circle cx="{bx:.1f}" cy="{by:.1f}" r="{badge_r}" '
+        f'fill="{stroke_colour}" opacity="0.9"/>'
+    )
+    parts.append(
+        f'  <text x="{bx:.1f}" y="{by - 3}" text-anchor="middle" '
+        f'dominant-baseline="middle" font-size="11" font-weight="bold" fill="white">'
+        f'{avg:.1f}</text>'
+    )
+    parts.append(
+        f'  <text x="{bx:.1f}" y="{by + 9}" text-anchor="middle" '
+        f'dominant-baseline="middle" font-size="8" fill="white">avg</text>'
+    )
+
+    parts.append("</svg>")
+    return "\n".join(parts)
 
 
 def render_pnote(
@@ -61,6 +214,14 @@ def render_pnote(
         frontmatter_fields.append("rubric: draft-ai")
 
     fm = "\n".join(frontmatter_fields)
+
+    # Build radar chart if rubric scores are available
+    radar_svg = ""
+    if parsed_ai is not None:
+        _, rubric_dict = parsed_ai
+        scores = _extract_rubric_scores(rubric_dict)
+        if scores:
+            radar_svg = render_radar_chart(scores)
 
     # Build AI draft block
     ai_block = _build_ai_block(parsed_ai, ai_draft_md)
@@ -242,6 +403,9 @@ def render_pnote(
 ---
 
 ## 评分量表
+
+{radar_svg}
+
 * Novelty (1-5):
 * Leverage (1-5):
 * Evidence (1-5):
