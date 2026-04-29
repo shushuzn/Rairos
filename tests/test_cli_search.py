@@ -4,7 +4,7 @@ import json
 from unittest.mock import MagicMock, patch
 
 
-from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, _run_citations, _run_stats, _run_cite_stats, infer_tags_if_empty, main
+from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, _run_citations, _run_stats, _run_cite_stats, _run_dedup_semantic, infer_tags_if_empty, main
 from core import Paper
 
 
@@ -77,6 +77,7 @@ def make_args(**kwargs):
         set_=None,
         llm=False, llm_clear=False,
         stats_paper=None, top=None,
+        dedup_semantic=False,
     )
     defaults.update(kwargs)
     ns = argparse.Namespace()
@@ -2033,4 +2034,149 @@ class TestRunCiteStats:
 
         out = capsys.readouterr().out
         assert "\033[" in out or "Cites" in out
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_dedup_semantic tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunDedupSemantic:
+    """Test _run_dedup_semantic."""
+
+    @patch("cli.Database")
+    def test_stats_shows_coverage(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_embedding_stats.return_value = {
+            "total_with_text": 100,
+            "with_embedding": 80,
+        }
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(
+            stats=True, generate=False, paper=None, threshold=0.85,
+            limit=20, format="text", dedup_semantic=False,
+        )
+        result = _run_dedup_semantic(args)
+
+        out = capsys.readouterr().out
+        assert "Embedding Coverage" in out
+        assert "80" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_stats_zero_total(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_embedding_stats.return_value = {"total_with_text": 0, "with_embedding": 0}
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats=True, generate=False, paper=None, threshold=0.85,
+                         limit=20, format="text", dedup_semantic=False)
+        result = _run_dedup_semantic(args)
+
+        out = capsys.readouterr().out
+        assert "Embedding Coverage" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_paper_not_found(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.paper_exists.return_value = False
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats=False, generate=False, paper="nonexistent",
+                         threshold=0.85, limit=20, format="text", dedup_semantic=False)
+        result = _run_dedup_semantic(args)
+
+        out = capsys.readouterr().out
+        assert "not found" in out
+        assert result == 1
+
+    @patch("cli.Database")
+    def test_paper_no_similar(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.paper_exists.return_value = True
+        mock_db.get_paper.return_value = MagicMock(id="uid1", title="Test Paper")
+        mock_db.find_similar.return_value = []
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats=False, generate=False, paper="uid1",
+                         threshold=0.85, limit=20, format="text", dedup_semantic=False)
+        result = _run_dedup_semantic(args)
+
+        out = capsys.readouterr().out
+        assert "No similar papers" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_paper_with_similar(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.paper_exists.return_value = True
+        mock_paper = MagicMock(id="uid1", title="Test Paper")
+        mock_db.get_paper.return_value = mock_paper
+        sim_paper = MagicMock(id="uid2", title="Similar Paper")
+        mock_db.find_similar.return_value = [(sim_paper, 0.92)]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats=False, generate=False, paper="uid1",
+                         threshold=0.85, limit=20, format="text", dedup_semantic=False)
+        result = _run_dedup_semantic(args)
+
+        out = capsys.readouterr().out
+        assert "uid2" in out
+        assert "0.92" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_paper_similar_csv_format(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.paper_exists.return_value = True
+        mock_paper = MagicMock(id="uid1", title='Paper "A"')
+        mock_db.get_paper.return_value = mock_paper
+        sim_paper = MagicMock(id="uid2", title="Similar")
+        mock_db.find_similar.return_value = [(sim_paper, 0.96)]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats=False, generate=False, paper="uid1",
+                         threshold=0.85, limit=20, format="csv", dedup_semantic=False)
+        result = _run_dedup_semantic(args)
+
+        out = capsys.readouterr().out
+        assert "paper_a,paper_b,similarity" in out
+        assert "uid1,uid2" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_global_scan_no_duplicates(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.list_papers.return_value = ([MagicMock(id="uid1", title="Paper")], 1)
+        mock_db.find_similar.return_value = []
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats=False, generate=False, paper=None,
+                         threshold=0.85, limit=5, format="text", dedup_semantic=False)
+        result = _run_dedup_semantic(args)
+
+        out = capsys.readouterr().out
+        assert "No Duplicates Found" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_generate_missing_embeddings(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_papers_without_embeddings.return_value = []
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats=False, generate=True, paper=None,
+                         threshold=0.85, limit=20, format="text", dedup_semantic=False)
+        result = _run_dedup_semantic(args)
+
         assert result == 0
