@@ -370,12 +370,17 @@ class ResearchDeepDivePipeline:
         claims = []
         unverified = []
         for c in (analysis.claims or []):
-            claims.append({"page": c.page, "chunk_text": c.chunk_text})
+            claims.append({
+                "page": c.page, "chunk_text": c.chunk_text,
+                "evidence_score": c.evidence_score, "claim_type": getattr(c, "claim_type", ""),
+            })
         for c in (analysis.unverified_claims or []):
             unverified.append({
                 "page": c.page,
                 "chunk_text": c.chunk_text,
+                "evidence_score": c.evidence_score,
                 "verification_note": c.verification_note,
+                "claim_type": getattr(c, "claim_type", ""),
             })
         if not claims and not unverified:
             return None
