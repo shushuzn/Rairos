@@ -8,6 +8,7 @@ from cli._shared import get_db
 from cli._shared import (
     Colors, colored, print_success, print_error, print_warning, print_info, print_header,
 )
+from cli.warp import WarpBlocks
 
 
 def _build_cite_stats_parser(subparsers) -> argparse.ArgumentParser:
@@ -17,7 +18,7 @@ def _build_cite_stats_parser(subparsers) -> argparse.ArgumentParser:
     )
     p.add_argument("--paper", metavar="PAPER_ID", dest="stats_paper", help="Show stats for a specific paper")
     p.add_argument("--top", type=int, metavar="N", help="Show top N most-cited papers")
-    p.add_argument("--format", choices=["text", "csv"], default="text", help="Output format (default: text)")
+    p.add_argument("--format", choices=["text", "csv", "warp"], default="text", help="Output format (default: text)")
     return p
 
 
@@ -60,15 +61,7 @@ def _run_cite_stats(args: argparse.Namespace) -> int:
         print(f"cited_papers,{cited_papers}")
         return 0
 
-    print("=== Citation Statistics ===")
-    print(f"Total citation pairs   : {total_citations}")
-    print(f"Papers with any citation data: {papers_with_any} / {total_papers}")
-    print(f"Orphan papers (no citation data): {orphan_papers}")
-    print(f"Papers that cite others: {citing_papers}")
-    print(f"Papers cited by others: {cited_papers}")
-
     if args.top:
-        print(f"\nTop {args.top} most-cited papers:")
         cur.execute("""
             SELECT target_id, COUNT(*) as cnt
             FROM citations
@@ -76,7 +69,50 @@ def _run_cite_stats(args: argparse.Namespace) -> int:
             ORDER BY cnt DESC
             LIMIT ?
         """, (args.top,))
-        for row in cur.fetchall():
+        top_rows = cur.fetchall()
+    else:
+        top_rows = []
+
+    if args.format == "warp":
+        _run_cite_stats_warp(total_citations, papers_with_any, orphan_papers,
+                              citing_papers, cited_papers, total_papers, top_rows, db)
+        return 0
+
+    # text format
+    print("=== Citation Statistics ===")
+    print(f"Total citation pairs   : {total_citations}")
+    print(f"Papers with any citation data: {papers_with_any} / {total_papers}")
+    print(f"Orphan papers (no citation data): {orphan_papers}")
+    print(f"Papers that cite others: {citing_papers}")
+    print(f"Papers cited by others: {cited_papers}")
+    if top_rows:
+        print(f"\nTop {args.top or len(top_rows)} most-cited papers:")
+        for row in top_rows:
             title = db.get_paper_title(row[0]) or ""
             print(f"  [{row[1]:4d}] {row[0]}  {title[:60]}")
     return 0
+
+
+def _run_cite_stats_warp(total_citations, papers_with_any, orphan_papers,
+                          citing_papers, cited_papers, total_papers, top_rows, db) -> None:
+    """Render citation stats using Warp-style blocks."""
+    blocks = []
+
+    summary_lines = [
+        f"Citation pairs  : {colored(str(total_citations), Colors.BOLD)}",
+        f"Papers w/ cites: {colored(str(papers_with_any), Colors.OKGREEN)} / {total_papers}",
+        f"Orphan papers   : {colored(str(orphan_papers), Colors.WARNING)}",
+        f"Cite others    : {citing_papers}",
+        f"Cited by others: {cited_papers}",
+    ]
+    blocks.append(WarpBlocks.panel("Citation Statistics", "\n".join(summary_lines)))
+
+    if top_rows:
+        rows = []
+        for row in top_rows:
+            title = db.get_paper_title(row[0]) or ""
+            rows.append([str(row[1]), row[0], title[:50]])
+        blocks.append(WarpBlocks.table(["Cites", "Paper ID", "Title"], rows))
+
+    print("\n\n".join(blocks))
+
