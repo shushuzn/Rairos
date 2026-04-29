@@ -214,6 +214,7 @@ def call_llm_chat_completions(
     timeout: int = 180,
     system_prompt: Optional[str] = None,
     stream: bool = False,
+    use_cache: bool = True,
 ) -> str:
     # Auto-detect Anthropic API if model is Anthropic-native
     anthropic_key = os.getenv("ANTHROPIC_API_KEY", "")
@@ -244,6 +245,7 @@ def call_llm_chat_completions(
                 timeout=timeout,
                 system_prompt=system_prompt,
                 stream=stream,
+                use_cache=use_cache,
             )
 
     api_key = api_key or os.getenv("OPENAI_API_KEY", "")
@@ -256,7 +258,7 @@ def call_llm_chat_completions(
 
     # Generate cache key for non-streaming requests
     cache_key = None
-    if not stream:
+    if use_cache and not stream:
         cache_key = _generate_cache_key(messages, model, user_prompt, system_prompt)
         # Check persistent cache first
         cached_response, found = _cache_read(cache_key)
@@ -290,7 +292,7 @@ def call_llm_chat_completions(
             data = r.json()
             result = data["choices"][0]["message"]["content"]
             # Cache the result for future requests (persistent cache)
-            if cache_key:
+            if cache_key and use_cache:
                 _cache_write(cache_key, result)
         return result
     except requests.RequestException as e:
@@ -310,6 +312,7 @@ def _call_anthropic_api(
     timeout: int = 180,
     system_prompt: Optional[str] = None,
     stream: bool = False,
+    use_cache: bool = True,
 ) -> str:
     """Call Anthropic Messages API directly.
 
@@ -321,7 +324,7 @@ def _call_anthropic_api(
     """
     # Generate cache key for non-streaming requests
     cache_key = None
-    if not stream:
+    if use_cache and not stream:
         cache_key = _generate_cache_key(messages, model, None, system_prompt)
         cached_response, found = _cache_read(cache_key)
         if found and cached_response:
@@ -381,7 +384,7 @@ def _call_anthropic_api(
             data = r.json()
             result = data["content"][0]["text"]
             # Cache the result for future requests
-            if cache_key:
+            if cache_key and use_cache:
                 _cache_write(cache_key, result)
             return result
 
@@ -419,6 +422,7 @@ def stream_llm_chat_completions(
     api_key: Optional[str] = None,
     timeout: int = 180,
     system_prompt: Optional[str] = None,
+    use_cache: bool = True,
 ) -> Iterator[str]:
     """Stream LLM responses as an iterator of content deltas.
 
@@ -447,6 +451,7 @@ def stream_llm_chat_completions(
             timeout=timeout,
             system_prompt=system_prompt,
             stream=True,
+            use_cache=use_cache,
         )
         yield result
         return
