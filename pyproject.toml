@@ -319,6 +319,7 @@ exclude_lines = [
 timeout = 60
 markers = [
     "lean: Lean 4 integration tests (run only when Lean is installed)",
+    "no_freeze: Tests that must not use freezegun time mocking",
 ]
 
 [tool.coverage.html]
