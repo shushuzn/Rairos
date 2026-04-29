@@ -110,31 +110,36 @@ def _run_search(args: argparse.Namespace) -> int:
 
 def _run_search_warp(results, total) -> None:
     """Render search results using Warp-style blocks."""
+    from cli._shared import colored, Colors
+
     blocks = []
 
-    # Header with count
+    # Header panel
     blocks.append(WarpBlocks.panel(
         "Search Results",
-        f"Showing {len(results)} of {total} papers",
+        f"[#A5D5FE]{len(results)}[/] shown · [#B4FA72]{total}[/] total",
     ))
 
     if not results:
-        blocks.append(WarpBlocks.section("No Results", "No papers matched your query."))
+        blocks.append(WarpBlocks.panel("No Results", "[#8E8E8E]No papers matched your query.[/]"))
         print("\n\n".join(blocks))
         return
 
-    # Results as individual panels
+    # Compact table: Title, Year, Score, Category
+    table_rows = []
     for r in results:
-        score_str = f"{r.score:.2f}" if r.score else "N/A"
-        meta_lines = [
-            f"{colored(r.authors, Colors.OKBLUE)}",
-            f"{r.published} · {colored(r.source, Colors.OKGREEN)} · {r.primary_category or 'unknown'}",
-            f"Score: {colored(score_str, Colors.BOLD)}",
-        ]
-        if r.snippet:
-            meta_lines.append(f"...{r.snippet}...")
-        body = "\n".join(meta_lines)
-        blocks.append(WarpBlocks.section(r.title, body))
+        year = r.published[:4] if r.published else "----"
+        score = f"{r.score:.2f}" if r.score else "—"
+        category = r.primary_category or "—"
+        # Truncate title
+        title = r.title[:50] + "..." if len(r.title) > 50 else r.title
+        table_rows.append([title, year, score, category])
+
+    blocks.append(WarpBlocks.table(
+        ["Title", "Year", "Score", "Category"],
+        table_rows,
+        title=f"Results ({len(results)})",
+    ))
 
     print("\n\n".join(blocks))
 
