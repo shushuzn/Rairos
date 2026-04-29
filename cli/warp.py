@@ -3,12 +3,27 @@ Warp-style terminal block renderer.
 
 Provides box-drawing character blocks, syntax highlighting, and structured
 output primitives for CLI commands. Inspired by Warp terminal's block model.
+
+Color palette aligned with Warp terminal's dark theme:
+  Accent:  #FF8272 (coral red)
+  Success: #B4FA72 (lime green)
+  Info:    #A5D5FE (sky blue)
+  Purple:  #D0D1FE (lavender)
 """
 from __future__ import annotations
 
 import re
 import sys
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Union
+
+try:
+    from rich.console import Console, ConsoleOptions, RenderResult
+    from rich.table import Table as RichTable
+    from rich.panel import Panel as RichPanel
+    from rich._null_file import NullFile
+    _RICH = True
+except ImportError:
+    _RICH = False
 
 # ─── Colors ────────────────────────────────────────────────────────────────────
 
@@ -38,7 +53,19 @@ class _Colors:
         self.SYN_DECORATOR = '\033[38;5;197m'# Pink
         self.SYN_OPERATOR = '\033[38;5;180m' # Yellow-brown
 
-        # Warp-style block colors
+        # Warp dark-theme colors (#RRGGBB hex, for Rich markup)
+        self.ACCENT = '#FF8272'     # Coral red (Warp primary accent)
+        self.SUCCESS = '#B4FA72'    # Lime green
+        self.INFO = '#A5D5FE'       # Sky blue
+        self.PURPLE = '#D0D1FE'    # Lavender
+        self.WARNING = '#FEFDC2'    # Pale yellow
+        self.ERROR = '#FF5555'     # Red
+        self.TEXT = '#F1F1F1'      # White text
+        self.MUTED = '#8E8E8E'     # Dimmed text
+        self.BG_HEADER = '#232323'  # Dark panel header
+        self.BG_ROW_ALT = '#232323' # Alternating row bg
+
+        # Fallback ANSI for non-Rich mode
         self.TITLE_FG = '\033[38;5;141m'
         self.HEADER_BG = '\033[48;5;235m'
         self.ROW_ALT = '\033[48;5;236m'
@@ -53,6 +80,10 @@ class _Colors:
             'syn_number': 'SYN_NUMBER', 'syn_comment': 'SYN_COMMENT',
             'syn_function': 'SYN_FUNCTION', 'syn_class': 'SYN_CLASS',
             'syn_decorator': 'SYN_DECORATOR', 'syn_operator': 'SYN_OPERATOR',
+            # Warp palette
+            'accent': 'ACCENT', 'success': 'SUCCESS', 'info': 'INFO',
+            'purple': 'PURPLE', 'warning': 'WARNING', 'error': 'ERROR',
+            'text': 'TEXT', 'muted': 'MUTED',
         }
 
     def __getitem__(self, key: str) -> str:
@@ -409,14 +440,30 @@ class WarpBlocks:
         return '\n'.join(result_lines)
 
     @classmethod
+    @classmethod
     def panel(cls, title: str, body: str, width: int = 80) -> str:
-        """Render a simple panel with a title bar and body text.
+        """Render a panel with Warp-style colors using Rich (falls back to ASCII).
 
         Args:
             title: Title shown in the top border
             body: Body content (supports \\n for multiple lines)
             width: Total block width
         """
+        if _RICH:
+            from io import StringIO
+            buf = StringIO()
+            console = Console(file=buf, width=width, force_terminal=True, no_color=False)
+            panel = RichPanel(
+                body,
+                title=f"[bold #FF8272]  {title}  [/]",
+                border_style="#FF8272",
+                style="#F1F1F1",
+                padding=(1, 2),
+            )
+            console.print(panel)
+            return buf.getvalue().rstrip('\n')
+
+        # Fallback: original ASCII box-drawing
         top = f"┌─ {title} " + "─" * max(0, width - len(title) - 7) + "┐"
         lines = body.split('\n') if body else ['']
         result_lines = [top]
@@ -429,13 +476,29 @@ class WarpBlocks:
 
     @classmethod
     def section(cls, title: str, *body_lines: str, width: int = 80) -> str:
-        """Render a titled section block.
+        """Render a titled section block with Warp-style colors.
 
         Args:
             title: Section title (shown in a header row)
             *body_lines: Body content lines
             width: Total block width
         """
+        body = '\n'.join(body_lines)
+        if _RICH:
+            from io import StringIO
+            buf = StringIO()
+            console = Console(file=buf, width=width, force_terminal=True, no_color=False)
+            panel = RichPanel(
+                body,
+                title=f"[bold #FF8272]  {title}  [/]",
+                border_style="#FF8272",
+                style="#F1F1F1",
+                padding=(1, 2),
+            )
+            console.print(panel)
+            return buf.getvalue().rstrip('\n')
+
+        # Fallback
         top = f"┌─ {title} " + "─" * max(0, width - len(title) - 7) + "┐"
         result_lines = [top]
         for line in body_lines:
@@ -451,27 +514,62 @@ class WarpBlocks:
         headers: List[str],
         rows: List[List[str]],
         width: int = 80,
+        title: Optional[str] = None,
     ) -> str:
-        """Render a table with box-drawing borders.
+        """Render a table with Warp-style colors using Rich (falls back to ASCII).
 
         Args:
             headers: Column header names
             rows: List of row data (one list per row)
             width: Total table width
+            title: Optional table title
         """
         if not headers:
             return ""
 
-        # Distribute width across columns proportionally
+        if _RICH:
+            from io import StringIO
+            buf = StringIO()
+            console = Console(file=buf, width=width, force_terminal=True, no_color=False)
+
+            t = RichTable(
+                title=title,
+                style="bold #FF8272",
+                header_style="bold #F1F1F1 on #232323",
+                border_style="#3A3A3C",
+                row_styles=["", "#232323"],  # alternating row backgrounds
+                show_lines=True,
+            )
+            for h in headers:
+                t.add_column(f"  {h}  ", style="#A5D5FE", no_wrap=False)
+
+            for row in rows:
+                cells = [str(c) for c in row]
+                # Color-code status columns heuristically
+                styled = []
+                for i, c in enumerate(cells):
+                    lc = c.lower()
+                    if any(kw in lc for kw in ('ready', 'done', '✓', 'pass', 'ok', 'success')):
+                        styled.append(f"[#B4FA72]{c}[/]")
+                    elif any(kw in lc for kw in ('pending', 'warn', '⚠', 'loading', 'progress')):
+                        styled.append(f"[#FEFDC2]{c}[/]")
+                    elif any(kw in lc for kw in ('error', 'fail', '✗', '✘', 'dead')):
+                        styled.append(f"[#FF5555]{c}[/]")
+                    else:
+                        styled.append(c)
+                t.add_row(*styled)
+
+            console.print(t)
+            return buf.getvalue().rstrip('\n')
+
+        # Fallback: original ASCII box-drawing
         n_cols = len(headers)
         col_widths = [max(len(h), max((len(str(r[i])) for r in rows), default=0))
                       for i, h in enumerate(headers)]
-        # Cap at proportional share + 10
-        total_weighted = sum(col_widths) + (n_cols - 1) * 3  # " │ " separators
+        total_weighted = sum(col_widths) + (n_cols - 1) * 3
         scale = min(1.0, (width - n_cols - 1) / max(1, total_weighted)) if total_weighted > 0 else 1.0
         col_widths = [max(3, int(w * scale)) for w in col_widths]
 
-        # Header separator
         header_sep = "├".join("─" * w for w in col_widths)
 
         def fmt_row(cells: List[str]) -> str:

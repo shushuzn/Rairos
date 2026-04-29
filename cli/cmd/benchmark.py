@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 
 from cli._shared import get_db, print_info, print_error, print_success
+from cli.warp import WarpBlocks
 from llm.benchmark import BenchmarkComparator
 
 
@@ -28,17 +29,23 @@ def _build_benchmark_parser(subparsers) -> argparse.ArgumentParser:
     detect_p.add_argument("paper_id", help="Paper ID to analyze")
     detect_p.add_argument("--verbose", "-v", action="store_true",
                           help="Show table contents")
+    detect_p.add_argument("--format", "-f", default="text",
+                          choices=["text", "warp"],
+                          help="Output format (default: text)")
 
     # list — list papers with benchmark-like tables
     list_p = sub.add_parser("list", help="List papers with benchmark tables")
     list_p.add_argument("--limit", type=int, default=20,
                         help="Maximum results (default: 20)")
+    list_p.add_argument("--format", "-f", default="text",
+                        choices=["text", "warp"],
+                        help="Output format (default: text)")
 
     # compare — cross-paper benchmark comparison
     compare_p = sub.add_parser("compare", help="Compare benchmarks across papers")
     compare_p.add_argument("paper_ids", nargs="+", help="Paper IDs to compare")
     compare_p.add_argument("--format", "-f", default="text",
-                           choices=["text", "markdown", "json"],
+                           choices=["text", "markdown", "json", "warp"],
                            help="Output format (default: text)")
     compare_p.add_argument("--metric", "-m", default=None,
                            help="Filter by metric name (e.g., 'Accuracy')")
@@ -85,31 +92,66 @@ def _run_detect(args: argparse.Namespace, comparator: BenchmarkComparator) -> in
     """Detect benchmark tables in a single paper."""
     pid = args.paper_id
     tables = comparator.detect_tables(pid)
+    use_warp = getattr(args, 'format', 'text') == 'warp'
 
     if not tables:
-        print_info(f"No benchmark-like tables found in paper: {pid}")
+        if use_warp:
+            print(WarpBlocks.panel("Benchmark Detection",
+                                  f"[#8E8E8E]No benchmark tables found in {pid}[/]"))
+        else:
+            print_info(f"No benchmark-like tables found in paper: {pid}")
         return 1
 
-    print_success(f"Found {len(tables)} benchmark table(s) in {pid}:\n")
+    if use_warp:
+        rows = []
+        for i, t in enumerate(tables):
+            caption = t.caption[:40] + "..." if len(t.caption) > 40 else t.caption
+            metrics_str = ", ".join(t.metrics[:5]) if t.metrics else "—"
+            rows.append([str(i + 1), t.benchmark_name, f"[#A5D5FE]p{t.page + 1}[/]", metrics_str])
 
-    for i, t in enumerate(tables):
-        print(f"  [{i + 1}] {t.benchmark_name}")
-        print(f"      Caption: {t.caption[:100]}")
-        print(f"      Page: {t.page + 1}")
-        print(f"      Metrics: {', '.join(t.metrics[:8])}")
+        print(WarpBlocks.table(
+            ["#", "Benchmark", "Page", "Metrics"],
+            rows,
+            title=f"Benchmark Tables in {pid}"
+        ))
 
         if args.verbose and t.metrics and t.rows:
-            # Show mini table
+            from rich.console import Console
+            c = Console()
             metric = t.metrics[0] if t.metrics else ""
-            print(f"\n      {metric} summary:")
-            for row in t.rows[:10]:  # limit to 10 rows
+            rows_data = []
+            for row in t.rows[:10]:
                 model = str(row[0].raw_value) if hasattr(row[0], 'raw_value') else str(row[0])
                 if len(row) > 1:
                     cell = row[1]
                     numeric = cell.numeric if hasattr(cell, 'numeric') else None
                     if numeric is not None:
-                        print(f"        {model[:25]:<26} {numeric:.4f}")
-        print()
+                        rows_data.append([model[:28], f"[#B4FA72]{numeric:.4f}[/]"])
+            if rows_data:
+                c.print(WarpBlocks.table(
+                    ["Model", metric or "Score"],
+                    rows_data,
+                    title=f"  {metric} Detail"
+                ))
+    else:
+        print_success(f"Found {len(tables)} benchmark table(s) in {pid}:\n")
+        for i, t in enumerate(tables):
+            print(f"  [{i + 1}] {t.benchmark_name}")
+            print(f"      Caption: {t.caption[:100]}")
+            print(f"      Page: {t.page + 1}")
+            print(f"      Metrics: {', '.join(t.metrics[:8])}")
+
+            if args.verbose and t.metrics and t.rows:
+                metric = t.metrics[0] if t.metrics else ""
+                print(f"\n      {metric} summary:")
+                for row in t.rows[:10]:
+                    model = str(row[0].raw_value) if hasattr(row[0], 'raw_value') else str(row[0])
+                    if len(row) > 1:
+                        cell = row[1]
+                        numeric = cell.numeric if hasattr(cell, 'numeric') else None
+                        if numeric is not None:
+                            print(f"        {model[:25]:<26} {numeric:.4f}")
+            print()
 
     return 0
 
@@ -118,6 +160,7 @@ def _run_list(args: argparse.Namespace, comparator: BenchmarkComparator) -> int:
     """List papers with benchmark-like tables."""
     db = comparator.db
     tables = db.get_all_experiment_tables()
+    use_warp = getattr(args, 'format', 'text') == 'warp'
 
     # Group by paper, count benchmark-like
     from collections import defaultdict
@@ -133,19 +176,36 @@ def _run_list(args: argparse.Namespace, comparator: BenchmarkComparator) -> int:
                 stats["benchmarks"].append(name)
 
     if not paper_stats:
-        print_info("No papers with stored tables found.")
+        if use_warp:
+            print(WarpBlocks.panel("Benchmark List",
+                                  "[#8E8E8E]No papers with stored tables found[/]"))
+        else:
+            print_info("No papers with stored tables found.")
         return 0
 
     # Sort by benchmark table count
     ranked = sorted(paper_stats.items(), key=lambda x: x[1]["benchmark"], reverse=True)
     ranked = ranked[:args.limit]
 
-    print_success(f"Papers with benchmark tables ({len(ranked)} results):\n")
-    print(f"{'Paper ID':<16} {'Total':<7} {'Bench':<7} {'Benchmarks'}")
-    print("-" * 60)
-    for pid, stats in ranked:
-        benchmarks = ", ".join(stats["benchmarks"][:3])
-        print(f"{pid:<16} {stats['total']:<7} {stats['benchmark']:<7} {benchmarks}")
+    if use_warp:
+        rows = []
+        for pid, stats in ranked:
+            benchmarks = ", ".join(stats["benchmarks"][:3])
+            bench = stats["benchmark"]
+            badge = "[#B4FA72]●[/]" if bench > 0 else "[#8E8E8E]○[/]"
+            rows.append([badge, pid, str(stats["total"]), str(bench), benchmarks[:40]])
+        print(WarpBlocks.table(
+            ["", "Paper ID", "Total", "Bench", "Benchmarks"],
+            rows,
+            title=f"Benchmark Tables ({len(ranked)} papers)"
+        ))
+    else:
+        print_success(f"Papers with benchmark tables ({len(ranked)} results):\n")
+        print(f"{'Paper ID':<16} {'Total':<7} {'Bench':<7} {'Benchmarks'}")
+        print("-" * 60)
+        for pid, stats in ranked:
+            benchmarks = ", ".join(stats["benchmarks"][:3])
+            print(f"{pid:<16} {stats['total']:<7} {stats['benchmark']:<7} {benchmarks}")
 
     return 0
 
@@ -171,22 +231,59 @@ def _run_compare(args: argparse.Namespace, comparator: BenchmarkComparator) -> i
         ]
 
     if not result.matches:
-        print_info("No matching benchmarks found across papers.")
-        # Show what each paper has
-        for pid, tables in result.tables_found.items():
-            print_info(f"\n  {pid}: {len(tables)} benchmark table(s)")
-            for t in tables:
-                print_info(f"    - {t.benchmark_name}: {', '.join(t.metrics[:3])}")
+        if args.format == "warp":
+            print(WarpBlocks.panel("Benchmark Compare",
+                                  "[#8E8E8E]No matching benchmarks found[/]"))
+        else:
+            print_info("No matching benchmarks found across papers.")
+            for pid, tables in result.tables_found.items():
+                print_info(f"\n  {pid}: {len(tables)} benchmark table(s)")
+                for t in tables:
+                    print_info(f"    - {t.benchmark_name}: {', '.join(t.metrics[:3])}")
         return 0
 
     if args.format == "json":
         print(comparator.render_json(result))
     elif args.format == "markdown":
         print(comparator.render_markdown(result))
+    elif args.format == "warp":
+        _render_compare_warp(result, comparator)
     else:
         print(comparator.render_text(result))
 
     return 0
+
+
+def _render_compare_warp(result, comparator: BenchmarkComparator) -> None:
+    """Render benchmark comparison in Warp style."""
+    from rich.console import Console
+    c = Console()
+
+    c.rule("[bold #FF8272]  Benchmark Comparison  [/]")
+    c.print()
+
+    # Group by benchmark + metric
+    from collections import defaultdict
+    groups: dict = defaultdict(list)
+    for m in result.matches:
+        groups[(m.benchmark_name, m.metric_name)].extend(m.entries)
+
+    for (bench_name, metric_name), entries in groups.items():
+        direction = "↑" if comparator._is_higher_better(metric_name) else "↓"
+        direction_label = "[#B4FA72]higher better[/]" if comparator._is_higher_better(metric_name) else "[#FF5555]lower better[/]"
+
+        # Build table rows
+        rows = []
+        for paper_id, value, model in sorted(entries, key=lambda x: -x[1]):
+            value_str = f"[#B4FA72]{value:.4f}[/]" if value >= 0.8 else f"[#FEFDC2]{value:.4f}[/]" if value >= 0.5 else f"[#FF5555]{value:.4f}[/]"
+            rows.append([paper_id[:18], model[:28], value_str])
+
+        c.print(WarpBlocks.table(
+            ["Paper", "Model", f"Score {direction}"],
+            rows,
+            title=f"  {bench_name} — {metric_name} ({direction_label})"
+        ))
+        c.print()
 
 
 def _run_viz(args: argparse.Namespace, comparator: BenchmarkComparator) -> int:

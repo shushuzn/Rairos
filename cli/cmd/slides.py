@@ -18,6 +18,7 @@ from typing import Optional, List
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from cli._shared import print_success, print_error, print_info, print_warning
+from cli.warp import WarpBlocks
 from llm.slides import PaperSlidesGenerator, SlidesConfig
 
 
@@ -101,9 +102,22 @@ def slides_main(
 
     try:
         result = generator.generate(papers_to_process, config)
-        print_success(f"幻灯片已生成: {result['output_path']}")
-        print_info(f"  幻灯片数: {result['slide_count']}")
-        print_info(f"  论文数: {result['paper_count']}")
+        from rich.console import Console
+        c = Console()
+        c.rule("[bold #FF8272]  Slides Generated  [/]")
+        c.print()
+        rows = [
+            ["Papers", f"[#A5D5FE]{result['paper_count']}[/]"],
+            ["Slides", f"[#B4FA72]{result['slide_count']}[/]"],
+            ["Template", f"[#D0D1FE]{template}[/]"],
+            ["Format", f"[#D0D1FE]{fmt}[/]"],
+        ]
+        c.print(WarpBlocks.table(["Property", "Value"], rows, title="Generation Summary"))
+        c.print()
+        print(WarpBlocks.panel(
+            "Output File",
+            f"[#B4FA72]{result['output_path']}[/]"
+        ))
     except Exception as e:
         print_error(f"生成失败: {e}")
         sys.exit(1)
@@ -120,11 +134,18 @@ def interactive_mode(db):
         print_error("本地数据库为空，先导入一些论文")
         return
 
+    from rich.console import Console
+    c = Console()
+    rows = []
     for i, paper in enumerate(papers, 1):
         title = paper.get("title", "Untitled")[:50]
         year = paper.get("published", "")[:4] or "?"
-        print(f"  [{i}] {year} - {title}")
-
+        rows.append([f"[#FEFDC2][{i}][/]", year, title])
+    c.print(WarpBlocks.table(
+        ["#", "Year", "Title"],
+        rows,
+        title=f"Available Papers ({len(papers)})"
+    ))
     print()
     choice = input("选择: ").strip()
 
@@ -150,10 +171,14 @@ def select_papers_from_db(db) -> List[str]:
         print_error("没有找到本地论文")
         return []
 
-    print_info("可用的论文:")
+    from rich.console import Console
+    c = Console()
+    rows = []
     for i, paper in enumerate(papers, 1):
-        title = paper.get("title", "Untitled")[:40]
-        print(f"  [{i}] {title}")
+        title = paper.get("title", "Untitled")[:45]
+        year = paper.get("published", "")[:4] or "?"
+        rows.append([f"[#FEFDC2][{i}][/]", year, title])
+    c.print(WarpBlocks.table(["#", "Year", "Title"], rows, title=f"Available Papers ({len(papers)})"))
 
     choice = input("\n选择 (逗号分隔): ").strip()
     try:
