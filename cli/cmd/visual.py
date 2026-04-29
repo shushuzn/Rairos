@@ -73,20 +73,28 @@ def _build_visual_parser(subparsers):
     export_p.set_defaults(func=lambda a: visual_export.callback(
         paper_id=a.paper_id, output=a.output, format=a.format, page=a.page, keyword=a.keyword))
 
-    p.set_defaults(func=lambda a: visual_status.callback())
+    p.set_defaults(func=lambda a: _show_visual_status())
 
 
-@click.command("visual")
-@click.argument("pdf", required=False)
-@click.option("--output", "-o", default=None)
-@click.option("--dpi", type=int, default=150)
-@click.option("--save-db", default=None, help="Save tables to DB with this paper_id")
-def visual(pdf: str, output: str, dpi: int, save_db: str):
-    """Extract visual content from PDF."""
-    if pdf:
-        visual_extract.callback(pdf, output, dpi, "markdown", save_db)
-    else:
-        visual_status.callback()
+def _show_visual_status():
+    """Show visual extraction capabilities (used by CLI registry)."""
+    from rich.console import Console
+    c = Console()
+    c.rule("[bold #FF8272]  Visual Extraction  [/]")
+    print()
+    rows = [
+        ["[#A5D5FE]✓[/]", "Figure extraction", "PNG/JPG from PDF pages"],
+        ["[#A5D5FE]✓[/]", "LaTeX rendering", "Formulas as high-DPI images"],
+        ["[#A5D5FE]✓[/]", "Table extraction", "Markdown + CSV + JSON"],
+    ]
+    c.print(WarpBlocks.table(["", "Capability", "Format"], rows, title="Supported Types"))
+    c.print()
+    print(WarpBlocks.section(
+        "Usage",
+        "[#A5D5FE]airos visual extract[/] paper.pdf --output figures/",
+        "[#A5D5FE]airos visual query[/] 2604.22754",
+        "[#A5D5FE]airos visual list[/]",
+    ))
 
 
 def visual_extract(pdf: str, output: str, dpi: int, format: str, save_db: str = None):
