@@ -665,7 +665,7 @@ class TestPreferenceTagConfidence:
                 gap_type="method_limitation",
             )
         text = temp_tracker.render_profile()
-        # Panel includes event count (tables are printed via c.print, not returned)
+        # Panel includes event count (tables printed via c.print, not returned)
         assert "events" in text
 
     def test_merge_preference_tags_takes_max_confidence(self, temp_tracker, tmp_path):
