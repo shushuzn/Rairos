@@ -643,21 +643,25 @@ def render_gap_report(result: GapAnalysisResultV2, show_preferences: bool = True
         "",
     ]
 
-    if type_rows:
-        c.print(WarpBlocks.table(
-            ["Gap Type", "Count"],
-            type_rows,
-            title="Gaps by Type"
-        ))
-        c.print()
+    # Capture Rich output using Console.capture()
+    with c.capture() as capture:
+        if type_rows:
+            c.print(WarpBlocks.table(
+                ["Gap Type", "Count"],
+                type_rows,
+                title="Gaps by Type"
+            ))
+            c.print()
 
-    if gap_rows:
-        c.print(WarpBlocks.table(
-            ["#", "Type", "Gap / Question"],
-            gap_rows,
-            title=f"Research Gaps ({len(result.gaps)})"
-        ))
+        if gap_rows:
+            c.print(WarpBlocks.table(
+                ["#", "Type", "Gap / Question"],
+                gap_rows,
+                title=f"Research Gaps ({len(result.gaps)})"
+            ))
 
+    if capture.get():
+        lines.append(capture.get().rstrip("\n"))
     return "\n".join(lines)
 
 
@@ -688,7 +692,6 @@ def render_combined_report(
     # Hypotheses table
     hypo_rows = []
     for i, h in enumerate(hypothesis_result.hypotheses[:5], 1):
-        "████████░░"[:int(h.novelty_score * 10)] + "░░░░░░░░░"[int(h.novelty_score * 10):]
         hypo_rows.append([
             f"[#FEFDC2]{i}.[/]",
             h.hypothesis_type.value[:15],
@@ -711,19 +714,23 @@ def render_combined_report(
         "",
     ]
 
-    if gap_rows:
-        c.print(WarpBlocks.table(
-            ["#", "", "Top Research Gaps"],
-            gap_rows,
-            title="Gap Analysis"
-        ))
-        c.print()
+    # Capture Rich output using Console.capture()
+    with c.capture() as capture:
+        if gap_rows:
+            c.print(WarpBlocks.table(
+                ["#", "", "Top Research Gaps"],
+                gap_rows,
+                title="Gap Analysis"
+            ))
+            c.print()
 
-    if hypo_rows:
-        c.print(WarpBlocks.table(
-            ["#", "Type", "Novelty", "Feas.", "Hypothesis"],
-            hypo_rows,
-            title=f"Research Hypotheses ({len(hypothesis_result.hypotheses)})"
-        ))
+        if hypo_rows:
+            c.print(WarpBlocks.table(
+                ["#", "Type", "Novelty", "Feas.", "Hypothesis"],
+                hypo_rows,
+                title=f"Research Hypotheses ({len(hypothesis_result.hypotheses)})"
+            ))
 
+    if capture.get():
+        parts.append(capture.get().rstrip("\n"))
     return "\n".join(parts)

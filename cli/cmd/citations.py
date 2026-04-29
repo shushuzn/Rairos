@@ -13,38 +13,24 @@ def _build_citations_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser(
         "citations",
         help="Show citation relationships for a paper",
-        prog="airos citations",
-        description="View backward citations (papers this paper cites) or forward citations (papers that cite this paper).",
-        epilog="""\
-Examples:
-  %(prog)s --from 2301.00001              # show papers cited by this paper
-  %(prog)s --to 2301.00001               # show papers citing this paper
-  %(prog)s --from 2301.00001 --format json  # JSON output""",
+        description="Display papers cited by or citing a given paper",
     )
-    p.add_argument(
-        "--from",
-        metavar="PAPER_ID",
-        dest="citation_from",
-        help="Show papers cited by PAPER_ID (backward citations)",
-    )
-    p.add_argument(
-        "--to",
-        metavar="PAPER_ID",
-        dest="citation_to",
-        help="Show papers that cite PAPER_ID (forward citations)",
-    )
+    p.add_argument("--from", dest="citation_from", help="Paper ID to find citations from")
+    p.add_argument("--to", dest="citation_to", help="Paper ID to find citations to")
     p.add_argument(
         "--format",
         choices=["text", "csv"],
         default="text",
         help="Output format (default: text)",
     )
+    p.set_defaults(func=lambda args: _run_citations(args))
     return p
 
 
 def _run_citations(args: argparse.Namespace) -> int:
     from rich.console import Console
-    c = Console()
+    from io import StringIO
+    c = Console(file=StringIO(), force_terminal=False, width=80)
 
     if not args.citation_from and not args.citation_to:
         print("Error: must specify --from or --to", file=sys.stderr)
@@ -99,10 +85,10 @@ def _run_citations(args: argparse.Namespace) -> int:
                 title_map = {pid: (paper_map[pid].title or '') for pid in via_ids if pid in paper_map}
                 body_lines.append("")
                 body_lines.append(f"[#FEFDC2]⚡ INDIRECT ({len(via_papers)} connections):[/]")
-                for c in via_papers:
-                    t = title_map.get(c.target_id, '?')
+                for via in via_papers:
+                    t = title_map.get(via.target_id, '?')
                     t_short = (t[:50] + "...") if len(t) > 53 else t
-                    body_lines.append(f"  [#D0D1FE]{paper_from}[/] → [#FF8272]{c.target_id}[/] → [#FF8272]{paper_to}[/]")
+                    body_lines.append(f"  [#D0D1FE]{paper_from}[/] → [#FF8272]{via.target_id}[/] → [#FF8272]{paper_to}[/]")
                     body_lines.append(f"    [#8E8E8E]{t_short}[/]")
             if not direct and not via_papers:
                 body_lines.append("")
@@ -112,6 +98,7 @@ def _run_citations(args: argparse.Namespace) -> int:
                 f"Citation Bridge — [#FF8272]{paper_from}[/] ↔ [#FF8272]{paper_to}[/]",
                 "\n".join(body_lines)
             ))
+            print(c.file.getvalue(), end="")
         return 0
 
     # Single-direction mode
@@ -131,8 +118,8 @@ def _run_citations(args: argparse.Namespace) -> int:
     else:
         label = "Backward Citations" if direction == "from" else "Forward Citations"
         citation_rows = []
-        for c in citations:
-            cid = c.target_id if direction == "from" else c.source_id
+        for citation in citations:
+            cid = citation.target_id if direction == "from" else citation.source_id
             citation_rows.append([f"[#D0D1FE]{cid}[/]"])
 
         c.print(WarpBlocks.panel(
@@ -150,5 +137,6 @@ def _run_citations(args: argparse.Namespace) -> int:
                 "No Citations",
                 "[#8E8E8E]This paper has no citations in the database[/]"
             ))
+        print(c.file.getvalue(), end="")
 
     return 0
