@@ -526,10 +526,6 @@ Rewrite as a standalone question (in the same language as the original question)
         if not contexts:
             # Fallback: use general LLM without paper context
             if self.api_key:
-                fallback_prompt = f"""用户问题：{question}
-
-请用中文回答这个关于 AI/机器学习/深度学习相关的问题。如果问题与这些领域无关，请直接回答。
-回答要简洁、有帮助，标注信息来源（如"根据我的知识"）。"""
                 answer = self._call_llm(
                     [],
                     model=self.model,
@@ -657,7 +653,7 @@ Rewrite as a standalone question (in the same language as the original question)
 
         # Build LLM prompt for synthesis
         papers_text = []
-        for pid, info in paper_summaries.items():
+        for _pid, info in paper_summaries.items():
             snippets = "\n".join([f"- {s}" for s in info["snippets"][:2]])
             papers_text.append(f"【{info['title']}】({info['year']})\n{snippets}")
 
@@ -1223,10 +1219,10 @@ Rewrite as a standalone question (in the same language as the original question)
 
         # Build context text with compression
         context_parts = []
-        for paper_id, ctxs in paper_contexts.items():
+        for _paper_id, ctxs in paper_contexts.items():
             ctx = ctxs[0]  # Use most relevant snippet
             # Compress snippets to reduce token count
-            compressed = self._compress_snippet(ctx.snippet, max_chars=400)
+            self._compress_snippet(ctx.snippet, max_chars=400)
             snippets = "\n\n".join([f"> {self._compress_snippet(c.snippet, max_chars=300)}" for c in ctxs[:2]])
             context_parts.append(
                 f"【论文】{ctx.paper_title}\n"

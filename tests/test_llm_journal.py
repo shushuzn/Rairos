@@ -200,7 +200,6 @@ class TestListEntriesFilter:
         if today:
             result = [e for e in result if e.created_at.startswith(today_str)]
         elif days > 0:
-            cutoff = "2026-04-27T00:00:00"
             # approximate: entries from last `days` days
             # For testing, use days filter
             cutoff_iso = f"2026-04-{27 - days + 1:02d}T00:00:00"
@@ -302,7 +301,6 @@ class TestStatsLogic:
         if not entries:
             return {"total": 0, "this_week": 0, "this_month": 0}
 
-        now_iso = "2026-04-27T12:00:00"
         week_ago = "2026-04-20T12:00:00"
         month_ago = "2026-03-28T12:00:00"
 

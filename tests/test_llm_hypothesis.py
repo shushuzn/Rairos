@@ -219,14 +219,14 @@ class TestHypothesisTemplates:
 
     def test_all_templates_have_placeholders(self):
         """All templates contain placeholders."""
-        for gap_type, templates in HypothesisGenerator.HYPOTHESIS_TEMPLATES.items():
+        for _gap_type, templates in HypothesisGenerator.HYPOTHESIS_TEMPLATES.items():
             for t in templates:
                 assert "{" in t["template"]
                 assert "}" in t["template"]
 
     def test_all_templates_have_variables(self):
         """All templates have variables list."""
-        for gap_type, templates in HypothesisGenerator.HYPOTHESIS_TEMPLATES.items():
+        for _gap_type, templates in HypothesisGenerator.HYPOTHESIS_TEMPLATES.items():
             for t in templates:
                 assert isinstance(t["variables"], list)
                 assert len(t["variables"]) > 0
@@ -561,7 +561,7 @@ class TestGenerateFromTemplates:
 
     def test_templates_have_valid_types(self):
         """All template types are valid HypothesisType values."""
-        for gap_type, templates in HypothesisGenerator.HYPOTHESIS_TEMPLATES.items():
+        for _gap_type, templates in HypothesisGenerator.HYPOTHESIS_TEMPLATES.items():
             for t in templates:
                 # type should be one of the HypothesisType enum values
                 type_value = t["type"].value

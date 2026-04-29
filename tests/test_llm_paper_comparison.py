@@ -381,7 +381,7 @@ class TestExtractMetrics:
             (r'(\d+\.?\d*)\s*(f1)', r'\1'),
         ]
 
-        for pattern, replacement in patterns:
+        for pattern, _replacement in patterns:
             match = _re.search(pattern, text)
             if match:
                 key = match.group(2).title()

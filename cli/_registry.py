@@ -82,7 +82,7 @@ SUBCOMMANDS = {name for name, _, _ in _SUBCOMMAND_TABLE}
 
 def _build_all_parsers(subparsers) -> None:
     """Build all subcommand parsers via lazy dynamic import."""
-    for name, module_path, builder_name in _SUBCOMMAND_TABLE:
+    for _name, module_path, builder_name in _SUBCOMMAND_TABLE:
         mod = importlib.import_module(module_path)
         getattr(mod, builder_name)(subparsers)
 
@@ -318,10 +318,10 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
     if args.structured:
         from sections.segment import segment_structured, format_section_snippets
         segments = segment_structured(extracted_text) if hasattr(extracted_text, 'text_blocks') else []
-        snippets = format_section_snippets(segments)
+        format_section_snippets(segments)
     else:
         segments = []
-        snippets = extracted_text[:500] if isinstance(extracted_text, str) and extracted_text else ""
+        extracted_text[:500] if isinstance(extracted_text, str) and extracted_text else ""
 
     paper.path = pdf_path
 

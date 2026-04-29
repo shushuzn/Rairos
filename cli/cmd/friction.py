@@ -98,7 +98,7 @@ def run(args: argparse.Namespace) -> int:
     if summary["by_severity"]:
         print(colored("By Severity:", Colors.BOLD))
         for s, count in sorted(summary["by_severity"].items(), key=lambda x: -x[1]):
-            label = getattr(FrictionType, s.upper(), s)
+            getattr(FrictionType, s.upper(), s)
             print(f"  {s:<10} {count}")
         print()
 

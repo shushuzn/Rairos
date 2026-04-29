@@ -105,7 +105,7 @@ def _run_detect(args: argparse.Namespace, comparator: BenchmarkComparator) -> in
     if use_warp:
         rows = []
         for i, t in enumerate(tables):
-            caption = t.caption[:40] + "..." if len(t.caption) > 40 else t.caption
+            t.caption[:40] + "..." if len(t.caption) > 40 else t.caption
             metrics_str = ", ".join(t.metrics[:5]) if t.metrics else "—"
             rows.append([str(i + 1), t.benchmark_name, f"[#A5D5FE]p{t.page + 1}[/]", metrics_str])
 

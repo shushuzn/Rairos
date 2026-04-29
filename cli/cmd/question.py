@@ -62,7 +62,7 @@ def _build_question_parser(subparsers) -> argparse.ArgumentParser:
     p_sync.add_argument("--priority", "-p", type=int, default=7, help="Priority 1-10")
 
     # stats
-    p_stats = sub.add_parser("stats", help="Show question statistics")
+    sub.add_parser("stats", help="Show question statistics")
 
     return p
 

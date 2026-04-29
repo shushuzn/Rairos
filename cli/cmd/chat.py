@@ -410,7 +410,7 @@ def _run_interactive(chat, args) -> int:
                 pass  # Non-critical, don't fail on DB errors
 
         except Exception as e:
-            warnings.warn(f"Chat failed: {e}")
+            warnings.warn(f"Chat failed: {e}", stacklevel=2)
             print_error(f"⚠️ 回答失败: {e}")
             if args.verbose:
                 import traceback

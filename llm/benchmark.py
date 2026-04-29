@@ -458,7 +458,7 @@ class BenchmarkComparator:
 
         for match in result.matches:
             lines.append(f"## {match.benchmark_name} — {match.metric_name}")
-            direction = "↑" if _is_higher_better(match.metric_name) else "↓"
+            "↑" if _is_higher_better(match.metric_name) else "↓"
             lines.append("")
             lines.append("| Rank | Paper ID | Model | Score |")
             lines.append("|------|----------|-------|-------|")
