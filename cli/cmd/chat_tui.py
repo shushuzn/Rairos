@@ -42,6 +42,7 @@ from textual.widgets import Button, Header, Label, Static, Input
 from textual.css.query import NoMatches
 
 from cli._shared import get_db, Colors, colored
+from cli.warp import WarpBlocks
 from llm.chat import RagChat
 from llm.friction_tracker import FrictionTracker
 
@@ -91,337 +92,31 @@ def _index_message(tokens: Set[str], msg_idx: int, index: Dict[str, Set[int]]) -
 
 
 class SimpleMarkdown:
-    """Simple markdown to ANSI-colored text converter for TUI."""
+    """Simple markdown to ANSI-colored text converter for TUI.
 
-    # ANSI color codes
-    COLORS = {
-        'bold': '\033[1m',
-        'italic': '\033[3m',
-        'code': '\033[92m',      # Green
-        'code_bg': '\033[40m',   # Dark background
-        'link': '\033[94m',      # Blue
-        'header': '\033[95m',    # Magenta
-        'list': '\033[96m',      # Cyan
-        'quote': '\033[90m',     # Gray
-        'reset': '\033[0m',
-        # Syntax highlighting colors
-        'syn_keyword': '\033[38;5;141m',   # Purple
-        'syn_string': '\033[38;5;114m',    # Light blue
-        'syn_number': '\033[38;5;215m',   # Orange
-        'syn_comment': '\033[38;5;242m',   # Gray
-        'syn_function': '\033[38;5;79m',   # Cyan
-        'syn_class': '\033[38;5;147m',    # Light purple
-        'syn_decorator': '\033[38;5;197m',# Pink
-        'syn_operator': '\033[38;5;180m', # Yellow-brown
-    }
+    Delegates code-block rendering to shared WarpBlocks to avoid duplication.
+    """
 
-    # Language alias mapping
-    LANG_ALIASES = {
-        'py': 'python', 'js': 'javascript', 'ts': 'typescript',
-        'sh': 'bash', 'shell': 'bash', 'zsh': 'bash',
-        'rb': 'ruby', 'rs': 'rust', 'go': 'go',
-        'yml': 'yaml', 'tf': 'hcl', 'dockerfile': 'dockerfile',
-        'jsonc': 'json', 'jsx': 'javascript', 'tsx': 'typescript',
-    }
+    # Re-use WarpBlocks colors for compatibility with existing CSS/text patterns
+    COLORS = WarpBlocks.C
+    LANG_ALIASES = WarpBlocks.LANG_ALIASES if hasattr(WarpBlocks, 'LANG_ALIASES') else {}
+    PY_KEYWORDS = WarpBlocks.PY_KEYWORDS if hasattr(WarpBlocks, 'PY_KEYWORDS') else frozenset()
+    JS_KEYWORDS = WarpBlocks.JS_KEYWORDS if hasattr(WarpBlocks, 'JS_KEYWORDS') else frozenset()
 
-    # Python keywords
-    PY_KEYWORDS = frozenset({
-        'and', 'as', 'assert', 'async', 'await', 'break', 'class', 'continue',
-        'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from',
-        'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 'not',
-        'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield',
-        'True', 'False', 'None', 'self', 'cls',
-    })
-
-    # JavaScript keywords
-    JS_KEYWORDS = frozenset({
-        'async', 'await', 'break', 'case', 'catch', 'class', 'const', 'continue',
-        'debugger', 'default', 'delete', 'do', 'else', 'export', 'extends',
-        'finally', 'for', 'function', 'if', 'import', 'in', 'instanceof',
-        'let', 'new', 'of', 'return', 'static', 'super', 'switch', 'this',
-        'throw', 'try', 'typeof', 'var', 'void', 'while', 'with', 'yield',
-        'true', 'false', 'null', 'undefined',
-    })
-
-    @classmethod
-    def _tokenize_python(cls, code: str) -> str:
-        """Highlight Python code with syntax colors."""
-        lines = code.split('\n')
-        result_lines = []
-
-        for i, line in enumerate(lines):
-            if not line.strip() or line.strip().startswith('#'):
-                result_lines.append(line)
-                continue
-
-            highlighted = []
-            pos = 0
-            ln = len(line)
-
-            while pos < ln:
-                # Decorator
-                if line[pos] == '@':
-                    end = pos + 1
-                    while end < ln and (line[end].isalnum() or line[end] in '_'):
-                        end += 1
-                    highlighted.append(f"{cls.COLORS['syn_decorator']}{line[pos:end]}{cls.COLORS['reset']}")
-                    pos = end
-                    continue
-
-                # String (single/double/triple quotes)
-                if line[pos] in '"\'':
-                    quote = line[pos]
-                    if line[pos:pos+3] == quote * 3:
-                        quote = quote * 3
-                    end = pos + len(quote)
-                    while end < ln:
-                        if line[end] == '\\' and end + 1 < ln:
-                            end += 2
-                            continue
-                        if line[end:].startswith(quote):
-                            end += len(quote)
-                            break
-                        end += 1
-                    highlighted.append(f"{cls.COLORS['syn_string']}{line[pos:end]}{cls.COLORS['reset']}")
-                    pos = end
-                    continue
-
-                # Comment
-                if line[pos] == '#':
-                    highlighted.append(f"{cls.COLORS['syn_comment']}{line[pos:]}{cls.COLORS['reset']}")
-                    break
-
-                # Word (keyword, function, class, number)
-                if line[pos].isalnum() or line[pos] == '_':
-                    end = pos
-                    while end < ln and (line[end].isalnum() or line[end] in '_'):
-                        end += 1
-                    word = line[pos:end]
-
-                    # Check if it's a keyword
-                    if word in cls.PY_KEYWORDS:
-                        highlighted.append(f"{cls.COLORS['syn_keyword']}{word}{cls.COLORS['reset']}")
-                    elif end < ln and line[end] == '(':
-                        highlighted.append(f"{cls.COLORS['syn_function']}{word}{cls.COLORS['reset']}")
-                    elif word[0].isupper() and '_' not in word and len(word) > 1:
-                        highlighted.append(f"{cls.COLORS['syn_class']}{word}{cls.COLORS['reset']}")
-                    elif word.replace('.', '').isdigit():
-                        highlighted.append(f"{cls.COLORS['syn_number']}{word}{cls.COLORS['reset']}")
-                    else:
-                        highlighted.append(word)
-                    pos = end
-                    continue
-
-                # Operators
-                if line[pos] in '=!<>+-*/%&|^~:':
-                    highlighted.append(f"{cls.COLORS['syn_operator']}{line[pos]}{cls.COLORS['reset']}")
-                    pos += 1
-                    continue
-
-                highlighted.append(line[pos])
-                pos += 1
-
-            result_lines.append(''.join(highlighted))
-
-        return '\n'.join(result_lines)
-
-    @classmethod
-    def _tokenize_javascript(cls, code: str) -> str:
-        """Highlight JavaScript/TypeScript code with syntax colors."""
-        lines = code.split('\n')
-        result_lines = []
-
-        for line in lines:
-            if not line.strip() or line.strip().startswith('//'):
-                result_lines.append(line)
-                continue
-
-            highlighted = []
-            pos = 0
-            ln = len(line)
-
-            while pos < ln:
-                # String
-                if line[pos] in '"\'':
-                    quote = line[pos]
-                    end = pos + 1
-                    while end < ln:
-                        if line[end] == '\\':
-                            end += 2
-                            continue
-                        if line[end] == quote:
-                            end += 1
-                            break
-                        end += 1
-                    highlighted.append(f"{cls.COLORS['syn_string']}{line[pos:end]}{cls.COLORS['reset']}")
-                    pos = end
-                    continue
-
-                # Template literal
-                if line[pos] == '`':
-                    end = pos + 1
-                    while end < ln:
-                        if line[end] == '\\':
-                            end += 2
-                            continue
-                        if line[end] == '`':
-                            end += 1
-                            break
-                        end += 1
-                    highlighted.append(f"{cls.COLORS['syn_string']}{line[pos:end]}{cls.COLORS['reset']}")
-                    pos = end
-                    continue
-
-                # Comment
-                if line[pos:pos+2] == '//':
-                    highlighted.append(f"{cls.COLORS['syn_comment']}{line[pos:]}{cls.COLORS['reset']}")
-                    break
-
-                # Word
-                if line[pos].isalnum() or line[pos] == '_':
-                    end = pos
-                    while end < ln and (line[end].isalnum() or line[end] in '_$'):
-                        end += 1
-                    word = line[pos:end]
-
-                    if word in cls.JS_KEYWORDS:
-                        highlighted.append(f"{cls.COLORS['syn_keyword']}{word}{cls.COLORS['reset']}")
-                    elif end < ln and line[end] == '(':
-                        highlighted.append(f"{cls.COLORS['syn_function']}{word}{cls.COLORS['reset']}")
-                    elif word[0].isupper() and len(word) > 1:
-                        highlighted.append(f"{cls.COLORS['syn_class']}{word}{cls.COLORS['reset']}")
-                    elif word.replace('.', '').isdigit():
-                        highlighted.append(f"{cls.COLORS['syn_number']}{word}{cls.COLORS['reset']}")
-                    else:
-                        highlighted.append(word)
-                    pos = end
-                    continue
-
-                # Operators
-                if line[pos] in '=!<>+-*/%&|^~?:':
-                    highlighted.append(f"{cls.COLORS['syn_operator']}{line[pos]}{cls.COLORS['reset']}")
-                    pos += 1
-                    continue
-
-                highlighted.append(line[pos])
-                pos += 1
-
-            result_lines.append(''.join(highlighted))
-
-        return '\n'.join(result_lines)
-
-    @classmethod
-    def _tokenize_json(cls, code: str) -> str:
-        """Highlight JSON with syntax colors."""
-        result = []
-        i = 0
-        ln = len(code)
-
-        while i < ln:
-            # String
-            if code[i] == '"':
-                end = i + 1
-                while end < ln:
-                    if code[end] == '\\':
-                        end += 2
-                        continue
-                    if code[end] == '"':
-                        end += 1
-                        break
-                    end += 1
-                # Check if it's a key (followed by :)
-                rest = code[end:].lstrip()
-                is_key = rest.startswith(':')
-                color = cls.COLORS['syn_keyword'] if is_key else cls.COLORS['syn_string']
-                result.append(f"{color}{code[i:end]}{cls.COLORS['reset']}")
-                i = end
-                continue
-
-            # Number
-            if code[i].isdigit() or (code[i] == '-' and i + 1 < ln and code[i+1].isdigit()):
-                end = i
-                if code[end] == '-':
-                    end += 1
-                while end < ln and (code[end].isdigit() or code[end] in '.eE+-'):
-                    end += 1
-                result.append(f"{cls.COLORS['syn_number']}{code[i:end]}{cls.COLORS['reset']}")
-                i = end
-                continue
-
-            # Keywords
-            for kw in ('true', 'false', 'null'):
-                if code[i:i+len(kw)] == kw and (i + len(kw) >= ln or not code[i+len(kw)].isalnum()):
-                    result.append(f"{cls.COLORS['syn_keyword']}{kw}{cls.COLORS['reset']}")
-                    i += len(kw)
-                    break
-            else:
-                result.append(code[i])
-                i += 1
-
-        return ''.join(result)
-
-    @classmethod
-    def _tokenize_generic(cls, code: str) -> str:
-        """Generic highlighting for unknown languages."""
-        lines = code.split('\n')
-        result_lines = []
-
-        for line in lines:
-            # Simple comment detection
-            if ' #' in line or line.lstrip().startswith('#'):
-                idx = line.find('#')
-                if idx >= 0:
-                    result_lines.append(
-                        f"{line[:idx]}{cls.COLORS['syn_comment']}{line[idx:]}{cls.COLORS['reset']}"
-                    )
-                    continue
-            result_lines.append(line)
-
-        return '\n'.join(result_lines)
-
-    @classmethod
-    def _tokenize(cls, lang: str, code: str) -> str:
-        """Tokenize code by language."""
-        lang = cls.LANG_ALIASES.get(lang.lower(), lang.lower())
-
-        if lang == 'python':
-            return cls._tokenize_python(code)
-        elif lang in ('javascript', 'typescript', 'jsx', 'tsx'):
-            return cls._tokenize_javascript(code)
-        elif lang in ('json', 'jsonc'):
-            return cls._tokenize_json(code)
-        else:
-            return cls._tokenize_generic(code)
+    # Delegate tokenizers to shared module
+    _tokenize_python = staticmethod(WarpBlocks._tokenize_python) if hasattr(WarpBlocks, '_tokenize_python') else None
+    _tokenize_javascript = staticmethod(WarpBlocks._tokenize_javascript) if hasattr(WarpBlocks, '_tokenize_javascript') else None
+    _tokenize_json = staticmethod(WarpBlocks._tokenize_json) if hasattr(WarpBlocks, '_tokenize_json') else None
+    _tokenize_generic = staticmethod(WarpBlocks._tokenize_generic) if hasattr(WarpBlocks, '_tokenize_generic') else None
+    _tokenize = staticmethod(WarpBlocks._tokenize) if hasattr(WarpBlocks, '_tokenize') else None
 
     @classmethod
     def _render_code_block(cls, lang: str, code: str, width: int = 80) -> str:
-        """Render a code block with syntax highlighting and line numbers."""
-        lines = code.split('\n')
-        highlighted = cls._tokenize(lang, code).split('\n')
+        """Render a code block with syntax highlighting and line numbers.
 
-        # Calculate line number width
-        num_width = len(str(len(lines)))
-
-        # Language display name
-        lang_display = lang.upper() if lang else 'CODE'
-
-        # Top border
-        top = f"┌─ {lang_display} ─" + "─" * max(0, width - len(lang_display) - 8) + "┐"
-
-        result_lines = [top]
-        for i, (orig, hl) in enumerate(zip(lines, highlighted)):
-            line_num = str(i + 1).rjust(num_width)
-            # Truncate long lines
-            max_content = width - num_width - 4  # account for " │ "
-            if len(orig) > max_content:
-                hl = hl[:max_content] + cls.COLORS['syn_comment'] + ' …' + cls.COLORS['reset']
-            content = f"{cls.COLORS['syn_comment']}{line_num}{cls.COLORS['reset']} │ {hl}"
-            result_lines.append(f"│ {content}")
-
-        # Bottom border
-        result_lines.append("└" + "─" * (width - 2) + "┘")
-
-        return '\n'.join(result_lines)
+        Delegates to the shared WarpBlocks implementation.
+        """
+        return WarpBlocks.code_block(lang, code, width=width)
 
     @classmethod
     def parse(cls, text: str) -> str:
