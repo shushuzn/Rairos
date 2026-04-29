@@ -2,7 +2,6 @@
 import hashlib
 import json
 import os
-import re
 import time
 from pathlib import Path
 from typing import Dict, Iterator, List, Optional, Tuple
@@ -168,7 +167,7 @@ def warm_cache(
     results = {}
     for query in queries:
         try:
-            response = call_llm_chat_completions(
+            call_llm_chat_completions(
                 messages=[{"role": "user", "content": query}],
                 model=model,
                 base_url=base_url,

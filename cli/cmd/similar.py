@@ -34,7 +34,7 @@ def _build_similar_parser(subparsers) -> argparse.ArgumentParser:
         help="Max similar papers to return (default: 10)",
     )
     p_run.add_argument(
-        "--format", choices=["table", "json"], default="table",
+        "--format", choices=["table", "json", "warp"], default="table",
         help="Output format (default: table)",
     )
 
@@ -101,7 +101,16 @@ def _run_similar_text(args: argparse.Namespace) -> int:
         print(f"No similar papers found for {args.paper_id!r}")
         return 0
 
-    if args.format == "json":
+    if args.format == "warp":
+        from cli.warp import WarpBlocks
+        rows = [[f"{score:.4f}", sim_paper.id, sim_paper.title[:60]]
+                for sim_paper, score in sims]
+        print(WarpBlocks.table(
+            ["Score", "Paper ID", "Title"],
+            rows,
+            title=f"Similar to {args.paper_id} — {paper.title[:40]}",
+        ))
+    elif args.format == "json":
         import json
         result = [{"id": p.id, "title": p.title, "score": float(s)} for p, s in sims]
         print(json.dumps(result, indent=2))

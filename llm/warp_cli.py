@@ -12,7 +12,6 @@ Usage:
     response = client.chat("What is RAG?", model="claude-3-5-sonnet-latest")
 """
 import json
-import os
 import subprocess
 import sys
 from typing import Optional
@@ -133,14 +132,14 @@ class WarpCLIClient:
                 return output
 
         except subprocess.TimeoutExpired:
-            raise RuntimeError("Warp CLI timed out after 120 seconds")
+            raise RuntimeError("Warp CLI timed out after 120 seconds") from None
         except FileNotFoundError:
             raise RuntimeError(
                 f"Warp not found at '{self.cli_path}'. "
                 "Please install Warp: https://warp.dev"
-            )
+            ) from None
         except Exception as e:
-            raise RuntimeError(f"Warp CLI call failed: {e}")
+            raise RuntimeError(f"Warp CLI call failed: {e}") from e
 
     def is_available(self) -> bool:
         """Check if Warp CLI is available and working.

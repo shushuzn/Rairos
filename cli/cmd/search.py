@@ -110,7 +110,6 @@ def _run_search(args: argparse.Namespace) -> int:
 
 def _run_search_warp(results, total) -> None:
     """Render search results using Warp-style blocks."""
-    from cli._shared import colored, Colors
 
     blocks = []
 

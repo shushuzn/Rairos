@@ -1,5 +1,5 @@
 """Unit tests for question CLI subcommand — research question tracking."""
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 class FakeArgs:
