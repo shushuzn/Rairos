@@ -19,6 +19,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from cli._shared import print_success, print_error, print_info, print_header, Colors
+from cli.warp import WarpBlocks
 from llm.evolution import get_evolution_memory, FeedbackType
 
 
@@ -127,51 +128,73 @@ def show_sessions_view():
 
 
 def show_dashboard(evo):
-    """显示完整的 Evolution Dashboard."""
+    """显示完整的 Evolution Dashboard — Warp 风格."""
+    from rich.console import Console
+    from rich.table import Table
+
     stats = evo.get_stats()
+    c = Console()
 
-    print_header("═" * 50)
-    print_header("   AI Research OS — Evolution Dashboard")
-    print_header("═" * 50)
-    print()
+    # Title
+    c.rule("[bold #FF8272] AI Research OS — Evolution Dashboard [/]")
+    c.print()
 
-    # 学习进度条
+    # Progress bar section
     progress = stats["learning_progress"]
-    bar_len = 30
+    bar_len = 24
     filled = int(bar_len * progress)
     bar = "█" * filled + "░" * (bar_len - filled)
+    pct = int(progress * 100)
+    status = "[#B4FA72]● Learning[/]" if pct < 50 else "[#B4FA72]✓ Evolving[/]"
 
-    print(f"  系统学习进度: [{bar}] {int(progress*100)}%")
-    print()
+    print(WarpBlocks.section(
+        f"System Progress {pct}%",
+        f"[#A5D5FE]{bar}[/]  {status}",
+        f"Events: {stats['total_events']}  |  Patterns: {stats['total_patterns']}",
+        width=60
+    ))
+    c.print()
 
-    # 核心指标
-    print_info("  📊 核心指标")
-    print(f"    总反馈数:     {stats['total_feedback']}")
-    print(f"    正面反馈:   {stats['positive_feedback']}  {render_star(stats.get('positive_rate', 0))}")
-    print(f"    负面反馈:   {stats['negative_feedback']}")
-    print(f"    进化事件:   {stats['total_events']}")
-    print()
+    # Core metrics table
+    pos_rate = stats.get('positive_rate', 0)
+    rate_str = f"[#B4FA72]{render_star(pos_rate)} {pos_rate*100:.0f}%[/]"
+    neg = stats['negative_feedback']
+    pos = stats['positive_feedback']
+    rows = [
+        ["Total Feedback", str(stats['total_feedback']), "[#A5D5FE]Overall[/]"],
+        ["Positive", str(pos), rate_str],
+        ["Negative", str(neg), "[#FF5555]Needs attention[/]" if neg > pos else "[#8E8E8E]Balanced[/]"],
+        ["Patterns", str(stats['total_patterns']), "[#B4FA72]✓ Evolved[/]"],
+        ["Reliable", str(stats['reliable_patterns']), "[#D0D1FE]★ Stable[/]"],
+    ]
+    c.print(WarpBlocks.table(
+        ["Metric", "Value", "Status"],
+        rows,
+        title="Core Metrics"
+    ))
+    c.print()
 
-    # 模式统计
-    print_info("  🧬 基因模式")
-    print(f"    学习模式:   {stats['total_patterns']}")
-    print(f"    可靠模式:   {stats['reliable_patterns']}  ⭐")
-    print()
-
-    # 进化阶段
-    print_info("  🚀 进化阶段")
+    # Evolution stage
     stage = get_evolution_stage(stats)
-    print(f"    当前阶段:   {stage}")
-    print(f"    下一目标:   {get_next_goal(stats)}")
-    print()
+    goal = get_next_goal(stats)
+    print(WarpBlocks.section(
+        "Evolution Stage",
+        f"[#FF8272]Stage:[/] {stage}",
+        f"[#A5D5FE]Next:[/] {goal}",
+        width=60
+    ))
+    c.print()
 
-    # 快捷选项
-    print_header("─" * 50)
-    print_info("  详细视图:")
-    print("    airos evolution --stats     # 统计详情")
-    print("    airos evolution --patterns  # 所有模式")
-    print("    airos evolution --feedback  # 反馈历史")
-    print()
+    # Quick links
+    print(WarpBlocks.section(
+        "Quick Actions",
+        "[#A5D5FE]--stats[/]    Detailed statistics",
+        "[#A5D5FE]--patterns[/]  View all patterns",
+        "[#A5D5FE]--feedback[/] Feedback history",
+        "[#A5D5FE]--report[/]   Learning report",
+        width=60
+    ))
+    c.print()
 
 
 def show_learning_report(evo, days: int = 7):
@@ -228,13 +251,17 @@ def show_learning_report(evo, days: int = 7):
 
 
 def show_stats_view(evo):
-    """显示详细统计."""
+    """显示详细统计 — Warp 风格."""
+    from rich.console import Console
+    from rich.table import Table
+
     stats = evo.get_stats()
+    c = Console()
 
-    print_header("📊 进化统计详情")
-    print()
+    c.rule("[bold #FF8272] Evolution Statistics [/]")
+    c.print()
 
-    # 反馈趋势
+    # Feedback distribution
     total = stats["total_feedback"]
     pos = stats["positive_feedback"]
     neg = stats["negative_feedback"]
@@ -243,47 +270,69 @@ def show_stats_view(evo):
         pos_rate = pos / total
         neg_rate = neg / total
 
-        print_info("  用户满意度分布:")
-        print(f"    满意 ████  {pos_rate*100:.1f}% ({pos})")
-        print(f"    不满意 ████ {neg_rate*100:.1f}% ({neg})")
-        print()
+        # Mini bar charts
+        bar_len = 16
+        pos_bar = "█" * int(bar_len * pos_rate) + "░" * (bar_len - int(bar_len * pos_rate))
+        neg_bar = "█" * int(bar_len * neg_rate) + "░" * (bar_len - int(bar_len * neg_rate))
 
-    # 事件类型分布
-    print_info("  事件分布:")
-    print(f"    总事件数: {stats['total_events']}")
-    print()
+        rows = [
+            ["[#B4FA72]Satisfied[/]", f"[#B4FA72]{pos_bar}[/]  {pos_rate*100:.0f}% ({pos})"],
+            ["[#FF5555]Unsatisfied[/]", f"[#FF5555]{neg_bar}[/]  {neg_rate*100:.0f}% ({neg})"],
+            ["[#A5D5FE]Total[/]", f"[#A5D5FE]{total}[/]"],
+        ]
+        c.print(WarpBlocks.table(["Metric", "Distribution"], rows, title="User Satisfaction"))
+        c.print()
 
-    # 模式分析
+    # Event distribution
+    rows = [
+        ["[#FF8272]Total Events[/]", str(stats["total_events"])],
+        ["[#A5D5FE]Patterns[/]", str(stats["total_patterns"])],
+        ["[#B4FA72]Reliable[/]", str(stats["reliable_patterns"])],
+    ]
+    c.print(WarpBlocks.table(["Event Type", "Count"], rows, title="Event Distribution"))
+    c.print()
+
+    # Pattern analysis
     patterns = evo.get_all_patterns()
     if patterns:
-        print_info("  模式效果排名 (Top 5):")
-
-        # 按效果排序
         sorted_patterns = sorted(
             patterns,
             key=lambda p: p.get("effectiveness", 0),
             reverse=True
-        )[:5]
+        )[:8]
 
+        rows = []
         for i, p in enumerate(sorted_patterns, 1):
             eff = p.get("effectiveness", 0)
             total_att = p.get("success_count", 0) + p.get("failure_count", 0)
-            print(f"    [{i}] {p['name'][:30]}")
-            print(f"        成功率: {eff*100:.0f}% ({total_att}次尝试)")
+            eff_str = f"[#B4FA72]{eff*100:.0f}%[/]" if eff >= 0.7 else f"[#FEFDC2]{eff*100:.0f}%[/]" if eff >= 0.4 else f"[#FF5555]{eff*100:.0f}%[/]"
+            rows.append([str(i), p['name'][:28], eff_str, str(total_att)])
+
+        c.print(WarpBlocks.table(
+            ["#", "Pattern", "Effectiveness", "Attempts"],
+            rows,
+            title="Top Patterns"
+        ))
     else:
-        print("    暂无模式数据")
+        c.print(WarpBlocks.panel("Patterns", "No pattern data yet"))
+    c.print()
 
 
 def show_patterns_view(evo):
-    """显示所有学习到的模式."""
-    patterns = evo.get_all_patterns()
+    """显示所有学习到的模式 — Warp 风格."""
+    from rich.console import Console
 
-    print_header("🧬 已学习的基因模式")
-    print()
+    patterns = evo.get_all_patterns()
+    c = Console()
+
+    c.rule("[bold #FF8272]  🧬 基因模式库  [/]")
+    c.print()
 
     if not patterns:
-        print_info("  暂无学习到的模式")
-        print_info("  使用 --chat 功能并提供反馈来积累模式")
+        print(WarpBlocks.panel(
+            "Pattern Library",
+            "[#8E8E8E]暂无学习到的模式\n\n使用 --chat 功能并提供反馈来积累模式[/]"
+        ))
         return
 
     reliable = [p for p in patterns if p.get("effectiveness", 0) >= 0.7]
@@ -291,55 +340,89 @@ def show_patterns_view(evo):
 
     # 可靠模式
     if reliable:
-        print_info("  ⭐ 可靠模式 (成功率 >70%):")
+        rows = []
         for p in reliable:
             eff = p.get("effectiveness", 0)
             total = p.get("success_count", 0) + p.get("failure_count", 0)
-            print(f"    • {p['name']}")
-            print(f"      成功率: {eff*100:.0f}% | 尝试: {total}次")
-        print()
+            eff_str = f"[#B4FA72]{eff*100:.0f}%[/]"
+            rows.append(["⭐", p['name'][:30], eff_str, f"[#A5D5FE]{total}[/]"])
+
+        c.print(WarpBlocks.table(
+            ["", "Pattern", "Effectiveness", "Attempts"],
+            rows,
+            title="Reliable Patterns (>70%)"
+        ))
+        c.print()
 
     # 实验中模式
     if experimental:
-        print_info("  🔬 实验中模式:")
+        rows = []
         for p in experimental:
             eff = p.get("effectiveness", 0)
             total = p.get("success_count", 0) + p.get("failure_count", 0)
-            print(f"    • {p['name']}")
-            print(f"      成功率: {eff*100:.0f}% | 尝试: {total}次")
+            eff_pct = eff * 100
+            if eff_pct >= 50:
+                eff_str = f"[#FEFDC2]{eff_pct:.0f}%[/]"
+            else:
+                eff_str = f"[#FF5555]{eff_pct:.0f}%[/]"
+            rows.append(["🔬", p['name'][:30], eff_str, f"[#A5D5FE]{total}[/]"])
+
+        c.print(WarpBlocks.table(
+            ["", "Pattern", "Effectiveness", "Attempts"],
+            rows,
+            title="Experimental Patterns"
+        ))
 
 
 def show_feedback_view(evo):
-    """显示最近反馈."""
-    print_header("💬 最近反馈历史")
-    print()
+    """显示最近反馈 — Warp 风格."""
+    import json
+    from rich.console import Console
+
+    c = Console()
+    c.rule("[bold #FF8272]  💬 反馈历史  [/]")
+    c.print()
 
     try:
         with open(evo.feedback_file, encoding="utf-8") as f:
             lines = f.readlines()
-
-        recent = lines[-20:] if len(lines) > 20 else lines
-
-        if not recent:
-            print_info("  暂无反馈")
-            return
-
-        for line in reversed(recent):
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                import json
-                data = json.loads(line)
-                fb_type = data.get("type", "")
-                icon = "✅" if fb_type == "positive" else "❌" if fb_type == "negative" else "➖"
-                query = data.get("query", "")[:40]
-                timestamp = data.get("timestamp", "")[:10]
-                print(f"  {icon} [{timestamp}] {query}...")
-            except json.JSONDecodeError:
-                continue
     except FileNotFoundError:
-        print_info("  暂无反馈")
+        print(WarpBlocks.panel(
+            "Feedback History",
+            "[#8E8E8E]暂无反馈记录\n\n使用 --chat 功能并提供反馈来积累数据[/]"
+        ))
+        return
+
+    recent = lines[-20:] if len(lines) > 20 else lines
+
+    if not recent:
+        print(WarpBlocks.panel(
+            "Feedback History",
+            "[#8E8E8E]暂无反馈记录\n\n使用 --chat 功能并提供反馈来积累数据[/]"
+        ))
+        return
+
+    rows = []
+    for line in reversed(recent):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            data = json.loads(line)
+            fb_type = data.get("type", "")
+            icon = "[#B4FA72]✅[/]" if fb_type == "positive" else "[#FF5555]❌[/]" if fb_type == "negative" else "[#8E8E8E]➖[/]"
+            query = data.get("query", "")[:38]
+            timestamp = data.get("timestamp", "")[:10]
+            rows.append([icon, f"[#A5D5FE][{timestamp}][/]", query])
+        except json.JSONDecodeError:
+            continue
+
+    if rows:
+        c.print(WarpBlocks.table(
+            ["", "Time", "Query"],
+            rows,
+            title=f"Recent Feedback ({len(rows)} entries)"
+        ))
 
 
 def export_evolution_data(evo):

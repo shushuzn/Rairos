@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 
 from cli._shared import get_db, print_info, print_error
+from cli.warp import WarpBlocks
 
 
 def _build_litreview_parser(subparsers) -> argparse.ArgumentParser:
@@ -145,17 +146,28 @@ def _run_litreview(args: argparse.Namespace) -> int:
 
     if args.action == "list":
         reviews = db.list_literature_reviews()
+        from rich.console import Console
+        c = Console()
+        c.rule("[bold #FF8272]  Literature Reviews  [/]")
+        c.print()
         if not reviews:
-            print_info("No literature reviews. Use 'litreview generate <topic>' to create one.")
+            print(WarpBlocks.panel("No Reviews",
+                                  "[#8E8E8E]No literature reviews yet.\n\nRun:[/] airos litreview generate <topic>"))
             return 0
-
-        print_info(f"Found {len(reviews)} literature review(s):")
+        rows = []
         for r in reviews:
-            print(f"  [{r['id']}] {r['topic']}")
-            print(f"        papers: {r.get('paper_count', 0)}")
-            print(f"        last updated: {r.get('last_updated', 'never')}")
-            if r.get('file_path'):
-                print(f"        file: {r['file_path']}")
+            topic = r['topic'][:40]
+            count = r.get('paper_count', 0)
+            updated = r.get('last_updated', 'never')[:10]
+            rows.append([f"[#FEFDC2][{r['id']}][/]", topic, f"[#A5D5FE]{count}[/]", updated])
+        c.print(WarpBlocks.table(
+            ["#", "Topic", "Papers", "Updated"],
+            rows,
+            title=f"{len(reviews)} Review(s)"
+        ))
+        c.print()
+        if len(reviews) == 1:
+            print(WarpBlocks.section("Hint", "[#A5D5FE]airos litreview view[/] <id>  — view review"))
         return 0
 
     if args.action == "delete":

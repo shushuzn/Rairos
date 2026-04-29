@@ -8,6 +8,7 @@ from cli._shared import (
     Colors, colored, print_success, print_error, print_warning, print_info, print_header,
     cmd_infer_tags_if_empty as infer_tags_if_empty,
 )
+from cli.warp import WarpBlocks
 from kg import KGManager
 
 
@@ -32,7 +33,7 @@ Examples:
     gp = sub.add_parser("graph", help="Show paper's ego graph (neighbors up to N hops)")
     gp.add_argument("paper_id", help="Paper UID")
     gp.add_argument("--depth", type=int, default=2, help="BFS depth (default 2)")
-    gp.add_argument("--format", choices=["text", "json"], default="text")
+    gp.add_argument("--format", choices=["text", "json", "warp"], default="text")
 
     # kg path
     pp = sub.add_parser("path", help="Find shortest path between two nodes")
@@ -40,7 +41,8 @@ Examples:
     pp.add_argument("idB", help="Second node ID or paper UID")
 
     # kg stats
-    sub.add_parser("stats", help="KG statistics (nodes/edges by type)")
+    sp = sub.add_parser("stats", help="KG statistics (nodes/edges by type)")
+    sp.add_argument("--format", choices=["text", "warp"], default="text")
 
     # kg rebuild
     rp = sub.add_parser("rebuild", help="Rebuild KG from papers.json")
@@ -51,7 +53,7 @@ Examples:
     fp = sub.add_parser("search", help="Find nodes by tag or type")
     fp.add_argument("--tag", help="Filter by tag")
     fp.add_argument("--type", help="Filter by node type (Paper/P-Note/C-Note/M-Note/Tag)")
-    fp.add_argument("--format", choices=["table", "json"], default="table")
+    fp.add_argument("--format", choices=["table", "json", "warp"], default="table")
 
     # kg view
     vp = sub.add_parser("view", help="Open interactive D3.js force graph in browser")
@@ -70,15 +72,36 @@ def _run_kg(args: argparse.Namespace) -> int:
 
     if args.kg_cmd == "stats":
         stats = kg.stats()
-        print("=== Knowledge Graph Stats ===")
-        print(f"Total nodes : {stats['total_nodes']}")
-        print(f"Total edges : {stats['total_edges']}")
-        print("\nNodes by type:")
-        for ntype, cnt in sorted(stats["nodes_by_type"].items()):
-            print(f"  {ntype:12s}: {cnt:6d}")
-        print("\nEdges by relation:")
-        for rtype, cnt in sorted(stats["edges_by_type"].items()):
-            print(f"  {rtype:12s}: {cnt:6d}")
+        use_warp = getattr(args, 'format', 'text') == 'warp'
+        if use_warp:
+            rows = []
+            for ntype, cnt in sorted(stats["nodes_by_type"].items()):
+                badge = "[#B4FA72]●[/]" if cnt > 0 else "[#8E8E8E]○[/]"
+                rows.append([badge, ntype, f"[#A5D5FE]{cnt}[/]"])
+            print(WarpBlocks.table(
+                ["", "Node Type", "Count"],
+                rows,
+                title=f"Nodes ({stats['total_nodes']} total)"
+            ))
+            rows = []
+            for rtype, cnt in sorted(stats["edges_by_type"].items()):
+                badge = "[#B4FA72]●[/]" if cnt > 0 else "[#8E8E8E]○[/]"
+                rows.append([badge, rtype, f"[#A5D5FE]{cnt}[/]"])
+            print(WarpBlocks.table(
+                ["", "Edge Type", "Count"],
+                rows,
+                title=f"Edges ({stats['total_edges']} total)"
+            ))
+        else:
+            print("=== Knowledge Graph Stats ===")
+            print(f"Total nodes : {stats['total_nodes']}")
+            print(f"Total edges : {stats['total_edges']}")
+            print("\nNodes by type:")
+            for ntype, cnt in sorted(stats["nodes_by_type"].items()):
+                print(f"  {ntype:12s}: {cnt:6d}")
+            print("\nEdges by relation:")
+            for rtype, cnt in sorted(stats["edges_by_type"].items()):
+                print(f"  {rtype:12s}: {cnt:6d}")
         return 0
 
     elif args.kg_cmd == "graph":
@@ -93,6 +116,31 @@ def _run_kg(args: argparse.Namespace) -> int:
                 "neighbors": [{"node": n, "edge": e, "depth": d} for n, e, d in neighbors],
             }
             print(json.dumps(out, option=json.OPT_INDENT_2).decode())
+        elif args.format == "warp":
+            from rich.console import Console
+            c = Console()
+            c.rule("[bold #FF8272]  KG Ego Graph  [/]")
+            print(WarpBlocks.section(
+                f"Center: {args.paper_id}",
+                f"[#A5D5FE]Type:[/] {paper_node['type']}",
+                f"[#A5D5FE]Label:[/] {paper_node['label'][:60]}",
+                f"[#A5D5FE]Neighbors:[/] {len(neighbors)} (depth={args.depth})",
+                width=65
+            ))
+            if neighbors:
+                rows = []
+                for node, edge, depth in sorted(neighbors, key=lambda x: x[2])[:30]:
+                    rel = edge['relation_type'][:20]
+                    label = node['label'][:45]
+                    type_badge = f"[#D0D1FE]{node['type']}[/]"
+                    rows.append([f"[#FEFDC2]d{depth}[/]", type_badge, rel, label])
+                c.print(WarpBlocks.table(
+                    ["D", "Type", "Relation", "Node"],
+                    rows,
+                    title=f"  {len(neighbors)} Neighbors"
+                ))
+            else:
+                print(WarpBlocks.panel("Neighbors", "[#8E8E8E]No neighbors found[/]"))
         else:
             print(f"=== KG Graph for '{args.paper_id}' (depth={args.depth}) ===")
             print(f"Center: [{paper_node['type']}] {paper_node['label']}")
@@ -150,10 +198,26 @@ def _run_kg(args: argparse.Namespace) -> int:
         else:
             nodes = kg.get_all_nodes()
         if not nodes:
-            print("No nodes found.")
+            if args.format == "warp":
+                print(WarpBlocks.panel("KG Search", "[#8E8E8E]No nodes found[/]"))
+            else:
+                print("No nodes found.")
             return 0
         if args.format == "json":
             print(json.dumps(nodes, option=json.OPT_INDENT_2).decode())
+        elif args.format == "warp":
+            rows = []
+            for n in nodes[:50]:
+                type_badge = f"[#D0D1FE]{n['type']}[/]"
+                label = n['label'][:55]
+                rows.append([type_badge, label])
+            print(WarpBlocks.table(
+                ["Type", "Label"],
+                rows,
+                title=f"Search Results ({len(nodes)} found)"
+            ))
+            if len(nodes) > 50:
+                print(f"[#8E8E8E]  ... and {len(nodes) - 50} more[/]")
         else:
             print(f"{len(nodes)} node(s):")
             for n in nodes[:50]:

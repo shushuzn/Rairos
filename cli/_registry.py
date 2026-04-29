@@ -200,7 +200,16 @@ def main(argv: Optional[List[str]] = None) -> int:
     elif args.subcmd == "evolution":
         from cli.cmd.evolution import evolution_main
         from cli.cmd.evolution import _build_evolution_parser
-        return evolution_main()
+        return evolution_main(
+            show_stats=args.stats,
+            show_patterns=args.patterns,
+            show_feedback=args.feedback,
+            show_report=args.report,
+            show_sessions=args.sessions,
+            report_days=args.days,
+            clear=args.clear,
+            export=args.export,
+        )
     elif args.subcmd == "visual":
         from cli.cmd.visual import visual as visual_cmd
         return visual_cmd.main(args.argv if hasattr(args, "argv") else [])

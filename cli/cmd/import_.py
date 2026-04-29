@@ -12,6 +12,7 @@ from typing import Tuple, Set, Optional
 
 from cli._shared import get_db
 from cli._shared import print_success, print_warning, print_error, print_info
+from cli.warp import WarpBlocks
 
 CHECKPOINT_VERSION = 1
 
@@ -209,7 +210,17 @@ def _run_import(args: argparse.Namespace) -> int:
         _save_checkpoint(checkpoint_path, all_processed, failed_ids, len(paper_ids))
 
     total_failed = len(failed_ids)
-    print_success(f"\nImport done: {added} added, {skipped} skipped, {total_failed} failed")
+    from rich.console import Console
+    c = Console()
+    c.rule("[bold #FF8272]  Import Complete  [/]")
+    c.print()
+    rows = [
+        [f"[#B4FA72]✓[/]", "Added",    f"[#B4FA72]{added}[/]"],
+        [f"[#A5D5FE]○[/]", "Skipped",  f"[#A5D5FE]{skipped}[/]"],
+        [f"[#FF5555]✗[/]", "Failed",    f"[#FF5555]{total_failed}[/]"],
+    ]
+    c.print(WarpBlocks.table(["", "Status", "Count"], rows, title="Import Summary"))
     if checkpoint_path:
-        print_info(f"Checkpoint saved: {checkpoint_path}")
+        c.print()
+        print(WarpBlocks.section("Checkpoint", f"[#A5D5FE]{checkpoint_path}[/]", width=60))
     return 0

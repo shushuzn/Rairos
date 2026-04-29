@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from research_loop.rag_pipeline import RagPipeline
 from cli._shared import print_success, print_error, print_info
+from cli.warp import WarpBlocks
 
 
 def _build_rag_parser(subparsers):
@@ -57,9 +58,9 @@ def _build_rag_parser(subparsers):
 
     # list-skills command
     sub.add_parser("list-skills", help="列出发现的技能").set_defaults(
-        func=lambda a: rag_list_skills.callback())
+        func=lambda a: rag_list_skills())
 
-    p.set_defaults(func=lambda a: rag_status.callback())
+    p.set_defaults(func=lambda a: rag_status())
 
 
 @click.command("rag")
@@ -71,12 +72,12 @@ def _build_rag_parser(subparsers):
               type=click.Choice(["pytorch", "jax", "numpy"]),
               help="Deep learning framework")
 @click.option("--task", "-t", default=None, help="EvoSkill task name")
-def rag(arxiv_id: str, mode: str, framework: str, task_name: str):
+def rag(arxiv_id: str, mode: str, framework: str, task: str):
     """RAG闭环: paper2code + EvoSkill 自动改进管道"""
     if arxiv_id:
-        rag_run_full.callback(arxiv_id, mode, framework, task_name)
+        rag_run_full.callback(arxiv_id, mode, framework, task)
     else:
-        rag_status.callback()
+        rag_status()
 
 
 def rag_run_full(arxiv_id: str, mode: str, framework: str, task_name: str):
@@ -190,21 +191,41 @@ def rag_status():
     """检查 RAG pipeline 状态"""
     try:
         pipeline = RagPipeline()
+        from rich.console import Console
+        c = Console()
 
-        print_info("RAG Pipeline Status:")
-        print_info(f"  Work dir: {pipeline.work_dir}")
+        c.rule("[bold #FF8272]  RAG Pipeline Status  [/]")
+        c.print()
 
-        # Check paper2code
-        if pipeline.paper_pipeline.is_available():
-            print_success("  paper2code: available")
+        print(WarpBlocks.section(
+            "Work Directory",
+            f"[#A5D5FE]{pipeline.work_dir}[/]",
+            width=60
+        ))
+
+        rows = []
+        paper_ok = getattr(pipeline.paper_pipeline, 'is_available', lambda: False)()
+        evoskill_ok = getattr(pipeline.evoskill_pipeline, 'is_available', lambda: False)()
+        rows.append(["paper2code", "[#B4FA72]✓ available[/]" if paper_ok else "[#FF5555]✗ not found[/]"])
+        rows.append(["EvoSkill", "[#B4FA72]✓ available[/]" if evoskill_ok else "[#FF5555]✗ not found[/]"])
+
+        c.print(WarpBlocks.table(
+            ["Component", "Status"],
+            rows,
+            title="Pipeline Components"
+        ))
+        c.print()
+
+        if paper_ok and evoskill_ok:
+            print(WarpBlocks.panel(
+                "Ready",
+                "[#B4FA72]RAG pipeline is fully available\n\nRun:[/] airos rag <arxiv_id>"
+            ))
         else:
-            print_error("  paper2code: not found")
-
-        # Check EvoSkill
-        if pipeline.evoskill_pipeline.is_available():
-            print_success("  EvoSkill: available")
-        else:
-            print_error("  EvoSkill: not found")
+            print(WarpBlocks.panel(
+                "Not Ready",
+                "[#FF5555]Some components are missing[/]"
+            ))
 
     except Exception as e:
         print_error(f"Status check failed: {e}")
