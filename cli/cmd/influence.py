@@ -52,7 +52,7 @@ def _build_influence_parser(subparsers) -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--format",
-        choices=["text", "csv", "json"],
+        choices=["text", "csv", "json", "warp"],
         default="text",
         help="Output format (default: text)",
     )
@@ -145,6 +145,30 @@ def _run_influence(args: argparse.Namespace) -> int:
             for i, p in enumerate(top_n)
         ]
         print(json.dumps(data, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.format == "warp":
+        from cli.warp import WarpBlocks
+        rows = []
+        for i, p in enumerate(top_n, 1):
+            velocity_bar = "█" * min(int(p.velocity), 20)
+            rows.append([
+                str(i),
+                f"{p.velocity:.1f}/y",
+                str(p.forward_cites),
+                f"{p.age_years:.0f}y",
+                str(p.year),
+                (p.title[:48] + "…" if len(p.title) > 48 else p.title),
+                velocity_bar,
+            ])
+        print(WarpBlocks.section(
+            f"📊 Citation Velocity — Top {len(top_n)} papers",
+            WarpBlocks.table(
+                ["#", "Velocity", "Cites", "Age", "Year", "Title", "Bar"],
+                rows,
+            ),
+            f"Formula: velocity = forward_citations / age_years  |  {len(all_influence)} total papers ≥ {args.min_cites} citations",
+        ))
         return 0
 
     # Text output
