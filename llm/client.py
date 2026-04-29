@@ -468,6 +468,7 @@ def stream_llm_chat_completions(
     """Stream LLM responses as an iterator of content deltas.
 
     Yields content deltas as they arrive from the SSE stream.
+    Buffers full response and caches after streaming completes.
 
     Args:
         messages: Chat history
@@ -477,10 +478,21 @@ def stream_llm_chat_completions(
         api_key: API key
         timeout: Request timeout
         system_prompt: System prompt
+        use_cache: Whether to use caching (default: True)
 
     Yields:
         Content deltas as strings
     """
+    # Generate cache key for streaming requests
+    cache_key = None
+    if use_cache:
+        cache_key = _generate_cache_key(messages, model, user_prompt, system_prompt)
+        cached_response, found = _cache_read(cache_key)
+        if found and cached_response:
+            # Yield cached content as single delta for streaming interface
+            yield cached_response
+            return
+
     # Auto-detect Anthropic API if model is Anthropic-native
     anthropic_key = os.getenv("ANTHROPIC_API_KEY", "")
     if _is_anthropic_model(model) and anthropic_key:
@@ -492,8 +504,11 @@ def stream_llm_chat_completions(
             timeout=timeout,
             system_prompt=system_prompt,
             stream=True,
-            use_cache=use_cache,
+            use_cache=False,  # Already handled above
         )
+        # Cache the streamed result
+        if cache_key:
+            _cache_write(cache_key, result)
         yield result
         return
 
@@ -524,16 +539,13 @@ def stream_llm_chat_completions(
     try:
         r = session.post(url, headers=headers, json=payload, timeout=timeout, stream=True)
         r.raise_for_status()
-        yield from _parse_sse_stream(r)
+        # Buffer full response for caching
+        full_response = ""
+        for delta in _parse_sse_stream(r):
+            yield delta
+            full_response += delta
+        # Cache after streaming completes
+        if cache_key and full_response:
+            _cache_write(cache_key, full_response)
     except requests.RequestException as e:
         raise RuntimeError(f"LLM API request failed: {str(e)}") from e
-
-
-def clear_llm_cache() -> None:
-    """Clear the LLM response cache."""
-    _llm_cache.clear()
-
-
-def get_llm_cache_size() -> int:
-    """Get the current size of the LLM response cache."""
-    return len(_llm_cache)
