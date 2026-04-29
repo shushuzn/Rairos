@@ -18,7 +18,7 @@ _session: Optional[aiohttp.ClientSession] = None
 async def _get_session() -> aiohttp.ClientSession:
     global _session
     if _session is None or _session.closed:
-        _session = aiohttp.ClientSession(connector=_connector, timeout=_timeout_cfg)
+        _session = aiohttp.ClientSession(connector=_connector, timeout=_timeout_cfg, trust_env=True)
     return _session
 
 
@@ -52,7 +52,8 @@ async def call_llm_chat_completions_async(
         payload["messages"] = msgs + [{"role": "user", "content": user_prompt}]
 
     session = await _get_session()
-    async with session.post(url, json=payload) as r:
+    headers = {"Authorization": f"Bearer {api_key}"}
+    async with session.post(url, json=payload, headers=headers) as r:
         r.raise_for_status()
         if stream:
             if progress_callback:
