@@ -22,17 +22,21 @@ def _build_cache_parser(subparsers) -> argparse.ArgumentParser:
 def _run_cache(args: argparse.Namespace) -> int:
     # LLM cache operations
     if args.llm or args.llm_clear:
-        from llm.client import clear_llm_cache, get_llm_cache_size, _cache_stats
+        from llm.client import clear_llm_cache, get_llm_cache_size, _cache_stats, get_cache_stats, reset_cache_stats
         if args.llm_clear:
             clear_llm_cache()
+            reset_cache_stats()
             print("LLM cache cleared")
         elif args.llm:
             size = get_llm_cache_size()
-            stats = _cache_stats()
-            print(f"LLM Response Cache:")
-            print(f"  Entries: {stats.get('entries', size)}")
-            print(f"  Active:  {stats.get('hits', 0)}")
-            print(f"  Expired: {stats.get('expired', 0)}")
+            disk_stats = _cache_stats()
+            hit_stats = get_cache_stats()
+            print("LLM Response Cache:")
+            print(f"  Entries:    {disk_stats.get('entries', size)}")
+            print(f"  Expired:    {disk_stats.get('expired', 0)}")
+            print(f"  Hits:       {hit_stats.get('hits', 0)}")
+            print(f"  Misses:     {hit_stats.get('misses', 0)}")
+            print(f"  Hit Rate:   {hit_stats.get('hit_rate', 0)}%")
         return 0
 
     db = get_db()
