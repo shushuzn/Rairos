@@ -4,9 +4,8 @@ from __future__ import annotations
 import argparse
 import datetime
 import os
-import sys
 import warnings
-from typing import List, Optional
+from typing import List
 
 from cli._shared import get_db, Colors, colored, print_info, print_error
 
@@ -725,7 +724,7 @@ def export_chat_to_html(history: List[dict], filepath: str) -> bool:
             f.write(f"<p class='meta'>导出时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>\n")
 
             for i, entry in enumerate(history, 1):
-                f.write(f"<div class='qa-block'>\n")
+                f.write("<div class='qa-block'>\n")
                 f.write(f"<div class='question'>Q{i}: {entry.get('question', '')}</div>\n")
                 answer = entry.get('answer', '')
                 if answer:

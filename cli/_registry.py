@@ -5,7 +5,7 @@ import argparse
 import importlib
 import logging
 import sys
-from typing import List, Optional, Callable, Dict
+from typing import List, Optional
 
 from pathlib import Path
 
@@ -82,7 +82,6 @@ SUBCOMMANDS = {name for name, _, _ in _SUBCOMMAND_TABLE}
 
 def _build_all_parsers(subparsers) -> None:
     """Build all subcommand parsers via lazy dynamic import."""
-    import importlib
     for name, module_path, builder_name in _SUBCOMMAND_TABLE:
         mod = importlib.import_module(module_path)
         getattr(mod, builder_name)(subparsers)
@@ -199,7 +198,6 @@ def main(argv: Optional[List[str]] = None) -> int:
         return slides_cmd.main(args.argv if hasattr(args, "argv") else [])
     elif args.subcmd == "evolution":
         from cli.cmd.evolution import evolution_main
-        from cli.cmd.evolution import _build_evolution_parser
         return evolution_main(
             show_stats=args.stats,
             show_patterns=args.patterns,
@@ -215,7 +213,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return visual_cmd.main(args.argv if hasattr(args, "argv") else [])
     elif args.subcmd == "repl":
         import cli as _cli
-        return getattr(_cli, "_run_repl")(args)
+        return _cli._run_repl(args)
     return 0
 
 
@@ -225,7 +223,6 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
     from parsers.input_detection import is_probably_doi, normalize_arxiv_id, normalize_doi
     from parsers.arxiv import fetch_arxiv_metadata
     from parsers.crossref import fetch_crossref_metadata
-    from sections.segment import segment_into_sections
     from renderers.pnote import render_pnote
     from updaters.radar import update_radar
     from updaters.timeline import update_timeline
@@ -234,7 +231,7 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
     from notes.pnotes import pnotes_by_tag
     from notes.keyword_tags import infer_tags_if_empty
     from core import today_iso
-    from core.basics import ensure_research_tree, get_default_concept_dir, get_default_radar_dir, safe_uid, slugify_title
+    from core.basics import ensure_research_tree, safe_uid, slugify_title
 
     parser = argparse.ArgumentParser(
         description="AI Research OS - Full Flow (P+C+M+Radar+Timeline + optional AI draft)"

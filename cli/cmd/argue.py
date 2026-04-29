@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 
-from cli._shared import get_db, print_info, print_error
+from cli._shared import get_db, print_info
 from llm.insight_evolution import EvolutionTracker, ExplorationAction
 from llm.argument_builder import ArgumentBuilder, render_argument
 

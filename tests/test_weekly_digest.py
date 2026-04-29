@@ -1,7 +1,5 @@
 """Tests for weekly digest."""
 import pytest
-from unittest.mock import Mock, patch
-from datetime import datetime
 
 from llm.weekly_digest import WeeklyDigest, WeekData
 

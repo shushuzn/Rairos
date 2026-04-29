@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/weekly_digest.py, pure functions, no I/O."""
-import pytest
 from llm.weekly_digest import WeekData, WeeklyDigest
 
 

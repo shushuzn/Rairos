@@ -204,7 +204,7 @@ def paper_dir():
         (test_dir / "conftest.py").write_text(conftest_content, encoding="utf-8")
 
         # 生成测试文件
-        test_impl_content = f'''"""Auto-generated tests for paper implementation."""
+        test_impl_content = '''"""Auto-generated tests for paper implementation."""
 import csv
 import pytest
 from pathlib import Path
@@ -231,7 +231,7 @@ class TestPaperImplementation:
     def test_code_directory_exists(self):
         """Verify implementation directory exists."""
         src_dir = self.paper_dir / "src"
-        assert src_dir.exists(), f"Implementation dir not found: {{src_dir}}"
+        assert src_dir.exists(), f"Implementation dir not found: {src_dir}"
 
     @pytest.mark.parametrize("case", load_test_cases(), ids=lambda c: c["category"])
     def test_case(self, case):
@@ -283,7 +283,7 @@ type = "multi_tolerance"
         evoskill_config.write_text(config_content, encoding="utf-8")
 
         # 写入 task 描述
-        task_content = f'''# Task
+        task_content = '''# Task
 
 验证 paper 实现的功能是否正确。
 

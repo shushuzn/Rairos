@@ -1,5 +1,4 @@
 """CLI command: experiment — Track experiments."""
-import argparse
 from cli._shared import print_info, print_error
 from llm.experiment_tracker import ExperimentTracker
 
@@ -63,7 +62,7 @@ def _run_experiment(args):
             print(f"Status: {e.status}")
             print(f"Created: {e.created_at}")
             if e.roadmap_milestone: print(f"Milestone: {e.roadmap_milestone}")
-            if e.metrics: print(f"Metrics: " + ", ".join(f"{m.name}={m.value}" for m in e.metrics))
+            if e.metrics: print("Metrics: " + ", ".join(f"{m.name}={m.value}" for m in e.metrics))
         else:
             print_error(f"Experiment [{args.id}] not found")
 

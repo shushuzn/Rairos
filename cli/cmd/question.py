@@ -2,10 +2,9 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 
-from cli._shared import get_db, print_info, print_error
-from llm.question_tracker import QuestionTracker, QuestionStatus, QuestionSource
+from cli._shared import get_db, print_error
+from llm.question_tracker import QuestionTracker, QuestionSource
 
 
 def _build_question_parser(subparsers) -> argparse.ArgumentParser:

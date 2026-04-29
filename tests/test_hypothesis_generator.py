@@ -1,5 +1,4 @@
 """Tests for research hypothesis generator."""
-import pytest
 from unittest.mock import MagicMock
 
 from llm.hypothesis_generator import (

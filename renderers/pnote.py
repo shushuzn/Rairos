@@ -61,7 +61,7 @@ def render_radar_chart(scores: Dict[str, int], size: int = 280) -> str:
     parts = [
         f'<svg viewBox="0 0 {size} {size}" xmlns="http://www.w3.org/2000/svg" '
         f'role="img" aria-label="论文评分雷达图">',
-        f'  <title>论文评分雷达图</title>',
+        '  <title>论文评分雷达图</title>',
         f'  <rect width="{size}" height="{size}" fill="{bg_colour}" rx="8"/>',
     ]
 
@@ -518,8 +518,8 @@ def _render_page_heatmap(
     rows = []
     rows.append("")
     rows.append("### 📍 分页置信热图\n")
-    rows.append(f"| 页码 | 状态 | 验证率 | 已验 | 未验 |")
-    rows.append(f"|------|------|--------|------|------|")
+    rows.append("| 页码 | 状态 | 验证率 | 已验 | 未验 |")
+    rows.append("|------|------|--------|------|------|")
     for pg in shown_pages:
         stats = page_stats.get(pg, {"verified": 0, "unverified": 0})
         v = stats["verified"]
@@ -613,8 +613,8 @@ def _render_cross_paper_comparison(
     rows = []
     rows.append("")
     rows.append("### 📊 跨论文引用验证对比\n")
-    rows.append(f"| 论文 | 已验 | 未验 | 验证率 |")
-    rows.append(f"|------|------|------|--------|")
+    rows.append("| 论文 | 已验 | 未验 | 验证率 |")
+    rows.append("|------|------|------|--------|")
 
     for p in sorted_papers:
         if p["rate"] >= 80:
@@ -683,8 +683,8 @@ def _build_claims_section(
     rate = (verified_count / total * 100) if total > 0 else 0
 
     parts.append("## 引用验证摘要\n")
-    parts.append(f"| 状态 | 数量 | 验证率 |")
-    parts.append(f"|------|------|--------|")
+    parts.append("| 状态 | 数量 | 验证率 |")
+    parts.append("|------|------|--------|")
     parts.append(f"| ✅ 已验证 | {verified_count} | {rate:.0f}% |")
     parts.append(f"| ⚠️ 未验证 | {unverified_count} | — |")
     parts.append("")

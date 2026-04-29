@@ -1,5 +1,4 @@
 """Tests for research_narrative_tracker — pure logic, no I/O."""
-import pytest
 
 from llm.research_narrative_tracker import (
     ResearchThread,

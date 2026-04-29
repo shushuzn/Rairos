@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/insight_cards.py, pure functions, no I/O."""
-import pytest
 from llm.insight_cards import InsightCard, InsightCollection, InsightManager
 
 

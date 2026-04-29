@@ -4,10 +4,6 @@ from __future__ import annotations
 import argparse
 import json
 
-from cli._shared import (
-    Colors, colored, print_success, print_error, print_warning, print_info, print_header,
-    cmd_infer_tags_if_empty as infer_tags_if_empty,
-)
 from cli.warp import WarpBlocks
 from kg import KGManager
 
@@ -235,7 +231,9 @@ def _run_kg(args: argparse.Namespace) -> int:
 
 def _run_kg_view(args: argparse.Namespace) -> int:
     """Render interactive D3.js force graph and open in browser (or write to stdout)."""
-    import tempfile, json, webbrowser, os
+    import tempfile
+    import json
+    import webbrowser
     from pathlib import Path
     from viz.d3_renderer import D3ForceGraph
 

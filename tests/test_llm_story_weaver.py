@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/story_weaver.py, pure functions, no I/O."""
-import pytest
 from llm.story_weaver import (
     NarrativeRole,
     RelationshipType,

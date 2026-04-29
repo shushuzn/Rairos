@@ -15,7 +15,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from llm.tracker_base import JsonFileStore
 
@@ -218,7 +218,7 @@ class ResearchNarrativeService:
     def _from_evolution_tracker(self, topic: str) -> List[str]:
         """Pull hypothesis_ids from hypothesized events."""
         try:
-            from llm.insight_evolution import EvolutionTracker, ExplorationAction
+            from llm.insight_evolution import EvolutionTracker
             ev = EvolutionTracker()
             events = ev.get_recent_events(limit=10000)
             hypothesis_ids = []

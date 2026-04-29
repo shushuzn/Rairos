@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/evolution.py, pure functions, no I/O."""
-import pytest
 from llm.evolution import (
     FeedbackType,
     SignalType,

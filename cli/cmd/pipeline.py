@@ -16,7 +16,7 @@ from cli._shared import (
 )
 from llm.experiment_tracker import ExperimentTracker
 from llm.gap_analyzer import GapAnalyzerV2, render_combined_report
-from llm.insight_evolution import EvolutionTracker, ExplorationAction
+from llm.insight_evolution import EvolutionTracker
 
 
 def _build_pipeline_parser(subparsers) -> argparse.ArgumentParser:

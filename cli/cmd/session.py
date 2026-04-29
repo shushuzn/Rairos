@@ -2,9 +2,8 @@
 from __future__ import annotations
 
 import argparse
-import sys
 
-from cli._shared import get_db, print_info, print_error
+from cli._shared import get_db, print_info
 from cli.warp import WarpBlocks
 from llm.research_session import ResearchSessionTracker, ResearchIntent
 
@@ -67,7 +66,7 @@ def _session_start(tracker: ResearchSessionTracker, args) -> int:
 
     print_info(f"📚 会话已启动: {session.title}")
     print(f"   ID: {session.id}")
-    print(f"   时长: 0 分钟")
+    print("   时长: 0 分钟")
 
     if args.topic:
         print(f"   主题: {args.topic}")
@@ -327,7 +326,6 @@ def _show_session_hypothesis(tracker, db):
     """Show hypotheses based on session context."""
     from llm.gap_analyzer import GapAnalyzerV2, render_combined_report
     from llm.insight_cards import InsightManager
-    from llm.hypothesis_generator import HypothesisGenerator
 
     session = tracker.get_current_session()
     if not session or not session.tags:

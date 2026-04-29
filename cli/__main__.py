@@ -1,7 +1,6 @@
 """Allow: python -m cli / airos-cli"""
 from __future__ import annotations
 import sys
-import runpy
 
 # When airos-cli.exe (zipapp) runs, it adds only itself to sys.path.
 # If Hermes is installed, its _EditableFinder in sys.meta_path intercepts

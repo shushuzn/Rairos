@@ -70,7 +70,6 @@ class StreamConfig:
 
 # ─── Message Indexer ─────────────────────────────────────────────────────────
 
-import re
 
 def tokenize(text: str) -> Set[str]:
     """Extract searchable tokens from text (simple word tokenization)."""

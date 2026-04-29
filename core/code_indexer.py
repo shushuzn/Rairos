@@ -28,7 +28,7 @@ _STOPWORDS = {
     "not", "in", "is", "None", "True", "False", "lambda", "yield", "async", "await",
     "self", "cls", "global", "nonlocal", "assert", "raise", "del",
     "print", "len", "range", "list", "dict", "set", "tuple", "str", "int", "float",
-    "bool", "type", "open", "read", "write", "close", "get", "set", "add", "update",
+    "bool", "type", "open", "read", "write", "close", "get", "add", "update",
 }
 
 

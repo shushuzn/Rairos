@@ -1,5 +1,4 @@
 """Tests for research question validator."""
-import pytest
 
 from llm.question_validator import (
     QuestionValidator,

@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/experiment_tracker.py, pure functions, no I/O."""
-import pytest
 from llm.experiment_tracker import (
     ExperimentStatus,
     Metric,

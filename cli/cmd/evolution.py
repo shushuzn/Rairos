@@ -18,9 +18,9 @@ from pathlib import Path
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from cli._shared import print_success, print_error, print_info, print_header, Colors
+from cli._shared import print_success, print_info, print_header
 from cli.warp import WarpBlocks
-from llm.evolution import get_evolution_memory, FeedbackType
+from llm.evolution import get_evolution_memory
 
 
 def _build_evolution_parser(subparsers):
@@ -130,7 +130,6 @@ def show_sessions_view():
 def show_dashboard(evo):
     """显示完整的 Evolution Dashboard — Warp 风格."""
     from rich.console import Console
-    from rich.table import Table
 
     stats = evo.get_stats()
     c = Console()
@@ -231,7 +230,7 @@ def show_learning_report(evo, days: int = 7):
     # 关键词
     if report.top_keywords:
         print_info("  🔑 关注热点:")
-        print(f"    " + " | ".join(report.top_keywords[:5]))
+        print("    " + " | ".join(report.top_keywords[:5]))
         print()
 
     # 探索建议
@@ -253,7 +252,6 @@ def show_learning_report(evo, days: int = 7):
 def show_stats_view(evo):
     """显示详细统计 — Warp 风格."""
     from rich.console import Console
-    from rich.table import Table
 
     stats = evo.get_stats()
     c = Console()

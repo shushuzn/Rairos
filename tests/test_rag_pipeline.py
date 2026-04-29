@@ -1,7 +1,6 @@
 """Tests for RAG pipeline module."""
 import pytest
 from pathlib import Path
-import tempfile
 import shutil
 
 

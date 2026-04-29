@@ -15,7 +15,7 @@ from __future__ import annotations
 import re
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from db.database import Database, ExperimentTableRecord
 
@@ -418,7 +418,7 @@ class BenchmarkComparator:
         """Render benchmark comparison as a formatted leaderboard."""
         lines: List[str] = []
         lines.append(f"\n{'=' * 70}")
-        lines.append(f"  Cross-Paper Benchmark Comparison")
+        lines.append("  Cross-Paper Benchmark Comparison")
         lines.append(f"  Papers: {', '.join(result.paper_ids)}")
         lines.append(f"{'=' * 70}")
 
@@ -451,20 +451,20 @@ class BenchmarkComparator:
     def render_markdown(self, result: BenchmarkResult) -> str:
         """Render as Markdown."""
         lines: List[str] = []
-        lines.append(f"# Benchmark Comparison")
-        lines.append(f"")
+        lines.append("# Benchmark Comparison")
+        lines.append("")
         lines.append(f"**Papers**: {', '.join(result.paper_ids)}")
-        lines.append(f"")
+        lines.append("")
 
         for match in result.matches:
             lines.append(f"## {match.benchmark_name} — {match.metric_name}")
             direction = "↑" if _is_higher_better(match.metric_name) else "↓"
-            lines.append(f"")
-            lines.append(f"| Rank | Paper ID | Model | Score |")
-            lines.append(f"|------|----------|-------|-------|")
+            lines.append("")
+            lines.append("| Rank | Paper ID | Model | Score |")
+            lines.append("|------|----------|-------|-------|")
             for rank, (pid, val, model) in enumerate(match.entries, 1):
                 lines.append(f"| {rank} | `{pid}` | {model} | {val:.4f} |")
-            lines.append(f"")
+            lines.append("")
 
         return "\n".join(lines)
 

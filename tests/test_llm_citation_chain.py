@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/citation_chain.py, pure functions, no I/O."""
-import pytest
 from llm.citation_chain import (
     CitationNode,
     CitationChain,

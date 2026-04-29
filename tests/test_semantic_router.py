@@ -1,5 +1,4 @@
 """Tests for llm/semantic_router — pure logic, no I/O."""
-import pytest
 
 from llm.semantic_router import (
     QueryType,

@@ -1,6 +1,5 @@
 """Tests for insight cards."""
 import pytest
-from pathlib import Path
 from llm.insight_cards import (
     InsightManager,
     InsightCard,

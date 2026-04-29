@@ -1,5 +1,4 @@
 """Tests for literature review generator."""
-import pytest
 
 from llm.review_generator import (
     ReviewGenerator,

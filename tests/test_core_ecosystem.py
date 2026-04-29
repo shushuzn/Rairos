@@ -1,6 +1,5 @@
 """Tests for core/ecosystem.py."""
 
-import pytest
 
 
 class TestEcosystemComponent:

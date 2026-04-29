@@ -99,7 +99,7 @@ def rag_run_full(arxiv_id: str, mode: str, framework: str, task_name: str):
             task_name=task_name,
         )
 
-        print_success(f"RAG pipeline completed!")
+        print_success("RAG pipeline completed!")
         print_info(f"  Code: {result['code_dir']}")
         print_info(f"  Test CSV: {result['test_csv']}")
         print_info(f"  Test dir: {result['test_dir']}")
@@ -145,7 +145,7 @@ def rag_init_benchmark(csv_path: str, task_name: str):
         pipeline = RagPipeline()
         result = pipeline._init_evoskill_benchmark(task_name, csv_path)
 
-        print_success(f"Benchmark initialized!")
+        print_success("Benchmark initialized!")
         print_info(f"  Config: {result['config']}")
         print_info(f"  Task: {result['task']}")
         print_info("\nNext: Run 'airos rag run-evoskill'")

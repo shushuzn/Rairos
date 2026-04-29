@@ -1,5 +1,4 @@
 """Tests for research path planner."""
-import pytest
 
 from llm.research_path import (
     ResearchPathPlanner,

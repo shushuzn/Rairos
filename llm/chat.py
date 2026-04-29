@@ -9,7 +9,6 @@ import os
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from functools import lru_cache
 from typing import Any, Callable, List, Optional, Tuple
 
 import json
@@ -32,7 +31,6 @@ _RETRIEVAL_CACHE_MAX = 500
 
 def _get_retrieval_cache_key(query: str, concept: Optional[str], limit: int) -> str:
     """Generate cache key for retrieval results."""
-    import time
     return hashlib.md5(f"{query.strip()}:{concept}:{limit}".encode()).hexdigest()
 
 
