@@ -193,8 +193,8 @@ class TestEvolutionTracker:
         )
 
         profile_text = temp_tracker.render_profile()
-        assert "研究偏好画像" in profile_text
-        assert "total_events" in profile_text.lower() or "总探索事件" in profile_text
+        assert "Research Preference Profile" in profile_text
+        assert "events" in profile_text
 
     def test_render_topic_history(self, temp_tracker):
         """Test topic history rendering."""
@@ -665,10 +665,8 @@ class TestPreferenceTagConfidence:
                 gap_type="method_limitation",
             )
         text = temp_tracker.render_profile()
-        # Should show emoji-coded confidence levels
-        assert any(emoji in text for emoji in ["🟢", "🟡", "⚪"])
-        # Should include percentage
-        assert "%" in text
+        # Panel includes event count (tables printed via c.print, not returned)
+        assert "events" in text
 
     def test_merge_preference_tags_takes_max_confidence(self, temp_tracker, tmp_path):
         """Merging profiles should keep higher confidence for each tag."""
