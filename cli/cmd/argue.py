@@ -28,7 +28,7 @@ def _build_argue_parser(subparsers) -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--format", "-f",
-        choices=["text", "markdown", "json"],
+        choices=["text", "markdown", "json", "warp"],
         default="text",
         help="Output format (default: text)",
     )
@@ -92,6 +92,24 @@ def _run_argue(args: argparse.Namespace) -> int:
             ],
             "related_gaps": result.argument.related_gaps,
         }, indent=2, ensure_ascii=False))
+    elif args.format == "warp":
+        from cli.warp import WarpBlocks
+        thesis = result.argument.thesis
+        supporting = "\n".join(
+            f"  • [{e.source}] {e.content[:120]}"
+            for e in result.argument.supporting_evidence
+        ) or "  (none)"
+        contradicting = "\n".join(
+            f"  • [{e.source}] {e.content[:120]}"
+            for e in result.argument.contradicting_evidence
+        ) or "  (none)"
+        gaps = "\n".join(f"  • {g}" for g in result.argument.related_gaps) or "  (none)"
+        print(WarpBlocks.section(
+            f"📝 Argument: {thesis[:60]}",
+            WarpBlocks.panel("✅ Supporting Evidence", supporting),
+            WarpBlocks.panel("❌ Contradicting Evidence", contradicting),
+            WarpBlocks.panel("🔍 Related Gaps", gaps),
+        ))
     else:
         print()
         print(render_argument(result))
