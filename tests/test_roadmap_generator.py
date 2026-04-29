@@ -1,5 +1,4 @@
 """Tests for research roadmap generator."""
-import pytest
 
 from llm.roadmap_generator import (
     RoadmapGenerator,

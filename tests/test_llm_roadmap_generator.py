@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/roadmap_generator.py, pure functions, no I/O."""
-import pytest
 import json
 from llm.roadmap_generator import (
     Milestone,
@@ -191,7 +190,7 @@ class TestGenerate:
 
     def _generate(self, question, question_id="", custom_phases=None):
         """Replicate generate logic."""
-        from llm.roadmap_generator import RoadmapGenerator, ResearchRoadmap, Phase, Milestone
+        from llm.roadmap_generator import ResearchRoadmap, Phase, Milestone
         gen = RoadmapGenerator()
         phases = custom_phases or DEFAULT_PHASES
         roadmap_phases = []
@@ -312,7 +311,6 @@ class TestRenderText:
 
     def _render(self, roadmap):
         """Replicate render_text."""
-        from llm.roadmap_generator import RoadmapGenerator
         gen = RoadmapGenerator()
         return gen.render_text(roadmap)
 
@@ -405,7 +403,6 @@ class TestRenderMarkdown:
 
     def _render(self, roadmap):
         """Replicate render_markdown."""
-        from llm.roadmap_generator import RoadmapGenerator
         gen = RoadmapGenerator()
         return gen.render_markdown(roadmap)
 
@@ -469,7 +466,6 @@ class TestRenderJson:
 
     def _render(self, roadmap):
         """Replicate render_json."""
-        from llm.roadmap_generator import RoadmapGenerator
         gen = RoadmapGenerator()
         return gen.render_json(roadmap)
 
@@ -562,7 +558,7 @@ class TestFullPipeline:
 
     def _full_pipeline(self, question, question_id="", format="text", custom_phases=None):
         """Replicate full pipeline."""
-        from llm.roadmap_generator import RoadmapGenerator, ResearchRoadmap, Phase, Milestone
+        from llm.roadmap_generator import ResearchRoadmap, Phase, Milestone
         gen = RoadmapGenerator()
         phases = custom_phases or DEFAULT_PHASES
         roadmap_phases = []

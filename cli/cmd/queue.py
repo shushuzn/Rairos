@@ -4,9 +4,6 @@ from __future__ import annotations
 import argparse
 
 from cli._shared import get_db
-from cli._shared import (
-    Colors, colored, print_success, print_error, print_warning, print_info, print_header,
-)
 
 
 def _build_queue_parser(subparsers) -> argparse.ArgumentParser:

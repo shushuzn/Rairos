@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/review_generator.py, pure functions, no I/O."""
-import pytest
 from llm.review_generator import (
     ResearchStream,
     Controversy,

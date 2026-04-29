@@ -1,8 +1,5 @@
 """Tests for experiment tracker."""
 import pytest
-import tempfile
-import os
-from pathlib import Path
 
 from llm.experiment_tracker import (
     ExperimentTracker,

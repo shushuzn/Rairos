@@ -534,7 +534,7 @@ class TestHypothesisGeneration:
     def test_generate_hypotheses_from_gaps(self, analyzer, sample_gap_result):
         """Test hypothesis generation from gap results."""
         with patch("llm.hypothesis_generator.HypothesisGenerator.generate") as mock_gen:
-            from llm.hypothesis_generator import HypothesisResult, HypothesisType, ExperimentDesign
+            from llm.hypothesis_generator import HypothesisResult
             mock_result = HypothesisResult(topic="RAG")
             mock_result.hypotheses = []
             mock_gen.return_value = mock_result

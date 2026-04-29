@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/trend_analyzer.py, pure functions, no I/O."""
-import pytest
 from llm.trend_analyzer import (
     TrendDirection,
     YearlyStats,

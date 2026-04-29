@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/paper_comparison.py, pure functions, no I/O."""
-import pytest
 from llm.paper_comparison import (
     ComparisonColumn,
     ComparisonResult,

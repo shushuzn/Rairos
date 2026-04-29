@@ -90,7 +90,7 @@ def _run_journal(args: argparse.Namespace) -> int:
     elif args.action == "stats":
         stats = journal.stats()
         print()
-        print(f"📊 Journal Statistics")
+        print("📊 Journal Statistics")
         print(f"   Total entries: {stats['total']}")
         print(f"   This week: {stats['this_week']}")
         print(f"   This month: {stats['this_month']}")

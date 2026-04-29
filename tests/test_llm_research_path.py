@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/research_path.py, pure functions, no I/O."""
-import pytest
 from llm.research_path import (
     ReadingLevel, PaperNode, ReadingStep, ReadingPath,
     ResearchPathPlanner,

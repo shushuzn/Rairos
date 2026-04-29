@@ -1,7 +1,8 @@
 """
 Experiment Tracker: Track experiments for research roadmaps.
 """
-import logging, uuid
+import logging
+import uuid
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from enum import Enum

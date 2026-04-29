@@ -1,6 +1,5 @@
 """Tier 2 unit tests — llm/tracker_base.py, JsonFileStore pure logic."""
 import json
-import pytest
 from pathlib import Path
 from llm.tracker_base import JsonFileStore
 

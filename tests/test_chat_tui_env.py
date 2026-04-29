@@ -1,9 +1,6 @@
 """Tests for chat_tui .env loading and CLI argument parsing."""
 
 import os
-import sys
-import tempfile
-from pathlib import Path
 from unittest.mock import patch
 
 

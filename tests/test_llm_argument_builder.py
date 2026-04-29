@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/argument_builder.py, pure functions, no I/O."""
-import pytest
 from llm.argument_builder import (
     EvidenceType,
     ArgumentSection,
@@ -8,7 +7,6 @@ from llm.argument_builder import (
     Argument,
     ArgumentResult,
     ArgumentBuilder,
-    render_argument,
 )
 
 

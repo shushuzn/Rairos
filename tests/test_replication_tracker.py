@@ -1,8 +1,5 @@
 """Tests for replication tracker."""
 import pytest
-import tempfile
-import os
-from pathlib import Path
 from llm.replication_tracker import (
     ReplicationTracker,
     ReplicationAttempt,

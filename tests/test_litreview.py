@@ -1,6 +1,4 @@
 """Tests for literature review components."""
-import pytest
-from datetime import datetime
 
 from renderers.litreview import (
     render_litreview,

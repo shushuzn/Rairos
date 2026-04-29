@@ -1,5 +1,4 @@
 """Tests for research gap detector."""
-import pytest
 
 from llm.gap_detector import (
     GapDetector,

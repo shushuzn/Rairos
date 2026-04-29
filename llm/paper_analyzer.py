@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from build.lib.pdf.extract import StructuredPdfContent, TextBlock
+    from build.lib.pdf.extract import StructuredPdfContent
 
 logger = logging.getLogger(__name__)
 
@@ -482,7 +482,9 @@ class PaperAnalyzer:
         Returns:
             Updated PaperAnalysisResult with claims and unverified_claims populated.
         """
-        import re, json, urllib.request
+        import re
+        import json
+        import urllib.request
 
         # ── Embedding helpers ──────────────────────────────────────────
         _embed_cache: Dict[str, List[float]] = {}

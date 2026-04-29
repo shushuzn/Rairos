@@ -4,7 +4,6 @@ from __future__ import annotations
 import os
 import sys
 from pathlib import Path
-from typing import Optional
 
 from notes.keyword_tags import infer_tags_if_empty
 

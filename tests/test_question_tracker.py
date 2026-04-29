@@ -1,8 +1,5 @@
 """Tests for research question tracker."""
-import pytest
 import tempfile
-import os
-from pathlib import Path
 
 from llm.question_tracker import (
     QuestionTracker,

@@ -5,7 +5,7 @@ import re
 from typing import List, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pdf.extract import MathBlock, StructuredPdfContent, TableBlock, TextBlock
+    from pdf.extract import MathBlock, StructuredPdfContent, TableBlock
 
 
 def looks_like_heading(line: str) -> bool:

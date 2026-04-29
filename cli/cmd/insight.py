@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 
-from cli._shared import get_db, print_info, print_error, print_success
+from cli._shared import get_db, print_error, print_success
 from llm.insight_cards import InsightManager
 
 
@@ -107,7 +107,6 @@ def _run_insight(args: argparse.Namespace) -> int:
 
         if args.collection:
             # Get cards from collection
-            from llm.insight_cards import InsightCollection
             collections = manager._load_collections()
             for c in collections:
                 if c.get("collection_id") == args.collection:

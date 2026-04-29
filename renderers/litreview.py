@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import datetime
-import textwrap
 from typing import List, Dict, Any
 
 
@@ -47,7 +46,7 @@ def render_litreview(
     # Build markdown
     lines = [
         "---",
-        f"type: lit-review",
+        "type: lit-review",
         f"topic: {topic}",
         f'created_at: "{created}"',
         f'last_updated: "{updated}"',

@@ -45,7 +45,7 @@ def _build_litreview_parser(subparsers) -> argparse.ArgumentParser:
 
 def _run_litreview(args: argparse.Namespace) -> int:
     """Run litreview command."""
-    from renderers.litreview import render_litreview, update_litreview
+    from renderers.litreview import render_litreview
 
     if not args.action:
         print_error("Usage: litreview <generate|view|list|delete>")

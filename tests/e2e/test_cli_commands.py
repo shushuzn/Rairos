@@ -2,7 +2,6 @@
 
 These tests verify that CLI command modules can be imported and initialized correctly.
 """
-import pytest
 import sys
 from pathlib import Path
 
@@ -16,7 +15,7 @@ class TestCLICommandImports:
 
     def test_import_registry(self):
         """Test that _registry can be imported."""
-        from cli._registry import main, SUBCOMMANDS
+        from cli._registry import SUBCOMMANDS
         assert "search" in SUBCOMMANDS
         assert "import" in SUBCOMMANDS
         assert "rag" in SUBCOMMANDS

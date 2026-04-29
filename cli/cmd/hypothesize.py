@@ -218,7 +218,7 @@ def _run_list_hypotheses() -> int:
 
 def _run_validate_hypothesis(hypothesis_id: str) -> int:
     """Validate a hypothesis by checking linked experiment outcomes."""
-    from llm.insight_evolution import EvolutionTracker, ExplorationAction
+    from llm.insight_evolution import EvolutionTracker
     from llm.experiment_tracker import ExperimentTracker
 
     ev = EvolutionTracker()
@@ -252,7 +252,7 @@ def _run_validate_hypothesis(hypothesis_id: str) -> int:
 
     # Show event timeline
     if events:
-        print(f"  event timeline:")
+        print("  event timeline:")
         for evt in events:
             icon = _action_icon(evt.action)
             print(f"    {icon} {evt.action.value} — {evt.topic or '(no topic)'}")
@@ -298,7 +298,7 @@ def _verify_hypotheses_with_lean(
     model: str | None,
 ) -> dict:
     """Verify each hypothesis with Lean 4. Returns {hypothesis_id: LeanVerificationResult}."""
-    from llm.lean_verifier import verify_hypothesis, LeanInstallStatus
+    from llm.lean_verifier import verify_hypothesis
 
     results = {}
     for h in hypotheses:

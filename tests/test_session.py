@@ -1,7 +1,5 @@
 """Tests for session CLI commands."""
-import pytest
 from unittest.mock import MagicMock, patch
-from io import StringIO
 
 from cli.cmd.session import (
     _build_session_parser,

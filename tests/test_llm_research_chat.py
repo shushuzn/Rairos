@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/research_chat.py, pure functions, no I/O."""
-import pytest
 from llm.research_chat import (
     QueryType, PaperContext, ResearchContext, ResearchChat,
 )

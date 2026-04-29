@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 
-from cli._shared import get_db, Colors, colored, print_info, print_success, print_error
+from cli._shared import get_db, Colors, print_info
 from llm.research_path import ResearchPathPlanner, ReadingLevel
 
 
@@ -135,7 +135,7 @@ def _run_interactive(planner: ResearchPathPlanner, args: argparse.Namespace) -> 
                 current_level = level_map[level_str]
                 print(f"  ✓ 难度设置为: {level_str}")
             else:
-                print(f"  ✗ 未知难度，可选: intro, intermediate, advanced")
+                print("  ✗ 未知难度，可选: intro, intermediate, advanced")
             continue
 
         if cmd.startswith("max "):
@@ -143,7 +143,7 @@ def _run_interactive(planner: ResearchPathPlanner, args: argparse.Namespace) -> 
                 current_max = int(cmd.split(maxsplit=1)[1])
                 print(f"  ✓ 最大论文数设置为: {current_max}")
             except ValueError:
-                print(f"  ✗ 无效数字")
+                print("  ✗ 无效数字")
             continue
 
         if cmd == "mermaid":

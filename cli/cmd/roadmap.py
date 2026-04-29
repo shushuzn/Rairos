@@ -62,7 +62,7 @@ def _run_roadmap(args: argparse.Namespace) -> int:
         print_error("请提供 --question <id> 或 --text <问题>")
         return 1
 
-    print_info(f"📋 生成研究路线图...")
+    print_info("📋 生成研究路线图...")
 
     roadmap = generator.generate(
         question=question_text,

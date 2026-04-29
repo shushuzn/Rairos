@@ -3,7 +3,7 @@ import logging
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import TYPE_CHECKING, List
+from typing import List
 
 from core import ARXIV_API, Paper
 

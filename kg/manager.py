@@ -378,7 +378,7 @@ class KGManager:
             params = list(node_ids) + list(node_ids)
 
         if rel_type:
-            where += f" AND relation_type = ?"
+            where += " AND relation_type = ?"
             params.append(rel_type)
         rows = conn.execute(
             f"SELECT * FROM kg_edges WHERE {where}",

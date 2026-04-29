@@ -1,15 +1,12 @@
 """Tier 2 unit tests — llm/evolution_report.py, pure functions, no I/O."""
-import pytest
 import math
 from llm.evolution_report import (
     PaperInsight,
     QueryInsight,
     LearningReport,
-    EvolutionReporter,
     FollowUpType,
     FollowUp,
     SmartFollowUp,
-    AdaptiveRetrieval,
 )
 
 
@@ -968,7 +965,6 @@ class TestDetectTopicTypes:
 
     def _detect(self, text):
         """Replicate _detect_topic_types."""
-        from llm.evolution_report import FollowUpType, SmartFollowUp
         sf = SmartFollowUp()
         scores = {}
         for ftype, keywords in sf.TOPIC_KEYWORDS.items():

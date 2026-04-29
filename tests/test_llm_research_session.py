@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/research_session.py, pure functions, no I/O."""
-import pytest
 from llm.research_session import (
     ResearchIntent, Query, ResearchSession,
     ResearchSessionTracker,

@@ -114,7 +114,7 @@ def _run_search_warp(results, total) -> None:
 
     # Header with count
     blocks.append(WarpBlocks.panel(
-        f"Search Results",
+        "Search Results",
         f"Showing {len(results)} of {total} papers",
     ))
 
