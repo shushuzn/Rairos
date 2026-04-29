@@ -8,15 +8,33 @@ from cli._shared import get_db
 
 
 def _build_cache_parser(subparsers) -> argparse.ArgumentParser:
-    p = subparsers.add_parser("cache", help="Manage paper cache")
+    p = subparsers.add_parser("cache", help="Manage paper and LLM cache")
     p.add_argument("--get", metavar="UID", help="Get cached paper by UID")
     p.add_argument("--set", nargs=2, metavar=("UID", "PATH"), help="Cache a paper from JSON")
     p.add_argument("--clear", action="store_true", help="Clear all cache entries")
     p.add_argument("--stats", action="store_true", help="Show cache statistics")
+    # LLM cache options
+    p.add_argument("--llm", action="store_true", help="Operate on LLM response cache instead of paper cache")
+    p.add_argument("--llm-clear", action="store_true", help="Clear LLM response cache")
     return p
 
 
 def _run_cache(args: argparse.Namespace) -> int:
+    # LLM cache operations
+    if args.llm or args.llm_clear:
+        from llm.client import clear_llm_cache, get_llm_cache_size, _cache_stats
+        if args.llm_clear:
+            clear_llm_cache()
+            print("LLM cache cleared")
+        elif args.llm:
+            size = get_llm_cache_size()
+            stats = _cache_stats()
+            print(f"LLM Response Cache:")
+            print(f"  Entries: {stats.get('entries', size)}")
+            print(f"  Active:  {stats.get('hits', 0)}")
+            print(f"  Expired: {stats.get('expired', 0)}")
+        return 0
+
     db = get_db()
     db.init()
 
