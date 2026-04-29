@@ -168,6 +168,7 @@ class ResearchDeepDivePipeline:
                     analysis = analyzer.verify_claims(analysis, structured_content)
                 sections_dict = analysis.sections
                 rubric_dict = analysis.rubric
+                self._last_analysis = analysis  # Save for PNODE_UPDATE stage
                 sr.success = True
                 sr.data = asdict(analysis)
                 result.stages_completed.append(PostStage.PAPER_ANALYSIS.value)
@@ -318,6 +319,7 @@ class ResearchDeepDivePipeline:
                         extracted_text=extracted_text,
                         sections_dict=sections_dict,
                         rubric_dict=rubric_dict,
+                        claims_data=self._build_claims_data(),
                     )
                     result.pnote_updated = True
 
@@ -360,6 +362,25 @@ class ResearchDeepDivePipeline:
                 pass
         return (paper_id, "", None)
 
+    def _build_claims_data(self) -> Optional[Dict[str, Any]]:
+        """Build claims_data dict from saved analysis for P-note rendering."""
+        if not getattr(self, "_last_analysis", None):
+            return None
+        analysis = self._last_analysis
+        claims = []
+        unverified = []
+        for c in (analysis.claims or []):
+            claims.append({"page": c.page, "chunk_text": c.chunk_text})
+        for c in (analysis.unverified_claims or []):
+            unverified.append({
+                "page": c.page,
+                "chunk_text": c.chunk_text,
+                "verification_note": c.verification_note,
+            })
+        if not claims and not unverified:
+            return None
+        return {"claims": claims, "unverified_claims": unverified}
+
     def _get_kg(self):
         """Get KGManager instance if available."""
         try:
@@ -381,6 +402,7 @@ class ResearchDeepDivePipeline:
         extracted_text: str,
         sections_dict: Dict[str, str],
         rubric_dict: Dict[str, Any],
+        claims_data: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Re-render P-note with analysis content injected."""
         from renderers.pnote import render_pnote
@@ -427,6 +449,7 @@ class ResearchDeepDivePipeline:
             tags=tags,
             extracted_sections_md=extracted_text,
             parsed_ai=(sections_with_raw, rubric_dict),
+            claims_data=claims_data,
         )
         pnote_path.write_text(rendered, encoding="utf-8")
         logger.info("P-note updated: %s", pnote_path)
