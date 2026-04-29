@@ -73,23 +73,6 @@ def frozen_year() -> str:
 # freezegun integration
 # ---------------------------------------------------------------------------
 
-def pytest_configure(config: pytest.Config) -> None:
-    """Register the freeze_time marker so @pytest.mark.freeze_time works."""
-    config.addinivalue_line(
-        "markers",
-        "freeze_time: freeze datetime to 2024-06-15 (uses freezegun)",
-    )
-    config.addinivalue_line(
-        "markers",
-        "no_freeze: opt out of the autouse freeze_time for this test",
-    )
-    # Register the lean marker before collection runs
-    config.addinivalue_line(
-        "markers",
-        "lean: Lean 4 integration tests (run only when Lean is installed)",
-    )
-
-
 @pytest.fixture(autouse=True)
 def freeze_time_fixture(request: pytest.FixtureRequest):
     """Automatically freeze time to 2024-06-15 for every test in the session.

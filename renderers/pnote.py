@@ -91,7 +91,7 @@ def render_radar_chart(scores: Dict[str, int], size: int = 280) -> str:
             )
 
     # ── Axes (spokes) ─────────────────────────────────────────────────────
-    for i, (en, zh, _) in enumerate(valid_axes):
+    for i, (_en, _zh, _) in enumerate(valid_axes):
         angle = i * angle_step - math.pi / 2
         x2 = cx + max_radius * math.sin(angle)
         y2 = cy + max_radius * math.cos(angle)

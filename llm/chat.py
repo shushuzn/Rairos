@@ -1307,7 +1307,7 @@ Rewrite as a standalone question (in the same language as the original question)
             quote = clean[:150].strip()
 
         # Clean up quote markers
-        quote = quote.strip('"...»""')
+        quote = quote.strip('"').strip('…').strip('»')
         if len(quote) > 150:
             quote = quote[:147] + "..."
 

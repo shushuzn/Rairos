@@ -16,10 +16,9 @@ import re
 from typing import List, Tuple, Optional
 
 try:
-    from rich.console import Console, ConsoleOptions, RenderResult
+    from rich.console import Console
     from rich.table import Table as RichTable
     from rich.panel import Panel as RichPanel
-    from rich._null_file import NullFile
     _RICH = True
 except ImportError:
     _RICH = False
@@ -546,7 +545,7 @@ class WarpBlocks:
                 cells = [str(c) for c in row]
                 # Color-code status columns heuristically
                 styled = []
-                for i, c in enumerate(cells):
+                for _i, c in enumerate(cells):
                     lc = c.lower()
                     if any(kw in lc for kw in ('ready', 'done', '✓', 'pass', 'ok', 'success')):
                         styled.append(f"[#B4FA72]{c}[/]")

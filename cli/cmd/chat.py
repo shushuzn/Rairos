@@ -85,7 +85,7 @@ def _run_chat(args: argparse.Namespace) -> int:
 
     # Import LLM chat
     try:
-        from llm.chat import RagChat, ChatResult
+        from llm.chat import RagChat
     except ImportError as e:
         print_error(f"Failed to import RAG chat module: {e}")
         return 1

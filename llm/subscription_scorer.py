@@ -171,7 +171,7 @@ class SubscriptionScorer:
             return 1.0
         elif days_old <= 30:
             return 0.9
-        elif days_dir := days_old <= 90:
+        elif days_old <= 90:
             return 0.7
         elif days_old <= 180:
             return 0.5
