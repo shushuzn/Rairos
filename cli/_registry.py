@@ -14,6 +14,29 @@ from llm.generate import ai_generate_pnote_draft
 
 logger = logging.getLogger(__name__)
 
+
+# ─── Custom help formatter ───────────────────────────────────────────────────────
+
+
+class _WarpHelpFormatter(argparse.RawDescriptionHelpFormatter):
+    """Format help with Warp-style tips."""
+
+    def __init__(self, prog):
+        super().__init__(prog, max_help_position=40, width=80)
+
+    def _add_warp_tip(self):
+        """Return Warp tip text for end of help."""
+        return """
+[#A5D5FE]Tip:[/#A5D5FE] Use [#B4FA72]--format warp[/#B4FA72] for Warp terminal style:
+  airos stats --format warp
+  airos search "attention" --format warp
+  airos cache --llm
+"""
+
+    def format_help(self):
+        help_text = super().format_help()
+        return help_text + self._add_warp_tip()
+
 # All available subcommands — derived from _SUBCOMMAND_TABLE
 _SUBCOMMAND_TABLE = [
     ("search",         "cli.cmd.search",          "_build_search_parser"),
@@ -116,7 +139,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         import cli
         return cli._main_legacy(argv)
 
-    parser = argparse.ArgumentParser(description="AI Research OS")
+    parser = argparse.ArgumentParser(
+        description="[#FF8272]AI Research OS[/#FF8272] — Self-Evolving Research System",
+        formatter_class=_WarpHelpFormatter,
+    )
     subparsers = parser.add_subparsers(dest="subcmd", help="Subcommands")
 
     # Build all parsers
