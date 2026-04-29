@@ -94,6 +94,8 @@ class CitationClaim:
     chunk_text: str  # The source text this claim refers to
     verified: bool = False  # True if source text actually supports the claim
     verification_note: str = ""  # Why it failed verification, if any
+    evidence_score: float = 0.0  # 0.0-1.0: strength of supporting evidence
+    correction_round: int = 0  # Which correction round this was verified in (0=first)
 
 
 # ── LLM prompts ──────────────────────────────────────────────────────────────
@@ -365,7 +367,7 @@ class PaperAnalyzer:
 
         if rubric:
             # Remove the JSON block from text for section parsing
-            remaining = text[:m.start()].rstrip() + "\n" + text[m.end():].lstrip()
+            remaining = text[:m.start()].rstrip()
             return rubric, remaining
 
         # Try bare JSON at end of text
@@ -464,10 +466,13 @@ class PaperAnalyzer:
         return "\n\n".join(parts)
 
     def verify_claims(self, result: PaperAnalysisResult, content: "StructuredPdfContent") -> PaperAnalysisResult:
-        """Verify each citation claim against source text blocks.
+        """Verify each citation claim against source text blocks with evidence strength scoring.
 
-        Uses Ollama embedding (nomic-embed-text) for semantic similarity when available,
-        falls back to word-overlap scoring otherwise.
+        Features:
+        - Evidence strength scoring (0.0-1.0) on a continuous scale
+        - Self-correction loop: retry unverified claims with lower thresholds
+        - Cross-page expansion: if exact page fails, try adjacent pages
+        - Claim deduplication: same claim in multiple sections counted once
 
         Args:
             result: PaperAnalysisResult with sections containing [Page N] citations.
@@ -479,6 +484,8 @@ class PaperAnalyzer:
         import re, json, urllib.request
 
         # ── Embedding helpers ──────────────────────────────────────────
+        _embed_cache: Dict[str, List[float]] = {}
+
         def _get_embedding(text: str) -> Optional[List[float]]:
             """Get embedding from Ollama nomic-embed-text, cached."""
             cache_key = text[:200]
@@ -510,86 +517,141 @@ class PaperAnalyzer:
 
         def _word_overlap(claim: str, source: str) -> float:
             """Return overlap ratio 0-1."""
-            claim_words = set(claim.lower().split())
-            source_words = set(source.lower().split())
+            claim_words = set(w.strip(".,;:!?()[]{}\"'") for w in claim.lower().split())
+            source_words = set(w.strip(".,;:!?()[]{}\"'") for w in source.lower().split())
             if not claim_words:
                 return 0.0
             overlap = claim_words & source_words
             return len(overlap) / len(claim_words)
 
-        # ── Build page index ───────────────────────────────────────────
+        def _evidence_score(emb_sim: float, overlap: float) -> float:
+            """Combined evidence score: embedding × 0.6 + word overlap × 0.4."""
+            return min(1.0, emb_sim * 0.6 + overlap * 0.4)
+
+        def _verify_block(claim_text: str, block_text: str, use_emb: bool) -> tuple[bool, float, str]:
+            """Verify claim against a single block. Returns (verified, score, note)."""
+            overlap = _word_overlap(claim_text, block_text)
+
+            if use_emb:
+                claim_emb = _get_embedding(claim_text[:500])
+                source_emb = _get_embedding(block_text[:500])
+                if claim_emb and source_emb:
+                    emb_sim = _cosine_sim(claim_emb, source_emb)
+                    score = _evidence_score(emb_sim, overlap)
+                    if emb_sim >= 0.7 and overlap >= 0.15:
+                        return True, score, f"emb={emb_sim:.2f}, ovlp={overlap:.2f}"
+                    if emb_sim >= 0.75:
+                        return True, score, f"partial emb={emb_sim:.2f}"
+
+            if overlap >= 0.3:
+                return True, overlap, f"ovlp={overlap:.2f}"
+            shared = len(set(claim_text.lower().split()) & set(block_text.lower().split()))
+            if shared >= 4:
+                return True, overlap, f"shared={shared} words"
+
+            return False, 0.0, ""
+
+        # ── Build page index ─────────────────────────────────────────
         page_blocks: Dict[int, List[tuple[int, str]]] = {}
         for idx, block in enumerate(content.text_blocks):
             if block.page not in page_blocks:
                 page_blocks[block.page] = []
             page_blocks[block.page].append((idx, block.text))
 
-        # Try to use embedding (may be unavailable — that's OK)
-        _embed_cache: Dict[str, List[float]] = {}
-        use_embedding = True
+        use_embedding = _get_embedding("test") is not None
 
-        # Quick probe: try one embedding to see if Ollama is up
-        if _get_embedding("test") is None:
-            use_embedding = False
-
-        # ── Extract and verify claims ───────────────────────────────────
+        # ── Extract claims with deduplication ─────────────────────────
         claim_pattern = re.compile(r"\[Page\s+(\d+)\]\s*([^.\n]+(?:[.\n][^.\n]+)*)")
+        seen: set[str] = set()
 
-        for section_key, section_text in result.sections.items():
+        raw_claims: List[dict] = []
+        for section_text in result.sections.values():
             for m in claim_pattern.finditer(section_text):
-                page_ref = int(m.group(1)) - 1  # 0-indexed
+                page_ref = int(m.group(1)) - 1
                 claim_text = m.group(2).strip()
+                norm = claim_text.lower()[:80]
+                if norm in seen:
+                    continue
+                seen.add(norm)
+                raw_claims.append({"text": claim_text, "page": page_ref})
 
-                verified = False
-                matched_block_idx = -1
-                matched_chunk = ""
-                best_score = 0.0
+        # ── Round 0: initial verification ───────────────────────────
+        verified: List[CitationClaim] = []
+        retry_queue: List[dict] = []
 
-                if page_ref in page_blocks:
-                    for block_idx, block_text in page_blocks[page_ref]:
-                        if use_embedding:
-                            claim_emb = _get_embedding(claim_text[:500])
-                            source_emb = _get_embedding(block_text[:500])
-                            if claim_emb and source_emb:
-                                score = _cosine_sim(claim_emb, source_emb)
-                                if score >= 0.7:
-                                    verified = True
-                                    best_score = score
-                                    matched_block_idx = block_idx
-                                    matched_chunk = block_text[:200]
-                                    break
-                            # Fall through to word overlap below if embeddings failed
-                            overlap_score = _word_overlap(claim_text, block_text)
-                            if overlap_score >= 0.3:
-                                verified = True
-                                best_score = overlap_score
-                                matched_block_idx = block_idx
-                                matched_chunk = block_text[:200]
+        for item in raw_claims:
+            best_score = 0.0
+            best_idx = -1
+            best_chunk = ""
+            note = ""
+            done = False
+
+            if item["page"] in page_blocks:
+                for block_idx, block_text in page_blocks[item["page"]]:
+                    ok, score, note = _verify_block(item["text"], block_text, use_embedding)
+                    if ok and score > best_score:
+                        best_score, best_idx, best_chunk = score, block_idx, block_text[:200]
+                        note = score >= 0.6 and f"Verified ({note})" or f"Partial ({note})"
+                        if score >= 0.6:
+                            done = True
+                            break
+
+            if done:
+                verified.append(CitationClaim(
+                    text=item["text"], page=item["page"], block_idx=best_idx,
+                    chunk_text=best_chunk, verified=True, evidence_score=best_score,
+                    verification_note=note, correction_round=0,
+                ))
+            else:
+                retry_queue.append({**item, "best_score": best_score, "best_chunk": best_chunk,
+                                     "best_block_idx": best_idx, "note": note})
+
+        # ── Self-correction loop: up to 2 rounds ─────────────────────
+        for round_n in range(1, 3):
+            still: List[dict] = []
+            for item in retry_queue:
+                improved = False
+                for delta in [-1, 1, -2, 2]:
+                    nb_page = item["page"] + delta
+                    if nb_page < 0 or nb_page not in page_blocks:
+                        continue
+                    for block_idx, block_text in page_blocks[nb_page]:
+                        ok, score, note = _verify_block(item["text"], block_text, use_embedding)
+                        if ok and score > item["best_score"]:
+                            item["best_score"] = score
+                            item["best_block_idx"] = block_idx
+                            item["best_chunk"] = block_text[:200]
+                            item["note"] = f"cross-page [{item['page']+1}→{nb_page+1}]: {note}"
+                            improved = True
+                            if score >= 0.6:
                                 break
-                        else:
-                            # Pure word-overlap fallback
-                            overlap_score = _word_overlap(claim_text, block_text)
-                            if overlap_score >= 0.3 or (
-                                len(set(claim_text.lower().split()) & set(block_text.lower().split())) >= 3
-                            ):
-                                verified = True
-                                best_score = overlap_score
-                                matched_block_idx = block_idx
-                                matched_chunk = block_text[:200]
-                                break
+                    if improved and item["best_score"] >= 0.6:
+                        break
 
-                citation = CitationClaim(
-                    text=claim_text,
-                    page=page_ref,
-                    block_idx=matched_block_idx,
-                    chunk_text=matched_chunk,
-                    verified=verified,
-                    verification_note=f"Verified (score={best_score:.2f})" if verified else "No matching source text found",
-                )
-
-                if verified:
-                    result.claims.append(citation)
+            for item in retry_queue:
+                if improved and item["best_score"] > 0.05:
+                    verified.append(CitationClaim(
+                        text=item["text"], page=item["page"], block_idx=item["best_block_idx"],
+                        chunk_text=item["best_chunk"], verified=True, evidence_score=item["best_score"],
+                        verification_note=f"Verified after correction: {item['note']}",
+                        correction_round=round_n,
+                    ))
                 else:
-                    result.unverified_claims.append(citation)
+                    still.append(item)
 
+            retry_queue = still
+            if not retry_queue:
+                break
+
+        # ── Build final results ─────────────────────────────────────
+        result.claims = verified
+        result.unverified_claims = [
+            CitationClaim(
+                text=item["text"], page=item["page"], block_idx=item["best_block_idx"],
+                chunk_text=item["best_chunk"], verified=False, evidence_score=item["best_score"],
+                verification_note=item["note"] or "No matching source text found",
+                correction_round=2,
+            )
+            for item in retry_queue
+        ]
         return result
