@@ -445,12 +445,14 @@ class PaperAnalyzer:
 
     @staticmethod
     def _extract_keywords(text: str, keywords: List[str]) -> List[str]:
-        """Extract known keywords from text, deduplicated in order."""
+        """Extract known keywords from text using word boundaries, deduplicated in order."""
+        import re
         text_lower = text.lower()
         found = []
         seen: set = set()
         for kw in keywords:
-            if kw in text_lower and kw not in seen:
+            pattern = re.compile(r'\b' + re.escape(kw) + r'\b', re.IGNORECASE)
+            if pattern.search(text) and kw not in seen:
                 found.append(kw)
                 seen.add(kw)
         return found

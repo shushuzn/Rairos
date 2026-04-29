@@ -124,13 +124,15 @@ def _run_postprocess_phase(
     # Build paper object for the pipeline
     from core import Paper
     paper = Paper(
+        source=getattr(rec, "source", "") or "arxiv",
         uid=paper_id,
         title=getattr(rec, "title", "") or "",
         authors=getattr(rec, "authors", []) or [],
         abstract=getattr(rec, "abstract", "") or "",
         published=getattr(rec, "published", "") or "",
+        updated=getattr(rec, "updated", "") or "",
+        abs_url=getattr(rec, "abs_url", "") or f"https://arxiv.org/abs/{paper_id}",
         pdf_url=getattr(rec, "pdf_url", "") or "",
-        doi=getattr(rec, "doi", "") or "",
     )
     paper.pid = paper_id
 
