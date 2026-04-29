@@ -146,6 +146,42 @@ def get_llm_cache_size() -> int:
     return len(list(_CACHE_DIR.rglob("*.json")))
 
 
+def warm_cache(
+    queries: List[str],
+    model: str = "gpt-4o-mini",
+    base_url: str = "https://api.openai.com/v1",
+    api_key: Optional[str] = None,
+    system_prompt: Optional[str] = None,
+) -> Dict[str, bool]:
+    """Pre-warm the cache with LLM responses for common queries.
+
+    Args:
+        queries: List of query strings to pre-cache
+        model: Model to use for generating responses
+        base_url: API base URL
+        api_key: API key (defaults to env OPENAI_API_KEY)
+        system_prompt: Optional system prompt
+
+    Returns:
+        Dict mapping query to success status
+    """
+    results = {}
+    for query in queries:
+        try:
+            response = call_llm_chat_completions(
+                messages=[{"role": "user", "content": query}],
+                model=model,
+                base_url=base_url,
+                api_key=api_key,
+                system_prompt=system_prompt,
+                use_cache=True,  # Force cache write
+            )
+            results[query] = True
+        except Exception:
+            results[query] = False
+    return results
+
+
 # Detect Claude CLI availability lazily
 _claude_cli_client = None
 
