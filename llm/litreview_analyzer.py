@@ -290,7 +290,7 @@ class LitReviewAnalyzer:
         if not sub:
             return None
 
-        topic = sub.get("topic", "")
+        sub.get("topic", "")
 
         # Find associated review
         reviews = self.db.list_literature_reviews()

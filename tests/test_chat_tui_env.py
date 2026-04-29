@@ -91,7 +91,7 @@ class TestChatTuiEnvLoading:
         # Should not raise
         _cwd_env = non_existent
         if _cwd_env.exists():
-            with open(_cwd_env, encoding="utf-8") as f:
+            with open(_cwd_env, encoding="utf-8"):
                 pass  # Would set vars if file existed
 
 

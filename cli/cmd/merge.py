@@ -75,8 +75,6 @@ def _run_merge(args: argparse.Namespace) -> int:
                 if sim is None or sim < 0.95:
                     continue
 
-                older = target if target.added_at <= duplicate.added_at else duplicate
-                newer = duplicate if target.added_at <= duplicate.added_at else target
                 keep, drop = _pick_keep(target, duplicate, "parsed")
 
                 if args.dry_run:
@@ -117,8 +115,6 @@ def _run_merge(args: argparse.Namespace) -> int:
         print(f"Duplicate paper {args.duplicate_id} not found")
         return 1
 
-    older = target if target.added_at <= duplicate.added_at else duplicate
-    newer = duplicate if target.added_at <= duplicate.added_at else target
     sim = db.get_similarity(target.id, duplicate.id)
 
     if args.keep == "semantic":

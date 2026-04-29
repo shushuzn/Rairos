@@ -105,7 +105,7 @@ class TestAddPaper:
     def test_creates_new_node(self):
         """add_paper creates a new node."""
         builder = CitationChainBuilder()
-        node = self._add_paper(builder, "p1", "Paper One", year=2020)
+        self._add_paper(builder, "p1", "Paper One", year=2020)
         assert builder.nodes["p1"].title == "Paper One"
         assert builder.nodes["p1"].year == 2020
 
@@ -337,7 +337,7 @@ class TestRenderText:
 
         sorted_nodes = sorted(chain.nodes, key=lambda x: -x.year if x.year else 0)
 
-        for i, node in enumerate(sorted_nodes[:max_nodes]):
+        for _i, node in enumerate(sorted_nodes[:max_nodes]):
             lines.append(f"[{node.paper_id[:8]}] {node.title[:50]}")
             lines.append(f"  Year: {node.year or '?'} | Cites: {len(node.citations)} | Cited by: {len(node.cited_by)}")
             lines.append("")

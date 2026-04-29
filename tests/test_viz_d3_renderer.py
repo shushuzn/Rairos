@@ -19,7 +19,7 @@ class TestD3ForceGraph:
         """D3ForceGraph accepts None kg (uses default KGManager)."""
         from viz.d3_renderer import D3ForceGraph
         with patch("viz.d3_renderer.KGManager") as MockKG:
-            g = D3ForceGraph()
+            D3ForceGraph()
             MockKG.assert_called_once()
 
     def test_init_with_kg_instance(self):

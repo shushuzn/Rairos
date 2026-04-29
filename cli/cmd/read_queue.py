@@ -412,7 +412,7 @@ def _run_read_queue(args: argparse.Namespace) -> int:
                     )
                     explanations[r.paper_id] = explanation
                 except Exception as e:
-                    warnings.warn(f"LLM explanation failed for {r.paper_id}: {e}")
+                    warnings.warn(f"LLM explanation failed for {r.paper_id}: {e}", stacklevel=2)
                     explanations[r.paper_id] = None
 
     if args.format == "json":
@@ -433,7 +433,6 @@ def _run_read_queue(args: argparse.Namespace) -> int:
         for i, r in enumerate(results, 1):
             bar_len = int(r.score * 20)
             bar = "█" * bar_len + "░" * (20 - bar_len)
-            color = Colors.OKGREEN if r.score > 0.5 else Colors.WARNING if r.score > 0.2 else Colors.OKBLUE
             print(f"{i:2}. [{bar}] {r.score:.2f}  {r.paper_id}")
             print(f"    {r.title[:70]}")
             print(f"    Sem:{r.semantic_score:.2f} Cit:{r.citation_score:.2f} Tag:{r.tag_score:.2f} New:{r.recency_score:.2f}")

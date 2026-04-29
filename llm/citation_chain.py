@@ -234,7 +234,7 @@ class CitationChainBuilder:
         # Sort by year
         sorted_nodes = sorted(chain.nodes, key=lambda x: -x.year if x.year else 0)
 
-        for i, node in enumerate(sorted_nodes[:max_nodes]):
+        for _i, node in enumerate(sorted_nodes[:max_nodes]):
             lines.append(f"[{node.paper_id[:8]}] {node.title[:50]}")
             lines.append(f"  Year: {node.year or '?'} | Cites: {len(node.citations)} | Cited by: {len(node.cited_by)}")
             lines.append("")

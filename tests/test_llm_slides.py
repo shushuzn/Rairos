@@ -144,7 +144,7 @@ class TestSlideTemplates:
 
     def test_all_templates_have_required_slides(self):
         """All templates have title, content, section slides."""
-        for name, template in PaperSlidesGenerator.TEMPLATES.items():
+        for _name, template in PaperSlidesGenerator.TEMPLATES.items():
             assert "title_slide" in template
             assert "content_slide" in template
             assert "section_slide" in template

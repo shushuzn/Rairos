@@ -149,14 +149,12 @@ def update_litreview(
 
     # Find and update the frontmatter
     in_frontmatter = False
-    frontmatter_end = -1
     for i, line in enumerate(lines):
         if line.strip() == "---":
             if not in_frontmatter:
                 in_frontmatter = True
                 updated_lines.append(line)
             else:
-                frontmatter_end = i
                 updated_lines.append(line)
                 # Add updated fields
                 updated_lines.append(f'last_updated: "{now}"')

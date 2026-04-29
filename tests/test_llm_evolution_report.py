@@ -696,7 +696,7 @@ class TestWilsonScore:
     def test_small_sample_more_conservative(self):
         """Small samples get more conservative scores."""
         large = self._wilson_score(9, 10, 0.95)
-        small = self._wilson_score(9, 10, 0.95)
+        self._wilson_score(9, 10, 0.95)
         # For same proportion, more samples → higher score (less penalty)
         # Actually with Wilson formula, more samples gives narrower interval
         assert large > 0

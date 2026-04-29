@@ -599,7 +599,7 @@ class WarpBlocks:
             width: Max width
         """
         lines = [f"📂 {_C.BOLD}{root}{_C.RESET}"]
-        for i, (prefix, label) in enumerate(children):
+        for i, (_prefix, label) in enumerate(children):
             is_last = i == len(children) - 1
             branch = "└── " if is_last else "├── "
             wrapped = cls.wrap(label, width - 6)

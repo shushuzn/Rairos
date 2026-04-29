@@ -558,7 +558,7 @@ class EvolutionTracker:
         ]
 
         rows_action, rows_gap, rows_topic, rows_tag = [], [], [], []
-        for key, title, sort_items, limit in [
+        for key, _title, _sort_items, limit in [
             ("recent_action_breakdown", "⚡ Actions",      False, None),
             ("top_gap_types",          "📈 Top Gap Types",False, 5),
             ("topic_frequency",         "🔑 Topics",         False, 5),

@@ -333,7 +333,7 @@ class TestInferRelationship:
 
     def _infer_relationship(self, a, b):
         """Replicate _infer_relationship."""
-        rel_type, desc = None, ""
+        _rel_type, _desc = None, ""
         if b.year > a.year:
             if 'extends' in a.title.lower() or 'building' in b.title.lower():
                 return RelationshipType.EXTENDS, f"{b.year} work extends {a.year} work"

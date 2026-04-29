@@ -107,8 +107,8 @@ def _session_list(tracker: ResearchSessionTracker, args) -> int:
         date = s.started_at[:10]
         icon = intent_icons.get(s.intent, "📚")
         intent_label = intent_names.get(s.intent, "—")
-        tags_str = ", ".join(s.tags[:3]) if s.tags else ""
-        insight_preview = (s.insights[0][:45] + "...") if s.insights else ""
+        ", ".join(s.tags[:3]) if s.tags else ""
+        (s.insights[0][:45] + "...") if s.insights else ""
         rows.append([
             icon,
             f"[#FF8272]{date}[/]",

@@ -77,7 +77,7 @@ class TestGetModelPrice:
         """Partial model name matches."""
         # Should match 'gpt' in 'gpt-4o-mini'
         price1 = get_model_price("gpt-4o-mini")
-        price2 = get_model_price("gpt-4o")
+        get_model_price("gpt-4o")
         # Both should return gpt prices
         assert price1[0] > 0
 
