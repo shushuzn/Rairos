@@ -57,6 +57,7 @@ def _run_stats(args: argparse.Namespace) -> int:
 def _run_stats_warp(s) -> None:
     """Render stats using Warp-style blocks."""
     from cli.warp import WarpBlocks
+    from llm.client import get_llm_cache_size, _cache_stats, get_cache_stats
 
     blocks = []
 
@@ -66,15 +67,38 @@ def _run_stats_warp(s) -> None:
         *[[k, str(v)] for k, v in sorted(s['by_source'].items())],
         *[[k, str(v)] for k, v in sorted(s['by_status'].items())],
     ]
-    blocks.append(WarpBlocks.table(["Category", "Value"], paper_rows))
+    blocks.append(WarpBlocks.table(["Papers", "Count"], paper_rows, title="Database Overview"))
 
-    # Queue + Cache panel
-    status_lines = [
-        f"Queued  : {s['queue_queued']}",
-        f"Running : {s['queue_running']}",
-        f"Cache   : {s['cache_entries']} entries",
-        f"Dedup   : {s['dedup_records']} records",
+    # LLM cache stats
+    llm_size = get_llm_cache_size()
+    llm_disk = _cache_stats()
+    llm_hit = get_cache_stats()
+    llm_rate = llm_hit.get('hit_rate', 0)
+
+    # Color-coded hit rate
+    if llm_rate >= 80:
+        rate_str = f"[#B4FA72]✓ {llm_rate}%[/]"
+    elif llm_rate >= 50:
+        rate_str = f"[#FEFDC2]⚠ {llm_rate}%[/]"
+    else:
+        rate_str = f"[#FF5555]✗ {llm_rate}%[/]"
+
+    llm_lines = [
+        f"  Entries : [#A5D5FE]{llm_disk.get('entries', llm_size)}[/]",
+        f"  Expired : [#8E8E8E]{llm_disk.get('expired', 0)}[/]",
+        f"  Hits    : [#B4FA72]{llm_hit.get('hits', 0)}[/]",
+        f"  Misses  : [#FF8272]{llm_hit.get('misses', 0)}[/]",
+        f"  Hit Rate: {rate_str}",
     ]
-    blocks.append(WarpBlocks.panel("Queue & Cache", "\n".join(status_lines)))
+    blocks.append(WarpBlocks.panel("LLM Cache", "\n".join(llm_lines)))
+
+    # Queue + Dedup panel
+    status_lines = [
+        f"Queued  : [#A5D5FE]{s['queue_queued']}[/]",
+        f"Running : [#FEFDC2]{s['queue_running']}[/]",
+        f"Paper Cache: [#8E8E8E]{s['cache_entries']}[/] entries",
+        f"Dedup   : [#8E8E8E]{s['dedup_records']}[/] records",
+    ]
+    blocks.append(WarpBlocks.panel("Queue & Dedup", "\n".join(status_lines)))
 
     print("\n\n".join(blocks))
