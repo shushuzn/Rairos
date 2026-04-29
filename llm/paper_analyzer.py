@@ -597,14 +597,14 @@ class PaperAnalyzer:
         use_embedding = _get_embedding("test") is not None
 
         # ── Extract claims with deduplication ─────────────────────────
-        claim_pattern = re.compile(r"\[Page\s+(\d+)\]\s*([^.\n]+(?:[.\n][^.\n]+)*)")
+        claim_pattern = re.compile(r"([^[]+?)\s*\[Page\s+(\d+)\]")
         seen: set[str] = set()
 
         raw_claims: List[dict] = []
         for section_text in result.sections.values():
             for m in claim_pattern.finditer(section_text):
-                page_ref = int(m.group(1)) - 1
-                claim_text = m.group(2).strip()
+                page_ref = int(m.group(2)) - 1
+                claim_text = m.group(1).strip()
                 norm = claim_text.lower()[:80]
                 if norm in seen:
                     continue
