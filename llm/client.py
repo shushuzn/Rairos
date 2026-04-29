@@ -1,13 +1,109 @@
 """LLM API client — supports OpenAI-compatible, Anthropic API, and Claude CLI."""
 import hashlib
+import json
 import os
 import re
-from typing import Dict, Iterator, List, Optional
+import time
+from pathlib import Path
+from typing import Dict, Iterator, List, Optional, Tuple
 
 import orjson
 import requests
 
 from core.retry import circuit_breaker
+
+# ── Persistent LLM Response Cache ────────────────────────────────────────────
+_CACHE_DIR = Path("data/llm_cache")
+_CACHE_TTL_SECONDS = 7 * 24 * 3600  # 7 days default
+
+
+def _get_cache_path(key: str) -> Path:
+    """Get file path for a cache key (use subdirs to avoid too many files in one dir)."""
+    _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    return _CACHE_DIR / f"{key[:2]}" / f"{key}.json"
+
+
+def _cache_read(key: str) -> Tuple[Optional[str], bool]:
+    """Read from persistent cache. Returns (value, found).
+
+    Checks TTL before returning.
+    """
+    path = _get_cache_path(key)
+    if not path.exists():
+        return None, False
+
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            entry = json.load(f)
+
+        # Check expiry
+        if time.time() - entry.get("cached_at", 0) > _CACHE_TTL_SECONDS:
+            path.unlink(missing_ok=True)
+            return None, False
+
+        return entry.get("response"), True
+    except (json.JSONDecodeError, OSError):
+        return None, False
+
+
+def _cache_write(key: str, response: str) -> None:
+    """Write to persistent cache."""
+    path = _get_cache_path(key)
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    entry = {
+        "response": response,
+        "cached_at": time.time(),
+    }
+
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(entry, f)
+    except OSError:
+        pass  # Cache write failure is non-fatal
+
+
+def _cache_stats() -> Dict[str, int]:
+    """Get cache statistics."""
+    hits = 0
+    misses = 0
+    expired = 0
+
+    if not _CACHE_DIR.exists():
+        return {"hits": 0, "misses": 0, "expired": 0, "entries": 0}
+
+    now = time.time()
+    for path in _CACHE_DIR.rglob("*.json"):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                entry = json.load(f)
+            if now - entry.get("cached_at", 0) > _CACHE_TTL_SECONDS:
+                expired += 1
+            else:
+                hits += 1
+        except (json.JSONDecodeError, OSError):
+            misses += 1
+
+    return {
+        "hits": hits,
+        "expired": expired,
+        "entries": hits + expired,
+    }
+
+
+def clear_llm_cache() -> None:
+    """Clear all cached LLM responses."""
+    if _CACHE_DIR.exists():
+        for path in _CACHE_DIR.rglob("*.json"):
+            path.unlink(missing_ok=True)
+
+
+def get_llm_cache_size() -> int:
+    """Get number of cached entries."""
+    if not _CACHE_DIR.exists():
+        return 0
+    return len(list(_CACHE_DIR.rglob("*.json")))
+
 
 # Detect Claude CLI availability lazily
 _claude_cli_client = None
@@ -162,8 +258,10 @@ def call_llm_chat_completions(
     cache_key = None
     if not stream:
         cache_key = _generate_cache_key(messages, model, user_prompt, system_prompt)
-        if cache_key in _llm_cache:
-            return _llm_cache[cache_key]
+        # Check persistent cache first
+        cached_response, found = _cache_read(cache_key)
+        if found and cached_response:
+            return cached_response
 
     url = base_url.rstrip("/") + "/chat/completions"
     session = _get_session()
@@ -191,9 +289,9 @@ def call_llm_chat_completions(
         else:
             data = r.json()
             result = data["choices"][0]["message"]["content"]
-            # Cache the result for future requests
+            # Cache the result for future requests (persistent cache)
             if cache_key:
-                _llm_cache[cache_key] = result
+                _cache_write(cache_key, result)
         return result
     except requests.RequestException as e:
         raise RuntimeError(f"LLM API request failed: {str(e)}") from e
@@ -221,6 +319,14 @@ def _call_anthropic_api(
     - System: first message in messages array
     - Requires: max_tokens
     """
+    # Generate cache key for non-streaming requests
+    cache_key = None
+    if not stream:
+        cache_key = _generate_cache_key(messages, model, None, system_prompt)
+        cached_response, found = _cache_read(cache_key)
+        if found and cached_response:
+            return cached_response
+
     session = _get_session()
     headers = {
         "x-api-key": api_key,
@@ -273,7 +379,11 @@ def _call_anthropic_api(
             return _stream_anthropic_to_string(r)
         else:
             data = r.json()
-            return data["content"][0]["text"]
+            result = data["content"][0]["text"]
+            # Cache the result for future requests
+            if cache_key:
+                _cache_write(cache_key, result)
+            return result
 
     except requests.RequestException as e:
         raise RuntimeError(f"Anthropic API request failed: {str(e)}") from e
