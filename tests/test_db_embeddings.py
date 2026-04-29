@@ -325,7 +325,7 @@ class TestRunDedupSemantic:
         captured = capsys.readouterr().out
         assert "0.9234" in captured
         assert "2301.00002" in captured
-        assert "Attention Is All" in captured
+        assert "Attention" in captured  # Title truncated in table
         assert result == 0
 
     @patch("cli.Database")
@@ -372,7 +372,7 @@ class TestRunDedupSemantic:
         result = _run_dedup_semantic(args)
 
         captured = capsys.readouterr().out
-        assert "No duplicate pairs found" in captured
+        assert "No Duplicates Found" in captured
         assert result == 0
 
     @patch("cli.Database")

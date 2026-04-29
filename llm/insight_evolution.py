@@ -654,14 +654,20 @@ class EvolutionTracker:
             ),
             "",
         ]
-        if tag_rows:
-            c.print(WarpBlocks.table(["", "Tag", "Score"], tag_rows, title="Preference Tags"))
-            c.print()
-        if gap_rows:
-            c.print(WarpBlocks.table(["Gap Type", "Score"], gap_rows, title="Top Gap Types"))
-            c.print()
-        if topic_rows:
-            c.print(WarpBlocks.table(["Topic", "Count"], topic_rows, title="Top Topics"))
+
+        # Capture Rich output using Console.capture()
+        with c.capture() as capture:
+            if tag_rows:
+                c.print(WarpBlocks.table(["", "Tag", "Score"], tag_rows, title="Preference Tags"))
+                c.print()
+            if gap_rows:
+                c.print(WarpBlocks.table(["Gap Type", "Score"], gap_rows, title="Top Gap Types"))
+                c.print()
+            if topic_rows:
+                c.print(WarpBlocks.table(["Topic", "Count"], topic_rows, title="Top Topics"))
+
+        if capture.get():
+            parts.append(capture.get().rstrip("\n"))
         return "\n".join(parts)
 
     def _render_profile_sections(
