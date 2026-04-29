@@ -4,7 +4,7 @@ import json
 from unittest.mock import MagicMock, patch
 
 
-from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, _run_citations, _run_stats, infer_tags_if_empty, main
+from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, _run_citations, _run_stats, _run_cite_stats, infer_tags_if_empty, main
 from core import Paper
 
 
@@ -76,6 +76,7 @@ def make_args(**kwargs):
         format="table", limit=0, out=None, json=False,
         set_=None,
         llm=False, llm_clear=False,
+        stats_paper=None, top=None,
     )
     defaults.update(kwargs)
     ns = argparse.Namespace()
@@ -1912,4 +1913,124 @@ class TestRunStats:
         out = capsys.readouterr().out
         # warp output should have colored ANSI codes
         assert "\033[" in out or "[" in out
+        assert result == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_cite_stats tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRunCiteStats:
+    """Test _run_cite_stats."""
+
+    @patch("cli.Database")
+    def test_cite_stats_paper_not_found(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.paper_exists.return_value = False
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats_paper="nonexistent")
+        result = _run_cite_stats(args)
+
+        out = capsys.readouterr().err
+        assert "not found" in out
+        assert result == 1
+
+    @patch("cli.Database")
+    def test_cite_stats_paper_shows_counts(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.paper_exists.return_value = True
+        mock_db.get_paper_title.return_value = "Test Paper"
+        mock_db.get_citation_count.return_value = {"backward": 5, "forward": 3}
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats_paper="uid1")
+        result = _run_cite_stats(args)
+
+        out = capsys.readouterr().out
+        assert "Paper: uid1" in out
+        assert "5" in out
+        assert "3" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_cite_stats_csv_format(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        # CSV path: no stats_paper, no top
+        mock_cursor = MagicMock()
+        mock_cursor.fetchone.side_effect = [(100,), (20,), (15,), (50,), (5,)]
+        mock_db.conn.cursor.return_value = mock_cursor
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats_paper=None, top=None, format="csv")
+        result = _run_cite_stats(args)
+
+        out = capsys.readouterr().out
+        assert "metric,value" in out
+        assert "total_citations,100" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_cite_stats_warp_format(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_cursor = MagicMock()
+        mock_cursor.fetchone.side_effect = [(50,), (10,), (5,), (20,), (2,)]
+        mock_cursor.fetchall.return_value = []
+        mock_db.conn.cursor.return_value = mock_cursor
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats_paper=None, top=None, format="warp")
+        result = _run_cite_stats(args)
+
+        out = capsys.readouterr().out
+        assert "\033[" in out or "Citation Statistics" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_cite_stats_top_n_papers(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_cursor = MagicMock()
+        mock_cursor.fetchone.side_effect = [(200,), (40,), (30,), (80,), (10,)]
+        mock_cursor.fetchall.return_value = [
+            ("paper1", 10),
+            ("paper2", 8),
+            ("paper3", 5),
+        ]
+        mock_db.conn.cursor.return_value = mock_cursor
+        mock_db.get_paper_title.side_effect = ["Paper One", "Paper Two", "Paper Three"]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats_paper=None, top=3, format="text")
+        result = _run_cite_stats(args)
+
+        out = capsys.readouterr().out
+        assert "paper1" in out
+        assert "paper2" in out
+        assert "paper3" in out
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_cite_stats_top_in_warp(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_cursor = MagicMock()
+        mock_cursor.fetchone.side_effect = [(0,), (0,), (0,), (0,), (0,)]
+        mock_cursor.fetchall.return_value = [
+            ("paper1", 10),
+            ("paper2", 8),
+        ]
+        mock_db.conn.cursor.return_value = mock_cursor
+        mock_db.get_paper_title.side_effect = ["Paper One", "Paper Two"]
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(stats_paper=None, top=2, format="warp")
+        result = _run_cite_stats(args)
+
+        out = capsys.readouterr().out
+        assert "\033[" in out or "Cites" in out
         assert result == 0
