@@ -19,7 +19,7 @@ def _build_citations_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--to", dest="citation_to", help="Paper ID to find citations to")
     p.add_argument(
         "--format",
-        choices=["text", "csv"],
+        choices=["text", "csv", "warp"],
         default="text",
         help="Output format (default: text)",
     )
