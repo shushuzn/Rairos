@@ -15,6 +15,10 @@ from core.retry import circuit_breaker
 # ── Persistent LLM Response Cache ────────────────────────────────────────────
 _CACHE_DIR = Path("data/llm_cache")
 
+# Cache hit/miss statistics
+_cache_hits = 0
+_cache_misses = 0
+
 
 def _get_cache_ttl() -> int:
     """Get cache TTL from environment variable, default 7 days."""
@@ -39,10 +43,12 @@ def _get_cache_path(key: str) -> Path:
 def _cache_read(key: str) -> Tuple[Optional[str], bool]:
     """Read from persistent cache. Returns (value, found).
 
-    Checks TTL before returning.
+    Checks TTL before returning. Records hit/miss statistics.
     """
+    global _cache_hits, _cache_misses
     path = _get_cache_path(key)
     if not path.exists():
+        _cache_misses += 1
         return None, False
 
     try:
@@ -52,10 +58,13 @@ def _cache_read(key: str) -> Tuple[Optional[str], bool]:
         # Check expiry
         if time.time() - entry.get("cached_at", 0) > _CACHE_TTL_SECONDS:
             path.unlink(missing_ok=True)
+            _cache_misses += 1
             return None, False
 
+        _cache_hits += 1
         return entry.get("response"), True
     except (json.JSONDecodeError, OSError):
+        _cache_misses += 1
         return None, False
 
 
@@ -102,6 +111,25 @@ def _cache_stats() -> Dict[str, int]:
         "expired": expired,
         "entries": hits + expired,
     }
+
+
+def get_cache_stats() -> Dict[str, int]:
+    """Get cache hit/miss statistics."""
+    total = _cache_hits + _cache_misses
+    hit_rate = round(_cache_hits / total * 100, 1) if total > 0 else 0.0
+    return {
+        "hits": _cache_hits,
+        "misses": _cache_misses,
+        "total": total,
+        "hit_rate": hit_rate,
+    }
+
+
+def reset_cache_stats() -> None:
+    """Reset cache hit/miss counters."""
+    global _cache_hits, _cache_misses
+    _cache_hits = 0
+    _cache_misses = 0
 
 
 def clear_llm_cache() -> None:
