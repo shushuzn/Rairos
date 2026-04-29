@@ -86,3 +86,29 @@ def print_header(message: str) -> None:
 def cmd_infer_tags_if_empty(tags: list, paper) -> list:
     """Wrapper for infer_tags_if_empty to avoid import cycle."""
     return infer_tags_if_empty(tags, paper)
+
+
+# ─── Warp-style block helpers ──────────────────────────────────────────────────
+
+def print_warp_panel(title: str, body: str, width: int = 80) -> None:
+    """Print a Warp-style panel block to stdout."""
+    from cli.warp import WarpBlocks
+    print(WarpBlocks.panel(title, body, width))
+
+
+def print_warp_code(lang: str, code: str, title: str = None, width: int = 80) -> None:
+    """Print a Warp-style code block to stdout."""
+    from cli.warp import WarpBlocks
+    print(WarpBlocks.code_block(lang, code, title, width))
+
+
+def print_warp_section(title: str, *body_lines: str, width: int = 80) -> None:
+    """Print a Warp-style section block to stdout."""
+    from cli.warp import WarpBlocks
+    print(WarpBlocks.section(title, *body_lines, width))
+
+
+def print_warp_table(headers: list, rows: list, width: int = 80) -> None:
+    """Print a Warp-style table block to stdout."""
+    from cli.warp import WarpBlocks
+    print(WarpBlocks.table(headers, rows, width))
