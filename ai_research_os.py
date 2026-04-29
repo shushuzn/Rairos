@@ -60,14 +60,14 @@ __all__ = [
     "Paper", "today_iso", "ensure_research_tree", "slugify_title", "safe_uid", "read_text", "write_text",
     # parsers
     "is_probably_doi", "normalize_doi", "normalize_arxiv_id", "fetch_arxiv_metadata", "fetch_arxiv_metadata_batch", "fetch_crossref_metadata",
-    # pdf (lazy-loaded)
-    "download_pdf", "extract_pdf_text", "extract_pdf_text_hybrid",
-    # sections (lazy-loaded)
-    "looks_like_heading", "segment_into_sections", "format_section_snippets",
-    # llm (lazy-loaded)
-    "call_llm_chat_completions", "ai_generate_pnote_draft", "ai_generate_cnote_draft",
-    # renderers (lazy-loaded)
-    "render_pnote", "render_cnote", "render_mnote",
+    # pdf (lazy-loaded)  # noqa: F822
+    "download_pdf", "extract_pdf_text", "extract_pdf_text_hybrid",  # noqa: F822
+    # sections (lazy-loaded)  # noqa: F822
+    "looks_like_heading", "segment_into_sections", "format_section_snippets",  # noqa: F822
+    # llm (lazy-loaded)  # noqa: F822
+    "call_llm_chat_completions", "ai_generate_pnote_draft", "ai_generate_cnote_draft",  # noqa: F822
+    # renderers (lazy-loaded)  # noqa: F822
+    "render_pnote", "render_cnote", "render_mnote",  # noqa: F822
     # notes
     "parse_frontmatter", "parse_tags_from_frontmatter", "parse_date_from_frontmatter",
     "collect_pnotes", "pnotes_by_tag", "wikilink_for_pnote", "read_pnote_metadata",

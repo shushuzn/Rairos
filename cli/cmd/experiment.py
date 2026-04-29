@@ -61,8 +61,10 @@ def _run_experiment(args):
             print(f"ID: {e.id}")
             print(f"Status: {e.status}")
             print(f"Created: {e.created_at}")
-            if e.roadmap_milestone: print(f"Milestone: {e.roadmap_milestone}")
-            if e.metrics: print("Metrics: " + ", ".join(f"{m.name}={m.value}" for m in e.metrics))
+            if e.roadmap_milestone:
+                print(f"Milestone: {e.roadmap_milestone}")
+            if e.metrics:
+                print("Metrics: " + ", ".join(f"{m.name}={m.value}" for m in e.metrics))
         else:
             print_error(f"Experiment [{args.id}] not found")
 
@@ -70,21 +72,27 @@ def _run_experiment(args):
         import json
         results = json.loads(args.metrics) if args.metrics else None
         e = tracker.complete(args.id, results)
-        if e: print(f"✓ Completed [{e.id}]: {e.name}")
-        else: print_error(f"Experiment [{args.id}] not found")
+        if e:
+            print(f"✓ Completed [{e.id}]: {e.name}")
+        else:
+            print_error(f"Experiment [{args.id}] not found")
 
     elif args.action == "metric":
         e = tracker.add_metric(args.id, args.name, args.value, args.unit or "")
-        if e: print(f"✓ Added metric {args.name}={args.value}{args.unit or ''} to [{e.id}]")
-        else: print_error(f"Experiment [{args.id}] not found")
+        if e:
+            print(f"✓ Added metric {args.name}={args.value}{args.unit or ''} to [{e.id}]")
+        else:
+            print_error(f"Experiment [{args.id}] not found")
 
     elif args.action == "compare":
         comp = tracker.compare(args.ids, args.metrics)
         print(tracker.render_compare(comp))
 
     elif args.action == "delete":
-        if tracker.delete(args.id): print(f"✓ Deleted [{args.id}]")
-        else: print_error(f"Experiment [{args.id}] not found")
+        if tracker.delete(args.id):
+            print(f"✓ Deleted [{args.id}]")
+        else:
+            print_error(f"Experiment [{args.id}] not found")
 
     elif args.action == "simulate":
         e = tracker.get(args.id)

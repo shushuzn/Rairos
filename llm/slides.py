@@ -220,7 +220,7 @@ class PaperSlidesGenerator:
         )]
 
         if results_sections:
-            for title, content in results_sections[:1]:
+            for _title, content in results_sections[:1]:
                 slides.append(Slide(
                     title="实验结果",
                     content=content[:600],

@@ -2,7 +2,7 @@
 import importlib
 from cli._registry import main, _main_legacy
 
-__all__ = ["main"]
+__all__ = ["main", "_main_legacy"]
 
 
 # Lazy re-exports for backward compatibility (tests and internal use).

@@ -149,7 +149,7 @@ def update_litreview(
 
     # Find and update the frontmatter
     in_frontmatter = False
-    for i, line in enumerate(lines):
+    for _i, line in enumerate(lines):
         if line.strip() == "---":
             if not in_frontmatter:
                 in_frontmatter = True
