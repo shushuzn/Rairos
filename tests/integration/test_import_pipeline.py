@@ -2,7 +2,6 @@
 
 Tests the checkpoint/resume functionality with mocked database.
 """
-import pytest
 import json
 import tempfile
 from pathlib import Path

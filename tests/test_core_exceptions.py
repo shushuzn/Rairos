@@ -1,5 +1,4 @@
 """Tests for core/exceptions.py."""
-import pytest
 from core.exceptions import (
     AIResearchOSError, PDFParseError, APIClientError, NetworkError,
     RateLimitError, PaperNotFoundError, DatabaseError, CacheError,

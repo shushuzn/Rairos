@@ -1,9 +1,8 @@
 """Tests for core/backup.py."""
 import shutil
 import sys
-import time
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))

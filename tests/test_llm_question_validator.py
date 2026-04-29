@@ -1,12 +1,10 @@
 """Tier 2 unit tests — llm/question_validator.py, pure functions, no I/O."""
-import pytest
 from llm.question_validator import (
     NoveltyLevel,
     InnovationDimension,
     RelatedWork,
     InnovationScore,
     ValidationResult,
-    QuestionValidator,
 )
 
 

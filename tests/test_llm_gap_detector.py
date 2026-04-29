@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/gap_detector.py, pure functions, no I/O."""
-import pytest
 from llm.gap_detector import (
     GapType,
     GapSeverity,

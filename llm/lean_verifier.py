@@ -715,7 +715,6 @@ def render_result_json(result: LeanVerificationResult) -> str:
 def main() -> int:
     """CLI entry point: python -m llm.lean_verifier [options] [hypothesis_text]"""
     import argparse
-    import sys
 
     parser = argparse.ArgumentParser(
         description="Verify research hypotheses in Lean 4",

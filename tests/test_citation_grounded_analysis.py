@@ -10,8 +10,7 @@ markers so the claim extraction pattern matches them.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from unittest.mock import patch
+from dataclasses import dataclass
 
 import pytest
 

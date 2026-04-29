@@ -4,7 +4,6 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-import os
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
@@ -215,9 +214,9 @@ def _run_import(args: argparse.Namespace) -> int:
     c.rule("[bold #FF8272]  Import Complete  [/]")
     c.print()
     rows = [
-        [f"[#B4FA72]✓[/]", "Added",    f"[#B4FA72]{added}[/]"],
-        [f"[#A5D5FE]○[/]", "Skipped",  f"[#A5D5FE]{skipped}[/]"],
-        [f"[#FF5555]✗[/]", "Failed",    f"[#FF5555]{total_failed}[/]"],
+        ["[#B4FA72]✓[/]", "Added",    f"[#B4FA72]{added}[/]"],
+        ["[#A5D5FE]○[/]", "Skipped",  f"[#A5D5FE]{skipped}[/]"],
+        ["[#FF5555]✗[/]", "Failed",    f"[#FF5555]{total_failed}[/]"],
     ]
     c.print(WarpBlocks.table(["", "Status", "Count"], rows, title="Import Summary"))
     if checkpoint_path:

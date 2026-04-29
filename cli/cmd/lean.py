@@ -2,10 +2,8 @@
 from __future__ import annotations
 
 import argparse
-import sys
 
 from llm.lean_verifier import (
-    LeanVerificationResult,
     LeanInstallStatus,
     VerificationLevel,
     check_lean_installed,

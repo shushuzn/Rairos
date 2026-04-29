@@ -5,9 +5,6 @@ import argparse
 import sys
 
 from cli._shared import get_db
-from cli._shared import (
-    Colors, colored, print_success, print_error, print_warning, print_info, print_header,
-)
 
 
 def _build_similar_parser(subparsers) -> argparse.ArgumentParser:
@@ -118,7 +115,9 @@ def _run_similar_text(args: argparse.Namespace) -> int:
 
 def _run_similar_view(args: argparse.Namespace) -> int:
     """Render interactive D3.js similarity graph and open in browser."""
-    import tempfile, json, webbrowser
+    import tempfile
+    import json
+    import webbrowser
     from pathlib import Path
     from viz.d3_renderer import D3ForceGraph
 

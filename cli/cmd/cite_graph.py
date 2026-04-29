@@ -5,17 +5,12 @@ import argparse
 import re
 import ssl
 import sys
-import threading
 import urllib.request
-import warnings
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
 from cli._shared import get_db
-from cli._shared import (
-    Colors, colored, print_success, print_error, print_warning, print_info, print_header,
-)
 
 _OPENALEX_BASE = "https://api.openalex.org"
 _OPENALEX_EMAIL = "ai-research-os@example.com"
@@ -378,7 +373,9 @@ def _enrich_openalex_titles(nodes: list[dict]) -> None:
 
 def _run_cite_graph_view(args: argparse.Namespace) -> int:
     """Render interactive D3.js citation graph and open in browser (or write to stdout)."""
-    import tempfile, json, webbrowser, os
+    import tempfile
+    import json
+    import webbrowser
     from pathlib import Path
 
     db = get_db()

@@ -1,7 +1,5 @@
 """Tests for core/achievements.py."""
 
-import pytest
-from datetime import datetime
 
 
 class TestAchievementSystem:

@@ -5,7 +5,6 @@ Covers the F (radar chart) and G (page heatmap) features.
 """
 from __future__ import annotations
 
-import pytest
 
 from renderers.pnote import (
     render_radar_chart,

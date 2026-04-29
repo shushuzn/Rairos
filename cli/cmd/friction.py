@@ -2,17 +2,14 @@
 from __future__ import annotations
 
 import argparse
-from typing import Optional
 
 from llm.friction_tracker import FrictionTracker, FrictionType
 
 from cli._shared import (
     Colors,
     colored,
-    print_error,
     print_info,
     print_success,
-    print_warning,
 )
 
 

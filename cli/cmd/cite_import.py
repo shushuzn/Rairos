@@ -5,12 +5,8 @@ import argparse
 import json as json_lib
 import sys
 import re as _re
-from typing import List
 
 from cli._shared import get_db
-from cli._shared import (
-    Colors, colored, print_success, print_error, print_warning, print_info, print_header,
-)
 
 
 def _extract_references_from_text(paper_id: str, text: str) -> dict[str, list[str]]:

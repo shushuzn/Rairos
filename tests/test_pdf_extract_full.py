@@ -1,25 +1,15 @@
 """Tests for pdf/extract.py."""
-import re
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
-import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from pdf.extract import (
     BlockType,
-    MathBlock,
-    StructuredPdfContent,
-    TableBlock,
-    TextBlock,
     _detect_block_type,
     _extract_inline_math,
     _is_display_math,
     _is_gibberish_or_too_short,
-    _tables_from_text,
-    extract_pdf_text,
-    extract_pdf_text_hybrid,
 )
 
 

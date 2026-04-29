@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/slides.py, pure functions, no I/O."""
-import pytest
 from llm.slides import (
     Slide,
     SlidesConfig,

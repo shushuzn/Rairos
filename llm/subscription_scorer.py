@@ -2,8 +2,7 @@
 from __future__ import annotations
 
 import logging
-import math
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List, Optional, Dict, Any
 
 logger = logging.getLogger(__name__)
@@ -138,7 +137,7 @@ class SubscriptionScorer:
             return min(0.8, overlap * 0.25)
 
         # Penalize papers with opposite signals
-        negative_terms = {"not ", "doesn't ", "doesn't ", "fail", "cannot "}
+        negative_terms = {"not ", "doesn't ", "fail", "cannot "}
         neg_hits = sum(1 for t in negative_terms if t in text)
         if neg_hits > 2:
             return 0.3

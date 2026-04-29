@@ -13,8 +13,7 @@ Color palette aligned with Warp terminal's dark theme:
 from __future__ import annotations
 
 import re
-import sys
-from typing import List, Tuple, Optional, Union
+from typing import List, Tuple, Optional
 
 try:
     from rich.console import Console, ConsoleOptions, RenderResult

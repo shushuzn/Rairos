@@ -3,7 +3,6 @@
 All hardcoded strings that span multiple modules are centralized here
 to avoid duplication and ensure consistency.
 """
-from pathlib import Path
 
 # ─── API endpoints ───────────────────────────────────────────────────────────
 ARXIV_API = "https://export.arxiv.org/api/query?id_list={arxiv_id}"

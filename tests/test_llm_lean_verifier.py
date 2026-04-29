@@ -176,7 +176,7 @@ class TestTemplateBasedTranslation:
         return defaults
 
     def _hypothesis(self, **kwargs):
-        from llm.hypothesis_generator import HypothesisType, ExperimentDesign, ResearchHypothesis
+        from llm.hypothesis_generator import ResearchHypothesis
         d = self._make_hypothesis(**kwargs)
         return ResearchHypothesis(**d)
 

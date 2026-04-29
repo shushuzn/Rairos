@@ -17,7 +17,7 @@ from typing import Optional, List
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from cli._shared import print_success, print_error, print_info, print_warning
+from cli._shared import print_success, print_error, print_info
 from cli.warp import WarpBlocks
 from llm.slides import PaperSlidesGenerator, SlidesConfig
 

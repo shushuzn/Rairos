@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/journal.py, pure functions, no I/O."""
-import pytest
 from llm.journal import JournalEntry
 
 

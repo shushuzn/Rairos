@@ -1,7 +1,5 @@
 """Tests for research journal."""
 import pytest
-import tempfile
-from pathlib import Path
 
 from llm.journal import Journal, JournalEntry
 

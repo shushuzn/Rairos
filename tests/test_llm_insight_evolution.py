@@ -1,5 +1,4 @@
 """Tier 2 unit tests — llm/insight_evolution.py, pure functions, no I/O."""
-import pytest
 from llm.insight_evolution import (
     ExplorationAction,
     PreferenceTag,

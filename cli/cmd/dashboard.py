@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 
-from cli._shared import print_info, get_db
+from cli._shared import get_db
 from llm.dashboard import Dashboard
 
 

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import argparse
-import sys
 from typing import Optional
 
 # readline is Unix-only; on Windows fall back gracefully

@@ -1,5 +1,4 @@
 """Tests for research trend analyzer."""
-import pytest
 
 from llm.trend_analyzer import (
     TrendAnalyzer,

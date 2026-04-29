@@ -3,9 +3,8 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 
-from cli._shared import print_info, print_warning
+from cli._shared import print_warning
 from llm.semantic_router import SemanticRouter
 
 

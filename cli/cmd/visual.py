@@ -8,7 +8,6 @@ Usage:
 """
 from __future__ import annotations
 
-import argparse
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -109,7 +108,7 @@ def visual_extract(pdf: str, output: str, dpi: int, format: str, save_db: str = 
         result = extractor.extract_visual_content(str(pdf_path), paper_id)
 
         # Summary
-        print_success(f"\nExtraction complete!")
+        print_success("\nExtraction complete!")
         print_info(f"  Figures: {len(result.figures)}")
         print_info(f"  Formulas: {len(result.rendered_formulas)}")
         print_info(f"  Tables: {len(result.tables_markdown)}")
@@ -232,7 +231,7 @@ def visual_query(paper_id: str, page: int, keyword: str, format: str):
             ]
 
         if not tables:
-            print_error(f"No tables match the query")
+            print_error("No tables match the query")
             sys.exit(1)
 
         print_success(f"Found {len(tables)} table(s) for paper: {paper_id}")

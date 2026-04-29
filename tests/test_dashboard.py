@@ -1,6 +1,6 @@
 """Tests for research dashboard."""
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from llm.dashboard import (
     Dashboard,

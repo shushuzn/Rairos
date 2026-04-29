@@ -10,8 +10,6 @@ import pytest
 from llm.insight_evolution import (
     EvolutionTracker,
     ExplorationAction,
-    EvolutionEvent,
-    UserPreferenceProfile,
 )
 
 

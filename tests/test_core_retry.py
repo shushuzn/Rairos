@@ -1,14 +1,13 @@
 """Tests for core/retry.py."""
 import time
-import threading
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from core.retry import (
-    retry, RetryStats, get_retry_stats, CircuitBreaker, CircuitOpen,
+    retry, RetryStats, CircuitBreaker, CircuitOpen,
     circuit_breaker,
 )
 
