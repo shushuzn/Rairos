@@ -330,6 +330,17 @@ def _build_claims_section(claims_data: Optional[Dict[str, Any]]) -> str:
     parts.append(f"| ⚠️ 未验证 | {unverified_count} | — |")
     parts.append("")
 
+    _TYPE_ICONS = {
+        "numerical":   "📊",
+        "methodology": "🔧",
+        "descriptive": "📝",
+    }
+
+    def _type_label(claim_type: str) -> str:
+        icon = _TYPE_ICONS.get(claim_type, "📝")
+        label = {"numerical": "数字类", "methodology": "方法论", "descriptive": "描述性"}.get(claim_type, "描述性")
+        return f"{icon} {label}"
+
     # Verified claims
     if claims:
         parts.append("### ✅ 已验证 Claims\n")
@@ -337,9 +348,9 @@ def _build_claims_section(claims_data: Optional[Dict[str, Any]]) -> str:
             page = c.get("page", "?")
             chunk = c.get("chunk_text", "")
             score = c.get("evidence_score", 0.0)
-            # Truncate long source chunks
-            snippet = chunk[:120] + "..." if len(chunk) > 120 else chunk
-            parts.append(f"{i}. **[Page {page}]** 证据强度 {score:.0%}  {chunk}\n")
+            ctype = c.get("claim_type", "")
+            type_str = _type_label(ctype)
+            parts.append(f"{i}. {type_str} · **[Page {page}]** 证据强度 {score:.0%}  {chunk}\n")
 
     # Unverified claims - these need attention
     if unverified:
@@ -349,9 +360,10 @@ def _build_claims_section(claims_data: Optional[Dict[str, Any]]) -> str:
             chunk = c.get("chunk_text", "")
             score = c.get("evidence_score", 0.0)
             note = c.get("verification_note", "无法在原文找到支撑文本")
-            snippet = chunk[:120] + "..." if len(chunk) > 120 else chunk
+            ctype = c.get("claim_type", "")
+            type_str = _type_label(ctype)
             parts.append(
-                f"{i}. **[Page {page}]** 证据强度 {score:.0%}  {chunk}\n"
+                f"{i}. {type_str} · **[Page {page}]** 证据强度 {score:.0%}  {chunk}\n"
                 f"   > 🔍 未验证原因：{note}\n"
             )
 
