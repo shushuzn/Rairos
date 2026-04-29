@@ -18,6 +18,7 @@ from research_loop.core import (
     arun_research,
     Metrics,
     _build_research_note,
+    warm_cache_research,
 )
 # Pipeline classes
 from research_loop.paper2code_integration import PaperPipeline
@@ -30,6 +31,7 @@ __all__ = [
     "arun_research",
     "Metrics",
     "_build_research_note",
+    "warm_cache_research",
     # Pipeline classes
     "PaperPipeline",
     "EvoSkillPipeline",

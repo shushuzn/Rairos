@@ -29,6 +29,7 @@ from core import Paper
 from core.basics import ensure_research_tree, get_default_concept_dir, safe_uid, slugify_title
 from llm.generate import ai_generate_pnote_draft, estimate_cost
 from llm.parse import parse_ai_pnote_draft, extract_rubric_scores
+from llm.client import warm_cache
 from parsers.arxiv_search import search_arxiv
 from pdf.extract import download_pdf as _download_pdf, extract_pdf_text
 from updaters.radar import flush_radar, update_radar
@@ -44,6 +45,20 @@ try:
 except Exception:
     _DEFAULT_MODEL = "gpt-4o-mini"
 DEFAULT_LLM_MODEL = _DEFAULT_MODEL
+
+# Common research queries for cache warm-up
+DEFAULT_WARM_QUERIES = [
+    "What is the main contribution of this paper?",
+    "What methodology does this paper propose?",
+    "What are the key results and findings?",
+    "How does this work compare to related approaches?",
+    "What are the limitations and future work suggestions?",
+    "Summarize the abstract in one paragraph.",
+    "What is the motivation for this research?",
+    "What datasets were used for evaluation?",
+    "What are the main hyperparameters?",
+    "Explain the architecture in detail.",
+]
 
 
 def run_research(
@@ -597,3 +612,60 @@ class Metrics:
             "llm_calls": self.llm_calls,
             "llm_cost_usd": self.llm_cost_usd,
         }
+
+
+# ─── Cache warm-up ─────────────────────────────────────────────────────────────
+
+
+def warm_cache_research(
+    queries: Optional[List[str]] = None,
+    model: str = DEFAULT_LLM_MODEL,
+    base_url: Optional[str] = None,
+    api_key: Optional[str] = None,
+    verbose: bool = False,
+) -> Dict[str, bool]:
+    """Pre-warm the LLM response cache with common research queries.
+
+    Args:
+        queries: List of research queries to pre-cache. Defaults to DEFAULT_WARM_QUERIES.
+        model: LLM model to use.
+        base_url: LLM API base URL.
+        api_key: LLM API key.
+        verbose: Print progress.
+
+    Returns:
+        Dict mapping query to success status.
+    """
+    from llm.client import get_llm_cache_size
+
+    if queries is None:
+        queries = DEFAULT_WARM_QUERIES
+
+    # Resolve API credentials
+    api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
+    base_url = base_url or os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
+
+    if not api_key:
+        if verbose:
+            print("[research] Skipping cache warm-up: no API key")
+        return {q: False for q in queries}
+
+    before = get_llm_cache_size()
+    if verbose:
+        print(f"[research] Warming cache with {len(queries)} queries...")
+
+    results = warm_cache(
+        queries=queries,
+        model=model,
+        base_url=base_url,
+        api_key=api_key,
+        system_prompt="You are a research assistant. Answer concisely.",
+    )
+
+    after = get_llm_cache_size()
+    warmed = sum(1 for v in results.values() if v)
+
+    if verbose:
+        print(f"[research] Cache warmed: {warmed}/{len(queries)} queries cached (+{after - before} entries)")
+
+    return results
