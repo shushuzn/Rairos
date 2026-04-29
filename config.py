@@ -106,7 +106,7 @@ DEFAULT_LLM_MODEL_RESEARCH: str = os.getenv("AIROS_DEFAULT_MODEL_RESEARCH", "gpt
 # ---------------------------------------------------------------------------
 # LLM API configuration
 # ---------------------------------------------------------------------------
-DEFAULT_OPENAI_BASE_URL: str = os.getenv("AIROS_DEFAULT_OPENAI_BASE_URL", "https://api.openai.com/v1")
+DEFAULT_OPENAI_BASE_URL: str = os.getenv("OPENAI_BASE_URL", os.getenv("AIROS_DEFAULT_OPENAI_BASE_URL", "https://api.openai.com/v1"))
 """Default OpenAI-compatible API base URL."""
 
 DEFAULT_LLM_TIMEOUT: int = int(os.getenv("AIROS_LLM_TIMEOUT", "180"))
