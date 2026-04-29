@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
 from cli._shared import get_db
+from cli.warp import WarpBlocks
 
 _OPENALEX_BASE = "https://api.openalex.org"
 _OPENALEX_EMAIL = "ai-research-os@example.com"
@@ -147,7 +148,7 @@ def _build_cite_graph_parser(subparsers) -> argparse.ArgumentParser:
         help="Maximum nodes per direction to show (default: 30)",
     )
     p_text.add_argument(
-        "--format", choices=["text", "mermaid", "json"], default="text",
+        "--format", choices=["text", "mermaid", "json", "warp"], default="text",
         help="Output format (default: text)",
     )
     p_text.add_argument(
@@ -278,6 +279,22 @@ def _run_cite_graph_text(args: argparse.Namespace) -> int:
     elif args.format == "json":
         import json
         print(json.dumps({"nodes": [{"id": n.paper_id, "title": n.title, "depth": n.depth, "direction": n.direction} for n in nodes.values()], "edges": [{"from": e[0], "to": e[1]} for e in edges]}, indent=2))
+    elif args.format == "warp":
+        from rich.console import Console
+        from io import StringIO
+        c = Console(file=StringIO(), force_terminal=False, width=80)
+        depth_labels = {0: "ROOT", 1: "D1", 2: "D2"}
+        dir_colors = {"root": "[#B4FA72]", "forward": "[#A5D5FE]", "backward": "[#FEFDC2]"}
+        rows = []
+        for n in sorted(nodes.values(), key=lambda x: (x.depth, x.direction)):
+            color = dir_colors.get(n.direction, "[#8E8E8E]")
+            label = depth_labels.get(n.depth, f"D{n.depth}")
+            title = n.title[:55] + "..." if n.title and len(n.title) > 55 else (n.title or "")
+            rows.append([f"{color}{n.paper_id}[/]", f"[#8E8E8E]{label}[/]", title])
+        c.print(WarpBlocks.panel(f"Citation Graph — [#FF8272]{root_id}[/]", f"[#A5D5FE]{len(nodes)}[/] nodes · [#FEFDC2]{len(edges)}[/] edges"))
+        if rows:
+            c.print(WarpBlocks.table(["Paper ID", "Depth", "Title"], rows, title=f"Nodes ({len(rows)})"))
+        print(c.file.getvalue(), end="")
     else:
         print(f"Citation graph for {root_id} (depth={args.depth}):")
         for n in sorted(nodes.values(), key=lambda x: (x.depth, x.direction)):
