@@ -100,7 +100,18 @@ class ClaudeCLIClient:
 
             if result.returncode != 0:
                 stderr = result.stderr.strip()
-                raise RuntimeError(f"Claude CLI error: {stderr}")
+                stdout_preview = result.stdout.strip()[:200]
+                # If stdout has content, the LLM call succeeded — the error
+                # is likely from a post-session hook (e.g. Bun ENOENT).  Log
+                # and continue rather than discarding the valid response.
+                if stdout_preview:
+                    import logging
+                    logging.getLogger(__name__).warning(
+                        "Claude CLI exit code %d (hook error?), using stdout: %s",
+                        result.returncode, stderr[:120],
+                    )
+                else:
+                    raise RuntimeError(f"Claude CLI error: {stderr}")
 
             # Parse JSON response to extract result
             output = result.stdout.strip()
