@@ -96,6 +96,7 @@ class CitationClaim:
     verification_note: str = ""  # Why it failed verification, if any
     evidence_score: float = 0.0  # 0.0-1.0: strength of supporting evidence
     correction_round: int = 0  # Which correction round this was verified in (0=first)
+    claim_type: str = ""  # "numerical" | "methodology" | "descriptive"
 
 
 # ── LLM prompts ──────────────────────────────────────────────────────────────
@@ -528,7 +529,41 @@ class PaperAnalyzer:
             """Combined evidence score: embedding × 0.6 + word overlap × 0.4."""
             return min(1.0, emb_sim * 0.6 + overlap * 0.4)
 
-        def _verify_block(claim_text: str, block_text: str, use_emb: bool) -> tuple[bool, float, str]:
+        # ── Claim type classification ─────────────────────────────────
+        _NUMERICAL_PATTERNS = [
+            r'\d+\.?\d*%',
+            r'\d+x',
+            r'\d+\.\d+%',
+            r'\d+倍',
+            r'(准确率|精度|提升|提高|降低|增长|超过|击败|优于)',
+            r'(accuracy|precision|recall|f1|latency|speed|throughput|improve|improve|improvement)',
+        ]
+        _METHODOLOGY_PATTERNS = [
+            r'(使用|基于|采用|提出|设计|架构|机制|方法|框架|原理)',
+            r'(architecture|mechanism|framework|approach|methodology)',
+        ]
+
+        def _classify_claim(claim_text: str) -> str:
+            """Classify a claim into: 'numerical', 'methodology', or 'descriptive'."""
+            text = claim_text.lower()
+            if any(re.search(p, text) for p in _NUMERICAL_PATTERNS):
+                return "numerical"
+            if any(re.search(p, text) for p in _METHODOLOGY_PATTERNS):
+                return "methodology"
+            return "descriptive"
+
+        # Adaptive thresholds per claim type
+        _THRESHOLDS = {
+            "numerical":    (0.75, 0.20),   # stricter: exact numbers
+            "methodology":   (0.70, 0.15),   # standard
+            "descriptive":   (0.65, 0.12),   # looser: LLM paraphrase
+        }
+        _ACCEPT_SCORE = {"numerical": 0.70, "methodology": 0.60, "descriptive": 0.55}
+
+        def _verify_block(
+            claim_text: str, block_text: str, use_emb: bool,
+            emb_thresh: float = 0.70, ovlp_thresh: float = 0.15,
+        ) -> tuple[bool, float, str]:
             """Verify claim against a single block. Returns (verified, score, note)."""
             overlap = _word_overlap(claim_text, block_text)
 
@@ -538,12 +573,13 @@ class PaperAnalyzer:
                 if claim_emb and source_emb:
                     emb_sim = _cosine_sim(claim_emb, source_emb)
                     score = _evidence_score(emb_sim, overlap)
-                    if emb_sim >= 0.7 and overlap >= 0.15:
+                    if emb_sim >= emb_thresh and overlap >= ovlp_thresh:
                         return True, score, f"emb={emb_sim:.2f}, ovlp={overlap:.2f}"
-                    if emb_sim >= 0.75:
+                    # Pure embedding fallback: very high sim even with low word match
+                    if emb_sim >= 0.78:
                         return True, score, f"partial emb={emb_sim:.2f}"
 
-            if overlap >= 0.3:
+            if overlap >= max(0.3, ovlp_thresh):
                 return True, overlap, f"ovlp={overlap:.2f}"
             shared = len(set(claim_text.lower().split()) & set(block_text.lower().split()))
             if shared >= 4:
@@ -575,11 +611,15 @@ class PaperAnalyzer:
                 seen.add(norm)
                 raw_claims.append({"text": claim_text, "page": page_ref})
 
-        # ── Round 0: initial verification ───────────────────────────
+        # ── Round 0: initial verification with adaptive thresholds ──────
         verified: List[CitationClaim] = []
         retry_queue: List[dict] = []
 
         for item in raw_claims:
+            claim_type = _classify_claim(item["text"])
+            emb_thresh, ovlp_thresh = _THRESHOLDS.get(claim_type, (0.70, 0.15))
+            accept_score = _ACCEPT_SCORE.get(claim_type, 0.60)
+
             best_score = 0.0
             best_idx = -1
             best_chunk = ""
@@ -588,11 +628,14 @@ class PaperAnalyzer:
 
             if item["page"] in page_blocks:
                 for block_idx, block_text in page_blocks[item["page"]]:
-                    ok, score, note = _verify_block(item["text"], block_text, use_embedding)
+                    ok, score, note = _verify_block(
+                        item["text"], block_text, use_embedding,
+                        emb_thresh=emb_thresh, ovlp_thresh=ovlp_thresh,
+                    )
                     if ok and score > best_score:
                         best_score, best_idx, best_chunk = score, block_idx, block_text[:200]
-                        note = score >= 0.6 and f"Verified ({note})" or f"Partial ({note})"
-                        if score >= 0.6:
+                        note = score >= accept_score and f"Verified ({note})" or f"Partial ({note})"
+                        if score >= accept_score:
                             done = True
                             break
 
@@ -600,41 +643,49 @@ class PaperAnalyzer:
                 verified.append(CitationClaim(
                     text=item["text"], page=item["page"], block_idx=best_idx,
                     chunk_text=best_chunk, verified=True, evidence_score=best_score,
-                    verification_note=note, correction_round=0,
+                    verification_note=note, correction_round=0, claim_type=claim_type,
                 ))
             else:
-                retry_queue.append({**item, "best_score": best_score, "best_chunk": best_chunk,
-                                     "best_block_idx": best_idx, "note": note})
+                retry_queue.append({
+                    **item, "best_score": best_score, "best_chunk": best_chunk,
+                    "best_block_idx": best_idx, "note": note, "claim_type": claim_type,
+                })
 
         # ── Self-correction loop: up to 2 rounds ─────────────────────
         for round_n in range(1, 3):
             still: List[dict] = []
             for item in retry_queue:
-                improved = False
+                claim_type = item["claim_type"]
+                emb_thresh, ovlp_thresh = _THRESHOLDS.get(claim_type, (0.70, 0.15))
+                accept_score = _ACCEPT_SCORE.get(claim_type, 0.60)
+
+                item_improved = False
                 for delta in [-1, 1, -2, 2]:
                     nb_page = item["page"] + delta
                     if nb_page < 0 or nb_page not in page_blocks:
                         continue
                     for block_idx, block_text in page_blocks[nb_page]:
-                        ok, score, note = _verify_block(item["text"], block_text, use_embedding)
+                        ok, score, note = _verify_block(
+                            item["text"], block_text, use_embedding,
+                            emb_thresh=emb_thresh, ovlp_thresh=ovlp_thresh,
+                        )
                         if ok and score > item["best_score"]:
                             item["best_score"] = score
                             item["best_block_idx"] = block_idx
                             item["best_chunk"] = block_text[:200]
                             item["note"] = f"cross-page [{item['page']+1}→{nb_page+1}]: {note}"
-                            improved = True
-                            if score >= 0.6:
+                            item_improved = True
+                            if score >= accept_score:
                                 break
-                    if improved and item["best_score"] >= 0.6:
+                    if item_improved and item["best_score"] >= accept_score:
                         break
 
-            for item in retry_queue:
-                if improved and item["best_score"] > 0.05:
+                if item_improved and item["best_score"] > 0.05:
                     verified.append(CitationClaim(
                         text=item["text"], page=item["page"], block_idx=item["best_block_idx"],
                         chunk_text=item["best_chunk"], verified=True, evidence_score=item["best_score"],
                         verification_note=f"Verified after correction: {item['note']}",
-                        correction_round=round_n,
+                        correction_round=round_n, claim_type=claim_type,
                     ))
                 else:
                     still.append(item)
@@ -650,7 +701,7 @@ class PaperAnalyzer:
                 text=item["text"], page=item["page"], block_idx=item["best_block_idx"],
                 chunk_text=item["best_chunk"], verified=False, evidence_score=item["best_score"],
                 verification_note=item["note"] or "No matching source text found",
-                correction_round=2,
+                correction_round=2, claim_type=item.get("claim_type", ""),
             )
             for item in retry_queue
         ]
