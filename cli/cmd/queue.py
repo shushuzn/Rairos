@@ -13,6 +13,12 @@ def _build_queue_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--dequeue", action="store_true", help="Pop next job from queue")
     p.add_argument("--cancel", metavar="JOB_ID", type=int, help="Cancel a queued job by id")
     p.add_argument("--clear", action="store_true", help="Clear all queued jobs")
+    p.add_argument(
+        "--format", "-f",
+        choices=["text", "warp"],
+        default="text",
+        help="Output format (default: text)",
+    )
     return p
 
 
@@ -23,7 +29,9 @@ def _run_queue(args: argparse.Namespace) -> int:
     if args.list:
         jobs = db.get_papers(limit=100)
         pending = [p.id for p in jobs if p.parse_status == "pending"]
-        if pending:
+        if args.format == "warp":
+            _run_queue_warp(pending, len(jobs))
+        elif pending:
             print("Pending:", ", ".join(pending))
         else:
             print("Queue empty")
@@ -49,3 +57,32 @@ def _run_queue(args: argparse.Namespace) -> int:
         print("Use --list, --dequeue, --add UID, --cancel JOB_ID, or --clear")
 
     return 0
+
+
+def _run_queue_warp(pending: list, total: int) -> None:
+    """Render queue status using Warp-style blocks."""
+    from cli.warp import WarpBlocks
+
+    blocks = []
+
+    # Header panel
+    status = "[#B4FA72]✓ Empty[#/]" if not pending else f"[#FEFDC2]{len(pending)} pending[#/]"
+    blocks.append(WarpBlocks.panel(
+        "Job Queue",
+        f"Status: {status} · {total} papers total",
+    ))
+
+    if pending:
+        rows = [[uid, "pending", "parse"] for uid in pending]
+        blocks.append(WarpBlocks.table(
+            ["Paper ID", "Status", "Job Type"],
+            rows,
+            title=f"Pending ({len(pending)})",
+        ))
+    else:
+        blocks.append(WarpBlocks.panel(
+            "Queue Empty",
+            "[#8E8E8E]No pending jobs in the queue.[#8E8E8E]",
+        ))
+
+    print("\n\n".join(blocks))
