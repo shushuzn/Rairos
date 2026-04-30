@@ -1158,6 +1158,13 @@ class TestWikilinkForPnoteTier1:
 # ---------------------------------------------------------------------------
 
 class TestCallLlmChatCompletions:
+    @pytest.fixture(autouse=True)
+    def reset_http_session(self):
+        import llm.client
+        llm.client._http_session = None
+        yield
+        llm.client._http_session = None
+
     def test_raises_on_no_api_key(self):
         with patch.dict(os.environ, {}, clear=True):
             with pytest.raises(ValueError, match="API_KEY"):
@@ -1171,16 +1178,18 @@ class TestCallLlmChatCompletions:
             "choices": [{"message": {"role": "assistant", "content": "Test response"}}]
         }
 
-        with patch("requests.Session.post", return_value=mock_response) as mock_post:
+        mock_session = MagicMock()
+        mock_session.post.return_value = mock_response
+        with patch("llm.client._get_session", return_value=mock_session):
             result = airo.call_llm_chat_completions(
                 [{"role": "user", "content": "Hello"}],
                 "gpt-4o-mini",
                 base_url="https://api.example.com/v1",
-                api_key="test-key-123"
+                api_key="test-key-123",
+                use_cache=False
             )
             assert "Test response" in result
-            # Should call the custom base_url
-            call_args = mock_post.call_args
+            call_args = mock_session.post.call_args
             assert "api.example.com" in str(call_args)
 
     def test_uses_environment_api_key(self, monkeypatch):
@@ -1191,12 +1200,15 @@ class TestCallLlmChatCompletions:
             "choices": [{"message": {"role": "assistant", "content": "Env key response"}}]
         }
 
-        with patch("requests.Session.post", return_value=mock_response):
+        mock_session = MagicMock()
+        mock_session.post.return_value = mock_response
+        with patch("llm.client._get_session", return_value=mock_session):
             result = airo.call_llm_chat_completions(
                 [{"role": "user", "content": "Hi"}],
                 "gpt-4o-mini",
                 base_url="https://api.openai.com/v1",
-                api_key=None  # should use env
+                api_key=None,
+                use_cache=False
             )
             assert "Env key response" in result
 
@@ -1209,23 +1221,24 @@ class TestCallLlmChatCompletions:
             "choices": [{"message": {"role": "assistant", "content": "Response"}}]
         }
 
-        with patch("requests.Session.post", return_value=mock_response) as mock_post:
+        mock_session = MagicMock()
+        mock_session.post.return_value = mock_response
+        with patch("llm.client._get_session", return_value=mock_session):
             result = airo.call_llm_chat_completions(
                 [{"role": "user", "content": "Hello"}],
                 "gpt-4o-mini",
                 "Say hi",
                 base_url="https://api.openai.com/v1",
                 api_key="test-key",
-                system_prompt="You are helpful."
+                system_prompt="You are helpful.",
+                use_cache=False
             )
             assert "Response" in result
-            call_kwargs = mock_post.call_args.kwargs
+            call_kwargs = mock_session.post.call_args.kwargs
             payload = call_kwargs["json"]
             messages = payload["messages"]
-            # First message should be system with system_prompt content
             assert messages[0]["role"] == "system"
             assert messages[0]["content"] == "You are helpful."
-            # Original user message should still be present
             assert any(m["role"] == "user" and "Hello" in m["content"] for m in messages)
 
     def test_system_prompt_none_not_injected(self, monkeypatch):
@@ -1237,21 +1250,22 @@ class TestCallLlmChatCompletions:
             "choices": [{"message": {"role": "assistant", "content": "Response"}}]
         }
 
-        with patch("requests.Session.post", return_value=mock_response) as mock_post:
+        mock_session = MagicMock()
+        mock_session.post.return_value = mock_response
+        with patch("llm.client._get_session", return_value=mock_session):
             _ = airo.call_llm_chat_completions(
                 [{"role": "user", "content": "Hello"}],
                 "gpt-4o-mini",
                 "Say hi",
                 base_url="https://api.openai.com/v1",
                 api_key="test-key",
-                system_prompt=None
+                system_prompt=None,
+                use_cache=False
             )
-            call_kwargs = mock_post.call_args.kwargs
+            call_kwargs = mock_session.post.call_args.kwargs
             payload = call_kwargs["json"]
             messages = payload["messages"]
-            # No system message prepended when system_prompt=None
             assert not any(m["role"] == "system" for m in messages)
-            # Original user message + the user_prompt should be present
             assert len(messages) == 2
             assert messages[0]["content"] == "Hello"
             assert messages[1]["content"] == "Say hi"
