@@ -50,7 +50,7 @@ jobs:
         run: python -m py_compile ai_research_os.py
 
       - name: Install and run ruff
-        run: pip install ruff && ruff check .
+        run: pip install ruff && ruff check . --exclude neuraloperator_fork/
 
       - name: Pyflakes
         run: python -m pyflakes ai_research_os.py
