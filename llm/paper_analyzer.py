@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import logging
 import math
+import os
 import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
@@ -597,7 +598,7 @@ class PaperAnalyzer:
                 page_blocks[block.page] = []
             page_blocks[block.page].append((idx, block.text))
 
-        use_embedding = False
+        use_embedding = os.getenv("AIROS_USE_EMBEDDING", "false").lower() in ("true", "1", "yes")
 
         # ── Extract claims with deduplication ─────────────────────────
         claim_pattern = re.compile(r"([^[]+?)\s*\[Page\s+(\d+)\]")
