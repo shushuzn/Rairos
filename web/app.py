@@ -405,6 +405,12 @@ elif page == "📊 KG Stats":
     init_kg()
     kg = st.session_state["kg"]
 
+    if st.button("Rebuild KG from DB"):
+        from kg.integration import KGIntegration
+        integ = KGIntegration(kg)
+        integ.rebuild_from_db(_get_db())
+        st.success("KG rebuilt!")
+
     stats = kg.stats()
     st.json(stats)
 
