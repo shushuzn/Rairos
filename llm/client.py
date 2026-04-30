@@ -11,6 +11,7 @@ import orjson
 import requests
 
 from core.retry import circuit_breaker
+from core.rate_limiter import rate_limited
 
 logger = logging.getLogger(__name__)
 
@@ -414,7 +415,8 @@ def call_llm_chat_completions(
         payload["messages"] = msgs + [{"role": "user", "content": user_prompt}]
 
     try:
-        r = session.post(url, headers=headers, json=payload, timeout=timeout)
+        with rate_limited("llm", config=None):
+            r = session.post(url, headers=headers, json=payload, timeout=timeout)
         r.raise_for_status()
 
         if stream:
