@@ -103,6 +103,11 @@ DEFAULT_LLM_MODEL_CLI: str = os.getenv("AIROS_DEFAULT_MODEL_CLI", "qwen3.5-plus"
 DEFAULT_LLM_MODEL_RESEARCH: str = os.getenv("AIROS_DEFAULT_MODEL_RESEARCH", "gpt-4o-mini")
 """Default LLM model used by the research loop."""
 
+DEFAULT_LLM_MODEL: str = os.getenv(
+    "DEFAULT_LLM_MODEL",
+    DEFAULT_LLM_MODEL_RESEARCH,  # fallback to gpt-4o-mini
+)
+
 # ---------------------------------------------------------------------------
 # LLM API configuration
 # ---------------------------------------------------------------------------

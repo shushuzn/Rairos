@@ -245,8 +245,8 @@ def _use_warp_cli_fallback(model: str) -> bool:
     return _get_warp_cli_client() is not None
 
 
-# Anthropic API endpoint
-ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
+# Anthropic API endpoint (override via ANTHROPIC_API_URL env for MiniMax etc.)
+ANTHROPIC_API_URL = os.getenv("ANTHROPIC_API_URL", "https://api.anthropic.com/v1/messages")
 ANTHROPIC_API_VERSION = "2023-06-01"
 
 # Detect if a model is Anthropic-native (claude-*)
@@ -509,7 +509,14 @@ def _call_anthropic_api(
             return _stream_anthropic_to_string(r)
         else:
             data = r.json()
-            result = data["content"][0]["text"]
+            # Handle content blocks - skip "thinking" type, find "text" type (MiniMax compatibility)
+            result = ""
+            for block in data.get("content", []):
+                if block.get("type") == "text":
+                    result = block.get("text", "")
+                    break
+            if not result:
+                raise RuntimeError(f"No text content in Anthropic response: {data}")
             # Cache the result for future requests
             if cache_key and use_cache:
                 _cache_write(cache_key, result)
