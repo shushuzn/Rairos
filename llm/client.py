@@ -112,7 +112,7 @@ def _cache_stats() -> Dict[str, int]:
     }
 
 
-def get_cache_stats() -> Dict[str, int]:
+def get_cache_stats() -> Dict[str, float]:
     """Get cache hit/miss statistics."""
     total = _cache_hits + _cache_misses
     hit_rate = round(_cache_hits / total * 100, 1) if total > 0 else 0.0
