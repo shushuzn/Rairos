@@ -270,3 +270,27 @@ class KGIntegration:
         self.kg.set_rebuild_meta(list(papers.keys()))
 
         logger.info(f"KG rebuild complete: {len(processed_uids)} papers processed")
+
+    def rebuild_from_db(self, db):
+        """Rebuild KG from the SQLite database (alternative to papers.json).
+
+        Args:
+            db: Database instance with list_papers() and get_tags() methods.
+        """
+        papers, total = db.list_papers(limit=10000)
+        logger.info(f"Rebuilding KG from DB: {total} papers")
+
+        for p in papers:
+            tags = db.get_tags(p.id)
+            if not tags and p.primary_category:
+                tags = [p.primary_category]
+            self.on_paper_processed(
+                paper_uid=p.id,
+                pnote_path=None,
+                paper_title=p.title,
+                paper_authors=p.authors,
+                paper_tags=tags,
+                paper_year=int(p.published[:4]) if p.published else None,
+            )
+
+        logger.info(f"KG rebuild from DB complete: {total} papers processed")
