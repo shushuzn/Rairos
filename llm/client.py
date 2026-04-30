@@ -4,7 +4,7 @@ import json
 import os
 import time
 from pathlib import Path
-from typing import Dict, Iterator, List, Optional, Tuple
+from typing import Dict, Iterator, List, Optional, Tuple, cast
 
 import orjson
 import requests
@@ -339,11 +339,11 @@ def call_llm_chat_completions(
                     combined += f"{role.upper()}: {content}\n"
                 if user_prompt:
                     combined += f"USER: {user_prompt}\n"
-                return cli.chat(
+                return cast(str, cli.chat(
                     prompt=combined,
                     model=model,
                     system_prompt=system_prompt,
-                )
+                ))
         # Fall back to direct API if key is available
         if anthropic_key:
             return _call_anthropic_api(
@@ -367,11 +367,11 @@ def call_llm_chat_completions(
                 combined += f"{role.upper()}: {content}\n"
             if user_prompt:
                 combined += f"USER: {user_prompt}\n"
-            return cli.chat(
+            return cast(str, cli.chat(
                 prompt=combined,
                 model=model,
                 system_prompt=system_prompt,
-            )
+            ))
 
     api_key = api_key or os.getenv("OPENAI_API_KEY", "")
     if not api_key:
