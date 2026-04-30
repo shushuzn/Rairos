@@ -30,6 +30,7 @@ class CacheEntry:
     size_bytes: int
     priority: int  # Higher = keep longer
     compressed: bool
+    original_size: int  # Original size before compression
     ttl: Optional[int] = None  # Time-to-live in seconds (None = use default)
 
 
@@ -95,9 +96,14 @@ class SmartCache:
                         size_bytes=meta["size_bytes"],
                         priority=meta["priority"],
                         compressed=meta["compressed"],
+                        original_size=meta.get("original_size", meta["size_bytes"]),
                         ttl=meta.get("ttl")
                     )
                     self._index[key] = entry
+
+                # Calculate total bytes saved from loaded entries
+                total_saved = sum(entry.original_size - entry.size_bytes for entry in self._index.values())
+                self._stats["bytes_saved"] = total_saved
 
                 logger.info(f"Loaded {len(self._index)} cache entries from index")
             except Exception as e:
@@ -116,6 +122,7 @@ class SmartCache:
                     "size_bytes": entry.size_bytes,
                     "priority": entry.priority,
                     "compressed": entry.compressed,
+                    "original_size": entry.original_size,
                     "ttl": entry.ttl
                 }
                 for key, entry in self._index.items()
@@ -224,6 +231,7 @@ class SmartCache:
             size_bytes=len(serialized),
             priority=priority,
             compressed=compressed,
+            original_size=original_size,
             ttl=ttl
         )
 
