@@ -194,12 +194,13 @@ def get_zilliz_store() -> ZillizStore:
         return _store
 
     uri = os.environ.get("ZILLIZ_URI")
-    token = os.environ.get("ZILLIZ_TOKEN")
+    token = os.environ.get("ZILLIZ_TOKEN", "")
 
-    if not uri or not token:
+    if not uri:
         raise ValueError(
-            "ZILLIZ_URI and ZILLIZ_TOKEN must be set. "
-            "Get them from https://cloud.zilliz.com"
+            "ZILLIZ_URI must be set. "
+            "For local Milvus: http://localhost:19530, "
+            "For Zilliz Cloud: https://xxx.zillizcloud.com:443"
         )
 
     _store = ZillizStore(uri=uri, token=token)
@@ -207,7 +208,6 @@ def get_zilliz_store() -> ZillizStore:
 
 
 def is_zilliz_configured() -> bool:
-    """Check if Zilliz is configured."""
+    """Check if Zilliz/Milvus is configured."""
     uri = os.environ.get("ZILLIZ_URI")
-    token = os.environ.get("ZILLIZ_TOKEN")
-    return bool(uri and token)
+    return bool(uri)
