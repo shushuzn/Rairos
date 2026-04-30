@@ -21,7 +21,12 @@ data/research.db-shm
 data/research.db-wal
 data/crossref/
 data/papers/
+cache/
 .env
+
+# Temp/artifact files
+0
+data/extable.db
 
 # Claude settings
 .claude/
