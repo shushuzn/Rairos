@@ -447,7 +447,6 @@ class PaperAnalyzer:
     def _extract_keywords(text: str, keywords: List[str]) -> List[str]:
         """Extract known keywords from text using word boundaries, deduplicated in order."""
         import re
-        text_lower = text.lower()
         found = []
         seen: set = set()
         for kw in keywords:
@@ -598,7 +597,7 @@ class PaperAnalyzer:
                 page_blocks[block.page] = []
             page_blocks[block.page].append((idx, block.text))
 
-        use_embedding = _get_embedding("test") is not None
+        use_embedding = False
 
         # ── Extract claims with deduplication ─────────────────────────
         claim_pattern = re.compile(r"([^[]+?)\s*\[Page\s+(\d+)\]")
