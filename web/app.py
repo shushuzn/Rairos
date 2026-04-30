@@ -329,16 +329,28 @@ elif page == "💬 Chat":
                     with st.expander("Citations"):
                         st.json(msg["citations"])
 
+        # Initialize ResearchChat with DB context
+        if "research_chat" not in st.session_state:
+            from llm.research_chat import ResearchChat
+            st.session_state["research_chat"] = ResearchChat(db=db)
+        rc = st.session_state["research_chat"]
+
         # Input
         if prompt := st.chat_input("Ask about your papers..."):
-            # Show user message
             with st.chat_message("user"):
                 st.write(prompt)
             db.add_chat_message(chat_session_id, "user", prompt)
 
-            # Generate response (placeholder — integrate with llm/research_chat.py for real AI)
             with st.chat_message("assistant"):
-                response = f"[Echo] Received: {prompt}\n\nTo enable AI responses, set OPENAI_API_KEY and integrate with llm/research_chat.py."
+                try:
+                    response = rc.chat(prompt)
+                except Exception as e:
+                    response = (
+                        f"AI call failed: {e}\n\n"
+                        "To enable AI responses, set one of:\n"
+                        "- `OPENAI_API_KEY` (+ optional `OPENAI_BASE_URL`)\n"
+                        "- `ANTHROPIC_API_KEY`"
+                    )
                 st.write(response)
                 db.add_chat_message(chat_session_id, "assistant", response)
     else:
