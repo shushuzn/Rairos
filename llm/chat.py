@@ -5,6 +5,7 @@ Provides natural language Q&A over your paper corpus with source citation.
 from __future__ import annotations
 
 import hashlib
+import logging
 import os
 import re
 from dataclasses import dataclass, field
@@ -12,12 +13,14 @@ from enum import Enum
 from typing import Any, Callable, List, Optional, Tuple
 
 import json
+import urllib.error
 import urllib.request
 
 from llm.client import call_llm_chat_completions, stream_llm_chat_completions
-from llm.constants import LLM_BASE_URL, LLM_MODEL
+from llm.constants import LLM_BASE_URL, LLM_MODEL, OLLAMA_API_EMBEDDINGS_ENDPOINT, OLLAMA_BASE_URL, OLLAMA_EMBEDDING_MODEL
 from llm.research_session import get_session_tracker
 
+logger = logging.getLogger(__name__)
 
 # LRU cache for embedding lookups (avoids redundant Ollama API calls)
 _EMBEDDING_CACHE: dict[str, Optional[List[float]]] = {}
@@ -31,7 +34,7 @@ _RETRIEVAL_CACHE_MAX = 500
 
 def _get_retrieval_cache_key(query: str, concept: Optional[str], limit: int) -> str:
     """Generate cache key for retrieval results."""
-    return hashlib.md5(f"{query.strip()}:{concept}:{limit}".encode()).hexdigest()
+    return hashlib.sha256(f"{query.strip()}:{concept}:{limit}".encode()).hexdigest()
 
 
 def _get_cached_retrieval(cache_key: str) -> Optional[List]:
@@ -55,10 +58,10 @@ def _cache_retrieval(cache_key: str, contexts: List) -> None:
     _RETRIEVAL_CACHE[cache_key] = (time.time(), contexts)
 
 
-def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optional[List[float]]:
+def _get_ollama_embedding(text: str, model: str = OLLAMA_EMBEDDING_MODEL) -> Optional[List[float]]:
     """Fetch embedding from local Ollama with LRU caching. Returns None on failure."""
     # Normalize text: lowercase, strip whitespace for consistent cache keys
-    cache_key = hashlib.md5(f"{model}:{text.strip()}".encode()).hexdigest()
+    cache_key = hashlib.sha256(f"{model}:{text.strip()}".encode()).hexdigest()
 
     # Check cache first
     if cache_key in _EMBEDDING_CACHE:
@@ -66,7 +69,7 @@ def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optiona
 
     try:
         req = urllib.request.Request(
-            "http://localhost:11434/api/embeddings",
+            f"{OLLAMA_BASE_URL}{OLLAMA_API_EMBEDDINGS_ENDPOINT}",
             data=json.dumps({"model": model, "prompt": text}).encode(),
             headers={"Content-Type": "application/json"},
             method="POST",
@@ -80,7 +83,8 @@ def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optiona
                 _EMBEDDING_CACHE.pop(next(iter(_EMBEDDING_CACHE)))
             _EMBEDDING_CACHE[cache_key] = embedding
             return embedding
-    except Exception:
+    except (urllib.error.URLError, json.JSONDecodeError, KeyError, TypeError) as e:
+        logger.debug("Embedding fetch failed for text snippet %r: %s", text[:50], e)
         _EMBEDDING_CACHE[cache_key] = None  # Cache failures too
         return None
 

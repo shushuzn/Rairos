@@ -13,6 +13,13 @@ from __future__ import annotations
 from config import DEFAULT_OPENAI_BASE_URL as LLM_BASE_URL  # noqa: F401
 from config import DEFAULT_LLM_MODEL as LLM_MODEL  # noqa: F401
 
+# ── Ollama Embedding Configuration ───────────────────────────────────────────
+
+OLLAMA_BASE_URL: str = "http://localhost:11434"
+OLLAMA_EMBEDDING_MODEL: str = "nomic-embed-text"
+OLLAMA_API_EMBEDDINGS_ENDPOINT: str = "/api/embeddings"
+ENV_AIROS_USE_EMBEDDING: str = "AIROS_USE_EMBEDDING"
+
 # ── AI/ML research keyword tracking ───────────────────────────────────────────
 
 # Supersets of terms used for keyword extraction across trend_analyzer,
