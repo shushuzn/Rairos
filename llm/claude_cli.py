@@ -11,7 +11,7 @@ Usage:
 import json
 import subprocess
 import sys
-from typing import Optional
+from typing import Optional, cast
 
 
 def _get_claude_executable() -> str:
@@ -118,7 +118,7 @@ class ClaudeCLIClient:
             try:
                 data = json.loads(output)
                 # JSON format: {"result": "...", "subtype": "success", ...}
-                return data.get("result", output)
+                return cast(str, data.get("result", output))
             except json.JSONDecodeError:
                 # Fallback: return raw output if not JSON
                 return output
