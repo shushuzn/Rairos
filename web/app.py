@@ -54,6 +54,7 @@ page = st.sidebar.radio("Go to", [
     "🔗 KG Graph",
     "📋 Experiment Tables",
     "📉 Trends",
+    "⚙️ Process",
 ])
 
 
@@ -526,3 +527,219 @@ elif page == "📉 Trends":
     if t1 and t2:
         comp = tf.compare_tags(t1, t2)
         st.json(comp)
+
+
+# ─── Process Papers ───────────────────────────────────────────────
+
+elif page == "⚙️ Process":
+    db = _get_db()
+    stats = db.get_stats()
+
+    st.subheader("Paper Processing Pipeline")
+
+    # Status overview
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Total Papers", stats["total_papers"])
+    col2.metric("Pending", stats["by_status"].get("pending", 0))
+    col3.metric("Parsed", stats["by_status"].get("parsed", 0))
+    col4.metric("Failed", stats["by_status"].get("failed", 0))
+
+    st.divider()
+
+    # ── Batch Process ────────────────────────────────────────────
+    st.subheader("Batch Process Papers")
+
+    with st.expander("Processing Options", expanded=False):
+        use_llm = st.checkbox("Use LLM for deep analysis (requires API key)", value=True)
+        if use_llm:
+            proc_api_key = st.text_input(
+                "API Key", value=st.session_state.get("ai_api_key", ""),
+                type="password", key="proc_api_key",
+            )
+            proc_base_url = st.text_input(
+                "Base URL", value=st.session_state.get("ai_base_url", "https://api.openai.com/v1"),
+                key="proc_base_url",
+            )
+            proc_model = st.text_input(
+                "Model", value=st.session_state.get("ai_model", "qwen3.5-plus"),
+                key="proc_model",
+            )
+        max_pages = st.slider("Max pages to extract", 5, 100, 30)
+
+    if st.button("🚀 Process All Pending Papers", type="primary"):
+        # Get all pending papers
+        all_papers, _ = db.list_papers(limit=1000)
+        pending = [p for p in all_papers if p.parse_status == "pending"]
+
+        if not pending:
+            st.info("No pending papers to process.")
+        else:
+            st.session_state["processing"] = True
+            st.session_state["process_results"] = []
+
+            progress = st.progress(0, text="Starting...")
+            status_area = st.status("Processing papers...", expanded=True)
+
+            from pdf.extract import download_pdf, extract_pdf_text_hybrid
+            from pathlib import Path
+            import time
+
+            cache_dir = Path("cache")
+            cache_dir.mkdir(exist_ok=True)
+
+            succeeded, failed = 0, 0
+
+            for i, paper in enumerate(pending):
+                pid = paper.id
+                status_area.write(f"**[{i+1}/{len(pending)}]** {paper.title[:60]}...")
+
+                try:
+                    # Step 1: Download PDF
+                    pdf_url = getattr(paper, "pdf_url", "") or ""
+                    if not pdf_url and pid.startswith("10."):
+                        status_area.write(f"  ⏭️ Skipping DOI paper (no direct PDF URL)")
+                        failed += 1
+                        continue
+
+                    if pdf_url:
+                        pdf_path = cache_dir / f"{pid}.pdf"
+                        if not pdf_path.exists():
+                            status_area.write(f"  📥 Downloading PDF...")
+                            download_pdf(pdf_url, pdf_path)
+                            status_area.write(f"  ✅ PDF downloaded")
+                        else:
+                            status_area.write(f"  📄 PDF already cached")
+                    else:
+                        status_area.write(f"  ⚠️ No PDF URL — trying arXiv fallback")
+                        # Try arXiv PDF URL
+                        if not pid.startswith("10."):
+                            pdf_url = f"https://arxiv.org/pdf/{pid}"
+                            pdf_path = cache_dir / f"{pid}.pdf"
+                            if not pdf_path.exists():
+                                download_pdf(pdf_url, pdf_path)
+                            status_area.write(f"  ✅ PDF downloaded from arXiv")
+                        else:
+                            failed += 1
+                            continue
+
+                    # Step 2: Extract text
+                    status_area.write(f"  📝 Extracting text...")
+                    extracted_text = extract_pdf_text_hybrid(pdf_path, max_pages=max_pages)
+                    word_count = len(extracted_text.split())
+                    status_area.write(f"  ✅ Extracted {word_count:,} words")
+
+                    # Step 3: Update DB with PDF path
+                    db.upsert_paper(
+                        paper_id=pid, source=paper.source,
+                        pdf_path=str(pdf_path),
+                    )
+
+                    # Step 4: Run pipeline (if LLM enabled)
+                    if use_llm and proc_api_key:
+                        status_area.write(f"  🧠 Running deep analysis pipeline...")
+                        from llm.postprocess import (
+                            ResearchDeepDivePipeline, PostStage, make_llm_config,
+                        )
+                        from core import Paper as PaperObj
+                        from core.basics import slugify_title
+
+                        paper_obj = PaperObj(
+                            source=getattr(paper, "source", "arxiv"),
+                            uid=pid,
+                            title=paper.title,
+                            authors=paper.authors or [],
+                            abstract=paper.abstract or "",
+                            published=paper.published or "",
+                            updated="",
+                            abs_url=getattr(paper, "abs_url", "") or "",
+                            pdf_url=pdf_url,
+                            primary_category=getattr(paper, "primary_category", "") or "",
+                        )
+
+                        # P-note path
+                        year = (paper.published or "")[:4] or str(time.localtime().tm_year)
+                        pnote_dir = Path("notes") / pid
+                        pnote_dir.mkdir(parents=True, exist_ok=True)
+                        pnote_path = pnote_dir / "P-Note.md"
+
+                        pipeline = ResearchDeepDivePipeline(db=db, data_dir=Path("."))
+                        result = pipeline.run(
+                            paper_id=pid,
+                            extracted_text=extracted_text,
+                            paper=paper_obj,
+                            tags=getattr(paper, "tags", []) or [],
+                            pnote_path=pnote_path,
+                            llm_config={
+                                "api_key": proc_api_key,
+                                "base_url": proc_base_url,
+                                "model": proc_model,
+                            },
+                        )
+                        if result.stages_completed:
+                            status_area.write(f"  ✅ Pipeline: {', '.join(result.stages_completed)}")
+                        if result.stages_failed:
+                            status_area.write(f"  ⚠️ Issues: {', '.join(result.stages_failed)}")
+                    else:
+                        # No LLM: just mark as parsed with extracted text
+                        status_area.write(f"  ℹ️ LLM disabled — text extracted only")
+
+                    # Mark as parsed
+                    db.update_parse_status(
+                        paper_id=pid,
+                        status="parsed",
+                        plain_text=extracted_text[:50000],
+                        word_count=word_count,
+                        page_count=0,
+                    )
+                    succeeded += 1
+                    st.session_state["process_results"].append({"id": pid, "status": "ok"})
+
+                except Exception as e:
+                    status_area.write(f"  ❌ Error: {e}")
+                    db.update_parse_status(pid, status="failed", error=str(e)[:200])
+                    failed += 1
+                    st.session_state["process_results"].append({"id": pid, "status": "error", "error": str(e)[:100]})
+
+                progress.progress(
+                    (i + 1) / len(pending),
+                    text=f"Processed {i+1}/{len(pending)}",
+                )
+
+            status_area.update(label=f"Done! ✅ {succeeded} succeeded, ❌ {failed} failed", state="complete")
+            progress.empty()
+            st.session_state["processing"] = False
+
+            if succeeded > 0:
+                st.success(f"Processed {succeeded} papers successfully!")
+            if failed > 0:
+                st.warning(f"{failed} papers failed processing.")
+
+    # Show last results
+    if "process_results" in st.session_state and st.session_state["process_results"]:
+        results = st.session_state["process_results"]
+        ok = [r for r in results if r["status"] == "ok"]
+        errs = [r for r in results if r["status"] == "error"]
+        if errs:
+            with st.expander(f"❌ Failed papers ({len(errs)})"):
+                for r in errs:
+                    st.write(f"**{r['id']}**: {r.get('error', 'unknown')}")
+
+    st.divider()
+
+    # ── KG Rebuild ───────────────────────────────────────────────
+    st.subheader("Knowledge Graph")
+
+    col_a, col_b = st.columns(2)
+    with col_a:
+        if st.button("🔄 Rebuild KG from DB"):
+            init_kg()
+            from kg.integration import KGIntegration
+            integ = KGIntegration(st.session_state["kg"])
+            integ.rebuild_from_db(db)
+            st.success("KG rebuilt from database!")
+
+    with col_b:
+        if st.button("📊 View KG Stats"):
+            init_kg()
+            kg_stats = st.session_state["kg"].stats()
+            st.json(kg_stats)
