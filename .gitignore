@@ -21,6 +21,7 @@ data/research.db-shm
 data/research.db-wal
 data/crossref/
 data/papers/
+data/*.pdf
 cache/
 .env
 
@@ -51,8 +52,19 @@ artifact_311.zip
 15
 48
 5
-80
 ['transformer'
 any
 1
 .git-rewrite/
+
+# Tool-specific files
+.kilo/
+.playwright-mcp/
+Output
+12}
+neuraloperator_fork/
+data/llm_cache/
+
+# Experiment files (local only)
+galerkin_experiment.py
+pino_experiment.py
