@@ -345,8 +345,10 @@ elif page == "💬 Chat":
         # Initialize ResearchChat with DB context + user settings
         if "research_chat" not in st.session_state:
             from llm.research_chat import ResearchChat
+            init_kg()
             st.session_state["research_chat"] = ResearchChat(
                 db=db,
+                kg=st.session_state.get("kg"),
                 api_key=st.session_state.get("ai_api_key"),
                 base_url=st.session_state.get("ai_base_url"),
                 model=st.session_state.get("ai_model"),

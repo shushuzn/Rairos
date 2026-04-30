@@ -44,9 +44,10 @@ class ResearchChat:
         "how", "why", "which", "this", "that", "these", "those",
     }
 
-    def __init__(self, db=None, insight_manager=None, api_key=None, base_url=None, model=None):
+    def __init__(self, db=None, insight_manager=None, kg=None, api_key=None, base_url=None, model=None):
         self.db = db
         self.insight_manager = insight_manager
+        self.kg = kg
         self.api_key = api_key
         self.base_url = base_url
         self.model = model or "qwen3.5-plus"
@@ -127,9 +128,45 @@ class ResearchChat:
         self,
         papers: List[PaperContext],
     ) -> tuple:
-        """Build paper relations (placeholder for KG integration)."""
-        # TODO: Integrate with core/kg/ for real relation building
-        return {}, {}
+        """Build paper relations from the knowledge graph."""
+        if not self.kg or not papers:
+            return {}, {}
+
+        relations: Dict[str, List[str]] = {}
+        citations: Dict[str, List[str]] = {}
+
+        for paper in papers:
+            # Find tags for this paper via same_tag edges
+            node = self.kg.get_node_by_entity("Paper", paper.uid)
+            if not node:
+                continue
+
+            edges = self.kg.get_edges_bulk([node["id"]], direction="outgoing", rel_type="same_tag")
+            tag_ids = [e["target_id"] for e in edges]
+
+            # Get tag labels
+            related_paper_uids: set[str] = set()
+            for tag_id in tag_ids:
+                tag_node = self.kg.get_nodes_bulk([tag_id]).get(tag_id)
+                if not tag_node:
+                    continue
+                # Find other papers with same tag
+                for rp in self.kg.find_papers_by_tag(tag_node["label"]):
+                    if rp["entity_id"] != paper.uid:
+                        related_paper_uids.add(rp["entity_id"])
+
+            if related_paper_uids:
+                relations[paper.uid] = list(related_paper_uids)
+
+            # Cite edges
+            cite_edges = self.kg.get_edges_bulk([node["id"]], direction="both", rel_type="cite")
+            for e in cite_edges:
+                other_id = e["target_id"] if e["source_id"] == node["id"] else e["source_id"]
+                other = self.kg.get_nodes_bulk([other_id]).get(other_id)
+                if other and other["type"] == "Paper":
+                    citations.setdefault(paper.uid, []).append(other["entity_id"])
+
+        return relations, citations
 
     # ── Query Analysis ──────────────────────────────────────
 
@@ -180,12 +217,26 @@ class ResearchChat:
             for i in ctx.insights[:3]
         ]) if ctx.insights else "No relevant insights"
 
+        # KG relations: related papers via shared tags
+        kg_info = ""
+        if ctx.relations:
+            paper_titles = {p.uid: p.title for p in ctx.papers}
+            lines = []
+            for uid, related_uids in list(ctx.relations.items())[:5]:
+                src = paper_titles.get(uid, uid)
+                related = [paper_titles.get(r, r) for r in related_uids[:3]]
+                if related:
+                    lines.append(f"- {src} is related to: {', '.join(related)}")
+            if lines:
+                kg_info = "\nKnowledge graph relations (papers sharing research topics):\n" + "\n".join(lines)
+
         return f"""You are a research assistant. Answer questions based on the user's research library.
 
 Current research focus: {ctx.topic}
 
 Relevant papers from your library:
 {papers_info}
+{kg_info}
 
 User's annotated insights:
 {insights_info}
@@ -194,7 +245,8 @@ Guidelines:
 1. Reference specific papers when making claims
 2. Synthesize information from multiple sources when possible
 3. Acknowledge gaps in the research library
-4. Suggest follow-up questions when appropriate"""
+4. Use knowledge graph relations to identify connections between papers
+5. Suggest follow-up questions when appropriate"""
 
     def _build_user_prompt(
         self,
