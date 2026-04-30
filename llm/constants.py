@@ -6,12 +6,12 @@ Shared constants across the llm module.
 
 from __future__ import annotations
 
-import os
-
-# ── LLM defaults (used by all modules that call the LLM API) ─────────────────
-
-LLM_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "gpt-4o-mini")
+# Re-export from config.py to serve as the canonical defaults for the llm/
+# sub-package.  The aliases prevent a naming conflict with the CONFIG var
+# in config.py while preserving the historical constant names used throughout
+# the llm/ sub-package.
+from config import DEFAULT_OPENAI_BASE_URL as LLM_BASE_URL  # noqa: F401
+from config import DEFAULT_LLM_MODEL as LLM_MODEL  # noqa: F401
 
 # ── AI/ML research keyword tracking ───────────────────────────────────────────
 
