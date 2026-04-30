@@ -1,6 +1,7 @@
 """LLM API client — supports OpenAI-compatible, Anthropic API, and Claude CLI."""
 import hashlib
 import json
+import logging
 import os
 import time
 from pathlib import Path
@@ -10,6 +11,8 @@ import orjson
 import requests
 
 from core.retry import circuit_breaker
+
+logger = logging.getLogger(__name__)
 
 # ── Persistent LLM Response Cache ────────────────────────────────────────────
 _CACHE_DIR = Path("data/llm_cache")
@@ -176,7 +179,8 @@ def warm_cache(
                 use_cache=True,  # Force cache write
             )
             results[query] = True
-        except Exception:
+        except Exception as e:
+            logger.warning("Failed to pre-warm cache for query %r: %s", query, e)
             results[query] = False
     return results
 
@@ -290,7 +294,7 @@ def _generate_cache_key(
         "system_prompt": system_prompt,
     }
     key_str = orjson.dumps(key_data)
-    return hashlib.md5(key_str).hexdigest()
+    return hashlib.sha256(key_str).hexdigest()
 
 
 def _parse_sse_stream(r: requests.Response) -> Iterator[str]:
