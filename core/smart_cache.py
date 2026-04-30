@@ -204,11 +204,14 @@ class SmartCache:
         serialized = orjson.dumps(data)
 
         # Check if compression is beneficial
-        compressed = len(serialized) >= self.compression_threshold_bytes
+        original_size = len(serialized)
+        compressed = original_size >= self.compression_threshold_bytes
         if compressed:
-            serialized = self._compress(serialized)
+            compressed_data = self._compress(serialized)
+            compressed_size = len(compressed_data)
+            serialized = compressed_data
             self._stats["compressions"] += 1
-            self._stats["bytes_saved"] += len(serialized) - len(serialized)
+            self._stats["bytes_saved"] += original_size - compressed_size
 
         # Create cache entry
         now = time.time()
