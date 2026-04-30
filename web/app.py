@@ -361,14 +361,14 @@ elif page == "💬 Chat":
 
             with st.chat_message("assistant"):
                 try:
-                    response = rc.chat(prompt)
+                    response = st.write_stream(rc.chat_stream(prompt))
                 except Exception as e:
                     response = (
                         f"AI call failed: {e}\n\n"
                         "Configure your API key in the sidebar under **AI Settings**,\n"
                         "or set environment variables: `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`."
                     )
-                st.write(response)
+                    st.write(response)
                 db.add_chat_message(chat_session_id, "assistant", response)
     else:
         st.info("Create or select a chat session to start.")

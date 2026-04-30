@@ -232,6 +232,40 @@ Guidelines:
             system_prompt=None,
         )
 
+    def chat_stream(
+        self,
+        query: str,
+        context: Optional[ResearchContext] = None,
+    ):
+        """Stream chat response as an iterator of content deltas."""
+        from llm.client import stream_llm_chat_completions
+
+        ctx = context or self.build_context(query)
+        query_type = self.classify_query(query)
+
+        system_prompt = self._build_system_prompt(ctx)
+        user_prompt = self._build_user_prompt(query, ctx, query_type)
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+        full_response = ""
+        for delta in stream_llm_chat_completions(
+            messages=messages,
+            model=self.model,
+            api_key=self.api_key,
+            base_url=self.base_url or "https://api.openai.com/v1",
+            system_prompt=None,
+        ):
+            yield delta
+            full_response += delta
+
+        # Store in history after streaming completes
+        self._chat_history.append({"role": "user", "content": query})
+        self._chat_history.append({"role": "assistant", "content": full_response})
+
     def get_history(self) -> List[Dict[str, str]]:
         """Get chat history."""
         return self._chat_history.copy()
