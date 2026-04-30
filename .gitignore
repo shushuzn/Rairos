@@ -17,6 +17,8 @@ AI-Research/
 ai_research.db
 data/arxiv/
 data/research.db
+data/research.db-shm
+data/research.db-wal
 data/crossref/
 data/papers/
 .env
