@@ -597,33 +597,33 @@ elif page == "⚙️ Process":
                     # Step 1: Download PDF
                     pdf_url = getattr(paper, "pdf_url", "") or ""
                     if not pdf_url and pid.startswith("10."):
-                        status_area.write(f"  ⏭️ Skipping DOI paper (no direct PDF URL)")
+                        status_area.write("  ⏭️ Skipping DOI paper (no direct PDF URL)")
                         failed += 1
                         continue
 
                     if pdf_url:
                         pdf_path = cache_dir / f"{pid}.pdf"
                         if not pdf_path.exists():
-                            status_area.write(f"  📥 Downloading PDF...")
+                            status_area.write("  📥 Downloading PDF...")
                             download_pdf(pdf_url, pdf_path)
-                            status_area.write(f"  ✅ PDF downloaded")
+                            status_area.write("  ✅ PDF downloaded")
                         else:
-                            status_area.write(f"  📄 PDF already cached")
+                            status_area.write("  📄 PDF already cached")
                     else:
-                        status_area.write(f"  ⚠️ No PDF URL — trying arXiv fallback")
+                        status_area.write("  ⚠️ No PDF URL — trying arXiv fallback")
                         # Try arXiv PDF URL
                         if not pid.startswith("10."):
                             pdf_url = f"https://arxiv.org/pdf/{pid}"
                             pdf_path = cache_dir / f"{pid}.pdf"
                             if not pdf_path.exists():
                                 download_pdf(pdf_url, pdf_path)
-                            status_area.write(f"  ✅ PDF downloaded from arXiv")
+                            status_area.write("  ✅ PDF downloaded from arXiv")
                         else:
                             failed += 1
                             continue
 
                     # Step 2: Extract text
-                    status_area.write(f"  📝 Extracting text...")
+                    status_area.write("  📝 Extracting text...")
                     extracted_text = extract_pdf_text_hybrid(pdf_path, max_pages=max_pages)
                     word_count = len(extracted_text.split())
                     status_area.write(f"  ✅ Extracted {word_count:,} words")
@@ -636,7 +636,7 @@ elif page == "⚙️ Process":
 
                     # Step 4: Run pipeline (if LLM enabled)
                     if use_llm and proc_api_key:
-                        status_area.write(f"  🧠 Running deep analysis pipeline...")
+                        status_area.write("  🧠 Running deep analysis pipeline...")
                         from llm.postprocess import (
                             ResearchDeepDivePipeline, PostStage, make_llm_config,
                         )
@@ -681,7 +681,7 @@ elif page == "⚙️ Process":
                             status_area.write(f"  ⚠️ Issues: {', '.join(result.stages_failed)}")
                     else:
                         # No LLM: just mark as parsed with extracted text
-                        status_area.write(f"  ℹ️ LLM disabled — text extracted only")
+                        status_area.write("  ℹ️ LLM disabled — text extracted only")
 
                     # Mark as parsed
                     db.update_parse_status(
