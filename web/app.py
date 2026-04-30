@@ -298,8 +298,21 @@ elif page == "📥 Import":
 elif page == "💬 Chat":
     db = _get_db()
 
-    # Session management in sidebar
+    # Session management + AI config in sidebar
     with st.sidebar:
+        st.subheader("AI Settings")
+        api_key = st.text_input("API Key", value=st.session_state.get("ai_api_key", ""), type="password", help="OpenAI or Anthropic API key")
+        base_url = st.text_input("Base URL", value=st.session_state.get("ai_base_url", "https://api.openai.com/v1"), help="OpenAI-compatible API base URL")
+        model = st.text_input("Model", value=st.session_state.get("ai_model", "qwen3.5-plus"), help="Model name (e.g. gpt-4o, qwen3.5-plus, claude-sonnet-4-20250514)")
+        if st.button("Save Settings"):
+            st.session_state["ai_api_key"] = api_key
+            st.session_state["ai_base_url"] = base_url
+            st.session_state["ai_model"] = model
+            # Reset ResearchChat so it picks up new settings
+            st.session_state.pop("research_chat", None)
+            st.success("Settings saved!")
+
+        st.divider()
         st.subheader("Chat Sessions")
         sessions = db.get_chat_sessions(limit=30)
         if sessions:
@@ -329,10 +342,15 @@ elif page == "💬 Chat":
                     with st.expander("Citations"):
                         st.json(msg["citations"])
 
-        # Initialize ResearchChat with DB context
+        # Initialize ResearchChat with DB context + user settings
         if "research_chat" not in st.session_state:
             from llm.research_chat import ResearchChat
-            st.session_state["research_chat"] = ResearchChat(db=db)
+            st.session_state["research_chat"] = ResearchChat(
+                db=db,
+                api_key=st.session_state.get("ai_api_key"),
+                base_url=st.session_state.get("ai_base_url"),
+                model=st.session_state.get("ai_model"),
+            )
         rc = st.session_state["research_chat"]
 
         # Input
@@ -347,9 +365,8 @@ elif page == "💬 Chat":
                 except Exception as e:
                     response = (
                         f"AI call failed: {e}\n\n"
-                        "To enable AI responses, set one of:\n"
-                        "- `OPENAI_API_KEY` (+ optional `OPENAI_BASE_URL`)\n"
-                        "- `ANTHROPIC_API_KEY`"
+                        "Configure your API key in the sidebar under **AI Settings**,\n"
+                        "or set environment variables: `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`."
                     )
                 st.write(response)
                 db.add_chat_message(chat_session_id, "assistant", response)

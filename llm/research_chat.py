@@ -44,9 +44,12 @@ class ResearchChat:
         "how", "why", "which", "this", "that", "these", "those",
     }
 
-    def __init__(self, db=None, insight_manager=None):
+    def __init__(self, db=None, insight_manager=None, api_key=None, base_url=None, model=None):
         self.db = db
         self.insight_manager = insight_manager
+        self.api_key = api_key
+        self.base_url = base_url
+        self.model = model or "qwen3.5-plus"
         self._chat_history: List[Dict[str, str]] = []
 
     # ── Context Building ────────────────────────────────────
@@ -223,7 +226,9 @@ Guidelines:
 
         return call_llm_chat_completions(
             messages=messages,
-            model="qwen3.5-plus",
+            model=self.model,
+            api_key=self.api_key,
+            base_url=self.base_url or "https://api.openai.com/v1",
             system_prompt=None,
         )
 
