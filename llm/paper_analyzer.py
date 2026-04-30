@@ -16,6 +16,13 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
+from llm.constants import (
+    ENV_AIROS_USE_EMBEDDING,
+    OLLAMA_API_EMBEDDINGS_ENDPOINT,
+    OLLAMA_BASE_URL,
+    OLLAMA_EMBEDDING_MODEL,
+)
+
 if TYPE_CHECKING:
     from build.lib.pdf.extract import StructuredPdfContent
 
@@ -486,6 +493,7 @@ class PaperAnalyzer:
         """
         import re
         import json
+        import urllib.error
         import urllib.request
 
         # ── Embedding helpers ──────────────────────────────────────────
@@ -498,8 +506,8 @@ class PaperAnalyzer:
                 return _embed_cache[cache_key]
             try:
                 req = urllib.request.Request(
-                    "http://localhost:11434/api/embeddings",
-                    data=json.dumps({"model": "nomic-embed-text", "prompt": text}).encode(),
+                    f"{OLLAMA_BASE_URL}{OLLAMA_API_EMBEDDINGS_ENDPOINT}",
+                    data=json.dumps({"model": OLLAMA_EMBEDDING_MODEL, "prompt": text}).encode(),
                     headers={"Content-Type": "application/json"},
                     method="POST",
                 )
@@ -509,7 +517,8 @@ class PaperAnalyzer:
                     if emb:
                         _embed_cache[cache_key] = emb
                     return emb
-            except Exception:
+            except (urllib.error.URLError, json.JSONDecodeError, KeyError, TypeError) as e:
+                logger.debug("Embedding fetch failed for text snippet %r: %s", text[:50], e)
                 return None
 
         def _cosine_sim(a: List[float], b: List[float]) -> float:
@@ -598,7 +607,7 @@ class PaperAnalyzer:
                 page_blocks[block.page] = []
             page_blocks[block.page].append((idx, block.text))
 
-        use_embedding = os.getenv("AIROS_USE_EMBEDDING", "false").lower() in ("true", "1", "yes")
+        use_embedding = os.getenv(ENV_AIROS_USE_EMBEDDING, "false").lower() in ("true", "1", "yes")
 
         # ── Extract claims with deduplication ─────────────────────────
         claim_pattern = re.compile(r"([^[]+?)\s*\[Page\s+(\d+)\]")
