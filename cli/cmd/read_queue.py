@@ -44,7 +44,7 @@ class ReadQueueScorer:
             limit=limit,
             parse_status="parsed"  # Only fully parsed papers
         )
-        return results
+        return results  # type: ignore[no-any-return]
 
     def get_read_papers_context(self, limit: int = 10) -> list[dict]:
         """Return list of dicts for LLM context."""

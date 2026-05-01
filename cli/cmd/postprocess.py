@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-from typing import Optional
+from typing import Optional, cast
 
 from cli._shared import get_db, print_info, print_error, print_success, print_warning
 from llm.postprocess import ResearchDeepDivePipeline, PostStage, make_llm_config
@@ -192,9 +192,9 @@ def _run_postprocess(args: argparse.Namespace) -> int:
         print_info(f"  + {', '.join(result.stages_completed)}")
     if result.stages_failed:
         last_errors = [
-            (result.stage_results.get(s, {}) or {}).get("error", "")[:80]
+            (cast(dict, result.stage_results).get(s, {}) or {}).get("error", "")[:80]
             for s in result.stages_failed
-            if (result.stage_results.get(s, {}) or {}).get("error")
+            if (cast(dict, result.stage_results).get(s, {}) or {}).get("error")
         ]
         for stage, err in zip(result.stages_failed, last_errors):
             print_error(f"  x {stage}: {err}")
