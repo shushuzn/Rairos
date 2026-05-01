@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.5.4 (2026-05-01)
+
+### Bug Fixes
+
+- Remove UTF-8 BOM and CRLF line endings from pyproject.toml (fixes pypa/build failure)
+- Release workflow: fix ref checkout and tag_name for workflow_dispatch trigger
+
+### CI/CD
+
+- Add ruff format check job to CI (--exclude neuraloperator_fork/)
+- Add mypy typecheck job to CI
+- Separate PyPI publish and GitHub Release into independent jobs (one failure no longer blocks the other)
+
+## v1.5.3 (2026-05-01)
+
+### CI/CD
+
+- Add GitHub Actions release workflow for PyPI + GitHub Releases
+- workflow_dispatch support for manual trigger
+- Automatic GitHub Release creation on tag push
+
 ## v1.5.2 (2026-04-28)
 
 ### Chat Export Enhancement
