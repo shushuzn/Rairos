@@ -10,7 +10,10 @@ import os
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, List, Optional, Tuple, cast
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, cast
+
+if TYPE_CHECKING:
+    from llm.evolution_report import AdaptiveRetrieval
 
 import json
 import urllib.error
@@ -272,7 +275,7 @@ class RagChat:
         self.model = model or LLM_MODEL
         self._call_llm = call_llm or call_llm_chat_completions
         # Lazy-load adaptive retrieval to avoid circular imports
-        self._adaptive = None
+        self._adaptive: "AdaptiveRetrieval | None" = None
         # Cache compiled patterns for query classification
         self._query_patterns = self._compile_query_patterns()
 
@@ -644,7 +647,7 @@ Rewrite as a standalone question (in the same language as the original question)
             return []
 
         # Build paper summaries
-        paper_summaries = {}
+        paper_summaries: Dict[str, Dict[str, Any]] = {}
         for ctx in contexts:
             if ctx.paper_id not in paper_summaries:
                 paper_summaries[ctx.paper_id] = {
@@ -822,7 +825,7 @@ Rewrite as a standalone question (in the same language as the original question)
             # If specific paper, search within that paper's content
             paper = self.db.get_paper(paper_id)
             if paper and paper.plain_text:
-                snippet = self._extract_snippet(paper.plain_text, query)
+                snippet, _, _, _ = self._extract_snippet(paper.plain_text, query)
                 if snippet:
                     contexts.append(ChatContext(
                         paper_id=paper.id,
@@ -1049,7 +1052,7 @@ Rewrite as a standalone question (in the same language as the original question)
                     n = sum(x * x for x in emb) ** 0.5
                     emb_norms[pid] = n if n > 0 else 1.0
 
-            selected = []
+            selected: List[int] = []
             remaining = list(valid_indices)
 
             # Greedy selection: pick best MMR score at each step

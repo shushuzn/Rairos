@@ -56,7 +56,7 @@ def _build_influence_parser(subparsers) -> argparse.ArgumentParser:
         default="text",
         help="Output format (default: text)",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _compute_influence(db, min_cites: int = 1) -> list[PaperInfluence]:

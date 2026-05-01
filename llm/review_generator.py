@@ -11,7 +11,7 @@ Generates comprehensive reviews with:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Tuple, Any
+from typing import List, Optional, Tuple, Any, cast
 
 
 @dataclass
@@ -112,7 +112,7 @@ class ReviewGenerator:
         if not self.db:
             return []
         rows, _ = self.db.search_papers(topic, limit=max_papers)
-        return rows
+        return cast(List[Any], rows)
 
     def _classify_streams(self, papers: List[Any]) -> List[ResearchStream]:
         """Classify papers into research streams."""

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, cast
 
 from cli.warp import WarpBlocks
 from kg import KGManager
@@ -61,7 +61,7 @@ Examples:
     vp.add_argument("--open", action="store_true", default=True, help="Open in default browser (default: on)")
     vp.add_argument("--no-open", dest="open", action="store_false", help="Write HTML to stdout instead of opening browser")
 
-    return p
+    return cast(argparse.ArgumentParser, p)
 
 
 def _run_kg(args: argparse.Namespace) -> int:
