@@ -1,7 +1,7 @@
 """Literature Review Analyzer: Analyzes papers for trends and insights."""
 from __future__ import annotations
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, cast
 from collections import defaultdict
 
 
@@ -303,7 +303,7 @@ class LitReviewAnalyzer:
         if not review:
             return None
 
-        file_path = review.get("file_path")
+        file_path = cast(str, review.get("file_path"))
         if not file_path or not os.path.exists(file_path):
             return None
 
