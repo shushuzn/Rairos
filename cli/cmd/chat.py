@@ -5,7 +5,7 @@ import argparse
 import datetime
 import os
 import warnings
-from typing import List
+from typing import List, Optional
 
 from cli._shared import get_db, Colors, colored, print_info, print_error
 
@@ -293,7 +293,7 @@ def _run_interactive(chat, args) -> int:
                             colored("导出对话？(y/n): ", Colors.OKBLUE)
                         ).strip().lower()
                         if export_choice == "y":
-                            default_path = f"chat_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+                            default_path = f"chat_export_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
                             export_chat(history, default_path, "html")
                             print(colored(f"✓ 对话已导出到 {default_path}\n", Colors.OKGREEN))
                     except (EOFError, KeyboardInterrupt):
@@ -325,7 +325,7 @@ def _run_interactive(chat, args) -> int:
                 contexts = chat._retrieve(question, args.paper, args.concept, args.limit)
                 if not contexts:
                     print_error("未找到相关论文")
-                    return
+                    return 1
 
                 from llm.client import stream_llm_chat_completions
                 from llm.chat import _RAG_SYSTEM_PROMPT
@@ -752,7 +752,7 @@ def export_chat_to_html(history: List[dict], filepath: str) -> bool:
         return False
 
 
-def export_chat(history: List[dict], filepath: str, format_hint: str = None) -> bool:
+def export_chat(history: List[dict], filepath: str, format_hint: Optional[str] = None) -> bool:
     """Export chat history to file. Auto-detects format from extension or uses hint.
 
     Args:
