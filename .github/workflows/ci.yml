@@ -44,19 +44,39 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install pyflakes requests
+        run: pip install pyflakes ruff requests
 
       - name: Syntax check
         run: python -m py_compile ai_research_os.py
 
-      - name: Install and run ruff
-        run: pip install ruff && ruff check . --exclude neuraloperator_fork/
+      - name: Ruff check
+        run: ruff check . --exclude neuraloperator_fork/
+
+      - name: Ruff format check
+        run: ruff format --check . --exclude neuraloperator_fork/
 
       - name: Pyflakes
         run: python -m pyflakes ai_research_os.py
 
       - name: Test Crossref API
         run: python -c "import requests; r=requests.get('https://api.crossref.org/works/10.1038/nature12373',timeout=15,headers={'User-Agent':'AI-Research-OS/1.0'}); r.raise_for_status(); print('Crossref OK')"
+
+  typecheck:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install mypy
+        run: pip install mypy
+
+      - name: Run mypy
+        run: python -m mypy core parsers llm db --ignore-missing-imports
 
   test-pytest:
     runs-on: ubuntu-22.04
@@ -133,7 +153,15 @@ jobs:
           merge-multiple: true
 
       - name: Combine and report
+        id: report
         run: |
           python -m coverage combine coverage-reports/
           python -m coverage report --format=term-missing | tail -3
           python -m coverage report --format=term-missing | grep "^TOTAL"
+          TOTAL=$(python -m coverage report --format=term-missing | grep "^TOTAL" | awk '{print $4}' | tr -d '%')
+          echo "Coverage: ${TOTAL}%"
+          echo "coverage_pct=${TOTAL}" >> $GITHUB_OUTPUT
+
+    outputs:
+      coverage_pct: ${{ steps.report.outputs.coverage_pct }}
+
