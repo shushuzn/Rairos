@@ -50,7 +50,7 @@ def _build_path_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Interactive exploration mode",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_path(args: argparse.Namespace) -> int:

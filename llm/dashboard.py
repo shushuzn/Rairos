@@ -103,7 +103,7 @@ class Dashboard:
                 id=q.id,
                 question=q.question,
                 status=q.status,
-                priority=q.priority,
+                priority=str(q.priority),
                 hypotheses_count=hypotheses_count,
                 roadmap_id=roadmap_id,
             ))
@@ -135,8 +135,8 @@ class Dashboard:
         # Gap type preferences
         try:
             from llm.insight_evolution import EvolutionTracker
-            tracker = EvolutionTracker()
-            profile = tracker.get_profile()
+            evolution_tracker = EvolutionTracker()
+            profile = evolution_tracker.get_profile()
             if profile and profile.total_events > 0:
                 prefs = profile.gap_type_preferences or {}
                 kw_prefs = profile.keyword_preferences or {}
