@@ -65,7 +65,7 @@ def _build_chat_parser(subparsers) -> argparse.ArgumentParser:
         "--session", "-s", metavar="ID",
         help="Continue from a saved chat session",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_chat(args: argparse.Namespace) -> int:

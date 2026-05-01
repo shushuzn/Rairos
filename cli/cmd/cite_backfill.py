@@ -302,4 +302,4 @@ def _build_cite_backfill_parser(subparsers) -> argparse.ArgumentParser:
         default=5,
         help="Number of parallel workers (default: 5)",
     )
-    return p
+    return p  # type: ignore[no-any-return]

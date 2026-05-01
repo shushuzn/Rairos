@@ -45,13 +45,13 @@ def _build_route_parser(subparsers) -> argparse.ArgumentParser:
         default=None,
         help="LLM model for classification (default: qwen3.5-plus)",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_route(args: argparse.Namespace) -> int:
     if not args.query:
         print_warning("Usage: airos route <query>")
-        return 1
+        return 1  # type: ignore[no-any-return]
 
     query = " ".join(args.query)
     router = SemanticRouter(model=args.model)
@@ -60,13 +60,13 @@ def _run_route(args: argparse.Namespace) -> int:
         route = router.route(query)
     except Exception as e:
         print_warning(f"Routing failed: {e}")
-        return 1
+        return 1  # type: ignore[no-any-return]
 
     exec_all = args.all or args.exec
 
     if args.json:
         print(json.dumps(route.to_dict(), indent=2, ensure_ascii=False))
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     # Human-readable output
     _print_route(route, query)

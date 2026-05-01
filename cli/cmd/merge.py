@@ -46,7 +46,7 @@ def _build_merge_parser(subparsers) -> argparse.ArgumentParser:
     )
     p.add_argument("target_id", metavar="TARGET_ID", nargs="?", help="ID of the paper to keep")
     p.add_argument("duplicate_id", metavar="DUPLICATE_ID", nargs="?", help="ID of the duplicate paper to absorb and delete")
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_merge(args: argparse.Namespace) -> int:

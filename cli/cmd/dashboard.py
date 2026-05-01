@@ -44,7 +44,7 @@ def _build_dashboard_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Skip paper statistics (faster)",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_dashboard(args: argparse.Namespace) -> int:

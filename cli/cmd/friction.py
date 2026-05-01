@@ -44,7 +44,7 @@ def _build_friction_parser(subparsers) -> argparse.ArgumentParser:
         default=20,
         help="Max events to show (default: 20)",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def run(args: argparse.Namespace) -> int:
@@ -66,7 +66,7 @@ def run(args: argparse.Namespace) -> int:
     if args.json:
         import json
         print(json.dumps({"summary": summary, "events": [e.to_dict() for e in events]}, indent=2))
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     # Human-readable output
     print()

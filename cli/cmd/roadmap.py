@@ -35,7 +35,7 @@ def _build_roadmap_parser(subparsers) -> argparse.ArgumentParser:
         type=str,
         help="Export as Markdown file",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_roadmap(args: argparse.Namespace) -> int:
@@ -55,12 +55,12 @@ def _run_roadmap(args: argparse.Namespace) -> int:
             question_id = q.id
         else:
             print_error(f"问题 [{args.question}] 不存在")
-            return 1
+            return 1  # type: ignore[no-any-return]
     elif args.text:
         question_text = args.text
     else:
         print_error("请提供 --question <id> 或 --text <问题>")
-        return 1
+        return 1  # type: ignore[no-any-return]
 
     print_info("📋 生成研究路线图...")
 

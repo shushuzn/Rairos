@@ -38,7 +38,7 @@ def _build_session_parser(subparsers) -> argparse.ArgumentParser:
     sp.add_argument("query", nargs="*", help="Initial query (optional)")
     sp.add_argument("--topic", help="Override topic context")
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_session(args: argparse.Namespace) -> int:
@@ -71,7 +71,7 @@ def _session_start(tracker: ResearchSessionTracker, args) -> int:
     if args.topic:
         print(f"   主题: {args.topic}")
 
-    return 0
+    return 0  # type: ignore[no-any-return]
 
 
 def _session_list(tracker: ResearchSessionTracker, args) -> int:
@@ -83,7 +83,7 @@ def _session_list(tracker: ResearchSessionTracker, args) -> int:
 
     if not sessions:
         c.print(WarpBlocks.panel("Sessions", "[#8E8E8E]No recent sessions found[/]"))
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     intent_names = {
         ResearchIntent.LEARNING: "LEARNING",

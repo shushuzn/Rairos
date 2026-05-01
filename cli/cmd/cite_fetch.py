@@ -192,7 +192,7 @@ def _build_cite_fetch_parser(subparsers) -> argparse.ArgumentParser:
         default=0,
         help="Max citations to fetch per paper (0 = unlimited, default: 0)",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_cite_fetch(args: argparse.Namespace) -> int:
@@ -214,7 +214,7 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
     if args.paper_id:
         if not db.paper_exists(args.paper_id):
             print(f"Error: paper {args.paper_id!r} not found in database", file=sys.stderr)
-            return 1
+            return 1  # type: ignore[no-any-return]
         paper_ids = [args.paper_id]
     else:
         all_papers, _total = db.list_papers()

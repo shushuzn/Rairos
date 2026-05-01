@@ -99,13 +99,13 @@ def _run_kg(args: argparse.Namespace) -> int:
             print("\nEdges by relation:")
             for rtype, cnt in sorted(stats["edges_by_type"].items()):
                 print(f"  {rtype:12s}: {cnt:6d}")
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     elif args.kg_cmd == "graph":
         paper_node = kg.get_node_by_entity("Paper", args.paper_id)
         if paper_node is None:
             print(f"Paper '{args.paper_id}' not found in KG.")
-            return 1
+            return 1  # type: ignore[no-any-return]
         neighbors = kg.find_neighbors(paper_node["id"], depth=args.depth)
         if args.format == "json":
             out = {

@@ -47,7 +47,7 @@ Examples:
 
     p.add_argument("--order", choices=["asc", "desc"], default="desc", help="Sort order")
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_list(args: argparse.Namespace) -> int:

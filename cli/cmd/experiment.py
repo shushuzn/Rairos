@@ -41,7 +41,7 @@ def _build_experiment_parser(subparsers):
     p_simulate.add_argument("id", help="Experiment ID")
     p_simulate.add_argument("result", choices=["success", "fail"], help="Simulated outcome")
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 def _run_experiment(args):
     tracker = ExperimentTracker()

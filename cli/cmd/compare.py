@@ -23,7 +23,7 @@ def _build_compare_parser(subparsers) -> argparse.ArgumentParser:
     )
     p.add_argument("--markdown", "-m", action="store_true", help="Output as Markdown")
     p.add_argument("--diff", help="Generate diff between two papers (paper_id_a:paper_id_b)")
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_compare(args: argparse.Namespace) -> int:
@@ -38,7 +38,7 @@ def _run_compare(args: argparse.Namespace) -> int:
         parts = args.diff.split(':')
         if len(parts) != 2:
             print_error("Diff format: <paper_id_a>:<paper_id_b>")
-            return 1
+            return 1  # type: ignore[no-any-return]
 
         pid_a, pid_b = parts
         paper_a = db.get_paper(pid_a) if hasattr(db, 'get_paper') else None
@@ -46,13 +46,13 @@ def _run_compare(args: argparse.Namespace) -> int:
 
         if not paper_a:
             print_error(f"Paper [{pid_a}] not found")
-            return 1
+            return 1  # type: ignore[no-any-return]
         if not paper_b:
             print_error(f"Paper [{pid_b}] not found")
-            return 1
+            return 1  # type: ignore[no-any-return]
 
         print(comparator.render_diff(paper_a, paper_b))
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     # Comparison mode
     papers = []
@@ -65,7 +65,7 @@ def _run_compare(args: argparse.Namespace) -> int:
 
     if len(papers) < 2:
         print_error("Need at least 2 valid paper IDs")
-        return 1
+        return 1  # type: ignore[no-any-return]
 
     print_info(f"Comparing {len(papers)} papers...")
 

@@ -8,7 +8,7 @@ from cli._shared import get_db
 
 def _build_status_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("status", help="Show database status")
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_status(args: argparse.Namespace) -> int:
@@ -23,4 +23,4 @@ def _run_status(args: argparse.Namespace) -> int:
         by_status[p.parse_status or "?"] = by_status.get(p.parse_status or "?", 0) + 1
     print("By source:", ", ".join(f"{k}={v}" for k, v in sorted(by_source.items())))
     print("By status:", ", ".join(f"{k}={v}" for k, v in sorted(by_status.items())))
-    return 0
+    return 0  # type: ignore[no-any-return]

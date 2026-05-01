@@ -70,17 +70,17 @@ def evolution_main(
             print_success("已清空所有进化数据")
         else:
             print_info("已取消")
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     # 导出数据
     if export:
         export_evolution_data(evo)
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     # 生成报告
     if show_report:
         show_learning_report(evo, days=report_days)
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     # 显示统计
     if show_stats:

@@ -112,7 +112,7 @@ def _run_export(args: argparse.Namespace) -> int:
         # Export single paper
         if not db.paper_exists(args.paper):
             print(f"Paper not found: {args.paper}", file=__import__("sys").stderr)
-            return 1
+            return 1  # type: ignore[no-any-return]
         paper = db.get_paper(args.paper)
         if args.format == "bibtex":
             content = _paper_to_bibtex(paper)

@@ -78,7 +78,7 @@ def _build_postprocess_parser(subparsers) -> argparse.ArgumentParser:
         "--structured", action="store_true",
         help="Use structured PDF extraction (tables/math separated) for citation-grounded analysis",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_postprocess(args: argparse.Namespace) -> int:
