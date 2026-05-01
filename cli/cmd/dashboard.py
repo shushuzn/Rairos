@@ -60,7 +60,8 @@ def _run_dashboard(args: argparse.Namespace) -> int:
     elif args.export_md:
         # Markdown export
         lines = ["# Research Dashboard", ""]
-        lines.append(f"Generated: {data.generated_at[:10]}", "")
+        lines.append(f"Generated: {data.generated_at[:10]}")
+        lines.append("")
         lines.append(dashboard.render_text(data))
         with open(args.export_md, 'w', encoding='utf-8') as f:
             f.write('\n'.join(lines))
