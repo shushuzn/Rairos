@@ -420,7 +420,7 @@ class GapDetector:
 
     def _parse_questions(self, response: str, gaps: List[ResearchGap]) -> List[ResearchQuestion]:
         """Parse LLM response into ResearchQuestion objects."""
-        questions = []
+        questions: List[ResearchQuestion] = []
         default_gap = gaps[0] if gaps else None
         if not default_gap:
             return questions
