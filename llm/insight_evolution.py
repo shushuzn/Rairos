@@ -538,7 +538,7 @@ class EvolutionTracker:
 
         # Action breakdown
         if recent:
-            action_counts = {}
+            action_counts: Dict[str, int] = {}
             for e in recent:
                 action_counts[e.action.value] = action_counts.get(e.action.value, 0) + 1
             stats["recent_action_breakdown"] = action_counts

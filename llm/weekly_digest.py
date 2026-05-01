@@ -3,7 +3,7 @@ Weekly Digest: Generate weekly research summaries.
 """
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import List
+from typing import Dict, List
 
 
 @dataclass
@@ -44,8 +44,8 @@ class WeeklyDigest:
         week_data.journal_entries = len(entries)
 
         # Mood breakdown
-        mood_count = {}
-        tag_count = {}
+        mood_count: Dict[str, int] = {}
+        tag_count: Dict[str, int] = {}
         for e in entries:
             if e.mood:
                 mood_count[e.mood] = mood_count.get(e.mood, 0) + 1

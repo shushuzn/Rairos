@@ -11,7 +11,7 @@ Generates structured research plans with:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Dict
+from typing import List, Dict, Optional
 from datetime import datetime
 
 
@@ -105,7 +105,7 @@ class RoadmapGenerator:
         self,
         question: str,
         question_id: str = "",
-        custom_phases: List[Dict] = None,
+        custom_phases: Optional[List[Dict]] = None,
     ) -> ResearchRoadmap:
         """
         Generate a research roadmap.
