@@ -22,6 +22,9 @@ class InsightCard:
     page_ref: str = ""
     created_at: str = ""
     references: List[str] = field(default_factory=list)  # other card_ids
+    quality_rating: int = 0   # 1-5 stars, 0 = unrated
+    usefulness_score: float = 0.0  # accumulated weighted score from feedback
+    times_rated: int = 0      # how many times rated
 
 
 @dataclass
@@ -100,6 +103,9 @@ class InsightManager:
             "page_ref": card.page_ref,
             "created_at": card.created_at,
             "references": card.references,
+            "quality_rating": card.quality_rating,
+            "usefulness_score": card.usefulness_score,
+            "times_rated": card.times_rated,
         })
 
         self._save_cards(data)
@@ -134,6 +140,59 @@ class InsightManager:
                 return True
         return False
 
+    def rate_card(self, card_id: str, rating: int) -> bool:
+        """Rate a card with 1-5 stars. Records rating history for score accumulation."""
+        if not 1 <= rating <= 5:
+            return False
+
+        data = self._load_cards()
+        for item in data:
+            if item["card_id"] == card_id:
+                times_rated = item.get("times_rated", 0)
+
+                # Accumulate using exponential moving average
+                if times_rated > 0:
+                    item["usefulness_score"] = round(
+                        (item.get("usefulness_score", 0.0) * times_rated + rating) / (times_rated + 1), 3
+                    )
+                else:
+                    item["usefulness_score"] = float(rating)
+
+                item["quality_rating"] = rating
+                item["times_rated"] = times_rated + 1
+
+                self._save_cards(data)
+                return True
+        return False
+
+    def like_card(self, card_id: str) -> bool:
+        """Shortcut: mark a card as useful (5-star)."""
+        return self.rate_card(card_id, 5)
+
+    def dislike_card(self, card_id: str) -> bool:
+        """Shortcut: mark a card as not useful (1-star)."""
+        return self.rate_card(card_id, 1)
+
+    def get_high_quality_cards(self, min_rating: int = 4, min_scores: int = 1) -> List[InsightCard]:
+        """Return cards with high quality rating (useful for evolution validation)."""
+        data = self._load_cards()
+        results = []
+        for item in data:
+            if item.get("quality_rating", 0) >= min_rating and item.get("times_rated", 0) >= min_scores:
+                results.append(InsightCard(**item))
+        results.sort(key=lambda x: x.usefulness_score, reverse=True)
+        return results
+
+    def get_low_quality_cards(self, max_rating: int = 2, min_scores: int = 1) -> List[InsightCard]:
+        """Return cards marked as low quality (useful for learning what to avoid)."""
+        data = self._load_cards()
+        results = []
+        for item in data:
+            if 0 < item.get("quality_rating", 0) <= max_rating and item.get("times_rated", 0) >= min_scores:
+                results.append(InsightCard(**item))
+        results.sort(key=lambda x: x.usefulness_score)
+        return results
+
     def add_reference(self, from_card_id: str, to_card_id: str) -> bool:
         """Add a reference from one card to another."""
         data = self._load_cards()
@@ -157,28 +216,23 @@ class InsightManager:
         results = []
 
         for item in data:
-            # Filter by query
             if query:
                 q = query.lower()
                 if q not in item["content"].lower() and q not in item["paper_title"].lower():
                     continue
 
-            # Filter by tags
             if tags:
                 if not any(t in item["tags"] for t in tags):
                     continue
 
-            # Filter by type
             if insight_type and item["insight_type"] != insight_type:
                 continue
 
-            # Filter by paper
             if paper_id and item["paper_id"] != paper_id:
                 continue
 
             results.append(InsightCard(**item))
 
-        # Sort by creation date
         results.sort(key=lambda x: x.created_at, reverse=True)
         return results
 
@@ -236,7 +290,6 @@ class InsightManager:
         """Extract potential insights from paper text using heuristics."""
         cards = []
 
-        # Extract key claims (sentences with numbers and comparisons)
         patterns = [
             r"improved by\s+(\d+\.?\d*)%",
             r"achieved\s+(\d+\.?\d*)%",
@@ -250,8 +303,6 @@ class InsightManager:
                 context_start = max(0, match.start() - 100)
                 context_end = min(len(text), match.end() + 100)
                 context = text[context_start:context_end].strip()
-
-                # Clean up whitespace
                 context = re.sub(r'\s+', ' ', context)
 
                 if len(context) > 20:
@@ -286,6 +337,9 @@ class InsightManager:
             lines.append(f"   {card.content[:100]}")
             if card.tags:
                 lines.append(f"   Tags: {', '.join(card.tags)}")
+            if card.quality_rating > 0:
+                stars = "★" * card.quality_rating + "☆" * (5 - card.quality_rating)
+                lines.append(f"   Rating: {stars} ({card.usefulness_score:.2f}, {card.times_rated} vote{'s' if card.times_rated != 1 else ''})")
             lines.append("")
 
         lines.append(f"Total: {len(cards)} cards")
@@ -299,7 +353,6 @@ class InsightManager:
         if not cards:
             return "\n".join(lines) + "\nNo cards found."
 
-        # Group by paper
         by_paper: Dict[str, List[InsightCard]] = {}
         for card in cards:
             if card.paper_id not in by_paper:
@@ -321,6 +374,10 @@ class InsightManager:
                 lines.append(f"### {type_icon} {card.insight_type.capitalize()}")
 
                 lines.append(f"{card.content}\n")
+
+                if card.quality_rating > 0:
+                    stars = "★" * card.quality_rating + "☆" * (5 - card.quality_rating)
+                    lines.append(f"**Rating:** {stars} ({card.usefulness_score:.2f}/5)\n")
 
                 if card.evidence:
                     lines.append(f"> Evidence: {card.evidence}\n")
