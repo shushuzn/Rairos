@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, cast
 
 # 可选依赖：python-pptx
 try:
@@ -130,14 +130,15 @@ class PaperSlidesGenerator:
                 continue
 
             # 提取关键内容
+            paper_dict = cast(Dict[str, Any], paper)
             content = {
                 "id": pid,
-                "title": paper.get("title", ""),
-                "authors": paper.get("authors", ""),
-                "abstract": paper.get("abstract", ""),
-                "year": paper.get("published", "")[:4] if paper.get("published") else "",
-                "tags": paper.get("tags", []),
-                "plain_text": paper.get("plain_text", ""),
+                "title": paper_dict.get("title", ""),
+                "authors": paper_dict.get("authors", ""),
+                "abstract": paper_dict.get("abstract", ""),
+                "year": (paper_dict.get("published") or "")[:4] if paper_dict.get("published") else "",
+                "tags": paper_dict.get("tags", []),
+                "plain_text": paper_dict.get("plain_text", ""),
             }
 
             # 如果有全文，提取关键章节

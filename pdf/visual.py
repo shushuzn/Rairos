@@ -105,9 +105,9 @@ class VisualExtractor:
         _ensure_deps()
         import fitz
 
-        pdf_path = Path(pdf_path)
-        paper_id = paper_id or pdf_path.stem
-        doc = fitz.open(str(pdf_path))
+        pdf_path_obj = Path(pdf_path)
+        paper_id = paper_id or pdf_path_obj.stem
+        doc = fitz.open(str(pdf_path_obj))
 
         visual = VisualContent(paper_id=paper_id, output_dir=self.output_dir)
 
@@ -186,6 +186,7 @@ class VisualExtractor:
         display_pattern = re.compile(r'\$\$([^\$]+)\$\$')
 
         # Extract text with bbox info
+        assert _fitz is not None, "Call _ensure_deps() first"
         page_dict = page.get_text("dict", flags=_fitz.TEXTFLAGS_BLOCKS)
 
         for block in page_dict.get("blocks", []):
@@ -204,7 +205,7 @@ class VisualExtractor:
                         is_display=True,
                         page=page_idx,
                     )
-                    if self.output_dir and self._Image:
+                    if self.output_dir and _Image:
                         formula.image_path = self._render_latex_image(
                             formula.latex, page_idx, paper_id, is_display=True
                         )
@@ -237,7 +238,7 @@ class VisualExtractor:
                 import matplotlib.pyplot as plt
 
                 fig = plt.figure(figsize=(4, 0.8) if not is_display else (6, 1))
-                ax = fig.add_axes([0, 0, 1, 1])
+                ax = fig.add_axes((0, 0, 1, 1))
                 ax.text(0.5, 0.5, f"${latex}$", fontsize=12,
                        ha='center', va='center', transform=ax.transAxes)
                 ax.axis('off')
@@ -323,7 +324,8 @@ class VisualExtractor:
     def _find_caption_near(self, page, bbox: tuple, max_distance: float = 50) -> str:
         """Find caption text near a figure or table."""
         try:
-            page_dict = page.get_text("dict", flags=fitz.TEXTFLAGS_BLOCKS)
+            assert _fitz is not None, "Call _ensure_deps() first"
+            page_dict = page.get_text("dict", flags=_fitz.TEXTFLAGS_BLOCKS)
 
             (bbox[0] + bbox[2]) / 2
             y_bottom = bbox[3]
