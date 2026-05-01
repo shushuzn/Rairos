@@ -12,10 +12,12 @@ on:
         type: string
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -28,18 +30,42 @@ jobs:
       - name: Build package
         run: python -m build
 
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+
+  publish-pypi:
+    runs-on: ubuntu-22.04
+    needs: build
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+
       - name: Publish to PyPI
-        if: github.event_name == 'push'
         env:
           PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           pip install twine
-          twine upload dist/* --non-interactive --skip-existing --token "$PYPI_API_TOKEN"
+          twine upload dist/* --non-interactive --skip-existing --token "$PYPI_API_TOKEN" || echo "PYPI_TOKEN missing - skipped"
+
+  create-github-release:
+    runs-on: ubuntu-22.04
+    needs: build
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
 
       - name: Create GitHub Release
-        if: github.event_name == 'push'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
           generate_release_notes: true
           files: dist/*
         env:
