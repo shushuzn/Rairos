@@ -1,4 +1,6 @@
 """Tier 2 unit tests — llm/trend_analyzer.py, pure functions, no I/O."""
+
+from typing import Any
 from llm.trend_analyzer import (
     TrendDirection,
     YearlyStats,
@@ -124,11 +126,13 @@ class TestComputeYearlyStats:
         """Replicate _compute_yearly_stats logic."""
         from collections import defaultdict
 
-        yearly_data = defaultdict(lambda: {
-            "count": 0,
-            "citations": 0,
-            "keywords": defaultdict(int),
-        })
+        yearly_data: dict[int, dict[str, Any]] = defaultdict(
+            lambda: {
+                "count": 0,
+                "citations": 0,
+                "keywords": defaultdict(int),
+            }
+        )
 
         for paper in papers:
             year = paper.get("year", 0)
@@ -144,13 +148,15 @@ class TestComputeYearlyStats:
         stats = []
         for year in range(year_range[0], year_range[1] + 1):
             data = yearly_data[year]
-            stats.append(YearlyStats(
-                year=year,
-                paper_count=data["count"],
-                total_citations=data["citations"],
-                avg_citations=data["citations"] / data["count"] if data["count"] > 0 else 0,
-                keywords=dict(data["keywords"]),
-            ))
+            stats.append(
+                YearlyStats(
+                    year=year,
+                    paper_count=data["count"],
+                    total_citations=data["citations"],
+                    avg_citations=data["citations"] / data["count"] if data["count"] > 0 else 0,
+                    keywords=dict(data["keywords"]),
+                )
+            )
 
         return stats
 
@@ -448,7 +454,11 @@ class TestRenderResult:
         if result.rising_trends:
             lines.append("🔥 上升趋势:")
             for trend in result.rising_trends[:5]:
-                growth_str = f"+{trend.growth_rate:.0f}%" if trend.growth_rate >= 0 else f"{trend.growth_rate:.0f}%"
+                growth_str = (
+                    f"+{trend.growth_rate:.0f}%"
+                    if trend.growth_rate >= 0
+                    else f"{trend.growth_rate:.0f}%"
+                )
                 lines.append(f"   ↑ {trend.keyword}: {growth_str} ({trend.current_year_count}篇)")
             lines.append("")
 
@@ -461,7 +471,9 @@ class TestRenderResult:
         if result.falling_trends:
             lines.append("📉 下降趋势:")
             for trend in result.falling_trends[:5]:
-                lines.append(f"   ↓ {trend.keyword}: {trend.growth_rate:.0f}% ({trend.current_year_count}篇)")
+                lines.append(
+                    f"   ↓ {trend.keyword}: {trend.growth_rate:.0f}% ({trend.current_year_count}篇)"
+                )
             lines.append("")
 
         return "\n".join(lines)
@@ -481,7 +493,9 @@ class TestRenderResult:
 
     def test_header_contains_growth_rate(self):
         """Header shows growth rate with sign."""
-        result = TrendAnalysisResult(topic="T", year_range=(2020, 2025), total_papers=0, growth_rate=50.0)
+        result = TrendAnalysisResult(
+            topic="T", year_range=(2020, 2025), total_papers=0, growth_rate=50.0
+        )
         output = self._render_result(result)
         assert "+50.0%" in output
 
@@ -489,7 +503,9 @@ class TestRenderResult:
         """Yearly distribution section rendered."""
         stats = [YearlyStats(year=2023, paper_count=50, total_citations=0, avg_citations=0)]
         result = TrendAnalysisResult(
-            topic="T", year_range=(2023, 2023), total_papers=50,
+            topic="T",
+            year_range=(2023, 2023),
+            total_papers=50,
             yearly_distribution=stats,
         )
         output = self._render_result(result)
@@ -500,7 +516,9 @@ class TestRenderResult:
         """Bar chart uses █ character."""
         stats = [YearlyStats(year=2023, paper_count=5, total_citations=0, avg_citations=0)]
         result = TrendAnalysisResult(
-            topic="T", year_range=(2023, 2023), total_papers=5,
+            topic="T",
+            year_range=(2023, 2023),
+            total_papers=5,
             yearly_distribution=stats,
         )
         output = self._render_result(result)
@@ -517,7 +535,9 @@ class TestRenderResult:
             current_year_count=20,
         )
         result = TrendAnalysisResult(
-            topic="T", year_range=(2023, 2023), total_papers=20,
+            topic="T",
+            year_range=(2023, 2023),
+            total_papers=20,
             rising_trends=[trend],
         )
         output = self._render_result(result)
@@ -536,7 +556,9 @@ class TestRenderResult:
             current_year_count=15,
         )
         result = TrendAnalysisResult(
-            topic="T", year_range=(2023, 2023), total_papers=15,
+            topic="T",
+            year_range=(2023, 2023),
+            total_papers=15,
             emerging_trends=[trend],
         )
         output = self._render_result(result)
@@ -554,7 +576,9 @@ class TestRenderResult:
             current_year_count=5,
         )
         result = TrendAnalysisResult(
-            topic="T", year_range=(2023, 2023), total_papers=5,
+            topic="T",
+            year_range=(2023, 2023),
+            total_papers=5,
             falling_trends=[trend],
         )
         output = self._render_result(result)
@@ -591,7 +615,9 @@ class TestRenderMermaidTimeline:
                 start_year = min(yearly.keys())
                 end_year = max(yearly.keys())
                 status = "active" if trend.direction == TrendDirection.EMERGING else "done"
-                lines.append(f"    {trend.keyword} ({status}) :t{start_year}, {end_year - start_year + 1}y")
+                lines.append(
+                    f"    {trend.keyword} ({status}) :t{start_year}, {end_year - start_year + 1}y"
+                )
 
         return "\n".join(lines)
 
@@ -622,7 +648,9 @@ class TestRenderMermaidTimeline:
             current_year_count=15,
         )
         result = TrendAnalysisResult(
-            topic="T", year_range=(2020, 2025), total_papers=20,
+            topic="T",
+            year_range=(2020, 2025),
+            total_papers=20,
             emerging_trends=[trend],
         )
         output = self._render_mermaid_timeline(result)
@@ -640,7 +668,9 @@ class TestRenderMermaidTimeline:
             current_year_count=50,
         )
         result = TrendAnalysisResult(
-            topic="T", year_range=(2020, 2025), total_papers=60,
+            topic="T",
+            year_range=(2020, 2025),
+            total_papers=60,
             rising_trends=[trend],
         )
         output = self._render_mermaid_timeline(result)
@@ -657,7 +687,9 @@ class TestRenderMermaidTimeline:
             current_year_count=3,
         )
         result = TrendAnalysisResult(
-            topic="T", year_range=(2020, 2025), total_papers=6,
+            topic="T",
+            year_range=(2020, 2025),
+            total_papers=6,
             rising_trends=[trend],
         )
         output = self._render_mermaid_timeline(result)
@@ -678,7 +710,9 @@ class TestRenderMermaidTimeline:
             for i in range(5)
         ]
         result = TrendAnalysisResult(
-            topic="T", year_range=(2020, 2025), total_papers=10,
+            topic="T",
+            year_range=(2020, 2025),
+            total_papers=10,
             emerging_trends=trends,
         )
         output = self._render_mermaid_timeline(result)
@@ -712,7 +746,7 @@ class TestRenderMermaidTimelineV2:
             "xychart-beta",
             f'    title "{result.topic} - Keyword Trends"',
             f"    x-axis [{', '.join(str(y) for y in year_range)}]",
-            "    y-axis \"Papers\" 0 --> 50",
+            '    y-axis "Papers" 0 --> 50',
             "",
             "    bar",
         ]
@@ -740,7 +774,9 @@ class TestRenderMermaidTimelineV2:
             current_year_count=20,
         )
         result = TrendAnalysisResult(
-            topic="NLP", year_range=(2020, 2025), total_papers=30,
+            topic="NLP",
+            year_range=(2020, 2025),
+            total_papers=30,
             rising_trends=[trend],
         )
         output = self._render_mermaid_timeline_v2(result)
@@ -758,7 +794,9 @@ class TestRenderMermaidTimelineV2:
             current_year_count=20,
         )
         result = TrendAnalysisResult(
-            topic="T", year_range=(2019, 2023), total_papers=35,
+            topic="T",
+            year_range=(2019, 2023),
+            total_papers=35,
             rising_trends=[trend],
         )
         output = self._render_mermaid_timeline_v2(result)
@@ -776,7 +814,9 @@ class TestRenderMermaidTimelineV2:
             current_year_count=15,
         )
         result = TrendAnalysisResult(
-            topic="T", year_range=(2022, 2023), total_papers=20,
+            topic="T",
+            year_range=(2022, 2023),
+            total_papers=20,
             rising_trends=[trend],
         )
         output = self._render_mermaid_timeline_v2(result)
@@ -801,7 +841,9 @@ class TestRenderMermaidTimelineV2:
             current_year_count=3,
         )
         result = TrendAnalysisResult(
-            topic="T", year_range=(2023, 2023), total_papers=5,
+            topic="T",
+            year_range=(2023, 2023),
+            total_papers=5,
             rising_trends=[rising] * 5,
             emerging_trends=[emerging] * 5,
         )
