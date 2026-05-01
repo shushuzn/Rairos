@@ -270,7 +270,7 @@ class HypothesisGenerator:
                 id=str(uuid.uuid4())[:8],
                 title=f"假说 {i+1}: {topic} 研究",
                 hypothesis_type=cast(HypothesisType, template_info["type"]),
-                core_statement=self._fill_template(template, topic, gap_context),
+                core_statement=self._fill_template(cast(str, template), topic, gap_context),
                 based_on=f"基于{gap_type.replace('_', ' ')}类型",
                 gap_type=gap_type,
                 experiment_design=ExperimentDesign(
