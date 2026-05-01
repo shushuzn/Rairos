@@ -5,7 +5,7 @@ import argparse
 import importlib
 import logging
 import sys
-from typing import List, Optional
+from typing import List, Optional, cast
 
 from pathlib import Path
 
@@ -206,7 +206,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     }
     if args.subcmd in dispatch:
         import cli as _cli
-        return getattr(_cli, dispatch[args.subcmd])(args)
+        func = getattr(_cli, dispatch[args.subcmd])  # type: ignore[assignment]
+        return cast(int, func(args))
     elif args.subcmd == "watch":
         from core.watch_papers import watch_and_rebuild
         watch_and_rebuild(
@@ -226,7 +227,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return slides_cmd.main(args.argv if hasattr(args, "argv") else [])
     elif args.subcmd == "evolution":
         from cli.cmd.evolution import evolution_main
-        return evolution_main(
+        return cast(int, evolution_main(
             show_stats=args.stats,
             show_patterns=args.patterns,
             show_feedback=args.feedback,
@@ -235,13 +236,13 @@ def main(argv: Optional[List[str]] = None) -> int:
             report_days=args.days,
             clear=args.clear,
             export=args.export,
-        )
+        ))
     elif args.subcmd == "visual":
         from cli.cmd.visual import _show_visual_status
-        return _show_visual_status()
+        return cast(int, _show_visual_status())
     elif args.subcmd == "repl":
         import cli as _cli
-        return _cli._run_repl(args)
+        return cast(int, _cli._run_repl(args))
     return 0
 
 
