@@ -145,7 +145,7 @@ class ResearchGap:
 class ResearchQuestion:
     """A generated research question."""
     question: str
-    gap: ResearchGap  # 来源的空白
+    gap: Optional[ResearchGap]  # 来源的空白
     hypothesis: str = ""  # 研究假设
     methodology_suggestion: str = ""  # 方法建议
     expected_impact: str = ""  # 预期影响
@@ -422,8 +422,6 @@ class GapDetector:
         """Parse LLM response into ResearchQuestion objects."""
         questions: List[ResearchQuestion] = []
         default_gap = gaps[0] if gaps else None
-        if not default_gap:
-            return questions
 
         for line in response.strip().split('\n'):
             line = line.strip()

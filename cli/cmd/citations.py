@@ -137,6 +137,6 @@ def _run_citations(args: argparse.Namespace) -> int:
                 "No Citations",
 "[#8E8E8E]This paper has no citations in the database[/]"
             ))
-            print(c.file.getvalue(), end="")  # type: ignore[union-attr,attr-defined]
+        print(c.file.getvalue(), end="")  # type: ignore[union-attr,attr-defined]
 
     return 0
