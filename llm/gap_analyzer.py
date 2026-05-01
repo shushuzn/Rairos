@@ -186,7 +186,7 @@ class GapAnalyzerV2(GapDetector):
             gap.sub_questions = self._generate_sub_questions(gap)
 
         # 7. Calculate statistics
-        gaps_by_type = {}
+        gaps_by_type: Dict[GapType, int] = {}
         for gap in enhanced_gaps:
             gaps_by_type[gap.gap_type] = gaps_by_type.get(gap.gap_type, 0) + 1
 
