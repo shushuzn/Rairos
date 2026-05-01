@@ -73,7 +73,7 @@ def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optiona
         )
         with urllib.request.urlopen(req, timeout=60) as resp:
             data = json.loads(resp.read())
-            return data.get("embedding")
+            return data.get("embedding")  # type: ignore[no-any-return]
     except Exception as e:
         print(f"  [WARN] Ollama embedding failed: {e}", file=sys.stderr)
         return None

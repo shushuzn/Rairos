@@ -269,8 +269,8 @@ def _render_compare_warp(result, comparator: BenchmarkComparator) -> None:
         groups[(m.benchmark_name, m.metric_name)].extend(m.entries)
 
     for (bench_name, metric_name), entries in groups.items():
-        direction = "↑" if comparator._is_higher_better(metric_name) else "↓"
-        direction_label = "[#B4FA72]higher better[/]" if comparator._is_higher_better(metric_name) else "[#FF5555]lower better[/]"
+        direction = "↑" if comparator._is_higher_better(metric_name) else "↓"  # type: ignore[attr-defined]
+        direction_label = "[#B4FA72]higher better[/]" if comparator._is_higher_better(metric_name) else "[#FF5555]lower better[/]"  # type: ignore[attr-defined]
 
         # Build table rows
         rows = []

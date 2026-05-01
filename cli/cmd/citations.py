@@ -98,7 +98,7 @@ def _run_citations(args: argparse.Namespace) -> int:
                 f"Citation Bridge — [#FF8272]{paper_from}[/] ↔ [#FF8272]{paper_to}[/]",
                 "\n".join(body_lines)
 ))
-            print(c.file.getvalue(), end="")  # type: ignore[union-attr]
+            print(c.file.getvalue(), end="")  # type: ignore[union-attr,attr-defined]
         return 0
 
     # Single-direction mode
@@ -137,6 +137,6 @@ def _run_citations(args: argparse.Namespace) -> int:
                 "No Citations",
 "[#8E8E8E]This paper has no citations in the database[/]"
             ))
-            print(c.file.getvalue(), end="")  # type: ignore[union-attr]
+            print(c.file.getvalue(), end="")  # type: ignore[union-attr,attr-defined]
 
     return 0

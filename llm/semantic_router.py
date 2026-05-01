@@ -8,7 +8,7 @@ import math
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from llm.client import call_llm_chat_completions
 
@@ -417,7 +417,7 @@ def _dispatch_command(subcmd: str, args: argparse.Namespace) -> None:
     from cli import _run_insight, _run_narrative, _run_ask
     from cli import _run_search, _run_chat
 
-    dispatch: Dict[str, callable] = {
+    dispatch: Dict[str, Callable] = {
         "gap":          _run_gap,
         "hypothesize":  _run_hypothesize,
         "experiment":   _run_experiment,

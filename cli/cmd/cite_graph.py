@@ -36,7 +36,7 @@ def _openalex_request(path: str, timeout: int = 15) -> dict:
     try:
         import orjson as json
         with opener.open(req, timeout=timeout) as resp:
-            return json.loads(resp.read())
+            return json.loads(resp.read())  # type: ignore[no-any-return]
     except Exception as e:
         raise RuntimeError(f"OpenAlex request failed for {path}: {e}") from e
 
@@ -294,7 +294,7 @@ def _run_cite_graph_text(args: argparse.Namespace) -> int:
         c.print(WarpBlocks.panel(f"Citation Graph — [#FF8272]{root_id}[/]", f"[#A5D5FE]{len(nodes)}[/] nodes · [#FEFDC2]{len(edges)}[/] edges"))
         if rows:
             c.print(WarpBlocks.table(["Paper ID", "Depth", "Title"], rows, title=f"Nodes ({len(rows)})"))
-        print(c.file.getvalue(), end="")  # type: ignore[union-attr]
+        print(c.file.getvalue(), end="")  # type: ignore[union-attr,attr-defined]
     else:
         print(f"Citation graph for {root_id} (depth={args.depth}):")
         for n in sorted(nodes.values(), key=lambda x: (x.depth, x.direction)):
