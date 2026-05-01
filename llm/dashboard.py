@@ -271,11 +271,11 @@ class Dashboard:
 
     def _build_summary(self, data: DashboardData) -> Dict[str, Any]:
         """Build summary statistics."""
-        questions_by_status = {}
+        questions_by_status: Dict[str, int] = {}
         for q in data.questions:
             questions_by_status[q.status] = questions_by_status.get(q.status, 0) + 1
 
-        experiments_by_status = {}
+        experiments_by_status: Dict[str, int] = {}
         for e in data.experiments:
             experiments_by_status[e.status] = experiments_by_status.get(e.status, 0) + 1
 
@@ -363,7 +363,7 @@ class Dashboard:
         if not data.questions:
             lines.append("  (none)")
         else:
-            q_by_status = {}
+            q_by_status: Dict[str, List[Any]] = {}
             for q in data.questions:
                 status = q.status or "unknown"
                 q_by_status.setdefault(status, []).append(q)
@@ -382,7 +382,7 @@ class Dashboard:
         if not data.experiments:
             lines.append("  (none)")
         else:
-            e_by_status = {}
+            e_by_status: Dict[str, List[Any]] = {}
             for e in data.experiments:
                 e_by_status.setdefault(e.status, []).append(e)
 
