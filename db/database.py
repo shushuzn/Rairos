@@ -901,6 +901,20 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"cancel_job({job_id}) failed: {e}") from e
 
+    def get_queue_jobs(self, limit: int = 100) -> List[sqlite3.Row]:
+        """Fetch queued/running jobs from job_queue table. Returns list of Row objects."""
+        try:
+            cur = self.conn.cursor()
+            cur.execute(
+                "SELECT id, paper_id, job_type, priority, status, created_at "
+                "FROM job_queue WHERE status IN ('queued', 'running') "
+                "ORDER BY priority DESC, created_at ASC LIMIT ?",
+                (limit,),
+            )
+            return list(cur.fetchall())
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_queue_jobs failed: {e}") from e
+
     # ── Settings ─────────────────────────────────────────────────────────────
 
     def set_setting(self, key: str, value: str) -> None:
