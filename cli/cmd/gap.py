@@ -83,7 +83,7 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Show gap_type preference evolution timeline",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_gap(args: argparse.Namespace) -> int:

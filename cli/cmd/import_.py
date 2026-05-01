@@ -61,7 +61,7 @@ def _load_checkpoint(checkpoint_path: Path) -> dict:
         return {"version": CHECKPOINT_VERSION, "processed": [], "failed": [], "total": 0}
     try:
         with open(checkpoint_path, encoding="utf-8") as f:
-            return json.load(f)
+            return json.load(f)  # type: ignore[no-any-return]
     except (json.JSONDecodeError, IOError):
         return {"version": CHECKPOINT_VERSION, "processed": [], "failed": [], "total": 0}
 
@@ -117,7 +117,7 @@ def _run_import(args: argparse.Namespace) -> int:
         if args.file == "-":
             _source = _io.StringIO(sys.stdin.read())
         else:
-            _source = cast(IO[str], open(args.file, encoding="utf-8"))
+            _source = cast(IO[str], open(args.file, encoding="utf-8"))  # type: ignore[assignment]
         try:
             raw = _source.read()
         finally:

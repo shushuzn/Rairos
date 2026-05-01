@@ -222,7 +222,7 @@ class StoryWeaver:
                     "year": getattr(row, 'year', 0) or 0,
                     "citations": getattr(row, 'citations', 0) or 0,
                 }
-                if paper["year"] > 2000:
+                if int(paper["year"]) > 2000:
                     papers.append(paper)
         except Exception:
             # Paper enrichment is optional — return partial results without crashing.
