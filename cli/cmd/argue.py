@@ -5,7 +5,7 @@ import argparse
 
 from cli._shared import get_db, print_info
 from llm.insight_evolution import EvolutionTracker, ExplorationAction
-from llm.argument_builder import ArgumentBuilder, render_argument
+from llm.argument_builder import ArgumentBuilder, ArgumentResult, render_argument
 
 
 def _build_argue_parser(subparsers) -> argparse.ArgumentParser:
@@ -117,7 +117,7 @@ def _run_argue(args: argparse.Namespace) -> int:
     return 0
 
 
-def _build_argument(db, thesis: str, args) -> "ArgumentResult":
+def _build_argument(db, thesis: str, args) -> ArgumentResult:
     """Build argument from thesis."""
     from llm.insight_cards import InsightManager
     from llm.gap_analyzer import GapAnalyzerV2
