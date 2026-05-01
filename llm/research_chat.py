@@ -1,6 +1,6 @@
 """Research Chat: AI research assistant with context awareness."""
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, cast
 from enum import Enum
 
 
@@ -276,13 +276,13 @@ Guidelines:
             {"role": "user", "content": user_prompt},
         ]
 
-        return call_llm_chat_completions(
+        return cast(str, call_llm_chat_completions(
             messages=messages,
             model=self.model,
             api_key=self.api_key,
             base_url=self.base_url or "https://api.openai.com/v1",
             system_prompt=None,
-        )
+        ))
 
     def chat_stream(
         self,
