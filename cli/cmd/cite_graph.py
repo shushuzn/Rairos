@@ -294,7 +294,7 @@ def _run_cite_graph_text(args: argparse.Namespace) -> int:
         c.print(WarpBlocks.panel(f"Citation Graph — [#FF8272]{root_id}[/]", f"[#A5D5FE]{len(nodes)}[/] nodes · [#FEFDC2]{len(edges)}[/] edges"))
         if rows:
             c.print(WarpBlocks.table(["Paper ID", "Depth", "Title"], rows, title=f"Nodes ({len(rows)})"))
-        print(c.file.getvalue(), end="")
+        print(c.file.getvalue(), end="")  # type: ignore[union-attr]
     else:
         print(f"Citation graph for {root_id} (depth={args.depth}):")
         for n in sorted(nodes.values(), key=lambda x: (x.depth, x.direction)):

@@ -97,8 +97,8 @@ def _run_citations(args: argparse.Namespace) -> int:
             c.print(WarpBlocks.panel(
                 f"Citation Bridge — [#FF8272]{paper_from}[/] ↔ [#FF8272]{paper_to}[/]",
                 "\n".join(body_lines)
-            ))
-            print(c.file.getvalue(), end="")
+))
+            print(c.file.getvalue(), end="")  # type: ignore[union-attr]
         return 0
 
     # Single-direction mode
@@ -135,8 +135,8 @@ def _run_citations(args: argparse.Namespace) -> int:
         else:
             c.print(WarpBlocks.panel(
                 "No Citations",
-                "[#8E8E8E]This paper has no citations in the database[/]"
+"[#8E8E8E]This paper has no citations in the database[/]"
             ))
-        print(c.file.getvalue(), end="")
+            print(c.file.getvalue(), end="")  # type: ignore[union-attr]
 
     return 0
