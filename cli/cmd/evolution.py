@@ -58,7 +58,7 @@ def evolution_main(
     report_days: int = 7,
     clear: bool = False,
     export: bool = False,
-):
+) -> int:
     """Main evolution dashboard entry point."""
     evo = get_evolution_memory()
 
