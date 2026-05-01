@@ -11,6 +11,7 @@ from __future__ import annotations
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -96,7 +97,7 @@ def _show_visual_status():
     ))
 
 
-def visual_extract(pdf: str, output: str, dpi: int, format: str, save_db: str = None):
+def visual_extract(pdf: str, output: str, dpi: int, format: str, save_db: Optional[str] = None):
     """Extract figures, formulas, and tables from PDF."""
     pdf_path = Path(pdf)
 

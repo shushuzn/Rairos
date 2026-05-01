@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import sys
 from pathlib import Path
+from typing import Optional
 
 from notes.keyword_tags import infer_tags_if_empty
 
@@ -95,7 +96,7 @@ def print_warp_panel(title: str, body: str, width: int = 80) -> None:
     print(WarpBlocks.panel(title, body, width))
 
 
-def print_warp_code(lang: str, code: str, title: str = None, width: int = 80) -> None:
+def print_warp_code(lang: str, code: str, title: Optional[str] = None, width: int = 80) -> None:
     """Print a Warp-style code block to stdout."""
     from cli.warp import WarpBlocks
     print(WarpBlocks.code_block(lang, code, title, width))

@@ -107,8 +107,8 @@ def slides_main(
         c.rule("[bold #FF8272]  Slides Generated  [/]")
         c.print()
         rows = [
-            ["Papers", f"[#A5D5FE]{result['paper_count']}[/]"],
-            ["Slides", f"[#B4FA72]{result['slide_count']}[/]"],
+            ["Papers", f"[#A5D5FE]{result.paper_count}[/]"],
+            ["Slides", f"[#B4FA72]{result.slide_count}[/]"],
             ["Template", f"[#D0D1FE]{template}[/]"],
             ["Format", f"[#D0D1FE]{fmt}[/]"],
         ]
@@ -116,7 +116,7 @@ def slides_main(
         c.print()
         print(WarpBlocks.panel(
             "Output File",
-            f"[#B4FA72]{result['output_path']}[/]"
+            f"[#B4FA72]{result.output_path}[/]"
         ))
     except Exception as e:
         print_error(f"生成失败: {e}")
@@ -203,7 +203,7 @@ def select_papers_from_db(db) -> List[str]:
 @click.option("--lang", default="zh", type=click.Choice(["zh", "en", "bilingual"]))
 def slides(
     arxiv_ids: tuple,
-    list: bool,
+    list_mode: bool,
     interactive: bool,
     format: str,
     template: str,
@@ -214,7 +214,7 @@ def slides(
 ):
     """从论文自动生成演示文稿."""
     slides_main(
-        list(arxiv_ids), list, interactive,
+        list(arxiv_ids), list_mode, interactive,
         format, template, slides, output, include_notes, lang
     )
 
