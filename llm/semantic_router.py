@@ -241,8 +241,10 @@ def _route_by_embedding(query: str) -> Route:
             _CAPABILITY_DESCRIPTIONS[qt] for qt in QueryType
         ]
         embeddings = _get_ollama_embedding_batch(texts)
+        if not embeddings or embeddings[0] is None:
+            return Route(query_type=QueryType.GENERAL, score=0.0, route="general")
         query_emb = embeddings[0]
-        cap_embs  = embeddings[1:]
+        cap_embs = [e for e in embeddings[1:] if e is not None]
 
         scores: List[float] = [
             _cosine_sim(query_emb, emb) for emb in cap_embs
