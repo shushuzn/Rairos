@@ -61,7 +61,7 @@ Examples:
     vp.add_argument("--open", action="store_true", default=True, help="Open in default browser (default: on)")
     vp.add_argument("--no-open", dest="open", action="store_false", help="Write HTML to stdout instead of opening browser")
 
-    return cast(argparse.ArgumentParser, p)
+    return p  # type: ignore[no-any-return]
 
 
 def _run_kg(args: argparse.Namespace) -> int:
