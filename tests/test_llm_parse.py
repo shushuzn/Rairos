@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/parse.py, pure functions, no I/O."""
+
 from llm.parse import (
     _parse_rubric,
     _parse_rubric_json,
@@ -54,11 +55,11 @@ class TestParseRubricJson:
 # =============================================================================
 class TestParseRubric:
     def test_extracts_from_xml_block(self):
-        raw = '''<!--
+        raw = """<!--
 <RUBRIC>
 {"novelty": 4, "leverage": 5, "evidence": 3}
 </RUBRIC>
--->'''
+-->"""
         result = _parse_rubric(raw)
         assert result["novelty"] == 4
         assert result["leverage"] == 5
@@ -115,13 +116,13 @@ class TestParseRubric:
 
     def test_mixed_block_and_fallback_prefers_block(self):
         # XML block is parsed first (primary path)
-        raw = '''<!--
+        raw = """<!--
 <RUBRIC>
 {"novelty": 9}
 </RUBRIC>
 -->
 novelty: 3 (1-5)
-'''
+"""
         result = _parse_rubric(raw)
         assert result["novelty"] == 9  # block value wins, not fallback
 
@@ -235,9 +236,9 @@ class TestExtractRubricScores:
     def test_returns_only_valid_scores(self):
         rubric = {
             "novelty": 3,
-            "leverage": 6,   # out of range
+            "leverage": 6,  # out of range
             "evidence": 1,
-            "cost": 0,       # out of range
+            "cost": 0,  # out of range
             "moat": 4,
             "adoption": 5,
         }
@@ -249,8 +250,8 @@ class TestExtractRubricScores:
 
     def test_ignores_non_integer_values(self):
         rubric = {
-            "novelty": "three",   # string, not int
-            "leverage": 4.5,      # float, not int
+            "novelty": "three",  # string, not int
+            "leverage": 4.5,  # float, not int
             "evidence": 3,
         }
         result = extract_rubric_scores(rubric)

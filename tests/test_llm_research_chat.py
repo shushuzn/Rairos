@@ -1,6 +1,10 @@
 """Tier 2 unit tests — llm/research_chat.py, pure functions, no I/O."""
+
 from llm.research_chat import (
-    QueryType, PaperContext, ResearchContext, ResearchChat,
+    QueryType,
+    PaperContext,
+    ResearchContext,
+    ResearchChat,
 )
 
 
@@ -28,9 +32,11 @@ class TestPaperContext:
 
     def test_required_fields(self):
         p = PaperContext(
-            uid="p001", title="Attention Is All You Need",
+            uid="p001",
+            title="Attention Is All You Need",
             abstract="A new neural network architecture",
-            authors=["Vaswani"], year=2017,
+            authors=["Vaswani"],
+            year=2017,
         )
         assert p.uid == "p001"
         assert p.title == "Attention Is All You Need"
@@ -60,8 +66,10 @@ class TestResearchContext:
     def test_with_data(self):
         paper = PaperContext(uid="p001", title="T", abstract="A", authors=[], year=0)
         ctx = ResearchContext(
-            topic="nlp", papers=[paper],
-            insights=["insight1"], relations={"p001": ["p002"]},
+            topic="nlp",
+            papers=[paper],
+            insights=["insight1"],
+            relations={"p001": ["p002"]},
         )
         assert len(ctx.papers) == 1
         assert len(ctx.insights) == 1
@@ -197,7 +205,9 @@ class TestClassifyQuery:
         assert self.chat.classify_query("what causes this phenomenon?") == QueryType.INFERENTIAL
 
     def test_inferential_because(self):
-        assert self.chat.classify_query("because of the attention mechanism") == QueryType.INFERENTIAL
+        assert (
+            self.chat.classify_query("because of the attention mechanism") == QueryType.INFERENTIAL
+        )
 
     # FACTUAL (default)
     def test_factual_default(self):
@@ -222,7 +232,9 @@ class TestBuildSystemPrompt:
         assert "nlp" in prompt
 
     def test_papers_listed(self):
-        paper = PaperContext(uid="p001", title="Attention Paper", abstract="A", authors=[], year=2017)
+        paper = PaperContext(
+            uid="p001", title="Attention Paper", abstract="A", authors=[], year=2017
+        )
         ctx = ResearchContext(topic="nlp", papers=[paper])
         prompt = self.chat._build_system_prompt(ctx)
         assert "Attention Paper" in prompt
@@ -249,6 +261,7 @@ class TestBuildSystemPrompt:
         class MockCard:
             def __init__(self, content):
                 self.content = content
+
         ctx = ResearchContext(topic="nlp", insights=[MockCard("attention is powerful")])
         prompt = self.chat._build_system_prompt(ctx)
         assert "attention" in prompt

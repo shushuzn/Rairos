@@ -1,4 +1,5 @@
 """Tests for performance profiling functionality."""
+
 import time
 from core.profiler import (
     PerformanceProfiler,

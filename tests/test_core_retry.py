@@ -1,4 +1,5 @@
 """Tests for core/retry.py."""
+
 import time
 import sys
 from pathlib import Path
@@ -7,9 +8,13 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from core.retry import (
-    retry, RetryStats, CircuitBreaker, CircuitOpen,
+    retry,
+    RetryStats,
+    CircuitBreaker,
+    CircuitOpen,
     circuit_breaker,
 )
+
 
 class TestRetryStats:
     def test_record_attempt_success(self):
@@ -62,21 +67,25 @@ class TestRetryStats:
 class TestRetryDecorator:
     def test_succeeds_first_attempt(self):
         call_count = [0]
+
         @retry(max_attempts=3)
         def fn():
             call_count[0] += 1
             return "ok"
+
         assert fn() == "ok"
         assert call_count[0] == 1
 
     def test_retries_on_failure_then_succeeds(self):
         call_count = [0]
+
         @retry(max_attempts=3, base_delay=0.01)
         def fn():
             call_count[0] += 1
             if call_count[0] < 3:
                 raise ValueError("fail")
             return "ok"
+
         assert fn() == "ok"
         assert call_count[0] == 3
 
@@ -84,25 +93,30 @@ class TestRetryDecorator:
         @retry(max_attempts=2, base_delay=0.01)
         def fn():
             raise ValueError("always fails")
+
         with pytest.raises(ValueError, match="always fails"):
             fn()
 
     def test_respects_exception_types(self):
         call_count = [0]
+
         @retry(max_attempts=3, exceptions=(ValueError,), base_delay=0.01)
         def fn():
             call_count[0] += 1
             if call_count[0] < 3:
                 raise ValueError("retry me")
             return "ok"
+
         assert fn() == "ok"
 
     def test_does_not_retry_other_exceptions(self):
         call_count = [0]
+
         @retry(max_attempts=3, exceptions=(ValueError,), base_delay=0.01)
         def fn():
             call_count[0] += 1
             raise TypeError("dont retry")
+
         with pytest.raises(TypeError):
             fn()
         assert call_count[0] == 1
@@ -110,13 +124,17 @@ class TestRetryDecorator:
     def test_exponential_backoff(self):
         delays = []
         original_sleep = time.sleep
+
         def mock_sleep(d):
             delays.append(d)
             original_sleep(0.001)
-        with patch('time.sleep', mock_sleep):
+
+        with patch("time.sleep", mock_sleep):
+
             @retry(max_attempts=4, base_delay=1.0, exceptions=(ValueError,))
             def fn():
                 raise ValueError("fail")
+
             try:
                 fn()
             except ValueError:
@@ -129,12 +147,16 @@ class TestRetryDecorator:
 
     def test_max_delay_cap(self):
         delays = []
+
         def mock_sleep(d):
             delays.append(d)
-        with patch('time.sleep', mock_sleep):
+
+        with patch("time.sleep", mock_sleep):
+
             @retry(max_attempts=5, base_delay=10.0, max_delay=15.0, exceptions=(ValueError,))
             def fn():
                 raise ValueError("fail")
+
             try:
                 fn()
             except ValueError:
@@ -143,11 +165,17 @@ class TestRetryDecorator:
 
     def test_on_retry_callback(self):
         callbacks = []
-        @retry(max_attempts=2, base_delay=0.01, on_retry=lambda e, a: callbacks.append((type(e).__name__, a)))
+
+        @retry(
+            max_attempts=2,
+            base_delay=0.01,
+            on_retry=lambda e, a: callbacks.append((type(e).__name__, a)),
+        )
         def fn():
             if len(callbacks) == 0:
                 raise ValueError("retry")
             return "ok"
+
         fn()
         assert callbacks == [("ValueError", 1)]
 
@@ -155,6 +183,7 @@ class TestRetryDecorator:
         @retry(max_attempts=3)
         def my_func():
             return "result"
+
         assert my_func.__name__ == "my_func"
 
 
@@ -162,9 +191,11 @@ class TestRetryDecorator:
 def reset_circuit_breaker():
     # Reset the module-level _breakers dict between tests
     import core.retry
+
     breakers = getattr(core.retry, "_breakers", {})
     breakers.clear()
     yield
+
 
 class TestCircuitBreaker:
     def test_initial_state_closed(self):
@@ -221,6 +252,7 @@ class TestCircuitBreakerDecorator:
         @circuit_breaker(failure_threshold=3)
         def fn():
             return "ok"
+
         assert fn() == "ok"
 
     @pytest.mark.skip(reason="CB decorator shares module-level _breakers dict across tests")
@@ -228,6 +260,7 @@ class TestCircuitBreakerDecorator:
         @circuit_breaker(failure_threshold=1)
         def fn():
             raise ValueError("fail")
+
         with pytest.raises(CircuitOpen):
             fn()
         with pytest.raises(CircuitOpen):
@@ -237,10 +270,12 @@ class TestCircuitBreakerDecorator:
         @circuit_breaker()
         def my_func():
             return "result"
+
         assert my_func.__name__ == "my_func"
 
     def test_accepts_kwargs(self):
         @circuit_breaker(failure_threshold=2, recovery_timeout=30.0)
         def fn():
             return "ok"
+
         assert fn() == "ok"

@@ -1,4 +1,5 @@
 """Tests for user-friendly error messages and helpers."""
+
 from core.user_helpers import (
     UserError,
     DatabaseError,
@@ -77,10 +78,7 @@ def test_format_error_regular_error():
 def test_print_table():
     """Test table printing."""
     headers = ["名称", "数量"]
-    rows = [
-        ["项目A", "10"],
-        ["项目B", "20"]
-    ]
+    rows = [["项目A", "10"], ["项目B", "20"]]
 
     # Should not raise exception
     print_table(headers, rows)

@@ -2,6 +2,7 @@
 
 Uses a simple file-hash polling loop — no external dependencies, cross-platform.
 """
+
 from __future__ import annotations
 
 import hashlib

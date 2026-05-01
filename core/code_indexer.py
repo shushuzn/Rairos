@@ -1,4 +1,5 @@
 """Code base indexer using Ollama embeddings for semantic code search."""
+
 from __future__ import annotations
 
 import json
@@ -24,20 +25,79 @@ def _get_zilliz_config() -> tuple:
     """Get Zilliz config lazily (after dotenv loads)."""
     return os.environ.get("ZILLIZ_URI"), os.environ.get("ZILLIZ_TOKEN")
 
+
 # Code-specific stopwords
 _STOPWORDS = {
-    "def", "class", "return", "if", "else", "elif", "for", "while", "try", "except",
-    "finally", "with", "as", "import", "from", "pass", "break", "continue", "and", "or",
-    "not", "in", "is", "None", "True", "False", "lambda", "yield", "async", "await",
-    "self", "cls", "global", "nonlocal", "assert", "raise", "del",
-    "print", "len", "range", "list", "dict", "set", "tuple", "str", "int", "float",
-    "bool", "type", "open", "read", "write", "close", "get", "add", "update",
+    "def",
+    "class",
+    "return",
+    "if",
+    "else",
+    "elif",
+    "for",
+    "while",
+    "try",
+    "except",
+    "finally",
+    "with",
+    "as",
+    "import",
+    "from",
+    "pass",
+    "break",
+    "continue",
+    "and",
+    "or",
+    "not",
+    "in",
+    "is",
+    "None",
+    "True",
+    "False",
+    "lambda",
+    "yield",
+    "async",
+    "await",
+    "self",
+    "cls",
+    "global",
+    "nonlocal",
+    "assert",
+    "raise",
+    "del",
+    "print",
+    "len",
+    "range",
+    "list",
+    "dict",
+    "set",
+    "tuple",
+    "str",
+    "int",
+    "float",
+    "bool",
+    "type",
+    "open",
+    "read",
+    "write",
+    "close",
+    "get",
+    "add",
+    "update",
 }
 
 
 class CodeChunk:
     """A chunk of code with its embedding."""
-    def __init__(self, chunk_id: str, file: str, line: int, content: str, embedding: Optional[List[float]] = None):
+
+    def __init__(
+        self,
+        chunk_id: str,
+        file: str,
+        line: int,
+        content: str,
+        embedding: Optional[List[float]] = None,
+    ):
         self.id = chunk_id
         self.file = file
         self.line = line
@@ -72,6 +132,7 @@ class CodeIndexer:
         if self._zilliz is None and self._use_zilliz:
             try:
                 from core.vector_store import ZillizStore
+
                 uri, token = _get_zilliz_config()
                 if uri and token:
                     self._zilliz = ZillizStore(uri, token)
@@ -122,14 +183,26 @@ class CodeIndexer:
         if project_root is None:
             project_root = Path(__file__).parent.parent
 
-        skip_dirs = {'.venv', '__pycache__', '.git', 'build', 'dist',
-                     '.pytest_cache', 'node_modules', 'data', 'cache'}
+        skip_dirs = {
+            ".venv",
+            "__pycache__",
+            ".git",
+            "build",
+            "dist",
+            ".pytest_cache",
+            "node_modules",
+            "data",
+            "cache",
+        }
 
-        for py_file in project_root.rglob('*.py'):
+        for py_file in project_root.rglob("*.py"):
             if any(skip in py_file.parts for skip in skip_dirs):
                 continue
             try:
-                self.add_file(str(py_file.relative_to(project_root)), py_file.read_text(encoding='utf-8', errors='ignore'))
+                self.add_file(
+                    str(py_file.relative_to(project_root)),
+                    py_file.read_text(encoding="utf-8", errors="ignore"),
+                )
             except Exception:
                 pass
 
@@ -158,7 +231,7 @@ class CodeIndexer:
             return (chunk, emb) if emb else None
 
         for i in range(0, len(chunks), batch_size):
-            batch = chunks[i:i + batch_size]
+            batch = chunks[i : i + batch_size]
 
             # Parallel embedding
             ids, vectors, contents, files, lines = [], [], [], [], []
@@ -210,7 +283,7 @@ class CodeIndexer:
     def _extract_chunks(self, file: str, content: str) -> List[CodeChunk]:
         """Extract code chunks (functions, classes, comments)."""
         chunks = []
-        lines = content.split('\n')
+        lines = content.split("\n")
         current_chunk_lines: List[str] = []
         current_line = 1
 
@@ -218,9 +291,9 @@ class CodeIndexer:
             stripped = line.strip()
 
             # Start new chunk on function/class definition
-            if re.match(r'^(def |class |async def )', stripped):
+            if re.match(r"^(def |class |async def )", stripped):
                 if current_chunk_lines:
-                    text = '\n'.join(current_chunk_lines).strip()
+                    text = "\n".join(current_chunk_lines).strip()
                     if text:
                         chunks.append(CodeChunk(f"{file}:{current_line}", file, current_line, text))
                         current_chunk_lines = []
@@ -230,13 +303,15 @@ class CodeIndexer:
 
         # Don't forget the last chunk
         if current_chunk_lines:
-            text = '\n'.join(current_chunk_lines).strip()
+            text = "\n".join(current_chunk_lines).strip()
             if text:
                 chunks.append(CodeChunk(f"{file}:{current_line}", file, current_line, text))
 
         return chunks
 
-    def search(self, query: str, limit: int = 10, use_semantic: bool = True, top_k: int = 50) -> List[CodeChunk]:
+    def search(
+        self, query: str, limit: int = 10, use_semantic: bool = True, top_k: int = 50
+    ) -> List[CodeChunk]:
         """Search for query with hybrid approach: keyword filter + semantic rerank.
 
         Uses Zilliz for persistent storage when available, otherwise falls back
@@ -282,10 +357,7 @@ class CodeIndexer:
 
         assert self._zilliz is not None
         results = self._zilliz.search(query_emb, limit)
-        return [
-            CodeChunk(r.id, r.file, r.line, r.content, None)
-            for r in results
-        ]
+        return [CodeChunk(r.id, r.file, r.line, r.content, None) for r in results]
 
     def _keyword_search(self, query: str, limit: int) -> List[CodeChunk]:
         """Fallback keyword search using jieba."""

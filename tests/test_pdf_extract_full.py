@@ -1,4 +1,5 @@
 """Tests for pdf/extract.py."""
+
 import sys
 from pathlib import Path
 
@@ -56,7 +57,9 @@ class TestDetectBlockType:
 
     def test_allcaps_heading(self):
         assert _detect_block_type("INTRODUCTION", BlockType.BODY, 0) is BlockType.HEADING
-        assert _detect_block_type("BACKGROUND AND MOTIVATION", BlockType.BODY, 0) is BlockType.HEADING
+        assert (
+            _detect_block_type("BACKGROUND AND MOTIVATION", BlockType.BODY, 0) is BlockType.HEADING
+        )
 
     def test_numbered_heading(self):
         assert _detect_block_type("1. Introduction", BlockType.BODY, 0) is BlockType.HEADING
@@ -79,7 +82,10 @@ class TestDetectBlockType:
         assert _detect_block_type("1. numbered item", BlockType.BODY, 0) is BlockType.LIST_ITEM
 
     def test_body_text(self):
-        assert _detect_block_type("This is a normal paragraph of text.", BlockType.BODY, 0) is BlockType.BODY
+        assert (
+            _detect_block_type("This is a normal paragraph of text.", BlockType.BODY, 0)
+            is BlockType.BODY
+        )
 
     def test_empty_line(self):
         assert _detect_block_type("", BlockType.BODY, 0) is BlockType.BODY
@@ -138,4 +144,5 @@ class TestTablesFromText:
 
     def _make_rec(self, text, page=0, bbox=(0, 0, 0, 0)):
         from db.database import ExperimentTableRecord
+
         return ExperimentTableRecord(text=text, page=page, bbox=bbox)

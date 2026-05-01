@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/roadmap_generator.py, pure functions, no I/O."""
+
 import json
 from llm.roadmap_generator import (
     Milestone,
@@ -17,7 +18,9 @@ class TestMilestone:
 
     def test_required_fields(self):
         """Required fields: id, name, description, duration_weeks."""
-        m = Milestone(id="m1", name="Literature Review", description="Read 20 papers", duration_weeks=1)
+        m = Milestone(
+            id="m1", name="Literature Review", description="Read 20 papers", duration_weeks=1
+        )
         assert m.id == "m1"
         assert m.name == "Literature Review"
         assert m.description == "Read 20 papers"
@@ -191,6 +194,7 @@ class TestGenerate:
     def _generate(self, question, question_id="", custom_phases=None):
         """Replicate generate logic."""
         from llm.roadmap_generator import ResearchRoadmap, Phase, Milestone
+
         RoadmapGenerator()
         phases = custom_phases or DEFAULT_PHASES
         roadmap_phases = []
@@ -209,7 +213,7 @@ class TestGenerate:
                 milestone_counter += 1
 
             phase = Phase(
-                id=f"phase{i+1}",
+                id=f"phase{i + 1}",
                 name=phase_def["name"],
                 description=phase_def["description"],
                 duration_weeks=phase_def.get("duration_weeks", 2),
@@ -317,6 +321,7 @@ class TestRenderText:
     def test_header_with_question(self):
         """Header includes question."""
         from llm.roadmap_generator import ResearchRoadmap
+
         r = ResearchRoadmap(question="Transformer optimization", question_id="q1")
         output = self._render(r)
         assert "Transformer optimization" in output
@@ -325,6 +330,7 @@ class TestRenderText:
     def test_total_weeks_shown(self):
         """Total weeks displayed."""
         from llm.roadmap_generator import ResearchRoadmap, Phase
+
         p = Phase(id="p1", name="Phase", description="D", duration_weeks=5)
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
         output = self._render(r)
@@ -333,6 +339,7 @@ class TestRenderText:
     def test_question_id_shown(self):
         """Question ID displayed when present."""
         from llm.roadmap_generator import ResearchRoadmap
+
         r = ResearchRoadmap(question="Q", question_id="q123")
         output = self._render(r)
         assert "q123" in output
@@ -340,6 +347,7 @@ class TestRenderText:
     def test_question_id_not_shown_when_empty(self):
         """Question ID not shown when empty."""
         from llm.roadmap_generator import ResearchRoadmap
+
         r = ResearchRoadmap(question="Q", question_id="")
         output = self._render(r)
         assert "问题ID" not in output
@@ -347,6 +355,7 @@ class TestRenderText:
     def test_phase_name_shown(self):
         """Phase names displayed."""
         from llm.roadmap_generator import ResearchRoadmap, Phase
+
         p = Phase(id="p1", name="Analysis Phase", description="Analyze", duration_weeks=2)
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
         output = self._render(r)
@@ -355,7 +364,10 @@ class TestRenderText:
     def test_milestone_name_shown(self):
         """Milestone names displayed."""
         from llm.roadmap_generator import ResearchRoadmap, Phase, Milestone
-        m = Milestone(id="m1", name="Literature Review", description="Read papers", duration_weeks=1)
+
+        m = Milestone(
+            id="m1", name="Literature Review", description="Read papers", duration_weeks=1
+        )
         p = Phase(id="p1", name="P", description="D", duration_weeks=1, milestones=[m])
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
         output = self._render(r)
@@ -364,6 +376,7 @@ class TestRenderText:
     def test_milestone_duration_shown(self):
         """Milestone duration shown."""
         from llm.roadmap_generator import ResearchRoadmap, Phase, Milestone
+
         m = Milestone(id="m1", name="M", description="D", duration_weeks=3)
         p = Phase(id="p1", name="P", description="D", duration_weeks=1, milestones=[m])
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
@@ -373,6 +386,7 @@ class TestRenderText:
     def test_timeline_summary_section(self):
         """Timeline summary section present."""
         from llm.roadmap_generator import ResearchRoadmap, Phase
+
         p = Phase(id="p1", name="Phase", description="D", duration_weeks=2)
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
         output = self._render(r)
@@ -382,6 +396,7 @@ class TestRenderText:
     def test_notes_shown_when_present(self):
         """Notes displayed when set."""
         from llm.roadmap_generator import ResearchRoadmap
+
         r = ResearchRoadmap(question="Q", question_id="q", notes="Important note")
         output = self._render(r)
         assert "Important note" in output
@@ -390,6 +405,7 @@ class TestRenderText:
     def test_notes_not_shown_when_empty(self):
         """Notes section absent when empty."""
         from llm.roadmap_generator import ResearchRoadmap
+
         r = ResearchRoadmap(question="Q", question_id="q", notes="")
         output = self._render(r)
         assert "备注" not in output
@@ -409,6 +425,7 @@ class TestRenderMarkdown:
     def test_header_with_question(self):
         """Header includes question."""
         from llm.roadmap_generator import ResearchRoadmap
+
         r = ResearchRoadmap(question="Attention mechanisms", question_id="q1")
         output = self._render(r)
         assert "Attention mechanisms" in output
@@ -417,6 +434,7 @@ class TestRenderMarkdown:
     def test_total_weeks_in_header(self):
         """Total weeks shown."""
         from llm.roadmap_generator import ResearchRoadmap, Phase
+
         p = Phase(id="p1", name="P", description="D", duration_weeks=7)
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
         output = self._render(r)
@@ -425,6 +443,7 @@ class TestRenderMarkdown:
     def test_phase_as_h2(self):
         """Phase name as H2."""
         from llm.roadmap_generator import ResearchRoadmap, Phase
+
         p = Phase(id="p1", name="Analysis", description="D", duration_weeks=1)
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
         output = self._render(r)
@@ -433,6 +452,7 @@ class TestRenderMarkdown:
     def test_milestone_as_checkbox(self):
         """Milestone shown as checkbox item."""
         from llm.roadmap_generator import ResearchRoadmap, Phase, Milestone
+
         m = Milestone(id="m1", name="Review", description="Review lit", duration_weeks=1)
         p = Phase(id="p1", name="P", description="D", duration_weeks=1, milestones=[m])
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
@@ -443,6 +463,7 @@ class TestRenderMarkdown:
     def test_gantt_table_present(self):
         """Gantt-style table present."""
         from llm.roadmap_generator import ResearchRoadmap, Phase
+
         p = Phase(id="p1", name="Phase", description="D", duration_weeks=2)
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
         output = self._render(r)
@@ -452,6 +473,7 @@ class TestRenderMarkdown:
     def test_table_row_contains_phase_name(self):
         """Table row includes phase name and week range."""
         from llm.roadmap_generator import ResearchRoadmap, Phase
+
         p = Phase(id="p1", name="Analysis", description="D", duration_weeks=3)
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
         output = self._render(r)
@@ -472,6 +494,7 @@ class TestRenderJson:
     def test_valid_json(self):
         """Output is valid JSON."""
         from llm.roadmap_generator import ResearchRoadmap
+
         r = ResearchRoadmap(question="Q", question_id="q")
         output = self._render(r)
         data = json.loads(output)
@@ -480,6 +503,7 @@ class TestRenderJson:
     def test_contains_question(self):
         """Question field present."""
         from llm.roadmap_generator import ResearchRoadmap
+
         r = ResearchRoadmap(question="My question", question_id="q1")
         output = self._render(r)
         data = json.loads(output)
@@ -488,6 +512,7 @@ class TestRenderJson:
     def test_contains_question_id(self):
         """Question ID field present."""
         from llm.roadmap_generator import ResearchRoadmap
+
         r = ResearchRoadmap(question="Q", question_id="abc123")
         output = self._render(r)
         data = json.loads(output)
@@ -496,6 +521,7 @@ class TestRenderJson:
     def test_contains_total_weeks(self):
         """total_weeks field present."""
         from llm.roadmap_generator import ResearchRoadmap, Phase
+
         p = Phase(id="p1", name="P", description="D", duration_weeks=4)
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
         output = self._render(r)
@@ -505,6 +531,7 @@ class TestRenderJson:
     def test_contains_created_at(self):
         """created_at field present."""
         from llm.roadmap_generator import ResearchRoadmap
+
         r = ResearchRoadmap(question="Q", question_id="q")
         output = self._render(r)
         data = json.loads(output)
@@ -514,6 +541,7 @@ class TestRenderJson:
     def test_phases_array(self):
         """phases is an array."""
         from llm.roadmap_generator import ResearchRoadmap, Phase
+
         p = Phase(id="p1", name="P", description="D", duration_weeks=1)
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
         output = self._render(r)
@@ -524,6 +552,7 @@ class TestRenderJson:
     def test_phase_fields(self):
         """Phase object has correct fields."""
         from llm.roadmap_generator import ResearchRoadmap, Phase
+
         p = Phase(id="phase1", name="Phase", description="Desc", duration_weeks=2, order=0)
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
         output = self._render(r)
@@ -538,7 +567,15 @@ class TestRenderJson:
     def test_milestone_in_phase(self):
         """Milestone object inside phase."""
         from llm.roadmap_generator import ResearchRoadmap, Phase, Milestone
-        m = Milestone(id="m1", name="Review", description="Review papers", duration_weeks=1, tasks=["t1"], dependencies=["m0"])
+
+        m = Milestone(
+            id="m1",
+            name="Review",
+            description="Review papers",
+            duration_weeks=1,
+            tasks=["t1"],
+            dependencies=["m0"],
+        )
         p = Phase(id="p1", name="P", description="D", duration_weeks=1, milestones=[m])
         r = ResearchRoadmap(question="Q", question_id="q", phases=[p])
         output = self._render(r)
@@ -559,6 +596,7 @@ class TestFullPipeline:
     def _full_pipeline(self, question, question_id="", format="text", custom_phases=None):
         """Replicate full pipeline."""
         from llm.roadmap_generator import ResearchRoadmap, Phase, Milestone
+
         gen = RoadmapGenerator()
         phases = custom_phases or DEFAULT_PHASES
         roadmap_phases = []
@@ -577,7 +615,7 @@ class TestFullPipeline:
                 milestone_counter += 1
 
             phase = Phase(
-                id=f"phase{i+1}",
+                id=f"phase{i + 1}",
                 name=phase_def["name"],
                 description=phase_def["description"],
                 duration_weeks=phase_def.get("duration_weeks", 2),
@@ -618,7 +656,12 @@ class TestFullPipeline:
     def test_custom_phase_reflected_in_text(self):
         """Custom phase name appears in text output."""
         custom = [
-            {"name": "My Custom Phase", "description": "Custom", "duration_weeks": 1, "milestones": []}
+            {
+                "name": "My Custom Phase",
+                "description": "Custom",
+                "duration_weeks": 1,
+                "milestones": [],
+            }
         ]
         output = self._full_pipeline("Q", custom_phases=custom)
         assert "My Custom Phase" in output
@@ -626,7 +669,12 @@ class TestFullPipeline:
     def test_custom_phase_reflected_in_json(self):
         """Custom phase name appears in JSON output."""
         custom = [
-            {"name": "My Custom Phase", "description": "Custom", "duration_weeks": 2, "milestones": []}
+            {
+                "name": "My Custom Phase",
+                "description": "Custom",
+                "duration_weeks": 2,
+                "milestones": [],
+            }
         ]
         output = self._full_pipeline("Q", custom_phases=custom, format="json")
         data = json.loads(output)

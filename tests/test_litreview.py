@@ -272,7 +272,11 @@ class TestLitReviewAnalyzer:
         """Test rising topic detection."""
         papers = [
             {"title": "LLM Paper", "abstract": "Large language models.", "published": "2024-06"},
-            {"title": "Multimodal Paper", "abstract": "Multimodal learning.", "published": "2024-05"},
+            {
+                "title": "Multimodal Paper",
+                "abstract": "Multimodal learning.",
+                "published": "2024-05",
+            },
         ]
         analyzer = LitReviewAnalyzer()
         result = analyzer.analyze_trends(papers)

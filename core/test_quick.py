@@ -1,4 +1,5 @@
 """Quick test"""
+
 from core.progress_tracker import get_tracker
 from core.watermarker import get_marker
 

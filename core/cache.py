@@ -1,8 +1,10 @@
 """HTTP response cache for arXiv and Crossref API calls."""
+
 import orjson
 import time
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
+from urllib.parse import quote
 
 from config import CACHE_DIR, CACHE_TTL_SECONDS, MAX_CACHE_FILES, MEMORY_CACHE_MAX_SIZE
 
@@ -24,7 +26,7 @@ def _cache_dir(source: str) -> Path:
 
 
 def _cache_path(source: str, key: str) -> Path:
-    safe = key.replace("/", "%2F").replace(":", "%3A").replace("?", "%3F").replace("#", "%23")
+    safe = quote(key, safe="")
     return _cache_dir(source) / f"{safe}.json"
 
 
@@ -99,6 +101,7 @@ def set_cached(source: str, key: str, data: dict) -> None:
     except OSError:
         pass  # disk full or permission issue — non-fatal
 
+
 def clear_cache(source: Optional[str] = None) -> None:
     """Clear cache for a specific source or all sources."""
 
@@ -129,6 +132,7 @@ def clear_cache(source: Optional[str] = None) -> None:
         except OSError:
             pass
 
+
 def get_cache_stats() -> Dict[str, Any]:
     """Get cache statistics."""
     stats = {
@@ -137,7 +141,7 @@ def get_cache_stats() -> Dict[str, Any]:
         "disk_cache_dir": str(_CACHE_DIR),
         "ttl_seconds": _TTL_SECONDS,
         "max_cache_files": _MAX_CACHE_FILES,
-        "disk_cache_sizes": {}
+        "disk_cache_sizes": {},
     }
 
     # Calculate disk cache sizes

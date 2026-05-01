@@ -1,4 +1,5 @@
 """Tests for research dashboard."""
+
 import pytest
 from unittest.mock import patch
 
@@ -23,8 +24,10 @@ class TestDashboard:
         """Test collecting with no data."""
         # QuestionTracker and ExperimentTracker are imported into llm.dashboard
         # from their source modules, so patch at source.
-        with patch("llm.question_tracker.QuestionTracker") as mock_qt, \
-             patch("llm.experiment_tracker.ExperimentTracker") as mock_et:
+        with (
+            patch("llm.question_tracker.QuestionTracker") as mock_qt,
+            patch("llm.experiment_tracker.ExperimentTracker") as mock_et,
+        ):
             mock_qt_instance = mock_qt.return_value
             mock_qt_instance.list_questions.return_value = []
             mock_et_instance = mock_et.return_value
@@ -47,14 +50,30 @@ class TestDashboard:
         """Test summary building."""
         data = DashboardData()
         data.questions = [
-            QuestionSummary(id="q1", question="Q1", status="open", priority="high",
-                         hypotheses_count=1, roadmap_id=""),
-            QuestionSummary(id="q2", question="Q2", status="resolved", priority="medium",
-                         hypotheses_count=2, roadmap_id=""),
+            QuestionSummary(
+                id="q1",
+                question="Q1",
+                status="open",
+                priority="high",
+                hypotheses_count=1,
+                roadmap_id="",
+            ),
+            QuestionSummary(
+                id="q2",
+                question="Q2",
+                status="resolved",
+                priority="medium",
+                hypotheses_count=2,
+                roadmap_id="",
+            ),
         ]
         data.experiments = [
-            ExperimentSummary(id="e1", name="E1", status="running", milestone="m1", metrics_count=0),
-            ExperimentSummary(id="e2", name="E2", status="completed", milestone="m1", metrics_count=1),
+            ExperimentSummary(
+                id="e1", name="E1", status="running", milestone="m1", metrics_count=0
+            ),
+            ExperimentSummary(
+                id="e2", name="E2", status="completed", milestone="m1", metrics_count=1
+            ),
         ]
 
         summary = dashboard._build_summary(data)
@@ -78,12 +97,19 @@ class TestDashboard:
         """Test text rendering with data."""
         data = DashboardData()
         data.questions = [
-            QuestionSummary(id="q1", question="Test question?", status="open",
-                         priority="high", hypotheses_count=2, roadmap_id=""),
+            QuestionSummary(
+                id="q1",
+                question="Test question?",
+                status="open",
+                priority="high",
+                hypotheses_count=2,
+                roadmap_id="",
+            ),
         ]
         data.experiments = [
-            ExperimentSummary(id="e1", name="Test exp", status="running",
-                           milestone="m1", metrics_count=3),
+            ExperimentSummary(
+                id="e1", name="Test exp", status="running", milestone="m1", metrics_count=3
+            ),
         ]
         data.summary = dashboard._build_summary(data)
 
@@ -101,8 +127,14 @@ class TestDashboard:
 
         data = DashboardData()
         data.questions = [
-            QuestionSummary(id="q1", question="Q1?", status="open",
-                         priority="high", hypotheses_count=1, roadmap_id=""),
+            QuestionSummary(
+                id="q1",
+                question="Q1?",
+                status="open",
+                priority="high",
+                hypotheses_count=1,
+                roadmap_id="",
+            ),
         ]
 
         output = dashboard.render_json(data)

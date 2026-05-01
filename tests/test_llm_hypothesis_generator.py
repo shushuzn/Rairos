@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/hypothesis_generator.py, pure functions, no I/O."""
+
 from llm.hypothesis_generator import (
     HypothesisType,
     RiskLevel,
@@ -217,7 +218,7 @@ class TestFillTemplate:
         """Replicate _fill_template logic."""
         import re
 
-        method_match = re.search(r'([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)', context[:200])
+        method_match = re.search(r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)", context[:200])
         method = method_match.group(1) if method_match else topic
 
         replacements = {
@@ -307,15 +308,15 @@ class TestInferGapType:
         """Replicate _infer_gap_type logic."""
         context_lower = context.lower()
 
-        if any(k in context_lower for k in ['limitation', '不足', 'weakness', 'scalability']):
+        if any(k in context_lower for k in ["limitation", "不足", "weakness", "scalability"]):
             return "method_limitation"
-        elif any(k in context_lower for k in ['future', 'unexplored', '未探索']):
+        elif any(k in context_lower for k in ["future", "unexplored", "未探索"]):
             return "unexplored_application"
-        elif any(k in context_lower for k in ['however', 'contradict', '矛盾']):
+        elif any(k in context_lower for k in ["however", "contradict", "矛盾"]):
             return "contradiction"
-        elif any(k in context_lower for k in ['scale', '扩展', '大规模']):
+        elif any(k in context_lower for k in ["scale", "扩展", "大规模"]):
             return "scalability_issue"
-        elif any(k in context_lower for k in ['benchmark', '评估', 'metric']):
+        elif any(k in context_lower for k in ["benchmark", "评估", "metric"]):
             return "evaluation_gap"
 
         return "method_limitation"
@@ -384,7 +385,9 @@ class TestAssessRisk:
         return RiskAssessment(
             technical_risk=tech_risk,
             hypothesis_risk=hyp_risk,
-            technical_reason="技术实现难度适中" if tech_risk == RiskLevel.MEDIUM else "技术挑战较大",
+            technical_reason="技术实现难度适中"
+            if tech_risk == RiskLevel.MEDIUM
+            else "技术挑战较大",
             hypothesis_reason="假说具体可验证" if hyp_risk == RiskLevel.LOW else "存在不确定性",
             mitigation=[
                 "从小规模实验开始",
@@ -396,7 +399,8 @@ class TestAssessRisk:
     def test_exploratory_hypothesis_has_high_hypothesis_risk(self):
         """EXPLORATORY type gets HIGH hypothesis risk."""
         h = ResearchHypothesis(
-            id="x", title="T",
+            id="x",
+            title="T",
             hypothesis_type=HypothesisType.EXPLORATORY,
             core_statement="Explore something",
         )
@@ -406,7 +410,8 @@ class TestAssessRisk:
     def test_new_domain_phrase_raises_both_risks(self):
         """新领域 in statement raises both risks to HIGH."""
         h = ResearchHypothesis(
-            id="x", title="T",
+            id="x",
+            title="T",
             hypothesis_type=HypothesisType.CAUSAL,
             core_statement="在新领域应用",
         )
@@ -417,7 +422,8 @@ class TestAssessRisk:
     def test_causal_without_new_domain(self):
         """CAUSAL without 新领域 gets MEDIUM risks."""
         h = ResearchHypothesis(
-            id="x", title="T",
+            id="x",
+            title="T",
             hypothesis_type=HypothesisType.CAUSAL,
             core_statement="Improve existing method",
         )
@@ -428,7 +434,8 @@ class TestAssessRisk:
     def test_exploratory_overrides_new_domain(self):
         """EXPLORATORY already sets HIGH, 新领域 adds nothing extra."""
         h = ResearchHypothesis(
-            id="x", title="T",
+            id="x",
+            title="T",
             hypothesis_type=HypothesisType.EXPLORATORY,
             core_statement="新领域探索",
         )
@@ -446,12 +453,14 @@ class TestAssessRisk:
     def test_technical_reason_text(self):
         """Technical reason text varies by risk level."""
         h_medium = ResearchHypothesis(
-            id="x", title="T",
+            id="x",
+            title="T",
             hypothesis_type=HypothesisType.CAUSAL,
             core_statement="S",
         )
         h_high = ResearchHypothesis(
-            id="x", title="T",
+            id="x",
+            title="T",
             hypothesis_type=HypothesisType.CAUSAL,
             core_statement="新领域",
         )
@@ -467,7 +476,9 @@ class TestAssessRisk:
 class TestCalculateNovelty:
     """Test _calculate_novelty logic."""
 
-    def _calculate_novelty(self, hypothesis: ResearchHypothesis, has_trend: bool, has_story: bool) -> float:
+    def _calculate_novelty(
+        self, hypothesis: ResearchHypothesis, has_trend: bool, has_story: bool
+    ) -> float:
         """Replicate _calculate_novelty logic."""
         score = 0.5
 
@@ -494,7 +505,9 @@ class TestCalculateNovelty:
 
     def test_cross_domain_adds_03(self):
         """跨领域 prefix adds 0.3."""
-        h = ResearchHypothesis(id="x", title="T", hypothesis_type=HypothesisType.CAUSAL, core_statement="跨领域探索X")
+        h = ResearchHypothesis(
+            id="x", title="T", hypothesis_type=HypothesisType.CAUSAL, core_statement="跨领域探索X"
+        )
         assert self._calculate_novelty(h, False, False) == 0.8
 
     def test_combined_context_adds_01(self):
@@ -504,7 +517,12 @@ class TestCalculateNovelty:
 
     def test_combined_all_factors(self):
         """EXPLORATORY + cross-domain + both context = capped at 1.0."""
-        h = ResearchHypothesis(id="x", title="T", hypothesis_type=HypothesisType.EXPLORATORY, core_statement="跨领域新方法")
+        h = ResearchHypothesis(
+            id="x",
+            title="T",
+            hypothesis_type=HypothesisType.EXPLORATORY,
+            core_statement="跨领域新方法",
+        )
         # 0.5 + 0.2 + 0.3 + 0.1 = 1.1, capped at 1.0
         assert self._calculate_novelty(h, True, True) == 1.0
 
@@ -546,7 +564,9 @@ class TestCalculateFeasibility:
             evaluation_metrics=["m"],
             expected_results="R",
         )
-        h = ResearchHypothesis(id="x", title="T", hypothesis_type=HypothesisType.CAUSAL, experiment_design=design)
+        h = ResearchHypothesis(
+            id="x", title="T", hypothesis_type=HypothesisType.CAUSAL, experiment_design=design
+        )
         assert self._calculate_feasibility(h) == 0.6
 
     def test_exploratory_subtracts_01(self):
@@ -558,7 +578,9 @@ class TestCalculateFeasibility:
             evaluation_metrics=["m"],
             expected_results="R",
         )
-        h = ResearchHypothesis(id="x", title="T", hypothesis_type=HypothesisType.EXPLORATORY, experiment_design=design)
+        h = ResearchHypothesis(
+            id="x", title="T", hypothesis_type=HypothesisType.EXPLORATORY, experiment_design=design
+        )
         assert self._calculate_feasibility(h) == 0.5
 
     def test_many_variables_subtracts_01(self):
@@ -570,7 +592,9 @@ class TestCalculateFeasibility:
             evaluation_metrics=["m"],
             expected_results="R",
         )
-        h = ResearchHypothesis(id="x", title="T", hypothesis_type=HypothesisType.CAUSAL, experiment_design=design)
+        h = ResearchHypothesis(
+            id="x", title="T", hypothesis_type=HypothesisType.CAUSAL, experiment_design=design
+        )
         assert self._calculate_feasibility(h) == 0.5
 
     def test_combined_penalties(self):
@@ -582,7 +606,9 @@ class TestCalculateFeasibility:
             evaluation_metrics=["m"],
             expected_results="R",
         )
-        h = ResearchHypothesis(id="x", title="T", hypothesis_type=HypothesisType.EXPLORATORY, experiment_design=design)
+        h = ResearchHypothesis(
+            id="x", title="T", hypothesis_type=HypothesisType.EXPLORATORY, experiment_design=design
+        )
         assert self._calculate_feasibility(h) == 0.4
 
     def test_exploratory_minimum_with_many_variables(self):
@@ -594,7 +620,9 @@ class TestCalculateFeasibility:
             evaluation_metrics=["m"],
             expected_results="R",
         )
-        h = ResearchHypothesis(id="x", title="T", hypothesis_type=HypothesisType.EXPLORATORY, experiment_design=design)
+        h = ResearchHypothesis(
+            id="x", title="T", hypothesis_type=HypothesisType.EXPLORATORY, experiment_design=design
+        )
         # 0.6 - 0.1 (variables) - 0.1 (EXPLORATORY) = 0.4, max(0.4, 0.3) = 0.4
         assert self._calculate_feasibility(h) == 0.4
 
@@ -706,8 +734,12 @@ class TestRenderResult:
                     RiskLevel.HIGH: "🔴",
                 }
                 lines.append("风险评估:")
-                lines.append(f"  技术风险: {risk_icon[h.risk_assessment.technical_risk]} {h.risk_assessment.technical_reason}")
-                lines.append(f"  假设风险: {risk_icon[h.risk_assessment.hypothesis_risk]} {h.risk_assessment.hypothesis_reason}")
+                lines.append(
+                    f"  技术风险: {risk_icon[h.risk_assessment.technical_risk]} {h.risk_assessment.technical_reason}"
+                )
+                lines.append(
+                    f"  假设风险: {risk_icon[h.risk_assessment.hypothesis_risk]} {h.risk_assessment.hypothesis_reason}"
+                )
                 lines.append("")
 
             if h.differentiations:
@@ -721,7 +753,7 @@ class TestRenderResult:
 
         lines.append(f"📊 {result.summary}")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def test_header(self):
         """Header contains topic."""
@@ -740,7 +772,8 @@ class TestRenderResult:
             expected_results="Better",
         )
         h = ResearchHypothesis(
-            id="h1", title="Hypothesis 1",
+            id="h1",
+            title="Hypothesis 1",
             hypothesis_type=HypothesisType.CAUSAL,
             core_statement="Better method",
             based_on="Gap analysis",
@@ -781,8 +814,8 @@ class TestRenderResult:
         h = ResearchHypothesis(id="x", title="T", experiment_design=design)
         result = HypothesisResult(topic="T", hypotheses=[h])
         output = self._render_result(result)
-        lines = output.split('\n')
-        var_line = [l for l in lines if '变量:' in l][0]
+        lines = output.split("\n")
+        var_line = [l for l in lines if "变量:" in l][0]
         assert "v1, v2, v3" in var_line
         assert "v4" not in var_line
 
@@ -853,14 +886,15 @@ class TestRenderResult:
             baseline="B", variables=[], controls=[], evaluation_metrics=[], expected_results="R"
         )
         h = ResearchHypothesis(
-            id="x", title="T",
+            id="x",
+            title="T",
             differentiations=[dp1, dp2, dp3],
             experiment_design=design,
         )
         result = HypothesisResult(topic="T", hypotheses=[h])
         output = self._render_result(result)
-        lines = output.split('\n')
-        diff_lines = [l for l in lines if 'Method' in l]
+        lines = output.split("\n")
+        diff_lines = [l for l in lines if "Method" in l]
         assert len(diff_lines) == 2
 
     def test_summary_appended(self):
@@ -897,8 +931,12 @@ class TestRenderJson:
                         "metrics": h.experiment_design.evaluation_metrics,
                     },
                     "risk": {
-                        "technical": h.risk_assessment.technical_risk.value if h.risk_assessment else "unknown",
-                        "hypothesis": h.risk_assessment.hypothesis_risk.value if h.risk_assessment else "unknown",
+                        "technical": h.risk_assessment.technical_risk.value
+                        if h.risk_assessment
+                        else "unknown",
+                        "hypothesis": h.risk_assessment.hypothesis_risk.value
+                        if h.risk_assessment
+                        else "unknown",
                     },
                 }
                 for h in result.hypotheses
@@ -917,6 +955,7 @@ class TestRenderJson:
     def test_hypothesis_in_json(self):
         """Hypothesis data included in JSON."""
         import json
+
         design = ExperimentDesign(
             baseline="B",
             variables=["v1"],
@@ -925,7 +964,8 @@ class TestRenderJson:
             expected_results="R",
         )
         h = ResearchHypothesis(
-            id="h1", title="H1",
+            id="h1",
+            title="H1",
             hypothesis_type=HypothesisType.COMPARATIVE,
             core_statement="Statement",
             based_on="Gap",
@@ -943,6 +983,7 @@ class TestRenderJson:
     def test_risk_unknown_when_none(self):
         """Missing risk_assessment shows 'unknown'."""
         import json
+
         h = ResearchHypothesis(id="x", title="T")
         result = HypothesisResult(topic="T", hypotheses=[h])
         output = self._render_json(result)
@@ -953,6 +994,7 @@ class TestRenderJson:
     def test_risk_values_when_present(self):
         """Risk values included when present."""
         import json
+
         risk = RiskAssessment(
             technical_risk=RiskLevel.HIGH,
             hypothesis_risk=RiskLevel.LOW,
@@ -982,6 +1024,7 @@ class TestRenderJson:
     def test_is_valid_json(self):
         """Output is valid JSON."""
         import json
+
         result = HypothesisResult(topic="T", summary="S")
         output = self._render_json(result)
         parsed = json.loads(output)

@@ -1,4 +1,5 @@
 """Core data structures and constants."""
+
 from dataclasses import dataclass
 from typing import List
 
@@ -40,11 +41,12 @@ class Paper:
     page: str = ""
     doi: str = ""  # DOI when source is arxiv
     comment: str = ""  # arXiv author comment (e.g. page count, v1/v2)
-    journal_ref: str = ""  #正式发表期刊引用
+    journal_ref: str = ""  # 正式发表期刊引用
     categories: str = ""  # comma-separated full category list
     reference_count: int = 0  # citation / reference count
 
 
 def today_iso() -> str:
     import datetime as dt
+
     return dt.date.today().isoformat()

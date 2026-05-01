@@ -105,9 +105,13 @@ class TestQuestionValidator:
         validator = QuestionValidator()
         related = [
             RelatedWork(
-                paper_id="1", title="Test", year=2024,
+                paper_id="1",
+                title="Test",
+                year=2024,
                 relevance_score=0.9,
-                overlap_aspects=[], difference_aspects=[], conclusion=""
+                overlap_aspects=[],
+                difference_aspects=[],
+                conclusion="",
             )
         ]
         innovation = validator._analyze_innovation_rules(related)
@@ -120,9 +124,13 @@ class TestQuestionValidator:
         validator = QuestionValidator()
         related = [
             RelatedWork(
-                paper_id="1", title="Test", year=2024,
+                paper_id="1",
+                title="Test",
+                year=2024,
                 relevance_score=0.4,
-                overlap_aspects=[], difference_aspects=[], conclusion=""
+                overlap_aspects=[],
+                difference_aspects=[],
+                conclusion="",
             )
         ]
         innovation = validator._analyze_innovation_rules(related)
@@ -134,8 +142,12 @@ class TestQuestionValidator:
         """Test novelty determination for high innovation."""
         validator = QuestionValidator()
         innovation = InnovationScore(
-            overall=8.0, method=7.0, task=8.0, evaluation=7.0,
-            dimensions=[InnovationDimension.TASK], reasoning=""
+            overall=8.0,
+            method=7.0,
+            task=8.0,
+            evaluation=7.0,
+            dimensions=[InnovationDimension.TASK],
+            reasoning="",
         )
 
         novelty = validator._determine_novelty(innovation, [])
@@ -145,17 +157,23 @@ class TestQuestionValidator:
         """Test novelty determination for low innovation."""
         validator = QuestionValidator()
         innovation = InnovationScore(
-            overall=3.0, method=3.0, task=3.0, evaluation=3.0,
-            dimensions=[], reasoning=""
+            overall=3.0, method=3.0, task=3.0, evaluation=3.0, dimensions=[], reasoning=""
         )
 
-        novelty = validator._determine_novelty(innovation, [
-            RelatedWork(
-                paper_id="1", title="Test", year=2024,
-                relevance_score=0.9,
-                overlap_aspects=[], difference_aspects=[], conclusion=""
-            )
-        ])
+        novelty = validator._determine_novelty(
+            innovation,
+            [
+                RelatedWork(
+                    paper_id="1",
+                    title="Test",
+                    year=2024,
+                    relevance_score=0.9,
+                    overlap_aspects=[],
+                    difference_aspects=[],
+                    conclusion="",
+                )
+            ],
+        )
         assert novelty == NoveltyLevel.LOW
 
     def test_calculate_confidence(self):
@@ -163,14 +181,24 @@ class TestQuestionValidator:
         validator = QuestionValidator()
 
         related = [
-            RelatedWork(paper_id=str(i), title=f"Paper {i}", year=2024,
-                       relevance_score=0.8, overlap_aspects=[], difference_aspects=[], conclusion="")
+            RelatedWork(
+                paper_id=str(i),
+                title=f"Paper {i}",
+                year=2024,
+                relevance_score=0.8,
+                overlap_aspects=[],
+                difference_aspects=[],
+                conclusion="",
+            )
             for i in range(5)
         ]
         innovation = InnovationScore(
-            overall=7.0, method=7.0, task=7.0, evaluation=7.0,
+            overall=7.0,
+            method=7.0,
+            task=7.0,
+            evaluation=7.0,
             dimensions=[InnovationDimension.METHOD, InnovationDimension.TASK],
-            reasoning="Clear analysis"
+            reasoning="Clear analysis",
         )
 
         confidence = validator._calculate_confidence(related, innovation)
@@ -188,8 +216,15 @@ class TestQuestionValidator:
         """Test suggestion generation with related works."""
         validator = QuestionValidator()
         related = [
-            RelatedWork(paper_id="1", title="Test", year=2024,
-                       relevance_score=0.8, overlap_aspects=[], difference_aspects=[], conclusion="")
+            RelatedWork(
+                paper_id="1",
+                title="Test",
+                year=2024,
+                relevance_score=0.8,
+                overlap_aspects=[],
+                difference_aspects=[],
+                conclusion="",
+            )
         ]
         suggestions = validator._generate_suggestions_rules(related)
 
@@ -213,9 +248,13 @@ class TestQuestionValidator:
             ),
             related_works=[
                 RelatedWork(
-                    paper_id="1", title="Causal Reasoning in LLMs", year=2023,
+                    paper_id="1",
+                    title="Causal Reasoning in LLMs",
+                    year=2023,
                     relevance_score=0.7,
-                    overlap_aspects=["causal"], difference_aspects=["method"], conclusion=""
+                    overlap_aspects=["causal"],
+                    difference_aspects=["method"],
+                    conclusion="",
                 )
             ],
             suggestions=[
@@ -242,8 +281,12 @@ class TestQuestionValidator:
             is_novel=True,
             novelty_level=NoveltyLevel.HIGH,
             innovation_score=InnovationScore(
-                overall=8.0, method=7.0, task=8.0, evaluation=7.0,
-                dimensions=[InnovationDimension.TASK], reasoning="Good"
+                overall=8.0,
+                method=7.0,
+                task=8.0,
+                evaluation=7.0,
+                dimensions=[InnovationDimension.TASK],
+                reasoning="Good",
             ),
             confidence=0.9,
         )

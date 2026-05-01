@@ -1,4 +1,5 @@
 """Tests for updaters module (timeline and radar)."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -21,6 +22,7 @@ from updaters.timeline import ensure_timeline, update_timeline
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _mkp(base: Path, rel: str) -> Path:
     return base / rel
 
@@ -28,6 +30,7 @@ def _mkp(base: Path, rel: str) -> Path:
 # ---------------------------------------------------------------------------
 # Timeline
 # ---------------------------------------------------------------------------
+
 
 class TestEnsureTimeline:
     def test_creates_file_if_missing(self, tmp_path):
@@ -126,6 +129,7 @@ class TestUpdateTimeline:
 # Radar — parse_radar_table + render_radar
 # ---------------------------------------------------------------------------
 
+
 class TestParseRadarTable:
     def test_parses_valid_table(self):
         md = (
@@ -164,7 +168,14 @@ class TestRenderRadar:
     def test_renders_header_and_rows(self):
         header = "# Radar\n"
         rows = [
-            {"主题": "LLM", "热度": "5", "证据质量": "高", "成本变化": "下降", "我的信心": "中", "最近更新": "2024-06-15"},
+            {
+                "主题": "LLM",
+                "热度": "5",
+                "证据质量": "高",
+                "成本变化": "下降",
+                "我的信心": "中",
+                "最近更新": "2024-06-15",
+            },
         ]
         out = render_radar(header, rows)
         assert "| 主题 |" in out
@@ -174,9 +185,30 @@ class TestRenderRadar:
         """render_radar preserves the order of rows passed in (sorting happens in update_radar)."""
         header = "# Radar\n"
         rows = [
-            {"主题": "A", "热度": "2", "证据质量": "", "成本变化": "", "我的信心": "", "最近更新": ""},
-            {"主题": "B", "热度": "10", "证据质量": "", "成本变化": "", "我的信心": "", "最近更新": ""},
-            {"主题": "C", "热度": "5", "证据质量": "", "成本变化": "", "我的信心": "", "最近更新": ""},
+            {
+                "主题": "A",
+                "热度": "2",
+                "证据质量": "",
+                "成本变化": "",
+                "我的信心": "",
+                "最近更新": "",
+            },
+            {
+                "主题": "B",
+                "热度": "10",
+                "证据质量": "",
+                "成本变化": "",
+                "我的信心": "",
+                "最近更新": "",
+            },
+            {
+                "主题": "C",
+                "热度": "5",
+                "证据质量": "",
+                "成本变化": "",
+                "我的信心": "",
+                "最近更新": "",
+            },
         ]
         out = render_radar(header, rows)
         lines = out.splitlines()
@@ -190,6 +222,7 @@ class TestRenderRadar:
 # ---------------------------------------------------------------------------
 # Radar — update_radar
 # ---------------------------------------------------------------------------
+
 
 class TestUpdateRadar:
     def test_creates_radar_file_if_missing(self, tmp_path):
@@ -250,6 +283,7 @@ class TestUpdateRadar:
 # ---------------------------------------------------------------------------
 # Radar — _heat helper
 # ---------------------------------------------------------------------------
+
 
 class TestHeatHelper:
     def test_returns_int_heat(self):

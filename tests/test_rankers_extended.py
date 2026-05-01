@@ -3,6 +3,7 @@
 
 def test_ranked_result_type():
     """Test RankedResult is properly typed."""
+
     # Mock paper record
     class MockPaper:
         def __init__(self):
@@ -17,6 +18,7 @@ def test_ranked_result_type():
 
 def test_ranked_result_order():
     """Test that RankedResult maintains proper ordering."""
+
     class MockPaper:
         def __init__(self, id):
             self.id = id
@@ -38,6 +40,7 @@ def test_ranked_result_order():
 
 def test_threshold_filtering():
     """Test threshold filtering works correctly."""
+
     class MockPaper:
         def __init__(self, id):
             self.id = id
@@ -58,6 +61,7 @@ def test_threshold_filtering():
 
 def test_limit_filtering():
     """Test limit filtering works correctly."""
+
     class MockPaper:
         def __init__(self, id):
             self.id = id

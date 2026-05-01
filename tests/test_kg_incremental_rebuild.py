@@ -1,4 +1,5 @@
 """Tests for kg/integration.py rebuild — full and incremental modes."""
+
 from __future__ import annotations
 
 import json
@@ -19,10 +20,15 @@ def kg_integ(tmp_path):
 def _write_papers_json(tmp_path, papers, citation_graph=None):
     """Helper: write a papers.json file and return its path."""
     path = tmp_path / "papers.json"
-    path.write_text(json.dumps({
-        "papers": papers,
-        "citation_graph": citation_graph or {},
-    }), encoding="utf-8")
+    path.write_text(
+        json.dumps(
+            {
+                "papers": papers,
+                "citation_graph": citation_graph or {},
+            }
+        ),
+        encoding="utf-8",
+    )
     return path
 
 

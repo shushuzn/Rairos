@@ -1,4 +1,5 @@
 """Tests for renderers module functionality."""
+
 from core import Paper
 
 
@@ -16,7 +17,7 @@ def test_render_pnote_basic():
         updated="2023-01-02",
         abs_url="https://arxiv.org/abs/2301.001",
         pdf_url="https://arxiv.org/pdf/2301.001.pdf",
-        primary_category="cs.AI"
+        primary_category="cs.AI",
     )
 
     result = render_pnote(

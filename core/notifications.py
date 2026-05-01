@@ -3,6 +3,7 @@ Notification System.
 
 Provides notifications for important events.
 """
+
 from typing import List
 
 from dataclasses import dataclass
@@ -11,6 +12,7 @@ from enum import Enum
 
 class NotificationLevel(Enum):
     """Notification levels."""
+
     INFO = "info"
     SUCCESS = "success"
     WARNING = "warning"
@@ -20,6 +22,7 @@ class NotificationLevel(Enum):
 @dataclass
 class Notification:
     """A notification message."""
+
     level: NotificationLevel
     title: str
     message: str
@@ -35,11 +38,9 @@ class NotificationManager:
     def add(self, level: NotificationLevel, title: str, message: str):
         """Add a notification."""
         import time
+
         notification = Notification(
-            level=level,
-            title=title,
-            message=message,
-            timestamp=time.time()
+            level=level, title=title, message=message, timestamp=time.time()
         )
         self.notifications.append(notification)
 

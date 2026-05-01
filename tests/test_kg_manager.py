@@ -1,4 +1,5 @@
 """Tests for kg/manager.py — KGManager core CRUD and graph operations."""
+
 from __future__ import annotations
 
 

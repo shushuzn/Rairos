@@ -1,4 +1,5 @@
 """Tests for research chat."""
+
 import pytest
 from unittest.mock import MagicMock, patch
 

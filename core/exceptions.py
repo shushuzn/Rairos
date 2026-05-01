@@ -1,6 +1,6 @@
 """Exception hierarchy for AI Research OS."""
-from typing import Any, Dict, Optional
 
+from typing import Any, Dict, Optional
 
 
 class AIResearchOSError(Exception):
@@ -106,7 +106,7 @@ def format_error_message(error: Exception) -> str:
     if isinstance(error, AIResearchOSError):
         error_info = error.get_error_info()
         parts = [f"[{error_info['error_type']}] {error_info['message']}"]
-        if error_info.get('cause'):
+        if error_info.get("cause"):
             parts.append(f"Caused by: {error_info['cause']}")
         return "\n".join(parts)
     else:

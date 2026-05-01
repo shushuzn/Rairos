@@ -1,4 +1,5 @@
 """Tests for paper comparison."""
+
 import pytest
 from llm.paper_comparison import (
     PaperComparator,
@@ -16,6 +17,7 @@ class TestPaperComparator:
 
     def test_add_paper(self, comparator):
         """Test adding a paper."""
+
         class MockPaper:
             uid = "p1"
             title = "Test Paper"
@@ -32,6 +34,7 @@ class TestPaperComparator:
 
     def test_extract_methods(self, comparator):
         """Test method extraction from paper text."""
+
         class MockPaper:
             title = "Transformer based model"
             abstract = "We use BERT and attention mechanisms"
@@ -44,6 +47,7 @@ class TestPaperComparator:
 
     def test_extract_datasets(self, comparator):
         """Test dataset extraction from paper text."""
+
         class MockPaper:
             title = "GLUE benchmark evaluation"
             abstract = "We evaluate on SQuAD and MNLI"
@@ -56,6 +60,7 @@ class TestPaperComparator:
 
     def test_compare_papers(self, comparator):
         """Test comparing multiple papers."""
+
         class Paper1:
             uid = "p1"
             title = "Paper One"
@@ -82,6 +87,7 @@ class TestPaperComparator:
 
     def test_compare_with_aspects(self, comparator):
         """Test comparing with specific aspects."""
+
         class Paper1:
             uid = "p1"
             title = "Paper One"
@@ -97,6 +103,7 @@ class TestPaperComparator:
 
     def test_render_text(self, comparator):
         """Test text rendering."""
+
         class Paper1:
             uid = "p1"
             title = "Paper One"
@@ -108,9 +115,12 @@ class TestPaperComparator:
             metrics = ""
 
         col = comparator.add_paper(Paper1())
-        result = ComparisonResult(columns=[col], aspect_rows=[
-            {"aspect": "Methods", "p1": "Transformer"},
-        ])
+        result = ComparisonResult(
+            columns=[col],
+            aspect_rows=[
+                {"aspect": "Methods", "p1": "Transformer"},
+            ],
+        )
 
         output = comparator.render_text(result)
         assert "Paper Comparison" in output
@@ -118,6 +128,7 @@ class TestPaperComparator:
 
     def test_render_markdown(self, comparator):
         """Test Markdown rendering."""
+
         class Paper1:
             uid = "p1"
             title = "Paper One"
@@ -129,9 +140,12 @@ class TestPaperComparator:
             metrics = ""
 
         col = comparator.add_paper(Paper1())
-        result = ComparisonResult(columns=[col], aspect_rows=[
-            {"aspect": "Methods", "p1": "Transformer"},
-        ])
+        result = ComparisonResult(
+            columns=[col],
+            aspect_rows=[
+                {"aspect": "Methods", "p1": "Transformer"},
+            ],
+        )
 
         output = comparator.render_markdown(result)
         assert "# Paper Comparison" in output
@@ -139,6 +153,7 @@ class TestPaperComparator:
 
     def test_render_diff(self, comparator):
         """Test diff rendering."""
+
         class Paper1:
             title = "Paper One"
             methods = ["BERT", "Transformer"]

@@ -1,9 +1,8 @@
 """
 Progress Tracker - 进度追踪系统
 """
+
 from datetime import datetime
-
-
 
 
 class ProgressTracker:
@@ -17,7 +16,7 @@ class ProgressTracker:
             "description": description,
             "status": "pending",
             "created": datetime.now().isoformat(),
-            "completed": None
+            "completed": None,
         }
 
     def complete_task(self, task_id: str):
@@ -34,6 +33,7 @@ class ProgressTracker:
 
 
 _tracker = None
+
 
 def get_tracker() -> ProgressTracker:
     global _tracker

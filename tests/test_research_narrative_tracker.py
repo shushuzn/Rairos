@@ -114,11 +114,21 @@ class TestScoreComputation:
 
     def _thread(self, **kw) -> ResearchThread:
         defaults = dict(
-            id="t1", topic="Test", phase=NarrativePhase.EXPLORATION,
-            phase_updated_at="", question_ids=[], hypothesis_ids=[],
-            experiment_ids=[], insight_card_ids=[], paper_ids=[],
-            gap_count=0, hypothesis_count=0, validated_count=0,
-            rejected_count=0, running_count=0, notes="",
+            id="t1",
+            topic="Test",
+            phase=NarrativePhase.EXPLORATION,
+            phase_updated_at="",
+            question_ids=[],
+            hypothesis_ids=[],
+            experiment_ids=[],
+            insight_card_ids=[],
+            paper_ids=[],
+            gap_count=0,
+            hypothesis_count=0,
+            validated_count=0,
+            rejected_count=0,
+            running_count=0,
+            notes="",
         )
         defaults.update(kw)
         return ResearchThread(**defaults)
@@ -177,8 +187,10 @@ class TestScoreComputation:
     def test_contribution_caps_at_1(self):
         svc = ResearchNarrativeService()
         t = self._thread(
-            gap_count=1, hypothesis_count=3,
-            insight_card_ids=["c1"], paper_ids=["p1", "p2", "p3"],
+            gap_count=1,
+            hypothesis_count=3,
+            insight_card_ids=["c1"],
+            paper_ids=["p1", "p2", "p3"],
             question_ids=["q1"],
         )
         s = svc._contribution_score(t)
@@ -187,8 +199,11 @@ class TestScoreComputation:
     def test_experiment_score_validated(self):
         svc = ResearchNarrativeService()
         t = self._thread(
-            validated_count=1, rejected_count=0, running_count=0,
-            hypothesis_count=1, paper_ids=["p1"],
+            validated_count=1,
+            rejected_count=0,
+            running_count=0,
+            hypothesis_count=1,
+            paper_ids=["p1"],
         )
         s = svc._experiment_score(t)
         assert 0 < s < 1.0
@@ -196,8 +211,11 @@ class TestScoreComputation:
     def test_experiment_score_multiple_validated(self):
         svc = ResearchNarrativeService()
         t = self._thread(
-            validated_count=3, rejected_count=0, running_count=0,
-            hypothesis_count=2, paper_ids=["p1"],
+            validated_count=3,
+            rejected_count=0,
+            running_count=0,
+            hypothesis_count=2,
+            paper_ids=["p1"],
         )
         s = svc._experiment_score(t)
         assert s >= 0.7  # 0.4 + 0.2 + 0.1
@@ -205,8 +223,11 @@ class TestScoreComputation:
     def test_experiment_score_bidirectional(self):
         svc = ResearchNarrativeService()
         t = self._thread(
-            validated_count=1, rejected_count=1, running_count=0,
-            hypothesis_count=1, paper_ids=["p1"],
+            validated_count=1,
+            rejected_count=1,
+            running_count=0,
+            hypothesis_count=1,
+            paper_ids=["p1"],
         )
         s = svc._experiment_score(t)
         assert s >= 0.5  # 0.2 + 0.2 + 0.1
@@ -231,7 +252,8 @@ class TestScoreComputation:
     def test_narrative_score_validated_contribution(self):
         svc = ResearchNarrativeService()
         t = self._thread(
-            question_ids=["q1"], hypothesis_ids=["h1"],
+            question_ids=["q1"],
+            hypothesis_ids=["h1"],
             validated_count=1,
         )
         _, _, n = svc._compute_readiness(t)
@@ -247,12 +269,23 @@ class TestNextSteps:
 
     def _thread(self, **kw) -> ResearchThread:
         defaults = dict(
-            id="t1", topic="Transformer", phase=NarrativePhase.EXPLORATION,
-            phase_updated_at="", question_ids=[], hypothesis_ids=[],
-            experiment_ids=[], insight_card_ids=[], paper_ids=[],
-            gap_count=0, hypothesis_count=0, validated_count=0,
-            rejected_count=0, running_count=0,
-            contribution_score=0.0, experiment_score=0.0, narrative_score=0.5,
+            id="t1",
+            topic="Transformer",
+            phase=NarrativePhase.EXPLORATION,
+            phase_updated_at="",
+            question_ids=[],
+            hypothesis_ids=[],
+            experiment_ids=[],
+            insight_card_ids=[],
+            paper_ids=[],
+            gap_count=0,
+            hypothesis_count=0,
+            validated_count=0,
+            rejected_count=0,
+            running_count=0,
+            contribution_score=0.0,
+            experiment_score=0.0,
+            narrative_score=0.5,
             notes="",
         )
         defaults.update(kw)
@@ -284,7 +317,8 @@ class TestNextSteps:
         t = self._thread(
             phase=NarrativePhase.VALIDATION,
             hypothesis_ids=["h1"],
-            validated_count=0, running_count=0,
+            validated_count=0,
+            running_count=0,
             experiment_score=0.1,
         )
         steps = svc.generate_next_steps(t)
@@ -349,10 +383,13 @@ class TestTrackerPersistence:
 
 def _make_event(action_value: str):
     """Create a mock event with a given action value string."""
+
     class MockEvent:
         pass
+
     class MockAction:
         value = action_value
+
     e = MockEvent()
     e.action = MockAction()
     return e

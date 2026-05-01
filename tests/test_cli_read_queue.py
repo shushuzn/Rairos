@@ -1,4 +1,5 @@
 """Unit tests for read-queue CLI subcommand — smart reading priority queue."""
+
 from unittest.mock import patch
 
 
@@ -49,12 +50,14 @@ class FakeDB:
 # Parser tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestReadQueueParser:
     def test_parser_help_text(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.read_queue import _build_read_queue_parser
         import argparse
+
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
         _build_read_queue_parser(sub)
@@ -65,6 +68,7 @@ class TestReadQueueParser:
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.read_queue import _build_read_queue_parser
         import argparse
+
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
         _build_read_queue_parser(sub)
@@ -74,6 +78,7 @@ class TestReadQueueParser:
 # ─────────────────────────────────────────────────────────────────────────────
 # _handle_status_action unit tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestHandleStatus:
     def _make_args(self, **kwargs):
@@ -156,6 +161,7 @@ class TestHandleStatus:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_read_queue unit tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunReadQueue:
     def _make_args(self, **kwargs):

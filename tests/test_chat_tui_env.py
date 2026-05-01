@@ -116,6 +116,7 @@ class TestChatTuiParser:
 def _get_subcommand_table():
     """Helper to get subcommand table."""
     from cli._registry import _SUBCOMMAND_TABLE
+
     return _SUBCOMMAND_TABLE
 
 
@@ -126,6 +127,7 @@ class TestChatTuiArgs:
         """Default model should come from config.DEFAULT_LLM_MODEL_CLI."""
         try:
             from config import DEFAULT_LLM_MODEL_CLI
+
             assert isinstance(DEFAULT_LLM_MODEL_CLI, str)
             assert len(DEFAULT_LLM_MODEL_CLI) > 0
         except ImportError:
@@ -135,6 +137,7 @@ class TestChatTuiArgs:
         """Default base URL should come from config.DEFAULT_OPENAI_BASE_URL."""
         try:
             from config import DEFAULT_OPENAI_BASE_URL
+
             assert isinstance(DEFAULT_OPENAI_BASE_URL, str)
             assert DEFAULT_OPENAI_BASE_URL.startswith("http")
         except ImportError:

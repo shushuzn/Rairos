@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/review_generator.py, pure functions, no I/O."""
+
 from llm.review_generator import (
     ResearchStream,
     Controversy,
@@ -87,26 +88,28 @@ class TestClassifyStreams:
         """Replicate _classify_streams."""
         streams = {}
         for paper in papers:
-            text = (getattr(paper, 'title', '') + " " +
-                    getattr(paper, 'abstract', '')).lower()
-            if any(k in text for k in ['retrieval', 'retriever', 'search', 'index']):
+            text = (getattr(paper, "title", "") + " " + getattr(paper, "abstract", "")).lower()
+            if any(k in text for k in ["retrieval", "retriever", "search", "index"]):
                 stream_name = "检索增强型"
-            elif any(k in text for k in ['generation', 'generator', 'decoder', 'llm', 'gpt']):
+            elif any(k in text for k in ["generation", "generator", "decoder", "llm", "gpt"]):
                 stream_name = "生成优化型"
-            elif any(k in text for k in ['hybrid', 'fusion', 'combine', 'ensemble']):
+            elif any(k in text for k in ["hybrid", "fusion", "combine", "ensemble"]):
                 stream_name = "混合方法"
-            elif any(k in text for k in ['fine-tun', 'tuning', 'adaptation', 'transfer']):
+            elif any(k in text for k in ["fine-tun", "tuning", "adaptation", "transfer"]):
                 stream_name = "适配优化型"
             else:
                 stream_name = "其他方法"
             if stream_name not in streams:
-                streams[stream_name] = ResearchStream(name=stream_name, papers=[], methods=[], key_contributions=[])
-            streams[stream_name].papers.append(getattr(paper, 'uid', ''))
+                streams[stream_name] = ResearchStream(
+                    name=stream_name, papers=[], methods=[], key_contributions=[]
+                )
+            streams[stream_name].papers.append(getattr(paper, "uid", ""))
         return list(streams.values())
 
     def _paper(self, title, abstract="", uid="p1"):
         class P:
             pass
+
         p = P()
         p.title = title
         p.abstract = abstract
@@ -194,23 +197,27 @@ class TestDetectControversies:
         controversies = []
         stream_names = [s.name for s in streams]
         if "检索增强型" in stream_names and "生成优化型" in stream_names:
-            controversies.append(Controversy(
-                topic="效率 vs 质量",
-                stream_a="检索增强型",
-                stream_b="生成优化型",
-                position_a="检索提供外部知识，减少生成参数",
-                position_b="端到端训练，知识内化",
-                papers=[],
-            ))
+            controversies.append(
+                Controversy(
+                    topic="效率 vs 质量",
+                    stream_a="检索增强型",
+                    stream_b="生成优化型",
+                    position_a="检索提供外部知识，减少生成参数",
+                    position_b="端到端训练，知识内化",
+                    papers=[],
+                )
+            )
         if "混合方法" in stream_names and len(streams) > 1:
-            controversies.append(Controversy(
-                topic="通用性 vs 专用性",
-                stream_a="混合方法",
-                stream_b="专用方法",
-                position_a="融合多种技术，追求通用性",
-                position_b="针对特定场景优化，追求性能",
-                papers=[],
-            ))
+            controversies.append(
+                Controversy(
+                    topic="通用性 vs 专用性",
+                    stream_a="混合方法",
+                    stream_b="专用方法",
+                    position_a="融合多种技术，追求通用性",
+                    position_b="针对特定场景优化，追求性能",
+                    papers=[],
+                )
+            )
         return controversies
 
     def _stream(self, name):
@@ -272,8 +279,8 @@ class TestBuildTimeline:
         """Replicate _build_timeline."""
         timeline = []
         for paper in papers:
-            year = getattr(paper, 'year', None) or 2020
-            title = getattr(paper, 'title', '')[:50]
+            year = getattr(paper, "year", None) or 2020
+            title = getattr(paper, "title", "")[:50]
             if year and title:
                 timeline.append((int(year), title))
         timeline.sort(key=lambda x: x[0])
@@ -282,6 +289,7 @@ class TestBuildTimeline:
     def _paper(self, year, title):
         class P:
             pass
+
         p = P()
         p.year = year
         p.title = title
@@ -314,9 +322,11 @@ class TestBuildTimeline:
     def test_missing_year_defaults_to_2020(self):
         """Missing year defaults to 2020."""
         papers = []
+
         class P:
             title = "Test"
             year = None
+
         papers.append(P())
         timeline = self._build_timeline(papers)
         assert timeline[0][0] == 2020
@@ -342,11 +352,13 @@ class TestIdentifyGaps:
             gaps.append("该领域论文数量较少，研究深度有限")
         if len(streams) < 2:
             gaps.append("领域方法单一，缺乏方法多样性")
-        gaps.extend([
-            "长文档场景下的检索效率问题",
-            "检索结果与生成质量的一致性保证",
-            "跨领域知识迁移的有效性评估",
-        ])
+        gaps.extend(
+            [
+                "长文档场景下的检索效率问题",
+                "检索结果与生成质量的一致性保证",
+                "跨领域知识迁移的有效性评估",
+            ]
+        )
         return gaps[:5]
 
     def _stream(self, name):
@@ -356,6 +368,7 @@ class TestIdentifyGaps:
         class P:
             title = "Test Paper"
             abstract = ""
+
         return P()
 
     def test_retrieval_without_generation_gap(self):
@@ -405,38 +418,37 @@ class TestGenerateSections:
     def _generate_sections(self, topic, streams, controversies, timeline, open_problems, depth):
         """Replicate _generate_sections."""
         sections = []
-        sections.append(ReviewSection(
-            title="概述",
-            content=f"本综述覆盖 {topic} 领域的关键研究，"
-                    f"涉及 {len(streams)} 个主要流派。",
-        ))
+        sections.append(
+            ReviewSection(
+                title="概述",
+                content=f"本综述覆盖 {topic} 领域的关键研究，涉及 {len(streams)} 个主要流派。",
+            )
+        )
         if streams:
-            stream_content = "\n".join([
-                f"### {s.name}\n"
-                f"- 论文数: {len(s.papers)}\n"
-                f"- 代表方法: {', '.join(s.methods[:3]) or '待识别'}"
-                for s in streams
-            ])
+            stream_content = "\n".join(
+                [
+                    f"### {s.name}\n"
+                    f"- 论文数: {len(s.papers)}\n"
+                    f"- 代表方法: {', '.join(s.methods[:3]) or '待识别'}"
+                    for s in streams
+                ]
+            )
             sections.append(ReviewSection(title="方法流派", content=stream_content))
         if controversies:
-            controversy_content = "\n".join([
-                f"### {c.topic}\n"
-                f"- {c.stream_a}观点: {c.position_a}\n"
-                f"- {c.stream_b}观点: {c.position_b}"
-                for c in controversies
-            ])
+            controversy_content = "\n".join(
+                [
+                    f"### {c.topic}\n"
+                    f"- {c.stream_a}观点: {c.position_a}\n"
+                    f"- {c.stream_b}观点: {c.position_b}"
+                    for c in controversies
+                ]
+            )
             sections.append(ReviewSection(title="核心争论", content=controversy_content))
         if timeline and depth == "full":
-            timeline_content = "\n".join([
-                f"- {year}: {event}"
-                for year, event in timeline[:10]
-            ])
+            timeline_content = "\n".join([f"- {year}: {event}" for year, event in timeline[:10]])
             sections.append(ReviewSection(title="演化脉络", content=timeline_content))
         if open_problems:
-            problems_content = "\n".join([
-                f"- {i+1}. {p}"
-                for i, p in enumerate(open_problems)
-            ])
+            problems_content = "\n".join([f"- {i + 1}. {p}" for i, p in enumerate(open_problems)])
             sections.append(ReviewSection(title="待解决问题", content=problems_content))
         return sections
 
@@ -464,7 +476,9 @@ class TestGenerateSections:
 
     def test_overview_shows_stream_count(self):
         """Overview content mentions stream count."""
-        sections = self._generate_sections("Topic", [self._stream("S1"), self._stream("S2")], [], [], [], "full")
+        sections = self._generate_sections(
+            "Topic", [self._stream("S1"), self._stream("S2")], [], [], [], "full"
+        )
         overview = next(s for s in sections if s.title == "概述")
         assert "2" in overview.content  # 2 streams
 
@@ -587,18 +601,20 @@ class TestRenderJson:
     def _render_json(self, review):
         """Replicate render_json."""
         import json
-        return json.dumps({
-            "topic": review.topic,
-            "streams": [
-                {"name": s.name, "paper_count": len(s.papers)}
-                for s in review.streams
-            ],
-            "controversies": [
-                {"topic": c.topic, "sides": [c.stream_a, c.stream_b]}
-                for c in review.controversies
-            ],
-            "open_problems": review.open_problems,
-        }, ensure_ascii=False, indent=2)
+
+        return json.dumps(
+            {
+                "topic": review.topic,
+                "streams": [{"name": s.name, "paper_count": len(s.papers)} for s in review.streams],
+                "controversies": [
+                    {"topic": c.topic, "sides": [c.stream_a, c.stream_b]}
+                    for c in review.controversies
+                ],
+                "open_problems": review.open_problems,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
 
     def test_topic_included(self):
         """Topic included in JSON."""
@@ -610,7 +626,11 @@ class TestRenderJson:
         """Streams included with paper count."""
         review = LiteratureReview(
             topic="T",
-            streams=[ResearchStream(name="检索增强型", papers=["p1", "p2"], methods=[], key_contributions=[])],
+            streams=[
+                ResearchStream(
+                    name="检索增强型", papers=["p1", "p2"], methods=[], key_contributions=[]
+                )
+            ],
         )
         output = self._render_json(review)
         assert "检索增强型" in output
@@ -621,7 +641,14 @@ class TestRenderJson:
         review = LiteratureReview(
             topic="T",
             controversies=[
-                Controversy(topic="Efficiency", stream_a="A", stream_b="B", position_a="", position_b="", papers=[]),
+                Controversy(
+                    topic="Efficiency",
+                    stream_a="A",
+                    stream_b="B",
+                    position_a="",
+                    position_b="",
+                    papers=[],
+                ),
             ],
         )
         output = self._render_json(review)

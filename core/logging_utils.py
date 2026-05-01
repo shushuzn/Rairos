@@ -1,4 +1,5 @@
 """Logging and monitoring utilities for AI Research OS."""
+
 import logging
 import time
 from functools import wraps
@@ -72,6 +73,7 @@ def track_time(name: str):
 
 def timed(func: Callable) -> Callable:
     """Decorator to track function execution time."""
+
     @wraps(func)
     def wrapper(*args, **kwargs) -> Any:
         start = time.time()
@@ -83,6 +85,7 @@ def timed(func: Callable) -> Callable:
             metric_name = f"{func.__module__}.{func.__name__}"
             _monitor.record(metric_name, duration)
             logger.debug(f"{metric_name} took {duration:.3f}s")
+
     return wrapper
 
 
@@ -117,7 +120,7 @@ def setup_logging(level: str = "INFO", log_file: str = None) -> None:  # type: i
     logging.basicConfig(
         level=log_level,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        handlers=handlers
+        handlers=handlers,
     )
 
     # Set library loggers to WARNING to reduce noise

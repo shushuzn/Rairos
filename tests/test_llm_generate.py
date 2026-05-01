@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/generate.py, pure functions, no I/O."""
+
 import pytest
 from llm.generate import (
     estimate_tokens,

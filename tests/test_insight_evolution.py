@@ -1,4 +1,5 @@
 """Tests for Insight Evolution Tracker."""
+
 from __future__ import annotations
 
 import json
@@ -749,6 +750,7 @@ class TestExtractKeywords:
 
     def test_extracts_single_word(self):
         from llm.insight_evolution import EvolutionTracker
+
         with tempfile.TemporaryDirectory() as tmpdir:
             tracker = EvolutionTracker(data_dir=Path(tmpdir))
             kw = tracker._extract_keywords("transformer attention mechanism")
@@ -756,6 +758,7 @@ class TestExtractKeywords:
 
     def test_extracts_nothing_from_empty_string(self):
         from llm.insight_evolution import EvolutionTracker
+
         with tempfile.TemporaryDirectory() as tmpdir:
             tracker = EvolutionTracker(data_dir=Path(tmpdir))
             kw = tracker._extract_keywords("")
@@ -808,6 +811,7 @@ class TestBackupManagement:
         temp_tracker.record_gap_accept(topic="RAG", gap_type="method_limitation", gap_title="Gap")
         temp_tracker.export_profile()
         import time
+
         time.sleep(1.1)  # Windows mtime resolution is ~1 second
         temp_tracker.export_profile()
 

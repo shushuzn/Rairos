@@ -4,6 +4,7 @@ User-Friendly Error Messages and Helpers.
 Provides clear, helpful error messages and suggestions for users.
 Inspired by the "simplify complexity" philosophy.
 """
+
 from typing import Optional, Dict, Any
 
 
@@ -33,7 +34,7 @@ class DatabaseError(UserError):
         """Create a not found error."""
         return DatabaseError(
             message=f"未找到 {item}: {item_id}",
-            suggestion=f"请检查 {item_id} 是否正确，或使用 'search' 命令搜索相关 {item}"
+            suggestion=f"请检查 {item_id} 是否正确，或使用 'search' 命令搜索相关 {item}",
         )
 
     @staticmethod
@@ -41,7 +42,7 @@ class DatabaseError(UserError):
         """Create a connection failed error."""
         return DatabaseError(
             message="数据库连接失败",
-            suggestion="请确保数据库文件存在，或运行 'python cli.py init' 初始化数据库"
+            suggestion="请确保数据库文件存在，或运行 'python cli.py init' 初始化数据库",
         )
 
 
@@ -56,23 +57,20 @@ class APIError(UserError):
         """Create a rate limit error."""
         return APIError(
             message=f"API请求过于频繁 ({endpoint})",
-            suggestion=f"请等待 {wait_seconds} 秒后重试，或使用 'rate-limit' 命令查看API使用统计"
+            suggestion=f"请等待 {wait_seconds} 秒后重试，或使用 'rate-limit' 命令查看API使用统计",
         )
 
     @staticmethod
     def network_failed() -> "APIError":
         """Create a network failed error."""
-        return APIError(
-            message="网络连接失败",
-            suggestion="请检查网络连接，或使用代理设置"
-        )
+        return APIError(message="网络连接失败", suggestion="请检查网络连接，或使用代理设置")
 
     @staticmethod
     def auth_failed() -> "APIError":
         """Create an authentication error."""
         return APIError(
             message="API认证失败",
-            suggestion="请检查API密钥是否正确，或使用 'export OPENAI_API_KEY=your-key' 设置"
+            suggestion="请检查API密钥是否正确，或使用 'export OPENAI_API_KEY=your-key' 设置",
         )
 
 
@@ -87,7 +85,7 @@ class ParseError(UserError):
         """Create a PDF parsing error."""
         return ParseError(
             message=f"解析论文失败: {paper_id}",
-            suggestion="请检查PDF文件是否可访问，或使用 '--no-pdf' 跳过PDF下载"
+            suggestion="请检查PDF文件是否可访问，或使用 '--no-pdf' 跳过PDF下载",
         )
 
 
@@ -101,7 +99,7 @@ def format_error(error: Exception) -> str:
 
 def print_error(error: Exception):
     """Print error message to console."""
-    print(format_error(error), file=__import__('sys').stderr)
+    print(format_error(error), file=__import__("sys").stderr)
 
 
 class ProgressIndicator:
@@ -132,7 +130,7 @@ class ProgressIndicator:
 def confirm_action(prompt: str) -> bool:
     """Ask user for confirmation."""
     response = input(f"{prompt} (y/n): ").strip().lower()
-    return response in ['y', 'yes']
+    return response in ["y", "yes"]
 
 
 def select_option(options: list, prompt: str = "请选择") -> int:
@@ -166,13 +164,16 @@ def print_table(headers: list, rows: list, max_width: int = 50):
 
     # Print rows
     for row in rows:
-        row_line = " | ".join(str(cell).ljust(col_widths[i])[:col_widths[i]] for i, cell in enumerate(row))
+        row_line = " | ".join(
+            str(cell).ljust(col_widths[i])[: col_widths[i]] for i, cell in enumerate(row)
+        )
         print(row_line)
 
 
 def print_json(data: Dict[str, Any], indent: int = 2):
     """Print data as formatted JSON."""
     import json
+
     print(json.dumps(data, indent=indent, ensure_ascii=False))
 
 

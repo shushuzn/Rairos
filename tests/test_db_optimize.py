@@ -1,4 +1,5 @@
 """Tests for database optimization functionality."""
+
 from db.optimize import (
     OPTIMIZATION_INDEXES,
     PRAGMA_SETTINGS,

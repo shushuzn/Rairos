@@ -11,6 +11,7 @@ We promise:
 - Background operation only when idle
 - Resource protection guarantees
 """
+
 import psutil
 from typing import Dict, List
 from dataclasses import dataclass
@@ -19,6 +20,7 @@ from dataclasses import dataclass
 @dataclass
 class PerformanceGuarantee:
     """Represents a performance guarantee."""
+
     name: str
     promise: str
     measured_impact: float
@@ -42,25 +44,19 @@ class PerformanceGuaranteeSystem:
                 name="CPU使用率",
                 promise="不影响其他应用（< 30% CPU）",
                 measured_impact=0.0,
-                status="OK"
+                status="OK",
             ),
             PerformanceGuarantee(
-                name="内存使用",
-                promise="不超过系统内存的50%",
-                measured_impact=0.0,
-                status="OK"
+                name="内存使用", promise="不超过系统内存的50%", measured_impact=0.0, status="OK"
             ),
             PerformanceGuarantee(
-                name="磁盘I/O",
-                promise="仅在后台低优先级执行",
-                measured_impact=0.0,
-                status="OK"
+                name="磁盘I/O", promise="仅在后台低优先级执行", measured_impact=0.0, status="OK"
             ),
             PerformanceGuarantee(
                 name="网络带宽",
                 promise="智能限流，不影响其他网络应用",
                 measured_impact=0.0,
-                status="OK"
+                status="OK",
             ),
         ]
 
@@ -110,9 +106,7 @@ class PerformanceGuaranteeSystem:
 
         for guarantee in self.guarantees:
             status_icon = "✅" if guarantee.status == "OK" else "⚠️"
-            lines.append(
-                f"{status_icon} {guarantee.name}: {guarantee.measured_impact:.1f}%"
-            )
+            lines.append(f"{status_icon} {guarantee.name}: {guarantee.measured_impact:.1f}%")
             lines.append(f"   承诺: {guarantee.promise}")
 
         lines.append("-" * 60)

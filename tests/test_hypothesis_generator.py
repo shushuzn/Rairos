@@ -1,4 +1,5 @@
 """Tests for research hypothesis generator."""
+
 from unittest.mock import MagicMock
 
 from llm.hypothesis_generator import (
@@ -457,8 +458,11 @@ class TestGenerateFromTemplates:
             core_statement="X causes Y",
             based_on="unit test",
             experiment_design=ExperimentDesign(
-                baseline="", variables=[], controls=[],
-                evaluation_metrics=[], expected_results="",
+                baseline="",
+                variables=[],
+                controls=[],
+                evaluation_metrics=[],
+                expected_results="",
             ),
         )
         defaults.update(kwargs)
@@ -541,8 +545,11 @@ class TestFindDifferentiations:
             core_statement="X causes Y",
             based_on="test",
             experiment_design=ExperimentDesign(
-                baseline="", variables=[], controls=[],
-                evaluation_metrics=[], expected_results="",
+                baseline="",
+                variables=[],
+                controls=[],
+                evaluation_metrics=[],
+                expected_results="",
             ),
         )
         diffs = generator._find_differentiations(hypothesis, "transformer")
@@ -559,8 +566,11 @@ class TestFindDifferentiations:
             core_statement="X causes Y",
             based_on="test",
             experiment_design=ExperimentDesign(
-                baseline="", variables=[], controls=[],
-                evaluation_metrics=[], expected_results="",
+                baseline="",
+                variables=[],
+                controls=[],
+                evaluation_metrics=[],
+                expected_results="",
             ),
         )
         diffs = generator._find_differentiations(hypothesis, "transformer")

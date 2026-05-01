@@ -1,4 +1,5 @@
 """Tests for RAG pipeline module."""
+
 import pytest
 from pathlib import Path
 import shutil
@@ -107,6 +108,7 @@ array([0.09003057, 0.24472847, 0.66524096])
 
         # Verify CSV content
         import csv
+
         with open(csv_path, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)

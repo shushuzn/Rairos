@@ -1,4 +1,5 @@
 """Tests for extable module — detector, parser, storage."""
+
 from __future__ import annotations
 
 
@@ -108,6 +109,7 @@ class TestExperimentDB:
 class TestTableDetector:
     def test_no_fitz_returns_empty(self):
         from extable.detector import TableDetector
+
         td = TableDetector()
         # If fitz is available this test still passes because we pass a bad path
         # but we mainly want to ensure the API works.

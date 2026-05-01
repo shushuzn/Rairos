@@ -1,11 +1,15 @@
 """Tests for core/notifications.py."""
+
 import sys
 import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from core.notifications import (
-    NotificationLevel, Notification, NotificationManager, get_notification_manager
+    NotificationLevel,
+    Notification,
+    NotificationManager,
+    get_notification_manager,
 )
 
 
@@ -97,10 +101,12 @@ class TestNotificationManager:
 class TestGetNotificationManager:
     def setup_method(self):
         import core.notifications as nm
+
         nm._notification_manager = None
 
     def teardown_method(self):
         import core.notifications as nm
+
         nm._notification_manager = None
 
     def test_singleton(self):

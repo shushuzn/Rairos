@@ -1,4 +1,5 @@
 """Tests for tag inference functionality."""
+
 from core import Paper
 from notes.keyword_tags import infer_tags_if_empty
 
@@ -14,7 +15,7 @@ def test_infer_tags_if_empty_with_provided_tags():
         published="2023-01-01",
         updated="2023-01-01",
         abs_url="https://arxiv.org/abs/2301.001",
-        pdf_url="https://arxiv.org/pdf/2301.001.pdf"
+        pdf_url="https://arxiv.org/pdf/2301.001.pdf",
     )
     provided_tags = ["LLM", "Agent"]
     result = infer_tags_if_empty(provided_tags, paper)
@@ -32,7 +33,7 @@ def test_infer_tags_if_empty_with_no_tags():
         published="2023-01-01",
         updated="2023-01-01",
         abs_url="https://arxiv.org/abs/2301.001",
-        pdf_url="https://arxiv.org/pdf/2301.001.pdf"
+        pdf_url="https://arxiv.org/pdf/2301.001.pdf",
     )
     result = infer_tags_if_empty([], paper)
     assert "LLM" in result
@@ -50,7 +51,7 @@ def test_infer_tags_if_empty_with_unsorted():
         published="2023-01-01",
         updated="2023-01-01",
         abs_url="https://arxiv.org/abs/2301.001",
-        pdf_url="https://arxiv.org/pdf/2301.001.pdf"
+        pdf_url="https://arxiv.org/pdf/2301.001.pdf",
     )
     result = infer_tags_if_empty([], paper)
     assert result == ["Unsorted"]
@@ -67,7 +68,7 @@ def test_infer_tags_if_empty_with_redundant_tags():
         published="2023-01-01",
         updated="2023-01-01",
         abs_url="https://arxiv.org/abs/2301.001",
-        pdf_url="https://arxiv.org/pdf/2301.001.pdf"
+        pdf_url="https://arxiv.org/pdf/2301.001.pdf",
     )
     result = infer_tags_if_empty([], paper)
     # Should include GPT and Agent, but not LLM (since GPT is more specific)
@@ -86,7 +87,7 @@ def test_infer_tags_if_empty_with_multiple_tags():
         published="2023-01-01",
         updated="2023-01-01",
         abs_url="https://arxiv.org/abs/2301.001",
-        pdf_url="https://arxiv.org/pdf/2301.001.pdf"
+        pdf_url="https://arxiv.org/pdf/2301.001.pdf",
     )
     result = infer_tags_if_empty([], paper)
     assert "Multimodal" in result

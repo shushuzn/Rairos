@@ -1,4 +1,5 @@
 """Unit tests for question CLI subcommand — research question tracking."""
+
 from unittest.mock import patch
 
 
@@ -12,12 +13,14 @@ class FakeArgs:
 # Parser tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestQuestionParser:
     def test_parser_help_text(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.question import _build_question_parser
         import argparse
+
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
         _build_question_parser(sub)
@@ -28,6 +31,7 @@ class TestQuestionParser:
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.question import _build_question_parser
         import argparse
+
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
         _build_question_parser(sub)
@@ -37,6 +41,7 @@ class TestQuestionParser:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_question unit tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunQuestion:
     def test_list_action_calls_tracker(self, monkeypatch, capsys):
