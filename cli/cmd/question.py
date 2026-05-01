@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import argparse
+from typing import Optional
 
 from cli._shared import get_db, print_error
-from llm.question_tracker import QuestionTracker, QuestionSource
+from llm.question_tracker import QuestionTracker, QuestionSource, ResearchQuestion
 
 
 def _build_question_parser(subparsers) -> argparse.ArgumentParser:
@@ -64,12 +65,13 @@ def _build_question_parser(subparsers) -> argparse.ArgumentParser:
     # stats
     sub.add_parser("stats", help="Show question statistics")
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_question(args: argparse.Namespace) -> int:
     """Run question management command."""
     tracker = QuestionTracker()
+    q: Optional[ResearchQuestion] = None
 
     if args.action == "list":
         questions = tracker.list_questions(

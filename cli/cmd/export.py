@@ -6,9 +6,24 @@ import csv as _csv
 import io as _io
 import json as _json
 import re
+from dataclasses import dataclass
 from pathlib import Path
+from typing import List, Optional
 
 from cli._shared import get_db
+
+
+@dataclass
+class FakePaper:
+    id: str = ""
+    title: str = ""
+    authors: List[str] = None  # type: ignore[assignment]
+    published: str = ""
+    journal: str = ""
+    doi: str = ""
+    abs_url: str = ""
+    abstract: str = ""
+    primary_category: str = ""
 
 
 def _sanitize_bibtex(value: str) -> str:
@@ -86,7 +101,7 @@ def _build_export_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--limit", type=int, default=0, help="Limit number of papers (0 = all)")
     p.add_argument("--out", metavar="FILE", help="Write to file instead of stdout")
     p.add_argument("--paper", metavar="ID", help="Export single paper by ID (overrides --limit)")
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_export(args: argparse.Namespace) -> int:
@@ -125,19 +140,17 @@ def _run_export(args: argparse.Namespace) -> int:
             # rows are dicts from export_papers
             output = _io.StringIO()
             for row in rows:
-                # Reconstruct minimal paper-like object for _paper_to_bibtex
-                class FakePaper:
-                    pass
-                p = FakePaper()
-                p.id = row.get("id", "")
-                p.title = row.get("title", "")
-                p.authors = row.get("authors", "").split(" and ") if row.get("authors") else []
-                p.published = row.get("published", "")
-                p.journal = row.get("journal", "")
-                p.doi = row.get("doi", "")
-                p.abs_url = row.get("abs_url", "")
-                p.abstract = row.get("abstract", "")
-                p.primary_category = row.get("primary_category", "")
+                p = FakePaper(
+                    id=row.get("id", ""),
+                    title=row.get("title", ""),
+                    authors=row.get("authors", "").split(" and ") if row.get("authors") else [],
+                    published=row.get("published", ""),
+                    journal=row.get("journal", ""),
+                    doi=row.get("doi", ""),
+                    abs_url=row.get("abs_url", ""),
+                    abstract=row.get("abstract", ""),
+                    primary_category=row.get("primary_category", ""),
+                )
                 output.write(_paper_to_bibtex(p))
                 output.write("\n\n")
             content = output.getvalue()

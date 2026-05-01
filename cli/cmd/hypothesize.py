@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from typing import Any, Dict, List
 
 from cli._shared import get_db, print_info
 from cli.warp import WarpBlocks
@@ -169,7 +170,7 @@ def _run_list_hypotheses() -> int:
 
     # Group experiments by hypothesis_id to get names
     experiments = tracker.list_experiments()
-    exp_by_hid = {}
+    exp_by_hid: Dict[str, List[Any]] = {}
     for e in experiments:
         if e.hypothesis_id:
             if e.hypothesis_id not in exp_by_hid:

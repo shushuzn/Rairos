@@ -15,7 +15,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, cast
 
 from llm.tracker_base import JsonFileStore
 
@@ -113,13 +113,13 @@ class ResearchNarrativeTracker(JsonFileStore):
         return self._load()
 
     def get_thread(self, thread_id: str) -> Optional[ResearchThread]:
-        for t in self._load():
+        for t in cast(List[ResearchThread], self._load()):
             if t.id == thread_id:
                 return t
         return None
 
     def get_by_topic(self, topic: str) -> Optional[ResearchThread]:
-        for t in self._load():
+        for t in cast(List[ResearchThread], self._load()):
             if t.topic.lower() == topic.lower():
                 return t
         return None

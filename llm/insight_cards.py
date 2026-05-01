@@ -2,7 +2,7 @@
 Key Insight Cards: Extract and manage research insights.
 """
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict
+from typing import Any, cast, List, Optional, Dict
 from datetime import datetime
 from pathlib import Path
 import json
@@ -46,7 +46,7 @@ class InsightManager:
     def _load_cards(self) -> List[Dict]:
         if self.cards_file.exists():
             with open(self.cards_file, "r", encoding="utf-8") as f:
-                return json.load(f)
+                return cast(List[Dict], json.load(f))
         return []
 
     def _save_cards(self, data: List[Dict]) -> None:
@@ -56,7 +56,7 @@ class InsightManager:
     def _load_collections(self) -> List[Dict]:
         if self.collections_file.exists():
             with open(self.collections_file, "r", encoding="utf-8") as f:
-                return json.load(f)
+                return cast(List[Dict], json.load(f))
         return []
 
     def _save_collections(self, data: List[Dict]) -> None:
