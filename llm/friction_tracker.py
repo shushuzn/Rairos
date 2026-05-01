@@ -81,8 +81,10 @@ class FrictionTracker:
 
     def __init__(self, data_dir: Optional[str] = None):
         if data_dir is None:
-            data_dir = Path.home() / ".ai_research_os" / "friction"
-        self.data_dir = Path(data_dir)
+            default_path = Path.home() / ".ai_research_os" / "friction"
+            self.data_dir = default_path
+        else:
+            self.data_dir = Path(data_dir)
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.events_file = self.data_dir / "friction_events.jsonl"
         if not self.events_file.exists():
@@ -96,7 +98,7 @@ class FrictionTracker:
         query: str = "",
         step: str = "",
         error: str = "",
-        resolution: Resolution = None,
+        resolution: Optional[Resolution] = None,
         duration_seconds: int = 0,
         retry_count: int = 0,
         abandoned: bool = False,
@@ -178,12 +180,12 @@ class FrictionTracker:
 
     def get_events(
         self,
-        friction_type: FrictionType = None,
+        friction_type: Optional[FrictionType] = None,
         since_days: int = 30,
         limit: int = 100,
     ) -> List[FrictionEvent]:
         """Load recent friction events."""
-        events = []
+        events: List[FrictionEvent] = []
         cutoff = datetime.now().timestamp() - (since_days * 86400)
         try:
             for line in reversed(open(self.events_file, encoding="utf-8").readlines()):

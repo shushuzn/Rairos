@@ -198,7 +198,7 @@ class TrendAnalyzer:
         year_range: Tuple[int, int],
     ) -> List[YearlyStats]:
         """Compute statistics per year."""
-        yearly_data = defaultdict(lambda: {
+        yearly_data: Dict[int, Dict[str, Any]] = defaultdict(lambda: {
             "count": 0,
             "citations": 0,
             "keywords": defaultdict(int),
@@ -236,7 +236,7 @@ class TrendAnalyzer:
     ) -> List[TrendKeyword]:
         """Detect trends for common keywords."""
         # Count keyword occurrences per year
-        keyword_yearly = defaultdict(lambda: defaultdict(int))
+        keyword_yearly: Dict[str, Dict[int, int]] = defaultdict(lambda: defaultdict(int))
 
         for paper in papers:
             year = paper.get("year", 0)
@@ -402,7 +402,7 @@ class TrendAnalyzer:
             return ""
 
         # Dynamically compute year range from actual data (no hardcoded years)
-        all_years = set()
+        all_years: set[int] = set()
         for trend in all_trends:
             all_years.update(trend.yearly_counts.keys())
         if not all_years:

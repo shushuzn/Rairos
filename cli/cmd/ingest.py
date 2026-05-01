@@ -14,7 +14,7 @@ from __future__ import annotations
 import argparse
 import time
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 from cli._shared import get_db, print_error, print_info, print_success, print_warning
 from cli.warp import WarpBlocks
@@ -46,7 +46,7 @@ def _extract_text(pdf_path: Path, max_pages: int = 30) -> str:
     """Extract text from PDF with graceful fallback."""
     try:
         from pdf.extract import extract_pdf_text_hybrid
-        return extract_pdf_text_hybrid(str(pdf_path), max_pages=max_pages)
+        return extract_pdf_text_hybrid(pdf_path, max_pages=max_pages)
     except Exception as e:
         print_warning(f"PDF extraction failed: {e}")
         return ""
@@ -134,8 +134,6 @@ def _run_postprocess_phase(
         abs_url=getattr(rec, "abs_url", "") or f"https://arxiv.org/abs/{paper_id}",
         pdf_url=getattr(rec, "pdf_url", "") or "",
     )
-    paper.pid = paper_id
-
     # P-note path
     pnote_dir = root / (getattr(rec, "category", "") or "02-Models")
     pnote_dir.mkdir(parents=True, exist_ok=True)
@@ -151,7 +149,8 @@ def _run_postprocess_phase(
             stage_vals = [PostStage(s) for s in stages]
         pl_config = make_llm_config()
         if skip_llm:
-            pl_config["api_key"] = ""
+            if pl_config is not None:
+                pl_config["api_key"] = ""
 
         result = pipeline.run(
             paper_id=paper_id,
@@ -179,7 +178,7 @@ def _run_kg_sync_phase(db) -> bool:
         from kg import KGManager
         kg = KGManager()
         integ = KGIntegration(kg)
-        integ.rebuild_from_papers_json(incremental=True)
+        integ.rebuild_from_papers_json("data/papers.json", incremental=True)
         print_success("  KG synced")
         return True
     except Exception as e:
@@ -277,8 +276,8 @@ def _run_ingest(args: argparse.Namespace) -> int:
         print_info("Phase 2/4: Skipped (--skip-embed)")
 
     # ── Phase 3: Postprocess ────────────────────────────────────────────────
-    postprocess_ok = []
-    postprocess_fail = []
+    postprocess_ok: List[str] = []
+    postprocess_fail: List[str] = []
     if not args.skip_postprocess:
         print_info(f"Phase 3/4: Deep analysis ({len(import_ids)} papers)...")
         for pid in import_ids:

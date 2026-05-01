@@ -281,7 +281,7 @@ class EvolutionReporter:
         return feedbacks
 
     def _analyze_paper_insights(self, feedbacks: List[Dict]) -> List[PaperInsight]:
-        paper_data = defaultdict(lambda: {"positive": 0, "negative": 0, "scores": [], "queries": []})
+        paper_data: Dict[str, Dict[str, Any]] = defaultdict(lambda: {"positive": 0, "negative": 0, "scores": [], "queries": []})
         for fb in feedbacks:
             if fb.get("command") != "chat":
                 continue
@@ -509,7 +509,7 @@ class AdaptiveRetrieval:
     def apply_boost(self, results: List[Dict], decay: float = 0.1) -> List[Dict]:
         """应用 boost，支持置信度加权和探索多样性."""
         boosted = []
-        topic_counts: dict = {}
+        topic_counts: Dict[str, int] = {}
 
         for r in results:
             paper_id = r.get("paper_id", "")
@@ -540,7 +540,7 @@ class AdaptiveRetrieval:
         boosted.sort(key=lambda x: x["score"], reverse=True)
         return self._apply_diversity_rerank(boosted)
 
-    def _calc_diversity_penalty(self, topic: str, topic_counts: dict, total: int) -> float:
+    def _calc_diversity_penalty(self, topic: str, topic_counts: Dict[str, int], total: int) -> float:
         """计算多样性惩罚，同类过多时降权."""
         if total == 0:
             return 1.0
@@ -646,7 +646,7 @@ class SmartFollowUp:
         self,
         question: str,
         answer: str,
-        citations: List[Any] = None,
+        citations: Optional[List[Any]] = None,
     ) -> List[FollowUp]:
         """基于问答内容和论文引用生成追问选项."""
         citations = citations or []
@@ -681,7 +681,7 @@ class SmartFollowUp:
         citations: List[Any],
     ) -> List[FollowUp]:
         """从引用论文生成追问."""
-        options = []
+        options: List[FollowUp] = []
         if not citations:
             return options
 

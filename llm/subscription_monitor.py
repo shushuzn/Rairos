@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+import xml.etree.ElementTree as ET
 from typing import Dict, List, Any, Optional
 
 from llm.subscription_scorer import SubscriptionScorer
