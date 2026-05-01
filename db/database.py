@@ -307,7 +307,7 @@ class Database:
     The database file is created automatically on first access.
     """
 
-    def __init__(self, db_path: Union[str, Path] = None):
+    def __init__(self, db_path: Optional[Union[str, Path]] = None):
         if db_path is None:
             from config import CACHE_DIR
             db_path = Path(CACHE_DIR) / "research.db"
@@ -1667,6 +1667,7 @@ class Database:
                     rows,
                 )
                 self.conn.commit()
+                return len(tables)
         except sqlite3.Error as e:
             raise DatabaseError(f"upsert_experiment_tables({paper_id!r}) failed: {e}") from e
 
@@ -1953,7 +1954,7 @@ class Database:
         session_id: str,
         role: str,
         content: str,
-        citations: List[dict] = None,
+        citations: Optional[List[dict]] = None,
     ) -> None:
         """Add a message to a chat session."""
         try:
@@ -2044,7 +2045,7 @@ class Database:
     def add_arxiv_subscription(
         self,
         topic: str,
-        keywords: List[str] = None,
+        keywords: Optional[List[str]] = None,
         min_score: float = 0.5,
         max_results: int = 10,
     ) -> str:
@@ -2147,7 +2148,7 @@ class Database:
             raise DatabaseError(f"record_subscription_paper failed: {e}") from e
 
     def get_subscription_papers(
-        self, sub_id: str, limit: int = 20, since_days: int = None
+        self, sub_id: str, limit: int = 20, since_days: Optional[int] = None
     ) -> List[dict]:
         """Get papers for a subscription, optionally filtered by days."""
         try:
@@ -2174,8 +2175,8 @@ class Database:
     def add_literature_review(
         self,
         topic: str,
-        subscription_id: str = None,
-        file_path: str = None,
+        subscription_id: Optional[str] = None,
+        file_path: Optional[str] = None,
     ) -> str:
         """Create a new literature review entry."""
         import uuid
@@ -2223,8 +2224,8 @@ class Database:
     def update_literature_review(
         self,
         review_id: str,
-        paper_count: int = None,
-        file_path: str = None,
+        paper_count: Optional[int] = None,
+        file_path: Optional[str] = None,
     ) -> bool:
         """Update literature review metadata."""
         try:
