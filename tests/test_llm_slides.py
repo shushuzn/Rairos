@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/slides.py, pure functions, no I/O."""
+
 from llm.slides import (
     Slide,
     SlidesConfig,
@@ -167,14 +168,17 @@ class TestComparisonTable:
         headers = ["论文", "年份", "标签"]
         rows = []
         for p in papers:
-            rows.append([
-                p["title"][:30],
-                p.get("year", ""),
-                ", ".join(p.get("tags", [])[:3]),
-            ])
+            rows.append(
+                [
+                    p["title"][:30],
+                    p.get("year", ""),
+                    ", ".join(p.get("tags", [])[:3]),
+                ]
+            )
 
-        col_widths = [max(len(str(row[i])) for row in [headers] + rows) + 2
-                      for i in range(len(headers))]
+        col_widths = [
+            max(len(str(row[i])) for row in [headers] + rows) + 2 for i in range(len(headers))
+        ]
 
         lines = []
         header_line = " | ".join(h.ljust(w) for h, w in zip(headers, col_widths))
@@ -262,21 +266,25 @@ class TestSlideGeneration:
         slides = []
 
         # Title slide
-        slides.append(Slide(
-            title=paper["title"],
-            content=f"{paper.get('authors', '')}\n{paper.get('year', '')}",
-            notes="开场介绍论文标题和作者",
-            slide_type="title",
-        ))
+        slides.append(
+            Slide(
+                title=paper["title"],
+                content=f"{paper.get('authors', '')}\n{paper.get('year', '')}",
+                notes="开场介绍论文标题和作者",
+                slide_type="title",
+            )
+        )
 
         # Abstract/motivation
         abstract = paper.get("abstract", "")[:500]
-        slides.append(Slide(
-            title="研究动机",
-            content=abstract,
-            notes="介绍研究背景和动机",
-            slide_type="content",
-        ))
+        slides.append(
+            Slide(
+                title="研究动机",
+                content=abstract,
+                notes="介绍研究背景和动机",
+                slide_type="content",
+            )
+        )
 
         return slides
 
@@ -355,12 +363,14 @@ class TestMultiPaperSlides:
         slides = []
 
         titles = [p["title"][:40] for p in papers]
-        slides.append(Slide(
-            title="论文对比分析",
-            content="\n".join(f"• {t}" for t in titles),
-            notes="介绍即将对比的论文",
-            slide_type="title",
-        ))
+        slides.append(
+            Slide(
+                title="论文对比分析",
+                content="\n".join(f"• {t}" for t in titles),
+                notes="介绍即将对比的论文",
+                slide_type="title",
+            )
+        )
 
         return slides
 

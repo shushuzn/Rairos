@@ -1,4 +1,5 @@
 """Unit tests for lean CLI subcommand — Lean 4 hypothesis verification."""
+
 from unittest.mock import patch, MagicMock
 
 
@@ -12,12 +13,14 @@ class FakeArgs:
 # Parser tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestLeanParser:
     def test_parser_help_text(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.lean import _build_lean_parser
         import argparse
+
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
         _build_lean_parser(sub)
@@ -28,6 +31,7 @@ class TestLeanParser:
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.lean import _build_lean_parser
         import argparse
+
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
         _build_lean_parser(sub)
@@ -37,6 +41,7 @@ class TestLeanParser:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_lean unit tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunLean:
     def test_check_install_reports_lean_available(self, monkeypatch, capsys):

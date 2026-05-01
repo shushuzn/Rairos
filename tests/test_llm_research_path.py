@@ -1,6 +1,10 @@
 """Tier 2 unit tests — llm/research_path.py, pure functions, no I/O."""
+
 from llm.research_path import (
-    ReadingLevel, PaperNode, ReadingStep, ReadingPath,
+    ReadingLevel,
+    PaperNode,
+    ReadingStep,
+    ReadingPath,
     ResearchPathPlanner,
 )
 
@@ -39,11 +43,16 @@ class TestPaperNode:
 
     def test_all_fields(self):
         node = PaperNode(
-            paper_id="p001", title="T", year=2017,
+            paper_id="p001",
+            title="T",
+            year=2017,
             authors=["Vaswani", "Shazeer"],
-            cited_by=["p002", "p003"], cites=["p004"],
-            relevance_score=0.9, pagerank=0.15,
-            is_foundational=True, is_milestone=True,
+            cited_by=["p002", "p003"],
+            cites=["p004"],
+            relevance_score=0.9,
+            pagerank=0.15,
+            is_foundational=True,
+            is_milestone=True,
         )
         assert node.year == 2017
         assert node.authors == ["Vaswani", "Shazeer"]
@@ -73,8 +82,10 @@ class TestReadingPath:
 
     def test_required_fields(self):
         path = ReadingPath(
-            topic="transformer", level=ReadingLevel.INTERMEDIATE,
-            total_papers=0, total_reading_time_minutes=0,
+            topic="transformer",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=0,
+            total_reading_time_minutes=0,
             steps=[],
         )
         assert path.topic == "transformer"
@@ -82,7 +93,7 @@ class TestReadingPath:
         assert path.total_papers == 0
         assert path.steps == []
         assert path.alternative_paths == []  # default
-        assert path.skipped_papers == []     # default
+        assert path.skipped_papers == []  # default
 
 
 # =============================================================================
@@ -192,10 +203,7 @@ class TestCalculatePagerank:
 
     def test_damping_converges(self):
         planner = ResearchPathPlanner()
-        papers = [
-            PaperNode(paper_id=f"p{i}", title=f"Paper {i}")
-            for i in range(3)
-        ]
+        papers = [PaperNode(paper_id=f"p{i}", title=f"Paper {i}") for i in range(3)]
         g = {p.paper_id: p for p in papers}
         # No error even with no edges
         planner._calculate_pagerank(g)
@@ -370,7 +378,8 @@ class TestEstimateReadTime:
 
     def test_many_citations(self):
         p = PaperNode(
-            paper_id="p1", title="T",
+            paper_id="p1",
+            title="T",
             cited_by=["a", "b", "c", "d", "e", "f"],
         )
         time = self.planner._estimate_read_time(p)
@@ -424,11 +433,19 @@ class TestRenderPath:
 
     def test_single_step(self):
         paper = PaperNode(paper_id="p1", title="Attention Is All You Need", year=2017)
-        step = ReadingStep(order=1, paper=paper, role="foundation",
-                           reason="开创性工作", estimated_read_time_minutes=20)
+        step = ReadingStep(
+            order=1,
+            paper=paper,
+            role="foundation",
+            reason="开创性工作",
+            estimated_read_time_minutes=20,
+        )
         path = ReadingPath(
-            topic="transformer", level=ReadingLevel.INTERMEDIATE,
-            total_papers=1, total_reading_time_minutes=20, steps=[step],
+            topic="transformer",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=20,
+            steps=[step],
         )
         output = self.planner.render_path(path)
         assert "Attention" in output
@@ -438,20 +455,30 @@ class TestRenderPath:
 
     def test_no_year_shown_as_empty(self):
         paper = PaperNode(paper_id="p1", title="Paper", year=0)
-        step = ReadingStep(order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15)
+        step = ReadingStep(
+            order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15
+        )
         path = ReadingPath(
-            topic="T", level=ReadingLevel.INTERMEDIATE,
-            total_papers=1, total_reading_time_minutes=15, steps=[step],
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
         )
         output = self.planner.render_path(path)
         assert "[0]" not in output
 
     def test_title_truncated_to_50(self):
         paper = PaperNode(paper_id="p1", title="A" * 60)
-        step = ReadingStep(order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15)
+        step = ReadingStep(
+            order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15
+        )
         path = ReadingPath(
-            topic="T", level=ReadingLevel.INTERMEDIATE,
-            total_papers=1, total_reading_time_minutes=15, steps=[step],
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
         )
         output = self.planner.render_path(path)
         assert ("A" * 50) in output
@@ -459,10 +486,15 @@ class TestRenderPath:
 
     def test_authors_truncated_to_two(self):
         paper = PaperNode(paper_id="p1", title="T", authors=["A", "B", "C"])
-        step = ReadingStep(order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15)
+        step = ReadingStep(
+            order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15
+        )
         path = ReadingPath(
-            topic="T", level=ReadingLevel.INTERMEDIATE,
-            total_papers=1, total_reading_time_minutes=15, steps=[step],
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
         )
         output = self.planner.render_path(path)
         assert "A, B" in output
@@ -470,10 +502,15 @@ class TestRenderPath:
 
     def test_skipped_papers_shown(self):
         paper = PaperNode(paper_id="p1", title="Included")
-        step = ReadingStep(order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15)
+        step = ReadingStep(
+            order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15
+        )
         path = ReadingPath(
-            topic="T", level=ReadingLevel.INTERMEDIATE,
-            total_papers=1, total_reading_time_minutes=15, steps=[step],
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
             skipped_papers=["Skipped Paper A", "Skipped Paper B"],
         )
         output = self.planner.render_path(path)
@@ -495,10 +532,15 @@ class TestRenderMermaid:
 
     def test_single_node(self):
         paper = PaperNode(paper_id="p001", title="First Paper")
-        step = ReadingStep(order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15)
+        step = ReadingStep(
+            order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15
+        )
         path = ReadingPath(
-            topic="T", level=ReadingLevel.INTERMEDIATE,
-            total_papers=1, total_reading_time_minutes=15, steps=[step],
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
         )
         output = self.planner.render_mermaid(path)
         assert "graph TD" in output
@@ -507,27 +549,38 @@ class TestRenderMermaid:
 
     def test_node_title_truncated(self):
         paper = PaperNode(paper_id="p001", title="A" * 40)
-        step = ReadingStep(order=1, paper=paper, role="foundation", reason="R", estimated_read_time_minutes=15)
+        step = ReadingStep(
+            order=1, paper=paper, role="foundation", reason="R", estimated_read_time_minutes=15
+        )
         path = ReadingPath(
-            topic="T", level=ReadingLevel.INTERMEDIATE,
-            total_papers=1, total_reading_time_minutes=15, steps=[step],
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
         )
         output = self.planner.render_mermaid(path)
         # Should not crash; title truncated to 30
         assert "graph TD" in output
 
     def test_arrows_between_steps(self):
-        papers = [
-            PaperNode(paper_id=f"p{i:03d}", title=f"Paper {i}")
-            for i in range(1, 4)
-        ]
+        papers = [PaperNode(paper_id=f"p{i:03d}", title=f"Paper {i}") for i in range(1, 4)]
         steps = [
-            ReadingStep(order=i, paper=papers[i-1], role="core", reason="R", estimated_read_time_minutes=15)
+            ReadingStep(
+                order=i,
+                paper=papers[i - 1],
+                role="core",
+                reason="R",
+                estimated_read_time_minutes=15,
+            )
             for i in range(1, 4)
         ]
         path = ReadingPath(
-            topic="T", level=ReadingLevel.INTERMEDIATE,
-            total_papers=3, total_reading_time_minutes=45, steps=steps,
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=3,
+            total_reading_time_minutes=45,
+            steps=steps,
         )
         output = self.planner.render_mermaid(path)
         # Should have arrows between adjacent steps
@@ -535,10 +588,15 @@ class TestRenderMermaid:
 
     def test_role_classes_defined(self):
         paper = PaperNode(paper_id="p001", title="T")
-        step = ReadingStep(order=1, paper=paper, role="foundation", reason="R", estimated_read_time_minutes=15)
+        step = ReadingStep(
+            order=1, paper=paper, role="foundation", reason="R", estimated_read_time_minutes=15
+        )
         path = ReadingPath(
-            topic="T", level=ReadingLevel.INTERMEDIATE,
-            total_papers=1, total_reading_time_minutes=15, steps=[step],
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
         )
         output = self.planner.render_mermaid(path)
         assert "classDef foundation" in output

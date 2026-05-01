@@ -3,6 +3,7 @@ Integration tests for ai_research_os CLI full flows.
 Run with: PYTHONHOME=/c/Users/adm/AppData/Local/Programs/Python/Python312 \
   .venv/Scripts/python.exe -m pytest tests/test_integration.py -v
 """
+
 import pytest
 import tempfile
 import re
@@ -18,6 +19,7 @@ import ai_research_os as airo
 # ---------------------------------------------------------------------------
 # Shared fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="function")
 def temp_research_root():
@@ -40,18 +42,24 @@ def _mock_crossref_session(mock_resp):
     return mock_session
 
 
-def make_mock_arxiv_response(uid="2301.00001", title="Test Paper",
-                             abstract="This is a test abstract.",
-                             authors=None, published="2024-01-15",
-                             primary_category="cs.AI",
-                             categories=None, comment="",
-                             journal_ref="", doi=""):
+def make_mock_arxiv_response(
+    uid="2301.00001",
+    title="Test Paper",
+    abstract="This is a test abstract.",
+    authors=None,
+    published="2024-01-15",
+    primary_category="cs.AI",
+    categories=None,
+    comment="",
+    journal_ref="",
+    doi="",
+):
     """Return a mock requests.Response for arXiv API."""
     if authors is None:
         authors = [{"name": "Alice Smith"}]
     if categories is None:
         categories = [primary_category]
-    cats_xml = "".join(f"<category term=\"{c}\"/>" for c in categories)
+    cats_xml = "".join(f'<category term="{c}"/>' for c in categories)
 
     author_xml = "".join(f"<author><name>{a['name']}</name></author>" for a in authors)
 
@@ -60,7 +68,7 @@ def make_mock_arxiv_response(uid="2301.00001", title="Test Paper",
     if categories or comment:
         tags_block = f"<arxiv:doi>{doi}</arxiv:doi><arxiv:comment>{comment}</arxiv:comment><arxiv:journal_ref>{journal_ref}</arxiv:journal_ref>"
         if categories:
-            tags_block += f"<arxiv:category term=\"{primary_category}\"/>"
+            tags_block += f'<arxiv:category term="{primary_category}"/>'
             tags_block += cats_xml
 
     xml = f"""<?xml version="1.0"?>
@@ -86,15 +94,17 @@ def make_mock_arxiv_response(uid="2301.00001", title="Test Paper",
     return mock_resp
 
 
-def make_mock_crossref_response(doi="10.1234/test",
-                                title="Crossref Paper",
-                                authors=None,
-                                published="2024-01-15",
-                                journal="Nature",
-                                volume="100",
-                                issue="1",
-                                page="50-60",
-                                reference_count=42):
+def make_mock_crossref_response(
+    doi="10.1234/test",
+    title="Crossref Paper",
+    authors=None,
+    published="2024-01-15",
+    journal="Nature",
+    volume="100",
+    issue="1",
+    page="50-60",
+    reference_count=42,
+):
     if authors is None:
         authors = [{"given": "Bob", "family": "Jones"}]
     payload = {
@@ -120,6 +130,7 @@ def make_mock_crossref_response(doi="10.1234/test",
 # Flow 1: arXiv ID full pipeline (mocked HTTP)
 # ---------------------------------------------------------------------------
 
+
 class TestArxivFullPipeline:
     """End-to-end test: arXiv ID → fetch → P-note + C-note + M-note + Radar."""
 
@@ -141,10 +152,15 @@ class TestArxivFullPipeline:
         published = "2024-01-15"
 
         mock_arxiv = make_mock_arxiv_response(
-            uid=uid, title=title, abstract=abstract,
-            published=published, primary_category="cs.AI",
-            categories=["cs.AI", "cs.CL"], comment="15 pages",
-            journal_ref="arXiv:2601.00155 [cs.AI]", doi="10.48550/arXiv.2601.00155"
+            uid=uid,
+            title=title,
+            abstract=abstract,
+            published=published,
+            primary_category="cs.AI",
+            categories=["cs.AI", "cs.CL"],
+            comment="15 pages",
+            journal_ref="arXiv:2601.00155 [cs.AI]",
+            doi="10.48550/arXiv.2601.00155",
         )
 
         mock_session = MagicMock()
@@ -154,14 +170,21 @@ class TestArxivFullPipeline:
                 with patch("sys.stdout", new=StringIO()):
                     # Simulate: python ai_research_os.py 2601.00155 --category 02-Models
                     # --concept-dir 01-Foundations --comparison-dir 00-Radar
-                    result = airo.main([
-                        uid,
-                        "--root", str(temp_research_root),
-                        "--category", "02-Models",
-                        "--concept-dir", "01-Foundations",
-                        "--comparison-dir", "00-Radar",
-                        "--tags", "Agent,RAG",
-                    ])
+                    result = airo.main(
+                        [
+                            uid,
+                            "--root",
+                            str(temp_research_root),
+                            "--category",
+                            "02-Models",
+                            "--concept-dir",
+                            "01-Foundations",
+                            "--comparison-dir",
+                            "00-Radar",
+                            "--tags",
+                            "Agent,RAG",
+                        ]
+                    )
 
         assert result == 0, "main() should return 0 on success"
 
@@ -183,7 +206,9 @@ class TestArxivFullPipeline:
         cnote_files = list(cnote_dir.glob("C - *.md"))
         assert len(cnote_files) >= 1, f"Expected at least 1 C-note, got: {cnote_files}"
         cnote_titles = [f.stem for f in cnote_files]
-        assert any("Agent" in t for t in cnote_titles), f"Expected Agent C-note, got: {cnote_titles}"
+        assert any("Agent" in t for t in cnote_titles), (
+            f"Expected Agent C-note, got: {cnote_titles}"
+        )
 
         # --- M-notes ---
         # M-note requires >=3 papers with the same tag; skip in single-paper test
@@ -216,12 +241,17 @@ class TestArxivFullPipeline:
         with patch("parsers.arxiv._get_session", return_value=mock_session):
             with patch("sys.stdout", new=StringIO()):
                 try:
-                    result = airo.main([
-                        "9999.99999",
-                        "--root", str(temp_research_root),
-                        "--category", "02-Models",
-                        "--tags", "Agent",
-                    ])
+                    result = airo.main(
+                        [
+                            "9999.99999",
+                            "--root",
+                            str(temp_research_root),
+                            "--category",
+                            "02-Models",
+                            "--tags",
+                            "Agent",
+                        ]
+                    )
                 except Exception:
                     result = 1
         # Should exit with error, not crash
@@ -233,8 +263,10 @@ class TestArxivFullPipeline:
 
         mock_resp = MagicMock()
         mock_resp.status_code = 404
+
         def raise_for_status():
             raise Exception("Not found")
+
         mock_resp.raise_for_status = raise_for_status
 
         mock_session = MagicMock()
@@ -242,12 +274,17 @@ class TestArxivFullPipeline:
         with patch("parsers.arxiv._get_session", return_value=mock_session):
             with patch("sys.stdout", new=StringIO()):
                 try:
-                    airo.main([
-                        "9999.99999",
-                        "--root", str(temp_research_root),
-                        "--category", "02-Models",
-                        "--tags", "Agent",
-                    ])
+                    airo.main(
+                        [
+                            "9999.99999",
+                            "--root",
+                            str(temp_research_root),
+                            "--category",
+                            "02-Models",
+                            "--tags",
+                            "Agent",
+                        ]
+                    )
                 except Exception:
                     pass
 
@@ -255,6 +292,7 @@ class TestArxivFullPipeline:
 # ---------------------------------------------------------------------------
 # Flow 2: DOI full pipeline
 # ---------------------------------------------------------------------------
+
 
 class TestDoiFullPipeline:
     """End-to-end test: DOI → Crossref → arXiv fallback (if available)."""
@@ -269,22 +307,31 @@ class TestDoiFullPipeline:
             authors=[{"given": "Bob", "family": "Jones"}],
             published="2024-01-15",
             journal="Nature",
-            volume="100", issue="1", page="50-60",
-            reference_count=99
+            volume="100",
+            issue="1",
+            page="50-60",
+            reference_count=99,
         )
 
         # Crossref returns DOI paper, no arXiv fallback
         with patch("parsers.crossref._http_session", _mock_crossref_session(mock_crossref)):
             with patch("parsers.crossref.get_cached", return_value=None):
                 with patch("sys.stdout", new=StringIO()):
-                    result = airo.main([
-                        "10.1038/nature12373",
-                        "--root", str(temp_research_root),
-                        "--category", "02-Models",
-                        "--concept-dir", "01-Foundations",
-                        "--comparison-dir", "00-Radar",
-                        "--tags", "Evaluation",
-                    ])
+                    result = airo.main(
+                        [
+                            "10.1038/nature12373",
+                            "--root",
+                            str(temp_research_root),
+                            "--category",
+                            "02-Models",
+                            "--concept-dir",
+                            "01-Foundations",
+                            "--comparison-dir",
+                            "00-Radar",
+                            "--tags",
+                            "Evaluation",
+                        ]
+                    )
 
         assert result == 0, "main() should return 0 on success"
         pnote_dir = temp_research_root / "02-Models"
@@ -300,13 +347,14 @@ class TestDoiFullPipeline:
 
         # arXiv metadata for the paper
         mock_arxiv = make_mock_arxiv_response(
-            uid="2306.12345", title="Agent Paper from arXiv",
+            uid="2306.12345",
+            title="Agent Paper from arXiv",
             abstract="An agent system.",
             published="2024-06-15",
             primary_category="cs.AI",
             categories=["cs.AI"],
             comment="10 pages, 5 figures",
-            journal_ref="arXiv:2306.12345 [cs.AI]"
+            journal_ref="arXiv:2306.12345 [cs.AI]",
         )
 
         # Crossref returns a DOI with an arXiv ID in the "URL" field
@@ -323,6 +371,7 @@ class TestDoiFullPipeline:
         }
 
         call_count = {"count": 0}
+
         def fake_arxiv_get(url, **kwargs):
             call_count["count"] += 1
             return mock_arxiv
@@ -340,12 +389,17 @@ class TestDoiFullPipeline:
                 with patch("parsers.crossref._http_session", mock_crossref_session):
                     with patch("parsers.crossref.get_cached", return_value=None):
                         with patch("sys.stdout", new=StringIO()):
-                            result = airo.main([
-                                "10.48550/arXiv.2306.12345",
-                                "--root", str(temp_research_root),
-                                "--category", "02-Models",
-                                "--tags", "Agent",
-                            ])
+                            result = airo.main(
+                                [
+                                    "10.48550/arXiv.2306.12345",
+                                    "--root",
+                                    str(temp_research_root),
+                                    "--category",
+                                    "02-Models",
+                                    "--tags",
+                                    "Agent",
+                                ]
+                            )
 
         assert result == 0
         pnote_dir = temp_research_root / "02-Models"
@@ -359,6 +413,7 @@ class TestDoiFullPipeline:
 # ---------------------------------------------------------------------------
 # Flow 3: Tag inference + P-note content
 # ---------------------------------------------------------------------------
+
 
 class TestTagInferencePipeline:
     """When --tags not provided, KEYWORD_TAGS patterns should infer tags."""
@@ -377,7 +432,7 @@ class TestTagInferencePipeline:
             ),
             published="2024-01-20",
             primary_category="cs.AI",
-            categories=["cs.AI", "cs.CL"]
+            categories=["cs.AI", "cs.CL"],
         )
 
         mock_session = MagicMock()
@@ -385,14 +440,20 @@ class TestTagInferencePipeline:
         with patch("parsers.arxiv._get_session", return_value=mock_session):
             with patch("parsers.arxiv.get_cached", return_value=None):
                 with patch("sys.stdout", new=StringIO()):
-                    result = airo.main([
-                        "2401.00001",
-                        "--root", str(temp_research_root),
-                        "--category", "02-Models",
-                        "--concept-dir", "01-Foundations",
-                        "--comparison-dir", "00-Radar",
-                        # No --tags: should infer from abstract
-                    ])
+                    result = airo.main(
+                        [
+                            "2401.00001",
+                            "--root",
+                            str(temp_research_root),
+                            "--category",
+                            "02-Models",
+                            "--concept-dir",
+                            "01-Foundations",
+                            "--comparison-dir",
+                            "00-Radar",
+                            # No --tags: should infer from abstract
+                        ]
+                    )
 
         assert result == 0
         pnote_dir = temp_research_root / "02-Models"
@@ -405,8 +466,9 @@ class TestTagInferencePipeline:
         cnote_files = list(cnote_dir.glob("C - *.md"))
         cnote_stems = [f.stem for f in cnote_files]
         # At least Agent and RAG should be inferred
-        assert any("Agent" in s for s in cnote_stems), \
+        assert any("Agent" in s for s in cnote_stems), (
             f"Expected inferred 'Agent' C-note, got: {cnote_stems}"
+        )
 
     def test_unsorted_when_no_pattern_matches(self, temp_research_root, monkeypatch):
         """Abstract with no matching pattern should get 'Unsorted' tag."""
@@ -417,20 +479,26 @@ class TestTagInferencePipeline:
             title="Foo Bar Baz",
             abstract="This paper studies the properties of foo and bar.",
             published="2024-02-01",
-            primary_category="cs.IT"
+            primary_category="cs.IT",
         )
 
         mock_session = MagicMock()
         mock_session.get.return_value = mock_arxiv
         with patch("parsers.arxiv._get_session", return_value=mock_session):
             with patch("sys.stdout", new=StringIO()):
-                result = airo.main([
-                    "2402.00002",
-                    "--root", str(temp_research_root),
-                    "--category", "02-Models",
-                    "--concept-dir", "01-Foundations",
-                    "--comparison-dir", "00-Radar",
-                ])
+                result = airo.main(
+                    [
+                        "2402.00002",
+                        "--root",
+                        str(temp_research_root),
+                        "--category",
+                        "02-Models",
+                        "--concept-dir",
+                        "01-Foundations",
+                        "--comparison-dir",
+                        "00-Radar",
+                    ]
+                )
 
         assert result == 0
         cnote_dir = temp_research_root / "01-Foundations"
@@ -441,6 +509,7 @@ class TestTagInferencePipeline:
 # ---------------------------------------------------------------------------
 # Flow 4: File content accuracy
 # ---------------------------------------------------------------------------
+
 
 class TestPnoteContentAccuracy:
     """Verify P-note frontmatter and body contain expected fields."""
@@ -459,7 +528,7 @@ class TestPnoteContentAccuracy:
             categories=["cs.CL", "cs.NE"],
             comment="15 pages, 8 figures, NeurIPS 2017",
             journal_ref="NeurIPS 2017",
-            doi="10.48550/arXiv.2305.00001"
+            doi="10.48550/arXiv.2305.00001",
         )
 
         mock_session = MagicMock()
@@ -467,12 +536,17 @@ class TestPnoteContentAccuracy:
         with patch("parsers.arxiv._get_session", return_value=mock_session):
             with patch("parsers.arxiv.get_cached", return_value=None):
                 with patch("sys.stdout", new=StringIO()):
-                    result = airo.main([
-                        "2305.00001",
-                        "--root", str(temp_research_root),
-                        "--category", "02-Models",
-                        "--tags", "LLM",
-                    ])
+                    result = airo.main(
+                        [
+                            "2305.00001",
+                            "--root",
+                            str(temp_research_root),
+                            "--category",
+                            "02-Models",
+                            "--tags",
+                            "LLM",
+                        ]
+                    )
 
         assert result == 0
         pnote_files = list((temp_research_root / "02-Models").glob("P - 2017 - *.md"))
@@ -488,14 +562,19 @@ class TestPnoteContentAccuracy:
         # Authors and uid appear in body, not frontmatter metadata wrapper
         assert "Ashish Vaswani" in content, "Author should appear in P-note"
         assert "Noam Shazeer" in content, "Author should appear in P-note"
-        assert "cs.CL" in content or "N/A" in content, "Category should appear (cs.CL from mock or N/A from feedparser namespace limitation)"
-        assert "10.48550/arXiv.2305.00001" in content or "ARXIV: 2305.00001" in content, "DOI/arXiv ID should appear in P-note"
+        assert "cs.CL" in content or "N/A" in content, (
+            "Category should appear (cs.CL from mock or N/A from feedparser namespace limitation)"
+        )
+        assert "10.48550/arXiv.2305.00001" in content or "ARXIV: 2305.00001" in content, (
+            "DOI/arXiv ID should appear in P-note"
+        )
         assert "2305.00001" in content, "UID should appear in P-note"
 
 
 # ---------------------------------------------------------------------------
 # Flow 5: Radar + Timeline update
 # ---------------------------------------------------------------------------
+
 
 class TestRadarTimelineUpdate:
     """Adding two papers with same tag should update same Radar row."""
@@ -528,16 +607,36 @@ class TestRadarTimelineUpdate:
         mock_arxiv_session.get = fake_arxiv_get
         with patch("parsers.arxiv._get_session", return_value=mock_arxiv_session):
             with patch("sys.stdout", new=StringIO()):
-                airo.main([
-                    paper_data[0][0], "--root", str(temp_research_root),
-                    "--category", "02-Models", "--concept-dir", "01-Foundations",
-                    "--comparison-dir", "00-Radar", "--tags", "RAG",
-                ])
-                result = airo.main([
-                    paper_data[1][0], "--root", str(temp_research_root),
-                    "--category", "02-Models", "--concept-dir", "01-Foundations",
-                    "--comparison-dir", "00-Radar", "--tags", "RAG",
-                ])
+                airo.main(
+                    [
+                        paper_data[0][0],
+                        "--root",
+                        str(temp_research_root),
+                        "--category",
+                        "02-Models",
+                        "--concept-dir",
+                        "01-Foundations",
+                        "--comparison-dir",
+                        "00-Radar",
+                        "--tags",
+                        "RAG",
+                    ]
+                )
+                result = airo.main(
+                    [
+                        paper_data[1][0],
+                        "--root",
+                        str(temp_research_root),
+                        "--category",
+                        "02-Models",
+                        "--concept-dir",
+                        "01-Foundations",
+                        "--comparison-dir",
+                        "00-Radar",
+                        "--tags",
+                        "RAG",
+                    ]
+                )
 
         assert result == 0
         radar = (temp_research_root / "00-Radar" / "Radar.md").read_text(encoding="utf-8")
@@ -553,10 +652,13 @@ class TestRadarTimelineUpdate:
 # Flow 6: M-note ABC sections
 # ---------------------------------------------------------------------------
 
+
 class TestMnoteAbcSections:
     """M-note should have A/B/C sections with paper links."""
 
-    @pytest.mark.skip(reason="pnotes_by_tag() scans 02-Papers/ dir, but test uses --category 02-Models; design limitation")
+    @pytest.mark.skip(
+        reason="pnotes_by_tag() scans 02-Papers/ dir, but test uses --category 02-Models; design limitation"
+    )
     def test_mnote_contains_abc_sections(self, temp_research_root, monkeypatch):
         """M-note requires 3+ P-notes with same tag — create 3 papers."""
         monkeypatch.chdir(temp_research_root)
@@ -572,25 +674,34 @@ class TestMnoteAbcSections:
             )
             with patch("parsers.arxiv._get_session", return_value=_mock_arxiv_session(mock_arxiv)):
                 with patch("sys.stdout", new=StringIO()):
-                    airo.main([
-                        uid,
-                        "--root", str(temp_research_root),
-                        "--category", "02-Models",
-                        "--concept-dir", "01-Foundations",
-                        "--comparison-dir", "00-Radar",
-                        "--tags", "Agent",
-                    ])
+                    airo.main(
+                        [
+                            uid,
+                            "--root",
+                            str(temp_research_root),
+                            "--category",
+                            "02-Models",
+                            "--concept-dir",
+                            "01-Foundations",
+                            "--comparison-dir",
+                            "00-Radar",
+                            "--tags",
+                            "Agent",
+                        ]
+                    )
 
         mnote_files = list((temp_research_root / "00-Radar").glob("M - Agent*.md"))
         assert len(mnote_files) >= 1, f"Expected M-note for Agent, got: {mnote_files}"
         content = mnote_files[0].read_text(encoding="utf-8")
-        assert "## 当前 A/B/C" in content or "## Current A" in content or "## 当前" in content, \
+        assert "## 当前 A/B/C" in content or "## Current A" in content or "## 当前" in content, (
             "M-note should have A/B/C section"
+        )
 
 
 # ---------------------------------------------------------------------------
 # Flow 7: C-note wikilinks
 # ---------------------------------------------------------------------------
+
 
 class TestCnoteWikilinks:
     """C-note should link to the P-note via wikilink under '关联笔记'."""
@@ -609,13 +720,19 @@ class TestCnoteWikilinks:
 
         with patch("parsers.arxiv._get_session", return_value=_mock_arxiv_session(mock_arxiv)):
             with patch("sys.stdout", new=StringIO()):
-                airo.main([
-                    "2301.00001",
-                    "--root", str(temp_research_root),
-                    "--category", "02-Models",
-                    "--concept-dir", "01-Foundations",
-                    "--tags", "Agent",
-                ])
+                airo.main(
+                    [
+                        "2301.00001",
+                        "--root",
+                        str(temp_research_root),
+                        "--category",
+                        "02-Models",
+                        "--concept-dir",
+                        "01-Foundations",
+                        "--tags",
+                        "Agent",
+                    ]
+                )
 
         cnote_files = list((temp_research_root / "01-Foundations").glob("C - Agent*.md"))
         assert len(cnote_files) >= 1
@@ -628,6 +745,7 @@ class TestCnoteWikilinks:
 # Flow 8: Research tree structure
 # ---------------------------------------------------------------------------
 
+
 class TestResearchTreeStructure:
     """ensure_research_tree creates correct directory layout."""
 
@@ -638,10 +756,18 @@ class TestResearchTreeStructure:
             airo.ensure_research_tree(root)
 
             expected = [
-                "00-Radar", "01-Foundations", "02-Models",
-                "03-Training", "04-Scaling", "05-Alignment",
-                "06-Agents", "07-Infrastructure", "08-Optimization",
-                "09-Evaluation", "10-Applications", "11-Future-Directions",
+                "00-Radar",
+                "01-Foundations",
+                "02-Models",
+                "03-Training",
+                "04-Scaling",
+                "05-Alignment",
+                "06-Agents",
+                "07-Infrastructure",
+                "08-Optimization",
+                "09-Evaluation",
+                "10-Applications",
+                "11-Future-Directions",
             ]
             for name in expected:
                 assert (root / name).is_dir(), f"{name} should be a directory"

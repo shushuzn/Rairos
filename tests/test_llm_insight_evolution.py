@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/insight_evolution.py, pure functions, no I/O."""
+
 from llm.insight_evolution import (
     ExplorationAction,
     PreferenceTag,
@@ -216,9 +217,12 @@ class TestEventWeights:
 class TestDecayWeight:
     """Test _decay_weight logic."""
 
-    def _decay_weight(self, base_weight: float, event_timestamp: str, lambda_: float = 0.01) -> float:
+    def _decay_weight(
+        self, base_weight: float, event_timestamp: str, lambda_: float = 0.01
+    ) -> float:
         """Replicate decay calculation logic."""
         from datetime import datetime
+
         try:
             event_time = datetime.fromisoformat(event_timestamp)
             age_days = (datetime.now() - event_time).total_seconds() / 86400.0
@@ -229,6 +233,7 @@ class TestDecayWeight:
     def test_decay_returns_base_for_current_time(self):
         """Recent event (now) returns base weight."""
         from datetime import datetime
+
         now = datetime.now().isoformat()
         result = self._decay_weight(1.0, now)
         assert abs(result - 1.0) < 0.01  # Essentially unchanged
@@ -236,6 +241,7 @@ class TestDecayWeight:
     def test_decay_reduces_old_events(self):
         """Older events have reduced weight."""
         from datetime import datetime, timedelta
+
         recent = datetime.now().isoformat()
         old = (datetime.now() - timedelta(days=30)).isoformat()
         recent_weight = self._decay_weight(1.0, recent)
@@ -245,6 +251,7 @@ class TestDecayWeight:
     def test_decay_formula_30_days(self):
         """Decay formula: 2^(-0.01 * 30) ≈ 0.74."""
         from datetime import datetime, timedelta
+
         thirty_days_ago = (datetime.now() - timedelta(days=30)).isoformat()
         result = self._decay_weight(1.0, thirty_days_ago)
         # 2^(-0.3) ≈ 0.74, allow range due to leap second / precision
@@ -253,6 +260,7 @@ class TestDecayWeight:
     def test_decay_formula_90_days(self):
         """Decay formula: 2^(-0.01 * 90) ≈ 0.37."""
         from datetime import datetime, timedelta
+
         ninety_days_ago = (datetime.now() - timedelta(days=90)).isoformat()
         result = self._decay_weight(1.0, ninety_days_ago)
         # 2^(-0.9) ≈ 0.52... wait let me recalculate
@@ -278,6 +286,7 @@ class TestDecayWeight:
     def test_custom_lambda(self):
         """Custom lambda changes decay rate."""
         from datetime import datetime, timedelta
+
         thirty_days_ago = (datetime.now() - timedelta(days=30)).isoformat()
         slow_decay = self._decay_weight(1.0, thirty_days_ago, lambda_=0.005)
         fast_decay = self._decay_weight(1.0, thirty_days_ago, lambda_=0.02)
@@ -538,9 +547,24 @@ class TestGapTypeScore:
     def test_multiple_events_accumulate(self):
         """Multiple events accumulate scores."""
         events = [
-            EvolutionEvent(timestamp="2024-01-01T10:00:00", topic="T", action=ExplorationAction.VIEWED, gap_type="m_gap"),
-            EvolutionEvent(timestamp="2024-01-01T10:01:00", topic="T", action=ExplorationAction.VIEWED, gap_type="m_gap"),
-            EvolutionEvent(timestamp="2024-01-01T10:02:00", topic="T", action=ExplorationAction.ACCEPTED, gap_type="m_gap"),
+            EvolutionEvent(
+                timestamp="2024-01-01T10:00:00",
+                topic="T",
+                action=ExplorationAction.VIEWED,
+                gap_type="m_gap",
+            ),
+            EvolutionEvent(
+                timestamp="2024-01-01T10:01:00",
+                topic="T",
+                action=ExplorationAction.VIEWED,
+                gap_type="m_gap",
+            ),
+            EvolutionEvent(
+                timestamp="2024-01-01T10:02:00",
+                topic="T",
+                action=ExplorationAction.ACCEPTED,
+                gap_type="m_gap",
+            ),
         ]
         scores = self._aggregate_gap_scores(events)
         assert scores["m_gap"] == 0.40  # 0.05 + 0.05 + 0.30
@@ -548,8 +572,18 @@ class TestGapTypeScore:
     def test_different_gap_types_separate(self):
         """Different gap types have separate scores."""
         events = [
-            EvolutionEvent(timestamp="2024-01-01T10:00:00", topic="T", action=ExplorationAction.ACCEPTED, gap_type="gap_a"),
-            EvolutionEvent(timestamp="2024-01-01T10:00:00", topic="T", action=ExplorationAction.ACCEPTED, gap_type="gap_b"),
+            EvolutionEvent(
+                timestamp="2024-01-01T10:00:00",
+                topic="T",
+                action=ExplorationAction.ACCEPTED,
+                gap_type="gap_a",
+            ),
+            EvolutionEvent(
+                timestamp="2024-01-01T10:00:00",
+                topic="T",
+                action=ExplorationAction.ACCEPTED,
+                gap_type="gap_b",
+            ),
         ]
         scores = self._aggregate_gap_scores(events)
         assert scores["gap_a"] == 0.30
@@ -558,7 +592,12 @@ class TestGapTypeScore:
     def test_hypothesized_highest_weight(self):
         """HYPOTHESIZED has highest weight."""
         events = [
-            EvolutionEvent(timestamp="2024-01-01T10:00:00", topic="T", action=ExplorationAction.HYPOTHESIZED, gap_type="h_gap"),
+            EvolutionEvent(
+                timestamp="2024-01-01T10:00:00",
+                topic="T",
+                action=ExplorationAction.HYPOTHESIZED,
+                gap_type="h_gap",
+            ),
         ]
         scores = self._aggregate_gap_scores(events)
         assert scores["h_gap"] == 0.40
@@ -667,7 +706,15 @@ class TestProfileMerge:
         result = {}
 
         # Scalars: max
-        for key in ["total_sessions", "total_events", "views", "accepts", "rejects", "expands", "hypothesizes"]:
+        for key in [
+            "total_sessions",
+            "total_events",
+            "views",
+            "accepts",
+            "rejects",
+            "expands",
+            "hypothesizes",
+        ]:
             result[key] = max(base.get(key, 0), incoming.get(key, 0))
 
         # Dict fields: sum
@@ -761,6 +808,7 @@ class TestEvolutionTrackerInit:
         """EvolutionTracker can be instantiated."""
         import tempfile
         from pathlib import Path
+
         with tempfile.TemporaryDirectory() as tmpdir:
             tracker = EvolutionTracker(data_dir=Path(tmpdir))
             assert tracker.data_dir == Path(tmpdir)

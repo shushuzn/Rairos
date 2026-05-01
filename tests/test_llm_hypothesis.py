@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/hypothesis_generator.py, pure functions, no I/O."""
+
 from llm.hypothesis_generator import (
     HypothesisType,
     RiskLevel,
@@ -241,7 +242,8 @@ class TestFillTemplate:
     def _fill_template(self, template: str, topic: str, context: str) -> str:
         """Replicate _fill_template logic."""
         import re
-        method_match = re.search(r'([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)', context[:200])
+
+        method_match = re.search(r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)", context[:200])
         method = method_match.group(1) if method_match else topic
 
         replacements = {
@@ -313,15 +315,15 @@ class TestInferGapType:
         """Replicate _infer_gap_type logic."""
         context_lower = context.lower()
 
-        if any(k in context_lower for k in ['limitation', '不足', 'weakness', 'scalability']):
+        if any(k in context_lower for k in ["limitation", "不足", "weakness", "scalability"]):
             return "method_limitation"
-        elif any(k in context_lower for k in ['future', 'unexplored', '未探索']):
+        elif any(k in context_lower for k in ["future", "unexplored", "未探索"]):
             return "unexplored_application"
-        elif any(k in context_lower for k in ['however', 'contradict', '矛盾']):
+        elif any(k in context_lower for k in ["however", "contradict", "矛盾"]):
             return "contradiction"
-        elif any(k in context_lower for k in ['scale', '扩展', '大规模']):
+        elif any(k in context_lower for k in ["scale", "扩展", "大规模"]):
             return "scalability_issue"
-        elif any(k in context_lower for k in ['benchmark', '评估', 'metric']):
+        elif any(k in context_lower for k in ["benchmark", "评估", "metric"]):
             return "evaluation_gap"
 
         return "method_limitation"  # Default
@@ -510,7 +512,8 @@ class TestCreativeHypothesis:
 
         topic_lower = topic.lower()
         detected_domains = [
-            domain for domain, keywords in domain_keywords.items()
+            domain
+            for domain, keywords in domain_keywords.items()
             if any(k in topic_lower for k in keywords)
         ]
 
@@ -565,7 +568,13 @@ class TestGenerateFromTemplates:
             for t in templates:
                 # type should be one of the HypothesisType enum values
                 type_value = t["type"].value
-                assert type_value in ["causal", "correlational", "comparative", "mechanistic", "exploratory"]
+                assert type_value in [
+                    "causal",
+                    "correlational",
+                    "comparative",
+                    "mechanistic",
+                    "exploratory",
+                ]
 
 
 # =============================================================================
@@ -602,26 +611,32 @@ class TestGenerateSummary:
 
     def test_counts_hypotheses(self):
         """Counts hypotheses correctly."""
-        result = {"hypotheses": [
-            {"feasibility_score": 0.5, "novelty_score": 0.5},
-            {"feasibility_score": 0.7, "novelty_score": 0.5},
-        ]}
+        result = {
+            "hypotheses": [
+                {"feasibility_score": 0.5, "novelty_score": 0.5},
+                {"feasibility_score": 0.7, "novelty_score": 0.5},
+            ]
+        }
         summary = self._generate_summary(result)
         assert "2 个研究假说" in summary
 
     def test_highlights_high_feasibility(self):
         """Highlights high feasibility hypotheses."""
-        result = {"hypotheses": [
-            {"feasibility_score": 0.8, "novelty_score": 0.5},
-        ]}
+        result = {
+            "hypotheses": [
+                {"feasibility_score": 0.8, "novelty_score": 0.5},
+            ]
+        }
         summary = self._generate_summary(result)
         assert "可行性较高" in summary
 
     def test_highlights_high_novelty(self):
         """Highlights high novelty hypotheses."""
-        result = {"hypotheses": [
-            {"feasibility_score": 0.5, "novelty_score": 0.8},
-        ]}
+        result = {
+            "hypotheses": [
+                {"feasibility_score": 0.5, "novelty_score": 0.8},
+            ]
+        }
         summary = self._generate_summary(result)
         assert "创新性较高" in summary
 

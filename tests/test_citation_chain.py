@@ -1,4 +1,5 @@
 """Tests for citation chain."""
+
 import pytest
 from llm.citation_chain import (
     CitationChainBuilder,

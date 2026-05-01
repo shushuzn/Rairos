@@ -1,4 +1,5 @@
 """Tests for pdf/parser.py — PDFParser, ParsedPaper, cache."""
+
 from __future__ import annotations
 
 import json
@@ -132,6 +133,7 @@ class TestPDFParserEdgeCases:
             pytest.skip("pdfminer not installed")
 
         parser = PDFParser()
+
         # Patch the method directly to avoid import path issues
         def mock_fallback(path):
             # Simulate pdfminer returning whitespace-only text (stripped to empty)
@@ -144,6 +146,7 @@ class TestPDFParserEdgeCases:
                 "warnings": ["Used pdfminer fallback"],
                 "errors": [],
             }
+
         monkeypatch.setattr(parser, "_pdfminer_fallback", mock_fallback)
 
         result = parser._pdfminer_fallback(sample_pdf)
@@ -174,6 +177,7 @@ class TestPDFParserEdgeCases:
     def test_find_caption_near_no_caption(self, sample_pdf):
         """Line 559: no blocks match caption pattern → returns ''."""
         import fitz
+
         parser = PDFParser()
         doc = fitz.open(str(sample_pdf))
         page = doc[0]
@@ -203,11 +207,13 @@ class TestPDFParserEdgeCases:
     def test_parse_timeout_raises(self, sample_pdf, monkeypatch):
         """Line 241: raises ParseTimeoutError when elapsed > max_parse_time."""
         from pdf.parser import ParseTimeoutError
+
         parser = PDFParser()
         # Freeze time: both calls return 0.0 → elapsed = 0 (no timeout normally).
         # Mock _check_db_cache to return None (cache miss) so parsing always runs.
         # Mock _save_db_cache / _save_file_cache to no-op (avoid side effects).
         import pdf.parser as _m
+
         monkeypatch.setattr(_m.time, "time", lambda: 0.0)
         monkeypatch.setattr(parser, "_check_db_cache", lambda pid, h: None)
         monkeypatch.setattr(parser, "_save_db_cache", lambda p: None)
@@ -215,7 +221,11 @@ class TestPDFParserEdgeCases:
         # Force timeout by patching max_parse_time to an extremely small value
         # so even 1ms of elapsed time triggers it
         with monkeypatch.context() as m:
-            m.setattr(parser, "parse", lambda *a, **kw: (_ for _ in ()).throw(ParseTimeoutError("simulated")))
+            m.setattr(
+                parser,
+                "parse",
+                lambda *a, **kw: (_ for _ in ()).throw(ParseTimeoutError("simulated")),
+            )
             with pytest.raises(ParseTimeoutError):
                 parser.parse(sample_pdf, paper_id="t", use_cache=False, max_parse_time=0.001)
 
@@ -226,26 +236,37 @@ class TestPDFParserEdgeCases:
         parser.db = None
 
         import pathlib
+
         orig_mkdir = pathlib.Path.mkdir
+
         def bad_mkdir(self, *a, **k):
             if str(self) == str(cache_dir):
                 raise OSError("read-only filesystem")
             return orig_mkdir(self, *a, **k)
+
         monkeypatch.setattr(pathlib.Path, "mkdir", staticmethod(bad_mkdir))
 
     def test_parse_pymupdf_exception_raises_when_fallback_also_fails(self, sample_pdf, monkeypatch):
         """Lines 233-237: PyMuPDF exception + empty pdfminer fallback = PDFParseError."""
         parser = PDFParser()
         parser.db = None
-        monkeypatch.setattr(parser, "_extract_structured", lambda p: (_ for _ in ()).throw(RuntimeError("pymupdf broken")))
-        monkeypatch.setattr(parser, "_pdfminer_fallback", lambda p: {"text": "", "warnings": [], "errors": []})
+        monkeypatch.setattr(
+            parser,
+            "_extract_structured",
+            lambda p: (_ for _ in ()).throw(RuntimeError("pymupdf broken")),
+        )
+        monkeypatch.setattr(
+            parser, "_pdfminer_fallback", lambda p: {"text": "", "warnings": [], "errors": []}
+        )
         from core.exceptions import PDFParseError
+
         with pytest.raises(PDFParseError, match="All PDF extraction methods failed"):
             parser.parse(sample_pdf, paper_id="t", use_cache=False)
 
     def test_find_caption_near(self, sample_pdf):
         """Lines 533-553: _find_caption_near detects captions near image bbox."""
         import fitz
+
         parser = PDFParser()
         doc = fitz.open(str(sample_pdf))
         page = doc[0]
@@ -300,6 +321,7 @@ class TestCheckDBCache:
     def test_returns_none_when_pdf_hash_mismatches(self, tmp_db, tmp_path):
         # Insert paper with different hash
         import sqlite3
+
         db_path = tmp_path / "research.db"
         conn = sqlite3.connect(str(db_path))
         conn.execute(
@@ -308,10 +330,12 @@ class TestCheckDBCache:
         )
         conn.commit()
         conn.close()
+
         # Reconnect using the same tmp_db fixture pattern
         class _FakeDB:
             def __init__(self, conn):
                 self.conn = conn
+
             def get_paper(self, paper_id):
                 cur = self.conn.cursor()
                 cur.execute("SELECT * FROM papers WHERE id = ?", (paper_id,))
@@ -320,6 +344,7 @@ class TestCheckDBCache:
                     return None
                 columns = [desc[0] for desc in cur.description]
                 return dict(zip(columns, row))
+
         # Use a fresh DB for this sub-test
         conn2 = sqlite3.connect(str(db_path))
         conn2.execute(
@@ -337,6 +362,7 @@ class TestCheckDBCache:
     def test_returns_none_when_parse_status_not_done(self, tmp_path):
         """parse_status must be 'done' for cache to be valid."""
         import sqlite3
+
         db_path = tmp_path / "research2.db"
         conn = sqlite3.connect(str(db_path))
         conn.execute(
@@ -361,9 +387,11 @@ class TestCheckDBCache:
             "VALUES ('2301.00001', 'arxiv', 'abc123', 'pending', '2023-01-01', '2023-01-01')"
         )
         conn.commit()
+
         class _FakeDB:
             def __init__(self, conn):
                 self.conn = conn
+
             def get_paper(self, paper_id):
                 cur = self.conn.cursor()
                 cur.execute("SELECT * FROM papers WHERE id = ?", (paper_id,))
@@ -372,6 +400,7 @@ class TestCheckDBCache:
                     return None
                 columns = [desc[0] for desc in cur.description]
                 return dict(zip(columns, row))
+
         db = _FakeDB(conn)
         parser = PDFParser(db=db)
         result = parser._check_db_cache("2301.00001", "abc123")
@@ -382,6 +411,7 @@ class TestCheckDBCache:
         class BadDB:
             def get_paper(self, paper_id):
                 raise RuntimeError("db connection lost")
+
         parser = PDFParser(db=BadDB())
         result = parser._check_db_cache("any", "any")
         assert result is None
@@ -390,6 +420,7 @@ class TestCheckDBCache:
         """Full cache hit: paper exists, hash matches, status='done'."""
         import sqlite3
         import json
+
         db_path = tmp_path / "research3.db"
         conn = sqlite3.connect(str(db_path))
         conn.execute(
@@ -409,9 +440,9 @@ class TestCheckDBCache:
             "  pnote_path TEXT DEFAULT '', cnote_path TEXT DEFAULT '',"
             "  mnote_path TEXT DEFAULT '', embed_vector BLOB DEFAULT NULL)"
         )
-        latex_blocks_json = json.dumps([{
-            "source": "$x$", "is_display": False, "page": 0, "bbox": [0, 0, 0, 0]
-        }])
+        latex_blocks_json = json.dumps(
+            [{"source": "$x$", "is_display": False, "page": 0, "bbox": [0, 0, 0, 0]}]
+        )
         conn.execute(
             "INSERT OR REPLACE INTO papers "
             "(id, source, pdf_hash, parse_status, plain_text, latex_blocks,"
@@ -438,11 +469,26 @@ class TestCheckDBCache:
                 # from_cache_dict receives a list (not a string) when iterating.
                 result["latex_blocks"] = json.loads(result["latex_blocks"])
                 from types import SimpleNamespace
-                return SimpleNamespace(**{k: result[k] for k in [
-                    "id", "pdf_hash", "parse_status", "plain_text",
-                    "latex_blocks", "page_count", "word_count",
-                    "parse_version", "title", "authors", "abstract", "published",
-                ]})
+
+                return SimpleNamespace(
+                    **{
+                        k: result[k]
+                        for k in [
+                            "id",
+                            "pdf_hash",
+                            "parse_status",
+                            "plain_text",
+                            "latex_blocks",
+                            "page_count",
+                            "word_count",
+                            "parse_version",
+                            "title",
+                            "authors",
+                            "abstract",
+                            "published",
+                        ]
+                    }
+                )
 
         db = _FakeDB(conn)
         parser = PDFParser(db=db)
@@ -459,6 +505,7 @@ class TestSaveDBCache:
 
     def test_save_succeeds_with_valid_db(self, tmp_path):
         import sqlite3
+
         db_path = tmp_path / "research_save.db"
         conn = sqlite3.connect(str(db_path))
         conn.execute(
@@ -498,23 +545,43 @@ class TestSaveDBCache:
                 columns = [desc[0] for desc in cur.description]
                 return dict(zip(columns, row))
 
-            def update_parse_status(self, paper_id, status, error="", plain_text="",
-                                    latex_blocks=None, table_count=0, figure_count=0,
-                                    word_count=0, page_count=0):
-                latex_json = json.dumps(latex_blocks or []) if not isinstance(latex_blocks, str) else latex_blocks
-                cur = self.conn.cursor()
-                cur.execute(
-                    "SELECT parse_version FROM papers WHERE id = ?", (paper_id,)
+            def update_parse_status(
+                self,
+                paper_id,
+                status,
+                error="",
+                plain_text="",
+                latex_blocks=None,
+                table_count=0,
+                figure_count=0,
+                word_count=0,
+                page_count=0,
+            ):
+                latex_json = (
+                    json.dumps(latex_blocks or [])
+                    if not isinstance(latex_blocks, str)
+                    else latex_blocks
                 )
+                cur = self.conn.cursor()
+                cur.execute("SELECT parse_version FROM papers WHERE id = ?", (paper_id,))
                 row = cur.fetchone()
                 version = (row[0] if row else 0) + 1
                 cur.execute(
                     "UPDATE papers SET parse_status=?, parse_error=?, plain_text=?, "
                     "latex_blocks=?, table_count=?, figure_count=?, word_count=?, "
                     "page_count=?, parse_version=? WHERE id=?",
-                    (status, error, plain_text, latex_json,
-                     table_count, figure_count, word_count, page_count,
-                     version, paper_id),
+                    (
+                        status,
+                        error,
+                        plain_text,
+                        latex_json,
+                        table_count,
+                        figure_count,
+                        word_count,
+                        page_count,
+                        version,
+                        paper_id,
+                    ),
                 )
                 self.conn.commit()
 
@@ -542,6 +609,7 @@ class TestSaveDBCache:
         class BadDB:
             def update_parse_status(self, **kwargs):
                 raise RuntimeError("db write failed")
+
         paper = ParsedPaper(paper_id="2301.00001", text="x")
         parser = PDFParser(db=BadDB())
         # Should NOT raise — exceptions are swallowed with a warning log
@@ -560,23 +628,27 @@ class TestCheckFileCache:
         cache_dir = tmp_path / "cache"
         cache_dir.mkdir()
         cache_file = cache_dir / "2301.00001.json"
-        cache_file.write_text(json.dumps({
-            "paper_id": "2301.00001",
-            "text": "old cached text",
-            "pdf_hash": "oldhash",
-            "latex_blocks": [],
-            "tables": [],
-            "figures": [],
-            "page_count": 1,
-            "word_count": 0,
-            "parse_version": 1,
-            "title": "",
-            "authors": [],
-            "abstract": "",
-            "published": "",
-            "warnings": [],
-            "errors": [],
-        }))
+        cache_file.write_text(
+            json.dumps(
+                {
+                    "paper_id": "2301.00001",
+                    "text": "old cached text",
+                    "pdf_hash": "oldhash",
+                    "latex_blocks": [],
+                    "tables": [],
+                    "figures": [],
+                    "page_count": 1,
+                    "word_count": 0,
+                    "parse_version": 1,
+                    "title": "",
+                    "authors": [],
+                    "abstract": "",
+                    "published": "",
+                    "warnings": [],
+                    "errors": [],
+                }
+            )
+        )
         parser = PDFParser(cache_dir=cache_dir)
         result = parser._check_file_cache("2301.00001", "different_hash")
         assert result is None
@@ -594,23 +666,27 @@ class TestCheckFileCache:
         cache_dir = tmp_path / "cache"
         cache_dir.mkdir()
         cache_file = cache_dir / "2301.00001.json"
-        cache_file.write_text(json.dumps({
-            "paper_id": "2301.00001",
-            "text": "cached content",
-            "pdf_hash": "abchash",
-            "latex_blocks": [],
-            "tables": [],
-            "figures": [],
-            "page_count": 3,
-            "word_count": 10,
-            "parse_version": 2,
-            "title": "Cached Title",
-            "authors": ["Alice"],
-            "abstract": "Abs",
-            "published": "2023",
-            "warnings": [],
-            "errors": [],
-        }))
+        cache_file.write_text(
+            json.dumps(
+                {
+                    "paper_id": "2301.00001",
+                    "text": "cached content",
+                    "pdf_hash": "abchash",
+                    "latex_blocks": [],
+                    "tables": [],
+                    "figures": [],
+                    "page_count": 3,
+                    "word_count": 10,
+                    "parse_version": 2,
+                    "title": "Cached Title",
+                    "authors": ["Alice"],
+                    "abstract": "Abs",
+                    "published": "2023",
+                    "warnings": [],
+                    "errors": [],
+                }
+            )
+        )
         parser = PDFParser(cache_dir=cache_dir)
         result = parser._check_file_cache("2301.00001", "abchash")
         assert result is not None
@@ -675,22 +751,27 @@ class TestExtractStructuredExceptions:
     def test_table_detection_exception_appends_warning(self, sample_pdf, monkeypatch):
         """Lines 376-377: table detection exception → warning appended."""
         import fitz
+
         parser = PDFParser()
         parser.db = None
 
         # Patch find_tables to raise
         class FakeDoc:
             page_count = 1
+
             def load_page(self, i):
                 return FakePage()
+
             def close(self):
                 pass
 
         class FakePage:
             def find_tables(self):
                 raise RuntimeError("table detection unavailable")
+
             def get_images(self, full=True):
                 return []
+
             def get_text(self, kind="dict", flags=0):
                 return {"blocks": []}
 
@@ -703,13 +784,16 @@ class TestExtractStructuredExceptions:
     def test_figure_detection_exception_appends_warning(self, sample_pdf, monkeypatch):
         """Lines 393-394: figure detection exception → warning appended."""
         import fitz
+
         parser = PDFParser()
         parser.db = None
 
         class FakeDoc:
             page_count = 1
+
             def load_page(self, i):
                 return FakePage()
+
             def close(self):
                 pass
 
@@ -718,9 +802,12 @@ class TestExtractStructuredExceptions:
                 class FakeTableBrowse:
                     def __iter__(self):
                         return iter([])
+
                 return FakeTableBrowse()
+
             def get_images(self, full=True):
                 raise RuntimeError("image detection unavailable")
+
             def get_text(self, kind="dict", flags=0):
                 return {"blocks": []}
 
@@ -732,13 +819,16 @@ class TestExtractStructuredExceptions:
     def test_get_text_exception_sets_empty_dict(self, sample_pdf, monkeypatch):
         """Lines 399-400: get_text exception → page_dict = {}."""
         import fitz
+
         parser = PDFParser()
         parser.db = None
 
         class FakeDoc:
             page_count = 1
+
             def load_page(self, i):
                 return FakePage()
+
             def close(self):
                 pass
 
@@ -747,9 +837,12 @@ class TestExtractStructuredExceptions:
                 class FakeTableBrowse:
                     def __iter__(self):
                         return iter([])
+
                 return FakeTableBrowse()
+
             def get_images(self, full=True):
                 return []
+
             def get_text(self, kind="dict", flags=0):
                 raise RuntimeError("text extraction unavailable")
 
@@ -792,16 +885,19 @@ class TestIsDisplayMath:
 
     def test_non_math_line_returns_false(self):
         from pdf.parser import _is_display_math
+
         assert _is_display_math("This is plain text") is False
         assert _is_display_math("") is False
 
     def test_inline_math_not_display(self):
         from pdf.parser import _is_display_math
+
         assert _is_display_math("$x^2$") is False
         assert _is_display_math("\\($y$\\)") is False
 
     def test_display_math_patterns_return_true(self):
         from pdf.parser import _is_display_math
+
         assert _is_display_math("$$x^2$$") is True
         assert _is_display_math("$$ formula $$") is True
         assert _is_display_math("\\[ formula \\]") is True
@@ -813,6 +909,7 @@ class TestExtractLatexBlocksFromText:
 
     def test_extracts_inline_math(self):
         from pdf.parser import PDFParser
+
         parser = PDFParser()
         text = "Let $x$ be a variable"
         blocks = parser._extract_latex_blocks_from_text(text, page_idx=0)
@@ -821,6 +918,7 @@ class TestExtractLatexBlocksFromText:
 
     def test_extracts_from_multiline_text(self):
         from pdf.parser import PDFParser
+
         parser = PDFParser()
         text = "Line one\nLine two\nLine three"
         blocks = parser._extract_latex_blocks_from_text(text, page_idx=0)
@@ -833,11 +931,14 @@ class TestFindCaptionNear:
 
     def test_returns_empty_on_exception(self):
         from pdf.parser import PDFParser
+
         parser = PDFParser()
+
         # Pass a non-fitz page object to trigger exception
         class FakePage:
             def get_text(self, kind="dict"):
                 raise RuntimeError("get_text unavailable")
+
         result = parser._find_caption_near(FakePage(), (10, 20, 30, 40), page_idx=0)
         assert result == ""
 
@@ -871,7 +972,9 @@ class TestPdfminerFallback:
         assert result.text == "Recovered via pdfminer fallback"
         assert "Used pdfminer fallback" in result.warnings
 
-    def test_pdfminer_fallback_returns_empty_dict_raises_pdfparse_error(self, sample_pdf, monkeypatch):
+    def test_pdfminer_fallback_returns_empty_dict_raises_pdfparse_error(
+        self, sample_pdf, monkeypatch
+    ):
         """Lines 233-235: _extract_structured raises, pdfminer returns empty dict → PDFParseError."""
         parser = PDFParser()
         parser.db = None
@@ -894,6 +997,7 @@ class TestPdfminerFallback:
         monkeypatch.setattr(parser, "_pdfminer_fallback", empty_fallback)
 
         from core.exceptions import PDFParseError
+
         with pytest.raises(PDFParseError, match="All PDF extraction methods failed"):
             parser.parse(sample_pdf, paper_id="2301.00001", use_cache=False)
 
@@ -920,6 +1024,7 @@ class TestPdfminerFallback:
         monkeypatch.setattr(parser, "_pdfminer_fallback", empty_text_fallback)
 
         from core.exceptions import PDFParseError
+
         with pytest.raises(PDFParseError, match="All PDF extraction methods failed"):
             parser.parse(sample_pdf, paper_id="2301.00001", use_cache=False)
 
@@ -999,10 +1104,7 @@ class TestPdfminerFallback:
         def mock_extract_text(path):
             return None
 
-        monkeypatch.setattr(
-            "pdfminer.high_level.extract_text",
-            mock_extract_text
-        )
+        monkeypatch.setattr("pdfminer.high_level.extract_text", mock_extract_text)
 
         result = parser._pdfminer_fallback(sample_pdf)
         assert result["text"] == ""
@@ -1017,6 +1119,7 @@ class TestHashFileOSError:
 
         # Patch the file read inside _hash_file to raise OSError
         orig_open = open
+
         def bad_open(path, mode="r", *a, **k):
             if mode == "rb" and "sample" in str(path):
                 raise OSError("Permission denied")
@@ -1039,6 +1142,7 @@ class TestSaveFileCacheOSError:
 
         # Patch the specific write_text call to raise OSError
         import pathlib
+
         orig_write_text = pathlib.Path.write_text
 
         def bad_write_text(self, *a, **k):
@@ -1059,13 +1163,16 @@ class TestEmptyTextBlockSkip:
     def test_empty_span_in_block_is_skipped(self, sample_pdf, monkeypatch):
         """Line 410-411: block with empty span text is skipped (no crash)."""
         import fitz
+
         parser = PDFParser()
         parser.db = None
 
         class FakeDoc:
             page_count = 1
+
             def load_page(self, i):
                 return FakePage()
+
             def close(self):
                 pass
 
@@ -1074,29 +1181,31 @@ class TestEmptyTextBlockSkip:
                 class FakeTableBrowse:
                     def __iter__(self):
                         return iter([])
+
                 return FakeTableBrowse()
+
             def get_images(self, full=True):
                 return []
+
             def get_text(self, kind="dict", flags=0):
                 # Block with a span whose text is empty string
                 return {
-                    "blocks": [{
-                        "type": 0,
-                        "bbox": (0, 0, 100, 20),
-                        "lines": [{
-                            "lines": [],
-                            "spans": [{"text": ""}],
-                            "bbox": (0, 0, 100, 20)
-                        }]
-                    }, {
-                        "type": 0,
-                        "bbox": (0, 30, 100, 50),
-                        "lines": [{
-                            "lines": [],
-                            "spans": [{"text": "x"}],
-                            "bbox": (0, 30, 100, 50)
-                        }]
-                    }]
+                    "blocks": [
+                        {
+                            "type": 0,
+                            "bbox": (0, 0, 100, 20),
+                            "lines": [
+                                {"lines": [], "spans": [{"text": ""}], "bbox": (0, 0, 100, 20)}
+                            ],
+                        },
+                        {
+                            "type": 0,
+                            "bbox": (0, 30, 100, 50),
+                            "lines": [
+                                {"lines": [], "spans": [{"text": "x"}], "bbox": (0, 30, 100, 50)}
+                            ],
+                        },
+                    ]
                 }
 
         monkeypatch.setattr(fitz, "open", lambda p: FakeDoc())
@@ -1114,6 +1223,7 @@ class TestTableToStructuredEdgeCases:
     def test_empty_rows_returns_none(self):
         """Lines 520-521: empty rows list → returns None."""
         from pdf.parser import PDFParser
+
         parser = PDFParser()
 
         class FakeTable:
@@ -1126,15 +1236,18 @@ class TestTableToStructuredEdgeCases:
     def test_single_row_returns_none(self):
         """Lines 520-521: rows with only header (len=1) → returns None."""
         from pdf.parser import PDFParser
+
         parser = PDFParser()
 
         class FakeRow:
             def __init__(self, texts):
                 self._texts = texts
+
             def __iter__(self):
                 class Cell:
                     def __init__(self, t):
                         self.text = t
+
                 return iter([Cell(t) for t in self._texts])
 
         class FakeTable:
@@ -1147,6 +1260,7 @@ class TestTableToStructuredEdgeCases:
     def test_two_rows_produces_table(self):
         """Lines 523-532: two rows (header + data) → TableData returned."""
         from pdf.parser import PDFParser
+
         parser = PDFParser()
 
         class FakeCell:
@@ -1156,6 +1270,7 @@ class TestTableToStructuredEdgeCases:
         class FakeRow:
             def __init__(self, texts):
                 self._texts = texts
+
             def __iter__(self):
                 return iter([FakeCell(t) for t in self._texts])
 
@@ -1175,6 +1290,7 @@ class TestTableToStructuredEdgeCases:
     def test_no_bbox_attribute_uses_default(self):
         """Line 526: tbl.bbox missing → uses (0,0,0,0)."""
         from pdf.parser import PDFParser
+
         parser = PDFParser()
 
         class FakeCell:
@@ -1184,6 +1300,7 @@ class TestTableToStructuredEdgeCases:
         class FakeRow:
             def __init__(self, texts):
                 self._texts = texts
+
             def __iter__(self):
                 return iter([FakeCell(t) for t in self._texts])
 
@@ -1202,6 +1319,7 @@ class TestFindCaptionNearEmpty:
     def test_returns_empty_when_no_caption_matches(self):
         """Line 559: no matching caption → returns ''."""
         from pdf.parser import PDFParser
+
         parser = PDFParser()
 
         class FakeSpan:
@@ -1249,8 +1367,9 @@ class TestExtractLatexBlocksEmptyInput:
     """Cover lines 575-578: _extract_latex_blocks_from_text with empty/no display math."""
 
     def test_empty_string_returns_empty_list(self):
-        """Lines 569-586: empty input → returns []. """
+        """Lines 569-586: empty input → returns []."""
         from pdf.parser import PDFParser
+
         parser = PDFParser()
         result = parser._extract_latex_blocks_from_text("", page_idx=0)
         assert result == []
@@ -1258,6 +1377,7 @@ class TestExtractLatexBlocksEmptyInput:
     def test_no_display_math_only_inline(self):
         """Line 580-581: inline math found but no display math → inline returned."""
         from pdf.parser import PDFParser
+
         parser = PDFParser()
         text = "Equation $x = 1$ and $y = 2$"
         blocks = parser._extract_latex_blocks_from_text(text, page_idx=0)
@@ -1309,6 +1429,7 @@ class TestParseErrorPath:
 
     def test_raises_pdf_parse_error_when_both_methods_fail(self, sample_pdf, monkeypatch):
         """When _extract_structured raises AND pdfminer returns empty → PDFParseError."""
+
         def bad_extract(path):
             raise RuntimeError("PyMuPDF destroyed")
 
@@ -1333,6 +1454,7 @@ class TestParseErrorPath:
 
     def test_pymupdf_failure_with_pdfminer_content_succeeds(self, sample_pdf, monkeypatch):
         """When PyMuPDF fails but pdfminer returns non-empty → succeeds with warning."""
+
         def bad_extract(path):
             raise RuntimeError("PyMuPDF error")
 
@@ -1367,6 +1489,7 @@ class TestExtractStructuredTableWithRows:
     def test_extract_structured_with_real_table_rows(self, sample_pdf, monkeypatch):
         """Tables with actual rows flow through _table_to_structured to completion."""
         import fitz
+
         parser = PDFParser()
         parser.db = None
 
@@ -1393,10 +1516,13 @@ class TestExtractStructuredTableWithRows:
         class FakePage:
             def find_tables(self):
                 # Return a table with header + 2 data rows
-                return iter([FakeTable(
-                    [["ColA", "ColB"], ["v1", "v2"], ["v3", "v4"]],
-                    bbox=(10, 20, 30, 40)
-                )])
+                return iter(
+                    [
+                        FakeTable(
+                            [["ColA", "ColB"], ["v1", "v2"], ["v3", "v4"]], bbox=(10, 20, 30, 40)
+                        )
+                    ]
+                )
 
             def get_images(self, full=True):
                 return []
@@ -1432,6 +1558,7 @@ class TestTableToStructuredCellAccess:
 
         class BadCell:
             """Cell whose .text attribute itself raises."""
+
             text = property(lambda self: (_ for _ in ()).throw(AttributeError("no text")))
 
         class FakeRow:
@@ -1456,6 +1583,7 @@ class TestExtractStructuredShortLineSkipped:
     def test_short_line_skipped_in_extract_structured(self, sample_pdf, monkeypatch):
         """Line 410-411: single-char line_text is skipped (continues, no crash)."""
         import fitz
+
         parser = PDFParser()
         parser.db = None
 
@@ -1473,6 +1601,7 @@ class TestExtractStructuredShortLineSkipped:
                 class Empty:
                     def __iter__(self):
                         return iter([])
+
                 return Empty()
 
             def get_images(self, full=True):
@@ -1481,21 +1610,18 @@ class TestExtractStructuredShortLineSkipped:
             def get_text(self, kind="dict", flags=0):
                 # Block with a 1-char span and a 2-char span
                 return {
-                    "blocks": [{
-                        "type": 0,
-                        "bbox": (0, 0, 100, 20),
-                        "lines": [{
-                            "spans": [{"text": "x"}],
-                            "bbox": (0, 0, 100, 20)
-                        }]
-                    }, {
-                        "type": 0,
-                        "bbox": (0, 30, 100, 50),
-                        "lines": [{
-                            "spans": [{"text": "ab"}],
-                            "bbox": (0, 30, 100, 50)
-                        }]
-                    }]
+                    "blocks": [
+                        {
+                            "type": 0,
+                            "bbox": (0, 0, 100, 20),
+                            "lines": [{"spans": [{"text": "x"}], "bbox": (0, 0, 100, 20)}],
+                        },
+                        {
+                            "type": 0,
+                            "bbox": (0, 30, 100, 50),
+                            "lines": [{"spans": [{"text": "ab"}], "bbox": (0, 30, 100, 50)}],
+                        },
+                    ]
                 }
 
         monkeypatch.setattr(fitz, "open", lambda p: FakeDoc())
@@ -1518,14 +1644,15 @@ class TestFindCaptionNearNoCaption:
         class FakePage:
             def get_text(self, kind="dict"):
                 return {
-                    "blocks": [{
-                        "type": 0,
-                        "bbox": (0, 0, 100, 20),  # block at y=10 (center)
-                        "lines": [{
-                            "spans": [{"text": "Some regular text"}],
-                            "bbox": (0, 0, 100, 20)
-                        }]
-                    }]
+                    "blocks": [
+                        {
+                            "type": 0,
+                            "bbox": (0, 0, 100, 20),  # block at y=10 (center)
+                            "lines": [
+                                {"spans": [{"text": "Some regular text"}], "bbox": (0, 0, 100, 20)}
+                            ],
+                        }
+                    ]
                 }
 
         # Image at y_center=500, block at y_center=10, distance=490 > search_radius=50
@@ -1552,4 +1679,3 @@ class TestExtractLatexBlocksFromTextEmptyInput:
         # Plain text, no display math, no inline math → empty list
         result = parser._extract_latex_blocks_from_text("Just plain text", page_idx=0)
         assert result == []
-

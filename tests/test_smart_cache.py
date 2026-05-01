@@ -1,4 +1,5 @@
 """Tests for smart cache functionality."""
+
 import pytest
 import tempfile
 from pathlib import Path
@@ -88,7 +89,7 @@ def test_smart_cache_compression(temp_cache_dir):
     cache = SmartCache(
         temp_cache_dir,
         max_size_mb=10.0,
-        compression_threshold_kb=0.1  # Very low threshold for testing
+        compression_threshold_kb=0.1,  # Very low threshold for testing
     )
 
     # Create large data

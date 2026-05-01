@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/tracker_base.py, JsonFileStore pure logic."""
+
 import json
 from pathlib import Path
 from llm.tracker_base import JsonFileStore
@@ -58,7 +59,7 @@ class TestJsonFileStoreLoad:
 
     def test_post_load_called(self, tmp_path, monkeypatch):
         f = tmp_path / "data.json"
-        f.write_text('[1, 2, 3]')
+        f.write_text("[1, 2, 3]")
         called = []
         store = DummyStore(f)
 

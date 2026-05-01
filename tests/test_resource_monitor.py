@@ -1,4 +1,5 @@
 """Tests for resource monitoring functionality."""
+
 from pathlib import Path
 from core.resource_monitor import (
     ResourceMonitor,
@@ -75,7 +76,7 @@ def test_resource_guard_check():
     """Test resource guard check."""
     guard = ResourceGuard(
         min_disk_gb=0.001,  # Very low threshold for testing
-        max_memory_percent=99.0  # Very high threshold for testing
+        max_memory_percent=99.0,  # Very high threshold for testing
     )
 
     ok, msg = guard.check()
@@ -93,10 +94,7 @@ def test_api_budget_tracker_record():
     """Test recording API calls."""
     tracker = APIBudgetTracker(monthly_budget_usd=10.0)
     tracker.record_api_call(
-        provider="openai",
-        endpoint="/chat/completions",
-        tokens_used=1000,
-        cost_per_1k=0.002
+        provider="openai", endpoint="/chat/completions", tokens_used=1000, cost_per_1k=0.002
     )
 
     assert tracker._call_count == 1

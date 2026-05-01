@@ -1,4 +1,5 @@
 """Tests for core/profiler.py."""
+
 import time
 import sys
 from pathlib import Path

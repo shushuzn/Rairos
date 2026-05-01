@@ -157,10 +157,7 @@ class TestReviewGenerator:
             ResearchStream(name="生成优化型", papers=[]),
         ]
 
-        gaps = generator._identify_gaps(
-            [None] * 20,
-            streams
-        )
+        gaps = generator._identify_gaps([None] * 20, streams)
 
         assert len(gaps) > 0
 
@@ -169,23 +166,20 @@ class TestReviewGenerator:
         generator = ReviewGenerator()
 
         streams = [ResearchStream(name="测试流派", papers=["p1"])]
-        controversies = [Controversy(
-            topic="测试争论",
-            stream_a="A",
-            stream_b="B",
-            position_a="pos A",
-            position_b="pos B",
-        )]
+        controversies = [
+            Controversy(
+                topic="测试争论",
+                stream_a="A",
+                stream_b="B",
+                position_a="pos A",
+                position_b="pos B",
+            )
+        ]
         timeline = [(2023, "Test event")]
         open_problems = ["问题1", "问题2"]
 
         sections = generator._generate_sections(
-            "测试主题",
-            streams,
-            controversies,
-            timeline,
-            open_problems,
-            "full"
+            "测试主题", streams, controversies, timeline, open_problems, "full"
         )
 
         assert len(sections) >= 4
@@ -198,14 +192,7 @@ class TestReviewGenerator:
         """Test short depth skips timeline."""
         generator = ReviewGenerator()
 
-        sections = generator._generate_sections(
-            "测试",
-            [],
-            [],
-            [(2023, "Event")],
-            [],
-            "short"
-        )
+        sections = generator._generate_sections("测试", [], [], [(2023, "Event")], [], "short")
 
         titles = [s.title for s in sections]
         assert "演化脉络" not in titles

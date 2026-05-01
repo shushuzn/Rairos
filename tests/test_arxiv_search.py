@@ -1,4 +1,5 @@
 """Tier 2 unit tests — parsers/arxiv_search.py, no I/O, no network."""
+
 from unittest.mock import Mock, patch
 
 import pytest
@@ -238,9 +239,7 @@ class TestSearchArxiv:
         import requests
 
         mock_response = Mock()
-        mock_response.raise_for_status = Mock(
-            side_effect=requests.HTTPError("404 Not Found")
-        )
+        mock_response.raise_for_status = Mock(side_effect=requests.HTTPError("404 Not Found"))
         mock_get.return_value = mock_response
 
         with pytest.raises(RuntimeError, match="arXiv search failed"):

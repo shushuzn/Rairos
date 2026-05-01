@@ -1,4 +1,5 @@
 """Tier 2 parser unit tests — pure functions, no I/O, no network."""
+
 import datetime as dt
 from unittest.mock import Mock
 
@@ -99,6 +100,7 @@ class TestPaperDataclassFields:
 class TestTodayIso:
     def test_returns_iso_format_date(self):
         from core import today_iso
+
         today = today_iso()
         # Verify it parses as a valid ISO date
         parsed = dt.date.fromisoformat(today)
@@ -180,8 +182,11 @@ class TestArxivParseEntry:
         e.id = "https://arxiv.org/abs/2301.12345v2"
         e.title = "Attention Is All You Need\n"
         e.summary = "We propose a new simple network architecture.\n"
+
         class _Auth:
-            def __init__(self, n): self.name = n
+            def __init__(self, n):
+                self.name = n
+
         e.authors = [_Auth("Ashish Vaswani"), _Auth("Noam Shazeer")]
         e.published = "2017-06-12T00:00:00Z"
         e.updated = "2017-06-13T00:00:00Z"
@@ -558,13 +563,7 @@ class TestCrossrefTryFindArxivId:
         assert crossref_parser._try_find_arxiv_id_in_crossref(item, doi) == "2301.12345"
 
     def test_finds_arxiv_in_relation_field(self):
-        item = {
-            "relation": {
-                "is-version-of": [
-                    {"id": "https://arxiv.org/abs/1706.03762v5"}
-                ]
-            }
-        }
+        item = {"relation": {"is-version-of": [{"id": "https://arxiv.org/abs/1706.03762v5"}]}}
         doi = "10.1234/test"
         assert crossref_parser._try_find_arxiv_id_in_crossref(item, doi) == "1706.03762v5"
 
@@ -744,6 +743,3 @@ class TestNormalizeArxivId:
 
     def test_handles_empty_string(self):
         assert normalize_arxiv_id("") is None
-
-
-

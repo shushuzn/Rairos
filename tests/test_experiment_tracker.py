@@ -1,4 +1,5 @@
 """Tests for experiment tracker."""
+
 import pytest
 
 from llm.experiment_tracker import (
@@ -261,9 +262,7 @@ class TestExperiment:
             "status": "running",
             "config": {},
             "results": {},
-            "metrics": [
-                {"name": "accuracy", "value": 0.92, "unit": "%"}
-            ],
+            "metrics": [{"name": "accuracy", "value": 0.92, "unit": "%"}],
             "artifacts": [],
             "tags": [],
             "created_at": "",

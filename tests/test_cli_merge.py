@@ -1,4 +1,5 @@
 """Unit tests for merge CLI subcommand."""
+
 from io import StringIO
 from unittest.mock import patch
 
@@ -10,9 +11,15 @@ class FakeArgs:
 
 
 class FakePaper:
-    def __init__(self, id="2301.00001", title="Test Paper", doi=None,
-                 parse_status="completed", added_at="2024-01-01",
-                 abstract=None):
+    def __init__(
+        self,
+        id="2301.00001",
+        title="Test Paper",
+        doi=None,
+        parse_status="completed",
+        added_at="2024-01-01",
+        abstract=None,
+    ):
         self.id = id
         self.title = title
         self.doi = doi
@@ -55,25 +62,30 @@ class FakeDatabase:
 # merge: missing arguments
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestMergeArgs:
     def test_missing_both_ids(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             MockDB.return_value = FakeDatabase()
-            rc = _run_merge(FakeArgs(target_id=None, duplicate_id=None,
-                                      keep="older", dry_run=False, auto=False))
+            rc = _run_merge(
+                FakeArgs(target_id=None, duplicate_id=None, keep="older", dry_run=False, auto=False)
+            )
             assert rc == 1
 
     def test_missing_duplicate_id(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             MockDB.return_value = FakeDatabase()
-            rc = _run_merge(FakeArgs(target_id="P1", duplicate_id=None,
-                                      keep="older", dry_run=False, auto=False))
+            rc = _run_merge(
+                FakeArgs(target_id="P1", duplicate_id=None, keep="older", dry_run=False, auto=False)
+            )
             assert rc == 1
 
 
@@ -81,27 +93,36 @@ class TestMergeArgs:
 # merge: paper not found
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestMergeNotFound:
     def test_target_not_found(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             MockDB.return_value = FakeDatabase()
-            rc = _run_merge(FakeArgs(target_id="notexist", duplicate_id="P2",
-                                      keep="older", dry_run=False, auto=False))
+            rc = _run_merge(
+                FakeArgs(
+                    target_id="notexist", duplicate_id="P2", keep="older", dry_run=False, auto=False
+                )
+            )
             assert rc == 1
 
     def test_duplicate_not_found(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
             mock_db.papers["P1"] = FakePaper(id="P1")
             MockDB.return_value = mock_db
-            rc = _run_merge(FakeArgs(target_id="P1", duplicate_id="notexist",
-                                      keep="older", dry_run=False, auto=False))
+            rc = _run_merge(
+                FakeArgs(
+                    target_id="P1", duplicate_id="notexist", keep="older", dry_run=False, auto=False
+                )
+            )
             assert rc == 1
 
 
@@ -109,22 +130,25 @@ class TestMergeNotFound:
 # merge --dry-run
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestMergeDryRun:
     def test_dry_run_shows_would_merge(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
-            mock_db.papers["P1"] = FakePaper(id="P1", title="Paper One",
-                                              added_at="2024-01-01")
-            mock_db.papers["P2"] = FakePaper(id="P2", title="Paper One dup",
-                                              added_at="2024-01-02")
+            mock_db.papers["P1"] = FakePaper(id="P1", title="Paper One", added_at="2024-01-01")
+            mock_db.papers["P2"] = FakePaper(id="P2", title="Paper One dup", added_at="2024-01-02")
             MockDB.return_value = mock_db
             captured = StringIO()
             with patch("sys.stdout", captured):
-                rc = _run_merge(FakeArgs(target_id="P1", duplicate_id="P2",
-                                          keep="older", dry_run=True, auto=False))
+                rc = _run_merge(
+                    FakeArgs(
+                        target_id="P1", duplicate_id="P2", keep="older", dry_run=True, auto=False
+                    )
+                )
             out = captured.getvalue()
             assert "Would merge P2 into P1" in out
             assert "--keep=older" in out
@@ -136,22 +160,25 @@ class TestMergeDryRun:
 # merge: keep strategies
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestMergeKeepStrategies:
     def test_keep_older(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
-            mock_db.papers["P1"] = FakePaper(id="P1", title="Older Paper",
-                                              added_at="2024-01-01")
-            mock_db.papers["P2"] = FakePaper(id="P2", title="Newer Paper",
-                                              added_at="2024-01-02")
+            mock_db.papers["P1"] = FakePaper(id="P1", title="Older Paper", added_at="2024-01-01")
+            mock_db.papers["P2"] = FakePaper(id="P2", title="Newer Paper", added_at="2024-01-02")
             MockDB.return_value = mock_db
             captured = StringIO()
             with patch("sys.stdout", captured):
-                rc = _run_merge(FakeArgs(target_id="P1", duplicate_id="P2",
-                                          keep="older", dry_run=False, auto=False))
+                rc = _run_merge(
+                    FakeArgs(
+                        target_id="P1", duplicate_id="P2", keep="older", dry_run=False, auto=False
+                    )
+                )
             assert mock_db.merged == [("P1", "P2")]
             assert rc == 0
 
@@ -159,15 +186,15 @@ class TestMergeKeepStrategies:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
-            mock_db.papers["P1"] = FakePaper(id="P1", title="Older Paper",
-                                              added_at="2024-01-01")
-            mock_db.papers["P2"] = FakePaper(id="P2", title="Newer Paper",
-                                              added_at="2024-01-02")
+            mock_db.papers["P1"] = FakePaper(id="P1", title="Older Paper", added_at="2024-01-01")
+            mock_db.papers["P2"] = FakePaper(id="P2", title="Newer Paper", added_at="2024-01-02")
             MockDB.return_value = mock_db
-            rc = _run_merge(FakeArgs(target_id="P1", duplicate_id="P2",
-                                      keep="newer", dry_run=False, auto=False))
+            rc = _run_merge(
+                FakeArgs(target_id="P1", duplicate_id="P2", keep="newer", dry_run=False, auto=False)
+            )
             assert mock_db.merged == [("P2", "P1")]
             assert rc == 0
 
@@ -175,18 +202,22 @@ class TestMergeKeepStrategies:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
             # target (P1) is older but pending; P2 is newer but completed
-            mock_db.papers["P1"] = FakePaper(id="P1", title="Older Paper",
-                                              parse_status="pending",
-                                              added_at="2024-01-01")
-            mock_db.papers["P2"] = FakePaper(id="P2", title="Newer Paper",
-                                              parse_status="completed",
-                                              added_at="2024-01-02")
+            mock_db.papers["P1"] = FakePaper(
+                id="P1", title="Older Paper", parse_status="pending", added_at="2024-01-01"
+            )
+            mock_db.papers["P2"] = FakePaper(
+                id="P2", title="Newer Paper", parse_status="completed", added_at="2024-01-02"
+            )
             MockDB.return_value = mock_db
-            rc = _run_merge(FakeArgs(target_id="P1", duplicate_id="P2",
-                                      keep="parsed", dry_run=False, auto=False))
+            rc = _run_merge(
+                FakeArgs(
+                    target_id="P1", duplicate_id="P2", keep="parsed", dry_run=False, auto=False
+                )
+            )
             # "parsed" keeps better parse_status regardless of added_at
             assert mock_db.merged == [("P2", "P1")]
             assert rc == 0
@@ -196,25 +227,34 @@ class TestMergeKeepStrategies:
 # merge --keep semantic
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestMergeKeepSemantic:
     def test_semantic_high_similarity(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
-            mock_db.papers["P1"] = FakePaper(id="P1", title="Paper One",
-                                              parse_status="pending",
-                                              added_at="2024-01-01")
-            mock_db.papers["P2"] = FakePaper(id="P2", title="Paper One dup",
-                                              parse_status="pending",
-                                              added_at="2024-01-02")
+            mock_db.papers["P1"] = FakePaper(
+                id="P1", title="Paper One", parse_status="pending", added_at="2024-01-01"
+            )
+            mock_db.papers["P2"] = FakePaper(
+                id="P2", title="Paper One dup", parse_status="pending", added_at="2024-01-02"
+            )
             mock_db.get_similarity = lambda id1, id2: 0.95
             MockDB.return_value = mock_db
             captured = StringIO()
             with patch("sys.stdout", captured):
-                rc = _run_merge(FakeArgs(target_id="P1", duplicate_id="P2",
-                                          keep="semantic", dry_run=False, auto=False))
+                rc = _run_merge(
+                    FakeArgs(
+                        target_id="P1",
+                        duplicate_id="P2",
+                        keep="semantic",
+                        dry_run=False,
+                        auto=False,
+                    )
+                )
             out = captured.getvalue()
             assert "Auto-selected: similarity 0.950" in out
             assert mock_db.merged == [("P1", "P2")]
@@ -225,20 +265,28 @@ class TestMergeKeepSemantic:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
-            mock_db.papers["P1"] = FakePaper(id="P1", title="Paper One",
-                                              parse_status="completed",
-                                              added_at="2024-01-01")
-            mock_db.papers["P2"] = FakePaper(id="P2", title="Different Paper",
-                                              parse_status="pending",
-                                              added_at="2024-01-02")
+            mock_db.papers["P1"] = FakePaper(
+                id="P1", title="Paper One", parse_status="completed", added_at="2024-01-01"
+            )
+            mock_db.papers["P2"] = FakePaper(
+                id="P2", title="Different Paper", parse_status="pending", added_at="2024-01-02"
+            )
             mock_db.get_similarity = lambda id1, id2: 0.50
             MockDB.return_value = mock_db
             captured = StringIO()
             with patch("sys.stdout", captured):
-                rc = _run_merge(FakeArgs(target_id="P1", duplicate_id="P2",
-                                          keep="semantic", dry_run=False, auto=False))
+                rc = _run_merge(
+                    FakeArgs(
+                        target_id="P1",
+                        duplicate_id="P2",
+                        keep="semantic",
+                        dry_run=False,
+                        auto=False,
+                    )
+                )
             out = captured.getvalue()
             assert "low similarity" in out
             # Falls back to "parsed" which keeps P1 (completed > pending)
@@ -249,20 +297,28 @@ class TestMergeKeepSemantic:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
-            mock_db.papers["P1"] = FakePaper(id="P1", title="Paper One",
-                                              parse_status="completed",
-                                              added_at="2024-01-01")
-            mock_db.papers["P2"] = FakePaper(id="P2", title="Paper Two",
-                                              parse_status="pending",
-                                              added_at="2024-01-02")
+            mock_db.papers["P1"] = FakePaper(
+                id="P1", title="Paper One", parse_status="completed", added_at="2024-01-01"
+            )
+            mock_db.papers["P2"] = FakePaper(
+                id="P2", title="Paper Two", parse_status="pending", added_at="2024-01-02"
+            )
             mock_db.get_similarity = lambda id1, id2: None
             MockDB.return_value = mock_db
             captured = StringIO()
             with patch("sys.stdout", captured):
-                rc = _run_merge(FakeArgs(target_id="P1", duplicate_id="P2",
-                                          keep="semantic", dry_run=False, auto=False))
+                rc = _run_merge(
+                    FakeArgs(
+                        target_id="P1",
+                        duplicate_id="P2",
+                        keep="semantic",
+                        dry_run=False,
+                        auto=False,
+                    )
+                )
             out = captured.getvalue()
             assert "low similarity" in out
             assert mock_db.merged == [("P1", "P2")]
@@ -273,23 +329,26 @@ class TestMergeKeepSemantic:
 # merge: dry-run shows semantic similarity
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestMergeDryRunSimilarity:
     def test_dry_run_shows_similarity(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
-            mock_db.papers["P1"] = FakePaper(id="P1", title="Paper One",
-                                              added_at="2024-01-01")
-            mock_db.papers["P2"] = FakePaper(id="P2", title="Paper One dup",
-                                              added_at="2024-01-02")
+            mock_db.papers["P1"] = FakePaper(id="P1", title="Paper One", added_at="2024-01-01")
+            mock_db.papers["P2"] = FakePaper(id="P2", title="Paper One dup", added_at="2024-01-02")
             mock_db.get_similarity = lambda id1, id2: 0.923
             MockDB.return_value = mock_db
             captured = StringIO()
             with patch("sys.stdout", captured):
-                rc = _run_merge(FakeArgs(target_id="P1", duplicate_id="P2",
-                                          keep="older", dry_run=True, auto=False))
+                rc = _run_merge(
+                    FakeArgs(
+                        target_id="P1", duplicate_id="P2", keep="older", dry_run=True, auto=False
+                    )
+                )
             out = captured.getvalue()
             assert "semantic similarity: 0.923" in out
             assert mock_db.merged == []
@@ -299,18 +358,20 @@ class TestMergeDryRunSimilarity:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
-            mock_db.papers["P1"] = FakePaper(id="P1", title="Paper One",
-                                              added_at="2024-01-01")
-            mock_db.papers["P2"] = FakePaper(id="P2", title="Paper One dup",
-                                              added_at="2024-01-02")
+            mock_db.papers["P1"] = FakePaper(id="P1", title="Paper One", added_at="2024-01-01")
+            mock_db.papers["P2"] = FakePaper(id="P2", title="Paper One dup", added_at="2024-01-02")
             mock_db.get_similarity = lambda id1, id2: None
             MockDB.return_value = mock_db
             captured = StringIO()
             with patch("sys.stdout", captured):
-                rc = _run_merge(FakeArgs(target_id="P1", duplicate_id="P2",
-                                          keep="older", dry_run=True, auto=False))
+                rc = _run_merge(
+                    FakeArgs(
+                        target_id="P1", duplicate_id="P2", keep="older", dry_run=True, auto=False
+                    )
+                )
             out = captured.getvalue()
             assert "no embeddings available" in out
             assert rc == 0
@@ -320,11 +381,13 @@ class TestMergeDryRunSimilarity:
 # merge --auto
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestMergeAuto:
     def test_auto_finds_and_merges_similar(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
             p1 = FakePaper(id="P1", title="Paper One", added_at="2024-01-01")
@@ -335,8 +398,11 @@ class TestMergeAuto:
             MockDB.return_value = mock_db
             captured = StringIO()
             with patch("sys.stdout", captured):
-                rc = _run_merge(FakeArgs(target_id=None, duplicate_id=None,
-                                          keep="semantic", dry_run=False, auto=True))
+                rc = _run_merge(
+                    FakeArgs(
+                        target_id=None, duplicate_id=None, keep="semantic", dry_run=False, auto=True
+                    )
+                )
             out = captured.getvalue()
             assert "Merged P2 into P1" in out
             assert mock_db.merged == [("P1", "P2")]
@@ -347,6 +413,7 @@ class TestMergeAuto:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
             p1 = FakePaper(id="P1", title="Paper One", added_at="2024-01-01")
@@ -357,8 +424,11 @@ class TestMergeAuto:
             MockDB.return_value = mock_db
             captured = StringIO()
             with patch("sys.stdout", captured):
-                rc = _run_merge(FakeArgs(target_id=None, duplicate_id=None,
-                                          keep="semantic", dry_run=True, auto=True))
+                rc = _run_merge(
+                    FakeArgs(
+                        target_id=None, duplicate_id=None, keep="semantic", dry_run=True, auto=True
+                    )
+                )
             out = captured.getvalue()
             assert "Would merge P2 into P1" in out
             assert "similarity: 0.970" in out
@@ -369,13 +439,17 @@ class TestMergeAuto:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
             MockDB.return_value = mock_db
             captured = StringIO()
             with patch("sys.stdout", captured):
-                rc = _run_merge(FakeArgs(target_id=None, duplicate_id=None,
-                                          keep="semantic", dry_run=False, auto=True))
+                rc = _run_merge(
+                    FakeArgs(
+                        target_id=None, duplicate_id=None, keep="semantic", dry_run=False, auto=True
+                    )
+                )
             out = captured.getvalue()
             assert "Auto-merge complete: 0" in out
             assert rc == 0
@@ -384,12 +458,14 @@ class TestMergeAuto:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_merge
+
         with patch("cli.Database") as MockDB:
             mock_db = FakeDatabase()
             p1 = FakePaper(id="P1", title="Paper One", added_at="2024-01-01")
             p2 = FakePaper(id="P2", title="Paper One Copy", added_at="2024-01-02")
             p3 = FakePaper(id="P3", title="Paper Three", added_at="2024-01-03")
             mock_db.papers = {"P1": p1, "P2": p2, "P3": p3}
+
             # P2 found similar to P1, P1 found similar to P2 (but should only merge once)
             def find_similar(pid, threshold, limit):
                 if pid == "P1":
@@ -397,13 +473,17 @@ class TestMergeAuto:
                 if pid == "P2":
                     return [(p1, 0.97)]
                 return []
+
             mock_db.find_similar = find_similar
             mock_db.get_similarity = lambda id1, id2: 0.97
             MockDB.return_value = mock_db
             captured = StringIO()
             with patch("sys.stdout", captured):
-                rc = _run_merge(FakeArgs(target_id=None, duplicate_id=None,
-                                          keep="semantic", dry_run=False, auto=True))
+                rc = _run_merge(
+                    FakeArgs(
+                        target_id=None, duplicate_id=None, keep="semantic", dry_run=False, auto=True
+                    )
+                )
             # Should only merge once (P1-P2 pair)
             assert len(mock_db.merged) == 1
             assert rc == 0
@@ -413,11 +493,13 @@ class TestMergeAuto:
 # _pick_keep
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestPickKeep:
     def test_pick_keep_older(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _pick_keep
+
         older = FakePaper(id="P1", added_at="2024-01-01")
         newer = FakePaper(id="P2", added_at="2024-01-02")
         keep, drop = _pick_keep(older, newer, "older")
@@ -428,6 +510,7 @@ class TestPickKeep:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _pick_keep
+
         older = FakePaper(id="P1", added_at="2024-01-01")
         newer = FakePaper(id="P2", added_at="2024-01-02")
         keep, drop = _pick_keep(older, newer, "newer")
@@ -438,6 +521,7 @@ class TestPickKeep:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _pick_keep
+
         older = FakePaper(id="P1", parse_status="pending", added_at="2024-01-01")
         newer = FakePaper(id="P2", parse_status="completed", added_at="2024-01-02")
         keep, drop = _pick_keep(older, newer, "parsed")

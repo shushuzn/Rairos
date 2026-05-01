@@ -140,12 +140,11 @@ class TestResearchPathPlanner:
         """Test Mermaid diagram generation."""
         planner = ResearchPathPlanner()
 
-        papers = [
-            PaperNode(paper_id=f"paper-{i}", title=f"Paper {i}")
-            for i in range(3)
-        ]
+        papers = [PaperNode(paper_id=f"paper-{i}", title=f"Paper {i}") for i in range(3)]
         steps = [
-            ReadingStep(order=i + 1, paper=p, role="core", reason="Test", estimated_read_time_minutes=15)
+            ReadingStep(
+                order=i + 1, paper=p, role="core", reason="Test", estimated_read_time_minutes=15
+            )
             for i, p in enumerate(papers)
         ]
         path = ReadingPath(

@@ -1,4 +1,5 @@
 """Tests for scoring/momentum.py — ResearchMomentum scoring."""
+
 from __future__ import annotations
 
 import json
@@ -92,9 +93,12 @@ class TestResearchMomentumTagScoring:
     def test_score_tag_heat_trend_rising(self, rm_populated, radar_file):
         """Tag with radar score > 70 should be labeled 'rising'/'hot'."""
         import scoring.momentum as m
+
         orig_load = m.ResearchMomentum._load_radar
+
         def fake_load(self):
             return {"LLM": {"score": 80}}
+
         m.ResearchMomentum._load_radar = fake_load
         try:
             rm = ResearchMomentum(kg=rm_populated["kg"])

@@ -1,4 +1,5 @@
 """Tests for kg/queries.py — KGQueries high-level graph queries."""
+
 from __future__ import annotations
 
 import pytest

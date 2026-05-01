@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/gap_detector.py, pure functions, no I/O."""
+
 from llm.gap_detector import (
     GapType,
     GapSeverity,
@@ -202,33 +203,34 @@ class TestParseGaps:
     def _parse_gaps(self, response: str, topic: str) -> list:
         """Replicate _parse_gaps logic."""
         import re
+
         gaps = []
 
         type_map = {
-            'unexplored_application': GapType.UNEXPLORED_APPLICATION,
-            'method_limitation': GapType.METHOD_LIMITATION,
-            'contradiction': GapType.CONTRADICTION,
-            'evaluation_gap': GapType.EVALUATION_GAP,
-            'scalability_issue': GapType.SCALABILITY_ISSUE,
-            'theoretical_gap': GapType.THEORETICAL_GAP,
-            'dataset_gap': GapType.DATASET_GAP,
-            'generalization_gap': GapType.GENERALIZATION_GAP,
+            "unexplored_application": GapType.UNEXPLORED_APPLICATION,
+            "method_limitation": GapType.METHOD_LIMITATION,
+            "contradiction": GapType.CONTRADICTION,
+            "evaluation_gap": GapType.EVALUATION_GAP,
+            "scalability_issue": GapType.SCALABILITY_ISSUE,
+            "theoretical_gap": GapType.THEORETICAL_GAP,
+            "dataset_gap": GapType.DATASET_GAP,
+            "generalization_gap": GapType.GENERALIZATION_GAP,
         }
         severity_map = {
-            'high': GapSeverity.HIGH,
-            'medium': GapSeverity.MEDIUM,
-            'low': GapSeverity.LOW,
+            "high": GapSeverity.HIGH,
+            "medium": GapSeverity.MEDIUM,
+            "low": GapSeverity.LOW,
         }
 
-        clean_response = re.sub(r'```.*?```', '', response, flags=re.DOTALL).strip()
+        clean_response = re.sub(r"```.*?```", "", response, flags=re.DOTALL).strip()
 
-        for line in clean_response.split('\n'):
+        for line in clean_response.split("\n"):
             line = line.strip()
-            if not line or line.startswith('#'):
+            if not line or line.startswith("#"):
                 continue
 
             match = re.match(
-                r'\[(\w+)\]\s*(.+?)\s*\|\s*(.+?)\s*\|\s*([\d.]+)\s*\|\s*(\w+)',
+                r"\[(\w+)\]\s*(.+?)\s*\|\s*(.+?)\s*\|\s*([\d.]+)\s*\|\s*(\w+)",
                 line,
             )
             if match:
@@ -237,7 +239,7 @@ class TestParseGaps:
                 gap_type = type_map.get(gap_type_str, GapType.METHOD_LIMITATION)
                 severity = severity_map.get(severity_str, GapSeverity.MEDIUM)
                 confidence = float(conf_str) if conf_str else 0.5
-                papers = [p.strip() for p in papers_str.split(',') if p.strip()]
+                papers = [p.strip() for p in papers_str.split(",") if p.strip()]
 
                 gap = ResearchGap(
                     gap_type=gap_type,
@@ -318,9 +320,14 @@ class TestParseGaps:
     def test_parses_all_gap_types(self):
         """All gap type strings parse correctly."""
         type_strs = [
-            "unexplored_application", "method_limitation", "contradiction",
-            "evaluation_gap", "scalability_issue", "theoretical_gap",
-            "dataset_gap", "generalization_gap",
+            "unexplored_application",
+            "method_limitation",
+            "contradiction",
+            "evaluation_gap",
+            "scalability_issue",
+            "theoretical_gap",
+            "dataset_gap",
+            "generalization_gap",
         ]
         for ts in type_strs:
             response = f"[{ts}] Description | Paper | 0.5 | medium"
@@ -337,36 +344,39 @@ class TestDetectGapsRules:
     def _detect_gaps_rules(self, paper_summaries: str) -> list:
         """Replicate _detect_gaps_rules logic."""
         import re
+
         gaps = []
 
         type_patterns = {
             GapType.UNEXPLORED_APPLICATION: [
-                r'未探索|未研究|future work|future directions|open problem',
-                r'potential application|limitation.*future|future research',
+                r"未探索|未研究|future work|future directions|open problem",
+                r"potential application|limitation.*future|future research",
             ],
             GapType.METHOD_LIMITATION: [
-                r'limitation|不足|weakness|shortcoming|constraint',
-                r'does not scale|only works for|restricted to',
+                r"limitation|不足|weakness|shortcoming|constraint",
+                r"does not scale|only works for|restricted to",
             ],
             GapType.CONTRADICTION: [
-                r'however|but|in contrast|on the contrary',
-                r'conflicting|disagree|differ|contradict',
+                r"however|but|in contrast|on the contrary",
+                r"conflicting|disagree|differ|contradict",
             ],
             GapType.EVALUATION_GAP: [
-                r'no benchmark|lack.*evaluation|evaluation.*limited',
-                r'no standard|without baseline',
+                r"no benchmark|lack.*evaluation|evaluation.*limited",
+                r"no standard|without baseline",
             ],
         }
 
         for gap_type, patterns in type_patterns.items():
             for pattern in patterns:
                 if re.search(pattern, paper_summaries, re.IGNORECASE):
-                    gaps.append(ResearchGap(
-                        gap_type=gap_type,
-                        description=f"基于关键词 '{pattern}' 发现的潜在研究空白",
-                        evidence_papers=["从摘要中推断"],
-                        confidence=0.3,
-                    ))
+                    gaps.append(
+                        ResearchGap(
+                            gap_type=gap_type,
+                            description=f"基于关键词 '{pattern}' 发现的潜在研究空白",
+                            evidence_papers=["从摘要中推断"],
+                            confidence=0.3,
+                        )
+                    )
                     break
 
         return gaps
@@ -444,12 +454,12 @@ class TestParseQuestions:
         questions = []
         default_gap = gaps[0] if gaps else None
 
-        for line in response.strip().split('\n'):
+        for line in response.strip().split("\n"):
             line = line.strip()
-            if not line or line.startswith('#'):
+            if not line or line.startswith("#"):
                 continue
 
-            parts = [p.strip() for p in line.split('|')]
+            parts = [p.strip() for p in line.split("|")]
             if len(parts) >= 1:
                 question_text = parts[0]
                 hypothesis = parts[1] if len(parts) > 1 else ""
@@ -686,7 +696,7 @@ class TestCalculateCoverage:
         recency_scores = []
         for p in papers:
             try:
-                year = int(p.get('year', 0))
+                year = int(p.get("year", 0))
             except (ValueError, TypeError):
                 year = 0
             if year >= 2024:
@@ -700,9 +710,9 @@ class TestCalculateCoverage:
 
         recency = sum(recency_scores) / len(recency_scores) if recency_scores else 0
 
-        has_abstract = sum(1 for p in papers if p.get('abstract')) / len(papers)
+        has_abstract = sum(1 for p in papers if p.get("abstract")) / len(papers)
 
-        return (count_score * 0.4 + recency * 0.4 + has_abstract * 0.2)
+        return count_score * 0.4 + recency * 0.4 + has_abstract * 0.2
 
     def test_empty_papers_returns_zero(self):
         """Empty list returns 0.0."""
@@ -814,8 +824,12 @@ class TestGenerateSummary:
         result = GapAnalysisResult(
             topic="T",
             gaps=[
-                ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="D", evidence_papers=[],
-                            severity=GapSeverity.HIGH),
+                ResearchGap(
+                    gap_type=GapType.METHOD_LIMITATION,
+                    description="D",
+                    evidence_papers=[],
+                    severity=GapSeverity.HIGH,
+                ),
             ],
         )
         summary = self._generate_summary(result)
@@ -826,10 +840,18 @@ class TestGenerateSummary:
         result = GapAnalysisResult(
             topic="T",
             gaps=[
-                ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="D", evidence_papers=[],
-                            severity=GapSeverity.MEDIUM),
-                ResearchGap(gap_type=GapType.CONTRADICTION, description="D", evidence_papers=[],
-                            severity=GapSeverity.MEDIUM),
+                ResearchGap(
+                    gap_type=GapType.METHOD_LIMITATION,
+                    description="D",
+                    evidence_papers=[],
+                    severity=GapSeverity.MEDIUM,
+                ),
+                ResearchGap(
+                    gap_type=GapType.CONTRADICTION,
+                    description="D",
+                    evidence_papers=[],
+                    severity=GapSeverity.MEDIUM,
+                ),
             ],
         )
         summary = self._generate_summary(result)
@@ -887,8 +909,12 @@ class TestGenerateSummary:
         result = GapAnalysisResult(
             topic="T",
             gaps=[
-                ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="D", evidence_papers=[],
-                            severity=GapSeverity.HIGH),
+                ResearchGap(
+                    gap_type=GapType.METHOD_LIMITATION,
+                    description="D",
+                    evidence_papers=[],
+                    severity=GapSeverity.HIGH,
+                ),
             ],
             coverage_score=0.5,
         )
@@ -953,7 +979,9 @@ class TestRenderResult:
 
     def test_header(self):
         """Header contains topic and analysis info."""
-        result = GapAnalysisResult(topic="Transformer", analyzed_papers_count=10, coverage_score=0.6)
+        result = GapAnalysisResult(
+            topic="Transformer", analyzed_papers_count=10, coverage_score=0.6
+        )
         output = self._render_result(result)
         assert "🔬 《Transformer》研究空白分析" in output
         assert "分析论文数: 10" in output
@@ -1038,8 +1066,8 @@ class TestRenderResult:
         assert "P1" in output
         assert "P2" in output
         # Should not contain P3 or P4
-        lines = output.split('\n')
-        evidence_line = [l for l in lines if '证据:' in l][0]
+        lines = output.split("\n")
+        evidence_line = [l for l in lines if "证据:" in l][0]
         assert "P3" not in evidence_line
 
     def test_question_shown(self):
@@ -1158,6 +1186,7 @@ class TestRenderJson:
     def test_gap_in_json(self):
         """Gap data included in JSON."""
         import json
+
         result = GapAnalysisResult(
             topic="T",
             gaps=[
@@ -1221,6 +1250,7 @@ class TestRenderJson:
     def test_is_valid_json(self):
         """Output is valid JSON."""
         import json
+
         result = GapAnalysisResult(
             topic="T",
             gaps=[

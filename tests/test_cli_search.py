@@ -1,10 +1,27 @@
 """Unit tests for CLI search, list, and status subcommands."""
+
 import argparse
 import json
 from unittest.mock import MagicMock, patch
 
 
-from cli import _run_search, _run_list, _run_status, _run_queue, _run_cache, _run_dedup, _run_merge, _run_citations, _run_stats, _run_cite_stats, _run_dedup_semantic, _run_kg, _run_trend, infer_tags_if_empty, main
+from cli import (
+    _run_search,
+    _run_list,
+    _run_status,
+    _run_queue,
+    _run_cache,
+    _run_dedup,
+    _run_merge,
+    _run_citations,
+    _run_stats,
+    _run_cite_stats,
+    _run_dedup_semantic,
+    _run_kg,
+    _run_trend,
+    infer_tags_if_empty,
+    main,
+)
 from cli.cmd.cite_fetch import _work_to_arxiv_id, _work_to_paper_record
 from core import Paper
 
@@ -13,8 +30,10 @@ from core import Paper
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class FakeSearchResult:
     """Fake SearchResult matching db.database.SearchResult."""
+
     def __init__(
         self,
         paper_id="2301.00001",
@@ -44,6 +63,7 @@ class FakeSearchResult:
 
 class FakePaper:
     """Fake Paper matching db.database.Paper."""
+
     def __init__(
         self,
         id="2301.00001",
@@ -71,13 +91,24 @@ class FakePaper:
 
 def make_args(**kwargs):
     defaults = dict(
-        sort="added_at", order="desc",
-        since="", clear=False, dry_run=False, keep="older", report=False,
-        source="import", skip_existing=False,
-        format="table", limit=0, out=None, json=False,
+        sort="added_at",
+        order="desc",
+        since="",
+        clear=False,
+        dry_run=False,
+        keep="older",
+        report=False,
+        source="import",
+        skip_existing=False,
+        format="table",
+        limit=0,
+        out=None,
+        json=False,
         set_=None,
-        llm=False, llm_clear=False,
-        stats_paper=None, top=None,
+        llm=False,
+        llm_clear=False,
+        stats_paper=None,
+        top=None,
         dedup_semantic=False,
     )
     defaults.update(kwargs)
@@ -90,6 +121,7 @@ def make_args(**kwargs):
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_search tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunSearchTable:
     """Test _run_search with table format (default)."""
@@ -125,8 +157,17 @@ class TestRunSearchTable:
         mock_db.search_papers.return_value = ([FakeSearchResult(score=7.43)], 1)
         mock_db_cls.return_value = mock_db
 
-        args = make_args(query="", limit=10, offset=0, format="table",
-                         source="", year=0, tags=[], status="", sort="relevance")
+        args = make_args(
+            query="",
+            limit=10,
+            offset=0,
+            format="table",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
+        )
         _run_search(args)
 
         captured = capsys.readouterr().out
@@ -135,13 +176,23 @@ class TestRunSearchTable:
     @patch("cli.Database")
     def test_table_shows_snippet(self, mock_db_cls, capsys):
         mock_db = MagicMock()
-        mock_db.search_papers.return_value = ([FakeSearchResult(
-            snippet="**attention** mechanism and **transformer** architecture"
-        )], 1)
+        mock_db.search_papers.return_value = (
+            [FakeSearchResult(snippet="**attention** mechanism and **transformer** architecture")],
+            1,
+        )
         mock_db_cls.return_value = mock_db
 
-        args = make_args(query="", limit=10, offset=0, format="table",
-                         source="", year=0, tags=[], status="", sort="relevance")
+        args = make_args(
+            query="",
+            limit=10,
+            offset=0,
+            format="table",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
+        )
         _run_search(args)
 
         captured = capsys.readouterr().out
@@ -154,8 +205,17 @@ class TestRunSearchTable:
         mock_db.search_papers.return_value = ([], 0)
         mock_db_cls.return_value = mock_db
 
-        args = make_args(query="nonexistent", limit=10, offset=0, format="table",
-                         source="", year=0, tags=[], status="", sort="relevance")
+        args = make_args(
+            query="nonexistent",
+            limit=10,
+            offset=0,
+            format="table",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
+        )
         _run_search(args)
 
         captured = capsys.readouterr().out
@@ -171,8 +231,17 @@ class TestRunSearchTable:
         mock_db.search_papers.return_value = (results, 2)
         mock_db_cls.return_value = mock_db
 
-        args = make_args(query="", limit=10, offset=0, format="table",
-                         source="", year=0, tags=[], status="", sort="relevance")
+        args = make_args(
+            query="",
+            limit=10,
+            offset=0,
+            format="table",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
+        )
         _run_search(args)
 
         captured = capsys.readouterr().out
@@ -214,8 +283,17 @@ class TestRunSearchTable:
         mock_db.search_papers.return_value = ([], 0)
         mock_db_cls.return_value = mock_db
 
-        args = make_args(query="", limit=10, offset=0, format="table",
-                         source="", year=0, tags=[], status="", sort="relevance")
+        args = make_args(
+            query="",
+            limit=10,
+            offset=0,
+            format="table",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
+        )
         _run_search(args)
 
         mock_db.search_papers.assert_called_once()
@@ -227,8 +305,17 @@ class TestRunSearchTable:
         mock_db.search_papers.return_value = ([], 0)
         mock_db_cls.return_value = mock_db
 
-        args = make_args(query="x", limit=10, offset=0, format="table",
-                         source="", year=0, tags=[], status="", sort="relevance")
+        args = make_args(
+            query="x",
+            limit=10,
+            offset=0,
+            format="table",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
+        )
         result = _run_search(args)
         assert result == 0
 
@@ -242,8 +329,17 @@ class TestRunSearchJson:
         mock_db.search_papers.return_value = ([FakeSearchResult()], 1)
         mock_db_cls.return_value = mock_db
 
-        args = make_args(query="", limit=10, offset=0, format="json",
-                         source="", year=0, tags=[], status="", sort="relevance")
+        args = make_args(
+            query="",
+            limit=10,
+            offset=0,
+            format="json",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
+        )
         _run_search(args)
 
         captured = capsys.readouterr().out
@@ -260,8 +356,17 @@ class TestRunSearchJson:
         mock_db.search_papers.return_value = ([FakeSearchResult(score=7.438)], 1)
         mock_db_cls.return_value = mock_db
 
-        args = make_args(query="", limit=10, offset=0, format="json",
-                         source="", year=0, tags=[], status="", sort="relevance")
+        args = make_args(
+            query="",
+            limit=10,
+            offset=0,
+            format="json",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
+        )
         _run_search(args)
 
         captured = capsys.readouterr().out
@@ -274,8 +379,17 @@ class TestRunSearchJson:
         mock_db.search_papers.return_value = ([FakeSearchResult(score=None)], 1)
         mock_db_cls.return_value = mock_db
 
-        args = make_args(query="", limit=10, offset=0, format="json",
-                         source="", year=0, tags=[], status="", sort="relevance")
+        args = make_args(
+            query="",
+            limit=10,
+            offset=0,
+            format="json",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
+        )
         _run_search(args)
 
         captured = capsys.readouterr().out
@@ -292,13 +406,25 @@ class TestRunSearchCsv:
         mock_db.search_papers.return_value = ([FakeSearchResult()], 1)
         mock_db_cls.return_value = mock_db
 
-        args = make_args(query="", limit=10, offset=0, format="csv",
-                         source="", year=0, tags=[], status="", sort="relevance")
+        args = make_args(
+            query="",
+            limit=10,
+            offset=0,
+            format="csv",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
+        )
         _run_search(args)
 
         captured = capsys.readouterr().out.replace("\r", "")
         lines = captured.strip().split("\n")
-        assert lines[0] == "paper_id,title,authors,published,primary_category,score,snippet,source,abs_url,parse_status"
+        assert (
+            lines[0]
+            == "paper_id,title,authors,published,primary_category,score,snippet,source,abs_url,parse_status"
+        )
 
     @patch("cli.Database")
     def test_csv_row(self, mock_db_cls, capsys):
@@ -306,8 +432,17 @@ class TestRunSearchCsv:
         mock_db.search_papers.return_value = ([FakeSearchResult()], 1)
         mock_db_cls.return_value = mock_db
 
-        args = make_args(query="", limit=10, offset=0, format="csv",
-                         source="", year=0, tags=[], status="", sort="relevance")
+        args = make_args(
+            query="",
+            limit=10,
+            offset=0,
+            format="csv",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
+        )
         _run_search(args)
 
         captured = capsys.readouterr().out.replace("\r", "")
@@ -320,6 +455,7 @@ class TestRunSearchCsv:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_list tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunList:
     """Test _run_list."""
@@ -400,7 +536,9 @@ class TestRunList:
 
         captured = capsys.readouterr().out.replace("\r", "")
         lines = captured.strip().split("\n")
-        assert lines[0] == "id,title,authors,published,source,primary_category,parse_status,added_at"
+        assert (
+            lines[0] == "id,title,authors,published,source,primary_category,parse_status,added_at"
+        )
         assert "2301.00001" in lines[1]
         assert "Attention Is All You Need" in lines[1]
         assert "Vaswani et al." in lines[1]
@@ -416,13 +554,16 @@ class TestRunList:
 
         captured = capsys.readouterr().out.replace("\r", "")
         lines = captured.strip().split("\n")
-        assert lines[0] == "id,title,authors,published,source,primary_category,parse_status,added_at"
+        assert (
+            lines[0] == "id,title,authors,published,source,primary_category,parse_status,added_at"
+        )
         assert len(lines) == 1  # only header, no data rows
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_status tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunStatus:
     """Test _run_status."""
@@ -476,6 +617,7 @@ class TestRunStatus:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_queue tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunQueueList:
     """Test queue --list."""
@@ -624,6 +766,7 @@ class TestRunQueueCancel:
 # _run_cache tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestRunCacheStats:
     """Test cache --stats."""
 
@@ -719,12 +862,16 @@ class TestRunCacheSet:
         mock_db_cls.return_value = mock_db
 
         json_file = tmp_path / "paper.json"
-        json_file.write_text('{"title": "Test Paper", "abstract": "Test abstract"}', encoding="utf-8")
+        json_file.write_text(
+            '{"title": "Test Paper", "abstract": "Test abstract"}', encoding="utf-8"
+        )
 
         args = make_args(stats=False, clear=False, get=None, set=["uid123", str(json_file)])
         result = _run_cache(args)
 
-        mock_db.set_cached_paper.assert_called_once_with("uid123", {"title": "Test Paper", "abstract": "Test abstract"})
+        mock_db.set_cached_paper.assert_called_once_with(
+            "uid123", {"title": "Test Paper", "abstract": "Test abstract"}
+        )
         captured = capsys.readouterr().out
         assert "Cached uid123" in captured
         assert result == 0
@@ -750,7 +897,9 @@ class TestRunCacheSet:
         mock_db.init.return_value = None
         mock_db_cls.return_value = mock_db
 
-        args = make_args(stats=False, clear=False, get=None, set=["uid123", "/nonexistent/path.json"])
+        args = make_args(
+            stats=False, clear=False, get=None, set=["uid123", "/nonexistent/path.json"]
+        )
         result = _run_cache(args)
 
         assert "Failed to cache" in capsys.readouterr().out
@@ -761,6 +910,7 @@ class TestRunCacheSet:
 # main() routing tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestMainRouting:
     """Test main() routes to correct subcommand handler."""
 
@@ -769,8 +919,18 @@ class TestMainRouting:
     def test_main_routes_to_search(self, mock_build, mock_run, capsys):
         mock_run.return_value = 0
 
-        args = make_args(subcmd="search", query="attention", limit=10, offset=0,
-                         format="table", source="", year=0, tags=[], status="", sort="relevance")
+        args = make_args(
+            subcmd="search",
+            query="attention",
+            limit=10,
+            offset=0,
+            format="table",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
+        )
         with patch("argparse.ArgumentParser.parse_args", return_value=args):
             result = main(["search", "attention"])
 
@@ -780,7 +940,9 @@ class TestMainRouting:
     @patch("cli._run_list")
     def test_main_routes_to_list(self, mock_run):
         mock_run.return_value = 0
-        args = make_args(subcmd="list", status="", year=0, tags=[], limit=20, offset=0, format="table")
+        args = make_args(
+            subcmd="list", status="", year=0, tags=[], limit=20, offset=0, format="table"
+        )
         with patch("argparse.ArgumentParser.parse_args", return_value=args):
             result = main(["list"])
         mock_run.assert_called_once()
@@ -844,6 +1006,7 @@ class TestMainRouting:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_status aggregation edge cases
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunStatusAggregation:
     """Test _run_status by_source / by_status aggregation."""
@@ -909,6 +1072,7 @@ class TestRunStatusAggregation:
 # _run_list / _run_search filter mapping
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestRunListFilters:
     """Test _run_list filter arguments are passed correctly to db.list_papers."""
 
@@ -921,7 +1085,9 @@ class TestRunListFilters:
         _run_list(args)
         mock_db.list_papers.assert_called_once()
         call_kwargs = mock_db.list_papers.call_args.kwargs
-        assert call_kwargs.get("date_from") == "2023-01-01", f"Expected date_from='2023-01-01', got {call_kwargs}"
+        assert call_kwargs.get("date_from") == "2023-01-01", (
+            f"Expected date_from='2023-01-01', got {call_kwargs}"
+        )
 
     @patch("cli.Database")
     def test_list_passes_status_filter(self, mock_db_cls, capsys):
@@ -931,7 +1097,9 @@ class TestRunListFilters:
         args = make_args(status="done", year=0, tags=[], limit=20, offset=0, format="table")
         _run_list(args)
         call_kwargs = mock_db.list_papers.call_args.kwargs
-        assert call_kwargs.get("parse_status") == "done", f"Expected parse_status='done', got {call_kwargs}"
+        assert call_kwargs.get("parse_status") == "done", (
+            f"Expected parse_status='done', got {call_kwargs}"
+        )
 
     @patch("cli.Database")
     def test_list_zero_year_no_date_filter(self, mock_db_cls, capsys):
@@ -941,7 +1109,9 @@ class TestRunListFilters:
         args = make_args(status="", year=0, tags=[], limit=20, offset=0, format="table")
         _run_list(args)
         call_kwargs = mock_db.list_papers.call_args.kwargs
-        assert call_kwargs.get("date_from") is None, f"Expected date_from=None for year=0, got {call_kwargs}"
+        assert call_kwargs.get("date_from") is None, (
+            f"Expected date_from=None for year=0, got {call_kwargs}"
+        )
 
 
 class TestRunSearchFilters:
@@ -953,12 +1123,21 @@ class TestRunSearchFilters:
         mock_db.search_papers.return_value = ([], 0)
         mock_db_cls.return_value = mock_db
         args = make_args(
-            query="attention", limit=10, offset=0, format="table",
-            source="", year=2024, tags=[], status="", sort="relevance"
+            query="attention",
+            limit=10,
+            offset=0,
+            format="table",
+            source="",
+            year=2024,
+            tags=[],
+            status="",
+            sort="relevance",
         )
         _run_search(args)
         call_kwargs = mock_db.search_papers.call_args.kwargs
-        assert call_kwargs.get("date_from") == "2024-01-01", f"Expected date_from='2024-01-01', got {call_kwargs}"
+        assert call_kwargs.get("date_from") == "2024-01-01", (
+            f"Expected date_from='2024-01-01', got {call_kwargs}"
+        )
 
     @patch("cli.Database")
     def test_search_zero_year_no_date_filter(self, mock_db_cls, capsys):
@@ -966,12 +1145,21 @@ class TestRunSearchFilters:
         mock_db.search_papers.return_value = ([], 0)
         mock_db_cls.return_value = mock_db
         args = make_args(
-            query="attention", limit=10, offset=0, format="table",
-            source="", year=0, tags=[], status="", sort="relevance"
+            query="attention",
+            limit=10,
+            offset=0,
+            format="table",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
         )
         _run_search(args)
         call_kwargs = mock_db.search_papers.call_args.kwargs
-        assert call_kwargs.get("date_from") is None, f"Expected date_from=None for year=0, got {call_kwargs}"
+        assert call_kwargs.get("date_from") is None, (
+            f"Expected date_from=None for year=0, got {call_kwargs}"
+        )
 
     @patch("cli.Database")
     def test_search_passes_source_filter(self, mock_db_cls, capsys):
@@ -979,8 +1167,15 @@ class TestRunSearchFilters:
         mock_db.search_papers.return_value = ([], 0)
         mock_db_cls.return_value = mock_db
         args = make_args(
-            query="attention", limit=10, offset=0, format="table",
-            source="doi", year=0, tags=[], status="", sort="relevance"
+            query="attention",
+            limit=10,
+            offset=0,
+            format="table",
+            source="doi",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
         )
         _run_search(args)
         call_kwargs = mock_db.search_papers.call_args.kwargs
@@ -992,12 +1187,21 @@ class TestRunSearchFilters:
         mock_db.search_papers.return_value = ([], 0)
         mock_db_cls.return_value = mock_db
         args = make_args(
-            query="attention", limit=10, offset=0, format="table",
-            source="", year=0, tags=[], status="done", sort="relevance"
+            query="attention",
+            limit=10,
+            offset=0,
+            format="table",
+            source="",
+            year=0,
+            tags=[],
+            status="done",
+            sort="relevance",
         )
         _run_search(args)
         call_kwargs = mock_db.search_papers.call_args.kwargs
-        assert call_kwargs.get("parse_status") == "done", f"Expected parse_status='done', got {call_kwargs}"
+        assert call_kwargs.get("parse_status") == "done", (
+            f"Expected parse_status='done', got {call_kwargs}"
+        )
 
     @patch("cli.Database")
     def test_search_empty_query_allowed(self, mock_db_cls, capsys):
@@ -1005,8 +1209,15 @@ class TestRunSearchFilters:
         mock_db.search_papers.return_value = ([], 0)
         mock_db_cls.return_value = mock_db
         args = make_args(
-            query="", limit=10, offset=0, format="table",
-            source="", year=0, tags=[], status="", sort="relevance"
+            query="",
+            limit=10,
+            offset=0,
+            format="table",
+            source="",
+            year=0,
+            tags=[],
+            status="",
+            sort="relevance",
         )
         result = _run_search(args)
         assert result == 0
@@ -1018,6 +1229,7 @@ class TestRunSearchFilters:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_cache edge cases
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunCacheEdgeCases:
     """Test _run_cache --stats and --set edge cases."""
@@ -1045,7 +1257,9 @@ class TestRunCacheEdgeCases:
 
     def test_cache_set_shows_error_on_missing_file(self, capsys):
         """--set with a missing file returns an error."""
-        args = make_args(stats=False, clear=False, get=None, set=["uid123", "/nonexistent/cache/file.json"])
+        args = make_args(
+            stats=False, clear=False, get=None, set=["uid123", "/nonexistent/cache/file.json"]
+        )
         result = _run_cache(args)
         out = capsys.readouterr().out
         assert "not found" in out or "error" in out or "Failed" in out
@@ -1056,26 +1270,71 @@ class TestRunCacheEdgeCases:
 # infer_tags_if_empty tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestInferTagsIfEmpty:
     """Test keyword tag inference."""
 
     def test_existing_tags_unchanged(self):
-        paper = Paper(source="arxiv", uid="t", title="t", authors=[], abstract="", published="", updated="", abs_url="", pdf_url="", primary_category="")
+        paper = Paper(
+            source="arxiv",
+            uid="t",
+            title="t",
+            authors=[],
+            abstract="",
+            published="",
+            updated="",
+            abs_url="",
+            pdf_url="",
+            primary_category="",
+        )
         tags = ["Agent", "RAG"]
         assert infer_tags_if_empty(tags, paper) == ["Agent", "RAG"]
 
     def test_infers_agent_from_title(self):
-        paper = Paper(source="arxiv", uid="t", title="Tool Use in LLM Agents", authors=[], abstract="", published="", updated="", abs_url="", pdf_url="", primary_category="")
+        paper = Paper(
+            source="arxiv",
+            uid="t",
+            title="Tool Use in LLM Agents",
+            authors=[],
+            abstract="",
+            published="",
+            updated="",
+            abs_url="",
+            pdf_url="",
+            primary_category="",
+        )
         tags = []
         assert "Agent" in infer_tags_if_empty(tags, paper)
 
     def test_infers_rag_from_abstract(self):
-        paper = Paper(source="arxiv", uid="t", title="Foo", authors=[], abstract="retrieval augmented generation", published="", updated="", abs_url="", pdf_url="", primary_category="")
+        paper = Paper(
+            source="arxiv",
+            uid="t",
+            title="Foo",
+            authors=[],
+            abstract="retrieval augmented generation",
+            published="",
+            updated="",
+            abs_url="",
+            pdf_url="",
+            primary_category="",
+        )
         tags = []
         assert "RAG" in infer_tags_if_empty(tags, paper)
 
     def test_unsorted_when_no_match(self):
-        paper = Paper(source="arxiv", uid="t", title="Foo Bar Baz", authors=[], abstract="", published="", updated="", abs_url="", pdf_url="", primary_category="")
+        paper = Paper(
+            source="arxiv",
+            uid="t",
+            title="Foo Bar Baz",
+            authors=[],
+            abstract="",
+            published="",
+            updated="",
+            abs_url="",
+            pdf_url="",
+            primary_category="",
+        )
         tags = []
         assert infer_tags_if_empty(tags, paper) == ["Unsorted"]
 
@@ -1083,6 +1342,7 @@ class TestInferTagsIfEmpty:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_search CSV format
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunSearchCsvFormat:
     """Test _run_search with CSV format (additional tests)."""
@@ -1114,6 +1374,7 @@ class TestRunSearchCsvFormat:
 # _run_list JSON format
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestRunListJson:
     """Test _run_list with JSON format."""
 
@@ -1140,6 +1401,7 @@ class TestRunListJson:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_status edge cases
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunStatusEdgeCases:
     """Test _run_status with empty/unusual data."""
@@ -1175,6 +1437,7 @@ class TestRunStatusEdgeCases:
 # main() routing: merge subcommand → legacy
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestMainDedupRouting:
     """Test main() routes 'dedup' to _run_dedup."""
 
@@ -1205,7 +1468,9 @@ class TestMainDedupRouting:
                                         # Patch argparse so it doesn't fail
                                         with patch("cli.argparse.ArgumentParser") as mock_ap:
                                             mock_parser = MagicMock()
-                                            mock_parser.parse_args.return_value = make_args(subcmd="dedup")
+                                            mock_parser.parse_args.return_value = make_args(
+                                                subcmd="dedup"
+                                            )
                                             mock_ap.return_value = mock_parser
                                             main(["dedup"])
         # If it routed to legacy instead, _run_dedup wouldn't be called
@@ -1220,7 +1485,9 @@ class TestMainMergeRouting:
     @patch("cli.argparse.ArgumentParser")
     def test_main_merge_routes_to_run_merge(self, mock_argparse, mock_build, mock_run, capsys):
         mock_parser = MagicMock()
-        mock_parser.parse_args.return_value = make_args(subcmd="merge", target_id="uid1", duplicate_id="uid2")
+        mock_parser.parse_args.return_value = make_args(
+            subcmd="merge", target_id="uid1", duplicate_id="uid2"
+        )
         mock_argparse.return_value = mock_parser
         mock_build.return_value = None
         mock_run.return_value = 0
@@ -1241,7 +1508,11 @@ class TestMainMergeRouting:
                                     with patch("cli._build_search_parser"):
                                         with patch("cli.argparse.ArgumentParser") as mock_ap:
                                             mock_parser = MagicMock()
-                                            mock_parser.parse_args.return_value = make_args(subcmd="merge", target_id="uid1", duplicate_id="uid2")
+                                            mock_parser.parse_args.return_value = make_args(
+                                                subcmd="merge",
+                                                target_id="uid1",
+                                                duplicate_id="uid2",
+                                            )
                                             mock_ap.return_value = mock_parser
                                             main(["merge", "uid1", "uid2"])
         assert mock_run.called
@@ -1250,6 +1521,7 @@ class TestMainMergeRouting:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_dedup tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunDedup:
     """Test _run_dedup behavior."""
@@ -1260,7 +1532,9 @@ class TestRunDedup:
         mock_db.find_duplicates.return_value = []
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=False, keep="older", batch=False, report=False))
+        result = _run_dedup(
+            make_args(dry_run=False, auto=False, keep="older", batch=False, report=False)
+        )
 
         assert result == 0
         assert "No Duplicates Found" in capsys.readouterr().out
@@ -1283,7 +1557,9 @@ class TestRunDedup:
         mock_db.find_duplicates.return_value = [(p1, p2)]
         mock_db_cls.return_value = mock_db
 
-        result = _run_dedup(make_args(dry_run=False, auto=False, keep="older", batch=False, report=False))
+        result = _run_dedup(
+            make_args(dry_run=False, auto=False, keep="older", batch=False, report=False)
+        )
 
         out = capsys.readouterr().out
         assert "uid1" in out
@@ -1485,6 +1761,7 @@ class TestRunDedup:
 # _run_merge tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestRunQueueElseBranch:
     """Test _run_queue when none of list/dequeue/add/cancel are set."""
 
@@ -1506,6 +1783,7 @@ class TestRunQueueElseBranch:
 # ─────────────────────────────────────────────────────────────────────────────
 # dedup --report
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestDedupReport:
     """Test dedup --report flag."""
@@ -1569,12 +1847,20 @@ class TestRunDedupBatch:
     def test_batch_both_same_doi(self, mock_db_cls, capsys):
         mock_db = MagicMock()
         mock_db.init.return_value = None
-        p1 = MagicMock(id="uid1", title="Attention Is All You Need",
-                       doi="10.1234/abc", parse_status="completed",
-                       added_at="2026-01-01T00:00:00")
-        p2 = MagicMock(id="uid2", title="Attention Is All You Need",
-                       doi="10.1234/abc", parse_status="pending",
-                       added_at="2026-01-02T00:00:00")
+        p1 = MagicMock(
+            id="uid1",
+            title="Attention Is All You Need",
+            doi="10.1234/abc",
+            parse_status="completed",
+            added_at="2026-01-01T00:00:00",
+        )
+        p2 = MagicMock(
+            id="uid2",
+            title="Attention Is All You Need",
+            doi="10.1234/abc",
+            parse_status="pending",
+            added_at="2026-01-02T00:00:00",
+        )
         mock_db.find_duplicates.return_value = [(p1, p2)]
         mock_db.merge_papers.return_value = True
         mock_db_cls.return_value = mock_db
@@ -1591,12 +1877,20 @@ class TestRunDedupBatch:
     def test_batch_different_doi(self, mock_db_cls, capsys):
         mock_db = MagicMock()
         mock_db.init.return_value = None
-        p1 = MagicMock(id="uid1", title="Attention Is All You Need",
-                       doi="10.1234/abc", parse_status="completed",
-                       added_at="2026-01-01T00:00:00")
-        p2 = MagicMock(id="uid2", title="Attention Is All You Need",
-                       doi="10.9999/xyz", parse_status="pending",
-                       added_at="2026-01-02T00:00:00")
+        p1 = MagicMock(
+            id="uid1",
+            title="Attention Is All You Need",
+            doi="10.1234/abc",
+            parse_status="completed",
+            added_at="2026-01-01T00:00:00",
+        )
+        p2 = MagicMock(
+            id="uid2",
+            title="Attention Is All You Need",
+            doi="10.9999/xyz",
+            parse_status="pending",
+            added_at="2026-01-02T00:00:00",
+        )
         mock_db.find_duplicates.return_value = [(p1, p2)]
         mock_db_cls.return_value = mock_db
 
@@ -1613,15 +1907,35 @@ class TestRunDedupBatch:
         mock_db = MagicMock()
         mock_db.init.return_value = None
         # Pair 1: same DOI → auto-merged
-        p1 = MagicMock(id="uid1", title="Paper A", doi="10.1234/a",
-                       parse_status="completed", added_at="2026-01-01T00:00:00")
-        p2 = MagicMock(id="uid2", title="Paper A", doi="10.1234/a",
-                       parse_status="pending", added_at="2026-01-02T00:00:00")
+        p1 = MagicMock(
+            id="uid1",
+            title="Paper A",
+            doi="10.1234/a",
+            parse_status="completed",
+            added_at="2026-01-01T00:00:00",
+        )
+        p2 = MagicMock(
+            id="uid2",
+            title="Paper A",
+            doi="10.1234/a",
+            parse_status="pending",
+            added_at="2026-01-02T00:00:00",
+        )
         # Pair 2: different DOI → skipped
-        p3 = MagicMock(id="uid3", title="Paper B", doi="10.9999/b",
-                       parse_status="completed", added_at="2026-01-01T00:00:00")
-        p4 = MagicMock(id="uid4", title="Paper B", doi=None,
-                       parse_status="completed", added_at="2026-01-02T00:00:00")
+        p3 = MagicMock(
+            id="uid3",
+            title="Paper B",
+            doi="10.9999/b",
+            parse_status="completed",
+            added_at="2026-01-01T00:00:00",
+        )
+        p4 = MagicMock(
+            id="uid4",
+            title="Paper B",
+            doi=None,
+            parse_status="completed",
+            added_at="2026-01-02T00:00:00",
+        )
         mock_db.find_duplicates.return_value = [(p1, p2), (p3, p4)]
         mock_db.merge_papers.return_value = True
         mock_db_cls.return_value = mock_db
@@ -1653,6 +1967,7 @@ class TestRunDedupBatch:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_merge tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunMerge:  # noqa: F811
     """Test _run_merge manual paper merging."""
@@ -1738,8 +2053,10 @@ class TestRunMerge:  # noqa: F811
 # _run_citations tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class FakeCitation:
     """Fake citation matching db.database.Citation."""
+
     def __init__(self, source_id="uid1", target_id="uid2"):
         self.source_id = source_id
         self.target_id = target_id
@@ -1856,6 +2173,7 @@ class TestRunCitations:
 # _run_stats tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestRunStats:
     """Test _run_stats."""
 
@@ -1921,6 +2239,7 @@ class TestRunStats:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_cite_stats tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunCiteStats:
     """Test _run_cite_stats."""
@@ -2042,6 +2361,7 @@ class TestRunCiteStats:
 # _run_dedup_semantic tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestRunDedupSemantic:
     """Test _run_dedup_semantic."""
 
@@ -2056,8 +2376,13 @@ class TestRunDedupSemantic:
         mock_db_cls.return_value = mock_db
 
         args = make_args(
-            stats=True, generate=False, paper=None, threshold=0.85,
-            limit=20, format="warp", dedup_semantic=False,
+            stats=True,
+            generate=False,
+            paper=None,
+            threshold=0.85,
+            limit=20,
+            format="warp",
+            dedup_semantic=False,
         )
         result = _run_dedup_semantic(args)
 
@@ -2073,8 +2398,15 @@ class TestRunDedupSemantic:
         mock_db.get_embedding_stats.return_value = {"total_with_text": 0, "with_embedding": 0}
         mock_db_cls.return_value = mock_db
 
-        args = make_args(stats=True, generate=False, paper=None, threshold=0.85,
-                         limit=20, format="warp", dedup_semantic=False)
+        args = make_args(
+            stats=True,
+            generate=False,
+            paper=None,
+            threshold=0.85,
+            limit=20,
+            format="warp",
+            dedup_semantic=False,
+        )
         result = _run_dedup_semantic(args)
 
         out = capsys.readouterr().out
@@ -2088,8 +2420,15 @@ class TestRunDedupSemantic:
         mock_db.paper_exists.return_value = False
         mock_db_cls.return_value = mock_db
 
-        args = make_args(stats=False, generate=False, paper="nonexistent",
-                         threshold=0.85, limit=20, format="warp", dedup_semantic=False)
+        args = make_args(
+            stats=False,
+            generate=False,
+            paper="nonexistent",
+            threshold=0.85,
+            limit=20,
+            format="warp",
+            dedup_semantic=False,
+        )
         result = _run_dedup_semantic(args)
 
         out = capsys.readouterr().out
@@ -2105,8 +2444,15 @@ class TestRunDedupSemantic:
         mock_db.find_similar.return_value = []
         mock_db_cls.return_value = mock_db
 
-        args = make_args(stats=False, generate=False, paper="uid1",
-                         threshold=0.85, limit=20, format="warp", dedup_semantic=False)
+        args = make_args(
+            stats=False,
+            generate=False,
+            paper="uid1",
+            threshold=0.85,
+            limit=20,
+            format="warp",
+            dedup_semantic=False,
+        )
         result = _run_dedup_semantic(args)
 
         out = capsys.readouterr().out
@@ -2124,8 +2470,15 @@ class TestRunDedupSemantic:
         mock_db.find_similar.return_value = [(sim_paper, 0.92)]
         mock_db_cls.return_value = mock_db
 
-        args = make_args(stats=False, generate=False, paper="uid1",
-                         threshold=0.85, limit=20, format="warp", dedup_semantic=False)
+        args = make_args(
+            stats=False,
+            generate=False,
+            paper="uid1",
+            threshold=0.85,
+            limit=20,
+            format="warp",
+            dedup_semantic=False,
+        )
         result = _run_dedup_semantic(args)
 
         out = capsys.readouterr().out
@@ -2144,8 +2497,15 @@ class TestRunDedupSemantic:
         mock_db.find_similar.return_value = [(sim_paper, 0.96)]
         mock_db_cls.return_value = mock_db
 
-        args = make_args(stats=False, generate=False, paper="uid1",
-                         threshold=0.85, limit=20, format="csv", dedup_semantic=False)
+        args = make_args(
+            stats=False,
+            generate=False,
+            paper="uid1",
+            threshold=0.85,
+            limit=20,
+            format="csv",
+            dedup_semantic=False,
+        )
         result = _run_dedup_semantic(args)
 
         out = capsys.readouterr().out
@@ -2161,8 +2521,15 @@ class TestRunDedupSemantic:
         mock_db.find_similar.return_value = []
         mock_db_cls.return_value = mock_db
 
-        args = make_args(stats=False, generate=False, paper=None,
-                         threshold=0.85, limit=5, format="warp", dedup_semantic=False)
+        args = make_args(
+            stats=False,
+            generate=False,
+            paper=None,
+            threshold=0.85,
+            limit=5,
+            format="warp",
+            dedup_semantic=False,
+        )
         result = _run_dedup_semantic(args)
 
         out = capsys.readouterr().out
@@ -2176,8 +2543,15 @@ class TestRunDedupSemantic:
         mock_db.get_papers_without_embeddings.return_value = []
         mock_db_cls.return_value = mock_db
 
-        args = make_args(stats=False, generate=True, paper=None,
-                         threshold=0.85, limit=20, format="warp", dedup_semantic=False)
+        args = make_args(
+            stats=False,
+            generate=True,
+            paper=None,
+            threshold=0.85,
+            limit=20,
+            format="warp",
+            dedup_semantic=False,
+        )
         result = _run_dedup_semantic(args)
 
         assert result == 0
@@ -2186,6 +2560,7 @@ class TestRunDedupSemantic:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_kg tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunKgStats:
     """Test kg stats subcommand."""
@@ -2200,13 +2575,16 @@ class TestRunKgStats:
 
     def test_stats_text_format_shows_totals(self, capsys):
         from kg import KGManager
+
         mock_kg = KGManager.__new__(KGManager)
-        mock_kg.stats = MagicMock(return_value={
-            "total_nodes": 100,
-            "total_edges": 250,
-            "nodes_by_type": {"Paper": 50, "Tag": 30},
-            "edges_by_type": {"cites": 200, "has_tag": 50},
-        })
+        mock_kg.stats = MagicMock(
+            return_value={
+                "total_nodes": 100,
+                "total_edges": 250,
+                "nodes_by_type": {"Paper": 50, "Tag": 30},
+                "edges_by_type": {"cites": 200, "has_tag": 50},
+            }
+        )
 
         with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("stats", format="text")
@@ -2218,13 +2596,16 @@ class TestRunKgStats:
 
     def test_stats_warp_format_shows_tables(self, capsys):
         from kg import KGManager
+
         mock_kg = KGManager.__new__(KGManager)
-        mock_kg.stats = MagicMock(return_value={
-            "total_nodes": 100,
-            "total_edges": 250,
-            "nodes_by_type": {"Paper": 50, "Tag": 30},
-            "edges_by_type": {"cites": 200, "has_tag": 50},
-        })
+        mock_kg.stats = MagicMock(
+            return_value={
+                "total_nodes": 100,
+                "total_edges": 250,
+                "nodes_by_type": {"Paper": 50, "Tag": 30},
+                "edges_by_type": {"cites": 200, "has_tag": 50},
+            }
+        )
 
         with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("stats", format="warp")
@@ -2248,6 +2629,7 @@ class TestRunKgGraph:
 
     def test_graph_paper_not_found(self, capsys):
         from kg import KGManager
+
         mock_kg = KGManager.__new__(KGManager)
         mock_kg.get_node_by_entity = MagicMock(return_value=None)
 
@@ -2261,12 +2643,29 @@ class TestRunKgGraph:
 
     def test_graph_text_format_shows_neighbors(self, capsys):
         from kg import KGManager
+
         mock_kg = KGManager.__new__(KGManager)
-        paper_node = {"id": "n1", "type": "Paper", "entity_id": "2301.00001", "label": "Test Paper", "properties": {}, "created_at": ""}
+        paper_node = {
+            "id": "n1",
+            "type": "Paper",
+            "entity_id": "2301.00001",
+            "label": "Test Paper",
+            "properties": {},
+            "created_at": "",
+        }
         neighbors = [
-            ({"id": "n2", "type": "Paper", "entity_id": "2301.00002", "label": "Neighbor Paper", "properties": {}, "created_at": ""},
-             {"id": "e1", "source_id": "n1", "target_id": "n2", "relation_type": "cites"},
-             1),
+            (
+                {
+                    "id": "n2",
+                    "type": "Paper",
+                    "entity_id": "2301.00002",
+                    "label": "Neighbor Paper",
+                    "properties": {},
+                    "created_at": "",
+                },
+                {"id": "e1", "source_id": "n1", "target_id": "n2", "relation_type": "cites"},
+                1,
+            ),
         ]
         mock_kg.get_node_by_entity = MagicMock(return_value=paper_node)
         mock_kg.find_neighbors = MagicMock(return_value=neighbors)
@@ -2282,8 +2681,16 @@ class TestRunKgGraph:
 
     def test_graph_json_format(self, capsys):
         from kg import KGManager
+
         mock_kg = KGManager.__new__(KGManager)
-        paper_node = {"id": "n1", "type": "Paper", "entity_id": "2301.00001", "label": "Test", "properties": {}, "created_at": ""}
+        paper_node = {
+            "id": "n1",
+            "type": "Paper",
+            "entity_id": "2301.00001",
+            "label": "Test",
+            "properties": {},
+            "created_at": "",
+        }
         neighbors = []
         mock_kg.get_node_by_entity = MagicMock(return_value=paper_node)
         mock_kg.find_neighbors = MagicMock(return_value=neighbors)
@@ -2310,6 +2717,7 @@ class TestRunKgPath:
 
     def test_path_node_a_not_found(self, capsys):
         from kg import KGManager
+
         mock_kg = KGManager.__new__(KGManager)
         mock_kg.get_node_by_entity = MagicMock(return_value=None)
         mock_kg.get_node = MagicMock(return_value=None)
@@ -2324,11 +2732,28 @@ class TestRunKgPath:
 
     def test_path_no_path_found(self, capsys):
         from kg import KGManager
+
         mock_kg = KGManager.__new__(KGManager)
-        mock_kg.get_node_by_entity = MagicMock(side_effect=[
-            {"id": "n1", "type": "Paper", "label": "A", "entity_id": "A", "properties": {}, "created_at": ""},
-            {"id": "n2", "type": "Paper", "label": "B", "entity_id": "B", "properties": {}, "created_at": ""},
-        ])
+        mock_kg.get_node_by_entity = MagicMock(
+            side_effect=[
+                {
+                    "id": "n1",
+                    "type": "Paper",
+                    "label": "A",
+                    "entity_id": "A",
+                    "properties": {},
+                    "created_at": "",
+                },
+                {
+                    "id": "n2",
+                    "type": "Paper",
+                    "label": "B",
+                    "entity_id": "B",
+                    "properties": {},
+                    "created_at": "",
+                },
+            ]
+        )
         mock_kg.get_node = MagicMock(return_value=None)
         mock_kg.find_shortest_path = MagicMock(return_value=None)
 
@@ -2342,18 +2767,37 @@ class TestRunKgPath:
 
     def test_path_found(self, capsys):
         from kg import KGManager
+
         mock_kg = KGManager.__new__(KGManager)
-        mock_kg.get_node_by_entity = MagicMock(side_effect=[
-            {"id": "n1", "type": "Paper", "label": "Paper A", "entity_id": "A", "properties": {}, "created_at": ""},
-            {"id": "n2", "type": "Paper", "label": "Paper B", "entity_id": "B", "properties": {}, "created_at": ""},
-        ])
+        mock_kg.get_node_by_entity = MagicMock(
+            side_effect=[
+                {
+                    "id": "n1",
+                    "type": "Paper",
+                    "label": "Paper A",
+                    "entity_id": "A",
+                    "properties": {},
+                    "created_at": "",
+                },
+                {
+                    "id": "n2",
+                    "type": "Paper",
+                    "label": "Paper B",
+                    "entity_id": "B",
+                    "properties": {},
+                    "created_at": "",
+                },
+            ]
+        )
         mock_kg.get_node = MagicMock(return_value=None)
         mock_kg.find_shortest_path = MagicMock(return_value=["n1", "n3", "n2"])
-        mock_kg.get_node = MagicMock(side_effect=lambda nid: {
-            "n1": {"id": "n1", "type": "Paper", "label": "Paper A"},
-            "n3": {"id": "n3", "type": "Paper", "label": "Middle Paper"},
-            "n2": {"id": "n2", "type": "Paper", "label": "Paper B"},
-        }.get(nid))
+        mock_kg.get_node = MagicMock(
+            side_effect=lambda nid: {
+                "n1": {"id": "n1", "type": "Paper", "label": "Paper A"},
+                "n3": {"id": "n3", "type": "Paper", "label": "Middle Paper"},
+                "n2": {"id": "n2", "type": "Paper", "label": "Paper B"},
+            }.get(nid)
+        )
 
         with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("path", idA="A", idB="B")
@@ -2378,6 +2822,7 @@ class TestRunKgSearch:
 
     def test_search_no_results(self, capsys):
         from kg import KGManager
+
         mock_kg = KGManager.__new__(KGManager)
         mock_kg.find_papers_by_tag = MagicMock(return_value=[])
         mock_kg.get_all_nodes = MagicMock(return_value=[])
@@ -2392,11 +2837,14 @@ class TestRunKgSearch:
 
     def test_search_by_tag_shows_results(self, capsys):
         from kg import KGManager
+
         mock_kg = KGManager.__new__(KGManager)
-        mock_kg.find_papers_by_tag = MagicMock(return_value=[
-            {"id": "n1", "type": "Paper", "label": "LLM Survey"},
-            {"id": "n2", "type": "Paper", "label": "LLM Benchmark"},
-        ])
+        mock_kg.find_papers_by_tag = MagicMock(
+            return_value=[
+                {"id": "n1", "type": "Paper", "label": "LLM Survey"},
+                {"id": "n2", "type": "Paper", "label": "LLM Benchmark"},
+            ]
+        )
         mock_kg.get_all_nodes = MagicMock(return_value=[])
 
         with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
@@ -2410,12 +2858,15 @@ class TestRunKgSearch:
 
     def test_search_by_type(self, capsys):
         from kg import KGManager
+
         mock_kg = KGManager.__new__(KGManager)
         mock_kg.find_papers_by_tag = MagicMock(return_value=[])
-        mock_kg.get_all_nodes = MagicMock(return_value=[
-            {"id": "n1", "type": "Tag", "label": "LLM"},
-            {"id": "n2", "type": "Tag", "label": "RAG"},
-        ])
+        mock_kg.get_all_nodes = MagicMock(
+            return_value=[
+                {"id": "n1", "type": "Tag", "label": "LLM"},
+                {"id": "n2", "type": "Tag", "label": "RAG"},
+            ]
+        )
 
         with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("search", type="Tag", format="text")
@@ -2427,11 +2878,14 @@ class TestRunKgSearch:
 
     def test_search_warp_format(self, capsys):
         from kg import KGManager
+
         mock_kg = KGManager.__new__(KGManager)
         mock_kg.find_papers_by_tag = MagicMock(return_value=[])
-        mock_kg.get_all_nodes = MagicMock(return_value=[
-            {"id": "n1", "type": "Paper", "label": "Attention Is All You Need"},
-        ])
+        mock_kg.get_all_nodes = MagicMock(
+            return_value=[
+                {"id": "n1", "type": "Paper", "label": "Attention Is All You Need"},
+            ]
+        )
 
         with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("search", format="warp")
@@ -2443,11 +2897,14 @@ class TestRunKgSearch:
 
     def test_search_json_format(self, capsys):
         from kg import KGManager
+
         mock_kg = KGManager.__new__(KGManager)
         mock_kg.find_papers_by_tag = MagicMock(return_value=[])
-        mock_kg.get_all_nodes = MagicMock(return_value=[
-            {"id": "n1", "type": "Paper", "label": "Test"},
-        ])
+        mock_kg.get_all_nodes = MagicMock(
+            return_value=[
+                {"id": "n1", "type": "Paper", "label": "Test"},
+            ]
+        )
 
         with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("search", format="json")
@@ -2461,6 +2918,7 @@ class TestRunKgSearch:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_stats tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunStatsAndTrend:
     """Test _run_stats extended and _run_trend."""
@@ -2517,13 +2975,19 @@ class TestRunStatsAndTrend:
 # _run_trend tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestRunTrend:
     """Test _run_trend."""
 
     def _trend_args(self, **kwargs):
         defaults = dict(
-            topic=None, year_start=None, year_end=None,
-            min_papers=10, mermaid=False, json=False, interactive=False,
+            topic=None,
+            year_start=None,
+            year_end=None,
+            min_papers=10,
+            mermaid=False,
+            json=False,
+            interactive=False,
         )
         defaults.update(kwargs)
         ns = argparse.Namespace()
@@ -2533,8 +2997,10 @@ class TestRunTrend:
 
     def test_no_topic_and_no_interactive_returns_early(self, capsys):
         """No topic with no interactive falls through to _run_interactive (returns 0)."""
-        with patch("cli.cmd.trend.TrendAnalyzer") as mock_analyzer, \
-             patch("builtins.input", return_value="q"):
+        with (
+            patch("cli.cmd.trend.TrendAnalyzer") as mock_analyzer,
+            patch("builtins.input", return_value="q"),
+        ):
             mock_analyzer.return_value = MagicMock()
             args = self._trend_args(topic=None, interactive=False)
             result = _run_trend(args)
@@ -2542,8 +3008,10 @@ class TestRunTrend:
 
     def test_interactive_mode_returns_zero(self, capsys):
         """--interactive without topic returns 0 (enters interactive loop)."""
-        with patch("cli.cmd.trend.TrendAnalyzer") as mock_analyzer, \
-             patch("builtins.input", return_value="q"):
+        with (
+            patch("cli.cmd.trend.TrendAnalyzer") as mock_analyzer,
+            patch("builtins.input", return_value="q"),
+        ):
             mock_analyzer.return_value = MagicMock()
             args = self._trend_args(interactive=True)
             result = _run_trend(args)
@@ -2617,9 +3085,7 @@ class TestRunTrend:
 
         capsys.readouterr()
         assert result == 0
-        mock_analyzer.analyze.assert_called_once_with(
-            topic="LLM", year_range=None, min_papers=10
-        )
+        mock_analyzer.analyze.assert_called_once_with(topic="LLM", year_range=None, min_papers=10)
 
     def test_json_flag_returns_json(self, capsys):
         """--json outputs JSON."""
@@ -2720,28 +3186,23 @@ class TestRunTrend:
 # _work_to_arxiv_id tests (pure function — no mocking needed)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestWorkToArxivId:
     """Test _work_to_arxiv_id pure function."""
 
     def test_arxiv_paper_standard_doi(self):
         """DOI containing /arxiv. returns the arXiv ID suffix."""
-        work = {
-            "ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001"}
-        }
+        work = {"ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001"}}
         assert _work_to_arxiv_id(work) == "2301.00001"
 
     def test_arxiv_paper_uppercase_doi(self):
         """Case-insensitive match on /arxiv. in DOI."""
-        work = {
-            "ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001"}
-        }
+        work = {"ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001"}}
         assert _work_to_arxiv_id(work) == "2301.00001"
 
     def test_non_arxiv_paper(self):
         """DOI without /arxiv. returns None."""
-        work = {
-            "ids": {"doi": "https://doi.org/10.1234/journal.2024.001"}
-        }
+        work = {"ids": {"doi": "https://doi.org/10.1234/journal.2024.001"}}
         assert _work_to_arxiv_id(work) is None
 
     def test_none_doi(self):
@@ -2771,9 +3232,7 @@ class TestWorkToArxivId:
 
     def test_arxiv_id_with_version(self):
         """arXiv ID with version suffix is returned as-is."""
-        work = {
-            "ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001v2"}
-        }
+        work = {"ids": {"doi": "https://doi.org/10.48550/arXiv.2301.00001v2"}}
         # The function splits on /arxiv. and takes the last part, preserving version
         assert _work_to_arxiv_id(work) == "2301.00001v2"
 
@@ -2781,6 +3240,7 @@ class TestWorkToArxivId:
 # ─────────────────────────────────────────────────────────────────────────────
 # _work_to_paper_record tests (pure function — no mocking needed)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestWorkToPaperRecord:
     """Test _work_to_paper_record pure function."""

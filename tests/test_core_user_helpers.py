@@ -1,12 +1,20 @@
 """Tests for core/user_helpers.py."""
+
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from core.user_helpers import (
-    UserError, DatabaseError, APIError, ParseError,
-    format_error, print_error, ProgressIndicator,
-    print_table, print_json, print_banner,
+    UserError,
+    DatabaseError,
+    APIError,
+    ParseError,
+    format_error,
+    print_error,
+    ProgressIndicator,
+    print_table,
+    print_json,
+    print_banner,
 )
 
 

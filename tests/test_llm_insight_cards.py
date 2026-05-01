@@ -1,14 +1,29 @@
 """Tier 2 unit tests — llm/insight_cards.py, pure functions, no I/O."""
+
 from llm.insight_cards import InsightCard, InsightCollection, InsightManager
 
 
-def card(card_id="i001", paper_id="p001", paper_title="Test Paper",
-         content="Test insight content", insight_type="finding",
-         tags=None, evidence="", created_at="", references=None):
+def card(
+    card_id="i001",
+    paper_id="p001",
+    paper_title="Test Paper",
+    content="Test insight content",
+    insight_type="finding",
+    tags=None,
+    evidence="",
+    created_at="",
+    references=None,
+):
     return InsightCard(
-        card_id=card_id, paper_id=paper_id, paper_title=paper_title,
-        content=content, insight_type=insight_type, tags=tags or [],
-        evidence=evidence, page_ref="", created_at=created_at,
+        card_id=card_id,
+        paper_id=paper_id,
+        paper_title=paper_title,
+        content=content,
+        insight_type=insight_type,
+        tags=tags or [],
+        evidence=evidence,
+        page_ref="",
+        created_at=created_at,
         references=references or [],
     )
 
@@ -26,7 +41,8 @@ class TestInsightCard:
 
     def test_required_fields(self):
         card = InsightCard(
-            card_id="i0001", paper_id="p001",
+            card_id="i0001",
+            paper_id="p001",
             paper_title="Attention Is All You Need",
             content="Multi-head attention outperforms single-head",
         )
@@ -46,9 +62,14 @@ class TestInsightCard:
 
     def test_all_fields_can_be_set(self):
         c = card(
-            card_id="full", paper_id="p", paper_title="T", content="C",
-            insight_type="method", tags=["transformer", "nlp"],
-            evidence="Table 1", created_at="2026-01-01",
+            card_id="full",
+            paper_id="p",
+            paper_title="T",
+            content="C",
+            insight_type="method",
+            tags=["transformer", "nlp"],
+            evidence="Table 1",
+            created_at="2026-01-01",
             references=["i0001"],
         )
         assert c.insight_type == "method"
@@ -305,12 +326,27 @@ class TestSearchCardsFilter:
         results.sort(key=lambda x: x["created_at"], reverse=True)
         return results
 
-    def _d(self, card_id="i001", paper_id="p001", paper_title="T",
-            content="C", insight_type="finding", tags=None, created_at="2026-01-01"):
+    def _d(
+        self,
+        card_id="i001",
+        paper_id="p001",
+        paper_title="T",
+        content="C",
+        insight_type="finding",
+        tags=None,
+        created_at="2026-01-01",
+    ):
         return {
-            "card_id": card_id, "paper_id": paper_id, "paper_title": paper_title,
-            "content": content, "insight_type": insight_type, "tags": tags or [],
-            "evidence": "", "page_ref": "", "created_at": created_at, "references": [],
+            "card_id": card_id,
+            "paper_id": paper_id,
+            "paper_title": paper_title,
+            "content": content,
+            "insight_type": insight_type,
+            "tags": tags or [],
+            "evidence": "",
+            "page_ref": "",
+            "created_at": created_at,
+            "references": [],
         }
 
     def test_no_filters_returns_all(self):
@@ -396,12 +432,19 @@ class TestSearchCardsFilter:
 
     def test_combined_filters(self):
         data = [
-            self._d(card_id="i001", paper_id="p001", insight_type="finding",
-                    tags=["nlp"], content="transformer"),
-            self._d(card_id="i002", paper_id="p001", insight_type="method",
-                    tags=["nlp"], content="bert"),
-            self._d(card_id="i003", paper_id="p002", insight_type="finding",
-                    tags=["nlp"], content="cnn"),
+            self._d(
+                card_id="i001",
+                paper_id="p001",
+                insight_type="finding",
+                tags=["nlp"],
+                content="transformer",
+            ),
+            self._d(
+                card_id="i002", paper_id="p001", insight_type="method", tags=["nlp"], content="bert"
+            ),
+            self._d(
+                card_id="i003", paper_id="p002", insight_type="finding", tags=["nlp"], content="cnn"
+            ),
         ]
         result = self._search_cards(data, paper_id="p001", insight_type="finding")
         assert len(result) == 1 and result[0]["card_id"] == "i001"

@@ -1,4 +1,5 @@
 """Tests for weekly digest."""
+
 import pytest
 
 from llm.weekly_digest import WeeklyDigest, WeekData
@@ -15,8 +16,8 @@ class TestWeeklyDigest:
         """Test collecting with no data."""
         data = digest.collect_week_data(days=7)
         # May have real data, just check structure
-        assert hasattr(data, 'journal_entries')
-        assert hasattr(data, 'experiments_started')
+        assert hasattr(data, "journal_entries")
+        assert hasattr(data, "experiments_started")
 
     def test_collect_with_data(self, digest):
         """Test collecting with data."""

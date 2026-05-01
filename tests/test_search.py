@@ -1,4 +1,5 @@
 """Tests for FTS5 full-text search in database.py"""
+
 import pytest
 import tempfile
 import os
@@ -174,14 +175,14 @@ class TestSearchPapersSort:
 class TestSearchPapersPagination:
     def test_search_with_limit(self, db):
         for i in range(5):
-            db.upsert_paper(f"2312.00{30+i:02d}", "arxiv", title=f"Paper {i}")
+            db.upsert_paper(f"2312.00{30 + i:02d}", "arxiv", title=f"Paper {i}")
         results, total = db.search_papers("paper", limit=3)
         assert len(results) == 3
         assert total == 5
 
     def test_search_with_offset(self, db):
         for i in range(5):
-            db.upsert_paper(f"2312.00{40+i:02d}", "arxiv", title=f"Paper {i}")
+            db.upsert_paper(f"2312.00{40 + i:02d}", "arxiv", title=f"Paper {i}")
         page1, _ = db.search_papers("paper", limit=3, offset=0)
         page2, _ = db.search_papers("paper", limit=3, offset=3)
         assert len(page1) == 3
@@ -197,7 +198,7 @@ class TestListPapers:
 
     def test_list_papers_pagination(self, db):
         for i in range(5):
-            db.upsert_paper(f"2312.00{60+i:02d}", "arxiv", title=f"Paper {i}")
+            db.upsert_paper(f"2312.00{60 + i:02d}", "arxiv", title=f"Paper {i}")
         page1, _ = db.list_papers(offset=0, limit=3)
         page2, _ = db.list_papers(offset=3, limit=3)
         assert len(page1) == 3

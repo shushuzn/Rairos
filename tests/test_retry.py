@@ -1,4 +1,5 @@
 """Tests for core/retry.py — decorator API."""
+
 from __future__ import annotations
 
 import time
@@ -14,6 +15,7 @@ class TestRetry:
         @retry(max_attempts=3, base_delay=0.01)
         def succeed():
             return 42
+
         assert succeed() == 42
 
     def test_retries_on_failure_then_succeeds(self):
@@ -25,6 +27,7 @@ class TestRetry:
             if calls[0] < 3:
                 raise ConnectionError("transient")
             return "done"
+
         assert flaky() == "done"
         assert calls[0] == 3
 
@@ -32,6 +35,7 @@ class TestRetry:
         @retry(max_attempts=3, base_delay=0.01)
         def always_fail():
             raise ConnectionError("permanent")
+
         with pytest.raises(ConnectionError):
             always_fail()
 

@@ -1,4 +1,5 @@
 """Tests for simple CLI functionality."""
+
 from core.simple_cli import SimpleCLI
 
 

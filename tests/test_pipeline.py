@@ -178,8 +178,8 @@ class TestResearchPipeline:
             growth_rate = 0.5
 
         lines = pipeline._render_trend(MockTrend())
-        assert "趋势分析" in ' '.join(lines)
-        assert "AI" in ' '.join(lines)
+        assert "趋势分析" in " ".join(lines)
+        assert "AI" in " ".join(lines)
 
     def test_render_story_summary(self):
         """Test story summary rendering."""
@@ -190,8 +190,8 @@ class TestResearchPipeline:
             contradictions = [("a", "b")]
 
         lines = pipeline._render_story(MockStory())
-        assert "研究故事" in ' '.join(lines)
-        assert "theme1" in ' '.join(lines)
+        assert "研究故事" in " ".join(lines)
+        assert "theme1" in " ".join(lines)
 
     def test_render_validation_summary(self):
         """Test validation summary rendering."""
@@ -205,8 +205,8 @@ class TestResearchPipeline:
             is_novel = True
 
         lines = pipeline._render_validation(MockValidate())
-        assert "问题验证" in ' '.join(lines)
-        assert "7.5" in ' '.join(lines)
+        assert "问题验证" in " ".join(lines)
+        assert "7.5" in " ".join(lines)
 
     def test_render_hypothesis_summary(self):
         """Test hypothesis summary rendering."""
@@ -219,8 +219,8 @@ class TestResearchPipeline:
             hypotheses = [MockHypothesis()]
 
         lines = pipeline._render_hypothesis(MockHypResult())
-        assert "研究假说" in ' '.join(lines)
-        assert "Test hypothesis" in ' '.join(lines)
+        assert "研究假说" in " ".join(lines)
+        assert "Test hypothesis" in " ".join(lines)
 
     def test_render_hypothesis_empty(self):
         """Test hypothesis rendering with no results."""

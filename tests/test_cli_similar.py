@@ -1,4 +1,5 @@
 """Unit tests for similar CLI subcommand — semantic similarity search."""
+
 from unittest.mock import patch
 
 
@@ -37,12 +38,14 @@ class FakeDB:
 # Parser tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestSimilarParser:
     def test_parser_help_text(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.similar import _build_similar_parser
         import argparse
+
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
         _build_similar_parser(sub)
@@ -53,6 +56,7 @@ class TestSimilarParser:
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.similar import _build_similar_parser
         import argparse
+
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
         _build_similar_parser(sub)
@@ -62,6 +66,7 @@ class TestSimilarParser:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_similar_text unit tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunSimilarText:
     def test_no_paper_id_prints_stats(self, monkeypatch, capsys):
@@ -129,6 +134,7 @@ class TestRunSimilarText:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_similar_view unit tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunSimilarView:
     def test_view_paper_not_found_returns_error(self, monkeypatch, capsys):

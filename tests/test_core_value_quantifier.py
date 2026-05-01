@@ -9,6 +9,7 @@ class TestValueMetric:
     def test_dataclass_fields(self):
         """ValueMetric stores name, value, unit, and description."""
         from core.value_quantifier import ValueMetric
+
         metric = ValueMetric(
             name="API Calls Saved",
             value=100.0,
@@ -27,6 +28,7 @@ class TestValueQuantifier:
     def test_init_metrics_are_zeroed(self):
         """All metrics start at zero."""
         from core.value_quantifier import ValueQuantifier
+
         q = ValueQuantifier()
         assert q.metrics["api_calls_saved"] == 0
         assert q.metrics["papers_processed"] == 0
@@ -38,6 +40,7 @@ class TestValueQuantifier:
     def test_update_changes_metric(self):
         """update() changes the specified metric."""
         from core.value_quantifier import ValueQuantifier
+
         q = ValueQuantifier()
         q.update("api_calls_saved", 50.0)
         assert q.metrics["api_calls_saved"] == 50.0
@@ -45,6 +48,7 @@ class TestValueQuantifier:
     def test_update_ignores_unknown_metric(self):
         """update() silently ignores unknown metric keys."""
         from core.value_quantifier import ValueQuantifier
+
         q = ValueQuantifier()
         q.update("unknown_metric", 999.0)
         assert "unknown_metric" not in q.metrics
@@ -52,6 +56,7 @@ class TestValueQuantifier:
     def test_calculate_value_returns_all_metrics(self):
         """calculate_value returns 4 ValueMetric entries."""
         from core.value_quantifier import ValueQuantifier
+
         q = ValueQuantifier()
         values = q.calculate_value()
         assert len(values) == 4
@@ -63,6 +68,7 @@ class TestValueQuantifier:
     def test_calculate_value_derived_from_api_calls(self):
         """hours_saved = api_calls_saved * 0.1."""
         from core.value_quantifier import ValueQuantifier
+
         q = ValueQuantifier()
         q.update("api_calls_saved", 100)
         values = q.calculate_value()
@@ -71,6 +77,7 @@ class TestValueQuantifier:
     def test_calculate_value_cost_includes_time_value(self):
         """cost_saved = api_calls * 0.01 + hours_saved * 50."""
         from core.value_quantifier import ValueQuantifier
+
         q = ValueQuantifier()
         q.update("api_calls_saved", 100)
         values = q.calculate_value()
@@ -82,6 +89,7 @@ class TestValueQuantifier:
     def test_get_value_report_contains_vw_reference(self):
         """Report references Volkswagen's 700-900 euros."""
         from core.value_quantifier import ValueQuantifier
+
         q = ValueQuantifier()
         q.update("api_calls_saved", 100)
         report = q.get_value_report()
@@ -90,6 +98,7 @@ class TestValueQuantifier:
     def test_get_value_report_contains_value_sections(self):
         """Report contains expected sections."""
         from core.value_quantifier import ValueQuantifier
+
         q = ValueQuantifier()
         q.update("api_calls_saved", 100)
         report = q.get_value_report()
@@ -100,6 +109,7 @@ class TestValueQuantifier:
     def test_get_value_report_empty_when_no_metrics(self):
         """Report shows no value when all metrics are zero."""
         from core.value_quantifier import ValueQuantifier
+
         q = ValueQuantifier()
         report = q.get_value_report()
         assert "总价值" not in report
@@ -107,6 +117,7 @@ class TestValueQuantifier:
     def test_get_vw_comparison_contains_vw_text(self):
         """VW comparison string references Volkswagen."""
         from core.value_quantifier import ValueQuantifier
+
         q = ValueQuantifier()
         q.update("api_calls_saved", 100)
         comparison = q.get_vw_comparison()
@@ -115,6 +126,7 @@ class TestValueQuantifier:
     def test_get_vw_comparison_annualizes(self):
         """VW comparison annualizes current savings."""
         from core.value_quantifier import ValueQuantifier
+
         q = ValueQuantifier()
         q.update("api_calls_saved", 100)
         comparison = q.get_vw_comparison()
@@ -125,6 +137,7 @@ class TestValueQuantifier:
     def test_get_vw_comparison_mentions_ai_research_os(self):
         """Comparison mentions AI Research OS."""
         from core.value_quantifier import ValueQuantifier
+
         q = ValueQuantifier()
         comparison = q.get_vw_comparison()
         assert "AI Research OS" in comparison
@@ -136,12 +149,14 @@ class TestGlobalValueQuantifier:
     def test_get_value_quantifier_returns_instance(self):
         """get_value_quantifier returns a ValueQuantifier instance."""
         from core.value_quantifier import get_value_quantifier
+
         q = get_value_quantifier()
         assert q is not None
 
     def test_get_value_quantifier_singleton(self):
         """get_value_quantifier returns the same instance on repeated calls."""
         from core.value_quantifier import get_value_quantifier
+
         q1 = get_value_quantifier()
         q2 = get_value_quantifier()
         assert q1 is q2

@@ -1,4 +1,5 @@
 """Tests for research journal."""
+
 import pytest
 
 from llm.journal import Journal, JournalEntry
@@ -134,8 +135,17 @@ class TestJournalEntry:
 
     def test_from_dict(self):
         """Test creating from dict."""
-        data = {"id": "e1", "content": "Test", "created_at": "2024-01-01T00:00:00",
-                "updated_at": "", "tags": [], "question_id": "", "experiment_id": "",
-                "paper_id": "", "mood": "", "highlights": []}
+        data = {
+            "id": "e1",
+            "content": "Test",
+            "created_at": "2024-01-01T00:00:00",
+            "updated_at": "",
+            "tags": [],
+            "question_id": "",
+            "experiment_id": "",
+            "paper_id": "",
+            "mood": "",
+            "highlights": [],
+        }
         entry = JournalEntry.from_dict(data)
         assert entry.id == "e1"

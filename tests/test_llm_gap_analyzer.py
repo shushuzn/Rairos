@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/gap_analyzer.py, pure functions, no I/O."""
+
 from llm.gap_analyzer import (
     ResearchGapV2,
     GapAnalysisResultV2,
@@ -334,26 +335,19 @@ class TestMatchesTrendingKeyword:
     def test_multiple_matches(self):
         """Multiple keyword matches sum up."""
         score = self._matches_trending_keyword(
-            "transformer attention mechanism",
-            {"transformer", "attention"}
+            "transformer attention mechanism", {"transformer", "attention"}
         )
         assert score == 1.0
 
     def test_capped_at_2_0(self):
         """Score is capped at 2.0."""
         # 5 matches = 2.5, but capped at 2.0
-        score = self._matches_trending_keyword(
-            "a b c d e",
-            {"a", "b", "c", "d", "e"}
-        )
+        score = self._matches_trending_keyword("a b c d e", {"a", "b", "c", "d", "e"})
         assert score == 2.0
 
     def test_partial_word_match(self):
         """Keywords match anywhere in text."""
-        score = self._matches_trending_keyword(
-            "The transformer architecture",
-            {"transformer"}
-        )
+        score = self._matches_trending_keyword("The transformer architecture", {"transformer"})
         assert score == 0.5
 
 
@@ -411,9 +405,9 @@ class TestFindRelatedInsights:
         # Keywords: "scalability", "issues", "description", "transformer", "has" (5 keywords)
         insights = [
             "scaler transformer analysis",  # matches "scalability"
-            "issue with transformer",       # matches "issues"
-            "describes the problem",        # matches "description"
-            "another match here",          # matches "has"
+            "issue with transformer",  # matches "issues"
+            "describes the problem",  # matches "description"
+            "another match here",  # matches "has"
         ]
         description = "transformer has scalability issues description"
         result = self._find_related_insights(description, insights)
@@ -439,20 +433,25 @@ class TestBuildGapContext:
         for gap in gaps[:5]:
             lines.append(f"- [{gap['gap_type']}] {gap['title']}")
             lines.append(f"  {gap['description'][:100]}")
-            if gap.get('sub_questions'):
+            if gap.get("sub_questions"):
                 lines.append(f"  Questions: {'; '.join(gap['sub_questions'][:2])}")
 
         return "\n".join(lines)
 
     def test_includes_gap_type(self):
         """Includes gap type in output."""
-        gaps = [{"gap_type": "method_limitation", "title": "T", "description": "D", "sub_questions": []}]
+        gaps = [
+            {"gap_type": "method_limitation", "title": "T", "description": "D", "sub_questions": []}
+        ]
         context = self._build_gap_context(gaps)
         assert "method_limitation" in context
 
     def test_limits_to_5_gaps(self):
         """Limits to first 5 gaps."""
-        gaps = [{"gap_type": "t", "title": str(i), "description": "D", "sub_questions": []} for i in range(10)]
+        gaps = [
+            {"gap_type": "t", "title": str(i), "description": "D", "sub_questions": []}
+            for i in range(10)
+        ]
         context = self._build_gap_context(gaps)
         assert context.count("[") == 5
 
@@ -464,14 +463,23 @@ class TestBuildGapContext:
 
     def test_includes_sub_questions(self):
         """Includes sub-questions when present."""
-        gaps = [{"gap_type": "t", "title": "T", "description": "D", "sub_questions": ["Q1", "Q2", "Q3"]}]
+        gaps = [
+            {"gap_type": "t", "title": "T", "description": "D", "sub_questions": ["Q1", "Q2", "Q3"]}
+        ]
         context = self._build_gap_context(gaps)
         assert "Q1" in context
         assert "Q2" in context
 
     def test_limits_sub_questions_to_2(self):
         """Limits sub-questions to first 2."""
-        gaps = [{"gap_type": "t", "title": "T", "description": "D", "sub_questions": ["Q1", "Q2", "Q3", "Q4"]}]
+        gaps = [
+            {
+                "gap_type": "t",
+                "title": "T",
+                "description": "D",
+                "sub_questions": ["Q1", "Q2", "Q3", "Q4"],
+            }
+        ]
         context = self._build_gap_context(gaps)
         assert "Q1" in context
         assert "Q3" not in context

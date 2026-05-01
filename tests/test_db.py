@@ -1,4 +1,5 @@
 """Tests for db/database.py — reflects actual API."""
+
 from __future__ import annotations
 
 
@@ -128,23 +129,32 @@ class TestSettings:
 class TestParseHistory:
     def test_record_and_get_parse_history(self, db):
         db.upsert_paper("2301.00001", "arxiv", title="T")
-        db.record_parse_attempt("2301.00001", duration_sec=1.5, status="success", pdf_hash="abc123", file_size=1024)
+        db.record_parse_attempt(
+            "2301.00001", duration_sec=1.5, status="success", pdf_hash="abc123", file_size=1024
+        )
         history = db.get_parse_history("2301.00001")
         assert len(history) == 1
         assert history[0]["duration_sec"] == 1.5
         assert history[0]["status"] == "success"
 
 
-
-
 class TestUpdateParseStatus:
     def test_update_parse_status_success(self, db):
         db.upsert_paper("2301.00001", "arxiv", title="Test Paper")
-        db.update_parse_status("2301.00001", status="success", plain_text="Full text", latex_blocks=["b1","b2"], table_count=3, figure_count=5, word_count=1000, page_count=10)
+        db.update_parse_status(
+            "2301.00001",
+            status="success",
+            plain_text="Full text",
+            latex_blocks=["b1", "b2"],
+            table_count=3,
+            figure_count=5,
+            word_count=1000,
+            page_count=10,
+        )
         paper = db.get_paper("2301.00001")
         assert paper.parse_status == "success"
         assert paper.plain_text == "Full text"
-        assert paper.latex_blocks == ["b1","b2"]
+        assert paper.latex_blocks == ["b1", "b2"]
         assert paper.table_count == 3
         assert paper.figure_count == 5
         assert paper.word_count == 1000
@@ -739,9 +749,9 @@ class TestEmbeddings:
         db.upsert_paper("S2", "arxiv", title="S2")
         db.upsert_paper("S3", "arxiv", title="S3")
         db.set_embedding("Q", [1.0, 0.0, 0.0])
-        db.set_embedding("S1", [0.5, 0.0, 0.0])   # sim ~0.5
-        db.set_embedding("S2", [0.9, 0.0, 0.0])   # sim ~0.9
-        db.set_embedding("S3", [0.7, 0.0, 0.0])   # sim ~0.7
+        db.set_embedding("S1", [0.5, 0.0, 0.0])  # sim ~0.5
+        db.set_embedding("S2", [0.9, 0.0, 0.0])  # sim ~0.9
+        db.set_embedding("S3", [0.7, 0.0, 0.0])  # sim ~0.7
         results = db.find_similar("Q", threshold=0.0)
         scores = [r[1] for r in results]
         assert scores == sorted(scores, reverse=True)

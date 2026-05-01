@@ -1,4 +1,5 @@
 """Tests for core/watermarker.py."""
+
 import sys
 from pathlib import Path
 
@@ -10,11 +11,13 @@ class TestWaterMarker:
     def setup_method(self):
         """Reset singleton before each test."""
         import core.watermarker as wm
+
         wm._marker = None
 
     def teardown_method(self):
         """Reset singleton after each test."""
         import core.watermarker as wm
+
         wm._marker = None
 
     def test_add_mark(self):
@@ -64,10 +67,12 @@ class TestWaterMarker:
 class TestGetMarker:
     def setup_method(self):
         import core.watermarker as wm
+
         wm._marker = None
 
     def teardown_method(self):
         import core.watermarker as wm
+
         wm._marker = None
 
     def test_get_marker_returns_singleton(self):

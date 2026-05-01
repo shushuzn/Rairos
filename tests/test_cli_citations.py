@@ -1,27 +1,53 @@
 """Unit tests for CLI citations, cite-stats, cite-fetch, cite-import, export, and stats subcommands."""
+
 import argparse
 import json
 from unittest.mock import MagicMock, patch
 
 
-from cli import _run_stats, _run_import, _run_export, _run_citations, _run_cite_fetch, _run_cite_import, _run_cite_stats
+from cli import (
+    _run_stats,
+    _run_import,
+    _run_export,
+    _run_citations,
+    _run_cite_fetch,
+    _run_cite_import,
+    _run_cite_stats,
+)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def make_args(**kwargs):
     defaults = dict(
-        subcmd="", json=False, limit=20, offset=0, format="text",
-        source="import", skip_existing=False, out=None,
-        citation_from=None, citation_to=None,
-        paper_id=None, direction="both", dry_run=False, skip_external=False,
-        delay=0.11, max_per_paper=0,
-        json_input=None, skip_missing=False, dedup=False,
-        extract=False, extract_paper=None,
-        stats_paper=None, top=None,
-        ids=None, file=None,
+        subcmd="",
+        json=False,
+        limit=20,
+        offset=0,
+        format="text",
+        source="import",
+        skip_existing=False,
+        out=None,
+        citation_from=None,
+        citation_to=None,
+        paper_id=None,
+        direction="both",
+        dry_run=False,
+        skip_external=False,
+        delay=0.11,
+        max_per_paper=0,
+        json_input=None,
+        skip_missing=False,
+        dedup=False,
+        extract=False,
+        extract_paper=None,
+        stats_paper=None,
+        top=None,
+        ids=None,
+        file=None,
     )
     defaults.update(kwargs)
     ns = argparse.Namespace()
@@ -33,6 +59,7 @@ def make_args(**kwargs):
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_stats tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunStats:
     """Test _run_stats."""
@@ -112,6 +139,7 @@ class TestRunStats:
 # _run_citations tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestRunCitations:
     """Test _run_citations."""
 
@@ -125,7 +153,9 @@ class TestRunCitations:
         ]
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="citations", citation_from="2301.00001", citation_to=None, format="text")
+        args = make_args(
+            subcmd="citations", citation_from="2301.00001", citation_to=None, format="text"
+        )
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
@@ -142,7 +172,9 @@ class TestRunCitations:
         ]
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="citations", citation_from=None, citation_to="2301.00001", format="text")
+        args = make_args(
+            subcmd="citations", citation_from=None, citation_to="2301.00001", format="text"
+        )
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
@@ -159,7 +191,9 @@ class TestRunCitations:
         ]
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="citations", citation_from="2301.00001", citation_to=None, format="csv")
+        args = make_args(
+            subcmd="citations", citation_from="2301.00001", citation_to=None, format="csv"
+        )
         result = _run_citations(args)
 
         captured = capsys.readouterr().out.replace("\r", "")
@@ -174,7 +208,9 @@ class TestRunCitations:
         mock_db.get_paper_title.return_value = None
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="citations", citation_from="nonexistent", citation_to=None, format="text")
+        args = make_args(
+            subcmd="citations", citation_from="nonexistent", citation_to=None, format="text"
+        )
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
@@ -200,7 +236,9 @@ class TestRunCitations:
         mock_db.get_citations.return_value = []
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="citations", citation_from="2301.00001", citation_to=None, format="text")
+        args = make_args(
+            subcmd="citations", citation_from="2301.00001", citation_to=None, format="text"
+        )
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
@@ -222,7 +260,9 @@ class TestRunCitations:
         ]
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="citations", citation_from="2301.00001", citation_to="2306.00001", format="text")
+        args = make_args(
+            subcmd="citations", citation_from="2301.00001", citation_to="2306.00001", format="text"
+        )
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
@@ -248,7 +288,9 @@ class TestRunCitations:
         ]
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="citations", citation_from="2301.00001", citation_to="2306.00001", format="text")
+        args = make_args(
+            subcmd="citations", citation_from="2301.00001", citation_to="2306.00001", format="text"
+        )
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
@@ -271,7 +313,9 @@ class TestRunCitations:
         ]
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="citations", citation_from="2301.00001", citation_to="2306.00001", format="text")
+        args = make_args(
+            subcmd="citations", citation_from="2301.00001", citation_to="2306.00001", format="text"
+        )
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
@@ -293,7 +337,9 @@ class TestRunCitations:
         ]
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="citations", citation_from="2301.00001", citation_to="2306.00001", format="csv")
+        args = make_args(
+            subcmd="citations", citation_from="2301.00001", citation_to="2306.00001", format="csv"
+        )
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
@@ -309,7 +355,9 @@ class TestRunCitations:
         mock_db.get_paper_title.return_value = None  # from paper not found
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="citations", citation_from="nonexistent", citation_to="2306.00001", format="text")
+        args = make_args(
+            subcmd="citations", citation_from="nonexistent", citation_to="2306.00001", format="text"
+        )
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
@@ -324,7 +372,9 @@ class TestRunCitations:
         mock_db.get_paper_title.side_effect = ["Attention", None]
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="citations", citation_from="2301.00001", citation_to="nonexistent", format="text")
+        args = make_args(
+            subcmd="citations", citation_from="2301.00001", citation_to="nonexistent", format="text"
+        )
         result = _run_citations(args)
 
         captured = capsys.readouterr().out
@@ -335,6 +385,7 @@ class TestRunCitations:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_cite_stats tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunCiteStats:
     """Test _run_cite_stats."""
@@ -416,6 +467,7 @@ class TestRunCiteStats:
 # _run_cite_fetch tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestRunCiteFetch:
     """Test _run_cite_fetch."""
 
@@ -453,6 +505,7 @@ class TestRunCiteFetch:
 # _run_cite_import tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestRunCiteImport:
     """Test _run_cite_import."""
 
@@ -487,7 +540,9 @@ class TestRunCiteImport:
         mock_db.add_citations_batch.return_value = 1
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="cite-import", json_input='{"source": "2301.00001", "targets": ["2306.00001"]}')
+        args = make_args(
+            subcmd="cite-import", json_input='{"source": "2301.00001", "targets": ["2306.00001"]}'
+        )
         result = _run_cite_import(args)
 
         mock_db.add_citations_batch.assert_called_once()
@@ -500,8 +555,10 @@ class TestRunCiteImport:
         mock_db.add_citations_batch.return_value = 2
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="cite-import",
-                         json_input='[{"source": "2301.00001", "targets": ["2306.00001", "2305.00001"]}]')
+        args = make_args(
+            subcmd="cite-import",
+            json_input='[{"source": "2301.00001", "targets": ["2306.00001", "2305.00001"]}]',
+        )
         result = _run_cite_import(args)
 
         # All targets share same source → one batch call
@@ -523,9 +580,12 @@ class TestRunCiteImport:
         mock_db.paper_exists.side_effect = lambda pid: pid == "2301.00001"
         mock_db_cls.return_value = mock_db
 
-        args = make_args(subcmd="cite-import",
-                         json_input='{"source": "2301.00001", "targets": ["nonexistent"]}',
-                         skip_missing=True, dry_run=True)
+        args = make_args(
+            subcmd="cite-import",
+            json_input='{"source": "2301.00001", "targets": ["nonexistent"]}',
+            skip_missing=True,
+            dry_run=True,
+        )
         result = _run_cite_import(args)
 
         captured = capsys.readouterr().out
@@ -580,6 +640,7 @@ class TestRunCiteImport:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_export tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunExport:
     """Test _run_export."""
@@ -655,6 +716,7 @@ class TestRunExport:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_import tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRunImport:
     """Test _run_import."""

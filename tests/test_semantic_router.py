@@ -176,6 +176,7 @@ class TestSemanticRouter:
     def test_route_uses_keyword_when_llm_fails(self):
         """Keyword routing is used as fallback when LLM is unavailable."""
         from llm.semantic_router import _route_by_keyword
+
         r = _route_by_keyword("transformer 的研究空白")
         assert r.query_type == QueryType.GAP_ANALYSIS
         assert r.primary_command == "gap"
@@ -183,6 +184,7 @@ class TestSemanticRouter:
 
     def test_route_returns_valid_route_object(self):
         from llm.semantic_router import SemanticRouter
+
         router = SemanticRouter()
         r = router.route("run an experiment on transformers")
         assert isinstance(r, Route)
@@ -195,6 +197,7 @@ class TestRouterExecute:
     def test_execute_returns_dict(self):
         """execute() returns a dict keyed by command name."""
         from llm.semantic_router import SemanticRouter, Route
+
         router = SemanticRouter()
         r = Route(
             query_type=QueryType.PAPER_SEARCH,
@@ -207,6 +210,7 @@ class TestRouterExecute:
     def test_execute_error_isolation(self):
         """One failing command does not stop the chain."""
         from llm.semantic_router import SemanticRouter, Route
+
         router = SemanticRouter()
         r = Route(
             query_type=QueryType.GAP_ANALYSIS,

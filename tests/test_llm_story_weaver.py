@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/story_weaver.py, pure functions, no I/O."""
+
 from llm.story_weaver import (
     NarrativeRole,
     RelationshipType,
@@ -60,9 +61,12 @@ class TestPaperNarrative:
     def test_optional_fields_default(self):
         """Optional fields default."""
         n = PaperNarrative(
-            paper_id="p", title="T", year=2020,
+            paper_id="p",
+            title="T",
+            year=2020,
             role=NarrativeRole.PROTAGONIST,
-            core_contribution="C", key_insight="I",
+            core_contribution="C",
+            key_insight="I",
         )
         assert n.turning_point_type == ""
         assert n.conflicts_with == []
@@ -130,20 +134,21 @@ class TestDetermineRole:
     def _determine_role(self, text: str, year: int):
         """Replicate _determine_role."""
         TURNING_POINT_PATTERNS = [
-            r'breakthrough|revolution|paradigm shift|game changer|state-of-the-art',
-            r'outperforms?|surpasses?|exceeds? previous',
-            r'first to|for the first time|introduces? a new',
-            r'despite|however|but|nevertheless|contradict',
+            r"breakthrough|revolution|paradigm shift|game changer|state-of-the-art",
+            r"outperforms?|surpasses?|exceeds? previous",
+            r"first to|for the first time|introduces? a new",
+            r"despite|however|but|nevertheless|contradict",
         ]
         DIVERGENCE_PATTERNS = [
-            r'alternative|instead|rather|unlike|contrast',
-            r'different approach|different from|diverges',
-            r'on the other hand|meanwhile|conversely',
+            r"alternative|instead|rather|unlike|contrast",
+            r"different approach|different from|diverges",
+            r"on the other hand|meanwhile|conversely",
         ]
         if year <= 2018:
-            if any(p in text for p in ['attention is all you need', 'bert', 'gpt']):
+            if any(p in text for p in ["attention is all you need", "bert", "gpt"]):
                 return NarrativeRole.PROTAGONIST
         import re
+
         if any(re.search(p, text) for p in TURNING_POINT_PATTERNS):
             return NarrativeRole.TURNING_POINT
         if any(re.search(p, text) for p in DIVERGENCE_PATTERNS):
@@ -157,18 +162,35 @@ class TestDetermineRole:
 
     def test_turning_point_pattern(self):
         """Turning point keywords → TURNING_POINT."""
-        assert self._determine_role("paradigm shift in AI research", 2020) == NarrativeRole.TURNING_POINT
-        assert self._determine_role("state-of-the-art results achieved", 2021) == NarrativeRole.TURNING_POINT
-        assert self._determine_role("first to propose this method", 2022) == NarrativeRole.TURNING_POINT
+        assert (
+            self._determine_role("paradigm shift in AI research", 2020)
+            == NarrativeRole.TURNING_POINT
+        )
+        assert (
+            self._determine_role("state-of-the-art results achieved", 2021)
+            == NarrativeRole.TURNING_POINT
+        )
+        assert (
+            self._determine_role("first to propose this method", 2022)
+            == NarrativeRole.TURNING_POINT
+        )
 
     def test_divergence_pattern(self):
         """Divergence keywords → DIVERGENCE."""
-        assert self._determine_role("an alternative approach instead", 2020) == NarrativeRole.DIVERGENCE
-        assert self._determine_role("unlike previous methods, we diverge", 2021) == NarrativeRole.DIVERGENCE
+        assert (
+            self._determine_role("an alternative approach instead", 2020)
+            == NarrativeRole.DIVERGENCE
+        )
+        assert (
+            self._determine_role("unlike previous methods, we diverge", 2021)
+            == NarrativeRole.DIVERGENCE
+        )
 
     def test_default_protagonist(self):
         """No special pattern → PROTAGONIST."""
-        assert self._determine_role("a method for classification", 2020) == NarrativeRole.PROTAGONIST
+        assert (
+            self._determine_role("a method for classification", 2020) == NarrativeRole.PROTAGONIST
+        )
 
     def test_case_insensitive(self):
         """Pattern matching is case insensitive."""
@@ -187,13 +209,14 @@ class TestExtractContribution:
     def _extract_contribution(self, paper: dict) -> str:
         """Replicate _extract_contribution."""
         import re
-        title = paper.get('title', '')
-        abstract = paper.get('abstract', '')[:200]
+
+        title = paper.get("title", "")
+        abstract = paper.get("abstract", "")[:200]
         contribution_patterns = [
-            r'we (?:propose|present|introduce|develop) (.+?)\.',
-            r'this paper (.+?)\.',
-            r'we show that (.+?)\.',
-            r'(?:propose|present|introduce) (.+?)(?:\.|$)',
+            r"we (?:propose|present|introduce|develop) (.+?)\.",
+            r"this paper (.+?)\.",
+            r"we show that (.+?)\.",
+            r"(?:propose|present|introduce) (.+?)(?:\.|$)",
         ]
         for pattern in contribution_patterns:
             match = re.search(pattern, abstract.lower())
@@ -247,11 +270,12 @@ class TestExtractInsight:
     def _extract_insight(self, text: str) -> str:
         """Replicate _extract_insight."""
         import re
+
         insight_patterns = [
-            r'(?:key|central|core) insight:?\s*(.+?)(?:\.|$)',
-            r'we find that (.+?)(?:\.|$)',
-            r'discover(?:y|ed) that (.+?)(?:\.|$)',
-            r'((?:the|this) .+? is(?: all| the) .+?)(?:\.|$)',
+            r"(?:key|central|core) insight:?\s*(.+?)(?:\.|$)",
+            r"we find that (.+?)(?:\.|$)",
+            r"discover(?:y|ed) that (.+?)(?:\.|$)",
+            r"((?:the|this) .+? is(?: all| the) .+?)(?:\.|$)",
         ]
         for pattern in insight_patterns:
             match = re.search(pattern, text.lower())
@@ -261,7 +285,10 @@ class TestExtractInsight:
 
     def test_key_insight_pattern(self):
         """Key insight pattern."""
-        assert self._extract_insight("key insight: attention scales with data") == "attention scales with data"
+        assert (
+            self._extract_insight("key insight: attention scales with data")
+            == "attention scales with data"
+        )
 
     def test_find_that_pattern(self):
         """We find that pattern."""
@@ -275,7 +302,10 @@ class TestExtractInsight:
 
     def test_default_insight(self):
         """No pattern → default."""
-        assert self._extract_insight("a paper about deep learning") == "Provides new approach to the problem"
+        assert (
+            self._extract_insight("a paper about deep learning")
+            == "Provides new approach to the problem"
+        )
 
     def test_truncated_to_80(self):
         """Insight truncated to 80 chars."""
@@ -292,13 +322,13 @@ class TestDetectTurningPoint:
 
     def _detect_turning_point(self, text: str) -> str:
         """Replicate _detect_turning_point."""
-        if 'breakthrough' in text or 'revolution' in text:
+        if "breakthrough" in text or "revolution" in text:
             return "颠覆性突破"
-        if 'paradigm shift' in text:
+        if "paradigm shift" in text:
             return "范式转变"
-        if 'state-of-the-art' in text or 'sota' in text:
+        if "state-of-the-art" in text or "sota" in text:
             return "性能突破"
-        if 'first' in text and 'time' in text:
+        if "first" in text and "time" in text:
             return "首次实现"
         return ""
 
@@ -335,21 +365,26 @@ class TestInferRelationship:
         """Replicate _infer_relationship."""
         _rel_type, _desc = None, ""
         if b.year > a.year:
-            if 'extends' in a.title.lower() or 'building' in b.title.lower():
+            if "extends" in a.title.lower() or "building" in b.title.lower():
                 return RelationshipType.EXTENDS, f"{b.year} work extends {a.year} work"
         if a.year <= 2017:
             if b.year > 2019:
                 return RelationshipType.INHERITS, f"Based on foundational work from {a.year}"
-        if any(p in b.title.lower() for p in ['instead', 'alternative', 'rather', 'unlike']):
+        if any(p in b.title.lower() for p in ["instead", "alternative", "rather", "unlike"]):
             return RelationshipType.CONTRASTS, f"Proposes alternative to {a.title[:30]}..."
-        if any(p in a.title.lower() + b.title.lower() for p in ['vs', 'versus', '对比', '比较']):
+        if any(p in a.title.lower() + b.title.lower() for p in ["vs", "versus", "对比", "比较"]):
             return RelationshipType.CONTRASTS, f"Contrasts with {a.title[:30]}..."
         return None, ""
 
     def _narrative(self, year, title):
-        return PaperNarrative(paper_id="", title=title, year=year,
-                              role=NarrativeRole.PROTAGONIST,
-                              core_contribution="", key_insight="")
+        return PaperNarrative(
+            paper_id="",
+            title=title,
+            year=year,
+            role=NarrativeRole.PROTAGONIST,
+            core_contribution="",
+            key_insight="",
+        )
 
     def test_extends_keyword(self):
         """'extends' in older paper's title → EXTENDS."""
@@ -360,7 +395,7 @@ class TestInferRelationship:
         assert rel_type == RelationshipType.EXTENDS
 
     def test_building_keyword(self):
-        """"building' in later title → EXTENDS."""
+        """ "building' in later title → EXTENDS."""
         a = self._narrative(2020, "Base")
         b = self._narrative(2021, "Building on Base")
         rel_type, _ = self._infer_relationship(a, b)
@@ -392,7 +427,7 @@ class TestInferRelationship:
         assert rel_type == RelationshipType.CONTRASTS
 
     def test_contrasts_chinese(self):
-        """"对比' or '比较' → CONTRASTS."""
+        """ "对比' or '比较' → CONTRASTS."""
         a = self._narrative(2020, "对比分析")
         b = self._narrative(2021, "研究")
         rel_type, _ = self._infer_relationship(a, b)
@@ -416,6 +451,7 @@ class TestOrganizeChapters:
     def _organize_chapters(self, narratives):
         """Replicate _organize_chapters."""
         from collections import defaultdict
+
         periods = defaultdict(list)
         for n in narratives:
             year = n.year
@@ -453,9 +489,14 @@ class TestOrganizeChapters:
         return chapters
 
     def _narrative(self, year):
-        return PaperNarrative(paper_id=f"p{year}", title=f"Paper {year}", year=year,
-                              role=NarrativeRole.PROTAGONIST,
-                              core_contribution="C", key_insight="I")
+        return PaperNarrative(
+            paper_id=f"p{year}",
+            title=f"Paper {year}",
+            year=year,
+            role=NarrativeRole.PROTAGONIST,
+            core_contribution="C",
+            key_insight="I",
+        )
 
     def test_2013_goes_to_2008_2014_period(self):
         """Year < 2015 → period (2008, 2014)."""
@@ -490,19 +531,23 @@ class TestOrganizeChapters:
 
     def test_multiple_papers_in_same_period(self):
         """Multiple papers in same period → one chapter."""
-        chapters = self._organize_chapters([
-            self._narrative(2016),
-            self._narrative(2017),
-        ])
+        chapters = self._organize_chapters(
+            [
+                self._narrative(2016),
+                self._narrative(2017),
+            ]
+        )
         assert len(chapters) == 1
         assert len(chapters[0].papers) == 2
 
     def test_papers_sorted_by_year(self):
         """Papers within chapter sorted by year ascending."""
-        chapters = self._organize_chapters([
-            self._narrative(2019),
-            self._narrative(2018),
-        ])
+        chapters = self._organize_chapters(
+            [
+                self._narrative(2019),
+                self._narrative(2018),
+            ]
+        )
         assert chapters[0].papers[0].year == 2018
         assert chapters[0].papers[1].year == 2019
 
@@ -520,10 +565,10 @@ class TestFindContradictions:
     def _find_contradictions(self, narratives):
         """Replicate _find_contradictions."""
         contradictions = []
-        efficiency_keywords = ['efficient', 'fast', 'lightweight', 'small', 'distill']
-        scale_keywords = ['large', 'massive', 'scale', 'billions', 'parameters']
+        efficiency_keywords = ["efficient", "fast", "lightweight", "small", "distill"]
+        scale_keywords = ["large", "massive", "scale", "billions", "parameters"]
         for i, a in enumerate(narratives):
-            for b in narratives[i + 1:]:
+            for b in narratives[i + 1 :]:
                 a_text = a.title.lower()
                 b_text = b.title.lower()
                 a_efficient = any(k in a_text for k in efficiency_keywords)
@@ -537,9 +582,14 @@ class TestFindContradictions:
         return contradictions[:5]
 
     def _narrative(self, title):
-        return PaperNarrative(paper_id="", title=title, year=2020,
-                              role=NarrativeRole.PROTAGONIST,
-                              core_contribution="", key_insight="")
+        return PaperNarrative(
+            paper_id="",
+            title=title,
+            year=2020,
+            role=NarrativeRole.PROTAGONIST,
+            core_contribution="",
+            key_insight="",
+        )
 
     def test_efficient_vs_large(self):
         """Efficient + large scale → one directional contradiction."""
@@ -588,24 +638,29 @@ class TestIdentifyThemes:
         """Replicate _identify_themes."""
         themes = []
         theme_keywords = {
-            'Attention 机制': ['attention', 'self-attention', 'multi-head'],
-            '预训练范式': ['pre-train', 'fine-tun', 'mask'],
-            '规模化': ['scale', 'large', 'billions', 'parameters'],
-            '效率优化': ['efficient', 'fast', 'distill', 'prune', 'quantize'],
-            '多模态': ['multimodal', 'vision', 'image', 'text'],
-            '推理能力': ['reason', 'chain-of-thought', 'cot'],
-            '对齐与安全': ['align', 'rlhf', 'safety', 'value'],
+            "Attention 机制": ["attention", "self-attention", "multi-head"],
+            "预训练范式": ["pre-train", "fine-tun", "mask"],
+            "规模化": ["scale", "large", "billions", "parameters"],
+            "效率优化": ["efficient", "fast", "distill", "prune", "quantize"],
+            "多模态": ["multimodal", "vision", "image", "text"],
+            "推理能力": ["reason", "chain-of-thought", "cot"],
+            "对齐与安全": ["align", "rlhf", "safety", "value"],
         }
-        all_text = ' '.join(n.title.lower() for n in narratives)
+        all_text = " ".join(n.title.lower() for n in narratives)
         for theme, keywords in theme_keywords.items():
             if any(k in all_text for k in keywords):
                 themes.append(theme)
         return themes[:5]
 
     def _narrative(self, title):
-        return PaperNarrative(paper_id="", title=title, year=2020,
-                              role=NarrativeRole.PROTAGONIST,
-                              core_contribution="", key_insight="")
+        return PaperNarrative(
+            paper_id="",
+            title=title,
+            year=2020,
+            role=NarrativeRole.PROTAGONIST,
+            core_contribution="",
+            key_insight="",
+        )
 
     def test_attention_theme(self):
         """Attention keyword → Attention 机制."""
@@ -661,7 +716,7 @@ class TestGenerateSummary:
         """Replicate _generate_summary."""
         if not result.chapters:
             return "暂无足够数据生成故事"
-        themes = ', '.join(result.themes[:3]) if result.themes else '技术演进'
+        themes = ", ".join(result.themes[:3]) if result.themes else "技术演进"
         summary = f"""《{result.topic}》的演进是一场关于{themes}的探索。
 从 {result.chapters[0].time_range[0]} 年的开创性工作，到 {result.chapters[-1].time_range[-1]} 年的最新突破，
 领域经历了从理论验证到工程化应用，从单一模型到多元化生态的转变。
@@ -688,7 +743,9 @@ class TestGenerateSummary:
 
     def test_uses_theme_list(self):
         """Uses theme list in summary."""
-        result = self._result("Transformers", chapters=[self._chapter(2017, 2017)], themes=["Attention 机制"])
+        result = self._result(
+            "Transformers", chapters=[self._chapter(2017, 2017)], themes=["Attention 机制"]
+        )
         summary = self._generate_summary(result)
         assert "Attention 机制" in summary
 
@@ -700,15 +757,20 @@ class TestGenerateSummary:
 
     def test_year_range_from_chapters(self):
         """Year range from chapter time_range."""
-        result = self._result("RAG", chapters=[self._chapter(2017, 2017), self._chapter(2023, 2023)])
+        result = self._result(
+            "RAG", chapters=[self._chapter(2017, 2017), self._chapter(2023, 2023)]
+        )
         summary = self._generate_summary(result)
         assert "2017" in summary
         assert "2023" in summary
 
     def test_contradictions_count(self):
         """Shows contradiction count."""
-        result = self._result("Topic", chapters=[self._chapter(2020, 2020)],
-                               contradictions=[("A", "B"), ("C", "D"), ("E", "F")])
+        result = self._result(
+            "Topic",
+            chapters=[self._chapter(2020, 2020)],
+            contradictions=[("A", "B"), ("C", "D"), ("E", "F")],
+        )
         summary = self._generate_summary(result)
         assert "3" in summary
         assert "主要矛盾点" in summary
@@ -736,12 +798,20 @@ class TestGenerateComparison:
         if shared_themes:
             lines.append(f"🔗 共同主题: {', '.join(shared_themes)}")
         lines.append("")
-        lines.append(f"📅 {story_a.topic}: {story_a.chapters[0].time_range[0]}-{story_a.chapters[-1].time_range[-1]}")
-        lines.append(f"📅 {story_b.topic}: {story_b.chapters[0].time_range[0]}-{story_b.chapters[-1].time_range[-1]}")
+        lines.append(
+            f"📅 {story_a.topic}: {story_a.chapters[0].time_range[0]}-{story_a.chapters[-1].time_range[-1]}"
+        )
+        lines.append(
+            f"📅 {story_b.topic}: {story_b.chapters[0].time_range[0]}-{story_b.chapters[-1].time_range[-1]}"
+        )
         lines.append("")
         lines.append("🎭 主角发展弧线:")
-        lines.append(f"  • {story_a.topic}: {story_a.protagonist_arc[:80] if story_a.protagonist_arc else '传统方法演进'}")
-        lines.append(f"  • {story_b.topic}: {story_b.protagonist_arc[:80] if story_b.protagonist_arc else '新方法探索'}")
+        lines.append(
+            f"  • {story_a.topic}: {story_a.protagonist_arc[:80] if story_a.protagonist_arc else '传统方法演进'}"
+        )
+        lines.append(
+            f"  • {story_b.topic}: {story_b.protagonist_arc[:80] if story_b.protagonist_arc else '新方法探索'}"
+        )
         return "\n".join(lines)
 
     def _chapter(self, year):
@@ -828,10 +898,18 @@ class TestRenderResult:
             lines.append(f"📝 {result.summary}")
         return "\n".join(lines)
 
-    def _narrative(self, title, year=2020, role=NarrativeRole.PROTAGONIST, insight="Key insight", turn_type=""):
-        return PaperNarrative(paper_id="", title=title, year=year, role=role,
-                              core_contribution="Contribution", key_insight=insight,
-                              turning_point_type=turn_type)
+    def _narrative(
+        self, title, year=2020, role=NarrativeRole.PROTAGONIST, insight="Key insight", turn_type=""
+    ):
+        return PaperNarrative(
+            paper_id="",
+            title=title,
+            year=year,
+            role=role,
+            core_contribution="Contribution",
+            key_insight=insight,
+            turning_point_type=turn_type,
+        )
 
     def _chapter(self, title, time_range, narratives=None, summary=""):
         c = Chapter(title=title, time_range=time_range, papers=narratives or [])
@@ -867,7 +945,9 @@ class TestRenderResult:
         """Without summary, shows core_contribution."""
         result = StoryResult(
             topic="T",
-            chapters=[self._chapter("T", (2020, 2020), [self._narrative("Paper 1", 2020, insight="A")])],
+            chapters=[
+                self._chapter("T", (2020, 2020), [self._narrative("Paper 1", 2020, insight="A")])
+            ],
         )
         output = self._render_result(result)
         assert "关键贡献" in output
@@ -886,7 +966,11 @@ class TestRenderResult:
         """Key insight shown."""
         result = StoryResult(
             topic="T",
-            chapters=[self._chapter("T", (2020, 2020), [self._narrative("P", 2020, insight="Self attention works")])],
+            chapters=[
+                self._chapter(
+                    "T", (2020, 2020), [self._narrative("P", 2020, insight="Self attention works")]
+                )
+            ],
         )
         output = self._render_result(result)
         assert "Self attention works" in output
@@ -895,9 +979,17 @@ class TestRenderResult:
         """Turning point type shown."""
         result = StoryResult(
             topic="T",
-            chapters=[self._chapter("T", (2020, 2020), [
-                self._narrative("P", 2020, role=NarrativeRole.TURNING_POINT, turn_type="性能突破")
-            ])],
+            chapters=[
+                self._chapter(
+                    "T",
+                    (2020, 2020),
+                    [
+                        self._narrative(
+                            "P", 2020, role=NarrativeRole.TURNING_POINT, turn_type="性能突破"
+                        )
+                    ],
+                )
+            ],
         )
         output = self._render_result(result)
         assert "性能突破" in output
@@ -940,13 +1032,14 @@ class TestRenderMermaid:
                     NarrativeRole.DIVERGENCE: "fill:#4ecdc4",
                 }.get(paper.role, "fill:#ddd")
                 lines.append(f'    {node_id}["{paper.title[:30]}..."]:::{paper.role.value}')
-                lines.append(f'    classDef {paper.role.value} {role_class}')
+                lines.append(f"    classDef {paper.role.value} {role_class}")
         lines.append("```")
         return "\n".join(lines)
 
     def _narrative(self, title, year=2020, role=NarrativeRole.PROTAGONIST):
-        return PaperNarrative(paper_id="", title=title, year=year, role=role,
-                              core_contribution="", key_insight="")
+        return PaperNarrative(
+            paper_id="", title=title, year=year, role=role, core_contribution="", key_insight=""
+        )
 
     def _chapter(self, narratives=None):
         return Chapter(title="T", time_range=(2020, 2020), papers=narratives or [])
@@ -981,9 +1074,11 @@ class TestRenderMermaid:
         """Role-specific class definitions."""
         result = StoryResult(
             topic="T",
-            chapters=[self._chapter([
-                self._narrative("Turning Point Paper", 2020, NarrativeRole.TURNING_POINT)
-            ])],
+            chapters=[
+                self._chapter(
+                    [self._narrative("Turning Point Paper", 2020, NarrativeRole.TURNING_POINT)]
+                )
+            ],
         )
         output = self._render_mermaid(result)
         assert "fill:#ff6b6b" in output
@@ -994,9 +1089,7 @@ class TestRenderMermaid:
         # Use different years to avoid duplicate node IDs (same year → same node_id)
         result = StoryResult(
             topic="T",
-            chapters=[self._chapter([
-                self._narrative(f"P{i}", 2020 + i) for i in range(5)
-            ])],
+            chapters=[self._chapter([self._narrative(f"P{i}", 2020 + i) for i in range(5)])],
         )
         output = self._render_mermaid(result)
         # Node IDs: P{year}{chapter_index}, chapter_index=0 → P20200, P20210, P20220...
