@@ -8,7 +8,7 @@ import sys
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, cast
 
 from cli._shared import get_db
 from cli.warp import WarpBlocks
@@ -385,7 +385,7 @@ def _enrich_openalex_titles(nodes: list[dict]) -> None:
 
     for n in nodes:
         if n["id"] in results and results[n["id"]]:
-            n["label"] = results[n["id"]][:60]
+            n["label"] = cast(str, results[n["id"]])[:60]
 
 
 def _run_cite_graph_view(args: argparse.Namespace) -> int:

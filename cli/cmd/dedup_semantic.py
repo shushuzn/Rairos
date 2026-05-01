@@ -7,7 +7,10 @@ import sys
 import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
-from typing import List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple
+
+if TYPE_CHECKING:
+    from db.database import Database
 
 from cli._shared import get_db
 from cli.warp import WarpBlocks
