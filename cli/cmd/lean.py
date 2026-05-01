@@ -61,7 +61,7 @@ def _build_lean_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Only output the generated Lean code, no verification",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_lean(args: argparse.Namespace) -> int:
@@ -71,11 +71,11 @@ def _run_lean(args: argparse.Namespace) -> int:
         status, version = check_lean_installed()
         if status == LeanInstallStatus.AVAILABLE:
             print(f"✅ Lean installed: {version}")
-            return 0
+            return 0  # type: ignore[no-any-return]
         else:
             print("❌ Lean not found")
             print(get_lean_install_instructions())
-            return 1
+            return 1  # type: ignore[no-any-return]
 
     # Build hypothesis
     hypothesis = _build_hypothesis(args)

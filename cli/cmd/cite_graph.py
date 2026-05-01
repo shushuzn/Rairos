@@ -189,7 +189,7 @@ def _build_cite_graph_parser(subparsers) -> argparse.ArgumentParser:
     vp.add_argument(
         "--no-open", dest="open", action="store_false", help="Write HTML to stdout instead of opening browser",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_cite_graph(args: argparse.Namespace) -> int:
@@ -213,7 +213,7 @@ def _run_cite_graph_text(args: argparse.Namespace) -> int:
     if plain_text is not None or fetch_meta:
         if fetch_meta and plain_text is None:
             print("Error: --fetch-metadata requires --plain-text", file=sys.stderr)
-            return 1
+            return 1  # type: ignore[no-any-return]
 
         if plain_text is not None:
             result = _extract_references_from_text(root_id, plain_text)

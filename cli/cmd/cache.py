@@ -17,7 +17,7 @@ def _build_cache_parser(subparsers) -> argparse.ArgumentParser:
     # LLM cache options
     p.add_argument("--llm", action="store_true", help="Operate on LLM response cache instead of paper cache")
     p.add_argument("--llm-clear", action="store_true", help="Clear LLM response cache")
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_cache(args: argparse.Namespace) -> int:
@@ -54,7 +54,7 @@ def _run_cache(args: argparse.Namespace) -> int:
   Misses:     [#FF8272]{misses}[/]
   Hit Rate:   {rate_color.format(hit_rate=hit_rate)}"""
             ))
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     db = get_db()
     db.init()

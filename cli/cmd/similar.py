@@ -63,7 +63,7 @@ def _build_similar_parser(subparsers) -> argparse.ArgumentParser:
         "--no-open", dest="open", action="store_false",
         help="Write HTML to stdout instead of opening browser",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_similar(args: argparse.Namespace) -> int:
@@ -88,11 +88,11 @@ def _run_similar_text(args: argparse.Namespace) -> int:
         print()
         print("To generate embeddings for papers without them, use:")
         print("  ai_research_os research --generate")
-        return 1
+        return 1  # type: ignore[no-any-return]
 
     if not db.paper_exists(args.paper_id):
         print(f"Paper {args.paper_id!r} not found in database", file=sys.stderr)
-        return 1
+        return 1  # type: ignore[no-any-return]
 
     paper = db.get_paper(args.paper_id)
     sims = db.find_similar(args.paper_id, threshold=args.threshold, limit=args.limit)

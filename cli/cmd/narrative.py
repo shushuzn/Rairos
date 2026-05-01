@@ -53,7 +53,7 @@ def _build_narrative_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Force refresh even if thread exists (for 'track' action)",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_narrative(args: argparse.Namespace) -> int:
@@ -71,7 +71,7 @@ def _run_narrative(args: argparse.Namespace) -> int:
     if action == "track":
         if not args.target:
             print_error("请提供 topic: airos narrative track <topic>")
-            return 1
+            return 1  # type: ignore[no-any-return]
         return _run_track(args.target, service, tracker, force=args.force)
 
     if action == "show":

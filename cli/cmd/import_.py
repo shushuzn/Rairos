@@ -101,7 +101,7 @@ Examples:
     p.add_argument("--file", metavar="FILE", help="Read IDs from file (one per line), or '-' for stdin")
     p.add_argument("--checkpoint", metavar="FILE", help="Save/resume progress to checkpoint file")
     p.add_argument("--resume", action="store_true", help="Resume from checkpoint (skip processed IDs)")
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_import(args: argparse.Namespace) -> int:
@@ -130,7 +130,7 @@ def _run_import(args: argparse.Namespace) -> int:
     if not paper_ids:
         if not _has_file and not getattr(args, "ids", []):
             print_error("Error: no IDs provided (use positional IDs, --file, or pipe into stdin)")
-            return 1
+            return 1  # type: ignore[no-any-return]
 
     # Load checkpoint for resume
     processed_ids: Set[str] = set()

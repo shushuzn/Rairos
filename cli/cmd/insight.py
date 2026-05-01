@@ -37,7 +37,7 @@ def _run_insight(args: argparse.Namespace) -> int:
     if args.action == "add":
         if not args.paper or not args.content:
             print_error("Usage: insight add --paper <pid> --content <text>")
-            return 1
+            return 1  # type: ignore[no-any-return]
 
         tags = [t.strip() for t in args.tags.split(",")] if args.tags else []
 
@@ -59,7 +59,7 @@ def _run_insight(args: argparse.Namespace) -> int:
                 manager.update_card(card.card_id, tags=tags)  # Just update for now
 
         print_success(f"Created insight card: {card.card_id}")
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     elif args.action == "list":
         cards = manager.search_cards(

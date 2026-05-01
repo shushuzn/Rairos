@@ -53,7 +53,7 @@ def _build_trend_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Interactive exploration mode",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_trend(args: argparse.Namespace) -> int:

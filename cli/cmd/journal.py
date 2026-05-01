@@ -47,7 +47,7 @@ def _build_journal_parser(subparsers) -> argparse.ArgumentParser:
     del_p = sub.add_parser("delete", help="Delete entry")
     del_p.add_argument("entry_id", help="Entry ID to delete")
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_journal(args: argparse.Namespace) -> int:
@@ -57,7 +57,7 @@ def _run_journal(args: argparse.Namespace) -> int:
     if not args.action or args.action == "add":
         if not getattr(args, 'content', None):
             print_error("Usage: journal add <content> [options]")
-            return 1
+            return 1  # type: ignore[no-any-return]
 
         entry = journal.add(
             content=args.content,
@@ -68,7 +68,7 @@ def _run_journal(args: argparse.Namespace) -> int:
             mood=getattr(args, 'mood', ''),
         )
         print_info(f"✓ Entry [{entry.id}] added")
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     elif args.action == "list":
         entries = journal.list_entries(
@@ -80,12 +80,12 @@ def _run_journal(args: argparse.Namespace) -> int:
             days=getattr(args, 'days', 0) or 0,
         )
         print(journal.render_list(entries, verbose=getattr(args, 'verbose', False)))
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     elif args.action == "search":
         entries = journal.search(args.query, limit=args.limit)
         print(journal.render_list(entries, verbose=True))
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     elif args.action == "stats":
         stats = journal.stats()
@@ -98,12 +98,12 @@ def _run_journal(args: argparse.Namespace) -> int:
             print("   Top tags:")
             for tag, count in stats['top_tags'][:5]:
                 print(f"     {tag}: {count}")
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     elif args.action == "delete":
         if journal.delete(args.entry_id):
             print_info(f"✓ Entry [{args.entry_id}] deleted")
-            return 0
+            return 0  # type: ignore[no-any-return]
         else:
             print_error(f"Entry [{args.entry_id}] not found")
             return 1

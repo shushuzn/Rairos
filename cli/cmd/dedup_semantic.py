@@ -59,7 +59,7 @@ def _build_dedup_semantic_parser(subparsers) -> argparse.ArgumentParser:
         default="warp",
         help="Output format: 'warp' (WarpBlocks-styled, default) or 'csv'",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _get_ollama_embedding(text: str, model: str = "nomic-embed-text") -> Optional[List[float]]:

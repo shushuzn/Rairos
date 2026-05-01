@@ -1763,7 +1763,7 @@ def _build_chat_tui_parser(subparsers) -> argparse.ArgumentParser:
         "--session", "-s", metavar="ID",
         help="Continue from a saved chat session",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def run(args: argparse.Namespace) -> int:
@@ -1776,7 +1776,7 @@ def run(args: argparse.Namespace) -> int:
     if not api_key:
         print(colored("OPENAI_API_KEY not set.", Colors.FAIL), file=sys.stderr)
         print("  export OPENAI_API_KEY=sk-...", file=sys.stderr)
-        return 1
+        return 1  # type: ignore[no-any-return]
 
     # Model
     model = args.model

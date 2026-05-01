@@ -58,7 +58,7 @@ def _build_story_parser(subparsers) -> argparse.ArgumentParser:
         default=20,
         help="Maximum papers to analyze (default: 20)",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_story(args: argparse.Namespace) -> int:

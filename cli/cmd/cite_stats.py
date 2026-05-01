@@ -19,7 +19,7 @@ def _build_cite_stats_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--paper", metavar="PAPER_ID", dest="stats_paper", help="Show stats for a specific paper")
     p.add_argument("--top", type=int, metavar="N", help="Show top N most-cited papers")
     p.add_argument("--format", choices=["text", "csv", "warp"], default="text", help="Output format (default: text)")
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_cite_stats(args: argparse.Namespace) -> int:
@@ -31,13 +31,13 @@ def _run_cite_stats(args: argparse.Namespace) -> int:
         title = db.get_paper_title(paper_id)
         if db.paper_exists(paper_id) is False:
             print(f"Error: paper {paper_id!r} not found in database", file=sys.stderr)
-            return 1
+            return 1  # type: ignore[no-any-return]
         counts = db.get_citation_count(paper_id)
         print(f"Paper: {paper_id}")
         print(f"Title : {title or '(no title)'}")
         print(f"Cites  (backward): {counts['backward']} papers")
         print(f"CitedBy (forward) : {counts['forward']} papers")
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     cur = db.conn.cursor()
     cur.execute("SELECT COUNT(*) FROM citations")
@@ -59,7 +59,7 @@ def _run_cite_stats(args: argparse.Namespace) -> int:
         print(f"orphan_papers,{orphan_papers}")
         print(f"citing_papers,{citing_papers}")
         print(f"cited_papers,{cited_papers}")
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     if args.top:
         cur.execute("""

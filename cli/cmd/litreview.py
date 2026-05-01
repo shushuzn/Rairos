@@ -40,7 +40,7 @@ def _build_litreview_parser(subparsers) -> argparse.ArgumentParser:
     p_del = sub.add_parser("delete", help="Delete a literature review")
     p_del.add_argument("id", help="Review ID")
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_litreview(args: argparse.Namespace) -> int:
@@ -49,7 +49,7 @@ def _run_litreview(args: argparse.Namespace) -> int:
 
     if not args.action:
         print_error("Usage: litreview <generate|view|list|delete>")
-        return 1
+        return 1  # type: ignore[no-any-return]
 
     db = get_db()
     db.init()
@@ -87,7 +87,7 @@ def _run_litreview(args: argparse.Namespace) -> int:
             print_info(f"Generated: {output_path}")
         except IOError as e:
             print_error(f"Failed to write file: {e}")
-            return 1
+            return 1  # type: ignore[no-any-return]
 
         # Record in database
         review_id = db.add_literature_review(

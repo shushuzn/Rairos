@@ -57,7 +57,7 @@ def _build_analyze_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Run only hypothesis generation",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_analyze(args: argparse.Namespace) -> int:

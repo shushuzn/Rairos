@@ -25,7 +25,7 @@ def _build_replicate_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--list", "-l", action="store_true", help="List all attempts")
     p.add_argument("--stats", action="store_true", help="Show statistics")
     p.add_argument("--markdown", "-m", action="store_true", help="Output as Markdown")
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_replicate(args: argparse.Namespace) -> int:
@@ -37,7 +37,7 @@ def _run_replicate(args: argparse.Namespace) -> int:
         report = tracker.generate_report(args.report)
         if not report:
             print_error(f"Attempt [{args.report}] not found")
-            return 1
+            return 1  # type: ignore[no-any-return]
 
         print(f"# Replication Report: {report.attempt.paper_title}\n")
         print(f"**Status**: {report.attempt.status}")
@@ -62,7 +62,7 @@ def _run_replicate(args: argparse.Namespace) -> int:
                 print(f"- {r}")
             print()
 
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     # Show statistics
     if args.stats:

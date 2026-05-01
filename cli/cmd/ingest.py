@@ -221,7 +221,7 @@ Examples:
         help="Specific postprocess stages to run (default: all)")
     p.add_argument("--skip-llm", action="store_true", help="Skip LLM calls in postprocess (keyword-only)")
     p.add_argument("--format", choices=["text", "warp"], default="warp", help="Output format")
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_ingest(args: argparse.Namespace) -> int:
@@ -238,11 +238,11 @@ def _run_ingest(args: argparse.Namespace) -> int:
             paper_ids += [l.strip() for l in fpath.read_text(encoding="utf-8").splitlines() if l.strip()]
         else:
             print_error(f"File not found: {args.file}")
-            return 1
+            return 1  # type: ignore[no-any-return]
 
     if not paper_ids:
         print_error("No paper IDs provided (use positional args or --file)")
-        return 1
+        return 1  # type: ignore[no-any-return]
 
     paper_ids = list(dict.fromkeys(paper_ids))  # dedup preserve order
 

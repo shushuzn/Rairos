@@ -45,7 +45,7 @@ def _build_ask_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Use semantic routing to delegate to specialized commands",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_ask(args: argparse.Namespace) -> int:
@@ -60,7 +60,7 @@ def _run_ask(args: argparse.Namespace) -> int:
             route = router.route(query)
         except Exception as e:
             print_error(f"Routing failed: {e}")
-            return 1
+            return 1  # type: ignore[no-any-return]
 
         # QUESTION_ANSWER falls through to RAG chat; all others delegate
         if route.query_type.value != "question_answer":
@@ -69,7 +69,7 @@ def _run_ask(args: argparse.Namespace) -> int:
                 print(f"=== {name} ===")
                 print(out if out.strip() else "[no output]")
                 print()
-            return 0
+            return 0  # type: ignore[no-any-return]
 
     db = get_db()
     db.init()

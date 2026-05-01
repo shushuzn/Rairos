@@ -42,14 +42,14 @@ def _build_subscribe_parser(subparsers) -> argparse.ArgumentParser:
     p_delete = sub.add_parser("delete", help="Delete a subscription")
     p_delete.add_argument("id", help="Subscription ID")
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_subscribe(args: argparse.Namespace) -> int:
     """Run subscribe command."""
     if not args.action:
         print_error("Usage: subscribe <add|list|check|recommendations|delete>")
-        return 1
+        return 1  # type: ignore[no-any-return]
 
     db = get_db()
     db.init()
@@ -68,13 +68,13 @@ def _run_subscribe(args: argparse.Namespace) -> int:
         print_info(f"Added subscription [{sub_id}]: {args.topic}")
         if keywords:
             print_info(f"  Keywords: {', '.join(keywords)}")
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     if args.action == "list":
         subs = db.list_arxiv_subscriptions()
         if not subs:
             print_info("No subscriptions. Use 'subscribe add <topic>' to create one.")
-            return 0
+            return 0  # type: ignore[no-any-return]
 
         print_info(f"Found {len(subs)} subscription(s):")
         for s in subs:
@@ -85,7 +85,7 @@ def _run_subscribe(args: argparse.Namespace) -> int:
             if keywords:
                 print(f"        keywords: {', '.join(keywords)}")
             print(f"        last checked: {last_checked}")
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     if args.action == "check":
         from llm.subscription_monitor import SubscriptionMonitor
