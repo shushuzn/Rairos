@@ -68,17 +68,17 @@ classifiers = [
 
 
 dependencies = [
-    "requests>=2.25.0",
-    "feedparser>=6.0.0",
-    "pymupdf>=1.23.0",
+    "requests>=2.33.1",
+    "feedparser>=6.0.12",
+    "pymupdf>=1.27.2.3",
     "pillow>=12.2.0",
-    "psutil>=5.9.0",
-    "aiohttp>=3.13.4",
-    "numpy>=1.24.0",
-    "orjson>=3.9.0",
-    "httpx>=0.25.0",
-    "textual>=0.50.0",
-    "rich>=13.0.0",
+    "psutil>=7.2.2",
+    "aiohttp>=3.13.5",
+    "numpy>=2.2.6",
+    "orjson>=3.11.8",
+    "httpx>=0.28.1",
+    "textual>=8.2.4",
+    "rich>=15.0.0",
     "jieba>=0.42.1",
     "pymilvus>=2.6.12",
 ]
