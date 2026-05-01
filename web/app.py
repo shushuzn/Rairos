@@ -55,8 +55,11 @@ page = st.sidebar.radio("Go to", [
     "📋 Experiment Tables",
     "📉 Trends",
     "⚙️ Process",
+    # ── Innovation pages ──
+    "🧬 Gene Pool",
+    "🎯 Gap Detection",
+    "🔄 InsightEvolution",
 ])
-
 
 # ─── Dashboard ─────────────────────────────────────────────────────
 
@@ -743,3 +746,430 @@ elif page == "⚙️ Process":
             init_kg()
             kg_stats = st.session_state["kg"].stats()
             st.json(kg_stats)
+# ─── Gene Pool Page ───────────────────────────────────────────────────────
+
+elif page == "🧬 Gene Pool":
+    st.header("🧬 Gene Pool — Self-Evolving Success Patterns")
+
+    with st.expander("ℹ️ What is the Gene Pool?", expanded=False):
+        st.markdown("""
+The **Gene Pool** stores *CapsuleGenes* — encoded success patterns from gaps you accepted.
+Every time you accept a gap, the system records:
+- **Trigger**: what context (topic, gap type, keywords) led to your action
+- **Action**: what gap type you accepted
+- **Outcome**: how well it worked (success score from accept/reject ratio)
+
+When detecting new gaps, the system matches them against your Gene Pool to inject a
+**success pattern signal** — gaps that match your proven interests rank higher.
+        """)
+
+    # Init tracker
+    if "evo_tracker" not in st.session_state:
+        from llm.insight.tracker import EvolutionTracker
+        st.session_state["evo_tracker"] = EvolutionTracker()
+
+    tracker = st.session_state["evo_tracker"]
+
+    # Gene Pool Stats
+    stats = tracker.get_gene_pool_stats()
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Total Capsules", stats["total"])
+    c2.metric("Avg Success Score", f"{stats['avg_score']:.3f}")
+    c3.metric("Generations", len(stats.get("generations", [0])))
+    by_type = stats.get("by_gap_type", {})
+    c4.metric("Gap Types", len(by_type))
+
+    st.divider()
+
+    # Gap Type Distribution
+    if by_type:
+        st.subheader("Capsules by Gap Type")
+        types = list(by_type.keys())
+        counts = list(by_type.values())
+        st.bar_chart({"Gap Type": types, "Count": counts})
+
+    st.divider()
+
+    # List all capsules
+    st.subheader("All Capsules")
+    capsules = []
+    gp_file = tracker._gene_pool_file
+    if gp_file.exists():
+        import json
+        with open(gp_file, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    try:
+                        capsules.append(json.loads(line))
+                    except Exception:
+                        pass
+
+    if capsules:
+        # Sort by success score desc
+        capsules.sort(key=lambda x: x.get("outcome_success_score", 0), reverse=True)
+
+        for i, cap in enumerate(capsules):
+            score = cap.get("outcome_success_score", 0)
+            score_bar = "🟢" if score >= 0.7 else "🟡" if score >= 0.4 else "🔴"
+            with st.expander(f"{score_bar} [{cap.get('capsule_id', '?')[:8]}] {cap.get('action_gap_type', '?')} — {cap.get('action_gap_title', '?')[:50]}"):
+                col_a, col_b = st.columns(2)
+                with col_a:
+                    st.write(f"**Trigger Topic:** {cap.get('trigger_topic', '?')}")
+                    st.write(f"**Trigger Gap Type:** {cap.get('trigger_gap_type', '?')}")
+                    st.write(f"**Trigger Keywords:** {', '.join(cap.get('trigger_keywords', [])[:8])}")
+                with col_b:
+                    st.write(f"**Action Gap Type:** {cap.get('action_gap_type', '?')}")
+                    st.write(f"**Action Gap Title:** {cap.get('action_gap_title', '?')[:60]}")
+                    st.write(f"**Success Score:** {score:.3f}")
+                    st.write(f"**Feedback Count:** {cap.get('feedback_count', 0)}")
+                    st.write(f"**Generation:** {cap.get('evolved_generation', 0)}")
+                    st.write(f"**Created:** {cap.get('created_at', '?')}")
+    else:
+        st.info("No capsules in Gene Pool yet. Accept some gaps to populate it!")
+
+    st.divider()
+
+    # Record a manual accept (for testing)
+    st.subheader("Record Feedback")
+    with st.expander("Simulate Accept/Reject (for testing)", expanded=False):
+        col_t, col_g, col_title = st.columns(3)
+        with col_t:
+            sim_topic = st.text_input("Topic", value="RLHF", key="sim_topic")
+        with col_g:
+            sim_gtype = st.selectbox("Gap Type", [
+                "method_limitation", "unexplored_application", "contradiction",
+                "evaluation_gap", "scalability_issue", "theoretical_gap",
+                "dataset_gap", "generalization_gap",
+            ], key="sim_gtype")
+        with col_title:
+            sim_gtitle = st.text_input("Gap Title", value="Reward hacking in RLHF", key="sim_gtitle")
+
+        col_acc, col_rej = st.columns(2)
+        with col_acc:
+            if st.button("✅ Record Accept", key="sim_accept"):
+                tracker.record_gap_accept(
+                    topic=sim_topic,
+                    gap_type=sim_gtype,
+                    gap_title=sim_gtitle,
+                )
+                st.success(f"Accepted: {sim_gtype} — {sim_gtitle}")
+                st.rerun()
+        with col_rej:
+            if st.button("❌ Record Reject", key="sim_reject"):
+                tracker.record_gap_reject(
+                    topic=sim_topic,
+                    gap_type=sim_gtype,
+                    gap_title=sim_gtitle,
+                    reason="Not relevant",
+                )
+                st.warning(f"Rejected: {sim_gtype} — {sim_gtitle}")
+                st.rerun()
+
+
+# ─── Gap Detection Page ─────────────────────────────────────────────────────
+
+elif page == "🎯 Gap Detection":
+    st.header("🎯 Gap Detection — Preference-Aware Ranking")
+
+    with st.expander("ℹ️ How does it work?", expanded=False):
+        st.markdown("""
+**Gap Detection** finds research gaps from your papers and ranks them using a **6-tuple**:
+
+| Dimension | Range | Description |
+|-----------|-------|-------------|
+| `trend` | 0.0–2.0 | Trending keyword boost from hot topics |
+| `gene_pool` | 0.0–1.0 | Success pattern match from your Gene Pool |
+| `keyword` | 0.0–3.0 | Matches your top keywords |
+| `pref` | -2 to +2 | Liked/disliked gap types |
+| `severity` | 1–3 | HIGH/MEDIUM/LOW severity |
+| `priority` | int | Evidence strength |
+
+Gaps are sorted by **lexicographic order** on this tuple — trend first, then gene_pool.
+The Gene Pool signal is the **strongest differentiator** between similar gaps.
+        """)
+
+    # Init tracker and gap analyzer
+    if "evo_tracker" not in st.session_state:
+        from llm.insight.tracker import EvolutionTracker
+        st.session_state["evo_tracker"] = EvolutionTracker()
+
+    if "gap_analyzer_v2" not in st.session_state:
+        from llm.gap_analyzer import GapAnalyzerV2
+        tracker = st.session_state["evo_tracker"]
+        st.session_state["gap_analyzer_v2"] = GapAnalyzerV2(
+            evolution_tracker=tracker
+        )
+
+    analyzer = st.session_state["gap_analyzer_v2"]
+    tracker = st.session_state["evo_tracker"]
+
+    # Topic input
+    topic = st.text_input("🎯 Research Topic", value="RLHF", placeholder="e.g., RLHF, RAG, Diffusion Models")
+    min_papers = st.slider("Min papers to analyze", 3, 20, 5)
+
+    if st.button("🔍 Analyze Gaps", type="primary") and topic.strip():
+        with st.spinner("Analyzing gaps..."):
+            result = analyzer.analyze(
+                topic=topic.strip(),
+                min_papers=min_papers,
+                use_llm=False,  # Skip LLM for speed
+            )
+
+        st.success(f"Found {len(result.gaps)} gaps from {result.total_papers_analyzed} papers")
+
+        if result.gaps:
+            st.subheader(f"Ranked Gaps (top {min(len(result.gaps), 20)})")
+            for i, gap in enumerate(result.gaps[:20]):
+                # Gap type name
+                gap_type_name = gap.gap_type.value if hasattr(gap.gap_type, 'value') else str(gap.gap_type)
+                sev_icon = "🔴" if gap.severity.value == "HIGH" else "🟡" if gap.severity.value == "MEDIUM" else "🟢"
+
+                with st.expander(f"#{i+1} {sev_icon} {gap_type_name}: {gap.title[:60]}"):
+                    col_left, col_right = st.columns([2, 1])
+
+                    with col_left:
+                        st.write(f"**Description:** {gap.description[:200]}")
+                        st.write(f"**Severity:** {gap.severity.value}")
+                        st.write(f"**Supporting Papers:** {len(gap.supporting_papers)}")
+                        if gap.sub_questions:
+                            st.write(f"**Sub-questions:** {len(gap.sub_questions)}")
+
+                    with col_right:
+                        # 6-tuple breakdown
+                        st.write("**6-Tuple Scores:**")
+                        st.write(f"  trend:    {gap.novelty_score:.2f}")  # reused for trend
+                        st.write(f"  gene_pool: {gap.gene_pool_score:.3f}")
+                        st.write(f"  pref:     {gap.preference_score:+.1f}")
+                        st.write(f"  severity: {gap.severity.value}")
+                        st.write(f"  priority: {gap.priority}")
+
+                        # Preference boost indicator
+                        if gap.preference_boost:
+                            st.markdown("✅ **Matches your preferences**")
+
+                        if gap.gene_pool_score > 0:
+                            st.markdown(f"🧬 **Gene Pool signal: {gap.gene_pool_score:.3f}**")
+
+                        # Record feedback
+                        col_acc, col_rej = st.columns(2)
+                        with col_acc:
+                            if st.button(f"✅ Accept", key=f"acc_{i}"):
+                                tracker.record_gap_accept(
+                                    topic=topic,
+                                    gap_type=gap_type_name,
+                                    gap_title=gap.title,
+                                    gap_description=gap.description,
+                                )
+                                st.success("Accepted! Gene Pool updated.")
+                                st.rerun()
+                        with col_rej:
+                            if st.button(f"❌ Reject", key=f"rej_{i}"):
+                                tracker.record_gap_reject(
+                                    topic=topic,
+                                    gap_type=gap_type_name,
+                                    gap_title=gap.title,
+                                    reason="Not useful",
+                                )
+                                st.warning("Rejected.")
+                                st.rerun()
+
+            # Gap type distribution
+            if result.gaps_by_type:
+                st.divider()
+                st.subheader("Gap Type Distribution")
+                types = [str(k.value) for k in result.gaps_by_type.keys()]
+                counts = list(result.gaps_by_type.values())
+                st.bar_chart({"Gap Type": types, "Count": counts})
+        else:
+            st.info("No gaps found. Try a different topic or add more papers.")
+    else:
+        st.info("Enter a research topic above to start gap detection.")
+
+    st.divider()
+
+    # Gene Pool signal explanation
+    with st.expander("🧬 Gene Pool Signal Details", expanded=False):
+        gp_stats = tracker.get_gene_pool_stats()
+        st.json(gp_stats)
+        st.markdown("""
+**Gene Pool Score Calculation:**
+```
+s_gene(gap) = max_{c in GenePool}[ c.outcome_success_score × trigger_match(topic, gap_type, keywords) ]
+```
+
+The best matching CapsuleGene's success score is weighted by how well its trigger
+pattern matches the new gap context.
+        """)
+
+
+# ─── InsightEvolution Page ──────────────────────────────────────────────────
+
+elif page == "🔄 InsightEvolution":
+    st.header("🔄 InsightEvolution — Feedback-Descent闭环")
+
+    with st.expander("ℹ️ The闭环 loop", expanded=False):
+        st.markdown("""
+**InsightEvolution** is a four-stage feedback loop that continuously improves capsule quality:
+
+```
+┌─────────────────────────────────────────────────────┐
+│  1. AUDIT   → Score all capsules on quality         │
+│                    (novelty + utility + freshness)   │
+│                         ↓                           │
+│  2. PROPOSE  → Generate V2 candidates via mutation  │
+│     (trigger_refine, gap_type_transfer,             │
+│      keyword_expand, llm_suggested)                │
+│                         ↓                           │
+│  3. EVALUATE → Pairwise LLM comparison              │
+│                         ↓                           │
+│  4. APPLY    → Retire POOR, update GOOD,           │
+│                adopt top candidates                 │
+└─────────────────────────────────────────────────────┘
+```
+
+**CapsuleQuality thresholds:**
+- EXCELLENT: score ≥ 0.8 → update toward EXCELLENT
+- GOOD: score ≥ 0.6 → maintain
+- FAIR: score ≥ 0.4 → monitor
+- POOR: score < 0.4 → retire
+        """)
+
+    # Init
+    if "evo_tracker" not in st.session_state:
+        from llm.insight.tracker import EvolutionTracker
+        st.session_state["evo_tracker"] = EvolutionTracker()
+
+    tracker = st.session_state["evo_tracker"]
+
+    if "evo_engine" not in st.session_state:
+        from llm.insight.evolution import InsightEvolution
+        st.session_state["evo_engine"] = InsightEvolution(tracker)
+
+    engine = st.session_state["evo_engine"]
+
+    # Stats overview
+    c1, c2 = st.columns(2)
+    gp_stats = tracker.get_gene_pool_stats()
+    with c1:
+        st.metric("Gene Pool Size", gp_stats["total"])
+    with c2:
+        st.metric("Avg Capsule Score", f"{gp_stats['avg_score']:.3f}")
+
+    st.divider()
+
+    # Run full cycle
+    st.subheader("🚀 Run Feedback-Descent Cycle")
+
+    with st.expander("Cycle Options", expanded=False):
+        col_top, col_gtype = st.columns(2)
+        with col_top:
+            cycle_topic = st.text_input("Topic", value="RLHF", key="cycle_topic")
+        with col_gtype:
+            cycle_gtype = st.selectbox("Gap Type", [
+                "method_limitation", "unexplored_application", "contradiction",
+                "evaluation_gap", "scalability_issue", "theoretical_gap",
+            ], key="cycle_gtype")
+
+    if st.button("🔄 Run Full Cycle", type="primary"):
+        with st.spinner("Running audit → propose → evaluate → apply..."):
+            result = engine.run_full_cycle(
+                tracker=tracker,
+                topic=cycle_topic,
+                gap_type=cycle_gtype,
+                auto_accept=False,
+            )
+
+        # Display results
+        st.success("Cycle complete!")
+
+        audit: "AuditResult" = result.get("audit_result")
+        if audit:
+            st.json({
+                "total_capsules": audit.total_capsules,
+                "avg_quality": audit.avg_quality,
+                "high_quality_ids": audit.candidate_ids[:5],
+                "low_quality_ids": audit.retire_ids[:5],
+            })
+
+        proposals = result.get("proposals", [])
+        st.write(f"**{len(proposals)} V2 candidates generated:**")
+        for p in proposals[:5]:
+            st.write(f"  [{p.source}] {p.mutation_description[:80]}")
+
+    st.divider()
+
+    # Manual audit display
+    st.subheader("📊 Current Gene Pool Audit")
+
+    if st.button("🔍 Run Audit Only"):
+        capsules = []
+        gp_file = tracker._gene_pool_file
+        if gp_file.exists():
+            import json
+            with open(gp_file, encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        try:
+                            capsules.append(json.loads(line))
+                        except Exception:
+                            pass
+
+        if capsules:
+            from llm.insight.evolution import CapsuleQuality
+            audit_result = engine.audit(capsules, topic="RLHF")
+            st.json({
+                "total_capsules": audit_result.total_capsules,
+                "avg_quality": audit_result.avg_quality,
+                "high_quality": len(audit_result.high_quality),
+                "low_quality": len(audit_result.low_quality),
+                "candidate_ids": audit_result.candidate_ids,
+                "retire_ids": audit_result.retire_ids,
+            })
+
+            # Show quality breakdown
+            if audit_result.high_quality:
+                st.markdown("**🟢 High Quality Capsules:**")
+                for q in audit_result.high_quality[:5]:
+                    st.write(f"  [{q.capsule_id[:8]}] score={q.overall:.2f} (novelty={q.novelty:.2f}, utility={q.utility:.2f}, freshness={q.freshness:.2f})")
+
+            if audit_result.low_quality:
+                st.markdown("**🔴 Low Quality Capsules (candidates for retirement):**")
+                for q in audit_result.low_quality[:5]:
+                    st.write(f"  [{q.capsule_id[:8]}] score={q.overall:.2f}")
+        else:
+            st.info("No capsules to audit. Accept some gaps first!")
+
+    st.divider()
+
+    # Architecture diagram
+    st.subheader("🏗️ System Architecture")
+    st.markdown("""
+```
+User Action
+    │
+    ▼
+EvolutionTracker.record_gap_accept(topic, gap_type, title)
+    │
+    ├─► encode_capsule() → Gene Pool (gene_pool.jsonl)
+    │
+    ├─► _update_profile() → UserPreferenceProfile (profile.json)
+    │
+    └─► _invalidate_score_cache()
+
+GapAnalyzerV2.analyze(topic)
+    │
+    └─► _get_gene_pool_score(topic, gap)
+            │
+            └─► tracker.find_capsule(topic, gap_type, keywords)
+                    │
+                    └─► trigger_match() → CapsuleGene.outcome_success_score
+
+GapAnalyzerV2._apply_preference_sorting()
+    │
+    └─► gap_preference_score(gap) = (trend, gene_pool, keyword, pref, severity, priority)
+            │
+            └─► gaps.sort(key=gap_preference_score, reverse=True)
+```
+""")
