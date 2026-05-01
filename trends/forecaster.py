@@ -35,7 +35,7 @@ class TrendForecaster:
     def _load_history(self) -> dict:
         if self._history_path.exists():
             try:
-                return orjson.loads(self._history_path.read_bytes())
+                return orjson.loads(self._history_path.read_bytes())  # type: ignore[no-any-return]
             except Exception:
                 pass
         return {}
@@ -153,7 +153,7 @@ class TrendForecaster:
             return float(np.polyfit(x, y, 1)[0])
 
         n = len(values)
-        x = list(range(n))
+        x = list(range(n))  # type: ignore[assignment]
         x_mean = (n - 1) / 2.0
         y_mean = sum(values) / n
         num = sum((x[i] - x_mean) * (values[i] - y_mean) for i in range(n))
