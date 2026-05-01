@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from typing import Any, Dict, Optional
 
 from cli.warp import WarpBlocks
 from kg import KGManager
@@ -160,9 +161,11 @@ def _run_kg(args: argparse.Namespace) -> int:
         else:
             print(f"Path ({len(path)} hops):")
             for i, nid in enumerate(path):
-                node = kg.get_node(nid)
-                label = node["label"][:50] if node else nid
-                print(f"  {i+1}. [{node['type'] if node else '?'}] {label}")
+                path_node: Optional[Dict[str, Any]] = kg.get_node(nid)
+                if not path_node:
+                    continue
+                label = path_node["label"][:50]
+                print(f"  {i+1}. [{path_node['type']}] {label}")
         return 0
 
     elif args.kg_cmd == "rebuild":
@@ -170,9 +173,9 @@ def _run_kg(args: argparse.Namespace) -> int:
         papers_json = args.papers_json
         if not papers_json:
             candidates = [Path("papers.json"), Path("data/papers.json")]
-            for c in candidates:
-                if c.exists():
-                    papers_json = str(c)
+            for candidate in candidates:
+                if candidate.exists():
+                    papers_json = str(candidate)
                     break
         if not papers_json:
             print("papers.json not found. Use --papers-json to specify.")
