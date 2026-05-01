@@ -1373,7 +1373,7 @@ class TUIChatApp(App):
             lines = [f"📂 代码搜索结果 ({len(results)} 条):", ""]
             for i, r in enumerate(results[:10], 1):
                 lines.append(f"  {i}. {r.file}:{r.line}")
-                lines.append(f"      {r.context[:70]}...")
+                lines.append(f"      {r.content[:70]}...")
             lines.append("")
             lines.append(f"共索引 {idx.size} 个token，{idx.stats()['indexed_files']} 个文件")
 
@@ -1465,10 +1465,10 @@ class TUIChatApp(App):
                     content = msg["content"]
                     citations = []
                     try:
-                        from llm.chat import ChatCitation
+                        from llm.chat import Citation
                         cites_data = json.loads(msg.get("citations", "[]")) if isinstance(msg.get("citations"), str) else msg.get("citations", [])
                         for c in cites_data:
-                            citations.append(ChatCitation(
+                            citations.append(Citation(
                                 paper_id=c.get("paper_id", ""),
                                 paper_title=c.get("title", ""),
                                 authors=[],
