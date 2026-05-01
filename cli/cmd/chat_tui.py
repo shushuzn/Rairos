@@ -294,7 +294,7 @@ class ChatBubble(Static):
     # Streaming indicator frames
     STREAM_FRAMES = ['○', '◔', '◑', '◕', '●']  # Expanding circles
 
-    def __init__(self, msg: ChatMessage, config: StreamConfig = None,
+    def __init__(self, msg: ChatMessage, config: StreamConfig | None = None,
                  is_streaming: bool = False, **kwargs):
         self.msg = msg
         self.config = config or StreamConfig()
@@ -716,11 +716,11 @@ class TUIChatApp(App):
     def __init__(
         self,
         chat: RagChat,
-        concept: str = None,
+        concept: str | None = None,
         limit: int = 5,
-        friction_tracker: FrictionTracker = None,
+        friction_tracker: FrictionTracker | None = None,
         stream: bool = True,
-        session_id: str = None,
+        session_id: str | None = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -1270,7 +1270,7 @@ class TUIChatApp(App):
         except NoMatches:
             pass
 
-    def _update_nav_hint(self, text: str = None) -> None:
+    def _update_nav_hint(self, text: str | None = None) -> None:
         """Update navigation hint bar."""
         try:
             hint = self.query_one("#nav-hint")
