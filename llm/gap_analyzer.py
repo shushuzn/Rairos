@@ -51,6 +51,9 @@ class ResearchGapV2:
     preference_boost: bool = False  # True if matches user preferences
     preference_score: float = 0.0  # Numeric score for display
 
+    # Gene Pool signal — success pattern match from accepted gaps
+    gene_pool_score: float = 0.0  # 0.0–1.0, from best matching CapsuleGene
+
 
 @dataclass
 class GapAnalysisResultV2:
@@ -176,9 +179,9 @@ class GapAnalyzerV2(GapDetector):
 
         self._collect_papers = original_collect  # type: ignore[method-assign]
 
-        # 5. Convert to enhanced format with insights + trend boost
+        # 5. Convert to enhanced format with insights + trend boost + gene pool signal
         enhanced_gaps, preference_applied = self._convert_to_v2(
-            base_result.gaps, insights, papers, hot_keywords
+            base_result.gaps, insights, papers, hot_keywords, topic
         )
 
         # 6. Generate sub-questions
@@ -305,8 +308,9 @@ class GapAnalyzerV2(GapDetector):
         insights: List[str],
         papers: List,
         hot_keywords: set | None = None,
+        topic: str = "",
     ) -> Tuple[List[ResearchGapV2], bool]:
-        """Convert base gaps to enhanced V2 format with preference learning."""
+        """Convert base gaps to enhanced V2 format with preference learning + Gene Pool signal."""
         hot_keywords = hot_keywords or set()
         enhanced = []
 
@@ -325,6 +329,11 @@ class GapAnalyzerV2(GapDetector):
             # Check if gap title/description matches a hot keyword
             trend_boost = self._matches_trending_keyword(gap, hot_keywords)
 
+            # Gene Pool lookup: find matching successful capsules
+            # This is the "success pattern match" — if user accepted similar gaps before,
+            # we boost this gap because it matches their proven interest pattern.
+            gene_pool_score = self._get_gene_pool_score(topic, gap)
+
             enhanced.append(ResearchGapV2(
                 gap_type=gap.gap_type,
                 title=gap.description[:100] if gap.description else "Untitled Gap",
@@ -334,12 +343,40 @@ class GapAnalyzerV2(GapDetector):
                 user_insights=related_insights,
                 priority=priority,
                 novelty_score=trend_boost,  # reuse field to carry trend signal
+                gene_pool_score=gene_pool_score,
             ))
 
-        # Sort by preference score + trend boost + severity + priority
+        # Sort by preference score + trend boost + Gene Pool signal + severity + priority
         enhanced, preference_applied = self._apply_preference_sorting(enhanced, hot_keywords)
 
         return enhanced, preference_applied
+
+    def _get_gene_pool_score(self, topic: str, gap: ResearchGap) -> float:
+        """Look up Gene Pool for capsules matching this gap context.
+
+        Returns the success-weighted match score from the best matching CapsuleGene.
+        If no match found, returns 0.0 (no boost).
+        """
+        try:
+            gap_keywords = extract_keywords(gap.description or "")
+            gap_type_str = gap.gap_type.value if hasattr(gap.gap_type, 'value') else str(gap.gap_type)
+
+            capsules = self.evolution_tracker.find_capsule(
+                topic=topic,
+                gap_type=gap_type_str,
+                keywords=gap_keywords,
+                min_score=0.1,
+            )
+
+            if not capsules:
+                return 0.0
+
+            # Best capsule's success score, weighted by match quality
+            best = capsules[0]
+            match_score = best.trigger_match(topic, gap_type_str, gap_keywords)
+            return best.outcome_success_score * match_score
+        except Exception:
+            return 0.0
 
     def _matches_trending_keyword(self, gap: ResearchGap, hot_keywords: set) -> float:
         """Check if a gap matches a trending keyword, return boost score."""
@@ -355,11 +392,12 @@ class GapAnalyzerV2(GapDetector):
         gaps: List[ResearchGapV2],
         hot_keywords: set | None = None,
     ) -> Tuple[List[ResearchGapV2], bool]:
-        """Apply user preference-based sorting + trend boost to gaps.
+        """Apply user preference-based sorting + Gene Pool signal + trend boost to gaps.
 
         Gaps matching user preferences (gap_type or keywords) or trending keywords
-        are boosted to appear first. Returns both sorted gaps and whether
-        preferences were applied.
+        are boosted to appear first. Gaps with Gene Pool matches (user accepted
+        similar gaps before) are boosted even higher. Returns both sorted gaps and
+        whether preferences were applied.
         """
         hot_keywords = hot_keywords or set()
 
@@ -375,10 +413,14 @@ class GapAnalyzerV2(GapDetector):
             return extract_keywords(title)
 
         def gap_preference_score(gap: ResearchGapV2) -> tuple:
-            """Calculate sorting score: (trend_score, keyword_score, pref_score, severity_score, priority_score).
+            """Calculate sorting score: (trend_score, gene_pool_score, keyword_score, pref_score, severity_score, priority_score).
 
             Higher is better. disliked/deprioritized gap types get negative pref_score
-            so they sort to the end of their trend/severity tier.
+            so they sort to the end of their trend/gene_pool tier.
+
+            Gene Pool score (0.0–1.0) is inserted as the 2nd dimension — gaps that
+            match the user's historically successful patterns get a strong boost
+            that outranks pure preference boosts.
             """
             gap_type_str = gap.gap_type.value
 
@@ -387,6 +429,9 @@ class GapAnalyzerV2(GapDetector):
 
             # Trend score: from novelty_score (set to trend boost in _convert_to_v2)
             trend_score = gap.novelty_score  # 0-2 scale
+
+            # Gene Pool signal: success pattern match from accepted gaps (0.0–1.0)
+            gene_pool_score = gap.gene_pool_score
 
             # Keyword preference score: +1 for each matching top keyword (max +3)
             gap_kws = _extract_gap_keywords(gap.title)
@@ -417,8 +462,8 @@ class GapAnalyzerV2(GapDetector):
             # Priority score (original calculation)
             priority_score = gap.priority
 
-            # Return tuple: trend first, then keyword match, then preference, then severity, then priority
-            return (trend_score, keyword_score, pref_score, severity_score, priority_score)
+            # Return tuple: trend first, then Gene Pool match (success pattern), then keyword, then preference, then severity, then priority
+            return (trend_score, gene_pool_score, keyword_score, pref_score, severity_score, priority_score)
 
         gaps.sort(key=gap_preference_score, reverse=True)
         return gaps, has_preferences
@@ -662,6 +707,7 @@ def render_gap_report(result: GapAnalysisResultV2, show_preferences: bool = True
 
     if capture.get():
         lines.append(capture.get().rstrip("\n"))
+
     return "\n".join(lines)
 
 
