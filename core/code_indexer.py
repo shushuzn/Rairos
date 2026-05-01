@@ -9,7 +9,10 @@ import threading
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
+
+if TYPE_CHECKING:
+    from core.vector_store import ZillizStore
 
 import jieba
 
@@ -61,7 +64,7 @@ class CodeIndexer:
         self._initialized = False
 
         # Zilliz for persistent storage (lazy init to wait for dotenv)
-        self._zilliz = None
+        self._zilliz: "ZillizStore | None" = None
         self._use_zilliz = use_zilliz
 
     def _ensure_zilliz(self) -> None:
@@ -95,7 +98,7 @@ class CodeIndexer:
             )
             with urllib.request.urlopen(req, timeout=60) as resp:
                 data = json.loads(resp.read())
-                embedding = data.get("embedding")
+                embedding = cast(List[float], data.get("embedding"))
                 if embedding:
                     self._embeddings_cache[cache_key] = embedding
                 return embedding
@@ -277,6 +280,7 @@ class CodeIndexer:
         if not query_emb:
             return []
 
+        assert self._zilliz is not None
         results = self._zilliz.search(query_emb, limit)
         return [
             CodeChunk(r.id, r.file, r.line, r.content, None)

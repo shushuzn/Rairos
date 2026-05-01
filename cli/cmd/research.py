@@ -163,5 +163,5 @@ def _run_research_cmd(args: argparse.Namespace) -> int:
 
     print_success(f"\nGenerated {len(paths)} note(s):")
     for p in paths:
-        print(f"  {colored(p, Colors.OKBLUE)}")
+        print(f"  {colored(str(p), Colors.OKBLUE)}")
     return 0

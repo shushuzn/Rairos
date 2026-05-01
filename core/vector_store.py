@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import os
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, cast
 from dataclasses import dataclass
 
 from pymilvus import MilvusClient, DataType
@@ -168,10 +168,11 @@ class ZillizStore:
 
     def count(self) -> int:
         """Get total chunk count."""
-        return self.client.query(
+        result = self.client.query(
             collection_name=self.COLLECTION_NAME,
             output_fields=["count(*)"],
-        )[0]["count(*)"]
+        )
+        return cast(int, result[0]["count(*)"])
 
     def stats(self) -> Dict[str, Any]:
         """Get collection stats."""
