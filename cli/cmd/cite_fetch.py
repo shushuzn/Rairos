@@ -8,7 +8,10 @@ import sys
 import time
 import urllib.request
 import warnings
-from typing import List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple
+
+if TYPE_CHECKING:
+    from db.database import PaperRecord
 
 import orjson as json
 

@@ -7,7 +7,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple, Set, Optional
+from typing import IO, Tuple, Set, Optional, cast
 
 from cli._shared import get_db
 from cli._shared import print_success, print_warning, print_error, print_info
@@ -117,7 +117,7 @@ def _run_import(args: argparse.Namespace) -> int:
         if args.file == "-":
             _source = _io.StringIO(sys.stdin.read())
         else:
-            _source = open(args.file, encoding="utf-8")
+            _source = cast(IO[str], open(args.file, encoding="utf-8"))
         try:
             raw = _source.read()
         finally:
