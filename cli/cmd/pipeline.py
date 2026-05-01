@@ -76,7 +76,7 @@ def _build_pipeline_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Verbose output",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_pipeline(args: argparse.Namespace) -> int:

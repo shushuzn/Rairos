@@ -48,7 +48,7 @@ def _build_argue_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Interactive argument building",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_argue(args: argparse.Namespace) -> int:

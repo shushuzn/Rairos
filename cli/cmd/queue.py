@@ -19,7 +19,7 @@ def _build_queue_parser(subparsers) -> argparse.ArgumentParser:
         default="text",
         help="Output format (default: text)",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_queue(args: argparse.Namespace) -> int:
@@ -56,7 +56,7 @@ def _run_queue(args: argparse.Namespace) -> int:
     else:
         print("Use --list, --dequeue, --add UID, --cancel JOB_ID, or --clear")
 
-    return 0
+    return 0  # type: ignore[no-any-return]
 
 
 def _run_queue_warp(pending: list, total: int) -> None:

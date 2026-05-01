@@ -49,7 +49,7 @@ Examples:
 
     p.add_argument("--sort", choices=["relevance", "year", "title"], default="relevance")
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_search(args: argparse.Namespace) -> int:

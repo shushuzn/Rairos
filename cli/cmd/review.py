@@ -49,7 +49,7 @@ def _build_review_parser(subparsers) -> argparse.ArgumentParser:
         default=None,
         help="Export as Markdown file",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_review(args: argparse.Namespace) -> int:
@@ -61,7 +61,7 @@ def _run_review(args: argparse.Namespace) -> int:
 
     if not args.topic:
         print("❌ 请提供 topic")
-        return 1
+        return 1  # type: ignore[no-any-return]
 
     print_info(f"📚 Generating literature review: {args.topic}")
 

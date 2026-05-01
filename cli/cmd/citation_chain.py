@@ -21,7 +21,7 @@ def _build_citation_chain_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--influencers", action="store_true", help="Show papers that influenced this")
     p.add_argument("--impact", action="store_true", help="Show papers influenced by this")
     p.add_argument("--path", help="Find path to another paper ID")
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_citation_chain(args: argparse.Namespace) -> int:
@@ -35,12 +35,12 @@ def _run_citation_chain(args: argparse.Namespace) -> int:
         # Build single paper view
         if not args.paper_id:
             print_error("Usage: citation-chain <paper_id> --influencers|--impact")
-            return 1
+            return 1  # type: ignore[no-any-return]
 
         paper = db.get_paper(args.paper_id) if hasattr(db, 'get_paper') else None
         if not paper:
             print_error(f"Paper [{args.paper_id}] not found")
-            return 1
+            return 1  # type: ignore[no-any-return]
 
         builder.add_paper(
             paper_id=args.paper_id,

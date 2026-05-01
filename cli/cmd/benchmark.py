@@ -61,7 +61,7 @@ def _build_benchmark_parser(subparsers) -> argparse.ArgumentParser:
     viz_p.add_argument("--metric", "-m", default=None,
                        help="Filter by metric name (e.g., 'Accuracy')")
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_benchmark(args: argparse.Namespace) -> int:
@@ -85,7 +85,7 @@ def _run_benchmark(args: argparse.Namespace) -> int:
 
     else:
         print_error("Usage: airos benchmark {detect|list|compare|viz} [...]")
-        return 1
+        return 1  # type: ignore[no-any-return]
 
 
 def _run_detect(args: argparse.Namespace, comparator: BenchmarkComparator) -> int:
@@ -100,7 +100,7 @@ def _run_detect(args: argparse.Namespace, comparator: BenchmarkComparator) -> in
                                   f"[#8E8E8E]No benchmark tables found in {pid}[/]"))
         else:
             print_info(f"No benchmark-like tables found in paper: {pid}")
-        return 1
+        return 1  # type: ignore[no-any-return]
 
     if use_warp:
         rows = []

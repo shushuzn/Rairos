@@ -24,7 +24,7 @@ def _build_citations_parser(subparsers) -> argparse.ArgumentParser:
         help="Output format (default: text)",
     )
     p.set_defaults(func=lambda args: _run_citations(args))
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_citations(args: argparse.Namespace) -> int:
@@ -34,7 +34,7 @@ def _run_citations(args: argparse.Namespace) -> int:
 
     if not args.citation_from and not args.citation_to:
         print("Error: must specify --from or --to", file=sys.stderr)
-        return 1
+        return 1  # type: ignore[no-any-return]
 
     db = get_db()
     db.init()
@@ -48,10 +48,10 @@ def _run_citations(args: argparse.Namespace) -> int:
 
         if not from_title:
             print(f"Error: paper {paper_from} not found in the database")
-            return 1
+            return 1  # type: ignore[no-any-return]
         if not to_title:
             print(f"Error: paper {paper_to} not found in the database")
-            return 1
+            return 1  # type: ignore[no-any-return]
 
         backward_from = db.get_citations(paper_from, "from")
         forward_to = db.get_citations(paper_to, "to")

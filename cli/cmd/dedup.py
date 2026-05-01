@@ -52,7 +52,7 @@ def _build_dedup_parser(subparsers) -> argparse.ArgumentParser:
         default="warp",
         help="Output format (default: warp)",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_dedup(args: argparse.Namespace) -> int:
@@ -66,7 +66,7 @@ def _run_dedup(args: argparse.Namespace) -> int:
         logs = db.get_dedup_log()
         if not logs:
             c.print(WarpBlocks.panel("Dedup History", "[#8E8E8E]No dedup history[/]"))
-            return 0
+            return 0  # type: ignore[no-any-return]
         rows = []
         for r in logs:
             rows.append([
@@ -84,7 +84,7 @@ def _run_dedup(args: argparse.Namespace) -> int:
                 rows,
                 title=f"Dedup Log ({len(rows)})"
             ))
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     pairs = db.find_duplicates(since=args.since or None)
 

@@ -35,7 +35,7 @@ def _build_digest_parser(subparsers) -> argparse.ArgumentParser:
         type=str,
         help="Export to file",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_digest(args: argparse.Namespace) -> int:
@@ -58,4 +58,4 @@ def _run_digest(args: argparse.Namespace) -> int:
         print()
         print(output)
 
-    return 0
+    return 0  # type: ignore[no-any-return]

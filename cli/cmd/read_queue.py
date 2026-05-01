@@ -241,7 +241,7 @@ def _build_read_queue_parser(subparsers) -> argparse.ArgumentParser:
         "--reset", metavar="PAPER_ID",
         help="Reset reading status to 'unread'",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _handle_status_action(args: argparse.Namespace, db) -> Optional[int]:

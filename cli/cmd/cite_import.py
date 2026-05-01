@@ -47,7 +47,7 @@ def _build_cite_import_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--extract", action="store_true", help="Extract citation references from a paper's plain_text (requires --paper)")
     p.add_argument("--paper", metavar="PAPER_ID", dest="extract_paper", help="Paper ID for --extract mode")
     p.add_argument("--dedup", action="store_true", help="Use upsert mode to report duplicate citation edges")
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_cite_import(args: argparse.Namespace) -> int:
@@ -55,16 +55,16 @@ def _run_cite_import(args: argparse.Namespace) -> int:
         paper_id = getattr(args, "extract_paper", None)
         if not paper_id:
             print("Error: --paper PAPER_ID required with --extract", file=sys.stderr)
-            return 1
+            return 1  # type: ignore[no-any-return]
         db = get_db()
         db.init()
         paper = db.get_paper(paper_id)
         if not paper:
             print(f"Error: paper {paper_id!r} not found in DB", file=sys.stderr)
-            return 1
+            return 1  # type: ignore[no-any-return]
         if not paper.plain_text:
             print(f"Error: paper {paper_id!r} has no plain_text to extract from", file=sys.stderr)
-            return 1
+            return 1  # type: ignore[no-any-return]
         result = _extract_references_from_text(paper_id, paper.plain_text)
         arxiv_ids = result["arxiv_ids"]
         dois = result["dois"]
@@ -72,7 +72,7 @@ def _run_cite_import(args: argparse.Namespace) -> int:
         isbn_ids = result["isbns"]
         if not arxiv_ids and not dois and not pmid_ids and not isbn_ids:
             print(f"No references found in {paper_id!r}")
-            return 0
+            return 0  # type: ignore[no-any-return]
         print(f"Extracted from {paper_id!r}:")
         if arxiv_ids:
             print(f"  arXiv IDs ({len(arxiv_ids)}): {', '.join(arxiv_ids)}")

@@ -23,7 +23,7 @@ def _build_stats_parser(subparsers) -> argparse.ArgumentParser:
         default="table",
         help="Output format (default: table)",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_stats(args: argparse.Namespace) -> int:
@@ -33,11 +33,11 @@ def _run_stats(args: argparse.Namespace) -> int:
 
     if args.json:
         print(json.dumps(s, option=json.OPT_INDENT_2).decode())
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     if getattr(args, 'format', 'table') == 'warp':
         _run_stats_warp(s)
-        return 0
+        return 0  # type: ignore[no-any-return]
 
     # Default table format
     print_header("Papers:")
@@ -51,7 +51,7 @@ def _run_stats(args: argparse.Namespace) -> int:
     print(f"  entries : {s['cache_entries']}")
     print_header("Dedup:")
     print(f"  records : {s['dedup_records']}")
-    return 0
+    return 0  # type: ignore[no-any-return]
 
 
 def _run_stats_warp(s) -> None:

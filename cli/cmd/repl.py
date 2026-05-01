@@ -419,7 +419,7 @@ Examples:
         "--limit", type=int, default=DEFAULT_LIMIT,
         help=f"Result limit per command (default {DEFAULT_LIMIT})",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_repl(args: argparse.Namespace) -> int:
