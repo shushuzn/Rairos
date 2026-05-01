@@ -127,6 +127,7 @@ class ResearchSessionTracker:
         """添加问答到当前会话."""
         if not self.current_session:
             self.start_session()
+        assert self.current_session is not None
 
         query = Query(
             id=f"q_{int(time.time()*1000)}",
@@ -291,6 +292,8 @@ class ResearchSessionTracker:
 
         # Build context from conversation history
         session = self.current_session
+        if not session:
+            return []
         history_parts = []
         for i, q in enumerate(session.queries[-3:], 1):  # Last 3 queries
             history_parts.append(f"Q{i}: {q.question}")
@@ -347,7 +350,7 @@ class ResearchSessionTracker:
                 q.follow_ups.append(follow_up_question)
                 break
 
-    def end_session(self) -> ResearchSession:
+    def end_session(self) -> Optional[ResearchSession]:
         """结束当前会话."""
         if not self.current_session:
             return None
