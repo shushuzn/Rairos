@@ -29,7 +29,7 @@ import re
 import sys
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Set
+from typing import Any, Callable, Dict, List, Set, cast
 
 # Load .env from current working directory (unified via cli._shared)
 from cli._shared import load_dotenv
@@ -225,7 +225,7 @@ class LoadingDots:
         """Get next frame."""
         frame = self.FRAMES[self.frame % len(self.FRAMES)]
         self.frame += 1
-        return frame
+        return frame  # type: ignore[no-any-return]
 
 
 class TypingCursor:
@@ -260,7 +260,7 @@ class Typewriter:
         self.delay = delay
         self.frame = 0
 
-    def tick(self) -> str:
+    def tick(self) -> str | None:
         """Get next characters (up to batch_size) for typewriter effect."""
         self.frame += 1
         if self.frame % max(1, self.delay) != 0:
@@ -497,7 +497,7 @@ class SuggestionChips(Horizontal):
                 id=f"suggestion-{i}",
                 classes="suggestion-btn",
             )
-            btn.on_click = lambda e, text=s: self.on_select(text)
+            btn.on_click = lambda e, text=s: self.on_select(text)  # type: ignore[attr-defined]
             yield btn
 
 
@@ -785,7 +785,7 @@ class TUIChatApp(App):
         if not question:
             return
         self._handle_submit(question)
-        self.query_one("#chat-input").value = ""
+        cast(Input, self.query_one("#chat-input")).value = ""
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle quick action button clicks."""
@@ -978,14 +978,14 @@ class TUIChatApp(App):
             # Estimate total based on typical response size (2000 chars)
             estimated_total = max(char_count * 3, 100)
             progress = min(int(char_count / estimated_total * 100), 95)
-            self.query_one("#progress-bar").update(f"[{'█' * progress}{'░' * (100 - progress)}] {progress}%")
+            cast(Static, self.query_one("#progress-bar")).update(f"[{'█' * progress}{'░' * (100 - progress)}] {progress}%")
         except NoMatches:
             pass
 
     def _clear_progress(self) -> None:
         """Clear the progress bar."""
         try:
-            self.query_one("#progress-bar").update("")
+            cast(Static, self.query_one("#progress-bar")).update("")
         except NoMatches:
             pass
 
@@ -1059,7 +1059,7 @@ class TUIChatApp(App):
     def _update_status(self, text: str, cls: str = "") -> None:
         """Update status bar with style class."""
         try:
-            status = self.query_one("#status-bar")
+            status = cast(Static, self.query_one("#status-bar"))
             status.update(text)
             status.remove_class("typing", "done", "error")
             if cls:
@@ -1069,7 +1069,7 @@ class TUIChatApp(App):
 
     # ── Actions ────────────────────────────────────────────────────────────
 
-    def action_quit(self) -> None:
+    async def action_quit(self) -> None:
         self.exit(0)
 
     def action_clear(self) -> None:
@@ -1151,7 +1151,7 @@ class TUIChatApp(App):
 
         # If input has content, don't navigate (normal up arrow behavior)
         try:
-            inp = self.query_one("#chat-input")
+            inp = cast(Input, self.query_one("#chat-input"))
             if inp.value:
                 return
         except NoMatches:
@@ -1181,7 +1181,7 @@ class TUIChatApp(App):
 
         # If input has content, don't navigate
         try:
-            inp = self.query_one("#chat-input")
+            inp = cast(Input, self.query_one("#chat-input"))
             if inp.value:
                 return
         except NoMatches:
@@ -1243,7 +1243,7 @@ class TUIChatApp(App):
             return
 
         try:
-            inp = self.query_one("#chat-input")
+            inp = cast(Input, self.query_one("#chat-input"))
             inp.value = msg.content
             inp.focus()
             self._selected_msg_idx = -1
@@ -1273,7 +1273,7 @@ class TUIChatApp(App):
     def _update_nav_hint(self, text: str | None = None) -> None:
         """Update navigation hint bar."""
         try:
-            hint = self.query_one("#nav-hint")
+            hint = cast(Static, self.query_one("#nav-hint"))
             if text:
                 hint.update(colored(f"❯ {text}  |  ↑↓ 选择  c=复制  e=编辑  Ctrl+F 搜索", Colors.OKBLUE))
             else:
@@ -1426,7 +1426,7 @@ class TUIChatApp(App):
     def action_complete_command(self) -> None:
         """Complete slash commands on Tab press."""
         try:
-            inp = self.query_one("#chat-input")
+            inp = cast(Input, self.query_one("#chat-input"))
             current = inp.value
 
             # Only complete if starts with /
