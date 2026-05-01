@@ -88,17 +88,17 @@ def evoskill(
 ):
     """Benchmark-driven skill discovery with EvoSkill."""
     if command == "init" or task:
-        evoskill_init.callback(task or "", dataset or "", harness, model, question_col, answer_col, category_col)
+        evoskill_init(task or "", dataset or "", harness, model, question_col, answer_col, category_col)
     elif command == "run":
-        evoskill_run.callback(continue_mode, verbose)
+        evoskill_run(continue_mode, verbose)
     elif command == "eval":
-        evoskill_eval.callback()
+        evoskill_eval()
     elif command == "diff":
-        evoskill_diff.callback(None, None)
+        evoskill_diff(0, 0)
     elif command == "reset":
-        evoskill_reset.callback()
+        evoskill_reset()
     else:
-        evoskill_status.callback()
+        evoskill_status()
 
 
 def evoskill_init(task: str, dataset: str, harness: str, model: str,
