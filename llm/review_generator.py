@@ -11,7 +11,7 @@ Generates comprehensive reviews with:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Tuple, Any
+from typing import List, Optional, Tuple, Any
 
 
 @dataclass
@@ -64,7 +64,7 @@ class ReviewGenerator:
         topic: str,
         max_papers: int = 50,
         depth: str = "full",
-        sections: List[str] = None,
+        sections: Optional[List[str]] = None,
     ) -> LiteratureReview:
         """
         Generate a literature review for the topic.

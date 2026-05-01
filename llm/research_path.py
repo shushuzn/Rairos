@@ -401,7 +401,7 @@ class ResearchPathPlanner:
     ) -> List[ReadingStep]:
         """Generate reading steps with roles and reasons."""
         steps = []
-        seen_years = set()
+        seen_years: set[int] = set()
 
         for i, paper in enumerate(papers):
             role, reason = self._assign_role(paper, i, level, seen_years)
