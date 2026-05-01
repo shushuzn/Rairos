@@ -110,7 +110,7 @@ Examples:
         help="Print LLM streaming tokens in real time (implies --async)",
     )
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_research_cmd(args: argparse.Namespace) -> int:

@@ -20,7 +20,7 @@ import tempfile
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, cast
 
 try:
     from llm.hypothesis_generator import ResearchHypothesis
@@ -570,7 +570,7 @@ def verify_lean_code(
                 if "error" in line.lower() or "failed" in line.lower():
                     error_lines.append(line)
 
-        result.json_output = json_messages
+        result.json_output = cast(dict, json_messages)
         result.errors = error_lines
         result.warnings = warning_lines
 

@@ -91,7 +91,7 @@ def _build_hypothesize_parser(subparsers) -> argparse.ArgumentParser:
         dest="list_hypotheses",
         help="List all hypotheses with their verdict status",
     )
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_hypothesize(args: argparse.Namespace) -> int:
