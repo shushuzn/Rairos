@@ -159,12 +159,13 @@ class ZillizStore:
         return search_results
 
     def delete_by_ids(self, ids: List[str]) -> None:
-        """Delete chunks by IDs."""
-        for id_ in ids:
-            self.client.delete(
-                collection_name=self.COLLECTION_NAME,
-                pks=[id_],
-            )
+        """Delete chunks by IDs (batch)."""
+        if not ids:
+            return
+        self.client.delete(
+            collection_name=self.COLLECTION_NAME,
+            pks=ids,
+        )
 
     def count(self) -> int:
         """Get total chunk count."""

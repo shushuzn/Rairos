@@ -111,6 +111,10 @@ def watch_and_rebuild(
         sys.exit(0)
 
     signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+    try:
+        signal.signal(signal.SIGTERM, signal_handler)
+    except (AttributeError, ValueError):
+        # SIGTERM not available on Windows
+        pass
 
     watcher.start()
