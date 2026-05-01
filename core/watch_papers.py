@@ -9,7 +9,7 @@ import signal
 import sys
 import time
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 # ── Signal handling ────────────────────────────────────────────────────────────
 
@@ -21,7 +21,7 @@ class Watcher:
         self,
         path: str | Path,
         interval: float = 5.0,
-        on_change: Optional[callable] = None,
+        on_change: Optional[Callable] = None,
     ):
         self.path = Path(path)
         self.interval = interval
