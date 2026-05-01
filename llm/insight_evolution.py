@@ -419,6 +419,125 @@ class EvolutionTracker:
         with open(self.profile_file, "w", encoding="utf-8") as f:
             json.dump(profile.__dict__, f, ensure_ascii=False, indent=2)
 
+    # ─── Research Archetype ───────────────────────────────────────────────────────
+
+    # Map gap types to archetype dimensions
+    _GAP_TYPE_TO_ARCHETYPE = {
+        "method_limitation": ["method_focused"],
+        "contradiction": ["method_focused"],
+        "evaluation_gap": ["method_focused", "theory_focused"],
+        "scalability_issue": ["method_focused"],
+        "unexplored_application": ["app_focused"],
+        "theoretical_gap": ["theory_focused"],
+        "dataset_gap": ["theory_focused", "method_focused"],
+        "generalization_gap": ["theory_focused"],
+    }
+
+    ARCHETYPE_DIMENSIONS = [
+        ("method_focused", "Method-Focused", "Focuses on methodology & theory"),
+        ("app_focused", "App-Focused", "Prioritizes real-world applications"),
+        ("theory_focused", "Theory-Focused", "Pursues rigorous foundations"),
+        ("high_risk", "High-Risk", "Tackles high-uncertainty problems"),
+        ("low_risk", "Low-Risk", "Prefers robust, reproducible work"),
+        ("exploratory", "Exploratory", "Loves discovering new questions"),
+        ("confirmatory", "Confirmatory", "Focuses on validation & replication"),
+        ("cross_domain", "Cross-Domain", "Interested in interdisciplinary work"),
+    ]
+
+    def get_archetype(self):
+        profile = self._load_profile()
+        event_count = profile.total_events
+        gap_prefs = profile.gap_type_preferences or {}
+
+        dimension_scores = {d: 0.0 for d, *_ in self.ARCHETYPE_DIMENSIONS}
+
+        for gap_type, score in gap_prefs.items():
+            if score <= 0:
+                continue
+            for ad in self._GAP_TYPE_TO_ARCHETYPE.get(gap_type, []):
+                dimension_scores[ad] += score
+
+        accepts = profile.accepts or 0
+        hypothesizes = profile.hypothesizes or 0
+        total = max(event_count, 1)
+        if hypothesizes / total > 0.2:
+            dimension_scores["exploratory"] += hypothesizes * 0.5
+        elif accepts / total > 0.4:
+            dimension_scores["confirmatory"] += accepts * 0.3
+
+        topics = profile.topics_explored or []
+        if len(set(topics)) > 5:
+            dimension_scores["cross_domain"] = min(len(set(topics)) * 0.3, 3.0)
+
+        method_score = gap_prefs.get("method_limitation", 0)
+        if method_score > 0.5:
+            dimension_scores["high_risk"] = method_score * 2
+        elif method_score < -0.2:
+            dimension_scores["low_risk"] = abs(method_score) * 2
+
+        max_raw = max(dimension_scores.values()) if any(dimension_scores.values()) else 1.0
+        max_raw = max(max_raw, 0.01)
+
+        normalized = {}
+        for dim, label, desc in self.ARCHETYPE_DIMENSIONS:
+            raw = dimension_scores[dim]
+            norm = min(raw / max_raw, 1.0)
+            normalized[dim] = (round(raw, 3), round(norm, 2), label, desc)
+
+        dominant = max(dimension_scores, key=dimension_scores.get) if any(dimension_scores.values()) else "method_focused"
+
+        labels = {
+            "method_focused": "Method Hunter",
+            "app_focused": "Application Pioneer",
+            "theory_focused": "Theory Builder",
+            "high_risk": "Risk Taker",
+            "low_risk": "Steady Researcher",
+            "exploratory": "Explorer",
+            "confirmatory": "Verifier",
+            "cross_domain": "Bridge Builder",
+        }
+
+        confidence = min(event_count / 20, 1.0)
+        return {
+            "dimensions": normalized,
+            "dominant": dominant,
+            "archetype_label": labels.get(dominant, "Undefined"),
+            "confidence": round(confidence, 2),
+            "event_count": event_count,
+        }
+
+    def render_archetype_radar(self):
+        arch = self.get_archetype()
+        if arch["event_count"] == 0:
+            return "No exploration data yet. Run airos gap <topic> to discover your archetype."
+        dims = arch["dimensions"]
+        blk = chr(0x2588)
+        dim_sym = chr(0x2591)
+        lines = []
+        lines.append("")
+        conf = "{:.0%}".format(arch["confidence"])
+        title = "Research Archetype Radar  (confidence {}, {} events)".format(conf, arch["event_count"])
+        lines.append("  " + chr(0x256d) + chr(0x2500) * 51 + chr(0x256e))
+        lines.append("  " + chr(0x2502) + "  " + title + " " * max(0, 51 - len(title)) + "  " + chr(0x2502))
+        label = arch["archetype_label"]
+        lines.append("  " + chr(0x2502) + "  " + label + " " * max(0, 51 - len(label)) + "  " + chr(0x2502))
+        lines.append("  " + chr(0x2570) + chr(0x2500) * 51 + chr(0x256f))
+        lines.append("")
+        sorted_dims = sorted(dims.items(), key=lambda x: x[1][0], reverse=True)[:4]
+        max_label = 14
+        for dim_name, (raw, norm, label, desc) in sorted_dims:
+            bar_len = int(norm * 20)
+            bar = blk * bar_len + dim_sym * (20 - bar_len)
+            lines.append("  {label:<{w}} {bar} {norm}  ({desc})".format(
+                label=label, w=max_label, bar=bar, norm=norm, desc=desc
+            ))
+        lines.append("")
+        lines.append("  All dimensions:")
+        for dim_name, (raw, norm, label, desc) in dims.items():
+            lines.append("  - {}: {} [{}]".format(label, desc, norm))
+        lines.append("")
+        return "\n".join(lines)
+
     def get_profile(self) -> UserPreferenceProfile:
         """Get current user preference profile."""
         return self._load_profile()
