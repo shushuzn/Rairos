@@ -304,7 +304,7 @@ class GapAnalyzerV2(GapDetector):
         gaps: List[ResearchGap],
         insights: List[str],
         papers: List,
-        hot_keywords: set = None,
+        hot_keywords: set | None = None,
     ) -> Tuple[List[ResearchGapV2], bool]:
         """Convert base gaps to enhanced V2 format with preference learning."""
         hot_keywords = hot_keywords or set()
@@ -353,7 +353,7 @@ class GapAnalyzerV2(GapDetector):
     def _apply_preference_sorting(
         self,
         gaps: List[ResearchGapV2],
-        hot_keywords: set = None,
+        hot_keywords: set | None = None,
     ) -> Tuple[List[ResearchGapV2], bool]:
         """Apply user preference-based sorting + trend boost to gaps.
 
@@ -453,7 +453,7 @@ class GapAnalyzerV2(GapDetector):
         paper_count: int,
         insight_count: int,
         severity: GapSeverity,
-        gap_type: GapType = None,
+        gap_type: GapType | None = None,
     ) -> int:
         """Calculate gap priority score."""
         severity_weight = {GapSeverity.HIGH: 3, GapSeverity.MEDIUM: 2, GapSeverity.LOW: 1}

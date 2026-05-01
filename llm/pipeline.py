@@ -46,7 +46,7 @@ class ResearchPipeline:
     def run(
         self,
         topic: str,
-        stages: List[PipelineStage] = None,
+        stages: List[PipelineStage] | None = None,
         quick: bool = False,
         use_llm: bool = True,
         model: Optional[str] = None,
