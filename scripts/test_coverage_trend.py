@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Track test coverage over time. Run after each coverage report."""
+
 import subprocess
 import json
 import os

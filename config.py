@@ -6,6 +6,7 @@ safe to import even when no .env file is present.
 
 Environment variables follow the pattern AIROS_<CONFIG_NAME> for consistency.
 """
+
 from __future__ import annotations
 
 import os
@@ -42,6 +43,7 @@ MAX_CACHE_FILES: int = int(os.getenv("AIROS_MAX_CACHE_FILES", "2000"))
 
 MEMORY_CACHE_MAX_SIZE: int = int(os.getenv("AIROS_MEMORY_CACHE_MAX_SIZE", "1000"))
 """Maximum number of items in memory cache."""
+
 
 # ---------------------------------------------------------------------------
 # LLM cost table  (input_price_per_1M, output_price_per_1M)
@@ -111,7 +113,9 @@ DEFAULT_LLM_MODEL: str = os.getenv(
 # ---------------------------------------------------------------------------
 # LLM API configuration
 # ---------------------------------------------------------------------------
-DEFAULT_OPENAI_BASE_URL: str = os.getenv("OPENAI_BASE_URL", os.getenv("AIROS_DEFAULT_OPENAI_BASE_URL", "https://api.openai.com/v1"))
+DEFAULT_OPENAI_BASE_URL: str = os.getenv(
+    "OPENAI_BASE_URL", os.getenv("AIROS_DEFAULT_OPENAI_BASE_URL", "https://api.openai.com/v1")
+)
 """Default OpenAI-compatible API base URL."""
 
 DEFAULT_LLM_TIMEOUT: int = int(os.getenv("AIROS_LLM_TIMEOUT", "180"))
@@ -153,6 +157,7 @@ MAX_PARSE_AUTHORS_CACHE_SIZE: int = int(os.getenv("AIROS_PARSE_AUTHORS_CACHE_SIZ
 CONCURRENT_WORKERS: int = int(os.getenv("AIROS_CONCURRENT_WORKERS", "8"))
 """Number of concurrent workers for parallel operations."""
 
+
 # ---------------------------------------------------------------------------
 # Helper functions
 # ---------------------------------------------------------------------------
@@ -178,6 +183,7 @@ def get_config() -> Dict[str, Any]:
         "MAX_PARSE_AUTHORS_CACHE_SIZE": MAX_PARSE_AUTHORS_CACHE_SIZE,
         "CONCURRENT_WORKERS": CONCURRENT_WORKERS,
     }
+
 
 def validate_config() -> bool:
     """Validate configuration values."""
