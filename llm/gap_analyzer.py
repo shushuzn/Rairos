@@ -1,6 +1,6 @@
 """Enhanced Gap Analyzer: Multi-source gap detection with insights fusion."""
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 
 from llm.gap_detector import (
     GapDetector,
@@ -305,7 +305,7 @@ class GapAnalyzerV2(GapDetector):
         insights: List[str],
         papers: List,
         hot_keywords: set = None,
-    ) -> List[ResearchGapV2]:
+    ) -> Tuple[List[ResearchGapV2], bool]:
         """Convert base gaps to enhanced V2 format with preference learning."""
         hot_keywords = hot_keywords or set()
         enhanced = []
@@ -354,7 +354,7 @@ class GapAnalyzerV2(GapDetector):
         self,
         gaps: List[ResearchGapV2],
         hot_keywords: set = None,
-    ) -> List[ResearchGapV2]:
+    ) -> Tuple[List[ResearchGapV2], bool]:
         """Apply user preference-based sorting + trend boost to gaps.
 
         Gaps matching user preferences (gap_type or keywords) or trending keywords
