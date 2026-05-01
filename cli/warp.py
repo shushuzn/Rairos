@@ -13,7 +13,7 @@ Color palette aligned with Warp terminal's dark theme:
 from __future__ import annotations
 
 import re
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, cast
 
 try:
     from rich.console import Console
@@ -87,7 +87,7 @@ class _Colors:
     def __getitem__(self, key: str) -> str:
         """Dict-style access for backward compatibility."""
         attr = self._aliases.get(key, key)
-        return getattr(self, attr)
+        return cast(str, getattr(self, attr))
 
 
 # Module-level singleton instance
