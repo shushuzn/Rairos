@@ -224,7 +224,7 @@ class LitReviewAnalyzer:
 
     def _analyze_temporal_distribution(self, papers: List[Dict[str, Any]]) -> Dict[str, int]:
         """Get paper count by year/quarter."""
-        distribution = defaultdict(int)
+        distribution: Dict[str, int] = defaultdict(int)
 
         for paper in papers:
             published = paper.get("published", "")
