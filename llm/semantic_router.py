@@ -242,7 +242,7 @@ def _route_by_embedding(query: str) -> Route:
         ]
         embeddings = _get_ollama_embedding_batch(texts)
         if not embeddings or embeddings[0] is None:
-            return Route(query_type=QueryType.GENERAL, confidence=0.0, primary_command="general")
+            raise RuntimeError("Embedding service unavailable")
         query_emb = embeddings[0]
         cap_embs = [e for e in embeddings[1:] if e is not None]
 
