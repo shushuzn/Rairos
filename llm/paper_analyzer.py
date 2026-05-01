@@ -376,6 +376,7 @@ class PaperAnalyzer:
 
         if rubric:
             # Remove the JSON block from text for section parsing
+            assert m is not None
             remaining = text[:m.start()].rstrip()
             return rubric, remaining
 
