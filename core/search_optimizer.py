@@ -3,6 +3,7 @@ Search Optimizer.
 
 Improves search relevance and performance.
 """
+import threading
 from typing import List, Dict, Any
 
 
@@ -17,13 +18,19 @@ class SearchOptimizer:
     - Search suggestions
     """
 
+    MAX_HISTORY = 1000
+
     def __init__(self):
         self.search_history: List[str] = []
+        self._history_lock = threading.Lock()
 
     def optimize_query(self, query: str) -> str:
         """Optimize a search query."""
-        # Add to history
-        self.search_history.append(query)
+        # Add to history with bounded size
+        with self._history_lock:
+            self.search_history.append(query)
+            if len(self.search_history) > self.MAX_HISTORY:
+                self.search_history = self.search_history[-self.MAX_HISTORY:]
 
         # Basic optimization
         query = query.strip().lower()
@@ -83,20 +90,25 @@ class SearchOptimizer:
         suggestions = []
         partial = partial.lower()
 
-        for query in self.search_history:
-            if partial in query.lower() and query not in suggestions:
-                suggestions.append(query)
+        with self._history_lock:
+            for query in self.search_history:
+                if partial in query.lower() and query not in suggestions:
+                    suggestions.append(query)
 
         return suggestions[:5]
 
 
-# Global search optimizer
+# Global search optimizer — thread-safe init
 _search_optimizer = None
+_search_optimizer_lock = threading.Lock()
 
 
 def get_search_optimizer() -> SearchOptimizer:
-    """Get the global search optimizer."""
+    """Get the global search optimizer (thread-safe)."""
     global _search_optimizer
     if _search_optimizer is None:
-        _search_optimizer = SearchOptimizer()
+        with _search_optimizer_lock:
+            # Double-checked locking
+            if _search_optimizer is None:
+                _search_optimizer = SearchOptimizer()
     return _search_optimizer
