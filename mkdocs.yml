@@ -1,5 +1,5 @@
 site_name: AI Research OS
-site_description: A Structured Research Operating System for Serious AI Researchers
+site_description: A Self-Evolving Research Operating System for AI Researchers
 site_url: https://shushuzn.github.io/ai_research_os/
 site_author: shushuzn
 
@@ -28,12 +28,21 @@ theme:
     - navigation.instant
     - navigation.tracking
     - navigation.tabs
+    - navigation.sections  # Expand sections in sidebar
     - content.code.copy
+    - content.action.view  # Edit page links
+    - content.action.edit  # Edit page links
 
 extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/shushuzn
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/ai-research-os/
+  generator: false  # Remove "Created with Material for MkDocs"
+
+extra_css:
+  - stylesheets/extra.css
 
 nav:
   - Home: index.md
@@ -45,7 +54,11 @@ nav:
       - Phase 1 — Infrastructure: specs/phase1-spec.md
       - Phase 2 — Search & Import: specs/phase2-spec.md
       - Phase 3 — Citation Graph: specs/phase3-citation-graph-spec.md
-  - Changelog: https://github.com/shushuzn/ai_research_os/blob/main/CHANGELOG.md
+  - Community:
+      - Contributing: contributing.md
+      - Roadmap: roadmap.md
+      - Changelog: https://github.com/shushuzn/ai_research_os/blob/main/CHANGELOG.md
+      - GitHub: https://github.com/shushuzn/ai_research_os
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -57,6 +70,22 @@ markdown_extensions:
   - tables
   - attr_list
   - md_in_html
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
 
 plugins:
-  - search
+  - search:
+      separator: '[\s\-,:!=\[\]()"/\\]+'
+      prebuild_index: true
+  - git-revision-date-localized:
+      type: timeago
+  - minify:
+      minify_html: true
+
+# Watch custom CSS and Python source for changes
+watch:
+  - stylesheets
+  - core
+  - llm
