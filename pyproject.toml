@@ -16,7 +16,7 @@ build-backend = "setuptools.build_meta"
 name = "ai-research-os"
 
 
-version = "1.5.3"
+version = "1.5.4"
 
 
 description = "A Self-Evolving Research OS for AI Researchers — manage papers, detect research gaps, generate insights"
