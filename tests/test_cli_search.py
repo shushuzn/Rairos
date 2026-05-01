@@ -22,7 +22,7 @@ from cli import (
     infer_tags_if_empty,
     main,
 )
-from cli.cmd.cite_fetch import _work_to_arxiv_id, _work_to_paper_record
+from cli.cmd.cite.cite_fetch import _work_to_arxiv_id, _work_to_paper_record
 from core import Paper
 
 
@@ -2619,7 +2619,7 @@ class TestRunKgStats:
             }
         )
 
-        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+        with patch("cli.cmd.kg.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("stats", format="text")
             result = _run_kg(args)
 
@@ -2640,7 +2640,7 @@ class TestRunKgStats:
             }
         )
 
-        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+        with patch("cli.cmd.kg.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("stats", format="warp")
             result = _run_kg(args)
 
@@ -2666,7 +2666,7 @@ class TestRunKgGraph:
         mock_kg = KGManager.__new__(KGManager)
         mock_kg.get_node_by_entity = MagicMock(return_value=None)
 
-        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+        with patch("cli.cmd.kg.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("graph", paper_id="nonexistent")
             result = _run_kg(args)
 
@@ -2703,7 +2703,7 @@ class TestRunKgGraph:
         mock_kg.get_node_by_entity = MagicMock(return_value=paper_node)
         mock_kg.find_neighbors = MagicMock(return_value=neighbors)
 
-        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+        with patch("cli.cmd.kg.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("graph", paper_id="2301.00001", format="text", depth=2)
             result = _run_kg(args)
 
@@ -2728,7 +2728,7 @@ class TestRunKgGraph:
         mock_kg.get_node_by_entity = MagicMock(return_value=paper_node)
         mock_kg.find_neighbors = MagicMock(return_value=neighbors)
 
-        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+        with patch("cli.cmd.kg.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("graph", paper_id="2301.00001", format="json")
             result = _run_kg(args)
 
@@ -2755,7 +2755,7 @@ class TestRunKgPath:
         mock_kg.get_node_by_entity = MagicMock(return_value=None)
         mock_kg.get_node = MagicMock(return_value=None)
 
-        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+        with patch("cli.cmd.kg.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("path", idA="nonexistent", idB="also-none")
             result = _run_kg(args)
 
@@ -2790,7 +2790,7 @@ class TestRunKgPath:
         mock_kg.get_node = MagicMock(return_value=None)
         mock_kg.find_shortest_path = MagicMock(return_value=None)
 
-        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+        with patch("cli.cmd.kg.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("path", idA="A", idB="B")
             result = _run_kg(args)
 
@@ -2832,7 +2832,7 @@ class TestRunKgPath:
             }.get(nid)
         )
 
-        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+        with patch("cli.cmd.kg.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("path", idA="A", idB="B")
             result = _run_kg(args)
 
@@ -2860,7 +2860,7 @@ class TestRunKgSearch:
         mock_kg.find_papers_by_tag = MagicMock(return_value=[])
         mock_kg.get_all_nodes = MagicMock(return_value=[])
 
-        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+        with patch("cli.cmd.kg.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("search", tag="LLM", format="text")
             result = _run_kg(args)
 
@@ -2880,7 +2880,7 @@ class TestRunKgSearch:
         )
         mock_kg.get_all_nodes = MagicMock(return_value=[])
 
-        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+        with patch("cli.cmd.kg.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("search", tag="LLM", format="text")
             result = _run_kg(args)
 
@@ -2901,7 +2901,7 @@ class TestRunKgSearch:
             ]
         )
 
-        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+        with patch("cli.cmd.kg.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("search", type="Tag", format="text")
             result = _run_kg(args)
 
@@ -2920,7 +2920,7 @@ class TestRunKgSearch:
             ]
         )
 
-        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+        with patch("cli.cmd.kg.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("search", format="warp")
             result = _run_kg(args)
 
@@ -2939,7 +2939,7 @@ class TestRunKgSearch:
             ]
         )
 
-        with patch("cli.cmd.kg.KGManager", return_value=mock_kg):
+        with patch("cli.cmd.kg.kg.KGManager", return_value=mock_kg):
             args = self._kg_args("search", format="json")
             result = _run_kg(args)
 
