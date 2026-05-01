@@ -1,4 +1,5 @@
 """Tests for sections/segment.py"""
+
 import pytest
 from sections.segment import (
     looks_like_heading,
@@ -14,6 +15,7 @@ from pdf.extract import TextBlock, TableBlock, MathBlock, StructuredPdfContent, 
 
 
 # ─── looks_like_heading ──────────────────────────────────────────────────────
+
 
 class TestLooksLikeHeading:
     def test_accepts_numbered_heading(self):
@@ -60,6 +62,7 @@ class TestLooksLikeHeading:
 
 # ─── text_blocks_to_lines ─────────────────────────────────────────────────────
 
+
 class TestTextBlocksToLines:
     def test_flattens_text_blocks(self):
         blocks = [
@@ -74,6 +77,7 @@ class TestTextBlocksToLines:
 
 
 # ─── segment_into_sections ───────────────────────────────────────────────────
+
 
 class TestSegmentIntoSections:
     def test_empty_input(self):
@@ -119,6 +123,7 @@ class TestSegmentIntoSections:
 
 # ─── segment_structured ───────────────────────────────────────────────────────
 
+
 class TestSegmentStructured:
     def test_empty(self):
         sdoc = StructuredPdfContent(text_blocks=[], tables=[], math_blocks=[])
@@ -127,6 +132,7 @@ class TestSegmentStructured:
 
     def test_basic_segmentation(self):
         from pdf.extract import BlockType
+
         blocks = [
             TextBlock(type=BlockType.HEADING, text="# Abstract\n\nSummary", page=0),
             TextBlock(type=BlockType.HEADING, text="# Introduction\n\nIntro", page=0),
@@ -148,8 +154,11 @@ class TestSegmentStructured:
         # Math detection is based on counting $ in section content.
         # Use text that does NOT match looks_like_heading (e.g., no "method " prefix).
         from pdf.extract import BlockType
+
         blocks = [
-            TextBlock(type=BlockType.BODY, text="Our approach uses $x = y$ for calculations.", page=0),
+            TextBlock(
+                type=BlockType.BODY, text="Our approach uses $x = y$ for calculations.", page=0
+            ),
         ]
         sdoc = StructuredPdfContent(text_blocks=blocks, tables=[], math_blocks=[])
         result = segment_structured(sdoc)
@@ -161,6 +170,7 @@ class TestSegmentStructured:
 
     def test_table_metadata(self):
         from pdf.extract import BlockType
+
         blocks = [TextBlock(type=BlockType.BODY, text="Some text", page=0)]
         tables = [
             TableBlock(text="col1 | col2\n---|---|", page=0, bbox=(0, 0, 100, 50)),
@@ -171,6 +181,7 @@ class TestSegmentStructured:
 
     def test_max_sections_truncation(self):
         from pdf.extract import BlockType
+
         # segment_structured uses BlockType.HEADING blocks as heading boundaries.
         # Plain text in BODY blocks without markdown/keyword patterns merges into 1 section.
         # To get 20 sections we use HEADING-type blocks.
@@ -185,6 +196,7 @@ class TestSegmentStructured:
 
 
 # ─── format_section_snippets ──────────────────────────────────────────────────
+
 
 class TestFormatSectionSnippets:
     def test_empty_input(self):
@@ -238,6 +250,7 @@ class TestFormatSectionSnippets:
 
 # ─── format_tables_markdown ───────────────────────────────────────────────────
 
+
 class TestFormatTablesMarkdown:
     def test_empty_tables(self):
         sdoc = StructuredPdfContent(text_blocks=[], tables=[], math_blocks=[])
@@ -268,6 +281,7 @@ class TestFormatTablesMarkdown:
 
 # ─── format_math_markdown ────────────────────────────────────────────────────
 
+
 class TestFormatMathMarkdown:
     def test_no_display_math(self):
         math_blocks = [
@@ -286,10 +300,7 @@ class TestFormatMathMarkdown:
         assert "E = mc^2" in result
 
     def test_max_count(self):
-        math_blocks = [
-            MathBlock(text=f"eq{i}", is_display=True, page=i)
-            for i in range(10)
-        ]
+        math_blocks = [MathBlock(text=f"eq{i}", is_display=True, page=i) for i in range(10)]
         sdoc = StructuredPdfContent(text_blocks=[], tables=[], math_blocks=math_blocks)
         result = format_math_markdown(sdoc, max_count=3)
         assert result.count("Equation") == 3
@@ -297,33 +308,37 @@ class TestFormatMathMarkdown:
 
 # ─── _section_priority ───────────────────────────────────────────────────────
 
+
 class TestSectionPriority:
-    @pytest.mark.parametrize("title,expected", [
-        ("Abstract", 10),
-        ("INTRODUCTION", 9),
-        ("Introduction to Transformers", 9),
-        ("Method", 8),
-        ("METHODOLOGY", 8),
-        ("Model Architecture", 7),
-        ("Algorithm Details", 7),
-        ("Experiments", 6),
-        ("Evaluation", 6),
-        ("Results and Analysis", 6),
-        ("Discussion", 4),
-        ("Limitations", 4),
-        ("Conclusion", 4),
-        ("Related Work", 3),
-        ("Background", 3),
-        ("Preliminaries", 3),
-        ("Appendix A", 1),
-        ("Acknowledgments", 1),
-        ("References", 0),
-        ("Future Work", 2),
-        ("Ablation Study", 5),
-        ("Body", 1),
-        ("TRUNCATED", 0),
-        ("Unknown Section Title", 2),  # default
-        ("", 2),  # default for empty
-    ])
+    @pytest.mark.parametrize(
+        "title,expected",
+        [
+            ("Abstract", 10),
+            ("INTRODUCTION", 9),
+            ("Introduction to Transformers", 9),
+            ("Method", 8),
+            ("METHODOLOGY", 8),
+            ("Model Architecture", 7),
+            ("Algorithm Details", 7),
+            ("Experiments", 6),
+            ("Evaluation", 6),
+            ("Results and Analysis", 6),
+            ("Discussion", 4),
+            ("Limitations", 4),
+            ("Conclusion", 4),
+            ("Related Work", 3),
+            ("Background", 3),
+            ("Preliminaries", 3),
+            ("Appendix A", 1),
+            ("Acknowledgments", 1),
+            ("References", 0),
+            ("Future Work", 2),
+            ("Ablation Study", 5),
+            ("Body", 1),
+            ("TRUNCATED", 0),
+            ("Unknown Section Title", 2),  # default
+            ("", 2),  # default for empty
+        ],
+    )
     def test_priority_values(self, title, expected):
         assert _section_priority(title) == expected

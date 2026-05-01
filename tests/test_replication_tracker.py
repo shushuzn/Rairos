@@ -1,4 +1,5 @@
 """Tests for replication tracker."""
+
 import pytest
 from llm.replication_tracker import (
     ReplicationTracker,

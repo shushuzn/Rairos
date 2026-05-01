@@ -1,9 +1,21 @@
 """Tests for core/exceptions.py."""
+
 from core.exceptions import (
-    AIResearchOSError, PDFParseError, APIClientError, NetworkError,
-    RateLimitError, PaperNotFoundError, DatabaseError, CacheError,
-    ValidationError, ParseTimeoutError, LLMCacheError, ConfigError,
-    RetryExhaustedError, InvalidInputError, MissingDependencyError,
+    AIResearchOSError,
+    PDFParseError,
+    APIClientError,
+    NetworkError,
+    RateLimitError,
+    PaperNotFoundError,
+    DatabaseError,
+    CacheError,
+    ValidationError,
+    ParseTimeoutError,
+    LLMCacheError,
+    ConfigError,
+    RetryExhaustedError,
+    InvalidInputError,
+    MissingDependencyError,
     format_error_message,
 )
 

@@ -1,4 +1,5 @@
 """Async research loop tests — arun_research with mocked I/O."""
+
 import asyncio
 import tempfile
 from pathlib import Path
@@ -13,6 +14,7 @@ from research_loop import arun_research
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 def _make_paper(uid: str = "2301.12345", title: str = "Test Paper") -> Paper:
     return Paper(
@@ -38,6 +40,7 @@ def tmp_output_dir():
 # arun_research — async pipeline
 # =============================================================================
 
+
 class TestArunResearch:
     @pytest.mark.no_freeze
     @pytest.mark.asyncio
@@ -50,11 +53,16 @@ class TestArunResearch:
             pdf_path.write_bytes(b"%PDF-1.4 test")
             return pdf_path
 
-        with patch("research_loop.core.search_arxiv", return_value=[paper]), \
-             patch("pdf.extract.extract_pdf_text", return_value="Extracted text."), \
-             patch("pdf.extract_async.download_pdf_async", side_effect=mock_download):
+        with (
+            patch("research_loop.core.search_arxiv", return_value=[paper]),
+            patch("pdf.extract.extract_pdf_text", return_value="Extracted text."),
+            patch("pdf.extract_async.download_pdf_async", side_effect=mock_download),
+        ):
             from llm import client_async
-            with patch.object(client_async, "call_llm_chat_completions_async", new_callable=AsyncMock) as mock_llm:
+
+            with patch.object(
+                client_async, "call_llm_chat_completions_async", new_callable=AsyncMock
+            ) as mock_llm:
                 mock_llm.return_value = "AI draft content."
                 paths = await arun_research(
                     query="transformer",
@@ -76,9 +84,11 @@ class TestArunResearch:
         """Without API key, arun_research produces metadata-only notes."""
         paper = _make_paper(uid="2301.00002")
 
-        with patch("research_loop.core.search_arxiv", return_value=[paper]), \
-             patch("pdf.extract_async.download_pdf_async", new_callable=AsyncMock) as mock_dl, \
-             patch("pdf.extract.extract_pdf_text", return_value="Some text"):
+        with (
+            patch("research_loop.core.search_arxiv", return_value=[paper]),
+            patch("pdf.extract_async.download_pdf_async", new_callable=AsyncMock) as mock_dl,
+            patch("pdf.extract.extract_pdf_text", return_value="Some text"),
+        ):
             mock_dl.side_effect = Exception("no pdf")
 
             paths = await arun_research(
@@ -169,11 +179,16 @@ class TestArunResearch:
             pdf_path.write_bytes(b"%PDF-1.4")
             return pdf_path
 
-        with patch("research_loop.core.search_arxiv", return_value=papers), \
-             patch("pdf.extract.extract_pdf_text", return_value="Extracted text."), \
-             patch("pdf.extract_async.download_pdf_async", side_effect=mock_download):
+        with (
+            patch("research_loop.core.search_arxiv", return_value=papers),
+            patch("pdf.extract.extract_pdf_text", return_value="Extracted text."),
+            patch("pdf.extract_async.download_pdf_async", side_effect=mock_download),
+        ):
             from llm import client_async
-            with patch.object(client_async, "call_llm_chat_completions_async", new_callable=AsyncMock) as mock_llm:
+
+            with patch.object(
+                client_async, "call_llm_chat_completions_async", new_callable=AsyncMock
+            ) as mock_llm:
                 mock_llm.return_value = "Draft."
                 await arun_research(
                     query="test",
@@ -227,11 +242,16 @@ class TestArunResearch:
             pdf_path.write_bytes(pdf_bytes)
             return pdf_path
 
-        with patch("research_loop.core.search_arxiv", return_value=papers), \
-             patch("pdf.extract.extract_pdf_text", return_value="Extracted text."), \
-             patch("pdf.extract_async.download_pdf_async", side_effect=flaky_download):
+        with (
+            patch("research_loop.core.search_arxiv", return_value=papers),
+            patch("pdf.extract.extract_pdf_text", return_value="Extracted text."),
+            patch("pdf.extract_async.download_pdf_async", side_effect=flaky_download),
+        ):
             from llm import client_async
-            with patch.object(client_async, "call_llm_chat_completions_async", new_callable=AsyncMock) as mock_llm:
+
+            with patch.object(
+                client_async, "call_llm_chat_completions_async", new_callable=AsyncMock
+            ) as mock_llm:
                 mock_llm.return_value = "Draft."
                 paths = await arun_research(
                     query="test",
@@ -269,11 +289,16 @@ class TestArunResearch:
             pdf_path.write_bytes(b"%PDF-1.4")
             return pdf_path
 
-        with patch("research_loop.core.search_arxiv", return_value=papers), \
-             patch("pdf.extract.extract_pdf_text", return_value="Extracted text."), \
-             patch("pdf.extract_async.download_pdf_async", side_effect=mock_dl):
+        with (
+            patch("research_loop.core.search_arxiv", return_value=papers),
+            patch("pdf.extract.extract_pdf_text", return_value="Extracted text."),
+            patch("pdf.extract_async.download_pdf_async", side_effect=mock_dl),
+        ):
             from llm import client_async
-            with patch.object(client_async, "call_llm_chat_completions_async", new_callable=AsyncMock) as mock_llm:
+
+            with patch.object(
+                client_async, "call_llm_chat_completions_async", new_callable=AsyncMock
+            ) as mock_llm:
                 mock_llm.return_value = "Draft."
                 paths = await arun_research(
                     query="test",

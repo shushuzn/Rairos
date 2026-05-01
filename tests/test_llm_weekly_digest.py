@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/weekly_digest.py, pure functions, no I/O."""
+
 from llm.weekly_digest import WeekData, WeeklyDigest
 
 
@@ -130,9 +131,9 @@ class TestProductivityScore:
         data = WeekData(
             start_date="S",
             end_date="E",
-            journal_entries=3,        # 15 pts
+            journal_entries=3,  # 15 pts
             experiments_completed=1,  # 20 pts
-            questions_resolved=1,     # 15 pts
+            questions_resolved=1,  # 15 pts
             mood_breakdown={"excited": 1},  # +5 pts
         )
         assert self._score(data) == 55  # 15+20+15+5
@@ -142,9 +143,9 @@ class TestProductivityScore:
         data = WeekData(
             start_date="S",
             end_date="E",
-            journal_entries=10,      # 25 pts (capped)
+            journal_entries=10,  # 25 pts (capped)
             experiments_completed=10,  # 40 pts (capped)
-            questions_resolved=10,    # 30 pts (capped)
+            questions_resolved=10,  # 30 pts (capped)
             mood_breakdown={"excited": 1},  # +5 pts
         )
         assert self._score(data) == 100  # 25+40+30+5=100

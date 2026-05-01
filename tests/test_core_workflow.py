@@ -1,4 +1,5 @@
 """Tests for core/workflow.py."""
+
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -50,6 +51,7 @@ class TestWorkflow:
         def make_func(name):
             def fn():
                 order.append(name)
+
             return fn
 
         wf.add_step(make_func("A"), "A desc")

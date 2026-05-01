@@ -7,6 +7,7 @@ Inspired by cloud optimization principles:
 - Intelligent cache expiration
 - Cache prioritization (keep valuable data longer)
 """
+
 import orjson
 import zlib
 import time
@@ -22,6 +23,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class CacheEntry:
     """Cache entry with metadata."""
+
     key: str
     data: bytes
     created_at: float
@@ -51,7 +53,7 @@ class SmartCache:
         max_size_mb: float = 500.0,
         compression_threshold_kb: float = 10.0,
         default_ttl: int = 86400,  # 24 hours
-        compression_level: int = 6
+        compression_level: int = 6,
     ):
         self.cache_dir = cache_dir
         self.max_size_bytes = int(max_size_mb * 1024 * 1024)
@@ -81,7 +83,7 @@ class SmartCache:
         index_file = self.cache_dir / ".cache_index.json"
         if index_file.exists():
             try:
-                with open(index_file, 'rb') as f:
+                with open(index_file, "rb") as f:
                     data = orjson.loads(f.read())
 
                 for key, meta in data.items():
@@ -95,7 +97,7 @@ class SmartCache:
                         size_bytes=meta["size_bytes"],
                         priority=meta["priority"],
                         compressed=meta["compressed"],
-                        ttl=meta.get("ttl")
+                        ttl=meta.get("ttl"),
                     )
                     self._index[key] = entry
 
@@ -116,12 +118,12 @@ class SmartCache:
                     "size_bytes": entry.size_bytes,
                     "priority": entry.priority,
                     "compressed": entry.compressed,
-                    "ttl": entry.ttl
+                    "ttl": entry.ttl,
                 }
                 for key, entry in self._index.items()
             }
 
-            with open(index_file, 'wb') as f:
+            with open(index_file, "wb") as f:
                 f.write(orjson.dumps(data))
         except Exception as e:
             logger.warning(f"Failed to save cache index: {e}")
@@ -146,7 +148,7 @@ class SmartCache:
         while self._get_total_size() > self.max_size_bytes and self._index:
             # Find entry to evict (LRU + lowest priority)
             evict_key = None
-            evict_score = float('inf')
+            evict_score = float("inf")
 
             for key, entry in self._index.items():
                 # Score = accessed_at (older = higher priority for eviction)
@@ -184,13 +186,7 @@ class SmartCache:
         # Remove from index
         del self._index[key]
 
-    def set(
-        self,
-        key: str,
-        data: Any,
-        ttl: Optional[int] = None,
-        priority: int = 0
-    ):
+    def set(self, key: str, data: Any, ttl: Optional[int] = None, priority: int = 0):
         """
         Store data in cache.
 
@@ -221,7 +217,7 @@ class SmartCache:
             size_bytes=len(serialized),
             priority=priority,
             compressed=compressed,
-            ttl=ttl
+            ttl=ttl,
         )
 
         # Ensure cache directory exists
@@ -230,7 +226,7 @@ class SmartCache:
 
         # Write to disk
         try:
-            with open(cache_path, 'wb') as f:
+            with open(cache_path, "wb") as f:
                 f.write(serialized)
 
             # Update index
@@ -275,7 +271,7 @@ class SmartCache:
             return None
 
         try:
-            with open(cache_path, 'rb') as f:
+            with open(cache_path, "rb") as f:
                 data = f.read()
 
             # Decompress if needed
@@ -324,7 +320,9 @@ class SmartCache:
             "total_entries": total_entries,
             "total_size_mb": total_size / (1024 * 1024),
             "max_size_mb": self.max_size_bytes / (1024 * 1024),
-            "usage_percent": (total_size / self.max_size_bytes) * 100 if self.max_size_bytes > 0 else 0,
+            "usage_percent": (total_size / self.max_size_bytes) * 100
+            if self.max_size_bytes > 0
+            else 0,
             "hits": self._stats["hits"],
             "misses": self._stats["misses"],
             "hit_rate_percent": hit_rate,
@@ -361,10 +359,7 @@ class SmartCache:
 _smart_cache: Optional[SmartCache] = None
 
 
-def get_smart_cache(
-    cache_dir: Optional[Path] = None,
-    max_size_mb: float = 500.0
-) -> SmartCache:
+def get_smart_cache(cache_dir: Optional[Path] = None, max_size_mb: float = 500.0) -> SmartCache:
     """Get or create the global smart cache."""
     global _smart_cache
     if _smart_cache is None:

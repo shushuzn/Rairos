@@ -12,9 +12,8 @@ uv.lock
 .omc/
 *.jsonl
 *.zip
-.pytest_cache/
-AI-Research/
-ai_research.db
+
+# Data directories
 data/arxiv/
 data/research.db
 data/research.db-shm
@@ -23,11 +22,6 @@ data/crossref/
 data/papers/
 data/*.pdf
 cache/
-.env
-
-# Temp/artifact files
-0
-data/extable.db
 
 # Claude settings
 .claude/
@@ -35,35 +29,17 @@ data/extable.db
 .claude/settings.local.json
 .claude/worktrees/
 
-# Debug artifacts from interactive testing
-0x3000
-fts_query
-make_pr.py
-pr_body.json
-pytest_310.txt
-pytest_output.zip
-pytest_out.zip
-logs.zip
-artifact_311.zip
-
-# Misc junk files (shell completion artifacts)
-0.4
-100
-15
-48
-5
-['transformer'
-any
-1
-.git-rewrite/
-
 # Tool-specific files
 .kilo/
 .playwright-mcp/
-Output
-12}
 neuraloperator_fork/
 data/llm_cache/
+
+# Misc
+.env
+AI-Research/
+ai_research.db
+data/extable.db
 
 # Experiment files (local only)
 galerkin_experiment.py

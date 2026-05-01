@@ -1,4 +1,5 @@
 """Tests for trends/forecaster.py — TrendForecaster time-series analysis."""
+
 from __future__ import annotations
 
 import pytest

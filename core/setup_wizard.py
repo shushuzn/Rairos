@@ -11,10 +11,10 @@ We offer:
 - One-click configuration
 - Ready-to-use system
 """
+
 import os
 from pathlib import Path
 from typing import Dict
-
 
 
 class SetupWizard:
@@ -69,7 +69,7 @@ class SetupWizard:
         if passed == len(self.results):
             print("\n🎉 设置完成！系统已准备就绪")
             print("\n下一步:")
-            print("  1. python cli.py search \"machine learning\"")
+            print('  1. python cli.py search "machine learning"')
             print("  2. python cli.py import 2301.001")
             print("  3. python cli.py status")
         else:
@@ -133,6 +133,7 @@ class SetupWizard:
     def _setup_database(self) -> bool:
         """Setup database."""
         from db import Database
+
         try:
             db = Database()
             db.init()

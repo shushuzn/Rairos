@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/chat.py, pure functions, no I/O."""
+
 from llm.chat import (
     QueryType,
     ChatContext,
@@ -17,26 +18,33 @@ class TestQueryTypePatterns:
         """Pattern compilation returns a dict with all QueryType keys."""
         # Import here to avoid needing full RagChat initialization
         import re
+
         patterns = {
             QueryType.FACTUAL: [
-                re.compile(r'\b(who|whom|whose|who\'s)\b', re.I),
-                re.compile(r'\b(when|what year|what date)\b', re.I),
-                re.compile(r'\b(which (paper|author|model))\b', re.I),
-                re.compile(r'\b(who proposed|who introduced|who published)\b', re.I),
-                re.compile(r'(是谁|谁提出|谁发明|谁创建|哪篇|哪个作者|哪篇论文)'),
+                re.compile(r"\b(who|whom|whose|who\'s)\b", re.I),
+                re.compile(r"\b(when|what year|what date)\b", re.I),
+                re.compile(r"\b(which (paper|author|model))\b", re.I),
+                re.compile(r"\b(who proposed|who introduced|who published)\b", re.I),
+                re.compile(r"(是谁|谁提出|谁发明|谁创建|哪篇|哪个作者|哪篇论文)"),
             ],
             QueryType.CONCEPTUAL: [
-                re.compile(r'\b(what is|what are|explain|describe|how does|how do|why does|why do|understand|definition|meaning)\b', re.I),
-                re.compile(r'(原理|机制|概念|解释|是什么|如何|为什么|理解|定义|工作原理)'),
+                re.compile(
+                    r"\b(what is|what are|explain|describe|how does|how do|why does|why do|understand|definition|meaning)\b",
+                    re.I,
+                ),
+                re.compile(r"(原理|机制|概念|解释|是什么|如何|为什么|理解|定义|工作原理)"),
             ],
             QueryType.COMPARATIVE: [
-                re.compile(r'\b(vs|versus|compared to|compared with|difference between| versus | vs\. )\b', re.I),
-                re.compile(r'\b(和.*比较|区别|差异|对比|优于|劣于)\b'),
+                re.compile(
+                    r"\b(vs|versus|compared to|compared with|difference between| versus | vs\. )\b",
+                    re.I,
+                ),
+                re.compile(r"\b(和.*比较|区别|差异|对比|优于|劣于)\b"),
             ],
             QueryType.TEMPORAL: [
-                re.compile(r'\b(recent|latest|newest|202[0-9]|20[2-9]\d)\b', re.I),
-                re.compile(r'\b(最近|最新|新的|202[0-9]|今年|去年|明年)\b'),
-                re.compile(r'\b(published in|released in|presented in|from 20)\b', re.I),
+                re.compile(r"\b(recent|latest|newest|202[0-9]|20[2-9]\d)\b", re.I),
+                re.compile(r"\b(最近|最新|新的|202[0-9]|今年|去年|明年)\b"),
+                re.compile(r"\b(published in|released in|presented in|from 20)\b", re.I),
             ],
         }
         assert QueryType.FACTUAL in patterns
@@ -47,7 +55,8 @@ class TestQueryTypePatterns:
     def test_factual_pattern_matches_english(self):
         """English factual patterns match correctly."""
         import re
-        pattern = re.compile(r'\b(who|whom|whose|who\'s)\b', re.I)
+
+        pattern = re.compile(r"\b(who|whom|whose|who\'s)\b", re.I)
         assert pattern.search("Who proposed this method")
         assert pattern.search("who is the author")
         assert pattern.search("WHO wrote it")  # case insensitive
@@ -55,7 +64,8 @@ class TestQueryTypePatterns:
     def test_factual_pattern_matches_chinese(self):
         """Chinese factual patterns match correctly."""
         import re
-        pattern = re.compile(r'(是谁|谁提出|谁发明|谁创建|哪篇|哪个作者|哪篇论文)')
+
+        pattern = re.compile(r"(是谁|谁提出|谁发明|谁创建|哪篇|哪个作者|哪篇论文)")
         assert pattern.search("这篇文章是谁写的")
         assert pattern.search("谁提出了Transformer")
         assert pattern.search("哪篇论文提出了注意力机制")
@@ -63,29 +73,38 @@ class TestQueryTypePatterns:
     def test_conceptual_pattern_matches(self):
         """Conceptual patterns match understanding-type queries."""
         import re
+
         # Note: \b doesn't work well with Chinese, test English only
-        pattern = re.compile(r'\b(what is|what are|explain|describe|how does|how do|why does|why do|understand|definition|meaning)\b', re.I)
+        pattern = re.compile(
+            r"\b(what is|what are|explain|describe|how does|how do|why does|why do|understand|definition|meaning)\b",
+            re.I,
+        )
         assert pattern.search("What is attention mechanism")
         assert pattern.search("Explain how transformers work")
 
     def test_comparative_pattern_matches(self):
         """Comparative patterns match comparison queries."""
         import re
-        pattern = re.compile(r'\b(vs|versus|compared to|compared with|difference between| versus | vs\. )\b', re.I)
+
+        pattern = re.compile(
+            r"\b(vs|versus|compared to|compared with|difference between| versus | vs\. )\b", re.I
+        )
         assert pattern.search("BERT vs GPT")
         assert pattern.search("difference between CNN and RNN")
 
     def test_temporal_pattern_matches(self):
         """Temporal patterns match time-related queries."""
         import re
-        pattern = re.compile(r'\b(recent|latest|newest|202[0-9]|20[2-9]\d)\b', re.I)
+
+        pattern = re.compile(r"\b(recent|latest|newest|202[0-9]|20[2-9]\d)\b", re.I)
         assert pattern.search("recent papers on NLP")
         assert pattern.search("latest research 2024")
 
     def test_temporal_year_pattern_matches(self):
         """Year patterns match correctly."""
         import re
-        pattern = re.compile(r'\b(202[0-9]|20[2-9]\d)\b', re.I)
+
+        pattern = re.compile(r"\b(202[0-9]|20[2-9]\d)\b", re.I)
         assert pattern.search("papers from 2023")
         assert pattern.search("research in 2025")
 
@@ -99,18 +118,30 @@ class TestExtractTopic:
     def _extract_topic(self, text: str) -> str | None:
         """Replicate the _extract_topic logic for testing."""
         import re
+
         patterns = [
-            r'是什么|什么是|请问|帮我|找找|解释|说明|介绍',
-            r'what is|what are|explain|describe|introduce',
+            r"是什么|什么是|请问|帮我|找找|解释|说明|介绍",
+            r"what is|what are|explain|describe|introduce",
         ]
         cleaned = text
         for p in patterns:
-            cleaned = re.sub(p, '', cleaned, flags=re.I)
+            cleaned = re.sub(p, "", cleaned, flags=re.I)
 
         # Take first meaningful phrase (3-10 chars)
         words = cleaned.split()
         for w in words:
-            if 2 <= len(w) <= 15 and w not in {'的', '了', '是', '在', '和', 'the', 'a', 'an', 'is', 'are'}:
+            if 2 <= len(w) <= 15 and w not in {
+                "的",
+                "了",
+                "是",
+                "在",
+                "和",
+                "the",
+                "a",
+                "an",
+                "is",
+                "are",
+            }:
                 return w[:20]
         return None
 
@@ -140,7 +171,7 @@ class TestExtractTopic:
         result = self._extract_topic("请帮我找找这篇论文")
         # Should strip "请帮我找找" leaving mostly noise
         words = result.split() if result else []
-        assert not any(w in ['请', '帮', '我', '找'] for w in words)
+        assert not any(w in ["请", "帮", "我", "找"] for w in words)
 
     def test_respects_word_length_bounds(self):
         """Only returns words between 2 and 15 chars."""
@@ -158,22 +189,35 @@ class TestResolvePronouns:
     def _extract_topic(self, text: str) -> str | None:
         """Replicate topic extraction logic."""
         import re
+
         patterns = [
-            r'是什么|什么是|请问|帮我|找找|解释|说明|介绍',
-            r'what is|what are|explain|describe|introduce',
+            r"是什么|什么是|请问|帮我|找找|解释|说明|介绍",
+            r"what is|what are|explain|describe|introduce",
         ]
         cleaned = text
         for p in patterns:
-            cleaned = re.sub(p, '', cleaned, flags=re.I)
+            cleaned = re.sub(p, "", cleaned, flags=re.I)
         words = cleaned.split()
         for w in words:
-            if 2 <= len(w) <= 15 and w not in {'的', '了', '是', '在', '和', 'the', 'a', 'an', 'is', 'are'}:
+            if 2 <= len(w) <= 15 and w not in {
+                "的",
+                "了",
+                "是",
+                "在",
+                "和",
+                "the",
+                "a",
+                "an",
+                "is",
+                "are",
+            }:
                 return w[:20]
         return None
 
     def _resolve_pronouns(self, question: str, session) -> str:
         """Replicate the _resolve_pronouns logic for testing."""
         import re
+
         if not session or not session.queries:
             return question
 
@@ -188,8 +232,8 @@ class TestResolvePronouns:
         is_followup = any(
             pattern.search(question.lower())
             for pattern in [
-                re.compile(r'^(它|它们|这个|有哪些|有什么|哪个|哪些|怎么|如何|为什么|有什么不同)'),
-                re.compile(r'^(what about|and how|what are the|which ones|how about)'),
+                re.compile(r"^(它|它们|这个|有哪些|有什么|哪个|哪些|怎么|如何|为什么|有什么不同)"),
+                re.compile(r"^(what about|and how|what are the|which ones|how about)"),
             ]
         )
 
@@ -207,24 +251,24 @@ class TestResolvePronouns:
 
     def test_returns_original_when_empty_queries(self):
         """Returns original question when session has no queries."""
-        session = type('Session', (), {'queries': []})()
+        session = type("Session", (), {"queries": []})()
         result = self._resolve_pronouns("它有什么优点", session)
         assert result == "它有什么优点"
 
     def test_resolves_followup_with_topic_context(self):
         """Resolves follow-up question with topic from history."""
-        session = type('Session', (), {
-            'queries': [type('Query', (), {'question': '什么是Transformer'})()]
-        })()
+        session = type(
+            "Session", (), {"queries": [type("Query", (), {"question": "什么是Transformer"})()]}
+        )()
         result = self._resolve_pronouns("它有什么优点", session)
         assert "Transformer" in result
         assert "[上文讨论:" in result
 
     def test_preserves_original_when_not_followup(self):
         """Does not modify non-follow-up questions."""
-        session = type('Session', (), {
-            'queries': [type('Query', (), {'question': '什么是Transformer'})()]
-        })()
+        session = type(
+            "Session", (), {"queries": [type("Query", (), {"question": "什么是Transformer"})()]}
+        )()
         result = self._resolve_pronouns("介绍一下BERT模型", session)
         # Non-follow-up questions are not modified
         assert result == "介绍一下BERT模型"
@@ -253,17 +297,23 @@ class TestCalculateConfidence:
         sections = set()
         for ctx in contexts:
             if ctx.snippet:
-                if 'abstract' in ctx.snippet.lower()[:100]:
-                    sections.add('Abstract')
-                if 'introduction' in ctx.snippet.lower()[:200]:
-                    sections.add('Introduction')
-                if any(kw in ctx.snippet.lower()[:100] for kw in ['method', 'approach', 'model', 'architecture']):
-                    sections.add('Method')
-                if any(kw in ctx.snippet.lower()[:100] for kw in ['experiment', 'result', 'evaluation', 'benchmark']):
-                    sections.add('Experiments')
+                if "abstract" in ctx.snippet.lower()[:100]:
+                    sections.add("Abstract")
+                if "introduction" in ctx.snippet.lower()[:200]:
+                    sections.add("Introduction")
+                if any(
+                    kw in ctx.snippet.lower()[:100]
+                    for kw in ["method", "approach", "model", "architecture"]
+                ):
+                    sections.add("Method")
+                if any(
+                    kw in ctx.snippet.lower()[:100]
+                    for kw in ["experiment", "result", "evaluation", "benchmark"]
+                ):
+                    sections.add("Experiments")
 
         if not sections:
-            sections.add('General')
+            sections.add("General")
 
         score = 50.0
 
@@ -290,7 +340,7 @@ class TestCalculateConfidence:
             warnings.append("仅基于单篇论文，建议补充更多证据")
         if avg_relevance < 0.6:
             warnings.append("部分检索结果相关性较低")
-        if len(sections) == 1 and 'General' not in sections:
+        if len(sections) == 1 and "General" not in sections:
             warnings.append(f"仅覆盖{sections.pop()}章节，缺少其他视角")
         elif len(sections) == 1:
             warnings.append("检索覆盖范围有限")
@@ -332,9 +382,30 @@ class TestCalculateConfidence:
     def test_multiple_papers_higher_confidence(self):
         """Multiple papers give higher base score."""
         contexts = [
-            ChatContext(paper_id="p1", paper_title="T1", authors=[], published="", snippet="abstract content", relevance_score=0.8),
-            ChatContext(paper_id="p2", paper_title="T2", authors=[], published="", snippet="method content", relevance_score=0.7),
-            ChatContext(paper_id="p3", paper_title="T3", authors=[], published="", snippet="experiment content", relevance_score=0.9),
+            ChatContext(
+                paper_id="p1",
+                paper_title="T1",
+                authors=[],
+                published="",
+                snippet="abstract content",
+                relevance_score=0.8,
+            ),
+            ChatContext(
+                paper_id="p2",
+                paper_title="T2",
+                authors=[],
+                published="",
+                snippet="method content",
+                relevance_score=0.7,
+            ),
+            ChatContext(
+                paper_id="p3",
+                paper_title="T3",
+                authors=[],
+                published="",
+                snippet="experiment content",
+                relevance_score=0.9,
+            ),
         ]
         result = self._calculate_confidence("answer", contexts)
         assert result.papers_count == 3
@@ -343,10 +414,24 @@ class TestCalculateConfidence:
     def test_high_relevance_increases_score(self):
         """High relevance scores increase overall confidence."""
         low_rel = [
-            ChatContext(paper_id="p1", paper_title="T1", authors=[], published="", snippet="some text", relevance_score=0.3),
+            ChatContext(
+                paper_id="p1",
+                paper_title="T1",
+                authors=[],
+                published="",
+                snippet="some text",
+                relevance_score=0.3,
+            ),
         ]
         high_rel = [
-            ChatContext(paper_id="p1", paper_title="T1", authors=[], published="", snippet="some text", relevance_score=0.9),
+            ChatContext(
+                paper_id="p1",
+                paper_title="T1",
+                authors=[],
+                published="",
+                snippet="some text",
+                relevance_score=0.9,
+            ),
         ]
         result_low = self._calculate_confidence("answer", low_rel)
         result_high = self._calculate_confidence("answer", high_rel)
@@ -355,7 +440,14 @@ class TestCalculateConfidence:
     def test_section_detection_abstract(self):
         """Detects Abstract section from snippet."""
         contexts = [
-            ChatContext(paper_id="p1", paper_title="T", authors=[], published="", snippet="Abstract: This paper proposes a new method. " * 5, relevance_score=0.8),
+            ChatContext(
+                paper_id="p1",
+                paper_title="T",
+                authors=[],
+                published="",
+                snippet="Abstract: This paper proposes a new method. " * 5,
+                relevance_score=0.8,
+            ),
         ]
         result = self._calculate_confidence("answer", contexts)
         # Note: sections set is mutated by pop() in implementation
@@ -364,7 +456,14 @@ class TestCalculateConfidence:
     def test_section_detection_method(self):
         """Detects Method section from keywords."""
         contexts = [
-            ChatContext(paper_id="p1", paper_title="T", authors=[], published="", snippet="Method and architecture are key contributions. " * 5, relevance_score=0.8),
+            ChatContext(
+                paper_id="p1",
+                paper_title="T",
+                authors=[],
+                published="",
+                snippet="Method and architecture are key contributions. " * 5,
+                relevance_score=0.8,
+            ),
         ]
         result = self._calculate_confidence("answer", contexts)
         # Note: sections set is mutated by pop() in implementation
@@ -373,7 +472,14 @@ class TestCalculateConfidence:
     def test_section_detection_experiment(self):
         """Detects Experiment section from keywords."""
         contexts = [
-            ChatContext(paper_id="p1", paper_title="T", authors=[], published="", snippet="Experiment and evaluation on benchmark show results. " * 5, relevance_score=0.8),
+            ChatContext(
+                paper_id="p1",
+                paper_title="T",
+                authors=[],
+                published="",
+                snippet="Experiment and evaluation on benchmark show results. " * 5,
+                relevance_score=0.8,
+            ),
         ]
         result = self._calculate_confidence("answer", contexts)
         # Note: sections set is mutated by pop() in implementation
@@ -393,9 +499,30 @@ class TestCalculateConfidence:
         """Score is always bounded between 0 and 100."""
         # Test with extreme values
         contexts = [
-            ChatContext(paper_id="p1", paper_title="T", authors=[], published="", snippet="x" * 1000, relevance_score=1.0),
-            ChatContext(paper_id="p2", paper_title="T", authors=[], published="", snippet="x" * 1000, relevance_score=1.0),
-            ChatContext(paper_id="p3", paper_title="T", authors=[], published="", snippet="x" * 1000, relevance_score=1.0),
+            ChatContext(
+                paper_id="p1",
+                paper_title="T",
+                authors=[],
+                published="",
+                snippet="x" * 1000,
+                relevance_score=1.0,
+            ),
+            ChatContext(
+                paper_id="p2",
+                paper_title="T",
+                authors=[],
+                published="",
+                snippet="x" * 1000,
+                relevance_score=1.0,
+            ),
+            ChatContext(
+                paper_id="p3",
+                paper_title="T",
+                authors=[],
+                published="",
+                snippet="x" * 1000,
+                relevance_score=1.0,
+            ),
         ]
         result = self._calculate_confidence("answer", contexts)
         assert 0 <= result.score <= 100
@@ -403,7 +530,14 @@ class TestCalculateConfidence:
     def test_coverage_description_format(self):
         """Coverage description has correct format."""
         contexts = [
-            ChatContext(paper_id="p1", paper_title="T", authors=[], published="", snippet="abstract content", relevance_score=0.8),
+            ChatContext(
+                paper_id="p1",
+                paper_title="T",
+                authors=[],
+                published="",
+                snippet="abstract content",
+                relevance_score=0.8,
+            ),
         ]
         result = self._calculate_confidence("answer", contexts)
         assert "1篇论文" in result.coverage
@@ -471,5 +605,5 @@ class TestChatContext:
             relevance_score=0.5,
         )
         # All fields should be present
-        assert hasattr(ctx, 'paper_id')
-        assert hasattr(ctx, 'snippet')
+        assert hasattr(ctx, "paper_id")
+        assert hasattr(ctx, "snippet")

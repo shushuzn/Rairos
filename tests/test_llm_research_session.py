@@ -1,6 +1,9 @@
 """Tier 2 unit tests — llm/research_session.py, pure functions, no I/O."""
+
 from llm.research_session import (
-    ResearchIntent, Query, ResearchSession,
+    ResearchIntent,
+    Query,
+    ResearchSession,
     ResearchSessionTracker,
 )
 
@@ -47,8 +50,12 @@ class TestQuery:
 
     def test_with_follow_ups(self):
         q = Query(
-            id="q001", question="Q", answer_preview="A",
-            paper_ids=[], paper_titles=[], timestamp="t",
+            id="q001",
+            question="Q",
+            answer_preview="A",
+            paper_ids=[],
+            paper_titles=[],
+            timestamp="t",
             follow_ups=["追问1", "追问2"],
         )
         assert len(q.follow_ups) == 2
@@ -76,18 +83,26 @@ class TestResearchSession:
 
     def test_with_queries(self):
         q = Query(
-            id="q001", question="Q", answer_preview="A",
-            paper_ids=[], paper_titles=[], timestamp="t",
+            id="q001",
+            question="Q",
+            answer_preview="A",
+            paper_ids=[],
+            paper_titles=[],
+            timestamp="t",
         )
         s = ResearchSession(
-            id="s001", title="T", queries=[q],
+            id="s001",
+            title="T",
+            queries=[q],
             started_at="2026-01-01T09:00:00",
         )
         assert len(s.queries) == 1
 
     def test_topics_property(self):
         s = ResearchSession(
-            id="s001", title="T", queries=[],
+            id="s001",
+            title="T",
+            queries=[],
             started_at="2026-01-01T09:00:00",
             tags=["nlp", "transformer"],
         )
@@ -95,7 +110,9 @@ class TestResearchSession:
 
     def test_topics_deduplicates(self):
         s = ResearchSession(
-            id="s001", title="T", queries=[],
+            id="s001",
+            title="T",
+            queries=[],
             started_at="2026-01-01T09:00:00",
             tags=["transformer", "transformer"],
         )
@@ -239,8 +256,11 @@ class TestProbingQuestions:
         tracker.current_session.tags = ["transformer"]
         tracker.current_session.queries = [
             Query(
-                id="q001", question="What is transformer?",
-                answer_preview="", paper_ids=[], paper_titles=[],
+                id="q001",
+                question="What is transformer?",
+                answer_preview="",
+                paper_ids=[],
+                paper_titles=[],
                 timestamp="2026-01-01T00:00:00",
             )
         ]
@@ -253,8 +273,12 @@ class TestProbingQuestions:
         tracker.current_session.tags = ["nlp"]
         tracker.current_session.queries = [
             Query(
-                id="q001", question="Q", answer_preview="",
-                paper_ids=[], paper_titles=[], timestamp="t",
+                id="q001",
+                question="Q",
+                answer_preview="",
+                paper_ids=[],
+                paper_titles=[],
+                timestamp="t",
             )
         ]
         questions = tracker.get_probing_questions(use_llm=False)
@@ -268,8 +292,12 @@ class TestProbingQuestions:
         tracker.current_session.tags = ["x", "y"]
         tracker.current_session.queries = [
             Query(
-                id="q001", question="Q", answer_preview="",
-                paper_ids=[], paper_titles=[], timestamp="t",
+                id="q001",
+                question="Q",
+                answer_preview="",
+                paper_ids=[],
+                paper_titles=[],
+                timestamp="t",
             )
         ]
         questions = tracker.get_probing_questions(use_llm=False)
@@ -300,8 +328,11 @@ class TestResearchPathSuggestion:
         # Add at least one query so get_research_path_suggestion returns a result
         tracker.current_session.queries = [
             Query(
-                id="q001", question="What is this?",
-                answer_preview="", paper_ids=[], paper_titles=[],
+                id="q001",
+                question="What is this?",
+                answer_preview="",
+                paper_ids=[],
+                paper_titles=[],
                 timestamp="2026-01-01T00:00:00",
             )
         ]
@@ -357,8 +388,10 @@ class TestRenderSessionTree:
 
     def test_empty_session(self):
         session = ResearchSession(
-            id="s001", title="Test Session",
-            queries=[], started_at="2026-01-01T09:00:00",
+            id="s001",
+            title="Test Session",
+            queries=[],
+            started_at="2026-01-01T09:00:00",
         )
         tracker = ResearchSessionTracker()
         output = tracker.render_session_tree(session)
@@ -367,8 +400,10 @@ class TestRenderSessionTree:
 
     def test_duration_included(self):
         session = ResearchSession(
-            id="s001", title="T",
-            queries=[], started_at="2026-01-01T09:00:00",
+            id="s001",
+            title="T",
+            queries=[],
+            started_at="2026-01-01T09:00:00",
             ended_at="2026-01-01T09:30:00",  # 30 min
         )
         tracker = ResearchSessionTracker()
@@ -377,10 +412,12 @@ class TestRenderSessionTree:
 
     def test_questions_rendered(self):
         session = ResearchSession(
-            id="s001", title="T",
+            id="s001",
+            title="T",
             queries=[
                 Query(
-                    id="q001", question="什么是 attention?",
+                    id="q001",
+                    question="什么是 attention?",
                     answer_preview="是一种机制",
                     paper_ids=["p001"],
                     paper_titles=["Attention Paper"],
@@ -395,10 +432,13 @@ class TestRenderSessionTree:
 
     def test_paper_titles_shown(self):
         session = ResearchSession(
-            id="s001", title="T",
+            id="s001",
+            title="T",
             queries=[
                 Query(
-                    id="q001", question="Q", answer_preview="A",
+                    id="q001",
+                    question="Q",
+                    answer_preview="A",
                     paper_ids=["p001"],
                     paper_titles=["Important Paper"],
                     timestamp="t",
@@ -412,11 +452,16 @@ class TestRenderSessionTree:
 
     def test_follow_ups_count_shown(self):
         session = ResearchSession(
-            id="s001", title="T",
+            id="s001",
+            title="T",
             queries=[
                 Query(
-                    id="q001", question="Q", answer_preview="A",
-                    paper_ids=[], paper_titles=[], timestamp="t",
+                    id="q001",
+                    question="Q",
+                    answer_preview="A",
+                    paper_ids=[],
+                    paper_titles=[],
+                    timestamp="t",
                     follow_ups=["追问1", "追问2", "追问3"],
                 ),
             ],
@@ -428,7 +473,8 @@ class TestRenderSessionTree:
 
     def test_insights_shown(self):
         session = ResearchSession(
-            id="s001", title="T",
+            id="s001",
+            title="T",
             queries=[],
             started_at="2026-01-01T09:00:00",
             insights=["深度探索（多次追问）"],
@@ -451,11 +497,16 @@ class TestRenderSessionsList:
 
     def test_single_session(self):
         session = ResearchSession(
-            id="s001", title="Test Session",
+            id="s001",
+            title="Test Session",
             queries=[
                 Query(
-                    id="q001", question="Q", answer_preview="A",
-                    paper_ids=[], paper_titles=[], timestamp="t",
+                    id="q001",
+                    question="Q",
+                    answer_preview="A",
+                    paper_ids=[],
+                    paper_titles=[],
+                    timestamp="t",
                 ),
             ],
             started_at="2026-01-01T09:00:00",
@@ -470,8 +521,10 @@ class TestRenderSessionsList:
     def test_multiple_sessions(self):
         sessions = [
             ResearchSession(
-                id=f"s{i:03d}", title=f"Session {i}",
-                queries=[], started_at=f"2026-01-{i+1:02d}T00:00:00",
+                id=f"s{i:03d}",
+                title=f"Session {i}",
+                queries=[],
+                started_at=f"2026-01-{i + 1:02d}T00:00:00",
             )
             for i in range(1, 4)
         ]

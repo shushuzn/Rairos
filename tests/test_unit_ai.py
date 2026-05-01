@@ -1,5 +1,6 @@
 """Unit tests for ai_generate_cnote_draft (mocked LLM calls)."""
 
+
 class TestAiGenerateCnoteDraft:
     def test_ai_generate_cnote_draft_calls_llm(self, monkeypatch):
         import ai_research_os as airo

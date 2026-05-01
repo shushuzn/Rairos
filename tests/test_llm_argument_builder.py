@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/argument_builder.py, pure functions, no I/O."""
+
 from llm.argument_builder import (
     EvidenceType,
     ArgumentSection,
@@ -174,7 +175,10 @@ class TestClassifyInsight:
     def test_thesis_not_used(self):
         """Thesis parameter is not used in classification."""
         # The thesis is passed but not used in the simple keyword matching
-        assert self._classify_insight("good method", thesis="problematic thesis") == EvidenceType.SUPPORT
+        assert (
+            self._classify_insight("good method", thesis="problematic thesis")
+            == EvidenceType.SUPPORT
+        )
 
 
 # =============================================================================
@@ -497,10 +501,7 @@ class TestRenderArgument:
 
     def test_max_5_evidence_items(self):
         """Only first 5 evidence items are shown."""
-        evidence = [
-            Evidence(EvidenceType.SUPPORT, f"P{i}", f"C{i}")
-            for i in range(10)
-        ]
+        evidence = [Evidence(EvidenceType.SUPPORT, f"P{i}", f"C{i}") for i in range(10)]
         arg = Argument(thesis="T", supporting_evidence=evidence)
         result = ArgumentResult(topic="T", argument=arg)
         output = self._render_argument(result)

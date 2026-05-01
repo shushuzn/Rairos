@@ -10,16 +10,17 @@ We quantify:
 - Time saved
 - API costs saved
 - Research efficiency gains
-"""from typing import cast
+"""
 
+from typing import cast
 from typing import Dict
-
 from dataclasses import dataclass
 
 
 @dataclass
 class ValueMetric:
     """Represents a value metric."""
+
     name: str
     value: float
     unit: str
@@ -67,25 +68,25 @@ class ValueQuantifier:
                 name="API调用节省",
                 value=self.metrics["api_calls_saved"],
                 unit="次",
-                description="通过缓存和智能重试节省"
+                description="通过缓存和智能重试节省",
             ),
             "hours_saved": ValueMetric(
                 name="时间节省",
                 value=hours_saved,
                 unit="小时",
-                description="自动化和优化带来的时间节省"
+                description="自动化和优化带来的时间节省",
             ),
             "cost_saved": ValueMetric(
                 name="成本节省",
                 value=cost_saved + research_time_value,
                 unit="美元",
-                description="API成本和时间成本的总节省"
+                description="API成本和时间成本的总节省",
             ),
             "papers_processed": ValueMetric(
                 name="论文处理",
                 value=self.metrics["papers_processed"],
                 unit="篇",
-                description="已处理的论文数量"
+                description="已处理的论文数量",
             ),
         }
 
@@ -106,9 +107,7 @@ class ValueQuantifier:
         # VW-style value presentation
         for _key, metric in values.items():
             if metric.value > 0:
-                lines.append(
-                    f"📊 {metric.name}: {metric.value:.1f} {metric.unit}"
-                )
+                lines.append(f"📊 {metric.name}: {metric.value:.1f} {metric.unit}")
                 lines.append(f"   {metric.description}")
                 lines.append("")
 

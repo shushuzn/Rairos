@@ -52,11 +52,13 @@ class TestCiteImportValidation:
 
 class TestCiteImportDryRun:
     def _mock_db(self):
-        return FakeDatabase({
-            "2301.00001": True,
-            "2302.00001": True,
-            "2303.00003": True,
-        })
+        return FakeDatabase(
+            {
+                "2301.00001": True,
+                "2302.00001": True,
+                "2303.00003": True,
+            }
+        )
 
     def test_dry_run_prints_actions(self, tmp_path, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
@@ -66,10 +68,13 @@ class TestCiteImportDryRun:
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
-        rc = cli_main([
-            "cite-import", "--dry-run",
-            '[{"source": "2301.00001", "targets": ["2302.00001", "2303.00003"]}]'
-        ])
+        rc = cli_main(
+            [
+                "cite-import",
+                "--dry-run",
+                '[{"source": "2301.00001", "targets": ["2302.00001", "2303.00003"]}]',
+            ]
+        )
         out = captured.getvalue()
         assert rc == 0
         assert "[dry-run] add citation: 2301.00001 -> 2302.00001" in out
@@ -84,10 +89,14 @@ class TestCiteImportDryRun:
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
-        rc = cli_main([
-            "cite-import", "--dry-run", "--skip-missing",
-            '[{"source": "2301.00001", "targets": ["2302.00001"]}]'
-        ])
+        rc = cli_main(
+            [
+                "cite-import",
+                "--dry-run",
+                "--skip-missing",
+                '[{"source": "2301.00001", "targets": ["2302.00001"]}]',
+            ]
+        )
         out = captured.getvalue()
         assert rc == 0
         assert "[dry-run] skip (missing): 2301.00001" in out
@@ -100,10 +109,14 @@ class TestCiteImportDryRun:
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
-        rc = cli_main([
-            "cite-import", "--dry-run", "--skip-missing",
-            '[{"source": "2301.00001", "targets": ["2302.00001"]}]'
-        ])
+        rc = cli_main(
+            [
+                "cite-import",
+                "--dry-run",
+                "--skip-missing",
+                '[{"source": "2301.00001", "targets": ["2302.00001"]}]',
+            ]
+        )
         out = captured.getvalue()
         assert rc == 0
         assert "[dry-run] skip (missing): 2302.00001" in out
@@ -111,11 +124,13 @@ class TestCiteImportDryRun:
 
 class TestCiteImportActual:
     def _mock_db(self):
-        return FakeDatabase({
-            "2301.00001": True,
-            "2302.00001": True,
-            "2303.00003": True,
-        })
+        return FakeDatabase(
+            {
+                "2301.00001": True,
+                "2302.00001": True,
+                "2303.00003": True,
+            }
+        )
 
     def test_actual_import_adds_citations(self, tmp_path, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
@@ -125,10 +140,9 @@ class TestCiteImportActual:
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
-        rc = cli_main([
-            "cite-import",
-            '[{"source": "2301.00001", "targets": ["2302.00001", "2303.00003"]}]'
-        ])
+        rc = cli_main(
+            ["cite-import", '[{"source": "2301.00001", "targets": ["2302.00001", "2303.00003"]}]']
+        )
         out = captured.getvalue()
         assert rc == 0
         assert "new citations : 2" in out
@@ -143,10 +157,13 @@ class TestCiteImportActual:
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
-        rc = cli_main([
-            "cite-import", "--skip-missing",
-            '[{"source": "2301.00001", "targets": ["2302.00001"]}]'
-        ])
+        rc = cli_main(
+            [
+                "cite-import",
+                "--skip-missing",
+                '[{"source": "2301.00001", "targets": ["2302.00001"]}]',
+            ]
+        )
         out = captured.getvalue()
         assert rc == 0
         assert "new citations : 0" in out
@@ -162,10 +179,7 @@ class TestCiteImportActual:
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
-        rc = cli_main([
-            "cite-import",
-            '[{"source": "2301.00001", "targets": ["2302.00001"]}]'
-        ])
+        rc = cli_main(["cite-import", '[{"source": "2301.00001", "targets": ["2302.00001"]}]'])
         assert rc == 1
         out = captured.getvalue()
         assert "2301.00001" in out
@@ -177,7 +191,9 @@ class TestCiteImportFileInput:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         json_file = tmp_path / "citations.json"
-        json_file.write_text('[{"source": "2301.00001", "targets": ["2302.00001"]}]', encoding="utf-8")
+        json_file.write_text(
+            '[{"source": "2301.00001", "targets": ["2302.00001"]}]', encoding="utf-8"
+        )
 
         fake_db = FakeDatabase({"2301.00001": True, "2302.00001": True})
         monkeypatch.setattr("cli.Database", lambda: fake_db)
@@ -207,9 +223,8 @@ class TestCiteImportFieldVariants:
 
         captured = StringIO()
         monkeypatch.setattr("sys.stdout", captured)
-        rc = cli_main([
-            "cite-import",
-            '[{"source_id": "2301.00001", "target_ids": ["2302.00001"]}]'
-        ])
+        rc = cli_main(
+            ["cite-import", '[{"source_id": "2301.00001", "target_ids": ["2302.00001"]}]']
+        )
         assert rc == 0
         assert "new citations : 1" in captured.getvalue()

@@ -1,4 +1,5 @@
 """Tests for optimized PDF extraction functionality."""
+
 import pytest
 from pathlib import Path
 from pdf.extract import extract_pdf_text, extract_pdf_text_hybrid

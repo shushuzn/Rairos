@@ -1,4 +1,5 @@
 """Tier 1 tests — CLI cache command."""
+
 import pytest
 from click.testing import CliRunner
 from cli.main import cli

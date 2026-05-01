@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/evolution.py, pure functions, no I/O."""
+
 from llm.evolution import (
     FeedbackType,
     SignalType,
@@ -488,7 +489,13 @@ class TestUpdatePatternFromEvent:
         """100% success → effectiveness = 1.0."""
         patterns = {}
         for _ in range(3):
-            event = {"signal_type": "s", "action": "a", "trigger": {}, "score": 0.9, "timestamp": ""}
+            event = {
+                "signal_type": "s",
+                "action": "a",
+                "trigger": {},
+                "score": 0.9,
+                "timestamp": "",
+            }
             patterns = self._update_pattern_from_event(patterns, event)
         assert patterns["s_a"]["effectiveness"] == 1.0
 
@@ -496,7 +503,13 @@ class TestUpdatePatternFromEvent:
         """100% failure → effectiveness = 0.0."""
         patterns = {}
         for _ in range(3):
-            event = {"signal_type": "s", "action": "a", "trigger": {}, "score": 0.3, "timestamp": ""}
+            event = {
+                "signal_type": "s",
+                "action": "a",
+                "trigger": {},
+                "score": 0.3,
+                "timestamp": "",
+            }
             patterns = self._update_pattern_from_event(patterns, event)
         assert patterns["s_a"]["effectiveness"] == 0.0
 
@@ -515,20 +528,42 @@ class TestUpdatePatternFromEvent:
     def test_last_used_updated(self):
         """last_used is set to event timestamp."""
         patterns = {}
-        event = {"signal_type": "s", "action": "a", "trigger": {}, "score": 0.8, "timestamp": "2024-06-15T10:00:00"}
+        event = {
+            "signal_type": "s",
+            "action": "a",
+            "trigger": {},
+            "score": 0.8,
+            "timestamp": "2024-06-15T10:00:00",
+        }
         patterns = self._update_pattern_from_event(patterns, event)
         assert patterns["s_a"]["last_used"] == "2024-06-15T10:00:00"
 
     def test_trigger_conditions_set_on_creation(self):
         """trigger_conditions from first event is preserved."""
         patterns = {}
-        event = {"signal_type": "s", "action": "a", "trigger": {"key": "val"}, "score": 0.8, "timestamp": ""}
+        event = {
+            "signal_type": "s",
+            "action": "a",
+            "trigger": {"key": "val"},
+            "score": 0.8,
+            "timestamp": "",
+        }
         patterns = self._update_pattern_from_event(patterns, event)
         assert patterns["s_a"]["trigger_conditions"] == {"key": "val"}
 
     def test_existing_pattern_not_overwritten(self):
         """Existing pattern fields are not overwritten by new events."""
-        patterns = {"s_a": {"name": "custom", "signal_type": "s", "trigger_conditions": {}, "success_count": 5, "failure_count": 2, "last_used": "", "effectiveness": 0.0}}
+        patterns = {
+            "s_a": {
+                "name": "custom",
+                "signal_type": "s",
+                "trigger_conditions": {},
+                "success_count": 5,
+                "failure_count": 2,
+                "last_used": "",
+                "effectiveness": 0.0,
+            }
+        }
         event = {"signal_type": "s", "action": "a", "trigger": {}, "score": 0.9, "timestamp": ""}
         patterns = self._update_pattern_from_event(patterns, event)
         # name should be preserved (only counts updated)
@@ -544,15 +579,23 @@ class TestGetReliablePatterns:
     def _get_reliable_patterns(self, patterns: dict) -> list:
         """Replicate reliable pattern filtering."""
         return [
-            p for p in patterns.values()
-            if p["success_count"] + p["failure_count"] >= 3
-            and p["effectiveness"] >= 0.7
+            p
+            for p in patterns.values()
+            if p["success_count"] + p["failure_count"] >= 3 and p["effectiveness"] >= 0.7
         ]
 
     def test_includes_high_effectiveness_patterns(self):
         """Pattern with >=0.7 effectiveness and >=3 attempts is reliable."""
         patterns = {
-            "high": {"name": "high", "signal_type": "s", "trigger_conditions": {}, "success_count": 10, "failure_count": 3, "last_used": "", "effectiveness": 0.769}
+            "high": {
+                "name": "high",
+                "signal_type": "s",
+                "trigger_conditions": {},
+                "success_count": 10,
+                "failure_count": 3,
+                "last_used": "",
+                "effectiveness": 0.769,
+            }
         }
         result = self._get_reliable_patterns(patterns)
         assert len(result) == 1
@@ -561,7 +604,15 @@ class TestGetReliablePatterns:
     def test_excludes_low_effectiveness_patterns(self):
         """Pattern with <0.7 effectiveness is not reliable."""
         patterns = {
-            "low": {"name": "low", "signal_type": "s", "trigger_conditions": {}, "success_count": 5, "failure_count": 2, "last_used": "", "effectiveness": 0.69}
+            "low": {
+                "name": "low",
+                "signal_type": "s",
+                "trigger_conditions": {},
+                "success_count": 5,
+                "failure_count": 2,
+                "last_used": "",
+                "effectiveness": 0.69,
+            }
         }
         result = self._get_reliable_patterns(patterns)
         assert len(result) == 0
@@ -569,7 +620,15 @@ class TestGetReliablePatterns:
     def test_excludes_few_attempts(self):
         """Pattern with <3 attempts is not reliable even with high effectiveness."""
         patterns = {
-            "few": {"name": "few", "signal_type": "s", "trigger_conditions": {}, "success_count": 2, "failure_count": 0, "last_used": "", "effectiveness": 1.0}
+            "few": {
+                "name": "few",
+                "signal_type": "s",
+                "trigger_conditions": {},
+                "success_count": 2,
+                "failure_count": 0,
+                "last_used": "",
+                "effectiveness": 1.0,
+            }
         }
         result = self._get_reliable_patterns(patterns)
         assert len(result) == 0
@@ -577,7 +636,15 @@ class TestGetReliablePatterns:
     def test_exact_boundary_included(self):
         """Exactly 3 attempts and 0.7 effectiveness is included."""
         patterns = {
-            "boundary": {"name": "boundary", "signal_type": "s", "trigger_conditions": {}, "success_count": 3, "failure_count": 0, "last_used": "", "effectiveness": 1.0}
+            "boundary": {
+                "name": "boundary",
+                "signal_type": "s",
+                "trigger_conditions": {},
+                "success_count": 3,
+                "failure_count": 0,
+                "last_used": "",
+                "effectiveness": 1.0,
+            }
         }
         result = self._get_reliable_patterns(patterns)
         assert len(result) == 1
@@ -585,9 +652,33 @@ class TestGetReliablePatterns:
     def test_mixed_patterns_returns_only_reliable(self):
         """Only reliable patterns are returned from mixed set."""
         patterns = {
-            "reliable": {"name": "reliable", "signal_type": "s", "trigger_conditions": {}, "success_count": 10, "failure_count": 3, "last_used": "", "effectiveness": 0.77},
-            "unreliable": {"name": "unreliable", "signal_type": "s", "trigger_conditions": {}, "success_count": 1, "failure_count": 1, "last_used": "", "effectiveness": 0.5},
-            "mostly_good": {"name": "mostly_good", "signal_type": "s", "trigger_conditions": {}, "success_count": 3, "failure_count": 2, "last_used": "", "effectiveness": 0.6},
+            "reliable": {
+                "name": "reliable",
+                "signal_type": "s",
+                "trigger_conditions": {},
+                "success_count": 10,
+                "failure_count": 3,
+                "last_used": "",
+                "effectiveness": 0.77,
+            },
+            "unreliable": {
+                "name": "unreliable",
+                "signal_type": "s",
+                "trigger_conditions": {},
+                "success_count": 1,
+                "failure_count": 1,
+                "last_used": "",
+                "effectiveness": 0.5,
+            },
+            "mostly_good": {
+                "name": "mostly_good",
+                "signal_type": "s",
+                "trigger_conditions": {},
+                "success_count": 3,
+                "failure_count": 2,
+                "last_used": "",
+                "effectiveness": 0.6,
+            },
         }
         result = self._get_reliable_patterns(patterns)
         assert len(result) == 1

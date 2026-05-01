@@ -1,4 +1,5 @@
 """Shared fixtures for tests."""
+
 from __future__ import annotations
 
 import json
@@ -16,13 +17,17 @@ import pytest
 # This avoids loading the heavy PyMuPDF/pdfminer libraries during test collection.
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def pytest_configure(config: pytest.Config) -> None:
     """Pre-import hooks: swap heavy libs with lightweight mocks at collect time."""
     # Create mock fitz/pymupdf that satisfy basic type checks
     mock_fitz = MagicMock(name="fitz")
-    mock_fitz.open.return_value = MagicMock(__enter__=MagicMock(return_value=mock_fitz),
-                                            __exit__=MagicMock(return_value=False),
-                                            page_count=0, tobytes=MemoryError)
+    mock_fitz.open.return_value = MagicMock(
+        __enter__=MagicMock(return_value=mock_fitz),
+        __exit__=MagicMock(return_value=False),
+        page_count=0,
+        tobytes=MemoryError,
+    )
 
     # Register mocks BEFORE any test code runs
     sys.modules["fitz"] = mock_fitz
@@ -43,6 +48,7 @@ def _reset_module_caches():
     yield
     try:
         import pdf.extract
+
         pdf.extract._fitz_pdf = None
         pdf.extract._tesseract = None
         sys.modules.pop("fitz", None)
@@ -72,6 +78,7 @@ def frozen_year() -> str:
 # ---------------------------------------------------------------------------
 # freezegun integration
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(autouse=True)
 def freeze_time_fixture(request: pytest.FixtureRequest):
@@ -107,6 +114,7 @@ def freeze_time(datetime_str: str = FROZEN_DATE):
 # ---------------------------------------------------------------------------
 # Shared fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def mock_research_root():
@@ -228,7 +236,9 @@ def tmp_db(tmp_path):
         word_count=0,
         page_count=0,
     ):
-        latex_json = json.dumps(latex_blocks or []) if not isinstance(latex_blocks, str) else latex_blocks
+        latex_json = (
+            json.dumps(latex_blocks or []) if not isinstance(latex_blocks, str) else latex_blocks
+        )
         cur = conn.cursor()
         cur.execute(
             "SELECT parse_version FROM papers WHERE id = ?",
@@ -241,9 +251,16 @@ def tmp_db(tmp_path):
             "latex_blocks=?, table_count=?, figure_count=?, word_count=?, "
             "page_count=?, parse_version=? WHERE id=?",
             (
-                status, error, plain_text, latex_json,
-                table_count, figure_count, word_count, page_count,
-                version, paper_id,
+                status,
+                error,
+                plain_text,
+                latex_json,
+                table_count,
+                figure_count,
+                word_count,
+                page_count,
+                version,
+                paper_id,
             ),
         )
         conn.commit()

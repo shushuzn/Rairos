@@ -1,4 +1,5 @@
 """AI Research OS - re-export from modules for backward compatibility."""
+
 from core import Paper, today_iso
 from core.basics import (
     ensure_research_tree,
@@ -10,9 +11,18 @@ from core.basics import (
 from parsers.input_detection import is_probably_doi, normalize_doi, normalize_arxiv_id
 from parsers.arxiv import fetch_arxiv_metadata, fetch_arxiv_metadata_batch
 from parsers.crossref import fetch_crossref_metadata
-from notes.frontmatter import parse_frontmatter, parse_tags_from_frontmatter, parse_date_from_frontmatter
+from notes.frontmatter import (
+    parse_frontmatter,
+    parse_tags_from_frontmatter,
+    parse_date_from_frontmatter,
+)
 from notes.pnotes import collect_pnotes, pnotes_by_tag, wikilink_for_pnote, read_pnote_metadata
-from notes.cnote import ensure_cnote, upsert_link_under_heading, update_cnote_links, auto_fill_cnotes_with_ai
+from notes.cnote import (
+    ensure_cnote,
+    upsert_link_under_heading,
+    update_cnote_links,
+    auto_fill_cnotes_with_ai,
+)
 from notes.mnote import (
     pick_top3_pnotes_for_tag,
     mnote_filename,
@@ -48,6 +58,7 @@ def __getattr__(name: str):
     for module_path, exports in _LAZY_SUBMODULES.items():
         if name in exports:
             import importlib
+
             mod = importlib.import_module(module_path)
             _lazy_cache[name] = getattr(mod, name)
             return _lazy_cache[name]
@@ -57,26 +68,62 @@ def __getattr__(name: str):
 
 __all__ = [
     # core
-    "Paper", "today_iso", "ensure_research_tree", "slugify_title", "safe_uid", "read_text", "write_text",
+    "Paper",
+    "today_iso",
+    "ensure_research_tree",
+    "slugify_title",
+    "safe_uid",
+    "read_text",
+    "write_text",
     # parsers
-    "is_probably_doi", "normalize_doi", "normalize_arxiv_id", "fetch_arxiv_metadata", "fetch_arxiv_metadata_batch", "fetch_crossref_metadata",
+    "is_probably_doi",
+    "normalize_doi",
+    "normalize_arxiv_id",
+    "fetch_arxiv_metadata",
+    "fetch_arxiv_metadata_batch",
+    "fetch_crossref_metadata",
     # pdf (lazy-loaded)  # noqa: F822
-    "download_pdf", "extract_pdf_text", "extract_pdf_text_hybrid",  # noqa: F822
+    "download_pdf",
+    "extract_pdf_text",
+    "extract_pdf_text_hybrid",  # noqa: F822
     # sections (lazy-loaded)  # noqa: F822
-    "looks_like_heading", "segment_into_sections", "format_section_snippets",  # noqa: F822
+    "looks_like_heading",
+    "segment_into_sections",
+    "format_section_snippets",  # noqa: F822
     # llm (lazy-loaded)  # noqa: F822
-    "call_llm_chat_completions", "ai_generate_pnote_draft", "ai_generate_cnote_draft",  # noqa: F822
+    "call_llm_chat_completions",
+    "ai_generate_pnote_draft",
+    "ai_generate_cnote_draft",  # noqa: F822
     # renderers (lazy-loaded)  # noqa: F822
-    "render_pnote", "render_cnote", "render_mnote",  # noqa: F822
+    "render_pnote",
+    "render_cnote",
+    "render_mnote",  # noqa: F822
     # notes
-    "parse_frontmatter", "parse_tags_from_frontmatter", "parse_date_from_frontmatter",
-    "collect_pnotes", "pnotes_by_tag", "wikilink_for_pnote", "read_pnote_metadata",
-    "ensure_cnote", "upsert_link_under_heading", "update_cnote_links", "auto_fill_cnotes_with_ai",
-    "pick_top3_pnotes_for_tag", "mnote_filename", "parse_current_abc", "append_view_evolution_log", "ensure_or_update_mnote",
-    "KEYWORD_TAGS", "infer_tags_if_empty",
+    "parse_frontmatter",
+    "parse_tags_from_frontmatter",
+    "parse_date_from_frontmatter",
+    "collect_pnotes",
+    "pnotes_by_tag",
+    "wikilink_for_pnote",
+    "read_pnote_metadata",
+    "ensure_cnote",
+    "upsert_link_under_heading",
+    "update_cnote_links",
+    "auto_fill_cnotes_with_ai",
+    "pick_top3_pnotes_for_tag",
+    "mnote_filename",
+    "parse_current_abc",
+    "append_view_evolution_log",
+    "ensure_or_update_mnote",
+    "KEYWORD_TAGS",
+    "infer_tags_if_empty",
     # updaters
-    "ensure_radar", "parse_radar_table", "render_radar", "update_radar",
-    "ensure_timeline", "update_timeline",
+    "ensure_radar",
+    "parse_radar_table",
+    "render_radar",
+    "update_radar",
+    "ensure_timeline",
+    "update_timeline",
     # cli
     "main",
 ]
@@ -84,4 +131,5 @@ __all__ = [
 # Backward compatibility: allow `python ai_research_os.py` to still work
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

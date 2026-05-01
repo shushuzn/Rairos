@@ -7,13 +7,20 @@ All notable changes to this project will be documented in this file.
 ### Bug Fixes
 
 - Remove UTF-8 BOM and CRLF line endings from pyproject.toml (fixes pypa/build failure)
-- Release workflow: fix ref checkout and tag_name for workflow_dispatch trigger
+- Fix release workflow: ref checkout and tag_name for workflow_dispatch trigger
+- Fix cache URL encoding: replace manual %-encoding (4 chars) with `urllib.parse.quote` for full RFC 3986 compliance
+- Fix `_ensure_collection` in vector store: add try/except with RuntimeError on Milvus connection failure
 
 ### CI/CD
 
 - Add ruff format check job to CI (--exclude neuraloperator_fork/)
 - Add mypy typecheck job to CI
 - Separate PyPI publish and GitHub Release into independent jobs (one failure no longer blocks the other)
+- Clean CRLF line endings across entire codebase (170+ Python files)
+
+### Refactor
+
+- Remove dead code `core/rate_limiter.py` (no callers, 310 lines)
 
 ## v1.5.3 (2026-05-01)
 
@@ -22,6 +29,15 @@ All notable changes to this project will be documented in this file.
 - Add GitHub Actions release workflow for PyPI + GitHub Releases
 - workflow_dispatch support for manual trigger
 - Automatic GitHub Release creation on tag push
+
+### Documentation
+
+- Add benchmarks page (docs/benchmarks.md) with performance data
+- Restore configuration.md documentation
+- Add architecture diagram HTML with interactive visualization (docs/assets/architecture.html)
+- Add hero image to README and README.zh-CN
+- Add logo design and favicon (neural network + document motif)
+- Add community infrastructure: CONTRIBUTING.md, ROADMAP.md, issue templates
 
 ## v1.5.2 (2026-04-28)
 
@@ -40,25 +56,37 @@ All notable changes to this project will be documented in this file.
 - Add update_chat_session_title() to database layer
 - Add search_chat_sessions() to database layer
 
+### AI Research Modules
+
+- Add 6 AI research modules: kg (knowledge graph), viz (visualization), scoring, trends, extable, web
+- Add tests for kg, scoring, and trends modules
+
+### Performance & Reliability
+
+- HTTP session pooling and thread-safe rate-limiting
+- Multi-layer optimizations: async research loop, session reuse, precompiled regex, lru_cache
+- Batch radar updates — accumulate in memory, flush once at end
+- Fix aiohttp session reuse for LLM and PDF async clients
+
 ### Developer Experience
 
-- Update .gitignore to exclude .claude/worktrees/
-- Remove cached worktree artifacts from git tracking
+- Update .gitignore to exclude .claude/worktrees/, .omc/, jsonl logs, artifact files
+- Remove trash files from repo (zips, cz, make_pr, etc.)
 
-## v1.5.1 (2026-04-19)
+## v1.5.1 (2026-04-23)
 
 ### Test Infrastructure
 
 - Add freezegun autouse fixture in tests/conftest.py: freeze_time("2026-06-15") applied globally via pytest_collection_modifyitems; opt-out with `@pytest.mark.no_freeze`
 - Add no_freeze marker: tests that need real time (OCR, retry timeout) opt out of freezegun autouse via `@pytest.mark.no_freeze`
 - Strengthen Tier 4 tmpdir assertions: verify file existence before assertions, check exact sort order and exact counts
-- Tier 4 sort test: fix expected order to match `collect_pnotes` lexicographic sort (`paper-[01-10]` paths sorted as strings, not by number)
+- Tier 4 sort test: fix expected order to match `collect_pnotes` lexicographic sort
 
 ### CI/CD
 
 - Add ruff lint gate to CI: `uv run ruff check .` now runs in CI and blocks on errors
-- Remove 9 unused imports across test_pdf_parser.py and test_unit_notes.py (sqlite3, fitz, pathlib.Path x2, etc.)
-- Add tool.coverage configuration to pyproject.toml: source=[".\\"'], omit patterns, report/show_contexts settings
+- Remove 9 unused imports across test_pdf_parser.py and test_unit_notes.py
+- Add tool.coverage configuration to pyproject.toml: source, omit patterns, report/show_contexts settings
 - Fix conftest.py: `autouse=True` + pytest_collection_modifyitems opt-out pattern for freezegun
 
 ### Bug Fixes
@@ -69,10 +97,9 @@ All notable changes to this project will be documented in this file.
 ### Developer Experience
 
 - Add justfile with 10 recipes: test, test-cov, test-tier4, test FILE, lint, lint-fix, fmt, check, install, run, ci
-- Add justfile recipe: `test-cov` runs pytest with coverage, `test-tier4` runs only Tier 4 tests
-- F841 (unused variable) noqa cleanup across test_ai_research_os.py, test_cli_search.py, test_integration.py, test_sections_segment.py, test_pdf_extract.py
-- Remove tracked `__pycache__/*.pyc` files from repo (were tracked before .gitignore existed)
-- Update README: coverage badge 82%, test count 1034+, cache/status CLI subcommands, correct project structure with renderers/
+- F841 (unused variable) noqa cleanup across test files
+- Remove tracked `__pycache__/*.pyc` files from repo
+- Update README: coverage badge 82%, test count 1034+, cache/status CLI subcommands
 
 ## v1.5.0 (2026-04-19)
 
@@ -89,8 +116,8 @@ All notable changes to this project will be documented in this file.
 
 ### Developer Experience
 
-- Add justfile with 10 recipes: test, test-cov, test-tier4, test FILE, lint, lint-fix, fmt, check, install, run, ci
-- F841 (unused variable) noqa cleanup across test_ai_research_os.py, test_cli_search.py, test_integration.py, test_sections_segment.py, test_pdf_extract.py
+- Add justfile with 10 recipes
+- F841 (unused variable) noqa cleanup across test files
 
 ## v1.4.0 (2026-04-18)
 
@@ -191,31 +218,38 @@ All notable changes to this project will be documented in this file.
 ## v1.0.2 (2026-04-17)
 
 ### Bug Fixes
+
 - Correct pyproject.toml after web UI corruption ([#49](https://github.com/shushuzn/ai_research_os/pull/49))
 - Add get_cached/set_cached mocks to prevent test cache pollution
 
 ### CI
+
 - Upload pytest output as artifact for debugging
 - Add workflow_dispatch trigger for manual CI runs
 
 ### Documentation
+
 - Bilingual README (English + Chinese)
 
 ## v1.0.1 (2026-04-17)
 
 ### Features
+
 - Add GitHub Actions PyPI release workflow
 - Add pyproject.toml for PyPI packaging
 
 ### CI
+
 - Fix CI artifact upload after web UI corruption
 
 ### Documentation
+
 - Add CHANGELOG.md for v1.0.0
 
 ## v1.0.0 (2026-04-16)
 
 ### Features
+
 - `--ai-cnote` standalone CLI mode for AI-generating C-Notes from P-Notes
 - Parse and structure LLM P-note draft output with rubric extraction
 - `--structured` flag for PDF structured extraction (tables/math separated)
@@ -228,6 +262,7 @@ All notable changes to this project will be documented in this file.
 - CLI shell completions (bash, zsh, fish)
 
 ### Bug Fixes
+
 - Rubric extraction: key-anchored regex + multi-format support
 - Mnote filename collision + preserve manual bullets
 - Escape `#` in render_cnote, warn on bad date, fix `short()` hash collision
@@ -239,6 +274,7 @@ All notable changes to this project will be documented in this file.
 - Remove pip cache from test-pytest (no requirements.txt)
 
 ### Tests
+
 - Add 68 Tier 2 parser unit tests
 - Add 23 new tests for Tier 3 coverage
 - Add 29 new tests for parsing, utils, and note functions
@@ -249,12 +285,15 @@ All notable changes to this project will be documented in this file.
 - Add pytest job to run all 255 tests
 
 ### Refactor
+
 - Split monolithic `ai_research_os.py` into modular package
 
 ### CI
+
 - Add GitHub Actions workflow with lint, test-arxiv, test-crossref, and test-pytest jobs
 - Rewrite ci.yml with correct branch triggers
 - Use ubuntu-22.04 instead of ubuntu-latest
 
 ### Documentation
+
 - Improve README: better structure, usage examples, CLI reference table

@@ -1,4 +1,5 @@
 """Tests for session CLI commands."""
+
 from unittest.mock import MagicMock, patch
 
 from cli.cmd.session import (
@@ -17,6 +18,7 @@ class TestSessionParser:
     def test_build_session_parser_succeeds(self):
         """Test that _build_session_parser executes without error."""
         import argparse
+
         parser = argparse.ArgumentParser()
         subparsers = parser.add_subparsers()
         # Should not raise

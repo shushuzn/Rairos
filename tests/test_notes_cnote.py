@@ -4,11 +4,13 @@ Covers: ensure_cnote, upsert_link_under_heading, update_cnote_links,
         _section_is_empty, _fill_cnote_section, _parse_cnote_sections,
         auto_fill_cnotes_with_ai
 """
+
 import re
 from pathlib import Path
 from unittest.mock import patch
 
 import sys
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from notes.cnote import (
     ensure_cnote,
@@ -23,6 +25,7 @@ from notes.cnote import (
 # ============================================================================
 # Test ensure_cnote
 # ============================================================================
+
 
 class TestEnsureCnote:
     def test_creates_cnote_file(self, tmp_path):
@@ -62,6 +65,7 @@ class TestEnsureCnote:
 # ============================================================================
 # Test upsert_link_under_heading
 # ============================================================================
+
 
 class TestUpsertLinkUnderHeading:
     def test_heading_not_exists_append_section(self):
@@ -124,6 +128,7 @@ class TestUpsertLinkUnderHeading:
 # Test _section_is_empty
 # ============================================================================
 
+
 class TestSectionIsEmpty:
     def test_missing_section_returns_true(self):
         md = "# Doc\n\n## Other\n\nContent."
@@ -166,6 +171,7 @@ class TestSectionIsEmpty:
 # Test _fill_cnote_section
 # ============================================================================
 
+
 class TestFillCnoteSection:
     def test_replaces_existing_section_content(self):
         md = "## Section\n\nOld content here."
@@ -199,6 +205,7 @@ class TestFillCnoteSection:
 # ============================================================================
 # Test _parse_cnote_sections
 # ============================================================================
+
 
 class TestParseCnoteSections:
     def test_single_section(self):
@@ -243,6 +250,7 @@ class TestParseCnoteSections:
 # ============================================================================
 # Test auto_fill_cnotes_with_ai
 # ============================================================================
+
 
 class TestAutoFillCnotesWithAi:
     def test_no_papers_skipped(self, tmp_path):
@@ -301,7 +309,9 @@ class TestAutoFillCnotesWithAi:
                     base_url="https://api.example.com",
                     model="test-model",
                     min_papers=1,
-                    call_llm=lambda **kwargs: "## 核心定义\nFilled.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech.",
+                    call_llm=lambda **kwargs: (
+                        "## 核心定义\nFilled.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech."
+                    ),
                 )
         assert ("filled", "skipped") in results
 
@@ -371,7 +381,9 @@ class TestAutoFillCnotesWithAi:
         cnote = concept_dir / "C - existing.md"
         cnote.write_text(existing_content, encoding="utf-8")
 
-        with patch("notes.pnotes.pnotes_by_tag", return_value={"existing": [("2024-01-01", pnote)]}):
+        with patch(
+            "notes.pnotes.pnotes_by_tag", return_value={"existing": [("2024-01-01", pnote)]}
+        ):
             with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "Existing"}):
                 results = auto_fill_cnotes_with_ai(
                     root=tmp_path,
@@ -379,7 +391,9 @@ class TestAutoFillCnotesWithAi:
                     base_url="https://api.example.com",
                     model="test-model",
                     min_papers=1,
-                    call_llm=lambda **kwargs: "## 核心定义\nNew core.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech.",
+                    call_llm=lambda **kwargs: (
+                        "## 核心定义\nNew core.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech."
+                    ),
                 )
 
         assert ("existing", "filled") in results
@@ -402,7 +416,9 @@ class TestAutoFillCnotesWithAi:
                     base_url="https://api.example.com",
                     model="test-model",
                     min_papers=1,
-                    call_llm=lambda **kwargs: "## 核心定义\nCore.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech.",
+                    call_llm=lambda **kwargs: (
+                        "## 核心定义\nCore.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech."
+                    ),
                 )
 
         # Should succeed even though 01-Foundations didn't exist

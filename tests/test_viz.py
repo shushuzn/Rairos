@@ -1,4 +1,5 @@
 """Tests for viz module — D3 and PyVis renderers."""
+
 from __future__ import annotations
 
 import pytest
@@ -34,10 +35,7 @@ class MockKGManager:
         return self._nodes
 
     def get_edges_by_node(self, nid, direction="both"):
-        return [
-            e for e in self._edges
-            if e["source_id"] == nid or e["target_id"] == nid
-        ]
+        return [e for e in self._edges if e["source_id"] == nid or e["target_id"] == nid]
 
     def find_papers_by_tag(self, tag):
         return [n for n in self._nodes if n.get("type") == "Paper" and tag in n.get("tags", [])]
@@ -48,7 +46,9 @@ class MockKGManager:
     def get_edges_bulk(self, nids, direction="both"):
         nids_set = set(nids)
         if direction == "both":
-            return [e for e in self._edges if e["source_id"] in nids_set or e["target_id"] in nids_set]
+            return [
+                e for e in self._edges if e["source_id"] in nids_set or e["target_id"] in nids_set
+            ]
         elif direction == "out":
             return [e for e in self._edges if e["source_id"] in nids_set]
         else:
@@ -77,7 +77,13 @@ def sample_kg():
     ]
     edges = [
         {"id": "e1", "source_id": "n1", "target_id": "n2", "relation_type": "cites", "weight": 1.0},
-        {"id": "e2", "source_id": "n1", "target_id": "n3", "relation_type": "has_note", "weight": 0.5},
+        {
+            "id": "e2",
+            "source_id": "n1",
+            "target_id": "n3",
+            "relation_type": "has_note",
+            "weight": 0.5,
+        },
     ]
     return MockKGManager(nodes=nodes, edges=edges)
 

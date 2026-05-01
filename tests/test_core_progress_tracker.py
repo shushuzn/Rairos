@@ -1,4 +1,5 @@
 """Tests for core/progress_tracker.py."""
+
 import sys
 from pathlib import Path
 
@@ -57,10 +58,12 @@ class TestProgressTracker:
 class TestGetTracker:
     def setup_method(self):
         import core.progress_tracker as pt
+
         pt._tracker = None
 
     def teardown_method(self):
         import core.progress_tracker as pt
+
         pt._tracker = None
 
     def test_singleton(self):

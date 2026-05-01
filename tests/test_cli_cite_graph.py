@@ -1,4 +1,5 @@
 """Unit tests for _run_cite_graph."""
+
 import argparse
 import json
 from io import StringIO
@@ -12,6 +13,7 @@ from cli import _run_cite_graph
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def make_args(**kwargs):
     defaults = dict(
@@ -33,6 +35,7 @@ def make_args(**kwargs):
 # ─────────────────────────────────────────────────────────────────────────────
 # Plain-text mode
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestCiteGraphPlainTextMode:
     """Test plain-text reference extraction mode."""
@@ -149,9 +152,7 @@ class TestCiteGraphPlainTextMode:
             plain_text="This paper has no citations at all.",
         )
         with patch("cli.cmd.cite_graph._extract_references_from_text") as mock_extract:
-            mock_extract.return_value = {
-                "arxiv_ids": [], "dois": [], "pmids": [], "isbns": []
-            }
+            mock_extract.return_value = {"arxiv_ids": [], "dois": [], "pmids": [], "isbns": []}
             captured = StringIO()
             with patch("sys.stdout", captured):
                 rc = _run_cite_graph(args)
@@ -205,6 +206,7 @@ class TestCiteGraphPlainTextMode:
 # ─────────────────────────────────────────────────────────────────────────────
 # Plain-text + metadata fetch mode
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestCiteGraphFetchMetadata:
     """Test --fetch-metadata in plain-text mode."""
@@ -285,6 +287,7 @@ class TestCiteGraphFetchMetadata:
 # DB mode
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestCiteGraphDBMode:
     """Test DB-backed citation graph mode."""
 
@@ -311,8 +314,8 @@ class TestCiteGraphDBMode:
         mock_db.get_paper_title.return_value = "Root Paper"
         mock_db.get_citations.side_effect = lambda pid, d: (
             [MagicMock(source_id="cited:by:root", target_id="root:cites")]
-            if d == "from" else
-            [MagicMock(source_id="cites:root", target_id="root")]
+            if d == "from"
+            else [MagicMock(source_id="cites:root", target_id="root")]
         )
         mock_db.get_papers_bulk.return_value = {}
         with patch("cli.Database", return_value=mock_db):

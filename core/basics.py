@@ -1,4 +1,5 @@
 """Basic utilities."""
+
 import os
 
 import orjson

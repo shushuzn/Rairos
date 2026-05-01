@@ -1,4 +1,5 @@
 """Tests for insight cards."""
+
 import pytest
 from llm.insight_cards import (
     InsightManager,

@@ -1,8 +1,8 @@
 """
 Workflow Automation - 工作流自动化
 """
-from typing import Callable
 
+from typing import Callable
 
 
 class Workflow:

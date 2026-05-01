@@ -3,6 +3,7 @@ Performance Profiler and Analysis Tools.
 
 Helps identify performance bottlenecks and optimize critical paths.
 """
+
 import time
 import functools
 import logging
@@ -20,10 +21,11 @@ logger = logging.getLogger(__name__)
 @dataclass
 class FunctionProfile:
     """Profile data for a single function."""
+
     name: str
     call_count: int = 0
     total_time: float = 0.0
-    min_time: float = float('inf')
+    min_time: float = float("inf")
     max_time: float = 0.0
     avg_time: float = 0.0
     last_called: float = 0.0
@@ -56,6 +58,7 @@ class PerformanceProfiler:
 
     def profile_function(self, name: Optional[str] = None):
         """Decorator to profile a function."""
+
         def decorator(func: Callable) -> Callable:
             profile_name = name or f"{func.__module__}.{func.__qualname__}"
 
@@ -73,6 +76,7 @@ class PerformanceProfiler:
                     self._record_call(profile_name, elapsed)
 
             return wrapper
+
         return decorator
 
     def _record_call(self, name: str, elapsed: float):
@@ -129,15 +133,13 @@ class PerformanceProfiler:
 
         slowest = self.get_slowest_functions(10)
         for i, profile in enumerate(slowest, 1):
-            lines.append(
-                f"{i:2d}. {profile.name}"
-            )
+            lines.append(f"{i:2d}. {profile.name}")
             lines.append(
                 f"    Total: {profile.total_time:.3f}s | "
                 f"Calls: {profile.call_count} | "
-                f"Avg: {profile.avg_time*1000:.2f}ms | "
-                f"Min: {profile.min_time*1000:.2f}ms | "
-                f"Max: {profile.max_time*1000:.2f}ms"
+                f"Avg: {profile.avg_time * 1000:.2f}ms | "
+                f"Min: {profile.min_time * 1000:.2f}ms | "
+                f"Max: {profile.max_time * 1000:.2f}ms"
             )
 
         lines.append("")
@@ -184,7 +186,7 @@ class PerformanceProfiler:
                     "total_time": p.total_time,
                 }
                 for p in self.get_most_called(10)
-            ]
+            ],
         }
 
 
@@ -229,7 +231,7 @@ class ProfilerContext:
         if self.enabled:
             self.profiler.disable()
 
-    def get_stats(self, sort_by: str = 'cumulative', limit: int = 20) -> str:
+    def get_stats(self, sort_by: str = "cumulative", limit: int = 20) -> str:
         """Get profiling stats as string."""
         s = io.StringIO()
         ps = pstats.Stats(self.profiler, stream=s)
@@ -239,7 +241,7 @@ class ProfilerContext:
 
 
 @contextmanager
-def cprofile_block(sort_by: str = 'cumulative', limit: int = 20):
+def cprofile_block(sort_by: str = "cumulative", limit: int = 20):
     """Context manager for cProfile-based profiling."""
     with ProfilerContext() as ctx:
         yield ctx
@@ -258,6 +260,7 @@ class MemoryProfiler:
         """Get current memory usage in MB."""
         try:
             import psutil
+
             process = psutil.Process()
             return process.memory_info().rss / (1024 * 1024)  # type: ignore[no-any-return]
         except (ImportError, OSError):

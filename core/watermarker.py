@@ -1,6 +1,7 @@
 """
 WaterMarker - 水印系统
 """
+
 from datetime import datetime
 from typing import Dict, List
 
@@ -12,11 +13,9 @@ class WaterMarker:
         self.marks = []
 
     def add_mark(self, mark_type: str, content: str):
-        self.marks.append({
-            "type": mark_type,
-            "content": content,
-            "time": datetime.now().isoformat()
-        })
+        self.marks.append(
+            {"type": mark_type, "content": content, "time": datetime.now().isoformat()}
+        )
 
     def get_marks(self) -> List[Dict]:
         return self.marks  # type: ignore[no-any-return]
@@ -26,6 +25,7 @@ class WaterMarker:
 
 
 _marker = None
+
 
 def get_marker() -> WaterMarker:
     global _marker

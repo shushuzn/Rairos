@@ -1,4 +1,5 @@
 """Tests for core/basics.py."""
+
 import json
 import sys
 from pathlib import Path
@@ -6,10 +7,17 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from core.basics import (
-    DEFAULT_RESEARCH_DIRS, get_research_dirs, get_default_concept_dir,
-    get_default_radar_dir, slugify_title, safe_uid, read_text,
-    write_text, ensure_research_tree,
+    DEFAULT_RESEARCH_DIRS,
+    get_research_dirs,
+    get_default_concept_dir,
+    get_default_radar_dir,
+    slugify_title,
+    safe_uid,
+    read_text,
+    write_text,
+    ensure_research_tree,
 )
+
 
 class TestSlugifyTitle:
     def test_basic(self):
@@ -105,22 +113,24 @@ class TestResearchDirs:
     def test_default_research_dirs_starts_with_radar(self):
         assert DEFAULT_RESEARCH_DIRS[0] == "00-Radar"
 
-    @patch('core.basics._get_config_path')
+    @patch("core.basics._get_config_path")
     def test_get_research_dirs_loads_from_file(self, mock_path, tmp_path):
         cfg = tmp_path / "categories.json"
         cfg.write_text(json.dumps(["Custom-Dir"]), encoding="utf-8")
         mock_path.return_value = cfg
         # Clear cache
         import core.basics
+
         core.basics.get_research_dirs.cache_clear()
         assert get_research_dirs() == ["Custom-Dir"]
 
-    @patch('core.basics._get_config_path')
+    @patch("core.basics._get_config_path")
     def test_get_research_dirs_falls_back_to_default(self, mock_path, tmp_path):
         cfg = tmp_path / "categories.json"
         cfg.write_text("not a list", encoding="utf-8")
         mock_path.return_value = cfg
         import core.basics
+
         core.basics.get_research_dirs.cache_clear()
         assert get_research_dirs() == list(DEFAULT_RESEARCH_DIRS)
 

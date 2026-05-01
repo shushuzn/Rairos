@@ -240,10 +240,23 @@ class TestTrendAnalyzer:
         analyzer = TrendAnalyzer()
 
         expected_keywords = [
-            "transformer", "attention", "bert", "gpt", "llm",
-            "neural", "embedding", "fine-tuning", "rlhf", "rag",
-            "diffusion", "gan", "clip", "vit",
-            "multimodal", "pre-training", "reasoning",
+            "transformer",
+            "attention",
+            "bert",
+            "gpt",
+            "llm",
+            "neural",
+            "embedding",
+            "fine-tuning",
+            "rlhf",
+            "rag",
+            "diffusion",
+            "gan",
+            "clip",
+            "vit",
+            "multimodal",
+            "pre-training",
+            "reasoning",
         ]
 
         for kw in expected_keywords:

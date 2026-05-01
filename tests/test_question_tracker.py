@@ -1,4 +1,5 @@
 """Tests for research question tracker."""
+
 import tempfile
 
 from llm.question_tracker import (
@@ -87,6 +88,7 @@ class TestQuestionTracker:
     def teardown_method(self):
         """Clean up temp files."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_add_question(self):

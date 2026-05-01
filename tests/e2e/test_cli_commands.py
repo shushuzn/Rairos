@@ -2,6 +2,7 @@
 
 These tests verify that CLI command modules can be imported and initialized correctly.
 """
+
 import sys
 from pathlib import Path
 
@@ -16,6 +17,7 @@ class TestCLICommandImports:
     def test_import_registry(self):
         """Test that _registry can be imported."""
         from cli._registry import SUBCOMMANDS
+
         assert "search" in SUBCOMMANDS
         assert "import" in SUBCOMMANDS
         assert "rag" in SUBCOMMANDS
@@ -27,6 +29,7 @@ class TestCLICommandImports:
         from cli.cmd.import_ import _build_import_parser
         from cli.cmd.rag import _build_rag_parser
         from cli.cmd.visual import _build_visual_parser
+
         # All should be callable
         assert callable(_build_search_parser)
         assert callable(_build_import_parser)
@@ -45,6 +48,7 @@ class TestCLICommandImports:
     def test_visual_extractor_imports(self):
         """Test that visual extraction module imports correctly."""
         from pdf.visual import VisualExtractor, VisualContent
+
         assert VisualExtractor is not None
         assert VisualContent is not None
 
@@ -53,10 +57,29 @@ class TestCLICommandImports:
         from cli._registry import SUBCOMMANDS
 
         expected = {
-            "search", "list", "status", "queue", "cache", "dedup", "merge",
-            "stats", "import", "export", "citations", "cite-graph", "cite-import",
-            "cite-fetch", "cite-stats", "dedup-semantic", "research", "similar",
-            "kg", "paper2code", "evoskill", "rag", "visual",
+            "search",
+            "list",
+            "status",
+            "queue",
+            "cache",
+            "dedup",
+            "merge",
+            "stats",
+            "import",
+            "export",
+            "citations",
+            "cite-graph",
+            "cite-import",
+            "cite-fetch",
+            "cite-stats",
+            "dedup-semantic",
+            "research",
+            "similar",
+            "kg",
+            "paper2code",
+            "evoskill",
+            "rag",
+            "visual",
         }
         assert expected.issubset(SUBCOMMANDS)
 

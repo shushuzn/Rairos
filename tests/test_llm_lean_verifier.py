@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/lean_verifier.py, pure functions + Lean integration."""
+
 import pytest
 import json
 from llm.lean_verifier import (
@@ -161,6 +162,7 @@ class TestTemplateBasedTranslation:
     def _make_hypothesis(self, **kwargs):
         """Create a minimal ResearchHypothesis for testing."""
         from llm.hypothesis_generator import HypothesisType, ExperimentDesign
+
         defaults = dict(
             id="test-id",
             title="Test Hypothesis",
@@ -168,8 +170,11 @@ class TestTemplateBasedTranslation:
             hypothesis_type=HypothesisType.CAUSAL,
             based_on="unit test",
             experiment_design=ExperimentDesign(
-                baseline="", variables=[], controls=[],
-                evaluation_metrics=[], expected_results="",
+                baseline="",
+                variables=[],
+                controls=[],
+                evaluation_metrics=[],
+                expected_results="",
             ),
         )
         defaults.update(kwargs)
@@ -177,6 +182,7 @@ class TestTemplateBasedTranslation:
 
     def _hypothesis(self, **kwargs):
         from llm.hypothesis_generator import ResearchHypothesis
+
         d = self._make_hypothesis(**kwargs)
         return ResearchHypothesis(**d)
 
@@ -212,6 +218,7 @@ class TestTemplateBasedTranslation:
 
     def test_hypothesis_type_included(self):
         from llm.hypothesis_generator import HypothesisType
+
         h = self._hypothesis(hypothesis_type=HypothesisType.MECHANISTIC)
         code = _template_based_translation(h)
         assert "mechanistic" in code.lower()

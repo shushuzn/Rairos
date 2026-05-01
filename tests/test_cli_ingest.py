@@ -1,4 +1,5 @@
 """Unit tests for ingest CLI subcommand — import + postprocess + embed + KG pipeline."""
+
 from unittest.mock import patch, MagicMock
 
 
@@ -9,9 +10,19 @@ class FakeArgs:
 
 
 class FakePaper:
-    def __init__(self, id="2301.00001", title="Test Paper", abstract="",
-                 authors=None, published="2024-01-01", pdf_url="", doi="",
-                 primary_category="cs.AI", tags="", category="02-Models"):
+    def __init__(
+        self,
+        id="2301.00001",
+        title="Test Paper",
+        abstract="",
+        authors=None,
+        published="2024-01-01",
+        pdf_url="",
+        doi="",
+        primary_category="cs.AI",
+        tags="",
+        category="02-Models",
+    ):
         self.id = id
         self.title = title
         self.abstract = abstract
@@ -26,7 +37,7 @@ class FakePaper:
 
 class FakeDB:
     def __init__(self, papers=None):
-        self.papers = papers or {}   # paper_id -> FakePaper
+        self.papers = papers or {}  # paper_id -> FakePaper
         self.upserted = []
         self.init_called = False
 
@@ -48,12 +59,14 @@ class FakeDB:
 # Parser tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestIngestParser:
     def test_parser_help_text(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.ingest import _build_ingest_parser
         import argparse
+
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
         _build_ingest_parser(sub)
@@ -65,6 +78,7 @@ class TestIngestParser:
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.ingest import _build_ingest_parser
         import argparse
+
         p = argparse.ArgumentParser()
         sub = p.add_subparsers()
         _build_ingest_parser(sub)
@@ -75,6 +89,7 @@ class TestIngestParser:
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_import_phase tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestImportPhase:
     def test_import_phase_no_papers(self, monkeypatch):
@@ -133,6 +148,7 @@ class TestImportPhase:
 # _run_kg_sync_phase tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestKGSyncPhase:
     def test_kg_sync_calls_integration(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
@@ -147,7 +163,9 @@ class TestKGSyncPhase:
                     MockInteg.return_value = mock_integ
 
                     result = _run_kg_sync_phase(MockDB.return_value)
-                    mock_integ.rebuild_from_papers_json.assert_called_once_with("data/papers.json", incremental=True)
+                    mock_integ.rebuild_from_papers_json.assert_called_once_with(
+                        "data/papers.json", incremental=True
+                    )
                     assert result is True
 
 
@@ -155,16 +173,28 @@ class TestKGSyncPhase:
 # _run_ingest main logic tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestRunIngest:
     def test_no_ids_returns_error(self, monkeypatch, capsys):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.ingest import _run_ingest
 
-        args = FakeArgs(ids=[], file=None, root="AI-Research", tags="",
-                        source="ingest", skip_postprocess=False, only_postprocess=False,
-                        skip_embed=False, skip_kg=False, skip_pdf=False,
-                        stages=None, skip_llm=False, format="text")
+        args = FakeArgs(
+            ids=[],
+            file=None,
+            root="AI-Research",
+            tags="",
+            source="ingest",
+            skip_postprocess=False,
+            only_postprocess=False,
+            skip_embed=False,
+            skip_kg=False,
+            skip_pdf=False,
+            stages=None,
+            skip_llm=False,
+            format="text",
+        )
         with patch("cli.Database") as MockDB:
             MockDB.return_value = FakeDB()
             rc = _run_ingest(args)
@@ -175,10 +205,21 @@ class TestRunIngest:
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.ingest import _run_ingest
 
-        args = FakeArgs(ids=["9999.99999"], file=None, root="AI-Research", tags="",
-                        source="ingest", skip_postprocess=False, only_postprocess=True,
-                        skip_embed=False, skip_kg=False, skip_pdf=False,
-                        stages=None, skip_llm=False, format="text")
+        args = FakeArgs(
+            ids=["9999.99999"],
+            file=None,
+            root="AI-Research",
+            tags="",
+            source="ingest",
+            skip_postprocess=False,
+            only_postprocess=True,
+            skip_embed=False,
+            skip_kg=False,
+            skip_pdf=False,
+            stages=None,
+            skip_llm=False,
+            format="text",
+        )
         with patch("cli.Database") as MockDB:
             MockDB.return_value = FakeDB()  # empty — paper doesn't exist
             rc = _run_ingest(args)
@@ -189,10 +230,21 @@ class TestRunIngest:
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.ingest import _run_ingest
 
-        args = FakeArgs(ids=["2301.00001"], file=None, root="AI-Research", tags="",
-                        source="ingest", skip_postprocess=False, only_postprocess=True,
-                        skip_embed=True, skip_kg=True, skip_pdf=True,
-                        stages=None, skip_llm=True, format="text")
+        args = FakeArgs(
+            ids=["2301.00001"],
+            file=None,
+            root="AI-Research",
+            tags="",
+            source="ingest",
+            skip_postprocess=False,
+            only_postprocess=True,
+            skip_embed=True,
+            skip_kg=True,
+            skip_pdf=True,
+            stages=None,
+            skip_llm=True,
+            format="text",
+        )
 
         with patch("cli.Database") as MockDB:
             mock_db = FakeDB(papers={"2301.00001": FakePaper()})
@@ -210,11 +262,21 @@ class TestRunIngest:
         monkeypatch.setenv("PYTHONPATH", "")
         from cli.cmd.ingest import _run_ingest
 
-        args = FakeArgs(ids=["2301.00001"], file=None, root="AI-Research", tags="",
-                        source="ingest", skip_postprocess=True,
-                        only_postprocess=False,
-                        skip_embed=True, skip_kg=True, skip_pdf=False,
-                        stages=None, skip_llm=False, format="text")
+        args = FakeArgs(
+            ids=["2301.00001"],
+            file=None,
+            root="AI-Research",
+            tags="",
+            source="ingest",
+            skip_postprocess=True,
+            only_postprocess=False,
+            skip_embed=True,
+            skip_kg=True,
+            skip_pdf=False,
+            stages=None,
+            skip_llm=False,
+            format="text",
+        )
 
         with patch("cli.Database") as MockDB:
             mock_db = FakeDB()

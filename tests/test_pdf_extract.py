@@ -1,4 +1,5 @@
 """Tests for pdf/extract.py — PDF download, extraction, and structured parsing."""
+
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -27,6 +28,7 @@ import pdf.extract
 
 # ─── helpers ────────────────────────────────────────────────────────────────
 
+
 def make_minimal_pdf(tmp_path: Path, pages_text: list[dict]) -> Path:
     """Create a minimal PDF with given page text using PyMuPDF.
 
@@ -48,6 +50,7 @@ def make_minimal_pdf(tmp_path: Path, pages_text: list[dict]) -> Path:
 
 
 # ─── _is_gibberish_or_too_short ─────────────────────────────────────────────
+
 
 class TestIsGibberishOrTooShort:
     def test_too_short(self):
@@ -113,6 +116,7 @@ class TestIsGibberishOrTooShort:
 
 # ─── _detect_block_type ──────────────────────────────────────────────────────
 
+
 class TestDetectBlockType:
     def test_markdown_heading_h1(self):
         assert _detect_block_type("# Introduction", BlockType.BODY, 0) == BlockType.HEADING
@@ -156,7 +160,9 @@ class TestDetectBlockType:
         assert _detect_block_type("Table 3: Performance", BlockType.BODY, 0) == BlockType.CAPTION
 
     def test_algorithm_caption(self):
-        assert _detect_block_type("Algorithm 1: Training Loop", BlockType.BODY, 0) == BlockType.CAPTION
+        assert (
+            _detect_block_type("Algorithm 1: Training Loop", BlockType.BODY, 0) == BlockType.CAPTION
+        )
 
     def test_algorithm_caption_abbr(self):
         # Line 218: "Alg." abbreviation followed by number → CAPTION
@@ -190,13 +196,17 @@ class TestDetectBlockType:
         assert _detect_block_type("1. item", BlockType.BODY, 0) == BlockType.LIST_ITEM
 
     def test_body_text(self):
-        assert _detect_block_type("This is a body paragraph with normal text.", BlockType.BODY, 0) == BlockType.BODY
+        assert (
+            _detect_block_type("This is a body paragraph with normal text.", BlockType.BODY, 0)
+            == BlockType.BODY
+        )
 
     def test_empty_line_returns_body(self):
         assert _detect_block_type("", BlockType.BODY, 0) == BlockType.BODY
 
 
 # ─── _is_display_math ────────────────────────────────────────────────────────
+
 
 class TestIsDisplayMath:
     def test_latex_display_dollar(self):
@@ -206,10 +216,13 @@ class TestIsDisplayMath:
         assert _is_display_math("\\[ x^2 + y^2 = z^2 \\]") is True
 
     def test_align_environment(self):
-        assert _is_display_math("""\\begin{align}
+        assert (
+            _is_display_math("""\\begin{align}
 x &= 1 \\\\
 y &= 2
-\\end{align}""") is True
+\\end{align}""")
+            is True
+        )
 
     def test_unicode_math_with_spaces(self):
         # Pattern requires unicode math chars separated by spaces around =
@@ -226,6 +239,7 @@ y &= 2
 
 
 # ─── _extract_inline_math ───────────────────────────────────────────────────
+
 
 class TestExtractInlineMath:
     def test_single_inline_dollar(self):
@@ -253,6 +267,7 @@ class TestExtractInlineMath:
 
 
 # ─── download_pdf ────────────────────────────────────────────────────────────
+
 
 class TestDownloadPdf:
     def test_download_pdf_writes_file(self, tmp_path, monkeypatch):
@@ -300,6 +315,7 @@ class TestDownloadPdf:
 
 # ─── extract_pdf_text ─────────────────────────────────────────────────────────
 
+
 class TestExtractPdfText:
     def test_extracts_text_from_pdf(self, tmp_path):
         try:
@@ -322,11 +338,14 @@ class TestExtractPdfText:
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
-        pdf_path = make_minimal_pdf(tmp_path, [
-            {"text": "Page One"},
-            {"text": "Page Two"},
-            {"text": "Page Three"},
-        ])
+        pdf_path = make_minimal_pdf(
+            tmp_path,
+            [
+                {"text": "Page One"},
+                {"text": "Page Two"},
+                {"text": "Page Three"},
+            ],
+        )
         text = airo.extract_pdf_text(pdf_path, max_pages=1)
         assert "Page One" in text
 
@@ -367,6 +386,7 @@ class TestExtractPdfText:
 
 # ─── _ocr_page ───────────────────────────────────────────────────────────────
 
+
 class TestOcrPage:
     def test_raises_when_tesseract_missing(self, monkeypatch):
         try:
@@ -390,8 +410,8 @@ class TestOcrPage:
             monkeypatch.setattr(builtins, "__import__", _real_import)
 
 
-
 # ─── extract_pdf_text_hybrid ────────────────────────────────────────────────
+
 
 class TestExtractPdfTextHybrid:
     def test_basic_extraction(self, tmp_path):
@@ -410,11 +430,14 @@ class TestExtractPdfTextHybrid:
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
-        pdf_path = make_minimal_pdf(tmp_path, [
-            {"text": "Page 1"},
-            {"text": "Page 2"},
-            {"text": "Page 3"},
-        ])
+        pdf_path = make_minimal_pdf(
+            tmp_path,
+            [
+                {"text": "Page 1"},
+                {"text": "Page 2"},
+                {"text": "Page 3"},
+            ],
+        )
         text = airo.extract_pdf_text_hybrid(pdf_path, max_pages=1)
         assert "Page 1" in text
 
@@ -458,10 +481,7 @@ class TestExtractPdfTextHybrid:
             ocr_called = True
             return "OCR recovered text from image"
 
-        monkeypatch.setattr(
-            "pdf.extract._ocr_page",
-            mock_ocr
-        )
+        monkeypatch.setattr("pdf.extract._ocr_page", mock_ocr)
 
         text = airo.extract_pdf_text_hybrid(pdf_path, ocr=True)
 
@@ -486,10 +506,7 @@ class TestExtractPdfTextHybrid:
         def mock_pdfminer(path):
             return "A" * 1000
 
-        monkeypatch.setattr(
-            "pdfminer.high_level.extract_text",
-            lambda path: "A" * 1000
-        )
+        monkeypatch.setattr("pdfminer.high_level.extract_text", lambda path: "A" * 1000)
 
         text = airo.extract_pdf_text_hybrid(pdf_path, use_pdfminer_fallback=True)
         # pdfminer result should be chosen since it's 1.2x+ longer
@@ -498,6 +515,7 @@ class TestExtractPdfTextHybrid:
     def test_raises_when_fitz_missing(self, tmp_path, monkeypatch):
         """RuntimeError when PyMuPDF is not installed at all."""
         import sys
+
         # Clear _fitz_pdf cache and sys.modules so _ensure_fitz retries import
         pdf.extract._fitz_pdf = None
         for mod in list(sys.modules.keys()):
@@ -568,6 +586,7 @@ class TestExtractPdfTextHybrid:
 
 # ─── extract_pdf_structured ──────────────────────────────────────────────────
 
+
 class TestExtractPdfStructured:
     def test_returns_structured_content(self, tmp_path):
         try:
@@ -609,10 +628,13 @@ class TestExtractPdfStructured:
         except ImportError:
             pytest.skip("PyMuPDF not installed")
 
-        pdf_path = make_minimal_pdf(tmp_path, [
-            {"text": "Page 1 content"},
-            {"text": "Page 2 content"},
-        ])
+        pdf_path = make_minimal_pdf(
+            tmp_path,
+            [
+                {"text": "Page 1 content"},
+                {"text": "Page 2 content"},
+            ],
+        )
         content = extract_pdf_structured(pdf_path, max_pages=1)
         # Should respect max_pages
         pages_found = {b.page for b in content.text_blocks}
@@ -664,6 +686,7 @@ class TestExtractPdfStructured:
     def test_raises_when_fitz_missing(self, tmp_path, monkeypatch):
         """RuntimeError when PyMuPDF is not installed at all (line 279)."""
         import sys
+
         # Clear _fitz_pdf cache and sys.modules so _ensure_fitz retries import
         pdf.extract._fitz_pdf = None
         for mod in list(sys.modules.keys()):
@@ -699,6 +722,7 @@ class TestExtractPdfStructured:
         class FakePage:
             def find_tables(self):
                 raise RuntimeError("table detection failed")
+
             def get_text(self, *args, **kwargs):
                 return {"blocks": []}
 
@@ -722,7 +746,9 @@ class TestExtractPdfStructured:
                 class FakeTableBrowse:
                     def __iter__(self):
                         return iter([])
+
                 return FakeTableBrowse()
+
             def get_text(self, format, flags=0):
                 if format == "dict":
                     raise RuntimeError("get_text dict failed")
@@ -750,7 +776,9 @@ class TestExtractPdfStructured:
                 class FakeTableBrowse:
                     def __iter__(self):
                         return iter([])
+
                 return FakeTableBrowse()
+
             def get_text(self, format, flags=0):
                 if format == "dict":
                     return {"blocks": []}

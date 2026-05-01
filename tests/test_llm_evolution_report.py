@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/evolution_report.py, pure functions, no I/O."""
+
 import math
 from llm.evolution_report import (
     PaperInsight,
@@ -147,14 +148,30 @@ class TestExtractTopKeywords:
         """Replicate _extract_top_keywords."""
         import re
         from collections import Counter
+
         all_text = " ".join(
             [fb.get("query", "") + " " + " ".join(fb.get("paper_ids", [])) for fb in feedbacks]
         )
         stopwords = {
-            "the", "is", "are", "a", "an", "what", "how", "why",
-            "this", "that", "and", "or", "的", "是", "如何", "什么", "怎么",
+            "the",
+            "is",
+            "are",
+            "a",
+            "an",
+            "what",
+            "how",
+            "why",
+            "this",
+            "that",
+            "and",
+            "or",
+            "的",
+            "是",
+            "如何",
+            "什么",
+            "怎么",
         }
-        words = re.findall(r'[\u4e00-\u9fff]+|[a-zA-Z]{3,}', all_text.lower())
+        words = re.findall(r"[\u4e00-\u9fff]+|[a-zA-Z]{3,}", all_text.lower())
         filtered = [w for w in words if w not in stopwords and len(w) > 2]
         return [w for w, _ in Counter(filtered).most_common(10)]
 
@@ -202,7 +219,10 @@ class TestExtractTopKeywords:
     def test_max_10_returned(self):
         """At most 10 keywords returned."""
         feedbacks = [
-            {"query": "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11", "paper_ids": []}
+            {
+                "query": "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11",
+                "paper_ids": [],
+            }
             for _ in range(5)
         ]
         result = self._extract_keywords(feedbacks)
@@ -230,7 +250,8 @@ class TestFindEmergingPatterns:
         patterns = []
         compare_keywords = ["vs", "versus", "比较", "区别", "diff", "对比"]
         compare_count = sum(
-            1 for fb in feedbacks
+            1
+            for fb in feedbacks
             if any(kw in fb.get("query", "").lower() for kw in compare_keywords)
         )
         if compare_count > len(feedbacks) * 0.2:
@@ -254,9 +275,9 @@ class TestFindEmergingPatterns:
     def test_compare_over_20_percent(self):
         """Compare > 20% → adds compare pattern."""
         # 3 out of 10 = 30% > 20%
-        feedbacks = [
-            {"query": "transformer vs lstm"} for _ in range(3)
-        ] + [{"query": "what is attention"} for _ in range(7)]
+        feedbacks = [{"query": "transformer vs lstm"} for _ in range(3)] + [
+            {"query": "what is attention"} for _ in range(7)
+        ]
         result = self._find_patterns(feedbacks)
         assert "你开始关注论文间的比较分析" in result
 
@@ -268,9 +289,7 @@ class TestFindEmergingPatterns:
     def test_long_queries_over_50_percent(self):
         """Long queries > 50% → adds deep question pattern."""
         # 6 out of 10 = 60% > 50%
-        feedbacks = [
-            {"query": "a" * 35} for _ in range(6)
-        ] + [{"query": "short"} for _ in range(4)]
+        feedbacks = [{"query": "a" * 35} for _ in range(6)] + [{"query": "short"} for _ in range(4)]
         result = self._find_patterns(feedbacks)
         assert "问题变得更加深入和具体" in result
 
@@ -281,10 +300,9 @@ class TestFindEmergingPatterns:
 
     def test_both_patterns_possible(self):
         """Both conditions met → both patterns."""
-        feedbacks = [
-            {"query": "a vs b longer query here" * 5}
-            for _ in range(6)
-        ] + [{"query": "a" * 35} for _ in range(4)]
+        feedbacks = [{"query": "a vs b longer query here" * 5} for _ in range(6)] + [
+            {"query": "a" * 35} for _ in range(4)
+        ]
         result = self._find_patterns(feedbacks)
         assert len(result) == 2
 
@@ -300,7 +318,7 @@ class TestGenerateSuggestions:
         suggestions = []
         if paper_insights:
             top_paper = paper_insights[0]
-            suggestions.append(f"深入探索 \"{top_paper.paper_id}\" 的相关工作")
+            suggestions.append(f'深入探索 "{top_paper.paper_id}" 的相关工作')
         # Simulate _extract_top_keywords
         keywords = []
         if feedbacks:
@@ -309,10 +327,12 @@ class TestGenerateSuggestions:
             keywords = kw
         if keywords:
             suggestions.append(f"了解 {keywords[0]} 的最新研究进展")
-        suggestions.extend([
-            "追踪你关注领域的最新论文",
-            "定期回顾已读论文的核心贡献",
-        ])
+        suggestions.extend(
+            [
+                "追踪你关注领域的最新论文",
+                "定期回顾已读论文的核心贡献",
+            ]
+        )
         return suggestions[:5]
 
     def test_empty_inputs(self):
@@ -325,7 +345,7 @@ class TestGenerateSuggestions:
         """Top paper → adds paper exploration suggestion."""
         paper = PaperInsight(paper_id="BERT", title="BERT Paper")
         result = self._generate_suggestions([], [paper])
-        assert "深入探索 \"BERT\" 的相关工作" in result
+        assert '深入探索 "BERT" 的相关工作' in result
 
     def test_max_5_suggestions(self):
         """At most 5 suggestions returned."""
@@ -396,9 +416,7 @@ class TestPredictInterests:
 
     def test_only_last_5_queries_counted(self):
         """Only last 5 queries considered."""
-        feedbacks = [
-            {"query": "short"}
-        ] + [{"query": "llm architecture"} for _ in range(10)]
+        feedbacks = [{"query": "short"}] + [{"query": "llm architecture"} for _ in range(10)]
         result = self._predict_interests(feedbacks, [])
         # Only last 5 have llm, but there are 10 total, so recent 5 should have llm
         assert "LLM架构优化" in result
@@ -564,7 +582,9 @@ class TestGenerateSystemLearned:
         elif reliable >= 3:
             kw = []
             if feedbacks:
-                words = [w for fb in feedbacks[:5] for w in fb.get("query", "").split() if len(w) > 3]
+                words = [
+                    w for fb in feedbacks[:5] for w in fb.get("query", "").split() if len(w) > 3
+                ]
                 kw = words[:1]
             learned_kw = kw[0] if kw else "相关主题"
             return f"我注意到你对「{learned_kw}」很感兴趣，学会了优先推荐这类内容。"
@@ -590,7 +610,9 @@ class TestGenerateSystemLearned:
 
     def test_3_to_4_patterns(self):
         """3-4 reliable patterns → interest-based message."""
-        result = self._system_learned([{"query": "transformer attention"}], [], {"reliable_patterns": 3})
+        result = self._system_learned(
+            [{"query": "transformer attention"}], [], {"reliable_patterns": 3}
+        )
         assert "感兴趣" in result
 
     def test_5_plus_patterns(self):
@@ -625,7 +647,9 @@ class TestGenerateHighlight:
 
     def test_5_plus_positive(self):
         """5+ positive count → most trusted message."""
-        paper = PaperInsight(paper_id="p", title="Transformer Paper", positive_count=7, negative_count=1)
+        paper = PaperInsight(
+            paper_id="p", title="Transformer Paper", positive_count=7, negative_count=1
+        )
         result = self._highlight([], [paper])
         assert "最信赖" in result
         assert "7 次" in result
@@ -846,6 +870,7 @@ class TestGetBoostAge:
     def _boost_age(self, paper_id, boost_data):
         """Replicate _get_boost_age."""
         from datetime import datetime
+
         data = boost_data.get(paper_id, {})
         last_update = data.get("last_update", "")
         if not last_update:
@@ -914,10 +939,11 @@ class TestExtractTechnicalTerms:
     def _extract_terms(self, text):
         """Replicate _extract_technical_terms."""
         import re
+
         patterns = [
-            r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:mechanism|model|network|architecture|method|algorithm)\b',
-            r'\b(?:self-|cross-|multi-|hierarchical)\s*\w+(?:-\w+)*\b',
-            r'\b\w+(?:-\w+){1,3}\b',
+            r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:mechanism|model|network|architecture|method|algorithm)\b",
+            r"\b(?:self-|cross-|multi-|hierarchical)\s*\w+(?:-\w+)*\b",
+            r"\b\w+(?:-\w+){1,3}\b",
         ]
         terms = []
         for pattern in patterns:
@@ -1010,10 +1036,15 @@ class TestLearningReportToMarkdown:
         r = LearningReport(
             period_start="2026-01-01T00:00:00",
             period_end="2026-01-07T23:59:59",
-            total_queries=0, positive_rate=0.0,
-            top_papers=[], top_keywords=[], emerging_patterns=[],
-            predicted_interests=[], questions_to_explore=[],
-            evolution_stage="🌱 种子期", progress_towards_next="开始",
+            total_queries=0,
+            positive_rate=0.0,
+            top_papers=[],
+            top_keywords=[],
+            emerging_patterns=[],
+            predicted_interests=[],
+            questions_to_explore=[],
+            evolution_stage="🌱 种子期",
+            progress_towards_next="开始",
         )
         output = r.to_markdown()
         assert "AI Research OS 学习报告" in output
@@ -1024,10 +1055,15 @@ class TestLearningReportToMarkdown:
         r = LearningReport(
             period_start="2026-01-01T00:00:00",
             period_end="2026-01-07T23:59:59",
-            total_queries=5, positive_rate=0.6,
-            top_papers=[], top_keywords=[], emerging_patterns=[],
-            predicted_interests=[], questions_to_explore=[],
-            evolution_stage="🌱 种子期", progress_towards_next="开始",
+            total_queries=5,
+            positive_rate=0.6,
+            top_papers=[],
+            top_keywords=[],
+            emerging_patterns=[],
+            predicted_interests=[],
+            questions_to_explore=[],
+            evolution_stage="🌱 种子期",
+            progress_towards_next="开始",
             user_journey="这是充实的一周！",
         )
         output = r.to_markdown()
@@ -1038,10 +1074,15 @@ class TestLearningReportToMarkdown:
         r = LearningReport(
             period_start="2026-01-01T00:00:00",
             period_end="2026-01-07T23:59:59",
-            total_queries=0, positive_rate=0.0,
-            top_papers=[], top_keywords=[], emerging_patterns=[],
-            predicted_interests=[], questions_to_explore=[],
-            evolution_stage="🌱 种子期", progress_towards_next="开始",
+            total_queries=0,
+            positive_rate=0.0,
+            top_papers=[],
+            top_keywords=[],
+            emerging_patterns=[],
+            predicted_interests=[],
+            questions_to_explore=[],
+            evolution_stage="🌱 种子期",
+            progress_towards_next="开始",
             system_learned="我已经学会了模式",
         )
         output = r.to_markdown()
@@ -1053,10 +1094,15 @@ class TestLearningReportToMarkdown:
         r = LearningReport(
             period_start="2026-01-01T00:00:00",
             period_end="2026-01-07T23:59:59",
-            total_queries=10, positive_rate=0.5,
-            top_papers=[paper], top_keywords=[], emerging_patterns=[],
-            predicted_interests=[], questions_to_explore=[],
-            evolution_stage="🌱 种子期", progress_towards_next="开始",
+            total_queries=10,
+            positive_rate=0.5,
+            top_papers=[paper],
+            top_keywords=[],
+            emerging_patterns=[],
+            predicted_interests=[],
+            questions_to_explore=[],
+            evolution_stage="🌱 种子期",
+            progress_towards_next="开始",
         )
         output = r.to_markdown()
         assert "老朋友" in output
@@ -1067,10 +1113,15 @@ class TestLearningReportToMarkdown:
         r = LearningReport(
             period_start="2026-01-01T00:00:00",
             period_end="2026-01-07T23:59:59",
-            total_queries=0, positive_rate=0.0,
-            top_papers=[], top_keywords=[], emerging_patterns=[],
-            predicted_interests=[], questions_to_explore=[],
-            evolution_stage="🚀 进化期", progress_towards_next="继续进化",
+            total_queries=0,
+            positive_rate=0.0,
+            top_papers=[],
+            top_keywords=[],
+            emerging_patterns=[],
+            predicted_interests=[],
+            questions_to_explore=[],
+            evolution_stage="🚀 进化期",
+            progress_towards_next="继续进化",
         )
         output = r.to_markdown()
         assert "🚀 进化期" in output
@@ -1085,10 +1136,15 @@ class TestLearningReportToMarkdownClassic:
         r = LearningReport(
             period_start="2026-01-01T00:00:00",
             period_end="2026-01-07T23:59:59",
-            total_queries=10, positive_rate=0.8,
-            top_papers=[], top_keywords=[], emerging_patterns=[],
-            predicted_interests=[], questions_to_explore=[],
-            evolution_stage="🌱 种子期", progress_towards_next="开始",
+            total_queries=10,
+            positive_rate=0.8,
+            top_papers=[],
+            top_keywords=[],
+            emerging_patterns=[],
+            predicted_interests=[],
+            questions_to_explore=[],
+            evolution_stage="🌱 种子期",
+            progress_towards_next="开始",
         )
         output = r.to_markdown_classic()
         assert "AI Research OS 学习报告" in output
@@ -1100,10 +1156,15 @@ class TestLearningReportToMarkdownClassic:
         r = LearningReport(
             period_start="2026-01-01T00:00:00",
             period_end="2026-01-07T23:59:59",
-            total_queries=42, positive_rate=0.5,
-            top_papers=[], top_keywords=[], emerging_patterns=[],
-            predicted_interests=[], questions_to_explore=[],
-            evolution_stage="🌱 种子期", progress_towards_next="",
+            total_queries=42,
+            positive_rate=0.5,
+            top_papers=[],
+            top_keywords=[],
+            emerging_patterns=[],
+            predicted_interests=[],
+            questions_to_explore=[],
+            evolution_stage="🌱 种子期",
+            progress_towards_next="",
         )
         output = r.to_markdown_classic()
         assert "42" in output
@@ -1113,10 +1174,15 @@ class TestLearningReportToMarkdownClassic:
         r = LearningReport(
             period_start="2026-01-01T00:00:00",
             period_end="2026-01-07T23:59:59",
-            total_queries=10, positive_rate=0.75,
-            top_papers=[], top_keywords=[], emerging_patterns=[],
-            predicted_interests=[], questions_to_explore=[],
-            evolution_stage="🌱 种子期", progress_towards_next="",
+            total_queries=10,
+            positive_rate=0.75,
+            top_papers=[],
+            top_keywords=[],
+            emerging_patterns=[],
+            predicted_interests=[],
+            questions_to_explore=[],
+            evolution_stage="🌱 种子期",
+            progress_towards_next="",
         )
         output = r.to_markdown_classic()
         assert "75" in output
@@ -1133,17 +1199,38 @@ class TestExtractConcept:
         text = f"{question} {answer}"
         # Simulate _extract_technical_terms from answer only
         import re
+
         terms = re.findall(
-            r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:mechanism|model|network|architecture|method|algorithm)\b',
-            answer, re.IGNORECASE
+            r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:mechanism|model|network|architecture|method|algorithm)\b",
+            answer,
+            re.IGNORECASE,
         )
         if terms:
             return terms[0][:40]
 
         stopwords = {
-            "what", "is", "are", "how", "why", "when", "where",
-            "the", "a", "an", "this", "that", "these", "those",
-            "的", "是", "如何", "什么", "怎么", "为什么", "please", "explain",
+            "what",
+            "is",
+            "are",
+            "how",
+            "why",
+            "when",
+            "where",
+            "the",
+            "a",
+            "an",
+            "this",
+            "that",
+            "these",
+            "those",
+            "的",
+            "是",
+            "如何",
+            "什么",
+            "怎么",
+            "为什么",
+            "please",
+            "explain",
         }
         # Split full text (question + answer) for keyword extraction
         words = text.split()
@@ -1164,8 +1251,7 @@ class TestExtractConcept:
     def test_capitalized_phrase_takes_priority(self):
         """Technical phrase in answer → returned as concept."""
         result = self._extract_concept(
-            "What is the transformer model?",
-            "It is a Neural Network Architecture."
+            "What is the transformer model?", "It is a Neural Network Architecture."
         )
         assert "neural" in result.lower()
         assert "architecture" in result.lower()
@@ -1174,8 +1260,7 @@ class TestExtractConcept:
         """Pattern uses IGNORECASE, so lowercase phrase also matches."""
         # re.IGNORECASE means [A-Z][a-z]+ matches "neural" too
         result = self._extract_concept(
-            "What is the transformer model?",
-            "It is a neural network architecture."
+            "What is the transformer model?", "It is a neural network architecture."
         )
         # With IGNORECASE, "neural network architecture" still matches
         assert "neural" in result.lower()

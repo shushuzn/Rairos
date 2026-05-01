@@ -2,6 +2,7 @@
 Comprehensive test suite for ai_research_os.py
 Run with: uv run --with requests,feedparser,pyyaml pytest tests/ -v
 """
+
 import pytest
 import os
 import re
@@ -16,6 +17,7 @@ from io import StringIO
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import ai_research_os as airo
+
 
 def make_paper(
     title="Test Paper",
@@ -44,9 +46,11 @@ def make_paper(
         primary_category=primary_category,
     )
 
+
 # ---------------------------------------------------------------------------
 # Paper dataclass
 # ---------------------------------------------------------------------------
+
 
 class TestPaperDataclass:
     def test_paper_required_fields(self):
@@ -77,9 +81,11 @@ class TestPaperDataclass:
         assert not hasattr(p, "pnote_path")
         assert not hasattr(p, "airol")
 
+
 # ---------------------------------------------------------------------------
 # slugify_title
 # ---------------------------------------------------------------------------
+
 
 class TestSlugifyTitle:
     def test_preserves_case(self):
@@ -117,9 +123,11 @@ class TestSlugifyTitle:
         result = airo.slugify_title("机器学习")
         assert "机器学习" in result
 
+
 # ---------------------------------------------------------------------------
 # safe_uid
 # ---------------------------------------------------------------------------
+
 
 class TestSafeUidTier1:
     def test_preserves_case(self):
@@ -129,7 +137,7 @@ class TestSafeUidTier1:
     def test_replaces_special_chars_with_underscore(self):
         assert airo.safe_uid("Hello World") == "Hello_World"
         assert airo.safe_uid("Hello-World") == "Hello-World"  # dash is valid
-        assert airo.safe_uid("Hello.World") == "Hello.World"   # dot is valid
+        assert airo.safe_uid("Hello.World") == "Hello.World"  # dot is valid
 
     def test_unicode_preserved(self):
         result = airo.safe_uid("机器学习")
@@ -143,9 +151,11 @@ class TestSafeUidTier1:
         # Multiple spaces collapse to single space, then replaced with single '_'
         assert airo.safe_uid("Hello   World") == "Hello_World"
 
+
 # ---------------------------------------------------------------------------
 # is_probably_doi
 # ---------------------------------------------------------------------------
+
 
 class TestIsProbablyDoiTier1:
     def test_accepts_10_prefix(self):
@@ -166,9 +176,11 @@ class TestIsProbablyDoiTier1:
         assert not airo.is_probably_doi("")
         assert not airo.is_probably_doi("   ")
 
+
 # ---------------------------------------------------------------------------
 # normalize_doi
 # ---------------------------------------------------------------------------
+
 
 class TestNormalizeDoi:
     def test_strips_doi_org_prefix(self):
@@ -197,9 +209,11 @@ class TestNormalizeDoi:
     def test_returns_none_for_empty_string(self):
         assert airo.normalize_doi("") is None
 
+
 # ---------------------------------------------------------------------------
 # normalize_arxiv_id
 # ---------------------------------------------------------------------------
+
 
 class TestNormalizeArxivId:
     def test_strips_version_from_url(self):
@@ -240,13 +254,16 @@ class TestNormalizeArxivId:
     def test_returns_none_for_empty_string(self):
         assert airo.normalize_arxiv_id("") is None
 
+
 # ---------------------------------------------------------------------------
 # today_iso
 # ---------------------------------------------------------------------------
 
+
 class TestTodayIsoTier1:
     def test_returns_iso_format_date(self):
         import datetime
+
         result = airo.today_iso()
         # Should be YYYY-MM-DD
         assert re.match(r"\d{4}-\d{2}-\d{2}", result)
@@ -254,9 +271,11 @@ class TestTodayIsoTier1:
         today = datetime.date.today().isoformat()
         assert result == today
 
+
 # ---------------------------------------------------------------------------
 # looks_like_heading
 # ---------------------------------------------------------------------------
+
 
 class TestLooksLikeHeadingTier1:
     def test_accepts_markdown_heading(self):
@@ -290,9 +309,11 @@ class TestLooksLikeHeadingTier1:
         assert airo.looks_like_heading("1.1 Method")
         assert airo.looks_like_heading("2.3.1 Details")
 
+
 # ---------------------------------------------------------------------------
 # segment_into_sections
 # ---------------------------------------------------------------------------
+
 
 class TestSegmentIntoSections:
     def test_splits_on_headings(self):
@@ -319,9 +340,11 @@ class TestSegmentIntoSections:
         sections = airo.segment_into_sections(text)
         assert len(sections) == 1
 
+
 # ---------------------------------------------------------------------------
 # format_section_snippets
 # ---------------------------------------------------------------------------
+
 
 class TestFormatSectionSnippetsTier1:
     def test_formats_sections_with_blockquotes(self):
@@ -336,9 +359,11 @@ class TestFormatSectionSnippetsTier1:
         # Total output should be under budget
         assert len(result) < 3000
 
+
 # ---------------------------------------------------------------------------
 # upsert_link_under_heading
 # ---------------------------------------------------------------------------
+
 
 class TestUpsertLinkUnderHeading:
     def test_inserts_new_heading_with_link(self):
@@ -366,9 +391,11 @@ class TestUpsertLinkUnderHeading:
         assert "Intro" in result
         assert "Some content" in result
 
+
 # ---------------------------------------------------------------------------
 # pick_top3_pnotes_for_tag
 # ---------------------------------------------------------------------------
+
 
 class TestPickTop3PnotesForTag:
     def test_returns_none_for_unknown_tag(self):
@@ -378,19 +405,23 @@ class TestPickTop3PnotesForTag:
 
     def test_returns_list_for_known_tag(self):
         # Function requires at least 3 papers to return a list
-        tag_map = {"LLM": [
-            ("2024-01-01", Path("p1.md")),
-            ("2024-01-02", Path("p2.md")),
-            ("2024-01-03", Path("p3.md")),
-        ]}
+        tag_map = {
+            "LLM": [
+                ("2024-01-01", Path("p1.md")),
+                ("2024-01-02", Path("p2.md")),
+                ("2024-01-03", Path("p3.md")),
+            ]
+        }
         result = airo.pick_top3_pnotes_for_tag("LLM", tag_map)
         assert result is not None
         assert len(result) == 3
         assert all(isinstance(p, Path) for p in result)
 
+
 # ---------------------------------------------------------------------------
 # mnote_filename
 # ---------------------------------------------------------------------------
+
 
 class TestMnoteFilenameTier1:
     def test_format(self, mock_research_root):
@@ -401,9 +432,11 @@ class TestMnoteFilenameTier1:
         assert "LLM" in result
         assert result.endswith(".md")
 
+
 # ---------------------------------------------------------------------------
 # parse_current_abc
 # ---------------------------------------------------------------------------
+
 
 class TestParseCurrentAbcTier1:
     def test_parses_a_b_c_lines(self):
@@ -427,9 +460,11 @@ class TestParseCurrentAbcTier1:
         assert b is None
         assert c == "Paper C"
 
+
 # ---------------------------------------------------------------------------
 # append_view_evolution_log
 # ---------------------------------------------------------------------------
+
 
 class TestAppendViewEvolutionLogTier1:
     def test_adds_entry_with_date(self):
@@ -440,9 +475,11 @@ class TestAppendViewEvolutionLogTier1:
         assert "旧观点" in result or "旧" in result
         assert "新证据" in result or "新" in result
 
+
 # ---------------------------------------------------------------------------
 # render_cnote
 # ---------------------------------------------------------------------------
+
 
 class TestRenderCnoteTier1:
     def test_contains_concept_title(self):
@@ -463,9 +500,11 @@ class TestRenderCnoteTier1:
         result = airo.render_cnote("Test")
         assert "status: evergreen" in result
 
+
 # ---------------------------------------------------------------------------
 # render_mnote
 # ---------------------------------------------------------------------------
+
 
 class TestRenderMnote:
     def test_contains_title(self):
@@ -486,9 +525,11 @@ class TestRenderMnote:
         result = airo.render_mnote("Tag", "A", "B", "C")
         assert "View Evolution Log" in result or "演进" in result
 
+
 # ---------------------------------------------------------------------------
 # render_radar
 # ---------------------------------------------------------------------------
+
 
 class TestRenderRadar:
     def test_contains_header(self):
@@ -496,7 +537,16 @@ class TestRenderRadar:
         assert "## 2024" in result
 
     def test_renders_rows(self):
-        rows = [{"主题": "LLM", "热度": "5", "证据质量": "high", "成本变化": "N/A", "我的信心": "medium", "最近更新": "2024-01"}]
+        rows = [
+            {
+                "主题": "LLM",
+                "热度": "5",
+                "证据质量": "high",
+                "成本变化": "N/A",
+                "我的信心": "medium",
+                "最近更新": "2024-01",
+            }
+        ]
         result = airo.render_radar("## 2024", rows)
         assert "LLM" in result
         assert "5" in result
@@ -505,9 +555,11 @@ class TestRenderRadar:
         result = airo.render_radar("## Empty", [])
         assert "## Empty" in result
 
+
 # ---------------------------------------------------------------------------
 # parse_radar_table
 # ---------------------------------------------------------------------------
+
 
 class TestParseRadarTable:
     def test_parses_valid_table(self):
@@ -528,9 +580,11 @@ class TestParseRadarTable:
         assert header.rstrip("\n").rstrip() == md.rstrip()
         assert rows == []
 
+
 # ---------------------------------------------------------------------------
 # read_text / write_text
 # ---------------------------------------------------------------------------
+
 
 class TestReadWriteText:
     def test_write_and_read_roundtrip(self, mock_research_root):
@@ -545,15 +599,30 @@ class TestReadWriteText:
         content = airo.read_text(f)
         assert content == "Binary content \x00\xff"
 
+
 # ---------------------------------------------------------------------------
 # ensure_research_tree
 # ---------------------------------------------------------------------------
+
 
 class TestEnsureResearchTree:
     def test_creates_all_directories(self, mock_research_root):
         root = mock_research_root
         airo.ensure_research_tree(root)
-        for name in ["00-Radar", "01-Foundations", "02-Models", "03-Training", "04-Scaling", "05-Alignment", "06-Agents", "07-Infrastructure", "08-Optimization", "09-Evaluation", "10-Applications", "11-Future-Directions"]:
+        for name in [
+            "00-Radar",
+            "01-Foundations",
+            "02-Models",
+            "03-Training",
+            "04-Scaling",
+            "05-Alignment",
+            "06-Agents",
+            "07-Infrastructure",
+            "08-Optimization",
+            "09-Evaluation",
+            "10-Applications",
+            "11-Future-Directions",
+        ]:
             assert (root / name).is_dir()
 
     def test_idempotent(self, mock_research_root):
@@ -561,9 +630,11 @@ class TestEnsureResearchTree:
         airo.ensure_research_tree(root)
         airo.ensure_research_tree(root)  # should not raise
 
+
 # ---------------------------------------------------------------------------
 # ensure_cnote
 # ---------------------------------------------------------------------------
+
 
 class TestEnsureCnote:
     def test_creates_cnote_file(self, mock_research_root):
@@ -580,9 +651,11 @@ class TestEnsureCnote:
         second = airo.ensure_cnote(concept_dir, "Test")
         assert first == second
 
+
 # ---------------------------------------------------------------------------
 # update_cnote_links
 # ---------------------------------------------------------------------------
+
 
 class TestUpdateCnoteLinks:
     def test_adds_paper_link(self, mock_research_root):
@@ -597,13 +670,17 @@ class TestUpdateCnoteLinks:
         content = airo.read_text(cnote)
         assert "[[test]]" in content or "test" in content
 
+
 # ---------------------------------------------------------------------------
 # render_pnote
 # ---------------------------------------------------------------------------
 
+
 class TestRenderPnote:
     def test_contains_title_and_frontmatter(self):
-        p = make_paper(abstract="AI Research OS is a research tool for artificial intelligence papers.")
+        p = make_paper(
+            abstract="AI Research OS is a research tool for artificial intelligence papers."
+        )
         result = airo.render_pnote(p, ["LLM", "NLP"], "## Intro\nIntroduction text.", "")
         assert p.title in result
         assert "type: paper" in result
@@ -644,9 +721,7 @@ class TestRenderPnote:
             "overall": "Strong paper with good evidence",
         }
         parsed_ai = (sections_dict, rubric_dict)
-        result = airo.render_pnote(
-            p, ["LLM"], "## Intro\nText.", parsed_ai=parsed_ai
-        )
+        result = airo.render_pnote(p, ["LLM"], "## Intro\nText.", parsed_ai=parsed_ai)
         # rubric: lines should be in frontmatter
         assert "rubric:" in result
         assert "novelty: 4" in result
@@ -668,9 +743,7 @@ class TestRenderPnote:
         sections_dict = {"## 1. 背景": "BG"}
         rubric_dict = {"overall": "OK paper"}  # no novelty/leverage/etc scores
         parsed_ai = (sections_dict, rubric_dict)
-        result = airo.render_pnote(
-            p, ["AI"], "## Intro\nText.", parsed_ai=parsed_ai
-        )
+        result = airo.render_pnote(p, ["AI"], "## Intro\nText.", parsed_ai=parsed_ai)
         # scores dict is empty → rubric: block with individual scores is NOT added
         # overall is only added inside the `if scores:` block → also NOT added
         # But ai_generated: true is still added (outside the scores block)
@@ -696,9 +769,11 @@ class TestRenderPnote:
         assert "ai_generated:" not in result
         assert "draft-ai" not in result
 
+
 # ---------------------------------------------------------------------------
 # parse_frontmatter
 # ---------------------------------------------------------------------------
+
 
 class TestParseFrontmatter:
     def test_parses_yaml_block(self):
@@ -717,9 +792,11 @@ class TestParseFrontmatter:
         fm = airo.parse_frontmatter(md)
         assert "tags" in fm
 
+
 # ---------------------------------------------------------------------------
 # parse_tags_from_frontmatter
 # ---------------------------------------------------------------------------
+
 
 class TestParseTagsFromFrontmatter:
     def test_extracts_tags_list(self):
@@ -738,9 +815,11 @@ class TestParseTagsFromFrontmatter:
         tags = airo.parse_tags_from_frontmatter(fm)
         assert "LLM" in tags
 
+
 # ---------------------------------------------------------------------------
 # parse_date_from_frontmatter
 # ---------------------------------------------------------------------------
+
 
 class TestParseDateFromFrontmatterTier1:
     def test_extracts_date(self):
@@ -751,9 +830,11 @@ class TestParseDateFromFrontmatterTier1:
         fm = {"type": "paper"}
         assert airo.parse_date_from_frontmatter(fm) == ""
 
+
 # ---------------------------------------------------------------------------
 # collect_pnotes
 # ---------------------------------------------------------------------------
+
 
 class TestCollectPnotes:
     def test_finds_papers_directory(self, mock_research_root):
@@ -771,9 +852,11 @@ class TestCollectPnotes:
         pnotes = airo.collect_pnotes(mock_research_root)
         assert pnotes == []
 
+
 # ---------------------------------------------------------------------------
 # pnotes_by_tag
 # ---------------------------------------------------------------------------
+
 
 class TestPnotesByTag:
     def test_groups_by_tag(self, mock_research_root):
@@ -790,9 +873,11 @@ class TestPnotesByTag:
         assert "LLM" in result
         assert "RAG" in result
 
+
 # ---------------------------------------------------------------------------
 # ensure_or_update_mnote
 # ---------------------------------------------------------------------------
+
 
 class TestEnsureOrUpdateMnoteTier1:
     def test_creates_new_mnote(self, mock_research_root):
@@ -819,9 +904,11 @@ class TestEnsureOrUpdateMnoteTier1:
         result = airo.ensure_or_update_mnote(mnote_dir, "LLM", [p1])
         assert result is None
 
+
 # ---------------------------------------------------------------------------
 # ensure_radar / update_radar
 # ---------------------------------------------------------------------------
+
 
 class TestRadar:
     def test_ensure_radar_creates_file(self, mock_research_root):
@@ -838,9 +925,11 @@ class TestRadar:
         assert "LLM" in content
         assert "RAG" in content
 
+
 # ---------------------------------------------------------------------------
 # ensure_timeline / update_timeline
 # ---------------------------------------------------------------------------
+
 
 class TestTimeline:
     def test_ensure_timeline_creates_file(self, mock_research_root):
@@ -861,9 +950,11 @@ class TestTimeline:
         assert "Test Paper Title" in content
         assert "2024" in content
 
+
 # ---------------------------------------------------------------------------
 # KEYWORD_TAGS
 # ---------------------------------------------------------------------------
+
 
 class TestKeywordTags:
     def test_is_list_of_tuples(self):
@@ -880,9 +971,11 @@ class TestKeywordTags:
         assert "RAG" in tag_names
         assert len(airo.KEYWORD_TAGS) >= 5
 
+
 # ---------------------------------------------------------------------------
 # infer_tags_if_empty
 # ---------------------------------------------------------------------------
+
 
 class TestInferTagsIfEmptyTier1:
     def test_returns_empty_for_empty_tags_with_empty_abstract(self):
@@ -895,9 +988,11 @@ class TestInferTagsIfEmptyTier1:
         tags = airo.infer_tags_if_empty(["LLM"], p)
         assert "LLM" in tags
 
+
 # ---------------------------------------------------------------------------
 # download_pdf (mocked)
 # ---------------------------------------------------------------------------
+
 
 class TestDownloadPdf:
     def test_download_pdf_writes_file(self, mock_research_root):
@@ -912,9 +1007,11 @@ class TestDownloadPdf:
             airo.download_pdf("https://example.com/paper.pdf", out_path, timeout=60)
             mock_get.assert_called_once()
 
+
 # ---------------------------------------------------------------------------
 # extract_pdf_text (mocked)
 # ---------------------------------------------------------------------------
+
 
 class TestExtractPdfText:
     def test_extracts_text_from_pdf(self, mock_research_root):
@@ -936,9 +1033,11 @@ class TestExtractPdfText:
         text = airo.extract_pdf_text(fake)
         assert text == "" or text is None
 
+
 # ---------------------------------------------------------------------------
 # fetch_arxiv_metadata (mocked)
 # ---------------------------------------------------------------------------
+
 
 class TestFetchArxivMetadata:
     def test_fetches_and_returns_paper(self):
@@ -1039,13 +1138,20 @@ class TestFetchArxivMetadataBatch:
 
     def test_batch_all_cached(self):
         cached_paper = {
-            "source": "arxiv", "uid": "2301.00001", "title": "Cached Paper",
-            "authors": ["Cached Author"], "abstract": "Cached abstract.",
-            "published": "2024-01-15", "updated": "2024-01-20",
+            "source": "arxiv",
+            "uid": "2301.00001",
+            "title": "Cached Paper",
+            "authors": ["Cached Author"],
+            "abstract": "Cached abstract.",
+            "published": "2024-01-15",
+            "updated": "2024-01-20",
             "abs_url": "https://arxiv.org/abs/2301.00001",
             "pdf_url": "https://arxiv.org/pdf/2301.00001.pdf",
-            "primary_category": "cs.AI", "categories": "cs.AI",
-            "comment": "", "journal_ref": "", "doi": "",
+            "primary_category": "cs.AI",
+            "categories": "cs.AI",
+            "comment": "",
+            "journal_ref": "",
+            "doi": "",
         }
         with patch("parsers.arxiv.get_cached", return_value=cached_paper):
             papers = airo.fetch_arxiv_metadata_batch(["2301.00001"])
@@ -1055,13 +1161,20 @@ class TestFetchArxivMetadataBatch:
     def test_batch_fallback_to_individual_on_error(self):
         """When batch request fails, falls back to individual fetch_arxiv_metadata."""
         cached_paper = {
-            "source": "arxiv", "uid": "2301.00001", "title": "Fallback Paper",
-            "authors": ["Fallback Author"], "abstract": "Fallback abstract.",
-            "published": "2024-01-15", "updated": "2024-01-20",
+            "source": "arxiv",
+            "uid": "2301.00001",
+            "title": "Fallback Paper",
+            "authors": ["Fallback Author"],
+            "abstract": "Fallback abstract.",
+            "published": "2024-01-15",
+            "updated": "2024-01-20",
             "abs_url": "https://arxiv.org/abs/2301.00001",
             "pdf_url": "https://arxiv.org/pdf/2301.00001.pdf",
-            "primary_category": "cs.AI", "categories": "cs.AI",
-            "comment": "", "journal_ref": "", "doi": "",
+            "primary_category": "cs.AI",
+            "categories": "cs.AI",
+            "comment": "",
+            "journal_ref": "",
+            "doi": "",
         }
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -1080,9 +1193,11 @@ class TestFetchArxivMetadataBatch:
         assert len(papers) == 1
         assert papers[0].uid == "2301.00001"
 
+
 # ---------------------------------------------------------------------------
 # fetch_crossref_metadata (mocked)
 # ---------------------------------------------------------------------------
+
 
 class TestFetchCrossrefMetadata:
     def test_fetches_and_returns_paper(self):
@@ -1115,9 +1230,11 @@ class TestFetchCrossrefMetadata:
             paper, updated = airo.fetch_crossref_metadata("10.9999/notfound", timeout=30)
             # Should return (None, None) or similar on 404
 
+
 # ---------------------------------------------------------------------------
 # main CLI paths
 # ---------------------------------------------------------------------------
+
 
 class TestMainCli:
     def test_main_accepts_arxiv_id(self, mock_research_root, monkeypatch):
@@ -1142,9 +1259,11 @@ class TestMainCli:
             with pytest.raises(SystemExit):
                 airo.main(["--help"])
 
+
 # ---------------------------------------------------------------------------
 # wikilink_for_pnote
 # ---------------------------------------------------------------------------
+
 
 class TestWikilinkForPnoteTier1:
     def test_creates_wikilink(self):
@@ -1153,14 +1272,17 @@ class TestWikilinkForPnoteTier1:
         assert "Test Paper" in result
         assert "]]" in result
 
+
 # ---------------------------------------------------------------------------
 # call_llm_chat_completions (mocked)
 # ---------------------------------------------------------------------------
+
 
 class TestCallLlmChatCompletions:
     @pytest.fixture(autouse=True)
     def reset_http_session(self):
         import llm.client
+
         llm.client._http_session = None
         yield
         llm.client._http_session = None
@@ -1186,7 +1308,7 @@ class TestCallLlmChatCompletions:
                 "gpt-4o-mini",
                 base_url="https://api.example.com/v1",
                 api_key="test-key-123",
-                use_cache=False
+                use_cache=False,
             )
             assert "Test response" in result
             call_args = mock_session.post.call_args
@@ -1208,7 +1330,7 @@ class TestCallLlmChatCompletions:
                 "gpt-4o-mini",
                 base_url="https://api.openai.com/v1",
                 api_key=None,
-                use_cache=False
+                use_cache=False,
             )
             assert "Env key response" in result
 
@@ -1231,7 +1353,7 @@ class TestCallLlmChatCompletions:
                 base_url="https://api.openai.com/v1",
                 api_key="test-key",
                 system_prompt="You are helpful.",
-                use_cache=False
+                use_cache=False,
             )
             assert "Response" in result
             call_kwargs = mock_session.post.call_args.kwargs
@@ -1260,7 +1382,7 @@ class TestCallLlmChatCompletions:
                 base_url="https://api.openai.com/v1",
                 api_key="test-key",
                 system_prompt=None,
-                use_cache=False
+                use_cache=False,
             )
             call_kwargs = mock_session.post.call_args.kwargs
             payload = call_kwargs["json"]
@@ -1274,6 +1396,7 @@ class TestCallLlmChatCompletions:
 # ---------------------------------------------------------------------------
 # looks_like_heading
 # ---------------------------------------------------------------------------
+
 
 class TestLooksLikeHeadingTier2:
     def test_accepts_numeric_outline(self):
@@ -1296,7 +1419,16 @@ class TestLooksLikeHeadingTier2:
         assert airo.looks_like_heading("XI. Overview") is False
 
     def test_accepts_keyword_headings(self):
-        for kw in ["Introduction", "Abstract", "Method", "Experiments", "Conclusion", "Related Work", "Future Work", "Appendix"]:
+        for kw in [
+            "Introduction",
+            "Abstract",
+            "Method",
+            "Experiments",
+            "Conclusion",
+            "Related Work",
+            "Future Work",
+            "Appendix",
+        ]:
             assert airo.looks_like_heading(kw) is True, f"Failed for {kw}"
 
     def test_rejects_bullet_points(self):
@@ -1324,11 +1456,14 @@ class TestLooksLikeHeadingTier2:
 # format_section_snippets
 # ---------------------------------------------------------------------------
 
+
 class TestFormatSectionSnippetsTier2:
     def test_truncates_long_section(self):
         long_content = "a" * 2000
         sections = [("Abstract", long_content)]  # Abstract = high priority, gets budget
-        result = airo.format_section_snippets(sections, max_chars_total=200, min_chars_per_high_prio=200)
+        result = airo.format_section_snippets(
+            sections, max_chars_total=200, min_chars_per_high_prio=200
+        )
         # With tiny budget, Abstract section should be truncated
         assert len(result) < len(long_content)
 
@@ -1367,6 +1502,7 @@ class TestFormatSectionSnippetsTier2:
 # is_probably_doi
 # ---------------------------------------------------------------------------
 
+
 class TestIsProbablyDoiTier2:
     def test_accepts_doi_url(self):
         assert airo.is_probably_doi("https://doi.org/10.1234/abc") is True
@@ -1388,6 +1524,7 @@ class TestIsProbablyDoiTier2:
 # safe_uid
 # ---------------------------------------------------------------------------
 
+
 class TestSafeUidTier2:
     def test_replaces_special_chars(self):
         assert airo.safe_uid("paper: title!@#") == "paper_title_"
@@ -1406,9 +1543,11 @@ class TestSafeUidTier2:
 # read_text / write_text edge cases
 # ---------------------------------------------------------------------------
 
+
 class TestReadWriteEdgeCasesTier2:
     def test_read_nonexistent_returns_empty(self):
         from pathlib import Path
+
         result = airo.read_text(Path("/nonexistent/file.txt"))
         assert result == ""
 
@@ -1428,6 +1567,7 @@ class TestReadWriteEdgeCasesTier2:
 # ---------------------------------------------------------------------------
 # infer_tags_if_empty
 # ---------------------------------------------------------------------------
+
 
 class TestInferTagsIfEmptyTier2:
     def test_returns_existing_tags(self):
@@ -1460,6 +1600,7 @@ class TestInferTagsIfEmptyTier2:
 # mnote_filename
 # ---------------------------------------------------------------------------
 
+
 class TestMnoteFilenameTier2:
     def test_basic_format(self, mock_research_root):
         a = mock_research_root / "P - 2024 - PaperA.md"
@@ -1486,6 +1627,7 @@ class TestMnoteFilenameTier2:
 # ---------------------------------------------------------------------------
 # parse_current_abc
 # ---------------------------------------------------------------------------
+
 
 class TestParseCurrentAbcTier2:
     def test_parses_all_three(self):
@@ -1514,10 +1656,13 @@ class TestParseCurrentAbcTier2:
 # append_view_evolution_log
 # ---------------------------------------------------------------------------
 
+
 class TestAppendViewEvolutionLogTier2:
     def test_adds_entry_with_date(self):
         md = "# Test\n\n## View Evolution Log\n"
-        result = airo.append_view_evolution_log(md, ("OldA", "OldB", "OldC"), ("NewA", "NewB", "NewC"))
+        result = airo.append_view_evolution_log(
+            md, ("OldA", "OldB", "OldC"), ("NewA", "NewB", "NewC")
+        )
         assert "NewA" in result
         assert "OldA" in result
         assert "旧观点" in result or "新证据" in result or "更新结论" in result
@@ -1537,6 +1682,7 @@ class TestAppendViewEvolutionLogTier2:
 # update_cnote_links edge cases
 # ---------------------------------------------------------------------------
 
+
 class TestUpdateCnoteLinksEdgeCasesTier2:
     def test_adds_link_to_cnote(self, mock_research_root):
         concept_dir = mock_research_root / "01-Concepts"
@@ -1554,10 +1700,19 @@ class TestUpdateCnoteLinksEdgeCasesTier2:
 # render_cnote
 # ---------------------------------------------------------------------------
 
+
 class TestRenderCnoteTier2:
     def test_has_required_sections(self):
         result = airo.render_cnote("Attention Mechanism")
-        for section in ["# Attention Mechanism", "## 核心定义", "## 技术本质", "## 常见实现路径", "## 优势", "## 局限", "## 演化时间线"]:
+        for section in [
+            "# Attention Mechanism",
+            "## 核心定义",
+            "## 技术本质",
+            "## 常见实现路径",
+            "## 优势",
+            "## 局限",
+            "## 演化时间线",
+        ]:
             assert section in result
 
     def test_type_is_concept(self):
@@ -1573,20 +1728,24 @@ class TestRenderCnoteTier2:
 # today_iso
 # ---------------------------------------------------------------------------
 
+
 class TestTodayIsoTier2:
     def test_returns_iso_format(self):
         import re
+
         result = airo.today_iso()
         assert re.match(r"\d{4}-\d{2}-\d{2}", result) is not None
 
     def test_returns_todays_date(self):
         import datetime as dt
+
         assert airo.today_iso() == dt.date.today().isoformat()
 
 
 # ---------------------------------------------------------------------------
 # wikilink_for_pnote
 # ---------------------------------------------------------------------------
+
 
 class TestWikilinkForPnoteTier2:
     def test_format(self, mock_research_root):
@@ -1603,6 +1762,7 @@ class TestWikilinkForPnoteTier2:
 # ---------------------------------------------------------------------------
 # ensure_or_update_mnote
 # ---------------------------------------------------------------------------
+
 
 class TestEnsureOrUpdateMnoteTier2:
     def test_returns_none_for_insufficient_papers(self, mock_research_root):
@@ -1627,6 +1787,7 @@ class TestEnsureOrUpdateMnoteTier2:
 # parse_tags_from_frontmatter edge cases
 # ---------------------------------------------------------------------------
 
+
 class TestParseTagsFromFrontmatterEdgeTier2:
     def test_handles_missing_tags_key(self):
         fm = {}
@@ -1644,6 +1805,7 @@ class TestParseTagsFromFrontmatterEdgeTier2:
 # ---------------------------------------------------------------------------
 # segment_into_sections edge cases
 # ---------------------------------------------------------------------------
+
 
 class TestSegmentIntoSectionsEdgeTier2:
     def test_no_headings_returns_single_section(self):
@@ -1681,6 +1843,7 @@ class TestSegmentIntoSectionsEdgeTier2:
 # parse_date_from_frontmatter edge cases
 # ---------------------------------------------------------------------------
 
+
 class TestParseDateFromFrontmatterTier2:
     def test_returns_empty_for_missing_date(self):
         result = airo.parse_date_from_frontmatter({})
@@ -1706,13 +1869,16 @@ class TestParseDateFromFrontmatterTier2:
 # update_radar edge cases
 # ---------------------------------------------------------------------------
 
+
 class TestUpdateRadarEdgeTier2:
     def test_increments_heat(self, mock_research_root):
         root = mock_research_root
         airo.ensure_research_tree(root)
         p = airo.ensure_radar(root)
         # Write initial radar with one tag (ASCII only to avoid encoding issues)
-        p.write_text("# Radar\n\n| Topic | Heat | Evidence | Cost | Confidence | Updated |\n| -- | -- | ---- | ---- | ---- | ---- |\n| LLM | 2 | High | Flat | Medium | 2024-01-15 |\n")
+        p.write_text(
+            "# Radar\n\n| Topic | Heat | Evidence | Cost | Confidence | Updated |\n| -- | -- | ---- | ---- | ---- | ---- |\n| LLM | 2 | High | Flat | Medium | 2024-01-15 |\n"
+        )
         result = airo.update_radar(root, ["LLM"], "2024-01-20")
         content = airo.read_text(result)
         assert "LLM" in content
@@ -1722,15 +1888,18 @@ class TestUpdateRadarEdgeTier2:
 # Tier 2: extract_pdf_text_hybrid
 # --------------------------------------------------
 
+
 def test_extract_pdf_text_hybrid_basic(tmp_path):
     """Basic text extraction from a valid PDF."""
     import ai_research_os as airo
+
     pdf_path = tmp_path / "sample.pdf"
     # Create a simple PDF with known text using PyMuPDF
     try:
         import fitz
     except ImportError:
         import pytest
+
         pytest.skip("PyMuPDF not installed")
     doc = fitz.open()
     page = doc.new_page(width=595, height=842)
@@ -1747,16 +1916,18 @@ def test_extract_pdf_text_hybrid_basic(tmp_path):
 def test_extract_pdf_text_hybrid_max_pages(tmp_path):
     """Respects max_pages limit."""
     import ai_research_os as airo
+
     try:
         import fitz
     except ImportError:
         import pytest
+
         pytest.skip("PyMuPDF not installed")
     pdf_path = tmp_path / "multipage.pdf"
     doc = fitz.open()
     for i in range(3):
         page = doc.new_page(width=200, height=200)
-        page.insert_text((50, 100), f"Page {i+1} content", fontsize=12)
+        page.insert_text((50, 100), f"Page {i + 1} content", fontsize=12)
     doc.save(str(pdf_path))
     doc.close()
 
@@ -1768,10 +1939,12 @@ def test_extract_pdf_text_hybrid_max_pages(tmp_path):
 def test_extract_pdf_text_hybrid_empty_page(tmp_path):
     """PDF with empty pages returns empty string for those pages."""
     import ai_research_os as airo
+
     try:
         import fitz
     except ImportError:
         import pytest
+
         pytest.skip("PyMuPDF not installed")
     pdf_path = tmp_path / "empty.pdf"
     doc = fitz.open()
@@ -1788,10 +1961,12 @@ def test_extract_pdf_text_hybrid_empty_page(tmp_path):
 def test_extract_pdf_text_hybrid_no_pdfminer(tmp_path):
     """Works even without pdfminer installed (uses PyMuPDF only)."""
     import ai_research_os as airo
+
     try:
         import fitz
     except ImportError:
         import pytest
+
         pytest.skip("PyMuPDF not installed")
     pdf_path = tmp_path / "sample.pdf"
     doc = fitz.open()
@@ -1809,6 +1984,7 @@ def test_extract_pdf_text_hybrid_no_pdfminer(tmp_path):
 # Tier 2: ai_generate_pnote_draft
 # --------------------------------------------------
 
+
 def test_ai_generate_pnote_draft_calls_llm(monkeypatch):
     """Verifies ai_generate_pnote_draft calls call_llm_chat_completions correctly."""
     import ai_research_os as airo
@@ -1819,6 +1995,7 @@ def test_ai_generate_pnote_draft_calls_llm(monkeypatch):
     mock_response.content = b'{"choices":[{"message":{"content":"Mock AI draft"}}]}'
 
     calls = []
+
     def mock_post(url, **kwargs):
         calls.append((url, kwargs))
         return mock_response
@@ -1844,7 +2021,7 @@ def test_ai_generate_pnote_draft_calls_llm(monkeypatch):
             extracted_text="Extracted text here.",
             base_url="https://api.openai.com/v1",
             api_key="test-key",
-            model="gpt-4o-mini"
+            model="gpt-4o-mini",
         )
     assert result == "Mock AI draft"
 
@@ -1854,6 +2031,7 @@ def test_ai_generate_pnote_draft_includes_required_sections(monkeypatch):
     import ai_research_os as airo
 
     captured_prompts = {}
+
     def mock_call_llm(**kwargs):
         captured_prompts.update(kwargs)
         return "draft"
@@ -1879,7 +2057,7 @@ def test_ai_generate_pnote_draft_includes_required_sections(monkeypatch):
             extracted_text="Some extracted text.",
             base_url="https://api.openai.com/v1",
             api_key="test-key",
-            model="gpt-4o-mini"
+            model="gpt-4o-mini",
         )
 
     user_prompt = captured_prompts.get("user_prompt", "")
@@ -1896,8 +2074,10 @@ def test_ai_generate_pnote_draft_includes_required_sections(monkeypatch):
 # Tier 3: segment_into_sections + format_section_snippets
 # --------------------------------------------------
 
+
 def test_segment_into_sections_basic():
     import ai_research_os as airo
+
     # "Method details here" triggers looks_like_heading (keyword "method"), so use a safe heading
     text = "# Introduction\n\nSome intro content.\n\n## Key Contributions\n\nActual method content here."
     sections = airo.segment_into_sections(text)
@@ -1909,6 +2089,7 @@ def test_segment_into_sections_basic():
 
 def test_segment_into_sections_no_headings():
     import ai_research_os as airo
+
     text = "Just plain text\n\nwith multiple lines\n\nno headings here."
     sections = airo.segment_into_sections(text)
     assert len(sections) == 1
@@ -1917,6 +2098,7 @@ def test_segment_into_sections_no_headings():
 
 def test_segment_into_sections_truncates_above_max():
     import ai_research_os as airo
+
     text = "\n\n".join(f"# Section {i}\nContent" for i in range(25))
     sections = airo.segment_into_sections(text, max_sections=5)
     assert len(sections) == 6  # 5 + TRUNCATED
@@ -1925,6 +2107,7 @@ def test_segment_into_sections_truncates_above_max():
 
 def test_segment_into_sections_strips_empty():
     import ai_research_os as airo
+
     text = "# A\n\n\n\n   \n# B\n\n"
     sections = airo.segment_into_sections(text)
     assert all(content.strip() for _, content in sections)
@@ -1932,6 +2115,7 @@ def test_segment_into_sections_strips_empty():
 
 def test_format_section_snippets_basic():
     import ai_research_os as airo
+
     sections = [("Introduction", "This is the intro content."), ("Methods", "Method details.")]
     result = airo.format_section_snippets(sections)
     assert "### Introduction" in result
@@ -1941,6 +2125,7 @@ def test_format_section_snippets_basic():
 
 def test_format_section_snippets_truncates_long():
     import ai_research_os as airo
+
     long_content = "x" * 3000
     sections = [("Abstract", long_content)]  # Abstract = high priority section
     result = airo.format_section_snippets(sections, max_chars_total=1000)
@@ -1951,8 +2136,10 @@ def test_format_section_snippets_truncates_long():
 # Tier 3: mnote_filename + parse_current_abc
 # --------------------------------------------------
 
+
 def test_mnote_filename_basic(tmp_path):
     import ai_research_os as airo
+
     a = tmp_path / "P - 2024 - Long Title Here12345.md"
     b = tmp_path / "P - 2024 - Another Title67890.md"
     c = tmp_path / "P - 2024 - Third Title11111.md"
@@ -1966,6 +2153,7 @@ def test_mnote_filename_basic(tmp_path):
 
 def test_mnote_filename_strips_prefix(tmp_path):
     import ai_research_os as airo
+
     a = tmp_path / "P - 2024 - Very Long Stem That Exceeds Twenty Four Characters.md"
     b = tmp_path / "P - 2024 - Short.md"
     c = tmp_path / "P - 2024 - Tiny.md"
@@ -1980,6 +2168,7 @@ def test_mnote_filename_strips_prefix(tmp_path):
 
 def test_parse_current_abc_basic():
     import ai_research_os as airo
+
     md = "# M Note\n\n- A: TitleA\n- B: TitleB\n- C: TitleC\n"
     a, b, c = airo.parse_current_abc(md)
     assert a == "TitleA"
@@ -1989,6 +2178,7 @@ def test_parse_current_abc_basic():
 
 def test_parse_current_abc_missing_fields():
     import ai_research_os as airo
+
     md = "- A: OnlyA\n"
     a, b, c = airo.parse_current_abc(md)
     assert a == "OnlyA"
@@ -1998,6 +2188,7 @@ def test_parse_current_abc_missing_fields():
 
 def test_parse_current_abc_no_match():
     import ai_research_os as airo
+
     md = "No ABC here"
     a, b, c = airo.parse_current_abc(md)
     assert a is None
@@ -2009,8 +2200,10 @@ def test_parse_current_abc_no_match():
 # Tier 3: append_view_evolution_log
 # --------------------------------------------------
 
+
 def test_append_view_evolution_log_new_section():
     import ai_research_os as airo
+
     md = "# M Note\n\nOld content."
     result = airo.append_view_evolution_log(md, ("OldA", "OldB", "OldC"), ("NewA", "NewB", "NewC"))
     assert "## View Evolution Log" in result
@@ -2020,6 +2213,7 @@ def test_append_view_evolution_log_new_section():
 
 def test_append_view_evolution_log_existing_section():
     import ai_research_os as airo
+
     md = "# M Note\n\n## View Evolution Log\n\nExisting log."
     result = airo.append_view_evolution_log(md, ("OA", "OB", "OC"), ("NA", "NB", "NC"))
     assert result.count("View Evolution Log") == 1
@@ -2030,8 +2224,10 @@ def test_append_view_evolution_log_existing_section():
 # Tier 3: parse_radar_table
 # --------------------------------------------------
 
+
 def test_parse_radar_table_basic():
     import ai_research_os as airo
+
     md = """# Radar
 
 | 主题 | 热度 | 证据质量 | 成本变化 | 我的信心 | 最近更新 |
@@ -2046,6 +2242,7 @@ def test_parse_radar_table_basic():
 
 def test_parse_radar_table_no_table():
     import ai_research_os as airo
+
     md = "# Radar\n\nNo table here."
     header, rows = airo.parse_radar_table(md)
     assert rows == []
@@ -2056,9 +2253,22 @@ def test_parse_radar_table_no_table():
 # Tier 3: infer_tags_if_empty
 # --------------------------------------------------
 
+
 def test_infer_tags_if_empty_returns_existing():
     import ai_research_os as airo
-    paper = airo.Paper(source="arxiv", uid="2301.00001", title="Test", authors=[], abstract="", published="", updated="", abs_url="", pdf_url="", primary_category="")
+
+    paper = airo.Paper(
+        source="arxiv",
+        uid="2301.00001",
+        title="Test",
+        authors=[],
+        abstract="",
+        published="",
+        updated="",
+        abs_url="",
+        pdf_url="",
+        primary_category="",
+    )
     tags = ["CustomTag"]
     result = airo.infer_tags_if_empty(tags, paper)
     assert result == ["CustomTag"]
@@ -2066,21 +2276,57 @@ def test_infer_tags_if_empty_returns_existing():
 
 def test_infer_tags_if_empty_infers_agent():
     import ai_research_os as airo
-    paper = airo.Paper(source="arxiv", uid="2301.00001", title="Agent Tools", authors=[], abstract="An agent uses tools.", published="", updated="", abs_url="", pdf_url="", primary_category="")
+
+    paper = airo.Paper(
+        source="arxiv",
+        uid="2301.00001",
+        title="Agent Tools",
+        authors=[],
+        abstract="An agent uses tools.",
+        published="",
+        updated="",
+        abs_url="",
+        pdf_url="",
+        primary_category="",
+    )
     result = airo.infer_tags_if_empty([], paper)
     assert "Agent" in result
 
 
 def test_infer_tags_if_empty_infers_rag():
     import ai_research_os as airo
-    paper = airo.Paper(source="arxiv", uid="2301.00001", title="RAG System", authors=[], abstract="Retrieval augmented generation.", published="", updated="", abs_url="", pdf_url="", primary_category="")
+
+    paper = airo.Paper(
+        source="arxiv",
+        uid="2301.00001",
+        title="RAG System",
+        authors=[],
+        abstract="Retrieval augmented generation.",
+        published="",
+        updated="",
+        abs_url="",
+        pdf_url="",
+        primary_category="",
+    )
     result = airo.infer_tags_if_empty([], paper)
     assert "RAG" in result
 
 
 def test_infer_tags_if_empty_returns_unsorted():
     import ai_research_os as airo
-    paper = airo.Paper(source="arxiv", uid="2301.00001", title="Foo Bar", authors=[], abstract="Nothing matching.", published="", updated="", abs_url="", pdf_url="", primary_category="")
+
+    paper = airo.Paper(
+        source="arxiv",
+        uid="2301.00001",
+        title="Foo Bar",
+        authors=[],
+        abstract="Nothing matching.",
+        published="",
+        updated="",
+        abs_url="",
+        pdf_url="",
+        primary_category="",
+    )
     result = airo.infer_tags_if_empty([], paper)
     assert result == ["Unsorted"]
 
@@ -2089,8 +2335,10 @@ def test_infer_tags_if_empty_returns_unsorted():
 # Tier 3: upsert_link_under_heading
 # --------------------------------------------------
 
+
 def test_upsert_link_under_heading_basic():
     import ai_research_os as airo
+
     md = "# C Note\n\n## 关联笔记\n\n"
     result = airo.upsert_link_under_heading(md, "关联笔记", "[[P - 2024 - Test]]")
     assert "[[P - 2024 - Test]]" in result
@@ -2098,6 +2346,7 @@ def test_upsert_link_under_heading_basic():
 
 def test_upsert_link_under_heading_no_section():
     import ai_research_os as airo
+
     md = "# C Note\n\nNo section."
     result = airo.upsert_link_under_heading(md, "关联笔记", "[[P - 2024 - Test]]")
     # Should add the heading section
@@ -2106,6 +2355,7 @@ def test_upsert_link_under_heading_no_section():
 
 def test_upsert_link_under_heading_idempotent():
     import ai_research_os as airo
+
     md = "# C Note\n\n## 关联笔记\n\n"
     # First call: adds link
     r1 = airo.upsert_link_under_heading(md, "关联笔记", "- [[P - 2024 - Test]]")
@@ -2119,8 +2369,10 @@ def test_upsert_link_under_heading_idempotent():
 # Tier 3: render_mnote
 # --------------------------------------------------
 
+
 def test_render_mnote_basic():
     import ai_research_os as airo
+
     result = airo.render_mnote("RAG", "PaperA", "PaperB", "PaperC")
     assert "RAG" in result
     assert "PaperA" in result
@@ -2134,13 +2386,12 @@ def test_render_mnote_basic():
 # (Moved to tests/test_unit_notes.py)
 
 
-
-
 class TestParseSections:
     """Section extraction from raw LLM markdown output."""
 
     def test_basic_section_extraction(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 1. 背景
 这里是背景内容。
 
@@ -2153,6 +2404,7 @@ class TestParseSections:
 
     def test_all_14_sections(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = "\n".join(f"## {i}. Section {i}\nContent for section {i}." for i in range(1, 15))
         sections, _, _ = parse_ai_pnote_draft(raw)
         assert len(sections) == 14
@@ -2161,6 +2413,7 @@ class TestParseSections:
 
     def test_subsection_extraction_removes_from_parent(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 3. 方法结构
 
 这是父节的主体内容，包含背景介绍。
@@ -2186,6 +2439,7 @@ class TestParseSections:
 
     def test_multiple_subsections_in_order(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 5. 实验分析
 
 ### 5.1 数据集
@@ -2212,6 +2466,7 @@ class TestParseSections:
 
     def test_section_with_no_heading_body(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 1. 背景
 
 ## 2. 核心问题
@@ -2223,6 +2478,7 @@ class TestParseSections:
 
     def test_section_titles_with_chinese_punctuation(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 11. Decision（决策）
 决策内容。
 
@@ -2235,6 +2491,7 @@ class TestParseSections:
 
     def test_section_with_long_content(self):
         from llm.parse import parse_ai_pnote_draft
+
         long = "x" * 5000
         raw = f"""## 1. 背景
 {long}
@@ -2244,6 +2501,7 @@ class TestParseSections:
 
     def test_section_content_with_numbered_pattern_not_heading(self):
         from llm.parse import parse_ai_pnote_draft
+
         # Numbers in content should NOT be treated as headings
         raw = """## 1. 背景
 我们在实验中发现 3.1 版本表现最好，在 5.2 场景下有显著提升。
@@ -2257,6 +2515,7 @@ class TestParseSections:
 
     def test_empty_subsection(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 3. 方法结构
 
 ### 3.1 架构拆解
@@ -2272,6 +2531,7 @@ class TestParseRubric:
 
     def test_full_json_rubric(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 1. 背景
 Content.
 
@@ -2300,6 +2560,7 @@ Content.
 
     def test_partial_json_rubric(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 1. 背景
 Content.
 
@@ -2317,6 +2578,7 @@ Content.
 
     def test_json_trailing_comma(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 1. 背景
 Content.
 
@@ -2333,6 +2595,7 @@ Content.
 
     def test_json_single_quoted_values(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 1. 背景
 Content.
 
@@ -2346,6 +2609,7 @@ Content.
 
     def test_rubric_fallback_line_by_line_avoids_range_digits(self):
         from llm.parse import parse_ai_pnote_draft
+
         # LLM writes "novelty: 3 (1-5)" — must take 5, not 3
         raw = """## 1. 背景
 Content.
@@ -2362,6 +2626,7 @@ evidence: 2 (1-5) — 证据质量
 
     def test_rubric_with_scores_out_of_range(self):
         from llm.parse import parse_ai_pnote_draft, extract_rubric_scores
+
         raw = """## 1. 背景
 Content.
 
@@ -2380,6 +2645,7 @@ cost: 2
 
     def test_rubric_overall_text_extraction(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 1. 背景
 Content.
 
@@ -2391,6 +2657,7 @@ Overall Judgment: 这篇论文提出了一个有效的方法，在多个数据�
 
     def test_empty_rubric(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 1. 背景
 Content only, no rubric.
 """
@@ -2399,6 +2666,7 @@ Content only, no rubric.
 
     def test_rubric_malformed_json_falls_back_to_lines(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 1. 背景
 Content.
 
@@ -2420,6 +2688,7 @@ class TestParseIntegration:
 
     def test_realistic_llm_output(self):
         from llm.parse import parse_ai_pnote_draft, extract_rubric_scores
+
         raw = """## 1. 背景
 本文研究了大语言模型在推理任务中的幻觉问题。
 
@@ -2497,7 +2766,10 @@ GSM8K, MATH, SVAMP
         # Rubric extracted
         assert rubric["novelty"] == 4
         assert rubric["leverage"] == 5
-        assert rubric["overall"] == "Strong contribution — significant improvement over baselines with clear motivation."
+        assert (
+            rubric["overall"]
+            == "Strong contribution — significant improvement over baselines with clear motivation."
+        )
         # Scores in valid range
         scores = extract_rubric_scores(rubric)
         assert len(scores) == 6
@@ -2506,6 +2778,7 @@ GSM8K, MATH, SVAMP
 
     def test_section_content_with_code_blocks(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 3. 方法结构
 
 ```python
@@ -2522,6 +2795,7 @@ def verify(step):
 
     def test_section_content_with_markdown_links(self):
         from llm.parse import parse_ai_pnote_draft
+
         raw = """## 1. 背景
 参考 [Smith et al., 2023](https://example.com/paper.pdf) 的工作。
 
@@ -2532,4 +2806,3 @@ def verify(step):
         assert "[Smith et al., 2023]" in sections["## 1. 背景"]
         assert "https://example.com/paper.pdf" in sections["## 1. 背景"]
         assert "[论文主页]" in sections["## 2. 核心问题"]
-

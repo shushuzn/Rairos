@@ -1,4 +1,5 @@
 """Tests for argument builder."""
+
 from unittest.mock import MagicMock
 
 from llm.argument_builder import (

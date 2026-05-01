@@ -1,4 +1,5 @@
 """Tests for rankers module."""
+
 from __future__ import annotations
 
 import struct
@@ -16,6 +17,7 @@ from rankers.score import CompositeScorer
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _embed(values: list[float]) -> bytes:
     """Pack a float list into a little-endian binary blob."""
@@ -49,6 +51,7 @@ def _insert(db: Database, paper_id: str, embed: list[float], **kwargs) -> None:
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def db_with_embeddings(tmp_path):
     """Database backed by a temp file, with the papers table created."""
@@ -63,6 +66,7 @@ def db_with_embeddings(tmp_path):
 # Ranker ABC
 # ---------------------------------------------------------------------------
 
+
 class TestRankerAbc:
     def test_rank_is_abstract(self):
         from rankers.base import Ranker
@@ -74,6 +78,7 @@ class TestRankerAbc:
 # ---------------------------------------------------------------------------
 # CosineSimilarityRanker
 # ---------------------------------------------------------------------------
+
 
 class TestCosineSimilarityRanker:
     @freeze_time("2024-06-15")
@@ -107,9 +112,9 @@ class TestCosineSimilarityRanker:
     @freeze_time("2024-06-15")
     def test_sorts_by_score_descending(self, db_with_embeddings):
         _insert(db_with_embeddings, "paper-x", [1.0] * 10)
-        _insert(db_with_embeddings, "low",  [0.3] * 10)
+        _insert(db_with_embeddings, "low", [0.3] * 10)
         _insert(db_with_embeddings, "high", [0.9] * 10)
-        _insert(db_with_embeddings, "mid",  [0.6] * 10)
+        _insert(db_with_embeddings, "mid", [0.6] * 10)
         ranker = CosineSimilarityRanker(db_with_embeddings)
         results = ranker.rank("paper-x", threshold=0.0)
         ids = [r[0].id for r in results]
@@ -122,7 +127,7 @@ class TestCosineSimilarityRanker:
     @freeze_time("2024-06-15")
     def test_excludes_self(self, db_with_embeddings):
         _insert(db_with_embeddings, "paper-x", [0.5] * 10)
-        _insert(db_with_embeddings, "other",   [0.5] * 10)
+        _insert(db_with_embeddings, "other", [0.5] * 10)
         ranker = CosineSimilarityRanker(db_with_embeddings)
         results = ranker.rank("paper-x")
         assert all(r[0].id != "paper-x" for r in results)
@@ -156,7 +161,7 @@ class TestCosineSimilarityRanker:
     def test_handles_zero_norm_embedding_in_db(self, db_with_embeddings):
         """Row with all-zero embed_vector is skipped (norm=0 → divide by zero)."""
         _insert(db_with_embeddings, "paper-x", [1.0] * 10)
-        _insert(db_with_embeddings, "p2", [0.0] * 10)   # zero norm — skipped
+        _insert(db_with_embeddings, "p2", [0.0] * 10)  # zero norm — skipped
         _insert(db_with_embeddings, "p3", [0.9] * 10)
         ranker = CosineSimilarityRanker(db_with_embeddings)
         results = ranker.rank("paper-x", threshold=0.0)
@@ -169,18 +174,19 @@ class TestCosineSimilarityRanker:
 # CompositeScorer — unit tests for _parse_quality_weight
 # ---------------------------------------------------------------------------
 
+
 class TestCompositeScorerParseQuality:
     @pytest.mark.parametrize(
         "status,expected",
         [
-            ("full",      1.0),
-            ("sections",  0.8),
-            ("partial",   0.5),
-            ("failed",    0.1),
-            ("FULL",      1.0),
-            ("Sections",  0.8),
-            ("unknown",   0.0),
-            ("-",         0.0),
+            ("full", 1.0),
+            ("sections", 0.8),
+            ("partial", 0.5),
+            ("failed", 0.1),
+            ("FULL", 1.0),
+            ("Sections", 0.8),
+            ("unknown", 0.0),
+            ("-", 0.0),
         ],
     )
     def test_parse_quality_mapping(self, db_with_embeddings, status, expected):
@@ -195,6 +201,7 @@ class TestCompositeScorerParseQuality:
 # ---------------------------------------------------------------------------
 # CompositeScorer — integration (mock CosineSimilarityRanker.rank)
 # ---------------------------------------------------------------------------
+
 
 class TestCompositeScorerIntegration:
     @pytest.mark.no_freeze
@@ -264,13 +271,14 @@ class TestCompositeScorerIntegration:
 # Test a real CosineSimilarityRanker + CompositeScorer round-trip
 # ---------------------------------------------------------------------------
 
+
 class TestCosinePlusComposite:
     @freeze_time("2024-06-15")
     def test_composite_score_with_real_ranker(self, db_with_embeddings):
         """End-to-end: insert papers, score via CompositeScorer backed by real CosineSimilarityRanker."""
         _insert(db_with_embeddings, "paper-x", [1.0] * 10)
         _insert(db_with_embeddings, "high-sim", [0.95] * 10, published="2024-01-01")
-        _insert(db_with_embeddings, "low-sim",  [0.3] * 10, published="2023-01-01")
+        _insert(db_with_embeddings, "low-sim", [0.3] * 10, published="2023-01-01")
         scorer = CompositeScorer(
             db_with_embeddings,
             sim_weight=0.7,
@@ -286,6 +294,7 @@ class TestCosinePlusComposite:
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _paper_record(id: str, score: float, published=None, parse_status="full"):
     now = date.today().isoformat()

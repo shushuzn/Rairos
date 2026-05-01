@@ -1,4 +1,5 @@
 """Tests for LLM client functionality."""
+
 import pytest
 from llm.client import clear_llm_cache, get_llm_cache_size
 

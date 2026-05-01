@@ -151,14 +151,20 @@ class TestStoryWeaver:
         """Test relationship inference for extensions."""
         weaver = StoryWeaver()
         a = PaperNarrative(
-            paper_id="1", title="Original Work", year=2017,
-            role=NarrativeRole.PROTAGONIST, core_contribution="",
-            key_insight=""
+            paper_id="1",
+            title="Original Work",
+            year=2017,
+            role=NarrativeRole.PROTAGONIST,
+            core_contribution="",
+            key_insight="",
         )
         b = PaperNarrative(
-            paper_id="2", title="Building on Original Work", year=2019,
-            role=NarrativeRole.PROTAGONIST, core_contribution="",
-            key_insight=""
+            paper_id="2",
+            title="Building on Original Work",
+            year=2019,
+            role=NarrativeRole.PROTAGONIST,
+            core_contribution="",
+            key_insight="",
         )
 
         rel_type, desc = weaver._infer_relationship(a, b)
@@ -169,12 +175,30 @@ class TestStoryWeaver:
         """Test chapter organization by time period."""
         weaver = StoryWeaver()
         narratives = [
-            PaperNarrative(paper_id="1", title="Early Work", year=2015,
-                          role=NarrativeRole.PROTAGONIST, core_contribution="", key_insight=""),
-            PaperNarrative(paper_id="2", title="Transformer", year=2017,
-                          role=NarrativeRole.TURNING_POINT, core_contribution="", key_insight=""),
-            PaperNarrative(paper_id="3", title="BERT", year=2018,
-                          role=NarrativeRole.PROTAGONIST, core_contribution="", key_insight=""),
+            PaperNarrative(
+                paper_id="1",
+                title="Early Work",
+                year=2015,
+                role=NarrativeRole.PROTAGONIST,
+                core_contribution="",
+                key_insight="",
+            ),
+            PaperNarrative(
+                paper_id="2",
+                title="Transformer",
+                year=2017,
+                role=NarrativeRole.TURNING_POINT,
+                core_contribution="",
+                key_insight="",
+            ),
+            PaperNarrative(
+                paper_id="3",
+                title="BERT",
+                year=2018,
+                role=NarrativeRole.PROTAGONIST,
+                core_contribution="",
+                key_insight="",
+            ),
         ]
 
         chapters = weaver._organize_chapters(narratives)
@@ -188,10 +212,22 @@ class TestStoryWeaver:
         """Test contradiction detection."""
         weaver = StoryWeaver()
         narratives = [
-            PaperNarrative(paper_id="1", title="Efficient Small Model", year=2023,
-                          role=NarrativeRole.PROTAGONIST, core_contribution="", key_insight=""),
-            PaperNarrative(paper_id="2", title="Large Scale Model", year=2024,
-                          role=NarrativeRole.PROTAGONIST, core_contribution="", key_insight=""),
+            PaperNarrative(
+                paper_id="1",
+                title="Efficient Small Model",
+                year=2023,
+                role=NarrativeRole.PROTAGONIST,
+                core_contribution="",
+                key_insight="",
+            ),
+            PaperNarrative(
+                paper_id="2",
+                title="Large Scale Model",
+                year=2024,
+                role=NarrativeRole.PROTAGONIST,
+                core_contribution="",
+                key_insight="",
+            ),
         ]
 
         contradictions = weaver._find_contradictions(narratives)
@@ -203,10 +239,22 @@ class TestStoryWeaver:
         """Test theme identification."""
         weaver = StoryWeaver()
         narratives = [
-            PaperNarrative(paper_id="1", title="Attention Mechanism Survey", year=2022,
-                          role=NarrativeRole.PROTAGONIST, core_contribution="", key_insight=""),
-            PaperNarrative(paper_id="2", title="Self-Attention Analysis", year=2023,
-                          role=NarrativeRole.PROTAGONIST, core_contribution="", key_insight=""),
+            PaperNarrative(
+                paper_id="1",
+                title="Attention Mechanism Survey",
+                year=2022,
+                role=NarrativeRole.PROTAGONIST,
+                core_contribution="",
+                key_insight="",
+            ),
+            PaperNarrative(
+                paper_id="2",
+                title="Self-Attention Analysis",
+                year=2023,
+                role=NarrativeRole.PROTAGONIST,
+                core_contribution="",
+                key_insight="",
+            ),
         ]
 
         themes = weaver._identify_themes(narratives)

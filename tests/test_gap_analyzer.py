@@ -1,4 +1,5 @@
 """Tests for enhanced gap analyzer."""
+
 import re
 import tempfile
 from pathlib import Path
@@ -9,8 +10,9 @@ from unittest.mock import MagicMock, patch
 
 def strip_ansi(text: str) -> str:
     """Remove ANSI escape codes from text for testing assertions."""
-    ansi_pattern = re.compile(r'\x1b\[[0-9;]*[a-zA-Z]')
-    return ansi_pattern.sub('', text)
+    ansi_pattern = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]")
+    return ansi_pattern.sub("", text)
+
 
 from llm.gap_analyzer import (
     GapAnalyzerV2,
@@ -544,6 +546,7 @@ class TestHypothesisGeneration:
         """Test hypothesis generation from gap results."""
         with patch("llm.hypothesis_generator.HypothesisGenerator.generate") as mock_gen:
             from llm.hypothesis_generator import HypothesisResult
+
             mock_result = HypothesisResult(topic="RAG")
             mock_result.hypotheses = []
             mock_gen.return_value = mock_result
@@ -590,7 +593,12 @@ class TestCombinedReportRendering:
 
     def test_render_combined_with_data(self):
         """Test rendering combined report with data."""
-        from llm.hypothesis_generator import HypothesisResult, HypothesisType, ExperimentDesign, ResearchHypothesis
+        from llm.hypothesis_generator import (
+            HypothesisResult,
+            HypothesisType,
+            ExperimentDesign,
+            ResearchHypothesis,
+        )
 
         gap_result = GapAnalysisResultV2(
             topic="RAG",

@@ -1,14 +1,17 @@
 """Tier 4 unit tests for notes-related functions (ensure_cnote, timeline, collect_pnotes, etc.)."""
 
+
 class TestTodayIsoTier4:
     def test_returns_iso_format(self):
         import ai_research_os as airo
+
         result = airo.today_iso()
         # Frozen to 2024-06-15 by conftest.py autouse fixture
         assert result == "2024-06-15"
 
     def test_returns_todays_date(self):
         import ai_research_os as airo
+
         result = airo.today_iso()
         # Frozen to 2024-06-15 by conftest.py autouse fixture
         assert result == "2024-06-15"
@@ -17,20 +20,24 @@ class TestTodayIsoTier4:
 class TestSlugifyTitleTier4:
     def test_basic(self):
         import ai_research_os as airo
+
         assert airo.slugify_title("Hello World") == "Hello-World"
 
     def test_empty(self):
         import ai_research_os as airo
+
         assert airo.slugify_title("") == "Paper"
 
     def test_max_len(self):
         import ai_research_os as airo
+
         long_title = "A" * 200
         result = airo.slugify_title(long_title)
         assert len(result) <= 200
 
     def test_strips_special_chars(self):
         import ai_research_os as airo
+
         result = airo.slugify_title("Hello! World? #Test")
         assert "!" not in result
         assert "?" not in result
@@ -38,6 +45,7 @@ class TestSlugifyTitleTier4:
 
     def test_unicode_letters_kept(self):
         import ai_research_os as airo
+
         result = airo.slugify_title("机器学习")
         assert result == "机器学习"
 
@@ -45,11 +53,13 @@ class TestSlugifyTitleTier4:
 class TestIsProbablyDoiTier4:
     def test_true_patterns(self):
         import ai_research_os as airo
+
         assert airo.is_probably_doi("10.1001/test")
         assert airo.is_probably_doi("10.1234/abc")
 
     def test_false_patterns(self):
         import ai_research_os as airo
+
         assert not airo.is_probably_doi("not a doi")
         assert not airo.is_probably_doi("")
 
@@ -57,45 +67,54 @@ class TestIsProbablyDoiTier4:
 class TestNormalizeDoiTier4:
     def test_url_stripped(self):
         import ai_research_os as airo
+
         assert airo.normalize_doi("https://doi.org/10.1001/test") == "10.1001/test"
         assert airo.normalize_doi("http://dx.doi.org/10.1001/test") == "10.1001/test"
 
     def test_plain(self):
         import ai_research_os as airo
+
         assert airo.normalize_doi("10.1001/test") == "10.1001/test"
 
     def test_none_input(self):
         import ai_research_os as airo
+
         assert airo.normalize_doi(None) is None
 
 
 class TestNormalizeArxivIdTier4:
     def test_url_formats(self):
         import ai_research_os as airo
+
         assert airo.normalize_arxiv_id("https://arxiv.org/abs/2301.00001") == "2301.00001"
         assert airo.normalize_arxiv_id("https://arxiv.org/abs/2301.00001v2") == "2301.00001v2"
 
     def test_new_style_bare(self):
         import ai_research_os as airo
+
         assert airo.normalize_arxiv_id("2301.00001") == "2301.00001"
         assert airo.normalize_arxiv_id("2301.00001v2") == "2301.00001v2"
 
     def test_old_style_bare(self):
         import ai_research_os as airo
+
         assert airo.normalize_arxiv_id("hep-th/9901001") == "hep-th/9901001"
 
     def test_doi_format(self):
         import ai_research_os as airo
+
         assert airo.normalize_arxiv_id("10.1001/test") is None
 
     def test_none_input(self):
         import ai_research_os as airo
+
         assert airo.normalize_arxiv_id(None) is None
 
 
 class TestParseFrontmatterTier4:
     def test_parses_yaml_block(self):
         import ai_research_os as airo
+
         content = "---\ntitle: Test\ntags:\n  - A\n  - B\n---\nbody"
         result = airo.parse_frontmatter(content)
         assert result["title"] == "Test"
@@ -103,16 +122,19 @@ class TestParseFrontmatterTier4:
 
     def test_empty_dict_for_no_frontmatter(self):
         import ai_research_os as airo
+
         assert airo.parse_frontmatter("no frontmatter") == {}
 
     def test_handles_multiline_values(self):
         import ai_research_os as airo
+
         content = "---\ntitle: Multi\n  Line\n---\nbody"
         result = airo.parse_frontmatter(content)
         assert "title" in result
 
     def test_inline_tags(self):
         import ai_research_os as airo
+
         content = "---\ntags: [Agent, RAG]\n---\nbody"
         result = airo.parse_frontmatter(content)
         assert result.get("tags") == "[Agent, RAG]"
@@ -121,6 +143,7 @@ class TestParseFrontmatterTier4:
 class TestParseDateFromFrontmatterTier4:
     def test_returns_iso_format(self):
         import ai_research_os as airo
+
         content = "---\ndate: 2024-03-15\n---\n"
         fm = airo.parse_frontmatter(content)
         result = airo.parse_date_from_frontmatter(fm)
@@ -128,6 +151,7 @@ class TestParseDateFromFrontmatterTier4:
 
     def test_returns_empty_for_missing_date(self):
         import ai_research_os as airo
+
         content = "---\ntitle: Test\n---\n"
         fm = airo.parse_frontmatter(content)
         result = airo.parse_date_from_frontmatter(fm)
@@ -136,6 +160,7 @@ class TestParseDateFromFrontmatterTier4:
     def test_returns_bad_format_with_warning(self):
         import ai_research_os as airo
         import warnings
+
         content = "---\ndate: not-a-date\n---\n"
         fm = airo.parse_frontmatter(content)
         with warnings.catch_warnings(record=True) as rec:
@@ -148,6 +173,7 @@ class TestParseDateFromFrontmatterTier4:
 class TestRenderCnoteTier4:
     def test_has_required_sections(self):
         import ai_research_os as airo
+
         result = airo.render_cnote("Test Concept")
         assert "Test Concept" in result
         assert "type: concept" in result
@@ -155,11 +181,13 @@ class TestRenderCnoteTier4:
 
     def test_type_is_concept(self):
         import ai_research_os as airo
+
         result = airo.render_cnote("Test Concept")
         assert "concept" in result.lower()
 
     def test_hash_escaped_in_title(self):
         import ai_research_os as airo
+
         result = airo.render_cnote("LLM# vs CNN#")
         lines = result.split("\n")
         title_line = lines[4]
@@ -170,6 +198,7 @@ class TestRenderCnoteTier4:
 class TestEnsureCnoteTier4:
     def test_creates_cnote_file(self, tmp_path):
         import ai_research_os as airo
+
         root = tmp_path / "notes"
         root.mkdir()
         path = airo.ensure_cnote(root, "Test Concept")
@@ -178,6 +207,7 @@ class TestEnsureCnoteTier4:
 
     def test_returns_existing_file(self, tmp_path):
         import ai_research_os as airo
+
         root = tmp_path / "notes"
         root.mkdir()
         p1 = airo.ensure_cnote(root, "Test")
@@ -188,6 +218,7 @@ class TestEnsureCnoteTier4:
 class TestEnsureTimelineTier4:
     def test_creates_timeline_file(self, tmp_path):
         import ai_research_os as airo
+
         root = tmp_path
         path = airo.ensure_timeline(root)
         assert path.exists()
@@ -195,6 +226,7 @@ class TestEnsureTimelineTier4:
 
     def test_is_idempotent(self, tmp_path):
         import ai_research_os as airo
+
         root = tmp_path
         p1 = airo.ensure_timeline(root)
         p2 = airo.ensure_timeline(root)
@@ -205,6 +237,7 @@ class TestEnsureTimelineTier4:
 class TestUpdateTimelineTier4:
     def test_appends_to_new_year_section(self, tmp_path):
         import ai_research_os as airo
+
         root = tmp_path
         airo.ensure_timeline(root)
         papers_dir = root / "02-Papers"
@@ -219,6 +252,7 @@ class TestUpdateTimelineTier4:
 
     def test_no_change_for_existing_bullet(self, tmp_path):
         import ai_research_os as airo
+
         root = tmp_path
         airo.ensure_timeline(root)
         papers_dir = root / "02-Papers"
@@ -233,6 +267,7 @@ class TestUpdateTimelineTier4:
 
     def test_inserts_before_next_year(self, tmp_path):
         import ai_research_os as airo
+
         root = tmp_path
         airo.ensure_timeline(root)
         papers_dir = root / "02-Papers"
@@ -253,6 +288,7 @@ class TestUpdateTimelineTier4:
 class TestCollectPnotesTier4:
     def test_returns_empty_for_no_files(self, tmp_path):
         import ai_research_os as airo
+
         root = tmp_path / "notes"
         root.mkdir()
         result = airo.collect_pnotes(root)
@@ -261,6 +297,7 @@ class TestCollectPnotesTier4:
     def test_sorts_by_date_descending(self, tmp_path):
         """collect_pnotes sorts by path (lexicographic), which on Windows sorts 2024-01 < 2024-06."""
         import ai_research_os as airo
+
         root = tmp_path / "notes"
         root.mkdir()
         papers_dir = root / "Papers"
@@ -273,6 +310,7 @@ class TestCollectPnotesTier4:
         f2.write_text("---\npublished: 2024-01-01\n---\n", encoding="utf-8")
         assert f1.exists() and f2.exists()  # setup verification
         import re
+
         result = airo.collect_pnotes(root)
         dates = [re.search(r"\d{4}-\d{2}-\d{2}", p.stem).group() for p in result]
         # Verify: result should be sorted (lexicographic), and dates are correctly extracted
@@ -283,6 +321,7 @@ class TestCollectPnotesTier4:
 class TestPnotesByTagTier4:
     def test_groups_by_tag(self, tmp_path):
         import ai_research_os as airo
+
         root = tmp_path / "notes"
         root.mkdir()
         papers_dir = root / "02-Papers"
@@ -300,26 +339,34 @@ class TestPnotesByTagTier4:
 class TestPickTop3PnotesForTagTier4:
     def test_returns_none_for_fewer_than_3(self, tmp_path):
         import ai_research_os as airo
+
         root = tmp_path / "notes"
         root.mkdir()
         papers_dir = root / "02-Papers"
         papers_dir.mkdir(parents=True)
-        (papers_dir / "P - 2024-01-01 - A.md").write_text("---\npublished: 2024-01-01\ntags:\n  - Agent\n---\n", encoding="utf-8")
-        (papers_dir / "P - 2024-02-01 - B.md").write_text("---\npublished: 2024-02-01\ntags:\n  - Agent\n---\n", encoding="utf-8")
+        (papers_dir / "P - 2024-01-01 - A.md").write_text(
+            "---\npublished: 2024-01-01\ntags:\n  - Agent\n---\n", encoding="utf-8"
+        )
+        (papers_dir / "P - 2024-02-01 - B.md").write_text(
+            "---\npublished: 2024-02-01\ntags:\n  - Agent\n---\n", encoding="utf-8"
+        )
         tag_map = airo.pnotes_by_tag(root)
         result = airo.pick_top3_pnotes_for_tag("Agent", tag_map)
         assert result is None
 
     def test_returns_3_oldest_for_more_than_3(self, tmp_path):
         import ai_research_os as airo
+
         root = tmp_path / "notes"
         root.mkdir()
         papers_dir = root / "02-Papers"
         papers_dir.mkdir(parents=True)
         files = []
         for i in range(5):
-            f = papers_dir / f"P - 2024-0{i+1}-01 - {i}.md"
-            f.write_text(f"---\npublished: 2024-0{i+1}-01\ntags:\n  - Agent\n---\n", encoding="utf-8")
+            f = papers_dir / f"P - 2024-0{i + 1}-01 - {i}.md"
+            f.write_text(
+                f"---\npublished: 2024-0{i + 1}-01\ntags:\n  - Agent\n---\n", encoding="utf-8"
+            )
             files.append(f)
         assert all(f.exists() for f in files)  # setup verification
         tag_map = airo.pnotes_by_tag(root)
@@ -328,16 +375,20 @@ class TestPickTop3PnotesForTagTier4:
         assert len(result) == 3
         # Verify they are the 3 oldest (earliest dates)
         import re
+
         result_stems = sorted([re.search(r"\d{4}-\d{2}-\d{2}", p.stem).group() for p in result])
         assert result_stems == ["2024-01-01", "2024-02-01", "2024-03-01"]  # oldest 3
 
     def test_returns_none_for_unknown_tag(self, tmp_path):
         import ai_research_os as airo
+
         root = tmp_path / "notes"
         root.mkdir()
         papers_dir = root / "02-Papers"
         papers_dir.mkdir(parents=True)
-        (papers_dir / "P - 2024-01-01 - A.md").write_text("---\npublished: 2024-01-01\ntags:\n  - Agent\n---\n", encoding="utf-8")
+        (papers_dir / "P - 2024-01-01 - A.md").write_text(
+            "---\npublished: 2024-01-01\ntags:\n  - Agent\n---\n", encoding="utf-8"
+        )
         tag_map = airo.pnotes_by_tag(root)
         result = airo.pick_top3_pnotes_for_tag("UnknownTag", tag_map)
         assert result is None
@@ -347,6 +398,7 @@ class TestWikilinkForPnoteTier4:
     def test_stem_only(self):
         import ai_research_os as airo
         from pathlib import Path
+
         p = Path("P - 2024-03-15 - Test Paper.md")
         result = airo.wikilink_for_pnote(p)
         assert result == "[[P - 2024-03-15 - Test Paper]]"
@@ -355,6 +407,7 @@ class TestWikilinkForPnoteTier4:
 class TestUpsertLinkUnderHeadingTier4:
     def test_heading_without_hash_prefix(self, tmp_path):
         import ai_research_os as airo
+
         md = "## 关联笔记\n- old link\n"
         result = airo.upsert_link_under_heading(md, "关联笔记", "- [[P1]]")
         assert "[[P1]]" in result
@@ -362,6 +415,7 @@ class TestUpsertLinkUnderHeadingTier4:
 
     def test_heading_not_found_appends_section(self, tmp_path):
         import ai_research_os as airo
+
         md = "# Other\nNo heading here"
         result = airo.upsert_link_under_heading(md, "New Section", "- [[P1]]")
         assert "New Section" in result
@@ -369,6 +423,7 @@ class TestUpsertLinkUnderHeadingTier4:
 
     def test_special_chars_in_heading(self, tmp_path):
         import ai_research_os as airo
+
         md = "## 机器学习\n"
         result = airo.upsert_link_under_heading(md, "机器学习", "- [[P1]]")
         assert "[[P1]]" in result
@@ -377,6 +432,7 @@ class TestUpsertLinkUnderHeadingTier4:
 class TestReadPnoteMetadataTier4:
     def test_read_pnote_metadata_basic(self, tmp_path):
         import ai_research_os as airo
+
         pnote = tmp_path / "P - 2024 - Test Paper.md"
         pnote.write_text(
             "type: paper\n"
@@ -399,6 +455,7 @@ class TestReadPnoteMetadataTier4:
 
     def test_read_pnote_metadata_fallback_uid(self, tmp_path):
         import ai_research_os as airo
+
         pnote = tmp_path / "P - 2023 - No Source.md"
         pnote.write_text(
             "type: paper\n"
@@ -519,5 +576,3 @@ class TestEnsureOrUpdateMnoteABCUpdate:
         assert "- A: P - 2024-06-15 - NewAlpha" in updated
         assert "- B: P - 2024-06-14 - NewBeta" in updated
         assert "- C: P - 2024-06-13 - NewGamma" in updated
-
-

@@ -3,6 +3,7 @@ Tests for P-note rendering: radar chart and per-page heatmap.
 
 Covers the F (radar chart) and G (page heatmap) features.
 """
+
 from __future__ import annotations
 
 
@@ -61,7 +62,7 @@ class TestRenderRadarChart:
         scores = {"novelty": 4, "leverage": 4, "evidence": 4, "cost": 4, "moat": 4, "adoption": 4}
         svg = render_radar_chart(scores)
         assert "avg" in svg
-        assert '4.0' in svg
+        assert "4.0" in svg
 
     def test_custom_size(self):
         svg = render_radar_chart({"novelty": 3, "leverage": 4, "evidence": 5}, size=400)
@@ -70,9 +71,9 @@ class TestRenderRadarChart:
     def test_does_not_raise_on_mixed_valid_invalid(self):
         scores = {
             "novelty": 3,
-            "leverage": 0,   # out of range
+            "leverage": 0,  # out of range
             "evidence": 5,
-            "cost": 99,      # out of range
+            "cost": 99,  # out of range
             "moat": 3,
             "adoption": 4,
         }
@@ -168,12 +169,21 @@ class TestBuildClaimsSection:
     def test_summary_table_present(self):
         claims_data = {
             "claims": [
-                {"page": 1, "evidence_score": 0.9, "claim_type": "numerical",
-                 "chunk_text": "准确率95%"},
+                {
+                    "page": 1,
+                    "evidence_score": 0.9,
+                    "claim_type": "numerical",
+                    "chunk_text": "准确率95%",
+                },
             ],
             "unverified_claims": [
-                {"page": 2, "evidence_score": 0.1, "claim_type": "numerical",
-                 "chunk_text": "准确率99%", "verification_note": "no match"},
+                {
+                    "page": 2,
+                    "evidence_score": 0.1,
+                    "claim_type": "numerical",
+                    "chunk_text": "准确率99%",
+                    "verification_note": "no match",
+                },
             ],
         }
         out = _build_claims_section(claims_data)
@@ -184,10 +194,8 @@ class TestBuildClaimsSection:
     def test_heatmap_rendered_in_section(self):
         claims_data = {
             "claims": [
-                {"page": 1, "evidence_score": 0.9, "claim_type": "numerical",
-                 "chunk_text": "test"},
-                {"page": 3, "evidence_score": 0.1, "claim_type": "numerical",
-                 "chunk_text": "test"},
+                {"page": 1, "evidence_score": 0.9, "claim_type": "numerical", "chunk_text": "test"},
+                {"page": 3, "evidence_score": 0.1, "claim_type": "numerical", "chunk_text": "test"},
             ],
             "unverified_claims": [],
         }
@@ -198,8 +206,12 @@ class TestBuildClaimsSection:
     def test_verified_claims_include_type_icon(self):
         claims_data = {
             "claims": [
-                {"page": 1, "evidence_score": 0.9, "claim_type": "numerical",
-                 "chunk_text": "准确率95%"},
+                {
+                    "page": 1,
+                    "evidence_score": 0.9,
+                    "claim_type": "numerical",
+                    "chunk_text": "准确率95%",
+                },
             ],
             "unverified_claims": [],
         }
@@ -210,8 +222,13 @@ class TestBuildClaimsSection:
         claims_data = {
             "claims": [],
             "unverified_claims": [
-                {"page": 1, "evidence_score": 0.0, "claim_type": "methodology",
-                 "chunk_text": "使用Transformer", "verification_note": "no match"},
+                {
+                    "page": 1,
+                    "evidence_score": 0.0,
+                    "claim_type": "methodology",
+                    "chunk_text": "使用Transformer",
+                    "verification_note": "no match",
+                },
             ],
         }
         out = _build_claims_section(claims_data)
@@ -256,8 +273,12 @@ class TestExtractRubricScores:
         }
         scores = _extract_rubric_scores(rubric)
         assert scores == {
-            "novelty": 4, "leverage": 3, "evidence": 5,
-            "cost": 2, "moat": 3, "adoption": 2,
+            "novelty": 4,
+            "leverage": 3,
+            "evidence": 5,
+            "cost": 2,
+            "moat": 3,
+            "adoption": 2,
         }
 
     def test_ignores_out_of_range(self):
@@ -273,7 +294,7 @@ class TestExtractRubricScores:
         rubric = {
             "novelty": 4,
             "leverage": "high",
-            "evidence": "five",     # not int
+            "evidence": "five",  # not int
         }
         scores = _extract_rubric_scores(rubric)
         assert scores == {"novelty": 4}
@@ -287,10 +308,12 @@ class TestRenderCrossPaperComparison:
 
     def test_empty_dir_returns_empty(self, tmp_path):
         from renderers.pnote import _render_cross_paper_comparison
+
         assert _render_cross_paper_comparison("test", None, analysis_dir=tmp_path) == ""
 
     def test_single_paper_returns_empty(self, tmp_path):
         from renderers.pnote import _render_cross_paper_comparison
+
         (tmp_path / "paper_x").mkdir()
         (tmp_path / "paper_x" / "paper_analysis.json").write_text(
             '{"paper_id":"paper_x","claims":[],"unverified_claims":[]}',
@@ -300,18 +323,17 @@ class TestRenderCrossPaperComparison:
 
     def test_two_papers_renders_table(self, tmp_path):
         from renderers.pnote import _render_cross_paper_comparison
+
         # Paper A: 3 verified, 1 unverified → 75%
         (tmp_path / "paper_a").mkdir()
         (tmp_path / "paper_a" / "paper_analysis.json").write_text(
-            '{"paper_id":"paper_a","claims":[{},{},{}],'
-            '"unverified_claims":[{}],"rubric":{}}',
+            '{"paper_id":"paper_a","claims":[{},{},{}],"unverified_claims":[{}],"rubric":{}}',
             encoding="utf-8",
         )
         # Paper B: 5 verified, 0 unverified → 100%
         (tmp_path / "paper_b").mkdir()
         (tmp_path / "paper_b" / "paper_analysis.json").write_text(
-            '{"paper_id":"paper_b","claims":[{},{},{},{},{}],'
-            '"unverified_claims":[],"rubric":{}}',
+            '{"paper_id":"paper_b","claims":[{},{},{},{},{}],"unverified_claims":[],"rubric":{}}',
             encoding="utf-8",
         )
         out = _render_cross_paper_comparison("paper_a", None, analysis_dir=tmp_path)
@@ -323,16 +345,15 @@ class TestRenderCrossPaperComparison:
 
     def test_current_paper_marked_bold(self, tmp_path):
         from renderers.pnote import _render_cross_paper_comparison
+
         (tmp_path / "cur").mkdir()
         (tmp_path / "cur" / "paper_analysis.json").write_text(
-            '{"paper_id":"cur","claims":[{}],'
-            '"unverified_claims":[{}],"rubric":{}}',
+            '{"paper_id":"cur","claims":[{}],"unverified_claims":[{}],"rubric":{}}',
             encoding="utf-8",
         )
         (tmp_path / "other").mkdir()
         (tmp_path / "other" / "paper_analysis.json").write_text(
-            '{"paper_id":"other","claims":[{},{}],'
-            '"unverified_claims":[],"rubric":{}}',
+            '{"paper_id":"other","claims":[{},{}],"unverified_claims":[],"rubric":{}}',
             encoding="utf-8",
         )
         out = _render_cross_paper_comparison("cur", None, analysis_dir=tmp_path)
@@ -340,18 +361,17 @@ class TestRenderCrossPaperComparison:
 
     def test_colour_coding(self, tmp_path):
         from renderers.pnote import _render_cross_paper_comparison
+
         # High rate → 🟢
         (tmp_path / "high").mkdir()
         (tmp_path / "high" / "paper_analysis.json").write_text(
-            '{"paper_id":"high","claims":[{}],'
-            '"unverified_claims":[],"rubric":{}}',
+            '{"paper_id":"high","claims":[{}],"unverified_claims":[],"rubric":{}}',
             encoding="utf-8",
         )
         # Low rate → 🔴
         (tmp_path / "low").mkdir()
         (tmp_path / "low" / "paper_analysis.json").write_text(
-            '{"paper_id":"low","claims":[],'
-            '"unverified_claims":[{},{},{}],"rubric":{}}',
+            '{"paper_id":"low","claims":[],"unverified_claims":[{},{},{}],"rubric":{}}',
             encoding="utf-8",
         )
         out = _render_cross_paper_comparison("high", None, analysis_dir=tmp_path)
@@ -360,6 +380,7 @@ class TestRenderCrossPaperComparison:
 
     def test_uses_rubric_overall_as_label(self, tmp_path):
         from renderers.pnote import _render_cross_paper_comparison
+
         (tmp_path / "p1").mkdir()
         (tmp_path / "p1" / "paper_analysis.json").write_text(
             '{"paper_id":"p1","claims":[{}],'
@@ -369,8 +390,7 @@ class TestRenderCrossPaperComparison:
         )
         (tmp_path / "p2").mkdir()
         (tmp_path / "p2" / "paper_analysis.json").write_text(
-            '{"paper_id":"p2","claims":[{},{}],'
-            '"unverified_claims":[],"rubric":{"overall":""}}',
+            '{"paper_id":"p2","claims":[{},{}],"unverified_claims":[],"rubric":{"overall":""}}',
             encoding="utf-8",
         )
         out = _render_cross_paper_comparison("p1", None, analysis_dir=tmp_path)

@@ -1,4 +1,5 @@
 """Retry utilities with exponential backoff and circuit breaker."""
+
 from __future__ import annotations
 
 import logging
@@ -30,7 +31,7 @@ class RetryStats:
                     "total_failures": 0,
                     "total_retries": 0,
                     "total_success": 0,
-                    "errors": {}
+                    "errors": {},
                 }
 
             self._stats[func_name]["total_attempts"] += 1
@@ -39,8 +40,9 @@ class RetryStats:
                 self._stats[func_name]["total_retries"] += attempt
                 if error:
                     error_type = type(error).__name__
-                    self._stats[func_name]["errors"][error_type] = \
+                    self._stats[func_name]["errors"][error_type] = (
                         self._stats[func_name]["errors"].get(error_type, 0) + 1
+                    )
             else:
                 self._stats[func_name]["total_success"] += 1
 

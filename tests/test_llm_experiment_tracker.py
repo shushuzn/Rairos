@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/experiment_tracker.py, pure functions, no I/O."""
+
 from llm.experiment_tracker import (
     ExperimentStatus,
     Metric,
@@ -63,7 +64,7 @@ class TestExperimentInit:
         assert e.results == {}
         assert e.metrics == []
         assert e.status == "running"
-        assert e.completed_at == ""   # truly defaulted
+        assert e.completed_at == ""  # truly defaulted
         assert e.artifacts == []
         assert e.tags == []
 
@@ -320,7 +321,11 @@ class TestCompareLogic:
     def test_explicit_metric_names(self):
         """Explicit metric_names only shows those."""
         exps = [
-            Experiment(id="1", name="E1", metrics=[Metric(name="accuracy", value=0.9), Metric(name="f1", value=0.8)]),
+            Experiment(
+                id="1",
+                name="E1",
+                metrics=[Metric(name="accuracy", value=0.9), Metric(name="f1", value=0.8)],
+            ),
         ]
         result = self._compare(exps, metric_names=["accuracy"])
         assert result["metrics"] == ["accuracy"]
@@ -420,10 +425,14 @@ class TestRenderList:
     def test_verbose_shows_metrics(self):
         """Verbose mode shows metrics."""
         exps = [
-            Experiment(id="1", name="E", metrics=[
-                Metric(name="accuracy", value=0.95),
-                Metric(name="loss", value=0.05),
-            ]),
+            Experiment(
+                id="1",
+                name="E",
+                metrics=[
+                    Metric(name="accuracy", value=0.95),
+                    Metric(name="loss", value=0.05),
+                ],
+            ),
         ]
         output = self._render_list(exps, verbose=True)
         assert "accuracy=0.95" in output

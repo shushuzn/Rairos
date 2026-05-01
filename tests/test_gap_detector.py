@@ -134,10 +134,18 @@ class TestGapDetector:
         result = GapAnalysisResult(
             topic="Test Topic",
             gaps=[
-                ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Gap 1",
-                          evidence_papers=[], severity=GapSeverity.HIGH),
-                ResearchGap(gap_type=GapType.UNEXPLORED_APPLICATION, description="Gap 2",
-                          evidence_papers=[], severity=GapSeverity.MEDIUM),
+                ResearchGap(
+                    gap_type=GapType.METHOD_LIMITATION,
+                    description="Gap 1",
+                    evidence_papers=[],
+                    severity=GapSeverity.HIGH,
+                ),
+                ResearchGap(
+                    gap_type=GapType.UNEXPLORED_APPLICATION,
+                    description="Gap 2",
+                    evidence_papers=[],
+                    severity=GapSeverity.MEDIUM,
+                ),
             ],
             questions=[
                 ResearchQuestion(question="Q1", gap=None),
@@ -306,7 +314,11 @@ class TestParseQuestions:
 How to improve scalability? | Hypothesis text | Use alternative methods | High impact | 0.7 | 0.8
 What metrics to use? | Metric hypothesis | Design new metrics | Medium impact | 0.6 | 0.5
 """
-        gaps = [ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=["p1"])]
+        gaps = [
+            ResearchGap(
+                gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=["p1"]
+            )
+        ]
         questions = detector._parse_questions(response, gaps)
 
         assert len(questions) == 2
@@ -318,7 +330,9 @@ What metrics to use? | Metric hypothesis | Design new metrics | Medium impact | 
     def test_parses_minimal_pipe_delimited(self):
         detector = GapDetector()
         response = "Just a question?"
-        gaps = [ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=[])]
+        gaps = [
+            ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=[])
+        ]
         questions = detector._parse_questions(response, gaps)
         assert len(questions) == 1
         assert questions[0].question == "Just a question?"
@@ -339,7 +353,9 @@ Valid question? | Hypothesis | Method | Impact | 0.7 | 0.8
 
    # whitespace-only
 """
-        gaps = [ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=[])]
+        gaps = [
+            ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=[])
+        ]
         questions = detector._parse_questions(response, gaps)
         assert len(questions) == 1
         assert questions[0].question == "Valid question?"
@@ -356,7 +372,9 @@ Valid question? | Hypothesis | Method | Impact | 0.7 | 0.8
         detector = GapDetector()
         # Two pipes: parts[0]=question, parts[1]=hypothesis, parts[2]=methodology
         response = "Question text | Hypothesis field | Methodology field"
-        gaps = [ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=[])]
+        gaps = [
+            ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=[])
+        ]
         questions = detector._parse_questions(response, gaps)
         assert len(questions) == 1
         assert questions[0].question == "Question text"

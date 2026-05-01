@@ -1,4 +1,5 @@
 """Unit tests for llm/warp_cli.py — Warp CLI LLM provider."""
+
 from unittest.mock import patch, MagicMock
 
 
@@ -12,6 +13,7 @@ class FakeArgs:
 # _get_warp_executable tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestGetWarpExecutable:
     def test_returns_warp_on_unix(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
@@ -20,6 +22,7 @@ class TestGetWarpExecutable:
         with patch("subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(returncode=0, stdout="Warp 1.0")
             from llm.warp_cli import _get_warp_executable
+
             result = _get_warp_executable()
             assert result == "warp"
 
@@ -30,6 +33,7 @@ class TestGetWarpExecutable:
         with patch("subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(returncode=0, stdout="Warp 1.0")
             from llm.warp_cli import _get_warp_executable
+
             result = _get_warp_executable()
             assert result == "warp.cmd"
 
@@ -37,6 +41,7 @@ class TestGetWarpExecutable:
 # ─────────────────────────────────────────────────────────────────────────────
 # WarpCLIClient tests
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestWarpCLIClientAvailable:
     def test_is_available_returns_true(self, monkeypatch):
@@ -199,6 +204,7 @@ class TestWarpCLIClientChat:
 # is_warp_cli_available singleton test
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestIsWarpCliAvailable:
     def test_is_warp_cli_available_calls_get_client(self, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
@@ -208,6 +214,7 @@ class TestIsWarpCliAvailable:
             mock_client.is_available.return_value = True
             mock_get.return_value = mock_client
             from llm.warp_cli import is_warp_cli_available
+
             result = is_warp_cli_available()
             assert result is True
             mock_get.assert_called_once()

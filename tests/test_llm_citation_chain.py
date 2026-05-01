@@ -1,4 +1,5 @@
 """Tier 2 unit tests — llm/citation_chain.py, pure functions, no I/O."""
+
 from llm.citation_chain import (
     CitationNode,
     CitationChain,
@@ -151,7 +152,8 @@ class TestLinkCitations:
     def _add_paper(self, builder, paper_id, title, **kwargs):
         if paper_id not in builder.nodes:
             builder.nodes[paper_id] = CitationNode(
-                paper_id=paper_id, title=title,
+                paper_id=paper_id,
+                title=title,
                 year=kwargs.get("year", 0),
                 authors=kwargs.get("authors", []) or [],
                 citations=kwargs.get("references", []) or [],
@@ -339,7 +341,9 @@ class TestRenderText:
 
         for _i, node in enumerate(sorted_nodes[:max_nodes]):
             lines.append(f"[{node.paper_id[:8]}] {node.title[:50]}")
-            lines.append(f"  Year: {node.year or '?'} | Cites: {len(node.citations)} | Cited by: {len(node.cited_by)}")
+            lines.append(
+                f"  Year: {node.year or '?'} | Cites: {len(node.citations)} | Cited by: {len(node.cited_by)}"
+            )
             lines.append("")
 
         if len(chain.nodes) > max_nodes:
@@ -450,7 +454,7 @@ class TestRenderGraphviz:
         lines = ["digraph citations {", "  rankdir=LR;", "  node [shape=box];"]
 
         for node in chain.nodes:
-            label = f'{node.title[:30]}...\\n({node.year})' if node.year else node.title[:30]
+            label = f"{node.title[:30]}...\\n({node.year})" if node.year else node.title[:30]
             lines.append(f'  "{node.paper_id}" [label="{label}"];')
 
         for from_id, to_id in chain.edges:
@@ -536,7 +540,7 @@ class TestRenderMermaid:
 
         for node in chain.nodes:
             year_str = f"({node.year})" if node.year else ""
-            lines.append(f'    {node.paper_id[:8]}[{node.title[:30]}{year_str}]')
+            lines.append(f"    {node.paper_id[:8]}[{node.title[:30]}{year_str}]")
 
         for from_id, to_id in chain.edges:
             lines.append(f"    {from_id[:8]} --> {to_id[:8]}")

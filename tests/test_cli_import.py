@@ -1,4 +1,5 @@
 """Unit tests for import CLI subcommand (batch file support)."""
+
 import sys
 from io import StringIO
 from unittest.mock import patch
@@ -39,6 +40,7 @@ class FakeDatabase:
 # _run_import unit tests
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestRunImport:
     def test_file_reads_ids_one_per_line(self, tmp_path, monkeypatch):
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
@@ -51,7 +53,10 @@ class TestRunImport:
             MockDB.return_value = mock_db
 
             from cli import _run_import
-            rc = _run_import(FakeArgs(ids=[], file=str(ids_file), skip_existing=False, source="import"))
+
+            rc = _run_import(
+                FakeArgs(ids=[], file=str(ids_file), skip_existing=False, source="import")
+            )
 
         assert rc == 0
         assert len(mock_db.upserted) == 3
@@ -65,8 +70,16 @@ class TestRunImport:
         monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
         monkeypatch.setenv("PYTHONPATH", "")
         from cli import _run_import
+
         try:
-            rc = _run_import(FakeArgs(ids=[], file=str(tmp_path / "nonexistent.txt"), skip_existing=False, source="import"))
+            rc = _run_import(
+                FakeArgs(
+                    ids=[],
+                    file=str(tmp_path / "nonexistent.txt"),
+                    skip_existing=False,
+                    source="import",
+                )
+            )
         except FileNotFoundError:
             rc = 1
         assert rc == 1
@@ -82,7 +95,10 @@ class TestRunImport:
             MockDB.return_value = mock_db
 
             from cli import _run_import
-            rc = _run_import(FakeArgs(ids=[], file=str(empty_file), skip_existing=False, source="import"))
+
+            rc = _run_import(
+                FakeArgs(ids=[], file=str(empty_file), skip_existing=False, source="import")
+            )
 
         assert rc == 0  # whitespace-only file is valid — zero IDs added is not an error
 
@@ -97,7 +113,10 @@ class TestRunImport:
             MockDB.return_value = mock_db
 
             from cli import _run_import
-            rc = _run_import(FakeArgs(ids=[], file=str(ids_file), skip_existing=True, source="import"))
+
+            rc = _run_import(
+                FakeArgs(ids=[], file=str(ids_file), skip_existing=True, source="import")
+            )
 
         assert rc == 0
         assert len(mock_db.upserted) == 1  # only 2301.00002 added
@@ -112,7 +131,12 @@ class TestRunImport:
             MockDB.return_value = mock_db
 
             from cli import _run_import
-            rc = _run_import(FakeArgs(ids=["2301.00001", "2301.00002"], file=None, skip_existing=False, source="cli"))
+
+            rc = _run_import(
+                FakeArgs(
+                    ids=["2301.00001", "2301.00002"], file=None, skip_existing=False, source="cli"
+                )
+            )
 
         assert rc == 0
         assert len(mock_db.upserted) == 2
@@ -130,7 +154,10 @@ class TestRunImport:
             MockDB.return_value = mock_db
 
             from cli import _run_import
-            rc = _run_import(FakeArgs(ids=[], file=str(ids_file), skip_existing=False, source="import"))
+
+            rc = _run_import(
+                FakeArgs(ids=[], file=str(ids_file), skip_existing=False, source="import")
+            )
 
         assert rc == 0
         assert mock_db.upserted[0][0] == "2301.00001"
@@ -148,7 +175,15 @@ class TestRunImport:
             MockDB.return_value = mock_db
 
             from cli import _run_import
-            rc = _run_import(FakeArgs(ids=["2301.00001", "2301.00002"], file=str(ids_file), skip_existing=False, source="import"))
+
+            rc = _run_import(
+                FakeArgs(
+                    ids=["2301.00001", "2301.00002"],
+                    file=str(ids_file),
+                    skip_existing=False,
+                    source="import",
+                )
+            )
 
         assert rc == 0
         assert len(mock_db.upserted) == 1
@@ -165,6 +200,7 @@ class TestRunImport:
             MockDB.return_value = mock_db
 
             from cli import _run_import
+
             rc = _run_import(FakeArgs(ids=[], file=None, skip_existing=False, source="import"))
 
         assert rc == 1
@@ -186,11 +222,14 @@ class TestRunImport:
             mock_db.upsert_paper = fail_upsert
 
             from cli import _run_import
+
             captured_out = StringIO()
             captured_err = StringIO()
             monkeypatch.setattr(sys, "stdout", captured_out)
             monkeypatch.setattr(sys, "stderr", captured_err)
-            rc = _run_import(FakeArgs(ids=[], file=str(ids_file), skip_existing=False, source="import"))
+            rc = _run_import(
+                FakeArgs(ids=[], file=str(ids_file), skip_existing=False, source="import")
+            )
 
         assert rc == 0
         assert "Failed: 2301.00001" in captured_err.getvalue()
@@ -206,6 +245,7 @@ class TestRunImport:
             MockDB.return_value = mock_db
 
             from cli import _run_import
+
             _run_import(FakeArgs(ids=[], file=str(ids_file), skip_existing=False, source="import"))
 
         assert mock_db.init_called is True
@@ -214,6 +254,7 @@ class TestRunImport:
 # ─────────────────────────────────────────────────────────────────────────────
 # main() integration: subcommand flow
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestMainImportIntegration:
     def test_import_subcommand_file(self, tmp_path, monkeypatch):
@@ -228,6 +269,7 @@ class TestMainImportIntegration:
         monkeypatch.setattr(sys, "argv", ["ai_research_os", "import", "--file", str(ids_file)])
 
         from cli import main as cli_main
+
         rc = cli_main(["import", "--file", str(ids_file)])
 
         assert rc == 0
@@ -238,6 +280,7 @@ class TestMainImportIntegration:
         monkeypatch.setattr(sys, "argv", ["ai_research_os", "import", "2301.00001"])
 
         from cli import main as cli_main
+
         rc = cli_main(["import", "2301.00001"])
 
         assert rc == 0
@@ -250,6 +293,7 @@ class TestMainImportIntegration:
         monkeypatch.setattr(sys, "stderr", captured)
 
         from cli import main as cli_main
+
         rc = cli_main(["import"])
 
         assert rc == 1

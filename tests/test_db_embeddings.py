@@ -1,4 +1,5 @@
 """Tests for DB embedding methods and dedup-semantic CLI."""
+
 from __future__ import annotations
 
 import argparse
@@ -13,6 +14,7 @@ from db import Database
 # Fixtures
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.fixture
 def db(tmp_path):
     d = Database(tmp_path / "research.db")
@@ -24,8 +26,10 @@ def db(tmp_path):
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class FakePaperRecord:
     """Fake PaperRecord for mocking."""
+
     def __init__(self, id, title="Test Paper", parse_status="pending"):
         self.id = id
         self.title = title
@@ -33,8 +37,9 @@ class FakePaperRecord:
 
 
 def make_args(**kwargs):
-    defaults = dict(stats=False, generate=False, paper=None,
-                    threshold=0.85, limit=20, format="text")
+    defaults = dict(
+        stats=False, generate=False, paper=None, threshold=0.85, limit=20, format="text"
+    )
     defaults.update(kwargs)
     ns = argparse.Namespace()
     for k, v in defaults.items():
@@ -45,6 +50,7 @@ def make_args(**kwargs):
 # ─────────────────────────────────────────────────────────────────────────────
 # Test: set_embedding + get_embedding roundtrip
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestEmbeddingRoundtrip:
     def test_set_and_get_embedding(self, db):
@@ -82,6 +88,7 @@ class TestEmbeddingRoundtrip:
 # ─────────────────────────────────────────────────────────────────────────────
 # Test: find_similar
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestFindSimilar:
     def test_find_similar_same_paper_excluded(self, db):
@@ -134,8 +141,8 @@ class TestFindSimilar:
         q = [1.0] * 768
         # Different similarity levels
         db.set_embedding("2301.00001", q)
-        db.set_embedding("2301.00002", [0.3 * x for x in q])   # ~0.3
-        db.set_embedding("2301.00003", [0.6 * x for x in q])   # ~0.6
+        db.set_embedding("2301.00002", [0.3 * x for x in q])  # ~0.3
+        db.set_embedding("2301.00003", [0.6 * x for x in q])  # ~0.6
         db.set_embedding("2301.00004", [0.9 * x for x in q])  # ~0.9
 
         results = db.find_similar("2301.00001", threshold=0.0, limit=10)
@@ -146,6 +153,7 @@ class TestFindSimilar:
 # ─────────────────────────────────────────────────────────────────────────────
 # Test: get_similarity
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestGetSimilarity:
     def test_get_similarity_identical_vectors(self, db):
@@ -186,6 +194,7 @@ class TestGetSimilarity:
 # Test: get_embedding_stats
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestEmbeddingStats:
     def test_stats_all_embedded(self, db):
         db.upsert_paper("2301.00001", "arxiv", title="A")
@@ -214,6 +223,7 @@ class TestEmbeddingStats:
 # Test: get_papers_without_embeddings
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestPapersWithoutEmbeddings:
     def test_returns_papers_without_vector(self, db):
         db.upsert_paper("2301.00001", "arxiv", title="No Embed")
@@ -239,19 +249,18 @@ class TestPapersWithoutEmbeddings:
 # Test: _run_dedup_semantic CLI
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestRunDedupSemantic:
     """Test the CLI _run_dedup_semantic function."""
 
     @patch("cli.Database")
     def test_stats_shows_coverage(self, mock_db_cls, capsys):
         mock_db = MagicMock()
-        mock_db.get_embedding_stats.return_value = {
-            "with_embedding": 5,
-            "total_with_text": 10
-        }
+        mock_db.get_embedding_stats.return_value = {"with_embedding": 5, "total_with_text": 10}
         mock_db_cls.return_value = mock_db
 
         from cli import _run_dedup_semantic
+
         args = make_args(stats=True)
         result = _run_dedup_semantic(args)
 
@@ -264,13 +273,11 @@ class TestRunDedupSemantic:
     @patch("cli.Database")
     def test_stats_empty_db(self, mock_db_cls, capsys):
         mock_db = MagicMock()
-        mock_db.get_embedding_stats.return_value = {
-            "with_embedding": 0,
-            "total_with_text": 0
-        }
+        mock_db.get_embedding_stats.return_value = {"with_embedding": 0, "total_with_text": 0}
         mock_db_cls.return_value = mock_db
 
         from cli import _run_dedup_semantic
+
         args = make_args(stats=True)
         result = _run_dedup_semantic(args)
 
@@ -285,6 +292,7 @@ class TestRunDedupSemantic:
         mock_db_cls.return_value = mock_db
 
         from cli import _run_dedup_semantic
+
         args = make_args(paper="nonexistent")
         result = _run_dedup_semantic(args)
 
@@ -301,6 +309,7 @@ class TestRunDedupSemantic:
         mock_db_cls.return_value = mock_db
 
         from cli import _run_dedup_semantic
+
         args = make_args(paper="2301.00001")
         result = _run_dedup_semantic(args)
 
@@ -319,6 +328,7 @@ class TestRunDedupSemantic:
         mock_db_cls.return_value = mock_db
 
         from cli import _run_dedup_semantic
+
         args = make_args(paper="2301.00001")
         result = _run_dedup_semantic(args)
 
@@ -339,6 +349,7 @@ class TestRunDedupSemantic:
         mock_db_cls.return_value = mock_db
 
         from cli import _run_dedup_semantic
+
         args = make_args(paper="2301.00001", format="csv")
         result = _run_dedup_semantic(args)
 
@@ -354,8 +365,11 @@ class TestRunDedupSemantic:
         mock_db = MagicMock()
         mock_db_cls.return_value = mock_db
 
-        with patch("cli.cmd.dedup_semantic._generate_missing_embeddings", return_value=(3, 1)) as mock_gen:
+        with patch(
+            "cli.cmd.dedup_semantic._generate_missing_embeddings", return_value=(3, 1)
+        ) as mock_gen:
             from cli import _run_dedup_semantic
+
             args = make_args(generate=True)
             result = _run_dedup_semantic(args)
             mock_gen.assert_called_once()
@@ -368,6 +382,7 @@ class TestRunDedupSemantic:
         mock_db_cls.return_value = mock_db
 
         from cli import _run_dedup_semantic
+
         args = make_args()
         result = _run_dedup_semantic(args)
 
@@ -378,16 +393,14 @@ class TestRunDedupSemantic:
     @patch("cli.Database")
     def test_global_scan_csv_output(self, mock_db_cls, capsys):
         mock_db = MagicMock()
-        mock_db.list_papers.return_value = (
-            [FakePaperRecord("2301.00001", "Paper A")],
-            1
-        )
+        mock_db.list_papers.return_value = ([FakePaperRecord("2301.00001", "Paper A")], 1)
         mock_db.find_similar.return_value = [
             (FakePaperRecord("2301.00002", "Paper B"), 0.91),
         ]
         mock_db_cls.return_value = mock_db
 
         from cli import _run_dedup_semantic
+
         args = make_args(format="csv")
         result = _run_dedup_semantic(args)
 
@@ -398,16 +411,14 @@ class TestRunDedupSemantic:
     @patch("cli.Database")
     def test_global_scan_text_output(self, mock_db_cls, capsys):
         mock_db = MagicMock()
-        mock_db.list_papers.return_value = (
-            [FakePaperRecord("2301.00001", "Paper A")],
-            1
-        )
+        mock_db.list_papers.return_value = ([FakePaperRecord("2301.00001", "Paper A")], 1)
         mock_db.find_similar.return_value = [
             (FakePaperRecord("2301.00002", "Paper B"), 0.91),
         ]
         mock_db_cls.return_value = mock_db
 
         from cli import _run_dedup_semantic
+
         args = make_args(format="text")
         result = _run_dedup_semantic(args)
 

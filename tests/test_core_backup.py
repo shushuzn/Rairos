@@ -1,4 +1,5 @@
 """Tests for core/backup.py."""
+
 import shutil
 import sys
 from pathlib import Path
