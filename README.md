@@ -8,7 +8,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![PyPI Version](https://img.shields.io/pypi/v/ai-research-os)](https://pypi.org/project/ai-research-os/)
-[![Coverage](https://img.shields.io/badge/coverage-83%25-green)](docs/benchmarks.md)
+[![Coverage](https://img.shields.io/codecov/c/github/shushuzn/ai_research_os/main?logo=codecov)](https://app.codecov.io/gh/shushuzn/ai_research_os)
 [![Tests](https://github.com/shushuzn/ai_research_os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/ai_research_os/actions)
 [![License](https://img.shields.io/badge/License-GPL--3.0--or--later-orange)](#license)
 
