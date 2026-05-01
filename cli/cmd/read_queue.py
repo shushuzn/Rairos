@@ -65,7 +65,7 @@ class ReadQueueScorer:
 
     def _compute_semantic_scores(self, read_papers: list, candidates: list) -> dict:
         """Compute average similarity to read papers."""
-        scores = {}
+        scores: Dict[str, float] = {}
         if not read_papers:
             return scores
 
@@ -432,7 +432,7 @@ def _run_read_queue(args: argparse.Namespace) -> int:
                 if explanations.get(r.paper_id):
                     print(WarpBlocks.panel(
                         f"💡 {r.paper_id} — Why read this?",
-                        explanations[r.paper_id].strip(),
+                        (explanations[r.paper_id] or "").strip(),
                     ))
     elif args.format == "json":
         import json
@@ -460,7 +460,7 @@ def _run_read_queue(args: argparse.Namespace) -> int:
 
             # Show LLM explanation if available
             if args.explain and explanations.get(r.paper_id):
-                exp = explanations[r.paper_id]
+                exp = explanations[r.paper_id] or ""
                 print()
                 print(colored("    ╔═ 推荐理由 ═╗", Colors.OKBLUE))
                 for line in exp.strip().split("\n"):
@@ -478,7 +478,7 @@ def _run_read_queue(args: argparse.Namespace) -> int:
 
             # Show brief LLM explanation if available
             if args.explain and explanations.get(r.paper_id):
-                exp = explanations[r.paper_id]
+                exp = explanations[r.paper_id] or ""
                 if exp:
                     # Extract first meaningful line
                     lines = [l.strip() for l in exp.strip().split("\n") if l.strip() and not l.strip().startswith("#")]

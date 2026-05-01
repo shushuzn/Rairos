@@ -192,9 +192,9 @@ def _run_postprocess(args: argparse.Namespace) -> int:
         print_info(f"  + {', '.join(result.stages_completed)}")
     if result.stages_failed:
         last_errors = [
-            result.stage_results[s].error[:80]
+            (result.stage_results.get(s, {}) or {}).get("error", "")[:80]
             for s in result.stages_failed
-            if result.stage_results.get(s, {}).error
+            if (result.stage_results.get(s, {}) or {}).get("error")
         ]
         for stage, err in zip(result.stages_failed, last_errors):
             print_error(f"  x {stage}: {err}")

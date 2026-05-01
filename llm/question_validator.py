@@ -225,7 +225,7 @@ class QuestionValidator:
         if not self.db:
             return []
 
-        related = []
+        related: List[RelatedWork] = []
         try:
             # Search by each keyword
             for kw in keywords[:3]:
