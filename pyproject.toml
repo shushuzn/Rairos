@@ -1,7 +1,7 @@
 [build-system]
 
 
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=82.0.1", "wheel"]
 
 
 build-backend = "setuptools.build_meta"
@@ -90,17 +90,17 @@ dependencies = [
 [project.optional-dependencies]
 
 
-ocr = ["pytesseract>=0.3.0", "pillow>=12.2.0"]
+ocr = ["pytesseract>=0.3.13", "pillow>=12.2.0"]
 
-web = ["streamlit>=1.28.0"]
-
-
-ai = ["openai>=1.0.0"]
+web = ["streamlit>=1.57.0"]
 
 
-dev = ["pytest>=7.0.0", "pytest-cov>=4.0.0", "pytest-xdist>=3.5.0", "freezegun>=1.2.0"]
+ai = ["openai>=2.33.0"]
 
-slides = ["python-pptx>=0.6.21"]
+
+dev = ["pytest>=9.0.3", "pytest-cov>=7.1.0", "pytest-xdist>=3.8.0", "freezegun>=1.5.5"]
+
+slides = ["python-pptx>=1.0.2"]
 
 all = ["ai-research-os[ocr,ai,dev,slides]"]
 
