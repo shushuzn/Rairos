@@ -1,7 +1,7 @@
 """Crossref API metadata fetching."""
 import datetime as dt
 import re
-from typing import List, Optional, Tuple, cast
+from typing import Any, List, Optional, Tuple, cast
 
 from core import CROSSREF_WORKS, DOI_RESOLVER, Paper
 
@@ -144,11 +144,13 @@ def fetch_crossref_metadata(doi: str, timeout: int = 30) -> Tuple[Paper, Optiona
     url = CROSSREF_WORKS.format(doi=doi)
 
     try:
-        r = _http_session.get(
+        r = cast(Any, _http_session).get(
             url,
             timeout=timeout,
             headers={"User-Agent": "AI-Research-OS/1.0"},
         )
+        if r is None:
+            raise ValueError("Crossref request returned None")
         if r.status_code == 404:
             raise ValueError("Crossref 404 (DOI not found in Crossref)")
         r.raise_for_status()

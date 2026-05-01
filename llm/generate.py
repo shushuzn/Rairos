@@ -401,7 +401,7 @@ def ai_generate_reading_recommendation_explanation(
         "标签重叠": tag_score,
         "时效性": recency_score,
     }
-    top_signal = max(scores, key=lambda k: scores.get(k))
+    top_signal = max(scores, key=lambda k: scores[k])
     top_value = scores[top_signal]
 
     # Format read papers context
