@@ -1913,8 +1913,8 @@ class TestRunStats:
         result = _run_stats(args)
 
         out = capsys.readouterr().out
-        # warp output should have colored ANSI codes
-        assert "\033[" in out or "[" in out
+        # warp output should have WarpBlocks table content
+        assert "Database Overview" in out or "Papers" in out
         assert result == 0
 
 
