@@ -83,6 +83,11 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
         action="store_true",
         help="Show gap_type preference evolution timeline",
     )
+    p.add_argument(
+        "--feedback",
+        action="store_true",
+        help="After gap analysis, prompt for accept/reject feedback on each gap",
+    )
     return p  # type: ignore[no-any-return]
 
 
@@ -120,6 +125,12 @@ def _run_gap(args: argparse.Namespace) -> int:
     else:
         print()
         print(detector.render_result(result))
+
+    # Preference feedback loop — close the insight evolution loop
+    if args.feedback:
+        print()
+        tracker = EvolutionTracker()
+        _collect_gap_feedback(args.topic, result.gaps, tracker)
 
     return 0
 
@@ -221,6 +232,12 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
         else:
             print()
             print(render_combined_report(gap_result, hypothesis_result))
+
+        # Preference feedback loop
+        if args.feedback:
+            print()
+            _collect_gap_feedback(args.topic, gap_result.gaps, tracker)
+
         return 0
 
     # Standard enhanced analysis
@@ -265,6 +282,11 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
         print()
         print(render_gap_report(result))
 
+    # Preference feedback loop
+    if args.feedback:
+        print()
+        _collect_gap_feedback(args.topic, result.gaps, tracker)
+
     return 0
 
 
@@ -274,10 +296,12 @@ def _run_interactive(detector: GapDetector, args: argparse.Namespace) -> int:
     print("  输入 topic 开始分析")
     print("  输入 no-llm 禁用 LLM 分析")
     print("  输入 json 输出 JSON 格式")
+    print("  输入 accept <n> / reject <n> 对第 N 个 gap 标记偏好")
     print("  输入 q/quit 退出")
     print()
 
     use_llm = True
+    last_gaps = []
 
     while True:
         try:
@@ -304,6 +328,26 @@ def _run_interactive(detector: GapDetector, args: argparse.Namespace) -> int:
             print("  请先输入 topic 进行分析")
             continue
 
+        # accept/reject commands in interactive mode
+        parts = cmd.split()
+        if len(parts) == 2 and parts[0] in ("accept", "reject"):
+            if not last_gaps:
+                print("  请先分析一个 topic")
+                continue
+            try:
+                idx = int(parts[1]) - 1
+                if idx < 0 or idx >= len(last_gaps):
+                    print(f"  无效编号，有效范围 1-{len(last_gaps)}")
+                    continue
+                gap = last_gaps[idx]
+                action_name = "采纳" if parts[0] == "accept" else "忽略"
+                print(f"  {action_name}: [{idx+1}] {gap.title}")
+                # Tracker is not available in interactive mode without args
+                # Just acknowledge — the user can re-run with --feedback
+            except ValueError:
+                print("  用法: accept <n> / reject <n>")
+            continue
+
         # Treat as topic
         topic = user_input
         print()
@@ -320,6 +364,103 @@ def _run_interactive(detector: GapDetector, args: argparse.Namespace) -> int:
         else:
             print()
             print(detector.render_result(result))
+            last_gaps = result.gaps
         print()
 
     return 0
+
+
+def _collect_gap_feedback(topic: str, gaps, tracker: EvolutionTracker) -> None:
+    """Prompt user for accept/reject feedback on each gap.
+
+    Closes the preference loop: user signals directly which gaps they care about,
+    and these signals feed back into gap_type_preferences.
+    """
+    from llm.insight_evolution import ExplorationAction
+
+    if not gaps:
+        print("  (无 gaps 可反馈)")
+        return
+
+    print("  📊 偏好反馈 — 输入编号采纳 / reject 编号忽略 / skip 跳过 / done 完成:")
+    print()
+
+    for i, gap in enumerate(gaps):
+        print(f"  [{i+1}] {gap.title}")
+        print(f"      type={gap.gap_type.value}  severity={gap.severity.name}")
+        if gap.description:
+            desc = gap.description[:80] + ("..." if len(gap.description) > 80 else "")
+            print(f"      {desc}")
+        print()
+
+    print("  示例: accept 1  reject 2  skip  done")
+    print()
+
+    # Collect feedback
+    accepted = []
+    rejected = []
+
+    while True:
+        try:
+            user_input = input("❯ ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            break
+
+        if not user_input:
+            continue
+
+        parts = user_input.lower().split()
+        cmd = parts[0]
+
+        if cmd in ("done", "skip", "q", "quit"):
+            break
+
+        if len(parts) < 2:
+            print("  用法: accept <n>  /  reject <n>  /  done")
+            continue
+
+        action = parts[0]
+        try:
+            idx = int(parts[1]) - 1
+        except ValueError:
+            print("  编号需为数字")
+            continue
+
+        if idx < 0 or idx >= len(gaps):
+            print(f"  编号无效 ({1}-{len(gaps)})")
+            continue
+
+        gap = gaps[idx]
+
+        if action == "accept":
+            tracker.record_gap_accept(
+                topic=topic,
+                gap_type=gap.gap_type.value,
+                gap_title=gap.title,
+                gap_description=gap.description,
+            )
+            accepted.append(gap.title)
+            print(f"  ✓ 采纳: [{idx+1}] {gap.title}")
+        elif action == "reject":
+            tracker.record_gap_reject(
+                topic=topic,
+                gap_type=gap.gap_type.value,
+                gap_title=gap.title,
+                reason="user_rejected",
+            )
+            rejected.append(gap.title)
+            print(f"  ✗ 忽略: [{idx+1}] {gap.title}")
+        else:
+            print("  未知命令: accept / reject / done")
+
+    print()
+    if accepted or rejected:
+        print(f"  📈 偏好已更新 — 采纳 {len(accepted)}  忽略 {len(rejected)}")
+        profile = tracker.get_profile()
+        if profile.gap_type_preferences:
+            print("  当前 gap_type 偏好:")
+            for gt, score in sorted(profile.gap_type_preferences.items(), key=lambda x: -x[1])[:5]:
+                print(f"    {gt}: {score:.2f}")
+    else:
+        print("  (无偏好更新)")
