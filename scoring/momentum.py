@@ -31,7 +31,7 @@ class ResearchMomentum:
     def _load_scores(self) -> dict:
         if self._scores_path.exists():
             try:
-                return orjson.loads(self._scores_path.read_bytes())
+                return orjson.loads(self._scores_path.read_bytes())  # type: ignore[no-any-return]
             except Exception:
                 pass
         return {}
@@ -136,7 +136,7 @@ class ResearchMomentum:
         for p in candidates:
             if p.exists():
                 try:
-                    return orjson.loads(p.read_bytes())
+                    return orjson.loads(p.read_bytes())  # type: ignore[no-any-return]
                 except Exception:
                     pass
         return {}

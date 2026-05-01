@@ -262,7 +262,7 @@ elif page == "📥 Import":
                     doi = normalize_doi(raw_id)
                     paper_obj, _ = fetch_crossref_metadata(doi)
                     source = "doi"
-                    paper_id = doi
+                    paper_id = doi if doi else ""
                 else:
                     paper_obj = fetch_arxiv_metadata(raw_id)
                     source = "arxiv"
