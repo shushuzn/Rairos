@@ -71,7 +71,7 @@ class AIROSRepl:
             return False
 
         try:
-            return handler(self, args)
+            return handler(self, args)  # type: ignore[no-any-return]
         except Exception as exc:
             print_error(f"Error: {exc}")
             return False
@@ -99,7 +99,7 @@ class AIROSRepl:
         if not hasattr(self, "_completing_pos"):
             self._completing_pos = 0
         try:
-            buf = readline.get_line_buffer()
+            buf = readline.get_line_buffer()  # type: ignore[attr-defined]
             tokens = buf.split()
             self._completing_pos = len(tokens)
         except Exception:
@@ -108,7 +108,7 @@ class AIROSRepl:
         if self._completing_pos <= 1:
             options = [c for c in _ALL_COMMANDS if c.startswith(text)]
             try:
-                return options[state]
+                return options[state]  # type: ignore[no-any-return]
             except IndexError:
                 return None
         return None
@@ -159,7 +159,7 @@ class AIROSRepl:
             print_error(f"Unknown kg subcommand: {sub}. Options: {', '.join(_KG_SUB_HANDLERS)}")
             return False
         try:
-            return sub_handler(self, sub_args)
+            return sub_handler(self, sub_args)  # type: ignore[no-any-return]
         except Exception as exc:
             print_error(f"Error: {exc}")
             return False
@@ -333,7 +333,7 @@ class AIROSRepl:
 
 def _make_handler(name: str):
     def handler(self: AIROSRepl, args: str) -> bool:
-        return getattr(self, f"_cmd_{name}")(args)
+        return getattr(self, f"_cmd_{name}")(args)  # type: ignore[no-any-return]
     return handler
 
 
