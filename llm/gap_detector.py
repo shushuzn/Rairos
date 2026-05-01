@@ -422,6 +422,8 @@ class GapDetector:
         """Parse LLM response into ResearchQuestion objects."""
         questions = []
         default_gap = gaps[0] if gaps else None
+        if not default_gap:
+            return questions
 
         for line in response.strip().split('\n'):
             line = line.strip()

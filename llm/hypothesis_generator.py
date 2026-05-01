@@ -16,7 +16,7 @@ import re
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, List
+from typing import Any, Optional, List, cast
 
 from llm.constants import LLM_BASE_URL, LLM_MODEL
 
@@ -269,13 +269,13 @@ class HypothesisGenerator:
             hypothesis = ResearchHypothesis(
                 id=str(uuid.uuid4())[:8],
                 title=f"假说 {i+1}: {topic} 研究",
-                hypothesis_type=template_info["type"],
+                hypothesis_type=cast(HypothesisType, template_info["type"]),
                 core_statement=self._fill_template(template, topic, gap_context),
                 based_on=f"基于{gap_type.replace('_', ' ')}类型",
                 gap_type=gap_type,
                 experiment_design=ExperimentDesign(
                     baseline="待确定",
-                    variables=template_info["variables"],
+                    variables=cast(List[str], template_info["variables"]),
                     controls=["计算资源", "训练数据", "随机种子"],
                     evaluation_metrics=["性能指标", "效率指标"],
                     expected_results="预期显著改进",

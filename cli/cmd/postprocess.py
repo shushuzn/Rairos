@@ -159,7 +159,7 @@ def _run_postprocess(args: argparse.Namespace) -> int:
                 try:
                     from pdf.extract import extract_pdf_structured
                     print_info(f"Extracting structured PDF: {pdf_path.name}")
-                    structured_content = extract_pdf_structured(str(pdf_path))
+                    structured_content = extract_pdf_structured(pdf_path)
                     extracted_text = "\n".join(
                         b.text for b in structured_content.text_blocks
                     )
