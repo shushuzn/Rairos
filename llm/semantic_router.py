@@ -1,6 +1,7 @@
 """Semantic Router — natural-language CLI command routing with graceful degradation."""
 from __future__ import annotations
 
+import argparse
 import json
 import logging
 import math

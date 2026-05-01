@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
-from typing import Optional
+from typing import Dict, Optional
 
 import os
 import warnings
@@ -380,7 +380,7 @@ def _run_read_queue(args: argparse.Namespace) -> int:
         return 0
 
     # Generate LLM explanations if requested
-    explanations = {}
+    explanations: Dict[str, Optional[str]] = {}
     if args.explain:
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:

@@ -29,7 +29,7 @@ import re
 import sys
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Callable, Dict, List, Set
+from typing import Any, Callable, Dict, List, Set
 
 # Load .env from current working directory (unified via cli._shared)
 from cli._shared import load_dotenv
@@ -1321,7 +1321,7 @@ class TUIChatApp(App):
 
         # Also do exact substring search on candidates for phrase matching
         query_lower = query.lower()
-        results = []
+        results: List[Dict[str, Any]] = []
         indices_to_check = candidate_indices if candidate_indices else range(len(self.messages))
 
         for i in indices_to_check:
@@ -1723,12 +1723,12 @@ class TUIChatApp(App):
             )
 
             if options:
-                self._suggestions = [opt['question'] for opt in options[:4]]
+                self._suggestions = [opt.query for opt in options[:4]]
 
                 # Display suggestions in notification
                 lines = ["💡 追问建议:", ""]
                 for i, opt in enumerate(options[:4], 1):
-                    q = opt['question'][:50]
+                    q = opt.query[:50]
                     lines.append(f"  {i}. {q}")
                 lines.append("")
                 lines.append("点击编号复制，或直接在输入框输入")
