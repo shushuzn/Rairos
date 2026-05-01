@@ -4,6 +4,7 @@ Simple CLI - 简化命令行界面
 提供简单易用的命令行接口，降低使用门槛。
 Inspired by "simplify complexity" philosophy from the tractor startup article.
 """
+
 import sys
 import argparse
 
@@ -45,7 +46,7 @@ class SimpleCLI:
   2. 使用 'import' 导入论文
   3. 使用 'list' 查看已导入的论文
   4. 使用 'status' 查看统计信息
-            """
+            """,
         )
 
         subparsers = parser.add_subparsers(dest="command", help="可用命令")
@@ -53,17 +54,23 @@ class SimpleCLI:
         # Search command
         search_parser = subparsers.add_parser("search", help="🔍 搜索论文")
         search_parser.add_argument("query", help="搜索关键词")
-        search_parser.add_argument("-n", "--limit", type=int, default=5, help="返回结果数量 (默认: 5)")
+        search_parser.add_argument(
+            "-n", "--limit", type=int, default=5, help="返回结果数量 (默认: 5)"
+        )
 
         # Import command
         import_parser = subparsers.add_parser("import", help="📥 导入论文")
         import_parser.add_argument("paper_id", help="论文ID (arXiv ID 或 DOI)")
-        import_parser.add_argument("--source", choices=["arxiv", "doi"], default="arxiv", help="论文来源")
+        import_parser.add_argument(
+            "--source", choices=["arxiv", "doi"], default="arxiv", help="论文来源"
+        )
 
         # List command
         list_parser = subparsers.add_parser("list", help="📚 列出所有论文")
         list_parser.add_argument("-n", "--limit", type=int, default=20, help="显示数量 (默认: 20)")
-        list_parser.add_argument("--status", choices=["all", "pending", "done"], default="all", help="按状态筛选")
+        list_parser.add_argument(
+            "--status", choices=["all", "pending", "done"], default="all", help="按状态筛选"
+        )
 
         # Status command
         subparsers.add_parser("status", help="📊 查看状态")
@@ -73,7 +80,9 @@ class SimpleCLI:
 
         # Export command
         export_parser = subparsers.add_parser("export", help="💾 导出数据")
-        export_parser.add_argument("format", choices=["json", "csv"], default="json", help="导出格式")
+        export_parser.add_argument(
+            "format", choices=["json", "csv"], default="json", help="导出格式"
+        )
 
         # Help command
         subparsers.add_parser("help", help="❓ 显示帮助")
@@ -161,8 +170,7 @@ class SimpleCLI:
         db.init()
 
         papers, total = db.list_papers(
-            parse_status=args.status if args.status != "all" else None,
-            limit=args.limit
+            parse_status=args.status if args.status != "all" else None, limit=args.limit
         )
 
         if not papers:
@@ -218,8 +226,8 @@ class SimpleCLI:
         print("论文统计:")
         print(f"  总数: {s['total_papers']}")
         print("  来源分布:")
-        for source, count in sorted(s['by_source'].items(), key=lambda x: -x[1]):
-            pct = (count / s['total_papers'] * 100) if s['total_papers'] > 0 else 0
+        for source, count in sorted(s["by_source"].items(), key=lambda x: -x[1]):
+            pct = (count / s["total_papers"] * 100) if s["total_papers"] > 0 else 0
             print(f"    {source}: {count} ({pct:.1f}%)")
 
         print(f"\n去重记录: {s['dedup_records']}")

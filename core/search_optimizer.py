@@ -3,6 +3,7 @@ Search Optimizer.
 
 Improves search relevance and performance.
 """
+
 import threading
 from typing import List, Dict, Any
 
@@ -30,7 +31,7 @@ class SearchOptimizer:
         with self._history_lock:
             self.search_history.append(query)
             if len(self.search_history) > self.MAX_HISTORY:
-                self.search_history = self.search_history[-self.MAX_HISTORY:]
+                self.search_history = self.search_history[-self.MAX_HISTORY :]
 
         # Basic optimization
         query = query.strip().lower()
@@ -57,11 +58,7 @@ class SearchOptimizer:
 
         return list(set(expansions))
 
-    def rank_results(
-        self,
-        results: List[Dict[str, Any]],
-        query: str
-    ) -> List[Dict[str, Any]]:
+    def rank_results(self, results: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
         """Rank search results by relevance."""
         scored = []
 

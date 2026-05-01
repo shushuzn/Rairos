@@ -3,6 +3,7 @@ Batch Operation Optimizer.
 
 Optimizes batch operations for efficiency.
 """
+
 from typing import List, Callable, Any, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -12,6 +13,7 @@ import time
 @dataclass
 class BatchResult:
     """Result of a batch operation."""
+
     success_count: int
     failure_count: int
     total_time: float
@@ -37,7 +39,7 @@ class BatchOptimizer:
         self,
         items: List[Any],
         processor: Callable[[Any], Any],
-        error_handler: Optional[Callable] = None
+        error_handler: Optional[Callable] = None,
     ) -> BatchResult:
         """Process items in batch with parallel execution."""
         start_time = time.time()
@@ -68,14 +70,14 @@ class BatchOptimizer:
             failure_count=failure_count,
             total_time=total_time,
             results=results,
-            errors=errors
+            errors=errors,
         )
 
     def process_sequential(
         self,
         items: List[Any],
         processor: Callable[[Any], Any],
-        error_handler: Optional[Callable] = None
+        error_handler: Optional[Callable] = None,
     ) -> BatchResult:
         """Process items sequentially with timing."""
         start_time = time.time()
@@ -102,5 +104,5 @@ class BatchOptimizer:
             failure_count=failure_count,
             total_time=total_time,
             results=results,
-            errors=errors
+            errors=errors,
         )

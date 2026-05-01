@@ -1,4 +1,5 @@
 """Internationalization support for CLI output."""
+
 import os
 
 LANG = os.environ.get("AI_RESEARCH_LANG", "zh").lower()

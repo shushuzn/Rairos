@@ -7,6 +7,7 @@ Inspired by cloud optimization principles:
 - Monitor resource usage (avoid resource exhaustion)
 - Efficient memory management
 """
+
 import time
 import psutil
 import logging
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ResourceStats:
     """Resource usage statistics."""
+
     timestamp: float
     cpu_percent: float
     memory_used_mb: float
@@ -36,6 +38,7 @@ class ResourceStats:
 @dataclass
 class DiskInfo:
     """Disk usage information."""
+
     path: Path
     total_gb: float
     used_gb: float
@@ -67,7 +70,7 @@ class ResourceMonitor:
             total_gb=usage.total / (1024**3),
             used_gb=usage.used / (1024**3),
             free_gb=usage.free / (1024**3),
-            percent=usage.percent
+            percent=usage.percent,
         )
 
     def get_memory_info(self) -> Tuple[float, float, float]:
@@ -76,15 +79,12 @@ class ResourceMonitor:
         return (
             mem.used / (1024**2),  # used_mb
             mem.available / (1024**2),  # available_mb
-            mem.percent  # percent
+            mem.percent,  # percent
         )
 
     def get_cpu_info(self) -> Tuple[float, int]:
         """Get CPU information (percent, count)."""
-        return (
-            psutil.cpu_percent(interval=0.1),
-            psutil.cpu_count()
-        )
+        return (psutil.cpu_percent(interval=0.1), psutil.cpu_count())
 
     def get_io_stats(self) -> Dict[str, int]:
         """Get disk I/O statistics."""
@@ -94,8 +94,12 @@ class ResourceMonitor:
             return {
                 "read_count": io.read_count - start.read_count if start else io.read_count,
                 "write_count": io.write_count - start.write_count if start else io.write_count,
-                "read_mb": (io.read_bytes - start.read_bytes) / (1024**2) if start else io.read_bytes / (1024**2),
-                "write_mb": (io.write_bytes - start.write_bytes) / (1024**2) if start else io.write_bytes / (1024**2),
+                "read_mb": (io.read_bytes - start.read_bytes) / (1024**2)
+                if start
+                else io.read_bytes / (1024**2),
+                "write_mb": (io.write_bytes - start.write_bytes) / (1024**2)
+                if start
+                else io.write_bytes / (1024**2),
             }
         except Exception as e:
             logger.warning(f"Failed to get I/O stats: {e}")
@@ -107,8 +111,12 @@ class ResourceMonitor:
             net = psutil.net_io_counters()
             start = self._net_io_start
             return {
-                "sent_mb": (net.bytes_sent - start.bytes_sent) / (1024**2) if start else net.bytes_sent / (1024**2),
-                "recv_mb": (net.bytes_recv - start.bytes_recv) / (1024**2) if start else net.bytes_recv / (1024**2),
+                "sent_mb": (net.bytes_sent - start.bytes_sent) / (1024**2)
+                if start
+                else net.bytes_sent / (1024**2),
+                "recv_mb": (net.bytes_recv - start.bytes_recv) / (1024**2)
+                if start
+                else net.bytes_recv / (1024**2),
             }
         except Exception as e:
             logger.warning(f"Failed to get network stats: {e}")
@@ -132,7 +140,7 @@ class ResourceMonitor:
             disk_io_reads=io_stats.get("read_count", 0),
             disk_io_writes=io_stats.get("write_count", 0),
             network_sent_mb=net_stats.get("sent_mb", 0.0),
-            network_recv_mb=net_stats.get("recv_mb", 0.0)
+            network_recv_mb=net_stats.get("recv_mb", 0.0),
         )
 
         # Store in history
@@ -216,7 +224,7 @@ class ResourceGuard:
         self,
         min_disk_gb: float = 1.0,
         max_memory_percent: float = 90.0,
-        monitor: Optional[ResourceMonitor] = None
+        monitor: Optional[ResourceMonitor] = None,
     ):
         self.min_disk_gb = min_disk_gb
         self.max_memory_percent = max_memory_percent
@@ -257,25 +265,23 @@ class APIBudgetTracker:
         self._cost_estimate = 0.0
 
     def record_api_call(
-        self,
-        provider: str,
-        endpoint: str,
-        tokens_used: int = 0,
-        cost_per_1k: float = 0.0
+        self, provider: str, endpoint: str, tokens_used: int = 0, cost_per_1k: float = 0.0
     ):
         """Record an API call."""
         self._call_count += 1
         call_cost = (tokens_used / 1000) * cost_per_1k
         self._cost_estimate += call_cost
 
-        self.api_calls.append({
-            "timestamp": time.time(),
-            "provider": provider,
-            "endpoint": endpoint,
-            "tokens": tokens_used,
-            "cost": call_cost,
-            "total_cost": self._cost_estimate
-        })
+        self.api_calls.append(
+            {
+                "timestamp": time.time(),
+                "provider": provider,
+                "endpoint": endpoint,
+                "tokens": tokens_used,
+                "cost": call_cost,
+                "total_cost": self._cost_estimate,
+            }
+        )
 
     def get_usage_report(self) -> Dict:
         """Get usage report."""
@@ -283,8 +289,10 @@ class APIBudgetTracker:
             "total_calls": self._call_count,
             "estimated_cost_usd": self._cost_estimate,
             "budget_remaining_usd": self.monthly_budget_usd - self._cost_estimate,
-            "budget_used_percent": (self._cost_estimate / self.monthly_budget_usd) * 100 if self.monthly_budget_usd > 0 else 0,
-            "recent_calls": len(self.api_calls[-100:])  # Last 100 calls
+            "budget_used_percent": (self._cost_estimate / self.monthly_budget_usd) * 100
+            if self.monthly_budget_usd > 0
+            else 0,
+            "recent_calls": len(self.api_calls[-100:]),  # Last 100 calls
         }
 
     def should_make_api_call(self, estimated_cost: float = 0.01) -> bool:

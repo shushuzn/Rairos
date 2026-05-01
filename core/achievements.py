@@ -11,6 +11,7 @@ Similarly, we offer:
 - Time saved metrics
 - Performance protection guarantees
 """
+
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 from datetime import datetime
@@ -19,6 +20,7 @@ from datetime import datetime
 @dataclass
 class Achievement:
     """Represents an achievement or badge."""
+
     id: str
     name: str
     description: str
@@ -57,56 +59,56 @@ class AchievementSystem:
                 name="🚀 首次导入",
                 description="成功导入第一篇论文",
                 icon="📥",
-                points=10
+                points=10,
             ),
             "paper_collector": Achievement(
                 id="paper_collector",
                 name="📚 论文收集者",
                 description="导入10篇论文",
                 icon="📚",
-                points=50
+                points=50,
             ),
             "researcher_100": Achievement(
                 id="researcher_100",
                 name="🎓 研究达人",
                 description="导入100篇论文",
                 icon="🎓",
-                points=200
+                points=200,
             ),
             "api_saver": Achievement(
                 id="api_saver",
                 name="💰 API节流侠",
                 description="通过缓存节省100次API调用",
                 icon="💰",
-                points=100
+                points=100,
             ),
             "time_saver": Achievement(
                 id="time_saver",
                 name="⏰ 时间管理大师",
                 description="节省10小时研究时间",
                 icon="⏰",
-                points=150
+                points=150,
             ),
             "speed_demon": Achievement(
                 id="speed_demon",
                 name="⚡ 速度达人",
                 description="批量导入50篇论文",
                 icon="⚡",
-                points=100
+                points=100,
             ),
             "cache_master": Achievement(
                 id="cache_master",
                 name="🗄️ 缓存大师",
                 description="缓存命中率超过80%",
                 icon="🗄️",
-                points=75
+                points=75,
             ),
             "search_expert": Achievement(
                 id="search_expert",
                 name="🔍 搜索专家",
                 description="执行100次搜索",
                 icon="🔍",
-                points=50
+                points=50,
             ),
         }
 
