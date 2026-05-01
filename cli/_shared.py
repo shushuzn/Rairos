@@ -105,7 +105,7 @@ def print_warp_code(lang: str, code: str, title: Optional[str] = None, width: in
 def print_warp_section(title: str, *body_lines: str, width: int = 80) -> None:
     """Print a Warp-style section block to stdout."""
     from cli.warp import WarpBlocks
-    print(WarpBlocks.section(title, *body_lines, width))
+    print(WarpBlocks.section(title, *body_lines, width=width))
 
 
 def print_warp_table(headers: list, rows: list, width: int = 80) -> None:

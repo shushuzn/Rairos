@@ -219,9 +219,9 @@ def slides(
     )
 
 
-def _run_slides(args) -> int:
+def _run_slides(args) -> None:
     """Run slides command from argparse args."""
-    return slides_main(
+    slides_main(
         args.arxiv_ids or [],
         args.list,
         args.interactive,

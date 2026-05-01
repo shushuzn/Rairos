@@ -5,7 +5,7 @@ import uuid
 from dataclasses import dataclass, asdict, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional, cast
 
 from llm.tracker_base import JsonFileStore
 
@@ -76,14 +76,14 @@ class Journal(JsonFileStore):
 
     def get(self, entry_id: str) -> Optional[JournalEntry]:
         """Get entry by ID."""
-        for e in self._load():
+        for e in cast(List[JournalEntry], self._load()):
             if e.id == entry_id:
                 return e
         return None
 
     def update(self, entry_id: str, content: str = "", tags: Optional[List[str]] = None) -> Optional[JournalEntry]:
         """Update an entry."""
-        entries = self._load()
+        entries = cast(List[JournalEntry], self._load())
         for e in entries:
             if e.id == entry_id:
                 if content:
@@ -152,8 +152,8 @@ class Journal(JsonFileStore):
         week_ago = (now - timedelta(days=7)).isoformat()
         month_ago = (now - timedelta(days=30)).isoformat()
 
-        tags_count = {}
-        mood_count = {}
+        tags_count: Dict[str, int] = {}
+        mood_count: Dict[str, int] = {}
         for e in entries:
             for t in e.tags:
                 tags_count[t] = tags_count.get(t, 0) + 1

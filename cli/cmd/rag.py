@@ -75,7 +75,7 @@ def _build_rag_parser(subparsers):
 def rag(arxiv_id: str, mode: str, framework: str, task: str):
     """RAG闭环: paper2code + EvoSkill 自动改进管道"""
     if arxiv_id:
-        rag_run_full.callback(arxiv_id, mode, framework, task)
+        rag_run_full(arxiv_id, mode, framework, task)
     else:
         rag_status()
 

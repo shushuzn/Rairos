@@ -6,7 +6,7 @@ import uuid
 import orjson
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, Optional
 
 
 
@@ -237,20 +237,6 @@ class KGManager:
         ).fetchall()
         return [self._row_to_edge(r) for r in rows]
 
-        """Find all Paper nodes with a given tag via same_tag edges."""
-        conn = self._conn()
-        rows = conn.execute(
-            """SELECT DISTINCT n.* FROM kg_nodes n
-               JOIN kg_edges e ON (e.target_id = n.id OR e.source_id = n.id)
-               JOIN kg_nodes tag ON (tag.id = e.target_id OR tag.id = e.source_id)
-               WHERE n.type = 'Paper'
-                 AND tag.type = 'Tag'
-                 AND tag.label = ?
-                 AND e.relation_type = 'same_tag'""",
-            (tag,),
-        ).fetchall()
-        return [self._row_to_node(r) for r in rows]
-
     def find_papers_by_tag(self, tag: str) -> list[dict]:
         """Find all Paper nodes with a given tag via same_tag edges."""
         conn = self._conn()
@@ -343,7 +329,7 @@ class KGManager:
             f"SELECT * FROM kg_nodes WHERE id IN ({placeholders})",
             node_ids,
         ).fetchall()
-        result = {nid: None for nid in node_ids}
+        result: Dict[str, Optional[Dict[Any, Any]]] = {nid: None for nid in node_ids}
         for row in rows:
             node = self._row_to_node(row)
             result[node["id"]] = node

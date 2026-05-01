@@ -14,7 +14,7 @@ from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional, cast
+from typing import Dict, List, Optional, cast
 
 from llm.tracker_base import JsonFileStore
 
@@ -231,9 +231,9 @@ class QuestionTracker(JsonFileStore):
         """Get statistics about tracked questions."""
         questions = self._load()
 
-        status_counts = {}
-        source_counts = {}
-        topic_counts = {}
+        status_counts: Dict[str, int] = {}
+        source_counts: Dict[str, int] = {}
+        topic_counts: Dict[str, int] = {}
 
         for q in questions:
             status_counts[q.status] = status_counts.get(q.status, 0) + 1

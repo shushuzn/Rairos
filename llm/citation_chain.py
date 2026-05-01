@@ -2,7 +2,7 @@
 Citation Chain: Build and visualize citation relationships.
 """
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Set, Tuple
+from typing import List, Optional, Dict, Set, Tuple, Any, cast
 from collections import deque
 
 
@@ -182,7 +182,7 @@ class CitationChainBuilder:
         paper_id: str,
         limit: int = 10,
         threshold: float = 0.85,
-    ) -> List[Tuple["PaperRecord", float]]:
+    ) -> List[Tuple[Any, float]]:
         """Find semantically similar papers using embeddings.
 
         Uses vector similarity to find related work even when
@@ -192,7 +192,7 @@ class CitationChainBuilder:
             return []
 
         try:
-            return self.db.find_similar(paper_id, threshold=threshold, limit=limit)
+            return cast(List[Tuple[Any, float]], self.db.find_similar(paper_id, threshold=threshold, limit=limit))
         except Exception:
             return []
 
