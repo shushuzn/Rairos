@@ -1,7 +1,7 @@
 """Crossref API metadata fetching."""
 import datetime as dt
 import re
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, cast
 
 from core import CROSSREF_WORKS, DOI_RESOLVER, Paper
 
@@ -152,7 +152,7 @@ def fetch_crossref_metadata(doi: str, timeout: int = 30) -> Tuple[Paper, Optiona
         if r.status_code == 404:
             raise ValueError("Crossref 404 (DOI not found in Crossref)")
         r.raise_for_status()
-        data = r.json()
+        data = r.json() or {}
         item = data.get("message") or {}
 
         title = _title_from_crossref(item) or doi
