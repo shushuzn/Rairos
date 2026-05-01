@@ -1,4 +1,4 @@
-name: Release to PyPI
+name: Release
 
 on:
   push:
@@ -6,40 +6,41 @@ on:
       - 'v*'
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'Tag name (e.g. v1.1.2)'
+      version:
+        description: 'Version tag (e.g. v1.5.3)'
         required: true
         type: string
 
 jobs:
   release:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
 
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: "3.11"
 
-      - name: Install build
+      - name: Install build dependencies
         run: pip install build
 
-      - name: Build distribution
+      - name: Build package
         run: python -m build
 
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_TOKEN }}
-          skip_existing: true
+        if: github.event_name == 'push'
+        env:
+          PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          pip install twine
+          twine upload dist/* --non-interactive --skip-existing --token "$PYPI_API_TOKEN"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v3
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ inputs.tag || github.ref_name }}
           generate_release_notes: true
+          files: dist/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
