@@ -11,7 +11,7 @@ import time
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, cast
 from enum import Enum
 
 
@@ -61,7 +61,7 @@ class EvolutionEvent:
     action: str  # 采取的行动
     outcome: str  # 结果
     score: float  # 评分 0-1
-    genes_applied: List[str] = None  # 应用的基因
+    genes_applied: Optional[List[str]] = None  # 应用的基因
     timestamp: str = ""
 
     def __post_init__(self):
@@ -270,7 +270,7 @@ class EvolutionMemory:
     def _load_patterns(self) -> Dict[str, Any]:
         """加载模式库."""
         try:
-            return json.loads(self.patterns_file.read_text(encoding="utf-8") or "{}")
+            return cast(Dict[str, Any], json.loads(self.patterns_file.read_text(encoding="utf-8") or "{}"))
         except (json.JSONDecodeError, FileNotFoundError):
             return {}
 
