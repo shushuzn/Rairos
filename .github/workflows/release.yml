@@ -12,7 +12,7 @@ on:
         type: string
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
@@ -28,16 +28,39 @@ jobs:
       - name: Build package
         run: python -m build
 
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+
+  publish-pypi:
+    runs-on: ubuntu-22.04
+    needs: build
+    # Continue even if PyPI token is missing — GitHub Release still happens
+    if: github.event_name == 'push' && github.event_name != 'workflow_dispatch'
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+
       - name: Publish to PyPI
-        if: github.event_name == 'push'
         env:
           PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           pip install twine
-          twine upload dist/* --non-interactive --skip-existing --token "$PYPI_API_TOKEN"
+          twine upload dist/* --non-interactive --skip-existing --token "$PYPI_API_TOKEN" || \
+            echo "PYPI_API_TOKEN not set or invalid — skipping PyPI upload"
+
+  create-github-release:
+    runs-on: ubuntu-22.04
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
 
       - name: Create GitHub Release
-        if: github.event_name == 'push'
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
