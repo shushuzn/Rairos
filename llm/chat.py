@@ -10,7 +10,7 @@ import os
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, List, Optional, Tuple
+from typing import Any, Callable, List, Optional, Tuple, cast
 
 import json
 import urllib.error
@@ -82,7 +82,7 @@ def _get_ollama_embedding(text: str, model: str = OLLAMA_EMBEDDING_MODEL) -> Opt
                 # Remove oldest entry (first item in dict - insertion order maintained)
                 _EMBEDDING_CACHE.pop(next(iter(_EMBEDDING_CACHE)))
             _EMBEDDING_CACHE[cache_key] = embedding
-            return embedding
+            return cast(Optional[List[float]], embedding)
     except (urllib.error.URLError, json.JSONDecodeError, KeyError, TypeError) as e:
         logger.debug("Embedding fetch failed for text snippet %r: %s", text[:50], e)
         _EMBEDDING_CACHE[cache_key] = None  # Cache failures too

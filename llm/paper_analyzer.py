@@ -14,7 +14,7 @@ import math
 import os
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, TYPE_CHECKING, cast
 
 from llm.constants import (
     ENV_AIROS_USE_EMBEDDING,
@@ -516,7 +516,7 @@ class PaperAnalyzer:
                     emb = data.get("embedding")
                     if emb:
                         _embed_cache[cache_key] = emb
-                    return emb
+                    return cast(Optional[List[float]], emb)
             except (urllib.error.URLError, json.JSONDecodeError, KeyError, TypeError) as e:
                 logger.debug("Embedding fetch failed for text snippet %r: %s", text[:50], e)
                 return None
