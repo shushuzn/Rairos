@@ -147,7 +147,7 @@ class TestKGSyncPhase:
                     MockInteg.return_value = mock_integ
 
                     result = _run_kg_sync_phase(MockDB.return_value)
-                    mock_integ.rebuild_from_papers_json.assert_called_once_with(incremental=True)
+                    mock_integ.rebuild_from_papers_json.assert_called_once_with("data/papers.json", incremental=True)
                     assert result is True
 
 
