@@ -2,14 +2,14 @@
 from __future__ import annotations
 
 import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 
 def render_litreview(
     topic: str,
     papers: List[Dict[str, Any]],
-    created_at: str = None,
-    updated_at: str = None,
+    created_at: Optional[str] = None,
+    updated_at: Optional[str] = None,
 ) -> str:
     """Generate a literature review Markdown document.
 
@@ -128,7 +128,7 @@ def render_litreview(
 def update_litreview(
     existing_content: str,
     new_papers: List[Dict[str, Any]],
-    all_papers: List[Dict[str, Any]] = None,
+    all_papers: Optional[List[Dict[str, Any]]] = None,
 ) -> str:
     """Incrementally update an existing literature review.
 
