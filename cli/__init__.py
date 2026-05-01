@@ -1,5 +1,6 @@
 """AI Research OS CLI."""
 import importlib
+from typing import Any, Dict
 from cli._registry import main, _main_legacy
 
 __all__ = ["main", "_main_legacy"]
@@ -136,7 +137,7 @@ _LAZY_EXPORTS = {
     "print_header": ("cli._shared", "print_header"),
 }
 
-_cache = {}
+_cache: Dict[str, Any] = {}
 
 
 def __getattr__(name):

@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import argparse
+from typing import List, Optional, cast
 
 from cli._shared import get_db, print_error, print_success
-from llm.insight_cards import InsightManager
+from llm.insight_cards import InsightCard, InsightManager
 
 
 def _build_insight_parser(subparsers) -> argparse.ArgumentParser:
@@ -26,7 +27,7 @@ def _build_insight_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--markdown", "-m", action="store_true", help="Output as Markdown")
     p.add_argument("--collection", "-c", help="Collection ID to add to")
     p.add_argument("--cite", help="Card ID to reference")
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_insight(args: argparse.Namespace) -> int:
@@ -86,15 +87,15 @@ def _run_insight(args: argparse.Namespace) -> int:
         return 0
 
     elif args.action == "tag-cloud":
-        tags = manager.get_tag_cloud()
-        if not tags:
+        tag_cloud = manager.get_tag_cloud()
+        if not tag_cloud:
             print("No tags found.")
             return 0
 
         print("📊 Tag Cloud\n")
-        max_count = max(tags.values()) if tags else 1
+        max_count = max(tag_cloud.values()) if tag_cloud else 1
 
-        for tag, count in sorted(tags.items(), key=lambda x: -x[1])[:20]:
+        for tag, count in sorted(tag_cloud.items(), key=lambda x: -x[1])[:20]:
             bar = "█" * int(count / max_count * 20)
             print(f"  {tag:20} {count:3} {bar}")
         return 0
@@ -111,8 +112,8 @@ def _run_insight(args: argparse.Namespace) -> int:
             for c in collections:
                 if c.get("collection_id") == args.collection:
                     card_ids = c.get("card_ids", [])
-                    cards = [manager.get_card(cid) for cid in card_ids]
-                    cards = [c for c in cards if c]
+                    raw_cards = [manager.get_card(cid) for cid in card_ids]
+                    cards = cast(List[InsightCard], [c for c in raw_cards if c])
                     break
 
         output = manager.export_for_note(cards)

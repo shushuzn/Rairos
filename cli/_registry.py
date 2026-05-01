@@ -323,15 +323,16 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
             pdf_path = None
 
     # Extract text from PDF if available
+    extracted_text_str = ""
+    structured_result = None
     if pdf_path and pdf_path.exists():
         try:
             from pdf.extract import extract_pdf_structured, extract_pdf_text_hybrid
             if args.structured:
-                result = extract_pdf_structured(str(pdf_path), max_pages=args.max_pages)
-                extracted_text = result  # StructuredPdfContent object for segment_structured
+                structured_result = extract_pdf_structured(pdf_path, max_pages=args.max_pages)
             else:
-                extracted_text = extract_pdf_text_hybrid(
-                    str(pdf_path),
+                extracted_text_str = extract_pdf_text_hybrid(
+                    pdf_path,
                     max_pages=args.max_pages,
                     ocr=args.ocr,
                     ocr_lang=args.ocr_lang,
@@ -340,17 +341,14 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
                 )
         except Exception as e:
             print_error(f"Failed to extract PDF: {e}")
-            extracted_text = ""
-    else:
-        extracted_text = ""
 
-    if args.structured:
+    if args.structured and structured_result:
         from sections.segment import segment_structured, format_section_snippets
-        segments = segment_structured(extracted_text) if hasattr(extracted_text, 'text_blocks') else []
+        segments = segment_structured(structured_result)
         format_section_snippets(segments)
+        extracted_text_str = structured_result.text_blocks_to_string() if hasattr(structured_result, 'text_blocks_to_string') else ""
     else:
         segments = []
-        extracted_text[:500] if isinstance(extracted_text, str) and extracted_text else ""
 
     paper.path = pdf_path
 
@@ -359,7 +357,7 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
     pnote_path = root / args.category / f"P - {year} - {slugify_title(paper.title)}.md"
     pnote_path.parent.mkdir(parents=True, exist_ok=True)
     with open(pnote_path, "w", encoding="utf-8") as f:
-        f.write(render_pnote(paper, tags, extracted_text, parsed_ai=None))
+        f.write(render_pnote(paper, tags, extracted_text_str, parsed_ai=None))
 
     note_date = paper.published[:4] if paper.published else today_iso()
     update_radar(root, tags, note_date)
@@ -395,7 +393,7 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
         base_url = os.environ.get("OPENAI_BASE_URL") or os.environ.get("AIROS_DEFAULT_OPENAI_BASE_URL", "https://api.openai.com/v1")
         api_key = os.environ.get("OPENAI_API_KEY", "")
         if api_key:
-            ai_content = ai_generate_pnote_draft(paper, tags, extracted_text, base_url, api_key, model=args.model or "gpt-4o-mini")
+            ai_content = ai_generate_pnote_draft(paper, tags, extracted_text_str, base_url, api_key, model=args.model or "gpt-4o-mini")
             existing = pnote_path.read_text(encoding="utf-8") if pnote_path.exists() else ""
             updated = existing + "\n\n" + ai_content if existing else ai_content
             pnote_path.write_text(updated, encoding="utf-8")
@@ -414,12 +412,12 @@ def _main_legacy(argv: Optional[List[str]] = None) -> int:
         pl_config = make_llm_config()
         pl_result = pipeline.run(
             paper_id=paper.pid,
-            extracted_text=extracted_text,
+            extracted_text=extracted_text_str,
             paper=paper,
             tags=tags,
             pnote_path=pnote_path,
             llm_config=pl_config,
-            structured_content=result if args.structured else None,
+            structured_content=structured_result if args.structured else None,
         )
         if pl_result.stages_completed:
             print_info(f"Deep dive OK: {', '.join(pl_result.stages_completed)}")
