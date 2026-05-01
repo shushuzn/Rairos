@@ -90,7 +90,7 @@ def _run_citation_chain(args: argparse.Namespace) -> int:
             if path:
                 print()
                 print("📍 Path found:")
-                for i, p in enumerate(path, 1):
+                for i, p in enumerate(path, 1):  # type: ignore[assignment]
                     print(f"  {i}. {p}")
             else:
                 print()

@@ -132,7 +132,7 @@ class GapAnalyzerV2(GapDetector):
                 })
         return papers
 
-    def analyze(
+    def analyze(  # type: ignore[override]
         self,
         topic: str,
         use_insights: bool = True,
@@ -163,7 +163,7 @@ class GapAnalyzerV2(GapDetector):
         # 4. Run gap detection with collected papers
         # Override parent's paper collection for this call
         original_collect = self._collect_papers
-        self._collect_papers = lambda t: papers  # Use same papers
+        self._collect_papers = lambda t, limit=30: papers  # type: ignore[method-assign,misc,assignment]
 
         base_result = super().analyze(
             topic=topic,
@@ -174,7 +174,7 @@ class GapAnalyzerV2(GapDetector):
             min_papers=min_papers,
         )
 
-        self._collect_papers = original_collect  # Restore
+        self._collect_papers = original_collect  # type: ignore[method-assign]
 
         # 5. Convert to enhanced format with insights + trend boost
         enhanced_gaps, preference_applied = self._convert_to_v2(

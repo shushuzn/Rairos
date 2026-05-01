@@ -41,7 +41,7 @@ def _openalex_request(path: str, timeout: int = 15) -> dict:
     })
     try:
         with opener.open(req, timeout=timeout) as resp:
-            return json.loads(resp.read())
+            return json.loads(resp.read())  # type: ignore[no-any-return]
     except Exception as e:
         raise RuntimeError(f"OpenAlex request failed for {path}: {e}") from e
 
@@ -54,7 +54,7 @@ def _arxiv_doi_to_openalex(arxiv_id: str) -> str | None:
         d = _openalex_request(f"/works?filter=doi:{doi}&per-page=1")
         results = d.get("results", [])
         if results:
-            return results[0]["id"]
+            return results[0]["id"]  # type: ignore[no-any-return]
     except Exception:
         pass
     return None
