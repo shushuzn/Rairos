@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from llm.text_utils import extract_keywords
 
@@ -502,7 +502,7 @@ class EvolutionTracker:
 
     def _get_all_gap_type_scores(self) -> Dict[str, float]:
         """Get time-decayed scores for all gap types (from cache or single scan)."""
-        return self._get_all_scores_cached()["gap_types"]
+        return cast(Dict[str, float], self._get_all_scores_cached()["gap_types"])
 
     def get_preferred_gap_types(self, limit: int = 3) -> List[str]:
         """Get most preferred gap types based on time-decayed history."""
@@ -742,18 +742,19 @@ class EvolutionTracker:
         try:
             event_time = datetime.fromisoformat(event_timestamp)
             age_days = (datetime.now() - event_time).total_seconds() / 86400.0
-            return base_weight * (2.0 ** (-lambda_ * age_days))
+            decay = 2.0 ** (-lambda_ * age_days)
+            return cast(float, base_weight * decay)
         except (ValueError, TypeError, OSError):
             return 0.0
 
     def get_gap_type_score(self, gap_type: str) -> float:
         """Get the numeric preference score for a gap type with time decay."""
-        scores = self._get_all_scores_cached()["gap_types"]
+        scores = cast(Dict[str, float], self._get_all_scores_cached()["gap_types"])
         return scores.get(gap_type, 0.0)
 
     def get_keyword_score(self, keyword: str) -> float:
         """Get the numeric preference score for a keyword with time decay."""
-        kw_scores = self._get_all_scores_cached()["keywords"]
+        kw_scores = cast(Dict[str, float], self._get_all_scores_cached()["keywords"])
         return kw_scores.get(keyword.lower(), 0.0)
 
     def get_top_keywords(self, limit: int = 5) -> List[str]:
