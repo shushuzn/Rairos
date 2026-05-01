@@ -14,7 +14,7 @@ from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, cast
 
 from llm.tracker_base import JsonFileStore
 
@@ -128,7 +128,7 @@ class QuestionTracker(JsonFileStore):
         questions = self._load()
         for q in questions:
             if q.id == question_id:
-                return q
+                return cast(Optional[ResearchQuestion], q)
         return None
 
     def update(
@@ -151,7 +151,7 @@ class QuestionTracker(JsonFileStore):
                     q.priority = max(1, min(10, priority))
                 q.updated_at = datetime.now().isoformat()
                 self._save(questions)
-                return q
+                return cast(ResearchQuestion, q)
 
         return None
 
@@ -165,7 +165,7 @@ class QuestionTracker(JsonFileStore):
                     q.related_papers.append(paper_id)
                     q.updated_at = datetime.now().isoformat()
                     self._save(questions)
-                return q
+                return cast(ResearchQuestion, q)
 
         return None
 
@@ -179,7 +179,7 @@ class QuestionTracker(JsonFileStore):
                     q.related_papers.remove(paper_id)
                     q.updated_at = datetime.now().isoformat()
                     self._save(questions)
-                return q
+                return cast(ResearchQuestion, q)
 
         return None
 
