@@ -32,6 +32,7 @@ class ExplorationAction(Enum):
     HYPOTHESIZED = "hypothesized"  # 生成了假说
     VALIDATED = "validated"     # 验证了问题
     NARRATED = "narrated"      # 编织了故事
+    INSIGHT_RATED = "insight_rated"  # 用户对 insight 打分
 
 
 class PreferenceTag(Enum):
@@ -60,6 +61,7 @@ class EvolutionEvent:
     paper_ids: List[str] = field(default_factory=list)
     duration_seconds: int = 0   # Time spent on this item
     notes: str = ""             # User's optional notes
+    insight_card_id: str = ""   # Insight card ID for insight_rated events
 
 
 @dataclass
@@ -134,6 +136,7 @@ class EvolutionTracker:
         ExplorationAction.HYPOTHESIZED: 0.40,
         ExplorationAction.VALIDATED: 0.40,
         ExplorationAction.NARRATED: 0.25,
+        ExplorationAction.INSIGHT_RATED: 0.20,
     }
     # Gap reject (no hypothesis) gets a lighter penalty in the profile accumulator.
     _REJECT_NO_HYPOTHESIS_PENALTY: float = -0.10
@@ -167,6 +170,7 @@ class EvolutionTracker:
         paper_ids: Optional[List[str]] = None,
         duration_seconds: int = 0,
         notes: str = "",
+        insight_card_id: str = "",
     ) -> EvolutionEvent:
         """Record a single exploration event."""
         event = EvolutionEvent(
@@ -181,6 +185,7 @@ class EvolutionTracker:
             paper_ids=paper_ids or [],
             duration_seconds=duration_seconds,
             notes=notes,
+            insight_card_id=insight_card_id,
         )
 
         # Append to events log (serialize enum as value)
@@ -278,6 +283,22 @@ class EvolutionTracker:
             gap_type=gap_type,
             gap_title=gap_title,
             hypothesis_id=hypothesis_id,
+        )
+
+    def record_insight_feedback(
+        self,
+        topic: str,
+        insight_card_id: str,
+        rating: int,
+        paper_title: str = "",
+    ) -> EvolutionEvent:
+        """Record user rating an insight card. Bridges insight quality to evolution profile."""
+        return self.record_event(
+            topic=topic,
+            action=ExplorationAction.INSIGHT_RATED,
+            notes=f"insight:{insight_card_id} rating:{rating}",
+            gap_description=paper_title,
+            insight_card_id=insight_card_id,
         )
 
     # ─── Profile Learning ───────────────────────────────────────────────────────
@@ -1132,3 +1153,7 @@ class EvolutionTracker:
         if not self.data_dir.exists():
             return []
         return sorted(self.data_dir.glob("profile_backup_*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+
+def get_evolution_tracker() -> EvolutionTracker:
+    """Factory: get a shared EvolutionTracker instance."""
+    return EvolutionTracker()
