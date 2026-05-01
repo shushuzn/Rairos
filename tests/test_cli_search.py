@@ -620,41 +620,74 @@ class TestRunStatus:
 
 
 class TestRunQueueList:
-    """Test queue --list."""
+    """Test queue --list (queries job_queue table, not papers.parse_status)."""
 
     @patch("cli.Database")
-    def test_queue_list_shows_pending(self, mock_db_cls, capsys):
+    def test_queue_list_shows_jobs(self, mock_db_cls, capsys):
         mock_db = MagicMock()
         mock_db.init.return_value = None
-        mock_db.get_papers.return_value = [
-            FakePaper(id="2301.00001", parse_status="pending"),
-            FakePaper(id="2301.00002", parse_status="done"),
-            FakePaper(id="2301.00003", parse_status="pending"),
-        ]
+        # Mock job_queue rows (sqlite3.Row compatible)
+        mock_job1 = MagicMock()
+        mock_job1.__getitem__ = lambda self, k: {
+            "id": 1, "paper_id": "2301.00001",
+            "job_type": "parse", "priority": 5, "status": "queued"
+        }[k]
+        mock_job2 = MagicMock()
+        mock_job2.__getitem__ = lambda self, k: {
+            "id": 2, "paper_id": "2301.00003",
+            "job_type": "parse", "priority": 3, "status": "running"
+        }[k]
+        mock_db.get_queue_jobs.return_value = [mock_job1, mock_job2]
         mock_db_cls.return_value = mock_db
 
-        args = make_args(list=True, dequeue=False, add=None, cancel=None)
+        args = make_args(list=True, dequeue=False, add=None, cancel=None, pending=False)
         result = _run_queue(args)
 
         captured = capsys.readouterr().out
-        assert "Pending:" in captured
         assert "2301.00001" in captured
         assert "2301.00003" in captured
-        assert "2301.00002" not in captured  # not pending
+        assert "[1]" in captured or "id=1" in captured
         assert result == 0
 
     @patch("cli.Database")
     def test_queue_list_empty(self, mock_db_cls, capsys):
         mock_db = MagicMock()
         mock_db.init.return_value = None
-        mock_db.get_papers.return_value = [FakePaper(id="2301.00001", parse_status="done")]
+        mock_db.get_queue_jobs.return_value = []
         mock_db_cls.return_value = mock_db
 
-        args = make_args(list=True, dequeue=False, add=None, cancel=None)
+        args = make_args(list=True, dequeue=False, add=None, cancel=None, pending=False)
         result = _run_queue(args)
 
         captured = capsys.readouterr().out
         assert "Queue empty" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_pending_shows_awaiting_papers(self, mock_db_cls, capsys):
+        """Test queue --pending shows papers with parse_status=pending."""
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        # Mock conn context manager for pending query
+        mock_conn = MagicMock()
+        mock_cur = MagicMock()
+        mock_row1 = MagicMock()
+        mock_row1.__getitem__ = lambda self, k: {"id": "2301.00001", "parse_status": "pending", "source": "import"}[k]
+        mock_row2 = MagicMock()
+        mock_row2.__getitem__ = lambda self, k: {"id": "2301.00003", "parse_status": "pending", "source": "import"}[k]
+        mock_cur.fetchall.return_value = [mock_row1, mock_row2]
+        mock_conn.execute.return_value = mock_cur
+        mock_db.conn.__enter__ = MagicMock(return_value=mock_conn)
+        mock_db.conn.__exit__ = MagicMock(return_value=False)
+        mock_db_cls.return_value = mock_db
+
+        args = make_args(list=False, dequeue=False, add=None, cancel=None, pending=True)
+        result = _run_queue(args)
+
+        captured = capsys.readouterr().out
+        assert "2 paper(s) awaiting processing" in captured
+        assert "2301.00001" in captured
+        assert "2301.00003" in captured
         assert result == 0
 
 
