@@ -1,4 +1,5 @@
 """Zilliz Cloud vector store for persistent code embeddings."""
+
 from __future__ import annotations
 
 import os
@@ -11,6 +12,7 @@ from pymilvus import MilvusClient, DataType
 @dataclass
 class SearchResult:
     """A search result with score and metadata."""
+
     id: str
     score: float
     content: str
@@ -40,54 +42,60 @@ class ZillizStore:
         self._ensure_collection()
 
     def _ensure_collection(self) -> None:
-        """Create collection if not exists."""
-        if self.client.has_collection(self.COLLECTION_NAME):
-            return
+        """Create collection if not exists. Raises RuntimeError on connection error."""
+        try:
+            if self.client.has_collection(self.COLLECTION_NAME):
+                return
+        except Exception as e:
+            raise RuntimeError(f"Failed to check collection '{self.COLLECTION_NAME}': {e}") from e
 
-        schema = MilvusClient.create_schema(
-            auto_id=False,
-            enable_dynamic_field=True,
-        )
+        try:
+            schema = MilvusClient.create_schema(
+                auto_id=False,
+                enable_dynamic_field=True,
+            )
 
-        schema.add_field(
-            field_name="id",
-            datatype=DataType.VARCHAR,
-            max_length=512,
-            is_primary=True,
-        )
-        schema.add_field(
-            field_name="vector",
-            datatype=DataType.FLOAT_VECTOR,
-            dim=self.dim,
-        )
-        schema.add_field(
-            field_name="content",
-            datatype=DataType.VARCHAR,
-            max_length=4096,
-        )
-        schema.add_field(
-            field_name="file",
-            datatype=DataType.VARCHAR,
-            max_length=256,
-        )
-        schema.add_field(
-            field_name="line",
-            datatype=DataType.INT32,
-        )
+            schema.add_field(
+                field_name="id",
+                datatype=DataType.VARCHAR,
+                max_length=512,
+                is_primary=True,
+            )
+            schema.add_field(
+                field_name="vector",
+                datatype=DataType.FLOAT_VECTOR,
+                dim=self.dim,
+            )
+            schema.add_field(
+                field_name="content",
+                datatype=DataType.VARCHAR,
+                max_length=4096,
+            )
+            schema.add_field(
+                field_name="file",
+                datatype=DataType.VARCHAR,
+                max_length=256,
+            )
+            schema.add_field(
+                field_name="line",
+                datatype=DataType.INT32,
+            )
 
-        index_params = self.client.prepare_index_params()
-        index_params.add_index(
-            field_name="vector",
-            index_type="AUTOINDEX",
-            metric_type="COSINE",
-        )
+            index_params = self.client.prepare_index_params()
+            index_params.add_index(
+                field_name="vector",
+                index_type="AUTOINDEX",
+                metric_type="COSINE",
+            )
 
-        self.client.create_collection(
-            collection_name=self.COLLECTION_NAME,
-            schema=schema,
-            index_params=index_params,
-        )
-        self.client.load_collection(self.COLLECTION_NAME)
+            self.client.create_collection(
+                collection_name=self.COLLECTION_NAME,
+                schema=schema,
+                index_params=index_params,
+            )
+            self.client.load_collection(self.COLLECTION_NAME)
+        except Exception as e:
+            raise RuntimeError(f"Failed to create collection '{self.COLLECTION_NAME}': {e}") from e
 
     def upsert(
         self,
@@ -148,13 +156,15 @@ class ZillizStore:
 
         search_results = []
         for hit in results[0]:
-            search_results.append(SearchResult(
-                id=hit["entity"]["id"],
-                score=hit["distance"],
-                content=hit["entity"]["content"],
-                file=hit["entity"]["file"],
-                line=hit["entity"]["line"],
-            ))
+            search_results.append(
+                SearchResult(
+                    id=hit["entity"]["id"],
+                    score=hit["distance"],
+                    content=hit["entity"]["content"],
+                    file=hit["entity"]["file"],
+                    line=hit["entity"]["line"],
+                )
+            )
 
         return search_results
 
