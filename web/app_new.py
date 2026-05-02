@@ -108,16 +108,25 @@ async def dashboard(request: Request):
 
 
 @app.get("/papers")
-async def papers(request: Request, q: str = "", source: str = "", page: int = 1):
+async def papers(request: Request, q: str = "", source: str = "", page: int = 1,
+                 year_from: str = "", year_to: str = ""):
     """Papers — search and list with pagination."""
     db = _get_db()
     limit = 20
     offset = (max(1, page) - 1) * limit
 
+    # Build date filters from year range
+    date_from = f"{year_from}-01-01" if year_from else None
+    date_to = f"{year_to}-12-31" if year_to else None
+
     if q:
         rows, total = db.search_papers(q, limit=limit, offset=offset)
     else:
-        rows, total = db.list_papers(limit=limit, offset=offset, source=source if source else None)
+        rows, total = db.list_papers(
+            limit=limit, offset=offset,
+            source=source if source else None,
+            date_from=date_from, date_to=date_to,
+        )
 
     papers_list = []
     for r in rows:
@@ -140,6 +149,8 @@ async def papers(request: Request, q: str = "", source: str = "", page: int = 1)
         "total": total,
         "page": page,
         "total_pages": total_pages,
+        "year_from": year_from,
+        "year_to": year_to,
     })
 
 
