@@ -21,6 +21,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+import datetime
 import json
 import logging
 from typing import Any, Dict, List, Optional
@@ -282,6 +283,42 @@ def get_tools() -> List[Dict]:
         {
             "name": "litreview_list",
             "description": "List all saved literature reviews"
+        },
+        {
+            "name": "research_memory_add_stance",
+            "description": "Record a research stance (supported/rejected/deferred) on a claim",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "topic": {"type": "string", "description": "Research topic or question"},
+                    "claim": {"type": "string", "description": "The specific claim or hypothesis you took a stance on"},
+                    "stance": {"type": "string", "description": "Your stance: supported, rejected, deferred, qualified"},
+                    "evidence_refs": {"type": "array", "items": {"type": "string"}, "description": "arXiv IDs that support this stance"},
+                    "reasoning": {"type": "string", "description": "Why you hold this stance"},
+                    "confidence": {"type": "number", "description": "Confidence 0.0–1.0"}
+                },
+                "required": ["topic", "claim", "stance"]
+            }
+        },
+        {
+            "name": "research_memory_list_stances",
+            "description": "List all research stances in your memory"
+        },
+        {
+            "name": "research_memory_check_paper",
+            "description": "Check a paper against your research memory for anomalies",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "arxiv_id": {"type": "string", "description": "arXiv ID of the paper to check"},
+                    "use_llm": {"type": "boolean", "default": true, "description": "Use LLM for deep anomaly detection"}
+                },
+                "required": ["arxiv_id"]
+            }
+        },
+        {
+            "name": "research_memory_anomalies",
+            "description": "List recent anomaly alerts — papers that contradict your stances"
         }
     ]
 
@@ -1029,6 +1066,159 @@ def tool_litreview_list() -> Dict:
         return error_response("LITREVIEW_ERROR", str(e))
 
 
+def tool_research_memory_add_stance(
+    topic: str,
+    claim: str,
+    stance: str,
+    evidence_refs: Optional[List[str]] = None,
+    reasoning: str = "",
+    confidence: float = 0.5,
+) -> Dict:
+    """Add a research stance to memory."""
+    try:
+        from llm.research_memory import ResearchMemory, StanceType
+
+        memory = ResearchMemory()
+        stance_enum = StanceType(stance.lower())
+        s = memory.add_stance(
+            topic=topic,
+            claim=claim,
+            stance=stance_enum,
+            evidence_refs=evidence_refs or [],
+            reasoning=reasoning,
+            confidence=confidence,
+        )
+        return success_response({
+            "stance_id": s.stance_id,
+            "topic": s.topic,
+            "stance": s.stance.value,
+            "claim": s.claim[:80],
+            "created_at": datetime.fromtimestamp(s.created_at).isoformat(),
+        })
+
+    except Exception as e:
+        logger.error(f"research_memory_add_stance error: {e}")
+        return error_response("MEMORY_ERROR", str(e))
+
+
+def tool_research_memory_list_stances() -> Dict:
+    """List all stances in research memory."""
+    try:
+        from llm.research_memory import ResearchMemory
+
+        memory = ResearchMemory()
+        summary = memory.get_summary()
+        stances = memory.get_stances()
+
+        return success_response({
+            "summary": summary,
+            "stances": [
+                {
+                    "stance_id": s.stance_id,
+                    "topic": s.topic,
+                    "claim": s.claim[:100],
+                    "stance": s.stance.value,
+                    "confidence": s.confidence,
+                    "evidence_count": len(s.evidence_refs),
+                    "created_at": datetime.fromtimestamp(s.created_at).isoformat(),
+                    "updated_at": datetime.fromtimestamp(s.updated_at).isoformat(),
+                }
+                for s in stances
+            ],
+        })
+
+    except Exception as e:
+        logger.error(f"research_memory_list_stances error: {e}")
+        return error_response("MEMORY_ERROR", str(e))
+
+
+def tool_research_memory_check_paper(arxiv_id: str, use_llm: bool = True) -> Dict:
+    """Check a paper against research memory for anomalies."""
+    try:
+        from llm.research_memory import ResearchMemory
+
+        memory = ResearchMemory()
+
+        # Fetch paper from DB
+        from db.database import Database
+        db = Database()
+        db.init()
+        rows, _ = db.search_papers(arxiv_id, limit=1)
+        if not rows:
+            return error_response("NOT_FOUND", f"Paper {arxiv_id} not found in database")
+
+        row = rows[0]
+        paper = {
+            "arxiv_id": getattr(row, "paper_id", "") or getattr(row, "arxiv_id", ""),
+            "title": getattr(row, "title", ""),
+            "abstract": getattr(row, "abstract", "") or "",
+        }
+
+        anomalies = memory.check_paper_against_stances(paper, use_llm=use_llm)
+
+        if not anomalies:
+            return success_response({
+                "arxiv_id": arxiv_id,
+                "anomalies_found": 0,
+                "message": "No contradictions detected",
+            })
+
+        return success_response({
+            "arxiv_id": arxiv_id,
+            "anomalies_found": len(anomalies),
+            "anomalies": [
+                {
+                    "anomaly_id": a.anomaly_id,
+                    "stance_id": a.stance_id,
+                    "topic": a.topic,
+                    "stance_claim": a.stance_claim[:80],
+                    "paper_title": a.paper_title,
+                    "anomaly_type": a.anomaly_type,
+                    "severity": a.severity.value,
+                    "description": a.description,
+                    "created_at": datetime.fromtimestamp(a.created_at).isoformat(),
+                }
+                for a in anomalies
+            ],
+        })
+
+    except Exception as e:
+        logger.error(f"research_memory_check_paper error: {e}")
+        return error_response("MEMORY_ERROR", str(e))
+
+
+def tool_research_memory_anomalies() -> Dict:
+    """List recent anomaly alerts."""
+    try:
+        from llm.research_memory import ResearchMemory
+
+        memory = ResearchMemory()
+        anomalies = memory.get_recent_anomalies(limit=20)
+        summary = memory.get_summary()
+
+        return success_response({
+            "summary": summary,
+            "anomalies": [
+                {
+                    "anomaly_id": a.anomaly_id,
+                    "stance_id": a.stance_id,
+                    "topic": a.topic,
+                    "paper_title": a.paper_title,
+                    "paper_arxiv_id": a.paper_arxiv_id,
+                    "anomaly_type": a.anomaly_type,
+                    "severity": a.severity.value,
+                    "description": a.description,
+                    "created_at": datetime.fromtimestamp(a.created_at).isoformat(),
+                }
+                for a in anomalies
+            ],
+        })
+
+    except Exception as e:
+        logger.error(f"research_memory_anomalies error: {e}")
+        return error_response("MEMORY_ERROR", str(e))
+
+
 # ─── MCP Protocol Handlers ──────────────────────────────────────────
 
 
@@ -1149,6 +1339,24 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
             )
         elif name == "litreview_list":
             result = tool_litreview_list()
+        elif name == "research_memory_add_stance":
+            result = tool_research_memory_add_stance(
+                topic=arguments.get("topic"),
+                claim=arguments.get("claim"),
+                stance=arguments.get("stance"),
+                evidence_refs=arguments.get("evidence_refs"),
+                reasoning=arguments.get("reasoning", ""),
+                confidence=arguments.get("confidence", 0.5),
+            )
+        elif name == "research_memory_list_stances":
+            result = tool_research_memory_list_stances()
+        elif name == "research_memory_check_paper":
+            result = tool_research_memory_check_paper(
+                arxiv_id=arguments.get("arxiv_id"),
+                use_llm=arguments.get("use_llm", True),
+            )
+        elif name == "research_memory_anomalies":
+            result = tool_research_memory_anomalies()
         else:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
 
