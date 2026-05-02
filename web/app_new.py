@@ -418,6 +418,40 @@ async def gene_pool_credibility(request: Request):
     })
 
 
+@app.get("/gene-pool/at-risk")
+async def gene_pool_at_risk(request: Request):
+    """Show at-risk capsules (low_score_streak >= 2) with keep/pin actions."""
+    from llm.at_risk_scanner import get_at_risk_capsules, render_html
+    capsules = get_at_risk_capsules()
+    html = render_html(capsules)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "gene-pool-at-risk",
+        "title": "At-Risk Capsules",
+        "content": html,
+    })
+
+
+@app.post("/gene-pool/at-risk/keep-active")
+async def at_risk_keep_active(request: Request):
+    """Reset low_score_streak for a capsule (keep active)."""
+    from llm.at_risk_scanner import keep_active
+    body = await request.json()
+    capsule_id = body.get("capsule_id", "")
+    success = keep_active(capsule_id)
+    return {"success": success}
+
+
+@app.post("/gene-pool/at-risk/pin")
+async def at_risk_pin(request: Request):
+    """Pin a capsule to TTL cycles."""
+    from llm.at_risk_scanner import pin_to_ttl
+    body = await request.json()
+    capsule_id = body.get("capsule_id", "")
+    ttl = int(body.get("ttl", 3))
+    success = pin_to_ttl(capsule_id, ttl)
+    return {"success": success}
+
+
 @app.get("/citation-chain")
 async def citation_chain(request: Request, arxiv_id: str = ""):
     """Citation Chain — build and visualize."""

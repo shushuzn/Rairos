@@ -6,4 +6,31 @@
 <h1 class="page-title">{{ title }}</h1>
 <div class="page-title-underline"></div>
 <div class="page-desc">{{ content|safe }}</div>
+
+{% if page == "gene-pool-at-risk" %}
+<script>
+function keepActive(capsuleId) {
+  fetch('/gene-pool/at-risk/keep-active', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({capsule_id: capsuleId}),
+  }).then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) { location.reload(); }
+      else { alert('Failed to keep active.'); }
+    });
+}
+function pinToTTL(capsuleId) {
+  fetch('/gene-pool/at-risk/pin', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({capsule_id: capsuleId, ttl: 3}),
+  }).then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) { location.reload(); }
+      else { alert('Failed to pin.'); }
+    });
+}
+</script>
+{% endif %}
 {% endblock %}
