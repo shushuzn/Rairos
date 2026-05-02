@@ -233,6 +233,38 @@ def get_tools() -> List[Dict]:
                     "topic": {"type": "string", "description": "Specific topic to analyze (optional, analyzes all subscriptions if omitted)"}
                 }
             }
+        },
+        {
+            "name": "hypothesis_generate",
+            "description": "Generate testable research hypotheses from a gap + topic",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "topic": {"type": "string", "description": "Research topic"},
+                    "gap_context": {"type": "string", "description": "Gap description from gap detection"},
+                    "gap_type": {"type": "string", "description": "Gap type: method_limitation, unexplored_application, contradiction, evaluation_gap, scalability_issue"},
+                    "creative": {"type": "boolean", "default": false, "description": "Include creative cross-domain hypotheses"}
+                },
+                "required": ["topic"]
+            }
+        },
+        {
+            "name": "hypothesis_list",
+            "description": "List all tracked hypotheses with their verdict status"
+        },
+        {
+            "name": "experiment_record",
+            "description": "Record an experiment result for a hypothesis",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "hypothesis_id": {"type": "string", "description": "Hypothesis ID to link the experiment to"},
+                    "name": {"type": "string", "description": "Experiment name"},
+                    "result": {"type": "string", "description": "Experiment result: validated, rejected, failed"},
+                    "metrics": {"type": "object", "description": "Key metrics as key-value pairs, e.g. {\"accuracy\": 0.92}"}
+                },
+                "required": ["hypothesis_id", "name", "result"]
+            }
         }
     ]
 
@@ -764,6 +796,162 @@ def tool_research_agent_trigger(topic: Optional[str] = None) -> Dict:
         return error_response("AGENT_ERROR", str(e))
 
 
+def tool_hypothesis_generate(
+    topic: str,
+    gap_context: str = "",
+    gap_type: str = "",
+    creative: bool = False,
+) -> Dict:
+    """Generate testable research hypotheses from gap + topic."""
+    try:
+        from llm.hypothesis_generator import HypothesisGenerator
+
+        gen = HypothesisGenerator()
+        result = gen.generate(
+            topic=topic,
+            gap_context=gap_context,
+            use_llm=True,
+            creative=creative,
+        )
+
+        return success_response({
+            "topic": topic,
+            "summary": result.summary,
+            "hypotheses": [
+                {
+                    "id": h.id,
+                    "title": h.title,
+                    "type": h.hypothesis_type.value,
+                    "core_statement": h.core_statement,
+                    "based_on": h.based_on,
+                    "novelty_score": h.novelty_score,
+                    "feasibility_score": h.feasibility_score,
+                    "experiment_design": {
+                        "baseline": h.experiment_design.baseline,
+                        "variables": h.experiment_design.variables,
+                        "controls": h.experiment_design.controls,
+                        "evaluation_metrics": h.experiment_design.evaluation_metrics,
+                        "expected_results": h.experiment_design.expected_results,
+                    },
+                    "risk": {
+                        "technical": h.risk_assessment.technical_risk.value if h.risk_assessment else "unknown",
+                        "hypothesis": h.risk_assessment.hypothesis_risk.value if h.risk_assessment else "unknown",
+                    } if h.risk_assessment else None,
+                }
+                for h in result.hypotheses
+            ]
+        })
+
+    except Exception as e:
+        logger.error(f"hypothesis_generate error: {e}")
+        return error_response("HYPOTHESIS_ERROR", str(e))
+
+
+def tool_hypothesis_list() -> Dict:
+    """List all tracked hypotheses with verdict status."""
+    try:
+        from llm.insight.evolution import EvolutionTracker
+        from llm.experiment_tracker import ExperimentTracker
+
+        ev = EvolutionTracker()
+        tracker = ExperimentTracker()
+
+        events = ev.get_recent_events(limit=10000)
+        hypothesis_ids = set()
+        for e in events:
+            if e.hypothesis_id:
+                hypothesis_ids.add(e.hypothesis_id)
+
+        experiments = tracker.list_experiments()
+        exp_by_hid: Dict[str, List] = {}
+        for e in experiments:
+            if e.hypothesis_id:
+                exp_by_hid.setdefault(e.hypothesis_id, []).append(e)
+
+        rows = []
+        for hid in sorted(hypothesis_ids):
+            evts = ev.get_hypothesis_events(hid)
+            verdict, detail = _compute_verdict(evts)
+            linked = exp_by_hid.get(hid, [])
+            rows.append({
+                "hypothesis_id": hid,
+                "verdict": verdict,
+                "detail": detail,
+                "linked_experiments": len(linked),
+                "experiments": [
+                    {"id": e.id, "name": e.name, "status": e.status}
+                    for e in linked
+                ]
+            })
+
+        return success_response({
+            "total": len(rows),
+            "hypotheses": rows
+        })
+
+    except Exception as e:
+        logger.error(f"hypothesis_list error: {e}")
+        return error_response("HYPOTHESIS_ERROR", str(e))
+
+
+def _compute_verdict(events):
+    """Compute verdict from hypothesis events."""
+    if not events:
+        return "INCONCLUSIVE", "no experiments recorded"
+    action_vals = {e.action.value if hasattr(e.action, 'value') else str(e.action) for e in events}
+    has_completed = "validated" in action_vals
+    has_failed = "rejected" in action_vals
+    if has_completed and has_failed:
+        return "MIXED", "both validated and rejected experiments exist"
+    if has_completed:
+        return "VALIDATED", "all experiments succeeded"
+    if has_failed:
+        return "REJECTED", "all experiments failed"
+    return "INCONCLUSIVE", "no completed experiments yet"
+
+
+def tool_experiment_record(
+    hypothesis_id: str,
+    name: str,
+    result: str,
+    metrics: Optional[Dict] = None,
+) -> Dict:
+    """Record an experiment result for a hypothesis."""
+    try:
+        from llm.experiment_tracker import ExperimentTracker, ExperimentStatus
+
+        tracker = ExperimentTracker()
+        status_map = {
+            "validated": ExperimentStatus.COMPLETED,
+            "rejected": ExperimentStatus.FAILED,
+            "failed": ExperimentStatus.FAILED,
+            "running": ExperimentStatus.RUNNING,
+            "completed": ExperimentStatus.COMPLETED,
+        }
+        status = status_map.get(result.lower(), ExperimentStatus.COMPLETED)
+
+        exp_id = str(uuid.uuid4())[:8]
+        experiment = Experiment(
+            id=exp_id,
+            name=name,
+            hypothesis_id=hypothesis_id,
+            status=status.value,
+            results={"verdict": result, "metrics": metrics or {}},
+        )
+        tracker.save_experiment(experiment)
+
+        return success_response({
+            "experiment_id": exp_id,
+            "hypothesis_id": hypothesis_id,
+            "status": status.value,
+            "message": f"Experiment recorded: {name} → {result}"
+        })
+
+    except Exception as e:
+        logger.error(f"experiment_record error: {e}")
+        return error_response("EXPERIMENT_ERROR", str(e))
+
+
 # ─── MCP Protocol Handlers ──────────────────────────────────────────
 
 
@@ -859,6 +1047,22 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
         elif name == "research_agent_trigger":
             result = tool_research_agent_trigger(
                 topic=arguments.get("topic")
+            )
+        elif name == "hypothesis_generate":
+            result = tool_hypothesis_generate(
+                topic=arguments.get("topic"),
+                gap_context=arguments.get("gap_context", ""),
+                gap_type=arguments.get("gap_type", ""),
+                creative=arguments.get("creative", False)
+            )
+        elif name == "hypothesis_list":
+            result = tool_hypothesis_list()
+        elif name == "experiment_record":
+            result = tool_experiment_record(
+                hypothesis_id=arguments.get("hypothesis_id"),
+                name=arguments.get("name"),
+                result=arguments.get("result"),
+                metrics=arguments.get("metrics")
             )
         else:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")

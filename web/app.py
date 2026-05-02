@@ -61,6 +61,7 @@ page = st.sidebar.radio("Go to", [
     "🔄 InsightEvolution",
     "🔍 MCP Research",
     "🚀 Autopilot Watch",
+    "🎯 Hypothesis Lab",
 ])
 
 # ─── Dashboard ─────────────────────────────────────────────────────
@@ -1662,6 +1663,220 @@ or here in the dashboard.
 
 **MCP Tools:** `research_agent_start`, `research_agent_stop`, `research_agent_status`, `research_agent_trigger`
         """)
+
+
+# ─── Hypothesis Lab Page ───────────────────────────────────────────────────────
+
+elif page == "🎯 Hypothesis Lab":
+    st.header("🎯 Hypothesis Lab — Gap → Hypothesis → Experiment")
+
+    with st.expander("ℹ️ The full pipeline", expanded=False):
+        st.markdown("""
+**Hypothesis Lab** closes the loop from research gap to experiment:
+
+```
+Research Gap (from Gap Detection or Autopilot)
+    → Generate hypothesis + experiment design (HypothesisGenerator)
+        → Record experiment results
+            → Compute verdict (validated / rejected / mixed)
+                → Encode back to Gene Pool (preference learning)
+```
+
+**Verdict logic:**
+- VALIDATED: all linked experiments succeeded
+- REJECTED: all linked experiments failed
+- MIXED: both successes and failures exist
+- INCONCLUSIVE: no experiments yet
+        """)
+
+    tab_gen, tab_experiments, tab_board = st.tabs(["🧪 Generate", "📋 Experiments", "📊 Leaderboard"])
+
+    # ── Generate Tab ─────────────────────────────────────────────────────────
+    with tab_gen:
+        st.subheader("Generate Hypotheses from Gap")
+        col_topic, col_gtype = st.columns([3, 1])
+        with col_topic:
+            hyp_topic = st.text_input("Research Topic", value="RLHF", key="hyp_topic")
+        with col_gtype:
+            hyp_gtype = st.selectbox(
+                "Gap Type",
+                ["method_limitation", "unexplored_application", "contradiction",
+                 "evaluation_gap", "scalability_issue"],
+                key="hyp_gtype",
+            )
+        hyp_context = st.text_area(
+            "Gap Context (optional)",
+            placeholder="Describe the specific gap, e.g. '现有RLHF方法在分布式场景下扩展性差'",
+            key="hyp_context",
+        )
+        creative_mode = st.checkbox("🌀 Creative cross-domain hypotheses", key="hyp_creative")
+
+        if st.button("🧪 Generate Hypotheses", type="primary", key="hyp_generate_btn"):
+            if not hyp_topic.strip():
+                st.warning("Enter a research topic.")
+            else:
+                with st.spinner("Generating hypotheses..."):
+                    try:
+                        from llm.hypothesis_generator import HypothesisGenerator
+                        gen = HypothesisGenerator()
+                        result = gen.generate(
+                            topic=hyp_topic.strip(),
+                            gap_context=hyp_context.strip(),
+                            use_llm=True,
+                            creative=creative_mode,
+                        )
+                        st.session_state["hyp_results"] = result
+                        st.session_state["hyp_generated"] = True
+                        st.success(f"Generated {len(result.hypotheses)} hypotheses")
+                    except Exception as e:
+                        st.error(f"Generation failed: {e}")
+
+        # Display generated hypotheses
+        if st.session_state.get("hyp_generated"):
+            result = st.session_state.get("hyp_results")
+            if result and result.hypotheses:
+                for i, h in enumerate(result.hypotheses):
+                    hyp_id = h.id or f"h{i}"
+                    sev_icon = "🟢" if h.feasibility_score > 0.6 else "🟡" if h.feasibility_score > 0.4 else "🔴"
+                    novelty_bar = "🟢" if h.novelty_score > 0.6 else "🟡" if h.novelty_score > 0.4 else "🔴"
+
+                    with st.expander(
+                        f"{sev_icon} [{hyp_id[:8]}] {h.hypothesis_type.value.upper()}: {h.title[:50]}"
+                    ):
+                        col_left, col_right = st.columns([2, 1])
+                        with col_left:
+                            st.write(f"**Core Statement:** {h.core_statement}")
+                            st.write(f"**Based on:** {h.based_on}")
+                            if h.risk_assessment:
+                                st.write(f"**Technical Risk:** {h.risk_assessment.technical_risk.value}")
+                                st.write(f"**Hypothesis Risk:** {h.risk_assessment.hypothesis_risk.value}")
+                        with col_right:
+                            st.write(f"**Novelty:** {novelty_bar} {h.novelty_score:.2f}")
+                            st.write(f"**Feasibility:** {sev_icon} {h.feasibility_score:.2f}")
+
+                        st.divider()
+                        st.write("**Experiment Design:**")
+                        ed = h.experiment_design
+                        st.write(f"  Baseline: {ed.baseline}")
+                        st.write(f"  Variables: {', '.join(ed.variables[:3])}")
+                        st.write(f"  Controls: {', '.join(ed.controls[:2])}")
+                        st.write(f"  Metrics: {', '.join(ed.evaluation_metrics[:2])}")
+
+                        # Record experiment buttons
+                        col_acc, col_rej = st.columns(2)
+                        with col_acc:
+                            exp_name = st.text_input(
+                                "Experiment name",
+                                value=f"exp-{hyp_id[:6]}",
+                                key=f"expname_{hyp_id}",
+                            )
+                            if st.button(f"✅ Record Validated", key=f"val_{hyp_id}"):
+                                try:
+                                    from llm.experiment_tracker import ExperimentTracker
+                                    tracker = ExperimentTracker()
+                                    exp = tracker.run(
+                                        name=exp_name or f"exp-{hyp_id[:6]}",
+                                        hypothesis_id=hyp_id,
+                                    )
+                                    tracker.complete(exp.id, results={"verdict": "validated"})
+                                    st.success("✅ Experiment recorded as VALIDATED")
+                                except Exception as e:
+                                    st.error(f"Failed: {e}")
+                        with col_rej:
+                            if st.button(f"❌ Record Rejected", key=f"rej_{hyp_id}"):
+                                try:
+                                    from llm.experiment_tracker import ExperimentTracker
+                                    tracker = ExperimentTracker()
+                                    exp = tracker.run(
+                                        name=exp_name or f"exp-{hyp_id[:6]}",
+                                        hypothesis_id=hyp_id,
+                                    )
+                                    tracker.complete(exp.id, results={"verdict": "rejected"})
+                                    st.warning("❌ Experiment recorded as REJECTED")
+                                except Exception as e:
+                                    st.error(f"Failed: {e}")
+
+    # ── Experiments Tab ──────────────────────────────────────────────────────
+    with tab_experiments:
+        st.subheader("Experiment Records")
+        try:
+            from llm.experiment_tracker import ExperimentTracker
+            tracker = ExperimentTracker()
+            experiments = tracker.list_experiments()
+
+            if experiments:
+                st.write(f"**{len(experiments)}** experiment(s) total")
+                for e in sorted(experiments, key=lambda x: x.created_at, reverse=True)[:30]:
+                    icon = {"running": "⚡", "completed": "✅", "failed": "❌"}.get(e.status, "•")
+                    with st.expander(f"{icon} [{e.id[:8]}] {e.name} (hypothesis: {e.hypothesis_id[:8]})"):
+                        st.write(f"**Status:** {e.status}")
+                        st.write(f"**Created:** {e.created_at}")
+                        if e.results:
+                            st.json(e.results)
+            else:
+                st.info("No experiments recorded yet. Generate hypotheses and record results above.")
+        except Exception as e:
+            st.error(f"Failed to load experiments: {e}")
+
+    # ── Leaderboard Tab ──────────────────────────────────────────────────────
+    with tab_board:
+        st.subheader("Hypothesis Leaderboard")
+        try:
+            from llm.insight.evolution import EvolutionTracker
+            from llm.experiment_tracker import ExperimentTracker
+
+            ev = EvolutionTracker()
+            tracker = ExperimentTracker()
+
+            events = ev.get_recent_events(limit=10000)
+            hypothesis_ids = set()
+            for e in events:
+                if e.hypothesis_id:
+                    hypothesis_ids.add(e.hypothesis_id)
+
+            experiments = tracker.list_experiments()
+            exp_by_hid = {}
+            for e in experiments:
+                if e.hypothesis_id:
+                    exp_by_hid.setdefault(e.hypothesis_id, []).append(e)
+
+            verdict_order = {"VALIDATED": 0, "MIXED": 1, "REJECTED": 2, "INCONCLUSIVE": 3}
+            rows = []
+            for hid in sorted(hypothesis_ids):
+                evts = ev.get_hypothesis_events(hid)
+                verdict, detail = _compute_verdict_from_events(evts)
+                linked = exp_by_hid.get(hid, [])
+                rows.append((verdict_order.get(verdict, 99), verdict, detail, hid, len(linked)))
+
+            rows.sort()
+            verdict_icons = {"VALIDATED": "✅", "REJECTED": "❌", "MIXED": "⚠️", "INCONCLUSIVE": "○"}
+            verdict_colors = {"VALIDATED": "green", "REJECTED": "red", "MIXED": "yellow", "INCONCLUSIVE": "gray"}
+
+            for _, verdict, detail, hid, n_exp in rows[:30]:
+                icon = verdict_icons.get(verdict, "?")
+                with st.expander(f"{icon} [{hid[:8]}] {verdict} — {n_exp} experiment(s)"):
+                    st.write(f"**Verdict:** {verdict}")
+                    st.write(f"**Reason:** {detail}")
+                    st.write(f"**Linked experiments:** {n_exp}")
+        except Exception as e:
+            st.error(f"Failed to load leaderboard: {e}")
+
+
+def _compute_verdict_from_events(events):
+    """Compute verdict from hypothesis events."""
+    if not events:
+        return "INCONCLUSIVE", "no experiments recorded"
+    action_vals = {e.action.value if hasattr(e.action, 'value') else str(e.action) for e in events}
+    has_completed = "validated" in action_vals or "completed" in action_vals
+    has_failed = "rejected" in action_vals or "failed" in action_vals
+    if has_completed and has_failed:
+        return "MIXED", "both validated and rejected experiments exist"
+    if has_completed:
+        return "VALIDATED", "all experiments succeeded"
+    if has_failed:
+        return "REJECTED", "all experiments failed"
+    return "INCONCLUSIVE", "no completed experiments yet"
+
 
 
 
