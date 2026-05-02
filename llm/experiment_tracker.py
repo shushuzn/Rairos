@@ -90,6 +90,8 @@ class ExperimentTracker(JsonFileStore):
         return sorted(exps, key=lambda x: -datetime.fromisoformat(x.created_at).timestamp())
 
     def complete(self, eid, results=None):
+        if not eid:
+            raise ValueError("eid cannot be None or empty")
         exps = self._load()
         for e in exps:
             if e.id == eid:
@@ -110,12 +112,15 @@ class ExperimentTracker(JsonFileStore):
                             hypothesis_id=e.hypothesis_id,
                             gap_type=e.config.get("hypothesis_type", ""),
                         )
-                    except Exception:
-                        logging.debug("EvolutionTracker integration skipped: %s", e)
+                    except Exception as exc:
+                        logging.warning("EvolutionTracker integration skipped for hypothesis %s: %s", e.hypothesis_id, exc)
 
                 return e
+        raise KeyError(f"Experiment not found: {eid}")
 
     def fail(self, eid, error=""):
+        if not eid:
+            raise ValueError("eid cannot be None or empty")
         exps = self._load()
         for e in exps:
             if e.id == eid:
@@ -136,18 +141,22 @@ class ExperimentTracker(JsonFileStore):
                             hypothesis_id=e.hypothesis_id,
                             gap_type=e.config.get("hypothesis_type", ""),
                         )
-                    except Exception as e:
-                        logging.debug("EvolutionTracker integration skipped: %s", e)
+                    except Exception as exc:
+                        logging.warning("EvolutionTracker integration skipped for hypothesis %s: %s", e.hypothesis_id, exc)
 
                 return e
+        raise KeyError(f"Experiment not found: {eid}")
 
     def add_metric(self, eid, name, value, unit=""):
+        if not eid:
+            raise ValueError("eid cannot be None or empty")
         exps = self._load()
         for e in exps:
             if e.id == eid:
                 e.metrics.append(Metric(name=name, value=value, unit=unit))
                 self._save(exps)
                 return e
+        raise KeyError(f"Experiment not found: {eid}")
 
     def compare(self, exp_ids, metric_names=None):
         exps = [self.get(eid) for eid in exp_ids]

@@ -71,17 +71,17 @@ def _run_experiment(args):
     elif args.action == "complete":
         import json
         results = json.loads(args.metrics) if args.metrics else None
-        e = tracker.complete(args.id, results)
-        if e:
+        try:
+            e = tracker.complete(args.id, results)
             print(f"✓ Completed [{e.id}]: {e.name}")
-        else:
+        except KeyError:
             print_error(f"Experiment [{args.id}] not found")
 
     elif args.action == "metric":
-        e = tracker.add_metric(args.id, args.name, args.value, args.unit or "")
-        if e:
+        try:
+            e = tracker.add_metric(args.id, args.name, args.value, args.unit or "")
             print(f"✓ Added metric {args.name}={args.value}{args.unit or ''} to [{e.id}]")
-        else:
+        except KeyError:
             print_error(f"Experiment [{args.id}] not found")
 
     elif args.action == "compare":
