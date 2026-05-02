@@ -9,7 +9,7 @@
   "languages": ["python"],
   "capabilities": ["mcp"],
   "mcp": {
-    "server": "server.py",
+    "server": "ai_research_os_mcp.py",
     "tools": [
       "paper_ingest",
       "paper_search",
