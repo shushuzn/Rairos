@@ -24,6 +24,21 @@ WEB_DIR = Path(__file__).parent
 app.mount("/static", StaticFiles(directory=str(WEB_DIR / "static")), name="static")
 templates = Jinja2Templates(directory=str(WEB_DIR / "templates"))
 
+# Jinja filters
+def _jinja_truncate(value, length=80):
+    s = str(value)
+    return s[:length] + "…" if len(s) > length else s
+
+def _jinja_timestamp(value):
+    from datetime import datetime
+    try:
+        return datetime.fromtimestamp(float(value)).strftime("%H:%M:%S")
+    except Exception:
+        return str(value)[:8]
+
+templates.env.filters["truncate"] = _jinja_truncate
+templates.env.filters["timestamp"] = _jinja_timestamp
+
 
 # ════════════════════════════════════════════
 # Database helper
@@ -514,6 +529,85 @@ async def research_loop_run_cycle(request: Request):
             logging.getLogger(__name__).error(f"Run cycle failed: {e}")
     threading.Thread(target=run, daemon=True).start()
     return RedirectResponse(url="/research-loop", status_code=303)
+
+
+# ── Squad Coordinator ────────────────────────────────────────────────────────────
+
+@app.get("/research-loop/squad")
+async def squad_dashboard(request: Request):
+    """Squad dashboard — multi-agent activity stream."""
+    try:
+        from research_loop.agents.squad import SquadCoordinator
+        coord = SquadCoordinator()
+        squad_status = coord.get_status()
+        activity = coord.get_activity(limit=50)
+        alerts = coord.get_alerts(limit=20)
+    except Exception as e:
+        squad_status = {"running": False, "agents": {}, "error": str(e), "interval_minutes": 30, "last_cycle": ""}
+        activity = []
+        alerts = []
+
+    return templates.TemplateResponse(request, "squad_dashboard.html", {
+        "page": "squad-dashboard",
+        "squad_status": squad_status,
+        "activity": activity,
+        "alerts": alerts,
+    })
+
+
+@app.post("/research-loop/squad/start")
+async def squad_start(request: Request):
+    """Start the multi-agent squad."""
+    try:
+        from research_loop.agents.squad import SquadCoordinator
+        coord = SquadCoordinator()
+        coord.start_watch(interval_minutes=30)
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Could not start squad: {e}")
+    return RedirectResponse(url="/research-loop/squad", status_code=303)
+
+
+@app.post("/research-loop/squad/stop")
+async def squad_stop(request: Request):
+    """Stop the multi-agent squad."""
+    try:
+        from research_loop.agents.squad import SquadCoordinator
+        coord = SquadCoordinator()
+        coord.stop_watch()
+    except Exception:
+        pass
+    return RedirectResponse(url="/research-loop/squad", status_code=303)
+
+
+@app.post("/research-loop/squad/run-cycle")
+async def squad_run_cycle(request: Request):
+    """Manually trigger one squad cycle."""
+    import threading
+    def run():
+        try:
+            from research_loop.agents.squad import SquadCoordinator
+            coord = SquadCoordinator()
+            coord.run_cycle()
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error(f"Squad cycle failed: {e}")
+    threading.Thread(target=run, daemon=True).start()
+    return RedirectResponse(url="/research-loop/squad", status_code=303)
+
+
+@app.get("/research-loop/squad/activity")
+async def squad_activity():
+    """JSON endpoint for squad activity stream."""
+    try:
+        from research_loop.agents.squad import SquadCoordinator
+        coord = SquadCoordinator()
+        return {
+            "activity": coord.get_activity(limit=50),
+            "status": coord.get_status(),
+        }
+    except Exception as e:
+        return {"activity": [], "error": str(e)}
 
 
 @app.get("/impact")
