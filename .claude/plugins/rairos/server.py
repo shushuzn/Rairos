@@ -180,6 +180,19 @@ def get_tools() -> List[Dict]:
                 },
                 "required": ["paper_id"]
             }
+        },
+        {
+            "name": "citation_graph",
+            "description": "Get citation graph data for a paper (forward + backward citations)",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "paper_id": {"type": "string", "description": "Paper ID (arXiv ID)"},
+                    "depth": {"type": "integer", "default": 2, "description": "Depth: 1=direct, 2=2-hop"},
+                    "max_nodes": {"type": "integer", "default": 100, "description": "Max nodes per direction"}
+                },
+                "required": ["paper_id"]
+            }
         }
     ]
 
@@ -557,6 +570,52 @@ def tool_paper_analyze(paper_id: str) -> Dict:
         return error_response("ANALYZE_ERROR", str(e))
 
 
+def tool_citation_graph(paper_id: str, depth: int = 2, max_nodes: int = 30) -> Dict:
+    """Get citation graph for a paper using Semantic Scholar API."""
+    try:
+        from parsers.semantic_scholar import get_paper_by_id, get_citations
+
+        root = get_paper_by_id(paper_id)
+        if not root:
+            return error_response("NOT_FOUND", f"Paper not found: {paper_id}")
+
+        nodes = []
+        links = []
+        node_ids = set()
+
+        def add_node(pid: str, label: str, is_root: bool = False):
+            nid = f"s2:{pid}"
+            if nid in node_ids:
+                return
+            node_ids.add(nid)
+            nodes.append({
+                "id": nid,
+                "entity_id": pid,
+                "label": label[:60] if label else pid,
+                "type": "Paper",
+                "is_root": is_root,
+            })
+
+        add_node(root.paper_id, root.title, is_root=True)
+
+        citing = get_citations(root.paper_id, limit=max_nodes)
+        for p in citing[:max_nodes]:
+            add_node(p.paper_id, p.title)
+            links.append({"source": f"s2:{p.paper_id}", "target": f"s2:{root.paper_id}", "relation": "cited_by"})
+
+        return success_response({
+            "paper_id": paper_id,
+            "root": f"s2:{root.paper_id}",
+            "nodes": nodes,
+            "links": links,
+            "count": len(nodes)
+        })
+
+    except Exception as e:
+        logger.error(f"citation_graph error: {e}")
+        return error_response("GRAPH_ERROR", str(e))
+
+
 # ─── MCP Protocol Handlers ──────────────────────────────────────────
 
 
@@ -629,6 +688,12 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
         elif name == "paper_analyze":
             result = tool_paper_analyze(
                 paper_id=arguments.get("paper_id")
+            )
+        elif name == "citation_graph":
+            result = tool_citation_graph(
+                paper_id=arguments.get("paper_id"),
+                depth=arguments.get("depth", 2),
+                max_nodes=arguments.get("max_nodes", 100)
             )
         else:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
