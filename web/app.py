@@ -60,6 +60,7 @@ page = st.sidebar.radio("Go to", [
     "🎯 Gap Detection",
     "🔄 InsightEvolution",
     "🔍 MCP Research",
+    "🚀 Autopilot Watch",
 ])
 
 # ─── Dashboard ─────────────────────────────────────────────────────
@@ -1556,6 +1557,111 @@ All of this mirrors what `paper_search(source=web)`, `paper_ingest`, and `citati
                         st.markdown("✅ **Matches your preferences**")
         else:
             st.info("Enter a topic and click **Detect Gaps** to find research gaps.")
+
+
+# ─── Autopilot Watch Page ─────────────────────────────────────────────────────
+
+elif page == "🚀 Autopilot Watch":
+    st.header("🚀 Autopilot Watch — Autonomous Research Agent")
+
+    with st.expander("ℹ️ How does it work?", expanded=False):
+        st.markdown("""
+**Autopilot Watch** runs the closed loop:
+
+```
+arXiv subscription watch
+    → new papers detected
+        → DeepResearchAgent (gap analysis loop)
+            → GapAnalyzerV2 (gap detection)
+                → Gene Pool scoring (preference-aware ranking)
+                    → Discord/Feishu webhook notification
+                    → Gene Pool encoding
+```
+
+You control it via Claude Code (`research_agent_start/stop/status/trigger`)
+or here in the dashboard.
+        """)
+
+    # Init orchestrator
+    from research_loop.orchestrator import AutonomousOrchestrator, _load_state
+    orch = AutonomousOrchestrator(webhook_enabled=True)
+
+    # Status display
+    status = orch.get_status()
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Running", "✅ Yes" if status["running"] else "❌ No")
+    col2.metric("Interval", f"{status['interval_minutes']} min")
+    col3.metric("Last Check", status["last_check"] or "never")
+    col4.metric("Alerts Stored", status["alerts_count"])
+
+    st.divider()
+
+    # Control buttons
+    col_start, col_trigger, col_stop = st.columns(3)
+    with col_start:
+        interval = st.selectbox("Check Interval", [15, 30, 60, 120], index=1, key="autopilot_interval")
+        if st.button("🚀 Start Watch", type="primary"):
+            orch.start_watch(interval_minutes=interval)
+            st.success("Watch started! It will run in the background.")
+            st.rerun()
+
+    with col_trigger:
+        st.write("")
+        st.write("")
+        if st.button("⚡ Trigger One Cycle Now"):
+            with st.spinner("Running research cycle..."):
+                try:
+                    alerts = orch.run_cycle()
+                    st.success(f"Cycle complete: {len(alerts)} alerts generated")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Cycle failed: {e}")
+
+    with col_stop:
+        st.write("")
+        st.write("")
+        if st.button("⏹ Stop Watch"):
+            orch.stop_watch()
+            st.warning("Watch stopped.")
+            st.rerun()
+
+    st.divider()
+
+    # Recent alerts
+    st.subheader("📡 Recent Research Alerts")
+    alerts = orch.get_recent_alerts(limit=20)
+
+    if alerts:
+        for alert in alerts:
+            sev_color = "🔴" if alert.severity == "HIGH" else "🟡" if alert.severity == "MEDIUM" else "🟢"
+            with st.expander(f"{sev_color} [{alert.alert_id}] {alert.top_gap_type}: {alert.top_gap_title[:50]}"):
+                col_a, col_b = st.columns([2, 1])
+                with col_a:
+                    st.write(f"**Topic:** {alert.topic}")
+                    st.write(f"**Trigger:** [{alert.trigger_title[:60]}](https://arxiv.org/abs/{alert.triggered_by})")
+                    st.write(f"**Gap:** {alert.top_gap_title[:100]}")
+                    st.write(f"**Gene Pool Score:** {alert.gene_pool_score:.3f}")
+                with col_b:
+                    st.write(f"**Severity:** {alert.severity}")
+                    st.write(f"**Time:** {time.strftime('%Y-%m-%d %H:%M', time.localtime(alert.created_at))}")
+                    if alert.preference_boost:
+                        st.markdown("✅ **Preference Match**")
+    else:
+        st.info("No alerts yet. Start the watch or trigger a cycle to discover research gaps.")
+
+    st.divider()
+
+    # Architecture summary
+    with st.expander("🏗️ Architecture", expanded=False):
+        st.markdown("""
+**Components:**
+- `research_loop/orchestrator.py`: `AutonomousOrchestrator` — main loop
+- `llm/subscription_monitor.py`: `SubscriptionMonitor` — arXiv watch
+- `llm/gap_analyzer.py`: `GapAnalyzerV2` — gap detection
+- `llm/insight/tracker.py`: `EvolutionTracker` — Gene Pool
+
+**MCP Tools:** `research_agent_start`, `research_agent_stop`, `research_agent_status`, `research_agent_trigger`
+        """)
 
 
 
