@@ -470,6 +470,30 @@ def get_tools() -> List[Dict]:
                     "year_min": {"type": "integer", "default": 2020, "description": "Minimum year"}
                 }
             }
+        },
+        {
+            "name": "replication_check",
+            "description": "Check paper reproducibility — extract code links, dependency info, difficulty rating",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "arxiv_id": {"type": "string", "description": "arXiv ID of the paper"},
+                    "include_abstract": {"type": "boolean", "default": true, "description": "Include abstract in analysis"}
+                },
+                "required": ["arxiv_id"]
+            }
+        },
+        {
+            "name": "replication_compare",
+            "description": "Compare reproducibility of two papers side by side",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "arxiv_id_1": {"type": "string", "description": "First arXiv ID"},
+                    "arxiv_id_2": {"type": "string", "description": "Second arXiv ID"}
+                },
+                "required": ["arxiv_id_1", "arxiv_id_2"]
+            }
         }
     ]
 
@@ -1591,6 +1615,77 @@ def tool_briefing_generate(arxiv_id: str, use_llm: bool = True) -> Dict:
         return error_response("BRIEFING_ERROR", str(e))
 
 
+
+
+def tool_replication_check(arxiv_id: str, include_abstract: bool = True) -> Dict:
+    """Check paper reproducibility."""
+    try:
+        from llm.replication_checker import ReplicationChecker
+        from db.database import Database
+        from parsers.semantic_scholar import get_paper_by_id
+
+        paper = get_paper_by_id(arxiv_id)
+        if not paper:
+            return error_response("NOT_FOUND", f"Paper not found: {arxiv_id}")
+
+        title = paper.title or arxiv_id
+        abstract = paper.abstract or "" if include_abstract else ""
+
+        checker = ReplicationChecker()
+        report = checker.check_paper(
+            paper_id=arxiv_id,
+            title=title,
+            abstract=abstract,
+        )
+
+        return success_response({
+            **report.to_dict(),
+            "rendered": checker.render_report(report),
+        })
+    except Exception as e:
+        logger.error(f"replication_check error: {e}")
+        return error_response("REPLICATION_ERROR", str(e))
+
+
+def tool_replication_compare(arxiv_id_1: str, arxiv_id_2: str) -> Dict:
+    """Compare reproducibility of two papers."""
+    try:
+        from llm.replication_checker import ReplicationChecker
+        from parsers.semantic_scholar import get_paper_by_id
+
+        checker = ReplicationChecker()
+
+        paper1 = get_paper_by_id(arxiv_id_1)
+        paper2 = get_paper_by_id(arxiv_id_2)
+
+        report1 = checker.check_paper(
+            paper_id=arxiv_id_1,
+            title=paper1.title if paper1 else arxiv_id_1,
+            abstract=paper1.abstract if paper1 else "",
+        )
+        report2 = checker.check_paper(
+            paper_id=arxiv_id_2,
+            title=paper2.title if paper2 else arxiv_id_2,
+            abstract=paper2.abstract if paper2 else "",
+        )
+
+        easier = report1 if report1.difficulty_score < report2.difficulty_score else report2
+
+        return success_response({
+            "paper_1": report1.to_dict(),
+            "paper_2": report2.to_dict(),
+            "easier_to_reproduce": easier.paper_id,
+            "comparison": {
+                "difficulty_diff": round(abs(report1.difficulty_score - report2.difficulty_score), 1),
+                "report_1": checker.render_report(report1),
+                "report_2": checker.render_report(report2),
+            },
+        })
+    except Exception as e:
+        logger.error(f"replication_compare error: {e}")
+        return error_response("REPLICATION_ERROR", str(e))
+
+
 # ─── MCP Protocol Handlers ──────────────────────────────────────────
 
 
@@ -1795,6 +1890,16 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
             result = tool_impact_leaderboard(
                 limit=arguments.get("limit", 20),
                 year_min=arguments.get("year_min", 2020),
+            )
+        elif name == "replication_check":
+            result = tool_replication_check(
+                arxiv_id=arguments.get("arxiv_id"),
+                include_abstract=arguments.get("include_abstract", True),
+            )
+        elif name == "replication_compare":
+            result = tool_replication_compare(
+                arxiv_id_1=arguments.get("arxiv_id_1"),
+                arxiv_id_2=arguments.get("arxiv_id_2"),
             )
         else:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
