@@ -87,7 +87,7 @@ diversity alerts. All three feed into one quality system.
 
 #### Gene Pool Quality (P0 — Foundation)
 
-- [ ] **Source Trust Score** — per-arXiv-category trust rating based on capsule quality; filter paper imports by trust threshold
+- [x] **Source Trust Score** — per-arXiv-category trust rating based on capsule quality; filter paper imports by trust threshold
 - [ ] **Gap Credibility Filter** — flag capsules with keyword overlap >0.7 vs. existing pool; show "trendslop" warning badge
 - [ ] **Research Rigor Score** — rate papers by dataset sharing, code availability, methodology clarity; display as "rigor badge" on paper detail
 - [ ] **Auto-Archive At-Risk Panel** — show capsules with `low_score_streak ≥ 2`; one-click "keep active" or "pin to TTL"
