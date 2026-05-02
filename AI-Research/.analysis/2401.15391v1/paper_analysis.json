@@ -1,0 +1,50 @@
+{
+  "paper_id": "2401.15391v1",
+  "sections": {
+    "## 1. 背景": "> **Abstract（原文）**\n> Retrieval-augmented generation (RAG) augments large language models (LLM) by retrieving relevant knowledge, showing promising potential in mitigating LLM hallucinations and enhancing response quality, thereby facilitating the great adoption of LLMs in practice. However, we find that existing RAG systems are inadequate in answering multi-hop queries, which require retrieving and reasoning over multiple pieces of supporting evidence. Furthermore, to our knowledge, no existing RAG benchmarking dataset focuses on multi-hop queries. In this paper, we develop a novel dataset, MultiHop-RAG, which consists of a knowledge base, a large collection of multi-hop queries, their ground-truth answers, and the associated supporting evidence. We detail the procedure of building the dataset, utilizing an English news article dataset as the underlying RAG knowledge base. We demonstrate the benchmarking utility of MultiHop-RAG in two experiments. The first experiment compares different embedding models for retrieving evidence for multi-hop queries. In the second experiment, we examine the capabilities of various state-of-the-art LLMs, including GPT-4, PaLM, and Llama2-70B, in reasoning and answering multi-hop queries given the evidence. Both experiments reveal that existing RAG methods perform unsatisfactorily in retrieving and answering multi-hop queries. We hope MultiHop-RAG will be a valuable resource for the community in developing effective RAG systems, thereby facilitating greater adoption of LLMs in practice. The MultiHop-RAG and implemented RAG system is publicly available at https://github.com/yixuantt/MultiHop-RAG/.\n\n_（关键词匹配摘要，建议 AI 深入分析）_",
+    "## 2. 核心问题": "_基于摘要推断：_\n\n> _（需要 AI 分析）_",
+    "## 3.1 架构拆解": "_检测到的方法/架构关键词：bert, gpt, prompt, retrieval augmented, rerank, contrastive_\n\n\n\n> _（需要 AI 分析）_",
+    "## 3.2 算法逻辑": "\n\n> _（需要 AI 分析）_",
+    "## 3.3 关键组件": "\n\n> _（需要 AI 分析）_",
+    "## 4. 关键创新": "\n\n> _（需要 AI 分析）_",
+    "## 5.1 数据集": "\n\n> _（需要 AI 分析）_",
+    "## 5.2 基线对比": "_检测到的评估指标关键词：accuracy, precision, recall, map_\n\n\n\n> _（需要 AI 分析）_",
+    "## 5.3 消融实验": "\n\n> _（需要 AI 分析）_",
+    "## 5.4 成本分析": "\n\n> _（需要 AI 分析）_",
+    "## 6. 对抗式审稿": "\n\n> _（需要 AI 分析）_",
+    "## 7. 优势": "\n\n> _（需要 AI 分析）_",
+    "## 8. 局限": "\n\n> _（需要 AI 分析）_",
+    "## 9. 本质抽象": "\n\n> _（需要 AI 分析）_",
+    "## 10. 与其他方法对比": "\n\n> _（需要 AI 分析）_",
+    "## 11. Decision（决策）": "\n\n> _（需要 AI 分析）_",
+    "## 12. 知识蒸馏": "\n\n> _（需要 AI 分析）_",
+    "## 13. 认知升级": "\n\n> _（需要 AI 分析）_"
+  },
+  "rubric": {
+    "novelty": 0,
+    "leverage": 0,
+    "evidence": 0,
+    "cost": 0,
+    "moat": 0,
+    "adoption": 0
+  },
+  "extracted_methods": [
+    "bert",
+    "gpt",
+    "prompt",
+    "retrieval augmented",
+    "rerank",
+    "contrastive"
+  ],
+  "extracted_datasets": [],
+  "extracted_metrics": [
+    "accuracy",
+    "precision",
+    "recall",
+    "map"
+  ],
+  "raw_llm_output": "",
+  "llm_used": false,
+  "claims": [],
+  "unverified_claims": []
+}

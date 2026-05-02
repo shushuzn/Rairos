@@ -1,0 +1,67 @@
+# Preference-Aware Research Gap Detection — Gap Feedback Loop
+
+## Project Overview
+ai_research_os is an intelligent research assistant that automatically discovers research gaps and evolves knowledge through a closed-loop feedback system.
+
+## Core Components
+
+### Topic Agent
+Receives research queries and routes them to the analysis pipeline.
+
+### GapAnalyzerV2  
+Analyzes academic papers to identify underexplored connections and research opportunities.
+
+### EvolutionTracker
+Tracks the evolution of research ideas over time, measuring novelty and diversity.
+
+### CapsuleGene Pool
+A growing knowledge pool of extracted research directions and findings.
+
+## The Feedback Loop
+
+1. **Topic Input** → Research query enters the system
+2. **Paper Retrieval** → Papers retrieved and ranked by relevance
+3. **Gap Analysis** → Missing connections and opportunities identified
+4. **Gene Extraction** → New directions encoded as capsule genes
+5. **Knowledge Pool** → Genes stored and cross-referenced
+6. **Feedback** → Insights refine future analysis
+
+## Installation
+
+```bash
+pip install -r requirements.txt
+python ai_research_os.py --help
+```
+
+## Usage
+
+```bash
+# Analyze a research topic
+python ai_research_os.py gap analyze "transformer efficiency"
+
+# Find capsule genes
+python ai_research_os.py capsule find "neural architecture search"
+
+# Track research evolution
+python ai_research_os.py evolution track "diffusion models"
+```
+
+## Architecture
+
+```
+Topic Input → GapAnalyzerV2 → Gap Objects → EvolutionTracker → CapsuleGene Pool
+     ↑                                                                    |
+     └─────────────────────── Feedback Loop ←──────────────────────────────┘
+```
+
+## Research Gap Detection Method
+
+Our approach combines:
+- Semantic paper embedding (transformer-based)
+- Citation network analysis  
+- Novelty scoring via information gain
+- Preference-aware ranking using user archetypes
+
+## License
+
+MIT

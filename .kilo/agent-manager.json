@@ -1,0 +1,25 @@
+{
+  "worktrees": {
+    "wt-1777569286591-1": {
+      "branch": "coral-duke",
+      "path": "d:\\OpenClaw\\workspace\\80-PROJECTS\\ai_research_os\\.kilo\\worktrees\\coral-duke",
+      "parentBranch": "main",
+      "createdAt": "2026-04-30T17:14:46.591Z",
+      "remote": "origin"
+    }
+  },
+  "sessions": {
+    "ses_2209d34afffeGJsWN5sloV73JZ": {
+      "worktreeId": "wt-1777569286591-1",
+      "createdAt": "2026-04-30T17:14:46.998Z"
+    }
+  },
+  "tabOrder": {
+    "local": [
+      "pending:1"
+    ]
+  },
+  "worktreeOrder": [
+    "wt-1777569286591-1"
+  ]
+}

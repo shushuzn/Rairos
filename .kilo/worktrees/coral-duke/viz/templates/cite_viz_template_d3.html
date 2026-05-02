@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AI Research OS — Citation Network</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7/7/d3.min.js"></script>
+  <style>
+    body{margin:0;font-family:Arial,sans-serif;background:#1a1a2e;color:#eee;}
+    svg{width:100vw;height:100vh;display:block;}
+    .node circle{stroke:#fff;stroke-width:1.5px;cursor:pointer;}
+    .node text{font-size:11px;fill:#eee;pointer-events:none;}
+    .link{stroke-opacity:0.7;stroke-width:1.5px;}
+    #tooltip{position:fixed;background:#222;border:1px solid #555;padding:10px;
+             border-radius:6px;font-size:12px;display:none;max-width:360px;
+             z-index:9;box-shadow:0 4px 12px rgba(0,0,0,.5);pointer-events:none;}
+    #legend{position:fixed;top:12px;left:12px;background:#222;border:1px solid #444;
+            padding:10px 14px;border-radius:6px;font-size:12px;z-index:10;}
+    #legend .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+    #controls{position:fixed;top:12px;right:12px;display:flex;gap:6px;z-index:10;}
+    #controls button{background:#333;border:1px solid #555;color:#eee;padding:6px 12px;
+                    border-radius:4px;cursor:pointer;font-size:12px;}
+    #controls button:hover{background:#444;}
+    #title-bar{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);
+                background:#222;border:1px solid #444;padding:8px 16px;border-radius:6px;
+                font-size:12px;z-index:10;color:#aaa;}
+  </style>
+</head>
+<body>
+<div id="tooltip"></div>
+<div id="legend">
+  <div style="margin-bottom:6px;font-weight:bold">Citation Network</div>
+  <div><span class="dot" style="background:#F4D03F"></span>Root paper</div>
+  <div><span class="dot" style="background:#4A90E2"></span>Cites (outbound)</div>
+  <div><span class="dot" style="background:#E74C3C"></span>Cited by (inbound)</div>
+</div>
+<div id="controls">
+  <button id="btn-fit">Fit Root</button>
+  <button id="btn-reset">Reset</button>
+</div>
+<div id="title-bar"></div>
+<svg id="graph"></svg>
+<script>
+(function(){
+  var _e=function(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;};
+  var _q=function(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
+  var NODE_COLORS={
+    root:"#F4D03F",
+    citing:"#4A90E2",
+    cited_by:"#E74C3C",
+    default:"#aaa"
+  };
+  var EDGE_COLORS={
+    cites:"#4A90E2",
+    cited_by:"#E74C3C",
+    default:"#555"
+  };
+  var ROOT_ID=window.INJECT_ROOT_ID||"";
+  var DATA={"nodes":INJECT_NODES,"links":INJECT_LINKS};
+  var nodes=DATA.nodes.map(function(d){return Object.assign({},d);});
+  var links=DATA.links.map(function(d){return Object.assign({},d);});
+  var W=window.innerWidth,H=window.innerHeight;
+  var svg=d3.select("svg");
+  // Arrow markers
+  var defs=svg.append("defs");
+  Object.keys(EDGE_COLORS).forEach(function(r){
+    defs.append("marker")
+      .attr("id","arrow-"+r).attr("viewBox","0 -5 10 10")
+      .attr("refX",22).attr("refY",0).attr("markerWidth",6).attr("markerHeight",6).attr("orient","auto")
+    .append("path").attr("d","M0,-5L10,0L0,5").attr("fill",EDGE_COLORS[r]);
+  });
+  // Count inbound/outbound per node
+  var inCount={},outCount={};
+  links.forEach(function(l){
+    var src=l.source.id||l.source,snd=l.target.id||l.target;
+    outCount[src]=(outCount[src]||0)+1;
+    inCount[snd]=(inCount[snd]||0)+1;
+  });
+  function nodeColor(d){
+    if(d.id===ROOT_ID)return NODE_COLORS.root;
+    if(d.is_citing)return NODE_COLORS.citing;
+    if(d.is_cited_by)return NODE_COLORS.cited_by;
+    return NODE_COLORS.default;
+  }
+  var sim=d3.forceSimulation(nodes)
+    .force("link",d3.forceLink(links).id(function(d){return d.id;}).distance(100))
+    .force("charge",d3.forceManyBody().strength(-300))
+    .force("center",d3.forceCenter(W/2,H/2))
+    .force("collide",d3.forceCollide(28));
+  var link=svg.append("g").selectAll("line").data(links).enter().append("line")
+    .attr("class","link")
+    .attr("stroke",function(d){
+      var r=d.relation||"";
+      if(r==="cites"||r==="cited_by")return EDGE_COLORS[r];
+      return EDGE_COLORS.default;
+    })
+    .attr("marker-end",function(d){
+      var r=d.relation||"";
+      if(r==="cites"||r==="cited_by")return "url(#arrow-"+r+")";
+      return "";
+    });
+  var node=svg.append("g").selectAll("g").data(nodes).enter().append("g")
+    .attr("class","node").call(d3.drag()
+      .on("start",function(e,d){if(!e.active)sim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y;})
+      .on("drag",function(e,d){d.fx=e.x;d.fy=e.y;})
+      .on("end",function(e,d){if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}))
+    .on("click",function(e,d){
+      var tip=document.getElementById("tooltip");
+      var color=nodeColor(d);
+      var role=d.id===ROOT_ID?"Root":d.is_citing?"Cites (outbound)":d.is_cited_by?"Cited by (inbound)":"Other";
+      var ic=inCount[d.id]||0,oc=outCount[d.id]||0;
+      tip.innerHTML='<b style="color:'+color+'">'+_q(role)+'</b>'+
+        '<div style="margin-top:6px">'+_q(d.label||d.id)+'</div>'+
+        '<div style="margin-top:4px;color:#888;font-size:11px">'+_q(d.entity_id||d.id)+'</div>'+
+        '<div style="margin-top:4px;font-size:11px;color:#aaa">Inbound: '+ic+'  |  Outbound: '+oc+'</div>';
+      tip.style.display="block";tip.style.left=(e.clientX+14)+"px";tip.style.top=(e.clientY+14)+"px";
+    });
+  document.addEventListener("click",function(e){
+    if(!e.target.closest(".node")&&!e.target.closest("#tooltip")&&!e.target.closest("#controls"))
+      document.getElementById("tooltip").style.display="none";
+  });
+  var circles=node.append("circle").attr("r",function(d){
+    return d.id===ROOT_ID?12:9;
+  }).attr("fill",nodeColor).attr("stroke-width",function(d){
+    return d.id===ROOT_ID?"2.5px":"1.5px";
+  });
+  node.append("text").attr("dx",14).attr("dy",4)
+    .text(function(d){var l=d.label||d.id;return l.slice(0,32);});
+  sim.on("tick",function(){
+    link.attr("x1",function(d){return d.source.x;}).attr("y1",function(d){return d.source.y;})
+        .attr("x2",function(d){return d.target.x;}).attr("y2",function(d){return d.target.y;});
+    node.attr("transform",function(d){return "translate("+d.x+","+d.y+")";});
+  });
+  // Fit Root button
+  d3.select("#btn-fit").on("click",function(){
+    var root=d3.selectAll(".node").filter(function(d){return d.id===ROOT_ID;});
+    if(!root.empty()){
+      var rx=root.datum().x,ry=root.datum().y;
+      var zoom=d3.zoom().scaleExtent([0.2,4]);
+      svg.transition().duration(500).call(
+        zoom.transform,
+        d3.zoomIdentity.translate(W/2-rx, H/2-ry)
+      );
+    }
+  });
+  // Reset button
+  d3.select("#btn-reset").on("click",function(){
+    sim.alpha(1).restart();
+  });
+  // Update title bar
+  var citingN=nodes.filter(function(d){return d.is_citing;}).length;
+  var citedByN=nodes.filter(function(d){return d.is_cited_by;}).length;
+  document.getElementById("title-bar").textContent=
+    nodes.length+' papers · '+citingN+' cites · '+citedByN+' cited by — Citation Network';
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "source": "arxiv",
+  "uid": "2305.00001",
+  "title": "Attention Is All You Need",
+  "authors": [
+    "Ashish Vaswani",
+    "Noam Shazeer"
+  ],
+  "abstract": "We propose the transformer.",
+  "published": "2017-06-12",
+  "updated": "2017-06-12",
+  "abs_url": "https://arxiv.org/abs/2305.00001",
+  "pdf_url": "https://arxiv.org/pdf/2305.00001.pdf",
+  "primary_category": "",
+  "categories": "cs.CL, cs.NE",
+  "comment": "15 pages, 8 figures, NeurIPS 2017",
+  "journal_ref": "",
+  "doi": "10.48550/arXiv.2305.00001"
+}

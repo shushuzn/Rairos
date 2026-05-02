@@ -1,0 +1,18 @@
+{
+  "source": "arxiv",
+  "uid": "2601.00156",
+  "title": "RAG Paper 2602",
+  "authors": [
+    "Alice Smith"
+  ],
+  "abstract": "Retrieval augmented generation paper.",
+  "published": "2024-01-15",
+  "updated": "2024-01-15",
+  "abs_url": "https://arxiv.org/abs/2601.00156",
+  "pdf_url": "https://arxiv.org/pdf/2601.00156.pdf",
+  "primary_category": "",
+  "categories": "cs.AI",
+  "comment": "",
+  "journal_ref": "",
+  "doi": ""
+}

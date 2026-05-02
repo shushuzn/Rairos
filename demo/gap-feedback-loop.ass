@@ -1,0 +1,21 @@
+[Script Info]
+Title: Gap Feedback Loop Demo
+ScriptType: v4.00+
+PlayDepth: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,48,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,2,2,2,10,10,10,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:01.50,Default,,0,0,0,,Welcome to the AI Research OS demonstration.
+Dialogue: 0,0:00:01.50,0:00:03.50,Default,,0,0,0,,This system automatically discovers research gaps
+Dialogue: 0,0:00:03.50,0:00:05.50,Default,,0,0,0,,and evolves knowledge through feedback.
+Dialogue: 0,0:00:05.50,0:00:07.50,Default,,0,0,0,,Topic Agent receives a research query
+Dialogue: 0,0:00:07.50,0:00:09.50,Default,,0,0,0,,about transformer efficiency.
+Dialogue: 0,0:00:09.50,0:00:11.50,Default,,0,0,0,,Papers retrieved, ranked by relevance and recency.
+Dialogue: 0,0:00:11.50,0:00:13.50,Default,,0,0,0,,Gap Analyzer identifies missing connections.
+Dialogue: 0,0:00:13.50,0:00:15.50,Default,,0,0,0,,New research directions extracted as capsule genes.
+Dialogue: 0,0:00:15.50,0:00:17.50,Default,,0,0,0,,Genes stored in evolving knowledge pool.
+Dialogue: 0,0:00:17.50,0:00:18.00,Default,,0,0,0,,AI Research OS — advancing science, one gap at a time.

@@ -1,0 +1,684 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1777545565338,
+  "projectRoot": "D:\\OpenClaw\\workspace\\80-PROJECTS\\ai_research_os",
+  "techStack": {
+    "languages": [
+      {
+        "name": "Python",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "pyproject.toml"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "pytest",
+        "version": null,
+        "category": "testing"
+      }
+    ],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": "pytest",
+    "lintCommand": "ruff check",
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "assets",
+      "docs",
+      "scripts",
+      "tests"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "AI-Research": {
+      "path": "AI-Research",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1777545565300,
+      "keyFiles": []
+    },
+    "assets": {
+      "path": "assets",
+      "purpose": "Static assets",
+      "fileCount": 0,
+      "lastAccessed": 1777545565301,
+      "keyFiles": []
+    },
+    "cli": {
+      "path": "cli",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1777545565302,
+      "keyFiles": [
+        "warp.py",
+        "_registry.py",
+        "_shared.py",
+        "__init__.py",
+        "__main__.py"
+      ]
+    },
+    "completions": {
+      "path": "completions",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1777545565303,
+      "keyFiles": [
+        "bash",
+        "fish",
+        "zsh",
+        "_airos"
+      ]
+    },
+    "core": {
+      "path": "core",
+      "purpose": null,
+      "fileCount": 30,
+      "lastAccessed": 1777545565303,
+      "keyFiles": [
+        "achievements.py",
+        "backup.py",
+        "basics.py",
+        "batch_optimizer.py",
+        "cache.py"
+      ]
+    },
+    "data": {
+      "path": "data",
+      "purpose": "Data files",
+      "fileCount": 8,
+      "lastAccessed": 1777545565304,
+      "keyFiles": [
+        "extable.db",
+        "kg.db",
+        "research.db",
+        "research.db-shm",
+        "research.db-wal"
+      ]
+    },
+    "db": {
+      "path": "db",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1777545565304,
+      "keyFiles": [
+        "database.py",
+        "migrate.py",
+        "optimize.py",
+        "__init__.py"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 7,
+      "lastAccessed": 1777545565305,
+      "keyFiles": [
+        "api.md",
+        "architecture.md",
+        "configuration.md",
+        "coverage_history.md",
+        "index.md"
+      ]
+    },
+    "extable": {
+      "path": "extable",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1777545565305,
+      "keyFiles": [
+        "detector.py",
+        "parser.py",
+        "storage.py",
+        "__init__.py"
+      ]
+    },
+    "kg": {
+      "path": "kg",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1777545565306,
+      "keyFiles": [
+        "integration.py",
+        "manager.py",
+        "queries.py",
+        "__init__.py"
+      ]
+    },
+    "llm": {
+      "path": "llm",
+      "purpose": null,
+      "fileCount": 48,
+      "lastAccessed": 1777545565306,
+      "keyFiles": [
+        "argument_builder.py",
+        "benchmark.py",
+        "chat.py",
+        "citation_chain.py",
+        "claude_cli.py"
+      ]
+    },
+    "memory": {
+      "path": "memory",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1777545565307,
+      "keyFiles": [
+        "EVOLUTION_ROADMAP.md",
+        "evolver_update_check.json"
+      ]
+    },
+    "notes": {
+      "path": "notes",
+      "purpose": null,
+      "fileCount": 6,
+      "lastAccessed": 1777545565307,
+      "keyFiles": [
+        "cnote.py",
+        "frontmatter.py",
+        "keyword_tags.py",
+        "mnote.py",
+        "pnotes.py"
+      ]
+    },
+    "parsers": {
+      "path": "parsers",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1777545565308,
+      "keyFiles": [
+        "arxiv.py",
+        "arxiv_search.py",
+        "crossref.py",
+        "input_detection.py",
+        "__init__.py"
+      ]
+    },
+    "pdf": {
+      "path": "pdf",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1777545565309,
+      "keyFiles": [
+        "extract.py",
+        "extract_async.py",
+        "parser.py",
+        "visual.py",
+        "__init__.py"
+      ]
+    },
+    "rankers": {
+      "path": "rankers",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1777545565309,
+      "keyFiles": [
+        "base.py",
+        "cosine.py",
+        "score.py",
+        "__init__.py"
+      ]
+    },
+    "renderers": {
+      "path": "renderers",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1777545565310,
+      "keyFiles": [
+        "cnote.py",
+        "litreview.py",
+        "mnote.py",
+        "pnote.py",
+        "__init__.py"
+      ]
+    },
+    "research_loop": {
+      "path": "research_loop",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1777545565310,
+      "keyFiles": [
+        "core.py",
+        "__init__.py"
+      ]
+    },
+    "scoring": {
+      "path": "scoring",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1777545565311,
+      "keyFiles": [
+        "momentum.py",
+        "__init__.py"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 2,
+      "lastAccessed": 1777545565311,
+      "keyFiles": [
+        "sync-project-version.py",
+        "test_coverage_trend.py"
+      ]
+    },
+    "sections": {
+      "path": "sections",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1777545565312,
+      "keyFiles": [
+        "segment.py",
+        "__init__.py"
+      ]
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 129,
+      "lastAccessed": 1777545565312,
+      "keyFiles": [
+        "conftest.py",
+        "test_ai_research_os.py",
+        "test_argument_builder.py",
+        "test_arun_research.py",
+        "test_arxiv_search.py"
+      ]
+    },
+    "trends": {
+      "path": "trends",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1777545565313,
+      "keyFiles": [
+        "forecaster.py",
+        "__init__.py"
+      ]
+    },
+    "updaters": {
+      "path": "updaters",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1777545565313,
+      "keyFiles": [
+        "radar.py",
+        "timeline.py",
+        "__init__.py"
+      ]
+    },
+    "viz": {
+      "path": "viz",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1777545565313,
+      "keyFiles": [
+        "benchmark_viz.py",
+        "d3_renderer.py",
+        "pyvis_renderer.py",
+        "__init__.py"
+      ]
+    },
+    "web": {
+      "path": "web",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1777545565314,
+      "keyFiles": [
+        "app.py"
+      ]
+    },
+    "__pycache__": {
+      "path": "__pycache__",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1777545565314,
+      "keyFiles": [
+        "ai_research_os.cpython-312.pyc",
+        "config.cpython-312.pyc"
+      ]
+    },
+    "docs\\assets": {
+      "path": "docs\\assets",
+      "purpose": "Static assets",
+      "fileCount": 2,
+      "lastAccessed": 1777545565315,
+      "keyFiles": [
+        "favicon.svg",
+        "logo.svg"
+      ]
+    },
+    "tests\\fixtures": {
+      "path": "tests\\fixtures",
+      "purpose": "Test fixtures",
+      "fileCount": 1,
+      "lastAccessed": 1777545565318,
+      "keyFiles": [
+        "sample.pdf"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "cli\\cmd\\chat_tui.py",
+      "accessCount": 43,
+      "lastAccessed": 1777608558390,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 32,
+      "lastAccessed": 1777606910062,
+      "type": "directory"
+    },
+    {
+      "path": "llm\\client.py",
+      "accessCount": 18,
+      "lastAccessed": 1777617649408,
+      "type": "directory"
+    },
+    {
+      "path": "web\\app.py",
+      "accessCount": 10,
+      "lastAccessed": 1777615454278,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\adm\\.claude\\projects\\D--OpenClaw-workspace-80-PROJECTS-ai-research-os\\memory\\reference_github_credentials.md",
+      "accessCount": 8,
+      "lastAccessed": 1777561139165,
+      "type": "file"
+    },
+    {
+      "path": "neuraloperator_fork\\neuralop\\layers\\galerkin_attention.py",
+      "accessCount": 8,
+      "lastAccessed": 1777567799657,
+      "type": "file"
+    },
+    {
+      "path": "db\\database.py",
+      "accessCount": 6,
+      "lastAccessed": 1777606902921,
+      "type": "directory"
+    },
+    {
+      "path": "pyproject.toml",
+      "accessCount": 6,
+      "lastAccessed": 1777607483667,
+      "type": "file"
+    },
+    {
+      "path": "core\\vector_store.py",
+      "accessCount": 5,
+      "lastAccessed": 1777556479590,
+      "type": "file"
+    },
+    {
+      "path": "cli\\cmd\\postprocess.py",
+      "accessCount": 5,
+      "lastAccessed": 1777611522730,
+      "type": "file"
+    },
+    {
+      "path": "neuraloperator_fork\\neuralop\\layers\\attention_kernel_integral.py",
+      "accessCount": 4,
+      "lastAccessed": 1777567809533,
+      "type": "file"
+    },
+    {
+      "path": "Dockerfile",
+      "accessCount": 3,
+      "lastAccessed": 1777556526609,
+      "type": "file"
+    },
+    {
+      "path": "config.py",
+      "accessCount": 3,
+      "lastAccessed": 1777559044871,
+      "type": "file"
+    },
+    {
+      "path": "galerkin_experiment.py",
+      "accessCount": 3,
+      "lastAccessed": 1777565061080,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 3,
+      "lastAccessed": 1777606878548,
+      "type": "file"
+    },
+    {
+      "path": "docs\\architecture.md",
+      "accessCount": 3,
+      "lastAccessed": 1777606909321,
+      "type": "file"
+    },
+    {
+      "path": "llm\\postprocess.py",
+      "accessCount": 2,
+      "lastAccessed": 1777545901625,
+      "type": "file"
+    },
+    {
+      "path": "pdf\\extract.py",
+      "accessCount": 2,
+      "lastAccessed": 1777545901649,
+      "type": "file"
+    },
+    {
+      "path": "docker-compose.yml",
+      "accessCount": 2,
+      "lastAccessed": 1777556432941,
+      "type": "file"
+    },
+    {
+      "path": "research_loop\\core.py",
+      "accessCount": 2,
+      "lastAccessed": 1777559282860,
+      "type": "directory"
+    },
+    {
+      "path": "llm\\research_chat.py",
+      "accessCount": 2,
+      "lastAccessed": 1777561087988,
+      "type": "file"
+    },
+    {
+      "path": ".env.example",
+      "accessCount": 2,
+      "lastAccessed": 1777561186192,
+      "type": "file"
+    },
+    {
+      "path": "cli\\cmd\\chat.py",
+      "accessCount": 2,
+      "lastAccessed": 1777607748417,
+      "type": "file"
+    },
+    {
+      "path": "cli\\cmd\\search.py",
+      "accessCount": 2,
+      "lastAccessed": 1777608003294,
+      "type": "file"
+    },
+    {
+      "path": "cli\\cmd\\pipeline.py",
+      "accessCount": 1,
+      "lastAccessed": 1777545807698,
+      "type": "file"
+    },
+    {
+      "path": "cli\\cmd\\ingest.py",
+      "accessCount": 1,
+      "lastAccessed": 1777545819066,
+      "type": "file"
+    },
+    {
+      "path": "core\\__init__.py",
+      "accessCount": 1,
+      "lastAccessed": 1777546112735,
+      "type": "directory"
+    },
+    {
+      "path": "core",
+      "accessCount": 1,
+      "lastAccessed": 1777546112750,
+      "type": "directory"
+    },
+    {
+      "path": "USAGE_EXAMPLES.md",
+      "accessCount": 1,
+      "lastAccessed": 1777547384610,
+      "type": "file"
+    },
+    {
+      "path": "docs\\index.md",
+      "accessCount": 1,
+      "lastAccessed": 1777547393650,
+      "type": "file"
+    },
+    {
+      "path": "mkdocs.yml",
+      "accessCount": 1,
+      "lastAccessed": 1777547393711,
+      "type": "file"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "accessCount": 1,
+      "lastAccessed": 1777547393841,
+      "type": "file"
+    },
+    {
+      "path": "FAIL",
+      "accessCount": 1,
+      "lastAccessed": 1777548995496,
+      "type": "file"
+    },
+    {
+      "path": "llm\\chat.py",
+      "accessCount": 1,
+      "lastAccessed": 1777549588131,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\adm\\.claude",
+      "accessCount": 1,
+      "lastAccessed": 1777551848297,
+      "type": "directory"
+    },
+    {
+      "path": "C:\\Users\\adm\\.claude\\plugins\\cache\\superpowers-dev\\superpowers",
+      "accessCount": 1,
+      "lastAccessed": 1777551954052,
+      "type": "directory"
+    },
+    {
+      "path": "C:\\Users\\adm\\.claude\\plugins\\cache\\superpowers-dev\\superpowers\\5.0.5\\skills\\finishing-a-development-branch\\SKILL.md",
+      "accessCount": 1,
+      "lastAccessed": 1777551960895,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\adm\\.agents\\skills\\find-skills\\SKILL.md",
+      "accessCount": 1,
+      "lastAccessed": 1777552481029,
+      "type": "file"
+    },
+    {
+      "path": "C:\\Users\\adm\\.agents\\skills\\github-pr-merge",
+      "accessCount": 1,
+      "lastAccessed": 1777552538426,
+      "type": "directory"
+    },
+    {
+      "path": "C:\\Users\\adm\\.agents\\skills\\github-pr-merge\\SKILL.md",
+      "accessCount": 1,
+      "lastAccessed": 1777552543038,
+      "type": "file"
+    },
+    {
+      "path": "ai_research_os.py",
+      "accessCount": 1,
+      "lastAccessed": 1777556200018,
+      "type": "file"
+    },
+    {
+      "path": ".dockerignore",
+      "accessCount": 1,
+      "lastAccessed": 1777556381502,
+      "type": "file"
+    },
+    {
+      "path": "core\\code_indexer.py",
+      "accessCount": 1,
+      "lastAccessed": 1777556410945,
+      "type": "file"
+    },
+    {
+      "path": "llm\\constants.py",
+      "accessCount": 1,
+      "lastAccessed": 1777558118741,
+      "type": "file"
+    },
+    {
+      "path": "data",
+      "accessCount": 1,
+      "lastAccessed": 1777559318009,
+      "type": "directory"
+    },
+    {
+      "path": "C:\\Users\\adm\\.claude\\projects\\D--OpenClaw-workspace-80-PROJECTS-ai-research-os\\memory\\feedback_no_reports.md",
+      "accessCount": 1,
+      "lastAccessed": 1777562485779,
+      "type": "file"
+    },
+    {
+      "path": "docs\\specs\\phase2-spec.md",
+      "accessCount": 1,
+      "lastAccessed": 1777606916282,
+      "type": "file"
+    },
+    {
+      "path": "cli\\__main__.py",
+      "accessCount": 1,
+      "lastAccessed": 1777606916354,
+      "type": "file"
+    },
+    {
+      "path": "assets\\gep\\genes.json",
+      "accessCount": 1,
+      "lastAccessed": 1777606916527,
+      "type": "file"
+    },
+    {
+      "path": "docs\\specs\\phase1-spec.md",
+      "accessCount": 1,
+      "lastAccessed": 1777606916604,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

@@ -1,0 +1,11 @@
+# AI Research OS — Bash completions
+_airos() {
+  local cur prev words cword
+  _init_completion || return
+  local commands="search research list import export stats status queue cache dedup dedup-semantic similar citations cite-graph cite-import cite-fetch cite-stats kg merge paper2code evoskill rag visual watch"
+  case "$prev" in
+    airos) COMPREPLY=($(compgen -W "$commands" -- "$cur")) ;;
+  esac
+}
+complete -F _airos airos
+complete -F _airos python -m cli
