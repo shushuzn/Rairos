@@ -90,9 +90,6 @@ dependencies = [
 
 ocr = ["pytesseract>=0.3.13", "pillow>=12.2.0"]
 
-web = ["streamlit>=1.57.0"]
-
-
 ai = ["openai>=2.33.0"]
 
 
