@@ -68,6 +68,7 @@ page = st.sidebar.radio("Go to", [
     "🗺️ Route Planner",
     "📋 Research Briefing",
     "🔗 Citation Chain",
+    "📊 Impact Ranking",
 ])
 
 # ─── Dashboard ─────────────────────────────────────────────────────
@@ -2377,3 +2378,123 @@ elif page == "🔗 Citation Chain":
             st.code(builder.render_graphviz(chain), language="dot")
     else:
         st.info("Enter an arXiv ID above to build a citation chain.")
+
+# ─── Impact Ranking Page ─────────────────────────────────────────────────────────
+
+elif page == "📊 Impact Ranking":
+    from llm.impact_scorer import ImpactScorer
+    from db.database import Database
+
+    st.header("📊 Paper Impact Ranking")
+
+    st.markdown("""
+    **Impact Ranking** composites normalized citations, PageRank-style influence,
+    citation momentum, and author H-index into a single S/A/B/C/D tier score.
+    """)
+
+    tab_mode = st.selectbox("Mode", ["Leaderboard", "Topic Search", "Single Paper"])
+
+    if tab_mode == "Leaderboard":
+        limit = st.slider("Papers", 5, 50, 20)
+        year_min = st.slider("Min Year", 2015, 2026, 2020)
+
+        if st.button("Load Leaderboard", use_container_width=True):
+            with st.spinner("Scoring papers..."):
+                db = _get_db()
+                rows, _ = db.list_papers(limit=limit * 3, sort_by="citation_count", sort_order="desc")
+                papers = []
+                for r in rows:
+                    year = getattr(r, 'year', 2020) or 2020
+                    if year < year_min:
+                        continue
+                    papers.append({
+                        "paper_id": getattr(r, 'paper_id', '') or getattr(r, 'arxiv_id', ''),
+                        "title": getattr(r, 'title', ''),
+                        "year": year,
+                        "citation_count": getattr(r, 'citation_count', 0) or 0,
+                    })
+
+                scorer = ImpactScorer(db=db)
+                ranking = scorer.rank_papers(papers, top_k=limit)
+
+                for entry in ranking:
+                    tier_color = {"S": "🟢", "A": "🔵", "B": "🟡", "C": "🟠", "D": "⚪"}
+                    c1, c2, c3, c4 = st.columns([1, 4, 2, 3])
+                    with c1:
+                        rank = entry["rank"]
+                        emoji = tier_color.get(entry["tier"], "⚪")
+                        st.markdown(f"**#{rank}** {emoji}")
+                    with c2:
+                        st.markdown(f"**{entry['title'][:70]}**")
+                        st.caption(f"{entry['paper_id'][:15]} · {entry['year']}")
+                    with c3:
+                        st.metric("Score", f"{entry['composite_score']:.3f}")
+                        st.caption(f"Top {entry['percentile']:.0f}%")
+                    with c4:
+                        st.metric("Citations", entry["raw_citations"])
+                        st.caption(entry["why"])
+                    st.divider()
+
+    elif tab_mode == "Topic Search":
+        topic = st.text_input("Topic / keyword", placeholder="e.g. retrieval augmented generation")
+        top_k = st.slider("Top K", 5, 30, 10)
+        min_cite = st.slider("Min Citations", 0, 200, 5)
+
+        if topic and st.button("Search & Rank", use_container_width=True):
+            with st.spinner("Searching papers..."):
+                db = _get_db()
+                rows, _ = db.search_papers(topic, limit=top_k * 5)
+                papers = []
+                for r in rows:
+                    cid = getattr(r, 'citation_count', 0) or 0
+                    if cid < min_cite:
+                        continue
+                    papers.append({
+                        "paper_id": getattr(r, 'paper_id', '') or getattr(r, 'arxiv_id', ''),
+                        "title": getattr(r, 'title', ''),
+                        "year": getattr(r, 'year', 2020) or 2020,
+                        "citation_count": cid,
+                    })
+
+                if not papers:
+                    st.warning("No papers found matching criteria.")
+                else:
+                    scorer = ImpactScorer(db=db)
+                    ranking = scorer.rank_papers(papers, top_k=min(top_k, len(papers)))
+                    st.code(scorer.render_ranking(ranking), language=None)
+
+    else:
+        arxiv_id = st.text_input("arXiv ID", placeholder="e.g. 2301.12345")
+        if arxiv_id and st.button("Score Paper", use_container_width=True):
+            with st.spinner("Fetching and scoring..."):
+                from parsers.semantic_scholar import get_paper_by_id
+                paper = get_paper_by_id(arxiv_id)
+                if not paper:
+                    st.error("Paper not found on Semantic Scholar.")
+                else:
+                    scorer = ImpactScorer()
+                    score = scorer.score_paper(
+                        paper_id=arxiv_id,
+                        title=paper.title or arxiv_id,
+                        year=paper.year or 2020,
+                        raw_citations=paper.citation_count or 0,
+                    )
+                    tier_emoji = {"S": "⭐ S-Tier", "A": "🅰️ A-Tier", "B": "🅱️ B-Tier", "C": "⚙️ C-Tier", "D": "📄 D-Tier"}
+
+                    mc1, mc2, mc3 = st.columns(3)
+                    mc1.metric("Composite Score", f"{score.composite_score:.3f}")
+                    mc2.metric("Tier", tier_emoji.get(score.tier, score.tier))
+                    mc3.metric("Percentile", f"Top {score.percentile:.0f}%")
+
+                    st.subheader("Score Breakdown")
+                    bd_col1, bd_col2 = st.columns(2)
+                    with bd_col1:
+                        st.write(f"**Raw Citations:** {score.raw_citations}")
+                        st.write(f"**Normalized/Year:** {score.normalized_score:.2f}")
+                        st.write(f"**Citation Momentum:** {score.momentum_score:.2f}")
+                    with bd_col2:
+                        st.write(f"**PageRank Score:** {score.pagerank_score:.3f}")
+                        st.write(f"**Author H-Index:** {score.author_h_index:.0f}")
+                        st.write(f"**Paper Age:** {2026 - score.year} years")
+
+                    st.info(f"**Why this score:** {scorer._explain_score(score)}")

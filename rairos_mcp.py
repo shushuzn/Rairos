@@ -436,6 +436,40 @@ def get_tools() -> List[Dict]:
                 },
                 "required": ["arxiv_id"]
             }
+        },
+        {
+            "name": "impact_rank",
+            "description": "Rank papers by composite impact score (normalized citations, PageRank, momentum, author h-index)",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "topic": {"type": "string", "description": "Topic/keyword to search papers for"},
+                    "top_k": {"type": "integer", "default": 10, "description": "Return top K papers"},
+                    "min_citations": {"type": "integer", "default": 0, "description": "Minimum citation count"}
+                }
+            }
+        },
+        {
+            "name": "impact_score_paper",
+            "description": "Get detailed impact score for a specific paper",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "arxiv_id": {"type": "string", "description": "arXiv ID of the paper"}
+                },
+                "required": ["arxiv_id"]
+            }
+        },
+        {
+            "name": "impact_leaderboard",
+            "description": "Get overall impact leaderboard from local paper database",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "limit": {"type": "integer", "default": 20, "description": "Number of papers to return"},
+                    "year_min": {"type": "integer", "default": 2020, "description": "Minimum year"}
+                }
+            }
         }
     ]
 
@@ -1747,6 +1781,21 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
                 arxiv_id=arguments.get("arxiv_id"),
                 format=arguments.get("format", "text"),
             )
+        elif name == "impact_rank":
+            result = tool_impact_rank(
+                topic=arguments.get("topic", ""),
+                top_k=arguments.get("top_k", 10),
+                min_citations=arguments.get("min_citations", 0),
+            )
+        elif name == "impact_score_paper":
+            result = tool_impact_score_paper(
+                arxiv_id=arguments.get("arxiv_id"),
+            )
+        elif name == "impact_leaderboard":
+            result = tool_impact_leaderboard(
+                limit=arguments.get("limit", 20),
+                year_min=arguments.get("year_min", 2020),
+            )
         else:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
 
@@ -1903,6 +1952,112 @@ def tool_citation_chain_render(arxiv_id: str, format: str = "text") -> Dict:
     except Exception as e:
         logger.error(f"citation_chain_render error: {e}")
         return error_response("CHAIN_ERROR", str(e))
+
+
+
+
+def tool_impact_rank(topic: str, top_k: int = 10, min_citations: int = 0) -> Dict:
+    """Rank papers by composite impact score."""
+    try:
+        from llm.impact_scorer import ImpactScorer
+        from db.database import Database
+
+        db = Database()
+        db.init()
+
+        rows, _ = db.search_papers(topic, limit=top_k * 3)
+        if not rows:
+            return error_response("NOT_FOUND", f"No papers found for topic: {topic}")
+
+        papers = []
+        for r in rows:
+            cid = getattr(r, 'citation_count', 0) or 0
+            if cid < min_citations:
+                continue
+            papers.append({
+                "paper_id": getattr(r, 'paper_id', '') or getattr(r, 'arxiv_id', ''),
+                "title": getattr(r, 'title', ''),
+                "year": getattr(r, 'year', 2020) or 2020,
+                "citation_count": cid,
+            })
+
+        scorer = ImpactScorer(db=db)
+        ranking = scorer.rank_papers(papers, top_k=top_k)
+
+        return success_response({
+            "topic": topic,
+            "total_ranked": len(ranking),
+            "ranking": ranking,
+            "rendered": scorer.render_ranking(ranking),
+        })
+    except Exception as e:
+        logger.error(f"impact_rank error: {e}")
+        return error_response("IMPACT_ERROR", str(e))
+
+
+def tool_impact_score_paper(arxiv_id: str) -> Dict:
+    """Get detailed impact score for a specific paper."""
+    try:
+        from llm.impact_scorer import ImpactScorer
+        from parsers.semantic_scholar import get_paper_by_id
+
+        paper = get_paper_by_id(arxiv_id)
+        if not paper:
+            return error_response("NOT_FOUND", f"Paper not found: {arxiv_id}")
+
+        scorer = ImpactScorer()
+        score = scorer.score_paper(
+            paper_id=arxiv_id,
+            title=paper.title or arxiv_id,
+            year=paper.year or 2020,
+            raw_citations=paper.citation_count or 0,
+        )
+
+        return success_response({
+            **score.to_dict(),
+            "explanation": scorer._explain_score(score),
+        })
+    except Exception as e:
+        logger.error(f"impact_score_paper error: {e}")
+        return error_response("IMPACT_ERROR", str(e))
+
+
+def tool_impact_leaderboard(limit: int = 20, year_min: int = 2020) -> Dict:
+    """Get overall impact leaderboard from local database."""
+    try:
+        from llm.impact_scorer import ImpactScorer
+        from db.database import Database
+
+        db = Database()
+        db.init()
+
+        rows, _ = db.list_papers(limit=limit * 5, sort_by="citation_count", sort_order="desc")
+
+        papers = []
+        for r in rows:
+            year = getattr(r, 'year', 2020) or 2020
+            if year < year_min:
+                continue
+            papers.append({
+                "paper_id": getattr(r, 'paper_id', '') or getattr(r, 'arxiv_id', ''),
+                "title": getattr(r, 'title', ''),
+                "year": year,
+                "citation_count": getattr(r, 'citation_count', 0) or 0,
+            })
+
+        scorer = ImpactScorer(db=db)
+        ranking = scorer.rank_papers(papers, top_k=limit)
+
+        return success_response({
+            "limit": limit,
+            "year_min": year_min,
+            "total_ranked": len(ranking),
+            "ranking": ranking,
+            "rendered": scorer.render_ranking(ranking),
+        })
+    except Exception as e:
+        logger.error(f"impact_leaderboard error: {e}")
+        return error_response("IMPACT_ERROR", str(e))
 
 
 
