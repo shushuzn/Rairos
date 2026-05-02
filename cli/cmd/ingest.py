@@ -160,6 +160,7 @@ def _run_postprocess_phase(
             pnote_path=pnote_path,
             llm_config=pl_config,
             stages=stage_vals,
+            pdf_path=pdf_path,
         )
         if result.stages_completed:
             print_success(f"  Postprocess OK: {', '.join(result.stages_completed)}")
