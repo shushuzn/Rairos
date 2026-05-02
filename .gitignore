@@ -14,15 +14,27 @@ uv.lock
 *.jsonl
 *.zip
 
-# Data directories
-data/arxiv/
-data/research.db
-data/research.db-shm
-data/research.db-wal
-data/crossref/
-data/papers/
-data/*.pdf
-cache/
+# Data directories
+
+data/arxiv/
+
+data/research.db
+
+data/research.db-shm
+
+data/research.db-wal
+
+data/crossref/
+
+data/papers/
+
+data/*.pdf
+
+data/*.db
+
+cache/
+
+uv.lock
 
 # Claude settings
 .claude/
@@ -42,6 +54,15 @@ AI-Research/
 ai_research.db
 data/extable.db
 
-# Experiment files (local only)
-galerkin_experiment.py
-pino_experiment.py
+# Experiment files (local only)
+
+galerkin_experiment.py
+
+pino_experiment.py
+
+
+# PR scripts (local only)
+
+_create_pr.js
+
+_pr2.js
