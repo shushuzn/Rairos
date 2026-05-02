@@ -12,9 +12,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import streamlit as st
 
-st.set_page_config(page_title="AI Research OS", layout="wide", page_icon="🧠")
+st.set_page_config(page_title="Rairos", layout="wide", page_icon="🧠")
 
-st.title("🧠 AI Research OS — Web UI")
+st.title("🧠 Rairos — AI Research OS")
 
 
 # ─── DB helpers ──────────────────────────────────────────────────────
