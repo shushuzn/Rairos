@@ -1,0 +1,33 @@
+{
+  "name": "ai-research-os",
+  "version": "1.5.4",
+  "description": "AI Research OS - Self-Evolving Research Operating System for AI researchers",
+  "author": "shushuzn",
+  "license": "GPL-3.0-or-later",
+  "homepage": "https://github.com/shushuzn/ai_research_os",
+  "repository": "https://github.com/shushuzn/ai_research_os",
+  "languages": ["python"],
+  "capabilities": ["mcp"],
+  "mcp": {
+    "server": "server.py",
+    "tools": [
+      "paper_ingest",
+      "paper_search",
+      "paper_chat",
+      "kg_query",
+      "chart_query",
+      "research_run",
+      "slides_generate",
+      "cite_fetch",
+      "paper_analyze"
+    ]
+  },
+  "keywords": [
+    "research",
+    "papers",
+    "ai",
+    "knowledge-graph",
+    "llm",
+    "arxiv"
+  ]
+}
