@@ -232,6 +232,20 @@ class BriefingGenerator:
                 return None
 
         try:
+            # Try direct ID lookup first (exact match for arxiv_id)
+            paper = self.db.get_paper(arxiv_id)
+            if paper:
+                return {
+                    "arxiv_id": paper.id,
+                    "title": paper.title,
+                    "abstract": paper.abstract or "",
+                    "authors": paper.authors or [],
+                    "published": paper.published or "",
+                    "venue": paper.journal or "",
+                    "citation_count": 0,
+                    "tags": paper.tags or [],
+                }
+            # Fall back to full-text search
             rows, _ = self.db.search_papers(arxiv_id, limit=1)
             if not rows:
                 return None
