@@ -36,6 +36,9 @@ class ExplorationAction(Enum):
 
     INSIGHT_RATED = "insight_rated"  # 用户对 insight 打分
 
+    # paper2code pipeline events
+    IMPLEMENTATION_PASS = "implementation_pass"  # paper→code→test 全部通过
+    IMPLEMENTATION_FAIL = "implementation_fail"  # paper→code→test 有失败
 
 class PreferenceTag(Enum):
 
