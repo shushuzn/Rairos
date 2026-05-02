@@ -29,9 +29,17 @@
     </defs>
   </svg>
 
+  <!-- Hamburger toggle button (mobile only) -->
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+
+  <!-- Mobile overlay backdrop -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
   <div class="app-shell">
     <!-- ── Sidebar ── -->
-    <nav class="sidebar">
+    <nav class="sidebar" id="sidebar">
       <div class="sidebar-brand">
         <span class="brand-icon">🧠</span> Rairos
       </div>
@@ -80,6 +88,12 @@
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script>
     mermaid.initialize({ startOnLoad: true, theme: 'neutral', fontFamily: 'Lora, serif' });
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebar-overlay').classList.toggle('active');
+      document.getElementById('hamburger').classList.toggle('active');
+    }
   </script>
 
   {% block scripts %}{% endblock %}
