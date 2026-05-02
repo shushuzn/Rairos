@@ -95,7 +95,7 @@ diversity alerts. All three feed into one quality system.
 
 #### Contradiction + Evolution Visibility (P1)
 
-- [ ] **Contradiction Heatmap** — papers colored by contradiction count; tooltip shows conflicting gap_type/polarity pairs
+- [x] **Contradiction Heatmap** — papers colored by contradiction count; tooltip shows conflicting gap_type/polarity pairs
 - [ ] **Paradigm Concentration Alert** — trigger when >60% citations cluster around ≤3 references; flag generalization_gap
 - [ ] **Bold Hypothesis Vault** — separate Gene Pool view for high-risk/high-reward gaps (red accent vs. standard blue)
 - [ ] **Gene Pool Prefetch** — pre-warm cache with capsules relevant to active topic; show "prefetched" indicator
