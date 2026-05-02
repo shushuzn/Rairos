@@ -1,14 +1,14 @@
-"""AI Research OS MCP Server - Provides research tools to Claude Code.
+"""Rairos MCP Server - Provides research tools to Claude Code.
 
 Usage as MCP server:
-    python -m .claude.plugins.ai-research-os.server
+    python -m .claude.plugins.rairos.server
 
 Or configure in Claude Code settings.json:
 {
   "mcpServers": {
-    "ai-research-os": {
+    "rairos": {
       "command": "python",
-      "args": ["-m", ".claude.plugins.ai-research-os.server"]
+      "args": ["-m", ".claude.plugins.rairos.server"]
     }
   }
 }
@@ -57,7 +57,7 @@ def get_tools() -> List[Dict]:
     return [
         {
             "name": "paper_ingest",
-            "description": "Import a paper from arXiv ID, DOI, or PDF file into AI Research OS",
+            "description": "Import a paper from arXiv ID, DOI, or PDF file into Rairos",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -256,24 +256,23 @@ def tool_paper_search(query: str, tag: Optional[str] = None, limit: int = 10) ->
     """Search papers."""
     try:
         from db.database import Database
-        from llm.text_utils import simple_search_papers
 
         db = Database()
         db.init()
 
-        results = simple_search_papers(db, query, tag_filter=tag, limit=limit)
+        results, total = db.search_papers(query, limit=limit)
 
         db.close()
 
         return success_response({
             "query": query,
-            "count": len(results),
+            "count": total,
             "results": [
                 {
-                    "paper_id": r.get("id", ""),
-                    "title": r.get("title", ""),
-                    "authors": r.get("authors", []),
-                    "tags": r.get("tags", [])
+                    "paper_id": r.paper_id,
+                    "title": r.title,
+                    "authors": r.authors,
+                    "published": r.published
                 }
                 for r in results[:limit]
             ]
@@ -497,11 +496,36 @@ def tool_cite_fetch(paper_id: str, direction: str = "both") -> Dict:
 def tool_paper_analyze(paper_id: str) -> Dict:
     """Analyze paper."""
     try:
-        from llm.paper_analyzer import PaperAnalyzer
+        from llm.paper_analyzer import PaperAnalyzer, PaperAnalysisResult
+        from db.database import Database
+
+        db = Database()
+        db.init()
+        rec = db.get_paper(paper_id)
+        db.close()
+
+        if not rec:
+            return error_response("NOT_FOUND", f"Paper not found: {paper_id}")
 
         analyzer = PaperAnalyzer()
-        result = analyzer.analyze_paper(paper_id)
+        result = analyzer.analyze(
+            paper_id=paper_id,
+            title=rec.title or "",
+            abstract=rec.abstract or "",
+            body_text="",
+            authors=rec.authors,
+        )
 
+        if isinstance(result, PaperAnalysisResult):
+            return success_response({
+                "paper_id": result.paper_id,
+                "sections": result.sections,
+                "rubric": result.rubric,
+                "extracted_methods": result.extracted_methods,
+                "extracted_datasets": result.extracted_datasets,
+                "extracted_metrics": result.extracted_metrics,
+                "llm_used": result.llm_used,
+            })
         return success_response(result)
 
     except Exception as e:
@@ -517,7 +541,7 @@ def handle_initialize() -> dict:
     return success_response({
         "protocolVersion": MCP_VERSION,
         "serverInfo": {
-            "name": "ai-research-os",
+            "name": "rairos",
             "version": "1.5.4"
         },
         "capabilities": {

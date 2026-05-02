@@ -1,6 +1,6 @@
-# AI Research OS Plugin for Claude Code
+# Rairos Plugin for Claude Code
 
-AI Research OS 封装为 Claude Code 的 MCP 插件，让 Claude 能够直接调用研究工具。
+Rairos 封装为 Claude Code 的 MCP 插件，让 Claude 能够直接调用研究工具。
 
 ## 安装
 
@@ -11,10 +11,10 @@ AI Research OS 封装为 Claude Code 的 MCP 插件，让 Claude 能够直接调
 ```json
 {
   "mcpServers": {
-    "ai-research-os": {
+    "rairos": {
       "command": "python",
-      "args": ["-m", ".claude.plugins.ai-research-os.server"],
-      "cwd": "/path/to/ai_research_os"
+      "args": ["-m", ".claude.plugins.rairos.server"],
+      "cwd": "/path/to/rairos"
     }
   }
 }
@@ -52,5 +52,5 @@ Claude: → chart_query { paper_id: "2601.00155", action: "figure", label: "Figu
 ## 前提条件
 
 - Python >= 3.10
-- 已安装 ai-research-os 依赖: `pip install -e .`
+- 已安装 rairos 依赖: `pip install -e .`
 - 配置好 `OPENAI_API_KEY` 等环境变量
