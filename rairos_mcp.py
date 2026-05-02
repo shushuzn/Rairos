@@ -265,6 +265,23 @@ def get_tools() -> List[Dict]:
                 },
                 "required": ["hypothesis_id", "name", "result"]
             }
+        },
+        {
+            "name": "litreview_generate",
+            "description": "Generate a narrative literature review for a research topic",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "topic": {"type": "string", "description": "Research topic to review"},
+                    "limit": {"type": "integer", "default": 30, "description": "Max papers to include (default 30)"},
+                    "use_llm": {"type": "boolean", "default": true, "description": "Use LLM for generation (default true)"}
+                },
+                "required": ["topic"]
+            }
+        },
+        {
+            "name": "litreview_list",
+            "description": "List all saved literature reviews"
         }
     ]
 
@@ -952,6 +969,66 @@ def tool_experiment_record(
         return error_response("EXPERIMENT_ERROR", str(e))
 
 
+def tool_litreview_generate(topic: str, limit: int = 30, use_llm: bool = True) -> Dict:
+    """Generate a literature review for a topic."""
+    try:
+        from llm.litreview_generator import LitReviewGenerator
+
+        generator = LitReviewGenerator()
+        result = generator.generate(
+            topic=topic,
+            limit=limit,
+            use_llm=use_llm,
+            output_dir=PROJECT_ROOT / "data" / "litreviews",
+        )
+
+        if result.success:
+            return success_response({
+                "topic": topic,
+                "total_papers": result.review.total_papers if result.review else 0,
+                "sections_count": len(result.review.sections) if result.review else 0,
+                "markdown": result.markdown,
+                "generated_at": result.review.generated_at if result.review else "",
+            })
+        else:
+            return error_response("LITREVIEW_ERROR", result.error)
+
+    except Exception as e:
+        logger.error(f"litreview_generate error: {e}")
+        return error_response("LITREVIEW_ERROR", str(e))
+
+
+def tool_litreview_list() -> Dict:
+    """List all saved literature reviews."""
+    try:
+        from pathlib import Path
+
+        litreview_dir = PROJECT_ROOT / "data" / "litreviews"
+        reviews = []
+        if litreview_dir.exists():
+            for f in sorted(litreview_dir.glob("litreview_*.md"), reverse=True)[:20]:
+                content = f.read_text(encoding="utf-8")
+                lines = content.split("\n")
+                title = lines[0].lstrip("# ").strip() if lines else f.stem
+                date = ""
+                for line in lines[1:5]:
+                    if "Generated:" in line:
+                        date = line.split("Generated:")[-1].strip()
+                        break
+                reviews.append({
+                    "filename": f.name,
+                    "topic": title,
+                    "date": date,
+                    "size_bytes": f.stat().st_size,
+                })
+
+        return success_response({"reviews": reviews, "count": len(reviews)})
+
+    except Exception as e:
+        logger.error(f"litreview_list error: {e}")
+        return error_response("LITREVIEW_ERROR", str(e))
+
+
 # ─── MCP Protocol Handlers ──────────────────────────────────────────
 
 
@@ -1064,6 +1141,14 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
                 result=arguments.get("result"),
                 metrics=arguments.get("metrics")
             )
+        elif name == "litreview_generate":
+            result = tool_litreview_generate(
+                topic=arguments.get("topic"),
+                limit=arguments.get("limit", 30),
+                use_llm=arguments.get("use_llm", True)
+            )
+        elif name == "litreview_list":
+            result = tool_litreview_list()
         else:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
 
