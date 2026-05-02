@@ -61,7 +61,7 @@ Goal: Make the project **contributor-friendly** and **discoverable**.
 
 - [ ] **Documentation**
   - [x] Architecture deep-dive (Gene Pool lifecycle in docs/architecture.md)
-  - [ ] API reference page with searchable examples
+  - [x] API reference page with searchable examples
   - [ ] Video demo / GIF showcase
   - [ ] Comparisons with Zotero, Notion, Semantic Scholar
   - [ ] Benchmark page (what the system measures)
