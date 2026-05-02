@@ -284,8 +284,17 @@ class BriefingGenerator:
         text = (title + " " + abstract).lower()
 
         # Check Gene Pool gaps
+        # OPPORTUNITY_SEIZED: paper's gap type matches a Gene Pool entry (directly addresses a known gap)
+        gap_type_matches = [
+            m for m in gene_pool_matches
+            if m.get("gap_type") and m.get("gap_type") in text
+        ]
+        if gap_type_matches:
+            return "opportunity_seized", "Paper directly addresses a known research gap in Gene Pool"
+
+        # Check outcome scores
         validates_gaps = any(
-            m.get("outcome_score", 0) > 0.5 for m in gene_pool_matches
+            m.get("outcome_score", 0) >= 0.5 for m in gene_pool_matches
         )
 
         # Check Research Memory stances
