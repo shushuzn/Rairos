@@ -249,6 +249,53 @@ async def briefing_generate(
         })
 
 
+@app.get("/briefing/history")
+async def briefing_history(request: Request):
+    """List all previously generated briefings."""
+    briefings_dir = PROJECT_ROOT / "data" / "briefings"
+    briefings = []
+
+    if briefings_dir.exists():
+        for f in sorted(briefings_dir.glob("briefing_*.md"), reverse=True):
+            try:
+                text = f.read_text(encoding="utf-8")
+                lines = text.split("\n", 4)
+                # Line 0: # Research Briefing: Title
+                title = lines[0][len("# Research Briefing: "):] if len(lines) > 0 and lines[0].startswith("# Research Briefing: ") else f.stem
+                # Line 1: metadata — "**arXiv:** [id](url) | **Authors:** ... | **Generated:** ..."
+                arxiv_id = ""
+                generated = ""
+                if len(lines) > 1:
+                    import re
+                    aid_match = re.search(r'\*\*arXiv:\*\* \[([^\]]+)\]', lines[1])
+                    if aid_match:
+                        arxiv_id = aid_match.group(1)
+                    gen_match = re.search(r'\*\*Generated:\*\* (\S+)', lines[1])
+                    if gen_match:
+                        generated = gen_match.group(1)
+                verdict = ""
+                verdict_emoji = ""
+                if len(lines) > 2:
+                    v_match = re.search(r'\*\*Verdict:\*\* (.) \*\*([A-Z]+)\*\*', lines[2])
+                    if v_match:
+                        verdict_emoji = v_match.group(1)
+                        verdict = v_match.group(2).lower()
+                briefings.append((
+                    arxiv_id,
+                    title[:90],
+                    generated,
+                    verdict,
+                    verdict_emoji,
+                ))
+            except Exception:
+                pass
+
+    return templates.TemplateResponse(request, "briefing_history.html", {
+        "page": "briefing-history",
+        "briefings": briefings,
+    })
+
+
 @app.get("/citation-chain")
 async def citation_chain(request: Request, arxiv_id: str = ""):
     """Citation Chain — build and visualize."""
