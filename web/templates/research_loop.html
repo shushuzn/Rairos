@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Research Loop — Rairos{% endblock %}
+
+{% block content %}
+<h1 class="page-title">🔄 Research Loop</h1>
+<div class="page-title-underline"></div>
+<p class="page-desc">Autonomous research agent — watches arXiv, discovers gaps, scores against Gene Pool.</p>
+
+<!-- Status Card -->
+<div class="card" style="margin-bottom: 24px;">
+  <div class="card-title">⚙️ Agent Status</div>
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px;">
+    <div style="text-align: center;">
+      <div style="font-family: var(--font-display); font-size: 32px; font-weight: 700; color: {% if status.running %}var(--pen-green){% else %}var(--ink-faint){% endif %};">
+        {% if status.running %}ON{% else %}OFF{% endif %}
+      </div>
+      <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px;">Running</div>
+    </div>
+    <div style="text-align: center;">
+      <div style="font-family: var(--font-display); font-size: 32px; font-weight: 700; color: var(--ink);">{{ status.interval_minutes }}m</div>
+      <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px;">Interval</div>
+    </div>
+    <div style="text-align: center;">
+      <div style="font-family: var(--font-display); font-size: 32px; font-weight: 700; color: var(--pen-blue);">{{ status.alerts_count }}</div>
+      <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px;">Alerts</div>
+    </div>
+    <div style="text-align: center;">
+      <div style="font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--ink-light);">{{ status.last_check or '—' }}</div>
+      <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px;">Last Check</div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+    {% if status.running %}
+    <form method="post" action="/research-loop/stop" style="display: inline;">
+      <button type="submit" class="btn btn-secondary" style="font-size: 14px;">⏹ Stop Watch</button>
+    </form>
+    {% else %}
+    <form method="post" action="/research-loop/start" style="display: inline;">
+      <button type="submit" class="btn btn-primary" style="font-size: 14px;">▶ Start Watch</button>
+    </form>
+    {% endif %}
+    <form method="post" action="/research-loop/run-cycle" style="display: inline;">
+      <button type="submit" class="btn btn-blue" style="font-size: 14px;" onclick="this.disabled=true; this.textContent='Running…'">⚡ Run Cycle Now</button>
+    </form>
+    <span style="font-size: 13px; color: var(--ink-faint); margin-left: 8px;">
+      A cycle checks arXiv subscriptions, runs deep analysis, and scores gaps against Gene Pool.
+    </span>
+  </div>
+</div>
+
+<!-- Subscriptions -->
+{% if subscriptions %}
+<div class="card" style="margin-bottom: 24px;">
+  <div class="card-title">📡 arXiv Subscriptions</div>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+    {% for sub in subscriptions %}
+    <div style="display: flex; align-items: center; gap: 6px; background: var(--paper-alt); border: 1px solid var(--border); border-radius: 2px; padding: 4px 10px; font-size: 13px;">
+      <span style="color: var(--pen-green); font-size: 11px;">●</span>
+      {{ sub.topic }}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Alerts -->
+<div class="card">
+  <div class="card-title">📬 Recent Alerts</div>
+  {% if alerts %}
+  {% for alert in alerts %}
+  <div style="padding: 12px 0; border-bottom: 1px dashed var(--border-light); {% if loop.last %}border-bottom: none;{% endif %}">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 4px;">
+      <div style="font-size: 14px; font-weight: 600; color: var(--ink); flex: 1; min-width: 0;">
+        {{ alert.top_gap_title[:80] }}
+      </div>
+      <div style="display: flex; gap: 6px; flex-shrink: 0;">
+        {% if alert.severity == 'HIGH' %}
+        <span class="badge badge-red">{{ alert.severity }}</span>
+        {% elif alert.severity == 'MEDIUM' %}
+        <span class="badge badge-blue">{{ alert.severity }}</span>
+        {% else %}
+        <span class="badge badge-gray">{{ alert.severity }}</span>
+        {% endif %}
+        {% if alert.preference_boost %}
+        <span class="badge badge-green">Pref</span>
+        {% endif %}
+      </div>
+    </div>
+    <div style="font-size: 11px; color: var(--ink-faint); margin-bottom: 4px;">
+      Triggered by <a href="/paper/{{ alert.triggered_by }}" style="color: var(--pen-blue);">{{ alert.trigger_title[:60] }}</a>
+      · {{ alert.topic }} · Score {{ (alert.gene_pool_score * 100)|round }}%
+    </div>
+    <div style="font-size: 11px; color: var(--ink-faint);">
+      <span class="badge badge-blue" style="font-size: 10px;">{{ alert.top_gap_type }}</span>
+      <span style="margin-left: 8px;">{{ alert.created_at }}</span>
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">🔍</div>
+    <div class="empty-state-text">No alerts yet. Start the watch loop to begin discovering research gaps.</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -422,6 +422,100 @@ async def citation_chain_build(
         })
 
 
+# ── Research Loop ────────────────────────────────────────────────────────────────
+
+@app.get("/research-loop")
+async def research_loop(request: Request):
+    """Research Loop dashboard — status, alerts, subscriptions."""
+    try:
+        from research_loop.orchestrator import AutonomousOrchestrator
+        orch = AutonomousOrchestrator(webhook_enabled=False)
+        status = orch.get_status()
+        alerts_raw = orch.get_recent_alerts(limit=20)
+    except Exception:
+        status = {"running": False, "interval_minutes": 30, "last_check": "", "alerts_count": 0, "error": "Orchestrator unavailable"}
+        alerts_raw = []
+
+    alerts = []
+    for a in alerts_raw:
+        created = a.created_at if hasattr(a, 'created_at') else a.get('created_at', '')
+        alerts.append((
+            a.alert_id,
+            a.session_id,
+            a.topic,
+            a.triggered_by,
+            a.trigger_title,
+            a.gaps_found,
+            a.top_gap_title,
+            a.top_gap_type,
+            a.severity,
+            a.gene_pool_score,
+            a.preference_boost,
+            created,
+        ))
+
+    try:
+        db = _get_db()
+        subs_raw = db.list_arxiv_subscriptions()
+    except Exception:
+        subs_raw = []
+
+    subscriptions = []
+    for s in subs_raw:
+        subscriptions.append({
+            "id": s.get("id", ""),
+            "topic": s.get("topic", ""),
+        })
+
+    return templates.TemplateResponse(request, "research_loop.html", {
+        "page": "research-loop",
+        "status": status,
+        "alerts": alerts,
+        "subscriptions": subscriptions,
+    })
+
+
+@app.post("/research-loop/start")
+async def research_loop_start(request: Request):
+    """Start the autonomous watch loop."""
+    try:
+        from research_loop.orchestrator import AutonomousOrchestrator
+        orch = AutonomousOrchestrator(webhook_enabled=False)
+        orch.start_watch(interval_minutes=30)
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Could not start orchestrator: {e}")
+    return RedirectResponse(url="/research-loop", status_code=303)
+
+
+@app.post("/research-loop/stop")
+async def research_loop_stop(request: Request):
+    """Stop the autonomous watch loop."""
+    try:
+        from research_loop.orchestrator import AutonomousOrchestrator
+        orch = AutonomousOrchestrator(webhook_enabled=False)
+        orch.stop_watch()
+    except Exception:
+        pass
+    return RedirectResponse(url="/research-loop", status_code=303)
+
+
+@app.post("/research-loop/run-cycle")
+async def research_loop_run_cycle(request: Request):
+    """Manually trigger one orchestrator cycle."""
+    import threading
+    def run():
+        try:
+            from research_loop.orchestrator import AutonomousOrchestrator
+            orch = AutonomousOrchestrator(webhook_enabled=False)
+            orch.run_cycle()
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error(f"Run cycle failed: {e}")
+    threading.Thread(target=run, daemon=True).start()
+    return RedirectResponse(url="/research-loop", status_code=303)
+
+
 @app.get("/impact")
 async def impact(request: Request):
     """Impact Ranking — leaderboard."""
