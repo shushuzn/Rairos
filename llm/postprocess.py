@@ -105,6 +105,7 @@ class ResearchDeepDivePipeline:
         stages: Optional[List[PostStage]] = None,
         llm_config: Optional[Dict[str, Any]] = None,
         structured_content: Optional["StructuredPdfContent"] = None,
+        pdf_path: Optional[Path] = None,
     ) -> PostProcessingResult:
         """Run the post-processing pipeline.
 
@@ -112,13 +113,13 @@ class ResearchDeepDivePipeline:
             paper_id: Unique paper identifier.
             extracted_text: Full extracted PDF text.
             paper: Optional Paper dataclass (from _main_legacy). If None,
-                   reconstructed from DB.
-            tags: Paper tags.
-            pnote_path: Path to the P-note file for updates.
-            stages: Subset of stages to run (default: all).
-            llm_config: LLM configuration dict with keys:
-                api_key, base_url, model, timeout.
-            structured_content: Optional structured PDF content for citation-grounded analysis.
+                a minimal one is constructed from paper_id.
+            tags: Optional list of topic tags.
+            pnote_path: Optional path to the P-Note markdown file.
+            stages: Optional list of PostStage enums to run. Runs all if None.
+            llm_config: Optional dict with api_key, base_url, model for LLM calls.
+            structured_content: Optional pre-extracted StructuredPdfContent.
+            pdf_path: Optional path to the PDF file (for Chart KG indexing).
 
         Returns:
             PostProcessingResult with per-stage outcomes.
@@ -292,10 +293,30 @@ class ResearchDeepDivePipeline:
                         paper_title=title if paper else None,
                         paper_tags=tags,
                     )
+
+                    # Auto-index charts if PDF is available
+                    chart_data = {}
+                    if pdf_path and pdf_path.exists():
+                        try:
+                            from pdf.chart_kg import ChartKGExtractor
+                            extractor = ChartKGExtractor(kg)
+                            paper_title_str = title if paper else paper_id
+                            fig_nodes, tbl_nodes = extractor.extract_and_index(
+                                str(pdf_path), paper_id, paper_title_str
+                            )
+                            integration.on_charts_indexed(paper_id, fig_nodes, tbl_nodes)
+                            chart_data = {
+                                "figures_indexed": len(fig_nodes),
+                                "tables_indexed": len(tbl_nodes),
+                            }
+                        except Exception as chart_err:
+                            logger.warning("Chart KG indexing failed: %s", chart_err)
+                            chart_data = {"chart_error": str(chart_err)}
+
                     sr.success = True
-                    sr.data = {"synced": True}
+                    sr.data = {"synced": True, **chart_data}
                     result.stages_completed.append(PostStage.KG_SYNC.value)
-                    _write_json(paper_out / "kg_sync.json", {"synced": True})
+                    _write_json(paper_out / "kg_sync.json", {"synced": True, **chart_data})
                 else:
                     sr.data = {"skipped": "no KG available"}
                     result.stages_completed.append(PostStage.KG_SYNC.value)
