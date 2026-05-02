@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} — Rairos{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{{ title }}</h1>
+<div class="page-title-underline"></div>
+<div class="page-desc">{{ content|safe }}</div>
+{% endblock %}

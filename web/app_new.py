@@ -377,6 +377,20 @@ async def briefing_history(request: Request):
     })
 
 
+@app.get("/trust-scores")
+async def trust_scores(request: Request):
+    """Source Trust Scores — per-arXiv-category credibility ratings."""
+    from llm.trust_scorer import TrustScorer
+    scorer = TrustScorer()
+    scorer.load_trust_map() or scorer.compute_trust_map()
+    html = scorer.render_html()
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "trust-scores",
+        "title": "Source Trust Scores",
+        "content": html,
+    })
+
+
 @app.get("/citation-chain")
 async def citation_chain(request: Request, arxiv_id: str = ""):
     """Citation Chain — build and visualize."""
