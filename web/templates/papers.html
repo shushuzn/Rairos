@@ -9,7 +9,7 @@
 
 <!-- Search + Filter -->
 <form method="get" action="/papers">
-  <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
+  <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; align-items: center;">
     <input
       name="q"
       class="input-field"
@@ -17,16 +17,47 @@
       placeholder="Search by title, author, keyword..."
       value="{{ query or '' }}"
     >
+    <button type="submit" class="btn btn-primary">🔍</button>
+    {% if query or year_from or year_to %}
+    <a href="/papers" class="btn btn-secondary">✕</a>
+    {% endif %}
+  </div>
+
+  <!-- Filters row -->
+  <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
     <select name="source" class="input-field" style="width: auto; min-width: 130px;" onchange="this.form.submit()">
       <option value="">All sources</option>
       <option value="import" {% if source=='import' %}selected{% endif %}>Import</option>
       <option value="arxiv" {% if source=='arxiv' %}selected{% endif %}>arXiv</option>
       <option value="local" {% if source=='local' %}selected{% endif %}>Local</option>
     </select>
-    <button type="submit" class="btn btn-primary">🔍</button>
-    {% if query %}
-    <a href="/papers" class="btn btn-secondary">✕</a>
-    {% endif %}
+
+    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+      <span style="font-family: var(--font-display); font-size: 14px; color: var(--ink-faint);">Year:</span>
+      <input
+        name="year_from"
+        class="input-field"
+        type="number"
+        min="1900"
+        max="2030"
+        placeholder="From"
+        value="{{ year_from or '' }}"
+        style="width: 80px; padding: 7px 10px; font-size: 14px;"
+        onchange="this.form.submit()"
+      >
+      <span style="color: var(--ink-faint); font-size: 13px;">–</span>
+      <input
+        name="year_to"
+        class="input-field"
+        type="number"
+        min="1900"
+        max="2030"
+        placeholder="To"
+        value="{{ year_to or '' }}"
+        style="width: 80px; padding: 7px 10px; font-size: 14px;"
+        onchange="this.form.submit()"
+      >
+    </div>
   </div>
 </form>
 
@@ -60,21 +91,21 @@
 {% if total_pages > 1 %}
 <div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;">
   {% if page > 1 %}
-  <a href="?q={{ query or '' }}&source={{ source or '' }}&page={{ page - 1 }}" class="btn btn-secondary" style="padding: 8px 16px;">← Prev</a>
+  <a href="?q={{ query or '' }}&source={{ source or '' }}&year_from={{ year_from or '' }}&year_to={{ year_to or '' }}&page={{ page - 1 }}" class="btn btn-secondary" style="padding: 8px 16px;">← Prev</a>
   {% endif %}
 
   {% for p in range(1, total_pages + 1) %}
     {% if p == page %}
     <span class="btn btn-primary" style="padding: 8px 16px; pointer-events: none;">{{ p }}</span>
     {% elif p <= 3 or p > total_pages - 2 or (p >= page - 1 and p <= page + 1) %}
-    <a href="?q={{ query or '' }}&source={{ source or '' }}&page={{ p }}" class="btn btn-secondary" style="padding: 8px 16px;">{{ p }}</a>
+    <a href="?q={{ query or '' }}&source={{ source or '' }}&year_from={{ year_from or '' }}&year_to={{ year_to or '' }}&page={{ p }}" class="btn btn-secondary" style="padding: 8px 16px;">{{ p }}</a>
     {% elif p == 4 or p == total_pages - 3 %}
     <span style="color: var(--ink-faint);">…</span>
     {% endif %}
   {% endfor %}
 
   {% if page < total_pages %}
-  <a href="?q={{ query or '' }}&source={{ source or '' }}&page={{ page + 1 }}" class="btn btn-secondary" style="padding: 8px 16px;">Next →</a>
+  <a href="?q={{ query or '' }}&source={{ source or '' }}&year_from={{ year_from or '' }}&year_to={{ year_to or '' }}&page={{ page + 1 }}" class="btn btn-secondary" style="padding: 8px 16px;">Next →</a>
   {% endif %}
 </div>
 {% endif %}
