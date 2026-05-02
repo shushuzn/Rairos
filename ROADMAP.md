@@ -157,6 +157,7 @@ Goal: A system that does research **with minimal human input**.
 | v1.3 | Released | C-Note, Radar, Timeline, citation graph |
 | v1.5 | Released | Chat TUI, semantic search, EvoSkill pipeline |
 | v1.6 | Released | Gene Pool, CapsuleGene lifecycle, FastAPI web UI, hand-drawn aesthetic |
+| v1.7 | In Progress | Gene Pool arXiv watch (`gap watch`), Contradiction Detection, Citation Pathfinder |
 | v2.0 | Planned | Community polish, Docker, API reference |
 | v2.2 | Planned | Self-evolution dashboard, research gap detection |
 | v3.0 | Future | Autonomous research agent |
