@@ -226,6 +226,7 @@ async def paper_detail(request: Request, paper_id: str):
         "paper_id": paper_id,
         "error": None,
         "gene_matches": gene_matches,
+        "rigor_score": None,  # lazy — use /paper/{id}/rigor to compute
     })
 
 
@@ -270,6 +271,19 @@ async def save_paper_gap(request: Request, paper_id: str):
         summary=summary,
     )
     return {"success": success}
+
+
+@app.get("/paper/{paper_id}/rigor")
+async def paper_rigor(request: Request, paper_id: str):
+    """Compute and return research rigor score for a paper as JSON."""
+    from llm.rigor_scorer import RigorScorer
+    db = _get_db()
+    paper = db.get_paper(paper_id)
+    if not paper:
+        return {"error": f"Paper '{paper_id}' not found."}
+    scorer = RigorScorer()
+    score = scorer.score_paper(paper_id, abstract=paper.abstract or "", title=paper.title or "")
+    return score.to_dict()
 
 
 @app.get("/briefing")

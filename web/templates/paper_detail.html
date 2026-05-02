@@ -126,6 +126,9 @@
     <button class="btn btn-secondary" style="font-size: 14px;" onclick="extractGap()">
       🧬 Extract Gap
     </button>
+    <button class="btn btn-secondary" style="font-size: 14px;" onclick="loadRigor()">
+      ⚖️ Rigor
+    </button>
   </div>
 </div>
 
@@ -286,6 +289,40 @@ function saveGap() {
         btn.textContent = 'Save to Gene Pool';
         alert('Failed to save gap.');
       }
+    });
+}
+
+function loadRigor() {
+  var paperId = {{ (paper_id or '')|tojson }};
+  var btn = event.target;
+  btn.disabled = true;
+  btn.textContent = '⏳…';
+
+  fetch('/paper/' + paperId + '/rigor')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) {
+        btn.disabled = false;
+        btn.textContent = '⚖️ Rigor';
+        alert('Error: ' + data.error);
+        return;
+      }
+      var colors = {A: '#7A9E7A', B: '#6B8FB5', C: '#D4A84B', D: '#C4706A'};
+      var color = colors[data.badge] || '#888';
+      var clarity = data.methodology_clarity || '?';
+      var signals = (data.reproducibility_signals || []).join(', ') || 'No signals detected';
+      var badge = document.createElement('span');
+      badge.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;'
+        + 'background:' + color + ';color:white;font-family:Caveat,cursive;'
+        + 'font-size:1.1em;font-weight:700;'
+        + 'width:2em;height:2em;border-radius:6px;cursor:help;'
+        + 'title="code:' + data.has_code + ' | dataset:' + data.has_dataset + ' | clarity:' + clarity + '\\n' + signals + '"';
+      badge.textContent = data.badge;
+      btn.parentNode.replaceChild(badge, btn);
+    })
+    .catch(function(e) {
+      btn.disabled = false;
+      btn.textContent = '⚖️ Rigor';
     });
 }
 </script>
