@@ -1,13 +1,13 @@
-# AI Research OS
+# Rairos
 
 <div align="center">
-  <img src="logo_hero.png" width="800" alt="AI Research OS Demo"/>
+  <img src="logo_hero.png" width="800" alt="Rairos Demo"/>
 </div>
 
 **A Self-Evolving Research Operating System for AI Researchers**
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
-[![PyPI Version](https://img.shields.io/pypi/v/ai-research-os)](https://pypi.org/project/ai-research-os/)
+[![PyPI Version](https://img.shields.io/pypi/v/rairos)](https://pypi.org/project/rairos/)
 [![Coverage](https://img.shields.io/codecov/c/github/shushuzn/ai_research_os/main?logo=codecov)](https://app.codecov.io/gh/shushuzn/ai_research_os)
 [![Tests](https://github.com/shushuzn/ai_research_os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/ai_research_os/actions)
 [![License](https://img.shields.io/badge/License-GPL--3.0--or--later-orange)](#license)
@@ -17,14 +17,14 @@
  <picture>
    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=shushuzn/ai_research_os&type=Date&theme=dark" />
    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=shushuzn/ai_research_os&type=Date" />
-   <img alt="AI Research OS Star History" src="https://api.star-history.com/svg?repos=shushuzn/ai_research_os&type=Date" style="width: 80%; height: auto;" />
+   <img alt="Rairos Star History" src="https://api.star-history.com/svg?repos=shushuzn/ai_research_os&type=Date" style="width: 80%; height: auto;" />
  </picture>
 </a>
 </div>
 
 ## What It Does
 
-AI Research OS is a **self-evolving research system** that learns from your usage patterns. It's not just a paper manager — it's a research partner that grows smarter over time.
+Rairos is a **self-evolving research system** that learns from your usage patterns. It's not just a paper manager — it's a research partner that grows smarter over time.
 
 Feed it a paper (arXiv URL, DOI, or PDF). Get back a **P-Note**, **C-Note**, **Radar entry**, and **Timeline entry** — all structured, tagged, and cross-linked.
 
@@ -53,7 +53,7 @@ This is **not a PDF manager**. It is a **Self-Evolving System** that:
 ## Quick Start
 
 ```bash
-pip install ai-research-os
+pip install rairos
 airos-cli 2601.00155 --tags LLM,Agent
 ```
 
@@ -108,7 +108,7 @@ Papers are organized into 12 directories:
 ## Installation
 
 ```bash
-pip install ai-research-os
+pip install rairos
 ```
 
 Or install from source:
@@ -121,7 +121,7 @@ pip install -e .
 
 ## Documentation
 
-Full documentation at [ai-research-os.readthedocs.io](https://ai-research-os.readthedocs.io/).
+Full documentation at [rairos.readthedocs.io](https://rairos.readthedocs.io/).
 
 | Doc | Description |
 |-----|-------------|

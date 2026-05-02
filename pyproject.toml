@@ -13,13 +13,13 @@ build-backend = "setuptools.build_meta"
 [project]
 
 
-name = "ai-research-os"
+name = "rairos"
 
 
 version = "1.5.4"
 
 
-description = "A Self-Evolving Research OS for AI Researchers — manage papers, detect research gaps, generate insights"
+description = "Rairos — Self-Evolving Research OS for AI Researchers — manage papers, detect research gaps, generate insights"
 
 
 readme = "README.md"
@@ -109,7 +109,7 @@ all = ["ai-research-os[ocr,ai,dev,slides]"]
 [project.scripts]
 
 
-airos-cli = "cli:main"
+rairos = "cli:main"
 
 
 
@@ -118,13 +118,13 @@ airos-cli = "cli:main"
 [project.urls]
 
 
-Homepage = "https://github.com/shushuzn/ai_research_os"
+Homepage = "https://github.com/shushuzn/rairos"
 
 
-Repository = "https://github.com/shushuzn/ai_research_os"
+Repository = "https://github.com/shushuzn/rairos"
 
 
-Documentation = "https://github.com/shushuzn/ai_research_os#readme"
+Documentation = "https://github.com/shushuzn/rairos#readme"
 
 
 
