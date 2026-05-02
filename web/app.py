@@ -69,6 +69,7 @@ page = st.sidebar.radio("Go to", [
     "📋 Research Briefing",
     "🔗 Citation Chain",
     "📊 Impact Ranking",
+    "🔬 Replication Checker",
 ])
 
 # ─── Dashboard ─────────────────────────────────────────────────────
@@ -2498,3 +2499,118 @@ elif page == "📊 Impact Ranking":
                         st.write(f"**Paper Age:** {2026 - score.year} years")
 
                     st.info(f"**Why this score:** {scorer._explain_score(score)}")
+
+# ─── Replication Checker Page ────────────────────────────────────────────────────
+
+elif page == "🔬 Replication Checker":
+    from llm.replication_checker import ReplicationChecker
+    from parsers.semantic_scholar import get_paper_by_id
+
+    st.header("🔬 Replication Checker")
+
+    st.markdown("""
+    **Replication Checker** extracts GitHub/HuggingFace/GitLab links from papers,
+    analyzes dependency requirements, and rates reproducibility difficulty.
+    """)
+
+    arxiv_id = st.text_input("arXiv ID", placeholder="e.g. 2301.12345")
+    compare_mode = st.checkbox("Compare two papers")
+
+    col1, col2 = st.columns(2)
+    if compare_mode:
+        arxiv_id_2 = col1.text_input("Second arXiv ID", placeholder="e.g. 2203.00001")
+        analyze_label = "Compare Both Papers"
+    else:
+        arxiv_id_2 = None
+        analyze_label = "Analyze Paper"
+
+    if (arxiv_id and (not compare_mode or arxiv_id_2)) and st.button(analyze_label, use_container_width=True):
+        checker = ReplicationChecker()
+
+        if compare_mode:
+            paper1 = get_paper_by_id(arxiv_id)
+            paper2 = get_paper_by_id(arxiv_id_2)
+
+            r1 = checker.check_paper(arxiv_id, paper1.title if paper1 else arxiv_id, paper1.abstract if paper1 else "")
+            r2 = checker.check_paper(arxiv_id_2, paper2.title if paper2 else arxiv_id_2, paper2.abstract if paper2 else "")
+
+            diff = abs(r1.difficulty_score - r2.difficulty_score)
+            easier = r1.paper_id if r1.difficulty_score < r2.difficulty_score else r2.paper_id
+
+            st.subheader("Comparison")
+            cmp_col1, cmp_col2 = st.columns(2)
+            with cmp_col1:
+                st.markdown(f"**{r1.paper_id}**")
+                st.write(f"Difficulty: {r1.difficulty} ({r1.difficulty_score}/10)")
+                if r1.primary_link:
+                    st.write(f"Link: {r1.primary_link.url}")
+                st.write(f"Issues found: {len(r1.reproducibility_issues)}")
+                for issue in r1.reproducibility_issues:
+                    st.caption(f"⚠️ {issue}")
+
+            with cmp_col2:
+                st.markdown(f"**{r2.paper_id}**")
+                st.write(f"Difficulty: {r2.difficulty} ({r2.difficulty_score}/10)")
+                if r2.primary_link:
+                    st.write(f"Link: {r2.primary_link.url}")
+                st.write(f"Issues found: {len(r2.reproducibility_issues)}")
+                for issue in r2.reproducibility_issues:
+                    st.caption(f"⚠️ {issue}")
+
+            st.success(f"✓ '{easier}' is easier to reproduce (score diff: {diff})")
+
+        else:
+            paper = get_paper_by_id(arxiv_id)
+            if not paper:
+                st.error("Paper not found on Semantic Scholar.")
+            else:
+                report = checker.check_paper(arxiv_id, paper.title, paper.abstract or "")
+
+                diff_color = {"Easy": "green", "Medium": "blue", "Hard": "orange", "Very Hard": "red", "Extremely Hard": "darkred", "No Code Found": "gray"}
+                color = diff_color.get(report.difficulty, "gray")
+
+                st.subheader(f"Result: {report.difficulty}")
+                st.markdown(f"**Difficulty score:** {report.difficulty_score}/10")
+
+                # Primary link
+                if report.primary_link:
+                    link = report.primary_link
+                    st.markdown(f"**Primary Code Link:** [{link.platform.title()} — {link.owner}/{link.repo}]({link.url})")
+                    st.caption(f"Confidence: {link.confidence:.0%}")
+                else:
+                    st.warning("No code links detected in this paper.")
+
+                # Dependency info
+                if report.dependency_info:
+                    di = report.dependency_info
+                    with st.expander("📦 Dependency Info", expanded=True):
+                        dep_col1, dep_col2 = st.columns(2)
+                        with dep_col1:
+                            st.write(f"**Manager:** {di.package_manager.upper()}")
+                            st.write(f"**Files:** {', '.join(di.files) if di.files else 'Not detected'}")
+                            st.write(f"**Python:** {di.python_version or 'Not specified'}")
+                        with dep_col2:
+                            st.write(f"**Hardware:** {', '.join(di.hardware) if di.hardware else 'Not mentioned'}")
+                            st.write(f"**Key libs:** {', '.join(di.special_requirements[:3]) if di.special_requirements else 'None detected'}")
+
+                # Issues
+                if report.reproducibility_issues:
+                    st.subheader("⚠️ Reproducibility Issues")
+                    for issue in report.reproducibility_issues:
+                        st.caption(f"- {issue}")
+
+                # Notes
+                if report.notes:
+                    st.subheader("📝 Notes")
+                    for note in report.notes:
+                        st.markdown(f"- {note}")
+
+                # Links found
+                if len(report.links) > 1:
+                    st.subheader(f"🔗 All Links Found ({len(report.links)})")
+                    for link in report.links[:5]:
+                        st.markdown(f"[{link.platform}]({link.url}) — confidence: {link.confidence:.0%}")
+
+                # Rendered text
+                with st.expander("📄 Full Report Text"):
+                    st.code(checker.render_report(report))
