@@ -205,6 +205,34 @@ def get_tools() -> List[Dict]:
                 },
                 "required": ["topic"]
             }
+        },
+        {
+            "name": "research_agent_start",
+            "description": "Start the autonomous research agent in background watch mode",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "interval_minutes": {"type": "integer", "default": 30, "description": "Check interval in minutes"}
+                }
+            }
+        },
+        {
+            "name": "research_agent_stop",
+            "description": "Stop the autonomous research agent watch loop"
+        },
+        {
+            "name": "research_agent_status",
+            "description": "Get status of the autonomous research agent (running state, alerts, last check)"
+        },
+        {
+            "name": "research_agent_trigger",
+            "description": "Manually trigger one cycle of the autonomous research agent",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "topic": {"type": "string", "description": "Specific topic to analyze (optional, analyzes all subscriptions if omitted)"}
+                }
+            }
         }
     ]
 
@@ -671,6 +699,71 @@ def tool_gap_detect(topic: str, use_llm: bool = True) -> Dict:
         return error_response("GAP_ERROR", str(e))
 
 
+def tool_research_agent_start(interval_minutes: int = 30) -> Dict:
+    """Start the autonomous research agent in background watch mode."""
+    try:
+        from research_loop.orchestrator import AutonomousOrchestrator
+        orch = AutonomousOrchestrator(webhook_enabled=True)
+        orch.start_watch(interval_minutes=interval_minutes)
+        status = orch.get_status()
+        return success_response({
+            "status": "started",
+            "interval_minutes": interval_minutes,
+            "running": status["running"],
+            "message": f"Autonomous research agent started. Will check subscriptions every {interval_minutes} minutes."
+        })
+    except Exception as e:
+        logger.error(f"research_agent_start error: {e}")
+        return error_response("AGENT_ERROR", str(e))
+
+
+def tool_research_agent_stop() -> Dict:
+    """Stop the autonomous research agent watch loop."""
+    try:
+        from research_loop.orchestrator import AutonomousOrchestrator
+        orch = AutonomousOrchestrator()
+        orch.stop_watch()
+        return success_response({
+            "status": "stopped",
+            "message": "Autonomous research agent stopped."
+        })
+    except Exception as e:
+        logger.error(f"research_agent_stop error: {e}")
+        return error_response("AGENT_ERROR", str(e))
+
+
+def tool_research_agent_status() -> Dict:
+    """Get status of the autonomous research agent."""
+    try:
+        from research_loop.orchestrator import AutonomousOrchestrator
+        orch = AutonomousOrchestrator()
+        status = orch.get_status()
+        recent_alerts = orch.get_recent_alerts(limit=10)
+        return success_response({
+            "status": status,
+            "recent_alerts": [a.to_dict() for a in recent_alerts]
+        })
+    except Exception as e:
+        logger.error(f"research_agent_status error: {e}")
+        return error_response("AGENT_ERROR", str(e))
+
+
+def tool_research_agent_trigger(topic: Optional[str] = None) -> Dict:
+    """Manually trigger one cycle of the autonomous research agent."""
+    try:
+        from research_loop.orchestrator import AutonomousOrchestrator
+        orch = AutonomousOrchestrator(webhook_enabled=True)
+        alerts = orch.run_cycle()
+        return success_response({
+            "status": "cycle_complete",
+            "alerts_generated": len(alerts),
+            "alerts": [a.to_dict() for a in alerts]
+        })
+    except Exception as e:
+        logger.error(f"research_agent_trigger error: {e}")
+        return error_response("AGENT_ERROR", str(e))
+
+
 # ─── MCP Protocol Handlers ──────────────────────────────────────────
 
 
@@ -754,6 +847,18 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
             result = tool_gap_detect(
                 topic=arguments.get("topic"),
                 use_llm=arguments.get("use_llm", True)
+            )
+        elif name == "research_agent_start":
+            result = tool_research_agent_start(
+                interval_minutes=arguments.get("interval_minutes", 30)
+            )
+        elif name == "research_agent_stop":
+            result = tool_research_agent_stop()
+        elif name == "research_agent_status":
+            result = tool_research_agent_status()
+        elif name == "research_agent_trigger":
+            result = tool_research_agent_trigger(
+                topic=arguments.get("topic")
             )
         else:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
