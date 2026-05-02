@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" width="900" height="300">
+  <defs>
+    <filter id="bg-sketch" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" seed="7"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2"
+        xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="text-sketch" x="-2%" y="-5%" width="104%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" result="noise" seed="15"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8"
+        xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="light-sketch" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="2" result="noise" seed="9"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.7"
+        xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <linearGradient id="paper-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FAF6F0"/>
+      <stop offset="100%" stop-color="#F0EAE0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background paper -->
+  <rect width="900" height="300" fill="url(#paper-grad)" filter="url(#bg-sketch)"/>
+
+  <!-- Subtle grid lines (notebook paper) -->
+  <g stroke="#D4C5B0" stroke-width="0.5" opacity="0.4" filter="url(#light-sketch)">
+    <line x1="0" y1="60" x2="900" y2="60"/>
+    <line x1="0" y1="100" x2="900" y2="100"/>
+    <line x1="0" y1="140" x2="900" y2="140"/>
+    <line x1="0" y1="180" x2="900" y2="180"/>
+    <line x1="0" y1="220" x2="900" y2="220"/>
+    <line x1="0" y1="260" x2="900" y2="260"/>
+  </g>
+
+  <!-- Left vertical margin line -->
+  <line x1="80" y1="0" x2="80" y2="300" stroke="#C4706A" stroke-width="1.2" opacity="0.3" filter="url(#light-sketch)"/>
+
+  <!-- ═══ LOGO MARK — stylized R with notebook & neural elements ═══ -->
+  <g transform="translate(130, 70)">
+    <!-- Background circle -->
+    <circle cx="80" cy="80" r="75" fill="#F5F0E8" stroke="#D4C5B0" stroke-width="1.5" filter="url(#light-sketch)"/>
+
+    <!-- Stylized R — main letter form -->
+    <path d="M 40 25 C 40 20, 45 18, 52 18 L 58 18 C 68 18, 76 22, 80 28 C 84 34, 84 41, 80 47 C 76 50, 70 51, 64 51 L 64 62 L 80 62 C 88 62, 95 66, 97 74 C 98 82, 93 90, 84 92 L 58 92 L 58 108 M 64 74 L 76 74 C 83 74, 88 70, 88 64 C 88 58, 82 55, 76 55 L 64 55"
+          fill="none" stroke="#2C2416" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"
+          filter="url(#text-sketch)"/>
+
+    <!-- Notebook ruling lines inside R loop -->
+    <line x1="44" y1="35" x2="78" y2="35" stroke="#A89E8C" stroke-width="1.2" opacity="0.7" filter="url(#light-sketch)"/>
+    <line x1="44" y1="44" x2="78" y2="44" stroke="#A89E8C" stroke-width="1.2" opacity="0.6" filter="url(#light-sketch)"/>
+
+    <!-- Neural research dots — blue nodes -->
+    <circle cx="48" cy="30" r="4" fill="#6B8FAD" filter="url(#light-sketch)"/>
+    <circle cx="68" cy="40" r="3.5" fill="#6B8FAD" opacity="0.8" filter="url(#light-sketch)"/>
+    <circle cx="88" cy="28" r="4" fill="#6B8FAD" filter="url(#light-sketch)"/>
+    <circle cx="74" cy="64" r="3" fill="#7A9E7A" opacity="0.9" filter="url(#light-sketch)"/>
+    <circle cx="92" cy="74" r="3" fill="#7A9E7A" opacity="0.7" filter="url(#light-sketch)"/>
+
+    <!-- Gene helix hint -->
+    <path d="M 88 80 Q 94 86, 88 92" fill="none" stroke="#7A9E7A" stroke-width="2" opacity="0.5" stroke-linecap="round" filter="url(#light-sketch)"/>
+    <path d="M 94 78 Q 100 84, 94 90" fill="none" stroke="#6B8FAD" stroke-width="1.5" opacity="0.5" stroke-linecap="round" filter="url(#light-sketch)"/>
+  </g>
+
+  <!-- ═══ TEXT PART ═══ -->
+  <g transform="translate(340, 0)" filter="url(#text-sketch)">
+    <!-- "Rairos" in Caveat font style — drawn as paths for SVG portability -->
+    <!-- R -->
+    <text x="0" y="155" font-family="Georgia, 'Times New Roman', serif" font-size="108" font-weight="700" fill="#2C2416" letter-spacing="-2">Rairos</text>
+
+    <!-- Tagline -->
+    <text x="5" y="195" font-family="Georgia, serif" font-size="18" fill="#6B5E4A" font-style="italic" letter-spacing="0.5">Self-Evolving Research Operating System</text>
+
+    <!-- Subtle underline -->
+    <path d="M 5 210 Q 200 215, 400 210" fill="none" stroke="#D4C5B0" stroke-width="1.5" opacity="0.8" stroke-linecap="round" filter="url(#light-sketch)"/>
+  </g>
+
+  <!-- Decorative corner flourishes -->
+  <g stroke="#D4C5B0" stroke-width="1" opacity="0.5" fill="none" filter="url(#light-sketch)">
+    <!-- Top left -->
+    <path d="M 20 20 Q 20 40, 40 40"/>
+    <path d="M 25 15 Q 25 35, 45 35"/>
+    <!-- Top right -->
+    <path d="M 880 20 Q 880 40, 860 40"/>
+    <path d="M 875 15 Q 875 35, 855 35"/>
+    <!-- Bottom left -->
+    <path d="M 20 280 Q 20 260, 40 260"/>
+    <!-- Bottom right -->
+    <path d="M 880 280 Q 880 260, 860 260"/>
+  </g>
+
+  <!-- Subtle label: "Gene Pool · Insight Evolution · Research OS" -->
+  <text x="450" y="268" font-family="Georgia, serif" font-size="11" fill="#A89E8C" text-anchor="middle" font-style="italic" letter-spacing="1" filter="url(#light-sketch)">Gene Pool · Insight Evolution · Research OS</text>
+</svg>
