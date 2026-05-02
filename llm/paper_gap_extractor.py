@@ -99,19 +99,18 @@ def save_gap_to_gene_pool(
     keywords: List[str],
     summary: str,
 ) -> bool:
-    """Append a new gap as a CapsuleGene entry to capsules.json."""
+    """Append a new gap as a CapsuleGene entry to both Gene Pool stores.
+
+    Writes to:
+    - ~/.ai_research_os/gene_pool/capsules.json   (read by _match_gene_pool / briefing_generator)
+    - ~/.ai_research_os/evolution/gene_pool.jsonl (read by find_capsule / Curator / EvolutionTracker)
+    """
     try:
-        capsule_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-        capsule_path.parent.mkdir(parents=True, exist_ok=True)
-
-        if capsule_path.exists():
-            data = json.loads(capsule_path.read_text(encoding="utf-8"))
-        else:
-            data = {"version": 1, "capsules": []}
-
+        capsule_id = f"extracted_{paper_id}_{uuid.uuid4().hex[:8]}"
+        now = ""
         capsule = {
-            "capsule_id": f"extracted_{paper_id}_{uuid.uuid4().hex[:8]}",
-            "created_at": "",
+            "capsule_id": capsule_id,
+            "created_at": now,
             "trigger_topic": title[:200],
             "trigger_gap_type": gap_type,
             "trigger_keywords": keywords,
@@ -126,8 +125,33 @@ def save_gap_to_gene_pool(
                 "summary": summary,
             },
         }
+
+        # Write to capsules.json (briefing_generator reads this)
+        capsule_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+        capsule_path.parent.mkdir(parents=True, exist_ok=True)
+        if capsule_path.exists():
+            data = json.loads(capsule_path.read_text(encoding="utf-8"))
+        else:
+            data = {"version": 1, "capsules": []}
         data["capsules"].append(capsule)
         capsule_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+
+        # Write to gene_pool.jsonl (EvolutionTracker.find_capsule reads this)
+        try:
+            from llm.insight.gene import CapsuleGene
+            from llm.insight.tracker import EvolutionTracker
+            tracker = EvolutionTracker()
+            tracker.encode_capsule(
+                topic=title[:200],
+                gap_type=gap_type,
+                gap_title=gap_title[:200],
+                gap_description=summary,
+                success_score=0.5,
+            )
+        except Exception:
+            # Non-critical: capsules.json write succeeded, gene_pool.jsonl is optional for CLI use
+            pass
+
         return True
     except Exception:
         return False
