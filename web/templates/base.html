@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Rairos{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* SVG Sketch Filter — applied to elements via CSS */
+    svg#sketch-filter { position: absolute; width: 0; height: 0; }
+  </style>
+</head>
+<body>
+  <!-- SVG Sketch filter for hand-drawn border effect -->
+  <svg id="sketch-filter" aria-hidden="true">
+    <defs>
+      <filter id="sketch" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" result="noise" seed="5"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8"
+          xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="sketch-light" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" seed="8"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2"
+          xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="app-shell">
+    <!-- ── Sidebar ── -->
+    <nav class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">🧠</span> Rairos
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-label">Core</div>
+        <a href="/" class="nav-item {% if page == 'dashboard' %}active{% endif %}">
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="/papers" class="nav-item {% if page == 'papers' %}active{% endif %}">
+          <span class="nav-icon">📚</span> Papers
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-label">Intelligence</div>
+        <a href="/briefing" class="nav-item {% if page == 'briefing' %}active{% endif %}">
+          <span class="nav-icon">📋</span> Briefing
+        </a>
+        <a href="/citation-chain" class="nav-item {% if page == 'citation_chain' %}active{% endif %}">
+          <span class="nav-icon">🔗</span> Citation Chain
+        </a>
+        <a href="/impact" class="nav-item {% if page == 'impact' %}active{% endif %}">
+          <span class="nav-icon">🏆</span> Impact Ranking
+        </a>
+      </div>
+
+      <div class="nav-section" style="margin-top: auto; padding-top: 20px; border-top: 1px dashed var(--border-light);">
+        <div class="nav-section-label" style="padding-top: 12px;">Streamlit</div>
+        <a href="/streamlit" class="nav-item" style="font-size: 14px; color: var(--ink-faint);">
+          <span class="nav-icon">🔀</span> Full App →
+        </a>
+      </div>
+    </nav>
+
+    <!-- ── Main Content ── -->
+    <main class="main">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <!-- Mermaid CDN for citation chain diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral', fontFamily: 'Lora, serif' });
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

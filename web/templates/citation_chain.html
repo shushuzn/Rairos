@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Citation Chain — Rairos{% endblock %}
+
+{% block content %}
+<h1 class="page-title">🔗 Citation Chain</h1>
+<div class="page-title-underline"></div>
+<p class="page-desc">Trace citations forward and backward using Semantic Scholar — visualize research influence.</p>
+
+<!-- Input -->
+<form method="post" action="/citation-chain" id="chain-form">
+  <div class="card">
+    <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 200px;">
+        <label class="input-label">Seed arXiv ID</label>
+        <input name="arxiv_id" id="chain-arxiv" class="input-field" placeholder="e.g. 2301.12345" value="{{ arxiv_id or '' }}" style="font-size: 17px; padding: 12px;" required>
+      </div>
+      <div>
+        <label class="input-label">Depth</label>
+        <select name="max_depth" id="chain-depth" class="input-field" style="width: 90px;">
+          <option value="1">1 hop</option>
+          <option value="2" selected>2 hops</option>
+          <option value="3">3 hops</option>
+        </select>
+      </div>
+      <input type="hidden" name="fmt" id="chain-fmt" value="{{ chain_data.fmt if chain_data else 'mermaid' }}">
+      <button type="submit" class="btn btn-blue" style="height: 48px;">🔗 Build Chain</button>
+    </div>
+  </div>
+</form>
+
+<!-- Error -->
+{% if error %}
+<div class="alert alert-warning">{{ error }}</div>
+{% endif %}
+
+<!-- Chain Result -->
+{% if chain_data %}
+<div class="card" style="margin-bottom: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <div class="card-title" style="margin: 0;">Chain: {{ chain_data.nodes_count }} papers · {{ chain_data.edges_count }} connections</div>
+    <span class="badge badge-blue">{{ chain_data.nodes_count }} nodes</span>
+  </div>
+
+  <!-- Format selector (real links) -->
+  <div class="tabs">
+    <a href="#" class="tab {% if chain_data.fmt == 'mermaid' %}active{% endif %}"
+       onclick="switchFmt('mermaid'); return false;">Mermaid</a>
+    <a href="#" class="tab {% if chain_data.fmt == 'text' %}active{% endif %}"
+       onclick="switchFmt('text'); return false;">Text</a>
+    <a href="#" class="tab {% if chain_data.fmt == 'graphviz' %}active{% endif %}"
+       onclick="switchFmt('graphviz'); return false;">Graphviz</a>
+  </div>
+
+  <!-- Mermaid diagram -->
+  {% if chain_data.fmt == 'mermaid' %}
+  <div class="mermaid-container">
+    <pre class="mermaid">{{ chain_data.rendered[9:-4] }}</pre>
+  </div>
+  {% elif chain_data.fmt == 'graphviz' %}
+  <div class="code-block" style="background: #faf8f4; color: var(--ink); font-size: 12px;">{{ chain_data.rendered }}</div>
+  {% else %}
+  <pre class="code-block" style="background: #faf8f4; color: var(--ink); white-space: pre-wrap;">{{ chain_data.rendered }}</pre>
+  {% endif %}
+</div>
+
+<!-- Node table -->
+<div class="card">
+  <div class="card-title">Papers in Chain</div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Paper</th>
+        <th>Year</th>
+        <th>Citations</th>
+        <th>Cites</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pid, title, year, cite_cnt in chain_data.nodes[:20] %}
+      <tr>
+        <td class="rank-num">{{ loop.index }}</td>
+        <td>
+          <div style="font-weight: 600; font-size: 14px;">{{ title[:70] }}</div>
+          <div style="font-size: 11px; color: var(--ink-faint); font-family: var(--font-mono);">{{ pid[:15] }}</div>
+        </td>
+        <td>{{ year or '?' }}</td>
+        <td>{{ cite_cnt }}</td>
+        <td>{{ chain_data.edges|select('equalto', pid)|list|length }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if chain_data.nodes_count > 20 %}
+  <p style="color: var(--ink-faint); font-size: 13px; margin-top: 10px;">...and {{ chain_data.nodes_count - 20 }} more papers</p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if chain_data and chain_data.fmt == 'mermaid' %}
+<script>mermaid.init({ startOnLoad: true });</script>
+{% endif %}
+<script>
+function switchFmt(fmt) {
+  document.getElementById('chain-fmt').value = fmt;
+  document.getElementById('chain-form').submit();
+}
+</script>
+{% endblock %}

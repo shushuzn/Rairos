@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Impact Ranking — Rairos{% endblock %}
+
+{% block content %}
+<h1 class="page-title">📊 Impact Ranking</h1>
+<div class="page-title-underline"></div>
+<p class="page-desc">Composite impact scores — normalized citations, PageRank, momentum, and author H-index.</p>
+
+{% if ranking %}
+<div class="card">
+  <div class="card-title">🏆 Leaderboard</div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 50px;">Rank</th>
+        <th>Tier</th>
+        <th>Paper</th>
+        <th style="width: 70px;">Year</th>
+        <th style="width: 90px;">Score</th>
+        <th style="width: 90px;">Citations</th>
+        <th style="width: 80px;">Percentile</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for entry in ranking %}
+      <tr>
+        <td class="rank-num">#{{ entry.rank }}</td>
+        <td>
+          {% if entry.tier == 'S' %}
+          <span class="tier-S" style="font-size: 18px;">⭐ S</span>
+          {% elif entry.tier == 'A' %}
+          <span class="tier-A">🅰️ A</span>
+          {% elif entry.tier == 'B' %}
+          <span class="tier-B">🅱️ B</span>
+          {% elif entry.tier == 'C' %}
+          <span class="tier-C">⚙️ C</span>
+          {% else %}
+          <span class="tier-D">D</span>
+          {% endif %}
+        </td>
+        <td>
+          <div style="font-weight: 600; font-size: 14px;">{{ entry.title[:70] }}</div>
+          <div style="font-size: 11px; color: var(--ink-faint);">{{ entry.why or '' }}</div>
+        </td>
+        <td>{{ entry.year }}</td>
+        <td>
+          <div style="font-family: var(--font-display); font-size: 20px; font-weight: 700;">
+            {{ "%.3f"|format(entry.composite_score) }}
+          </div>
+        </td>
+        <td>{{ entry.raw_citations }}</td>
+        <td>
+          <div style="font-size: 12px; color: var(--ink-faint);">Top {{ "%.0f"|format(entry.percentile) }}%</div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Score explanation card -->
+<div class="card">
+  <div class="card-title">📐 Score Formula</div>
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px;">
+    <div style="text-align: center; padding: 16px; background: var(--paper-alt); border-radius: 4px;">
+      <div style="font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--pen-blue);">30%</div>
+      <div style="font-size: 13px; color: var(--ink-light);">Normalized Citations<br><span style="font-size:11px; color: var(--ink-faint);">/year</span></div>
+    </div>
+    <div style="text-align: center; padding: 16px; background: var(--paper-alt); border-radius: 4px;">
+      <div style="font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--pen-blue);">30%</div>
+      <div style="font-size: 13px; color: var(--ink-light);">PageRank Influence<br><span style="font-size:11px; color: var(--ink-faint);">cited by high-impact</span></div>
+    </div>
+    <div style="text-align: center; padding: 16px; background: var(--paper-alt); border-radius: 4px;">
+      <div style="font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--pen-blue);">25%</div>
+      <div style="font-size: 13px; color: var(--ink-light);">Citation Momentum<br><span style="font-size:11px; color: var(--ink-faint);">recent growth</span></div>
+    </div>
+    <div style="text-align: center; padding: 16px; background: var(--paper-alt); border-radius: 4px;">
+      <div style="font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--pen-blue);">15%</div>
+      <div style="font-size: 13px; color: var(--ink-light);">Author H-Index<br><span style="font-size:11px; color: var(--ink-faint);">track record</span></div>
+    </div>
+  </div>
+  <div class="alert alert-info" style="font-size: 13px;">
+    <strong>Tier S</strong> ≥ 0.80 &nbsp;|&nbsp; <strong>Tier A</strong> ≥ 0.60 &nbsp;|&nbsp; <strong>Tier B</strong> ≥ 0.40 &nbsp;|&nbsp; <strong>Tier C</strong> ≥ 0.20 &nbsp;|&nbsp; <strong>Tier D</strong> &lt; 0.20
+  </div>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-icon">📭</div>
+  <div class="empty-state-text">No papers to rank.</div>
+  <p style="margin-top: 12px; color: var(--ink-faint); font-size: 14px;">Import papers to see impact rankings.</p>
+</div>
+{% endif %}
+{% endblock %}

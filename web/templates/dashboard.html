@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Rairos{% endblock %}
+
+{% block content %}
+<h1 class="page-title">📊 Dashboard</h1>
+<div class="page-title-underline"></div>
+<p class="page-desc">Your research at a glance.</p>
+
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon">📄</div>
+    <div class="stat-value">{{ stats.total_papers }}</div>
+    <div class="stat-label">Total Papers</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">✅</div>
+    <div class="stat-value">{{ stats.parsed }}</div>
+    <div class="stat-label">Parsed</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">⏳</div>
+    <div class="stat-value">{{ stats.idle + stats.pending }}</div>
+    <div class="stat-label">Idle / Pending</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">⚡</div>
+    <div class="stat-value">{{ stats.queued }}</div>
+    <div class="stat-label">In Queue</div>
+  </div>
+</div>
+
+<!-- Charts -->
+{% if stats.by_source or stats.by_status %}
+<div class="chart-grid">
+  {% if stats.by_source %}
+  <div class="bar-chart-container">
+    <div class="bar-chart-title">Papers by Source</div>
+    {% for source, count in stats.by_source %}
+    <div class="bar-row">
+      <div class="bar-label">{{ source }}</div>
+      <div class="bar-track">
+        {% if stats.total_papers > 0 %}
+        {% set pct = (count / stats.total_papers * 100)|round %}
+        <div class="bar-fill" style="width: {{ pct }}%"></div>
+        {% if pct >= 20 %}
+        <span class="bar-label-overlay">{{ count }}</span>
+        {% endif %}
+        {% else %}
+        <div class="bar-fill" style="width: 0%"></div>
+        {% endif %}
+      </div>
+      <div style="font-size:12px; color: var(--ink-faint); width: 30px;">{{ count }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if stats.by_status %}
+  <div class="bar-chart-container">
+    <div class="bar-chart-title">Papers by Status</div>
+    {% for status, count in stats.by_status %}
+    <div class="bar-row">
+      <div class="bar-label">{{ status }}</div>
+      <div class="bar-track">
+        {% if stats.total_papers > 0 %}
+        {% set pct = (count / stats.total_papers * 100)|round %}
+        <div class="bar-fill bar-fill-alt" style="width: {{ pct }}%"></div>
+        {% if pct >= 20 %}
+        <span class="bar-label-overlay">{{ count }}</span>
+        {% endif %}
+        {% else %}
+        <div class="bar-fill bar-fill-alt" style="width: 0%"></div>
+        {% endif %}
+      </div>
+      <div style="font-size:12px; color: var(--ink-faint); width: 30px;">{{ count }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- Parsing Queue -->
+{% if parsing or queue_list %}
+<div class="card" style="margin-bottom: 20px;">
+  <div class="card-title">⚙️ Parse Queue</div>
+  {% if parsing %}
+  {% for pid, title, source in parsing %}
+  <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px dashed var(--border-light);">
+    <div style="flex: 1; min-width: 0;">
+      <div style="font-size: 14px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ title }}</div>
+      <div style="font-size: 11px; color: var(--ink-faint);">{{ pid[:20] }} · {{ source }}</div>
+    </div>
+    <span class="badge badge-blue" style="flex-shrink: 0;">
+      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--pen-blue); animation: pulse 1.5s infinite;"></span>
+      Running
+    </span>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% if queue_list %}
+  {% for pid, title, status, job_type in queue_list[:5] %}
+  <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--border-light);">
+    <div style="flex: 1; min-width: 0;">
+      <div style="font-size: 13px; color: var(--ink-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ title }}</div>
+      <div style="font-size: 11px; color: var(--ink-faint);">{{ pid[:20] }}</div>
+    </div>
+    <span class="badge badge-gray" style="flex-shrink: 0;">{{ status }}</span>
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+{% endif %}
+<div class="card">
+  <div class="card-title">📖 Recent Papers</div>
+  {% if recent %}
+  {% for paper in recent %}
+  <div style="border-bottom: 1px dashed var(--border-light); padding: 12px 0;">
+    <a href="{{ paper[5] }}" style="text-decoration: none;">
+      <div class="paper-title" style="font-size: 16px;">{{ paper[1][:80] }}</div>
+    </a>
+    <div class="paper-meta">{{ paper[2] }} · {{ paper[3] }} · {{ paper[4] }}</div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">📭</div>
+    <div class="empty-state-text">No papers yet. Import some!</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

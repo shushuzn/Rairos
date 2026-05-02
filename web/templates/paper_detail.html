@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}{{ paper[1][:60] if paper else "Paper Not Found" }} — Rairos{% endblock %}
+
+{% block content %}
+{% if error %}
+<div class="card">
+  <div class="empty-state">
+    <div class="empty-state-icon">📭</div>
+    <div class="empty-state-text">{{ error }}</div>
+    <a href="/papers" class="btn btn-secondary" style="margin-top: 16px; display: inline-flex;">← Back to Papers</a>
+  </div>
+</div>
+{% else %}
+{% set p = paper %}
+
+<!-- Header -->
+<div style="margin-bottom: 32px;">
+  <div style="display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center;">
+    <a href="/papers" style="color: var(--ink-faint); text-decoration: none; font-size: 13px;">← Papers</a>
+    <span style="color: var(--border);">·</span>
+    <span class="paper-category">{{ p[6] }}</span>
+    {% for cat in p[19] %}
+    {% if cat and cat != p[6] %}
+    <span style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); background: var(--paper-alt); border: 1px solid var(--border-light); border-radius: 2px; padding: 1px 6px;">{{ cat }}</span>
+    {% endif %}
+    {% endfor %}
+  </div>
+  <h1 class="page-title" style="font-size: 34px;">{{ p[1] }}</h1>
+  <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
+    <span style="font-family: var(--font-display); font-size: 16px; color: var(--ink-light);">{{ p[2] }}</span>
+    <span style="color: var(--border);">·</span>
+    <span style="color: var(--ink-faint); font-size: 14px;">{{ p[3] }}</span>
+    <span style="color: var(--border);">·</span>
+    <span style="color: var(--ink-faint); font-size: 14px;">{{ p[4] }}</span>
+  </div>
+</div>
+
+<!-- Meta cards -->
+<div class="chart-grid" style="margin-bottom: 28px;">
+  <div class="card" style="margin: 0; padding: 20px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div style="text-align: center;">
+        <div style="font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--pen-blue);">{{ p[13] }}</div>
+        <div style="font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px;">Citations</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--ink);">{{ p[12] }}</div>
+        <div style="font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px;">References</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--ink-light);">{{ p[14] }}</div>
+        <div style="font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px;">Pages</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--ink-light);">{{ p[15] }}</div>
+        <div style="font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px;">Words</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin: 0; padding: 20px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div>
+        <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Status</div>
+        {% if p[16] == 'parsed' %}
+        <span class="badge badge-green">✅ Parsed</span>
+        {% elif p[16] == 'pending' %}
+        <span class="badge badge-gray">⏳ Pending</span>
+        {% elif p[16] == 'failed' %}
+        <span class="badge badge-red">❌ Failed</span>
+        {% else %}
+        <span class="badge badge-gray">{{ p[16] }}</span>
+        {% endif %}
+      </div>
+      <div>
+        <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Reading</div>
+        {% if p[17] == 'reading' %}
+        <span class="badge badge-blue">📖 Reading</span>
+        {% elif p[17] == 'completed' %}
+        <span class="badge badge-green">✅ Completed</span>
+        {% else %}
+        <span class="badge badge-gray">○ Unread</span>
+        {% endif %}
+      </div>
+      <div>
+        <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">arXiv ID</div>
+        <span style="font-family: var(--font-mono); font-size: 12px; color: var(--ink);">{{ p[0][:20] }}</span>
+      </div>
+      <div>
+        <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Added</div>
+        <span style="font-size: 13px; color: var(--ink);">{{ p[18][:10] if p[18] else '—' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Abstract -->
+<div class="card" style="margin-bottom: 20px;">
+  <div class="card-title">📝 Abstract</div>
+  <div style="font-size: 14px; line-height: 1.8; color: var(--ink-light);">{{ p[7][:800] }}{% if p[7]|length > 800 %}...{% endif %}</div>
+</div>
+
+<!-- Links -->
+<div class="card" style="margin-bottom: 20px;">
+  <div class="card-title">🔗 Links</div>
+  <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+    {% if p[8] %}
+    <a href="{{ p[8] }}" target="_blank" class="btn btn-secondary" style="font-size: 14px;">
+      📄 arXiv Abstract
+    </a>
+    {% endif %}
+    {% if p[9] %}
+    <a href="{{ p[9] }}" target="_blank" class="btn btn-secondary" style="font-size: 14px;">
+      📥 PDF
+    </a>
+    {% endif %}
+    {% if p[11] %}
+    <a href="https://doi.org/{{ p[11] }}" target="_blank" class="btn btn-secondary" style="font-size: 14px;">
+      🔗 DOI
+    </a>
+    {% endif %}
+    <a href="/briefing?arxiv_id={{ p[0] }}" class="btn btn-blue" style="font-size: 14px;">
+      📋 Generate Briefing
+    </a>
+  </div>
+</div>
+
+<!-- Citation info -->
+{% if p[10] or p[11] %}
+<div class="card" style="margin-bottom: 20px;">
+  <div class="card-title">📚 Citation</div>
+  {% if p[10] %}
+  <div style="font-size: 13px; color: var(--ink-light); margin-bottom: 6px;">
+    <strong>Journal:</strong> {{ p[10] }}
+  </div>
+  {% endif %}
+  {% if p[11] %}
+  <div style="font-size: 13px; color: var(--ink-light);">
+    <strong>DOI:</strong> <span style="font-family: var(--font-mono);">{{ p[11] }}</span>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

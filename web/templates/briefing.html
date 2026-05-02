@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Research Briefing — Rairos{% endblock %}
+
+{% block content %}
+<h1 class="page-title">📋 Research Briefing</h1>
+<div class="page-title-underline"></div>
+<p class="page-desc">Structured intelligence report for any paper — key claims, verdict, and Gene Pool relevance.</p>
+
+<!-- Input Form -->
+<form method="post" action="/briefing">
+  <div class="card">
+    <div class="card-title">Generate Briefing</div>
+    <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 200px;">
+        <label class="input-label" for="arxiv_id">arXiv ID</label>
+        <input
+          id="arxiv_id"
+          name="arxiv_id"
+          class="input-field"
+          placeholder="e.g. 2301.12345"
+          value="{{ arxiv_id or '' }}"
+          required
+          style="font-size: 17px; padding: 12px;"
+        >
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <label class="input-label" style="margin: 0;">LLM</label>
+        <input type="hidden" name="use_llm" value="false">
+        <input type="checkbox" name="use_llm" value="true" checked style="width: 18px; height: 18px;">
+      </div>
+      <button type="submit" class="btn btn-blue" style="height: 48px;">⚡ Generate</button>
+    </div>
+  </div>
+</form>
+
+<!-- Error -->
+{% if error %}
+<div class="alert alert-warning">{{ error }}</div>
+{% endif %}
+
+<!-- Result -->
+{% if result %}
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div>
+      <div class="card-title" style="margin-bottom: 4px;">{{ result.briefing.paper_title[:80] }}</div>
+      <div style="font-size: 13px; color: var(--ink-faint);">
+        arXiv: <a href="https://arxiv.org/abs/{{ result.briefing.paper_arxiv_id }}" target="_blank" style="color: var(--pen-blue);">{{ result.briefing.paper_arxiv_id }}</a>
+        · Generated {{ result.briefing.generated_at[:16] }}
+      </div>
+    </div>
+    <div style="text-align: right;">
+      {% if result.briefing.verdict == 'validates' %}
+      <span class="badge badge-green" style="font-size: 14px;">✅ Validates</span>
+      {% elif result.briefing.verdict == 'contradicts' %}
+      <span class="badge badge-red" style="font-size: 14px;">❌ Contradicts</span>
+      {% else %}
+      <span class="badge badge-gray" style="font-size: 14px;">⚪ Neutral</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Sections -->
+  <div class="markdown-content">
+    {% for section in result.briefing.sections %}
+    <h2>{{ section.title }}</h2>
+    <div>{{ section.content.replace('\n', '<br>')|safe }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- Gene Pool + Memory -->
+  {% if result.briefing.gene_pool_matches or result.briefing.memory_stances %}
+  <hr class="divider">
+  {% if result.briefing.gene_pool_matches %}
+  <div style="margin-bottom: 16px;">
+    <div style="font-family: var(--font-display); font-size: 18px; margin-bottom: 10px;">🧬 Gene Pool Relevance</div>
+    {% for m in result.briefing.gene_pool_matches %}
+    <div style="padding: 8px 12px; background: rgba(107,143,173,0.06); border-left: 3px solid var(--pen-blue); margin-bottom: 8px;">
+      <strong>{{ m.gap_title }}</strong> <span class="badge badge-blue">{{ m.gap_type }}</span>
+      <div style="font-size: 12px; color: var(--ink-faint); margin-top: 2px;">Score: {{ "%.2f"|format(m.outcome_score) }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if result.briefing.memory_stances %}
+  <div>
+    <div style="font-family: var(--font-display); font-size: 18px; margin-bottom: 10px;">🧠 Research Memory Alignment</div>
+    {% for s in result.briefing.memory_stances %}
+    <div style="padding: 8px 12px; background: rgba(196,112,106,0.06); border-left: 3px solid var(--pen-red); margin-bottom: 8px;">
+      <strong>[{{ s.stance_type.upper() }}]</strong> {{ s.topic }}: {{ s.claim[:80] }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
