@@ -36,16 +36,39 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-# Import our new modules
-from research_loop.paper_parser import download_and_parse, parse_existing_pdf, PaperContent
-from research_loop.code_generator import generate_code, save_code
-from research_loop.test_extractor import extract_tests, save_tests, TestSuite
-from research_loop.benchmark_runner import (
-    run_benchmark,
-    BenchmarkConfig,
-    BenchmarkResult,
-    summarize_result,
-)
+# Import our new modules — guard against missing modules
+try:
+    from research_loop.paper_parser import download_and_parse, parse_existing_pdf, PaperContent
+except ImportError:
+    PaperContent = None  # type: ignore
+    download_and_parse = None  # type: ignore
+    parse_existing_pdf = None  # type: ignore
+
+try:
+    from research_loop.code_generator import generate_code, save_code
+except ImportError:
+    generate_code = None  # type: ignore
+    save_code = None  # type: ignore
+
+try:
+    from research_loop.test_extractor import extract_tests, save_tests, TestSuite
+except ImportError:
+    extract_tests = None  # type: ignore
+    save_tests = None  # type: ignore
+    TestSuite = None  # type: ignore
+
+try:
+    from research_loop.benchmark_runner import (
+        run_benchmark,
+        BenchmarkConfig,
+        BenchmarkResult,
+        summarize_result,
+    )
+except ImportError:
+    run_benchmark = None  # type: ignore
+    BenchmarkConfig = None  # type: ignore
+    BenchmarkResult = None  # type: ignore
+    summarize_result = None  # type: ignore
 
 
 class PaperPipeline:
@@ -82,44 +105,56 @@ class PaperPipeline:
             dict with paths to all generated artifacts
         """
         # Normalize
-        from research_loop.paper_parser import normalize_arxiv_id
-        arxiv_id = normalize_arxiv_id(arxiv_id)
+        try:
+            from parsers.input_detection import normalize_arxiv_id
+            arxiv_id = normalize_arxiv_id(arxiv_id) or arxiv_id
+        except Exception:
+            arxiv_id = arxiv_id.strip()
 
         self.work_dir.mkdir(parents=True, exist_ok=True)
         paper_dir = self.work_dir / arxiv_id.replace(".", "_")
 
         # Stage 1: Download & parse paper
-        print(f"[paper2code] Downloading paper {arxiv_id}...")
-        try:
-            content = download_and_parse(arxiv_id)
-        except Exception as e:
-            print(f"[paper2code] Download failed: {e}, trying PDF parse...")
-            # Fallback: try to find existing PDF
-            pdf_path = self._find_existing_pdf(arxiv_id)
-            if pdf_path and pdf_path.exists():
-                content = parse_existing_pdf(pdf_path, arxiv_id)
-            else:
-                raise RuntimeError(f"Could not fetch paper {arxiv_id}: {e}")
+        content = None
+        if download_and_parse:
+            print(f"[paper2code] Downloading paper {arxiv_id}...")
+            try:
+                content = download_and_parse(arxiv_id)
+            except Exception as e:
+                print(f"[paper2code] Download failed: {e}, trying PDF parse...")
+                pdf_path = self._find_existing_pdf(arxiv_id)
+                if pdf_path and pdf_path.exists() and parse_existing_pdf:
+                    content = parse_existing_pdf(pdf_path, arxiv_id)
+
+        if content is None:
+            raise RuntimeError(f"Could not fetch paper {arxiv_id} (download_and_parse unavailable)")
 
         print(f"[paper2code] Paper title: {content.title[:80]}")
 
         # Stage 2: Generate code skeleton
-        print(f"[paper2code] Generating {framework} code skeleton...")
-        code = generate_code(content, framework=framework)
+        code = None
         src_dir = paper_dir / "src"
+        code_path = src_dir / "model.py"
         module_name = self._suggest_module_name(content.title)
-        code_path = save_code(code, src_dir, module_name=module_name)
-        print(f"[paper2code] Code saved: {code_path}")
+
+        if generate_code and save_code:
+            print(f"[paper2code] Generating {framework} code skeleton...")
+            code = generate_code(content, framework=framework)
+            code_path = save_code(code, src_dir, module_name=module_name)
+            print(f"[paper2code] Code saved: {code_path}")
+        else:
+            print(f"[paper2code] Skipping code generation (module unavailable)")
 
         # Stage 3: Generate tests
         test_dir = paper_dir / "tests"
         benchmark_result: Optional[BenchmarkResult] = None
 
-        if not skip_tests:
+        if not skip_tests and extract_tests and run_benchmark and code is not None:
             print(f"[paper2code] Extracting assertions and generating tests...")
             try:
                 suite = extract_tests(content, code, module_name=module_name)
-                save_tests(suite, test_dir)
+                if save_tests:
+                    save_tests(suite, test_dir)
                 print(f"[paper2code] Tests: {len(suite.test_cases)} test cases")
 
                 # Stage 4: Run benchmark
@@ -141,9 +176,8 @@ class PaperPipeline:
 
             except Exception as e:
                 print(f"[paper2code] Test/benchmark stage failed: {e}")
-                # Continue anyway — code was generated successfully
         else:
-            print(f"[paper2code] Skipping tests (--skip-tests)")
+            print(f"[paper2code] Skipping tests (--skip-tests or module unavailable)")
 
         # Stage 5: Write README
         readme = self._generate_readme(content, framework, benchmark_result)
