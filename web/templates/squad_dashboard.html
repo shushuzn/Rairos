@@ -64,6 +64,29 @@
   </div>
 </div>
 
+<!-- Gap Watch Status -->
+<div class="card" style="margin-bottom: 24px;">
+  <div class="card-title">📡 Gap Watch
+    <span style="font-size:11px; color:var(--ink-faint); font-weight:400; margin-left:8px;">
+      (monitors arXiv feed for Gene Pool matches)
+    </span>
+  </div>
+  <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 140px; background: var(--paper-alt); border: 1px solid var(--border-light); border-radius: 4px; padding: 12px 16px; text-align: center;">
+      <div style="font-size: 22px; font-family: var(--font-display); font-weight: 700; color: var(--pen-green);" id="gw-arxiv-today">—</div>
+      <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.5px;">arXiv Hits Today</div>
+    </div>
+    <div style="flex: 1; min-width: 140px; background: var(--paper-alt); border: 1px solid var(--border-light); border-radius: 4px; padding: 12px 16px; text-align: center;">
+      <div style="font-size: 22px; font-family: var(--font-display); font-weight: 700; color: var(--pen-blue);" id="gw-squad-status">—</div>
+      <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.5px;">Squad Status</div>
+    </div>
+    <div style="flex: 2; min-width: 200px; background: var(--paper-alt); border: 1px solid var(--border-light); border-radius: 4px; padding: 12px 16px;">
+      <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Last arXiv Match</div>
+      <div style="font-size: 13px; color: var(--ink);" id="gw-last-arxiv">No activity yet</div>
+    </div>
+  </div>
+</div>
+
 <!-- Activity Stream -->
 <div class="card" style="margin-bottom: 24px;">
   <div class="card-title">📡 Activity Stream</div>
@@ -114,6 +137,24 @@
 .status-error { background: #e05050; color: white; }
 .status-idle { background: var(--paper); color: var(--ink-faint); border: 1px solid var(--border); }
 </style>
+
+<script>
+(function() {
+  fetch('/research-loop/squad/activity')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var stats = data.watch_stats || {};
+      var el = document.getElementById('gw-arxiv-today');
+      if (el) el.textContent = stats.arxiv_events_today || 0;
+
+      var squadEl = document.getElementById('gw-squad-status');
+      if (squadEl) squadEl.textContent = stats.squad_running ? 'Running' : 'Idle';
+
+      var lastEl = document.getElementById('gw-last-arxiv');
+      if (lastEl && stats.last_arxiv_event) lastEl.textContent = stats.last_arxiv_event;
+    });
+})();
+</script>
 </div>
 
 <!-- Recent Alerts from Squad -->

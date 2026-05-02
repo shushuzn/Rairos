@@ -717,13 +717,25 @@ async def squad_stream():
 
 @app.get("/research-loop/squad/activity")
 async def squad_activity():
-    """JSON endpoint for squad activity stream."""
+    """JSON endpoint for squad activity stream + gap watch stats."""
     try:
         from research_loop.agents.squad import SquadCoordinator
         coord = SquadCoordinator()
+        activity = coord.get_activity(limit=50)
+
+        # Extract arXiv-related events for gap watch stats
+        arxiv_events = [e for e in activity if "arxiv" in (e.get("payload") or "").lower()]
+        import datetime
+        now = datetime.datetime.now()
+        watch_stats = {
+            "arxiv_events_today": len(arxiv_events),
+            "last_arxiv_event": arxiv_events[0]["ts"] if arxiv_events else None,
+            "squad_running": coord.get_status().get("running", False),
+        }
         return {
-            "activity": coord.get_activity(limit=50),
+            "activity": activity,
             "status": coord.get_status(),
+            "watch_stats": watch_stats,
         }
     except Exception as e:
         return {"activity": [], "error": str(e)}
