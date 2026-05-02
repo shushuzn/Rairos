@@ -152,7 +152,7 @@ def get_llm_cache_size() -> int:
 def warm_cache(
     queries: List[str],
     model: str = "gpt-4o-mini",
-    base_url: str = "https://api.openai.com/v1",
+    base_url: str = os.getenv("MINIMAX_BASE_URL") or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
     api_key: Optional[str] = None,
     system_prompt: Optional[str] = None,
 ) -> Dict[str, bool]:
@@ -252,6 +252,8 @@ def _use_warp_cli_fallback(model: str) -> bool:
 
 # Anthropic API endpoint (override via ANTHROPIC_API_URL env for MiniMax etc.)
 ANTHROPIC_API_URL = os.getenv("ANTHROPIC_API_URL", "https://api.anthropic.com/v1/messages")
+# MiniMax API endpoint (override via MINIMAX_BASE_URL env)
+MINIMAX_BASE_URL = os.getenv("MINIMAX_BASE_URL", "https://api.minimax.chat/v1")
 ANTHROPIC_API_VERSION = "2023-06-01"
 
 # Detect if a model is Anthropic-native (claude-*)
@@ -322,7 +324,7 @@ def call_llm_chat_completions(
     messages: List[Dict[str, str]],
     model: str,
     user_prompt: Optional[str] = None,
-    base_url: str = "https://api.openai.com/v1",
+    base_url: str = os.getenv("MINIMAX_BASE_URL") or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
     api_key: Optional[str] = None,
     timeout: int = 180,
     system_prompt: Optional[str] = None,
@@ -558,7 +560,7 @@ def stream_llm_chat_completions(
     messages: List[Dict[str, str]],
     model: str,
     user_prompt: Optional[str] = None,
-    base_url: str = "https://api.openai.com/v1",
+    base_url: str = os.getenv("MINIMAX_BASE_URL") or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
     api_key: Optional[str] = None,
     timeout: int = 180,
     system_prompt: Optional[str] = None,
@@ -648,3 +650,46 @@ def stream_llm_chat_completions(
             _cache_write(cache_key, full_response)
     except requests.RequestException as e:
         raise RuntimeError(f"LLM API request failed: {str(e)}") from e
+
+
+def get_client(
+    model: str = "minimax-m2.7-highspeed",
+    base_url: str = "https://api.minimax.chat/v1",
+    api_key: str = "",
+) -> callable:
+    """Get a callable LLM client for evolution.py.
+
+    Returns a wrapper around call_llm_chat_completions that provides a
+    .generate(prompt) interface expected by InsightEvolution.
+
+    Args:
+        model: Model name (default: minimax-m2.7-highspeed)
+        base_url: API base URL (default: MiniMax)
+        api_key: API key (reads from MINIMAX_API_KEY env if empty)
+
+    Returns:
+        A callable with .generate(prompt) method that calls the LLM.
+    """
+    import os as _os
+
+    if not api_key:
+        api_key = _os.getenv("MINIMAX_API_KEY", "")
+
+    def client_wrapper(messages: list) -> str:
+        return call_llm_chat_completions(
+            messages=messages,
+            model=model,
+            base_url=base_url,
+            api_key=api_key,
+        )
+
+    def generate(prompt: str) -> str:
+        return call_llm_chat_completions(
+            messages=[{"role": "user", "content": prompt}],
+            model=model,
+            base_url=base_url,
+            api_key=api_key,
+        )
+
+    client_wrapper.generate = generate
+    return client_wrapper
