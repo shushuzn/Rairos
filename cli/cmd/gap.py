@@ -43,6 +43,12 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
     con_p = sub.add_parser("contradictions", help="Find Gene Pool capsule pairs with opposite polarity")
     con_p.add_argument("--json", "-j", action="store_true", help="Output as JSON")
 
+    # gap path — trace citation path from paper to Gene Pool capsule
+    path_p = sub.add_parser("path", help="Trace citation path from paper to Gene Pool capsule")
+    path_p.add_argument("paper_id", help="Starting paper ID")
+    path_p.add_argument("--depth", type=int, default=3, help="Max path depth (default: 3)")
+    path_p.add_argument("--json", "-j", action="store_true", help="Output as JSON")
+
     p.add_argument(
         "topic",
         nargs="?",
@@ -139,6 +145,10 @@ def _run_gap(args: argparse.Namespace) -> int:
     # gap contradictions — find Gene Pool capsule pairs with opposite polarity
     if args.gap_cmd == "contradictions":
         return _run_gap_contradictions(args)
+
+    # gap path — trace citation path from paper to Gene Pool capsule
+    if args.gap_cmd == "path":
+        return _run_gap_path(args)
 
     # Profile/history/stats/prefs-history commands
     if args.profile or args.history or args.stats or args.prefs_history:
@@ -621,6 +631,60 @@ def _run_gap_contradictions(args: argparse.Namespace) -> int:
         print(f"      CHALLENGE: {nc.get('action_gap_title', nc.get('trigger_gap_title', '?'))[:60]}")
         print(f"             ↕ {nc.get('capsule_id', '?')}")
         print(f"      Shared keywords: {', '.join(shared[:6])}")
+        print()
+    return 0
+
+
+def _run_gap_path(args: argparse.Namespace) -> int:
+    """Trace citation path from paper to Gene Pool capsule."""
+    import json
+
+    db = get_db()
+    db.init()
+
+    paper = db.get_paper(args.paper_id)
+    if not paper:
+        print_error(f"Paper not found: {args.paper_id}")
+        return 1
+
+    from llm.citation_chain import CitationChainBuilder
+    builder = CitationChainBuilder(db=db)
+    paths = builder.find_paths_to_gene_pool(
+        seed_paper_id=args.paper_id,
+        depth=args.depth,
+    )
+
+    if args.json:
+        print(json.dumps(paths, indent=2, ensure_ascii=False))
+        return 0
+
+    if not paths:
+        print_info(f"No Gene Pool capsules found within {args.depth} hops of [{args.paper_id}]")
+        print(f"  Title: {paper.title[:60]}")
+        return 0
+
+    print(f"🧬 {len(paths)} path(s) from [{args.paper_id}] to Gene Pool:")
+    print(f"  Seed:  {paper.title[:60]}")
+    print()
+
+    for i, result in enumerate(paths):
+        path = result["path"]
+        gap_type = result["gap_type"]
+        gap_title = result["gap_title"]
+        polarity = result["polarity"]
+        capsule_id = result["capsule_id"]
+        score = result["outcome_score"]
+        source = result["source_paper_id"]
+
+        arrow = "→" if polarity == "positive" else "⇄"
+        print(f"  [{i+1}] {gap_type} {arrow}")
+        for j, pid in enumerate(path):
+            p = db.get_paper(pid) if hasattr(db, "get_paper") else None
+            title = getattr(p, "title", pid)[:50] if p else pid[:50]
+            indent = "  " if j > 0 else ""
+            suffix = " ◂ Gene Pool" if pid == source else ""
+            print(f"    {indent}{'└─ ' if j == len(path) - 1 else '├─ '}{pid[:12]} {title}{suffix}")
+        print(f"       score={score:.2f}  cap={capsule_id[:16]}")
         print()
     return 0
 
