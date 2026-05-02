@@ -167,6 +167,7 @@ async def papers(request: Request, q: str = "", source: str = "", page: int = 1,
         "total_pages": total_pages,
         "year_from": year_from,
         "year_to": year_to,
+        "contradiction_map": {},
     })
 
 
@@ -414,6 +415,22 @@ async def gene_pool_credibility(request: Request):
     return templates.TemplateResponse(request, "generic.html", {
         "page": "gene-pool-credibility",
         "title": "Gap Credibility",
+        "content": html,
+    })
+
+
+@app.get("/heatmap")
+async def contradiction_heatmap(request: Request):
+    """Contradiction Heatmap — papers colored by contradiction count."""
+    from llm.contradiction_heatmap import compute_paper_contradictions, render_heatmap_html
+    db = _get_db()
+    rows, _ = db.list_papers(limit=200, offset=0)
+    papers = [{"id": r.id, "title": r.title, "primary_category": getattr(r, "primary_category", "") or "", "published": r.published} for r in rows]
+    contrad_map = compute_paper_contradictions()
+    html = render_heatmap_html(papers, contrad_map)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "heatmap",
+        "title": "Contradiction Heatmap",
         "content": html,
     })
 
