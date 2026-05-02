@@ -86,7 +86,7 @@ Goal: Make AI Research OS **accessible without CLI**.
   - [x] Research gap visualizer
   - [x] Hand-drawn aesthetic (SVG sketch filter, Caveat/Lora fonts)
   - [ ] Chat interface (web version of `chat-tui`)
-  - [ ] Docker deployment
+  - [x] Docker deployment
 
 - [ ] Authentication
   - Optional API key management
