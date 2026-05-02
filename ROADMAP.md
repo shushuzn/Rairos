@@ -77,23 +77,53 @@ Goal: Make the project **contributor-friendly** and **discoverable**.
 
 ---
 
-### v2.1 — Web UI (Mid Term)
+### v2.1 — Web UI + Gene Pool Credibility (Mid Term)
 
-Goal: Make AI Research OS **accessible without CLI**.
+Goal: Make Gene Pool evolution visible, and Rairos accessible without CLI.
 
-- [x] FastAPI web dashboard (app_new.py)
-  - [x] Paper library browser
-  - [x] Research gap visualizer
-  - [x] Hand-drawn aesthetic (SVG sketch filter, Caveat/Lora fonts)
-  - [x] Docker deployment (`docker compose up`)
-  - [ ] Chat interface (web version of `chat-tui`)
-  - [ ] Gene Pool dashboard (visualize capsules, scores, gap_type distribution)
-  - [ ] Contradiction visualizer (edge graph for opposite-polarity pairs)
-  - [ ] Paper detail → Gene Pool linking (relevance card + Extract Gap button)
+Core insight (from HN newest trends): **Gene Pool Credibility** is the top priority —
+LLM spam → trust scoring; trendslop → novelty filtering; paradigm concentration →
+diversity alerts. All three feed into one quality system.
 
-- [ ] Authentication
-  - Optional API key management
-  - Session persistence for web
+#### Gene Pool Quality (P0 — Foundation)
+
+- [ ] **Source Trust Score** — per-arXiv-category trust rating based on capsule quality; filter paper imports by trust threshold
+- [ ] **Gap Credibility Filter** — flag capsules with keyword overlap >0.7 vs. existing pool; show "trendslop" warning badge
+- [ ] **Research Rigor Score** — rate papers by dataset sharing, code availability, methodology clarity; display as "rigor badge" on paper detail
+- [ ] **Auto-Archive At-Risk Panel** — show capsules with `low_score_streak ≥ 2`; one-click "keep active" or "pin to TTL"
+- [ ] **Research Agent Dashboard** — daemon status, event log, session TTL countdown, gap watch activity
+
+#### Contradiction + Evolution Visibility (P1)
+
+- [ ] **Contradiction Heatmap** — papers colored by contradiction count; tooltip shows conflicting gap_type/polarity pairs
+- [ ] **Paradigm Concentration Alert** — trigger when >60% citations cluster around ≤3 references; flag generalization_gap
+- [ ] **Bold Hypothesis Vault** — separate Gene Pool view for high-risk/high-reward gaps (red accent vs. standard blue)
+- [ ] **Gene Pool Prefetch** — pre-warm cache with capsules relevant to active topic; show "prefetched" indicator
+
+#### Self-Evolution + Gamification (P2)
+
+- [ ] **Research Game Mode** — badges: "Contradiction Hunter" (3+ pairs), "Gap Extractor" (10+ capsules), "Evolution Master" (evolved capsule)
+- [ ] **Evaluation Gap Alert** — flag when deployment timeline outpaces benchmark paper count (AV regulation, AI policy)
+- [ ] **Gene Pool Backup Scheduler** — daily snapshot to `~/.ai_research_os/backups/`; retain 30 versions
+- [ ] **Capsule Review Queue** — new capsules pending first feedback; system prompts "Does this gap match your research?"
+
+#### Advanced (P3/P4)
+
+- [ ] **Voice-to-Capsule** — upload audio → Whisper transcription → LLM gap extraction → save to Gene Pool
+- [ ] **Cross-Domain Gap Bridge** — suggest Gene Pool connections between physics and AI papers based on shared method keywords
+- [ ] **Policy Impact Tracer** — map new regulation → affected domains → updated Gene Pool priority weights
+- [ ] **Labor Displacement Tracker** — dedicated Gene Pool filter for "AI vs. human labor" gaps (arXiv: cs.cyber-ph, cs.soc)
+- [ ] **Climate AI Monitor** — arXiv watch tuned to climate+AI intersection; high priority in gap watch matching
+- [ ] **Briefing Distributor** — generate audience-specific digests: PhD advisor, industry engineer, policy maker
+- [ ] **Research Disseminator** — one-click public link to briefing (`rairos.app/b/{short_id}`)
+- [ ] **Citation Pathfinder Web Graph** — interactive SVG graph: paper → cites → Gene Pool capsule, color-coded by gap_type
+- [ ] **arXiv Watch Alert Channels** — multiple feed configs (general, climate, AI safety, regulation) with different matching criteria
+
+#### Still Pending (from v2.0)
+
+- [ ] Chat interface (web version of `chat-tui`)
+- [ ] Authentication — optional API key management + session persistence for web
+- [ ] Video demo / GIF showcase
 
 - [x] Feature research: see [docs/v2.1_research.md](docs/v2.1_research.md) — 22 features from HN newest-page trends
 
