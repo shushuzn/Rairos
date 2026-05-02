@@ -85,12 +85,17 @@ Goal: Make AI Research OS **accessible without CLI**.
   - [x] Paper library browser
   - [x] Research gap visualizer
   - [x] Hand-drawn aesthetic (SVG sketch filter, Caveat/Lora fonts)
+  - [x] Docker deployment (`docker compose up`)
   - [ ] Chat interface (web version of `chat-tui`)
-  - [x] Docker deployment
+  - [ ] Gene Pool dashboard (visualize capsules, scores, gap_type distribution)
+  - [ ] Contradiction visualizer (edge graph for opposite-polarity pairs)
+  - [ ] Paper detail → Gene Pool linking (relevance card + Extract Gap button)
 
 - [ ] Authentication
   - Optional API key management
   - Session persistence for web
+
+- [x] Feature research: see [docs/v2.1_research.md](docs/v2.1_research.md) — 22 candidate features from HN trends
 
 ---
 
