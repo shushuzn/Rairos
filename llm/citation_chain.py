@@ -262,6 +262,121 @@ class CitationChainBuilder:
 
         return None
 
+    def find_paths_to_gene_pool(
+        self,
+        seed_paper_id: str,
+        depth: int = 3,
+        capsule_path: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """Find shortest paths from seed paper to any Gene Pool capsule.
+
+        Loads Gene Pool capsules, builds the local citation graph from DB,
+        then BFS outward in both directions until a capsule's source_paper_id is found.
+        Returns list of dicts: {path: [paper_ids], capsule: {...}, gap_title: str}
+        """
+        import json
+        from pathlib import Path
+        from dataclasses import dataclass
+
+        if not self.db:
+            return []
+
+        # Load Gene Pool capsules
+        if capsule_path:
+            cap_file = Path(capsule_path)
+        else:
+            cap_file = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+
+        if not cap_file.exists():
+            return []
+
+        try:
+            data = json.loads(cap_file.read_text(encoding="utf-8"))
+            capsules = data.get("capsules", [])
+        except Exception:
+            return []
+
+        # Build set of target paper_ids from capsules
+        capsule_targets: Dict[str, Dict[str, Any]] = {}
+        for cap in capsules:
+            if cap.get("status") == "archived":
+                continue
+            src = cap.get("archetype", {}).get("source_paper_id", "")
+            if src:
+                capsule_targets[src] = cap
+        if not capsule_targets:
+            return []
+
+        # Build graph from DB citations
+        graph: Dict[str, Set[str]] = {}
+        paper_titles: Dict[str, str] = {}
+
+        for paper_id in capsule_targets:
+            for direction in ("from", "to"):
+                try:
+                    records = self.db.get_citations(paper_id, direction=direction)
+                except Exception:
+                    records = []
+                for rec in records:
+                    src = rec.source_id
+                    tgt = rec.target_id
+                    graph.setdefault(src, set()).add(tgt)
+                    graph.setdefault(tgt, set())
+                    if src not in paper_titles:
+                        try:
+                            p = self.db.get_paper(src)
+                            paper_titles[src] = getattr(p, "title", src) if p else src
+                        except Exception:
+                            paper_titles[src] = src
+                    if tgt not in paper_titles:
+                        try:
+                            p = self.db.get_paper(tgt)
+                            paper_titles[tgt] = getattr(p, "title", tgt) if p else tgt
+                        except Exception:
+                            paper_titles[tgt] = tgt
+
+        # Also add seed to graph
+        graph.setdefault(seed_paper_id, set())
+        if seed_paper_id not in paper_titles:
+            try:
+                p = self.db.get_paper(seed_paper_id)
+                paper_titles[seed_paper_id] = getattr(p, "title", seed_paper_id) if p else seed_paper_id
+            except Exception:
+                paper_titles[seed_paper_id] = seed_paper_id
+
+        # BFS from seed in both directions
+        visited: Set[str] = {seed_paper_id}
+        queue = deque([(seed_paper_id, [seed_paper_id])])
+        results: List[Dict[str, Any]] = []
+
+        while queue:
+            current, path = queue.popleft()
+
+            if current in capsule_targets and current != seed_paper_id:
+                cap = capsule_targets[current]
+                results.append({
+                    "path": path,
+                    "capsule_id": cap.get("capsule_id", ""),
+                    "gap_type": cap.get("action_gap_type", cap.get("trigger_gap_type", "")),
+                    "gap_title": cap.get("action_gap_title", cap.get("trigger_gap_title", "")),
+                    "polarity": cap.get("polarity", "positive"),
+                    "source_paper_id": current,
+                    "outcome_score": cap.get("outcome_success_score", 0),
+                })
+                continue  # keep searching for more paths
+
+            if len(path) >= depth:
+                continue
+
+            for neighbor in graph.get(current, []):
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append((neighbor, path + [neighbor]))
+
+        # Sort by path length
+        results.sort(key=lambda x: len(x["path"]))
+        return results
+
     def find_influencers(self, paper_id: str, depth: int = 2) -> List[CitationNode]:
         """Find papers that influenced this paper (ancestors)."""
         if paper_id not in self.nodes:
