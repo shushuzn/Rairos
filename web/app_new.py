@@ -71,6 +71,20 @@ async def dashboard(request: Request):
     parsing_rows, _ = db.list_papers(limit=10, parse_status="running")
     parsing = [(r.id, r.title[:60], r.source) for r in parsing_rows]
 
+    # Category distribution
+    cur = db.conn.cursor()
+    cur.execute("SELECT primary_category, COUNT(*) FROM papers WHERE primary_category != '' GROUP BY primary_category ORDER BY COUNT(*) DESC LIMIT 8")
+    by_category = tuple((r[0] or "uncategorized", r[1]) for r in cur.fetchall())
+
+    # Activity: papers added in last 7 days
+    cur.execute("SELECT id, title, added_at FROM papers WHERE added_at != '' ORDER BY added_at DESC LIMIT 7")
+    activity = []
+    for r in cur.fetchall():
+        pid = getattr(r, 'paper_id', None) or r.id if hasattr(r, 'id') else r[0]
+        added = r[2] or ""
+        date_str = added[:10] if added else "?"
+        activity.append((r[0], r[1][:60], date_str))
+
     # Flatten stats — convert unhashable dicts to tuples so Jinja2 LRU cache works
     stats_flat = {
         "total_papers": stats.get("total_papers", 0),
@@ -88,7 +102,8 @@ async def dashboard(request: Request):
         request,
         "dashboard.html",
         {"page": "dashboard", "stats": stats_flat, "recent": recent,
-         "queue_list": queue_list, "parsing": parsing},
+         "queue_list": queue_list, "parsing": parsing,
+         "by_category": by_category, "activity": activity},
     )
 
 
