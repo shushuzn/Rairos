@@ -65,6 +65,7 @@ page = st.sidebar.radio("Go to", [
     "📚 Lit Review",
     "🧠 Research Memory",
     "🎯 Auto Reviewer",
+    "🗺️ Route Planner",
 ])
 
 # ─── Dashboard ─────────────────────────────────────────────────────
@@ -2158,6 +2159,107 @@ elif page == "🎯 Auto Reviewer":
                         st.markdown(f"Annotations: {r.get('annotation_count', 0)}")
             else:
                 st.info("No saved reviews yet. Run a review above!")
+        except Exception as e:
+            st.error(f"Error: {e}")
+
+
+# ─── Route Planner Page ────────────────────────────────────────────────────────
+
+elif page == "🗺️ Route Planner":
+    st.header("🗺️ Route Planner — Research GPS")
+
+    st.markdown("""
+    **Route Planner** creates a concrete, dependency-ordered research plan from a hypothesis.
+    Not a to-do list — a directed graph of what to do and when, with automatic re-planning on failure.
+    """)
+
+    tab_create, tab_plans = st.tabs(["➕ Create Plan", "📋 Active Plans"])
+
+    with tab_create:
+        with st.form("create_plan_form"):
+            hypothesis = st.text_area("Research Hypothesis", placeholder="e.g., Retrieval-augmented generation outperforms fine-tuning on factual recall tasks")
+            goal = st.text_input("Goal", placeholder="e.g., Determine whether RAG is superior to fine-tuning for factual question answering")
+            submitted = st.form_submit_button("🗺️ Generate Research Route")
+
+            if submitted:
+                if not hypothesis or not goal:
+                    st.warning("Both hypothesis and goal are required")
+                else:
+                    with st.spinner("Building dependency graph..."):
+                        try:
+                            from llm.route_planner import RoutePlanner
+                            planner = RoutePlanner()
+                            plan = planner.create_plan(hypothesis=hypothesis, goal=goal)
+                            progress = plan.get_progress()
+                            st.success(f"Plan created: {len(plan.steps)} steps, ~{progress['estimated_hours']}h estimated")
+                            st.json({
+                                "plan_id": plan.plan_id,
+                                "hypothesis": plan.hypothesis,
+                                "goal": plan.goal,
+                                "steps": [{"id": s.step_id, "type": s.type.value, "description": s.description, "hours": s.estimated_hours, "deps": s.dependencies or []} for s in plan.steps]
+                            })
+                        except Exception as e:
+                            st.error(f"Failed: {e}")
+
+    with tab_plans:
+        try:
+            from llm.route_planner import RoutePlanner, PlanStatus, StepStatus
+            planner = RoutePlanner()
+            plans = planner.list_plans(limit=20)
+
+            if not plans:
+                st.info("No plans yet. Create one above!")
+            else:
+                for plan in plans:
+                    progress = plan.get_progress()
+                    status_color = {"active": "🟡", "completed": "🟢", "abandoned": "⚫", "revised": "🔵"}.get(plan.status.value, "⚪")
+                    with st.expander(f"{status_color} **[{plan.status.value}]** {plan.hypothesis[:60]}"):
+                        col1, col2, col3, col4 = st.columns(4)
+                        col1.metric("Steps", progress["total_steps"])
+                        col2.metric("Done", f"{progress['completed']}/{progress['total_steps']}")
+                        col3.metric("Hours", f"{progress['completed_hours']:.0f}/{progress['estimated_hours']:.0f}h")
+                        col4.metric("Progress", f"{progress['progress_pct']:.0f}%")
+                        st.caption(f"Plan ID: {plan.plan_id} | Revisions: {plan.revision_count} | Created: {plan.created_at[:19]}")
+
+                        ready = plan.get_ready_steps()
+                        if ready:
+                            st.markdown("**Ready to start:**")
+                            for s in ready:
+                                cols = st.columns([1, 4, 1, 1])
+                                cols[0].write(f"`{s.step_id}`")
+                                cols[1].write(s.description[:60])
+                                cols[2].write(f"{s.estimated_hours}h")
+                                if cols[3].button("✓ Done", key=f"done_{s.step_id}"):
+                                    planner.update_step(plan.plan_id, s.step_id, StepStatus.COMPLETED)
+                                    st.rerun()
+
+                        st.markdown("**All steps:**")
+                        type_emoji = {
+                            "read_paper": "📄", "run_experiment": "🧪", "compare_methods": "⚖️",
+                            "write_analysis": "✍️", "survey_baselines": "🔍", "check_contradiction": "⚠️",
+                            "revise_hypothesis": "🔄",
+                        }
+                        for s in plan.steps:
+                            emoji = type_emoji.get(s.type.value, "📌")
+                            status_icons = {"pending": "⏳", "in_progress": "🔄", "completed": "✅", "blocked": "🚫", "failed": "❌", "skipped": "⏭️"}
+                            icon = status_icons.get(s.status.value, "❓")
+                            deps_str = f" (deps: {', '.join(s.dependencies)})" if s.dependencies else ""
+                            st.markdown(f"{icon} {emoji} `{s.step_id}`: {s.description[:70]}{deps_str}")
+
+                        col_rev, col_del = st.columns(2)
+                        with col_rev:
+                            if st.button("🔄 Revise Plan", key=f"rev_{plan.plan_id}"):
+                                reason = st.text_input("Why revise?", key=f"rev_reason_{plan.plan_id}")
+                                if reason:
+                                    new_plan = planner.revise_plan(plan.plan_id, reason)
+                                    if new_plan:
+                                        st.success(f"Revised plan created: {new_plan.plan_id}")
+                                        st.rerun()
+                        with col_del:
+                            if st.button("🗑️ Delete", key=f"del_{plan.plan_id}"):
+                                planner.delete_plan(plan.plan_id)
+                                st.rerun()
+
         except Exception as e:
             st.error(f"Error: {e}")
 

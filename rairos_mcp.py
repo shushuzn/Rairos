@@ -336,6 +336,50 @@ def get_tools() -> List[Dict]:
         {
             "name": "review_list",
             "description": "List saved simulated reviews"
+        },
+        {
+            "name": "routeplan_create",
+            "description": "Create a research route plan from a hypothesis",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "hypothesis": {"type": "string", "description": "Research hypothesis to investigate"},
+                    "goal": {"type": "string", "description": "What the plan should determine"},
+                    "known_papers": {"type": "array", "description": "Known relevant papers as {arxiv_id, title} objects"}
+                },
+                "required": ["hypothesis", "goal"]
+            }
+        },
+        {
+            "name": "routeplan_list",
+            "description": "List all research plans"
+        },
+        {
+            "name": "routeplan_update_step",
+            "description": "Update a step status in a research plan",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "plan_id": {"type": "string"},
+                    "step_id": {"type": "string"},
+                    "status": {"type": "string", "description": "pending, in_progress, completed, failed, skipped"},
+                    "result": {"type": "string", "description": "What the step produced"},
+                    "notes": {"type": "string"}
+                },
+                "required": ["plan_id", "step_id", "status"]
+            }
+        },
+        {
+            "name": "routeplan_revise",
+            "description": "Revise a plan when dead ends are hit",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "plan_id": {"type": "string"},
+                    "reason": {"type": "string", "description": "Why revision is needed"}
+                },
+                "required": ["plan_id", "reason"]
+            }
         }
     ]
 
@@ -1299,6 +1343,132 @@ def tool_review_list() -> Dict:
         return error_response("REVIEW_ERROR", str(e))
 
 
+def tool_routeplan_create(
+    hypothesis: str,
+    goal: str,
+    known_papers: Optional[List[Dict[str, str]]] = None,
+) -> Dict:
+    """Create a research route plan from a hypothesis."""
+    try:
+        from llm.route_planner import RoutePlanner
+
+        planner = RoutePlanner()
+        plan = planner.create_plan(
+            hypothesis=hypothesis,
+            goal=goal,
+            known_papers=known_papers,
+        )
+
+        progress = plan.get_progress()
+        return success_response({
+            "plan_id": plan.plan_id,
+            "hypothesis": plan.hypothesis,
+            "goal": plan.goal,
+            "step_count": len(plan.steps),
+            "estimated_hours": progress["estimated_hours"],
+            "progress_pct": progress["progress_pct"],
+            "steps": [s.to_dict() for s in plan.steps],
+            "created_at": datetime.fromtimestamp(plan.created_at).isoformat(),
+        })
+
+    except Exception as e:
+        logger.error(f"routeplan_create error: {e}")
+        return error_response("PLAN_ERROR", str(e))
+
+
+def tool_routeplan_list() -> Dict:
+    """List all research plans."""
+    try:
+        from llm.route_planner import RoutePlanner, PlanStatus
+
+        planner = RoutePlanner()
+        plans = planner.list_plans(limit=20)
+
+        return success_response({
+            "plans": [
+                {
+                    "plan_id": p.plan_id,
+                    "hypothesis": p.hypothesis[:80],
+                    "goal": p.goal[:80],
+                    "status": p.status.value,
+                    "step_count": len(p.steps),
+                    "progress": p.get_progress()["progress_pct"],
+                    "revision_count": p.revision_count,
+                    "created_at": datetime.fromtimestamp(p.created_at).isoformat(),
+                    "updated_at": datetime.fromtimestamp(p.updated_at).isoformat(),
+                }
+                for p in plans
+            ],
+            "count": len(plans),
+        })
+
+    except Exception as e:
+        logger.error(f"routeplan_list error: {e}")
+        return error_response("PLAN_ERROR", str(e))
+
+
+def tool_routeplan_update_step(
+    plan_id: str,
+    step_id: str,
+    status: str,
+    result: str = "",
+    notes: str = "",
+) -> Dict:
+    """Update a step status in a research plan."""
+    try:
+        from llm.route_planner import RoutePlanner, StepStatus
+
+        status_enum = StepStatus(status.lower())
+        planner = RoutePlanner()
+        plan = planner.update_step(
+            plan_id=plan_id,
+            step_id=step_id,
+            status=status_enum,
+            result=result,
+            notes=notes,
+        )
+
+        if not plan:
+            return error_response("NOT_FOUND", f"Plan {plan_id} or step {step_id} not found")
+
+        return success_response({
+            "plan_id": plan.plan_id,
+            "step_id": step_id,
+            "status": status_enum.value,
+            "progress": plan.get_progress(),
+            "ready_steps": [{"step_id": s.step_id, "description": s.description} for s in plan.get_ready_steps()],
+        })
+
+    except Exception as e:
+        logger.error(f"routeplan_update_step error: {e}")
+        return error_response("PLAN_ERROR", str(e))
+
+
+def tool_routeplan_revise(plan_id: str, reason: str) -> Dict:
+    """Revise a plan when dead ends are hit."""
+    try:
+        from llm.route_planner import RoutePlanner
+
+        planner = RoutePlanner()
+        new_plan = planner.revise_plan(plan_id=plan_id, reason=reason)
+
+        if not new_plan:
+            return error_response("NOT_FOUND", f"Plan {plan_id} not found")
+
+        return success_response({
+            "new_plan_id": new_plan.plan_id,
+            "old_plan_id": plan_id,
+            "revision_count": new_plan.revision_count,
+            "step_count": len(new_plan.steps),
+            "progress": new_plan.get_progress(),
+            "steps": [s.to_dict() for s in new_plan.steps],
+        })
+
+    except Exception as e:
+        logger.error(f"routeplan_revise error: {e}")
+        return error_response("PLAN_ERROR", str(e))
+
+
 # ─── MCP Protocol Handlers ──────────────────────────────────────────
 
 
@@ -1445,6 +1615,27 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
             )
         elif name == "review_list":
             result = tool_review_list()
+        elif name == "routeplan_create":
+            result = tool_routeplan_create(
+                hypothesis=arguments.get("hypothesis"),
+                goal=arguments.get("goal"),
+                known_papers=arguments.get("known_papers"),
+            )
+        elif name == "routeplan_list":
+            result = tool_routeplan_list()
+        elif name == "routeplan_update_step":
+            result = tool_routeplan_update_step(
+                plan_id=arguments.get("plan_id"),
+                step_id=arguments.get("step_id"),
+                status=arguments.get("status"),
+                result=arguments.get("result", ""),
+                notes=arguments.get("notes", ""),
+            )
+        elif name == "routeplan_revise":
+            result = tool_routeplan_revise(
+                plan_id=arguments.get("plan_id"),
+                reason=arguments.get("reason"),
+            )
         else:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
 
