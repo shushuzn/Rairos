@@ -59,6 +59,7 @@ page = st.sidebar.radio("Go to", [
     "🧬 Gene Pool",
     "🎯 Gap Detection",
     "🔄 InsightEvolution",
+    "🔍 MCP Research",
 ])
 
 # ─── Dashboard ─────────────────────────────────────────────────────
@@ -1173,3 +1174,389 @@ GapAnalyzerV2._apply_preference_sorting()
             └─► gaps.sort(key=gap_preference_score, reverse=True)
 ```
 """)
+
+
+# ─── MCP Research Panel ──────────────────────────────────────────────────────
+
+elif page == "🔍 MCP Research":
+    st.header("🔍 MCP Research Panel — Web + Local Search")
+
+    with st.expander("ℹ️ What can I do here?", expanded=False):
+        st.markdown("""
+**MCP Research Panel** gives the web UI the same research superpowers as the Claude Code MCP plugin:
+
+- **Web Search**: Query arXiv + Semantic Scholar concurrently — no CLI needed
+- **One-Click Import**: Import any web result directly to your local DB
+- **Citation Graph**: Visualize forward/backward citations for any paper
+- **Gap Detection**: Find research gaps using your local paper corpus
+
+All of this mirrors what `paper_search(source=web)`, `paper_ingest`, and `citation_graph` do in the MCP server.
+        """)
+
+    tab_web, tab_graph, tab_gap = st.tabs(["🌐 Web Search", "🔗 Citation Graph", "🎯 Gap Detection"])
+
+    # ── Web Search Tab ─────────────────────────────────────────────────────────
+    with tab_web:
+        col_q, col_src = st.columns([4, 1])
+        with col_q:
+            search_query = st.text_input(
+                "🔍 Search Query",
+                value="RLHF reinforcement learning",
+                placeholder="Enter research topic, e.g. 'RLHF', 'attention mechanism'",
+                key="mcp_search_query",
+            )
+        with col_src:
+            search_source = st.selectbox(
+                "Source",
+                ["web", "local", "both"],
+                index=0,
+                format_func=lambda x: {"web": "🌐 Web Only", "local": "💾 Local Only", "both": "🔄 Both"}[x],
+                key="mcp_search_source",
+            )
+
+        if st.button("🔍 Search", type="primary", key="mcp_do_search"):
+            if not search_query.strip():
+                st.warning("Enter a search query first.")
+            else:
+                with st.spinner("Searching..."):
+                    results = []
+                    sources_used = []
+
+                    if search_source in ("local", "both"):
+                        try:
+                            db = _get_db()
+                            local_results, total = db.search_papers(search_query.strip(), limit=20)
+                            db.close()
+                            for r in local_results:
+                                results.append({
+                                    "paper_id": r.paper_id,
+                                    "title": r.title,
+                                    "authors": r.authors or [],
+                                    "published": r.published or "",
+                                    "source": "local",
+                                    "abs_url": getattr(r, 'abs_url', '') or "",
+                                    "abstract": getattr(r, 'abstract', '') or "",
+                                })
+                            sources_used.append(f"local({total})")
+                        except Exception as e:
+                            st.warning(f"Local search failed: {e}")
+
+                    if search_source in ("web", "both"):
+                        try:
+                            from parsers.cross_search import search_papers_multi
+                            web_papers = search_papers_multi(search_query.strip(), max_per_source=10)
+                            for p in web_papers:
+                                results.append({
+                                    "paper_id": p.uid,
+                                    "title": p.title,
+                                    "authors": p.authors or [],
+                                    "published": p.published[:10] if p.published else "",
+                                    "source": getattr(p, 'source', 'web'),
+                                    "abs_url": getattr(p, 'abs_url', '') or "",
+                                    "abstract": getattr(p, 'abstract', '') or "",
+                                })
+                            sources_used.append(f"web({len(web_papers)})")
+                        except Exception as e:
+                            st.warning(f"Web search failed: {e}. Check API rate limits.")
+
+                if results:
+                    st.success(f"Found {len(results)} results from {' + '.join(sources_used)}")
+                    st.session_state["mcp_search_results"] = results
+                else:
+                    st.warning("No results found. Try a different query.")
+
+        # Display cached results
+        cached = st.session_state.get("mcp_search_results", [])
+        if cached:
+            st.divider()
+            st.subheader(f"Results ({len(cached)} papers)")
+            for r in cached:
+                src_color = "🟢" if r["source"] == "local" else "🔵"
+                with st.expander(f"{src_color} **{r['title'][:80]}**"):
+                    authors = ", ".join(r.get("authors", [])[:5]) if r.get("authors") else "N/A"
+                    st.write(f"**Authors:** {authors}")
+                    st.write(f"**Year:** {r.get('published', '?')[:4]} | **Source:** {r.get('source', '?')}")
+                    if r.get("abstract"):
+                        st.write(f"**Abstract:** {r['abstract'][:300]}...")
+                    if r.get("abs_url"):
+                        st.markdown(f"[View Paper]({r['abs_url']})")
+
+                    # One-click import button
+                    pid = r.get("paper_id", "")
+                    if pid:
+                        col_imp, col_graph = st.columns([1, 1])
+                        with col_imp:
+                            if st.button(f"📥 Import to DB", key=f"imp_{pid}"):
+                                try:
+                                    db = _get_db()
+                                    if r["source"] != "local":
+                                        if pid.startswith("10."):
+                                            from parsers.crossref import fetch_crossref_metadata
+                                            paper_obj, _ = fetch_crossref_metadata(pid)
+                                        else:
+                                            from parsers.arxiv import fetch_arxiv_metadata
+                                            paper_obj = fetch_arxiv_metadata(pid)
+                                    else:
+                                        paper_obj = None
+
+                                    if paper_obj:
+                                        db.upsert_paper(
+                                            paper_id=pid,
+                                            source=r["source"],
+                                            title=paper_obj.title or r.get("title", ""),
+                                            authors=paper_obj.authors or r.get("authors", []),
+                                            abstract=paper_obj.abstract or r.get("abstract", ""),
+                                            published=paper_obj.published or r.get("published", ""),
+                                            abs_url=paper_obj.abs_url or r.get("abs_url", ""),
+                                            pdf_url=getattr(paper_obj, "pdf_url", "") or "",
+                                            primary_category=getattr(paper_obj, "primary_category", "") or "",
+                                            doi=getattr(paper_obj, "doi", "") or "",
+                                        )
+                                    st.success(f"✅ Imported: {r.get('title', pid)[:60]}")
+                                except Exception as e:
+                                    st.error(f"❌ Import failed: {e}")
+
+                        with col_graph:
+                            if st.button(f"🔗 View Graph", key=f"graph_{pid}"):
+                                st.session_state["mcp_graph_paper"] = pid
+                                st.rerun()
+        else:
+            st.info("Enter a query above and click **Search** to find papers.")
+
+    # ── Citation Graph Tab ────────────────────────────────────────────────────
+    with tab_graph:
+        graph_pid = st.text_input(
+            "Paper ID (arXiv ID or DOI)",
+            value=st.session_state.get("mcp_graph_paper", "2307.02486"),
+            key="mcp_graph_pid_input",
+        )
+        col_depth, col_nodes = st.columns([1, 1])
+        with col_depth:
+            graph_depth = st.selectbox("Depth", [1, 2, 3], index=1, key="mcp_graph_depth")
+        with col_nodes:
+            max_nodes = st.slider("Max nodes/direction", 10, 100, 30, key="mcp_max_nodes")
+
+        if st.button("🔗 Load Citation Graph", type="primary", key="mcp_load_graph"):
+            if not graph_pid.strip():
+                st.warning("Enter a paper ID.")
+            else:
+                with st.spinner("Fetching citation data from Semantic Scholar..."):
+                    try:
+                        from parsers.semantic_scholar import get_paper_by_id, get_citations, get_references
+                        root = get_paper_by_id(graph_pid.strip())
+                        if not root:
+                            st.error(f"Paper not found: {graph_pid}")
+                        else:
+                            nodes = []
+                            links = []
+                            seen = set()
+
+                            nodes.append({
+                                "id": root.paper_id,
+                                "label": root.title,
+                                "is_root": True,
+                                "is_citing": False,
+                                "is_cited_by": False,
+                                "type": "Paper",
+                                "entity_id": root.paper_id,
+                            })
+                            seen.add(root.paper_id)
+
+                            try:
+                                citing = get_references(root.paper_id, limit=max_nodes)
+                                for p in citing:
+                                    if p.paper_id not in seen:
+                                        nodes.append({
+                                            "id": p.paper_id,
+                                            "label": p.title,
+                                            "is_root": False,
+                                            "is_citing": True,
+                                            "is_cited_by": False,
+                                            "type": "Paper",
+                                            "entity_id": p.paper_id,
+                                        })
+                                        seen.add(p.paper_id)
+                                    links.append({
+                                        "source": root.paper_id,
+                                        "target": p.paper_id,
+                                        "relation": "cites",
+                                        "weight": 1,
+                                    })
+                            except Exception as e:
+                                st.warning(f"Could not fetch citing papers: {e}")
+
+                            try:
+                                cited_by = get_citations(root.paper_id, limit=max_nodes)
+                                for p in cited_by:
+                                    if p.paper_id not in seen:
+                                        nodes.append({
+                                            "id": p.paper_id,
+                                            "label": p.title,
+                                            "is_root": False,
+                                            "is_citing": False,
+                                            "is_cited_by": True,
+                                            "type": "Paper",
+                                            "entity_id": p.paper_id,
+                                        })
+                                        seen.add(p.paper_id)
+                                    links.append({
+                                        "source": p.paper_id,
+                                        "target": root.paper_id,
+                                        "relation": "cited_by",
+                                        "weight": 1,
+                                    })
+                            except Exception as e:
+                                st.warning(f"Could not fetch cited-by papers: {e}")
+
+                            st.session_state["mcp_citation_data"] = {
+                                "nodes": nodes,
+                                "links": links,
+                                "root": root.title,
+                            }
+                            st.session_state["mcp_graph_paper"] = graph_pid.strip()
+                    except Exception as e:
+                        st.error(f"Failed to load citation graph: {e}")
+
+        # Render D3 graph
+        citation_data = st.session_state.get("mcp_citation_data")
+        if citation_data:
+            import json
+            graph_json = json.dumps(citation_data)
+            st.success(f"Loaded {len(citation_data['nodes'])} nodes, {len(citation_data['links'])} links")
+            st.markdown(f"**Root paper:** {citation_data.get('root', graph_pid)}")
+
+            st.components.v1.html(f"""
+            <div id="mcp_cit_graph" style="width:100%;height:500px;border:1px solid #30363d;border-radius:8px;margin-top:8px;"></div>
+            <script src="https://unpkg.com/d3@7/dist/d3.min.js"></script>
+            <script>
+            const data = {graph_json};
+            const color = {{ root: '#4A90E2', cites: '#58a6ff', cited_by: '#f78166' }};
+            const w = document.getElementById('mcp_cit_graph').clientWidth || 800;
+            const h = 500;
+            d3.select('#mcp_cit_graph').selectAll('*').remove();
+            const svg = d3.select('#mcp_cit_graph').append('svg').attr('width', w).attr('height', h);
+            const g = svg.append('g');
+            svg.call(d3.zoom().scaleExtent([0.1, 4]).on('zoom', e => g.attr('transform', e.transform)));
+            const simulation = d3.forceSimulation(data.nodes)
+                .force('link', d3.forceLink(data.links).id(d => d.id).distance(80))
+                .force('charge', d3.forceManyBody().strength(-200))
+                .force('center', d3.forceCenter(w/2, h/2))
+                .force('collision', d3.forceCollide().radius(30));
+            const link = g.append('g').selectAll('line').data(data.links).join('line')
+                .attr('stroke', d => d.relation === 'cites' ? color.cites : color.cited_by)
+                .attr('stroke-width', 1.5).attr('stroke-opacity', 0.6);
+            const node = g.append('g').selectAll('g').data(data.nodes).join('g');
+            node.append('circle').attr('r', d => d.is_root ? 10 : 6)
+                .attr('fill', d => d.is_root ? color.root : d.is_citing ? color.cites : color.cited_by);
+            node.append('text').attr('dx', 12).attr('dy', 4).attr('font-size', '10px').attr('fill', '#e6edf3')
+                .text(d => (d.label||'').substring(0,25));
+            simulation.on('tick', () => {{
+                link.attr('x1', d=>d.source.x).attr('y1',d=>d.source.y)
+                    .attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+                node.attr('transform', d => 'translate('+d.x+','+d.y+')');
+            }});
+            </script>
+            """, height=520)
+
+            citing_count = sum(1 for n in citation_data["nodes"] if n.get("is_citing"))
+            cited_by_count = sum(1 for n in citation_data["nodes"] if n.get("is_cited_by"))
+            col_c1, col_c2 = st.columns(2)
+            col_c1.metric("Cites (forward)", citing_count)
+            col_c2.metric("Cited by (backward)", cited_by_count)
+
+            root_pid = st.session_state.get("mcp_graph_paper", "")
+            if root_pid:
+                col_exp, col_imp = st.columns([1, 1])
+                with col_exp:
+                    if st.button(f"📥 Import Root Paper to DB", key="mcp_imp_root"):
+                        try:
+                            db = _get_db()
+                            if root_pid.startswith("10."):
+                                from parsers.crossref import fetch_crossref_metadata
+                                paper_obj, _ = fetch_crossref_metadata(root_pid)
+                            else:
+                                from parsers.arxiv import fetch_arxiv_metadata
+                                paper_obj = fetch_arxiv_metadata(root_pid)
+                            if paper_obj:
+                                db.upsert_paper(
+                                    paper_id=root_pid,
+                                    source="arxiv" if not root_pid.startswith("10.") else "doi",
+                                    title=paper_obj.title or "", authors=paper_obj.authors or [],
+                                    abstract=paper_obj.abstract or "", published=paper_obj.published or "",
+                                    abs_url=paper_obj.abs_url or "", pdf_url=getattr(paper_obj, "pdf_url", "") or "",
+                                    primary_category=getattr(paper_obj, "primary_category", "") or "",
+                                    doi=getattr(paper_obj, "doi", "") or "",
+                                )
+                                st.success(f"✅ Imported: {paper_obj.title[:60]}")
+                        except Exception as e:
+                            st.error(f"❌ {e}")
+                with col_imp:
+                    graph_json_str = json.dumps(citation_data)
+                    st.download_button(
+                        "📤 Export Graph JSON",
+                        graph_json_str,
+                        file_name=f"citation_graph_{root_pid}.json",
+                        mime="application/json",
+                        key="mcp_export_graph",
+                    )
+        else:
+            st.info("Enter a paper ID and click **Load Citation Graph** to visualize citations.")
+
+    # ── Gap Detection Tab ──────────────────────────────────────────────────────
+    with tab_gap:
+        st.subheader("🎯 Research Gap Detection")
+        gap_topic = st.text_input(
+            "Research Topic",
+            value="RLHF",
+            placeholder="e.g. RLHF, RAG, Diffusion Models",
+            key="mcp_gap_topic",
+        )
+        min_papers_gap = st.slider("Min papers to analyze", 3, 20, 5, key="mcp_gap_papers")
+
+        if st.button("🔍 Detect Gaps", type="primary", key="mcp_detect_gaps"):
+            if not gap_topic.strip():
+                st.warning("Enter a research topic.")
+            else:
+                with st.spinner("Analyzing papers for research gaps..."):
+                    try:
+                        if "gap_analyzer_v2" not in st.session_state:
+                            from llm.insight.tracker import EvolutionTracker
+                            from llm.gap_analyzer import GapAnalyzerV2
+                            tracker = EvolutionTracker()
+                            st.session_state["gap_analyzer_v2"] = GapAnalyzerV2(evolution_tracker=tracker)
+
+                        analyzer = st.session_state["gap_analyzer_v2"]
+                        result = analyzer.analyze(
+                            topic=gap_topic.strip(),
+                            min_papers=min_papers_gap,
+                            use_llm=False,
+                        )
+
+                        if result.gaps:
+                            st.session_state["mcp_gap_results"] = result.gaps
+                            st.success(f"Found {len(result.gaps)} gaps from {result.total_papers_analyzed} papers")
+                        else:
+                            st.session_state["mcp_gap_results"] = []
+                            st.info("No gaps found. Try a different topic or more papers.")
+                    except Exception as e:
+                        st.error(f"Gap detection failed: {e}")
+
+        gap_results = st.session_state.get("mcp_gap_results", [])
+        if gap_results:
+            st.subheader(f"Detected Gaps ({len(gap_results)})")
+            for i, gap in enumerate(gap_results[:20]):
+                gap_type_name = gap.gap_type.value if hasattr(gap.gap_type, 'value') else str(gap.gap_type)
+                sev_icon = "🔴" if gap.severity.value == "HIGH" else "🟡" if gap.severity.value == "MEDIUM" else "🟢"
+                with st.expander(f"#{i+1} {sev_icon} {gap_type_name}: {gap.title[:60]}"):
+                    st.write(f"**Description:** {gap.description[:200]}")
+                    st.write(f"**Severity:** {gap.severity.value} | **Supporting Papers:** {len(gap.supporting_papers)}")
+                    if gap.gene_pool_score > 0:
+                        st.markdown(f"🧬 **Gene Pool signal: {gap.gene_pool_score:.3f}**")
+                    if gap.preference_boost:
+                        st.markdown("✅ **Matches your preferences**")
+        else:
+            st.info("Enter a topic and click **Detect Gaps** to find research gaps.")
+
+
+
+
