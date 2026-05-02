@@ -380,6 +380,18 @@ def get_tools() -> List[Dict]:
                 },
                 "required": ["plan_id", "reason"]
             }
+        },
+        {
+            "name": "briefing_generate",
+            "description": "Generate a structured research briefing for a paper",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "arxiv_id": {"type": "string", "description": "arXiv ID of the paper"},
+                    "use_llm": {"type": "boolean", "default": true}
+                },
+                "required": ["arxiv_id"]
+            }
         }
     ]
 
@@ -1469,6 +1481,38 @@ def tool_routeplan_revise(plan_id: str, reason: str) -> Dict:
         return error_response("PLAN_ERROR", str(e))
 
 
+def tool_briefing_generate(arxiv_id: str, use_llm: bool = True) -> Dict:
+    """Generate a research briefing for a paper."""
+    try:
+        from llm.briefing_generator import BriefingGenerator
+
+        generator = BriefingGenerator()
+        result = generator.generate(
+            arxiv_id=arxiv_id,
+            use_llm=use_llm,
+            output_dir=PROJECT_ROOT / "data" / "briefings",
+        )
+
+        if result.success:
+            return success_response({
+                "arxiv_id": arxiv_id,
+                "title": result.briefing.paper_title,
+                "verdict": result.briefing.verdict,
+                "verdict_reason": result.briefing.verdict_reason,
+                "sections_count": len(result.briefing.sections),
+                "gene_pool_matches": len(result.briefing.gene_pool_matches),
+                "memory_stances": len(result.briefing.memory_stances),
+                "markdown": result.markdown,
+                "generated_at": result.briefing.generated_at,
+            })
+        else:
+            return error_response("BRIEFING_ERROR", result.error)
+
+    except Exception as e:
+        logger.error(f"briefing_generate error: {e}")
+        return error_response("BRIEFING_ERROR", str(e))
+
+
 # ─── MCP Protocol Handlers ──────────────────────────────────────────
 
 
@@ -1635,6 +1679,11 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
             result = tool_routeplan_revise(
                 plan_id=arguments.get("plan_id"),
                 reason=arguments.get("reason"),
+            )
+        elif name == "briefing_generate":
+            result = tool_briefing_generate(
+                arxiv_id=arguments.get("arxiv_id"),
+                use_llm=arguments.get("use_llm", True),
             )
         else:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")

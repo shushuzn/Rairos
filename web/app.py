@@ -66,6 +66,7 @@ page = st.sidebar.radio("Go to", [
     "🧠 Research Memory",
     "🎯 Auto Reviewer",
     "🗺️ Route Planner",
+    "📋 Research Briefing",
 ])
 
 # ─── Dashboard ─────────────────────────────────────────────────────
@@ -2262,5 +2263,54 @@ elif page == "🗺️ Route Planner":
 
         except Exception as e:
             st.error(f"Error: {e}")
+
+
+# ─── Research Briefing Page ───────────────────────────────────────────────────
+
+elif page == "📋 Research Briefing":
+    st.header("📋 Research Briefing — Paper Intelligence")
+
+    st.markdown("""
+    **Research Briefing** generates structured intelligence reports for papers,
+    enriched with your Gene Pool gaps and Research Memory stances.
+    TL;DR, key claims, weaknesses, and a verdict on whether it validates or contradicts you.
+    """)
+
+    col_input, col_view = st.columns([1, 2])
+
+    with col_input:
+        arxiv_id = st.text_input("arXiv ID", placeholder="e.g. 2307.02486")
+        use_llm = st.checkbox("Use LLM (uncheck for metadata-only)", value=True)
+
+        if st.button("📋 Generate Briefing", type="primary"):
+            if not arxiv_id:
+                st.warning("Enter an arXiv ID")
+            else:
+                with st.spinner("Generating briefing..."):
+                    try:
+                        from llm.briefing_generator import BriefingGenerator
+                        generator = BriefingGenerator()
+                        result = generator.generate(
+                            arxiv_id=arxiv_id.strip(),
+                            use_llm=use_llm,
+                            output_dir=PROJECT_ROOT / "data" / "briefings",
+                        )
+                        if result.success:
+                            st.session_state["_briefing_markdown"] = result.markdown
+                            st.session_state["_briefing_arxiv"] = arxiv_id
+                            verdict_emoji = {"validates": "✅", "contradicts": "❌", "neutral": "⚪", "irrelevant": "🚫"}
+                            emoji = verdict_emoji.get(result.briefing.verdict, "⚪")
+                            st.success(f"Generated! Verdict: {emoji} **{result.briefing.verdict.upper()}**")
+                        else:
+                            st.error(f"Failed: {result.error}")
+                    except Exception as e:
+                        st.error(f"Error: {e}")
+
+    with col_view:
+        markdown = st.session_state.get("_briefing_markdown", "")
+        if markdown:
+            st.markdown(markdown)
+        else:
+            st.info("Enter an arXiv ID and generate a briefing to see it here.")
 
 
