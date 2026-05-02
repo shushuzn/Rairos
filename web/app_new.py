@@ -391,6 +391,19 @@ async def trust_scores(request: Request):
     })
 
 
+@app.get("/gene-pool/credibility")
+async def gene_pool_credibility(request: Request):
+    """Gap Credibility — flags trendslop capsules with high keyword overlap."""
+    from llm.credibility_scorer import CredibilityScorer
+    scorer = CredibilityScorer()
+    html = scorer.render_html()
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "gene-pool-credibility",
+        "title": "Gap Credibility",
+        "content": html,
+    })
+
+
 @app.get("/citation-chain")
 async def citation_chain(request: Request, arxiv_id: str = ""):
     """Citation Chain — build and visualize."""
