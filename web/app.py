@@ -63,6 +63,7 @@ page = st.sidebar.radio("Go to", [
     "🚀 Autopilot Watch",
     "🎯 Hypothesis Lab",
     "📚 Lit Review",
+    "🧠 Research Memory",
 ])
 
 # ─── Dashboard ─────────────────────────────────────────────────────
@@ -1944,5 +1945,107 @@ elif page == "📚 Lit Review":
         else:
             st.info("No saved reviews yet. Generate one above!")
 
+
+# ─── Research Memory Page ──────────────────────────────────────────────────────
+
+elif page == "🧠 Research Memory":
+    st.header("🧠 Research Memory — Stance Log & Anomaly Detector")
+
+    st.markdown("""
+    **Research Memory** tracks your research stance history — what you concluded, rejected, or deferred.
+    When new papers arrive, it automatically detects contradictions to your prior decisions.
+    """)
+
+    tab_stances, tab_anomalies, tab_add = st.tabs(["📋 Stances", "⚠️ Anomalies", "➕ Add Stance"])
+
+    with tab_add:
+        with st.form("add_stance_form"):
+            topic = st.text_input("Topic / Research Question", placeholder="e.g., Is RAG better than fine-tuning for factuality?")
+            claim = st.text_area("Your Claim / Conclusion", placeholder="e.g., RAG outperforms fine-tuning on factuality tasks by 15%")
+            stance_type = st.selectbox("Stance", ["supported", "rejected", "deferred", "qualified"])
+            confidence = st.slider("Confidence", 0.0, 1.0, 0.6, 0.05)
+            reasoning = st.text_area("Reasoning / Evidence", placeholder="What led you to this conclusion?")
+            evidence_refs = st.text_input("Evidence arXiv IDs (comma-separated)", placeholder="2301.02486, 2302.10982")
+            submitted = st.form_submit_button("Record Stance")
+
+            if submitted:
+                if not topic or not claim:
+                    st.warning("Topic and claim are required")
+                else:
+                    try:
+                        from llm.research_memory import ResearchMemory, StanceType
+                        memory = ResearchMemory()
+                        refs = [r.strip() for r in evidence_refs.split(",") if r.strip()]
+                        memory.add_stance(
+                            topic=topic,
+                            claim=claim,
+                            stance=StanceType(stance_type),
+                            reasoning=reasoning,
+                            evidence_refs=refs,
+                            confidence=confidence,
+                        )
+                        st.success(f"Stance recorded! ({stance_type})")
+                    except Exception as e:
+                        st.error(f"Failed: {e}")
+
+    with tab_stances:
+        try:
+            from llm.research_memory import ResearchMemory, StanceType
+            memory = ResearchMemory()
+            summary = memory.get_summary()
+            st.caption(f"**{summary['total_stances']}** stances recorded")
+            col1, col2, col3 = st.columns(3)
+            for i, (k, v) in enumerate(summary.get("stance_breakdown", {}).items()):
+                col = [col1, col2, col3][min(i, 2)]
+                col.metric(k.capitalize(), v)
+        except Exception as e:
+            st.error(f"Error loading memory: {e}")
+
+        st.subheader("All Stances")
+        try:
+            from llm.research_memory import ResearchMemory
+            memory = ResearchMemory()
+            stances = memory.get_stances()
+            if stances:
+                for s in stances:
+                    with st.expander(f"[{s.stance.value.upper()}] {s.claim[:80]}"):
+                        st.markdown(f"**Topic:** {s.topic}")
+                        st.markdown(f"**Claim:** {s.claim}")
+                        st.markdown(f"**Confidence:** {s.confidence:.0%}")
+                        if s.reasoning:
+                            st.markdown(f"**Reasoning:** {s.reasoning}")
+                        if s.evidence_refs:
+                            st.markdown(f"**Evidence:** {', '.join(s.evidence_refs)}")
+                        if s.notes:
+                            st.markdown(f"**Notes:** {s.notes}")
+                        st.caption(f"Created: {datetime.fromtimestamp(s.created_at).isoformat()} | Updated: {datetime.fromtimestamp(s.updated_at).isoformat()}")
+            else:
+                st.info("No stances recorded yet. Add your first stance above!")
+        except Exception as e:
+            st.error(f"Error: {e}")
+
+    with tab_anomalies:
+        st.subheader("⚠️ Anomaly Alerts")
+        st.markdown("Papers that **contradict** or challenge your prior stances.")
+        try:
+            from llm.research_memory import ResearchMemory
+            memory = ResearchMemory()
+            anomalies = memory.get_recent_anomalies(limit=20)
+            summary = memory.get_summary()
+            st.caption(f"**{summary['total_anomalies']}** total anomalies | **{summary['recent_anomalies']}** in last 24h")
+
+            if anomalies:
+                for a in anomalies:
+                    color = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(a.severity.value, "⚪")
+                    with st.expander(f"{color} [{a.severity.value.upper()}] {a.paper_title[:70]}"):
+                        st.markdown(f"**Anomaly type:** {a.anomaly_type}")
+                        st.markdown(f"**Paper:** [{a.paper_arxiv_id}](https://arxiv.org/abs/{a.paper_arxiv_id}) — {a.paper_title[:100]}")
+                        st.markdown(f"**Challenges stance:** {a.stance_claim[:100]}")
+                        st.markdown(f"**Description:** {a.description}")
+                        st.caption(f"Detected: {datetime.fromtimestamp(a.created_at).isoformat()}")
+            else:
+                st.info("No anomalies detected yet. Stances will be checked against new papers!")
+        except Exception as e:
+            st.error(f"Error: {e}")
 
 
