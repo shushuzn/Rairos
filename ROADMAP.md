@@ -118,6 +118,8 @@ diversity alerts. All three feed into one quality system.
 - [ ] **Research Disseminator** — one-click public link to briefing (`rairos.app/b/{short_id}`)
 - [ ] **Citation Pathfinder Web Graph** — interactive SVG graph: paper → cites → Gene Pool capsule, color-coded by gap_type
 - [ ] **arXiv Watch Alert Channels** — multiple feed configs (general, climate, AI safety, regulation) with different matching criteria
+- [ ] **Gene Pool Import/Export** — backup/restore pool as JSON; share configs across machines
+- [ ] **Multi-Researcher Support** — shared Gene Pool with `source_user` tags; collaborative gap tracking
 
 #### Still Pending (from v2.0)
 
