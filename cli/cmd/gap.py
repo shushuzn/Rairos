@@ -30,6 +30,15 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
     ext_p.add_argument("paper_id", help="Paper ID (arXiv ID or internal ID)")
     ext_p.add_argument("--json", "-j", action="store_true", help="Output as JSON")
 
+    # gap watch — monitor arXiv for papers matching Gene Pool
+    watch_p = sub.add_parser("watch", help="Monitor arXiv for papers matching Gene Pool entries")
+    watch_p.add_argument("--interval", type=int, default=30,
+                         help="Check interval in minutes (default: 30)")
+    watch_p.add_argument("--daemon", action="store_true",
+                         help="Run as background daemon")
+    watch_p.add_argument("--new-only", action="store_true",
+                         help="Only report papers not yet in database")
+
     p.add_argument(
         "topic",
         nargs="?",
@@ -118,6 +127,10 @@ def _run_gap(args: argparse.Namespace) -> int:
     # gap extract — extract gap from a paper
     if args.gap_cmd == "extract":
         return _run_gap_extract(args)
+
+    # gap watch — monitor arXiv for Gene Pool matches
+    if args.gap_cmd == "watch":
+        return _run_gap_watch(args)
 
     # Profile/history/stats/prefs-history commands
     if args.profile or args.history or args.stats or args.prefs_history:
@@ -497,6 +510,67 @@ def _run_gap_extract(args: argparse.Namespace) -> int:
         print_info("Skipped.")
 
     return 0
+
+
+
+def _run_gap_watch(args):
+    import threading
+    import urllib.request
+    import xml.etree.ElementTree as ET
+    from llm.briefing_generator import _match_gene_pool
+
+    db = get_db()
+    db.init()
+
+    def _check_cycle():
+        try:
+            url = "https://export.arxiv.org/api/query?search_query=all:lastUploadDate&start=0&max_results=20&sortBy=submittedDate&sortOrder=descending"
+            with urllib.request.urlopen(url, timeout=30) as resp:
+                root = ET.fromstring(resp.read())
+                ns = {"a": "http://www.w3.org/2005/Atom"}
+                entries = root.findall("a:entry", ns)
+        except Exception as e:
+            print_info(f"arXiv feed error: {e}")
+            return
+
+        matched = []
+        for entry in entries:
+            t = entry.find("a:title", ns)
+            s = entry.find("a:summary", ns)
+            i = entry.find("a:id", ns)
+            if t is None or s is None or i is None:
+                continue
+            title = (t.text or "").strip().replace("\n", " ")
+            abstract = (s.text or "").strip().replace("\n", " ")
+            arxiv_id = (i.text or "").strip().split("/")[-1]
+
+            if args.new_only and db.get_paper(arxiv_id):
+                continue
+
+            matches = _match_gene_pool(arxiv_id, title, abstract)
+            if matches:
+                matched.append((arxiv_id, title, matches))
+
+        if matched:
+            print(f"\n  Found {len(matched)} paper(s) matching Gene Pool:")
+            for arxiv_id, title, matches in matched:
+                print(f"  [{arxiv_id}] {title[:60]}")
+                for m in matches:
+                    print(f"    -> {m['gap_title'][:60]} type={m['gap_type']} score={m['outcome_score']:.2f}")
+        else:
+            print(f"  (no matches this cycle)")
+
+    if args.daemon:
+        print_info(f"Gene Pool watch running (interval={args.interval}min, daemon)...")
+        _check_cycle()
+        stop_event = threading.Event()
+        while not stop_event.wait(args.interval * 60):
+            _check_cycle()
+        return 0
+    else:
+        print_info("Checking arXiv for Gene Pool matches...")
+        _check_cycle()
+        return 0
 
 
 def _collect_gap_feedback(topic: str, gaps, tracker: EvolutionTracker) -> None:
