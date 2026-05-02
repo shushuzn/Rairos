@@ -14,7 +14,8 @@ CLI (python -m cli)
     ├── parsers/           # arXiv, DOI, OpenAlex, PDF
     ├── database.py        # SQLite + FTS5
     ├── embed.py           # Ollama embedding client
-    └── citation.py        # OpenAlex citation API
+    ├── citation.py        # OpenAlex citation API
+    └── llm/insight/      # Gene Pool + CapsuleGene lifecycle
 ```
 
 AI Research OS is a **local-first** research tool. No cloud dependency — all data stays in `~/.ai_research_os/`.
@@ -23,7 +24,7 @@ AI Research OS is a **local-first** research tool. No cloud dependency — all d
 
 ### CLI Entry Point
 
-`cli/` — 23 subcommands registered via `argparse`. Two invocation styles:
+`cli/` — subcommands registered via `argparse`. All invocations use subcommands:
 
 ```bash
 python -m cli <subcommand> [args]   # recommended
@@ -84,9 +85,43 @@ Structured knowledge output from paper processing:
 |-----------|-------|-------------|
 | P-Note | Per paper | One key insight per paper |
 | C-Note | Per concept/tag | Aggregated notes across papers sharing a tag |
-| M-Note | 3+ papers | Comparison when papers share a tag |
+| M-Note | 3+ papers | Comparison when papers sharing a tag |
 | Radar | Per tag | Topic frequency heat score |
 | Timeline | Per tag | Year-based research evolution |
+
+### `llm/insight/` — Gene Pool
+
+Self-evolving research gap memory. Tracks which gaps have been identified, validated, or consumed.
+
+**Core concepts:**
+
+| Concept | Description |
+|---------|-------------|
+| CapsuleGene | A single research gap entry — `gap_type`, `gap_title`, `keywords`, `outcome_success_score` |
+| Gene Pool | Dual-store: `gene_pool.jsonl` (tracker) + `capsules.json` (web UI) |
+| consumed 闭环 | Suggestions carry `source_cap_id`; when accepted, source capsule marked `consumed` |
+| Capsule merge | Same `gap_type` + Jaccard keyword overlap ≥ 0.80 → merge into winner |
+| Auto-archive | Capsule with `low_score_streak ≥ 3` and score < 0.30 → auto-archived |
+
+**Lifecycle states:** `active` → `consumed` (闭环) or `archived` (自动归档)
+
+**Key files:**
+
+| File | Role |
+|------|------|
+| `llm/insight/gene.py` | `CapsuleGene` dataclass with `status`, `low_score_streak` |
+| `llm/insight/tracker.py` | `EvolutionTracker` — encodes/finds/archives capsules |
+| `llm/insight/evolution.py` | `InsightEvolution` — merge + auto-archive on each `apply()` |
+| `llm/paper_gap_extractor.py` | Extract gap from paper via LLM → Gene Pool |
+| `llm/briefing_generator.py` | `_match_gene_pool()` — match paper to existing capsules |
+
+**CLI access:**
+```bash
+airos-cli gap list [--status active|consumed|archived]  # list Gene Pool
+airos-cli gap extract <paper_id>                       # extract gap from paper
+```
+
+**Web UI:** `/paper/{id}` page shows Gene Pool relevance and "Extract Gap" button.
 
 ### `kg/`
 
