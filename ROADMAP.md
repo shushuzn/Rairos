@@ -95,7 +95,7 @@ Goal: Make AI Research OS **accessible without CLI**.
   - Optional API key management
   - Session persistence for web
 
-- [x] Feature research: see [docs/v2.1_research.md](docs/v2.1_research.md) — 22 features from HN newest-page trends
+- [ ] Feature research: see [docs/v2.1_research.md](docs/v2.1_research.md) — 22 features from HN newest-page trends
 
 ---
 
