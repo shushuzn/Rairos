@@ -69,7 +69,7 @@ Goal: Make the project **contributor-friendly** and **discoverable**.
 - [x] **First impressions**
   - [x] Professional README banner
   - [x] Logo redesign (hexagonal R, hand-drawn SVG)
-  - [ ] Social preview images for GitHub links
+  - [x] Social preview images for GitHub links
 
 - [ ] **Good first issues**
   - [ ] Label 10+ issues as `good first issue`
