@@ -56,8 +56,8 @@ Goal: Make the project **contributor-friendly** and **discoverable**.
 - [x] **GitHub automation**
   - [x] FUNDING.yml
   - [x] PR template automation
-  - [ ] Issue templates (bug report, feature request)
-  - [ ] Stale bot configuration
+  - [x] Issue templates (bug report, feature request)
+  - [x] Stale bot configuration
 
 - [ ] **Documentation**
   - [x] Architecture deep-dive (Gene Pool lifecycle in docs/architecture.md)
