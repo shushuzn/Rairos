@@ -53,7 +53,8 @@ Respond ONLY with a JSON object (no markdown, no code fences):
   "gap_type": "the_gap_type_here",
   "gap_title": "Short descriptive title (max 80 chars)",
   "keywords": ["keyword1", "keyword2", "keyword3"],
-  "summary": "One sentence explaining what gap this paper addresses"
+  "summary": "One sentence explaining what gap this paper addresses",
+  "polarity": "positive or negative — does this paper ADVANCE the gap (positive: proposes new method/scale/improve) or FAIL/challenge it (negative: shows limitation, refutes, or fails to scale)"
 }}
 """
 
@@ -99,6 +100,7 @@ def save_gap_to_gene_pool(
     gap_title: str,
     keywords: List[str],
     summary: str,
+    polarity: str = "positive",
 ) -> bool:
     """Append a new gap as a CapsuleGene entry to both Gene Pool stores.
 
@@ -120,6 +122,7 @@ def save_gap_to_gene_pool(
             "outcome_success_score": 0.5,
             "feedback_count": 0,
             "evolved_generation": 0,
+            "polarity": polarity,
             "archetype": {
                 "extracted_from": "paper_gap_extractor",
                 "source_paper_id": paper_id,
@@ -158,3 +161,40 @@ def save_gap_to_gene_pool(
         return True
     except Exception:
         return False
+
+
+def detect_contradictions(capsules: list) -> list:
+    """Find pairs of capsules with same gap_type but opposite polarity.
+
+    Returns list of dicts:
+        {gap_type, positive_capsule, negative_capsule, shared_keywords}
+    """
+    from collections import defaultdict
+
+    by_type = defaultdict(list)
+    for c in capsules:
+        if c.get("status") == "archived":
+            continue
+        polarity = c.get("polarity", "positive")
+        gap_type = c.get("action_gap_type") or c.get("trigger_gap_type", "")
+        if gap_type and polarity:
+            by_type[gap_type].append((polarity, c))
+
+    contradictions = []
+    for gap_type, items in by_type.items():
+        positives = [c for p, c in items if p == "positive"]
+        negatives = [c for p, c in items if p == "negative"]
+        for pc in positives:
+            for nc in negatives:
+                pk = set(pc.get("trigger_keywords", []))
+                nk = set(nc.get("trigger_keywords", []))
+                shared = pk & nk
+                if shared:
+                    contradictions.append({
+                        "gap_type": gap_type,
+                        "positive_capsule": pc,
+                        "negative_capsule": nc,
+                        "shared_keywords": list(shared),
+                    })
+
+    return contradictions
