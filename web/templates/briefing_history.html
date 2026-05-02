@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Briefing History — Rairos{% endblock %}
+
+{% block content %}
+<h1 class="page-title">📋 Briefing History</h1>
+<div class="page-title-underline"></div>
+<p class="page-desc">Previously generated research briefings.</p>
+
+<div style="margin-bottom: 24px;">
+  <a href="/briefing" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 6px;">
+    + New Briefing
+  </a>
+</div>
+
+{% if briefings %}
+<div style="display: flex; flex-direction: column; gap: 12px;">
+  {% for arxiv_id, title, generated, verdict, emoji in briefings %}
+  <div class="card" style="padding: 18px 20px;">
+    <div style="display: flex; gap: 14px; align-items: flex-start;">
+      <!-- Verdict icon -->
+      <div style="font-size: 24px; flex-shrink: 0; width: 36px; text-align: center;">
+        {{ emoji }}
+      </div>
+      <div style="flex: 1; min-width: 0;">
+        <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 4px;">
+          {{ title[:90] }}{% if title|length > 90 %}…{% endif %}
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--ink-faint);">
+          <span style="font-family: var(--font-mono);">{{ arxiv_id[:20] }}</span>
+          <span>·</span>
+          <span>{{ generated }}</span>
+          <span>·</span>
+          <span class="badge {% if verdict=='validates' %}badge-green{% elif verdict=='contradicts' %}badge-red{% elif verdict=='neutral' %}badge-gray{% else %}badge-gray{% endif %}">
+            {{ verdict }}
+          </span>
+        </div>
+      </div>
+      <!-- Actions -->
+      <div style="display: flex; gap: 8px; flex-shrink: 0;">
+        <a href="/briefing?arxiv_id={{ arxiv_id }}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;">
+          ↻ Regenerate
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card">
+  <div class="empty-state">
+    <div class="empty-state-icon">📋</div>
+    <div class="empty-state-text">No briefings yet</div>
+    <p style="margin-top: 10px; color: var(--ink-faint); font-size: 14px;">
+      Generate a briefing from any paper's arXiv ID.
+    </p>
+    <a href="/briefing" class="btn btn-primary" style="margin-top: 14px; display: inline-flex;">
+      Generate your first briefing →
+    </a>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
