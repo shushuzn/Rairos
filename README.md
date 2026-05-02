@@ -16,13 +16,13 @@
 
 Rairos is a **self-evolving research system** that learns from your usage patterns. It's not just a paper manager — it's a research partner that grows smarter over time.
 
-Feed it a paper (arXiv URL, DOI, or PDF). Get back a **P-Note**, **C-Note**, **Radar entry**, and **Timeline entry** — all structured, tagged, and cross-linked.
+Feed it a paper (arXiv URL, DOI, or PDF). Get back a **CapsuleGene**, **Research Brief**, and **Gene Pool entry** — all structured, tagged, and cross-linked.
 
 | Input | Output |
 |---|---|
-| arXiv URL/ID | P-Note + C-Note + Radar + Timeline |
-| DOI | P-Note + C-Note + Radar + Timeline |
-| Local PDF | P-Note + C-Note + Radar + Timeline |
+| arXiv URL/ID | CapsuleGene + Briefing + Gene Pool |
+| DOI | CapsuleGene + Briefing + Gene Pool |
+| Local PDF | CapsuleGene + Briefing + Gene Pool |
 | Scanned PDF | Same (via OCR) |
 
 This is **not a PDF manager**. It is a **Self-Evolving System** that:
@@ -38,7 +38,8 @@ This is **not a PDF manager**. It is a **Self-Evolving System** that:
 | `airos chat` | RAG-powered Q&A with your papers |
 | `airos slides` | Auto-generate presentations |
 | `airos kg` | Knowledge graph visualization |
-| Evolution | Self-improvement via Gene/Capsule patterns |
+| Gene Pool | Self-evolution via Capsule lifecycle |
+| `airos gap` | Extract & manage research gaps |
 
 ## Quick Start
 
