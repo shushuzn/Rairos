@@ -42,35 +42,43 @@ def init_scoring():
 
 # ─── Sidebar navigation ────────────────────────────────────────────
 
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", [
-    "📊 Dashboard",
-    "📚 Papers",
-    "📄 Paper Detail",
-    "📥 Import",
-    "💬 Chat",
-    "📈 Momentum Scores",
-    "📊 KG Stats",
-    "🔗 KG Graph",
-    "📋 Experiment Tables",
-    "📉 Trends",
-    "⚙️ Process",
-    # ── Innovation pages ──
-    "🧬 Gene Pool",
-    "🎯 Gap Detection",
-    "🔄 InsightEvolution",
-    "🔍 MCP Research",
-    "🚀 Autopilot Watch",
-    "🎯 Hypothesis Lab",
-    "📚 Lit Review",
-    "🧠 Research Memory",
-    "🎯 Auto Reviewer",
-    "🗺️ Route Planner",
-    "📋 Research Briefing",
-    "🔗 Citation Chain",
-    "📊 Impact Ranking",
-    "🔬 Replication Checker",
-])
+st.sidebar.title("Rairos")
+
+_cats = {
+    "🔬 Core": ["📊 Dashboard", "📚 Papers", "📄 Paper Detail", "📥 Import"],
+    "🧬 Research": ["📈 Momentum Scores", "📊 KG Stats", "🔗 KG Graph", "📉 Trends"],
+    "🤖 Agents": ["💬 Chat", "🔍 MCP Research", "🚀 Autopilot Watch", "🎯 Hypothesis Lab"],
+    "📝 Intelligence": ["📚 Lit Review", "🎯 Auto Reviewer", "🗺️ Route Planner", "📋 Research Briefing", "🔗 Citation Chain", "📊 Impact Ranking", "🔬 Replication Checker"],
+    "💡 Innovation": ["🧬 Gene Pool", "🎯 Gap Detection", "🔄 InsightEvolution", "⚙️ Process", "📋 Experiment Tables", "🧠 Research Memory"],
+}
+
+with st.sidebar.expander("🔬 Core", expanded=True):
+    for p in _cats["🔬 Core"]:
+        if st.button(f"  {p}", use_container_width=True, key=f"nav_{p}"):
+            page = p
+
+with st.sidebar.expander("🧬 Research"):
+    for p in _cats["🧬 Research"]:
+        if st.button(f"  {p}", use_container_width=True, key=f"nav_{p}"):
+            page = p
+
+with st.sidebar.expander("🤖 Agents"):
+    for p in _cats["🤖 Agents"]:
+        if st.button(f"  {p}", use_container_width=True, key=f"nav_{p}"):
+            page = p
+
+with st.sidebar.expander("📝 Intelligence"):
+    for p in _cats["📝 Intelligence"]:
+        if st.button(f"  {p}", use_container_width=True, key=f"nav_{p}"):
+            page = p
+
+with st.sidebar.expander("💡 Innovation"):
+    for p in _cats["💡 Innovation"]:
+        if st.button(f"  {p}", use_container_width=True, key=f"nav_{p}"):
+            page = p
+
+page = st.session_state.get("_page", "📊 Dashboard")
+
 
 # ─── Dashboard ─────────────────────────────────────────────────────
 
