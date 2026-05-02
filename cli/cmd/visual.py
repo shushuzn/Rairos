@@ -20,6 +20,15 @@ from db.database import Database, ExperimentTableRecord
 from cli._shared import print_success, print_error, print_info
 from cli.warp import WarpBlocks
 
+# Chart KG integration
+try:
+    from pdf.chart_kg import ChartKGExtractor
+    from kg.manager import KGManager
+    from kg.integration import KGIntegration
+    _HAS_CHART_KG = True
+except ImportError:
+    _HAS_CHART_KG = False
+
 
 def _build_visual_parser(subparsers):
     p = subparsers.add_parser("visual", help="Extract visual content from PDFs")
@@ -72,6 +81,21 @@ def _build_visual_parser(subparsers):
                          help="Search in table content")
     export_p.set_defaults(func=lambda a: visual_export.callback(
         paper_id=a.paper_id, output=a.output, format=a.format, page=a.page, keyword=a.keyword))
+
+    # chart command - index figures/tables to KG and query
+    chart_p = sub.add_parser("chart", help="Index figures/tables to KG and query them")
+    chart_p.add_argument("paper_id", nargs="?", default=None, help="Paper ID to index/query")
+    chart_p.add_argument("--index", "-i", metavar="PDF_PATH", default=None,
+                        help="Index figures/tables from PDF into KG")
+    chart_p.add_argument("--list", "-l", action="store_true",
+                        help="List all indexed figures/tables for the paper")
+    chart_p.add_argument("--figure", "-f", metavar="LABEL", default=None,
+                        help="Query specific figure, e.g. 'Figure 3'")
+    chart_p.add_argument("--table", "-t", metavar="LABEL", default=None,
+                        help="Query specific table, e.g. 'Table 1'")
+    chart_p.set_defaults(func=lambda a: visual_chart.callback(
+        paper_id=a.paper_id, index=a.index, list_charts=a.list,
+        figure=a.figure, table=a.table))
 
     p.set_defaults(func=lambda a: _show_visual_status())
 
@@ -397,3 +421,123 @@ def visual_export(paper_id: str, output: str, format: str, page: int, keyword: s
 
     finally:
         db.close()
+
+
+def visual_chart(paper_id: str, index: str, list_charts: bool, figure: str, table: str):
+    """Index figures/tables to KG and query them."""
+    if not _HAS_CHART_KG:
+        print_error("Chart KG not available. Install required dependencies.")
+        sys.exit(1)
+
+    if not paper_id:
+        print_error("Paper ID required. Usage: airos visual chart <paper_id>")
+        sys.exit(1)
+
+    kg = KGManager()
+    integ = KGIntegration(kg)
+    extractor = ChartKGExtractor(kg)
+
+    # Index mode
+    if index:
+        pdf_path = Path(index)
+        if not pdf_path.exists():
+            print_error(f"PDF not found: {index}")
+            sys.exit(1)
+
+        # Get paper title from DB if available
+        db = Database()
+        paper = db.get_paper(paper_id)
+        paper_title = paper.title if paper else paper_id
+        db.close()
+
+        print_info(f"Indexing charts from {pdf_path} for paper: {paper_id}")
+        try:
+            fig_nodes, tbl_nodes = extractor.extract_and_index(
+                str(pdf_path), paper_id, paper_title
+            )
+            integ.on_charts_indexed(paper_id, fig_nodes, tbl_nodes)
+            print_success(f"Indexed {len(fig_nodes)} figures and {len(tbl_nodes)} tables")
+        except Exception as e:
+            print_error(f"Indexing failed: {e}")
+            sys.exit(1)
+        return
+
+    # Query mode - list
+    if list_charts:
+        figures = extractor.get_paper_figures(paper_id)
+        tables = extractor.get_paper_tables(paper_id)
+
+        from rich.console import Console
+        c = Console()
+        c.rule(f"[bold #FF8272]  Charts for {paper_id}  [/]")
+        c.print()
+
+        if figures:
+            c.print("[bold]Figures:[/]")
+            for fig in figures:
+                props = fig.get("properties", {})
+                page = props.get("page", "?")
+                desc = props.get("description", "")[:80]
+                c.print(f"  [#A5D5FE]•[/] {fig['label']} (p.{page + 1})")
+                if desc:
+                    c.print(f"    {desc}...")
+                c.print()
+
+        if tables:
+            c.print("[bold]Tables:[/]")
+            for tbl in tables:
+                props = tbl.get("properties", {})
+                page = props.get("page", "?")
+                desc = props.get("description", "")[:80]
+                c.print(f"  [#A5D5FE]•[/] {tbl['label']} (p.{page + 1})")
+                if desc:
+                    c.print(f"    {desc}...")
+                c.print()
+
+        if not figures and not tables:
+            print_info(f"No charts indexed for {paper_id}")
+            print_info("Run: airos visual chart <paper_id> --index paper.pdf")
+
+        return
+
+    # Query specific figure
+    if figure:
+        fig_node = extractor.query_figure(paper_id, figure)
+        if fig_node:
+            props = fig_node.get("properties", {})
+            print_success(f"Figure: {fig_node['label']}")
+            print(f"Page: {props.get('page', '?') + 1}")
+            print(f"Caption: {props.get('caption', 'N/A')}")
+            print(f"\nDescription:\n{props.get('description', 'N/A')}")
+            if props.get("image_path"):
+                print(f"\nImage: {props.get('image_path')}")
+        else:
+            print_error(f"Figure '{figure}' not found for {paper_id}")
+        return
+
+    # Query specific table
+    if table:
+        tables = extractor.get_paper_tables(paper_id)
+        tbl_node = None
+        for t in tables:
+            if table.lower() in t["label"].lower():
+                tbl_node = t
+                break
+
+        if tbl_node:
+            props = tbl_node.get("properties", {})
+            print_success(f"Table: {tbl_node['label']}")
+            print(f"Page: {props.get('page', '?') + 1}")
+            print(f"Caption: {props.get('caption', 'N/A')}")
+            print(f"\nDescription:\n{props.get('description', 'N/A')}")
+            print(f"\nMarkdown:\n{props.get('markdown', 'N/A')}")
+        else:
+            print_error(f"Table '{table}' not found for {paper_id}")
+        return
+
+    # No specific action - show help
+    print_info("Usage:")
+    print("  airos visual chart <paper_id> --index paper.pdf   # Index charts")
+    print("  airos visual chart <paper_id> --list              # List all charts")
+    print("  airos visual chart <paper_id> -f 'Figure 3'     # Query figure")
+    print("  airos visual chart <paper_id> -t 'Table 1'       # Query table")

@@ -2,12 +2,10 @@
 
 import logging
 import re
-
-import orjson
 from typing import Optional, Union
 from pathlib import Path
 
-
+import orjson
 
 logger = logging.getLogger(__name__)
 
@@ -216,6 +214,64 @@ class KGIntegration:
             pnode = self.kg.get_node_by_entity("Paper", uid)
             pnode_id = pnode["id"] if pnode else self.kg.add_node("Paper", uid, uid)
             self.kg.add_edge(pnode_id, mnote_node_id, "in_comparison", weight=1.0)
+
+    def on_charts_indexed(
+        self,
+        paper_uid: str,
+        figure_nodes: list,
+        table_nodes: list,
+    ):
+        """Store figure/table nodes for a paper in the KG.
+
+        Args:
+            paper_uid: Paper unique identifier
+            figure_nodes: List of FigureNode from pdf.chart_kg
+            table_nodes: List of TableNode from pdf.chart_kg
+        """
+        paper_node = self.kg.get_node_by_entity("Paper", paper_uid)
+        if not paper_node:
+            logger.warning(f"Paper node not found for {paper_uid}, skipping chart indexing")
+            return
+
+        paper_node_id = paper_node["id"]
+
+        # Index figures
+        for fig in figure_nodes:
+            fig_node_id = self.kg.upsert_node(
+                "Figure",
+                fig.entity_id,
+                fig.label,
+                description=fig.description,
+                page=fig.page,
+                image_path=fig.image_path or "",
+                caption=fig.caption,
+            )
+            # Link figure to paper if not already linked
+            existing = self.kg.get_node_by_entity("Figure", fig.entity_id)
+            if existing:
+                edges = self.kg.get_edges_by_node(existing["id"], direction="out", rel_type="has_figure")
+                if not edges:
+                    self.kg.add_edge(paper_node_id, existing["id"], "has_figure")
+
+        # Index tables
+        for tbl in table_nodes:
+            tbl_node_id = self.kg.upsert_node(
+                "Table",
+                tbl.entity_id,
+                tbl.label,
+                description=tbl.description,
+                page=tbl.page,
+                markdown=tbl.markdown,
+                caption=tbl.caption,
+            )
+            # Link table to paper if not already linked
+            existing = self.kg.get_node_by_entity("Table", tbl.entity_id)
+            if existing:
+                edges = self.kg.get_edges_by_node(existing["id"], direction="out", rel_type="has_table")
+                if not edges:
+                    self.kg.add_edge(paper_node_id, existing["id"], "has_table")
+
+        logger.info(f"Indexed {len(figure_nodes)} figures and {len(table_nodes)} tables for paper {paper_uid}")
 
     def rebuild_from_papers_json(
         self,
