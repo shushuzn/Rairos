@@ -59,10 +59,10 @@ class CuratorAgent(BaseAgent):
             self.status = AgentStatus.ERROR
             return []
 
-        # Find matching Gene Pool capsule
-        capsule = None
+        # Find matching Gene Pool capsules
+        capsules = []
         try:
-            capsule = self._tracker.find_capsule(
+            capsules = self._tracker.find_capsule(
                 topic=topic,
                 gap_type=gap_type,
                 keywords=[],
@@ -72,8 +72,10 @@ class CuratorAgent(BaseAgent):
 
         gene_pool_score = 0.0
         preference_boost = False
-        if capsule:
-            gene_pool_score = capsule.get("outcome_success_score", 0.0)
+        if capsules:
+            # capsules is List[CapsuleGene] — use the top-scored one
+            top = capsules[0]
+            gene_pool_score = top.outcome_success_score
             preference_boost = gene_pool_score >= 0.5
 
         # Filter by minimum thresholds
@@ -100,6 +102,17 @@ class CuratorAgent(BaseAgent):
             self._log("encoded_to_gene_pool", gap=gap_title[:40])
         except Exception as e:
             self._log("encode_error", error=str(e))
+
+        # Trigger feedback-descent evolution cycle
+        try:
+            from llm.insight.evolution import InsightEvolution
+            evo = InsightEvolution(tracker=self._tracker)
+            evo_result = evo.evolve(topic=topic)
+            improved = evo_result.get("result", {}).get("added", 0)
+            if improved > 0:
+                self._log("evolution_applied", topic=topic[:40], added=improved)
+        except Exception as e:
+            self._log("evolution_error", error=str(e))
 
         self._log("alert_ready", gap=gap_title[:40], score=gene_pool_score)
         self.status = AgentStatus.DONE
