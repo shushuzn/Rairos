@@ -367,6 +367,8 @@ body {
 }
 
 .bar-fill-alt { background: var(--pen-red); }
+.bar-fill-green { background: var(--pen-green); }
+.bar-fill-red { background: var(--pen-red); }
 
 /* ── Paper List ────────────────────────────── */
 .paper-card {
