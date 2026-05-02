@@ -21,7 +21,7 @@ The goal is not to be another PDF manager or reference manager. It's to be an **
 
 ## Current State
 
-**v1.6** — Gene Pool is live. FastAPI hand-drawn web UI, Gene/Capsule self-evolution system, CLI unified to subcommands.
+**v1.7** — Gene Pool ecosystem expanded. FastAPI hand-drawn web UI, Gene/Capsule self-evolution system, CLI unified to subcommands.
 
 Strengths:
 - 3839 tests, 129 test files
@@ -34,7 +34,10 @@ Strengths:
 - paper2code pipeline
 - Gene Pool + CapsuleGene lifecycle (consumed闭环, capsule merge, auto-archive)
 - FastAPI hand-drawn web UI (app_new.py)
-- `airos-cli gap list/extract` for Gene Pool access
+- `airos-cli gap list/extract/watch/path/contradictions` for Gene Pool
+- `polarity` field + contradiction detection (opposite polarity + same gap_type)
+- Citation Pathfinder — trace citation chain from paper to Gene Pool capsule
+- arXiv Auto-Import — `gap watch` monitors feed for Gene Pool matches
 
 Gaps:
 - No real product demo/showcase
@@ -157,7 +160,7 @@ Goal: A system that does research **with minimal human input**.
 | v1.3 | Released | C-Note, Radar, Timeline, citation graph |
 | v1.5 | Released | Chat TUI, semantic search, EvoSkill pipeline |
 | v1.6 | Released | Gene Pool, CapsuleGene lifecycle, FastAPI web UI, hand-drawn aesthetic |
-| v1.7 | In Progress | Gene Pool arXiv watch (`gap watch`), Contradiction Detection, Citation Pathfinder |
+| v1.7 | Released | Gene Pool arXiv watch (`gap watch`), Contradiction Detection, Citation Pathfinder |
 | v2.0 | Planned | Community polish, Docker, API reference |
 | v2.2 | Planned | Self-evolution dashboard, research gap detection |
 | v3.0 | Future | Autonomous research agent |
