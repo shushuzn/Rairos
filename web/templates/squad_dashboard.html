@@ -68,7 +68,7 @@
 <div class="card" style="margin-bottom: 24px;">
   <div class="card-title">📡 Activity Stream</div>
   {% if activity %}
-  <div style="max-height: 360px; overflow-y: auto; font-family: var(--font-mono); font-size: 11px;">
+  <div id="activity-log" style="max-height: 360px; overflow-y: auto; font-family: var(--font-mono); font-size: 11px;">
     {% for entry in activity | reverse %}
     <div style="padding: 6px 0; border-bottom: 1px dashed var(--border-light); {% if loop.last %}border-bottom: none;{% endif %} display: flex; gap: 10px; align-items: flex-start;">
       <span style="color: var(--ink-faint); flex-shrink: 0; width: 70px;">{{ entry.ts | timestamp }}</span>
@@ -93,6 +93,27 @@
     <div class="empty-state-text">No activity yet. Start the squad to see the agent pipeline in action.</div>
   </div>
   {% endif %}
+</div>
+
+<style>
+.activity-entry {
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--border-light);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 11px;
+}
+.activity-entry .ts { color: var(--ink-faint); flex-shrink: 0; width: 70px; }
+.activity-entry .agent-icon { flex-shrink: 0; }
+.activity-entry .event { color: var(--pen-blue); flex-shrink: 0; width: 50px; }
+.activity-entry .topic { color: var(--ink-light); flex: 1; min-width: 0; word-break: break-all; }
+.status-badge { font-size: 11px; padding: 2px 8px; border-radius: 2px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.status-working { background: var(--pen-green); color: white; }
+.status-done { background: var(--pen-blue); color: white; }
+.status-error { background: #e05050; color: white; }
+.status-idle { background: var(--paper); color: var(--ink-faint); border: 1px solid var(--border); }
+</style>
 </div>
 
 <!-- Recent Alerts from Squad -->
@@ -122,20 +143,66 @@
 
 {% block scripts %}
 <script>
-// Auto-refresh every 5 seconds
-let refreshTimer;
-function startRefresh() {
-  refreshTimer = setInterval(() => {
-    fetch('/research-loop/squad/activity')
-      .then(r => r.json())
-      .then(data => {
-        if (data.activity && data.activity.length > 0) {
-          location.reload();
-        }
-      })
-      .catch(() => {});
-  }, 5000);
-}
-startRefresh();
+// SSE real-time activity stream — no polling
+(function() {
+  var lastCount = 0;
+
+  function getIcon(agent) {
+    return {'scout':'🔍','analyzer':'🧬','citation_hunter':'🔗','curator':'🎯'}[agent] || '🤖';
+  }
+
+  function formatTs(ts) {
+    try { return new Date(ts * 1000).toLocaleTimeString(); } catch(e) { return '—'; }
+  }
+
+  function createEl(tag, text) {
+    var el = document.createElement(tag);
+    el.textContent = text || '';
+    return el;
+  }
+
+  function appendActivity(entries) {
+    var container = document.getElementById('activity-log');
+    if (!container) return;
+    container.innerHTML = '';
+    entries.reverse().forEach(function(entry) {
+      var div = document.createElement('div');
+      div.className = 'activity-entry';
+
+      var tsSpan = createEl('span', formatTs(entry.ts));
+      tsSpan.className = 'ts';
+
+      var iconSpan = createEl('span', getIcon(entry.agent));
+
+      var eventSpan = createEl('span', entry.event || '');
+      eventSpan.className = 'event';
+
+      var topicSpan = createEl('span', entry.topic || '');
+
+      div.appendChild(tsSpan);
+      div.appendChild(iconSpan);
+      div.appendChild(eventSpan);
+      div.appendChild(topicSpan);
+      container.appendChild(div);
+    });
+  }
+
+  var es = new EventSource('/research-loop/squad/stream');
+
+  es.onmessage = function(e) {
+    try {
+      var data = JSON.parse(e.data);
+      if (data.error) return;
+      if (data.activity && data.activity.length !== lastCount) {
+        lastCount = data.activity.length;
+        appendActivity(data.activity.slice(-20));
+      }
+    } catch(err) {}
+  };
+
+  es.onerror = function() {
+    setTimeout(function() { location.reload(); }, 5000);
+  };
+})();
 </script>
 {% endblock %}

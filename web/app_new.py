@@ -596,6 +596,49 @@ async def squad_run_cycle(request: Request):
     return RedirectResponse(url="/research-loop/squad", status_code=303)
 
 
+@app.get("/research-loop/squad/stream")
+async def squad_stream():
+    """Server-Sent Events — real-time agent activity stream."""
+    from fastapi.responses import StreamingResponse
+    import asyncio
+
+    async def event_generator():
+        import time as _time
+        _last_len = 0
+        try:
+            from research_loop.agents.squad import SquadCoordinator
+            coord = SquadCoordinator()
+            while True:
+                activity = coord.get_activity(limit=50)
+                status = coord.get_status()
+                alerts = coord.get_alerts(limit=10)
+
+                # Only emit if something changed
+                if len(activity) != _last_len:
+                    _last_len = len(activity)
+                    payload = {
+                        "activity": activity[-20:],
+                        "agents": status.get("agents", {}),
+                        "alerts": alerts,
+                        "running": status.get("running", False),
+                    }
+                    yield f"data: {__import__('json').dumps(payload)}\n\n"
+
+                await asyncio.sleep(3)
+        except Exception as e:
+            yield f"data: {__import__('json').dumps({'error': str(e)})}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 @app.get("/research-loop/squad/activity")
 async def squad_activity():
     """JSON endpoint for squad activity stream."""
