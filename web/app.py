@@ -62,6 +62,7 @@ page = st.sidebar.radio("Go to", [
     "🔍 MCP Research",
     "🚀 Autopilot Watch",
     "🎯 Hypothesis Lab",
+    "📚 Lit Review",
 ])
 
 # ─── Dashboard ─────────────────────────────────────────────────────
@@ -1862,22 +1863,86 @@ Research Gap (from Gap Detection or Autopilot)
             st.error(f"Failed to load leaderboard: {e}")
 
 
-def _compute_verdict_from_events(events):
-    """Compute verdict from hypothesis events."""
-    if not events:
-        return "INCONCLUSIVE", "no experiments recorded"
-    action_vals = {e.action.value if hasattr(e.action, 'value') else str(e.action) for e in events}
-    has_completed = "validated" in action_vals or "completed" in action_vals
-    has_failed = "rejected" in action_vals or "failed" in action_vals
-    if has_completed and has_failed:
-        return "MIXED", "both validated and rejected experiments exist"
-    if has_completed:
-        return "VALIDATED", "all experiments succeeded"
-    if has_failed:
-        return "REJECTED", "all experiments failed"
-    return "INCONCLUSIVE", "no completed experiments yet"
+    def _compute_verdict_from_events(events):
+        """Compute verdict from hypothesis events."""
+        if not events:
+            return "INCONCLUSIVE", "no experiments recorded"
+        action_vals = {e.action.value if hasattr(e.action, 'value') else str(e.action) for e in events}
+        has_completed = "validated" in action_vals or "completed" in action_vals
+        has_failed = "rejected" in action_vals or "failed" in action_vals
+        if has_completed and has_failed:
+            return "MIXED", "both validated and rejected experiments exist"
+        if has_completed:
+            return "VALIDATED", "all experiments succeeded"
+        if has_failed:
+            return "REJECTED", "all experiments failed"
+        return "INCONCLUSIVE", "no completed experiments yet"
 
 
+# ─── Lit Review Page ───────────────────────────────────────────────────────────
+
+elif page == "📚 Lit Review":
+    st.header("📚 Literature Review — LLM-Generated Research Summaries")
+
+    st.markdown("""
+    **Lit Review** generates narrative, structured literature reviews using an LLM.
+    Enter a research topic — it pulls papers from your local database and synthesizes
+    thematic sections, consensus points, and key papers.
+    """)
+
+    col_gen, col_list = st.tabs(["⚡ Generate Review", "📋 Saved Reviews"])
+
+    with col_gen:
+        topic = st.text_input("Research Topic", placeholder="e.g., retrieval-augmented generation in LLMs")
+        limit = st.slider("Papers to include", 5, 50, 20)
+        use_llm = st.checkbox("Use LLM for generation (uncheck for template only)", value=True)
+
+        if st.button("🔍 Generate Literature Review", type="primary"):
+            if not topic:
+                st.warning("Enter a research topic")
+            else:
+                with st.spinner("Generating literature review..."):
+                    try:
+                        from llm.litreview_generator import LitReviewGenerator
+                        generator = LitReviewGenerator()
+                        result = generator.generate(
+                            topic=topic,
+                            limit=limit,
+                            use_llm=use_llm,
+                            output_dir=PROJECT_ROOT / "data" / "litreviews",
+                        )
+                        if result.success:
+                            st.success(f"Review generated ({result.review.total_papers} papers, {len(result.review.sections)} sections)")
+                            st.markdown(result.markdown)
+                        else:
+                            st.error(f"Failed: {result.error}")
+                    except Exception as e:
+                        st.error(f"Error: {e}")
+
+    with col_list:
+        litreview_dir = PROJECT_ROOT / "data" / "litreviews"
+        reviews = []
+        if litreview_dir.exists():
+            for f in sorted(litreview_dir.glob("litreview_*.md"), reverse=True):
+                content = f.read_text(encoding="utf-8")
+                lines = content.split("\n")
+                date = ""
+                for line in lines[1:5]:
+                    if "Generated:" in line:
+                        date = line.split("Generated:")[-1].strip()
+                        break
+                reviews.append({"file": f.name, "date": date, "size": f.stat().st_size})
+
+        if reviews:
+            for r in reviews:
+                with st.expander(f"{r['file']} — {r['date']} ({r['size']} bytes)"):
+                    try:
+                        content = (litreview_dir / r["file"]).read_text(encoding="utf-8")
+                        st.markdown(content)
+                    except Exception as e:
+                        st.error(f"Failed to load: {e}")
+        else:
+            st.info("No saved reviews yet. Generate one above!")
 
 
 
