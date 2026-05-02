@@ -392,6 +392,50 @@ def get_tools() -> List[Dict]:
                 },
                 "required": ["arxiv_id"]
             }
+        },
+        {
+            "name": "citation_chain_build",
+            "description": "Build a citation chain for a paper using Semantic Scholar API",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "arxiv_id": {"type": "string", "description": "Seed arXiv ID"},
+                    "max_depth": {"type": "integer", "default": 2, "description": "Max traversal depth"}
+                },
+                "required": ["arxiv_id"]
+            }
+        },
+        {
+            "name": "citation_chain_families",
+            "description": "Cluster papers in a citation chain into research families",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "arxiv_id": {"type": "string", "description": "Seed arXiv ID to build chain first"}
+                }
+            }
+        },
+        {
+            "name": "citation_chain_silent",
+            "description": "Detect potential silent citations between papers in a chain",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "arxiv_id": {"type": "string", "description": "Seed arXiv ID"}
+                }
+            }
+        },
+        {
+            "name": "citation_chain_render",
+            "description": "Render a citation chain as text, mermaid, or graphviz",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "arxiv_id": {"type": "string", "description": "Seed arXiv ID"},
+                    "format": {"type": "string", "enum": ["text", "mermaid", "graphviz"], "default": "text"}
+                },
+                "required": ["arxiv_id"]
+            }
         }
     ]
 
@@ -1685,6 +1729,24 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
                 arxiv_id=arguments.get("arxiv_id"),
                 use_llm=arguments.get("use_llm", True),
             )
+        elif name == "citation_chain_build":
+            result = tool_citation_chain_build(
+                arxiv_id=arguments.get("arxiv_id"),
+                max_depth=arguments.get("max_depth", 2),
+            )
+        elif name == "citation_chain_families":
+            result = tool_citation_chain_families(
+                arxiv_id=arguments.get("arxiv_id"),
+            )
+        elif name == "citation_chain_silent":
+            result = tool_citation_chain_silent(
+                arxiv_id=arguments.get("arxiv_id"),
+            )
+        elif name == "citation_chain_render":
+            result = tool_citation_chain_render(
+                arxiv_id=arguments.get("arxiv_id"),
+                format=arguments.get("format", "text"),
+            )
         else:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
 
@@ -1747,3 +1809,100 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+def tool_citation_chain_build(arxiv_id: str, max_depth: int = 2) -> Dict:
+    """Build a citation chain using Semantic Scholar API."""
+    try:
+        from llm.citation_chain import CitationChainBuilder
+
+        builder = CitationChainBuilder()
+        chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=max_depth)
+
+        return success_response({
+            "arxiv_id": arxiv_id,
+            "nodes_count": len(chain.nodes),
+            "edges_count": len(chain.edges),
+            "nodes": [
+                {
+                    "paper_id": n.paper_id,
+                    "title": n.title,
+                    "year": n.year,
+                    "citations": n.citations,
+                    "cited_by": n.cited_by,
+                    "citation_count": n.citation_count,
+                }
+                for n in chain.nodes
+            ],
+            "edges": [{"from": e[0], "to": e[1]} for e in chain.edges],
+        })
+    except Exception as e:
+        logger.error(f"citation_chain_build error: {e}")
+        return error_response("CHAIN_ERROR", str(e))
+
+
+def tool_citation_chain_families(arxiv_id: str) -> Dict:
+    """Cluster papers in a citation chain into research families."""
+    try:
+        from llm.citation_chain import CitationChainBuilder
+
+        builder = CitationChainBuilder()
+        chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
+        families = builder.cluster_families()
+
+        return success_response({
+            "arxiv_id": arxiv_id,
+            "families_count": len(families),
+            "families": [f.to_dict() for f in families],
+        })
+    except Exception as e:
+        logger.error(f"citation_chain_families error: {e}")
+        return error_response("CHAIN_ERROR", str(e))
+
+
+def tool_citation_chain_silent(arxiv_id: str) -> Dict:
+    """Detect potential silent citations in a citation chain."""
+    try:
+        from llm.citation_chain import CitationChainBuilder
+
+        builder = CitationChainBuilder()
+        chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
+        silent = builder.detect_silent_citations()
+
+        return success_response({
+            "arxiv_id": arxiv_id,
+            "silent_count": len(silent),
+            "silent_citations": silent,
+        })
+    except Exception as e:
+        logger.error(f"citation_chain_silent error: {e}")
+        return error_response("CHAIN_ERROR", str(e))
+
+
+def tool_citation_chain_render(arxiv_id: str, format: str = "text") -> Dict:
+    """Render a citation chain in text, mermaid, or graphviz format."""
+    try:
+        from llm.citation_chain import CitationChainBuilder
+
+        builder = CitationChainBuilder()
+        chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
+
+        if format == "mermaid":
+            rendered = builder.render_mermaid(chain)
+        elif format == "graphviz":
+            rendered = builder.render_graphviz(chain)
+        else:
+            rendered = builder.render_text(chain)
+
+        return success_response({
+            "arxiv_id": arxiv_id,
+            "format": format,
+            "rendered": rendered,
+            "nodes_count": len(chain.nodes),
+            "edges_count": len(chain.edges),
+        })
+    except Exception as e:
+        logger.error(f"citation_chain_render error: {e}")
+        return error_response("CHAIN_ERROR", str(e))
+
+
+

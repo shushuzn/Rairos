@@ -67,6 +67,7 @@ page = st.sidebar.radio("Go to", [
     "🎯 Auto Reviewer",
     "🗺️ Route Planner",
     "📋 Research Briefing",
+    "🔗 Citation Chain",
 ])
 
 # ─── Dashboard ─────────────────────────────────────────────────────
@@ -2313,4 +2314,66 @@ elif page == "📋 Research Briefing":
         else:
             st.info("Enter an arXiv ID and generate a briefing to see it here.")
 
+# ─── Citation Chain Page ────────────────────────────────────────────────────────
 
+elif page == "🔗 Citation Chain":
+    from llm.citation_chain import CitationChainBuilder
+    st.header("🔗 Citation Chain Tracer")
+
+    st.markdown("""
+    **Citation Chain Tracer** builds citation chains using Semantic Scholar,
+    clusters papers into research families, and detects silent citations.
+    """)
+
+    arxiv_id = st.text_input("arXiv ID", placeholder="e.g. 2301.12345")
+    max_depth = st.slider("Max Depth", 1, 3, 2)
+    col_build, col_families, col_silent, col_render = st.columns(4)
+
+    if arxiv_id:
+        builder = CitationChainBuilder()
+        chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=max_depth)
+
+        st.success(f"Chain built: {len(chain.nodes)} papers, {len(chain.edges)} connections")
+
+        tabs = st.tabs(["Chain View", "Families", "Silent Citations", "Mermaid", "Graphviz"])
+
+        with tabs[0]:
+            format_choice = st.selectbox("Format", ["text", "mermaid", "graphviz"], index=0)
+            if format_choice == "text":
+                st.text(builder.render_text(chain))
+            elif format_choice == "mermaid":
+                st.code(builder.render_mermaid(chain), language="mermaid")
+            else:
+                st.code(builder.render_graphviz(chain), language="dot")
+
+        with tabs[1]:
+            families = builder.cluster_families()
+            if families:
+                for i, fam in enumerate(families, 1):
+                    with st.expander(f"Family {i}: {fam.common_theme[:60]}", expanded=i <= 3):
+                        st.write(f"**Size:** {fam.size} papers")
+                        for p in fam.papers[:5]:
+                            st.write(f"- [{p['paper_id'][:8]}] {p['title'][:60]} ({p.get('year', '?')})")
+            else:
+                st.info("No research families detected at this depth.")
+
+        with tabs[2]:
+            silent = builder.detect_silent_citations()
+            if silent:
+                for s in silent:
+                    conf = f"{s['confidence']:.0%}"
+                    st.warning(f"**[{conf}]** {s['newer_arxiv_id'][:8]} may not cite {s['older_arxiv_id'][:8]}")
+                    st.caption(f"NEWER: {s['newer_title'][:80]}")
+                    st.caption(f"OLDER: {s['older_title'][:80]}")
+                    st.caption(f"Shared: {', '.join(s['shared_methods'][:5])}")
+                    st.divider()
+            else:
+                st.success("No silent citations detected.")
+
+        with tabs[3]:
+            st.code(builder.render_mermaid(chain), language="mermaid")
+
+        with tabs[4]:
+            st.code(builder.render_graphviz(chain), language="dot")
+    else:
+        st.info("Enter an arXiv ID above to build a citation chain.")
