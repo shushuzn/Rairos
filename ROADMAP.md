@@ -64,7 +64,7 @@ Goal: Make the project **contributor-friendly** and **discoverable**.
   - [x] API reference page with searchable examples
   - [ ] Video demo / GIF showcase
   - [ ] Comparisons with Zotero, Notion, Semantic Scholar
-  - [ ] Benchmark page (what the system measures)
+  - [x] Benchmark page (what the system measures)
 
 - [x] **First impressions**
   - [x] Professional README banner
