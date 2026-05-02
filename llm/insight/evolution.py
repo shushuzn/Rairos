@@ -522,6 +522,14 @@ Respond with JSON:
                 if self._retire_capsule(cid):
                     retired += 1
 
+        # Merge overlapping capsules (same gap_type + >80% keyword overlap)
+        merged = self._merge_capsules()
+        retired += merged
+
+        # Auto-archive: update low_score_streak, archive if streak >= 3
+        auto_archived = self._auto_archive_low_score()
+        retired += auto_archived
+
         # Add winning candidates (winners from evaluations)
         if evaluations:
             winner_ids = set(e.winner_id for e in evaluations)
@@ -538,7 +546,7 @@ Respond with JSON:
         }
 
     def _retire_capsule(self, capsule_id: str) -> bool:
-        """Mark a capsule as retired (append to retire log, remove from pool)."""
+        """Mark a capsule as retired (append to retire log, remove from both stores)."""
         capsules = self._load_capsules()
         updated = [c for c in capsules if c.capsule_id != capsule_id]
 
@@ -547,6 +555,18 @@ Respond with JSON:
 
         # Rewrite gene pool (remove retired)
         self._save_capsules(updated)
+
+        # Also remove from capsules.json (web UI store)
+        capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+        if capsules_path.exists():
+            try:
+                data = json.loads(capsules_path.read_text(encoding="utf-8"))
+                raw = data.get("capsules", []) if isinstance(data, dict) else data
+                raw = [c for c in raw if c.get("capsule_id", "") != capsule_id]
+                data["capsules"] = raw
+                capsules_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+            except Exception:
+                pass
 
         # Log retirement
         retire_file = self.tracker.data_dir / "retired.jsonl"
@@ -580,6 +600,7 @@ Respond with JSON:
             feedback_count=0,
             evolved_generation=1,  # V2 generation
             archetype={},
+            status="active",
         )
 
         capsules.append(new_capsule)
@@ -669,6 +690,144 @@ Respond with JSON:
         except Exception:
             pass
         return [c.capsule_id for c in low[:limit]]
+
+    OVERLAP_THRESHOLD = 0.80  # merge if keyword Jaccard > 80%
+
+    def _merge_capsules(self) -> int:
+        """Find capsule pairs with same gap_type + >80% keyword overlap; merge into higher-score, archive lower-score.
+
+        Returns the number of capsules archived.
+        """
+        capsules = [c for c in self._load_capsules() if c.status == "active"]
+        merged_count = 0
+        to_archive: set[str] = set()
+
+        for i, a in enumerate(capsules):
+            if a.capsule_id in to_archive:
+                continue
+            for b in capsules[i + 1:]:
+                if b.capsule_id in to_archive:
+                    continue
+                if a.trigger_gap_type != b.trigger_gap_type:
+                    continue
+
+                # Keyword Jaccard similarity
+                set_a = set(k.lower() for k in a.trigger_keywords)
+                set_b = set(k.lower() for k in b.trigger_keywords)
+                if not set_a or not set_b:
+                    continue
+                intersection = len(set_a & set_b)
+                union = len(set_a | set_b)
+                jaccard = intersection / union if union > 0 else 0.0
+
+                if jaccard >= self.OVERLAP_THRESHOLD:
+                    # Keep the one with higher score, archive the other
+                    loser = b if a.outcome_success_score >= b.outcome_success_score else a
+                    winner = a if loser is b else b
+
+                    # Merge keywords into winner (union, dedup preserving order)
+                    existing = set(k.lower() for k in winner.trigger_keywords)
+                    merged_kws = list(winner.trigger_keywords)
+                    for kw in loser.trigger_keywords:
+                        if kw.lower() not in existing:
+                            merged_kws.append(kw)
+                    winner.trigger_keywords = merged_kws[:20]
+                    winner.feedback_count += loser.feedback_count
+                    to_archive.add(loser.capsule_id)
+                    merged_count += 1
+
+        if not to_archive:
+            return 0
+
+        # Archive losers and save updated winners
+        remaining = [c for c in capsules if c.capsule_id not in to_archive]
+        # Add back winners (with merged keywords) + any non-active capsules
+        all_capsules = self._load_capsules()
+        winners_updated = {
+            c.capsule_id: c for c in capsules
+            if c.capsule_id not in to_archive
+        }
+        result = []
+        for c in all_capsules:
+            if c.capsule_id in to_archive:
+                c.status = "archived"
+                result.append(c)
+            elif c.capsule_id in winners_updated:
+                result.append(winners_updated[c.capsule_id])
+            else:
+                result.append(c)
+
+        self._save_capsules(result)
+
+        # Also clean capsules.json
+        capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+        if capsules_path.exists():
+            try:
+                data = json.loads(capsules_path.read_text(encoding="utf-8"))
+                raw = data.get("capsules", []) if isinstance(data, dict) else data
+                raw = [c for c in raw if c.get("capsule_id", "") not in to_archive]
+                data["capsules"] = raw
+                capsules_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+            except Exception:
+                pass
+
+        return len(to_archive)
+
+    LOW_SCORE_THRESHOLD = 0.30
+    STREAK_THRESHOLD = 3  # archive after 3 consecutive low-score cycles
+
+    def _auto_archive_low_score(self) -> int:
+        """Update low_score_streak for all active capsules; archive those with streak >= 3.
+
+        Each evolution cycle:
+        - If capsule score < 0.3: increment streak
+        - If capsule score >= 0.3: reset streak to 0
+        - If streak >= 3: mark archived
+
+        Returns the number of capsules auto-archived.
+        """
+        capsules = self._load_capsules()
+        to_archive: set[str] = set()
+        updated = []
+
+        for c in capsules:
+            if c.status != "active":
+                updated.append(c)
+                continue
+
+            if c.outcome_success_score < self.LOW_SCORE_THRESHOLD:
+                c.low_score_streak += 1
+            else:
+                c.low_score_streak = 0
+
+            if c.low_score_streak >= self.STREAK_THRESHOLD:
+                c.status = "archived"
+                to_archive.add(c.capsule_id)
+
+            updated.append(c)
+
+        if not to_archive:
+            self._save_capsules(updated)
+            return 0
+
+        self._save_capsules(updated)
+
+        # Also update capsules.json
+        capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+        if capsules_path.exists():
+            try:
+                data = json.loads(capsules_path.read_text(encoding="utf-8"))
+                raw = data.get("capsules", []) if isinstance(data, dict) else data
+                archived_ids = set(to_archive)
+                for c in raw:
+                    if c.get("capsule_id", "") in archived_ids:
+                        c["status"] = "archived"
+                data["capsules"] = raw
+                capsules_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+            except Exception:
+                pass
+
+        return len(to_archive)
 
     # ─── CLI entry point ───────────────────────────────────────────────────
 

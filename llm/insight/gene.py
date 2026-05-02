@@ -47,6 +47,15 @@ class CapsuleGene:
     evolved_generation: int = 0   # incremented when the capsule is refined
     archetype: Dict[str, Any] = field(default_factory=dict)  # research archetype at creation time
 
+    # ─── Lifecycle status ──────────────────────────────────────────────────────
+    # active:   in Gene Pool, shown in UI, eligible for matching/suggestions
+    # consumed: suggestion was "taken on" — user acted on it, still visible as evidence
+    # archived: low-quality / superseded / manually archived — hidden from active view
+    status: str = "active"   # "active" | "consumed" | "archived"
+
+    # Auto-archive tracking: consecutive evolution cycles with score < 0.3
+    low_score_streak: int = 0  # incremented each cycle if score < 0.3, reset if >= 0.3
+
 
     def trigger_match(self, topic: str, gap_type: str, keywords: List[str]) -> float:
 
@@ -118,6 +127,8 @@ class CapsuleGene:
 
             "evolved_generation": self.evolved_generation,
             "archetype": self.archetype,
+            "status": self.status,
+            "low_score_streak": self.low_score_streak,
 
         }
 
@@ -148,5 +159,7 @@ class CapsuleGene:
 
             evolved_generation=d.get("evolved_generation", 0),
             archetype=d.get("archetype", {}),
+            status=d.get("status", "active"),
+            low_score_streak=d.get("low_score_streak", 0),
 
         )

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import uuid
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -107,7 +108,7 @@ def save_gap_to_gene_pool(
     """
     try:
         capsule_id = f"extracted_{paper_id}_{uuid.uuid4().hex[:8]}"
-        now = ""
+        now = datetime.now().isoformat()
         capsule = {
             "capsule_id": capsule_id,
             "created_at": now,
@@ -124,6 +125,7 @@ def save_gap_to_gene_pool(
                 "source_paper_id": paper_id,
                 "summary": summary,
             },
+            "status": "active",
         }
 
         # Write to capsules.json (briefing_generator reads this)
@@ -147,6 +149,7 @@ def save_gap_to_gene_pool(
                 gap_title=gap_title[:200],
                 gap_description=summary,
                 success_score=0.5,
+                status="active",
             )
         except Exception:
             # Non-critical: capsules.json write succeeded, gene_pool.jsonl is optional for CLI use
