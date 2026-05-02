@@ -90,7 +90,7 @@ diversity alerts. All three feed into one quality system.
 - [x] **Source Trust Score** — per-arXiv-category trust rating based on capsule quality; filter paper imports by trust threshold
 - [x] **Gap Credibility Filter** — flag capsules with keyword overlap >0.7 vs. existing pool; show "trendslop" warning badge
 - [x] **Research Rigor Score** — rate papers by dataset sharing, code availability, methodology clarity; display as "rigor badge" on paper detail
-- [ ] **Auto-Archive At-Risk Panel** — show capsules with `low_score_streak ≥ 2`; one-click "keep active" or "pin to TTL"
+- [x] **Auto-Archive At-Risk Panel** — show capsules with `low_score_streak ≥ 2`; one-click "keep active" or "pin to TTL"
 - [ ] **Research Agent Dashboard** — daemon status, event log, session TTL countdown, gap watch activity
 
 #### Contradiction + Evolution Visibility (P1)
