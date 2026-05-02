@@ -112,7 +112,7 @@ class InsightEvolution:
     # ─── LLM Client (lazy) ─────────────────────────────────────────────────
 
     def _get_llm_client(self):
-        """Lazy LLM client init."""
+        """Lazy LLM client init. Returns a client with .generate(prompt) method."""
         if self._llm_client is None:
             try:
                 from llm.client import get_client
