@@ -164,12 +164,21 @@ async def paper_detail(request: Request, paper_id: str):
         return templates.TemplateResponse(request, "paper_detail.html", {
             "page": "paper",
             "paper": None,
+            "paper_id": paper_id,
             "error": f"Paper '{paper_id}' not found.",
         })
 
     authors = ", ".join((paper.authors or [])[:10])
     year = (paper.published or "")[:4] if paper.published else "?"
     all_categories = (paper.categories or "").split(",")[:8]
+
+    # Gene Pool matches
+    from llm.briefing_generator import _match_gene_pool
+    gene_matches_raw = _match_gene_pool(paper.id, paper.title, paper.abstract or "")
+    gene_matches = tuple(
+        (m["gap_title"], m["gap_type"], m["outcome_score"], m["match_reason"])
+        for m in gene_matches_raw
+    )
 
     # Flatten to hashable tuple
     paper_tuple = (
@@ -198,8 +207,53 @@ async def paper_detail(request: Request, paper_id: str):
     return templates.TemplateResponse(request, "paper_detail.html", {
         "page": "paper",
         "paper": paper_tuple,
+        "paper_id": paper_id,
         "error": None,
+        "gene_matches": gene_matches,
     })
+
+
+@app.get("/paper/{paper_id}/extract-gap")
+async def extract_paper_gap(request: Request, paper_id: str):
+    """Extract a research gap from a paper using LLM."""
+    db = _get_db()
+    paper = db.get_paper(paper_id)
+    if not paper:
+        return {"error": f"Paper '{paper_id}' not found."}
+
+    from llm.paper_gap_extractor import extract_gap_from_paper
+    result = extract_gap_from_paper(
+        paper_id=paper_id,
+        title=paper.title,
+        abstract=paper.abstract or "",
+        authors=paper.authors,
+    )
+    return result
+
+
+@app.post("/paper/{paper_id}/save-gap")
+async def save_paper_gap(request: Request, paper_id: str):
+    """Save an extracted gap to the Gene Pool."""
+    body = await request.json()
+    gap_type = body.get("gap_type", "")
+    gap_title = body.get("gap_title", "")
+    keywords = body.get("keywords", [])
+    summary = body.get("summary", "")
+
+    from llm.paper_gap_extractor import save_gap_to_gene_pool
+    db = _get_db()
+    paper = db.get_paper(paper_id)
+    title = paper.title if paper else paper_id
+
+    success = save_gap_to_gene_pool(
+        paper_id=paper_id,
+        title=title,
+        gap_type=gap_type,
+        gap_title=gap_title,
+        keywords=keywords,
+        summary=summary,
+    )
+    return {"success": success}
 
 
 @app.get("/briefing")

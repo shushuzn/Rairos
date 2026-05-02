@@ -104,7 +104,7 @@
 <!-- Links -->
 <div class="card" style="margin-bottom: 20px;">
   <div class="card-title">🔗 Links</div>
-  <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+  <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
     {% if p[8] %}
     <a href="{{ p[8] }}" target="_blank" class="btn btn-secondary" style="font-size: 14px;">
       📄 arXiv Abstract
@@ -121,10 +121,41 @@
     </a>
     {% endif %}
     <a href="/briefing?arxiv_id={{ p[0] }}" class="btn btn-blue" style="font-size: 14px;">
-      📋 Generate Briefing
+      📋 Briefing
     </a>
+    <button class="btn btn-secondary" style="font-size: 14px;" onclick="extractGap()">
+      🧬 Extract Gap
+    </button>
   </div>
 </div>
+
+<!-- Gene Pool Relevance -->
+{% if gene_matches %}
+<div class="card" style="margin-bottom: 20px;">
+  <div class="card-title">🧬 Gene Pool Relevance</div>
+  {% for gap_title, gap_type, score, reason in gene_matches %}
+  <div style="display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; border-bottom: 1px dashed var(--border-light); {% if loop.last %}border-bottom: none;{% endif %}">
+    <div style="flex: 1; min-width: 0;">
+      <div style="font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 2px;">{{ gap_title[:80] }}</div>
+      <div style="font-size: 11px; color: var(--ink-faint);">
+        <span class="badge badge-blue" style="font-size: 10px;">{{ gap_type }}</span>
+        <span style="margin-left: 6px;">{{ reason }}</span>
+      </div>
+    </div>
+    <div style="font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--pen-green); flex-shrink: 0;">
+      {{ (score * 100)|round }}%
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card" style="margin-bottom: 20px;">
+  <div class="card-title">🧬 Gene Pool Relevance</div>
+  <div style="font-size: 13px; color: var(--ink-faint); font-style: italic;">
+    No matching Gene Pool entries yet. Extract a gap from this paper to get started.
+  </div>
+</div>
+{% endif %}
 
 <!-- Citation info -->
 {% if p[10] or p[11] %}
@@ -142,5 +173,122 @@
   {% endif %}
 </div>
 {% endif %}
+
 {% endif %}
+
+{% block scripts %}
+<!-- Extract Gap Modal -->
+<div id="gap-modal" style="display: none; position: fixed; inset: 0; z-index: 9000; align-items: center; justify-content: center; background: rgba(44,36,22,0.5); backdrop-filter: blur(3px);">
+  <div class="card" style="width: 480px; max-width: 90vw; max-height: 80vh; overflow-y: auto; padding: 28px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div class="card-title" style="margin: 0;">🧬 Extracted Research Gap</div>
+      <button onclick="closeGapModal()" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--ink-faint);">✕</button>
+    </div>
+    <div id="gap-modal-body" style="font-size: 14px; color: var(--ink-light); margin-bottom: 20px;">
+      <div class="loading"><div class="loading-dots"><span></span><span></span><span></span></div> Extracting gap…</div>
+    </div>
+    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+      <button onclick="closeGapModal()" class="btn btn-secondary">Cancel</button>
+      <button id="gap-save-btn" onclick="saveGap()" class="btn btn-primary" disabled>Save to Gene Pool</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var extractedGap = {};
+
+function extractGap() {
+  var paperId = {{ (paper_id or '')|tojson }};
+  var body = document.getElementById('gap-modal-body');
+  document.getElementById('gap-modal').style.display = 'flex';
+  body.innerHTML = '';
+  var loadingDiv = document.createElement('div');
+  loadingDiv.className = 'loading';
+  loadingDiv.textContent = 'Extracting gap…';
+  body.appendChild(loadingDiv);
+  document.getElementById('gap-save-btn').disabled = true;
+
+  fetch('/paper/' + paperId + '/extract-gap')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) {
+        body.innerHTML = '';
+        var errDiv = document.createElement('div');
+        errDiv.className = 'alert alert-warning';
+        errDiv.textContent = 'Error: ' + data.error;
+        body.appendChild(errDiv);
+        return;
+      }
+      extractedGap = data;
+      body.innerHTML = '';
+
+      var badgeWrap = document.createElement('div');
+      badgeWrap.style.marginBottom = '12px';
+      var badge = document.createElement('span');
+      badge.className = 'badge badge-blue';
+      badge.textContent = data.gap_type || 'unknown';
+      badgeWrap.appendChild(badge);
+      body.appendChild(badgeWrap);
+
+      var titleDiv = document.createElement('div');
+      titleDiv.style.fontSize = '15px';
+      titleDiv.style.fontWeight = '600';
+      titleDiv.style.color = 'var(--ink)';
+      titleDiv.style.marginBottom = '8px';
+      titleDiv.textContent = data.gap_title || '';
+      body.appendChild(titleDiv);
+
+      var summaryDiv = document.createElement('div');
+      summaryDiv.style.fontSize = '13px';
+      summaryDiv.style.color = 'var(--ink-light)';
+      summaryDiv.style.marginBottom = '10px';
+      summaryDiv.textContent = data.summary || '';
+      body.appendChild(summaryDiv);
+
+      var kwDiv = document.createElement('div');
+      kwDiv.style.fontSize = '12px';
+      kwDiv.style.color = 'var(--ink-faint)';
+      kwDiv.textContent = 'Keywords: ' + ((data.keywords || []).join(', '));
+      body.appendChild(kwDiv);
+
+      document.getElementById('gap-save-btn').disabled = false;
+    })
+    .catch(function(e) {
+      body.innerHTML = '';
+      var errDiv = document.createElement('div');
+      errDiv.className = 'alert alert-warning';
+      errDiv.textContent = 'Network error: ' + e;
+      body.appendChild(errDiv);
+    });
+}
+
+function closeGapModal() {
+  document.getElementById('gap-modal').style.display = 'none';
+}
+
+function saveGap() {
+  var paperId = {{ (paper_id or '')|tojson }};
+  var btn = document.getElementById('gap-save-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  fetch('/paper/' + paperId + '/save-gap', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(extractedGap),
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        closeGapModal();
+        location.reload();
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Save to Gene Pool';
+        alert('Failed to save gap.');
+      }
+    });
+}
+</script>
+{% endblock %}
+
 {% endblock %}
