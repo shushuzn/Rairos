@@ -23,7 +23,7 @@ FROM python:3.12-slim AS runtime
 
 WORKDIR /app
 
-# Runtime deps: Tesseract OCR + curl (for health checks)
+# Runtime deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
     tesseract-ocr \
     tesseract-ocr-eng \
@@ -32,11 +32,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
+
+# Data directories
+RUN mkdir -p /data /home/airos/.ai_research_os
 
 COPY . .
 
 RUN useradd -m -u 1000 airos && \
-    chown -R airos:airos /app
+    chown -R airos:airos /app /data /home/airos
 USER airos
 
-ENTRYPOINT ["airos-cli"]
+EXPOSE 8501
+
+ENTRYPOINT ["uvicorn"]
+CMD ["web.app_new:app", "--host", "0.0.0.0", "--port", "8501"]
