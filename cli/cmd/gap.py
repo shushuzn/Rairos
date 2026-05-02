@@ -39,6 +39,10 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
     watch_p.add_argument("--new-only", action="store_true",
                          help="Only report papers not yet in database")
 
+    # gap contradictions — find Gene Pool pairs with same gap_type but opposite polarity
+    con_p = sub.add_parser("contradictions", help="Find Gene Pool capsule pairs with opposite polarity")
+    con_p.add_argument("--json", "-j", action="store_true", help="Output as JSON")
+
     p.add_argument(
         "topic",
         nargs="?",
@@ -131,6 +135,10 @@ def _run_gap(args: argparse.Namespace) -> int:
     # gap watch — monitor arXiv for Gene Pool matches
     if args.gap_cmd == "watch":
         return _run_gap_watch(args)
+
+    # gap contradictions — find Gene Pool capsule pairs with opposite polarity
+    if args.gap_cmd == "contradictions":
+        return _run_gap_contradictions(args)
 
     # Profile/history/stats/prefs-history commands
     if args.profile or args.history or args.stats or args.prefs_history:
@@ -478,11 +486,13 @@ def _run_gap_extract(args: argparse.Namespace) -> int:
         print(json.dumps(result, indent=2, ensure_ascii=False))
         return 0
 
+    polarity = result.get("polarity", "positive")
     print()
     print(f"  Gap Type: {result.get('gap_type', '?')}")
     print(f"  Title:    {result.get('gap_title', '?')}")
     print(f"  Summary:  {result.get('summary', '?')}")
     print(f"  Keywords: {', '.join(result.get('keywords', []))}")
+    print(f"  Polarity: {polarity}")
     print()
 
     # Ask confirmation before saving
@@ -500,6 +510,7 @@ def _run_gap_extract(args: argparse.Namespace) -> int:
             gap_title=result.get("gap_title", ""),
             keywords=result.get("keywords", []),
             summary=result.get("summary", ""),
+            polarity=polarity,
         )
         if ok:
             print_info("✓ Saved to Gene Pool.")
@@ -571,6 +582,47 @@ def _run_gap_watch(args):
         print_info("Checking arXiv for Gene Pool matches...")
         _check_cycle()
         return 0
+
+
+def _run_gap_contradictions(args: argparse.Namespace) -> int:
+    """Find Gene Pool capsule pairs with same gap_type but opposite polarity."""
+    import json
+    from pathlib import Path
+
+    capsule_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+    if not capsule_path.exists():
+        print_info("Gene Pool is empty.")
+        return 0
+
+    data = json.loads(capsule_path.read_text(encoding="utf-8"))
+    capsules = data.get("capsules", [])
+
+    from llm.paper_gap_extractor import detect_contradictions
+    contradictions = detect_contradictions(capsules)
+
+    if args.json:
+        print(json.dumps(contradictions, indent=2, ensure_ascii=False))
+        return 0
+
+    if not contradictions:
+        print_info("No contradictions found in Gene Pool.")
+        return 0
+
+    print(f"⚡ Found {len(contradictions)} contradiction(s) in Gene Pool:")
+    print()
+    for i, c in enumerate(contradictions):
+        gap_type = c["gap_type"]
+        shared = c["shared_keywords"]
+        pc = c["positive_capsule"]
+        nc = c["negative_capsule"]
+        print(f"  [{i+1}] {gap_type}")
+        print(f"      ADVANCE: {pc.get('action_gap_title', pc.get('trigger_gap_title', '?'))[:60]}")
+        print(f"             ↕ {pc.get('capsule_id', '?')}")
+        print(f"      CHALLENGE: {nc.get('action_gap_title', nc.get('trigger_gap_title', '?'))[:60]}")
+        print(f"             ↕ {nc.get('capsule_id', '?')}")
+        print(f"      Shared keywords: {', '.join(shared[:6])}")
+        print()
+    return 0
 
 
 def _collect_gap_feedback(topic: str, gaps, tracker: EvolutionTracker) -> None:
