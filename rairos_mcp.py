@@ -319,6 +319,23 @@ def get_tools() -> List[Dict]:
         {
             "name": "research_memory_anomalies",
             "description": "List recent anomaly alerts — papers that contradict your stances"
+        },
+        {
+            "name": "review_simulate",
+            "description": "Simulate adversarial peer reviewers on a paper",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "arxiv_id": {"type": "string", "description": "arXiv ID of paper to review"},
+                    "persona": {"type": "string", "description": "Reviewer persona: methodology, contributions, clarity, ethics, or all (default: all)"},
+                    "use_llm": {"type": "boolean", "default": true}
+                },
+                "required": ["arxiv_id"]
+            }
+        },
+        {
+            "name": "review_list",
+            "description": "List saved simulated reviews"
         }
     ]
 
@@ -1219,6 +1236,69 @@ def tool_research_memory_anomalies() -> Dict:
         return error_response("MEMORY_ERROR", str(e))
 
 
+def tool_review_simulate(arxiv_id: str, persona: str = "all", use_llm: bool = True) -> Dict:
+    """Simulate adversarial peer reviewers on a paper."""
+    try:
+        from llm.review_simulator import ReviewSimulator, ReviewPersona, _REVIEW_PERSONAS
+
+        # Fetch paper
+        from db.database import Database
+        db = Database()
+        db.init()
+        rows, _ = db.search_papers(arxiv_id, limit=1)
+        if not rows:
+            return error_response("NOT_FOUND", f"Paper {arxiv_id} not found")
+
+        row = rows[0]
+        paper_text = getattr(row, "abstract", "") or ""
+        title = getattr(row, "title", "")
+
+        # Build paper text for review
+        full_text = f"{title}\n\n{paper_text}"
+
+        simulator = ReviewSimulator()
+
+        if persona != "all":
+            persona_map = {p.name.lower().split()[0]: p for p in _REVIEW_PERSONAS}
+            selected = persona_map.get(persona.lower())
+            if not selected:
+                return error_response("INVALID_PERSONA", f"Unknown persona: {persona}")
+            review = simulator.review(full_text, title, persona=selected)
+        else:
+            review = simulator.review(full_text, title)
+
+        # Save review
+        from llm.review_simulator import save_review
+        save_review(review)
+
+        return success_response({
+            "review_id": review.review_id,
+            "persona": review.persona,
+            "overall_score": review.overall_score,
+            "recommendation": review.recommendation,
+            "summary": review.summary,
+            "strengths": review.strengths,
+            "weaknesses": review.weaknesses,
+            "annotation_count": len(review.annotations),
+            "annotations": [a.to_dict() for a in review.annotations[:6]],
+        })
+
+    except Exception as e:
+        logger.error(f"review_simulate error: {e}")
+        return error_response("REVIEW_ERROR", str(e))
+
+
+def tool_review_list() -> Dict:
+    """List saved simulated reviews."""
+    try:
+        from llm.review_simulator import list_reviews
+        reviews = list_reviews(limit=20)
+        return success_response({"reviews": reviews, "count": len(reviews)})
+    except Exception as e:
+        logger.error(f"review_list error: {e}")
+        return error_response("REVIEW_ERROR", str(e))
+
+
 # ─── MCP Protocol Handlers ──────────────────────────────────────────
 
 
@@ -1357,6 +1437,14 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
             )
         elif name == "research_memory_anomalies":
             result = tool_research_memory_anomalies()
+        elif name == "review_simulate":
+            result = tool_review_simulate(
+                arxiv_id=arguments.get("arxiv_id"),
+                persona=arguments.get("persona", "all"),
+                use_llm=arguments.get("use_llm", True),
+            )
+        elif name == "review_list":
+            result = tool_review_list()
         else:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
 
