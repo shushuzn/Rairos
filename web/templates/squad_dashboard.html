@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Squad Dashboard — Rairos{% endblock %}
+
+{% block content %}
+<h1 class="page-title">🤖 Squad Dashboard</h1>
+<div class="page-title-underline"></div>
+<p class="page-desc">Multi-agent research squad — Scout · Analyzer · Citation Hunter · Curator</p>
+
+<!-- Squad Status -->
+<div class="card" style="margin-bottom: 24px;">
+  <div class="card-title">🧠 Agent Squad</div>
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;">
+    {% for name, agent in squad_status.agents.items() %}
+    <div style="background: var(--paper-alt); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; text-align: center;">
+      <div style="font-size: 20px; margin-bottom: 6px;">
+        {% if name == 'scout' %}🔍{% elif name == 'analyzer' %}🧬{% elif name == 'citation_hunter' %}🔗{% elif name == 'curator' %}🎯{% else %}🤖{% endif %}
+      </div>
+      <div style="font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px;">{{ name }}</div>
+      <div style="font-size: 11px; padding: 2px 8px; border-radius: 2px; display: inline-block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+        {% if agent.status == 'working' %}background: var(--pen-green); color: white;
+        {% elif agent.status == 'done' %}background: var(--pen-blue); color: white;
+        {% elif agent.status == 'error' %}background: #e05050; color: white;
+        {% else %}background: var(--paper); color: var(--ink-faint); border: 1px solid var(--border);{% endif %}">
+        {{ agent.status }}
+      </div>
+    </div>
+    {% else %}
+    <div style="grid-column: 1/-1; text-align: center; padding: 20px; color: var(--ink-faint); font-size: 13px;">
+      No agents registered
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pipeline visualization -->
+  <div style="background: var(--paper-alt); border: 1px solid var(--border-light); border-radius: 4px; padding: 14px; margin-bottom: 16px;">
+    <div style="font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Pipeline</div>
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px;">
+      <span style="background: var(--paper); border: 1px dashed var(--border); border-radius: 3px; padding: 4px 10px;">📡 arXiv Subscriptions</span>
+      <span style="color: var(--border);">→</span>
+      <span style="background: #e8f5e9; border: 1px dashed #4caf50; border-radius: 3px; padding: 4px 10px;">🔍 Scout</span>
+      <span style="color: var(--border);">→</span>
+      <span style="background: #e3f2fd; border: 1px dashed #2196f3; border-radius: 3px; padding: 4px 10px;">🧬 Analyzer</span>
+      <span style="color: var(--border);">→</span>
+      <span style="background: #fff3e0; border: 1px dashed #ff9800; border-radius: 3px; padding: 4px 10px;">🔗 Citation Hunter</span>
+      <span style="color: var(--border);">→</span>
+      <span style="background: #fce4ec; border: 1px dashed #e91e63; border-radius: 3px; padding: 4px 10px;">🎯 Curator</span>
+      <span style="color: var(--border);">→</span>
+      <span style="background: #e8f5e9; border: 1px dashed #4caf50; border-radius: 3px; padding: 4px 10px;">📬 Alert</span>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+    <form method="post" action="/research-loop/squad/start" style="display: inline;">
+      <button type="submit" class="btn btn-primary" style="font-size: 14px;">▶ Start Squad</button>
+    </form>
+    <form method="post" action="/research-loop/squad/stop" style="display: inline;">
+      <button type="submit" class="btn btn-secondary" style="font-size: 14px;">⏹ Stop</button>
+    </form>
+    <form method="post" action="/research-loop/squad/run-cycle" style="display: inline;">
+      <button type="submit" class="btn btn-blue" style="font-size: 14px;" onclick="this.disabled=true; this.textContent='Running…'">⚡ Run Cycle</button>
+    </form>
+    <a href="/research-loop" class="btn btn-secondary" style="font-size: 14px;">← Legacy View</a>
+  </div>
+</div>
+
+<!-- Activity Stream -->
+<div class="card" style="margin-bottom: 24px;">
+  <div class="card-title">📡 Activity Stream</div>
+  {% if activity %}
+  <div style="max-height: 360px; overflow-y: auto; font-family: var(--font-mono); font-size: 11px;">
+    {% for entry in activity | reverse %}
+    <div style="padding: 6px 0; border-bottom: 1px dashed var(--border-light); {% if loop.last %}border-bottom: none;{% endif %} display: flex; gap: 10px; align-items: flex-start;">
+      <span style="color: var(--ink-faint); flex-shrink: 0; width: 70px;">{{ entry.ts | timestamp }}</span>
+      <span style="background: var(--paper-alt); border: 1px solid var(--border-light); border-radius: 2px; padding: 1px 6px; flex-shrink: 0; font-size: 10px; font-weight: 600;">
+        {% if entry.agent == 'scout' %}🔍
+        {% elif entry.agent == 'analyzer' %}🧬
+        {% elif entry.agent == 'citation_hunter' %}🔗
+        {% elif entry.agent == 'curator' %}🎯
+        {% else %}{{ entry.agent[:4] }}{% endif %}
+      </span>
+      <span style="color: var(--pen-blue); flex-shrink: 0; width: 50px;">{{ entry.event }}</span>
+      <span style="color: var(--ink-light); flex: 1; min-width: 0; word-break: break-all;">
+        {% if entry.topic %}→ {{ entry.topic }}{% endif %}
+        {% if entry.payload %} | {{ entry.payload | tojson | truncate(80) }}{% endif %}
+      </span>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">📡</div>
+    <div class="empty-state-text">No activity yet. Start the squad to see the agent pipeline in action.</div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Recent Alerts from Squad -->
+{% if alerts %}
+<div class="card">
+  <div class="card-title">📬 Squad Alerts</div>
+  {% for alert in alerts %}
+  <div style="padding: 10px 0; border-bottom: 1px dashed var(--border-light); {% if loop.last %}border-bottom: none;{% endif %}">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+      <div style="flex: 1; min-width: 0;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--ink);">{{ alert.gap_title[:80] }}</div>
+        <div style="font-size: 11px; color: var(--ink-faint); margin-top: 2px;">
+          Triggered by {{ alert.triggered_by }} · {{ alert.topic }}
+        </div>
+      </div>
+      <div style="text-align: right; flex-shrink: 0;">
+        <div style="font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--pen-green);">{{ (alert.gene_pool_score * 100) | round }}%</div>
+        <div style="font-size: 10px; color: var(--ink-faint);">Gene Pool</div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-refresh every 5 seconds
+let refreshTimer;
+function startRefresh() {
+  refreshTimer = setInterval(() => {
+    fetch('/research-loop/squad/activity')
+      .then(r => r.json())
+      .then(data => {
+        if (data.activity && data.activity.length > 0) {
+          location.reload();
+        }
+      })
+      .catch(() => {});
+  }, 5000);
+}
+startRefresh();
+</script>
+{% endblock %}
