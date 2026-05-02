@@ -64,6 +64,7 @@ page = st.sidebar.radio("Go to", [
     "🎯 Hypothesis Lab",
     "📚 Lit Review",
     "🧠 Research Memory",
+    "🎯 Auto Reviewer",
 ])
 
 # ─── Dashboard ─────────────────────────────────────────────────────
@@ -2045,6 +2046,118 @@ elif page == "🧠 Research Memory":
                         st.caption(f"Detected: {datetime.fromtimestamp(a.created_at).isoformat()}")
             else:
                 st.info("No anomalies detected yet. Stances will be checked against new papers!")
+        except Exception as e:
+            st.error(f"Error: {e}")
+
+
+# ─── Auto Reviewer Page ────────────────────────────────────────────────────────
+
+elif page == "🎯 Auto Reviewer":
+    st.header("🎯 Auto Reviewer — Adversarial Paper Stress-Test")
+
+    st.markdown("""
+    **Auto Reviewer** simulates a panel of hostile peer reviewers who try to tear apart your paper.
+    Run it on any paper in your database before submission to surface hidden weaknesses.
+    """)
+
+    tab_run, tab_history = st.tabs(["⚡ Run Review", "📋 Saved Reviews"])
+
+    with tab_run:
+        col1, col2 = st.columns([1, 1])
+        with col2:
+            arxiv_id = st.text_input("arXiv ID", placeholder="e.g. 2307.02486")
+        with col1:
+            persona = st.selectbox("Reviewer Persona", [
+                "all", "methodology", "contributions", "clarity", "ethics"
+            ])
+
+        if st.button("🔍 Run Adversarial Review", type="primary"):
+            if not arxiv_id:
+                st.warning("Enter an arXiv ID")
+            else:
+                with st.spinner("Running adversarial review (4 reviewers simulating attacks)..."):
+                    try:
+                        from llm.review_simulator import ReviewSimulator, ReviewPersona, _REVIEW_PERSONAS
+                        from db.database import Database
+
+                        db = Database()
+                        db.init()
+                        rows, _ = db.search_papers(arxiv_id, limit=1)
+                        if not rows:
+                            st.error(f"Paper {arxiv_id} not found in database")
+                        else:
+                            row = rows[0]
+                            paper_text = getattr(row, "abstract", "") or ""
+                            title = getattr(row, "title", "")
+                            full_text = f"{title}\n\n{paper_text}"
+
+                            simulator = ReviewSimulator()
+                            if persona != "all":
+                                persona_map = {p.name.lower().split()[0]: p for p in _REVIEW_PERSONAS}
+                                selected = persona_map.get(persona.lower())
+                                if selected:
+                                    review = simulator.review(full_text, title, persona=selected)
+                                else:
+                                    review = simulator.review(full_text, title)
+                            else:
+                                review = simulator.review(full_text, title)
+
+                            from llm.review_simulator import save_review
+                            save_review(review)
+
+                            score_color = "🟢" if review.overall_score >= 7 else "🟡" if review.overall_score >= 5 else "🔴"
+                            st.subheader(f"Overall Score: {score_color} **{review.overall_score}/10** — *{review.recommendation.upper()}*")
+                            st.markdown(review.summary)
+
+                            col_s, col_w = st.columns(2)
+                            with col_s:
+                                st.markdown("**✅ Strengths**")
+                                for s in review.strengths:
+                                    st.markdown(f"- {s}")
+                            with col_w:
+                                st.markdown("**❌ Weaknesses**")
+                                for w in review.weaknesses:
+                                    st.markdown(f"- {w}")
+
+                            st.markdown("---")
+                            st.markdown(f"**📝 Annotations ({len(review.annotations)})**")
+                            sev_emoji = {"critical": "🔴", "major": "🟡", "minor": "🟢", "praise": "✨"}
+                            dim_label = {
+                                "methodology": "Methodology",
+                                "novelty_contribution": "Novelty/Contribution",
+                                "clarity_presentation": "Clarity",
+                                "baselines_comparison": "Baselines",
+                                "reproducibility": "Reproducibility",
+                                "overclaiming": "Overclaiming",
+                                "related_work": "Related Work",
+                            }
+                            for a in review.annotations:
+                                emoji = sev_emoji.get(a.severity.value, "⚪")
+                                dim = dim_label.get(a.dimension.value, a.dimension.value)
+                                with st.expander(f"{emoji} [{a.severity.value.upper()}] {dim}: {a.headline}"):
+                                    st.markdown(f"**Location:** {a.location}")
+                                    st.markdown(f"**Comment:** {a.comment}")
+                                    if a.suggestion:
+                                        st.markdown(f"**💡 Suggestion:** {a.suggestion}")
+
+                            st.success(f"Review saved (ID: {review.review_id})")
+
+                    except Exception as e:
+                        st.error(f"Failed: {e}")
+
+    with tab_history:
+        try:
+            from llm.review_simulator import list_reviews
+            reviews = list_reviews(limit=20)
+            if reviews:
+                st.write(f"**{len(reviews)}** saved reviews")
+                for r in reviews:
+                    emoji = "🟢" if r.get("overall_score", 5) >= 7 else "🟡" if r.get("overall_score", 5) >= 5 else "🔴"
+                    with st.expander(f"{emoji} {r.get('persona','')} — Score {r.get('overall_score','?')}/10 ({r.get('recommendation','')})"):
+                        st.caption(f"Review ID: {r.get('review_id','')} | Created: {r.get('created_at','')[:19]}")
+                        st.markdown(f"Annotations: {r.get('annotation_count', 0)}")
+            else:
+                st.info("No saved reviews yet. Run a review above!")
         except Exception as e:
             st.error(f"Error: {e}")
 
