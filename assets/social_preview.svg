@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <defs>
+    <filter id="s" x="-2%" y="-2%" width="104%" height="104%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" result="n" seed="7"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="light" x="-4%" y="-4%" width="108%" height="108%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="2" result="n" seed="11"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="0.6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="dot" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" result="n" seed="3"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FAF6F0"/>
+      <stop offset="100%" stop-color="#EDE5D8"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#C44"/>
+      <stop offset="100%" stop-color="#8B2020"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6B8FAD"/>
+      <stop offset="100%" stop-color="#4A6A8A"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7A9E7A"/>
+      <stop offset="100%" stop-color="#5A7A5A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="url(#bg)"/>
+
+  <!-- Subtle ruled lines -->
+  <g stroke="#D4C5B0" stroke-width="0.5" opacity="0.4">
+    <line x1="0" y1="130" x2="1280" y2="130"/>
+    <line x1="0" y1="175" x2="1280" y2="175"/>
+    <line x1="0" y1="220" x2="1280" y2="220"/>
+    <line x1="0" y1="265" x2="1280" y2="265"/>
+    <line x1="0" y1="310" x2="1280" y2="310"/>
+    <line x1="0" y1="355" x2="1280" y2="355"/>
+    <line x1="0" y1="400" x2="1280" y2="400"/>
+    <line x1="0" y1="445" x2="1280" y2="445"/>
+    <line x1="0" y1="490" x2="1280" y2="490"/>
+    <line x1="0" y1="535" x2="1280" y2="535"/>
+  </g>
+
+  <!-- Left margin rule -->
+  <line x1="100" y1="0" x2="100" y2="640" stroke="#C4706A" stroke-width="1" opacity="0.2"/>
+
+  <!-- ─── LEFT: Logo mark + typography ─── -->
+  <g transform="translate(100, 0)" filter="url(#s)">
+    <!-- Logo hexagon -->
+    <g transform="translate(80, 160)">
+      <polygon points="80,0 148,23 148,93 80,116 -12,93 -12,23"
+        fill="#FAF6F0" stroke="#2C2416" stroke-width="4" stroke-linejoin="round"/>
+      <polygon points="80,18 135,37 135,81 80,100 25,81 25,37"
+        fill="none" stroke="#D4C5B0" stroke-width="1" stroke-linejoin="round" opacity="0.6"/>
+      <!-- R letterform -->
+      <line x1="52" y1="35" x2="52" y2="84" stroke="#2C2416" stroke-width="6.5" stroke-linecap="round"/>
+      <path d="M 52 44 Q 52 35, 62 35 L 84 35 Q 93 35, 93 44 Q 93 53, 84 53 L 62 53"
+        fill="none" stroke="#2C2416" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 64 53 L 64 63 Q 64 74, 75 77 L 93 87"
+        fill="none" stroke="#2C2416" stroke-width="5.5" stroke-linecap="round"/>
+      <!-- Gene dots -->
+      <circle cx="52" cy="30" r="5" fill="#6B8FAD" filter="url(#dot)"/>
+      <circle cx="93" cy="35" r="4.5" fill="#6B8FAD" opacity="0.75" filter="url(#dot)"/>
+      <circle cx="93" cy="87" r="4.5" fill="#7A9E7A" opacity="0.75" filter="url(#dot)"/>
+    </g>
+
+    <!-- Rairos text -->
+    <g transform="translate(270, 155)">
+      <text x="0" y="120"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="120" font-weight="700"
+        fill="#2C2416" letter-spacing="-2">Rairos</text>
+      <text x="4" y="172"
+        font-family="Georgia, serif"
+        font-size="21" fill="#6B5E4A" font-style="italic">Self-Evolving Research OS</text>
+      <line x1="2" y1="200" x2="540" y2="200" stroke="#D4C5B0" stroke-width="1.5" opacity="0.8" filter="url(#light)"/>
+    </g>
+  </g>
+
+  <!-- ─── RIGHT: Feature icons ─── -->
+  <g transform="translate(820, 100)" filter="url(#light)">
+
+    <!-- Gene Pool -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="380" height="120" rx="12"
+        fill="#FAF6F0" stroke="#D4C5B0" stroke-width="1.5"/>
+      <text x="22" y="38" font-family="Georgia, serif" font-size="15" font-weight="700" fill="#2C2416" letter-spacing="1">Gene Pool</text>
+      <text x="22" y="60" font-family="Georgia, serif" font-size="12" fill="#7A7570">Self-evolving capsule storage</text>
+      <text x="22" y="80" font-family="Georgia, serif" font-size="12" fill="#7A7570">Consumes gaps · Detects contradictions</text>
+      <text x="22" y="100" font-family="Georgia, serif" font-size="12" fill="#7A7570">Auto-archive · Capsule merge</text>
+      <circle cx="340" cy="60" r="22" fill="none" stroke="#7A9E7A" stroke-width="2.5" stroke-dasharray="4 2"/>
+      <circle cx="340" cy="60" r="10" fill="#7A9E7A" opacity="0.7"/>
+      <circle cx="340" cy="60" r="4" fill="#FAF6F0"/>
+    </g>
+
+    <!-- Citation Pathfinder -->
+    <g transform="translate(0, 140)">
+      <rect x="0" y="0" width="380" height="120" rx="12"
+        fill="#FAF6F0" stroke="#D4C5B0" stroke-width="1.5"/>
+      <text x="22" y="38" font-family="Georgia, serif" font-size="15" font-weight="700" fill="#2C2416" letter-spacing="1">Citation Pathfinder</text>
+      <text x="22" y="60" font-family="Georgia, serif" font-size="12" fill="#7A7570">Trace citation chains to Gene Pool</text>
+      <text x="22" y="80" font-family="Georgia, serif" font-size="12" fill="#7A7570">BFS pathfinding · OpenAlex graph</text>
+      <text x="22" y="100" font-family="Georgia, serif" font-size="12" fill="#7A7570">Forward + backward traversal</text>
+      <!-- Path dots -->
+      <g transform="translate(300, 40)">
+        <circle cx="0" cy="20" r="8" fill="none" stroke="#6B8FAD" stroke-width="2"/>
+        <circle cx="40" cy="20" r="8" fill="none" stroke="#6B8FAD" stroke-width="2"/>
+        <circle cx="80" cy="20" r="8" fill="#6B8FAD"/>
+        <line x1="8" y1="20" x2="32" y2="20" stroke="#6B8FAD" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <line x1="48" y1="20" x2="72" y2="20" stroke="#6B8FAD" stroke-width="1.5" stroke-dasharray="3 2"/>
+      </g>
+    </g>
+
+    <!-- arXiv Watch -->
+    <g transform="translate(0, 280)">
+      <rect x="0" y="0" width="380" height="120" rx="12"
+        fill="#FAF6F0" stroke="#D4C5B0" stroke-width="1.5"/>
+      <text x="22" y="38" font-family="Georgia, serif" font-size="15" font-weight="700" fill="#2C2416" letter-spacing="1">arXiv Auto-Import</text>
+      <text x="22" y="60" font-family="Georgia, serif" font-size="12" fill="#7A7570">gap watch — monitors new uploads</text>
+      <text x="22" y="80" font-family="Georgia, serif" font-size="12" fill="#7A7570">Matches Gene Pool · Sends alerts</text>
+      <text x="22" y="100" font-family="Georgia, serif" font-size="12" fill="#7A7570">Daemon mode · 30-min intervals</text>
+      <!-- Antenna icon -->
+      <g transform="translate(325, 35)">
+        <path d="M 15 0 Q 15 25, 0 30 Q 15 35, 15 60" fill="none" stroke="#C4706A" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="15" cy="65" r="6" fill="#C4706A" opacity="0.8"/>
+      </g>
+    </g>
+
+    <!-- Research Gap Detection -->
+    <g transform="translate(0, 420)">
+      <rect x="0" y="0" width="380" height="120" rx="12"
+        fill="#FAF6F0" stroke="#D4C5B0" stroke-width="1.5"/>
+      <text x="22" y="38" font-family="Georgia, serif" font-size="15" font-weight="700" fill="#2C2416" letter-spacing="1">Contradiction Detection</text>
+      <text x="22" y="60" font-family="Georgia, serif" font-size="12" fill="#7A7570">Same gap_type · Opposite polarity</text>
+      <text x="22" y="80" font-family="Georgia, serif" font-size="12" fill="#7A7570">ADVANCE ↕ CHALLENGE</text>
+      <text x="22" y="100" font-family="Georgia, serif" font-size="12" fill="#7A7570">Keyword overlap detection</text>
+      <!-- Lightning icon -->
+      <g transform="translate(330, 35)">
+        <path d="M 20 0 L 5 32 L 18 32 L 10 65 L 35 28 L 20 28 Z"
+          fill="#C44" opacity="0.85"/>
+      </g>
+    </g>
+
+  </g>
+
+  <!-- Divider line -->
+  <line x1="760" y1="60" x2="760" y2="580" stroke="#D4C5B0" stroke-width="1" opacity="0.5" filter="url(#light)"/>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="590" width="1280" height="50" fill="#2C2416" opacity="0.06"/>
+  <text x="100" y="622"
+    font-family="Georgia, serif" font-size="13"
+    fill="#A89E8C" letter-spacing="2" filter="url(#light)">
+    Gene Pool · Insight Evolution · Research OS · v1.7
+  </text>
+  <text x="1180" y="622"
+    font-family="Georgia, serif" font-size="13"
+    fill="#A89E8C" text-anchor="end" letter-spacing="1" filter="url(#light)">
+    github.com/shushuzn/Rairos
+  </text>
+
+  <!-- Corner marks -->
+  <g stroke="#D4C5B0" stroke-width="1.2" opacity="0.35" filter="url(#light)">
+    <path d="M 30 30 L 30 48 M 30 30 L 48 30"/>
+    <path d="M 1250 30 L 1250 48 M 1250 30 L 1232 30"/>
+    <path d="M 30 610 L 30 592 M 30 610 L 48 610"/>
+    <path d="M 1250 610 L 1250 592 M 1250 610 L 1232 610"/>
+  </g>
+</svg>
