@@ -1036,11 +1036,6 @@ async def impact(request: Request):
     })
 
 
-@app.get("/streamlit")
-async def streamlit_redirect():
-    """Redirect to the full Streamlit app."""
-    return RedirectResponse(url="http://localhost:8501", status_code=307)
-
 
 if __name__ == "__main__":
     import uvicorn
