@@ -84,12 +84,15 @@ class ClaudeCLIClient:
             full_prompt = f"[System: {system_prompt}]\n\n{prompt}"
 
         try:
+            # Use --print with --output-format json and --input-format text.
+            # This forces JSON output even in non-TTY (piped stdin) environments.
             result = subprocess.run(
                 [
                     self.cli_path,
                     "--print",
                     "--model", model,
                     "--output-format", "json",
+                    "--input-format", "text",
                 ],
                 input=full_prompt,
                 capture_output=True,
@@ -115,12 +118,23 @@ class ClaudeCLIClient:
 
             # Parse JSON response to extract result
             output = result.stdout.strip()
+            # Claude CLI may append hook/agent error text after the JSON.
+            # Try to extract only the first JSON object.
+            json_text = output
             try:
+                # Attempt direct parse first
                 data = json.loads(output)
-                # JSON format: {"result": "...", "subtype": "success", ...}
                 return cast(str, data.get("result", output))
             except json.JSONDecodeError:
-                # Fallback: return raw output if not JSON
+                # Find first '{' and parse from there
+                brace_pos = output.find('{')
+                if brace_pos >= 0:
+                    try:
+                        data = json.loads(output[brace_pos:])
+                        return cast(str, data.get("result", output[brace_pos:]))
+                    except json.JSONDecodeError:
+                        pass
+                # Last resort: return raw output
                 return output
 
         except subprocess.TimeoutExpired:
