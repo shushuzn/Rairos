@@ -193,6 +193,18 @@ def get_tools() -> List[Dict]:
                 },
                 "required": ["paper_id"]
             }
+        },
+        {
+            "name": "gap_detect",
+            "description": "Detect research gaps in a topic using your paper corpus",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "topic": {"type": "string", "description": "Research topic or keyword to analyze"},
+                    "use_llm": {"type": "boolean", "default": true, "description": "Use LLM for deep analysis"}
+                },
+                "required": ["topic"]
+            }
         }
     ]
 
@@ -616,6 +628,49 @@ def tool_citation_graph(paper_id: str, depth: int = 2, max_nodes: int = 30) -> D
         return error_response("GRAPH_ERROR", str(e))
 
 
+def tool_gap_detect(topic: str, use_llm: bool = True) -> Dict:
+    """Detect research gaps in a topic using the paper corpus."""
+    try:
+        from llm.gap_detector import GapDetector
+        from db.database import Database
+
+        db = Database()
+        db.init()
+
+        detector = GapDetector(db=db)
+        result = detector.analyze(topic=topic, use_llm=use_llm)
+
+        db.close()
+
+        return success_response({
+            "topic": topic,
+            "analyzed_papers_count": result.analyzed_papers_count,
+            "coverage_score": result.coverage_score,
+            "gaps": [
+                {
+                    "type": g.gap_type,
+                    "description": g.description,
+                    "evidence": g.evidence,
+                    "confidence": g.confidence,
+                    "severity": g.severity
+                }
+                for g in result.gaps
+            ],
+            "questions": [
+                {
+                    "question": q.question,
+                    "gap_type": q.gap_type,
+                    "verifiability": q.verifiability
+                }
+                for q in result.questions
+            ]
+        })
+
+    except Exception as e:
+        logger.error(f"gap_detect error: {e}")
+        return error_response("GAP_ERROR", str(e))
+
+
 # ─── MCP Protocol Handlers ──────────────────────────────────────────
 
 
@@ -694,6 +749,11 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
                 paper_id=arguments.get("paper_id"),
                 depth=arguments.get("depth", 2),
                 max_nodes=arguments.get("max_nodes", 100)
+            )
+        elif name == "gap_detect":
+            result = tool_gap_detect(
+                topic=arguments.get("topic"),
+                use_llm=arguments.get("use_llm", True)
             )
         else:
             result = error_response("UNKNOWN_TOOL", f"Unknown tool: {name}")
