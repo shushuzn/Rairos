@@ -1,0 +1,17 @@
+{
+  "agents": [
+    {
+      "agent_id": "a17b352626d21e0d4",
+      "agent_type": "compound-engineering:research:repo-research-analyst",
+      "started_at": "2026-05-01T03:41:10.229Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-05-01T03:42:26.972Z",
+      "duration_ms": 76743
+    }
+  ],
+  "total_spawned": 1,
+  "total_completed": 1,
+  "total_failed": 0,
+  "last_updated": "2026-05-01T06:26:25.391Z"
+}

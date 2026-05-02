@@ -1,0 +1,63 @@
+{
+  "version": "1.0",
+  "query_types": {
+    "gap_analysis": {
+      "description": "Identify research gaps, unanswered questions, or underexplored areas in a topic",
+      "keywords": [
+        "gap", "gaps", "空白", "未解决", "missing", "unresolved",
+        "opportunity", "差距", "limitation", "limitations", "不足",
+        "untouched", "overlooked", "open problem", "open question"
+      ]
+    },
+    "hypothesis_generation": {
+      "description": "Generate testable research hypotheses or conjectures based on gaps",
+      "keywords": [
+        "hypothesis", "假设", "假设生成", "conjecture", "predict",
+        "预测", "实验设计", "hypothesize", "if-then"
+      ]
+    },
+    "experiment": {
+      "description": "Design, run, or track experiments to validate hypotheses",
+      "keywords": [
+        "experiment", "实验", "ab test", "evaluate", "评估",
+        "validate", "验证", "trial", "跑实验", "实验结果",
+        "benchmark", "benchmarking"
+      ]
+    },
+    "insight": {
+      "description": "Extract key insights, patterns, or synthesis from research papers",
+      "keywords": [
+        "insight", "insights", "发现", "洞察", "pattern", "patterns",
+        "key finding", "takeaway", "synthesis"
+      ]
+    },
+    "narrative": {
+      "description": "Track research narrative threads, phases, or story arcs across the research",
+      "keywords": [
+        "narrative", "story", "线程", "progress", "phase", "跟踪",
+        "进展", "状态", "story arc"
+      ]
+    },
+    "paper_search": {
+      "description": "Search for papers or research publications by keywords or topic",
+      "keywords": [
+        "paper", "papers", "search", "find", "论文", "搜索",
+        "arxiv", "找论文", "文献", "publication"
+      ]
+    },
+    "question_answer": {
+      "description": "Ask a research question that can be answered from the paper library",
+      "keywords": [
+        "what", "who", "how", "why", "explain", "什么", "如何",
+        "为什么", "请问", "回答", "answer", "can you"
+      ]
+    },
+    "general": {
+      "description": "General research conversation or open-ended discussion",
+      "keywords": [
+        "chat", "talk", "discuss", "对话", "聊聊", "tell me",
+        "about", "introduction", "介绍"
+      ]
+    }
+  }
+}

@@ -1,0 +1,74 @@
+"""
+Shared constants across the llm module.
+
+集中管理所有模块级常量，避免重复定义和漂移。
+"""
+
+from __future__ import annotations
+
+# Re-export from config.py to serve as the canonical defaults for the llm/
+# sub-package.  The aliases prevent a naming conflict with the CONFIG var
+# in config.py while preserving the historical constant names used throughout
+# the llm/ sub-package.
+from config import DEFAULT_OPENAI_BASE_URL as LLM_BASE_URL  # noqa: F401
+from config import DEFAULT_LLM_MODEL as LLM_MODEL  # noqa: F401
+
+# ── Ollama Embedding Configuration ───────────────────────────────────────────
+
+OLLAMA_BASE_URL: str = "http://localhost:11434"
+OLLAMA_EMBEDDING_MODEL: str = "nomic-embed-text"
+OLLAMA_API_EMBEDDINGS_ENDPOINT: str = "/api/embeddings"
+ENV_AIROS_USE_EMBEDDING: str = "AIROS_USE_EMBEDDING"
+
+# ── AI/ML research keyword tracking ───────────────────────────────────────────
+
+# Supersets of terms used for keyword extraction across trend_analyzer,
+# research_session, and question_validator. Each consumer selects a subset
+# appropriate to its needs.
+AI_RESEARCH_KEYWORDS: set[str] = {
+    # Core NLP/LLM
+    "transformer", "attention", "bert", "gpt", "llm", "language model",
+    "neural", "network", "embedding", "fine-tuning", "rlhf", "rag",
+    "retrieval", "generative", "diffusion", "gan", "clip", "vit",
+    # RL
+    "reinforcement", "policy", "reward", "rl", "dpo", "ppo", "reward model",
+    # Training
+    "training", "optimization", "pre-training", "instruction", "alignment",
+    # Multimodal
+    "multimodal", "vision", "language", "speech", "audio",
+    # Reasoning
+    "constitutional", "reasoning", "chain-of-thought", "cot", "synthetic data",
+    # Generic
+    "model", "learning",
+}
+
+# ── Shared baseline keywords for SmartFollowUp topic classification ───────────
+# All follow-up types share this baseline set of AI/ML terms.
+# Individual types extend it with domain-specific keywords.
+SMART_FOLLOWUP_BASE: set[str] = {
+    # Core NLP/LLM
+    "attention", "transformer", "bert", "gpt", "llm", "language model",
+    "neural", "network", "embedding", "fine-tuning", "rlhf", "rag",
+    "retrieval", "generative", "diffusion", "gan", "clip", "vit",
+    "weight", "layer", "parameter", "gradient", "loss", "optimize",
+    "softmax", "matrix", "dot", "product", "mechanism",
+    # RL
+    "reinforcement", "policy", "reward", "rl", "dpo", "ppo",
+    # Training
+    "training", "pre-training", "instruction", "alignment",
+    # Multimodal
+    "multimodal", "vision", "language", "speech", "audio",
+    # Reasoning
+    "constitutional", "reasoning", "chain-of-thought", "cot",
+    # Implementation
+    "implement", "code", "function", "class", "api", "library",
+    "pytorch", "tensorflow", "module", "algorithm",
+    # Comparison
+    "vs", "versus", "better", "worse", "compare", "advantage", "disadvantage",
+    # Evolution
+    "based on", "follow", "extend", "improve", "build upon",
+    "later", "previous", "next", "evolution", "derived", "succeed",
+    # Application
+    "apply", "use", "application", "industry", "practical",
+    "deploy", "production", "real-world", "benchmark",
+}

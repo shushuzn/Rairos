@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "current": {
+    "type": "PersonalityState",
+    "rigor": 0.7,
+    "creativity": 0.35,
+    "verbosity": 0.25,
+    "risk_tolerance": 0.4,
+    "obedience": 0.85
+  },
+  "stats": {},
+  "history": [],
+  "updated_at": "2026-04-25T17:12:56.003Z"
+}

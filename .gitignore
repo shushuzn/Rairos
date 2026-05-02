@@ -1,0 +1,47 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+*.egg-info/
+dist/
+build/
+.coverage
+coverage.xml
+coverage.json
+uv.lock
+.omc/
+*.jsonl
+*.zip
+
+# Data directories
+data/arxiv/
+data/research.db
+data/research.db-shm
+data/research.db-wal
+data/crossref/
+data/papers/
+data/*.pdf
+cache/
+
+# Claude settings
+.claude/
+!/.claude/
+.claude/settings.local.json
+.claude/worktrees/
+
+# Tool-specific files
+.kilo/
+.playwright-mcp/
+neuraloperator_fork/
+data/llm_cache/
+
+# Misc
+.env
+AI-Research/
+ai_research.db
+data/extable.db
+
+# Experiment files (local only)
+galerkin_experiment.py
+pino_experiment.py

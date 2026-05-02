@@ -1,0 +1,45 @@
+{
+  "paper_id": "2601.00155",
+  "sections": {
+    "## 1. 背景": "> **Abstract（原文）**\n> Retrieval augmented generation with agent tools for long context.\n\n_（关键词匹配摘要，建议 AI 深入分析）_",
+    "## 2. 核心问题": "_基于摘要推断：_\n\n> _（需要 AI 分析）_",
+    "## 3.1 架构拆解": "_检测到的方法/架构关键词：attention, normalization_\n\n\n\n> _（需要 AI 分析）_",
+    "## 3.2 算法逻辑": "\n\n> _（需要 AI 分析）_",
+    "## 3.3 关键组件": "\n\n> _（需要 AI 分析）_",
+    "## 4. 关键创新": "\n\n> _（需要 AI 分析）_",
+    "## 5.1 数据集": "\n\n> _（需要 AI 分析）_",
+    "## 5.2 基线对比": "_检测到的评估指标关键词：recall, map, auc_\n\n\n\n> _（需要 AI 分析）_",
+    "## 5.3 消融实验": "\n\n> _（需要 AI 分析）_",
+    "## 5.4 成本分析": "\n\n> _（需要 AI 分析）_",
+    "## 6. 对抗式审稿": "\n\n> _（需要 AI 分析）_",
+    "## 7. 优势": "\n\n> _（需要 AI 分析）_",
+    "## 8. 局限": "\n\n> _（需要 AI 分析）_",
+    "## 9. 本质抽象": "\n\n> _（需要 AI 分析）_",
+    "## 10. 与其他方法对比": "\n\n> _（需要 AI 分析）_",
+    "## 11. Decision（决策）": "\n\n> _（需要 AI 分析）_",
+    "## 12. 知识蒸馏": "\n\n> _（需要 AI 分析）_",
+    "## 13. 认知升级": "\n\n> _（需要 AI 分析）_"
+  },
+  "rubric": {
+    "novelty": 0,
+    "leverage": 0,
+    "evidence": 0,
+    "cost": 0,
+    "moat": 0,
+    "adoption": 0
+  },
+  "extracted_methods": [
+    "attention",
+    "normalization"
+  ],
+  "extracted_datasets": [],
+  "extracted_metrics": [
+    "recall",
+    "map",
+    "auc"
+  ],
+  "raw_llm_output": "",
+  "llm_used": false,
+  "claims": [],
+  "unverified_claims": []
+}

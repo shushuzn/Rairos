@@ -1,0 +1,107 @@
+{
+  "last_run": {
+    "run_id": "run_1777137176039",
+    "created_at": "2026-04-25T17:12:56.461Z",
+    "parent_event_id": null,
+    "selected_gene_id": null,
+    "selected_capsule_id": null,
+    "selector": {
+      "selected": null,
+      "reason": [
+        "no matching gene found; new gene may be required",
+        "signals: memory_missing, user_missing, session_logs_missing",
+        "drift_intensity: 0.577",
+        "selection_path: none"
+      ],
+      "alternatives": [],
+      "selectionPath": "none",
+      "memoryUsed": false
+    },
+    "signals": [
+      "memory_missing",
+      "user_missing",
+      "session_logs_missing"
+    ],
+    "mutation": {
+      "type": "Mutation",
+      "id": "mut_1777137176011",
+      "category": "innovate",
+      "trigger_signals": [
+        "memory_missing",
+        "user_missing",
+        "session_logs_missing"
+      ],
+      "target": "behavior:protocol",
+      "expected_effect": "explore new strategy combinations to escape local optimum",
+      "risk_level": "medium"
+    },
+    "mutation_id": "mut_1777137176011",
+    "personality_state": {
+      "type": "PersonalityState",
+      "rigor": 0.7,
+      "creativity": 0.35,
+      "verbosity": 0.25,
+      "risk_tolerance": 0.4,
+      "obedience": 0.85
+    },
+    "personality_key": "rigor=0.7|creativity=0.3|verbosity=0.3|risk_tolerance=0.4|obedience=0.9",
+    "personality_known": false,
+    "personality_mutations": [],
+    "drift": false,
+    "selected_by": "selector",
+    "source_type": "generated",
+    "reused_asset_id": null,
+    "reused_source_node": null,
+    "reused_chain_id": null,
+    "baseline_untracked": [
+      ".claude/worktrees/condescending-neumann-1b7be5/.claude/hooks/evolver-session-end.js",
+      ".claude/worktrees/condescending-neumann-1b7be5/.claude/hooks/evolver-session-start.js",
+      ".claude/worktrees/condescending-neumann-1b7be5/.claude/hooks/evolver-signal-detect.js",
+      ".claude/worktrees/condescending-neumann-1b7be5/.claude/settings.json",
+      ".claude/worktrees/condescending-neumann-1b7be5/.claude/settings.local.json",
+      ".claude/worktrees/condescending-neumann-1b7be5/0.0.26",
+      ".claude/worktrees/condescending-neumann-1b7be5/12.2.0",
+      ".claude/worktrees/condescending-neumann-1b7be5/5}",
+      ".claude/worktrees/condescending-neumann-1b7be5/CLAUDE.md",
+      "assets/gep/capsules.json",
+      "assets/gep/failed_capsules.json",
+      "assets/gep/genes.json",
+      "data/kg.db",
+      "memory/evolution/evolution_solidify_state.json",
+      "memory/evolution/evolution_state.json",
+      "memory/evolution/memory_graph_state.json",
+      "memory/evolution/personality_state.json",
+      "memory/evolver_update_check.json",
+      "pr_result.txt"
+    ],
+    "baseline_git_head": "a60d44ea248429f066b9b08b00408e1026d6331c",
+    "blast_radius_estimate": {
+      "files": 12,
+      "lines": 960
+    },
+    "strategy_policy": {
+      "name": "balanced",
+      "label": "Balanced",
+      "description": "Normal operation. Steady growth with stability.",
+      "forceInnovate": false,
+      "cautiousExecution": false,
+      "highRiskGene": false,
+      "repairStreak": 0,
+      "failureStreak": 0,
+      "blastRadiusMaxFiles": 12,
+      "directives": [
+        "Base strategy: Balanced (Normal operation. Steady growth with stability.)",
+        "Target max files for this cycle: 12."
+      ]
+    },
+    "active_task_id": null,
+    "active_task_title": null,
+    "worker_assignment_id": null,
+    "worker_pending": false,
+    "commitment_deadline": null,
+    "applied_lessons": [],
+    "hub_lessons": [],
+    "cycleId": "0004",
+    "initial_user_prompt": null
+  }
+}

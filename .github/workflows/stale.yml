@@ -1,0 +1,33 @@
+# Configuration for github-stale (runs as a GitHub Action)
+# Add to .github/workflows/ after enabling the app
+name: Stale
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Run daily at midnight
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-message: |
+            This issue has been automatically marked as stale because it has not had recent activity.
+            If this is still important to you, please comment and we will reopen it.
+            Otherwise, the issue will be closed in 14 days.
+
+          stale-pr-message: |
+            This PR has been automatically marked as stale because it has not had recent activity.
+            If this is still relevant, please comment or we will close it.
+
+          days-before-stale: 60
+          days-before-close: 14
+          exempt-issue-labels: 'pinned,security,critical'
+          exempt-pr-labels: 'pinned,security'
+          only-labels: ''  # Apply to all

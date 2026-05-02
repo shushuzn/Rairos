@@ -1,0 +1,18 @@
+{
+  "source": "arxiv",
+  "uid": "2401.00001",
+  "title": "Agent Meets RAG",
+  "authors": [
+    "Alice Smith"
+  ],
+  "abstract": "We present an agent-based system that uses retrieval augmented generation to answer questions over long documents. The agent calls tools and uses a mixture of experts for routing.",
+  "published": "2024-01-20",
+  "updated": "2024-01-20",
+  "abs_url": "https://arxiv.org/abs/2401.00001",
+  "pdf_url": "https://arxiv.org/pdf/2401.00001.pdf",
+  "primary_category": "",
+  "categories": "cs.AI, cs.CL",
+  "comment": "",
+  "journal_ref": "",
+  "doi": ""
+}

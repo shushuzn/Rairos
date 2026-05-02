@@ -1,0 +1,14 @@
+{
+  "paper_id": "2604.24836",
+  "stages_completed": [
+    "benchmark",
+    "cross_reference",
+    "insight",
+    "kg_sync"
+  ],
+  "stages_failed": [],
+  "pnote_updated": false,
+  "start_time": "2026-04-30T00:34:23.165801",
+  "end_time": "2026-04-30T00:34:23.231792",
+  "summary": "[4/4] stages OK, 0 failed"
+}

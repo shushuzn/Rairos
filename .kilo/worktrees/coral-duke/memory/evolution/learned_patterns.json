@@ -1,0 +1,17 @@
+{
+  "chat_success_chat_response": {
+    "name": "chat_success_chat_response",
+    "signal_type": "chat_success",
+    "trigger_conditions": {
+      "query": "What is attention mechanism?",
+      "papers": [
+        "paper1",
+        "paper2"
+      ]
+    },
+    "success_count": 2,
+    "failure_count": 0,
+    "last_used": "2026-04-26T10:40:09.890888",
+    "effectiveness": 1.0
+  }
+}
