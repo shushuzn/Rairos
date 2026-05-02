@@ -57,33 +57,22 @@ Respond ONLY with a JSON object (no markdown, no code fences):
 """
 
     try:
-        import httpx
+        from llm.client import call_llm_chat_completions
     except ImportError:
         return {
             "gap_type": "method_limitation",
             "gap_title": title[:80],
             "keywords": _extract_keywords(abstract),
-            "summary": "Gap extraction requires httpx/llm library.",
-            "error": "httpx not available",
+            "summary": "Gap extraction requires llm.client.",
+            "error": "llm.client not available",
         }
 
-    key = api_key or LLM_BASE_URL
-    url = (base_url or LLM_BASE_URL or "https://api.openai.com/v1") + "/chat/completions"
-    headers = {"Authorization": f"Bearer {key}"} if key and "openai" not in key else {}
-    payload = {
-        "model": model or LLM_MODEL or "gpt-4o-mini",
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.3,
-        "max_tokens": 300,
-    }
-
     try:
-        with httpx.Client(timeout=30.0) as client:
-            resp = client.post(url, json=payload, headers=headers)
-            resp.raise_for_status()
-            data = resp.json()
-            content = data["choices"][0]["message"]["content"].strip()
-            return json.loads(content)
+        content = call_llm_chat_completions(
+            messages=[{"role": "user", "content": prompt}],
+            model="claude-3-5-sonnet-latest",
+        )
+        return json.loads(content.strip())
     except Exception as e:
         return {
             "gap_type": "method_limitation",

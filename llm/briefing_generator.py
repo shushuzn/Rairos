@@ -51,7 +51,11 @@ def _load_gene_pool() -> List[Dict[str, Any]]:
         from pathlib import Path
         path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
         if path.exists():
-            return json.loads(path.read_text(encoding="utf-8"))
+            data = json.loads(path.read_text(encoding="utf-8"))
+            # Support both raw list and {"version":1,"capsules":[...]} format
+            if isinstance(data, list):
+                return data
+            return data.get("capsules", [])
     except Exception:
         pass
     return []
@@ -80,16 +84,19 @@ def _match_gene_pool(topic: str, title: str, abstract: str) -> List[Dict[str, An
 
     matches = []
     for capsule in gene_pool:
-        gap_title = capsule.get("gap_title", "").lower()
-        keywords = [k.lower() for k in capsule.get("keywords", [])]
+        # Support multiple field name variants from different versions
+        gap_title = (capsule.get("gap_title") or capsule.get("action_gap_title") or capsule.get("trigger_gap_title") or "").lower()
+        gap_type = capsule.get("gap_type") or capsule.get("trigger_gap_type") or capsule.get("action_gap_type") or ""
+        keywords = [k.lower() for k in (capsule.get("keywords") or capsule.get("trigger_keywords") or [])]
+        outcome_score = capsule.get("outcome_success_score") or capsule.get("score") or 0.0
 
         # Simple keyword overlap
         overlap = sum(1 for kw in keywords if kw in text)
-        if overlap >= 1 or any(kw in topic_lower for kw in keywords):
+        if overlap >= 1 or any(kw in topic_lower for kw in keywords) or gap_title and overlap > 0:
             matches.append({
-                "gap_title": capsule.get("gap_title", ""),
-                "gap_type": capsule.get("gap_type", ""),
-                "outcome_score": capsule.get("outcome_success_score", 0.0),
+                "gap_title": gap_title,
+                "gap_type": gap_type,
+                "outcome_score": outcome_score,
                 "match_reason": f"keyword overlap: {overlap}" if overlap else "topic match",
             })
 
