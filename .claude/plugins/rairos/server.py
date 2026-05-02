@@ -76,13 +76,14 @@ def get_tools() -> List[Dict]:
         },
         {
             "name": "paper_search",
-            "description": "Search papers by keyword using full-text search",
+            "description": "Search papers by keyword (local DB or web)",
             "inputSchema": {
                 "type": "object",
                 "properties": {
                     "query": {"type": "string", "description": "Search query"},
-                    "tag": {"type": "string", "description": "Filter by tag"},
-                    "limit": {"type": "integer", "default": 10, "description": "Max results"}
+                    "tag": {"type": "string", "description": "Filter by tag (local only)"},
+                    "limit": {"type": "integer", "default": 10, "description": "Max results per source"},
+                    "source": {"type": "string", "enum": ["local", "web", "both"], "default": "local", "description": "Search source: local DB, web (arXiv+SemanticScholar), or both"}
                 },
                 "required": ["query"]
             }
@@ -252,30 +253,53 @@ def tool_paper_ingest(identifier: str, tags: Optional[List[str]] = None) -> Dict
         return error_response("INGEST_ERROR", str(e))
 
 
-def tool_paper_search(query: str, tag: Optional[str] = None, limit: int = 10) -> Dict:
-    """Search papers."""
+def tool_paper_search(query: str, tag: Optional[str] = None, limit: int = 10, source: str = "local") -> Dict:
+    """Search papers from local DB and/or web sources."""
     try:
-        from db.database import Database
+        results = []
+        sources_used = []
 
-        db = Database()
-        db.init()
-
-        results, total = db.search_papers(query, limit=limit)
-
-        db.close()
-
-        return success_response({
-            "query": query,
-            "count": total,
-            "results": [
+        if source in ("local", "both"):
+            from db.database import Database
+            db = Database()
+            db.init()
+            local_results, total = db.search_papers(query, limit=limit)
+            db.close()
+            results.extend([
                 {
                     "paper_id": r.paper_id,
                     "title": r.title,
                     "authors": r.authors,
-                    "published": r.published
+                    "published": r.published,
+                    "source": "local"
                 }
-                for r in results[:limit]
-            ]
+                for r in local_results[:limit]
+            ])
+            sources_used.append(f"local({total})")
+
+        if source in ("web", "both"):
+            try:
+                from parsers.cross_search import search_papers_multi
+                web_papers = search_papers_multi(query, max_per_source=limit)
+                results.extend([
+                    {
+                        "paper_id": p.uid,
+                        "title": p.title,
+                        "authors": p.authors,
+                        "published": p.published[:10] if p.published else "",
+                        "source": getattr(p, "source", "web")
+                    }
+                    for p in web_papers
+                ])
+                sources_used.append(f"web({len(web_papers)})")
+            except Exception as e:
+                logger.warning(f"Web search failed: {e}")
+
+        return success_response({
+            "query": query,
+            "sources": sources_used,
+            "count": len(results),
+            "results": results[:limit * 2] if source == "both" else results[:limit]
         })
 
     except Exception as e:
@@ -567,7 +591,8 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
             result = tool_paper_search(
                 query=arguments.get("query"),
                 tag=arguments.get("tag"),
-                limit=arguments.get("limit", 10)
+                limit=arguments.get("limit", 10),
+                source=arguments.get("source", "local")
             )
         elif name == "paper_chat":
             result = tool_paper_chat(
