@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Papers — Rairos{% endblock %}
+
+{% block content %}
+<h1 class="page-title">📚 Papers</h1>
+<div class="page-title-underline"></div>
+<p class="page-desc">{{ total }} papers found{% if query %} for "{{ query }}"{% endif %}</p>
+
+<!-- Search + Filter -->
+<form method="get" action="/papers">
+  <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
+    <input
+      name="q"
+      class="input-field"
+      style="flex: 1; min-width: 180px; font-size: 16px; padding: 12px 16px;"
+      placeholder="Search by title, author, keyword..."
+      value="{{ query or '' }}"
+    >
+    <select name="source" class="input-field" style="width: auto; min-width: 130px;" onchange="this.form.submit()">
+      <option value="">All sources</option>
+      <option value="import" {% if source=='import' %}selected{% endif %}>Import</option>
+      <option value="arxiv" {% if source=='arxiv' %}selected{% endif %}>arXiv</option>
+      <option value="local" {% if source=='local' %}selected{% endif %}>Local</option>
+    </select>
+    <button type="submit" class="btn btn-primary">🔍</button>
+    {% if query %}
+    <a href="/papers" class="btn btn-secondary">✕</a>
+    {% endif %}
+  </div>
+</form>
+
+<!-- Results -->
+{% if papers %}
+<div style="margin-bottom: 20px;">
+  {% for paper in papers %}
+  <a href="{{ paper[7] }}" style="text-decoration: none;">
+    <div class="paper-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 6px;">
+        <div class="paper-title" style="flex: 1;">{{ paper[1][:90] }}</div>
+        {% if paper[0] %}
+        <span class="paper-arxiv-id">{{ paper[0][:15] }}</span>
+        {% endif %}
+      </div>
+      <div class="paper-meta">
+        {{ paper[2] }} · {{ paper[3] }} · {{ paper[4] }}
+        {% if paper[5] %}
+        <span class="paper-category">{{ paper[5] }}</span>
+        {% endif %}
+      </div>
+      {% if paper[6] %}
+      <div class="paper-snippet">{{ paper[6][:200] }}...</div>
+      {% endif %}
+    </div>
+  </a>
+  {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;">
+  {% if page > 1 %}
+  <a href="?q={{ query or '' }}&source={{ source or '' }}&page={{ page - 1 }}" class="btn btn-secondary" style="padding: 8px 16px;">← Prev</a>
+  {% endif %}
+
+  {% for p in range(1, total_pages + 1) %}
+    {% if p == page %}
+    <span class="btn btn-primary" style="padding: 8px 16px; pointer-events: none;">{{ p }}</span>
+    {% elif p <= 3 or p > total_pages - 2 or (p >= page - 1 and p <= page + 1) %}
+    <a href="?q={{ query or '' }}&source={{ source or '' }}&page={{ p }}" class="btn btn-secondary" style="padding: 8px 16px;">{{ p }}</a>
+    {% elif p == 4 or p == total_pages - 3 %}
+    <span style="color: var(--ink-faint);">…</span>
+    {% endif %}
+  {% endfor %}
+
+  {% if page < total_pages %}
+  <a href="?q={{ query or '' }}&source={{ source or '' }}&page={{ page + 1 }}" class="btn btn-secondary" style="padding: 8px 16px;">Next →</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-icon">🔍</div>
+  <div class="empty-state-text">No papers found{% if query %} for "{{ query }}"{% endif %}</div>
+  {% if not query %}
+  <p style="margin-top: 12px; color: var(--ink-faint); font-size: 14px;">
+    Import papers using the Streamlit app or <code>python -m cli ingest</code>
+  </p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
