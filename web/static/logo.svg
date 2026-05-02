@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <!-- Sketch filter for hand-drawn look -->
+    <filter id="sketch" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" seed="12"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5"
+        xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <!-- Lighter sketch for inner elements -->
+    <filter id="sketch-light" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" result="noise" seed="8"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.8"
+        xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+
+  <!-- Background paper circle (subtle) -->
+  <circle cx="32" cy="32" r="30" fill="#F5F0E8" stroke="#D4C5B0" stroke-width="1.2" filter="url(#sketch-light)"/>
+
+  <!-- Stylized 'R' — combining notebook paper + neural research -->
+  <!-- Main R body: vertical stroke (like a pen stroke) -->
+  <path d="M 20 16 C 20 14, 22 13, 24 13 L 26 13 C 30 13, 34 14, 36 16 C 38 18, 38 21, 36 23 C 34 24, 31 24, 28 24 L 28 28 L 36 28 C 40 28, 43 30, 44 34 C 44 38, 41 42, 36 43 L 26 43 L 26 50 M 28 33 L 34 33 C 37 33, 39 31, 39 29"
+        fill="none" stroke="#2C2416" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"
+        filter="url(#sketch)"/>
+
+  <!-- Horizontal ruling lines (like notebook paper) — inside the R loop -->
+  <line x1="23" y1="19" x2="35" y2="19" stroke="#A89E8C" stroke-width="0.8" opacity="0.6" filter="url(#sketch-light)"/>
+  <line x1="23" y1="22" x2="34" y2="22" stroke="#A89E8C" stroke-width="0.8" opacity="0.5" filter="url(#sketch-light)"/>
+
+  <!-- Small dots / neural nodes on the R stroke -->
+  <circle cx="24" cy="16" r="1.5" fill="#6B8FAD" filter="url(#sketch-light)"/>
+  <circle cx="30" cy="20" r="1.2" fill="#6B8FAD" opacity="0.7" filter="url(#sketch-light)"/>
+  <circle cx="36" cy="16" r="1.5" fill="#6B8FAD" filter="url(#sketch-light)"/>
+  <circle cx="32" cy="28" r="1.2" fill="#7A9E7A" opacity="0.8" filter="url(#sketch-light)"/>
+  <circle cx="40" cy="34" r="1.0" fill="#7A9E7A" opacity="0.7" filter="url(#sketch-light)"/>
+
+  <!-- Gene helix hint — two small arcs in bottom right -->
+  <path d="M 40 36 Q 43 38, 40 40" fill="none" stroke="#7A9E7A" stroke-width="1.0" opacity="0.5" stroke-linecap="round" filter="url(#sketch-light)"/>
+  <path d="M 42 35 Q 45 37, 42 39" fill="none" stroke="#6B8FAD" stroke-width="0.8" opacity="0.5" stroke-linecap="round" filter="url(#sketch-light)"/>
+</svg>

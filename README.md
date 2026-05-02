@@ -1,7 +1,7 @@
 # Rairos
 
 <div align="center">
-  <img src="logo_hero.png" width="800" alt="Rairos Demo"/>
+  <img src="logo_hero.svg" width="900" alt="Rairos Demo"/>
 </div>
 
 **A Self-Evolving Research Operating System for AI Researchers**
