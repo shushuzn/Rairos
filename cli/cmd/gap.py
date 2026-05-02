@@ -15,6 +15,21 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
         help="Detect research gaps and generate research questions",
         description="Analyze papers to identify research gaps and suggest questions.",
     )
+
+    # Subcommands: list, extract
+    sub = p.add_subparsers(dest="gap_cmd", help="Gap subcommands")
+
+    # gap list — show Gene Pool capsules
+    list_p = sub.add_parser("list", help="List Gene Pool capsules")
+    list_p.add_argument("--status", choices=["all", "active", "consumed", "archived"],
+                        default="active", help="Filter by status (default: active)")
+    list_p.add_argument("--json", "-j", action="store_true", help="Output as JSON")
+
+    # gap extract — extract gap from a paper
+    ext_p = sub.add_parser("extract", help="Extract a research gap from a paper")
+    ext_p.add_argument("paper_id", help="Paper ID (arXiv ID or internal ID)")
+    ext_p.add_argument("--json", "-j", action="store_true", help="Output as JSON")
+
     p.add_argument(
         "topic",
         nargs="?",
@@ -95,6 +110,14 @@ def _run_gap(args: argparse.Namespace) -> int:
     """Run gap detection command."""
     db = get_db()
     db.init()
+
+    # gap list — show Gene Pool capsules
+    if args.gap_cmd == "list":
+        return _run_gap_list(args)
+
+    # gap extract — extract gap from a paper
+    if args.gap_cmd == "extract":
+        return _run_gap_extract(args)
 
     # Profile/history/stats/prefs-history commands
     if args.profile or args.history or args.stats or args.prefs_history:
@@ -366,6 +389,112 @@ def _run_interactive(detector: GapDetector, args: argparse.Namespace) -> int:
             print(detector.render_result(result))
             last_gaps = result.gaps
         print()
+
+    return 0
+
+
+def _run_gap_list(args: argparse.Namespace) -> int:
+    """List Gene Pool capsules."""
+    import json
+    from pathlib import Path
+
+    capsule_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+    if not capsule_path.exists():
+        print_info("Gene Pool is empty.")
+        return 0
+
+    data = json.loads(capsule_path.read_text(encoding="utf-8"))
+    capsules = data.get("capsules", [])
+
+    status_filter = args.status if hasattr(args, "status") else "all"
+    if status_filter != "all":
+        capsules = [c for c in capsules if c.get("status", "active") == status_filter]
+
+    if args.json:
+        print(json.dumps(capsules, indent=2, ensure_ascii=False))
+        return 0
+
+    if not capsules:
+        print_info(f"No {status_filter} capsules in Gene Pool.")
+        return 0
+
+    print(f"🧬 Gene Pool — {len(capsules)} capsule(s) [{status_filter}]")
+    print()
+    for c in capsules:
+        status = c.get("status", "active")
+        score = c.get("outcome_success_score", 0)
+        gap_type = c.get("action_gap_type") or c.get("trigger_gap_type", "?")
+        title = c.get("action_gap_title") or c.get("trigger_gap_title", "?")
+        keywords = c.get("trigger_keywords", [])[:5]
+        created = c.get("created_at", "")[:10]
+        capsule_id = c.get("capsule_id", "?")
+        print(f"  [{status:8}] {title[:60]}")
+        print(f"           type={gap_type}  score={score:.2f}  keywords={', '.join(keywords)}")
+        print(f"           id={capsule_id}  created={created}")
+        print()
+    return 0
+
+
+def _run_gap_extract(args: argparse.Namespace) -> int:
+    """Extract a research gap from a paper and save to Gene Pool."""
+    import json
+
+    db = get_db()
+    db.init()
+    paper = db.get_paper(args.paper_id)
+
+    if not paper:
+        print_error(f"Paper not found: {args.paper_id}")
+        return 1
+
+    print_info(f"Extracting gap from: {paper.title[:60]}")
+
+    from llm.paper_gap_extractor import extract_gap_from_paper, save_gap_to_gene_pool
+    result = extract_gap_from_paper(
+        paper_id=paper.id,
+        title=paper.title,
+        abstract=paper.abstract or "",
+        authors=paper.authors,
+    )
+
+    if result.get("error"):
+        print_error(f"Extraction failed: {result.get('error')}")
+        return 1
+
+    if args.json:
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        return 0
+
+    print()
+    print(f"  Gap Type: {result.get('gap_type', '?')}")
+    print(f"  Title:    {result.get('gap_title', '?')}")
+    print(f"  Summary:  {result.get('summary', '?')}")
+    print(f"  Keywords: {', '.join(result.get('keywords', []))}")
+    print()
+
+    # Ask confirmation before saving
+    try:
+        confirm = input("Save to Gene Pool? [y/N] ").strip().lower()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        confirm = "n"
+
+    if confirm == "y":
+        ok = save_gap_to_gene_pool(
+            paper_id=paper.id,
+            title=paper.title,
+            gap_type=result.get("gap_type", "unknown"),
+            gap_title=result.get("gap_title", ""),
+            keywords=result.get("keywords", []),
+            summary=result.get("summary", ""),
+        )
+        if ok:
+            print_info("✓ Saved to Gene Pool.")
+        else:
+            print_error("Failed to save.")
+            return 1
+    else:
+        print_info("Skipped.")
 
     return 0
 
