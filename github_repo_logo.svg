@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <filter id="s" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="n" seed="5"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="128" height="128" fill="#FAF6F0"/>
+
+  <!-- Hexagonal frame -->
+  <polygon
+    points="64,8 112,36 112,92 64,120 16,92 16,36"
+    fill="#FAF6F0"
+    stroke="#2C2416"
+    stroke-width="5"
+    stroke-linejoin="round"
+    filter="url(#s)"
+  />
+
+  <!-- Inner hexagon line -->
+  <polygon
+    points="64,22 100,44 100,84 64,106 28,84 28,44"
+    fill="none"
+    stroke="#D4C5B0"
+    stroke-width="1.5"
+    stroke-linejoin="round"
+    opacity="0.6"
+    filter="url(#s)"
+  />
+
+  <!-- R — vertical stroke -->
+  <line x1="48" y1="38" x2="48" y2="90" stroke="#2C2416" stroke-width="7" stroke-linecap="round" filter="url(#s)"/>
+
+  <!-- R bowl -->
+  <path d="M 48 52 Q 48 38, 60 38 L 76 38 Q 88 38, 88 52 Q 88 66, 76 66 L 60 66"
+    fill="none" stroke="#2C2416" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" filter="url(#s)"/>
+
+  <!-- R leg -->
+  <path d="M 62 66 L 62 76 Q 62 86, 72 90 L 88 100"
+    fill="none" stroke="#2C2416" stroke-width="6" stroke-linecap="round" filter="url(#s)"/>
+
+  <!-- Gene dots -->
+  <circle cx="48" cy="36" r="5" fill="#6B8FAD" filter="url(#s)"/>
+  <circle cx="88" cy="38" r="4" fill="#6B8FAD" opacity="0.8" filter="url(#s)"/>
+  <circle cx="88" cy="100" r="4" fill="#7A9E7A" opacity="0.8" filter="url(#s)"/>
+</svg>
