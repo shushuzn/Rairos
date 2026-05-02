@@ -3058,6 +3058,7 @@ class EvolutionTracker:
         gap_title: str,
         gap_description: str = "",
         success_score: float = 0.8,
+        status: str = "active",
     ) -> CapsuleGene:
         """Encode a successful accept event into a CapsuleGene and persist it.
 
@@ -3077,6 +3078,7 @@ class EvolutionTracker:
             feedback_count=1,
             evolved_generation=0,
             archetype=archetype,
+            status=status,
         )
 
         with open(self._gene_pool_file, "a", encoding="utf-8") as f:
@@ -3111,12 +3113,69 @@ class EvolutionTracker:
                 except Exception:
                     continue
 
+                if capsule.status == "archived":
+                    continue
                 match_score = capsule.trigger_match(topic, gap_type, keywords)
                 if match_score >= min_score:
                     scored.append((capsule, match_score))
 
         scored.sort(key=lambda x: x[1], reverse=True)
         return [capsule for capsule, _ in scored]
+
+    def archive_capsule(self, capsule_id: str) -> bool:
+        """Archive a capsule from both Gene Pool stores.
+
+        Sets status='archived' in gene_pool.jsonl AND removes from capsules.json.
+        Call this when a capsule should no longer appear in active suggestions.
+        """
+        archived = False
+
+        # 1. Mark archived in gene_pool.jsonl
+        capsules = self._load_capsules()
+        for c in capsules:
+            if c.capsule_id == capsule_id:
+                c.status = "archived"
+                archived = True
+                break
+        if archived:
+            self._save_capsules(capsules)
+
+        # 2. Remove from capsules.json (web UI store)
+        capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+        if capsules_path.exists():
+            try:
+                data = json.loads(capsules_path.read_text(encoding="utf-8"))
+                raw = data.get("capsules", []) if isinstance(data, dict) else data
+                original_len = len(raw)
+                raw = [c for c in raw if c.get("capsule_id", "") != capsule_id]
+                if len(raw) < original_len:
+                    data["capsules"] = raw
+                    capsules_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+            except Exception:
+                pass
+
+        return archived
+
+    def _load_capsules(self) -> List[CapsuleGene]:
+        """Load all capsules from gene_pool.jsonl (active + all statuses)."""
+        capsules = []
+        if self._gene_pool_file.exists():
+            with open(self._gene_pool_file, encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        capsules.append(CapsuleGene.from_dict(json.loads(line)))
+                    except Exception:
+                        continue
+        return capsules
+
+    def _save_capsules(self, capsules: List[CapsuleGene]) -> None:
+        """Rewrite gene_pool.jsonl."""
+        with open(self._gene_pool_file, "w", encoding="utf-8") as f:
+            for c in capsules:
+                f.write(json.dumps(c.to_dict(), ensure_ascii=False) + "\n")
 
     def get_gene_pool_stats(self) -> Dict[str, Any]:
         """Return summary statistics about the Gene Pool."""

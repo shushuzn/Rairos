@@ -4,6 +4,7 @@ Run: uvicorn web.app_new:app --reload --port 8501
 """
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -651,6 +652,360 @@ async def squad_activity():
         }
     except Exception as e:
         return {"activity": [], "error": str(e)}
+
+
+@app.get("/insights")
+async def insights(request: Request):
+    """Research Insights — Gene Pool knowledge, user archetype, exploration history."""
+    try:
+        from llm.insight.tracker import EvolutionTracker
+        tracker = EvolutionTracker()
+
+        # Gene Pool capsules
+        capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+        capsules = []
+        if capsules_path.exists():
+            data = json.loads(capsules_path.read_text(encoding="utf-8"))
+            raw = data.get("capsules", []) if isinstance(data, dict) else data
+            for c in raw[-20:]:  # newest 20
+                status = c.get("status", "active")
+                capsules.append((
+                    c.get("capsule_id", "")[:12],
+                    c.get("trigger_topic", "")[:60],
+                    c.get("action_gap_type", ""),
+                    c.get("action_gap_title", "")[:80],
+                    c.get("outcome_success_score", 0.0),
+                    c.get("created_at", "")[:10],
+                    c.get("trigger_keywords", [])[:5],
+                    status,
+                ))
+
+        # Gene Pool stats from tracker
+        stats = tracker.get_gene_pool_stats()
+
+        # User archetype
+        archetype = tracker.get_archetype()
+
+        # Top gap type preferences
+        profile = tracker.get_profile()
+        gap_prefs = dict(sorted(
+            (profile.gap_type_preferences or {}).items(),
+            key=lambda x: x[1], reverse=True
+        ))
+
+        # Top topics
+        topic_freq = dict(sorted(
+            (profile.topic_frequency or {}).items(),
+            key=lambda x: x[1], reverse=True
+        )[:8])
+
+        # Recent events (last 15)
+        recent_events = tracker.get_recent_events(limit=15)
+        events_display = []
+        for e in reversed(recent_events):
+            ts = e.timestamp[11:16] if e.timestamp else ""
+            date = e.timestamp[:10] if e.timestamp else ""
+            events_display.append((
+                ts, date,
+                e.action.value if hasattr(e.action, 'value') else str(e.action),
+                e.topic[:40] if e.topic else "—",
+                e.gap_type or "—",
+                e.gap_title[:50] if e.gap_title else "—",
+            ))
+
+        # Exploration stats
+        exp_stats = tracker.get_exploration_stats()
+
+        # ── Actionable Project Suggestions ────────────────────────────────────────
+        # Analyze Gene Pool patterns to generate concrete next-step suggestions
+        suggestions = _generate_suggestions(capsules, gap_prefs, topic_freq, archetype, tracker)
+
+    except Exception as e:
+        capsules, stats, archetype, gap_prefs, topic_freq, events_display, exp_stats = [], {}, {}, {}, {}, [], {}
+        import logging
+        logging.getLogger(__name__).warning(f"Insights unavailable: {e}")
+
+    return templates.TemplateResponse(request, "insights.html", {
+        "page": "insights",
+        "capsules": capsules,
+        "gene_pool_stats": stats,
+        "archetype": archetype,
+        "gap_prefs": gap_prefs,
+        "topic_freq": topic_freq,
+        "events": events_display,
+        "exp_stats": exp_stats,
+        "suggestions": suggestions,
+    })
+
+
+@app.post("/insights/accept-suggestion")
+async def accept_suggestion(request: Request):
+    """Accept an actionable suggestion — record it as a gap acceptance event.
+
+   闭环: marks the source capsule as 'consumed' so it won't repeat.
+    """
+    body = await request.json()
+    topic = body.get("topic", "")
+    gap_type = body.get("gap_type", "")
+    gap_title = body.get("title", "")
+    description = body.get("body", "")
+    s_type = body.get("type", "")
+    source_cap_id = body.get("source_cap_id") or None
+
+    try:
+        from llm.insight.tracker import EvolutionTracker
+        tracker = EvolutionTracker()
+        tracker.record_gap_accept(
+            topic=topic or "insights",
+            gap_type=gap_type,
+            gap_title=gap_title[:200],
+            gap_description=description,
+        )
+        # Also encode as a capsule
+        tracker.encode_capsule(
+            topic=topic or "insights",
+            gap_type=gap_type,
+            gap_title=gap_title[:200],
+            gap_description=description,
+            success_score=0.7,
+        )
+        _mark_suggestion_consumed(gap_type, topic, gap_title, s_type)
+
+        # Mark source capsule as 'consumed' — prevents duplicate suggestions
+        if source_cap_id:
+            _mark_capule_consumed(source_cap_id, tracker)
+
+        # Trigger evolution闭环 — this is what actually IMPROVES the Gene Pool
+        try:
+            from llm.insight.evolution import InsightEvolution
+            evo = InsightEvolution(tracker=tracker)
+            evo_result = evo.evolve(topic=topic or "insights")
+            improved = evo_result.get("result", {}).get("added", 0)
+            return {"success": True, "evolved": improved}
+        except Exception as evo_err:
+            import logging
+            logging.getLogger(__name__).warning(f"Evolution trigger failed: {evo_err}")
+            return {"success": True, "evolved": 0}
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"accept_suggestion failed: {e}")
+        return {"success": False, "error": str(e)}
+
+@app.post("/insights/archive-capsule")
+async def archive_capsule(request: Request):
+    """Archive a capsule from both Gene Pool stores (active → archived)."""
+    body = await request.json()
+    capsule_id = body.get("capsule_id", "")
+    if not capsule_id:
+        return {"success": False, "error": "capsule_id required"}
+    try:
+        from llm.insight.tracker import EvolutionTracker
+        tracker = EvolutionTracker()
+        archived = tracker.archive_capsule(capsule_id)
+        return {"success": archived}
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"archive_capsule failed: {e}")
+        return {"success": False, "error": str(e)}
+
+
+# Gap types the user has NOT explored yet but might find valuable
+_UNDERREPRESENTED_GAPS = [
+    ("theoretical_gap", "Theoretical foundations", "Develop formal theory or proofs for observed empirical patterns in your work"),
+    ("dataset_gap", "Dataset gap", "Build or curate a benchmark dataset addressing an under-explored problem domain"),
+    ("generalization_gap", "Generalization gap", "Test existing methods on out-of-distribution data to expose failure modes"),
+    ("scalability_issue", "Scalability issue", "Push current methods to larger scales and characterize runtime/cost tradeoffs"),
+    ("contradiction", "Contradiction", "Reproduce or challenge published findings in this area"),
+    ("evaluation_gap", "Evaluation gap", "Design proper evaluation protocols and baselines for this problem"),
+]
+
+
+def _get_consumed_suggestions() -> set:
+    """Return set of suggestion keys that have been consumed by the user."""
+    try:
+        path = Path.home() / ".ai_research_os" / "consumed_suggestions.json"
+        if path.exists():
+            import json
+            return set(json.loads(path.read_text(encoding="utf-8")))
+    except Exception:
+        pass
+    return set()
+
+
+def _mark_capule_consumed(capsule_id: str, tracker) -> None:
+    """Mark a capsule as consumed in both Gene Pool stores."""
+    try:
+        # Update gene_pool.jsonl
+        capsules = tracker._load_capsules()
+        updated = False
+        for c in capsules:
+            if c.capsule_id == capsule_id:
+                c.status = "consumed"
+                updated = True
+                break
+        if updated:
+            tracker._save_capsules(capsules)
+
+        # Update capsules.json (web UI store)
+        capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+        if capsules_path.exists():
+            try:
+                data = json.loads(capsules_path.read_text(encoding="utf-8"))
+                raw = data.get("capsules", []) if isinstance(data, dict) else data
+                for c in raw:
+                    if c.get("capsule_id", "") == capsule_id:
+                        c["status"] = "consumed"
+                        break
+                data["capsules"] = raw
+                capsules_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+
+def _mark_suggestion_consumed(gap_type: str, topic_hint: str, title: str, s_type: str = "") -> None:
+    """Mark a suggestion as consumed so it won't appear again."""
+    try:
+        import json
+        consumed = _get_consumed_suggestions()
+        if s_type == "archetype_advice":
+            key = f"archetype:{title}"
+        else:
+            key = f"{gap_type}:{topic_hint[:20]}:{title[:30]}"
+        consumed.add(key)
+        path = Path.home() / ".ai_research_os" / "consumed_suggestions.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(list(consumed), ensure_ascii=False), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def _generate_suggestions(capsules, gap_prefs, topic_freq, archetype, tracker) -> list:
+    """Analyze Gene Pool patterns and generate actionable project suggestions."""
+    suggestions = []
+
+    if not capsules and not gap_prefs:
+        return []
+
+    consumed = _get_consumed_suggestions()
+    explored_gaps = set(gap_prefs.keys())
+    explored_topics = set(topic_freq.keys())
+
+    # 1. High-performing gap types with low exploration → suggest exploring them
+    high_score_gaps = {k: v for k, v in gap_prefs.items() if v > 0.3}
+    suggested_gap_types = set()  # avoid duplicate suggestions
+    for gap_type, score in high_score_gaps.items():
+        for candidate_gap, label, description in _UNDERREPRESENTED_GAPS:
+            if candidate_gap not in explored_gaps and candidate_gap not in suggested_gap_types:
+                # Suggest applying this successful gap type to a new domain
+                suggestions.append({
+                    "type": "explore_new_gap",
+                    "icon": "🔍",
+                    "title": f"Explore {label} in your research",
+                    "body": f"You've had success with {gap_type} (score {score:.2f}). "
+                             f"Consider investigating {description.lower()}.",
+                    "gap_type": candidate_gap,
+                    "confidence": min(score, 0.9),
+                    "topic_hint": list(explored_topics)[0] if explored_topics else "your field",
+                    "consumed": False,
+                })
+                suggested_gap_types.add(candidate_gap)
+                break
+
+    # 2. Top topics with no evaluation_gap explored → suggest evaluation
+    top_topics = list(topic_freq.items())[:3]
+    evaluated = [g for g in explored_gaps if "evaluation" in g or "benchmark" in g]
+    if not evaluated and top_topics:
+        topic_name = top_topics[0][0][:40]
+        suggestions.append({
+            "type": "evaluation_gap",
+            "icon": "📏",
+            "title": f"Evaluate {topic_name} rigorously",
+            "body": f"You've explored '{topic_name}' ({topic_freq[topic_name]}×) "
+                     "but haven't investigated evaluation gaps. "
+                     "Proper benchmarks and controlled experiments could unlock significant improvements.",
+            "gap_type": "evaluation_gap",
+            "confidence": 0.7,
+            "topic_hint": topic_name,
+        })
+
+    # 3. From capsule keywords — find high-scoring capsules and suggest projects
+    high_perf_capsules = [c for c in capsules if len(c) >= 5 and c[4] >= 0.7]
+    if high_perf_capsules:
+        best = high_perf_capsules[0]  # top capsule by score
+        cap_id, topic, gap_type, gap_title, score, date, keywords, status = best
+        suggestions.append({
+            "type": "build_on_success",
+            "icon": "🚀",
+            "title": f"Build on: {gap_title[:60]}",
+            "body": f"This pattern scored {score*100:.0f}% success. "
+                     "Try extending it: add more keywords, test in adjacent domains, "
+                     "or compose with another high-performing capsule.",
+            "gap_type": gap_type,
+            "confidence": score,
+            "topic_hint": topic[:40],
+            "keywords": keywords,
+            "consumed": False,
+            "source_cap_id": cap_id,
+        })
+
+    # 4. Dominant archetype-driven suggestion
+    arch_label = archetype.get("archetype_label", "")
+    arch_dim = archetype.get("dominant", "")
+    if arch_dim == "method_focused":
+        suggestions.append({
+            "type": "archetype_advice",
+            "icon": "⚙️",
+            "title": "Your archetype: Method Hunter",
+            "body": "Focus on novel architectures, training procedures, or inference optimizations. "
+                    "Look for published methods with surprising results and improve or extend them.",
+            "gap_type": "method_limitation",
+            "confidence": archetype.get("confidence", 0.5),
+            "topic_hint": list(explored_topics)[0][:40] if explored_topics else "ML",
+            "consumed": False,
+        })
+    elif arch_dim == "high_risk":
+        suggestions.append({
+            "type": "archetype_advice",
+            "icon": "🧗",
+            "title": "Your archetype: Risk Taker",
+            "body": "Pursue high-uncertainty problems with high payoff: "
+                    "new domains, controversial claims, unproven scalability. "
+                    "Your profile suggests you can handle the volatility.",
+            "gap_type": "unexplored_application",
+            "confidence": archetype.get("confidence", 0.5),
+            "topic_hint": list(explored_topics)[0][:40] if explored_topics else "research",
+            "consumed": False,
+        })
+
+    # 5. Cross-domain suggestion if applicable
+    if archetype.get("dimensions", {}).get("cross_domain", (0, 0, "", ""))[1] >= 0.3:
+        suggestions.append({
+            "type": "cross_domain",
+            "icon": "🌉",
+            "title": "Bridge domains with your cross-domain profile",
+            "body": "Your research spans multiple areas. Try combining RL concepts with "
+                    "transformer architectures, or apply your NLP insights to graph problems.",
+            "gap_type": "generalization_gap",
+            "confidence": 0.65,
+            "topic_hint": list(explored_topics)[0][:40] if explored_topics else "interdisciplinary",
+            "consumed": False,
+        })
+
+    # Filter out already-consumed suggestions
+    # For archetype advice, deduplicate by type so consuming "Your archetype: Risk Taker"
+    # once removes it regardless of which topic it's paired with
+    filtered = []
+    for s in suggestions:
+        if s["type"] == "archetype_advice":
+            key = f"archetype:{s['title']}"
+        else:
+            key = f"{s['gap_type']}:{s.get('topic_hint','')[:20]}:{s.get('title','')[:30]}"
+        if key not in consumed:
+            filtered.append(s)
+
+    return sorted(filtered, key=lambda s: s.get("confidence", 0), reverse=True)[:5]
 
 
 @app.get("/impact")
