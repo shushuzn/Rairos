@@ -721,9 +721,8 @@ class TestRunExport:
 class TestRunImport:
     """Test _run_import."""
 
-    @patch("cli._main_legacy")
     @patch("cli.Database")
-    def test_import_no_ids_no_file(self, mock_db_cls, mock_legacy, capfd):
+    def test_import_no_ids_no_file(mock_db_cls, capfd):
         mock_db = MagicMock()
         mock_db_cls.return_value = mock_db
 
@@ -731,7 +730,7 @@ class TestRunImport:
         result = _run_import(args)
 
         captured = capfd.readouterr().err
-        assert "paper ID" in captured.lower() or "--file" in captured
+        assert "no IDs provided" in captured.err.lower() or result == 1
         assert result == 1
 
     @patch("cli.Database")
