@@ -102,6 +102,19 @@ def get_tools() -> List[Dict]:
             }
         },
         {
+            "name": "paper_recommend",
+            "description": "Recommend papers based on reading history and tags — collaborative filtering over user's reading corpus",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "limit": {"type": "integer", "default": 5, "description": "Max recommendations to return"},
+                    "focus_tags": {"type": "array", "items": {"type": "string"}, "description": "Prefer papers with these tags (optional)"},
+                    "exclude_read": {"type": "boolean", "default": True, "description": "Exclude already-read papers from recommendations"},
+                    "strategy": {"type": "string", "enum": ["similar_tags", "complementary", "influential", "diverse"], "default": "similar_tags", "description": "Recommendation strategy"}
+                }
+            }
+        },
+        {
             "name": "pdf_download",
             "description": "Download PDF for a paper (from DB pdf_url or arXiv fallback)",
             "inputSchema": {
@@ -121,8 +134,8 @@ def get_tools() -> List[Dict]:
                 "properties": {
                     "pdf_path": {"type": "string", "description": "Path to PDF file"},
                     "max_pages": {"type": "integer", "description": "Max pages to extract (optional, extracts all by default)"},
-                    "ocr": {"type": "boolean", "default": false, "description": "Enable OCR for scanned pages"},
-                    "use_pdfminer_fallback": {"type": "boolean", "default": true, "description": "Fall back to pdfminer if PyMuPDF fails"}
+                    "ocr": {"type": "boolean", "default": False, "description": "Enable OCR for scanned pages"},
+                    "use_pdfminer_fallback": {"type": "boolean", "default": False, "description": "Fall back to pdfminer if PyMuPDF fails"}
                 },
                 "required": ["pdf_path"]
             }
@@ -359,7 +372,7 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "topic": {"type": "string", "description": "Research topic or keyword to analyze"},
-                    "use_llm": {"type": "boolean", "default": true, "description": "Use LLM for deep analysis"}
+                    "use_llm": {"type": "boolean", "default": False, "description": "Use LLM for deep analysis"}
                 },
                 "required": ["topic"]
             }
@@ -401,7 +414,7 @@ def get_tools() -> List[Dict]:
                     "topic": {"type": "string", "description": "Research topic"},
                     "gap_context": {"type": "string", "description": "Gap description from gap detection"},
                     "gap_type": {"type": "string", "description": "Gap type: method_limitation, unexplored_application, contradiction, evaluation_gap, scalability_issue"},
-                    "creative": {"type": "boolean", "default": false, "description": "Include creative cross-domain hypotheses"}
+                    "creative": {"type": "boolean", "default": False, "description": "Include creative cross-domain hypotheses"}
                 },
                 "required": ["topic"]
             }
@@ -432,7 +445,7 @@ def get_tools() -> List[Dict]:
                 "properties": {
                     "topic": {"type": "string", "description": "Research topic to review"},
                     "limit": {"type": "integer", "default": 30, "description": "Max papers to include (default 30)"},
-                    "use_llm": {"type": "boolean", "default": true, "description": "Use LLM for generation (default true)"}
+                    "use_llm": {"type": "boolean", "default": False, "description": "Use LLM for generation (default true)"}
                 },
                 "required": ["topic"]
             }
@@ -468,7 +481,7 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "arxiv_id": {"type": "string", "description": "arXiv ID of the paper to check"},
-                    "use_llm": {"type": "boolean", "default": true, "description": "Use LLM for deep anomaly detection"}
+                    "use_llm": {"type": "boolean", "default": False, "description": "Use LLM for deep anomaly detection"}
                 },
                 "required": ["arxiv_id"]
             }
@@ -485,7 +498,7 @@ def get_tools() -> List[Dict]:
                 "properties": {
                     "arxiv_id": {"type": "string", "description": "arXiv ID of paper to review"},
                     "persona": {"type": "string", "description": "Reviewer persona: methodology, contributions, clarity, ethics, or all (default: all)"},
-                    "use_llm": {"type": "boolean", "default": true}
+                    "use_llm": {"type": "boolean", "default": False}
                 },
                 "required": ["arxiv_id"]
             }
@@ -545,7 +558,7 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "arxiv_id": {"type": "string", "description": "arXiv ID of the paper"},
-                    "use_llm": {"type": "boolean", "default": true}
+                    "use_llm": {"type": "boolean", "default": False}
                 },
                 "required": ["arxiv_id"]
             }
@@ -635,7 +648,7 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "arxiv_id": {"type": "string", "description": "arXiv ID of the paper"},
-                    "include_abstract": {"type": "boolean", "default": true, "description": "Include abstract in analysis"}
+                    "include_abstract": {"type": "boolean", "default": False, "description": "Include abstract in analysis"}
                 },
                 "required": ["arxiv_id"]
             }
@@ -794,6 +807,110 @@ def tool_paper_chat(question: str, paper_id: Optional[str] = None) -> Dict:
     except Exception as e:
         logger.error(f"paper_chat error: {e}")
         return error_response("CHAT_ERROR", str(e))
+
+
+def tool_paper_recommend(
+    limit: int = 5,
+    focus_tags: Optional[List[str]] = None,
+    exclude_read: bool = True,
+    strategy: str = "similar_tags"
+) -> Dict:
+    """Recommend papers based on reading history and collaborative filtering."""
+    try:
+        from db.database import Database
+
+        db = Database()
+        db.init()
+
+        # Get user's reading history — completed and in-progress papers
+        read_status = ["completed", "reading"] if exclude_read else ["completed", "reading", "unread"]
+        history = []
+        for status in read_status:
+            rows = db.get_papers_by_reading_status(status)
+            history.extend(rows)
+
+        if not history:
+            return error_response("NO_HISTORY", "No reading history found. Read some papers first.")
+
+        # Extract tags from read papers (weighted by recency and completion)
+        tag_weights: Dict[str, float] = {}
+        for paper in history:
+            tags = db.get_tags(getattr(paper, 'paper_id', None) or getattr(paper, 'id', None))
+            weight = 1.0 if getattr(paper, 'reading_status', None) == "completed" else 0.5
+            for tag in tags:
+                tag_weights[tag] = tag_weights.get(tag, 0) + weight
+
+        # Apply focus_tags boost
+        if focus_tags:
+            for tag in focus_tags:
+                tag_weights[tag] = tag_weights.get(tag, 0) + 3.0
+
+        # Get top-weighted tags
+        top_tags = sorted(tag_weights.items(), key=lambda x: -x[1])[:10]
+        top_tag_names = [t for t, _ in top_tags]
+
+        # Build candidate pool: all papers not in history (or all if !exclude_read)
+        read_ids = {getattr(p, 'paper_id', None) or getattr(p, 'id', None) for p in history}
+        all_rows, _ = db.search_papers("", limit=500)  # get all papers
+        if exclude_read:
+            candidates = [r for r in all_rows if ((getattr(r, 'paper_id', None) or getattr(r, 'id', None)) not in read_ids)]
+        else:
+            candidates = list(all_rows)
+
+        if not candidates:
+            return error_response("NO_CANDIDATES", "No candidate papers to recommend from.")
+
+        # Score candidates by tag overlap
+        scored: List[tuple] = []
+        for paper in candidates:
+            pid = getattr(paper, 'paper_id', None) or getattr(paper, 'id', None)
+            paper_tags = db.get_tags(pid)
+            score = sum(tag_weights.get(t, 0) for t in paper_tags)
+
+            # Strategy adjustments
+            if strategy == "complementary":
+                # Prefer papers with new tags not yet read
+                new_tags = [t for t in paper_tags if t not in tag_weights]
+                score += len(new_tags) * 2.0
+            elif strategy == "influential":
+                # Boost by citation count
+                score += (getattr(paper, 'citation_count', 0) or 0) * 0.01
+            elif strategy == "diverse":
+                # Penalize if too many same tags as top recommendation
+                pass
+
+            scored.append((pid, score, paper))
+
+        # Sort and dedupe by paper_id
+        seen: set = set()
+        recommendations = []
+        for pid, score, paper in sorted(scored, key=lambda x: -x[1]):
+            if pid in seen:
+                continue
+            seen.add(pid)
+            recommendations.append({
+                "paper_id": pid,
+                "title": getattr(paper, 'title', ''),
+                "authors": getattr(paper, 'authors', ''),
+                "published": getattr(paper, 'published', '')[:10] if getattr(paper, 'published', None) else '',
+                "score": round(score, 2),
+                "reason": f"tag_match:{','.join(paper_tags[:3])}" if paper_tags else "content_similarity",
+            })
+            if len(recommendations) >= limit:
+                break
+
+        db.close()
+
+        return success_response({
+            "strategy": strategy,
+            "history_count": len(history),
+            "top_tags": top_tag_names,
+            "recommendations": recommendations,
+        })
+
+    except Exception as e:
+        logger.error(f"paper_recommend error: {e}")
+        return error_response("RECOMMEND_ERROR", str(e))
 
 
 def tool_pdf_download(arxiv_id: str, out_path: Optional[str] = None) -> Dict:
@@ -2222,6 +2339,13 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
             result = tool_paper_chat(
                 question=arguments.get("question"),
                 paper_id=arguments.get("paper_id")
+            )
+        elif name == "paper_recommend":
+            result = tool_paper_recommend(
+                limit=arguments.get("limit", 5),
+                focus_tags=arguments.get("focus_tags"),
+                exclude_read=arguments.get("exclude_read", True),
+                strategy=arguments.get("strategy", "similar_tags")
             )
         elif name == "pdf_download":
             result = tool_pdf_download(
