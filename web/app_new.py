@@ -461,6 +461,19 @@ async def paradigm_alert(request: Request):
     })
 
 
+@app.get("/alerts/eval-gap")
+async def eval_gap_alert(request: Request):
+    """Evaluation Gap Monitor — flags domains where deployment outpaces benchmark research."""
+    from llm.eval_gap_monitor import check_eval_gaps, render_eval_gap_html
+    data = check_eval_gaps()
+    html = render_eval_gap_html(data)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "eval-gap-alert",
+        "title": "Evaluation Gap",
+        "content": html,
+    })
+
+
 @app.get("/gene-pool/bold")
 async def gene_pool_bold(request: Request):
     """Bold Hypothesis Vault — high-risk/high-reward Gene Pool capsules."""
