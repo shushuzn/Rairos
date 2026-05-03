@@ -184,7 +184,7 @@ summary: [2-sentence analysis]"""
         # Save to Gene Pool
         gap_type = "embodied_planning"
         polarity = "open"
-        save_gap_to_gene_pool(
+        capsule_id = save_gap_to_gene_pool(
             paper_id=paper_id,
             title=title,
             gap_type=gap_type,
@@ -192,7 +192,31 @@ summary: [2-sentence analysis]"""
             keywords=[result["representation_type"], "embodied", "latent", "reasoning", "VLA"],
             summary=result.get("summary") or f"{result['representation_type'].capitalize()} latent reasoning paper. Confidence: {result['confidence']:.0%}.",
             polarity=polarity,
+            extra_fields={
+                "representation_type": result["representation_type"],
+                "confidence": result["confidence"],
+                "evidence": result.get("evidence", []),
+            },
         )
+
+        # Contradiction detection: check existing capsules of same gap_type
+        result["contradiction_with"] = None
+        result["contradiction_type"] = None
+        if capsule_id:
+            from .gene import _read_capsules_json
+            all_capsules = _read_capsules_json()
+            existing = [
+                c for c in all_capsules
+                if c.get("action_gap_type") == "embodied_planning"
+                and c.get("archetype", {}).get("source_paper_id") != paper_id
+                and c.get("status") != "archived"
+            ]
+            for ex in existing:
+                ex_rep = ex.get("archetype", {}).get("representation_type", "unknown")
+                if ex_rep != result["representation_type"] and ex_rep != "unknown":
+                    result["contradiction_with"] = ex.get("archetype", {}).get("source_paper_id")
+                    result["contradiction_type"] = ex_rep
+                    break
 
         return result
 
@@ -514,6 +538,17 @@ def _extract_keywords(text: str) -> List[str]:
     return list(dict.fromkeys(keywords))[:6]
 
 
+def _read_capsules_json() -> List[Dict[str, Any]]:
+    """Read capsules from the Gene Pool JSON store."""
+    capsule_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+    if not capsule_path.exists():
+        return []
+    try:
+        return json.loads(capsule_path.read_text(encoding="utf-8")).get("capsules", [])
+    except Exception:
+        return []
+
+
 def save_gap_to_gene_pool(
     paper_id: str,
     title: str,
@@ -522,16 +557,26 @@ def save_gap_to_gene_pool(
     keywords: List[str],
     summary: str,
     polarity: str = "positive",
-) -> bool:
+    extra_fields: Optional[Dict[str, Any]] = None,
+) -> Optional[str]:
     """Append a new gap as a CapsuleGene entry to both Gene Pool stores.
 
     Writes to:
     - ~/.ai_research_os/gene_pool/capsules.json   (read by _match_gene_pool / briefing_generator)
     - ~/.ai_research_os/evolution/gene_pool.jsonl (read by find_capsule / Curator / EvolutionTracker)
+
+    Returns capsule_id on success, None on failure.
     """
     try:
         capsule_id = f"extracted_{paper_id}_{uuid.uuid4().hex[:8]}"
         now = datetime.now().isoformat()
+        archetype = {
+            "extracted_from": "paper_gap_extractor",
+            "source_paper_id": paper_id,
+            "summary": summary,
+        }
+        if extra_fields:
+            archetype.update(extra_fields)
         capsule = {
             "capsule_id": capsule_id,
             "created_at": now,
@@ -544,11 +589,7 @@ def save_gap_to_gene_pool(
             "feedback_count": 0,
             "evolved_generation": 0,
             "polarity": polarity,
-            "archetype": {
-                "extracted_from": "paper_gap_extractor",
-                "source_paper_id": paper_id,
-                "summary": summary,
-            },
+            "archetype": archetype,
             "status": "active",
         }
 
@@ -579,9 +620,9 @@ def save_gap_to_gene_pool(
             # Non-critical: capsules.json write succeeded, gene_pool.jsonl is optional for CLI use
             pass
 
-        return True
+        return capsule_id
     except Exception:
-        return False
+        return None
 
 
 def detect_contradictions(capsules: list) -> list:
