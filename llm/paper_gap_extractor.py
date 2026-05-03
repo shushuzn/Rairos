@@ -1978,3 +1978,66 @@ def append_hypothesis_to_roadmap(
         return True
     except Exception:
         return False
+
+
+# =============================================================================
+# Shared embodied planning analysis pipeline
+# =============================================================================
+
+def run_embodied_analysis(
+    paper_ids: List[str],
+    db=None,
+    save_to_pool: bool = True,
+    gap_type: str = "embodied_planning",
+) -> Dict[str, Any]:
+    """Run embodied planning analysis on a list of paper IDs.
+
+    Shared by auto-scan (save=True) and batch (save=False).
+    Returns {analyzed, contradictions, type_counts, total_analyzed}.
+    """
+    if db is None:
+        from db.database import Database
+        db = Database()
+        db.init()
+
+    analyzed: List[Dict[str, Any]] = []
+    contradictions: List[Dict[str, Any]] = []
+    type_counts: Dict[str, int] = {"discrete": 0, "continuous": 0, "hybrid": 0, "unknown": 0}
+
+    for pid in paper_ids:
+        paper = db.get_paper(pid)
+        if not paper:
+            continue
+        r = analyze_embodied_planning(
+            paper_id=pid,
+            title=paper.title,
+            abstract=paper.abstract or "",
+            authors=paper.authors,
+        )
+        rep_type = r.get("representation_type", "unknown")
+        type_counts[rep_type] = type_counts.get(rep_type, 0) + 1
+        entry = {
+            "paper_id": pid,
+            "title": paper.title[:60],
+            "representation_type": rep_type,
+            "confidence": r.get("confidence", 0),
+            "saved": "error" not in r,
+        }
+        if r.get("contradiction_with"):
+            entry["contradiction_with"] = r["contradiction_with"]
+            entry["contradiction_type"] = r.get("contradiction_type")
+            contradictions.append(entry)
+        analyzed.append(entry)
+
+    total = len(analyzed)
+    trend = max(type_counts, key=type_counts.get) if total > 0 else "unknown"
+    trend_pct = type_counts[trend] / total if total > 0 else 0
+
+    return {
+        "analyzed": analyzed,
+        "contradictions": contradictions,
+        "type_counts": type_counts,
+        "total_analyzed": total,
+        "trend": trend,
+        "trend_pct": trend_pct,
+    }
