@@ -16,7 +16,7 @@ try:
     import mss.tools
 except ImportError:
     print("Error: mss not installed. Run: pip install mss pillow")
-    raise SystemExit(1)
+    raise SystemExit(1) from None
 
 
 def record_screen(output: str, duration: int, fps: int = 10):
