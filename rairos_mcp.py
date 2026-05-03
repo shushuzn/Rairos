@@ -393,6 +393,18 @@ def get_tools() -> List[Dict]:
             }
         },
         {
+            "name": "gap_evolve",
+            "description": "Run Gene Pool evolution cycle for a topic — audit, propose mutations, evaluate, apply",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "topic": {"type": "string", "description": "Research topic to evolve (e.g. RLHF, world models)"},
+                    "gap_type": {"type": "string", "description": "Optional gap type filter (e.g. capability, method_limitation)"}
+                },
+                "required": ["topic"]
+            }
+        },
+        {
             "name": "research_agent_start",
             "description": "Start the autonomous research agent in background watch mode",
             "inputSchema": {
@@ -1630,6 +1642,46 @@ def tool_gap_submit(
         return error_response("GAP_SUBMIT_ERROR", str(e))
 
 
+def tool_gap_evolve(
+    topic: str,
+    gap_type: Optional[str] = None
+) -> Dict:
+    """Run Gene Pool evolution cycle for a topic — audit, propose, evaluate, apply."""
+    try:
+        from llm.insight.tracker import EvolutionTracker
+        from llm.insight.evolution import InsightEvolution
+
+        tracker = EvolutionTracker()
+        evo = InsightEvolution(tracker)
+        result = evo.evolve(topic=topic, gap_type=gap_type or "")
+
+        audit = result["audit"]
+        ev_result = result["result"]
+
+        return success_response({
+            "topic": topic,
+            "gap_type": gap_type,
+            "audit": {
+                "total_capsules": audit["total"],
+                "avg_quality": round(audit["avg_quality"], 3),
+                "candidates": audit["candidates"],
+                "to_retire": audit["to_retire"],
+            },
+            "proposed": result["proposed"],
+            "evaluated": result["evaluations"],
+            "result": {
+                "added": ev_result["added"],
+                "retired": ev_result["retired"],
+                "total_capsules": ev_result["total_capsules"],
+                "avg_quality": round(ev_result["avg_quality"], 3),
+            }
+        })
+
+    except Exception as e:
+        logger.error(f"gap_evolve error: {e}")
+        return error_response("GAP_EVOLVE_ERROR", str(e))
+
+
 def tool_research_agent_start(interval_minutes: int = 30) -> Dict:
     """Start the autonomous research agent in background watch mode."""
     try:
@@ -2517,6 +2569,11 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
                 title=arguments.get("title"),
                 description=arguments.get("description"),
                 success_score=arguments.get("success_score", 0.8)
+            )
+        elif name == "gap_evolve":
+            result = tool_gap_evolve(
+                topic=arguments.get("topic"),
+                gap_type=arguments.get("gap_type")
             )
         elif name == "research_agent_start":
             result = tool_research_agent_start(
