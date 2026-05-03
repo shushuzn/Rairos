@@ -102,10 +102,10 @@ diversity alerts. All three feed into one quality system.
 
 #### Self-Evolution + Gamification (P2)
 
-- [ ] **Research Game Mode** — badges: "Contradiction Hunter" (3+ pairs), "Gap Extractor" (10+ capsules), "Evolution Master" (evolved capsule)
-- [ ] **Evaluation Gap Alert** — flag when deployment timeline outpaces benchmark paper count (AV regulation, AI policy)
-- [ ] **Gene Pool Backup Scheduler** — daily snapshot to `~/.ai_research_os/backups/`; retain 30 versions
-- [ ] **Capsule Review Queue** — new capsules pending first feedback; system prompts "Does this gap match your research?"
+- [x] **Research Game Mode** — badges: "Contradiction Hunter" (3+ pairs), "Gap Extractor" (10+ capsules), "Evolution Master" (evolved capsule)
+- [x] **Evaluation Gap Alert** — flag when deployment timeline outpaces benchmark paper count (AV regulation, AI policy)
+- [x] **Gene Pool Backup Scheduler** — daily snapshot to `~/.ai_research_os/backups/`; retain 30 versions
+- [x] **Capsule Review Queue** — new capsules pending first feedback; system prompts "Does this gap match your research?"
 
 #### Advanced (P3/P4)
 
