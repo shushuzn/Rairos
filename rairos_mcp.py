@@ -378,6 +378,21 @@ def get_tools() -> List[Dict]:
             }
         },
         {
+            "name": "gap_submit",
+            "description": "Submit a new research gap directly to the Gene Pool as a CapsuleGene",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "topic": {"type": "string", "description": "Research topic or domain (e.g. RLHF, world models)"},
+                    "gap_type": {"type": "string", "description": "Gap type", "enum": ["capability", "method_limitation", "embodied_planning", "improvement", "evaluation_gap", "theoretical_gap", "dataset_gap", "unexplored_application", "sim_to_real", "planning_control", "rl_efficiency", "reasoning_scaling", "representation_learning", "rl_pretraining", "benchmark_coverage", "architecture_agnostic", "human_ai_collaboration"]},
+                    "title": {"type": "string", "description": "Short descriptive title of the gap"},
+                    "description": {"type": "string", "description": "Detailed description of the gap, what makes it a gap, and why it matters"},
+                    "success_score": {"type": "number", "default": 0.8, "description": "Initial success score (0.0-1.0)"}
+                },
+                "required": ["topic", "gap_type", "title", "description"]
+            }
+        },
+        {
             "name": "research_agent_start",
             "description": "Start the autonomous research agent in background watch mode",
             "inputSchema": {
@@ -817,6 +832,15 @@ def tool_paper_recommend(
 ) -> Dict:
     """Recommend papers based on reading history and collaborative filtering."""
     try:
+        # Defensive: if limit arrives as dict (positional dict arg dispatch bug), unpack it
+        if isinstance(limit, dict):
+            _args = limit
+            limit = _args.get("limit", 5)
+            focus_tags = _args.get("focus_tags", focus_tags)
+            exclude_read = _args.get("exclude_read", exclude_read)
+            strategy = _args.get("strategy", strategy)
+        limit = max(1, min(int(limit), 100)) if limit else 5
+
         from db.database import Database
 
         db = Database()
@@ -1570,6 +1594,40 @@ def tool_gap_detect(topic: str, use_llm: bool = True) -> Dict:
     except Exception as e:
         logger.error(f"gap_detect error: {e}")
         return error_response("GAP_ERROR", str(e))
+
+
+def tool_gap_submit(
+    topic: str,
+    gap_type: str,
+    title: str,
+    description: str,
+    success_score: float = 0.8
+) -> Dict:
+    """Submit a new research gap directly to the Gene Pool as a CapsuleGene."""
+    try:
+        from llm.insight.tracker import EvolutionTracker
+
+        tracker = EvolutionTracker()
+        capsule = tracker.encode_capsule(
+            topic=topic,
+            gap_type=gap_type,
+            gap_title=title,
+            gap_description=description,
+            success_score=success_score,
+        )
+
+        return success_response({
+            "capsule_id": capsule.capsule_id,
+            "topic": topic,
+            "gap_type": gap_type,
+            "title": title,
+            "status": capsule.status,
+            "message": f"Gap '{title}' submitted to Gene Pool successfully"
+        })
+
+    except Exception as e:
+        logger.error(f"gap_submit error: {e}")
+        return error_response("GAP_SUBMIT_ERROR", str(e))
 
 
 def tool_research_agent_start(interval_minutes: int = 30) -> Dict:
@@ -2451,6 +2509,14 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
             result = tool_gap_detect(
                 topic=arguments.get("topic"),
                 use_llm=arguments.get("use_llm", True)
+            )
+        elif name == "gap_submit":
+            result = tool_gap_submit(
+                topic=arguments.get("topic"),
+                gap_type=arguments.get("gap_type"),
+                title=arguments.get("title"),
+                description=arguments.get("description"),
+                success_score=arguments.get("success_score", 0.8)
             )
         elif name == "research_agent_start":
             result = tool_research_agent_start(
