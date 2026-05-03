@@ -75,7 +75,7 @@ def find_cross_domain_bridges() -> List[Dict[str, Any]]:
                     "biology|medicine": "bio",
                     "math|stats": "math",
                 }
-                for cluster, label in clusters.items():
+                for cluster, _label in clusters.items():
                     if cat_a in cluster and cat_b in cluster:
                         break
                 else:

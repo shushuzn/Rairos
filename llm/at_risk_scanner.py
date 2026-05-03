@@ -122,17 +122,17 @@ def render_html(capsules: Optional[List[AtRiskCapsule]] = None) -> str:
     for cap in capsules:
         streak_bar = "🔴" * cap.low_score_streak
         pinned = f"TTL {cap.pinned_ttl}" if cap.pinned_ttl > 0 else "—"
-        lines.append(f"<tr>")
+        lines.append("<tr>")
         lines.append(f"<td style='max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'><code title='{cap.gap_title}'>{cap.gap_title[:35]}</code></td>")
         lines.append(f"<td><code>{cap.gap_type}</code></td>")
         lines.append(f"<td>{cap.outcome_score:.2f}</td>")
         lines.append(f"<td>{streak_bar} <small>{cap.low_score_streak}</small></td>")
         lines.append(f"<td>{pinned}</td>")
-        lines.append(f"<td>")
+        lines.append("<td>")
         lines.append(f'<button class="btn btn-small btn-keep" onclick="keepActive(\'{cap.capsule_id}\')">✓ Keep Active</button>')
         lines.append(f'<button class="btn btn-small btn-pin" onclick="pinToTTL(\'{cap.capsule_id}\')">📌 Pin TTL</button>')
-        lines.append(f"</td>")
-        lines.append(f"</tr>")
+        lines.append("</td>")
+        lines.append("</tr>")
 
     lines.append("</tbody></table>")
     lines.append("<style>")

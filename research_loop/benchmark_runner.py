@@ -77,7 +77,7 @@ def run_benchmark(
         "--tb=short",
         "--no-header",
         "-q",
-        f"--json-report",
+        "--json-report",
         f"--json-report-file={json_report}",
     ]
 
@@ -191,7 +191,7 @@ def _encode_to_gene_pool(
     # The success_score is derived from pass rate
     success_score = pass_rate * config.code_quality
 
-    capsule = CapsuleGene(
+    _capsule = CapsuleGene(
         capsule_id=f"impl_{config.arxiv_id.replace('.', '_')}_{uuid.uuid4().hex[:6]}",
         created_at=_timestamp(),
         trigger_topic=config.paper_topic,

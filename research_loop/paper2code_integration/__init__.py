@@ -143,14 +143,14 @@ class PaperPipeline:
             code_path = save_code(code, src_dir, module_name=module_name)
             print(f"[paper2code] Code saved: {code_path}")
         else:
-            print(f"[paper2code] Skipping code generation (module unavailable)")
+            print("[paper2code] Skipping code generation (module unavailable)")
 
         # Stage 3: Generate tests
         test_dir = paper_dir / "tests"
         benchmark_result: Optional[BenchmarkResult] = None
 
         if not skip_tests and extract_tests and run_benchmark and code is not None:
-            print(f"[paper2code] Extracting assertions and generating tests...")
+            print("[paper2code] Extracting assertions and generating tests...")
             try:
                 suite = extract_tests(content, code, module_name=module_name)
                 if save_tests:
@@ -158,7 +158,7 @@ class PaperPipeline:
                 print(f"[paper2code] Tests: {len(suite.test_cases)} test cases")
 
                 # Stage 4: Run benchmark
-                print(f"[paper2code] Running benchmark...")
+                print("[paper2code] Running benchmark...")
                 config = BenchmarkConfig(
                     arxiv_id=arxiv_id,
                     paper_topic=content.title,
@@ -177,7 +177,7 @@ class PaperPipeline:
             except Exception as e:
                 print(f"[paper2code] Test/benchmark stage failed: {e}")
         else:
-            print(f"[paper2code] Skipping tests (--skip-tests or module unavailable)")
+            print("[paper2code] Skipping tests (--skip-tests or module unavailable)")
 
         # Stage 5: Write README
         readme = self._generate_readme(content, framework, benchmark_result)

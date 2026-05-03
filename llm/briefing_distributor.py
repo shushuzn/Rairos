@@ -166,7 +166,7 @@ def render_distributed_briefing(arxiv_id: str, title: str, markdown: str, audien
         body_content = _render_researcher(sections, markdown)
 
     lines = ['<div class="briefing-dist">']
-    lines.append(f"<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:16px'>")
+    lines.append("<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:16px'>")
     lines.append(f"<h3 style='margin:0'>{label}</h3>")
     lines.append(f"<span style='font-size:11px;color:#A89E8C;background:#f5f0e8;padding:3px 10px;border-radius:12px'>"
                 f"Share: <code style='font-size:11px'>rairos.app/b/{short_id}</code></span>")
@@ -208,7 +208,7 @@ def render_distributor_panel(arxiv_id: str, title: str) -> str:
 
     for aud_id, aud_name, aud_desc in audiences:
         s = create_share_link(arxiv_id, title, aud_id)
-        lines.append(f"<div style='margin-bottom:14px;padding:12px;background:#f8f4ef;border-radius:6px'>")
+        lines.append("<div style='margin-bottom:14px;padding:12px;background:#f8f4ef;border-radius:6px'>")
         lines.append(f"<div style='font-weight:700;font-size:13px;margin-bottom:2px'>{aud_name}</div>")
         lines.append(f"<div style='font-size:12px;color:#A89E8C;margin-bottom:6px'>{aud_desc}</div>")
         lines.append(f"<button id='btn-{aud_id}' style='background:#6B8FB5;color:white;border:none;border-radius:4px;"

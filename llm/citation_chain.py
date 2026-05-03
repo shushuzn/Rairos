@@ -274,7 +274,6 @@ class CitationChainBuilder:
         then BFS outward in both directions until a capsule's source_paper_id is found.
         Returns list of dicts: {path: [paper_ids], capsule: {...}, gap_title: str}
         """
-        import json
         from pathlib import Path
         from dataclasses import dataclass
 

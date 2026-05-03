@@ -36,7 +36,9 @@ def create_backup() -> str:
     BACKUP_DIR.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now().strftime(TIMESTAMP_FORMAT)
 
-    import tarfile, tempfile, os
+    import tarfile
+    import tempfile
+    import os
 
     with tempfile.TemporaryDirectory() as tmpdir:
         tar_path = os.path.join(tmpdir, f"gene_pool_{stamp}.tar.gz")
@@ -67,7 +69,8 @@ def restore_backup(stamp: str) -> bool:
     if not backup_file.exists():
         return False
 
-    import tempfile, os
+    import tempfile
+    import os
     with tempfile.TemporaryDirectory() as tmpdir:
         with tarfile.open(backup_file, "r:gz") as tar:
             tar.extractall(tmpdir)
@@ -102,9 +105,9 @@ def render_backup_html(info: Optional[dict] = None) -> str:
                  f"max {info['max_backups']} versions retained</p>")
 
     lines.append("<div style='margin-bottom:16px'>")
-    lines.append(f"<button onclick='triggerBackup()' style='background:#6B8FB5;color:white;border:none;"
-                f"border-radius:4px;padding:8px 16px;cursor:pointer;font-size:13px'>"
-                f"☁️ Take Backup Now</button>")
+    lines.append("<button onclick='triggerBackup()' style='background:#6B8FB5;color:white;border:none;"
+                "border-radius:4px;padding:8px 16px;cursor:pointer;font-size:13px'>"
+                "☁️ Take Backup Now</button>")
     lines.append("</div>")
 
     if info["stamps"]:

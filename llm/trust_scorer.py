@@ -180,13 +180,13 @@ class TrustScorer:
         for t in trusts:
             bar_width = int(t.trust_ratio * 100)
             color = "#7A9E7A" if t.trust_ratio >= 0.5 else "#C4706A"
-            lines.append(f"<tr>")
+            lines.append("<tr>")
             lines.append(f"<td><code>{t.category}</code></td>")
             lines.append(f"<td>{t.total_capsules}</td>")
             lines.append(f"<td>{t.trusted_capsules}</td>")
             lines.append(f"<td>{t.avg_score:.2f}</td>")
             lines.append(f'<td><div class="trust-bar" style="width:{bar_width}%;background:{color}">{t.trust_ratio:.0%}</div></td>')
-            lines.append(f"</tr>")
+            lines.append("</tr>")
 
         lines.append("</tbody></table>")
         lines.append("<style>")

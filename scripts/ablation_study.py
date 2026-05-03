@@ -106,7 +106,7 @@ def run_ablation():
         results = []
         for g in gaps_list:
             gap_type_str = g.gap_type.value
-            numeric_score = tracker.get_gap_type_score(gap_type_str)
+            _numeric_score = tracker.get_gap_type_score(gap_type_str)
             trend_score = g.novelty_score
             gene_pool = g.gene_pool_score
             pref_score = 2.0 if gap_type_str == "contradiction" else 0.0
@@ -274,9 +274,9 @@ def run_ablation():
         sorted_g, _ = analyzer._apply_preference_sorting(list(test_gaps), hot_keywords=set())
         order = [g.title for g in sorted_g]
 
-        print(f"  Test: liked (pref=+3, gene=0) vs disliked (pref=-3, gene=0.9)")
+        print("  Test: liked (pref=+3, gene=0) vs disliked (pref=-3, gene=0.9)")
         print(f"  Result: [{' > '.join(order)}]")
-        print(f"  Interpretation: pref_score=-3 demotes disliked gap even with gene_pool=0.9")
+        print("  Interpretation: pref_score=-3 demotes disliked gap even with gene_pool=0.9")
 
     print("\n" + "=" * 72)
     print("SUMMARY")

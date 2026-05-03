@@ -117,7 +117,7 @@ def _run_deep_research(args) -> int:
     else:
         print()
         print(colored("=" * 60, Colors.BLUE))
-        print(colored(f"  Deep Research Complete", Colors.BOLD))
+        print(colored("  Deep Research Complete", Colors.BOLD))
         print(colored("=" * 60, Colors.BLUE))
         print(f"  Session: {result.session_id}")
         print(f"  Iterations: {result.iterations}")

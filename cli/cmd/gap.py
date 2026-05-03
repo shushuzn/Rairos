@@ -579,7 +579,7 @@ def _run_gap_watch(args):
                 for m in matches:
                     print(f"    -> {m['gap_title'][:60]} type={m['gap_type']} score={m['outcome_score']:.2f}")
         else:
-            print(f"  (no matches this cycle)")
+            print("  (no matches this cycle)")
 
     if args.daemon:
         print_info(f"Gene Pool watch running (interval={args.interval}min, daemon)...")
@@ -670,7 +670,7 @@ def _run_gap_path(args: argparse.Namespace) -> int:
     for i, result in enumerate(paths):
         path = result["path"]
         gap_type = result["gap_type"]
-        gap_title = result["gap_title"]
+        _gap_title = result["gap_title"]
         polarity = result["polarity"]
         capsule_id = result["capsule_id"]
         score = result["outcome_score"]

@@ -70,7 +70,7 @@ def check_policy_impact(paper: Dict[str, Any]) -> List[Dict[str, Any]]:
     cats = set(paper.get("categories", []) or [])
     results: List[Dict[str, Any]] = []
 
-    for rid, reg in REGULATIONS.items():
+    for _rid, reg in REGULATIONS.items():
         # Keyword match
         kw_match = any(kw.lower() in text for kw in reg["keywords"])
         # Category match
@@ -114,7 +114,7 @@ def get_impacted_capsules() -> List[Dict[str, Any]]:
 
 def render_policy_tracer_html() -> str:
     impacted = get_impacted_capsules()
-    data = _load_policy_data()
+    _ = _load_policy_data()
 
     lines = ['<div class="policy-tracer">']
     lines.append("<h3>🏛️ Policy Impact Tracer</h3>")
@@ -123,7 +123,7 @@ def render_policy_tracer_html() -> str:
                 "Priority weights increase for gap types targeted by new policies.</p>")
 
     # Regulation list
-    for rid, reg in REGULATIONS.items():
+    for _rid, reg in REGULATIONS.items():
         lines.append(f"""
 <div style='border:1px solid #e0dbd4;border-radius:6px;padding:12px;margin-bottom:10px;border-left:4px solid #D4A055'>
   <div style='display:flex;justify-content:space-between'>

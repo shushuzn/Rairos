@@ -42,7 +42,7 @@ def build_citation_graph(paper_id: str, paper_title: str,
     nodes.append({"id": paper_id, "label": paper_title[:50], "type": "source_paper", "x": 300, "y": 50})
 
     # Cited paper nodes
-    n_cited = len(cited_paper_ids)
+    _n_cited = len(cited_paper_ids)
     for i, cpid in enumerate(cited_paper_ids[:8]):
         x = 120 + (i % 4) * 140
         y = 160 + (i // 4) * 80
@@ -162,7 +162,7 @@ def render_citation_chain_html(paper_id: str, paper_title: str,
 
     lines = ['<div class="citation-pathfinder">']
     lines.append("<h3>🔗 Citation Pathfinder</h3>")
-    lines.append(f"<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
+    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
                 "Paper → cited references → Gene Pool capsules</p>")
     lines.append(f"<div style='overflow:auto'>{graph_svg}</div>")
 
