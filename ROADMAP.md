@@ -62,7 +62,7 @@ Goal: Make the project **contributor-friendly** and **discoverable**.
 - [ ] **Documentation**
   - [x] Architecture deep-dive (Gene Pool lifecycle in docs/architecture.md)
   - [x] API reference page with searchable examples
-  - [ ] Video demo / GIF showcase
+  - [x] Video demo / GIF showcase
   - [x] Comparisons with Zotero, Notion, Semantic Scholar
   - [x] Benchmark page (what the system measures)
 
@@ -125,7 +125,7 @@ diversity alerts. All three feed into one quality system.
 
 - [x] Chat interface (web version of `chat-tui`)
 - [x] Authentication — optional API key management + session persistence for web
-- [ ] Video demo / GIF showcase
+- [x] Video demo / GIF showcase
 
 - [x] Feature research: see [docs/v2.1_research.md](docs/v2.1_research.md) — 22 features from HN newest-page trends
 
