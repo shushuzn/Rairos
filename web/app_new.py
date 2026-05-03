@@ -589,6 +589,36 @@ async def submit_verdict(request: Request):
     return {"success": True}
 
 
+@app.get("/gene-pool/io")
+async def gene_pool_io(request: Request):
+    """Gene Pool Import/Export — backup and restore as JSON."""
+    from llm.gene_pool_io import render_io_html
+    html = render_io_html()
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "gene-pool-io",
+        "title": "Gene Pool Import/Export",
+        "content": html,
+    })
+
+
+@app.get("/gene-pool/io/export")
+async def export_pool(request: Request):
+    """Export full Gene Pool as JSON."""
+    from llm.gene_pool_io import export_pool
+    from fastapi.responses import JSONResponse
+    return JSONResponse(export_pool())
+
+
+@app.post("/gene-pool/io/import")
+async def import_pool(request: Request):
+    """Import Gene Pool from JSON."""
+    from llm.gene_pool_io import import_pool
+    from fastapi.responses import JSONResponse
+    body = await request.json()
+    stats = import_pool(body, merge=True)
+    return JSONResponse({"success": True, **stats})
+
+
 @app.get("/citation-chain")
 async def citation_chain(request: Request, arxiv_id: str = ""):
     """Citation Chain — build and visualize."""
