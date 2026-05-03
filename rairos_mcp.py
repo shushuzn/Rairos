@@ -186,6 +186,49 @@ def get_tools() -> List[Dict]:
             }
         },
         {
+            "name": "tag_add",
+            "description": "Add a tag to a paper",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "paper_id": {"type": "string", "description": "arXiv ID of the paper"},
+                    "tag": {"type": "string", "description": "Tag name to add"}
+                },
+                "required": ["paper_id", "tag"]
+            }
+        },
+        {
+            "name": "tag_remove",
+            "description": "Remove a tag from a paper",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "paper_id": {"type": "string", "description": "arXiv ID of the paper"},
+                    "tag": {"type": "string", "description": "Tag name to remove"}
+                },
+                "required": ["paper_id", "tag"]
+            }
+        },
+        {
+            "name": "tag_list",
+            "description": "List all tags for a paper",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "paper_id": {"type": "string", "description": "arXiv ID of the paper"}
+                },
+                "required": ["paper_id"]
+            }
+        },
+        {
+            "name": "tag_all",
+            "description": "List all tags in the system",
+            "inputSchema": {
+                "type": "object",
+                "properties": {}
+            }
+        },
+        {
             "name": "chart_query",
             "description": "Query figures and tables from a paper's knowledge graph",
             "inputSchema": {
@@ -1002,6 +1045,60 @@ def tool_kg_full_graph(max_nodes: int = 500) -> Dict:
     except Exception as e:
         logger.error(f"kg_full_graph error: {e}")
         return error_response("KG_ERROR", str(e))
+
+
+def tool_tag_add(paper_id: str, tag: str) -> Dict:
+    """Add a tag to a paper."""
+    try:
+        from db.database import Database
+        db = Database()
+        db.init()
+        db.add_tag(paper_id, tag)
+        return success_response({"paper_id": paper_id, "tag": tag, "added": True})
+    except Exception as e:
+        logger.error(f"tag_add error: {e}")
+        return error_response("TAG_ERROR", str(e))
+
+
+def tool_tag_remove(paper_id: str, tag: str) -> Dict:
+    """Remove a tag from a paper."""
+    try:
+        from db.database import Database
+        db = Database()
+        db.init()
+        db.remove_tag(paper_id, tag)
+        return success_response({"paper_id": paper_id, "tag": tag, "removed": True})
+    except Exception as e:
+        logger.error(f"tag_remove error: {e}")
+        return error_response("TAG_ERROR", str(e))
+
+
+def tool_tag_list(paper_id: str) -> Dict:
+    """List all tags for a paper."""
+    try:
+        from db.database import Database
+        db = Database()
+        db.init()
+        tags = db.get_tags(paper_id)
+        return success_response({"paper_id": paper_id, "tags": tags, "count": len(tags)})
+    except Exception as e:
+        logger.error(f"tag_list error: {e}")
+        return error_response("TAG_ERROR", str(e))
+
+
+def tool_tag_all() -> Dict:
+    """List all tags in the system."""
+    try:
+        from db.database import Database
+        db = Database()
+        db.init()
+        cur = db.conn.cursor()
+        cur.execute("SELECT name FROM tags ORDER BY name")
+        tags = [row["name"] for row in cur.fetchall()]
+        return success_response({"tags": tags, "count": len(tags)})
+    except Exception as e:
+        logger.error(f"tag_all error: {e}")
+        return error_response("TAG_ERROR", str(e))
 
 
 def tool_chart_query(paper_id: str, action: str, label: Optional[str] = None) -> Dict:
@@ -2071,6 +2168,22 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
             result = tool_kg_full_graph(
                 max_nodes=arguments.get("max_nodes", 500)
             )
+        elif name == "tag_add":
+            result = tool_tag_add(
+                paper_id=arguments.get("paper_id"),
+                tag=arguments.get("tag")
+            )
+        elif name == "tag_remove":
+            result = tool_tag_remove(
+                paper_id=arguments.get("paper_id"),
+                tag=arguments.get("tag")
+            )
+        elif name == "tag_list":
+            result = tool_tag_list(
+                paper_id=arguments.get("paper_id")
+            )
+        elif name == "tag_all":
+            result = tool_tag_all()
         elif name == "chart_query":
             result = tool_chart_query(
                 paper_id=arguments.get("paper_id"),
