@@ -22,7 +22,7 @@ from cli import (
     infer_tags_if_empty,
     main,
 )
-from cli.cmd.cite.cite_fetch import _work_to_arxiv_id, _work_to_paper_record
+from cli.cmd.cite_fetch import _work_to_arxiv_id, _work_to_paper_record
 from core import Paper
 
 
@@ -1008,34 +1008,6 @@ class TestMainRouting:
         mock_run.assert_called_once()
         assert result == 0
 
-    @patch("cli._main_legacy")
-    def test_main_routes_to_legacy_for_arxiv_id(self, mock_legacy):
-        mock_legacy.return_value = 0
-        _ = main(["2301.00001"])
-        mock_legacy.assert_called_once_with(["2301.00001"])
-
-    def test_main_no_args_routes_to_legacy(self):
-        """No args falls through to legacy parser."""
-        with patch("cli._main_legacy") as mock_legacy:
-            mock_legacy.return_value = 0
-            _ = main([])
-            mock_legacy.assert_called_once()
-
-    def test_main_unknown_subcommand_routes_to_legacy(self):
-        """Unknown subcommand (not in SUBCOMMANDS set) falls through to legacy."""
-        with patch("cli._main_legacy") as mock_legacy:
-            mock_legacy.return_value = 0
-            _ = main(["some-random-input"])
-            mock_legacy.assert_called_once_with(["some-random-input"])
-
-    def test_main_doi_input_routes_to_legacy(self):
-        """DOI input routes to legacy."""
-        with patch("cli._main_legacy") as mock_legacy:
-            mock_legacy.return_value = 0
-            _ = main(["10.1234/some"])
-            mock_legacy.assert_called_once_with(["10.1234/some"])
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_status aggregation edge cases
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1488,28 +1460,6 @@ class TestMainDedupRouting:
 
         assert result == 0
 
-    def test_main_dedup_not_legacy(self):
-        """dedup must be a subcommand, not fall through to legacy."""
-        with patch("cli._build_dedup_parser"):
-            with patch("cli._run_dedup", return_value=0) as mock_run:
-                with patch("cli._build_merge_parser"):
-                    with patch("cli._build_queue_parser"):
-                        with patch("cli._build_cache_parser"):
-                            with patch("cli._build_status_parser"):
-                                with patch("cli._build_list_parser"):
-                                    with patch("cli._build_search_parser"):
-                                        # Patch argparse so it doesn't fail
-                                        with patch("cli.argparse.ArgumentParser") as mock_ap:
-                                            mock_parser = MagicMock()
-                                            mock_parser.parse_args.return_value = make_args(
-                                                subcmd="dedup"
-                                            )
-                                            mock_ap.return_value = mock_parser
-                                            main(["dedup"])
-        # If it routed to legacy instead, _run_dedup wouldn't be called
-        assert mock_run.called
-
-
 class TestMainMergeRouting:
     """Test main() routes 'merge' to _run_merge (not legacy)."""
 
@@ -1528,28 +1478,6 @@ class TestMainMergeRouting:
         result = main(["merge", "uid1", "uid2"])
 
         assert result == 0
-
-    def test_main_merge_not_legacy(self):
-        """merge must be a subcommand, not fall through to legacy."""
-        with patch("cli._build_dedup_parser"):
-            with patch("cli._run_merge", return_value=0) as mock_run:
-                with patch("cli._build_merge_parser"):
-                    with patch("cli._build_queue_parser"):
-                        with patch("cli._build_cache_parser"):
-                            with patch("cli._build_status_parser"):
-                                with patch("cli._build_list_parser"):
-                                    with patch("cli._build_search_parser"):
-                                        with patch("cli.argparse.ArgumentParser") as mock_ap:
-                                            mock_parser = MagicMock()
-                                            mock_parser.parse_args.return_value = make_args(
-                                                subcmd="merge",
-                                                target_id="uid1",
-                                                duplicate_id="uid2",
-                                            )
-                                            mock_ap.return_value = mock_parser
-                                            main(["merge", "uid1", "uid2"])
-        assert mock_run.called
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_dedup tests
