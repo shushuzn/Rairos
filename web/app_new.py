@@ -302,6 +302,33 @@ async def embodied_planning_dashboard(request: Request):
     })
 
 
+@app.get("/embodied-planning/evolution")
+async def embodied_evolution_timeline(request: Request):
+    """Render Mermaid Gantt chart showing belief evolution over time."""
+    from llm.paper_gap_extractor import render_evolution_timeline
+    graph = render_evolution_timeline()
+    if not graph:
+        graph = "<div style='text-align:center;padding:40px;color:#888;'>No timeline data yet — analyze some papers first.</div>"
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "embodied-evolution",
+        "title": "🦾 Belief Evolution Timeline",
+        "content": f"<div style='overflow-x:auto;'>{graph}</div>",
+    })
+
+
+@app.get("/embodied-planning/compare")
+async def embodied_planning_compare(request: Request, ids: str = ""):
+    """Compare representation types across 2 papers side-by-side."""
+    from llm.paper_gap_extractor import render_compare_view
+    paper_ids = [p.strip() for p in ids.split(",") if p.strip()][:2]
+    html = render_compare_view(paper_ids)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "embodied-compare",
+        "title": "🦾 Embodied Planning — Compare",
+        "content": html,
+    })
+
+
 @app.post("/paper/{paper_id}/save-gap")
 async def save_paper_gap(request: Request, paper_id: str):
     """Save an extracted gap to the Gene Pool."""
@@ -1059,6 +1086,31 @@ async def embodied_planning_auto_scan(request: Request):
             }
             _notification_store.append(notification)
 
+        # ── Task 2: Append recommended papers to ROADMAP.md ──────────────────
+        if total_analyzed > 0 and analyzed:
+            try:
+                recommended_type = underrep
+                # Pick the top paper from the batch that matches the under-represented type
+                rec_paper = next(
+                    (r for r in analyzed if r.get("representation_type") == recommended_type),
+                    analyzed[0] if analyzed else None,
+                )
+                if rec_paper:
+                    from pathlib import Path as _Path
+                    _rm_path = _Path("D:/OpenClaw/workspace/80-PROJECTS/ai_research_os/ROADMAP.md")
+                    if _rm_path.exists():
+                        existing_content = _rm_path.read_text(encoding="utf-8")
+                        # Only write if not already listed (avoid duplicates)
+                        rec_id = rec_paper.get("paper_id", "unknown")
+                        rec_title = rec_paper.get("title", "Unknown Title")
+                        marker = f"[ ] {recommended_type} paper: {rec_title} ({rec_id})"
+                        if marker not in existing_content:
+                            # Append under v2.2 section
+                            with open(_rm_path, "a", encoding="utf-8") as _f:
+                                _f.write(f"\n### Pending Readings\n- {marker}\n")
+            except Exception as _e:
+                pass  # Non-critical: don't fail the scan if roadmap write fails
+
         return JSONResponse({
             "success": True,
             "total_new": len(all_new_ids),
@@ -1097,6 +1149,87 @@ async def dismiss_notification(request: Request):
         else:
             _notification_store.clear()
         return JSONResponse({"success": True, "remaining": len(_notification_store)})
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
+
+
+# ── Task 5: arXiv主动搜索 ──────────────────────────────────────────────────
+
+@app.post("/embodied-planning/search")
+async def embodied_planning_search(request: Request):
+    """主动搜索arXiv论文并分析embodied planning representation type.
+
+    Query: "latent reasoning" OR "physical reasoning" OR "embodied planning" site:arxiv.org
+    """
+    from fastapi.responses import JSONResponse
+    from pathlib import Path as _Path
+
+    try:
+        body = await request.json()
+        query = body.get("query", "latent reasoning OR physical reasoning OR embodied planning")
+        max_results = body.get("max_results", 10)
+
+        # Use SubscriptionMonitor._search_arxiv via a lightweight in-process call
+        # (avoids needing a full db instance — uses arXiv API directly)
+        import urllib.parse
+        import urllib.request
+        import xml.etree.ElementTree as ET
+
+        encoded_query = urllib.parse.quote_plus(query)
+        url = (
+            f"https://export.arxiv.org/api/query?"
+            f"search_query=all:{encoded_query}&"
+            f"start=0&"
+            f"max_results={max_results}&"
+            f"sortBy=submittedDate&"
+            f"sortOrder=descending"
+        )
+
+        with urllib.request.urlopen(url, timeout=30) as response:
+            content = response.read().decode("utf-8")
+
+        root = ET.fromstring(content)
+        ns = {"atom": "http://www.w3.org/2005/Atom"}
+        papers = []
+        for entry in root.findall("atom:entry", ns):
+            arxiv_id_elem = entry.find("atom:id", ns)
+            arxiv_id = arxiv_id_elem.text.split("/")[-1] if arxiv_id_elem is not None and arxiv_id_elem.text else ""
+            title_elem = entry.find("atom:title", ns)
+            title = title_elem.text.strip().replace("\n", " ") if title_elem is not None and title_elem.text else ""
+            summary_elem = entry.find("atom:summary", ns)
+            abstract = summary_elem.text.strip().replace("\n", " ") if summary_elem is not None and summary_elem.text else ""
+            published_elem = entry.find("atom:published", ns)
+            published = published_elem.text[:10] if published_elem is not None and published_elem.text else ""
+            papers.append({
+                "arxiv_id": arxiv_id,
+                "title": title,
+                "abstract": abstract,
+                "published": published,
+            })
+
+        if not papers:
+            return JSONResponse({"success": True, "query": query, "results": [], "analyzed": []})
+
+        # Analyze each paper with analyze_embodied_planning
+        from llm.paper_gap_extractor import analyze_embodied_planning
+        analyzed = []
+        for p in papers:
+            result = analyze_embodied_planning(
+                paper_id=p["arxiv_id"],
+                title=p["title"],
+                abstract=p["abstract"],
+            )
+            result["arxiv_id"] = p["arxiv_id"]
+            result["published"] = p["published"]
+            analyzed.append(result)
+
+        return JSONResponse({
+            "success": True,
+            "query": query,
+            "total": len(papers),
+            "analyzed": len(analyzed),
+            "results": analyzed,
+        })
     except Exception as e:
         return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
