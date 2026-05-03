@@ -72,12 +72,13 @@ class CapsuleGene:
         # Topic substring match
 
         if topic and self.trigger_topic:
-
-            if topic.lower() in self.trigger_topic.lower():
+            # Handle trigger_topic as str or list (legacy data)
+            tt = self.trigger_topic if isinstance(self.trigger_topic, str) else " ".join(self.trigger_topic) if self.trigger_topic else ""
+            if topic.lower() in tt.lower():
 
                 score += 0.4
 
-            elif self.trigger_topic.lower() in topic.lower():
+            elif tt.lower() in topic.lower():
 
                 score += 0.3
 
