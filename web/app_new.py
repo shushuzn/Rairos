@@ -329,6 +329,15 @@ async def embodied_planning_compare(request: Request, ids: str = ""):
     })
 
 
+@app.get("/embodied-planning/semantic-search")
+async def semantic_search(request: Request, q: str = "", top_k: int = 5):
+    """Semantic search across analyzed papers."""
+    from fastapi.responses import JSONResponse
+    from llm.paper_gap_extractor import semantic_search_papers
+    results = semantic_search_papers(q, top_k=top_k)
+    return JSONResponse({"query": q, "results": results})
+
+
 @app.post("/paper/{paper_id}/save-gap")
 async def save_paper_gap(request: Request, paper_id: str):
     """Save an extracted gap to the Gene Pool."""
@@ -556,11 +565,194 @@ async def gene_pool_credibility(request: Request):
     from llm.credibility_scorer import CredibilityScorer
     scorer = CredibilityScorer()
     html = scorer.render_html()
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "gene-pool-credibility",
-        "title": "Gap Credibility",
-        "content": html,
-    })
+
+
+@app.get("/gene-pool/graph")
+async def gene_pool_graph(request: Request):
+    """D3.js force-directed graph of all Gene Pool capsules.
+
+    Nodes: papers colored by gap_type
+    Edges: contradiction (red solid) | same-gap (gray dashed)
+    Returns HTML page with embedded D3.js visualization.
+    """
+    capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+    capsules = []
+    if capsules_path.exists():
+        try:
+            data = json.loads(capsules_path.read_text(encoding="utf-8"))
+            capsules = data.get("capsules", []) if isinstance(data, dict) else data
+        except Exception:
+            capsules = []
+
+    GAP_TYPE_COLORS = {
+        "embodied_planning": "#7A9E7A",
+        "rl_efficiency": "#6B8FB5",
+        "method_limitation": "#B57A7A",
+        "unexplored_application": "#9B7AB5",
+        "evaluation_gap": "#B5A57A",
+        "theoretical_gap": "#7AB5B5",
+        "dataset_gap": "#B57A9B",
+        "generalization_gap": "#7A8FB5",
+        "scalability_issue": "#B58B7A",
+        "contradiction": "#D9534F",
+        "other": "#AAAAAA",
+    }
+
+    nodes = []
+    for c in capsules:
+        gap_type = c.get("action_gap_type", "other")
+        color = GAP_TYPE_COLORS.get(gap_type, GAP_TYPE_COLORS["other"])
+        nodes.append({
+            "id": c.get("capsule_id", ""),
+            "label": (c.get("action_gap_title") or c.get("trigger_topic") or "?")[:60],
+            "gap_type": gap_type,
+            "color": color,
+            "score": c.get("outcome_success_score", 0.0),
+            "source": c.get("trigger_topic", "")[:40],
+        })
+
+    # Build edges: same gap_type + different title → red solid (contradiction)
+    # same gap_type + same title → gray dashed (same conclusion)
+    links = []
+    for i, a in enumerate(capsules):
+        for j, b in enumerate(capsules):
+            if i >= j:
+                continue
+            if a.get("action_gap_type") != b.get("action_gap_type"):
+                continue
+            same_title = a.get("action_gap_title") == b.get("action_gap_title")
+            if not same_title:
+                links.append({
+                    "source": a.get("capsule_id", ""),
+                    "target": b.get("capsule_id", ""),
+                    "type": "contradiction",
+                    "stroke": "#D9534F",
+                    "strokeWidth": 2.5,
+                    "strokeDasharray": None,
+                })
+            else:
+                links.append({
+                    "source": a.get("capsule_id", ""),
+                    "target": b.get("capsule_id", ""),
+                    "type": "same_gap",
+                    "stroke": "#999999",
+                    "strokeWidth": 1.0,
+                    "strokeDasharray": "4,4",
+                })
+
+    nodes_json = json.dumps(nodes, ensure_ascii=False)
+    links_json = json.dumps(links, ensure_ascii=False)
+
+    html = f"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Gene Pool — Research Map</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+:root {{ --font-display: 'Courier New', monospace; }}
+body {{ margin:0; font-family: var(--font-display); background:#fafaf7; overflow:hidden; }}
+svg {{ width:100vw; height:100vh; }}
+.node circle {{ cursor:pointer; stroke-width:2px; }}
+.node text {{ font-size:10px; fill:#333; pointer-events:none; }}
+.link {{ fill:none; stroke-opacity:0.7; }}
+h1 {{ position:fixed; top:14px; left:20px; margin:0; font-size:16px; color:#1a1a2e; z-index:10; background:#fafaf7; padding:0 8px 4px 0; }}
+.legend {{ position:fixed; bottom:20px; left:20px; background:#fff; border:1px solid #ddd; border-radius:8px; padding:10px 14px; font-size:11px; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.08); }}
+.legend-item {{ display:flex; align-items:center; gap:7px; margin-bottom:5px; }}
+.legend-dot {{ width:12px; height:12px; border-radius:50%; flex-shrink:0; }}
+.legend-line {{ width:24px; height:3px; flex-shrink:0; border-radius:2px; }}
+.legend-label {{ color:#555; }}
+</style>
+</head>
+<body>
+<h1>Gene Pool — Research Map</h1>
+<div class="legend">
+<div class="legend-item"><div class="legend-dot" style="background:#7A9E7A"></div><span class="legend-label">embodied_planning</span></div>
+<div class="legend-item"><div class="legend-dot" style="background:#6B8FB5"></div><span class="legend-label">rl_efficiency</span></div>
+<div class="legend-item"><div class="legend-dot" style="background:#B57A7A"></div><span class="legend-label">method_limitation</span></div>
+<div class="legend-item"><div class="legend-dot" style="background:#9B7AB5"></div><span class="legend-label">unexplored_application</span></div>
+<div class="legend-item"><div class="legend-dot" style="background:#B5A57A"></div><span class="legend-label">evaluation_gap</span></div>
+<div class="legend-item"><div class="legend-dot" style="background:#7AB5B5"></div><span class="legend-label">theoretical_gap</span></div>
+<div class="legend-item"><div class="legend-dot" style="background:#AAAAAA"></div><span class="legend-label">other</span></div>
+<div class="legend-item"><div class="legend-line" style="background:#D9534F"></div><span class="legend-label">contradiction (diff conclusion)</span></div>
+<div class="legend-item"><div class="legend-line" style="background:#999; border-top:2px dashed #999"></div><span class="legend-label">same gap (same conclusion)</span></div>
+</div>
+<script>
+const nodes = {nodes_json};
+const links = {links_json};
+
+const width = window.innerWidth;
+const height = window.innerHeight;
+
+const svg = d3.select("body").append("svg")
+    .attr("width", width).attr("height", height);
+
+const g = svg.append("g");
+svg.call(d3.zoom().scaleExtent([0.1, 4]).on("zoom", (event) => {{
+    g.attr("transform", event.transform);
+}}));
+
+const simulation = d3.forceSimulation(nodes)
+    .force("link", d3.forceLink(links).id(d => d.id).distance(120).strength(0.4))
+    .force("charge", d3.forceManyBody().strength(-300))
+    .force("center", d3.forceCenter(width / 2, height / 2))
+    .force("collision", d3.forceCollide().radius(40));
+
+const link = g.append("g")
+    .selectAll("line")
+    .data(links)
+    .join("line")
+    .attr("class", "link")
+    .attr("stroke", d => d.stroke)
+    .attr("stroke-width", d => d.strokeWidth)
+    .attr("stroke-dasharray", d => d.strokeDasharray || null);
+
+const node = g.append("g")
+    .selectAll("g")
+    .data(nodes)
+    .join("g")
+    .attr("class", "node")
+    .call(d3.drag()
+        .on("start", (event, d) => {{
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x; d.fy = d.y;
+        }})
+        .on("drag", (event, d) => {{
+            d.fx = event.x; d.fy = event.y;
+        }})
+        .on("end", (event, d) => {{
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null; d.fy = null;
+        }}));
+
+node.append("circle")
+    .attr("r", d => 6 + (d.score || 0) * 10)
+    .attr("fill", d => d.color)
+    .attr("stroke", "#fff");
+
+node.append("text")
+    .attr("dx", 14).attr("dy", 4)
+    .text(d => d.label);
+
+node.on("mouseover", function(event, d) {{
+    d3.select(this).select("text").style("font-weight", "bold");
+}}).on("mouseout", function(event, d) {{
+    d3.select(this).select("text").style("font-weight", "normal");
+}});
+
+simulation.on("tick", () => {{
+    link
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+    node.attr("transform", d => "translate(" + d.x + "," + d.y + ")");
+}});
+</script>
+</body>
+</html>"""
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(content=html)
 
 
 @app.get("/gene-pool/evolution-log")
@@ -1078,6 +1270,30 @@ async def embodied_planning_auto_scan(request: Request):
                 "details": contradictions[:3],
             }
             _notification_store.append(notification)
+
+            # ── Hypothesis generation from contradictions ──────────────────────
+            try:
+                from llm.paper_gap_extractor import (
+                    generate_hypothesis_from_contradiction,
+                    append_hypothesis_to_roadmap,
+                )
+                for contra in contradictions:
+                    pid_a = contra.get("paper_id", "")
+                    pid_b = contra.get("contradiction_with", "")
+                    contra_pair = {
+                        "paper_a_id": pid_a,
+                        "paper_b_id": pid_b,
+                        "paper_a_title": contra.get("title", ""),
+                        "paper_b_title": "",
+                        "representation_a": contra.get("representation_type", "unknown"),
+                        "representation_b": contra.get("contradiction_type", "unknown"),
+                        "effectiveness_a": "effective",
+                        "effectiveness_b": "ineffective",
+                    }
+                    hyp = generate_hypothesis_from_contradiction(contra_pair)
+                    append_hypothesis_to_roadmap(hyp, pid_a, pid_b)
+            except Exception:
+                pass  # Non-critical: don't fail scan if hypothesis generation fails
         elif total_analyzed > 2 and trend_pct > 0.7:
             notification = {
                 "type": "trend",
@@ -2504,6 +2720,42 @@ async def run_experiment(request: Request):
 def _get_tracker():
     from llm.insight.tracker import EvolutionTracker
     return EvolutionTracker()
+
+
+# ── Research Log ────────────────────────────────────────────────────────────────
+
+@app.get("/research-log")
+async def research_log(request: Request, paper_id: str = ""):
+    """Research Log page — view and add research notes."""
+    from llm.paper_gap_extractor import render_research_log
+    html = render_research_log(paper_id or None)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "research-log",
+        "title": "Research Log",
+        "content": html,
+    })
+
+
+@app.post("/research-log/note")
+async def add_note(request: Request):
+    """Append a research note."""
+    from fastapi.responses import JSONResponse
+    body = await request.json()
+    paper_id = body.get("paper_id", "")
+    note = body.get("note", "")
+    tags = body.get("tags", [])
+    from llm.paper_gap_extractor import add_research_note
+    ok = add_research_note(paper_id, note, tags)
+    return JSONResponse({"success": ok})
+
+
+@app.get("/research-log/notes")
+async def get_notes(request: Request, paper_id: str = ""):
+    """Get notes JSON, optionally filtered by paper_id."""
+    from fastapi.responses import JSONResponse
+    from llm.paper_gap_extractor import get_research_notes
+    notes = get_research_notes(paper_id or None)
+    return JSONResponse({"notes": notes})
 
 
 if __name__ == "__main__":

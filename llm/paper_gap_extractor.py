@@ -1310,6 +1310,154 @@ Respond ONLY with a JSON object (no markdown, no code fences):
         }
 
 
+def semantic_search_papers(
+    query: str,
+    top_k: int = 5,
+    db=None,
+) -> List[Dict[str, Any]]:
+    """Semantic search across analyzed papers using embeddings.
+
+    如果有sentence-transformers或openai embedding可用，用它。
+    否则fallback到关键词+BM25相似度。
+
+    Returns: [{"paper_id", "title", "abstract", "score", "matched_terms"}, ...]
+    """
+    try:
+        from sentence_transformers import SentenceTransformer
+        import numpy as np
+
+        # Load papers from Gene Pool
+        capsules = _read_capsules_json()
+        if not capsules:
+            return _keyword_search_fallback(query, db=db, top_k=top_k)
+
+        paper_ids = list({c.get("archetype", {}).get("source_paper_id", "") for c in capsules})
+        paper_ids = [pid for pid in paper_ids if pid]
+
+        if not paper_ids:
+            return _keyword_search_fallback(query, db=db, top_k=top_k)
+
+        # Fetch paper details from db
+        if db is None:
+            from db.database import Database
+            db = Database()
+
+        paper_map = db.get_papers_bulk(paper_ids)
+
+        texts = []
+        valid_ids = []
+        for pid in paper_ids:
+            p = paper_map.get(pid)
+            if not p:
+                continue
+            title = getattr(p, "title", "") or ""
+            abstract = getattr(p, "abstract", "") or ""
+            texts.append(f"{title} {abstract}")
+            valid_ids.append(pid)
+
+        if not texts:
+            return _keyword_search_fallback(query, db=db, top_k=top_k)
+
+        # Encode query and corpus
+        model_emb = SentenceTransformer("all-MiniLM-L6-v2")
+        query_vec = model_emb.encode([query])
+        doc_vecs = model_emb.encode(texts)
+
+        # Cosine similarity
+        scores = np.dot(doc_vecs, query_vec.T).flatten()
+        top_indices = np.argsort(scores)[::-1][:top_k]
+
+        results = []
+        for idx in top_indices:
+            pid = valid_ids[idx]
+            p = paper_map.get(pid)
+            if not p:
+                continue
+            title = getattr(p, "title", "") or ""
+            abstract = getattr(p, "abstract", "") or ""
+            results.append({
+                "paper_id": pid,
+                "title": title,
+                "abstract": abstract[:300],
+                "score": float(scores[idx]),
+                "matched_terms": [],
+            })
+        return results
+
+    except ImportError:
+        pass
+
+    # Fallback: keyword + tf-idf style search
+    return _keyword_search_fallback(query, db=db, top_k=top_k)
+
+
+def _keyword_search_fallback(
+    query: str,
+    db=None,
+    top_k: int = 5,
+) -> List[Dict[str, Any]]:
+    """Simple keyword + tf-idf style search fallback.
+
+    用简单词频匹配：query terms在title/abstract中出现次数/score。
+    """
+    capsules = _read_capsules_json()
+    if not capsules:
+        return []
+
+    paper_ids = list({c.get("archetype", {}).get("source_paper_id", "") for c in capsules})
+    paper_ids = [pid for pid in paper_ids if pid]
+
+    if not paper_ids:
+        return []
+
+    if db is None:
+        from db.database import Database
+        db = Database()
+
+    paper_map = db.get_papers_bulk(paper_ids)
+
+    query_terms = [w.lower().strip(".,;:!?()[]{}") for w in query.split() if len(w) > 1]
+    if not query_terms:
+        return []
+
+    scored = []
+    for pid in paper_ids:
+        p = paper_map.get(pid)
+        if not p:
+            continue
+        title = getattr(p, "title", "") or ""
+        abstract = getattr(p, "abstract", "") or ""
+        title_lower = title.lower()
+        abstract_lower = abstract.lower()
+
+        matched = set()
+        title_hits = 0
+        abstract_hits = 0
+        for term in query_terms:
+            t_count = title_lower.count(term)
+            a_count = abstract_lower.count(term)
+            title_hits += t_count
+            abstract_hits += a_count
+            if t_count > 0 or a_count > 0:
+                matched.add(term)
+
+        if not matched:
+            continue
+
+        # Score: title hits weighted 3x, abstract hits 1x
+        score = title_hits * 3 + abstract_hits
+        scored.append({
+            "paper_id": pid,
+            "title": title,
+            "abstract": abstract[:300],
+            "score": score,
+            "matched_terms": list(matched),
+        })
+
+    scored.sort(key=lambda x: x["score"], reverse=True)
+    return scored[:top_k]
+
+
 def gaps_to_research_questions(
     frontier_gaps: List[Dict[str, Any]],
     paper_titles: Optional[Dict[str, str]] = None,
@@ -1392,3 +1540,412 @@ Respond ONLY with the JSON object.
             "gap_count": len(frontier_gaps),
             "error": str(e),
         }
+
+
+# =============================================================================
+# RESEARCH LOG — per-paper research notes stored in ~/.ai_research_os/gene_pool/research_log.jsonl
+# =============================================================================
+
+def add_research_note(
+    paper_id: str,
+    note: str,
+    tags: Optional[List[str]] = None,
+) -> bool:
+    """Append a research note to the log file.
+
+    Writes to ~/.ai_research_os/gene_pool/research_log.jsonl
+    Each entry: {timestamp, paper_id, note, tags}
+    """
+    try:
+        log_path = Path.home() / ".ai_research_os" / "gene_pool" / "research_log.jsonl"
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        entry = {
+            "timestamp": datetime.now().isoformat(),
+            "paper_id": paper_id,
+            "note": note,
+            "tags": tags or [],
+        }
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+        return True
+    except Exception:
+        return False
+
+
+def get_research_notes(
+    paper_id: Optional[str] = None,
+    limit: int = 20,
+) -> List[Dict[str, Any]]:
+    """Read research notes, optionally filtered by paper_id."""
+    try:
+        log_path = Path.home() / ".ai_research_os" / "gene_pool" / "research_log.jsonl"
+        if not log_path.exists():
+            return []
+
+        notes = []
+        with open(log_path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    entry = json.loads(line)
+                except Exception:
+                    continue
+                if paper_id and entry.get("paper_id") != paper_id:
+                    continue
+                notes.append(entry)
+
+        # Sort by timestamp descending
+        notes.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+        return notes[:limit]
+    except Exception:
+        return []
+
+
+def render_research_log(paper_id: Optional[str] = None) -> str:
+    """Return HTML timeline of research notes.
+
+    Each note: timestamp (top-right), paper title, note content, tags as small pills.
+    Sorted newest first. Uses font-family: var(--font-display).
+    """
+    notes = get_research_notes(paper_id=paper_id, limit=50)
+
+    if not notes:
+        empty_msg = "No research notes yet."
+        if paper_id:
+            empty_msg = f"No notes for paper {paper_id} yet."
+        return f"""
+        <div style="text-align:center;padding:60px 20px;color:#888;font-family:var(--font-display);">
+          <div style="font-size:48px;margin-bottom:12px;">📝</div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:6px;">{empty_msg}</div>
+          <div style="font-size:13px;">Add notes from a paper detail page.</div>
+        </div>"""
+
+    # Fetch paper titles for display
+    paper_titles: Dict[str, str] = {}
+    if paper_id is None:
+        # Collect all paper_ids to bulk-fetch titles
+        seen_ids = list(dict.fromkeys(n.get("paper_id", "") for n in notes if n.get("paper_id")))
+        if seen_ids:
+            try:
+                from db.database import Database
+                db = Database()
+                db.init()
+                for pid in seen_ids:
+                    p = db.get_paper(pid)
+                    if p:
+                        paper_titles[pid] = p.title
+            except Exception:
+                pass
+
+    cards = ""
+    for n in notes:
+        ts = n.get("timestamp", "")
+        # Format: YYYY-MM-DD HH:MM
+        date_str = ts[:16].replace("T", " ") if ts else "—"
+        pid = n.get("paper_id", "")
+        title = paper_titles.get(pid, pid[:20] if pid else "—")
+        note_text = n.get("note", "")
+        tags = n.get("tags", [])
+
+        tags_html = ""
+        if tags:
+            tags_html = "".join(
+                f"<span style='display:inline-block;background:#e8f0fe;color:#1a73e8;padding:2px 8px;border-radius:12px;font-size:11px;margin:2px;'>{t}</span>"
+                for t in tags
+            )
+
+        cards += f"""
+        <div style="background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:16px 20px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,0.05);position:relative;font-family:var(--font-display);">
+          <div style="position:absolute;top:12px;right:16px;font-size:11px;color:#aaa;">{date_str}</div>
+          <div style="font-size:12px;color:#888;margin-bottom:6px;">{title}</div>
+          <div style="font-size:14px;color:#222;line-height:1.6;margin-bottom:8px;">{note_text}</div>
+          {('<div style="display:flex;flex-wrap:wrap;gap:4px;">' + tags_html + '</div>' if tags_html else '')}
+        </div>"""
+
+    filter_label = ""
+    if paper_id:
+        filter_label = f" for <strong>{paper_titles.get(paper_id, paper_id[:20])}</strong>"
+
+    return f"""
+    <style>
+    .rl-header {{ font-family: var(--font-display); font-size: 14px; color: #888; margin-bottom: 16px; }}
+    </style>
+    <div class="rl-header">{len(notes)} note(s){filter_label}</div>
+    <div>{cards}</div>"""
+
+
+# =============================================================================
+# CONFIDENCE CALIBRATION TRACKING
+# =============================================================================
+
+def render_confidence_calibration() -> str:
+    """Return HTML displaying confidence calibration statistics.
+
+    Reads embodied_timeline.jsonl, groups predictions by confidence bucket,
+    and shows how many were verified vs contradicted by subsequent analyses.
+    Output: HTML table + bar chart.
+
+    Verification: same representation_type appears again (repeated confirmation).
+    Contradiction: a different representation_type appears for the same/related context.
+    """
+    import json as _json
+
+    timeline_path = Path.home() / ".ai_research_os" / "gene_pool" / "embodied_timeline.jsonl"
+    if not timeline_path.exists():
+        return """
+        <div style="text-align:center;padding:60px 20px;color:#888;font-family:var(--font-display);">
+          <div style="font-size:48px;margin-bottom:12px;">📊</div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:6px;">No Timeline Data</div>
+          <div style="font-size:13px;">Run embodied planning analyses first.</div>
+        </div>"""
+
+    entries = []
+    try:
+        with open(timeline_path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                entries.append(_json.loads(line))
+    except Exception:
+        return "<p>Error reading timeline data.</p>"
+
+    if not entries:
+        return """
+        <div style="text-align:center;padding:60px 20px;color:#888;font-family:var(--font-display);">
+          <div style="font-size:48px;margin-bottom:12px;">📊</div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:6px;">No Entries Yet</div>
+          <div style="font-size:13px;">Embodied planning analyses will appear here.</div>
+        </div>"""
+
+    # Sort by timestamp
+    entries.sort(key=lambda x: x.get("timestamp", ""))
+
+    # Confidence buckets
+    buckets = [
+        ("0-20%", 0.0, 0.2),
+        ("20-40%", 0.2, 0.4),
+        ("40-60%", 0.4, 0.6),
+        ("60-80%", 0.6, 0.8),
+        ("80-100%", 0.8, 1.01),
+    ]
+
+    bucket_stats: Dict[str, Dict[str, int]] = {
+        b[0]: {"verified": 0, "contradicted": 0, "unknown": 0}
+        for b in buckets
+    }
+
+    # For each entry, look at subsequent entries with same/similar title keywords
+    for i, entry in enumerate(entries):
+        conf = entry.get("confidence", 0.5)
+        rt = entry.get("representation_type", "unknown")
+        title_words = set((entry.get("paper_title", "") + " " + entry.get("gap_title", "")).lower().split())
+
+        # Find bucket
+        bucket_label = "unknown"
+        for label, lo, hi in buckets:
+            if lo <= conf < hi:
+                bucket_label = label
+                break
+
+        # Look ahead for subsequent entries (within 30 days)
+        verified = False
+        contradicted = False
+        entry_ts = entry.get("timestamp", "")
+
+        for j in range(i + 1, len(entries)):
+            later = entries[j]
+            later_rt = later.get("representation_type", "unknown")
+            later_title_words = set((later.get("paper_title", "") + " " + later.get("gap_title", "")).split())
+            overlap = title_words & later_title_words
+
+            if overlap and len(overlap) >= 2:  # significant keyword overlap
+                if later_rt == rt:
+                    verified = True
+                elif later_rt != rt and later_rt != "unknown":
+                    contradicted = True
+                break  # use first meaningful subsequent entry
+
+        if verified:
+            bucket_stats[bucket_label]["verified"] += 1
+        elif contradicted:
+            bucket_stats[bucket_label]["contradicted"] += 1
+        else:
+            bucket_stats[bucket_label]["unknown"] += 1
+
+    # Build HTML table
+    table_rows = ""
+    for label, lo, hi in buckets:
+        stats = bucket_stats[label]
+        total = stats["verified"] + stats["contradicted"] + stats["unknown"]
+        v = stats["verified"]
+        c = stats["contradicted"]
+        u = stats["unknown"]
+
+        # Bar chart
+        max_val = max(total, 1)
+        bar_w = 300
+        v_w = int(v / max_val * bar_w)
+        c_w = int(c / max_val * bar_w)
+        u_w = int(u / max_val * bar_w)
+
+        table_rows += f"""
+        <tr>
+          <td style="padding:8px 12px;font-family:var(--font-display);font-size:13px;font-weight:600;color:#555;">{label}</td>
+          <td style="padding:8px 12px;">
+            <div style="display:flex;height:18px;border-radius:3px;overflow:hidden;background:#f0f0f0;width:{bar_w}px;">
+              <div style="width:{v_w}px;background:#4caf50;" title="verified:{v}"></div>
+              <div style="width:{c_w}px;background:#e53935;" title="contradicted:{c}"></div>
+              <div style="width:{u_w}px;background:#aaa;" title="unknown:{u}"></div>
+            </div>
+          </td>
+          <td style="padding:8px 12px;text-align:center;font-family:var(--font-display);font-size:12px;color:#888;">{total}</td>
+          <td style="padding:8px 12px;font-family:var(--font-display);font-size:12px;">
+            <span style="color:#4caf50;">&#10003;{v}</span>
+            <span style="color:#e53935;margin-left:6px;">&#10007;{c}</span>
+            <span style="color:#aaa;margin-left:6px;">?{u}</span>
+          </td>
+        </tr>"""
+
+    return f"""
+    <div style="font-family:var(--font-display);">
+      <div style="font-size:14px;font-weight:700;color:#555;margin-bottom:12px;">Confidence Calibration — Embodied Planning</div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+        <thead>
+          <tr style="background:#f8f8f8;">
+            <th style="padding:8px 12px;text-align:left;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.5px;">Confidence</th>
+            <th style="padding:8px 12px;text-align:left;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.5px;">Distribution</th>
+            <th style="padding:8px 12px;text-align:center;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.5px;">Total</th>
+            <th style="padding:8px 12px;text-align:left;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.5px;">Breakdown</th>
+          </tr>
+        </thead>
+        <tbody>
+          {table_rows}
+        </tbody>
+      </table>
+      <div style="font-size:11px;color:#aaa;margin-top:8px;">
+        &#10003; verified = same representation_type confirmed later &nbsp;|&nbsp;
+        &#10007; contradicted = different representation_type appeared later &nbsp;|&nbsp;
+        ? unknown = no subsequent entry with keyword overlap
+      </div>
+    </div>"""
+
+
+# =============================================================================
+# HYPOTHESIS GENERATION FROM CONTRADICTIONS
+# =============================================================================
+
+def generate_hypothesis_from_contradiction(contradiction_pair: dict) -> str:
+    """Generate a new hypothesis suggestion from a contradiction pair.
+
+    Reads both papers' information and uses simple rules to generate a hypothesis:
+    - If paper A says discrete/effective and paper B says continuous/ineffective
+    - Hypothesis: "A+B hybrid method may combine both advantages"
+
+    Returns a research question string.
+    """
+    paper_a_title = contradiction_pair.get("paper_a_title", "")
+    paper_b_title = contradiction_pair.get("paper_b_title", "")
+    rep_a = contradiction_pair.get("representation_a", "unknown")
+    rep_b = contradiction_pair.get("representation_b", "unknown")
+    effect_a = contradiction_pair.get("effectiveness_a", "")
+    effect_b = contradiction_pair.get("effectiveness_b", "")
+    paper_a_id = contradiction_pair.get("paper_a_id", "")
+    paper_b_id = contradiction_pair.get("paper_b_id", "")
+
+    # Normalise
+    rep_a_lower = rep_a.lower().strip()
+    rep_b_lower = rep_b.lower().strip()
+    eff_a_lower = effect_a.lower().strip()
+    eff_b_lower = effect_b.lower().strip()
+
+    # Rule patterns
+    patterns = [
+        # (rep_a, rep_b, eff_a, eff_b, hypothesis_template)
+        ("discrete", "continuous", "effective", "ineffective",
+         f"探索离散的符号化推理与连续的潜空间推理的混合架构，结合两者的精确性与鲁棒性优势"),
+        ("continuous", "discrete", "effective", "ineffective",
+         f"探索连续的潜空间推理与离散的符号化推理的混合架构，结合两者的表达力与可解释性"),
+        ("discrete", "continuous", "ineffective", "effective",
+         f"探索混合架构能否结合离散的组合泛化能力与连续的空间推理能力"),
+        ("continuous", "discrete", "ineffective", "effective",
+         f"探索混合架构能否融合连续表示的平滑性与离散表示的结构化优势"),
+        ("discrete", "hybrid", "effective", "ineffective",
+         f"离到混合的渐进式过渡：能否在离散推理基础上引入连续层提升鲁棒性？"),
+        ("hybrid", "discrete", "ineffective", "effective",
+         f"混合到离散的模块化拆解：混合架构中哪些连续组件可以离散化而不损失性能？"),
+    ]
+
+    hypothesis = None
+    for pat in patterns:
+        if (rep_a_lower == pat[0] and rep_b_lower == pat[1] and
+                eff_a_lower == pat[2] and eff_b_lower == pat[3]):
+            hypothesis = pat[4]
+            break
+
+    # Default fallback
+    if not hypothesis:
+        if rep_a_lower != rep_b_lower:
+            hypothesis = (
+                f"探索{rep_a}与{rep_b}的协同机制："
+                f"能否设计分层架构结合两者的优势，"
+                f"在高效性与泛化能力间取得更好平衡？"
+            )
+        else:
+            hypothesis = (
+                f"针对同一{rep_a}表示的内部变体，"
+                f"探索其在不同任务尺度下的适应性边界。"
+            )
+
+    return hypothesis
+
+
+def append_hypothesis_to_roadmap(
+    hypothesis: str,
+    paper_id_a: str,
+    paper_id_b: str,
+) -> bool:
+    """Append a hypothesis to ROADMAP.md under ### Pending Hypotheses.
+
+    Creates the section if it doesn't exist.
+    """
+    try:
+        roadmap_path = Path("D:/OpenClaw/workspace/80-PROJECTS/ai_research_os/ROADMAP.md")
+        if not roadmap_path.exists():
+            return False
+
+        content = roadmap_path.read_text(encoding="utf-8")
+        marker = f"- [ ] HYPOTHESIS: {hypothesis} (from: {paper_id_a} vs {paper_id_b})"
+
+        # Check not already present
+        if marker in content:
+            return True  # Already present, treat as success
+
+        # Find or create ### Pending Hypotheses section
+        pending_marker = "### Pending Hypotheses"
+        if pending_marker in content:
+            # Append after the section heading
+            lines = content.split("\n")
+            new_lines = []
+            for i, line in enumerate(lines):
+                new_lines.append(line)
+                if line.strip() == pending_marker:
+                    # Find the end of this section (next ### or end of file)
+                    j = i + 1
+                    while j < len(lines) and not lines[j].startswith("### "):
+                        j += 1
+                    # Insert before the next section (or end)
+                    insert_pos = j if j < len(lines) else len(lines)
+                    new_lines.insert(insert_pos, f"- [ ] HYPOTHESIS: {hypothesis} (from: {paper_id_a} vs {paper_id_b})")
+                    content = "\n".join(new_lines)
+                    break
+        else:
+            # Append at end with new section
+            content += f"\n\n{pending_marker}\n- [ ] HYPOTHESIS: {hypothesis} (from: {paper_id_a} vs {paper_id_b})\n"
+
+        roadmap_path.write_text(content, encoding="utf-8")
+        return True
+    except Exception:
+        return False
