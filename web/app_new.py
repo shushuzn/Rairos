@@ -849,8 +849,6 @@ def _render_evolution_log_html(events: list) -> str:
     """
 
 
-@app.get("/heatmap")
-
 
 @app.get("/heatmap")
 async def contradiction_heatmap(request: Request):
@@ -1385,43 +1383,9 @@ async def embodied_planning_search(request: Request):
         query = body.get("query", "latent reasoning OR physical reasoning OR embodied planning")
         max_results = body.get("max_results", 10)
 
-        # Use SubscriptionMonitor._search_arxiv via a lightweight in-process call
-        # (avoids needing a full db instance — uses arXiv API directly)
-        import urllib.parse
-        import urllib.request
-        import xml.etree.ElementTree as ET
-
-        encoded_query = urllib.parse.quote_plus(query)
-        url = (
-            f"https://export.arxiv.org/api/query?"
-            f"search_query=all:{encoded_query}&"
-            f"start=0&"
-            f"max_results={max_results}&"
-            f"sortBy=submittedDate&"
-            f"sortOrder=descending"
-        )
-
-        with urllib.request.urlopen(url, timeout=30) as response:
-            content = response.read().decode("utf-8")
-
-        root = ET.fromstring(content)
-        ns = {"atom": "http://www.w3.org/2005/Atom"}
-        papers = []
-        for entry in root.findall("atom:entry", ns):
-            arxiv_id_elem = entry.find("atom:id", ns)
-            arxiv_id = arxiv_id_elem.text.split("/")[-1] if arxiv_id_elem is not None and arxiv_id_elem.text else ""
-            title_elem = entry.find("atom:title", ns)
-            title = title_elem.text.strip().replace("\n", " ") if title_elem is not None and title_elem.text else ""
-            summary_elem = entry.find("atom:summary", ns)
-            abstract = summary_elem.text.strip().replace("\n", " ") if summary_elem is not None and summary_elem.text else ""
-            published_elem = entry.find("atom:published", ns)
-            published = published_elem.text[:10] if published_elem is not None and published_elem.text else ""
-            papers.append({
-                "arxiv_id": arxiv_id,
-                "title": title,
-                "abstract": abstract,
-                "published": published,
-            })
+        # Use SubscriptionMonitor.search_arxiv — unified, no duplicate XML parsing
+        from llm.subscription_monitor import search_arxiv
+        papers = search_arxiv(query, max_results)
 
         if not papers:
             return JSONResponse({"success": True, "query": query, "results": [], "analyzed": []})

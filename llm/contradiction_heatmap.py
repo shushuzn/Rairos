@@ -11,22 +11,12 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List
 
-from llm.paper_gap_extractor import detect_contradictions
-
-
-CAPSULE_PATH = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-
-
-def _load_capsules() -> List[Dict[str, Any]]:
-    if not CAPSULE_PATH.exists():
-        return []
-    data = json.loads(CAPSULE_PATH.read_text(encoding="utf-8"))
-    return data.get("capsules", [])
+from llm.gene_pool_io import load_capsules
 
 
 def compute_paper_contradictions() -> Dict[str, Dict[str, Any]]:
     """Return {paper_id: {count, contradictions: [...]}} for all papers."""
-    capsules = _load_capsules()
+    capsules = load_capsules()
     contrad = detect_contradictions(capsules)
 
     by_paper: Dict[str, Dict[str, Any]] = defaultdict(

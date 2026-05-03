@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-CAPSULES_PATH = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+from llm.gene_pool_io import load_capsules
 
 # Method keywords that bridge multiple domains
 BRIDGE_METHODS = {
@@ -27,12 +27,6 @@ DOMAIN_PAIRS = [
     ("physics", "cs.AI"), ("biology", "cs.LG"), ("chemistry", "cs.CL"),
     ("math", "cs.CV"), ("economics", "cs.AI"), ("neuroscience", "cs.NE"),
 ]
-
-
-def _load_capsules() -> List[Dict[str, Any]]:
-    if not CAPSULES_PATH.exists():
-        return []
-    return json.loads(CAPSULES_PATH.read_text(encoding="utf-8")).get("capsules", [])
 
 
 def _jaccard(a: List[str], b: List[str]) -> float:
@@ -52,7 +46,7 @@ def _keyword_overlap(kw1: List[str], kw2: List[str]) -> float:
 
 def find_cross_domain_bridges() -> List[Dict[str, Any]]:
     """Find capsules from different domains whose keywords share bridging methods."""
-    capsules = _load_capsules()
+    capsules = load_capsules()
     results: List[Dict[str, Any]] = []
 
     for i, cap_a in enumerate(capsules):
