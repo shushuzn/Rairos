@@ -27,8 +27,7 @@ Generates:
 
 from __future__ import annotations
 
-
-
+import re
 
 
 from pathlib import Path
@@ -180,10 +179,13 @@ def generate_code(
 
     result = result.strip()
 
+    # Strip thinking/reasoning blocks that some models emit before code
+    result = re.sub(r'^去想[\s\S]*?```python\n', '', result).strip()
+    result = re.sub(r'^<think>[\s\S]*?```python\n', '', result).strip()
+
+
 
     if result.startswith("```python"):
-
-
         result = result[7:]
 
 
@@ -430,20 +432,16 @@ def _build_prompt(paper_content, framework: str) -> str:
 
 
 def save_code(code: str, output_dir: Path, module_name: str = "model") -> Path:
+    """Save generated code to a file, stripping markdown code-block wrappers."""
+    import re
 
-
-    """Save generated code to a file."""
-
+    # Strip triple-backtick markdown wrappers: ```python ... ``` or ``` ... ```
+    code = re.sub(r'^```(?:python)?\s*\n', '', code, flags=re.MULTILINE)
+    code = re.sub(r'\n```\s*$', '', code)
 
     output_dir.mkdir(parents=True, exist_ok=True)
-
-
     out_path = output_dir / f"{module_name}.py"
-
-
-    out_path.write_text(code, encoding="utf-8")
-
-
+    out_path.write_text(code.strip(), encoding="utf-8")
     return out_path
 
 

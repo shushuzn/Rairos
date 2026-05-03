@@ -11,6 +11,7 @@ Benchmark Runner — run pytest tests and encode results to Gene Pool.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import time
@@ -79,6 +80,9 @@ def run_benchmark(
         "-q",
     ]
 
+    # Prepend src_dir to PYTHONPATH so pytest can import the generated module
+    env = {**os.environ, "PYTHONPATH": f"{config.code_path.parent}{os.pathsep}{os.environ.get('PYTHONPATH', '')}"}
+
     result = BenchmarkResult(
         arxiv_id=config.arxiv_id,
         test_dir=test_dir,
@@ -96,6 +100,7 @@ def run_benchmark(
             timeout=300,
             encoding="utf-8",
             errors="replace",
+            env=env,
         )
         result.duration_seconds = time.time() - start
         result.error_message = proc.stdout + proc.stderr
@@ -160,6 +165,10 @@ def _parse_pytest_output(result: BenchmarkResult, output: str) -> None:
         failed_m = re.search(r'(\d+)\s+failed', output)
         if failed_m:
             result.failed = int(failed_m.group(1))
+        # Handle collection errors: "N error" during collection
+        error_m = re.search(r'(\d+)\s+error', output)
+        if error_m:
+            result.failed = int(error_m.group(1))
 
 
 def _parse_json_report(result: BenchmarkResult, report_path: Path) -> None:
