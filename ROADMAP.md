@@ -124,7 +124,7 @@ diversity alerts. All three feed into one quality system.
 #### Still Pending (from v2.0)
 
 - [x] Chat interface (web version of `chat-tui`)
-- [ ] Authentication — optional API key management + session persistence for web
+- [x] Authentication — optional API key management + session persistence for web
 - [ ] Video demo / GIF showcase
 
 - [x] Feature research: see [docs/v2.1_research.md](docs/v2.1_research.md) — 22 features from HN newest-page trends
