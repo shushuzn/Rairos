@@ -18,7 +18,7 @@ try:
     from playwright.sync_api import sync_playwright
 except ImportError:
     print("Error: playwright not installed. Run: pip install playwright && playwright install chromium")
-    raise SystemExit(1)
+    raise SystemExit(1) from None
 
 DEMO_STEPS = [
     {"name": "homepage", "url": "/", "wait": 2, "desc": "Rairos Dashboard"},

@@ -177,11 +177,10 @@ async def papers(request: Request, q: str = "", source: str = "", page: int = 1,
     total_pages = max(1, (total + limit - 1) // limit)
 
     return templates.TemplateResponse(request, "papers.html", {
-        "page": "papers",
+        "page": page,
         "papers": papers_list,
         "query": q,
         "total": total,
-        "page": page,
         "total_pages": total_pages,
         "year_from": year_from,
         "year_to": year_to,
@@ -1212,8 +1211,6 @@ async def squad_activity():
 
         # Extract arXiv-related events for gap watch stats
         arxiv_events = [e for e in activity if "arxiv" in (e.get("payload") or "").lower()]
-        import datetime
-        now = datetime.datetime.now()
         watch_stats = {
             "arxiv_events_today": len(arxiv_events),
             "last_arxiv_event": arxiv_events[0]["ts"] if arxiv_events else None,
@@ -1536,7 +1533,6 @@ def _generate_suggestions(capsules, gap_prefs, topic_freq, archetype, tracker) -
         })
 
     # 4. Dominant archetype-driven suggestion
-    arch_label = archetype.get("archetype_label", "")
     arch_dim = archetype.get("dominant", "")
     if arch_dim == "method_focused":
         suggestions.append({
