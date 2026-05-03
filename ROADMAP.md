@@ -114,11 +114,11 @@ diversity alerts. All three feed into one quality system.
 - [ ] **Policy Impact Tracer** — map new regulation → affected domains → updated Gene Pool priority weights
 - [ ] **Labor Displacement Tracker** — dedicated Gene Pool filter for "AI vs. human labor" gaps (arXiv: cs.cyber-ph, cs.soc)
 - [ ] **Climate AI Monitor** — arXiv watch tuned to climate+AI intersection; high priority in gap watch matching
-- [ ] **Briefing Distributor** — generate audience-specific digests: PhD advisor, industry engineer, policy maker
-- [ ] **Research Disseminator** — one-click public link to briefing (`rairos.app/b/{short_id}`)
-- [ ] **Citation Pathfinder Web Graph** — interactive SVG graph: paper → cites → Gene Pool capsule, color-coded by gap_type
+- [x] **Briefing Distributor** — generate audience-specific digests: PhD advisor, industry engineer, policy maker
+- [x] **Research Disseminator** — one-click public link to briefing (`rairos.app/b/{short_id}`)
+- [x] **Citation Pathfinder Web Graph** — interactive SVG graph: paper → cites → Gene Pool capsule, color-coded by gap_type
 - [ ] **arXiv Watch Alert Channels** — multiple feed configs (general, climate, AI safety, regulation) with different matching criteria
-- [ ] **Gene Pool Import/Export** — backup/restore pool as JSON; share configs across machines
+- [x] **Gene Pool Import/Export** — backup/restore pool as JSON; share configs across machines
 - [ ] **Multi-Researcher Support** — shared Gene Pool with `source_user` tags; collaborative gap tracking
 
 #### Still Pending (from v2.0)
