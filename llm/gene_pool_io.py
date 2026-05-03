@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-GP_DIR = Path.home() / ".ai_research_os" / "gene_pool"
+GP_DIR = Path.home() / ".ai_research_os" / "evolution"  # unified with EvolutionTracker
 CAPSULE_PATH = GP_DIR / "capsules.json"
 
 
@@ -20,13 +20,13 @@ def load_capsules(
     source_paper_id: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Load capsules with optional filtering by gap_type, status, source_paper_id."""
-    if not CAPSULE_PATH.exists():
+    if not GP_DIR.exists():
         return []
     try:
-        data = json.loads(CAPSULE_PATH.read_text(encoding="utf-8"))
+        text = (GP_DIR / "gene_pool.jsonl").read_text(encoding="utf-8").strip()
+        capsules = [json.loads(l) for l in text.split("\n") if l.strip()]
     except Exception:
         return []
-    capsules = data.get("capsules", [])
     if gap_type is not None:
         capsules = [c for c in capsules if c.get("action_gap_type") == gap_type]
     if status is not None:
