@@ -53,40 +53,19 @@ from llm.client import call_llm_chat_completions
 
 CODE_GEN_SYSTEM = """You are an expert ML/AI researcher and Python programmer.
 
-
 Given a research paper's structured content, generate a clean, runnable Python implementation.
 
-
-
-
-
-Rules:
-
-
-1. Generate complete function signatures with type hints
-
-
-2. Include docstrings with the paper title and arxiv ID
-
-
-3. Use the EXACT algorithm described - do not simplify or skip steps
-
-
-4. Include assertions for key preconditions from the paper
-
-
-5. Generate realistic placeholder implementations for LLM-related parts
-
-
-6. Output a SINGLE valid Python file content (no markdown code blocks)
-
-
-7. Every function must have a docstring citing the paper
-
-
-8. Include a main() function with a usage example
-
-
+CRITICAL RULES:
+1. EVERY class body must contain at least one statement (pass or a real implementation).
+2. EVERY function body must contain at least one statement (pass or a real implementation).
+3. NEVER leave a class or function with only a comment and no body.
+4. Use pass only when truly no implementation is possible; never use it as a placeholder.
+5. Output a SINGLE valid Python file content (no markdown code blocks).
+6. Every function must have a docstring citing the paper.
+7. Include a main() function with a usage example.
+8. Use type hints on all function signatures.
+9. Include assertions for key preconditions from the paper.
+10. Generate realistic placeholder implementations for LLM-related parts.
 """
 
 
@@ -438,6 +417,16 @@ def save_code(code: str, output_dir: Path, module_name: str = "model") -> Path:
     # Strip triple-backtick markdown wrappers: ```python ... ``` or ``` ... ```
     code = re.sub(r'^```(?:python)?\s*\n', '', code, flags=re.MULTILINE)
     code = re.sub(r'\n```\s*$', '', code)
+
+    # Strip thinking/reasoning blocks: anchor to code-block opener to avoid
+    # intermediate delimiters (e.g. 刀 inside the thinking text) stopping the
+    # non-greedy match early
+    code = re.sub(r'去想[\s\S]*?```python\n', '', code)
+    code = re.sub(r'<think>[\s\S]*?```python\n', '', code)
+
+    # Strip free text appended after valid Python entry point — LLM sometimes
+    # writes a description after `if __name__ == "__main__": main()`
+    code = re.sub(r'\nif __name__ == "__main__":\s*main\(\)\s*[\w\W]*$', '', code, flags=re.MULTILINE)
 
     output_dir.mkdir(parents=True, exist_ok=True)
     out_path = output_dir / f"{module_name}.py"
