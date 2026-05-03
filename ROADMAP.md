@@ -4,7 +4,7 @@
 
 ## Research Questions from LaST-R1 (arXiv:2604.28192)
 
-- [ ] Q1: 物理 Latent Reasoning 最优表征：离散 vs 连续？
+- [x] Q1: 物理 Latent Reasoning 最优表征：离散 vs 连续？
 - [ ] Q2: LAPO vs PPO：收敛速度与样本效率的量化 trade-off？
 - [ ] Q3: 推理链长度与任务复杂度：成正比还是饱和效应？
 - [ ] Q4: Latent reasoning 能否 zero-shot 泛化到未见物体类别？

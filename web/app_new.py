@@ -267,6 +267,42 @@ async def extract_paper_gap(request: Request, paper_id: str):
     return result
 
 
+@app.get("/paper/{paper_id}/embodied-planning")
+async def embodied_planning_analysis(request: Request, paper_id: str):
+    """Analyze embodied planning paper: discrete vs continuous latent representation."""
+    db = _get_db()
+    paper = db.get_paper(paper_id)
+    if not paper:
+        return {"error": f"Paper '{paper_id}' not found."}
+
+    from llm.paper_gap_extractor import analyze_embodied_planning
+    result = analyze_embodied_planning(
+        paper_id=paper_id,
+        title=paper.title,
+        abstract=paper.abstract or "",
+        authors=paper.authors,
+    )
+    return result
+
+
+@app.get("/paper/{paper_id}/embodied-planning")
+async def embodied_planning_analysis(request: Request, paper_id: str):
+    """Analyze embodied planning paper: discrete vs continuous latent representation."""
+    db = _get_db()
+    paper = db.get_paper(paper_id)
+    if not paper:
+        return {"error": f"Paper '{paper_id}' not found."}
+
+    from llm.paper_gap_extractor import analyze_embodied_planning
+    result = analyze_embodied_planning(
+        paper_id=paper_id,
+        title=paper.title,
+        abstract=paper.abstract or "",
+        authors=paper.authors,
+    )
+    return result
+
+
 @app.post("/paper/{paper_id}/save-gap")
 async def save_paper_gap(request: Request, paper_id: str):
     """Save an extracted gap to the Gene Pool."""
