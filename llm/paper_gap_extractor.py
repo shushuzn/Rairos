@@ -198,3 +198,100 @@ def detect_contradictions(capsules: list) -> list:
                     })
 
     return contradictions
+
+
+def analyze_multi_paper_gaps(
+    papers: List[Dict[str, str]],
+    model: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Analyze gaps across multiple papers to surface shared and frontier opportunities.
+
+    papers: list of {id, title, abstract}
+    Returns: {shared_themes, complementary_gaps, frontier_gaps, contradictions, paper_count}
+    """
+    if len(papers) < 2:
+        return {
+            "shared_themes": [],
+            "complementary_gaps": [],
+            "frontier_gaps": [],
+            "contradictions": [],
+            "paper_count": len(papers),
+            "error": "Need at least 2 papers for multi-paper gap analysis",
+        }
+
+    papers_str = "\n\n".join(
+        f"Paper {i+1} (ID: {p.get('id', '?')}):\nTitle: {p.get('title', '?')}\nAbstract: {p.get('abstract', '?')[:400]}"
+        for i, p in enumerate(papers)
+    )
+
+    prompt = f"""You are a research gap analyst. Given a set of papers, identify systematic research gaps and opportunities across the entire collection.
+
+PAPERS:
+{papers_str}
+
+TASK:
+Analyze ALL papers above and produce a structured gap report. Focus on:
+
+1. SHARED THEMES: research areas/keywords that appear across multiple papers — these represent active frontier themes.
+
+2. COMPLEMENTARY GAPS: for each paper, identify what it DOES NOT address that another paper in the set DOES — these are complementary opportunities.
+
+3. FRONTIER GAPS: research gaps that NONE of the papers address but are clearly suggested by the collection's themes. These are the most valuable opportunities.
+
+4. CONTRADICTIONS: any papers that make opposing claims or findings about the same gap_type.
+
+Respond ONLY with a JSON object (no markdown, no code fences):
+{{
+  "shared_themes": [
+    {{"theme": "reasoning", "papers": ["id1", "id2"], "strength": 0.8, "description": "both papers tackle reasoning in long context"}}
+  ],
+  "complementary_gaps": [
+    {{"gap_title": "..." , "gap_type": "method_limitation", "addressed_by": ["id1"], "missing_from": ["id2"], "description": "..."}}
+  ],
+  "frontier_gaps": [
+    {{"gap_title": "...", "gap_type": "evaluation_gap", "keywords": ["benchmark", "reasoning"], "summary": "No paper evaluates on real-world deployment scenarios"}}
+  ],
+  "contradictions": [
+    {{"gap_type": "scalability_issue", "positive_id": "id1", "negative_id": "id2", "description": "Paper A claims scaling works; Paper B shows it fails on OOD data"}}
+  ]
+}}
+"""
+
+    try:
+        from llm.client import call_llm_chat_completions
+    except ImportError:
+        return {
+            "shared_themes": [],
+            "complementary_gaps": [],
+            "frontier_gaps": [],
+            "contradictions": [],
+            "paper_count": len(papers),
+            "error": "llm.client not available",
+        }
+
+    try:
+        content = call_llm_chat_completions(
+            messages=[{"role": "user", "content": prompt}],
+            model=model or "claude-3-5-sonnet-latest",
+        )
+        result = json.loads(content.strip())
+        result["paper_count"] = len(papers)
+        return result
+    except json.JSONDecodeError:
+        return {
+            "shared_themes": [],
+            "complementary_gaps": [],
+            "frontier_gaps": [],
+            "contradictions": [],
+            "paper_count": len(papers),
+            "error": f"LLM returned invalid JSON: {content[:200] if 'content' in dir() else '?'}",
+        }
+    except Exception as e:
+        return {
+            "shared_themes": [],
+            "complementary_gaps": [],
+            "frontier_gaps": [],
+            "contradictions": [],
+            "paper_count": len(papers),
+            "error": str(e),
+        }
