@@ -555,6 +555,40 @@ async def at_risk_pin(request: Request):
     return {"success": success}
 
 
+@app.get("/insights/queue")
+async def review_queue(request: Request):
+    """Capsule Review Queue — new capsules pending first feedback."""
+    from llm.review_queue import get_review_queue, render_review_queue_html
+    queue = get_review_queue()
+    html = render_review_queue_html(queue)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "review-queue",
+        "title": "Capsule Review Queue",
+        "content": html,
+    })
+
+
+@app.post("/insights/queue/verdict")
+async def submit_verdict(request: Request):
+    """Record a user's verdict on a queued capsule."""
+    from llm.insight.tracker import record_gap_accept
+    from llm.review_queue import _load_capsules
+    body = await request.json()
+    capsule_id = body.get("capsule_id", "")
+    verdict = body.get("verdict", "")
+
+    score_map = {"match": 1.0, "partial": 0.5, "not_relevant": 0.0}
+    score = score_map.get(verdict, 0.5)
+
+    capsules = _load_capsules()
+    for cap in capsules:
+        if cap.get("capsule_id", "") == capsule_id:
+            record_gap_accept(capsule_id, score=score)
+            break
+
+    return {"success": True}
+
+
 @app.get("/citation-chain")
 async def citation_chain(request: Request, arxiv_id: str = ""):
     """Citation Chain — build and visualize."""
