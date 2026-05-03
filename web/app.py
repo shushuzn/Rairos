@@ -605,14 +605,8 @@ async def gene_pool_graph(request: Request):
     Edges: contradiction (red solid) | same-gap (gray dashed)
     Returns HTML page with embedded D3.js visualization.
     """
-    capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-    capsules = []
-    if capsules_path.exists():
-        try:
-            data = json.loads(capsules_path.read_text(encoding="utf-8"))
-            capsules = data.get("capsules", []) if isinstance(data, dict) else data
-        except Exception:
-            capsules = []
+    from llm.gene_pool_io import load_capsules
+    capsules = load_capsules()
 
     GAP_TYPE_COLORS = {
         "embodied_planning": "#7A9E7A",
