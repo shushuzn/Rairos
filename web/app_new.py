@@ -962,6 +962,20 @@ async def arxiv_check(request: Request):
         return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
 
+def _get_global_rep_type_counts() -> dict:
+    """Count representation types across all embodied_planning capsules in Gene Pool."""
+    from llm.paper_gap_extractor import _read_capsules_json
+    capsules = _read_capsules_json()
+    counts = {"discrete": 0, "continuous": 0, "hybrid": 0, "unknown": 0}
+    for c in capsules:
+        if c.get("action_gap_type") != "embodied_planning":
+            continue
+        rt = c.get("archetype", {}).get("representation_type", "unknown")
+        if rt in counts:
+            counts[rt] += 1
+    return counts
+
+
 @app.post("/embodied-planning/auto-scan")
 async def embodied_planning_auto_scan(request: Request):
     """Auto-scan new VLA/robotics papers from subscriptions for embodied planning analysis.
@@ -982,6 +996,8 @@ async def embodied_planning_auto_scan(request: Request):
             all_new_ids.extend(papers)
 
         analyzed = []
+        contradictions = []
+        type_counts = {"discrete": 0, "continuous": 0, "hybrid": 0, "unknown": 0}
         for pid in all_new_ids:
             paper = db.get_paper(pid)
             if not paper:
@@ -995,20 +1011,92 @@ async def embodied_planning_auto_scan(request: Request):
                     abstract=paper.abstract or "",
                     authors=paper.authors,
                 )
-                analyzed.append({
+                rep_type = r.get("representation_type", "unknown")
+                type_counts[rep_type] = type_counts.get(rep_type, 0) + 1
+                entry = {
                     "paper_id": pid,
                     "title": paper.title[:60],
-                    "representation_type": r.get("representation_type", "?"),
+                    "representation_type": rep_type,
                     "confidence": r.get("confidence", 0),
                     "saved": "error" not in r,
-                })
+                }
+                # Contradiction alert
+                if r.get("contradiction_with"):
+                    entry["contradiction_with"] = r["contradiction_with"]
+                    entry["contradiction_type"] = r.get("contradiction_type")
+                    contradictions.append(entry)
+                analyzed.append(entry)
+
+        # Trend forecasting: dominant representation type in this batch
+        total_analyzed = len(analyzed)
+        trend = max(type_counts, key=type_counts.get) if total_analyzed > 0 else "unknown"
+        trend_pct = type_counts[trend] / total_analyzed if total_analyzed > 0 else 0
+
+        # Recommend next paper: under-represented type
+        all_counts = _get_global_rep_type_counts()
+        for rt in ["discrete", "continuous", "hybrid"]:
+            all_counts[rt] = all_counts.get(rt, 0) + type_counts.get(rt, 0)
+        underrep = min(all_counts, key=all_counts.get) if all_counts else "hybrid"
+        recommend_msg = ""
+        if total_analyzed > 0:
+            recommend_msg = (f"Only {type_counts.get(underrep,0)}/{total_analyzed} papers "
+                             f"in this batch used {underrep} — consider searching for more.")
+
+        notification = None
+        if contradictions:
+            notification = {
+                "type": "contradiction",
+                "uid": f"contra_{all_new_ids[0] if all_new_ids else 'none'}",
+                "message": f"⚠️ {len(contradictions)} contradiction(s) detected — papers disagree on representation type",
+                "details": contradictions[:3],
+            }
+            _notification_store.append(notification)
+        elif total_analyzed > 2 and trend_pct > 0.7:
+            notification = {
+                "type": "trend",
+                "uid": f"trend_{all_new_ids[0] if all_new_ids else 'none'}",
+                "message": f"📊 Strong trend: {trend} representation dominates ({int(trend_pct*100)}% of this batch)",
+            }
+            _notification_store.append(notification)
 
         return JSONResponse({
             "success": True,
             "total_new": len(all_new_ids),
             "analyzed": len(analyzed),
             "results": analyzed,
+            "contradictions": contradictions,
+            "trend": {"dominant": trend, "pct": int(trend_pct * 100), "counts": type_counts},
+            "recommended_next_type": underrep,
+            "recommend_msg": recommend_msg,
+            "notification": notification,
         })
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
+
+
+# In-memory notification store (per-process, reset on restart — lightweight)
+_notification_store: List[Dict[str, Any]] = []
+
+
+@app.get("/notifications")
+async def get_notifications(request: Request):
+    """Get current notifications (contradictions, trends, alerts)."""
+    from fastapi.responses import JSONResponse
+    return JSONResponse({"notifications": _notification_store})
+
+
+@app.post("/notifications/dismiss")
+async def dismiss_notification(request: Request):
+    """Dismiss all or specific notifications."""
+    from fastapi.responses import JSONResponse
+    try:
+        body = await request.json()
+        uid = body.get("uid")
+        if uid:
+            _notification_store[:] = [n for n in _notification_store if n.get("uid") != uid]
+        else:
+            _notification_store.clear()
+        return JSONResponse({"success": True, "remaining": len(_notification_store)})
     except Exception as e:
         return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
