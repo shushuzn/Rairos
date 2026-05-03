@@ -123,7 +123,7 @@ diversity alerts. All three feed into one quality system.
 
 #### Still Pending (from v2.0)
 
-- [ ] Chat interface (web version of `chat-tui`)
+- [x] Chat interface (web version of `chat-tui`)
 - [ ] Authentication — optional API key management + session persistence for web
 - [ ] Video demo / GIF showcase
 
