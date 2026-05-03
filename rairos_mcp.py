@@ -851,7 +851,7 @@ def tool_paper_recommend(
 
         # Build candidate pool: all papers not in history (or all if !exclude_read)
         read_ids = {getattr(p, 'paper_id', None) or getattr(p, 'id', None) for p in history}
-        all_rows, _ = db.search_papers("", limit=500)  # get all papers
+        all_rows, _ = db.list_papers(limit=500)  # get all papers
         if exclude_read:
             candidates = [r for r in all_rows if ((getattr(r, 'paper_id', None) or getattr(r, 'id', None)) not in read_ids)]
         else:
