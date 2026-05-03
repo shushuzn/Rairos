@@ -11,6 +11,332 @@ from typing import Any, Dict, List, Optional
 from llm.constants import LLM_BASE_URL, LLM_MODEL
 
 
+# =============================================================================
+# GAP ANALYZER CONFIGS — Q1-Q10 预配置模板
+# =============================================================================
+
+GAP_ANALYZER_CONFIGS: Dict[str, dict] = {
+    # Q1: embodied_planning — discrete vs continuous latent representation
+    "embodied_planning": {
+        "gap_type": "embodied_planning",
+        "result_fields": ["representation_type", "confidence", "evidence", "gap_title", "summary"],
+        "prompt_template": """You are a research analyst specializing in robotics and embodied AI.
+Given a paper's title and abstract, determine how the paper represents physical reasoning (latent reasoning over physical dynamics).
+
+PAPER:
+Title: {title}
+Authors: {authors}
+Abstract: {abstract}
+
+TASK:
+Answer these questions about the paper's latent representation approach:
+
+1. Does the paper use DISCRETE latent representations?
+   (e.g., discrete tokens, symbolic, quantized, language-like discrete states)
+   Look for: "discrete", "symbolic", "token", "quantized", "categorical", "language"
+
+2. Does the paper use CONTINUOUS latent representations?
+   (e.g., continuous vectors, real-valued embeddings, diffusion, Gaussian, continuous distributions)
+   Look for: "continuous", "diffusion", "Gaussian", "real-valued", "embedding", "vector"
+
+3. Is it HYBRID (both)?
+   (e.g., discrete reasoning + continuous execution, world model tokens + action distributions)
+
+4. What is the KEY EVIDENCE from the abstract?
+
+5. What OPEN QUESTION remains about this representation choice?
+
+Provide your analysis in this format:
+representation_type: [discrete|continuous|hybrid]
+confidence: [0.0-1.0]
+evidence: [key phrases from abstract]
+gap_title: [specific research question about this representation choice]
+summary: [2-sentence analysis]""",
+        "keywords": ["embodied", "latent", "reasoning", "VLA", "robotics"],
+    },
+    # Q2: rl_efficiency — LAPO vs PPO convergence speed
+    "rl_efficiency": {
+        "gap_type": "rl_efficiency",
+        "result_fields": ["algorithm", "convergence_speed", "sample_efficiency", "gap_title", "summary"],
+        "prompt_template": """You are a research analyst specializing in reinforcement learning.
+
+PAPER:
+Title: {title}
+Authors: {authors}
+Abstract: {abstract}
+
+TASK:
+Analyze the RL algorithm and its efficiency characteristics:
+
+1. Which RL algorithm does the paper focus on?
+   (e.g., PPO, LAPO, SAC, TD3, DDPG, Q-learning variants)
+
+2. How fast does it converge compared to baselines?
+   Look for: "converges in X steps", "sample efficiency", "faster than", "reduced samples"
+
+3. What is the sample efficiency ranking?
+
+4. What OPEN QUESTION remains about efficiency tradeoffs?
+
+Provide your analysis in this format:
+algorithm: [algorithm name]
+convergence_speed: [fast|medium|slow|unknown]
+sample_efficiency: [high|medium|low|unknown]
+gap_title: [specific research question about RL efficiency]
+summary: [2-sentence analysis]""",
+        "keywords": ["RL", "reinforcement learning", "efficiency", "convergence", "PPO", "LAPO"],
+    },
+    # Q3: reasoning_scaling — inference chain length vs task complexity
+    "reasoning_scaling": {
+        "gap_type": "reasoning_scaling",
+        "result_fields": ["chain_length", "task_complexity", "scaling_behavior", "gap_title", "summary"],
+        "prompt_template": """You are a research analyst specializing in reasoning systems.
+
+PAPER:
+Title: {title}
+Authors: {authors}
+Abstract: {abstract}
+
+TASK:
+Analyze the paper's approach to reasoning chain length and task complexity:
+
+1. What is the inference chain length discussed?
+   Look for: "chain-of-thought", "reasoning steps", "N steps", "depth"
+
+2. How does chain length scale with task complexity?
+
+3. What is the relationship between reasoning depth and performance?
+
+4. What OPEN QUESTION remains about scaling reasoning?
+
+Provide your analysis in this format:
+chain_length: [short|medium|long|variable|unknown]
+task_complexity: [simple|moderate|high|unknown]
+scaling_behavior: [linear|sublinear|superlinear|decreasing|unknown]
+gap_title: [specific research question about reasoning scaling]
+summary: [2-sentence analysis]""",
+        "keywords": ["reasoning", "chain-of-thought", "scaling", "inference", "complexity"],
+    },
+    # Q4: sim_to_real — zero-shot generalization
+    "sim_to_real": {
+        "gap_type": "sim_to_real",
+        "result_fields": ["generalization_level", "domain_gap", "transfer_quality", "gap_title", "summary"],
+        "prompt_template": """You are a research analyst specializing in sim-to-real transfer.
+
+PAPER:
+Title: {title}
+Authors: {authors}
+Abstract: {abstract}
+
+TASK:
+Analyze the paper's sim-to-real generalization capability:
+
+1. Does the paper achieve zero-shot generalization?
+   Look for: "zero-shot", "domain randomization", "unseen", "out-of-distribution"
+
+2. How large is the domain gap between simulation and real?
+
+3. What is the quality of transfer?
+
+4. What OPEN QUESTION remains about generalization bounds?
+
+Provide your analysis in this format:
+generalization_level: [zero-shot|few-shot|full-transfer|none|unknown]
+domain_gap: [small|medium|large|unknown]
+transfer_quality: [high|medium|low|unknown]
+gap_title: [specific research question about sim-to-real]
+summary: [2-sentence analysis]""",
+        "keywords": ["sim-to-real", "zero-shot", "generalization", "domain randomization", "transfer"],
+    },
+    # Q5: planning_control — reasoning/action alternation frequency
+    "planning_control": {
+        "gap_type": "planning_control",
+        "result_fields": ["alternation_freq", "planning_depth", "control_type", "gap_title", "summary"],
+        "prompt_template": """You are a research analyst specializing in planning and control systems.
+
+PAPER:
+Title: {title}
+Authors: {authors}
+Abstract: {abstract}
+
+TASK:
+Analyze the paper's planning and control architecture:
+
+1. How often does reasoning alternate with action execution?
+   Look for: "replan", "online planning", "action frequency", "control loop"
+
+2. What is the planning depth (how many steps ahead)?
+
+3. Is it hierarchical or flat control?
+
+4. What OPEN QUESTION remains about planning frequency?
+
+Provide your analysis in this format:
+alternation_freq: [high|medium|low|adaptive|unknown]
+planning_depth: [shallow|medium|deep|variable|unknown]
+control_type: [hierarchical|flat|hybrid|unknown]
+gap_title: [specific research question about planning/control]
+summary: [2-sentence analysis]""",
+        "keywords": ["planning", "control", "replanning", "hierarchical", "action"],
+    },
+    # Q6: representation_learning — visual vs physical latent attention
+    "representation_learning": {
+        "gap_type": "representation_learning",
+        "result_fields": ["attention_type", "modality_focus", "latent_structure", "gap_title", "summary"],
+        "prompt_template": """You are a research analyst specializing in representation learning.
+
+PAPER:
+Title: {title}
+Authors: {authors}
+Abstract: {abstract}
+
+TASK:
+Analyze the paper's representation learning approach:
+
+1. Where is attention focused — visual features or physical dynamics?
+   Look for: "visual", "physical", "latent", "attention", "feature"
+
+2. What modality does the latent representation encode?
+
+3. How is the latent space structured?
+
+4. What OPEN QUESTION remains about representation quality?
+
+Provide your analysis in this format:
+attention_type: [visual|physical|both|unknown]
+modality_focus: [vision|physics|multimodal|unknown]
+latent_structure: [discrete|continuous|structured|unknown]
+gap_title: [specific research question about representation learning]
+summary: [2-sentence analysis]""",
+        "keywords": ["representation", "attention", "visual", "latent", "features"],
+    },
+    # Q7: rl_pretraining — warm-start strategy quality vs diversity
+    "rl_pretraining": {
+        "gap_type": "rl_pretraining",
+        "result_fields": ["pretrain_strategy", "quality_diversity", "transfer_gain", "gap_title", "summary"],
+        "prompt_template": """You are a research analyst specializing in RL pretraining.
+
+PAPER:
+Title: {title}
+Authors: {authors}
+Abstract: {abstract}
+
+TASK:
+Analyze the paper's RL pretraining approach:
+
+1. What is the pretraining strategy?
+   Look for: "pretrained", "warm-start", "imitation learning", "offline", "online"
+
+2. Does it prioritize quality or diversity of pretraining data?
+
+3. How much does pretraining help downstream tasks?
+
+4. What OPEN QUESTION remains about pretraining tradeoffs?
+
+Provide your analysis in this format:
+pretrain_strategy: [imitation|offline|online|multi-task|mixed|unknown]
+quality_diversity: [quality-focused|diversity-focused|balanced|unknown]
+transfer_gain: [high|medium|low|none|unknown]
+gap_title: [specific research question about RL pretraining]
+summary: [2-sentence analysis]""",
+        "keywords": ["pretraining", "warm-start", "imitation learning", "offline RL", "transfer"],
+    },
+    # Q8: benchmark_coverage — LIBERO vs real robot evaluation
+    "benchmark_coverage": {
+        "gap_type": "benchmark_coverage",
+        "result_fields": ["benchmark_used", "real_robot_eval", "coverage_gap", "gap_title", "summary"],
+        "prompt_template": """You are a research analyst specializing in robot learning benchmarks.
+
+PAPER:
+Title: {title}
+Authors: {authors}
+Abstract: {abstract}
+
+TASK:
+Analyze the paper's evaluation approach:
+
+1. Which benchmark does the paper use?
+   Look for: "LIBERO", "RLBench", "MetaWorld", "real robot", "simulation benchmark"
+
+2. Does it evaluate on real robots or only simulation?
+
+3. What aspects of real-world deployment are NOT covered?
+
+4. What OPEN QUESTION remains about benchmark validity?
+
+Provide your analysis in this format:
+benchmark_used: [LIBERO|RLBench|MetaWorld|other|none|unknown]
+real_robot_eval: [yes|no|partial|unknown]
+coverage_gap: [small|medium|large|unknown]
+gap_title: [specific research question about benchmark coverage]
+summary: [2-sentence analysis]""",
+        "keywords": ["benchmark", "LIBERO", "RLBench", "evaluation", "real robot"],
+    },
+    # Q9: architecture_agnostic — non-VLA architecture transfer
+    "architecture_agnostic": {
+        "gap_type": "architecture_agnostic",
+        "result_fields": ["architecture_type", "transfer_scope", "model_agnostic", "gap_title", "summary"],
+        "prompt_template": """You are a research analyst specializing in robot learning architectures.
+
+PAPER:
+Title: {title}
+Authors: {authors}
+Abstract: {abstract}
+
+TASK:
+Analyze the paper's architecture and transfer properties:
+
+1. What architecture does the paper use?
+   Look for: "VLA", "CNN", "Transformer", "diffusion", "GPT", "language model"
+
+2. How well does it transfer to different architectures?
+
+3. Is the approach architecture-agnostic?
+
+4. What OPEN QUESTION remains about architecture transfer?
+
+Provide your analysis in this format:
+architecture_type: [VLA|Transformer|CNN|diffusion|hybrid|other|unknown]
+transfer_scope: [narrow|medium|broad|architecture-agnostic|unknown]
+model_agnostic: [yes|partial|no|unknown]
+gap_title: [specific research question about architecture transfer]
+summary: [2-sentence analysis]""",
+        "keywords": ["VLA", "architecture", "transfer", "Transformer", "CNN", "diffusion"],
+    },
+    # Q10: human_ai_collaboration — human intervention corrects latent paths
+    "human_ai_collaboration": {
+        "gap_type": "human_ai_collaboration",
+        "result_fields": ["intervention_type", "latent_correction", "collaboration_mode", "gap_title", "summary"],
+        "prompt_template": """You are a research analyst specializing in human-AI collaboration.
+
+PAPER:
+Title: {title}
+Authors: {authors}
+Abstract: {abstract}
+
+TASK:
+Analyze the paper's human-AI collaboration approach:
+
+1. How does human intervention occur?
+   Look for: "human in the loop", "intervention", "correction", "feedback", "teleoperation"
+
+2. Does human correction modify latent representations or only actions?
+
+3. What is the collaboration mode?
+
+4. What OPEN QUESTION remains about human-AI teaming?
+
+Provide your analysis in this format:
+intervention_type: [latent|action|both|unknown]
+latent_correction: [yes|no|partial|unknown]
+collaboration_mode: [teleop|correction|feedback|shared-control|unknown]
+gap_title: [specific research question about human-AI collaboration]
+summary: [2-sentence analysis]""",
+        "keywords": ["human-AI", "collaboration", "intervention", "teleoperation", "correction"],
+    },
+}
+
+
 def extract_gap_from_paper(
     paper_id: str,
     title: str,
@@ -85,6 +411,141 @@ Respond ONLY with a JSON object (no markdown, no code fences):
         }
 
 
+def analyze_gap(
+    paper_id: str,
+    title: str,
+    abstract: str,
+    gap_type: str,
+    authors: Optional[List[str]] = None,
+    api_key: Optional[str] = None,
+    model: Optional[str] = None,
+    extra_fields: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Generalized gap analyzer using GAP_ANALYZER_CONFIGS templates.
+
+    Args:
+        paper_id: unique paper identifier
+        title: paper title
+        abstract: paper abstract
+        gap_type: key in GAP_ANALYZER_CONFIGS (e.g. "embodied_planning", "rl_efficiency")
+        authors: optional list of author names
+        api_key: optional LLM API key
+        model: optional LLM model override
+        extra_fields: additional fields to store in archetype
+
+    Returns:
+        dict with result_fields from the config plus contradiction detection
+    """
+    if gap_type not in GAP_ANALYZER_CONFIGS:
+        return {
+            "error": f"Unknown gap_type: {gap_type}. Available: {list(GAP_ANALYZER_CONFIGS.keys())}",
+        }
+
+    config = GAP_ANALYZER_CONFIGS[gap_type]
+    result_fields = config["result_fields"]
+    keywords = config.get("keywords", [])
+    authors_str = ", ".join(authors[:3]) if authors else "Unknown"
+
+    # Fill prompt template
+    prompt = config["prompt_template"].format(
+        title=title,
+        authors=authors_str,
+        abstract=abstract[:800],
+    )
+
+    try:
+        from llm.client import call_llm_chat_completions
+    except ImportError:
+        result = {f: "unknown" for f in result_fields}
+        result["gap_title"] = title[:80]
+        result["summary"] = "LLM client not available."
+        result["error"] = "llm.client not available"
+        return result
+
+    try:
+        content = call_llm_chat_completions(
+            messages=[{"role": "user", "content": prompt}],
+            model=model or "claude-3-5-sonnet-latest",
+            api_key=api_key,
+        )
+
+        lines = content.strip().split("\n")
+        result = {f: "" for f in result_fields}
+        result["confidence"] = 0.5  # default
+        for line in lines:
+            for field in result_fields:
+                prefix = field + ":"
+                if line.startswith(prefix):
+                    val = line.split(":", 1)[1].strip()
+                    if field == "confidence":
+                        try:
+                            result[field] = float(val)
+                        except ValueError:
+                            pass
+                    elif isinstance(result[field], list):
+                        result[field] = [val]
+                    else:
+                        result[field] = val
+
+        # Build extra_fields for Gene Pool
+        gap_extra = extra_fields.copy() if extra_fields else {}
+        for field in result_fields:
+            if result.get(field) and result[field] != "unknown":
+                gap_extra[field] = result[field]
+
+        # Save to Gene Pool
+        capsule_id = save_gap_to_gene_pool(
+            paper_id=paper_id,
+            title=title,
+            gap_type=gap_type,
+            gap_title=result.get("gap_title") or f"{gap_type}: {title[:60]}",
+            keywords=keywords + [str(result.get(result_fields[0], ""))],
+            summary=result.get("summary") or f"{gap_type} analysis. {result_fields[0]}: {result.get(result_fields[0], 'unknown')}",
+            polarity="open",
+            extra_fields=gap_extra,
+        )
+
+        # Contradiction detection: same gap_type, different conclusion
+        result["contradiction_with"] = None
+        result["contradiction_type"] = None
+        if capsule_id:
+            all_capsules = _read_capsules_json()
+            existing = [
+                c for c in all_capsules
+                if c.get("action_gap_type") == gap_type
+                and c.get("archetype", {}).get("source_paper_id") != paper_id
+                and c.get("status") != "archived"
+            ]
+            primary_field = result_fields[0]
+            current_val = result.get(primary_field, "unknown")
+            if current_val and current_val != "unknown":
+                for ex in existing:
+                    ex_val = ex.get("archetype", {}).get(primary_field, "unknown")
+                    if ex_val != current_val and ex_val != "unknown":
+                        result["contradiction_with"] = ex.get("archetype", {}).get("source_paper_id")
+                        result["contradiction_type"] = ex_val
+                        break
+
+        # Track timeline (embodied_planning uses specialized tracker)
+        if gap_type == "embodied_planning":
+            track_embodied_evolution(
+                paper_id=paper_id,
+                title=title,
+                representation_type=result.get("representation_type", "unknown"),
+                confidence=result.get("confidence", 0.5),
+                gap_title=result.get("gap_title") or f"Latent Reasoning: {result.get('representation_type', 'unknown')}",
+            )
+
+        return result
+
+    except Exception as e:
+        result = {f: "unknown" for f in result_fields}
+        result["gap_title"] = title[:80]
+        result["summary"] = f"Analysis failed: {e}"
+        result["error"] = str(e)
+        return result
+
+
 def analyze_embodied_planning(
     paper_id: str,
     title: str,
@@ -95,140 +556,17 @@ def analyze_embodied_planning(
 ) -> Dict[str, Any]:
     """Analyze embodied planning paper: discrete vs continuous latent representation.
 
-    Returns:
-        representation_type: "discrete" | "continuous" | "hybrid"
-        confidence: float (0-1)
-        evidence: list of text snippets from abstract supporting the classification
-        gap_title: research question derived from the finding
-        summary: 1-2 sentence analysis
+    Delegates to analyze_gap(gap_type="embodied_planning", ...).
     """
-    authors_str = ", ".join(authors[:3]) if authors else "Unknown"
-
-    prompt = f"""You are a research analyst specializing in robotics and embodied AI.
-Given a paper's title and abstract, determine how the paper represents physical reasoning (latent reasoning over physical dynamics).
-
-PAPER:
-Title: {title}
-Authors: {authors_str}
-Abstract: {abstract[:800]}
-
-TASK:
-Answer these questions about the paper's latent representation approach:
-
-1. Does the paper use DISCRETE latent representations?
-   (e.g., discrete tokens, symbolic, quantized, language-like discrete states)
-   Look for: "discrete", "symbolic", "token", "quantized", "categorical", "language"
-
-2. Does the paper use CONTINUOUS latent representations?
-   (e.g., continuous vectors, real-valued embeddings, diffusion, Gaussian, continuous distributions)
-   Look for: "continuous", "diffusion", "Gaussian", "real-valued", "embedding", "vector"
-
-3. Is it HYBRID (both)?
-   (e.g., discrete reasoning + continuous execution, world model tokens + action distributions)
-
-4. What is the KEY EVIDENCE from the abstract?
-
-5. What OPEN QUESTION remains about this representation choice?
-
-Provide your analysis in this format:
-representation_type: [discrete|continuous|hybrid]
-confidence: [0.0-1.0]
-evidence: [key phrases from abstract]
-gap_title: [specific research question about this representation choice]
-summary: [2-sentence analysis]"""
-
-    try:
-        from llm.client import call_llm_chat_completions
-    except ImportError:
-        return {
-            "representation_type": "unknown",
-            "confidence": 0.0,
-            "evidence": [],
-            "gap_title": title[:80],
-            "summary": "LLM client not available for embodied planning analysis.",
-            "error": "llm.client not available",
-        }
-
-    try:
-        content = call_llm_chat_completions(
-            messages=[{"role": "user", "content": prompt}],
-            model=model or "claude-3-5-sonnet-latest",
-            api_key=api_key,
-        )
-
-        lines = content.strip().split("\n")
-        result = {
-            "representation_type": "unknown",
-            "confidence": 0.5,
-            "evidence": [],
-            "gap_title": "",
-            "summary": "",
-        }
-        for line in lines:
-            if line.startswith("representation_type:"):
-                val = line.split(":", 1)[1].strip().lower()
-                if val in ("discrete", "continuous", "hybrid"):
-                    result["representation_type"] = val
-            elif line.startswith("confidence:"):
-                try:
-                    result["confidence"] = float(line.split(":", 1)[1].strip())
-                except ValueError:
-                    pass
-            elif line.startswith("evidence:"):
-                result["evidence"] = [line.split(":", 1)[1].strip()]
-            elif line.startswith("gap_title:"):
-                result["gap_title"] = line.split(":", 1)[1].strip()
-            elif line.startswith("summary:"):
-                result["summary"] = line.split(":", 1)[1].strip()
-
-        # Save to Gene Pool
-        gap_type = "embodied_planning"
-        polarity = "open"
-        capsule_id = save_gap_to_gene_pool(
-            paper_id=paper_id,
-            title=title,
-            gap_type=gap_type,
-            gap_title=result.get("gap_title") or f"Latent Reasoning Representation: {result['representation_type']}",
-            keywords=[result["representation_type"], "embodied", "latent", "reasoning", "VLA"],
-            summary=result.get("summary") or f"{result['representation_type'].capitalize()} latent reasoning paper. Confidence: {result['confidence']:.0%}.",
-            polarity=polarity,
-            extra_fields={
-                "representation_type": result["representation_type"],
-                "confidence": result["confidence"],
-                "evidence": result.get("evidence", []),
-            },
-        )
-
-        # Contradiction detection: check existing capsules of same gap_type
-        result["contradiction_with"] = None
-        result["contradiction_type"] = None
-        if capsule_id:
-            from .gene import _read_capsules_json
-            all_capsules = _read_capsules_json()
-            existing = [
-                c for c in all_capsules
-                if c.get("action_gap_type") == "embodied_planning"
-                and c.get("archetype", {}).get("source_paper_id") != paper_id
-                and c.get("status") != "archived"
-            ]
-            for ex in existing:
-                ex_rep = ex.get("archetype", {}).get("representation_type", "unknown")
-                if ex_rep != result["representation_type"] and ex_rep != "unknown":
-                    result["contradiction_with"] = ex.get("archetype", {}).get("source_paper_id")
-                    result["contradiction_type"] = ex_rep
-                    break
-
-        return result
-
-    except Exception as e:
-        return {
-            "representation_type": "unknown",
-            "confidence": 0.0,
-            "evidence": [],
-            "gap_title": title[:80],
-            "summary": f"Analysis failed: {e}",
-            "error": str(e),
-        }
+    return analyze_gap(
+        paper_id=paper_id,
+        title=title,
+        abstract=abstract,
+        gap_type="embodied_planning",
+        authors=authors,
+        api_key=api_key,
+        model=model,
+    )
 
 
 def batch_analyze_embodied_planning(
@@ -489,8 +827,9 @@ def render_embodied_planning_graph() -> str:
             rtype = "unknown"
         nodes_info[pid] = (rtype, title, conf)
 
-    # Find contradiction edges: same paper mentions both types
-    edges = set()
+    # Find same-type edges (within-cluster) and contradiction edges (cross-type)
+    same_type_edges = set()
+    contradiction_edges = set()
     pids = list(nodes_info.keys())
     for i, p1 in enumerate(pids):
         for p2 in pids[i+1:]:
@@ -499,8 +838,11 @@ def render_embodied_planning_graph() -> str:
             r1, title1, _ = nodes_info[p1]
             r2, title2, _ = nodes_info[p2]
             if r1 != r2 and r1 != "unknown" and r2 != "unknown":
-                # Cross-type edge = potential contradiction
-                edges.add((p1[:12], p2[:12], r1, r2))
+                # Cross-type = potential contradiction
+                contradiction_edges.add((p1[:12], p2[:12], r1, r2))
+            elif r1 == r2 and r1 != "unknown":
+                # Same type = within-cluster edge
+                same_type_edges.add((p1[:12], p2[:12], r1))
 
     # Build Mermaid
     lines = ["```mermaid", "flowchart TD"]
@@ -508,9 +850,8 @@ def render_embodied_planning_graph() -> str:
 
     for pid, (rtype, title, conf) in nodes_info.items():
         short_id = pid[:12]
-        color = type_colors.get(rtype, "#aaa")
         conf_pct = int(conf * 100)
-        label = f"{title} {conf_pct}%"
+        label = f"**{title}**\n({conf_pct}%)"
         if rtype == "discrete":
             line = f"    {short_id}(({label}))"
         elif rtype == "continuous":
@@ -521,13 +862,136 @@ def render_embodied_planning_graph() -> str:
             line = f"    {short_id}(({label}))"
         lines.append(line)
 
-    lines.append("    %% Edges: cross-type contradictions")
-    for e1, e2, r1, r2 in sorted(edges):
-        color = {"discrete": "stroke:#7A9E7A", "continuous": "stroke:#6B8FB5", "hybrid": "stroke:#D4A84B"}.get(r1, "")
-        lines.append(f"    {e1} -.->|{r1}/{r2}| {e2} {color}")
+    lines.append("    %% Same-type edges: gray solid (within-cluster)")
+    for e1, e2, rtype in sorted(same_type_edges):
+        lines.append(f"    {e1} -->|same| {e2}")
 
+    lines.append("    %% Contradiction edges: red dashed (cross-type)")
+    for e1, e2, r1, r2 in sorted(contradiction_edges):
+        lines.append(f"    {e1} -.->|{r1}/{r2}| {e2}")
+
+    lines.append("")
+    lines.append("    subgraph legend[\"\"]")
+    lines.append("        direction LR")
+    lines.append("        L1[\"\"] --- L2[\"\"]")
+    lines.append("        L1[\"\"] -..- L3[\"\"]")
+    lines.append("        LS1[\"same type (same color)\"]")
+    lines.append("        LS2[\"contradiction (cross-type)\"]")
+    lines.append("    end")
     lines.append("```")
     return "\n".join(lines)
+
+
+def render_compare_view(paper_ids: List[str], db=None) -> str:
+    """Render side-by-side HTML comparison of up to 2 papers.
+
+    Each paper shows: representation_type badge, confidence bar, evidence list, gap_title.
+    Middle column shows comparison verdict: same type = green "一致", diff type = red "矛盾".
+    """
+    if not paper_ids:
+        return "<div style='font-family:var(--font-display);color:#888;'>No papers selected.</div>"
+    if len(paper_ids) > 2:
+        paper_ids = paper_ids[:2]
+    if db is None:
+        from db.database import Database
+        db = Database()
+
+    import json as _json
+    capsule_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+    capsules = []
+    if capsule_path.exists():
+        capsules = _json.loads(capsule_path.read_text(encoding="utf-8")).get("capsules", [])
+
+    color_map = {"discrete": "#7A9E7A", "continuous": "#6B8FB5", "hybrid": "#D4A84B", "unknown": "#aaa"}
+    type_labels = {"discrete": "Discrete", "continuous": "Continuous", "hybrid": "Hybrid", "unknown": "Unclear"}
+    badge_colors = {"discrete": "#7A9E7A", "continuous": "#6B8FB5", "hybrid": "#D4A84B", "unknown": "#aaa"}
+
+    paper_data = []
+    for pid in paper_ids:
+        paper = db.get_paper(pid)
+        # Find matching capsule
+        capsule = None
+        for c in capsules:
+            src = c.get("archetype", {}).get("source_paper_id", "")
+            if src == pid and (c.get("action_gap_type") == "embodied_planning" or c.get("trigger_gap_type") == "embodied_planning"):
+                capsule = c
+                break
+        rep_type = "unknown"
+        confidence = 0.0
+        evidence = []
+        gap_title = ""
+        if capsule:
+            rep_type = capsule.get("archetype", {}).get("representation_type", "unknown")
+            confidence = capsule.get("outcome_success_score", 0.0)
+            evidence = capsule.get("archetype", {}).get("evidence", [])
+            gap_title = capsule.get("action_gap_title", "")
+        if paper:
+            title = paper.title
+        else:
+            title = f"Paper {pid[:12]}"
+        paper_data.append({
+            "id": pid,
+            "title": title,
+            "representation_type": rep_type,
+            "confidence": confidence,
+            "evidence": evidence,
+            "gap_title": gap_title,
+        })
+
+    if len(paper_data) == 1:
+        pd = paper_data[0]
+        badge = f"<span style='background:{badge_colors.get(pd['representation_type'],'#aaa')};color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;'>{type_labels.get(pd['representation_type'],'Unknown')}</span>"
+        conf_pct = int(pd['confidence'] * 100)
+        conf_bar = f"<div style='background:#eee;border-radius:4px;height:8px;width:100%;'><div style='background:{color_map.get(pd['representation_type'],'#aaa')};height:8px;border-radius:4px;width:{conf_pct}%;'></div></div>"
+        evidence_html = "".join(f"<li style='font-size:13px;color:#555;margin-bottom:4px;'>{e}</li>" for e in pd['evidence']) if pd['evidence'] else "<li style='font-size:13px;color:#aaa;'>No evidence extracted.</li>"
+        gap_html = f"<div style='font-size:13px;color:#333;margin-top:8px;'><strong>Gap:</strong> {pd['gap_title'] or '—'}</div>"
+        return f"""
+<div style="font-family:var(--font-display);max-width:600px;">
+  <div style="font-size:16px;font-weight:700;margin-bottom:16px;">{pd['title'][:80]}</div>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">{badge} <span style="font-size:12px;color:#888;">{conf_pct}% confidence</span></div>
+  {conf_bar}
+  <ul style="margin-top:12px;padding-left:18px;">{evidence_html}</ul>
+  {gap_html}
+</div>"""
+
+    pd1, pd2 = paper_data[0], paper_data[1]
+    same_type = pd1['representation_type'] == pd2['representation_type'] and pd1['representation_type'] != 'unknown'
+    verdict_color = "#4caf50" if same_type else "#e53935"
+    verdict_text = "一致" if same_type else "矛盾"
+    verdict_icon = "&#10004;" if same_type else "&#10006;"
+
+    def paper_card(pd):
+        badge = f"<span style='background:{badge_colors.get(pd['representation_type'],'#aaa')};color:#fff;padding:2px 10px;border-radius:4px;font-size:12px;font-weight:700;'>{type_labels.get(pd['representation_type'],'Unknown')}</span>"
+        conf_pct = int(pd['confidence'] * 100)
+        conf_bar = f"<div style='background:#eee;border-radius:4px;height:8px;width:100%;'><div style='background:{color_map.get(pd['representation_type'],'#aaa')};height:8px;border-radius:4px;width:{conf_pct}%;'></div></div>"
+        evidence_html = "".join(f"<li style='font-size:13px;color:#555;margin-bottom:6px;'>{e}</li>" for e in pd['evidence']) if pd['evidence'] else "<li style='font-size:13px;color:#aaa;'>No evidence extracted.</li>"
+        gap_html = f"<div style='font-size:13px;color:#333;margin-top:10px;padding-top:10px;border-top:1px solid #eee;'><strong>Gap:</strong> {pd['gap_title'] or '—'}</div>"
+        return f"""
+  <td style="vertical-align:top;padding:16px;background:#fafafa;border-radius:8px;border:1px solid #eee;width:40%;">
+    <div style="font-size:14px;font-weight:700;color:#222;margin-bottom:10px;line-height:1.4;">{pd['title'][:80]}</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">{badge} <span style="font-size:11px;color:#888;">{conf_pct}%</span></div>
+    {conf_bar}
+    <ul style="margin-top:10px;padding-left:18px;">{evidence_html}</ul>
+    {gap_html}
+  </td>"""
+
+    verdict_html = f"""
+  <td style="vertical-align:center;text-align:center;padding:16px;width:20%;">
+    <div style="font-size:24px;color:{verdict_color};">{verdict_icon}</div>
+    <div style="font-size:16px;font-weight:700;color:{verdict_color};margin-top:6px;">{verdict_text}</div>
+    <div style="font-size:11px;color:#888;margin-top:4px;">{"Same representation" if same_type else "Different representations"}</div>
+  </td>"""
+
+    return f"""
+<div style="font-family:var(--font-display);max-width:900px;">
+  <table style="width:100%;border-collapse:separate;border-spacing:8px;">
+    <tr>
+{paper_card(pd1)}
+{verdict_html}
+{paper_card(pd2)}
+    </tr>
+  </table>
+</div>"""
 
 
 def _extract_keywords(text: str) -> List[str]:
@@ -623,6 +1087,93 @@ def save_gap_to_gene_pool(
         return capsule_id
     except Exception:
         return None
+
+
+def track_embodied_evolution(
+    paper_id: str,
+    title: str,
+    representation_type: str,
+    confidence: float,
+    gap_title: str,
+) -> bool:
+    """Record embodied planning belief change for timeline tracking.
+
+    Writes a timeline entry to ~/.ai_research_os/gene_pool/embodied_timeline.jsonl.
+    Each entry captures a 'belief snapshot' of what the field believes at a point in time.
+    """
+    try:
+        timeline_path = Path.home() / ".ai_research_os" / "gene_pool" / "embodied_timeline.jsonl"
+        timeline_path.parent.mkdir(parents=True, exist_ok=True)
+        entry = {
+            "timestamp": datetime.now().isoformat(),
+            "paper_id": paper_id,
+            "paper_title": title[:120],
+            "representation_type": representation_type,
+            "confidence": confidence,
+            "gap_title": gap_title[:120],
+        }
+        with open(timeline_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+        return True
+    except Exception:
+        return False
+
+
+def render_evolution_timeline() -> str:
+    """Render embodied planning belief timeline as a Mermaid Gantt chart.
+
+    Shows how the field's representation-type 'belief' evolved over time.
+    """
+    import json as _json
+    timeline_path = Path.home() / ".ai_research_os" / "gene_pool" / "embodied_timeline.jsonl"
+    if not timeline_path.exists():
+        return ""
+
+    entries = []
+    try:
+        with open(timeline_path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                entries.append(_json.loads(line))
+    except Exception:
+        return ""
+
+    if not entries:
+        return ""
+
+    # Sort by timestamp
+    entries.sort(key=lambda x: x.get("timestamp", ""))
+
+    type_colors = {"discrete": "#7A9E7A", "continuous": "#6B8FB5", "hybrid": "#D4A84B", "unknown": "#aaa"}
+
+    lines = ["```mermaid", "gantt"]
+    lines.append("    title Embodied Planning: Field Belief Evolution")
+    lines.append("    dateFormat X")
+    lines.append("    axisFormat %m/%d")
+
+    prev_type = None
+    section_open = False
+    for i, e in enumerate(entries):
+        rt = e.get("representation_type", "unknown")
+        color = type_colors.get(rt, "#aaa")
+        short_id = e["paper_id"][:10]
+        title_short = e.get("paper_title", "Untitled")[:35].replace('"', "'")
+        ts = e.get("timestamp", "")[5:10]  # MM-DD
+        label = f"{title_short} ({rt})"
+
+        if rt != prev_type:
+            if section_open:
+                lines.append("    section ::")
+            lines.append(f"    section {rt.capitalize()} ::")
+            prev_type = rt
+            section_open = True
+
+        lines.append(f"    {label} :done, {short_id}, {i}, {i+1}d")
+
+    lines.append("```")
+    return "\n".join(lines)
 
 
 def detect_contradictions(capsules: list) -> list:
