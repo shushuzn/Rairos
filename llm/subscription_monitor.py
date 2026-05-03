@@ -133,41 +133,6 @@ class SubscriptionMonitor:
     def _search_arxiv(self, query: str, max_results: int) -> List[Dict[str, Any]]:
         return search_arxiv(query, max_results)
 
-    def _parse_atom_feed(self, xml_content: str) -> List[Dict[str, Any]]:
-        """Parse arXiv Atom feed into paper dicts."""
-        papers = []
-
-        try:
-            root = ET.fromstring(xml_content)
-            ns = {"atom": "http://www.w3.org/2005/Atom"}
-
-            for entry in root.findall("atom:entry", ns):
-                # Extract arXiv ID from ID element
-                arxiv_id_elem = entry.find("atom:id", ns)
-                arxiv_id = ""
-                if arxiv_id_elem is not None and arxiv_id_elem.text:
-                    arxiv_id = arxiv_id_elem.text.split("/")[-1]
-
-                title_elem = entry.find("atom:title", ns)
-                title = title_elem.text.strip().replace("\n", " ") if title_elem is not None and title_elem.text else ""
-
-                summary_elem = entry.find("atom:summary", ns)
-                abstract = summary_elem.text.strip().replace("\n", " ") if summary_elem is not None and summary_elem.text else ""
-
-                published_elem = entry.find("atom:published", ns)
-                published = published_elem.text[:10] if published_elem is not None and published_elem.text else ""
-
-                papers.append({
-                    "arxiv_id": arxiv_id,
-                    "title": title,
-                    "abstract": abstract,
-                    "published": published,
-                })
-        except ET.ParseError as e:
-            logger.error(f"Failed to parse arXiv feed: {e}")
-
-        return papers
-
 
 # Standalone public function — reuse in embodied_planning_search
 def search_arxiv(query: str, max_results: int = 10) -> List[Dict[str, Any]]:
