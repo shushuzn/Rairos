@@ -435,6 +435,19 @@ async def contradiction_heatmap(request: Request):
     })
 
 
+@app.get("/alerts/paradigm")
+async def paradigm_alert(request: Request):
+    """Paradigm Concentration Alert — flags when >60% citations cluster around ≤3 papers."""
+    from llm.paradigm_monitor import check_paradigm_concentration, render_html
+    result = check_paradigm_concentration("all")
+    html = render_html(result)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "paradigm-alert",
+        "title": "Paradigm Alert",
+        "content": html,
+    })
+
+
 @app.get("/gene-pool/at-risk")
 async def gene_pool_at_risk(request: Request):
     """Show at-risk capsules (low_score_streak >= 2) with keep/pin actions."""
