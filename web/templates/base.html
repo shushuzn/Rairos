@@ -161,5 +161,17 @@
   </script>
 
   {% block scripts %}{% endblock %}
+  <style>
+    @media print {
+      .sidebar, .hamburger, .sidebar-overlay, .btn, nav, header, footer,
+      .page-title-underline, .page-desc, #briefing-result > div > div:last-child { display: none !important; }
+      .main { margin: 0 !important; padding: 20px !important; }
+      .card { box-shadow: none !important; border: 1px solid #ddd !important; break-inside: avoid; }
+      .markdown-content h2 { border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+      body { font-size: 12pt; color: #000; background: #fff; }
+      a { color: #000; text-decoration: underline; }
+      @page { margin: 2cm; }
+    }
+  </style>
 </body>
 </html>

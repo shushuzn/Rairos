@@ -41,8 +41,8 @@
 
 <!-- Result -->
 {% if result %}
-<div class="card">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<div class="card" id="briefing-result">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
     <div>
       <div class="card-title" style="margin-bottom: 4px;">{{ result.briefing.paper_title[:80] }}</div>
       <div style="font-size: 13px; color: var(--ink-faint);">
@@ -50,7 +50,15 @@
         · Generated {{ result.briefing.generated_at[:16] }}
       </div>
     </div>
-    <div style="text-align: right;">
+    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+      {% if markdown_path %}
+      <a href="{{ markdown_path }}" download class="btn btn-secondary" style="padding: 6px 14px; font-size: 13px; text-decoration: none;">
+        📄 Download MD
+      </a>
+      {% endif %}
+      <button onclick="window.print()" class="btn btn-secondary" style="padding: 6px 14px; font-size: 13px;">
+        🖨️ Print / PDF
+      </button>
       {% if result.briefing.verdict == 'validates' %}
       <span class="badge badge-green" style="font-size: 14px;">✅ Validates</span>
       {% elif result.briefing.verdict == 'contradicts' %}
