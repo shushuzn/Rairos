@@ -2184,6 +2184,38 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"get_subscription_papers failed: {e}") from e
 
+    def get_recent_subscription_papers_grouped(self, limit_per: int = 5) -> Dict[str, List[dict]]:
+        """Get most recent subscription papers grouped by subscription topic (channel id).
+
+        Returns: {topic: [paper_dict, ...]}
+        """
+        try:
+            cur = self.conn.execute(
+                """
+                SELECT sp.topic, sp.arxiv_id, sp.title, sp.score,
+                       sp.published, sp.created_at
+                FROM arxiv_subscription_papers asp
+                JOIN arxiv_subscriptions sp ON asp.subscription_id = sp.id
+                ORDER BY asp.created_at DESC
+                """)
+            rows = cur.fetchall()
+            grouped: Dict[str, List[dict]] = {}
+            for row in rows:
+                topic = row[0]
+                if topic not in grouped:
+                    grouped[topic] = []
+                if len(grouped[topic]) < limit_per:
+                    grouped[topic].append({
+                        "arxiv_id": row[1],
+                        "title": row[2],
+                        "score": row[3],
+                        "published": row[4],
+                        "created_at": row[5],
+                    })
+            return grouped
+        except sqlite3.Error as e:
+            raise DatabaseError(f"get_recent_subscription_papers_grouped failed: {e}") from e
+
     # ── Literature Reviews ────────────────────────────────────────────────────────
 
     def add_literature_review(

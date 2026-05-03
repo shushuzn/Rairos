@@ -114,8 +114,9 @@ def update_channel(cid: str, updates: Dict[str, Any]) -> bool:
     return True
 
 
-def render_channels_html() -> str:
+def render_channels_html(check_results: Optional[Dict[str, List[Dict[str, Any]]]] = None) -> str:
     channels = get_channels()
+    check_results = check_results or {}
 
     lines = ['<div class="channels-panel">']
     lines.append("<h3>📡 arXiv Watch Alert Channels</h3>")
@@ -123,11 +124,39 @@ def render_channels_html() -> str:
                 "Configure multiple feed channels with different matching criteria. "
                 "Higher priority = shown first in alerts.</p>")
 
+    # Run Check button
+    lines.append("""
+    <div style="margin-bottom: 20px;">
+      <button id="run-check-btn" onclick="runCheck()" style="
+        background: #1a73e8; color: #fff; border: none; border-radius: 6px;
+        padding: 10px 20px; font-size: 14px; cursor: pointer; font-family: Georgia, serif;">
+        🔍 Run Check Now
+      </button>
+      <span id="check-status" style="font-size:13px;color:#888;margin-left:12px;display:none;"></span>
+    </div>
+    <div id="check-results"></div>
+    """)
+
     for ch in channels:
         color = {3: "#C4706A", 2: "#D4A055", 1: "#6B8FB5"}.get(ch.priority, "#A89E8C")
         status = "✅ Enabled" if ch.enabled else "❌ Disabled"
         kw_str = ", ".join(f"<code>{k}</code>" for k in ch.keywords[:6])
         cat_str = ", ".join(ch.categories[:4])
+        # Results from last check for this channel
+        channel_results = check_results.get(ch.id, [])
+        result_rows = ""
+        for rp in channel_results[:5]:
+            result_rows += f"""
+            <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #f0ebe5;">
+              <span style="color:#4CAF50;font-size:12px;">●</span>
+              <div style="flex:1;">
+                <div style="font-size:12px;color:#2a2a2a;font-weight:600;">{rp.get('title','')[:80]}</div>
+                <div style="font-size:11px;color:#888;">{rp.get('published','')} · score={rp.get('score',0):.2f}</div>
+              </div>
+            </div>"""
+        if not result_rows:
+            result_rows = "<div style='font-size:12px;color:#bbb;padding:4px 0;'>No new papers in last check</div>"
+
         lines.append(f"""
 <div style='border: 1px solid #e0dbd4; border-radius: 6px; padding: 14px; margin-bottom: 12px; border-left: 4px solid {color};'>
   <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;'>
@@ -136,6 +165,10 @@ def render_channels_html() -> str:
   </div>
   <div style='font-size: 12px; color: #7a7570; margin-bottom: 4px'>Categories: {cat_str}</div>
   <div style='font-size: 12px; color: #A89E8C; margin-bottom: 8px'>Keywords: {kw_str or '(none)'}</div>
+  <div style='margin-bottom: 10px; padding: 8px; background: #faf9f7; border-radius: 4px;'>
+    <div style='font-size:11px;color:#888;margin-bottom:6px;'>Recent papers from this channel:</div>
+    {result_rows}
+  </div>
   <div style='display: flex; gap: 8px;'>
     <button onclick="toggleChannel('{ch.id}')" style="font-size: 11px; padding: 3px 10px; cursor: pointer; border-radius: 3px; border: 1px solid #ccc; background: transparent">
       Toggle
@@ -149,6 +182,27 @@ function toggleChannel(cid) {
     fetch('/arxiv-channels/toggle/' + cid, {method: 'POST'})
       .then(function(r) { return r.json(); })
       .then(function(d) { if (d.success) location.reload(); });
+}
+function runCheck() {
+    var btn = document.getElementById('run-check-btn');
+    var status = document.getElementById('check-status');
+    btn.disabled = true;
+    btn.textContent = '⏳ Checking...';
+    status.style.display = 'inline';
+    status.textContent = 'Querying arXiv...';
+    fetch('/arxiv-channels/check', {method: 'POST'})
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+          btn.disabled = false;
+          btn.textContent = '🔍 Run Check Now';
+          status.textContent = '';
+          location.reload();
+      })
+      .catch(function(e) {
+          btn.disabled = false;
+          btn.textContent = '🔍 Run Check Now';
+          status.textContent = 'Error: ' + e.message;
+      });
 }
 </script>""")
 
