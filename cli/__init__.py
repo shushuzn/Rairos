@@ -10,7 +10,7 @@ from typing import Any, Dict
 
 
 
-from cli._registry import main, _main_legacy
+from cli._registry import main
 
 
 
@@ -18,7 +18,7 @@ from cli._registry import main, _main_legacy
 
 
 
-__all__ = ["main", "_main_legacy"]
+__all__ = ["main"]
 
 
 
