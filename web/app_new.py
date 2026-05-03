@@ -1181,12 +1181,10 @@ async def arxiv_check(request: Request):
 
 def _get_global_rep_type_counts() -> dict:
     """Count representation types across all embodied_planning capsules in Gene Pool."""
-    from llm.paper_gap_extractor import _read_capsules_json
-    capsules = _read_capsules_json()
-    counts = {"discrete": 0, "continuous": 0, "hybrid": 0, "unknown": 0}
+    from llm.gene_pool_io import load_capsules
+    capsules = load_capsules(gap_type="embodied_planning")
+    counts: Dict[str, int] = {"discrete": 0, "continuous": 0, "hybrid": 0, "unknown": 0}
     for c in capsules:
-        if c.get("action_gap_type") != "embodied_planning":
-            continue
         rt = c.get("archetype", {}).get("representation_type", "unknown")
         if rt in counts:
             counts[rt] += 1
@@ -1204,7 +1202,7 @@ async def embodied_planning_auto_scan(request: Request):
     try:
         db = _get_db()
         from llm.subscription_monitor import SubscriptionMonitor
-        from llm.paper_gap_extractor import analyze_embodied_planning
+        from llm.paper_gap_extractor import run_embodied_analysis
 
         monitor = SubscriptionMonitor(db)
         results = monitor.check_all()  # {topic: [paper_ids]}
@@ -1212,42 +1210,21 @@ async def embodied_planning_auto_scan(request: Request):
         for papers in results.values():
             all_new_ids.extend(papers)
 
-        analyzed = []
-        contradictions = []
-        type_counts = {"discrete": 0, "continuous": 0, "hybrid": 0, "unknown": 0}
-        for pid in all_new_ids:
-            paper = db.get_paper(pid)
-            if not paper:
-                continue
-            # Only analyze if categories suggest VLA/robotics
-            cats = (paper.categories or "").lower()
-            if any(c in cats for c in ["cs.ro", "cs.cv", "cs.ai", "cs.lg"]):
-                r = analyze_embodied_planning(
-                    paper_id=pid,
-                    title=paper.title,
-                    abstract=paper.abstract or "",
-                    authors=paper.authors,
-                )
-                rep_type = r.get("representation_type", "unknown")
-                type_counts[rep_type] = type_counts.get(rep_type, 0) + 1
-                entry = {
-                    "paper_id": pid,
-                    "title": paper.title[:60],
-                    "representation_type": rep_type,
-                    "confidence": r.get("confidence", 0),
-                    "saved": "error" not in r,
-                }
-                # Contradiction alert
-                if r.get("contradiction_with"):
-                    entry["contradiction_with"] = r["contradiction_with"]
-                    entry["contradiction_type"] = r.get("contradiction_type")
-                    contradictions.append(entry)
-                analyzed.append(entry)
-
-        # Trend forecasting: dominant representation type in this batch
-        total_analyzed = len(analyzed)
-        trend = max(type_counts, key=type_counts.get) if total_analyzed > 0 else "unknown"
-        trend_pct = type_counts[trend] / total_analyzed if total_analyzed > 0 else 0
+        # Filter to VLA/robotics papers only, then run shared analysis pipeline
+        vla_ids = [
+            pid for pid in all_new_ids
+            if any(
+                c in (db.get_paper(pid).categories or "").lower()
+                for c in ["cs.ro", "cs.cv", "cs.ai", "cs.lg"]
+            )
+        ]
+        result = run_embodied_analysis(vla_ids, db=db, save_to_pool=True)
+        analyzed = result["analyzed"]
+        contradictions = result["contradictions"]
+        type_counts = result["type_counts"]
+        total_analyzed = result["total_analyzed"]
+        trend = result["trend"]
+        trend_pct = result["trend_pct"]
 
         # Recommend next paper: under-represented type
         all_counts = _get_global_rep_type_counts()
