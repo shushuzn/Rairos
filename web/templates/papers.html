@@ -74,12 +74,16 @@
   <a id="sel-analyze" href="#" class="btn btn-primary" style="padding:6px 16px; font-size:13px; background:#1a73e8; color:#fff; border-radius:6px; text-decoration:none;">
     🔬 Analyze Gaps
   </a>
+  <button id="sel-delete" class="btn btn-danger" style="padding:6px 16px; font-size:13px; background:#dc3545; color:#fff; border-radius:6px; border:none; cursor:pointer;">
+    🗑️ Delete
+  </button>
 </div>
 <script>
 (function() {
   const selBar = document.getElementById('gap-sel-bar');
   const selCount = document.getElementById('sel-count');
   const selAnalyze = document.getElementById('sel-analyze');
+  const selDelete = document.getElementById('sel-delete');
   const cards = document.querySelectorAll('.paper-card[data-id]');
   let selected = new Set();
 
@@ -97,9 +101,32 @@
     });
   }
 
+  selDelete.addEventListener('click', async function() {
+    if (selected.size === 0) return;
+    if (!confirm('Delete ' + selected.size + ' paper(s)? This cannot be undone.')) return;
+    try {
+      const resp = await fetch('/papers', {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({paper_ids: [...selected]})
+      });
+      const result = await resp.json();
+      if (result.deleted) {
+        // Remove deleted cards from DOM
+        selected.forEach(id => {
+          const card = document.querySelector('.paper-card[data-id="' + id + '"]');
+          if (card) card.remove();
+        });
+        selected.clear();
+        updateBar();
+        // Reload to update count
+        location.reload();
+      }
+    } catch(e) { alert('Delete failed: ' + e); }
+  });
+
   cards.forEach(card => {
     card.addEventListener('click', function(e) {
-      // Clicking the <a> navigates normally; clicking elsewhere on card toggles selection
       if (e.target.closest('a')) return;
       e.preventDefault();
       const id = card.getAttribute('data-id');
