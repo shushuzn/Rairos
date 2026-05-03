@@ -207,6 +207,87 @@ summary: [2-sentence analysis]"""
         }
 
 
+def batch_analyze_embodied_planning(
+    paper_ids: List[str],
+    db=None,
+) -> Dict[str, Any]:
+    """Batch analyze multiple papers for embodied planning representation types.
+
+    Returns comparative report with discrete/continuous/hybrid grouping.
+    """
+    if db is None:
+        from db.database import Database
+        db = Database()
+
+    results = []
+    for pid in paper_ids:
+        paper = db.get_paper(pid)
+        if not paper:
+            continue
+        r = analyze_embodied_planning(
+            paper_id=pid,
+            title=paper.title,
+            abstract=paper.abstract or "",
+            authors=paper.authors,
+        )
+        r["paper_id"] = pid
+        r["paper_title"] = paper.title[:80]
+        results.append(r)
+
+    # Group by representation type
+    by_type: Dict[str, List] = {"discrete": [], "continuous": [], "hybrid": [], "unknown": []}
+    for r in results:
+        rt = r.get("representation_type", "unknown")
+        if rt in by_type:
+            by_type[rt].append(r)
+
+    # Sort each group by confidence
+    for rt in by_type:
+        by_type[rt].sort(key=lambda x: x.get("confidence", 0), reverse=True)
+
+    # Summary stats
+    total = len(results)
+    summary = {
+        "total": total,
+        "discrete_count": len(by_type["discrete"]),
+        "continuous_count": len(by_type["continuous"]),
+        "hybrid_count": len(by_type["hybrid"]),
+        "unknown_count": len(by_type["unknown"]),
+        "dominant_type": max(by_type, key=lambda k: len(by_type[k])) if total > 0 else "unknown",
+    }
+
+
+    # Contradiction pairs: discrete vs continuous for same tasks
+    contradictions = []
+    discrete_set = {(r.get("paper_id"), r.get("paper_title","").lower()) for r in by_type["discrete"]}
+    continuous_set = {(r.get("paper_id"), r.get("paper_title","").lower()) for r in by_type["continuous"]}
+    # Find papers that appear to study similar tasks but use different representations
+    for dc in by_type["discrete"]:
+        for cc in by_type["continuous"]:
+            # Simple keyword overlap check on evidence
+            dc_ev = " ".join(dc.get("evidence", [])).lower()
+            cc_ev = " ".join(cc.get("evidence", [])).lower()
+            if any(w in cc_ev for w in dc_ev.split() if len(w) > 4):
+                contradictions.append({
+                    "discrete_paper": dc.get("paper_id"),
+                    "discrete_title": dc.get("paper_title"),
+                    "continuous_paper": cc.get("paper_id"),
+                    "continuous_title": cc.get("paper_title"),
+                    "evidence_overlap": True,
+                })
+
+    return {
+        "summary": summary,
+        "by_type": {k: [{"paper_id": r["paper_id"], "paper_title": r["paper_title"],
+                          "confidence": r["confidence"], "gap_title": r.get("gap_title", ""),
+                          "evidence": r.get("evidence", [])}
+                         for r in v]
+                     for k, v in by_type.items()},
+        "contradictions": contradictions[:5],
+        "total_analyzed": total,
+    }
+
+
 def _extract_keywords(text: str) -> List[str]:
     """Simple keyword extraction from text."""
     words = text.lower().split()
