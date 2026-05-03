@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from llm.constants import LLM_BASE_URL, LLM_MODEL
-from llm.gene_pool_io import load_capsules, get_capsule_by_paper, paper_exists_in_pool
+from llm.gene_pool_io import load_capsules, get_capsule_by_paper
 
 
 # =============================================================================
@@ -474,10 +474,12 @@ def analyze_gap(
         result = {f: "" for f in result_fields}
         result["confidence"] = 0.5  # default
         for line in lines:
+            # Strip markdown bold/heading markers from both ends before parsing
+            stripped = line.strip().strip("**").strip()
             for field in result_fields:
                 prefix = field + ":"
-                if line.startswith(prefix):
-                    val = line.split(":", 1)[1].strip()
+                if stripped.startswith(prefix):
+                    val = stripped.split(":", 1)[1].strip().strip("**`-").strip()
                     if field == "confidence":
                         try:
                             result[field] = float(val)
@@ -505,6 +507,7 @@ def analyze_gap(
             polarity="open",
             extra_fields=gap_extra,
         )
+        result["saved_to_pool"] = capsule_id
 
         # Contradiction detection via unified detect_field_contradiction
         result["contradiction_with"] = None
