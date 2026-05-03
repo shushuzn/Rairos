@@ -249,6 +249,36 @@ async def paper_detail(request: Request, paper_id: str):
     })
 
 
+@app.delete("/paper/{paper_id}")
+async def delete_paper(paper_id: str):
+    """Delete a paper by ID."""
+    db = _get_db()
+    deleted = db.delete_paper(paper_id)
+    return {"deleted": deleted, "paper_id": paper_id}
+
+
+@app.delete("/papers")
+async def delete_papers_bulk(request: Request):
+    """Bulk delete papers. Accepts JSON body with list of paper_ids."""
+    from starlette.datastructures import URL
+    try:
+        body = await request.json()
+        paper_ids = body.get("paper_ids", [])
+    except Exception:
+        return {"error": "Invalid JSON"}, 400
+
+    if not paper_ids:
+        return {"deleted": 0, "paper_ids": []}
+
+    db = _get_db()
+    deleted = 0
+    for pid in paper_ids:
+        if db.delete_paper(pid):
+            deleted += 1
+
+    return {"deleted": deleted, "paper_ids": paper_ids}
+
+
 @app.get("/paper/{paper_id}/extract-gap")
 async def extract_paper_gap(request: Request, paper_id: str):
     """Extract a research gap from a paper using LLM."""
