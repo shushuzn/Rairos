@@ -245,6 +245,7 @@ class TestArxivFullPipeline:
                 try:
                     result = airo.main(
                         [
+                            "search",
                             "9999.99999",
                             "--root",
                             str(temp_research_root),
@@ -254,6 +255,8 @@ class TestArxivFullPipeline:
                             "Agent",
                         ]
                     )
+                except SystemExit:
+                    result = 2
                 except Exception:
                     result = 1
         # Should exit with error, not crash
@@ -276,8 +279,9 @@ class TestArxivFullPipeline:
         with patch("parsers.arxiv._get_session", return_value=mock_session):
             with patch("sys.stdout", new=StringIO()):
                 try:
-                    airo.main(
+                    result = airo.main(
                         [
+                            "search",
                             "9999.99999",
                             "--root",
                             str(temp_research_root),
@@ -287,8 +291,12 @@ class TestArxivFullPipeline:
                             "Agent",
                         ]
                     )
+                except SystemExit:
+                    result = 2
                 except Exception:
-                    pass
+                    result = 1
+        # Should exit with error, not crash
+        assert result != 0
 
 
 # ---------------------------------------------------------------------------
@@ -321,6 +329,7 @@ class TestDoiFullPipeline:
                 with patch("sys.stdout", new=StringIO()):
                     result = airo.main(
                         [
+                            "ingest",
                             "10.1038/nature12373",
                             "--root",
                             str(temp_research_root),
@@ -393,6 +402,7 @@ class TestDoiFullPipeline:
                         with patch("sys.stdout", new=StringIO()):
                             result = airo.main(
                                 [
+                                    "ingest",
                                     "10.48550/arXiv.2306.12345",
                                     "--root",
                                     str(temp_research_root),
@@ -444,6 +454,7 @@ class TestTagInferencePipeline:
                 with patch("sys.stdout", new=StringIO()):
                     result = airo.main(
                         [
+                            "ingest",
                             "2401.00001",
                             "--root",
                             str(temp_research_root),
@@ -490,6 +501,7 @@ class TestTagInferencePipeline:
             with patch("sys.stdout", new=StringIO()):
                 result = airo.main(
                     [
+                        "ingest",
                         "2402.00002",
                         "--root",
                         str(temp_research_root),
@@ -540,6 +552,7 @@ class TestPnoteContentAccuracy:
                 with patch("sys.stdout", new=StringIO()):
                     result = airo.main(
                         [
+                            "ingest",
                             "2305.00001",
                             "--root",
                             str(temp_research_root),
@@ -626,6 +639,7 @@ class TestRadarTimelineUpdate:
                 )
                 result = airo.main(
                     [
+                        "ingest",
                         paper_data[1][0],
                         "--root",
                         str(temp_research_root),
