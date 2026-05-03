@@ -286,6 +286,22 @@ async def embodied_planning_batch(request: Request, ids: str = ""):
     return result
 
 
+@app.get("/embodied-planning/dashboard")
+async def embodied_planning_dashboard(request: Request):
+    """Render the embodied planning domain-wide dashboard.
+
+    Shows all analyzed papers grouped by representation type (discrete/
+    continuous/hybrid), with confidence scores and contradiction pairs.
+    """
+    from llm.paper_gap_extractor import render_embodied_planning_dashboard
+    html = render_embodied_planning_dashboard()
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "embodied-planning-dashboard",
+        "title": "🦾 Embodied Planning — Representation Atlas",
+        "content": html,
+    })
+
+
 @app.post("/paper/{paper_id}/save-gap")
 async def save_paper_gap(request: Request, paper_id: str):
     """Save an extracted gap to the Gene Pool."""
