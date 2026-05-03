@@ -1867,6 +1867,94 @@ def _render_gap_analysis_html(result: Dict[str, Any], papers: List[Dict[str, Any
     {''.join(sections)}"""
 
 
+@app.get("/papers/gap-analysis/questions")
+async def gap_analysis_questions(request: Request, ids: str = ""):
+    """Generate research questions from frontier gaps for selected papers."""
+    if not ids:
+        return templates.TemplateResponse(request, "generic.html", {
+            "page": "gap-questions",
+            "title": "Research Questions",
+            "content": "<div class='gap-analysis-empty'><div class='gap-analysis-empty-icon'>🔬</div><div class='gap-analysis-empty-msg'>No papers selected.</div></div>",
+        })
+
+    paper_ids = [i.strip() for i in ids.split(",") if i.strip()]
+    if len(paper_ids) < 2:
+        return templates.TemplateResponse(request, "generic.html", {
+            "page": "gap-questions",
+            "title": "Research Questions",
+            "content": "<div class='gap-analysis-empty'><div class='gap-analysis-empty-icon'>🔬</div><div class='gap-analysis-empty-msg'>Need at least 2 papers.</div></div>",
+        })
+
+    db = _get_db()
+    paper_map = db.get_papers_bulk(paper_ids)
+    papers = [
+        {"id": pid, "title": getattr(p, "title", ""), "abstract": getattr(p, "abstract", "") or ""}
+        for pid, p in paper_map.items()
+    ]
+
+    from llm.paper_gap_extractor import analyze_multi_paper_gaps, gaps_to_research_questions
+    gap_result = analyze_multi_paper_gaps(papers)
+    frontier = gap_result.get("frontier_gaps", [])
+    paper_titles = {p["id"]: p["title"] for p in papers}
+    questions_result = gaps_to_research_questions(frontier, paper_titles)
+    html = _render_rq_html(questions_result, frontier, paper_titles)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "gap-questions",
+        "title": f"Research Questions ({len(papers)} papers)",
+        "content": html,
+    })
+
+
+def _render_rq_html(result: Dict[str, Any], frontier_gaps: List[Dict[str, Any]],
+                    paper_titles: Dict[str, str]) -> str:
+    DIFFICULTY_COLOR = {"easy": "#4CAF50", "medium": "#FF9800", "hard": "#F44336"}
+
+    questions = result.get("questions", [])
+    if not questions:
+        error = result.get("error", "")
+        return f"<div class='ga-empty'>No questions generated. {error}</div>"
+
+    q_rows = ""
+    for i, q in enumerate(questions, 1):
+        diff = q.get("difficulty", "medium").lower()
+        diff_color = DIFFICULTY_COLOR.get(diff, "#757575")
+        gap_title = q.get("gap_title", "")
+        gap_type = q.get("gap_type", "")
+        keywords = ", ".join(q.get("keywords", [])[:6])
+        hypothesis = q.get("hypothesis", "")
+
+        q_rows += f"""
+        <div class='rq-item'>
+          <div class='rq-header'>
+            <span class='rq-num'>{i}</span>
+            <div class='rq-question'>{q.get('question', '?')}</div>
+            <span class='rq-diff' style='color:{diff_color};'>{diff.upper()}</span>
+          </div>
+          <div class='rq-meta'>
+            <span class='ga-tag'>{gap_type}</span>
+            <span class='rq-kw'>{keywords}</span>
+          </div>
+          <div class='rq-gap-title'>From gap: {gap_title}</div>
+          {"<div class='rq-hypothesis'>💡 Hypothesis: " + hypothesis + "</div>" if hypothesis else ""}
+        </div>"""
+
+    return f"""
+    <style>
+    .rq-item {{ background: #fff; border: 1px solid #e0e8f0; border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }}
+    .rq-header {{ display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }}
+    .rq-num {{ background: #1a73e8; color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0; padding-top: 1px; }}
+    .rq-question {{ flex: 1; font-size: 15px; color: #1a1a2e; line-height: 1.5; }}
+    .rq-diff {{ font-size: 11px; font-weight: bold; flex-shrink: 0; padding-top: 4px; }}
+    .rq-meta {{ display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }}
+    .rq-kw {{ font-size: 12px; color: #666; }}
+    .rq-gap-title {{ font-size: 12px; color: #888; margin-bottom: 6px; }}
+    .rq-hypothesis {{ font-size: 13px; color: #555; background: #f8f4e8; border-left: 3px solid #f0c040; padding: 8px 12px; border-radius: 4px; margin-top: 6px; line-height: 1.5; }}
+    .ga-tag {{ background: #e8f0fe; color: #1a73e8; padding: 2px 8px; border-radius: 4px; font-size: 11px; }}
+    .ga-empty {{ text-align: center; color: #888; padding: 40px; }}
+    </style>
+    <div class='rq-list'>{q_rows}</div>"""
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8501)
