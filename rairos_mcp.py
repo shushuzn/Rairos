@@ -353,6 +353,19 @@ def get_tools() -> List[Dict]:
             }
         },
         {
+            "name": "paper2code_run",
+            "description": "Run the full paper2code pipeline: download paper → parse → generate code skeleton → extract tests → run benchmark → encode successful pattern to Gene Pool",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "arxiv_id": {"type": "string", "description": "arXiv ID (e.g. 1706.03762) or full URL"},
+                    "framework": {"type": "string", "enum": ["pytorch", "jax", "numpy"], "default": "pytorch", "description": "Target framework"},
+                    "skip_gene_pool": {"type": "boolean", "default": False, "description": "Skip Gene Pool encoding (for dry runs)"}
+                },
+                "required": ["arxiv_id"]
+            }
+        },
+        {
             "name": "citation_graph",
             "description": "Get citation graph data for a paper (forward + backward citations)",
             "inputSchema": {
@@ -1519,6 +1532,33 @@ def tool_paper_analyze(paper_id: str) -> Dict:
         return error_response("ANALYZE_ERROR", str(e))
 
 
+def tool_paper2code_run(arxiv_id: str, framework: str = "pytorch", skip_gene_pool: bool = False) -> Dict:
+    """Run full paper2code pipeline: download → parse → generate → test → benchmark → Gene Pool."""
+    try:
+        from research_loop.paper2code_integration import PaperPipeline
+        import tempfile
+
+        pipeline = PaperPipeline(work_dir=tempfile.mkdtemp())
+        result = pipeline.run(
+            arxiv_id=arxiv_id,
+            mode="minimal",
+            framework=framework,
+            skip_gene_pool=skip_gene_pool,
+        )
+        return success_response({
+            "arxiv_id": result["arxiv_id"],
+            "paper_dir": result["paper_dir"],
+            "src_dir": result["src_dir"],
+            "test_dir": result["test_dir"],
+            "readme": result["readme"],
+            "benchmark": result.get("benchmark"),
+        })
+
+    except Exception as e:
+        logger.error(f"paper2code_run error: {e}")
+        return error_response("PAPER2CODE_ERROR", str(e))
+
+
 def tool_citation_graph(paper_id: str, depth: int = 2, max_nodes: int = 30) -> Dict:
     """Get citation graph for a paper using Semantic Scholar API."""
     try:
@@ -2550,6 +2590,12 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
         elif name == "paper_analyze":
             result = tool_paper_analyze(
                 paper_id=arguments.get("paper_id")
+            )
+        elif name == "paper2code_run":
+            result = tool_paper2code_run(
+                arxiv_id=arguments.get("arxiv_id"),
+                framework=arguments.get("framework", "pytorch"),
+                skip_gene_pool=arguments.get("skip_gene_pool", False)
             )
         elif name == "citation_graph":
             result = tool_citation_graph(
