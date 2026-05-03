@@ -288,6 +288,128 @@ def batch_analyze_embodied_planning(
     }
 
 
+def render_embodied_planning_dashboard() -> str:
+    """Render HTML dashboard of all embodied planning analyses from Gene Pool.
+
+    Shows domain-wide representation type distribution, confidence ranking,
+    and contradiction pairs.
+    """
+    import json as _json
+
+    # Read from capsules.json
+    capsule_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+    if not capsule_path.exists():
+        return _empty_dashboard("No Gene Pool data found.")
+
+    data = _json.loads(capsule_path.read_text(encoding="utf-8"))
+    capsules = data.get("capsules", [])
+
+    # Filter embodied_planning gap types
+    embodied = [
+        c for c in capsules
+        if c.get("action_gap_type") == "embodied_planning"
+        or c.get("trigger_gap_type") == "embodied_planning"
+    ]
+
+    if not embodied:
+        return _empty_dashboard(
+            "No embodied planning analyses yet. "
+            "Open a VLA/robotics paper and click 🦾 Embodied Planning."
+        )
+
+    # Group by representation type from gap_title keywords
+    discrete = []
+    continuous = []
+    hybrid = []
+    unknown = []
+
+    for c in embodied:
+        title = c.get("action_gap_title", "").lower()
+        summary = c.get("archetype", {}).get("summary", "").lower()
+        combined = title + " " + summary
+        if "hybrid" in combined or ("discrete" in combined and "continuous" in combined):
+            hybrid.append(c)
+        elif "discrete" in combined:
+            discrete.append(c)
+        elif "continuous" in combined:
+            continuous.append(c)
+        else:
+            unknown.append(c)
+
+    # Sort by confidence
+    for lst in [discrete, continuous, hybrid, unknown]:
+        lst.sort(key=lambda x: x.get("outcome_success_score", 0.5), reverse=True)
+
+    html = """
+    <div style="font-family: var(--font-display);">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:24px;">
+        <div style="text-align:center;padding:16px;background:#f8faf8;border-radius:8px;border-left:4px solid #7A9E7A;">
+          <div style="font-size:32px;font-weight:700;color:#7A9E7A;">{dc}</div>
+          <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;">Discrete</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:#f8fafc;border-radius:8px;border-left:4px solid #6B8FB5;">
+          <div style="font-size:32px;font-weight:700;color:#6B8FB5;">{cc}</div>
+          <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;">Continuous</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:#fafaf4;border-radius:8px;border-left:4px solid #D4A84B;">
+          <div style="font-size:32px;font-weight:700;color:#D4A84B;">{hc}</div>
+          <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;">Hybrid</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:#f5f5f5;border-radius:8px;border-left:4px solid #aaa;">
+          <div style="font-size:32px;font-weight:700;color:#888;">{uc}</div>
+          <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;">Unclear</div>
+        </div>
+      </div>
+    """.format(
+        dc=len(discrete), cc=len(continuous),
+        hc=len(hybrid), uc=len(unknown)
+    )
+
+    # Papers list by type
+    def _render_list(capsules, color, type_label):
+        if not capsules:
+            return ""
+        items = ""
+        for c in capsules:
+            score = c.get("outcome_success_score", 0.5)
+            title = c.get("action_gap_title", "Untitled")[:70]
+            paper_id = c.get("archetype", {}).get("source_paper_id", "")
+            items += """
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0ebe5;">
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:13px;color:#2a2a2a;margin-bottom:2px;">{title}</div>
+                <div style="font-size:11px;color:#aaa;">{paper_id}</div>
+              </div>
+              <div style="font-size:11px;color:{color};font-weight:700;margin-left:8px;">{score:.0%}</div>
+            </div>""".format(
+                title=title, paper_id=paper_id[:20],
+                color=color, score=score
+            )
+        return """
+        <div style="margin-bottom:20px;">
+          <div style="font-size:14px;font-weight:700;color:{color};margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid {color};">{label} ({count})</div>
+          {items}
+        </div>""".format(color=color, label=type_label, count=len(capsules), items=items)
+
+    html += _render_list(discrete, "#7A9E7A", "Discrete Representation")
+    html += _render_list(continuous, "#6B8FB5", "Continuous Representation")
+    html += _render_list(hybrid, "#D4A84B", "Hybrid Representation")
+    html += _render_list(unknown, "#aaa", "Unclear / Unanalyzed")
+
+    html += "</div>"
+    return html
+
+
+def _empty_dashboard(msg: str) -> str:
+    return """
+    <div style="text-align:center;padding:60px 20px;color:#888;font-family:var(--font-display);">
+      <div style="font-size:48px;margin-bottom:12px;">🦾</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:6px;">No Embodied Planning Data</div>
+      <div style="font-size:13px;">{msg}</div>
+    </div>
+    """.format(msg=msg)
+
+
 def _extract_keywords(text: str) -> List[str]:
     """Simple keyword extraction from text."""
     words = text.lower().split()
