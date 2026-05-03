@@ -598,6 +598,25 @@ async def at_risk_pin(request: Request):
     return {"success": success}
 
 
+@app.get("/chat")
+async def chat(request: Request):
+    """Web Chat — streaming RAG chat over the paper library."""
+    from llm.web_chat import render_chat_html
+    html = render_chat_html()
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "chat",
+        "title": "Research Chat",
+        "content": html,
+    })
+
+
+@app.post("/chat/stream")
+async def chat_stream(request: Request):
+    """Streaming chat endpoint — SSE."""
+    from llm.web_chat import chat_stream as ws_chat_stream
+    return await ws_chat_stream(request)
+
+
 @app.get("/insights/queue")
 async def review_queue(request: Request):
     """Capsule Review Queue — new capsules pending first feedback."""
