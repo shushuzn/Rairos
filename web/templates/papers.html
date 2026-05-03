@@ -63,10 +63,54 @@
 
 <!-- Results -->
 {% if papers %}
+<!-- Selection bar -->
+<div id="gap-sel-bar" style="display:none; background:#e8f0fe; border:1px solid #c3d9f8; border-radius:8px; padding:10px 14px; margin-bottom:16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+  <span style="font-size:14px; color:#1a73e8; font-weight:500;">
+    <span id="sel-count">0</span> selected
+  </span>
+  <a id="sel-analyze" href="#" class="btn btn-primary" style="padding:6px 16px; font-size:13px; background:#1a73e8; color:#fff; border-radius:6px; text-decoration:none;">
+    🔬 Analyze Gaps
+  </a>
+</div>
+<script>
+(function() {
+  const selBar = document.getElementById('gap-sel-bar');
+  const selCount = document.getElementById('sel-count');
+  const selAnalyze = document.getElementById('sel-analyze');
+  const cards = document.querySelectorAll('.paper-card[data-id]');
+  let selected = new Set();
+
+  function updateBar() {
+    const n = selected.size;
+    selCount.textContent = n;
+    selBar.style.display = n > 0 ? 'flex' : 'none';
+    selAnalyze.href = n >= 2 ? '/papers/gap-analysis?ids=' + [...selected].join(',') : '#';
+    selAnalyze.style.opacity = n >= 2 ? '1' : '0.5';
+    selAnalyze.style.pointerEvents = n >= 2 ? 'auto' : 'none';
+    cards.forEach(c => {
+      const id = c.getAttribute('data-id');
+      c.style.outline = selected.has(id) ? '2px solid #1a73e8' : 'none';
+      c.style.background = selected.has(id) ? '#f0f4ff' : '';
+    });
+  }
+
+  cards.forEach(card => {
+    card.addEventListener('click', function(e) {
+      // Clicking the <a> navigates normally; clicking elsewhere on card toggles selection
+      if (e.target.closest('a')) return;
+      e.preventDefault();
+      const id = card.getAttribute('data-id');
+      if (selected.has(id)) selected.delete(id); else selected.add(id);
+      updateBar();
+    });
+  });
+})();
+</script>
+
 <div style="margin-bottom: 20px;">
   {% for paper in papers %}
-  <a href="{{ paper[7] }}" style="text-decoration: none;">
-    <div class="paper-card">
+  <div class="paper-card" data-id="{{ paper[0] }}" style="cursor:pointer;">
+    <a href="{{ paper[7] }}" style="text-decoration:none; color:inherit; display:block;">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 6px;">
         <div class="paper-title" style="flex: 1;">{{ paper[1][:90] }}</div>
         {% if paper[0] %}
@@ -82,8 +126,8 @@
       {% if paper[6] %}
       <div class="paper-snippet">{{ paper[6][:200] }}...</div>
       {% endif %}
-    </div>
-  </a>
+    </a>
+  </div>
   {% endfor %}
 </div>
 

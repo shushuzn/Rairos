@@ -1726,6 +1726,147 @@ async def impact(request: Request):
 
 
 
+@app.get("/papers/gap-analysis")
+async def papers_gap_analysis(request: Request, ids: str = ""):
+    """Multi-paper gap analysis — surface shared and frontier gaps across N papers."""
+    if not ids:
+        return templates.TemplateResponse(request, "generic.html", {
+            "page": "papers-gap-analysis",
+            "title": "Gap Analysis",
+            "content": """
+            <div class="gap-analysis-empty">
+                <div class="gap-analysis-empty-icon">🔬</div>
+                <div class="gap-analysis-empty-msg">No papers selected.</div>
+                <div class="gap-analysis-empty-sub">Select 2+ papers from the Papers page, then click "Analyze Gaps".</div>
+            </div>""",
+        })
+
+    paper_ids = [i.strip() for i in ids.split(",") if i.strip()]
+    if len(paper_ids) < 2:
+        return templates.TemplateResponse(request, "generic.html", {
+            "page": "papers-gap-analysis",
+            "title": "Gap Analysis",
+            "content": """
+            <div class="gap-analysis-empty">
+                <div class="gap-analysis-empty-icon">🔬</div>
+                <div class="gap-analysis-empty-msg">Need at least 2 papers.</div>
+                <div class="gap-analysis-empty-sub">Select more papers from the Papers page.</div>
+            </div>""",
+        })
+
+    db = _get_db()
+    paper_map = db.get_papers_bulk(paper_ids)
+    papers = [
+        {"id": pid, "title": getattr(p, "title", ""), "abstract": getattr(p, "abstract", "") or ""}
+        for pid, p in paper_map.items()
+    ]
+
+    from llm.paper_gap_extractor import analyze_multi_paper_gaps
+    result = analyze_multi_paper_gaps(papers)
+    html = _render_gap_analysis_html(result, papers)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "papers-gap-analysis",
+        "title": f"Gap Analysis ({len(papers)} papers)",
+        "content": html,
+    })
+
+
+def _render_gap_analysis_html(result: Dict[str, Any], papers: List[Dict[str, Any]]) -> str:
+    paper_titles = {p["id"]: p["title"] for p in papers}
+
+    def paper_link(pid: str) -> str:
+        title = paper_titles.get(pid, pid)
+        return f"<a href='/paper/{pid}'>{title[:60]}</a>"
+
+    sections = []
+
+    # Error
+    if "error" in result:
+        sections.append(f"<div class='ga-error'>Error: {result['error']}</div>")
+
+    # Shared themes
+    themes = result.get("shared_themes", [])
+    if themes:
+        theme_rows = ""
+        for t in themes:
+            pids = t.get("papers", [])
+            theme_rows += f"<tr><td>{t.get('theme','')}</td><td>{', '.join(pids)}</td><td>{t.get('strength','')}</td><td>{t.get('description','')}</td></tr>"
+        sections.append(f"""
+        <div class='ga-section'>
+          <div class='ga-section-title'>🧠 Shared Themes ({len(themes)})</div>
+          <table class='ga-table'>
+            <thead><tr><th>Theme</th><th>Papers</th><th>Strength</th><th>Description</th></tr></thead>
+            <tbody>{theme_rows}</tbody>
+          </table>
+        </div>""")
+
+    # Frontier gaps
+    frontier = result.get("frontier_gaps", [])
+    if frontier:
+        gap_rows = ""
+        for g in frontier:
+            gap_rows += f"<tr><td>{g.get('gap_title','')}</td><td><span class='ga-tag'>{g.get('gap_type','')}</span></td><td>{', '.join(g.get('keywords',[]))}</td><td>{g.get('summary','')}</td></tr>"
+        sections.append(f"""
+        <div class='ga-section'>
+          <div class='ga-section-title'>🚀 Frontier Gaps ({len(frontier)})</div>
+          <table class='ga-table'>
+            <thead><tr><th>Gap Title</th><th>Type</th><th>Keywords</th><th>Summary</th></tr></thead>
+            <tbody>{gap_rows}</tbody>
+          </table>
+        </div>""")
+
+    # Complementary gaps
+    comp = result.get("complementary_gaps", [])
+    if comp:
+        comp_rows = ""
+        for g in comp:
+            comp_rows += f"<tr><td>{g.get('gap_title','')}</td><td><span class='ga-tag'>{g.get('gap_type','')}</span></td><td>{g.get('description','')}</td></tr>"
+        sections.append(f"""
+        <div class='ga-section'>
+          <div class='ga-section-title'>🔗 Complementary Gaps ({len(comp)})</div>
+          <table class='ga-table'>
+            <thead><tr><th>Gap Title</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>{comp_rows}</tbody>
+          </table>
+        </div>""")
+
+    # Contradictions
+    contrad = result.get("contradictions", [])
+    if contrad:
+        contrad_rows = ""
+        for c in contrad:
+            contrad_rows += f"<tr><td><span class='ga-tag'>{c.get('gap_type','')}</span></td><td>{c.get('description','')}</td></tr>"
+        sections.append(f"""
+        <div class='ga-section'>
+          <div class='ga-section-title'>⚡ Contradictions ({len(contrad)})</div>
+          <table class='ga-table'>
+            <thead><tr><th>Gap Type</th><th>Description</th></tr></thead>
+            <tbody>{contrad_rows}</tbody>
+          </table>
+        </div>""")
+
+    if not sections:
+        sections.append("<div class='ga-empty'>No gaps identified. Try papers with more diverse abstracts.</div>")
+
+    return f"""
+    <style>
+    .ga-section {{ margin-bottom: 32px; }}
+    .ga-section-title {{ font-size: 16px; font-weight: bold; color: #1a1a2e; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #e8f0fe; }}
+    .ga-table {{ width: 100%; border-collapse: collapse; font-size: 13px; }}
+    .ga-table th {{ background: #f8f9fa; text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; color: #555; font-size: 11px; text-transform: uppercase; }}
+    .ga-table td {{ padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: top; }}
+    .ga-table tr:hover td {{ background: #fafbff; }}
+    .ga-tag {{ background: #e8f0fe; color: #1a73e8; padding: 2px 8px; border-radius: 4px; font-size: 11px; }}
+    .ga-error {{ background: #fef0f0; border: 1px solid #f5c6cb; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 16px; }}
+    .ga-empty {{ text-align: center; color: #888; padding: 40px; }}
+    .gap-analysis-empty {{ text-align: center; padding: 60px 20px; }}
+    .gap-analysis-empty-icon {{ font-size: 48px; opacity: 0.4; margin-bottom: 16px; }}
+    .gap-analysis-empty-msg {{ font-size: 18px; color: #444; margin-bottom: 8px; }}
+    .gap-analysis-empty-sub {{ font-size: 13px; color: #999; }}
+    </style>
+    {''.join(sections)}"""
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8501)
