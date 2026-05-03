@@ -305,6 +305,24 @@ async def paper_rigor(request: Request, paper_id: str):
     return score.to_dict()
 
 
+@app.get("/paper/{paper_id}/replication")
+async def paper_replication(request: Request, paper_id: str):
+    """Run replication checker on a paper — returns JSON report."""
+    from llm.replication_checker import ReplicationChecker
+    db = _get_db()
+    paper = db.get_paper(paper_id)
+    if not paper:
+        return {"error": f"Paper '{paper_id}' not found."}
+    checker = ReplicationChecker()
+    report = checker.check_paper(
+        paper_id=paper_id,
+        title=paper.title or "",
+        abstract=paper.abstract or "",
+        full_text=paper.plain_text or "",
+    )
+    return report.to_dict()
+
+
 @app.get("/briefing")
 async def briefing(request: Request, arxiv_id: str = ""):
     """Research Briefing — generate or show."""
