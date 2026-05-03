@@ -41,6 +41,7 @@ async def auth_middleware(request: Request, call_next):
 # Static files + templates
 WEB_DIR = Path(__file__).parent
 app.mount("/static", StaticFiles(directory=str(WEB_DIR / "static")), name="static")
+app.mount("/data/briefings", StaticFiles(directory=str(PROJECT_ROOT / "data" / "briefings")), name="briefings")
 templates = Jinja2Templates(directory=str(WEB_DIR / "templates"))
 
 # Jinja filters
@@ -340,10 +341,13 @@ async def briefing_generate(
         )
 
         if result.success:
+            slug = "".join(c if c.isalnum() else "_" for c in arxiv_id.strip().lower())
+            md_path = f"/data/briefings/briefing_{slug}.md"
             return templates.TemplateResponse(request, "briefing.html", {
                 "page": "briefing",
                 "arxiv_id": arxiv_id,
                 "result": result,
+                "markdown_path": md_path,
                 "error": None,
             })
         else:
