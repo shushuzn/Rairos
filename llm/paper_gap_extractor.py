@@ -85,6 +85,128 @@ Respond ONLY with a JSON object (no markdown, no code fences):
         }
 
 
+def analyze_embodied_planning(
+    paper_id: str,
+    title: str,
+    abstract: str,
+    authors: Optional[List[str]] = None,
+    api_key: Optional[str] = None,
+    model: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Analyze embodied planning paper: discrete vs continuous latent representation.
+
+    Returns:
+        representation_type: "discrete" | "continuous" | "hybrid"
+        confidence: float (0-1)
+        evidence: list of text snippets from abstract supporting the classification
+        gap_title: research question derived from the finding
+        summary: 1-2 sentence analysis
+    """
+    authors_str = ", ".join(authors[:3]) if authors else "Unknown"
+
+    prompt = f"""You are a research analyst specializing in robotics and embodied AI.
+Given a paper's title and abstract, determine how the paper represents physical reasoning (latent reasoning over physical dynamics).
+
+PAPER:
+Title: {title}
+Authors: {authors_str}
+Abstract: {abstract[:800]}
+
+TASK:
+Answer these questions about the paper's latent representation approach:
+
+1. Does the paper use DISCRETE latent representations?
+   (e.g., discrete tokens, symbolic, quantized, language-like discrete states)
+   Look for: "discrete", "symbolic", "token", "quantized", "categorical", "language"
+
+2. Does the paper use CONTINUOUS latent representations?
+   (e.g., continuous vectors, real-valued embeddings, diffusion, Gaussian, continuous distributions)
+   Look for: "continuous", "diffusion", "Gaussian", "real-valued", "embedding", "vector"
+
+3. Is it HYBRID (both)?
+   (e.g., discrete reasoning + continuous execution, world model tokens + action distributions)
+
+4. What is the KEY EVIDENCE from the abstract?
+
+5. What OPEN QUESTION remains about this representation choice?
+
+Provide your analysis in this format:
+representation_type: [discrete|continuous|hybrid]
+confidence: [0.0-1.0]
+evidence: [key phrases from abstract]
+gap_title: [specific research question about this representation choice]
+summary: [2-sentence analysis]"""
+
+    try:
+        from llm.client import call_llm_chat_completions
+    except ImportError:
+        return {
+            "representation_type": "unknown",
+            "confidence": 0.0,
+            "evidence": [],
+            "gap_title": title[:80],
+            "summary": "LLM client not available for embodied planning analysis.",
+            "error": "llm.client not available",
+        }
+
+    try:
+        content = call_llm_chat_completions(
+            messages=[{"role": "user", "content": prompt}],
+            model=model or "claude-3-5-sonnet-latest",
+            api_key=api_key,
+        )
+
+        lines = content.strip().split("\n")
+        result = {
+            "representation_type": "unknown",
+            "confidence": 0.5,
+            "evidence": [],
+            "gap_title": "",
+            "summary": "",
+        }
+        for line in lines:
+            if line.startswith("representation_type:"):
+                val = line.split(":", 1)[1].strip().lower()
+                if val in ("discrete", "continuous", "hybrid"):
+                    result["representation_type"] = val
+            elif line.startswith("confidence:"):
+                try:
+                    result["confidence"] = float(line.split(":", 1)[1].strip())
+                except ValueError:
+                    pass
+            elif line.startswith("evidence:"):
+                result["evidence"] = [line.split(":", 1)[1].strip()]
+            elif line.startswith("gap_title:"):
+                result["gap_title"] = line.split(":", 1)[1].strip()
+            elif line.startswith("summary:"):
+                result["summary"] = line.split(":", 1)[1].strip()
+
+        # Save to Gene Pool
+        gap_type = "embodied_planning"
+        polarity = "open"
+        save_gap_to_gene_pool(
+            paper_id=paper_id,
+            title=title,
+            gap_type=gap_type,
+            gap_title=result.get("gap_title") or f"Latent Reasoning Representation: {result['representation_type']}",
+            keywords=[result["representation_type"], "embodied", "latent", "reasoning", "VLA"],
+            summary=result.get("summary") or f"{result['representation_type'].capitalize()} latent reasoning paper. Confidence: {result['confidence']:.0%}.",
+            polarity=polarity,
+        )
+
+        return result
+
+    except Exception as e:
+        return {
+            "representation_type": "unknown",
+            "confidence": 0.0,
+            "evidence": [],
+            "gap_title": title[:80],
+            "summary": f"Analysis failed: {e}",
+            "error": str(e),
+        }
+
+
 def _extract_keywords(text: str) -> List[str]:
     """Simple keyword extraction from text."""
     words = text.lower().split()
