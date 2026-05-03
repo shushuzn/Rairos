@@ -345,6 +345,49 @@ async def briefing_generate(
         })
 
 
+@app.get("/briefing/distribute/{arxiv_id}")
+async def distribute_briefing(request: Request, arxiv_id: str, audience: str = "researcher"):
+    """Render a briefing in a specific audience format."""
+    from llm.briefing_distributor import (
+        get_latest_briefing_markdown,
+        render_distributed_briefing,
+    )
+    markdown = get_latest_briefing_markdown(arxiv_id)
+    if not markdown:
+        return {"error": "No briefing found for " + arxiv_id}
+    html = render_distributed_briefing(arxiv_id, arxiv_id, markdown, audience)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "briefing",
+        "title": f"Briefing — {audience}",
+        "content": html,
+    })
+
+
+@app.get("/b/{short_id}")
+async def shared_briefing(request: Request, short_id: str):
+    """Resolve a short share link to the appropriate briefing."""
+    from llm.briefing_distributor import _load_links, get_latest_briefing_markdown, render_distributed_briefing
+    links = _load_links()
+    info = links.get(short_id)
+    if not info:
+        return templates.TemplateResponse(request, "error.html", {
+            "page": "error",
+            "error": "Link not found or expired.",
+        })
+    arxiv_id = info.get("arxiv_id", "")
+    title = info.get("title", arxiv_id)
+    audience = info.get("audience", "researcher")
+    markdown = get_latest_briefing_markdown(arxiv_id)
+    if not markdown:
+        markdown = f"# {title}\n\nNo briefing available."
+    html = render_distributed_briefing(arxiv_id, title, markdown, audience)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "briefing",
+        "title": f"Shared Briefing — {title[:40]}",
+        "content": html,
+    })
+
+
 @app.get("/briefing/history")
 async def briefing_history(request: Request):
     """List all previously generated briefings."""
