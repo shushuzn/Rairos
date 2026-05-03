@@ -1083,7 +1083,7 @@ class EvolutionTracker:
         max_label = 14
 
 
-        for dim_name, (raw, norm, label, desc) in sorted_dims:
+        for _dim_name, (_raw, norm, label, desc) in sorted_dims:
 
 
             bar_len = int(norm * 20)
@@ -1107,7 +1107,7 @@ class EvolutionTracker:
         lines.append("  All dimensions:")
 
 
-        for dim_name, (raw, norm, label, desc) in dims.items():
+        for _dim_name, (_raw, norm, label, desc) in dims.items():
 
 
             lines.append("  - {}: {} [{}]".format(label, desc, norm))

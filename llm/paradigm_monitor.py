@@ -158,12 +158,12 @@ def render_html(result: Optional[Dict[str, Any]] = None) -> str:
         lines.append("<tbody>")
         for p in top:
             bar_w = int(p["ratio"] * 100)
-            lines.append(f"<tr>")
+            lines.append("<tr>")
             lines.append(f"<td style='max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'><code title='{p['paper_id']}'>{p['title']}</code></td>")
             lines.append(f"<td style='text-align:right;font-weight:600'>{p['citation_count']}</td>")
             lines.append(f"<td style='text-align:right'>{p['ratio']:.1%}</td>")
             lines.append(f"<td style='width:120px'><div style='background:#e8e4de;border-radius:3px;height:8px'><div style='background:{'#e74c3c' if is_alert else '#7A9E7A'};height:100%;width:{bar_w}%;border-radius:3px'></div></div></td>")
-            lines.append(f"</tr>")
+            lines.append("</tr>")
         lines.append("</tbody></table>")
 
     lines.append("<style>")

@@ -256,7 +256,7 @@ class ResearchMemory:
         paper_text = (
             paper.get("title", "") + " " + paper.get("abstract", "")
         ).lower()
-        stance_text = stance.claim.lower()
+        _stance_text = stance.claim.lower()
 
         # Check for negation patterns indicating contradiction
         contradiction_signals = ["fail to", "does not", "cannot", "ineffective", "worse than", "no evidence", "contrary to"]
@@ -271,7 +271,7 @@ class ResearchMemory:
                     paper_arxiv_id=paper.get("arxiv_id", ""),
                     anomaly_type="challenge",
                     severity=AnomalySeverity.MEDIUM,
-                    description=f"Paper discusses limitations that challenge the claimed stance",
+                    description="Paper discusses limitations that challenge the claimed stance",
                 )
         return None
 

@@ -44,7 +44,7 @@ class AnalyzerAgent(BaseAgent):
 
         paper = msg.payload
         title = paper.get("title", "")
-        abstract = paper.get("abstract", "") or ""
+        _abstract = paper.get("abstract", "") or ""
         arxiv_id = paper.get("arxiv_id", "")
         topic = paper.get("subscription_id", title[:50])
 

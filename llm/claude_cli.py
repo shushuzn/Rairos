@@ -120,7 +120,7 @@ class ClaudeCLIClient:
             output = result.stdout.strip()
             # Claude CLI may append hook/agent error text after the JSON.
             # Try to extract only the first JSON object.
-            json_text = output
+            _json_text = output
             try:
                 # Attempt direct parse first
                 data = json.loads(output)

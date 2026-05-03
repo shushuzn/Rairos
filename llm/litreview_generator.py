@@ -146,7 +146,7 @@ class LitReviewGenerator:
                 )
                 markdown = self._render_markdown(review)
                 result = LitReviewResult(success=True, topic=topic, review=review, markdown=markdown)
-            except Exception as e:
+            except Exception:
                 # Fallback to template on LLM failure
                 review = self._generate_template_review(topic, papers)
                 markdown = self._render_markdown(review)
@@ -259,10 +259,10 @@ class LitReviewGenerator:
                 continue
 
             # Detect section headers
-            is_header = False
+            is_header = False  # noqa: F841
             for prefix in ["## ", "# ", "**", "*", "##"]:
                 if line.startswith(prefix) and len(line) > 3:
-                    is_header = True
+                    _is_header = True
                     break
 
             if line.startswith("## ") or (line.startswith("# ") and "literature review" not in line.lower()):

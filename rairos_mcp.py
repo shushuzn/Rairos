@@ -1970,7 +1970,7 @@ def tool_citation_chain_build(arxiv_id: str, max_depth: int = 2) -> Dict:
         from llm.citation_chain import CitationChainBuilder
 
         builder = CitationChainBuilder()
-        chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=max_depth)
+        _chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=max_depth)
 
         return success_response({
             "arxiv_id": arxiv_id,
@@ -2000,7 +2000,7 @@ def tool_citation_chain_families(arxiv_id: str) -> Dict:
         from llm.citation_chain import CitationChainBuilder
 
         builder = CitationChainBuilder()
-        chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
+        _chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
         families = builder.cluster_families()
 
         return success_response({
@@ -2019,7 +2019,7 @@ def tool_citation_chain_silent(arxiv_id: str) -> Dict:
         from llm.citation_chain import CitationChainBuilder
 
         builder = CitationChainBuilder()
-        chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
+        _chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
         silent = builder.detect_silent_citations()
 
         return success_response({

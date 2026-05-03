@@ -74,7 +74,7 @@ class CredibilityScorer:
         capsules = data.get("capsules", [])
 
         results: List[CapsuleCredibility] = []
-        n = len(capsules)
+        _n = len(capsules)
 
         for i, cap in enumerate(capsules):
             kw = cap.get("trigger_keywords", [])
@@ -139,16 +139,16 @@ class CredibilityScorer:
 
         for c in capsules:
             novelty_pct = int(c.novelty_score * 100)
-            color = "#C4706A" if c.is_trendslop else "#7A9E7A"
+            _color = "#C4706A" if c.is_trendslop else "#7A9E7A"
             badge = '<span style="background:#C4706A;color:white;padding:2px 8px;border-radius:10px;font-size:11px">⚠️ TRENDSLOP</span>' if c.is_trendslop else '<span style="background:#7A9E7A;color:white;padding:2px 8px;border-radius:10px;font-size:11px">✓ Original</span>'
-            lines.append(f"<tr>")
+            lines.append("<tr>")
             lines.append(f"<td style='max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'><code title='{c.gap_title}'>{c.gap_title[:40]}</code></td>")
             lines.append(f"<td><code>{c.gap_type}</code></td>")
             lines.append(f"<td>{c.outcome_score:.2f}</td>")
             lines.append(f"<td>{novelty_pct}%</td>")
             lines.append(f"<td>{int(c.max_overlap * 100)}%</td>")
             lines.append(f"<td>{badge}</td>")
-            lines.append(f"</tr>")
+            lines.append("</tr>")
 
         lines.append("</tbody></table>")
         lines.append("<style>")

@@ -67,7 +67,7 @@ def match_paper_to_channels(paper: Dict[str, Any]) -> List[str]:
     channels = _load_channels()
     cats = set(paper.get("categories", []) or [])
     abstract = (paper.get("abstract", "") + " " + paper.get("title", "")).lower()
-    title = paper.get("title", "").lower()
+    _title = paper.get("title", "").lower()
     matched: List[str] = []
 
     for cid, cfg in channels.items():

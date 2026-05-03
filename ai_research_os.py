@@ -83,20 +83,20 @@ __all__ = [
     "fetch_arxiv_metadata_batch",
     "fetch_crossref_metadata",
     # pdf (lazy-loaded)  # noqa: F822
-    "download_pdf",
-    "extract_pdf_text",
+    "download_pdf",  # noqa: F822
+    "extract_pdf_text",  # noqa: F822
     "extract_pdf_text_hybrid",  # noqa: F822
     # sections (lazy-loaded)  # noqa: F822
-    "looks_like_heading",
-    "segment_into_sections",
+    "looks_like_heading",  # noqa: F822
+    "segment_into_sections",  # noqa: F822
     "format_section_snippets",  # noqa: F822
     # llm (lazy-loaded)  # noqa: F822
-    "call_llm_chat_completions",
-    "ai_generate_pnote_draft",
+    "call_llm_chat_completions",  # noqa: F822
+    "ai_generate_pnote_draft",  # noqa: F822
     "ai_generate_cnote_draft",  # noqa: F822
     # renderers (lazy-loaded)  # noqa: F822
-    "render_pnote",
-    "render_cnote",
+    "render_pnote",  # noqa: F822
+    "render_cnote",  # noqa: F822
     "render_mnote",  # noqa: F822
     # notes
     "parse_frontmatter",

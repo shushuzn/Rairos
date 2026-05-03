@@ -80,7 +80,7 @@ def _match_gene_pool(topic: str, title: str, abstract: str) -> List[Dict[str, An
         return []
 
     text = (title + " " + abstract).lower()
-    topic_lower = topic.lower()
+    _topic_lower = topic.lower()
 
     matches = []
     for capsule in gene_pool:
@@ -112,7 +112,7 @@ def _match_research_memory(topic: str, title: str, abstract: str) -> List[Dict[s
         return []
 
     text = (title + " " + abstract).lower()
-    topic_lower = topic.lower()
+    topic_lower = topic.lower()  # noqa: F841
 
     matches = []
     for stance in stances:
@@ -165,7 +165,7 @@ class BriefingGenerator:
             BriefingResult with the generated briefing
         """
         import os
-        import datetime
+
 
         # Step 1: Fetch paper from DB
         paper = self._fetch_paper(arxiv_id)
@@ -376,7 +376,7 @@ Respond with ONLY valid markdown. Be concise and critical."""
                 system_prompt="You are a research intelligence analyst. Produce concise, critical briefings.",
                 user_prompt=prompt,
             )
-        except Exception as e:
+        except Exception:
             return self._generate_metadata_briefing(
                 title, abstract, authors, arxiv_id, gene_pool_matches, memory_stances
             )
@@ -432,7 +432,7 @@ Respond with ONLY valid markdown. Be concise and critical."""
         memory_stances: List[Dict[str, Any]],
     ) -> List[BriefingSection]:
         """Generate a metadata-only briefing without LLM."""
-        import datetime
+
 
         sections = [
             BriefingSection(
@@ -461,7 +461,7 @@ Respond with ONLY valid markdown. Be concise and critical."""
 
     def _render_markdown(self, briefing: Briefing, authors: List[str]) -> str:
         """Render Briefing as markdown string."""
-        import datetime
+
 
         now = datetime.datetime.now().strftime("%Y-%m-%d")
 

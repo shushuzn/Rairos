@@ -105,7 +105,7 @@ def render_multi_researcher_html() -> str:
     lines.append("<h4 style='font-size:13px;font-weight:700;color:#333;margin-bottom:8px'>Add Researcher</h4>")
     lines.append("<input type='text' id='newUserId' placeholder='User ID' style='font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid #ccc;margin-right:6px;width:120px'>")
     lines.append("<input type='text' id='newUserName' placeholder='Name' style='font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid #ccc;margin-right:6px;width:140px'>")
-    lines.append(f"<button onclick='addResearcher()' style='background:#6B8FB5;color:white;border:none;border-radius:4px;padding:5px 14px;cursor:pointer;font-size:12px'>Add</button>")
+    lines.append("<button onclick='addResearcher()' style='background:#6B8FB5;color:white;border:none;border-radius:4px;padding:5px 14px;cursor:pointer;font-size:12px'>Add</button>")
     lines.append("</div>")
 
     # Shared vs private toggle per capsule (info)

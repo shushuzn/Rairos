@@ -237,7 +237,7 @@ class KGIntegration:
 
         # Index figures
         for fig in figure_nodes:
-            fig_node_id = self.kg.upsert_node(
+            _fig = self.kg.upsert_node(
                 "Figure",
                 fig.entity_id,
                 fig.label,
@@ -255,7 +255,7 @@ class KGIntegration:
 
         # Index tables
         for tbl in table_nodes:
-            tbl_node_id = self.kg.upsert_node(
+            _tbl = self.kg.upsert_node(
                 "Table",
                 tbl.entity_id,
                 tbl.label,

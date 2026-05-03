@@ -740,7 +740,7 @@ Respond with JSON:
             return 0
 
         # Archive losers and save updated winners
-        remaining = [c for c in capsules if c.capsule_id not in to_archive]
+        _remaining = [c for c in capsules if c.capsule_id not in to_archive]
         # Add back winners (with merged keywords) + any non-active capsules
         all_capsules = self._load_capsules()
         winners_updated = {
