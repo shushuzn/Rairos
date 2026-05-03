@@ -1701,16 +1701,29 @@ def _generate_suggestions(capsules, gap_prefs, topic_freq, archetype, tracker) -
 async def impact(request: Request):
     """Impact Ranking — leaderboard."""
     db = _get_db()
-    rows, _ = db.list_papers(limit=50, sort_by="citation_count", sort_order="desc")
+    rows, _ = db.list_papers(limit=100)  # no citation_count column — sort in Python after fetching real counts
 
     papers = []
     for r in rows:
+        pid = getattr(r, 'paper_id', '') or getattr(r, 'id', '')
+        if not pid:
+            continue
+        citation_data = db.get_citation_count(pid)
+        year_raw = getattr(r, 'published', '') or ''
+        try:
+            year = int(str(year_raw)[:4]) if year_raw else 2020
+        except (ValueError, TypeError):
+            year = 2020
         papers.append({
-            "paper_id": getattr(r, 'paper_id', '') or getattr(r, 'id', ''),
+            "paper_id": pid,
             "title": r.title,
-            "year": getattr(r, 'year', 2020) or 2020,
-            "citation_count": getattr(r, 'citation_count', 0) or 0,
+            "year": year,
+            "citation_count": citation_data.get("forward", 0) or 0,
         })
+
+    # Sort by citation_count desc, then score in Python
+    papers.sort(key=lambda p: p["citation_count"], reverse=True)
+    papers = papers[:50]
 
     try:
         from llm.impact_scorer import ImpactScorer
