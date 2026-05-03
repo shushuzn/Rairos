@@ -487,6 +487,40 @@ async def gene_pool_bold(request: Request):
     })
 
 
+@app.get("/gene-pool/backup")
+async def gene_pool_backup(request: Request):
+    """Gene Pool Backup — view snapshots and restore."""
+    from llm.gene_pool_backup import get_backup_info, render_backup_html
+    info = get_backup_info()
+    html = render_backup_html(info)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "gene-pool-backup",
+        "title": "Gene Pool Backup",
+        "content": html,
+    })
+
+
+@app.post("/gene-pool/backup/create")
+async def create_backup(request: Request):
+    """Trigger an immediate backup."""
+    from llm.gene_pool_backup import create_backup
+    from fastapi.responses import JSONResponse
+    try:
+        stamp = create_backup()
+        return JSONResponse({"success": True, "stamp": stamp})
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
+
+
+@app.post("/gene-pool/backup/restore/{stamp}")
+async def restore_backup(stamp: str, request: Request):
+    """Restore Gene Pool from a specific backup stamp."""
+    from llm.gene_pool_backup import restore_backup
+    from fastapi.responses import JSONResponse
+    ok = restore_backup(stamp)
+    return JSONResponse({"success": ok, "message": "Restored" if ok else "Failed"})
+
+
 @app.get("/gene-pool/at-risk")
 async def gene_pool_at_risk(request: Request):
     """Show at-risk capsules (low_score_streak >= 2) with keep/pin actions."""
