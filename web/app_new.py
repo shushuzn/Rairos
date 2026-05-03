@@ -662,6 +662,76 @@ async def import_pool(request: Request):
     return JSONResponse({"success": True, **stats})
 
 
+@app.get("/arxiv-channels")
+async def arxiv_channels(request: Request):
+    """arXiv Watch Alert Channels — configure multiple feed configs."""
+    from llm.arxiv_alert_channels import render_channels_html
+    html = render_channels_html()
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "arxiv-channels",
+        "title": "arXiv Watch Channels",
+        "content": html,
+    })
+
+
+@app.post("/arxiv-channels/toggle/{channel_id}")
+async def toggle_channel(channel_id: str, request: Request):
+    """Toggle an alert channel on/off."""
+    from llm.arxiv_alert_channels import update_channel
+    from fastapi.responses import JSONResponse
+    from llm.arxiv_alert_channels import _load_channels
+    channels = _load_channels()
+    if channel_id not in channels:
+        return JSONResponse({"success": False}, status_code=404)
+    current = channels[channel_id].get("enabled", True)
+    update_channel(channel_id, {"enabled": not current})
+    return JSONResponse({"success": True})
+
+
+@app.get("/gene-pool/cross-domain")
+async def cross_domain_bridge(request: Request):
+    """Cross-Domain Gap Bridge — find Gene Pool connections across research fields."""
+    from llm.cross_domain_bridge import find_cross_domain_bridges, render_cross_domain_html
+    bridges = find_cross_domain_bridges()
+    html = render_cross_domain_html(bridges)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "cross-domain",
+        "title": "Cross-Domain Gap Bridge",
+        "content": html,
+    })
+
+
+@app.get("/climate-monitor")
+async def climate_monitor(request: Request):
+    """Climate AI Monitor — papers at climate+AI intersection."""
+    from llm.climate_ai_monitor import get_watch_stats, render_climate_monitor_html
+    stats = get_watch_stats()
+    html = render_climate_monitor_html(stats)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "climate-monitor",
+        "title": "Climate AI Monitor",
+        "content": html,
+    })
+
+
+@app.post("/climate-monitor/toggle-watch")
+async def climate_toggle_watch(request: Request):
+    """Toggle watch status for a climate paper."""
+    from llm.climate_ai_monitor import _load_watch_list, _save_watch_list
+    from fastapi.responses import JSONResponse
+    body = await request.json()
+    paper_id = body.get("paper_id", "")
+    watch = _load_watch_list()
+    watched = set(watch.get("watched_ids", []))
+    if paper_id in watched:
+        watched.discard(paper_id)
+    else:
+        watched.add(paper_id)
+    watch["watched_ids"] = list(watched)
+    _save_watch_list(watch)
+    return JSONResponse({"success": True})
+
+
 @app.get("/citation-chain")
 async def citation_chain(request: Request, arxiv_id: str = ""):
     """Citation Chain — build and visualize."""
