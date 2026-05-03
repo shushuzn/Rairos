@@ -479,6 +479,103 @@ async def gene_pool_credibility(request: Request):
     })
 
 
+@app.get("/gene-pool/evolution-log")
+async def gene_pool_evolution_log(request: Request):
+    """Evolution Log — shows what the Gene Pool learned over time."""
+    from llm.insight.tracker import EvolutionTracker
+    tracker = EvolutionTracker()
+    events = tracker.get_evolution_log(limit=100)
+    html = _render_evolution_log_html(events)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "gene-pool-evolution-log",
+        "title": "Evolution Log",
+        "content": html,
+    })
+
+
+def _render_evolution_log_html(events: list) -> str:
+    """Render lifecycle events as a timeline HTML fragment."""
+    ACTION_ICON = {
+        "created": "🆕",
+        "merged": "🔀",
+        "evolved": "🧬",
+        "archived": "📦",
+        "consumed": "⚡",
+    }
+    ACTION_COLOR = {
+        "created": "#4CAF50",
+        "merged": "#9C27B0",
+        "evolved": "#2196F3",
+        "archived": "#757575",
+        "consumed": "#FF9800",
+    }
+
+    rows = []
+    for ev in events:
+        icon = ACTION_ICON.get(ev["action"], "📌")
+        color = ACTION_COLOR.get(ev["action"], "#666")
+        ts = ev.get("timestamp", "")
+        # Human-friendly: just show date+time
+        date_str = ts.replace("T", " ").split(".")[0] if ts else "—"
+        details = ev.get("details", "")
+        gap_title = ev.get("gap_title", "") or "—"
+        gap_type = ev.get("gap_type", "") or "—"
+        cap_id = ev.get("capsule_id", "") or ""
+
+        details_html = f"<div class='ev-details'>{details}</div>" if details else ""
+
+        rows.append(f"""
+        <div class='ev-row'>
+            <span class='ev-icon'>{icon}</span>
+            <div class='ev-body'>
+                <div class='ev-header'>
+                    <span class='ev-action' style='color:{color}'>{ev['action'].upper()}</span>
+                    <span class='ev-time'>{date_str}</span>
+                </div>
+                <div class='ev-title'>{gap_title}</div>
+                <div class='ev-meta'>
+                    <span class='ev-type'>{gap_type}</span>
+                    <span class='ev-id'>{cap_id}</span>
+                </div>
+                {details_html}
+            </div>
+        </div>""")
+
+    if not rows:
+        return """
+        <div class="evo-empty">
+            <div class="evo-empty-icon">🧬</div>
+            <div class="evo-empty-msg">No evolution events yet.</div>
+            <div class="evo-empty-sub">Accept suggestions or submit verdicts to grow your Gene Pool.</div>
+        </div>"""
+
+    rows_html = "\n".join(rows)
+    return f"""
+    <style>
+    .evo-log {{ font-family: 'Courier New', monospace; }}
+    .ev-row {{ display: flex; gap: 14px; padding: 10px 0; border-bottom: 1px solid #eee; align-items: flex-start; }}
+    .ev-icon {{ font-size: 18px; flex-shrink: 0; width: 28px; text-align: center; padding-top: 2px; }}
+    .ev-body {{ flex: 1; min-width: 0; }}
+    .ev-header {{ display: flex; align-items: center; gap: 10px; margin-bottom: 3px; }}
+    .ev-action {{ font-size: 11px; font-weight: bold; letter-spacing: 0.05em; }}
+    .ev-time {{ font-size: 11px; color: #888; }}
+    .ev-title {{ font-size: 14px; color: #222; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+    .ev-meta {{ display: flex; gap: 10px; align-items: center; }}
+    .ev-type {{ font-size: 11px; background: #e8f0fe; color: #1a73e8; padding: 1px 6px; border-radius: 4px; }}
+    .ev-id {{ font-size: 10px; color: #aaa; }}
+    .ev-details {{ font-size: 12px; color: #666; margin-top: 3px; font-style: italic; }}
+    .evo-empty {{ text-align: center; padding: 60px 20px; }}
+    .evo-empty-icon {{ font-size: 48px; margin-bottom: 16px; opacity: 0.4; }}
+    .evo-empty-msg {{ font-size: 18px; color: #444; margin-bottom: 8px; }}
+    .evo-empty-sub {{ font-size: 13px; color: #999; }}
+    </style>
+    <div class="evo-log">{rows_html}</div>
+    """
+
+
+@app.get("/heatmap")
+
+
 @app.get("/heatmap")
 async def contradiction_heatmap(request: Request):
     """Contradiction Heatmap — papers colored by contradiction count."""
@@ -1417,6 +1514,8 @@ def _get_consumed_suggestions() -> set:
 def _mark_capule_consumed(capsule_id: str, tracker) -> None:
     """Mark a capsule as consumed in both Gene Pool stores."""
     try:
+        consumed_title = ""
+        consumed_gap_type = ""
         # Update gene_pool.jsonl
         capsules = tracker._load_capsules()
         updated = False
@@ -1424,6 +1523,8 @@ def _mark_capule_consumed(capsule_id: str, tracker) -> None:
             if c.capsule_id == capsule_id:
                 c.status = "consumed"
                 updated = True
+                consumed_title = c.action_gap_title
+                consumed_gap_type = c.action_gap_type
                 break
         if updated:
             tracker._save_capsules(capsules)
@@ -1442,6 +1543,13 @@ def _mark_capule_consumed(capsule_id: str, tracker) -> None:
                 capsules_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
             except Exception:
                 pass
+
+        tracker.record_capsule_lifecycle_event(
+            capsule_id=capsule_id,
+            action="consumed",
+            gap_title=consumed_title,
+            gap_type=consumed_gap_type,
+        )
     except Exception:
         pass
 

@@ -91,6 +91,39 @@ class EvolutionTracker:
     _REJECT_NO_HYPOTHESIS_PENALTY: float = -0.10
 
 
+    # ─── Capsule Lifecycle Events ────────────────────────────────────────────────
+
+    def record_capsule_lifecycle_event(
+        self,
+        capsule_id: str,
+        action: str,
+        gap_title: str,
+        gap_type: str,
+        details: str = "",
+    ) -> None:
+        """Append a capsule lifecycle event to lifecycle_events.jsonl."""
+        event = {
+            "timestamp": self._get_timestamp(),
+            "capsule_id": capsule_id,
+            "action": action,
+            "gap_title": gap_title,
+            "gap_type": gap_type,
+            "details": details,
+        }
+        with open(self.lifecycle_events_file, "a", encoding="utf-8") as f:
+            f.write(json.dumps(event, ensure_ascii=False) + "\n")
+
+    def get_evolution_log(self, limit: int = 100) -> List[Dict[str, Any]]:
+        """Read newest lifecycle events first (newest at top of file)."""
+        if not self.lifecycle_events_file.exists():
+            return []
+        with open(self.lifecycle_events_file, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+        events = [json.loads(line) for line in lines if line.strip()]
+        events.reverse()
+        return events[:limit]
+
+
     def __init__(self, data_dir: Optional[Path] = None):
 
 
@@ -101,6 +134,9 @@ class EvolutionTracker:
 
 
         self.events_file = self.data_dir / "events.jsonl"
+
+
+        self.lifecycle_events_file = self.data_dir / "lifecycle_events.jsonl"
 
 
         self.profile_file = self.data_dir / "preference_profile.json"
@@ -3084,6 +3120,13 @@ class EvolutionTracker:
         with open(self._gene_pool_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(capsule.to_dict(), ensure_ascii=False) + "\n")
 
+        self.record_capsule_lifecycle_event(
+            capsule_id=capsule.capsule_id,
+            action="created",
+            gap_title=capsule.action_gap_title,
+            gap_type=capsule.action_gap_type,
+        )
+
         return capsule
 
     def find_capsule(
@@ -3129,6 +3172,8 @@ class EvolutionTracker:
         Call this when a capsule should no longer appear in active suggestions.
         """
         archived = False
+        archived_title = ""
+        archived_gap_type = ""
 
         # 1. Mark archived in gene_pool.jsonl
         capsules = self._load_capsules()
@@ -3136,6 +3181,8 @@ class EvolutionTracker:
             if c.capsule_id == capsule_id:
                 c.status = "archived"
                 archived = True
+                archived_title = c.action_gap_title
+                archived_gap_type = c.action_gap_type
                 break
         if archived:
             self._save_capsules(capsules)
@@ -3153,6 +3200,14 @@ class EvolutionTracker:
                     capsules_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
             except Exception:
                 pass
+
+        if archived:
+            self.record_capsule_lifecycle_event(
+                capsule_id=capsule_id,
+                action="archived",
+                gap_title=archived_title,
+                gap_type=archived_gap_type,
+            )
 
         return archived
 
