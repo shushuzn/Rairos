@@ -1043,7 +1043,6 @@ def save_gap_to_gene_pool(
 
         # Write to gene_pool.jsonl (EvolutionTracker.find_capsule reads this)
         try:
-            from llm.insight.gene import CapsuleGene
             from llm.insight.tracker import EvolutionTracker
             tracker = EvolutionTracker()
             tracker.encode_capsule(
@@ -1054,9 +1053,9 @@ def save_gap_to_gene_pool(
                 success_score=0.5,
                 status="active",
             )
-        except Exception:
-            # Non-critical: capsules.json write succeeded, gene_pool.jsonl is optional for CLI use
-            pass
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"gene_pool.jsonl write failed (non-critical): {e}")
 
         return capsule_id
     except Exception:
