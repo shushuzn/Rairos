@@ -962,6 +962,57 @@ async def arxiv_check(request: Request):
         return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
 
+@app.post("/embodied-planning/auto-scan")
+async def embodied_planning_auto_scan(request: Request):
+    """Auto-scan new VLA/robotics papers from subscriptions for embodied planning analysis.
+
+    Runs subscription check, then for each new paper auto-analyzes
+    embodied planning representation type and saves to Gene Pool.
+    """
+    from fastapi.responses import JSONResponse
+    try:
+        db = _get_db()
+        from llm.subscription_monitor import SubscriptionMonitor
+        from llm.paper_gap_extractor import analyze_embodied_planning
+
+        monitor = SubscriptionMonitor(db)
+        results = monitor.check_all()  # {topic: [paper_ids]}
+        all_new_ids = []
+        for papers in results.values():
+            all_new_ids.extend(papers)
+
+        analyzed = []
+        for pid in all_new_ids:
+            paper = db.get_paper(pid)
+            if not paper:
+                continue
+            # Only analyze if categories suggest VLA/robotics
+            cats = (paper.categories or "").lower()
+            if any(c in cats for c in ["cs.ro", "cs.cv", "cs.ai", "cs.lg"]):
+                r = analyze_embodied_planning(
+                    paper_id=pid,
+                    title=paper.title,
+                    abstract=paper.abstract or "",
+                    authors=paper.authors,
+                )
+                analyzed.append({
+                    "paper_id": pid,
+                    "title": paper.title[:60],
+                    "representation_type": r.get("representation_type", "?"),
+                    "confidence": r.get("confidence", 0),
+                    "saved": "error" not in r,
+                })
+
+        return JSONResponse({
+            "success": True,
+            "total_new": len(all_new_ids),
+            "analyzed": len(analyzed),
+            "results": analyzed,
+        })
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
+
+
 @app.get("/gene-pool/cross-domain")
 async def cross_domain_bridge(request: Request):
     """Cross-Domain Gap Bridge — find Gene Pool connections across research fields."""
