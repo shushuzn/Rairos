@@ -630,6 +630,20 @@ async def citation_chain(request: Request, arxiv_id: str = ""):
     })
 
 
+@app.get("/citation-chain/graph")
+async def citation_chain_graph(request: Request, paper_id: str = "", title: str = ""):
+    """Interactive SVG citation graph: paper → cited refs → Gene Pool capsules."""
+    from llm.citation_pathfinder_web import render_citation_chain_html
+    cited_paper_ids = ["p1", "p2", "p3"]  # placeholders; real impl reads from DB
+    cited_capsule_ids = []
+    html = render_citation_chain_html(paper_id, title, cited_paper_ids, cited_capsule_ids)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "citation_chain",
+        "title": "Citation Pathfinder",
+        "content": html,
+    })
+
+
 @app.post("/citation-chain")
 async def citation_chain_build(
     request: Request,
