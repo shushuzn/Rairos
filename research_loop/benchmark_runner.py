@@ -77,8 +77,6 @@ def run_benchmark(
         "--tb=short",
         "--no-header",
         "-q",
-        "--json-report",
-        f"--json-report-file={json_report}",
     ]
 
     result = BenchmarkResult(
@@ -142,6 +140,8 @@ def run_benchmark(
 def _parse_pytest_output(result: BenchmarkResult, output: str) -> None:
     """Parse pytest stdout/stderr for pass/fail counts."""
     import re
+    # Matches: "N passed", "N passed, M failed", "N passed, M failed, K skipped"
+    # Also handles all-skipped case: "N skipped"
     m = re.search(
         r'(\d+)\s+passed'
         r'(?:,\s+(\d+)\s+failed)?'
@@ -152,6 +152,14 @@ def _parse_pytest_output(result: BenchmarkResult, output: str) -> None:
         result.passed = int(m.group(1))
         result.failed = int(m.group(2)) if m.group(2) else 0
         result.skipped = int(m.group(3)) if m.group(3) else 0
+    else:
+        # Handle all-skipped or all-failed output: "N skipped in Xs" or "N failed in Xs"
+        skipped_m = re.search(r'(\d+)\s+skipped', output)
+        if skipped_m:
+            result.skipped = int(skipped_m.group(1))
+        failed_m = re.search(r'(\d+)\s+failed', output)
+        if failed_m:
+            result.failed = int(failed_m.group(1))
 
 
 def _parse_json_report(result: BenchmarkResult, report_path: Path) -> None:
