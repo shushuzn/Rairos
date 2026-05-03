@@ -1288,8 +1288,8 @@ class TestCallLlmChatCompletions:
         llm.client._http_session = None
 
     def test_raises_on_no_api_key(self):
-        with patch.dict(os.environ, {}, clear=True):
-            with pytest.raises(ValueError, match="API_KEY"):
+        with patch("llm.client._resolve_llm_credentials", return_value=("", "")):
+            with pytest.raises(ValueError, match="API key"):
                 airo.call_llm_chat_completions([], "gpt-4o-mini", "")
 
     def test_uses_custom_base_url(self, monkeypatch):
