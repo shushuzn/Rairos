@@ -295,3 +295,87 @@ Respond ONLY with a JSON object (no markdown, no code fences):
             "paper_count": len(papers),
             "error": str(e),
         }
+
+
+def gaps_to_research_questions(
+    frontier_gaps: List[Dict[str, Any]],
+    paper_titles: Optional[Dict[str, str]] = None,
+    model: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Convert frontier gaps into actionable research questions.
+
+    Each question is specific enough to drive a paper2code experiment or
+    a targeted literature search.
+
+    frontier_gaps: list of {gap_title, gap_type, keywords, summary}
+    paper_titles: optional {paper_id: title} map for context
+
+    Returns: {questions: [{question, gap_title, gap_type, keywords, difficulty, hypothesis}]}
+    """
+    if not frontier_gaps:
+        return {"questions": [], "gap_count": 0}
+
+    gaps_str = "\n".join(
+        f"- Gap {i+1}: {g.get('gap_title','?')} [{g.get('gap_type','?')}] "
+        f"keywords={', '.join(g.get('keywords',[])[:5])} "
+        f"summary={g.get('summary','?')}"
+        for i, g in enumerate(frontier_gaps)
+    )
+
+    prompt = f"""Given the following frontier research gaps (underexplored problem spaces), generate concrete, actionable research questions.
+
+Each question must be:
+- Specific: mentions method names, evaluation criteria, or constraints
+- Answerable: can be addressed by running experiments or analyzing existing papers
+- Novelty-justified: motivated by the gap it addresses
+
+Output JSON (no markdown, no code fences):
+{{
+  "questions": [
+    {{
+      "question": "Can chain-of-thought prompting improve factual recall in 70B+ models on medical VQA when evaluated on the MedQA dataset?",
+      "gap_title": "Limited medical VQA benchmark coverage",
+      "gap_type": "evaluation_gap",
+      "keywords": ["medical-vqa", "chain-of-thought", "factual-recall"],
+      "difficulty": "medium",
+      "hypothesis": "Chain-of-thought reasoning will improve factual recall by enabling multi-step diagnostic inference"
+    }},
+    ...
+  ]
+}}
+
+GAP DATA:
+{gaps_str}
+
+Respond ONLY with the JSON object.
+"""
+
+    try:
+        from llm.client import call_llm_chat_completions
+    except ImportError:
+        return {
+            "questions": [],
+            "gap_count": len(frontier_gaps),
+            "error": "llm.client not available",
+        }
+
+    try:
+        content = call_llm_chat_completions(
+            messages=[{"role": "user", "content": prompt}],
+            model=model or "claude-3-5-sonnet-latest",
+        )
+        result = json.loads(content.strip())
+        result["gap_count"] = len(frontier_gaps)
+        return result
+    except json.JSONDecodeError:
+        return {
+            "questions": [],
+            "gap_count": len(frontier_gaps),
+            "error": f"LLM returned invalid JSON: {content[:200] if 'content' in dir() else '?'}",
+        }
+    except Exception as e:
+        return {
+            "questions": [],
+            "gap_count": len(frontier_gaps),
+            "error": str(e),
+        }
