@@ -435,6 +435,19 @@ async def contradiction_heatmap(request: Request):
     })
 
 
+@app.get("/game-mode")
+async def game_mode(request: Request):
+    """Research Game Mode — badges and progression."""
+    from llm.game_mode import compute_badges, render_game_mode_html
+    badges = compute_badges()
+    html = render_game_mode_html(badges)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "game-mode",
+        "title": "Research Game Mode",
+        "content": html,
+    })
+
+
 @app.get("/alerts/paradigm")
 async def paradigm_alert(request: Request):
     """Paradigm Concentration Alert — flags when >60% citations cluster around ≤3 papers."""
@@ -850,6 +863,16 @@ async def insights(request: Request):
         # Analyze Gene Pool patterns to generate concrete next-step suggestions
         suggestions = _generate_suggestions(capsules, gap_prefs, topic_freq, archetype, tracker)
 
+        # ── Gene Pool Prefetch ─────────────────────────────────────────────────────
+        # Find capsules matching the top research topic for prefetch indicator
+        prefetched_ids: set = set()
+        if topic_freq:
+            top_topic = max(topic_freq.items(), key=lambda x: x[1])[0] if topic_freq else ""
+            if top_topic:
+                from llm.briefing_generator import _match_gene_pool
+                matches = _match_gene_pool(top_topic, "", "")
+                prefetched_ids = {m.get("capsule_id", "")[:12] for m in matches}
+
     except Exception as e:
         capsules, stats, archetype, gap_prefs, topic_freq, events_display, exp_stats = [], {}, {}, {}, {}, [], {}
         import logging
@@ -865,6 +888,7 @@ async def insights(request: Request):
         "events": events_display,
         "exp_stats": exp_stats,
         "suggestions": suggestions,
+        "prefetched_ids": prefetched_ids,
     })
 
 
