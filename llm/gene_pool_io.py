@@ -1,12 +1,56 @@
-"""Gene Pool Import/Export — backup/restore pool as JSON; share across machines."""
+"""Gene Pool I/O — unified read/write for capsules.json + import/export."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 GP_DIR = Path.home() / ".ai_research_os" / "gene_pool"
+CAPSULE_PATH = GP_DIR / "capsules.json"
+
+
+# =============================================================================
+# Unified capsule read API (replaces scattered _read_capsules_json / _load_capsules)
+# =============================================================================
+
+def load_capsules(
+    gap_type: Optional[str] = None,
+    status: Optional[str] = None,
+    source_paper_id: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    """Load capsules with optional filtering by gap_type, status, source_paper_id."""
+    if not CAPSULE_PATH.exists():
+        return []
+    try:
+        data = json.loads(CAPSULE_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    capsules = data.get("capsules", [])
+    if gap_type is not None:
+        capsules = [c for c in capsules if c.get("action_gap_type") == gap_type]
+    if status is not None:
+        capsules = [c for c in capsules if c.get("status") == status]
+    if source_paper_id is not None:
+        capsules = [
+            c for c in capsules
+            if c.get("archetype", {}).get("source_paper_id") == source_paper_id
+        ]
+    return capsules
+
+
+def get_capsule_by_paper(paper_id: str, gap_type: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """Get the most recent active capsule for a given paper."""
+    capsules = load_capsules(gap_type=gap_type, status="active")
+    candidates = [c for c in capsules if c.get("archetype", {}).get("source_paper_id") == paper_id]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda c: c.get("created_at", ""))
+
+
+def paper_exists_in_pool(paper_id: str, gap_type: Optional[str] = None) -> bool:
+    """Check if a paper already has a capsule entry (for deduplication)."""
+    return get_capsule_by_paper(paper_id, gap_type) is not None
 
 
 def export_pool() -> Dict[str, Any]:

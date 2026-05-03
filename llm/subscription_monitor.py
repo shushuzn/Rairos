@@ -131,36 +131,7 @@ class SubscriptionMonitor:
         return query
 
     def _search_arxiv(self, query: str, max_results: int) -> List[Dict[str, Any]]:
-        """Search arXiv API for papers matching query.
-
-        Args:
-            query: arXiv search query string
-            max_results: Maximum papers to return
-
-        Returns:
-            List of paper dicts with arxiv_id, title, abstract, published
-        """
-        import urllib.parse
-        import urllib.request
-
-        encoded_query = urllib.parse.quote_plus(query)
-        url = (
-            f"https://export.arxiv.org/api/query?"
-            f"search_query=all:{encoded_query}&"
-            f"start=0&"
-            f"max_results={max_results}&"
-            f"sortBy=submittedDate&"
-            f"sortOrder=descending"
-        )
-
-        try:
-            with urllib.request.urlopen(url, timeout=30) as response:
-                content = response.read().decode("utf-8")
-        except Exception as e:
-            logger.error(f"arXiv search failed: {e}")
-            return []
-
-        return self._parse_atom_feed(content)
+        return search_arxiv(query, max_results)
 
     def _parse_atom_feed(self, xml_content: str) -> List[Dict[str, Any]]:
         """Parse arXiv Atom feed into paper dicts."""
@@ -196,3 +167,50 @@ class SubscriptionMonitor:
             logger.error(f"Failed to parse arXiv feed: {e}")
 
         return papers
+
+
+# Standalone public function — reuse in embodied_planning_search
+def search_arxiv(query: str, max_results: int = 10) -> List[Dict[str, Any]]:
+    """Search arXiv API and return paper dicts. Reuses SubscriptionMonitor parsing."""
+    import urllib.parse
+    import urllib.request
+
+    encoded_query = urllib.parse.quote_plus(query)
+    url = (
+        f"https://export.arxiv.org/api/query?"
+        f"search_query=all:{encoded_query}&"
+        f"start=0&"
+        f"max_results={max_results}&"
+        f"sortBy=submittedDate&"
+        f"sortOrder=descending"
+    )
+    try:
+        with urllib.request.urlopen(url, timeout=30) as response:
+            content = response.read().decode("utf-8")
+    except Exception as e:
+        logger.error(f"arXiv search failed: {e}")
+        return []
+    return _parse_atom_feed_static(content)
+
+
+def _parse_atom_feed_static(xml_content: str) -> List[Dict[str, Any]]:
+    """Parse arXiv Atom feed into paper dicts (static version, no self)."""
+    papers = []
+    try:
+        root = ET.fromstring(xml_content)
+        ns = {"atom": "http://www.w3.org/2005/Atom"}
+        for entry in root.findall("atom:entry", ns):
+            arxiv_id_elem = entry.find("atom:id", ns)
+            arxiv_id = ""
+            if arxiv_id_elem is not None and arxiv_id_elem.text:
+                arxiv_id = arxiv_id_elem.text.split("/")[-1]
+            title_elem = entry.find("atom:title", ns)
+            title = title_elem.text.strip().replace("\n", " ") if title_elem is not None and title_elem.text else ""
+            summary_elem = entry.find("atom:summary", ns)
+            abstract = summary_elem.text.strip().replace("\n", " ") if summary_elem is not None and summary_elem.text else ""
+            published_elem = entry.find("atom:published", ns)
+            published = published_elem.text[:10] if published_elem is not None and published_elem.text else ""
+            papers.append({"arxiv_id": arxiv_id, "title": title, "abstract": abstract, "published": published})
+    except ET.ParseError as e:
+        logger.error(f"Failed to parse arXiv feed: {e}")
+    return papers

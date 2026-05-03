@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from llm.constants import LLM_BASE_URL, LLM_MODEL
+from llm.gene_pool_io import load_capsules, get_capsule_by_paper, paper_exists_in_pool
 
 
 # =============================================================================
@@ -505,26 +506,16 @@ def analyze_gap(
             extra_fields=gap_extra,
         )
 
-        # Contradiction detection: same gap_type, different conclusion
+        # Contradiction detection via unified detect_field_contradiction
         result["contradiction_with"] = None
         result["contradiction_type"] = None
         if capsule_id:
-            all_capsules = _read_capsules_json()
-            existing = [
-                c for c in all_capsules
-                if c.get("action_gap_type") == gap_type
-                and c.get("archetype", {}).get("source_paper_id") != paper_id
-                and c.get("status") != "archived"
-            ]
             primary_field = result_fields[0]
             current_val = result.get(primary_field, "unknown")
-            if current_val and current_val != "unknown":
-                for ex in existing:
-                    ex_val = ex.get("archetype", {}).get(primary_field, "unknown")
-                    if ex_val != current_val and ex_val != "unknown":
-                        result["contradiction_with"] = ex.get("archetype", {}).get("source_paper_id")
-                        result["contradiction_type"] = ex_val
-                        break
+            conflict = detect_field_contradiction(gap_type, primary_field, current_val)
+            if conflict:
+                result["contradiction_with"] = conflict["source_paper_id"]
+                result["contradiction_type"] = conflict["conflicting_value"]
 
         # Track timeline (embodied_planning uses specialized tracker)
         if gap_type == "embodied_planning":
@@ -619,24 +610,8 @@ def batch_analyze_embodied_planning(
     }
 
 
-    # Contradiction pairs: discrete vs continuous for same tasks
-    contradictions = []
-    discrete_set = {(r.get("paper_id"), r.get("paper_title","").lower()) for r in by_type["discrete"]}
-    continuous_set = {(r.get("paper_id"), r.get("paper_title","").lower()) for r in by_type["continuous"]}
-    # Find papers that appear to study similar tasks but use different representations
-    for dc in by_type["discrete"]:
-        for cc in by_type["continuous"]:
-            # Simple keyword overlap check on evidence
-            dc_ev = " ".join(dc.get("evidence", [])).lower()
-            cc_ev = " ".join(cc.get("evidence", [])).lower()
-            if any(w in cc_ev for w in dc_ev.split() if len(w) > 4):
-                contradictions.append({
-                    "discrete_paper": dc.get("paper_id"),
-                    "discrete_title": dc.get("paper_title"),
-                    "continuous_paper": cc.get("paper_id"),
-                    "continuous_title": cc.get("paper_title"),
-                    "evidence_overlap": True,
-                })
+    # Contradiction pairs via unified detect_evidence_contradiction
+    contradictions = detect_evidence_contradiction(results)
 
     return {
         "summary": summary,
@@ -1002,17 +977,6 @@ def _extract_keywords(text: str) -> List[str]:
     return list(dict.fromkeys(keywords))[:6]
 
 
-def _read_capsules_json() -> List[Dict[str, Any]]:
-    """Read capsules from the Gene Pool JSON store."""
-    capsule_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-    if not capsule_path.exists():
-        return []
-    try:
-        return json.loads(capsule_path.read_text(encoding="utf-8")).get("capsules", [])
-    except Exception:
-        return []
-
-
 def save_gap_to_gene_pool(
     paper_id: str,
     title: str,
@@ -1025,12 +989,19 @@ def save_gap_to_gene_pool(
 ) -> Optional[str]:
     """Append a new gap as a CapsuleGene entry to both Gene Pool stores.
 
+    Deduplication: if paper_id + gap_type already exists in capsules.json, skip (return existing capsule_id).
+
     Writes to:
     - ~/.ai_research_os/gene_pool/capsules.json   (read by _match_gene_pool / briefing_generator)
     - ~/.ai_research_os/evolution/gene_pool.jsonl (read by find_capsule / Curator / EvolutionTracker)
 
     Returns capsule_id on success, None on failure.
     """
+    # Deduplication: skip if paper already analyzed for this gap_type
+    existing = get_capsule_by_paper(paper_id, gap_type=gap_type)
+    if existing:
+        return existing.get("capsule_id")
+
     try:
         capsule_id = f"extracted_{paper_id}_{uuid.uuid4().hex[:8]}"
         now = datetime.now().isoformat()
@@ -1176,41 +1147,99 @@ def render_evolution_timeline() -> str:
     return "\n".join(lines)
 
 
-def detect_contradictions(capsules: list) -> list:
-    """Find pairs of capsules with same gap_type but opposite polarity.
+def detect_field_contradiction(
+    gap_type: str,
+    primary_field: str,
+    current_val: str,
+    capsules: Optional[List[Dict[str, Any]]] = None,
+) -> Optional[Dict[str, Any]]:
+    """Find a capsule with same gap_type but different primary field value.
 
-    Returns list of dicts:
-        {gap_type, positive_capsule, negative_capsule, shared_keywords}
+    Returns {source_paper_id, conflicting_value} or None.
+    Used after saving a new analysis to flag if an existing capsule disagrees.
+    """
+    if current_val == "unknown" or current_val is None:
+        return None
+    if capsules is None:
+        capsules = load_capsules(gap_type=gap_type, status="active")
+    for c in capsules:
+        if c.get("archetype", {}).get("source_paper_id") is None:
+            continue
+        ex_val = c.get("archetype", {}).get(primary_field, "unknown")
+        if ex_val != current_val and ex_val != "unknown":
+            return {"source_paper_id": c["archetype"]["source_paper_id"], "conflicting_value": ex_val}
+    return None
+
+
+def detect_polarity_contradiction(
+    gap_type: str,
+    capsules: Optional[List[Dict[str, Any]]] = None,
+) -> List[Dict[str, Any]]:
+    """Find capsule pairs with same gap_type but opposite polarity + shared keywords.
+
+    Returns list of {gap_type, positive_capsule, negative_capsule, shared_keywords}.
     """
     from collections import defaultdict
+    if capsules is None:
+        capsules = load_capsules(gap_type=gap_type, status="active")
 
-    by_type = defaultdict(list)
+    by_polarity = defaultdict(list)
     for c in capsules:
         if c.get("status") == "archived":
             continue
         polarity = c.get("polarity", "positive")
-        gap_type = c.get("action_gap_type") or c.get("trigger_gap_type", "")
-        if gap_type and polarity:
-            by_type[gap_type].append((polarity, c))
+        by_polarity[polarity].append(c)
 
     contradictions = []
-    for gap_type, items in by_type.items():
-        positives = [c for p, c in items if p == "positive"]
-        negatives = [c for p, c in items if p == "negative"]
-        for pc in positives:
-            for nc in negatives:
-                pk = set(pc.get("trigger_keywords", []))
-                nk = set(nc.get("trigger_keywords", []))
-                shared = pk & nk
-                if shared:
-                    contradictions.append({
-                        "gap_type": gap_type,
-                        "positive_capsule": pc,
-                        "negative_capsule": nc,
-                        "shared_keywords": list(shared),
-                    })
-
+    for pos_c in by_polarity.get("positive", []):
+        for neg_c in by_polarity.get("negative", []):
+            shared = set(pos_c.get("trigger_keywords", [])) & set(neg_c.get("trigger_keywords", []))
+            if shared:
+                contradictions.append({
+                    "gap_type": gap_type,
+                    "positive_capsule": pos_c,
+                    "negative_capsule": neg_c,
+                    "shared_keywords": list(shared),
+                })
     return contradictions
+
+
+def detect_evidence_contradiction(
+    embodied_results: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """Find discrete-vs-continuous contradictions via evidence keyword overlap.
+
+    Returns list of {discrete_paper, continuous_paper, evidence_overlap}.
+    """
+    contradictions = []
+    discrete = [r for r in embodied_results if r.get("representation_type") == "discrete"]
+    continuous = [r for r in embodied_results if r.get("representation_type") == "continuous"]
+    for dc in discrete:
+        for cc in continuous:
+            dc_ev = " ".join(dc.get("evidence", [])).lower()
+            cc_ev = " ".join(cc.get("evidence", [])).lower()
+            if any(w in cc_ev for w in dc_ev.split() if len(w) > 4):
+                contradictions.append({
+                    "discrete_paper": dc.get("paper_id"),
+                    "continuous_paper": cc.get("paper_id"),
+                    "evidence_overlap": True,
+                })
+    return contradictions
+
+
+# Backwards-compatible alias
+def detect_contradictions(capsules: list) -> list:
+    """Legacy wrapper — dispatches to polarity-based detection per gap_type."""
+    from collections import defaultdict
+    by_type = defaultdict(list)
+    for c in capsules:
+        gt = c.get("action_gap_type") or c.get("trigger_gap_type", "")
+        if gt:
+            by_type[gt].append(c)
+    all_results = []
+    for gt, caps in by_type.items():
+        all_results.extend(detect_polarity_contradiction(gt, caps))
+    return all_results
 
 
 def analyze_multi_paper_gaps(
@@ -1327,7 +1356,7 @@ def semantic_search_papers(
         import numpy as np
 
         # Load papers from Gene Pool
-        capsules = _read_capsules_json()
+        capsules = load_capsules()
         if not capsules:
             return _keyword_search_fallback(query, db=db, top_k=top_k)
 
@@ -1400,7 +1429,7 @@ def _keyword_search_fallback(
 
     用简单词频匹配：query terms在title/abstract中出现次数/score。
     """
-    capsules = _read_capsules_json()
+    capsules = load_capsules()
     if not capsules:
         return []
 
