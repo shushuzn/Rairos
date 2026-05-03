@@ -333,6 +333,7 @@ class TestDoiFullPipeline:
                             str(temp_research_root),
                             "--tags",
                             "Evaluation",
+                            "--skip-embed",
                         ]
                     )
 
@@ -400,6 +401,7 @@ class TestDoiFullPipeline:
                                     str(temp_research_root),
                                     "--tags",
                                     "Agent",
+                                    "--skip-embed",
                                 ]
                             )
 
@@ -447,6 +449,7 @@ class TestTagInferencePipeline:
                             "2401.00001",
                             "--root",
                             str(temp_research_root),
+                            "--skip-embed",
                             # No --tags: should infer from abstract
                         ]
                     )
@@ -486,6 +489,7 @@ class TestTagInferencePipeline:
                         "2402.00002",
                         "--root",
                         str(temp_research_root),
+                        "--skip-embed",
                     ]
                 )
 
