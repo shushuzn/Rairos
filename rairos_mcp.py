@@ -153,6 +153,39 @@ def get_tools() -> List[Dict]:
             }
         },
         {
+            "name": "kg_paper_subgraph",
+            "description": "Get ego graph around a paper (nodes + edges JSON)",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "paper_id": {"type": "string", "description": "arXiv ID of the paper"},
+                    "depth": {"type": "integer", "default": 2, "description": "Traversal depth (1-3)"}
+                },
+                "required": ["paper_id"]
+            }
+        },
+        {
+            "name": "kg_tag_graph",
+            "description": "Get all papers and notes related to a tag as graph JSON",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "tag": {"type": "string", "description": "Tag name"}
+                },
+                "required": ["tag"]
+            }
+        },
+        {
+            "name": "kg_full_graph",
+            "description": "Get global KG graph as JSON (up to max_nodes)",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "max_nodes": {"type": "integer", "default": 500, "description": "Max nodes to return"}
+                }
+            }
+        },
+        {
             "name": "chart_query",
             "description": "Query figures and tables from a paper's knowledge graph",
             "inputSchema": {
@@ -845,6 +878,129 @@ def tool_kg_query(query: str, entity_id: Optional[str] = None, tag: Optional[str
 
     except Exception as e:
         logger.error(f"kg_query error: {e}")
+        return error_response("KG_ERROR", str(e))
+
+
+def tool_kg_paper_subgraph(paper_id: str, depth: int = 2) -> Dict:
+    """Get ego graph around a paper as JSON (nodes + edges)."""
+    try:
+        from kg.manager import KGManager
+        from kg.queries import KGQueries
+
+        kg = KGManager()
+        q = KGQueries(kg)
+        subgraph = q.get_paper_subgraph(paper_id, depth=depth)
+
+        return success_response({
+            "paper_id": paper_id,
+            "depth": depth,
+            "nodes": [
+                {
+                    "id": n["id"],
+                    "entity_type": n.get("entity_type"),
+                    "entity_id": n.get("entity_id"),
+                    "label": n.get("label"),
+                }
+                for n in subgraph.get("nodes", [])
+            ],
+            "edges": [
+                {
+                    "id": e["id"],
+                    "source_id": e["source_id"],
+                    "target_id": e["target_id"],
+                    "relation": e.get("relation"),
+                }
+                for e in subgraph.get("edges", [])
+            ],
+            "center": subgraph.get("center"),
+        })
+
+    except Exception as e:
+        logger.error(f"kg_paper_subgraph error: {e}")
+        return error_response("KG_ERROR", str(e))
+
+
+def tool_kg_tag_graph(tag: str) -> Dict:
+    """Get all papers and notes related to a tag as graph JSON."""
+    try:
+        from kg.manager import KGManager
+        from kg.queries import KGQueries
+
+        kg = KGManager()
+        q = KGQueries(kg)
+        ecosystem = q.get_tag_ecosystem(tag)
+
+        return success_response({
+            "tag": tag,
+            "nodes": [
+                {
+                    "id": n["id"],
+                    "entity_type": n.get("entity_type"),
+                    "entity_id": n.get("entity_id"),
+                    "label": n.get("label"),
+                }
+                for n in ecosystem.get("nodes", [])
+            ],
+            "edges": [
+                {
+                    "id": e["id"],
+                    "source_id": e["source_id"],
+                    "target_id": e["target_id"],
+                    "relation": e.get("relation"),
+                }
+                for e in ecosystem.get("edges", [])
+            ],
+        })
+
+    except Exception as e:
+        logger.error(f"kg_tag_graph error: {e}")
+        return error_response("KG_ERROR", str(e))
+
+
+def tool_kg_full_graph(max_nodes: int = 500) -> Dict:
+    """Get global KG graph as JSON (up to max_nodes)."""
+    try:
+        from kg.manager import KGManager
+        from kg.queries import KGQueries
+
+        kg = KGManager()
+        q = KGQueries(kg)
+        export = q.export_graph_json()
+
+        nodes = export["nodes"][:max_nodes]
+        nids = {n["id"] for n in nodes}
+        edges = [
+            e for e in export["edges"]
+            if e["source_id"] in nids and e["target_id"] in nids
+        ]
+
+        return success_response({
+            "total_nodes": len(export["nodes"]),
+            "total_edges": len(export["edges"]),
+            "returned_nodes": len(nodes),
+            "returned_edges": len(edges),
+            "nodes": [
+                {
+                    "id": n["id"],
+                    "entity_type": n.get("entity_type"),
+                    "entity_id": n.get("entity_id"),
+                    "label": n.get("label"),
+                }
+                for n in nodes
+            ],
+            "edges": [
+                {
+                    "id": e["id"],
+                    "source_id": e["source_id"],
+                    "target_id": e["target_id"],
+                    "relation": e.get("relation"),
+                }
+                for e in edges
+            ],
+        })
+
+    except Exception as e:
+        logger.error(f"kg_full_graph error: {e}")
         return error_response("KG_ERROR", str(e))
 
 
@@ -1901,6 +2057,19 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
                 query=arguments.get("query"),
                 entity_id=arguments.get("entity_id"),
                 tag=arguments.get("tag")
+            )
+        elif name == "kg_paper_subgraph":
+            result = tool_kg_paper_subgraph(
+                paper_id=arguments.get("paper_id"),
+                depth=arguments.get("depth", 2)
+            )
+        elif name == "kg_tag_graph":
+            result = tool_kg_tag_graph(
+                tag=arguments.get("tag")
+            )
+        elif name == "kg_full_graph":
+            result = tool_kg_full_graph(
+                max_nodes=arguments.get("max_nodes", 500)
             )
         elif name == "chart_query":
             result = tool_chart_query(
