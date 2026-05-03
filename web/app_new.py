@@ -2010,6 +2010,195 @@ def _render_rq_html(result: Dict[str, Any], frontier_gaps: List[Dict[str, Any]],
     <div class='rq-list'>{q_rows}</div>"""
 
 
+# ── Experiment Proposals ─────────────────────────────────────────────────────
+
+EXPERIMENTS_DIR = Path.home() / ".ai_research_os" / "experiments"
+EXPERIMENTS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _get_experiment_queue() -> List[Dict[str, Any]]:
+    try:
+        if not EXPERIMENTS_DIR.exists():
+            return []
+        files = sorted(EXPERIMENTS_DIR.glob("experiment_*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+        results = []
+        for f in files[:20]:
+            results.append(json.loads(f.read_text(encoding="utf-8")))
+        return results
+    except Exception:
+        return []
+
+
+def _save_experiment(exp: Dict[str, Any]) -> None:
+    slug = exp.get("id", "unknown").replace(":", "_")
+    path = EXPERIMENTS_DIR / f"experiment_{slug}.json"
+    path.write_text(json.dumps(exp, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+@app.get("/insights/experiments")
+async def insights_experiments(request: Request):
+    """List queued experiment proposals."""
+    queue = _get_experiment_queue()
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "experiments",
+        "title": "🔬 Experiment Proposals",
+        "content": _render_experiments_html(queue),
+    })
+
+
+def _render_experiments_html(queue: List[Dict[str, Any]]) -> str:
+    if not queue:
+        return """
+        <div style="text-align:center;padding:40px;color:#888;">
+          <div style="font-size:40px;margin-bottom:12px;">🔬</div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:6px;">No experiment proposals yet</div>
+          <div style="font-size:13px;">Accept a suggestion with a concrete gap, then come back here to run the experiment.</div>
+        </div>"""
+    rows = ""
+    for i, exp in enumerate(queue, 1):
+        status = exp.get("status", "pending")
+        status_color = {"pending": "#FF9800", "running": "#2196F3", "done": "#4CAF50", "failed": "#F44336"}.get(status, "#888")
+        hypothesis = exp.get("hypothesis", "")
+        exp_id_js = exp["id"].replace("'", "\\'")
+        run_btn = (f'<button onclick="runExperiment(\'{exp_id_js}\')" '
+                   f'style="background:#4CAF50;color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:12px;cursor:pointer;">'
+                   f'▶ Run Experiment</button>') if status == "pending" else ""
+        rows += f"""
+        <div style="border: 1px solid #e0e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+            <div style="font-size:14px;font-weight:700;color:#1a2a3a;">{i}. {exp.get('title', 'Untitled')[:80]}</div>
+            <span style="font-size:11px;font-weight:700;color:{status_color};background:{status_color}22;padding:3px 10px;border-radius:12px;">{status.upper()}</span>
+          </div>
+          <div style="font-size:12px;color:#555;margin-bottom:6px;"><span style="color:#888;">gap_type:</span> {exp.get('gap_type','')}</div>
+          <div style="font-size:12px;color:#555;margin-bottom:6px;"><span style="color:#888;">difficulty:</span> {exp.get('difficulty','')}</div>
+          {('<div style="font-size:12px;color:#666;margin-bottom:6px;font-style:italic;">&#128161; Hypothesis: ' + hypothesis[:150] + '</div>' if hypothesis else '')}
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            {run_btn}
+            <button onclick="removeExperiment('{exp_id_js}')" style="background:transparent;color:#888;border:1px solid #ccc;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;">Remove</button>
+          </div>
+        </div>"""
+    return f"""
+    <div style="margin-bottom:20px;">
+      <div style="font-size:13px;color:#888;margin-bottom:12px;">{len(queue)} experiment proposal(s)</div>
+      {rows}
+    </div>
+    <script>
+    function runExperiment(id) {{
+      if (!confirm('Run this experiment? It will execute in the background.')) return;
+      fetch('/insights/run-experiment', {{method:'POST', headers:{{'Content-Type':'application/json'}}, body: JSON.stringify({{id}})}})
+        .then(function(r) {{ return r.json(); }})
+        .then(function(d) {{ alert('Experiment started: ' + d.message); location.reload(); }})
+        .catch(function(e) {{ alert('Error: ' + e.message); }});
+    }}
+    function removeExperiment(id) {{
+      fetch('/insights/experiments/remove', {{method:'POST', headers:{{'Content-Type':'application/json'}}, body: JSON.stringify({{id}})}})
+        .then(function(r) {{ location.reload(); }});
+    }}
+    </script>"""
+
+
+@app.post("/insights/generate-experiment")
+async def generate_experiment(request: Request):
+    """Generate a concrete experiment proposal from a gap/suggestion."""
+    body = await request.json()
+    gap_type = body.get("gap_type", "")
+    topic = body.get("topic", "")
+    gap_title = body.get("title", "")
+    description = body.get("body", "")
+    keywords = body.get("keywords", [])
+
+    try:
+        from llm.paper_gap_extractor import gaps_to_research_questions
+        frontier_gaps = [{
+            "gap_title": gap_title or topic or "Research gap",
+            "gap_type": gap_type,
+            "keywords": keywords,
+            "summary": description,
+        }]
+        questions_result = gaps_to_research_questions(frontier_gaps)
+        questions = questions_result.get("questions", [])
+        if questions:
+            q = questions[0]  # take top question as experiment
+            exp_title = q.get("question", gap_title or topic)[:100]
+        else:
+            q = {}
+            exp_title = gap_title or topic or "Experiment"
+        exp_id = f"exp_{gap_type[:10]}_{topic[:15].replace(' ', '_')}"
+        exp = {
+            "id": exp_id,
+            "title": exp_title,
+            "gap_type": gap_type,
+            "topic": topic,
+            "description": q.get("question", description),
+            "hypothesis": q.get("hypothesis", ""),
+            "difficulty": q.get("difficulty", "medium"),
+            "method": q.get("question", ""),
+            "keywords": keywords,
+            "status": "pending",
+            "created_at": datetime.now().isoformat(),
+        }
+        _save_experiment(exp)
+        return {"success": True, "experiment": exp}
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Experiment generation failed: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/insights/run-experiment")
+async def run_experiment(request: Request):
+    """Trigger paper2code pipeline for an experiment proposal (background)."""
+    body = await request.json()
+    exp_id = body.get("id", "")
+    queue = _get_experiment_queue()
+    exp = next((e for e in queue if e.get("id") == exp_id), None)
+    if not exp:
+        return {"success": False, "error": "Experiment not found"}
+
+    # Update status
+    exp["status"] = "running"
+    exp["started_at"] = datetime.now().isoformat()
+    _save_experiment(exp)
+
+    # Run in background thread
+    import threading
+
+    def _run():
+        try:
+            paper_id = exp.get("paper_id", "")
+            if paper_id:
+                from research_loop.paper2code_integration import PaperPipeline
+                pipeline = PaperPipeline()
+                result = pipeline.run(paper_id)
+                exp["status"] = "done"
+                exp["result"] = result
+            else:
+                # No specific paper — just update Gene Pool with verdict-based score
+                tracker = _get_tracker()
+                tracker.record_gap_accept(
+                    topic=exp.get("topic", "experiment"),
+                    gap_type=exp.get("gap_type", ""),
+                    gap_title=exp.get("title", "")[:200],
+                    gap_description=exp.get("description", ""),
+                )
+                exp["status"] = "done"
+                exp["result"] = {"verdict_encoded": True}
+        except Exception as e:
+            exp["status"] = "failed"
+            exp["error"] = str(e)
+        finally:
+            _save_experiment(exp)
+
+    t = threading.Thread(target=_run, daemon=True)
+    t.start()
+    return {"success": True, "message": f"Experiment '{exp_id}' started in background"}
+
+
+def _get_tracker():
+    from llm.insight.tracker import EvolutionTracker
+    return EvolutionTracker()
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8501)
