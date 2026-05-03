@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 
@@ -45,8 +46,6 @@ class CapsuleCredibility:
             "trigger_keywords": self.trigger_keywords,
         }
 
-
-from dataclasses import dataclass
 
 
 class CredibilityScorer:
