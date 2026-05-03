@@ -323,7 +323,7 @@ class TestDoiFullPipeline:
 
         # Crossref returns DOI paper, no arXiv fallback
         with patch("parsers.crossref._http_session", _mock_crossref_session(mock_crossref)):
-            with patch("parsers.crossref.get_cached", side_effect=lambda ns, key: None):
+            with patch("core.cache.get_cached", side_effect=lambda ns, key: None):
                 with patch("sys.stdout", new=StringIO()):
                     result = airo.main(
                         [
@@ -389,20 +389,19 @@ class TestDoiFullPipeline:
         mock_crossref_session.get = fake_crossref_get
 
         with patch("parsers.arxiv._get_session", return_value=mock_arxiv_session):
-            with patch("parsers.arxiv.get_cached", side_effect=lambda ns, key: None):
+            with patch("core.cache.get_cached", side_effect=lambda ns, key: None):
                 with patch("parsers.crossref._http_session", mock_crossref_session):
-                    with patch("parsers.crossref.get_cached", side_effect=lambda ns, key: None):
-                        with patch("sys.stdout", new=StringIO()):
-                            result = airo.main(
-                                [
-                                    "ingest",
-                                    "10.48550/arXiv.2306.12345",
-                                    "--root",
-                                    str(temp_research_root),
-                                    "--tags",
-                                    "Agent",
-                                    "--skip-embed",
-                                ]
+                    with patch("sys.stdout", new=StringIO()):
+                        result = airo.main(
+                            [
+                                "ingest",
+                                "10.48550/arXiv.2306.12345",
+                                "--root",
+                                str(temp_research_root),
+                                "--tags",
+                                "Agent",
+                                "--skip-embed",
+                            ]
                             )
 
         assert result == 0
@@ -441,7 +440,7 @@ class TestTagInferencePipeline:
         mock_session = MagicMock()
         mock_session.get.return_value = mock_arxiv
         with patch("parsers.arxiv._get_session", return_value=mock_session):
-            with patch("parsers.arxiv.get_cached", side_effect=lambda ns, key: None):
+            with patch("core.cache.get_cached", side_effect=lambda ns, key: None):
                 with patch("sys.stdout", new=StringIO()):
                     result = airo.main(
                         [
@@ -482,7 +481,7 @@ class TestTagInferencePipeline:
         mock_session = MagicMock()
         mock_session.get.return_value = mock_arxiv
         with patch("parsers.arxiv._get_session", return_value=mock_session):
-            with patch("parsers.arxiv.get_cached", side_effect=lambda ns, key: None):
+            with patch("core.cache.get_cached", side_effect=lambda ns, key: None):
                 with patch("sys.stdout", new=StringIO()):
                     result = airo.main(
                         [
