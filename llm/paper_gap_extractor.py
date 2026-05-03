@@ -365,6 +365,17 @@ def render_embodied_planning_dashboard() -> str:
         hc=len(hybrid), uc=len(unknown)
     )
 
+    # Mermaid graph
+    graph = render_embodied_planning_graph()
+    if graph:
+        html += """
+    <div style="margin-bottom:24px;">
+      <div style="font-size:14px;font-weight:700;color:#555;margin-bottom:12px;">🕸️ Representation Atlas</div>
+      <div style="background:#fafaf7;border:1px solid #e0dbd4;border-radius:8px;padding:16px;overflow-x:auto;">
+        """ + graph + """
+      </div>
+    </div>"""
+
     # Papers list by type
     def _render_list(capsules, color, type_label):
         if not capsules:
@@ -408,6 +419,91 @@ def _empty_dashboard(msg: str) -> str:
       <div style="font-size:13px;">{msg}</div>
     </div>
     """.format(msg=msg)
+
+
+def render_embodied_planning_graph() -> str:
+    """Render embodied planning analyses as a Mermaid graph.
+
+    Nodes = papers colored by representation type (discrete/continuous/hybrid).
+    Edges = contradictory pairs (same gap, different conclusion).
+    Node size reflects confidence.
+    """
+    import json as _json
+
+    capsule_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+    if not capsule_path.exists():
+        return ""
+
+    data = _json.loads(capsule_path.read_text(encoding="utf-8"))
+    capsules = data.get("capsules", [])
+
+    embodied = [
+        c for c in capsules
+        if c.get("action_gap_type") == "embodied_planning"
+    ]
+
+    if len(embodied) < 1:
+        return ""
+
+    # Build node id -> type mapping
+    type_colors = {"discrete": "#7A9E7A", "continuous": "#6B8FB5", "hybrid": "#D4A84B"}
+    nodes_info: Dict[str, tuple] = {}  # paper_id -> (type, title, confidence)
+
+    for c in embodied:
+        pid = c.get("archetype", {}).get("source_paper_id", "")
+        title = c.get("action_gap_title", "Untitled")[:40]
+        conf = c.get("outcome_success_score", 0.5)
+        gap_title = c.get("action_gap_title", "").lower()
+        combined = gap_title + " " + c.get("archetype", {}).get("summary", "").lower()
+        if "hybrid" in combined or ("discrete" in combined and "continuous" in combined):
+            rtype = "hybrid"
+        elif "discrete" in combined:
+            rtype = "discrete"
+        elif "continuous" in combined:
+            rtype = "continuous"
+        else:
+            rtype = "unknown"
+        nodes_info[pid] = (rtype, title, conf)
+
+    # Find contradiction edges: same paper mentions both types
+    edges = set()
+    pids = list(nodes_info.keys())
+    for i, p1 in enumerate(pids):
+        for p2 in pids[i+1:]:
+            if p1 == p2:
+                continue
+            r1, title1, _ = nodes_info[p1]
+            r2, title2, _ = nodes_info[p2]
+            if r1 != r2 and r1 != "unknown" and r2 != "unknown":
+                # Cross-type edge = potential contradiction
+                edges.add((p1[:12], p2[:12], r1, r2))
+
+    # Build Mermaid
+    lines = ["```mermaid", "flowchart TD"]
+    lines.append("    %% Nodes: papers by representation type")
+
+    for pid, (rtype, title, conf) in nodes_info.items():
+        short_id = pid[:12]
+        color = type_colors.get(rtype, "#aaa")
+        conf_pct = int(conf * 100)
+        label = f"{title} {conf_pct}%"
+        if rtype == "discrete":
+            line = f"    {short_id}(({label}))"
+        elif rtype == "continuous":
+            line = f"    {short_id}(({label}))"
+        elif rtype == "hybrid":
+            line = f"    {short_id}{{{{{label}}}}}"
+        else:
+            line = f"    {short_id}(({label}))"
+        lines.append(line)
+
+    lines.append("    %% Edges: cross-type contradictions")
+    for e1, e2, r1, r2 in sorted(edges):
+        color = {"discrete": "stroke:#7A9E7A", "continuous": "stroke:#6B8FB5", "hybrid": "stroke:#D4A84B"}.get(r1, "")
+        lines.append(f"    {e1} -.->|{r1}/{r2}| {e2} {color}")
+
+    lines.append("```")
+    return "\n".join(lines)
 
 
 def _extract_keywords(text: str) -> List[str]:
