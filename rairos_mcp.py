@@ -1974,8 +1974,8 @@ def tool_citation_chain_build(arxiv_id: str, max_depth: int = 2) -> Dict:
 
         return success_response({
             "arxiv_id": arxiv_id,
-            "nodes_count": len(chain.nodes),
-            "edges_count": len(chain.edges),
+            "nodes_count": len(_chain.nodes),
+            "edges_count": len(_chain.edges),
             "nodes": [
                 {
                     "paper_id": n.paper_id,
@@ -1985,9 +1985,9 @@ def tool_citation_chain_build(arxiv_id: str, max_depth: int = 2) -> Dict:
                     "cited_by": n.cited_by,
                     "citation_count": n.citation_count,
                 }
-                for n in chain.nodes
+                for n in _chain.nodes
             ],
-            "edges": [{"from": e[0], "to": e[1]} for e in chain.edges],
+            "edges": [{"from": e[0], "to": e[1]} for e in _chain.edges],
         })
     except Exception as e:
         logger.error(f"citation_chain_build error: {e}")
