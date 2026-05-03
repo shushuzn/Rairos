@@ -148,6 +148,9 @@
           {% elif status == 'consumed' %}
           <span class="badge" style="font-size: 9px; background: var(--pen-green); color: var(--paper);">consumed</span>
           {% endif %}
+          {% if cap_id in prefetched_ids %}
+          <span title="Prefetched: matches current research topic" style="color:#6B8FB5; font-size: 14px;">⚡</span>
+          {% endif %}
         </div>
         <span style="font-family: var(--font-display); font-size: 22px; font-weight: 700; color: {% if score >= 0.7 %}var(--pen-green){% elif score >= 0.4 %}var(--pen-blue){% else %}var(--ink-faint){% endif %};">{{ (score * 100)|round }}%</span>
       </div>
