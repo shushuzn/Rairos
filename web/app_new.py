@@ -863,7 +863,12 @@ async def import_pool(request: Request):
 async def arxiv_channels(request: Request):
     """arXiv Watch Alert Channels — configure multiple feed configs."""
     from llm.arxiv_alert_channels import render_channels_html
-    html = render_channels_html()
+    db = _get_db()
+    try:
+        recent = db.get_recent_subscription_papers_grouped(limit_per=5)
+    except Exception:
+        recent = {}
+    html = render_channels_html(check_results=recent)
     return templates.TemplateResponse(request, "generic.html", {
         "page": "arxiv-channels",
         "title": "arXiv Watch Channels",
@@ -883,6 +888,21 @@ async def toggle_channel(channel_id: str, request: Request):
     current = channels[channel_id].get("enabled", True)
     update_channel(channel_id, {"enabled": not current})
     return JSONResponse({"success": True})
+
+
+@app.post("/arxiv-channels/check")
+async def arxiv_check(request: Request):
+    """Run arXiv subscription check across all enabled subscriptions."""
+    from fastapi.responses import JSONResponse
+    try:
+        db = _get_db()
+        from llm.subscription_monitor import SubscriptionMonitor
+        monitor = SubscriptionMonitor(db)
+        results = monitor.check_all()
+        total = sum(len(v) for v in results.values())
+        return JSONResponse({"success": True, "new_papers": total, "details": {k: len(v) for k, v in results.items()}})
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
 
 @app.get("/gene-pool/cross-domain")
