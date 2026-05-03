@@ -757,6 +757,98 @@ async def citation_chain_graph(request: Request, paper_id: str = "", title: str 
     })
 
 
+@app.get("/voice-capsule")
+async def voice_capsule(request: Request):
+    """Voice-to-Capsule — upload audio, transcribe, extract gap, save to Gene Pool."""
+    from llm.voice_to_capsule import render_voice_upload_html
+    html = render_voice_upload_html()
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "voice-capsule", "title": "Voice-to-Capsule", "content": html,
+    })
+
+
+@app.post("/voice-capsule/transcribe")
+async def voice_transcribe(request: Request):
+    """Receive audio file, transcribe with Whisper, extract gap with LLM."""
+    from llm.voice_to_capsule import extract_gap_from_text, transcribe_audio
+    from fastapi.responses import JSONResponse
+    try:
+        form = await request.form()
+        audio_file = form.get("audio")
+        if not audio_file:
+            return JSONResponse({"error": "No audio file"}, status_code=400)
+        audio_bytes = await audio_file.read()
+        text = transcribe_audio(audio_bytes)
+        if text.startswith("[Transcription error"):
+            return JSONResponse({"error": text})
+        gap = extract_gap_from_text(text)
+        return JSONResponse(gap)
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+@app.post("/voice-capsule/save")
+async def voice_save(request: Request):
+    """Save extracted voice gap to Gene Pool."""
+    from llm.voice_to_capsule import save_voice_capsule
+    from fastapi.responses import JSONResponse
+    try:
+        body = await request.json()
+        cid = save_voice_capsule(body)
+        return JSONResponse({"success": True, "capsule_id": cid})
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
+
+
+@app.get("/policy-impact")
+async def policy_impact(request: Request):
+    """Policy Impact Tracer — map regulations to Gene Pool priority weights."""
+    from llm.policy_impact_tracer import render_policy_tracer_html
+    html = render_policy_tracer_html()
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "policy-impact", "title": "Policy Impact Tracer", "content": html,
+    })
+
+
+@app.get("/labor-displacement")
+async def labor_displacement(request: Request):
+    """Labor Displacement Tracker — AI vs. human labor gaps."""
+    from llm.labor_displacement_tracker import render_labor_tracker_html
+    html = render_labor_tracker_html()
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "labor-displacement", "title": "Labor Displacement Tracker", "content": html,
+    })
+
+
+@app.get("/researchers")
+async def multi_researcher(request: Request):
+    """Multi-Researcher Support — shared Gene Pool with source_user tags."""
+    from llm.multi_researcher import render_multi_researcher_html
+    html = render_multi_researcher_html()
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "multi-researcher", "title": "Multi-Researcher", "content": html,
+    })
+
+
+@app.post("/researchers/add")
+async def add_researcher_route(request: Request):
+    from llm.multi_researcher import add_researcher
+    from fastapi.responses import JSONResponse
+    body = await request.json()
+    uid = body.get("user_id", "")
+    name = body.get("name", "")
+    ok = add_researcher(uid, name)
+    return JSONResponse({"success": ok, "error": None if ok else "already exists"})
+
+
+@app.get("/researchers/capsules/{user_id}")
+async def researcher_capsules(user_id: str, request: Request):
+    from llm.multi_researcher import get_capsules_for_user
+    from fastapi.responses import JSONResponse
+    capsules = get_capsules_for_user(user_id)
+    return JSONResponse({"count": len(capsules), "capsules": capsules[:10]})
+
+
 @app.post("/citation-chain")
 async def citation_chain_build(
     request: Request,
