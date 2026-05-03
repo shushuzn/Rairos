@@ -33,6 +33,8 @@ from __future__ import annotations
 import shutil
 import subprocess
 import sys
+import time
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional
 
@@ -69,6 +71,47 @@ except ImportError:
     BenchmarkConfig = None  # type: ignore
     BenchmarkResult = None  # type: ignore
     summarize_result = None  # type: ignore
+
+
+# ─── OpenTelemetry Tracing ────────────────────────────────────────────────────
+
+_tracer = None
+
+
+def _get_tracer():
+    """Lazily init tracer to avoid hard dependency on OpenTelemetry."""
+    global _tracer
+    if _tracer is None:
+        try:
+            from opentelemetry import trace
+            from opentelemetry.sdk.trace import TracerProvider
+            from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
+            from opentelemetry.sdk.resources import Resource
+            from opentelemetry.semconv.resource import ResourceAttributes
+
+            provider = TracerProvider(
+                resource=Resource.create({ResourceAttributes.SERVICE_NAME: "paper2code"})
+            )
+            provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
+            trace.set_tracer_provider(provider)
+            _tracer = trace.get_tracer("paper2code")
+        except Exception:
+            _tracer = None
+    return _tracer
+
+
+def _span(name: str, attrs=None):
+    """Create a span with the given name, or no-op context if OTel unavailable."""
+    tracer = _get_tracer()
+    if tracer is None:
+        import contextlib
+        return contextlib.nullcontext()
+
+    span_ctx = tracer.start_as_current_span(name)
+    if attrs:
+        for k, v in (attrs or {}).items():
+            span_ctx.set_attribute(k, v)
+    return span_ctx
 
 
 class PaperPipeline:
@@ -114,75 +157,100 @@ class PaperPipeline:
         self.work_dir.mkdir(parents=True, exist_ok=True)
         paper_dir = self.work_dir / arxiv_id.replace(".", "_")
 
-        # Stage 1: Download & parse paper
-        content = None
-        if download_and_parse:
-            print(f"[paper2code] Downloading paper {arxiv_id}...")
-            try:
-                content = download_and_parse(arxiv_id)
-            except Exception as e:
-                print(f"[paper2code] Download failed: {e}, trying PDF parse...")
-                pdf_path = self._find_existing_pdf(arxiv_id)
-                if pdf_path and pdf_path.exists() and parse_existing_pdf:
-                    content = parse_existing_pdf(pdf_path, arxiv_id)
+        # Wrap all stages in one parent span
+        with _span("paper2code_run") as span:
+            if span:
+                span.add_event("pipeline_start", {"arxiv_id": arxiv_id})
 
-        if content is None:
-            raise RuntimeError(f"Could not fetch paper {arxiv_id} (download_and_parse unavailable)")
+            # Stage 1: Download & parse paper
+            content = None
+            if download_and_parse:
+                with _span("stage1_download"):
+                    print(f"[paper2code] Downloading paper {arxiv_id}...")
+                    try:
+                        content = download_and_parse(arxiv_id)
+                    except Exception as e:
+                        print(f"[paper2code] Download failed: {e}, trying PDF parse...")
+                        pdf_path = self._find_existing_pdf(arxiv_id)
+                        if pdf_path and pdf_path.exists() and parse_existing_pdf:
+                            content = parse_existing_pdf(pdf_path, arxiv_id)
+                        if span:
+                            span.add_event("stage1_fallback_pdf", {"success": content is not None})
 
-        print(f"[paper2code] Paper title: {content.title[:80]}")
+            if content is None:
+                raise RuntimeError(f"Could not fetch paper {arxiv_id} (download_and_parse unavailable)")
 
-        # Stage 2: Generate code skeleton
-        code = None
-        src_dir = paper_dir / "src"
-        code_path = src_dir / "model.py"
-        module_name = self._suggest_module_name(content.title)
+            print(f"[paper2code] Paper title: {content.title[:80]}")
+            if span:
+                span.add_event("stage1_complete", {"title": content.title[:80]})
 
-        if generate_code and save_code:
-            print(f"[paper2code] Generating {framework} code skeleton...")
-            code = generate_code(content, framework=framework)
-            code_path = save_code(code, src_dir, module_name=module_name)
-            print(f"[paper2code] Code saved: {code_path}")
-        else:
-            print("[paper2code] Skipping code generation (module unavailable)")
+            # Stage 2: Generate code skeleton
+            code = None
+            src_dir = paper_dir / "src"
+            code_path = src_dir / "model.py"
+            module_name = self._suggest_module_name(content.title)
 
-        # Stage 3: Generate tests
-        test_dir = paper_dir / "tests"
-        benchmark_result: Optional[BenchmarkResult] = None
+            if generate_code and save_code:
+                with _span("stage2_generate_code"):
+                    print(f"[paper2code] Generating {framework} code skeleton...")
+                    code = generate_code(content, framework=framework)
+                    code_path = save_code(code, src_dir, module_name=module_name)
+                    print(f"[paper2code] Code saved: {code_path}")
+                    if span:
+                        span.add_event("stage2_complete", {"code_path": str(code_path)})
+            else:
+                print("[paper2code] Skipping code generation (module unavailable)")
 
-        if not skip_tests and extract_tests and run_benchmark and code is not None:
-            print("[paper2code] Extracting assertions and generating tests...")
-            try:
-                suite = extract_tests(content, code, module_name=module_name)
-                if save_tests:
-                    save_tests(suite, test_dir)
-                print(f"[paper2code] Tests: {len(suite.test_cases)} test cases")
+            # Stage 3: Generate tests
+            test_dir = paper_dir / "tests"
+            benchmark_result = None
 
-                # Stage 4: Run benchmark
-                print("[paper2code] Running benchmark...")
-                config = BenchmarkConfig(
-                    arxiv_id=arxiv_id,
-                    paper_topic=content.title,
-                    algorithm_description="; ".join(content.algorithm_descriptions[:1]) if content.algorithm_descriptions else content.abstract[:200],
-                    test_dir=test_dir,
-                    code_path=code_path,
-                )
+            if not skip_tests and extract_tests and run_benchmark and code is not None:
+                print("[paper2code] Extracting assertions and generating tests...")
+                try:
+                    with _span("stage3_extract_tests"):
+                        suite = extract_tests(content, code, module_name=module_name)
+                        if save_tests:
+                            save_tests(suite, test_dir)
+                        print(f"[paper2code] Tests: {len(suite.test_cases)} test cases")
+                        if span:
+                            span.add_event("stage3_complete", {"test_count": len(suite.test_cases)})
 
-                tracker = self._get_tracker(skip_gene_pool)
-                benchmark_result = run_benchmark(config, tracker=tracker)
+                    # Stage 4: Run benchmark
+                    with _span("stage4_run_benchmark"):
+                        print("[paper2code] Running benchmark...")
+                        config = BenchmarkConfig(
+                            arxiv_id=arxiv_id,
+                            paper_topic=content.title,
+                            algorithm_description="; ".join(content.algorithm_descriptions[:1]) if content.algorithm_descriptions else content.abstract[:200],
+                            test_dir=test_dir,
+                            code_path=code_path,
+                        )
+                        tracker = self._get_tracker(skip_gene_pool)
+                        benchmark_result = run_benchmark(config, tracker=tracker)
+                        print(f"[paper2code] Benchmark: {benchmark_result.passed} passed, "
+                              f"{benchmark_result.failed} failed, {benchmark_result.skipped} skipped")
+                        print(summarize_result(benchmark_result))
+                        if span:
+                            span.add_event("stage4_complete", {
+                                "passed": benchmark_result.passed,
+                                "failed": benchmark_result.failed,
+                            })
 
-                print(f"[paper2code] Benchmark: {benchmark_result.passed} passed, "
-                      f"{benchmark_result.failed} failed, {benchmark_result.skipped} skipped")
-                print(summarize_result(benchmark_result))
+                except Exception as e:
+                    print(f"[paper2code] Test/benchmark stage failed: {e}")
+                    if span:
+                        span.add_event("stage3_4_error", {"error": str(e)})
+            else:
+                print("[paper2code] Skipping tests (--skip-tests or module unavailable)")
 
-            except Exception as e:
-                print(f"[paper2code] Test/benchmark stage failed: {e}")
-        else:
-            print("[paper2code] Skipping tests (--skip-tests or module unavailable)")
+            # Stage 5: Write README
+            readme = self._generate_readme(content, framework, benchmark_result)
+            readme_path = paper_dir / "README.md"
+            readme_path.write_text(readme, encoding="utf-8")
 
-        # Stage 5: Write README
-        readme = self._generate_readme(content, framework, benchmark_result)
-        readme_path = paper_dir / "README.md"
-        readme_path.write_text(readme, encoding="utf-8")
+            if span:
+                span.add_event("pipeline_end", {"arxiv_id": arxiv_id})
 
         return {
             "arxiv_id": arxiv_id,
