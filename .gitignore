@@ -1,19 +1,32 @@
-__pycache__/
-*.pyc
-*.pyo
-.pytest_cache/
-.venv/
-*.egg-info/
-dist/
-build/
+__pycache__/
+
+*.pyc
+
+*.pyo
+
+.pytest_cache/
+
+.venv/
+
+*.egg-info/
+
+dist/
+
+build/
+
 .coverage
 coverage.xml
 coverage.json
-uv.lock
-.omc/
-*.jsonl
-*.zip
-
+uv.lock
+
+.omc/
+
+*.jsonl
+
+*.zip
+
+
+
 # Data directories
 
 data/arxiv/
@@ -35,25 +48,60 @@ data/*.db
 cache/
 
 uv.lock
-
-# Claude settings
-.claude/
-!/.claude/
-.claude/settings.local.json
-.claude/worktrees/
-
-# Tool-specific files
-.kilo/
-.playwright-mcp/
-neuraloperator_fork/
-data/llm_cache/
-
-# Misc
-.env
-AI-Research/
-ai_research.db
-data/extable.db
-
+
+# Database files
+
+*.db
+
+ruvector.db
+
+vectors.db
+
+
+# Claude settings
+
+.claude/
+
+.claude/memory.db
+
+.claude/settings.local.json
+
+.claude/worktrees/
+
+.claude/skills/
+
+
+
+# Tool-specific files
+
+.kilo/
+
+.playwright-mcp/
+
+.swarm/
+
+neuraloperator_fork/
+
+data/llm_cache/
+
+.mcp.json
+
+.claude-flow/
+
+
+
+# Misc
+
+.env
+
+AI-Research/
+
+ai_research.db
+
+data/extable.db
+
+
+
 # Experiment files (local only)
 
 galerkin_experiment.py
