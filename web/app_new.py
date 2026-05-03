@@ -448,6 +448,19 @@ async def paradigm_alert(request: Request):
     })
 
 
+@app.get("/gene-pool/bold")
+async def gene_pool_bold(request: Request):
+    """Bold Hypothesis Vault — high-risk/high-reward Gene Pool capsules."""
+    from llm.bold_vault import get_bold_capsules, render_html
+    capsules = get_bold_capsules()
+    html = render_html(capsules)
+    return templates.TemplateResponse(request, "generic.html", {
+        "page": "gene-pool-bold",
+        "title": "Bold Hypothesis Vault",
+        "content": html,
+    })
+
+
 @app.get("/gene-pool/at-risk")
 async def gene_pool_at_risk(request: Request):
     """Show at-risk capsules (low_score_streak >= 2) with keep/pin actions."""
