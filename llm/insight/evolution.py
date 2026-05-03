@@ -548,6 +548,13 @@ Respond with JSON:
     def _retire_capsule(self, capsule_id: str) -> bool:
         """Mark a capsule as retired (append to retire log, remove from both stores)."""
         capsules = self._load_capsules()
+        retired_gap_title = ""
+        retired_gap_type = ""
+        for c in capsules:
+            if c.capsule_id == capsule_id:
+                retired_gap_title = c.action_gap_title
+                retired_gap_type = c.action_gap_type
+                break
         updated = [c for c in capsules if c.capsule_id != capsule_id]
 
         if len(updated) == len(capsules):
@@ -575,6 +582,14 @@ Respond with JSON:
                 "capsule_id": capsule_id,
                 "retired_at": datetime.now().isoformat(),
             }, ensure_ascii=False) + "\n")
+
+        self.tracker.record_capsule_lifecycle_event(
+            capsule_id=capsule_id,
+            action="evolved",
+            gap_title=retired_gap_title,
+            gap_type=retired_gap_type,
+            details="Retired during evolution cycle",
+        )
 
         return True
 
@@ -758,6 +773,28 @@ Respond with JSON:
                 result.append(c)
 
         self._save_capsules(result)
+
+        # Emit lifecycle events for merged capsules
+        all_capsules = self._load_capsules()
+        winner_ids = {c.capsule_id for c in capsules if c.capsule_id not in to_archive}
+        winners = {c.capsule_id: c for c in all_capsules if c.capsule_id in winner_ids}
+        for loser_id in to_archive:
+            loser = next((c for c in capsules if c.capsule_id == loser_id), None)
+            if loser:
+                winner_id = next(
+                    (wid for wid, w in winners.items()
+                     if w.action_gap_type == loser.action_gap_type and
+                     set(k.lower() for k in w.trigger_keywords) & set(k.lower() for k in loser.trigger_keywords)),
+                    ""
+                )
+                details = f"Absorbed by {winner_id}" if winner_id else ""
+                self.tracker.record_capsule_lifecycle_event(
+                    capsule_id=loser_id,
+                    action="merged",
+                    gap_title=loser.action_gap_title,
+                    gap_type=loser.action_gap_type,
+                    details=details,
+                )
 
         # Also clean capsules.json
         capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
