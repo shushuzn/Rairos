@@ -20,6 +20,24 @@ from fastapi.templating import Jinja2Templates
 
 app = FastAPI(title="Rairos", description="AI Research OS — Hand-drawn UI")
 
+# Auth middleware — skip if auth not enabled
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    from llm.auth import is_auth_enabled, validate_session
+    if not is_auth_enabled():
+        return await call_next(request)
+    # Skip auth routes
+    if request.url.path.startswith("/auth"):
+        return await call_next(request)
+    if request.url.path.startswith("/static"):
+        return await call_next(request)
+    token = request.cookies.get("session_token") or request.headers.get("X-Session-Token", "")
+    username = validate_session(token) if token else None
+    if not username:
+        return RedirectResponse(url="/auth/login", status_code=303)
+    request.state.username = username
+    return await call_next(request)
+
 # Static files + templates
 WEB_DIR = Path(__file__).parent
 app.mount("/static", StaticFiles(directory=str(WEB_DIR / "static")), name="static")
@@ -596,6 +614,70 @@ async def at_risk_pin(request: Request):
     ttl = int(body.get("ttl", 3))
     success = pin_to_ttl(capsule_id, ttl)
     return {"success": success}
+
+
+@app.get("/auth/login")
+async def login_page(request: Request):
+    """Login page — redirects to / if already authenticated."""
+    from llm.auth import is_auth_enabled, validate_session
+    if not is_auth_enabled():
+        return RedirectResponse(url="/", status_code=303)
+    token = request.cookies.get("session_token", "")
+    if validate_session(token):
+        return RedirectResponse(url="/", status_code=303)
+    return templates.TemplateResponse("login.html", {"request": request, "error": None, "not_setup": False})
+
+
+@app.post("/auth/login")
+async def login_submit(request: Request, username: str = Form(""), password: str = Form("")):
+    from llm.auth import create_session, verify_login
+    if verify_login(username, password):
+        token = create_session(username)
+        response = RedirectResponse(url="/", status_code=303)
+        response.set_cookie(key="session_token", value=token, httponly=True, samesite="lax", max_age=86400 * 7)
+        return response
+    return templates.TemplateResponse("login.html", {"request": request, "error": "Invalid credentials", "not_setup": False})
+
+
+@app.get("/auth/setup")
+async def setup_page(request: Request):
+    """First-time setup — create admin account."""
+    from llm.auth import is_auth_enabled
+    if is_auth_enabled():
+        return RedirectResponse(url="/auth/login", status_code=303)
+    return templates.TemplateResponse("setup.html", {"request": request, "error": None})
+
+
+@app.post("/auth/setup")
+async def setup_submit(request: Request, username: str = Form(""), password: str = Form(""), password2: str = Form("")):
+    from llm.auth import is_auth_enabled, setup_admin
+    if is_auth_enabled():
+        return RedirectResponse(url="/auth/login", status_code=303)
+    if not username or len(username) < 3:
+        return templates.TemplateResponse("setup.html", {"request": request, "error": "Username must be at least 3 characters"})
+    if not password or len(password) < 8:
+        return templates.TemplateResponse("setup.html", {"request": request, "error": "Password must be at least 8 characters"})
+    if password != password2:
+        return templates.TemplateResponse("setup.html", {"request": request, "error": "Passwords do not match"})
+    ok = setup_admin(username, password)
+    if not ok:
+        return templates.TemplateResponse("setup.html", {"request": request, "error": "Setup failed"})
+    token = create_session(username)
+    response = RedirectResponse(url="/", status_code=303)
+    response.set_cookie(key="session_token", value=token, httponly=True, samesite="lax", max_age=86400 * 7)
+    return response
+
+
+@app.post("/auth/logout")
+async def logout(request: Request):
+    from llm.auth import revoke_session
+    from fastapi.responses import JSONResponse
+    token = request.cookies.get("session_token", "")
+    if token:
+        revoke_session(token)
+    response = RedirectResponse(url="/auth/login", status_code=303)
+    response.delete_cookie("session_token")
+    return response
 
 
 @app.get("/chat")
