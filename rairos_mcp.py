@@ -102,6 +102,44 @@ def get_tools() -> List[Dict]:
             }
         },
         {
+            "name": "pdf_download",
+            "description": "Download PDF for a paper (from DB pdf_url or arXiv fallback)",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "arxiv_id": {"type": "string", "description": "arXiv ID of the paper"},
+                    "out_path": {"type": "string", "description": "Output path (optional, defaults to temp file)"}
+                },
+                "required": ["arxiv_id"]
+            }
+        },
+        {
+            "name": "pdf_extract_text",
+            "description": "Extract plain text from a PDF file",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "pdf_path": {"type": "string", "description": "Path to PDF file"},
+                    "max_pages": {"type": "integer", "description": "Max pages to extract (optional, extracts all by default)"},
+                    "ocr": {"type": "boolean", "default": false, "description": "Enable OCR for scanned pages"},
+                    "use_pdfminer_fallback": {"type": "boolean", "default": true, "description": "Fall back to pdfminer if PyMuPDF fails"}
+                },
+                "required": ["pdf_path"]
+            }
+        },
+        {
+            "name": "pdf_extract_structured",
+            "description": "Extract structured content from a PDF: text blocks (with type), tables, math formulas",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "pdf_path": {"type": "string", "description": "Path to PDF file"},
+                    "max_pages": {"type": "integer", "description": "Max pages to extract (optional, extracts all by default)"}
+                },
+                "required": ["pdf_path"]
+            }
+        },
+        {
             "name": "kg_query",
             "description": "Query the knowledge graph",
             "inputSchema": {
@@ -637,6 +675,119 @@ def tool_paper_chat(question: str, paper_id: Optional[str] = None) -> Dict:
     except Exception as e:
         logger.error(f"paper_chat error: {e}")
         return error_response("CHAT_ERROR", str(e))
+
+
+def tool_pdf_download(arxiv_id: str, out_path: Optional[str] = None) -> Dict:
+    """Download PDF for a paper from DB pdf_url or arXiv fallback."""
+    try:
+        from pathlib import Path
+        from db.database import Database
+        from pdf.extract import download_pdf
+
+        db = Database()
+        db.init()
+        paper = db.get_paper(arxiv_id)
+
+        if paper and getattr(paper, "pdf_url", ""):
+            pdf_url = paper.pdf_url
+        else:
+            pdf_url = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
+
+        if out_path:
+            target = Path(out_path)
+        else:
+            import tempfile
+            tmp_dir = Path(tempfile.gettempdir()) / "rairos_pdfs"
+            target = tmp_dir / f"{arxiv_id}.pdf"
+
+        download_pdf(pdf_url, target)
+
+        return success_response({
+            "arxiv_id": arxiv_id,
+            "pdf_url": pdf_url,
+            "saved_path": str(target),
+            "size_bytes": target.stat().st_size
+        })
+
+    except Exception as e:
+        logger.error(f"pdf_download error: {e}")
+        return error_response("PDF_DOWNLOAD_ERROR", str(e))
+
+
+def tool_pdf_extract_text(
+    pdf_path: str,
+    max_pages: Optional[int] = None,
+    ocr: bool = False,
+    use_pdfminer_fallback: bool = True
+) -> Dict:
+    """Extract plain text from a PDF file."""
+    try:
+        from pathlib import Path
+        from pdf.extract import extract_pdf_text_hybrid
+
+        path = Path(pdf_path)
+        if not path.exists():
+            return error_response("FILE_NOT_FOUND", f"PDF not found: {pdf_path}")
+
+        text = extract_pdf_text_hybrid(
+            path,
+            max_pages=max_pages,
+            ocr=ocr,
+            use_pdfminer_fallback=use_pdfminer_fallback
+        )
+
+        return success_response({
+            "pdf_path": pdf_path,
+            "text": text,
+            "char_count": len(text),
+            "pages_extracted": max_pages or "all"
+        })
+
+    except Exception as e:
+        logger.error(f"pdf_extract_text error: {e}")
+        return error_response("PDF_EXTRACT_ERROR", str(e))
+
+
+def tool_pdf_extract_structured(
+    pdf_path: str,
+    max_pages: Optional[int] = None
+) -> Dict:
+    """Extract structured content from a PDF: text blocks, tables, math."""
+    try:
+        from pathlib import Path
+        from pdf.extract import extract_pdf_structured
+
+        path = Path(pdf_path)
+        if not path.exists():
+            return error_response("FILE_NOT_FOUND", f"PDF not found: {pdf_path}")
+
+        content = extract_pdf_structured(path, max_pages=max_pages)
+
+        return success_response({
+            "pdf_path": pdf_path,
+            "blocks": [
+                {
+                    "type": b.type.value if hasattr(b.type, "value") else str(b.type),
+                    "text": b.text,
+                    "page": b.page,
+                }
+                for b in content.blocks
+            ],
+            "tables": [
+                {
+                    "headers": t.headers,
+                    "rows": t.rows,
+                    "page": t.page,
+                }
+                for t in content.tables
+            ],
+            "math_count": len(content.math_blocks),
+            "pages_extracted": max_pages or "all"
+        })
+
+    except Exception as e:
+        logger.error(f"pdf_extract_structured error: {e}")
+        return error_response("PDF_EXTRACT_ERROR", str(e))
 
 
 def tool_kg_query(query: str, entity_id: Optional[str] = None, tag: Optional[str] = None) -> Dict:
@@ -1727,6 +1878,23 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
             result = tool_paper_chat(
                 question=arguments.get("question"),
                 paper_id=arguments.get("paper_id")
+            )
+        elif name == "pdf_download":
+            result = tool_pdf_download(
+                arxiv_id=arguments.get("arxiv_id"),
+                out_path=arguments.get("out_path")
+            )
+        elif name == "pdf_extract_text":
+            result = tool_pdf_extract_text(
+                pdf_path=arguments.get("pdf_path"),
+                max_pages=arguments.get("max_pages"),
+                ocr=arguments.get("ocr", False),
+                use_pdfminer_fallback=arguments.get("use_pdfminer_fallback", True)
+            )
+        elif name == "pdf_extract_structured":
+            result = tool_pdf_extract_structured(
+                pdf_path=arguments.get("pdf_path"),
+                max_pages=arguments.get("max_pages")
             )
         elif name == "kg_query":
             result = tool_kg_query(
