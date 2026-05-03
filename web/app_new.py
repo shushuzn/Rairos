@@ -267,39 +267,22 @@ async def extract_paper_gap(request: Request, paper_id: str):
     return result
 
 
-@app.get("/paper/{paper_id}/embodied-planning")
-async def embodied_planning_analysis(request: Request, paper_id: str):
-    """Analyze embodied planning paper: discrete vs continuous latent representation."""
-    db = _get_db()
-    paper = db.get_paper(paper_id)
-    if not paper:
-        return {"error": f"Paper '{paper_id}' not found."}
+@app.get("/embodied-planning/batch")
+async def embodied_planning_batch(request: Request, ids: str = ""):
+    """Batch analyze multiple papers for embodied planning representation types.
 
-    from llm.paper_gap_extractor import analyze_embodied_planning
-    result = analyze_embodied_planning(
-        paper_id=paper_id,
-        title=paper.title,
-        abstract=paper.abstract or "",
-        authors=paper.authors,
-    )
-    return result
+    Query param: ids=pid1,pid2,pid3
+    Returns comparative report: discrete vs continuous vs hybrid grouping,
+    contradiction pairs, and summary statistics.
+    """
+    if not ids:
+        return {"error": "Provide paper IDs via ?ids=pid1,pid2,pid3"}
+    paper_ids = [p.strip() for p in ids.split(",") if p.strip()]
+    if not paper_ids:
+        return {"error": "No valid paper IDs provided"}
 
-
-@app.get("/paper/{paper_id}/embodied-planning")
-async def embodied_planning_analysis(request: Request, paper_id: str):
-    """Analyze embodied planning paper: discrete vs continuous latent representation."""
-    db = _get_db()
-    paper = db.get_paper(paper_id)
-    if not paper:
-        return {"error": f"Paper '{paper_id}' not found."}
-
-    from llm.paper_gap_extractor import analyze_embodied_planning
-    result = analyze_embodied_planning(
-        paper_id=paper_id,
-        title=paper.title,
-        abstract=paper.abstract or "",
-        authors=paper.authors,
-    )
+    from llm.paper_gap_extractor import batch_analyze_embodied_planning
+    result = batch_analyze_embodied_planning(paper_ids=paper_ids)
     return result
 
 
