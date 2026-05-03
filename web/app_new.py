@@ -1302,6 +1302,55 @@ async def embodied_planning_auto_scan(request: Request):
             except Exception as _e:
                 pass  # Non-critical: don't fail the scan if roadmap write fails
 
+        # ── Fallback: Gene Pool keyword-driven scan if no subscriptions configured ──
+        if not all_new_ids:
+            try:
+                from llm.gene_pool_io import load_capsules, get_capsule_by_paper
+                from llm.paper_gap_extractor import analyze_gap
+                from llm.subscription_monitor import search_arxiv
+
+                GAP = "embodied_planning"
+                capsules = load_capsules(status="active", gap_type=GAP)
+                kw_set: set = set()
+                for cap in capsules:
+                    for kw in cap.get("trigger_keywords", []):
+                        if len(kw) > 3:
+                            kw_set.add(kw.lower())
+                kw_list = list(kw_set)[:8]
+                query = " AND ".join(f'"{k}"' for k in kw_list)
+                papers = search_arxiv(query, max_results=6)
+
+                db = _get_db()
+                new_analyzed = []
+                for p in papers:
+                    arxiv_id = p.get("arxiv_id", "")
+                    if get_capsule_by_paper(arxiv_id, gap_type=GAP):
+                        continue  # already in Gene Pool
+                    r = analyze_gap(
+                        paper_id=arxiv_id,
+                        title=p.get("title", ""),
+                        abstract=p.get("abstract", ""),
+                        gap_type=GAP,
+                    )
+                    capsule_id = r.get("saved_to_pool")
+                    new_analyzed.append({
+                        "paper_id": arxiv_id,
+                        "title": p.get("title", "")[:80],
+                        "representation_type": r.get("representation_type", "unknown"),
+                        "confidence": r.get("confidence", 0),
+                        "capsule_id": capsule_id,
+                    })
+                if new_analyzed:
+                    all_new_ids = [p["paper_id"] for p in new_analyzed]
+                    analyzed = new_analyzed
+                    notification = None
+                    recommend_msg = (
+                        f"Scanned {len(new_analyzed)} new papers via Gene Pool keywords "
+                        f"(no subscriptions configured — using keyword fallback)."
+                    )
+            except Exception:
+                pass  # Non-critical fallback
+
         return JSONResponse({
             "success": True,
             "total_new": len(all_new_ids),
