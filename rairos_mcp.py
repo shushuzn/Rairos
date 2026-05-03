@@ -229,6 +229,49 @@ def get_tools() -> List[Dict]:
             }
         },
         {
+            "name": "trends_detect_trending",
+            "description": "Detect trending tags based on radar snapshots",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "threshold": {"type": "number", "default": 0.5, "description": "Trending threshold (0-1)"}
+                }
+            }
+        },
+        {
+            "name": "trends_predict_next",
+            "description": "Predict next value for a tag",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "tag": {"type": "string", "description": "Tag name"}
+                },
+                "required": ["tag"]
+            }
+        },
+        {
+            "name": "trends_top_predictions",
+            "description": "Get top-K predicted trending tags",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "top_k": {"type": "integer", "default": 5, "description": "Number of predictions"}
+                }
+            }
+        },
+        {
+            "name": "trends_compare_tags",
+            "description": "Compare two tags by their trajectories",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "tag_a": {"type": "string", "description": "First tag"},
+                    "tag_b": {"type": "string", "description": "Second tag"}
+                },
+                "required": ["tag_a", "tag_b"]
+            }
+        },
+        {
             "name": "chart_query",
             "description": "Query figures and tables from a paper's knowledge graph",
             "inputSchema": {
@@ -1099,6 +1142,54 @@ def tool_tag_all() -> Dict:
     except Exception as e:
         logger.error(f"tag_all error: {e}")
         return error_response("TAG_ERROR", str(e))
+
+
+def tool_trends_detect_trending(threshold: float = 0.5) -> Dict:
+    """Detect trending tags based on radar snapshots."""
+    try:
+        from trends.forecaster import TrendForecaster
+        f = TrendForecaster()
+        results = f.detect_trending(threshold=threshold)
+        return success_response({"trending": results, "count": len(results)})
+    except Exception as e:
+        logger.error(f"trends_detect_trending error: {e}")
+        return error_response("TRENDS_ERROR", str(e))
+
+
+def tool_trends_predict_next(tag: str) -> Dict:
+    """Predict next value for a tag."""
+    try:
+        from trends.forecaster import TrendForecaster
+        f = TrendForecaster()
+        prediction = f.predict_next(tag)
+        return success_response({"tag": tag, "prediction": prediction})
+    except Exception as e:
+        logger.error(f"trends_predict_next error: {e}")
+        return error_response("TRENDS_ERROR", str(e))
+
+
+def tool_trends_top_predictions(top_k: int = 5) -> Dict:
+    """Get top-K predicted trending tags."""
+    try:
+        from trends.forecaster import TrendForecaster
+        f = TrendForecaster()
+        predictions = f.get_top_predictions(top_k=top_k)
+        return success_response({"predictions": predictions, "count": len(predictions)})
+    except Exception as e:
+        logger.error(f"trends_top_predictions error: {e}")
+        return error_response("TRENDS_ERROR", str(e))
+
+
+def tool_trends_compare_tags(tag_a: str, tag_b: str) -> Dict:
+    """Compare two tags by their trajectories."""
+    try:
+        from trends.forecaster import TrendForecaster
+        f = TrendForecaster()
+        comparison = f.compare_tags(tag_a, tag_b)
+        return success_response({"tag_a": tag_a, "tag_b": tag_b, "comparison": comparison})
+    except Exception as e:
+        logger.error(f"trends_compare_tags error: {e}")
+        return error_response("TRENDS_ERROR", str(e))
 
 
 def tool_chart_query(paper_id: str, action: str, label: Optional[str] = None) -> Dict:
@@ -2184,6 +2275,23 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
             )
         elif name == "tag_all":
             result = tool_tag_all()
+        elif name == "trends_detect_trending":
+            result = tool_trends_detect_trending(
+                threshold=arguments.get("threshold", 0.5)
+            )
+        elif name == "trends_predict_next":
+            result = tool_trends_predict_next(
+                tag=arguments.get("tag")
+            )
+        elif name == "trends_top_predictions":
+            result = tool_trends_top_predictions(
+                top_k=arguments.get("top_k", 5)
+            )
+        elif name == "trends_compare_tags":
+            result = tool_trends_compare_tags(
+                tag_a=arguments.get("tag_a"),
+                tag_b=arguments.get("tag_b")
+            )
         elif name == "chart_query":
             result = tool_chart_query(
                 paper_id=arguments.get("paper_id"),
