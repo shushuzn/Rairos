@@ -127,7 +127,8 @@
 
 <!-- Parsing Queue -->
 {% if parsing or queue_list %}
-<div class="card" style="margin-bottom: 20px;">
+<div class="card" style="margin-bottom: 20px; position: relative;">
+  <div class="margin-note">parse queue<br>active jobs</div>
   <div class="card-title">⚙️ Parse Queue</div>
   {% if parsing %}
   {% for pid, title, source in parsing %}

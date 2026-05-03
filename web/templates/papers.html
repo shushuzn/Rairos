@@ -3,9 +3,12 @@
 {% block title %}Papers — Rairos{% endblock %}
 
 {% block content %}
+<div class="torn-edge-top">
 <h1 class="page-title">📚 Papers</h1>
 <div class="page-title-underline"></div>
-<p class="page-desc">{{ total }} papers found{% if query %} for "{{ query }}"{% endif %}</p>
+<p class="page-desc">
+  <span class="annot">{{ total }}</span> papers found{% if query %} for "<em>{{ query }}</em>"{% endif %}
+</p>
 
 <!-- Search + Filter -->
 <form method="get" action="/papers">

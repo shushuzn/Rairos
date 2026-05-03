@@ -751,11 +751,170 @@ pre, code {
   margin-bottom: 20px;
 }
 
+/* ── Notebook Margin ─────────────────────────── */
+.main {
+  position: relative;
+}
+/* Vertical ink rule on the left margin */
+.main::before {
+  content: '';
+  position: absolute;
+  left: 28px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(180, 120, 80, 0.12);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Torn Paper Edge ─────────────────────────── */
+.torn-edge-top {
+  position: relative;
+  padding-top: 24px;
+}
+.torn-edge-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='12' preserveAspectRatio='none'%3E%3Cpath d='M0,10 Q5,4 10,10 T20,10 T30,10 T40,10 T50,10 T60,10 T70,10 T80,10 T90,10 T100,10 T110,10 T120,10 T130,10 T140,10 T150,10 T160,10 T170,10 T180,10 T190,10 T200,10' stroke='none' fill='none'/%3E%3C/svg%3E") repeat-x center top;
+  background-size: 200px 12px;
+  opacity: 0.25;
+}
+
+.torn-edge-bottom {
+  position: relative;
+  padding-bottom: 24px;
+}
+.torn-edge-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='12' preserveAspectRatio='none'%3E%3Cpath d='M0,2 Q5,8 10,2 T20,2 T30,2 T40,2 T50,2 T60,2 T70,2 T80,2 T90,2 T100,2 T110,2 T120,2 T130,2 T140,2 T150,2 T160,2 T170,2 T180,2 T190,2 T200,2' stroke='none' fill='none'/%3E%3C/svg%3E") repeat-x center bottom;
+  background-size: 200px 12px;
+  opacity: 0.25;
+}
+
+/* ── Handwritten Annotation ─────────────────── */
+.annot {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--ink-faint);
+  font-style: italic;
+}
+.annot::before { content: '['; }
+.annot::after  { content: ']'; }
+
+/* ── Ink Wash Section Divider ─────────────── */
+.ink-divider {
+  border: none;
+  margin: 32px 0 24px;
+  position: relative;
+  text-align: center;
+}
+.ink-divider::before {
+  content: '✂ ──────────';
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--ink-faint);
+  letter-spacing: 3px;
+  position: relative;
+  top: -10px;
+  background: var(--bg);
+  padding: 0 12px;
+}
+
+/* ── Paper Clip Decoration ─────────────────── */
+.paper-clip {
+  position: relative;
+  padding-left: 32px;
+}
+.paper-clip::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -8px;
+  width: 22px;
+  height: 32px;
+  border: 3px solid var(--ink-faint);
+  border-radius: 8px 8px 0 0;
+  border-bottom: none;
+  opacity: 0.35;
+}
+.paper-clip::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 10px;
+  height: 20px;
+  border: 2.5px solid var(--ink-faint);
+  border-radius: 5px 5px 0 0;
+  border-bottom: none;
+  opacity: 0.25;
+}
+
+/* ── Margin Note (sidenote) ───────────────── */
+.margin-note {
+  position: absolute;
+  right: -20px;
+  top: 0;
+  width: 160px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--pen-blue);
+  opacity: 0.55;
+  font-style: italic;
+  line-height: 1.5;
+  text-align: right;
+  pointer-events: none;
+  transform: rotate(2deg);
+}
+
+/* ── Sticker / Stamp Badges ──────────────── */
+.stamp {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 2.5px solid currentColor;
+  border-radius: 3px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  transform: rotate(-1.5deg);
+}
+.stamp-red   { color: var(--pen-red); }
+.stamp-green { color: var(--pen-green); }
+.stamp-blue  { color: var(--pen-blue); }
+
+/* ── Enhanced fade-in for cards ──────────── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px) rotate(-0.3deg); }
+  to   { opacity: 1; transform: translateY(0) rotate(0deg); }
+}
+.card { animation: fadeSlideUp 0.35s ease-out both; }
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.12s; }
+.card:nth-child(3) { animation-delay: 0.19s; }
+.card:nth-child(4) { animation-delay: 0.26s; }
+.card:nth-child(5) { animation-delay: 0.33s; }
+.card:nth-child(n+6) { animation-delay: 0.38s; }
+
 /* ── Responsive ──────────────────────────────── */
 @media (max-width: 768px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .chart-grid  { grid-template-columns: 1fr; }
   .main      { padding: 24px 20px; }
+  .main::before { display: none; }
+  .margin-note { display: none; }
 }
 
 /* ── Mobile Sidebar ──────────────────────────── */

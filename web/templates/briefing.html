@@ -41,13 +41,15 @@
 
 <!-- Result -->
 {% if result %}
-<div class="card" id="briefing-result">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-    <div>
-      <div class="card-title" style="margin-bottom: 4px;">{{ result.briefing.paper_title[:80] }}</div>
+<div class="card torn-edge-top torn-edge-bottom" id="briefing-result" style="padding: 32px; position: relative;">
+  <div class="margin-note">briefing<br>{{ result.briefing.paper_arxiv_id[:8] }}</div>
+
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+    <div class="paper-clip" style="flex: 1; min-width: 240px;">
+      <div class="card-title" style="margin-bottom: 4px; font-size: 24px;">{{ result.briefing.paper_title[:80] }}</div>
       <div style="font-size: 13px; color: var(--ink-faint);">
         arXiv: <a href="https://arxiv.org/abs/{{ result.briefing.paper_arxiv_id }}" target="_blank" style="color: var(--pen-blue);">{{ result.briefing.paper_arxiv_id }}</a>
-        · Generated {{ result.briefing.generated_at[:16] }}
+        · {{ result.briefing.generated_at[:16] }}
       </div>
     </div>
     <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
@@ -60,11 +62,11 @@
         🖨️ Print / PDF
       </button>
       {% if result.briefing.verdict == 'validates' %}
-      <span class="badge badge-green" style="font-size: 14px;">✅ Validates</span>
+      <span class="stamp stamp-green">✓ Validates</span>
       {% elif result.briefing.verdict == 'contradicts' %}
-      <span class="badge badge-red" style="font-size: 14px;">❌ Contradicts</span>
+      <span class="stamp stamp-red">✗ Contradicts</span>
       {% else %}
-      <span class="badge badge-gray" style="font-size: 14px;">⚪ Neutral</span>
+      <span class="stamp stamp-blue">— Neutral</span>
       {% endif %}
     </div>
   </div>
@@ -73,7 +75,12 @@
   <div class="markdown-content">
     {% for section in result.briefing.sections %}
     <h2>{{ section.title }}</h2>
+    {% if not loop.last %}
     <div>{{ section.content.replace('\n', '<br>')|safe }}</div>
+    <hr class="ink-divider">
+    {% else %}
+    <div>{{ section.content.replace('\n', '<br>')|safe }}</div>
+    {% endif %}
     {% endfor %}
   </div>
 
