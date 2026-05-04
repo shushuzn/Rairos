@@ -254,6 +254,29 @@ class InsightEvolution:
             llm_candidates = self._propose_llm(top_capsules=capsules[:3], topic=topic)
             candidates.extend(llm_candidates)
 
+        # Strategy 5: cross-topic seed injection
+        # When few candidates generated, inject seeds from high-quality capsules in other topics
+        if len(candidates) < 2:
+            all_capsules = self._load_capsules()
+            high_quality = [c for c in all_capsules if c.outcome_success_score >= 0.7]
+            # Pick capsules from different topics
+            seen_topics = set(c.trigger_topic for c in capsules[:5])
+            cross_topic = [c for c in high_quality if c.trigger_topic not in seen_topics]
+            for c in cross_topic[:2]:
+                candidate = CapsuleCandidate(
+                    original_id=c.capsule_id,
+                    candidate_id=str(uuid.uuid4())[:8],
+                    trigger_topic=topic,  # use the search topic, not the capsule's topic
+                    trigger_gap_type=c.trigger_gap_type,
+                    trigger_keywords=c.trigger_keywords + [w for w in topic.split() if len(w) > 3][:3],
+                    action_gap_type=c.action_gap_type,
+                    action_gap_title=c.action_gap_title,
+                    mutation_description=f"cross_topic_seed: from '{c.trigger_topic}' → '{topic}'",
+                    confidence=c.outcome_success_score * 0.6,
+                    source="cross_topic_seed",
+                )
+                candidates.append(candidate)
+
         return candidates[:limit]
 
     def _mutate_trigger_broaden(
@@ -627,13 +650,24 @@ Respond with JSON:
         """Add a winning candidate as a new capsule to the gene pool."""
         capsules = self._load_capsules()
 
-        # Check for near-duplicate
+        # Check for near-duplicate (relaxed: allow different action patterns)
         for c in capsules:
             if (
                 c.trigger_topic == candidate.trigger_topic
                 and c.trigger_gap_type == candidate.trigger_gap_type
+                and c.action_gap_title == candidate.action_gap_title
             ):
-                return False  # duplicate, skip
+                return False  # exact duplicate, skip
+            # Also reject if >80% keyword overlap (near-duplicate)
+            if (
+                c.trigger_topic == candidate.trigger_topic
+                and c.trigger_keywords
+                and candidate.trigger_keywords
+            ):
+                overlap = len(set(c.trigger_keywords) & set(candidate.trigger_keywords))
+                total = max(len(set(c.trigger_keywords) | set(candidate.trigger_keywords)), 1)
+                if overlap / total > 0.8:
+                    return False  # near-duplicate by keywords
 
         new_capsule = CapsuleGene(
             capsule_id=candidate.candidate_id,
