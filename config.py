@@ -87,6 +87,11 @@ _BUILTIN_MODEL_PRICES: dict[str, Tuple[float, float]] = {
     "claude-3-5-sonnet": (3.0, 15.0),
     "claude-3-5-haiku": (0.8, 4.0),
     "minimax-m2.7-highspeed": (0.1, 0.1),  # MiniMax M2.7 高速版
+    # Ollama local models — free (runs on your own hardware)
+    "ollama/*": (0.0, 0.0),
+    "llama3.2": (0.0, 0.0),
+    "llama3.1": (0.0, 0.0),
+    "mistral": (0.0, 0.0),
     "default": (1.0, 4.0),
 }
 
@@ -120,6 +125,15 @@ DEFAULT_OPENAI_BASE_URL: str = os.getenv(
 
 DEFAULT_LLM_TIMEOUT: int = int(os.getenv("AIROS_LLM_TIMEOUT", "180"))
 """Default timeout for LLM API calls in seconds."""
+
+# ---------------------------------------------------------------------------
+# Ollama
+# ---------------------------------------------------------------------------
+OLLAMA_BASE_URL: str = os.getenv("AIROS_OLLAMA_BASE_URL", "http://localhost:11434")
+"""Ollama local LLM base URL."""
+
+DEFAULT_OLLAMA_MODEL: str = os.getenv("AIROS_DEFAULT_OLLAMA_MODEL", "qwen2.5")
+"""Default Ollama model for local inference."""
 
 # ---------------------------------------------------------------------------
 # PDF processing
@@ -174,6 +188,8 @@ def get_config() -> Dict[str, Any]:
         "DEFAULT_LLM_MODEL_RESEARCH": DEFAULT_LLM_MODEL_RESEARCH,
         "DEFAULT_OPENAI_BASE_URL": DEFAULT_OPENAI_BASE_URL,
         "DEFAULT_LLM_TIMEOUT": DEFAULT_LLM_TIMEOUT,
+        "OLLAMA_BASE_URL": OLLAMA_BASE_URL,
+        "DEFAULT_OLLAMA_MODEL": DEFAULT_OLLAMA_MODEL,
         "PDF_MAX_PAGES": PDF_MAX_PAGES,
         "PDF_OCR_ZOOM": PDF_OCR_ZOOM,
         "PDF_OCR_LANG": PDF_OCR_LANG,
