@@ -141,7 +141,11 @@ async def gene_pool_evolution_log(request: Request):
 @router.get("/heatmap")
 async def contradiction_heatmap(request: Request):
     """Contradiction Heatmap — papers colored by contradiction count."""
+    try:
     from llm.contradiction_heatmap import compute_paper_contradictions, render_heatmap_html
+except ImportError:
+    compute_paper_contradictions = lambda: {}
+    render_heatmap_html = lambda p, c: '<p>Heatmap not available</p>'
 
     db = get_db()
     rows, _ = db.list_papers(limit=200, offset=0)
@@ -162,7 +166,11 @@ async def contradiction_heatmap(request: Request):
 @router.get("/game-mode")
 async def game_mode(request: Request):
     """Research Game Mode — badges and progression."""
+    try:
     from llm.game_mode import compute_badges, render_game_mode_html
+except ImportError:
+    compute_badges = lambda: {}
+    render_game_mode_html = lambda b: '<p>Game mode not available</p>'
 
     badges = compute_badges()
     html = render_game_mode_html(badges)
@@ -175,7 +183,11 @@ async def game_mode(request: Request):
 @router.get("/alerts/paradigm")
 async def paradigm_alert(request: Request):
     """Paradigm Concentration Alert."""
+    try:
     from llm.paradigm_monitor import check_paradigm_concentration, render_html
+except ImportError:
+    check_paradigm_concentration = lambda t: {}
+    render_html = lambda r: '<p>Paradigm monitor not available</p>'
 
     result = check_paradigm_concentration("all")
     html = render_html(result)
@@ -188,7 +200,11 @@ async def paradigm_alert(request: Request):
 @router.get("/alerts/eval-gap")
 async def eval_gap_alert(request: Request):
     """Evaluation Gap Monitor."""
+    try:
     from llm.eval_gap_monitor import check_eval_gaps, render_eval_gap_html
+except ImportError:
+    check_eval_gaps = lambda: {}
+    render_eval_gap_html = lambda d: '<p>Eval gap monitor not available</p>'
 
     data = check_eval_gaps()
     html = render_eval_gap_html(data)
@@ -201,7 +217,11 @@ async def eval_gap_alert(request: Request):
 @router.get("/gene-pool/bold")
 async def gene_pool_bold(request: Request):
     """Bold Hypothesis Vault."""
+    try:
     from llm.bold_vault import get_bold_capsules, render_html
+except ImportError:
+    get_bold_capsules = lambda: []
+    render_html = lambda c: '<p>Bold vault not available</p>'
 
     capsules = get_bold_capsules()
     html = render_html(capsules)
@@ -214,7 +234,11 @@ async def gene_pool_bold(request: Request):
 @router.get("/gene-pool/backup")
 async def gene_pool_backup(request: Request):
     """Gene Pool Backup — create and restore snapshots."""
-    from llm.gene_pool_backup import get_backup_info, create_backup
+    try:
+    from llm.gene_pool_backup import get_backup_info, create_backup as _create_backup
+except ImportError:
+    get_backup_info = lambda: []
+    _create_backup = lambda: ''
 
     backups = get_backup_info()
     html = _render_backup_html(backups)
@@ -346,7 +370,11 @@ async def import_pool(request: Request):
 async def cross_domain_bridge(request: Request):
     """Cross-Domain Gap Bridge — find connections between distant categories."""
     try:
+    try:
     from llm.cross_domain_bridge import get_bridges, render_html
+except ImportError:
+    get_bridges = lambda: []
+    render_html = lambda x: '<p>Cross-domain bridge not available</p>'
 except ImportError:
     def get_bridges(): return []
     def render_html(b): return "<p>Module not available</p>"
