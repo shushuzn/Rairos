@@ -53,6 +53,9 @@ app.include_router(routes_research.router)
 from web import routes_gene_pool
 app.include_router(routes_gene_pool.router)
 
+from web import routes_daemon
+app.include_router(routes_daemon.router)
+
 
 
 # Auth middleware — skip if auth not enabled
