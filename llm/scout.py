@@ -12,9 +12,20 @@ from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
-# Cache for ArXiv search results
+# Cache for search results
 _SEARCH_CACHE: Dict[str, Tuple[float, List[Dict]]] = {}
 _CACHE_TTL = 3600  # 1 hour
+
+# News RSS feeds — free, no API key needed
+NEWS_FEEDS = [
+    ("Reuters World", "https://www.reuters.com/world/rss"),
+    ("Reuters Business", "https://www.reuters.com/business/rss"),
+    ("BBC World", "https://feeds.bbci.co.uk/news/world/rss.xml"),
+    ("BBC Technology", "https://feeds.bbci.co.uk/news/technology/rss.xml"),
+    ("Google News Top", "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en"),
+    ("Google News Science", "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp0Y1RjU0FtVnVHZ0pWVXlnQVAB"),
+    ("Hacker News", "https://hnrss.org/frontpage"),
+]
 
 
 @dataclass
@@ -27,6 +38,7 @@ class ScoutResult:
     abstract: str
     categories: List[str]
     published: str
+    source: str = "arxiv"  # "arxiv" or news source name
 
     # Gene Pool matching
     match_score: float = 0.0  # 0.0–1.0, best capsule trigger_match × credibility
@@ -114,8 +126,89 @@ def _get_topics_from_pool(capsules: List) -> List[str]:
     return sorted(topics, key=len)[:10]
 
 
+def _fetch_rss(feed_url: str, feed_name: str, max_items: int = 10) -> List[Dict]:
+    """Fetch articles from an RSS feed."""
+    import feedparser
+    try:
+        feed = feedparser.parse(feed_url)
+        articles = []
+        for entry in feed.entries[:max_items]:
+            title = entry.get("title", "")
+            link = entry.get("link", "")
+            summary = entry.get("summary", "") or entry.get("description", "") or ""
+            published = entry.get("published", "") or entry.get("updated", "") or ""
+            authors = []
+            if hasattr(entry, "authors") and entry.authors:
+                authors = [a.get("name", "") for a in entry.authors]
+            articles.append({
+                "arxiv_id": f"news_{feed_name}_{hash(link) % 10**8}",
+                "title": title,
+                "authors": authors,
+                "abstract": summary[:500],
+                "categories": [feed_name],
+                "published": published[:10],
+                "source": feed_name,
+                "url": link,
+            })
+        return articles
+    except Exception as e:
+        logger.warning(f"RSS feed '{feed_name}' failed: {e}")
+        return []
+
+
+def _score_article(p: Dict, active: List, topic: str) -> Optional[ScoutResult]:
+    """Score a single article/paper against all active Gene Pool capsules."""
+    pid = p["arxiv_id"]
+    title = p["title"]
+    abstract = p["abstract"]
+    text = (title + " " + abstract).lower()
+
+    best_score = 0.0
+    best_capsule = None
+    best_reason = ""
+
+    for c in active:
+        match = c.trigger_match(topic, c.trigger_gap_type, c.trigger_keywords)
+        kw_overlap = sum(1 for kw in c.trigger_keywords if kw.lower() in text)
+        if kw_overlap > 0:
+            match = max(match, min(0.3 + kw_overlap * 0.15, 0.8))
+        cred = getattr(c, "credibility_score", 0.5)
+        weighted = match * (0.5 + 0.5 * cred)
+
+        if weighted > best_score:
+            best_score = weighted
+            best_capsule = c
+            rp = []
+            if match > 0:
+                rp.append(f"trigger_match={match:.2f}")
+            if kw_overlap > 0:
+                rp.append(f"keyword overlap={kw_overlap}")
+            if cred > 0:
+                rp.append(f"capsule credibility={cred:.2f}")
+            best_reason = "; ".join(rp) if rp else "topic match"
+
+    if best_score > 0 and best_capsule:
+        return ScoutResult(
+            arxiv_id=pid,
+            title=title[:200],
+            authors=p.get("authors", [])[:5],
+            abstract=abstract[:500],
+            categories=p.get("categories", []),
+            published=p.get("published", "")[:10],
+            source=p.get("source", "arxiv"),
+            match_score=round(best_score, 3),
+            matched_capsule_id=best_capsule.capsule_id,
+            matched_gap_title=best_capsule.action_gap_title[:100],
+            matched_gap_type=best_capsule.action_gap_type,
+            credibility_of_match=round(getattr(best_capsule, "credibility_score", 0.5), 3),
+            reason=best_reason,
+        )
+    return None
+
+
 def scout(
     topic: str = "",
+    sources: str = "arxiv",  # "arxiv", "news", or "all"
     max_papers_per_query: int = 10,
     max_results: int = 20,
     min_match_score: float = 0.15,
@@ -145,70 +238,31 @@ def scout(
     if not topics:
         topics = ["machine learning"]  # fallback
 
-    # Search ArXiv for each topic
     seen: set = set()
     all_papers: List[ScoutResult] = []
 
-    for t in topics[:5]:  # max 5 topics
-        papers = _search_arxiv(t, max_results=max_papers_per_query)
-        for p in papers:
-            pid = p["arxiv_id"]
-            if pid in seen:
-                continue
-            seen.add(pid)
+    if sources in ("news", "all"):
+        for feed_name, feed_url in NEWS_FEEDS:
+            articles = _fetch_rss(feed_url, feed_name, max_items=5)
+            for p in articles:
+                pid = p["arxiv_id"]
+                if pid in seen:
+                    continue
+                seen.add(pid)
+                all_papers.append(_score_article(p, active, topic))
 
-            # Score against all active capsules
-            best_score = 0.0
-            best_capsule = None
-            best_reason = ""
-
-            title = p["title"]
-            abstract = p["abstract"]
-            text = (title + " " + abstract).lower()
-
-            for c in active:
-                # Use trigger_match
-                match = c.trigger_match(t, c.trigger_gap_type, c.trigger_keywords)
-
-                # Also check keyword overlap in title/abstract
-                kw_overlap = sum(1 for kw in c.trigger_keywords if kw.lower() in text)
-                if kw_overlap > 0:
-                    match = max(match, min(0.3 + kw_overlap * 0.15, 0.8))
-
-                # Weight by credibility
-                cred = getattr(c, "credibility_score", 0.5)
-                weighted = match * (0.5 + 0.5 * cred)
-
-                if weighted > best_score:
-                    best_score = weighted
-                    best_capsule = c
-                    reason_parts = []
-                    if match > 0:
-                        reason_parts.append(f"trigger_match={match:.2f}")
-                    if kw_overlap > 0:
-                        reason_parts.append(f"keyword overlap={kw_overlap}")
-                    if cred > 0:
-                        reason_parts.append(f"capsule credibility={cred:.2f}")
-                    best_reason = "; ".join(reason_parts) if reason_parts else "topic match"
-
-            if best_score >= min_match_score and best_capsule:
-                sr = ScoutResult(
-                    arxiv_id=pid,
-                    title=p["title"][:200],
-                    authors=p["authors"][:5],
-                    abstract=p["abstract"][:500],
-                    categories=p["categories"],
-                    published=p["published"][:10],
-                    match_score=round(best_score, 3),
-                    matched_capsule_id=best_capsule.capsule_id,
-                    matched_gap_title=best_capsule.action_gap_title[:100],
-                    matched_gap_type=best_capsule.action_gap_type,
-                    credibility_of_match=round(
-                        getattr(best_capsule, "credibility_score", 0.5), 3
-                    ),
-                    reason=best_reason,
-                )
-                all_papers.append(sr)
+    # Search ArXiv for each topic
+    if sources in ("arxiv", "all"):
+        for t in topics[:5]:
+            papers = _search_arxiv(t, max_results=max_papers_per_query)
+            for p in papers:
+                pid = p["arxiv_id"]
+                if pid in seen:
+                    continue
+                seen.add(pid)
+                sr = _score_article(p, active, topic if topic else t)
+                if sr and sr.match_score >= min_match_score:
+                    all_papers.append(sr)
 
     # Sort by match_score descending
     all_papers.sort(key=lambda x: x.match_score, reverse=True)
@@ -225,15 +279,16 @@ def render_scout_results(results: List[ScoutResult]) -> str:
     if not results:
         return "  No matching papers found."
 
-    lines = [f"\n  Found {len(results)} papers matching Gene Pool interests:\n"]
+    lines = [f"\n  Found {len(results)} items matching Gene Pool interests:\n"]
     for r in results:
         sev = r.match_score
         icon = "🟢" if sev >= 0.5 else "🟡" if sev >= 0.3 else "⚪"
         authors_str = ", ".join(r.authors[:2])
+        source_tag = f"[{r.source}]" if r.source != "arxiv" else ""
         lines.append(
-            f"  {icon} [#{r.rank}] {r.title[:70]}"
+            f"  {icon} {source_tag} [#{r.rank}] {r.title[:70]}"
         )
-        lines.append(f"       {r.arxiv_id} · {r.published} · {authors_str}")
+        lines.append(f"       {r.published} · {authors_str}")
         lines.append(f"       Match: {r.match_score:.2f} ← {r.matched_gap_type}")
         lines.append(f"       Capsule: {r.matched_gap_title[:50]}")
         if r.reason:

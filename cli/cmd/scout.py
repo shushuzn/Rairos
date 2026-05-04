@@ -30,6 +30,11 @@ def _build_scout_parser(subparsers) -> argparse.ArgumentParser:
         help="Specific topic to search (default: auto-derived from Gene Pool)",
     )
     p.add_argument(
+        "--sources", "-s", type=str, default="arxiv",
+        choices=["arxiv", "news", "all"],
+        help="Sources to search: arxiv, news, or all (default: arxiv)",
+    )
+    p.add_argument(
         "--limit", "-n", type=int, default=20,
         help="Maximum papers to return (default: 20)",
     )
@@ -57,6 +62,7 @@ def _run_scout(args) -> None:
     from llm.scout import scout, render_scout_results
 
     topic = getattr(args, "topic", "")
+    sources = getattr(args, "sources", "arxiv")
     limit = getattr(args, "limit", 20)
     min_score = getattr(args, "min_score", 0.15)
     daemon = getattr(args, "daemon", False)
@@ -64,11 +70,12 @@ def _run_scout(args) -> None:
     output = getattr(args, "output", "")
 
     if daemon:
-        _run_daemon(topic, limit, min_score, interval, output)
+        _run_daemon(topic, limit, min_score, interval, output, sources)
         return
 
     results = scout(
         topic=topic,
+        sources=sources,
         max_results=limit,
         min_match_score=min_score,
     )
@@ -98,7 +105,7 @@ def _run_scout(args) -> None:
 
 def _run_daemon(
     topic: str, limit: int, min_score: float,
-    interval_minutes: int, output: str,
+    interval_minutes: int, output: str, sources: str = "arxiv",
 ) -> None:
     """Run scout in a continuous loop."""
     from llm.scout import scout, render_scout_results
@@ -108,7 +115,7 @@ def _run_daemon(
 
     while True:
         try:
-            results = scout(topic=topic, max_results=limit, min_match_score=min_score)
+            results = scout(topic=topic, sources=sources, max_results=limit, min_match_score=min_score)
             ts = time.strftime("%Y-%m-%d %H:%M")
 
             if output:
