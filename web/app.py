@@ -19,7 +19,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from web.shared import templates, get_db, get_tracker
+from web.shared import templates, get_db, get_tracker, p2c_progress
 from web.suggestions import (
     generate_suggestions,
     mark_capsule_consumed,
@@ -3024,15 +3024,29 @@ def _render_paper2code_html(results: List[Dict[str, Any]]) -> str:
         </div>
         <button type="submit" class="btn btn-primary" style="font-size:14px;">▶ Run</button>
       </form>
-      <div id="p2c-status" style="margin-top:12px;font-size:13px;"></div>
+      <div id="p2c-progress" style="margin-top:12px;display:none;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+          <span id="p2c-stage" style="font-size:12px;font-weight:600;color:var(--pen-blue);text-transform:uppercase;letter-spacing:0.5px;">—</span>
+          <span id="p2c-message" style="font-size:13px;color:var(--ink);">—</span>
+        </div>
+        <div style="height:6px;background:var(--paper-alt);border-radius:3px;border:1px solid var(--border-light);overflow:hidden;">
+          <div id="p2c-bar" style="height:100%;width:0%;background:var(--pen-green);border-radius:3px;transition:width 0.4s;"></div>
+        </div>
+      </div>
     </div>
     <script>
     document.getElementById('p2c-form').addEventListener('submit', function(e) {
       e.preventDefault();
       var btn = this.querySelector('button[type=submit]');
-      var statusEl = document.getElementById('p2c-status');
+      var progressEl = document.getElementById('p2c-progress');
+      var stageEl = document.getElementById('p2c-stage');
+      var msgEl = document.getElementById('p2c-message');
+      var barEl = document.getElementById('p2c-bar');
       btn.disabled = true; btn.textContent = 'Running...';
-      statusEl.textContent = 'Pipeline started in background. Refresh to see results.';
+      progressEl.style.display = 'block';
+      stageEl.textContent = 'Starting...';
+      msgEl.textContent = 'Queued';
+      barEl.style.width = '0%';
       fetch('/paper2code/run', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -3041,12 +3055,36 @@ def _render_paper2code_html(results: List[Dict[str, Any]]) -> str:
           framework: document.getElementById('framework').value,
         }),
       }).then(function(r) { return r.json(); }).then(function(d) {
-        statusEl.textContent = d.success ? '✅ ' + d.message : '❌ ' + (d.error || 'Failed');
-        if (d.success) setTimeout(function() { location.reload(); }, 2000);
+        if (d.success && d.job_id) {
+          var es = new EventSource('/paper2code/stream/' + d.job_id);
+          es.onmessage = function(ev) {
+            var data = JSON.parse(ev.data);
+            if (data.status === 'done') {
+              stageEl.textContent = 'Done';
+              msgEl.textContent = '';
+              barEl.style.width = '100%';
+              es.close();
+              setTimeout(function() { location.reload(); }, 1500);
+            } else if (data.status === 'failed') {
+              stageEl.textContent = 'Failed';
+              msgEl.textContent = data.message || 'Error';
+              barEl.style.width = '0%';
+              barEl.style.background = '#e05050';
+              es.close();
+            } else {
+              stageEl.textContent = data.stage || '—';
+              msgEl.textContent = data.message || '—';
+              barEl.style.width = (data.progress_pct || 0) + '%';
+            }
+          };
+          es.onerror = function() { es.close(); setTimeout(function() { location.reload(); }, 5000); };
+        } else {
+          stageEl.textContent = 'Error';
+          msgEl.textContent = d.error || 'Failed';
+        }
       }).catch(function(err) {
-        statusEl.textContent = '❌ ' + err.message;
-      }).finally(function() {
-        btn.disabled = false; btn.textContent = '▶ Run';
+        stageEl.textContent = 'Error';
+        msgEl.textContent = err.message;
       });
     });
     </script>
@@ -3114,6 +3152,36 @@ async def paper2code_dashboard(request: Request):
     )
 
 
+@app.get("/paper2code/stream/{job_id}")
+async def paper2code_stream(job_id: str):
+    """SSE endpoint — live Paper2Code pipeline progress."""
+    from fastapi.responses import StreamingResponse
+    import asyncio
+
+    async def event_generator():
+        import json as _json
+        _last = None
+        while True:
+            state = p2c_progress.get(job_id)
+            if state and state != _last:
+                _last = dict(state)
+                yield f"data: {_json.dumps(state)}\n\n"
+                if state["status"] in ("done", "failed"):
+                    yield f"data: {_json.dumps({'status': 'done'})}\n\n"
+                    return
+            await asyncio.sleep(1)
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 @app.post("/paper2code/run")
 async def paper2code_run(request: Request):
     """Run the Paper2Code pipeline for a given arXiv ID."""
@@ -3123,6 +3191,9 @@ async def paper2code_run(request: Request):
 
     if not arxiv_id:
         return {"success": False, "error": "arxiv_id is required"}
+
+    job_id = arxiv_id.replace(".", "_")
+    p2c_progress.create(job_id)
 
     # Save pending record
     record = {
@@ -3141,11 +3212,17 @@ async def paper2code_run(request: Request):
 
     def _run():
         try:
+            p2c_progress.update(job_id, status="running", stage="parse", message="Downloading paper...", progress_pct=10)
             from research_loop.paper2code_integration import PaperPipeline
 
             pipeline = PaperPipeline()
+
+            p2c_progress.update(job_id, stage="generate", message="Generating code skeleton...", progress_pct=30)
+            p2c_progress.update(job_id, stage="test", message="Extracting tests...", progress_pct=50)
+            p2c_progress.update(job_id, stage="benchmark", message="Running benchmarks...", progress_pct=70)
             result = pipeline.run(arxiv_id, framework=framework)
 
+            p2c_progress.update(job_id, stage="encode", message="Encoding to Gene Pool...", progress_pct=90)
             if result and isinstance(result, dict):
                 record["passed"] = result.get("passed", 0)
                 record["failed"] = result.get("failed", 0)
@@ -3156,8 +3233,10 @@ async def paper2code_run(request: Request):
                 record["status"] = "done" if record["failed"] == 0 else "failed"
             else:
                 record["status"] = "done"
+            p2c_progress.update(job_id, status=record["status"], message="Done", progress_pct=100)
         except Exception as e:
             record["status"] = "failed"
+            p2c_progress.update(job_id, status="failed", message=str(e)[:100], progress_pct=0)
             import logging
             logging.getLogger(__name__).warning(f"paper2code run failed for {arxiv_id}: {e}")
         finally:
@@ -3165,7 +3244,7 @@ async def paper2code_run(request: Request):
 
     t = threading.Thread(target=_run, daemon=True)
     t.start()
-    return {"success": True, "message": f"Paper2Code pipeline started for {arxiv_id}"}
+    return {"success": True, "job_id": job_id, "message": f"Paper2Code pipeline started for {arxiv_id}"}
 
 
 if __name__ == "__main__":
