@@ -2530,23 +2530,6 @@ def _mark_capule_consumed(capsule_id: str, tracker) -> None:
         if updated:
             tracker._save_capsules(capsules)
 
-        # Update capsules.json (web UI store)
-        capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-        if capsules_path.exists():
-            try:
-                data = json.loads(capsules_path.read_text(encoding="utf-8"))
-                raw = data.get("capsules", []) if isinstance(data, dict) else data
-                for c in raw:
-                    if c.get("capsule_id", "") == capsule_id:
-                        c["status"] = "consumed"
-                        break
-                data["capsules"] = raw
-                capsules_path.write_text(
-                    json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
-                )
-            except Exception:
-                pass
-
         tracker.record_capsule_lifecycle_event(
             capsule_id=capsule_id,
             action="consumed",
