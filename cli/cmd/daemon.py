@@ -1,12 +1,14 @@
-"""CLI command: daemon — autonomous research autopilot.
+"""CLI command: daemon — autonomous research autopilot + event watch.
 
 Usage:
-    airos daemon start        Start background research watch + evolution
-    airos daemon stop         Stop background watch
-    airos daemon status       Current daemon status
-    airos daemon run-cycle    Run one orchestrator cycle (subscriptions + gaps)
-    airos daemon evolve       Run one evolution cycle on Gene Pool
-    airos daemon log          Recent alerts and activity
+    airos daemon start              Start background research watch + evolution
+    airos daemon stop               Stop background watch
+    airos daemon status             Current daemon status
+    airos daemon run-cycle          Run one orchestrator cycle
+    airos daemon evolve             Run one evolution cycle on Gene Pool
+    airos daemon log                Recent alerts and activity
+    airos daemon watch              Start continuous event monitoring (Jin10 + auto-capsule)
+    airos daemon watch-stop         Stop event monitoring
 """
 
 from __future__ import annotations
@@ -61,18 +63,26 @@ def _build_daemon_parser(subparsers) -> argparse.ArgumentParser:
 
     # evolve
     evolve = sub.add_parser("evolve", help="Run one evolution cycle on Gene Pool")
-    evolve.add_argument(
-        "--topic",
-        type=str,
-        default="",
-        help="Topic to focus evolution on (default: auto-detect from history)",
-    )
+    evolve.add_argument("--topic", type=str, default="",
+        help="Topic to focus evolution on (default: auto-detect)")
     evolve.set_defaults(func=_run_daemon_evolve)
 
     # log
     log = sub.add_parser("log", help="Show recent alerts and activity")
     log.add_argument("--limit", type=int, default=20, help="Max entries to show")
     log.set_defaults(func=_run_daemon_log)
+
+    # watch (event monitoring)
+    watch = sub.add_parser("watch", help="Start continuous event monitoring (Jin10)")
+    watch.add_argument("--interval", type=int, default=300,
+        help="Check interval in seconds (default: 300)")
+    watch.set_defaults(func=_run_daemon_watch)
+
+    watch_stop = sub.add_parser("watch-stop", help="Stop event monitoring")
+    watch_stop.set_defaults(func=_run_daemon_watch_stop)
+
+    watch_status = sub.add_parser("watch-status", help="Event monitor status")
+    watch_status.set_defaults(func=_run_daemon_watch_status)
 
     return p
 
@@ -192,4 +202,38 @@ def _run_daemon_log(args) -> None:
         boost = " ✅" if getattr(a, "preference_boost", False) else ""
         print(f"  {ts} {color}[{sev}]{Colors.END} {a.top_gap_title[:55]:<55} "
               f"gp={gp:.2f}{boost}")
+    print()
+
+
+def _run_daemon_watch(args) -> None:
+    from llm.watch import WatchDaemon
+
+    interval = getattr(args, "interval", 300)
+    daemon = WatchDaemon(interval=interval)
+    daemon.start()
+    print_success(f"Event watch started (interval={interval}s)")
+    print("  Monitoring Jin10 for geopolitical + financial events")
+    print("  Auto-encoding high-impact events as Gene Pool capsules")
+    print("  Use 'airos daemon watch-status' to check")
+
+
+def _run_daemon_watch_stop(args) -> None:
+    from llm.watch import WatchDaemon
+
+    d = WatchDaemon()
+    d.stop()
+    print_success("Event watch stopped.")
+
+
+def _run_daemon_watch_status(args) -> None:
+    from llm.watch import WatchDaemon
+
+    d = WatchDaemon()
+    status = d.get_status()
+    print(f"\n  Event Watch Status:")
+    print(f"    Running:     {'Yes' if status['running'] else 'No'}")
+    print(f"    Interval:    {status['interval']}s")
+    print(f"    Last check:  {status.get('last_check', 'never')[:19]}")
+    print(f"    Events:      {status['total_events']} total")
+    print(f"    Gene Pool:   {status['gene_pool_size']} capsules")
     print()
