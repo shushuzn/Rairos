@@ -190,8 +190,7 @@ async def paper2code_run(request: Request):
 
 # --- Fallback routes for sidebar items (graceful "not available") ---
 
-@router.get("/chat")
-async def _chat_fallback(request: Request):
+# removed old fallback(request: Request):
     return templates.TemplateResponse(request, "generic.html",
         {"page": "chat", "title": "Chat", "content": "<p>Chat module loading...</p>"})
 
@@ -247,8 +246,35 @@ MISSING_ROUTES = [
 ]
 
 @router.get("/chat")
-async def chat_fb(request: Request):
-    return templates.TemplateResponse(request, "generic.html", {"page": "chat", "title": "Chat", "content": "<p>Chat module not available</p>"})
+async def chat_page(request: Request):
+    """Gene Pool browser — explore capsules in a chat-like interface."""
+    from llm.insight.tracker import EvolutionTracker
+    tracker = EvolutionTracker()
+    capsules = tracker._load_capsules()
+
+    cards = []
+    for c in sorted(capsules, key=lambda x: x.outcome_success_score, reverse=True)[:20]:
+        badge = c.credibility_badge.upper()
+        cards.append(
+            f'<div style="border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;">'
+            f'<div style="font-size:11px;color:var(--ink-faint);">'
+            f'[{badge}] score={c.outcome_success_score:.2f} cred={c.credibility_score:.2f} {c.action_gap_type}</div>'
+            f'<div style="font-size:14px;margin-top:4px;">{c.action_gap_title}</div>'
+            f'</div>'
+        )
+
+    html = f"""
+    <style>
+    .chat-container {{ max-width: 800px; margin: 0 auto; }}
+    .chat-header {{ font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--ink); }}
+    .chat-count {{ font-size: 13px; color: var(--ink-faint); margin-bottom: 16px; }}
+    </style>
+    <div class="chat-container">
+        <div class="chat-header">Gene Pool Browser</div>
+        <div class="chat-count">{len(capsules)} capsules · sorted by score</div>
+        {''.join(cards)}
+    </div>"""
+    return templates.TemplateResponse(request, "generic.html", {"page": "chat", "title": "Gene Pool", "content": html})
 
 @router.get("/citation-chain")
 async def citation_fb(request: Request):
