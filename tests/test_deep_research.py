@@ -871,7 +871,7 @@ class TestAnalyzeGaps:
         ps = _make_paper_snapshot()
         with patch("research_loop.deep_research.GapSnapshot") as MockGS:
             MockGS.return_value = _make_gap_snapshot()
-            result = agent._analyze_gaps([ps], 0)
+            agent._analyze_gaps([ps], 0)
             # Should produce at most 5 gaps (top 5)
             assert MockGS.call_count <= 5
     def test_analyze_handles_exception(self, agent: DeepResearchAgent):
