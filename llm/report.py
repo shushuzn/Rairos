@@ -1,4 +1,4 @@
-"""Report organized by research themes — research and news separated."""
+"""Research report — written analysis, not capsule dump."""
 
 from __future__ import annotations
 from datetime import datetime
@@ -6,24 +6,9 @@ from datetime import datetime
 from llm.insight.tracker import EvolutionTracker
 
 
-def _find(caps, keywords, exclude=None):
-    """Filter capsules by keyword match, excluding already-listed IDs."""
-    exclude = exclude or set()
-    result = []
-    for c in caps:
-        if c.capsule_id in exclude:
-            continue
-        text = (c.action_gap_title + " " + c.trigger_topic).lower()
-        if any(kw in text for kw in keywords):
-            result.append(c)
-    return result
-
-
 def generate() -> str:
     tracker = EvolutionTracker()
     caps = tracker._load_capsules()
-
-    # Separate research (cs.RO, cs.LG, etc.) from event (cs.GL) capsules
     research = [c for c in caps if getattr(c, "source_arxiv_category", "") not in ("cs.GL", "")]
     events = [c for c in caps if getattr(c, "source_arxiv_category", "") == "cs.GL"]
 
@@ -31,98 +16,86 @@ def generate() -> str:
     lines = []
     def w(s=""): lines.append(s)
 
-    w("=" * 60)
     w("RAIROS RESEARCH REPORT")
     w(now)
-    w("=" * 60)
-    w()
+    w("")
+    w("This report summarizes the current state of the system's Gene Pool,")
+    w("organized by research themes and live events.")
+    w("")
 
-    used = set()
+    w("─" * 60)
+    w("")
 
-    # Theme 1: VLA / Robotics
-    vla = _find(research, ["lapo", "vla", "liberoo", "diffusion policy",
-                           "octo", "gr-2", "robot", "embodied"])
-    if vla:
-        w("VLA / ROBOTICS")
-        w("-" * 60)
-        for c in sorted(vla, key=lambda x: x.outcome_success_score, reverse=True):
-            w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:65]}")
-            w(f"  score={c.outcome_success_score:.2f} | {c.action_gap_type}")
-            used.add(c.capsule_id)
-        w()
+    # Research section
+    w("RESEARCH")
+    w("")
+    w(f"The system is tracking {len(research)} research capsules across VLA")
+    w("robotics, representation learning, and evaluation methodology.")
+    w("")
+    w("VLA & ROBOTICS")
+    w(f"  {len([c for c in research if 'lapo' in c.action_gap_title.lower() or 'vla' in c.action_gap_title.lower() or 'libero' in c.action_gap_title.lower() or 'robot' in c.action_gap_title.lower() or 'diffusion' in c.action_gap_title.lower()])} capsules")
+    w("  Covers LAPO vs PPO convergence, LIBERO benchmark analysis,")
+    w("  diffusion policy representations, and generalist vs specialist")
+    w("  policy trade-offs.")
+    w("")
 
-    # Theme 2: Learning / Optimization
-    learn = _find(research, ["rl", "reinforcement", "fine-tuning", "warmup",
-                             "warm-up", "sample", "convergence"], used)
-    if learn:
-        w("LEARNING / OPTIMIZATION")
-        w("-" * 60)
-        for c in sorted(learn, key=lambda x: x.outcome_success_score, reverse=True):
-            w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:65]}")
-            w(f"  score={c.outcome_success_score:.2f} | {c.action_gap_type}")
-            used.add(c.capsule_id)
-        w()
+    w("REPRESENTATION & THEORY")
+    w(f"  {len([c for c in research if 'latent' in c.action_gap_title.lower() or 'reasoning' in c.action_gap_title.lower() or 'attention' in c.action_gap_title.lower() or 'representation' in c.action_gap_title.lower()])} capsules")
+    w("  Latent reasoning chain length saturation, visual vs physical")
+    w("  attention, diffusion vs token-based representations.")
+    w("")
 
-    # Theme 3: Representation / Theory
-    theory = _find(research, ["latent", "reasoning", "attention", "representation",
-                              "interpretability", "contradiction"], used)
-    if theory:
-        w("REPRESENTATION / THEORY")
-        w("-" * 60)
-        for c in sorted(theory, key=lambda x: x.outcome_success_score, reverse=True):
-            w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:65]}")
-            w(f"  score={c.outcome_success_score:.2f} | {c.action_gap_type}")
-            used.add(c.capsule_id)
-        w()
+    w("EVALUATION & BENCHMARKING")
+    w(f"  {len([c for c in research if 'benchmark' in c.action_gap_title.lower() or 'evaluation' in c.action_gap_title.lower() or 'liberoo' in c.action_gap_title.lower()])} capsules")
+    w("  LIBERO coverage gaps, missing zero-shot evaluation protocols,")
+    w("  and the need for standardized VLA manipulation benchmarks.")
+    w("")
 
-    # Theme 4: Benchmark / Evaluation
-    bench = _find(research, ["benchmark", "libero", "evaluation", "gap",
-                             "scalability", "generalization"], used)
-    if bench:
-        w("BENCHMARK / EVALUATION")
-        w("-" * 60)
-        for c in sorted(bench, key=lambda x: x.outcome_success_score, reverse=True):
-            w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:65]}")
-            w(f"  score={c.outcome_success_score:.2f} | {c.action_gap_type}")
-            used.add(c.capsule_id)
-        w()
+    # Events section
+    w("LIVE EVENTS")
+    w("")
+    w(f"The system is monitoring {len(events)} real-world events.")
+    w("")
 
-    # Remaining research
-    remaining = [c for c in research if c.capsule_id not in used]
-    if remaining:
-        w("OTHER RESEARCH")
-        w("-" * 60)
-        for c in sorted(remaining, key=lambda x: x.outcome_success_score, reverse=True):
-            w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:65]}")
-            w(f"  score={c.outcome_success_score:.2f} | {c.action_gap_type}")
-        w()
+    geo = [c for c in events if 'iran' in c.action_gap_title.lower() or 'hormuz' in c.action_gap_title.lower() or 'oil' in c.action_gap_title.lower() or 'military' in c.action_gap_title.lower()]
+    econ = [c for c in events if 'treasury' in c.action_gap_title.lower() or 'debt' in c.action_gap_title.lower()]
+    safety = [c for c in events if 'fireworks' in c.action_gap_title.lower() or 'explosion' in c.action_gap_title.lower() or 'earthquake' in c.action_gap_title.lower()]
 
-    # Events section (deduplicated, condensed)
-    if events:
-        seen = set()
-        w("LIVE EVENTS")
-        w("-" * 60)
-        for c in sorted(events, key=lambda x: x.outcome_success_score, reverse=True):
-            key = c.action_gap_title[:50]
-            if key in seen:
-                continue
-            seen.add(key)
-            w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:65]}")
-        w()
+    if geo:
+        w("GEOPOLITICAL")
+        w(f"  {len(geo)} capsules")
+        for c in sorted(geo, key=lambda x: x.outcome_success_score, reverse=True)[:3]:
+            w(f"  \u2022 {c.action_gap_title[:60]}")
+        w("")
+
+    if econ:
+        w("ECONOMIC")
+        w(f"  {len(econ)} capsules")
+        for c in econ:
+            w(f"  \u2022 {c.action_gap_title[:60]}")
+        w("")
+
+    if safety:
+        w("SAFETY")
+        w(f"  {len(safety)} capsules")
+        for c in safety:
+            w(f"  \u2022 {c.action_gap_title[:60]}")
+        w("")
 
     # Stats
     w("STATS")
-    w("-" * 60)
-    by_type = {}
-    for c in caps:
-        by_type[c.action_gap_type] = by_type.get(c.action_gap_type, 0) + 1
-    w(f"  Total: {len(caps)} capsules ({len(research)} research, {len(events)} events)")
-    w(f"  Gap types: {by_type}")
+    w("")
+    w(f"  Total capsules: {len(caps)}")
+    w(f"  Research: {len(research)}")
+    w(f"  Events: {len(events)}")
+    w(f"  Gap types: {len(set(c.action_gap_type for c in caps))}")
     w(f"  Avg score: {sum(c.outcome_success_score for c in caps)/len(caps):.2f}")
     w(f"  High credibility: {sum(1 for c in caps if c.credibility_badge == 'high')}")
-    w()
+    w("")
 
-    w("=" * 60)
+    w("─" * 60)
+    w("End")
+
     return "\n".join(lines)
 
 
