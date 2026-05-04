@@ -1575,7 +1575,7 @@ def tool_paper2code_run(arxiv_id: str, framework: str = "pytorch", skip_gene_poo
                 try:
                     results = monitor.check_all()
                     total_new = 0
-                    for sub_id, papers in results.items():
+                    for _sub_id, papers in results.items():
                         for paper in papers:
                             paper_id = paper.get("arxiv_id", "")
                             if paper_id and paper_id not in seen:
