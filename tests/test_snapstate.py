@@ -109,7 +109,7 @@ class TestResearchSession:
 # ---------------------------------------------------------------------------
 class TestSnapstate:
     def test_init_creates_dir(self, tmp_path):
-        s = Snapstate(base_dir=tmp_path / "sessions")
+        Snapstate(base_dir=tmp_path / "sessions")
         assert (tmp_path / "sessions").exists()
 
     def test_save_and_load(self, tmp_path):
