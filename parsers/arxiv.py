@@ -23,7 +23,7 @@ def _lazy_feedparser():
 def _lazy_requests():
     global _requests
     if _requests is None:
-        import requests
+        import requests  # type: ignore[import-untyped]
         _requests = requests
     return _requests
 
