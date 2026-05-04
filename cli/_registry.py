@@ -128,6 +128,7 @@ _SUBCOMMAND_TABLE = [
     ("benchmark", "cli.cmd.benchmark", "_build_benchmark_parser"),
     ("postprocess", "cli.cmd.postprocess", "_build_postprocess_parser"),
     ("ingest", "cli.cmd.ingest", "_build_ingest_parser"),
+    ("daemon", "cli.cmd.daemon", "_build_daemon_parser"),
 ]
 
 
