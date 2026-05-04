@@ -7,7 +7,7 @@ Thank you for your interest in contributing! This project is a self-evolving res
 ```bash
 # Clone the repository
 git clone https://github.com/shushuzn/Rairos.git
-cd ai_research_os
+cd Rairos
 
 # Install dependencies
 pip install -e ".[all]"
