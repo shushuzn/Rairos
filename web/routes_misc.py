@@ -230,34 +230,6 @@ async def chat_page(request: Request):
     </div>"""
     return templates.TemplateResponse(request, "generic.html", {"page": "chat", "title": "Gene Pool", "content": html})
 
-@router.get("/citation-chain")
-async def citation_fb(request: Request):
-    return templates.TemplateResponse(request, "generic.html", {"page": "citation_chain", "title": "Citation Chain", "content": "<p>Citation chain not available</p>"})
-
-@router.get("/arxiv-channels")
-async def arxiv_fb(request: Request):
-    return templates.TemplateResponse(request, "generic.html", {"page": "arxiv-channels", "title": "arXiv Channels", "content": "<p>arXiv channels not available</p>"})
-
-@router.get("/climate-monitor")
-async def climate_fb(request: Request):
-    return templates.TemplateResponse(request, "generic.html", {"page": "climate-monitor", "title": "Climate AI", "content": "<p>Climate monitor not available</p>"})
-
-@router.get("/voice-capsule")
-async def voice_fb(request: Request):
-    return templates.TemplateResponse(request, "generic.html", {"page": "voice-capsule", "title": "Voice Capsule", "content": "<p>Voice capsule not available</p>"})
-
-@router.get("/policy-impact")
-async def policy_fb(request: Request):
-    return templates.TemplateResponse(request, "generic.html", {"page": "policy-impact", "title": "Policy Impact", "content": "<p>Policy impact not available</p>"})
-
-@router.get("/researchers")
-async def researchers_fb(request: Request):
-    return templates.TemplateResponse(request, "generic.html", {"page": "multi-researcher", "title": "Researchers", "content": "<p>Multi-researcher not available</p>"})
-
-@router.get("/insights/queue")
-async def queue_fb(request: Request):
-    return templates.TemplateResponse(request, "generic.html", {"page": "review-queue", "title": "Review Queue", "content": "<p>Review queue not available</p>"})
-
 
 
 @router.get("/citation-chain")
