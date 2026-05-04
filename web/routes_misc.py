@@ -643,3 +643,146 @@ async def submit_verdict(request: Request):
 
     return {"success": True}
 
+def _render_paper2code_html(results: List[Dict[str, Any]]) -> str:
+    lines = ['<div class="paper2code-dash">']
+
+    # Run form
+    lines.append("""
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-title">⚡ Run Paper2Code Pipeline</div>
+      <p style="font-size:13px;color:var(--ink-faint);margin-bottom:12px;">
+        Download an arXiv paper, generate code skeleton, extract tests, run benchmarks, and encode results to the Gene Pool.
+      </p>
+      <form id="p2c-form" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+        <div>
+          <label style="font-size:11px;color:var(--ink-faint);display:block;margin-bottom:4px;">arXiv ID</label>
+          <input type="text" id="arxiv-id" placeholder="e.g. 1706.03762" required
+                 style="padding:8px 12px;border:1px solid var(--border);border-radius:4px;font-size:13px;width:200px;">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--ink-faint);display:block;margin-bottom:4px;">Framework</label>
+          <select id="framework" style="padding:8px 12px;border:1px solid var(--border);border-radius:4px;font-size:13px;">
+            <option value="pytorch">PyTorch</option>
+            <option value="jax">JAX</option>
+            <option value="numpy">NumPy</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="font-size:14px;">▶ Run</button>
+      </form>
+      <div id="p2c-progress" style="margin-top:12px;display:none;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+          <span id="p2c-stage" style="font-size:12px;font-weight:600;color:var(--pen-blue);text-transform:uppercase;letter-spacing:0.5px;">—</span>
+          <span id="p2c-message" style="font-size:13px;color:var(--ink);">—</span>
+        </div>
+        <div style="height:6px;background:var(--paper-alt);border-radius:3px;border:1px solid var(--border-light);overflow:hidden;">
+          <div id="p2c-bar" style="height:100%;width:0%;background:var(--pen-green);border-radius:3px;transition:width 0.4s;"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+    document.getElementById('p2c-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var btn = this.querySelector('button[type=submit]');
+      var progressEl = document.getElementById('p2c-progress');
+      var stageEl = document.getElementById('p2c-stage');
+      var msgEl = document.getElementById('p2c-message');
+      var barEl = document.getElementById('p2c-bar');
+      btn.disabled = true; btn.textContent = 'Running...';
+      progressEl.style.display = 'block';
+      stageEl.textContent = 'Starting...';
+      msgEl.textContent = 'Queued';
+      barEl.style.width = '0%';
+      fetch('/paper2code/run', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          arxiv_id: document.getElementById('arxiv-id').value.trim(),
+          framework: document.getElementById('framework').value,
+        }),
+      }).then(function(r) { return r.json(); }).then(function(d) {
+        if (d.success && d.job_id) {
+          var es = new EventSource('/paper2code/stream/' + d.job_id);
+          es.onmessage = function(ev) {
+            var data = JSON.parse(ev.data);
+            if (data.status === 'done') {
+              stageEl.textContent = 'Done';
+              msgEl.textContent = '';
+              barEl.style.width = '100%';
+              es.close();
+              setTimeout(function() { location.reload(); }, 1500);
+            } else if (data.status === 'failed') {
+              stageEl.textContent = 'Failed';
+              msgEl.textContent = data.message || 'Error';
+              barEl.style.width = '0%';
+              barEl.style.background = '#e05050';
+              es.close();
+            } else {
+              stageEl.textContent = data.stage || '—';
+              msgEl.textContent = data.message || '—';
+              barEl.style.width = (data.progress_pct || 0) + '%';
+            }
+          };
+          es.onerror = function() { es.close(); setTimeout(function() { location.reload(); }, 5000); };
+        } else {
+          stageEl.textContent = 'Error';
+          msgEl.textContent = d.error || 'Failed';
+        }
+      }).catch(function(err) {
+        stageEl.textContent = 'Error';
+        msgEl.textContent = err.message;
+      });
+    });
+    </script>
+    """)
+
+    # History
+    if not results:
+        lines.append("""
+        <div class="card">
+          <div class="card-title">📋 Run History</div>
+          <div class="empty-state">
+            <div class="empty-state-icon">⚡</div>
+            <div class="empty-state-text">No paper2code runs yet. Submit an arXiv ID above to get started.</div>
+          </div>
+        </div>""")
+    else:
+        lines.append('<div class="card"><div class="card-title">📋 Run History</div>')
+        lines.append("""
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border);">
+            <th style="padding:8px 10px;text-align:left;color:var(--ink-faint);">arXiv</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--ink-faint);">Framework</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--ink-faint);">Pass</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--ink-faint);">Fail</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--ink-faint);">Gene Pool</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--ink-faint);">When</th>
+          </tr>
+        </thead>
+        <tbody>""")
+        for r in results:
+            arxiv = r.get("arxiv_id", "?")
+            fw = r.get("framework", "pytorch")
+            passed = r.get("passed", 0)
+            failed = r.get("failed", 0)
+            skipped = r.get("skipped", 0)
+            gp = r.get("gene_pool_encoded", False)
+            ts = r.get("created_at", "")[:19]
+            status = r.get("status", "done")
+            status_dot = {"done": "✅", "failed": "❌", "running": "⏳", "pending": "⏳"}.get(status, "❓")
+            lines.append(f"""
+            <tr style="border-bottom:1px solid var(--border-light);">
+              <td style="padding:8px 10px;"><a href="/paper/{arxiv}" style="color:var(--pen-blue);">{arxiv}</a></td>
+              <td style="padding:8px 10px;">{fw}</td>
+              <td style="padding:8px 10px;color:var(--pen-green);">{passed}</td>
+              <td style="padding:8px 10px;color:#e05050;">{failed}</td>
+              <td style="padding:8px 10px;">{"✅" if gp else "—"}</td>
+              <td style="padding:8px 10px;color:var(--ink-faint);">{ts}</td>
+            </tr>""")
+        lines.append("</tbody></table></div>")
+
+    lines.append("</div>")
+    return "\n".join(lines)
+
+
+
