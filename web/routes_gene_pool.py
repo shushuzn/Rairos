@@ -142,7 +142,6 @@ async def gene_pool_evolution_log(request: Request):
 async def contradiction_heatmap(request: Request):
     """Contradiction Heatmap — papers colored by contradiction count."""
     from llm.contradiction_heatmap import compute_paper_contradictions, render_heatmap_html
-    render_heatmap_html = lambda p, c: '<p>Heatmap not available</p>'
 
     db = get_db()
     rows, _ = db.list_papers(limit=200, offset=0)
@@ -178,7 +177,6 @@ async def game_mode(request: Request):
 async def paradigm_alert(request: Request):
     """Paradigm Concentration Alert."""
     from llm.paradigm_monitor import check_paradigm_concentration, render_html
-    render_html = lambda r: '<p>Paradigm monitor not available</p>'
 
     result = check_paradigm_concentration("all")
     html = render_html(result)
@@ -206,7 +204,6 @@ async def eval_gap_alert(request: Request):
 async def gene_pool_bold(request: Request):
     """Bold Hypothesis Vault."""
     from llm.bold_vault import get_bold_capsules, render_html
-    render_html = lambda c: '<p>Bold vault not available</p>'
 
     capsules = get_bold_capsules()
     html = render_html(capsules)
