@@ -5,9 +5,9 @@ Generated: 2024-06-15 00:00:00
 
 1. GENE POOL OVERVIEW
 ------------------------------------------------------------
-Total: 27 capsules
-Gap types: {'method_limitation': 5, 'evaluation_gap': 7, 'contradiction': 1, 'scalability_issue': 4, 'generalization_gap': 2, 'unexplored_application': 6, 'theoretical_gap': 2}
-Avg score: 0.714
+Total: 26 capsules
+Gap types: {'method_limitation': 5, 'evaluation_gap': 6, 'contradiction': 1, 'scalability_issue': 4, 'generalization_gap': 2, 'unexplored_application': 6, 'theoretical_gap': 2}
+Avg score: 0.712
 High credibility: 1
 
 2. GEOPOLITICAL INTELLIGENCE
@@ -17,9 +17,9 @@ High credibility: 1
   score=0.82 [MEDIUM] UAE oil infrastructure vulnerability to asymmetric threats (drones, mi
   score=0.80 [MEDIUM] Iran-US ceasefire fragility: one-month gap between ceasefire and first
   score=0.78 [MEDIUM] Military escalation at Hormuz threatens not just oil but global trade:
-  score=0.75 [MEDIUM] é¿èéçå¯æ¥ä¼æç§°é­å°æ¥èªä¼æçç©ºè¢­ã
-  score=0.75 [MEDIUM] å¢¨è¥¿å¥å½å®¶å°éå±4æ¥åå¸åæ­¥æ¥åè¯´ï¼è¯¥å½åé¨ç¦å
-  score=0.75 [MEDIUM] ãä¹ è¿å¹³å¯¹æ¹åé¿æ²æµé³å¸ä¸çè±åçç¸äºæä½åºéè
+  score=0.75 [MEDIUM] 阿联酉的富查伊拉称遭到来自伊朗的空袭。
+  score=0.75 [MEDIUM] 墨西哥国家地震局4日发布初步报告说，该国南部瓦哈卡州当天发生6级地震，首都墨西哥城�
+  score=0.75 [MEDIUM] 【习近平对湖南长沙浏阳市一烟花厂爆炸事故作出重要指示】金十数据5月5日讯，习近平对�
   score=0.72 [MEDIUM] Energy supply chain security models need to incorporate real-time geop
   score=0.70 [MEDIUM] Liuyang fireworks factory explosion: workplace safety gap with high-le
 
@@ -29,54 +29,54 @@ High credibility: 1
   score=0.85 [HIGH] LAPO convergence vs PPO on complex long-horizon tasks
   score=0.82 [MEDIUM] Latent reasoning chain length has diminishing returns — adaptive 
   score=0.78 [MEDIUM] LIBERO covers 110 single-arm tasks but excludes deformable object
-  score=0.76 [MEDIUM] LIBERO benchmark lacks held-out object categories — zero-shot gen
   score=0.75 [MEDIUM] Oil price volatility from geopolitical shocks dominates other fac
   score=0.73 [MEDIUM] No controlled ablation of warm-up diversity vs quality exists for
   score=0.72 [MEDIUM] LIBERO benchmark insufficiently covers real-world deployment scen
   score=0.70 [MEDIUM] Optimal reasoning frequency should be learned per-task, not fixed
   score=0.65 [MEDIUM] No latent-space probing methods exist for VLA models — visual vs 
+  score=0.64 [MEDIUM] Diffusion vs token-based action representations for high-frequenc
 
 4. DISCOVERED PATTERNS
 ------------------------------------------------------------
   [hormuz_oil_correlation]
     event_count: 3
     avg_event_score: 0.8533333333333334
-    current_oil_change_pct: 4.239
+    current_oil_change_pct: 4.591
     signal: oil_volatility
     last_event: 2026-05-04T23:18:25.758953
 
   [military_gold_safe_haven]
     event_count: 3
-    current_gold_change_pct: -2.05
+    current_gold_change_pct: -2.24
     direction: down
-    note: Gold moving down 2.0% during military escalation events
+    note: Gold moving down 2.2% during military escalation events
 
   [gene_pool_composition]
-    total_capsules: 25
-    event_vs_research_ratio: 0.36
-    avg_score: 0.713
-    note: Gene Pool: 25 capsules, 9 events, 16 research, avg 0.71
+    total_capsules: 26
+    event_vs_research_ratio: 0.423
+    avg_score: 0.712
+    note: Gene Pool: 26 capsules, 11 events, 15 research, avg 0.71
 
 
 5. KEYWORD SIGNALS
 ------------------------------------------------------------
-  'oil': 27 matches
+  'oil': 26 matches
     1.00 Iran-US military escalation directly impacts oil prices thro
     1.00 Oil price volatility from geopolitical shocks dominates othe
     0.60 LAPO convergence vs PPO on complex long-horizon tasks
-  'military': 27 matches
+  'military': 26 matches
     1.00 Iran-US military escalation directly impacts oil prices thro
     1.00 Military escalation at Hormuz threatens not just oil but glo
     0.60 LAPO convergence vs PPO on complex long-horizon tasks
-  'Hormuz': 27 matches
+  'Hormuz': 26 matches
     1.00 Strait of Hormuz chokepoint risk: ~20% of global oil/LNG tra
     1.00 Military escalation at Hormuz threatens not just oil but glo
     0.60 LAPO convergence vs PPO on complex long-horizon tasks
-  'earthquake': 27 matches
+  'earthquake': 26 matches
     0.60 LAPO convergence vs PPO on complex long-horizon tasks
     0.60 LIBERO benchmark insufficiently covers real-world deployment
     0.60 Diffusion vs token-based action representations for high-fre
-  'ceasefire': 27 matches
+  'ceasefire': 26 matches
     0.98 Iran-US ceasefire fragility: one-month gap between ceasefire
     0.60 LAPO convergence vs PPO on complex long-horizon tasks
     0.60 LIBERO benchmark insufficiently covers real-world deployment
