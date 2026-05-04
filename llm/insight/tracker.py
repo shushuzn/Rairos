@@ -1757,6 +1757,7 @@ class EvolutionTracker:
         gap_description: str = "",
         success_score: float = 0.8,
         status: str = "active",
+        source_paper_id: str = "",
     ) -> CapsuleGene:
         """Encode a successful accept event into a CapsuleGene and persist it.
 
@@ -1764,6 +1765,8 @@ class EvolutionTracker:
         (context → action) pattern worth remembering for future retrieval.
         """
         archetype = self.get_archetype()
+        if source_paper_id:
+            archetype["source_paper_id"] = source_paper_id
         capsule = CapsuleGene(
             capsule_id=uuid.uuid4().hex[:12],
             created_at=self._get_timestamp(),

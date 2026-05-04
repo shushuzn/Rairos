@@ -760,14 +760,19 @@ async def gene_pool_graph(request: Request):
     for c in capsules:
         gap_type = c.get("action_gap_type", "other")
         color = GAP_TYPE_COLORS.get(gap_type, GAP_TYPE_COLORS["other"])
+        source_paper_id = c.get("archetype", {}).get("source_paper_id", "")
+        label = (c.get("action_gap_title") or c.get("trigger_topic") or "?")[:60]
+        if source_paper_id:
+            label = f"[{source_paper_id}] {label}"
         nodes.append(
             {
                 "id": c.get("capsule_id", ""),
-                "label": (c.get("action_gap_title") or c.get("trigger_topic") or "?")[:60],
+                "label": label,
                 "gap_type": gap_type,
                 "color": color,
                 "score": c.get("outcome_success_score", 0.0),
                 "source": c.get("trigger_topic", "")[:40],
+                "source_paper_id": source_paper_id,
             }
         )
 
@@ -892,7 +897,8 @@ const node = g.append("g")
 node.append("circle")
     .attr("r", d => 6 + (d.score || 0) * 10)
     .attr("fill", d => d.color)
-    .attr("stroke", "#fff");
+    .attr("stroke", d => d.source_paper_id ? "#333" : "#fff")
+    .attr("stroke-width", d => d.source_paper_id ? 2 : 1.5);
 
 node.append("text")
     .attr("dx", 14).attr("dy", 4)
@@ -900,8 +906,15 @@ node.append("text")
 
 node.on("mouseover", function(event, d) {{
     d3.select(this).select("text").style("font-weight", "bold");
+    if (d.source_paper_id) {{
+        d3.select(this).select("circle").style("cursor", "pointer");
+    }}
 }}).on("mouseout", function(event, d) {{
     d3.select(this).select("text").style("font-weight", "normal");
+}}).on("click", function(event, d) {{
+    if (d.source_paper_id) {{
+        window.open('/paper/' + d.source_paper_id, '_blank');
+    }}
 }});
 
 simulation.on("tick", () => {{
