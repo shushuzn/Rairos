@@ -307,3 +307,339 @@ async def researchers_fb(request: Request):
 @router.get("/insights/queue")
 async def queue_fb(request: Request):
     return templates.TemplateResponse(request, "generic.html", {"page": "review-queue", "title": "Review Queue", "content": "<p>Review queue not available</p>"})
+
+
+
+@router.get("/citation-chain")
+async def citation_chain(request: Request, arxiv_id: str = ""):
+    """Citation Chain — build and visualize."""
+    return templates.TemplateResponse(
+        request,
+        "citation_chain.html",
+        {
+            "page": "citation_chain",
+            "arxiv_id": arxiv_id,
+            "chain_data": None,
+            "error": None,
+        },
+    )
+
+
+
+
+@router.get("/citation-chain")
+async def citation_chain_page(request: Request):
+    return templates.TemplateResponse(request, "generic.html", {"page": "citation_chain", "title": "Citation Chain", "content": "<p>Citation chain not available</p>"})
+
+@router.get("/citation-chain/graph")
+
+
+@router.get("/citation-chain/graph")
+async def citation_chain_graph(request: Request, paper_id: str = "", title: str = ""):
+    """Interactive SVG citation graph: paper → cited refs → Gene Pool capsules."""
+    from llm.citation_pathfinder_web import render_citation_chain_html
+
+    cited_paper_ids = ["p1", "p2", "p3"]  # placeholders; real impl reads from DB
+    cited_capsule_ids = []
+    html = render_citation_chain_html(paper_id, title, cited_paper_ids, cited_capsule_ids)
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "citation_chain",
+            "title": "Citation Pathfinder",
+            "content": html,
+        },
+    )
+
+
+
+
+@router.get("/arxiv-channels")
+async def arxiv_channels(request: Request):
+    """arXiv Watch Alert Channels — configure multiple feed configs."""
+    from llm.arxiv_alert_channels import render_channels_html
+
+    db = _get_db()
+    try:
+        recent = db.get_recent_subscription_papers_grouped(limit_per=5)
+    except Exception:
+        recent = {}
+    html = render_channels_html(check_results=recent)
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "arxiv-channels",
+            "title": "arXiv Watch Channels",
+            "content": html,
+        },
+    )
+
+
+
+
+@router.post("/arxiv-channels/toggle/{channel_id}")
+async def toggle_channel(channel_id: str, request: Request):
+    """Toggle an alert channel on/off."""
+    from llm.arxiv_alert_channels import update_channel
+    from fastapi.responses import JSONResponse
+    from llm.arxiv_alert_channels import _load_channels
+
+    channels = _load_channels()
+    if channel_id not in channels:
+        return JSONResponse({"success": False}, status_code=404)
+    current = channels[channel_id].get("enabled", True)
+    update_channel(channel_id, {"enabled": not current})
+    return JSONResponse({"success": True})
+
+
+
+
+@router.post("/arxiv-channels/check")
+async def arxiv_check(request: Request):
+    """Run arXiv subscription check across all enabled subscriptions."""
+    from fastapi.responses import JSONResponse
+
+    try:
+        db = _get_db()
+        from llm.subscription_monitor import SubscriptionMonitor
+
+        monitor = SubscriptionMonitor(db)
+        results = monitor.check_all()
+        total = sum(len(v) for v in results.values())
+        return JSONResponse(
+            {
+                "success": True,
+                "new_papers": total,
+                "details": {k: len(v) for k, v in results.items()},
+            }
+        )
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
+
+
+
+
+@router.get("/climate-monitor")
+async def climate_monitor(request: Request):
+    """Climate AI Monitor — papers at climate+AI intersection."""
+    from llm.climate_ai_monitor import get_watch_stats, render_climate_monitor_html
+
+    stats = get_watch_stats()
+    html = render_climate_monitor_html(stats)
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "climate-monitor",
+            "title": "Climate AI Monitor",
+            "content": html,
+        },
+    )
+
+
+
+
+@router.post("/climate-monitor/toggle-watch")
+async def climate_toggle_watch(request: Request):
+    """Toggle watch status for a climate paper."""
+    from llm.climate_ai_monitor import _load_watch_list, _save_watch_list
+    from fastapi.responses import JSONResponse
+
+    body = await request.json()
+    paper_id = body.get("paper_id", "")
+    watch = _load_watch_list()
+    watched = set(watch.get("watched_ids", []))
+    if paper_id in watched:
+        watched.discard(paper_id)
+    else:
+        watched.add(paper_id)
+    watch["watched_ids"] = list(watched)
+    _save_watch_list(watch)
+    return JSONResponse({"success": True})
+
+
+
+
+@router.get("/voice-capsule")
+async def voice_capsule(request: Request):
+    """Voice-to-Capsule — upload audio, transcribe, extract gap, save to Gene Pool."""
+    from llm.voice_to_capsule import render_voice_upload_html
+
+    html = render_voice_upload_html()
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "voice-capsule",
+            "title": "Voice-to-Capsule",
+            "content": html,
+        },
+    )
+
+
+
+
+@router.post("/voice-capsule/transcribe")
+async def voice_transcribe(request: Request):
+    """Receive audio file, transcribe with Whisper, extract gap with LLM."""
+    from llm.voice_to_capsule import extract_gap_from_text, transcribe_audio
+    from fastapi.responses import JSONResponse
+
+    try:
+        form = await request.form()
+        audio_file = form.get("audio")
+        if not audio_file:
+            return JSONResponse({"error": "No audio file"}, status_code=400)
+        audio_bytes = await audio_file.read()
+        text = transcribe_audio(audio_bytes)
+        if text.startswith("[Transcription error"):
+            return JSONResponse({"error": text})
+        gap = extract_gap_from_text(text)
+        return JSONResponse(gap)
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+
+
+@router.post("/voice-capsule/save")
+async def voice_save(request: Request):
+    """Save extracted voice gap to Gene Pool."""
+    from llm.voice_to_capsule import save_voice_capsule
+    from fastapi.responses import JSONResponse
+
+    try:
+        body = await request.json()
+        cid = save_voice_capsule(body)
+        return JSONResponse({"success": True, "capsule_id": cid})
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
+
+
+
+
+@router.get("/policy-impact")
+async def policy_impact(request: Request):
+    """Policy Impact Tracer — map regulations to Gene Pool priority weights."""
+    from llm.policy_impact_tracer import render_policy_tracer_html
+
+    html = render_policy_tracer_html()
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "policy-impact",
+            "title": "Policy Impact Tracer",
+            "content": html,
+        },
+    )
+
+
+
+
+@router.get("/labor-displacement")
+async def labor_displacement(request: Request):
+    """Labor Displacement Tracker — AI vs. human labor gaps."""
+    from llm.labor_displacement_tracker import render_labor_tracker_html
+
+    html = render_labor_tracker_html()
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "labor-displacement",
+            "title": "Labor Displacement Tracker",
+            "content": html,
+        },
+    )
+
+
+
+
+@router.get("/researchers")
+async def multi_researcher(request: Request):
+    """Multi-Researcher Support — shared Gene Pool with source_user tags."""
+    from llm.multi_researcher import render_multi_researcher_html
+
+    html = render_multi_researcher_html()
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "multi-researcher",
+            "title": "Multi-Researcher",
+            "content": html,
+        },
+    )
+
+
+
+
+@router.post("/researchers/add")
+async def add_researcher_route(request: Request):
+    from llm.multi_researcher import add_researcher
+    from fastapi.responses import JSONResponse
+
+    body = await request.json()
+    uid = body.get("user_id", "")
+    name = body.get("name", "")
+    ok = add_researcher(uid, name)
+    return JSONResponse({"success": ok, "error": None if ok else "already exists"})
+
+
+
+
+@router.get("/researchers/capsules/{user_id}")
+async def researcher_capsules(user_id: str, request: Request):
+    from llm.multi_researcher import get_capsules_for_user
+    from fastapi.responses import JSONResponse
+
+    capsules = get_capsules_for_user(user_id)
+    return JSONResponse({"count": len(capsules), "capsules": capsules[:10]})
+
+
+
+
+@router.get("/insights/queue")
+async def review_queue(request: Request):
+    """Capsule Review Queue — new capsules pending first feedback."""
+    from llm.review_queue import get_review_queue, render_review_queue_html
+
+    queue = get_review_queue()
+    html = render_review_queue_html(queue)
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "review-queue",
+            "title": "Capsule Review Queue",
+            "content": html,
+        },
+    )
+
+
+
+
+@router.post("/insights/queue/verdict")
+async def submit_verdict(request: Request):
+    """Record a user's verdict on a queued capsule."""
+    from llm.insight.tracker import record_gap_accept
+    from llm.review_queue import _load_capsules
+
+    body = await request.json()
+    capsule_id = body.get("capsule_id", "")
+    verdict = body.get("verdict", "")
+
+    score_map = {"match": 1.0, "partial": 0.5, "not_relevant": 0.0}
+    score = score_map.get(verdict, 0.5)
+
+    capsules = _load_capsules()
+    for cap in capsules:
+        if cap.get("capsule_id", "") == capsule_id:
+            record_gap_accept(capsule_id, score=score)
+            break
+
+    return {"success": True}
+
