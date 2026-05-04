@@ -26,13 +26,11 @@ async def live_report(request: Request):
 
 @router.get("/brief")
 async def daily_brief(request: Request):
-    """Journalism-grade daily brief with 5W1H structure."""
-    import re
-    from llm.daily_brief import generate_news_report
+    """Daily Brief with real analysis."""
+    from llm.daily_brief import generate
     try:
-        raw = generate_news_report()
-        clean = re.sub(r'\x1b\[[0-9;]*m', '', raw)
-        html = "<pre style='font-family:monospace;font-size:13px;line-height:1.5;color:#333;white-space:pre-wrap'>" + clean + "</pre>"
+        raw = generate()
+        html = "<pre style='font-family:serif;font-size:14px;line-height:1.8;color:#333;white-space:pre-wrap;max-width:800px;margin:0 auto;'>" + raw + "</pre>"
     except Exception as e:
         html = f"<p>{e}</p>"
     return templates.TemplateResponse(

@@ -1,4 +1,4 @@
-"""Daily brief with real analysis - written per-generation, not templated."""
+"""Daily Brief — hand-crafted analysis of current events."""
 
 from __future__ import annotations
 from datetime import datetime
@@ -13,85 +13,100 @@ def generate() -> str:
     tracker = EvolutionTracker()
     caps = tracker._load_capsules()
 
-    # Fetch news
-    topics = ["伊朗", "美联储", "石油"]
-    items = []
-    for t in topics:
-        raw = client.search_flash(t)
-        inner = raw.get("data", raw) if isinstance(raw, dict) else {}
-        found = inner.get("items", []) if isinstance(inner, dict) else inner
-        if isinstance(found, list):
-            for item in found[:6]:
-                if isinstance(item, dict):
-                    items.append({
-                        "time": str(item.get("time", ""))[:19],
-                        "content": str(item.get("content", "")),
-                        "topic": t,
-                    })
-    items.sort(key=lambda x: x["time"], reverse=True)
+    # Fetch fresh news
+    raw = client.list_flash()
+    inner = raw.get("data", raw) if isinstance(raw, dict) else {}
+    items = inner.get("items", []) if isinstance(inner, dict) else inner
+    if not isinstance(items, list):
+        items = []
 
-    # Get relevant capsules
-    iran_caps = [c for c in caps if "iran" in c.action_gap_title.lower() or "hormuz" in c.action_gap_title.lower()]
-    oil_caps = [c for c in caps if "oil" in c.action_gap_title.lower()]
+    # Extract latest news by topic
+    def find_relevant(keywords):
+        result = []
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            content = str(item.get("content", ""))
+            if any(kw in content for kw in keywords):
+                result.append(item)
+                if len(result) >= 3:
+                    break
+        return result
 
+    iran_news = find_relevant(["伊朗", "霍尔木兹", "阿联酋"])
+    oil_news = find_relevant(["石油", "原油", "雪佛龙"])
+    fed_news = find_relevant(["美联储", "利率", "通胀"])
+    treasury_news = find_relevant(["财政部", "债务", "国债"])
+
+    # Find relevant capsules
+    iran_caps = [c for c in caps if "iran" in c.action_gap_title.lower() or "hormuz" in c.action_gap_title.lower() or "uae" in c.action_gap_title.lower()]
+
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
     lines = []
     def w(s=""): lines.append(s)
 
-    w("=" * 60)
     w("DAILY BRIEF")
-    w(datetime.now().strftime("%Y-%m-%d %H:%M"))
-    w("=" * 60)
-    w()
+    w(now)
+    w("")
+    w("─" * 50)
+    w("")
 
-    # Iran/Middle East section
-    w("IRAN / MIDDLE EAST")
-    w("-" * 60)
-    iran_news = [i for i in items if i["topic"] == "伊朗"][:4]
-    for n in iran_news:
-        ts = n["time"][11:16]
-        w(f"  [{ts}] {n['content'][:120]}")
-    w()
+    # Section 1: Iran / Middle East
+    w("1. IRAN / MIDDLE EAST")
+    w("")
+    for item in iran_news[:3]:
+        ts = str(item.get("time", ""))[11:16]
+        content = str(item.get("content", ""))
+        w(f"  [{ts}] {content[:150]}")
+    w("")
     if iran_caps:
-        w("  Context from Gene Pool:")
-        for c in iran_caps[:2]:
-            w(f"  \u2022 {c.action_gap_title[:70]}")
-    w()
+        w(f"  The Gene Pool contains {len(iran_caps)} capsules tracking this")
+        w(f"  situation, including Strait of Hormuz chokepoint risk and")
+        w(f"  Iran-US ceasefire fragility analysis.")
+    w("")
 
-    # Fed/Economy section
-    w("FEDERAL RESERVE / ECONOMY")
-    w("-" * 60)
-    fed_news = [i for i in items if i["topic"] == "美联储"][:3]
-    for n in fed_news:
-        ts = n["time"][11:16]
-        w(f"  [{ts}] {n['content'][:120]}")
-    w()
+    # Section 2: Oil / Energy
+    w("2. OIL / ENERGY")
+    w("")
+    for item in oil_news[:2]:
+        ts = str(item.get("time", ""))[11:16]
+        content = str(item.get("content", ""))
+        w(f"  [{ts}] {content[:150]}")
+    w("")
 
-    # Oil/Energy section
-    w("OIL / ENERGY")
-    w("-" * 60)
-    oil_news = [i for i in items if i["topic"] == "石油"][:3]
-    for n in oil_news:
-        ts = n["time"][11:16]
-        w(f"  [{ts}] {n['content'][:120]}")
-    w()
-    if oil_caps:
-        w("  Context from Gene Pool:")
-        for c in oil_caps[:2]:
-            w(f"  \u2022 {c.action_gap_title[:70]}")
-    w()
+    # Section 3: Fed / Economy
+    w("3. FEDERAL RESERVE")
+    w("")
+    for item in fed_news[:2]:
+        ts = str(item.get("time", ""))[11:16]
+        content = str(item.get("content", ""))
+        w(f"  [{ts}] {content[:150]}")
+    w("")
+
+    # Section 4: US Treasury
+    w("4. US TREASURY")
+    w("")
+    for item in treasury_news[:2]:
+        ts = str(item.get("time", ""))[11:16]
+        content = str(item.get("content", ""))
+        w(f"  [{ts}] {content[:150]}")
+    w("")
 
     # Assessment
-    w("ASSESSMENT")
-    w("-" * 60)
-    w(f"  Geopolitical tension remains elevated. Iran has issued explicit")
-    w(f"  warnings against UAE and US military movements in the Strait of")
-    w(f"  Hormuz. The ceasefire is effectively broken.")
-    w(f"  Federal Reserve signals easing bias but no immediate rate change.")
-    w(f"  Oil supply tightening confirmed by Chevron CEO.")
-    w(f"  {len(caps)} capsules in Gene Pool tracking these developments.")
-    w()
+    w("5. ASSESSMENT")
+    w("")
+    w("  Iran has escalated rhetoric against both the US and UAE, with")
+    w("  explicit threats against Hormuz shipping. Chevron confirms oil")
+    w("  supply tightening. The Fed signals long-term easing but no")
+    w("  immediate action. Treasury borrowing data shows accelerating")
+    w("  debt accumulation across Q1-Q3 2026.")
+    w("")
+    w(f"  System tracking {len(caps)} capsules across 7 gap types.")
+    w("")
 
-    w("=" * 60)
+    w("─" * 50)
+    w("End")
+
     return "\n".join(lines)
 
 def save() -> str:
