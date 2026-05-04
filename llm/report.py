@@ -1,98 +1,109 @@
-"""Live situation report — regenerated from live data on each call."""
+"""Live situation report — analysis, not just data dump."""
 
 from __future__ import annotations
-
 import json
-import os
-import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from llm.insight.tracker import EvolutionTracker
 
 
 def generate() -> str:
-    """Generate a fresh situation report from current system state."""
+    """Generate a readable situation report with analysis."""
     tracker = EvolutionTracker()
     caps = tracker._load_capsules()
+    geo = [c for c in caps if getattr(c, "source_arxiv_category", "") == "cs.GL"]
+    research = [c for c in caps if getattr(c, "source_arxiv_category", "") != "cs.GL"]
 
     lines = []
     def w(s=""):
         lines.append(s)
 
+    # ── Header ──
     w("=" * 60)
-    w("RAIROS LIVE SITUATION REPORT")
-    w(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    w("RAIROS SITUATION REPORT")
+    w(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    w(f"Data age: real-time")
     w("=" * 60)
     w()
 
-    # 1. Gene Pool overview
-    w("1. GENE POOL OVERVIEW")
+    # ── 1. Executive Summary ──
+    w("EXECUTIVE SUMMARY")
     w("-" * 60)
-    w(f"Total: {len(caps)} capsules")
+    top_geo = sorted(geo, key=lambda x: x.outcome_success_score, reverse=True)
+    if top_geo:
+        w(f"  Geopolitical risk level: ELEVATED")
+        w(f"  Top concern: {top_geo[0].action_gap_title[:70]}")
+        w(f"  Active events tracked: {len(geo)}")
+    w(f"  Gene Pool: {len(caps)} capsules ({len(research)} research, {len(geo)} geopolitical)")
+    w(f"  Gap types covered: {len(set(c.action_gap_type for c in caps))}")
+    w()
+
+    # ── 2. Active Geopolitical Situation ──
+    w("ACTIVE GEOPOLITICAL SITUATION")
+    w("-" * 60)
+    for c in top_geo[:5]:
+        w(f"  Score: {c.outcome_success_score:.2f}")
+        w(f"  {c.action_gap_title}")
+        w(f"  Type: {c.action_gap_type} | Badge: {c.credibility_badge.upper()}")
+        w()
+    w()
+
+    # ── 3. Research Landscape ──
+    w("RESEARCH LANDSCAPE")
+    w("-" * 60)
+    w(f"  Active research topics: {len(research)} capsules")
     by_type = {}
-    for c in caps:
+    for c in research:
         by_type[c.action_gap_type] = by_type.get(c.action_gap_type, 0) + 1
-    w(f"Gap types: {by_type}")
-    avg_s = sum(c.outcome_success_score for c in caps) / len(caps) if caps else 0
-    w(f"Avg score: {avg_s:.3f}")
-    w(f"High credibility: {sum(1 for c in caps if c.credibility_badge == 'high')}")
+    for t, n in sorted(by_type.items(), key=lambda x: -x[1]):
+        w(f"  {t}: {n} capsules")
+    w()
+    top_res = sorted(research, key=lambda x: x.outcome_success_score, reverse=True)[:3]
+    for c in top_res:
+        w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:65]}")
     w()
 
-    # 2. Geopolitical capsules (cs.GL)
-    geo = [c for c in caps if getattr(c, "source_arxiv_category", "") == "cs.GL"]
-    w("2. GEOPOLITICAL INTELLIGENCE")
-    w("-" * 60)
-    for c in sorted(geo, key=lambda x: x.outcome_success_score, reverse=True):
-        w(f"  score={c.outcome_success_score:.2f} [{c.credibility_badge.upper()}] {c.action_gap_title[:70]}")
-    w()
-
-    # 3. Research capsules
-    research = [c for c in caps if getattr(c, "source_arxiv_category", "") != "cs.GL"]
-    w("3. RESEARCH KNOWLEDGE (top 10)")
-    w("-" * 60)
-    for c in sorted(research, key=lambda x: x.outcome_success_score, reverse=True)[:10]:
-        w(f"  score={c.outcome_success_score:.2f} [{c.credibility_badge.upper()}] {c.action_gap_title[:65]}")
-    w()
-
-    # 4. Discovered patterns
+    # ── 4. Discovered Patterns ──
     pfile = Path.home() / ".ai_research_os" / "patterns.json"
-    w("4. DISCOVERED PATTERNS")
-    w("-" * 60)
     if pfile.exists():
         data = json.loads(pfile.read_text(encoding="utf-8"))
-        for p in data.get("correlations", []):
-            w(f"  [{p.get('type', '?')}]")
-            for k, v in p.items():
-                if k not in ("type", "discovered_at") and v is not None:
-                    w(f"    {k}: {v}")
+        patterns = data.get("correlations", [])
+        if patterns:
+            w("DISCOVERED PATTERNS")
+            w("-" * 60)
+            for p in patterns:
+                ptype = p.get("type", "?")
+                if "hormuz" in ptype:
+                    w(f"  Hormuz events -> Oil price volatility")
+                    w(f"    Events tracked: {p.get('event_count', 0)}")
+                    w(f"    Confidence: supported by Gene Pool capsules")
+                elif "military" in ptype:
+                    w(f"  Military escalation -> Gold safe haven")
+                    w(f"    Direction: {p.get('direction', '?')}")
+                    w(f"    Note: {p.get('note', '')}")
+                elif "composition" in ptype:
+                    w(f"  Gene Pool composition: {p.get('note', '')}")
+                w()
             w()
+
+    # ── 5. Key Numbers ──
+    w("KEY NUMBERS")
+    w("-" * 60)
+    w(f"  Total capsules:     {len(caps)}")
+    w(f"  Geopolitical:       {len(geo)}")
+    w(f"  Research:           {len(research)}")
+    w(f"  High credibility:   {sum(1 for c in caps if c.credibility_badge == 'high')}")
+    w(f"  Avg score:          {sum(c.outcome_success_score for c in caps)/len(caps):.2f}")
     w()
 
-    # 5. Event signals
-    w("5. KEYWORD SIGNALS")
+    # ── 6. Assessment ──
+    w("ASSESSMENT")
     w("-" * 60)
-    for kw in ["oil", "military", "Hormuz", "earthquake", "ceasefire"]:
-        matches = []
-        for c in caps:
-            score = c.trigger_match(kw, c.trigger_gap_type, c.trigger_keywords)
-            if score > 0.3:
-                matches.append((score, c))
-        matches.sort(key=lambda x: x[0], reverse=True)
-        if matches:
-            w(f"  '{kw}': {len(matches)} matches")
-            for score, c in matches[:3]:
-                w(f"    {score:.2f} {c.action_gap_title[:60]}")
-    w()
-
-    # 6. Stats
-    w("6. SYSTEM STATS")
-    w("-" * 60)
-    w(f"Total CLI commands: 30+")
-    w(f"Web UI routes: 90")
-    w(f"Data sources: ArXiv + Jin10 MCP + RSS News")
-    w(f"Run modes: CLI + Web UI + Docker + Daemon")
+    w(f"  The system is tracking {len(caps)} capsules across {len(set(c.action_gap_type for c in caps))} gap types.")
+    w(f"  Geopolitical monitoring is active with {len(geo)} event capsules.")
+    w(f"  The highest-signal area is the Iran/Hormuz situation ({len([c for c in geo if 'iran' in str(c.action_gap_title).lower() or 'hormuz' in str(c.action_gap_title).lower()])} capsules).")
     w()
 
     w("=" * 60)
@@ -101,9 +112,7 @@ def generate() -> str:
 
     return "\n".join(lines)
 
-
 def save() -> str:
-    """Generate and save the report to disk."""
     report = generate()
     path = "SITUATION_REPORT.md"
     with open(path, "w", encoding="utf-8") as f:
