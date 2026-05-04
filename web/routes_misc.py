@@ -80,6 +80,9 @@ async def get_notes(request: Request, paper_id: str = ""):
 
 
 
+def get_paper2code_results():
+    return []
+
 @router.get("/paper2code")
 async def paper2code_dashboard(request: Request):
     """Paper2Code pipeline dashboard — run and view results."""

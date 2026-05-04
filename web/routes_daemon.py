@@ -24,20 +24,6 @@ async def live_report(request: Request):
         {"page": "report", "title": "Report", "content": html},
     )
 
-@router.get("/brief")
-async def daily_brief(request: Request):
-    """Daily Brief with real analysis."""
-    from llm.daily_brief import generate
-    try:
-        raw = generate()
-        html = "<pre style='font-family:serif;font-size:14px;line-height:1.8;color:#333;white-space:pre-wrap;max-width:800px;margin:0 auto;'>" + raw + "</pre>"
-    except Exception as e:
-        html = f"<p>{e}</p>"
-    return templates.TemplateResponse(
-        request, "generic.html",
-        {"page": "brief", "title": "Daily Brief", "content": html},
-    )
-
 @router.get("/intel")
 async def intel_dashboard(request: Request):
     """Unified intelligence dashboard."""

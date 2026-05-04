@@ -1,92 +1,93 @@
 ============================================================
-RAIROS LIVE SITUATION REPORT
-Generated: 2024-06-15 00:00:00
+RAIROS SITUATION REPORT
+Generated: 2026-05-05 03:06
+Data age: real-time
 ============================================================
 
-1. GENE POOL OVERVIEW
+EXECUTIVE SUMMARY
 ------------------------------------------------------------
-Total: 26 capsules
-Gap types: {'method_limitation': 5, 'evaluation_gap': 6, 'contradiction': 1, 'scalability_issue': 4, 'generalization_gap': 2, 'unexplored_application': 6, 'theoretical_gap': 2}
-Avg score: 0.712
-High credibility: 1
+  Geopolitical risk level: ELEVATED
+  Top concern: Strait of Hormuz chokepoint risk: ~20% of global oil/LNG transit, sing
+  Active events tracked: 21
+  Gene Pool: 37 capsules (16 research, 21 geopolitical)
+  Gap types covered: 7
 
-2. GEOPOLITICAL INTELLIGENCE
+LIVE NEWS
 ------------------------------------------------------------
-  score=0.90 [MEDIUM] Strait of Hormuz chokepoint risk: ~20% of global oil/LNG transit, sing
-  score=0.88 [MEDIUM] Iran-US military escalation directly impacts oil prices through supply
-  score=0.82 [MEDIUM] UAE oil infrastructure vulnerability to asymmetric threats (drones, mi
-  score=0.80 [MEDIUM] Iran-US ceasefire fragility: one-month gap between ceasefire and first
-  score=0.78 [MEDIUM] Military escalation at Hormuz threatens not just oil but global trade:
-  score=0.75 [MEDIUM] 阿联酉的富查伊拉称遭到来自伊朗的空袭。
-  score=0.75 [MEDIUM] 墨西哥国家地震局4日发布初步报告说，该国南部瓦哈卡州当天发生6级地震，首都墨西哥城�
-  score=0.75 [MEDIUM] 【习近平对湖南长沙浏阳市一烟花厂爆炸事故作出重要指示】金十数据5月5日讯，习近平对�
-  score=0.72 [MEDIUM] Energy supply chain security models need to incorporate real-time geop
-  score=0.70 [MEDIUM] Liuyang fireworks factory explosion: workplace safety gap with high-le
+  [02:54] 据伊朗Mizan新闻社：伊朗一名高级安全消息人士表示，伊朗的信息很明确：如果美国人试图在霍尔木兹海峡推进，将成为打击目标。
+  [02:53] 【中国驻阿联酋使领馆提醒在阿中国公民加强安全防范】金十数据5月5日讯，当地时间5月4日，中国驻阿联酋使领馆发文，提醒在阿中国公民加强安全防范。5月4日，阿联酋再
+  [02:54] 据伊朗Mizan新闻社：伊朗一名高级安全消息人士表示，伊朗的信息很明确：如果美国人试图在霍尔木兹海峡推进，将成为打击目标。
+  [02:26] 【伊朗媒体：伊方驳斥美军击沉多艘小型船只言论】金十数据5月5日讯，伊朗塔斯尼姆通讯社4日发表报道，驳斥美军关于击沉多艘伊朗小型船只的说法。报道称，一名伊朗武装力
+  [01:54] 雪佛龙(CVX.N)CEO：伊朗冲突导致石油供应形势趋紧。
+  [01:53] 雪佛龙(CVX.N)CEO：石油库存缓冲正在被消耗。
+  [02:56] 美联储威廉姆斯：美联储倾向宽松主要反映可能的长期政策趋势。长期展望仍然表明最终将会降息。
+  [02:55] 美联储威廉姆斯：对利率决策委员会当前的政策措辞“非常满意”。
 
-3. RESEARCH KNOWLEDGE (top 10)
+
+ACTIVE GEOPOLITICAL SITUATION
 ------------------------------------------------------------
-  score=0.88 [MEDIUM] No systematic comparison of LAPO vs PPO with matched compute budg
-  score=0.85 [HIGH] LAPO convergence vs PPO on complex long-horizon tasks
-  score=0.82 [MEDIUM] Latent reasoning chain length has diminishing returns — adaptive 
-  score=0.78 [MEDIUM] LIBERO covers 110 single-arm tasks but excludes deformable object
-  score=0.75 [MEDIUM] Oil price volatility from geopolitical shocks dominates other fac
-  score=0.73 [MEDIUM] No controlled ablation of warm-up diversity vs quality exists for
-  score=0.72 [MEDIUM] LIBERO benchmark insufficiently covers real-world deployment scen
-  score=0.70 [MEDIUM] Optimal reasoning frequency should be learned per-task, not fixed
-  score=0.65 [MEDIUM] No latent-space probing methods exist for VLA models — visual vs 
-  score=0.64 [MEDIUM] Diffusion vs token-based action representations for high-frequenc
+  Score: 0.90
+  Strait of Hormuz chokepoint risk: ~20% of global oil/LNG transit, single point of failure for energy markets
+  Type: evaluation_gap | Badge: MEDIUM
 
-4. DISCOVERED PATTERNS
+  Score: 0.88
+  Iran-US military escalation directly impacts oil prices through supply disruption risk at Hormuz
+  Type: scalability_issue | Badge: MEDIUM
+
+  Score: 0.82
+  UAE oil infrastructure vulnerability to asymmetric threats (drones, missiles) not covered in traditional risk models
+  Type: generalization_gap | Badge: MEDIUM
+
+  Score: 0.80
+  Iran-US ceasefire fragility: one-month gap between ceasefire and first missile alert demonstrates instability
+  Type: evaluation_gap | Badge: MEDIUM
+
+  Score: 0.78
+  Military escalation at Hormuz threatens not just oil but global trade: ~30% of seaborne crude
+  Type: scalability_issue | Badge: MEDIUM
+
+
+RESEARCH LANDSCAPE
 ------------------------------------------------------------
-  [hormuz_oil_correlation]
-    event_count: 3
-    avg_event_score: 0.8533333333333334
-    current_oil_change_pct: 4.591
-    signal: oil_volatility
-    last_event: 2026-05-04T23:18:25.758953
+  Active research topics: 16 capsules
+  method_limitation: 5 capsules
+  evaluation_gap: 3 capsules
+  scalability_issue: 2 capsules
+  unexplored_application: 2 capsules
+  theoretical_gap: 2 capsules
+  contradiction: 1 capsules
+  generalization_gap: 1 capsules
 
-  [military_gold_safe_haven]
-    event_count: 3
-    current_gold_change_pct: -2.24
-    direction: down
-    note: Gold moving down 2.2% during military escalation events
+  [MEDIUM] No systematic comparison of LAPO vs PPO with matched compute budg
+  [HIGH] LAPO convergence vs PPO on complex long-horizon tasks
+  [MEDIUM] Latent reasoning chain length has diminishing returns — adaptive 
 
-  [gene_pool_composition]
-    total_capsules: 26
-    event_vs_research_ratio: 0.423
-    avg_score: 0.712
-    note: Gene Pool: 26 capsules, 11 events, 15 research, avg 0.71
-
-
-5. KEYWORD SIGNALS
+DISCOVERED PATTERNS
 ------------------------------------------------------------
-  'oil': 26 matches
-    1.00 Iran-US military escalation directly impacts oil prices thro
-    1.00 Oil price volatility from geopolitical shocks dominates othe
-    0.60 LAPO convergence vs PPO on complex long-horizon tasks
-  'military': 26 matches
-    1.00 Iran-US military escalation directly impacts oil prices thro
-    1.00 Military escalation at Hormuz threatens not just oil but glo
-    0.60 LAPO convergence vs PPO on complex long-horizon tasks
-  'Hormuz': 26 matches
-    1.00 Strait of Hormuz chokepoint risk: ~20% of global oil/LNG tra
-    1.00 Military escalation at Hormuz threatens not just oil but glo
-    0.60 LAPO convergence vs PPO on complex long-horizon tasks
-  'earthquake': 26 matches
-    0.60 LAPO convergence vs PPO on complex long-horizon tasks
-    0.60 LIBERO benchmark insufficiently covers real-world deployment
-    0.60 Diffusion vs token-based action representations for high-fre
-  'ceasefire': 26 matches
-    0.98 Iran-US ceasefire fragility: one-month gap between ceasefire
-    0.60 LAPO convergence vs PPO on complex long-horizon tasks
-    0.60 LIBERO benchmark insufficiently covers real-world deployment
+  Hormuz events -> Oil price volatility
+    Events tracked: 3
+    Confidence: supported by Gene Pool capsules
 
-6. SYSTEM STATS
+  Military escalation -> Gold safe haven
+    Direction: down
+    Note: Gold moving down 2.3% during military escalation events
+
+  Gene Pool composition: Gene Pool: 33 capsules, 18 events, 15 research, avg 0.72
+
+
+KEY NUMBERS
 ------------------------------------------------------------
-Total CLI commands: 30+
-Web UI routes: 90
-Data sources: ArXiv + Jin10 MCP + RSS News
-Run modes: CLI + Web UI + Docker + Daemon
+  Total capsules:     37
+  Geopolitical:       21
+  Research:           16
+  High credibility:   1
+  Avg score:          0.72
+
+ASSESSMENT
+------------------------------------------------------------
+  The system is tracking 37 capsules across 7 gap types.
+  Geopolitical monitoring is active with 21 event capsules.
+  The highest-signal area is the Iran/Hormuz situation (4 capsules).
 
 ============================================================
 REPORT AUTO-GENERATED BY RAIROS
