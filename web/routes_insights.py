@@ -184,7 +184,7 @@ async def accept_suggestion(request: Request):
 @router.get("/impact")
 async def impact(request: Request):
     """Impact Ranking — leaderboard."""
-    db = _get_db()
+    db = get_db()
     rows, _ = db.list_papers(
         limit=100
     )  # no citation_count column — sort in Python after fetching real counts

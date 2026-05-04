@@ -345,7 +345,11 @@ async def import_pool(request: Request):
 @router.get("/gene-pool/cross-domain")
 async def cross_domain_bridge(request: Request):
     """Cross-Domain Gap Bridge — find connections between distant categories."""
+    try:
     from llm.cross_domain_bridge import get_bridges, render_html
+except ImportError:
+    def get_bridges(): return []
+    def render_html(b): return "<p>Module not available</p>"
 
     bridges = get_bridges()
     html = render_html(bridges)

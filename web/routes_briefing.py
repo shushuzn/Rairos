@@ -1,7 +1,8 @@
 """Briefing generation and history web routes."""
 from __future__ import annotations
 
-from fastapi import APIRouter, Request
+from pathlib import Path
+from fastapi import APIRouter, Form, Request
 from web.shared import templates, get_db
 
 router = APIRouter()
@@ -49,7 +50,7 @@ async def briefing_generate(
         result = gen.generate(
             arxiv_id=arxiv_id.strip(),
             use_llm=use_llm,
-            output_dir=PROJECT_ROOT / "data" / "briefings",
+            output_dir=Path(__file__).parent.parent / "data" / "briefings",
         )
 
         if result.success:
@@ -157,7 +158,7 @@ async def shared_briefing(request: Request, short_id: str):
 @router.get("/briefing/history")
 async def briefing_history(request: Request):
     """List all previously generated briefings."""
-    briefings_dir = PROJECT_ROOT / "data" / "briefings"
+    briefings_dir = Path(__file__).parent.parent / "data" / "briefings"
     briefings = []
 
     if briefings_dir.exists():

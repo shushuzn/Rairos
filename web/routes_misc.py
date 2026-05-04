@@ -83,7 +83,7 @@ async def get_notes(request: Request, paper_id: str = ""):
 @router.get("/paper2code")
 async def paper2code_dashboard(request: Request):
     """Paper2Code pipeline dashboard — run and view results."""
-    results = _get_paper2code_results()
+    results = get_paper2code_results()
     html = _render_paper2code_html(results)
     return templates.TemplateResponse(
         request,
