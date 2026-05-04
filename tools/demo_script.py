@@ -1,7 +1,7 @@
 """Rairos demo automation script — automates browser for screen recording.
 
 Usage:
-    # Start the web UI first: python -m uvicorn web.app_new:app --port 8765
+    # Start the web UI first: python -m uvicorn web.app:app --port 8765
     # Then run this script:
     python tools/demo_script.py --url http://localhost:8765 --output demo_steps.json
 
