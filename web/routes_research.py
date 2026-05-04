@@ -4,7 +4,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
 
-from web.shared import templates
+from web.shared import get_db,  templates
 
 router = APIRouter()
 
@@ -140,7 +140,7 @@ async def research_loop(request: Request):
         )
 
     try:
-        db = _get_db()
+        db = get_db()
         subs_raw = db.list_arxiv_subscriptions()
     except Exception:
         subs_raw = []
