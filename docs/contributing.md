@@ -6,7 +6,7 @@ Thank you for your interest in contributing! This project is a self-evolving res
 
 ```bash
 # Clone the repository
-git clone https://github.com/shushuzn/ai_research_os.git
+git clone https://github.com/shushuzn/Rairos.git
 cd ai_research_os
 
 # Install dependencies
@@ -20,7 +20,7 @@ python -B -m pytest tests/ -q
 
 ### 1. Pick an Issue
 
-- Look for issues labeled [good first issue](https://github.com/shushuzn/ai_research_os/labels/good%20first%20issue) or [help wanted](https://github.com/shushuzn/ai_research_os/labels/help%20wanted)
+- Look for issues labeled [good first issue](https://github.com/shushuzn/Rairos/labels/good%20first%20issue) or [help wanted](https://github.com/shushuzn/Rairos/labels/help%20wanted)
 - Comment on the issue to let others know you're working on it
 - Fork the repo and create a feature branch
 
@@ -120,7 +120,7 @@ Closes #123
 ## Questions?
 
 - Open an issue for bugs or feature requests
-- Check the [documentation](https://shushuzn.github.io/ai_research_os/)
+- Check the [documentation](https://shushuzn.github.io/Rairos/)
 - Review existing PRs for patterns
 
 ## License

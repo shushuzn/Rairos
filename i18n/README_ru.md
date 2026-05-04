@@ -8,16 +8,16 @@
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![PyPI Version](https://img.shields.io/pypi/v/ai-research-os)](https://pypi.org/project/ai-research-os/)
-[![Coverage](https://img.shields.io/codecov/c/github/shushuzn/ai_research_os/main?logo=codecov)](https://app.codecov.io/gh/shushuzn/ai_research_os)
-[![Tests](https://github.com/shushuzn/ai_research_os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/ai_research_os/actions)
+[![Coverage](https://img.shields.io/codecov/c/github/shushuzn/Rairos/main?logo=codecov)](https://app.codecov.io/gh/shushuzn/Rairos)
+[![Tests](https://github.com/shushuzn/Rairos/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
 [![License](https://img.shields.io/badge/License-GPL--3.0--or--later-orange)](#license)
 
 <div align="center">
-<a href="https://www.star-history.com/#shushuzn/ai_research_os&Date">
+<a href="https://www.star-history.com/#shushuzn/Rairos&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=shushuzn/ai_research_os&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=shushuzn/ai_research_os&type=Date" />
-   <img alt="AI Research OS Star History" src="https://api.star-history.com/svg?repos=shushuzn/ai_research_os&type=Date" style="width: 80%; height: auto;" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=shushuzn/Rairos&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=shushuzn/Rairos&type=Date" />
+   <img alt="AI Research OS Star History" src="https://api.star-history.com/svg?repos=shushuzn/Rairos&type=Date" style="width: 80%; height: auto;" />
  </picture>
 </a>
 </div>
@@ -114,7 +114,7 @@ pip install ai-research-os
 Или установить из исходников:
 
 ```bash
-git clone https://github.com/shushuzn/ai_research_os.git
+git clone https://github.com/shushuzn/Rairos.git
 cd ai_research_os
 pip install -e .
 ```

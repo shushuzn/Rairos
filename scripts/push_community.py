@@ -7,7 +7,7 @@ import json
 import urllib.request
 import urllib.error
 
-REPO = "shushuzn/ai_research_os"
+REPO = "shushuzn/Rairos"
 API = f"https://api.github.com/repos/{REPO}"
 
 # Read token from .git/config
