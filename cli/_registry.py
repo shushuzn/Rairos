@@ -130,6 +130,7 @@ _SUBCOMMAND_TABLE = [
     ("ingest", "cli.cmd.ingest", "_build_ingest_parser"),
     ("daemon", "cli.cmd.daemon", "_build_daemon_parser"),
     ("demo", "cli.cmd.demo", "_build_demo_parser"),
+    ("scout", "cli.cmd.scout", "_build_scout_parser"),
 ]
 
 
