@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Reports — Rairos{% endblock %}
+
+{% block content %}
+<h1 class="page-title">📄 Research Reports</h1>
+<div class="page-title-underline"></div>
+<div class="page-desc">Theme-based analysis of Gene Pool knowledge.</div>
+
+<div class="reports-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:24px;">
+
+  <a href="/report/vla" style="text-decoration:none;">
+    <div class="card" style="height:100%;cursor:pointer;">
+      <div class="card-title" style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:24px;">🤖</span> VLA / Robotics
+      </div>
+      <div style="font-size:13px;color:var(--ink-light);margin-top:4px;">11 capsules</div>
+      <div style="font-size:12px;color:var(--ink-faint);margin-top:8px;line-height:1.5;">
+        LAPO convergence, LIBERO benchmarks, diffusion policy representations, generalist vs specialist trade-offs.
+      </div>
+    </div>
+  </a>
+
+  <a href="/report/geopolitics" style="text-decoration:none;">
+    <div class="card" style="height:100%;cursor:pointer;">
+      <div class="card-title" style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:24px;">🌍</span> Geopolitics / Energy
+      </div>
+      <div style="font-size:13px;color:var(--ink-light);margin-top:4px;">10 capsules</div>
+      <div style="font-size:12px;color:var(--ink-faint);margin-top:8px;line-height:1.5;">
+        Strait of Hormuz, Iran-US escalation, UAE drone attacks, oil supply security.
+      </div>
+    </div>
+  </a>
+
+  <a href="/report/economy" style="text-decoration:none;">
+    <div class="card" style="height:100%;cursor:pointer;">
+      <div class="card-title" style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:24px;">📊</span> Economy / Markets
+      </div>
+      <div style="font-size:13px;color:var(--ink-light);margin-top:4px;">1 capsule</div>
+      <div style="font-size:12px;color:var(--ink-faint);margin-top:8px;line-height:1.5;">
+        US Treasury borrowing data, Q1-Q3 projections.
+      </div>
+    </div>
+  </a>
+
+  <a href="/report/theory" style="text-decoration:none;">
+    <div class="card" style="height:100%;cursor:pointer;">
+      <div class="card-title" style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:24px;">🧠</span> Theory / Representation
+      </div>
+      <div style="font-size:13px;color:var(--ink-light);margin-top:4px;">5 capsules</div>
+      <div style="font-size:12px;color:var(--ink-faint);margin-top:8px;line-height:1.5;">
+        Latent reasoning chains, attention mechanisms, interpretability, representation learning.
+      </div>
+    </div>
+  </a>
+
+  <a href="/report/safety" style="text-decoration:none;">
+    <div class="card" style="height:100%;cursor:pointer;">
+      <div class="card-title" style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:24px;">⚠️</span> Safety / Incidents
+      </div>
+      <div style="font-size:13px;color:var(--ink-light);margin-top:4px;">3 capsules</div>
+      <div style="font-size:12px;color:var(--ink-faint);margin-top:8px;line-height:1.5;">
+        Liuyang explosion, Mexico earthquake, Fujairah drone attack.
+      </div>
+    </div>
+  </a>
+
+</div>
+{% endblock %}

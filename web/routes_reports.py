@@ -11,12 +11,9 @@ router = APIRouter()
 @router.get("/report")
 async def report_index(request: Request):
     """Reports index — list all themes."""
-    from llm.reports import report_index as _index
-    content = _index()
-    html = "<pre style='font-family:serif;font-size:14px;line-height:1.8;color:#333;white-space:pre-wrap;max-width:800px;margin:0 auto;'>" + content + "</pre>"
     return templates.TemplateResponse(
-        request, "generic.html",
-        {"page": "reports", "title": "Reports", "content": html},
+        request, "reports.html",
+        {"page": "reports", "title": "Reports"},
     )
 
 
