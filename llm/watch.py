@@ -144,7 +144,14 @@ class WatchDaemon:
             except Exception as e:
                 logger.debug(f"Topic '{topic}' check failed: {e}")
 
-        # 3. Update state
+        # 3. Regenerate report after each cycle
+        try:
+            from llm.report import save as _save_report
+            _save_report()
+        except Exception:
+            pass
+
+        # 4. Update state
         if events:
             state = _load_state()
             state["events"] = state.get("events", []) + events

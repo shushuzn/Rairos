@@ -1,32 +1,38 @@
 ============================================================
-RAIROS SITUATION REPORT
-Generated: 2026-05-05 00:04
+RAIROS LIVE SITUATION REPORT
+Generated: 2026-05-05 00:07:42
 ============================================================
 
-1. GENE POOL
+1. GENE POOL OVERVIEW
 ------------------------------------------------------------
 Total: 25 capsules
-Types: {'method_limitation': 5, 'evaluation_gap': 6, 'contradiction': 1, 'scalability_issue': 4, 'generalization_gap': 2, 'unexplored_application': 5, 'theoretical_gap': 2}
+Gap types: {'method_limitation': 5, 'evaluation_gap': 6, 'contradiction': 1, 'scalability_issue': 4, 'generalization_gap': 2, 'unexplored_application': 5, 'theoretical_gap': 2}
 Avg score: 0.713
+High credibility: 1
 
-2. GEOPOLITICAL CAPSULES
+2. GEOPOLITICAL INTELLIGENCE
 ------------------------------------------------------------
-  [MEDIUM] score=0.90 Strait of Hormuz chokepoint risk: ~20% of global oil/LNG transit, sing
-  [MEDIUM] score=0.88 Iran-US military escalation directly impacts oil prices through supply
-  [MEDIUM] score=0.82 UAE oil infrastructure vulnerability to asymmetric threats (drones, mi
-  [MEDIUM] score=0.80 Iran-US ceasefire fragility: one-month gap between ceasefire and first
-  [MEDIUM] score=0.78 Military escalation at Hormuz threatens not just oil but global trade:
-  [MEDIUM] score=0.75 é¿èéçå¯æ¥ä¼æç§°é­å°æ¥èªä¼æçç©ºè¢­ã
-  [MEDIUM] score=0.75 å¢¨è¥¿å¥å½å®¶å°éå±4æ¥åå¸åæ­¥æ¥åè¯´ï¼è¯¥å½åé¨ç¦å
-  [MEDIUM] score=0.72 Energy supply chain security models need to incorporate real-time geop
+  score=0.90 [MEDIUM] Strait of Hormuz chokepoint risk: ~20% of global oil/LNG transit, sing
+  score=0.88 [MEDIUM] Iran-US military escalation directly impacts oil prices through supply
+  score=0.82 [MEDIUM] UAE oil infrastructure vulnerability to asymmetric threats (drones, mi
+  score=0.80 [MEDIUM] Iran-US ceasefire fragility: one-month gap between ceasefire and first
+  score=0.78 [MEDIUM] Military escalation at Hormuz threatens not just oil but global trade:
+  score=0.75 [MEDIUM] é¿èéçå¯æ¥ä¼æç§°é­å°æ¥èªä¼æçç©ºè¢­ã
+  score=0.75 [MEDIUM] å¢¨è¥¿å¥å½å®¶å°éå±4æ¥åå¸åæ­¥æ¥åè¯´ï¼è¯¥å½åé¨ç¦å
+  score=0.72 [MEDIUM] Energy supply chain security models need to incorporate real-time geop
 
-3. RESEARCH CAPSULES
+3. RESEARCH KNOWLEDGE (top 10)
 ------------------------------------------------------------
-  [MEDIUM] score=0.88 No systematic comparison of LAPO vs PPO with matched compute budgets e
-  [HIGH] score=0.85 LAPO convergence vs PPO on complex long-horizon tasks
-  [MEDIUM] score=0.82 Latent reasoning chain length has diminishing returns — adaptive mecha
-  [MEDIUM] score=0.78 LIBERO covers 110 single-arm tasks but excludes deformable objects, du
-  [MEDIUM] score=0.76 LIBERO benchmark lacks held-out object categories — zero-shot generali
+  score=0.88 [MEDIUM] No systematic comparison of LAPO vs PPO with matched compute budg
+  score=0.85 [HIGH] LAPO convergence vs PPO on complex long-horizon tasks
+  score=0.82 [MEDIUM] Latent reasoning chain length has diminishing returns — adaptive 
+  score=0.78 [MEDIUM] LIBERO covers 110 single-arm tasks but excludes deformable object
+  score=0.76 [MEDIUM] LIBERO benchmark lacks held-out object categories — zero-shot gen
+  score=0.75 [MEDIUM] Oil price volatility from geopolitical shocks dominates other fac
+  score=0.73 [MEDIUM] No controlled ablation of warm-up diversity vs quality exists for
+  score=0.72 [MEDIUM] LIBERO benchmark insufficiently covers real-world deployment scen
+  score=0.70 [MEDIUM] Optimal reasoning frequency should be learned per-task, not fixed
+  score=0.65 [MEDIUM] No latent-space probing methods exist for VLA models — visual vs 
 
 4. DISCOVERED PATTERNS
 ------------------------------------------------------------
@@ -50,21 +56,36 @@ Avg score: 0.713
     note: Gene Pool: 25 capsules, 9 events, 16 research, avg 0.71
 
 
-5. EVENT SIGNALS (Gene Pool-based)
+5. KEYWORD SIGNALS
 ------------------------------------------------------------
-  'oil': 25 capsule matches
-    match=1.00 Iran-US military escalation directly impacts oil prices thro
-    match=1.00 Oil price volatility from geopolitical shocks dominates othe
-    match=0.60 LAPO convergence vs PPO on complex long-horizon tasks
-  'military': 25 capsule matches
-    match=1.00 Iran-US military escalation directly impacts oil prices thro
-    match=1.00 Military escalation at Hormuz threatens not just oil but glo
-    match=0.60 LAPO convergence vs PPO on complex long-horizon tasks
-  'Hormuz': 25 capsule matches
-    match=1.00 Strait of Hormuz chokepoint risk: ~20% of global oil/LNG tra
-    match=1.00 Military escalation at Hormuz threatens not just oil but glo
-    match=0.60 LAPO convergence vs PPO on complex long-horizon tasks
+  'oil': 25 matches
+    1.00 Iran-US military escalation directly impacts oil prices thro
+    1.00 Oil price volatility from geopolitical shocks dominates othe
+    0.60 LAPO convergence vs PPO on complex long-horizon tasks
+  'military': 25 matches
+    1.00 Iran-US military escalation directly impacts oil prices thro
+    1.00 Military escalation at Hormuz threatens not just oil but glo
+    0.60 LAPO convergence vs PPO on complex long-horizon tasks
+  'Hormuz': 25 matches
+    1.00 Strait of Hormuz chokepoint risk: ~20% of global oil/LNG tra
+    1.00 Military escalation at Hormuz threatens not just oil but glo
+    0.60 LAPO convergence vs PPO on complex long-horizon tasks
+  'earthquake': 25 matches
+    0.60 LAPO convergence vs PPO on complex long-horizon tasks
+    0.60 LIBERO benchmark insufficiently covers real-world deployment
+    0.60 Diffusion vs token-based action representations for high-fre
+  'ceasefire': 25 matches
+    0.98 Iran-US ceasefire fragility: one-month gap between ceasefire
+    0.60 LAPO convergence vs PPO on complex long-horizon tasks
+    0.60 LIBERO benchmark insufficiently covers real-world deployment
+
+6. SYSTEM STATS
+------------------------------------------------------------
+Total CLI commands: 30+
+Web UI routes: 90
+Data sources: ArXiv + Jin10 MCP + RSS News
+Run modes: CLI + Web UI + Docker + Daemon
 
 ============================================================
-END REPORT
+REPORT AUTO-GENERATED BY RAIROS
 ============================================================

@@ -135,6 +135,7 @@ _SUBCOMMAND_TABLE = [
     ("intel", "cli.cmd.intel", "_build_intel_parser"),
     ("signal", "cli.cmd.signal", "_build_signal_parser"),
     ("discover", "cli.cmd.discover", "_build_discover_parser"),
+    ("report", "cli.cmd.report", "_build_report_parser"),
 ]
 
 
