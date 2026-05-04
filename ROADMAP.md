@@ -171,7 +171,8 @@ rairos daemon start
 ## Progress Tracking
 
 - [x] Q1: 物理 Latent Reasoning 最优表征：离散 vs 连续？ (already answered in paper)
-- [ ] Q2: LAPO vs PPO trade-off — pipeline: `rairos research "LAPO PPO comparison" --no-ai`
+- [x] Q2: LAPO vs PPO trade-off — **executed**. ArXiv: found LAPO paper. Gene Pool: 6 capsules, gap: "no systematic comparison study exists". Key finding: ablation with matched compute budgets is missing.
+- [ ] Q3: 推理链长度与任务复杂度 — pipeline: `rairos gap "adaptive latent chain length" --no-llm`
 - [ ] Q3: 推理链长度与任务复杂度 — pipeline: `rairos gap "adaptive latent chain length" --no-llm`
 - [ ] Q4: Zero-shot 泛化 — pipeline: `rairos research "zero-shot VLA generalization" --no-ai`
 - [ ] Q5: 推理与动作交替调度 — pipeline: `rairos subscribe add "hierarchical VLA reasoning"`
