@@ -28,6 +28,7 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
         default="active",
         help="Filter by status (default: active)",
     )
+    list_p.add_argument("--legacy", "-l", action="store_true", help="Include legacy (paper-extracted) capsules")
     list_p.add_argument("--json", "-j", action="store_true", help="Output as JSON")
 
     # gap extract — extract gap from a paper
@@ -480,15 +481,16 @@ def _run_gap_list(args: argparse.Namespace) -> int:
     if status_filter != "all":
         capsules = [c for c in capsules if c.status == status_filter]
 
-    # Also load legacy capsules from JSON for backward compat
-    legacy_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-    if legacy_path.exists():
-        try:
-            legacy = json.loads(legacy_path.read_text(encoding="utf-8")).get("capsules", [])
-        except Exception:
-            legacy = []
-    else:
-        legacy = []
+    # Optionally load legacy capsules
+    show_legacy = getattr(args, "legacy", False)
+    legacy = []
+    if show_legacy:
+        legacy_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+        if legacy_path.exists():
+            try:
+                legacy = json.loads(legacy_path.read_text(encoding="utf-8")).get("capsules", [])
+            except Exception:
+                legacy = []
 
     if args.json:
         output = [c.to_dict() for c in capsules] + legacy
@@ -499,25 +501,22 @@ def _run_gap_list(args: argparse.Namespace) -> int:
         print_info("Gene Pool is empty.")
         return 0
 
-    total = len(capsules) + len(legacy)
-    print(f"🧬 Gene Pool — {len(capsules)} active + {len(legacy)} legacy = {total} total\n")
+    print(f"🧬 Gene Pool — {len(capsules)} capsules (add --legacy for {len(legacy)} paper-extracted)\n")
 
     for c in capsules:
-        print(f"  [{'active':8}] score={c.outcome_success_score:.2f} [{c.credibility_badge.upper()}] "
-              f"cred={c.credibility_score:.2f} {c.action_gap_title[:55]}")
-        print(f"           type={c.action_gap_type}  keywords={', '.join(c.trigger_keywords[:5])}")
-        print(f"           id={c.capsule_id}  created={c.created_at[:10]}")
+        print(f"  score={c.outcome_success_score:.2f} [{c.credibility_badge.upper()}] "
+              f"cred={c.credibility_score:.2f}  {c.action_gap_title[:55]}")
+        print(f"         type={c.action_gap_type}  id={c.capsule_id[:16]}")
         print()
 
     if legacy:
         print(f"  --- Legacy capsules ({len(legacy)}) ---\n")
         for c in legacy:
-            status = c.get("status", "active")
             score = c.get("outcome_success_score", 0)
             gap_type = c.get("action_gap_type") or c.get("trigger_gap_type", "?")
             title = c.get("action_gap_title") or c.get("trigger_gap_title", "?")
-            print(f"  [{status:8}] score={score:.2f} {title[:55]}")
-            print(f"           type={gap_type}")
+            print(f"  score={score:.2f}  {title[:55]}")
+            print(f"         type={gap_type}")
             print()
     return 0
 
