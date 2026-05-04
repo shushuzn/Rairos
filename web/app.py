@@ -32,6 +32,9 @@ from web.suggestions import (
 )
 
 app = FastAPI(title="Rairos", description="AI Research OS — Hand-drawn UI")
+from web import routes_research
+app.include_router(routes_research.router)
+
 from web import routes_gene_pool
 app.include_router(routes_gene_pool.router)
 
@@ -984,158 +987,6 @@ async def embodied_planning_search(request: Request):
 
 
 # ── Squad Coordinator ────────────────────────────────────────────────────────────
-
-
-@app.get("/research-loop/squad")
-async def squad_dashboard(request: Request):
-    """Squad dashboard — multi-agent activity stream."""
-    try:
-        from research_loop.agents.squad import SquadCoordinator
-
-        coord = SquadCoordinator()
-        squad_status = coord.get_status()
-        activity = coord.get_activity(limit=50)
-        alerts = coord.get_alerts(limit=20)
-    except Exception as e:
-        squad_status = {
-            "running": False,
-            "agents": {},
-            "error": str(e),
-            "interval_minutes": 30,
-            "last_cycle": "",
-        }
-        activity = []
-        alerts = []
-
-    return templates.TemplateResponse(
-        request,
-        "squad_dashboard.html",
-        {
-            "page": "squad-dashboard",
-            "squad_status": squad_status,
-            "activity": activity,
-            "alerts": alerts,
-        },
-    )
-
-
-@app.post("/research-loop/squad/start")
-async def squad_start(request: Request):
-    """Start the multi-agent squad."""
-    try:
-        from research_loop.agents.squad import SquadCoordinator
-
-        coord = SquadCoordinator()
-        coord.start_watch(interval_minutes=30)
-    except Exception as e:
-        import logging
-
-        logging.getLogger(__name__).warning(f"Could not start squad: {e}")
-    return RedirectResponse(url="/research-loop/squad", status_code=303)
-
-
-@app.post("/research-loop/squad/stop")
-async def squad_stop(request: Request):
-    """Stop the multi-agent squad."""
-    try:
-        from research_loop.agents.squad import SquadCoordinator
-
-        coord = SquadCoordinator()
-        coord.stop_watch()
-    except Exception:
-        pass
-    return RedirectResponse(url="/research-loop/squad", status_code=303)
-
-
-@app.post("/research-loop/squad/run-cycle")
-async def squad_run_cycle(request: Request):
-    """Manually trigger one squad cycle."""
-    import threading
-
-    def run():
-        try:
-            from research_loop.agents.squad import SquadCoordinator
-
-            coord = SquadCoordinator()
-            coord.run_cycle()
-        except Exception as e:
-            import logging
-
-            logging.getLogger(__name__).error(f"Squad cycle failed: {e}")
-
-    threading.Thread(target=run, daemon=True).start()
-    return RedirectResponse(url="/research-loop/squad", status_code=303)
-
-
-@app.get("/research-loop/squad/stream")
-async def squad_stream():
-    """Server-Sent Events — real-time agent activity stream."""
-    from fastapi.responses import StreamingResponse
-    import asyncio
-
-    async def event_generator():
-        import time as _time
-
-        _last_len = 0
-        try:
-            from research_loop.agents.squad import SquadCoordinator
-
-            coord = SquadCoordinator()
-            while True:
-                activity = coord.get_activity(limit=50)
-                status = coord.get_status()
-                alerts = coord.get_alerts(limit=10)
-
-                # Only emit if something changed
-                if len(activity) != _last_len:
-                    _last_len = len(activity)
-                    payload = {
-                        "activity": activity[-20:],
-                        "agents": status.get("agents", {}),
-                        "alerts": alerts,
-                        "running": status.get("running", False),
-                    }
-                    yield f"data: {__import__('json').dumps(payload)}\n\n"
-
-                await asyncio.sleep(3)
-        except Exception as e:
-            yield f"data: {__import__('json').dumps({'error': str(e)})}\n\n"
-
-    return StreamingResponse(
-        event_generator(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",
-        },
-    )
-
-
-@app.get("/research-loop/squad/activity")
-async def squad_activity():
-    """JSON endpoint for squad activity stream + gap watch stats."""
-    try:
-        from research_loop.agents.squad import SquadCoordinator
-
-        coord = SquadCoordinator()
-        activity = coord.get_activity(limit=50)
-
-        # Extract arXiv-related events for gap watch stats
-        arxiv_events = [e for e in activity if "arxiv" in (e.get("payload") or "").lower()]
-        watch_stats = {
-            "arxiv_events_today": len(arxiv_events),
-            "last_arxiv_event": arxiv_events[0]["ts"] if arxiv_events else None,
-            "squad_running": coord.get_status().get("running", False),
-        }
-        return {
-            "activity": activity,
-            "status": coord.get_status(),
-            "watch_stats": watch_stats,
-        }
-    except Exception as e:
-        return {"activity": [], "error": str(e)}
-
 
 @app.get("/insights")
 async def insights(request: Request):
