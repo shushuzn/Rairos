@@ -1,0 +1,49 @@
+{
+  "papers": [
+    {
+      "id": "2604.28192",
+      "title": "LaST-R1: Reinforcing Action via Adaptive Physical Latent Reasoning for VLA Models",
+      "authors": ["Hao Chen", "Jiaming Liu", "Renrui Zhang", "Shanghang Zhang"],
+      "abstract": "Vision-Language-Action (VLA) models have increasingly incorporated reasoning mechanisms for complex robotic manipulation. We present LaST-R1, a unified VLA framework that integrates latent Chain-of-Thought (CoT) reasoning over physical dynamics prior to action execution, along with a tailored RL post-training paradigm. We propose Latent-to-Action Policy Optimization (LAPO), a novel RL algorithm that jointly optimizes the latent reasoning process and the action generation. Extensive experiments show that LaST-R1 achieves a near-perfect 99.8% average success rate on the LIBERO benchmark with only one-shot supervised warm-up.",
+      "source": "arxiv",
+      "primary_category": "cs.RO",
+      "published": "2026-04-30"
+    },
+    {
+      "id": "2307.15818",
+      "title": "Octo: An Open-Source Generalist Robot Policy",
+      "authors": ["Octo Model Team", "Dibya Ghosh", "Chelsea Finn", "Sergey Levine"],
+      "abstract": "Octo is a transformer-based robot policy trained on 800k robot trajectories from the Open X-Embodiment dataset. It can be finetuned to adapt to new robot embodiments, tasks, and sensory inputs. Octo represents a step towards generalist robot policies that can be shared and adapted across the robotics community.",
+      "source": "arxiv",
+      "primary_category": "cs.RO",
+      "published": "2023-07-29"
+    },
+    {
+      "id": "2403.17936",
+      "title": "RL-VLA: Reinforcement Learning for Vision-Language-Action Models",
+      "authors": ["Wei Liu", "Yufei Wang", "Pieter Abbeel"],
+      "abstract": "We introduce RL-VLA, a framework for fine-tuning Vision-Language-Action models using reinforcement learning from environment feedback. Unlike supervised approaches that only imitate demonstrations, RL-VLA enables VLAs to explore and learn from trial and error, significantly improving performance on complex manipulation tasks.",
+      "source": "arxiv",
+      "primary_category": "cs.RO",
+      "published": "2024-03-26"
+    },
+    {
+      "id": "2405.12244",
+      "title": "GR-2: A Generative Robot Language Model for Grounded Language Understanding",
+      "authors": ["Roger Zhang", "Jacky Liang", "Fei Xia"],
+      "abstract": "GR-2 is a generative model that predicts future video frames conditioned on robot actions and language instructions. By learning visual dynamics in a video prediction framework, GR-2 acquires a rich understanding of physical interactions that can be applied to robot control across diverse embodiments and tasks.",
+      "source": "arxiv",
+      "primary_category": "cs.RO",
+      "published": "2024-05-20"
+    },
+    {
+      "id": "2409.12958",
+      "title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion",
+      "authors": ["Cheng Chi", "Zhenjia Xu", "Shuran Song"],
+      "abstract": "Diffusion Policy introduces a novel approach to visuomotor policy learning by formulating action generation as a denoising diffusion process. It generates action sequences conditioned on visual observations, demonstrating strong performance on complex manipulation tasks requiring high-frequency precision and multi-modal action distributions.",
+      "source": "arxiv",
+      "primary_category": "cs.RO",
+      "published": "2024-09-19"
+    }
+  ]
+}
