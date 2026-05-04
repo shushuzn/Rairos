@@ -462,44 +462,57 @@ def _run_interactive(detector: GapDetector, args: argparse.Namespace) -> int:
 
 
 def _run_gap_list(args: argparse.Namespace) -> int:
-    """List Gene Pool capsules."""
+    """List Gene Pool capsules (unified storage via EvolutionTracker)."""
     import json
     from pathlib import Path
+    from llm.insight.tracker import EvolutionTracker
 
-    capsule_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-    if not capsule_path.exists():
+    tracker = EvolutionTracker()
+    capsules = tracker._load_capsules()
+
+    status_filter = args.status if hasattr(args, "status") else "active"
+    if status_filter != "all":
+        capsules = [c for c in capsules if c.status == status_filter]
+
+    # Also load legacy capsules from JSON for backward compat
+    legacy_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+    if legacy_path.exists():
+        try:
+            legacy = json.loads(legacy_path.read_text(encoding="utf-8")).get("capsules", [])
+        except Exception:
+            legacy = []
+    else:
+        legacy = []
+
+    if args.json:
+        output = [c.to_dict() for c in capsules] + legacy
+        print(json.dumps(output, indent=2, ensure_ascii=False))
+        return 0
+
+    if not capsules and not legacy:
         print_info("Gene Pool is empty.")
         return 0
 
-    data = json.loads(capsule_path.read_text(encoding="utf-8"))
-    capsules = data.get("capsules", [])
+    total = len(capsules) + len(legacy)
+    print(f"🧬 Gene Pool — {len(capsules)} active + {len(legacy)} legacy = {total} total\n")
 
-    status_filter = args.status if hasattr(args, "status") else "all"
-    if status_filter != "all":
-        capsules = [c for c in capsules if c.get("status", "active") == status_filter]
-
-    if args.json:
-        print(json.dumps(capsules, indent=2, ensure_ascii=False))
-        return 0
-
-    if not capsules:
-        print_info(f"No {status_filter} capsules in Gene Pool.")
-        return 0
-
-    print(f"🧬 Gene Pool — {len(capsules)} capsule(s) [{status_filter}]")
-    print()
     for c in capsules:
-        status = c.get("status", "active")
-        score = c.get("outcome_success_score", 0)
-        gap_type = c.get("action_gap_type") or c.get("trigger_gap_type", "?")
-        title = c.get("action_gap_title") or c.get("trigger_gap_title", "?")
-        keywords = c.get("trigger_keywords", [])[:5]
-        created = c.get("created_at", "")[:10]
-        capsule_id = c.get("capsule_id", "?")
-        print(f"  [{status:8}] {title[:60]}")
-        print(f"           type={gap_type}  score={score:.2f}  keywords={', '.join(keywords)}")
-        print(f"           id={capsule_id}  created={created}")
+        print(f"  [{'active':8}] score={c.outcome_success_score:.2f} [{c.credibility_badge.upper()}] "
+              f"cred={c.credibility_score:.2f} {c.action_gap_title[:55]}")
+        print(f"           type={c.action_gap_type}  keywords={', '.join(c.trigger_keywords[:5])}")
+        print(f"           id={c.capsule_id}  created={c.created_at[:10]}")
         print()
+
+    if legacy:
+        print(f"  --- Legacy capsules ({len(legacy)}) ---\n")
+        for c in legacy:
+            status = c.get("status", "active")
+            score = c.get("outcome_success_score", 0)
+            gap_type = c.get("action_gap_type") or c.get("trigger_gap_type", "?")
+            title = c.get("action_gap_title") or c.get("trigger_gap_title", "?")
+            print(f"  [{status:8}] score={score:.2f} {title[:55]}")
+            print(f"           type={gap_type}")
+            print()
     return 0
 
 
