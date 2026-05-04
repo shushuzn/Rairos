@@ -786,7 +786,7 @@ def render_embodied_planning_graph() -> str:
         return ""
 
     # Build node id -> type mapping
-    type_colors = {"discrete": "#7A9E7A", "continuous": "#6B8FB5", "hybrid": "#D4A84B"}
+    _type_colors = {"discrete": "#7A9E7A", "continuous": "#6B8FB5", "hybrid": "#D4A84B"}
     nodes_info: Dict[str, tuple] = {}  # paper_id -> (type, title, confidence)
 
     for c in embodied:
@@ -841,7 +841,7 @@ def render_embodied_planning_graph() -> str:
         lines.append(line)
 
     lines.append("    %% Same-type edges: gray solid (within-cluster)")
-    for e1, e2, rtype in sorted(same_type_edges):
+    for e1, e2, _rtype in sorted(same_type_edges):
         lines.append(f"    {e1} -->|same| {e2}")
 
     lines.append("    %% Contradiction edges: red dashed (cross-type)")
@@ -1130,10 +1130,10 @@ def render_evolution_timeline() -> str:
     section_open = False
     for i, e in enumerate(entries):
         rt = e.get("representation_type", "unknown")
-        color = type_colors.get(rt, "#aaa")
+        _color = type_colors.get(rt, "#aaa")
         short_id = e["paper_id"][:10]
         title_short = e.get("paper_title", "Untitled")[:35].replace('"', "'")
-        ts = e.get("timestamp", "")[5:10]  # MM-DD
+        _ts = e.get("timestamp", "")[5:10]  # MM-DD
         label = f"{title_short} ({rt})"
 
         if rt != prev_type:
@@ -1784,7 +1784,7 @@ def render_confidence_calibration() -> str:
         # Look ahead for subsequent entries (within 30 days)
         verified = False
         contradicted = False
-        entry_ts = entry.get("timestamp", "")
+        _entry_ts = entry.get("timestamp", "")
 
         for j in range(i + 1, len(entries)):
             later = entries[j]
@@ -1877,14 +1877,14 @@ def generate_hypothesis_from_contradiction(contradiction_pair: dict) -> str:
 
     Returns a research question string.
     """
-    paper_a_title = contradiction_pair.get("paper_a_title", "")
-    paper_b_title = contradiction_pair.get("paper_b_title", "")
+    _paper_a_title = contradiction_pair.get("paper_a_title", "")
+    _paper_b_title = contradiction_pair.get("paper_b_title", "")
     rep_a = contradiction_pair.get("representation_a", "unknown")
     rep_b = contradiction_pair.get("representation_b", "unknown")
     effect_a = contradiction_pair.get("effectiveness_a", "")
     effect_b = contradiction_pair.get("effectiveness_b", "")
-    paper_a_id = contradiction_pair.get("paper_a_id", "")
-    paper_b_id = contradiction_pair.get("paper_b_id", "")
+    _paper_a_id = contradiction_pair.get("paper_a_id", "")
+    _paper_b_id = contradiction_pair.get("paper_b_id", "")
 
     # Normalise
     rep_a_lower = rep_a.lower().strip()
