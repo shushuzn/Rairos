@@ -16,9 +16,7 @@
 ## Verification
 
 - [ ] Tests pass locally (`just test`)
-- [ ] CI passes on all shards
 - [ ] No new lint errors (`just lint`)
-- [ ] CHANGELOG.md updated (if applicable)
 - [ ] Documentation updated (if applicable)
 
 
@@ -34,8 +32,7 @@
 
 ## Checklist
 
-- [ ] Code follows the style guidelines (run `just check`)
 - [ ] Self-review completed
-- [ ] Comments added for complex code
+- [ ] Tests added for new functionality
 - [ ] Documentation updated in `/docs`
 - [ ] Any new environment variables documented in `.env.example`
