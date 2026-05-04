@@ -18,6 +18,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from web.shared import templates, get_db, get_tracker, p2c_progress
 from web.renderers import render_gene_pool_graph_html
@@ -57,6 +58,23 @@ from web import routes_daemon
 app.include_router(routes_daemon.router)
 
 
+
+# Graceful error handlers for broken sidebar routes
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc):
+    if exc.status_code == 404:
+        return templates.TemplateResponse(
+            request, "generic.html",
+            {"page": "", "title": "Not Available",
+             "content": "<p>This feature is not available in the current build.</p>"},
+            status_code=404,
+        )
+    return templates.TemplateResponse(
+        request, "generic.html",
+        {"page": "", "title": "Error",
+         "content": f"<p>Error {exc.status_code}</p>"},
+        status_code=exc.status_code,
+    )
 
 # Auth middleware — skip if auth not enabled
 @app.middleware("http")

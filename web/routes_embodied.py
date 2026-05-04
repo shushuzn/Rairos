@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
-from web.shared import templates
+from web.shared import get_db,  templates
 
 router = APIRouter()
 
@@ -108,7 +108,7 @@ async def embodied_planning_auto_scan(request: Request):
     from fastapi.responses import JSONResponse
 
     try:
-        db = _get_db()
+        db = get_db()
         from llm.subscription_monitor import SubscriptionMonitor
         from llm.paper_gap_extractor import run_embodied_analysis
 
@@ -233,7 +233,7 @@ async def embodied_planning_auto_scan(request: Request):
                 query = " AND ".join(f'"{k}"' for k in kw_list)
                 papers = search_arxiv(query, max_results=6)
 
-                db = _get_db()
+                db = get_db()
                 new_analyzed = []
                 for p in papers:
                     arxiv_id = p.get("arxiv_id", "")
