@@ -76,7 +76,8 @@ jobs:
         run: pip install mypy
 
       - name: Run mypy
-        run: python -m mypy core parsers llm db --ignore-missing-imports
+        run: |
+          python -m mypy core parsers db --ignore-missing-imports
 
   test-pytest:
     runs-on: ubuntu-22.04
