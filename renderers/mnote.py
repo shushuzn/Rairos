@@ -1,1 +1,61 @@
-IiIiTS1Ob3RlIChjb21wYXJpc29uIG5vdGUpIHJlbmRlcmVyLiIiIgoKaW1wb3J0IHRleHR3cmFwCgpmcm9tIGNvcmUgaW1wb3J0IHRvZGF5X2lzbwoKCmRlZiByZW5kZXJfbW5vdGUodGl0bGU6IHN0ciwgYTogc3RyLCBiOiBzdHIsIGM6IHN0cikgLT4gc3RyOgogICAgdG9kYXkgPSB0b2RheV9pc28oKQogICAgbWQgPSBmIiIiXAp0eXBlOiBjb21wYXJpc29uCnN0YXR1czogZXZvbHZpbmcKLS0tLS0tLS0tLS0tLS0tLQoKIyB7dGl0bGV9CgojIyDlr7nmr5Tnu7TluqYKCnwg57u05bqmICAgfCBBIHwgQiB8IEMgfAp8IC0tLS0gfCAtIHwgLSB8IC0gfAp8IOaguOW/g+aAneaDsyB8ICAgfCAgIHwgICB8Cnwg5oiQ5pys57uT5p6EIHwgICB8ICAgfCAgIHwKfCDmgKfog70gICB8ICAgfCAgIHwgICB8Cnwg5omp5bGV5oCnICB8ICAgfCAgIHwgICB8Cnwg6YCC55So5Zy65pmvIHwgICB8ICAgfCAgIHwKCi0tLQoKIyMg5b2T5YmNIEEvQi9DCgotIEE6IHthfQotIEI6IHtifQotIEM6IHtjfQoKLS0tCgojIyDnu5PmnoTmgKflt67lvIIKCi0tLQoKIyMg5oiQ5pys5ryU6L+b5YiG5p6QCgotLS0KCiMjIOa8lOi/m+aWueWQkQoKLS0tCgojIyDlvZPliY3liKTmlq0KCi0tLQoKIyMgVmlldyBFdm9sdXRpb24gTG9nCgoqIHt0b2RheX0KCiAgKiDml6fop4LngrnvvJoKICAqIOaWsOivgeaNru+8mgogICog5pu05paw57uT6K6677yaCgoiIiIKICAgIHJldHVybiB0ZXh0d3JhcC5kZWRlbnQobWQpLnN0cmlwKCkgKyAiXG4iCg==
+"""M-Note (comparison note) renderer."""
+import textwrap
+
+from core import today_iso
+
+
+def render_mnote(title: str, a: str, b: str, c: str) -> str:
+    today = today_iso()
+    md = f"""\
+type: comparison
+status: evolving
+----------------
+
+# {title}
+
+## 对比维度
+
+| 维度   | A | B | C |
+| ---- | - | - | - |
+| 核心思想 |   |   |   |
+| 成本结构 |   |   |   |
+| 性能   |   |   |   |
+| 扩展性  |   |   |   |
+| 适用场景 |   |   |   |
+
+---
+
+## 当前 A/B/C
+
+- A: {a}
+- B: {b}
+- C: {c}
+
+---
+
+## 结构性差异
+
+---
+
+## 成本演进分析
+
+---
+
+## 演进方向
+
+---
+
+## 当前判断
+
+---
+
+## View Evolution Log
+
+* {today}
+
+  * 旧观点：
+  * 新证据：
+  * 更新结论：
+
+"""
+    return textwrap.dedent(md).strip() + "\n"

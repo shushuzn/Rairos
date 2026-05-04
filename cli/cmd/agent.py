@@ -1,1 +1,243 @@
-IiIiQ0xJIGNvbW1hbmQ6IGFnZW50IOKAlCBEZWVwIFJlc2VhcmNoIEFnZW50IHdpdGggc25hcHN0YXRlIHBlcnNpc3RlbmNlLgoKVXNhZ2U6CiAgICBhaXJvcyBhZ2VudCBkZWVwLXJlc2VhcmNoICJSTEhGIGFsaWdubWVudCIgLS1pdGVyYXRpb25zIDMKICAgIGFpcm9zIGFnZW50IGRlZXAtcmVzZWFyY2ggInRyYW5zZm9ybWVyIGF0dGVudGlvbiIgLS1pdGVyYXRpb25zIDIgLS12ZXJib3NlCiAgICBhaXJvcyBhZ2VudCBsaXN0LXNlc3Npb25zCiAgICBhaXJvcyBhZ2VudCByZXN1bWUgPHNlc3Npb25faWQ+CiAgICBhaXJvcyBhZ2VudCBwYXVzZSA8c2Vzc2lvbl9pZD4KICAgIGFpcm9zIGFnZW50IGRlbGV0ZSA8c2Vzc2lvbl9pZD4KIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgYXJncGFyc2UKaW1wb3J0IHN5cwpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKCmZyb20gY2xpLl9zaGFyZWQgaW1wb3J0IENvbG9ycywgY29sb3JlZCwgcHJpbnRfZXJyb3IsIHByaW50X3N1Y2Nlc3MKCmZyb20gcmVzZWFyY2hfbG9vcC5kZWVwX3Jlc2VhcmNoIGltcG9ydCBEZWVwUmVzZWFyY2hBZ2VudApmcm9tIHJlc2VhcmNoX2xvb3Auc25hcHN0YXRlIGltcG9ydCBTbmFwc3RhdGUKCgpkZWYgX2J1aWxkX2FnZW50X3BhcnNlcihzdWJwYXJzZXJzKSAtPiBhcmdwYXJzZS5Bcmd1bWVudFBhcnNlcjoKICAgIHAgPSBzdWJwYXJzZXJzLmFkZF9wYXJzZXIoCiAgICAgICAgImFnZW50IiwKICAgICAgICBoZWxwPSJEZWVwIFJlc2VhcmNoIEFnZW50IHdpdGggZ2FwLWF3YXJlIGl0ZXJhdGl2ZSByZXNlYXJjaCIsCiAgICAgICAgcHJvZz0iYWlyb3MgYWdlbnQiLAogICAgICAgIGRlc2NyaXB0aW9uPSJSdW4gYXV0b25vbW91cyBkZWVwIHJlc2VhcmNoIGFnZW50IHdpdGggZ2FwIGRldGVjdGlvbiBhbmQgc2Vzc2lvbiBwZXJzaXN0ZW5jZS4iLAogICAgKQoKICAgIHN1YiA9IHAuYWRkX3N1YnBhcnNlcnMoZGVzdD0iYWdlbnRfY29tbWFuZCIsIG1ldGF2YXI9IiBDT01NQU5EIikKCiAgICAjIGRlZXAtcmVzZWFyY2ggc3ViY29tbWFuZAogICAgZHIgPSBzdWIuYWRkX3BhcnNlcigiZGVlcC1yZXNlYXJjaCIsIGhlbHA9IlN0YXJ0IGEgbmV3IGRlZXAgcmVzZWFyY2ggc2Vzc2lvbiIpCiAgICBkci5hZGRfYXJndW1lbnQoInF1ZXJ5IiwgbmFyZ3M9Ij8iLCBkZWZhdWx0PSIiLCBoZWxwPSJSZXNlYXJjaCB0b3BpYy9xdWVzdGlvbiIpCiAgICBkci5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0taXRlcmF0aW9ucyIsCiAgICAgICAgIi1uIiwKICAgICAgICB0eXBlPWludCwKICAgICAgICBkZWZhdWx0PTMsCiAgICAgICAgaGVscD0iTWF4IGl0ZXJhdGlvbnMgKGRlZmF1bHQgMykuIEVhY2ggaXRlcmF0aW9uOiBzZWFyY2gg4oaSIGV4dHJhY3Qg4oaSIGFuYWx5emUgZ2FwcyIsCiAgICApCiAgICBkci5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tcGFwZXJzIiwgIi1wIiwgdHlwZT1pbnQsIGRlZmF1bHQ9NSwgaGVscD0iTWF4IHBhcGVycyBwZXIgaXRlcmF0aW9uIChkZWZhdWx0IDUpIgogICAgKQogICAgZHIuYWRkX2FyZ3VtZW50KCItLXZlcmJvc2UiLCAiLXYiLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSJQcmludCB2ZXJib3NlIGRlYnVnIG91dHB1dCIpCiAgICBkci5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tcmVzdW1lIiwgIi1yIiwgdHlwZT1zdHIsIG1ldGF2YXI9IlNFU1NJT05fSUQiLCBoZWxwPSJSZXN1bWUgYW4gZXhpc3Rpbmcgc2Vzc2lvbiIKICAgICkKICAgIGRyLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1vdXRwdXQiLAogICAgICAgICItbyIsCiAgICAgICAgdHlwZT1zdHIsCiAgICAgICAgaGVscD0iT3V0cHV0IGZpbGUgZm9yIHRoZSByZXNlYXJjaCByZXBvcnQgKGRlZmF1bHQ6IHByaW50IHRvIHN0ZG91dCkiLAogICAgKQogICAgZHIuc2V0X2RlZmF1bHRzKGZ1bmM9X3J1bl9kZWVwX3Jlc2VhcmNoKQoKICAgICMgbGlzdC1zZXNzaW9ucyBzdWJjb21tYW5kCiAgICBscyA9IHN1Yi5hZGRfcGFyc2VyKCJsaXN0LXNlc3Npb25zIiwgaGVscD0iTGlzdCBhbGwgc2F2ZWQgcmVzZWFyY2ggc2Vzc2lvbnMiKQogICAgbHMuYWRkX2FyZ3VtZW50KCItLWxpbWl0IiwgdHlwZT1pbnQsIGRlZmF1bHQ9MjAsIGhlbHA9Ik1heCBzZXNzaW9ucyB0byBzaG93IChkZWZhdWx0IDIwKSIpCiAgICBscy5zZXRfZGVmYXVsdHMoZnVuYz1fbGlzdF9zZXNzaW9ucykKCiAgICAjIHJlc3VtZSBzdWJjb21tYW5kCiAgICBycyA9IHN1Yi5hZGRfcGFyc2VyKCJyZXN1bWUiLCBoZWxwPSJSZXN1bWUgYSBwYXVzZWQgc2Vzc2lvbiIpCiAgICBycy5hZGRfYXJndW1lbnQoInNlc3Npb25faWQiLCBoZWxwPSJTZXNzaW9uIElEIHRvIHJlc3VtZSIpCiAgICBycy5hZGRfYXJndW1lbnQoIi0tdmVyYm9zZSIsICItdiIsIGFjdGlvbj0ic3RvcmVfdHJ1ZSIpCiAgICBycy5zZXRfZGVmYXVsdHMoZnVuYz1fcmVzdW1lX3Nlc3Npb24pCgogICAgIyBwYXVzZSBzdWJjb21tYW5kCiAgICBwcyA9IHN1Yi5hZGRfcGFyc2VyKCJwYXVzZSIsIGhlbHA9IlBhdXNlIGEgcnVubmluZyBzZXNzaW9uIikKICAgIHBzLmFkZF9hcmd1bWVudCgic2Vzc2lvbl9pZCIsIGhlbHA9IlNlc3Npb24gSUQgdG8gcGF1c2UiKQogICAgcHMuc2V0X2RlZmF1bHRzKGZ1bmM9X3BhdXNlX3Nlc3Npb24pCgogICAgIyBkZWxldGUgc3ViY29tbWFuZAogICAgZHMgPSBzdWIuYWRkX3BhcnNlcigiZGVsZXRlIiwgaGVscD0iRGVsZXRlIGEgc2Vzc2lvbiIpCiAgICBkcy5hZGRfYXJndW1lbnQoInNlc3Npb25faWQiLCBoZWxwPSJTZXNzaW9uIElEIHRvIGRlbGV0ZSIpCiAgICBkcy5hZGRfYXJndW1lbnQoIi0tZm9yY2UiLCAiLWYiLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSJTa2lwIGNvbmZpcm1hdGlvbiIpCiAgICBkcy5zZXRfZGVmYXVsdHMoZnVuYz1fZGVsZXRlX3Nlc3Npb24pCgogICAgIyBzdGF0dXMgc3ViY29tbWFuZAogICAgc3QgPSBzdWIuYWRkX3BhcnNlcigic3RhdHVzIiwgaGVscD0iU2hvdyBzdGF0dXMgb2YgYSBzZXNzaW9uIikKICAgIHN0LmFkZF9hcmd1bWVudCgic2Vzc2lvbl9pZCIsIGhlbHA9IlNlc3Npb24gSUQiKQogICAgc3Quc2V0X2RlZmF1bHRzKGZ1bmM9X3N0YXR1c19zZXNzaW9uKQoKICAgIHJldHVybiBwCgoKZGVmIF9ydW5fZGVlcF9yZXNlYXJjaChhcmdzKSAtPiBpbnQ6CiAgICBzbmFwc3RhdGVfZGlyID0gUGF0aC5ob21lKCkgLyAiLmFpX3Jlc2VhcmNoX29zIiAvICJzZXNzaW9ucyIKICAgIGFnZW50ID0gRGVlcFJlc2VhcmNoQWdlbnQoCiAgICAgICAgcXVlcnk9YXJncy5xdWVyeSwKICAgICAgICBtYXhfaXRlcmF0aW9ucz1hcmdzLml0ZXJhdGlvbnMsCiAgICAgICAgbWF4X3BhcGVyc19wZXJfaXRlcmF0aW9uPWFyZ3MucGFwZXJzLAogICAgICAgIHZlcmJvc2U9YXJncy52ZXJib3NlLAogICAgICAgIHNuYXBzdGF0ZV9kaXI9c25hcHN0YXRlX2RpciwKICAgICkKCiAgICBpZiBhcmdzLnJlc3VtZToKICAgICAgICBzZXNzaW9uID0gYWdlbnQucmVzdW1lKGFyZ3MucmVzdW1lKQogICAgICAgIGlmIG5vdCBzZXNzaW9uOgogICAgICAgICAgICBwcmludF9lcnJvcihmIlNlc3Npb24gbm90IGZvdW5kOiB7YXJncy5yZXN1bWV9IikKICAgICAgICAgICAgcmV0dXJuIDEKICAgICAgICBwcmludF9zdWNjZXNzKGYiUmVzdW1lZCBzZXNzaW9uIHthcmdzLnJlc3VtZX0gKGl0ZXJhdGlvbiB7c2Vzc2lvbi5pdGVyYXRpb259KSIpCiAgICBlbHNlOgogICAgICAgIGlmIG5vdCBhcmdzLnF1ZXJ5OgogICAgICAgICAgICBwcmludF9lcnJvcigicXVlcnkgaXMgcmVxdWlyZWQgZm9yIG5ldyBzZXNzaW9ucyIpCiAgICAgICAgICAgIHJldHVybiAxCiAgICAgICAgYWdlbnQuc3RhcnQoKQoKICAgIHJlc3VsdCA9IGFnZW50LnJ1bigpCgogICAgIyBPdXRwdXQKICAgIGlmIGFyZ3Mub3V0cHV0OgogICAgICAgIFBhdGgoYXJncy5vdXRwdXQpLndyaXRlX3RleHQocmVzdWx0LnJlcG9ydCwgZW5jb2Rpbmc9InV0Zi04IikKICAgICAgICBwcmludF9zdWNjZXNzKGYiUmVwb3J0IHdyaXR0ZW4gdG8ge2FyZ3Mub3V0cHV0fSIpCiAgICBlbHNlOgogICAgICAgIHByaW50KCkKICAgICAgICBwcmludChjb2xvcmVkKCI9IiAqIDYwLCBDb2xvcnMuQkxVRSkpCiAgICAgICAgcHJpbnQoY29sb3JlZCgiICBEZWVwIFJlc2VhcmNoIENvbXBsZXRlIiwgQ29sb3JzLkJPTEQpKQogICAgICAgIHByaW50KGNvbG9yZWQoIj0iICogNjAsIENvbG9ycy5CTFVFKSkKICAgICAgICBwcmludChmIiAgU2Vzc2lvbjoge3Jlc3VsdC5zZXNzaW9uX2lkfSIpCiAgICAgICAgcHJpbnQoZiIgIEl0ZXJhdGlvbnM6IHtyZXN1bHQuaXRlcmF0aW9uc30iKQogICAgICAgIHByaW50KGYiICBQYXBlcnMgYW5hbHl6ZWQ6IHtsZW4ocmVzdWx0LnBhcGVycyl9IikKICAgICAgICBwcmludChmIiAgR2FwcyBmb3VuZDoge2xlbihyZXN1bHQuZ2Fwcyl9IikKICAgICAgICBwcmludChmIiAgRHVyYXRpb246IHtyZXN1bHQuZHVyYXRpb25fc2Vjb25kczouMWZ9cyIpCiAgICAgICAgcHJpbnQoKQogICAgICAgIHByaW50KHJlc3VsdC5yZXBvcnQpCgogICAgcHJpbnRfc3VjY2VzcyhmIlxuU2Vzc2lvbiBzYXZlZDoge3Jlc3VsdC5zZXNzaW9uX2lkfSIpCiAgICByZXR1cm4gMAoKCmRlZiBfbGlzdF9zZXNzaW9ucyhhcmdzKSAtPiBpbnQ6CiAgICBzbmFwc3RhdGUgPSBTbmFwc3RhdGUoKQogICAgc2Vzc2lvbnMgPSBzbmFwc3RhdGUubGlzdF9zZXNzaW9ucygpCgogICAgaWYgbm90IHNlc3Npb25zOgogICAgICAgIHByaW50KCJObyByZXNlYXJjaCBzZXNzaW9ucyBmb3VuZC4iKQogICAgICAgIHByaW50KCJSdW46IGFpcm9zIGFnZW50IGRlZXAtcmVzZWFyY2ggPHF1ZXJ5PiIpCiAgICAgICAgcmV0dXJuIDAKCiAgICBwcmludCgKICAgICAgICBjb2xvcmVkKAogICAgICAgICAgICBmInsnU0VTU0lPTic6MTJ9IHsnU1RBVFVTJzoxMH0geydJVEVSJzo1fSB7J1BBUEVSUyc6Nn0geydHQVBTJzo1fSB7J0RVUkFUSU9OJzo4fSAgUVVFUlkiLAogICAgICAgICAgICBDb2xvcnMuQk9MRCwKICAgICAgICApCiAgICApCiAgICBwcmludCgiLSIgKiA4MCkKICAgIGZvciBzIGluIHNlc3Npb25zWzogYXJncy5saW1pdF06CiAgICAgICAgc3RhdHVzX2NvbG9yID0gKAogICAgICAgICAgICBDb2xvcnMuR1JFRU4KICAgICAgICAgICAgaWYgc1sic3RhdHVzIl0gPT0gImNvbXBsZXRlZCIKICAgICAgICAgICAgZWxzZSBDb2xvcnMuWUVMTE9XCiAgICAgICAgICAgIGlmIHNbInN0YXR1cyJdID09ICJwYXVzZWQiCiAgICAgICAgICAgIGVsc2UgQ29sb3JzLlJFRAogICAgICAgICkKICAgICAgICBwcmludCgKICAgICAgICAgICAgZiJ7c1snc2Vzc2lvbl9pZCddOjEyfSAiCiAgICAgICAgICAgIGYie2NvbG9yZWQoc1snc3RhdHVzJ10udXBwZXIoKSwgc3RhdHVzX2NvbG9yKToxMH0gIgogICAgICAgICAgICBmIntzWydpdGVyYXRpb24nXTo1fSAiCiAgICAgICAgICAgIGYie2xlbihzLmdldCgncGFwZXJzJywgW10pKTo2fSAiCiAgICAgICAgICAgIGYie2xlbihzLmdldCgnZ2FwcycsIFtdKSk6NX0gIgogICAgICAgICAgICBmIntzWydkdXJhdGlvbiddOjguMWZ9cyAgIgogICAgICAgICAgICBmIntzWydxdWVyeSddWzo0MF19IgogICAgICAgICkKICAgIHJldHVybiAwCgoKZGVmIF9yZXN1bWVfc2Vzc2lvbihhcmdzKSAtPiBpbnQ6CiAgICBzbmFwc3RhdGUgPSBTbmFwc3RhdGUoKQogICAgc2Vzc2lvbiA9IHNuYXBzdGF0ZS5sb2FkKGFyZ3Muc2Vzc2lvbl9pZCkKICAgIGlmIG5vdCBzZXNzaW9uOgogICAgICAgIHByaW50X2Vycm9yKGYiU2Vzc2lvbiBub3QgZm91bmQ6IHthcmdzLnNlc3Npb25faWR9IikKICAgICAgICByZXR1cm4gMQoKICAgIGlmIHNlc3Npb24uc3RhdHVzID09ICJjb21wbGV0ZWQiOgogICAgICAgIHByaW50KGNvbG9yZWQoZiJTZXNzaW9uIHthcmdzLnNlc3Npb25faWR9IGFscmVhZHkgY29tcGxldGVkLiBSZS1ydW5uaW5nLi4uIiwgQ29sb3JzLllFTExPVykpCgogICAgYWdlbnQgPSBEZWVwUmVzZWFyY2hBZ2VudCgKICAgICAgICBxdWVyeT1zZXNzaW9uLnF1ZXJ5LAogICAgICAgIG1heF9pdGVyYXRpb25zPXNlc3Npb24ubWF4X2l0ZXJhdGlvbnMsCiAgICAgICAgdmVyYm9zZT1hcmdzLnZlcmJvc2UsCiAgICApCiAgICBhZ2VudC5yZXN1bWUoYXJncy5zZXNzaW9uX2lkKQogICAgcmVzdWx0ID0gYWdlbnQucnVuKCkKCiAgICBwcmludF9zdWNjZXNzKAogICAgICAgIGYiU2Vzc2lvbiB7YXJncy5zZXNzaW9uX2lkfSBjb21wbGV0ZWQ6IHtyZXN1bHQuaXRlcmF0aW9uc30gaXRlcmF0aW9ucywge2xlbihyZXN1bHQucGFwZXJzKX0gcGFwZXJzIgogICAgKQogICAgcHJpbnQoKQogICAgcHJpbnQocmVzdWx0LnJlcG9ydFs6NTAwXSkKICAgIHJldHVybiAwCgoKZGVmIF9wYXVzZV9zZXNzaW9uKGFyZ3MpIC0+IGludDoKICAgIHNuYXBzdGF0ZSA9IFNuYXBzdGF0ZSgpCiAgICBzZXNzaW9uID0gc25hcHN0YXRlLmxvYWQoYXJncy5zZXNzaW9uX2lkKQogICAgaWYgbm90IHNlc3Npb246CiAgICAgICAgcHJpbnRfZXJyb3IoZiJTZXNzaW9uIG5vdCBmb3VuZDoge2FyZ3Muc2Vzc2lvbl9pZH0iKQogICAgICAgIHJldHVybiAxCgogICAgc2Vzc2lvbi5zdGF0dXMgPSAicGF1c2VkIgogICAgc25hcHN0YXRlLnNhdmUoc2Vzc2lvbikKICAgIHByaW50X3N1Y2Nlc3MoZiJTZXNzaW9uIHthcmdzLnNlc3Npb25faWR9IHBhdXNlZCBhdCBpdGVyYXRpb24ge3Nlc3Npb24uaXRlcmF0aW9ufSIpCiAgICByZXR1cm4gMAoKCmRlZiBfZGVsZXRlX3Nlc3Npb24oYXJncykgLT4gaW50OgogICAgc25hcHN0YXRlID0gU25hcHN0YXRlKCkKCiAgICBpZiBub3QgYXJncy5mb3JjZToKICAgICAgICBzZXNzaW9uID0gc25hcHN0YXRlLmxvYWQoYXJncy5zZXNzaW9uX2lkKQogICAgICAgIHF1ZXJ5ID0gc2Vzc2lvbi5xdWVyeSBpZiBzZXNzaW9uIGVsc2UgInVua25vd24iCiAgICAgICAgY29uZmlybSA9IGlucHV0KGYiRGVsZXRlIHNlc3Npb24ge2FyZ3Muc2Vzc2lvbl9pZH0gKHF1ZXJ5OiB7cXVlcnl9KT8gW3kvTl06ICIpCiAgICAgICAgaWYgY29uZmlybS5sb3dlcigpICE9ICJ5IjoKICAgICAgICAgICAgcHJpbnQoIkFib3J0ZWQuIikKICAgICAgICAgICAgcmV0dXJuIDAKCiAgICBkZWxldGVkID0gc25hcHN0YXRlLmRlbGV0ZShhcmdzLnNlc3Npb25faWQpCiAgICBpZiBkZWxldGVkOgogICAgICAgIHByaW50X3N1Y2Nlc3MoZiJEZWxldGVkIHNlc3Npb24ge2FyZ3Muc2Vzc2lvbl9pZH0iKQogICAgZWxzZToKICAgICAgICBwcmludF9lcnJvcihmIlNlc3Npb24gbm90IGZvdW5kOiB7YXJncy5zZXNzaW9uX2lkfSIpCiAgICByZXR1cm4gMAoKCmRlZiBfc3RhdHVzX3Nlc3Npb24oYXJncykgLT4gaW50OgogICAgc25hcHN0YXRlID0gU25hcHN0YXRlKCkKICAgIHNlc3Npb24gPSBzbmFwc3RhdGUubG9hZChhcmdzLnNlc3Npb25faWQpCiAgICBpZiBub3Qgc2Vzc2lvbjoKICAgICAgICBwcmludF9lcnJvcihmIlNlc3Npb24gbm90IGZvdW5kOiB7YXJncy5zZXNzaW9uX2lkfSIpCiAgICAgICAgcmV0dXJuIDEKCiAgICBwcmludChjb2xvcmVkKGYiU2Vzc2lvbjoge3Nlc3Npb24uc2Vzc2lvbl9pZH0iLCBDb2xvcnMuQk9MRCkpCiAgICBwcmludChmIiAgUXVlcnk6IHtzZXNzaW9uLnF1ZXJ5fSIpCiAgICBwcmludChmIiAgU3RhdHVzOiB7c2Vzc2lvbi5zdGF0dXN9IikKICAgIHByaW50KGYiICBJdGVyYXRpb246IHtzZXNzaW9uLml0ZXJhdGlvbn0gLyB7c2Vzc2lvbi5tYXhfaXRlcmF0aW9uc30iKQogICAgcHJpbnQoZiIgIFBhcGVyczoge2xlbihzZXNzaW9uLnBhcGVycyl9IikKICAgIHByaW50KGYiICBHYXBzOiB7bGVuKHNlc3Npb24uZ2Fwcyl9IikKICAgIHByaW50KGYiICBGaW5kaW5nczoge2xlbihzZXNzaW9uLmZpbmRpbmdzKX0iKQogICAgcHJpbnQoZiIgIER1cmF0aW9uOiB7c2Vzc2lvbi5kdXJhdGlvbigpOi4xZn1zIikKICAgIHByaW50KGYiICBDcmVhdGVkOiB7c2Vzc2lvbi5jcmVhdGVkX2F0fSIpCiAgICBwcmludChmIiAgVXBkYXRlZDoge3Nlc3Npb24udXBkYXRlZF9hdH0iKQoKICAgIGlmIHNlc3Npb24uZXJyb3I6CiAgICAgICAgcHJpbnQoZiIgIEVycm9yOiB7c2Vzc2lvbi5lcnJvcn0iKQogICAgcmV0dXJuIDAKCgpkZWYgcnVuKGFyZ3M6IGFyZ3BhcnNlLk5hbWVzcGFjZSkgLT4gaW50OgogICAgaWYgbm90IGhhc2F0dHIoYXJncywgImFnZW50X2NvbW1hbmQiKSBvciBub3QgYXJncy5hZ2VudF9jb21tYW5kOgogICAgICAgIHByaW50X2Vycm9yKCJhaXJvcyBhZ2VudDogbm8gY29tbWFuZCBzcGVjaWZpZWQuIFJ1biAnYWlyb3MgYWdlbnQgLS1oZWxwJyBmb3IgdXNhZ2UuIikKICAgICAgICByZXR1cm4gMQoKICAgIHJldHVybiBhcmdzLmZ1bmMoYXJncykK
+"""CLI command: agent — Deep Research Agent with snapstate persistence.
+
+Usage:
+    airos agent deep-research "RLHF alignment" --iterations 3
+    airos agent deep-research "transformer attention" --iterations 2 --verbose
+    airos agent list-sessions
+    airos agent resume <session_id>
+    airos agent pause <session_id>
+    airos agent delete <session_id>
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+from cli._shared import Colors, colored, print_error, print_success
+
+from research_loop.deep_research import DeepResearchAgent
+from research_loop.snapstate import Snapstate
+
+
+def _build_agent_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "agent",
+        help="Deep Research Agent with gap-aware iterative research",
+        prog="airos agent",
+        description="Run autonomous deep research agent with gap detection and session persistence.",
+    )
+
+    sub = p.add_subparsers(dest="agent_command", metavar=" COMMAND")
+
+    # deep-research subcommand
+    dr = sub.add_parser("deep-research", help="Start a new deep research session")
+    dr.add_argument("query", nargs="?", default="", help="Research topic/question")
+    dr.add_argument(
+        "--iterations", "-n", type=int, default=3,
+        help="Max iterations (default 3). Each iteration: search → extract → analyze gaps"
+    )
+    dr.add_argument(
+        "--papers", "-p", type=int, default=5,
+        help="Max papers per iteration (default 5)"
+    )
+    dr.add_argument(
+        "--verbose", "-v", action="store_true",
+        help="Print verbose debug output"
+    )
+    dr.add_argument(
+        "--resume", "-r", type=str, metavar="SESSION_ID",
+        help="Resume an existing session"
+    )
+    dr.add_argument(
+        "--output", "-o", type=str,
+        help="Output file for the research report (default: print to stdout)"
+    )
+    dr.set_defaults(func=_run_deep_research)
+
+    # list-sessions subcommand
+    ls = sub.add_parser("list-sessions", help="List all saved research sessions")
+    ls.add_argument("--limit", type=int, default=20, help="Max sessions to show (default 20)")
+    ls.set_defaults(func=_list_sessions)
+
+    # resume subcommand
+    rs = sub.add_parser("resume", help="Resume a paused session")
+    rs.add_argument("session_id", help="Session ID to resume")
+    rs.add_argument("--verbose", "-v", action="store_true")
+    rs.set_defaults(func=_resume_session)
+
+    # pause subcommand
+    ps = sub.add_parser("pause", help="Pause a running session")
+    ps.add_argument("session_id", help="Session ID to pause")
+    ps.set_defaults(func=_pause_session)
+
+    # delete subcommand
+    ds = sub.add_parser("delete", help="Delete a session")
+    ds.add_argument("session_id", help="Session ID to delete")
+    ds.add_argument("--force", "-f", action="store_true", help="Skip confirmation")
+    ds.set_defaults(func=_delete_session)
+
+    # status subcommand
+    st = sub.add_parser("status", help="Show status of a session")
+    st.add_argument("session_id", help="Session ID")
+    st.set_defaults(func=_status_session)
+
+    return p
+
+
+def _run_deep_research(args) -> int:
+    snapstate_dir = Path.home() / ".ai_research_os" / "sessions"
+    agent = DeepResearchAgent(
+        query=args.query,
+        max_iterations=args.iterations,
+        max_papers_per_iteration=args.papers,
+        verbose=args.verbose,
+        snapstate_dir=snapstate_dir,
+    )
+
+    if args.resume:
+        session = agent.resume(args.resume)
+        if not session:
+            print_error(f"Session not found: {args.resume}")
+            return 1
+        print_success(f"Resumed session {args.resume} (iteration {session.iteration})")
+    else:
+        if not args.query:
+            print_error("query is required for new sessions")
+            return 1
+        agent.start()
+
+    result = agent.run()
+
+    # Output
+    if args.output:
+        Path(args.output).write_text(result.report, encoding="utf-8")
+        print_success(f"Report written to {args.output}")
+    else:
+        print()
+        print(colored("=" * 60, Colors.BLUE))
+        print(colored("  Deep Research Complete", Colors.BOLD))
+        print(colored("=" * 60, Colors.BLUE))
+        print(f"  Session: {result.session_id}")
+        print(f"  Iterations: {result.iterations}")
+        print(f"  Papers analyzed: {len(result.papers)}")
+        print(f"  Gaps found: {len(result.gaps)}")
+        print(f"  Duration: {result.duration_seconds:.1f}s")
+        print()
+        print(result.report)
+
+    print_success(f"\nSession saved: {result.session_id}")
+    return 0
+
+
+def _list_sessions(args) -> int:
+    snapstate = Snapstate()
+    sessions = snapstate.list_sessions()
+
+    if not sessions:
+        print("No research sessions found.")
+        print("Run: airos agent deep-research <query>")
+        return 0
+
+    print(colored(f"{'SESSION':12} {'STATUS':10} {'ITER':5} {'PAPERS':6} {'GAPS':5} {'DURATION':8}  QUERY", Colors.BOLD))
+    print("-" * 80)
+    for s in sessions[:args.limit]:
+        status_color = Colors.GREEN if s["status"] == "completed" else Colors.YELLOW if s["status"] == "paused" else Colors.RED
+        print(
+            f"{s['session_id']:12} "
+            f"{colored(s['status'].upper(), status_color):10} "
+            f"{s['iteration']:5} "
+            f"{len(s.get('papers', [])):6} "
+            f"{len(s.get('gaps', [])):5} "
+            f"{s['duration']:8.1f}s  "
+            f"{s['query'][:40]}"
+        )
+    return 0
+
+
+def _resume_session(args) -> int:
+    snapstate = Snapstate()
+    session = snapstate.load(args.session_id)
+    if not session:
+        print_error(f"Session not found: {args.session_id}")
+        return 1
+
+    if session.status == "completed":
+        print(colored(f"Session {args.session_id} already completed. Re-running...", Colors.YELLOW))
+
+    agent = DeepResearchAgent(
+        query=session.query,
+        max_iterations=session.max_iterations,
+        verbose=args.verbose,
+    )
+    agent.resume(args.session_id)
+    result = agent.run()
+
+    print_success(f"Session {args.session_id} completed: {result.iterations} iterations, {len(result.papers)} papers")
+    print()
+    print(result.report[:500])
+    return 0
+
+
+def _pause_session(args) -> int:
+    snapstate = Snapstate()
+    session = snapstate.load(args.session_id)
+    if not session:
+        print_error(f"Session not found: {args.session_id}")
+        return 1
+
+    session.status = "paused"
+    snapstate.save(session)
+    print_success(f"Session {args.session_id} paused at iteration {session.iteration}")
+    return 0
+
+
+def _delete_session(args) -> int:
+    snapstate = Snapstate()
+
+    if not args.force:
+        session = snapstate.load(args.session_id)
+        query = session.query if session else "unknown"
+        confirm = input(f"Delete session {args.session_id} (query: {query})? [y/N]: ")
+        if confirm.lower() != "y":
+            print("Aborted.")
+            return 0
+
+    deleted = snapstate.delete(args.session_id)
+    if deleted:
+        print_success(f"Deleted session {args.session_id}")
+    else:
+        print_error(f"Session not found: {args.session_id}")
+    return 0
+
+
+def _status_session(args) -> int:
+    snapstate = Snapstate()
+    session = snapstate.load(args.session_id)
+    if not session:
+        print_error(f"Session not found: {args.session_id}")
+        return 1
+
+    print(colored(f"Session: {session.session_id}", Colors.BOLD))
+    print(f"  Query: {session.query}")
+    print(f"  Status: {session.status}")
+    print(f"  Iteration: {session.iteration} / {session.max_iterations}")
+    print(f"  Papers: {len(session.papers)}")
+    print(f"  Gaps: {len(session.gaps)}")
+    print(f"  Findings: {len(session.findings)}")
+    print(f"  Duration: {session.duration():.1f}s")
+    print(f"  Created: {session.created_at}")
+    print(f"  Updated: {session.updated_at}")
+
+    if session.error:
+        print(f"  Error: {session.error}")
+    return 0
+
+
+def run(args: argparse.Namespace) -> int:
+    if not hasattr(args, "agent_command") or not args.agent_command:
+        print_error("airos agent: no command specified. Run 'airos agent --help' for usage.")
+        return 1
+
+    return args.func(args)

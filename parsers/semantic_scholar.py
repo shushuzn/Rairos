@@ -1,1 +1,216 @@
-IiIiU2VtYW50aWMgU2Nob2xhciBBUEkgc2VhcmNoIHdpdGggcmV0cnkgbG9naWMuIiIiCgppbXBvcnQgbG9nZ2luZwppbXBvcnQgdGltZQpmcm9tIHR5cGluZyBpbXBvcnQgTGlzdCwgT3B0aW9uYWwsIERpY3QsIEFueQoKaW1wb3J0IGh0dHB4Cgpmcm9tIGNvcmUgaW1wb3J0IFBhcGVyCgpsb2dnZXIgPSBsb2dnaW5nLmdldExvZ2dlcihfX25hbWVfXykKCl9TMl9BUEkgPSAiaHR0cHM6Ly9hcGkuc2VtYW50aWNzY2hvbGFyLm9yZy9ncmFwaC92MSIKX01BWF9SRVRSSUVTID0gMwpfUkVUUllfREVMQVkgPSAxLjAKCgpkZWYgX2dldF9jbGllbnQoKSAtPiBodHRweC5DbGllbnQ6CiAgICAiIiJDcmVhdGUgSFRUUCBjbGllbnQgd2l0aCBwcm9wZXIgdGltZW91dCBhbmQgcmV0cnkgYmVoYXZpb3IuIiIiCiAgICByZXR1cm4gaHR0cHguQ2xpZW50KAogICAgICAgIHRpbWVvdXQ9MzAuMCwKICAgICAgICBmb2xsb3dfcmVkaXJlY3RzPVRydWUsCiAgICApCgoKZGVmIHNlYXJjaF9zZW1hbnRpY19zY2hvbGFyKAogICAgcXVlcnk6IHN0ciwKICAgIG1heF9yZXN1bHRzOiBpbnQgPSAxMCwKICAgIHRpbWVvdXQ6IGZsb2F0ID0gMzAuMCwKICAgIGZpZWxkczogT3B0aW9uYWxbTGlzdFtzdHJdXSA9IE5vbmUsCikgLT4gTGlzdFsiUzJQYXBlciJdOgogICAgIiIiCiAgICBTZWFyY2ggU2VtYW50aWMgU2Nob2xhciBieSBrZXl3b3JkIHdpdGggcmV0cnkgbG9naWMuCgogICAgQXJnczoKICAgICAgICBxdWVyeTogU2VhcmNoIHF1ZXJ5CiAgICAgICAgbWF4X3Jlc3VsdHM6IE51bWJlciBvZiBwYXBlcnMgdG8gcmV0dXJuIChkZWZhdWx0IDEwKQogICAgICAgIHRpbWVvdXQ6IFJlcXVlc3QgdGltZW91dCBpbiBzZWNvbmRzCiAgICAgICAgZmllbGRzOiBMaXN0IG9mIGZpZWxkcyB0byByZXF1ZXN0CgogICAgUmV0dXJuczoKICAgICAgICBMaXN0IG9mIFMyUGFwZXIgZGljdHMgc29ydGVkIGJ5IHJlbGV2YW5jZQogICAgIiIiCiAgICBpZiBmaWVsZHMgaXMgTm9uZToKICAgICAgICBmaWVsZHMgPSBbCiAgICAgICAgICAgICJ0aXRsZSIsCiAgICAgICAgICAgICJhdXRob3JzIiwKICAgICAgICAgICAgImFic3RyYWN0IiwKICAgICAgICAgICAgInllYXIiLAogICAgICAgICAgICAidmVudWUiLAogICAgICAgICAgICAiY2l0YXRpb25Db3VudCIsCiAgICAgICAgICAgICJvcGVuQWNjZXNzUGRmIiwKICAgICAgICAgICAgInBhcGVySWQiLAogICAgICAgIF0KCiAgICBlbmNvZGVkX3F1ZXJ5ID0gX3VybGVuY29kZShxdWVyeSkKICAgIHVybCA9ICgKICAgICAgICBmIntfUzJfQVBJfS9wYXBlci9zZWFyY2g/IgogICAgICAgIGYicXVlcnk9e2VuY29kZWRfcXVlcnl9JiIKICAgICAgICBmImxpbWl0PXttYXhfcmVzdWx0c30mIgogICAgICAgIGYiZmllbGRzPXsnLCcuam9pbihmaWVsZHMpfSIKICAgICkKCiAgICBsYXN0X2Vycm9yOiBFeGNlcHRpb24gPSBSdW50aW1lRXJyb3IoInVua25vd24gZXJyb3IiKQogICAgZm9yIGF0dGVtcHQgaW4gcmFuZ2UoX01BWF9SRVRSSUVTKToKICAgICAgICB0cnk6CiAgICAgICAgICAgIHdpdGggX2dldF9jbGllbnQoKSBhcyBjbGllbnQ6CiAgICAgICAgICAgICAgICByID0gY2xpZW50LmdldCh1cmwpCiAgICAgICAgICAgICAgICBpZiByLnN0YXR1c19jb2RlID09IDQyOToKICAgICAgICAgICAgICAgICAgICByZXRyeV9hZnRlciA9IGludChyLmhlYWRlcnMuZ2V0KCJyZXRyeS1hZnRlciIsICI2MCIpKQogICAgICAgICAgICAgICAgICAgIGxvZ2dlci53YXJuaW5nKGYiUmF0ZSBsaW1pdGVkLCB3YWl0aW5nIHtyZXRyeV9hZnRlcn1zIikKICAgICAgICAgICAgICAgICAgICB0aW1lLnNsZWVwKG1pbihyZXRyeV9hZnRlciwgMTIwKSkKICAgICAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICAgICAgci5yYWlzZV9mb3Jfc3RhdHVzKCkKICAgICAgICAgICAgICAgIGRhdGEgPSByLmpzb24oKQogICAgICAgICAgICAgICAgcmV0dXJuIFtTMlBhcGVyKHApIGZvciBwIGluIGRhdGEuZ2V0KCJkYXRhIiwgW10pXQogICAgICAgIGV4Y2VwdCBodHRweC5IVFRQU3RhdHVzRXJyb3IgYXMgZToKICAgICAgICAgICAgbGFzdF9lcnJvciA9IGUKICAgICAgICAgICAgaWYgci5zdGF0dXNfY29kZSA9PSA0Mjk6CiAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICBpZiBhdHRlbXB0IDwgX01BWF9SRVRSSUVTIC0gMToKICAgICAgICAgICAgICAgIHRpbWUuc2xlZXAoX1JFVFJZX0RFTEFZICogKGF0dGVtcHQgKyAxKSkKICAgICAgICAgICAgY29udGludWUKICAgICAgICBleGNlcHQgaHR0cHguSFRUUEVycm9yIGFzIGU6CiAgICAgICAgICAgIGxhc3RfZXJyb3IgPSBlCiAgICAgICAgICAgIGlmIGF0dGVtcHQgPCBfTUFYX1JFVFJJRVMgLSAxOgogICAgICAgICAgICAgICAgdGltZS5zbGVlcChfUkVUUllfREVMQVkgKiAoYXR0ZW1wdCArIDEpKQogICAgICAgICAgICBjb250aW51ZQoKICAgIHJhaXNlIFJ1bnRpbWVFcnJvcigKICAgICAgICBmIlNlbWFudGljIFNjaG9sYXIgc2VhcmNoIGZhaWxlZCBmb3IgJ3txdWVyeX0nIGFmdGVyIHtfTUFYX1JFVFJJRVN9IGF0dGVtcHRzOiB7bGFzdF9lcnJvcn0iCiAgICApCgoKZGVmIGdldF9wYXBlcl9ieV9pZChwYXBlcl9pZDogc3RyLCBmaWVsZHM6IE9wdGlvbmFsW0xpc3Rbc3RyXV0gPSBOb25lKSAtPiBPcHRpb25hbFsiUzJQYXBlciJdOgogICAgIiIiRmV0Y2ggYSBwYXBlciBieSBTZW1hbnRpYyBTY2hvbGFyIElELiIiIgogICAgaWYgZmllbGRzIGlzIE5vbmU6CiAgICAgICAgZmllbGRzID0gWwogICAgICAgICAgICAidGl0bGUiLAogICAgICAgICAgICAiYXV0aG9ycyIsCiAgICAgICAgICAgICJhYnN0cmFjdCIsCiAgICAgICAgICAgICJ5ZWFyIiwKICAgICAgICAgICAgInZlbnVlIiwKICAgICAgICAgICAgImNpdGF0aW9uQ291bnQiLAogICAgICAgICAgICAib3BlbkFjY2Vzc1BkZiIsCiAgICAgICAgICAgICJwYXBlcklkIiwKICAgICAgICAgICAgImV4dGVybmFsSWRzIiwKICAgICAgICBdCgogICAgdXJsID0gZiJ7X1MyX0FQSX0vcGFwZXIve3BhcGVyX2lkfT9maWVsZHM9eycsJy5qb2luKGZpZWxkcyl9IgogICAgdHJ5OgogICAgICAgIHdpdGggX2dldF9jbGllbnQoKSBhcyBjbGllbnQ6CiAgICAgICAgICAgIHIgPSBjbGllbnQuZ2V0KHVybCkKICAgICAgICAgICAgci5yYWlzZV9mb3Jfc3RhdHVzKCkKICAgICAgICAgICAgcmV0dXJuIFMyUGFwZXIoci5qc29uKCkpCiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgbG9nZ2VyLndhcm5pbmcoZiJGYWlsZWQgdG8gZmV0Y2ggcGFwZXIge3BhcGVyX2lkfToge2V9IikKICAgICAgICByZXR1cm4gTm9uZQoKCmRlZiBnZXRfY2l0YXRpb25zKHBhcGVyX2lkOiBzdHIsIGxpbWl0OiBpbnQgPSAxMDApIC0+IExpc3RbIlMyUGFwZXIiXToKICAgICIiIkZldGNoIHBhcGVycyB0aGF0IGNpdGUgdGhlIGdpdmVuIHBhcGVyLiIiIgogICAgdXJsID0gKAogICAgICAgIGYie19TMl9BUEl9L3BhcGVyL3twYXBlcl9pZH0vY2l0YXRpb25zPyIKICAgICAgICBmImZpZWxkcz10aXRsZSxhdXRob3JzLGFic3RyYWN0LHllYXIsdmVudWUsY2l0YXRpb25Db3VudCxvcGVuQWNjZXNzUGRmLHBhcGVySWQmIgogICAgICAgIGYibGltaXQ9e2xpbWl0fSIKICAgICkKICAgIHRyeToKICAgICAgICB3aXRoIF9nZXRfY2xpZW50KCkgYXMgY2xpZW50OgogICAgICAgICAgICByID0gY2xpZW50LmdldCh1cmwpCiAgICAgICAgICAgIHIucmFpc2VfZm9yX3N0YXR1cygpCiAgICAgICAgICAgIGRhdGEgPSByLmpzb24oKQogICAgICAgICAgICByZXR1cm4gW1MyUGFwZXIoY1siY2l0aW5nUGFwZXIiXSkgZm9yIGMgaW4gZGF0YS5nZXQoImRhdGEiLCBbXSldCiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgbG9nZ2VyLndhcm5pbmcoZiJGYWlsZWQgdG8gZmV0Y2ggY2l0YXRpb25zIGZvciB7cGFwZXJfaWR9OiB7ZX0iKQogICAgICAgIHJldHVybiBbXQoKCmRlZiBnZXRfcmVmZXJlbmNlcyhwYXBlcl9pZDogc3RyLCBsaW1pdDogaW50ID0gMTAwKSAtPiBMaXN0WyJTMlBhcGVyIl06CiAgICAiIiJGZXRjaCBwYXBlcnMgcmVmZXJlbmNlZCBieSB0aGUgZ2l2ZW4gcGFwZXIuIiIiCiAgICB1cmwgPSAoCiAgICAgICAgZiJ7X1MyX0FQSX0vcGFwZXIve3BhcGVyX2lkfS9yZWZlcmVuY2VzPyIKICAgICAgICBmImZpZWxkcz10aXRsZSxhdXRob3JzLGFic3RyYWN0LHllYXIsdmVudWUsY2l0YXRpb25Db3VudCxvcGVuQWNjZXNzUGRmLHBhcGVySWQmIgogICAgICAgIGYibGltaXQ9e2xpbWl0fSIKICAgICkKICAgIHRyeToKICAgICAgICB3aXRoIF9nZXRfY2xpZW50KCkgYXMgY2xpZW50OgogICAgICAgICAgICByID0gY2xpZW50LmdldCh1cmwpCiAgICAgICAgICAgIHIucmFpc2VfZm9yX3N0YXR1cygpCiAgICAgICAgICAgIGRhdGEgPSByLmpzb24oKQogICAgICAgICAgICByZXR1cm4gW1MyUGFwZXIoclsicmVmZXJlbmNlZFBhcGVyIl0pIGZvciByIGluIGRhdGEuZ2V0KCJkYXRhIiwgW10pXQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgIGxvZ2dlci53YXJuaW5nKGYiRmFpbGVkIHRvIGZldGNoIHJlZmVyZW5jZXMgZm9yIHtwYXBlcl9pZH06IHtlfSIpCiAgICAgICAgcmV0dXJuIFtdCgoKZGVmIF91cmxlbmNvZGUocTogc3RyKSAtPiBzdHI6CiAgICBpbXBvcnQgdXJsbGliLnBhcnNlCgogICAgcmV0dXJuIHVybGxpYi5wYXJzZS5xdW90ZV9wbHVzKHEpCgoKY2xhc3MgUzJQYXBlcjoKICAgICIiIldyYXBwZXIgZm9yIFNlbWFudGljIFNjaG9sYXIgcGFwZXIgZGF0YS4iIiIKCiAgICBfX3Nsb3RzX18gPSAoIl9kIiwpCgogICAgZGVmIF9faW5pdF9fKHNlbGYsIGQ6IERpY3Rbc3RyLCBBbnldKToKICAgICAgICBzZWxmLl9kID0gZAoKICAgIEBwcm9wZXJ0eQogICAgZGVmIHBhcGVyX2lkKHNlbGYpIC0+IHN0cjoKICAgICAgICByZXR1cm4gc2VsZi5fZC5nZXQoInBhcGVySWQiLCAiIikgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgQHByb3BlcnR5CiAgICBkZWYgdGl0bGUoc2VsZikgLT4gc3RyOgogICAgICAgIHJldHVybiBzZWxmLl9kLmdldCgidGl0bGUiLCAiIikgb3IgIiIKCiAgICBAcHJvcGVydHkKICAgIGRlZiBhYnN0cmFjdChzZWxmKSAtPiBzdHI6CiAgICAgICAgcmV0dXJuIHNlbGYuX2QuZ2V0KCJhYnN0cmFjdCIsICIiKSBvciAiIgoKICAgIEBwcm9wZXJ0eQogICAgZGVmIHllYXIoc2VsZikgLT4gT3B0aW9uYWxbaW50XToKICAgICAgICByZXR1cm4gc2VsZi5fZC5nZXQoInllYXIiKQoKICAgIEBwcm9wZXJ0eQogICAgZGVmIHZlbnVlKHNlbGYpIC0+IHN0cjoKICAgICAgICByZXR1cm4gc2VsZi5fZC5nZXQoInZlbnVlIiwgIiIpIG9yICIiCgogICAgQHByb3BlcnR5CiAgICBkZWYgY2l0YXRpb25fY291bnQoc2VsZikgLT4gaW50OgogICAgICAgIHJldHVybiBzZWxmLl9kLmdldCgiY2l0YXRpb25Db3VudCIsIDApIG9yIDAKCiAgICBAcHJvcGVydHkKICAgIGRlZiBhdXRob3JzKHNlbGYpIC0+IExpc3Rbc3RyXToKICAgICAgICByZXR1cm4gW2EuZ2V0KCJuYW1lIiwgIiIpIGZvciBhIGluIHNlbGYuX2QuZ2V0KCJhdXRob3JzIiwgW10pIG9yIFtdIGlmIGEuZ2V0KCJuYW1lIildCgogICAgQHByb3BlcnR5CiAgICBkZWYgb3Blbl9hY2Nlc3NfcGRmKHNlbGYpIC0+IE9wdGlvbmFsW3N0cl06CiAgICAgICAgcGRmID0gc2VsZi5fZC5nZXQoIm9wZW5BY2Nlc3NQZGYiKQogICAgICAgIGlmIHBkZjoKICAgICAgICAgICAgcmV0dXJuIHBkZi5nZXQoInVybCIpIG9yIHBkZi5nZXQoInN0YXR1cyIpICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQogICAgICAgIHJldHVybiBOb25lCgogICAgQHByb3BlcnR5CiAgICBkZWYgZXh0ZXJuYWxfaWRzKHNlbGYpIC0+IERpY3Rbc3RyLCBzdHJdOgogICAgICAgIHJldHVybiBzZWxmLl9kLmdldCgiZXh0ZXJuYWxJZHMiLCB7fSkgb3Ige30KCiAgICBAcHJvcGVydHkKICAgIGRlZiBhcnhpdl9pZChzZWxmKSAtPiBPcHRpb25hbFtzdHJdOgogICAgICAgIGV4dCA9IHNlbGYuZXh0ZXJuYWxfaWRzCiAgICAgICAgcmV0dXJuIGV4dC5nZXQoIkFyWGl2Iikgb3IgZXh0LmdldCgiYXJYaXYiKQoKICAgIGRlZiB0b19wYXBlcihzZWxmKSAtPiBQYXBlcjoKICAgICAgICAiIiJDb252ZXJ0IHRvIGNvcmUuUGFwZXIuIiIiCiAgICAgICAgZnJvbSBjb3JlIGltcG9ydCBQYXBlciBhcyBDb3JlUGFwZXIKCiAgICAgICAgZXh0ID0gc2VsZi5leHRlcm5hbF9pZHMKICAgICAgICB1aWQgPSBzZWxmLmFyeGl2X2lkIG9yIHNlbGYucGFwZXJfaWQKICAgICAgICBwZGZfdXJsID0gc2VsZi5vcGVuX2FjY2Vzc19wZGYgb3IgIiIKICAgICAgICBpZiBub3QgcGRmX3VybCBhbmQgc2VsZi5hcnhpdl9pZDoKICAgICAgICAgICAgcGRmX3VybCA9IGYiaHR0cHM6Ly9hcnhpdi5vcmcvcGRmL3tzZWxmLmFyeGl2X2lkfS5wZGYiCgogICAgICAgIHJldHVybiBDb3JlUGFwZXIoCiAgICAgICAgICAgIHNvdXJjZT0ic2VtYW50aWNfc2Nob2xhciIsCiAgICAgICAgICAgIHVpZD11aWQsCiAgICAgICAgICAgIHRpdGxlPXNlbGYudGl0bGUsCiAgICAgICAgICAgIGF1dGhvcnM9c2VsZi5hdXRob3JzLAogICAgICAgICAgICBhYnN0cmFjdD1zZWxmLmFic3RyYWN0LAogICAgICAgICAgICBwdWJsaXNoZWQ9c3RyKHNlbGYueWVhcikgaWYgc2VsZi55ZWFyIGVsc2UgIiIsCiAgICAgICAgICAgIHVwZGF0ZWQ9IiIsCiAgICAgICAgICAgIGFic191cmw9ZiJodHRwczovL3d3dy5zZW1hbnRpY3NjaG9sYXIub3JnL3BhcGVyL3tzZWxmLnBhcGVyX2lkfSIsCiAgICAgICAgICAgIHBkZl91cmw9cGRmX3VybCwKICAgICAgICAgICAgcHJpbWFyeV9jYXRlZ29yeT1zZWxmLnZlbnVlLAogICAgICAgICAgICBjYXRlZ29yaWVzPSIiLAogICAgICAgICAgICBjb21tZW50PSIiLAogICAgICAgICAgICBqb3VybmFsX3JlZj1zZWxmLnZlbnVlLAogICAgICAgICAgICBkb2k9ZXh0LmdldCgiRE9JIiwgIiIpLAogICAgICAgICkK
+"""Semantic Scholar API search with retry logic."""
+import logging
+import time
+from typing import List, Optional, Dict, Any
+
+import httpx
+
+from core import Paper
+
+logger = logging.getLogger(__name__)
+
+_S2_API = "https://api.semanticscholar.org/graph/v1"
+_MAX_RETRIES = 3
+_RETRY_DELAY = 1.0
+
+
+def _get_client() -> httpx.Client:
+    """Create HTTP client with proper timeout and retry behavior."""
+    return httpx.Client(
+        timeout=30.0,
+        follow_redirects=True,
+    )
+
+
+def search_semantic_scholar(
+    query: str,
+    max_results: int = 10,
+    timeout: float = 30.0,
+    fields: Optional[List[str]] = None,
+) -> List["S2Paper"]:
+    """
+    Search Semantic Scholar by keyword with retry logic.
+
+    Args:
+        query: Search query
+        max_results: Number of papers to return (default 10)
+        timeout: Request timeout in seconds
+        fields: List of fields to request
+
+    Returns:
+        List of S2Paper dicts sorted by relevance
+    """
+    if fields is None:
+        fields = ["title", "authors", "abstract", "year", "venue", "citationCount", "openAccessPdf", "paperId"]
+
+    encoded_query = _urlencode(query)
+    url = (
+        f"{_S2_API}/paper/search?"
+        f"query={encoded_query}&"
+        f"limit={max_results}&"
+        f"fields={','.join(fields)}"
+    )
+
+    last_error: Exception = RuntimeError("unknown error")
+    for attempt in range(_MAX_RETRIES):
+        try:
+            with _get_client() as client:
+                r = client.get(url)
+                if r.status_code == 429:
+                    retry_after = int(r.headers.get("retry-after", "60"))
+                    logger.warning(f"Rate limited, waiting {retry_after}s")
+                    time.sleep(min(retry_after, 120))
+                    continue
+                r.raise_for_status()
+                data = r.json()
+                return [S2Paper(p) for p in data.get("data", [])]
+        except httpx.HTTPStatusError as e:
+            last_error = e
+            if r.status_code == 429:
+                continue
+            if attempt < _MAX_RETRIES - 1:
+                time.sleep(_RETRY_DELAY * (attempt + 1))
+            continue
+        except httpx.HTTPError as e:
+            last_error = e
+            if attempt < _MAX_RETRIES - 1:
+                time.sleep(_RETRY_DELAY * (attempt + 1))
+            continue
+
+    raise RuntimeError(f"Semantic Scholar search failed for '{query}' after {_MAX_RETRIES} attempts: {last_error}")
+
+
+def get_paper_by_id(paper_id: str, fields: Optional[List[str]] = None) -> Optional["S2Paper"]:
+    """Fetch a paper by Semantic Scholar ID."""
+    if fields is None:
+        fields = ["title", "authors", "abstract", "year", "venue", "citationCount", "openAccessPdf", "paperId", "externalIds"]
+
+    url = f"{_S2_API}/paper/{paper_id}?fields={','.join(fields)}"
+    try:
+        with _get_client() as client:
+            r = client.get(url)
+            r.raise_for_status()
+            return S2Paper(r.json())
+    except Exception as e:
+        logger.warning(f"Failed to fetch paper {paper_id}: {e}")
+        return None
+
+
+def get_citations(paper_id: str, limit: int = 100) -> List["S2Paper"]:
+    """Fetch papers that cite the given paper."""
+    url = (
+        f"{_S2_API}/paper/{paper_id}/citations?"
+        f"fields=title,authors,abstract,year,venue,citationCount,openAccessPdf,paperId&"
+        f"limit={limit}"
+    )
+    try:
+        with _get_client() as client:
+            r = client.get(url)
+            r.raise_for_status()
+            data = r.json()
+            return [S2Paper(c["citingPaper"]) for c in data.get("data", [])]
+    except Exception as e:
+        logger.warning(f"Failed to fetch citations for {paper_id}: {e}")
+        return []
+
+
+def get_references(paper_id: str, limit: int = 100) -> List["S2Paper"]:
+    """Fetch papers referenced by the given paper."""
+    url = (
+        f"{_S2_API}/paper/{paper_id}/references?"
+        f"fields=title,authors,abstract,year,venue,citationCount,openAccessPdf,paperId&"
+        f"limit={limit}"
+    )
+    try:
+        with _get_client() as client:
+            r = client.get(url)
+            r.raise_for_status()
+            data = r.json()
+            return [S2Paper(r["referencedPaper"]) for r in data.get("data", [])]
+    except Exception as e:
+        logger.warning(f"Failed to fetch references for {paper_id}: {e}")
+        return []
+
+
+def _urlencode(q: str) -> str:
+    import urllib.parse
+    return urllib.parse.quote_plus(q)
+
+
+class S2Paper:
+    """Wrapper for Semantic Scholar paper data."""
+
+    __slots__ = ("_d",)
+
+    def __init__(self, d: Dict[str, Any]):
+        self._d = d
+
+    @property
+    def paper_id(self) -> str:
+        return self._d.get("paperId", "")  # type: ignore[no-any-return]
+
+    @property
+    def title(self) -> str:
+        return self._d.get("title", "") or ""
+
+    @property
+    def abstract(self) -> str:
+        return self._d.get("abstract", "") or ""
+
+    @property
+    def year(self) -> Optional[int]:
+        return self._d.get("year")
+
+    @property
+    def venue(self) -> str:
+        return self._d.get("venue", "") or ""
+
+    @property
+    def citation_count(self) -> int:
+        return self._d.get("citationCount", 0) or 0
+
+    @property
+    def authors(self) -> List[str]:
+        return [a.get("name", "") for a in self._d.get("authors", []) or [] if a.get("name")]
+
+    @property
+    def open_access_pdf(self) -> Optional[str]:
+        pdf = self._d.get("openAccessPdf")
+        if pdf:
+            return pdf.get("url") or pdf.get("status")  # type: ignore[no-any-return]
+        return None
+
+    @property
+    def external_ids(self) -> Dict[str, str]:
+        return self._d.get("externalIds", {}) or {}
+
+    @property
+    def arxiv_id(self) -> Optional[str]:
+        ext = self.external_ids
+        return ext.get("ArXiv") or ext.get("arXiv")
+
+    def to_paper(self) -> Paper:
+        """Convert to core.Paper."""
+        from core import Paper as CorePaper
+        ext = self.external_ids
+        uid = self.arxiv_id or self.paper_id
+        pdf_url = self.open_access_pdf or ""
+        if not pdf_url and self.arxiv_id:
+            pdf_url = f"https://arxiv.org/pdf/{self.arxiv_id}.pdf"
+
+        return CorePaper(
+            source="semantic_scholar",
+            uid=uid,
+            title=self.title,
+            authors=self.authors,
+            abstract=self.abstract,
+            published=str(self.year) if self.year else "",
+            updated="",
+            abs_url=f"https://www.semanticscholar.org/paper/{self.paper_id}",
+            pdf_url=pdf_url,
+            primary_category=self.venue,
+            categories="",
+            comment="",
+            journal_ref=self.venue,
+            doi=ext.get("DOI", ""),
+        )

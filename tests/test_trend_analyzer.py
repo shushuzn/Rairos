@@ -1,1 +1,263 @@
-IiIiVGVzdHMgZm9yIHJlc2VhcmNoIHRyZW5kIGFuYWx5emVyLiIiIgoKZnJvbSBsbG0udHJlbmRfYW5hbHl6ZXIgaW1wb3J0ICgKICAgIFRyZW5kQW5hbHl6ZXIsCiAgICBUcmVuZERpcmVjdGlvbiwKICAgIFllYXJseVN0YXRzLAogICAgVHJlbmRLZXl3b3JkLAogICAgVHJlbmRBbmFseXNpc1Jlc3VsdCwKKQoKCmNsYXNzIFRlc3RUcmVuZEFuYWx5emVyOgogICAgIiIiVGVzdCBUcmVuZEFuYWx5emVyLiIiIgoKICAgIGRlZiB0ZXN0X2VtcHR5X3Jlc3VsdF93aGVuX25vX2RiKHNlbGYpOgogICAgICAgICIiIlRlc3QgZW1wdHkgcmVzdWx0IHdoZW4gbm8gREIgYXZhaWxhYmxlLiIiIgogICAgICAgIGFuYWx5emVyID0gVHJlbmRBbmFseXplcihkYj1Ob25lKQogICAgICAgIHJlc3VsdCA9IGFuYWx5emVyLmFuYWx5emUoIm5vbmV4aXN0ZW50X3RvcGljX3h5el8xMjMiKQoKICAgICAgICBhc3NlcnQgaXNpbnN0YW5jZShyZXN1bHQsIFRyZW5kQW5hbHlzaXNSZXN1bHQpCiAgICAgICAgYXNzZXJ0IHJlc3VsdC50b3BpYyA9PSAibm9uZXhpc3RlbnRfdG9waWNfeHl6XzEyMyIKICAgICAgICBhc3NlcnQgcmVzdWx0LnRvdGFsX3BhcGVycyA9PSAwCgogICAgZGVmIHRlc3RfdHJlbmRfZGlyZWN0aW9uX2VudW0oc2VsZik6CiAgICAgICAgIiIiVGVzdCBUcmVuZERpcmVjdGlvbiBlbnVtIHZhbHVlcy4iIiIKICAgICAgICBhc3NlcnQgVHJlbmREaXJlY3Rpb24uUklTSU5HLnZhbHVlID09ICJyaXNpbmciCiAgICAgICAgYXNzZXJ0IFRyZW5kRGlyZWN0aW9uLkZBTExJTkcudmFsdWUgPT0gImZhbGxpbmciCiAgICAgICAgYXNzZXJ0IFRyZW5kRGlyZWN0aW9uLkVNRVJHSU5HLnZhbHVlID09ICJlbWVyZ2luZyIKICAgICAgICBhc3NlcnQgVHJlbmREaXJlY3Rpb24uU1RBQkxFLnZhbHVlID09ICJzdGFibGUiCiAgICAgICAgYXNzZXJ0IFRyZW5kRGlyZWN0aW9uLlVOS05PV04udmFsdWUgPT0gInVua25vd24iCgogICAgZGVmIHRlc3RfeWVhcmx5X3N0YXRzX2NyZWF0aW9uKHNlbGYpOgogICAgICAgICIiIlRlc3QgWWVhcmx5U3RhdHMgZGF0YWNsYXNzLiIiIgogICAgICAgIHN0YXRzID0gWWVhcmx5U3RhdHMoCiAgICAgICAgICAgIHllYXI9MjAyNCwKICAgICAgICAgICAgcGFwZXJfY291bnQ9NTAsCiAgICAgICAgICAgIHRvdGFsX2NpdGF0aW9ucz01MDAsCiAgICAgICAgICAgIGF2Z19jaXRhdGlvbnM9MTAuMCwKICAgICAgICAgICAga2V5d29yZHM9eyJ0cmFuc2Zvcm1lciI6IDIwLCAiYXR0ZW50aW9uIjogMTV9LAogICAgICAgICkKCiAgICAgICAgYXNzZXJ0IHN0YXRzLnllYXIgPT0gMjAyNAogICAgICAgIGFzc2VydCBzdGF0cy5wYXBlcl9jb3VudCA9PSA1MAogICAgICAgIGFzc2VydCBzdGF0cy5hdmdfY2l0YXRpb25zID09IDEwLjAKICAgICAgICBhc3NlcnQgc3RhdHMua2V5d29yZHNbInRyYW5zZm9ybWVyIl0gPT0gMjAKCiAgICBkZWYgdGVzdF90cmVuZF9rZXl3b3JkX2NyZWF0aW9uKHNlbGYpOgogICAgICAgICIiIlRlc3QgVHJlbmRLZXl3b3JkIGRhdGFjbGFzcy4iIiIKICAgICAgICBrZXl3b3JkID0gVHJlbmRLZXl3b3JkKAogICAgICAgICAgICBrZXl3b3JkPSJ0cmFuc2Zvcm1lciIsCiAgICAgICAgICAgIGRpcmVjdGlvbj1UcmVuZERpcmVjdGlvbi5SSVNJTkcsCiAgICAgICAgICAgIHllYXJseV9jb3VudHM9ezIwMjI6IDEwLCAyMDIzOiAyNSwgMjAyNDogNTB9LAogICAgICAgICAgICBncm93dGhfcmF0ZT00MDAuMCwKICAgICAgICAgICAgcGVha195ZWFyPTIwMjQsCiAgICAgICAgICAgIGN1cnJlbnRfeWVhcl9jb3VudD01MCwKICAgICAgICAgICAgdmVsb2NpdHk9MTI1LjAsCiAgICAgICAgICAgIG1vbWVudHVtPTEuNSwKICAgICAgICApCgogICAgICAgIGFzc2VydCBrZXl3b3JkLmtleXdvcmQgPT0gInRyYW5zZm9ybWVyIgogICAgICAgIGFzc2VydCBrZXl3b3JkLmRpcmVjdGlvbiA9PSBUcmVuZERpcmVjdGlvbi5SSVNJTkcKICAgICAgICBhc3NlcnQga2V5d29yZC5ncm93dGhfcmF0ZSA9PSA0MDAuMAogICAgICAgIGFzc2VydCBrZXl3b3JkLnBlYWtfeWVhciA9PSAyMDI0CgogICAgZGVmIHRlc3RfY29tcHV0ZV90cmVuZF9yaXNpbmcoc2VsZik6CiAgICAgICAgIiIiVGVzdCByaXNpbmcgdHJlbmQgZGV0ZWN0aW9uLiIiIgogICAgICAgIGFuYWx5emVyID0gVHJlbmRBbmFseXplcigpCiAgICAgICAgeWVhcmx5X2NvdW50cyA9IHsyMDIyOiA1LCAyMDIzOiAxMCwgMjAyNDogMjB9CgogICAgICAgIHRyZW5kID0gYW5hbHl6ZXIuX2NvbXB1dGVfdHJlbmQoInRlc3Rfa2V5d29yZCIsIHllYXJseV9jb3VudHMsICgyMDIyLCAyMDI0KSkKCiAgICAgICAgYXNzZXJ0IHRyZW5kIGlzIG5vdCBOb25lCiAgICAgICAgYXNzZXJ0IHRyZW5kLmRpcmVjdGlvbiBpbiAoVHJlbmREaXJlY3Rpb24uUklTSU5HLCBUcmVuZERpcmVjdGlvbi5FTUVSR0lORykKICAgICAgICBhc3NlcnQgdHJlbmQuZ3Jvd3RoX3JhdGUgPiAwCiAgICAgICAgYXNzZXJ0IHRyZW5kLnBlYWtfeWVhciA9PSAyMDI0CgogICAgZGVmIHRlc3RfY29tcHV0ZV90cmVuZF9mYWxsaW5nKHNlbGYpOgogICAgICAgICIiIlRlc3QgZmFsbGluZyB0cmVuZCBkZXRlY3Rpb24uIiIiCiAgICAgICAgYW5hbHl6ZXIgPSBUcmVuZEFuYWx5emVyKCkKICAgICAgICB5ZWFybHlfY291bnRzID0gezIwMjI6IDUwLCAyMDIzOiAzMCwgMjAyNDogMTB9CgogICAgICAgIHRyZW5kID0gYW5hbHl6ZXIuX2NvbXB1dGVfdHJlbmQoInRlc3Rfa2V5d29yZCIsIHllYXJseV9jb3VudHMsICgyMDIyLCAyMDI0KSkKCiAgICAgICAgYXNzZXJ0IHRyZW5kIGlzIG5vdCBOb25lCiAgICAgICAgYXNzZXJ0IHRyZW5kLmRpcmVjdGlvbiA9PSBUcmVuZERpcmVjdGlvbi5GQUxMSU5HCiAgICAgICAgYXNzZXJ0IHRyZW5kLmdyb3d0aF9yYXRlIDwgMAoKICAgIGRlZiB0ZXN0X2NvbXB1dGVfdHJlbmRfc3RhYmxlKHNlbGYpOgogICAgICAgICIiIlRlc3Qgc3RhYmxlIHRyZW5kIGRldGVjdGlvbi4iIiIKICAgICAgICBhbmFseXplciA9IFRyZW5kQW5hbHl6ZXIoKQogICAgICAgIHllYXJseV9jb3VudHMgPSB7MjAyMjogMTAsIDIwMjM6IDExLCAyMDI0OiAxMH0KCiAgICAgICAgdHJlbmQgPSBhbmFseXplci5fY29tcHV0ZV90cmVuZCgidGVzdF9rZXl3b3JkIiwgeWVhcmx5X2NvdW50cywgKDIwMjIsIDIwMjQpKQoKICAgICAgICBhc3NlcnQgdHJlbmQgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQgdHJlbmQuZGlyZWN0aW9uID09IFRyZW5kRGlyZWN0aW9uLlNUQUJMRQoKICAgIGRlZiB0ZXN0X2NvbXB1dGVfdHJlbmRfYWxsX3plcm9zKHNlbGYpOgogICAgICAgICIiIlRlc3QgdHJlbmQgd2l0aCBhbGwgemVyb3MgcmV0dXJucyBOb25lLiIiIgogICAgICAgIGFuYWx5emVyID0gVHJlbmRBbmFseXplcigpCiAgICAgICAgeWVhcmx5X2NvdW50cyA9IHsyMDIyOiAwLCAyMDIzOiAwLCAyMDI0OiAwfSAgIyBBbGwgemVybwoKICAgICAgICB0cmVuZCA9IGFuYWx5emVyLl9jb21wdXRlX3RyZW5kKCJ0ZXN0X2tleXdvcmQiLCB5ZWFybHlfY291bnRzLCAoMjAyMiwgMjAyNCkpCgogICAgICAgIGFzc2VydCB0cmVuZCBpcyBOb25lICAjIFNob3VsZCByZXR1cm4gTm9uZSBmb3IgYWxsIHplcm9zCgogICAgZGVmIHRlc3RfY29tcHV0ZV9ncm93dGhfcmF0ZShzZWxmKToKICAgICAgICAiIiJUZXN0IGdyb3d0aCByYXRlIGNhbGN1bGF0aW9uLiIiIgogICAgICAgIGFuYWx5emVyID0gVHJlbmRBbmFseXplcigpCiAgICAgICAgc3RhdHMgPSBbCiAgICAgICAgICAgIFllYXJseVN0YXRzKHllYXI9MjAyMiwgcGFwZXJfY291bnQ9MTAsIHRvdGFsX2NpdGF0aW9ucz0xMDAsIGF2Z19jaXRhdGlvbnM9MTAuMCksCiAgICAgICAgICAgIFllYXJseVN0YXRzKHllYXI9MjAyMywgcGFwZXJfY291bnQ9MjAsIHRvdGFsX2NpdGF0aW9ucz0yMDAsIGF2Z19jaXRhdGlvbnM9MTAuMCksCiAgICAgICAgICAgIFllYXJseVN0YXRzKHllYXI9MjAyNCwgcGFwZXJfY291bnQ9NDAsIHRvdGFsX2NpdGF0aW9ucz00MDAsIGF2Z19jaXRhdGlvbnM9MTAuMCksCiAgICAgICAgXQoKICAgICAgICBncm93dGggPSBhbmFseXplci5fY29tcHV0ZV9ncm93dGhfcmF0ZShzdGF0cykKCiAgICAgICAgYXNzZXJ0IGdyb3d0aCA9PSAzMDAuMCAgIyAoNDAtMTApLzEwICogMTAwCgogICAgZGVmIHRlc3RfY29tcHV0ZV9ncm93dGhfcmF0ZV9lbXB0eShzZWxmKToKICAgICAgICAiIiJUZXN0IGdyb3d0aCByYXRlIHdpdGggZW1wdHkgc3RhdHMuIiIiCiAgICAgICAgYW5hbHl6ZXIgPSBUcmVuZEFuYWx5emVyKCkKICAgICAgICBncm93dGggPSBhbmFseXplci5fY29tcHV0ZV9ncm93dGhfcmF0ZShbXSkKICAgICAgICBhc3NlcnQgZ3Jvd3RoID09IDAuMAoKICAgIGRlZiB0ZXN0X2NvbXB1dGVfZ3Jvd3RoX3JhdGVfc2luZ2xlX3llYXIoc2VsZik6CiAgICAgICAgIiIiVGVzdCBncm93dGggcmF0ZSB3aXRoIHNpbmdsZSB5ZWFyLiIiIgogICAgICAgIGFuYWx5emVyID0gVHJlbmRBbmFseXplcigpCiAgICAgICAgc3RhdHMgPSBbCiAgICAgICAgICAgIFllYXJseVN0YXRzKHllYXI9MjAyNCwgcGFwZXJfY291bnQ9MTAsIHRvdGFsX2NpdGF0aW9ucz0xMDAsIGF2Z19jaXRhdGlvbnM9MTAuMCksCiAgICAgICAgXQogICAgICAgIGdyb3d0aCA9IGFuYWx5emVyLl9jb21wdXRlX2dyb3d0aF9yYXRlKHN0YXRzKQogICAgICAgIGFzc2VydCBncm93dGggPT0gMC4wCgogICAgZGVmIHRlc3RfcmVuZGVyX3Jlc3VsdChzZWxmKToKICAgICAgICAiIiJUZXN0IHJlc3VsdCByZW5kZXJpbmcuIiIiCiAgICAgICAgYW5hbHl6ZXIgPSBUcmVuZEFuYWx5emVyKCkKICAgICAgICByZXN1bHQgPSBUcmVuZEFuYWx5c2lzUmVzdWx0KAogICAgICAgICAgICB0b3BpYz0iVHJhbnNmb3JtZXIiLAogICAgICAgICAgICB5ZWFyX3JhbmdlPSgyMDIyLCAyMDI0KSwKICAgICAgICAgICAgdG90YWxfcGFwZXJzPTEwMCwKICAgICAgICAgICAgeWVhcmx5X2Rpc3RyaWJ1dGlvbj1bCiAgICAgICAgICAgICAgICBZZWFybHlTdGF0cyh5ZWFyPTIwMjIsIHBhcGVyX2NvdW50PTIwLCB0b3RhbF9jaXRhdGlvbnM9MjAwLCBhdmdfY2l0YXRpb25zPTEwLjApLAogICAgICAgICAgICAgICAgWWVhcmx5U3RhdHMoeWVhcj0yMDIzLCBwYXBlcl9jb3VudD0zNSwgdG90YWxfY2l0YXRpb25zPTM1MCwgYXZnX2NpdGF0aW9ucz0xMC4wKSwKICAgICAgICAgICAgICAgIFllYXJseVN0YXRzKHllYXI9MjAyNCwgcGFwZXJfY291bnQ9NDUsIHRvdGFsX2NpdGF0aW9ucz00NTAsIGF2Z19jaXRhdGlvbnM9MTAuMCksCiAgICAgICAgICAgIF0sCiAgICAgICAgICAgIHJpc2luZ190cmVuZHM9WwogICAgICAgICAgICAgICAgVHJlbmRLZXl3b3JkKAogICAgICAgICAgICAgICAgICAgIGtleXdvcmQ9ImF0dGVudGlvbiIsCiAgICAgICAgICAgICAgICAgICAgZGlyZWN0aW9uPVRyZW5kRGlyZWN0aW9uLlJJU0lORywKICAgICAgICAgICAgICAgICAgICB5ZWFybHlfY291bnRzPXsyMDIyOiAxMCwgMjAyMzogMjAsIDIwMjQ6IDMwfSwKICAgICAgICAgICAgICAgICAgICBncm93dGhfcmF0ZT0yMDAuMCwKICAgICAgICAgICAgICAgICAgICBwZWFrX3llYXI9MjAyNCwKICAgICAgICAgICAgICAgICAgICBjdXJyZW50X3llYXJfY291bnQ9MzAsCiAgICAgICAgICAgICAgICApLAogICAgICAgICAgICBdLAogICAgICAgICAgICBncm93dGhfcmF0ZT0xMjUuMCwKICAgICAgICApCgogICAgICAgIG91dHB1dCA9IGFuYWx5emVyLnJlbmRlcl9yZXN1bHQocmVzdWx0KQoKICAgICAgICBhc3NlcnQgIlRyYW5zZm9ybWVyIiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIjEwMCIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICIxMjUiIGluIG91dHB1dCBvciAiMTI1LjAiIGluIG91dHB1dAogICAgICAgIGFzc2VydCAiYXR0ZW50aW9uIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9yZW5kZXJfbWVybWFpZF90aW1lbGluZShzZWxmKToKICAgICAgICAiIiJUZXN0IE1lcm1haWQgdGltZWxpbmUgcmVuZGVyaW5nLiIiIgogICAgICAgIGFuYWx5emVyID0gVHJlbmRBbmFseXplcigpCiAgICAgICAgcmVzdWx0ID0gVHJlbmRBbmFseXNpc1Jlc3VsdCgKICAgICAgICAgICAgdG9waWM9IkxMTSIsCiAgICAgICAgICAgIHllYXJfcmFuZ2U9KDIwMjIsIDIwMjQpLAogICAgICAgICAgICB0b3RhbF9wYXBlcnM9NTAsCiAgICAgICAgICAgIGVtZXJnaW5nX3RyZW5kcz1bCiAgICAgICAgICAgICAgICBUcmVuZEtleXdvcmQoCiAgICAgICAgICAgICAgICAgICAga2V5d29yZD0ic2NhbGluZyIsCiAgICAgICAgICAgICAgICAgICAgZGlyZWN0aW9uPVRyZW5kRGlyZWN0aW9uLkVNRVJHSU5HLAogICAgICAgICAgICAgICAgICAgIHllYXJseV9jb3VudHM9ezIwMjI6IDUsIDIwMjM6IDE1LCAyMDI0OiA0MH0sCiAgICAgICAgICAgICAgICAgICAgZ3Jvd3RoX3JhdGU9NzAwLjAsCiAgICAgICAgICAgICAgICAgICAgcGVha195ZWFyPTIwMjQsCiAgICAgICAgICAgICAgICAgICAgY3VycmVudF95ZWFyX2NvdW50PTQwLAogICAgICAgICAgICAgICAgKSwKICAgICAgICAgICAgXSwKICAgICAgICAgICAgcmlzaW5nX3RyZW5kcz1bCiAgICAgICAgICAgICAgICBUcmVuZEtleXdvcmQoCiAgICAgICAgICAgICAgICAgICAga2V5d29yZD0icmxoZiIsCiAgICAgICAgICAgICAgICAgICAgZGlyZWN0aW9uPVRyZW5kRGlyZWN0aW9uLlJJU0lORywKICAgICAgICAgICAgICAgICAgICB5ZWFybHlfY291bnRzPXsyMDIyOiA4LCAyMDIzOiAxMiwgMjAyNDogMTh9LAogICAgICAgICAgICAgICAgICAgIGdyb3d0aF9yYXRlPTEyNS4wLAogICAgICAgICAgICAgICAgICAgIHBlYWtfeWVhcj0yMDI0LAogICAgICAgICAgICAgICAgICAgIGN1cnJlbnRfeWVhcl9jb3VudD0xOCwKICAgICAgICAgICAgICAgICksCiAgICAgICAgICAgIF0sCiAgICAgICAgKQoKICAgICAgICBvdXRwdXQgPSBhbmFseXplci5yZW5kZXJfbWVybWFpZF90aW1lbGluZShyZXN1bHQpCgogICAgICAgIGFzc2VydCAiZ2FudHQiIGluIG91dHB1dAogICAgICAgIGFzc2VydCAiTExNIiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgInNjYWxpbmciIGluIG91dHB1dAogICAgICAgIGFzc2VydCAicmxoZiIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfcmVuZGVyX21lcm1haWRfdGltZWxpbmVfdjIoc2VsZik6CiAgICAgICAgIiIiVGVzdCBNZXJtYWlkIFhZQ2hhcnQgcmVuZGVyaW5nLiIiIgogICAgICAgIGFuYWx5emVyID0gVHJlbmRBbmFseXplcigpCiAgICAgICAgcmVzdWx0ID0gVHJlbmRBbmFseXNpc1Jlc3VsdCgKICAgICAgICAgICAgdG9waWM9IlZpc2lvbiIsCiAgICAgICAgICAgIHllYXJfcmFuZ2U9KDIwMjIsIDIwMjQpLAogICAgICAgICAgICB0b3RhbF9wYXBlcnM9MzAsCiAgICAgICAgICAgIHJpc2luZ190cmVuZHM9WwogICAgICAgICAgICAgICAgVHJlbmRLZXl3b3JkKAogICAgICAgICAgICAgICAgICAgIGtleXdvcmQ9InZpdCIsCiAgICAgICAgICAgICAgICAgICAgZGlyZWN0aW9uPVRyZW5kRGlyZWN0aW9uLlJJU0lORywKICAgICAgICAgICAgICAgICAgICB5ZWFybHlfY291bnRzPXsyMDIyOiAxMCwgMjAyMzogMjAsIDIwMjQ6IDM1fSwKICAgICAgICAgICAgICAgICAgICBncm93dGhfcmF0ZT0yNTAuMCwKICAgICAgICAgICAgICAgICAgICBwZWFrX3llYXI9MjAyNCwKICAgICAgICAgICAgICAgICAgICBjdXJyZW50X3llYXJfY291bnQ9MzUsCiAgICAgICAgICAgICAgICApLAogICAgICAgICAgICBdLAogICAgICAgICkKCiAgICAgICAgb3V0cHV0ID0gYW5hbHl6ZXIucmVuZGVyX21lcm1haWRfdGltZWxpbmVfdjIocmVzdWx0KQoKICAgICAgICBhc3NlcnQgInh5Y2hhcnQtYmV0YSIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICJWaXNpb24iIGluIG91dHB1dAogICAgICAgIGFzc2VydCAidml0IiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9lbXB0eV9yZXN1bHQoc2VsZik6CiAgICAgICAgIiIiVGVzdCBlbXB0eSByZXN1bHQgaGFuZGxpbmcuIiIiCiAgICAgICAgYW5hbHl6ZXIgPSBUcmVuZEFuYWx5emVyKCkKICAgICAgICByZXN1bHQgPSBhbmFseXplci5fZW1wdHlfcmVzdWx0KCJUZXN0IFRvcGljIiwgKDIwMjAsIDIwMjQpKQoKICAgICAgICBhc3NlcnQgcmVzdWx0LnRvcGljID09ICJUZXN0IFRvcGljIgogICAgICAgIGFzc2VydCByZXN1bHQueWVhcl9yYW5nZSA9PSAoMjAyMCwgMjAyNCkKICAgICAgICBhc3NlcnQgcmVzdWx0LnRvdGFsX3BhcGVycyA9PSAwCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHQucmlzaW5nX3RyZW5kcykgPT0gMAoKICAgIGRlZiB0ZXN0X3RlY2hfa2V5d29yZHNfbGlzdChzZWxmKToKICAgICAgICAiIiJUZXN0IHRoYXQgVEVDSF9LRVlXT1JEUyBjb250YWlucyBleHBlY3RlZCB0ZXJtcy4iIiIKICAgICAgICBhbmFseXplciA9IFRyZW5kQW5hbHl6ZXIoKQoKICAgICAgICBleHBlY3RlZF9rZXl3b3JkcyA9IFsKICAgICAgICAgICAgInRyYW5zZm9ybWVyIiwKICAgICAgICAgICAgImF0dGVudGlvbiIsCiAgICAgICAgICAgICJiZXJ0IiwKICAgICAgICAgICAgImdwdCIsCiAgICAgICAgICAgICJsbG0iLAogICAgICAgICAgICAibmV1cmFsIiwKICAgICAgICAgICAgImVtYmVkZGluZyIsCiAgICAgICAgICAgICJmaW5lLXR1bmluZyIsCiAgICAgICAgICAgICJybGhmIiwKICAgICAgICAgICAgInJhZyIsCiAgICAgICAgICAgICJkaWZmdXNpb24iLAogICAgICAgICAgICAiZ2FuIiwKICAgICAgICAgICAgImNsaXAiLAogICAgICAgICAgICAidml0IiwKICAgICAgICAgICAgIm11bHRpbW9kYWwiLAogICAgICAgICAgICAicHJlLXRyYWluaW5nIiwKICAgICAgICAgICAgInJlYXNvbmluZyIsCiAgICAgICAgXQoKICAgICAgICBmb3Iga3cgaW4gZXhwZWN0ZWRfa2V5d29yZHM6CiAgICAgICAgICAgIGFzc2VydCBrdyBpbiBhbmFseXplci5URUNIX0tFWVdPUkRTLCBmIntrd30gbm90IGluIFRFQ0hfS0VZV09SRFMiCg==
+"""Tests for research trend analyzer."""
+
+from llm.trend_analyzer import (
+    TrendAnalyzer,
+    TrendDirection,
+    YearlyStats,
+    TrendKeyword,
+    TrendAnalysisResult,
+)
+
+
+class TestTrendAnalyzer:
+    """Test TrendAnalyzer."""
+
+    def test_empty_result_when_no_db(self):
+        """Test empty result when no DB available."""
+        analyzer = TrendAnalyzer(db=None)
+        result = analyzer.analyze("nonexistent_topic_xyz_123")
+
+        assert isinstance(result, TrendAnalysisResult)
+        assert result.topic == "nonexistent_topic_xyz_123"
+        assert result.total_papers == 0
+
+    def test_trend_direction_enum(self):
+        """Test TrendDirection enum values."""
+        assert TrendDirection.RISING.value == "rising"
+        assert TrendDirection.FALLING.value == "falling"
+        assert TrendDirection.EMERGING.value == "emerging"
+        assert TrendDirection.STABLE.value == "stable"
+        assert TrendDirection.UNKNOWN.value == "unknown"
+
+    def test_yearly_stats_creation(self):
+        """Test YearlyStats dataclass."""
+        stats = YearlyStats(
+            year=2024,
+            paper_count=50,
+            total_citations=500,
+            avg_citations=10.0,
+            keywords={"transformer": 20, "attention": 15},
+        )
+
+        assert stats.year == 2024
+        assert stats.paper_count == 50
+        assert stats.avg_citations == 10.0
+        assert stats.keywords["transformer"] == 20
+
+    def test_trend_keyword_creation(self):
+        """Test TrendKeyword dataclass."""
+        keyword = TrendKeyword(
+            keyword="transformer",
+            direction=TrendDirection.RISING,
+            yearly_counts={2022: 10, 2023: 25, 2024: 50},
+            growth_rate=400.0,
+            peak_year=2024,
+            current_year_count=50,
+            velocity=125.0,
+            momentum=1.5,
+        )
+
+        assert keyword.keyword == "transformer"
+        assert keyword.direction == TrendDirection.RISING
+        assert keyword.growth_rate == 400.0
+        assert keyword.peak_year == 2024
+
+    def test_compute_trend_rising(self):
+        """Test rising trend detection."""
+        analyzer = TrendAnalyzer()
+        yearly_counts = {2022: 5, 2023: 10, 2024: 20}
+
+        trend = analyzer._compute_trend("test_keyword", yearly_counts, (2022, 2024))
+
+        assert trend is not None
+        assert trend.direction in (TrendDirection.RISING, TrendDirection.EMERGING)
+        assert trend.growth_rate > 0
+        assert trend.peak_year == 2024
+
+    def test_compute_trend_falling(self):
+        """Test falling trend detection."""
+        analyzer = TrendAnalyzer()
+        yearly_counts = {2022: 50, 2023: 30, 2024: 10}
+
+        trend = analyzer._compute_trend("test_keyword", yearly_counts, (2022, 2024))
+
+        assert trend is not None
+        assert trend.direction == TrendDirection.FALLING
+        assert trend.growth_rate < 0
+
+    def test_compute_trend_stable(self):
+        """Test stable trend detection."""
+        analyzer = TrendAnalyzer()
+        yearly_counts = {2022: 10, 2023: 11, 2024: 10}
+
+        trend = analyzer._compute_trend("test_keyword", yearly_counts, (2022, 2024))
+
+        assert trend is not None
+        assert trend.direction == TrendDirection.STABLE
+
+    def test_compute_trend_all_zeros(self):
+        """Test trend with all zeros returns None."""
+        analyzer = TrendAnalyzer()
+        yearly_counts = {2022: 0, 2023: 0, 2024: 0}  # All zero
+
+        trend = analyzer._compute_trend("test_keyword", yearly_counts, (2022, 2024))
+
+        assert trend is None  # Should return None for all zeros
+
+    def test_compute_growth_rate(self):
+        """Test growth rate calculation."""
+        analyzer = TrendAnalyzer()
+        stats = [
+            YearlyStats(year=2022, paper_count=10, total_citations=100, avg_citations=10.0),
+            YearlyStats(year=2023, paper_count=20, total_citations=200, avg_citations=10.0),
+            YearlyStats(year=2024, paper_count=40, total_citations=400, avg_citations=10.0),
+        ]
+
+        growth = analyzer._compute_growth_rate(stats)
+
+        assert growth == 300.0  # (40-10)/10 * 100
+
+    def test_compute_growth_rate_empty(self):
+        """Test growth rate with empty stats."""
+        analyzer = TrendAnalyzer()
+        growth = analyzer._compute_growth_rate([])
+        assert growth == 0.0
+
+    def test_compute_growth_rate_single_year(self):
+        """Test growth rate with single year."""
+        analyzer = TrendAnalyzer()
+        stats = [
+            YearlyStats(year=2024, paper_count=10, total_citations=100, avg_citations=10.0),
+        ]
+        growth = analyzer._compute_growth_rate(stats)
+        assert growth == 0.0
+
+    def test_render_result(self):
+        """Test result rendering."""
+        analyzer = TrendAnalyzer()
+        result = TrendAnalysisResult(
+            topic="Transformer",
+            year_range=(2022, 2024),
+            total_papers=100,
+            yearly_distribution=[
+                YearlyStats(year=2022, paper_count=20, total_citations=200, avg_citations=10.0),
+                YearlyStats(year=2023, paper_count=35, total_citations=350, avg_citations=10.0),
+                YearlyStats(year=2024, paper_count=45, total_citations=450, avg_citations=10.0),
+            ],
+            rising_trends=[
+                TrendKeyword(
+                    keyword="attention",
+                    direction=TrendDirection.RISING,
+                    yearly_counts={2022: 10, 2023: 20, 2024: 30},
+                    growth_rate=200.0,
+                    peak_year=2024,
+                    current_year_count=30,
+                ),
+            ],
+            growth_rate=125.0,
+        )
+
+        output = analyzer.render_result(result)
+
+        assert "Transformer" in output
+        assert "100" in output
+        assert "125" in output or "125.0" in output
+        assert "attention" in output
+
+    def test_render_mermaid_timeline(self):
+        """Test Mermaid timeline rendering."""
+        analyzer = TrendAnalyzer()
+        result = TrendAnalysisResult(
+            topic="LLM",
+            year_range=(2022, 2024),
+            total_papers=50,
+            emerging_trends=[
+                TrendKeyword(
+                    keyword="scaling",
+                    direction=TrendDirection.EMERGING,
+                    yearly_counts={2022: 5, 2023: 15, 2024: 40},
+                    growth_rate=700.0,
+                    peak_year=2024,
+                    current_year_count=40,
+                ),
+            ],
+            rising_trends=[
+                TrendKeyword(
+                    keyword="rlhf",
+                    direction=TrendDirection.RISING,
+                    yearly_counts={2022: 8, 2023: 12, 2024: 18},
+                    growth_rate=125.0,
+                    peak_year=2024,
+                    current_year_count=18,
+                ),
+            ],
+        )
+
+        output = analyzer.render_mermaid_timeline(result)
+
+        assert "gantt" in output
+        assert "LLM" in output
+        assert "scaling" in output
+        assert "rlhf" in output
+
+    def test_render_mermaid_timeline_v2(self):
+        """Test Mermaid XYChart rendering."""
+        analyzer = TrendAnalyzer()
+        result = TrendAnalysisResult(
+            topic="Vision",
+            year_range=(2022, 2024),
+            total_papers=30,
+            rising_trends=[
+                TrendKeyword(
+                    keyword="vit",
+                    direction=TrendDirection.RISING,
+                    yearly_counts={2022: 10, 2023: 20, 2024: 35},
+                    growth_rate=250.0,
+                    peak_year=2024,
+                    current_year_count=35,
+                ),
+            ],
+        )
+
+        output = analyzer.render_mermaid_timeline_v2(result)
+
+        assert "xychart-beta" in output
+        assert "Vision" in output
+        assert "vit" in output
+
+    def test_empty_result(self):
+        """Test empty result handling."""
+        analyzer = TrendAnalyzer()
+        result = analyzer._empty_result("Test Topic", (2020, 2024))
+
+        assert result.topic == "Test Topic"
+        assert result.year_range == (2020, 2024)
+        assert result.total_papers == 0
+        assert len(result.rising_trends) == 0
+
+    def test_tech_keywords_list(self):
+        """Test that TECH_KEYWORDS contains expected terms."""
+        analyzer = TrendAnalyzer()
+
+        expected_keywords = [
+            "transformer",
+            "attention",
+            "bert",
+            "gpt",
+            "llm",
+            "neural",
+            "embedding",
+            "fine-tuning",
+            "rlhf",
+            "rag",
+            "diffusion",
+            "gan",
+            "clip",
+            "vit",
+            "multimodal",
+            "pre-training",
+            "reasoning",
+        ]
+
+        for kw in expected_keywords:
+            assert kw in analyzer.TECH_KEYWORDS, f"{kw} not in TECH_KEYWORDS"

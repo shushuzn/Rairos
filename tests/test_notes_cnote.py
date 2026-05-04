@@ -1,1 +1,427 @@
-IiIiClRlc3RzIGZvciBub3Rlcy9jbm90ZS5weSDigJQgQy1ub3RlIGNyZWF0aW9uLCBsaW5rIG1hbmFnZW1lbnQsIGFuZCBBSSBhdXRvLWZpbGwuCkNvdmVyczogZW5zdXJlX2Nub3RlLCB1cHNlcnRfbGlua191bmRlcl9oZWFkaW5nLCB1cGRhdGVfY25vdGVfbGlua3MsCiAgICAgICAgX3NlY3Rpb25faXNfZW1wdHksIF9maWxsX2Nub3RlX3NlY3Rpb24sIF9wYXJzZV9jbm90ZV9zZWN0aW9ucywKICAgICAgICBhdXRvX2ZpbGxfY25vdGVzX3dpdGhfYWkKIiIiCgppbXBvcnQgcmUKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdW5pdHRlc3QubW9jayBpbXBvcnQgcGF0Y2gKCmltcG9ydCBzeXMKCnN5cy5wYXRoLmluc2VydCgwLCBzdHIoUGF0aChfX2ZpbGVfXykucmVzb2x2ZSgpLnBhcmVudC5wYXJlbnQpKQpmcm9tIG5vdGVzLmNub3RlIGltcG9ydCAoCiAgICBlbnN1cmVfY25vdGUsCiAgICB1cHNlcnRfbGlua191bmRlcl9oZWFkaW5nLAogICAgX3NlY3Rpb25faXNfZW1wdHksCiAgICBfZmlsbF9jbm90ZV9zZWN0aW9uLAogICAgX3BhcnNlX2Nub3RlX3NlY3Rpb25zLAogICAgYXV0b19maWxsX2Nub3Rlc193aXRoX2FpLAopCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgVGVzdCBlbnN1cmVfY25vdGUKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CgoKY2xhc3MgVGVzdEVuc3VyZUNub3RlOgogICAgZGVmIHRlc3RfY3JlYXRlc19jbm90ZV9maWxlKHNlbGYsIHRtcF9wYXRoKToKICAgICAgICBwYXRoID0gZW5zdXJlX2Nub3RlKHRtcF9wYXRoLCAiVGVzdENvbmNlcHQiKQogICAgICAgIGFzc2VydCBwYXRoLm5hbWUgPT0gIkMgLSBUZXN0Q29uY2VwdC5tZCIKICAgICAgICBhc3NlcnQgcGF0aC5leGlzdHMoKQoKICAgIGRlZiB0ZXN0X2NyZWF0ZXNfY29ycmVjdF9jb250ZW50KHNlbGYsIHRtcF9wYXRoKToKICAgICAgICBwYXRoID0gZW5zdXJlX2Nub3RlKHRtcF9wYXRoLCAiVGVzdENvbmNlcHQiKQogICAgICAgIGNvbnRlbnQgPSBwYXRoLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQogICAgICAgIGFzc2VydCAiIyBUZXN0Q29uY2VwdCIgaW4gY29udGVudAogICAgICAgIGFzc2VydCAiIyMg5qC45b+D5a6a5LmJIiBpbiBjb250ZW50CiAgICAgICAgYXNzZXJ0ICIjIyDkuqfnlJ/og4zmma8iIGluIGNvbnRlbnQKICAgICAgICBhc3NlcnQgIiMjIOaKgOacr+acrOi0qCIgaW4gY29udGVudAoKICAgIGRlZiB0ZXN0X2RvZXNfbm90X292ZXJ3cml0ZV9leGlzdGluZyhzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgZXhpc3RpbmcgPSB0bXBfcGF0aCAvICJDIC0gRXhpc3RpbmcubWQiCiAgICAgICAgZXhpc3Rpbmcud3JpdGVfdGV4dCgiZXhpc3RpbmcgY29udGVudCIsIGVuY29kaW5nPSJ1dGYtOCIpCiAgICAgICAgcGF0aCA9IGVuc3VyZV9jbm90ZSh0bXBfcGF0aCwgIkV4aXN0aW5nIikKICAgICAgICBhc3NlcnQgcGF0aC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikgPT0gImV4aXN0aW5nIGNvbnRlbnQiCgogICAgZGVmIHRlc3RfcmV0dXJuc19wYXRoX2V2ZW5faWZfZXhpc3RzKHNlbGYsIHRtcF9wYXRoKToKICAgICAgICBwYXRoID0gZW5zdXJlX2Nub3RlKHRtcF9wYXRoLCAiVGVzdENvbmNlcHQiKQogICAgICAgIHBhdGgyID0gZW5zdXJlX2Nub3RlKHRtcF9wYXRoLCAiVGVzdENvbmNlcHQiKQogICAgICAgIGFzc2VydCBwYXRoID09IHBhdGgyCgogICAgZGVmIHRlc3RfY29uY2VwdF93aXRoX3NwYWNlcyhzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgcGF0aCA9IGVuc3VyZV9jbm90ZSh0bXBfcGF0aCwgIlRlc3QgQ29uY2VwdCIpCiAgICAgICAgYXNzZXJ0IHBhdGgubmFtZSA9PSAiQyAtIFRlc3QgQ29uY2VwdC5tZCIKCiAgICBkZWYgdGVzdF9yZW5kZXJzX2luY2x1ZGVzX3N0YXR1c19mcm9udG1hdHRlcihzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgcGF0aCA9IGVuc3VyZV9jbm90ZSh0bXBfcGF0aCwgIlRlc3RDb25jZXB0IikKICAgICAgICBjb250ZW50ID0gcGF0aC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikKICAgICAgICBhc3NlcnQgInN0YXR1czoiIGluIGNvbnRlbnQKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBUZXN0IHVwc2VydF9saW5rX3VuZGVyX2hlYWRpbmcKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CgoKY2xhc3MgVGVzdFVwc2VydExpbmtVbmRlckhlYWRpbmc6CiAgICBkZWYgdGVzdF9oZWFkaW5nX25vdF9leGlzdHNfYXBwZW5kX3NlY3Rpb24oc2VsZik6CiAgICAgICAgbWQgPSAiIyBUZXN0RG9jXG5cblNvbWUgY29udGVudC4iCiAgICAgICAgcmVzdWx0ID0gdXBzZXJ0X2xpbmtfdW5kZXJfaGVhZGluZyhtZCwgIiMjIE5ld1NlY3Rpb24iLCAiLSBbW0xpbmtdXSIpCiAgICAgICAgYXNzZXJ0ICIjIyBOZXdTZWN0aW9uIiBpbiByZXN1bHQKICAgICAgICBhc3NlcnQgIltbTGlua11dIiBpbiByZXN1bHQKCiAgICBkZWYgdGVzdF9oZWFkaW5nX25vdF9leGlzdHNfc3RyaXBzX2hhc2hfcHJlZml4KHNlbGYpOgogICAgICAgIG1kID0gIiMgVGVzdERvYyIKICAgICAgICByZXN1bHQgPSB1cHNlcnRfbGlua191bmRlcl9oZWFkaW5nKG1kLCAiIyMgTmV3U2VjdGlvbiIsICItIFtbTGlua11dIikKICAgICAgICBhc3NlcnQgIiMjIE5ld1NlY3Rpb24iIGluIHJlc3VsdAoKICAgIGRlZiB0ZXN0X2hlYWRpbmdfZXhpc3RzX2FwcGVuZHNfdG9fc2VjdGlvbihzZWxmKToKICAgICAgICBtZCA9ICIjIFRlc3REb2NcblxuIyMgVGFyZ2V0XG5cbi0gW1tPbGRMaW5rXV1cblxuTW9yZSBjb250ZW50LiIKICAgICAgICByZXN1bHQgPSB1cHNlcnRfbGlua191bmRlcl9oZWFkaW5nKG1kLCAiIyMgVGFyZ2V0IiwgIi0gW1tOZXdMaW5rXV0iKQogICAgICAgICMgTmV3IGxpbmsgc2hvdWxkIGNvbWUgYmVmb3JlIG9sZCBjb250ZW50IChvbGQgbGluayByZW1vdmVkKQogICAgICAgIGFzc2VydCAiW1tOZXdMaW5rXV0iIGluIHJlc3VsdAogICAgICAgIGFzc2VydCAiW1tPbGRMaW5rXV0iIG5vdCBpbiByZXN1bHQKCiAgICBkZWYgdGVzdF9leGlzdGluZ193aWtpbGlua19yZW1vdmVkX2JlZm9yZV9pbnNlcnQoc2VsZik6CiAgICAgICAgbWQgPSAiIyMgU2VjdGlvblxuXG4tIFtbT2xkTGlua11dIHNvbWUgdGV4dCIKICAgICAgICByZXN1bHQgPSB1cHNlcnRfbGlua191bmRlcl9oZWFkaW5nKG1kLCAiIyMgU2VjdGlvbiIsICItIFtbTmV3TGlua11dIikKICAgICAgICBhc3NlcnQgIltbT2xkTGlua11dIiBub3QgaW4gcmVzdWx0CiAgICAgICAgYXNzZXJ0ICJbW05ld0xpbmtdXSIgaW4gcmVzdWx0CgogICAgZGVmIHRlc3Rfc2VjdGlvbl93aXRoX25vX2V4aXN0aW5nX2xpbmsoc2VsZik6CiAgICAgICAgbWQgPSAiIyMgU2VjdGlvblxuXG5QbGFpbiBjb250ZW50IGhlcmUuIgogICAgICAgIHJlc3VsdCA9IHVwc2VydF9saW5rX3VuZGVyX2hlYWRpbmcobWQsICIjIyBTZWN0aW9uIiwgIi0gW1tOZXdMaW5rXV0iKQogICAgICAgIGFzc2VydCAiW1tOZXdMaW5rXV0iIGluIHJlc3VsdAogICAgICAgIGFzc2VydCAiUGxhaW4gY29udGVudCBoZXJlIiBpbiByZXN1bHQKCiAgICBkZWYgdGVzdF9zZWN0aW9uX2F0X2VuZF9vZl9maWxlKHNlbGYpOgogICAgICAgIG1kID0gIiMgRG9jXG5cbiMjIExhc3RTZWN0aW9uXG5cblNvbWUgdGV4dC4iCiAgICAgICAgcmVzdWx0ID0gdXBzZXJ0X2xpbmtfdW5kZXJfaGVhZGluZyhtZCwgIiMjIExhc3RTZWN0aW9uIiwgIi0gW1tMaW5rXV0iKQogICAgICAgIGFzc2VydCAiW1tMaW5rXV0iIGluIHJlc3VsdAoKICAgIGRlZiB0ZXN0X3ByZXNlcnZlc19jb250ZW50X2FmdGVyX3NlY3Rpb24oc2VsZik6CiAgICAgICAgbWQgPSAiIyMgU2VjdGlvblxuXG5Db250ZW50LlxuXG4jIyBOZXh0U2VjdGlvblxuXG5Nb3JlLiIKICAgICAgICByZXN1bHQgPSB1cHNlcnRfbGlua191bmRlcl9oZWFkaW5nKG1kLCAiIyMgU2VjdGlvbiIsICItIFtbTGlua11dIikKICAgICAgICBhc3NlcnQgIiMjIE5leHRTZWN0aW9uIiBpbiByZXN1bHQKICAgICAgICBhc3NlcnQgIltbTGlua11dIiBpbiByZXN1bHQKCiAgICBkZWYgdGVzdF9tdWx0aXBsZV93aWtpbGlua3NfcmVtb3ZlZChzZWxmKToKICAgICAgICBtZCA9ICIjIyBTZWN0aW9uXG5cbi0gW1tMaW5rMV1dXG4tIFtbTGluazJdXVxuLSBSZWd1bGFyIGxpbmUiCiAgICAgICAgcmVzdWx0ID0gdXBzZXJ0X2xpbmtfdW5kZXJfaGVhZGluZyhtZCwgIiMjIFNlY3Rpb24iLCAiLSBbW05ld0xpbmtdXSIpCiAgICAgICAgYXNzZXJ0ICJbW0xpbmsxXV0iIG5vdCBpbiByZXN1bHQKICAgICAgICBhc3NlcnQgIltbTGluazJdXSIgbm90IGluIHJlc3VsdAogICAgICAgIGFzc2VydCAiW1tOZXdMaW5rXV0iIGluIHJlc3VsdAogICAgICAgIGFzc2VydCAiUmVndWxhciBsaW5lIiBpbiByZXN1bHQKCiAgICBkZWYgdGVzdF9ub19oYXNoX3ByZWZpeF9pbl9oZWFkaW5nX2FyZyhzZWxmKToKICAgICAgICBtZCA9ICIjIERvYyIKICAgICAgICByZXN1bHQgPSB1cHNlcnRfbGlua191bmRlcl9oZWFkaW5nKG1kLCAiTXlIZWFkaW5nIiwgIi0gW1tMaW5rXV0iKQogICAgICAgIGFzc2VydCAiIyMgTXlIZWFkaW5nIiBpbiByZXN1bHQKICAgICAgICBhc3NlcnQgIltbTGlua11dIiBpbiByZXN1bHQKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBUZXN0IF9zZWN0aW9uX2lzX2VtcHR5CiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQoKCmNsYXNzIFRlc3RTZWN0aW9uSXNFbXB0eToKICAgIGRlZiB0ZXN0X21pc3Npbmdfc2VjdGlvbl9yZXR1cm5zX3RydWUoc2VsZik6CiAgICAgICAgbWQgPSAiIyBEb2NcblxuIyMgT3RoZXJcblxuQ29udGVudC4iCiAgICAgICAgYXNzZXJ0IF9zZWN0aW9uX2lzX2VtcHR5KG1kLCAiTWlzc2luZ1NlY3Rpb24iKSBpcyBUcnVlCgogICAgZGVmIHRlc3RfZW1wdHlfc2VjdGlvbl9yZXR1cm5zX3RydWUoc2VsZik6CiAgICAgICAgbWQgPSAiIyMgU2VjdGlvblxuXG4iCiAgICAgICAgYXNzZXJ0IF9zZWN0aW9uX2lzX2VtcHR5KG1kLCAiU2VjdGlvbiIpIGlzIFRydWUKCiAgICBkZWYgdGVzdF9vbmx5X2Rhc2hlc19yZXR1cm5zX3RydWUoc2VsZik6CiAgICAgICAgbWQgPSAiIyMgU2VjdGlvblxuXG4tLS0iCiAgICAgICAgYXNzZXJ0IF9zZWN0aW9uX2lzX2VtcHR5KG1kLCAiU2VjdGlvbiIpIGlzIFRydWUKCiAgICBkZWYgdGVzdF9vbmx5X2VtX2Rhc2hlc19yZXR1cm5zX3RydWUoc2VsZik6CiAgICAgICAgbWQgPSAiIyMgU2VjdGlvblxuXG7igJTigJQiCiAgICAgICAgYXNzZXJ0IF9zZWN0aW9uX2lzX2VtcHR5KG1kLCAiU2VjdGlvbiIpIGlzIFRydWUKCiAgICBkZWYgdGVzdF9vbmx5X3doaXRlc3BhY2VfcmV0dXJuc190cnVlKHNlbGYpOgogICAgICAgIG1kID0gIiMjIFNlY3Rpb25cblxuICAgXG5cdCIKICAgICAgICBhc3NlcnQgX3NlY3Rpb25faXNfZW1wdHkobWQsICJTZWN0aW9uIikgaXMgVHJ1ZQoKICAgIGRlZiB0ZXN0X3Nob3J0X3BsYWNlaG9sZGVyX25vX3B1bmN0dWF0aW9uX3JldHVybnNfdHJ1ZShzZWxmKToKICAgICAgICBtZCA9ICIjIyBTZWN0aW9uXG5cblRvIGJlIGZpbGxlZCIgICMgbm8gcHVuY3R1YXRpb24sIHNob3J0CiAgICAgICAgYXNzZXJ0IF9zZWN0aW9uX2lzX2VtcHR5KG1kLCAiU2VjdGlvbiIpIGlzIFRydWUKCiAgICBkZWYgdGVzdF9zaG9ydF93aXRoX3B1bmN0dWF0aW9uX3JldHVybnNfZmFsc2Uoc2VsZik6CiAgICAgICAgbWQgPSAiIyMgU2VjdGlvblxuXG5UbyBiZSBmaWxsZWQuIFllcyEiCiAgICAgICAgYXNzZXJ0IF9zZWN0aW9uX2lzX2VtcHR5KG1kLCAiU2VjdGlvbiIpIGlzIEZhbHNlCgogICAgZGVmIHRlc3Rfbm9ybWFsX2NvbnRlbnRfcmV0dXJuc19mYWxzZShzZWxmKToKICAgICAgICBtZCA9ICIjIyBTZWN0aW9uXG5cblRoaXMgaXMgbWVhbmluZ2Z1bCBjb250ZW50IHdpdGggYSBzZW50ZW5jZS4iCiAgICAgICAgYXNzZXJ0IF9zZWN0aW9uX2lzX2VtcHR5KG1kLCAiU2VjdGlvbiIpIGlzIEZhbHNlCgogICAgZGVmIHRlc3Rfc2VjdGlvbl9ub3RfYXRfZW5kX29mX2ZpbGUoc2VsZik6CiAgICAgICAgbWQgPSAiIyMgU2VjdGlvblxuXG5SZWFsIGNvbnRlbnQuXG5cbiMjIE5leHRcblxuTW9yZS4iCiAgICAgICAgYXNzZXJ0IF9zZWN0aW9uX2lzX2VtcHR5KG1kLCAiU2VjdGlvbiIpIGlzIEZhbHNlCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgVGVzdCBfZmlsbF9jbm90ZV9zZWN0aW9uCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQoKCmNsYXNzIFRlc3RGaWxsQ25vdGVTZWN0aW9uOgogICAgZGVmIHRlc3RfcmVwbGFjZXNfZXhpc3Rpbmdfc2VjdGlvbl9jb250ZW50KHNlbGYpOgogICAgICAgIG1kID0gIiMjIFNlY3Rpb25cblxuT2xkIGNvbnRlbnQgaGVyZS4iCiAgICAgICAgcmVzdWx0ID0gX2ZpbGxfY25vdGVfc2VjdGlvbihtZCwgIlNlY3Rpb24iLCAiTmV3IGNvbnRlbnQuIikKICAgICAgICBhc3NlcnQgIk5ldyBjb250ZW50LiIgaW4gcmVzdWx0CiAgICAgICAgYXNzZXJ0ICJPbGQgY29udGVudCIgbm90IGluIHJlc3VsdAoKICAgIGRlZiB0ZXN0X2FwcGVuZHNfc2VjdGlvbl9pZl9ub3RfZm91bmQoc2VsZik6CiAgICAgICAgbWQgPSAiIyBEb2NcblxuIyMgT3RoZXJcblxuQ29udGVudC4iCiAgICAgICAgcmVzdWx0ID0gX2ZpbGxfY25vdGVfc2VjdGlvbihtZCwgIk5ld1NlY3Rpb24iLCAiTmV3IGNvbnRlbnQuIikKICAgICAgICBhc3NlcnQgIiMjIE5ld1NlY3Rpb24iIGluIHJlc3VsdAogICAgICAgIGFzc2VydCAiTmV3IGNvbnRlbnQuIiBpbiByZXN1bHQKCiAgICBkZWYgdGVzdF9wcmVzZXJ2ZXNfb3RoZXJfc2VjdGlvbnMoc2VsZik6CiAgICAgICAgbWQgPSAiIyMgU2VjdGlvbjFcblxuQ29udGVudDEuXG5cbiMjIFNlY3Rpb24yXG5cbkNvbnRlbnQyLiIKICAgICAgICByZXN1bHQgPSBfZmlsbF9jbm90ZV9zZWN0aW9uKG1kLCAiU2VjdGlvbjEiLCAiVXBkYXRlZDEuIikKICAgICAgICBhc3NlcnQgIlVwZGF0ZWQxLiIgaW4gcmVzdWx0CiAgICAgICAgYXNzZXJ0ICJDb250ZW50Mi4iIGluIHJlc3VsdAoKICAgIGRlZiB0ZXN0X2VtcHR5X25ld19jb250ZW50KHNlbGYpOgogICAgICAgIG1kID0gIiMjIFNlY3Rpb25cblxuT2xkIGNvbnRlbnQuIgogICAgICAgIHJlc3VsdCA9IF9maWxsX2Nub3RlX3NlY3Rpb24obWQsICJTZWN0aW9uIiwgIiIpCiAgICAgICAgYXNzZXJ0ICJPbGQgY29udGVudCIgbm90IGluIHJlc3VsdAoKICAgIGRlZiB0ZXN0X3ByZXNlcnZlc19oZWFkaW5nX2Zvcm1hdChzZWxmKToKICAgICAgICBtZCA9ICIjIyBTZWN0aW9uXG5cbk9sZC4iCiAgICAgICAgcmVzdWx0ID0gX2ZpbGxfY25vdGVfc2VjdGlvbihtZCwgIlNlY3Rpb24iLCAiTmV3LiIpCiAgICAgICAgYXNzZXJ0IHJlLnNlYXJjaChyIiMjXHMrU2VjdGlvbiIsIHJlc3VsdCkgaXMgbm90IE5vbmUKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBUZXN0IF9wYXJzZV9jbm90ZV9zZWN0aW9ucwojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KCgpjbGFzcyBUZXN0UGFyc2VDbm90ZVNlY3Rpb25zOgogICAgZGVmIHRlc3Rfc2luZ2xlX3NlY3Rpb24oc2VsZik6CiAgICAgICAgZHJhZnQgPSAiIyMgU2VjdGlvblxuXG5Db250ZW50IGhlcmUuIgogICAgICAgIHJlc3VsdCA9IF9wYXJzZV9jbm90ZV9zZWN0aW9ucyhkcmFmdCkKICAgICAgICBhc3NlcnQgIlNlY3Rpb24iIGluIHJlc3VsdAogICAgICAgIGFzc2VydCByZXN1bHRbIlNlY3Rpb24iXSA9PSAiQ29udGVudCBoZXJlLiIKCiAgICBkZWYgdGVzdF9tdWx0aXBsZV9zZWN0aW9ucyhzZWxmKToKICAgICAgICBkcmFmdCA9ICIjIyBTZWN0aW9uMVxuXG5Db250ZW50MS5cblxuIyMgU2VjdGlvbjJcblxuQ29udGVudDIuIgogICAgICAgIHJlc3VsdCA9IF9wYXJzZV9jbm90ZV9zZWN0aW9ucyhkcmFmdCkKICAgICAgICBhc3NlcnQgcmVzdWx0WyJTZWN0aW9uMSJdID09ICJDb250ZW50MS4iCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsiU2VjdGlvbjIiXSA9PSAiQ29udGVudDIuIgoKICAgIGRlZiB0ZXN0X211bHRpbGluZV9jb250ZW50KHNlbGYpOgogICAgICAgIGRyYWZ0ID0gIiMjIFNlY3Rpb25cblxuTGluZTEuXG5MaW5lMi5cbkxpbmUzLiIKICAgICAgICByZXN1bHQgPSBfcGFyc2VfY25vdGVfc2VjdGlvbnMoZHJhZnQpCiAgICAgICAgYXNzZXJ0ICJMaW5lMS4iIGluIHJlc3VsdFsiU2VjdGlvbiJdCiAgICAgICAgYXNzZXJ0ICJMaW5lMy4iIGluIHJlc3VsdFsiU2VjdGlvbiJdCgogICAgZGVmIHRlc3RfZW1wdHlfZHJhZnRfcmV0dXJuc19lbXB0eV9kaWN0KHNlbGYpOgogICAgICAgIHJlc3VsdCA9IF9wYXJzZV9jbm90ZV9zZWN0aW9ucygiIikKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IHt9CgogICAgZGVmIHRlc3Rfbm9faGVhZGluZ3Moc2VsZik6CiAgICAgICAgZHJhZnQgPSAiSnVzdCBzb21lIHRleHQgd2l0aG91dCBoZWFkaW5ncy4iCiAgICAgICAgcmVzdWx0ID0gX3BhcnNlX2Nub3RlX3NlY3Rpb25zKGRyYWZ0KQogICAgICAgIGFzc2VydCByZXN1bHQgPT0ge30KCiAgICBkZWYgdGVzdF9zZWN0aW9uX3dpdGhfYmxhbmtfbGluZXMoc2VsZik6CiAgICAgICAgZHJhZnQgPSAiIyMgU2VjdGlvblxuXG5MaW5lMS5cblxuXG5MaW5lMi4iCiAgICAgICAgcmVzdWx0ID0gX3BhcnNlX2Nub3RlX3NlY3Rpb25zKGRyYWZ0KQogICAgICAgIGFzc2VydCByZXN1bHRbIlNlY3Rpb24iXSA9PSAiTGluZTEuXG5cblxuTGluZTIuIgoKICAgIGRlZiB0ZXN0X2hlYWRpbmdfd2l0aF9ub19jb250ZW50KHNlbGYpOgogICAgICAgIGRyYWZ0ID0gIiMjIFNlY3Rpb24xXG5cbiMjIFNlY3Rpb24yXG5cbkNvbnRlbnQuIgogICAgICAgIHJlc3VsdCA9IF9wYXJzZV9jbm90ZV9zZWN0aW9ucyhkcmFmdCkKICAgICAgICBhc3NlcnQgcmVzdWx0WyJTZWN0aW9uMSJdID09ICIiCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsiU2VjdGlvbjIiXSA9PSAiQ29udGVudC4iCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgVGVzdCBhdXRvX2ZpbGxfY25vdGVzX3dpdGhfYWkKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CgoKY2xhc3MgVGVzdEF1dG9GaWxsQ25vdGVzV2l0aEFpOgogICAgZGVmIHRlc3Rfbm9fcGFwZXJzX3NraXBwZWQoc2VsZiwgdG1wX3BhdGgpOgogICAgICAgICMgQ3JlYXRlIGNvbmNlcHQgZGlyIHdpdGggbm8gUC1ub3RlcwogICAgICAgIGNvbmNlcHRfZGlyID0gdG1wX3BhdGggLyAiMDEtRm91bmRhdGlvbnMiCiAgICAgICAgY29uY2VwdF9kaXIubWtkaXIocGFyZW50cz1UcnVlKQogICAgICAgICMgUGF0Y2ggYXQgbm90ZXMucG5vdGVzIHdoZXJlIGl0IGlzIGltcG9ydGVkIGZyb20KICAgICAgICB3aXRoIHBhdGNoKCJub3Rlcy5wbm90ZXMucG5vdGVzX2J5X3RhZyIsIHJldHVybl92YWx1ZT17fSk6CiAgICAgICAgICAgIHJlc3VsdHMgPSBhdXRvX2ZpbGxfY25vdGVzX3dpdGhfYWkoCiAgICAgICAgICAgICAgICByb290PXRtcF9wYXRoLAogICAgICAgICAgICAgICAgYXBpX2tleT0iZmFrZS1rZXkiLAogICAgICAgICAgICAgICAgYmFzZV91cmw9Imh0dHBzOi8vYXBpLmV4YW1wbGUuY29tIiwKICAgICAgICAgICAgICAgIG1vZGVsPSJ0ZXN0LW1vZGVsIiwKICAgICAgICAgICAgICAgIG1pbl9wYXBlcnM9MSwKICAgICAgICAgICAgKQogICAgICAgIGFzc2VydCByZXN1bHRzID09IFtdCgogICAgZGVmIHRlc3RfYmVsb3dfbWluX3BhcGVyc19za2lwcGVkKHNlbGYsIHRtcF9wYXRoKToKICAgICAgICBjb25jZXB0X2RpciA9IHRtcF9wYXRoIC8gIjAxLUZvdW5kYXRpb25zIgogICAgICAgIGNvbmNlcHRfZGlyLm1rZGlyKHBhcmVudHM9VHJ1ZSkKICAgICAgICBwbm90ZV9kaXIgPSB0bXBfcGF0aCAvICIwMi1QYXBlcnMiCiAgICAgICAgcG5vdGVfZGlyLm1rZGlyKHBhcmVudHM9VHJ1ZSkKICAgICAgICAjIENyZWF0ZSBvbmUgUC1ub3RlCiAgICAgICAgcG5vdGUgPSBwbm90ZV9kaXIgLyAiUCAtIFRlc3QubWQiCiAgICAgICAgcG5vdGUud3JpdGVfdGV4dCgidGFnczogW3Rlc3RdXG5cbiMgVGVzdFxuXG5Db250ZW50LiIsIGVuY29kaW5nPSJ1dGYtOCIpCiAgICAgICAgd2l0aCBwYXRjaCgibm90ZXMucG5vdGVzLnBub3Rlc19ieV90YWciLCByZXR1cm5fdmFsdWU9eyJ0ZXN0IjogWygiMjAyNC0wMS0wMSIsIHBub3RlKV19KToKICAgICAgICAgICAgcmVzdWx0cyA9IGF1dG9fZmlsbF9jbm90ZXNfd2l0aF9haSgKICAgICAgICAgICAgICAgIHJvb3Q9dG1wX3BhdGgsCiAgICAgICAgICAgICAgICBhcGlfa2V5PSJmYWtlLWtleSIsCiAgICAgICAgICAgICAgICBiYXNlX3VybD0iaHR0cHM6Ly9hcGkuZXhhbXBsZS5jb20iLAogICAgICAgICAgICAgICAgbW9kZWw9InRlc3QtbW9kZWwiLAogICAgICAgICAgICAgICAgbWluX3BhcGVycz0yLAogICAgICAgICAgICApCiAgICAgICAgYXNzZXJ0ICgidGVzdCIsICJza2lwcGVkIikgaW4gcmVzdWx0cwoKICAgIGRlZiB0ZXN0X2FsbF9zZWN0aW9uc19maWxsZWRfc2tpcHBlZChzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgY29uY2VwdF9kaXIgPSB0bXBfcGF0aCAvICIwMS1Gb3VuZGF0aW9ucyIKICAgICAgICBjb25jZXB0X2Rpci5ta2RpcihwYXJlbnRzPVRydWUpCiAgICAgICAgcG5vdGVfZGlyID0gdG1wX3BhdGggLyAiMDItUGFwZXJzIgogICAgICAgIHBub3RlX2Rpci5ta2RpcihwYXJlbnRzPVRydWUpCiAgICAgICAgIyBDLW5vdGUgd2l0aCBhbGwgc2VjdGlvbnMgZmlsbGVkIChub3RlOiBmaWxlbmFtZSB1c2VzIGxvd2VyY2FzZSAnZmlsbGVkJyB0byBtYXRjaCB0YWcpCiAgICAgICAgY25vdGUgPSBjb25jZXB0X2RpciAvICJDIC0gZmlsbGVkLm1kIgogICAgICAgIGNub3RlLndyaXRlX3RleHQoCiAgICAgICAgICAgICIjIyDmoLjlv4PlrprkuYlcbk1lYW5pbmdmdWwgY29udGVudC5cblxuIgogICAgICAgICAgICAiIyMg5Lqn55Sf6IOM5pmvXG5CYWNrZ3JvdW5kIGluZm8uXG5cbiIKICAgICAgICAgICAgIiMjIOaKgOacr+acrOi0qFxuVGVjaG5pY2FsIGRldGFpbHMuIiwKICAgICAgICAgICAgZW5jb2Rpbmc9InV0Zi04IiwKICAgICAgICApCiAgICAgICAgcG5vdGUgPSBwbm90ZV9kaXIgLyAiUCAtIEZpbGxlZC5tZCIKICAgICAgICBwbm90ZS53cml0ZV90ZXh0KCJ0YWdzOiBbZmlsbGVkXVxuXG4jIEZpbGxlZFxuXG5Db250ZW50LiIsIGVuY29kaW5nPSJ1dGYtOCIpCiAgICAgICAgd2l0aCBwYXRjaCgibm90ZXMucG5vdGVzLnBub3Rlc19ieV90YWciLCByZXR1cm5fdmFsdWU9eyJmaWxsZWQiOiBbKCIyMDI0LTAxLTAxIiwgcG5vdGUpXX0pOgogICAgICAgICAgICB3aXRoIHBhdGNoKCJub3Rlcy5wbm90ZXMucmVhZF9wbm90ZV9tZXRhZGF0YSIsIHJldHVybl92YWx1ZT17InRpdGxlIjogIkZpbGxlZCJ9KToKICAgICAgICAgICAgICAgIHJlc3VsdHMgPSBhdXRvX2ZpbGxfY25vdGVzX3dpdGhfYWkoCiAgICAgICAgICAgICAgICAgICAgcm9vdD10bXBfcGF0aCwKICAgICAgICAgICAgICAgICAgICBhcGlfa2V5PSJmYWtlLWtleSIsCiAgICAgICAgICAgICAgICAgICAgYmFzZV91cmw9Imh0dHBzOi8vYXBpLmV4YW1wbGUuY29tIiwKICAgICAgICAgICAgICAgICAgICBtb2RlbD0idGVzdC1tb2RlbCIsCiAgICAgICAgICAgICAgICAgICAgbWluX3BhcGVycz0xLAogICAgICAgICAgICAgICAgICAgIGNhbGxfbGxtPWxhbWJkYSAqKmt3YXJnczogKAogICAgICAgICAgICAgICAgICAgICAgICAiIyMg5qC45b+D5a6a5LmJXG5GaWxsZWQuXG5cbiMjIOS6p+eUn+iDjOaZr1xuQmcuXG5cbiMjIOaKgOacr+acrOi0qFxuVGVjaC4iCiAgICAgICAgICAgICAgICAgICAgKSwKICAgICAgICAgICAgICAgICkKICAgICAgICBhc3NlcnQgKCJmaWxsZWQiLCAic2tpcHBlZCIpIGluIHJlc3VsdHMKCiAgICBkZWYgdGVzdF9haV9nZW5lcmF0ZXNfYW5kX2ZpbGxzKHNlbGYsIHRtcF9wYXRoKToKICAgICAgICBjb25jZXB0X2RpciA9IHRtcF9wYXRoIC8gIjAxLUZvdW5kYXRpb25zIgogICAgICAgIGNvbmNlcHRfZGlyLm1rZGlyKHBhcmVudHM9VHJ1ZSkKICAgICAgICBwbm90ZV9kaXIgPSB0bXBfcGF0aCAvICIwMi1QYXBlcnMiCiAgICAgICAgcG5vdGVfZGlyLm1rZGlyKHBhcmVudHM9VHJ1ZSkKICAgICAgICBwbm90ZSA9IHBub3RlX2RpciAvICJQIC0gQ29uY2VwdC5tZCIKICAgICAgICBwbm90ZS53cml0ZV90ZXh0KCJ0YWdzOiBbY29uY2VwdF1cblxuIyBDb25jZXB0XG5cbkNvbnRlbnQuIiwgZW5jb2Rpbmc9InV0Zi04IikKCiAgICAgICAgZ2VuZXJhdGVkX2RyYWZ0ID0gKAogICAgICAgICAgICAiIyMg5qC45b+D5a6a5LmJXG5BSSBnZW5lcmF0ZWQgY29yZSBkZWZpbml0aW9uLlxuXG4iCiAgICAgICAgICAgICIjIyDkuqfnlJ/og4zmma9cbkFJIGdlbmVyYXRlZCBiYWNrZ3JvdW5kLlxuXG4iCiAgICAgICAgICAgICIjIyDmioDmnK/mnKzotKhcbkFJIGdlbmVyYXRlZCB0ZWNobmljYWwgY29udGVudC4iCiAgICAgICAgKQoKICAgICAgICB3aXRoIHBhdGNoKCJub3Rlcy5wbm90ZXMucG5vdGVzX2J5X3RhZyIsIHJldHVybl92YWx1ZT17ImNvbmNlcHQiOiBbKCIyMDI0LTAxLTAxIiwgcG5vdGUpXX0pOgogICAgICAgICAgICB3aXRoIHBhdGNoKCJub3Rlcy5wbm90ZXMucmVhZF9wbm90ZV9tZXRhZGF0YSIsIHJldHVybl92YWx1ZT17InRpdGxlIjogIkNvbmNlcHQifSk6CiAgICAgICAgICAgICAgICByZXN1bHRzID0gYXV0b19maWxsX2Nub3Rlc193aXRoX2FpKAogICAgICAgICAgICAgICAgICAgIHJvb3Q9dG1wX3BhdGgsCiAgICAgICAgICAgICAgICAgICAgYXBpX2tleT0iZmFrZS1rZXkiLAogICAgICAgICAgICAgICAgICAgIGJhc2VfdXJsPSJodHRwczovL2FwaS5leGFtcGxlLmNvbSIsCiAgICAgICAgICAgICAgICAgICAgbW9kZWw9InRlc3QtbW9kZWwiLAogICAgICAgICAgICAgICAgICAgIG1pbl9wYXBlcnM9MSwKICAgICAgICAgICAgICAgICAgICBjYWxsX2xsbT1sYW1iZGEgKiprd2FyZ3M6IGdlbmVyYXRlZF9kcmFmdCwKICAgICAgICAgICAgICAgICkKCiAgICAgICAgYXNzZXJ0ICgiY29uY2VwdCIsICJmaWxsZWQiKSBpbiByZXN1bHRzCgogICAgICAgICMgVmVyaWZ5IEMtbm90ZSB3YXMgdXBkYXRlZAogICAgICAgIGNub3RlX3BhdGggPSBjb25jZXB0X2RpciAvICJDIC0gY29uY2VwdC5tZCIKICAgICAgICBjb250ZW50ID0gY25vdGVfcGF0aC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikKICAgICAgICBhc3NlcnQgIkFJIGdlbmVyYXRlZCBjb3JlIGRlZmluaXRpb24iIGluIGNvbnRlbnQKCiAgICBkZWYgdGVzdF9haV9mYWlsdXJlX2FwcGVuZHNfZmFpbGVkKHNlbGYsIHRtcF9wYXRoKToKICAgICAgICBjb25jZXB0X2RpciA9IHRtcF9wYXRoIC8gIjAxLUZvdW5kYXRpb25zIgogICAgICAgIGNvbmNlcHRfZGlyLm1rZGlyKHBhcmVudHM9VHJ1ZSkKICAgICAgICBwbm90ZV9kaXIgPSB0bXBfcGF0aCAvICIwMi1QYXBlcnMiCiAgICAgICAgcG5vdGVfZGlyLm1rZGlyKHBhcmVudHM9VHJ1ZSkKICAgICAgICBwbm90ZSA9IHBub3RlX2RpciAvICJQIC0gRmFpbC5tZCIKICAgICAgICBwbm90ZS53cml0ZV90ZXh0KCJ0YWdzOiBbZmFpbF1cblxuIyBGYWlsXG5cbkNvbnRlbnQuIiwgZW5jb2Rpbmc9InV0Zi04IikKCiAgICAgICAgd2l0aCBwYXRjaCgibm90ZXMucG5vdGVzLnBub3Rlc19ieV90YWciLCByZXR1cm5fdmFsdWU9eyJmYWlsIjogWygiMjAyNC0wMS0wMSIsIHBub3RlKV19KToKICAgICAgICAgICAgd2l0aCBwYXRjaCgibm90ZXMucG5vdGVzLnJlYWRfcG5vdGVfbWV0YWRhdGEiLCByZXR1cm5fdmFsdWU9eyJ0aXRsZSI6ICJGYWlsIn0pOgogICAgICAgICAgICAgICAgcmVzdWx0cyA9IGF1dG9fZmlsbF9jbm90ZXNfd2l0aF9haSgKICAgICAgICAgICAgICAgICAgICByb290PXRtcF9wYXRoLAogICAgICAgICAgICAgICAgICAgIGFwaV9rZXk9ImZha2Uta2V5IiwKICAgICAgICAgICAgICAgICAgICBiYXNlX3VybD0iaHR0cHM6Ly9hcGkuZXhhbXBsZS5jb20iLAogICAgICAgICAgICAgICAgICAgIG1vZGVsPSJ0ZXN0LW1vZGVsIiwKICAgICAgICAgICAgICAgICAgICBtaW5fcGFwZXJzPTEsCiAgICAgICAgICAgICAgICAgICAgY2FsbF9sbG09bGFtYmRhICoqa3dhcmdzOiAoXyBmb3IgXyBpbiAoKSkudGhyb3coUnVudGltZUVycm9yKCJBUEkgZXJyb3IiKSksCiAgICAgICAgICAgICAgICApCiAgICAgICAgYXNzZXJ0ICgiZmFpbCIsICJmYWlsZWQiKSBpbiByZXN1bHRzCgogICAgZGVmIHRlc3RfZXhpc3RpbmdfY25vdGVfcmVhZF9iZWZvcmVfYWlfY2FsbChzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgY29uY2VwdF9kaXIgPSB0bXBfcGF0aCAvICIwMS1Gb3VuZGF0aW9ucyIKICAgICAgICBjb25jZXB0X2Rpci5ta2RpcihwYXJlbnRzPVRydWUpCiAgICAgICAgcG5vdGVfZGlyID0gdG1wX3BhdGggLyAiMDItUGFwZXJzIgogICAgICAgIHBub3RlX2Rpci5ta2RpcihwYXJlbnRzPVRydWUpCiAgICAgICAgcG5vdGUgPSBwbm90ZV9kaXIgLyAiUCAtIEV4aXN0aW5nLm1kIgogICAgICAgIHBub3RlLndyaXRlX3RleHQoInRhZ3M6IFtleGlzdGluZ11cblxuIyBFeGlzdGluZ1xuXG5Db250ZW50LiIsIGVuY29kaW5nPSJ1dGYtOCIpCgogICAgICAgICMgQWxsIHNlY3Rpb25zIHNob3J0IGFuZCB3aXRob3V0IHNlbnRlbmNlLWVuZGluZyBwdW5jdHVhdGlvbiAtPiBjb25zaWRlcmVkIGVtcHR5CiAgICAgICAgIyAtPiBBSSBkcmFmdCBzaG91bGQgYmUgdHJpZ2dlcmVkIGFuZCBDLW5vdGUgdXBkYXRlZAogICAgICAgIGV4aXN0aW5nX2NvbnRlbnQgPSAiIyMg5qC45b+D5a6a5LmJXG5FeGlzdGluZy4iICAjIHNob3J0LCBubyBlbmRpbmcgcHVuY3R1YXRpb24KICAgICAgICBjbm90ZSA9IGNvbmNlcHRfZGlyIC8gIkMgLSBleGlzdGluZy5tZCIKICAgICAgICBjbm90ZS53cml0ZV90ZXh0KGV4aXN0aW5nX2NvbnRlbnQsIGVuY29kaW5nPSJ1dGYtOCIpCgogICAgICAgIHdpdGggcGF0Y2goCiAgICAgICAgICAgICJub3Rlcy5wbm90ZXMucG5vdGVzX2J5X3RhZyIsIHJldHVybl92YWx1ZT17ImV4aXN0aW5nIjogWygiMjAyNC0wMS0wMSIsIHBub3RlKV19CiAgICAgICAgKToKICAgICAgICAgICAgd2l0aCBwYXRjaCgibm90ZXMucG5vdGVzLnJlYWRfcG5vdGVfbWV0YWRhdGEiLCByZXR1cm5fdmFsdWU9eyJ0aXRsZSI6ICJFeGlzdGluZyJ9KToKICAgICAgICAgICAgICAgIHJlc3VsdHMgPSBhdXRvX2ZpbGxfY25vdGVzX3dpdGhfYWkoCiAgICAgICAgICAgICAgICAgICAgcm9vdD10bXBfcGF0aCwKICAgICAgICAgICAgICAgICAgICBhcGlfa2V5PSJmYWtlLWtleSIsCiAgICAgICAgICAgICAgICAgICAgYmFzZV91cmw9Imh0dHBzOi8vYXBpLmV4YW1wbGUuY29tIiwKICAgICAgICAgICAgICAgICAgICBtb2RlbD0idGVzdC1tb2RlbCIsCiAgICAgICAgICAgICAgICAgICAgbWluX3BhcGVycz0xLAogICAgICAgICAgICAgICAgICAgIGNhbGxfbGxtPWxhbWJkYSAqKmt3YXJnczogKAogICAgICAgICAgICAgICAgICAgICAgICAiIyMg5qC45b+D5a6a5LmJXG5OZXcgY29yZS5cblxuIyMg5Lqn55Sf6IOM5pmvXG5CZy5cblxuIyMg5oqA5pyv5pys6LSoXG5UZWNoLiIKICAgICAgICAgICAgICAgICAgICApLAogICAgICAgICAgICAgICAgKQoKICAgICAgICBhc3NlcnQgKCJleGlzdGluZyIsICJmaWxsZWQiKSBpbiByZXN1bHRzCgogICAgICAgICMgVmVyaWZ5IEMtbm90ZSB3YXMgdXBkYXRlZCB3aXRoIEFJLWdlbmVyYXRlZCBjb250ZW50CiAgICAgICAgY29udGVudCA9IGNub3RlLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQogICAgICAgIGFzc2VydCAiTmV3IGNvcmUuIiBpbiBjb250ZW50CgogICAgZGVmIHRlc3Rfbm9fY29uY2VwdF9kaXJfY3JlYXRlc19pdChzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgcG5vdGVfZGlyID0gdG1wX3BhdGggLyAiMDItUGFwZXJzIgogICAgICAgIHBub3RlX2Rpci5ta2RpcihwYXJlbnRzPVRydWUpCiAgICAgICAgcG5vdGUgPSBwbm90ZV9kaXIgLyAiUCAtIE5ldy5tZCIKICAgICAgICBwbm90ZS53cml0ZV90ZXh0KCJ0YWdzOiBbbmV3XVxuXG4jIE5ld1xuXG5Db250ZW50LiIsIGVuY29kaW5nPSJ1dGYtOCIpCgogICAgICAgIHdpdGggcGF0Y2goIm5vdGVzLnBub3Rlcy5wbm90ZXNfYnlfdGFnIiwgcmV0dXJuX3ZhbHVlPXsibmV3IjogWygiMjAyNC0wMS0wMSIsIHBub3RlKV19KToKICAgICAgICAgICAgd2l0aCBwYXRjaCgibm90ZXMucG5vdGVzLnJlYWRfcG5vdGVfbWV0YWRhdGEiLCByZXR1cm5fdmFsdWU9eyJ0aXRsZSI6ICJOZXcifSk6CiAgICAgICAgICAgICAgICByZXN1bHRzID0gYXV0b19maWxsX2Nub3Rlc193aXRoX2FpKAogICAgICAgICAgICAgICAgICAgIHJvb3Q9dG1wX3BhdGgsCiAgICAgICAgICAgICAgICAgICAgYXBpX2tleT0iZmFrZS1rZXkiLAogICAgICAgICAgICAgICAgICAgIGJhc2VfdXJsPSJodHRwczovL2FwaS5leGFtcGxlLmNvbSIsCiAgICAgICAgICAgICAgICAgICAgbW9kZWw9InRlc3QtbW9kZWwiLAogICAgICAgICAgICAgICAgICAgIG1pbl9wYXBlcnM9MSwKICAgICAgICAgICAgICAgICAgICBjYWxsX2xsbT1sYW1iZGEgKiprd2FyZ3M6ICgKICAgICAgICAgICAgICAgICAgICAgICAgIiMjIOaguOW/g+WumuS5iVxuQ29yZS5cblxuIyMg5Lqn55Sf6IOM5pmvXG5CZy5cblxuIyMg5oqA5pyv5pys6LSoXG5UZWNoLiIKICAgICAgICAgICAgICAgICAgICApLAogICAgICAgICAgICAgICAgKQoKICAgICAgICAjIFNob3VsZCBzdWNjZWVkIGV2ZW4gdGhvdWdoIDAxLUZvdW5kYXRpb25zIGRpZG4ndCBleGlzdAogICAgICAgIGFzc2VydCAoIm5ldyIsICJmaWxsZWQiKSBpbiByZXN1bHRzCiAgICAgICAgY25vdGVfcGF0aCA9IHRtcF9wYXRoIC8gIjAxLUZvdW5kYXRpb25zIiAvICJDIC0gbmV3Lm1kIgogICAgICAgIGFzc2VydCBjbm90ZV9wYXRoLmV4aXN0cygpCg==
+"""
+Tests for notes/cnote.py — C-note creation, link management, and AI auto-fill.
+Covers: ensure_cnote, upsert_link_under_heading, update_cnote_links,
+        _section_is_empty, _fill_cnote_section, _parse_cnote_sections,
+        auto_fill_cnotes_with_ai
+"""
+
+import re
+from pathlib import Path
+from unittest.mock import patch
+
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from notes.cnote import (
+    ensure_cnote,
+    upsert_link_under_heading,
+    _section_is_empty,
+    _fill_cnote_section,
+    _parse_cnote_sections,
+    auto_fill_cnotes_with_ai,
+)
+
+
+# ============================================================================
+# Test ensure_cnote
+# ============================================================================
+
+
+class TestEnsureCnote:
+    def test_creates_cnote_file(self, tmp_path):
+        path = ensure_cnote(tmp_path, "TestConcept")
+        assert path.name == "C - TestConcept.md"
+        assert path.exists()
+
+    def test_creates_correct_content(self, tmp_path):
+        path = ensure_cnote(tmp_path, "TestConcept")
+        content = path.read_text(encoding="utf-8")
+        assert "# TestConcept" in content
+        assert "## 核心定义" in content
+        assert "## 产生背景" in content
+        assert "## 技术本质" in content
+
+    def test_does_not_overwrite_existing(self, tmp_path):
+        existing = tmp_path / "C - Existing.md"
+        existing.write_text("existing content", encoding="utf-8")
+        path = ensure_cnote(tmp_path, "Existing")
+        assert path.read_text(encoding="utf-8") == "existing content"
+
+    def test_returns_path_even_if_exists(self, tmp_path):
+        path = ensure_cnote(tmp_path, "TestConcept")
+        path2 = ensure_cnote(tmp_path, "TestConcept")
+        assert path == path2
+
+    def test_concept_with_spaces(self, tmp_path):
+        path = ensure_cnote(tmp_path, "Test Concept")
+        assert path.name == "C - Test Concept.md"
+
+    def test_renders_includes_status_frontmatter(self, tmp_path):
+        path = ensure_cnote(tmp_path, "TestConcept")
+        content = path.read_text(encoding="utf-8")
+        assert "status:" in content
+
+
+# ============================================================================
+# Test upsert_link_under_heading
+# ============================================================================
+
+
+class TestUpsertLinkUnderHeading:
+    def test_heading_not_exists_append_section(self):
+        md = "# TestDoc\n\nSome content."
+        result = upsert_link_under_heading(md, "## NewSection", "- [[Link]]")
+        assert "## NewSection" in result
+        assert "[[Link]]" in result
+
+    def test_heading_not_exists_strips_hash_prefix(self):
+        md = "# TestDoc"
+        result = upsert_link_under_heading(md, "## NewSection", "- [[Link]]")
+        assert "## NewSection" in result
+
+    def test_heading_exists_appends_to_section(self):
+        md = "# TestDoc\n\n## Target\n\n- [[OldLink]]\n\nMore content."
+        result = upsert_link_under_heading(md, "## Target", "- [[NewLink]]")
+        # New link should come before old content (old link removed)
+        assert "[[NewLink]]" in result
+        assert "[[OldLink]]" not in result
+
+    def test_existing_wikilink_removed_before_insert(self):
+        md = "## Section\n\n- [[OldLink]] some text"
+        result = upsert_link_under_heading(md, "## Section", "- [[NewLink]]")
+        assert "[[OldLink]]" not in result
+        assert "[[NewLink]]" in result
+
+    def test_section_with_no_existing_link(self):
+        md = "## Section\n\nPlain content here."
+        result = upsert_link_under_heading(md, "## Section", "- [[NewLink]]")
+        assert "[[NewLink]]" in result
+        assert "Plain content here" in result
+
+    def test_section_at_end_of_file(self):
+        md = "# Doc\n\n## LastSection\n\nSome text."
+        result = upsert_link_under_heading(md, "## LastSection", "- [[Link]]")
+        assert "[[Link]]" in result
+
+    def test_preserves_content_after_section(self):
+        md = "## Section\n\nContent.\n\n## NextSection\n\nMore."
+        result = upsert_link_under_heading(md, "## Section", "- [[Link]]")
+        assert "## NextSection" in result
+        assert "[[Link]]" in result
+
+    def test_multiple_wikilinks_removed(self):
+        md = "## Section\n\n- [[Link1]]\n- [[Link2]]\n- Regular line"
+        result = upsert_link_under_heading(md, "## Section", "- [[NewLink]]")
+        assert "[[Link1]]" not in result
+        assert "[[Link2]]" not in result
+        assert "[[NewLink]]" in result
+        assert "Regular line" in result
+
+    def test_no_hash_prefix_in_heading_arg(self):
+        md = "# Doc"
+        result = upsert_link_under_heading(md, "MyHeading", "- [[Link]]")
+        assert "## MyHeading" in result
+        assert "[[Link]]" in result
+
+
+# ============================================================================
+# Test _section_is_empty
+# ============================================================================
+
+
+class TestSectionIsEmpty:
+    def test_missing_section_returns_true(self):
+        md = "# Doc\n\n## Other\n\nContent."
+        assert _section_is_empty(md, "MissingSection") is True
+
+    def test_empty_section_returns_true(self):
+        md = "## Section\n\n"
+        assert _section_is_empty(md, "Section") is True
+
+    def test_only_dashes_returns_true(self):
+        md = "## Section\n\n---"
+        assert _section_is_empty(md, "Section") is True
+
+    def test_only_em_dashes_returns_true(self):
+        md = "## Section\n\n——"
+        assert _section_is_empty(md, "Section") is True
+
+    def test_only_whitespace_returns_true(self):
+        md = "## Section\n\n   \n\t"
+        assert _section_is_empty(md, "Section") is True
+
+    def test_short_placeholder_no_punctuation_returns_true(self):
+        md = "## Section\n\nTo be filled"  # no punctuation, short
+        assert _section_is_empty(md, "Section") is True
+
+    def test_short_with_punctuation_returns_false(self):
+        md = "## Section\n\nTo be filled. Yes!"
+        assert _section_is_empty(md, "Section") is False
+
+    def test_normal_content_returns_false(self):
+        md = "## Section\n\nThis is meaningful content with a sentence."
+        assert _section_is_empty(md, "Section") is False
+
+    def test_section_not_at_end_of_file(self):
+        md = "## Section\n\nReal content.\n\n## Next\n\nMore."
+        assert _section_is_empty(md, "Section") is False
+
+
+# ============================================================================
+# Test _fill_cnote_section
+# ============================================================================
+
+
+class TestFillCnoteSection:
+    def test_replaces_existing_section_content(self):
+        md = "## Section\n\nOld content here."
+        result = _fill_cnote_section(md, "Section", "New content.")
+        assert "New content." in result
+        assert "Old content" not in result
+
+    def test_appends_section_if_not_found(self):
+        md = "# Doc\n\n## Other\n\nContent."
+        result = _fill_cnote_section(md, "NewSection", "New content.")
+        assert "## NewSection" in result
+        assert "New content." in result
+
+    def test_preserves_other_sections(self):
+        md = "## Section1\n\nContent1.\n\n## Section2\n\nContent2."
+        result = _fill_cnote_section(md, "Section1", "Updated1.")
+        assert "Updated1." in result
+        assert "Content2." in result
+
+    def test_empty_new_content(self):
+        md = "## Section\n\nOld content."
+        result = _fill_cnote_section(md, "Section", "")
+        assert "Old content" not in result
+
+    def test_preserves_heading_format(self):
+        md = "## Section\n\nOld."
+        result = _fill_cnote_section(md, "Section", "New.")
+        assert re.search(r"##\s+Section", result) is not None
+
+
+# ============================================================================
+# Test _parse_cnote_sections
+# ============================================================================
+
+
+class TestParseCnoteSections:
+    def test_single_section(self):
+        draft = "## Section\n\nContent here."
+        result = _parse_cnote_sections(draft)
+        assert "Section" in result
+        assert result["Section"] == "Content here."
+
+    def test_multiple_sections(self):
+        draft = "## Section1\n\nContent1.\n\n## Section2\n\nContent2."
+        result = _parse_cnote_sections(draft)
+        assert result["Section1"] == "Content1."
+        assert result["Section2"] == "Content2."
+
+    def test_multiline_content(self):
+        draft = "## Section\n\nLine1.\nLine2.\nLine3."
+        result = _parse_cnote_sections(draft)
+        assert "Line1." in result["Section"]
+        assert "Line3." in result["Section"]
+
+    def test_empty_draft_returns_empty_dict(self):
+        result = _parse_cnote_sections("")
+        assert result == {}
+
+    def test_no_headings(self):
+        draft = "Just some text without headings."
+        result = _parse_cnote_sections(draft)
+        assert result == {}
+
+    def test_section_with_blank_lines(self):
+        draft = "## Section\n\nLine1.\n\n\nLine2."
+        result = _parse_cnote_sections(draft)
+        assert result["Section"] == "Line1.\n\n\nLine2."
+
+    def test_heading_with_no_content(self):
+        draft = "## Section1\n\n## Section2\n\nContent."
+        result = _parse_cnote_sections(draft)
+        assert result["Section1"] == ""
+        assert result["Section2"] == "Content."
+
+
+# ============================================================================
+# Test auto_fill_cnotes_with_ai
+# ============================================================================
+
+
+class TestAutoFillCnotesWithAi:
+    def test_no_papers_skipped(self, tmp_path):
+        # Create concept dir with no P-notes
+        concept_dir = tmp_path / "01-Foundations"
+        concept_dir.mkdir(parents=True)
+        # Patch at notes.pnotes where it is imported from
+        with patch("notes.pnotes.pnotes_by_tag", return_value={}):
+            results = auto_fill_cnotes_with_ai(
+                root=tmp_path,
+                api_key="fake-key",
+                base_url="https://api.example.com",
+                model="test-model",
+                min_papers=1,
+            )
+        assert results == []
+
+    def test_below_min_papers_skipped(self, tmp_path):
+        concept_dir = tmp_path / "01-Foundations"
+        concept_dir.mkdir(parents=True)
+        pnote_dir = tmp_path / "02-Papers"
+        pnote_dir.mkdir(parents=True)
+        # Create one P-note
+        pnote = pnote_dir / "P - Test.md"
+        pnote.write_text("tags: [test]\n\n# Test\n\nContent.", encoding="utf-8")
+        with patch("notes.pnotes.pnotes_by_tag", return_value={"test": [("2024-01-01", pnote)]}):
+            results = auto_fill_cnotes_with_ai(
+                root=tmp_path,
+                api_key="fake-key",
+                base_url="https://api.example.com",
+                model="test-model",
+                min_papers=2,
+            )
+        assert ("test", "skipped") in results
+
+    def test_all_sections_filled_skipped(self, tmp_path):
+        concept_dir = tmp_path / "01-Foundations"
+        concept_dir.mkdir(parents=True)
+        pnote_dir = tmp_path / "02-Papers"
+        pnote_dir.mkdir(parents=True)
+        # C-note with all sections filled (note: filename uses lowercase 'filled' to match tag)
+        cnote = concept_dir / "C - filled.md"
+        cnote.write_text(
+            "## 核心定义\nMeaningful content.\n\n"
+            "## 产生背景\nBackground info.\n\n"
+            "## 技术本质\nTechnical details.",
+            encoding="utf-8",
+        )
+        pnote = pnote_dir / "P - Filled.md"
+        pnote.write_text("tags: [filled]\n\n# Filled\n\nContent.", encoding="utf-8")
+        with patch("notes.pnotes.pnotes_by_tag", return_value={"filled": [("2024-01-01", pnote)]}):
+            with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "Filled"}):
+                results = auto_fill_cnotes_with_ai(
+                    root=tmp_path,
+                    api_key="fake-key",
+                    base_url="https://api.example.com",
+                    model="test-model",
+                    min_papers=1,
+                    call_llm=lambda **kwargs: (
+                        "## 核心定义\nFilled.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech."
+                    ),
+                )
+        assert ("filled", "skipped") in results
+
+    def test_ai_generates_and_fills(self, tmp_path):
+        concept_dir = tmp_path / "01-Foundations"
+        concept_dir.mkdir(parents=True)
+        pnote_dir = tmp_path / "02-Papers"
+        pnote_dir.mkdir(parents=True)
+        pnote = pnote_dir / "P - Concept.md"
+        pnote.write_text("tags: [concept]\n\n# Concept\n\nContent.", encoding="utf-8")
+
+        generated_draft = (
+            "## 核心定义\nAI generated core definition.\n\n"
+            "## 产生背景\nAI generated background.\n\n"
+            "## 技术本质\nAI generated technical content."
+        )
+
+        with patch("notes.pnotes.pnotes_by_tag", return_value={"concept": [("2024-01-01", pnote)]}):
+            with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "Concept"}):
+                results = auto_fill_cnotes_with_ai(
+                    root=tmp_path,
+                    api_key="fake-key",
+                    base_url="https://api.example.com",
+                    model="test-model",
+                    min_papers=1,
+                    call_llm=lambda **kwargs: generated_draft,
+                )
+
+        assert ("concept", "filled") in results
+
+        # Verify C-note was updated
+        cnote_path = concept_dir / "C - concept.md"
+        content = cnote_path.read_text(encoding="utf-8")
+        assert "AI generated core definition" in content
+
+    def test_ai_failure_appends_failed(self, tmp_path):
+        concept_dir = tmp_path / "01-Foundations"
+        concept_dir.mkdir(parents=True)
+        pnote_dir = tmp_path / "02-Papers"
+        pnote_dir.mkdir(parents=True)
+        pnote = pnote_dir / "P - Fail.md"
+        pnote.write_text("tags: [fail]\n\n# Fail\n\nContent.", encoding="utf-8")
+
+        with patch("notes.pnotes.pnotes_by_tag", return_value={"fail": [("2024-01-01", pnote)]}):
+            with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "Fail"}):
+                results = auto_fill_cnotes_with_ai(
+                    root=tmp_path,
+                    api_key="fake-key",
+                    base_url="https://api.example.com",
+                    model="test-model",
+                    min_papers=1,
+                    call_llm=lambda **kwargs: (_ for _ in ()).throw(RuntimeError("API error")),
+                )
+        assert ("fail", "failed") in results
+
+    def test_existing_cnote_read_before_ai_call(self, tmp_path):
+        concept_dir = tmp_path / "01-Foundations"
+        concept_dir.mkdir(parents=True)
+        pnote_dir = tmp_path / "02-Papers"
+        pnote_dir.mkdir(parents=True)
+        pnote = pnote_dir / "P - Existing.md"
+        pnote.write_text("tags: [existing]\n\n# Existing\n\nContent.", encoding="utf-8")
+
+        # All sections short and without sentence-ending punctuation -> considered empty
+        # -> AI draft should be triggered and C-note updated
+        existing_content = "## 核心定义\nExisting."  # short, no ending punctuation
+        cnote = concept_dir / "C - existing.md"
+        cnote.write_text(existing_content, encoding="utf-8")
+
+        with patch(
+            "notes.pnotes.pnotes_by_tag", return_value={"existing": [("2024-01-01", pnote)]}
+        ):
+            with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "Existing"}):
+                results = auto_fill_cnotes_with_ai(
+                    root=tmp_path,
+                    api_key="fake-key",
+                    base_url="https://api.example.com",
+                    model="test-model",
+                    min_papers=1,
+                    call_llm=lambda **kwargs: (
+                        "## 核心定义\nNew core.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech."
+                    ),
+                )
+
+        assert ("existing", "filled") in results
+
+        # Verify C-note was updated with AI-generated content
+        content = cnote.read_text(encoding="utf-8")
+        assert "New core." in content
+
+    def test_no_concept_dir_creates_it(self, tmp_path):
+        pnote_dir = tmp_path / "02-Papers"
+        pnote_dir.mkdir(parents=True)
+        pnote = pnote_dir / "P - New.md"
+        pnote.write_text("tags: [new]\n\n# New\n\nContent.", encoding="utf-8")
+
+        with patch("notes.pnotes.pnotes_by_tag", return_value={"new": [("2024-01-01", pnote)]}):
+            with patch("notes.pnotes.read_pnote_metadata", return_value={"title": "New"}):
+                results = auto_fill_cnotes_with_ai(
+                    root=tmp_path,
+                    api_key="fake-key",
+                    base_url="https://api.example.com",
+                    model="test-model",
+                    min_papers=1,
+                    call_llm=lambda **kwargs: (
+                        "## 核心定义\nCore.\n\n## 产生背景\nBg.\n\n## 技术本质\nTech."
+                    ),
+                )
+
+        # Should succeed even though 01-Foundations didn't exist
+        assert ("new", "filled") in results
+        cnote_path = tmp_path / "01-Foundations" / "C - new.md"
+        assert cnote_path.exists()

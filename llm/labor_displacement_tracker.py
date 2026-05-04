@@ -1,1 +1,78 @@
-IiIiTGFib3IgRGlzcGxhY2VtZW50IFRyYWNrZXIg4oCUIGRlZGljYXRlZCBHZW5lIFBvb2wgZmlsdGVyIGZvciBBSSB2cy4gaHVtYW4gbGFib3IgZ2Fwcy4KClRyYWNrcyBwYXBlcnMgYWJvdXQgQUkncyBpbXBhY3Qgb24gZW1wbG95bWVudCBhY3Jvc3MgY3MuY3liZXItcGgsIGNzLnNvYywgYW5kIHJlbGF0ZWQgY2F0ZWdvcmllcy4KIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQganNvbgpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKZnJvbSB0eXBpbmcgaW1wb3J0IEFueSwgRGljdCwgTGlzdCwgT3B0aW9uYWwKClBBUEVSU19EQiA9IFBhdGguaG9tZSgpIC8gIi5haV9yZXNlYXJjaF9vcyIgLyAicGFwZXJzLmpzb24iCgpMQUJPUl9LRVlXT1JEUyA9IFsKICAgICJsYWJvciBkaXNwbGFjZW1lbnQiLAogICAgImpvYiBkaXNwbGFjZW1lbnQiLAogICAgImF1dG9tYXRpb24iLAogICAgInVuZW1wbG95bWVudCIsCiAgICAiZW1wbG95bWVudCIsCiAgICAid29ya2ZvcmNlIiwKICAgICJsYWJvciBtYXJrZXQiLAogICAgInNraWxsIGdhcCIsCiAgICAiaW5jb21lIGluZXF1YWxpdHkiLAogICAgIkFJIGFuZCBqb2JzIiwKICAgICJBSSBpbXBhY3Qgb24gZW1wbG95bWVudCIsCiAgICAiZnV0dXJlIG9mIHdvcmsiLAogICAgImF1dG9tYXRpb24gcmlzayIsCiAgICAicm9ib3RzIiwKICAgICJyZXBsYWNlbWVudCIsCiAgICAib3V0c291cmNpbmciLAogICAgImdpZyBlY29ub215IiwKICAgICJwbGF0Zm9ybSB3b3JrIiwKICAgICJzb2NpYWwgcHJvdGVjdGlvbiIsCiAgICAidW5pdmVyc2FsIGJhc2ljIGluY29tZSIsCiAgICAicmVza2lsbGluZyIsCiAgICAiY3MuY3liZXItcGgiLAogICAgImNzLnNvYyIsCiAgICAiZWNvbi5HTiIsCiAgICAiZWNvbi5HUiIsCl0KCkxBQk9SX0NBVFMgPSBbImNzLmN5YmVyLXBoIiwgImNzLnNvYyIsICJjcy5IQyIsICJlY29uLkdOIl0KCgpkZWYgX2xvYWRfcGFwZXJzKCkgLT4gTGlzdFtEaWN0W3N0ciwgQW55XV06CiAgICBpZiBub3QgUEFQRVJTX0RCLmV4aXN0cygpOgogICAgICAgIHJldHVybiBbXQogICAgZGF0YSA9IGpzb24ubG9hZHMoUEFQRVJTX0RCLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKSkKICAgIHJldHVybiBkYXRhLmdldCgicGFwZXJzIiwgW10pCgoKZGVmIGlzX2xhYm9yX3JlbGF0ZWQocGFwZXI6IERpY3Rbc3RyLCBBbnldKSAtPiBib29sOgogICAgdGV4dCA9IChwYXBlci5nZXQoInRpdGxlIiwgIiIpICsgIiAiICsgcGFwZXIuZ2V0KCJhYnN0cmFjdCIsICIiKSkubG93ZXIoKQogICAgY2F0cyA9IHNldChwYXBlci5nZXQoImNhdGVnb3JpZXMiLCBbXSkgb3IgW10pCiAgICBpZiBhbnkoYyBpbiBbImNzLmN5YmVyLXBoIiwgImNzLnNvYyIsICJjcy5IQyIsICJlY29uLkdOIl0gZm9yIGMgaW4gY2F0cyk6CiAgICAgICAgcmV0dXJuIFRydWUKICAgIHJldHVybiBhbnkoa3cubG93ZXIoKSBpbiB0ZXh0IGZvciBrdyBpbiBMQUJPUl9LRVlXT1JEUykKCgpkZWYgZ2V0X2xhYm9yX3BhcGVycygpIC0+IExpc3RbRGljdFtzdHIsIEFueV1dOgogICAgcmV0dXJuIFtwIGZvciBwIGluIF9sb2FkX3BhcGVycygpIGlmIGlzX2xhYm9yX3JlbGF0ZWQocCldCgoKZGVmIHJlbmRlcl9sYWJvcl90cmFja2VyX2h0bWwoKSAtPiBzdHI6CiAgICBwYXBlcnMgPSBnZXRfbGFib3JfcGFwZXJzKCkKCiAgICBsaW5lcyA9IFsnPGRpdiBjbGFzcz0ibGFib3ItdHJhY2tlciI+J10KICAgIGxpbmVzLmFwcGVuZCgiPGgzPvCfkbcgTGFib3IgRGlzcGxhY2VtZW50IFRyYWNrZXI8L2gzPiIpCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIjxwIHN0eWxlPSdmb250LXNpemU6MTNweDtjb2xvcjojQTg5RThDO21hcmdpbi1ib3R0b206MTZweCc+IgogICAgICAgICJQYXBlcnMgYWJvdXQgQUkncyBpbXBhY3Qgb24gZW1wbG95bWVudCwgd29ya2ZvcmNlLCBhbmQgbGFib3IgbWFya2V0cy4gIgogICAgICAgICJBclhpdjogY3MuY3liZXItcGgsIGNzLnNvYywgY3MuSEM8L3A+IgogICAgKQogICAgbGluZXMuYXBwZW5kKAogICAgICAgIGYiPHAgc3R5bGU9J2ZvbnQtc2l6ZToxM3B4O2NvbG9yOiM2QjhGQjU7bWFyZ2luLWJvdHRvbToxNHB4Jz4iCiAgICAgICAgZiI8Yj57bGVuKHBhcGVycyl9PC9iPiBsYWJvci1yZWxhdGVkIHBhcGVycyBpbiB5b3VyIGxpYnJhcnkuPC9wPiIKICAgICkKCiAgICBpZiBub3QgcGFwZXJzOgogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgIjxwIHN0eWxlPSdjb2xvcjojQTg5RThDO2ZvbnQtc2l6ZToxM3B4Jz5ObyBsYWJvci1yZWxhdGVkIHBhcGVycyB5ZXQuICIKICAgICAgICAgICAgIlBhcGVycyBmcm9tIGNzLmN5YmVyLXBoIGFuZCBjcy5zb2MgY2F0ZWdvcmllcyB3aWxsIGFwcGVhciBoZXJlLjwvcD4iCiAgICAgICAgKQogICAgZWxzZToKICAgICAgICBmb3IgcCBpbiBwYXBlcnNbOjIwXToKICAgICAgICAgICAgY2F0cyA9ICIsICIuam9pbigocC5nZXQoImNhdGVnb3JpZXMiLCBbXSkgb3IgW10pWzoyXSkKICAgICAgICAgICAgdGl0bGUgPSBwLmdldCgidGl0bGUiLCAiIilbOjcwXQogICAgICAgICAgICBwdWJsaXNoZWQgPSBwLmdldCgicHVibGlzaGVkIiwgIiIpWzo0XQogICAgICAgICAgICBrd19tYXRjaGVzID0gWwogICAgICAgICAgICAgICAga3cKICAgICAgICAgICAgICAgIGZvciBrdyBpbiBMQUJPUl9LRVlXT1JEUwogICAgICAgICAgICAgICAgaWYga3cubG93ZXIoKSBpbiAocC5nZXQoInRpdGxlIiwgIiIpICsgIiAiICsgcC5nZXQoImFic3RyYWN0IiwgIiIpKS5sb3dlcigpCiAgICAgICAgICAgICAgICBhbmQgbGVuKGt3KSA+IDQKICAgICAgICAgICAgXQogICAgICAgICAgICBrd19kaXNwbGF5ID0gIiwgIi5qb2luKGYiPGNvZGU+e2t9PC9jb2RlPiIgZm9yIGsgaW4ga3dfbWF0Y2hlc1s6M10pCgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIiIgo8ZGl2IHN0eWxlPSdib3JkZXI6MXB4IHNvbGlkICNlMGRiZDQ7Ym9yZGVyLXJhZGl1czo2cHg7cGFkZGluZzoxMnB4O21hcmdpbi1ib3R0b206MTBweCc+CiAgPGRpdiBzdHlsZT0nZm9udC1zaXplOjEzcHg7Zm9udC13ZWlnaHQ6NjAwO2NvbG9yOiMyYTJhMmE7bWFyZ2luLWJvdHRvbTozcHgnPnt0aXRsZX08L2Rpdj4KICA8ZGl2IHN0eWxlPSdmb250LXNpemU6MTFweDtjb2xvcjojQTg5RThDO21hcmdpbi1ib3R0b206NHB4Jz57Y2F0c30gwrcge3B1Ymxpc2hlZH08L2Rpdj4KICB7ZiI8ZGl2IHN0eWxlPSdmb250LXNpemU6MTFweDtjb2xvcjojN2E3NTcwJz57a3dfZGlzcGxheX08L2Rpdj4iIGlmIGt3X2Rpc3BsYXkgZWxzZSAiIn0KPC9kaXY+IiIiKQoKICAgIGxpbmVzLmFwcGVuZCgiPHN0eWxlPi5sYWJvci10cmFja2VyIHsgZm9udC1mYW1pbHk6IEdlb3JnaWEsIHNlcmlmOyB9PC9zdHlsZT4iKQogICAgbGluZXMuYXBwZW5kKCI8L2Rpdj4iKQogICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykK
+"""Labor Displacement Tracker — dedicated Gene Pool filter for AI vs. human labor gaps.
+
+Tracks papers about AI's impact on employment across cs.cyber-ph, cs.soc, and related categories.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+PAPERS_DB = Path.home() / ".ai_research_os" / "papers.json"
+
+LABOR_KEYWORDS = [
+    "labor displacement", "job displacement", "automation", "unemployment",
+    "employment", "workforce", "labor market", "skill gap", "income inequality",
+    "AI and jobs", "AI impact on employment", "future of work", "automation risk",
+    "robots", "replacement", "outsourcing", "gig economy", "platform work",
+    "social protection", "universal basic income", "reskilling",
+    "cs.cyber-ph", "cs.soc", "econ.GN", "econ.GR",
+]
+
+LABOR_CATS = ["cs.cyber-ph", "cs.soc", "cs.HC", "econ.GN"]
+
+
+def _load_papers() -> List[Dict[str, Any]]:
+    if not PAPERS_DB.exists():
+        return []
+    data = json.loads(PAPERS_DB.read_text(encoding="utf-8"))
+    return data.get("papers", [])
+
+
+def is_labor_related(paper: Dict[str, Any]) -> bool:
+    text = (paper.get("title", "") + " " + paper.get("abstract", "")).lower()
+    cats = set(paper.get("categories", []) or [])
+    if any(c in ["cs.cyber-ph", "cs.soc", "cs.HC", "econ.GN"] for c in cats):
+        return True
+    return any(kw.lower() in text for kw in LABOR_KEYWORDS)
+
+
+def get_labor_papers() -> List[Dict[str, Any]]:
+    return [p for p in _load_papers() if is_labor_related(p)]
+
+
+def render_labor_tracker_html() -> str:
+    papers = get_labor_papers()
+
+    lines = ['<div class="labor-tracker">']
+    lines.append("<h3>👷 Labor Displacement Tracker</h3>")
+    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
+                "Papers about AI's impact on employment, workforce, and labor markets. "
+                "ArXiv: cs.cyber-ph, cs.soc, cs.HC</p>")
+    lines.append(f"<p style='font-size:13px;color:#6B8FB5;margin-bottom:14px'>"
+                f"<b>{len(papers)}</b> labor-related papers in your library.</p>")
+
+    if not papers:
+        lines.append("<p style='color:#A89E8C;font-size:13px'>No labor-related papers yet. "
+                    "Papers from cs.cyber-ph and cs.soc categories will appear here.</p>")
+    else:
+        for p in papers[:20]:
+            cats = ", ".join((p.get("categories", []) or [])[:2])
+            title = p.get("title", "")[:70]
+            published = p.get("published", "")[:4]
+            kw_matches = [kw for kw in LABOR_KEYWORDS
+                         if kw.lower() in (p.get("title", "") + " " + p.get("abstract", "")).lower()
+                         and len(kw) > 4]
+            kw_display = ", ".join(f"<code>{k}</code>" for k in kw_matches[:3])
+
+            lines.append(f"""
+<div style='border:1px solid #e0dbd4;border-radius:6px;padding:12px;margin-bottom:10px'>
+  <div style='font-size:13px;font-weight:600;color:#2a2a2a;margin-bottom:3px'>{title}</div>
+  <div style='font-size:11px;color:#A89E8C;margin-bottom:4px'>{cats} · {published}</div>
+  {f"<div style='font-size:11px;color:#7a7570'>{kw_display}</div>" if kw_display else ""}
+</div>""")
+
+    lines.append("<style>.labor-tracker { font-family: Georgia, serif; }</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

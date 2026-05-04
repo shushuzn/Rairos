@@ -1,1 +1,140 @@
-IiIiUmFkYXIgcGFnZSBtYW5hZ2VtZW50LiIiIgoKaW1wb3J0IHRleHR3cmFwCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgQW55LCBEaWN0LCBMaXN0Cgpmcm9tIGNvcmUuYmFzaWNzIGltcG9ydCBnZXRfZGVmYXVsdF9yYWRhcl9kaXIsIHJlYWRfdGV4dCwgd3JpdGVfdGV4dApmcm9tIGNvcmUuX2NvbnN0YW50cyBpbXBvcnQgUkFEQVJfRklMRQoKIyBJbi1tZW1vcnkgYWNjdW11bGF0aW9uIGZvciBiYXRjaCB1cGRhdGVzIOKAlCBrZXllZCBieSAocm9vdCwgdGFnKQpfcGVuZGluZzogRGljdFt0dXBsZSwgRGljdFtzdHIsIEFueV1dID0ge30KCgpkZWYgZW5zdXJlX3JhZGFyKHJvb3Q6IFBhdGgpIC0+IFBhdGg6CiAgICBwID0gcm9vdCAvIGdldF9kZWZhdWx0X3JhZGFyX2RpcigpIC8gUkFEQVJfRklMRQogICAgaWYgcC5leGlzdHMoKToKICAgICAgICByZXR1cm4gcAoKICAgIG1kID0gIiIiXAojIFJhZGFy77yI6ZW/5pyf6Lef6Liq6aG177yJCgp8IOS4u+mimCB8IOeDreW6piB8IOivgeaNrui0qOmHjyB8IOaIkOacrOWPmOWMliB8IOaIkeeahOS/oeW/gyB8IOacgOi/keabtOaWsCB8CnwgLS0gfCAtLSB8IC0tLS0gfCAtLS0tIHwgLS0tLSB8IC0tLS0gfAoiIiIKICAgIHdyaXRlX3RleHQocCwgdGV4dHdyYXAuZGVkZW50KG1kKS5zdHJpcCgpICsgIlxuIikKICAgIHJldHVybiBwCgoKZGVmIHBhcnNlX3JhZGFyX3RhYmxlKG1kOiBzdHIpIC0+IHR1cGxlOgogICAgbGluZXMgPSBtZC5zcGxpdGxpbmVzKCkKICAgIHN0YXJ0ID0gTm9uZQogICAgZm9yIGksIGxuIGluIGVudW1lcmF0ZShsaW5lcyk6CiAgICAgICAgaWYgbG4uc3RyaXAoKS5zdGFydHN3aXRoKCJ8IOS4u+mimCB8Iik6CiAgICAgICAgICAgIHN0YXJ0ID0gaQogICAgICAgICAgICBicmVhawogICAgaWYgc3RhcnQgaXMgTm9uZToKICAgICAgICByZXR1cm4gbWQucnN0cmlwKCkgKyAiXG4iLCBbXQoKICAgIGhlYWRlciA9ICJcbiIuam9pbihsaW5lc1s6c3RhcnRdKS5yc3RyaXAoKSArICJcbiIKICAgIHJvd3M6IExpc3RbRGljdFtzdHIsIHN0cl1dID0gW10KICAgIGZvciBsbiBpbiBsaW5lc1tzdGFydCArIDIgOl06CiAgICAgICAgaWYgbm90IGxuLnN0cmlwKCkuc3RhcnRzd2l0aCgifCIpOgogICAgICAgICAgICBjb250aW51ZQogICAgICAgIGNvbHMgPSBbYy5zdHJpcCgpIGZvciBjIGluIGxuLnN0cmlwKCkuc3RyaXAoInwiKS5zcGxpdCgifCIpXQogICAgICAgIGlmIGxlbihjb2xzKSA8IDY6CiAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgcm93cy5hcHBlbmQoCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICLkuLvpopgiOiBjb2xzWzBdLAogICAgICAgICAgICAgICAgIueDreW6piI6IGNvbHNbMV0sCiAgICAgICAgICAgICAgICAi6K+B5o2u6LSo6YePIjogY29sc1syXSwKICAgICAgICAgICAgICAgICLmiJDmnKzlj5jljJYiOiBjb2xzWzNdLAogICAgICAgICAgICAgICAgIuaIkeeahOS/oeW/gyI6IGNvbHNbNF0sCiAgICAgICAgICAgICAgICAi5pyA6L+R5pu05pawIjogY29sc1s1XSwKICAgICAgICAgICAgfQogICAgICAgICkKICAgIHJldHVybiBoZWFkZXIsIHJvd3MKCgpkZWYgcmVuZGVyX3JhZGFyKGhlYWRlcjogc3RyLCByb3dzOiBMaXN0W0RpY3Rbc3RyLCBzdHJdXSkgLT4gc3RyOgogICAgb3V0ID0gWwogICAgICAgIGhlYWRlci5yc3RyaXAoKSwKICAgICAgICAiIiwKICAgICAgICAifCDkuLvpopggfCDng63luqYgfCDor4Hmja7otKjph48gfCDmiJDmnKzlj5jljJYgfCDmiJHnmoTkv6Hlv4MgfCDmnIDov5Hmm7TmlrAgfCIsCiAgICAgICAgInwgLS0gfCAtLSB8IC0tLS0gfCAtLS0tIHwgLS0tLSB8IC0tLS0gfCIsCiAgICBdCiAgICBmb3IgciBpbiByb3dzOgogICAgICAgIG91dC5hcHBlbmQoCiAgICAgICAgICAgIGYifCB7clsn5Li76aKYJ119IHwge3JbJ+eDreW6piddfSB8IHtyWyfor4Hmja7otKjph48nXX0gfCB7clsn5oiQ5pys5Y+Y5YyWJ119IHwge3JbJ+aIkeeahOS/oeW/gyddfSB8IHtyWyfmnIDov5Hmm7TmlrAnXX0gfCIKICAgICAgICApCiAgICByZXR1cm4gIlxuIi5qb2luKG91dCkuc3RyaXAoKSArICJcbiIKCgpkZWYgdXBkYXRlX3JhZGFyKAogICAgcm9vdDogUGF0aCwKICAgIHRhZ3M6IGxpc3QsCiAgICBub3RlX2RhdGU6IHN0ciwKICAgIGZsdXNoOiBib29sID0gVHJ1ZSwKKSAtPiBQYXRoOgogICAgIiIiVXBkYXRlIHJhZGFyIHdpdGggaW5jcmVtZW50ZWQgaGVhdCBmb3IgdGFncy4KCiAgICBBcmdzOgogICAgICAgIHJvb3Q6IFJlc2VhcmNoIE9TIHJvb3QKICAgICAgICB0YWdzOiBMaXN0IG9mIHRhZyBuYW1lcyB0byBidW1wCiAgICAgICAgbm90ZV9kYXRlOiBEYXRlIHN0cmluZyBmb3IgJ+acgOi/keabtOaWsCcgZmllbGQKICAgICAgICBmbHVzaDogSWYgVHJ1ZSAoZGVmYXVsdCksIHdyaXRlIGltbWVkaWF0ZWx5LiBJZiBGYWxzZSwgYWNjdW11bGF0ZQogICAgICAgICAgICAgICAgaW4gbWVtb3J5IGFuZCBjYWxsZXIgbXVzdCBjYWxsIGZsdXNoX3JhZGFyKCkgYWZ0ZXJ3YXJkcy4KICAgICIiIgogICAgcCA9IGVuc3VyZV9yYWRhcihyb290KQogICAga2V5ID0gKHJvb3QucmVzb2x2ZSgpLCBOb25lKSAgIyBOb25lIHNlbnRpbmVsIGZvciBzaW5nbGUtdXBkYXRlIHBhdGgKCiAgICBpZiBmbHVzaDoKICAgICAgICBfcGVuZGluZy5jbGVhcigpICAjIGNsZWFyIGFueSBzdGFsZSBiYXRjaCBzdGF0ZQogICAgICAgIG1kID0gcmVhZF90ZXh0KHApCiAgICAgICAgaGVhZGVyLCByb3dzID0gcGFyc2VfcmFkYXJfdGFibGUobWQpCiAgICAgICAgcm93X21hcCA9IHtyWyLkuLvpopgiXTogciBmb3IgciBpbiByb3dzfQogICAgICAgIGZvciB0IGluIHRhZ3M6CiAgICAgICAgICAgIGlmIHQgbm90IGluIHJvd19tYXA6CiAgICAgICAgICAgICAgICByb3dfbWFwW3RdID0gewogICAgICAgICAgICAgICAgICAgICLkuLvpopgiOiB0LAogICAgICAgICAgICAgICAgICAgICLng63luqYiOiAiMSIsCiAgICAgICAgICAgICAgICAgICAgIuivgeaNrui0qOmHjyI6ICIiLAogICAgICAgICAgICAgICAgICAgICLmiJDmnKzlj5jljJYiOiAiIiwKICAgICAgICAgICAgICAgICAgICAi5oiR55qE5L+h5b+DIjogIiIsCiAgICAgICAgICAgICAgICAgICAgIuacgOi/keabtOaWsCI6IG5vdGVfZGF0ZSwKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxzZToKICAgICAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgICAgICByb3dfbWFwW3RdWyLng63luqYiXSA9IHN0cihpbnQocm93X21hcFt0XVsi54Ot5bqmIl0gb3IgIjAiKSArIDEpCiAgICAgICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAgICAgICAgIHJvd19tYXBbdF1bIueDreW6piJdID0gIjEiCiAgICAgICAgICAgICAgICByb3dfbWFwW3RdWyLmnIDov5Hmm7TmlrAiXSA9IG5vdGVfZGF0ZQogICAgICAgIHJvd3MyID0gbGlzdChyb3dfbWFwLnZhbHVlcygpKQogICAgICAgIHJvd3MyLnNvcnQoa2V5PWxhbWJkYSByOiAoLV9oZWF0KHIpLCByWyLkuLvpopgiXS5sb3dlcigpKSkKICAgICAgICB3cml0ZV90ZXh0KHAsIHJlbmRlcl9yYWRhcihoZWFkZXIsIHJvd3MyKSkKICAgICAgICByZXR1cm4gcAoKICAgICMgRGVmZXJyZWQgbW9kZTogYWNjdW11bGF0ZSBpbiBtZW1vcnkKICAgIGlmIGtleSBub3QgaW4gX3BlbmRpbmc6CiAgICAgICAgbWQgPSByZWFkX3RleHQocCkKICAgICAgICBoZWFkZXIsIHJvd3MgPSBwYXJzZV9yYWRhcl90YWJsZShtZCkKICAgICAgICBfcGVuZGluZ1trZXldID0geyJfaGVhZGVyIjogaGVhZGVyLCAiX3Jvd3MiOiB7clsi5Li76aKYIl06IHIgZm9yIHIgaW4gcm93c319CiAgICBzdGF0ZSA9IF9wZW5kaW5nW2tleV0KICAgIGZvciB0IGluIHRhZ3M6CiAgICAgICAgaWYgdCBub3QgaW4gc3RhdGVbIl9yb3dzIl06CiAgICAgICAgICAgIHN0YXRlWyJfcm93cyJdW3RdID0gewogICAgICAgICAgICAgICAgIuS4u+mimCI6IHQsCiAgICAgICAgICAgICAgICAi54Ot5bqmIjogIjEiLAogICAgICAgICAgICAgICAgIuivgeaNrui0qOmHjyI6ICIiLAogICAgICAgICAgICAgICAgIuaIkOacrOWPmOWMliI6ICIiLAogICAgICAgICAgICAgICAgIuaIkeeahOS/oeW/gyI6ICIiLAogICAgICAgICAgICAgICAgIuacgOi/keabtOaWsCI6IG5vdGVfZGF0ZSwKICAgICAgICAgICAgfQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgIHN0YXRlWyJfcm93cyJdW3RdWyLng63luqYiXSA9IHN0cihpbnQoc3RhdGVbIl9yb3dzIl1bdF1bIueDreW6piJdIG9yICIwIikgKyAxKQogICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAgICAgc3RhdGVbIl9yb3dzIl1bdF1bIueDreW6piJdID0gIjEiCiAgICAgICAgICAgIHN0YXRlWyJfcm93cyJdW3RdWyLmnIDov5Hmm7TmlrAiXSA9IG5vdGVfZGF0ZQogICAgcmV0dXJuIHAKCgpkZWYgX2hlYXQocjogRGljdFtzdHIsIHN0cl0pIC0+IGludDoKICAgIHRyeToKICAgICAgICByZXR1cm4gaW50KHJbIueDreW6piJdKQogICAgZXhjZXB0IEV4Y2VwdGlvbjoKICAgICAgICByZXR1cm4gMAoKCmRlZiBmbHVzaF9yYWRhcihyb290OiBQYXRoKSAtPiBOb25lOgogICAgIiIiV3JpdGUgYWxsIGFjY3VtdWxhdGVkIHJhZGFyIHVwZGF0ZXMgZm9yIGEgcm9vdCB0byBkaXNrLiIiIgogICAga2V5ID0gKHJvb3QucmVzb2x2ZSgpLCBOb25lKQogICAgaWYga2V5IG5vdCBpbiBfcGVuZGluZzoKICAgICAgICByZXR1cm4KICAgIHN0YXRlID0gX3BlbmRpbmcucG9wKGtleSkKICAgIHAgPSBlbnN1cmVfcmFkYXIocm9vdCkKICAgIHJvd3MyID0gbGlzdChzdGF0ZVsiX3Jvd3MiXS52YWx1ZXMoKSkKICAgIHJvd3MyLnNvcnQoa2V5PWxhbWJkYSByOiAoLV9oZWF0KHIpLCByWyLkuLvpopgiXS5sb3dlcigpKSkKICAgIHdyaXRlX3RleHQocCwgcmVuZGVyX3JhZGFyKHN0YXRlWyJfaGVhZGVyIl0sIHJvd3MyKSkK
+"""Radar page management."""
+import textwrap
+from pathlib import Path
+from typing import Any, Dict, List
+
+from core.basics import get_default_radar_dir, read_text, write_text
+from core._constants import RADAR_FILE
+
+# In-memory accumulation for batch updates — keyed by (root, tag)
+_pending: Dict[tuple, Dict[str, Any]] = {}
+
+
+def ensure_radar(root: Path) -> Path:
+    p = root / get_default_radar_dir() / RADAR_FILE
+    if p.exists():
+        return p
+
+    md = """\
+# Radar（长期跟踪页）
+
+| 主题 | 热度 | 证据质量 | 成本变化 | 我的信心 | 最近更新 |
+| -- | -- | ---- | ---- | ---- | ---- |
+"""
+    write_text(p, textwrap.dedent(md).strip() + "\n")
+    return p
+
+
+def parse_radar_table(md: str) -> tuple:
+    lines = md.splitlines()
+    start = None
+    for i, ln in enumerate(lines):
+        if ln.strip().startswith("| 主题 |"):
+            start = i
+            break
+    if start is None:
+        return md.rstrip() + "\n", []
+
+    header = "\n".join(lines[:start]).rstrip() + "\n"
+    rows: List[Dict[str, str]] = []
+    for ln in lines[start + 2:]:
+        if not ln.strip().startswith("|"):
+            continue
+        cols = [c.strip() for c in ln.strip().strip("|").split("|")]
+        if len(cols) < 6:
+            continue
+        rows.append({
+            "主题": cols[0],
+            "热度": cols[1],
+            "证据质量": cols[2],
+            "成本变化": cols[3],
+            "我的信心": cols[4],
+            "最近更新": cols[5],
+        })
+    return header, rows
+
+
+def render_radar(header: str, rows: List[Dict[str, str]]) -> str:
+    out = [
+        header.rstrip(),
+        "",
+        "| 主题 | 热度 | 证据质量 | 成本变化 | 我的信心 | 最近更新 |",
+        "| -- | -- | ---- | ---- | ---- | ---- |",
+    ]
+    for r in rows:
+        out.append(f"| {r['主题']} | {r['热度']} | {r['证据质量']} | {r['成本变化']} | {r['我的信心']} | {r['最近更新']} |")
+    return "\n".join(out).strip() + "\n"
+
+
+def update_radar(
+    root: Path,
+    tags: list,
+    note_date: str,
+    flush: bool = True,
+) -> Path:
+    """Update radar with incremented heat for tags.
+
+    Args:
+        root: Research OS root
+        tags: List of tag names to bump
+        note_date: Date string for '最近更新' field
+        flush: If True (default), write immediately. If False, accumulate
+                in memory and caller must call flush_radar() afterwards.
+    """
+    p = ensure_radar(root)
+    key = (root.resolve(), None)  # None sentinel for single-update path
+
+    if flush:
+        _pending.clear()  # clear any stale batch state
+        md = read_text(p)
+        header, rows = parse_radar_table(md)
+        row_map = {r["主题"]: r for r in rows}
+        for t in tags:
+            if t not in row_map:
+                row_map[t] = {"主题": t, "热度": "1", "证据质量": "", "成本变化": "", "我的信心": "", "最近更新": note_date}
+            else:
+                try:
+                    row_map[t]["热度"] = str(int(row_map[t]["热度"] or "0") + 1)
+                except Exception:
+                    row_map[t]["热度"] = "1"
+                row_map[t]["最近更新"] = note_date
+        rows2 = list(row_map.values())
+        rows2.sort(key=lambda r: (-_heat(r), r["主题"].lower()))
+        write_text(p, render_radar(header, rows2))
+        return p
+
+    # Deferred mode: accumulate in memory
+    if key not in _pending:
+        md = read_text(p)
+        header, rows = parse_radar_table(md)
+        _pending[key] = {"_header": header, "_rows": {r["主题"]: r for r in rows}}
+    state = _pending[key]
+    for t in tags:
+        if t not in state["_rows"]:
+            state["_rows"][t] = {"主题": t, "热度": "1", "证据质量": "", "成本变化": "", "我的信心": "", "最近更新": note_date}
+        else:
+            try:
+                state["_rows"][t]["热度"] = str(int(state["_rows"][t]["热度"] or "0") + 1)
+            except Exception:
+                state["_rows"][t]["热度"] = "1"
+            state["_rows"][t]["最近更新"] = note_date
+    return p
+
+
+def _heat(r: Dict[str, str]) -> int:
+    try:
+        return int(r["热度"])
+    except Exception:
+        return 0
+
+
+def flush_radar(root: Path) -> None:
+    """Write all accumulated radar updates for a root to disk."""
+    key = (root.resolve(), None)
+    if key not in _pending:
+        return
+    state = _pending.pop(key)
+    p = ensure_radar(root)
+    rows2 = list(state["_rows"].values())
+    rows2.sort(key=lambda r: (-_heat(r), r["主题"].lower()))
+    write_text(p, render_radar(state["_header"], rows2))

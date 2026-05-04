@@ -1,1 +1,99 @@
-IiIiQ0xJIGNvbW1hbmQ6IGFzayDigJQgUmVzZWFyY2ggY2hhdC4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBhcmdwYXJzZQoKZnJvbSBjbGkuX3NoYXJlZCBpbXBvcnQgZ2V0X2RiLCBwcmludF9pbmZvLCBwcmludF9lcnJvcgpmcm9tIGxsbS5yZXNlYXJjaF9jaGF0IGltcG9ydCBSZXNlYXJjaENoYXQKZnJvbSBsbG0uaW5zaWdodF9jYXJkcyBpbXBvcnQgSW5zaWdodE1hbmFnZXIKCgpkZWYgX2J1aWxkX2Fza19wYXJzZXIoc3VicGFyc2VycykgLT4gYXJncGFyc2UuQXJndW1lbnRQYXJzZXI6CiAgICAiIiJCdWlsZCB0aGUgYXNrIHN1YmNvbW1hbmQgcGFyc2VyLiIiIgogICAgcCA9IHN1YnBhcnNlcnMuYWRkX3BhcnNlcigKICAgICAgICAiYXNrIiwKICAgICAgICBoZWxwPSJSZXNlYXJjaCBjaGF0IiwKICAgICAgICBkZXNjcmlwdGlvbj0iQXNrIHJlc2VhcmNoIHF1ZXN0aW9ucyB3aXRoIGNvbnRleHQgYXdhcmVuZXNzLiIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAicXVlcnkiLAogICAgICAgIG5hcmdzPSIrIiwKICAgICAgICBoZWxwPSJZb3VyIHJlc2VhcmNoIHF1ZXN0aW9uIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWNvbnRleHQiLAogICAgICAgICItYyIsCiAgICAgICAgaGVscD0iTGltaXQgdG8gcGFwZXJzIHdpdGggdGFnL3RvcGljIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLXZlcmJvc2UiLAogICAgICAgICItdiIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBoZWxwPSJTaG93IHJldHJpZXZlZCBjb250ZXh0IiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLW5vLWluc2lnaHRzIiwKICAgICAgICBhY3Rpb249InN0b3JlX3RydWUiLAogICAgICAgIGhlbHA9IlNraXAgaW5zaWdodHMgaW4gY29udGV4dCIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1tYXgtcGFwZXJzIiwKICAgICAgICB0eXBlPWludCwKICAgICAgICBkZWZhdWx0PTEwLAogICAgICAgIGhlbHA9Ik1heCBwYXBlcnMgdG8gcmV0cmlldmUgKGRlZmF1bHQ6IDEwKSIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1yb3V0ZSIsCiAgICAgICAgIi1yIiwKICAgICAgICBhY3Rpb249InN0b3JlX3RydWUiLAogICAgICAgIGhlbHA9IlVzZSBzZW1hbnRpYyByb3V0aW5nIHRvIGRlbGVnYXRlIHRvIHNwZWNpYWxpemVkIGNvbW1hbmRzIiwKICAgICkKICAgIHJldHVybiBwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKCmRlZiBfcnVuX2FzayhhcmdzOiBhcmdwYXJzZS5OYW1lc3BhY2UpIC0+IGludDoKICAgICIiIlJ1biBhc2sgY29tbWFuZC4iIiIKICAgIHF1ZXJ5ID0gIiAiLmpvaW4oYXJncy5xdWVyeSkKCiAgICAjIFNlbWFudGljIHJvdXRpbmc6IGRlbGVnYXRlIHRvIHNwZWNpYWxpemVkIGNvbW1hbmRzIGluc3RlYWQgb2YgUkFHIGNoYXQKICAgIGlmIGFyZ3Mucm91dGU6CiAgICAgICAgZnJvbSBsbG0uc2VtYW50aWNfcm91dGVyIGltcG9ydCBTZW1hbnRpY1JvdXRlcgoKICAgICAgICByb3V0ZXIgPSBTZW1hbnRpY1JvdXRlcigpCiAgICAgICAgdHJ5OgogICAgICAgICAgICByb3V0ZSA9IHJvdXRlci5yb3V0ZShxdWVyeSkKICAgICAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgICAgIHByaW50X2Vycm9yKGYiUm91dGluZyBmYWlsZWQ6IHtlfSIpCiAgICAgICAgICAgIHJldHVybiAxICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKICAgICAgICAjIFFVRVNUSU9OX0FOU1dFUiBmYWxscyB0aHJvdWdoIHRvIFJBRyBjaGF0OyBhbGwgb3RoZXJzIGRlbGVnYXRlCiAgICAgICAgaWYgcm91dGUucXVlcnlfdHlwZS52YWx1ZSAhPSAicXVlc3Rpb25fYW5zd2VyIjoKICAgICAgICAgICAgb3V0cHV0cyA9IHJvdXRlci5leGVjdXRlKHJvdXRlLCBxdWVyeSwgZXhlY19hbGw9VHJ1ZSkKICAgICAgICAgICAgZm9yIG5hbWUsIG91dCBpbiBvdXRwdXRzLml0ZW1zKCk6CiAgICAgICAgICAgICAgICBwcmludChmIj09PSB7bmFtZX0gPT09IikKICAgICAgICAgICAgICAgIHByaW50KG91dCBpZiBvdXQuc3RyaXAoKSBlbHNlICJbbm8gb3V0cHV0XSIpCiAgICAgICAgICAgICAgICBwcmludCgpCiAgICAgICAgICAgIHJldHVybiAwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKICAgIGRiID0gZ2V0X2RiKCkKICAgIGRiLmluaXQoKQoKICAgIGluc2lnaHRfbWFuYWdlciA9IE5vbmUgaWYgYXJncy5ub19pbnNpZ2h0cyBlbHNlIEluc2lnaHRNYW5hZ2VyKCkKICAgIGNoYXQgPSBSZXNlYXJjaENoYXQoZGI9ZGIsIGluc2lnaHRfbWFuYWdlcj1pbnNpZ2h0X21hbmFnZXIpCgogICAgcHJpbnRfaW5mbyhmIlxu8J+UjSB7cXVlcnl9XG4iKQoKICAgICMgQnVpbGQgY29udGV4dAogICAgY3R4ID0gY2hhdC5idWlsZF9jb250ZXh0KHF1ZXJ5LCB0b3BpY19oaW50PWFyZ3MuY29udGV4dCkKCiAgICBpZiBhcmdzLnZlcmJvc2U6CiAgICAgICAgcHJpbnQoZiJbQ29udGV4dF0gVG9waWM6IHtjdHgudG9waWN9IikKICAgICAgICBwcmludChmIltDb250ZXh0XSBQYXBlcnM6IHtsZW4oY3R4LnBhcGVycyl9IikKICAgICAgICBwcmludChmIltDb250ZXh0XSBJbnNpZ2h0czoge2xlbihjdHguaW5zaWdodHMpfSIpCiAgICAgICAgaWYgY3R4LnBhcGVyczoKICAgICAgICAgICAgcHJpbnQoIlxuW1JldHJpZXZlZCBQYXBlcnNdIikKICAgICAgICAgICAgZm9yIHAgaW4gY3R4LnBhcGVyc1s6NV06CiAgICAgICAgICAgICAgICBwcmludChmIiAgLSB7cC50aXRsZVs6NjBdfSIpCiAgICAgICAgcHJpbnQoKQoKICAgICMgR2VuZXJhdGUgcmVzcG9uc2UKICAgIHJlc3BvbnNlID0gY2hhdC5jaGF0KHF1ZXJ5LCBjb250ZXh0PWN0eCkKICAgIHByaW50KHJlc3BvbnNlKQoKICAgIHJldHVybiAwCg==
+"""CLI command: ask — Research chat."""
+from __future__ import annotations
+
+import argparse
+
+from cli._shared import get_db, print_info, print_error
+from llm.research_chat import ResearchChat
+from llm.insight_cards import InsightManager
+
+
+def _build_ask_parser(subparsers) -> argparse.ArgumentParser:
+    """Build the ask subcommand parser."""
+    p = subparsers.add_parser(
+        "ask",
+        help="Research chat",
+        description="Ask research questions with context awareness.",
+    )
+    p.add_argument(
+        "query",
+        nargs="+",
+        help="Your research question",
+    )
+    p.add_argument(
+        "--context", "-c",
+        help="Limit to papers with tag/topic",
+    )
+    p.add_argument(
+        "--verbose", "-v",
+        action="store_true",
+        help="Show retrieved context",
+    )
+    p.add_argument(
+        "--no-insights",
+        action="store_true",
+        help="Skip insights in context",
+    )
+    p.add_argument(
+        "--max-papers",
+        type=int,
+        default=10,
+        help="Max papers to retrieve (default: 10)",
+    )
+    p.add_argument(
+        "--route", "-r",
+        action="store_true",
+        help="Use semantic routing to delegate to specialized commands",
+    )
+    return p  # type: ignore[no-any-return]
+
+
+def _run_ask(args: argparse.Namespace) -> int:
+    """Run ask command."""
+    query = " ".join(args.query)
+
+    # Semantic routing: delegate to specialized commands instead of RAG chat
+    if args.route:
+        from llm.semantic_router import SemanticRouter
+        router = SemanticRouter()
+        try:
+            route = router.route(query)
+        except Exception as e:
+            print_error(f"Routing failed: {e}")
+            return 1  # type: ignore[no-any-return]
+
+        # QUESTION_ANSWER falls through to RAG chat; all others delegate
+        if route.query_type.value != "question_answer":
+            outputs = router.execute(route, query, exec_all=True)
+            for name, out in outputs.items():
+                print(f"=== {name} ===")
+                print(out if out.strip() else "[no output]")
+                print()
+            return 0  # type: ignore[no-any-return]
+
+    db = get_db()
+    db.init()
+
+    insight_manager = None if args.no_insights else InsightManager()
+    chat = ResearchChat(db=db, insight_manager=insight_manager)
+
+    print_info(f"\n🔍 {query}\n")
+
+    # Build context
+    ctx = chat.build_context(query, topic_hint=args.context)
+
+    if args.verbose:
+        print(f"[Context] Topic: {ctx.topic}")
+        print(f"[Context] Papers: {len(ctx.papers)}")
+        print(f"[Context] Insights: {len(ctx.insights)}")
+        if ctx.papers:
+            print("\n[Retrieved Papers]")
+            for p in ctx.papers[:5]:
+                print(f"  - {p.title[:60]}")
+        print()
+
+    # Generate response
+    response = chat.chat(query, context=ctx)
+    print(response)
+
+    return 0

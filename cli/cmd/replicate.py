@@ -1,1 +1,148 @@
-IiIiQ0xJIGNvbW1hbmQ6IHJlcGxpY2F0ZSDigJQgVHJhY2sgcGFwZXIgcmVwbGljYXRpb24gYXR0ZW1wdHMuIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgYXJncGFyc2UKCmZyb20gY2xpLl9zaGFyZWQgaW1wb3J0IGdldF9kYiwgcHJpbnRfaW5mbywgcHJpbnRfZXJyb3IsIHByaW50X3N1Y2Nlc3MKZnJvbSBsbG0ucmVwbGljYXRpb25fdHJhY2tlciBpbXBvcnQgUmVwbGljYXRpb25UcmFja2VyCgoKZGVmIF9idWlsZF9yZXBsaWNhdGVfcGFyc2VyKHN1YnBhcnNlcnMpIC0+IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyOgogICAgIiIiQnVpbGQgdGhlIHJlcGxpY2F0ZSBzdWJjb21tYW5kIHBhcnNlci4iIiIKICAgIHAgPSBzdWJwYXJzZXJzLmFkZF9wYXJzZXIoCiAgICAgICAgInJlcGxpY2F0ZSIsCiAgICAgICAgaGVscD0iVHJhY2sgcmVwbGljYXRpb24gYXR0ZW1wdHMiLAogICAgICAgIGRlc2NyaXB0aW9uPSJUcmFjayBwYXBlciByZXBsaWNhdGlvbiBhdHRlbXB0cyBhbmQgcmVzdWx0cy4iLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoInBhcGVyX2lkIiwgbmFyZ3M9Ij8iLCBoZWxwPSJQYXBlciBJRCB0byB0cmFjayIpCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1zdGF0dXMiLAogICAgICAgICItcyIsCiAgICAgICAgY2hvaWNlcz1bInN1Y2Nlc3MiLCAiZmFpbGVkIiwgInBhcnRpYWwiLCAiaW5fcHJvZ3Jlc3MiXSwKICAgICAgICBoZWxwPSJTZXQgcmVwbGljYXRpb24gc3RhdHVzIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KCItLW5vdGUiLCAiLW4iLCBoZWxwPSJBZGQgYSBub3RlIikKICAgIHAuYWRkX2FyZ3VtZW50KCItLWRpZmYiLCAiLWQiLCBhY3Rpb249ImFwcGVuZCIsIGhlbHA9IkFkZCBhIGRpZmZlcmVuY2UgZm91bmQiKQogICAgcC5hZGRfYXJndW1lbnQoIi0tbWV0cmljIiwgaGVscD0iQWRkIGEgcmVzdWx0IG1ldHJpYyAoa2V5PXZhbHVlKSIpCiAgICBwLmFkZF9hcmd1bWVudCgiLS1lbnYiLCBoZWxwPSJTZXQgZW52aXJvbm1lbnQgKGtleT12YWx1ZSkiKQogICAgcC5hZGRfYXJndW1lbnQoIi0tcmVwb3J0IiwgIi1yIiwgaGVscD0iR2VuZXJhdGUgcmVwb3J0IGZvciBhdHRlbXB0IElEIikKICAgIHAuYWRkX2FyZ3VtZW50KCItLWxpc3QiLCAiLWwiLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSJMaXN0IGFsbCBhdHRlbXB0cyIpCiAgICBwLmFkZF9hcmd1bWVudCgiLS1zdGF0cyIsIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsIGhlbHA9IlNob3cgc3RhdGlzdGljcyIpCiAgICBwLmFkZF9hcmd1bWVudCgiLS1tYXJrZG93biIsICItbSIsIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsIGhlbHA9Ik91dHB1dCBhcyBNYXJrZG93biIpCiAgICByZXR1cm4gcCAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCgpkZWYgX3J1bl9yZXBsaWNhdGUoYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKSAtPiBpbnQ6CiAgICAiIiJSdW4gcmVwbGljYXRlIGNvbW1hbmQuIiIiCiAgICB0cmFja2VyID0gUmVwbGljYXRpb25UcmFja2VyKCkKCiAgICAjIEdlbmVyYXRlIHJlcG9ydAogICAgaWYgYXJncy5yZXBvcnQ6CiAgICAgICAgcmVwb3J0ID0gdHJhY2tlci5nZW5lcmF0ZV9yZXBvcnQoYXJncy5yZXBvcnQpCiAgICAgICAgaWYgbm90IHJlcG9ydDoKICAgICAgICAgICAgcHJpbnRfZXJyb3IoZiJBdHRlbXB0IFt7YXJncy5yZXBvcnR9XSBub3QgZm91bmQiKQogICAgICAgICAgICByZXR1cm4gMSAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCiAgICAgICAgcHJpbnQoZiIjIFJlcGxpY2F0aW9uIFJlcG9ydDoge3JlcG9ydC5hdHRlbXB0LnBhcGVyX3RpdGxlfVxuIikKICAgICAgICBwcmludChmIioqU3RhdHVzKio6IHtyZXBvcnQuYXR0ZW1wdC5zdGF0dXN9IikKICAgICAgICBwcmludChmIioqRGF0ZSoqOiB7cmVwb3J0LmF0dGVtcHQuYXR0ZW1wdF9kYXRlfVxuIikKCiAgICAgICAgaWYgcmVwb3J0LnN1bW1hcnk6CiAgICAgICAgICAgIHByaW50KGYiIyMgU3VtbWFyeVxue3JlcG9ydC5zdW1tYXJ5fVxuIikKCiAgICAgICAgaWYgcmVwb3J0Lm1ldGhvZG9sb2d5OgogICAgICAgICAgICBwcmludChyZXBvcnQubWV0aG9kb2xvZ3kpCiAgICAgICAgICAgIHByaW50KCkKCiAgICAgICAgaWYgcmVwb3J0LmZpbmRpbmdzOgogICAgICAgICAgICBwcmludCgiIyMgRmluZGluZ3MiKQogICAgICAgICAgICBmb3IgZiBpbiByZXBvcnQuZmluZGluZ3M6CiAgICAgICAgICAgICAgICBwcmludChmIi0ge2Z9IikKICAgICAgICAgICAgcHJpbnQoKQoKICAgICAgICBpZiByZXBvcnQucmVjb21tZW5kYXRpb25zOgogICAgICAgICAgICBwcmludCgiIyMgUmVjb21tZW5kYXRpb25zIikKICAgICAgICAgICAgZm9yIHIgaW4gcmVwb3J0LnJlY29tbWVuZGF0aW9uczoKICAgICAgICAgICAgICAgIHByaW50KGYiLSB7cn0iKQogICAgICAgICAgICBwcmludCgpCgogICAgICAgIHJldHVybiAwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKICAgICMgU2hvdyBzdGF0aXN0aWNzCiAgICBpZiBhcmdzLnN0YXRzOgogICAgICAgIHN0YXRzID0gdHJhY2tlci5nZXRfc3RhdGlzdGljcygpCiAgICAgICAgcHJpbnQoIvCflKwgUmVwbGljYXRpb24gU3RhdGlzdGljcyIpCiAgICAgICAgcHJpbnQoZiIgIFRvdGFsOiAgICAgICB7c3RhdHNbJ3RvdGFsJ119IikKICAgICAgICBwcmludChmIiAgU3VjY2VzczogICAgIHtzdGF0c1snc3VjY2VzcyddfSIpCiAgICAgICAgcHJpbnQoZiIgIEZhaWxlZDogICAgICB7c3RhdHNbJ2ZhaWxlZCddfSIpCiAgICAgICAgcHJpbnQoZiIgIFBhcnRpYWw6ICAgICB7c3RhdHNbJ3BhcnRpYWwnXX0iKQogICAgICAgIHByaW50KGYiICBJbiBQcm9ncmVzczoge3N0YXRzWydpbl9wcm9ncmVzcyddfSIpCiAgICAgICAgcHJpbnQoZiIgIFN1Y2Nlc3MgUmF0ZToge3N0YXRzWydzdWNjZXNzX3JhdGUnXTouMWZ9JSIpCiAgICAgICAgcmV0dXJuIDAKCiAgICAjIExpc3QgYXR0ZW1wdHMKICAgIGlmIGFyZ3MubGlzdDoKICAgICAgICBzdGF0dXNfZmlsdGVyID0gYXJncy5zdGF0dXMKICAgICAgICBhdHRlbXB0cyA9IHRyYWNrZXIuZ2V0X2FsbF9hdHRlbXB0cyhzdGF0dXM9c3RhdHVzX2ZpbHRlcikKCiAgICAgICAgaWYgYXJncy5tYXJrZG93bjoKICAgICAgICAgICAgcHJpbnQodHJhY2tlci5yZW5kZXJfbWFya2Rvd24oYXR0ZW1wdHMpKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIHByaW50KHRyYWNrZXIucmVuZGVyX3RleHQoYXR0ZW1wdHMpKQogICAgICAgIHJldHVybiAwCgogICAgIyBVcGRhdGUgZXhpc3RpbmcgYXR0ZW1wdAogICAgaWYgYXJncy5wYXBlcl9pZCBhbmQgbm90IGFyZ3Muc3RhdHVzOgogICAgICAgICMgRmluZCBhdHRlbXB0IGZvciB0aGlzIHBhcGVyCiAgICAgICAgYXR0ZW1wdHMgPSB0cmFja2VyLmdldF9wYXBlcl9hdHRlbXB0cyhhcmdzLnBhcGVyX2lkKQogICAgICAgIGlmIG5vdCBhdHRlbXB0czoKICAgICAgICAgICAgcHJpbnRfZXJyb3IoZiJObyBhdHRlbXB0cyBmb3VuZCBmb3IgcGFwZXIgW3thcmdzLnBhcGVyX2lkfV0iKQogICAgICAgICAgICBwcmludCgiVXNlIHdpdGggLS1zdGF0dXMgdG8gY3JlYXRlIGEgbmV3IGF0dGVtcHQiKQogICAgICAgICAgICByZXR1cm4gMQoKICAgICAgICAjIFVzZSBtb3N0IHJlY2VudAogICAgICAgIGF0dGVtcHQgPSBhdHRlbXB0c1swXQogICAgICAgIHByaW50X2luZm8oZiJGb3VuZCBhdHRlbXB0OiB7YXR0ZW1wdC5hdHRlbXB0X2lkfSIpCgogICAgICAgIHVwZGF0ZXMgPSB7fQogICAgICAgIGlmIGFyZ3Mubm90ZToKICAgICAgICAgICAgdXBkYXRlc1sibm90ZXMiXSA9IGFyZ3Mubm90ZQogICAgICAgIGlmIGFyZ3MuZGlmZjoKICAgICAgICAgICAgdXBkYXRlc1siZGlmZmVyZW5jZXMiXSA9IGFyZ3MuZGlmZgoKICAgICAgICB0cmFja2VyLnVwZGF0ZV9hdHRlbXB0KGF0dGVtcHQuYXR0ZW1wdF9pZCwgKip1cGRhdGVzKQogICAgICAgIHByaW50X3N1Y2Nlc3MoIkF0dGVtcHQgdXBkYXRlZCIpCiAgICAgICAgcmV0dXJuIDAKCiAgICAjIENyZWF0ZSBvciB1cGRhdGUgYXR0ZW1wdAogICAgaWYgbm90IGFyZ3MucGFwZXJfaWQ6CiAgICAgICAgcHJpbnRfZXJyb3IoIlVzYWdlOiByZXBsaWNhdGUgPHBhcGVyX2lkPiBbb3B0aW9uc10iKQogICAgICAgIHJldHVybiAxCgogICAgIyBHZXQgcGFwZXIgaW5mbyBpZiBhdmFpbGFibGUKICAgIHBhcGVyX3RpdGxlID0gYXJncy5wYXBlcl9pZAogICAgZGIgPSBnZXRfZGIoKQogICAgZGIuaW5pdCgpCiAgICBwYXBlciA9IGRiLmdldF9wYXBlcihhcmdzLnBhcGVyX2lkKSBpZiBoYXNhdHRyKGRiLCAiZ2V0X3BhcGVyIikgZWxzZSBOb25lCiAgICBpZiBwYXBlcjoKICAgICAgICBwYXBlcl90aXRsZSA9IGdldGF0dHIocGFwZXIsICJ0aXRsZSIsIGFyZ3MucGFwZXJfaWQpCgogICAgIyBDaGVjayBmb3IgZXhpc3RpbmcgYXR0ZW1wdAogICAgZXhpc3RpbmcgPSB0cmFja2VyLmdldF9wYXBlcl9hdHRlbXB0cyhhcmdzLnBhcGVyX2lkKQoKICAgIGlmIGV4aXN0aW5nIGFuZCBhcmdzLnN0YXR1czoKICAgICAgICAjIFVwZGF0ZSBleGlzdGluZwogICAgICAgIGF0dGVtcHRfaWQgPSBleGlzdGluZ1swXS5hdHRlbXB0X2lkCiAgICAgICAgdHJhY2tlci51cGRhdGVfYXR0ZW1wdCgKICAgICAgICAgICAgYXR0ZW1wdF9pZCwKICAgICAgICAgICAgc3RhdHVzPWFyZ3Muc3RhdHVzLAogICAgICAgICAgICBub3Rlcz1hcmdzLm5vdGUgb3IgIiIsCiAgICAgICAgICAgIGRpZmZlcmVuY2VzPWFyZ3MuZGlmZiBvciBbXSwKICAgICAgICApCiAgICAgICAgcHJpbnRfc3VjY2VzcyhmIlVwZGF0ZWQgYXR0ZW1wdCBbe2F0dGVtcHRfaWR9XSB3aXRoIHN0YXR1czoge2FyZ3Muc3RhdHVzfSIpCiAgICAgICAgcmV0dXJuIDAKCiAgICBpZiBub3QgYXJncy5zdGF0dXM6CiAgICAgICAgIyBDcmVhdGUgbmV3IGF0dGVtcHQKICAgICAgICBhdHRlbXB0ID0gdHJhY2tlci5jcmVhdGVfYXR0ZW1wdChhcmdzLnBhcGVyX2lkLCBwYXBlcl90aXRsZSkKICAgICAgICBwcmludF9zdWNjZXNzKGYiQ3JlYXRlZCBuZXcgYXR0ZW1wdDoge2F0dGVtcHQuYXR0ZW1wdF9pZH0iKQogICAgICAgIHJldHVybiAwCgogICAgcHJpbnRfZXJyb3IoIkludmFsaWQgb3BlcmF0aW9uIikKICAgIHJldHVybiAxCg==
+"""CLI command: replicate — Track paper replication attempts."""
+from __future__ import annotations
+
+import argparse
+
+from cli._shared import get_db, print_info, print_error, print_success
+from llm.replication_tracker import ReplicationTracker
+
+
+def _build_replicate_parser(subparsers) -> argparse.ArgumentParser:
+    """Build the replicate subcommand parser."""
+    p = subparsers.add_parser(
+        "replicate",
+        help="Track replication attempts",
+        description="Track paper replication attempts and results.",
+    )
+    p.add_argument("paper_id", nargs="?", help="Paper ID to track")
+    p.add_argument("--status", "-s", choices=["success", "failed", "partial", "in_progress"],
+                   help="Set replication status")
+    p.add_argument("--note", "-n", help="Add a note")
+    p.add_argument("--diff", "-d", action="append", help="Add a difference found")
+    p.add_argument("--metric", help="Add a result metric (key=value)")
+    p.add_argument("--env", help="Set environment (key=value)")
+    p.add_argument("--report", "-r", help="Generate report for attempt ID")
+    p.add_argument("--list", "-l", action="store_true", help="List all attempts")
+    p.add_argument("--stats", action="store_true", help="Show statistics")
+    p.add_argument("--markdown", "-m", action="store_true", help="Output as Markdown")
+    return p  # type: ignore[no-any-return]
+
+
+def _run_replicate(args: argparse.Namespace) -> int:
+    """Run replicate command."""
+    tracker = ReplicationTracker()
+
+    # Generate report
+    if args.report:
+        report = tracker.generate_report(args.report)
+        if not report:
+            print_error(f"Attempt [{args.report}] not found")
+            return 1  # type: ignore[no-any-return]
+
+        print(f"# Replication Report: {report.attempt.paper_title}\n")
+        print(f"**Status**: {report.attempt.status}")
+        print(f"**Date**: {report.attempt.attempt_date}\n")
+
+        if report.summary:
+            print(f"## Summary\n{report.summary}\n")
+
+        if report.methodology:
+            print(report.methodology)
+            print()
+
+        if report.findings:
+            print("## Findings")
+            for f in report.findings:
+                print(f"- {f}")
+            print()
+
+        if report.recommendations:
+            print("## Recommendations")
+            for r in report.recommendations:
+                print(f"- {r}")
+            print()
+
+        return 0  # type: ignore[no-any-return]
+
+    # Show statistics
+    if args.stats:
+        stats = tracker.get_statistics()
+        print("🔬 Replication Statistics")
+        print(f"  Total:       {stats['total']}")
+        print(f"  Success:     {stats['success']}")
+        print(f"  Failed:      {stats['failed']}")
+        print(f"  Partial:     {stats['partial']}")
+        print(f"  In Progress: {stats['in_progress']}")
+        print(f"  Success Rate: {stats['success_rate']:.1f}%")
+        return 0
+
+    # List attempts
+    if args.list:
+        status_filter = args.status
+        attempts = tracker.get_all_attempts(status=status_filter)
+
+        if args.markdown:
+            print(tracker.render_markdown(attempts))
+        else:
+            print(tracker.render_text(attempts))
+        return 0
+
+    # Update existing attempt
+    if args.paper_id and not args.status:
+        # Find attempt for this paper
+        attempts = tracker.get_paper_attempts(args.paper_id)
+        if not attempts:
+            print_error(f"No attempts found for paper [{args.paper_id}]")
+            print("Use with --status to create a new attempt")
+            return 1
+
+        # Use most recent
+        attempt = attempts[0]
+        print_info(f"Found attempt: {attempt.attempt_id}")
+
+        updates = {}
+        if args.note:
+            updates["notes"] = args.note
+        if args.diff:
+            updates["differences"] = args.diff
+
+        tracker.update_attempt(attempt.attempt_id, **updates)
+        print_success("Attempt updated")
+        return 0
+
+    # Create or update attempt
+    if not args.paper_id:
+        print_error("Usage: replicate <paper_id> [options]")
+        return 1
+
+    # Get paper info if available
+    paper_title = args.paper_id
+    db = get_db()
+    db.init()
+    paper = db.get_paper(args.paper_id) if hasattr(db, 'get_paper') else None
+    if paper:
+        paper_title = getattr(paper, 'title', args.paper_id)
+
+    # Check for existing attempt
+    existing = tracker.get_paper_attempts(args.paper_id)
+
+    if existing and args.status:
+        # Update existing
+        attempt_id = existing[0].attempt_id
+        tracker.update_attempt(
+            attempt_id,
+            status=args.status,
+            notes=args.note or "",
+            differences=args.diff or [],
+        )
+        print_success(f"Updated attempt [{attempt_id}] with status: {args.status}")
+        return 0
+
+    if not args.status:
+        # Create new attempt
+        attempt = tracker.create_attempt(args.paper_id, paper_title)
+        print_success(f"Created new attempt: {attempt.attempt_id}")
+        return 0
+
+    print_error("Invalid operation")
+    return 1

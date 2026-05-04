@@ -1,1 +1,523 @@
-IiIiVGllciAyIHVuaXQgdGVzdHMg4oCUIGxsbS9pbnNpZ2h0X2NhcmRzLnB5LCBwdXJlIGZ1bmN0aW9ucywgbm8gSS9PLiIiIgoKZnJvbSBsbG0uaW5zaWdodF9jYXJkcyBpbXBvcnQgSW5zaWdodENhcmQsIEluc2lnaHRDb2xsZWN0aW9uLCBJbnNpZ2h0TWFuYWdlcgoKCmRlZiBjYXJkKAogICAgY2FyZF9pZD0iaTAwMSIsCiAgICBwYXBlcl9pZD0icDAwMSIsCiAgICBwYXBlcl90aXRsZT0iVGVzdCBQYXBlciIsCiAgICBjb250ZW50PSJUZXN0IGluc2lnaHQgY29udGVudCIsCiAgICBpbnNpZ2h0X3R5cGU9ImZpbmRpbmciLAogICAgdGFncz1Ob25lLAogICAgZXZpZGVuY2U9IiIsCiAgICBjcmVhdGVkX2F0PSIiLAogICAgcmVmZXJlbmNlcz1Ob25lLAopOgogICAgcmV0dXJuIEluc2lnaHRDYXJkKAogICAgICAgIGNhcmRfaWQ9Y2FyZF9pZCwKICAgICAgICBwYXBlcl9pZD1wYXBlcl9pZCwKICAgICAgICBwYXBlcl90aXRsZT1wYXBlcl90aXRsZSwKICAgICAgICBjb250ZW50PWNvbnRlbnQsCiAgICAgICAgaW5zaWdodF90eXBlPWluc2lnaHRfdHlwZSwKICAgICAgICB0YWdzPXRhZ3Mgb3IgW10sCiAgICAgICAgZXZpZGVuY2U9ZXZpZGVuY2UsCiAgICAgICAgcGFnZV9yZWY9IiIsCiAgICAgICAgY3JlYXRlZF9hdD1jcmVhdGVkX2F0LAogICAgICAgIHJlZmVyZW5jZXM9cmVmZXJlbmNlcyBvciBbXSwKICAgICkKCgpkZWYgY2FyZHNfZnJvbV9kaWN0cyhpdGVtcyk6CiAgICAiIiJDb252ZXJ0IGRpY3RzIHRvIEluc2lnaHRDYXJkIGxpc3QgKHNpbXVsYXRlIF9sb2FkX2NhcmRzKS4iIiIKICAgIHJldHVybiBbSW5zaWdodENhcmQoKipkKSBmb3IgZCBpbiBpdGVtc10KCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgRGF0YWNsYXNzIHRlc3RzCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdEluc2lnaHRDYXJkOgogICAgIiIiVGVzdCBJbnNpZ2h0Q2FyZCBkYXRhY2xhc3MuIiIiCgogICAgZGVmIHRlc3RfcmVxdWlyZWRfZmllbGRzKHNlbGYpOgogICAgICAgIGNhcmQgPSBJbnNpZ2h0Q2FyZCgKICAgICAgICAgICAgY2FyZF9pZD0iaTAwMDEiLAogICAgICAgICAgICBwYXBlcl9pZD0icDAwMSIsCiAgICAgICAgICAgIHBhcGVyX3RpdGxlPSJBdHRlbnRpb24gSXMgQWxsIFlvdSBOZWVkIiwKICAgICAgICAgICAgY29udGVudD0iTXVsdGktaGVhZCBhdHRlbnRpb24gb3V0cGVyZm9ybXMgc2luZ2xlLWhlYWQiLAogICAgICAgICkKICAgICAgICBhc3NlcnQgY2FyZC5jYXJkX2lkID09ICJpMDAwMSIKICAgICAgICBhc3NlcnQgY2FyZC5wYXBlcl9pZCA9PSAicDAwMSIKICAgICAgICBhc3NlcnQgY2FyZC5wYXBlcl90aXRsZSA9PSAiQXR0ZW50aW9uIElzIEFsbCBZb3UgTmVlZCIKICAgICAgICBhc3NlcnQgY2FyZC5jb250ZW50ID09ICJNdWx0aS1oZWFkIGF0dGVudGlvbiBvdXRwZXJmb3JtcyBzaW5nbGUtaGVhZCIKCiAgICBkZWYgdGVzdF9vcHRpb25hbF9maWVsZHNfZGVmYXVsdChzZWxmKToKICAgICAgICBjID0gY2FyZChjYXJkX2lkPSJpIiwgcGFwZXJfaWQ9InAiLCBwYXBlcl90aXRsZT0iVCIsIGNvbnRlbnQ9IkMiKQogICAgICAgIGFzc2VydCBjLmluc2lnaHRfdHlwZSA9PSAiZmluZGluZyIKICAgICAgICBhc3NlcnQgYy50YWdzID09IFtdCiAgICAgICAgYXNzZXJ0IGMuZXZpZGVuY2UgPT0gIiIKICAgICAgICBhc3NlcnQgYy5wYWdlX3JlZiA9PSAiIgogICAgICAgIGFzc2VydCBjLmNyZWF0ZWRfYXQgPT0gIiIKICAgICAgICBhc3NlcnQgYy5yZWZlcmVuY2VzID09IFtdCgogICAgZGVmIHRlc3RfYWxsX2ZpZWxkc19jYW5fYmVfc2V0KHNlbGYpOgogICAgICAgIGMgPSBjYXJkKAogICAgICAgICAgICBjYXJkX2lkPSJmdWxsIiwKICAgICAgICAgICAgcGFwZXJfaWQ9InAiLAogICAgICAgICAgICBwYXBlcl90aXRsZT0iVCIsCiAgICAgICAgICAgIGNvbnRlbnQ9IkMiLAogICAgICAgICAgICBpbnNpZ2h0X3R5cGU9Im1ldGhvZCIsCiAgICAgICAgICAgIHRhZ3M9WyJ0cmFuc2Zvcm1lciIsICJubHAiXSwKICAgICAgICAgICAgZXZpZGVuY2U9IlRhYmxlIDEiLAogICAgICAgICAgICBjcmVhdGVkX2F0PSIyMDI2LTAxLTAxIiwKICAgICAgICAgICAgcmVmZXJlbmNlcz1bImkwMDAxIl0sCiAgICAgICAgKQogICAgICAgIGFzc2VydCBjLmluc2lnaHRfdHlwZSA9PSAibWV0aG9kIgogICAgICAgIGFzc2VydCBjLnRhZ3MgPT0gWyJ0cmFuc2Zvcm1lciIsICJubHAiXQogICAgICAgIGFzc2VydCBjLmV2aWRlbmNlID09ICJUYWJsZSAxIgogICAgICAgIGFzc2VydCBjLmNyZWF0ZWRfYXQgPT0gIjIwMjYtMDEtMDEiCiAgICAgICAgYXNzZXJ0IGMucmVmZXJlbmNlcyA9PSBbImkwMDAxIl0KCgpjbGFzcyBUZXN0SW5zaWdodENvbGxlY3Rpb246CiAgICAiIiJUZXN0IEluc2lnaHRDb2xsZWN0aW9uIGRhdGFjbGFzcy4iIiIKCiAgICBkZWYgdGVzdF9yZXF1aXJlZF9maWVsZHMoc2VsZik6CiAgICAgICAgY29sID0gSW5zaWdodENvbGxlY3Rpb24oY29sbGVjdGlvbl9pZD0iYzAwMDEiLCB0aXRsZT0iVHJhbnNmb3JtZXIgUmVzZWFyY2giKQogICAgICAgIGFzc2VydCBjb2wuY29sbGVjdGlvbl9pZCA9PSAiYzAwMDEiCiAgICAgICAgYXNzZXJ0IGNvbC50aXRsZSA9PSAiVHJhbnNmb3JtZXIgUmVzZWFyY2giCgogICAgZGVmIHRlc3Rfb3B0aW9uYWxfZmllbGRzX2RlZmF1bHQoc2VsZik6CiAgICAgICAgY29sID0gSW5zaWdodENvbGxlY3Rpb24oY29sbGVjdGlvbl9pZD0iYyIsIHRpdGxlPSJUIikKICAgICAgICBhc3NlcnQgY29sLmRlc2NyaXB0aW9uID09ICIiCiAgICAgICAgYXNzZXJ0IGNvbC5jYXJkX2lkcyA9PSBbXQogICAgICAgIGFzc2VydCBjb2wudGFncyA9PSBbXQoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyByZW5kZXJfdGV4dCB0ZXN0cyDigJQgdGVzdCB0aGUgYWN0dWFsIG1ldGhvZCBvbiByZWFsIG9iamVjdHMKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0UmVuZGVyVGV4dDoKICAgICIiIlRlc3QgSW5zaWdodE1hbmFnZXIucmVuZGVyX3RleHQuIiIiCgogICAgbWFuYWdlciA9IEluc2lnaHRNYW5hZ2VyKCkKCiAgICBkZWYgdGVzdF9lbXB0eV9yZXR1cm5zX3BsYWNlaG9sZGVyKHNlbGYpOgogICAgICAgIG91dHB1dCA9IHNlbGYubWFuYWdlci5yZW5kZXJfdGV4dChbXSkKICAgICAgICBhc3NlcnQgb3V0cHV0ID09ICJObyBpbnNpZ2h0IGNhcmRzIGZvdW5kLiIKCiAgICBkZWYgdGVzdF9oZWFkZXJfYm9yZGVyX2FuZF90aXRsZShzZWxmKToKICAgICAgICBvdXRwdXQgPSBzZWxmLm1hbmFnZXIucmVuZGVyX3RleHQoW2NhcmQoKV0pCiAgICAgICAgYXNzZXJ0ICI9IiAqIDcwIGluIG91dHB1dAogICAgICAgIGFzc2VydCAi8J+SoSBLZXkgSW5zaWdodCBDYXJkcyIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfZmluZGluZ19pY29uKHNlbGYpOgogICAgICAgIG91dHB1dCA9IHNlbGYubWFuYWdlci5yZW5kZXJfdGV4dChbY2FyZChpbnNpZ2h0X3R5cGU9ImZpbmRpbmciKV0pCiAgICAgICAgYXNzZXJ0ICLwn46vIFtpMDAxXSBGSU5ESU5HIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9tZXRob2RfaWNvbihzZWxmKToKICAgICAgICBvdXRwdXQgPSBzZWxmLm1hbmFnZXIucmVuZGVyX3RleHQoW2NhcmQoaW5zaWdodF90eXBlPSJtZXRob2QiKV0pCiAgICAgICAgYXNzZXJ0ICLimpnvuI8gW2kwMDFdIE1FVEhPRCIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfbGltaXRhdGlvbl9pY29uKHNlbGYpOgogICAgICAgIG91dHB1dCA9IHNlbGYubWFuYWdlci5yZW5kZXJfdGV4dChbY2FyZChpbnNpZ2h0X3R5cGU9ImxpbWl0YXRpb24iKV0pCiAgICAgICAgYXNzZXJ0ICLimqDvuI8gW2kwMDFdIExJTUlUQVRJT04iIGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X2Z1dHVyZV93b3JrX2ljb24oc2VsZik6CiAgICAgICAgb3V0cHV0ID0gc2VsZi5tYW5hZ2VyLnJlbmRlcl90ZXh0KFtjYXJkKGluc2lnaHRfdHlwZT0iZnV0dXJlX3dvcmsiKV0pCiAgICAgICAgYXNzZXJ0ICLwn5SuIFtpMDAxXSBGVVRVUkVfV09SSyIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfdW5rbm93bl90eXBlX3VzZXNfZGVmYXVsdF9pY29uKHNlbGYpOgogICAgICAgIG91dHB1dCA9IHNlbGYubWFuYWdlci5yZW5kZXJfdGV4dChbY2FyZChpbnNpZ2h0X3R5cGU9InVua25vd25fdHlwZSIpXSkKICAgICAgICBhc3NlcnQgIvCfkqEgW2kwMDFdIFVOS05PV05fVFlQRSIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfcGFwZXJfdGl0bGVfdHJ1bmNhdGVkX3RvXzUwKHNlbGYpOgogICAgICAgIGxvbmdfdGl0bGUgPSAiQSIgKiA2MAogICAgICAgIG91dHB1dCA9IHNlbGYubWFuYWdlci5yZW5kZXJfdGV4dChbY2FyZChwYXBlcl90aXRsZT1sb25nX3RpdGxlKV0pCiAgICAgICAgYXNzZXJ0ICJBIiAqIDUwIGluIG91dHB1dAogICAgICAgIGFzc2VydCAoIkEiICogNTEpIG5vdCBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9jb250ZW50X3RydW5jYXRlZF90b18xMDAoc2VsZik6CiAgICAgICAgbG9uZ19jb250ZW50ID0gIlgiICogMTIwCiAgICAgICAgb3V0cHV0ID0gc2VsZi5tYW5hZ2VyLnJlbmRlcl90ZXh0KFtjYXJkKGNvbnRlbnQ9bG9uZ19jb250ZW50KV0pCiAgICAgICAgYXNzZXJ0ICgiWCIgKiAxMDApIGluIG91dHB1dAogICAgICAgIGFzc2VydCAoIlgiICogMTAxKSBub3QgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfdGFnc19zaG93bihzZWxmKToKICAgICAgICBvdXRwdXQgPSBzZWxmLm1hbmFnZXIucmVuZGVyX3RleHQoW2NhcmQodGFncz1bInRyYW5zZm9ybWVyIiwgImF0dGVudGlvbiJdKV0pCiAgICAgICAgYXNzZXJ0ICJUYWdzOiB0cmFuc2Zvcm1lciwgYXR0ZW50aW9uIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9ub190YWdzX3doZW5fZW1wdHkoc2VsZik6CiAgICAgICAgb3V0cHV0ID0gc2VsZi5tYW5hZ2VyLnJlbmRlcl90ZXh0KFtjYXJkKHRhZ3M9W10pXSkKICAgICAgICBhc3NlcnQgIlRhZ3M6IiBub3QgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfbWF4XzIwX2NhcmRzKHNlbGYpOgogICAgICAgICMgcmFuZ2UoMSwgMzEpIGdpdmVzIGk9MS4uMzAg4oaSIElEcyAiaTAwMDEiLi4iaTAwMzAiCiAgICAgICAgY2FyZHMgPSBbY2FyZChjYXJkX2lkPWYiaXtpOjA0ZH0iKSBmb3IgaSBpbiByYW5nZSgxLCAzMSldCiAgICAgICAgb3V0cHV0ID0gc2VsZi5tYW5hZ2VyLnJlbmRlcl90ZXh0KGNhcmRzKQogICAgICAgIGFzc2VydCAiaTAwMDEiIGluIG91dHB1dAogICAgICAgIGFzc2VydCAiaTAwMjAiIGluIG91dHB1dAogICAgICAgIGFzc2VydCAiaTAwMjEiIG5vdCBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF90b3RhbF9jb3VudChzZWxmKToKICAgICAgICBjYXJkcyA9IFtjYXJkKGNhcmRfaWQ9ZiJpe2k6MDRkfSIpIGZvciBpIGluIHJhbmdlKDUpXQogICAgICAgIG91dHB1dCA9IHNlbGYubWFuYWdlci5yZW5kZXJfdGV4dChjYXJkcykKICAgICAgICBhc3NlcnQgIlRvdGFsOiA1IGNhcmRzIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9tdWx0aXBsZV9jYXJkcyhzZWxmKToKICAgICAgICBjYXJkcyA9IFsKICAgICAgICAgICAgY2FyZChjYXJkX2lkPSJpMDAxIiwgaW5zaWdodF90eXBlPSJmaW5kaW5nIiwgY29udGVudD0iRmlyc3QgaW5zaWdodCIpLAogICAgICAgICAgICBjYXJkKGNhcmRfaWQ9ImkwMDIiLCBpbnNpZ2h0X3R5cGU9Im1ldGhvZCIsIGNvbnRlbnQ9IlNlY29uZCBpbnNpZ2h0IiksCiAgICAgICAgXQogICAgICAgIG91dHB1dCA9IHNlbGYubWFuYWdlci5yZW5kZXJfdGV4dChjYXJkcykKICAgICAgICBhc3NlcnQgImkwMDEiIGluIG91dHB1dCBhbmQgImkwMDIiIGluIG91dHB1dAogICAgICAgIGFzc2VydCAiRklORElORyIgaW4gb3V0cHV0IGFuZCAiTUVUSE9EIiBpbiBvdXRwdXQKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgcmVuZGVyX21hcmtkb3duIHRlc3RzIOKAlCB0ZXN0IHRoZSBhY3R1YWwgbWV0aG9kIG9uIHJlYWwgb2JqZWN0cwojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RSZW5kZXJNYXJrZG93bjoKICAgICIiIlRlc3QgSW5zaWdodE1hbmFnZXIucmVuZGVyX21hcmtkb3duLiIiIgoKICAgIG1hbmFnZXIgPSBJbnNpZ2h0TWFuYWdlcigpCgogICAgZGVmIHRlc3RfZW1wdHlfcmV0dXJuc19iYXNlX2hlYWRlcihzZWxmKToKICAgICAgICBvdXRwdXQgPSBzZWxmLm1hbmFnZXIucmVuZGVyX21hcmtkb3duKFtdKQogICAgICAgIGFzc2VydCAiIyBLZXkgSW5zaWdodCBDYXJkcyIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICJObyBjYXJkcyBmb3VuZC4iIGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X2hlYWRlcl9wcmVzZW50KHNlbGYpOgogICAgICAgIG91dHB1dCA9IHNlbGYubWFuYWdlci5yZW5kZXJfbWFya2Rvd24oW2NhcmQoKV0pCiAgICAgICAgYXNzZXJ0ICIjIEtleSBJbnNpZ2h0IENhcmRzIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9wYXBlcl9zZWN0aW9uX3RpdGxlKHNlbGYpOgogICAgICAgIGMgPSBjYXJkKHBhcGVyX2lkPSJwMSIsIHBhcGVyX3RpdGxlPSJNeSBQYXBlciBUaXRsZSIpCiAgICAgICAgb3V0cHV0ID0gc2VsZi5tYW5hZ2VyLnJlbmRlcl9tYXJrZG93bihbY10pCiAgICAgICAgYXNzZXJ0ICIjIyBNeSBQYXBlciBUaXRsZSIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICIqRnJvbTogcDEqIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9wYXBlcl90aXRsZV90cnVuY2F0ZWRfdG9fNjAoc2VsZik6CiAgICAgICAgbG9uZ190aXRsZSA9ICJCIiAqIDcwCiAgICAgICAgb3V0cHV0ID0gc2VsZi5tYW5hZ2VyLnJlbmRlcl9tYXJrZG93bihbY2FyZChwYXBlcl90aXRsZT1sb25nX3RpdGxlKV0pCiAgICAgICAgYXNzZXJ0ICgiQiIgKiA2MCkgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICgiQiIgKiA2MSkgbm90IGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X211bHRpcGxlX2NhcmRzX3NhbWVfcGFwZXJfZ3JvdXBlZChzZWxmKToKICAgICAgICAjIENhcmRzIGZyb20gc2FtZSBwYXBlcl9pZCBhcmUgZ3JvdXBlZCB0b2dldGhlciB1bmRlciBvbmUgIyMgaGVhZGluZy4KICAgICAgICAjIENhcmRzIGZyb20gZGlmZmVyZW50IHBhcGVyX2lkcyBnZXQgc2VwYXJhdGUgc2VjdGlvbnMuCiAgICAgICAgY2FyZHMgPSBbCiAgICAgICAgICAgIGNhcmQocGFwZXJfaWQ9InAxIiwgcGFwZXJfdGl0bGU9IlBhcGVyIEFscGhhIiwgY2FyZF9pZD0iaTAwMSIsIGNvbnRlbnQ9IkNhcmQgMSIpLAogICAgICAgICAgICBjYXJkKHBhcGVyX2lkPSJwMSIsIHBhcGVyX3RpdGxlPSJQYXBlciBBbHBoYSIsIGNhcmRfaWQ9ImkwMDIiLCBjb250ZW50PSJDYXJkIDIiKSwKICAgICAgICAgICAgY2FyZChwYXBlcl9pZD0icDIiLCBwYXBlcl90aXRsZT0iUGFwZXIgQmV0YSIsIGNhcmRfaWQ9ImkwMDMiLCBjb250ZW50PSJDYXJkIDMiKSwKICAgICAgICBdCiAgICAgICAgb3V0cHV0ID0gc2VsZi5tYW5hZ2VyLnJlbmRlcl9tYXJrZG93bihjYXJkcykKICAgICAgICAjIHAxIOKGkiBvbmUgIlBhcGVyIEFscGhhIiBzZWN0aW9uLCBwMiDihpIgb25lICJQYXBlciBCZXRhIiBzZWN0aW9uCiAgICAgICAgYXNzZXJ0IG91dHB1dC5jb3VudCgiIyMgUGFwZXIgQWxwaGEiKSA9PSAxCiAgICAgICAgYXNzZXJ0IG91dHB1dC5jb3VudCgiIyMgUGFwZXIgQmV0YSIpID09IDEKICAgICAgICBhc3NlcnQgIkNhcmQgMSIgaW4gb3V0cHV0IGFuZCAiQ2FyZCAyIiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIkNhcmQgMyIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfZXZpZGVuY2Vfc2hvd24oc2VsZik6CiAgICAgICAgb3V0cHV0ID0gc2VsZi5tYW5hZ2VyLnJlbmRlcl9tYXJrZG93bihbY2FyZChldmlkZW5jZT0iVGFibGUgMSByZXN1bHRzIildKQogICAgICAgIGFzc2VydCAiPiBFdmlkZW5jZTogVGFibGUgMSByZXN1bHRzIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9ub19ldmlkZW5jZV9zZWN0aW9uX3doZW5fZW1wdHkoc2VsZik6CiAgICAgICAgb3V0cHV0ID0gc2VsZi5tYW5hZ2VyLnJlbmRlcl9tYXJrZG93bihbY2FyZChldmlkZW5jZT0iIildKQogICAgICAgIGFzc2VydCAiRXZpZGVuY2U6IiBub3QgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfdGFnc19zaG93bihzZWxmKToKICAgICAgICBvdXRwdXQgPSBzZWxmLm1hbmFnZXIucmVuZGVyX21hcmtkb3duKFtjYXJkKHRhZ3M9WyJubHAiLCAidHJhbnNmb3JtZXIiXSldKQogICAgICAgIGFzc2VydCAiKlRhZ3M6IG5scCwgdHJhbnNmb3JtZXIqIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9ub190YWdzX3NlY3Rpb25fd2hlbl9lbXB0eShzZWxmKToKICAgICAgICBvdXRwdXQgPSBzZWxmLm1hbmFnZXIucmVuZGVyX21hcmtkb3duKFtjYXJkKHRhZ3M9W10pXSkKICAgICAgICBhc3NlcnQgIlRhZ3M6IiBub3QgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfZmluZGluZ19jYXBpdGFsaXplZChzZWxmKToKICAgICAgICBvdXRwdXQgPSBzZWxmLm1hbmFnZXIucmVuZGVyX21hcmtkb3duKFtjYXJkKGluc2lnaHRfdHlwZT0iZmluZGluZyIpXSkKICAgICAgICBhc3NlcnQgIiMjIyDwn46vIEZpbmRpbmciIGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X21ldGhvZF9jYXBpdGFsaXplZChzZWxmKToKICAgICAgICBvdXRwdXQgPSBzZWxmLm1hbmFnZXIucmVuZGVyX21hcmtkb3duKFtjYXJkKGluc2lnaHRfdHlwZT0ibWV0aG9kIildKQogICAgICAgIGFzc2VydCAiIyMjIOKame+4jyBNZXRob2QiIGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X2xpbWl0YXRpb25fY2FwaXRhbGl6ZWQoc2VsZik6CiAgICAgICAgb3V0cHV0ID0gc2VsZi5tYW5hZ2VyLnJlbmRlcl9tYXJrZG93bihbY2FyZChpbnNpZ2h0X3R5cGU9ImxpbWl0YXRpb24iKV0pCiAgICAgICAgYXNzZXJ0ICIjIyMg4pqg77iPIExpbWl0YXRpb24iIGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X2Z1dHVyZV93b3JrX2NhcGl0YWxpemVkKHNlbGYpOgogICAgICAgIG91dHB1dCA9IHNlbGYubWFuYWdlci5yZW5kZXJfbWFya2Rvd24oW2NhcmQoaW5zaWdodF90eXBlPSJmdXR1cmVfd29yayIpXSkKICAgICAgICBhc3NlcnQgIiMjIyDwn5SuIEZ1dHVyZV93b3JrIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF91bmtub3duX3R5cGVfdXNlc19kZWZhdWx0X2ljb24oc2VsZik6CiAgICAgICAgb3V0cHV0ID0gc2VsZi5tYW5hZ2VyLnJlbmRlcl9tYXJrZG93bihbY2FyZChpbnNpZ2h0X3R5cGU9InVua25vd24iKV0pCiAgICAgICAgYXNzZXJ0ICIjIyMg8J+SoSBVbmtub3duIiBpbiBvdXRwdXQKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgZXhwb3J0X2Zvcl9ub3RlIHRlc3RzIOKAlCB0ZXN0IHRoZSBhY3R1YWwgbWV0aG9kIG9uIHJlYWwgb2JqZWN0cwojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RFeHBvcnRGb3JOb3RlOgogICAgIiIiVGVzdCBJbnNpZ2h0TWFuYWdlci5leHBvcnRfZm9yX25vdGUuIiIiCgogICAgbWFuYWdlciA9IEluc2lnaHRNYW5hZ2VyKCkKCiAgICBkZWYgdGVzdF9jb250ZW50X2FzX2hlYWRlcihzZWxmKToKICAgICAgICBvdXRwdXQgPSBzZWxmLm1hbmFnZXIuZXhwb3J0X2Zvcl9ub3RlKFtjYXJkKGNvbnRlbnQ9IkF0dGVudGlvbiBicmVha3Rocm91Z2giKV0pCiAgICAgICAgYXNzZXJ0ICIjIyBBdHRlbnRpb24gYnJlYWt0aHJvdWdoIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9jb250ZW50X3RydW5jYXRlZF90b184MChzZWxmKToKICAgICAgICBsb25nX2NvbnRlbnQgPSAiWCIgKiAxMDAKICAgICAgICBvdXRwdXQgPSBzZWxmLm1hbmFnZXIuZXhwb3J0X2Zvcl9ub3RlKFtjYXJkKGNvbnRlbnQ9bG9uZ19jb250ZW50KV0pCiAgICAgICAgYXNzZXJ0ICgiWCIgKiA4MCkgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICgiWCIgKiA4MSkgbm90IGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X3BhcGVyX2lkX2FzX3dpa2lfbGluayhzZWxmKToKICAgICAgICBvdXRwdXQgPSBzZWxmLm1hbmFnZXIuZXhwb3J0X2Zvcl9ub3RlKFtjYXJkKHBhcGVyX2lkPSJwMTIzIildKQogICAgICAgIGFzc2VydCAiLSBTb3VyY2U6IFtbcDEyM11dIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9pbnNpZ2h0X3R5cGVfc2hvd24oc2VsZik6CiAgICAgICAgb3V0cHV0ID0gc2VsZi5tYW5hZ2VyLmV4cG9ydF9mb3Jfbm90ZShbY2FyZChpbnNpZ2h0X3R5cGU9Im1ldGhvZCIpXSkKICAgICAgICBhc3NlcnQgIi0gVHlwZTogbWV0aG9kIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF90YWdzX2FzX2hhc2h0YWdzKHNlbGYpOgogICAgICAgIG91dHB1dCA9IHNlbGYubWFuYWdlci5leHBvcnRfZm9yX25vdGUoW2NhcmQodGFncz1bIm5scCIsICJ0cmFuc2Zvcm1lciJdKV0pCiAgICAgICAgYXNzZXJ0ICItIFRhZ3M6ICNubHAsICN0cmFuc2Zvcm1lciIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3Rfbm9fdGFnc193aGVuX2VtcHR5KHNlbGYpOgogICAgICAgIG91dHB1dCA9IHNlbGYubWFuYWdlci5leHBvcnRfZm9yX25vdGUoW2NhcmQodGFncz1bXSldKQogICAgICAgIGFzc2VydCAiVGFnczoiIG5vdCBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9tdWx0aXBsZV9jYXJkcyhzZWxmKToKICAgICAgICBjYXJkcyA9IFsKICAgICAgICAgICAgY2FyZChwYXBlcl9pZD0icDAwMSIsIGNvbnRlbnQ9IkZpcnN0IGluc2lnaHQiKSwKICAgICAgICAgICAgY2FyZChwYXBlcl9pZD0icDAwMiIsIGNvbnRlbnQ9IlNlY29uZCBpbnNpZ2h0IiksCiAgICAgICAgXQogICAgICAgIG91dHB1dCA9IHNlbGYubWFuYWdlci5leHBvcnRfZm9yX25vdGUoY2FyZHMpCiAgICAgICAgYXNzZXJ0ICIjIyBGaXJzdCBpbnNpZ2h0IiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIiMjIFNlY29uZCBpbnNpZ2h0IiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIltbcDAwMV1dIiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIltbcDAwMl1dIiBpbiBvdXRwdXQKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgc2VhcmNoX2NhcmRzIHRlc3RzIOKAlCByZXBsaWNhdGUgcHVyZSBmaWx0ZXJpbmcgbG9naWMKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0U2VhcmNoQ2FyZHNGaWx0ZXI6CiAgICAiIiJUZXN0IHNlYXJjaF9jYXJkcyBmaWx0ZXJpbmcgbG9naWMgKHJlcGxpY2F0ZWQgZm9yIGlzb2xhdGlvbikuIiIiCgogICAgZGVmIF9zZWFyY2hfY2FyZHMoc2VsZiwgZGF0YSwgcXVlcnk9Tm9uZSwgdGFncz1Ob25lLCBpbnNpZ2h0X3R5cGU9Tm9uZSwgcGFwZXJfaWQ9Tm9uZSk6CiAgICAgICAgIiIiUmVwbGljYXRlIHNlYXJjaF9jYXJkcyBmaWx0ZXJpbmcgbG9naWMuIiIiCiAgICAgICAgcmVzdWx0cyA9IFtdCiAgICAgICAgZm9yIGl0ZW0gaW4gZGF0YToKICAgICAgICAgICAgaWYgcXVlcnk6CiAgICAgICAgICAgICAgICBxID0gcXVlcnkubG93ZXIoKQogICAgICAgICAgICAgICAgaWYgcSBub3QgaW4gaXRlbVsiY29udGVudCJdLmxvd2VyKCkgYW5kIHEgbm90IGluIGl0ZW1bInBhcGVyX3RpdGxlIl0ubG93ZXIoKToKICAgICAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICBpZiB0YWdzOgogICAgICAgICAgICAgICAgaWYgbm90IGFueSh0IGluIGl0ZW1bInRhZ3MiXSBmb3IgdCBpbiB0YWdzKToKICAgICAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICBpZiBpbnNpZ2h0X3R5cGUgYW5kIGl0ZW1bImluc2lnaHRfdHlwZSJdICE9IGluc2lnaHRfdHlwZToKICAgICAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgICAgIGlmIHBhcGVyX2lkIGFuZCBpdGVtWyJwYXBlcl9pZCJdICE9IHBhcGVyX2lkOgogICAgICAgICAgICAgICAgY29udGludWUKICAgICAgICAgICAgcmVzdWx0cy5hcHBlbmQoaXRlbSkKICAgICAgICByZXN1bHRzLnNvcnQoa2V5PWxhbWJkYSB4OiB4WyJjcmVhdGVkX2F0Il0sIHJldmVyc2U9VHJ1ZSkKICAgICAgICByZXR1cm4gcmVzdWx0cwoKICAgIGRlZiBfZCgKICAgICAgICBzZWxmLAogICAgICAgIGNhcmRfaWQ9ImkwMDEiLAogICAgICAgIHBhcGVyX2lkPSJwMDAxIiwKICAgICAgICBwYXBlcl90aXRsZT0iVCIsCiAgICAgICAgY29udGVudD0iQyIsCiAgICAgICAgaW5zaWdodF90eXBlPSJmaW5kaW5nIiwKICAgICAgICB0YWdzPU5vbmUsCiAgICAgICAgY3JlYXRlZF9hdD0iMjAyNi0wMS0wMSIsCiAgICApOgogICAgICAgIHJldHVybiB7CiAgICAgICAgICAgICJjYXJkX2lkIjogY2FyZF9pZCwKICAgICAgICAgICAgInBhcGVyX2lkIjogcGFwZXJfaWQsCiAgICAgICAgICAgICJwYXBlcl90aXRsZSI6IHBhcGVyX3RpdGxlLAogICAgICAgICAgICAiY29udGVudCI6IGNvbnRlbnQsCiAgICAgICAgICAgICJpbnNpZ2h0X3R5cGUiOiBpbnNpZ2h0X3R5cGUsCiAgICAgICAgICAgICJ0YWdzIjogdGFncyBvciBbXSwKICAgICAgICAgICAgImV2aWRlbmNlIjogIiIsCiAgICAgICAgICAgICJwYWdlX3JlZiI6ICIiLAogICAgICAgICAgICAiY3JlYXRlZF9hdCI6IGNyZWF0ZWRfYXQsCiAgICAgICAgICAgICJyZWZlcmVuY2VzIjogW10sCiAgICAgICAgfQoKICAgIGRlZiB0ZXN0X25vX2ZpbHRlcnNfcmV0dXJuc19hbGwoc2VsZik6CiAgICAgICAgZGF0YSA9IFtzZWxmLl9kKGNhcmRfaWQ9ImkwMDEiKSwgc2VsZi5fZChjYXJkX2lkPSJpMDAyIildCiAgICAgICAgYXNzZXJ0IGxlbihzZWxmLl9zZWFyY2hfY2FyZHMoZGF0YSkpID09IDIKCiAgICBkZWYgdGVzdF9maWx0ZXJfYnlfcXVlcnlfaW5fY29udGVudChzZWxmKToKICAgICAgICBkYXRhID0gWwogICAgICAgICAgICBzZWxmLl9kKGNhcmRfaWQ9ImkwMDEiLCBjb250ZW50PSJUcmFuc2Zvcm1lciBhdHRlbnRpb24iKSwKICAgICAgICAgICAgc2VsZi5fZChjYXJkX2lkPSJpMDAyIiwgY29udGVudD0iQ05OIGNsYXNzaWZpZXIiKSwKICAgICAgICBdCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fc2VhcmNoX2NhcmRzKGRhdGEsIHF1ZXJ5PSJ0cmFuc2Zvcm1lciIpCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHQpID09IDEgYW5kIHJlc3VsdFswXVsiY2FyZF9pZCJdID09ICJpMDAxIgoKICAgIGRlZiB0ZXN0X2ZpbHRlcl9ieV9xdWVyeV9pbl90aXRsZShzZWxmKToKICAgICAgICBkYXRhID0gWwogICAgICAgICAgICBzZWxmLl9kKGNhcmRfaWQ9ImkwMDEiLCBwYXBlcl90aXRsZT0iQkVSVCBwYXBlciIpLAogICAgICAgICAgICBzZWxmLl9kKGNhcmRfaWQ9ImkwMDIiLCBwYXBlcl90aXRsZT0iQ05OIHN0dWR5IiksCiAgICAgICAgXQogICAgICAgIHJlc3VsdCA9IHNlbGYuX3NlYXJjaF9jYXJkcyhkYXRhLCBxdWVyeT0iYmVydCIpCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHQpID09IDEgYW5kIHJlc3VsdFswXVsiY2FyZF9pZCJdID09ICJpMDAxIgoKICAgIGRlZiB0ZXN0X3F1ZXJ5X2Nhc2VfaW5zZW5zaXRpdmUoc2VsZik6CiAgICAgICAgZGF0YSA9IFtzZWxmLl9kKGNhcmRfaWQ9ImkwMDEiLCBjb250ZW50PSJEZWVwIExlYXJuaW5nIildCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fc2VhcmNoX2NhcmRzKGRhdGEsIHF1ZXJ5PSJERUVQIikKICAgICAgICBhc3NlcnQgbGVuKHJlc3VsdCkgPT0gMQoKICAgIGRlZiB0ZXN0X3F1ZXJ5X25vdF9tYXRjaGluZyhzZWxmKToKICAgICAgICBkYXRhID0gW3NlbGYuX2QoY2FyZF9pZD0iaTAwMSIsIGNvbnRlbnQ9InRyYW5zZm9ybWVyIildCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fc2VhcmNoX2NhcmRzKGRhdGEsIHF1ZXJ5PSJjbm4iKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0KSA9PSAwCgogICAgZGVmIHRlc3RfZmlsdGVyX2J5X3NpbmdsZV90YWcoc2VsZik6CiAgICAgICAgZGF0YSA9IFsKICAgICAgICAgICAgc2VsZi5fZChjYXJkX2lkPSJpMDAxIiwgdGFncz1bIm5scCJdKSwKICAgICAgICAgICAgc2VsZi5fZChjYXJkX2lkPSJpMDAyIiwgdGFncz1bImN2Il0pLAogICAgICAgIF0KICAgICAgICByZXN1bHQgPSBzZWxmLl9zZWFyY2hfY2FyZHMoZGF0YSwgdGFncz1bIm5scCJdKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0KSA9PSAxIGFuZCByZXN1bHRbMF1bImNhcmRfaWQiXSA9PSAiaTAwMSIKCiAgICBkZWYgdGVzdF9maWx0ZXJfYnlfdGFnc19hbnlfbWF0Y2goc2VsZik6CiAgICAgICAgZGF0YSA9IFsKICAgICAgICAgICAgc2VsZi5fZChjYXJkX2lkPSJpMDAxIiwgdGFncz1bIm5scCIsICJ0cmFuc2Zvcm1lciJdKSwKICAgICAgICAgICAgc2VsZi5fZChjYXJkX2lkPSJpMDAyIiwgdGFncz1bImN2Il0pLAogICAgICAgIF0KICAgICAgICByZXN1bHQgPSBzZWxmLl9zZWFyY2hfY2FyZHMoZGF0YSwgdGFncz1bInRyYW5zZm9ybWVyIl0pCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHQpID09IDEgYW5kIHJlc3VsdFswXVsiY2FyZF9pZCJdID09ICJpMDAxIgoKICAgIGRlZiB0ZXN0X2ZpbHRlcl9ieV9tdWx0aXBsZV90YWdzKHNlbGYpOgogICAgICAgIGRhdGEgPSBbCiAgICAgICAgICAgIHNlbGYuX2QoY2FyZF9pZD0iaTAwMSIsIHRhZ3M9WyJubHAiXSksCiAgICAgICAgICAgIHNlbGYuX2QoY2FyZF9pZD0iaTAwMiIsIHRhZ3M9WyJjdiJdKSwKICAgICAgICBdCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fc2VhcmNoX2NhcmRzKGRhdGEsIHRhZ3M9WyJubHAiLCAiY3YiXSkKICAgICAgICBhc3NlcnQgbGVuKHJlc3VsdCkgPT0gMgoKICAgIGRlZiB0ZXN0X2ZpbHRlcl9ieV9pbnNpZ2h0X3R5cGUoc2VsZik6CiAgICAgICAgZGF0YSA9IFsKICAgICAgICAgICAgc2VsZi5fZChjYXJkX2lkPSJpMDAxIiwgaW5zaWdodF90eXBlPSJmaW5kaW5nIiksCiAgICAgICAgICAgIHNlbGYuX2QoY2FyZF9pZD0iaTAwMiIsIGluc2lnaHRfdHlwZT0ibWV0aG9kIiksCiAgICAgICAgXQogICAgICAgIHJlc3VsdCA9IHNlbGYuX3NlYXJjaF9jYXJkcyhkYXRhLCBpbnNpZ2h0X3R5cGU9Im1ldGhvZCIpCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHQpID09IDEgYW5kIHJlc3VsdFswXVsiY2FyZF9pZCJdID09ICJpMDAyIgoKICAgIGRlZiB0ZXN0X2ZpbHRlcl9ieV9wYXBlcl9pZChzZWxmKToKICAgICAgICBkYXRhID0gWwogICAgICAgICAgICBzZWxmLl9kKGNhcmRfaWQ9ImkwMDEiLCBwYXBlcl9pZD0icDAwMSIpLAogICAgICAgICAgICBzZWxmLl9kKGNhcmRfaWQ9ImkwMDIiLCBwYXBlcl9pZD0icDAwMiIpLAogICAgICAgIF0KICAgICAgICByZXN1bHQgPSBzZWxmLl9zZWFyY2hfY2FyZHMoZGF0YSwgcGFwZXJfaWQ9InAwMDEiKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0KSA9PSAxIGFuZCByZXN1bHRbMF1bImNhcmRfaWQiXSA9PSAiaTAwMSIKCiAgICBkZWYgdGVzdF9zb3J0X2J5X2NyZWF0ZWRfYXRfZGVzY2VuZGluZyhzZWxmKToKICAgICAgICBkYXRhID0gWwogICAgICAgICAgICBzZWxmLl9kKGNhcmRfaWQ9ImkwMDEiLCBjcmVhdGVkX2F0PSIyMDI2LTAxLTAxIiksCiAgICAgICAgICAgIHNlbGYuX2QoY2FyZF9pZD0iaTAwMiIsIGNyZWF0ZWRfYXQ9IjIwMjYtMDQtMDEiKSwKICAgICAgICAgICAgc2VsZi5fZChjYXJkX2lkPSJpMDAzIiwgY3JlYXRlZF9hdD0iMjAyNi0wMi0wMSIpLAogICAgICAgIF0KICAgICAgICByZXN1bHQgPSBzZWxmLl9zZWFyY2hfY2FyZHMoZGF0YSkKICAgICAgICBhc3NlcnQgcmVzdWx0WzBdWyJjYXJkX2lkIl0gPT0gImkwMDIiCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsxXVsiY2FyZF9pZCJdID09ICJpMDAzIgogICAgICAgIGFzc2VydCByZXN1bHRbMl1bImNhcmRfaWQiXSA9PSAiaTAwMSIKCiAgICBkZWYgdGVzdF9jb21iaW5lZF9maWx0ZXJzKHNlbGYpOgogICAgICAgIGRhdGEgPSBbCiAgICAgICAgICAgIHNlbGYuX2QoCiAgICAgICAgICAgICAgICBjYXJkX2lkPSJpMDAxIiwKICAgICAgICAgICAgICAgIHBhcGVyX2lkPSJwMDAxIiwKICAgICAgICAgICAgICAgIGluc2lnaHRfdHlwZT0iZmluZGluZyIsCiAgICAgICAgICAgICAgICB0YWdzPVsibmxwIl0sCiAgICAgICAgICAgICAgICBjb250ZW50PSJ0cmFuc2Zvcm1lciIsCiAgICAgICAgICAgICksCiAgICAgICAgICAgIHNlbGYuX2QoCiAgICAgICAgICAgICAgICBjYXJkX2lkPSJpMDAyIiwgcGFwZXJfaWQ9InAwMDEiLCBpbnNpZ2h0X3R5cGU9Im1ldGhvZCIsIHRhZ3M9WyJubHAiXSwgY29udGVudD0iYmVydCIKICAgICAgICAgICAgKSwKICAgICAgICAgICAgc2VsZi5fZCgKICAgICAgICAgICAgICAgIGNhcmRfaWQ9ImkwMDMiLCBwYXBlcl9pZD0icDAwMiIsIGluc2lnaHRfdHlwZT0iZmluZGluZyIsIHRhZ3M9WyJubHAiXSwgY29udGVudD0iY25uIgogICAgICAgICAgICApLAogICAgICAgIF0KICAgICAgICByZXN1bHQgPSBzZWxmLl9zZWFyY2hfY2FyZHMoZGF0YSwgcGFwZXJfaWQ9InAwMDEiLCBpbnNpZ2h0X3R5cGU9ImZpbmRpbmciKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0KSA9PSAxIGFuZCByZXN1bHRbMF1bImNhcmRfaWQiXSA9PSAiaTAwMSIKCiAgICBkZWYgdGVzdF9lbXB0eV9jcmVhdGVkX2F0X3NvcnRlZF9sYXN0KHNlbGYpOgogICAgICAgICIiIkVtcHR5IHN0cmluZyA8IGFueSBkYXRlIGluIGRlc2NlbmRpbmcgb3JkZXIg4oCUIGl0ZW1zIHdpdGggZGF0ZXMgY29tZSBmaXJzdC4iIiIKICAgICAgICBkYXRhID0gWwogICAgICAgICAgICBzZWxmLl9kKGNhcmRfaWQ9ImkwMDEiLCBjcmVhdGVkX2F0PSIyMDI2LTAxLTAxIiksCiAgICAgICAgICAgIHNlbGYuX2QoY2FyZF9pZD0iaTAwMiIsIGNyZWF0ZWRfYXQ9IiIpLAogICAgICAgIF0KICAgICAgICByZXN1bHQgPSBzZWxmLl9zZWFyY2hfY2FyZHMoZGF0YSkKICAgICAgICAjIERlc2NlbmRpbmc6ICIyMDI2LTAxLTAxIiA+ICIiIHNvIGkwMDEgY29tZXMgZmlyc3QKICAgICAgICBhc3NlcnQgcmVzdWx0WzBdWyJjYXJkX2lkIl0gPT0gImkwMDEiCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIGdldF90YWdfY2xvdWQgbG9naWMgdGVzdHMg4oCUIHJlcGxpY2F0ZSBwdXJlIGZ1bmN0aW9uCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFRhZ0Nsb3VkOgogICAgIiIiVGVzdCBnZXRfdGFnX2Nsb3VkIGxvZ2ljIChyZXBsaWNhdGVkIGZvciBpc29sYXRpb24pLiIiIgoKICAgIGRlZiBfZ2V0X3RhZ19jbG91ZChzZWxmLCBkYXRhKToKICAgICAgICAiIiJSZXBsaWNhdGUgZ2V0X3RhZ19jbG91ZC4iIiIKICAgICAgICB0YWdzID0ge30KICAgICAgICBmb3IgaXRlbSBpbiBkYXRhOgogICAgICAgICAgICBmb3IgdGFnIGluIGl0ZW1bInRhZ3MiXToKICAgICAgICAgICAgICAgIHRhZ3NbdGFnXSA9IHRhZ3MuZ2V0KHRhZywgMCkgKyAxCiAgICAgICAgcmV0dXJuIGRpY3Qoc29ydGVkKHRhZ3MuaXRlbXMoKSwga2V5PWxhbWJkYSB4OiAteFsxXSkpCgogICAgZGVmIHRlc3RfY291bnRzX3RhZ3Moc2VsZik6CiAgICAgICAgZGF0YSA9IFsKICAgICAgICAgICAgeyJ0YWdzIjogWyJubHAiXX0sCiAgICAgICAgICAgIHsidGFncyI6IFsibmxwIl19LAogICAgICAgICAgICB7InRhZ3MiOiBbImN2Il19LAogICAgICAgIF0KICAgICAgICBjbG91ZCA9IHNlbGYuX2dldF90YWdfY2xvdWQoZGF0YSkKICAgICAgICBhc3NlcnQgY2xvdWRbIm5scCJdID09IDIKICAgICAgICBhc3NlcnQgY2xvdWRbImN2Il0gPT0gMQoKICAgIGRlZiB0ZXN0X3NvcnRlZF9ieV9mcmVxdWVuY3lfZGVzY2VuZGluZyhzZWxmKToKICAgICAgICBkYXRhID0gWwogICAgICAgICAgICB7InRhZ3MiOiBbImN2Il19LAogICAgICAgICAgICB7InRhZ3MiOiBbIm5scCJdfSwKICAgICAgICAgICAgeyJ0YWdzIjogWyJubHAiXX0sCiAgICAgICAgICAgIHsidGFncyI6IFsibmxwIl19LAogICAgICAgIF0KICAgICAgICBjbG91ZCA9IHNlbGYuX2dldF90YWdfY2xvdWQoZGF0YSkKICAgICAgICBrZXlzID0gbGlzdChjbG91ZC5rZXlzKCkpCiAgICAgICAgYXNzZXJ0IGtleXNbMF0gPT0gIm5scCIKICAgICAgICBhc3NlcnQga2V5c1sxXSA9PSAiY3YiCgogICAgZGVmIHRlc3RfZW1wdHlfbGlzdChzZWxmKToKICAgICAgICBhc3NlcnQgc2VsZi5fZ2V0X3RhZ19jbG91ZChbXSkgPT0ge30KCiAgICBkZWYgdGVzdF9ub190YWdzKHNlbGYpOgogICAgICAgIGFzc2VydCBzZWxmLl9nZXRfdGFnX2Nsb3VkKFt7InRhZ3MiOiBbXX1dKSA9PSB7fQoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBJbnNpZ2h0TWFuYWdlciBpbnN0YW50aWF0aW9uCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdEluc2lnaHRNYW5hZ2VySW5pdDoKICAgICIiIlRlc3QgSW5zaWdodE1hbmFnZXIgY2xhc3MuIiIiCgogICAgZGVmIHRlc3RfY2FuX2luc3RhbnRpYXRlKHNlbGYpOgogICAgICAgIG1hbmFnZXIgPSBJbnNpZ2h0TWFuYWdlcigpCiAgICAgICAgYXNzZXJ0IG1hbmFnZXIgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQgbWFuYWdlci5kYXRhX2RpciBpcyBub3QgTm9uZQoKICAgIGRlZiB0ZXN0X2hhc19leHBlY3RlZF9tZXRob2RzKHNlbGYpOgogICAgICAgIG1hbmFnZXIgPSBJbnNpZ2h0TWFuYWdlcigpCiAgICAgICAgYXNzZXJ0IGhhc2F0dHIobWFuYWdlciwgInJlbmRlcl90ZXh0IikKICAgICAgICBhc3NlcnQgaGFzYXR0cihtYW5hZ2VyLCAicmVuZGVyX21hcmtkb3duIikKICAgICAgICBhc3NlcnQgaGFzYXR0cihtYW5hZ2VyLCAiZXhwb3J0X2Zvcl9ub3RlIikKICAgICAgICBhc3NlcnQgaGFzYXR0cihtYW5hZ2VyLCAic2VhcmNoX2NhcmRzIikKICAgICAgICBhc3NlcnQgaGFzYXR0cihtYW5hZ2VyLCAiZ2V0X3RhZ19jbG91ZCIpCg==
+"""Tier 2 unit tests — llm/insight_cards.py, pure functions, no I/O."""
+
+from llm.insight_cards import InsightCard, InsightCollection, InsightManager
+
+
+def card(
+    card_id="i001",
+    paper_id="p001",
+    paper_title="Test Paper",
+    content="Test insight content",
+    insight_type="finding",
+    tags=None,
+    evidence="",
+    created_at="",
+    references=None,
+):
+    return InsightCard(
+        card_id=card_id,
+        paper_id=paper_id,
+        paper_title=paper_title,
+        content=content,
+        insight_type=insight_type,
+        tags=tags or [],
+        evidence=evidence,
+        page_ref="",
+        created_at=created_at,
+        references=references or [],
+    )
+
+
+def cards_from_dicts(items):
+    """Convert dicts to InsightCard list (simulate _load_cards)."""
+    return [InsightCard(**d) for d in items]
+
+
+# =============================================================================
+# Dataclass tests
+# =============================================================================
+class TestInsightCard:
+    """Test InsightCard dataclass."""
+
+    def test_required_fields(self):
+        card = InsightCard(
+            card_id="i0001",
+            paper_id="p001",
+            paper_title="Attention Is All You Need",
+            content="Multi-head attention outperforms single-head",
+        )
+        assert card.card_id == "i0001"
+        assert card.paper_id == "p001"
+        assert card.paper_title == "Attention Is All You Need"
+        assert card.content == "Multi-head attention outperforms single-head"
+
+    def test_optional_fields_default(self):
+        c = card(card_id="i", paper_id="p", paper_title="T", content="C")
+        assert c.insight_type == "finding"
+        assert c.tags == []
+        assert c.evidence == ""
+        assert c.page_ref == ""
+        assert c.created_at == ""
+        assert c.references == []
+
+    def test_all_fields_can_be_set(self):
+        c = card(
+            card_id="full",
+            paper_id="p",
+            paper_title="T",
+            content="C",
+            insight_type="method",
+            tags=["transformer", "nlp"],
+            evidence="Table 1",
+            created_at="2026-01-01",
+            references=["i0001"],
+        )
+        assert c.insight_type == "method"
+        assert c.tags == ["transformer", "nlp"]
+        assert c.evidence == "Table 1"
+        assert c.created_at == "2026-01-01"
+        assert c.references == ["i0001"]
+
+
+class TestInsightCollection:
+    """Test InsightCollection dataclass."""
+
+    def test_required_fields(self):
+        col = InsightCollection(collection_id="c0001", title="Transformer Research")
+        assert col.collection_id == "c0001"
+        assert col.title == "Transformer Research"
+
+    def test_optional_fields_default(self):
+        col = InsightCollection(collection_id="c", title="T")
+        assert col.description == ""
+        assert col.card_ids == []
+        assert col.tags == []
+
+
+# =============================================================================
+# render_text tests — test the actual method on real objects
+# =============================================================================
+class TestRenderText:
+    """Test InsightManager.render_text."""
+
+    manager = InsightManager()
+
+    def test_empty_returns_placeholder(self):
+        output = self.manager.render_text([])
+        assert output == "No insight cards found."
+
+    def test_header_border_and_title(self):
+        output = self.manager.render_text([card()])
+        assert "=" * 70 in output
+        assert "💡 Key Insight Cards" in output
+
+    def test_finding_icon(self):
+        output = self.manager.render_text([card(insight_type="finding")])
+        assert "🎯 [i001] FINDING" in output
+
+    def test_method_icon(self):
+        output = self.manager.render_text([card(insight_type="method")])
+        assert "⚙️ [i001] METHOD" in output
+
+    def test_limitation_icon(self):
+        output = self.manager.render_text([card(insight_type="limitation")])
+        assert "⚠️ [i001] LIMITATION" in output
+
+    def test_future_work_icon(self):
+        output = self.manager.render_text([card(insight_type="future_work")])
+        assert "🔮 [i001] FUTURE_WORK" in output
+
+    def test_unknown_type_uses_default_icon(self):
+        output = self.manager.render_text([card(insight_type="unknown_type")])
+        assert "💡 [i001] UNKNOWN_TYPE" in output
+
+    def test_paper_title_truncated_to_50(self):
+        long_title = "A" * 60
+        output = self.manager.render_text([card(paper_title=long_title)])
+        assert "A" * 50 in output
+        assert ("A" * 51) not in output
+
+    def test_content_truncated_to_100(self):
+        long_content = "X" * 120
+        output = self.manager.render_text([card(content=long_content)])
+        assert ("X" * 100) in output
+        assert ("X" * 101) not in output
+
+    def test_tags_shown(self):
+        output = self.manager.render_text([card(tags=["transformer", "attention"])])
+        assert "Tags: transformer, attention" in output
+
+    def test_no_tags_when_empty(self):
+        output = self.manager.render_text([card(tags=[])])
+        assert "Tags:" not in output
+
+    def test_max_20_cards(self):
+        # range(1, 31) gives i=1..30 → IDs "i0001".."i0030"
+        cards = [card(card_id=f"i{i:04d}") for i in range(1, 31)]
+        output = self.manager.render_text(cards)
+        assert "i0001" in output
+        assert "i0020" in output
+        assert "i0021" not in output
+
+    def test_total_count(self):
+        cards = [card(card_id=f"i{i:04d}") for i in range(5)]
+        output = self.manager.render_text(cards)
+        assert "Total: 5 cards" in output
+
+    def test_multiple_cards(self):
+        cards = [
+            card(card_id="i001", insight_type="finding", content="First insight"),
+            card(card_id="i002", insight_type="method", content="Second insight"),
+        ]
+        output = self.manager.render_text(cards)
+        assert "i001" in output and "i002" in output
+        assert "FINDING" in output and "METHOD" in output
+
+
+# =============================================================================
+# render_markdown tests — test the actual method on real objects
+# =============================================================================
+class TestRenderMarkdown:
+    """Test InsightManager.render_markdown."""
+
+    manager = InsightManager()
+
+    def test_empty_returns_base_header(self):
+        output = self.manager.render_markdown([])
+        assert "# Key Insight Cards" in output
+        assert "No cards found." in output
+
+    def test_header_present(self):
+        output = self.manager.render_markdown([card()])
+        assert "# Key Insight Cards" in output
+
+    def test_paper_section_title(self):
+        c = card(paper_id="p1", paper_title="My Paper Title")
+        output = self.manager.render_markdown([c])
+        assert "## My Paper Title" in output
+        assert "*From: p1*" in output
+
+    def test_paper_title_truncated_to_60(self):
+        long_title = "B" * 70
+        output = self.manager.render_markdown([card(paper_title=long_title)])
+        assert ("B" * 60) in output
+        assert ("B" * 61) not in output
+
+    def test_multiple_cards_same_paper_grouped(self):
+        # Cards from same paper_id are grouped together under one ## heading.
+        # Cards from different paper_ids get separate sections.
+        cards = [
+            card(paper_id="p1", paper_title="Paper Alpha", card_id="i001", content="Card 1"),
+            card(paper_id="p1", paper_title="Paper Alpha", card_id="i002", content="Card 2"),
+            card(paper_id="p2", paper_title="Paper Beta", card_id="i003", content="Card 3"),
+        ]
+        output = self.manager.render_markdown(cards)
+        # p1 → one "Paper Alpha" section, p2 → one "Paper Beta" section
+        assert output.count("## Paper Alpha") == 1
+        assert output.count("## Paper Beta") == 1
+        assert "Card 1" in output and "Card 2" in output
+        assert "Card 3" in output
+
+    def test_evidence_shown(self):
+        output = self.manager.render_markdown([card(evidence="Table 1 results")])
+        assert "> Evidence: Table 1 results" in output
+
+    def test_no_evidence_section_when_empty(self):
+        output = self.manager.render_markdown([card(evidence="")])
+        assert "Evidence:" not in output
+
+    def test_tags_shown(self):
+        output = self.manager.render_markdown([card(tags=["nlp", "transformer"])])
+        assert "*Tags: nlp, transformer*" in output
+
+    def test_no_tags_section_when_empty(self):
+        output = self.manager.render_markdown([card(tags=[])])
+        assert "Tags:" not in output
+
+    def test_finding_capitalized(self):
+        output = self.manager.render_markdown([card(insight_type="finding")])
+        assert "### 🎯 Finding" in output
+
+    def test_method_capitalized(self):
+        output = self.manager.render_markdown([card(insight_type="method")])
+        assert "### ⚙️ Method" in output
+
+    def test_limitation_capitalized(self):
+        output = self.manager.render_markdown([card(insight_type="limitation")])
+        assert "### ⚠️ Limitation" in output
+
+    def test_future_work_capitalized(self):
+        output = self.manager.render_markdown([card(insight_type="future_work")])
+        assert "### 🔮 Future_work" in output
+
+    def test_unknown_type_uses_default_icon(self):
+        output = self.manager.render_markdown([card(insight_type="unknown")])
+        assert "### 💡 Unknown" in output
+
+
+# =============================================================================
+# export_for_note tests — test the actual method on real objects
+# =============================================================================
+class TestExportForNote:
+    """Test InsightManager.export_for_note."""
+
+    manager = InsightManager()
+
+    def test_content_as_header(self):
+        output = self.manager.export_for_note([card(content="Attention breakthrough")])
+        assert "## Attention breakthrough" in output
+
+    def test_content_truncated_to_80(self):
+        long_content = "X" * 100
+        output = self.manager.export_for_note([card(content=long_content)])
+        assert ("X" * 80) in output
+        assert ("X" * 81) not in output
+
+    def test_paper_id_as_wiki_link(self):
+        output = self.manager.export_for_note([card(paper_id="p123")])
+        assert "- Source: [[p123]]" in output
+
+    def test_insight_type_shown(self):
+        output = self.manager.export_for_note([card(insight_type="method")])
+        assert "- Type: method" in output
+
+    def test_tags_as_hashtags(self):
+        output = self.manager.export_for_note([card(tags=["nlp", "transformer"])])
+        assert "- Tags: #nlp, #transformer" in output
+
+    def test_no_tags_when_empty(self):
+        output = self.manager.export_for_note([card(tags=[])])
+        assert "Tags:" not in output
+
+    def test_multiple_cards(self):
+        cards = [
+            card(paper_id="p001", content="First insight"),
+            card(paper_id="p002", content="Second insight"),
+        ]
+        output = self.manager.export_for_note(cards)
+        assert "## First insight" in output
+        assert "## Second insight" in output
+        assert "[[p001]]" in output
+        assert "[[p002]]" in output
+
+
+# =============================================================================
+# search_cards tests — replicate pure filtering logic
+# =============================================================================
+class TestSearchCardsFilter:
+    """Test search_cards filtering logic (replicated for isolation)."""
+
+    def _search_cards(self, data, query=None, tags=None, insight_type=None, paper_id=None):
+        """Replicate search_cards filtering logic."""
+        results = []
+        for item in data:
+            if query:
+                q = query.lower()
+                if q not in item["content"].lower() and q not in item["paper_title"].lower():
+                    continue
+            if tags:
+                if not any(t in item["tags"] for t in tags):
+                    continue
+            if insight_type and item["insight_type"] != insight_type:
+                continue
+            if paper_id and item["paper_id"] != paper_id:
+                continue
+            results.append(item)
+        results.sort(key=lambda x: x["created_at"], reverse=True)
+        return results
+
+    def _d(
+        self,
+        card_id="i001",
+        paper_id="p001",
+        paper_title="T",
+        content="C",
+        insight_type="finding",
+        tags=None,
+        created_at="2026-01-01",
+    ):
+        return {
+            "card_id": card_id,
+            "paper_id": paper_id,
+            "paper_title": paper_title,
+            "content": content,
+            "insight_type": insight_type,
+            "tags": tags or [],
+            "evidence": "",
+            "page_ref": "",
+            "created_at": created_at,
+            "references": [],
+        }
+
+    def test_no_filters_returns_all(self):
+        data = [self._d(card_id="i001"), self._d(card_id="i002")]
+        assert len(self._search_cards(data)) == 2
+
+    def test_filter_by_query_in_content(self):
+        data = [
+            self._d(card_id="i001", content="Transformer attention"),
+            self._d(card_id="i002", content="CNN classifier"),
+        ]
+        result = self._search_cards(data, query="transformer")
+        assert len(result) == 1 and result[0]["card_id"] == "i001"
+
+    def test_filter_by_query_in_title(self):
+        data = [
+            self._d(card_id="i001", paper_title="BERT paper"),
+            self._d(card_id="i002", paper_title="CNN study"),
+        ]
+        result = self._search_cards(data, query="bert")
+        assert len(result) == 1 and result[0]["card_id"] == "i001"
+
+    def test_query_case_insensitive(self):
+        data = [self._d(card_id="i001", content="Deep Learning")]
+        result = self._search_cards(data, query="DEEP")
+        assert len(result) == 1
+
+    def test_query_not_matching(self):
+        data = [self._d(card_id="i001", content="transformer")]
+        result = self._search_cards(data, query="cnn")
+        assert len(result) == 0
+
+    def test_filter_by_single_tag(self):
+        data = [
+            self._d(card_id="i001", tags=["nlp"]),
+            self._d(card_id="i002", tags=["cv"]),
+        ]
+        result = self._search_cards(data, tags=["nlp"])
+        assert len(result) == 1 and result[0]["card_id"] == "i001"
+
+    def test_filter_by_tags_any_match(self):
+        data = [
+            self._d(card_id="i001", tags=["nlp", "transformer"]),
+            self._d(card_id="i002", tags=["cv"]),
+        ]
+        result = self._search_cards(data, tags=["transformer"])
+        assert len(result) == 1 and result[0]["card_id"] == "i001"
+
+    def test_filter_by_multiple_tags(self):
+        data = [
+            self._d(card_id="i001", tags=["nlp"]),
+            self._d(card_id="i002", tags=["cv"]),
+        ]
+        result = self._search_cards(data, tags=["nlp", "cv"])
+        assert len(result) == 2
+
+    def test_filter_by_insight_type(self):
+        data = [
+            self._d(card_id="i001", insight_type="finding"),
+            self._d(card_id="i002", insight_type="method"),
+        ]
+        result = self._search_cards(data, insight_type="method")
+        assert len(result) == 1 and result[0]["card_id"] == "i002"
+
+    def test_filter_by_paper_id(self):
+        data = [
+            self._d(card_id="i001", paper_id="p001"),
+            self._d(card_id="i002", paper_id="p002"),
+        ]
+        result = self._search_cards(data, paper_id="p001")
+        assert len(result) == 1 and result[0]["card_id"] == "i001"
+
+    def test_sort_by_created_at_descending(self):
+        data = [
+            self._d(card_id="i001", created_at="2026-01-01"),
+            self._d(card_id="i002", created_at="2026-04-01"),
+            self._d(card_id="i003", created_at="2026-02-01"),
+        ]
+        result = self._search_cards(data)
+        assert result[0]["card_id"] == "i002"
+        assert result[1]["card_id"] == "i003"
+        assert result[2]["card_id"] == "i001"
+
+    def test_combined_filters(self):
+        data = [
+            self._d(
+                card_id="i001",
+                paper_id="p001",
+                insight_type="finding",
+                tags=["nlp"],
+                content="transformer",
+            ),
+            self._d(
+                card_id="i002", paper_id="p001", insight_type="method", tags=["nlp"], content="bert"
+            ),
+            self._d(
+                card_id="i003", paper_id="p002", insight_type="finding", tags=["nlp"], content="cnn"
+            ),
+        ]
+        result = self._search_cards(data, paper_id="p001", insight_type="finding")
+        assert len(result) == 1 and result[0]["card_id"] == "i001"
+
+    def test_empty_created_at_sorted_last(self):
+        """Empty string < any date in descending order — items with dates come first."""
+        data = [
+            self._d(card_id="i001", created_at="2026-01-01"),
+            self._d(card_id="i002", created_at=""),
+        ]
+        result = self._search_cards(data)
+        # Descending: "2026-01-01" > "" so i001 comes first
+        assert result[0]["card_id"] == "i001"
+
+
+# =============================================================================
+# get_tag_cloud logic tests — replicate pure function
+# =============================================================================
+class TestTagCloud:
+    """Test get_tag_cloud logic (replicated for isolation)."""
+
+    def _get_tag_cloud(self, data):
+        """Replicate get_tag_cloud."""
+        tags = {}
+        for item in data:
+            for tag in item["tags"]:
+                tags[tag] = tags.get(tag, 0) + 1
+        return dict(sorted(tags.items(), key=lambda x: -x[1]))
+
+    def test_counts_tags(self):
+        data = [
+            {"tags": ["nlp"]},
+            {"tags": ["nlp"]},
+            {"tags": ["cv"]},
+        ]
+        cloud = self._get_tag_cloud(data)
+        assert cloud["nlp"] == 2
+        assert cloud["cv"] == 1
+
+    def test_sorted_by_frequency_descending(self):
+        data = [
+            {"tags": ["cv"]},
+            {"tags": ["nlp"]},
+            {"tags": ["nlp"]},
+            {"tags": ["nlp"]},
+        ]
+        cloud = self._get_tag_cloud(data)
+        keys = list(cloud.keys())
+        assert keys[0] == "nlp"
+        assert keys[1] == "cv"
+
+    def test_empty_list(self):
+        assert self._get_tag_cloud([]) == {}
+
+    def test_no_tags(self):
+        assert self._get_tag_cloud([{"tags": []}]) == {}
+
+
+# =============================================================================
+# InsightManager instantiation
+# =============================================================================
+class TestInsightManagerInit:
+    """Test InsightManager class."""
+
+    def test_can_instantiate(self):
+        manager = InsightManager()
+        assert manager is not None
+        assert manager.data_dir is not None
+
+    def test_has_expected_methods(self):
+        manager = InsightManager()
+        assert hasattr(manager, "render_text")
+        assert hasattr(manager, "render_markdown")
+        assert hasattr(manager, "export_for_note")
+        assert hasattr(manager, "search_cards")
+        assert hasattr(manager, "get_tag_cloud")

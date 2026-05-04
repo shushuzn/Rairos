@@ -1,1 +1,92 @@
-IiIiQmFzaWMgdXRpbGl0aWVzLiIiIgoKaW1wb3J0IG9zCgppbXBvcnQgb3Jqc29uCmltcG9ydCByZQpmcm9tIGZ1bmN0b29scyBpbXBvcnQgbHJ1X2NhY2hlCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAoKIyBDYW5vbmljYWwgcmVzZWFyY2ggdHJlZSBkaXJlY3RvcnkgbmFtZXMgKGluIGRpc3BsYXkgb3JkZXIpCmZyb20gY29yZS5fY29uc3RhbnRzIGltcG9ydCBERUZBVUxUX1JFU0VBUkNIX0RJUlMKCgpkZWYgX2dldF9jb25maWdfcGF0aCgpIC0+IFBhdGg6CiAgICAiIiJQYXRoIHRvIHVzZXIgY29uZmlnIGZpbGUgKH4vLmFpX3Jlc2VhcmNoX29zL2NhdGVnb3JpZXMuanNvbikuIiIiCiAgICByZXR1cm4gUGF0aChvcy5wYXRoLmV4cGFuZHVzZXIoIn4vLmFpX3Jlc2VhcmNoX29zL2NhdGVnb3JpZXMuanNvbiIpKQoKCkBscnVfY2FjaGUobWF4c2l6ZT04KQpkZWYgZ2V0X3Jlc2VhcmNoX2RpcnMoKSAtPiBsaXN0OgogICAgIiIiCiAgICBSZXR1cm4gdGhlIGxpc3Qgb2YgcmVzZWFyY2ggdHJlZSBkaXJlY3RvcnkgbmFtZXMuCiAgICBMb2FkcyBmcm9tIH4vLmFpX3Jlc2VhcmNoX29zL2NhdGVnb3JpZXMuanNvbiBpZiBpdCBleGlzdHMgYW5kIGlzIHZhbGlkLgogICAgRmFsbHMgYmFjayB0byBERUZBVUxUX1JFU0VBUkNIX0RJUlMuCiAgICAiIiIKICAgIGNmZyA9IF9nZXRfY29uZmlnX3BhdGgoKQogICAgaWYgY2ZnLmV4aXN0cygpOgogICAgICAgIHRyeToKICAgICAgICAgICAgZGF0YSA9IG9yanNvbi5sb2FkcyhjZmcucmVhZF9ieXRlcygpKQogICAgICAgICAgICBpZiBpc2luc3RhbmNlKGRhdGEsIGxpc3QpIGFuZCBkYXRhOgogICAgICAgICAgICAgICAgcmV0dXJuIGRhdGEKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICBwYXNzCiAgICByZXR1cm4gbGlzdChERUZBVUxUX1JFU0VBUkNIX0RJUlMpCgoKZGVmIGdldF9kZWZhdWx0X2NvbmNlcHRfZGlyKCkgLT4gc3RyOgogICAgIiIiCiAgICBSZXR1cm4gdGhlIGRlZmF1bHQgZGlyZWN0b3J5IGZvciBDLU5vdGVzIChjb25jZXB0IG5vdGVzKS4KICAgIENvbnZlbnRpb25hbGx5IHRoZSBzZWNvbmQgZW50cnkgKGFmdGVyIFJhZGFyKS4gRmFsbHMgYmFjayB0byAnMDEtRm91bmRhdGlvbnMnLgogICAgIiIiCiAgICBkaXJzID0gZ2V0X3Jlc2VhcmNoX2RpcnMoKQogICAgIyBDb252ZW50aW9uOiBpbmRleCAwIGlzIFJhZGFyLCBpbmRleCAxIGlzIHRoZSBjb25jZXB0L2NvbmNlcHQgbm90ZSBkaXJlY3RvcnkKICAgIGlmIGxlbihkaXJzKSA+IDE6CiAgICAgICAgcmV0dXJuIGRpcnNbMV0gICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCiAgICByZXR1cm4gIjAxLUZvdW5kYXRpb25zIgoKCmRlZiBnZXRfZGVmYXVsdF9yYWRhcl9kaXIoKSAtPiBzdHI6CiAgICAiIiIKICAgIFJldHVybiB0aGUgZGVmYXVsdCBSYWRhciBkaXJlY3RvcnkgKGluZGV4IDApLgogICAgRmFsbHMgYmFjayB0byAnMDAtUmFkYXInLgogICAgIiIiCiAgICBkaXJzID0gZ2V0X3Jlc2VhcmNoX2RpcnMoKQogICAgcmV0dXJuIGRpcnNbMF0gaWYgZGlycyBlbHNlICIwMC1SYWRhciIKCgpfUkVfU1BBQ0VTID0gcmUuY29tcGlsZShyIiB7Mix9IikKX1JFX05PTldPUkQgPSByZS5jb21waWxlKHIiW15cd1xzXC1dIikKX1JFX0RBU0hFUyA9IHJlLmNvbXBpbGUociItezIsfSIpCgoKZGVmIHNsdWdpZnlfdGl0bGUodGl0bGU6IHN0ciwgbWF4X2xlbjogaW50ID0gODApIC0+IHN0cjoKICAgIGlmIG5vdCB0aXRsZToKICAgICAgICByZXR1cm4gIlBhcGVyIgogICAgdCA9IHRpdGxlLnN0cmlwKCkKICAgIHQgPSBfUkVfU1BBQ0VTLnN1YigiICIsIHQpCiAgICB0ID0gX1JFX05PTldPUkQuc3ViKCIiLCB0KQogICAgdCA9IHQucmVwbGFjZSgiICIsICItIikKICAgIHQgPSBfUkVfREFTSEVTLnN1YigiLSIsIHQpLnN0cmlwKCItXyIpCiAgICBpZiBsZW4odCkgPiBtYXhfbGVuOgogICAgICAgIHQgPSB0WzptYXhfbGVuXS5yc3RyaXAoIi1fIikKICAgIHJldHVybiB0IG9yICJQYXBlciIKCgpkZWYgc2FmZV91aWQoczogc3RyKSAtPiBzdHI6CiAgICByZXR1cm4gcmUuc3ViKHIiW15cd1wuLV0rIiwgIl8iLCBzLnN0cmlwKCkpCgoKZGVmIHJlYWRfdGV4dChwOiBQYXRoKSAtPiBzdHI6CiAgICByZXR1cm4gcC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikgaWYgcC5leGlzdHMoKSBlbHNlICIiCgoKZGVmIHdyaXRlX3RleHQocDogUGF0aCwgY29udGVudDogc3RyKSAtPiBOb25lOgogICAgcC5wYXJlbnQubWtkaXIocGFyZW50cz1UcnVlLCBleGlzdF9vaz1UcnVlKQogICAgcC53cml0ZV90ZXh0KGNvbnRlbnQsIGVuY29kaW5nPSJ1dGYtOCIpCgoKZGVmIGVuc3VyZV9yZXNlYXJjaF90cmVlKHJvb3Q6IFBhdGgpIC0+IE5vbmU6CiAgICByb290Lm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgIGZvciBkIGluIGdldF9yZXNlYXJjaF9kaXJzKCk6CiAgICAgICAgKHJvb3QgLyBkKS5ta2RpcihwYXJlbnRzPVRydWUsIGV4aXN0X29rPVRydWUpCg==
+"""Basic utilities."""
+
+import os
+
+import orjson
+import re
+from functools import lru_cache
+from pathlib import Path
+
+# Canonical research tree directory names (in display order)
+from core._constants import DEFAULT_RESEARCH_DIRS
+
+
+def _get_config_path() -> Path:
+    """Path to user config file (~/.ai_research_os/categories.json)."""
+    return Path(os.path.expanduser("~/.ai_research_os/categories.json"))
+
+
+@lru_cache(maxsize=8)
+def get_research_dirs() -> list:
+    """
+    Return the list of research tree directory names.
+    Loads from ~/.ai_research_os/categories.json if it exists and is valid.
+    Falls back to DEFAULT_RESEARCH_DIRS.
+    """
+    cfg = _get_config_path()
+    if cfg.exists():
+        try:
+            data = orjson.loads(cfg.read_bytes())
+            if isinstance(data, list) and data:
+                return data
+        except Exception:
+            pass
+    return list(DEFAULT_RESEARCH_DIRS)
+
+
+def get_default_concept_dir() -> str:
+    """
+    Return the default directory for C-Notes (concept notes).
+    Conventionally the second entry (after Radar). Falls back to '01-Foundations'.
+    """
+    dirs = get_research_dirs()
+    # Convention: index 0 is Radar, index 1 is the concept/concept note directory
+    if len(dirs) > 1:
+        return dirs[1]  # type: ignore[no-any-return]
+    return "01-Foundations"
+
+
+def get_default_radar_dir() -> str:
+    """
+    Return the default Radar directory (index 0).
+    Falls back to '00-Radar'.
+    """
+    dirs = get_research_dirs()
+    return dirs[0] if dirs else "00-Radar"
+
+
+_RE_SPACES = re.compile(r" {2,}")
+_RE_NONWORD = re.compile(r"[^\w\s\-]")
+_RE_DASHES = re.compile(r"-{2,}")
+
+
+def slugify_title(title: str, max_len: int = 80) -> str:
+    if not title:
+        return "Paper"
+    t = title.strip()
+    t = _RE_SPACES.sub(" ", t)
+    t = _RE_NONWORD.sub("", t)
+    t = t.replace(" ", "-")
+    t = _RE_DASHES.sub("-", t).strip("-_")
+    if len(t) > max_len:
+        t = t[:max_len].rstrip("-_")
+    return t or "Paper"
+
+
+def safe_uid(s: str) -> str:
+    return re.sub(r"[^\w\.-]+", "_", s.strip())
+
+
+def read_text(p: Path) -> str:
+    return p.read_text(encoding="utf-8") if p.exists() else ""
+
+
+def write_text(p: Path, content: str) -> None:
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(content, encoding="utf-8")
+
+
+def ensure_research_tree(root: Path) -> None:
+    root.mkdir(parents=True, exist_ok=True)
+    for d in get_research_dirs():
+        (root / d).mkdir(parents=True, exist_ok=True)

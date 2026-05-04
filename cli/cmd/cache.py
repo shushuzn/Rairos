@@ -1,1 +1,87 @@
-IiIiQ0xJIGNvbW1hbmQ6IGNhY2hlLiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGFyZ3BhcnNlCmltcG9ydCBvcmpzb24gYXMganNvbgoKZnJvbSBjbGkuX3NoYXJlZCBpbXBvcnQgZ2V0X2RiCmZyb20gY2xpLndhcnAgaW1wb3J0IFdhcnBCbG9ja3MKCgpkZWYgX2J1aWxkX2NhY2hlX3BhcnNlcihzdWJwYXJzZXJzKSAtPiBhcmdwYXJzZS5Bcmd1bWVudFBhcnNlcjoKICAgIHAgPSBzdWJwYXJzZXJzLmFkZF9wYXJzZXIoImNhY2hlIiwgaGVscD0iTWFuYWdlIHBhcGVyIGFuZCBMTE0gY2FjaGUiKQogICAgcC5hZGRfYXJndW1lbnQoIi0tZ2V0IiwgbWV0YXZhcj0iVUlEIiwgaGVscD0iR2V0IGNhY2hlZCBwYXBlciBieSBVSUQiKQogICAgcC5hZGRfYXJndW1lbnQoIi0tc2V0IiwgbmFyZ3M9MiwgbWV0YXZhcj0oIlVJRCIsICJQQVRIIiksIGhlbHA9IkNhY2hlIGEgcGFwZXIgZnJvbSBKU09OIikKICAgIHAuYWRkX2FyZ3VtZW50KCItLWNsZWFyIiwgYWN0aW9uPSJzdG9yZV90cnVlIiwgaGVscD0iQ2xlYXIgYWxsIGNhY2hlIGVudHJpZXMiKQogICAgcC5hZGRfYXJndW1lbnQoIi0tc3RhdHMiLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSJTaG93IGNhY2hlIHN0YXRpc3RpY3MiKQogICAgIyBMTE0gY2FjaGUgb3B0aW9ucwogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tbGxtIiwgYWN0aW9uPSJzdG9yZV90cnVlIiwgaGVscD0iT3BlcmF0ZSBvbiBMTE0gcmVzcG9uc2UgY2FjaGUgaW5zdGVhZCBvZiBwYXBlciBjYWNoZSIKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KCItLWxsbS1jbGVhciIsIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsIGhlbHA9IkNsZWFyIExMTSByZXNwb25zZSBjYWNoZSIpCiAgICByZXR1cm4gcCAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCgpkZWYgX3J1bl9jYWNoZShhcmdzOiBhcmdwYXJzZS5OYW1lc3BhY2UpIC0+IGludDoKICAgICMgTExNIGNhY2hlIG9wZXJhdGlvbnMKICAgIGlmIGFyZ3MubGxtIG9yIGFyZ3MubGxtX2NsZWFyOgogICAgICAgIGZyb20gbGxtLmNsaWVudCBpbXBvcnQgKAogICAgICAgICAgICBjbGVhcl9sbG1fY2FjaGUsCiAgICAgICAgICAgIGdldF9sbG1fY2FjaGVfc2l6ZSwKICAgICAgICAgICAgX2NhY2hlX3N0YXRzLAogICAgICAgICAgICBnZXRfY2FjaGVfc3RhdHMsCiAgICAgICAgICAgIHJlc2V0X2NhY2hlX3N0YXRzLAogICAgICAgICkKCiAgICAgICAgaWYgYXJncy5sbG1fY2xlYXI6CiAgICAgICAgICAgIGNsZWFyX2xsbV9jYWNoZSgpCiAgICAgICAgICAgIHJlc2V0X2NhY2hlX3N0YXRzKCkKICAgICAgICAgICAgcHJpbnQoV2FycEJsb2Nrcy5wYW5lbCgiQ2FjaGUiLCAiWyNCNEZBNzJd4pyTWy9dIExMTSByZXNwb25zZSBjYWNoZSBjbGVhcmVkIikpCiAgICAgICAgZWxpZiBhcmdzLmxsbToKICAgICAgICAgICAgc2l6ZSA9IGdldF9sbG1fY2FjaGVfc2l6ZSgpCiAgICAgICAgICAgIGRpc2tfc3RhdHMgPSBfY2FjaGVfc3RhdHMoKQogICAgICAgICAgICBoaXRfc3RhdHMgPSBnZXRfY2FjaGVfc3RhdHMoKQogICAgICAgICAgICBlbnRyaWVzID0gZGlza19zdGF0cy5nZXQoImVudHJpZXMiLCBzaXplKQogICAgICAgICAgICBleHBpcmVkID0gZGlza19zdGF0cy5nZXQoImV4cGlyZWQiLCAwKQogICAgICAgICAgICBoaXRzID0gaGl0X3N0YXRzLmdldCgiaGl0cyIsIDApCiAgICAgICAgICAgIG1pc3NlcyA9IGhpdF9zdGF0cy5nZXQoIm1pc3NlcyIsIDApCiAgICAgICAgICAgIGhpdF9yYXRlID0gaGl0X3N0YXRzLmdldCgiaGl0X3JhdGUiLCAwKQoKICAgICAgICAgICAgIyBDb2xvci1jb2RlZCBoaXQgcmF0ZQogICAgICAgICAgICBpZiBoaXRfcmF0ZSA+PSA4MDoKICAgICAgICAgICAgICAgIHJhdGVfY29sb3IgPSAiWyNCNEZBNzJd4pyTIHtoaXRfcmF0ZX0lWy9dIgogICAgICAgICAgICBlbGlmIGhpdF9yYXRlID49IDUwOgogICAgICAgICAgICAgICAgcmF0ZV9jb2xvciA9ICJbI0ZFRkRDMl3imqAge2hpdF9yYXRlfSVbL10iCiAgICAgICAgICAgIGVsc2U6CiAgICAgICAgICAgICAgICByYXRlX2NvbG9yID0gIlsjRkY1NTU1XeKclyB7aGl0X3JhdGV9JVsvXSIKCiAgICAgICAgICAgIHByaW50KAogICAgICAgICAgICAgICAgV2FycEJsb2Nrcy5wYW5lbCgKICAgICAgICAgICAgICAgICAgICAiTExNIFJlc3BvbnNlIENhY2hlIiwKICAgICAgICAgICAgICAgICAgICBmIiIiICBFbnRyaWVzOiAgICBbI0E1RDVGRV17ZW50cmllc31bL10KICBFeHBpcmVkOiAgICBbIzhFOEU4RV17ZXhwaXJlZH1bL10KICBIaXRzOiAgICAgICBbI0I0RkE3Ml17aGl0c31bL10KICBNaXNzZXM6ICAgICBbI0ZGODI3Ml17bWlzc2VzfVsvXQogIEhpdCBSYXRlOiAgIHtyYXRlX2NvbG9yLmZvcm1hdChoaXRfcmF0ZT1oaXRfcmF0ZSl9IiIiLAogICAgICAgICAgICAgICAgKQogICAgICAgICAgICApCiAgICAgICAgcmV0dXJuIDAgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgZGIgPSBnZXRfZGIoKQogICAgZGIuaW5pdCgpCgogICAgaWYgYXJncy5zdGF0czoKICAgICAgICBlbnRyaWVzID0gZGIuZ2V0X2NhY2hlZF9wYXBlcigiX19zdGF0c19fIikKICAgICAgICBwcmludChmIkNhY2hlIHNpemU6IHtlbnRyaWVzfSIpCiAgICBlbGlmIGFyZ3MuY2xlYXI6CiAgICAgICAgZGVsZXRlZCA9IGRiLmNsZWFyX2NhY2hlKCkKICAgICAgICBwcmludChmIkNhY2hlIGNsZWFyZWQgKHtkZWxldGVkfSBlbnRyaWVzKSIpCiAgICBlbGlmIGFyZ3MuZ2V0OgogICAgICAgIGNhY2hlZCA9IGRiLmdldF9jYWNoZWRfcGFwZXIoYXJncy5nZXQpCiAgICAgICAgaWYgY2FjaGVkOgogICAgICAgICAgICBwcmludChqc29uLmR1bXBzKGNhY2hlZCwgb3B0aW9uPWpzb24uT1BUX0lOREVOVF8yKS5kZWNvZGUoKSkKICAgICAgICBlbHNlOgogICAgICAgICAgICBwcmludChmIk5vIGNhY2hlIGVudHJ5IGZvciB7YXJncy5nZXR9IikKICAgIGVsaWYgZ2V0YXR0cihhcmdzLCAic2V0IiwgTm9uZSk6CiAgICAgICAgdWlkLCBwYXRoID0gYXJncy5zZXQKICAgICAgICB0cnk6CiAgICAgICAgICAgIHdpdGggb3BlbihwYXRoLCBlbmNvZGluZz0idXRmLTgiKSBhcyBmOgogICAgICAgICAgICAgICAgZGF0YSA9IGpzb24ubG9hZHMoZi5yZWFkKCkpCiAgICAgICAgICAgIGRiLnNldF9jYWNoZWRfcGFwZXIodWlkLCBkYXRhKQogICAgICAgICAgICBwcmludChmIkNhY2hlZCB7dWlkfSBmcm9tIHtwYXRofSIpCiAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgICAgICBwcmludChmIkZhaWxlZCB0byBjYWNoZSB7dWlkfToge2V9IikKICAgICAgICAgICAgcmV0dXJuIDEKICAgIGVsc2U6CiAgICAgICAgcHJpbnQoIlVzZSAtLXN0YXRzLCAtLWNsZWFyLCAtLWdldCBVSUQsIG9yIC0tc2V0IFVJRCBQQVRIIikKCiAgICByZXR1cm4gMAo=
+"""CLI command: cache."""
+from __future__ import annotations
+
+import argparse
+import orjson as json
+
+from cli._shared import get_db
+from cli.warp import WarpBlocks
+
+
+def _build_cache_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser("cache", help="Manage paper and LLM cache")
+    p.add_argument("--get", metavar="UID", help="Get cached paper by UID")
+    p.add_argument("--set", nargs=2, metavar=("UID", "PATH"), help="Cache a paper from JSON")
+    p.add_argument("--clear", action="store_true", help="Clear all cache entries")
+    p.add_argument("--stats", action="store_true", help="Show cache statistics")
+    # LLM cache options
+    p.add_argument("--llm", action="store_true", help="Operate on LLM response cache instead of paper cache")
+    p.add_argument("--llm-clear", action="store_true", help="Clear LLM response cache")
+    return p  # type: ignore[no-any-return]
+
+
+def _run_cache(args: argparse.Namespace) -> int:
+    # LLM cache operations
+    if args.llm or args.llm_clear:
+        from llm.client import clear_llm_cache, get_llm_cache_size, _cache_stats, get_cache_stats, reset_cache_stats
+        if args.llm_clear:
+            clear_llm_cache()
+            reset_cache_stats()
+            print(WarpBlocks.panel("Cache", "[#B4FA72]✓[/] LLM response cache cleared"))
+        elif args.llm:
+            size = get_llm_cache_size()
+            disk_stats = _cache_stats()
+            hit_stats = get_cache_stats()
+            entries = disk_stats.get('entries', size)
+            expired = disk_stats.get('expired', 0)
+            hits = hit_stats.get('hits', 0)
+            misses = hit_stats.get('misses', 0)
+            hit_rate = hit_stats.get('hit_rate', 0)
+
+            # Color-coded hit rate
+            if hit_rate >= 80:
+                rate_color = "[#B4FA72]✓ {hit_rate}%[/]"
+            elif hit_rate >= 50:
+                rate_color = "[#FEFDC2]⚠ {hit_rate}%[/]"
+            else:
+                rate_color = "[#FF5555]✗ {hit_rate}%[/]"
+
+            print(WarpBlocks.panel(
+                "LLM Response Cache",
+                f"""  Entries:    [#A5D5FE]{entries}[/]
+  Expired:    [#8E8E8E]{expired}[/]
+  Hits:       [#B4FA72]{hits}[/]
+  Misses:     [#FF8272]{misses}[/]
+  Hit Rate:   {rate_color.format(hit_rate=hit_rate)}"""
+            ))
+        return 0  # type: ignore[no-any-return]
+
+    db = get_db()
+    db.init()
+
+    if args.stats:
+        entries = db.get_cached_paper("__stats__")
+        print(f"Cache size: {entries}")
+    elif args.clear:
+        deleted = db.clear_cache()
+        print(f"Cache cleared ({deleted} entries)")
+    elif args.get:
+        cached = db.get_cached_paper(args.get)
+        if cached:
+            print(json.dumps(cached, option=json.OPT_INDENT_2).decode())
+        else:
+            print(f"No cache entry for {args.get}")
+    elif getattr(args, "set", None):
+        uid, path = args.set
+        try:
+            with open(path, encoding="utf-8") as f:
+                data = json.loads(f.read())
+            db.set_cached_paper(uid, data)
+            print(f"Cached {uid} from {path}")
+        except Exception as e:
+            print(f"Failed to cache {uid}: {e}")
+            return 1
+    else:
+        print("Use --stats, --clear, --get UID, or --set UID PATH")
+
+    return 0

@@ -1,1 +1,484 @@
-IiIiClJlc2VhcmNoIERhc2hib2FyZDogQWdncmVnYXRlZCB2aWV3IG9mIHJlc2VhcmNoIHByb2dyZXNzLgoiIiIKCmltcG9ydCBsb2dnaW5nCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcywgZmllbGQKZnJvbSB0eXBpbmcgaW1wb3J0IExpc3QsIE9wdGlvbmFsLCBEaWN0LCBUdXBsZSwgQW55CmZyb20gZGF0ZXRpbWUgaW1wb3J0IGRhdGV0aW1lCgoKQGRhdGFjbGFzcwpjbGFzcyBRdWVzdGlvblN1bW1hcnk6CiAgICAiIiJTdW1tYXJ5IG9mIGEgcmVzZWFyY2ggcXVlc3Rpb24uIiIiCgogICAgaWQ6IHN0cgogICAgcXVlc3Rpb246IHN0cgogICAgc3RhdHVzOiBzdHIKICAgIHByaW9yaXR5OiBzdHIKICAgIGh5cG90aGVzZXNfY291bnQ6IGludAogICAgcm9hZG1hcF9pZDogc3RyCgoKQGRhdGFjbGFzcwpjbGFzcyBFeHBlcmltZW50U3VtbWFyeToKICAgICIiIlN1bW1hcnkgb2YgYW4gZXhwZXJpbWVudC4iIiIKCiAgICBpZDogc3RyCiAgICBuYW1lOiBzdHIKICAgIHN0YXR1czogc3RyCiAgICBtaWxlc3RvbmU6IHN0cgogICAgbWV0cmljc19jb3VudDogaW50CgoKQGRhdGFjbGFzcwpjbGFzcyBQYXBlclN0YXRzOgogICAgIiIiUGFwZXIgcmVhZGluZyBzdGF0aXN0aWNzLiIiIgoKICAgIHRvdGFsX3BhcGVyczogaW50CiAgICByZWNlbnRfcGFwZXJzOiBpbnQgICMgTGFzdCAzMCBkYXlzCiAgICBieV95ZWFyOiBEaWN0W3N0ciwgaW50XQogICAgYnlfdGFnOiBEaWN0W3N0ciwgaW50XQoKCkBkYXRhY2xhc3MKY2xhc3MgSG90UGFwZXI6CiAgICAiIiJBIHBhcGVyIHdpdGggaGlnaCBjaXRhdGlvbiB2ZWxvY2l0eS4iIiIKCiAgICBwYXBlcl9pZDogc3RyCiAgICB0aXRsZTogc3RyCiAgICB5ZWFyOiBpbnQKICAgIHZlbG9jaXR5OiBmbG9hdAogICAgZm9yd2FyZF9jaXRlczogaW50CgoKQGRhdGFjbGFzcwpjbGFzcyBUcmVuZEtleXdvcmQ6CiAgICAiIiJBIHRyZW5kaW5nIGtleXdvcmQgZnJvbSB0aGUgY29ycHVzLiIiIgoKICAgIGtleXdvcmQ6IHN0cgogICAgZGlyZWN0aW9uOiBzdHIgICMgcmlzaW5nIC8gZmFsbGluZyAvIGVtZXJnaW5nIC8gc3RhYmxlCiAgICBwYXBlcl9jb3VudDogaW50CiAgICBncm93dGg6IHN0ciAgIyBlLmcuICIrMjUlIiBvciAiLTEwJSIKCgpAZGF0YWNsYXNzCmNsYXNzIEdhcFByZWZlcmVuY2VTdGF0czoKICAgICIiIlN1bW1hcnkgb2YgdXNlcidzIGdhcF90eXBlIGFuZCBrZXl3b3JkIHByZWZlcmVuY2UgcHJvZmlsZS4iIiIKCiAgICB0b3RhbF9ldmVudHM6IGludAogICAgcHJlZmVycmVkX3R5cGVzOiBMaXN0W1R1cGxlW3N0ciwgZmxvYXRdXQogICAgZGlzbGlrZWRfdHlwZXM6IExpc3RbVHVwbGVbc3RyLCBmbG9hdF1dCiAgICBwcmVmZXJyZWRfa2V5d29yZHM6IExpc3RbVHVwbGVbc3RyLCBmbG9hdF1dID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCgoKQGRhdGFjbGFzcwpjbGFzcyBEYXNoYm9hcmREYXRhOgogICAgIiIiQWdncmVnYXRlZCBkYXNoYm9hcmQgZGF0YS4iIiIKCiAgICBnZW5lcmF0ZWRfYXQ6IHN0ciA9ICIiCiAgICBxdWVzdGlvbnM6IExpc3RbUXVlc3Rpb25TdW1tYXJ5XSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgZXhwZXJpbWVudHM6IExpc3RbRXhwZXJpbWVudFN1bW1hcnldID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICBwYXBlcnM6IE9wdGlvbmFsW1BhcGVyU3RhdHNdID0gTm9uZQogICAgaG90X3BhcGVyczogTGlzdFtIb3RQYXBlcl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKICAgIHRyZW5kczogTGlzdFtUcmVuZEtleXdvcmRdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICBnYXBfcHJlZmVyZW5jZXM6IE9wdGlvbmFsW0dhcFByZWZlcmVuY2VTdGF0c10gPSBOb25lCiAgICBzdW1tYXJ5OiBEaWN0W3N0ciwgQW55XSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1kaWN0KQoKICAgIGRlZiBfX3Bvc3RfaW5pdF9fKHNlbGYpOgogICAgICAgIGlmIG5vdCBzZWxmLmdlbmVyYXRlZF9hdDoKICAgICAgICAgICAgc2VsZi5nZW5lcmF0ZWRfYXQgPSBkYXRldGltZS5ub3coKS5pc29mb3JtYXQoKQoKCmNsYXNzIERhc2hib2FyZDoKICAgICIiIkFnZ3JlZ2F0ZSByZXNlYXJjaCBwcm9ncmVzcyBkYXRhLiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBkYj1Ob25lKToKICAgICAgICBzZWxmLmRiID0gZGIKCiAgICBkZWYgY29sbGVjdChzZWxmLCBpbmNsdWRlX3BhcGVyczogYm9vbCA9IFRydWUpIC0+IERhc2hib2FyZERhdGE6CiAgICAgICAgIiIiQ29sbGVjdCBhbGwgZGFzaGJvYXJkIGRhdGEuIiIiCiAgICAgICAgZGF0YSA9IERhc2hib2FyZERhdGEoKQoKICAgICAgICAjIFF1ZXN0aW9ucwogICAgICAgIGZyb20gbGxtLnF1ZXN0aW9uX3RyYWNrZXIgaW1wb3J0IFF1ZXN0aW9uVHJhY2tlcgoKICAgICAgICB0cmFja2VyID0gUXVlc3Rpb25UcmFja2VyKCkKICAgICAgICBxdWVzdGlvbnMgPSB0cmFja2VyLmxpc3RfcXVlc3Rpb25zKCkKICAgICAgICBmb3IgcSBpbiBxdWVzdGlvbnM6CiAgICAgICAgICAgIGh5cG90aGVzZXNfY291bnQgPSBsZW4ocS5oeXBvdGhlc2VzKSBpZiBoYXNhdHRyKHEsICJoeXBvdGhlc2VzIikgYW5kIHEuaHlwb3RoZXNlcyBlbHNlIDAKICAgICAgICAgICAgcm9hZG1hcF9pZCA9IHEucm9hZG1hcF9pZCBpZiBoYXNhdHRyKHEsICJyb2FkbWFwX2lkIikgYW5kIHEucm9hZG1hcF9pZCBlbHNlICIiCiAgICAgICAgICAgIGRhdGEucXVlc3Rpb25zLmFwcGVuZCgKICAgICAgICAgICAgICAgIFF1ZXN0aW9uU3VtbWFyeSgKICAgICAgICAgICAgICAgICAgICBpZD1xLmlkLAogICAgICAgICAgICAgICAgICAgIHF1ZXN0aW9uPXEucXVlc3Rpb24sCiAgICAgICAgICAgICAgICAgICAgc3RhdHVzPXEuc3RhdHVzLAogICAgICAgICAgICAgICAgICAgIHByaW9yaXR5PXN0cihxLnByaW9yaXR5KSwKICAgICAgICAgICAgICAgICAgICBoeXBvdGhlc2VzX2NvdW50PWh5cG90aGVzZXNfY291bnQsCiAgICAgICAgICAgICAgICAgICAgcm9hZG1hcF9pZD1yb2FkbWFwX2lkLAogICAgICAgICAgICAgICAgKQogICAgICAgICAgICApCgogICAgICAgICMgRXhwZXJpbWVudHMKICAgICAgICBmcm9tIGxsbS5leHBlcmltZW50X3RyYWNrZXIgaW1wb3J0IEV4cGVyaW1lbnRUcmFja2VyCgogICAgICAgIGV4cF90cmFja2VyID0gRXhwZXJpbWVudFRyYWNrZXIoKQogICAgICAgIGV4cHMgPSBleHBfdHJhY2tlci5saXN0X2V4cGVyaW1lbnRzKCkKICAgICAgICBmb3IgZSBpbiBleHBzOgogICAgICAgICAgICBkYXRhLmV4cGVyaW1lbnRzLmFwcGVuZCgKICAgICAgICAgICAgICAgIEV4cGVyaW1lbnRTdW1tYXJ5KAogICAgICAgICAgICAgICAgICAgIGlkPWUuaWQsCiAgICAgICAgICAgICAgICAgICAgbmFtZT1lLm5hbWUsCiAgICAgICAgICAgICAgICAgICAgc3RhdHVzPWUuc3RhdHVzLAogICAgICAgICAgICAgICAgICAgIG1pbGVzdG9uZT1lLnJvYWRtYXBfbWlsZXN0b25lLAogICAgICAgICAgICAgICAgICAgIG1ldHJpY3NfY291bnQ9bGVuKGUubWV0cmljcyksCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICkKCiAgICAgICAgIyBQYXBlcnMgKyBleHRlbmRlZCBhbmFseXRpY3MKICAgICAgICBpZiBpbmNsdWRlX3BhcGVycyBhbmQgc2VsZi5kYjoKICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgc2VsZi5kYi5pbml0KCkKICAgICAgICAgICAgICAgIGRhdGEucGFwZXJzID0gc2VsZi5fY29sbGVjdF9wYXBlcl9zdGF0cygpCiAgICAgICAgICAgICAgICBkYXRhLmhvdF9wYXBlcnMgPSBzZWxmLl9jb2xsZWN0X2hvdF9wYXBlcnMoKQogICAgICAgICAgICAgICAgZGF0YS50cmVuZHMgPSBzZWxmLl9jb2xsZWN0X3RyZW5kcygpCiAgICAgICAgICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgICAgICAgICBsb2dnaW5nLmRlYnVnKCJEYXNoYm9hcmQ6IGZhaWxlZCB0byBjb2xsZWN0IHBhcGVyIGFuYWx5dGljczogJXMiKQogICAgICAgICAgICAgICAgZGF0YS5wYXBlcnMgPSBOb25lCgogICAgICAgICMgR2FwIHR5cGUgcHJlZmVyZW5jZXMKICAgICAgICB0cnk6CiAgICAgICAgICAgIGZyb20gbGxtLmluc2lnaHRfZXZvbHV0aW9uIGltcG9ydCBFdm9sdXRpb25UcmFja2VyCgogICAgICAgICAgICBldm9sdXRpb25fdHJhY2tlciA9IEV2b2x1dGlvblRyYWNrZXIoKQogICAgICAgICAgICBwcm9maWxlID0gZXZvbHV0aW9uX3RyYWNrZXIuZ2V0X3Byb2ZpbGUoKQogICAgICAgICAgICBpZiBwcm9maWxlIGFuZCBwcm9maWxlLnRvdGFsX2V2ZW50cyA+IDA6CiAgICAgICAgICAgICAgICBwcmVmcyA9IHByb2ZpbGUuZ2FwX3R5cGVfcHJlZmVyZW5jZXMgb3Ige30KICAgICAgICAgICAgICAgIGt3X3ByZWZzID0gcHJvZmlsZS5rZXl3b3JkX3ByZWZlcmVuY2VzIG9yIHt9CiAgICAgICAgICAgICAgICBwcmVmZXJyZWQgPSBbKGd0LCBzKSBmb3IgZ3QsIHMgaW4gcHJlZnMuaXRlbXMoKSBpZiBzID4gMC4xXQogICAgICAgICAgICAgICAgZGlzbGlrZWQgPSBbKGd0LCBzKSBmb3IgZ3QsIHMgaW4gcHJlZnMuaXRlbXMoKSBpZiBzIDwgLTAuMDVdCiAgICAgICAgICAgICAgICBrd19wcmVmZXJyZWQgPSBbKGt3LCBzKSBmb3Iga3csIHMgaW4ga3dfcHJlZnMuaXRlbXMoKSBpZiBzID4gMC4wNV0KICAgICAgICAgICAgICAgIGRhdGEuZ2FwX3ByZWZlcmVuY2VzID0gR2FwUHJlZmVyZW5jZVN0YXRzKAogICAgICAgICAgICAgICAgICAgIHRvdGFsX2V2ZW50cz1wcm9maWxlLnRvdGFsX2V2ZW50cywKICAgICAgICAgICAgICAgICAgICBwcmVmZXJyZWRfdHlwZXM9c29ydGVkKHByZWZlcnJlZCwga2V5PWxhbWJkYSB4OiB4WzFdLCByZXZlcnNlPVRydWUpLAogICAgICAgICAgICAgICAgICAgIGRpc2xpa2VkX3R5cGVzPXNvcnRlZChkaXNsaWtlZCwga2V5PWxhbWJkYSB4OiB4WzFdKSwKICAgICAgICAgICAgICAgICAgICBwcmVmZXJyZWRfa2V5d29yZHM9c29ydGVkKGt3X3ByZWZlcnJlZCwga2V5PWxhbWJkYSB4OiB4WzFdLCByZXZlcnNlPVRydWUpWzo1XSwKICAgICAgICAgICAgICAgICkKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICBsb2dnaW5nLmRlYnVnKCJEYXNoYm9hcmQ6IGZhaWxlZCB0byBjb2xsZWN0IGdhcCBwcmVmZXJlbmNlczogJXMiKQogICAgICAgICAgICBwYXNzCgogICAgICAgICMgU3VtbWFyeQogICAgICAgIGRhdGEuc3VtbWFyeSA9IHNlbGYuX2J1aWxkX3N1bW1hcnkoZGF0YSkKCiAgICAgICAgcmV0dXJuIGRhdGEKCiAgICBkZWYgX2NvbGxlY3RfcGFwZXJfc3RhdHMoc2VsZikgLT4gUGFwZXJTdGF0czoKICAgICAgICAiIiJDb2xsZWN0IHBhcGVyIHN0YXRpc3RpY3MuIiIiCiAgICAgICAgc3RhdHMgPSBQYXBlclN0YXRzKHRvdGFsX3BhcGVycz0wLCByZWNlbnRfcGFwZXJzPTAsIGJ5X3llYXI9e30sIGJ5X3RhZz17fSkKCiAgICAgICAgdHJ5OgogICAgICAgICAgICBwYXBlcnMgPSBzZWxmLmRiLmxpc3RfcGFwZXJzKGxpbWl0PTEwMDAwKQogICAgICAgICAgICBzdGF0cy50b3RhbF9wYXBlcnMgPSBsZW4ocGFwZXJzKQoKICAgICAgICAgICAgZnJvbSBkYXRldGltZSBpbXBvcnQgdGltZWRlbHRhCgogICAgICAgICAgICBub3cgPSBkYXRldGltZS5ub3coKQogICAgICAgICAgICB0aGlydHlfZGF5c19hZ28gPSAobm93IC0gdGltZWRlbHRhKGRheXM9MzApKS5pc29mb3JtYXQoKQoKICAgICAgICAgICAgZm9yIHAgaW4gcGFwZXJzOgogICAgICAgICAgICAgICAgIyBCeSB5ZWFyCiAgICAgICAgICAgICAgICB5ZWFyID0gZ2V0YXR0cihwLCAieWVhciIsIE5vbmUpIG9yICJ1bmtub3duIgogICAgICAgICAgICAgICAgc3RhdHMuYnlfeWVhclt5ZWFyXSA9IHN0YXRzLmJ5X3llYXIuZ2V0KHllYXIsIDApICsgMQoKICAgICAgICAgICAgICAgICMgUmVjZW50IHBhcGVycwogICAgICAgICAgICAgICAgY3JlYXRlZCA9IGdldGF0dHIocCwgImNyZWF0ZWRfYXQiLCBOb25lKSBvciAiIgogICAgICAgICAgICAgICAgaWYgY3JlYXRlZCBhbmQgY3JlYXRlZCA+IHRoaXJ0eV9kYXlzX2FnbzoKICAgICAgICAgICAgICAgICAgICBzdGF0cy5yZWNlbnRfcGFwZXJzICs9IDEKCiAgICAgICAgICAgICAgICAjIEJ5IHRhZwogICAgICAgICAgICAgICAgdGFncyA9IGdldGF0dHIocCwgInRhZ3MiLCBbXSkgb3IgW10KICAgICAgICAgICAgICAgIGZvciB0YWcgaW4gdGFnczoKICAgICAgICAgICAgICAgICAgICBzdGF0cy5ieV90YWdbdGFnXSA9IHN0YXRzLmJ5X3RhZy5nZXQodGFnLCAwKSArIDEKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICBsb2dnaW5nLmRlYnVnKCJEYXNoYm9hcmQ6IGZhaWxlZCB0byBjb2xsZWN0IHBhcGVyIHN0YXRzOiAlcyIpCiAgICAgICAgICAgIHBhc3MKCiAgICAgICAgcmV0dXJuIHN0YXRzCgogICAgZGVmIF9jb2xsZWN0X2hvdF9wYXBlcnMoc2VsZikgLT4gTGlzdFtIb3RQYXBlcl06CiAgICAgICAgIiIiQ29sbGVjdCB0b3AgcGFwZXJzIGJ5IGNpdGF0aW9uIHZlbG9jaXR5IChmcm9tIGluZmx1ZW5jZSBsb2dpYykuIiIiCiAgICAgICAgaG90ID0gW10KICAgICAgICB0cnk6CiAgICAgICAgICAgIGN1cnJlbnRfeWVhciA9IDIwMjYKICAgICAgICAgICAgY3VyID0gc2VsZi5kYi5jb25uLmV4ZWN1dGUoIiIiCiAgICAgICAgICAgICAgICBTRUxFQ1QgcC5pZCwgcC50aXRsZSwgcC5wdWJsaXNoZWQsIENPVU5UKGMuaWQpIEFTIGZvcndhcmRfY2l0ZXMKICAgICAgICAgICAgICAgIEZST00gcGFwZXJzIHAKICAgICAgICAgICAgICAgIExFRlQgSk9JTiBjaXRhdGlvbnMgYyBPTiBjLnRhcmdldF9pZCA9IHAuaWQKICAgICAgICAgICAgICAgIEdST1VQIEJZIHAuaWQKICAgICAgICAgICAgICAgIEhBVklORyBmb3J3YXJkX2NpdGVzID49IDEKICAgICAgICAgICAgIiIiKQogICAgICAgICAgICByb3dzID0gY3VyLmZldGNoYWxsKCkKICAgICAgICAgICAgc2NvcmVkID0gW10KICAgICAgICAgICAgZm9yIHJvdyBpbiByb3dzOgogICAgICAgICAgICAgICAgcGFwZXJfaWQsIHRpdGxlLCBwdWJsaXNoZWQsIGZ3ZCA9IHJvd1swXSwgcm93WzFdIG9yICIiLCByb3dbMl0gb3IgIiIsIHJvd1szXQogICAgICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgICAgIHllYXIgPSBpbnQocHVibGlzaGVkWzo0XSkKICAgICAgICAgICAgICAgIGV4Y2VwdCAoVmFsdWVFcnJvciwgVHlwZUVycm9yKToKICAgICAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICAgICAgaWYgeWVhciA8IDIwMDAgb3IgeWVhciA+IGN1cnJlbnRfeWVhcjoKICAgICAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICAgICAgYWdlID0gY3VycmVudF95ZWFyIC0geWVhciArIDEKICAgICAgICAgICAgICAgIHZlbG9jaXR5ID0gZndkIC8gYWdlCiAgICAgICAgICAgICAgICBzY29yZWQuYXBwZW5kKCh2ZWxvY2l0eSwgZndkLCBwYXBlcl9pZCwgdGl0bGUsIHllYXIpKQoKICAgICAgICAgICAgc2NvcmVkLnNvcnQoa2V5PWxhbWJkYSB4OiB4WzBdLCByZXZlcnNlPVRydWUpCiAgICAgICAgICAgIGZvciB2ZWxvY2l0eSwgZndkLCBwaWQsIHRpdGxlLCB5ZWFyIGluIHNjb3JlZFs6MTBdOgogICAgICAgICAgICAgICAgaG90LmFwcGVuZCgKICAgICAgICAgICAgICAgICAgICBIb3RQYXBlcigKICAgICAgICAgICAgICAgICAgICAgICAgcGFwZXJfaWQ9cGlkLAogICAgICAgICAgICAgICAgICAgICAgICB0aXRsZT10aXRsZVs6NjBdICsgIuKApiIgaWYgbGVuKHRpdGxlKSA+IDYwIGVsc2UgdGl0bGUsCiAgICAgICAgICAgICAgICAgICAgICAgIHllYXI9eWVhciwKICAgICAgICAgICAgICAgICAgICAgICAgdmVsb2NpdHk9cm91bmQodmVsb2NpdHksIDEpLAogICAgICAgICAgICAgICAgICAgICAgICBmb3J3YXJkX2NpdGVzPWZ3ZCwKICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICApCiAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbjoKICAgICAgICAgICAgbG9nZ2luZy5kZWJ1ZygiRGFzaGJvYXJkOiBmYWlsZWQgdG8gY29sbGVjdCBob3QgcGFwZXJzOiAlcyIpCiAgICAgICAgICAgIHBhc3MKICAgICAgICByZXR1cm4gaG90CgogICAgZGVmIF9jb2xsZWN0X3RyZW5kcyhzZWxmKSAtPiBMaXN0W1RyZW5kS2V5d29yZF06CiAgICAgICAgIiIiQ29sbGVjdCBrZXl3b3JkIHRyZW5kcyBmcm9tIHBhcGVyIGNvcnB1cyB1c2luZyBUcmVuZEFuYWx5emVyLiIiIgogICAgICAgIHRyZW5kcyA9IFtdCiAgICAgICAgdHJ5OgogICAgICAgICAgICBmcm9tIGxsbS50cmVuZF9hbmFseXplciBpbXBvcnQgVHJlbmRBbmFseXplcgoKICAgICAgICAgICAgYW5hbHl6ZXIgPSBUcmVuZEFuYWx5emVyKGRiPXNlbGYuZGIpCiAgICAgICAgICAgIHJlc3VsdCA9IGFuYWx5emVyLmFuYWx5emUoIiIsIG1pbl9wYXBlcnM9MykKICAgICAgICAgICAgZGlyZWN0aW9uX21hcCA9IHsKICAgICAgICAgICAgICAgICJyaXNpbmciOiAi8J+TiCByaXNpbmciLAogICAgICAgICAgICAgICAgImZhbGxpbmciOiAi8J+TiSBmYWxsaW5nIiwKICAgICAgICAgICAgICAgICJlbWVyZ2luZyI6ICLinKggZW1lcmdpbmciLAogICAgICAgICAgICAgICAgInN0YWJsZSI6ICLinqHvuI8gc3RhYmxlIiwKICAgICAgICAgICAgfQogICAgICAgICAgICBmb3IgdCBpbiByZXN1bHQucmlzaW5nX3RyZW5kc1s6NV06CiAgICAgICAgICAgICAgICB0cmVuZHMuYXBwZW5kKAogICAgICAgICAgICAgICAgICAgIFRyZW5kS2V5d29yZCgKICAgICAgICAgICAgICAgICAgICAgICAga2V5d29yZD10LmtleXdvcmQsCiAgICAgICAgICAgICAgICAgICAgICAgIGRpcmVjdGlvbj1kaXJlY3Rpb25fbWFwLmdldCh0LmRpcmVjdGlvbi52YWx1ZSwgdC5kaXJlY3Rpb24udmFsdWUpLAogICAgICAgICAgICAgICAgICAgICAgICBwYXBlcl9jb3VudD10LmN1cnJlbnRfeWVhcl9jb3VudCwKICAgICAgICAgICAgICAgICAgICAgICAgZ3Jvd3RoPWYiK3ttYXgoaW50KHQuZ3Jvd3RoX3JhdGUpLCAwKX0lIgogICAgICAgICAgICAgICAgICAgICAgICBpZiB0Lmdyb3d0aF9yYXRlID4gMAogICAgICAgICAgICAgICAgICAgICAgICBlbHNlIGYie2ludCh0Lmdyb3d0aF9yYXRlKX0lIiwKICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgIGZvciB0IGluIHJlc3VsdC5mYWxsaW5nX3RyZW5kc1s6M106CiAgICAgICAgICAgICAgICB0cmVuZHMuYXBwZW5kKAogICAgICAgICAgICAgICAgICAgIFRyZW5kS2V5d29yZCgKICAgICAgICAgICAgICAgICAgICAgICAga2V5d29yZD10LmtleXdvcmQsCiAgICAgICAgICAgICAgICAgICAgICAgIGRpcmVjdGlvbj1kaXJlY3Rpb25fbWFwLmdldCh0LmRpcmVjdGlvbi52YWx1ZSwgdC5kaXJlY3Rpb24udmFsdWUpLAogICAgICAgICAgICAgICAgICAgICAgICBwYXBlcl9jb3VudD10LmN1cnJlbnRfeWVhcl9jb3VudCwKICAgICAgICAgICAgICAgICAgICAgICAgZ3Jvd3RoPWYie2ludCh0Lmdyb3d0aF9yYXRlKX0lIiwKICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgIGZvciB0IGluIHJlc3VsdC5lbWVyZ2luZ190cmVuZHNbOjNdOgogICAgICAgICAgICAgICAgdHJlbmRzLmFwcGVuZCgKICAgICAgICAgICAgICAgICAgICBUcmVuZEtleXdvcmQoCiAgICAgICAgICAgICAgICAgICAgICAgIGtleXdvcmQ9dC5rZXl3b3JkLAogICAgICAgICAgICAgICAgICAgICAgICBkaXJlY3Rpb249ZGlyZWN0aW9uX21hcC5nZXQodC5kaXJlY3Rpb24udmFsdWUsIHQuZGlyZWN0aW9uLnZhbHVlKSwKICAgICAgICAgICAgICAgICAgICAgICAgcGFwZXJfY291bnQ9dC5jdXJyZW50X3llYXJfY291bnQsCiAgICAgICAgICAgICAgICAgICAgICAgIGdyb3d0aD1mIit7bWF4KGludCh0Lmdyb3d0aF9yYXRlKSwgMCl9JSIKICAgICAgICAgICAgICAgICAgICAgICAgaWYgdC5ncm93dGhfcmF0ZSA+IDAKICAgICAgICAgICAgICAgICAgICAgICAgZWxzZSBmIntpbnQodC5ncm93dGhfcmF0ZSl9JSIsCiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgKQogICAgICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgICAgIGxvZ2dpbmcuZGVidWcoIkRhc2hib2FyZDogZmFpbGVkIHRvIGNvbGxlY3QgdHJlbmRzOiAlcyIpCiAgICAgICAgICAgIHBhc3MKICAgICAgICByZXR1cm4gdHJlbmRzCgogICAgZGVmIF9idWlsZF9zdW1tYXJ5KHNlbGYsIGRhdGE6IERhc2hib2FyZERhdGEpIC0+IERpY3Rbc3RyLCBBbnldOgogICAgICAgICIiIkJ1aWxkIHN1bW1hcnkgc3RhdGlzdGljcy4iIiIKICAgICAgICBxdWVzdGlvbnNfYnlfc3RhdHVzOiBEaWN0W3N0ciwgaW50XSA9IHt9CiAgICAgICAgZm9yIHEgaW4gZGF0YS5xdWVzdGlvbnM6CiAgICAgICAgICAgIHF1ZXN0aW9uc19ieV9zdGF0dXNbcS5zdGF0dXNdID0gcXVlc3Rpb25zX2J5X3N0YXR1cy5nZXQocS5zdGF0dXMsIDApICsgMQoKICAgICAgICBleHBlcmltZW50c19ieV9zdGF0dXM6IERpY3Rbc3RyLCBpbnRdID0ge30KICAgICAgICBmb3IgZSBpbiBkYXRhLmV4cGVyaW1lbnRzOgogICAgICAgICAgICBleHBlcmltZW50c19ieV9zdGF0dXNbZS5zdGF0dXNdID0gZXhwZXJpbWVudHNfYnlfc3RhdHVzLmdldChlLnN0YXR1cywgMCkgKyAxCgogICAgICAgIHJldHVybiB7CiAgICAgICAgICAgICJ0b3RhbF9xdWVzdGlvbnMiOiBsZW4oZGF0YS5xdWVzdGlvbnMpLAogICAgICAgICAgICAicXVlc3Rpb25zX2J5X3N0YXR1cyI6IHF1ZXN0aW9uc19ieV9zdGF0dXMsCiAgICAgICAgICAgICJ0b3RhbF9leHBlcmltZW50cyI6IGxlbihkYXRhLmV4cGVyaW1lbnRzKSwKICAgICAgICAgICAgImV4cGVyaW1lbnRzX2J5X3N0YXR1cyI6IGV4cGVyaW1lbnRzX2J5X3N0YXR1cywKICAgICAgICAgICAgInRvdGFsX3BhcGVycyI6IGRhdGEucGFwZXJzLnRvdGFsX3BhcGVycyBpZiBkYXRhLnBhcGVycyBlbHNlIDAsCiAgICAgICAgICAgICJwYXBlcnNfdGhpc19tb250aCI6IGRhdGEucGFwZXJzLnJlY2VudF9wYXBlcnMgaWYgZGF0YS5wYXBlcnMgZWxzZSAwLAogICAgICAgICAgICAiaG90X3BhcGVyc19jb3VudCI6IGxlbihkYXRhLmhvdF9wYXBlcnMpLAogICAgICAgICAgICAidHJlbmRzX2NvdW50IjogbGVuKGRhdGEudHJlbmRzKSwKICAgICAgICB9CgogICAgZGVmIHJlbmRlcl90ZXh0KHNlbGYsIGRhdGE6IERhc2hib2FyZERhdGEpIC0+IHN0cjoKICAgICAgICAiIiJSZW5kZXIgZGFzaGJvYXJkIGFzIHRleHQuIiIiCiAgICAgICAgbGluZXMgPSBbCiAgICAgICAgICAgICI9IiAqIDYwLAogICAgICAgICAgICAi8J+TiiBSZXNlYXJjaCBEYXNoYm9hcmQiLAogICAgICAgICAgICBmIkdlbmVyYXRlZDoge2RhdGEuZ2VuZXJhdGVkX2F0WzoxOV19IiwKICAgICAgICAgICAgIj0iICogNjAsCiAgICAgICAgICAgICIiLAogICAgICAgIF0KCiAgICAgICAgIyBTdW1tYXJ5CiAgICAgICAgcyA9IGRhdGEuc3VtbWFyeQogICAgICAgIGxpbmVzLmFwcGVuZCgiIyMgU3VtbWFyeSIpCiAgICAgICAgbGluZXMuYXBwZW5kKGYiICBRdWVzdGlvbnM6IHtzLmdldCgndG90YWxfcXVlc3Rpb25zJywgMCl9IikKICAgICAgICBsaW5lcy5hcHBlbmQoZiIgIEV4cGVyaW1lbnRzOiB7cy5nZXQoJ3RvdGFsX2V4cGVyaW1lbnRzJywgMCl9IikKICAgICAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgICAgIGYiICBQYXBlcnM6IHtzLmdldCgndG90YWxfcGFwZXJzJywgMCl9ICh0aGlzIG1vbnRoOiB7cy5nZXQoJ3BhcGVyc190aGlzX21vbnRoJywgMCl9KSIKICAgICAgICApCiAgICAgICAgaWYgcy5nZXQoImhvdF9wYXBlcnNfY291bnQiLCAwKSA+IDA6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgSG90IFBhcGVyczoge3NbJ2hvdF9wYXBlcnNfY291bnQnXX0gKGNpdGF0aW9uIHZlbG9jaXR5ID4gMCkiKQogICAgICAgIGlmIHMuZ2V0KCJ0cmVuZHNfY291bnQiLCAwKSA+IDA6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgVHJlbmRzOiB7c1sndHJlbmRzX2NvdW50J119IGtleXdvcmRzIHRyYWNrZWQiKQoKICAgICAgICAjIEdhcCBUeXBlIFByZWZlcmVuY2VzCiAgICAgICAgZ3AgPSBkYXRhLmdhcF9wcmVmZXJlbmNlcwogICAgICAgIGlmIGdwOgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIyMg8J+noCBSZXNlYXJjaCBHYXAgUHJlZmVyZW5jZXMiKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgIEJhc2VkIG9uIHtncC50b3RhbF9ldmVudHN9IGV4cGxvcmF0aW9uIGV2ZW50cyIpCiAgICAgICAgICAgIGlmIGdwLnByZWZlcnJlZF9rZXl3b3JkczoKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiICDwn5SRIFByZWZlcnJlZCBrZXl3b3JkczoiKQogICAgICAgICAgICAgICAgZm9yIGt3LCBzY29yZSBpbiBncC5wcmVmZXJyZWRfa2V5d29yZHNbOjVdOgogICAgICAgICAgICAgICAgICAgIGJhciA9ICLilogiICogbWluKGludChzY29yZSAqIDUpLCAxMCkKICAgICAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICAge2t3fToge3Njb3JlOisuMmZ9IHtiYXJ9IikKICAgICAgICAgICAgaWYgZ3AucHJlZmVycmVkX3R5cGVzOgogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIgIPCfn6IgUHJlZmVycmVkIHR5cGVzOiIpCiAgICAgICAgICAgICAgICBmb3IgZ3QsIHNjb3JlIGluIGdwLnByZWZlcnJlZF90eXBlc1s6NV06CiAgICAgICAgICAgICAgICAgICAgYmFyID0gIuKWiCIgKiBtaW4oaW50KHNjb3JlICogNSksIDEwKQogICAgICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgICB7Z3R9OiB7c2NvcmU6Ky4yZn0ge2Jhcn0iKQogICAgICAgICAgICBpZiBncC5kaXNsaWtlZF90eXBlczoKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiICDwn5S0IEF2b2lkZWQgdHlwZXM6IikKICAgICAgICAgICAgICAgIGZvciBndCwgc2NvcmUgaW4gZ3AuZGlzbGlrZWRfdHlwZXNbOjNdOgogICAgICAgICAgICAgICAgICAgIGJhciA9ICLilogiICogbWluKGludChhYnMoc2NvcmUpICogNSksIDEwKQogICAgICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgICB7Z3R9OiB7c2NvcmU6Ky4yZn0ge2Jhcn0iKQogICAgICAgICAgICBpZiBub3QgZ3AucHJlZmVycmVkX3R5cGVzIGFuZCBub3QgZ3AucHJlZmVycmVkX2tleXdvcmRzIGFuZCBub3QgZ3AuZGlzbGlrZWRfdHlwZXM6CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiAgKG5vIHN0cm9uZyBwcmVmZXJlbmNlcyB5ZXQg4oCUIGtlZXAgZXhwbG9yaW5nISkiKQoKICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgICMgSG90IFBhcGVycwogICAgICAgIGlmIGRhdGEuaG90X3BhcGVyczoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIjIyDwn5SlIEhvdCBQYXBlcnMgKGJ5IENpdGF0aW9uIFZlbG9jaXR5KSIpCiAgICAgICAgICAgIGZvciBpLCBwIGluIGVudW1lcmF0ZShkYXRhLmhvdF9wYXBlcnNbOjVdLCAxKToKICAgICAgICAgICAgICAgIGJhciA9ICLilogiICogbWluKGludChwLnZlbG9jaXR5KSwgMTApCiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgIHtpfS4ge3AudmVsb2NpdHk6LjFmfS95ICB7YmFyfSAge3AudGl0bGV9ICh7cC55ZWFyfSkiKQogICAgICAgICAgICBpZiBsZW4oZGF0YS5ob3RfcGFwZXJzKSA+IDU6CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgIC4uLiBhbmQge2xlbihkYXRhLmhvdF9wYXBlcnMpIC0gNX0gbW9yZSIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIikKCiAgICAgICAgIyBSZXNlYXJjaCBUcmVuZHMKICAgICAgICBpZiBkYXRhLnRyZW5kczoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIjIyDwn5OIIFJlc2VhcmNoIFRyZW5kcyIpCiAgICAgICAgICAgIGZvciB0IGluIGRhdGEudHJlbmRzWzoxMF06CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgIHt0LmRpcmVjdGlvbn0gIHt0LmtleXdvcmR9ICAoe3QucGFwZXJfY291bnR9IHBhcGVycywge3QuZ3Jvd3RofSkiKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgICMgUXVlc3Rpb25zCiAgICAgICAgbGluZXMuYXBwZW5kKCIjIyBRdWVzdGlvbnMiKQogICAgICAgIGlmIG5vdCBkYXRhLnF1ZXN0aW9uczoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIgIChub25lKSIpCiAgICAgICAgZWxzZToKICAgICAgICAgICAgcV9ieV9zdGF0dXM6IERpY3Rbc3RyLCBMaXN0W0FueV1dID0ge30KICAgICAgICAgICAgZm9yIHEgaW4gZGF0YS5xdWVzdGlvbnM6CiAgICAgICAgICAgICAgICBzdGF0dXMgPSBxLnN0YXR1cyBvciAidW5rbm93biIKICAgICAgICAgICAgICAgIHFfYnlfc3RhdHVzLnNldGRlZmF1bHQoc3RhdHVzLCBbXSkuYXBwZW5kKHEpCgogICAgICAgICAgICBmb3Igc3RhdHVzLCBxdWVzdGlvbnMgaW4gc29ydGVkKHFfYnlfc3RhdHVzLml0ZW1zKCkpOgogICAgICAgICAgICAgICAgaWNvbiA9IHsib3BlbiI6ICLwn5OdIiwgImluX3Byb2dyZXNzIjogIvCflIQiLCAicmVzb2x2ZWQiOiAi4pyFIn0uZ2V0KHN0YXR1cywgIuKdkyIpCiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgIHtpY29ufSB7c3RhdHVzLnVwcGVyKCl9ICh7bGVuKHF1ZXN0aW9ucyl9KSIpCiAgICAgICAgICAgICAgICBmb3IgcSBpbiBxdWVzdGlvbnNbOjNdOgogICAgICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgICAtIFt7cS5pZH1dIHtxLnF1ZXN0aW9uWzo1MF19Li4uIikKICAgICAgICAgICAgICAgIGlmIGxlbihxdWVzdGlvbnMpID4gMzoKICAgICAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICAgLi4uIGFuZCB7bGVuKHF1ZXN0aW9ucykgLSAzfSBtb3JlIikKICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgICMgRXhwZXJpbWVudHMKICAgICAgICBsaW5lcy5hcHBlbmQoIiMjIEV4cGVyaW1lbnRzIikKICAgICAgICBpZiBub3QgZGF0YS5leHBlcmltZW50czoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIgIChub25lKSIpCiAgICAgICAgZWxzZToKICAgICAgICAgICAgZV9ieV9zdGF0dXM6IERpY3Rbc3RyLCBMaXN0W0FueV1dID0ge30KICAgICAgICAgICAgZm9yIGUgaW4gZGF0YS5leHBlcmltZW50czoKICAgICAgICAgICAgICAgIGVfYnlfc3RhdHVzLnNldGRlZmF1bHQoZS5zdGF0dXMsIFtdKS5hcHBlbmQoZSkKCiAgICAgICAgICAgIGZvciBzdGF0dXMsIGV4cHMgaW4gc29ydGVkKGVfYnlfc3RhdHVzLml0ZW1zKCkpOgogICAgICAgICAgICAgICAgaWNvbiA9IHsicnVubmluZyI6ICLimqEiLCAiY29tcGxldGVkIjogIuKchSIsICJmYWlsZWQiOiAi4p2MIn0uZ2V0KHN0YXR1cywgIuKdkyIpCiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgIHtpY29ufSB7c3RhdHVzLnVwcGVyKCl9ICh7bGVuKGV4cHMpfSkiKQogICAgICAgICAgICAgICAgZm9yIGUgaW4gZXhwc1s6M106CiAgICAgICAgICAgICAgICAgICAgbWV0cmljcyA9IGYiIFt7ZS5tZXRyaWNzX2NvdW50fSBtZXRyaWNzXSIgaWYgZS5tZXRyaWNzX2NvdW50IGVsc2UgIiIKICAgICAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICAgLSBbe2UuaWR9XSB7ZS5uYW1lfXttZXRyaWNzfSIpCiAgICAgICAgICAgICAgICBpZiBsZW4oZXhwcykgPiAzOgogICAgICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgICAuLi4gYW5kIHtsZW4oZXhwcykgLSAzfSBtb3JlIikKICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgICMgUGFwZXJzCiAgICAgICAgaWYgZGF0YS5wYXBlcnMgYW5kIGRhdGEucGFwZXJzLnRvdGFsX3BhcGVycyA+IDA6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIyMgUGFwZXJzIikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICBUb3RhbDoge2RhdGEucGFwZXJzLnRvdGFsX3BhcGVyc30iKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgIFRoaXMgbW9udGg6IHtkYXRhLnBhcGVycy5yZWNlbnRfcGFwZXJzfSIpCiAgICAgICAgICAgIGlmIGRhdGEucGFwZXJzLmJ5X3llYXI6CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiAgQnkgeWVhcjoiKQogICAgICAgICAgICAgICAgZm9yIHllYXIgaW4gc29ydGVkKGRhdGEucGFwZXJzLmJ5X3llYXIua2V5cygpLCByZXZlcnNlPVRydWUpWzo1XToKICAgICAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICAge3llYXJ9OiB7ZGF0YS5wYXBlcnMuYnlfeWVhclt5ZWFyXX0iKQogICAgICAgICAgICBpZiBkYXRhLnBhcGVycy5ieV90YWc6CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiAgVG9wIHRhZ3M6IikKICAgICAgICAgICAgICAgIHRvcF90YWdzID0gc29ydGVkKGRhdGEucGFwZXJzLmJ5X3RhZy5pdGVtcygpLCBrZXk9bGFtYmRhIHg6IC14WzFdKVs6NV0KICAgICAgICAgICAgICAgIGZvciB0YWcsIGNvdW50IGluIHRvcF90YWdzOgogICAgICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgICB7dGFnfToge2NvdW50fSIpCiAgICAgICAgbGluZXMuYXBwZW5kKCIiKQogICAgICAgIGxpbmVzLmFwcGVuZCgiPSIgKiA2MCkKCiAgICAgICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykKCiAgICBkZWYgcmVuZGVyX2pzb24oc2VsZiwgZGF0YTogRGFzaGJvYXJkRGF0YSkgLT4gc3RyOgogICAgICAgICIiIlJlbmRlciBkYXNoYm9hcmQgYXMgSlNPTi4iIiIKICAgICAgICBpbXBvcnQganNvbgoKICAgICAgICByZXR1cm4ganNvbi5kdW1wcygKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgImdlbmVyYXRlZF9hdCI6IGRhdGEuZ2VuZXJhdGVkX2F0LAogICAgICAgICAgICAgICAgInN1bW1hcnkiOiBkYXRhLnN1bW1hcnksCiAgICAgICAgICAgICAgICAiaG90X3BhcGVycyI6IFsKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgICJwYXBlcl9pZCI6IHAucGFwZXJfaWQsCiAgICAgICAgICAgICAgICAgICAgICAgICJ0aXRsZSI6IHAudGl0bGUsCiAgICAgICAgICAgICAgICAgICAgICAgICJ5ZWFyIjogcC55ZWFyLAogICAgICAgICAgICAgICAgICAgICAgICAidmVsb2NpdHkiOiBwLnZlbG9jaXR5LAogICAgICAgICAgICAgICAgICAgICAgICAiZm9yd2FyZF9jaXRlcyI6IHAuZm9yd2FyZF9jaXRlcywKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgZm9yIHAgaW4gZGF0YS5ob3RfcGFwZXJzCiAgICAgICAgICAgICAgICBdLAogICAgICAgICAgICAgICAgInRyZW5kcyI6IFsKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgICJrZXl3b3JkIjogdC5rZXl3b3JkLAogICAgICAgICAgICAgICAgICAgICAgICAiZGlyZWN0aW9uIjogdC5kaXJlY3Rpb24sCiAgICAgICAgICAgICAgICAgICAgICAgICJwYXBlcl9jb3VudCI6IHQucGFwZXJfY291bnQsCiAgICAgICAgICAgICAgICAgICAgICAgICJncm93dGgiOiB0Lmdyb3d0aCwKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgZm9yIHQgaW4gZGF0YS50cmVuZHMKICAgICAgICAgICAgICAgIF0sCiAgICAgICAgICAgICAgICAicXVlc3Rpb25zIjogWwogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgImlkIjogcS5pZCwKICAgICAgICAgICAgICAgICAgICAgICAgInF1ZXN0aW9uIjogcS5xdWVzdGlvbiwKICAgICAgICAgICAgICAgICAgICAgICAgInN0YXR1cyI6IHEuc3RhdHVzLAogICAgICAgICAgICAgICAgICAgICAgICAicHJpb3JpdHkiOiBxLnByaW9yaXR5LAogICAgICAgICAgICAgICAgICAgICAgICAiaHlwb3RoZXNlc19jb3VudCI6IHEuaHlwb3RoZXNlc19jb3VudCwKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgZm9yIHEgaW4gZGF0YS5xdWVzdGlvbnMKICAgICAgICAgICAgICAgIF0sCiAgICAgICAgICAgICAgICAiZXhwZXJpbWVudHMiOiBbCiAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICAiaWQiOiBlLmlkLAogICAgICAgICAgICAgICAgICAgICAgICAibmFtZSI6IGUubmFtZSwKICAgICAgICAgICAgICAgICAgICAgICAgInN0YXR1cyI6IGUuc3RhdHVzLAogICAgICAgICAgICAgICAgICAgICAgICAibWlsZXN0b25lIjogZS5taWxlc3RvbmUsCiAgICAgICAgICAgICAgICAgICAgICAgICJtZXRyaWNzX2NvdW50IjogZS5tZXRyaWNzX2NvdW50LAogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICBmb3IgZSBpbiBkYXRhLmV4cGVyaW1lbnRzCiAgICAgICAgICAgICAgICBdLAogICAgICAgICAgICAgICAgInBhcGVycyI6IHsKICAgICAgICAgICAgICAgICAgICAidG90YWwiOiBkYXRhLnBhcGVycy50b3RhbF9wYXBlcnMgaWYgZGF0YS5wYXBlcnMgZWxzZSAwLAogICAgICAgICAgICAgICAgICAgICJ0aGlzX21vbnRoIjogZGF0YS5wYXBlcnMucmVjZW50X3BhcGVycyBpZiBkYXRhLnBhcGVycyBlbHNlIDAsCiAgICAgICAgICAgICAgICAgICAgImJ5X3llYXIiOiBkYXRhLnBhcGVycy5ieV95ZWFyIGlmIGRhdGEucGFwZXJzIGVsc2Uge30sCiAgICAgICAgICAgICAgICAgICAgImJ5X3RhZyI6IGRhdGEucGFwZXJzLmJ5X3RhZyBpZiBkYXRhLnBhcGVycyBlbHNlIHt9LAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgaWYgZGF0YS5wYXBlcnMKICAgICAgICAgICAgICAgIGVsc2UgTm9uZSwKICAgICAgICAgICAgICAgICJnYXBfcHJlZmVyZW5jZXMiOiB7CiAgICAgICAgICAgICAgICAgICAgInRvdGFsX2V2ZW50cyI6IGRhdGEuZ2FwX3ByZWZlcmVuY2VzLnRvdGFsX2V2ZW50cwogICAgICAgICAgICAgICAgICAgIGlmIGRhdGEuZ2FwX3ByZWZlcmVuY2VzCiAgICAgICAgICAgICAgICAgICAgZWxzZSAwLAogICAgICAgICAgICAgICAgICAgICJwcmVmZXJyZWRfa2V5d29yZHMiOiBbCiAgICAgICAgICAgICAgICAgICAgICAgIHsia2V5d29yZCI6IGt3LCAic2NvcmUiOiBmbG9hdChzY29yZSl9CiAgICAgICAgICAgICAgICAgICAgICAgIGZvciBrdywgc2NvcmUgaW4gKAogICAgICAgICAgICAgICAgICAgICAgICAgICAgZGF0YS5nYXBfcHJlZmVyZW5jZXMucHJlZmVycmVkX2tleXdvcmRzIGlmIGRhdGEuZ2FwX3ByZWZlcmVuY2VzIGVsc2UgW10KICAgICAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgICAgIF0sCiAgICAgICAgICAgICAgICAgICAgInByZWZlcnJlZF90eXBlcyI6IFsKICAgICAgICAgICAgICAgICAgICAgICAgeyJnYXBfdHlwZSI6IGd0LCAic2NvcmUiOiBmbG9hdChzY29yZSl9CiAgICAgICAgICAgICAgICAgICAgICAgIGZvciBndCwgc2NvcmUgaW4gKAogICAgICAgICAgICAgICAgICAgICAgICAgICAgZGF0YS5nYXBfcHJlZmVyZW5jZXMucHJlZmVycmVkX3R5cGVzIGlmIGRhdGEuZ2FwX3ByZWZlcmVuY2VzIGVsc2UgW10KICAgICAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgICAgIF0sCiAgICAgICAgICAgICAgICAgICAgImRpc2xpa2VkX3R5cGVzIjogWwogICAgICAgICAgICAgICAgICAgICAgICB7ImdhcF90eXBlIjogZ3QsICJzY29yZSI6IGZsb2F0KHNjb3JlKX0KICAgICAgICAgICAgICAgICAgICAgICAgZm9yIGd0LCBzY29yZSBpbiAoCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBkYXRhLmdhcF9wcmVmZXJlbmNlcy5kaXNsaWtlZF90eXBlcyBpZiBkYXRhLmdhcF9wcmVmZXJlbmNlcyBlbHNlIFtdCiAgICAgICAgICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICAgICAgICBdLAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgaWYgZGF0YS5nYXBfcHJlZmVyZW5jZXMKICAgICAgICAgICAgICAgIGVsc2UgTm9uZSwKICAgICAgICAgICAgfSwKICAgICAgICAgICAgZW5zdXJlX2FzY2lpPUZhbHNlLAogICAgICAgICAgICBpbmRlbnQ9MiwKICAgICAgICApCg==
+"""
+Research Dashboard: Aggregated view of research progress.
+"""
+import logging
+from dataclasses import dataclass, field
+from typing import List, Optional, Dict, Tuple, Any
+from datetime import datetime
+
+
+@dataclass
+class QuestionSummary:
+    """Summary of a research question."""
+    id: str
+    question: str
+    status: str
+    priority: str
+    hypotheses_count: int
+    roadmap_id: str
+
+
+@dataclass
+class ExperimentSummary:
+    """Summary of an experiment."""
+    id: str
+    name: str
+    status: str
+    milestone: str
+    metrics_count: int
+
+
+@dataclass
+class PaperStats:
+    """Paper reading statistics."""
+    total_papers: int
+    recent_papers: int  # Last 30 days
+    by_year: Dict[str, int]
+    by_tag: Dict[str, int]
+
+
+@dataclass
+class HotPaper:
+    """A paper with high citation velocity."""
+    paper_id: str
+    title: str
+    year: int
+    velocity: float
+    forward_cites: int
+
+
+@dataclass
+class TrendKeyword:
+    """A trending keyword from the corpus."""
+    keyword: str
+    direction: str  # rising / falling / emerging / stable
+    paper_count: int
+    growth: str  # e.g. "+25%" or "-10%"
+
+
+@dataclass
+class GapPreferenceStats:
+    """Summary of user's gap_type and keyword preference profile."""
+    total_events: int
+    preferred_types: List[Tuple[str, float]]
+    disliked_types: List[Tuple[str, float]]
+    preferred_keywords: List[Tuple[str, float]] = field(default_factory=list)
+
+
+@dataclass
+class DashboardData:
+    """Aggregated dashboard data."""
+    generated_at: str = ""
+    questions: List[QuestionSummary] = field(default_factory=list)
+    experiments: List[ExperimentSummary] = field(default_factory=list)
+    papers: Optional[PaperStats] = None
+    hot_papers: List[HotPaper] = field(default_factory=list)
+    trends: List[TrendKeyword] = field(default_factory=list)
+    gap_preferences: Optional[GapPreferenceStats] = None
+    summary: Dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        if not self.generated_at:
+            self.generated_at = datetime.now().isoformat()
+
+
+class Dashboard:
+    """Aggregate research progress data."""
+
+    def __init__(self, db=None):
+        self.db = db
+
+    def collect(self, include_papers: bool = True) -> DashboardData:
+        """Collect all dashboard data."""
+        data = DashboardData()
+
+        # Questions
+        from llm.question_tracker import QuestionTracker
+        tracker = QuestionTracker()
+        questions = tracker.list_questions()
+        for q in questions:
+            hypotheses_count = len(q.hypotheses) if hasattr(q, 'hypotheses') and q.hypotheses else 0
+            roadmap_id = q.roadmap_id if hasattr(q, 'roadmap_id') and q.roadmap_id else ""
+            data.questions.append(QuestionSummary(
+                id=q.id,
+                question=q.question,
+                status=q.status,
+                priority=str(q.priority),
+                hypotheses_count=hypotheses_count,
+                roadmap_id=roadmap_id,
+            ))
+
+        # Experiments
+        from llm.experiment_tracker import ExperimentTracker
+        exp_tracker = ExperimentTracker()
+        exps = exp_tracker.list_experiments()
+        for e in exps:
+            data.experiments.append(ExperimentSummary(
+                id=e.id,
+                name=e.name,
+                status=e.status,
+                milestone=e.roadmap_milestone,
+                metrics_count=len(e.metrics),
+            ))
+
+        # Papers + extended analytics
+        if include_papers and self.db:
+            try:
+                self.db.init()
+                data.papers = self._collect_paper_stats()
+                data.hot_papers = self._collect_hot_papers()
+                data.trends = self._collect_trends()
+            except Exception:
+                logging.debug("Dashboard: failed to collect paper analytics: %s")
+                data.papers = None
+
+        # Gap type preferences
+        try:
+            from llm.insight_evolution import EvolutionTracker
+            evolution_tracker = EvolutionTracker()
+            profile = evolution_tracker.get_profile()
+            if profile and profile.total_events > 0:
+                prefs = profile.gap_type_preferences or {}
+                kw_prefs = profile.keyword_preferences or {}
+                preferred = [(gt, s) for gt, s in prefs.items() if s > 0.1]
+                disliked = [(gt, s) for gt, s in prefs.items() if s < -0.05]
+                kw_preferred = [(kw, s) for kw, s in kw_prefs.items() if s > 0.05]
+                data.gap_preferences = GapPreferenceStats(
+                    total_events=profile.total_events,
+                    preferred_types=sorted(preferred, key=lambda x: x[1], reverse=True),
+                    disliked_types=sorted(disliked, key=lambda x: x[1]),
+                    preferred_keywords=sorted(kw_preferred, key=lambda x: x[1], reverse=True)[:5],
+                )
+        except Exception:
+            logging.debug("Dashboard: failed to collect gap preferences: %s")
+            pass
+
+        # Summary
+        data.summary = self._build_summary(data)
+
+        return data
+
+    def _collect_paper_stats(self) -> PaperStats:
+        """Collect paper statistics."""
+        stats = PaperStats(total_papers=0, recent_papers=0, by_year={}, by_tag={})
+
+        try:
+            papers = self.db.list_papers(limit=10000)
+            stats.total_papers = len(papers)
+
+            from datetime import timedelta
+            now = datetime.now()
+            thirty_days_ago = (now - timedelta(days=30)).isoformat()
+
+            for p in papers:
+                # By year
+                year = getattr(p, 'year', None) or 'unknown'
+                stats.by_year[year] = stats.by_year.get(year, 0) + 1
+
+                # Recent papers
+                created = getattr(p, 'created_at', None) or ''
+                if created and created > thirty_days_ago:
+                    stats.recent_papers += 1
+
+                # By tag
+                tags = getattr(p, 'tags', []) or []
+                for tag in tags:
+                    stats.by_tag[tag] = stats.by_tag.get(tag, 0) + 1
+        except Exception:
+            logging.debug("Dashboard: failed to collect paper stats: %s")
+            pass
+
+        return stats
+
+    def _collect_hot_papers(self) -> List[HotPaper]:
+        """Collect top papers by citation velocity (from influence logic)."""
+        hot = []
+        try:
+            current_year = 2026
+            cur = self.db.conn.execute("""
+                SELECT p.id, p.title, p.published, COUNT(c.id) AS forward_cites
+                FROM papers p
+                LEFT JOIN citations c ON c.target_id = p.id
+                GROUP BY p.id
+                HAVING forward_cites >= 1
+            """)
+            rows = cur.fetchall()
+            scored = []
+            for row in rows:
+                paper_id, title, published, fwd = row[0], row[1] or "", row[2] or "", row[3]
+                try:
+                    year = int(published[:4])
+                except (ValueError, TypeError):
+                    continue
+                if year < 2000 or year > current_year:
+                    continue
+                age = current_year - year + 1
+                velocity = fwd / age
+                scored.append((velocity, fwd, paper_id, title, year))
+
+            scored.sort(key=lambda x: x[0], reverse=True)
+            for velocity, fwd, pid, title, year in scored[:10]:
+                hot.append(HotPaper(
+                    paper_id=pid,
+                    title=title[:60] + "…" if len(title) > 60 else title,
+                    year=year,
+                    velocity=round(velocity, 1),
+                    forward_cites=fwd,
+                ))
+        except Exception:
+            logging.debug("Dashboard: failed to collect hot papers: %s")
+            pass
+        return hot
+
+    def _collect_trends(self) -> List[TrendKeyword]:
+        """Collect keyword trends from paper corpus using TrendAnalyzer."""
+        trends = []
+        try:
+            from llm.trend_analyzer import TrendAnalyzer
+            analyzer = TrendAnalyzer(db=self.db)
+            result = analyzer.analyze("", min_papers=3)
+            direction_map = {
+                "rising": "📈 rising",
+                "falling": "📉 falling",
+                "emerging": "✨ emerging",
+                "stable": "➡️ stable",
+            }
+            for t in result.rising_trends[:5]:
+                trends.append(TrendKeyword(
+                    keyword=t.keyword,
+                    direction=direction_map.get(t.direction.value, t.direction.value),
+                    paper_count=t.current_year_count,
+                    growth=f"+{max(int(t.growth_rate), 0)}%" if t.growth_rate > 0 else f"{int(t.growth_rate)}%",
+                ))
+            for t in result.falling_trends[:3]:
+                trends.append(TrendKeyword(
+                    keyword=t.keyword,
+                    direction=direction_map.get(t.direction.value, t.direction.value),
+                    paper_count=t.current_year_count,
+                    growth=f"{int(t.growth_rate)}%",
+                ))
+            for t in result.emerging_trends[:3]:
+                trends.append(TrendKeyword(
+                    keyword=t.keyword,
+                    direction=direction_map.get(t.direction.value, t.direction.value),
+                    paper_count=t.current_year_count,
+                    growth=f"+{max(int(t.growth_rate), 0)}%" if t.growth_rate > 0 else f"{int(t.growth_rate)}%",
+                ))
+        except Exception:
+            logging.debug("Dashboard: failed to collect trends: %s")
+            pass
+        return trends
+
+    def _build_summary(self, data: DashboardData) -> Dict[str, Any]:
+        """Build summary statistics."""
+        questions_by_status: Dict[str, int] = {}
+        for q in data.questions:
+            questions_by_status[q.status] = questions_by_status.get(q.status, 0) + 1
+
+        experiments_by_status: Dict[str, int] = {}
+        for e in data.experiments:
+            experiments_by_status[e.status] = experiments_by_status.get(e.status, 0) + 1
+
+        return {
+            "total_questions": len(data.questions),
+            "questions_by_status": questions_by_status,
+            "total_experiments": len(data.experiments),
+            "experiments_by_status": experiments_by_status,
+            "total_papers": data.papers.total_papers if data.papers else 0,
+            "papers_this_month": data.papers.recent_papers if data.papers else 0,
+            "hot_papers_count": len(data.hot_papers),
+            "trends_count": len(data.trends),
+        }
+
+    def render_text(self, data: DashboardData) -> str:
+        """Render dashboard as text."""
+        lines = [
+            "=" * 60,
+            "📊 Research Dashboard",
+            f"Generated: {data.generated_at[:19]}",
+            "=" * 60,
+            "",
+        ]
+
+        # Summary
+        s = data.summary
+        lines.append("## Summary")
+        lines.append(f"  Questions: {s.get('total_questions', 0)}")
+        lines.append(f"  Experiments: {s.get('total_experiments', 0)}")
+        lines.append(f"  Papers: {s.get('total_papers', 0)} (this month: {s.get('papers_this_month', 0)})")
+        if s.get('hot_papers_count', 0) > 0:
+            lines.append(f"  Hot Papers: {s['hot_papers_count']} (citation velocity > 0)")
+        if s.get('trends_count', 0) > 0:
+            lines.append(f"  Trends: {s['trends_count']} keywords tracked")
+
+        # Gap Type Preferences
+        gp = data.gap_preferences
+        if gp:
+            lines.append("")
+            lines.append("## 🧠 Research Gap Preferences")
+            lines.append(f"  Based on {gp.total_events} exploration events")
+            if gp.preferred_keywords:
+                lines.append("  🔑 Preferred keywords:")
+                for kw, score in gp.preferred_keywords[:5]:
+                    bar = "█" * min(int(score * 5), 10)
+                    lines.append(f"    {kw}: {score:+.2f} {bar}")
+            if gp.preferred_types:
+                lines.append("  🟢 Preferred types:")
+                for gt, score in gp.preferred_types[:5]:
+                    bar = "█" * min(int(score * 5), 10)
+                    lines.append(f"    {gt}: {score:+.2f} {bar}")
+            if gp.disliked_types:
+                lines.append("  🔴 Avoided types:")
+                for gt, score in gp.disliked_types[:3]:
+                    bar = "█" * min(int(abs(score) * 5), 10)
+                    lines.append(f"    {gt}: {score:+.2f} {bar}")
+            if not gp.preferred_types and not gp.preferred_keywords and not gp.disliked_types:
+                lines.append("  (no strong preferences yet — keep exploring!)")
+
+        lines.append("")
+
+        # Hot Papers
+        if data.hot_papers:
+            lines.append("## 🔥 Hot Papers (by Citation Velocity)")
+            for i, p in enumerate(data.hot_papers[:5], 1):
+                bar = "█" * min(int(p.velocity), 10)
+                lines.append(
+                    f"  {i}. {p.velocity:.1f}/y  {bar}  {p.title} ({p.year})"
+                )
+            if len(data.hot_papers) > 5:
+                lines.append(f"  ... and {len(data.hot_papers) - 5} more")
+            lines.append("")
+
+        # Research Trends
+        if data.trends:
+            lines.append("## 📈 Research Trends")
+            for t in data.trends[:10]:
+                lines.append(
+                    f"  {t.direction}  {t.keyword}  ({t.paper_count} papers, {t.growth})"
+                )
+            lines.append("")
+
+        # Questions
+        lines.append("## Questions")
+        if not data.questions:
+            lines.append("  (none)")
+        else:
+            q_by_status: Dict[str, List[Any]] = {}
+            for q in data.questions:
+                status = q.status or "unknown"
+                q_by_status.setdefault(status, []).append(q)
+
+            for status, questions in sorted(q_by_status.items()):
+                icon = {"open": "📝", "in_progress": "🔄", "resolved": "✅"}.get(status, "❓")
+                lines.append(f"  {icon} {status.upper()} ({len(questions)})")
+                for q in questions[:3]:
+                    lines.append(f"    - [{q.id}] {q.question[:50]}...")
+                if len(questions) > 3:
+                    lines.append(f"    ... and {len(questions) - 3} more")
+        lines.append("")
+
+        # Experiments
+        lines.append("## Experiments")
+        if not data.experiments:
+            lines.append("  (none)")
+        else:
+            e_by_status: Dict[str, List[Any]] = {}
+            for e in data.experiments:
+                e_by_status.setdefault(e.status, []).append(e)
+
+            for status, exps in sorted(e_by_status.items()):
+                icon = {"running": "⚡", "completed": "✅", "failed": "❌"}.get(status, "❓")
+                lines.append(f"  {icon} {status.upper()} ({len(exps)})")
+                for e in exps[:3]:
+                    metrics = f" [{e.metrics_count} metrics]" if e.metrics_count else ""
+                    lines.append(f"    - [{e.id}] {e.name}{metrics}")
+                if len(exps) > 3:
+                    lines.append(f"    ... and {len(exps) - 3} more")
+        lines.append("")
+
+        # Papers
+        if data.papers and data.papers.total_papers > 0:
+            lines.append("## Papers")
+            lines.append(f"  Total: {data.papers.total_papers}")
+            lines.append(f"  This month: {data.papers.recent_papers}")
+            if data.papers.by_year:
+                lines.append("  By year:")
+                for year in sorted(data.papers.by_year.keys(), reverse=True)[:5]:
+                    lines.append(f"    {year}: {data.papers.by_year[year]}")
+            if data.papers.by_tag:
+                lines.append("  Top tags:")
+                top_tags = sorted(data.papers.by_tag.items(), key=lambda x: -x[1])[:5]
+                for tag, count in top_tags:
+                    lines.append(f"    {tag}: {count}")
+        lines.append("")
+        lines.append("=" * 60)
+
+        return '\n'.join(lines)
+
+    def render_json(self, data: DashboardData) -> str:
+        """Render dashboard as JSON."""
+        import json
+        return json.dumps({
+            "generated_at": data.generated_at,
+            "summary": data.summary,
+            "hot_papers": [
+                {
+                    "paper_id": p.paper_id,
+                    "title": p.title,
+                    "year": p.year,
+                    "velocity": p.velocity,
+                    "forward_cites": p.forward_cites,
+                }
+                for p in data.hot_papers
+            ],
+            "trends": [
+                {
+                    "keyword": t.keyword,
+                    "direction": t.direction,
+                    "paper_count": t.paper_count,
+                    "growth": t.growth,
+                }
+                for t in data.trends
+            ],
+            "questions": [
+                {
+                    "id": q.id,
+                    "question": q.question,
+                    "status": q.status,
+                    "priority": q.priority,
+                    "hypotheses_count": q.hypotheses_count,
+                }
+                for q in data.questions
+            ],
+            "experiments": [
+                {
+                    "id": e.id,
+                    "name": e.name,
+                    "status": e.status,
+                    "milestone": e.milestone,
+                    "metrics_count": e.metrics_count,
+                }
+                for e in data.experiments
+            ],
+            "papers": {
+                "total": data.papers.total_papers if data.papers else 0,
+                "this_month": data.papers.recent_papers if data.papers else 0,
+                "by_year": data.papers.by_year if data.papers else {},
+                "by_tag": data.papers.by_tag if data.papers else {},
+            } if data.papers else None,
+            "gap_preferences": {
+                "total_events": data.gap_preferences.total_events if data.gap_preferences else 0,
+                "preferred_keywords": [
+                    {"keyword": kw, "score": float(score)}
+                    for kw, score in (data.gap_preferences.preferred_keywords if data.gap_preferences else [])
+                ],
+                "preferred_types": [
+                    {"gap_type": gt, "score": float(score)}
+                    for gt, score in (data.gap_preferences.preferred_types if data.gap_preferences else [])
+                ],
+                "disliked_types": [
+                    {"gap_type": gt, "score": float(score)}
+                    for gt, score in (data.gap_preferences.disliked_types if data.gap_preferences else [])
+                ],
+            } if data.gap_preferences else None,
+        }, ensure_ascii=False, indent=2)

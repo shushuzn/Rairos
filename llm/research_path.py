@@ -1,1 +1,559 @@
-IiIiClJlc2VhcmNoIFBhdGggUGxhbm5lcjogR2VuZXJhdGUgb3B0aW1hbCByZWFkaW5nIG9yZGVyIGZyb20ga25vd2xlZGdlIGdyYXBoLgoK5Z+65LqO5byV55So5Zu+5ZKM55+l6K+G5Zu+6LCx77yM6Ieq5Yqo55Sf5oiQ5pyA5LyY6K665paH6ZiF6K+76aG65bqP44CCCgrkvb/nlKggUGFnZVJhbmsgKyDmi5PmiZHmjpLluo8gKyDmhI/lm77mo4DmtYvmnaXmjqjojZDkuKrmgKfljJbpmIXor7vot6/lvoTjgIIKIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgpmcm9tIGRhdGFjbGFzc2VzIGltcG9ydCBkYXRhY2xhc3MsIGZpZWxkCmZyb20gZW51bSBpbXBvcnQgRW51bQpmcm9tIHR5cGluZyBpbXBvcnQgT3B0aW9uYWwsIExpc3QsIERpY3QsIFNldCwgVHVwbGUKCmltcG9ydCBudW1weSBhcyBucAoKCmNsYXNzIFJlYWRpbmdMZXZlbChFbnVtKToKICAgICIiIlJlYWRpbmcgbGV2ZWwgLyBkZXB0aCBwcmVmZXJlbmNlLiIiIgoKICAgIElOVFJPID0gImludHJvIiAgIyDlhaXpl6jvvJrln7rnoYDmpoLlv7UKICAgIElOVEVSTUVESUFURSA9ICJpbnRlcm1lZGlhdGUiICAjIOi/m+mYtu+8muaguOW/g+iuuuaWhwogICAgQURWQU5DRUQgPSAiYWR2YW5jZWQiICAjIOa3seWFpe+8muacgOaWsOi/m+WxlQoKCkBkYXRhY2xhc3MKY2xhc3MgUGFwZXJOb2RlOgogICAgIiIiUmVwcmVzZW50cyBhIHBhcGVyIGluIHRoZSByZWFkaW5nIHBhdGguIiIiCgogICAgcGFwZXJfaWQ6IHN0cgogICAgdGl0bGU6IHN0cgogICAgeWVhcjogaW50ID0gMAogICAgYXV0aG9yczogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICBjaXRlZF9ieTogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpICAjIFBhcGVycyBjaXRpbmcgdGhpcwogICAgY2l0ZXM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KSAgIyBQYXBlcnMgdGhpcyBjaXRlcwogICAgcmVsZXZhbmNlX3Njb3JlOiBmbG9hdCA9IDAuMAogICAgcGFnZXJhbms6IGZsb2F0ID0gMC4wCiAgICBpc19mb3VuZGF0aW9uYWw6IGJvb2wgPSBGYWxzZSAgIyBHcm91bmRicmVha2luZyBwYXBlcgogICAgaXNfbWlsZXN0b25lOiBib29sID0gRmFsc2UgICMgSW1wb3J0YW50IGludGVybWVkaWF0ZSBwYXBlcgoKCkBkYXRhY2xhc3MKY2xhc3MgUmVhZGluZ1N0ZXA6CiAgICAiIiJBIHNpbmdsZSBzdGVwIGluIHRoZSByZWFkaW5nIHBhdGguIiIiCgogICAgb3JkZXI6IGludAogICAgcGFwZXI6IFBhcGVyTm9kZQogICAgcm9sZTogc3RyICAjICJmb3VuZGF0aW9uIiwgImNvcmUiLCAiaW1wcm92ZW1lbnQiLCAidmFyaWFudCIsICJsYXRlc3QiCiAgICByZWFzb246IHN0ciAgIyBXaHkgdGhpcyBwYXBlciBpcyByZWNvbW1lbmRlZCBoZXJlCiAgICBlc3RpbWF0ZWRfcmVhZF90aW1lX21pbnV0ZXM6IGludCA9IDE1CgoKQGRhdGFjbGFzcwpjbGFzcyBSZWFkaW5nUGF0aDoKICAgICIiIkEgY29tcGxldGUgcmVhZGluZyBwYXRoIHJlY29tbWVuZGF0aW9uLiIiIgoKICAgIHRvcGljOiBzdHIKICAgIGxldmVsOiBSZWFkaW5nTGV2ZWwKICAgIHRvdGFsX3BhcGVyczogaW50CiAgICB0b3RhbF9yZWFkaW5nX3RpbWVfbWludXRlczogaW50CiAgICBzdGVwczogTGlzdFtSZWFkaW5nU3RlcF0KICAgIGFsdGVybmF0aXZlX3BhdGhzOiBMaXN0W0xpc3RbUmVhZGluZ1N0ZXBdXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgc2tpcHBlZF9wYXBlcnM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KSAgIyBQYXBlcnMgdGhhdCBleGlzdCBidXQgbm90IGluY2x1ZGVkCgoKY2xhc3MgUmVzZWFyY2hQYXRoUGxhbm5lcjoKICAgICIiIkdlbmVyYXRlIG9wdGltYWwgcmVzZWFyY2ggcmVhZGluZyBwYXRocyBmcm9tIGNpdGF0aW9uIGdyYXBoLiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBrZ19tYW5hZ2VyPU5vbmUsIGRiPU5vbmUpOgogICAgICAgIHNlbGYua2cgPSBrZ19tYW5hZ2VyCiAgICAgICAgc2VsZi5kYiA9IGRiCgogICAgZGVmIHBsYW5fcGF0aCgKICAgICAgICBzZWxmLAogICAgICAgIHRvcGljOiBzdHIsCiAgICAgICAgbGV2ZWw6IFJlYWRpbmdMZXZlbCA9IFJlYWRpbmdMZXZlbC5JTlRFUk1FRElBVEUsCiAgICAgICAgbWF4X3BhcGVyczogaW50ID0gOCwKICAgICAgICBtaW5feWVhcjogT3B0aW9uYWxbaW50XSA9IE5vbmUsCiAgICAgICAgbWF4X3llYXI6IE9wdGlvbmFsW2ludF0gPSBOb25lLAogICAgKSAtPiBSZWFkaW5nUGF0aDoKICAgICAgICAiIiIKICAgICAgICBHZW5lcmF0ZSBhbiBvcHRpbWFsIHJlYWRpbmcgcGF0aCBmb3IgYSB0b3BpYy4KCiAgICAgICAgQXJnczoKICAgICAgICAgICAgdG9waWM6IFJlc2VhcmNoIHRvcGljL2tleXdvcmQKICAgICAgICAgICAgbGV2ZWw6IFJlYWRpbmcgbGV2ZWwgKGludHJvL2ludGVybWVkaWF0ZS9hZHZhbmNlZCkKICAgICAgICAgICAgbWF4X3BhcGVyczogTWF4aW11bSBwYXBlcnMgdG8gcmVjb21tZW5kCiAgICAgICAgICAgIG1pbl95ZWFyOiBGaWx0ZXIgYnkgbWluaW11bSB5ZWFyCiAgICAgICAgICAgIG1heF95ZWFyOiBGaWx0ZXIgYnkgbWF4aW11bSB5ZWFyCgogICAgICAgIFJldHVybnM6CiAgICAgICAgICAgIFJlYWRpbmdQYXRoIHdpdGggb3JkZXJlZCByZWFkaW5nIHN0ZXBzCiAgICAgICAgIiIiCiAgICAgICAgIyAxLiBGaW5kIHBhcGVycyByZWxhdGVkIHRvIHRvcGljCiAgICAgICAgcGFwZXJzID0gc2VsZi5fZmluZF90b3BpY19wYXBlcnModG9waWMsIG1pbl95ZWFyLCBtYXhfeWVhcikKICAgICAgICBpZiBub3QgcGFwZXJzOgogICAgICAgICAgICByZXR1cm4gc2VsZi5fZW1wdHlfcGF0aCh0b3BpYywgbGV2ZWwpCgogICAgICAgICMgMi4gQnVpbGQgY2l0YXRpb24gZ3JhcGgKICAgICAgICBncmFwaCA9IHNlbGYuX2J1aWxkX2NpdGF0aW9uX2dyYXBoKHBhcGVycykKCiAgICAgICAgIyAzLiBDYWxjdWxhdGUgUGFnZVJhbmsgdG8gZmluZCBpbXBvcnRhbnQgcGFwZXJzCiAgICAgICAgc2VsZi5fY2FsY3VsYXRlX3BhZ2VyYW5rKGdyYXBoKQoKICAgICAgICAjIDQuIElkZW50aWZ5IGZvdW5kYXRpb25hbCBhbmQgbWlsZXN0b25lIHBhcGVycwogICAgICAgIHNlbGYuX2lkZW50aWZ5X2tleV9wYXBlcnMoZ3JhcGgsIGxldmVsKQoKICAgICAgICAjIDUuIFRvcG9sb2dpY2FsIHNvcnQgZm9yIG9wdGltYWwgcmVhZGluZyBvcmRlcgogICAgICAgIG9yZGVyZWRfcGFwZXJzID0gc2VsZi5fdG9wb2xvZ2ljYWxfc29ydChncmFwaCwgbGV2ZWwpCgogICAgICAgICMgNi4gR2VuZXJhdGUgcmVhZGluZyBzdGVwcwogICAgICAgIHN0ZXBzID0gc2VsZi5fZ2VuZXJhdGVfc3RlcHMob3JkZXJlZF9wYXBlcnMsIHRvcGljLCBsZXZlbCkKCiAgICAgICAgIyBMaW1pdCB0byBtYXhfcGFwZXJzCiAgICAgICAgaWYgbGVuKHN0ZXBzKSA+IG1heF9wYXBlcnM6CiAgICAgICAgICAgIHNraXBwZWQgPSBzdGVwc1ttYXhfcGFwZXJzOl0KICAgICAgICAgICAgc3RlcHMgPSBzdGVwc1s6bWF4X3BhcGVyc10KICAgICAgICBlbHNlOgogICAgICAgICAgICBza2lwcGVkID0gW10KCiAgICAgICAgdG90YWxfdGltZSA9IHN1bShzLmVzdGltYXRlZF9yZWFkX3RpbWVfbWludXRlcyBmb3IgcyBpbiBzdGVwcykKCiAgICAgICAgcmV0dXJuIFJlYWRpbmdQYXRoKAogICAgICAgICAgICB0b3BpYz10b3BpYywKICAgICAgICAgICAgbGV2ZWw9bGV2ZWwsCiAgICAgICAgICAgIHRvdGFsX3BhcGVycz1sZW4oc3RlcHMpLAogICAgICAgICAgICB0b3RhbF9yZWFkaW5nX3RpbWVfbWludXRlcz10b3RhbF90aW1lLAogICAgICAgICAgICBzdGVwcz1zdGVwcywKICAgICAgICAgICAgc2tpcHBlZF9wYXBlcnM9W3MucGFwZXIudGl0bGUgZm9yIHMgaW4gc2tpcHBlZF0sCiAgICAgICAgKQoKICAgIGRlZiBfZmluZF90b3BpY19wYXBlcnMoCiAgICAgICAgc2VsZiwKICAgICAgICB0b3BpYzogc3RyLAogICAgICAgIG1pbl95ZWFyOiBPcHRpb25hbFtpbnRdID0gTm9uZSwKICAgICAgICBtYXhfeWVhcjogT3B0aW9uYWxbaW50XSA9IE5vbmUsCiAgICApIC0+IExpc3RbUGFwZXJOb2RlXToKICAgICAgICAiIiJGaW5kIHBhcGVycyByZWxhdGVkIHRvIHRvcGljIGZyb20gS0cgYW5kIERCLiIiIgogICAgICAgIHBhcGVycyA9IHt9CgogICAgICAgICMgU2VhcmNoIGluIEtHIGJ5IHRhZwogICAgICAgIGlmIHNlbGYua2c6CiAgICAgICAgICAgIGtnX3BhcGVycyA9IHNlbGYuX3NlYXJjaF9rZ19ieV90YWcodG9waWMpCiAgICAgICAgICAgIGZvciBwIGluIGtnX3BhcGVyczoKICAgICAgICAgICAgICAgIHBhcGVyc1twLnBhcGVyX2lkXSA9IHAKCiAgICAgICAgIyBTZWFyY2ggaW4gREIgYnkgdGV4dAogICAgICAgIGlmIHNlbGYuZGI6CiAgICAgICAgICAgIGRiX3BhcGVycyA9IHNlbGYuX3NlYXJjaF9kYl9ieV90ZXh0KHRvcGljLCBtaW5feWVhciwgbWF4X3llYXIpCiAgICAgICAgICAgIGZvciBwIGluIGRiX3BhcGVyczoKICAgICAgICAgICAgICAgIHBhcGVyc1twLnBhcGVyX2lkXSA9IHAKCiAgICAgICAgcmV0dXJuIGxpc3QocGFwZXJzLnZhbHVlcygpKQoKICAgIGRlZiBfc2VhcmNoX2tnX2J5X3RhZyhzZWxmLCB0b3BpYzogc3RyKSAtPiBMaXN0W1BhcGVyTm9kZV06CiAgICAgICAgIiIiU2VhcmNoIHBhcGVycyBpbiBLRyBieSB0YWcuIiIiCiAgICAgICAgaWYgbm90IHNlbGYua2c6CiAgICAgICAgICAgIHJldHVybiBbXQoKICAgICAgICByZXN1bHRzID0gW10KICAgICAgICB0cnk6CiAgICAgICAgICAgIG5vZGVzID0gc2VsZi5rZy5maW5kX3BhcGVyc19ieV90YWcodG9waWMubG93ZXIoKSkKICAgICAgICAgICAgZm9yIG5vZGUgaW4gbm9kZXM6CiAgICAgICAgICAgICAgICBwYXBlciA9IFBhcGVyTm9kZSgKICAgICAgICAgICAgICAgICAgICBwYXBlcl9pZD1ub2RlWyJlbnRpdHlfaWQiXSwKICAgICAgICAgICAgICAgICAgICB0aXRsZT1ub2RlWyJsYWJlbCJdLAogICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgIyBHZXQgY2l0YXRpb24gZWRnZXMKICAgICAgICAgICAgICAgIGVkZ2VzID0gc2VsZi5rZy5nZXRfZWRnZXNfYnlfbm9kZShub2RlWyJpZCJdLCBkaXJlY3Rpb249ImJvdGgiKQogICAgICAgICAgICAgICAgZm9yIGVkZ2UgaW4gZWRnZXM6CiAgICAgICAgICAgICAgICAgICAgaWYgZWRnZVsicmVsYXRpb25fdHlwZSJdID09ICJjaXRlIjoKICAgICAgICAgICAgICAgICAgICAgICAgaWYgZWRnZVsic291cmNlX2lkIl0gPT0gbm9kZVsiaWQiXToKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBhcGVyLmNpdGVzLmFwcGVuZChlZGdlWyJ0YXJnZXRfaWQiXSkKICAgICAgICAgICAgICAgICAgICAgICAgZWxzZToKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBhcGVyLmNpdGVkX2J5LmFwcGVuZChlZGdlWyJzb3VyY2VfaWQiXSkKICAgICAgICAgICAgICAgIHJlc3VsdHMuYXBwZW5kKHBhcGVyKQogICAgICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgICAgICMgS25vd2xlZGdlIGdyYXBoIGJ1aWxkIGZhaWxlZCDigJQgcmV0dXJuIHBhcnRpYWwgcmVzdWx0cyB3aXRob3V0IGNyYXNoaW5nLgogICAgICAgICAgICBwYXNzCgogICAgICAgIHJldHVybiByZXN1bHRzCgogICAgZGVmIF9zZWFyY2hfZGJfYnlfdGV4dCgKICAgICAgICBzZWxmLAogICAgICAgIHRvcGljOiBzdHIsCiAgICAgICAgbWluX3llYXI6IE9wdGlvbmFsW2ludF0gPSBOb25lLAogICAgICAgIG1heF95ZWFyOiBPcHRpb25hbFtpbnRdID0gTm9uZSwKICAgICkgLT4gTGlzdFtQYXBlck5vZGVdOgogICAgICAgICIiIlNlYXJjaCBwYXBlcnMgaW4gREIgYnkgdGl0bGUvYWJzdHJhY3QuIiIiCiAgICAgICAgaWYgbm90IHNlbGYuZGI6CiAgICAgICAgICAgIHJldHVybiBbXQoKICAgICAgICByZXN1bHRzID0gW10KICAgICAgICB0cnk6CiAgICAgICAgICAgICMgVXNlIEZUUyBzZWFyY2gKICAgICAgICAgICAgcm93cywgXyA9IHNlbGYuZGIuc2VhcmNoX3BhcGVycyh0b3BpYywgbGltaXQ9NTApCiAgICAgICAgICAgIGZvciByb3cgaW4gcm93czoKICAgICAgICAgICAgICAgIHllYXIgPSBnZXRhdHRyKHJvdywgInllYXIiLCAwKSBvciAwCiAgICAgICAgICAgICAgICBpZiBtaW5feWVhciBhbmQgeWVhciA8IG1pbl95ZWFyOgogICAgICAgICAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgICAgICAgICBpZiBtYXhfeWVhciBhbmQgeWVhciA+IG1heF95ZWFyOgogICAgICAgICAgICAgICAgICAgIGNvbnRpbnVlCgogICAgICAgICAgICAgICAgcGFwZXIgPSBQYXBlck5vZGUoCiAgICAgICAgICAgICAgICAgICAgcGFwZXJfaWQ9c3RyKGdldGF0dHIocm93LCAiaWQiLCAiIikpLAogICAgICAgICAgICAgICAgICAgIHRpdGxlPWdldGF0dHIocm93LCAidGl0bGUiLCB0b3BpYykgb3IgdG9waWMsCiAgICAgICAgICAgICAgICAgICAgeWVhcj15ZWFyLAogICAgICAgICAgICAgICAgICAgIGF1dGhvcnM9c2VsZi5fcGFyc2VfYXV0aG9ycyhnZXRhdHRyKHJvdywgImF1dGhvcnMiLCAiIikpLAogICAgICAgICAgICAgICAgICAgIHJlbGV2YW5jZV9zY29yZT1nZXRhdHRyKHJvdywgImJtMjVfc2NvcmUiLCAwKSBvciAwLjUsCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICByZXN1bHRzLmFwcGVuZChwYXBlcikKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAjIERCIHRleHQgc2VhcmNoIGZhaWxlZCDigJQgcmV0dXJuIHBhcnRpYWwgcmVzdWx0cyB3aXRob3V0IGNyYXNoaW5nLgogICAgICAgICAgICBwYXNzCgogICAgICAgIHJldHVybiByZXN1bHRzCgogICAgZGVmIF9wYXJzZV9hdXRob3JzKHNlbGYsIGF1dGhvcnNfc3RyOiBzdHIpIC0+IExpc3Rbc3RyXToKICAgICAgICAiIiJQYXJzZSBhdXRob3JzIHN0cmluZyB0byBsaXN0LiIiIgogICAgICAgIGlmIG5vdCBhdXRob3JzX3N0cjoKICAgICAgICAgICAgcmV0dXJuIFtdCiAgICAgICAgIyBIYW5kbGUgY29tbW9uIGZvcm1hdHMKICAgICAgICBhdXRob3JzX3N0ciA9IGF1dGhvcnNfc3RyLnJlcGxhY2UoIiBhbmQgIiwgIiwgIikKICAgICAgICByZXR1cm4gW2Euc3RyaXAoKSBmb3IgYSBpbiBhdXRob3JzX3N0ci5zcGxpdCgiLCIpIGlmIGEuc3RyaXAoKV0KCiAgICBkZWYgX2J1aWxkX2NpdGF0aW9uX2dyYXBoKHNlbGYsIHBhcGVyczogTGlzdFtQYXBlck5vZGVdKSAtPiBEaWN0W3N0ciwgUGFwZXJOb2RlXToKICAgICAgICAiIiJCdWlsZCBjaXRhdGlvbiBncmFwaCBmcm9tIHBhcGVycy4iIiIKICAgICAgICBncmFwaCA9IHtwLnBhcGVyX2lkOiBwIGZvciBwIGluIHBhcGVyc30KCiAgICAgICAgIyBJZiB3ZSBoYXZlIGNpdGF0aW9uIGRhdGEgaW4gS0csIGVucmljaCBpdAogICAgICAgIGlmIHNlbGYua2c6CiAgICAgICAgICAgIHNlbGYuX2VucmljaF9mcm9tX2tnKGdyYXBoKQoKICAgICAgICByZXR1cm4gZ3JhcGgKCiAgICBkZWYgX2VucmljaF9mcm9tX2tnKHNlbGYsIGdyYXBoOiBEaWN0W3N0ciwgUGFwZXJOb2RlXSk6CiAgICAgICAgIiIiRW5yaWNoIGdyYXBoIHdpdGggY2l0YXRpb24gZGF0YSBmcm9tIEtHLiIiIgogICAgICAgIHRyeToKICAgICAgICAgICAgIyBHZXQgYWxsIFBhcGVyIG5vZGVzCiAgICAgICAgICAgIHBhcGVyX25vZGVzID0gc2VsZi5rZy5nZXRfYWxsX25vZGVzKG5vZGVfdHlwZT0iUGFwZXIiKQogICAgICAgICAgICBwYXBlcl9pZF9tYXAgPSB7blsiZW50aXR5X2lkIl06IG5bImlkIl0gZm9yIG4gaW4gcGFwZXJfbm9kZXMgaWYgblsiZW50aXR5X2lkIl0gaW4gZ3JhcGh9CgogICAgICAgICAgICBmb3IgcGFwZXJfaWQsIGtnX2lkIGluIHBhcGVyX2lkX21hcC5pdGVtcygpOgogICAgICAgICAgICAgICAgZWRnZXMgPSBzZWxmLmtnLmdldF9lZGdlc19ieV9ub2RlKGtnX2lkLCBkaXJlY3Rpb249ImJvdGgiLCByZWxfdHlwZT0iY2l0ZSIpCiAgICAgICAgICAgICAgICBmb3IgZWRnZSBpbiBlZGdlczoKICAgICAgICAgICAgICAgICAgICBpZiBlZGdlWyJzb3VyY2VfaWQiXSA9PSBrZ19pZDoKICAgICAgICAgICAgICAgICAgICAgICAgIyBUaGlzIHBhcGVyIGNpdGVzIGFub3RoZXIKICAgICAgICAgICAgICAgICAgICAgICAgdGFyZ2V0ID0gc2VsZi5fZ2V0X2VudGl0eV9pZF9mcm9tX2tnX2lkKGVkZ2VbInRhcmdldF9pZCJdKQogICAgICAgICAgICAgICAgICAgICAgICBpZiB0YXJnZXQgYW5kIHRhcmdldCBpbiBncmFwaDoKICAgICAgICAgICAgICAgICAgICAgICAgICAgIGdyYXBoW3BhcGVyX2lkXS5jaXRlcy5hcHBlbmQodGFyZ2V0KQogICAgICAgICAgICAgICAgICAgIGVsc2U6CiAgICAgICAgICAgICAgICAgICAgICAgICMgVGhpcyBwYXBlciBpcyBjaXRlZCBieSBhbm90aGVyCiAgICAgICAgICAgICAgICAgICAgICAgIHNvdXJjZSA9IHNlbGYuX2dldF9lbnRpdHlfaWRfZnJvbV9rZ19pZChlZGdlWyJzb3VyY2VfaWQiXSkKICAgICAgICAgICAgICAgICAgICAgICAgaWYgc291cmNlIGFuZCBzb3VyY2UgaW4gZ3JhcGg6CiAgICAgICAgICAgICAgICAgICAgICAgICAgICBncmFwaFtwYXBlcl9pZF0uY2l0ZWRfYnkuYXBwZW5kKHNvdXJjZSkKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAjIEtub3dsZWRnZSBncmFwaCBjaXRhdGlvbiBtYXBwaW5nIGZhaWxlZCDigJQgY29udGludWUgd2l0aG91dCBjcmFzaGluZy4KICAgICAgICAgICAgcGFzcwoKICAgIGRlZiBfZ2V0X2VudGl0eV9pZF9mcm9tX2tnX2lkKHNlbGYsIGtnX2lkOiBzdHIpIC0+IE9wdGlvbmFsW3N0cl06CiAgICAgICAgIiIiQ29udmVydCBLRyBub2RlIElEIHRvIGVudGl0eSBJRC4iIiIKICAgICAgICBpZiBub3Qgc2VsZi5rZzoKICAgICAgICAgICAgcmV0dXJuIE5vbmUKICAgICAgICBub2RlID0gc2VsZi5rZy5nZXRfbm9kZShrZ19pZCkKICAgICAgICByZXR1cm4gbm9kZVsiZW50aXR5X2lkIl0gaWYgbm9kZSBlbHNlIE5vbmUKCiAgICBkZWYgX2NhbGN1bGF0ZV9wYWdlcmFuaygKICAgICAgICBzZWxmLCBncmFwaDogRGljdFtzdHIsIFBhcGVyTm9kZV0sIGRhbXBpbmc6IGZsb2F0ID0gMC44NSwgaXRlcmF0aW9uczogaW50ID0gMzAKICAgICk6CiAgICAgICAgIiIiCiAgICAgICAgQ2FsY3VsYXRlIFBhZ2VSYW5rIGZvciBwYXBlcnMuCgogICAgICAgIEluIGNpdGF0aW9uIGdyYXBoOgogICAgICAgIC0gT3V0Z29pbmcgZWRnZSAoQSBjaXRlcyBCKSBtZWFucyBCIGluZmx1ZW5jZXMgQQogICAgICAgIC0gSGlnaGVyIFBhZ2VSYW5rID0gbW9yZSBpbmZsdWVudGlhbCBwYXBlcgogICAgICAgICIiIgogICAgICAgIGlmIG5vdCBncmFwaDoKICAgICAgICAgICAgcmV0dXJuCgogICAgICAgIG4gPSBsZW4oZ3JhcGgpCiAgICAgICAgaWYgbiA9PSAwOgogICAgICAgICAgICByZXR1cm4KCiAgICAgICAgcGFwZXJfaWRzID0gbGlzdChncmFwaC5rZXlzKCkpCiAgICAgICAgaWR4X21hcCA9IHtwaWQ6IGkgZm9yIGksIHBpZCBpbiBlbnVtZXJhdGUocGFwZXJfaWRzKX0KCiAgICAgICAgIyBCdWlsZCBhZGphY2VuY3kgbWF0cml4IChjaXRhdGlvbiByZWxhdGlvbnNoaXBzKQogICAgICAgICMgSWYgQSBjaXRlcyBCLCB0aGVuIHRoZXJlJ3MgYW4gZWRnZSBmcm9tIEEgdG8gQgogICAgICAgICMgRm9yIFBhZ2VSYW5rLCB3ZSB3YW50IGVkZ2VzIGluIHJldmVyc2UgZGlyZWN0aW9uIChpbmZsdWVuY2VkIGJ5KQogICAgICAgIGFkaiA9IG5wLnplcm9zKChuLCBuKSkKCiAgICAgICAgZm9yIHBhcGVyIGluIGdyYXBoLnZhbHVlcygpOgogICAgICAgICAgICBpZiBwYXBlci5wYXBlcl9pZCBub3QgaW4gaWR4X21hcDoKICAgICAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgICAgIGkgPSBpZHhfbWFwW3BhcGVyLnBhcGVyX2lkXQogICAgICAgICAgICBmb3IgY2l0ZWQgaW4gcGFwZXIuY2l0ZWRfYnk6CiAgICAgICAgICAgICAgICBpZiBjaXRlZCBpbiBpZHhfbWFwOgogICAgICAgICAgICAgICAgICAgIGogPSBpZHhfbWFwW2NpdGVkXQogICAgICAgICAgICAgICAgICAgIGFkaltqLCBpXSA9IDEuMCAgIyBjaXRlZF9ieSAtPiBpbmZsdWVuY2UKCiAgICAgICAgIyBOb3JtYWxpemUgYnkgb3V0LWRlZ3JlZQogICAgICAgIGZvciBqIGluIHJhbmdlKG4pOgogICAgICAgICAgICBvdXRfZGVncmVlID0gc3VtKGFkaltqLCA6XSkKICAgICAgICAgICAgaWYgb3V0X2RlZ3JlZSA+IDA6CiAgICAgICAgICAgICAgICBhZGpbaiwgOl0gLz0gb3V0X2RlZ3JlZQoKICAgICAgICAjIFBhZ2VSYW5rIGl0ZXJhdGlvbgogICAgICAgIHByID0gbnAub25lcyhuKSAvIG4KICAgICAgICBmb3IgXyBpbiByYW5nZShpdGVyYXRpb25zKToKICAgICAgICAgICAgbmV3X3ByID0gKDEgLSBkYW1waW5nKSAvIG4gKyBkYW1waW5nICogYWRqLlQgQCBwcgogICAgICAgICAgICBpZiBucC5hbGxjbG9zZShwciwgbmV3X3ByLCBhdG9sPTFlLTYpOgogICAgICAgICAgICAgICAgYnJlYWsKICAgICAgICAgICAgcHIgPSBuZXdfcHIKCiAgICAgICAgIyBBc3NpZ24gUGFnZVJhbmsgc2NvcmVzCiAgICAgICAgZm9yIGksIHBpZCBpbiBlbnVtZXJhdGUocGFwZXJfaWRzKToKICAgICAgICAgICAgZ3JhcGhbcGlkXS5wYWdlcmFuayA9IHByW2ldCgogICAgZGVmIF9pZGVudGlmeV9rZXlfcGFwZXJzKHNlbGYsIGdyYXBoOiBEaWN0W3N0ciwgUGFwZXJOb2RlXSwgbGV2ZWw6IFJlYWRpbmdMZXZlbCk6CiAgICAgICAgIiIiSWRlbnRpZnkgZm91bmRhdGlvbmFsIGFuZCBtaWxlc3RvbmUgcGFwZXJzLiIiIgogICAgICAgIGlmIG5vdCBncmFwaDoKICAgICAgICAgICAgcmV0dXJuCgogICAgICAgIHBhcGVycyA9IGxpc3QoZ3JhcGgudmFsdWVzKCkpCiAgICAgICAgaWYgbm90IHBhcGVyczoKICAgICAgICAgICAgcmV0dXJuCgogICAgICAgICMgU29ydCBieSBQYWdlUmFuawogICAgICAgIHBhcGVycy5zb3J0KGtleT1sYW1iZGEgcDogcC5wYWdlcmFuaywgcmV2ZXJzZT1UcnVlKQoKICAgICAgICAjIFRvcCBwYXBlcnMgYnkgUGFnZVJhbmsgYXJlIGZvdW5kYXRpb25hbAogICAgICAgIHRvcF9jb3VudCA9IG1heCgxLCBsZW4ocGFwZXJzKSAvLyA0KQogICAgICAgIGZvciBwIGluIHBhcGVyc1s6dG9wX2NvdW50XToKICAgICAgICAgICAgcC5pc19mb3VuZGF0aW9uYWwgPSBUcnVlCgogICAgICAgICMgSWYgd2UgaGF2ZSB5ZWFyIGRhdGEsIGVhcmxpZXN0IHBhcGVycyB3aXRoIGhpZ2ggUGFnZVJhbmsgYXJlIG1pbGVzdG9uZXMKICAgICAgICBwYXBlcnNfd2l0aF95ZWFyID0gW3AgZm9yIHAgaW4gcGFwZXJzIGlmIHAueWVhciA+IDBdCiAgICAgICAgaWYgcGFwZXJzX3dpdGhfeWVhcjoKICAgICAgICAgICAgcGFwZXJzX3dpdGhfeWVhci5zb3J0KGtleT1sYW1iZGEgcDogcC55ZWFyKQogICAgICAgICAgICAjIEZpcnN0IDI1JSBieSB5ZWFyIHdpdGggZGVjZW50IFBhZ2VSYW5rCiAgICAgICAgICAgIG1pZF9yYW5rID0gbGVuKHBhcGVycykgLy8gMgogICAgICAgICAgICBmb3IgcCBpbiBwYXBlcnNfd2l0aF95ZWFyWzptaWRfcmFua106CiAgICAgICAgICAgICAgICBpZiBwLnBhZ2VyYW5rID4gMC41IC8gbGVuKGdyYXBoKToKICAgICAgICAgICAgICAgICAgICBwLmlzX21pbGVzdG9uZSA9IFRydWUKCiAgICBkZWYgX3RvcG9sb2dpY2FsX3NvcnQoCiAgICAgICAgc2VsZiwKICAgICAgICBncmFwaDogRGljdFtzdHIsIFBhcGVyTm9kZV0sCiAgICAgICAgbGV2ZWw6IFJlYWRpbmdMZXZlbCwKICAgICkgLT4gTGlzdFtQYXBlck5vZGVdOgogICAgICAgICIiIgogICAgICAgIFRvcG9sb2dpY2FsIHNvcnQgZm9yIHJlYWRpbmcgb3JkZXIuCgogICAgICAgIEtleSBpbnNpZ2h0OiBQYXBlcnMgc2hvdWxkIGJlIHJlYWQgYmVmb3JlIHBhcGVycyB0aGV5IGFyZSBjaXRlZCBieS4KICAgICAgICBBIGNpdGVzIEIgLT4gcmVhZCBCIGJlZm9yZSBBLgogICAgICAgICIiIgogICAgICAgIGlmIG5vdCBncmFwaDoKICAgICAgICAgICAgcmV0dXJuIFtdCgogICAgICAgICMgQnVpbGQgaW4tZGVncmVlIGNvdW50IChob3cgbWFueSBwYXBlcnMgY2l0ZSB0aGlzIHBhcGVyKQogICAgICAgIGluX2RlZ3JlZSA9IHtwaWQ6IDAgZm9yIHBpZCBpbiBncmFwaH0KICAgICAgICBmb3IgcGFwZXIgaW4gZ3JhcGgudmFsdWVzKCk6CiAgICAgICAgICAgIGZvciBjaXRlZCBpbiBwYXBlci5jaXRlZF9ieToKICAgICAgICAgICAgICAgIGlmIGNpdGVkIGluIGdyYXBoOiAgIyBPbmx5IGNvdW50IGlmIGluIG91ciBncmFwaAogICAgICAgICAgICAgICAgICAgIGluX2RlZ3JlZVtwYXBlci5wYXBlcl9pZF0gKz0gMQoKICAgICAgICAjIFBhcGVycyB3aXRoIG5vIGluY29taW5nIGVkZ2VzIChub3QgY2l0ZWQgYnkgb3RoZXJzIGluIGdyYXBoKSBnbyBmaXJzdAogICAgICAgIHF1ZXVlID0gW3BpZCBmb3IgcGlkLCBkZWcgaW4gaW5fZGVncmVlLml0ZW1zKCkgaWYgZGVnID09IDBdCiAgICAgICAgcmVzdWx0ID0gW10KCiAgICAgICAgd2hpbGUgcXVldWU6CiAgICAgICAgICAgICMgUHJlZmVyIGZvdW5kYXRpb25hbCBwYXBlcnMgYW5kIGVhcmx5LXllYXIgcGFwZXJzCiAgICAgICAgICAgIHF1ZXVlLnNvcnQoCiAgICAgICAgICAgICAgICBrZXk9bGFtYmRhIHBpZDogKAogICAgICAgICAgICAgICAgICAgIC1ncmFwaFtwaWRdLmlzX2ZvdW5kYXRpb25hbCwKICAgICAgICAgICAgICAgICAgICAtZ3JhcGhbcGlkXS5wYWdlcmFuaywKICAgICAgICAgICAgICAgICAgICBncmFwaFtwaWRdLnllYXIgaWYgZ3JhcGhbcGlkXS55ZWFyIGVsc2UgOTk5OSwKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgKQogICAgICAgICAgICBwaWQgPSBxdWV1ZS5wb3AoMCkKICAgICAgICAgICAgcmVzdWx0LmFwcGVuZChncmFwaFtwaWRdKQoKICAgICAgICAgICAgIyBSZWR1Y2UgaW4tZGVncmVlIGZvciBwYXBlcnMgdGhpcyBwYXBlciBjaXRlcwogICAgICAgICAgICBmb3IgY2l0ZWRfcGlkIGluIGdyYXBoW3BpZF0uY2l0ZXM6CiAgICAgICAgICAgICAgICBpZiBjaXRlZF9waWQgaW4gaW5fZGVncmVlOgogICAgICAgICAgICAgICAgICAgIGluX2RlZ3JlZVtjaXRlZF9waWRdIC09IDEKICAgICAgICAgICAgICAgICAgICBpZiBpbl9kZWdyZWVbY2l0ZWRfcGlkXSA9PSAwOgogICAgICAgICAgICAgICAgICAgICAgICBxdWV1ZS5hcHBlbmQoY2l0ZWRfcGlkKQoKICAgICAgICAjIElmIHdlIGhhdmUgY3ljbGVzIG9yIG1pc3NpbmcgZWRnZXMsIGFkZCByZW1haW5pbmcgcGFwZXJzIGJ5IFBhZ2VSYW5rCiAgICAgICAgaWYgbGVuKHJlc3VsdCkgPCBsZW4oZ3JhcGgpOgogICAgICAgICAgICByZW1haW5pbmcgPSBbZ3JhcGhbcGlkXSBmb3IgcGlkIGluIGdyYXBoIGlmIHBpZCBub3QgaW4gW3AucGFwZXJfaWQgZm9yIHAgaW4gcmVzdWx0XV0KICAgICAgICAgICAgcmVtYWluaW5nLnNvcnQoa2V5PWxhbWJkYSBwOiAoLXAucGFnZXJhbmssIHAueWVhciBpZiBwLnllYXIgZWxzZSA5OTk5KSkKICAgICAgICAgICAgcmVzdWx0LmV4dGVuZChyZW1haW5pbmcpCgogICAgICAgIHJldHVybiByZXN1bHQKCiAgICBkZWYgX2dlbmVyYXRlX3N0ZXBzKAogICAgICAgIHNlbGYsCiAgICAgICAgcGFwZXJzOiBMaXN0W1BhcGVyTm9kZV0sCiAgICAgICAgdG9waWM6IHN0ciwKICAgICAgICBsZXZlbDogUmVhZGluZ0xldmVsLAogICAgKSAtPiBMaXN0W1JlYWRpbmdTdGVwXToKICAgICAgICAiIiJHZW5lcmF0ZSByZWFkaW5nIHN0ZXBzIHdpdGggcm9sZXMgYW5kIHJlYXNvbnMuIiIiCiAgICAgICAgc3RlcHMgPSBbXQogICAgICAgIHNlZW5feWVhcnM6IHNldFtpbnRdID0gc2V0KCkKCiAgICAgICAgZm9yIGksIHBhcGVyIGluIGVudW1lcmF0ZShwYXBlcnMpOgogICAgICAgICAgICByb2xlLCByZWFzb24gPSBzZWxmLl9hc3NpZ25fcm9sZShwYXBlciwgaSwgbGV2ZWwsIHNlZW5feWVhcnMpCiAgICAgICAgICAgIHJlYWRfdGltZSA9IHNlbGYuX2VzdGltYXRlX3JlYWRfdGltZShwYXBlcikKCiAgICAgICAgICAgIHN0ZXAgPSBSZWFkaW5nU3RlcCgKICAgICAgICAgICAgICAgIG9yZGVyPWkgKyAxLAogICAgICAgICAgICAgICAgcGFwZXI9cGFwZXIsCiAgICAgICAgICAgICAgICByb2xlPXJvbGUsCiAgICAgICAgICAgICAgICByZWFzb249cmVhc29uLAogICAgICAgICAgICAgICAgZXN0aW1hdGVkX3JlYWRfdGltZV9taW51dGVzPXJlYWRfdGltZSwKICAgICAgICAgICAgKQogICAgICAgICAgICBzdGVwcy5hcHBlbmQoc3RlcCkKICAgICAgICAgICAgaWYgcGFwZXIueWVhciA+IDA6CiAgICAgICAgICAgICAgICBzZWVuX3llYXJzLmFkZChwYXBlci55ZWFyKQoKICAgICAgICByZXR1cm4gc3RlcHMKCiAgICBkZWYgX2Fzc2lnbl9yb2xlKAogICAgICAgIHNlbGYsCiAgICAgICAgcGFwZXI6IFBhcGVyTm9kZSwKICAgICAgICBwb3NpdGlvbjogaW50LAogICAgICAgIGxldmVsOiBSZWFkaW5nTGV2ZWwsCiAgICAgICAgc2Vlbl95ZWFyczogU2V0W2ludF0sCiAgICApIC0+IFR1cGxlW3N0ciwgc3RyXToKICAgICAgICAiIiJBc3NpZ24gcm9sZSBhbmQgcmVhc29uIGZvciBpbmNsdWRpbmcgdGhpcyBwYXBlci4iIiIKICAgICAgICB5ZWFyID0gcGFwZXIueWVhcgoKICAgICAgICBpZiBwYXBlci5pc19mb3VuZGF0aW9uYWwgYW5kIChub3QgeWVhciBvciB5ZWFyIDwgMjAxOCk6CiAgICAgICAgICAgIHJldHVybiAiZm91bmRhdGlvbiIsICLlvIDliJvmgKflt6XkvZzvvIzlpaDlrprkuobor6Xpoobln5/nmoTln7rnoYAiCgogICAgICAgIGlmIHBhcGVyLmlzX2ZvdW5kYXRpb25hbDoKICAgICAgICAgICAgcmV0dXJuICJjb3JlIiwgIumrmOW9seWTjeWKm+aguOW/g+iuuuaWh++8jOW/heivuyIKCiAgICAgICAgaWYgcG9zaXRpb24gPT0gMDoKICAgICAgICAgICAgcmV0dXJuICJjb3JlIiwgIuS9nOS4uuWFpeWPo+iuuuaWh++8jOmAguWQiOW7uueri+aVtOS9k+iupOefpSIKCiAgICAgICAgIyBDaGVjayBpZiB0aGlzIGlzIGEgbmV3ZXIgcGFwZXIKICAgICAgICBpZiB5ZWFyIGFuZCB5ZWFyID49IDIwMjI6CiAgICAgICAgICAgIHJldHVybiAibGF0ZXN0IiwgZiLmnIDmlrDov5vlsZXvvIh7eWVhcn3lubTvvIkiCgogICAgICAgICMgQ2hlY2sgZm9yIHJlbGF0aW9uc2hpcCB0byBlYXJsaWVyIHBhcGVycwogICAgICAgIGlmIHBhcGVyLmNpdGVkX2J5IGFuZCBsZW4ocGFwZXIuY2l0ZWRfYnkpID4gMjoKICAgICAgICAgICAgcmV0dXJuICJpbXByb3ZlbWVudCIsICLooqvlpJrnr4flkI7nu63orrrmloflvJXnlKjvvIzlvbHlk43lipvovoPpq5giCgogICAgICAgIGlmIGxldmVsID09IFJlYWRpbmdMZXZlbC5JTlRSTzoKICAgICAgICAgICAgaWYgbm90IHllYXIgb3IgeWVhciA8IDIwMjA6CiAgICAgICAgICAgICAgICByZXR1cm4gImNvcmUiLCAi6YCC5ZCI5YWl6Zeo55qE5qC45b+D6K665paHIgogICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgcmV0dXJuICJ2YXJpYW50IiwgZiJ7eWVhcn3lubTnmoTmlrnms5Xlj5jkvZMiCgogICAgICAgIHJldHVybiAiaW1wcm92ZW1lbnQiLCAi6K+l6aKG5Z+f55qE5pS56L+bL+W6lOeUqCIKCiAgICBkZWYgX2VzdGltYXRlX3JlYWRfdGltZShzZWxmLCBwYXBlcjogUGFwZXJOb2RlKSAtPiBpbnQ6CiAgICAgICAgIiIiRXN0aW1hdGUgcmVhZGluZyB0aW1lIGluIG1pbnV0ZXMgYmFzZWQgb24gYXZhaWxhYmxlIGluZm8uIiIiCiAgICAgICAgIyBCYXNlIHRpbWUKICAgICAgICBiYXNlID0gMTUKCiAgICAgICAgIyBUaXRsZSBsZW5ndGggaGV1cmlzdGljCiAgICAgICAgaWYgcGFwZXIudGl0bGU6CiAgICAgICAgICAgIGJhc2UgKz0gbGVuKHBhcGVyLnRpdGxlKSAvLyA1MAoKICAgICAgICAjIENpdGF0aW9uIGNvdW50IGhldXJpc3RpYyAobW9yZSBjaXRhdGlvbnMgPSBtb3JlIGNvbXBsZXgvaW1wb3J0YW50KQogICAgICAgIGlmIGxlbihwYXBlci5jaXRlZF9ieSkgPiA1OgogICAgICAgICAgICBiYXNlICs9IDEwCiAgICAgICAgZWxpZiBsZW4ocGFwZXIuY2l0ZWRfYnkpID4gMjoKICAgICAgICAgICAgYmFzZSArPSA1CgogICAgICAgIHJldHVybiBtaW4oYmFzZSwgNDUpICAjIENhcCBhdCA0NSBtaW51dGVzCgogICAgZGVmIF9lbXB0eV9wYXRoKHNlbGYsIHRvcGljOiBzdHIsIGxldmVsOiBSZWFkaW5nTGV2ZWwpIC0+IFJlYWRpbmdQYXRoOgogICAgICAgICIiIlJldHVybiBlbXB0eSBwYXRoIHdoZW4gbm8gcGFwZXJzIGZvdW5kLiIiIgogICAgICAgIHJldHVybiBSZWFkaW5nUGF0aCgKICAgICAgICAgICAgdG9waWM9dG9waWMsCiAgICAgICAgICAgIGxldmVsPWxldmVsLAogICAgICAgICAgICB0b3RhbF9wYXBlcnM9MCwKICAgICAgICAgICAgdG90YWxfcmVhZGluZ190aW1lX21pbnV0ZXM9MCwKICAgICAgICAgICAgc3RlcHM9W10sCiAgICAgICAgICAgIGFsdGVybmF0aXZlX3BhdGhzPVtdLAogICAgICAgICAgICBza2lwcGVkX3BhcGVycz1bXSwKICAgICAgICApCgogICAgZGVmIHJlbmRlcl9wYXRoKHNlbGYsIHBhdGg6IFJlYWRpbmdQYXRoKSAtPiBzdHI6CiAgICAgICAgIiIiUmVuZGVyIHJlYWRpbmcgcGF0aCBhcyBmb3JtYXR0ZWQgc3RyaW5nLiIiIgogICAgICAgIGlmIG5vdCBwYXRoLnN0ZXBzOgogICAgICAgICAgICByZXR1cm4gZiLwn5OaIOacquaJvuWIsOWFs+S6juOAjHtwYXRoLnRvcGljfeOAjeeahOebuOWFs+iuuuaWhyIKCiAgICAgICAgbGV2ZWxfbGFiZWxzID0gewogICAgICAgICAgICBSZWFkaW5nTGV2ZWwuSU5UUk86ICLlhaXpl6giLAogICAgICAgICAgICBSZWFkaW5nTGV2ZWwuSU5URVJNRURJQVRFOiAi6L+b6Zi2IiwKICAgICAgICAgICAgUmVhZGluZ0xldmVsLkFEVkFOQ0VEOiAi5rex5YWlIiwKICAgICAgICB9CgogICAgICAgIGxpbmVzID0gWwogICAgICAgICAgICBmIvCfk5og44CKe3BhdGgudG9waWN944CL6ZiF6K+76Lev5b6E5o6o6I2QIiwKICAgICAgICAgICAgZiIgICDpmr7luqY6IHtsZXZlbF9sYWJlbHMuZ2V0KHBhdGgubGV2ZWwsICfov5vpmLYnKX0gfCAiCiAgICAgICAgICAgIGYi5YWxIHtwYXRoLnRvdGFsX3BhcGVyc30g56+HIHwgIgogICAgICAgICAgICBmIumihOiuoSB7cGF0aC50b3RhbF9yZWFkaW5nX3RpbWVfbWludXRlc30g5YiG6ZKfIiwKICAgICAgICAgICAgIiIsCiAgICAgICAgXQoKICAgICAgICByb2xlX2ljb25zID0gewogICAgICAgICAgICAiZm91bmRhdGlvbiI6ICLwn4+b77iPIiwKICAgICAgICAgICAgImNvcmUiOiAi8J+TliIsCiAgICAgICAgICAgICJpbXByb3ZlbWVudCI6ICLimqEiLAogICAgICAgICAgICAidmFyaWFudCI6ICLwn5SEIiwKICAgICAgICAgICAgImxhdGVzdCI6ICLinKgiLAogICAgICAgIH0KCiAgICAgICAgZm9yIHN0ZXAgaW4gcGF0aC5zdGVwczoKICAgICAgICAgICAgaWNvbiA9IHJvbGVfaWNvbnMuZ2V0KHN0ZXAucm9sZSwgIvCfk4QiKQogICAgICAgICAgICB5ZWFyX3N0ciA9IGYiW3tzdGVwLnBhcGVyLnllYXJ9XSIgaWYgc3RlcC5wYXBlci55ZWFyIGVsc2UgIiIKICAgICAgICAgICAgdGl0bGUgPSBzdGVwLnBhcGVyLnRpdGxlWzo1MF0gKyAoIi4uLiIgaWYgbGVuKHN0ZXAucGFwZXIudGl0bGUpID4gNTAgZWxzZSAiIikKCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIntzdGVwLm9yZGVyfS4ge2ljb259IHt5ZWFyX3N0cn0ge3RpdGxlfSIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgIPCfkqEge3N0ZXAucmVhc29ufSIpCiAgICAgICAgICAgIGlmIHN0ZXAucGFwZXIuYXV0aG9yczoKICAgICAgICAgICAgICAgIGF1dGhvcnNfc3RyID0gIiwgIi5qb2luKHN0ZXAucGFwZXIuYXV0aG9yc1s6Ml0pCiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgICAgICAgICAgICAgZiIgICDwn5GlIHthdXRob3JzX3N0cn0iICsgKCIgZXQgYWwuIiBpZiBsZW4oc3RlcC5wYXBlci5hdXRob3JzKSA+IDIgZWxzZSAiIikKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAg4o+x77iPIHtzdGVwLmVzdGltYXRlZF9yZWFkX3RpbWVfbWludXRlc30gbWluIikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIiKQoKICAgICAgICBpZiBwYXRoLnNraXBwZWRfcGFwZXJzOgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiLwn5KhIOi/mOaciSB7bGVuKHBhdGguc2tpcHBlZF9wYXBlcnMpfSDnr4fnm7jlhbPorrrmlofmnKrmmL7npLoiKQoKICAgICAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQoKICAgIGRlZiByZW5kZXJfbWVybWFpZChzZWxmLCBwYXRoOiBSZWFkaW5nUGF0aCkgLT4gc3RyOgogICAgICAgICIiIlJlbmRlciByZWFkaW5nIHBhdGggYXMgTWVybWFpZCBncmFwaC4iIiIKICAgICAgICBpZiBub3QgcGF0aC5zdGVwczoKICAgICAgICAgICAgcmV0dXJuICdncmFwaCBURFxuICAgIEVtcHR5WyJObyBwYXBlcnMgZm91bmQiXScKCiAgICAgICAgbGluZXMgPSBbImdyYXBoIFREIl0KICAgICAgICBsaW5lcy5hcHBlbmQoJyAgICBzdWJncmFwaCAiUmVhZGluZyBQYXRoIicpCgogICAgICAgIGZvciBzdGVwIGluIHBhdGguc3RlcHM6CiAgICAgICAgICAgIHBpZCA9IHN0ZXAucGFwZXIucGFwZXJfaWQucmVwbGFjZSgiLSIsICJfIikKICAgICAgICAgICAgdGl0bGUgPSBzdGVwLnBhcGVyLnRpdGxlWzozMF0ucmVwbGFjZSgnIicsICInIikKICAgICAgICAgICAgcm9sZSA9IHN0ZXAucm9sZQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZicgICAge3N0ZXAub3JkZXJ9X3twaWR9WyJ7c3RlcC5vcmRlcn0uIHt0aXRsZX0iXTo6Ontyb2xlfScpCgogICAgICAgICMgQWRkIGFycm93cyBiZXR3ZWVuIHN0ZXBzCiAgICAgICAgZm9yIGkgaW4gcmFuZ2UobGVuKHBhdGguc3RlcHMpIC0gMSk6CiAgICAgICAgICAgIGN1cnIgPSBwYXRoLnN0ZXBzW2ldLnBhcGVyLnBhcGVyX2lkLnJlcGxhY2UoIi0iLCAiXyIpCiAgICAgICAgICAgIG5leHRfcGlkID0gcGF0aC5zdGVwc1tpICsgMV0ucGFwZXIucGFwZXJfaWQucmVwbGFjZSgiLSIsICJfIikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAgIHtpICsgMX1fe2N1cnJ9IC0tPiB7aSArIDJ9X3tuZXh0X3BpZH0iKQoKICAgICAgICBsaW5lcy5hcHBlbmQoIiAgICBlbmQiKQogICAgICAgIGxpbmVzLmFwcGVuZCgiIikKICAgICAgICBsaW5lcy5hcHBlbmQoIiAgICBjbGFzc0RlZiBmb3VuZGF0aW9uIGZpbGw6I2Y5ZixzdHJva2U6IzMzMyIpCiAgICAgICAgbGluZXMuYXBwZW5kKCIgICAgY2xhc3NEZWYgY29yZSBmaWxsOiNmZjksc3Ryb2tlOiMzMzMiKQogICAgICAgIGxpbmVzLmFwcGVuZCgiICAgIGNsYXNzRGVmIGltcHJvdmVtZW50IGZpbGw6IzlmOSxzdHJva2U6IzMzMyIpCiAgICAgICAgbGluZXMuYXBwZW5kKCIgICAgY2xhc3NEZWYgbGF0ZXN0IGZpbGw6IzlmZixzdHJva2U6IzMzMyIpCgogICAgICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCg==
+"""
+Research Path Planner: Generate optimal reading order from knowledge graph.
+
+基于引用图和知识图谱，自动生成最优论文阅读顺序。
+
+使用 PageRank + 拓扑排序 + 意图检测来推荐个性化阅读路径。
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Optional, List, Dict, Set, Tuple
+
+import numpy as np
+
+
+class ReadingLevel(Enum):
+    """Reading level / depth preference."""
+    INTRO = "intro"      # 入门：基础概念
+    INTERMEDIATE = "intermediate"  # 进阶：核心论文
+    ADVANCED = "advanced"  # 深入：最新进展
+
+
+@dataclass
+class PaperNode:
+    """Represents a paper in the reading path."""
+    paper_id: str
+    title: str
+    year: int = 0
+    authors: List[str] = field(default_factory=list)
+    cited_by: List[str] = field(default_factory=list)  # Papers citing this
+    cites: List[str] = field(default_factory=list)  # Papers this cites
+    relevance_score: float = 0.0
+    pagerank: float = 0.0
+    is_foundational: bool = False  # Groundbreaking paper
+    is_milestone: bool = False  # Important intermediate paper
+
+
+@dataclass
+class ReadingStep:
+    """A single step in the reading path."""
+    order: int
+    paper: PaperNode
+    role: str  # "foundation", "core", "improvement", "variant", "latest"
+    reason: str  # Why this paper is recommended here
+    estimated_read_time_minutes: int = 15
+
+
+@dataclass
+class ReadingPath:
+    """A complete reading path recommendation."""
+    topic: str
+    level: ReadingLevel
+    total_papers: int
+    total_reading_time_minutes: int
+    steps: List[ReadingStep]
+    alternative_paths: List[List[ReadingStep]] = field(default_factory=list)
+    skipped_papers: List[str] = field(default_factory=list)  # Papers that exist but not included
+
+
+class ResearchPathPlanner:
+    """Generate optimal research reading paths from citation graph."""
+
+    def __init__(self, kg_manager=None, db=None):
+        self.kg = kg_manager
+        self.db = db
+
+    def plan_path(
+        self,
+        topic: str,
+        level: ReadingLevel = ReadingLevel.INTERMEDIATE,
+        max_papers: int = 8,
+        min_year: Optional[int] = None,
+        max_year: Optional[int] = None,
+    ) -> ReadingPath:
+        """
+        Generate an optimal reading path for a topic.
+
+        Args:
+            topic: Research topic/keyword
+            level: Reading level (intro/intermediate/advanced)
+            max_papers: Maximum papers to recommend
+            min_year: Filter by minimum year
+            max_year: Filter by maximum year
+
+        Returns:
+            ReadingPath with ordered reading steps
+        """
+        # 1. Find papers related to topic
+        papers = self._find_topic_papers(topic, min_year, max_year)
+        if not papers:
+            return self._empty_path(topic, level)
+
+        # 2. Build citation graph
+        graph = self._build_citation_graph(papers)
+
+        # 3. Calculate PageRank to find important papers
+        self._calculate_pagerank(graph)
+
+        # 4. Identify foundational and milestone papers
+        self._identify_key_papers(graph, level)
+
+        # 5. Topological sort for optimal reading order
+        ordered_papers = self._topological_sort(graph, level)
+
+        # 6. Generate reading steps
+        steps = self._generate_steps(ordered_papers, topic, level)
+
+        # Limit to max_papers
+        if len(steps) > max_papers:
+            skipped = steps[max_papers:]
+            steps = steps[:max_papers]
+        else:
+            skipped = []
+
+        total_time = sum(s.estimated_read_time_minutes for s in steps)
+
+        return ReadingPath(
+            topic=topic,
+            level=level,
+            total_papers=len(steps),
+            total_reading_time_minutes=total_time,
+            steps=steps,
+            skipped_papers=[s.paper.title for s in skipped],
+        )
+
+    def _find_topic_papers(
+        self,
+        topic: str,
+        min_year: Optional[int] = None,
+        max_year: Optional[int] = None,
+    ) -> List[PaperNode]:
+        """Find papers related to topic from KG and DB."""
+        papers = {}
+
+        # Search in KG by tag
+        if self.kg:
+            kg_papers = self._search_kg_by_tag(topic)
+            for p in kg_papers:
+                papers[p.paper_id] = p
+
+        # Search in DB by text
+        if self.db:
+            db_papers = self._search_db_by_text(topic, min_year, max_year)
+            for p in db_papers:
+                papers[p.paper_id] = p
+
+        return list(papers.values())
+
+    def _search_kg_by_tag(self, topic: str) -> List[PaperNode]:
+        """Search papers in KG by tag."""
+        if not self.kg:
+            return []
+
+        results = []
+        try:
+            nodes = self.kg.find_papers_by_tag(topic.lower())
+            for node in nodes:
+                paper = PaperNode(
+                    paper_id=node["entity_id"],
+                    title=node["label"],
+                )
+                # Get citation edges
+                edges = self.kg.get_edges_by_node(node["id"], direction="both")
+                for edge in edges:
+                    if edge["relation_type"] == "cite":
+                        if edge["source_id"] == node["id"]:
+                            paper.cites.append(edge["target_id"])
+                        else:
+                            paper.cited_by.append(edge["source_id"])
+                results.append(paper)
+        except Exception:
+            # Knowledge graph build failed — return partial results without crashing.
+            pass
+
+        return results
+
+    def _search_db_by_text(
+        self,
+        topic: str,
+        min_year: Optional[int] = None,
+        max_year: Optional[int] = None,
+    ) -> List[PaperNode]:
+        """Search papers in DB by title/abstract."""
+        if not self.db:
+            return []
+
+        results = []
+        try:
+            # Use FTS search
+            rows, _ = self.db.search_papers(topic, limit=50)
+            for row in rows:
+                year = getattr(row, 'year', 0) or 0
+                if min_year and year < min_year:
+                    continue
+                if max_year and year > max_year:
+                    continue
+
+                paper = PaperNode(
+                    paper_id=str(getattr(row, 'id', '')),
+                    title=getattr(row, 'title', topic) or topic,
+                    year=year,
+                    authors=self._parse_authors(getattr(row, 'authors', '')),
+                    relevance_score=getattr(row, 'bm25_score', 0) or 0.5,
+                )
+                results.append(paper)
+        except Exception:
+            # DB text search failed — return partial results without crashing.
+            pass
+
+        return results
+
+    def _parse_authors(self, authors_str: str) -> List[str]:
+        """Parse authors string to list."""
+        if not authors_str:
+            return []
+        # Handle common formats
+        authors_str = authors_str.replace(' and ', ', ')
+        return [a.strip() for a in authors_str.split(',') if a.strip()]
+
+    def _build_citation_graph(self, papers: List[PaperNode]) -> Dict[str, PaperNode]:
+        """Build citation graph from papers."""
+        graph = {p.paper_id: p for p in papers}
+
+        # If we have citation data in KG, enrich it
+        if self.kg:
+            self._enrich_from_kg(graph)
+
+        return graph
+
+    def _enrich_from_kg(self, graph: Dict[str, PaperNode]):
+        """Enrich graph with citation data from KG."""
+        try:
+            # Get all Paper nodes
+            paper_nodes = self.kg.get_all_nodes(node_type="Paper")
+            paper_id_map = {
+                n["entity_id"]: n["id"]
+                for n in paper_nodes
+                if n["entity_id"] in graph
+            }
+
+            for paper_id, kg_id in paper_id_map.items():
+                edges = self.kg.get_edges_by_node(kg_id, direction="both", rel_type="cite")
+                for edge in edges:
+                    if edge["source_id"] == kg_id:
+                        # This paper cites another
+                        target = self._get_entity_id_from_kg_id(edge["target_id"])
+                        if target and target in graph:
+                            graph[paper_id].cites.append(target)
+                    else:
+                        # This paper is cited by another
+                        source = self._get_entity_id_from_kg_id(edge["source_id"])
+                        if source and source in graph:
+                            graph[paper_id].cited_by.append(source)
+        except Exception:
+            # Knowledge graph citation mapping failed — continue without crashing.
+            pass
+
+    def _get_entity_id_from_kg_id(self, kg_id: str) -> Optional[str]:
+        """Convert KG node ID to entity ID."""
+        if not self.kg:
+            return None
+        node = self.kg.get_node(kg_id)
+        return node["entity_id"] if node else None
+
+    def _calculate_pagerank(self, graph: Dict[str, PaperNode], damping: float = 0.85, iterations: int = 30):
+        """
+        Calculate PageRank for papers.
+
+        In citation graph:
+        - Outgoing edge (A cites B) means B influences A
+        - Higher PageRank = more influential paper
+        """
+        if not graph:
+            return
+
+        n = len(graph)
+        if n == 0:
+            return
+
+        paper_ids = list(graph.keys())
+        idx_map = {pid: i for i, pid in enumerate(paper_ids)}
+
+        # Build adjacency matrix (citation relationships)
+        # If A cites B, then there's an edge from A to B
+        # For PageRank, we want edges in reverse direction (influenced by)
+        adj = np.zeros((n, n))
+
+        for paper in graph.values():
+            if paper.paper_id not in idx_map:
+                continue
+            i = idx_map[paper.paper_id]
+            for cited in paper.cited_by:
+                if cited in idx_map:
+                    j = idx_map[cited]
+                    adj[j, i] = 1.0  # cited_by -> influence
+
+        # Normalize by out-degree
+        for j in range(n):
+            out_degree = sum(adj[j, :])
+            if out_degree > 0:
+                adj[j, :] /= out_degree
+
+        # PageRank iteration
+        pr = np.ones(n) / n
+        for _ in range(iterations):
+            new_pr = (1 - damping) / n + damping * adj.T @ pr
+            if np.allclose(pr, new_pr, atol=1e-6):
+                break
+            pr = new_pr
+
+        # Assign PageRank scores
+        for i, pid in enumerate(paper_ids):
+            graph[pid].pagerank = pr[i]
+
+    def _identify_key_papers(self, graph: Dict[str, PaperNode], level: ReadingLevel):
+        """Identify foundational and milestone papers."""
+        if not graph:
+            return
+
+        papers = list(graph.values())
+        if not papers:
+            return
+
+        # Sort by PageRank
+        papers.sort(key=lambda p: p.pagerank, reverse=True)
+
+        # Top papers by PageRank are foundational
+        top_count = max(1, len(papers) // 4)
+        for p in papers[:top_count]:
+            p.is_foundational = True
+
+        # If we have year data, earliest papers with high PageRank are milestones
+        papers_with_year = [p for p in papers if p.year > 0]
+        if papers_with_year:
+            papers_with_year.sort(key=lambda p: p.year)
+            # First 25% by year with decent PageRank
+            mid_rank = len(papers) // 2
+            for p in papers_with_year[:mid_rank]:
+                if p.pagerank > 0.5 / len(graph):
+                    p.is_milestone = True
+
+    def _topological_sort(
+        self,
+        graph: Dict[str, PaperNode],
+        level: ReadingLevel,
+    ) -> List[PaperNode]:
+        """
+        Topological sort for reading order.
+
+        Key insight: Papers should be read before papers they are cited by.
+        A cites B -> read B before A.
+        """
+        if not graph:
+            return []
+
+        # Build in-degree count (how many papers cite this paper)
+        in_degree = {pid: 0 for pid in graph}
+        for paper in graph.values():
+            for cited in paper.cited_by:
+                if cited in graph:  # Only count if in our graph
+                    in_degree[paper.paper_id] += 1
+
+        # Papers with no incoming edges (not cited by others in graph) go first
+        queue = [pid for pid, deg in in_degree.items() if deg == 0]
+        result = []
+
+        while queue:
+            # Prefer foundational papers and early-year papers
+            queue.sort(
+                key=lambda pid: (
+                    -graph[pid].is_foundational,
+                    -graph[pid].pagerank,
+                    graph[pid].year if graph[pid].year else 9999,
+                )
+            )
+            pid = queue.pop(0)
+            result.append(graph[pid])
+
+            # Reduce in-degree for papers this paper cites
+            for cited_pid in graph[pid].cites:
+                if cited_pid in in_degree:
+                    in_degree[cited_pid] -= 1
+                    if in_degree[cited_pid] == 0:
+                        queue.append(cited_pid)
+
+        # If we have cycles or missing edges, add remaining papers by PageRank
+        if len(result) < len(graph):
+            remaining = [graph[pid] for pid in graph if pid not in [p.paper_id for p in result]]
+            remaining.sort(key=lambda p: (-p.pagerank, p.year if p.year else 9999))
+            result.extend(remaining)
+
+        return result
+
+    def _generate_steps(
+        self,
+        papers: List[PaperNode],
+        topic: str,
+        level: ReadingLevel,
+    ) -> List[ReadingStep]:
+        """Generate reading steps with roles and reasons."""
+        steps = []
+        seen_years: set[int] = set()
+
+        for i, paper in enumerate(papers):
+            role, reason = self._assign_role(paper, i, level, seen_years)
+            read_time = self._estimate_read_time(paper)
+
+            step = ReadingStep(
+                order=i + 1,
+                paper=paper,
+                role=role,
+                reason=reason,
+                estimated_read_time_minutes=read_time,
+            )
+            steps.append(step)
+            if paper.year > 0:
+                seen_years.add(paper.year)
+
+        return steps
+
+    def _assign_role(
+        self,
+        paper: PaperNode,
+        position: int,
+        level: ReadingLevel,
+        seen_years: Set[int],
+    ) -> Tuple[str, str]:
+        """Assign role and reason for including this paper."""
+        year = paper.year
+
+        if paper.is_foundational and (not year or year < 2018):
+            return "foundation", "开创性工作，奠定了该领域的基础"
+
+        if paper.is_foundational:
+            return "core", "高影响力核心论文，必读"
+
+        if position == 0:
+            return "core", "作为入口论文，适合建立整体认知"
+
+        # Check if this is a newer paper
+        if year and year >= 2022:
+            return "latest", f"最新进展（{year}年）"
+
+        # Check for relationship to earlier papers
+        if paper.cited_by and len(paper.cited_by) > 2:
+            return "improvement", "被多篇后续论文引用，影响力较高"
+
+        if level == ReadingLevel.INTRO:
+            if not year or year < 2020:
+                return "core", "适合入门的核心论文"
+            else:
+                return "variant", f"{year}年的方法变体"
+
+        return "improvement", "该领域的改进/应用"
+
+    def _estimate_read_time(self, paper: PaperNode) -> int:
+        """Estimate reading time in minutes based on available info."""
+        # Base time
+        base = 15
+
+        # Title length heuristic
+        if paper.title:
+            base += len(paper.title) // 50
+
+        # Citation count heuristic (more citations = more complex/important)
+        if len(paper.cited_by) > 5:
+            base += 10
+        elif len(paper.cited_by) > 2:
+            base += 5
+
+        return min(base, 45)  # Cap at 45 minutes
+
+    def _empty_path(self, topic: str, level: ReadingLevel) -> ReadingPath:
+        """Return empty path when no papers found."""
+        return ReadingPath(
+            topic=topic,
+            level=level,
+            total_papers=0,
+            total_reading_time_minutes=0,
+            steps=[],
+            alternative_paths=[],
+            skipped_papers=[],
+        )
+
+    def render_path(self, path: ReadingPath) -> str:
+        """Render reading path as formatted string."""
+        if not path.steps:
+            return f"📚 未找到关于「{path.topic}」的相关论文"
+
+        level_labels = {
+            ReadingLevel.INTRO: "入门",
+            ReadingLevel.INTERMEDIATE: "进阶",
+            ReadingLevel.ADVANCED: "深入",
+        }
+
+        lines = [
+            f"📚 《{path.topic}》阅读路径推荐",
+            f"   难度: {level_labels.get(path.level, '进阶')} | "
+            f"共 {path.total_papers} 篇 | "
+            f"预计 {path.total_reading_time_minutes} 分钟",
+            "",
+        ]
+
+        role_icons = {
+            "foundation": "🏛️",
+            "core": "📖",
+            "improvement": "⚡",
+            "variant": "🔄",
+            "latest": "✨",
+        }
+
+        for step in path.steps:
+            icon = role_icons.get(step.role, "📄")
+            year_str = f"[{step.paper.year}]" if step.paper.year else ""
+            title = step.paper.title[:50] + ("..." if len(step.paper.title) > 50 else "")
+
+            lines.append(f"{step.order}. {icon} {year_str} {title}")
+            lines.append(f"   💡 {step.reason}")
+            if step.paper.authors:
+                authors_str = ", ".join(step.paper.authors[:2])
+                lines.append(f"   👥 {authors_str}" + (" et al." if len(step.paper.authors) > 2 else ""))
+            lines.append(f"   ⏱️ {step.estimated_read_time_minutes} min")
+            lines.append("")
+
+        if path.skipped_papers:
+            lines.append(f"💡 还有 {len(path.skipped_papers)} 篇相关论文未显示")
+
+        return "\n".join(lines)
+
+    def render_mermaid(self, path: ReadingPath) -> str:
+        """Render reading path as Mermaid graph."""
+        if not path.steps:
+            return "graph TD\n    Empty[\"No papers found\"]"
+
+        lines = ["graph TD"]
+        lines.append('    subgraph "Reading Path"')
+
+        for step in path.steps:
+            pid = step.paper.paper_id.replace("-", "_")
+            title = step.paper.title[:30].replace('"', "'")
+            role = step.role
+            lines.append(f'    {step.order}_{pid}["{step.order}. {title}"]:::{role}')
+
+        # Add arrows between steps
+        for i in range(len(path.steps) - 1):
+            curr = path.steps[i].paper.paper_id.replace("-", "_")
+            next_pid = path.steps[i + 1].paper.paper_id.replace("-", "_")
+            lines.append(f"    {i+1}_{curr} --> {i+2}_{next_pid}")
+
+        lines.append("    end")
+        lines.append("")
+        lines.append("    classDef foundation fill:#f9f,stroke:#333")
+        lines.append("    classDef core fill:#ff9,stroke:#333")
+        lines.append("    classDef improvement fill:#9f9,stroke:#333")
+        lines.append("    classDef latest fill:#9ff,stroke:#333")
+
+        return "\n".join(lines)

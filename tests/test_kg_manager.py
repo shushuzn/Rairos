@@ -1,1 +1,216 @@
-IiIiVGVzdHMgZm9yIGtnL21hbmFnZXIucHkg4oCUIEtHTWFuYWdlciBjb3JlIENSVUQgYW5kIGdyYXBoIG9wZXJhdGlvbnMuIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgoKaW1wb3J0IHB5dGVzdAoKZnJvbSBrZy5tYW5hZ2VyIGltcG9ydCBLR01hbmFnZXIKCgpAcHl0ZXN0LmZpeHR1cmUKZGVmIGtnKHRtcF9wYXRoKToKICAgICIiIkZyZXNoIEtHTWFuYWdlciBiYWNrZWQgYnkgYSB0ZW1wb3JhcnkgREIuIiIiCiAgICBkYiA9IHRtcF9wYXRoIC8gInRlc3Rfa2cuZGIiCiAgICByZXR1cm4gS0dNYW5hZ2VyKGRiX3BhdGg9c3RyKGRiKSkKCgpjbGFzcyBUZXN0S0dNYW5hZ2VyTm9kZU9wczoKICAgIGRlZiB0ZXN0X2FkZF9ub2RlX3JldHVybnNfaWQoc2VsZiwga2cpOgogICAgICAgIG5pZCA9IGtnLmFkZF9ub2RlKCJQYXBlciIsICJwYXBlci0xIiwgIlBhcGVyIE9uZSIsIHRpdGxlPSJIZWxsbyIsIHllYXI9MjAyNCkKICAgICAgICBhc3NlcnQgaXNpbnN0YW5jZShuaWQsIHN0cikKICAgICAgICBhc3NlcnQgbGVuKG5pZCkgPT0gMzYgICMgVVVJRAoKICAgIGRlZiB0ZXN0X2FkZF9ub2RlX2lkZW1wb3RlbnQoc2VsZiwga2cpOgogICAgICAgIG5pZDEgPSBrZy5hZGRfbm9kZSgiUGFwZXIiLCAicGFwZXItMSIsICJQYXBlciBPbmUiKQogICAgICAgIG5pZDIgPSBrZy5hZGRfbm9kZSgiUGFwZXIiLCAicGFwZXItMSIsICJQYXBlciBPbmUiKQogICAgICAgIGFzc2VydCBuaWQxID09IG5pZDIKCiAgICBkZWYgdGVzdF9nZXRfbm9kZShzZWxmLCBrZyk6CiAgICAgICAgbmlkID0ga2cuYWRkX25vZGUoIlBhcGVyIiwgInBhcGVyLTEiLCAiUGFwZXIgT25lIiwgeWVhcj0yMDI0KQogICAgICAgIG5vZGUgPSBrZy5nZXRfbm9kZShuaWQpCiAgICAgICAgYXNzZXJ0IG5vZGUgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQgbm9kZVsidHlwZSJdID09ICJQYXBlciIKICAgICAgICBhc3NlcnQgbm9kZVsiZW50aXR5X2lkIl0gPT0gInBhcGVyLTEiCiAgICAgICAgYXNzZXJ0IG5vZGVbImxhYmVsIl0gPT0gIlBhcGVyIE9uZSIKICAgICAgICBhc3NlcnQgbm9kZVsicHJvcGVydGllcyJdWyJ5ZWFyIl0gPT0gMjAyNAoKICAgIGRlZiB0ZXN0X2dldF9ub2RlX25vdF9mb3VuZChzZWxmLCBrZyk6CiAgICAgICAgbm9kZSA9IGtnLmdldF9ub2RlKCJkb2VzLW5vdC1leGlzdCIpCiAgICAgICAgYXNzZXJ0IG5vZGUgaXMgTm9uZQoKICAgIGRlZiB0ZXN0X2dldF9ub2RlX2J5X2VudGl0eShzZWxmLCBrZyk6CiAgICAgICAga2cuYWRkX25vZGUoIlBhcGVyIiwgInBhcGVyLTEiLCAiUGFwZXIgT25lIikKICAgICAgICBub2RlID0ga2cuZ2V0X25vZGVfYnlfZW50aXR5KCJQYXBlciIsICJwYXBlci0xIikKICAgICAgICBhc3NlcnQgbm9kZSBpcyBub3QgTm9uZQogICAgICAgIGFzc2VydCBub2RlWyJlbnRpdHlfaWQiXSA9PSAicGFwZXItMSIKCiAgICBkZWYgdGVzdF9nZXRfbm9kZV9ieV9lbnRpdHlfbm90X2ZvdW5kKHNlbGYsIGtnKToKICAgICAgICBub2RlID0ga2cuZ2V0X25vZGVfYnlfZW50aXR5KCJQYXBlciIsICJnaG9zdCIpCiAgICAgICAgYXNzZXJ0IG5vZGUgaXMgTm9uZQoKICAgIGRlZiB0ZXN0X3Vwc2VydF9ub2RlX3VwZGF0ZXNfcHJvcGVydGllcyhzZWxmLCBrZyk6CiAgICAgICAga2cuYWRkX25vZGUoIlBhcGVyIiwgInBhcGVyLTEiLCAiUGFwZXIgT25lIiwgeWVhcj0yMDIzKQogICAgICAgIG5pZCA9IGtnLnVwc2VydF9ub2RlKCJQYXBlciIsICJwYXBlci0xIiwgIlBhcGVyIE9uZSBVcGRhdGVkIiwgeWVhcj0yMDI0KQogICAgICAgIG5vZGUgPSBrZy5nZXRfbm9kZShuaWQpCiAgICAgICAgYXNzZXJ0IG5vZGVbImxhYmVsIl0gPT0gIlBhcGVyIE9uZSBVcGRhdGVkIgogICAgICAgIGFzc2VydCBub2RlWyJwcm9wZXJ0aWVzIl1bInllYXIiXSA9PSAyMDI0CgogICAgZGVmIHRlc3RfdXBzZXJ0X25vZGVfaW5zZXJ0c19pZl9taXNzaW5nKHNlbGYsIGtnKToKICAgICAgICBuaWQgPSBrZy51cHNlcnRfbm9kZSgiUGFwZXIiLCAicGFwZXItbmV3IiwgIk5ldyBQYXBlciIsIHRhZ3M9WyJMTE0iXSkKICAgICAgICBub2RlID0ga2cuZ2V0X25vZGUobmlkKQogICAgICAgIGFzc2VydCBub2RlWyJlbnRpdHlfaWQiXSA9PSAicGFwZXItbmV3IgogICAgICAgIGFzc2VydCBub2RlWyJwcm9wZXJ0aWVzIl1bInRhZ3MiXSA9PSBbIkxMTSJdCgogICAgZGVmIHRlc3RfZ2V0X2FsbF9ub2Rlc19ub19maWx0ZXIoc2VsZiwga2cpOgogICAgICAgIGtnLmFkZF9ub2RlKCJQYXBlciIsICJwMSIsICJPbmUiKQogICAgICAgIGtnLmFkZF9ub2RlKCJQYXBlciIsICJwMiIsICJUd28iKQogICAgICAgIGtnLmFkZF9ub2RlKCJUYWciLCAidDEiLCAiTExNIikKICAgICAgICBub2RlcyA9IGtnLmdldF9hbGxfbm9kZXMoKQogICAgICAgIGFzc2VydCBsZW4obm9kZXMpID09IDMKCiAgICBkZWYgdGVzdF9nZXRfYWxsX25vZGVzX2ZpbHRlcmVkX2J5X3R5cGUoc2VsZiwga2cpOgogICAgICAgIGtnLmFkZF9ub2RlKCJQYXBlciIsICJwMSIsICJPbmUiKQogICAgICAgIGtnLmFkZF9ub2RlKCJQYXBlciIsICJwMiIsICJUd28iKQogICAgICAgIGtnLmFkZF9ub2RlKCJUYWciLCAidDEiLCAiTExNIikKICAgICAgICBwYXBlcnMgPSBrZy5nZXRfYWxsX25vZGVzKG5vZGVfdHlwZT0iUGFwZXIiKQogICAgICAgIGFzc2VydCBsZW4ocGFwZXJzKSA9PSAyCiAgICAgICAgYXNzZXJ0IGFsbChuWyJ0eXBlIl0gPT0gIlBhcGVyIiBmb3IgbiBpbiBwYXBlcnMpCgoKY2xhc3MgVGVzdEtHTWFuYWdlckVkZ2VPcHM6CiAgICBkZWYgdGVzdF9hZGRfZWRnZV9yZXR1cm5zX2lkKHNlbGYsIGtnKToKICAgICAgICBuaWQxID0ga2cuYWRkX25vZGUoIlBhcGVyIiwgInAxIiwgIk9uZSIpCiAgICAgICAgbmlkMiA9IGtnLmFkZF9ub2RlKCJQYXBlciIsICJwMiIsICJUd28iKQogICAgICAgIGVpZCA9IGtnLmFkZF9lZGdlKG5pZDEsIG5pZDIsICJjaXRlIikKICAgICAgICBhc3NlcnQgaXNpbnN0YW5jZShlaWQsIHN0cikKCiAgICBkZWYgdGVzdF9hZGRfZWRnZV9pZGVtcG90ZW50KHNlbGYsIGtnKToKICAgICAgICBuaWQxID0ga2cuYWRkX25vZGUoIlBhcGVyIiwgInAxIiwgIk9uZSIpCiAgICAgICAgbmlkMiA9IGtnLmFkZF9ub2RlKCJQYXBlciIsICJwMiIsICJUd28iKQogICAgICAgIGVpZDEgPSBrZy5hZGRfZWRnZShuaWQxLCBuaWQyLCAiY2l0ZSIpCiAgICAgICAgZWlkMiA9IGtnLmFkZF9lZGdlKG5pZDEsIG5pZDIsICJjaXRlIikKICAgICAgICBhc3NlcnQgZWlkMSA9PSBlaWQyCgogICAgZGVmIHRlc3RfZ2V0X2VkZ2Uoc2VsZiwga2cpOgogICAgICAgIG5pZDEgPSBrZy5hZGRfbm9kZSgiUGFwZXIiLCAicDEiLCAiT25lIikKICAgICAgICBuaWQyID0ga2cuYWRkX25vZGUoIlBhcGVyIiwgInAyIiwgIlR3byIpCiAgICAgICAgZWlkID0ga2cuYWRkX2VkZ2UobmlkMSwgbmlkMiwgImNpdGUiLCB3ZWlnaHQ9MC45KQogICAgICAgIGVkZ2UgPSBrZy5nZXRfZWRnZShlaWQpCiAgICAgICAgYXNzZXJ0IGVkZ2UgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQgZWRnZVsic291cmNlX2lkIl0gPT0gbmlkMQogICAgICAgIGFzc2VydCBlZGdlWyJ0YXJnZXRfaWQiXSA9PSBuaWQyCiAgICAgICAgYXNzZXJ0IGVkZ2VbInJlbGF0aW9uX3R5cGUiXSA9PSAiY2l0ZSIKICAgICAgICBhc3NlcnQgZWRnZVsid2VpZ2h0Il0gPT0gMC45CgogICAgZGVmIHRlc3RfZ2V0X2VkZ2VzX2J5X25vZGVfb3V0KHNlbGYsIGtnKToKICAgICAgICBuaWQxID0ga2cuYWRkX25vZGUoIlBhcGVyIiwgInAxIiwgIk9uZSIpCiAgICAgICAgbmlkMiA9IGtnLmFkZF9ub2RlKCJQYXBlciIsICJwMiIsICJUd28iKQogICAgICAgIGtnLmFkZF9lZGdlKG5pZDEsIG5pZDIsICJjaXRlIikKICAgICAgICBlZGdlcyA9IGtnLmdldF9lZGdlc19ieV9ub2RlKG5pZDEsIGRpcmVjdGlvbj0ib3V0IikKICAgICAgICBhc3NlcnQgbGVuKGVkZ2VzKSA9PSAxCiAgICAgICAgYXNzZXJ0IGVkZ2VzWzBdWyJ0YXJnZXRfaWQiXSA9PSBuaWQyCgogICAgZGVmIHRlc3RfZ2V0X2VkZ2VzX2J5X25vZGVfaW4oc2VsZiwga2cpOgogICAgICAgIG5pZDEgPSBrZy5hZGRfbm9kZSgiUGFwZXIiLCAicDEiLCAiT25lIikKICAgICAgICBuaWQyID0ga2cuYWRkX25vZGUoIlBhcGVyIiwgInAyIiwgIlR3byIpCiAgICAgICAga2cuYWRkX2VkZ2UobmlkMSwgbmlkMiwgImNpdGUiKQogICAgICAgIGVkZ2VzID0ga2cuZ2V0X2VkZ2VzX2J5X25vZGUobmlkMiwgZGlyZWN0aW9uPSJpbiIpCiAgICAgICAgYXNzZXJ0IGxlbihlZGdlcykgPT0gMQogICAgICAgIGFzc2VydCBlZGdlc1swXVsic291cmNlX2lkIl0gPT0gbmlkMQoKICAgIGRlZiB0ZXN0X2dldF9lZGdlc19ieV9ub2RlX2JvdGgoc2VsZiwga2cpOgogICAgICAgIG5pZDEgPSBrZy5hZGRfbm9kZSgiUGFwZXIiLCAicDEiLCAiT25lIikKICAgICAgICBuaWQyID0ga2cuYWRkX25vZGUoIlBhcGVyIiwgInAyIiwgIlR3byIpCiAgICAgICAga2cuYWRkX2VkZ2UobmlkMSwgbmlkMiwgImNpdGUiKQogICAgICAgIGVkZ2VzID0ga2cuZ2V0X2VkZ2VzX2J5X25vZGUobmlkMSwgZGlyZWN0aW9uPSJib3RoIikKICAgICAgICBhc3NlcnQgbGVuKGVkZ2VzKSA9PSAxCiAgICAgICAgZWRnZXMyID0ga2cuZ2V0X2VkZ2VzX2J5X25vZGUobmlkMiwgZGlyZWN0aW9uPSJib3RoIikKICAgICAgICBhc3NlcnQgbGVuKGVkZ2VzMikgPT0gMQoKICAgIGRlZiB0ZXN0X2dldF9lZGdlc19ieV9ub2RlX2ZpbHRlcmVkX2J5X3JlbF90eXBlKHNlbGYsIGtnKToKICAgICAgICBuaWQxID0ga2cuYWRkX25vZGUoIlBhcGVyIiwgInAxIiwgIk9uZSIpCiAgICAgICAgbmlkMiA9IGtnLmFkZF9ub2RlKCJQYXBlciIsICJwMiIsICJUd28iKQogICAgICAgIG5pZDMgPSBrZy5hZGRfbm9kZSgiVGFnIiwgInQxIiwgIkxMTSIpCiAgICAgICAga2cuYWRkX2VkZ2UobmlkMSwgbmlkMiwgImNpdGUiKQogICAgICAgIGtnLmFkZF9lZGdlKG5pZDEsIG5pZDMsICJzYW1lX3RhZyIpCiAgICAgICAgY2l0ZV9lZGdlcyA9IGtnLmdldF9lZGdlc19ieV9ub2RlKG5pZDEsIGRpcmVjdGlvbj0ib3V0IiwgcmVsX3R5cGU9ImNpdGUiKQogICAgICAgIGFzc2VydCBsZW4oY2l0ZV9lZGdlcykgPT0gMQogICAgICAgIGFzc2VydCBjaXRlX2VkZ2VzWzBdWyJyZWxhdGlvbl90eXBlIl0gPT0gImNpdGUiCgoKY2xhc3MgVGVzdEtHTWFuYWdlckdyYXBoUXVlcmllczoKICAgIGRlZiB0ZXN0X2ZpbmRfbmVpZ2hib3JzX2RlcHRoMShzZWxmLCBrZyk6CiAgICAgICAgbmlkMSA9IGtnLmFkZF9ub2RlKCJQYXBlciIsICJwMSIsICJPbmUiKQogICAgICAgIG5pZDIgPSBrZy5hZGRfbm9kZSgiUGFwZXIiLCAicDIiLCAiVHdvIikKICAgICAgICBrZy5hZGRfZWRnZShuaWQxLCBuaWQyLCAiY2l0ZSIpCiAgICAgICAgbmVpZ2hib3JzID0ga2cuZmluZF9uZWlnaGJvcnMobmlkMSwgZGVwdGg9MSkKICAgICAgICBhc3NlcnQgbGVuKG5laWdoYm9ycykgPT0gMQogICAgICAgIG5laWdoYm9yX25vZGUsIGVkZ2UsIGRlcHRoID0gbmVpZ2hib3JzWzBdCiAgICAgICAgYXNzZXJ0IG5laWdoYm9yX25vZGVbImVudGl0eV9pZCJdID09ICJwMiIKICAgICAgICBhc3NlcnQgZGVwdGggPT0gMQoKICAgIGRlZiB0ZXN0X2ZpbmRfbmVpZ2hib3JzX2RlcHRoMihzZWxmLCBrZyk6CiAgICAgICAgbmlkMSA9IGtnLmFkZF9ub2RlKCJQYXBlciIsICJwMSIsICJPbmUiKQogICAgICAgIG5pZDIgPSBrZy5hZGRfbm9kZSgiUGFwZXIiLCAicDIiLCAiVHdvIikKICAgICAgICBuaWQzID0ga2cuYWRkX25vZGUoIlBhcGVyIiwgInAzIiwgIlRocmVlIikKICAgICAgICBrZy5hZGRfZWRnZShuaWQxLCBuaWQyLCAiY2l0ZSIpCiAgICAgICAga2cuYWRkX2VkZ2UobmlkMiwgbmlkMywgImNpdGUiKQogICAgICAgIG5laWdoYm9ycyA9IGtnLmZpbmRfbmVpZ2hib3JzKG5pZDEsIGRlcHRoPTIpCiAgICAgICAgZW50aXR5X2lkcyA9IHtuWzBdWyJlbnRpdHlfaWQiXSBmb3IgbiBpbiBuZWlnaGJvcnN9CiAgICAgICAgYXNzZXJ0IGVudGl0eV9pZHMgPT0geyJwMiIsICJwMyJ9CgogICAgZGVmIHRlc3RfZmluZF9zaG9ydGVzdF9wYXRoKHNlbGYsIGtnKToKICAgICAgICBuaWQxID0ga2cuYWRkX25vZGUoIlBhcGVyIiwgInAxIiwgIk9uZSIpCiAgICAgICAgbmlkMiA9IGtnLmFkZF9ub2RlKCJQYXBlciIsICJwMiIsICJUd28iKQogICAgICAgIG5pZDMgPSBrZy5hZGRfbm9kZSgiUGFwZXIiLCAicDMiLCAiVGhyZWUiKQogICAgICAgIGtnLmFkZF9lZGdlKG5pZDEsIG5pZDIsICJjaXRlIikKICAgICAgICBrZy5hZGRfZWRnZShuaWQyLCBuaWQzLCAiY2l0ZSIpCiAgICAgICAgcGF0aCA9IGtnLmZpbmRfc2hvcnRlc3RfcGF0aChuaWQxLCBuaWQzKQogICAgICAgIGFzc2VydCBwYXRoIGlzIG5vdCBOb25lCiAgICAgICAgYXNzZXJ0IGxlbihwYXRoKSA9PSAzCiAgICAgICAgYXNzZXJ0IHBhdGhbMF0gPT0gbmlkMQogICAgICAgIGFzc2VydCBwYXRoWy0xXSA9PSBuaWQzCgogICAgZGVmIHRlc3RfZmluZF9zaG9ydGVzdF9wYXRoX25vX3BhdGgoc2VsZiwga2cpOgogICAgICAgIG5pZDEgPSBrZy5hZGRfbm9kZSgiUGFwZXIiLCAicDEiLCAiT25lIikKICAgICAgICBuaWQyID0ga2cuYWRkX25vZGUoIlBhcGVyIiwgInAyIiwgIlR3byIpCiAgICAgICAgIyBubyBlZGdlIGJldHdlZW4gdGhlbQogICAgICAgIHBhdGggPSBrZy5maW5kX3Nob3J0ZXN0X3BhdGgobmlkMSwgbmlkMikKICAgICAgICBhc3NlcnQgcGF0aCBpcyBOb25lCgogICAgZGVmIHRlc3RfZmluZF9zaG9ydGVzdF9wYXRoX3NhbWVfbm9kZShzZWxmLCBrZyk6CiAgICAgICAgbmlkMSA9IGtnLmFkZF9ub2RlKCJQYXBlciIsICJwMSIsICJPbmUiKQogICAgICAgIHBhdGggPSBrZy5maW5kX3Nob3J0ZXN0X3BhdGgobmlkMSwgbmlkMSkKICAgICAgICBhc3NlcnQgcGF0aCA9PSBbbmlkMV0KCiAgICBkZWYgdGVzdF9maW5kX3BhcGVyc19ieV90YWcoc2VsZiwga2cpOgogICAgICAgIHBhcGVyX25pZCA9IGtnLmFkZF9ub2RlKCJQYXBlciIsICJwYXBlci1sbG0iLCAiTExNIFBhcGVyIikKICAgICAgICB0YWdfbmlkID0ga2cuYWRkX25vZGUoIlRhZyIsICJMTE0iLCAiTExNIikKICAgICAgICBrZy5hZGRfZWRnZShwYXBlcl9uaWQsIHRhZ19uaWQsICJzYW1lX3RhZyIpCiAgICAgICAgcGFwZXJzID0ga2cuZmluZF9wYXBlcnNfYnlfdGFnKCJMTE0iKQogICAgICAgIGFzc2VydCBsZW4ocGFwZXJzKSA9PSAxCiAgICAgICAgYXNzZXJ0IHBhcGVyc1swXVsiZW50aXR5X2lkIl0gPT0gInBhcGVyLWxsbSIKCiAgICBkZWYgdGVzdF9maW5kX3BhcGVyc19ieV90YWdfbm90X2ZvdW5kKHNlbGYsIGtnKToKICAgICAgICBwYXBlcnMgPSBrZy5maW5kX3BhcGVyc19ieV90YWcoIk5vbkV4aXN0ZW50VGFnIikKICAgICAgICBhc3NlcnQgcGFwZXJzID09IFtdCgogICAgZGVmIHRlc3RfZmluZF9tbm90ZXNfYnlfdGFnKHNlbGYsIGtnKToKICAgICAgICBrZy5hZGRfbm9kZSgiTS1Ob3RlIiwgIm0xIiwgIk5vdGUgYWJvdXQgTExNIiwgYWJzdHJhY3Q9IkxMTSBpcyBob3QiKQogICAgICAgIHBhcGVycyA9IGtnLmZpbmRfbW5vdGVzX2J5X3RhZygiTExNIikKICAgICAgICBhc3NlcnQgbGVuKHBhcGVycykgPT0gMQogICAgICAgIGFzc2VydCBwYXBlcnNbMF1bImVudGl0eV9pZCJdID09ICJtMSIKCiAgICBkZWYgdGVzdF9zdGF0cyhzZWxmLCBrZyk6CiAgICAgICAga2cuYWRkX25vZGUoIlBhcGVyIiwgInAxIiwgIk9uZSIpCiAgICAgICAga2cuYWRkX25vZGUoIlBhcGVyIiwgInAyIiwgIlR3byIpCiAgICAgICAga2cuYWRkX25vZGUoIlRhZyIsICJ0MSIsICJMTE0iKQogICAgICAgIG5pZDEgPSBrZy5hZGRfbm9kZSgiUGFwZXIiLCAicDEiLCAiT25lIikKICAgICAgICBuaWQyID0ga2cuYWRkX25vZGUoIlBhcGVyIiwgInAyIiwgIlR3byIpCiAgICAgICAga2cuYWRkX2VkZ2UobmlkMSwgbmlkMiwgImNpdGUiKQogICAgICAgIHMgPSBrZy5zdGF0cygpCiAgICAgICAgYXNzZXJ0IHNbInRvdGFsX25vZGVzIl0gPT0gMwogICAgICAgIGFzc2VydCBzWyJub2Rlc19ieV90eXBlIl1bIlBhcGVyIl0gPT0gMgogICAgICAgIGFzc2VydCBzWyJub2Rlc19ieV90eXBlIl1bIlRhZyJdID09IDEKICAgICAgICBhc3NlcnQgc1sidG90YWxfZWRnZXMiXSA9PSAxCg==
+"""Tests for kg/manager.py — KGManager core CRUD and graph operations."""
+
+from __future__ import annotations
+
+
+import pytest
+
+from kg.manager import KGManager
+
+
+@pytest.fixture
+def kg(tmp_path):
+    """Fresh KGManager backed by a temporary DB."""
+    db = tmp_path / "test_kg.db"
+    return KGManager(db_path=str(db))
+
+
+class TestKGManagerNodeOps:
+    def test_add_node_returns_id(self, kg):
+        nid = kg.add_node("Paper", "paper-1", "Paper One", title="Hello", year=2024)
+        assert isinstance(nid, str)
+        assert len(nid) == 36  # UUID
+
+    def test_add_node_idempotent(self, kg):
+        nid1 = kg.add_node("Paper", "paper-1", "Paper One")
+        nid2 = kg.add_node("Paper", "paper-1", "Paper One")
+        assert nid1 == nid2
+
+    def test_get_node(self, kg):
+        nid = kg.add_node("Paper", "paper-1", "Paper One", year=2024)
+        node = kg.get_node(nid)
+        assert node is not None
+        assert node["type"] == "Paper"
+        assert node["entity_id"] == "paper-1"
+        assert node["label"] == "Paper One"
+        assert node["properties"]["year"] == 2024
+
+    def test_get_node_not_found(self, kg):
+        node = kg.get_node("does-not-exist")
+        assert node is None
+
+    def test_get_node_by_entity(self, kg):
+        kg.add_node("Paper", "paper-1", "Paper One")
+        node = kg.get_node_by_entity("Paper", "paper-1")
+        assert node is not None
+        assert node["entity_id"] == "paper-1"
+
+    def test_get_node_by_entity_not_found(self, kg):
+        node = kg.get_node_by_entity("Paper", "ghost")
+        assert node is None
+
+    def test_upsert_node_updates_properties(self, kg):
+        kg.add_node("Paper", "paper-1", "Paper One", year=2023)
+        nid = kg.upsert_node("Paper", "paper-1", "Paper One Updated", year=2024)
+        node = kg.get_node(nid)
+        assert node["label"] == "Paper One Updated"
+        assert node["properties"]["year"] == 2024
+
+    def test_upsert_node_inserts_if_missing(self, kg):
+        nid = kg.upsert_node("Paper", "paper-new", "New Paper", tags=["LLM"])
+        node = kg.get_node(nid)
+        assert node["entity_id"] == "paper-new"
+        assert node["properties"]["tags"] == ["LLM"]
+
+    def test_get_all_nodes_no_filter(self, kg):
+        kg.add_node("Paper", "p1", "One")
+        kg.add_node("Paper", "p2", "Two")
+        kg.add_node("Tag", "t1", "LLM")
+        nodes = kg.get_all_nodes()
+        assert len(nodes) == 3
+
+    def test_get_all_nodes_filtered_by_type(self, kg):
+        kg.add_node("Paper", "p1", "One")
+        kg.add_node("Paper", "p2", "Two")
+        kg.add_node("Tag", "t1", "LLM")
+        papers = kg.get_all_nodes(node_type="Paper")
+        assert len(papers) == 2
+        assert all(n["type"] == "Paper" for n in papers)
+
+
+class TestKGManagerEdgeOps:
+    def test_add_edge_returns_id(self, kg):
+        nid1 = kg.add_node("Paper", "p1", "One")
+        nid2 = kg.add_node("Paper", "p2", "Two")
+        eid = kg.add_edge(nid1, nid2, "cite")
+        assert isinstance(eid, str)
+
+    def test_add_edge_idempotent(self, kg):
+        nid1 = kg.add_node("Paper", "p1", "One")
+        nid2 = kg.add_node("Paper", "p2", "Two")
+        eid1 = kg.add_edge(nid1, nid2, "cite")
+        eid2 = kg.add_edge(nid1, nid2, "cite")
+        assert eid1 == eid2
+
+    def test_get_edge(self, kg):
+        nid1 = kg.add_node("Paper", "p1", "One")
+        nid2 = kg.add_node("Paper", "p2", "Two")
+        eid = kg.add_edge(nid1, nid2, "cite", weight=0.9)
+        edge = kg.get_edge(eid)
+        assert edge is not None
+        assert edge["source_id"] == nid1
+        assert edge["target_id"] == nid2
+        assert edge["relation_type"] == "cite"
+        assert edge["weight"] == 0.9
+
+    def test_get_edges_by_node_out(self, kg):
+        nid1 = kg.add_node("Paper", "p1", "One")
+        nid2 = kg.add_node("Paper", "p2", "Two")
+        kg.add_edge(nid1, nid2, "cite")
+        edges = kg.get_edges_by_node(nid1, direction="out")
+        assert len(edges) == 1
+        assert edges[0]["target_id"] == nid2
+
+    def test_get_edges_by_node_in(self, kg):
+        nid1 = kg.add_node("Paper", "p1", "One")
+        nid2 = kg.add_node("Paper", "p2", "Two")
+        kg.add_edge(nid1, nid2, "cite")
+        edges = kg.get_edges_by_node(nid2, direction="in")
+        assert len(edges) == 1
+        assert edges[0]["source_id"] == nid1
+
+    def test_get_edges_by_node_both(self, kg):
+        nid1 = kg.add_node("Paper", "p1", "One")
+        nid2 = kg.add_node("Paper", "p2", "Two")
+        kg.add_edge(nid1, nid2, "cite")
+        edges = kg.get_edges_by_node(nid1, direction="both")
+        assert len(edges) == 1
+        edges2 = kg.get_edges_by_node(nid2, direction="both")
+        assert len(edges2) == 1
+
+    def test_get_edges_by_node_filtered_by_rel_type(self, kg):
+        nid1 = kg.add_node("Paper", "p1", "One")
+        nid2 = kg.add_node("Paper", "p2", "Two")
+        nid3 = kg.add_node("Tag", "t1", "LLM")
+        kg.add_edge(nid1, nid2, "cite")
+        kg.add_edge(nid1, nid3, "same_tag")
+        cite_edges = kg.get_edges_by_node(nid1, direction="out", rel_type="cite")
+        assert len(cite_edges) == 1
+        assert cite_edges[0]["relation_type"] == "cite"
+
+
+class TestKGManagerGraphQueries:
+    def test_find_neighbors_depth1(self, kg):
+        nid1 = kg.add_node("Paper", "p1", "One")
+        nid2 = kg.add_node("Paper", "p2", "Two")
+        kg.add_edge(nid1, nid2, "cite")
+        neighbors = kg.find_neighbors(nid1, depth=1)
+        assert len(neighbors) == 1
+        neighbor_node, edge, depth = neighbors[0]
+        assert neighbor_node["entity_id"] == "p2"
+        assert depth == 1
+
+    def test_find_neighbors_depth2(self, kg):
+        nid1 = kg.add_node("Paper", "p1", "One")
+        nid2 = kg.add_node("Paper", "p2", "Two")
+        nid3 = kg.add_node("Paper", "p3", "Three")
+        kg.add_edge(nid1, nid2, "cite")
+        kg.add_edge(nid2, nid3, "cite")
+        neighbors = kg.find_neighbors(nid1, depth=2)
+        entity_ids = {n[0]["entity_id"] for n in neighbors}
+        assert entity_ids == {"p2", "p3"}
+
+    def test_find_shortest_path(self, kg):
+        nid1 = kg.add_node("Paper", "p1", "One")
+        nid2 = kg.add_node("Paper", "p2", "Two")
+        nid3 = kg.add_node("Paper", "p3", "Three")
+        kg.add_edge(nid1, nid2, "cite")
+        kg.add_edge(nid2, nid3, "cite")
+        path = kg.find_shortest_path(nid1, nid3)
+        assert path is not None
+        assert len(path) == 3
+        assert path[0] == nid1
+        assert path[-1] == nid3
+
+    def test_find_shortest_path_no_path(self, kg):
+        nid1 = kg.add_node("Paper", "p1", "One")
+        nid2 = kg.add_node("Paper", "p2", "Two")
+        # no edge between them
+        path = kg.find_shortest_path(nid1, nid2)
+        assert path is None
+
+    def test_find_shortest_path_same_node(self, kg):
+        nid1 = kg.add_node("Paper", "p1", "One")
+        path = kg.find_shortest_path(nid1, nid1)
+        assert path == [nid1]
+
+    def test_find_papers_by_tag(self, kg):
+        paper_nid = kg.add_node("Paper", "paper-llm", "LLM Paper")
+        tag_nid = kg.add_node("Tag", "LLM", "LLM")
+        kg.add_edge(paper_nid, tag_nid, "same_tag")
+        papers = kg.find_papers_by_tag("LLM")
+        assert len(papers) == 1
+        assert papers[0]["entity_id"] == "paper-llm"
+
+    def test_find_papers_by_tag_not_found(self, kg):
+        papers = kg.find_papers_by_tag("NonExistentTag")
+        assert papers == []
+
+    def test_find_mnotes_by_tag(self, kg):
+        kg.add_node("M-Note", "m1", "Note about LLM", abstract="LLM is hot")
+        papers = kg.find_mnotes_by_tag("LLM")
+        assert len(papers) == 1
+        assert papers[0]["entity_id"] == "m1"
+
+    def test_stats(self, kg):
+        kg.add_node("Paper", "p1", "One")
+        kg.add_node("Paper", "p2", "Two")
+        kg.add_node("Tag", "t1", "LLM")
+        nid1 = kg.add_node("Paper", "p1", "One")
+        nid2 = kg.add_node("Paper", "p2", "Two")
+        kg.add_edge(nid1, nid2, "cite")
+        s = kg.stats()
+        assert s["total_nodes"] == 3
+        assert s["nodes_by_type"]["Paper"] == 2
+        assert s["nodes_by_type"]["Tag"] == 1
+        assert s["total_edges"] == 1

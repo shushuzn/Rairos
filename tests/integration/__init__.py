@@ -1,1 +1,5 @@
-IiIiSW50ZWdyYXRpb24gdGVzdHMgZm9yIGFpLXJlc2VhcmNoLW9zLgoKVGhlc2UgdGVzdHMgdmVyaWZ5IHRoYXQgbXVsdGlwbGUgY29tcG9uZW50cyB3b3JrIHRvZ2V0aGVyIGNvcnJlY3RseS4KUnVuIHdpdGg6IHB5dGVzdCB0ZXN0cy9pbnRlZ3JhdGlvbi8gLXYKIiIiCg==
+"""Integration tests for ai-research-os.
+
+These tests verify that multiple components work together correctly.
+Run with: pytest tests/integration/ -v
+"""

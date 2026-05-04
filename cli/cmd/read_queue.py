@@ -1,1 +1,492 @@
-IiIiQ0xJIGNvbW1hbmQ6IHJlYWQtcXVldWUg4oCUIFNtYXJ0IHJlYWRpbmcgcHJpb3JpdHkgcXVldWUuIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgYXJncGFyc2UKZnJvbSBkYXRhY2xhc3NlcyBpbXBvcnQgZGF0YWNsYXNzCmZyb20gdHlwaW5nIGltcG9ydCBEaWN0LCBPcHRpb25hbAoKaW1wb3J0IG9zCmltcG9ydCB3YXJuaW5ncwoKZnJvbSBjbGkuX3NoYXJlZCBpbXBvcnQgZ2V0X2RiLCBDb2xvcnMsIGNvbG9yZWQsIHByaW50X2luZm8KCgpAZGF0YWNsYXNzCmNsYXNzIFF1ZXVlZFBhcGVyOgogICAgIiIiQSBwYXBlciBpbiB0aGUgcmVhZGluZyBxdWV1ZSB3aXRoIHNjb3JpbmcgYnJlYWtkb3duLiIiIgoKICAgIHBhcGVyX2lkOiBzdHIKICAgIHRpdGxlOiBzdHIKICAgIHNjb3JlOiBmbG9hdAogICAgc2VtYW50aWNfc2NvcmU6IGZsb2F0CiAgICBjaXRhdGlvbl9zY29yZTogZmxvYXQKICAgIHRhZ19zY29yZTogZmxvYXQKICAgIHJlY2VuY3lfc2NvcmU6IGZsb2F0CiAgICBhdXRob3JzOiBsaXN0W3N0cl0KICAgIHB1Ymxpc2hlZDogc3RyCiAgICBwcmltYXJ5X2NhdGVnb3J5OiBzdHIKCgpjbGFzcyBSZWFkUXVldWVTY29yZXI6CiAgICAiIiJTY29yZSBwYXBlcnMgZm9yIHJlYWRpbmcgcHJpb3JpdHkgYmFzZWQgb24gbXVsdGlwbGUgc2lnbmFscy4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZiwgZGIpOgogICAgICAgIHNlbGYuZGIgPSBkYgogICAgICAgICMgRGVmYXVsdCB3ZWlnaHRzIChjYW4gYmUgYWRqdXN0ZWQpCiAgICAgICAgc2VsZi5hbHBoYSA9IDAuNCAgIyBzZW1hbnRpYyBzaW1pbGFyaXR5IHdlaWdodAogICAgICAgIHNlbGYuYmV0YSA9IDAuMyAgIyBjaXRhdGlvbiByZWxhdGlvbnNoaXAgd2VpZ2h0CiAgICAgICAgc2VsZi5nYW1tYSA9IDAuMiAgIyB0YWcgb3ZlcmxhcCB3ZWlnaHQKICAgICAgICBzZWxmLmRlbHRhID0gMC4xICAjIHJlY2VuY3kgd2VpZ2h0CgogICAgZGVmIF9nZXRfcmVhZF9wYXBlcnMoc2VsZiwgbGltaXQ6IGludCA9IDUwKSAtPiBsaXN0OgogICAgICAgICIiIkdldCBwYXBlcnMgdGhlIHVzZXIgaGFzIGFscmVhZHkgcmVhZCAocGFyc2VkL2NvbXBsZXRlZCkuIiIiCiAgICAgICAgcmVzdWx0cywgXyA9IHNlbGYuZGIuc2VhcmNoX3BhcGVycygKICAgICAgICAgICAgcXVlcnk9IiIsCiAgICAgICAgICAgIGxpbWl0PWxpbWl0LAogICAgICAgICAgICBwYXJzZV9zdGF0dXM9InBhcnNlZCIsICAjIE9ubHkgZnVsbHkgcGFyc2VkIHBhcGVycwogICAgICAgICkKICAgICAgICByZXR1cm4gcmVzdWx0cyAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCiAgICBkZWYgZ2V0X3JlYWRfcGFwZXJzX2NvbnRleHQoc2VsZiwgbGltaXQ6IGludCA9IDEwKSAtPiBsaXN0W2RpY3RdOgogICAgICAgICIiIlJldHVybiBsaXN0IG9mIGRpY3RzIGZvciBMTE0gY29udGV4dC4iIiIKICAgICAgICByZXN1bHRzLCBfID0gc2VsZi5kYi5zZWFyY2hfcGFwZXJzKHF1ZXJ5PSIiLCBsaW1pdD1saW1pdCwgcGFyc2Vfc3RhdHVzPSJwYXJzZWQiKQogICAgICAgIHJldHVybiBbCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICJ0aXRsZSI6IHAudGl0bGUgb3IgIiIsCiAgICAgICAgICAgICAgICAiYXV0aG9ycyI6IGxpc3QocC5hdXRob3JzKSBpZiBwLmF1dGhvcnMgZWxzZSBbXSwKICAgICAgICAgICAgICAgICJ5ZWFyIjogKHAucHVibGlzaGVkWzo0XSBpZiBwLnB1Ymxpc2hlZCBhbmQgbGVuKHAucHVibGlzaGVkKSA+PSA0IGVsc2UgIk4vQSIpLAogICAgICAgICAgICAgICAgImNhdGVnb3J5IjogKHAucHJpbWFyeV9jYXRlZ29yeSBvciAiIiksCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZm9yIHAgaW4gcmVzdWx0cwogICAgICAgIF0KCiAgICBkZWYgX2NvbXB1dGVfc2VtYW50aWNfc2NvcmVzKHNlbGYsIHJlYWRfcGFwZXJzOiBsaXN0LCBjYW5kaWRhdGVzOiBsaXN0KSAtPiBkaWN0OgogICAgICAgICIiIkNvbXB1dGUgYXZlcmFnZSBzaW1pbGFyaXR5IHRvIHJlYWQgcGFwZXJzLiIiIgogICAgICAgIHNjb3JlczogRGljdFtzdHIsIGZsb2F0XSA9IHt9CiAgICAgICAgaWYgbm90IHJlYWRfcGFwZXJzOgogICAgICAgICAgICByZXR1cm4gc2NvcmVzCgogICAgICAgIGZvciBjYW5kaWRhdGUgaW4gY2FuZGlkYXRlczoKICAgICAgICAgICAgdG90YWxfc2ltID0gMC4wCiAgICAgICAgICAgIHNpbV9jb3VudCA9IDAKICAgICAgICAgICAgZm9yIHJlYWRfcGFwZXIgaW4gcmVhZF9wYXBlcnM6CiAgICAgICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICAgICAgc2ltID0gc2VsZi5kYi5nZXRfc2ltaWxhcml0eShyZWFkX3BhcGVyLnBhcGVyX2lkLCBjYW5kaWRhdGUucGFwZXJfaWQpCiAgICAgICAgICAgICAgICAgICAgaWYgc2ltIGlzIG5vdCBOb25lOgogICAgICAgICAgICAgICAgICAgICAgICB0b3RhbF9zaW0gKz0gc2ltCiAgICAgICAgICAgICAgICAgICAgICAgIHNpbV9jb3VudCArPSAxCiAgICAgICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAgICAgICAgIHBhc3MKICAgICAgICAgICAgc2NvcmVzW2NhbmRpZGF0ZS5wYXBlcl9pZF0gPSB0b3RhbF9zaW0gLyBzaW1fY291bnQgaWYgc2ltX2NvdW50ID4gMCBlbHNlIDAuMAogICAgICAgIHJldHVybiBzY29yZXMKCiAgICBkZWYgX2NvbXB1dGVfY2l0YXRpb25fc2NvcmVzKHNlbGYsIHJlYWRfcGFwZXJzOiBsaXN0LCBjYW5kaWRhdGVzOiBsaXN0KSAtPiBkaWN0OgogICAgICAgICIiIlNjb3JlIHBhcGVycyB0aGF0IGNpdGUgb3IgYXJlIGNpdGVkIGJ5IHJlYWQgcGFwZXJzLiIiIgogICAgICAgIHNjb3JlcyA9IHt9CiAgICAgICAgcmVhZF9pZHMgPSB7cC5wYXBlcl9pZCBmb3IgcCBpbiByZWFkX3BhcGVyc30KCiAgICAgICAgZm9yIGNhbmRpZGF0ZSBpbiBjYW5kaWRhdGVzOgogICAgICAgICAgICBzY29yZSA9IDAuMAogICAgICAgICAgICAjIENoZWNrIGlmIHRoaXMgY2FuZGlkYXRlIGNpdGVzIGFueSByZWFkIHBhcGVyCiAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgIGVkZ2VzID0gc2VsZi5kYi5nZXRfZWRnZXNfYnlfbm9kZSgKICAgICAgICAgICAgICAgICAgICBjYW5kaWRhdGUucGFwZXJfaWQsIGRpcmVjdGlvbj0ib3V0IiwgcmVsX3R5cGU9ImNpdGUiCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICBmb3IgZWRnZSBpbiBlZGdlczoKICAgICAgICAgICAgICAgICAgICBpZiBlZGdlLmdldCgidGFyZ2V0X2lkIikgaW4gcmVhZF9pZHM6CiAgICAgICAgICAgICAgICAgICAgICAgIHNjb3JlICs9IDEuMAogICAgICAgICAgICAgICAgIyBDaGVjayBpZiBhbnkgcmVhZCBwYXBlciBjaXRlcyB0aGlzIGNhbmRpZGF0ZQogICAgICAgICAgICAgICAgZWRnZXNfaW4gPSBzZWxmLmRiLmdldF9lZGdlc19ieV9ub2RlKAogICAgICAgICAgICAgICAgICAgIGNhbmRpZGF0ZS5wYXBlcl9pZCwgZGlyZWN0aW9uPSJpbiIsIHJlbF90eXBlPSJjaXRlIgogICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgZm9yIGVkZ2UgaW4gZWRnZXNfaW46CiAgICAgICAgICAgICAgICAgICAgaWYgZWRnZS5nZXQoInNvdXJjZV9pZCIpIGluIHJlYWRfaWRzOgogICAgICAgICAgICAgICAgICAgICAgICBzY29yZSArPSAwLjUgICMgU2xpZ2h0bHkgbG93ZXIgd2VpZ2h0IGZvciBiZWluZyBjaXRlZAogICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAgICAgcGFzcwogICAgICAgICAgICBzY29yZXNbY2FuZGlkYXRlLnBhcGVyX2lkXSA9IG1pbihzY29yZSAvIDUuMCwgMS4wKSAgIyBOb3JtYWxpemUgdG8gMC0xCiAgICAgICAgcmV0dXJuIHNjb3JlcwoKICAgIGRlZiBfY29tcHV0ZV90YWdfc2NvcmVzKHNlbGYsIHJlYWRfcGFwZXJzOiBsaXN0LCBjYW5kaWRhdGVzOiBsaXN0KSAtPiBkaWN0OgogICAgICAgICIiIlNjb3JlIGJhc2VkIG9uIHRhZyBvdmVybGFwIHdpdGggcmVhZCBwYXBlcnMuIiIiCiAgICAgICAgc2NvcmVzID0ge30KICAgICAgICAjIEdldCB0YWdzIGZyb20gcmVhZCBwYXBlcnMKICAgICAgICByZWFkX3RhZ3MgPSBzZXQoKQogICAgICAgIGZvciBwIGluIHJlYWRfcGFwZXJzOgogICAgICAgICAgICBpZiBoYXNhdHRyKHAsICJjYXRlZ29yaWVzIikgYW5kIHAuY2F0ZWdvcmllczoKICAgICAgICAgICAgICAgIGZvciB0YWcgaW4gcC5jYXRlZ29yaWVzLnNwbGl0KCIsIik6CiAgICAgICAgICAgICAgICAgICAgcmVhZF90YWdzLmFkZCh0YWcuc3RyaXAoKS5sb3dlcigpKQoKICAgICAgICBmb3IgY2FuZGlkYXRlIGluIGNhbmRpZGF0ZXM6CiAgICAgICAgICAgIGlmIGhhc2F0dHIoY2FuZGlkYXRlLCAiY2F0ZWdvcmllcyIpIGFuZCBjYW5kaWRhdGUuY2F0ZWdvcmllczoKICAgICAgICAgICAgICAgIGNhbmRfdGFncyA9IHNldChjLmxvd2VyKCkgZm9yIGMgaW4gY2FuZGlkYXRlLmNhdGVnb3JpZXMuc3BsaXQoIiwiKSkKICAgICAgICAgICAgICAgIG92ZXJsYXAgPSBsZW4oY2FuZF90YWdzICYgcmVhZF90YWdzKQogICAgICAgICAgICAgICAgc2NvcmVzW2NhbmRpZGF0ZS5wYXBlcl9pZF0gPSBtaW4ob3ZlcmxhcCAvIDMuMCwgMS4wKSAgIyAzKyBvdmVybGFwcGluZyB0YWdzID0gbWF4CiAgICAgICAgICAgIGVsc2U6CiAgICAgICAgICAgICAgICBzY29yZXNbY2FuZGlkYXRlLnBhcGVyX2lkXSA9IDAuMAogICAgICAgIHJldHVybiBzY29yZXMKCiAgICBkZWYgX2NvbXB1dGVfcmVjZW5jeV9zY29yZXMoc2VsZiwgY2FuZGlkYXRlczogbGlzdCkgLT4gZGljdDoKICAgICAgICAiIiJTY29yZSBiYXNlZCBvbiBwYXBlciByZWNlbmN5IChwcmVmZXIgcmVjZW50IHBhcGVycykuIiIiCiAgICAgICAgaW1wb3J0IHRpbWUKCiAgICAgICAgc2NvcmVzID0ge30KICAgICAgICBjdXJyZW50X3llYXIgPSBpbnQodGltZS5zdHJmdGltZSgiJVkiKSkKCiAgICAgICAgZm9yIGNhbmRpZGF0ZSBpbiBjYW5kaWRhdGVzOgogICAgICAgICAgICB5ZWFyID0gY3VycmVudF95ZWFyCiAgICAgICAgICAgIGlmIGhhc2F0dHIoY2FuZGlkYXRlLCAicHVibGlzaGVkIikgYW5kIGNhbmRpZGF0ZS5wdWJsaXNoZWQ6CiAgICAgICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICAgICAgeWVhciA9IGludChjYW5kaWRhdGUucHVibGlzaGVkWzo0XSkKICAgICAgICAgICAgICAgIGV4Y2VwdCAoVmFsdWVFcnJvciwgVHlwZUVycm9yKToKICAgICAgICAgICAgICAgICAgICBwYXNzCiAgICAgICAgICAgICMgU2NvcmU6IHBhcGVycyBmcm9tIGN1cnJlbnQgeWVhciA9IDEuMCwgZGVjcmVhc2luZyAwLjEgcGVyIHllYXIgb2xkZXIKICAgICAgICAgICAgc2NvcmUgPSBtYXgoMC4wLCAxLjAgLSAoY3VycmVudF95ZWFyIC0geWVhcikgKiAwLjEpCiAgICAgICAgICAgIHNjb3Jlc1tjYW5kaWRhdGUucGFwZXJfaWRdID0gbWluKHNjb3JlLCAxLjApCiAgICAgICAgcmV0dXJuIHNjb3JlcwoKICAgIGRlZiBzY29yZV9wYXBlcnMoc2VsZiwgY2FuZGlkYXRlczogbGlzdCwgbGltaXQ6IGludCA9IDIwKSAtPiBsaXN0W1F1ZXVlZFBhcGVyXToKICAgICAgICAiIiJTY29yZSBhbmQgcmFuayBjYW5kaWRhdGUgcGFwZXJzIGZvciByZWFkaW5nIHByaW9yaXR5LiIiIgogICAgICAgIHJlYWRfcGFwZXJzID0gc2VsZi5fZ2V0X3JlYWRfcGFwZXJzKGxpbWl0PTMwKQoKICAgICAgICAjIENvbXB1dGUgaW5kaXZpZHVhbCBzY29yZXMKICAgICAgICBzZW1hbnRpYyA9IHNlbGYuX2NvbXB1dGVfc2VtYW50aWNfc2NvcmVzKHJlYWRfcGFwZXJzLCBjYW5kaWRhdGVzKQogICAgICAgIGNpdGF0aW9uID0gc2VsZi5fY29tcHV0ZV9jaXRhdGlvbl9zY29yZXMocmVhZF9wYXBlcnMsIGNhbmRpZGF0ZXMpCiAgICAgICAgdGFnID0gc2VsZi5fY29tcHV0ZV90YWdfc2NvcmVzKHJlYWRfcGFwZXJzLCBjYW5kaWRhdGVzKQogICAgICAgIHJlY2VuY3kgPSBzZWxmLl9jb21wdXRlX3JlY2VuY3lfc2NvcmVzKGNhbmRpZGF0ZXMpCgogICAgICAgICMgQ29tYmluZSBzY29yZXMKICAgICAgICByZXN1bHRzID0gW10KICAgICAgICBmb3IgY2FuZGlkYXRlIGluIGNhbmRpZGF0ZXM6CiAgICAgICAgICAgIHNfc2VtID0gc2VtYW50aWMuZ2V0KGNhbmRpZGF0ZS5wYXBlcl9pZCwgMC4wKQogICAgICAgICAgICBzX2NpdCA9IGNpdGF0aW9uLmdldChjYW5kaWRhdGUucGFwZXJfaWQsIDAuMCkKICAgICAgICAgICAgc190YWcgPSB0YWcuZ2V0KGNhbmRpZGF0ZS5wYXBlcl9pZCwgMC4wKQogICAgICAgICAgICBzX3JlYyA9IHJlY2VuY3kuZ2V0KGNhbmRpZGF0ZS5wYXBlcl9pZCwgMC4wKQoKICAgICAgICAgICAgIyBXZWlnaHRlZCBjb21iaW5hdGlvbgogICAgICAgICAgICBjb21iaW5lZCA9ICgKICAgICAgICAgICAgICAgIHNlbGYuYWxwaGEgKiBzX3NlbSArIHNlbGYuYmV0YSAqIHNfY2l0ICsgc2VsZi5nYW1tYSAqIHNfdGFnICsgc2VsZi5kZWx0YSAqIHNfcmVjCiAgICAgICAgICAgICkKCiAgICAgICAgICAgICMgQm9vc3QgaWYgd2UgaGF2ZSBhbnkgc3Ryb25nIHNpZ25hbAogICAgICAgICAgICBpZiBtYXgoc19zZW0sIHNfY2l0LCBzX3RhZykgPiAwLjU6CiAgICAgICAgICAgICAgICBjb21iaW5lZCA9IG1pbihjb21iaW5lZCAqIDEuMiwgMS4wKQoKICAgICAgICAgICAgcmVzdWx0cy5hcHBlbmQoCiAgICAgICAgICAgICAgICBRdWV1ZWRQYXBlcigKICAgICAgICAgICAgICAgICAgICBwYXBlcl9pZD1jYW5kaWRhdGUucGFwZXJfaWQsCiAgICAgICAgICAgICAgICAgICAgdGl0bGU9Y2FuZGlkYXRlLnRpdGxlLAogICAgICAgICAgICAgICAgICAgIHNjb3JlPWNvbWJpbmVkLAogICAgICAgICAgICAgICAgICAgIHNlbWFudGljX3Njb3JlPXNfc2VtLAogICAgICAgICAgICAgICAgICAgIGNpdGF0aW9uX3Njb3JlPXNfY2l0LAogICAgICAgICAgICAgICAgICAgIHRhZ19zY29yZT1zX3RhZywKICAgICAgICAgICAgICAgICAgICByZWNlbmN5X3Njb3JlPXNfcmVjLAogICAgICAgICAgICAgICAgICAgIGF1dGhvcnM9Y2FuZGlkYXRlLmF1dGhvcnMgaWYgaGFzYXR0cihjYW5kaWRhdGUsICJhdXRob3JzIikgZWxzZSBbXSwKICAgICAgICAgICAgICAgICAgICBwdWJsaXNoZWQ9Y2FuZGlkYXRlLnB1Ymxpc2hlZCBpZiBoYXNhdHRyKGNhbmRpZGF0ZSwgInB1Ymxpc2hlZCIpIGVsc2UgIiIsCiAgICAgICAgICAgICAgICAgICAgcHJpbWFyeV9jYXRlZ29yeT1jYW5kaWRhdGUucHJpbWFyeV9jYXRlZ29yeQogICAgICAgICAgICAgICAgICAgIGlmIGhhc2F0dHIoY2FuZGlkYXRlLCAicHJpbWFyeV9jYXRlZ29yeSIpCiAgICAgICAgICAgICAgICAgICAgZWxzZSAiIiwKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgKQoKICAgICAgICAjIFNvcnQgYnkgY29tYmluZWQgc2NvcmUKICAgICAgICByZXN1bHRzLnNvcnQoa2V5PWxhbWJkYSB4OiB4LnNjb3JlLCByZXZlcnNlPVRydWUpCiAgICAgICAgcmV0dXJuIHJlc3VsdHNbOmxpbWl0XQoKCmRlZiBfYnVpbGRfcmVhZF9xdWV1ZV9wYXJzZXIoc3VicGFyc2VycykgLT4gYXJncGFyc2UuQXJndW1lbnRQYXJzZXI6CiAgICBwID0gc3VicGFyc2Vycy5hZGRfcGFyc2VyKAogICAgICAgICJyZWFkLXF1ZXVlIiwKICAgICAgICBoZWxwPSJTbWFydCByZWFkaW5nIHByaW9yaXR5IHF1ZXVlIGJhc2VkIG9uIHlvdXIgcmVhZGluZyBoaXN0b3J5IiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWxpbWl0IiwKICAgICAgICB0eXBlPWludCwKICAgICAgICBkZWZhdWx0PTEwLAogICAgICAgIGhlbHA9Ik1heCBwYXBlcnMgdG8gcmV0dXJuIChkZWZhdWx0OiAxMCkiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tdGFnIiwKICAgICAgICBhY3Rpb249ImFwcGVuZCIsCiAgICAgICAgaGVscD0iRmlsdGVyIGJ5IHRhZy9maWVsZCBvZiBpbnRlcmVzdCAocmVwZWF0YWJsZSkiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0teWVhciIsCiAgICAgICAgdHlwZT1pbnQsCiAgICAgICAgaGVscD0iRmlsdGVyIGJ5IG1pbmltdW0geWVhciIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1taW4tc2ltaWxhcml0eSIsCiAgICAgICAgdHlwZT1mbG9hdCwKICAgICAgICBkZWZhdWx0PTAuMCwKICAgICAgICBoZWxwPSJNaW5pbXVtIHNlbWFudGljIHNpbWlsYXJpdHkgdGhyZXNob2xkIChkZWZhdWx0OiAwLjApIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWZvcm1hdCIsCiAgICAgICAgY2hvaWNlcz1bInRhYmxlIiwgImpzb24iLCAic2NvcmUtYnJlYWtkb3duIiwgIndhcnAiXSwKICAgICAgICBkZWZhdWx0PSJ0YWJsZSIsCiAgICAgICAgaGVscD0iT3V0cHV0IGZvcm1hdCAoZGVmYXVsdDogdGFibGUpIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWV4cGxhaW4iLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iR2VuZXJhdGUgTExNIGV4cGxhbmF0aW9ucyBmb3Igd2h5IGVhY2ggcGFwZXIgaXMgcmVjb21tZW5kZWQiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tZXhwbGFpbi1tb2RlbCIsCiAgICAgICAgdHlwZT1zdHIsCiAgICAgICAgZGVmYXVsdD1Ob25lLAogICAgICAgIGhlbHA9IkxMTSBtb2RlbCBmb3IgZXhwbGFuYXRpb25zIChkZWZhdWx0OiBmcm9tIGNvbmZpZykiLAogICAgKQogICAgIyBSZWFkaW5nIHN0YXR1cyBtYW5hZ2VtZW50CiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1zdGFydCIsCiAgICAgICAgbWV0YXZhcj0iUEFQRVJfSUQiLAogICAgICAgIGhlbHA9IlN0YXJ0IHJlYWRpbmcgYSBwYXBlciAoc2V0IHN0YXR1cyB0byAncmVhZGluZycpIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWRvbmUiLAogICAgICAgIG1ldGF2YXI9IlBBUEVSX0lEIiwKICAgICAgICBoZWxwPSJNYXJrIGEgcGFwZXIgYXMgY29tcGxldGVkIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLXN0YXR1cyIsCiAgICAgICAgbWV0YXZhcj0iUEFQRVJfSUQiLAogICAgICAgIG5hcmdzPSI/IiwKICAgICAgICBjb25zdD0iIiwKICAgICAgICBoZWxwPSJDaGVjayByZWFkaW5nIHN0YXR1cyBvZiBhIHBhcGVyLCBvciBsaXN0IGFsbCByZWFkaW5nIHBhcGVycyIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1yZXNldCIsCiAgICAgICAgbWV0YXZhcj0iUEFQRVJfSUQiLAogICAgICAgIGhlbHA9IlJlc2V0IHJlYWRpbmcgc3RhdHVzIHRvICd1bnJlYWQnIiwKICAgICkKICAgIHJldHVybiBwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKCmRlZiBfaGFuZGxlX3N0YXR1c19hY3Rpb24oYXJnczogYXJncGFyc2UuTmFtZXNwYWNlLCBkYikgLT4gT3B0aW9uYWxbaW50XToKICAgICIiIkhhbmRsZSAtLXN0YXJ0LCAtLWRvbmUsIC0tc3RhdHVzLCAtLXJlc2V0IGFjdGlvbnMuIFJldHVybnMgZXhpdCBjb2RlIG9yIE5vbmUgdG8gY29udGludWUuIiIiCiAgICBmcm9tIGNsaS5fc2hhcmVkIGltcG9ydCBwcmludF9zdWNjZXNzLCBwcmludF9lcnJvciwgcHJpbnRfaW5mbwoKICAgICMgLS1zdGF0dXM6IHNob3cgc3RhdHVzCiAgICBpZiBhcmdzLnN0YXR1cyBpcyBub3QgTm9uZToKICAgICAgICBpZiBhcmdzLnN0YXR1cyA9PSAiIjoKICAgICAgICAgICAgIyBMaXN0IGFsbCByZWFkaW5nIHBhcGVycwogICAgICAgICAgICByZWFkaW5nID0gZGIuZ2V0X3BhcGVyc19ieV9yZWFkaW5nX3N0YXR1cygicmVhZGluZyIsIGxpbWl0PTUwKQogICAgICAgICAgICBjb21wbGV0ZWQgPSBkYi5nZXRfcGFwZXJzX2J5X3JlYWRpbmdfc3RhdHVzKCJjb21wbGV0ZWQiLCBsaW1pdD01MCkKICAgICAgICAgICAgaWYgbm90IHJlYWRpbmcgYW5kIG5vdCBjb21wbGV0ZWQ6CiAgICAgICAgICAgICAgICBwcmludF9pbmZvKCJObyBwYXBlcnMgY3VycmVudGx5IHJlYWRpbmcgb3IgY29tcGxldGVkLiIpCiAgICAgICAgICAgIGlmIHJlYWRpbmc6CiAgICAgICAgICAgICAgICBwcmludChjb2xvcmVkKCLwn5OWIOato+WcqOmYheivuyIsIENvbG9ycy5IRUFERVIpKQogICAgICAgICAgICAgICAgcHJpbnQoIi0iICogNjApCiAgICAgICAgICAgICAgICBmb3IgaSwgcCBpbiBlbnVtZXJhdGUocmVhZGluZywgMSk6CiAgICAgICAgICAgICAgICAgICAgc3RhcnRlZCA9IHAucmVhZGluZ19zdGFydGVkX2F0IG9yICJOL0EiCiAgICAgICAgICAgICAgICAgICAgcHJpbnQoZiIgIHtpfS4ge3AuaWR9IOKAlCB7cC50aXRsZVs6NTBdfSIpCiAgICAgICAgICAgICAgICAgICAgcHJpbnQoZiIgICAgIOW8gOWni+S6jjoge3N0YXJ0ZWR9IikKICAgICAgICAgICAgICAgIHByaW50KCkKICAgICAgICAgICAgaWYgY29tcGxldGVkOgogICAgICAgICAgICAgICAgcHJpbnQoY29sb3JlZCgi4pyFIOW3suWujOaIkCIsIENvbG9ycy5IRUFERVIpKQogICAgICAgICAgICAgICAgcHJpbnQoIi0iICogNjApCiAgICAgICAgICAgICAgICBmb3IgaSwgcCBpbiBlbnVtZXJhdGUoY29tcGxldGVkLCAxKToKICAgICAgICAgICAgICAgICAgICBjb21wbGV0ZWRfYXQgPSBwLnJlYWRpbmdfY29tcGxldGVkX2F0IG9yICJOL0EiCiAgICAgICAgICAgICAgICAgICAgcHJpbnQoZiIgIHtpfS4ge3AuaWR9IOKAlCB7cC50aXRsZVs6NTBdfSIpCiAgICAgICAgICAgICAgICAgICAgcHJpbnQoZiIgICAgIOWujOaIkOS6jjoge2NvbXBsZXRlZF9hdH0iKQogICAgICAgICAgICByZXR1cm4gMAogICAgICAgIGVsc2U6CiAgICAgICAgICAgICMgU2hvdyBzcGVjaWZpYyBwYXBlciBzdGF0dXMKICAgICAgICAgICAgaW5mbyA9IGRiLmdldF9yZWFkaW5nX3N0YXR1cyhhcmdzLnN0YXR1cykKICAgICAgICAgICAgaWYgaW5mbyBpcyBOb25lOgogICAgICAgICAgICAgICAgcHJpbnRfZXJyb3IoZiJQYXBlciBub3QgZm91bmQ6IHthcmdzLnN0YXR1c30iKQogICAgICAgICAgICAgICAgcmV0dXJuIDEKICAgICAgICAgICAgdGl0bGUgPSBkYi5nZXRfcGFwZXJfdGl0bGUoYXJncy5zdGF0dXMpCiAgICAgICAgICAgIHN0YXR1c19tYXAgPSB7InVucmVhZCI6ICLmnKror7siLCAicmVhZGluZyI6ICLwn5OWIOato+WcqOmYheivuyIsICJjb21wbGV0ZWQiOiAi4pyFIOW3suWujOaIkCJ9CiAgICAgICAgICAgIHN0YXR1c190ZXh0ID0gc3RhdHVzX21hcC5nZXQoaW5mb1sic3RhdHVzIl0sIGluZm9bInN0YXR1cyJdKQogICAgICAgICAgICBwcmludChmIvCfk4Qge2FyZ3Muc3RhdHVzfSIpCiAgICAgICAgICAgIHByaW50KGYiICAg5qCH6aKYOiB7dGl0bGVbOjYwXSBpZiB0aXRsZSBlbHNlICdOL0EnfSIpCiAgICAgICAgICAgIHByaW50KGYiICAg54q25oCBOiB7c3RhdHVzX3RleHR9IikKICAgICAgICAgICAgaWYgaW5mb1sic3RhcnRlZF9hdCJdOgogICAgICAgICAgICAgICAgcHJpbnQoZiIgICDlvIDlp4vkuo46IHtpbmZvWydzdGFydGVkX2F0J119IikKICAgICAgICAgICAgaWYgaW5mb1siY29tcGxldGVkX2F0Il06CiAgICAgICAgICAgICAgICBwcmludChmIiAgIOWujOaIkOS6jjoge2luZm9bJ2NvbXBsZXRlZF9hdCddfSIpCiAgICAgICAgICAgIHJldHVybiAwCgogICAgIyAtLXN0YXJ0OiBiZWdpbiByZWFkaW5nCiAgICBpZiBhcmdzLnN0YXJ0OgogICAgICAgIGlmIG5vdCBkYi5wYXBlcl9leGlzdHMoYXJncy5zdGFydCk6CiAgICAgICAgICAgIHByaW50X2Vycm9yKGYiUGFwZXIgbm90IGZvdW5kOiB7YXJncy5zdGFydH0iKQogICAgICAgICAgICByZXR1cm4gMQogICAgICAgIHRpdGxlID0gZGIuZ2V0X3BhcGVyX3RpdGxlKGFyZ3Muc3RhcnQpCiAgICAgICAgZGIudXBkYXRlX3JlYWRpbmdfc3RhdHVzKGFyZ3Muc3RhcnQsICJyZWFkaW5nIikKICAgICAgICBwcmludF9zdWNjZXNzKGYiU3RhcnRlZCByZWFkaW5nOiB7YXJncy5zdGFydH0iKQogICAgICAgIGlmIHRpdGxlOgogICAgICAgICAgICBwcmludChmIiAgIHt0aXRsZVs6NjBdfSIpCiAgICAgICAgcmV0dXJuIDAKCiAgICAjIC0tZG9uZTogbWFyayBjb21wbGV0ZWQKICAgIGlmIGFyZ3MuZG9uZToKICAgICAgICBpZiBub3QgZGIucGFwZXJfZXhpc3RzKGFyZ3MuZG9uZSk6CiAgICAgICAgICAgIHByaW50X2Vycm9yKGYiUGFwZXIgbm90IGZvdW5kOiB7YXJncy5kb25lfSIpCiAgICAgICAgICAgIHJldHVybiAxCiAgICAgICAgdGl0bGUgPSBkYi5nZXRfcGFwZXJfdGl0bGUoYXJncy5kb25lKQogICAgICAgIGRiLnVwZGF0ZV9yZWFkaW5nX3N0YXR1cyhhcmdzLmRvbmUsICJjb21wbGV0ZWQiKQogICAgICAgIHByaW50X3N1Y2Nlc3MoZiJNYXJrZWQgYXMgY29tcGxldGVkOiB7YXJncy5kb25lfSIpCiAgICAgICAgaWYgdGl0bGU6CiAgICAgICAgICAgIHByaW50KGYiICAge3RpdGxlWzo2MF19IikKICAgICAgICByZXR1cm4gMAoKICAgICMgLS1yZXNldDogcmVzZXQgdG8gdW5yZWFkCiAgICBpZiBhcmdzLnJlc2V0OgogICAgICAgIGlmIG5vdCBkYi5wYXBlcl9leGlzdHMoYXJncy5yZXNldCk6CiAgICAgICAgICAgIHByaW50X2Vycm9yKGYiUGFwZXIgbm90IGZvdW5kOiB7YXJncy5yZXNldH0iKQogICAgICAgICAgICByZXR1cm4gMQogICAgICAgIHRpdGxlID0gZGIuZ2V0X3BhcGVyX3RpdGxlKGFyZ3MucmVzZXQpCiAgICAgICAgZGIudXBkYXRlX3JlYWRpbmdfc3RhdHVzKGFyZ3MucmVzZXQsICJ1bnJlYWQiKQogICAgICAgIHByaW50X3N1Y2Nlc3MoZiJSZXNldCByZWFkaW5nIHN0YXR1czoge2FyZ3MucmVzZXR9IikKICAgICAgICBpZiB0aXRsZToKICAgICAgICAgICAgcHJpbnQoZiIgICB7dGl0bGVbOjYwXX0iKQogICAgICAgIHJldHVybiAwCgogICAgcmV0dXJuIE5vbmUgICMgTm8gc3RhdHVzIGFjdGlvbiB0YWtlbiwgY29udGludWUgd2l0aCBub3JtYWwgZmxvdwoKCmRlZiBfcnVuX3JlYWRfcXVldWUoYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKSAtPiBpbnQ6CiAgICBmcm9tIGNsaS5fc2hhcmVkIGltcG9ydCBsb2FkX2RvdGVudgoKICAgIGxvYWRfZG90ZW52KCkKCiAgICBkYiA9IGdldF9kYigpCiAgICBkYi5pbml0KCkKCiAgICAjIEhhbmRsZSByZWFkaW5nIHN0YXR1cyBhY3Rpb25zIGZpcnN0CiAgICByZXN1bHQgPSBfaGFuZGxlX3N0YXR1c19hY3Rpb24oYXJncywgZGIpCiAgICBpZiByZXN1bHQgaXMgbm90IE5vbmU6CiAgICAgICAgcmV0dXJuIHJlc3VsdAoKICAgICMgR2V0IGNhbmRpZGF0ZSBwYXBlcnMg4oCUIGV4Y2x1ZGUgY29tcGxldGVkIHBhcGVycyBmcm9tIHJlYWRpbmcgcXVldWUKICAgIGNhbmRpZGF0ZXMsIHRvdGFsID0gZGIuc2VhcmNoX3BhcGVycygKICAgICAgICBxdWVyeT0iIiwKICAgICAgICBsaW1pdD0yMDAsCiAgICApCgogICAgIyBGaWx0ZXIgb3V0IGNvbXBsZXRlZCBwYXBlcnMgZnJvbSByZWNvbW1lbmRhdGlvbnMKICAgIGNvbXBsZXRlZF9pZHMgPSB7cC5pZCBmb3IgcCBpbiBkYi5nZXRfcGFwZXJzX2J5X3JlYWRpbmdfc3RhdHVzKCJjb21wbGV0ZWQiLCBsaW1pdD0xMDAwKX0KICAgIGNhbmRpZGF0ZXMgPSBbcCBmb3IgcCBpbiBjYW5kaWRhdGVzIGlmIHAucGFwZXJfaWQgbm90IGluIGNvbXBsZXRlZF9pZHNdCgogICAgIyBBcHBseSBmaWx0ZXJzCiAgICBpZiBhcmdzLnRhZzoKICAgICAgICBmaWx0ZXJlZCA9IFtdCiAgICAgICAgZm9yIHAgaW4gY2FuZGlkYXRlczoKICAgICAgICAgICAgaWYgaGFzYXR0cihwLCAiY2F0ZWdvcmllcyIpIGFuZCBwLmNhdGVnb3JpZXM6CiAgICAgICAgICAgICAgICBwX3RhZ3MgPSBzZXQoYy5sb3dlcigpIGZvciBjIGluIHAuY2F0ZWdvcmllcy5zcGxpdCgiLCIpKQogICAgICAgICAgICAgICAgaWYgYW55KHQubG93ZXIoKSBpbiBwX3RhZ3MgZm9yIHQgaW4gYXJncy50YWcpOgogICAgICAgICAgICAgICAgICAgIGZpbHRlcmVkLmFwcGVuZChwKQogICAgICAgIGNhbmRpZGF0ZXMgPSBmaWx0ZXJlZAoKICAgIGlmIGFyZ3MueWVhcjoKICAgICAgICBjYW5kaWRhdGVzID0gWwogICAgICAgICAgICBwCiAgICAgICAgICAgIGZvciBwIGluIGNhbmRpZGF0ZXMKICAgICAgICAgICAgaWYgaGFzYXR0cihwLCAicHVibGlzaGVkIikKICAgICAgICAgICAgYW5kIHAucHVibGlzaGVkCiAgICAgICAgICAgIGFuZCBwLnB1Ymxpc2hlZFs6NF0uaXNkaWdpdCgpCiAgICAgICAgICAgIGFuZCBpbnQocC5wdWJsaXNoZWRbOjRdKSA+PSBhcmdzLnllYXIKICAgICAgICBdCgogICAgIyBTY29yZSBhbmQgcmFuawogICAgc2NvcmVyID0gUmVhZFF1ZXVlU2NvcmVyKGRiKQogICAgcmVzdWx0cyA9IHNjb3Jlci5zY29yZV9wYXBlcnMoY2FuZGlkYXRlcywgbGltaXQ9YXJncy5saW1pdCkKCiAgICAjIEZpbHRlciBieSBtaW4gc2ltaWxhcml0eSBpZiBzcGVjaWZpZWQKICAgIGlmIGFyZ3MubWluX3NpbWlsYXJpdHkgPiAwOgogICAgICAgIHJlc3VsdHMgPSBbciBmb3IgciBpbiByZXN1bHRzIGlmIHIuc2VtYW50aWNfc2NvcmUgPj0gYXJncy5taW5fc2ltaWxhcml0eV0KCiAgICBpZiBub3QgcmVzdWx0czoKICAgICAgICBwcmludF9pbmZvKAogICAgICAgICAgICAiTm8gcGFwZXJzIG1hdGNoIHlvdXIgY3JpdGVyaWEuIFRyeSByZWxheGluZyBmaWx0ZXJzIG9yIGFkZCBtb3JlIHBhcGVycyB0byB5b3VyIGxpYnJhcnkuIgogICAgICAgICkKICAgICAgICByZXR1cm4gMAoKICAgICMgR2VuZXJhdGUgTExNIGV4cGxhbmF0aW9ucyBpZiByZXF1ZXN0ZWQKICAgIGV4cGxhbmF0aW9uczogRGljdFtzdHIsIE9wdGlvbmFsW3N0cl1dID0ge30KICAgIGlmIGFyZ3MuZXhwbGFpbjoKICAgICAgICBhcGlfa2V5ID0gb3MuZ2V0ZW52KCJPUEVOQUlfQVBJX0tFWSIpCiAgICAgICAgaWYgbm90IGFwaV9rZXk6CiAgICAgICAgICAgIHByaW50X2luZm8oCiAgICAgICAgICAgICAgICAiT1BFTkFJX0FQSV9LRVkgbm90IHNldC4gU2tpcHBpbmcgZXhwbGFuYXRpb25zLiBTZXQgaXQgdG8gZW5hYmxlIExMTSBleHBsYW5hdGlvbnMuIgogICAgICAgICAgICApCiAgICAgICAgZWxzZToKICAgICAgICAgICAgZnJvbSBjb25maWcgaW1wb3J0IERFRkFVTFRfTExNX01PREVMX0NMSSwgREVGQVVMVF9PUEVOQUlfQkFTRV9VUkwKICAgICAgICAgICAgZnJvbSBsbG0uZ2VuZXJhdGUgaW1wb3J0IGFpX2dlbmVyYXRlX3JlYWRpbmdfcmVjb21tZW5kYXRpb25fZXhwbGFuYXRpb24KCiAgICAgICAgICAgIG1vZGVsID0gYXJncy5leHBsYWluX21vZGVsIG9yIERFRkFVTFRfTExNX01PREVMX0NMSQogICAgICAgICAgICBiYXNlX3VybCA9IERFRkFVTFRfT1BFTkFJX0JBU0VfVVJMCiAgICAgICAgICAgIHJlYWRfY29udGV4dCA9IHNjb3Jlci5nZXRfcmVhZF9wYXBlcnNfY29udGV4dChsaW1pdD0xMCkKCiAgICAgICAgICAgIGZvciByIGluIHJlc3VsdHM6CiAgICAgICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICAgICAgZXhwbGFuYXRpb24gPSBhaV9nZW5lcmF0ZV9yZWFkaW5nX3JlY29tbWVuZGF0aW9uX2V4cGxhbmF0aW9uKAogICAgICAgICAgICAgICAgICAgICAgICBwYXBlcl90aXRsZT1yLnRpdGxlLAogICAgICAgICAgICAgICAgICAgICAgICBwYXBlcl9hdXRob3JzPXIuYXV0aG9ycywKICAgICAgICAgICAgICAgICAgICAgICAgcGFwZXJfeWVhcj1yLnB1Ymxpc2hlZFs6NF0gaWYgci5wdWJsaXNoZWQgZWxzZSAiTi9BIiwKICAgICAgICAgICAgICAgICAgICAgICAgcGFwZXJfY2F0ZWdvcnk9ci5wcmltYXJ5X2NhdGVnb3J5LAogICAgICAgICAgICAgICAgICAgICAgICBzY29yZT1yLnNjb3JlLAogICAgICAgICAgICAgICAgICAgICAgICBzZW1hbnRpY19zY29yZT1yLnNlbWFudGljX3Njb3JlLAogICAgICAgICAgICAgICAgICAgICAgICBjaXRhdGlvbl9zY29yZT1yLmNpdGF0aW9uX3Njb3JlLAogICAgICAgICAgICAgICAgICAgICAgICB0YWdfc2NvcmU9ci50YWdfc2NvcmUsCiAgICAgICAgICAgICAgICAgICAgICAgIHJlY2VuY3lfc2NvcmU9ci5yZWNlbmN5X3Njb3JlLAogICAgICAgICAgICAgICAgICAgICAgICByZWFkX3BhcGVyc19jb250ZXh0PXJlYWRfY29udGV4dCwKICAgICAgICAgICAgICAgICAgICAgICAgYmFzZV91cmw9YmFzZV91cmwsCiAgICAgICAgICAgICAgICAgICAgICAgIGFwaV9rZXk9YXBpX2tleSwKICAgICAgICAgICAgICAgICAgICAgICAgbW9kZWw9bW9kZWwsCiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgICAgIGV4cGxhbmF0aW9uc1tyLnBhcGVyX2lkXSA9IGV4cGxhbmF0aW9uCiAgICAgICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgICAgICAgICAgICAgd2FybmluZ3Mud2FybihmIkxMTSBleHBsYW5hdGlvbiBmYWlsZWQgZm9yIHtyLnBhcGVyX2lkfToge2V9Iiwgc3RhY2tsZXZlbD0yKQogICAgICAgICAgICAgICAgICAgIGV4cGxhbmF0aW9uc1tyLnBhcGVyX2lkXSA9IE5vbmUKCiAgICBpZiBhcmdzLmZvcm1hdCA9PSAid2FycCI6CiAgICAgICAgZnJvbSBjbGkud2FycCBpbXBvcnQgV2FycEJsb2NrcwoKICAgICAgICByb3dzID0gW10KICAgICAgICBmb3IgaSwgciBpbiBlbnVtZXJhdGUocmVzdWx0cywgMSk6CiAgICAgICAgICAgIGJhcl9sZW4gPSBpbnQoci5zY29yZSAqIDIwKQogICAgICAgICAgICBiYXIgPSAi4paIIiAqIGJhcl9sZW4gKyAi4paRIiAqICgyMCAtIGJhcl9sZW4pCiAgICAgICAgICAgIHJvd3MuYXBwZW5kKFtzdHIoaSksIGYiW3tiYXJ9XSB7ci5zY29yZTouMmZ9Iiwgci5wYXBlcl9pZCwgci50aXRsZVs6NDVdXSkKICAgICAgICBwcmludCgKICAgICAgICAgICAgV2FycEJsb2Nrcy50YWJsZSgKICAgICAgICAgICAgICAgIFsiIyIsICJTY29yZSIsICJQYXBlciBJRCIsICJUaXRsZSJdLAogICAgICAgICAgICAgICAgcm93cywKICAgICAgICAgICAgICAgIHRpdGxlPWYi8J+TliBSZWFkaW5nIFF1ZXVlIOKAlCB7bGVuKHJlc3VsdHMpfSBwYXBlcnMiLAogICAgICAgICAgICApCiAgICAgICAgKQogICAgICAgIGlmIGFyZ3MuZXhwbGFpbjoKICAgICAgICAgICAgZm9yIHIgaW4gcmVzdWx0czoKICAgICAgICAgICAgICAgIGlmIGV4cGxhbmF0aW9ucy5nZXQoci5wYXBlcl9pZCk6CiAgICAgICAgICAgICAgICAgICAgcHJpbnQoCiAgICAgICAgICAgICAgICAgICAgICAgIFdhcnBCbG9ja3MucGFuZWwoCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBmIvCfkqEge3IucGFwZXJfaWR9IOKAlCBXaHkgcmVhZCB0aGlzPyIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAoZXhwbGFuYXRpb25zW3IucGFwZXJfaWRdIG9yICIiKS5zdHJpcCgpLAogICAgICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICAgICAgKQogICAgZWxpZiBhcmdzLmZvcm1hdCA9PSAianNvbiI6CiAgICAgICAgaW1wb3J0IGpzb24KCiAgICAgICAgb3V0cHV0ID0gWwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAicGFwZXJfaWQiOiByLnBhcGVyX2lkLAogICAgICAgICAgICAgICAgInRpdGxlIjogci50aXRsZSwKICAgICAgICAgICAgICAgICJzY29yZSI6IHJvdW5kKHIuc2NvcmUsIDMpLAogICAgICAgICAgICAgICAgImF1dGhvcnMiOiByLmF1dGhvcnMsCiAgICAgICAgICAgICAgICAicHVibGlzaGVkIjogci5wdWJsaXNoZWQsCiAgICAgICAgICAgICAgICAiY2F0ZWdvcnkiOiByLnByaW1hcnlfY2F0ZWdvcnksCiAgICAgICAgICAgICAgICAiZXhwbGFuYXRpb24iOiBleHBsYW5hdGlvbnMuZ2V0KHIucGFwZXJfaWQpLAogICAgICAgICAgICB9CiAgICAgICAgICAgIGZvciByIGluIHJlc3VsdHMKICAgICAgICBdCiAgICAgICAgcHJpbnQoanNvbi5kdW1wcyhvdXRwdXQsIGluZGVudD0yLCBlbnN1cmVfYXNjaWk9RmFsc2UpKQogICAgZWxpZiBhcmdzLmZvcm1hdCA9PSAic2NvcmUtYnJlYWtkb3duIjoKICAgICAgICBwcmludChjb2xvcmVkKCI9PT0gUmVhZGluZyBQcmlvcml0eSBRdWV1ZSA9PT0iLCBDb2xvcnMuSEVBREVSKSkKICAgICAgICBwcmludCgKICAgICAgICAgICAgZiJTY29yaW5nOiBzZW1hbnRpYz17c2NvcmVyLmFscGhhfSwgY2l0YXRpb249e3Njb3Jlci5iZXRhfSwgdGFnPXtzY29yZXIuZ2FtbWF9LCByZWNlbmN5PXtzY29yZXIuZGVsdGF9XG4iCiAgICAgICAgKQogICAgICAgIGZvciBpLCByIGluIGVudW1lcmF0ZShyZXN1bHRzLCAxKToKICAgICAgICAgICAgYmFyX2xlbiA9IGludChyLnNjb3JlICogMjApCiAgICAgICAgICAgIGJhciA9ICLilogiICogYmFyX2xlbiArICLilpEiICogKDIwIC0gYmFyX2xlbikKICAgICAgICAgICAgcHJpbnQoZiJ7aToyfS4gW3tiYXJ9XSB7ci5zY29yZTouMmZ9ICB7ci5wYXBlcl9pZH0iKQogICAgICAgICAgICBwcmludChmIiAgICB7ci50aXRsZVs6NzBdfSIpCiAgICAgICAgICAgIHByaW50KAogICAgICAgICAgICAgICAgZiIgICAgU2VtOntyLnNlbWFudGljX3Njb3JlOi4yZn0gQ2l0OntyLmNpdGF0aW9uX3Njb3JlOi4yZn0gVGFnOntyLnRhZ19zY29yZTouMmZ9IE5ldzp7ci5yZWNlbmN5X3Njb3JlOi4yZn0iCiAgICAgICAgICAgICkKICAgICAgICAgICAgaWYgci5wdWJsaXNoZWQ6CiAgICAgICAgICAgICAgICBwcmludChmIiAgICB7ci5wdWJsaXNoZWRbOjRdfSB8IHtyLnByaW1hcnlfY2F0ZWdvcnkgb3IgJ04vQSd9IikKCiAgICAgICAgICAgICMgU2hvdyBMTE0gZXhwbGFuYXRpb24gaWYgYXZhaWxhYmxlCiAgICAgICAgICAgIGlmIGFyZ3MuZXhwbGFpbiBhbmQgZXhwbGFuYXRpb25zLmdldChyLnBhcGVyX2lkKToKICAgICAgICAgICAgICAgIGV4cCA9IGV4cGxhbmF0aW9uc1tyLnBhcGVyX2lkXSBvciAiIgogICAgICAgICAgICAgICAgcHJpbnQoKQogICAgICAgICAgICAgICAgcHJpbnQoY29sb3JlZCgiICAgIOKVlOKVkCDmjqjojZDnkIbnlLEg4pWQ4pWXIiwgQ29sb3JzLk9LQkxVRSkpCiAgICAgICAgICAgICAgICBmb3IgbGluZSBpbiBleHAuc3RyaXAoKS5zcGxpdCgiXG4iKToKICAgICAgICAgICAgICAgICAgICBpZiBsaW5lLnN0cmlwKCk6CiAgICAgICAgICAgICAgICAgICAgICAgIHByaW50KGYiICAgIOKVkSB7bGluZX0iKQogICAgICAgICAgICAgICAgcHJpbnQoIiAgICDilZrilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZ0iKQogICAgICAgICAgICBwcmludCgpCiAgICBlbHNlOiAgIyB0YWJsZSBmb3JtYXQKICAgICAgICBwcmludChjb2xvcmVkKCI9PT0gUmVjb21tZW5kZWQgUmVhZGluZyBRdWV1ZSA9PT0iLCBDb2xvcnMuSEVBREVSKSkKICAgICAgICBwcmludChmInsnIyc6PjJ9ICB7J1Njb3JlJzo+NX0gIHsnSUQnOjwxNX0gIHsnVGl0bGUnfSIpCiAgICAgICAgcHJpbnQoIi0iICogODApCiAgICAgICAgZm9yIGksIHIgaW4gZW51bWVyYXRlKHJlc3VsdHMsIDEpOgogICAgICAgICAgICBzY29yZV9zdHIgPSBjb2xvcmVkKAogICAgICAgICAgICAgICAgZiJ7ci5zY29yZTouMmZ9IiwgQ29sb3JzLk9LR1JFRU4gaWYgci5zY29yZSA+IDAuNSBlbHNlIENvbG9ycy5XQVJOSU5HCiAgICAgICAgICAgICkKICAgICAgICAgICAgcHJpbnQoZiJ7aToyfS4gIHtzY29yZV9zdHJ9ICB7ci5wYXBlcl9pZDo8MTV9ICB7ci50aXRsZVs6NDVdfSIpCgogICAgICAgICAgICAjIFNob3cgYnJpZWYgTExNIGV4cGxhbmF0aW9uIGlmIGF2YWlsYWJsZQogICAgICAgICAgICBpZiBhcmdzLmV4cGxhaW4gYW5kIGV4cGxhbmF0aW9ucy5nZXQoci5wYXBlcl9pZCk6CiAgICAgICAgICAgICAgICBleHAgPSBleHBsYW5hdGlvbnNbci5wYXBlcl9pZF0gb3IgIiIKICAgICAgICAgICAgICAgIGlmIGV4cDoKICAgICAgICAgICAgICAgICAgICAjIEV4dHJhY3QgZmlyc3QgbWVhbmluZ2Z1bCBsaW5lCiAgICAgICAgICAgICAgICAgICAgbGluZXMgPSBbCiAgICAgICAgICAgICAgICAgICAgICAgIGwuc3RyaXAoKQogICAgICAgICAgICAgICAgICAgICAgICBmb3IgbCBpbiBleHAuc3RyaXAoKS5zcGxpdCgiXG4iKQogICAgICAgICAgICAgICAgICAgICAgICBpZiBsLnN0cmlwKCkgYW5kIG5vdCBsLnN0cmlwKCkuc3RhcnRzd2l0aCgiIyIpCiAgICAgICAgICAgICAgICAgICAgXQogICAgICAgICAgICAgICAgICAgIGJyaWVmID0gbGluZXNbMF1bOjgwXSBpZiBsaW5lcyBlbHNlICIiCiAgICAgICAgICAgICAgICAgICAgaWYgYnJpZWY6CiAgICAgICAgICAgICAgICAgICAgICAgIHByaW50KGYiICAgICAgIHtjb2xvcmVkKCfihpInLCBDb2xvcnMuT0tCTFVFKX0ge2JyaWVmfS4uLiIpCgogICAgICAgIHByaW50KCkKICAgICAgICBwcmludF9pbmZvKGYiU2hvd2luZyB7bGVuKHJlc3VsdHMpfSBvZiB7dG90YWx9IGNhbmRpZGF0ZXMiKQoKICAgIHJldHVybiAwCg==
+"""CLI command: read-queue — Smart reading priority queue."""
+from __future__ import annotations
+
+import argparse
+from dataclasses import dataclass
+from typing import Dict, Optional
+
+import os
+import warnings
+
+from cli._shared import get_db, Colors, colored, print_info
+
+
+@dataclass
+class QueuedPaper:
+    """A paper in the reading queue with scoring breakdown."""
+    paper_id: str
+    title: str
+    score: float
+    semantic_score: float
+    citation_score: float
+    tag_score: float
+    recency_score: float
+    authors: list[str]
+    published: str
+    primary_category: str
+
+
+class ReadQueueScorer:
+    """Score papers for reading priority based on multiple signals."""
+
+    def __init__(self, db):
+        self.db = db
+        # Default weights (can be adjusted)
+        self.alpha = 0.4   # semantic similarity weight
+        self.beta = 0.3     # citation relationship weight
+        self.gamma = 0.2    # tag overlap weight
+        self.delta = 0.1    # recency weight
+
+    def _get_read_papers(self, limit: int = 50) -> list:
+        """Get papers the user has already read (parsed/completed)."""
+        results, _ = self.db.search_papers(
+            query="",
+            limit=limit,
+            parse_status="parsed"  # Only fully parsed papers
+        )
+        return results  # type: ignore[no-any-return]
+
+    def get_read_papers_context(self, limit: int = 10) -> list[dict]:
+        """Return list of dicts for LLM context."""
+        results, _ = self.db.search_papers(
+            query="",
+            limit=limit,
+            parse_status="parsed"
+        )
+        return [
+            {
+                "title": p.title or "",
+                "authors": list(p.authors) if p.authors else [],
+                "year": (p.published[:4] if p.published and len(p.published) >= 4 else "N/A"),
+                "category": (p.primary_category or ""),
+            }
+            for p in results
+        ]
+
+    def _compute_semantic_scores(self, read_papers: list, candidates: list) -> dict:
+        """Compute average similarity to read papers."""
+        scores: Dict[str, float] = {}
+        if not read_papers:
+            return scores
+
+        for candidate in candidates:
+            total_sim = 0.0
+            sim_count = 0
+            for read_paper in read_papers:
+                try:
+                    sim = self.db.get_similarity(read_paper.paper_id, candidate.paper_id)
+                    if sim is not None:
+                        total_sim += sim
+                        sim_count += 1
+                except Exception:
+                    pass
+            scores[candidate.paper_id] = total_sim / sim_count if sim_count > 0 else 0.0
+        return scores
+
+    def _compute_citation_scores(self, read_papers: list, candidates: list) -> dict:
+        """Score papers that cite or are cited by read papers."""
+        scores = {}
+        read_ids = {p.paper_id for p in read_papers}
+
+        for candidate in candidates:
+            score = 0.0
+            # Check if this candidate cites any read paper
+            try:
+                edges = self.db.get_edges_by_node(candidate.paper_id, direction="out", rel_type="cite")
+                for edge in edges:
+                    if edge.get("target_id") in read_ids:
+                        score += 1.0
+                # Check if any read paper cites this candidate
+                edges_in = self.db.get_edges_by_node(candidate.paper_id, direction="in", rel_type="cite")
+                for edge in edges_in:
+                    if edge.get("source_id") in read_ids:
+                        score += 0.5  # Slightly lower weight for being cited
+            except Exception:
+                pass
+            scores[candidate.paper_id] = min(score / 5.0, 1.0)  # Normalize to 0-1
+        return scores
+
+    def _compute_tag_scores(self, read_papers: list, candidates: list) -> dict:
+        """Score based on tag overlap with read papers."""
+        scores = {}
+        # Get tags from read papers
+        read_tags = set()
+        for p in read_papers:
+            if hasattr(p, "categories") and p.categories:
+                for tag in p.categories.split(","):
+                    read_tags.add(tag.strip().lower())
+
+        for candidate in candidates:
+            if hasattr(candidate, "categories") and candidate.categories:
+                cand_tags = set(c.lower() for c in candidate.categories.split(","))
+                overlap = len(cand_tags & read_tags)
+                scores[candidate.paper_id] = min(overlap / 3.0, 1.0)  # 3+ overlapping tags = max
+            else:
+                scores[candidate.paper_id] = 0.0
+        return scores
+
+    def _compute_recency_scores(self, candidates: list) -> dict:
+        """Score based on paper recency (prefer recent papers)."""
+        import time
+        scores = {}
+        current_year = int(time.strftime("%Y"))
+
+        for candidate in candidates:
+            year = current_year
+            if hasattr(candidate, "published") and candidate.published:
+                try:
+                    year = int(candidate.published[:4])
+                except (ValueError, TypeError):
+                    pass
+            # Score: papers from current year = 1.0, decreasing 0.1 per year older
+            score = max(0.0, 1.0 - (current_year - year) * 0.1)
+            scores[candidate.paper_id] = min(score, 1.0)
+        return scores
+
+    def score_papers(self, candidates: list, limit: int = 20) -> list[QueuedPaper]:
+        """Score and rank candidate papers for reading priority."""
+        read_papers = self._get_read_papers(limit=30)
+
+        # Compute individual scores
+        semantic = self._compute_semantic_scores(read_papers, candidates)
+        citation = self._compute_citation_scores(read_papers, candidates)
+        tag = self._compute_tag_scores(read_papers, candidates)
+        recency = self._compute_recency_scores(candidates)
+
+        # Combine scores
+        results = []
+        for candidate in candidates:
+            s_sem = semantic.get(candidate.paper_id, 0.0)
+            s_cit = citation.get(candidate.paper_id, 0.0)
+            s_tag = tag.get(candidate.paper_id, 0.0)
+            s_rec = recency.get(candidate.paper_id, 0.0)
+
+            # Weighted combination
+            combined = (
+                self.alpha * s_sem +
+                self.beta * s_cit +
+                self.gamma * s_tag +
+                self.delta * s_rec
+            )
+
+            # Boost if we have any strong signal
+            if max(s_sem, s_cit, s_tag) > 0.5:
+                combined = min(combined * 1.2, 1.0)
+
+            results.append(QueuedPaper(
+                paper_id=candidate.paper_id,
+                title=candidate.title,
+                score=combined,
+                semantic_score=s_sem,
+                citation_score=s_cit,
+                tag_score=s_tag,
+                recency_score=s_rec,
+                authors=candidate.authors if hasattr(candidate, "authors") else [],
+                published=candidate.published if hasattr(candidate, "published") else "",
+                primary_category=candidate.primary_category if hasattr(candidate, "primary_category") else "",
+            ))
+
+        # Sort by combined score
+        results.sort(key=lambda x: x.score, reverse=True)
+        return results[:limit]
+
+
+def _build_read_queue_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "read-queue",
+        help="Smart reading priority queue based on your reading history",
+    )
+    p.add_argument(
+        "--limit", type=int, default=10,
+        help="Max papers to return (default: 10)",
+    )
+    p.add_argument(
+        "--tag", action="append",
+        help="Filter by tag/field of interest (repeatable)",
+    )
+    p.add_argument(
+        "--year", type=int,
+        help="Filter by minimum year",
+    )
+    p.add_argument(
+        "--min-similarity", type=float, default=0.0,
+        help="Minimum semantic similarity threshold (default: 0.0)",
+    )
+    p.add_argument(
+        "--format", choices=["table", "json", "score-breakdown", "warp"], default="table",
+        help="Output format (default: table)",
+    )
+    p.add_argument(
+        "--explain", action="store_true",
+        help="Generate LLM explanations for why each paper is recommended",
+    )
+    p.add_argument(
+        "--explain-model", type=str, default=None,
+        help="LLM model for explanations (default: from config)",
+    )
+    # Reading status management
+    p.add_argument(
+        "--start", metavar="PAPER_ID",
+        help="Start reading a paper (set status to 'reading')",
+    )
+    p.add_argument(
+        "--done", metavar="PAPER_ID",
+        help="Mark a paper as completed",
+    )
+    p.add_argument(
+        "--status", metavar="PAPER_ID", nargs="?", const="",
+        help="Check reading status of a paper, or list all reading papers",
+    )
+    p.add_argument(
+        "--reset", metavar="PAPER_ID",
+        help="Reset reading status to 'unread'",
+    )
+    return p  # type: ignore[no-any-return]
+
+
+def _handle_status_action(args: argparse.Namespace, db) -> Optional[int]:
+    """Handle --start, --done, --status, --reset actions. Returns exit code or None to continue."""
+    from cli._shared import print_success, print_error, print_info
+
+    # --status: show status
+    if args.status is not None:
+        if args.status == "":
+            # List all reading papers
+            reading = db.get_papers_by_reading_status("reading", limit=50)
+            completed = db.get_papers_by_reading_status("completed", limit=50)
+            if not reading and not completed:
+                print_info("No papers currently reading or completed.")
+            if reading:
+                print(colored("📖 正在阅读", Colors.HEADER))
+                print("-" * 60)
+                for i, p in enumerate(reading, 1):
+                    started = p.reading_started_at or "N/A"
+                    print(f"  {i}. {p.id} — {p.title[:50]}")
+                    print(f"     开始于: {started}")
+                print()
+            if completed:
+                print(colored("✅ 已完成", Colors.HEADER))
+                print("-" * 60)
+                for i, p in enumerate(completed, 1):
+                    completed_at = p.reading_completed_at or "N/A"
+                    print(f"  {i}. {p.id} — {p.title[:50]}")
+                    print(f"     完成于: {completed_at}")
+            return 0
+        else:
+            # Show specific paper status
+            info = db.get_reading_status(args.status)
+            if info is None:
+                print_error(f"Paper not found: {args.status}")
+                return 1
+            title = db.get_paper_title(args.status)
+            status_map = {"unread": "未读", "reading": "📖 正在阅读", "completed": "✅ 已完成"}
+            status_text = status_map.get(info["status"], info["status"])
+            print(f"📄 {args.status}")
+            print(f"   标题: {title[:60] if title else 'N/A'}")
+            print(f"   状态: {status_text}")
+            if info["started_at"]:
+                print(f"   开始于: {info['started_at']}")
+            if info["completed_at"]:
+                print(f"   完成于: {info['completed_at']}")
+            return 0
+
+    # --start: begin reading
+    if args.start:
+        if not db.paper_exists(args.start):
+            print_error(f"Paper not found: {args.start}")
+            return 1
+        title = db.get_paper_title(args.start)
+        db.update_reading_status(args.start, "reading")
+        print_success(f"Started reading: {args.start}")
+        if title:
+            print(f"   {title[:60]}")
+        return 0
+
+    # --done: mark completed
+    if args.done:
+        if not db.paper_exists(args.done):
+            print_error(f"Paper not found: {args.done}")
+            return 1
+        title = db.get_paper_title(args.done)
+        db.update_reading_status(args.done, "completed")
+        print_success(f"Marked as completed: {args.done}")
+        if title:
+            print(f"   {title[:60]}")
+        return 0
+
+    # --reset: reset to unread
+    if args.reset:
+        if not db.paper_exists(args.reset):
+            print_error(f"Paper not found: {args.reset}")
+            return 1
+        title = db.get_paper_title(args.reset)
+        db.update_reading_status(args.reset, "unread")
+        print_success(f"Reset reading status: {args.reset}")
+        if title:
+            print(f"   {title[:60]}")
+        return 0
+
+    return None  # No status action taken, continue with normal flow
+
+
+def _run_read_queue(args: argparse.Namespace) -> int:
+    from cli._shared import load_dotenv
+    load_dotenv()
+
+    db = get_db()
+    db.init()
+
+    # Handle reading status actions first
+    result = _handle_status_action(args, db)
+    if result is not None:
+        return result
+
+    # Get candidate papers — exclude completed papers from reading queue
+    candidates, total = db.search_papers(
+        query="",
+        limit=200,
+    )
+
+    # Filter out completed papers from recommendations
+    completed_ids = {p.id for p in db.get_papers_by_reading_status("completed", limit=1000)}
+    candidates = [p for p in candidates if p.paper_id not in completed_ids]
+
+    # Apply filters
+    if args.tag:
+        filtered = []
+        for p in candidates:
+            if hasattr(p, "categories") and p.categories:
+                p_tags = set(c.lower() for c in p.categories.split(","))
+                if any(t.lower() in p_tags for t in args.tag):
+                    filtered.append(p)
+        candidates = filtered
+
+    if args.year:
+        candidates = [p for p in candidates
+                     if hasattr(p, "published") and p.published
+                     and p.published[:4].isdigit()
+                     and int(p.published[:4]) >= args.year]
+
+    # Score and rank
+    scorer = ReadQueueScorer(db)
+    results = scorer.score_papers(candidates, limit=args.limit)
+
+    # Filter by min similarity if specified
+    if args.min_similarity > 0:
+        results = [r for r in results if r.semantic_score >= args.min_similarity]
+
+    if not results:
+        print_info("No papers match your criteria. Try relaxing filters or add more papers to your library.")
+        return 0
+
+    # Generate LLM explanations if requested
+    explanations: Dict[str, Optional[str]] = {}
+    if args.explain:
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            print_info("OPENAI_API_KEY not set. Skipping explanations. Set it to enable LLM explanations.")
+        else:
+            from config import DEFAULT_LLM_MODEL_CLI, DEFAULT_OPENAI_BASE_URL
+            from llm.generate import ai_generate_reading_recommendation_explanation
+
+            model = args.explain_model or DEFAULT_LLM_MODEL_CLI
+            base_url = DEFAULT_OPENAI_BASE_URL
+            read_context = scorer.get_read_papers_context(limit=10)
+
+            for r in results:
+                try:
+                    explanation = ai_generate_reading_recommendation_explanation(
+                        paper_title=r.title,
+                        paper_authors=r.authors,
+                        paper_year=r.published[:4] if r.published else "N/A",
+                        paper_category=r.primary_category,
+                        score=r.score,
+                        semantic_score=r.semantic_score,
+                        citation_score=r.citation_score,
+                        tag_score=r.tag_score,
+                        recency_score=r.recency_score,
+                        read_papers_context=read_context,
+                        base_url=base_url,
+                        api_key=api_key,
+                        model=model,
+                    )
+                    explanations[r.paper_id] = explanation
+                except Exception as e:
+                    warnings.warn(f"LLM explanation failed for {r.paper_id}: {e}", stacklevel=2)
+                    explanations[r.paper_id] = None
+
+    if args.format == "warp":
+        from cli.warp import WarpBlocks
+        rows = []
+        for i, r in enumerate(results, 1):
+            bar_len = int(r.score * 20)
+            bar = "█" * bar_len + "░" * (20 - bar_len)
+            rows.append([str(i), f"[{bar}] {r.score:.2f}", r.paper_id, r.title[:45]])
+        print(WarpBlocks.table(
+            ["#", "Score", "Paper ID", "Title"],
+            rows,
+            title=f"📖 Reading Queue — {len(results)} papers",
+        ))
+        if args.explain:
+            for r in results:
+                if explanations.get(r.paper_id):
+                    print(WarpBlocks.panel(
+                        f"💡 {r.paper_id} — Why read this?",
+                        (explanations[r.paper_id] or "").strip(),
+                    ))
+    elif args.format == "json":
+        import json
+        output = [{
+            "paper_id": r.paper_id,
+            "title": r.title,
+            "score": round(r.score, 3),
+            "authors": r.authors,
+            "published": r.published,
+            "category": r.primary_category,
+            "explanation": explanations.get(r.paper_id),
+        } for r in results]
+        print(json.dumps(output, indent=2, ensure_ascii=False))
+    elif args.format == "score-breakdown":
+        print(colored("=== Reading Priority Queue ===", Colors.HEADER))
+        print(f"Scoring: semantic={scorer.alpha}, citation={scorer.beta}, tag={scorer.gamma}, recency={scorer.delta}\n")
+        for i, r in enumerate(results, 1):
+            bar_len = int(r.score * 20)
+            bar = "█" * bar_len + "░" * (20 - bar_len)
+            print(f"{i:2}. [{bar}] {r.score:.2f}  {r.paper_id}")
+            print(f"    {r.title[:70]}")
+            print(f"    Sem:{r.semantic_score:.2f} Cit:{r.citation_score:.2f} Tag:{r.tag_score:.2f} New:{r.recency_score:.2f}")
+            if r.published:
+                print(f"    {r.published[:4]} | {r.primary_category or 'N/A'}")
+
+            # Show LLM explanation if available
+            if args.explain and explanations.get(r.paper_id):
+                exp = explanations[r.paper_id] or ""
+                print()
+                print(colored("    ╔═ 推荐理由 ═╗", Colors.OKBLUE))
+                for line in exp.strip().split("\n"):
+                    if line.strip():
+                        print(f"    ║ {line}")
+                print("    ╚═════════════╝")
+            print()
+    else:  # table format
+        print(colored("=== Recommended Reading Queue ===", Colors.HEADER))
+        print(f"{'#':>2}  {'Score':>5}  {'ID':<15}  {'Title'}")
+        print("-" * 80)
+        for i, r in enumerate(results, 1):
+            score_str = colored(f"{r.score:.2f}", Colors.OKGREEN if r.score > 0.5 else Colors.WARNING)
+            print(f"{i:2}.  {score_str}  {r.paper_id:<15}  {r.title[:45]}")
+
+            # Show brief LLM explanation if available
+            if args.explain and explanations.get(r.paper_id):
+                exp = explanations[r.paper_id] or ""
+                if exp:
+                    # Extract first meaningful line
+                    lines = [l.strip() for l in exp.strip().split("\n") if l.strip() and not l.strip().startswith("#")]
+                    brief = lines[0][:80] if lines else ""
+                    if brief:
+                        print(f"       {colored('→', Colors.OKBLUE)} {brief}...")
+
+        print()
+        print_info(f"Showing {len(results)} of {total} candidates")
+
+    return 0

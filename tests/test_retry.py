@@ -1,1 +1,90 @@
-IiIiVGVzdHMgZm9yIGNvcmUvcmV0cnkucHkg4oCUIGRlY29yYXRvciBBUEkuIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgdGltZQoKaW1wb3J0IHB5dGVzdAoKZnJvbSBjb3JlLnJldHJ5IGltcG9ydCBDaXJjdWl0QnJlYWtlciwgQ2lyY3VpdE9wZW4sIHJldHJ5CgoKIyByZXRyeSBpcyBhIGRlY29yYXRvciDigJQgdXNlIGFzIEByZXRyeSguLi4pCmNsYXNzIFRlc3RSZXRyeToKICAgIGRlZiB0ZXN0X3N1Y2NlZWRzX2ZpcnN0X3RyeShzZWxmKToKICAgICAgICBAcmV0cnkobWF4X2F0dGVtcHRzPTMsIGJhc2VfZGVsYXk9MC4wMSkKICAgICAgICBkZWYgc3VjY2VlZCgpOgogICAgICAgICAgICByZXR1cm4gNDIKCiAgICAgICAgYXNzZXJ0IHN1Y2NlZWQoKSA9PSA0MgoKICAgIGRlZiB0ZXN0X3JldHJpZXNfb25fZmFpbHVyZV90aGVuX3N1Y2NlZWRzKHNlbGYpOgogICAgICAgIGNhbGxzID0gWzBdCgogICAgICAgIEByZXRyeShtYXhfYXR0ZW1wdHM9NSwgYmFzZV9kZWxheT0wLjAxKQogICAgICAgIGRlZiBmbGFreSgpOgogICAgICAgICAgICBjYWxsc1swXSArPSAxCiAgICAgICAgICAgIGlmIGNhbGxzWzBdIDwgMzoKICAgICAgICAgICAgICAgIHJhaXNlIENvbm5lY3Rpb25FcnJvcigidHJhbnNpZW50IikKICAgICAgICAgICAgcmV0dXJuICJkb25lIgoKICAgICAgICBhc3NlcnQgZmxha3koKSA9PSAiZG9uZSIKICAgICAgICBhc3NlcnQgY2FsbHNbMF0gPT0gMwoKICAgIGRlZiB0ZXN0X3JhaXNlc19hZnRlcl9hbGxfYXR0ZW1wdHNfZmFpbChzZWxmKToKICAgICAgICBAcmV0cnkobWF4X2F0dGVtcHRzPTMsIGJhc2VfZGVsYXk9MC4wMSkKICAgICAgICBkZWYgYWx3YXlzX2ZhaWwoKToKICAgICAgICAgICAgcmFpc2UgQ29ubmVjdGlvbkVycm9yKCJwZXJtYW5lbnQiKQoKICAgICAgICB3aXRoIHB5dGVzdC5yYWlzZXMoQ29ubmVjdGlvbkVycm9yKToKICAgICAgICAgICAgYWx3YXlzX2ZhaWwoKQoKCmNsYXNzIFRlc3RDaXJjdWl0QnJlYWtlcjoKICAgIGRlZiB0ZXN0X2RlZmF1bHRfc3RhdGVfaXNfY2xvc2VkKHNlbGYpOgogICAgICAgIGNiID0gQ2lyY3VpdEJyZWFrZXIoKQogICAgICAgIGFzc2VydCBjYi5fc3RhdGUgPT0gY2IuQ0xPU0VECgogICAgZGVmIHRlc3RfY2FsbF9zdWNjZXNzKHNlbGYpOgogICAgICAgIGNiID0gQ2lyY3VpdEJyZWFrZXIoKQogICAgICAgIGFzc2VydCBjYi5jYWxsKGxhbWJkYTogIm9rIikgPT0gIm9rIgoKICAgIGRlZiB0ZXN0X2ZhaWx1cmVfY291bnRfaW5jcmVhc2VzKHNlbGYpOgogICAgICAgIGNiID0gQ2lyY3VpdEJyZWFrZXIoZmFpbHVyZV90aHJlc2hvbGQ9NSwgcmVjb3ZlcnlfdGltZW91dD02MC4wKQogICAgICAgIHRyeToKICAgICAgICAgICAgY2IuY2FsbChsYW1iZGE6IChfIGZvciBfIGluICgpKS50aHJvdyhWYWx1ZUVycm9yKCJmYWlsIikpKQogICAgICAgIGV4Y2VwdCBWYWx1ZUVycm9yOgogICAgICAgICAgICBwYXNzCiAgICAgICAgYXNzZXJ0IGNiLl9mYWlsdXJlX2NvdW50ID09IDEKCiAgICBkZWYgdGVzdF9jaXJjdWl0X29wZW5zX2F0X3RocmVzaG9sZChzZWxmKToKICAgICAgICBjYiA9IENpcmN1aXRCcmVha2VyKGZhaWx1cmVfdGhyZXNob2xkPTIsIHJlY292ZXJ5X3RpbWVvdXQ9NjAuMCkKICAgICAgICBmb3IgXyBpbiByYW5nZSgyKToKICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgY2IuY2FsbChsYW1iZGE6IChfIGZvciBfIGluICgpKS50aHJvdyhWYWx1ZUVycm9yKCJmYWlsIikpKQogICAgICAgICAgICBleGNlcHQgVmFsdWVFcnJvcjoKICAgICAgICAgICAgICAgIHBhc3MKICAgICAgICBhc3NlcnQgY2IuX3N0YXRlID09IGNiLk9QRU4KCiAgICBkZWYgdGVzdF9vcGVuX3JhaXNlc19jaXJjdWl0X29wZW4oc2VsZik6CiAgICAgICAgY2IgPSBDaXJjdWl0QnJlYWtlcihmYWlsdXJlX3RocmVzaG9sZD0xLCByZWNvdmVyeV90aW1lb3V0PTYwLjApCiAgICAgICAgdHJ5OgogICAgICAgICAgICBjYi5jYWxsKGxhbWJkYTogKF8gZm9yIF8gaW4gKCkpLnRocm93KFZhbHVlRXJyb3IoImZhaWwiKSkpCiAgICAgICAgZXhjZXB0IFZhbHVlRXJyb3I6CiAgICAgICAgICAgIHBhc3MKICAgICAgICBhc3NlcnQgY2IuX3N0YXRlID09IGNiLk9QRU4KICAgICAgICB3aXRoIHB5dGVzdC5yYWlzZXMoQ2lyY3VpdE9wZW4pOgogICAgICAgICAgICBjYi5jYWxsKGxhbWJkYTogIm9rIikKCiAgICBAcHl0ZXN0Lm1hcmsubm9fZnJlZXplCiAgICBkZWYgdGVzdF9oYWxmX29wZW5fYWZ0ZXJfcmVjb3ZlcnlfdGltZW91dChzZWxmKToKICAgICAgICBjYiA9IENpcmN1aXRCcmVha2VyKGZhaWx1cmVfdGhyZXNob2xkPTIsIHJlY292ZXJ5X3RpbWVvdXQ9MC41KQogICAgICAgIGZvciBfIGluIHJhbmdlKDIpOgogICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICBjYi5jYWxsKGxhbWJkYTogKF8gZm9yIF8gaW4gKCkpLnRocm93KFZhbHVlRXJyb3IoImZhaWwiKSkpCiAgICAgICAgICAgIGV4Y2VwdCBWYWx1ZUVycm9yOgogICAgICAgICAgICAgICAgcGFzcwogICAgICAgIGFzc2VydCBjYi5fc3RhdGUgPT0gY2IuT1BFTgogICAgICAgIHRpbWUuc2xlZXAoMC42KQogICAgICAgIGFzc2VydCBjYi5jYWxsKGxhbWJkYTogInJlY292ZXJlZCIpID09ICJyZWNvdmVyZWQiCiAgICAgICAgYXNzZXJ0IGNiLl9zdGF0ZSA9PSBjYi5DTE9TRUQK
+"""Tests for core/retry.py — decorator API."""
+
+from __future__ import annotations
+
+import time
+
+import pytest
+
+from core.retry import CircuitBreaker, CircuitOpen, retry
+
+
+# retry is a decorator — use as @retry(...)
+class TestRetry:
+    def test_succeeds_first_try(self):
+        @retry(max_attempts=3, base_delay=0.01)
+        def succeed():
+            return 42
+
+        assert succeed() == 42
+
+    def test_retries_on_failure_then_succeeds(self):
+        calls = [0]
+
+        @retry(max_attempts=5, base_delay=0.01)
+        def flaky():
+            calls[0] += 1
+            if calls[0] < 3:
+                raise ConnectionError("transient")
+            return "done"
+
+        assert flaky() == "done"
+        assert calls[0] == 3
+
+    def test_raises_after_all_attempts_fail(self):
+        @retry(max_attempts=3, base_delay=0.01)
+        def always_fail():
+            raise ConnectionError("permanent")
+
+        with pytest.raises(ConnectionError):
+            always_fail()
+
+
+class TestCircuitBreaker:
+    def test_default_state_is_closed(self):
+        cb = CircuitBreaker()
+        assert cb._state == cb.CLOSED
+
+    def test_call_success(self):
+        cb = CircuitBreaker()
+        assert cb.call(lambda: "ok") == "ok"
+
+    def test_failure_count_increases(self):
+        cb = CircuitBreaker(failure_threshold=5, recovery_timeout=60.0)
+        try:
+            cb.call(lambda: (_ for _ in ()).throw(ValueError("fail")))
+        except ValueError:
+            pass
+        assert cb._failure_count == 1
+
+    def test_circuit_opens_at_threshold(self):
+        cb = CircuitBreaker(failure_threshold=2, recovery_timeout=60.0)
+        for _ in range(2):
+            try:
+                cb.call(lambda: (_ for _ in ()).throw(ValueError("fail")))
+            except ValueError:
+                pass
+        assert cb._state == cb.OPEN
+
+    def test_open_raises_circuit_open(self):
+        cb = CircuitBreaker(failure_threshold=1, recovery_timeout=60.0)
+        try:
+            cb.call(lambda: (_ for _ in ()).throw(ValueError("fail")))
+        except ValueError:
+            pass
+        assert cb._state == cb.OPEN
+        with pytest.raises(CircuitOpen):
+            cb.call(lambda: "ok")
+
+    @pytest.mark.no_freeze
+    def test_half_open_after_recovery_timeout(self):
+        cb = CircuitBreaker(failure_threshold=2, recovery_timeout=0.5)
+        for _ in range(2):
+            try:
+                cb.call(lambda: (_ for _ in ()).throw(ValueError("fail")))
+            except ValueError:
+                pass
+        assert cb._state == cb.OPEN
+        time.sleep(0.6)
+        assert cb.call(lambda: "recovered") == "recovered"
+        assert cb._state == cb.CLOSED

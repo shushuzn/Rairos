@@ -1,1 +1,212 @@
-IiIiVGVzdHMgZm9yIHJlc2VhcmNoIHJvYWRtYXAgZ2VuZXJhdG9yLiIiIgoKZnJvbSBsbG0ucm9hZG1hcF9nZW5lcmF0b3IgaW1wb3J0ICgKICAgIFJvYWRtYXBHZW5lcmF0b3IsCiAgICBSZXNlYXJjaFJvYWRtYXAsCiAgICBQaGFzZSwKICAgIE1pbGVzdG9uZSwKKQoKCmNsYXNzIFRlc3RSb2FkbWFwR2VuZXJhdG9yOgogICAgIiIiVGVzdCBSb2FkbWFwR2VuZXJhdG9yLiIiIgoKICAgIGRlZiB0ZXN0X21pbGVzdG9uZV9jcmVhdGlvbihzZWxmKToKICAgICAgICAiIiJUZXN0IE1pbGVzdG9uZSBkYXRhY2xhc3MuIiIiCiAgICAgICAgbSA9IE1pbGVzdG9uZSgKICAgICAgICAgICAgaWQ9Im0xIiwKICAgICAgICAgICAgbmFtZT0i5paH54yu6LCD56CUIiwKICAgICAgICAgICAgZGVzY3JpcHRpb249IumYheivuzEw56+H6K665paHIiwKICAgICAgICAgICAgZHVyYXRpb25fd2Vla3M9MSwKICAgICAgICApCgogICAgICAgIGFzc2VydCBtLmlkID09ICJtMSIKICAgICAgICBhc3NlcnQgbS5kdXJhdGlvbl93ZWVrcyA9PSAxCiAgICAgICAgYXNzZXJ0IG0udGFza3MgPT0gW10KICAgICAgICBhc3NlcnQgbS5kZXBlbmRlbmNpZXMgPT0gW10KCiAgICBkZWYgdGVzdF9waGFzZV9jcmVhdGlvbihzZWxmKToKICAgICAgICAiIiJUZXN0IFBoYXNlIGRhdGFjbGFzcy4iIiIKICAgICAgICBwaGFzZSA9IFBoYXNlKAogICAgICAgICAgICBpZD0icGhhc2UxIiwKICAgICAgICAgICAgbmFtZT0i6Zeu6aKY5YiG5p6QIiwKICAgICAgICAgICAgZGVzY3JpcHRpb249IuWIhuaekOmXrumimCIsCiAgICAgICAgICAgIGR1cmF0aW9uX3dlZWtzPTIsCiAgICAgICAgKQoKICAgICAgICBhc3NlcnQgcGhhc2UuaWQgPT0gInBoYXNlMSIKICAgICAgICBhc3NlcnQgcGhhc2Uub3JkZXIgPT0gMAogICAgICAgIGFzc2VydCBwaGFzZS5taWxlc3RvbmVzID09IFtdCgogICAgZGVmIHRlc3Rfcm9hZG1hcF9jcmVhdGlvbihzZWxmKToKICAgICAgICAiIiJUZXN0IFJlc2VhcmNoUm9hZG1hcCBkYXRhY2xhc3MuIiIiCiAgICAgICAgcm9hZG1hcCA9IFJlc2VhcmNoUm9hZG1hcCgKICAgICAgICAgICAgcXVlc3Rpb249IuWmguS9leaPkOWNh1JBRz8iLAogICAgICAgICAgICBxdWVzdGlvbl9pZD0icTEyMyIsCiAgICAgICAgKQoKICAgICAgICBhc3NlcnQgcm9hZG1hcC5xdWVzdGlvbiA9PSAi5aaC5L2V5o+Q5Y2HUkFHPyIKICAgICAgICBhc3NlcnQgcm9hZG1hcC5xdWVzdGlvbl9pZCA9PSAicTEyMyIKICAgICAgICBhc3NlcnQgcm9hZG1hcC50b3RhbF93ZWVrcyA9PSAwICAjIE5vIHBoYXNlcyB5ZXQKCiAgICBkZWYgdGVzdF9yb2FkbWFwX3RvdGFsX3dlZWtzX2NhbGN1bGF0aW9uKHNlbGYpOgogICAgICAgICIiIlRlc3QgdG90YWwgd2Vla3MgaXMgY2FsY3VsYXRlZCBmcm9tIHBoYXNlcy4iIiIKICAgICAgICByb2FkbWFwID0gUmVzZWFyY2hSb2FkbWFwKAogICAgICAgICAgICBxdWVzdGlvbj0iVGVzdCIsCiAgICAgICAgICAgIHF1ZXN0aW9uX2lkPSIiLAogICAgICAgICAgICBwaGFzZXM9WwogICAgICAgICAgICAgICAgUGhhc2UoaWQ9InAxIiwgbmFtZT0iUDEiLCBkZXNjcmlwdGlvbj0iIiwgZHVyYXRpb25fd2Vla3M9MiksCiAgICAgICAgICAgICAgICBQaGFzZShpZD0icDIiLCBuYW1lPSJQMiIsIGRlc2NyaXB0aW9uPSIiLCBkdXJhdGlvbl93ZWVrcz0zKSwKICAgICAgICAgICAgXSwKICAgICAgICApCgogICAgICAgIGFzc2VydCByb2FkbWFwLnRvdGFsX3dlZWtzID09IDUKCiAgICBkZWYgdGVzdF9nZW5lcmF0ZV9kZWZhdWx0X3BoYXNlcyhzZWxmKToKICAgICAgICAiIiJUZXN0IGdlbmVyYXRpbmcgcm9hZG1hcCB3aXRoIGRlZmF1bHQgcGhhc2VzLiIiIgogICAgICAgIGdlbmVyYXRvciA9IFJvYWRtYXBHZW5lcmF0b3IoKQogICAgICAgIHJvYWRtYXAgPSBnZW5lcmF0b3IuZ2VuZXJhdGUoCiAgICAgICAgICAgIHF1ZXN0aW9uPSLlpoLkvZXmlLnov5vmo4DntKI/IiwKICAgICAgICAgICAgcXVlc3Rpb25faWQ9InE0NTYiLAogICAgICAgICkKCiAgICAgICAgYXNzZXJ0IGxlbihyb2FkbWFwLnBoYXNlcykgPT0gNCAgIyA0IGRlZmF1bHQgcGhhc2VzCiAgICAgICAgYXNzZXJ0IHJvYWRtYXAudG90YWxfd2Vla3MgPT0gMTMgICMgMis0KzQrMwogICAgICAgIGFzc2VydCByb2FkbWFwLnF1ZXN0aW9uID09ICLlpoLkvZXmlLnov5vmo4DntKI/IgogICAgICAgIGFzc2VydCByb2FkbWFwLnF1ZXN0aW9uX2lkID09ICJxNDU2IgoKICAgIGRlZiB0ZXN0X2dlbmVyYXRlX2N1c3RvbV9waGFzZXMoc2VsZik6CiAgICAgICAgIiIiVGVzdCBnZW5lcmF0aW5nIHJvYWRtYXAgd2l0aCBjdXN0b20gcGhhc2VzLiIiIgogICAgICAgIGdlbmVyYXRvciA9IFJvYWRtYXBHZW5lcmF0b3IoKQogICAgICAgIGN1c3RvbSA9IFsKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgIm5hbWUiOiAi5b+r6YCf6aqM6K+BIiwKICAgICAgICAgICAgICAgICJkZXNjcmlwdGlvbiI6ICLlv6vpgJ/pqozor4Hmg7Pms5UiLAogICAgICAgICAgICAgICAgImR1cmF0aW9uX3dlZWtzIjogMSwKICAgICAgICAgICAgICAgICJtaWxlc3RvbmVzIjogWwogICAgICAgICAgICAgICAgICAgIHsibmFtZSI6ICJNVlAiLCAiZGVzY3JpcHRpb24iOiAi5pyA5bCP5Y+v6KGM5Lqn5ZOBIiwgImR1cmF0aW9uX3dlZWtzIjogMX0sCiAgICAgICAgICAgICAgICBdLAogICAgICAgICAgICB9LAogICAgICAgIF0KCiAgICAgICAgcm9hZG1hcCA9IGdlbmVyYXRvci5nZW5lcmF0ZSgKICAgICAgICAgICAgcXVlc3Rpb249IlRlc3QgcXVlc3Rpb24iLAogICAgICAgICAgICBjdXN0b21fcGhhc2VzPWN1c3RvbSwKICAgICAgICApCgogICAgICAgIGFzc2VydCBsZW4ocm9hZG1hcC5waGFzZXMpID09IDEKICAgICAgICBhc3NlcnQgcm9hZG1hcC5waGFzZXNbMF0ubmFtZSA9PSAi5b+r6YCf6aqM6K+BIgogICAgICAgIGFzc2VydCBsZW4ocm9hZG1hcC5waGFzZXNbMF0ubWlsZXN0b25lcykgPT0gMQoKICAgIGRlZiB0ZXN0X2dlbmVyYXRlX21pbGVzdG9uZV9pZHMoc2VsZik6CiAgICAgICAgIiIiVGVzdCBtaWxlc3RvbmUgSURzIGFyZSB1bmlxdWUgYW5kIHNlcXVlbnRpYWwuIiIiCiAgICAgICAgZ2VuZXJhdG9yID0gUm9hZG1hcEdlbmVyYXRvcigpCiAgICAgICAgcm9hZG1hcCA9IGdlbmVyYXRvci5nZW5lcmF0ZShxdWVzdGlvbj0iVGVzdCIpCgogICAgICAgIG1pbGVzdG9uZV9pZHMgPSBbXQogICAgICAgIGZvciBwaGFzZSBpbiByb2FkbWFwLnBoYXNlczoKICAgICAgICAgICAgZm9yIG0gaW4gcGhhc2UubWlsZXN0b25lczoKICAgICAgICAgICAgICAgIG1pbGVzdG9uZV9pZHMuYXBwZW5kKG0uaWQpCgogICAgICAgIGFzc2VydCBsZW4obWlsZXN0b25lX2lkcykgPT0gbGVuKHNldChtaWxlc3RvbmVfaWRzKSkgICMgQWxsIHVuaXF1ZQogICAgICAgIGFzc2VydCAibTEiIGluIG1pbGVzdG9uZV9pZHMKCiAgICBkZWYgdGVzdF9yZW5kZXJfdGV4dChzZWxmKToKICAgICAgICAiIiJUZXN0IHRleHQgcmVuZGVyaW5nLiIiIgogICAgICAgIGdlbmVyYXRvciA9IFJvYWRtYXBHZW5lcmF0b3IoKQogICAgICAgIHJvYWRtYXAgPSBnZW5lcmF0b3IuZ2VuZXJhdGUocXVlc3Rpb249Iua1i+ivlemXrumimCIpCgogICAgICAgIG91dHB1dCA9IGdlbmVyYXRvci5yZW5kZXJfdGV4dChyb2FkbWFwKQoKICAgICAgICBhc3NlcnQgIiMg56CU56m26Lev57q/5Zu+IiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIua1i+ivlemXrumimCIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICLpl67popjliIbmnpAiIGluIG91dHB1dAogICAgICAgIGFzc2VydCAi5Y6f5Z6L5byA5Y+RIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9yZW5kZXJfdGV4dF93aXRoX3F1ZXN0aW9uX2lkKHNlbGYpOgogICAgICAgICIiIlRlc3QgdGV4dCByZW5kZXJpbmcgaW5jbHVkZXMgcXVlc3Rpb24gSUQuIiIiCiAgICAgICAgZ2VuZXJhdG9yID0gUm9hZG1hcEdlbmVyYXRvcigpCiAgICAgICAgcm9hZG1hcCA9IGdlbmVyYXRvci5nZW5lcmF0ZSgKICAgICAgICAgICAgcXVlc3Rpb249Iua1i+ivlSIsCiAgICAgICAgICAgIHF1ZXN0aW9uX2lkPSJxMTIzIiwKICAgICAgICApCgogICAgICAgIG91dHB1dCA9IGdlbmVyYXRvci5yZW5kZXJfdGV4dChyb2FkbWFwKQogICAgICAgIGFzc2VydCAicTEyMyIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfcmVuZGVyX21hcmtkb3duKHNlbGYpOgogICAgICAgICIiIlRlc3QgTWFya2Rvd24gcmVuZGVyaW5nLiIiIgogICAgICAgIGdlbmVyYXRvciA9IFJvYWRtYXBHZW5lcmF0b3IoKQogICAgICAgIHJvYWRtYXAgPSBnZW5lcmF0b3IuZ2VuZXJhdGUocXVlc3Rpb249Iua1i+ivlSIpCgogICAgICAgIG91dHB1dCA9IGdlbmVyYXRvci5yZW5kZXJfbWFya2Rvd24ocm9hZG1hcCkKCiAgICAgICAgYXNzZXJ0ICIjIOeglOeptui3r+e6v+WbviIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICIxLiDpl67popjliIbmnpAiIGluIG91dHB1dAogICAgICAgIGFzc2VydCAifCDpmLbmrrUgfCIgaW4gb3V0cHV0ICAjIEdhbnR0IHRhYmxlCgogICAgZGVmIHRlc3RfcmVuZGVyX2pzb24oc2VsZik6CiAgICAgICAgIiIiVGVzdCBKU09OIHJlbmRlcmluZy4iIiIKICAgICAgICBpbXBvcnQganNvbgoKICAgICAgICBnZW5lcmF0b3IgPSBSb2FkbWFwR2VuZXJhdG9yKCkKICAgICAgICByb2FkbWFwID0gZ2VuZXJhdG9yLmdlbmVyYXRlKHF1ZXN0aW9uPSLmtYvor5UiKQoKICAgICAgICBvdXRwdXQgPSBnZW5lcmF0b3IucmVuZGVyX2pzb24ocm9hZG1hcCkKICAgICAgICBkYXRhID0ganNvbi5sb2FkcyhvdXRwdXQpCgogICAgICAgIGFzc2VydCBkYXRhWyJxdWVzdGlvbiJdID09ICLmtYvor5UiCiAgICAgICAgYXNzZXJ0IGxlbihkYXRhWyJwaGFzZXMiXSkgPT0gNAogICAgICAgIGFzc2VydCAidG90YWxfd2Vla3MiIGluIGRhdGEKCiAgICBkZWYgdGVzdF9yZW5kZXJfanNvbl9zdHJ1Y3R1cmUoc2VsZik6CiAgICAgICAgIiIiVGVzdCBKU09OIHN0cnVjdHVyZS4iIiIKICAgICAgICBpbXBvcnQganNvbgoKICAgICAgICBnZW5lcmF0b3IgPSBSb2FkbWFwR2VuZXJhdG9yKCkKICAgICAgICByb2FkbWFwID0gZ2VuZXJhdG9yLmdlbmVyYXRlKHF1ZXN0aW9uPSLmtYvor5UiKQoKICAgICAgICBvdXRwdXQgPSBnZW5lcmF0b3IucmVuZGVyX2pzb24ocm9hZG1hcCkKICAgICAgICBkYXRhID0ganNvbi5sb2FkcyhvdXRwdXQpCgogICAgICAgICMgQ2hlY2sgcGhhc2Ugc3RydWN0dXJlCiAgICAgICAgcGhhc2UgPSBkYXRhWyJwaGFzZXMiXVswXQogICAgICAgIGFzc2VydCAiaWQiIGluIHBoYXNlCiAgICAgICAgYXNzZXJ0ICJuYW1lIiBpbiBwaGFzZQogICAgICAgIGFzc2VydCAibWlsZXN0b25lcyIgaW4gcGhhc2UKCiAgICAgICAgIyBDaGVjayBtaWxlc3RvbmUgc3RydWN0dXJlCiAgICAgICAgbWlsZXN0b25lID0gcGhhc2VbIm1pbGVzdG9uZXMiXVswXQogICAgICAgIGFzc2VydCAiaWQiIGluIG1pbGVzdG9uZQogICAgICAgIGFzc2VydCAibmFtZSIgaW4gbWlsZXN0b25lCiAgICAgICAgYXNzZXJ0ICJkdXJhdGlvbl93ZWVrcyIgaW4gbWlsZXN0b25lCgogICAgZGVmIHRlc3RfZGVmYXVsdF9waGFzZXNfaGF2ZV9leHBlY3RlZF9uYW1lcyhzZWxmKToKICAgICAgICAiIiJUZXN0IGRlZmF1bHQgcGhhc2VzIGhhdmUgZXhwZWN0ZWQgbmFtZXMuIiIiCiAgICAgICAgZ2VuZXJhdG9yID0gUm9hZG1hcEdlbmVyYXRvcigpCiAgICAgICAgcm9hZG1hcCA9IGdlbmVyYXRvci5nZW5lcmF0ZShxdWVzdGlvbj0iVGVzdCIpCgogICAgICAgIHBoYXNlX25hbWVzID0gW3AubmFtZSBmb3IgcCBpbiByb2FkbWFwLnBoYXNlc10KICAgICAgICBhc3NlcnQgIumXrumimOWIhuaekCIgaW4gcGhhc2VfbmFtZXMKICAgICAgICBhc3NlcnQgIuWOn+Wei+W8gOWPkSIgaW4gcGhhc2VfbmFtZXMKICAgICAgICBhc3NlcnQgIuWunumqjOmqjOivgSIgaW4gcGhhc2VfbmFtZXMKICAgICAgICBhc3NlcnQgIuiuuuaWh+aSsOWGmSIgaW4gcGhhc2VfbmFtZXMKCiAgICBkZWYgdGVzdF9waGFzZV9vcmRlcihzZWxmKToKICAgICAgICAiIiJUZXN0IHBoYXNlIG9yZGVyIGlzIHNldCBjb3JyZWN0bHkuIiIiCiAgICAgICAgZ2VuZXJhdG9yID0gUm9hZG1hcEdlbmVyYXRvcigpCiAgICAgICAgcm9hZG1hcCA9IGdlbmVyYXRvci5nZW5lcmF0ZShxdWVzdGlvbj0iVGVzdCIpCgogICAgICAgIGZvciBpLCBwaGFzZSBpbiBlbnVtZXJhdGUocm9hZG1hcC5waGFzZXMpOgogICAgICAgICAgICBhc3NlcnQgcGhhc2Uub3JkZXIgPT0gaQoKICAgIGRlZiB0ZXN0X21pbGVzdG9uZV9pbl9waGFzZShzZWxmKToKICAgICAgICAiIiJUZXN0IG1pbGVzdG9uZXMgYXJlIGFzc29jaWF0ZWQgd2l0aCBwaGFzZXMuIiIiCiAgICAgICAgZ2VuZXJhdG9yID0gUm9hZG1hcEdlbmVyYXRvcigpCiAgICAgICAgcm9hZG1hcCA9IGdlbmVyYXRvci5nZW5lcmF0ZShxdWVzdGlvbj0iVGVzdCIpCgogICAgICAgIGZvciBwaGFzZSBpbiByb2FkbWFwLnBoYXNlczoKICAgICAgICAgICAgYXNzZXJ0IHBoYXNlLm1pbGVzdG9uZXMgaXMgbm90IE5vbmUKICAgICAgICAgICAgZm9yIG0gaW4gcGhhc2UubWlsZXN0b25lczoKICAgICAgICAgICAgICAgIGFzc2VydCBtLmlkIGlzIG5vdCBOb25lCiAgICAgICAgICAgICAgICBhc3NlcnQgbS5uYW1lIGlzIG5vdCBOb25lCg==
+"""Tests for research roadmap generator."""
+
+from llm.roadmap_generator import (
+    RoadmapGenerator,
+    ResearchRoadmap,
+    Phase,
+    Milestone,
+)
+
+
+class TestRoadmapGenerator:
+    """Test RoadmapGenerator."""
+
+    def test_milestone_creation(self):
+        """Test Milestone dataclass."""
+        m = Milestone(
+            id="m1",
+            name="文献调研",
+            description="阅读10篇论文",
+            duration_weeks=1,
+        )
+
+        assert m.id == "m1"
+        assert m.duration_weeks == 1
+        assert m.tasks == []
+        assert m.dependencies == []
+
+    def test_phase_creation(self):
+        """Test Phase dataclass."""
+        phase = Phase(
+            id="phase1",
+            name="问题分析",
+            description="分析问题",
+            duration_weeks=2,
+        )
+
+        assert phase.id == "phase1"
+        assert phase.order == 0
+        assert phase.milestones == []
+
+    def test_roadmap_creation(self):
+        """Test ResearchRoadmap dataclass."""
+        roadmap = ResearchRoadmap(
+            question="如何提升RAG?",
+            question_id="q123",
+        )
+
+        assert roadmap.question == "如何提升RAG?"
+        assert roadmap.question_id == "q123"
+        assert roadmap.total_weeks == 0  # No phases yet
+
+    def test_roadmap_total_weeks_calculation(self):
+        """Test total weeks is calculated from phases."""
+        roadmap = ResearchRoadmap(
+            question="Test",
+            question_id="",
+            phases=[
+                Phase(id="p1", name="P1", description="", duration_weeks=2),
+                Phase(id="p2", name="P2", description="", duration_weeks=3),
+            ],
+        )
+
+        assert roadmap.total_weeks == 5
+
+    def test_generate_default_phases(self):
+        """Test generating roadmap with default phases."""
+        generator = RoadmapGenerator()
+        roadmap = generator.generate(
+            question="如何改进检索?",
+            question_id="q456",
+        )
+
+        assert len(roadmap.phases) == 4  # 4 default phases
+        assert roadmap.total_weeks == 13  # 2+4+4+3
+        assert roadmap.question == "如何改进检索?"
+        assert roadmap.question_id == "q456"
+
+    def test_generate_custom_phases(self):
+        """Test generating roadmap with custom phases."""
+        generator = RoadmapGenerator()
+        custom = [
+            {
+                "name": "快速验证",
+                "description": "快速验证想法",
+                "duration_weeks": 1,
+                "milestones": [
+                    {"name": "MVP", "description": "最小可行产品", "duration_weeks": 1},
+                ],
+            },
+        ]
+
+        roadmap = generator.generate(
+            question="Test question",
+            custom_phases=custom,
+        )
+
+        assert len(roadmap.phases) == 1
+        assert roadmap.phases[0].name == "快速验证"
+        assert len(roadmap.phases[0].milestones) == 1
+
+    def test_generate_milestone_ids(self):
+        """Test milestone IDs are unique and sequential."""
+        generator = RoadmapGenerator()
+        roadmap = generator.generate(question="Test")
+
+        milestone_ids = []
+        for phase in roadmap.phases:
+            for m in phase.milestones:
+                milestone_ids.append(m.id)
+
+        assert len(milestone_ids) == len(set(milestone_ids))  # All unique
+        assert "m1" in milestone_ids
+
+    def test_render_text(self):
+        """Test text rendering."""
+        generator = RoadmapGenerator()
+        roadmap = generator.generate(question="测试问题")
+
+        output = generator.render_text(roadmap)
+
+        assert "# 研究路线图" in output
+        assert "测试问题" in output
+        assert "问题分析" in output
+        assert "原型开发" in output
+
+    def test_render_text_with_question_id(self):
+        """Test text rendering includes question ID."""
+        generator = RoadmapGenerator()
+        roadmap = generator.generate(
+            question="测试",
+            question_id="q123",
+        )
+
+        output = generator.render_text(roadmap)
+        assert "q123" in output
+
+    def test_render_markdown(self):
+        """Test Markdown rendering."""
+        generator = RoadmapGenerator()
+        roadmap = generator.generate(question="测试")
+
+        output = generator.render_markdown(roadmap)
+
+        assert "# 研究路线图" in output
+        assert "1. 问题分析" in output
+        assert "| 阶段 |" in output  # Gantt table
+
+    def test_render_json(self):
+        """Test JSON rendering."""
+        import json
+
+        generator = RoadmapGenerator()
+        roadmap = generator.generate(question="测试")
+
+        output = generator.render_json(roadmap)
+        data = json.loads(output)
+
+        assert data["question"] == "测试"
+        assert len(data["phases"]) == 4
+        assert "total_weeks" in data
+
+    def test_render_json_structure(self):
+        """Test JSON structure."""
+        import json
+
+        generator = RoadmapGenerator()
+        roadmap = generator.generate(question="测试")
+
+        output = generator.render_json(roadmap)
+        data = json.loads(output)
+
+        # Check phase structure
+        phase = data["phases"][0]
+        assert "id" in phase
+        assert "name" in phase
+        assert "milestones" in phase
+
+        # Check milestone structure
+        milestone = phase["milestones"][0]
+        assert "id" in milestone
+        assert "name" in milestone
+        assert "duration_weeks" in milestone
+
+    def test_default_phases_have_expected_names(self):
+        """Test default phases have expected names."""
+        generator = RoadmapGenerator()
+        roadmap = generator.generate(question="Test")
+
+        phase_names = [p.name for p in roadmap.phases]
+        assert "问题分析" in phase_names
+        assert "原型开发" in phase_names
+        assert "实验验证" in phase_names
+        assert "论文撰写" in phase_names
+
+    def test_phase_order(self):
+        """Test phase order is set correctly."""
+        generator = RoadmapGenerator()
+        roadmap = generator.generate(question="Test")
+
+        for i, phase in enumerate(roadmap.phases):
+            assert phase.order == i
+
+    def test_milestone_in_phase(self):
+        """Test milestones are associated with phases."""
+        generator = RoadmapGenerator()
+        roadmap = generator.generate(question="Test")
+
+        for phase in roadmap.phases:
+            assert phase.milestones is not None
+            for m in phase.milestones:
+                assert m.id is not None
+                assert m.name is not None

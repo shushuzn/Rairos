@@ -1,1 +1,176 @@
-IiIiUGFyYWRpZ20gQ29uY2VudHJhdGlvbiBNb25pdG9yLgoKRGV0ZWN0cyB3aGVuID42MCUgb2YgY2l0YXRpb25zIGluIGEgZG9tYWluIGNsdXN0ZXIgYXJvdW5kIOKJpDMgcmVmZXJlbmNlcy4KRmxhZ3MgYSBnZW5lcmFsaXphdGlvbl9nYXAgcmlzayBhbGVydC4KIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgc3FsaXRlMwpmcm9tIGNvbGxlY3Rpb25zIGltcG9ydCBDb3VudGVyCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgQW55LCBEaWN0LCBMaXN0LCBPcHRpb25hbAoKCkRCX1BBVEggPSBQYXRoLmhvbWUoKSAvICIuYWlfcmVzZWFyY2hfb3MiIC8gInBhcGVycy5kYiIKQUxFUlRfVEhSRVNIT0xEID0gMC42MCAgIyA+NjAlIGNvbmNlbnRyYXRpb24gdHJpZ2dlcnMgYWxlcnQKVE9QX04gPSAzCgoKZGVmIF9nZXRfZGIoKSAtPiBzcWxpdGUzLkNvbm5lY3Rpb246CiAgICByZXR1cm4gc3FsaXRlMy5jb25uZWN0KERCX1BBVEgpCgoKZGVmIGdldF9wYXBlcnNfaW5fZG9tYWluKGNhdGVnb3J5OiBzdHIpIC0+IExpc3Rbc3RyXToKICAgICIiIlJldHVybiBwYXBlciBJRHMgaW4gYSBnaXZlbiBwcmltYXJ5X2NhdGVnb3J5LCBvciBhbGwgaWYgJ2FsbCcuIiIiCiAgICBjb25uID0gX2dldF9kYigpCiAgICB0cnk6CiAgICAgICAgaWYgY2F0ZWdvcnkgPT0gImFsbCI6CiAgICAgICAgICAgIHJvd3MgPSBjb25uLmV4ZWN1dGUoIlNFTEVDVCBpZCBGUk9NIHBhcGVycyIpLmZldGNoYWxsKCkKICAgICAgICBlbHNlOgogICAgICAgICAgICByb3dzID0gY29ubi5leGVjdXRlKAogICAgICAgICAgICAgICAgIlNFTEVDVCBpZCBGUk9NIHBhcGVycyBXSEVSRSBwcmltYXJ5X2NhdGVnb3J5ID0gPyIsIChjYXRlZ29yeSwpCiAgICAgICAgICAgICkuZmV0Y2hhbGwoKQogICAgICAgIHJldHVybiBbclswXSBmb3IgciBpbiByb3dzXQogICAgZmluYWxseToKICAgICAgICBjb25uLmNsb3NlKCkKCgpkZWYgY2hlY2tfcGFyYWRpZ21fY29uY2VudHJhdGlvbihjYXRlZ29yeTogc3RyID0gImFsbCIpIC0+IERpY3Rbc3RyLCBBbnldOgogICAgIiIiQ2hlY2sgY2l0YXRpb24gY29uY2VudHJhdGlvbiBmb3IgYSBkb21haW4uCgogICAgUmV0dXJucyBkaWN0IHdpdGg6CiAgICAgIC0gdG90YWxfY2l0YXRpb25zOiB0b3RhbCBvdXRnb2luZyBjaXRhdGlvbiBlZGdlcyBmcm9tIGRvbWFpbiBwYXBlcnMKICAgICAgLSB0b3BfcGFwZXJzOiBsaXN0IG9mIHtwYXBlcl9pZCwgdGl0bGUsIGNpdGF0aW9uX2NvdW50LCByYXRpb30KICAgICAgLSBjb25jZW50cmF0aW9uX3JhdGlvOiBmcmFjdGlvbiBvZiBjaXRhdGlvbnMgcG9pbnRpbmcgdG8gdG9wLTMKICAgICAgLSBpc19hbGVydDogYm9vbCAocmF0aW8gPiAwLjYwKQogICAgICAtIGNhdGVnb3J5OiB0aGUgY2hlY2tlZCBjYXRlZ29yeQogICAgIiIiCiAgICBwYXBlcl9pZHMgPSBzZXQoZ2V0X3BhcGVyc19pbl9kb21haW4oY2F0ZWdvcnkpKQogICAgaWYgbm90IHBhcGVyX2lkczoKICAgICAgICByZXR1cm4gewogICAgICAgICAgICAiY2F0ZWdvcnkiOiBjYXRlZ29yeSwKICAgICAgICAgICAgInRvdGFsX2NpdGF0aW9ucyI6IDAsCiAgICAgICAgICAgICJ0b3BfcGFwZXJzIjogW10sCiAgICAgICAgICAgICJjb25jZW50cmF0aW9uX3JhdGlvIjogMC4wLAogICAgICAgICAgICAiaXNfYWxlcnQiOiBGYWxzZSwKICAgICAgICAgICAgImVycm9yIjogIk5vIHBhcGVycyBpbiBkb21haW4uIiwKICAgICAgICB9CgogICAgY29ubiA9IF9nZXRfZGIoKQogICAgdHJ5OgogICAgICAgIHBsYWNlaG9sZGVycyA9ICIsIi5qb2luKCI/IiAqIGxlbihwYXBlcl9pZHMpKQogICAgICAgIHF1ZXJ5ID0gZiIiIgogICAgICAgICAgICBTRUxFQ1QgYy50YXJnZXRfaWQsIENPVU5UKCopIGFzIGNudCwgcC50aXRsZQogICAgICAgICAgICBGUk9NIGNpdGF0aW9ucyBjCiAgICAgICAgICAgIExFRlQgSk9JTiBwYXBlcnMgcCBPTiBwLmlkID0gYy50YXJnZXRfaWQKICAgICAgICAgICAgV0hFUkUgYy5zb3VyY2VfaWQgSU4gKHtwbGFjZWhvbGRlcnN9KQogICAgICAgICAgICBHUk9VUCBCWSBjLnRhcmdldF9pZAogICAgICAgICAgICBPUkRFUiBCWSBjbnQgREVTQwogICAgICAgICIiIgogICAgICAgIHJvd3MgPSBjb25uLmV4ZWN1dGUocXVlcnksIGxpc3QocGFwZXJfaWRzKSkuZmV0Y2hhbGwoKQogICAgZmluYWxseToKICAgICAgICBjb25uLmNsb3NlKCkKCiAgICBpZiBub3Qgcm93czoKICAgICAgICByZXR1cm4gewogICAgICAgICAgICAiY2F0ZWdvcnkiOiBjYXRlZ29yeSwKICAgICAgICAgICAgInRvdGFsX2NpdGF0aW9ucyI6IDAsCiAgICAgICAgICAgICJ0b3BfcGFwZXJzIjogW10sCiAgICAgICAgICAgICJjb25jZW50cmF0aW9uX3JhdGlvIjogMC4wLAogICAgICAgICAgICAiaXNfYWxlcnQiOiBGYWxzZSwKICAgICAgICB9CgogICAgdG90YWwgPSBzdW0oclsxXSBmb3IgciBpbiByb3dzKQogICAgdG9wX3BhcGVycyA9IFtdCiAgICBmb3IgcGFwZXJfaWQsIGNudCwgdGl0bGUgaW4gcm93c1s6VE9QX05dOgogICAgICAgIHRvcF9wYXBlcnMuYXBwZW5kKAogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAicGFwZXJfaWQiOiBwYXBlcl9pZCwKICAgICAgICAgICAgICAgICJ0aXRsZSI6ICh0aXRsZSBvciBwYXBlcl9pZClbOjgwXSwKICAgICAgICAgICAgICAgICJjaXRhdGlvbl9jb3VudCI6IGNudCwKICAgICAgICAgICAgICAgICJyYXRpbyI6IHJvdW5kKGNudCAvIHRvdGFsLCAzKSBpZiB0b3RhbCBlbHNlIDAsCiAgICAgICAgICAgIH0KICAgICAgICApCgogICAgdG9wM19jb3VudCA9IHN1bShyWzFdIGZvciByIGluIHJvd3NbOlRPUF9OXSkKICAgIGNvbmNlbnRyYXRpb25fcmF0aW8gPSByb3VuZCh0b3AzX2NvdW50IC8gdG90YWwsIDMpIGlmIHRvdGFsIGVsc2UgMAoKICAgIHJldHVybiB7CiAgICAgICAgImNhdGVnb3J5IjogY2F0ZWdvcnksCiAgICAgICAgInRvdGFsX2NpdGF0aW9ucyI6IHRvdGFsLAogICAgICAgICJ0b3BfcGFwZXJzIjogdG9wX3BhcGVycywKICAgICAgICAiY29uY2VudHJhdGlvbl9yYXRpbyI6IGNvbmNlbnRyYXRpb25fcmF0aW8sCiAgICAgICAgImlzX2FsZXJ0IjogY29uY2VudHJhdGlvbl9yYXRpbyA+IEFMRVJUX1RIUkVTSE9MRCwKICAgIH0KCgpkZWYgZ2V0X2FsbF9jYXRlZ29yaWVzKCkgLT4gTGlzdFtzdHJdOgogICAgIiIiUmV0dXJuIGFsbCBkaXN0aW5jdCBwcmltYXJ5X2NhdGVnb3JpZXMgaW4gdGhlIERCLiIiIgogICAgY29ubiA9IF9nZXRfZGIoKQogICAgdHJ5OgogICAgICAgIHJvd3MgPSBjb25uLmV4ZWN1dGUoCiAgICAgICAgICAgICJTRUxFQ1QgRElTVElOQ1QgcHJpbWFyeV9jYXRlZ29yeSBGUk9NIHBhcGVycyBXSEVSRSBwcmltYXJ5X2NhdGVnb3J5IElTIE5PVCBOVUxMIEFORCBwcmltYXJ5X2NhdGVnb3J5ICE9ICcnIE9SREVSIEJZIHByaW1hcnlfY2F0ZWdvcnkiCiAgICAgICAgKS5mZXRjaGFsbCgpCiAgICAgICAgcmV0dXJuIFtyWzBdIGZvciByIGluIHJvd3NdCiAgICBmaW5hbGx5OgogICAgICAgIGNvbm4uY2xvc2UoKQoKCmRlZiByZW5kZXJfaHRtbChyZXN1bHQ6IE9wdGlvbmFsW0RpY3Rbc3RyLCBBbnldXSA9IE5vbmUpIC0+IHN0cjoKICAgIGlmIHJlc3VsdCBpcyBOb25lOgogICAgICAgIHJlc3VsdCA9IGNoZWNrX3BhcmFkaWdtX2NvbmNlbnRyYXRpb24oImFsbCIpCgogICAgY2F0ID0gcmVzdWx0LmdldCgiY2F0ZWdvcnkiLCAiYWxsIikKICAgIHRvdGFsID0gcmVzdWx0LmdldCgidG90YWxfY2l0YXRpb25zIiwgMCkKICAgIHRvcCA9IHJlc3VsdC5nZXQoInRvcF9wYXBlcnMiLCBbXSkKICAgIHJhdGlvID0gcmVzdWx0LmdldCgiY29uY2VudHJhdGlvbl9yYXRpbyIsIDApCiAgICBpc19hbGVydCA9IHJlc3VsdC5nZXQoImlzX2FsZXJ0IiwgRmFsc2UpCiAgICBlcnIgPSByZXN1bHQuZ2V0KCJlcnJvciIpCgogICAgbGluZXMgPSBbJzxkaXYgY2xhc3M9InBhcmFkaWdtLXBhbmVsIj4nXQoKICAgIGlmIGVycjoKICAgICAgICBsaW5lcy5hcHBlbmQoZiI8cCBjbGFzcz0nZW1wdHknPntlcnJ9PC9wPjwvZGl2PiIpCiAgICAgICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykKCiAgICAjIEFsZXJ0IGJhbm5lcgogICAgaWYgaXNfYWxlcnQ6CiAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICBmJzxkaXYgY2xhc3M9ImFsZXJ0LWJhbm5lciIgc3R5bGU9ImJhY2tncm91bmQ6I2U3NGMzYztjb2xvcjp3aGl0ZTtwYWRkaW5nOjEycHggMTZweDtib3JkZXItcmFkaXVzOjZweDttYXJnaW4tYm90dG9tOjE2cHg7Zm9udC1mYW1pbHk6R2VvcmdpYSxzZXJpZjsiPicKICAgICAgICAgICAgZic8c3Ryb25nIHN0eWxlPSJmb250LXNpemU6MTZweCI+4pqg77iPIFBBUkFESUdNIENPTkNFTlRSQVRJT04gQUxFUlQ8L3N0cm9uZz48YnI+JwogICAgICAgICAgICBmJzxzcGFuIHN0eWxlPSJmb250LXNpemU6MTNweCI+e2ludChyYXRpbyAqIDEwMCl9JSBvZiBjaXRhdGlvbnMgcG9pbnQgdG8gdGhlIHRvcCB7bGVuKHRvcCl9IHJlZmVyZW5jZXMg4oCUIGZpZWxkIG1heSBiZSBsb2NrZWQgaW50byBhIHNpbmdsZSBwYXJhZGlnbS48L3NwYW4+JwogICAgICAgICAgICBmIjwvZGl2PiIKICAgICAgICApCiAgICBlbHNlOgogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgZic8ZGl2IGNsYXNzPSJhbGVydC1iYW5uZXIiIHN0eWxlPSJiYWNrZ3JvdW5kOiM3QTlFN0E7Y29sb3I6d2hpdGU7cGFkZGluZzoxMnB4IDE2cHg7Ym9yZGVyLXJhZGl1czo2cHg7bWFyZ2luLWJvdHRvbToxNnB4O2ZvbnQtZmFtaWx5Okdlb3JnaWEsc2VyaWY7Ij4nCiAgICAgICAgICAgIGYnPHN0cm9uZyBzdHlsZT0iZm9udC1zaXplOjE0cHgiPuKckyBDaXRhdGlvbiBsYW5kc2NhcGUgaXMgZGl2ZXJzZTwvc3Ryb25nPiAnCiAgICAgICAgICAgIGYnPHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxM3B4Ij5Ub3Age2xlbih0b3ApfSBwYXBlcnMgcmVjZWl2ZSB7aW50KHJhdGlvICogMTAwKX0lIG9mIGNpdGF0aW9ucy48L3NwYW4+JwogICAgICAgICAgICBmIjwvZGl2PiIKICAgICAgICApCgogICAgbGluZXMuYXBwZW5kKAogICAgICAgIGYiPHAgc3R5bGU9J2ZvbnQtc2l6ZToxM3B4O2NvbG9yOiM3YTc1NzA7bWFyZ2luLWJvdHRvbToxNnB4Oyc+IgogICAgICAgIGYiRG9tYWluOiA8c3Ryb25nPntjYXR9PC9zdHJvbmc+IMK3IHt0b3RhbH0gdG90YWwgb3V0Z29pbmcgY2l0YXRpb25zIMK3ICIKICAgICAgICBmIkNvbmNlbnRyYXRpb246IDxzdHJvbmc+e2ludChyYXRpbyAqIDEwMCl9JTwvc3Ryb25nPiAoYWxlcnQgYXQge2ludChBTEVSVF9USFJFU0hPTEQgKiAxMDApfSUpPC9wPiIKICAgICkKCiAgICBpZiB0b3A6CiAgICAgICAgbGluZXMuYXBwZW5kKCI8dGFibGUgY2xhc3M9J3BhcmFkaWdtLXRhYmxlJz4iKQogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgIjx0aGVhZD48dHI+PHRoPlBhcGVyPC90aD48dGg+Q2l0LjwvdGg+PHRoPlNoYXJlPC90aD48dGg+QmFyPC90aD48L3RyPjwvdGhlYWQ+IgogICAgICAgICkKICAgICAgICBsaW5lcy5hcHBlbmQoIjx0Ym9keT4iKQogICAgICAgIGZvciBwIGluIHRvcDoKICAgICAgICAgICAgYmFyX3cgPSBpbnQocFsicmF0aW8iXSAqIDEwMCkKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCI8dHI+IikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICAgICAgZiI8dGQgc3R5bGU9J21heC13aWR0aDozMDBweDtvdmVyZmxvdzpoaWRkZW47dGV4dC1vdmVyZmxvdzplbGxpcHNpczt3aGl0ZS1zcGFjZTpub3dyYXAnPjxjb2RlIHRpdGxlPSd7cFsncGFwZXJfaWQnXX0nPntwWyd0aXRsZSddfTwvY29kZT48L3RkPiIKICAgICAgICAgICAgKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiI8dGQgc3R5bGU9J3RleHQtYWxpZ246cmlnaHQ7Zm9udC13ZWlnaHQ6NjAwJz57cFsnY2l0YXRpb25fY291bnQnXX08L3RkPiIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIjx0ZCBzdHlsZT0ndGV4dC1hbGlnbjpyaWdodCc+e3BbJ3JhdGlvJ106LjElfTwvdGQ+IikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICAgICAgZiI8dGQgc3R5bGU9J3dpZHRoOjEyMHB4Jz48ZGl2IHN0eWxlPSdiYWNrZ3JvdW5kOiNlOGU0ZGU7Ym9yZGVyLXJhZGl1czozcHg7aGVpZ2h0OjhweCc+PGRpdiBzdHlsZT0nYmFja2dyb3VuZDp7JyNlNzRjM2MnIGlmIGlzX2FsZXJ0IGVsc2UgJyM3QTlFN0EnfTtoZWlnaHQ6MTAwJTt3aWR0aDp7YmFyX3d9JTtib3JkZXItcmFkaXVzOjNweCc+PC9kaXY+PC9kaXY+PC90ZD4iCiAgICAgICAgICAgICkKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCI8L3RyPiIpCiAgICAgICAgbGluZXMuYXBwZW5kKCI8L3Rib2R5PjwvdGFibGU+IikKCiAgICBsaW5lcy5hcHBlbmQoIjxzdHlsZT4iKQogICAgbGluZXMuYXBwZW5kKCIucGFyYWRpZ20tcGFuZWwgeyBmb250LWZhbWlseTogR2VvcmdpYSwgc2VyaWY7IH0iKQogICAgbGluZXMuYXBwZW5kKCIucGFyYWRpZ20tdGFibGUgeyB3aWR0aDogMTAwJTsgYm9yZGVyLWNvbGxhcHNlOiBjb2xsYXBzZTsgbWFyZ2luLXRvcDogMXJlbTsgfSIpCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIi5wYXJhZGlnbS10YWJsZSB0aCwgLnBhcmFkaWdtLXRhYmxlIHRkIHsgcGFkZGluZzogMC40cmVtIDAuOHJlbTsgYm9yZGVyLWJvdHRvbTogMXB4IHNvbGlkICNlOGU0ZGU7IHRleHQtYWxpZ246IGxlZnQ7IH0iCiAgICApCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIi5wYXJhZGlnbS10YWJsZSB0aCB7IGZvbnQtc2l6ZTogMC43NXJlbTsgdGV4dC10cmFuc2Zvcm06IHVwcGVyY2FzZTsgbGV0dGVyLXNwYWNpbmc6IDAuMDVlbTsgY29sb3I6ICM3YTc1NzA7IH0iCiAgICApCiAgICBsaW5lcy5hcHBlbmQoIjwvc3R5bGU+IikKICAgIGxpbmVzLmFwcGVuZCgiPC9kaXY+IikKICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCg==
+"""Paradigm Concentration Monitor.
+
+Detects when >60% of citations in a domain cluster around ≤3 references.
+Flags a generalization_gap risk alert.
+"""
+
+from __future__ import annotations
+
+import sqlite3
+from collections import Counter
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+
+DB_PATH = Path.home() / ".ai_research_os" / "papers.db"
+ALERT_THRESHOLD = 0.60  # >60% concentration triggers alert
+TOP_N = 3
+
+
+def _get_db() -> sqlite3.Connection:
+    return sqlite3.connect(DB_PATH)
+
+
+def get_papers_in_domain(category: str) -> List[str]:
+    """Return paper IDs in a given primary_category, or all if 'all'."""
+    conn = _get_db()
+    try:
+        if category == "all":
+            rows = conn.execute("SELECT id FROM papers").fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT id FROM papers WHERE primary_category = ?", (category,)
+            ).fetchall()
+        return [r[0] for r in rows]
+    finally:
+        conn.close()
+
+
+def check_paradigm_concentration(category: str = "all") -> Dict[str, Any]:
+    """Check citation concentration for a domain.
+
+    Returns dict with:
+      - total_citations: total outgoing citation edges from domain papers
+      - top_papers: list of {paper_id, title, citation_count, ratio}
+      - concentration_ratio: fraction of citations pointing to top-3
+      - is_alert: bool (ratio > 0.60)
+      - category: the checked category
+    """
+    paper_ids = set(get_papers_in_domain(category))
+    if not paper_ids:
+        return {
+            "category": category,
+            "total_citations": 0,
+            "top_papers": [],
+            "concentration_ratio": 0.0,
+            "is_alert": False,
+            "error": "No papers in domain.",
+        }
+
+    conn = _get_db()
+    try:
+        placeholders = ",".join("?" * len(paper_ids))
+        query = f"""
+            SELECT c.target_id, COUNT(*) as cnt, p.title
+            FROM citations c
+            LEFT JOIN papers p ON p.id = c.target_id
+            WHERE c.source_id IN ({placeholders})
+            GROUP BY c.target_id
+            ORDER BY cnt DESC
+        """
+        rows = conn.execute(query, list(paper_ids)).fetchall()
+    finally:
+        conn.close()
+
+    if not rows:
+        return {
+            "category": category,
+            "total_citations": 0,
+            "top_papers": [],
+            "concentration_ratio": 0.0,
+            "is_alert": False,
+        }
+
+    total = sum(r[1] for r in rows)
+    top_papers = []
+    for paper_id, cnt, title in rows[:TOP_N]:
+        top_papers.append({
+            "paper_id": paper_id,
+            "title": (title or paper_id)[:80],
+            "citation_count": cnt,
+            "ratio": round(cnt / total, 3) if total else 0,
+        })
+
+    top3_count = sum(r[1] for r in rows[:TOP_N])
+    concentration_ratio = round(top3_count / total, 3) if total else 0
+
+    return {
+        "category": category,
+        "total_citations": total,
+        "top_papers": top_papers,
+        "concentration_ratio": concentration_ratio,
+        "is_alert": concentration_ratio > ALERT_THRESHOLD,
+    }
+
+
+def get_all_categories() -> List[str]:
+    """Return all distinct primary_categories in the DB."""
+    conn = _get_db()
+    try:
+        rows = conn.execute(
+            "SELECT DISTINCT primary_category FROM papers WHERE primary_category IS NOT NULL AND primary_category != '' ORDER BY primary_category"
+        ).fetchall()
+        return [r[0] for r in rows]
+    finally:
+        conn.close()
+
+
+def render_html(result: Optional[Dict[str, Any]] = None) -> str:
+    if result is None:
+        result = check_paradigm_concentration("all")
+
+    cat = result.get("category", "all")
+    total = result.get("total_citations", 0)
+    top = result.get("top_papers", [])
+    ratio = result.get("concentration_ratio", 0)
+    is_alert = result.get("is_alert", False)
+    err = result.get("error")
+
+    lines = ['<div class="paradigm-panel">']
+
+    if err:
+        lines.append(f"<p class='empty'>{err}</p></div>")
+        return "\n".join(lines)
+
+    # Alert banner
+    if is_alert:
+        lines.append(
+            f'<div class="alert-banner" style="background:#e74c3c;color:white;padding:12px 16px;border-radius:6px;margin-bottom:16px;font-family:Georgia,serif;">'
+            f'<strong style="font-size:16px">⚠️ PARADIGM CONCENTRATION ALERT</strong><br>'
+            f'<span style="font-size:13px">{int(ratio*100)}% of citations point to the top {len(top)} references — field may be locked into a single paradigm.</span>'
+            f'</div>'
+        )
+    else:
+        lines.append(
+            f'<div class="alert-banner" style="background:#7A9E7A;color:white;padding:12px 16px;border-radius:6px;margin-bottom:16px;font-family:Georgia,serif;">'
+            f'<strong style="font-size:14px">✓ Citation landscape is diverse</strong> '
+            f'<span style="font-size:13px">Top {len(top)} papers receive {int(ratio*100)}% of citations.</span>'
+            f'</div>'
+        )
+
+    lines.append(f"<p style='font-size:13px;color:#7a7570;margin-bottom:16px;'>"
+                f"Domain: <strong>{cat}</strong> · {total} total outgoing citations · "
+                f"Concentration: <strong>{int(ratio*100)}%</strong> (alert at {int(ALERT_THRESHOLD*100)}%)</p>")
+
+    if top:
+        lines.append("<table class='paradigm-table'>")
+        lines.append("<thead><tr><th>Paper</th><th>Cit.</th><th>Share</th><th>Bar</th></tr></thead>")
+        lines.append("<tbody>")
+        for p in top:
+            bar_w = int(p["ratio"] * 100)
+            lines.append("<tr>")
+            lines.append(f"<td style='max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'><code title='{p['paper_id']}'>{p['title']}</code></td>")
+            lines.append(f"<td style='text-align:right;font-weight:600'>{p['citation_count']}</td>")
+            lines.append(f"<td style='text-align:right'>{p['ratio']:.1%}</td>")
+            lines.append(f"<td style='width:120px'><div style='background:#e8e4de;border-radius:3px;height:8px'><div style='background:{'#e74c3c' if is_alert else '#7A9E7A'};height:100%;width:{bar_w}%;border-radius:3px'></div></div></td>")
+            lines.append("</tr>")
+        lines.append("</tbody></table>")
+
+    lines.append("<style>")
+    lines.append(".paradigm-panel { font-family: Georgia, serif; }")
+    lines.append(".paradigm-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }")
+    lines.append(".paradigm-table th, .paradigm-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }")
+    lines.append(".paradigm-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }")
+    lines.append("</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

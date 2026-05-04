@@ -1,1 +1,282 @@
-IiIiUmV0cnkgdXRpbGl0aWVzIHdpdGggZXhwb25lbnRpYWwgYmFja29mZiBhbmQgY2lyY3VpdCBicmVha2VyLiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGxvZ2dpbmcKaW1wb3J0IHJhbmRvbQppbXBvcnQgdGltZQppbXBvcnQgdGhyZWFkaW5nCmZyb20gZnVuY3Rvb2xzIGltcG9ydCB3cmFwcwpmcm9tIHR5cGluZyBpbXBvcnQgQ2FsbGFibGUsIE9wdGlvbmFsLCBTZXF1ZW5jZSwgRGljdCwgQW55Cgpsb2dnZXIgPSBsb2dnaW5nLmdldExvZ2dlcihfX25hbWVfXykKCgojIOKUgOKUgOKUgCBSZXRyeSBTdGF0aXN0aWNzIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmNsYXNzIFJldHJ5U3RhdHM6CiAgICAiIiJUcmFjayByZXRyeSBzdGF0aXN0aWNzIGZvciBtb25pdG9yaW5nLiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmKToKICAgICAgICBzZWxmLl9zdGF0czogRGljdFtzdHIsIERpY3Rbc3RyLCBBbnldXSA9IHt9CiAgICAgICAgc2VsZi5fbG9jayA9IHRocmVhZGluZy5Mb2NrKCkKCiAgICBkZWYgcmVjb3JkX2F0dGVtcHQoc2VsZiwgZnVuY19uYW1lOiBzdHIsIGF0dGVtcHQ6IGludCwgc3VjY2VzczogYm9vbCwgZXJyb3I6IHN0ciA9IE5vbmUpOiAgIyB0eXBlOiBpZ25vcmVbYXNzaWdubWVudF0KICAgICAgICAiIiJSZWNvcmQgYSByZXRyeSBhdHRlbXB0LiIiIgogICAgICAgIHdpdGggc2VsZi5fbG9jazoKICAgICAgICAgICAgaWYgZnVuY19uYW1lIG5vdCBpbiBzZWxmLl9zdGF0czoKICAgICAgICAgICAgICAgIHNlbGYuX3N0YXRzW2Z1bmNfbmFtZV0gPSB7CiAgICAgICAgICAgICAgICAgICAgInRvdGFsX2F0dGVtcHRzIjogMCwKICAgICAgICAgICAgICAgICAgICAidG90YWxfZmFpbHVyZXMiOiAwLAogICAgICAgICAgICAgICAgICAgICJ0b3RhbF9yZXRyaWVzIjogMCwKICAgICAgICAgICAgICAgICAgICAidG90YWxfc3VjY2VzcyI6IDAsCiAgICAgICAgICAgICAgICAgICAgImVycm9ycyI6IHt9LAogICAgICAgICAgICAgICAgfQoKICAgICAgICAgICAgc2VsZi5fc3RhdHNbZnVuY19uYW1lXVsidG90YWxfYXR0ZW1wdHMiXSArPSAxCiAgICAgICAgICAgIGlmIG5vdCBzdWNjZXNzOgogICAgICAgICAgICAgICAgc2VsZi5fc3RhdHNbZnVuY19uYW1lXVsidG90YWxfZmFpbHVyZXMiXSArPSAxCiAgICAgICAgICAgICAgICBzZWxmLl9zdGF0c1tmdW5jX25hbWVdWyJ0b3RhbF9yZXRyaWVzIl0gKz0gYXR0ZW1wdAogICAgICAgICAgICAgICAgaWYgZXJyb3I6CiAgICAgICAgICAgICAgICAgICAgZXJyb3JfdHlwZSA9IHR5cGUoZXJyb3IpLl9fbmFtZV9fCiAgICAgICAgICAgICAgICAgICAgc2VsZi5fc3RhdHNbZnVuY19uYW1lXVsiZXJyb3JzIl1bZXJyb3JfdHlwZV0gPSAoCiAgICAgICAgICAgICAgICAgICAgICAgIHNlbGYuX3N0YXRzW2Z1bmNfbmFtZV1bImVycm9ycyJdLmdldChlcnJvcl90eXBlLCAwKSArIDEKICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgIGVsc2U6CiAgICAgICAgICAgICAgICBzZWxmLl9zdGF0c1tmdW5jX25hbWVdWyJ0b3RhbF9zdWNjZXNzIl0gKz0gMQoKICAgIGRlZiBnZXRfc3RhdHMoc2VsZiwgZnVuY19uYW1lOiBzdHIgPSBOb25lKSAtPiBEaWN0W3N0ciwgQW55XTogICMgdHlwZTogaWdub3JlW2Fzc2lnbm1lbnRdCiAgICAgICAgIiIiR2V0IHN0YXRpc3RpY3MgZm9yIGEgZnVuY3Rpb24gb3IgYWxsIGZ1bmN0aW9ucy4iIiIKICAgICAgICB3aXRoIHNlbGYuX2xvY2s6CiAgICAgICAgICAgIGlmIGZ1bmNfbmFtZToKICAgICAgICAgICAgICAgIHJldHVybiBzZWxmLl9zdGF0cy5nZXQoZnVuY19uYW1lLCB7fSkKICAgICAgICAgICAgcmV0dXJuIGRpY3Qoc2VsZi5fc3RhdHMpCgogICAgZGVmIHJlc2V0KHNlbGYsIGZ1bmNfbmFtZTogc3RyID0gTm9uZSk6ICAjIHR5cGU6IGlnbm9yZVthc3NpZ25tZW50XQogICAgICAgICIiIlJlc2V0IHN0YXRpc3RpY3MuIiIiCiAgICAgICAgd2l0aCBzZWxmLl9sb2NrOgogICAgICAgICAgICBpZiBmdW5jX25hbWUgYW5kIGZ1bmNfbmFtZSBpbiBzZWxmLl9zdGF0czoKICAgICAgICAgICAgICAgIGRlbCBzZWxmLl9zdGF0c1tmdW5jX25hbWVdCiAgICAgICAgICAgIGVsaWYgZnVuY19uYW1lIGlzIE5vbmU6CiAgICAgICAgICAgICAgICBzZWxmLl9zdGF0cy5jbGVhcigpCgoKIyBHbG9iYWwgcmV0cnkgc3RhdGlzdGljcyB0cmFja2VyCl9yZXRyeV9zdGF0cyA9IFJldHJ5U3RhdHMoKQoKCmRlZiBnZXRfcmV0cnlfc3RhdHMoKSAtPiBSZXRyeVN0YXRzOgogICAgIiIiR2V0IHRoZSBnbG9iYWwgcmV0cnkgc3RhdGlzdGljcyB0cmFja2VyLiIiIgogICAgcmV0dXJuIF9yZXRyeV9zdGF0cwoKCiMg4pSA4pSA4pSAIFJldHJ5IERlY29yYXRvciDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpkZWYgcmV0cnkoCiAgICBtYXhfYXR0ZW1wdHM6IGludCA9IDMsCiAgICBiYXNlX2RlbGF5OiBmbG9hdCA9IDEuMCwKICAgIG1heF9kZWxheTogZmxvYXQgPSAzMC4wLAogICAgZXhjZXB0aW9uczogU2VxdWVuY2VbdHlwZVtFeGNlcHRpb25dXSA9IChFeGNlcHRpb24sKSwKICAgIG9uX3JldHJ5OiBDYWxsYWJsZVtbRXhjZXB0aW9uLCBpbnRdLCBOb25lXSB8IE5vbmUgPSBOb25lLAogICAgaml0dGVyOiBmbG9hdCA9IDAuMCwKICAgIHRyYWNrX3N0YXRzOiBib29sID0gRmFsc2UsCikgLT4gQ2FsbGFibGU6CiAgICAiIiIKICAgIERlY29yYXRvciB0aGF0IHJldHJpZXMgYSBmdW5jdGlvbiB3aXRoIGV4cG9uZW50aWFsIGJhY2tvZmYgYW5kIG9wdGlvbmFsIGppdHRlci4KCiAgICBBcmdzOgogICAgICAgIG1heF9hdHRlbXB0czogTWF4aW11bSBudW1iZXIgb2YgYXR0ZW1wdHMgKGluY2x1ZGluZyB0aGUgZmlyc3QpLgogICAgICAgIGJhc2VfZGVsYXk6IEluaXRpYWwgZGVsYXkgaW4gc2Vjb25kcy4KICAgICAgICBtYXhfZGVsYXk6IE1heGltdW0gZGVsYXkgY2FwIGluIHNlY29uZHMuCiAgICAgICAgZXhjZXB0aW9uczogVHVwbGUgb2YgZXhjZXB0aW9uIHR5cGVzIHRvIGNhdGNoIGFuZCByZXRyeS4KICAgICAgICBvbl9yZXRyeTogT3B0aW9uYWwgY2FsbGJhY2sgZmlyZWQgYmVmb3JlIGVhY2ggcmV0cnkgd2l0aCAoZXhjZXB0aW9uLCBhdHRlbXB0KS4KICAgICAgICBqaXR0ZXI6IFJhbmRvbSBqaXR0ZXIgZmFjdG9yICgwLjAtMS4wKSBhZGRlZCB0byBkZWxheSBmb3IgYmV0dGVyIGRpc3RyaWJ1dGlvbi4KICAgICAgICB0cmFja19zdGF0czogV2hldGhlciB0byB0cmFjayByZXRyeSBzdGF0aXN0aWNzLgogICAgIiIiCgogICAgZGVmIGRlY29yYXRvcihmbjogQ2FsbGFibGUpIC0+IENhbGxhYmxlOgogICAgICAgIGZ1bmNfbmFtZSA9IGYie2ZuLl9fbW9kdWxlX199Lntmbi5fX3F1YWxuYW1lX199IgoKICAgICAgICBAd3JhcHMoZm4pCiAgICAgICAgZGVmIHdyYXBwZXIoKmFyZ3MsICoqa3dhcmdzKToKICAgICAgICAgICAgbGFzdF9leGM6IE9wdGlvbmFsW0V4Y2VwdGlvbl0gPSBOb25lCiAgICAgICAgICAgIGZvciBhdHRlbXB0IGluIHJhbmdlKDEsIG1heF9hdHRlbXB0cyArIDEpOgogICAgICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgICAgIHJlc3VsdCA9IGZuKCphcmdzLCAqKmt3YXJncykKICAgICAgICAgICAgICAgICAgICBpZiB0cmFja19zdGF0czoKICAgICAgICAgICAgICAgICAgICAgICAgX3JldHJ5X3N0YXRzLnJlY29yZF9hdHRlbXB0KGZ1bmNfbmFtZSwgYXR0ZW1wdCwgc3VjY2Vzcz1UcnVlKQogICAgICAgICAgICAgICAgICAgIHJldHVybiByZXN1bHQKICAgICAgICAgICAgICAgIGV4Y2VwdCBleGNlcHRpb25zIGFzIGU6CiAgICAgICAgICAgICAgICAgICAgbGFzdF9leGMgPSBlCiAgICAgICAgICAgICAgICAgICAgaWYgdHJhY2tfc3RhdHM6CiAgICAgICAgICAgICAgICAgICAgICAgIF9yZXRyeV9zdGF0cy5yZWNvcmRfYXR0ZW1wdChmdW5jX25hbWUsIGF0dGVtcHQsIHN1Y2Nlc3M9RmFsc2UsIGVycm9yPWUpCiAgICAgICAgICAgICAgICAgICAgaWYgYXR0ZW1wdCA9PSBtYXhfYXR0ZW1wdHM6CiAgICAgICAgICAgICAgICAgICAgICAgIGJyZWFrCiAgICAgICAgICAgICAgICAgICAgZGVsYXkgPSBtaW4oYmFzZV9kZWxheSAqICgyICoqIChhdHRlbXB0IC0gMSkpLCBtYXhfZGVsYXkpCgogICAgICAgICAgICAgICAgICAgICMgQWRkIGppdHRlciBpZiBzcGVjaWZpZWQKICAgICAgICAgICAgICAgICAgICBpZiBqaXR0ZXIgPiAwOgogICAgICAgICAgICAgICAgICAgICAgICBkZWxheSArPSBkZWxheSAqIGppdHRlciAqIHJhbmRvbS5yYW5kb20oKQoKICAgICAgICAgICAgICAgICAgICBsb2dnZXIud2FybmluZygKICAgICAgICAgICAgICAgICAgICAgICAgIltyZXRyeV0gJXMgYXR0ZW1wdCAlZC8lZCBmYWlsZWQ6ICVzLiBSZXRyeWluZyBpbiAlLjFmcyIsCiAgICAgICAgICAgICAgICAgICAgICAgIGZuLl9fcXVhbG5hbWVfXywKICAgICAgICAgICAgICAgICAgICAgICAgYXR0ZW1wdCwKICAgICAgICAgICAgICAgICAgICAgICAgbWF4X2F0dGVtcHRzLAogICAgICAgICAgICAgICAgICAgICAgICBlLAogICAgICAgICAgICAgICAgICAgICAgICBkZWxheSwKICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICAgICAgaWYgb25fcmV0cnkgaXMgbm90IE5vbmU6CiAgICAgICAgICAgICAgICAgICAgICAgIG9uX3JldHJ5KGUsIGF0dGVtcHQpCiAgICAgICAgICAgICAgICAgICAgdGltZS5zbGVlcChkZWxheSkKICAgICAgICAgICAgIyBSZS1yYWlzZSB0aGUgbGFzdCBleGNlcHRpb24gd2l0aCBvcmlnaW5hbCB0cmFjZWJhY2sKICAgICAgICAgICAgcmFpc2UgbGFzdF9leGMgZnJvbSBsYXN0X2V4Yy5fX2NhdXNlX18gaWYgbGFzdF9leGMgZWxzZSBOb25lCgogICAgICAgIHJldHVybiB3cmFwcGVyCgogICAgcmV0dXJuIGRlY29yYXRvcgoKCiMg4pSA4pSA4pSAIENpcmN1aXQgQnJlYWtlciDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpjbGFzcyBDaXJjdWl0QnJlYWtlcjoKICAgICIiIgogICAgQ2lyY3VpdCBicmVha2VyIHRoYXQgcHJldmVudHMgcmVwZWF0ZWQgY2FsbHMgdG8gYSBmYWlsaW5nIHNlcnZpY2UuCgogICAgU3RhdGVzOgogICAgICAgIENMT1NFRCDihpIgbm9ybWFsIG9wZXJhdGlvbiwgY2FsbHMgcGFzcyB0aHJvdWdoCiAgICAgICAgT1BFTiAgIOKGkiBjYWxscyBmYWlsIGltbWVkaWF0ZWx5IChDaXJjdWl0T3BlbikKICAgICAgICBIQUxGLU9QRU4g4oaSIG9uZSB0ZXN0IGNhbGwgYWxsb3dlZAogICAgIiIiCgogICAgQ0xPU0VEID0gImNsb3NlZCIKICAgIE9QRU4gPSAib3BlbiIKICAgIEhBTEZfT1BFTiA9ICJoYWxmLW9wZW4iCgogICAgZGVmIF9faW5pdF9fKAogICAgICAgIHNlbGYsCiAgICAgICAgZmFpbHVyZV90aHJlc2hvbGQ6IGludCA9IDUsCiAgICAgICAgcmVjb3ZlcnlfdGltZW91dDogZmxvYXQgPSA2MC4wLAogICAgICAgIGV4cGVjdGVkX2V4Y2VwdGlvbjogdHlwZVtFeGNlcHRpb25dID0gRXhjZXB0aW9uLAogICAgKToKICAgICAgICBzZWxmLmZhaWx1cmVfdGhyZXNob2xkID0gZmFpbHVyZV90aHJlc2hvbGQKICAgICAgICBzZWxmLnJlY292ZXJ5X3RpbWVvdXQgPSByZWNvdmVyeV90aW1lb3V0CiAgICAgICAgc2VsZi5leHBlY3RlZF9leGNlcHRpb24gPSBleHBlY3RlZF9leGNlcHRpb24KCiAgICAgICAgc2VsZi5fc3RhdGUgPSBzZWxmLkNMT1NFRAogICAgICAgIHNlbGYuX2ZhaWx1cmVfY291bnQgPSAwCiAgICAgICAgc2VsZi5fbGFzdF9mYWlsdXJlX3RpbWU6IE9wdGlvbmFsW2Zsb2F0XSA9IE5vbmUKICAgICAgICBzZWxmLl9sb2NrID0gdGhyZWFkaW5nLlJMb2NrKCkKCiAgICBAcHJvcGVydHkKICAgIGRlZiBzdGF0ZShzZWxmKSAtPiBzdHI6CiAgICAgICAgd2l0aCBzZWxmLl9sb2NrOgogICAgICAgICAgICBpZiBzZWxmLl9zdGF0ZSA9PSBzZWxmLk9QRU46CiAgICAgICAgICAgICAgICBpZiAoCiAgICAgICAgICAgICAgICAgICAgc2VsZi5fbGFzdF9mYWlsdXJlX3RpbWUgaXMgbm90IE5vbmUKICAgICAgICAgICAgICAgICAgICBhbmQgdGltZS50aW1lKCkgLSBzZWxmLl9sYXN0X2ZhaWx1cmVfdGltZSA+PSBzZWxmLnJlY292ZXJ5X3RpbWVvdXQKICAgICAgICAgICAgICAgICk6CiAgICAgICAgICAgICAgICAgICAgc2VsZi5fc3RhdGUgPSBzZWxmLkhBTEZfT1BFTgogICAgICAgICAgICByZXR1cm4gc2VsZi5fc3RhdGUKCiAgICBkZWYgcmVjb3JkX3N1Y2Nlc3Moc2VsZikgLT4gTm9uZToKICAgICAgICB3aXRoIHNlbGYuX2xvY2s6CiAgICAgICAgICAgIHNlbGYuX2ZhaWx1cmVfY291bnQgPSAwCiAgICAgICAgICAgIHNlbGYuX3N0YXRlID0gc2VsZi5DTE9TRUQKCiAgICBkZWYgcmVjb3JkX2ZhaWx1cmUoc2VsZikgLT4gTm9uZToKICAgICAgICB3aXRoIHNlbGYuX2xvY2s6CiAgICAgICAgICAgIHNlbGYuX2ZhaWx1cmVfY291bnQgKz0gMQogICAgICAgICAgICBzZWxmLl9sYXN0X2ZhaWx1cmVfdGltZSA9IHRpbWUudGltZSgpCiAgICAgICAgICAgIGlmIHNlbGYuX2ZhaWx1cmVfY291bnQgPj0gc2VsZi5mYWlsdXJlX3RocmVzaG9sZDoKICAgICAgICAgICAgICAgIHNlbGYuX3N0YXRlID0gc2VsZi5PUEVOCiAgICAgICAgICAgICAgICBsb2dnZXIuZXJyb3IoCiAgICAgICAgICAgICAgICAgICAgIltjaXJjdWl0X2JyZWFrZXJdIE9QRU4gYWZ0ZXIgJWQgZmFpbHVyZXMgKHRocmVzaG9sZD0lZCkiLAogICAgICAgICAgICAgICAgICAgIHNlbGYuX2ZhaWx1cmVfY291bnQsCiAgICAgICAgICAgICAgICAgICAgc2VsZi5mYWlsdXJlX3RocmVzaG9sZCwKICAgICAgICAgICAgICAgICkKCiAgICBkZWYgY2FsbChzZWxmLCBmbjogQ2FsbGFibGUsICphcmdzLCAqKmt3YXJncyk6CiAgICAgICAgIiIiRXhlY3V0ZSBmbiB0aHJvdWdoIHRoZSBjaXJjdWl0IGJyZWFrZXIuIiIiCiAgICAgICAgc3RhdGUgPSBzZWxmLnN0YXRlCiAgICAgICAgaWYgc3RhdGUgPT0gc2VsZi5PUEVOOgogICAgICAgICAgICByYWlzZSBDaXJjdWl0T3BlbihmIkNpcmN1aXQgYnJlYWtlciBpcyBPUEVOLiBSZXRyeSBhZnRlciB7c2VsZi5yZWNvdmVyeV90aW1lb3V0fXMiKQoKICAgICAgICB0cnk6CiAgICAgICAgICAgIHJlc3VsdCA9IGZuKCphcmdzLCAqKmt3YXJncykKICAgICAgICAgICAgc2VsZi5yZWNvcmRfc3VjY2VzcygpCiAgICAgICAgICAgIHJldHVybiByZXN1bHQKICAgICAgICBleGNlcHQgc2VsZi5leHBlY3RlZF9leGNlcHRpb246CiAgICAgICAgICAgIHNlbGYucmVjb3JkX2ZhaWx1cmUoKQogICAgICAgICAgICByYWlzZQoKCmNsYXNzIENpcmN1aXRPcGVuKEV4Y2VwdGlvbik6CiAgICAiIiJSYWlzZWQgd2hlbiBhIGNpcmN1aXQgYnJlYWtlciBpcyBvcGVuLiIiIgoKCiMg4pSA4pSA4pSAIENpcmN1aXQgQnJlYWtlciBEZWNvcmF0b3Ig4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgoKZGVmIGNpcmN1aXRfYnJlYWtlcigKICAgIF9mbjogT3B0aW9uYWxbQ2FsbGFibGVbLi4uLCBBbnldXSA9IE5vbmUsCiAgICAqLAogICAgZmFpbHVyZV90aHJlc2hvbGQ6IGludCA9IDUsCiAgICByZWNvdmVyeV90aW1lb3V0OiBmbG9hdCA9IDYwLjAsCiAgICBleHBlY3RlZF9leGNlcHRpb246IHR5cGVbRXhjZXB0aW9uXSA9IEV4Y2VwdGlvbiwKKSAtPiBDYWxsYWJsZToKICAgICIiIgogICAgRGVjb3JhdG9yIHRoYXQgd3JhcHMgYSBmdW5jdGlvbiB3aXRoIGEgY2lyY3VpdCBicmVha2VyLgoKICAgIFVzYWdlOgogICAgICAgIEBjaXJjdWl0X2JyZWFrZXIoKQogICAgICAgIGRlZiBteV9mdW5jKCk6CiAgICAgICAgICAgIC4uLgoKICAgICAgICAjIG9yIHdpdGggb3B0aW9uczoKICAgICAgICBAY2lyY3VpdF9icmVha2VyKGZhaWx1cmVfdGhyZXNob2xkPTMsIHJlY292ZXJ5X3RpbWVvdXQ9MzAuMCkKICAgICAgICBkZWYgbXlfZnVuYygpOgogICAgICAgICAgICAuLi4KCiAgICBUaHJlYWQtc2FmZS4gRWFjaCBkZWNvcmF0ZWQgZnVuY3Rpb24gZ2V0cyBpdHMgb3duIENpcmN1aXRCcmVha2VyIGluc3RhbmNlLgogICAgIiIiCiAgICBfYnJlYWtlcnM6IGRpY3Rbc3RyLCBDaXJjdWl0QnJlYWtlcl0gPSB7fQogICAgX2JyZWFrZXJzX2xvY2sgPSB0aHJlYWRpbmcuTG9jaygpCgogICAgZGVmIGRlY29yYXRvcihmbjogQ2FsbGFibGUpIC0+IENhbGxhYmxlOgogICAgICAgIGtleSA9IGYie2ZuLl9fbW9kdWxlX199Lntmbi5fX3F1YWxuYW1lX199IgoKICAgICAgICBkZWYgZ2V0X2JyZWFrZXIoKSAtPiBDaXJjdWl0QnJlYWtlcjoKICAgICAgICAgICAgd2l0aCBfYnJlYWtlcnNfbG9jazoKICAgICAgICAgICAgICAgIGlmIGtleSBub3QgaW4gX2JyZWFrZXJzOgogICAgICAgICAgICAgICAgICAgIF9icmVha2Vyc1trZXldID0gQ2lyY3VpdEJyZWFrZXIoCiAgICAgICAgICAgICAgICAgICAgICAgIGZhaWx1cmVfdGhyZXNob2xkPWZhaWx1cmVfdGhyZXNob2xkLAogICAgICAgICAgICAgICAgICAgICAgICByZWNvdmVyeV90aW1lb3V0PXJlY292ZXJ5X3RpbWVvdXQsCiAgICAgICAgICAgICAgICAgICAgICAgIGV4cGVjdGVkX2V4Y2VwdGlvbj1leHBlY3RlZF9leGNlcHRpb24sCiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgcmV0dXJuIF9icmVha2Vyc1trZXldCgogICAgICAgIEB3cmFwcyhmbikKICAgICAgICBkZWYgd3JhcHBlcigqYXJncywgKiprd2FyZ3MpOgogICAgICAgICAgICBicmVha2VyID0gZ2V0X2JyZWFrZXIoKQogICAgICAgICAgICBpZiBicmVha2VyLnN0YXRlID09IENpcmN1aXRCcmVha2VyLk9QRU46CiAgICAgICAgICAgICAgICByYWlzZSBDaXJjdWl0T3BlbigKICAgICAgICAgICAgICAgICAgICBmIltjaXJjdWl0X2JyZWFrZXJdIHtmbi5fX3F1YWxuYW1lX199IGlzIE9QRU4uICIKICAgICAgICAgICAgICAgICAgICBmIlJldHJ5IGFmdGVyIHticmVha2VyLnJlY292ZXJ5X3RpbWVvdXQ6LjBmfXMuIgogICAgICAgICAgICAgICAgKQogICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICByZXN1bHQgPSBmbigqYXJncywgKiprd2FyZ3MpCiAgICAgICAgICAgICAgICBicmVha2VyLnJlY29yZF9zdWNjZXNzKCkKICAgICAgICAgICAgICAgIHJldHVybiByZXN1bHQKICAgICAgICAgICAgZXhjZXB0IGV4cGVjdGVkX2V4Y2VwdGlvbjoKICAgICAgICAgICAgICAgIGJyZWFrZXIucmVjb3JkX2ZhaWx1cmUoKQogICAgICAgICAgICAgICAgcmFpc2UKCiAgICAgICAgcmV0dXJuIHdyYXBwZXIKCiAgICBpZiBfZm4gaXMgbm90IE5vbmU6CiAgICAgICAgcmV0dXJuIGRlY29yYXRvcihfZm4pCiAgICByZXR1cm4gZGVjb3JhdG9yCg==
+"""Retry utilities with exponential backoff and circuit breaker."""
+
+from __future__ import annotations
+
+import logging
+import random
+import time
+import threading
+from functools import wraps
+from typing import Callable, Optional, Sequence, Dict, Any
+
+logger = logging.getLogger(__name__)
+
+
+# ─── Retry Statistics ────────────────────────────────────────────────────
+
+
+class RetryStats:
+    """Track retry statistics for monitoring."""
+
+    def __init__(self):
+        self._stats: Dict[str, Dict[str, Any]] = {}
+        self._lock = threading.Lock()
+
+    def record_attempt(self, func_name: str, attempt: int, success: bool, error: str = None):  # type: ignore[assignment]
+        """Record a retry attempt."""
+        with self._lock:
+            if func_name not in self._stats:
+                self._stats[func_name] = {
+                    "total_attempts": 0,
+                    "total_failures": 0,
+                    "total_retries": 0,
+                    "total_success": 0,
+                    "errors": {},
+                }
+
+            self._stats[func_name]["total_attempts"] += 1
+            if not success:
+                self._stats[func_name]["total_failures"] += 1
+                self._stats[func_name]["total_retries"] += attempt
+                if error:
+                    error_type = type(error).__name__
+                    self._stats[func_name]["errors"][error_type] = (
+                        self._stats[func_name]["errors"].get(error_type, 0) + 1
+                    )
+            else:
+                self._stats[func_name]["total_success"] += 1
+
+    def get_stats(self, func_name: str = None) -> Dict[str, Any]:  # type: ignore[assignment]
+        """Get statistics for a function or all functions."""
+        with self._lock:
+            if func_name:
+                return self._stats.get(func_name, {})
+            return dict(self._stats)
+
+    def reset(self, func_name: str = None):  # type: ignore[assignment]
+        """Reset statistics."""
+        with self._lock:
+            if func_name and func_name in self._stats:
+                del self._stats[func_name]
+            elif func_name is None:
+                self._stats.clear()
+
+
+# Global retry statistics tracker
+_retry_stats = RetryStats()
+
+
+def get_retry_stats() -> RetryStats:
+    """Get the global retry statistics tracker."""
+    return _retry_stats
+
+
+# ─── Retry Decorator ──────────────────────────────────────────────────
+
+
+def retry(
+    max_attempts: int = 3,
+    base_delay: float = 1.0,
+    max_delay: float = 30.0,
+    exceptions: Sequence[type[Exception]] = (Exception,),
+    on_retry: Callable[[Exception, int], None] | None = None,
+    jitter: float = 0.0,
+    track_stats: bool = False,
+) -> Callable:
+    """
+    Decorator that retries a function with exponential backoff and optional jitter.
+
+    Args:
+        max_attempts: Maximum number of attempts (including the first).
+        base_delay: Initial delay in seconds.
+        max_delay: Maximum delay cap in seconds.
+        exceptions: Tuple of exception types to catch and retry.
+        on_retry: Optional callback fired before each retry with (exception, attempt).
+        jitter: Random jitter factor (0.0-1.0) added to delay for better distribution.
+        track_stats: Whether to track retry statistics.
+    """
+
+    def decorator(fn: Callable) -> Callable:
+        func_name = f"{fn.__module__}.{fn.__qualname__}"
+
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            last_exc: Optional[Exception] = None
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    result = fn(*args, **kwargs)
+                    if track_stats:
+                        _retry_stats.record_attempt(func_name, attempt, success=True)
+                    return result
+                except exceptions as e:
+                    last_exc = e
+                    if track_stats:
+                        _retry_stats.record_attempt(func_name, attempt, success=False, error=e)
+                    if attempt == max_attempts:
+                        break
+                    delay = min(base_delay * (2 ** (attempt - 1)), max_delay)
+
+                    # Add jitter if specified
+                    if jitter > 0:
+                        delay += delay * jitter * random.random()
+
+                    logger.warning(
+                        "[retry] %s attempt %d/%d failed: %s. Retrying in %.1fs",
+                        fn.__qualname__,
+                        attempt,
+                        max_attempts,
+                        e,
+                        delay,
+                    )
+                    if on_retry is not None:
+                        on_retry(e, attempt)
+                    time.sleep(delay)
+            # Re-raise the last exception with original traceback
+            raise last_exc from last_exc.__cause__ if last_exc else None
+
+        return wrapper
+
+    return decorator
+
+
+# ─── Circuit Breaker ──────────────────────────────────────────────────
+
+
+class CircuitBreaker:
+    """
+    Circuit breaker that prevents repeated calls to a failing service.
+
+    States:
+        CLOSED → normal operation, calls pass through
+        OPEN   → calls fail immediately (CircuitOpen)
+        HALF-OPEN → one test call allowed
+    """
+
+    CLOSED = "closed"
+    OPEN = "open"
+    HALF_OPEN = "half-open"
+
+    def __init__(
+        self,
+        failure_threshold: int = 5,
+        recovery_timeout: float = 60.0,
+        expected_exception: type[Exception] = Exception,
+    ):
+        self.failure_threshold = failure_threshold
+        self.recovery_timeout = recovery_timeout
+        self.expected_exception = expected_exception
+
+        self._state = self.CLOSED
+        self._failure_count = 0
+        self._last_failure_time: Optional[float] = None
+        self._lock = threading.RLock()
+
+    @property
+    def state(self) -> str:
+        with self._lock:
+            if self._state == self.OPEN:
+                if (
+                    self._last_failure_time is not None
+                    and time.time() - self._last_failure_time >= self.recovery_timeout
+                ):
+                    self._state = self.HALF_OPEN
+            return self._state
+
+    def record_success(self) -> None:
+        with self._lock:
+            self._failure_count = 0
+            self._state = self.CLOSED
+
+    def record_failure(self) -> None:
+        with self._lock:
+            self._failure_count += 1
+            self._last_failure_time = time.time()
+            if self._failure_count >= self.failure_threshold:
+                self._state = self.OPEN
+                logger.error(
+                    "[circuit_breaker] OPEN after %d failures (threshold=%d)",
+                    self._failure_count,
+                    self.failure_threshold,
+                )
+
+    def call(self, fn: Callable, *args, **kwargs):
+        """Execute fn through the circuit breaker."""
+        state = self.state
+        if state == self.OPEN:
+            raise CircuitOpen(f"Circuit breaker is OPEN. Retry after {self.recovery_timeout}s")
+
+        try:
+            result = fn(*args, **kwargs)
+            self.record_success()
+            return result
+        except self.expected_exception:
+            self.record_failure()
+            raise
+
+
+class CircuitOpen(Exception):
+    """Raised when a circuit breaker is open."""
+
+
+# ─── Circuit Breaker Decorator ────────────────────────────────────────
+
+
+def circuit_breaker(
+    _fn: Optional[Callable[..., Any]] = None,
+    *,
+    failure_threshold: int = 5,
+    recovery_timeout: float = 60.0,
+    expected_exception: type[Exception] = Exception,
+) -> Callable:
+    """
+    Decorator that wraps a function with a circuit breaker.
+
+    Usage:
+        @circuit_breaker()
+        def my_func():
+            ...
+
+        # or with options:
+        @circuit_breaker(failure_threshold=3, recovery_timeout=30.0)
+        def my_func():
+            ...
+
+    Thread-safe. Each decorated function gets its own CircuitBreaker instance.
+    """
+    _breakers: dict[str, CircuitBreaker] = {}
+    _breakers_lock = threading.Lock()
+
+    def decorator(fn: Callable) -> Callable:
+        key = f"{fn.__module__}.{fn.__qualname__}"
+
+        def get_breaker() -> CircuitBreaker:
+            with _breakers_lock:
+                if key not in _breakers:
+                    _breakers[key] = CircuitBreaker(
+                        failure_threshold=failure_threshold,
+                        recovery_timeout=recovery_timeout,
+                        expected_exception=expected_exception,
+                    )
+                return _breakers[key]
+
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            breaker = get_breaker()
+            if breaker.state == CircuitBreaker.OPEN:
+                raise CircuitOpen(
+                    f"[circuit_breaker] {fn.__qualname__} is OPEN. "
+                    f"Retry after {breaker.recovery_timeout:.0f}s."
+                )
+            try:
+                result = fn(*args, **kwargs)
+                breaker.record_success()
+                return result
+            except expected_exception:
+                breaker.record_failure()
+                raise
+
+        return wrapper
+
+    if _fn is not None:
+        return decorator(_fn)
+    return decorator

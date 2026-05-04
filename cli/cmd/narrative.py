@@ -1,1 +1,176 @@
-IiIiQ0xJIGNvbW1hbmQ6IG5hcnJhdGl2ZSDigJQgUmVzZWFyY2ggTmFycmF0aXZlIFRyYWNrZXIuIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgYXJncGFyc2UKCmZyb20gY2xpLl9zaGFyZWQgaW1wb3J0IHByaW50X2luZm8sIHByaW50X2Vycm9yLCBwcmludF9zdWNjZXNzCmZyb20gbGxtLnJlc2VhcmNoX25hcnJhdGl2ZV90cmFja2VyIGltcG9ydCAoCiAgICBSZXNlYXJjaE5hcnJhdGl2ZVRyYWNrZXIsCiAgICBSZXNlYXJjaE5hcnJhdGl2ZVNlcnZpY2UsCiAgICBOYXJyYXRpdmVQaGFzZSwKICAgIHJlbmRlcl90aHJlYWQsCiAgICByZW5kZXJfZGFzaGJvYXJkLAopCgoKZGVmIF9idWlsZF9uYXJyYXRpdmVfcGFyc2VyKHN1YnBhcnNlcnMpIC0+IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyOgogICAgcCA9IHN1YnBhcnNlcnMuYWRkX3BhcnNlcigKICAgICAgICAibmFycmF0aXZlIiwKICAgICAgICBoZWxwPSJSZXNlYXJjaCBOYXJyYXRpdmUgVHJhY2tlciDigJQgdW5pZmllZCB2aWV3IGFjcm9zcyBnYXBzLCBoeXBvdGhlc2VzLCBleHBlcmltZW50cyIsCiAgICAgICAgZGVzY3JpcHRpb249IkFnZ3JlZ2F0ZSBhbGwgcmVzZWFyY2ggc3RhdGUgaW50byBuYXJyYXRpdmUgdGhyZWFkcyB3aXRoIHBoYXNlIHRyYWNraW5nIGFuZCBwdWJsaWNhdGlvbiByZWFkaW5lc3Mgc2NvcmluZy4iLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgImFjdGlvbiIsCiAgICAgICAgbmFyZ3M9Ij8iLAogICAgICAgIGRlZmF1bHQ9Imxpc3QiLAogICAgICAgIGNob2ljZXM9WyJsaXN0IiwgInNob3ciLCAidHJhY2siLCAidXBkYXRlIiwgIm5vdGUiLCAiZGFzaGJvYXJkIl0sCiAgICAgICAgaGVscD0iQWN0aW9uIHRvIHBlcmZvcm0iLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgInRhcmdldCIsCiAgICAgICAgbmFyZ3M9Ij8iLAogICAgICAgIGRlZmF1bHQ9Tm9uZSwKICAgICAgICBoZWxwPSJUb3BpYyBvciB0aHJlYWQgSUQgZGVwZW5kaW5nIG9uIGFjdGlvbiIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1waGFzZSIsCiAgICAgICAgIi1wIiwKICAgICAgICB0eXBlPXN0ciwKICAgICAgICBjaG9pY2VzPVsiZXhwbG9yYXRpb24iLCAiaHlwb3RoZXNpcyIsICJ2YWxpZGF0aW9uIiwgInB1YmxpY2F0aW9uIl0sCiAgICAgICAgaGVscD0iU2V0IHRocmVhZCBwaGFzZSAoZm9yICd1cGRhdGUnIGFjdGlvbikiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tbm90ZSIsCiAgICAgICAgIi1uIiwKICAgICAgICB0eXBlPXN0ciwKICAgICAgICBoZWxwPSJTZXQgbmFycmF0aXZlIG5vdGUgKGZvciAnbm90ZScgYWN0aW9uKSIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1qc29uIiwKICAgICAgICAiLWoiLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iT3V0cHV0IGFzIEpTT04iLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tZm9yY2UiLAogICAgICAgICItZiIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBoZWxwPSJGb3JjZSByZWZyZXNoIGV2ZW4gaWYgdGhyZWFkIGV4aXN0cyAoZm9yICd0cmFjaycgYWN0aW9uKSIsCiAgICApCiAgICByZXR1cm4gcCAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCgpkZWYgX3J1bl9uYXJyYXRpdmUoYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKSAtPiBpbnQ6CiAgICB0cmFja2VyID0gUmVzZWFyY2hOYXJyYXRpdmVUcmFja2VyKCkKICAgIHNlcnZpY2UgPSBSZXNlYXJjaE5hcnJhdGl2ZVNlcnZpY2UodHJhY2tlcikKCiAgICBhY3Rpb24gPSBhcmdzLmFjdGlvbgoKICAgIGlmIGFjdGlvbiA9PSAibGlzdCI6CiAgICAgICAgcmV0dXJuIF9ydW5fbGlzdCh0cmFja2VyKQoKICAgIGlmIGFjdGlvbiA9PSAiZGFzaGJvYXJkIjoKICAgICAgICByZXR1cm4gX3J1bl9kYXNoYm9hcmQodHJhY2tlcikKCiAgICBpZiBhY3Rpb24gPT0gInRyYWNrIjoKICAgICAgICBpZiBub3QgYXJncy50YXJnZXQ6CiAgICAgICAgICAgIHByaW50X2Vycm9yKCLor7fmj5DkvpsgdG9waWM6IGFpcm9zIG5hcnJhdGl2ZSB0cmFjayA8dG9waWM+IikKICAgICAgICAgICAgcmV0dXJuIDEgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCiAgICAgICAgcmV0dXJuIF9ydW5fdHJhY2soYXJncy50YXJnZXQsIHNlcnZpY2UsIHRyYWNrZXIsIGZvcmNlPWFyZ3MuZm9yY2UpCgogICAgaWYgYWN0aW9uID09ICJzaG93IjoKICAgICAgICBpZiBub3QgYXJncy50YXJnZXQ6CiAgICAgICAgICAgIHByaW50X2Vycm9yKCLor7fmj5DkvpsgdG9waWM6IGFpcm9zIG5hcnJhdGl2ZSBzaG93IDx0b3BpYz4iKQogICAgICAgICAgICByZXR1cm4gMQogICAgICAgIHJldHVybiBfcnVuX3Nob3coYXJncy50YXJnZXQsIHNlcnZpY2UpCgogICAgaWYgYWN0aW9uID09ICJ1cGRhdGUiOgogICAgICAgIGlmIG5vdCBhcmdzLnRhcmdldDoKICAgICAgICAgICAgcHJpbnRfZXJyb3IoIuivt+aPkOS+myB0aHJlYWQgSUQ6IGFpcm9zIG5hcnJhdGl2ZSB1cGRhdGUgPGlkPiAtLXBoYXNlIDxwaGFzZT4iKQogICAgICAgICAgICByZXR1cm4gMQogICAgICAgIGlmIG5vdCBhcmdzLnBoYXNlOgogICAgICAgICAgICBwcmludF9lcnJvcigi6K+35o+Q5L6bIC0tcGhhc2U6IGV4cGxvcmF0aW9uIHwgaHlwb3RoZXNpcyB8IHZhbGlkYXRpb24gfCBwdWJsaWNhdGlvbiIpCiAgICAgICAgICAgIHJldHVybiAxCiAgICAgICAgcmV0dXJuIF9ydW5fdXBkYXRlKGFyZ3MudGFyZ2V0LCBhcmdzLnBoYXNlLCB0cmFja2VyKQoKICAgIGlmIGFjdGlvbiA9PSAibm90ZSI6CiAgICAgICAgaWYgbm90IGFyZ3MudGFyZ2V0OgogICAgICAgICAgICBwcmludF9lcnJvcigi6K+35o+Q5L6bIHRocmVhZCBJRDogYWlyb3MgbmFycmF0aXZlIG5vdGUgPGlkPiAtLW5vdGUgJ3RleHQnIikKICAgICAgICAgICAgcmV0dXJuIDEKICAgICAgICBpZiBub3QgYXJncy5ub3RlOgogICAgICAgICAgICBwcmludF9lcnJvcigi6K+35o+Q5L6bIC0tbm90ZSAn5YaF5a65JyIpCiAgICAgICAgICAgIHJldHVybiAxCiAgICAgICAgcmV0dXJuIF9ydW5fbm90ZShhcmdzLnRhcmdldCwgYXJncy5ub3RlLCB0cmFja2VyKQoKICAgIHJldHVybiAwCgoKZGVmIF9ydW5fbGlzdCh0cmFja2VyOiBSZXNlYXJjaE5hcnJhdGl2ZVRyYWNrZXIpIC0+IGludDoKICAgIHRocmVhZHMgPSB0cmFja2VyLmxpc3RfdGhyZWFkcygpCiAgICBpZiBub3QgdGhyZWFkczoKICAgICAgICBwcmludF9pbmZvKCLmsqHmnInnoJTnqbbnur/nqIsuIOi/kOihjCBhaXJvcyBuYXJyYXRpdmUgdHJhY2sgPHRvcGljPiDliJvlu7rnrKzkuIDkuKouIikKICAgICAgICByZXR1cm4gMAogICAgcHJpbnQocmVuZGVyX2Rhc2hib2FyZCh0aHJlYWRzKSkKICAgIHJldHVybiAwCgoKZGVmIF9ydW5fZGFzaGJvYXJkKHRyYWNrZXI6IFJlc2VhcmNoTmFycmF0aXZlVHJhY2tlcikgLT4gaW50OgogICAgdGhyZWFkcyA9IHRyYWNrZXIubGlzdF90aHJlYWRzKCkKICAgIHByaW50KHJlbmRlcl9kYXNoYm9hcmQodGhyZWFkcykpCiAgICByZXR1cm4gMAoKCmRlZiBfcnVuX3RyYWNrKAogICAgdG9waWM6IHN0ciwKICAgIHNlcnZpY2U6IFJlc2VhcmNoTmFycmF0aXZlU2VydmljZSwKICAgIHRyYWNrZXI6IFJlc2VhcmNoTmFycmF0aXZlVHJhY2tlciwKICAgIGZvcmNlOiBib29sID0gRmFsc2UsCikgLT4gaW50OgogICAgZXhpc3RpbmcgPSB0cmFja2VyLmdldF9ieV90b3BpYyh0b3BpYykgaWYgbm90IGZvcmNlIGVsc2UgTm9uZQogICAgaWYgZXhpc3RpbmcgYW5kIG5vdCBmb3JjZToKICAgICAgICBwcmludF9pbmZvKGYiVGhyZWFkIOW3suWtmOWcqCAoe2V4aXN0aW5nLmlkfSkuIOS9v+eUqCAtLWZvcmNlIOWIt+aWsC4iKQogICAgICAgIHByaW50KCkKICAgICAgICBwcmludChyZW5kZXJfdGhyZWFkKGV4aXN0aW5nLCBzZXJ2aWNlKSkKICAgICAgICByZXR1cm4gMAoKICAgIHByaW50X2luZm8oZiLwn5SEIEFnZ3JlZ2F0aW5nIHJlc2VhcmNoIHN0YXRlIGZvcjoge3RvcGljfSIpCiAgICB0aHJlYWQgPSBzZXJ2aWNlLmFnZ3JlZ2F0ZSh0b3BpYykKICAgIHNlcnZpY2Uuc2F2ZSh0aHJlYWQpCiAgICBwcmludF9zdWNjZXNzKGYi4pyFIFRocmVhZCBjcmVhdGVkL3VwZGF0ZWQ6IHt0aHJlYWQuaWR9IikKICAgIHByaW50KCkKICAgIHByaW50KHJlbmRlcl90aHJlYWQodGhyZWFkLCBzZXJ2aWNlKSkKICAgIHJldHVybiAwCgoKZGVmIF9ydW5fc2hvdyh0b3BpYzogc3RyLCBzZXJ2aWNlOiBSZXNlYXJjaE5hcnJhdGl2ZVNlcnZpY2UpIC0+IGludDoKICAgIGZyb20gbGxtLnJlc2VhcmNoX25hcnJhdGl2ZV90cmFja2VyIGltcG9ydCBSZXNlYXJjaE5hcnJhdGl2ZVRyYWNrZXIgYXMgUk5UCgogICAgdHJhY2tlciA9IFJOVCgpCiAgICB0aHJlYWQgPSB0cmFja2VyLmdldF9ieV90b3BpYyh0b3BpYykKICAgIGlmIG5vdCB0aHJlYWQ6CiAgICAgICAgcHJpbnRfZXJyb3IoZiJUaHJlYWQgJ3t0b3BpY30nIOS4jeWtmOWcqC4g6L+Q6KGMOiBhaXJvcyBuYXJyYXRpdmUgdHJhY2sgJ3t0b3BpY30nIikKICAgICAgICByZXR1cm4gMQoKICAgIGlmIHRocmVhZC5waGFzZSAhPSBOYXJyYXRpdmVQaGFzZS5FWFBMT1JBVElPTjoKICAgICAgICAjIFJlLWFnZ3JlZ2F0ZSB0byByZWZyZXNoIHNjb3JlcwogICAgICAgIHRocmVhZCA9IHNlcnZpY2UuYWdncmVnYXRlKHRvcGljKQogICAgICAgIHNlcnZpY2Uuc2F2ZSh0aHJlYWQpCgogICAgcHJpbnQocmVuZGVyX3RocmVhZCh0aHJlYWQsIHNlcnZpY2UpKQogICAgcmV0dXJuIDAKCgpkZWYgX3J1bl91cGRhdGUodGhyZWFkX2lkOiBzdHIsIHBoYXNlX3N0cjogc3RyLCB0cmFja2VyOiBSZXNlYXJjaE5hcnJhdGl2ZVRyYWNrZXIpIC0+IGludDoKICAgIHRocmVhZCA9IHRyYWNrZXIuZ2V0X3RocmVhZCh0aHJlYWRfaWQpCiAgICBpZiBub3QgdGhyZWFkOgogICAgICAgIHByaW50X2Vycm9yKGYiVGhyZWFkIFt7dGhyZWFkX2lkfV0g5LiN5a2Y5ZyoIikKICAgICAgICByZXR1cm4gMQoKICAgIG9sZF9waGFzZSA9IHRocmVhZC5waGFzZQogICAgdGhyZWFkLnBoYXNlID0gTmFycmF0aXZlUGhhc2UocGhhc2Vfc3RyKQogICAgdGhyZWFkLnBoYXNlX3VwZGF0ZWRfYXQgPSBfX2ltcG9ydF9fKCJkYXRldGltZSIpLmRhdGV0aW1lLm5vdygpLmlzb2Zvcm1hdCgpCiAgICB0cmFja2VyLnVwc2VydCh0aHJlYWQpCiAgICBwcmludF9zdWNjZXNzKGYiUGhhc2UgdXBkYXRlZDoge29sZF9waGFzZS52YWx1ZX0g4oaSIHt0aHJlYWQucGhhc2UudmFsdWV9IikKICAgIHJldHVybiAwCgoKZGVmIF9ydW5fbm90ZSh0aHJlYWRfaWQ6IHN0ciwgbm90ZTogc3RyLCB0cmFja2VyOiBSZXNlYXJjaE5hcnJhdGl2ZVRyYWNrZXIpIC0+IGludDoKICAgIHRocmVhZCA9IHRyYWNrZXIuZ2V0X3RocmVhZCh0aHJlYWRfaWQpCiAgICBpZiBub3QgdGhyZWFkOgogICAgICAgIHByaW50X2Vycm9yKGYiVGhyZWFkIFt7dGhyZWFkX2lkfV0g5LiN5a2Y5ZyoIikKICAgICAgICByZXR1cm4gMQoKICAgIHRocmVhZC5ub3RlcyA9IG5vdGUKICAgIHRyYWNrZXIudXBzZXJ0KHRocmVhZCkKICAgIHByaW50X3N1Y2Nlc3MoZiJOb3RlIHNhdmVkIGZvciBbe3RocmVhZF9pZH1dIikKICAgIHJldHVybiAwCg==
+"""CLI command: narrative — Research Narrative Tracker."""
+from __future__ import annotations
+
+import argparse
+
+from cli._shared import print_info, print_error, print_success
+from llm.research_narrative_tracker import (
+    ResearchNarrativeTracker,
+    ResearchNarrativeService,
+    NarrativePhase,
+    render_thread,
+    render_dashboard,
+)
+
+
+def _build_narrative_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "narrative",
+        help="Research Narrative Tracker — unified view across gaps, hypotheses, experiments",
+        description="Aggregate all research state into narrative threads with phase tracking and publication readiness scoring.",
+    )
+    p.add_argument(
+        "action",
+        nargs="?",
+        default="list",
+        choices=["list", "show", "track", "update", "note", "dashboard"],
+        help="Action to perform",
+    )
+    p.add_argument(
+        "target",
+        nargs="?",
+        default=None,
+        help="Topic or thread ID depending on action",
+    )
+    p.add_argument(
+        "--phase", "-p",
+        type=str,
+        choices=["exploration", "hypothesis", "validation", "publication"],
+        help="Set thread phase (for 'update' action)",
+    )
+    p.add_argument(
+        "--note", "-n",
+        type=str,
+        help="Set narrative note (for 'note' action)",
+    )
+    p.add_argument(
+        "--json", "-j",
+        action="store_true",
+        help="Output as JSON",
+    )
+    p.add_argument(
+        "--force", "-f",
+        action="store_true",
+        help="Force refresh even if thread exists (for 'track' action)",
+    )
+    return p  # type: ignore[no-any-return]
+
+
+def _run_narrative(args: argparse.Namespace) -> int:
+    tracker = ResearchNarrativeTracker()
+    service = ResearchNarrativeService(tracker)
+
+    action = args.action
+
+    if action == "list":
+        return _run_list(tracker)
+
+    if action == "dashboard":
+        return _run_dashboard(tracker)
+
+    if action == "track":
+        if not args.target:
+            print_error("请提供 topic: airos narrative track <topic>")
+            return 1  # type: ignore[no-any-return]
+        return _run_track(args.target, service, tracker, force=args.force)
+
+    if action == "show":
+        if not args.target:
+            print_error("请提供 topic: airos narrative show <topic>")
+            return 1
+        return _run_show(args.target, service)
+
+    if action == "update":
+        if not args.target:
+            print_error("请提供 thread ID: airos narrative update <id> --phase <phase>")
+            return 1
+        if not args.phase:
+            print_error("请提供 --phase: exploration | hypothesis | validation | publication")
+            return 1
+        return _run_update(args.target, args.phase, tracker)
+
+    if action == "note":
+        if not args.target:
+            print_error("请提供 thread ID: airos narrative note <id> --note 'text'")
+            return 1
+        if not args.note:
+            print_error("请提供 --note '内容'")
+            return 1
+        return _run_note(args.target, args.note, tracker)
+
+    return 0
+
+
+def _run_list(tracker: ResearchNarrativeTracker) -> int:
+    threads = tracker.list_threads()
+    if not threads:
+        print_info("没有研究线程. 运行 airos narrative track <topic> 创建第一个.")
+        return 0
+    print(render_dashboard(threads))
+    return 0
+
+
+def _run_dashboard(tracker: ResearchNarrativeTracker) -> int:
+    threads = tracker.list_threads()
+    print(render_dashboard(threads))
+    return 0
+
+
+def _run_track(topic: str, service: ResearchNarrativeService, tracker: ResearchNarrativeTracker, force: bool = False) -> int:
+    existing = tracker.get_by_topic(topic) if not force else None
+    if existing and not force:
+        print_info(f"Thread 已存在 ({existing.id}). 使用 --force 刷新.")
+        print()
+        print(render_thread(existing, service))
+        return 0
+
+    print_info(f"🔄 Aggregating research state for: {topic}")
+    thread = service.aggregate(topic)
+    service.save(thread)
+    print_success(f"✅ Thread created/updated: {thread.id}")
+    print()
+    print(render_thread(thread, service))
+    return 0
+
+
+def _run_show(topic: str, service: ResearchNarrativeService) -> int:
+    from llm.research_narrative_tracker import ResearchNarrativeTracker as RNT
+    tracker = RNT()
+    thread = tracker.get_by_topic(topic)
+    if not thread:
+        print_error(f"Thread '{topic}' 不存在. 运行: airos narrative track '{topic}'")
+        return 1
+
+    if thread.phase != NarrativePhase.EXPLORATION:
+        # Re-aggregate to refresh scores
+        thread = service.aggregate(topic)
+        service.save(thread)
+
+    print(render_thread(thread, service))
+    return 0
+
+
+def _run_update(thread_id: str, phase_str: str, tracker: ResearchNarrativeTracker) -> int:
+    thread = tracker.get_thread(thread_id)
+    if not thread:
+        print_error(f"Thread [{thread_id}] 不存在")
+        return 1
+
+    old_phase = thread.phase
+    thread.phase = NarrativePhase(phase_str)
+    thread.phase_updated_at = __import__("datetime").datetime.now().isoformat()
+    tracker.upsert(thread)
+    print_success(f"Phase updated: {old_phase.value} → {thread.phase.value}")
+    return 0
+
+
+def _run_note(thread_id: str, note: str, tracker: ResearchNarrativeTracker) -> int:
+    thread = tracker.get_thread(thread_id)
+    if not thread:
+        print_error(f"Thread [{thread_id}] 不存在")
+        return 1
+
+    thread.notes = note
+    tracker.upsert(thread)
+    print_success(f"Note saved for [{thread_id}]")
+    return 0

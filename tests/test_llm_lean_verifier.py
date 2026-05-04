@@ -1,1 +1,428 @@
-IiIiVGllciAyIHVuaXQgdGVzdHMg4oCUIGxsbS9sZWFuX3ZlcmlmaWVyLnB5LCBwdXJlIGZ1bmN0aW9ucyArIExlYW4gaW50ZWdyYXRpb24uIiIiCgppbXBvcnQgcHl0ZXN0CmltcG9ydCBqc29uCmZyb20gbGxtLmxlYW5fdmVyaWZpZXIgaW1wb3J0ICgKICAgIExlYW5JbnN0YWxsU3RhdHVzLAogICAgVmVyaWZpY2F0aW9uTGV2ZWwsCiAgICBMZWFuVmVyaWZpY2F0aW9uUmVzdWx0LAogICAgY2hlY2tfbGVhbl9pbnN0YWxsZWQsCiAgICBnZXRfbGVhbl9pbnN0YWxsX2luc3RydWN0aW9ucywKICAgIF9leHRyYWN0X2xlYW5fY29kZSwKICAgIF90ZW1wbGF0ZV9iYXNlZF90cmFuc2xhdGlvbiwKICAgIHJlbmRlcl9yZXN1bHQsCiAgICByZW5kZXJfcmVzdWx0X2pzb24sCiAgICB2ZXJpZnlfbGVhbl9jb2RlLAopCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIEVudW1zCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdExlYW5JbnN0YWxsU3RhdHVzOgogICAgIiIiVGVzdCBMZWFuSW5zdGFsbFN0YXR1cyBlbnVtLiIiIgoKICAgIGRlZiB0ZXN0X2FsbF92YWx1ZXMoc2VsZik6CiAgICAgICAgYXNzZXJ0IExlYW5JbnN0YWxsU3RhdHVzLkFWQUlMQUJMRS52YWx1ZSA9PSAiYXZhaWxhYmxlIgogICAgICAgIGFzc2VydCBMZWFuSW5zdGFsbFN0YXR1cy5OT1RfRk9VTkQudmFsdWUgPT0gIm5vdF9mb3VuZCIKICAgICAgICBhc3NlcnQgTGVhbkluc3RhbGxTdGF0dXMuVkVSU0lPTl9VTktOT1dOLnZhbHVlID09ICJ2ZXJzaW9uX3Vua25vd24iCgogICAgZGVmIHRlc3RfY291bnQoc2VsZik6CiAgICAgICAgYXNzZXJ0IGxlbihMZWFuSW5zdGFsbFN0YXR1cykgPT0gMwoKCmNsYXNzIFRlc3RWZXJpZmljYXRpb25MZXZlbDoKICAgICIiIlRlc3QgVmVyaWZpY2F0aW9uTGV2ZWwgZW51bS4iIiIKCiAgICBkZWYgdGVzdF9hbGxfdmFsdWVzKHNlbGYpOgogICAgICAgIGFzc2VydCBWZXJpZmljYXRpb25MZXZlbC5MMF9TWU5UQVgudmFsdWUgPT0gImwwX3N5bnRheCIKICAgICAgICBhc3NlcnQgVmVyaWZpY2F0aW9uTGV2ZWwuTDFfVFlQRUNIRUNLLnZhbHVlID09ICJsMV90eXBlY2hlY2siCiAgICAgICAgYXNzZXJ0IFZlcmlmaWNhdGlvbkxldmVsLkwyX1BST1ZFTi52YWx1ZSA9PSAibDJfcHJvdmVuIgogICAgICAgIGFzc2VydCBWZXJpZmljYXRpb25MZXZlbC5MMF9GQUlMRUQudmFsdWUgPT0gImwwX2ZhaWxlZCIKCiAgICBkZWYgdGVzdF9jb3VudChzZWxmKToKICAgICAgICBhc3NlcnQgbGVuKFZlcmlmaWNhdGlvbkxldmVsKSA9PSA0CgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIExlYW5WZXJpZmljYXRpb25SZXN1bHQgZGF0YWNsYXNzCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdExlYW5WZXJpZmljYXRpb25SZXN1bHQ6CiAgICAiIiJUZXN0IExlYW5WZXJpZmljYXRpb25SZXN1bHQgZGF0YWNsYXNzLiIiIgoKICAgIGRlZiB0ZXN0X3JlcXVpcmVkX2ZpZWxkcyhzZWxmKToKICAgICAgICByID0gTGVhblZlcmlmaWNhdGlvblJlc3VsdCgKICAgICAgICAgICAgaHlwb3RoZXNpc19pZD0iaDAwMSIsCiAgICAgICAgICAgIGh5cG90aGVzaXNfdGV4dD0i4oiAbiBtOiBOYXQsIG4rbSA9IG0rbiIsCiAgICAgICAgICAgIGxldmVsPVZlcmlmaWNhdGlvbkxldmVsLkwwX1NZTlRBWCwKICAgICAgICAgICAgbGVhbl9jb2RlPSJ0aGVvcmVtIGFkZF9jb21tIDogVHJ1ZSA6PSBieSBzb3JyeSIsCiAgICAgICAgKQogICAgICAgIGFzc2VydCByLmh5cG90aGVzaXNfaWQgPT0gImgwMDEiCiAgICAgICAgYXNzZXJ0IHIuaHlwb3RoZXNpc190ZXh0ID09ICLiiIBuIG06IE5hdCwgbittID0gbStuIgogICAgICAgIGFzc2VydCByLmxldmVsID09IFZlcmlmaWNhdGlvbkxldmVsLkwwX1NZTlRBWAogICAgICAgIGFzc2VydCByLmxlYW5fY29kZSA9PSAidGhlb3JlbSBhZGRfY29tbSA6IFRydWUgOj0gYnkgc29ycnkiCiAgICAgICAgYXNzZXJ0IHIuZXJyb3JzID09IFtdICAjIGRlZmF1bHQKICAgICAgICBhc3NlcnQgci53YXJuaW5ncyA9PSBbXSAgIyBkZWZhdWx0CiAgICAgICAgYXNzZXJ0IHIuaW5zdGFsbF9zdGF0dXMgPT0gTGVhbkluc3RhbGxTdGF0dXMuTk9UX0ZPVU5EICAjIGRlZmF1bHQKCiAgICBkZWYgdGVzdF93aXRoX2Vycm9yc19hbmRfd2FybmluZ3Moc2VsZik6CiAgICAgICAgciA9IExlYW5WZXJpZmljYXRpb25SZXN1bHQoCiAgICAgICAgICAgIGh5cG90aGVzaXNfaWQ9ImgwMDIiLAogICAgICAgICAgICBoeXBvdGhlc2lzX3RleHQ9ImJhZCBjb2RlIiwKICAgICAgICAgICAgbGV2ZWw9VmVyaWZpY2F0aW9uTGV2ZWwuTDBfRkFJTEVELAogICAgICAgICAgICBsZWFuX2NvZGU9InRoZW9yZW0gYnJva2VuIiwKICAgICAgICAgICAgZXJyb3JzPVsiZXJyb3I6IHVuZXhwZWN0ZWQgdG9rZW4iXSwKICAgICAgICAgICAgd2FybmluZ3M9WyJ3YXJuaW5nOiB1bnVzZWQgdmFyaWFibGUiXSwKICAgICAgICApCiAgICAgICAgYXNzZXJ0IGxlbihyLmVycm9ycykgPT0gMQogICAgICAgIGFzc2VydCBsZW4oci53YXJuaW5ncykgPT0gMQoKICAgIGRlZiB0ZXN0X3dpdGhfaW5zdGFsbF9zdGF0dXMoc2VsZik6CiAgICAgICAgciA9IExlYW5WZXJpZmljYXRpb25SZXN1bHQoCiAgICAgICAgICAgIGh5cG90aGVzaXNfaWQ9ImgwMDMiLAogICAgICAgICAgICBoeXBvdGhlc2lzX3RleHQ9InQiLAogICAgICAgICAgICBsZXZlbD1WZXJpZmljYXRpb25MZXZlbC5MMV9UWVBFQ0hFQ0ssCiAgICAgICAgICAgIGxlYW5fY29kZT0iZGVmIHggOiBOYXQgOj0gMCIsCiAgICAgICAgICAgIGluc3RhbGxfc3RhdHVzPUxlYW5JbnN0YWxsU3RhdHVzLkFWQUlMQUJMRSwKICAgICAgICApCiAgICAgICAgYXNzZXJ0IHIuaW5zdGFsbF9zdGF0dXMgPT0gTGVhbkluc3RhbGxTdGF0dXMuQVZBSUxBQkxFCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIGdldF9sZWFuX2luc3RhbGxfaW5zdHJ1Y3Rpb25zCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdEdldExlYW5JbnN0YWxsSW5zdHJ1Y3Rpb25zOgogICAgIiIiVGVzdCBnZXRfbGVhbl9pbnN0YWxsX2luc3RydWN0aW9ucy4iIiIKCiAgICBkZWYgdGVzdF9yZXR1cm5zX25vbl9lbXB0eV9zdHJpbmcoc2VsZik6CiAgICAgICAgcyA9IGdldF9sZWFuX2luc3RhbGxfaW5zdHJ1Y3Rpb25zKCkKICAgICAgICBhc3NlcnQgaXNpbnN0YW5jZShzLCBzdHIpCiAgICAgICAgYXNzZXJ0IGxlbihzKSA+IDEwCgogICAgZGVmIHRlc3RfY29udGFpbnNfaW5zdGFsbGF0aW9uX2hpbnRzKHNlbGYpOgogICAgICAgIHMgPSBnZXRfbGVhbl9pbnN0YWxsX2luc3RydWN0aW9ucygpCiAgICAgICAgYXNzZXJ0ICJlbGFuIiBpbiBzIG9yICJsYWtlIiBpbiBzLmxvd2VyKCkKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgX2V4dHJhY3RfbGVhbl9jb2RlIOKAlCBwdXJlIHN0cmluZy9yZWdleCBwYXJzaW5nCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdEV4dHJhY3RMZWFuQ29kZToKICAgICIiIlRlc3QgX2V4dHJhY3RfbGVhbl9jb2RlIOKAlCBwdXJlLCBubyBJL08uIiIiCgogICAgZGVmIHRlc3RfZXh0cmFjdHNfZmVuY2VkX2xlYW5fYmxvY2soc2VsZik6CiAgICAgICAgcmVzcG9uc2UgPSAiIiJIZXJlIGlzIHRoZSBMZWFuIGNvZGU6CgpgYGBsZWFuCnRoZW9yZW0gYWRkX2NvbW0gKG4gbSA6IE5hdCkgOiBuICsgbSA9IG0gKyBuIDo9IGJ5IHNvcnJ5CmBgYAoKTGV0IG1lIGtub3cgaWYgeW91IGhhdmUgcXVlc3Rpb25zLiIiIgogICAgICAgIHJlc3VsdCA9IF9leHRyYWN0X2xlYW5fY29kZShyZXNwb25zZSkKICAgICAgICBhc3NlcnQgInRoZW9yZW0gYWRkX2NvbW0iIGluIHJlc3VsdAogICAgICAgIGFzc2VydCAiYnkgc29ycnkiIGluIHJlc3VsdAoKICAgIGRlZiB0ZXN0X2V4dHJhY3RzX3dpdGhfbGFuZ3VhZ2VfdGFnKHNlbGYpOgogICAgICAgIHJlc3VsdCA9IF9leHRyYWN0X2xlYW5fY29kZSgiYGBgbGVhblxudGhlb3JlbSBmb28gOj0gVHJ1ZVxuYGBgIikKICAgICAgICBhc3NlcnQgInRoZW9yZW0gZm9vIiBpbiByZXN1bHQKICAgICAgICBhc3NlcnQgImBgYCIgbm90IGluIHJlc3VsdCAgIyBmZW5jZXMgc3RyaXBwZWQKCiAgICBkZWYgdGVzdF9ub19mZW5jZV9yZXR1cm5zX3dob2xlX3Jlc3BvbnNlKHNlbGYpOgogICAgICAgIHJhdyA9ICJ0aGVvcmVtIGZvbyA6PSBUcnVlIgogICAgICAgIGFzc2VydCBfZXh0cmFjdF9sZWFuX2NvZGUocmF3KSA9PSByYXcKCiAgICBkZWYgdGVzdF9lbXB0eV9zdHJpbmcoc2VsZik6CiAgICAgICAgYXNzZXJ0IF9leHRyYWN0X2xlYW5fY29kZSgiIikgPT0gIiIKCiAgICBkZWYgdGVzdF9vbmx5X3doaXRlc3BhY2Uoc2VsZik6CiAgICAgICAgYXNzZXJ0IF9leHRyYWN0X2xlYW5fY29kZSgiICAgXG4gICIpID09ICIiCgogICAgZGVmIHRlc3RfbXVsdGlsaW5lX2Jsb2NrX3ByZXNlcnZlZChzZWxmKToKICAgICAgICBjb2RlID0gInRoZW9yZW0gZm9vXG4gIChuIDogTmF0KSA6IG4gPSBuIDo9IGJ5IHJmbCIKICAgICAgICByZXNwb25zZSA9IGYiYGBgbGVhblxue2NvZGV9XG5gYGAiCiAgICAgICAgcmVzdWx0ID0gX2V4dHJhY3RfbGVhbl9jb2RlKHJlc3BvbnNlKQogICAgICAgIGFzc2VydCAidGhlb3JlbSBmb28iIGluIHJlc3VsdAogICAgICAgIGFzc2VydCAiKG4gOiBOYXQpIiBpbiByZXN1bHQKCiAgICBkZWYgdGVzdF9maXJzdF9ibG9ja193aGVuX211bHRpcGxlKHNlbGYpOgogICAgICAgIGZpcnN0ID0gInRoZW9yZW0gZmlyc3QgOj0gVHJ1ZSIKICAgICAgICBzZWNvbmQgPSAidGhlb3JlbSBzZWNvbmQgOj0gRmFsc2UiCiAgICAgICAgcmVzcG9uc2UgPSBmImBgYGxlYW5cbntmaXJzdH1cbmBgYFxuXG5gYGBsZWFuXG57c2Vjb25kfVxuYGBgIgogICAgICAgIHJlc3VsdCA9IF9leHRyYWN0X2xlYW5fY29kZShyZXNwb25zZSkKICAgICAgICBhc3NlcnQgInRoZW9yZW0gZmlyc3QiIGluIHJlc3VsdAogICAgICAgIGFzc2VydCAidGhlb3JlbSBzZWNvbmQiIG5vdCBpbiByZXN1bHQKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgX3RlbXBsYXRlX2Jhc2VkX3RyYW5zbGF0aW9uIOKAlCBwdXJlLCBubyBJL08KIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0VGVtcGxhdGVCYXNlZFRyYW5zbGF0aW9uOgogICAgIiIiVGVzdCBfdGVtcGxhdGVfYmFzZWRfdHJhbnNsYXRpb24gd2l0aCBtb2NrIFJlc2VhcmNoSHlwb3RoZXNpcy4iIiIKCiAgICBkZWYgX21ha2VfaHlwb3RoZXNpcyhzZWxmLCAqKmt3YXJncyk6CiAgICAgICAgIiIiQ3JlYXRlIGEgbWluaW1hbCBSZXNlYXJjaEh5cG90aGVzaXMgZm9yIHRlc3RpbmcuIiIiCiAgICAgICAgZnJvbSBsbG0uaHlwb3RoZXNpc19nZW5lcmF0b3IgaW1wb3J0IEh5cG90aGVzaXNUeXBlLCBFeHBlcmltZW50RGVzaWduCgogICAgICAgIGRlZmF1bHRzID0gZGljdCgKICAgICAgICAgICAgaWQ9InRlc3QtaWQiLAogICAgICAgICAgICB0aXRsZT0iVGVzdCBIeXBvdGhlc2lzIiwKICAgICAgICAgICAgY29yZV9zdGF0ZW1lbnQ9IuKIgG4gbSA6IE5hdCwgbiArIG0gPSBtICsgbiIsCiAgICAgICAgICAgIGh5cG90aGVzaXNfdHlwZT1IeXBvdGhlc2lzVHlwZS5DQVVTQUwsCiAgICAgICAgICAgIGJhc2VkX29uPSJ1bml0IHRlc3QiLAogICAgICAgICAgICBleHBlcmltZW50X2Rlc2lnbj1FeHBlcmltZW50RGVzaWduKAogICAgICAgICAgICAgICAgYmFzZWxpbmU9IiIsCiAgICAgICAgICAgICAgICB2YXJpYWJsZXM9W10sCiAgICAgICAgICAgICAgICBjb250cm9scz1bXSwKICAgICAgICAgICAgICAgIGV2YWx1YXRpb25fbWV0cmljcz1bXSwKICAgICAgICAgICAgICAgIGV4cGVjdGVkX3Jlc3VsdHM9IiIsCiAgICAgICAgICAgICksCiAgICAgICAgKQogICAgICAgIGRlZmF1bHRzLnVwZGF0ZShrd2FyZ3MpCiAgICAgICAgcmV0dXJuIGRlZmF1bHRzCgogICAgZGVmIF9oeXBvdGhlc2lzKHNlbGYsICoqa3dhcmdzKToKICAgICAgICBmcm9tIGxsbS5oeXBvdGhlc2lzX2dlbmVyYXRvciBpbXBvcnQgUmVzZWFyY2hIeXBvdGhlc2lzCgogICAgICAgIGQgPSBzZWxmLl9tYWtlX2h5cG90aGVzaXMoKiprd2FyZ3MpCiAgICAgICAgcmV0dXJuIFJlc2VhcmNoSHlwb3RoZXNpcygqKmQpCgogICAgZGVmIHRlc3RfZ2VuZXJhdGVzX2xlYW5fY29kZShzZWxmKToKICAgICAgICBoID0gc2VsZi5faHlwb3RoZXNpcygpCiAgICAgICAgY29kZSA9IF90ZW1wbGF0ZV9iYXNlZF90cmFuc2xhdGlvbihoKQogICAgICAgIGFzc2VydCBpc2luc3RhbmNlKGNvZGUsIHN0cikKICAgICAgICBhc3NlcnQgbGVuKGNvZGUpID4gMTAKCiAgICBkZWYgdGVzdF9jb250YWluc19oeXBvdGhlc2lzX3RpdGxlKHNlbGYpOgogICAgICAgIGggPSBzZWxmLl9oeXBvdGhlc2lzKHRpdGxlPSJDb21tdXRhdGl2aXR5IFRoZW9yZW0iKQogICAgICAgIGNvZGUgPSBfdGVtcGxhdGVfYmFzZWRfdHJhbnNsYXRpb24oaCkKICAgICAgICBhc3NlcnQgIkNvbW11dGF0aXZpdHlfVGhlb3JlbSIgaW4gY29kZQoKICAgIGRlZiB0ZXN0X2NvbnRhaW5zX2J5X3NvcnJ5X2Zvcl9tYXRoeShzZWxmKToKICAgICAgICBoID0gc2VsZi5faHlwb3RoZXNpcyhjb3JlX3N0YXRlbWVudD0i4oiAbiBtLCBuICsgbSA9IG0gKyBuIikKICAgICAgICBjb2RlID0gX3RlbXBsYXRlX2Jhc2VkX3RyYW5zbGF0aW9uKGgpCiAgICAgICAgYXNzZXJ0ICJieSBzb3JyeSIgaW4gY29kZQoKICAgIGRlZiB0ZXN0X25vbl9tYXRoeV91c2VzX3N0dWIoc2VsZik6CiAgICAgICAgaCA9IHNlbGYuX2h5cG90aGVzaXMoY29yZV9zdGF0ZW1lbnQ9IlRoaXMgaXMgYSBxdWFsaXRhdGl2ZSByZXNlYXJjaCBxdWVzdGlvbiIpCiAgICAgICAgY29kZSA9IF90ZW1wbGF0ZV9iYXNlZF90cmFuc2xhdGlvbihoKQogICAgICAgIGFzc2VydCAiV0FSTklORyIgaW4gY29kZSBvciAic3R1YiIgaW4gY29kZSBvciAiZGVmICIgaW4gY29kZQoKICAgIGRlZiB0ZXN0X3NhZmVfbmFtZV9mb3Jfc3BlY2lhbF9jaGFycyhzZWxmKToKICAgICAgICBoID0gc2VsZi5faHlwb3RoZXNpcygKICAgICAgICAgICAgdGl0bGU9Ikh5cG90aGVzaXM6IOKIgHgg4oiIIOKEnSwgeMKyIOKJpSAwIiwKICAgICAgICAgICAgY29yZV9zdGF0ZW1lbnQ9IuKIgHgg4oiIIOKEnSwgeMKyIOKJpSAwIiwKICAgICAgICApCiAgICAgICAgY29kZSA9IF90ZW1wbGF0ZV9iYXNlZF90cmFuc2xhdGlvbihoKQogICAgICAgICMgU2hvdWxkIG5vdCBjcmFzaCDigJQgbm8gc3BlY2lhbCBjaGFycyBpbiB0aGVvcmVtIG5hbWUKICAgICAgICBhc3NlcnQgaXNpbnN0YW5jZShjb2RlLCBzdHIpCgogICAgZGVmIHRlc3RfaHlwb3RoZXNpc190eXBlX2luY2x1ZGVkKHNlbGYpOgogICAgICAgIGZyb20gbGxtLmh5cG90aGVzaXNfZ2VuZXJhdG9yIGltcG9ydCBIeXBvdGhlc2lzVHlwZQoKICAgICAgICBoID0gc2VsZi5faHlwb3RoZXNpcyhoeXBvdGhlc2lzX3R5cGU9SHlwb3RoZXNpc1R5cGUuTUVDSEFOSVNUSUMpCiAgICAgICAgY29kZSA9IF90ZW1wbGF0ZV9iYXNlZF90cmFuc2xhdGlvbihoKQogICAgICAgIGFzc2VydCAibWVjaGFuaXN0aWMiIGluIGNvZGUubG93ZXIoKQoKICAgIGRlZiB0ZXN0X2NvbnRhaW5zX2Zvcm1hbF9jbGFpbV9jb21tZW50KHNlbGYpOgogICAgICAgIGggPSBzZWxmLl9oeXBvdGhlc2lzKGJhc2VkX29uPSJwcmlvciB3b3JrIG9uIGNvbW11dGF0aXZpdHkiKQogICAgICAgIGNvZGUgPSBfdGVtcGxhdGVfYmFzZWRfdHJhbnNsYXRpb24oaCkKICAgICAgICBhc3NlcnQgIkZvcm1hbCBjbGFpbSIgaW4gY29kZQoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyByZW5kZXJfcmVzdWx0IOKAlCBwdXJlIHN0cmluZyBmb3JtYXR0aW5nCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFJlbmRlclJlc3VsdDoKICAgICIiIlRlc3QgcmVuZGVyX3Jlc3VsdC4iIiIKCiAgICBkZWYgX3Jlc3VsdChzZWxmLCAqKmt3YXJncyk6CiAgICAgICAgZGVmYXVsdHMgPSBkaWN0KAogICAgICAgICAgICBoeXBvdGhlc2lzX2lkPSJoMDAxIiwKICAgICAgICAgICAgaHlwb3RoZXNpc190ZXh0PSJ0ZXN0IGh5cG90aGVzaXMiLAogICAgICAgICAgICBsZXZlbD1WZXJpZmljYXRpb25MZXZlbC5MMF9TWU5UQVgsCiAgICAgICAgICAgIGxlYW5fY29kZT0idGhlb3JlbSBmb28gOj0gVHJ1ZSIsCiAgICAgICAgICAgIGVycm9ycz1bXSwKICAgICAgICAgICAgd2FybmluZ3M9W10sCiAgICAgICAgICAgIGluc3RhbGxfc3RhdHVzPUxlYW5JbnN0YWxsU3RhdHVzLk5PVF9GT1VORCwKICAgICAgICAgICAgdHJhbnNsYXRpb25fbm90ZXM9IiIsCiAgICAgICAgKQogICAgICAgIGRlZmF1bHRzLnVwZGF0ZShrd2FyZ3MpCiAgICAgICAgcmV0dXJuIExlYW5WZXJpZmljYXRpb25SZXN1bHQoKipkZWZhdWx0cykKCiAgICBkZWYgdGVzdF9jb250YWluc19sZXZlbChzZWxmKToKICAgICAgICByID0gc2VsZi5fcmVzdWx0KGxldmVsPVZlcmlmaWNhdGlvbkxldmVsLkwxX1RZUEVDSEVDSykKICAgICAgICBvdXRwdXQgPSByZW5kZXJfcmVzdWx0KHIpCiAgICAgICAgYXNzZXJ0ICJsMV90eXBlY2hlY2siIGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X2NvbnRhaW5zX2xlYW5fY29kZShzZWxmKToKICAgICAgICByID0gc2VsZi5fcmVzdWx0KGxlYW5fY29kZT0idGhlb3JlbSBhZGRfY29tbSA6PSBieSBzb3JyeSIpCiAgICAgICAgb3V0cHV0ID0gcmVuZGVyX3Jlc3VsdChyKQogICAgICAgIGFzc2VydCAiYWRkX2NvbW0iIGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X2Vycm9yc19zaG93bihzZWxmKToKICAgICAgICByID0gc2VsZi5fcmVzdWx0KGVycm9ycz1bImVycm9yOiBzeW50YXggZXJyb3IiXSkKICAgICAgICBvdXRwdXQgPSByZW5kZXJfcmVzdWx0KHIpCiAgICAgICAgYXNzZXJ0ICJlcnJvcjogc3ludGF4IGVycm9yIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF93YXJuaW5nc19zaG93bihzZWxmKToKICAgICAgICByID0gc2VsZi5fcmVzdWx0KHdhcm5pbmdzPVsidW51c2VkIHZhcmlhYmxlICd4JyJdKQogICAgICAgIG91dHB1dCA9IHJlbmRlcl9yZXN1bHQocikKICAgICAgICBhc3NlcnQgInVudXNlZCB2YXJpYWJsZSIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfaW5zdGFsbF9zdGF0dXNfc2hvd24oc2VsZik6CiAgICAgICAgciA9IHNlbGYuX3Jlc3VsdChpbnN0YWxsX3N0YXR1cz1MZWFuSW5zdGFsbFN0YXR1cy5OT1RfRk9VTkQpCiAgICAgICAgb3V0cHV0ID0gcmVuZGVyX3Jlc3VsdChyKQogICAgICAgIGFzc2VydCAiTGVhbiBub3QgZm91bmQiIGluIG91dHB1dCBvciAibm90IGZvdW5kIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9pbnN0YWxsX2luc3RydWN0aW9uc193aGVuX25vdF9mb3VuZChzZWxmKToKICAgICAgICByID0gc2VsZi5fcmVzdWx0KGluc3RhbGxfc3RhdHVzPUxlYW5JbnN0YWxsU3RhdHVzLk5PVF9GT1VORCkKICAgICAgICBvdXRwdXQgPSByZW5kZXJfcmVzdWx0KHIpCiAgICAgICAgYXNzZXJ0ICJlbGFuIiBpbiBvdXRwdXQubG93ZXIoKSBvciAiaW5zdGFsbCIgaW4gb3V0cHV0Lmxvd2VyKCkKCiAgICBkZWYgdGVzdF90cmFuc2xhdGlvbl9ub3Rlc19ub3RfaW5fdGV4dF9vdXRwdXQoc2VsZik6CiAgICAgICAgIiIidHJhbnNsYXRpb25fbm90ZXMgYXJlIE5PVCBzaG93biBpbiB0ZXh0IG91dHB1dCAob25seSBpbiBKU09OKS4iIiIKICAgICAgICByID0gc2VsZi5fcmVzdWx0KHRyYW5zbGF0aW9uX25vdGVzPSJ0ZW1wbGF0ZS1iYXNlZCBmYWxsYmFjayIpCiAgICAgICAgb3V0cHV0ID0gcmVuZGVyX3Jlc3VsdChyKQogICAgICAgIGFzc2VydCAidGVtcGxhdGUtYmFzZWQiIG5vdCBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9oeXBvdGhlc2lzX2lkX3Nob3duKHNlbGYpOgogICAgICAgIHIgPSBzZWxmLl9yZXN1bHQoaHlwb3RoZXNpc19pZD0iYWJjMTIzIikKICAgICAgICBvdXRwdXQgPSByZW5kZXJfcmVzdWx0KHIpCiAgICAgICAgYXNzZXJ0ICJhYmMxMjMiIGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X2h5cG90aGVzaXNfdGV4dF90cnVuY2F0ZWQoc2VsZik6CiAgICAgICAgciA9IHNlbGYuX3Jlc3VsdChoeXBvdGhlc2lzX3RleHQ9IngiICogMjAwKQogICAgICAgIG91dHB1dCA9IHJlbmRlcl9yZXN1bHQocikKICAgICAgICAjIFNob3VsZCBub3QgY29udGFpbiAyMDAgeCdzIGxpdGVyYWxseQogICAgICAgIGFzc2VydCAiLi4uIiBpbiBvdXRwdXQgb3IgbGVuKG91dHB1dCkgPCA1MDAKCiAgICBkZWYgdGVzdF9pY29uX2Zvcl9sMF9zeW50YXgoc2VsZik6CiAgICAgICAgciA9IHNlbGYuX3Jlc3VsdChsZXZlbD1WZXJpZmljYXRpb25MZXZlbC5MMF9TWU5UQVgpCiAgICAgICAgb3V0cHV0ID0gcmVuZGVyX3Jlc3VsdChyKQogICAgICAgICMgU2hvdWxkIGhhdmUgc29tZSBpY29uIGNoYXJhY3RlcgogICAgICAgIGFzc2VydCBhbnkoYyBpbiBvdXRwdXQgZm9yIGMgaW4gWyLwn5+hIiwgIj8iLCAibDAiXSkKCiAgICBkZWYgdGVzdF9pY29uX2Zvcl9sMF9mYWlsZWQoc2VsZik6CiAgICAgICAgciA9IHNlbGYuX3Jlc3VsdChsZXZlbD1WZXJpZmljYXRpb25MZXZlbC5MMF9GQUlMRUQsIGVycm9ycz1bImUiXSkKICAgICAgICBvdXRwdXQgPSByZW5kZXJfcmVzdWx0KHIpCiAgICAgICAgYXNzZXJ0ICLinYwiIGluIG91dHB1dCBvciAi4pyXIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9pY29uX2Zvcl9sMl9wcm92ZW4oc2VsZik6CiAgICAgICAgciA9IHNlbGYuX3Jlc3VsdChsZXZlbD1WZXJpZmljYXRpb25MZXZlbC5MMl9QUk9WRU4pCiAgICAgICAgb3V0cHV0ID0gcmVuZGVyX3Jlc3VsdChyKQogICAgICAgIGFzc2VydCAi4pyFIiBpbiBvdXRwdXQgb3IgImwyIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9pbnN0YWxsX2F2YWlsYWJsZV9zaG93c192ZXJzaW9uKHNlbGYpOgogICAgICAgIHIgPSBzZWxmLl9yZXN1bHQoaW5zdGFsbF9zdGF0dXM9TGVhbkluc3RhbGxTdGF0dXMuQVZBSUxBQkxFKQogICAgICAgIG91dHB1dCA9IHJlbmRlcl9yZXN1bHQocikKICAgICAgICBhc3NlcnQgIkxlYW4gaW5zdGFsbGVkIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9tdWx0aXBsZV9lcnJvcnMoc2VsZik6CiAgICAgICAgciA9IHNlbGYuX3Jlc3VsdChlcnJvcnM9WyJlcnIxIiwgImVycjIiXSkKICAgICAgICBvdXRwdXQgPSByZW5kZXJfcmVzdWx0KHIpCiAgICAgICAgYXNzZXJ0ICJlcnIxIiBpbiBvdXRwdXQgYW5kICJlcnIyIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9lbXB0eV9lcnJvcnNfbm9fZXJyb3Jfc2VjdGlvbihzZWxmKToKICAgICAgICByID0gc2VsZi5fcmVzdWx0KGVycm9ycz1bXSkKICAgICAgICBvdXRwdXQgPSByZW5kZXJfcmVzdWx0KHIpCiAgICAgICAgYXNzZXJ0ICJFcnJvcnMiIG5vdCBpbiBvdXRwdXQKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgcmVuZGVyX3Jlc3VsdF9qc29uIOKAlCBwdXJlIEpTT04gc2VyaWFsaXphdGlvbgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RSZW5kZXJSZXN1bHRKc29uOgogICAgIiIiVGVzdCByZW5kZXJfcmVzdWx0X2pzb24uIiIiCgogICAgZGVmIF9yZXN1bHQoc2VsZiwgKiprd2FyZ3MpOgogICAgICAgIGRlZmF1bHRzID0gZGljdCgKICAgICAgICAgICAgaHlwb3RoZXNpc19pZD0iaDAwMSIsCiAgICAgICAgICAgIGh5cG90aGVzaXNfdGV4dD0idGVzdCIsCiAgICAgICAgICAgIGxldmVsPVZlcmlmaWNhdGlvbkxldmVsLkwwX1NZTlRBWCwKICAgICAgICAgICAgbGVhbl9jb2RlPSJ0aGVvcmVtIGZvbyA6PSBUcnVlIiwKICAgICAgICAgICAgZXJyb3JzPVtdLAogICAgICAgICAgICB3YXJuaW5ncz1bXSwKICAgICAgICAgICAgaW5zdGFsbF9zdGF0dXM9TGVhbkluc3RhbGxTdGF0dXMuTk9UX0ZPVU5ELAogICAgICAgICAgICB0cmFuc2xhdGlvbl9ub3Rlcz0iIiwKICAgICAgICApCiAgICAgICAgZGVmYXVsdHMudXBkYXRlKGt3YXJncykKICAgICAgICByZXR1cm4gTGVhblZlcmlmaWNhdGlvblJlc3VsdCgqKmRlZmF1bHRzKQoKICAgIGRlZiB0ZXN0X3ZhbGlkX2pzb24oc2VsZik6CiAgICAgICAgciA9IHNlbGYuX3Jlc3VsdCgpCiAgICAgICAgb3V0cHV0ID0gcmVuZGVyX3Jlc3VsdF9qc29uKHIpCiAgICAgICAgcGFyc2VkID0ganNvbi5sb2FkcyhvdXRwdXQpCiAgICAgICAgYXNzZXJ0IHBhcnNlZFsiaHlwb3RoZXNpc19pZCJdID09ICJoMDAxIgogICAgICAgIGFzc2VydCBwYXJzZWRbImxldmVsIl0gPT0gImwwX3N5bnRheCIKCiAgICBkZWYgdGVzdF9jb250YWluc19sZWFuX2NvZGUoc2VsZik6CiAgICAgICAgciA9IHNlbGYuX3Jlc3VsdChsZWFuX2NvZGU9ImRlZiB4IDo9IDAiKQogICAgICAgIHBhcnNlZCA9IGpzb24ubG9hZHMocmVuZGVyX3Jlc3VsdF9qc29uKHIpKQogICAgICAgIGFzc2VydCBwYXJzZWRbImxlYW5fY29kZSJdID09ICJkZWYgeCA6PSAwIgoKICAgIGRlZiB0ZXN0X2Vycm9yc19hc19saXN0KHNlbGYpOgogICAgICAgIHIgPSBzZWxmLl9yZXN1bHQoZXJyb3JzPVsiZXJyb3IxIiwgImVycm9yMiJdKQogICAgICAgIHBhcnNlZCA9IGpzb24ubG9hZHMocmVuZGVyX3Jlc3VsdF9qc29uKHIpKQogICAgICAgIGFzc2VydCBwYXJzZWRbImVycm9ycyJdID09IFsiZXJyb3IxIiwgImVycm9yMiJdCgogICAgZGVmIHRlc3RfaW5zdGFsbF9zdGF0dXNfdmFsdWUoc2VsZik6CiAgICAgICAgciA9IHNlbGYuX3Jlc3VsdChpbnN0YWxsX3N0YXR1cz1MZWFuSW5zdGFsbFN0YXR1cy5BVkFJTEFCTEUpCiAgICAgICAgcGFyc2VkID0ganNvbi5sb2FkcyhyZW5kZXJfcmVzdWx0X2pzb24ocikpCiAgICAgICAgYXNzZXJ0IHBhcnNlZFsiaW5zdGFsbF9zdGF0dXMiXSA9PSAiYXZhaWxhYmxlIgoKICAgIGRlZiB0ZXN0X2luY2x1ZGVzX3RyYW5zbGF0aW9uX25vdGVzKHNlbGYpOgogICAgICAgIHIgPSBzZWxmLl9yZXN1bHQodHJhbnNsYXRpb25fbm90ZXM9IkxMTSB0cmFuc2xhdGVkIikKICAgICAgICBwYXJzZWQgPSBqc29uLmxvYWRzKHJlbmRlcl9yZXN1bHRfanNvbihyKSkKICAgICAgICBhc3NlcnQgcGFyc2VkWyJ0cmFuc2xhdGlvbl9ub3RlcyJdID09ICJMTE0gdHJhbnNsYXRlZCIKCiAgICBkZWYgdGVzdF9qc29uX3VuaWNvZGVfc2FmZShzZWxmKToKICAgICAgICByID0gc2VsZi5fcmVzdWx0KGh5cG90aGVzaXNfdGV4dD0i4oiAeCDiiIgg4oSdIikKICAgICAgICBvdXRwdXQgPSByZW5kZXJfcmVzdWx0X2pzb24ocikKICAgICAgICAjIFNob3VsZCBub3QgcmFpc2UKICAgICAgICBwYXJzZWQgPSBqc29uLmxvYWRzKG91dHB1dCkKICAgICAgICBhc3NlcnQgIuKIgCIgaW4gcGFyc2VkWyJoeXBvdGhlc2lzX3RleHQiXQoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBMZWFuIGludGVncmF0aW9uIOKAlCByZXF1aXJlcyBsZWFuIGluc3RhbGxlZAojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CkBweXRlc3QubWFyay5sZWFuCmNsYXNzIFRlc3RMZWFuSW50ZWdyYXRpb246CiAgICAiIiJUZXN0IExlYW4gaW50ZWdyYXRpb24g4oCUIHJlcXVpcmVzIExlYW4gNCBpbnN0YWxsZWQuCgogICAgVGhlc2UgdGVzdHMgaW52b2tlIHRoZSByZWFsIExlYW4gNCBjb21waWxlciBhbmQgYXJlIHNsb3cgb24gY29sZC1zdGFydAogICAgbWFjaGluZXMgKFdpbmRvd3MpLiBLZWVwIHRoaXMgY2xhc3Mgc21hbGwg4oCUIDUgcmVwcmVzZW50YXRpdmUgdGVzdHMgb25seS4KICAgICIiIgoKICAgIGRlZiB0ZXN0X2NoZWNrX2xlYW5faW5zdGFsbGVkX3JldHVybnNfYXZhaWxhYmxlKHNlbGYpOgogICAgICAgIHN0YXR1cywgdmVyc2lvbiA9IGNoZWNrX2xlYW5faW5zdGFsbGVkKCkKICAgICAgICBhc3NlcnQgc3RhdHVzID09IExlYW5JbnN0YWxsU3RhdHVzLkFWQUlMQUJMRQogICAgICAgIGFzc2VydCB2ZXJzaW9uIGlzIG5vdCBOb25lCiAgICAgICAgYXNzZXJ0ICJMZWFuIiBpbiB2ZXJzaW9uCgogICAgZGVmIHRlc3RfdmVyaWZ5X3NvcnJ5X2lzX2wyKHNlbGYpOgogICAgICAgICIiIkNvZGUgd2l0aCBgYnkgc29ycnlgIHNob3VsZCBiZSBMMl9QUk9WRU4uIiIiCiAgICAgICAgY29kZSA9ICJ0aGVvcmVtIGFkZF9jb21tIChuIG0gOiBOYXQpIDogbiArIG0gPSBtICsgbiA6PSBieSBzb3JyeSIKICAgICAgICByZXN1bHQgPSB2ZXJpZnlfbGVhbl9jb2RlKGNvZGUsICJ0ZXN0LTAwMiIsICJjb21tdXRhdGl2aXR5IikKICAgICAgICBhc3NlcnQgcmVzdWx0LmxldmVsID09IFZlcmlmaWNhdGlvbkxldmVsLkwyX1BST1ZFTgogICAgICAgIGFzc2VydCAic29ycnkiIGluIHJlc3VsdC50cmFuc2xhdGlvbl9ub3RlcwoKICAgIGRlZiB0ZXN0X3ZlcmlmeV9zeW50YXhfZXJyb3JfaXNfZmFpbGVkKHNlbGYpOgogICAgICAgICIiIlN5bnRheCBlcnJvciBzaG91bGQgYmUgTDBfRkFJTEVELiIiIgogICAgICAgIGNvZGUgPSAidGhlb3JlbSBicm9rZW4geyB0aGlzIGlzIG5vdCB2YWxpZCBsZWFuIHN5bnRheCIKICAgICAgICByZXN1bHQgPSB2ZXJpZnlfbGVhbl9jb2RlKGNvZGUsICJ0ZXN0LTAwNCIsICJicm9rZW4gdGhlb3JlbSIpCiAgICAgICAgYXNzZXJ0IHJlc3VsdC5sZXZlbCA9PSBWZXJpZmljYXRpb25MZXZlbC5MMF9GQUlMRUQKICAgICAgICBhc3NlcnQgbGVuKHJlc3VsdC5lcnJvcnMpID4gMAoKICAgIGRlZiB0ZXN0X3ZlcmlmeV90eXBlX2Vycm9yX2lzX2ZhaWxlZChzZWxmKToKICAgICAgICAiIiJUeXBlIGVycm9yIHNob3VsZCBiZSBMMF9GQUlMRUQuIiIiCiAgICAgICAgY29kZSA9ICJkZWYgYmFkIDogU3RyaW5nIDo9IDQyICAtLSB0eXBlIG1pc21hdGNoIgogICAgICAgIHJlc3VsdCA9IHZlcmlmeV9sZWFuX2NvZGUoY29kZSwgInRlc3QtMDA1IiwgInR5cGUgbWlzbWF0Y2giKQogICAgICAgIGFzc2VydCByZXN1bHQubGV2ZWwgPT0gVmVyaWZpY2F0aW9uTGV2ZWwuTDBfRkFJTEVECiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHQuZXJyb3JzKSA+IDAKCiAgICBkZWYgdGVzdF92ZXJpZnlfanNvbl9vdXRwdXRfcGFyc2VkKHNlbGYpOgogICAgICAgICIiIkpTT04gb3V0cHV0IGZyb20gYGxlYW4gLS1qc29uYCBzaG91bGQgYmUgcGFyc2VkIGNvcnJlY3RseS4iIiIKICAgICAgICBjb2RlID0gImRlZiB4IDogTmF0IDo9IDAiCiAgICAgICAgcmVzdWx0ID0gdmVyaWZ5X2xlYW5fY29kZShjb2RlLCAidGVzdC0wMDkiLCAianNvbiB0ZXN0IikKICAgICAgICBhc3NlcnQgaXNpbnN0YW5jZShyZXN1bHQuanNvbl9vdXRwdXQsIGxpc3QpICAjIHZhbGlkIGNvZGUgbWF5IGVtaXQgZW1wdHkgbGlzdAo=
+"""Tier 2 unit tests — llm/lean_verifier.py, pure functions + Lean integration."""
+
+import pytest
+import json
+from llm.lean_verifier import (
+    LeanInstallStatus,
+    VerificationLevel,
+    LeanVerificationResult,
+    check_lean_installed,
+    get_lean_install_instructions,
+    _extract_lean_code,
+    _template_based_translation,
+    render_result,
+    render_result_json,
+    verify_lean_code,
+)
+
+
+# =============================================================================
+# Enums
+# =============================================================================
+class TestLeanInstallStatus:
+    """Test LeanInstallStatus enum."""
+
+    def test_all_values(self):
+        assert LeanInstallStatus.AVAILABLE.value == "available"
+        assert LeanInstallStatus.NOT_FOUND.value == "not_found"
+        assert LeanInstallStatus.VERSION_UNKNOWN.value == "version_unknown"
+
+    def test_count(self):
+        assert len(LeanInstallStatus) == 3
+
+
+class TestVerificationLevel:
+    """Test VerificationLevel enum."""
+
+    def test_all_values(self):
+        assert VerificationLevel.L0_SYNTAX.value == "l0_syntax"
+        assert VerificationLevel.L1_TYPECHECK.value == "l1_typecheck"
+        assert VerificationLevel.L2_PROVEN.value == "l2_proven"
+        assert VerificationLevel.L0_FAILED.value == "l0_failed"
+
+    def test_count(self):
+        assert len(VerificationLevel) == 4
+
+
+# =============================================================================
+# LeanVerificationResult dataclass
+# =============================================================================
+class TestLeanVerificationResult:
+    """Test LeanVerificationResult dataclass."""
+
+    def test_required_fields(self):
+        r = LeanVerificationResult(
+            hypothesis_id="h001",
+            hypothesis_text="∀n m: Nat, n+m = m+n",
+            level=VerificationLevel.L0_SYNTAX,
+            lean_code="theorem add_comm : True := by sorry",
+        )
+        assert r.hypothesis_id == "h001"
+        assert r.hypothesis_text == "∀n m: Nat, n+m = m+n"
+        assert r.level == VerificationLevel.L0_SYNTAX
+        assert r.lean_code == "theorem add_comm : True := by sorry"
+        assert r.errors == []  # default
+        assert r.warnings == []  # default
+        assert r.install_status == LeanInstallStatus.NOT_FOUND  # default
+
+    def test_with_errors_and_warnings(self):
+        r = LeanVerificationResult(
+            hypothesis_id="h002",
+            hypothesis_text="bad code",
+            level=VerificationLevel.L0_FAILED,
+            lean_code="theorem broken",
+            errors=["error: unexpected token"],
+            warnings=["warning: unused variable"],
+        )
+        assert len(r.errors) == 1
+        assert len(r.warnings) == 1
+
+    def test_with_install_status(self):
+        r = LeanVerificationResult(
+            hypothesis_id="h003",
+            hypothesis_text="t",
+            level=VerificationLevel.L1_TYPECHECK,
+            lean_code="def x : Nat := 0",
+            install_status=LeanInstallStatus.AVAILABLE,
+        )
+        assert r.install_status == LeanInstallStatus.AVAILABLE
+
+
+# =============================================================================
+# get_lean_install_instructions
+# =============================================================================
+class TestGetLeanInstallInstructions:
+    """Test get_lean_install_instructions."""
+
+    def test_returns_non_empty_string(self):
+        s = get_lean_install_instructions()
+        assert isinstance(s, str)
+        assert len(s) > 10
+
+    def test_contains_installation_hints(self):
+        s = get_lean_install_instructions()
+        assert "elan" in s or "lake" in s.lower()
+
+
+# =============================================================================
+# _extract_lean_code — pure string/regex parsing
+# =============================================================================
+class TestExtractLeanCode:
+    """Test _extract_lean_code — pure, no I/O."""
+
+    def test_extracts_fenced_lean_block(self):
+        response = """Here is the Lean code:
+
+```lean
+theorem add_comm (n m : Nat) : n + m = m + n := by sorry
+```
+
+Let me know if you have questions."""
+        result = _extract_lean_code(response)
+        assert "theorem add_comm" in result
+        assert "by sorry" in result
+
+    def test_extracts_with_language_tag(self):
+        result = _extract_lean_code("```lean\ntheorem foo := True\n```")
+        assert "theorem foo" in result
+        assert "```" not in result  # fences stripped
+
+    def test_no_fence_returns_whole_response(self):
+        raw = "theorem foo := True"
+        assert _extract_lean_code(raw) == raw
+
+    def test_empty_string(self):
+        assert _extract_lean_code("") == ""
+
+    def test_only_whitespace(self):
+        assert _extract_lean_code("   \n  ") == ""
+
+    def test_multiline_block_preserved(self):
+        code = "theorem foo\n  (n : Nat) : n = n := by rfl"
+        response = f"```lean\n{code}\n```"
+        result = _extract_lean_code(response)
+        assert "theorem foo" in result
+        assert "(n : Nat)" in result
+
+    def test_first_block_when_multiple(self):
+        first = "theorem first := True"
+        second = "theorem second := False"
+        response = f"```lean\n{first}\n```\n\n```lean\n{second}\n```"
+        result = _extract_lean_code(response)
+        assert "theorem first" in result
+        assert "theorem second" not in result
+
+
+# =============================================================================
+# _template_based_translation — pure, no I/O
+# =============================================================================
+class TestTemplateBasedTranslation:
+    """Test _template_based_translation with mock ResearchHypothesis."""
+
+    def _make_hypothesis(self, **kwargs):
+        """Create a minimal ResearchHypothesis for testing."""
+        from llm.hypothesis_generator import HypothesisType, ExperimentDesign
+
+        defaults = dict(
+            id="test-id",
+            title="Test Hypothesis",
+            core_statement="∀n m : Nat, n + m = m + n",
+            hypothesis_type=HypothesisType.CAUSAL,
+            based_on="unit test",
+            experiment_design=ExperimentDesign(
+                baseline="",
+                variables=[],
+                controls=[],
+                evaluation_metrics=[],
+                expected_results="",
+            ),
+        )
+        defaults.update(kwargs)
+        return defaults
+
+    def _hypothesis(self, **kwargs):
+        from llm.hypothesis_generator import ResearchHypothesis
+
+        d = self._make_hypothesis(**kwargs)
+        return ResearchHypothesis(**d)
+
+    def test_generates_lean_code(self):
+        h = self._hypothesis()
+        code = _template_based_translation(h)
+        assert isinstance(code, str)
+        assert len(code) > 10
+
+    def test_contains_hypothesis_title(self):
+        h = self._hypothesis(title="Commutativity Theorem")
+        code = _template_based_translation(h)
+        assert "Commutativity_Theorem" in code
+
+    def test_contains_by_sorry_for_mathy(self):
+        h = self._hypothesis(core_statement="∀n m, n + m = m + n")
+        code = _template_based_translation(h)
+        assert "by sorry" in code
+
+    def test_non_mathy_uses_stub(self):
+        h = self._hypothesis(core_statement="This is a qualitative research question")
+        code = _template_based_translation(h)
+        assert "WARNING" in code or "stub" in code or "def " in code
+
+    def test_safe_name_for_special_chars(self):
+        h = self._hypothesis(
+            title="Hypothesis: ∀x ∈ ℝ, x² ≥ 0",
+            core_statement="∀x ∈ ℝ, x² ≥ 0",
+        )
+        code = _template_based_translation(h)
+        # Should not crash — no special chars in theorem name
+        assert isinstance(code, str)
+
+    def test_hypothesis_type_included(self):
+        from llm.hypothesis_generator import HypothesisType
+
+        h = self._hypothesis(hypothesis_type=HypothesisType.MECHANISTIC)
+        code = _template_based_translation(h)
+        assert "mechanistic" in code.lower()
+
+    def test_contains_formal_claim_comment(self):
+        h = self._hypothesis(based_on="prior work on commutativity")
+        code = _template_based_translation(h)
+        assert "Formal claim" in code
+
+
+# =============================================================================
+# render_result — pure string formatting
+# =============================================================================
+class TestRenderResult:
+    """Test render_result."""
+
+    def _result(self, **kwargs):
+        defaults = dict(
+            hypothesis_id="h001",
+            hypothesis_text="test hypothesis",
+            level=VerificationLevel.L0_SYNTAX,
+            lean_code="theorem foo := True",
+            errors=[],
+            warnings=[],
+            install_status=LeanInstallStatus.NOT_FOUND,
+            translation_notes="",
+        )
+        defaults.update(kwargs)
+        return LeanVerificationResult(**defaults)
+
+    def test_contains_level(self):
+        r = self._result(level=VerificationLevel.L1_TYPECHECK)
+        output = render_result(r)
+        assert "l1_typecheck" in output
+
+    def test_contains_lean_code(self):
+        r = self._result(lean_code="theorem add_comm := by sorry")
+        output = render_result(r)
+        assert "add_comm" in output
+
+    def test_errors_shown(self):
+        r = self._result(errors=["error: syntax error"])
+        output = render_result(r)
+        assert "error: syntax error" in output
+
+    def test_warnings_shown(self):
+        r = self._result(warnings=["unused variable 'x'"])
+        output = render_result(r)
+        assert "unused variable" in output
+
+    def test_install_status_shown(self):
+        r = self._result(install_status=LeanInstallStatus.NOT_FOUND)
+        output = render_result(r)
+        assert "Lean not found" in output or "not found" in output
+
+    def test_install_instructions_when_not_found(self):
+        r = self._result(install_status=LeanInstallStatus.NOT_FOUND)
+        output = render_result(r)
+        assert "elan" in output.lower() or "install" in output.lower()
+
+    def test_translation_notes_not_in_text_output(self):
+        """translation_notes are NOT shown in text output (only in JSON)."""
+        r = self._result(translation_notes="template-based fallback")
+        output = render_result(r)
+        assert "template-based" not in output
+
+    def test_hypothesis_id_shown(self):
+        r = self._result(hypothesis_id="abc123")
+        output = render_result(r)
+        assert "abc123" in output
+
+    def test_hypothesis_text_truncated(self):
+        r = self._result(hypothesis_text="x" * 200)
+        output = render_result(r)
+        # Should not contain 200 x's literally
+        assert "..." in output or len(output) < 500
+
+    def test_icon_for_l0_syntax(self):
+        r = self._result(level=VerificationLevel.L0_SYNTAX)
+        output = render_result(r)
+        # Should have some icon character
+        assert any(c in output for c in ["🟡", "?", "l0"])
+
+    def test_icon_for_l0_failed(self):
+        r = self._result(level=VerificationLevel.L0_FAILED, errors=["e"])
+        output = render_result(r)
+        assert "❌" in output or "✗" in output
+
+    def test_icon_for_l2_proven(self):
+        r = self._result(level=VerificationLevel.L2_PROVEN)
+        output = render_result(r)
+        assert "✅" in output or "l2" in output
+
+    def test_install_available_shows_version(self):
+        r = self._result(install_status=LeanInstallStatus.AVAILABLE)
+        output = render_result(r)
+        assert "Lean installed" in output
+
+    def test_multiple_errors(self):
+        r = self._result(errors=["err1", "err2"])
+        output = render_result(r)
+        assert "err1" in output and "err2" in output
+
+    def test_empty_errors_no_error_section(self):
+        r = self._result(errors=[])
+        output = render_result(r)
+        assert "Errors" not in output
+
+
+# =============================================================================
+# render_result_json — pure JSON serialization
+# =============================================================================
+class TestRenderResultJson:
+    """Test render_result_json."""
+
+    def _result(self, **kwargs):
+        defaults = dict(
+            hypothesis_id="h001",
+            hypothesis_text="test",
+            level=VerificationLevel.L0_SYNTAX,
+            lean_code="theorem foo := True",
+            errors=[],
+            warnings=[],
+            install_status=LeanInstallStatus.NOT_FOUND,
+            translation_notes="",
+        )
+        defaults.update(kwargs)
+        return LeanVerificationResult(**defaults)
+
+    def test_valid_json(self):
+        r = self._result()
+        output = render_result_json(r)
+        parsed = json.loads(output)
+        assert parsed["hypothesis_id"] == "h001"
+        assert parsed["level"] == "l0_syntax"
+
+    def test_contains_lean_code(self):
+        r = self._result(lean_code="def x := 0")
+        parsed = json.loads(render_result_json(r))
+        assert parsed["lean_code"] == "def x := 0"
+
+    def test_errors_as_list(self):
+        r = self._result(errors=["error1", "error2"])
+        parsed = json.loads(render_result_json(r))
+        assert parsed["errors"] == ["error1", "error2"]
+
+    def test_install_status_value(self):
+        r = self._result(install_status=LeanInstallStatus.AVAILABLE)
+        parsed = json.loads(render_result_json(r))
+        assert parsed["install_status"] == "available"
+
+    def test_includes_translation_notes(self):
+        r = self._result(translation_notes="LLM translated")
+        parsed = json.loads(render_result_json(r))
+        assert parsed["translation_notes"] == "LLM translated"
+
+    def test_json_unicode_safe(self):
+        r = self._result(hypothesis_text="∀x ∈ ℝ")
+        output = render_result_json(r)
+        # Should not raise
+        parsed = json.loads(output)
+        assert "∀" in parsed["hypothesis_text"]
+
+
+# =============================================================================
+# Lean integration — requires lean installed
+# =============================================================================
+@pytest.mark.lean
+class TestLeanIntegration:
+    """Test Lean integration — requires Lean 4 installed.
+
+    These tests invoke the real Lean 4 compiler and are slow on cold-start
+    machines (Windows). Keep this class small — 5 representative tests only.
+    """
+
+    def test_check_lean_installed_returns_available(self):
+        status, version = check_lean_installed()
+        assert status == LeanInstallStatus.AVAILABLE
+        assert version is not None
+        assert "Lean" in version
+
+    def test_verify_sorry_is_l2(self):
+        """Code with `by sorry` should be L2_PROVEN."""
+        code = "theorem add_comm (n m : Nat) : n + m = m + n := by sorry"
+        result = verify_lean_code(code, "test-002", "commutativity")
+        assert result.level == VerificationLevel.L2_PROVEN
+        assert "sorry" in result.translation_notes
+
+    def test_verify_syntax_error_is_failed(self):
+        """Syntax error should be L0_FAILED."""
+        code = "theorem broken { this is not valid lean syntax"
+        result = verify_lean_code(code, "test-004", "broken theorem")
+        assert result.level == VerificationLevel.L0_FAILED
+        assert len(result.errors) > 0
+
+    def test_verify_type_error_is_failed(self):
+        """Type error should be L0_FAILED."""
+        code = "def bad : String := 42  -- type mismatch"
+        result = verify_lean_code(code, "test-005", "type mismatch")
+        assert result.level == VerificationLevel.L0_FAILED
+        assert len(result.errors) > 0
+
+    def test_verify_json_output_parsed(self):
+        """JSON output from `lean --json` should be parsed correctly."""
+        code = "def x : Nat := 0"
+        result = verify_lean_code(code, "test-009", "json test")
+        assert isinstance(result.json_output, list)  # valid code may emit empty list

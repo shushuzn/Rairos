@@ -1,1 +1,143 @@
-IiIiTXVsdGktUmVzZWFyY2hlciBTdXBwb3J0IOKAlCBzaGFyZWQgR2VuZSBQb29sIHdpdGggc291cmNlX3VzZXIgdGFnczsgY29sbGFib3JhdGl2ZSBnYXAgdHJhY2tpbmcuCgpFYWNoIGNhcHN1bGUgY2FuIGJlIHRhZ2dlZCB3aXRoIGEgc291cmNlX3VzZXIgc28gZGlmZmVyZW50IHJlc2VhcmNoZXJzIGNhbiBoYXZlCnRoZWlyIG93biB2aWV3cyBvZiB0aGUgcG9vbCwgb3Igc2hhcmUgc2VsZWN0aXZlbHkuCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGpzb24KZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBBbnksIERpY3QsIExpc3QsIE9wdGlvbmFsCgpHUF9ESVIgPSBQYXRoLmhvbWUoKSAvICIuYWlfcmVzZWFyY2hfb3MiIC8gImdlbmVfcG9vbCIKQ0FQU1VMRVNfUEFUSCA9IEdQX0RJUiAvICJjYXBzdWxlcy5qc29uIgpVU0VSU19GSUxFID0gR1BfRElSIC8gInVzZXJzLmpzb24iCgpERUZBVUxUX1VTRVIgPSAiZGVmYXVsdCIKCgpkZWYgX2xvYWRfY2Fwc3VsZXMoKSAtPiBMaXN0W0RpY3Rbc3RyLCBBbnldXToKICAgIGlmIG5vdCBDQVBTVUxFU19QQVRILmV4aXN0cygpOgogICAgICAgIHJldHVybiBbXQogICAgcmV0dXJuIGpzb24ubG9hZHMoQ0FQU1VMRVNfUEFUSC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikpLmdldCgiY2Fwc3VsZXMiLCBbXSkKCgpkZWYgX2xvYWRfdXNlcnMoKSAtPiBEaWN0W3N0ciwgQW55XToKICAgIGlmIG5vdCBVU0VSU19GSUxFLmV4aXN0cygpOgogICAgICAgIHJldHVybiB7fQogICAgcmV0dXJuIGpzb24ubG9hZHMoVVNFUlNfRklMRS5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikpCgoKZGVmIF9zYXZlX3VzZXJzKHVzZXJzOiBEaWN0W3N0ciwgQW55XSkgLT4gTm9uZToKICAgIFVTRVJTX0ZJTEUucGFyZW50Lm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgIFVTRVJTX0ZJTEUud3JpdGVfdGV4dChqc29uLmR1bXBzKHVzZXJzLCBpbmRlbnQ9MiwgZW5zdXJlX2FzY2lpPUZhbHNlKSwgZW5jb2Rpbmc9InV0Zi04IikKCgpkZWYgZ2V0X3Jlc2VhcmNoZXJzKCkgLT4gTGlzdFtEaWN0W3N0ciwgQW55XV06CiAgICAiIiJSZXR1cm4gbGlzdCBvZiBhbGwgcmVzZWFyY2hlcnMgd2hvIGhhdmUgY29udHJpYnV0ZWQgY2Fwc3VsZXMuIiIiCiAgICBjYXBzdWxlcyA9IF9sb2FkX2NhcHN1bGVzKCkKICAgIHVzZXJfY291bnRzOiBEaWN0W3N0ciwgaW50XSA9IHt9CiAgICBmb3IgY2FwIGluIGNhcHN1bGVzOgogICAgICAgIHVpZCA9IGNhcC5nZXQoInNvdXJjZV91c2VyIiwgREVGQVVMVF9VU0VSKSBvciBERUZBVUxUX1VTRVIKICAgICAgICB1c2VyX2NvdW50c1t1aWRdID0gdXNlcl9jb3VudHMuZ2V0KHVpZCwgMCkgKyAxCiAgICByZXR1cm4gWwogICAgICAgIHsidXNlcl9pZCI6IHVpZCwgImNhcHN1bGVfY291bnQiOiBjb3VudH0KICAgICAgICBmb3IgdWlkLCBjb3VudCBpbiBzb3J0ZWQodXNlcl9jb3VudHMuaXRlbXMoKSwga2V5PWxhbWJkYSB4OiAteFsxXSkKICAgIF0KCgpkZWYgZ2V0X2NhcHN1bGVzX2Zvcl91c2VyKHVzZXJfaWQ6IHN0cikgLT4gTGlzdFtEaWN0W3N0ciwgQW55XV06CiAgICAiIiJSZXR1cm4gY2Fwc3VsZXMgdmlzaWJsZSB0byBhIHNwZWNpZmljIHVzZXIgKG93biArIHNoYXJlZCkuIiIiCiAgICBjYXBzdWxlcyA9IF9sb2FkX2NhcHN1bGVzKCkKICAgIGlmIHVzZXJfaWQgPT0gImFsbCI6CiAgICAgICAgcmV0dXJuIGNhcHN1bGVzCiAgICByZXR1cm4gWwogICAgICAgIGMKICAgICAgICBmb3IgYyBpbiBjYXBzdWxlcwogICAgICAgIGlmIGMuZ2V0KCJzb3VyY2VfdXNlciIsIERFRkFVTFRfVVNFUikgPT0gdXNlcl9pZAogICAgICAgIG9yIGMuZ2V0KCJ2aXNpYmlsaXR5IiwgInNoYXJlZCIpID09ICJzaGFyZWQiCiAgICBdCgoKZGVmIGFkZF9yZXNlYXJjaGVyKHVzZXJfaWQ6IHN0ciwgbmFtZTogc3RyID0gIiIsIGVtYWlsOiBzdHIgPSAiIikgLT4gYm9vbDoKICAgIHVzZXJzID0gX2xvYWRfdXNlcnMoKQogICAgaWYgdXNlcl9pZCBpbiB1c2VyczoKICAgICAgICByZXR1cm4gRmFsc2UKICAgIHVzZXJzW3VzZXJfaWRdID0gewogICAgICAgICJuYW1lIjogbmFtZSBvciB1c2VyX2lkLAogICAgICAgICJlbWFpbCI6IGVtYWlsLAogICAgICAgICJqb2luZWRfYXQiOiBzdHIoX19pbXBvcnRfXygiZGF0ZXRpbWUiKS5kYXRldGltZS5ub3coKS5pc29mb3JtYXQoKSksCiAgICB9CiAgICBfc2F2ZV91c2Vycyh1c2VycykKICAgIHJldHVybiBUcnVlCgoKZGVmIHJlbmRlcl9tdWx0aV9yZXNlYXJjaGVyX2h0bWwoKSAtPiBzdHI6CiAgICByZXNlYXJjaGVycyA9IGdldF9yZXNlYXJjaGVycygpCiAgICBjYXBzdWxlcyA9IF9sb2FkX2NhcHN1bGVzKCkKICAgIHVzZXJzID0gX2xvYWRfdXNlcnMoKQoKICAgIGxpbmVzID0gWyc8ZGl2IGNsYXNzPSJtdWx0aS1yZXNlYXJjaGVyIj4nXQogICAgbGluZXMuYXBwZW5kKCI8aDM+8J+RpSBNdWx0aS1SZXNlYXJjaGVyIFN1cHBvcnQ8L2gzPiIpCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIjxwIHN0eWxlPSdmb250LXNpemU6MTNweDtjb2xvcjojQTg5RThDO21hcmdpbi1ib3R0b206MTRweCc+IgogICAgICAgICJDb2xsYWJvcmF0aXZlIEdlbmUgUG9vbC4gRWFjaCByZXNlYXJjaGVyIGlzIHRhZ2dlZCBvbiB0aGVpciBjYXBzdWxlcy48L3A+IgogICAgKQoKICAgICMgUmVzZWFyY2hlciBsaXN0CiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIjxoNCBzdHlsZT0nZm9udC1zaXplOjEzcHg7Zm9udC13ZWlnaHQ6NzAwO2NvbG9yOiMzMzM7bWFyZ2luLWJvdHRvbTo4cHgnPiIKICAgICAgICBmIlJlc2VhcmNoZXJzICh7bGVuKHJlc2VhcmNoZXJzKX0pPC9oND4iCiAgICApCgogICAgaWYgbm90IHJlc2VhcmNoZXJzOgogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgIjxwIHN0eWxlPSdjb2xvcjojQTg5RThDO2ZvbnQtc2l6ZToxM3B4Jz5ObyByZXNlYXJjaGVycyB5ZXQuICIKICAgICAgICAgICAgIkFkZCBhIHJlc2VhcmNoZXIgSUQgdG8gc3RhcnQgY29sbGFib3JhdGluZy48L3A+IgogICAgICAgICkKICAgIGVsc2U6CiAgICAgICAgZm9yIHIgaW4gcmVzZWFyY2hlcnM6CiAgICAgICAgICAgIHVpZCA9IHJbInVzZXJfaWQiXQogICAgICAgICAgICBpbmZvID0gdXNlcnMuZ2V0KHVpZCwge30pCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiIiCjxkaXYgc3R5bGU9J2Rpc3BsYXk6ZmxleDtqdXN0aWZ5LWNvbnRlbnQ6c3BhY2UtYmV0d2VlbjthbGlnbi1pdGVtczpjZW50ZXI7cGFkZGluZzoxMHB4IDEycHg7YmFja2dyb3VuZDojZjhmNGVmO2JvcmRlci1yYWRpdXM6NnB4O21hcmdpbi1ib3R0b206OHB4Jz4KICA8ZGl2PgogICAgPGRpdiBzdHlsZT0nZm9udC13ZWlnaHQ6NjAwO2ZvbnQtc2l6ZToxM3B4Jz57aW5mby5nZXQoIm5hbWUiLCB1aWQpfTwvZGl2PgogICAgPGRpdiBzdHlsZT0nZm9udC1zaXplOjExcHg7Y29sb3I6I0E4OUU4Qyc+e3VpZH0gwrcge3JbImNhcHN1bGVfY291bnQiXX0gY2Fwc3VsZXM8L2Rpdj4KICA8L2Rpdj4KICA8YnV0dG9uIG9uY2xpY2s9InN3aXRjaFZpZXcoJ3t1aWR9JykiIHN0eWxlPSJmb250LXNpemU6MTFweDtwYWRkaW5nOjNweCAxMHB4O2N1cnNvcjpwb2ludGVyO2JvcmRlci1yYWRpdXM6M3B4O2JvcmRlcjoxcHggc29saWQgI2NjYztiYWNrZ3JvdW5kOnRyYW5zcGFyZW50Ij4KICAgIFZpZXcKICA8L2J1dHRvbj4KPC9kaXY+IiIiKQoKICAgICMgQWRkIHJlc2VhcmNoZXIKICAgIGxpbmVzLmFwcGVuZCgiPGRpdiBzdHlsZT0nbWFyZ2luLXRvcDoxNnB4O3BhZGRpbmc6MTRweDtiYWNrZ3JvdW5kOiNmOGY0ZWY7Ym9yZGVyLXJhZGl1czo2cHgnPiIpCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIjxoNCBzdHlsZT0nZm9udC1zaXplOjEzcHg7Zm9udC13ZWlnaHQ6NzAwO2NvbG9yOiMzMzM7bWFyZ2luLWJvdHRvbTo4cHgnPkFkZCBSZXNlYXJjaGVyPC9oND4iCiAgICApCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIjxpbnB1dCB0eXBlPSd0ZXh0JyBpZD0nbmV3VXNlcklkJyBwbGFjZWhvbGRlcj0nVXNlciBJRCcgc3R5bGU9J2ZvbnQtc2l6ZToxMnB4O3BhZGRpbmc6NXB4IDhweDtib3JkZXItcmFkaXVzOjRweDtib3JkZXI6MXB4IHNvbGlkICNjY2M7bWFyZ2luLXJpZ2h0OjZweDt3aWR0aDoxMjBweCc+IgogICAgKQogICAgbGluZXMuYXBwZW5kKAogICAgICAgICI8aW5wdXQgdHlwZT0ndGV4dCcgaWQ9J25ld1VzZXJOYW1lJyBwbGFjZWhvbGRlcj0nTmFtZScgc3R5bGU9J2ZvbnQtc2l6ZToxMnB4O3BhZGRpbmc6NXB4IDhweDtib3JkZXItcmFkaXVzOjRweDtib3JkZXI6MXB4IHNvbGlkICNjY2M7bWFyZ2luLXJpZ2h0OjZweDt3aWR0aDoxNDBweCc+IgogICAgKQogICAgbGluZXMuYXBwZW5kKAogICAgICAgICI8YnV0dG9uIG9uY2xpY2s9J2FkZFJlc2VhcmNoZXIoKScgc3R5bGU9J2JhY2tncm91bmQ6IzZCOEZCNTtjb2xvcjp3aGl0ZTtib3JkZXI6bm9uZTtib3JkZXItcmFkaXVzOjRweDtwYWRkaW5nOjVweCAxNHB4O2N1cnNvcjpwb2ludGVyO2ZvbnQtc2l6ZToxMnB4Jz5BZGQ8L2J1dHRvbj4iCiAgICApCiAgICBsaW5lcy5hcHBlbmQoIjwvZGl2PiIpCgogICAgIyBTaGFyZWQgdnMgcHJpdmF0ZSB0b2dnbGUgcGVyIGNhcHN1bGUgKGluZm8pCiAgICB0b3RhbCA9IGxlbihjYXBzdWxlcykKICAgIHNoYXJlZCA9IHN1bSgxIGZvciBjIGluIGNhcHN1bGVzIGlmIGMuZ2V0KCJ2aXNpYmlsaXR5IiwgInNoYXJlZCIpID09ICJzaGFyZWQiKQogICAgbGluZXMuYXBwZW5kKAogICAgICAgIGYiPGRpdiBzdHlsZT0nbWFyZ2luLXRvcDoxNnB4O2ZvbnQtc2l6ZToxMnB4O2NvbG9yOiM3YTc1NzAnPntzaGFyZWR9L3t0b3RhbH0gY2Fwc3VsZXMgc2hhcmVkIMK3IHZpc2liaWxpdHkgaXMgc2V0IHBlciBjYXBzdWxlIHZpYSB0aGUgY2Fwc3VsZSBlZGl0b3IuPC9kaXY+IgogICAgKQoKICAgIGxpbmVzLmFwcGVuZCgiIiIKPHNjcmlwdD4KZnVuY3Rpb24gYWRkUmVzZWFyY2hlcigpIHsKICAgIHZhciB1aWQgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnbmV3VXNlcklkJykudmFsdWUudHJpbSgpOwogICAgdmFyIG5hbWUgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnbmV3VXNlck5hbWUnKS52YWx1ZS50cmltKCk7CiAgICBpZiAoIXVpZCkgeyBhbGVydCgnVXNlciBJRCByZXF1aXJlZCcpOyByZXR1cm47IH0KICAgIGZldGNoKCcvcmVzZWFyY2hlcnMvYWRkJywgewogICAgICAgIG1ldGhvZDogJ1BPU1QnLAogICAgICAgIGhlYWRlcnM6IHsnQ29udGVudC1UeXBlJzogJ2FwcGxpY2F0aW9uL2pzb24nfSwKICAgICAgICBib2R5OiBKU09OLnN0cmluZ2lmeSh7dXNlcl9pZDogdWlkLCBuYW1lOiBuYW1lfSkKICAgIH0pLnRoZW4oZnVuY3Rpb24ocikgeyByZXR1cm4gci5qc29uKCk7IH0pCiAgICAgIC50aGVuKGZ1bmN0aW9uKGQpIHsKICAgICAgICAgIGlmIChkLnN1Y2Nlc3MpIGxvY2F0aW9uLnJlbG9hZCgpOwogICAgICAgICAgZWxzZSBhbGVydCgnRXJyb3I6ICcgKyAoZC5lcnJvciB8fCAndW5rbm93bicpKTsKICAgICAgfSk7Cn0KZnVuY3Rpb24gc3dpdGNoVmlldyh1aWQpIHsKICAgIGZldGNoKCcvcmVzZWFyY2hlcnMvY2Fwc3VsZXMvJyArIHVpZCkKICAgICAgLnRoZW4oZnVuY3Rpb24ocikgeyByZXR1cm4gci5qc29uKCk7IH0pCiAgICAgIC50aGVuKGZ1bmN0aW9uKGQpIHsKICAgICAgICAgIGFsZXJ0KCdVc2VyICcgKyB1aWQgKyAnIGhhcyAnICsgZC5jb3VudCArICcgdmlzaWJsZSBjYXBzdWxlcycpOwogICAgICB9KTsKfQo8L3NjcmlwdD4iIiIpCgogICAgbGluZXMuYXBwZW5kKCI8c3R5bGU+Lm11bHRpLXJlc2VhcmNoZXIgeyBmb250LWZhbWlseTogR2VvcmdpYSwgc2VyaWY7IH08L3N0eWxlPiIpCiAgICBsaW5lcy5hcHBlbmQoIjwvZGl2PiIpCiAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQo=
+"""Multi-Researcher Support — shared Gene Pool with source_user tags; collaborative gap tracking.
+
+Each capsule can be tagged with a source_user so different researchers can have
+their own views of the pool, or share selectively.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+GP_DIR = Path.home() / ".ai_research_os" / "gene_pool"
+CAPSULES_PATH = GP_DIR / "capsules.json"
+USERS_FILE = GP_DIR / "users.json"
+
+DEFAULT_USER = "default"
+
+
+def _load_capsules() -> List[Dict[str, Any]]:
+    if not CAPSULES_PATH.exists():
+        return []
+    return json.loads(CAPSULES_PATH.read_text(encoding="utf-8")).get("capsules", [])
+
+
+def _load_users() -> Dict[str, Any]:
+    if not USERS_FILE.exists():
+        return {}
+    return json.loads(USERS_FILE.read_text(encoding="utf-8"))
+
+
+def _save_users(users: Dict[str, Any]) -> None:
+    USERS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    USERS_FILE.write_text(json.dumps(users, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def get_researchers() -> List[Dict[str, Any]]:
+    """Return list of all researchers who have contributed capsules."""
+    capsules = _load_capsules()
+    user_counts: Dict[str, int] = {}
+    for cap in capsules:
+        uid = cap.get("source_user", DEFAULT_USER) or DEFAULT_USER
+        user_counts[uid] = user_counts.get(uid, 0) + 1
+    return [
+        {"user_id": uid, "capsule_count": count}
+        for uid, count in sorted(user_counts.items(), key=lambda x: -x[1])
+    ]
+
+
+def get_capsules_for_user(user_id: str) -> List[Dict[str, Any]]:
+    """Return capsules visible to a specific user (own + shared)."""
+    capsules = _load_capsules()
+    if user_id == "all":
+        return capsules
+    return [
+        c for c in capsules
+        if c.get("source_user", DEFAULT_USER) == user_id
+        or c.get("visibility", "shared") == "shared"
+    ]
+
+
+def add_researcher(user_id: str, name: str = "", email: str = "") -> bool:
+    users = _load_users()
+    if user_id in users:
+        return False
+    users[user_id] = {"name": name or user_id, "email": email, "joined_at": str(__import__("datetime").datetime.now().isoformat())}
+    _save_users(users)
+    return True
+
+
+def render_multi_researcher_html() -> str:
+    researchers = get_researchers()
+    capsules = _load_capsules()
+    users = _load_users()
+
+    lines = ['<div class="multi-researcher">']
+    lines.append("<h3>👥 Multi-Researcher Support</h3>")
+    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
+                "Collaborative Gene Pool. Each researcher is tagged on their capsules.</p>")
+
+    # Researcher list
+    lines.append("<h4 style='font-size:13px;font-weight:700;color:#333;margin-bottom:8px'>"
+                f"Researchers ({len(researchers)})</h4>")
+
+    if not researchers:
+        lines.append("<p style='color:#A89E8C;font-size:13px'>No researchers yet. "
+                    "Add a researcher ID to start collaborating.</p>")
+    else:
+        for r in researchers:
+            uid = r["user_id"]
+            info = users.get(uid, {})
+            lines.append(f"""
+<div style='display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f8f4ef;border-radius:6px;margin-bottom:8px'>
+  <div>
+    <div style='font-weight:600;font-size:13px'>{info.get('name', uid)}</div>
+    <div style='font-size:11px;color:#A89E8C'>{uid} · {r['capsule_count']} capsules</div>
+  </div>
+  <button onclick="switchView('{uid}')" style="font-size:11px;padding:3px 10px;cursor:pointer;border-radius:3px;border:1px solid #ccc;background:transparent">
+    View
+  </button>
+</div>""")
+
+    # Add researcher
+    lines.append("<div style='margin-top:16px;padding:14px;background:#f8f4ef;border-radius:6px'>")
+    lines.append("<h4 style='font-size:13px;font-weight:700;color:#333;margin-bottom:8px'>Add Researcher</h4>")
+    lines.append("<input type='text' id='newUserId' placeholder='User ID' style='font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid #ccc;margin-right:6px;width:120px'>")
+    lines.append("<input type='text' id='newUserName' placeholder='Name' style='font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid #ccc;margin-right:6px;width:140px'>")
+    lines.append("<button onclick='addResearcher()' style='background:#6B8FB5;color:white;border:none;border-radius:4px;padding:5px 14px;cursor:pointer;font-size:12px'>Add</button>")
+    lines.append("</div>")
+
+    # Shared vs private toggle per capsule (info)
+    total = len(capsules)
+    shared = sum(1 for c in capsules if c.get("visibility", "shared") == "shared")
+    lines.append(f"<div style='margin-top:16px;font-size:12px;color:#7a7570'>{shared}/{total} capsules shared · visibility is set per capsule via the capsule editor.</div>")
+
+    lines.append("""
+<script>
+function addResearcher() {
+    var uid = document.getElementById('newUserId').value.trim();
+    var name = document.getElementById('newUserName').value.trim();
+    if (!uid) { alert('User ID required'); return; }
+    fetch('/researchers/add', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: uid, name: name})
+    }).then(function(r) { return r.json(); })
+      .then(function(d) {
+          if (d.success) location.reload();
+          else alert('Error: ' + (d.error || 'unknown'));
+      });
+}
+function switchView(uid) {
+    fetch('/researchers/capsules/' + uid)
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+          alert('User ' + uid + ' has ' + d.count + ' visible capsules');
+      });
+}
+</script>""")
+
+    lines.append("<style>.multi-researcher { font-family: Georgia, serif; }</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

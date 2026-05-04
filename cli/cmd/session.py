@@ -1,1 +1,352 @@
-IiIiQ0xJIGNvbW1hbmQ6IHNlc3Npb24g4oCUIFJlc2VhcmNoIHNlc3Npb24gbWFuYWdlbWVudC4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBhcmdwYXJzZQoKZnJvbSBjbGkuX3NoYXJlZCBpbXBvcnQgZ2V0X2RiLCBwcmludF9pbmZvCmZyb20gY2xpLndhcnAgaW1wb3J0IFdhcnBCbG9ja3MKZnJvbSBsbG0ucmVzZWFyY2hfc2Vzc2lvbiBpbXBvcnQgUmVzZWFyY2hTZXNzaW9uVHJhY2tlciwgUmVzZWFyY2hJbnRlbnQKCgpkZWYgX2J1aWxkX3Nlc3Npb25fcGFyc2VyKHN1YnBhcnNlcnMpIC0+IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyOgogICAgIiIiQnVpbGQgdGhlIHNlc3Npb24gc3ViY29tbWFuZCBwYXJzZXIuIiIiCiAgICBwID0gc3VicGFyc2Vycy5hZGRfcGFyc2VyKAogICAgICAgICJzZXNzaW9uIiwKICAgICAgICBoZWxwPSJNYW5hZ2UgcmVzZWFyY2ggc2Vzc2lvbnMiLAogICAgICAgIGRlc2NyaXB0aW9uPSJTdGFydCwgbGlzdCwgYW5kIG1hbmFnZSByZXNlYXJjaCBzZXNzaW9ucyBmb3IgY29udGV4dC1hd2FyZSBjb252ZXJzYXRpb25zLiIsCiAgICApCiAgICBzdWIgPSBwLmFkZF9zdWJwYXJzZXJzKGRlc3Q9ImFjdGlvbiIsIGhlbHA9IlNlc3Npb24gYWN0aW9ucyIpCgogICAgIyBzdGFydAogICAgc3AgPSBzdWIuYWRkX3BhcnNlcigic3RhcnQiLCBoZWxwPSJTdGFydCBhIG5ldyByZXNlYXJjaCBzZXNzaW9uIikKICAgIHNwLmFkZF9hcmd1bWVudCgidGl0bGUiLCBuYXJncz0iPyIsIGRlZmF1bHQ9Tm9uZSwgaGVscD0iU2Vzc2lvbiB0aXRsZSIpCiAgICBzcC5hZGRfYXJndW1lbnQoIi0tdG9waWMiLCAiLXQiLCBoZWxwPSJJbml0aWFsIHRvcGljIikKCiAgICAjIGxpc3QKICAgIHNwID0gc3ViLmFkZF9wYXJzZXIoImxpc3QiLCBoZWxwPSJMaXN0IHJlY2VudCBzZXNzaW9ucyIpCiAgICBzcC5hZGRfYXJndW1lbnQoIi0tZGF5cyIsICItZCIsIHR5cGU9aW50LCBkZWZhdWx0PTcsIGhlbHA9IkRheXMgdG8gbG9vayBiYWNrIChkZWZhdWx0OiA3KSIpCiAgICBzcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tbGltaXQiLCAiLW4iLCB0eXBlPWludCwgZGVmYXVsdD0xMCwgaGVscD0iTWF4IHNlc3Npb25zIHRvIHNob3cgKGRlZmF1bHQ6IDEwKSIKICAgICkKCiAgICAjIGN1cnJlbnQKICAgIHN1Yi5hZGRfcGFyc2VyKCJjdXJyZW50IiwgaGVscD0iU2hvdyBjdXJyZW50IHNlc3Npb24iKQoKICAgICMgZW5kCiAgICBzdWIuYWRkX3BhcnNlcigiZW5kIiwgaGVscD0iRW5kIGN1cnJlbnQgc2Vzc2lvbiIpCgogICAgIyBpbnRlcmFjdGl2ZQogICAgc3AgPSBzdWIuYWRkX3BhcnNlcigiY2hhdCIsIGhlbHA9IkludGVyYWN0aXZlIHJlc2VhcmNoIGNoYXQgd2l0aGluIHNlc3Npb24iKQogICAgc3AuYWRkX2FyZ3VtZW50KCJxdWVyeSIsIG5hcmdzPSIqIiwgaGVscD0iSW5pdGlhbCBxdWVyeSAob3B0aW9uYWwpIikKICAgIHNwLmFkZF9hcmd1bWVudCgiLS10b3BpYyIsIGhlbHA9Ik92ZXJyaWRlIHRvcGljIGNvbnRleHQiKQoKICAgIHJldHVybiBwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKCmRlZiBfcnVuX3Nlc3Npb24oYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKSAtPiBpbnQ6CiAgICAiIiJSdW4gc2Vzc2lvbiBjb21tYW5kLiIiIgogICAgdHJhY2tlciA9IFJlc2VhcmNoU2Vzc2lvblRyYWNrZXIoKQoKICAgIGlmIGFyZ3MuYWN0aW9uID09ICJzdGFydCI6CiAgICAgICAgcmV0dXJuIF9zZXNzaW9uX3N0YXJ0KHRyYWNrZXIsIGFyZ3MpCiAgICBlbGlmIGFyZ3MuYWN0aW9uID09ICJsaXN0IjoKICAgICAgICByZXR1cm4gX3Nlc3Npb25fbGlzdCh0cmFja2VyLCBhcmdzKQogICAgZWxpZiBhcmdzLmFjdGlvbiA9PSAiY3VycmVudCI6CiAgICAgICAgcmV0dXJuIF9zZXNzaW9uX2N1cnJlbnQodHJhY2tlcikKICAgIGVsaWYgYXJncy5hY3Rpb24gPT0gImVuZCI6CiAgICAgICAgcmV0dXJuIF9zZXNzaW9uX2VuZCh0cmFja2VyKQogICAgZWxpZiBhcmdzLmFjdGlvbiA9PSAiY2hhdCI6CiAgICAgICAgcmV0dXJuIF9zZXNzaW9uX2NoYXQodHJhY2tlciwgYXJncykKICAgIGVsc2U6CiAgICAgICAgIyBEZWZhdWx0OiBzaG93IGN1cnJlbnQgc2Vzc2lvbgogICAgICAgIHJldHVybiBfc2Vzc2lvbl9jdXJyZW50KHRyYWNrZXIpCgoKZGVmIF9zZXNzaW9uX3N0YXJ0KHRyYWNrZXI6IFJlc2VhcmNoU2Vzc2lvblRyYWNrZXIsIGFyZ3MpIC0+IGludDoKICAgICIiIlN0YXJ0IGEgbmV3IHNlc3Npb24uIiIiCiAgICBzZXNzaW9uID0gdHJhY2tlci5zdGFydF9zZXNzaW9uKHRpdGxlPWFyZ3MudGl0bGUpCgogICAgcHJpbnRfaW5mbyhmIvCfk5og5Lya6K+d5bey5ZCv5YqoOiB7c2Vzc2lvbi50aXRsZX0iKQogICAgcHJpbnQoZiIgICBJRDoge3Nlc3Npb24uaWR9IikKICAgIHByaW50KCIgICDml7bplb86IDAg5YiG6ZKfIikKCiAgICBpZiBhcmdzLnRvcGljOgogICAgICAgIHByaW50KGYiICAg5Li76aKYOiB7YXJncy50b3BpY30iKQoKICAgIHJldHVybiAwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKCmRlZiBfc2Vzc2lvbl9saXN0KHRyYWNrZXI6IFJlc2VhcmNoU2Vzc2lvblRyYWNrZXIsIGFyZ3MpIC0+IGludDoKICAgICIiIkxpc3QgcmVjZW50IHNlc3Npb25zLiIiIgogICAgZnJvbSByaWNoLmNvbnNvbGUgaW1wb3J0IENvbnNvbGUKCiAgICBjID0gQ29uc29sZSgpCgogICAgc2Vzc2lvbnMgPSB0cmFja2VyLmdldF9yZWNlbnRfc2Vzc2lvbnMoZGF5cz1hcmdzLmRheXMsIGxpbWl0PWFyZ3MubGltaXQpCgogICAgaWYgbm90IHNlc3Npb25zOgogICAgICAgIGMucHJpbnQoV2FycEJsb2Nrcy5wYW5lbCgiU2Vzc2lvbnMiLCAiWyM4RThFOEVdTm8gcmVjZW50IHNlc3Npb25zIGZvdW5kWy9dIikpCiAgICAgICAgcmV0dXJuIDAgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgaW50ZW50X25hbWVzID0gewogICAgICAgIFJlc2VhcmNoSW50ZW50LkxFQVJOSU5HOiAiTEVBUk5JTkciLAogICAgICAgIFJlc2VhcmNoSW50ZW50LkVYUExPUklORzogIkVYUExPUklORyIsCiAgICAgICAgUmVzZWFyY2hJbnRlbnQuSU1QUk9WSU5HOiAiSU1QUk9WSU5HIiwKICAgICAgICBSZXNlYXJjaEludGVudC5DT01QQVJJTkc6ICJDT01QQVJJTkciLAogICAgICAgIFJlc2VhcmNoSW50ZW50LlJFUFJPRFVDSU5HOiAiUkVQUk9EVUNJTkciLAogICAgICAgIFJlc2VhcmNoSW50ZW50LkNJVElORzogIkNJVElORyIsCiAgICB9CiAgICBpbnRlbnRfaWNvbnMgPSB7CiAgICAgICAgUmVzZWFyY2hJbnRlbnQuTEVBUk5JTkc6ICLwn5OWIiwKICAgICAgICBSZXNlYXJjaEludGVudC5FWFBMT1JJTkc6ICLwn5SNIiwKICAgICAgICBSZXNlYXJjaEludGVudC5JTVBST1ZJTkc6ICLwn5qAIiwKICAgICAgICBSZXNlYXJjaEludGVudC5DT01QQVJJTkc6ICLimpbvuI8iLAogICAgICAgIFJlc2VhcmNoSW50ZW50LlJFUFJPRFVDSU5HOiAi8J+UpyIsCiAgICAgICAgUmVzZWFyY2hJbnRlbnQuQ0lUSU5HOiAi8J+TnSIsCiAgICB9CgogICAgcm93cyA9IFtdCiAgICBmb3IgcyBpbiBzZXNzaW9uczoKICAgICAgICBkYXRlID0gcy5zdGFydGVkX2F0WzoxMF0KICAgICAgICBpY29uID0gaW50ZW50X2ljb25zLmdldChzLmludGVudCwgIvCfk5oiKQogICAgICAgIGludGVudF9sYWJlbCA9IGludGVudF9uYW1lcy5nZXQocy5pbnRlbnQsICLigJQiKQogICAgICAgICIsICIuam9pbihzLnRhZ3NbOjNdKSBpZiBzLnRhZ3MgZWxzZSAiIgogICAgICAgIChzLmluc2lnaHRzWzBdWzo0NV0gKyAiLi4uIikgaWYgcy5pbnNpZ2h0cyBlbHNlICIiCiAgICAgICAgcm93cy5hcHBlbmQoCiAgICAgICAgICAgIFsKICAgICAgICAgICAgICAgIGljb24sCiAgICAgICAgICAgICAgICBmIlsjRkY4MjcyXXtkYXRlfVsvXSIsCiAgICAgICAgICAgICAgICBmIlsjQTVENUZFXXtzLnRpdGxlWzo0MF19Wy9dIiwKICAgICAgICAgICAgICAgIGYiWyNCNEZBNzJde2xlbihzLnF1ZXJpZXMpfSBRJkFbL10iLAogICAgICAgICAgICAgICAgZiJbI0QwRDFGRV17cy5kdXJhdGlvbl9taW51dGVzfW1bL10iLAogICAgICAgICAgICAgICAgZiJbI0ZFRkRDMl17aW50ZW50X2xhYmVsfVsvXSIsCiAgICAgICAgICAgIF0KICAgICAgICApCgogICAgYy5wcmludCgKICAgICAgICBXYXJwQmxvY2tzLnBhbmVsKAogICAgICAgICAgICBmIlJlY2VudCBTZXNzaW9ucyDigJQgWyNGRjgyNzJde2xlbihzZXNzaW9ucyl9Wy9dIChsYXN0IFsjRkY4MjcyXXthcmdzLmRheXN9Wy9dIGRheXMpIiwKICAgICAgICAgICAgIlsjOEU4RThFXVVzZSBhaXJvcyBzZXNzaW9uIHN0YXJ0IHRvIGJlZ2luIGEgcmVzZWFyY2ggc2Vzc2lvblsvXSIsCiAgICAgICAgKQogICAgKQogICAgaWYgcm93czoKICAgICAgICBjLnByaW50KAogICAgICAgICAgICBXYXJwQmxvY2tzLnRhYmxlKAogICAgICAgICAgICAgICAgWyIiLCAiRGF0ZSIsICJUaXRsZSIsICJRJkEiLCAiTWluIiwgIkludGVudCJdLCByb3dzLCB0aXRsZT1mIlNlc3Npb25zICh7bGVuKHJvd3MpfSkiCiAgICAgICAgICAgICkKICAgICAgICApCiAgICBjLnByaW50KCkKICAgIHJldHVybiAwCgoKZGVmIF9zZXNzaW9uX2N1cnJlbnQodHJhY2tlcjogUmVzZWFyY2hTZXNzaW9uVHJhY2tlcikgLT4gaW50OgogICAgIiIiU2hvdyBjdXJyZW50IHNlc3Npb24uIiIiCiAgICBmcm9tIHJpY2guY29uc29sZSBpbXBvcnQgQ29uc29sZQoKICAgIGMgPSBDb25zb2xlKCkKCiAgICBzZXNzaW9uID0gdHJhY2tlci5nZXRfY3VycmVudF9zZXNzaW9uKCkKCiAgICBpZiBub3Qgc2Vzc2lvbjoKICAgICAgICBjLnByaW50KAogICAgICAgICAgICBXYXJwQmxvY2tzLnBhbmVsKAogICAgICAgICAgICAgICAgIkN1cnJlbnQgU2Vzc2lvbiIsCiAgICAgICAgICAgICAgICAiWyM4RThFOEVdTm8gYWN0aXZlIHNlc3Npb25bL11cblxuWyNBNUQ1RkVdVXNlIGFpcm9zIHNlc3Npb24gc3RhcnQgdG8gYmVnaW5bL10iLAogICAgICAgICAgICApCiAgICAgICAgKQogICAgICAgIHJldHVybiAwCgogICAgaW50ZW50X2xhYmVsID0gewogICAgICAgIFJlc2VhcmNoSW50ZW50LkxFQVJOSU5HOiAi8J+TliBMZWFybmluZyIsCiAgICAgICAgUmVzZWFyY2hJbnRlbnQuRVhQTE9SSU5HOiAi8J+UjSBFeHBsb3JpbmciLAogICAgICAgIFJlc2VhcmNoSW50ZW50LklNUFJPVklORzogIvCfmoAgSW1wcm92aW5nIiwKICAgICAgICBSZXNlYXJjaEludGVudC5DT01QQVJJTkc6ICLimpbvuI8gQ29tcGFyaW5nIiwKICAgICAgICBSZXNlYXJjaEludGVudC5SRVBST0RVQ0lORzogIvCflKcgUmVwcm9kdWNpbmciLAogICAgICAgIFJlc2VhcmNoSW50ZW50LkNJVElORzogIvCfk50gQ2l0aW5nIiwKICAgIH0uZ2V0KHNlc3Npb24uaW50ZW50LCBmIvCfk5oge3Nlc3Npb24uaW50ZW50LnZhbHVlfSIpCgogICAgYm9keV9saW5lcyA9IFsKICAgICAgICBmIlsjQTVENUZFXVRpdGxlOlsvXSAgWyNGRjgyNzJde3Nlc3Npb24udGl0bGV9Wy9dIiwKICAgICAgICBmIlsjQTVENUZFXUlEOlsvXSAgICAgWyNEMEQxRkVdW3tzZXNzaW9uLmlkfV1bL10iLAogICAgICAgIGYiWyNBNUQ1RkVdRHVyYXRpb246Wy9dIFsjQjRGQTcyXXtzZXNzaW9uLmR1cmF0aW9uX21pbnV0ZXN9IG1pbnV0ZXNbL10iLAogICAgICAgIGYiWyNBNUQ1RkVdUSZBOlsvXSAgICBbI0I0RkE3Ml17bGVuKHNlc3Npb24ucXVlcmllcyl9Wy9dIiwKICAgICAgICBmIlsjQTVENUZFXUludGVudDpbL10ge2ludGVudF9sYWJlbH0iLAogICAgXQogICAgaWYgc2Vzc2lvbi50YWdzOgogICAgICAgIHRhZ3Nfc3RyID0gIiwgIi5qb2luKHNlc3Npb24udGFnc1s6NV0pCiAgICAgICAgYm9keV9saW5lcy5hcHBlbmQoZiJbI0E1RDVGRV1UYWdzOlsvXSAgIFsjRkVGREMyXXt0YWdzX3N0cn1bL10iKQogICAgaWYgc2Vzc2lvbi5pbnNpZ2h0czoKICAgICAgICBib2R5X2xpbmVzLmFwcGVuZCgiIikKICAgICAgICBib2R5X2xpbmVzLmFwcGVuZCgiWyNBNUQ1RkVdSW5zaWdodHM6Wy9dIikKICAgICAgICBmb3IgaW5zaWdodCBpbiBzZXNzaW9uLmluc2lnaHRzOgogICAgICAgICAgICBib2R5X2xpbmVzLmFwcGVuZChmIiAg4oCiIFsjQjRGQTcyXXtpbnNpZ2h0Wzo3MF19Wy9dIikKCiAgICBjLnByaW50KFdhcnBCbG9ja3MucGFuZWwoIkN1cnJlbnQgU2Vzc2lvbiIsICJcbiIuam9pbihib2R5X2xpbmVzKSkpCiAgICByZXR1cm4gMAoKCmRlZiBfc2Vzc2lvbl9lbmQodHJhY2tlcjogUmVzZWFyY2hTZXNzaW9uVHJhY2tlcikgLT4gaW50OgogICAgIiIiRW5kIGN1cnJlbnQgc2Vzc2lvbi4iIiIKICAgIHNlc3Npb24gPSB0cmFja2VyLmVuZF9zZXNzaW9uKCkKCiAgICBpZiBub3Qgc2Vzc2lvbjoKICAgICAgICBwcmludCgi5rKh5pyJ5rS76LeD55qE5Lya6K+d6ZyA6KaB57uT5p2fIikKICAgICAgICByZXR1cm4gMAoKICAgIHByaW50KGYi4pyFIOS8muivneW3sue7k+adnzoge3Nlc3Npb24udGl0bGV9IikKICAgIHByaW50KGYiICAg5pe26ZW/OiB7c2Vzc2lvbi5kdXJhdGlvbl9taW51dGVzfSDliIbpkp8iKQogICAgcHJpbnQoZiIgICDpl67nrZQ6IHtsZW4oc2Vzc2lvbi5xdWVyaWVzKX0iKQoKICAgIHJldHVybiAwCgoKZGVmIF9zZXNzaW9uX2NoYXQodHJhY2tlcjogUmVzZWFyY2hTZXNzaW9uVHJhY2tlciwgYXJncykgLT4gaW50OgogICAgIiIiSW50ZXJhY3RpdmUgY2hhdCB3aXRoaW4gc2Vzc2lvbi4iIiIKICAgIGRiID0gZ2V0X2RiKCkKICAgIGRiLmluaXQoKQoKICAgICMgU3RhcnQgc2Vzc2lvbiBpZiBub3QgYWN0aXZlCiAgICBzZXNzaW9uID0gdHJhY2tlci5nZXRfY3VycmVudF9zZXNzaW9uKCkKICAgIGlmIG5vdCBzZXNzaW9uOgogICAgICAgIHRpdGxlID0gYXJncy5xdWVyeVswXSBpZiBhcmdzLnF1ZXJ5IGVsc2UgTm9uZQogICAgICAgIHNlc3Npb24gPSB0cmFja2VyLnN0YXJ0X3Nlc3Npb24odGl0bGU9dGl0bGUpCiAgICAgICAgcHJpbnRfaW5mbyhmIvCfk5og5paw5Lya6K+d5bey5ZCv5YqoOiB7c2Vzc2lvbi50aXRsZX0iKQogICAgZWxzZToKICAgICAgICBwcmludF9pbmZvKGYi8J+TmiDnu6fnu63kvJror506IHtzZXNzaW9uLnRpdGxlfSIpCgogICAgIyBHZXQgaW5pdGlhbCBxdWVyeQogICAgaWYgYXJncy5xdWVyeToKICAgICAgICBxdWVyeSA9ICIgIi5qb2luKGFyZ3MucXVlcnkpCiAgICAgICAgX3Byb2Nlc3NfY2hhdF9xdWVyeSh0cmFja2VyLCBkYiwgcXVlcnkpCiAgICBlbHNlOgogICAgICAgIHByaW50KCLwn5KsIOeglOeptuWKqeaJiyAo6L6T5YWlIHEvcXVpdCDpgIDlh7opIikKICAgICAgICBwcmludCgiICAg6L6T5YWlIHRvcGljIOW8gOWni+WIhuaekCIpCiAgICAgICAgcHJpbnQoIiAgIOi+k+WFpSBnYXBzIOafpeeci+WPkeeOsOeahOeglOeptuepuueZvSIpCiAgICAgICAgcHJpbnQoIiAgIOi+k+WFpSBoeXBvdGhlc2lzIOeUn+aIkOeglOeptuWBh+ivtCIpCiAgICAgICAgcHJpbnQoKQoKICAgICMgSW50ZXJhY3RpdmUgbG9vcAogICAgd2hpbGUgVHJ1ZToKICAgICAgICB0cnk6CiAgICAgICAgICAgIHVzZXJfaW5wdXQgPSBpbnB1dCgi4p2vICIpLnN0cmlwKCkKICAgICAgICBleGNlcHQgKEVPRkVycm9yLCBLZXlib2FyZEludGVycnVwdCk6CiAgICAgICAgICAgIHByaW50KCkKICAgICAgICAgICAgYnJlYWsKCiAgICAgICAgaWYgbm90IHVzZXJfaW5wdXQ6CiAgICAgICAgICAgIGNvbnRpbnVlCgogICAgICAgIGNtZCA9IHVzZXJfaW5wdXQubG93ZXIoKQoKICAgICAgICBpZiBjbWQgaW4gKCJxIiwgInF1aXQiLCAiZXhpdCIpOgogICAgICAgICAgICBicmVhawoKICAgICAgICBpZiBjbWQgaW4gKCJnYXBzIiwgImdhcCIpOgogICAgICAgICAgICBfc2hvd19zZXNzaW9uX2dhcHModHJhY2tlciwgZGIpCiAgICAgICAgICAgIGNvbnRpbnVlCgogICAgICAgIGlmIGNtZCBpbiAoImh5cG90aGVzaXMiLCAiaHlwIik6CiAgICAgICAgICAgIF9zaG93X3Nlc3Npb25faHlwb3RoZXNpcyh0cmFja2VyLCBkYikKICAgICAgICAgICAgY29udGludWUKCiAgICAgICAgIyBSZWd1bGFyIHF1ZXJ5CiAgICAgICAgX3Byb2Nlc3NfY2hhdF9xdWVyeSh0cmFja2VyLCBkYiwgdXNlcl9pbnB1dCkKICAgICAgICBwcmludCgpCgogICAgIyBPZmZlciB0byBlbmQgc2Vzc2lvbgogICAgcHJpbnQoKQogICAgcHJpbnQoZiLkvJror53lt7LmmoLlgZwgKElEOiB7c2Vzc2lvbi5pZH0pIikKICAgIHByaW50KCLkvb/nlKggJ2Fpcm9zIHNlc3Npb24gZW5kJyDnu5PmnZ/kvJror50iKQoKICAgIHJldHVybiAwCgoKZGVmIF9wcm9jZXNzX2NoYXRfcXVlcnkodHJhY2tlciwgZGIsIHF1ZXJ5OiBzdHIpOgogICAgIiIiUHJvY2VzcyBhIGNoYXQgcXVlcnkgYW5kIGFkZCB0byBzZXNzaW9uLiIiIgogICAgZnJvbSBsbG0ucmVzZWFyY2hfY2hhdCBpbXBvcnQgUmVzZWFyY2hDaGF0CiAgICBmcm9tIGxsbS5pbnNpZ2h0X2NhcmRzIGltcG9ydCBJbnNpZ2h0TWFuYWdlcgoKICAgIHByaW50KGYi8J+UjSB7cXVlcnl9IikKICAgIHByaW50KCkKCiAgICAjIEJ1aWxkIGNvbnRleHQgd2l0aCBzZXNzaW9uIGF3YXJlbmVzcwogICAgc2Vzc2lvbiA9IHRyYWNrZXIuZ2V0X2N1cnJlbnRfc2Vzc2lvbigpCiAgICB0b3BpY19oaW50ID0gTm9uZQoKICAgIGlmIHNlc3Npb24gYW5kIHNlc3Npb24udGFnczoKICAgICAgICAjIFVzZSBzZXNzaW9uIHRhZ3MgYXMgdG9waWMgaGludHMKICAgICAgICB0b3BpY19oaW50ID0gc2Vzc2lvbi50YWdzWzBdCgogICAgIyBDcmVhdGUgY2hhdCB3aXRoIHNlc3Npb24gY29udGV4dAogICAgaW5zaWdodF9tYW5hZ2VyID0gSW5zaWdodE1hbmFnZXIoKQogICAgY2hhdCA9IFJlc2VhcmNoQ2hhdChkYj1kYiwgaW5zaWdodF9tYW5hZ2VyPWluc2lnaHRfbWFuYWdlcikKCiAgICAjIEJ1aWxkIGVuaGFuY2VkIGNvbnRleHQKICAgIGN0eCA9IGNoYXQuYnVpbGRfY29udGV4dChxdWVyeSwgdG9waWNfaGludD10b3BpY19oaW50KQoKICAgICMgR2V0IHJlc3BvbnNlCiAgICByZXNwb25zZSA9IGNoYXQuY2hhdChxdWVyeSwgY29udGV4dD1jdHgpCgogICAgIyBFeHRyYWN0IHBhcGVyIGluZm8gZm9yIHNlc3Npb24gdHJhY2tpbmcKICAgIHBhcGVyX2lkcyA9IFtwLnVpZCBmb3IgcCBpbiBjdHgucGFwZXJzXQogICAgcGFwZXJfdGl0bGVzID0gW3AudGl0bGUgZm9yIHAgaW4gY3R4LnBhcGVyc10KCiAgICAjIEFkZCB0byBzZXNzaW9uCiAgICB0cmFja2VyLmFkZF9xdWVyeSgKICAgICAgICBxdWVzdGlvbj1xdWVyeSwKICAgICAgICBhbnN3ZXI9cmVzcG9uc2VbOjUwMF0sICAjIFRydW5jYXRlIGZvciBzdG9yYWdlCiAgICAgICAgcGFwZXJfaWRzPXBhcGVyX2lkcywKICAgICAgICBwYXBlcl90aXRsZXM9cGFwZXJfdGl0bGVzLAogICAgKQoKICAgIHByaW50KHJlc3BvbnNlKQoKCmRlZiBfc2hvd19zZXNzaW9uX2dhcHModHJhY2tlciwgZGIpOgogICAgIiIiU2hvdyBnYXBzIGJhc2VkIG9uIHNlc3Npb24gY29udGV4dC4iIiIKICAgIGZyb20gbGxtLmdhcF9hbmFseXplciBpbXBvcnQgR2FwQW5hbHl6ZXJWMgogICAgZnJvbSBsbG0uaW5zaWdodF9jYXJkcyBpbXBvcnQgSW5zaWdodE1hbmFnZXIKCiAgICBzZXNzaW9uID0gdHJhY2tlci5nZXRfY3VycmVudF9zZXNzaW9uKCkKICAgIGlmIG5vdCBzZXNzaW9uIG9yIG5vdCBzZXNzaW9uLnRhZ3M6CiAgICAgICAgcHJpbnQoIuivt+WFiOi/m+ihjOS4gOS6m+eglOeptumXruetlCIpCiAgICAgICAgcmV0dXJuCgogICAgdG9waWMgPSBzZXNzaW9uLnRhZ3NbMF0KICAgIHByaW50X2luZm8oZiLwn5SsIOWIhuaekCBnYXBzIGZvcjoge3RvcGljfSIpCgogICAgaW5zaWdodF9tYW5hZ2VyID0gSW5zaWdodE1hbmFnZXIoKQogICAgYW5hbHl6ZXIgPSBHYXBBbmFseXplclYyKGRiPWRiLCBpbnNpZ2h0X21hbmFnZXI9aW5zaWdodF9tYW5hZ2VyKQoKICAgIHJlc3VsdCA9IGFuYWx5emVyLmFuYWx5emUoCiAgICAgICAgdG9waWM9dG9waWMsCiAgICAgICAgdXNlX2luc2lnaHRzPVRydWUsCiAgICAgICAgdXNlX2xsbT1UcnVlLAogICAgKQoKICAgIGlmIHJlc3VsdC5nYXBzOgogICAgICAgIGZyb20gbGxtLmdhcF9hbmFseXplciBpbXBvcnQgcmVuZGVyX2dhcF9yZXBvcnQKCiAgICAgICAgcHJpbnQocmVuZGVyX2dhcF9yZXBvcnQocmVzdWx0KSkKICAgIGVsc2U6CiAgICAgICAgcHJpbnQoZiLmnKrlj5HnjrAge3RvcGljfSDnmoTnoJTnqbbnqbrnmb0iKQoKCmRlZiBfc2hvd19zZXNzaW9uX2h5cG90aGVzaXModHJhY2tlciwgZGIpOgogICAgIiIiU2hvdyBoeXBvdGhlc2VzIGJhc2VkIG9uIHNlc3Npb24gY29udGV4dC4iIiIKICAgIGZyb20gbGxtLmdhcF9hbmFseXplciBpbXBvcnQgR2FwQW5hbHl6ZXJWMiwgcmVuZGVyX2NvbWJpbmVkX3JlcG9ydAogICAgZnJvbSBsbG0uaW5zaWdodF9jYXJkcyBpbXBvcnQgSW5zaWdodE1hbmFnZXIKCiAgICBzZXNzaW9uID0gdHJhY2tlci5nZXRfY3VycmVudF9zZXNzaW9uKCkKICAgIGlmIG5vdCBzZXNzaW9uIG9yIG5vdCBzZXNzaW9uLnRhZ3M6CiAgICAgICAgcHJpbnQoIuivt+WFiOi/m+ihjOS4gOS6m+eglOeptumXruetlCIpCiAgICAgICAgcmV0dXJuCgogICAgdG9waWMgPSBzZXNzaW9uLnRhZ3NbMF0KICAgIHByaW50X2luZm8oZiLwn5KhIOWIhuaekCBnYXBzICYg55Sf5oiQIGh5cG90aGVzaXMgZm9yOiB7dG9waWN9IikKCiAgICBpbnNpZ2h0X21hbmFnZXIgPSBJbnNpZ2h0TWFuYWdlcigpCiAgICBhbmFseXplciA9IEdhcEFuYWx5emVyVjIoZGI9ZGIsIGluc2lnaHRfbWFuYWdlcj1pbnNpZ2h0X21hbmFnZXIpCgogICAgZ2FwX3Jlc3VsdCwgaHlwX3Jlc3VsdCA9IGFuYWx5emVyLmFuYWx5emVfd2l0aF9oeXBvdGhlc2VzKAogICAgICAgIHRvcGljPXRvcGljLAogICAgICAgIHVzZV9pbnNpZ2h0cz1UcnVlLAogICAgICAgIHVzZV9sbG09VHJ1ZSwKICAgICkKCiAgICBpZiBnYXBfcmVzdWx0LmdhcHMgb3IgaHlwX3Jlc3VsdC5oeXBvdGhlc2VzOgogICAgICAgIHByaW50KHJlbmRlcl9jb21iaW5lZF9yZXBvcnQoZ2FwX3Jlc3VsdCwgaHlwX3Jlc3VsdCkpCiAgICAgICAgcHJpbnQoKQogICAgICAgIHByaW50KGh5cF9yZXN1bHQucmVuZGVyX3Jlc3VsdChoeXBfcmVzdWx0KSkKICAgIGVsc2U6CiAgICAgICAgcHJpbnQoZiLml6Dms5XkuLoge3RvcGljfSDnlJ/miJDlgYfor7QiKQo=
+"""CLI command: session — Research session management."""
+from __future__ import annotations
+
+import argparse
+
+from cli._shared import get_db, print_info
+from cli.warp import WarpBlocks
+from llm.research_session import ResearchSessionTracker, ResearchIntent
+
+
+def _build_session_parser(subparsers) -> argparse.ArgumentParser:
+    """Build the session subcommand parser."""
+    p = subparsers.add_parser(
+        "session",
+        help="Manage research sessions",
+        description="Start, list, and manage research sessions for context-aware conversations.",
+    )
+    sub = p.add_subparsers(dest="action", help="Session actions")
+
+    # start
+    sp = sub.add_parser("start", help="Start a new research session")
+    sp.add_argument("title", nargs="?", default=None, help="Session title")
+    sp.add_argument("--topic", "-t", help="Initial topic")
+
+    # list
+    sp = sub.add_parser("list", help="List recent sessions")
+    sp.add_argument("--days", "-d", type=int, default=7, help="Days to look back (default: 7)")
+    sp.add_argument("--limit", "-n", type=int, default=10, help="Max sessions to show (default: 10)")
+
+    # current
+    sub.add_parser("current", help="Show current session")
+
+    # end
+    sub.add_parser("end", help="End current session")
+
+    # interactive
+    sp = sub.add_parser("chat", help="Interactive research chat within session")
+    sp.add_argument("query", nargs="*", help="Initial query (optional)")
+    sp.add_argument("--topic", help="Override topic context")
+
+    return p  # type: ignore[no-any-return]
+
+
+def _run_session(args: argparse.Namespace) -> int:
+    """Run session command."""
+    tracker = ResearchSessionTracker()
+
+    if args.action == "start":
+        return _session_start(tracker, args)
+    elif args.action == "list":
+        return _session_list(tracker, args)
+    elif args.action == "current":
+        return _session_current(tracker)
+    elif args.action == "end":
+        return _session_end(tracker)
+    elif args.action == "chat":
+        return _session_chat(tracker, args)
+    else:
+        # Default: show current session
+        return _session_current(tracker)
+
+
+def _session_start(tracker: ResearchSessionTracker, args) -> int:
+    """Start a new session."""
+    session = tracker.start_session(title=args.title)
+
+    print_info(f"📚 会话已启动: {session.title}")
+    print(f"   ID: {session.id}")
+    print("   时长: 0 分钟")
+
+    if args.topic:
+        print(f"   主题: {args.topic}")
+
+    return 0  # type: ignore[no-any-return]
+
+
+def _session_list(tracker: ResearchSessionTracker, args) -> int:
+    """List recent sessions."""
+    from rich.console import Console
+    c = Console()
+
+    sessions = tracker.get_recent_sessions(days=args.days, limit=args.limit)
+
+    if not sessions:
+        c.print(WarpBlocks.panel("Sessions", "[#8E8E8E]No recent sessions found[/]"))
+        return 0  # type: ignore[no-any-return]
+
+    intent_names = {
+        ResearchIntent.LEARNING: "LEARNING",
+        ResearchIntent.EXPLORING: "EXPLORING",
+        ResearchIntent.IMPROVING: "IMPROVING",
+        ResearchIntent.COMPARING: "COMPARING",
+        ResearchIntent.REPRODUCING: "REPRODUCING",
+        ResearchIntent.CITING: "CITING",
+    }
+    intent_icons = {
+        ResearchIntent.LEARNING: "📖",
+        ResearchIntent.EXPLORING: "🔍",
+        ResearchIntent.IMPROVING: "🚀",
+        ResearchIntent.COMPARING: "⚖️",
+        ResearchIntent.REPRODUCING: "🔧",
+        ResearchIntent.CITING: "📝",
+    }
+
+    rows = []
+    for s in sessions:
+        date = s.started_at[:10]
+        icon = intent_icons.get(s.intent, "📚")
+        intent_label = intent_names.get(s.intent, "—")
+        ", ".join(s.tags[:3]) if s.tags else ""
+        (s.insights[0][:45] + "...") if s.insights else ""
+        rows.append([
+            icon,
+            f"[#FF8272]{date}[/]",
+            f"[#A5D5FE]{s.title[:40]}[/]",
+            f"[#B4FA72]{len(s.queries)} Q&A[/]",
+            f"[#D0D1FE]{s.duration_minutes}m[/]",
+            f"[#FEFDC2]{intent_label}[/]",
+        ])
+
+    c.print(WarpBlocks.panel(
+        f"Recent Sessions — [#FF8272]{len(sessions)}[/] (last [#FF8272]{args.days}[/] days)",
+        "[#8E8E8E]Use airos session start to begin a research session[/]"
+    ))
+    if rows:
+        c.print(WarpBlocks.table(
+            ["", "Date", "Title", "Q&A", "Min", "Intent"],
+            rows,
+            title=f"Sessions ({len(rows)})"
+        ))
+    c.print()
+    return 0
+
+
+def _session_current(tracker: ResearchSessionTracker) -> int:
+    """Show current session."""
+    from rich.console import Console
+    c = Console()
+
+    session = tracker.get_current_session()
+
+    if not session:
+        c.print(WarpBlocks.panel(
+            "Current Session",
+            "[#8E8E8E]No active session[/]\n\n"
+            "[#A5D5FE]Use airos session start to begin[/]"
+        ))
+        return 0
+
+    intent_label = {
+        ResearchIntent.LEARNING: "📖 Learning",
+        ResearchIntent.EXPLORING: "🔍 Exploring",
+        ResearchIntent.IMPROVING: "🚀 Improving",
+        ResearchIntent.COMPARING: "⚖️ Comparing",
+        ResearchIntent.REPRODUCING: "🔧 Reproducing",
+        ResearchIntent.CITING: "📝 Citing",
+    }.get(session.intent, f"📚 {session.intent.value}")
+
+    body_lines = [
+        f"[#A5D5FE]Title:[/]  [#FF8272]{session.title}[/]",
+        f"[#A5D5FE]ID:[/]     [#D0D1FE][{session.id}][/]",
+        f"[#A5D5FE]Duration:[/] [#B4FA72]{session.duration_minutes} minutes[/]",
+        f"[#A5D5FE]Q&A:[/]    [#B4FA72]{len(session.queries)}[/]",
+        f"[#A5D5FE]Intent:[/] {intent_label}",
+    ]
+    if session.tags:
+        tags_str = ", ".join(session.tags[:5])
+        body_lines.append(f"[#A5D5FE]Tags:[/]   [#FEFDC2]{tags_str}[/]")
+    if session.insights:
+        body_lines.append("")
+        body_lines.append("[#A5D5FE]Insights:[/]")
+        for insight in session.insights:
+            body_lines.append(f"  • [#B4FA72]{insight[:70]}[/]")
+
+    c.print(WarpBlocks.panel("Current Session", "\n".join(body_lines)))
+    return 0
+
+
+def _session_end(tracker: ResearchSessionTracker) -> int:
+    """End current session."""
+    session = tracker.end_session()
+
+    if not session:
+        print("没有活跃的会话需要结束")
+        return 0
+
+    print(f"✅ 会话已结束: {session.title}")
+    print(f"   时长: {session.duration_minutes} 分钟")
+    print(f"   问答: {len(session.queries)}")
+
+    return 0
+
+
+def _session_chat(tracker: ResearchSessionTracker, args) -> int:
+    """Interactive chat within session."""
+    db = get_db()
+    db.init()
+
+    # Start session if not active
+    session = tracker.get_current_session()
+    if not session:
+        title = args.query[0] if args.query else None
+        session = tracker.start_session(title=title)
+        print_info(f"📚 新会话已启动: {session.title}")
+    else:
+        print_info(f"📚 继续会话: {session.title}")
+
+    # Get initial query
+    if args.query:
+        query = " ".join(args.query)
+        _process_chat_query(tracker, db, query)
+    else:
+        print("💬 研究助手 (输入 q/quit 退出)")
+        print("   输入 topic 开始分析")
+        print("   输入 gaps 查看发现的研究空白")
+        print("   输入 hypothesis 生成研究假说")
+        print()
+
+    # Interactive loop
+    while True:
+        try:
+            user_input = input("❯ ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            break
+
+        if not user_input:
+            continue
+
+        cmd = user_input.lower()
+
+        if cmd in ("q", "quit", "exit"):
+            break
+
+        if cmd in ("gaps", "gap"):
+            _show_session_gaps(tracker, db)
+            continue
+
+        if cmd in ("hypothesis", "hyp"):
+            _show_session_hypothesis(tracker, db)
+            continue
+
+        # Regular query
+        _process_chat_query(tracker, db, user_input)
+        print()
+
+    # Offer to end session
+    print()
+    print(f"会话已暂停 (ID: {session.id})")
+    print("使用 'airos session end' 结束会话")
+
+    return 0
+
+
+def _process_chat_query(tracker, db, query: str):
+    """Process a chat query and add to session."""
+    from llm.research_chat import ResearchChat
+    from llm.insight_cards import InsightManager
+
+    print(f"🔍 {query}")
+    print()
+
+    # Build context with session awareness
+    session = tracker.get_current_session()
+    topic_hint = None
+
+    if session and session.tags:
+        # Use session tags as topic hints
+        topic_hint = session.tags[0]
+
+    # Create chat with session context
+    insight_manager = InsightManager()
+    chat = ResearchChat(db=db, insight_manager=insight_manager)
+
+    # Build enhanced context
+    ctx = chat.build_context(query, topic_hint=topic_hint)
+
+    # Get response
+    response = chat.chat(query, context=ctx)
+
+    # Extract paper info for session tracking
+    paper_ids = [p.uid for p in ctx.papers]
+    paper_titles = [p.title for p in ctx.papers]
+
+    # Add to session
+    tracker.add_query(
+        question=query,
+        answer=response[:500],  # Truncate for storage
+        paper_ids=paper_ids,
+        paper_titles=paper_titles,
+    )
+
+    print(response)
+
+
+def _show_session_gaps(tracker, db):
+    """Show gaps based on session context."""
+    from llm.gap_analyzer import GapAnalyzerV2
+    from llm.insight_cards import InsightManager
+
+    session = tracker.get_current_session()
+    if not session or not session.tags:
+        print("请先进行一些研究问答")
+        return
+
+    topic = session.tags[0]
+    print_info(f"🔬 分析 gaps for: {topic}")
+
+    insight_manager = InsightManager()
+    analyzer = GapAnalyzerV2(db=db, insight_manager=insight_manager)
+
+    result = analyzer.analyze(
+        topic=topic,
+        use_insights=True,
+        use_llm=True,
+    )
+
+    if result.gaps:
+        from llm.gap_analyzer import render_gap_report
+        print(render_gap_report(result))
+    else:
+        print(f"未发现 {topic} 的研究空白")
+
+
+def _show_session_hypothesis(tracker, db):
+    """Show hypotheses based on session context."""
+    from llm.gap_analyzer import GapAnalyzerV2, render_combined_report
+    from llm.insight_cards import InsightManager
+
+    session = tracker.get_current_session()
+    if not session or not session.tags:
+        print("请先进行一些研究问答")
+        return
+
+    topic = session.tags[0]
+    print_info(f"💡 分析 gaps & 生成 hypothesis for: {topic}")
+
+    insight_manager = InsightManager()
+    analyzer = GapAnalyzerV2(db=db, insight_manager=insight_manager)
+
+    gap_result, hyp_result = analyzer.analyze_with_hypotheses(
+        topic=topic,
+        use_insights=True,
+        use_llm=True,
+    )
+
+    if gap_result.gaps or hyp_result.hypotheses:
+        print(render_combined_report(gap_result, hyp_result))
+        print()
+        print(hyp_result.render_result(hyp_result))
+    else:
+        print(f"无法为 {topic} 生成假说")

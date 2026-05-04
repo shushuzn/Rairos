@@ -1,1 +1,429 @@
-IiIiVGVzdHMgZm9yIERCIGVtYmVkZGluZyBtZXRob2RzIGFuZCBkZWR1cC1zZW1hbnRpYyBDTEkuIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgYXJncGFyc2UKZnJvbSB1bml0dGVzdC5tb2NrIGltcG9ydCBNYWdpY01vY2ssIHBhdGNoCgppbXBvcnQgcHl0ZXN0Cgpmcm9tIGRiIGltcG9ydCBEYXRhYmFzZQoKCiMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiMgRml4dHVyZXMKIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpAcHl0ZXN0LmZpeHR1cmUKZGVmIGRiKHRtcF9wYXRoKToKICAgIGQgPSBEYXRhYmFzZSh0bXBfcGF0aCAvICJyZXNlYXJjaC5kYiIpCiAgICBkLmluaXQoKQogICAgcmV0dXJuIGQKCgojIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAojIEhlbHBlcnMKIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpjbGFzcyBGYWtlUGFwZXJSZWNvcmQ6CiAgICAiIiJGYWtlIFBhcGVyUmVjb3JkIGZvciBtb2NraW5nLiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBpZCwgdGl0bGU9IlRlc3QgUGFwZXIiLCBwYXJzZV9zdGF0dXM9InBlbmRpbmciKToKICAgICAgICBzZWxmLmlkID0gaWQKICAgICAgICBzZWxmLnRpdGxlID0gdGl0bGUKICAgICAgICBzZWxmLnBhcnNlX3N0YXR1cyA9IHBhcnNlX3N0YXR1cwoKCmRlZiBtYWtlX2FyZ3MoKiprd2FyZ3MpOgogICAgZGVmYXVsdHMgPSBkaWN0KAogICAgICAgIHN0YXRzPUZhbHNlLCBnZW5lcmF0ZT1GYWxzZSwgcGFwZXI9Tm9uZSwgdGhyZXNob2xkPTAuODUsIGxpbWl0PTIwLCBmb3JtYXQ9InRleHQiCiAgICApCiAgICBkZWZhdWx0cy51cGRhdGUoa3dhcmdzKQogICAgbnMgPSBhcmdwYXJzZS5OYW1lc3BhY2UoKQogICAgZm9yIGssIHYgaW4gZGVmYXVsdHMuaXRlbXMoKToKICAgICAgICBzZXRhdHRyKG5zLCBrLCB2KQogICAgcmV0dXJuIG5zCgoKIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKIyBUZXN0OiBzZXRfZW1iZWRkaW5nICsgZ2V0X2VtYmVkZGluZyByb3VuZHRyaXAKIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpjbGFzcyBUZXN0RW1iZWRkaW5nUm91bmR0cmlwOgogICAgZGVmIHRlc3Rfc2V0X2FuZF9nZXRfZW1iZWRkaW5nKHNlbGYsIGRiKToKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMDEuMDAwMDEiLCAiYXJ4aXYiLCB0aXRsZT0iQXR0ZW50aW9uIElzIEFsbCBZb3UgTmVlZCIpCiAgICAgICAgdmVjdG9yID0gWzAuMV0gKiA3NjgKICAgICAgICBvayA9IGRiLnNldF9lbWJlZGRpbmcoIjIzMDEuMDAwMDEiLCB2ZWN0b3IpCiAgICAgICAgYXNzZXJ0IG9rIGlzIFRydWUKCiAgICAgICAgcmV0cmlldmVkID0gZGIuZ2V0X2VtYmVkZGluZygiMjMwMS4wMDAwMSIpCiAgICAgICAgYXNzZXJ0IHJldHJpZXZlZCBpcyBub3QgTm9uZQogICAgICAgIGFzc2VydCBsZW4ocmV0cmlldmVkKSA9PSA3NjgKICAgICAgICBhc3NlcnQgYWJzKHJldHJpZXZlZFswXSAtIDAuMSkgPCAxZS02CgogICAgZGVmIHRlc3RfZ2V0X2VtYmVkZGluZ19taXNzaW5nX3BhcGVyKHNlbGYsIGRiKToKICAgICAgICBhc3NlcnQgZGIuZ2V0X2VtYmVkZGluZygiZG9lcy1ub3QtZXhpc3QiKSBpcyBOb25lCgogICAgZGVmIHRlc3RfZ2V0X2VtYmVkZGluZ19ub192ZWN0b3Jfc2V0KHNlbGYsIGRiKToKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMDEuMDAwMDEiLCAiYXJ4aXYiLCB0aXRsZT0iTm8gRW1iZWRkaW5nIikKICAgICAgICBhc3NlcnQgZGIuZ2V0X2VtYmVkZGluZygiMjMwMS4wMDAwMSIpIGlzIE5vbmUKCiAgICBkZWYgdGVzdF9zZXRfZW1iZWRkaW5nX3VwZGF0ZXNfZXhpc3Rpbmcoc2VsZiwgZGIpOgogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMwMS4wMDAwMSIsICJhcnhpdiIsIHRpdGxlPSJUZXN0IikKICAgICAgICB2MSA9IFswLjFdICogNzY4CiAgICAgICAgdjIgPSBbMC45XSAqIDc2OAogICAgICAgIGRiLnNldF9lbWJlZGRpbmcoIjIzMDEuMDAwMDEiLCB2MSkKICAgICAgICBkYi5zZXRfZW1iZWRkaW5nKCIyMzAxLjAwMDAxIiwgdjIpCiAgICAgICAgcmV0cmlldmVkID0gZGIuZ2V0X2VtYmVkZGluZygiMjMwMS4wMDAwMSIpCiAgICAgICAgYXNzZXJ0IGFicyhyZXRyaWV2ZWRbMF0gLSAwLjkpIDwgMWUtNgoKICAgIGRlZiB0ZXN0X3NldF9lbWJlZGRpbmdfbWlzc2luZ19wYXBlcl9yZXR1cm5zX2ZhbHNlKHNlbGYsIGRiKToKICAgICAgICBvayA9IGRiLnNldF9lbWJlZGRpbmcoIm5vbmV4aXN0ZW50IiwgWzAuMV0gKiA3NjgpCiAgICAgICAgYXNzZXJ0IG9rIGlzIEZhbHNlCgoKIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKIyBUZXN0OiBmaW5kX3NpbWlsYXIKIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpjbGFzcyBUZXN0RmluZFNpbWlsYXI6CiAgICBkZWYgdGVzdF9maW5kX3NpbWlsYXJfc2FtZV9wYXBlcl9leGNsdWRlZChzZWxmLCBkYik6CiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzAxLjAwMDAxIiwgImFyeGl2IiwgdGl0bGU9IlBhcGVyIEEiKQogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMwMS4wMDAwMiIsICJhcnhpdiIsIHRpdGxlPSJQYXBlciBCIikKICAgICAgICAjIEJvdGggaGF2ZSBzYW1lIGVtYmVkZGluZyDihpIgc2ltaWxhcml0eSA9IDEuMAogICAgICAgIHZlY3RvciA9IFswLjVdICogNzY4CiAgICAgICAgZGIuc2V0X2VtYmVkZGluZygiMjMwMS4wMDAwMSIsIHZlY3RvcikKICAgICAgICBkYi5zZXRfZW1iZWRkaW5nKCIyMzAxLjAwMDAyIiwgdmVjdG9yKQoKICAgICAgICByZXN1bHRzID0gZGIuZmluZF9zaW1pbGFyKCIyMzAxLjAwMDAxIiwgdGhyZXNob2xkPTAuODUsIGxpbWl0PTIwKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0cykgPT0gMQogICAgICAgIGFzc2VydCByZXN1bHRzWzBdWzBdLmlkID09ICIyMzAxLjAwMDAyIgoKICAgIGRlZiB0ZXN0X2ZpbmRfc2ltaWxhcl9iZWxvd190aHJlc2hvbGQoc2VsZiwgZGIpOgogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMwMS4wMDAwMSIsICJhcnhpdiIsIHRpdGxlPSJQYXBlciBBIikKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMDEuMDAwMDIiLCAiYXJ4aXYiLCB0aXRsZT0iUGFwZXIgQiIpCiAgICAgICAgIyBPcnRob2dvbmFsIHZlY3RvcnMg4oaSIHNpbWlsYXJpdHkg4omIIDAKICAgICAgICB2MSA9IFsxLjBdICsgWzAuMF0gKiA3NjcKICAgICAgICB2MiA9IFswLjBdICogNzY4CiAgICAgICAgdjJbMTBdID0gMS4wCiAgICAgICAgZGIuc2V0X2VtYmVkZGluZygiMjMwMS4wMDAwMSIsIHYxKQogICAgICAgIGRiLnNldF9lbWJlZGRpbmcoIjIzMDEuMDAwMDIiLCB2MikKCiAgICAgICAgcmVzdWx0cyA9IGRiLmZpbmRfc2ltaWxhcigiMjMwMS4wMDAwMSIsIHRocmVzaG9sZD0wLjg1LCBsaW1pdD0yMCkKICAgICAgICBhc3NlcnQgbGVuKHJlc3VsdHMpID09IDAKCiAgICBkZWYgdGVzdF9maW5kX3NpbWlsYXJfcmVzcGVjdHNfbGltaXQoc2VsZiwgZGIpOgogICAgICAgIGZvciBpIGluIHJhbmdlKDUpOgogICAgICAgICAgICBkYi51cHNlcnRfcGFwZXIoZiIyMzAxLntpOjA1ZH0iLCAiYXJ4aXYiLCB0aXRsZT1mIlBhcGVyIHtpfSIpCiAgICAgICAgICAgIGRiLnNldF9lbWJlZGRpbmcoZiIyMzAxLntpOjA1ZH0iLCBbMC41XSAqIDc2OCkKCiAgICAgICAgcmVzdWx0cyA9IGRiLmZpbmRfc2ltaWxhcigiMjMwMS4wMDAwMCIsIHRocmVzaG9sZD0wLjAsIGxpbWl0PTIpCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHRzKSA9PSAyCgogICAgZGVmIHRlc3RfZmluZF9zaW1pbGFyX25vX2VtYmVkZGluZ19mb3JfcXVlcnkoc2VsZiwgZGIpOgogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMwMS4wMDAwMSIsICJhcnhpdiIsIHRpdGxlPSJQYXBlciBBIikKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMDEuMDAwMDIiLCAiYXJ4aXYiLCB0aXRsZT0iUGFwZXIgQiIpCiAgICAgICAgZGIuc2V0X2VtYmVkZGluZygiMjMwMS4wMDAwMiIsIFswLjVdICogNzY4KQoKICAgICAgICByZXN1bHRzID0gZGIuZmluZF9zaW1pbGFyKCIyMzAxLjAwMDAxIiwgdGhyZXNob2xkPTAuODUsIGxpbWl0PTIwKQogICAgICAgIGFzc2VydCByZXN1bHRzID09IFtdCgogICAgZGVmIHRlc3RfZmluZF9zaW1pbGFyX3Jlc3VsdF9zb3J0ZWRfYnlfc2NvcmUoc2VsZiwgZGIpOgogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMwMS4wMDAwMSIsICJhcnhpdiIsIHRpdGxlPSJRdWVyeSIpCiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzAxLjAwMDAyIiwgImFyeGl2IiwgdGl0bGU9Ik1lZCIpCiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzAxLjAwMDAzIiwgImFyeGl2IiwgdGl0bGU9IkNsb3NlIikKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMDEuMDAwMDQiLCAiYXJ4aXYiLCB0aXRsZT0iQ2xvc2VyIikKICAgICAgICAjIFF1ZXJ5IGVtYmVkZGluZwogICAgICAgIHEgPSBbMS4wXSAqIDc2OAogICAgICAgICMgRGlmZmVyZW50IHNpbWlsYXJpdHkgbGV2ZWxzCiAgICAgICAgZGIuc2V0X2VtYmVkZGluZygiMjMwMS4wMDAwMSIsIHEpCiAgICAgICAgZGIuc2V0X2VtYmVkZGluZygiMjMwMS4wMDAwMiIsIFswLjMgKiB4IGZvciB4IGluIHFdKSAgIyB+MC4zCiAgICAgICAgZGIuc2V0X2VtYmVkZGluZygiMjMwMS4wMDAwMyIsIFswLjYgKiB4IGZvciB4IGluIHFdKSAgIyB+MC42CiAgICAgICAgZGIuc2V0X2VtYmVkZGluZygiMjMwMS4wMDAwNCIsIFswLjkgKiB4IGZvciB4IGluIHFdKSAgIyB+MC45CgogICAgICAgIHJlc3VsdHMgPSBkYi5maW5kX3NpbWlsYXIoIjIzMDEuMDAwMDEiLCB0aHJlc2hvbGQ9MC4wLCBsaW1pdD0xMCkKICAgICAgICBzY29yZXMgPSBbclsxXSBmb3IgciBpbiByZXN1bHRzXQogICAgICAgIGFzc2VydCBzY29yZXMgPT0gc29ydGVkKHNjb3JlcywgcmV2ZXJzZT1UcnVlKQoKCiMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiMgVGVzdDogZ2V0X3NpbWlsYXJpdHkKIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpjbGFzcyBUZXN0R2V0U2ltaWxhcml0eToKICAgIGRlZiB0ZXN0X2dldF9zaW1pbGFyaXR5X2lkZW50aWNhbF92ZWN0b3JzKHNlbGYsIGRiKToKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMDEuMDAwMDEiLCAiYXJ4aXYiLCB0aXRsZT0iQSIpCiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzAxLjAwMDAyIiwgImFyeGl2IiwgdGl0bGU9IkIiKQogICAgICAgIHYgPSBbMC41XSAqIDc2OAogICAgICAgIGRiLnNldF9lbWJlZGRpbmcoIjIzMDEuMDAwMDEiLCB2KQogICAgICAgIGRiLnNldF9lbWJlZGRpbmcoIjIzMDEuMDAwMDIiLCB2KQogICAgICAgIHNpbSA9IGRiLmdldF9zaW1pbGFyaXR5KCIyMzAxLjAwMDAxIiwgIjIzMDEuMDAwMDIiKQogICAgICAgIGFzc2VydCBzaW0gaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQgYWJzKHNpbSAtIDEuMCkgPCAxZS00CgogICAgZGVmIHRlc3RfZ2V0X3NpbWlsYXJpdHlfb3J0aG9nb25hbF92ZWN0b3JzKHNlbGYsIGRiKToKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMDEuMDAwMDEiLCAiYXJ4aXYiLCB0aXRsZT0iQSIpCiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzAxLjAwMDAyIiwgImFyeGl2IiwgdGl0bGU9IkIiKQogICAgICAgIHYxID0gWzEuMF0gKyBbMC4wXSAqIDc2NwogICAgICAgIHYyID0gWzAuMF0gKiA3NjgKICAgICAgICB2MlswXSA9IDAuMAogICAgICAgIHYyWzFdID0gMS4wCiAgICAgICAgZGIuc2V0X2VtYmVkZGluZygiMjMwMS4wMDAwMSIsIHYxKQogICAgICAgIGRiLnNldF9lbWJlZGRpbmcoIjIzMDEuMDAwMDIiLCB2MikKICAgICAgICBzaW0gPSBkYi5nZXRfc2ltaWxhcml0eSgiMjMwMS4wMDAwMSIsICIyMzAxLjAwMDAyIikKICAgICAgICBhc3NlcnQgYWJzKHNpbSkgPCAxZS00CgogICAgZGVmIHRlc3RfZ2V0X3NpbWlsYXJpdHlfb25lX21pc3Npbmcoc2VsZiwgZGIpOgogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMwMS4wMDAwMSIsICJhcnhpdiIsIHRpdGxlPSJBIikKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMDEuMDAwMDIiLCAiYXJ4aXYiLCB0aXRsZT0iQiIpCiAgICAgICAgZGIuc2V0X2VtYmVkZGluZygiMjMwMS4wMDAwMSIsIFswLjVdICogNzY4KQogICAgICAgIGFzc2VydCBkYi5nZXRfc2ltaWxhcml0eSgiMjMwMS4wMDAwMSIsICIyMzAxLjAwMDAyIikgaXMgTm9uZQoKICAgIGRlZiB0ZXN0X2dldF9zaW1pbGFyaXR5X2JvdGhfbWlzc2luZyhzZWxmLCBkYik6CiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzAxLjAwMDAxIiwgImFyeGl2IiwgdGl0bGU9IkEiKQogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMwMS4wMDAwMiIsICJhcnhpdiIsIHRpdGxlPSJCIikKICAgICAgICBhc3NlcnQgZGIuZ2V0X3NpbWlsYXJpdHkoIjIzMDEuMDAwMDEiLCAiMjMwMS4wMDAwMiIpIGlzIE5vbmUKCgojIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAojIFRlc3Q6IGdldF9lbWJlZGRpbmdfc3RhdHMKIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpjbGFzcyBUZXN0RW1iZWRkaW5nU3RhdHM6CiAgICBkZWYgdGVzdF9zdGF0c19hbGxfZW1iZWRkZWQoc2VsZiwgZGIpOgogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMwMS4wMDAwMSIsICJhcnhpdiIsIHRpdGxlPSJBIikKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMDEuMDAwMDIiLCAiYXJ4aXYiLCB0aXRsZT0iQiIpCiAgICAgICAgZGIuc2V0X2VtYmVkZGluZygiMjMwMS4wMDAwMSIsIFswLjFdICogNzY4KQogICAgICAgIGRiLnNldF9lbWJlZGRpbmcoIjIzMDEuMDAwMDIiLCBbMC4yXSAqIDc2OCkKICAgICAgICBzID0gZGIuZ2V0X2VtYmVkZGluZ19zdGF0cygpCiAgICAgICAgYXNzZXJ0IHNbIndpdGhfZW1iZWRkaW5nIl0gPT0gMgogICAgICAgIGFzc2VydCBzWyJ0b3RhbF93aXRoX3RleHQiXSA9PSAyCgogICAgZGVmIHRlc3Rfc3RhdHNfcGFydGlhbChzZWxmLCBkYik6CiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzAxLjAwMDAxIiwgImFyeGl2IiwgdGl0bGU9IkEiKQogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMwMS4wMDAwMiIsICJhcnhpdiIsIHRpdGxlPSJCIikgICMgbm8gZW1iZWRkaW5nCiAgICAgICAgZGIuc2V0X2VtYmVkZGluZygiMjMwMS4wMDAwMSIsIFswLjFdICogNzY4KQogICAgICAgIHMgPSBkYi5nZXRfZW1iZWRkaW5nX3N0YXRzKCkKICAgICAgICBhc3NlcnQgc1sid2l0aF9lbWJlZGRpbmciXSA9PSAxCiAgICAgICAgYXNzZXJ0IHNbInRvdGFsX3dpdGhfdGV4dCJdID09IDIKCiAgICBkZWYgdGVzdF9zdGF0c19lbXB0eV9kYihzZWxmLCBkYik6CiAgICAgICAgcyA9IGRiLmdldF9lbWJlZGRpbmdfc3RhdHMoKQogICAgICAgIGFzc2VydCBzWyJ3aXRoX2VtYmVkZGluZyJdID09IDAKICAgICAgICBhc3NlcnQgc1sidG90YWxfd2l0aF90ZXh0Il0gPT0gMAoKCiMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiMgVGVzdDogZ2V0X3BhcGVyc193aXRob3V0X2VtYmVkZGluZ3MKIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpjbGFzcyBUZXN0UGFwZXJzV2l0aG91dEVtYmVkZGluZ3M6CiAgICBkZWYgdGVzdF9yZXR1cm5zX3BhcGVyc193aXRob3V0X3ZlY3RvcihzZWxmLCBkYik6CiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzAxLjAwMDAxIiwgImFyeGl2IiwgdGl0bGU9Ik5vIEVtYmVkIikKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMDEuMDAwMDIiLCAiYXJ4aXYiLCB0aXRsZT0iSGFzIEVtYmVkIikKICAgICAgICBkYi5zZXRfZW1iZWRkaW5nKCIyMzAxLjAwMDAyIiwgWzAuMV0gKiA3NjgpCiAgICAgICAgcGFwZXJzID0gZGIuZ2V0X3BhcGVyc193aXRob3V0X2VtYmVkZGluZ3MobGltaXQ9MTAwKQogICAgICAgIGFzc2VydCBsZW4ocGFwZXJzKSA9PSAxCiAgICAgICAgYXNzZXJ0IHBhcGVyc1swXS5pZCA9PSAiMjMwMS4wMDAwMSIKCiAgICBkZWYgdGVzdF9yZXNwZWN0c19saW1pdChzZWxmLCBkYik6CiAgICAgICAgZm9yIGkgaW4gcmFuZ2UoNSk6CiAgICAgICAgICAgIGRiLnVwc2VydF9wYXBlcihmIjIzMDEue2k6MDVkfSIsICJhcnhpdiIsIHRpdGxlPWYiUGFwZXIge2l9IikKICAgICAgICBwYXBlcnMgPSBkYi5nZXRfcGFwZXJzX3dpdGhvdXRfZW1iZWRkaW5ncyhsaW1pdD0yKQogICAgICAgIGFzc2VydCBsZW4ocGFwZXJzKSA9PSAyCgogICAgZGVmIHRlc3RfZXhjbHVkZXNfZW1wdHlfdGl0bGUoc2VsZiwgZGIpOgogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMwMS4wMDAwMSIsICJhcnhpdiIsIHRpdGxlPSIiKQogICAgICAgIHBhcGVycyA9IGRiLmdldF9wYXBlcnNfd2l0aG91dF9lbWJlZGRpbmdzKGxpbWl0PTEwKQogICAgICAgIGFzc2VydCBsZW4ocGFwZXJzKSA9PSAwCgoKIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKIyBUZXN0OiBfcnVuX2RlZHVwX3NlbWFudGljIENMSQojIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmNsYXNzIFRlc3RSdW5EZWR1cFNlbWFudGljOgogICAgIiIiVGVzdCB0aGUgQ0xJIF9ydW5fZGVkdXBfc2VtYW50aWMgZnVuY3Rpb24uIiIiCgogICAgQHBhdGNoKCJjbGkuRGF0YWJhc2UiKQogICAgZGVmIHRlc3Rfc3RhdHNfc2hvd3NfY292ZXJhZ2Uoc2VsZiwgbW9ja19kYl9jbHMsIGNhcHN5cyk6CiAgICAgICAgbW9ja19kYiA9IE1hZ2ljTW9jaygpCiAgICAgICAgbW9ja19kYi5nZXRfZW1iZWRkaW5nX3N0YXRzLnJldHVybl92YWx1ZSA9IHsid2l0aF9lbWJlZGRpbmciOiA1LCAidG90YWxfd2l0aF90ZXh0IjogMTB9CiAgICAgICAgbW9ja19kYl9jbHMucmV0dXJuX3ZhbHVlID0gbW9ja19kYgoKICAgICAgICBmcm9tIGNsaSBpbXBvcnQgX3J1bl9kZWR1cF9zZW1hbnRpYwoKICAgICAgICBhcmdzID0gbWFrZV9hcmdzKHN0YXRzPVRydWUpCiAgICAgICAgcmVzdWx0ID0gX3J1bl9kZWR1cF9zZW1hbnRpYyhhcmdzKQoKICAgICAgICBjYXB0dXJlZCA9IGNhcHN5cy5yZWFkb3V0ZXJyKCkub3V0CiAgICAgICAgYXNzZXJ0ICJ3aXRoIGVtYmVkZGluZyIgaW4gY2FwdHVyZWQKICAgICAgICBhc3NlcnQgIjUiIGluIGNhcHR1cmVkCiAgICAgICAgYXNzZXJ0ICI1MC4wJSIgaW4gY2FwdHVyZWQKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IDAKCiAgICBAcGF0Y2goImNsaS5EYXRhYmFzZSIpCiAgICBkZWYgdGVzdF9zdGF0c19lbXB0eV9kYihzZWxmLCBtb2NrX2RiX2NscywgY2Fwc3lzKToKICAgICAgICBtb2NrX2RiID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX2RiLmdldF9lbWJlZGRpbmdfc3RhdHMucmV0dXJuX3ZhbHVlID0geyJ3aXRoX2VtYmVkZGluZyI6IDAsICJ0b3RhbF93aXRoX3RleHQiOiAwfQogICAgICAgIG1vY2tfZGJfY2xzLnJldHVybl92YWx1ZSA9IG1vY2tfZGIKCiAgICAgICAgZnJvbSBjbGkgaW1wb3J0IF9ydW5fZGVkdXBfc2VtYW50aWMKCiAgICAgICAgYXJncyA9IG1ha2VfYXJncyhzdGF0cz1UcnVlKQogICAgICAgIHJlc3VsdCA9IF9ydW5fZGVkdXBfc2VtYW50aWMoYXJncykKCiAgICAgICAgY2FwdHVyZWQgPSBjYXBzeXMucmVhZG91dGVycigpLm91dAogICAgICAgIGFzc2VydCAiMCIgaW4gY2FwdHVyZWQKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IDAKCiAgICBAcGF0Y2goImNsaS5EYXRhYmFzZSIpCiAgICBkZWYgdGVzdF9wYXBlcl9ub3RfZm91bmQoc2VsZiwgbW9ja19kYl9jbHMsIGNhcHN5cyk6CiAgICAgICAgbW9ja19kYiA9IE1hZ2ljTW9jaygpCiAgICAgICAgbW9ja19kYi5wYXBlcl9leGlzdHMucmV0dXJuX3ZhbHVlID0gRmFsc2UKICAgICAgICBtb2NrX2RiX2Nscy5yZXR1cm5fdmFsdWUgPSBtb2NrX2RiCgogICAgICAgIGZyb20gY2xpIGltcG9ydCBfcnVuX2RlZHVwX3NlbWFudGljCgogICAgICAgIGFyZ3MgPSBtYWtlX2FyZ3MocGFwZXI9Im5vbmV4aXN0ZW50IikKICAgICAgICByZXN1bHQgPSBfcnVuX2RlZHVwX3NlbWFudGljKGFyZ3MpCgogICAgICAgIGNhcHR1cmVkID0gY2Fwc3lzLnJlYWRvdXRlcnIoKS5vdXQKICAgICAgICBhc3NlcnQgIm5vdCBmb3VuZCIgaW4gY2FwdHVyZWQKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IDEKCiAgICBAcGF0Y2goImNsaS5EYXRhYmFzZSIpCiAgICBkZWYgdGVzdF9wYXBlcl9ub19zaW1pbGFyKHNlbGYsIG1vY2tfZGJfY2xzLCBjYXBzeXMpOgogICAgICAgIG1vY2tfZGIgPSBNYWdpY01vY2soKQogICAgICAgIG1vY2tfZGIucGFwZXJfZXhpc3RzLnJldHVybl92YWx1ZSA9IFRydWUKICAgICAgICBtb2NrX2RiLmdldF9wYXBlci5yZXR1cm5fdmFsdWUgPSBGYWtlUGFwZXJSZWNvcmQoIjIzMDEuMDAwMDEiLCAiVGVzdCBQYXBlciIpCiAgICAgICAgbW9ja19kYi5maW5kX3NpbWlsYXIucmV0dXJuX3ZhbHVlID0gW10KICAgICAgICBtb2NrX2RiX2Nscy5yZXR1cm5fdmFsdWUgPSBtb2NrX2RiCgogICAgICAgIGZyb20gY2xpIGltcG9ydCBfcnVuX2RlZHVwX3NlbWFudGljCgogICAgICAgIGFyZ3MgPSBtYWtlX2FyZ3MocGFwZXI9IjIzMDEuMDAwMDEiKQogICAgICAgIHJlc3VsdCA9IF9ydW5fZGVkdXBfc2VtYW50aWMoYXJncykKCiAgICAgICAgY2FwdHVyZWQgPSBjYXBzeXMucmVhZG91dGVycigpLm91dAogICAgICAgIGFzc2VydCAiTm8gc2ltaWxhciBwYXBlcnMiIGluIGNhcHR1cmVkCiAgICAgICAgYXNzZXJ0IHJlc3VsdCA9PSAwCgogICAgQHBhdGNoKCJjbGkuRGF0YWJhc2UiKQogICAgZGVmIHRlc3RfcGFwZXJfc2ltaWxhcl90ZXh0X2Zvcm1hdChzZWxmLCBtb2NrX2RiX2NscywgY2Fwc3lzKToKICAgICAgICBtb2NrX2RiID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX2RiLnBhcGVyX2V4aXN0cy5yZXR1cm5fdmFsdWUgPSBUcnVlCiAgICAgICAgbW9ja19kYi5nZXRfcGFwZXIucmV0dXJuX3ZhbHVlID0gRmFrZVBhcGVyUmVjb3JkKCIyMzAxLjAwMDAxIiwgIkF0dGVudGlvbiBJcyBBbGwgWW91IE5lZWQiKQogICAgICAgIG1vY2tfZGIuZmluZF9zaW1pbGFyLnJldHVybl92YWx1ZSA9IFsKICAgICAgICAgICAgKEZha2VQYXBlclJlY29yZCgiMjMwMS4wMDAwMiIsICJBdHRlbnRpb24gSXMgQWxsIiksIDAuOTIzNCksCiAgICAgICAgXQogICAgICAgIG1vY2tfZGJfY2xzLnJldHVybl92YWx1ZSA9IG1vY2tfZGIKCiAgICAgICAgZnJvbSBjbGkgaW1wb3J0IF9ydW5fZGVkdXBfc2VtYW50aWMKCiAgICAgICAgYXJncyA9IG1ha2VfYXJncyhwYXBlcj0iMjMwMS4wMDAwMSIpCiAgICAgICAgcmVzdWx0ID0gX3J1bl9kZWR1cF9zZW1hbnRpYyhhcmdzKQoKICAgICAgICBjYXB0dXJlZCA9IGNhcHN5cy5yZWFkb3V0ZXJyKCkub3V0CiAgICAgICAgYXNzZXJ0ICIwLjkyMzQiIGluIGNhcHR1cmVkCiAgICAgICAgYXNzZXJ0ICIyMzAxLjAwMDAyIiBpbiBjYXB0dXJlZAogICAgICAgIGFzc2VydCAiQXR0ZW50aW9uIiBpbiBjYXB0dXJlZCAgIyBUaXRsZSB0cnVuY2F0ZWQgaW4gdGFibGUKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IDAKCiAgICBAcGF0Y2goImNsaS5EYXRhYmFzZSIpCiAgICBkZWYgdGVzdF9wYXBlcl9zaW1pbGFyX2Nzdl9mb3JtYXQoc2VsZiwgbW9ja19kYl9jbHMsIGNhcHN5cyk6CiAgICAgICAgbW9ja19kYiA9IE1hZ2ljTW9jaygpCiAgICAgICAgbW9ja19kYi5wYXBlcl9leGlzdHMucmV0dXJuX3ZhbHVlID0gVHJ1ZQogICAgICAgIG1vY2tfZGIuZ2V0X3BhcGVyLnJldHVybl92YWx1ZSA9IEZha2VQYXBlclJlY29yZCgiMjMwMS4wMDAwMSIsICJBdHRlbnRpb24gSXMgQWxsIFlvdSBOZWVkIikKICAgICAgICBtb2NrX2RiLmZpbmRfc2ltaWxhci5yZXR1cm5fdmFsdWUgPSBbCiAgICAgICAgICAgIChGYWtlUGFwZXJSZWNvcmQoIjIzMDEuMDAwMDIiLCAiQXR0ZW50aW9uIElzIEFsbCIpLCAwLjkyMzQpLAogICAgICAgIF0KICAgICAgICBtb2NrX2RiX2Nscy5yZXR1cm5fdmFsdWUgPSBtb2NrX2RiCgogICAgICAgIGZyb20gY2xpIGltcG9ydCBfcnVuX2RlZHVwX3NlbWFudGljCgogICAgICAgIGFyZ3MgPSBtYWtlX2FyZ3MocGFwZXI9IjIzMDEuMDAwMDEiLCBmb3JtYXQ9ImNzdiIpCiAgICAgICAgcmVzdWx0ID0gX3J1bl9kZWR1cF9zZW1hbnRpYyhhcmdzKQoKICAgICAgICBjYXB0dXJlZCA9IGNhcHN5cy5yZWFkb3V0ZXJyKCkub3V0CiAgICAgICAgYXNzZXJ0IGNhcHR1cmVkLnN0YXJ0c3dpdGgoInBhcGVyX2EscGFwZXJfYixzaW1pbGFyaXR5LHRpdGxlX2EsdGl0bGVfYiIpCiAgICAgICAgYXNzZXJ0ICIyMzAxLjAwMDAxIiBpbiBjYXB0dXJlZAogICAgICAgIGFzc2VydCAiMjMwMS4wMDAwMiIgaW4gY2FwdHVyZWQKICAgICAgICBhc3NlcnQgIjAuOTIzNCIgaW4gY2FwdHVyZWQKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IDAKCiAgICBAcGF0Y2goImNsaS5EYXRhYmFzZSIpCiAgICBkZWYgdGVzdF9nZW5lcmF0ZV9jYWxsc19nZW5lcmF0ZV9taXNzaW5nKHNlbGYsIG1vY2tfZGJfY2xzKToKICAgICAgICBtb2NrX2RiID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX2RiX2Nscy5yZXR1cm5fdmFsdWUgPSBtb2NrX2RiCgogICAgICAgIHdpdGggcGF0Y2goCiAgICAgICAgICAgICJjbGkuY21kLmRlZHVwX3NlbWFudGljLl9nZW5lcmF0ZV9taXNzaW5nX2VtYmVkZGluZ3MiLCByZXR1cm5fdmFsdWU9KDMsIDEpCiAgICAgICAgKSBhcyBtb2NrX2dlbjoKICAgICAgICAgICAgZnJvbSBjbGkgaW1wb3J0IF9ydW5fZGVkdXBfc2VtYW50aWMKCiAgICAgICAgICAgIGFyZ3MgPSBtYWtlX2FyZ3MoZ2VuZXJhdGU9VHJ1ZSkKICAgICAgICAgICAgcmVzdWx0ID0gX3J1bl9kZWR1cF9zZW1hbnRpYyhhcmdzKQogICAgICAgICAgICBtb2NrX2dlbi5hc3NlcnRfY2FsbGVkX29uY2UoKQogICAgICAgICAgICBhc3NlcnQgcmVzdWx0ID09IDAKCiAgICBAcGF0Y2goImNsaS5EYXRhYmFzZSIpCiAgICBkZWYgdGVzdF9nbG9iYWxfc2Nhbl9ub19wYWlycyhzZWxmLCBtb2NrX2RiX2NscywgY2Fwc3lzKToKICAgICAgICBtb2NrX2RiID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX2RiLmxpc3RfcGFwZXJzLnJldHVybl92YWx1ZSA9IChbXSwgMCkKICAgICAgICBtb2NrX2RiX2Nscy5yZXR1cm5fdmFsdWUgPSBtb2NrX2RiCgogICAgICAgIGZyb20gY2xpIGltcG9ydCBfcnVuX2RlZHVwX3NlbWFudGljCgogICAgICAgIGFyZ3MgPSBtYWtlX2FyZ3MoKQogICAgICAgIHJlc3VsdCA9IF9ydW5fZGVkdXBfc2VtYW50aWMoYXJncykKCiAgICAgICAgY2FwdHVyZWQgPSBjYXBzeXMucmVhZG91dGVycigpLm91dAogICAgICAgIGFzc2VydCAiTm8gRHVwbGljYXRlcyBGb3VuZCIgaW4gY2FwdHVyZWQKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IDAKCiAgICBAcGF0Y2goImNsaS5EYXRhYmFzZSIpCiAgICBkZWYgdGVzdF9nbG9iYWxfc2Nhbl9jc3Zfb3V0cHV0KHNlbGYsIG1vY2tfZGJfY2xzLCBjYXBzeXMpOgogICAgICAgIG1vY2tfZGIgPSBNYWdpY01vY2soKQogICAgICAgIG1vY2tfZGIubGlzdF9wYXBlcnMucmV0dXJuX3ZhbHVlID0gKFtGYWtlUGFwZXJSZWNvcmQoIjIzMDEuMDAwMDEiLCAiUGFwZXIgQSIpXSwgMSkKICAgICAgICBtb2NrX2RiLmZpbmRfc2ltaWxhci5yZXR1cm5fdmFsdWUgPSBbCiAgICAgICAgICAgIChGYWtlUGFwZXJSZWNvcmQoIjIzMDEuMDAwMDIiLCAiUGFwZXIgQiIpLCAwLjkxKSwKICAgICAgICBdCiAgICAgICAgbW9ja19kYl9jbHMucmV0dXJuX3ZhbHVlID0gbW9ja19kYgoKICAgICAgICBmcm9tIGNsaSBpbXBvcnQgX3J1bl9kZWR1cF9zZW1hbnRpYwoKICAgICAgICBhcmdzID0gbWFrZV9hcmdzKGZvcm1hdD0iY3N2IikKICAgICAgICByZXN1bHQgPSBfcnVuX2RlZHVwX3NlbWFudGljKGFyZ3MpCgogICAgICAgIGNhcHR1cmVkID0gY2Fwc3lzLnJlYWRvdXRlcnIoKS5vdXQKICAgICAgICBhc3NlcnQgY2FwdHVyZWQuc3RhcnRzd2l0aCgicGFwZXJfYSxwYXBlcl9iLHNpbWlsYXJpdHksdGl0bGVfYSx0aXRsZV9iIikKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IDAKCiAgICBAcGF0Y2goImNsaS5EYXRhYmFzZSIpCiAgICBkZWYgdGVzdF9nbG9iYWxfc2Nhbl90ZXh0X291dHB1dChzZWxmLCBtb2NrX2RiX2NscywgY2Fwc3lzKToKICAgICAgICBtb2NrX2RiID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX2RiLmxpc3RfcGFwZXJzLnJldHVybl92YWx1ZSA9IChbRmFrZVBhcGVyUmVjb3JkKCIyMzAxLjAwMDAxIiwgIlBhcGVyIEEiKV0sIDEpCiAgICAgICAgbW9ja19kYi5maW5kX3NpbWlsYXIucmV0dXJuX3ZhbHVlID0gWwogICAgICAgICAgICAoRmFrZVBhcGVyUmVjb3JkKCIyMzAxLjAwMDAyIiwgIlBhcGVyIEIiKSwgMC45MSksCiAgICAgICAgXQogICAgICAgIG1vY2tfZGJfY2xzLnJldHVybl92YWx1ZSA9IG1vY2tfZGIKCiAgICAgICAgZnJvbSBjbGkgaW1wb3J0IF9ydW5fZGVkdXBfc2VtYW50aWMKCiAgICAgICAgYXJncyA9IG1ha2VfYXJncyhmb3JtYXQ9InRleHQiKQogICAgICAgIHJlc3VsdCA9IF9ydW5fZGVkdXBfc2VtYW50aWMoYXJncykKCiAgICAgICAgY2FwdHVyZWQgPSBjYXBzeXMucmVhZG91dGVycigpLm91dAogICAgICAgIGFzc2VydCAiMC45MTAwIiBpbiBjYXB0dXJlZAogICAgICAgIGFzc2VydCAiUGFwZXIgQSIgaW4gY2FwdHVyZWQKICAgICAgICBhc3NlcnQgIlBhcGVyIEIiIGluIGNhcHR1cmVkCiAgICAgICAgYXNzZXJ0IHJlc3VsdCA9PSAwCg==
+"""Tests for DB embedding methods and dedup-semantic CLI."""
+
+from __future__ import annotations
+
+import argparse
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+from db import Database
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Fixtures
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+@pytest.fixture
+def db(tmp_path):
+    d = Database(tmp_path / "research.db")
+    d.init()
+    return d
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Helpers
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class FakePaperRecord:
+    """Fake PaperRecord for mocking."""
+
+    def __init__(self, id, title="Test Paper", parse_status="pending"):
+        self.id = id
+        self.title = title
+        self.parse_status = parse_status
+
+
+def make_args(**kwargs):
+    defaults = dict(
+        stats=False, generate=False, paper=None, threshold=0.85, limit=20, format="text"
+    )
+    defaults.update(kwargs)
+    ns = argparse.Namespace()
+    for k, v in defaults.items():
+        setattr(ns, k, v)
+    return ns
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test: set_embedding + get_embedding roundtrip
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestEmbeddingRoundtrip:
+    def test_set_and_get_embedding(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Attention Is All You Need")
+        vector = [0.1] * 768
+        ok = db.set_embedding("2301.00001", vector)
+        assert ok is True
+
+        retrieved = db.get_embedding("2301.00001")
+        assert retrieved is not None
+        assert len(retrieved) == 768
+        assert abs(retrieved[0] - 0.1) < 1e-6
+
+    def test_get_embedding_missing_paper(self, db):
+        assert db.get_embedding("does-not-exist") is None
+
+    def test_get_embedding_no_vector_set(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="No Embedding")
+        assert db.get_embedding("2301.00001") is None
+
+    def test_set_embedding_updates_existing(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Test")
+        v1 = [0.1] * 768
+        v2 = [0.9] * 768
+        db.set_embedding("2301.00001", v1)
+        db.set_embedding("2301.00001", v2)
+        retrieved = db.get_embedding("2301.00001")
+        assert abs(retrieved[0] - 0.9) < 1e-6
+
+    def test_set_embedding_missing_paper_returns_false(self, db):
+        ok = db.set_embedding("nonexistent", [0.1] * 768)
+        assert ok is False
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test: find_similar
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestFindSimilar:
+    def test_find_similar_same_paper_excluded(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Paper A")
+        db.upsert_paper("2301.00002", "arxiv", title="Paper B")
+        # Both have same embedding → similarity = 1.0
+        vector = [0.5] * 768
+        db.set_embedding("2301.00001", vector)
+        db.set_embedding("2301.00002", vector)
+
+        results = db.find_similar("2301.00001", threshold=0.85, limit=20)
+        assert len(results) == 1
+        assert results[0][0].id == "2301.00002"
+
+    def test_find_similar_below_threshold(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Paper A")
+        db.upsert_paper("2301.00002", "arxiv", title="Paper B")
+        # Orthogonal vectors → similarity ≈ 0
+        v1 = [1.0] + [0.0] * 767
+        v2 = [0.0] * 768
+        v2[10] = 1.0
+        db.set_embedding("2301.00001", v1)
+        db.set_embedding("2301.00002", v2)
+
+        results = db.find_similar("2301.00001", threshold=0.85, limit=20)
+        assert len(results) == 0
+
+    def test_find_similar_respects_limit(self, db):
+        for i in range(5):
+            db.upsert_paper(f"2301.{i:05d}", "arxiv", title=f"Paper {i}")
+            db.set_embedding(f"2301.{i:05d}", [0.5] * 768)
+
+        results = db.find_similar("2301.00000", threshold=0.0, limit=2)
+        assert len(results) == 2
+
+    def test_find_similar_no_embedding_for_query(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Paper A")
+        db.upsert_paper("2301.00002", "arxiv", title="Paper B")
+        db.set_embedding("2301.00002", [0.5] * 768)
+
+        results = db.find_similar("2301.00001", threshold=0.85, limit=20)
+        assert results == []
+
+    def test_find_similar_result_sorted_by_score(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="Query")
+        db.upsert_paper("2301.00002", "arxiv", title="Med")
+        db.upsert_paper("2301.00003", "arxiv", title="Close")
+        db.upsert_paper("2301.00004", "arxiv", title="Closer")
+        # Query embedding
+        q = [1.0] * 768
+        # Different similarity levels
+        db.set_embedding("2301.00001", q)
+        db.set_embedding("2301.00002", [0.3 * x for x in q])  # ~0.3
+        db.set_embedding("2301.00003", [0.6 * x for x in q])  # ~0.6
+        db.set_embedding("2301.00004", [0.9 * x for x in q])  # ~0.9
+
+        results = db.find_similar("2301.00001", threshold=0.0, limit=10)
+        scores = [r[1] for r in results]
+        assert scores == sorted(scores, reverse=True)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test: get_similarity
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestGetSimilarity:
+    def test_get_similarity_identical_vectors(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="A")
+        db.upsert_paper("2301.00002", "arxiv", title="B")
+        v = [0.5] * 768
+        db.set_embedding("2301.00001", v)
+        db.set_embedding("2301.00002", v)
+        sim = db.get_similarity("2301.00001", "2301.00002")
+        assert sim is not None
+        assert abs(sim - 1.0) < 1e-4
+
+    def test_get_similarity_orthogonal_vectors(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="A")
+        db.upsert_paper("2301.00002", "arxiv", title="B")
+        v1 = [1.0] + [0.0] * 767
+        v2 = [0.0] * 768
+        v2[0] = 0.0
+        v2[1] = 1.0
+        db.set_embedding("2301.00001", v1)
+        db.set_embedding("2301.00002", v2)
+        sim = db.get_similarity("2301.00001", "2301.00002")
+        assert abs(sim) < 1e-4
+
+    def test_get_similarity_one_missing(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="A")
+        db.upsert_paper("2301.00002", "arxiv", title="B")
+        db.set_embedding("2301.00001", [0.5] * 768)
+        assert db.get_similarity("2301.00001", "2301.00002") is None
+
+    def test_get_similarity_both_missing(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="A")
+        db.upsert_paper("2301.00002", "arxiv", title="B")
+        assert db.get_similarity("2301.00001", "2301.00002") is None
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test: get_embedding_stats
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestEmbeddingStats:
+    def test_stats_all_embedded(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="A")
+        db.upsert_paper("2301.00002", "arxiv", title="B")
+        db.set_embedding("2301.00001", [0.1] * 768)
+        db.set_embedding("2301.00002", [0.2] * 768)
+        s = db.get_embedding_stats()
+        assert s["with_embedding"] == 2
+        assert s["total_with_text"] == 2
+
+    def test_stats_partial(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="A")
+        db.upsert_paper("2301.00002", "arxiv", title="B")  # no embedding
+        db.set_embedding("2301.00001", [0.1] * 768)
+        s = db.get_embedding_stats()
+        assert s["with_embedding"] == 1
+        assert s["total_with_text"] == 2
+
+    def test_stats_empty_db(self, db):
+        s = db.get_embedding_stats()
+        assert s["with_embedding"] == 0
+        assert s["total_with_text"] == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test: get_papers_without_embeddings
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestPapersWithoutEmbeddings:
+    def test_returns_papers_without_vector(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="No Embed")
+        db.upsert_paper("2301.00002", "arxiv", title="Has Embed")
+        db.set_embedding("2301.00002", [0.1] * 768)
+        papers = db.get_papers_without_embeddings(limit=100)
+        assert len(papers) == 1
+        assert papers[0].id == "2301.00001"
+
+    def test_respects_limit(self, db):
+        for i in range(5):
+            db.upsert_paper(f"2301.{i:05d}", "arxiv", title=f"Paper {i}")
+        papers = db.get_papers_without_embeddings(limit=2)
+        assert len(papers) == 2
+
+    def test_excludes_empty_title(self, db):
+        db.upsert_paper("2301.00001", "arxiv", title="")
+        papers = db.get_papers_without_embeddings(limit=10)
+        assert len(papers) == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test: _run_dedup_semantic CLI
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestRunDedupSemantic:
+    """Test the CLI _run_dedup_semantic function."""
+
+    @patch("cli.Database")
+    def test_stats_shows_coverage(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_embedding_stats.return_value = {"with_embedding": 5, "total_with_text": 10}
+        mock_db_cls.return_value = mock_db
+
+        from cli import _run_dedup_semantic
+
+        args = make_args(stats=True)
+        result = _run_dedup_semantic(args)
+
+        captured = capsys.readouterr().out
+        assert "with embedding" in captured
+        assert "5" in captured
+        assert "50.0%" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_stats_empty_db(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.get_embedding_stats.return_value = {"with_embedding": 0, "total_with_text": 0}
+        mock_db_cls.return_value = mock_db
+
+        from cli import _run_dedup_semantic
+
+        args = make_args(stats=True)
+        result = _run_dedup_semantic(args)
+
+        captured = capsys.readouterr().out
+        assert "0" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_paper_not_found(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.paper_exists.return_value = False
+        mock_db_cls.return_value = mock_db
+
+        from cli import _run_dedup_semantic
+
+        args = make_args(paper="nonexistent")
+        result = _run_dedup_semantic(args)
+
+        captured = capsys.readouterr().out
+        assert "not found" in captured
+        assert result == 1
+
+    @patch("cli.Database")
+    def test_paper_no_similar(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.paper_exists.return_value = True
+        mock_db.get_paper.return_value = FakePaperRecord("2301.00001", "Test Paper")
+        mock_db.find_similar.return_value = []
+        mock_db_cls.return_value = mock_db
+
+        from cli import _run_dedup_semantic
+
+        args = make_args(paper="2301.00001")
+        result = _run_dedup_semantic(args)
+
+        captured = capsys.readouterr().out
+        assert "No similar papers" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_paper_similar_text_format(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.paper_exists.return_value = True
+        mock_db.get_paper.return_value = FakePaperRecord("2301.00001", "Attention Is All You Need")
+        mock_db.find_similar.return_value = [
+            (FakePaperRecord("2301.00002", "Attention Is All"), 0.9234),
+        ]
+        mock_db_cls.return_value = mock_db
+
+        from cli import _run_dedup_semantic
+
+        args = make_args(paper="2301.00001")
+        result = _run_dedup_semantic(args)
+
+        captured = capsys.readouterr().out
+        assert "0.9234" in captured
+        assert "2301.00002" in captured
+        assert "Attention" in captured  # Title truncated in table
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_paper_similar_csv_format(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.paper_exists.return_value = True
+        mock_db.get_paper.return_value = FakePaperRecord("2301.00001", "Attention Is All You Need")
+        mock_db.find_similar.return_value = [
+            (FakePaperRecord("2301.00002", "Attention Is All"), 0.9234),
+        ]
+        mock_db_cls.return_value = mock_db
+
+        from cli import _run_dedup_semantic
+
+        args = make_args(paper="2301.00001", format="csv")
+        result = _run_dedup_semantic(args)
+
+        captured = capsys.readouterr().out
+        assert captured.startswith("paper_a,paper_b,similarity,title_a,title_b")
+        assert "2301.00001" in captured
+        assert "2301.00002" in captured
+        assert "0.9234" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_generate_calls_generate_missing(self, mock_db_cls):
+        mock_db = MagicMock()
+        mock_db_cls.return_value = mock_db
+
+        with patch(
+            "cli.cmd.dedup_semantic._generate_missing_embeddings", return_value=(3, 1)
+        ) as mock_gen:
+            from cli import _run_dedup_semantic
+
+            args = make_args(generate=True)
+            result = _run_dedup_semantic(args)
+            mock_gen.assert_called_once()
+            assert result == 0
+
+    @patch("cli.Database")
+    def test_global_scan_no_pairs(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.list_papers.return_value = ([], 0)
+        mock_db_cls.return_value = mock_db
+
+        from cli import _run_dedup_semantic
+
+        args = make_args()
+        result = _run_dedup_semantic(args)
+
+        captured = capsys.readouterr().out
+        assert "No Duplicates Found" in captured
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_global_scan_csv_output(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.list_papers.return_value = ([FakePaperRecord("2301.00001", "Paper A")], 1)
+        mock_db.find_similar.return_value = [
+            (FakePaperRecord("2301.00002", "Paper B"), 0.91),
+        ]
+        mock_db_cls.return_value = mock_db
+
+        from cli import _run_dedup_semantic
+
+        args = make_args(format="csv")
+        result = _run_dedup_semantic(args)
+
+        captured = capsys.readouterr().out
+        assert captured.startswith("paper_a,paper_b,similarity,title_a,title_b")
+        assert result == 0
+
+    @patch("cli.Database")
+    def test_global_scan_text_output(self, mock_db_cls, capsys):
+        mock_db = MagicMock()
+        mock_db.list_papers.return_value = ([FakePaperRecord("2301.00001", "Paper A")], 1)
+        mock_db.find_similar.return_value = [
+            (FakePaperRecord("2301.00002", "Paper B"), 0.91),
+        ]
+        mock_db_cls.return_value = mock_db
+
+        from cli import _run_dedup_semantic
+
+        args = make_args(format="text")
+        result = _run_dedup_semantic(args)
+
+        captured = capsys.readouterr().out
+        assert "0.9100" in captured
+        assert "Paper A" in captured
+        assert "Paper B" in captured
+        assert result == 0

@@ -1,1 +1,189 @@
-IiIiClJlc2VhcmNoIEpvdXJuYWw6IFRyYWNrIHJlc2VhcmNoIGFjdGl2aXRpZXMgYW5kIHRob3VnaHRzLgoiIiIKCmltcG9ydCB1dWlkCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcywgYXNkaWN0LCBmaWVsZApmcm9tIGRhdGV0aW1lIGltcG9ydCBkYXRldGltZSwgdGltZWRlbHRhCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgRGljdCwgTGlzdCwgT3B0aW9uYWwsIGNhc3QKCmZyb20gbGxtLnRyYWNrZXJfYmFzZSBpbXBvcnQgSnNvbkZpbGVTdG9yZQoKCkBkYXRhY2xhc3MKY2xhc3MgSm91cm5hbEVudHJ5OgogICAgIiIiQSBqb3VybmFsIGVudHJ5LiIiIgoKICAgIGlkOiBzdHIKICAgIGNvbnRlbnQ6IHN0cgogICAgY3JlYXRlZF9hdDogc3RyID0gIiIKICAgIHVwZGF0ZWRfYXQ6IHN0ciA9ICIiCiAgICB0YWdzOiBMaXN0W3N0cl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKICAgIHF1ZXN0aW9uX2lkOiBzdHIgPSAiIgogICAgZXhwZXJpbWVudF9pZDogc3RyID0gIiIKICAgIHBhcGVyX2lkOiBzdHIgPSAiIgogICAgbW9vZDogc3RyID0gIiIgICMgcHJvZHVjdGl2ZSwgc3R1Y2ssIGV4Y2l0ZWQsIG5ldXRyYWwKICAgIGhpZ2hsaWdodHM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQoKICAgIGRlZiBfX3Bvc3RfaW5pdF9fKHNlbGYpOgogICAgICAgIGlmIG5vdCBzZWxmLmNyZWF0ZWRfYXQ6CiAgICAgICAgICAgIHNlbGYuY3JlYXRlZF9hdCA9IGRhdGV0aW1lLm5vdygpLmlzb2Zvcm1hdCgpCgogICAgZGVmIHRvX2RpY3Qoc2VsZik6CiAgICAgICAgcmV0dXJuIGFzZGljdChzZWxmKQoKICAgIEBjbGFzc21ldGhvZAogICAgZGVmIGZyb21fZGljdChjbHMsIGRhdGEpOgogICAgICAgIHJldHVybiBjbHMoKipkYXRhKQoKCmNsYXNzIEpvdXJuYWwoSnNvbkZpbGVTdG9yZSk6CiAgICAiIiJSZXNlYXJjaCBqb3VybmFsIGZvciB0cmFja2luZyBhY3Rpdml0aWVzLiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBkYXRhX2Rpcj1Ob25lKToKICAgICAgICBwID0gUGF0aChkYXRhX2RpciBvciBQYXRoLmhvbWUoKSAvICIuYWlfcmVzZWFyY2hfb3MiIC8gImpvdXJuYWwiKQogICAgICAgIHAubWtkaXIocGFyZW50cz1UcnVlLCBleGlzdF9vaz1UcnVlKQogICAgICAgIHNlbGYuZGF0YV9maWxlID0gcCAvICJqb3VybmFsLmpzb24iCgogICAgZGVmIF9wb3N0X2xvYWQoc2VsZiwgcmF3OiBMaXN0W2RpY3RdKSAtPiBMaXN0W0pvdXJuYWxFbnRyeV06CiAgICAgICAgcmV0dXJuIFtKb3VybmFsRW50cnkuZnJvbV9kaWN0KGUpIGZvciBlIGluIHJhd10KCiAgICBkZWYgX3ByZV9zYXZlKHNlbGYsIGVudHJpZXM6IExpc3RbSm91cm5hbEVudHJ5XSkgLT4gTGlzdFtkaWN0XToKICAgICAgICByZXR1cm4gW2UudG9fZGljdCgpIGZvciBlIGluIGVudHJpZXNdCgogICAgZGVmIGFkZCgKICAgICAgICBzZWxmLAogICAgICAgIGNvbnRlbnQ6IHN0ciwKICAgICAgICB0YWdzOiBPcHRpb25hbFtMaXN0W3N0cl1dID0gTm9uZSwKICAgICAgICBxdWVzdGlvbl9pZDogc3RyID0gIiIsCiAgICAgICAgZXhwZXJpbWVudF9pZDogc3RyID0gIiIsCiAgICAgICAgcGFwZXJfaWQ6IHN0ciA9ICIiLAogICAgICAgIG1vb2Q6IHN0ciA9ICIiLAogICAgKSAtPiBKb3VybmFsRW50cnk6CiAgICAgICAgIiIiQWRkIGEgam91cm5hbCBlbnRyeS4iIiIKICAgICAgICBlbnRyeSA9IEpvdXJuYWxFbnRyeSgKICAgICAgICAgICAgaWQ9c3RyKHV1aWQudXVpZDQoKSlbOjhdLAogICAgICAgICAgICBjb250ZW50PWNvbnRlbnQsCiAgICAgICAgICAgIHRhZ3M9dGFncyBvciBbXSwKICAgICAgICAgICAgcXVlc3Rpb25faWQ9cXVlc3Rpb25faWQsCiAgICAgICAgICAgIGV4cGVyaW1lbnRfaWQ9ZXhwZXJpbWVudF9pZCwKICAgICAgICAgICAgcGFwZXJfaWQ9cGFwZXJfaWQsCiAgICAgICAgICAgIG1vb2Q9bW9vZCwKICAgICAgICApCiAgICAgICAgZW50cmllcyA9IHNlbGYuX2xvYWQoKQogICAgICAgIGVudHJpZXMuYXBwZW5kKGVudHJ5KQogICAgICAgIHNlbGYuX3NhdmUoZW50cmllcykKICAgICAgICByZXR1cm4gZW50cnkKCiAgICBkZWYgZ2V0KHNlbGYsIGVudHJ5X2lkOiBzdHIpIC0+IE9wdGlvbmFsW0pvdXJuYWxFbnRyeV06CiAgICAgICAgIiIiR2V0IGVudHJ5IGJ5IElELiIiIgogICAgICAgIGZvciBlIGluIGNhc3QoTGlzdFtKb3VybmFsRW50cnldLCBzZWxmLl9sb2FkKCkpOgogICAgICAgICAgICBpZiBlLmlkID09IGVudHJ5X2lkOgogICAgICAgICAgICAgICAgcmV0dXJuIGUKICAgICAgICByZXR1cm4gTm9uZQoKICAgIGRlZiB1cGRhdGUoCiAgICAgICAgc2VsZiwgZW50cnlfaWQ6IHN0ciwgY29udGVudDogc3RyID0gIiIsIHRhZ3M6IE9wdGlvbmFsW0xpc3Rbc3RyXV0gPSBOb25lCiAgICApIC0+IE9wdGlvbmFsW0pvdXJuYWxFbnRyeV06CiAgICAgICAgIiIiVXBkYXRlIGFuIGVudHJ5LiIiIgogICAgICAgIGVudHJpZXMgPSBjYXN0KExpc3RbSm91cm5hbEVudHJ5XSwgc2VsZi5fbG9hZCgpKQogICAgICAgIGZvciBlIGluIGVudHJpZXM6CiAgICAgICAgICAgIGlmIGUuaWQgPT0gZW50cnlfaWQ6CiAgICAgICAgICAgICAgICBpZiBjb250ZW50OgogICAgICAgICAgICAgICAgICAgIGUuY29udGVudCA9IGNvbnRlbnQKICAgICAgICAgICAgICAgIGlmIHRhZ3MgaXMgbm90IE5vbmU6CiAgICAgICAgICAgICAgICAgICAgZS50YWdzID0gdGFncwogICAgICAgICAgICAgICAgZS51cGRhdGVkX2F0ID0gZGF0ZXRpbWUubm93KCkuaXNvZm9ybWF0KCkKICAgICAgICAgICAgICAgIHNlbGYuX3NhdmUoZW50cmllcykKICAgICAgICAgICAgICAgIHJldHVybiBlCiAgICAgICAgcmV0dXJuIE5vbmUKCiAgICBkZWYgZGVsZXRlKHNlbGYsIGVudHJ5X2lkOiBzdHIpIC0+IGJvb2w6CiAgICAgICAgIiIiRGVsZXRlIGFuIGVudHJ5LiIiIgogICAgICAgIGVudHJpZXMgPSBzZWxmLl9sb2FkKCkKICAgICAgICBuID0gbGVuKGVudHJpZXMpCiAgICAgICAgZW50cmllcyA9IFtlIGZvciBlIGluIGVudHJpZXMgaWYgZS5pZCAhPSBlbnRyeV9pZF0KICAgICAgICBpZiBsZW4oZW50cmllcykgPCBuOgogICAgICAgICAgICBzZWxmLl9zYXZlKGVudHJpZXMpCiAgICAgICAgICAgIHJldHVybiBUcnVlCiAgICAgICAgcmV0dXJuIEZhbHNlCgogICAgZGVmIGxpc3RfZW50cmllcygKICAgICAgICBzZWxmLAogICAgICAgIGxpbWl0OiBpbnQgPSA1MCwKICAgICAgICB0YWc6IHN0ciA9ICIiLAogICAgICAgIHF1ZXN0aW9uX2lkOiBzdHIgPSAiIiwKICAgICAgICBleHBlcmltZW50X2lkOiBzdHIgPSAiIiwKICAgICAgICB0b2RheTogYm9vbCA9IEZhbHNlLAogICAgICAgIGRheXM6IGludCA9IDAsCiAgICApIC0+IExpc3RbSm91cm5hbEVudHJ5XToKICAgICAgICAiIiJMaXN0IGpvdXJuYWwgZW50cmllcy4iIiIKICAgICAgICBlbnRyaWVzID0gc2VsZi5fbG9hZCgpCgogICAgICAgIGlmIHRvZGF5OgogICAgICAgICAgICB0b2RheV9zdHIgPSBkYXRldGltZS5ub3coKS5zdHJmdGltZSgiJVktJW0tJWQiKQogICAgICAgICAgICBlbnRyaWVzID0gW2UgZm9yIGUgaW4gZW50cmllcyBpZiBlLmNyZWF0ZWRfYXQuc3RhcnRzd2l0aCh0b2RheV9zdHIpXQogICAgICAgIGVsaWYgZGF5cyA+IDA6CiAgICAgICAgICAgIGN1dG9mZiA9IChkYXRldGltZS5ub3coKSAtIHRpbWVkZWx0YShkYXlzPWRheXMpKS5pc29mb3JtYXQoKQogICAgICAgICAgICBlbnRyaWVzID0gW2UgZm9yIGUgaW4gZW50cmllcyBpZiBlLmNyZWF0ZWRfYXQgPj0gY3V0b2ZmXQoKICAgICAgICBpZiB0YWc6CiAgICAgICAgICAgIGVudHJpZXMgPSBbZSBmb3IgZSBpbiBlbnRyaWVzIGlmIHRhZyBpbiBlLnRhZ3NdCiAgICAgICAgaWYgcXVlc3Rpb25faWQ6CiAgICAgICAgICAgIGVudHJpZXMgPSBbZSBmb3IgZSBpbiBlbnRyaWVzIGlmIGUucXVlc3Rpb25faWQgPT0gcXVlc3Rpb25faWRdCiAgICAgICAgaWYgZXhwZXJpbWVudF9pZDoKICAgICAgICAgICAgZW50cmllcyA9IFtlIGZvciBlIGluIGVudHJpZXMgaWYgZS5leHBlcmltZW50X2lkID09IGV4cGVyaW1lbnRfaWRdCgogICAgICAgICMgU29ydCBieSBkYXRlIGRlc2NlbmRpbmcKICAgICAgICBlbnRyaWVzLnNvcnQoa2V5PWxhbWJkYSB4OiB4LmNyZWF0ZWRfYXQsIHJldmVyc2U9VHJ1ZSkKICAgICAgICByZXR1cm4gZW50cmllc1s6bGltaXRdCgogICAgZGVmIHNlYXJjaChzZWxmLCBxdWVyeTogc3RyLCBsaW1pdDogaW50ID0gMjApIC0+IExpc3RbSm91cm5hbEVudHJ5XToKICAgICAgICAiIiJTZWFyY2ggZW50cmllcyBieSBjb250ZW50LiIiIgogICAgICAgIHEgPSBxdWVyeS5sb3dlcigpCiAgICAgICAgZW50cmllcyA9IFtlIGZvciBlIGluIHNlbGYuX2xvYWQoKSBpZiBxIGluIGUuY29udGVudC5sb3dlcigpXQogICAgICAgIGVudHJpZXMuc29ydChrZXk9bGFtYmRhIHg6IHguY3JlYXRlZF9hdCwgcmV2ZXJzZT1UcnVlKQogICAgICAgIHJldHVybiBlbnRyaWVzWzpsaW1pdF0KCiAgICBkZWYgc3RhdHMoc2VsZikgLT4gZGljdDoKICAgICAgICAiIiJHZXQgam91cm5hbCBzdGF0aXN0aWNzLiIiIgogICAgICAgIGVudHJpZXMgPSBzZWxmLl9sb2FkKCkKICAgICAgICBpZiBub3QgZW50cmllczoKICAgICAgICAgICAgcmV0dXJuIHsidG90YWwiOiAwLCAidGhpc193ZWVrIjogMCwgInRoaXNfbW9udGgiOiAwfQoKICAgICAgICBub3cgPSBkYXRldGltZS5ub3coKQogICAgICAgIHdlZWtfYWdvID0gKG5vdyAtIHRpbWVkZWx0YShkYXlzPTcpKS5pc29mb3JtYXQoKQogICAgICAgIG1vbnRoX2FnbyA9IChub3cgLSB0aW1lZGVsdGEoZGF5cz0zMCkpLmlzb2Zvcm1hdCgpCgogICAgICAgIHRhZ3NfY291bnQ6IERpY3Rbc3RyLCBpbnRdID0ge30KICAgICAgICBtb29kX2NvdW50OiBEaWN0W3N0ciwgaW50XSA9IHt9CiAgICAgICAgZm9yIGUgaW4gZW50cmllczoKICAgICAgICAgICAgZm9yIHQgaW4gZS50YWdzOgogICAgICAgICAgICAgICAgdGFnc19jb3VudFt0XSA9IHRhZ3NfY291bnQuZ2V0KHQsIDApICsgMQogICAgICAgICAgICBpZiBlLm1vb2Q6CiAgICAgICAgICAgICAgICBtb29kX2NvdW50W2UubW9vZF0gPSBtb29kX2NvdW50LmdldChlLm1vb2QsIDApICsgMQoKICAgICAgICByZXR1cm4gewogICAgICAgICAgICAidG90YWwiOiBsZW4oZW50cmllcyksCiAgICAgICAgICAgICJ0aGlzX3dlZWsiOiBsZW4oW2UgZm9yIGUgaW4gZW50cmllcyBpZiBlLmNyZWF0ZWRfYXQgPj0gd2Vla19hZ29dKSwKICAgICAgICAgICAgInRoaXNfbW9udGgiOiBsZW4oW2UgZm9yIGUgaW4gZW50cmllcyBpZiBlLmNyZWF0ZWRfYXQgPj0gbW9udGhfYWdvXSksCiAgICAgICAgICAgICJ0b3BfdGFncyI6IHNvcnRlZCh0YWdzX2NvdW50Lml0ZW1zKCksIGtleT1sYW1iZGEgeDogLXhbMV0pWzoxMF0sCiAgICAgICAgICAgICJtb29kX2Rpc3RyaWJ1dGlvbiI6IG1vb2RfY291bnQsCiAgICAgICAgfQoKICAgIGRlZiByZW5kZXJfbGlzdChzZWxmLCBlbnRyaWVzOiBMaXN0W0pvdXJuYWxFbnRyeV0sIHZlcmJvc2U6IGJvb2wgPSBGYWxzZSkgLT4gc3RyOgogICAgICAgICIiIlJlbmRlciBlbnRyaWVzIGFzIHRleHQuIiIiCiAgICAgICAgaWYgbm90IGVudHJpZXM6CiAgICAgICAgICAgIHJldHVybiAiTm8gam91cm5hbCBlbnRyaWVzLiIKCiAgICAgICAgbW9vZF9pY29ucyA9IHsicHJvZHVjdGl2ZSI6ICLimqEiLCAic3R1Y2siOiAi8J+YkyIsICJleGNpdGVkIjogIvCfjokiLCAibmV1dHJhbCI6ICLwn5OdIn0KICAgICAgICBsaW5lcyA9IFtdCiAgICAgICAgZm9yIGUgaW4gZW50cmllczoKICAgICAgICAgICAgaWNvbiA9IG1vb2RfaWNvbnMuZ2V0KGUubW9vZCwgIvCfk50iKQogICAgICAgICAgICBkYXRlID0gZS5jcmVhdGVkX2F0WzoxMF0KICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYie2ljb259IFt7ZGF0ZX1dIHtlLmNvbnRlbnRbOjgwXX0iKQogICAgICAgICAgICBpZiB2ZXJib3NlOgogICAgICAgICAgICAgICAgaWYgZS50YWdzOgogICAgICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgIFRhZ3M6IHsnLCAnLmpvaW4oZS50YWdzKX0iKQogICAgICAgICAgICAgICAgaWYgZS5xdWVzdGlvbl9pZDoKICAgICAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICBRdWVzdGlvbjoge2UucXVlc3Rpb25faWR9IikKICAgICAgICAgICAgICAgIGlmIGUuZXhwZXJpbWVudF9pZDoKICAgICAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICBFeHBlcmltZW50OiB7ZS5leHBlcmltZW50X2lkfSIpCiAgICAgICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykK
+"""
+Research Journal: Track research activities and thoughts.
+"""
+import uuid
+from dataclasses import dataclass, asdict, field
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Dict, List, Optional, cast
+
+from llm.tracker_base import JsonFileStore
+
+
+@dataclass
+class JournalEntry:
+    """A journal entry."""
+    id: str
+    content: str
+    created_at: str = ""
+    updated_at: str = ""
+    tags: List[str] = field(default_factory=list)
+    question_id: str = ""
+    experiment_id: str = ""
+    paper_id: str = ""
+    mood: str = ""  # productive, stuck, excited, neutral
+    highlights: List[str] = field(default_factory=list)
+
+    def __post_init__(self):
+        if not self.created_at:
+            self.created_at = datetime.now().isoformat()
+
+    def to_dict(self):
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(**data)
+
+
+class Journal(JsonFileStore):
+    """Research journal for tracking activities."""
+
+    def __init__(self, data_dir=None):
+        p = Path(data_dir or Path.home() / ".ai_research_os" / "journal")
+        p.mkdir(parents=True, exist_ok=True)
+        self.data_file = p / "journal.json"
+
+    def _post_load(self, raw: List[dict]) -> List[JournalEntry]:
+        return [JournalEntry.from_dict(e) for e in raw]
+
+    def _pre_save(self, entries: List[JournalEntry]) -> List[dict]:
+        return [e.to_dict() for e in entries]
+
+    def add(
+        self,
+        content: str,
+        tags: Optional[List[str]] = None,
+        question_id: str = "",
+        experiment_id: str = "",
+        paper_id: str = "",
+        mood: str = "",
+    ) -> JournalEntry:
+        """Add a journal entry."""
+        entry = JournalEntry(
+            id=str(uuid.uuid4())[:8],
+            content=content,
+            tags=tags or [],
+            question_id=question_id,
+            experiment_id=experiment_id,
+            paper_id=paper_id,
+            mood=mood,
+        )
+        entries = self._load()
+        entries.append(entry)
+        self._save(entries)
+        return entry
+
+    def get(self, entry_id: str) -> Optional[JournalEntry]:
+        """Get entry by ID."""
+        for e in cast(List[JournalEntry], self._load()):
+            if e.id == entry_id:
+                return e
+        return None
+
+    def update(self, entry_id: str, content: str = "", tags: Optional[List[str]] = None) -> Optional[JournalEntry]:
+        """Update an entry."""
+        entries = cast(List[JournalEntry], self._load())
+        for e in entries:
+            if e.id == entry_id:
+                if content:
+                    e.content = content
+                if tags is not None:
+                    e.tags = tags
+                e.updated_at = datetime.now().isoformat()
+                self._save(entries)
+                return e
+        return None
+
+    def delete(self, entry_id: str) -> bool:
+        """Delete an entry."""
+        entries = self._load()
+        n = len(entries)
+        entries = [e for e in entries if e.id != entry_id]
+        if len(entries) < n:
+            self._save(entries)
+            return True
+        return False
+
+    def list_entries(
+        self,
+        limit: int = 50,
+        tag: str = "",
+        question_id: str = "",
+        experiment_id: str = "",
+        today: bool = False,
+        days: int = 0,
+    ) -> List[JournalEntry]:
+        """List journal entries."""
+        entries = self._load()
+
+        if today:
+            today_str = datetime.now().strftime("%Y-%m-%d")
+            entries = [e for e in entries if e.created_at.startswith(today_str)]
+        elif days > 0:
+            cutoff = (datetime.now() - timedelta(days=days)).isoformat()
+            entries = [e for e in entries if e.created_at >= cutoff]
+
+        if tag:
+            entries = [e for e in entries if tag in e.tags]
+        if question_id:
+            entries = [e for e in entries if e.question_id == question_id]
+        if experiment_id:
+            entries = [e for e in entries if e.experiment_id == experiment_id]
+
+        # Sort by date descending
+        entries.sort(key=lambda x: x.created_at, reverse=True)
+        return entries[:limit]
+
+    def search(self, query: str, limit: int = 20) -> List[JournalEntry]:
+        """Search entries by content."""
+        q = query.lower()
+        entries = [e for e in self._load() if q in e.content.lower()]
+        entries.sort(key=lambda x: x.created_at, reverse=True)
+        return entries[:limit]
+
+    def stats(self) -> dict:
+        """Get journal statistics."""
+        entries = self._load()
+        if not entries:
+            return {"total": 0, "this_week": 0, "this_month": 0}
+
+        now = datetime.now()
+        week_ago = (now - timedelta(days=7)).isoformat()
+        month_ago = (now - timedelta(days=30)).isoformat()
+
+        tags_count: Dict[str, int] = {}
+        mood_count: Dict[str, int] = {}
+        for e in entries:
+            for t in e.tags:
+                tags_count[t] = tags_count.get(t, 0) + 1
+            if e.mood:
+                mood_count[e.mood] = mood_count.get(e.mood, 0) + 1
+
+        return {
+            "total": len(entries),
+            "this_week": len([e for e in entries if e.created_at >= week_ago]),
+            "this_month": len([e for e in entries if e.created_at >= month_ago]),
+            "top_tags": sorted(tags_count.items(), key=lambda x: -x[1])[:10],
+            "mood_distribution": mood_count,
+        }
+
+    def render_list(self, entries: List[JournalEntry], verbose: bool = False) -> str:
+        """Render entries as text."""
+        if not entries:
+            return "No journal entries."
+
+        mood_icons = {"productive": "⚡", "stuck": "😓", "excited": "🎉", "neutral": "📝"}
+        lines = []
+        for e in entries:
+            icon = mood_icons.get(e.mood, "📝")
+            date = e.created_at[:10]
+            lines.append(f"{icon} [{date}] {e.content[:80]}")
+            if verbose:
+                if e.tags:
+                    lines.append(f"   Tags: {', '.join(e.tags)}")
+                if e.question_id:
+                    lines.append(f"   Question: {e.question_id}")
+                if e.experiment_id:
+                    lines.append(f"   Experiment: {e.experiment_id}")
+        return '\n'.join(lines)

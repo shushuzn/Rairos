@@ -1,1 +1,351 @@
-IiIiDQpCZW5jaG1hcmsgUnVubmVyIOKAlCBydW4gcHl0ZXN0IHRlc3RzIGFuZCBlbmNvZGUgcmVzdWx0cyB0byBHZW5lIFBvb2wuDQoNCumXreeOr+aguOW/gzoNCi0g6L+Q6KGMIHB5dGVzdCDmtYvor5UNCi0g6YCa6L+HIOKGkiBlbmNvZGUgQ2Fwc3VsZUdlbmUoc3VjY2Vzc2Z1bCBpbXBsZW1lbnRhdGlvbiBwYXR0ZXJuKQ0KLSDlpLHotKUg4oaSIOWPjemmiOe7mSBHYXBBbmFseXplciwg5qCH6K6w5Li65L2O6LSo6YeP6Lev5b6EDQotIOaIkOWKn+WQjiDihpIg6Kem5Y+RIEluc2lnaHRFdm9sdXRpb24gZmVlZGJhY2stZGVzY2VudCDov5vljJYNCiIiIg0KDQpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zDQoNCmltcG9ydCBqc29uDQppbXBvcnQgb3MNCmltcG9ydCBzdWJwcm9jZXNzDQppbXBvcnQgc3lzDQppbXBvcnQgdGltZQ0KaW1wb3J0IHV1aWQNCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcywgZmllbGQNCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aA0KZnJvbSB0eXBpbmcgaW1wb3J0IE9wdGlvbmFsDQoNCmZyb20gbGxtLmluc2lnaHQuZ2VuZSBpbXBvcnQgQ2Fwc3VsZUdlbmUNCmZyb20gbGxtLmluc2lnaHQucHJlZmVyZW5jZXMgaW1wb3J0IEV4cGxvcmF0aW9uQWN0aW9uDQpmcm9tIGxsbS5pbnNpZ2h0LnRyYWNrZXIgaW1wb3J0IEV2b2x1dGlvblRyYWNrZXINCg0KDQpAZGF0YWNsYXNzDQpjbGFzcyBCZW5jaG1hcmtSZXN1bHQ6DQogICAgIiIiUmVzdWx0IG9mIGEgc2luZ2xlIGJlbmNobWFyayBydW4uIiIiDQoNCiAgICBhcnhpdl9pZDogc3RyDQogICAgdGVzdF9kaXI6IFBhdGgNCiAgICBwYXNzZWQ6IGludA0KICAgIGZhaWxlZDogaW50DQogICAgc2tpcHBlZDogaW50DQogICAgZHVyYXRpb25fc2Vjb25kczogZmxvYXQNCiAgICBwYXNzZWRfdGVzdHM6IGxpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQ0KICAgIGZhaWxlZF90ZXN0czogbGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpDQogICAgZXJyb3JfbWVzc2FnZTogc3RyID0gIiINCiAgICBnZW5lX3Bvb2xfZW50cnk6IE9wdGlvbmFsW0NhcHN1bGVHZW5lXSA9IE5vbmUNCg0KDQpAZGF0YWNsYXNzDQpjbGFzcyBCZW5jaG1hcmtDb25maWc6DQogICAgIiIiQ29uZmlndXJhdGlvbiBmb3IgYSBiZW5jaG1hcmsgcnVuLiIiIg0KDQogICAgYXJ4aXZfaWQ6IHN0cg0KICAgIHBhcGVyX3RvcGljOiBzdHINCiAgICBhbGdvcml0aG1fZGVzY3JpcHRpb246IHN0cg0KICAgIHRlc3RfZGlyOiBQYXRoDQogICAgY29kZV9wYXRoOiBQYXRoDQogICAgY29kZV9xdWFsaXR5OiBmbG9hdCA9IDAuNSAgIyBlc3RpbWF0ZWQgcXVhbGl0eSBvZiBnZW5lcmF0ZWQgY29kZQ0KICAgIG1pbl9wYXNzX3JhdGU6IGZsb2F0ID0gMC4wICAjIG1pbmltdW0gcGFzcyByYXRlIHRvIGVuY29kZSBhcyBzdWNjZXNzICgwID0gcmVjb3JkIGV2ZXJ5dGhpbmcpDQoNCg0KZGVmIHJ1bl9iZW5jaG1hcmsoDQogICAgY29uZmlnOiBCZW5jaG1hcmtDb25maWcsDQogICAgdHJhY2tlcjogT3B0aW9uYWxbRXZvbHV0aW9uVHJhY2tlcl0gPSBOb25lLA0KKSAtPiBCZW5jaG1hcmtSZXN1bHQ6DQogICAgIiIiUnVuIHB5dGVzdCBvbiB0aGUgZ2VuZXJhdGVkIHRlc3Qgc3VpdGUuDQoNCiAgICBBcmdzOg0KICAgICAgICBjb25maWc6IEJlbmNobWFyayBjb25maWd1cmF0aW9uDQogICAgICAgIHRyYWNrZXI6IEV2b2x1dGlvblRyYWNrZXIgZm9yIEdlbmUgUG9vbCBlbmNvZGluZw0KDQogICAgUmV0dXJuczoNCiAgICAgICAgQmVuY2htYXJrUmVzdWx0IHdpdGggcGFzcy9mYWlsIGRldGFpbHMNCiAgICAiIiINCiAgICBzdGFydCA9IHRpbWUudGltZSgpDQoNCiAgICAjIFJ1biBweXRlc3Qgd2l0aCBKU09OIHJlcG9ydA0KICAgIHRlc3RfZGlyID0gY29uZmlnLnRlc3RfZGlyDQogICAganNvbl9yZXBvcnQgPSB0ZXN0X2RpciAvICJyZXBvcnQuanNvbiINCg0KICAgIGNtZCA9IFsNCiAgICAgICAgc3lzLmV4ZWN1dGFibGUsDQogICAgICAgICItbSIsDQogICAgICAgICJweXRlc3QiLA0KICAgICAgICBzdHIodGVzdF9kaXIpLA0KICAgICAgICAiLXYiLA0KICAgICAgICAiLS10Yj1zaG9ydCIsDQogICAgICAgICItLW5vLWhlYWRlciIsDQogICAgICAgICItcSIsDQogICAgXQ0KDQogICAgIyBQcmVwZW5kIHNyY19kaXIgdG8gUFlUSE9OUEFUSCBzbyBweXRlc3QgY2FuIGltcG9ydCB0aGUgZ2VuZXJhdGVkIG1vZHVsZQ0KICAgIGVudiA9IHsNCiAgICAgICAgKipvcy5lbnZpcm9uLA0KICAgICAgICAiUFlUSE9OUEFUSCI6IGYie2NvbmZpZy5jb2RlX3BhdGgucGFyZW50fXtvcy5wYXRoc2VwfXtvcy5lbnZpcm9uLmdldCgnUFlUSE9OUEFUSCcsICcnKX0iLA0KICAgIH0NCg0KICAgIHJlc3VsdCA9IEJlbmNobWFya1Jlc3VsdCgNCiAgICAgICAgYXJ4aXZfaWQ9Y29uZmlnLmFyeGl2X2lkLA0KICAgICAgICB0ZXN0X2Rpcj10ZXN0X2RpciwNCiAgICAgICAgcGFzc2VkPTAsDQogICAgICAgIGZhaWxlZD0wLA0KICAgICAgICBza2lwcGVkPTAsDQogICAgICAgIGR1cmF0aW9uX3NlY29uZHM9MCwNCiAgICApDQoNCiAgICB0cnk6DQogICAgICAgIHByb2MgPSBzdWJwcm9jZXNzLnJ1bigNCiAgICAgICAgICAgIGNtZCwNCiAgICAgICAgICAgIGNhcHR1cmVfb3V0cHV0PVRydWUsDQogICAgICAgICAgICB0ZXh0PVRydWUsDQogICAgICAgICAgICB0aW1lb3V0PTMwMCwNCiAgICAgICAgICAgIGVuY29kaW5nPSJ1dGYtOCIsDQogICAgICAgICAgICBlcnJvcnM9InJlcGxhY2UiLA0KICAgICAgICAgICAgZW52PWVudiwNCiAgICAgICAgKQ0KICAgICAgICByZXN1bHQuZHVyYXRpb25fc2Vjb25kcyA9IHRpbWUudGltZSgpIC0gc3RhcnQNCiAgICAgICAgcmVzdWx0LmVycm9yX21lc3NhZ2UgPSBwcm9jLnN0ZG91dCArIHByb2Muc3RkZXJyDQoNCiAgICBleGNlcHQgc3VicHJvY2Vzcy5UaW1lb3V0RXhwaXJlZDoNCiAgICAgICAgcmVzdWx0LmR1cmF0aW9uX3NlY29uZHMgPSB0aW1lLnRpbWUoKSAtIHN0YXJ0DQogICAgICAgIHJlc3VsdC5lcnJvcl9tZXNzYWdlID0gZiJUaW1lb3V0IGFmdGVyIHtyZXN1bHQuZHVyYXRpb25fc2Vjb25kczouMGZ9cyINCiAgICAgICAgcmV0dXJuIHJlc3VsdA0KICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToNCiAgICAgICAgcmVzdWx0LmR1cmF0aW9uX3NlY29uZHMgPSB0aW1lLnRpbWUoKSAtIHN0YXJ0DQogICAgICAgIHJlc3VsdC5lcnJvcl9tZXNzYWdlID0gc3RyKGUpDQogICAgICAgIHJldHVybiByZXN1bHQNCg0KICAgICMgUGFyc2UgcHl0ZXN0IG91dHB1dCBmb3IgcGFzcy9mYWlsIGNvdW50cw0KICAgIF9wYXJzZV9weXRlc3Rfb3V0cHV0KHJlc3VsdCwgcHJvYy5zdGRvdXQgKyBwcm9jLnN0ZGVycikNCg0KICAgICMgUGFyc2UgSlNPTiByZXBvcnQgaWYgYXZhaWxhYmxlDQogICAgaWYganNvbl9yZXBvcnQuZXhpc3RzKCk6DQogICAgICAgIF9wYXJzZV9qc29uX3JlcG9ydChyZXN1bHQsIGpzb25fcmVwb3J0KQ0KDQogICAgIyBFbmNvZGUgdG8gR2VuZSBQb29sIGJhc2VkIG9uIHJlc3VsdHMNCiAgICBpZiB0cmFja2VyIGFuZCByZXN1bHQucGFzc2VkID4gMDoNCiAgICAgICAgX2VuY29kZV90b19nZW5lX3Bvb2woY29uZmlnLCByZXN1bHQsIHRyYWNrZXIpDQoNCiAgICAjIElmIGFsbCB0ZXN0cyBwYXNzZWQsIHJlY29yZCBhcyBzdWNjZXNzZnVsIGltcGxlbWVudGF0aW9uDQogICAgaWYgcmVzdWx0LnBhc3NlZCA+IDAgYW5kIHJlc3VsdC5mYWlsZWQgPT0gMCBhbmQgdHJhY2tlcjoNCiAgICAgICAgX3JlY29yZF9zdWNjZXNzZnVsX2ltcGxlbWVudGF0aW9uKGNvbmZpZywgcmVzdWx0LCB0cmFja2VyKQ0KDQogICAgIyBJZiB0ZXN0cyBmYWlsZWQsIHJlY29yZCB0aGUgZmFpbHVyZSBzaWduYWwgZm9yIGdhcCBhbmFseXplcg0KICAgIGlmIHJlc3VsdC5mYWlsZWQgPiAwIGFuZCB0cmFja2VyOg0KICAgICAgICBfcmVjb3JkX2ZhaWxlZF9pbXBsZW1lbnRhdGlvbihjb25maWcsIHJlc3VsdCwgdHJhY2tlcikNCg0KICAgICMgVHJpZ2dlciBJbnNpZ2h0RXZvbHV0aW9uIGZlZWRiYWNrLWRlc2NlbnQgY3ljbGUgZm9yIHRoZSBwYXBlcidzIHRvcGljLg0KICAgICMgQ2xvc2VzIHRoZSBsb29wOiBiZW5jaG1hcmsgcGFzcyAtPiBHZW5lIFBvb2wgd3JpdGUgLT4gY2Fwc3VsZSBhdWRpdCAtPg0KICAgICMgVjIgY2FuZGlkYXRlIHByb3Bvc2UgLT4gcGFpcndpc2UgZXZhbHVhdGUgLT4gYXBwbHkgaW1wcm92ZW1lbnRzLg0KICAgIGlmIHRyYWNrZXIgYW5kIHJlc3VsdC5wYXNzZWQgPiAwOg0KICAgICAgICBfdHJpZ2dlcl9ldm9sdXRpb24odHJhY2tlciwgY29uZmlnLnBhcGVyX3RvcGljKQ0KDQogICAgcmV0dXJuIHJlc3VsdA0KDQoNCmRlZiBfcGFyc2VfcHl0ZXN0X291dHB1dChyZXN1bHQ6IEJlbmNobWFya1Jlc3VsdCwgb3V0cHV0OiBzdHIpIC0+IE5vbmU6DQogICAgIiIiUGFyc2UgcHl0ZXN0IHN0ZG91dC9zdGRlcnIgZm9yIHBhc3MvZmFpbCBjb3VudHMuIiIiDQogICAgaW1wb3J0IHJlDQoNCiAgICAjIE1hdGNoZXM6ICJOIHBhc3NlZCIsICJOIHBhc3NlZCwgTSBmYWlsZWQiLCAiTiBwYXNzZWQsIE0gZmFpbGVkLCBLIHNraXBwZWQiDQogICAgIyBBbHNvIGhhbmRsZXMgYWxsLXNraXBwZWQgY2FzZTogIk4gc2tpcHBlZCINCiAgICBtID0gcmUuc2VhcmNoKA0KICAgICAgICByIihcZCspXHMrcGFzc2VkIg0KICAgICAgICByIig/OixccysoXGQrKVxzK2ZhaWxlZCk/Ig0KICAgICAgICByIig/OixccysoXGQrKVxzK3NraXBwZWQpPyIsDQogICAgICAgIG91dHB1dCwNCiAgICApDQogICAgaWYgbToNCiAgICAgICAgcmVzdWx0LnBhc3NlZCA9IGludChtLmdyb3VwKDEpKQ0KICAgICAgICByZXN1bHQuZmFpbGVkID0gaW50KG0uZ3JvdXAoMikpIGlmIG0uZ3JvdXAoMikgZWxzZSAwDQogICAgICAgIHJlc3VsdC5za2lwcGVkID0gaW50KG0uZ3JvdXAoMykpIGlmIG0uZ3JvdXAoMykgZWxzZSAwDQogICAgZWxzZToNCiAgICAgICAgIyBIYW5kbGUgYWxsLXNraXBwZWQgb3IgYWxsLWZhaWxlZCBvdXRwdXQ6ICJOIHNraXBwZWQgaW4gWHMiIG9yICJOIGZhaWxlZCBpbiBYcyINCiAgICAgICAgc2tpcHBlZF9tID0gcmUuc2VhcmNoKHIiKFxkKylccytza2lwcGVkIiwgb3V0cHV0KQ0KICAgICAgICBpZiBza2lwcGVkX206DQogICAgICAgICAgICByZXN1bHQuc2tpcHBlZCA9IGludChza2lwcGVkX20uZ3JvdXAoMSkpDQogICAgICAgIGZhaWxlZF9tID0gcmUuc2VhcmNoKHIiKFxkKylccytmYWlsZWQiLCBvdXRwdXQpDQogICAgICAgIGlmIGZhaWxlZF9tOg0KICAgICAgICAgICAgcmVzdWx0LmZhaWxlZCA9IGludChmYWlsZWRfbS5ncm91cCgxKSkNCiAgICAgICAgIyBIYW5kbGUgY29sbGVjdGlvbiBlcnJvcnM6ICJOIGVycm9yIiBkdXJpbmcgY29sbGVjdGlvbg0KICAgICAgICBlcnJvcl9tID0gcmUuc2VhcmNoKHIiKFxkKylccytlcnJvciIsIG91dHB1dCkNCiAgICAgICAgaWYgZXJyb3JfbToNCiAgICAgICAgICAgIHJlc3VsdC5mYWlsZWQgPSBpbnQoZXJyb3JfbS5ncm91cCgxKSkNCg0KDQpkZWYgX3BhcnNlX2pzb25fcmVwb3J0KHJlc3VsdDogQmVuY2htYXJrUmVzdWx0LCByZXBvcnRfcGF0aDogUGF0aCkgLT4gTm9uZToNCiAgICAiIiJQYXJzZSBweXRlc3QtanNvbi1yZXBvcnQgb3V0cHV0LiIiIg0KICAgIHRyeToNCiAgICAgICAgZGF0YSA9IGpzb24ubG9hZHMocmVwb3J0X3BhdGgucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpKQ0KICAgICAgICByZXN1bHQucGFzc2VkID0gZGF0YS5nZXQoInN1bW1hcnkiLCB7fSkuZ2V0KCJwYXNzZWQiLCByZXN1bHQucGFzc2VkKQ0KICAgICAgICByZXN1bHQuZmFpbGVkID0gZGF0YS5nZXQoInN1bW1hcnkiLCB7fSkuZ2V0KCJmYWlsZWQiLCByZXN1bHQuZmFpbGVkKQ0KICAgICAgICByZXN1bHQuc2tpcHBlZCA9IGRhdGEuZ2V0KCJzdW1tYXJ5Iiwge30pLmdldCgic2tpcHBlZCIsIHJlc3VsdC5za2lwcGVkKQ0KDQogICAgICAgIGZvciBub2RlIGluIGRhdGEuZ2V0KCJyZXN1bHRzIiwgW10pOg0KICAgICAgICAgICAgdGVzdF9uYW1lID0gbm9kZS5nZXQoIm5vZGVpZCIsICIiKQ0KICAgICAgICAgICAgb3V0Y29tZSA9IG5vZGUuZ2V0KCJvdXRjb21lIiwgIiIpDQogICAgICAgICAgICBpZiBvdXRjb21lID09ICJwYXNzZWQiOg0KICAgICAgICAgICAgICAgIHJlc3VsdC5wYXNzZWRfdGVzdHMuYXBwZW5kKHRlc3RfbmFtZSkNCiAgICAgICAgICAgIGVsaWYgb3V0Y29tZSA9PSAiZmFpbGVkIjoNCiAgICAgICAgICAgICAgICByZXN1bHQuZmFpbGVkX3Rlc3RzLmFwcGVuZCh0ZXN0X25hbWUpDQogICAgZXhjZXB0IEV4Y2VwdGlvbjoNCiAgICAgICAgcGFzcyAgIyBOb24tY3JpdGljYWwsIHdlIGFscmVhZHkgaGF2ZSBkYXRhIGZyb20gc3Rkb3V0DQoNCg0KZGVmIF9lbmNvZGVfdG9fZ2VuZV9wb29sKA0KICAgIGNvbmZpZzogQmVuY2htYXJrQ29uZmlnLA0KICAgIHJlc3VsdDogQmVuY2htYXJrUmVzdWx0LA0KICAgIHRyYWNrZXI6IEV2b2x1dGlvblRyYWNrZXIsDQopIC0+IE5vbmU6DQogICAgIiIiRW5jb2RlIGEgc3VjY2Vzc2Z1bCBpbXBsZW1lbnRhdGlvbiBwYXR0ZXJuIHRvIEdlbmUgUG9vbC4NCg0KICAgIENhbGxlZCB3aGVuIHRlc3RzIHBhc3MuIFRoZSBmYWN0IHRoYXQgdGhpcyBwYXBlcidzIGFsZ29yaXRobQ0KICAgIHdhcyBpbXBsZW1lbnRhYmxlIEFORCBwYXNzZWQgdGVzdHMgaXMgd29ydGggcmVjb3JkaW5nIGFzIGEgQ2Fwc3VsZUdlbmUuDQogICAgIiIiDQogICAgcGFzc19yYXRlID0gKA0KICAgICAgICByZXN1bHQucGFzc2VkIC8gKHJlc3VsdC5wYXNzZWQgKyByZXN1bHQuZmFpbGVkKQ0KICAgICAgICBpZiAocmVzdWx0LnBhc3NlZCArIHJlc3VsdC5mYWlsZWQpID4gMA0KICAgICAgICBlbHNlIDANCiAgICApDQoNCiAgICBpZiBwYXNzX3JhdGUgPCBjb25maWcubWluX3Bhc3NfcmF0ZToNCiAgICAgICAgcmV0dXJuICAjIE5vdCBzdWNjZXNzZnVsIGVub3VnaCB0byBlbmNvZGUNCg0KICAgICMgVGhlIHN1Y2Nlc3Nfc2NvcmUgaXMgZGVyaXZlZCBmcm9tIHBhc3MgcmF0ZQ0KICAgIHN1Y2Nlc3Nfc2NvcmUgPSBwYXNzX3JhdGUgKiBjb25maWcuY29kZV9xdWFsaXR5DQoNCiAgICBfY2Fwc3VsZSA9IENhcHN1bGVHZW5lKA0KICAgICAgICBjYXBzdWxlX2lkPWYiaW1wbF97Y29uZmlnLmFyeGl2X2lkLnJlcGxhY2UoJy4nLCAnXycpfV97dXVpZC51dWlkNCgpLmhleFs6Nl19IiwNCiAgICAgICAgY3JlYXRlZF9hdD1fdGltZXN0YW1wKCksDQogICAgICAgIHRyaWdnZXJfdG9waWM9Y29uZmlnLnBhcGVyX3RvcGljLA0KICAgICAgICB0cmlnZ2VyX2dhcF90eXBlPSJpbXBsZW1lbnRhdGlvbiIsDQogICAgICAgIHRyaWdnZXJfa2V5d29yZHM9X2V4dHJhY3Rfa2V5d29yZHMoY29uZmlnLmFsZ29yaXRobV9kZXNjcmlwdGlvbiksDQogICAgICAgIGFjdGlvbl9nYXBfdHlwZT0iaW1wbGVtZW50YXRpb24iLA0KICAgICAgICBhY3Rpb25fZ2FwX3RpdGxlPWYie2NvbmZpZy5hcnhpdl9pZH0gaW1wbGVtZW50YXRpb24iLA0KICAgICAgICBvdXRjb21lX3N1Y2Nlc3Nfc2NvcmU9c3VjY2Vzc19zY29yZSwNCiAgICAgICAgZmVlZGJhY2tfY291bnQ9MSwNCiAgICAgICAgZXZvbHZlZF9nZW5lcmF0aW9uPTAsDQogICAgICAgIGFyY2hldHlwZT17fSwNCiAgICApDQoNCiAgICAjIFBlcnNpc3QgdmlhIHRyYWNrZXINCiAgICB0cmFja2VyLmVuY29kZV9jYXBzdWxlKA0KICAgICAgICB0b3BpYz1jb25maWcucGFwZXJfdG9waWMsDQogICAgICAgIGdhcF90eXBlPSJpbXBsZW1lbnRhdGlvbiIsDQogICAgICAgIGdhcF90aXRsZT1mIntjb25maWcuYXJ4aXZfaWR9IGltcGxlbWVudGF0aW9uIiwNCiAgICAgICAgZ2FwX2Rlc2NyaXB0aW9uPWYiUGFzc2VkIHtyZXN1bHQucGFzc2VkfS97cmVzdWx0LnBhc3NlZCArIHJlc3VsdC5mYWlsZWR9IHRlc3RzIiwNCiAgICAgICAgc3VjY2Vzc19zY29yZT1zdWNjZXNzX3Njb3JlLA0KICAgICkNCg0KDQpkZWYgX3JlY29yZF9zdWNjZXNzZnVsX2ltcGxlbWVudGF0aW9uKA0KICAgIGNvbmZpZzogQmVuY2htYXJrQ29uZmlnLA0KICAgIHJlc3VsdDogQmVuY2htYXJrUmVzdWx0LA0KICAgIHRyYWNrZXI6IEV2b2x1dGlvblRyYWNrZXIsDQopIC0+IE5vbmU6DQogICAgIiIiUmVjb3JkIHRoYXQgdGhpcyBwYXBlcidzIGltcGxlbWVudGF0aW9uIHBhc3NlZCBhbGwgdGVzdHMuIiIiDQogICAgdHJhY2tlci5yZWNvcmRfZXZlbnQoDQogICAgICAgIHRvcGljPWNvbmZpZy5wYXBlcl90b3BpYywNCiAgICAgICAgYWN0aW9uPUV4cGxvcmF0aW9uQWN0aW9uLklNUExFTUVOVEFUSU9OX1BBU1MsDQogICAgICAgIHBhcGVyX2lkcz1bY29uZmlnLmFyeGl2X2lkXSwNCiAgICAgICAgbm90ZXM9ZiJQYXNzZWQge3Jlc3VsdC5wYXNzZWR9L3tyZXN1bHQucGFzc2VkICsgcmVzdWx0LmZhaWxlZH0gdGVzdHMgaW4ge3Jlc3VsdC5kdXJhdGlvbl9zZWNvbmRzOi4xZn1zIiwNCiAgICApDQoNCg0KZGVmIF9yZWNvcmRfZmFpbGVkX2ltcGxlbWVudGF0aW9uKA0KICAgIGNvbmZpZzogQmVuY2htYXJrQ29uZmlnLA0KICAgIHJlc3VsdDogQmVuY2htYXJrUmVzdWx0LA0KICAgIHRyYWNrZXI6IEV2b2x1dGlvblRyYWNrZXIsDQopIC0+IE5vbmU6DQogICAgIiIiUmVjb3JkIHRoYXQgdGhpcyBwYXBlcidzIGltcGxlbWVudGF0aW9uIGhhZCB0ZXN0IGZhaWx1cmVzLg0KDQogICAgVGhpcyBmZWVkcyBiYWNrIHRvIEdhcEFuYWx5emVyIHRvIGluZm9ybSBmdXR1cmUgZ2FwIHNjb3JpbmcNCiAgICAoZmFpbGVkIGltcGxlbWVudGF0aW9ucyBhcmUgbG93ZXIgcXVhbGl0eSBwYXRocykuDQogICAgIiIiDQogICAgdHJhY2tlci5yZWNvcmRfZXZlbnQoDQogICAgICAgIHRvcGljPWNvbmZpZy5wYXBlcl90b3BpYywNCiAgICAgICAgYWN0aW9uPUV4cGxvcmF0aW9uQWN0aW9uLklNUExFTUVOVEFUSU9OX0ZBSUwsDQogICAgICAgIHBhcGVyX2lkcz1bY29uZmlnLmFyeGl2X2lkXSwNCiAgICAgICAgbm90ZXM9ZiJGYWlsZWQge3Jlc3VsdC5mYWlsZWR9L3tyZXN1bHQucGFzc2VkICsgcmVzdWx0LmZhaWxlZH0gdGVzdHMuIEVycm9yczoge3Jlc3VsdC5lcnJvcl9tZXNzYWdlWzozMDBdfSIsDQogICAgKQ0KDQoNCmRlZiBfdHJpZ2dlcl9ldm9sdXRpb24oDQogICAgdHJhY2tlcjogRXZvbHV0aW9uVHJhY2tlciwNCiAgICBwYXBlcl90b3BpYzogc3RyLA0KKSAtPiBOb25lOg0KICAgICIiIlRyaWdnZXIgSW5zaWdodEV2b2x1dGlvbiBmZWVkYmFjay1kZXNjZW50IGN5Y2xlIGZvciB0aGUgcGFwZXIncyB0b3BpYy4NCg0KICAgIFJlYWRzIGNhcHN1bGVzIGZyb20gR2VuZSBQb29sIG1hdGNoaW5nIHRoaXMgdG9waWMsIHJ1bnMgYXVkaXQvcHJvcG9zZS9ldmFsdWF0ZS9hcHBseSwNCiAgICBhbmQgcGVyc2lzdHMgYW55IFYyIGNhcHN1bGUgaW1wcm92ZW1lbnRzIGJhY2sgdG8gdGhlIEdlbmUgUG9vbC4NCiAgICAiIiINCiAgICB0cnk6DQogICAgICAgIGZyb20gbGxtLmluc2lnaHQuZXZvbHV0aW9uIGltcG9ydCBJbnNpZ2h0RXZvbHV0aW9uDQoNCiAgICAgICAgZXZvID0gSW5zaWdodEV2b2x1dGlvbih0cmFja2VyPXRyYWNrZXIpDQogICAgICAgIHN1bW1hcnkgPSBldm8uZXZvbHZlKHRvcGljPXBhcGVyX3RvcGljKQ0KDQogICAgICAgICMgTG9nIHN1bW1hcnkgdG8gc3RkZXJyIGZvciB2aXNpYmlsaXR5DQogICAgICAgIGltcHJvdmVkID0gc3VtbWFyeS5nZXQoImFwcGxpZWQiLCBbXSkNCiAgICAgICAgaWYgaW1wcm92ZWQ6DQogICAgICAgICAgICBwcmludCgNCiAgICAgICAgICAgICAgICBmIltldm9sdXRpb25dIEFwcGxpZWQge2xlbihpbXByb3ZlZCl9IFYyIGNhcHN1bGUocykgZm9yIHRvcGljOiB7cGFwZXJfdG9waWNbOjYwXX0iDQogICAgICAgICAgICApDQogICAgICAgIGVsc2U6DQogICAgICAgICAgICBwcmludChmIltldm9sdXRpb25dIE5vIGltcHJvdmVtZW50cyBhcHBsaWVkIGZvciB0b3BpYzoge3BhcGVyX3RvcGljWzo2MF19IikNCiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6DQogICAgICAgICMgTmV2ZXIgbGV0IGV2b2x1dGlvbiBlcnJvcnMgY3Jhc2ggdGhlIGJlbmNobWFyayBwaXBlbGluZQ0KICAgICAgICBwcmludChmIltldm9sdXRpb25dIFdhcm5pbmc6IGV2b2x1dGlvbiBjeWNsZSBmYWlsZWQ6IHtlfSIpDQoNCg0KZGVmIF9leHRyYWN0X2tleXdvcmRzKHRleHQ6IHN0cikgLT4gbGlzdFtzdHJdOg0KICAgICIiIlNpbXBsZSBrZXl3b3JkIGV4dHJhY3Rpb24gZnJvbSB0ZXh0LiIiIg0KICAgIGltcG9ydCByZQ0KDQogICAgc3RvcHdvcmRzID0gew0KICAgICAgICAidGhlIiwNCiAgICAgICAgImEiLA0KICAgICAgICAiYW4iLA0KICAgICAgICAiYW5kIiwNCiAgICAgICAgIm9yIiwNCiAgICAgICAgImJ1dCIsDQogICAgICAgICJpbiIsDQogICAgICAgICJvbiIsDQogICAgICAgICJhdCIsDQogICAgICAgICJ0byIsDQogICAgICAgICJmb3IiLA0KICAgICAgICAib2YiLA0KICAgICAgICAid2l0aCIsDQogICAgICAgICJieSIsDQogICAgICAgICJmcm9tIiwNCiAgICAgICAgImlzIiwNCiAgICAgICAgImFyZSIsDQogICAgICAgICJ3YXMiLA0KICAgICAgICAid2VyZSIsDQogICAgICAgICJiZSIsDQogICAgICAgICJiZWVuIiwNCiAgICAgICAgImJlaW5nIiwNCiAgICAgICAgImhhdmUiLA0KICAgICAgICAiaGFzIiwNCiAgICAgICAgImhhZCIsDQogICAgICAgICJkbyIsDQogICAgICAgICJkb2VzIiwNCiAgICAgICAgImRpZCIsDQogICAgICAgICJ3aWxsIiwNCiAgICAgICAgIndvdWxkIiwNCiAgICAgICAgImNvdWxkIiwNCiAgICAgICAgInNob3VsZCIsDQogICAgICAgICJtYXkiLA0KICAgICAgICAibWlnaHQiLA0KICAgICAgICAiY2FuIiwNCiAgICAgICAgInRoaXMiLA0KICAgICAgICAidGhhdCIsDQogICAgICAgICJ0aGVzZSIsDQogICAgICAgICJ0aG9zZSIsDQogICAgICAgICJpdCIsDQogICAgICAgICJpdHMiLA0KICAgICAgICAid2UiLA0KICAgICAgICAib3VyIiwNCiAgICAgICAgInlvdSIsDQogICAgICAgICJ5b3VyIiwNCiAgICAgICAgImkiLA0KICAgICAgICAibXkiLA0KICAgIH0NCiAgICB3b3JkcyA9IHJlLmZpbmRhbGwociJbYS16QS1aXXszLH0iLCB0ZXh0Lmxvd2VyKCkpDQogICAga2V5d29yZHMgPSBbdyBmb3IgdyBpbiB3b3JkcyBpZiB3IG5vdCBpbiBzdG9wd29yZHNdDQogICAgc2VlbiA9IHNldCgpDQogICAgdW5pcXVlID0gW10NCiAgICBmb3IgdyBpbiBrZXl3b3JkczoNCiAgICAgICAgaWYgdyBub3QgaW4gc2VlbjoNCiAgICAgICAgICAgIHNlZW4uYWRkKHcpDQogICAgICAgICAgICB1bmlxdWUuYXBwZW5kKHcpDQogICAgcmV0dXJuIHVuaXF1ZVs6MjBdDQoNCg0KZGVmIF90aW1lc3RhbXAoKSAtPiBzdHI6DQogICAgIiIiUmV0dXJuIElTTyB0aW1lc3RhbXAuIiIiDQogICAgZnJvbSBkYXRldGltZSBpbXBvcnQgZGF0ZXRpbWUNCg0KICAgIHJldHVybiBkYXRldGltZS51dGNub3coKS5pc29mb3JtYXQoKQ0KDQoNCiMg4pSA4pSA4pSAIFRlc3QgcnVuIHV0aWxpdGllcyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIANCg0KDQpkZWYgcnVuX3Rlc3RzX2xvY2FsbHkodGVzdF9kaXI6IFBhdGgsIHZlcmJvc2U6IGJvb2wgPSBUcnVlKSAtPiBzdWJwcm9jZXNzLkNvbXBsZXRlZFByb2Nlc3M6DQogICAgIiIiUnVuIHRlc3RzIGFuZCByZXR1cm4gdGhlIHN1YnByb2Nlc3MgcmVzdWx0IChmb3IgQ0xJIHVzZSkuIiIiDQogICAgY21kID0gWw0KICAgICAgICBzeXMuZXhlY3V0YWJsZSwNCiAgICAgICAgIi1tIiwNCiAgICAgICAgInB5dGVzdCIsDQogICAgICAgIHN0cih0ZXN0X2RpciksDQogICAgICAgICItdiIgaWYgdmVyYm9zZSBlbHNlICItcSIsDQogICAgICAgICItLXRiPXNob3J0IiwNCiAgICBdDQogICAgcmV0dXJuIHN1YnByb2Nlc3MucnVuKGNtZCwgY2FwdHVyZV9vdXRwdXQ9VHJ1ZSwgdGV4dD1UcnVlLCBlbmNvZGluZz0idXRmLTgiLCBlcnJvcnM9InJlcGxhY2UiKQ0KDQoNCmRlZiBzdW1tYXJpemVfcmVzdWx0KHJlc3VsdDogQmVuY2htYXJrUmVzdWx0KSAtPiBzdHI6DQogICAgIiIiSHVtYW4tcmVhZGFibGUgc3VtbWFyeSBvZiBiZW5jaG1hcmsgcmVzdWx0LiIiIg0KICAgIHRvdGFsID0gcmVzdWx0LnBhc3NlZCArIHJlc3VsdC5mYWlsZWQNCiAgICBwYXNzX3JhdGUgPSByZXN1bHQucGFzc2VkIC8gdG90YWwgaWYgdG90YWwgPiAwIGVsc2UgMA0KDQogICAgbGluZXMgPSBbDQogICAgICAgIGYiYXJYaXY6IHtyZXN1bHQuYXJ4aXZfaWR9IiwNCiAgICAgICAgZiJUZXN0czoge3Jlc3VsdC5wYXNzZWR9IHBhc3NlZCwge3Jlc3VsdC5mYWlsZWR9IGZhaWxlZCwge3Jlc3VsdC5za2lwcGVkfSBza2lwcGVkIiwNCiAgICAgICAgZiJEdXJhdGlvbjoge3Jlc3VsdC5kdXJhdGlvbl9zZWNvbmRzOi4yZn1zIiwNCiAgICAgICAgZiJQYXNzIHJhdGU6IHtwYXNzX3JhdGU6LjElfSIsDQogICAgXQ0KDQogICAgaWYgcmVzdWx0LmdlbmVfcG9vbF9lbnRyeToNCiAgICAgICAgbGluZXMuYXBwZW5kKGYiR2VuZSBQb29sOiBlbmNvZGVkIGNhcHN1bGUge3Jlc3VsdC5nZW5lX3Bvb2xfZW50cnkuY2Fwc3VsZV9pZH0iKQ0KDQogICAgaWYgcmVzdWx0LmVycm9yX21lc3NhZ2UgYW5kIHJlc3VsdC5mYWlsZWQgPiAwOg0KICAgICAgICBsaW5lcy5hcHBlbmQoZiJcbkVycm9yIChmaXJzdCAzMDAgY2hhcnMpOlxue3Jlc3VsdC5lcnJvcl9tZXNzYWdlWzozMDBdfSIpDQoNCiAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQ0K
+"""
+Benchmark Runner — run pytest tests and encode results to Gene Pool.
+
+闭环核心:
+- 运行 pytest 测试
+- 通过 → encode CapsuleGene(successful implementation pattern)
+- 失败 → 反馈给 GapAnalyzer, 标记为低质量路径
+- 成功后 → 触发 InsightEvolution feedback-descent 进化
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import subprocess
+import sys
+import time
+import uuid
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Optional
+
+from llm.insight.gene import CapsuleGene
+from llm.insight.preferences import ExplorationAction
+from llm.insight.tracker import EvolutionTracker
+
+
+@dataclass
+class BenchmarkResult:
+    """Result of a single benchmark run."""
+    arxiv_id: str
+    test_dir: Path
+    passed: int
+    failed: int
+    skipped: int
+    duration_seconds: float
+    passed_tests: list[str] = field(default_factory=list)
+    failed_tests: list[str] = field(default_factory=list)
+    error_message: str = ""
+    gene_pool_entry: Optional[CapsuleGene] = None
+
+
+@dataclass
+class BenchmarkConfig:
+    """Configuration for a benchmark run."""
+    arxiv_id: str
+    paper_topic: str
+    algorithm_description: str
+    test_dir: Path
+    code_path: Path
+    code_quality: float = 0.5  # estimated quality of generated code
+    min_pass_rate: float = 0.0  # minimum pass rate to encode as success (0 = record everything)
+
+
+def run_benchmark(
+    config: BenchmarkConfig,
+    tracker: Optional[EvolutionTracker] = None,
+) -> BenchmarkResult:
+    """Run pytest on the generated test suite.
+
+    Args:
+        config: Benchmark configuration
+        tracker: EvolutionTracker for Gene Pool encoding
+
+    Returns:
+        BenchmarkResult with pass/fail details
+    """
+    start = time.time()
+
+    # Run pytest with JSON report
+    test_dir = config.test_dir
+    json_report = test_dir / "report.json"
+
+    cmd = [
+        sys.executable, "-m", "pytest",
+        str(test_dir),
+        "-v",
+        "--tb=short",
+        "--no-header",
+        "-q",
+    ]
+
+    # Prepend src_dir to PYTHONPATH so pytest can import the generated module
+    env = {**os.environ, "PYTHONPATH": f"{config.code_path.parent}{os.pathsep}{os.environ.get('PYTHONPATH', '')}"}
+
+    result = BenchmarkResult(
+        arxiv_id=config.arxiv_id,
+        test_dir=test_dir,
+        passed=0,
+        failed=0,
+        skipped=0,
+        duration_seconds=0,
+    )
+
+    try:
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=300,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+        )
+        result.duration_seconds = time.time() - start
+        result.error_message = proc.stdout + proc.stderr
+
+    except subprocess.TimeoutExpired:
+        result.duration_seconds = time.time() - start
+        result.error_message = f"Timeout after {result.duration_seconds:.0f}s"
+        return result
+    except Exception as e:
+        result.duration_seconds = time.time() - start
+        result.error_message = str(e)
+        return result
+
+    # Parse pytest output for pass/fail counts
+    _parse_pytest_output(result, proc.stdout + proc.stderr)
+
+    # Parse JSON report if available
+    if json_report.exists():
+        _parse_json_report(result, json_report)
+
+    # Encode to Gene Pool based on results
+    if tracker and result.passed > 0:
+        _encode_to_gene_pool(config, result, tracker)
+
+    # If all tests passed, record as successful implementation
+    if result.passed > 0 and result.failed == 0 and tracker:
+        _record_successful_implementation(config, result, tracker)
+
+    # If tests failed, record the failure signal for gap analyzer
+    if result.failed > 0 and tracker:
+        _record_failed_implementation(config, result, tracker)
+
+    # Trigger InsightEvolution feedback-descent cycle for the paper's topic.
+    # Closes the loop: benchmark pass -> Gene Pool write -> capsule audit ->
+    # V2 candidate propose -> pairwise evaluate -> apply improvements.
+    if tracker and result.passed > 0:
+        _trigger_evolution(tracker, config.paper_topic)
+
+    return result
+
+
+def _parse_pytest_output(result: BenchmarkResult, output: str) -> None:
+    """Parse pytest stdout/stderr for pass/fail counts."""
+    import re
+    # Matches: "N passed", "N passed, M failed", "N passed, M failed, K skipped"
+    # Also handles all-skipped case: "N skipped"
+    m = re.search(
+        r'(\d+)\s+passed'
+        r'(?:,\s+(\d+)\s+failed)?'
+        r'(?:,\s+(\d+)\s+skipped)?',
+        output
+    )
+    if m:
+        result.passed = int(m.group(1))
+        result.failed = int(m.group(2)) if m.group(2) else 0
+        result.skipped = int(m.group(3)) if m.group(3) else 0
+    else:
+        # Handle all-skipped or all-failed output: "N skipped in Xs" or "N failed in Xs"
+        skipped_m = re.search(r'(\d+)\s+skipped', output)
+        if skipped_m:
+            result.skipped = int(skipped_m.group(1))
+        failed_m = re.search(r'(\d+)\s+failed', output)
+        if failed_m:
+            result.failed = int(failed_m.group(1))
+        # Handle collection errors: "N error" during collection
+        error_m = re.search(r'(\d+)\s+error', output)
+        if error_m:
+            result.failed = int(error_m.group(1))
+
+
+def _parse_json_report(result: BenchmarkResult, report_path: Path) -> None:
+    """Parse pytest-json-report output."""
+    try:
+        data = json.loads(report_path.read_text(encoding="utf-8"))
+        result.passed = data.get("summary", {}).get("passed", result.passed)
+        result.failed = data.get("summary", {}).get("failed", result.failed)
+        result.skipped = data.get("summary", {}).get("skipped", result.skipped)
+
+        for node in data.get("results", []):
+            test_name = node.get("nodeid", "")
+            outcome = node.get("outcome", "")
+            if outcome == "passed":
+                result.passed_tests.append(test_name)
+            elif outcome == "failed":
+                result.failed_tests.append(test_name)
+    except Exception:
+        pass  # Non-critical, we already have data from stdout
+
+
+def _encode_to_gene_pool(
+    config: BenchmarkConfig,
+    result: BenchmarkResult,
+    tracker: EvolutionTracker,
+) -> None:
+    """Encode a successful implementation pattern to Gene Pool.
+
+    Called when tests pass. The fact that this paper's algorithm
+    was implementable AND passed tests is worth recording as a CapsuleGene.
+    """
+    pass_rate = result.passed / (result.passed + result.failed) if (result.passed + result.failed) > 0 else 0
+
+    if pass_rate < config.min_pass_rate:
+        return  # Not successful enough to encode
+
+    # The success_score is derived from pass rate
+    success_score = pass_rate * config.code_quality
+
+    _capsule = CapsuleGene(
+        capsule_id=f"impl_{config.arxiv_id.replace('.', '_')}_{uuid.uuid4().hex[:6]}",
+        created_at=_timestamp(),
+        trigger_topic=config.paper_topic,
+        trigger_gap_type="implementation",
+        trigger_keywords=_extract_keywords(config.algorithm_description),
+        action_gap_type="implementation",
+        action_gap_title=f"{config.arxiv_id} implementation",
+        outcome_success_score=success_score,
+        feedback_count=1,
+        evolved_generation=0,
+        archetype={},
+    )
+
+    # Persist via tracker
+    tracker.encode_capsule(
+        topic=config.paper_topic,
+        gap_type="implementation",
+        gap_title=f"{config.arxiv_id} implementation",
+        gap_description=f"Passed {result.passed}/{result.passed + result.failed} tests",
+        success_score=success_score,
+    )
+
+
+def _record_successful_implementation(
+    config: BenchmarkConfig,
+    result: BenchmarkResult,
+    tracker: EvolutionTracker,
+) -> None:
+    """Record that this paper's implementation passed all tests."""
+    tracker.record_event(
+        topic=config.paper_topic,
+        action=ExplorationAction.IMPLEMENTATION_PASS,
+        paper_ids=[config.arxiv_id],
+        notes=f"Passed {result.passed}/{result.passed + result.failed} tests in {result.duration_seconds:.1f}s",
+    )
+
+
+def _record_failed_implementation(
+    config: BenchmarkConfig,
+    result: BenchmarkResult,
+    tracker: EvolutionTracker,
+) -> None:
+    """Record that this paper's implementation had test failures.
+
+    This feeds back to GapAnalyzer to inform future gap scoring
+    (failed implementations are lower quality paths).
+    """
+    tracker.record_event(
+        topic=config.paper_topic,
+        action=ExplorationAction.IMPLEMENTATION_FAIL,
+        paper_ids=[config.arxiv_id],
+        notes=f"Failed {result.failed}/{result.passed + result.failed} tests. Errors: {result.error_message[:300]}",
+    )
+
+
+def _trigger_evolution(
+    tracker: EvolutionTracker,
+    paper_topic: str,
+) -> None:
+    """Trigger InsightEvolution feedback-descent cycle for the paper's topic.
+
+    Reads capsules from Gene Pool matching this topic, runs audit/propose/evaluate/apply,
+    and persists any V2 capsule improvements back to the Gene Pool.
+    """
+    try:
+        from llm.insight.evolution import InsightEvolution
+
+        evo = InsightEvolution(tracker=tracker)
+        summary = evo.evolve(topic=paper_topic)
+
+        # Log summary to stderr for visibility
+        improved = summary.get("applied", [])
+        if improved:
+            print(f"[evolution] Applied {len(improved)} V2 capsule(s) for topic: {paper_topic[:60]}")
+        else:
+            print(f"[evolution] No improvements applied for topic: {paper_topic[:60]}")
+    except Exception as e:
+        # Never let evolution errors crash the benchmark pipeline
+        print(f"[evolution] Warning: evolution cycle failed: {e}")
+
+
+def _extract_keywords(text: str) -> list[str]:
+    """Simple keyword extraction from text."""
+    import re
+    stopwords = {
+        "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for",
+        "of", "with", "by", "from", "is", "are", "was", "were", "be", "been",
+        "being", "have", "has", "had", "do", "does", "did", "will", "would",
+        "could", "should", "may", "might", "can", "this", "that", "these",
+        "those", "it", "its", "we", "our", "you", "your", "i", "my",
+    }
+    words = re.findall(r'[a-zA-Z]{3,}', text.lower())
+    keywords = [w for w in words if w not in stopwords]
+    seen = set()
+    unique = []
+    for w in keywords:
+        if w not in seen:
+            seen.add(w)
+            unique.append(w)
+    return unique[:20]
+
+
+def _timestamp() -> str:
+    """Return ISO timestamp."""
+    from datetime import datetime
+    return datetime.utcnow().isoformat()
+
+
+# ─── Test run utilities ───────────────────────────────────────────────────────
+
+def run_tests_locally(test_dir: Path, verbose: bool = True) -> subprocess.CompletedProcess:
+    """Run tests and return the subprocess result (for CLI use)."""
+    cmd = [
+        sys.executable, "-m", "pytest",
+        str(test_dir),
+        "-v" if verbose else "-q",
+        "--tb=short",
+    ]
+    return subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
+
+
+def summarize_result(result: BenchmarkResult) -> str:
+    """Human-readable summary of benchmark result."""
+    total = result.passed + result.failed
+    pass_rate = result.passed / total if total > 0 else 0
+
+    lines = [
+        f"arXiv: {result.arxiv_id}",
+        f"Tests: {result.passed} passed, {result.failed} failed, {result.skipped} skipped",
+        f"Duration: {result.duration_seconds:.2f}s",
+        f"Pass rate: {pass_rate:.1%}",
+    ]
+
+    if result.gene_pool_entry:
+        lines.append(f"Gene Pool: encoded capsule {result.gene_pool_entry.capsule_id}")
+
+    if result.error_message and result.failed > 0:
+        lines.append(f"\nError (first 300 chars):\n{result.error_message[:300]}")
+
+    return "\n".join(lines)

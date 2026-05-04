@@ -1,1 +1,534 @@
-IiIiVGllciAyIHVuaXQgdGVzdHMg4oCUIGxsbS9hcmd1bWVudF9idWlsZGVyLnB5LCBwdXJlIGZ1bmN0aW9ucywgbm8gSS9PLiIiIgoKZnJvbSBsbG0uYXJndW1lbnRfYnVpbGRlciBpbXBvcnQgKAogICAgRXZpZGVuY2VUeXBlLAogICAgQXJndW1lbnRTZWN0aW9uLAogICAgRXZpZGVuY2UsCiAgICBDbGFpbSwKICAgIEFyZ3VtZW50LAogICAgQXJndW1lbnRSZXN1bHQsCiAgICBBcmd1bWVudEJ1aWxkZXIsCikKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgRW51bSB0ZXN0cwojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RFdmlkZW5jZVR5cGU6CiAgICAiIiJUZXN0IEV2aWRlbmNlVHlwZSBlbnVtLiIiIgoKICAgIGRlZiB0ZXN0X2FsbF90eXBlc19oYXZlX3ZhbHVlcyhzZWxmKToKICAgICAgICAiIiJBbGwgRXZpZGVuY2VUeXBlIHZhcmlhbnRzIGhhdmUgc3RyaW5nIHZhbHVlcy4iIiIKICAgICAgICBhc3NlcnQgRXZpZGVuY2VUeXBlLlNVUFBPUlQudmFsdWUgPT0gInN1cHBvcnQiCiAgICAgICAgYXNzZXJ0IEV2aWRlbmNlVHlwZS5DT05UUkFESUNULnZhbHVlID09ICJjb250cmFkaWN0IgogICAgICAgIGFzc2VydCBFdmlkZW5jZVR5cGUuUVVBTElGWS52YWx1ZSA9PSAicXVhbGlmeSIKICAgICAgICBhc3NlcnQgRXZpZGVuY2VUeXBlLk1FVEhPRE9MT0dJQ0FMLnZhbHVlID09ICJtZXRob2RvbG9naWNhbCIKCiAgICBkZWYgdGVzdF9jYW5fY29uc3RydWN0X2Zyb21fdmFsdWUoc2VsZik6CiAgICAgICAgIiIiRW51bSBjYW4gYmUgY29uc3RydWN0ZWQgZnJvbSBzdHJpbmcgdmFsdWUuIiIiCiAgICAgICAgYXNzZXJ0IEV2aWRlbmNlVHlwZSgic3VwcG9ydCIpID09IEV2aWRlbmNlVHlwZS5TVVBQT1JUCiAgICAgICAgYXNzZXJ0IEV2aWRlbmNlVHlwZSgiY29udHJhZGljdCIpID09IEV2aWRlbmNlVHlwZS5DT05UUkFESUNUCgoKY2xhc3MgVGVzdEFyZ3VtZW50U2VjdGlvbjoKICAgICIiIlRlc3QgQXJndW1lbnRTZWN0aW9uIGVudW0uIiIiCgogICAgZGVmIHRlc3RfYWxsX3NlY3Rpb25zX2hhdmVfdmFsdWVzKHNlbGYpOgogICAgICAgICIiIkFsbCBBcmd1bWVudFNlY3Rpb24gdmFyaWFudHMgaGF2ZSB2YWx1ZXMuIiIiCiAgICAgICAgYXNzZXJ0IEFyZ3VtZW50U2VjdGlvbi5JTlRST0RVQ1RJT04udmFsdWUgPT0gImludHJvZHVjdGlvbiIKICAgICAgICBhc3NlcnQgQXJndW1lbnRTZWN0aW9uLlJFTEFURURfV09SSy52YWx1ZSA9PSAicmVsYXRlZF93b3JrIgogICAgICAgIGFzc2VydCBBcmd1bWVudFNlY3Rpb24uTUVUSE9ET0xPR1kudmFsdWUgPT0gIm1ldGhvZG9sb2d5IgogICAgICAgIGFzc2VydCBBcmd1bWVudFNlY3Rpb24uRVhQRVJJTUVOVFMudmFsdWUgPT0gImV4cGVyaW1lbnRzIgogICAgICAgIGFzc2VydCBBcmd1bWVudFNlY3Rpb24uRElTQ1VTU0lPTi52YWx1ZSA9PSAiZGlzY3Vzc2lvbiIKICAgICAgICBhc3NlcnQgQXJndW1lbnRTZWN0aW9uLkxJTUlUQVRJT04udmFsdWUgPT0gImxpbWl0YXRpb24iCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIERhdGFjbGFzcyB0ZXN0cwojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RFdmlkZW5jZToKICAgICIiIlRlc3QgRXZpZGVuY2UgZGF0YWNsYXNzLiIiIgoKICAgIGRlZiB0ZXN0X3JlcXVpcmVkX2ZpZWxkcyhzZWxmKToKICAgICAgICAiIiJSZXF1aXJlZCBmaWVsZHM6IGV2aWRlbmNlX3R5cGUsIHNvdXJjZSwgY29udGVudC4iIiIKICAgICAgICBldmlkZW5jZSA9IEV2aWRlbmNlKAogICAgICAgICAgICBldmlkZW5jZV90eXBlPUV2aWRlbmNlVHlwZS5TVVBQT1JULAogICAgICAgICAgICBzb3VyY2U9IlBhcGVyIFRpdGxlIiwKICAgICAgICAgICAgY29udGVudD0iQWJzdHJhY3QgY29udGVudCBoZXJlIiwKICAgICAgICApCiAgICAgICAgYXNzZXJ0IGV2aWRlbmNlLmV2aWRlbmNlX3R5cGUgPT0gRXZpZGVuY2VUeXBlLlNVUFBPUlQKICAgICAgICBhc3NlcnQgZXZpZGVuY2Uuc291cmNlID09ICJQYXBlciBUaXRsZSIKICAgICAgICBhc3NlcnQgZXZpZGVuY2UuY29udGVudCA9PSAiQWJzdHJhY3QgY29udGVudCBoZXJlIgoKICAgIGRlZiB0ZXN0X29wdGlvbmFsX2ZpZWxkc19kZWZhdWx0KHNlbGYpOgogICAgICAgICIiIk9wdGlvbmFsIGZpZWxkcyBoYXZlIGRlZmF1bHRzLiIiIgogICAgICAgIGV2aWRlbmNlID0gRXZpZGVuY2UoCiAgICAgICAgICAgIGV2aWRlbmNlX3R5cGU9RXZpZGVuY2VUeXBlLkNPTlRSQURJQ1QsCiAgICAgICAgICAgIHNvdXJjZT0iUyIsCiAgICAgICAgICAgIGNvbnRlbnQ9IkMiLAogICAgICAgICkKICAgICAgICBhc3NlcnQgZXZpZGVuY2UuY2l0YXRpb24gPT0gIiIKICAgICAgICBhc3NlcnQgZXZpZGVuY2Uud2VpZ2h0ID09IDEuMAoKICAgIGRlZiB0ZXN0X2FsbF9maWVsZHNfY2FuX2JlX3NldChzZWxmKToKICAgICAgICAiIiJBbGwgZmllbGRzIGNhbiBiZSBzZXQuIiIiCiAgICAgICAgZXZpZGVuY2UgPSBFdmlkZW5jZSgKICAgICAgICAgICAgZXZpZGVuY2VfdHlwZT1FdmlkZW5jZVR5cGUuTUVUSE9ET0xPR0lDQUwsCiAgICAgICAgICAgIHNvdXJjZT0iSW5zaWdodCIsCiAgICAgICAgICAgIGNvbnRlbnQ9Ik1ldGhvZCBpc3N1ZSIsCiAgICAgICAgICAgIGNpdGF0aW9uPSJhclhpdjoxMjM0LjU2NzgiLAogICAgICAgICAgICB3ZWlnaHQ9MC41LAogICAgICAgICkKICAgICAgICBhc3NlcnQgZXZpZGVuY2UuY2l0YXRpb24gPT0gImFyWGl2OjEyMzQuNTY3OCIKICAgICAgICBhc3NlcnQgZXZpZGVuY2Uud2VpZ2h0ID09IDAuNQoKCmNsYXNzIFRlc3RDbGFpbToKICAgICIiIlRlc3QgQ2xhaW0gZGF0YWNsYXNzLiIiIgoKICAgIGRlZiB0ZXN0X3JlcXVpcmVkX2ZpZWxkcyhzZWxmKToKICAgICAgICAiIiJSZXF1aXJlZCBmaWVsZHM6IHRleHQuIiIiCiAgICAgICAgY2xhaW0gPSBDbGFpbSh0ZXh0PSJUaGlzIG1ldGhvZCBpcyBlZmZlY3RpdmUiKQogICAgICAgIGFzc2VydCBjbGFpbS50ZXh0ID09ICJUaGlzIG1ldGhvZCBpcyBlZmZlY3RpdmUiCgogICAgZGVmIHRlc3Rfb3B0aW9uYWxfZmllbGRzX2RlZmF1bHQoc2VsZik6CiAgICAgICAgIiIiT3B0aW9uYWwgZmllbGRzIGRlZmF1bHQgdG8gZW1wdHkvbG93IHZhbHVlcy4iIiIKICAgICAgICBjbGFpbSA9IENsYWltKHRleHQ9IkNsYWltIHRleHQiKQogICAgICAgIGFzc2VydCBjbGFpbS5ldmlkZW5jZSA9PSBbXQogICAgICAgIGFzc2VydCBjbGFpbS5jb25maWRlbmNlID09IDAuNQoKCmNsYXNzIFRlc3RBcmd1bWVudDoKICAgICIiIlRlc3QgQXJndW1lbnQgZGF0YWNsYXNzLiIiIgoKICAgIGRlZiB0ZXN0X3JlcXVpcmVkX2ZpZWxkcyhzZWxmKToKICAgICAgICAiIiJSZXF1aXJlZCBmaWVsZHM6IHRoZXNpcy4iIiIKICAgICAgICBhcmcgPSBBcmd1bWVudCh0aGVzaXM9IlRyYW5zZm9ybWVyIGlzIGJldHRlciB0aGFuIFJOTiIpCiAgICAgICAgYXNzZXJ0IGFyZy50aGVzaXMgPT0gIlRyYW5zZm9ybWVyIGlzIGJldHRlciB0aGFuIFJOTiIKCiAgICBkZWYgdGVzdF9vcHRpb25hbF9maWVsZHNfZGVmYXVsdChzZWxmKToKICAgICAgICAiIiJPcHRpb25hbCBmaWVsZHMgZGVmYXVsdCB0byBlbXB0eS4iIiIKICAgICAgICBhcmcgPSBBcmd1bWVudCh0aGVzaXM9IlQiKQogICAgICAgIGFzc2VydCBhcmcuY2xhaW1zID09IFtdCiAgICAgICAgYXNzZXJ0IGFyZy5zdXBwb3J0aW5nX2V2aWRlbmNlID09IFtdCiAgICAgICAgYXNzZXJ0IGFyZy5jb250cmFkaWN0aW5nX2V2aWRlbmNlID09IFtdCiAgICAgICAgYXNzZXJ0IGFyZy5yZWxhdGVkX2dhcHMgPT0gW10KICAgICAgICBhc3NlcnQgYXJnLnBhcGVyX3N1Z2dlc3Rpb25zID09IFtdCgoKY2xhc3MgVGVzdEFyZ3VtZW50UmVzdWx0OgogICAgIiIiVGVzdCBBcmd1bWVudFJlc3VsdCBkYXRhY2xhc3MuIiIiCgogICAgZGVmIHRlc3RfcmVxdWlyZWRfZmllbGRzKHNlbGYpOgogICAgICAgICIiIlJlcXVpcmVkIGZpZWxkczogdG9waWMsIGFyZ3VtZW50LiIiIgogICAgICAgIGFyZyA9IEFyZ3VtZW50KHRoZXNpcz0iVCIpCiAgICAgICAgcmVzdWx0ID0gQXJndW1lbnRSZXN1bHQodG9waWM9IlRvcGljIiwgYXJndW1lbnQ9YXJnKQogICAgICAgIGFzc2VydCByZXN1bHQudG9waWMgPT0gIlRvcGljIgogICAgICAgIGFzc2VydCByZXN1bHQuYXJndW1lbnQudGhlc2lzID09ICJUIgoKICAgIGRlZiB0ZXN0X29wdGlvbmFsX2ZpZWxkc19kZWZhdWx0KHNlbGYpOgogICAgICAgICIiIk9wdGlvbmFsIGZpZWxkcyBkZWZhdWx0LiIiIgogICAgICAgIGFyZyA9IEFyZ3VtZW50KHRoZXNpcz0iVCIpCiAgICAgICAgcmVzdWx0ID0gQXJndW1lbnRSZXN1bHQodG9waWM9IlQiLCBhcmd1bWVudD1hcmcpCiAgICAgICAgYXNzZXJ0IHJlc3VsdC5zdW1tYXJ5ID09ICIiCiAgICAgICAgYXNzZXJ0IHJlc3VsdC5zZWN0aW9uX2d1aWRhbmNlID09IHt9CgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIF9jbGFzc2lmeV9pbnNpZ2h0IHRlc3RzCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdENsYXNzaWZ5SW5zaWdodDoKICAgICIiIlRlc3QgX2NsYXNzaWZ5X2luc2lnaHQgbG9naWMuIiIiCgogICAgZGVmIF9jbGFzc2lmeV9pbnNpZ2h0KHNlbGYsIGNvbnRlbnQ6IHN0ciwgdGhlc2lzOiBzdHIpIC0+IEV2aWRlbmNlVHlwZToKICAgICAgICAiIiJSZXBsaWNhdGUgaW5zaWdodCBjbGFzc2lmaWNhdGlvbiBsb2dpYy4iIiIKICAgICAgICBjb250cmFkaWN0X2tleXdvcmRzID0gWyLlsYDpmZAiLCAi6Zeu6aKYIiwgIuWksei0pSIsICLnvLrpmbciLCAibGltaXRhdGlvbiIsICJwcm9ibGVtIiwgImZhaWwiXQogICAgICAgIGNvbnRlbnRfbG93ZXIgPSBjb250ZW50Lmxvd2VyKCkKCiAgICAgICAgZm9yIGt3IGluIGNvbnRyYWRpY3Rfa2V5d29yZHM6CiAgICAgICAgICAgIGlmIGt3IGluIGNvbnRlbnRfbG93ZXI6CiAgICAgICAgICAgICAgICByZXR1cm4gRXZpZGVuY2VUeXBlLkNPTlRSQURJQ1QKCiAgICAgICAgcmV0dXJuIEV2aWRlbmNlVHlwZS5TVVBQT1JUCgogICAgZGVmIHRlc3RfY2hpbmVzZV9jb250cmFkaWN0X2tleXdvcmQoc2VsZik6CiAgICAgICAgIiIiQ2hpbmVzZSBjb250cmFkaWN0aW9uIGtleXdvcmQgdHJpZ2dlcnMgQ09OVFJBRElDVC4iIiIKICAgICAgICBhc3NlcnQgc2VsZi5fY2xhc3NpZnlfaW5zaWdodCgi6L+Z5Liq5pa55rOV5pyJ5bGA6ZmQ5oCnIiwgInRoZXNpcyIpID09IEV2aWRlbmNlVHlwZS5DT05UUkFESUNUCiAgICAgICAgYXNzZXJ0IHNlbGYuX2NsYXNzaWZ5X2luc2lnaHQoIuWtmOWcqOS4pemHjemXrumimCIsICJ0aGVzaXMiKSA9PSBFdmlkZW5jZVR5cGUuQ09OVFJBRElDVAoKICAgIGRlZiB0ZXN0X2VuZ2xpc2hfY29udHJhZGljdF9rZXl3b3JkKHNlbGYpOgogICAgICAgICIiIkVuZ2xpc2ggY29udHJhZGljdGlvbiBrZXl3b3JkIHRyaWdnZXJzIENPTlRSQURJQ1QuIiIiCiAgICAgICAgYXNzZXJ0IHNlbGYuX2NsYXNzaWZ5X2luc2lnaHQoImhhcyBsaW1pdGF0aW9uIiwgInRoZXNpcyIpID09IEV2aWRlbmNlVHlwZS5DT05UUkFESUNUCiAgICAgICAgYXNzZXJ0IHNlbGYuX2NsYXNzaWZ5X2luc2lnaHQoInRoZSBwcm9ibGVtIGlzIiwgInRoZXNpcyIpID09IEV2aWRlbmNlVHlwZS5DT05UUkFESUNUCiAgICAgICAgYXNzZXJ0IHNlbGYuX2NsYXNzaWZ5X2luc2lnaHQoImV4cGVyaW1lbnQgZmFpbCIsICJ0aGVzaXMiKSA9PSBFdmlkZW5jZVR5cGUuQ09OVFJBRElDVAoKICAgIGRlZiB0ZXN0X25vX2NvbnRyYWRpY3Rfa2V5d29yZHMoc2VsZik6CiAgICAgICAgIiIiV2l0aG91dCBjb250cmFkaWN0aW9uIGtleXdvcmRzLCBkZWZhdWx0cyB0byBTVVBQT1JULiIiIgogICAgICAgIGFzc2VydCBzZWxmLl9jbGFzc2lmeV9pbnNpZ2h0KCJUaGlzIGlzIGEgZ29vZCBtZXRob2QiLCAidGhlc2lzIikgPT0gRXZpZGVuY2VUeXBlLlNVUFBPUlQKICAgICAgICBhc3NlcnQgc2VsZi5fY2xhc3NpZnlfaW5zaWdodCgibm92ZWwgYXBwcm9hY2giLCAidGhlc2lzIikgPT0gRXZpZGVuY2VUeXBlLlNVUFBPUlQKCiAgICBkZWYgdGVzdF9jYXNlX2luc2Vuc2l0aXZlKHNlbGYpOgogICAgICAgICIiIktleXdvcmQgbWF0Y2hpbmcgaXMgY2FzZSBpbnNlbnNpdGl2ZS4iIiIKICAgICAgICBhc3NlcnQgc2VsZi5fY2xhc3NpZnlfaW5zaWdodCgiSEFTIExJTUlUQVRJT04iLCAidGhlc2lzIikgPT0gRXZpZGVuY2VUeXBlLkNPTlRSQURJQ1QKICAgICAgICBhc3NlcnQgc2VsZi5fY2xhc3NpZnlfaW5zaWdodCgiUHJvYmxlbSBmb3VuZCIsICJ0aGVzaXMiKSA9PSBFdmlkZW5jZVR5cGUuQ09OVFJBRElDVAoKICAgIGRlZiB0ZXN0X3RoZXNpc19ub3RfdXNlZChzZWxmKToKICAgICAgICAiIiJUaGVzaXMgcGFyYW1ldGVyIGlzIG5vdCB1c2VkIGluIGNsYXNzaWZpY2F0aW9uLiIiIgogICAgICAgICMgVGhlIHRoZXNpcyBpcyBwYXNzZWQgYnV0IG5vdCB1c2VkIGluIHRoZSBzaW1wbGUga2V5d29yZCBtYXRjaGluZwogICAgICAgIGFzc2VydCAoCiAgICAgICAgICAgIHNlbGYuX2NsYXNzaWZ5X2luc2lnaHQoImdvb2QgbWV0aG9kIiwgdGhlc2lzPSJwcm9ibGVtYXRpYyB0aGVzaXMiKQogICAgICAgICAgICA9PSBFdmlkZW5jZVR5cGUuU1VQUE9SVAogICAgICAgICkKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgX2NhdGVnb3JpemVfZXZpZGVuY2UgdGVzdHMKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0Q2F0ZWdvcml6ZUV2aWRlbmNlOgogICAgIiIiVGVzdCBfY2F0ZWdvcml6ZV9ldmlkZW5jZSBsb2dpYy4iIiIKCiAgICBkZWYgX2NhdGVnb3JpemVfZXZpZGVuY2Uoc2VsZiwgZXZpZGVuY2VfbGlzdDogbGlzdCkgLT4gdHVwbGU6CiAgICAgICAgIiIiUmVwbGljYXRlIGV2aWRlbmNlIGNhdGVnb3JpemF0aW9uLiIiIgogICAgICAgIHN1cHBvcnRpbmcgPSBbXQogICAgICAgIGNvbnRyYWRpY3RpbmcgPSBbXQoKICAgICAgICBmb3IgZSBpbiBldmlkZW5jZV9saXN0OgogICAgICAgICAgICBpZiBlLmV2aWRlbmNlX3R5cGUgaW4gKEV2aWRlbmNlVHlwZS5TVVBQT1JULCBFdmlkZW5jZVR5cGUuUVVBTElGWSk6CiAgICAgICAgICAgICAgICBzdXBwb3J0aW5nLmFwcGVuZChlKQogICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgY29udHJhZGljdGluZy5hcHBlbmQoZSkKCiAgICAgICAgc3VwcG9ydGluZy5zb3J0KGtleT1sYW1iZGEgeDogeC53ZWlnaHQsIHJldmVyc2U9VHJ1ZSkKICAgICAgICBjb250cmFkaWN0aW5nLnNvcnQoa2V5PWxhbWJkYSB4OiB4LndlaWdodCwgcmV2ZXJzZT1UcnVlKQoKICAgICAgICByZXR1cm4gc3VwcG9ydGluZywgY29udHJhZGljdGluZwoKICAgIGRlZiB0ZXN0X3N1cHBvcnRfZ29lc190b19zdXBwb3J0aW5nKHNlbGYpOgogICAgICAgICIiIlNVUFBPUlQgZXZpZGVuY2UgZ29lcyB0byBzdXBwb3J0aW5nIGxpc3QuIiIiCiAgICAgICAgZXZpZGVuY2UgPSBbRXZpZGVuY2UoRXZpZGVuY2VUeXBlLlNVUFBPUlQsICJTIiwgIkMiKV0KICAgICAgICBzdXBwb3J0aW5nLCBjb250cmFkaWN0aW5nID0gc2VsZi5fY2F0ZWdvcml6ZV9ldmlkZW5jZShldmlkZW5jZSkKICAgICAgICBhc3NlcnQgbGVuKHN1cHBvcnRpbmcpID09IDEKICAgICAgICBhc3NlcnQgbGVuKGNvbnRyYWRpY3RpbmcpID09IDAKCiAgICBkZWYgdGVzdF9xdWFsaWZ5X2dvZXNfdG9fc3VwcG9ydGluZyhzZWxmKToKICAgICAgICAiIiJRVUFMSUZZIGV2aWRlbmNlIGdvZXMgdG8gc3VwcG9ydGluZyBsaXN0LiIiIgogICAgICAgIGV2aWRlbmNlID0gW0V2aWRlbmNlKEV2aWRlbmNlVHlwZS5RVUFMSUZZLCAiUyIsICJDIildCiAgICAgICAgc3VwcG9ydGluZywgY29udHJhZGljdGluZyA9IHNlbGYuX2NhdGVnb3JpemVfZXZpZGVuY2UoZXZpZGVuY2UpCiAgICAgICAgYXNzZXJ0IGxlbihzdXBwb3J0aW5nKSA9PSAxCiAgICAgICAgYXNzZXJ0IGxlbihjb250cmFkaWN0aW5nKSA9PSAwCgogICAgZGVmIHRlc3RfY29udHJhZGljdF9nb2VzX3RvX2NvbnRyYWRpY3Rpbmcoc2VsZik6CiAgICAgICAgIiIiQ09OVFJBRElDVCBldmlkZW5jZSBnb2VzIHRvIGNvbnRyYWRpY3RpbmcgbGlzdC4iIiIKICAgICAgICBldmlkZW5jZSA9IFtFdmlkZW5jZShFdmlkZW5jZVR5cGUuQ09OVFJBRElDVCwgIlMiLCAiQyIpXQogICAgICAgIHN1cHBvcnRpbmcsIGNvbnRyYWRpY3RpbmcgPSBzZWxmLl9jYXRlZ29yaXplX2V2aWRlbmNlKGV2aWRlbmNlKQogICAgICAgIGFzc2VydCBsZW4oc3VwcG9ydGluZykgPT0gMAogICAgICAgIGFzc2VydCBsZW4oY29udHJhZGljdGluZykgPT0gMQoKICAgIGRlZiB0ZXN0X21ldGhvZG9sb2dpY2FsX2dvZXNfdG9fY29udHJhZGljdGluZyhzZWxmKToKICAgICAgICAiIiJNRVRIT0RPTE9HSUNBTCBldmlkZW5jZSBnb2VzIHRvIGNvbnRyYWRpY3RpbmcgbGlzdC4iIiIKICAgICAgICBldmlkZW5jZSA9IFtFdmlkZW5jZShFdmlkZW5jZVR5cGUuTUVUSE9ET0xPR0lDQUwsICJTIiwgIkMiKV0KICAgICAgICBzdXBwb3J0aW5nLCBjb250cmFkaWN0aW5nID0gc2VsZi5fY2F0ZWdvcml6ZV9ldmlkZW5jZShldmlkZW5jZSkKICAgICAgICBhc3NlcnQgbGVuKHN1cHBvcnRpbmcpID09IDAKICAgICAgICBhc3NlcnQgbGVuKGNvbnRyYWRpY3RpbmcpID09IDEKCiAgICBkZWYgdGVzdF9zb3J0ZWRfYnlfd2VpZ2h0X2Rlc2NlbmRpbmcoc2VsZik6CiAgICAgICAgIiIiRXZpZGVuY2UgaXMgc29ydGVkIGJ5IHdlaWdodCBkZXNjZW5kaW5nLiIiIgogICAgICAgIGV2aWRlbmNlID0gWwogICAgICAgICAgICBFdmlkZW5jZShFdmlkZW5jZVR5cGUuU1VQUE9SVCwgIlMxIiwgIkMiLCB3ZWlnaHQ9MC4zKSwKICAgICAgICAgICAgRXZpZGVuY2UoRXZpZGVuY2VUeXBlLlNVUFBPUlQsICJTMiIsICJDIiwgd2VpZ2h0PTAuOCksCiAgICAgICAgICAgIEV2aWRlbmNlKEV2aWRlbmNlVHlwZS5TVVBQT1JULCAiUzMiLCAiQyIsIHdlaWdodD0wLjUpLAogICAgICAgIF0KICAgICAgICBzdXBwb3J0aW5nLCBfID0gc2VsZi5fY2F0ZWdvcml6ZV9ldmlkZW5jZShldmlkZW5jZSkKICAgICAgICBhc3NlcnQgc3VwcG9ydGluZ1swXS53ZWlnaHQgPT0gMC44CiAgICAgICAgYXNzZXJ0IHN1cHBvcnRpbmdbMV0ud2VpZ2h0ID09IDAuNQogICAgICAgIGFzc2VydCBzdXBwb3J0aW5nWzJdLndlaWdodCA9PSAwLjMKCiAgICBkZWYgdGVzdF9taXhlZF9ldmlkZW5jZV9zZXBhcmF0ZWQoc2VsZik6CiAgICAgICAgIiIiTWl4ZWQgZXZpZGVuY2UgdHlwZXMgYXJlIHByb3Blcmx5IHNlcGFyYXRlZC4iIiIKICAgICAgICBldmlkZW5jZSA9IFsKICAgICAgICAgICAgRXZpZGVuY2UoRXZpZGVuY2VUeXBlLlNVUFBPUlQsICJTMSIsICJDIiksCiAgICAgICAgICAgIEV2aWRlbmNlKEV2aWRlbmNlVHlwZS5DT05UUkFESUNULCAiQzEiLCAiQyIpLAogICAgICAgICAgICBFdmlkZW5jZShFdmlkZW5jZVR5cGUuUVVBTElGWSwgIlExIiwgIkMiKSwKICAgICAgICAgICAgRXZpZGVuY2UoRXZpZGVuY2VUeXBlLk1FVEhPRE9MT0dJQ0FMLCAiTTEiLCAiQyIpLAogICAgICAgIF0KICAgICAgICBzdXBwb3J0aW5nLCBjb250cmFkaWN0aW5nID0gc2VsZi5fY2F0ZWdvcml6ZV9ldmlkZW5jZShldmlkZW5jZSkKICAgICAgICBhc3NlcnQgbGVuKHN1cHBvcnRpbmcpID09IDIKICAgICAgICBhc3NlcnQgbGVuKGNvbnRyYWRpY3RpbmcpID09IDIKCiAgICBkZWYgdGVzdF9lbXB0eV9saXN0KHNlbGYpOgogICAgICAgICIiIkVtcHR5IGxpc3QgcmV0dXJucyBlbXB0eSByZXN1bHRzLiIiIgogICAgICAgIHN1cHBvcnRpbmcsIGNvbnRyYWRpY3RpbmcgPSBzZWxmLl9jYXRlZ29yaXplX2V2aWRlbmNlKFtdKQogICAgICAgIGFzc2VydCBzdXBwb3J0aW5nID09IFtdCiAgICAgICAgYXNzZXJ0IGNvbnRyYWRpY3RpbmcgPT0gW10KCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgX3N1Z2dlc3Rfc2VjdGlvbnMgdGVzdHMKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0U3VnZ2VzdFNlY3Rpb25zOgogICAgIiIiVGVzdCBfc3VnZ2VzdF9zZWN0aW9ucyBsb2dpYy4iIiIKCiAgICBkZWYgX3N1Z2dlc3Rfc2VjdGlvbnMoc2VsZiwgY29udHJhZGljdGluZzogbGlzdCkgLT4gbGlzdDoKICAgICAgICAiIiJSZXBsaWNhdGUgc2VjdGlvbiBzdWdnZXN0aW9uIGxvZ2ljLiIiIgogICAgICAgIHNlY3Rpb25zID0gW0FyZ3VtZW50U2VjdGlvbi5JTlRST0RVQ1RJT04sIEFyZ3VtZW50U2VjdGlvbi5ESVNDVVNTSU9OXQoKICAgICAgICBpZiBjb250cmFkaWN0aW5nOgogICAgICAgICAgICBzZWN0aW9ucy5hcHBlbmQoQXJndW1lbnRTZWN0aW9uLkxJTUlUQVRJT04pCgogICAgICAgIHJldHVybiBzZWN0aW9ucwoKICAgIGRlZiB0ZXN0X2Fsd2F5c19zdWdnZXN0c19pbnRyb19hbmRfZGlzY3Vzc2lvbihzZWxmKToKICAgICAgICAiIiJBbHdheXMgc3VnZ2VzdHMgSU5UUk9EVUNUSU9OIGFuZCBESVNDVVNTSU9OLiIiIgogICAgICAgIHJlc3VsdCA9IHNlbGYuX3N1Z2dlc3Rfc2VjdGlvbnMoW10pCiAgICAgICAgYXNzZXJ0IEFyZ3VtZW50U2VjdGlvbi5JTlRST0RVQ1RJT04gaW4gcmVzdWx0CiAgICAgICAgYXNzZXJ0IEFyZ3VtZW50U2VjdGlvbi5ESVNDVVNTSU9OIGluIHJlc3VsdAoKICAgIGRlZiB0ZXN0X2FkZHNfbGltaXRhdGlvbl93aGVuX2NvbnRyYWRpY3Rpbmcoc2VsZik6CiAgICAgICAgIiIiQWRkcyBMSU1JVEFUSU9OIHdoZW4gY29udHJhZGljdGluZyBldmlkZW5jZSBleGlzdHMuIiIiCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fc3VnZ2VzdF9zZWN0aW9ucyhbRXZpZGVuY2UoRXZpZGVuY2VUeXBlLkNPTlRSQURJQ1QsICJTIiwgIkMiKV0pCiAgICAgICAgYXNzZXJ0IEFyZ3VtZW50U2VjdGlvbi5MSU1JVEFUSU9OIGluIHJlc3VsdAoKICAgIGRlZiB0ZXN0X25vX2xpbWl0YXRpb25fd2l0aG91dF9jb250cmFkaWN0aW5nKHNlbGYpOgogICAgICAgICIiIkRvZXMgbm90IHN1Z2dlc3QgTElNSVRBVElPTiB3aGVuIG5vIGNvbnRyYWRpY3RpbmcgZXZpZGVuY2UuIiIiCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fc3VnZ2VzdF9zZWN0aW9ucyhbXSkKICAgICAgICBhc3NlcnQgQXJndW1lbnRTZWN0aW9uLkxJTUlUQVRJT04gbm90IGluIHJlc3VsdAoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBfc3VtbWFyaXplIHRlc3RzCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFN1bW1hcml6ZToKICAgICIiIlRlc3QgX3N1bW1hcml6ZSBsb2dpYy4iIiIKCiAgICBkZWYgX3N1bW1hcml6ZShzZWxmLCBhcmd1bWVudDogQXJndW1lbnQpIC0+IHN0cjoKICAgICAgICAiIiJSZXBsaWNhdGUgYXJndW1lbnQgc3VtbWFyeSBnZW5lcmF0aW9uLiIiIgogICAgICAgIHN1cHBvcnRfY291bnQgPSBsZW4oYXJndW1lbnQuc3VwcG9ydGluZ19ldmlkZW5jZSkKICAgICAgICBjb250cmFkaWN0X2NvdW50ID0gbGVuKGFyZ3VtZW50LmNvbnRyYWRpY3RpbmdfZXZpZGVuY2UpCgogICAgICAgIHJldHVybiAoCiAgICAgICAgICAgIGYi6K6654K544CMe2FyZ3VtZW50LnRoZXNpc1s6NTBdfS4uLuOAjSIKICAgICAgICAgICAgZiLmnIkge3N1cHBvcnRfY291bnR9IOadoeaUr+aMgeivgeaNru+8jCIKICAgICAgICAgICAgZiJ7Y29udHJhZGljdF9jb3VudH0g5p2h5Y+N6amz6K+B5o2u44CCIgogICAgICAgICAgICBmIua2ieWPiiB7bGVuKGFyZ3VtZW50LnJlbGF0ZWRfZ2Fwcyl9IOS4quebuOWFs+eglOeptuepuueZveOAgiIKICAgICAgICApCgogICAgZGVmIHRlc3Rfc3VtbWFyeV9mb3JtYXQoc2VsZik6CiAgICAgICAgIiIiU3VtbWFyeSBoYXMgZXhwZWN0ZWQgZm9ybWF0LiIiIgogICAgICAgIGFyZyA9IEFyZ3VtZW50KAogICAgICAgICAgICB0aGVzaXM9IlRyYW5zZm9ybWVyIGF0dGVudGlvbiBtZWNoYW5pc20iLAogICAgICAgICAgICBzdXBwb3J0aW5nX2V2aWRlbmNlPVtFdmlkZW5jZShFdmlkZW5jZVR5cGUuU1VQUE9SVCwgIlMiLCAiQyIpXSwKICAgICAgICAgICAgY29udHJhZGljdGluZ19ldmlkZW5jZT1bRXZpZGVuY2UoRXZpZGVuY2VUeXBlLkNPTlRSQURJQ1QsICJDIiwgIkMiKV0sCiAgICAgICAgICAgIHJlbGF0ZWRfZ2Fwcz1bImdhcDEiXSwKICAgICAgICApCiAgICAgICAgc3VtbWFyeSA9IHNlbGYuX3N1bW1hcml6ZShhcmcpCiAgICAgICAgYXNzZXJ0ICLmnIkgMSDmnaHmlK/mjIHor4Hmja4iIGluIHN1bW1hcnkKICAgICAgICBhc3NlcnQgIjEg5p2h5Y+N6amz6K+B5o2uIiBpbiBzdW1tYXJ5CiAgICAgICAgYXNzZXJ0ICIxIOS4quebuOWFs+eglOeptuepuueZvSIgaW4gc3VtbWFyeQoKICAgIGRlZiB0ZXN0X3RoZXNpc190cnVuY2F0ZWQoc2VsZik6CiAgICAgICAgIiIiTG9uZyB0aGVzaXMgaXMgdHJ1bmNhdGVkIHRvIDUwIGNoYXJzLiIiIgogICAgICAgIGxvbmdfdGhlc2lzID0gIkEiICogMTAwCiAgICAgICAgYXJnID0gQXJndW1lbnQodGhlc2lzPWxvbmdfdGhlc2lzKQogICAgICAgIHN1bW1hcnkgPSBzZWxmLl9zdW1tYXJpemUoYXJnKQogICAgICAgIGFzc2VydCAiLi4uIiBpbiBzdW1tYXJ5CiAgICAgICAgYXNzZXJ0IGYi6K6654K544CMe2xvbmdfdGhlc2lzWzo1MF19Li4uIiBpbiBzdW1tYXJ5CgogICAgZGVmIHRlc3RfemVyb19jb3VudHMoc2VsZik6CiAgICAgICAgIiIiWmVybyBldmlkZW5jZSBjb3VudHMgc2hvd24gY29ycmVjdGx5LiIiIgogICAgICAgIGFyZyA9IEFyZ3VtZW50KHRoZXNpcz0iVGVzdCIpCiAgICAgICAgc3VtbWFyeSA9IHNlbGYuX3N1bW1hcml6ZShhcmcpCiAgICAgICAgYXNzZXJ0ICIwIOadoeaUr+aMgeivgeaNriIgaW4gc3VtbWFyeQogICAgICAgIGFzc2VydCAiMCDmnaHlj43pqbPor4Hmja4iIGluIHN1bW1hcnkKICAgICAgICBhc3NlcnQgIjAg5Liq55u45YWz56CU56m256m655m9IiBpbiBzdW1tYXJ5CgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIHJlbmRlcl9hcmd1bWVudCB0ZXN0cwojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RSZW5kZXJBcmd1bWVudDoKICAgICIiIlRlc3QgcmVuZGVyX2FyZ3VtZW50IGZ1bmN0aW9uLiIiIgoKICAgIGRlZiBfcmVuZGVyX2FyZ3VtZW50KHNlbGYsIHJlc3VsdDogQXJndW1lbnRSZXN1bHQpIC0+IHN0cjoKICAgICAgICAiIiJSZXBsaWNhdGUgYXJndW1lbnQgcmVuZGVyaW5nIGxvZ2ljLiIiIgogICAgICAgIGxpbmVzID0gW10KICAgICAgICBhcmcgPSByZXN1bHQuYXJndW1lbnQKCiAgICAgICAgbGluZXMuYXBwZW5kKCI9IiAqIDcwKQogICAgICAgIGxpbmVzLmFwcGVuZCgi8J+TnSDorrrngrnorrror4EiKQogICAgICAgIGxpbmVzLmFwcGVuZCgiPSIgKiA3MCkKICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCiAgICAgICAgbGluZXMuYXBwZW5kKGYi6K6654K577yae2FyZy50aGVzaXN9IikKICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgIGxpbmVzLmFwcGVuZCgi4pyFIOaUr+aMgeivgeaNrjoiKQogICAgICAgIGlmIGFyZy5zdXBwb3J0aW5nX2V2aWRlbmNlOgogICAgICAgICAgICBmb3IgaSwgZSBpbiBlbnVtZXJhdGUoYXJnLnN1cHBvcnRpbmdfZXZpZGVuY2VbOjVdLCAxKToKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgIHtpfS4gW3tlLnNvdXJjZX1dIikKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgICAgIHtlLmNvbnRlbnRbOjgwXX0uLi4iKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiICAg5pqC5peg5pSv5oyB6K+B5o2uIikKICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgIGxpbmVzLmFwcGVuZCgi4p2MIOWPjempsy/otKjnlpHor4Hmja46IikKICAgICAgICBpZiBhcmcuY29udHJhZGljdGluZ19ldmlkZW5jZToKICAgICAgICAgICAgZm9yIGksIGUgaW4gZW51bWVyYXRlKGFyZy5jb250cmFkaWN0aW5nX2V2aWRlbmNlWzo1XSwgMSk6CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICB7aX0uIFt7ZS5zb3VyY2V9XSIpCiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICAgICB7ZS5jb250ZW50Wzo4MF19Li4uIikKICAgICAgICBlbHNlOgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiAgIOaaguaXoOaYjuaYvuWPjemps+ivgeaNriIpCiAgICAgICAgbGluZXMuYXBwZW5kKCIiKQoKICAgICAgICBpZiBhcmcucmVsYXRlZF9nYXBzOgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIvCflJcg55u45YWz56CU56m256m655m9OiIpCiAgICAgICAgICAgIGZvciBnYXAgaW4gYXJnLnJlbGF0ZWRfZ2FwczoKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgIOKAoiB7Z2FwfSIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIikKCiAgICAgICAgaWYgcmVzdWx0LnNlY3Rpb25fZ3VpZGFuY2U6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgi8J+TmiDorrrmlofnq6DoioLlu7rorq46IikKICAgICAgICAgICAgZm9yIHNlY3Rpb24sIGd1aWRhbmNlIGluIHJlc3VsdC5zZWN0aW9uX2d1aWRhbmNlLml0ZW1zKCk6CiAgICAgICAgICAgICAgICBzZWN0aW9uX25hbWUgPSB7CiAgICAgICAgICAgICAgICAgICAgQXJndW1lbnRTZWN0aW9uLklOVFJPRFVDVElPTjogIuW8leiogCIsCiAgICAgICAgICAgICAgICAgICAgQXJndW1lbnRTZWN0aW9uLlJFTEFURURfV09SSzogIuebuOWFs+W3peS9nCIsCiAgICAgICAgICAgICAgICAgICAgQXJndW1lbnRTZWN0aW9uLk1FVEhPRE9MT0dZOiAi5pa55rOV6K66IiwKICAgICAgICAgICAgICAgICAgICBBcmd1bWVudFNlY3Rpb24uRVhQRVJJTUVOVFM6ICLlrp7pqowiLAogICAgICAgICAgICAgICAgICAgIEFyZ3VtZW50U2VjdGlvbi5ESVNDVVNTSU9OOiAi6K6o6K66IiwKICAgICAgICAgICAgICAgICAgICBBcmd1bWVudFNlY3Rpb24uTElNSVRBVElPTjogIuWxgOmZkCIsCiAgICAgICAgICAgICAgICB9LmdldChzZWN0aW9uLCBzZWN0aW9uLnZhbHVlKQogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAge3NlY3Rpb25fbmFtZX06IikKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgICAgIHtndWlkYW5jZVs6MTAwXX0uLi4iKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgIGxpbmVzLmFwcGVuZCgiPSIgKiA3MCkKICAgICAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQoKICAgIGRlZiB0ZXN0X2hlYWRlcl9wcmVzZW50KHNlbGYpOgogICAgICAgICIiIlJlbmRlcnMgaGVhZGVyIHdpdGggYm9yZGVyIGFuZCB0aXRsZS4iIiIKICAgICAgICBhcmcgPSBBcmd1bWVudCh0aGVzaXM9IlRlc3QgdGhlc2lzIikKICAgICAgICByZXN1bHQgPSBBcmd1bWVudFJlc3VsdCh0b3BpYz0iVG9waWMiLCBhcmd1bWVudD1hcmcpCiAgICAgICAgb3V0cHV0ID0gc2VsZi5fcmVuZGVyX2FyZ3VtZW50KHJlc3VsdCkKICAgICAgICBhc3NlcnQgIuiuuueCueiuuuivgSIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICI9IiAqIDcwIGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X3RoZXNpc19zaG93bihzZWxmKToKICAgICAgICAiIiJUaGVzaXMgaXMgZGlzcGxheWVkLiIiIgogICAgICAgIGFyZyA9IEFyZ3VtZW50KHRoZXNpcz0iVHJhbnNmb3JtZXIgaXMgZWZmaWNpZW50IikKICAgICAgICByZXN1bHQgPSBBcmd1bWVudFJlc3VsdCh0b3BpYz0iVG9waWMiLCBhcmd1bWVudD1hcmcpCiAgICAgICAgb3V0cHV0ID0gc2VsZi5fcmVuZGVyX2FyZ3VtZW50KHJlc3VsdCkKICAgICAgICBhc3NlcnQgIuiuuueCue+8mlRyYW5zZm9ybWVyIGlzIGVmZmljaWVudCIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3Rfc3VwcG9ydGluZ19ldmlkZW5jZV9sYWJlbChzZWxmKToKICAgICAgICAiIiJTdXBwb3J0aW5nIGV2aWRlbmNlIGxhYmVsIGlzIHByZXNlbnQuIiIiCiAgICAgICAgYXJnID0gQXJndW1lbnQodGhlc2lzPSJUIikKICAgICAgICByZXN1bHQgPSBBcmd1bWVudFJlc3VsdCh0b3BpYz0iVCIsIGFyZ3VtZW50PWFyZykKICAgICAgICBvdXRwdXQgPSBzZWxmLl9yZW5kZXJfYXJndW1lbnQocmVzdWx0KQogICAgICAgIGFzc2VydCAi4pyFIOaUr+aMgeivgeaNriIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfZW1wdHlfc3VwcG9ydGluZ19ldmlkZW5jZShzZWxmKToKICAgICAgICAiIiJFbXB0eSBzdXBwb3J0aW5nIGV2aWRlbmNlIHNob3dzIHBsYWNlaG9sZGVyLiIiIgogICAgICAgIGFyZyA9IEFyZ3VtZW50KHRoZXNpcz0iVCIpCiAgICAgICAgcmVzdWx0ID0gQXJndW1lbnRSZXN1bHQodG9waWM9IlQiLCBhcmd1bWVudD1hcmcpCiAgICAgICAgb3V0cHV0ID0gc2VsZi5fcmVuZGVyX2FyZ3VtZW50KHJlc3VsdCkKICAgICAgICBhc3NlcnQgIuaaguaXoOaUr+aMgeivgeaNriIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3Rfc3VwcG9ydGluZ19ldmlkZW5jZV9saXN0ZWQoc2VsZik6CiAgICAgICAgIiIiU3VwcG9ydGluZyBldmlkZW5jZSBpdGVtcyBhcmUgbGlzdGVkLiIiIgogICAgICAgIGFyZyA9IEFyZ3VtZW50KAogICAgICAgICAgICB0aGVzaXM9IlQiLAogICAgICAgICAgICBzdXBwb3J0aW5nX2V2aWRlbmNlPVsKICAgICAgICAgICAgICAgIEV2aWRlbmNlKEV2aWRlbmNlVHlwZS5TVVBQT1JULCAiUGFwZXIgQSIsICJHb29kIHJlc3VsdHMiKSwKICAgICAgICAgICAgXSwKICAgICAgICApCiAgICAgICAgcmVzdWx0ID0gQXJndW1lbnRSZXN1bHQodG9waWM9IlQiLCBhcmd1bWVudD1hcmcpCiAgICAgICAgb3V0cHV0ID0gc2VsZi5fcmVuZGVyX2FyZ3VtZW50KHJlc3VsdCkKICAgICAgICBhc3NlcnQgIlBhcGVyIEEiIGluIG91dHB1dAogICAgICAgIGFzc2VydCAiR29vZCByZXN1bHRzIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9jb250cmFkaWN0aW5nX2V2aWRlbmNlX2xhYmVsKHNlbGYpOgogICAgICAgICIiIkNvbnRyYWRpY3RpbmcgZXZpZGVuY2UgbGFiZWwgaXMgcHJlc2VudC4iIiIKICAgICAgICBhcmcgPSBBcmd1bWVudCh0aGVzaXM9IlQiKQogICAgICAgIHJlc3VsdCA9IEFyZ3VtZW50UmVzdWx0KHRvcGljPSJUIiwgYXJndW1lbnQ9YXJnKQogICAgICAgIG91dHB1dCA9IHNlbGYuX3JlbmRlcl9hcmd1bWVudChyZXN1bHQpCiAgICAgICAgYXNzZXJ0ICLinYwg5Y+N6amzL+i0qOeWkeivgeaNriIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfZW1wdHlfY29udHJhZGljdGluZ19ldmlkZW5jZShzZWxmKToKICAgICAgICAiIiJFbXB0eSBjb250cmFkaWN0aW5nIGV2aWRlbmNlIHNob3dzIHBsYWNlaG9sZGVyLiIiIgogICAgICAgIGFyZyA9IEFyZ3VtZW50KHRoZXNpcz0iVCIpCiAgICAgICAgcmVzdWx0ID0gQXJndW1lbnRSZXN1bHQodG9waWM9IlQiLCBhcmd1bWVudD1hcmcpCiAgICAgICAgb3V0cHV0ID0gc2VsZi5fcmVuZGVyX2FyZ3VtZW50KHJlc3VsdCkKICAgICAgICBhc3NlcnQgIuaaguaXoOaYjuaYvuWPjemps+ivgeaNriIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfcmVsYXRlZF9nYXBzX3Nob3duKHNlbGYpOgogICAgICAgICIiIlJlbGF0ZWQgZ2FwcyBhcmUgZGlzcGxheWVkIHdoZW4gcHJlc2VudC4iIiIKICAgICAgICBhcmcgPSBBcmd1bWVudCgKICAgICAgICAgICAgdGhlc2lzPSJUIiwKICAgICAgICAgICAgcmVsYXRlZF9nYXBzPVsiR2FwIEEiLCAiR2FwIEIiXSwKICAgICAgICApCiAgICAgICAgcmVzdWx0ID0gQXJndW1lbnRSZXN1bHQodG9waWM9IlQiLCBhcmd1bWVudD1hcmcpCiAgICAgICAgb3V0cHV0ID0gc2VsZi5fcmVuZGVyX2FyZ3VtZW50KHJlc3VsdCkKICAgICAgICBhc3NlcnQgIvCflJcg55u45YWz56CU56m256m655m9IiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIkdhcCBBIiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIkdhcCBCIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9zZWN0aW9uX2d1aWRhbmNlX3Nob3duKHNlbGYpOgogICAgICAgICIiIlNlY3Rpb24gZ3VpZGFuY2UgaXMgZGlzcGxheWVkLiIiIgogICAgICAgIGFyZyA9IEFyZ3VtZW50KHRoZXNpcz0iVCIpCiAgICAgICAgcmVzdWx0ID0gQXJndW1lbnRSZXN1bHQoCiAgICAgICAgICAgIHRvcGljPSJUIiwKICAgICAgICAgICAgYXJndW1lbnQ9YXJnLAogICAgICAgICAgICBzZWN0aW9uX2d1aWRhbmNlPXsKICAgICAgICAgICAgICAgIEFyZ3VtZW50U2VjdGlvbi5JTlRST0RVQ1RJT046ICJTdGFydCB3aXRoIG1vdGl2YXRpb24iLAogICAgICAgICAgICB9LAogICAgICAgICkKICAgICAgICBvdXRwdXQgPSBzZWxmLl9yZW5kZXJfYXJndW1lbnQocmVzdWx0KQogICAgICAgIGFzc2VydCAi8J+TmiDorrrmlofnq6DoioLlu7rorq4iIGluIG91dHB1dAogICAgICAgIGFzc2VydCAi5byV6KiAIiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIlN0YXJ0IHdpdGggbW90aXZhdGlvbiIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfZXZpZGVuY2VfY29udGVudF90cnVuY2F0ZWQoc2VsZik6CiAgICAgICAgIiIiRXZpZGVuY2UgY29udGVudCBpcyB0cnVuY2F0ZWQgdG8gODAgY2hhcnMuIiIiCiAgICAgICAgbG9uZ19jb250ZW50ID0gIlgiICogMTAwCiAgICAgICAgYXJnID0gQXJndW1lbnQoCiAgICAgICAgICAgIHRoZXNpcz0iVCIsCiAgICAgICAgICAgIHN1cHBvcnRpbmdfZXZpZGVuY2U9WwogICAgICAgICAgICAgICAgRXZpZGVuY2UoRXZpZGVuY2VUeXBlLlNVUFBPUlQsICJTIiwgbG9uZ19jb250ZW50KSwKICAgICAgICAgICAgXSwKICAgICAgICApCiAgICAgICAgcmVzdWx0ID0gQXJndW1lbnRSZXN1bHQodG9waWM9IlQiLCBhcmd1bWVudD1hcmcpCiAgICAgICAgb3V0cHV0ID0gc2VsZi5fcmVuZGVyX2FyZ3VtZW50KHJlc3VsdCkKICAgICAgICBhc3NlcnQgIlgiICogODAgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICIuLi4iIGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X21heF81X2V2aWRlbmNlX2l0ZW1zKHNlbGYpOgogICAgICAgICIiIk9ubHkgZmlyc3QgNSBldmlkZW5jZSBpdGVtcyBhcmUgc2hvd24uIiIiCiAgICAgICAgZXZpZGVuY2UgPSBbRXZpZGVuY2UoRXZpZGVuY2VUeXBlLlNVUFBPUlQsIGYiUHtpfSIsIGYiQ3tpfSIpIGZvciBpIGluIHJhbmdlKDEwKV0KICAgICAgICBhcmcgPSBBcmd1bWVudCh0aGVzaXM9IlQiLCBzdXBwb3J0aW5nX2V2aWRlbmNlPWV2aWRlbmNlKQogICAgICAgIHJlc3VsdCA9IEFyZ3VtZW50UmVzdWx0KHRvcGljPSJUIiwgYXJndW1lbnQ9YXJnKQogICAgICAgIG91dHB1dCA9IHNlbGYuX3JlbmRlcl9hcmd1bWVudChyZXN1bHQpCiAgICAgICAgYXNzZXJ0ICJQMCIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICJQNCIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICJQNSIgbm90IGluIG91dHB1dAoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBBcmd1bWVudEJ1aWxkZXIgaW5zdGFudGlhdGlvbgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RBcmd1bWVudEJ1aWxkZXJJbml0OgogICAgIiIiVGVzdCBBcmd1bWVudEJ1aWxkZXIgY2xhc3MuIiIiCgogICAgZGVmIHRlc3RfY2FuX2luc3RhbnRpYXRlKHNlbGYpOgogICAgICAgICIiIkFyZ3VtZW50QnVpbGRlciBjYW4gYmUgaW5zdGFudGlhdGVkLiIiIgogICAgICAgIGJ1aWxkZXIgPSBBcmd1bWVudEJ1aWxkZXIoKQogICAgICAgIGFzc2VydCBidWlsZGVyLmRiIGlzIE5vbmUKICAgICAgICBhc3NlcnQgYnVpbGRlci5pbnNpZ2h0X21hbmFnZXIgaXMgTm9uZQogICAgICAgIGFzc2VydCBidWlsZGVyLmdhcF9hbmFseXplciBpcyBOb25lCgogICAgZGVmIHRlc3RfY2FuX2luc3RhbnRpYXRlX3dpdGhfZGVwcyhzZWxmKToKICAgICAgICAiIiJBcmd1bWVudEJ1aWxkZXIgY2FuIGJlIGluc3RhbnRpYXRlZCB3aXRoIGRlcGVuZGVuY2llcy4iIiIKICAgICAgICBtb2NrX2RiID0gb2JqZWN0KCkKICAgICAgICBtb2NrX2ltID0gb2JqZWN0KCkKICAgICAgICBtb2NrX2dhID0gb2JqZWN0KCkKICAgICAgICBidWlsZGVyID0gQXJndW1lbnRCdWlsZGVyKGRiPW1vY2tfZGIsIGluc2lnaHRfbWFuYWdlcj1tb2NrX2ltLCBnYXBfYW5hbHl6ZXI9bW9ja19nYSkKICAgICAgICBhc3NlcnQgYnVpbGRlci5kYiBpcyBtb2NrX2RiCiAgICAgICAgYXNzZXJ0IGJ1aWxkZXIuaW5zaWdodF9tYW5hZ2VyIGlzIG1vY2tfaW0KICAgICAgICBhc3NlcnQgYnVpbGRlci5nYXBfYW5hbHl6ZXIgaXMgbW9ja19nYQo=
+"""Tier 2 unit tests — llm/argument_builder.py, pure functions, no I/O."""
+
+from llm.argument_builder import (
+    EvidenceType,
+    ArgumentSection,
+    Evidence,
+    Claim,
+    Argument,
+    ArgumentResult,
+    ArgumentBuilder,
+)
+
+
+# =============================================================================
+# Enum tests
+# =============================================================================
+class TestEvidenceType:
+    """Test EvidenceType enum."""
+
+    def test_all_types_have_values(self):
+        """All EvidenceType variants have string values."""
+        assert EvidenceType.SUPPORT.value == "support"
+        assert EvidenceType.CONTRADICT.value == "contradict"
+        assert EvidenceType.QUALIFY.value == "qualify"
+        assert EvidenceType.METHODOLOGICAL.value == "methodological"
+
+    def test_can_construct_from_value(self):
+        """Enum can be constructed from string value."""
+        assert EvidenceType("support") == EvidenceType.SUPPORT
+        assert EvidenceType("contradict") == EvidenceType.CONTRADICT
+
+
+class TestArgumentSection:
+    """Test ArgumentSection enum."""
+
+    def test_all_sections_have_values(self):
+        """All ArgumentSection variants have values."""
+        assert ArgumentSection.INTRODUCTION.value == "introduction"
+        assert ArgumentSection.RELATED_WORK.value == "related_work"
+        assert ArgumentSection.METHODOLOGY.value == "methodology"
+        assert ArgumentSection.EXPERIMENTS.value == "experiments"
+        assert ArgumentSection.DISCUSSION.value == "discussion"
+        assert ArgumentSection.LIMITATION.value == "limitation"
+
+
+# =============================================================================
+# Dataclass tests
+# =============================================================================
+class TestEvidence:
+    """Test Evidence dataclass."""
+
+    def test_required_fields(self):
+        """Required fields: evidence_type, source, content."""
+        evidence = Evidence(
+            evidence_type=EvidenceType.SUPPORT,
+            source="Paper Title",
+            content="Abstract content here",
+        )
+        assert evidence.evidence_type == EvidenceType.SUPPORT
+        assert evidence.source == "Paper Title"
+        assert evidence.content == "Abstract content here"
+
+    def test_optional_fields_default(self):
+        """Optional fields have defaults."""
+        evidence = Evidence(
+            evidence_type=EvidenceType.CONTRADICT,
+            source="S",
+            content="C",
+        )
+        assert evidence.citation == ""
+        assert evidence.weight == 1.0
+
+    def test_all_fields_can_be_set(self):
+        """All fields can be set."""
+        evidence = Evidence(
+            evidence_type=EvidenceType.METHODOLOGICAL,
+            source="Insight",
+            content="Method issue",
+            citation="arXiv:1234.5678",
+            weight=0.5,
+        )
+        assert evidence.citation == "arXiv:1234.5678"
+        assert evidence.weight == 0.5
+
+
+class TestClaim:
+    """Test Claim dataclass."""
+
+    def test_required_fields(self):
+        """Required fields: text."""
+        claim = Claim(text="This method is effective")
+        assert claim.text == "This method is effective"
+
+    def test_optional_fields_default(self):
+        """Optional fields default to empty/low values."""
+        claim = Claim(text="Claim text")
+        assert claim.evidence == []
+        assert claim.confidence == 0.5
+
+
+class TestArgument:
+    """Test Argument dataclass."""
+
+    def test_required_fields(self):
+        """Required fields: thesis."""
+        arg = Argument(thesis="Transformer is better than RNN")
+        assert arg.thesis == "Transformer is better than RNN"
+
+    def test_optional_fields_default(self):
+        """Optional fields default to empty."""
+        arg = Argument(thesis="T")
+        assert arg.claims == []
+        assert arg.supporting_evidence == []
+        assert arg.contradicting_evidence == []
+        assert arg.related_gaps == []
+        assert arg.paper_suggestions == []
+
+
+class TestArgumentResult:
+    """Test ArgumentResult dataclass."""
+
+    def test_required_fields(self):
+        """Required fields: topic, argument."""
+        arg = Argument(thesis="T")
+        result = ArgumentResult(topic="Topic", argument=arg)
+        assert result.topic == "Topic"
+        assert result.argument.thesis == "T"
+
+    def test_optional_fields_default(self):
+        """Optional fields default."""
+        arg = Argument(thesis="T")
+        result = ArgumentResult(topic="T", argument=arg)
+        assert result.summary == ""
+        assert result.section_guidance == {}
+
+
+# =============================================================================
+# _classify_insight tests
+# =============================================================================
+class TestClassifyInsight:
+    """Test _classify_insight logic."""
+
+    def _classify_insight(self, content: str, thesis: str) -> EvidenceType:
+        """Replicate insight classification logic."""
+        contradict_keywords = ["局限", "问题", "失败", "缺陷", "limitation", "problem", "fail"]
+        content_lower = content.lower()
+
+        for kw in contradict_keywords:
+            if kw in content_lower:
+                return EvidenceType.CONTRADICT
+
+        return EvidenceType.SUPPORT
+
+    def test_chinese_contradict_keyword(self):
+        """Chinese contradiction keyword triggers CONTRADICT."""
+        assert self._classify_insight("这个方法有局限性", "thesis") == EvidenceType.CONTRADICT
+        assert self._classify_insight("存在严重问题", "thesis") == EvidenceType.CONTRADICT
+
+    def test_english_contradict_keyword(self):
+        """English contradiction keyword triggers CONTRADICT."""
+        assert self._classify_insight("has limitation", "thesis") == EvidenceType.CONTRADICT
+        assert self._classify_insight("the problem is", "thesis") == EvidenceType.CONTRADICT
+        assert self._classify_insight("experiment fail", "thesis") == EvidenceType.CONTRADICT
+
+    def test_no_contradict_keywords(self):
+        """Without contradiction keywords, defaults to SUPPORT."""
+        assert self._classify_insight("This is a good method", "thesis") == EvidenceType.SUPPORT
+        assert self._classify_insight("novel approach", "thesis") == EvidenceType.SUPPORT
+
+    def test_case_insensitive(self):
+        """Keyword matching is case insensitive."""
+        assert self._classify_insight("HAS LIMITATION", "thesis") == EvidenceType.CONTRADICT
+        assert self._classify_insight("Problem found", "thesis") == EvidenceType.CONTRADICT
+
+    def test_thesis_not_used(self):
+        """Thesis parameter is not used in classification."""
+        # The thesis is passed but not used in the simple keyword matching
+        assert (
+            self._classify_insight("good method", thesis="problematic thesis")
+            == EvidenceType.SUPPORT
+        )
+
+
+# =============================================================================
+# _categorize_evidence tests
+# =============================================================================
+class TestCategorizeEvidence:
+    """Test _categorize_evidence logic."""
+
+    def _categorize_evidence(self, evidence_list: list) -> tuple:
+        """Replicate evidence categorization."""
+        supporting = []
+        contradicting = []
+
+        for e in evidence_list:
+            if e.evidence_type in (EvidenceType.SUPPORT, EvidenceType.QUALIFY):
+                supporting.append(e)
+            else:
+                contradicting.append(e)
+
+        supporting.sort(key=lambda x: x.weight, reverse=True)
+        contradicting.sort(key=lambda x: x.weight, reverse=True)
+
+        return supporting, contradicting
+
+    def test_support_goes_to_supporting(self):
+        """SUPPORT evidence goes to supporting list."""
+        evidence = [Evidence(EvidenceType.SUPPORT, "S", "C")]
+        supporting, contradicting = self._categorize_evidence(evidence)
+        assert len(supporting) == 1
+        assert len(contradicting) == 0
+
+    def test_qualify_goes_to_supporting(self):
+        """QUALIFY evidence goes to supporting list."""
+        evidence = [Evidence(EvidenceType.QUALIFY, "S", "C")]
+        supporting, contradicting = self._categorize_evidence(evidence)
+        assert len(supporting) == 1
+        assert len(contradicting) == 0
+
+    def test_contradict_goes_to_contradicting(self):
+        """CONTRADICT evidence goes to contradicting list."""
+        evidence = [Evidence(EvidenceType.CONTRADICT, "S", "C")]
+        supporting, contradicting = self._categorize_evidence(evidence)
+        assert len(supporting) == 0
+        assert len(contradicting) == 1
+
+    def test_methodological_goes_to_contradicting(self):
+        """METHODOLOGICAL evidence goes to contradicting list."""
+        evidence = [Evidence(EvidenceType.METHODOLOGICAL, "S", "C")]
+        supporting, contradicting = self._categorize_evidence(evidence)
+        assert len(supporting) == 0
+        assert len(contradicting) == 1
+
+    def test_sorted_by_weight_descending(self):
+        """Evidence is sorted by weight descending."""
+        evidence = [
+            Evidence(EvidenceType.SUPPORT, "S1", "C", weight=0.3),
+            Evidence(EvidenceType.SUPPORT, "S2", "C", weight=0.8),
+            Evidence(EvidenceType.SUPPORT, "S3", "C", weight=0.5),
+        ]
+        supporting, _ = self._categorize_evidence(evidence)
+        assert supporting[0].weight == 0.8
+        assert supporting[1].weight == 0.5
+        assert supporting[2].weight == 0.3
+
+    def test_mixed_evidence_separated(self):
+        """Mixed evidence types are properly separated."""
+        evidence = [
+            Evidence(EvidenceType.SUPPORT, "S1", "C"),
+            Evidence(EvidenceType.CONTRADICT, "C1", "C"),
+            Evidence(EvidenceType.QUALIFY, "Q1", "C"),
+            Evidence(EvidenceType.METHODOLOGICAL, "M1", "C"),
+        ]
+        supporting, contradicting = self._categorize_evidence(evidence)
+        assert len(supporting) == 2
+        assert len(contradicting) == 2
+
+    def test_empty_list(self):
+        """Empty list returns empty results."""
+        supporting, contradicting = self._categorize_evidence([])
+        assert supporting == []
+        assert contradicting == []
+
+
+# =============================================================================
+# _suggest_sections tests
+# =============================================================================
+class TestSuggestSections:
+    """Test _suggest_sections logic."""
+
+    def _suggest_sections(self, contradicting: list) -> list:
+        """Replicate section suggestion logic."""
+        sections = [ArgumentSection.INTRODUCTION, ArgumentSection.DISCUSSION]
+
+        if contradicting:
+            sections.append(ArgumentSection.LIMITATION)
+
+        return sections
+
+    def test_always_suggests_intro_and_discussion(self):
+        """Always suggests INTRODUCTION and DISCUSSION."""
+        result = self._suggest_sections([])
+        assert ArgumentSection.INTRODUCTION in result
+        assert ArgumentSection.DISCUSSION in result
+
+    def test_adds_limitation_when_contradicting(self):
+        """Adds LIMITATION when contradicting evidence exists."""
+        result = self._suggest_sections([Evidence(EvidenceType.CONTRADICT, "S", "C")])
+        assert ArgumentSection.LIMITATION in result
+
+    def test_no_limitation_without_contradicting(self):
+        """Does not suggest LIMITATION when no contradicting evidence."""
+        result = self._suggest_sections([])
+        assert ArgumentSection.LIMITATION not in result
+
+
+# =============================================================================
+# _summarize tests
+# =============================================================================
+class TestSummarize:
+    """Test _summarize logic."""
+
+    def _summarize(self, argument: Argument) -> str:
+        """Replicate argument summary generation."""
+        support_count = len(argument.supporting_evidence)
+        contradict_count = len(argument.contradicting_evidence)
+
+        return (
+            f"论点「{argument.thesis[:50]}...」"
+            f"有 {support_count} 条支持证据，"
+            f"{contradict_count} 条反驳证据。"
+            f"涉及 {len(argument.related_gaps)} 个相关研究空白。"
+        )
+
+    def test_summary_format(self):
+        """Summary has expected format."""
+        arg = Argument(
+            thesis="Transformer attention mechanism",
+            supporting_evidence=[Evidence(EvidenceType.SUPPORT, "S", "C")],
+            contradicting_evidence=[Evidence(EvidenceType.CONTRADICT, "C", "C")],
+            related_gaps=["gap1"],
+        )
+        summary = self._summarize(arg)
+        assert "有 1 条支持证据" in summary
+        assert "1 条反驳证据" in summary
+        assert "1 个相关研究空白" in summary
+
+    def test_thesis_truncated(self):
+        """Long thesis is truncated to 50 chars."""
+        long_thesis = "A" * 100
+        arg = Argument(thesis=long_thesis)
+        summary = self._summarize(arg)
+        assert "..." in summary
+        assert f"论点「{long_thesis[:50]}..." in summary
+
+    def test_zero_counts(self):
+        """Zero evidence counts shown correctly."""
+        arg = Argument(thesis="Test")
+        summary = self._summarize(arg)
+        assert "0 条支持证据" in summary
+        assert "0 条反驳证据" in summary
+        assert "0 个相关研究空白" in summary
+
+
+# =============================================================================
+# render_argument tests
+# =============================================================================
+class TestRenderArgument:
+    """Test render_argument function."""
+
+    def _render_argument(self, result: ArgumentResult) -> str:
+        """Replicate argument rendering logic."""
+        lines = []
+        arg = result.argument
+
+        lines.append("=" * 70)
+        lines.append("📝 论点论证")
+        lines.append("=" * 70)
+        lines.append("")
+        lines.append(f"论点：{arg.thesis}")
+        lines.append("")
+
+        lines.append("✅ 支持证据:")
+        if arg.supporting_evidence:
+            for i, e in enumerate(arg.supporting_evidence[:5], 1):
+                lines.append(f"   {i}. [{e.source}]")
+                lines.append(f"      {e.content[:80]}...")
+        else:
+            lines.append("   暂无支持证据")
+        lines.append("")
+
+        lines.append("❌ 反驳/质疑证据:")
+        if arg.contradicting_evidence:
+            for i, e in enumerate(arg.contradicting_evidence[:5], 1):
+                lines.append(f"   {i}. [{e.source}]")
+                lines.append(f"      {e.content[:80]}...")
+        else:
+            lines.append("   暂无明显反驳证据")
+        lines.append("")
+
+        if arg.related_gaps:
+            lines.append("🔗 相关研究空白:")
+            for gap in arg.related_gaps:
+                lines.append(f"   • {gap}")
+            lines.append("")
+
+        if result.section_guidance:
+            lines.append("📚 论文章节建议:")
+            for section, guidance in result.section_guidance.items():
+                section_name = {
+                    ArgumentSection.INTRODUCTION: "引言",
+                    ArgumentSection.RELATED_WORK: "相关工作",
+                    ArgumentSection.METHODOLOGY: "方法论",
+                    ArgumentSection.EXPERIMENTS: "实验",
+                    ArgumentSection.DISCUSSION: "讨论",
+                    ArgumentSection.LIMITATION: "局限",
+                }.get(section, section.value)
+                lines.append(f"   {section_name}:")
+                lines.append(f"      {guidance[:100]}...")
+            lines.append("")
+
+        lines.append("=" * 70)
+        return "\n".join(lines)
+
+    def test_header_present(self):
+        """Renders header with border and title."""
+        arg = Argument(thesis="Test thesis")
+        result = ArgumentResult(topic="Topic", argument=arg)
+        output = self._render_argument(result)
+        assert "论点论证" in output
+        assert "=" * 70 in output
+
+    def test_thesis_shown(self):
+        """Thesis is displayed."""
+        arg = Argument(thesis="Transformer is efficient")
+        result = ArgumentResult(topic="Topic", argument=arg)
+        output = self._render_argument(result)
+        assert "论点：Transformer is efficient" in output
+
+    def test_supporting_evidence_label(self):
+        """Supporting evidence label is present."""
+        arg = Argument(thesis="T")
+        result = ArgumentResult(topic="T", argument=arg)
+        output = self._render_argument(result)
+        assert "✅ 支持证据" in output
+
+    def test_empty_supporting_evidence(self):
+        """Empty supporting evidence shows placeholder."""
+        arg = Argument(thesis="T")
+        result = ArgumentResult(topic="T", argument=arg)
+        output = self._render_argument(result)
+        assert "暂无支持证据" in output
+
+    def test_supporting_evidence_listed(self):
+        """Supporting evidence items are listed."""
+        arg = Argument(
+            thesis="T",
+            supporting_evidence=[
+                Evidence(EvidenceType.SUPPORT, "Paper A", "Good results"),
+            ],
+        )
+        result = ArgumentResult(topic="T", argument=arg)
+        output = self._render_argument(result)
+        assert "Paper A" in output
+        assert "Good results" in output
+
+    def test_contradicting_evidence_label(self):
+        """Contradicting evidence label is present."""
+        arg = Argument(thesis="T")
+        result = ArgumentResult(topic="T", argument=arg)
+        output = self._render_argument(result)
+        assert "❌ 反驳/质疑证据" in output
+
+    def test_empty_contradicting_evidence(self):
+        """Empty contradicting evidence shows placeholder."""
+        arg = Argument(thesis="T")
+        result = ArgumentResult(topic="T", argument=arg)
+        output = self._render_argument(result)
+        assert "暂无明显反驳证据" in output
+
+    def test_related_gaps_shown(self):
+        """Related gaps are displayed when present."""
+        arg = Argument(
+            thesis="T",
+            related_gaps=["Gap A", "Gap B"],
+        )
+        result = ArgumentResult(topic="T", argument=arg)
+        output = self._render_argument(result)
+        assert "🔗 相关研究空白" in output
+        assert "Gap A" in output
+        assert "Gap B" in output
+
+    def test_section_guidance_shown(self):
+        """Section guidance is displayed."""
+        arg = Argument(thesis="T")
+        result = ArgumentResult(
+            topic="T",
+            argument=arg,
+            section_guidance={
+                ArgumentSection.INTRODUCTION: "Start with motivation",
+            },
+        )
+        output = self._render_argument(result)
+        assert "📚 论文章节建议" in output
+        assert "引言" in output
+        assert "Start with motivation" in output
+
+    def test_evidence_content_truncated(self):
+        """Evidence content is truncated to 80 chars."""
+        long_content = "X" * 100
+        arg = Argument(
+            thesis="T",
+            supporting_evidence=[
+                Evidence(EvidenceType.SUPPORT, "S", long_content),
+            ],
+        )
+        result = ArgumentResult(topic="T", argument=arg)
+        output = self._render_argument(result)
+        assert "X" * 80 in output
+        assert "..." in output
+
+    def test_max_5_evidence_items(self):
+        """Only first 5 evidence items are shown."""
+        evidence = [Evidence(EvidenceType.SUPPORT, f"P{i}", f"C{i}") for i in range(10)]
+        arg = Argument(thesis="T", supporting_evidence=evidence)
+        result = ArgumentResult(topic="T", argument=arg)
+        output = self._render_argument(result)
+        assert "P0" in output
+        assert "P4" in output
+        assert "P5" not in output
+
+
+# =============================================================================
+# ArgumentBuilder instantiation
+# =============================================================================
+class TestArgumentBuilderInit:
+    """Test ArgumentBuilder class."""
+
+    def test_can_instantiate(self):
+        """ArgumentBuilder can be instantiated."""
+        builder = ArgumentBuilder()
+        assert builder.db is None
+        assert builder.insight_manager is None
+        assert builder.gap_analyzer is None
+
+    def test_can_instantiate_with_deps(self):
+        """ArgumentBuilder can be instantiated with dependencies."""
+        mock_db = object()
+        mock_im = object()
+        mock_ga = object()
+        builder = ArgumentBuilder(db=mock_db, insight_manager=mock_im, gap_analyzer=mock_ga)
+        assert builder.db is mock_db
+        assert builder.insight_manager is mock_im
+        assert builder.gap_analyzer is mock_ga

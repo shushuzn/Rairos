@@ -1,1 +1,31 @@
-IiIiQ2Fub25pY2FsIGNvbnN0YW50cyDigJQgc2luZ2xlIHNvdXJjZSBvZiB0cnV0aC4KCkFsbCBoYXJkY29kZWQgc3RyaW5ncyB0aGF0IHNwYW4gbXVsdGlwbGUgbW9kdWxlcyBhcmUgY2VudHJhbGl6ZWQgaGVyZQp0byBhdm9pZCBkdXBsaWNhdGlvbiBhbmQgZW5zdXJlIGNvbnNpc3RlbmN5LgoiIiIKCiMg4pSA4pSA4pSAIEFQSSBlbmRwb2ludHMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACkFSWElWX0FQSSA9ICJodHRwczovL2V4cG9ydC5hcnhpdi5vcmcvYXBpL3F1ZXJ5P2lkX2xpc3Q9e2FyeGl2X2lkfSIKQ1JPU1NSRUZfV09SS1MgPSAiaHR0cHM6Ly9hcGkuY3Jvc3NyZWYub3JnL3dvcmtzL3tkb2l9IgpET0lfUkVTT0xWRVIgPSAiaHR0cHM6Ly9kb2kub3JnLyIKCiMg4pSA4pSA4pSAIE91dHB1dCBmaWxlbmFtZXMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAClJBREFSX0ZJTEUgPSAiUmFkYXIubWQiClRJTUVMSU5FX0ZJTEUgPSAiVGltZWxpbmUubWQiCgojIOKUgOKUgOKUgCBSZXNlYXJjaCB0cmVlIGRpcmVjdG9yeSBuYW1lcyAoY2Fub25pY2FsIG9yZGVyKSDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKIyBOT1RFOiBtdXN0IHN0YXkgaW4gc3luYyB3aXRoIGNvbXBsZXRpb25zL2Zpc2ggYW5kIGNvbXBsZXRpb25zL3pzaApERUZBVUxUX1JFU0VBUkNIX0RJUlMgPSBbCiAgICAiMDAtUmFkYXIiLAogICAgIjAxLUZvdW5kYXRpb25zIiwKICAgICIwMi1Nb2RlbHMiLAogICAgIjAzLVRyYWluaW5nIiwKICAgICIwNC1TY2FsaW5nIiwKICAgICIwNS1BbGlnbm1lbnQiLAogICAgIjA2LUFnZW50cyIsCiAgICAiMDctSW5mcmFzdHJ1Y3R1cmUiLAogICAgIjA4LU9wdGltaXphdGlvbiIsCiAgICAiMDktRXZhbHVhdGlvbiIsCiAgICAiMTAtQXBwbGljYXRpb25zIiwKICAgICIxMS1GdXR1cmUtRGlyZWN0aW9ucyIsCl0K
+"""Canonical constants — single source of truth.
+
+All hardcoded strings that span multiple modules are centralized here
+to avoid duplication and ensure consistency.
+"""
+
+# ─── API endpoints ───────────────────────────────────────────────────────────
+ARXIV_API = "https://export.arxiv.org/api/query?id_list={arxiv_id}"
+CROSSREF_WORKS = "https://api.crossref.org/works/{doi}"
+DOI_RESOLVER = "https://doi.org/"
+
+# ─── Output filenames ──────────────────────────────────────────────────────
+RADAR_FILE = "Radar.md"
+TIMELINE_FILE = "Timeline.md"
+
+# ─── Research tree directory names (canonical order) ───────────────────────
+# NOTE: must stay in sync with completions/fish and completions/zsh
+DEFAULT_RESEARCH_DIRS = [
+    "00-Radar",
+    "01-Foundations",
+    "02-Models",
+    "03-Training",
+    "04-Scaling",
+    "05-Alignment",
+    "06-Agents",
+    "07-Infrastructure",
+    "08-Optimization",
+    "09-Evaluation",
+    "10-Applications",
+    "11-Future-Directions",
+]

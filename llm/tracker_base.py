@@ -1,1 +1,77 @@
-IiIiSnNvbkZpbGVTdG9yZTogcmV1c2FibGUgSlNPTiBmaWxlIHBlcnNpc3RlbmNlIG1peGluIGZvciB0cmFja2VyIGNsYXNzZXMuIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQganNvbgppbXBvcnQgbG9nZ2luZwpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKZnJvbSB0eXBpbmcgaW1wb3J0IEFueSwgTGlzdCwgVHlwZVZhcgoKVCA9IFR5cGVWYXIoIlQiKQoKIyBSZXVzYWJsZSBzZW50aW5lbCDigJQgc3ViY2xhc3NlcyBzZXQgdGhlaXIgZGF0YV9maWxlIGF0dHJpYnV0ZQpKc29uRmlsZVN0b3JlU2VsZiA9IFR5cGVWYXIoIkpzb25GaWxlU3RvcmVTZWxmIiwgYm91bmQ9Ikpzb25GaWxlU3RvcmUiKQoKCmNsYXNzIEpzb25GaWxlU3RvcmU6CiAgICAiIiJNaXhpbiBwcm92aWRpbmcgc2FmZSBKU09OIGZpbGUgbG9hZC9zYXZlIGZvciBkYXRhY2xhc3MtYmFzZWQgdHJhY2tlcnMuCgogICAgU3ViY2xhc3NlcyBtdXN0IHNldDoKICAgICAgICBkYXRhX2ZpbGU6IFBhdGggICDigJQgcGF0aCB0byB0aGUgSlNPTiBmaWxlCgogICAgU3ViY2xhc3NlcyBtYXkgb3ZlcnJpZGU6CiAgICAgICAgX3ByZV9sb2FkKHNlbGYpIC0+IExpc3RbZGljdF06ICAgcmF3IGRpY3RzIGZyb20gZmlsZSAoZGVmYXVsdDoganNvbi5sb2FkKQogICAgICAgIF9wcmVfc2F2ZShzZWxmLCBpdGVtcykgLT4gTGlzdFtkaWN0XTogIGRpY3RzIGJlZm9yZSB3cml0aW5nIChkZWZhdWx0OiBlYWNoIGl0ZW0gdG8gZGljdCkKCiAgICBFYWNoIGRhdGFjbGFzcyB0cmFja2VyIGFsc28gbmVlZHMgZnJvbV9kaWN0KGRhdGEpIC0+IFQgYW5kIHRvX2RpY3QoaXRlbSkgLT4gZGljdAogICAgY2xhc3MgbWV0aG9kcywgb3IgY2FuIG92ZXJyaWRlIF9mcm9tX2RpY3QgLyBfdG9fZGljdCB3aXRoIGxhbWJkYXMuCiAgICAiIiIKCiAgICBkYXRhX2ZpbGU6IFBhdGgKCiAgICAjIOKUgOKUgOKUgCBMb2FkIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKICAgIGRlZiBfbG9hZChzZWxmKSAtPiBMaXN0W0FueV06CiAgICAgICAgIiIiTG9hZCBpdGVtcyBmcm9tIEpTT04gZmlsZS4gUmV0dXJucyBbXSBpZiBmaWxlIGlzIGFic2VudCBvciBjb3JydXB0LiIiIgogICAgICAgIGlmIG5vdCBzZWxmLmRhdGFfZmlsZS5leGlzdHMoKToKICAgICAgICAgICAgcmV0dXJuIFtdCgogICAgICAgIHRyeToKICAgICAgICAgICAgd2l0aCBvcGVuKHNlbGYuZGF0YV9maWxlLCAiciIsIGVuY29kaW5nPSJ1dGYtOCIsIGVycm9ycz0icmVwbGFjZSIpIGFzIGY6CiAgICAgICAgICAgICAgICByYXc6IExpc3RbZGljdF0gPSBqc29uLmxvYWQoZikKICAgICAgICBleGNlcHQgKGpzb24uSlNPTkRlY29kZUVycm9yLCBJT0Vycm9yKToKICAgICAgICAgICAgbG9nZ2luZy53YXJuaW5nKAogICAgICAgICAgICAgICAgIkZhaWxlZCB0byBsb2FkICVzIGZyb20gJXMuIFJldHVybmluZyBlbXB0eSBsaXN0LiIsCiAgICAgICAgICAgICAgICB0eXBlKHNlbGYpLl9fbmFtZV9fLAogICAgICAgICAgICAgICAgc2VsZi5kYXRhX2ZpbGUsCiAgICAgICAgICAgICkKICAgICAgICAgICAgcmV0dXJuIFtdCgogICAgICAgIHJldHVybiBzZWxmLl9wb3N0X2xvYWQocmF3KQoKICAgIGRlZiBfcG9zdF9sb2FkKHNlbGYsIHJhdzogTGlzdFtkaWN0XSkgLT4gTGlzdFtBbnldOgogICAgICAgICIiIkNvbnZlcnQgcmF3IGRpY3RzIHRvIGRhdGFjbGFzcyBpbnN0YW5jZXMuIE92ZXJyaWRlIGZvciBjdXN0b20gY29udmVyc2lvbi4iIiIKICAgICAgICByZXR1cm4gcmF3ICAjIHN1YmNsYXNzZXMgb3ZlcnJpZGUgd2hlbiBkYXRhY2xhc3MgaGFzIGZyb21fZGljdCgpCgogICAgIyDilIDilIDilIAgU2F2ZSDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCiAgICBkZWYgX3NhdmUoc2VsZiwgaXRlbXM6IExpc3RbQW55XSkgLT4gTm9uZToKICAgICAgICAiIiJTYXZlIGl0ZW1zIHRvIEpTT04gZmlsZSBhdG9taWNhbGx5ICh3cml0ZS10aGVuLXJlbmFtZSkuIiIiCiAgICAgICAgcmF3ID0gc2VsZi5fcHJlX3NhdmUoaXRlbXMpCiAgICAgICAgdGV4dCA9IGpzb24uZHVtcHMocmF3LCBlbnN1cmVfYXNjaWk9RmFsc2UsIGluZGVudD0yKQoKICAgICAgICAjIEF0b21pYyB3cml0ZTogd3JpdGUgdG8gdGVtcCBmaWxlLCB0aGVuIHJlbmFtZSBvdmVyIHRoZSB0YXJnZXQKICAgICAgICB0bXAgPSBzZWxmLmRhdGFfZmlsZS53aXRoX3N1ZmZpeCgiLnRtcCIpCiAgICAgICAgdHJ5OgogICAgICAgICAgICB0bXAud3JpdGVfdGV4dCh0ZXh0LCBlbmNvZGluZz0idXRmLTgiKQogICAgICAgICAgICB0bXAucmVwbGFjZShzZWxmLmRhdGFfZmlsZSkKICAgICAgICBleGNlcHQgT1NFcnJvciBhcyBlOgogICAgICAgICAgICBsb2dnaW5nLndhcm5pbmcoCiAgICAgICAgICAgICAgICAiRmFpbGVkIHRvIHNhdmUgJXMgdG8gJXM6ICVzIiwKICAgICAgICAgICAgICAgIHR5cGUoc2VsZikuX19uYW1lX18sCiAgICAgICAgICAgICAgICBzZWxmLmRhdGFfZmlsZSwKICAgICAgICAgICAgICAgIGUsCiAgICAgICAgICAgICkKCiAgICBkZWYgX3ByZV9zYXZlKHNlbGYsIGl0ZW1zOiBMaXN0W0FueV0pIC0+IExpc3RbZGljdF06CiAgICAgICAgIiIiQ29udmVydCBkYXRhY2xhc3MgaW5zdGFuY2VzIHRvIGRpY3RzIGJlZm9yZSBzYXZpbmcuIE92ZXJyaWRlIGZvciBjdXN0b20gY29udmVyc2lvbi4iIiIKICAgICAgICByZXR1cm4gaXRlbXMgICMgc3ViY2xhc3NlcyBvdmVycmlkZSB3aGVuIGRhdGFjbGFzcyBoYXMgdG9fZGljdCgpCg==
+"""JsonFileStore: reusable JSON file persistence mixin for tracker classes."""
+from __future__ import annotations
+
+import json
+import logging
+from pathlib import Path
+from typing import Any, List, TypeVar
+
+T = TypeVar("T")
+
+# Reusable sentinel — subclasses set their data_file attribute
+JsonFileStoreSelf = TypeVar("JsonFileStoreSelf", bound="JsonFileStore")
+
+
+class JsonFileStore:
+    """Mixin providing safe JSON file load/save for dataclass-based trackers.
+
+    Subclasses must set:
+        data_file: Path   — path to the JSON file
+
+    Subclasses may override:
+        _pre_load(self) -> List[dict]:   raw dicts from file (default: json.load)
+        _pre_save(self, items) -> List[dict]:  dicts before writing (default: each item to dict)
+
+    Each dataclass tracker also needs from_dict(data) -> T and to_dict(item) -> dict
+    class methods, or can override _from_dict / _to_dict with lambdas.
+    """
+
+    data_file: Path
+
+    # ─── Load ──────────────────────────────────────────────────────────────────
+
+    def _load(self) -> List[Any]:
+        """Load items from JSON file. Returns [] if file is absent or corrupt."""
+        if not self.data_file.exists():
+            return []
+
+        try:
+            with open(self.data_file, "r", encoding="utf-8", errors="replace") as f:
+                raw: List[dict] = json.load(f)
+        except (json.JSONDecodeError, IOError):
+            logging.warning(
+                "Failed to load %s from %s. Returning empty list.",
+                type(self).__name__,
+                self.data_file,
+            )
+            return []
+
+        return self._post_load(raw)
+
+    def _post_load(self, raw: List[dict]) -> List[Any]:
+        """Convert raw dicts to dataclass instances. Override for custom conversion."""
+        return raw  # subclasses override when dataclass has from_dict()
+
+    # ─── Save ──────────────────────────────────────────────────────────────────
+
+    def _save(self, items: List[Any]) -> None:
+        """Save items to JSON file atomically (write-then-rename)."""
+        raw = self._pre_save(items)
+        text = json.dumps(raw, ensure_ascii=False, indent=2)
+
+        # Atomic write: write to temp file, then rename over the target
+        tmp = self.data_file.with_suffix(".tmp")
+        try:
+            tmp.write_text(text, encoding="utf-8")
+            tmp.replace(self.data_file)
+        except OSError as e:
+            logging.warning(
+                "Failed to save %s to %s: %s",
+                type(self).__name__,
+                self.data_file,
+                e,
+            )
+
+    def _pre_save(self, items: List[Any]) -> List[dict]:
+        """Convert dataclass instances to dicts before saving. Override for custom conversion."""
+        return items  # subclasses override when dataclass has to_dict()

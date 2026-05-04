@@ -1,1 +1,53 @@
-IiIiVGltZWxpbmUgcGFnZSBtYW5hZ2VtZW50LiIiIgoKaW1wb3J0IHJlCmltcG9ydCB0ZXh0d3JhcApmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKCmZyb20gY29yZS5iYXNpY3MgaW1wb3J0IGdldF9kZWZhdWx0X3JhZGFyX2RpciwgcmVhZF90ZXh0LCB3cml0ZV90ZXh0CmZyb20gY29yZS5fY29uc3RhbnRzIGltcG9ydCBUSU1FTElORV9GSUxFCmZyb20gbm90ZXMucG5vdGVzIGltcG9ydCB3aWtpbGlua19mb3JfcG5vdGUKCgpkZWYgZW5zdXJlX3RpbWVsaW5lKHJvb3Q6IFBhdGgpIC0+IFBhdGg6CiAgICBwID0gcm9vdCAvIGdldF9kZWZhdWx0X3JhZGFyX2RpcigpIC8gVElNRUxJTkVfRklMRQogICAgaWYgcC5leGlzdHMoKToKICAgICAgICByZXR1cm4gcAogICAgbWQgPSAiIiJcCiMgVGltZWxpbmXvvIjmioDmnK/mvJTov5vvvIkKCuaMieW5tOS7veiusOW9leWFs+mUruiuuuaWh+S4juaKgOacr+aLkOeCueOAggoKIiIiCiAgICB3cml0ZV90ZXh0KHAsIHRleHR3cmFwLmRlZGVudChtZCkuc3RyaXAoKSArICJcbiIpCiAgICByZXR1cm4gcAoKCmRlZiB1cGRhdGVfdGltZWxpbmUocm9vdDogUGF0aCwgeWVhcjogc3RyLCBwbm90ZV9wYXRoOiBQYXRoLCB0aXRsZTogc3RyKSAtPiBQYXRoOgogICAgcCA9IGVuc3VyZV90aW1lbGluZShyb290KQogICAgbWQgPSByZWFkX3RleHQocCkKCiAgICBzZWN0aW9uID0gZiIjIyB7eWVhcn0iCiAgICBidWxsZXQgPSBmIi0ge3dpa2lsaW5rX2Zvcl9wbm90ZShwbm90ZV9wYXRoKX0g4oCUIHt0aXRsZX0iCgogICAgaWYgc2VjdGlvbiBub3QgaW4gbWQ6CiAgICAgICAgbWQgPSBtZC5yc3RyaXAoKSArIGYiXG5cbntzZWN0aW9ufVxuXG57YnVsbGV0fVxuIgogICAgICAgIHdyaXRlX3RleHQocCwgbWQuc3RyaXAoKSArICJcbiIpCiAgICAgICAgcmV0dXJuIHAKCiAgICBpZiBidWxsZXQgaW4gbWQ6CiAgICAgICAgcmV0dXJuIHAKCiAgICBwYXR0ZXJuID0gcmYiXiMjXHMre3JlLmVzY2FwZSh5ZWFyKX1ccyokIgogICAgbSA9IHJlLnNlYXJjaChwYXR0ZXJuLCBtZCwgZmxhZ3M9cmUuTSkKICAgIGlmIG5vdCBtOgogICAgICAgIHJldHVybiBwCgogICAgc3RhcnQgPSBtLmVuZCgpCiAgICByZXN0ID0gbWRbc3RhcnQ6XQogICAgbTIgPSByZS5zZWFyY2gociJeXHMqIyNccysiLCByZXN0LCBmbGFncz1yZS5NKQogICAgZW5kID0gc3RhcnQgKyAobTIuc3RhcnQoKSBpZiBtMiBlbHNlIGxlbihyZXN0KSkKCiAgICBibG9jayA9IG1kW3N0YXJ0OmVuZF0ucnN0cmlwKCkgKyAiXG4iICsgYnVsbGV0ICsgIlxuIgogICAgbWQyID0gbWRbOnN0YXJ0XSArIGJsb2NrICsgbWRbZW5kOl0KICAgIHdyaXRlX3RleHQocCwgbWQyLnN0cmlwKCkgKyAiXG4iKQogICAgcmV0dXJuIHAK
+"""Timeline page management."""
+import re
+import textwrap
+from pathlib import Path
+
+from core.basics import get_default_radar_dir, read_text, write_text
+from core._constants import TIMELINE_FILE
+from notes.pnotes import wikilink_for_pnote
+
+
+def ensure_timeline(root: Path) -> Path:
+    p = root / get_default_radar_dir() / TIMELINE_FILE
+    if p.exists():
+        return p
+    md = """\
+# Timeline（技术演进）
+
+按年份记录关键论文与技术拐点。
+
+"""
+    write_text(p, textwrap.dedent(md).strip() + "\n")
+    return p
+
+
+def update_timeline(root: Path, year: str, pnote_path: Path, title: str) -> Path:
+    p = ensure_timeline(root)
+    md = read_text(p)
+
+    section = f"## {year}"
+    bullet = f"- {wikilink_for_pnote(pnote_path)} — {title}"
+
+    if section not in md:
+        md = md.rstrip() + f"\n\n{section}\n\n{bullet}\n"
+        write_text(p, md.strip() + "\n")
+        return p
+
+    if bullet in md:
+        return p
+
+    pattern = rf"^##\s+{re.escape(year)}\s*$"
+    m = re.search(pattern, md, flags=re.M)
+    if not m:
+        return p
+
+    start = m.end()
+    rest = md[start:]
+    m2 = re.search(r"^\s*##\s+", rest, flags=re.M)
+    end = start + (m2.start() if m2 else len(rest))
+
+    block = md[start:end].rstrip() + "\n" + bullet + "\n"
+    md2 = md[:start] + block + md[end:]
+    write_text(p, md2.strip() + "\n")
+    return p

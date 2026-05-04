@@ -1,1 +1,216 @@
-IiIiVGVzdHMgZm9yIGNvcmUvYWNoaWV2ZW1lbnRzLnB5LiIiIgoKCmNsYXNzIFRlc3RBY2hpZXZlbWVudFN5c3RlbToKICAgICIiIlRlc3RzIGZvciBBY2hpZXZlbWVudFN5c3RlbS4iIiIKCiAgICBkZWYgdGVzdF9pbml0KHNlbGYpOgogICAgICAgICIiIlN5c3RlbSBpbml0aWFsaXplcyB3aXRoIHplcm8gcG9pbnRzIGFuZCBlbXB0eSB1bmxvY2tlZCBsaXN0LiIiIgogICAgICAgIGZyb20gY29yZS5hY2hpZXZlbWVudHMgaW1wb3J0IEFjaGlldmVtZW50U3lzdGVtCgogICAgICAgIHN5c3RlbSA9IEFjaGlldmVtZW50U3lzdGVtKCkKICAgICAgICBhc3NlcnQgc3lzdGVtLnRvdGFsX3BvaW50cyA9PSAwCiAgICAgICAgYXNzZXJ0IHN5c3RlbS51c2VyX3N0YXRzWyJwYXBlcnNfcHJvY2Vzc2VkIl0gPT0gMAogICAgICAgIGFzc2VydCBzeXN0ZW0udXNlcl9zdGF0c1siYXBpX2NhbGxzX3NhdmVkIl0gPT0gMAogICAgICAgIGFzc2VydCBzeXN0ZW0udXNlcl9zdGF0c1siaG91cnNfc2F2ZWQiXSA9PSAwLjAKCiAgICBkZWYgdGVzdF9pbml0X2FjaGlldmVtZW50c19kZWZpbmVzX2FsbF9iYWRnZXMoc2VsZik6CiAgICAgICAgIiIiQWxsIDggYWNoaWV2ZW1lbnRzIGFyZSByZWdpc3RlcmVkIG9uIGluaXQuIiIiCiAgICAgICAgZnJvbSBjb3JlLmFjaGlldmVtZW50cyBpbXBvcnQgQWNoaWV2ZW1lbnRTeXN0ZW0KCiAgICAgICAgc3lzdGVtID0gQWNoaWV2ZW1lbnRTeXN0ZW0oKQogICAgICAgIGFzc2VydCBsZW4oc3lzdGVtLmFjaGlldmVtZW50cykgPT0gOAogICAgICAgIGFzc2VydCAiZmlyc3RfaW1wb3J0IiBpbiBzeXN0ZW0uYWNoaWV2ZW1lbnRzCiAgICAgICAgYXNzZXJ0ICJwYXBlcl9jb2xsZWN0b3IiIGluIHN5c3RlbS5hY2hpZXZlbWVudHMKICAgICAgICBhc3NlcnQgInJlc2VhcmNoZXJfMTAwIiBpbiBzeXN0ZW0uYWNoaWV2ZW1lbnRzCiAgICAgICAgYXNzZXJ0ICJhcGlfc2F2ZXIiIGluIHN5c3RlbS5hY2hpZXZlbWVudHMKICAgICAgICBhc3NlcnQgInRpbWVfc2F2ZXIiIGluIHN5c3RlbS5hY2hpZXZlbWVudHMKICAgICAgICBhc3NlcnQgInNwZWVkX2RlbW9uIiBpbiBzeXN0ZW0uYWNoaWV2ZW1lbnRzCiAgICAgICAgYXNzZXJ0ICJjYWNoZV9tYXN0ZXIiIGluIHN5c3RlbS5hY2hpZXZlbWVudHMKICAgICAgICBhc3NlcnQgInNlYXJjaF9leHBlcnQiIGluIHN5c3RlbS5hY2hpZXZlbWVudHMKCiAgICBkZWYgdGVzdF91bmxvY2tfYWNoaWV2ZW1lbnRfcmV0dXJuc19hY2hpZXZlbWVudChzZWxmKToKICAgICAgICAiIiJ1bmxvY2tfYWNoaWV2ZW1lbnQgcmV0dXJucyB0aGUgYWNoaWV2ZW1lbnQgd2hlbiBuZXdseSB1bmxvY2tlZC4iIiIKICAgICAgICBmcm9tIGNvcmUuYWNoaWV2ZW1lbnRzIGltcG9ydCBBY2hpZXZlbWVudFN5c3RlbQoKICAgICAgICBzeXN0ZW0gPSBBY2hpZXZlbWVudFN5c3RlbSgpCiAgICAgICAgcmVzdWx0ID0gc3lzdGVtLnVubG9ja19hY2hpZXZlbWVudCgiZmlyc3RfaW1wb3J0IikKICAgICAgICBhc3NlcnQgcmVzdWx0IGlzIG5vdCBOb25lCiAgICAgICAgYXNzZXJ0IHJlc3VsdC5pZCA9PSAiZmlyc3RfaW1wb3J0IgogICAgICAgIGFzc2VydCByZXN1bHQucG9pbnRzID09IDEwCgogICAgZGVmIHRlc3RfdW5sb2NrX2FjaGlldmVtZW50X2luY3JlbWVudHNfdG90YWxfcG9pbnRzKHNlbGYpOgogICAgICAgICIiIlVubG9ja2luZyBhbiBhY2hpZXZlbWVudCBhZGRzIGl0cyBwb2ludHMgdG8gdG90YWxfcG9pbnRzLiIiIgogICAgICAgIGZyb20gY29yZS5hY2hpZXZlbWVudHMgaW1wb3J0IEFjaGlldmVtZW50U3lzdGVtCgogICAgICAgIHN5c3RlbSA9IEFjaGlldmVtZW50U3lzdGVtKCkKICAgICAgICBhc3NlcnQgc3lzdGVtLnRvdGFsX3BvaW50cyA9PSAwCiAgICAgICAgc3lzdGVtLnVubG9ja19hY2hpZXZlbWVudCgiZmlyc3RfaW1wb3J0IikKICAgICAgICBhc3NlcnQgc3lzdGVtLnRvdGFsX3BvaW50cyA9PSAxMAoKICAgIGRlZiB0ZXN0X3VubG9ja19hY2hpZXZlbWVudF9zZXRzX3VubG9ja2VkX2F0KHNlbGYpOgogICAgICAgICIiIlVubG9ja2luZyBzZXRzIHRoZSB1bmxvY2tlZF9hdCB0aW1lc3RhbXAuIiIiCiAgICAgICAgZnJvbSBjb3JlLmFjaGlldmVtZW50cyBpbXBvcnQgQWNoaWV2ZW1lbnRTeXN0ZW0KCiAgICAgICAgc3lzdGVtID0gQWNoaWV2ZW1lbnRTeXN0ZW0oKQogICAgICAgIGFzc2VydCBzeXN0ZW0uYWNoaWV2ZW1lbnRzWyJmaXJzdF9pbXBvcnQiXS51bmxvY2tlZF9hdCBpcyBOb25lCiAgICAgICAgc3lzdGVtLnVubG9ja19hY2hpZXZlbWVudCgiZmlyc3RfaW1wb3J0IikKICAgICAgICBhc3NlcnQgc3lzdGVtLmFjaGlldmVtZW50c1siZmlyc3RfaW1wb3J0Il0udW5sb2NrZWRfYXQgaXMgbm90IE5vbmUKCiAgICBkZWYgdGVzdF91bmxvY2tfYWNoaWV2ZW1lbnRfaWRlbXBvdGVudChzZWxmKToKICAgICAgICAiIiJVbmxvY2tpbmcgdGhlIHNhbWUgYWNoaWV2ZW1lbnQgdHdpY2UgcmV0dXJucyBOb25lIGFuZCBkb2VzIG5vdCBkb3VibGUtY291bnQgcG9pbnRzLiIiIgogICAgICAgIGZyb20gY29yZS5hY2hpZXZlbWVudHMgaW1wb3J0IEFjaGlldmVtZW50U3lzdGVtCgogICAgICAgIHN5c3RlbSA9IEFjaGlldmVtZW50U3lzdGVtKCkKICAgICAgICBzeXN0ZW0udW5sb2NrX2FjaGlldmVtZW50KCJmaXJzdF9pbXBvcnQiKQogICAgICAgIGFzc2VydCBzeXN0ZW0udG90YWxfcG9pbnRzID09IDEwCiAgICAgICAgcmVzdWx0ID0gc3lzdGVtLnVubG9ja19hY2hpZXZlbWVudCgiZmlyc3RfaW1wb3J0IikKICAgICAgICBhc3NlcnQgcmVzdWx0IGlzIE5vbmUKICAgICAgICBhc3NlcnQgc3lzdGVtLnRvdGFsX3BvaW50cyA9PSAxMAoKICAgIGRlZiB0ZXN0X3VubG9ja191bmtub3duX2FjaGlldmVtZW50X3JldHVybnNfbm9uZShzZWxmKToKICAgICAgICAiIiJVbmtub3duIGFjaGlldmVtZW50IElEcyByZXR1cm4gTm9uZS4iIiIKICAgICAgICBmcm9tIGNvcmUuYWNoaWV2ZW1lbnRzIGltcG9ydCBBY2hpZXZlbWVudFN5c3RlbQoKICAgICAgICBzeXN0ZW0gPSBBY2hpZXZlbWVudFN5c3RlbSgpCiAgICAgICAgcmVzdWx0ID0gc3lzdGVtLnVubG9ja19hY2hpZXZlbWVudCgibm9uZXhpc3RlbnQiKQogICAgICAgIGFzc2VydCByZXN1bHQgaXMgTm9uZQoKICAgIGRlZiB0ZXN0X2NoZWNrX2FjaGlldmVtZW50c191bmxvY2tzX2ZpcnN0X2ltcG9ydChzZWxmKToKICAgICAgICAiIiJjaGVja19hY2hpZXZlbWVudHMgYXV0by11bmxvY2tzIGZpcnN0X2ltcG9ydCBhZnRlciAxIGltcG9ydC4iIiIKICAgICAgICBmcm9tIGNvcmUuYWNoaWV2ZW1lbnRzIGltcG9ydCBBY2hpZXZlbWVudFN5c3RlbQoKICAgICAgICBzeXN0ZW0gPSBBY2hpZXZlbWVudFN5c3RlbSgpCiAgICAgICAgdW5sb2NrZWQgPSBzeXN0ZW0uY2hlY2tfYWNoaWV2ZW1lbnRzKCkKICAgICAgICBhc3NlcnQgbGVuKHVubG9ja2VkKSA9PSAwCiAgICAgICAgdW5sb2NrZWQgPSBzeXN0ZW0udXBkYXRlX3N0YXRzKGltcG9ydHNfcGVyZm9ybWVkPTEpCiAgICAgICAgYXNzZXJ0IGFueShhLmlkID09ICJmaXJzdF9pbXBvcnQiIGZvciBhIGluIHVubG9ja2VkKQoKICAgIGRlZiB0ZXN0X2NoZWNrX2FjaGlldmVtZW50c191bmxvY2tzX3BhcGVyX2NvbGxlY3RvcihzZWxmKToKICAgICAgICAiIiJjaGVja19hY2hpZXZlbWVudHMgYXV0by11bmxvY2tzIHBhcGVyX2NvbGxlY3RvciBhdCAxMCBwYXBlcnMuIiIiCiAgICAgICAgZnJvbSBjb3JlLmFjaGlldmVtZW50cyBpbXBvcnQgQWNoaWV2ZW1lbnRTeXN0ZW0KCiAgICAgICAgc3lzdGVtID0gQWNoaWV2ZW1lbnRTeXN0ZW0oKQogICAgICAgIHVubG9ja2VkID0gc3lzdGVtLnVwZGF0ZV9zdGF0cyhwYXBlcnNfcHJvY2Vzc2VkPTEwKQogICAgICAgIGFzc2VydCBhbnkoYS5pZCA9PSAicGFwZXJfY29sbGVjdG9yIiBmb3IgYSBpbiB1bmxvY2tlZCkKCiAgICBkZWYgdGVzdF9jaGVja19hY2hpZXZlbWVudHNfdW5sb2Nrc19hcGlfc2F2ZXIoc2VsZik6CiAgICAgICAgIiIiY2hlY2tfYWNoaWV2ZW1lbnRzIGF1dG8tdW5sb2NrcyBhcGlfc2F2ZXIgYXQgMTAwIGFwaV9jYWxsc19zYXZlZC4iIiIKICAgICAgICBmcm9tIGNvcmUuYWNoaWV2ZW1lbnRzIGltcG9ydCBBY2hpZXZlbWVudFN5c3RlbQoKICAgICAgICBzeXN0ZW0gPSBBY2hpZXZlbWVudFN5c3RlbSgpCiAgICAgICAgdW5sb2NrZWQgPSBzeXN0ZW0udXBkYXRlX3N0YXRzKGFwaV9jYWxsc19zYXZlZD0xMDApCiAgICAgICAgYXNzZXJ0IGFueShhLmlkID09ICJhcGlfc2F2ZXIiIGZvciBhIGluIHVubG9ja2VkKQoKICAgIGRlZiB0ZXN0X2NoZWNrX2FjaGlldmVtZW50c191bmxvY2tzX3RpbWVfc2F2ZXIoc2VsZik6CiAgICAgICAgIiIiY2hlY2tfYWNoaWV2ZW1lbnRzIGF1dG8tdW5sb2NrcyB0aW1lX3NhdmVyIGF0IDEwIGhvdXJzX3NhdmVkLiIiIgogICAgICAgIGZyb20gY29yZS5hY2hpZXZlbWVudHMgaW1wb3J0IEFjaGlldmVtZW50U3lzdGVtCgogICAgICAgIHN5c3RlbSA9IEFjaGlldmVtZW50U3lzdGVtKCkKICAgICAgICB1bmxvY2tlZCA9IHN5c3RlbS51cGRhdGVfc3RhdHMoaG91cnNfc2F2ZWQ9MTAuMCkKICAgICAgICBhc3NlcnQgYW55KGEuaWQgPT0gInRpbWVfc2F2ZXIiIGZvciBhIGluIHVubG9ja2VkKQoKICAgIGRlZiB0ZXN0X2NoZWNrX2FjaGlldmVtZW50c191bmxvY2tzX3NwZWVkX2RlbW9uKHNlbGYpOgogICAgICAgICIiImNoZWNrX2FjaGlldmVtZW50cyBhdXRvLXVubG9ja3Mgc3BlZWRfZGVtb24gYXQgNTAgcGFwZXJzX3Byb2Nlc3NlZC4iIiIKICAgICAgICBmcm9tIGNvcmUuYWNoaWV2ZW1lbnRzIGltcG9ydCBBY2hpZXZlbWVudFN5c3RlbQoKICAgICAgICBzeXN0ZW0gPSBBY2hpZXZlbWVudFN5c3RlbSgpCiAgICAgICAgdW5sb2NrZWQgPSBzeXN0ZW0udXBkYXRlX3N0YXRzKHBhcGVyc19wcm9jZXNzZWQ9NTApCiAgICAgICAgYXNzZXJ0IGFueShhLmlkID09ICJzcGVlZF9kZW1vbiIgZm9yIGEgaW4gdW5sb2NrZWQpCgogICAgZGVmIHRlc3RfY2hlY2tfYWNoaWV2ZW1lbnRzX3VubG9ja3NfcmVzZWFyY2hlcl8xMDAoc2VsZik6CiAgICAgICAgIiIiY2hlY2tfYWNoaWV2ZW1lbnRzIGF1dG8tdW5sb2NrcyByZXNlYXJjaGVyXzEwMCBhdCAxMDAgcGFwZXJzLiIiIgogICAgICAgIGZyb20gY29yZS5hY2hpZXZlbWVudHMgaW1wb3J0IEFjaGlldmVtZW50U3lzdGVtCgogICAgICAgIHN5c3RlbSA9IEFjaGlldmVtZW50U3lzdGVtKCkKICAgICAgICB1bmxvY2tlZCA9IHN5c3RlbS51cGRhdGVfc3RhdHMocGFwZXJzX3Byb2Nlc3NlZD0xMDApCiAgICAgICAgYXNzZXJ0IGFueShhLmlkID09ICJyZXNlYXJjaGVyXzEwMCIgZm9yIGEgaW4gdW5sb2NrZWQpCgogICAgZGVmIHRlc3RfZ2V0X3VubG9ja2VkX2FjaGlldmVtZW50cyhzZWxmKToKICAgICAgICAiIiJnZXRfdW5sb2NrZWRfYWNoaWV2ZW1lbnRzIHJldHVybnMgb25seSBhY2hpZXZlbWVudHMgd2l0aCB1bmxvY2tlZF9hdCBzZXQuIiIiCiAgICAgICAgZnJvbSBjb3JlLmFjaGlldmVtZW50cyBpbXBvcnQgQWNoaWV2ZW1lbnRTeXN0ZW0KCiAgICAgICAgc3lzdGVtID0gQWNoaWV2ZW1lbnRTeXN0ZW0oKQogICAgICAgIHN5c3RlbS51bmxvY2tfYWNoaWV2ZW1lbnQoImZpcnN0X2ltcG9ydCIpCiAgICAgICAgdW5sb2NrZWQgPSBzeXN0ZW0uZ2V0X3VubG9ja2VkX2FjaGlldmVtZW50cygpCiAgICAgICAgYXNzZXJ0IGxlbih1bmxvY2tlZCkgPT0gMQogICAgICAgIGFzc2VydCB1bmxvY2tlZFswXS5pZCA9PSAiZmlyc3RfaW1wb3J0IgoKICAgIGRlZiB0ZXN0X2dldF9wZW5kaW5nX2FjaGlldmVtZW50cyhzZWxmKToKICAgICAgICAiIiJnZXRfcGVuZGluZ19hY2hpZXZlbWVudHMgcmV0dXJucyBhY2hpZXZlbWVudHMgbm90IHlldCB1bmxvY2tlZC4iIiIKICAgICAgICBmcm9tIGNvcmUuYWNoaWV2ZW1lbnRzIGltcG9ydCBBY2hpZXZlbWVudFN5c3RlbQoKICAgICAgICBzeXN0ZW0gPSBBY2hpZXZlbWVudFN5c3RlbSgpCiAgICAgICAgcGVuZGluZyA9IHN5c3RlbS5nZXRfcGVuZGluZ19hY2hpZXZlbWVudHMoKQogICAgICAgIGFzc2VydCBsZW4ocGVuZGluZykgPT0gOAogICAgICAgIHN5c3RlbS51bmxvY2tfYWNoaWV2ZW1lbnQoImZpcnN0X2ltcG9ydCIpCiAgICAgICAgcGVuZGluZyA9IHN5c3RlbS5nZXRfcGVuZGluZ19hY2hpZXZlbWVudHMoKQogICAgICAgIGFzc2VydCBsZW4ocGVuZGluZykgPT0gNwoKICAgIGRlZiB0ZXN0X3VwZGF0ZV9zdGF0c19yZXR1cm5zX2NoZWNrX2FjaGlldmVtZW50cyhzZWxmKToKICAgICAgICAiIiJ1cGRhdGVfc3RhdHMgcmV0dXJucyBsaXN0IG9mIG5ld2x5IHVubG9ja2VkIGFjaGlldmVtZW50cy4iIiIKICAgICAgICBmcm9tIGNvcmUuYWNoaWV2ZW1lbnRzIGltcG9ydCBBY2hpZXZlbWVudFN5c3RlbQoKICAgICAgICBzeXN0ZW0gPSBBY2hpZXZlbWVudFN5c3RlbSgpCiAgICAgICAgcmVzdWx0ID0gc3lzdGVtLnVwZGF0ZV9zdGF0cyhpbXBvcnRzX3BlcmZvcm1lZD0xKQogICAgICAgIGFzc2VydCBhbnkoYS5pZCA9PSAiZmlyc3RfaW1wb3J0IiBmb3IgYSBpbiByZXN1bHQpCgogICAgZGVmIHRlc3RfZ2V0X3Byb2dyZXNzX3JlcG9ydF9jb250YWluc19zZWN0aW9ucyhzZWxmKToKICAgICAgICAiIiJQcm9ncmVzcyByZXBvcnQgY29udGFpbnMga2V5IHNlY3Rpb25zLiIiIgogICAgICAgIGZyb20gY29yZS5hY2hpZXZlbWVudHMgaW1wb3J0IEFjaGlldmVtZW50U3lzdGVtCgogICAgICAgIHN5c3RlbSA9IEFjaGlldmVtZW50U3lzdGVtKCkKICAgICAgICByZXBvcnQgPSBzeXN0ZW0uZ2V0X3Byb2dyZXNzX3JlcG9ydCgpCiAgICAgICAgYXNzZXJ0ICLmgLvnp6/liIYiIGluIHJlcG9ydAogICAgICAgIGFzc2VydCAi5bey6Kej6ZSB5oiQ5bCxIiBpbiByZXBvcnQKICAgICAgICBhc3NlcnQgIuS9v+eUqOe7n+iuoSIgaW4gcmVwb3J0CiAgICAgICAgYXNzZXJ0ICLljbPlsIbop6PplIEiIGluIHJlcG9ydAoKICAgIGRlZiB0ZXN0X2dldF92YWx1ZV9zYXZlZF9rZXlzKHNlbGYpOgogICAgICAgICIiImdldF92YWx1ZV9zYXZlZCByZXR1cm5zIGV4cGVjdGVkIGtleXMuIiIiCiAgICAgICAgZnJvbSBjb3JlLmFjaGlldmVtZW50cyBpbXBvcnQgQWNoaWV2ZW1lbnRTeXN0ZW0KCiAgICAgICAgc3lzdGVtID0gQWNoaWV2ZW1lbnRTeXN0ZW0oKQogICAgICAgIHN5c3RlbS51cGRhdGVfc3RhdHMoYXBpX2NhbGxzX3NhdmVkPTUwKQogICAgICAgIHNhdmVkID0gc3lzdGVtLmdldF92YWx1ZV9zYXZlZCgpCiAgICAgICAgYXNzZXJ0ICJob3Vyc19zYXZlZCIgaW4gc2F2ZWQKICAgICAgICBhc3NlcnQgImNvc3Rfc2F2ZWQiIGluIHNhdmVkCiAgICAgICAgYXNzZXJ0ICJwYXBlcnNfcHJvY2Vzc2VkIiBpbiBzYXZlZAogICAgICAgIGFzc2VydCAiYWNoaWV2ZW1lbnRfcG9pbnRzIiBpbiBzYXZlZAoKICAgIGRlZiB0ZXN0X2dldF92YWx1ZV9zYXZlZF9ob3Vyc19jYWxjdWxhdGlvbihzZWxmKToKICAgICAgICAiIiJob3Vyc19zYXZlZCA9IGFwaV9jYWxsc19zYXZlZCAqIDAuMS4iIiIKICAgICAgICBmcm9tIGNvcmUuYWNoaWV2ZW1lbnRzIGltcG9ydCBBY2hpZXZlbWVudFN5c3RlbQoKICAgICAgICBzeXN0ZW0gPSBBY2hpZXZlbWVudFN5c3RlbSgpCiAgICAgICAgc3lzdGVtLnVwZGF0ZV9zdGF0cyhhcGlfY2FsbHNfc2F2ZWQ9MTAwKQogICAgICAgIHNhdmVkID0gc3lzdGVtLmdldF92YWx1ZV9zYXZlZCgpCiAgICAgICAgYXNzZXJ0ICIxMC4wIiBpbiBzYXZlZFsiaG91cnNfc2F2ZWQiXQoKICAgIGRlZiB0ZXN0X2dldF92YWx1ZV9zYXZlZF9jb3N0X2NhbGN1bGF0aW9uKHNlbGYpOgogICAgICAgICIiImNvc3Rfc2F2ZWQgPSBhcGlfY2FsbHNfc2F2ZWQgKiAwLjAxLiIiIgogICAgICAgIGZyb20gY29yZS5hY2hpZXZlbWVudHMgaW1wb3J0IEFjaGlldmVtZW50U3lzdGVtCgogICAgICAgIHN5c3RlbSA9IEFjaGlldmVtZW50U3lzdGVtKCkKICAgICAgICBzeXN0ZW0udXBkYXRlX3N0YXRzKGFwaV9jYWxsc19zYXZlZD0xMDApCiAgICAgICAgc2F2ZWQgPSBzeXN0ZW0uZ2V0X3ZhbHVlX3NhdmVkKCkKICAgICAgICBhc3NlcnQgIiQxLjAwIiBpbiBzYXZlZFsiY29zdF9zYXZlZCJdCgoKY2xhc3MgVGVzdEdsb2JhbEFjaGlldmVtZW50U3lzdGVtOgogICAgIiIiVGVzdHMgZm9yIGdsb2JhbCBzaW5nbGV0b24uIiIiCgogICAgZGVmIHRlc3RfZ2V0X2FjaGlldmVtZW50X3N5c3RlbV9yZXR1cm5zX2luc3RhbmNlKHNlbGYpOgogICAgICAgICIiImdldF9hY2hpZXZlbWVudF9zeXN0ZW0gcmV0dXJucyBhbiBBY2hpZXZlbWVudFN5c3RlbSBpbnN0YW5jZS4iIiIKICAgICAgICBmcm9tIGNvcmUuYWNoaWV2ZW1lbnRzIGltcG9ydCBnZXRfYWNoaWV2ZW1lbnRfc3lzdGVtCgogICAgICAgIHN5c3RlbSA9IGdldF9hY2hpZXZlbWVudF9zeXN0ZW0oKQogICAgICAgIGFzc2VydCBzeXN0ZW0gaXMgbm90IE5vbmUKCiAgICBkZWYgdGVzdF9nZXRfYWNoaWV2ZW1lbnRfc3lzdGVtX3NpbmdsZXRvbihzZWxmKToKICAgICAgICAiIiJnZXRfYWNoaWV2ZW1lbnRfc3lzdGVtIHJldHVybnMgdGhlIHNhbWUgaW5zdGFuY2Ugb24gcmVwZWF0ZWQgY2FsbHMuIiIiCiAgICAgICAgZnJvbSBjb3JlLmFjaGlldmVtZW50cyBpbXBvcnQgZ2V0X2FjaGlldmVtZW50X3N5c3RlbQoKICAgICAgICBzeXN0ZW0xID0gZ2V0X2FjaGlldmVtZW50X3N5c3RlbSgpCiAgICAgICAgc3lzdGVtMiA9IGdldF9hY2hpZXZlbWVudF9zeXN0ZW0oKQogICAgICAgIGFzc2VydCBzeXN0ZW0xIGlzIHN5c3RlbTIK
+"""Tests for core/achievements.py."""
+
+
+class TestAchievementSystem:
+    """Tests for AchievementSystem."""
+
+    def test_init(self):
+        """System initializes with zero points and empty unlocked list."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        assert system.total_points == 0
+        assert system.user_stats["papers_processed"] == 0
+        assert system.user_stats["api_calls_saved"] == 0
+        assert system.user_stats["hours_saved"] == 0.0
+
+    def test_init_achievements_defines_all_badges(self):
+        """All 8 achievements are registered on init."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        assert len(system.achievements) == 8
+        assert "first_import" in system.achievements
+        assert "paper_collector" in system.achievements
+        assert "researcher_100" in system.achievements
+        assert "api_saver" in system.achievements
+        assert "time_saver" in system.achievements
+        assert "speed_demon" in system.achievements
+        assert "cache_master" in system.achievements
+        assert "search_expert" in system.achievements
+
+    def test_unlock_achievement_returns_achievement(self):
+        """unlock_achievement returns the achievement when newly unlocked."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        result = system.unlock_achievement("first_import")
+        assert result is not None
+        assert result.id == "first_import"
+        assert result.points == 10
+
+    def test_unlock_achievement_increments_total_points(self):
+        """Unlocking an achievement adds its points to total_points."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        assert system.total_points == 0
+        system.unlock_achievement("first_import")
+        assert system.total_points == 10
+
+    def test_unlock_achievement_sets_unlocked_at(self):
+        """Unlocking sets the unlocked_at timestamp."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        assert system.achievements["first_import"].unlocked_at is None
+        system.unlock_achievement("first_import")
+        assert system.achievements["first_import"].unlocked_at is not None
+
+    def test_unlock_achievement_idempotent(self):
+        """Unlocking the same achievement twice returns None and does not double-count points."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        system.unlock_achievement("first_import")
+        assert system.total_points == 10
+        result = system.unlock_achievement("first_import")
+        assert result is None
+        assert system.total_points == 10
+
+    def test_unlock_unknown_achievement_returns_none(self):
+        """Unknown achievement IDs return None."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        result = system.unlock_achievement("nonexistent")
+        assert result is None
+
+    def test_check_achievements_unlocks_first_import(self):
+        """check_achievements auto-unlocks first_import after 1 import."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        unlocked = system.check_achievements()
+        assert len(unlocked) == 0
+        unlocked = system.update_stats(imports_performed=1)
+        assert any(a.id == "first_import" for a in unlocked)
+
+    def test_check_achievements_unlocks_paper_collector(self):
+        """check_achievements auto-unlocks paper_collector at 10 papers."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        unlocked = system.update_stats(papers_processed=10)
+        assert any(a.id == "paper_collector" for a in unlocked)
+
+    def test_check_achievements_unlocks_api_saver(self):
+        """check_achievements auto-unlocks api_saver at 100 api_calls_saved."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        unlocked = system.update_stats(api_calls_saved=100)
+        assert any(a.id == "api_saver" for a in unlocked)
+
+    def test_check_achievements_unlocks_time_saver(self):
+        """check_achievements auto-unlocks time_saver at 10 hours_saved."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        unlocked = system.update_stats(hours_saved=10.0)
+        assert any(a.id == "time_saver" for a in unlocked)
+
+    def test_check_achievements_unlocks_speed_demon(self):
+        """check_achievements auto-unlocks speed_demon at 50 papers_processed."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        unlocked = system.update_stats(papers_processed=50)
+        assert any(a.id == "speed_demon" for a in unlocked)
+
+    def test_check_achievements_unlocks_researcher_100(self):
+        """check_achievements auto-unlocks researcher_100 at 100 papers."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        unlocked = system.update_stats(papers_processed=100)
+        assert any(a.id == "researcher_100" for a in unlocked)
+
+    def test_get_unlocked_achievements(self):
+        """get_unlocked_achievements returns only achievements with unlocked_at set."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        system.unlock_achievement("first_import")
+        unlocked = system.get_unlocked_achievements()
+        assert len(unlocked) == 1
+        assert unlocked[0].id == "first_import"
+
+    def test_get_pending_achievements(self):
+        """get_pending_achievements returns achievements not yet unlocked."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        pending = system.get_pending_achievements()
+        assert len(pending) == 8
+        system.unlock_achievement("first_import")
+        pending = system.get_pending_achievements()
+        assert len(pending) == 7
+
+    def test_update_stats_returns_check_achievements(self):
+        """update_stats returns list of newly unlocked achievements."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        result = system.update_stats(imports_performed=1)
+        assert any(a.id == "first_import" for a in result)
+
+    def test_get_progress_report_contains_sections(self):
+        """Progress report contains key sections."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        report = system.get_progress_report()
+        assert "总积分" in report
+        assert "已解锁成就" in report
+        assert "使用统计" in report
+        assert "即将解锁" in report
+
+    def test_get_value_saved_keys(self):
+        """get_value_saved returns expected keys."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        system.update_stats(api_calls_saved=50)
+        saved = system.get_value_saved()
+        assert "hours_saved" in saved
+        assert "cost_saved" in saved
+        assert "papers_processed" in saved
+        assert "achievement_points" in saved
+
+    def test_get_value_saved_hours_calculation(self):
+        """hours_saved = api_calls_saved * 0.1."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        system.update_stats(api_calls_saved=100)
+        saved = system.get_value_saved()
+        assert "10.0" in saved["hours_saved"]
+
+    def test_get_value_saved_cost_calculation(self):
+        """cost_saved = api_calls_saved * 0.01."""
+        from core.achievements import AchievementSystem
+
+        system = AchievementSystem()
+        system.update_stats(api_calls_saved=100)
+        saved = system.get_value_saved()
+        assert "$1.00" in saved["cost_saved"]
+
+
+class TestGlobalAchievementSystem:
+    """Tests for global singleton."""
+
+    def test_get_achievement_system_returns_instance(self):
+        """get_achievement_system returns an AchievementSystem instance."""
+        from core.achievements import get_achievement_system
+
+        system = get_achievement_system()
+        assert system is not None
+
+    def test_get_achievement_system_singleton(self):
+        """get_achievement_system returns the same instance on repeated calls."""
+        from core.achievements import get_achievement_system
+
+        system1 = get_achievement_system()
+        system2 = get_achievement_system()
+        assert system1 is system2

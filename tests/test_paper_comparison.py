@@ -1,1 +1,196 @@
-IiIiVGVzdHMgZm9yIHBhcGVyIGNvbXBhcmlzb24uIiIiCgppbXBvcnQgcHl0ZXN0CmZyb20gbGxtLnBhcGVyX2NvbXBhcmlzb24gaW1wb3J0ICgKICAgIFBhcGVyQ29tcGFyYXRvciwKICAgIENvbXBhcmlzb25Db2x1bW4sCiAgICBDb21wYXJpc29uUmVzdWx0LAopCgoKY2xhc3MgVGVzdFBhcGVyQ29tcGFyYXRvcjoKICAgICIiIlRlc3QgUGFwZXJDb21wYXJhdG9yLiIiIgoKICAgIEBweXRlc3QuZml4dHVyZQogICAgZGVmIGNvbXBhcmF0b3Ioc2VsZik6CiAgICAgICAgcmV0dXJuIFBhcGVyQ29tcGFyYXRvcigpCgogICAgZGVmIHRlc3RfYWRkX3BhcGVyKHNlbGYsIGNvbXBhcmF0b3IpOgogICAgICAgICIiIlRlc3QgYWRkaW5nIGEgcGFwZXIuIiIiCgogICAgICAgIGNsYXNzIE1vY2tQYXBlcjoKICAgICAgICAgICAgdWlkID0gInAxIgogICAgICAgICAgICB0aXRsZSA9ICJUZXN0IFBhcGVyIgogICAgICAgICAgICB5ZWFyID0gMjAyMwogICAgICAgICAgICBhdXRob3JzID0gWyJBdXRob3IgQSIsICJBdXRob3IgQiJdCiAgICAgICAgICAgIGFic3RyYWN0ID0gIlRoaXMgaXMgYSB0ZXN0IGFic3RyYWN0LiIKICAgICAgICAgICAgbWV0aG9kID0gIiIKICAgICAgICAgICAgZGF0YXNldCA9ICIiCgogICAgICAgIGNvbCA9IGNvbXBhcmF0b3IuYWRkX3BhcGVyKE1vY2tQYXBlcigpKQogICAgICAgIGFzc2VydCBjb2wucGFwZXJfaWQgPT0gInAxIgogICAgICAgIGFzc2VydCBjb2wudGl0bGUgPT0gIlRlc3QgUGFwZXIiCiAgICAgICAgYXNzZXJ0IGNvbC55ZWFyID09IDIwMjMKCiAgICBkZWYgdGVzdF9leHRyYWN0X21ldGhvZHMoc2VsZiwgY29tcGFyYXRvcik6CiAgICAgICAgIiIiVGVzdCBtZXRob2QgZXh0cmFjdGlvbiBmcm9tIHBhcGVyIHRleHQuIiIiCgogICAgICAgIGNsYXNzIE1vY2tQYXBlcjoKICAgICAgICAgICAgdGl0bGUgPSAiVHJhbnNmb3JtZXIgYmFzZWQgbW9kZWwiCiAgICAgICAgICAgIGFic3RyYWN0ID0gIldlIHVzZSBCRVJUIGFuZCBhdHRlbnRpb24gbWVjaGFuaXNtcyIKICAgICAgICAgICAgbWV0aG9kID0gIiIKCiAgICAgICAgY29sID0gY29tcGFyYXRvci5hZGRfcGFwZXIoTW9ja1BhcGVyKCkpCiAgICAgICAgYXNzZXJ0ICJUcmFuc2Zvcm1lciIgaW4gY29sLm1ldGhvZHMKICAgICAgICBhc3NlcnQgIkJFUlQiIGluIGNvbC5tZXRob2RzCiAgICAgICAgYXNzZXJ0ICJBdHRlbnRpb24iIGluIGNvbC5tZXRob2RzCgogICAgZGVmIHRlc3RfZXh0cmFjdF9kYXRhc2V0cyhzZWxmLCBjb21wYXJhdG9yKToKICAgICAgICAiIiJUZXN0IGRhdGFzZXQgZXh0cmFjdGlvbiBmcm9tIHBhcGVyIHRleHQuIiIiCgogICAgICAgIGNsYXNzIE1vY2tQYXBlcjoKICAgICAgICAgICAgdGl0bGUgPSAiR0xVRSBiZW5jaG1hcmsgZXZhbHVhdGlvbiIKICAgICAgICAgICAgYWJzdHJhY3QgPSAiV2UgZXZhbHVhdGUgb24gU1F1QUQgYW5kIE1OTEkiCiAgICAgICAgICAgIGRhdGFzZXQgPSAiIgoKICAgICAgICBjb2wgPSBjb21wYXJhdG9yLmFkZF9wYXBlcihNb2NrUGFwZXIoKSkKICAgICAgICBhc3NlcnQgIkdMVUUiIGluIGNvbC5kYXRhc2V0cwogICAgICAgIGFzc2VydCAiU1F1QUQiIGluIGNvbC5kYXRhc2V0cwogICAgICAgIGFzc2VydCAiTU5MSSIgaW4gY29sLmRhdGFzZXRzCgogICAgZGVmIHRlc3RfY29tcGFyZV9wYXBlcnMoc2VsZiwgY29tcGFyYXRvcik6CiAgICAgICAgIiIiVGVzdCBjb21wYXJpbmcgbXVsdGlwbGUgcGFwZXJzLiIiIgoKICAgICAgICBjbGFzcyBQYXBlcjE6CiAgICAgICAgICAgIHVpZCA9ICJwMSIKICAgICAgICAgICAgdGl0bGUgPSAiUGFwZXIgT25lIgogICAgICAgICAgICB5ZWFyID0gMjAyMwogICAgICAgICAgICBhdXRob3JzID0gWyJBdXRob3IgQSJdCiAgICAgICAgICAgIGFic3RyYWN0ID0gIldlIHVzZSBCRVJUIG9uIEdMVUUiCiAgICAgICAgICAgIG1ldGhvZCA9ICJCRVJUIgogICAgICAgICAgICBkYXRhc2V0ID0gIkdMVUUiCiAgICAgICAgICAgIG1ldHJpY3MgPSAiIgoKICAgICAgICBjbGFzcyBQYXBlcjI6CiAgICAgICAgICAgIHVpZCA9ICJwMiIKICAgICAgICAgICAgdGl0bGUgPSAiUGFwZXIgVHdvIgogICAgICAgICAgICB5ZWFyID0gMjAyNAogICAgICAgICAgICBhdXRob3JzID0gWyJBdXRob3IgQiJdCiAgICAgICAgICAgIGFic3RyYWN0ID0gIldlIHVzZSBHUFQgb24gU3VwZXJHTFVFIgogICAgICAgICAgICBtZXRob2QgPSAiR1BUIgogICAgICAgICAgICBkYXRhc2V0ID0gIlN1cGVyR0xVRSIKICAgICAgICAgICAgbWV0cmljcyA9ICIiCgogICAgICAgIHJlc3VsdCA9IGNvbXBhcmF0b3IuY29tcGFyZShbInAxIiwgInAyIl0pCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHQuY29sdW1ucykgPT0gMgogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0LmFzcGVjdF9yb3dzKSA+IDAKCiAgICBkZWYgdGVzdF9jb21wYXJlX3dpdGhfYXNwZWN0cyhzZWxmLCBjb21wYXJhdG9yKToKICAgICAgICAiIiJUZXN0IGNvbXBhcmluZyB3aXRoIHNwZWNpZmljIGFzcGVjdHMuIiIiCgogICAgICAgIGNsYXNzIFBhcGVyMToKICAgICAgICAgICAgdWlkID0gInAxIgogICAgICAgICAgICB0aXRsZSA9ICJQYXBlciBPbmUiCiAgICAgICAgICAgIHllYXIgPSAyMDIzCiAgICAgICAgICAgIGF1dGhvcnMgPSBbXQogICAgICAgICAgICBhYnN0cmFjdCA9ICIiCiAgICAgICAgICAgIG1ldGhvZCA9ICIiCiAgICAgICAgICAgIGRhdGFzZXQgPSAiIgogICAgICAgICAgICBtZXRyaWNzID0gIiIKCiAgICAgICAgcmVzdWx0ID0gY29tcGFyYXRvci5jb21wYXJlKFsicDEiXSwgYXNwZWN0cz1bIm1ldGhvZHMiLCAiZGF0YXNldHMiXSkKICAgICAgICBhc3NlcnQgbGVuKHJlc3VsdC5hc3BlY3Rfcm93cykgPT0gMgoKICAgIGRlZiB0ZXN0X3JlbmRlcl90ZXh0KHNlbGYsIGNvbXBhcmF0b3IpOgogICAgICAgICIiIlRlc3QgdGV4dCByZW5kZXJpbmcuIiIiCgogICAgICAgIGNsYXNzIFBhcGVyMToKICAgICAgICAgICAgdWlkID0gInAxIgogICAgICAgICAgICB0aXRsZSA9ICJQYXBlciBPbmUiCiAgICAgICAgICAgIHllYXIgPSAyMDIzCiAgICAgICAgICAgIGF1dGhvcnMgPSBbXQogICAgICAgICAgICBhYnN0cmFjdCA9ICIiCiAgICAgICAgICAgIG1ldGhvZCA9ICJUcmFuc2Zvcm1lciIKICAgICAgICAgICAgZGF0YXNldCA9ICJHTFVFIgogICAgICAgICAgICBtZXRyaWNzID0gIiIKCiAgICAgICAgY29sID0gY29tcGFyYXRvci5hZGRfcGFwZXIoUGFwZXIxKCkpCiAgICAgICAgcmVzdWx0ID0gQ29tcGFyaXNvblJlc3VsdCgKICAgICAgICAgICAgY29sdW1ucz1bY29sXSwKICAgICAgICAgICAgYXNwZWN0X3Jvd3M9WwogICAgICAgICAgICAgICAgeyJhc3BlY3QiOiAiTWV0aG9kcyIsICJwMSI6ICJUcmFuc2Zvcm1lciJ9LAogICAgICAgICAgICBdLAogICAgICAgICkKCiAgICAgICAgb3V0cHV0ID0gY29tcGFyYXRvci5yZW5kZXJfdGV4dChyZXN1bHQpCiAgICAgICAgYXNzZXJ0ICJQYXBlciBDb21wYXJpc29uIiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIlBhcGVyIE9uZSIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfcmVuZGVyX21hcmtkb3duKHNlbGYsIGNvbXBhcmF0b3IpOgogICAgICAgICIiIlRlc3QgTWFya2Rvd24gcmVuZGVyaW5nLiIiIgoKICAgICAgICBjbGFzcyBQYXBlcjE6CiAgICAgICAgICAgIHVpZCA9ICJwMSIKICAgICAgICAgICAgdGl0bGUgPSAiUGFwZXIgT25lIgogICAgICAgICAgICB5ZWFyID0gMjAyMwogICAgICAgICAgICBhdXRob3JzID0gW10KICAgICAgICAgICAgYWJzdHJhY3QgPSAiIgogICAgICAgICAgICBtZXRob2QgPSAiIgogICAgICAgICAgICBkYXRhc2V0ID0gIiIKICAgICAgICAgICAgbWV0cmljcyA9ICIiCgogICAgICAgIGNvbCA9IGNvbXBhcmF0b3IuYWRkX3BhcGVyKFBhcGVyMSgpKQogICAgICAgIHJlc3VsdCA9IENvbXBhcmlzb25SZXN1bHQoCiAgICAgICAgICAgIGNvbHVtbnM9W2NvbF0sCiAgICAgICAgICAgIGFzcGVjdF9yb3dzPVsKICAgICAgICAgICAgICAgIHsiYXNwZWN0IjogIk1ldGhvZHMiLCAicDEiOiAiVHJhbnNmb3JtZXIifSwKICAgICAgICAgICAgXSwKICAgICAgICApCgogICAgICAgIG91dHB1dCA9IGNvbXBhcmF0b3IucmVuZGVyX21hcmtkb3duKHJlc3VsdCkKICAgICAgICBhc3NlcnQgIiMgUGFwZXIgQ29tcGFyaXNvbiIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICJ8IE1ldGhvZHMgfCIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfcmVuZGVyX2RpZmYoc2VsZiwgY29tcGFyYXRvcik6CiAgICAgICAgIiIiVGVzdCBkaWZmIHJlbmRlcmluZy4iIiIKCiAgICAgICAgY2xhc3MgUGFwZXIxOgogICAgICAgICAgICB0aXRsZSA9ICJQYXBlciBPbmUiCiAgICAgICAgICAgIG1ldGhvZHMgPSBbIkJFUlQiLCAiVHJhbnNmb3JtZXIiXQoKICAgICAgICBjbGFzcyBQYXBlcjI6CiAgICAgICAgICAgIHRpdGxlID0gIlBhcGVyIFR3byIKICAgICAgICAgICAgbWV0aG9kcyA9IFsiR1BUIiwgIlRyYW5zZm9ybWVyIl0KCiAgICAgICAgb3V0cHV0ID0gY29tcGFyYXRvci5yZW5kZXJfZGlmZihQYXBlcjEoKSwgUGFwZXIyKCksICJtZXRob2RzIikKICAgICAgICBhc3NlcnQgIlBhcGVyIE9uZSIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICJQYXBlciBUd28iIGluIG91dHB1dAoKCmNsYXNzIFRlc3RDb21wYXJpc29uQ29sdW1uOgogICAgIiIiVGVzdCBDb21wYXJpc29uQ29sdW1uLiIiIgoKICAgIGRlZiB0ZXN0X2NyZWF0aW9uKHNlbGYpOgogICAgICAgICIiIlRlc3QgY3JlYXRpbmcgYSBjb2x1bW4uIiIiCiAgICAgICAgY29sID0gQ29tcGFyaXNvbkNvbHVtbigKICAgICAgICAgICAgcGFwZXJfaWQ9InAxIiwKICAgICAgICAgICAgdGl0bGU9IlRlc3QiLAogICAgICAgICAgICB5ZWFyPTIwMjMsCiAgICAgICAgICAgIG1ldGhvZHM9WyJCRVJUIl0sCiAgICAgICAgICAgIGRhdGFzZXRzPVsiR0xVRSJdLAogICAgICAgICkKICAgICAgICBhc3NlcnQgY29sLnBhcGVyX2lkID09ICJwMSIKICAgICAgICBhc3NlcnQgY29sLnRpdGxlID09ICJUZXN0IgogICAgICAgIGFzc2VydCBjb2wubWV0aG9kcyA9PSBbIkJFUlQiXQogICAgICAgIGFzc2VydCBjb2wuZGF0YXNldHMgPT0gWyJHTFVFIl0KCgpjbGFzcyBUZXN0Q29tcGFyaXNvblJlc3VsdDoKICAgICIiIlRlc3QgQ29tcGFyaXNvblJlc3VsdC4iIiIKCiAgICBkZWYgdGVzdF9jcmVhdGlvbihzZWxmKToKICAgICAgICAiIiJUZXN0IGNyZWF0aW5nIGEgcmVzdWx0LiIiIgogICAgICAgIGNvbCA9IENvbXBhcmlzb25Db2x1bW4ocGFwZXJfaWQ9InAxIiwgdGl0bGU9IlRlc3QiKQogICAgICAgIHJlc3VsdCA9IENvbXBhcmlzb25SZXN1bHQoY29sdW1ucz1bY29sXSkKICAgICAgICBhc3NlcnQgbGVuKHJlc3VsdC5jb2x1bW5zKSA9PSAxCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHQuYXNwZWN0X3Jvd3MpID09IDAK
+"""Tests for paper comparison."""
+
+import pytest
+from llm.paper_comparison import (
+    PaperComparator,
+    ComparisonColumn,
+    ComparisonResult,
+)
+
+
+class TestPaperComparator:
+    """Test PaperComparator."""
+
+    @pytest.fixture
+    def comparator(self):
+        return PaperComparator()
+
+    def test_add_paper(self, comparator):
+        """Test adding a paper."""
+
+        class MockPaper:
+            uid = "p1"
+            title = "Test Paper"
+            year = 2023
+            authors = ["Author A", "Author B"]
+            abstract = "This is a test abstract."
+            method = ""
+            dataset = ""
+
+        col = comparator.add_paper(MockPaper())
+        assert col.paper_id == "p1"
+        assert col.title == "Test Paper"
+        assert col.year == 2023
+
+    def test_extract_methods(self, comparator):
+        """Test method extraction from paper text."""
+
+        class MockPaper:
+            title = "Transformer based model"
+            abstract = "We use BERT and attention mechanisms"
+            method = ""
+
+        col = comparator.add_paper(MockPaper())
+        assert "Transformer" in col.methods
+        assert "BERT" in col.methods
+        assert "Attention" in col.methods
+
+    def test_extract_datasets(self, comparator):
+        """Test dataset extraction from paper text."""
+
+        class MockPaper:
+            title = "GLUE benchmark evaluation"
+            abstract = "We evaluate on SQuAD and MNLI"
+            dataset = ""
+
+        col = comparator.add_paper(MockPaper())
+        assert "GLUE" in col.datasets
+        assert "SQuAD" in col.datasets
+        assert "MNLI" in col.datasets
+
+    def test_compare_papers(self, comparator):
+        """Test comparing multiple papers."""
+
+        class Paper1:
+            uid = "p1"
+            title = "Paper One"
+            year = 2023
+            authors = ["Author A"]
+            abstract = "We use BERT on GLUE"
+            method = "BERT"
+            dataset = "GLUE"
+            metrics = ""
+
+        class Paper2:
+            uid = "p2"
+            title = "Paper Two"
+            year = 2024
+            authors = ["Author B"]
+            abstract = "We use GPT on SuperGLUE"
+            method = "GPT"
+            dataset = "SuperGLUE"
+            metrics = ""
+
+        result = comparator.compare(["p1", "p2"])
+        assert len(result.columns) == 2
+        assert len(result.aspect_rows) > 0
+
+    def test_compare_with_aspects(self, comparator):
+        """Test comparing with specific aspects."""
+
+        class Paper1:
+            uid = "p1"
+            title = "Paper One"
+            year = 2023
+            authors = []
+            abstract = ""
+            method = ""
+            dataset = ""
+            metrics = ""
+
+        result = comparator.compare(["p1"], aspects=["methods", "datasets"])
+        assert len(result.aspect_rows) == 2
+
+    def test_render_text(self, comparator):
+        """Test text rendering."""
+
+        class Paper1:
+            uid = "p1"
+            title = "Paper One"
+            year = 2023
+            authors = []
+            abstract = ""
+            method = "Transformer"
+            dataset = "GLUE"
+            metrics = ""
+
+        col = comparator.add_paper(Paper1())
+        result = ComparisonResult(
+            columns=[col],
+            aspect_rows=[
+                {"aspect": "Methods", "p1": "Transformer"},
+            ],
+        )
+
+        output = comparator.render_text(result)
+        assert "Paper Comparison" in output
+        assert "Paper One" in output
+
+    def test_render_markdown(self, comparator):
+        """Test Markdown rendering."""
+
+        class Paper1:
+            uid = "p1"
+            title = "Paper One"
+            year = 2023
+            authors = []
+            abstract = ""
+            method = ""
+            dataset = ""
+            metrics = ""
+
+        col = comparator.add_paper(Paper1())
+        result = ComparisonResult(
+            columns=[col],
+            aspect_rows=[
+                {"aspect": "Methods", "p1": "Transformer"},
+            ],
+        )
+
+        output = comparator.render_markdown(result)
+        assert "# Paper Comparison" in output
+        assert "| Methods |" in output
+
+    def test_render_diff(self, comparator):
+        """Test diff rendering."""
+
+        class Paper1:
+            title = "Paper One"
+            methods = ["BERT", "Transformer"]
+
+        class Paper2:
+            title = "Paper Two"
+            methods = ["GPT", "Transformer"]
+
+        output = comparator.render_diff(Paper1(), Paper2(), "methods")
+        assert "Paper One" in output
+        assert "Paper Two" in output
+
+
+class TestComparisonColumn:
+    """Test ComparisonColumn."""
+
+    def test_creation(self):
+        """Test creating a column."""
+        col = ComparisonColumn(
+            paper_id="p1",
+            title="Test",
+            year=2023,
+            methods=["BERT"],
+            datasets=["GLUE"],
+        )
+        assert col.paper_id == "p1"
+        assert col.title == "Test"
+        assert col.methods == ["BERT"]
+        assert col.datasets == ["GLUE"]
+
+
+class TestComparisonResult:
+    """Test ComparisonResult."""
+
+    def test_creation(self):
+        """Test creating a result."""
+        col = ComparisonColumn(paper_id="p1", title="Test")
+        result = ComparisonResult(columns=[col])
+        assert len(result.columns) == 1
+        assert len(result.aspect_rows) == 0
