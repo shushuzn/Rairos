@@ -1,1 +1,176 @@
-IiIiCldlZWtseSBEaWdlc3Q6IEdlbmVyYXRlIHdlZWtseSByZXNlYXJjaCBzdW1tYXJpZXMuCiIiIgoKZnJvbSBkYXRhY2xhc3NlcyBpbXBvcnQgZGF0YWNsYXNzLCBmaWVsZApmcm9tIGRhdGV0aW1lIGltcG9ydCBkYXRldGltZSwgdGltZWRlbHRhCmZyb20gdHlwaW5nIGltcG9ydCBEaWN0LCBMaXN0CgoKQGRhdGFjbGFzcwpjbGFzcyBXZWVrRGF0YToKICAgICIiIkRhdGEgZm9yIGEgd2Vlay4iIiIKCiAgICBzdGFydF9kYXRlOiBzdHIKICAgIGVuZF9kYXRlOiBzdHIKICAgIGpvdXJuYWxfZW50cmllczogaW50ID0gMAogICAgZXhwZXJpbWVudHNfc3RhcnRlZDogaW50ID0gMAogICAgZXhwZXJpbWVudHNfY29tcGxldGVkOiBpbnQgPSAwCiAgICBxdWVzdGlvbnNfbmV3OiBpbnQgPSAwCiAgICBxdWVzdGlvbnNfcmVzb2x2ZWQ6IGludCA9IDAKICAgIHBhcGVyc19hZGRlZDogaW50ID0gMAogICAgbW9vZF9icmVha2Rvd246IGRpY3QgPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9ZGljdCkKICAgIHRvcF90YWdzOiBsaXN0ID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICBoaWdobGlnaHRzOiBMaXN0W3N0cl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKCgpjbGFzcyBXZWVrbHlEaWdlc3Q6CiAgICAiIiJHZW5lcmF0ZSB3ZWVrbHkgcmVzZWFyY2ggc3VtbWFyaWVzLiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmKToKICAgICAgICBwYXNzCgogICAgZGVmIGNvbGxlY3Rfd2Vla19kYXRhKHNlbGYsIGRheXM6IGludCA9IDcpIC0+IFdlZWtEYXRhOgogICAgICAgICIiIkNvbGxlY3QgZGF0YSBmb3IgdGhlIHBhc3QgTiBkYXlzLiIiIgogICAgICAgIG5vdyA9IGRhdGV0aW1lLm5vdygpCiAgICAgICAgc3RhcnQgPSBub3cgLSB0aW1lZGVsdGEoZGF5cz1kYXlzKQogICAgICAgIHN0YXJ0X3N0ciA9IHN0YXJ0LnN0cmZ0aW1lKCIlWS0lbS0lZCIpCiAgICAgICAgZW5kX3N0ciA9IG5vdy5zdHJmdGltZSgiJVktJW0tJWQiKQoKICAgICAgICB3ZWVrX2RhdGEgPSBXZWVrRGF0YShzdGFydF9kYXRlPXN0YXJ0X3N0ciwgZW5kX2RhdGU9ZW5kX3N0cikKCiAgICAgICAgIyBKb3VybmFsIGVudHJpZXMKICAgICAgICBmcm9tIGxsbS5qb3VybmFsIGltcG9ydCBKb3VybmFsCgogICAgICAgIGpvdXJuYWwgPSBKb3VybmFsKCkKICAgICAgICBlbnRyaWVzID0gam91cm5hbC5saXN0X2VudHJpZXMoZGF5cz1kYXlzKQogICAgICAgIHdlZWtfZGF0YS5qb3VybmFsX2VudHJpZXMgPSBsZW4oZW50cmllcykKCiAgICAgICAgIyBNb29kIGJyZWFrZG93bgogICAgICAgIG1vb2RfY291bnQ6IERpY3Rbc3RyLCBpbnRdID0ge30KICAgICAgICB0YWdfY291bnQ6IERpY3Rbc3RyLCBpbnRdID0ge30KICAgICAgICBmb3IgZSBpbiBlbnRyaWVzOgogICAgICAgICAgICBpZiBlLm1vb2Q6CiAgICAgICAgICAgICAgICBtb29kX2NvdW50W2UubW9vZF0gPSBtb29kX2NvdW50LmdldChlLm1vb2QsIDApICsgMQogICAgICAgICAgICBmb3IgdGFnIGluIGUudGFnczoKICAgICAgICAgICAgICAgIHRhZ19jb3VudFt0YWddID0gdGFnX2NvdW50LmdldCh0YWcsIDApICsgMQogICAgICAgIHdlZWtfZGF0YS5tb29kX2JyZWFrZG93biA9IG1vb2RfY291bnQKICAgICAgICB3ZWVrX2RhdGEudG9wX3RhZ3MgPSBzb3J0ZWQodGFnX2NvdW50Lml0ZW1zKCksIGtleT1sYW1iZGEgeDogLXhbMV0pWzo1XQoKICAgICAgICAjIEV4cGVyaW1lbnRzCiAgICAgICAgZnJvbSBsbG0uZXhwZXJpbWVudF90cmFja2VyIGltcG9ydCBFeHBlcmltZW50VHJhY2tlcgoKICAgICAgICBleHBfdHJhY2tlciA9IEV4cGVyaW1lbnRUcmFja2VyKCkKICAgICAgICBleHBzID0gZXhwX3RyYWNrZXIubGlzdF9leHBlcmltZW50cygpCiAgICAgICAgZm9yIGUgaW4gZXhwczoKICAgICAgICAgICAgaWYgZS5jcmVhdGVkX2F0ID49IHN0YXJ0Lmlzb2Zvcm1hdCgpOgogICAgICAgICAgICAgICAgd2Vla19kYXRhLmV4cGVyaW1lbnRzX3N0YXJ0ZWQgKz0gMQogICAgICAgICAgICBpZiBlLnN0YXR1cyA9PSAiY29tcGxldGVkIiBhbmQgZS5jb21wbGV0ZWRfYXQgPj0gc3RhcnQuaXNvZm9ybWF0KCk6CiAgICAgICAgICAgICAgICB3ZWVrX2RhdGEuZXhwZXJpbWVudHNfY29tcGxldGVkICs9IDEKCiAgICAgICAgIyBRdWVzdGlvbnMKICAgICAgICBmcm9tIGxsbS5xdWVzdGlvbl90cmFja2VyIGltcG9ydCBRdWVzdGlvblRyYWNrZXIKCiAgICAgICAgcV90cmFja2VyID0gUXVlc3Rpb25UcmFja2VyKCkKICAgICAgICBxdWVzdGlvbnMgPSBxX3RyYWNrZXIubGlzdF9xdWVzdGlvbnMoKQogICAgICAgIGZvciBxIGluIHF1ZXN0aW9uczoKICAgICAgICAgICAgaWYgcS5jcmVhdGVkX2F0ID49IHN0YXJ0Lmlzb2Zvcm1hdCgpOgogICAgICAgICAgICAgICAgd2Vla19kYXRhLnF1ZXN0aW9uc19uZXcgKz0gMQogICAgICAgICAgICBpZiBxLnN0YXR1cyA9PSAicmVzb2x2ZWQiIGFuZCBxLnVwZGF0ZWRfYXQgYW5kIHEudXBkYXRlZF9hdCA+PSBzdGFydC5pc29mb3JtYXQoKToKICAgICAgICAgICAgICAgIHdlZWtfZGF0YS5xdWVzdGlvbnNfcmVzb2x2ZWQgKz0gMQoKICAgICAgICByZXR1cm4gd2Vla19kYXRhCgogICAgZGVmIGdlbmVyYXRlX3N1bW1hcnkoc2VsZiwgZGF0YTogV2Vla0RhdGEpIC0+IHN0cjoKICAgICAgICAiIiJHZW5lcmF0ZSBhIHRleHQgc3VtbWFyeS4iIiIKICAgICAgICBsaW5lcyA9IFsKICAgICAgICAgICAgIj0iICogNjAsCiAgICAgICAgICAgICLwn5OKIFdlZWtseSBSZXNlYXJjaCBEaWdlc3QiLAogICAgICAgICAgICBmIiAgIHtkYXRhLnN0YXJ0X2RhdGV9IH4ge2RhdGEuZW5kX2RhdGV9IiwKICAgICAgICAgICAgIj0iICogNjAsCiAgICAgICAgICAgICIiLAogICAgICAgIF0KCiAgICAgICAgIyBBY3Rpdml0eSBzdGF0cwogICAgICAgIGxpbmVzLmFwcGVuZCgiIyMg8J+TiCBBY3Rpdml0eSIpCiAgICAgICAgbGluZXMuYXBwZW5kKGYiICBKb3VybmFsIGVudHJpZXM6IHtkYXRhLmpvdXJuYWxfZW50cmllc30iKQogICAgICAgIGxpbmVzLmFwcGVuZChmIiAgRXhwZXJpbWVudHMgc3RhcnRlZDoge2RhdGEuZXhwZXJpbWVudHNfc3RhcnRlZH0iKQogICAgICAgIGxpbmVzLmFwcGVuZChmIiAgRXhwZXJpbWVudHMgY29tcGxldGVkOiB7ZGF0YS5leHBlcmltZW50c19jb21wbGV0ZWR9IikKICAgICAgICBsaW5lcy5hcHBlbmQoZiIgIE5ldyBxdWVzdGlvbnM6IHtkYXRhLnF1ZXN0aW9uc19uZXd9IikKICAgICAgICBsaW5lcy5hcHBlbmQoZiIgIFF1ZXN0aW9ucyByZXNvbHZlZDoge2RhdGEucXVlc3Rpb25zX3Jlc29sdmVkfSIpCiAgICAgICAgbGluZXMuYXBwZW5kKCIiKQoKICAgICAgICAjIE1vb2QKICAgICAgICBpZiBkYXRhLm1vb2RfYnJlYWtkb3duOgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiMjIPCfkq0gTW9vZCIpCiAgICAgICAgICAgIG1vb2RfaWNvbnMgPSB7InByb2R1Y3RpdmUiOiAi4pqhIiwgInN0dWNrIjogIvCfmJMiLCAiZXhjaXRlZCI6ICLwn46JIiwgIm5ldXRyYWwiOiAi8J+TnSJ9CiAgICAgICAgICAgIGZvciBtb29kLCBjb3VudCBpbiBkYXRhLm1vb2RfYnJlYWtkb3duLml0ZW1zKCk6CiAgICAgICAgICAgICAgICBpY29uID0gbW9vZF9pY29ucy5nZXQobW9vZCwgIvCfk50iKQogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICB7aWNvbn0ge21vb2R9OiB7Y291bnR9IikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIiKQoKICAgICAgICAjIFRhZ3MKICAgICAgICBpZiBkYXRhLnRvcF90YWdzOgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiMjIPCfj7fvuI8gVG9wIFRvcGljcyIpCiAgICAgICAgICAgIGZvciB0YWcsIGNvdW50IGluIGRhdGEudG9wX3RhZ3NbOjVdOgogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICB7dGFnfToge2NvdW50fSIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIikKCiAgICAgICAgIyBIaWdobGlnaHRzCiAgICAgICAgaWYgZGF0YS5oaWdobGlnaHRzOgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiMjIOKtkCBIaWdobGlnaHRzIikKICAgICAgICAgICAgZm9yIGggaW4gZGF0YS5oaWdobGlnaHRzOgogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICDigKIge2h9IikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIiKQoKICAgICAgICAjIFdlZWsncyBwcm9kdWN0aXZpdHkgc2NvcmUKICAgICAgICBzY29yZSA9IHNlbGYuX2NhbGN1bGF0ZV9wcm9kdWN0aXZpdHlfc2NvcmUoZGF0YSkKICAgICAgICBsaW5lcy5hcHBlbmQoZiIjIyDwn5OFIFByb2R1Y3Rpdml0eSBTY29yZToge3Njb3JlfS8xMDAiKQogICAgICAgIGxpbmVzLmFwcGVuZCgiIikKICAgICAgICBsaW5lcy5hcHBlbmQoIj0iICogNjApCgogICAgICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCgogICAgZGVmIF9jYWxjdWxhdGVfcHJvZHVjdGl2aXR5X3Njb3JlKHNlbGYsIGRhdGE6IFdlZWtEYXRhKSAtPiBpbnQ6CiAgICAgICAgIiIiQ2FsY3VsYXRlIGEgc2ltcGxlIHByb2R1Y3Rpdml0eSBzY29yZS4iIiIKICAgICAgICBzY29yZSA9IDAKICAgICAgICBzY29yZSArPSBtaW4oZGF0YS5qb3VybmFsX2VudHJpZXMgKiA1LCAyNSkgICMgTWF4IDI1IHB0cwogICAgICAgIHNjb3JlICs9IG1pbihkYXRhLmV4cGVyaW1lbnRzX2NvbXBsZXRlZCAqIDIwLCA0MCkgICMgTWF4IDQwIHB0cwogICAgICAgIHNjb3JlICs9IG1pbihkYXRhLnF1ZXN0aW9uc19yZXNvbHZlZCAqIDE1LCAzMCkgICMgTWF4IDMwIHB0cwogICAgICAgIGlmIGRhdGEubW9vZF9icmVha2Rvd24uZ2V0KCJleGNpdGVkIiwgMCkgPiAwOgogICAgICAgICAgICBzY29yZSArPSA1ICAjIEJvbnVzIGZvciBleGNpdGVtZW50CiAgICAgICAgcmV0dXJuIG1pbihzY29yZSwgMTAwKQoKICAgIGRlZiByZW5kZXJfbWFya2Rvd24oc2VsZiwgZGF0YTogV2Vla0RhdGEpIC0+IHN0cjoKICAgICAgICAiIiJSZW5kZXIgYXMgTWFya2Rvd24uIiIiCiAgICAgICAgbGluZXMgPSBbCiAgICAgICAgICAgICIjIFdlZWtseSBSZXNlYXJjaCBEaWdlc3QiLAogICAgICAgICAgICBmIioqUGVyaW9kKio6IHtkYXRhLnN0YXJ0X2RhdGV9IH4ge2RhdGEuZW5kX2RhdGV9IiwKICAgICAgICAgICAgIiIsCiAgICAgICAgXQoKICAgICAgICAjIFN0YXRzIHRhYmxlCiAgICAgICAgbGluZXMuYXBwZW5kKCIjIyBTdGF0cyIpCiAgICAgICAgbGluZXMuYXBwZW5kKCJ8IE1ldHJpYyB8IFZhbHVlIHwiKQogICAgICAgIGxpbmVzLmFwcGVuZCgifC0tLS0tLS0tfC0tLS0tLS18IikKICAgICAgICBsaW5lcy5hcHBlbmQoZiJ8IEpvdXJuYWwgZW50cmllcyB8IHtkYXRhLmpvdXJuYWxfZW50cmllc30gfCIpCiAgICAgICAgbGluZXMuYXBwZW5kKGYifCBFeHBlcmltZW50cyBzdGFydGVkIHwge2RhdGEuZXhwZXJpbWVudHNfc3RhcnRlZH0gfCIpCiAgICAgICAgbGluZXMuYXBwZW5kKGYifCBFeHBlcmltZW50cyBjb21wbGV0ZWQgfCB7ZGF0YS5leHBlcmltZW50c19jb21wbGV0ZWR9IHwiKQogICAgICAgIGxpbmVzLmFwcGVuZChmInwgTmV3IHF1ZXN0aW9ucyB8IHtkYXRhLnF1ZXN0aW9uc19uZXd9IHwiKQogICAgICAgIGxpbmVzLmFwcGVuZChmInwgUXVlc3Rpb25zIHJlc29sdmVkIHwge2RhdGEucXVlc3Rpb25zX3Jlc29sdmVkfSB8IikKICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgICMgTW9vZAogICAgICAgIGlmIGRhdGEubW9vZF9icmVha2Rvd246CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIyMgTW9vZCBEaXN0cmlidXRpb24iKQogICAgICAgICAgICBmb3IgbW9vZCwgY291bnQgaW4gZGF0YS5tb29kX2JyZWFrZG93bi5pdGVtcygpOgogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiLSB7bW9vZH06IHtjb3VudH0iKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgICMgVGFncwogICAgICAgIGlmIGRhdGEudG9wX3RhZ3M6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIyMgVG9wIFRvcGljcyIpCiAgICAgICAgICAgIGZvciB0YWcsIGNvdW50IGluIGRhdGEudG9wX3RhZ3M6CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiItICoqe3RhZ30qKjoge2NvdW50fSIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIikKCiAgICAgICAgIyBTY29yZQogICAgICAgIHNjb3JlID0gc2VsZi5fY2FsY3VsYXRlX3Byb2R1Y3Rpdml0eV9zY29yZShkYXRhKQogICAgICAgIGxpbmVzLmFwcGVuZChmIioqUHJvZHVjdGl2aXR5IFNjb3JlKio6IHtzY29yZX0vMTAwIikKCiAgICAgICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykK
+"""
+Weekly Digest: Generate weekly research summaries.
+"""
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from typing import Dict, List
+
+
+@dataclass
+class WeekData:
+    """Data for a week."""
+    start_date: str
+    end_date: str
+    journal_entries: int = 0
+    experiments_started: int = 0
+    experiments_completed: int = 0
+    questions_new: int = 0
+    questions_resolved: int = 0
+    papers_added: int = 0
+    mood_breakdown: dict = field(default_factory=dict)
+    top_tags: list = field(default_factory=list)
+    highlights: List[str] = field(default_factory=list)
+
+
+class WeeklyDigest:
+    """Generate weekly research summaries."""
+
+    def __init__(self):
+        pass
+
+    def collect_week_data(self, days: int = 7) -> WeekData:
+        """Collect data for the past N days."""
+        now = datetime.now()
+        start = now - timedelta(days=days)
+        start_str = start.strftime("%Y-%m-%d")
+        end_str = now.strftime("%Y-%m-%d")
+
+        week_data = WeekData(start_date=start_str, end_date=end_str)
+
+        # Journal entries
+        from llm.journal import Journal
+        journal = Journal()
+        entries = journal.list_entries(days=days)
+        week_data.journal_entries = len(entries)
+
+        # Mood breakdown
+        mood_count: Dict[str, int] = {}
+        tag_count: Dict[str, int] = {}
+        for e in entries:
+            if e.mood:
+                mood_count[e.mood] = mood_count.get(e.mood, 0) + 1
+            for tag in e.tags:
+                tag_count[tag] = tag_count.get(tag, 0) + 1
+        week_data.mood_breakdown = mood_count
+        week_data.top_tags = sorted(tag_count.items(), key=lambda x: -x[1])[:5]
+
+        # Experiments
+        from llm.experiment_tracker import ExperimentTracker
+        exp_tracker = ExperimentTracker()
+        exps = exp_tracker.list_experiments()
+        for e in exps:
+            if e.created_at >= start.isoformat():
+                week_data.experiments_started += 1
+            if e.status == "completed" and e.completed_at >= start.isoformat():
+                week_data.experiments_completed += 1
+
+        # Questions
+        from llm.question_tracker import QuestionTracker
+        q_tracker = QuestionTracker()
+        questions = q_tracker.list_questions()
+        for q in questions:
+            if q.created_at >= start.isoformat():
+                week_data.questions_new += 1
+            if q.status == "resolved" and q.updated_at and q.updated_at >= start.isoformat():
+                week_data.questions_resolved += 1
+
+        return week_data
+
+    def generate_summary(self, data: WeekData) -> str:
+        """Generate a text summary."""
+        lines = [
+            "=" * 60,
+            "📊 Weekly Research Digest",
+            f"   {data.start_date} ~ {data.end_date}",
+            "=" * 60,
+            "",
+        ]
+
+        # Activity stats
+        lines.append("## 📈 Activity")
+        lines.append(f"  Journal entries: {data.journal_entries}")
+        lines.append(f"  Experiments started: {data.experiments_started}")
+        lines.append(f"  Experiments completed: {data.experiments_completed}")
+        lines.append(f"  New questions: {data.questions_new}")
+        lines.append(f"  Questions resolved: {data.questions_resolved}")
+        lines.append("")
+
+        # Mood
+        if data.mood_breakdown:
+            lines.append("## 💭 Mood")
+            mood_icons = {"productive": "⚡", "stuck": "😓", "excited": "🎉", "neutral": "📝"}
+            for mood, count in data.mood_breakdown.items():
+                icon = mood_icons.get(mood, "📝")
+                lines.append(f"  {icon} {mood}: {count}")
+            lines.append("")
+
+        # Tags
+        if data.top_tags:
+            lines.append("## 🏷️ Top Topics")
+            for tag, count in data.top_tags[:5]:
+                lines.append(f"  {tag}: {count}")
+            lines.append("")
+
+        # Highlights
+        if data.highlights:
+            lines.append("## ⭐ Highlights")
+            for h in data.highlights:
+                lines.append(f"  • {h}")
+            lines.append("")
+
+        # Week's productivity score
+        score = self._calculate_productivity_score(data)
+        lines.append(f"## 📅 Productivity Score: {score}/100")
+        lines.append("")
+        lines.append("=" * 60)
+
+        return '\n'.join(lines)
+
+    def _calculate_productivity_score(self, data: WeekData) -> int:
+        """Calculate a simple productivity score."""
+        score = 0
+        score += min(data.journal_entries * 5, 25)  # Max 25 pts
+        score += min(data.experiments_completed * 20, 40)  # Max 40 pts
+        score += min(data.questions_resolved * 15, 30)  # Max 30 pts
+        if data.mood_breakdown.get("excited", 0) > 0:
+            score += 5  # Bonus for excitement
+        return min(score, 100)
+
+    def render_markdown(self, data: WeekData) -> str:
+        """Render as Markdown."""
+        lines = [
+            "# Weekly Research Digest",
+            f"**Period**: {data.start_date} ~ {data.end_date}",
+            "",
+        ]
+
+        # Stats table
+        lines.append("## Stats")
+        lines.append("| Metric | Value |")
+        lines.append("|--------|-------|")
+        lines.append(f"| Journal entries | {data.journal_entries} |")
+        lines.append(f"| Experiments started | {data.experiments_started} |")
+        lines.append(f"| Experiments completed | {data.experiments_completed} |")
+        lines.append(f"| New questions | {data.questions_new} |")
+        lines.append(f"| Questions resolved | {data.questions_resolved} |")
+        lines.append("")
+
+        # Mood
+        if data.mood_breakdown:
+            lines.append("## Mood Distribution")
+            for mood, count in data.mood_breakdown.items():
+                lines.append(f"- {mood}: {count}")
+            lines.append("")
+
+        # Tags
+        if data.top_tags:
+            lines.append("## Top Topics")
+            for tag, count in data.top_tags:
+                lines.append(f"- **{tag}**: {count}")
+            lines.append("")
+
+        # Score
+        score = self._calculate_productivity_score(data)
+        lines.append(f"**Productivity Score**: {score}/100")
+
+        return '\n'.join(lines)

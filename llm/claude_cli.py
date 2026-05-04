@@ -1,1 +1,202 @@
-IiIiTExNIHByb3ZpZGVyIHVzaW5nIENsYXVkZSBDb2RlIENMSSDigJQgemVybyBBUEkga2V5IHJlcXVpcmVkIQoKVXNlcyB0aGUgaW5zdGFsbGVkIENsYXVkZSBDb2RlIENMSSB0byBtYWtlIExMTSBjYWxscywgbGV2ZXJhZ2luZyBpdHMKYnVpbHQtaW4gQW50aHJvcGljIGF1dGhlbnRpY2F0aW9uLiBObyBBUEkga2V5IGNvbmZpZ3VyYXRpb24gbmVlZGVkLgoKVXNhZ2U6CiAgICBmcm9tIGxsbS5jbGF1ZGVfY2xpIGltcG9ydCBDbGF1ZGVDTElDbGllbnQKICAgIGNsaWVudCA9IENsYXVkZUNMSUNsaWVudCgpCiAgICByZXNwb25zZSA9IGNsaWVudC5jaGF0KCJXaGF0IGlzIFJBRz8iLCBtb2RlbD0iY2xhdWRlLTMtNS1zb25uZXQtbGF0ZXN0IikKIiIiCgppbXBvcnQganNvbgppbXBvcnQgc3VicHJvY2VzcwppbXBvcnQgc3lzCmZyb20gdHlwaW5nIGltcG9ydCBPcHRpb25hbCwgY2FzdAoKCmRlZiBfZ2V0X2NsYXVkZV9leGVjdXRhYmxlKCkgLT4gc3RyOgogICAgIiIiR2V0IHRoZSBjb3JyZWN0IENsYXVkZSBDTEkgZXhlY3V0YWJsZSBmb3IgdGhlIHBsYXRmb3JtLiIiIgogICAgIyBUcnkgJ2NsYXVkZScgZmlyc3QgKHdvcmtzIG9uIFVuaXgvbWFjT1MpCiAgICBpZiBzeXMucGxhdGZvcm0gIT0gIndpbjMyIjoKICAgICAgICByZXR1cm4gImNsYXVkZSIKCiAgICAjIE9uIFdpbmRvd3MsIHRyeSBkaWZmZXJlbnQgdmFyaWFudHMKICAgIGZvciBuYW1lIGluIFsiY2xhdWRlLmNtZCIsICJjbGF1ZGUuZXhlIiwgImNsYXVkZSJdOgogICAgICAgIHRyeToKICAgICAgICAgICAgcmVzdWx0ID0gc3VicHJvY2Vzcy5ydW4oCiAgICAgICAgICAgICAgICBbbmFtZSwgIi0tdmVyc2lvbiJdLAogICAgICAgICAgICAgICAgY2FwdHVyZV9vdXRwdXQ9VHJ1ZSwKICAgICAgICAgICAgICAgIHRleHQ9VHJ1ZSwKICAgICAgICAgICAgICAgIHRpbWVvdXQ9MTAsCiAgICAgICAgICAgICkKICAgICAgICAgICAgaWYgcmVzdWx0LnJldHVybmNvZGUgPT0gMDoKICAgICAgICAgICAgICAgIHJldHVybiBuYW1lCiAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbjoKICAgICAgICAgICAgY29udGludWUKCiAgICAjIEZhbGxiYWNrIHRvIGNsYXVkZS5jbWQgb24gV2luZG93cwogICAgcmV0dXJuICJjbGF1ZGUuY21kIgoKCmNsYXNzIENsYXVkZUNMSUNsaWVudDoKICAgICIiIkxMTSBjbGllbnQgdXNpbmcgQ2xhdWRlIENvZGUgQ0xJIGFzIHRoZSBiYWNrZW5kLgoKICAgIEFkdmFudGFnZXM6CiAgICAtIE5vIEFQSSBrZXkgbmVlZGVkIOKAlCB1c2VzIENsYXVkZSBDb2RlJ3MgYnVpbHQtaW4gYXV0aGVudGljYXRpb24KICAgIC0gU3VwcG9ydHMgYWxsIENsYXVkZSBtb2RlbHMKICAgIC0gV29ya3Mgb3V0IG9mIHRoZSBib3ggaWYgQ2xhdWRlIENvZGUgaXMgaW5zdGFsbGVkCgogICAgTGltaXRhdGlvbnM6CiAgICAtIFJlcXVpcmVzIENsYXVkZSBDb2RlIENMSSB0byBiZSBpbnN0YWxsZWQKICAgIC0gU2xvd2VyIHRoYW4gZGlyZWN0IEFQSSBjYWxscyAoc3VicHJvY2VzcyBvdmVyaGVhZCkKICAgICIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBjbGlfcGF0aDogT3B0aW9uYWxbc3RyXSA9IE5vbmUpOgogICAgICAgICIiIkluaXRpYWxpemUgdGhlIENsYXVkZSBDTEkgY2xpZW50LgoKICAgICAgICBBcmdzOgogICAgICAgICAgICBjbGlfcGF0aDogUGF0aCB0byBDbGF1ZGUgQ0xJIGV4ZWN1dGFibGUgKGF1dG8tZGV0ZWN0ZWQgYnkgZGVmYXVsdCkKICAgICAgICAiIiIKICAgICAgICBzZWxmLmNsaV9wYXRoID0gY2xpX3BhdGggb3IgX2dldF9jbGF1ZGVfZXhlY3V0YWJsZSgpCgogICAgZGVmIGNoYXQoCiAgICAgICAgc2VsZiwKICAgICAgICBwcm9tcHQ6IHN0ciwKICAgICAgICBtb2RlbDogc3RyID0gImNsYXVkZS0zLTUtc29ubmV0LWxhdGVzdCIsCiAgICAgICAgc3lzdGVtX3Byb21wdDogT3B0aW9uYWxbc3RyXSA9IE5vbmUsCiAgICAgICAgdGVtcGVyYXR1cmU6IGZsb2F0ID0gMC4yLAogICAgICAgIG1heF90b2tlbnM6IGludCA9IDQwOTYsCiAgICApIC0+IHN0cjoKICAgICAgICAiIiJTZW5kIGEgY2hhdCBtZXNzYWdlIGFuZCBnZXQgYSByZXNwb25zZS4KCiAgICAgICAgQXJnczoKICAgICAgICAgICAgcHJvbXB0OiBVc2VyIG1lc3NhZ2UKICAgICAgICAgICAgbW9kZWw6IE1vZGVsIHRvIHVzZSAoY2xhdWRlLTMtNS1zb25uZXQtbGF0ZXN0LCBldGMuKQogICAgICAgICAgICBzeXN0ZW1fcHJvbXB0OiBPcHRpb25hbCBzeXN0ZW0gbWVzc2FnZQogICAgICAgICAgICB0ZW1wZXJhdHVyZTogU2FtcGxpbmcgdGVtcGVyYXR1cmUKICAgICAgICAgICAgbWF4X3Rva2VuczogTWF4aW11bSB0b2tlbnMgaW4gcmVzcG9uc2UKCiAgICAgICAgUmV0dXJuczoKICAgICAgICAgICAgTW9kZWwncyB0ZXh0IHJlc3BvbnNlCiAgICAgICAgIiIiCiAgICAgICAgZnVsbF9wcm9tcHQgPSBwcm9tcHQKICAgICAgICBpZiBzeXN0ZW1fcHJvbXB0OgogICAgICAgICAgICBmdWxsX3Byb21wdCA9IGYiW1N5c3RlbToge3N5c3RlbV9wcm9tcHR9XVxuXG57cHJvbXB0fSIKCiAgICAgICAgdHJ5OgogICAgICAgICAgICAjIFVzZSAtLXByaW50IHdpdGggLS1vdXRwdXQtZm9ybWF0IGpzb24gYW5kIC0taW5wdXQtZm9ybWF0IHRleHQuCiAgICAgICAgICAgICMgVGhpcyBmb3JjZXMgSlNPTiBvdXRwdXQgZXZlbiBpbiBub24tVFRZIChwaXBlZCBzdGRpbikgZW52aXJvbm1lbnRzLgogICAgICAgICAgICByZXN1bHQgPSBzdWJwcm9jZXNzLnJ1bigKICAgICAgICAgICAgICAgIFsKICAgICAgICAgICAgICAgICAgICBzZWxmLmNsaV9wYXRoLAogICAgICAgICAgICAgICAgICAgICItLXByaW50IiwKICAgICAgICAgICAgICAgICAgICAiLS1tb2RlbCIsCiAgICAgICAgICAgICAgICAgICAgbW9kZWwsCiAgICAgICAgICAgICAgICAgICAgIi0tb3V0cHV0LWZvcm1hdCIsCiAgICAgICAgICAgICAgICAgICAgImpzb24iLAogICAgICAgICAgICAgICAgICAgICItLWlucHV0LWZvcm1hdCIsCiAgICAgICAgICAgICAgICAgICAgInRleHQiLAogICAgICAgICAgICAgICAgXSwKICAgICAgICAgICAgICAgIGlucHV0PWZ1bGxfcHJvbXB0LAogICAgICAgICAgICAgICAgY2FwdHVyZV9vdXRwdXQ9VHJ1ZSwKICAgICAgICAgICAgICAgIHRleHQ9VHJ1ZSwKICAgICAgICAgICAgICAgIHRpbWVvdXQ9MTIwLAogICAgICAgICAgICAgICAgZW5jb2Rpbmc9InV0Zi04IiwKICAgICAgICAgICAgKQoKICAgICAgICAgICAgaWYgcmVzdWx0LnJldHVybmNvZGUgIT0gMDoKICAgICAgICAgICAgICAgIHN0ZGVyciA9IHJlc3VsdC5zdGRlcnIuc3RyaXAoKQogICAgICAgICAgICAgICAgc3Rkb3V0X3ByZXZpZXcgPSByZXN1bHQuc3Rkb3V0LnN0cmlwKClbOjIwMF0KICAgICAgICAgICAgICAgICMgSWYgc3Rkb3V0IGhhcyBjb250ZW50LCB0aGUgTExNIGNhbGwgc3VjY2VlZGVkIOKAlCB0aGUgZXJyb3IKICAgICAgICAgICAgICAgICMgaXMgbGlrZWx5IGZyb20gYSBwb3N0LXNlc3Npb24gaG9vayAoZS5nLiBCdW4gRU5PRU5UKS4gIExvZwogICAgICAgICAgICAgICAgIyBhbmQgY29udGludWUgcmF0aGVyIHRoYW4gZGlzY2FyZGluZyB0aGUgdmFsaWQgcmVzcG9uc2UuCiAgICAgICAgICAgICAgICBpZiBzdGRvdXRfcHJldmlldzoKICAgICAgICAgICAgICAgICAgICBpbXBvcnQgbG9nZ2luZwoKICAgICAgICAgICAgICAgICAgICBsb2dnaW5nLmdldExvZ2dlcihfX25hbWVfXykud2FybmluZygKICAgICAgICAgICAgICAgICAgICAgICAgIkNsYXVkZSBDTEkgZXhpdCBjb2RlICVkIChob29rIGVycm9yPyksIHVzaW5nIHN0ZG91dDogJXMiLAogICAgICAgICAgICAgICAgICAgICAgICByZXN1bHQucmV0dXJuY29kZSwKICAgICAgICAgICAgICAgICAgICAgICAgc3RkZXJyWzoxMjBdLAogICAgICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICAgIGVsc2U6CiAgICAgICAgICAgICAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKGYiQ2xhdWRlIENMSSBlcnJvcjoge3N0ZGVycn0iKQoKICAgICAgICAgICAgIyBQYXJzZSBKU09OIHJlc3BvbnNlIHRvIGV4dHJhY3QgcmVzdWx0CiAgICAgICAgICAgIG91dHB1dCA9IHJlc3VsdC5zdGRvdXQuc3RyaXAoKQogICAgICAgICAgICAjIENsYXVkZSBDTEkgbWF5IGFwcGVuZCBob29rL2FnZW50IGVycm9yIHRleHQgYWZ0ZXIgdGhlIEpTT04uCiAgICAgICAgICAgICMgVHJ5IHRvIGV4dHJhY3Qgb25seSB0aGUgZmlyc3QgSlNPTiBvYmplY3QuCiAgICAgICAgICAgIF9qc29uX3RleHQgPSBvdXRwdXQKICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgIyBBdHRlbXB0IGRpcmVjdCBwYXJzZSBmaXJzdAogICAgICAgICAgICAgICAgZGF0YSA9IGpzb24ubG9hZHMob3V0cHV0KQogICAgICAgICAgICAgICAgcmV0dXJuIGNhc3Qoc3RyLCBkYXRhLmdldCgicmVzdWx0Iiwgb3V0cHV0KSkKICAgICAgICAgICAgZXhjZXB0IGpzb24uSlNPTkRlY29kZUVycm9yOgogICAgICAgICAgICAgICAgIyBGaW5kIGZpcnN0ICd7JyBhbmQgcGFyc2UgZnJvbSB0aGVyZQogICAgICAgICAgICAgICAgYnJhY2VfcG9zID0gb3V0cHV0LmZpbmQoInsiKQogICAgICAgICAgICAgICAgaWYgYnJhY2VfcG9zID49IDA6CiAgICAgICAgICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgICAgICAgICBkYXRhID0ganNvbi5sb2FkcyhvdXRwdXRbYnJhY2VfcG9zOl0pCiAgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiBjYXN0KHN0ciwgZGF0YS5nZXQoInJlc3VsdCIsIG91dHB1dFticmFjZV9wb3M6XSkpCiAgICAgICAgICAgICAgICAgICAgZXhjZXB0IGpzb24uSlNPTkRlY29kZUVycm9yOgogICAgICAgICAgICAgICAgICAgICAgICBwYXNzCiAgICAgICAgICAgICAgICAjIExhc3QgcmVzb3J0OiByZXR1cm4gcmF3IG91dHB1dAogICAgICAgICAgICAgICAgcmV0dXJuIG91dHB1dAoKICAgICAgICBleGNlcHQgc3VicHJvY2Vzcy5UaW1lb3V0RXhwaXJlZDoKICAgICAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKCJDbGF1ZGUgQ0xJIHRpbWVkIG91dCBhZnRlciAxMjAgc2Vjb25kcyIpIGZyb20gTm9uZQogICAgICAgIGV4Y2VwdCBGaWxlTm90Rm91bmRFcnJvcjoKICAgICAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKAogICAgICAgICAgICAgICAgZiJDbGF1ZGUgQ0xJIG5vdCBmb3VuZCBhdCAne3NlbGYuY2xpX3BhdGh9Jy4gIgogICAgICAgICAgICAgICAgIlBsZWFzZSBpbnN0YWxsIENsYXVkZSBDb2RlOiBucG0gaSAtZyBAYW50aHJvcGljLWFpL2NsYXVkZS1jb2RlIgogICAgICAgICAgICApIGZyb20gTm9uZQogICAgICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToKICAgICAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKGYiQ2xhdWRlIENMSSBjYWxsIGZhaWxlZDoge2V9IikgZnJvbSBlCgogICAgZGVmIGlzX2F2YWlsYWJsZShzZWxmKSAtPiBib29sOgogICAgICAgICIiIkNoZWNrIGlmIENsYXVkZSBDTEkgaXMgYXZhaWxhYmxlIGFuZCB3b3JraW5nLgoKICAgICAgICBSZXR1cm5zOgogICAgICAgICAgICBUcnVlIGlmIENsYXVkZSBDTEkgY2FuIGJlIGludm9rZWQsIEZhbHNlIG90aGVyd2lzZQogICAgICAgICIiIgogICAgICAgIHRyeToKICAgICAgICAgICAgcmVzdWx0ID0gc3VicHJvY2Vzcy5ydW4oCiAgICAgICAgICAgICAgICBbc2VsZi5jbGlfcGF0aCwgIi0tdmVyc2lvbiJdLAogICAgICAgICAgICAgICAgY2FwdHVyZV9vdXRwdXQ9VHJ1ZSwKICAgICAgICAgICAgICAgIHRleHQ9VHJ1ZSwKICAgICAgICAgICAgICAgIHRpbWVvdXQ9MTAsCiAgICAgICAgICAgICkKICAgICAgICAgICAgcmV0dXJuIHJlc3VsdC5yZXR1cm5jb2RlID09IDAKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICByZXR1cm4gRmFsc2UKCiAgICBkZWYgZ2V0X3ZlcnNpb24oc2VsZikgLT4gT3B0aW9uYWxbc3RyXToKICAgICAgICAiIiJHZXQgQ2xhdWRlIENMSSB2ZXJzaW9uIGlmIGF2YWlsYWJsZS4KCiAgICAgICAgUmV0dXJuczoKICAgICAgICAgICAgVmVyc2lvbiBzdHJpbmcgb3IgTm9uZSBpZiBub3QgYXZhaWxhYmxlCiAgICAgICAgIiIiCiAgICAgICAgdHJ5OgogICAgICAgICAgICByZXN1bHQgPSBzdWJwcm9jZXNzLnJ1bigKICAgICAgICAgICAgICAgIFtzZWxmLmNsaV9wYXRoLCAiLS12ZXJzaW9uIl0sCiAgICAgICAgICAgICAgICBjYXB0dXJlX291dHB1dD1UcnVlLAogICAgICAgICAgICAgICAgdGV4dD1UcnVlLAogICAgICAgICAgICAgICAgdGltZW91dD0xMCwKICAgICAgICAgICAgICAgIGVuY29kaW5nPSJ1dGYtOCIsCiAgICAgICAgICAgICkKICAgICAgICAgICAgaWYgcmVzdWx0LnJldHVybmNvZGUgPT0gMDoKICAgICAgICAgICAgICAgIHJldHVybiByZXN1bHQuc3Rkb3V0LnN0cmlwKCkKICAgICAgICAgICAgcmV0dXJuIE5vbmUKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICByZXR1cm4gTm9uZQoKCiMgU2luZ2xldG9uIGluc3RhbmNlIGZvciBjb252ZW5pZW5jZQpfZGVmYXVsdF9jbGllbnQ6IE9wdGlvbmFsW0NsYXVkZUNMSUNsaWVudF0gPSBOb25lCgoKZGVmIGdldF9jbGF1ZGVfY2xpX2NsaWVudCgpIC0+IENsYXVkZUNMSUNsaWVudDoKICAgICIiIkdldCBvciBjcmVhdGUgdGhlIGRlZmF1bHQgQ2xhdWRlIENMSSBjbGllbnQgaW5zdGFuY2UuIiIiCiAgICBnbG9iYWwgX2RlZmF1bHRfY2xpZW50CiAgICBpZiBfZGVmYXVsdF9jbGllbnQgaXMgTm9uZToKICAgICAgICBfZGVmYXVsdF9jbGllbnQgPSBDbGF1ZGVDTElDbGllbnQoKQogICAgcmV0dXJuIF9kZWZhdWx0X2NsaWVudAoKCmRlZiBpc19jbGF1ZGVfY2xpX2F2YWlsYWJsZSgpIC0+IGJvb2w6CiAgICAiIiJRdWljayBjaGVjayBpZiBDbGF1ZGUgQ0xJIGlzIGF2YWlsYWJsZS4iIiIKICAgIHJldHVybiBnZXRfY2xhdWRlX2NsaV9jbGllbnQoKS5pc19hdmFpbGFibGUoKQo=
+"""LLM provider using Claude Code CLI — zero API key required!
+
+Uses the installed Claude Code CLI to make LLM calls, leveraging its
+built-in Anthropic authentication. No API key configuration needed.
+
+Usage:
+    from llm.claude_cli import ClaudeCLIClient
+    client = ClaudeCLIClient()
+    response = client.chat("What is RAG?", model="claude-3-5-sonnet-latest")
+"""
+import json
+import subprocess
+import sys
+from typing import Optional, cast
+
+
+def _get_claude_executable() -> str:
+    """Get the correct Claude CLI executable for the platform."""
+    # Try 'claude' first (works on Unix/macOS)
+    if sys.platform != "win32":
+        return "claude"
+
+    # On Windows, try different variants
+    for name in ["claude.cmd", "claude.exe", "claude"]:
+        try:
+            result = subprocess.run(
+                [name, "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            if result.returncode == 0:
+                return name
+        except Exception:
+            continue
+
+    # Fallback to claude.cmd on Windows
+    return "claude.cmd"
+
+
+class ClaudeCLIClient:
+    """LLM client using Claude Code CLI as the backend.
+
+    Advantages:
+    - No API key needed — uses Claude Code's built-in authentication
+    - Supports all Claude models
+    - Works out of the box if Claude Code is installed
+
+    Limitations:
+    - Requires Claude Code CLI to be installed
+    - Slower than direct API calls (subprocess overhead)
+    """
+
+    def __init__(self, cli_path: Optional[str] = None):
+        """Initialize the Claude CLI client.
+
+        Args:
+            cli_path: Path to Claude CLI executable (auto-detected by default)
+        """
+        self.cli_path = cli_path or _get_claude_executable()
+
+    def chat(
+        self,
+        prompt: str,
+        model: str = "claude-3-5-sonnet-latest",
+        system_prompt: Optional[str] = None,
+        temperature: float = 0.2,
+        max_tokens: int = 4096,
+    ) -> str:
+        """Send a chat message and get a response.
+
+        Args:
+            prompt: User message
+            model: Model to use (claude-3-5-sonnet-latest, etc.)
+            system_prompt: Optional system message
+            temperature: Sampling temperature
+            max_tokens: Maximum tokens in response
+
+        Returns:
+            Model's text response
+        """
+        full_prompt = prompt
+        if system_prompt:
+            full_prompt = f"[System: {system_prompt}]\n\n{prompt}"
+
+        try:
+            # Use --print with --output-format json and --input-format text.
+            # This forces JSON output even in non-TTY (piped stdin) environments.
+            result = subprocess.run(
+                [
+                    self.cli_path,
+                    "--print",
+                    "--model", model,
+                    "--output-format", "json",
+                    "--input-format", "text",
+                ],
+                input=full_prompt,
+                capture_output=True,
+                text=True,
+                timeout=120,
+                encoding='utf-8',
+            )
+
+            if result.returncode != 0:
+                stderr = result.stderr.strip()
+                stdout_preview = result.stdout.strip()[:200]
+                # If stdout has content, the LLM call succeeded — the error
+                # is likely from a post-session hook (e.g. Bun ENOENT).  Log
+                # and continue rather than discarding the valid response.
+                if stdout_preview:
+                    import logging
+                    logging.getLogger(__name__).warning(
+                        "Claude CLI exit code %d (hook error?), using stdout: %s",
+                        result.returncode, stderr[:120],
+                    )
+                else:
+                    raise RuntimeError(f"Claude CLI error: {stderr}")
+
+            # Parse JSON response to extract result
+            output = result.stdout.strip()
+            # Claude CLI may append hook/agent error text after the JSON.
+            # Try to extract only the first JSON object.
+            _json_text = output
+            try:
+                # Attempt direct parse first
+                data = json.loads(output)
+                return cast(str, data.get("result", output))
+            except json.JSONDecodeError:
+                # Find first '{' and parse from there
+                brace_pos = output.find('{')
+                if brace_pos >= 0:
+                    try:
+                        data = json.loads(output[brace_pos:])
+                        return cast(str, data.get("result", output[brace_pos:]))
+                    except json.JSONDecodeError:
+                        pass
+                # Last resort: return raw output
+                return output
+
+        except subprocess.TimeoutExpired:
+            raise RuntimeError("Claude CLI timed out after 120 seconds") from None
+        except FileNotFoundError:
+            raise RuntimeError(
+                f"Claude CLI not found at '{self.cli_path}'. "
+                "Please install Claude Code: npm i -g @anthropic-ai/claude-code"
+            ) from None
+        except Exception as e:
+            raise RuntimeError(f"Claude CLI call failed: {e}") from e
+
+    def is_available(self) -> bool:
+        """Check if Claude CLI is available and working.
+
+        Returns:
+            True if Claude CLI can be invoked, False otherwise
+        """
+        try:
+            result = subprocess.run(
+                [self.cli_path, "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            return result.returncode == 0
+        except Exception:
+            return False
+
+    def get_version(self) -> Optional[str]:
+        """Get Claude CLI version if available.
+
+        Returns:
+            Version string or None if not available
+        """
+        try:
+            result = subprocess.run(
+                [self.cli_path, "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+                encoding='utf-8',
+            )
+            if result.returncode == 0:
+                return result.stdout.strip()
+            return None
+        except Exception:
+            return None
+
+
+# Singleton instance for convenience
+_default_client: Optional[ClaudeCLIClient] = None
+
+
+def get_claude_cli_client() -> ClaudeCLIClient:
+    """Get or create the default Claude CLI client instance."""
+    global _default_client
+    if _default_client is None:
+        _default_client = ClaudeCLIClient()
+    return _default_client
+
+
+def is_claude_cli_available() -> bool:
+    """Quick check if Claude CLI is available."""
+    return get_claude_cli_client().is_available()

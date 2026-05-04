@@ -1,1 +1,91 @@
-IiIiSW50ZXJuYXRpb25hbGl6YXRpb24gc3VwcG9ydCBmb3IgQ0xJIG91dHB1dC4iIiIKCmltcG9ydCBvcwoKTEFORyA9IG9zLmVudmlyb24uZ2V0KCJBSV9SRVNFQVJDSF9MQU5HIiwgInpoIikubG93ZXIoKQpfaW5fbGFuZzogc3RyID0gTEFORwoKIyBlbiBzdHJpbmdzCl9NU0dTX0VOID0gewogICAgIyByZXNlYXJjaCBsb29wCiAgICAicmVzZWFyY2hfc2VhcmNoaW5nIjogIltyZXNlYXJjaF0gU2VhcmNoaW5nIGFyWGl2IGZvcjoge3F1ZXJ5fSIsCiAgICAicmVzZWFyY2hfbm9fcGFwZXJzIjogIltyZXNlYXJjaF0gTm8gcGFwZXJzIGZvdW5kIGZvciBxdWVyeToge3F1ZXJ5fSIsCiAgICAicmVzZWFyY2hfZm91bmQiOiAiW3Jlc2VhcmNoXSBGb3VuZCB7bn0gcGFwZXJzIiwKICAgICJyZXNlYXJjaF9kb25lIjogIlxuW3Jlc2VhcmNoXSBEb25lOiB7cHJvY2Vzc2VkfS97dG90YWx9IHByb2Nlc3NlZCwge2ZhaWxlZH0gZmFpbGVkLCB7c2tpcHBlZH0gc2tpcHBlZCIsCiAgICAicmVzZWFyY2hfZG9uZV9yZWFzb24iOiAiICBbe3JlYXNvbn1dIHtjb3VudH0gcGFwZXIocykiLAogICAgInJlc2VhcmNoX3NraXAiOiAiICBbc2tpcF0gQWxyZWFkeSBleGlzdHM6IHtuYW1lfSIsCiAgICAicmVzZWFyY2hfcGRmX2Rvd25sb2FkZWQiOiAiICBbcGRmXSBEb3dubG9hZGVkOiB7bmFtZX0gKHtzaXplOi4wZn0gS0IpIiwKICAgICJyZXNlYXJjaF90ZXh0X2V4dHJhY3RlZCI6ICIgIFt0ZXh0XSBFeHRyYWN0ZWQge259IGNoYXJzIiwKICAgICJyZXNlYXJjaF9sbG1fZ2VuZXJhdGluZyI6ICIgIFtsbG1dIEdlbmVyYXRpbmcgZHJhZnQuLi4iLAogICAgInJlc2VhcmNoX2xsbV9nZW5lcmF0ZWQiOiAiICBbbGxtXSBEcmFmdCBnZW5lcmF0ZWQgKHtufSBjaGFycykiLAogICAgInJlc2VhcmNoX3BkZl9mYWlsZWQiOiAiUERGIGRvd25sb2FkL2V4dHJhY3QgZmFpbGVkIGZvciB7dWlkfSBhZnRlciByZXRyeSIsCiAgICAicmVzZWFyY2hfbGxtX2ZhaWxlZCI6ICJMTE0gZHJhZnQgZ2VuZXJhdGlvbiBmYWlsZWQgZm9yIHt1aWR9IiwKICAgICJyZXNlYXJjaF9ub19hcGlfa2V5IjogIiAgW3NraXBdIE5vIEFQSSBrZXkg4oCUIG1ldGFkYXRhLW9ubHkgbm90ZSIsCiAgICAicmVzZWFyY2hfbm9fdGV4dCI6ICIgIFtza2lwXSBObyBleHRyYWN0ZWQgdGV4dCDigJQgbWV0YWRhdGEtb25seSBub3RlIiwKICAgICJyZXNlYXJjaF9zYXZlZCI6ICIgIFtzYXZlZF0ge25hbWV9IiwKICAgICJyZXNlYXJjaF9zYXZlZF9ub3ZlbHR5IjogIiAgW3NhdmVkXSB7bmFtZX0gW25vdmVsdHk9e3Njb3JlfV0iLAogICAgIyBwYXJzZSBlcnJvcnMKICAgICJlcnJfcGRmX2Rvd25sb2FkIjogIlBERiBkb3dubG9hZCBmYWlsZWQiLAogICAgImVycl9wZGZfbm9fdXJsIjogIk5vIGRpcmVjdGx5IGRvd25sb2FkYWJsZSBQREYgbGluayBhdmFpbGFibGUgKGNvbW1vbiBmb3IgRE9JLW9ubHkgbWV0YWRhdGEpOyBza2lwcGVkIFBERiBleHRyYWN0aW9uLiIsCiAgICAiZXJyX3BkZl9leHRyYWN0IjogIlBERiBleHRyYWN0aW9uIGZhaWxlZCIsCiAgICAiZXJyX2FpX2RyYWZ0IjogIkFJIERyYWZ0IGdlbmVyYXRpb24gZmFpbGVkIOKAlCByZXF1aXJlcyBtYW51YWwgdmVyaWZpY2F0aW9uIiwKICAgICJlcnJfZGV0YWlsIjogIkVycm9yOiB7ZX0iLAogICAgImVycl9zdWdnZXN0aW9uIjogIlN1Z2dlc3Rpb246IGNoZWNrIE9QRU5BSV9BUElfS0VZIC8gLS1hcGkta2V5IC8gLS1iYXNlLXVybCAvIC0tbW9kZWwiLAogICAgIyBtaXNjCiAgICAiYWlfZHJhZnRfZW5hYmxlZCI6ICItIEFJIERyYWZ0OiBFTkFCTEVEIChzZWUgUC1Ob3RlIHNlY3Rpb246ICdBSSDoh6rliqjliJ3nqL/vvIjlvoXmoLjpqozvvIknKSIsCiAgICAicmVzZWFyY2hfZG9uZV9kb25lIjogIkRvbmU6IHtwcm9jZXNzZWR9L3t0b3RhbH0gcHJvY2Vzc2VkLCB7ZmFpbGVkfSBmYWlsZWQsIHtza2lwcGVkfSBza2lwcGVkIiwKfQoKIyB6aCBzdHJpbmdzCl9NU0dTX1pIID0gewogICAgInJlc2VhcmNoX3NlYXJjaGluZyI6ICJbcmVzZWFyY2hdIOato+WcqOaQnOe0oiBhclhpdu+8mntxdWVyeX0iLAogICAgInJlc2VhcmNoX25vX3BhcGVycyI6ICJbcmVzZWFyY2hdIOacquaJvuWIsOebuOWFs+iuuuaWh++8mntxdWVyeX0iLAogICAgInJlc2VhcmNoX2ZvdW5kIjogIltyZXNlYXJjaF0g5om+5YiwIHtufSDnr4forrrmlociLAogICAgInJlc2VhcmNoX2RvbmUiOiAiXG5bcmVzZWFyY2hdIOWujOaIkO+8mntwcm9jZXNzZWR9L3t0b3RhbH0g5bey5aSE55CG77yMe2ZhaWxlZH0g5aSx6LSl77yMe3NraXBwZWR9IOi3s+i/hyIsCiAgICAicmVzZWFyY2hfZG9uZV9yZWFzb24iOiAiICBbe3JlYXNvbn1dIHtjb3VudH0g56+HIiwKICAgICJyZXNlYXJjaF9za2lwIjogIiAgW+i3s+i/h10g5bey5a2Y5Zyo77yae25hbWV9IiwKICAgICJyZXNlYXJjaF9wZGZfZG93bmxvYWRlZCI6ICIgIFtwZGZdIOW3suS4i+i9ve+8mntuYW1lfSAoe3NpemU6LjBmfSBLQikiLAogICAgInJlc2VhcmNoX3RleHRfZXh0cmFjdGVkIjogIiAgW3RleHRdIOW3suaPkOWPliB7bn0g5a2X56ymIiwKICAgICJyZXNlYXJjaF9sbG1fZ2VuZXJhdGluZyI6ICIgIFtsbG1dIOato+WcqOeUn+aIkOiNieeovy4uLiIsCiAgICAicmVzZWFyY2hfbGxtX2dlbmVyYXRlZCI6ICIgIFtsbG1dIOiNieeov+W3sueUn+aIkO+8iHtufSDlrZfnrKbvvIkiLAogICAgInJlc2VhcmNoX3BkZl9mYWlsZWQiOiAiUERGIOS4i+i9vS/op6PmnpDlpLHotKXvvIjph43or5XlkI7ku43lpLHotKXvvInvvJp7dWlkfSIsCiAgICAicmVzZWFyY2hfbGxtX2ZhaWxlZCI6ICJMTE0g6I2J56i/55Sf5oiQ5aSx6LSl77yae3VpZH0iLAogICAgInJlc2VhcmNoX25vX2FwaV9rZXkiOiAiICBb6Lez6L+HXSDml6AgQVBJIEtleSDigJQg5LuF5L+d5a2Y5YWD5pWw5o2uIiwKICAgICJyZXNlYXJjaF9ub190ZXh0IjogIiAgW+i3s+i/h10g5peg5o+Q5Y+W5paH5pysIOKAlCDku4Xkv53lrZjlhYPmlbDmja4iLAogICAgInJlc2VhcmNoX3NhdmVkIjogIiAgW+W3suS/neWtmF0ge25hbWV9IiwKICAgICJyZXNlYXJjaF9zYXZlZF9ub3ZlbHR5IjogIiAgW+W3suS/neWtmF0ge25hbWV9IFvmlrDpopbluqY9e3Njb3JlfV0iLAogICAgImVycl9wZGZfZG93bmxvYWQiOiAiUERGIOS4i+i9veWksei0pSIsCiAgICAiZXJyX3BkZl9ub191cmwiOiAi5pyq5o+Q5L6b5Y+v55u05o6l5LiL6L2955qEIFBERiDpk77mjqXvvIjluLjop4Hkuo4gRE9JLW9ubHkg5YWD5pWw5o2u77yJ77yM5bey6Lez6L+HIFBERiDmir3lj5bjgIIiLAogICAgImVycl9wZGZfZXh0cmFjdCI6ICJQREYg5oq95Y+W5aSx6LSlIiwKICAgICJlcnJfYWlfZHJhZnQiOiAiQUkg6I2J56i/55Sf5oiQ5aSx6LSl77yM6ZyA5Lq65bel5qC46aqMIiwKICAgICJlcnJfZGV0YWlsIjogIumUmeivr++8mntlfSIsCiAgICAiZXJyX3N1Z2dlc3Rpb24iOiAi5bu66K6u77ya5qOA5p+lIE9QRU5BSV9BUElfS0VZIC8gLS1hcGkta2V5IC8gLS1iYXNlLXVybCAvIC0tbW9kZWwiLAogICAgImFpX2RyYWZ0X2VuYWJsZWQiOiAiLSBBSSDojYnnqL/vvJrlt7LlkK/nlKjvvIjop4EgUC1Ob3RlIOeroOiKgu+8midBSSDoh6rliqjliJ3nqL/vvIjlvoXmoLjpqozvvIkn77yJIiwKICAgICJyZXNlYXJjaF9kb25lX2RvbmUiOiAi5a6M5oiQ77yae3Byb2Nlc3NlZH0ve3RvdGFsfSDlt7LlpITnkIbvvIx7ZmFpbGVkfSDlpLHotKXvvIx7c2tpcHBlZH0g6Lez6L+HIiwKfQoKX01TR1M6IGRpY3Rbc3RyLCBkaWN0W3N0ciwgc3RyXV0gPSB7ImVuIjogX01TR1NfRU4sICJ6aCI6IF9NU0dTX1pIfQpfTEFOR19DT0RFUyA9IHsiZW4iLCAiemgiLCAiZSIsICJ6In0KCgpkZWYgc2V0X2xhbmcobGFuZzogc3RyKSAtPiBOb25lOgogICAgIiIiU2V0IGFjdGl2ZSBsYW5ndWFnZSAoZW4vemgpLiIiIgogICAgZ2xvYmFsIF9pbl9sYW5nCiAgICBsYW5nID0gbGFuZy5sb3dlcigpCiAgICBpZiBsYW5nIGluICgiZSIsKToKICAgICAgICBfaW5fbGFuZyA9ICJlbiIKICAgIGVsaWYgbGFuZyBpbiAoInoiLCk6CiAgICAgICAgX2luX2xhbmcgPSAiemgiCiAgICBlbHNlOgogICAgICAgIF9pbl9sYW5nID0gbGFuZyBpZiBsYW5nIGluIF9MQU5HX0NPREVTIGVsc2UgInpoIgoKCmRlZiBnZXRfbGFuZygpIC0+IHN0cjoKICAgICIiIlJldHVybiBjdXJyZW50IGxhbmd1YWdlIGNvZGUuIiIiCiAgICByZXR1cm4gX2luX2xhbmcKCgpkZWYgXyhrZXk6IHN0ciwgKiprd2FyZ3MpIC0+IHN0cjoKICAgICIiIlRyYW5zbGF0ZSBrZXkgd2l0aCBmb3JtYXQgc3Vic3RpdHV0aW9ucy4iIiIKICAgIG1zZyA9IF9NU0dTLmdldChfaW5fbGFuZywgX01TR1NfWkgpLmdldChrZXksIGtleSkKICAgIHJldHVybiBtc2cuZm9ybWF0KCoqa3dhcmdzKSBpZiBrd2FyZ3MgZWxzZSBtc2cK
+"""Internationalization support for CLI output."""
+
+import os
+
+LANG = os.environ.get("AI_RESEARCH_LANG", "zh").lower()
+_in_lang: str = LANG
+
+# en strings
+_MSGS_EN = {
+    # research loop
+    "research_searching": "[research] Searching arXiv for: {query}",
+    "research_no_papers": "[research] No papers found for query: {query}",
+    "research_found": "[research] Found {n} papers",
+    "research_done": "\n[research] Done: {processed}/{total} processed, {failed} failed, {skipped} skipped",
+    "research_done_reason": "  [{reason}] {count} paper(s)",
+    "research_skip": "  [skip] Already exists: {name}",
+    "research_pdf_downloaded": "  [pdf] Downloaded: {name} ({size:.0f} KB)",
+    "research_text_extracted": "  [text] Extracted {n} chars",
+    "research_llm_generating": "  [llm] Generating draft...",
+    "research_llm_generated": "  [llm] Draft generated ({n} chars)",
+    "research_pdf_failed": "PDF download/extract failed for {uid} after retry",
+    "research_llm_failed": "LLM draft generation failed for {uid}",
+    "research_no_api_key": "  [skip] No API key — metadata-only note",
+    "research_no_text": "  [skip] No extracted text — metadata-only note",
+    "research_saved": "  [saved] {name}",
+    "research_saved_novelty": "  [saved] {name} [novelty={score}]",
+    # parse errors
+    "err_pdf_download": "PDF download failed",
+    "err_pdf_no_url": "No directly downloadable PDF link available (common for DOI-only metadata); skipped PDF extraction.",
+    "err_pdf_extract": "PDF extraction failed",
+    "err_ai_draft": "AI Draft generation failed — requires manual verification",
+    "err_detail": "Error: {e}",
+    "err_suggestion": "Suggestion: check OPENAI_API_KEY / --api-key / --base-url / --model",
+    # misc
+    "ai_draft_enabled": "- AI Draft: ENABLED (see P-Note section: 'AI 自动初稿（待核验）')",
+    "research_done_done": "Done: {processed}/{total} processed, {failed} failed, {skipped} skipped",
+}
+
+# zh strings
+_MSGS_ZH = {
+    "research_searching": "[research] 正在搜索 arXiv：{query}",
+    "research_no_papers": "[research] 未找到相关论文：{query}",
+    "research_found": "[research] 找到 {n} 篇论文",
+    "research_done": "\n[research] 完成：{processed}/{total} 已处理，{failed} 失败，{skipped} 跳过",
+    "research_done_reason": "  [{reason}] {count} 篇",
+    "research_skip": "  [跳过] 已存在：{name}",
+    "research_pdf_downloaded": "  [pdf] 已下载：{name} ({size:.0f} KB)",
+    "research_text_extracted": "  [text] 已提取 {n} 字符",
+    "research_llm_generating": "  [llm] 正在生成草稿...",
+    "research_llm_generated": "  [llm] 草稿已生成（{n} 字符）",
+    "research_pdf_failed": "PDF 下载/解析失败（重试后仍失败）：{uid}",
+    "research_llm_failed": "LLM 草稿生成失败：{uid}",
+    "research_no_api_key": "  [跳过] 无 API Key — 仅保存元数据",
+    "research_no_text": "  [跳过] 无提取文本 — 仅保存元数据",
+    "research_saved": "  [已保存] {name}",
+    "research_saved_novelty": "  [已保存] {name} [新颖度={score}]",
+    "err_pdf_download": "PDF 下载失败",
+    "err_pdf_no_url": "未提供可直接下载的 PDF 链接（常见于 DOI-only 元数据），已跳过 PDF 抽取。",
+    "err_pdf_extract": "PDF 抽取失败",
+    "err_ai_draft": "AI 草稿生成失败，需人工核验",
+    "err_detail": "错误：{e}",
+    "err_suggestion": "建议：检查 OPENAI_API_KEY / --api-key / --base-url / --model",
+    "ai_draft_enabled": "- AI 草稿：已启用（见 P-Note 章节：'AI 自动初稿（待核验）'）",
+    "research_done_done": "完成：{processed}/{total} 已处理，{failed} 失败，{skipped} 跳过",
+}
+
+_MSGS: dict[str, dict[str, str]] = {"en": _MSGS_EN, "zh": _MSGS_ZH}
+_LANG_CODES = {"en", "zh", "e", "z"}
+
+
+def set_lang(lang: str) -> None:
+    """Set active language (en/zh)."""
+    global _in_lang
+    lang = lang.lower()
+    if lang in ("e",):
+        _in_lang = "en"
+    elif lang in ("z",):
+        _in_lang = "zh"
+    else:
+        _in_lang = lang if lang in _LANG_CODES else "zh"
+
+
+def get_lang() -> str:
+    """Return current language code."""
+    return _in_lang
+
+
+def _(key: str, **kwargs) -> str:
+    """Translate key with format substitutions."""
+    msg = _MSGS.get(_in_lang, _MSGS_ZH).get(key, key)
+    return msg.format(**kwargs) if kwargs else msg

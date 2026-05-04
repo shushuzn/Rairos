@@ -1,1 +1,237 @@
-IiIiQmFzZSBBZ2VudCArIE1lc3NhZ2UgQnVzIGZvciBtdWx0aS1hZ2VudCBjb29yZGluYXRpb24uIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQganNvbgppbXBvcnQgdGltZQppbXBvcnQgdXVpZApmcm9tIGRhdGFjbGFzc2VzIGltcG9ydCBhc2RpY3QsIGRhdGFjbGFzcywgZmllbGQKZnJvbSBlbnVtIGltcG9ydCBFbnVtCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgQW55LCBEaWN0LCBMaXN0LCBPcHRpb25hbCwgQ2FsbGFibGUKaW1wb3J0IHRocmVhZGluZwppbXBvcnQgbG9nZ2luZwoKbG9nZ2VyID0gbG9nZ2luZy5nZXRMb2dnZXIoX19uYW1lX18pCgoKY2xhc3MgQWdlbnRTdGF0dXMoRW51bSk6CiAgICBJRExFID0gImlkbGUiCiAgICBXT1JLSU5HID0gIndvcmtpbmciCiAgICBET05FID0gImRvbmUiCiAgICBFUlJPUiA9ICJlcnJvciIKCgojIOKUgOKUgOKUgCBNZXNzYWdlIEJ1cyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpjbGFzcyBNZXNzYWdlQnVzOgogICAgIiIiSW4tcHJvY2VzcyBwdWIvc3ViIGJ1cyBmb3IgaW50ZXItYWdlbnQgY29tbXVuaWNhdGlvbi4KCiAgICBBZ2VudHMgcHVibGlzaCBtZXNzYWdlcyB0byBuYW1lZCB0b3BpY3MuIE90aGVyIGFnZW50cyBzdWJzY3JpYmUgdG8gdG9waWNzCiAgICB0byByZWNlaXZlIG1lc3NhZ2VzLiBNZXNzYWdlcyBhcmUgc3RvcmVkIGluIGEgc2ltcGxlIGluLW1lbW9yeSBsb2cuCiAgICAiIiIKCiAgICBfaW5zdGFuY2U6IE9wdGlvbmFsW01lc3NhZ2VCdXNdID0gTm9uZQogICAgX2xvY2sgPSB0aHJlYWRpbmcuTG9jaygpCgogICAgZGVmIF9fbmV3X18oY2xzKSAtPiBNZXNzYWdlQnVzOgogICAgICAgIGlmIGNscy5faW5zdGFuY2UgaXMgTm9uZToKICAgICAgICAgICAgd2l0aCBjbHMuX2xvY2s6CiAgICAgICAgICAgICAgICBpZiBjbHMuX2luc3RhbmNlIGlzIE5vbmU6CiAgICAgICAgICAgICAgICAgICAgY2xzLl9pbnN0YW5jZSA9IHN1cGVyKCkuX19uZXdfXyhjbHMpCiAgICAgICAgICAgICAgICAgICAgY2xzLl9pbnN0YW5jZS5faW5pdCgpCiAgICAgICAgcmV0dXJuIGNscy5faW5zdGFuY2UKCiAgICBkZWYgX2luaXQoc2VsZik6CiAgICAgICAgc2VsZi5fc3Vic2NyaWJlcnM6IERpY3Rbc3RyLCBMaXN0W3N0cl1dID0ge30gICMgdG9waWMgLT4gW2FnZW50X25hbWUsIC4uLl0KICAgICAgICBzZWxmLl9pbmJveDogRGljdFtzdHIsIExpc3RbQWdlbnRNZXNzYWdlXV0gPSB7fSAgIyBhZ2VudF9uYW1lIC0+IFttc2csIC4uLl0KICAgICAgICBzZWxmLl9sb2c6IExpc3RbQWdlbnRNZXNzYWdlXSA9IFtdCiAgICAgICAgc2VsZi5fbG9jayA9IHRocmVhZGluZy5Mb2NrKCkKICAgICAgICBzZWxmLl9zdGF0ZV9maWxlID0gUGF0aC5ob21lKCkgLyAiLmFpX3Jlc2VhcmNoX29zIiAvICJhdXRvbm9tb3VzIiAvICJhZ2VudF9sb2cuanNvbmwiCiAgICAgICAgc2VsZi5fc3RhdGVfZmlsZS5wYXJlbnQubWtkaXIocGFyZW50cz1UcnVlLCBleGlzdF9vaz1UcnVlKQoKICAgICMg4pSA4pSAIFN1YnNjcmliZSDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCiAgICBkZWYgc3Vic2NyaWJlKHNlbGYsIHRvcGljOiBzdHIsIGFnZW50X25hbWU6IHN0cikgLT4gTm9uZToKICAgICAgICB3aXRoIHNlbGYuX2xvY2s6CiAgICAgICAgICAgIGlmIHRvcGljIG5vdCBpbiBzZWxmLl9zdWJzY3JpYmVyczoKICAgICAgICAgICAgICAgIHNlbGYuX3N1YnNjcmliZXJzW3RvcGljXSA9IFtdCiAgICAgICAgICAgIGlmIGFnZW50X25hbWUgbm90IGluIHNlbGYuX3N1YnNjcmliZXJzW3RvcGljXToKICAgICAgICAgICAgICAgIHNlbGYuX3N1YnNjcmliZXJzW3RvcGljXS5hcHBlbmQoYWdlbnRfbmFtZSkKCiAgICBkZWYgdW5zdWJzY3JpYmUoc2VsZiwgdG9waWM6IHN0ciwgYWdlbnRfbmFtZTogc3RyKSAtPiBOb25lOgogICAgICAgIHdpdGggc2VsZi5fbG9jazoKICAgICAgICAgICAgaWYgdG9waWMgaW4gc2VsZi5fc3Vic2NyaWJlcnM6CiAgICAgICAgICAgICAgICBzZWxmLl9zdWJzY3JpYmVyc1t0b3BpY10gPSBbYSBmb3IgYSBpbiBzZWxmLl9zdWJzY3JpYmVyc1t0b3BpY10gaWYgYSAhPSBhZ2VudF9uYW1lXQoKICAgICMg4pSA4pSAIFB1Ymxpc2gg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgogICAgZGVmIHB1Ymxpc2goc2VsZiwgdG9waWM6IHN0ciwgc2VuZGVyOiBzdHIsIHBheWxvYWQ6IERpY3Rbc3RyLCBBbnldKSAtPiBBZ2VudE1lc3NhZ2U6CiAgICAgICAgbXNnID0gQWdlbnRNZXNzYWdlKAogICAgICAgICAgICBpZD1zdHIodXVpZC51dWlkNCgpKVs6OF0sCiAgICAgICAgICAgIHRvcGljPXRvcGljLAogICAgICAgICAgICBzZW5kZXI9c2VuZGVyLAogICAgICAgICAgICBwYXlsb2FkPXBheWxvYWQsCiAgICAgICAgICAgIHRpbWVzdGFtcD10aW1lLnRpbWUoKSwKICAgICAgICApCiAgICAgICAgd2l0aCBzZWxmLl9sb2NrOgogICAgICAgICAgICBzZWxmLl9sb2cuYXBwZW5kKG1zZykKICAgICAgICAgICAgIyBGYW4gb3V0IHRvIHN1YnNjcmliZXJzCiAgICAgICAgICAgIGZvciBhZ2VudF9uYW1lIGluIHNlbGYuX3N1YnNjcmliZXJzLmdldCh0b3BpYywgW10pOgogICAgICAgICAgICAgICAgaWYgYWdlbnRfbmFtZSBub3QgaW4gc2VsZi5faW5ib3g6CiAgICAgICAgICAgICAgICAgICAgc2VsZi5faW5ib3hbYWdlbnRfbmFtZV0gPSBbXQogICAgICAgICAgICAgICAgc2VsZi5faW5ib3hbYWdlbnRfbmFtZV0uYXBwZW5kKG1zZykKICAgICAgICAjIFBlcnNpc3QgdG8gZGlzawogICAgICAgIHNlbGYuX3BlcnNpc3QobXNnKQogICAgICAgIHJldHVybiBtc2cKCiAgICAjIOKUgOKUgCBSZWNlaXZlIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKICAgIGRlZiByZWNlaXZlKHNlbGYsIGFnZW50X25hbWU6IHN0ciwgdGltZW91dDogZmxvYXQgPSAwKSAtPiBPcHRpb25hbFtBZ2VudE1lc3NhZ2VdOgogICAgICAgICIiIlJlY2VpdmUgb25lIG1lc3NhZ2UgZm9yIGFnZW50IChub24tYmxvY2tpbmcgYnkgZGVmYXVsdCkuIiIiCiAgICAgICAgd2l0aCBzZWxmLl9sb2NrOgogICAgICAgICAgICBpZiBhZ2VudF9uYW1lIGluIHNlbGYuX2luYm94IGFuZCBzZWxmLl9pbmJveFthZ2VudF9uYW1lXToKICAgICAgICAgICAgICAgIHJldHVybiBzZWxmLl9pbmJveFthZ2VudF9uYW1lXS5wb3AoMCkKICAgICAgICByZXR1cm4gTm9uZQoKICAgIGRlZiByZWNlaXZlX2FsbChzZWxmLCBhZ2VudF9uYW1lOiBzdHIpIC0+IExpc3RbQWdlbnRNZXNzYWdlXToKICAgICAgICAiIiJSZWNlaXZlIGFsbCBwZW5kaW5nIG1lc3NhZ2VzIGZvciBhZ2VudC4iIiIKICAgICAgICB3aXRoIHNlbGYuX2xvY2s6CiAgICAgICAgICAgIG1zZ3MgPSBzZWxmLl9pbmJveC5nZXQoYWdlbnRfbmFtZSwgW10pCiAgICAgICAgICAgIHNlbGYuX2luYm94W2FnZW50X25hbWVdID0gW10KICAgICAgICAgICAgcmV0dXJuIG1zZ3MKCiAgICBkZWYgcGVlayhzZWxmLCBhZ2VudF9uYW1lOiBzdHIpIC0+IExpc3RbQWdlbnRNZXNzYWdlXToKICAgICAgICAiIiJQZWVrIGF0IHBlbmRpbmcgbWVzc2FnZXMgd2l0aG91dCBjb25zdW1pbmcgdGhlbS4iIiIKICAgICAgICB3aXRoIHNlbGYuX2xvY2s6CiAgICAgICAgICAgIHJldHVybiBsaXN0KHNlbGYuX2luYm94LmdldChhZ2VudF9uYW1lLCBbXSkpCgogICAgIyDilIDilIAgTG9nIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKICAgIGRlZiBnZXRfbG9nKHNlbGYsIGxpbWl0OiBpbnQgPSAxMDApIC0+IExpc3RbRGljdFtzdHIsIEFueV1dOgogICAgICAgIHdpdGggc2VsZi5fbG9jazoKICAgICAgICAgICAgcmV0dXJuIFthc2RpY3QobSkgZm9yIG0gaW4gc2VsZi5fbG9nWy1saW1pdDpdXQoKICAgIGRlZiBjbGVhcl9sb2coc2VsZikgLT4gTm9uZToKICAgICAgICB3aXRoIHNlbGYuX2xvY2s6CiAgICAgICAgICAgIHNlbGYuX2xvZy5jbGVhcigpCiAgICAgICAgICAgIHNlbGYuX2luYm94LmNsZWFyKCkKCiAgICBkZWYgX3BlcnNpc3Qoc2VsZiwgbXNnOiBBZ2VudE1lc3NhZ2UpIC0+IE5vbmU6CiAgICAgICAgdHJ5OgogICAgICAgICAgICB3aXRoIG9wZW4oc2VsZi5fc3RhdGVfZmlsZSwgImEiLCBlbmNvZGluZz0idXRmLTgiKSBhcyBmOgogICAgICAgICAgICAgICAgZi53cml0ZShqc29uLmR1bXBzKGFzZGljdChtc2cpLCBlbnN1cmVfYXNjaWk9RmFsc2UpICsgIlxuIikKICAgICAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgICAgIGxvZ2dlci53YXJuaW5nKGYiRmFpbGVkIHRvIHBlcnNpc3QgYWdlbnQgbWVzc2FnZToge2V9IikKCgojIOKUgOKUgOKUgCBBZ2VudCBNZXNzYWdlIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCkBkYXRhY2xhc3MKY2xhc3MgQWdlbnRNZXNzYWdlOgogICAgaWQ6IHN0cgogICAgdG9waWM6IHN0cgogICAgc2VuZGVyOiBzdHIKICAgIHBheWxvYWQ6IERpY3Rbc3RyLCBBbnldCiAgICB0aW1lc3RhbXA6IGZsb2F0CiAgICByZXBseV90bzogT3B0aW9uYWxbc3RyXSA9IE5vbmUgICMgbWVzc2FnZSBpZCB0aGlzIGlzIGEgcmVzcG9uc2UgdG8KCiAgICBkZWYgdG9fZGljdChzZWxmKSAtPiBEaWN0W3N0ciwgQW55XToKICAgICAgICByZXR1cm4gYXNkaWN0KHNlbGYpCgoKIyDilIDilIDilIAgQmFzZSBBZ2VudCDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpjbGFzcyBCYXNlQWdlbnQ6CiAgICAiIiJCYXNlIGNsYXNzIGZvciBhbGwgcmVzZWFyY2ggc3F1YWQgYWdlbnRzLgoKICAgIEVhY2ggYWdlbnQ6CiAgICAtIEhhcyBhIHVuaXF1ZSBuYW1lIGFuZCBhIHNldCBvZiB0b3BpY3MgaXQgc3Vic2NyaWJlcyB0bwogICAgLSBSdW5zIGluIGl0cyBvd24gdGhyZWFkCiAgICAtIEhhcyBhbiBpbmJveCAobWVzc2FnZSBxdWV1ZSkgYW5kIGFuIG91dGJveCAoZm9yIHJlcGxpZXMpCiAgICAtIEltcGxlbWVudHMgYHRoaW5rKClgIHRvIGhhbmRsZSBpbmNvbWluZyBtZXNzYWdlcyBhbmQgcHJvZHVjZSBvdXRwdXRzCiAgICAtIFB1Ymxpc2hlcyByZXN1bHRzIGJhY2sgdG8gdGhlIG1lc3NhZ2UgYnVzCiAgICAiIiIKCiAgICBTVEFUVVMgPSBBZ2VudFN0YXR1cwoKICAgIGRlZiBfX2luaXRfXygKICAgICAgICBzZWxmLAogICAgICAgIG5hbWU6IHN0ciwKICAgICAgICB0b3BpY3M6IE9wdGlvbmFsW0xpc3Rbc3RyXV0gPSBOb25lLAogICAgICAgIGJ1czogT3B0aW9uYWxbTWVzc2FnZUJ1c10gPSBOb25lLAogICAgKToKICAgICAgICBzZWxmLm5hbWUgPSBuYW1lCiAgICAgICAgc2VsZi50b3BpY3MgPSB0b3BpY3Mgb3IgW10KICAgICAgICBzZWxmLmJ1cyA9IGJ1cyBvciBNZXNzYWdlQnVzKCkKICAgICAgICBzZWxmLnN0YXR1cyA9IEFnZW50U3RhdHVzLklETEUKICAgICAgICBzZWxmLl90aHJlYWQ6IE9wdGlvbmFsW3RocmVhZGluZy5UaHJlYWRdID0gTm9uZQogICAgICAgIHNlbGYuX3N0b3BfZXZlbnQgPSB0aHJlYWRpbmcuRXZlbnQoKQogICAgICAgIHNlbGYuX2FjdGl2aXR5X2xvZzogTGlzdFtEaWN0W3N0ciwgQW55XV0gPSBbXQogICAgICAgIHNlbGYuX2xvY2sgPSB0aHJlYWRpbmcuTG9jaygpCgogICAgICAgICMgU3Vic2NyaWJlIHRvIHRvcGljcwogICAgICAgIGZvciB0b3BpYyBpbiBzZWxmLnRvcGljczoKICAgICAgICAgICAgc2VsZi5idXMuc3Vic2NyaWJlKHRvcGljLCBzZWxmLm5hbWUpCgogICAgIyDilIDilIAgTGlmZWN5Y2xlIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKICAgIGRlZiBzdGFydChzZWxmKSAtPiBOb25lOgogICAgICAgIGlmIHNlbGYuX3RocmVhZCBhbmQgc2VsZi5fdGhyZWFkLmlzX2FsaXZlKCk6CiAgICAgICAgICAgIHJldHVybgogICAgICAgIHNlbGYuX3N0b3BfZXZlbnQuY2xlYXIoKQogICAgICAgIHNlbGYuX3RocmVhZCA9IHRocmVhZGluZy5UaHJlYWQodGFyZ2V0PXNlbGYuX3J1biwgbmFtZT1mImFnZW50LXtzZWxmLm5hbWV9IiwgZGFlbW9uPVRydWUpCiAgICAgICAgc2VsZi5fdGhyZWFkLnN0YXJ0KCkKICAgICAgICBzZWxmLl9sb2coInN0YXJ0ZWQiKQoKICAgIGRlZiBzdG9wKHNlbGYpIC0+IE5vbmU6CiAgICAgICAgc2VsZi5fc3RvcF9ldmVudC5zZXQoKQogICAgICAgIGlmIHNlbGYuX3RocmVhZDoKICAgICAgICAgICAgc2VsZi5fdGhyZWFkLmpvaW4odGltZW91dD01KQogICAgICAgIHNlbGYuX2xvZygic3RvcHBlZCIpCgogICAgZGVmIF9ydW4oc2VsZikgLT4gTm9uZToKICAgICAgICB3aGlsZSBub3Qgc2VsZi5fc3RvcF9ldmVudC5pc19zZXQoKToKICAgICAgICAgICAgbXNncyA9IHNlbGYuYnVzLnJlY2VpdmVfYWxsKHNlbGYubmFtZSkKICAgICAgICAgICAgZm9yIG1zZyBpbiBtc2dzOgogICAgICAgICAgICAgICAgc2VsZi5fbG9nKCJyZWNlaXZlZCIsIHRvcGljPW1zZy50b3BpYywgcGF5bG9hZD1tc2cucGF5bG9hZCkKICAgICAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgICAgICByZXNwb25zZXMgPSBzZWxmLnRoaW5rKG1zZykKICAgICAgICAgICAgICAgICAgICBpZiByZXNwb25zZXM6CiAgICAgICAgICAgICAgICAgICAgICAgIGZvciByZXNwIGluIHJlc3BvbnNlczoKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJlc3AucmVwbHlfdG8gPSBtc2cuaWQKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNlbGYuYnVzLnB1Ymxpc2gocmVzcC50b3BpYywgc2VsZi5uYW1lLCByZXNwLnBheWxvYWQpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBzZWxmLl9sb2coInB1Ymxpc2hlZCIsIHRvcGljPXJlc3AudG9waWMsIHBheWxvYWQ9cmVzcC5wYXlsb2FkKQogICAgICAgICAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgICAgICAgICAgICAgIHNlbGYuc3RhdHVzID0gQWdlbnRTdGF0dXMuRVJST1IKICAgICAgICAgICAgICAgICAgICBzZWxmLl9sb2coImVycm9yIiwgZXJyb3I9c3RyKGUpKQogICAgICAgICAgICAgICAgICAgIGxvZ2dlci5lcnJvcihmIlt7c2VsZi5uYW1lfV0gdGhpbmsoKSBlcnJvcjoge2V9IikKCiAgICAgICAgICAgICMgQnJpZWYgc2xlZXAgdG8gYXZvaWQgYnVzeS13YWl0aW5nCiAgICAgICAgICAgIHRpbWUuc2xlZXAoMC4wNSkKCiAgICAjIOKUgOKUgCBTdWJjbGFzcyBob29rIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKICAgIGRlZiB0aGluayhzZWxmLCBtc2c6IEFnZW50TWVzc2FnZSkgLT4gTGlzdFtBZ2VudE1lc3NhZ2VdOgogICAgICAgICIiIlByb2Nlc3MgYW4gaW5jb21pbmcgbWVzc2FnZSBhbmQgcmV0dXJuIHplcm8gb3IgbW9yZSByZXNwb25zZSBtZXNzYWdlcy4KCiAgICAgICAgT3ZlcnJpZGUgdGhpcyBpbiBzdWJjbGFzc2VzLgogICAgICAgICIiIgogICAgICAgIHJldHVybiBbXQoKICAgICMg4pSA4pSAIEhlbHBlcnMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgogICAgZGVmIHB1Ymxpc2goc2VsZiwgdG9waWM6IHN0ciwgcGF5bG9hZDogRGljdFtzdHIsIEFueV0pIC0+IEFnZW50TWVzc2FnZToKICAgICAgICByZXR1cm4gc2VsZi5idXMucHVibGlzaCh0b3BpYywgc2VsZi5uYW1lLCBwYXlsb2FkKQoKICAgIGRlZiBfbG9nKHNlbGYsIGV2ZW50OiBzdHIsICoqa3dhcmdzKSAtPiBOb25lOgogICAgICAgIGVudHJ5ID0geyJ0cyI6IHRpbWUudGltZSgpLCAiZXZlbnQiOiBldmVudCwgImFnZW50Ijogc2VsZi5uYW1lLCAqKmt3YXJnc30KICAgICAgICB3aXRoIHNlbGYuX2xvY2s6CiAgICAgICAgICAgIHNlbGYuX2FjdGl2aXR5X2xvZy5hcHBlbmQoZW50cnkpCgogICAgZGVmIGdldF9hY3Rpdml0eShzZWxmLCBsaW1pdDogaW50ID0gNTApIC0+IExpc3RbRGljdFtzdHIsIEFueV1dOgogICAgICAgIHdpdGggc2VsZi5fbG9jazoKICAgICAgICAgICAgcmV0dXJuIGxpc3Qoc2VsZi5fYWN0aXZpdHlfbG9nWy1saW1pdDpdKQo=
+"""Base Agent + Message Bus for multi-agent coordination."""
+
+from __future__ import annotations
+
+import json
+import time
+import uuid
+from dataclasses import asdict, dataclass, field
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Callable
+import threading
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class AgentStatus(Enum):
+    IDLE = "idle"
+    WORKING = "working"
+    DONE = "done"
+    ERROR = "error"
+
+
+# ─── Message Bus ────────────────────────────────────────────────────────────────
+
+
+class MessageBus:
+    """In-process pub/sub bus for inter-agent communication.
+
+    Agents publish messages to named topics. Other agents subscribe to topics
+    to receive messages. Messages are stored in a simple in-memory log.
+    """
+
+    _instance: Optional[MessageBus] = None
+    _lock = threading.Lock()
+
+    def __new__(cls) -> MessageBus:
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+                    cls._instance._init()
+        return cls._instance
+
+    def _init(self):
+        self._subscribers: Dict[str, List[str]] = {}  # topic -> [agent_name, ...]
+        self._inbox: Dict[str, List[AgentMessage]] = {}  # agent_name -> [msg, ...]
+        self._log: List[AgentMessage] = []
+        self._lock = threading.Lock()
+        self._state_file = Path.home() / ".ai_research_os" / "autonomous" / "agent_log.jsonl"
+        self._state_file.parent.mkdir(parents=True, exist_ok=True)
+
+    # ── Subscribe ──────────────────────────────────────────────────────────────
+
+    def subscribe(self, topic: str, agent_name: str) -> None:
+        with self._lock:
+            if topic not in self._subscribers:
+                self._subscribers[topic] = []
+            if agent_name not in self._subscribers[topic]:
+                self._subscribers[topic].append(agent_name)
+
+    def unsubscribe(self, topic: str, agent_name: str) -> None:
+        with self._lock:
+            if topic in self._subscribers:
+                self._subscribers[topic] = [a for a in self._subscribers[topic] if a != agent_name]
+
+    # ── Publish ────────────────────────────────────────────────────────────────
+
+    def publish(self, topic: str, sender: str, payload: Dict[str, Any]) -> AgentMessage:
+        msg = AgentMessage(
+            id=str(uuid.uuid4())[:8],
+            topic=topic,
+            sender=sender,
+            payload=payload,
+            timestamp=time.time(),
+        )
+        with self._lock:
+            self._log.append(msg)
+            # Fan out to subscribers
+            for agent_name in self._subscribers.get(topic, []):
+                if agent_name not in self._inbox:
+                    self._inbox[agent_name] = []
+                self._inbox[agent_name].append(msg)
+        # Persist to disk
+        self._persist(msg)
+        return msg
+
+    # ── Receive ────────────────────────────────────────────────────────────────
+
+    def receive(self, agent_name: str, timeout: float = 0) -> Optional[AgentMessage]:
+        """Receive one message for agent (non-blocking by default)."""
+        with self._lock:
+            if agent_name in self._inbox and self._inbox[agent_name]:
+                return self._inbox[agent_name].pop(0)
+        return None
+
+    def receive_all(self, agent_name: str) -> List[AgentMessage]:
+        """Receive all pending messages for agent."""
+        with self._lock:
+            msgs = self._inbox.get(agent_name, [])
+            self._inbox[agent_name] = []
+            return msgs
+
+    def peek(self, agent_name: str) -> List[AgentMessage]:
+        """Peek at pending messages without consuming them."""
+        with self._lock:
+            return list(self._inbox.get(agent_name, []))
+
+    # ── Log ────────────────────────────────────────────────────────────────────
+
+    def get_log(self, limit: int = 100) -> List[Dict[str, Any]]:
+        with self._lock:
+            return [asdict(m) for m in self._log[-limit:]]
+
+    def clear_log(self) -> None:
+        with self._lock:
+            self._log.clear()
+            self._inbox.clear()
+
+    def _persist(self, msg: AgentMessage) -> None:
+        try:
+            with open(self._state_file, "a", encoding="utf-8") as f:
+                f.write(json.dumps(asdict(msg), ensure_ascii=False) + "\n")
+        except Exception as e:
+            logger.warning(f"Failed to persist agent message: {e}")
+
+
+# ─── Agent Message ─────────────────────────────────────────────────────────────
+
+
+@dataclass
+class AgentMessage:
+    id: str
+    topic: str
+    sender: str
+    payload: Dict[str, Any]
+    timestamp: float
+    reply_to: Optional[str] = None  # message id this is a response to
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
+# ─── Base Agent ────────────────────────────────────────────────────────────────
+
+
+class BaseAgent:
+    """Base class for all research squad agents.
+
+    Each agent:
+    - Has a unique name and a set of topics it subscribes to
+    - Runs in its own thread
+    - Has an inbox (message queue) and an outbox (for replies)
+    - Implements `think()` to handle incoming messages and produce outputs
+    - Publishes results back to the message bus
+    """
+
+    STATUS = AgentStatus
+
+    def __init__(
+        self,
+        name: str,
+        topics: Optional[List[str]] = None,
+        bus: Optional[MessageBus] = None,
+    ):
+        self.name = name
+        self.topics = topics or []
+        self.bus = bus or MessageBus()
+        self.status = AgentStatus.IDLE
+        self._thread: Optional[threading.Thread] = None
+        self._stop_event = threading.Event()
+        self._activity_log: List[Dict[str, Any]] = []
+        self._lock = threading.Lock()
+
+        # Subscribe to topics
+        for topic in self.topics:
+            self.bus.subscribe(topic, self.name)
+
+    # ── Lifecycle ──────────────────────────────────────────────────────────────
+
+    def start(self) -> None:
+        if self._thread and self._thread.is_alive():
+            return
+        self._stop_event.clear()
+        self._thread = threading.Thread(target=self._run, name=f"agent-{self.name}", daemon=True)
+        self._thread.start()
+        self._log("started")
+
+    def stop(self) -> None:
+        self._stop_event.set()
+        if self._thread:
+            self._thread.join(timeout=5)
+        self._log("stopped")
+
+    def _run(self) -> None:
+        while not self._stop_event.is_set():
+            msgs = self.bus.receive_all(self.name)
+            for msg in msgs:
+                self._log("received", topic=msg.topic, payload=msg.payload)
+                try:
+                    responses = self.think(msg)
+                    if responses:
+                        for resp in responses:
+                            resp.reply_to = msg.id
+                            self.bus.publish(resp.topic, self.name, resp.payload)
+                            self._log("published", topic=resp.topic, payload=resp.payload)
+                except Exception as e:
+                    self.status = AgentStatus.ERROR
+                    self._log("error", error=str(e))
+                    logger.error(f"[{self.name}] think() error: {e}")
+
+            # Brief sleep to avoid busy-waiting
+            time.sleep(0.05)
+
+    # ── Subclass hook ──────────────────────────────────────────────────────────
+
+    def think(self, msg: AgentMessage) -> List[AgentMessage]:
+        """Process an incoming message and return zero or more response messages.
+
+        Override this in subclasses.
+        """
+        return []
+
+    # ── Helpers ────────────────────────────────────────────────────────────────
+
+    def publish(self, topic: str, payload: Dict[str, Any]) -> AgentMessage:
+        return self.bus.publish(topic, self.name, payload)
+
+    def _log(self, event: str, **kwargs) -> None:
+        entry = {"ts": time.time(), "event": event, "agent": self.name, **kwargs}
+        with self._lock:
+            self._activity_log.append(entry)
+
+    def get_activity(self, limit: int = 50) -> List[Dict[str, Any]]:
+        with self._lock:
+            return list(self._activity_log[-limit:])

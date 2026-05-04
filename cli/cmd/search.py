@@ -1,1 +1,144 @@
-IiIiQ0xJIGNvbW1hbmQ6IHNlYXJjaC4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBhcmdwYXJzZQppbXBvcnQgY3N2CmltcG9ydCBzeXMgYXMgX3N5cwoKaW1wb3J0IG9yanNvbiBhcyBqc29uCgpmcm9tIGNsaS5fc2hhcmVkIGltcG9ydCBnZXRfZGIKZnJvbSBjbGkuX3NoYXJlZCBpbXBvcnQgKAogICAgQ29sb3JzLAogICAgY29sb3JlZCwKICAgIHByaW50X3N1Y2Nlc3MsCikKZnJvbSBjbGkud2FycCBpbXBvcnQgV2FycEJsb2NrcwoKCmRlZiBfYnVpbGRfc2VhcmNoX3BhcnNlcihzdWJwYXJzZXJzKSAtPiBhcmdwYXJzZS5Bcmd1bWVudFBhcnNlcjoKICAgIHAgPSBzdWJwYXJzZXJzLmFkZF9wYXJzZXIoCiAgICAgICAgInNlYXJjaCIsCiAgICAgICAgaGVscD0iU2VhcmNoIGluZGV4ZWQgcGFwZXJzIiwKICAgICAgICBwcm9nPSJhaXJvcyBzZWFyY2giLAogICAgICAgIGRlc2NyaXB0aW9uPSJTZWFyY2ggcGFwZXJzIGJ5IHF1ZXJ5LCB5ZWFyLCBzb3VyY2UsIHRhZywgb3IgcGFyc2Ugc3RhdHVzLiIsCiAgICAgICAgZXBpbG9nPSIiIlwKRXhhbXBsZXM6CiAgJShwcm9nKXMgImF0dGVudGlvbiBtZWNoYW5pc20iICAgICAgICAgICAgICAgICAgICAgIyBiYXNpYyBxdWVyeQogICUocHJvZylzIC0teWVhciAyMDI0IC0tbGltaXQgMjAgICAgICAgICAgICAgICAgICMgcmVjZW50IHBhcGVycwogICUocHJvZylzIC0tdGFnIExMTSAtLXRhZyBBZ2VudCAtLWZvcm1hdCBqc29uICAgICMgYnkgdGFncywgSlNPTiBvdXRwdXQKICAlKHByb2cpcyAtLXNvdXJjZSBhcnhpdiAtLXNvcnQgeWVhciAtLW9yZGVyIGRlc2MgIyBieSBzb3VyY2UsIG5ld2VzdCBmaXJzdAogICUocHJvZylzIC0tc3RhdHVzIHBhcnNlZCAtLWZvcm1hdCBjc3YgICAgICAgICAgICAjIGV4cG9ydCBwYXJzZWQgcGFwZXJzIGFzIENTViIiIiwKICAgICkKCiAgICBwLmFkZF9hcmd1bWVudCgicXVlcnkiLCBuYXJncz0iPyIsIGRlZmF1bHQ9IiIsIGhlbHA9IlNlYXJjaCBxdWVyeSAob3B0aW9uYWwpIikKCiAgICBwLmFkZF9hcmd1bWVudCgiLS1saW1pdCIsIHR5cGU9aW50LCBkZWZhdWx0PTEwLCBoZWxwPSJNYXggcmVzdWx0cyIpCgogICAgcC5hZGRfYXJndW1lbnQoIi0tb2Zmc2V0IiwgdHlwZT1pbnQsIGRlZmF1bHQ9MCwgaGVscD0iU2tpcCBOIHJlc3VsdHMiKQoKICAgIHAuYWRkX2FyZ3VtZW50KCItLWZvcm1hdCIsIGNob2ljZXM9WyJ0YWJsZSIsICJqc29uIiwgImNzdiIsICJ3YXJwIl0sIGRlZmF1bHQ9InRhYmxlIikKCiAgICBwLmFkZF9hcmd1bWVudCgiLS1zb3VyY2UiLCBkZWZhdWx0PSIiLCBoZWxwPSJGaWx0ZXIgYnkgc291cmNlIChlLmcuIGFyeGl2LCBkb2kpIikKCiAgICBwLmFkZF9hcmd1bWVudCgiLS15ZWFyIiwgdHlwZT1pbnQsIGRlZmF1bHQ9MCwgaGVscD0iRmlsdGVyIGJ5IHllYXIiKQoKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLXRhZyIsIGRlc3Q9InRhZ3MiLCBhY3Rpb249ImFwcGVuZCIsIGRlZmF1bHQ9W10sIGhlbHA9IkZpbHRlciBieSB0YWcgKHJlcGVhdGFibGUpIgogICAgKQoKICAgIHAuYWRkX2FyZ3VtZW50KCItLXN0YXR1cyIsIGRlZmF1bHQ9IiIsIGhlbHA9IkZpbHRlciBieSBwYXJzZSBzdGF0dXMiKQoKICAgIHAuYWRkX2FyZ3VtZW50KCItLXNvcnQiLCBjaG9pY2VzPVsicmVsZXZhbmNlIiwgInllYXIiLCAidGl0bGUiXSwgZGVmYXVsdD0icmVsZXZhbmNlIikKCiAgICByZXR1cm4gcCAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCgpkZWYgX3J1bl9zZWFyY2goYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKSAtPiBpbnQ6CiAgICBkYiA9IGdldF9kYigpCiAgICBkYi5pbml0KCkKCiAgICByZXN1bHRzLCB0b3RhbCA9IGRiLnNlYXJjaF9wYXBlcnMoCiAgICAgICAgcXVlcnk9YXJncy5xdWVyeSBvciAiIiwKICAgICAgICBsaW1pdD1hcmdzLmxpbWl0LAogICAgICAgIG9mZnNldD1hcmdzLm9mZnNldCwKICAgICAgICBzb3VyY2U9YXJncy5zb3VyY2Ugb3IgTm9uZSwKICAgICAgICBwYXJzZV9zdGF0dXM9YXJncy5zdGF0dXMgb3IgTm9uZSwKICAgICAgICBkYXRlX2Zyb209ZiJ7YXJncy55ZWFyfS0wMS0wMSIgaWYgYXJncy55ZWFyID4gMCBlbHNlIE5vbmUsCiAgICApCgogICAgaWYgYXJncy5mb3JtYXQgPT0gImpzb24iOgogICAgICAgIG91dCA9IFtdCiAgICAgICAgZm9yIHIgaW4gcmVzdWx0czoKICAgICAgICAgICAgb3V0LmFwcGVuZCgKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAicGFwZXJfaWQiOiByLnBhcGVyX2lkLAogICAgICAgICAgICAgICAgICAgICJ0aXRsZSI6IHIudGl0bGUsCiAgICAgICAgICAgICAgICAgICAgImF1dGhvcnMiOiByLmF1dGhvcnMsCiAgICAgICAgICAgICAgICAgICAgInB1Ymxpc2hlZCI6IHIucHVibGlzaGVkLAogICAgICAgICAgICAgICAgICAgICJwcmltYXJ5X2NhdGVnb3J5Ijogci5wcmltYXJ5X2NhdGVnb3J5LAogICAgICAgICAgICAgICAgICAgICJzY29yZSI6IHJvdW5kKHIuc2NvcmUsIDMpIGlmIHIuc2NvcmUgZWxzZSBOb25lLAogICAgICAgICAgICAgICAgICAgICJzbmlwcGV0Ijogci5zbmlwcGV0LAogICAgICAgICAgICAgICAgICAgICJzb3VyY2UiOiByLnNvdXJjZSwKICAgICAgICAgICAgICAgICAgICAiYWJzX3VybCI6IHIuYWJzX3VybCwKICAgICAgICAgICAgICAgICAgICAicGRmX3VybCI6IHIucGRmX3VybCwKICAgICAgICAgICAgICAgICAgICAicGFyc2Vfc3RhdHVzIjogci5wYXJzZV9zdGF0dXMsCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICkKICAgICAgICBwcmludChqc29uLmR1bXBzKHsidG90YWwiOiB0b3RhbCwgInJlc3VsdHMiOiBvdXR9LCBvcHRpb249anNvbi5PUFRfSU5ERU5UXzIpLmRlY29kZSgpKQoKICAgIGVsaWYgYXJncy5mb3JtYXQgPT0gImNzdiI6CiAgICAgICAgd3JpdGVyID0gY3N2LndyaXRlcihfc3lzLnN0ZG91dCkKICAgICAgICB3cml0ZXIud3JpdGVyb3coCiAgICAgICAgICAgIFsKICAgICAgICAgICAgICAgICJwYXBlcl9pZCIsCiAgICAgICAgICAgICAgICAidGl0bGUiLAogICAgICAgICAgICAgICAgImF1dGhvcnMiLAogICAgICAgICAgICAgICAgInB1Ymxpc2hlZCIsCiAgICAgICAgICAgICAgICAicHJpbWFyeV9jYXRlZ29yeSIsCiAgICAgICAgICAgICAgICAic2NvcmUiLAogICAgICAgICAgICAgICAgInNuaXBwZXQiLAogICAgICAgICAgICAgICAgInNvdXJjZSIsCiAgICAgICAgICAgICAgICAiYWJzX3VybCIsCiAgICAgICAgICAgICAgICAicGFyc2Vfc3RhdHVzIiwKICAgICAgICAgICAgXQogICAgICAgICkKICAgICAgICBmb3IgciBpbiByZXN1bHRzOgogICAgICAgICAgICB3cml0ZXIud3JpdGVyb3coCiAgICAgICAgICAgICAgICBbCiAgICAgICAgICAgICAgICAgICAgci5wYXBlcl9pZCwKICAgICAgICAgICAgICAgICAgICByLnRpdGxlLAogICAgICAgICAgICAgICAgICAgIHIuYXV0aG9ycywKICAgICAgICAgICAgICAgICAgICByLnB1Ymxpc2hlZCwKICAgICAgICAgICAgICAgICAgICByLnByaW1hcnlfY2F0ZWdvcnksCiAgICAgICAgICAgICAgICAgICAgcm91bmQoci5zY29yZSwgMykgaWYgci5zY29yZSBlbHNlICIiLAogICAgICAgICAgICAgICAgICAgIHIuc25pcHBldCwKICAgICAgICAgICAgICAgICAgICByLnNvdXJjZSwKICAgICAgICAgICAgICAgICAgICByLmFic191cmwsCiAgICAgICAgICAgICAgICAgICAgci5wYXJzZV9zdGF0dXMgb3IgIiIsCiAgICAgICAgICAgICAgICBdCiAgICAgICAgICAgICkKCiAgICBlbGlmIGFyZ3MuZm9ybWF0ID09ICJ3YXJwIjoKICAgICAgICBfcnVuX3NlYXJjaF93YXJwKHJlc3VsdHMsIHRvdGFsKQoKICAgIGVsc2U6CiAgICAgICAgcHJpbnRfc3VjY2VzcyhmIkZvdW5kIHt0b3RhbH0gcGFwZXJzLCBzaG93aW5nIHtsZW4ocmVzdWx0cyl9OiIpCiAgICAgICAgcHJpbnQoKQogICAgICAgIGZvciByIGluIHJlc3VsdHM6CiAgICAgICAgICAgIHNjb3JlX3N0ciA9IGYiW3tyLnNjb3JlOi4yZn1dIiBpZiByLnNjb3JlIGVsc2UgIiAgICAgIgogICAgICAgICAgICBwcmludChmIiAge2NvbG9yZWQoc2NvcmVfc3RyLCBDb2xvcnMuQk9MRCl9IHtyLnRpdGxlfSIpCiAgICAgICAgICAgIHByaW50KGYiICAgICAgICAge2NvbG9yZWQoci5hdXRob3JzLCBDb2xvcnMuT0tCTFVFKX0iKQogICAgICAgICAgICBwcmludCgKICAgICAgICAgICAgICAgIGYiICAgICAgICAge3IucHVibGlzaGVkfSB8IHtjb2xvcmVkKHIuc291cmNlLCBDb2xvcnMuT0tHUkVFTil9IHwge3IucHJpbWFyeV9jYXRlZ29yeX0iCiAgICAgICAgICAgICkKICAgICAgICAgICAgaWYgci5zbmlwcGV0OgogICAgICAgICAgICAgICAgcHJpbnQoZiIgICAgICAgICAuLi57ci5zbmlwcGV0fS4uLiIpCiAgICAgICAgICAgIHByaW50KCkKCiAgICByZXR1cm4gMAoKCmRlZiBfcnVuX3NlYXJjaF93YXJwKHJlc3VsdHMsIHRvdGFsKSAtPiBOb25lOgogICAgIiIiUmVuZGVyIHNlYXJjaCByZXN1bHRzIHVzaW5nIFdhcnAtc3R5bGUgYmxvY2tzLiIiIgoKICAgIGJsb2NrcyA9IFtdCgogICAgIyBIZWFkZXIgcGFuZWwKICAgIGJsb2Nrcy5hcHBlbmQoCiAgICAgICAgV2FycEJsb2Nrcy5wYW5lbCgKICAgICAgICAgICAgIlNlYXJjaCBSZXN1bHRzIiwKICAgICAgICAgICAgZiJbI0E1RDVGRV17bGVuKHJlc3VsdHMpfVsvXSBzaG93biDCtyBbI0I0RkE3Ml17dG90YWx9Wy9dIHRvdGFsIiwKICAgICAgICApCiAgICApCgogICAgaWYgbm90IHJlc3VsdHM6CiAgICAgICAgYmxvY2tzLmFwcGVuZChXYXJwQmxvY2tzLnBhbmVsKCJObyBSZXN1bHRzIiwgIlsjOEU4RThFXU5vIHBhcGVycyBtYXRjaGVkIHlvdXIgcXVlcnkuWy9dIikpCiAgICAgICAgcHJpbnQoIlxuXG4iLmpvaW4oYmxvY2tzKSkKICAgICAgICByZXR1cm4KCiAgICAjIENvbXBhY3QgdGFibGU6IFRpdGxlLCBZZWFyLCBTY29yZSwgQ2F0ZWdvcnkKICAgIHRhYmxlX3Jvd3MgPSBbXQogICAgZm9yIHIgaW4gcmVzdWx0czoKICAgICAgICB5ZWFyID0gci5wdWJsaXNoZWRbOjRdIGlmIHIucHVibGlzaGVkIGVsc2UgIi0tLS0iCiAgICAgICAgc2NvcmUgPSBmIntyLnNjb3JlOi4yZn0iIGlmIHIuc2NvcmUgZWxzZSAi4oCUIgogICAgICAgIGNhdGVnb3J5ID0gci5wcmltYXJ5X2NhdGVnb3J5IG9yICLigJQiCiAgICAgICAgIyBUcnVuY2F0ZSB0aXRsZQogICAgICAgIHRpdGxlID0gci50aXRsZVs6NTBdICsgIi4uLiIgaWYgbGVuKHIudGl0bGUpID4gNTAgZWxzZSByLnRpdGxlCiAgICAgICAgdGFibGVfcm93cy5hcHBlbmQoW3RpdGxlLCB5ZWFyLCBzY29yZSwgY2F0ZWdvcnldKQoKICAgIGJsb2Nrcy5hcHBlbmQoCiAgICAgICAgV2FycEJsb2Nrcy50YWJsZSgKICAgICAgICAgICAgWyJUaXRsZSIsICJZZWFyIiwgIlNjb3JlIiwgIkNhdGVnb3J5Il0sCiAgICAgICAgICAgIHRhYmxlX3Jvd3MsCiAgICAgICAgICAgIHRpdGxlPWYiUmVzdWx0cyAoe2xlbihyZXN1bHRzKX0pIiwKICAgICAgICApCiAgICApCgogICAgcHJpbnQoIlxuXG4iLmpvaW4oYmxvY2tzKSkK
+"""CLI command: search."""
+from __future__ import annotations
+
+import argparse
+import csv
+import sys as _sys
+
+import orjson as json
+
+from cli._shared import get_db
+from cli._shared import (
+    Colors,
+    colored,
+    print_success,
+)
+from cli.warp import WarpBlocks
+
+
+def _build_search_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "search",
+        help="Search indexed papers",
+        prog="airos search",
+        description="Search papers by query, year, source, tag, or parse status.",
+        epilog="""\
+Examples:
+  %(prog)s "attention mechanism"                     # basic query
+  %(prog)s --year 2024 --limit 20                 # recent papers
+  %(prog)s --tag LLM --tag Agent --format json    # by tags, JSON output
+  %(prog)s --source arxiv --sort year --order desc # by source, newest first
+  %(prog)s --status parsed --format csv            # export parsed papers as CSV""",
+    )
+
+    p.add_argument("query", nargs="?", default="", help="Search query (optional)")
+
+    p.add_argument("--limit", type=int, default=10, help="Max results")
+
+    p.add_argument("--offset", type=int, default=0, help="Skip N results")
+
+    p.add_argument("--format", choices=["table", "json", "csv", "warp"], default="table")
+
+    p.add_argument("--source", default="", help="Filter by source (e.g. arxiv, doi)")
+
+    p.add_argument("--year", type=int, default=0, help="Filter by year")
+
+    p.add_argument("--tag", dest="tags", action="append", default=[], help="Filter by tag (repeatable)")
+
+    p.add_argument("--status", default="", help="Filter by parse status")
+
+    p.add_argument("--sort", choices=["relevance", "year", "title"], default="relevance")
+
+    return p  # type: ignore[no-any-return]
+
+
+def _run_search(args: argparse.Namespace) -> int:
+    db = get_db()
+    db.init()
+
+    results, total = db.search_papers(
+        query=args.query or "",
+        limit=args.limit,
+        offset=args.offset,
+        source=args.source or None,
+        parse_status=args.status or None,
+        date_from=f"{args.year}-01-01" if args.year > 0 else None,
+    )
+
+    if args.format == "json":
+        out = []
+        for r in results:
+            out.append({
+                "paper_id": r.paper_id,
+                "title": r.title,
+                "authors": r.authors,
+                "published": r.published,
+                "primary_category": r.primary_category,
+                "score": round(r.score, 3) if r.score else None,
+                "snippet": r.snippet,
+                "source": r.source,
+                "abs_url": r.abs_url,
+                "pdf_url": r.pdf_url,
+                "parse_status": r.parse_status,
+            })
+        print(json.dumps({"total": total, "results": out}, option=json.OPT_INDENT_2).decode())
+
+    elif args.format == "csv":
+        writer = csv.writer(_sys.stdout)
+        writer.writerow(["paper_id", "title", "authors", "published", "primary_category", "score", "snippet", "source", "abs_url", "parse_status"])
+        for r in results:
+            writer.writerow([r.paper_id, r.title, r.authors, r.published, r.primary_category,
+                             round(r.score, 3) if r.score else "", r.snippet, r.source, r.abs_url, r.parse_status or ""])
+
+    elif args.format == "warp":
+        _run_search_warp(results, total)
+
+    else:
+        print_success(f"Found {total} papers, showing {len(results)}:")
+        print()
+        for r in results:
+            score_str = f"[{r.score:.2f}]" if r.score else "     "
+            print(f"  {colored(score_str, Colors.BOLD)} {r.title}")
+            print(f"         {colored(r.authors, Colors.OKBLUE)}")
+            print(f"         {r.published} | {colored(r.source, Colors.OKGREEN)} | {r.primary_category}")
+            if r.snippet:
+                print(f"         ...{r.snippet}...")
+            print()
+
+    return 0
+
+
+def _run_search_warp(results, total) -> None:
+    """Render search results using Warp-style blocks."""
+
+    blocks = []
+
+    # Header panel
+    blocks.append(WarpBlocks.panel(
+        "Search Results",
+        f"[#A5D5FE]{len(results)}[/] shown · [#B4FA72]{total}[/] total",
+    ))
+
+    if not results:
+        blocks.append(WarpBlocks.panel("No Results", "[#8E8E8E]No papers matched your query.[/]"))
+        print("\n\n".join(blocks))
+        return
+
+    # Compact table: Title, Year, Score, Category
+    table_rows = []
+    for r in results:
+        year = r.published[:4] if r.published else "----"
+        score = f"{r.score:.2f}" if r.score else "—"
+        category = r.primary_category or "—"
+        # Truncate title
+        title = r.title[:50] + "..." if len(r.title) > 50 else r.title
+        table_rows.append([title, year, score, category])
+
+    blocks.append(WarpBlocks.table(
+        ["Title", "Year", "Score", "Category"],
+        table_rows,
+        title=f"Results ({len(results)})",
+    ))
+
+    print("\n\n".join(blocks))
+

@@ -1,1 +1,121 @@
-IiIiQ0xJIGNvbW1hbmQ6IGZyaWN0aW9uIOKAlCBSZXNlYXJjaCBmcmljdGlvbiByZXBvcnQuIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgYXJncGFyc2UKCmZyb20gbGxtLmZyaWN0aW9uX3RyYWNrZXIgaW1wb3J0IEZyaWN0aW9uVHJhY2tlciwgRnJpY3Rpb25UeXBlCgpmcm9tIGNsaS5fc2hhcmVkIGltcG9ydCAoCiAgICBDb2xvcnMsCiAgICBjb2xvcmVkLAogICAgcHJpbnRfaW5mbywKICAgIHByaW50X3N1Y2Nlc3MsCikKCgpkZWYgX2J1aWxkX2ZyaWN0aW9uX3BhcnNlcihzdWJwYXJzZXJzKSAtPiBhcmdwYXJzZS5Bcmd1bWVudFBhcnNlcjoKICAgIHAgPSBzdWJwYXJzZXJzLmFkZF9wYXJzZXIoCiAgICAgICAgImZyaWN0aW9uIiwKICAgICAgICBoZWxwPSJTaG93IHJlc2VhcmNoIGZyaWN0aW9uIChib3R0bGVuZWNrcykgcmVwb3J0IiwKICAgICAgICBkZXNjcmlwdGlvbj0iRGV0ZWN0IGFuZCByZXBvcnQgcmVzZWFyY2ggZnJpY3Rpb24gcG9pbnRzIOKAlCBjb21tYW5kcyB0aGF0IGZhaWwsICIKICAgICAgICAid29ya2Zsb3dzIHRoYXQgZ2V0IGFiYW5kb25lZCwgc2VhcmNoZXMgdGhhdCBjb21lIHVwIGVtcHR5LiIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS10eXBlIiwKICAgICAgICAiLXQiLAogICAgICAgIGRlc3Q9ImZyaWN0aW9uX3R5cGUiLAogICAgICAgIGNob2ljZXM9WyJjb21tYW5kIiwgIndvcmtmbG93IiwgInJldHJpZXZhbCIsICJjb2duaXRpdmUiLCAibmF2aWdhdGlvbiJdLAogICAgICAgIGRlZmF1bHQ9Tm9uZSwKICAgICAgICBoZWxwPSJGaWx0ZXIgYnkgZnJpY3Rpb24gdHlwZSIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1kYXlzIiwKICAgICAgICAiLWQiLAogICAgICAgIHR5cGU9aW50LAogICAgICAgIGRlZmF1bHQ9MzAsCiAgICAgICAgaGVscD0iVGltZSB3aW5kb3cgaW4gZGF5cyAoZGVmYXVsdDogMzApIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWpzb24iLAogICAgICAgICItaiIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBoZWxwPSJPdXRwdXQgYXMgSlNPTiIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1saW1pdCIsCiAgICAgICAgIi1uIiwKICAgICAgICB0eXBlPWludCwKICAgICAgICBkZWZhdWx0PTIwLAogICAgICAgIGhlbHA9Ik1heCBldmVudHMgdG8gc2hvdyAoZGVmYXVsdDogMjApIiwKICAgICkKICAgIHJldHVybiBwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKCmRlZiBydW4oYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKSAtPiBpbnQ6CiAgICAiIiJSdW4gdGhlIGZyaWN0aW9uIGNvbW1hbmQuIiIiCiAgICB0cmFja2VyID0gRnJpY3Rpb25UcmFja2VyKCkKCiAgICBpZiBhcmdzLmZyaWN0aW9uX3R5cGU6CiAgICAgICAgZnR5cGUgPSBGcmljdGlvblR5cGUoYXJncy5mcmljdGlvbl90eXBlKQogICAgZWxzZToKICAgICAgICBmdHlwZSA9IE5vbmUKCiAgICBzdW1tYXJ5ID0gdHJhY2tlci5nZXRfc3VtbWFyeShzaW5jZV9kYXlzPWFyZ3MuZGF5cykKICAgIGV2ZW50cyA9IHRyYWNrZXIuZ2V0X2V2ZW50cygKICAgICAgICBmcmljdGlvbl90eXBlPWZ0eXBlLAogICAgICAgIHNpbmNlX2RheXM9YXJncy5kYXlzLAogICAgICAgIGxpbWl0PWFyZ3MubGltaXQsCiAgICApCgogICAgaWYgYXJncy5qc29uOgogICAgICAgIGltcG9ydCBqc29uCgogICAgICAgIHByaW50KGpzb24uZHVtcHMoeyJzdW1tYXJ5Ijogc3VtbWFyeSwgImV2ZW50cyI6IFtlLnRvX2RpY3QoKSBmb3IgZSBpbiBldmVudHNdfSwgaW5kZW50PTIpKQogICAgICAgIHJldHVybiAwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKICAgICMgSHVtYW4tcmVhZGFibGUgb3V0cHV0CiAgICBwcmludCgpCiAgICBwcmludChjb2xvcmVkKCLilZAiICogNjAsIENvbG9ycy5IRUFERVIpKQogICAgcHJpbnQoY29sb3JlZCgiICBSZXNlYXJjaCBGcmljdGlvbiBSZXBvcnQiLCBDb2xvcnMuQk9MRCArIENvbG9ycy5IRUFERVIpKQogICAgcHJpbnQoY29sb3JlZChmIiAgTGFzdCB7YXJncy5kYXlzfSBkYXlzIiwgQ29sb3JzLk9LQkxVRSkpCiAgICBwcmludChjb2xvcmVkKCLilZAiICogNjAsIENvbG9ycy5IRUFERVIpKQogICAgcHJpbnQoKQoKICAgIGlmIHN1bW1hcnlbInRvdGFsX2V2ZW50cyJdID09IDA6CiAgICAgICAgcHJpbnRfaW5mbygiTm8gZnJpY3Rpb24gZXZlbnRzIHJlY29yZGVkIHlldC4iKQogICAgICAgIHByaW50KCIgIFJ1biBzb21lIGNvbW1hbmRzIOKAlCBmcmljdGlvbiBpcyB0cmFja2VkIGF1dG9tYXRpY2FsbHkgaW4gdGhlIGJhY2tncm91bmQuIikKICAgICAgICBwcmludCgpCiAgICAgICAgcmV0dXJuIDAKCiAgICBwcmludF9zdWNjZXNzKGYiVG90YWwgZXZlbnRzOiB7c3VtbWFyeVsndG90YWxfZXZlbnRzJ119IikKICAgIHByaW50KGYiICBBYmFuZG9uIHJhdGU6IHtzdW1tYXJ5WydhYmFuZG9uX3JhdGUnXTouMSV9IikKICAgIHByaW50KCkKCiAgICAjIEJ5IHR5cGUKICAgIGlmIHN1bW1hcnlbImJ5X3R5cGUiXToKICAgICAgICBwcmludChjb2xvcmVkKCJCeSBUeXBlOiIsIENvbG9ycy5CT0xEKSkKICAgICAgICBmb3IgdCwgY291bnQgaW4gc29ydGVkKHN1bW1hcnlbImJ5X3R5cGUiXS5pdGVtcygpLCBrZXk9bGFtYmRhIHg6IC14WzFdKToKICAgICAgICAgICAgYmFyID0gIuKWiCIgKiBtaW4oY291bnQsIDMwKQogICAgICAgICAgICBwcmludChmIiAge3Q6PDEyfSB7YmFyfSB7Y291bnR9IikKICAgICAgICBwcmludCgpCgogICAgIyBCeSBzZXZlcml0eQogICAgaWYgc3VtbWFyeVsiYnlfc2V2ZXJpdHkiXToKICAgICAgICBwcmludChjb2xvcmVkKCJCeSBTZXZlcml0eToiLCBDb2xvcnMuQk9MRCkpCiAgICAgICAgZm9yIHMsIGNvdW50IGluIHNvcnRlZChzdW1tYXJ5WyJieV9zZXZlcml0eSJdLml0ZW1zKCksIGtleT1sYW1iZGEgeDogLXhbMV0pOgogICAgICAgICAgICBnZXRhdHRyKEZyaWN0aW9uVHlwZSwgcy51cHBlcigpLCBzKQogICAgICAgICAgICBwcmludChmIiAge3M6PDEwfSB7Y291bnR9IikKICAgICAgICBwcmludCgpCgogICAgIyBUb3AgY29tbWFuZHMKICAgIGlmIHN1bW1hcnlbInRvcF9jb21tYW5kcyJdOgogICAgICAgIHByaW50KGNvbG9yZWQoIlRvcCBGcmljdGlvbiBDb21tYW5kczoiLCBDb2xvcnMuQk9MRCkpCiAgICAgICAgZm9yIGNtZCwgY291bnQgaW4gc3VtbWFyeVsidG9wX2NvbW1hbmRzIl06CiAgICAgICAgICAgIHByaW50KGYiICB7Y21kOjwyMH0ge2NvdW50fSBldmVudHMiKQogICAgICAgIHByaW50KCkKCiAgICAjIFJlY2VudCBldmVudHMKICAgIGlmIGV2ZW50czoKICAgICAgICBwcmludChjb2xvcmVkKGYiUmVjZW50IEV2ZW50cyAobGFzdCB7bGVuKGV2ZW50cyl9KToiLCBDb2xvcnMuQk9MRCkpCiAgICAgICAgZm9yIGUgaW4gZXZlbnRzWzogYXJncy5saW1pdF06CiAgICAgICAgICAgIHRzID0gZS50aW1lc3RhbXBbOjEwXSBpZiBsZW4oZS50aW1lc3RhbXApID49IDEwIGVsc2UgZS50aW1lc3RhbXAKICAgICAgICAgICAgc3RhdHVzID0gY29sb3JlZCgiW0FCQU5ET05FRF0iLCBDb2xvcnMuRkFJTCkgaWYgZS5hYmFuZG9uZWQgZWxzZSAiIgogICAgICAgICAgICBwcmludCgKICAgICAgICAgICAgICAgIGYiICB7dHN9ICB7ZS5mcmljdGlvbl90eXBlOjwxMn0ge2UuY29tbWFuZCBvciAnLSc6PDE1fSB7ZS5lcnJvciBvciBlLm5vdGVzWzo0MF0gb3IgJy0nfSB7c3RhdHVzfSIKICAgICAgICAgICAgKQoKICAgIHByaW50KCkKICAgIHJldHVybiAwCg==
+"""CLI command: friction — Research friction report."""
+from __future__ import annotations
+
+import argparse
+
+from llm.friction_tracker import FrictionTracker, FrictionType
+
+from cli._shared import (
+    Colors,
+    colored,
+    print_info,
+    print_success,
+)
+
+
+def _build_friction_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "friction",
+        help="Show research friction (bottlenecks) report",
+        description="Detect and report research friction points — commands that fail, "
+                    "workflows that get abandoned, searches that come up empty.",
+    )
+    p.add_argument(
+        "--type", "-t",
+        dest="friction_type",
+        choices=["command", "workflow", "retrieval", "cognitive", "navigation"],
+        default=None,
+        help="Filter by friction type",
+    )
+    p.add_argument(
+        "--days", "-d",
+        type=int,
+        default=30,
+        help="Time window in days (default: 30)",
+    )
+    p.add_argument(
+        "--json", "-j",
+        action="store_true",
+        help="Output as JSON",
+    )
+    p.add_argument(
+        "--limit", "-n",
+        type=int,
+        default=20,
+        help="Max events to show (default: 20)",
+    )
+    return p  # type: ignore[no-any-return]
+
+
+def run(args: argparse.Namespace) -> int:
+    """Run the friction command."""
+    tracker = FrictionTracker()
+
+    if args.friction_type:
+        ftype = FrictionType(args.friction_type)
+    else:
+        ftype = None
+
+    summary = tracker.get_summary(since_days=args.days)
+    events = tracker.get_events(
+        friction_type=ftype,
+        since_days=args.days,
+        limit=args.limit,
+    )
+
+    if args.json:
+        import json
+        print(json.dumps({"summary": summary, "events": [e.to_dict() for e in events]}, indent=2))
+        return 0  # type: ignore[no-any-return]
+
+    # Human-readable output
+    print()
+    print(colored("═" * 60, Colors.HEADER))
+    print(colored("  Research Friction Report", Colors.BOLD + Colors.HEADER))
+    print(colored(f"  Last {args.days} days", Colors.OKBLUE))
+    print(colored("═" * 60, Colors.HEADER))
+    print()
+
+    if summary["total_events"] == 0:
+        print_info("No friction events recorded yet.")
+        print("  Run some commands — friction is tracked automatically in the background.")
+        print()
+        return 0
+
+    print_success(f"Total events: {summary['total_events']}")
+    print(f"  Abandon rate: {summary['abandon_rate']:.1%}")
+    print()
+
+    # By type
+    if summary["by_type"]:
+        print(colored("By Type:", Colors.BOLD))
+        for t, count in sorted(summary["by_type"].items(), key=lambda x: -x[1]):
+            bar = "█" * min(count, 30)
+            print(f"  {t:<12} {bar} {count}")
+        print()
+
+    # By severity
+    if summary["by_severity"]:
+        print(colored("By Severity:", Colors.BOLD))
+        for s, count in sorted(summary["by_severity"].items(), key=lambda x: -x[1]):
+            getattr(FrictionType, s.upper(), s)
+            print(f"  {s:<10} {count}")
+        print()
+
+    # Top commands
+    if summary["top_commands"]:
+        print(colored("Top Friction Commands:", Colors.BOLD))
+        for cmd, count in summary["top_commands"]:
+            print(f"  {cmd:<20} {count} events")
+        print()
+
+    # Recent events
+    if events:
+        print(colored(f"Recent Events (last {len(events)}):", Colors.BOLD))
+        for e in events[: args.limit]:
+            ts = e.timestamp[:10] if len(e.timestamp) >= 10 else e.timestamp
+            status = colored("[ABANDONED]", Colors.FAIL) if e.abandoned else ""
+            print(f"  {ts}  {e.friction_type:<12} {e.command or '-':<15} {e.error or e.notes[:40] or '-'} {status}")
+
+    print()
+    return 0

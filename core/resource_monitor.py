@@ -1,1 +1,312 @@
-IiIiCkxvY2FsIFJlc291cmNlIE1vbml0b3IgYW5kIE1hbmFnZXIuCgpJbnNwaXJlZCBieSBjbG91ZCBvcHRpbWl6YXRpb24gcHJpbmNpcGxlczoKLSBNaW5pbWl6ZSByZW1vdGUgQVBJIGNhbGxzIChyZWR1Y2UgY29zdHMpCi0gT3B0aW1pemUgbG9jYWwgZGlzayBJL08gKGxpa2UgU1NEIG9wdGltaXphdGlvbiBpbiB0aGUgY2xvdWQpCi0gTW9uaXRvciByZXNvdXJjZSB1c2FnZSAoYXZvaWQgcmVzb3VyY2UgZXhoYXVzdGlvbikKLSBFZmZpY2llbnQgbWVtb3J5IG1hbmFnZW1lbnQKIiIiCgppbXBvcnQgdGltZQppbXBvcnQgcHN1dGlsCmltcG9ydCBsb2dnaW5nCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgRGljdCwgTGlzdCwgT3B0aW9uYWwsIFR1cGxlCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcwpmcm9tIGRhdGV0aW1lIGltcG9ydCBkYXRldGltZQoKbG9nZ2VyID0gbG9nZ2luZy5nZXRMb2dnZXIoX19uYW1lX18pCgoKQGRhdGFjbGFzcwpjbGFzcyBSZXNvdXJjZVN0YXRzOgogICAgIiIiUmVzb3VyY2UgdXNhZ2Ugc3RhdGlzdGljcy4iIiIKCiAgICB0aW1lc3RhbXA6IGZsb2F0CiAgICBjcHVfcGVyY2VudDogZmxvYXQKICAgIG1lbW9yeV91c2VkX21iOiBmbG9hdAogICAgbWVtb3J5X3BlcmNlbnQ6IGZsb2F0CiAgICBkaXNrX3VzZWRfZ2I6IGZsb2F0CiAgICBkaXNrX3BlcmNlbnQ6IGZsb2F0CiAgICBkaXNrX2lvX3JlYWRzOiBpbnQgPSAwCiAgICBkaXNrX2lvX3dyaXRlczogaW50ID0gMAogICAgbmV0d29ya19zZW50X21iOiBmbG9hdCA9IDAuMAogICAgbmV0d29ya19yZWN2X21iOiBmbG9hdCA9IDAuMAoKCkBkYXRhY2xhc3MKY2xhc3MgRGlza0luZm86CiAgICAiIiJEaXNrIHVzYWdlIGluZm9ybWF0aW9uLiIiIgoKICAgIHBhdGg6IFBhdGgKICAgIHRvdGFsX2diOiBmbG9hdAogICAgdXNlZF9nYjogZmxvYXQKICAgIGZyZWVfZ2I6IGZsb2F0CiAgICBwZXJjZW50OiBmbG9hdAoKCmNsYXNzIFJlc291cmNlTW9uaXRvcjoKICAgICIiIk1vbml0b3IgbG9jYWwgc3lzdGVtIHJlc291cmNlcy4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZiwgZGF0YV9kaXI6IE9wdGlvbmFsW1BhdGhdID0gTm9uZSk6CiAgICAgICAgc2VsZi5kYXRhX2RpciA9IGRhdGFfZGlyIG9yIHNlbGYuX2dldF9kZWZhdWx0X2RhdGFfZGlyKCkKICAgICAgICBzZWxmLl9kaXNrX2lvX3N0YXJ0ID0gcHN1dGlsLmRpc2tfaW9fY291bnRlcnMoKQogICAgICAgIHNlbGYuX25ldF9pb19zdGFydCA9IHBzdXRpbC5uZXRfaW9fY291bnRlcnMoKQogICAgICAgIHNlbGYuX2hpc3Rvcnk6IExpc3RbUmVzb3VyY2VTdGF0c10gPSBbXQogICAgICAgIHNlbGYuX21heF9oaXN0b3J5ID0gMTAwMCAgIyBLZWVwIGxhc3QgMTAwMCBzYW1wbGVzCgogICAgQHN0YXRpY21ldGhvZAogICAgZGVmIF9nZXRfZGVmYXVsdF9kYXRhX2RpcigpIC0+IFBhdGg6CiAgICAgICAgIiIiR2V0IGRlZmF1bHQgZGF0YSBkaXJlY3RvcnkuIiIiCiAgICAgICAgcmV0dXJuIFBhdGguaG9tZSgpIC8gIi5jYWNoZSIgLyAiYWlfcmVzZWFyY2hfb3MiCgogICAgZGVmIGdldF9kaXNrX2luZm8oc2VsZiwgcGF0aDogT3B0aW9uYWxbUGF0aF0gPSBOb25lKSAtPiBEaXNrSW5mbzoKICAgICAgICAiIiJHZXQgZGlzayB1c2FnZSBpbmZvcm1hdGlvbiBmb3IgYSBwYXRoLiIiIgogICAgICAgIHRhcmdldCA9IHBhdGggb3Igc2VsZi5kYXRhX2RpcgogICAgICAgIHVzYWdlID0gcHN1dGlsLmRpc2tfdXNhZ2Uoc3RyKHRhcmdldCkpCiAgICAgICAgcmV0dXJuIERpc2tJbmZvKAogICAgICAgICAgICBwYXRoPXRhcmdldCwKICAgICAgICAgICAgdG90YWxfZ2I9dXNhZ2UudG90YWwgLyAoMTAyNCoqMyksCiAgICAgICAgICAgIHVzZWRfZ2I9dXNhZ2UudXNlZCAvICgxMDI0KiozKSwKICAgICAgICAgICAgZnJlZV9nYj11c2FnZS5mcmVlIC8gKDEwMjQqKjMpLAogICAgICAgICAgICBwZXJjZW50PXVzYWdlLnBlcmNlbnQsCiAgICAgICAgKQoKICAgIGRlZiBnZXRfbWVtb3J5X2luZm8oc2VsZikgLT4gVHVwbGVbZmxvYXQsIGZsb2F0LCBmbG9hdF06CiAgICAgICAgIiIiR2V0IG1lbW9yeSBpbmZvcm1hdGlvbiAodXNlZF9tYiwgYXZhaWxhYmxlX21iLCBwZXJjZW50KS4iIiIKICAgICAgICBtZW0gPSBwc3V0aWwudmlydHVhbF9tZW1vcnkoKQogICAgICAgIHJldHVybiAoCiAgICAgICAgICAgIG1lbS51c2VkIC8gKDEwMjQqKjIpLCAgIyB1c2VkX21iCiAgICAgICAgICAgIG1lbS5hdmFpbGFibGUgLyAoMTAyNCoqMiksICAjIGF2YWlsYWJsZV9tYgogICAgICAgICAgICBtZW0ucGVyY2VudCwgICMgcGVyY2VudAogICAgICAgICkKCiAgICBkZWYgZ2V0X2NwdV9pbmZvKHNlbGYpIC0+IFR1cGxlW2Zsb2F0LCBpbnRdOgogICAgICAgICIiIkdldCBDUFUgaW5mb3JtYXRpb24gKHBlcmNlbnQsIGNvdW50KS4iIiIKICAgICAgICByZXR1cm4gKHBzdXRpbC5jcHVfcGVyY2VudChpbnRlcnZhbD0wLjEpLCBwc3V0aWwuY3B1X2NvdW50KCkpCgogICAgZGVmIGdldF9pb19zdGF0cyhzZWxmKSAtPiBEaWN0W3N0ciwgaW50XToKICAgICAgICAiIiJHZXQgZGlzayBJL08gc3RhdGlzdGljcy4iIiIKICAgICAgICB0cnk6CiAgICAgICAgICAgIGlvID0gcHN1dGlsLmRpc2tfaW9fY291bnRlcnMoKQogICAgICAgICAgICBzdGFydCA9IHNlbGYuX2Rpc2tfaW9fc3RhcnQKICAgICAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgICAgICJyZWFkX2NvdW50IjogaW8ucmVhZF9jb3VudCAtIHN0YXJ0LnJlYWRfY291bnQgaWYgc3RhcnQgZWxzZSBpby5yZWFkX2NvdW50LAogICAgICAgICAgICAgICAgIndyaXRlX2NvdW50IjogaW8ud3JpdGVfY291bnQgLSBzdGFydC53cml0ZV9jb3VudCBpZiBzdGFydCBlbHNlIGlvLndyaXRlX2NvdW50LAogICAgICAgICAgICAgICAgInJlYWRfbWIiOiAoaW8ucmVhZF9ieXRlcyAtIHN0YXJ0LnJlYWRfYnl0ZXMpIC8gKDEwMjQqKjIpCiAgICAgICAgICAgICAgICBpZiBzdGFydAogICAgICAgICAgICAgICAgZWxzZSBpby5yZWFkX2J5dGVzIC8gKDEwMjQqKjIpLAogICAgICAgICAgICAgICAgIndyaXRlX21iIjogKGlvLndyaXRlX2J5dGVzIC0gc3RhcnQud3JpdGVfYnl0ZXMpIC8gKDEwMjQqKjIpCiAgICAgICAgICAgICAgICBpZiBzdGFydAogICAgICAgICAgICAgICAgZWxzZSBpby53cml0ZV9ieXRlcyAvICgxMDI0KioyKSwKICAgICAgICAgICAgfQogICAgICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToKICAgICAgICAgICAgbG9nZ2VyLndhcm5pbmcoZiJGYWlsZWQgdG8gZ2V0IEkvTyBzdGF0czoge2V9IikKICAgICAgICAgICAgcmV0dXJuIHsicmVhZF9jb3VudCI6IDAsICJ3cml0ZV9jb3VudCI6IDAsICJyZWFkX21iIjogMC4wLCAid3JpdGVfbWIiOiAwLjB9ICAjIHR5cGU6IGlnbm9yZVtkaWN0LWl0ZW1dCgogICAgZGVmIGdldF9uZXR3b3JrX3N0YXRzKHNlbGYpIC0+IERpY3Rbc3RyLCBmbG9hdF06CiAgICAgICAgIiIiR2V0IG5ldHdvcmsgSS9PIHN0YXRpc3RpY3MuIiIiCiAgICAgICAgdHJ5OgogICAgICAgICAgICBuZXQgPSBwc3V0aWwubmV0X2lvX2NvdW50ZXJzKCkKICAgICAgICAgICAgc3RhcnQgPSBzZWxmLl9uZXRfaW9fc3RhcnQKICAgICAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgICAgICJzZW50X21iIjogKG5ldC5ieXRlc19zZW50IC0gc3RhcnQuYnl0ZXNfc2VudCkgLyAoMTAyNCoqMikKICAgICAgICAgICAgICAgIGlmIHN0YXJ0CiAgICAgICAgICAgICAgICBlbHNlIG5ldC5ieXRlc19zZW50IC8gKDEwMjQqKjIpLAogICAgICAgICAgICAgICAgInJlY3ZfbWIiOiAobmV0LmJ5dGVzX3JlY3YgLSBzdGFydC5ieXRlc19yZWN2KSAvICgxMDI0KioyKQogICAgICAgICAgICAgICAgaWYgc3RhcnQKICAgICAgICAgICAgICAgIGVsc2UgbmV0LmJ5dGVzX3JlY3YgLyAoMTAyNCoqMiksCiAgICAgICAgICAgIH0KICAgICAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgICAgIGxvZ2dlci53YXJuaW5nKGYiRmFpbGVkIHRvIGdldCBuZXR3b3JrIHN0YXRzOiB7ZX0iKQogICAgICAgICAgICByZXR1cm4geyJzZW50X21iIjogMC4wLCAicmVjdl9tYiI6IDAuMH0KCiAgICBkZWYgY29sbGVjdF9zdGF0cyhzZWxmKSAtPiBSZXNvdXJjZVN0YXRzOgogICAgICAgICIiIkNvbGxlY3QgYWxsIHJlc291cmNlIHN0YXRpc3RpY3MuIiIiCiAgICAgICAgbWVtX3VzZWQsIG1lbV9hdmFpbCwgbWVtX3BjdCA9IHNlbGYuZ2V0X21lbW9yeV9pbmZvKCkKICAgICAgICBjcHVfcGN0LCBjcHVfY291bnQgPSBzZWxmLmdldF9jcHVfaW5mbygpCiAgICAgICAgZGlza19pbmZvID0gc2VsZi5nZXRfZGlza19pbmZvKCkKICAgICAgICBpb19zdGF0cyA9IHNlbGYuZ2V0X2lvX3N0YXRzKCkKICAgICAgICBuZXRfc3RhdHMgPSBzZWxmLmdldF9uZXR3b3JrX3N0YXRzKCkKCiAgICAgICAgc3RhdHMgPSBSZXNvdXJjZVN0YXRzKAogICAgICAgICAgICB0aW1lc3RhbXA9dGltZS50aW1lKCksCiAgICAgICAgICAgIGNwdV9wZXJjZW50PWNwdV9wY3QsCiAgICAgICAgICAgIG1lbW9yeV91c2VkX21iPW1lbV91c2VkLAogICAgICAgICAgICBtZW1vcnlfcGVyY2VudD1tZW1fcGN0LAogICAgICAgICAgICBkaXNrX3VzZWRfZ2I9ZGlza19pbmZvLnVzZWRfZ2IsCiAgICAgICAgICAgIGRpc2tfcGVyY2VudD1kaXNrX2luZm8ucGVyY2VudCwKICAgICAgICAgICAgZGlza19pb19yZWFkcz1pb19zdGF0cy5nZXQoInJlYWRfY291bnQiLCAwKSwKICAgICAgICAgICAgZGlza19pb193cml0ZXM9aW9fc3RhdHMuZ2V0KCJ3cml0ZV9jb3VudCIsIDApLAogICAgICAgICAgICBuZXR3b3JrX3NlbnRfbWI9bmV0X3N0YXRzLmdldCgic2VudF9tYiIsIDAuMCksCiAgICAgICAgICAgIG5ldHdvcmtfcmVjdl9tYj1uZXRfc3RhdHMuZ2V0KCJyZWN2X21iIiwgMC4wKSwKICAgICAgICApCgogICAgICAgICMgU3RvcmUgaW4gaGlzdG9yeQogICAgICAgIHNlbGYuX2hpc3RvcnkuYXBwZW5kKHN0YXRzKQogICAgICAgIGlmIGxlbihzZWxmLl9oaXN0b3J5KSA+IHNlbGYuX21heF9oaXN0b3J5OgogICAgICAgICAgICBzZWxmLl9oaXN0b3J5LnBvcCgwKQoKICAgICAgICByZXR1cm4gc3RhdHMKCiAgICBkZWYgZ2V0X3JlY2VudF9zdGF0cyhzZWxmLCBjb3VudDogaW50ID0gMTApIC0+IExpc3RbUmVzb3VyY2VTdGF0c106CiAgICAgICAgIiIiR2V0IHJlY2VudCByZXNvdXJjZSBzdGF0aXN0aWNzLiIiIgogICAgICAgIHJldHVybiBzZWxmLl9oaXN0b3J5Wy1jb3VudDpdCgogICAgZGVmIGdldF9hdmVyYWdlX3N0YXRzKHNlbGYsIGNvdW50OiBpbnQgPSAxMDApIC0+IERpY3Rbc3RyLCBmbG9hdF06CiAgICAgICAgIiIiR2V0IGF2ZXJhZ2UgcmVzb3VyY2Ugc3RhdGlzdGljcyBvdmVyIHJlY2VudCBzYW1wbGVzLiIiIgogICAgICAgIHNhbXBsZXMgPSBzZWxmLl9oaXN0b3J5Wy1jb3VudDpdCiAgICAgICAgaWYgbm90IHNhbXBsZXM6CiAgICAgICAgICAgIHJldHVybiB7fQoKICAgICAgICByZXR1cm4gewogICAgICAgICAgICAiYXZnX2NwdV9wZXJjZW50Ijogc3VtKHMuY3B1X3BlcmNlbnQgZm9yIHMgaW4gc2FtcGxlcykgLyBsZW4oc2FtcGxlcyksCiAgICAgICAgICAgICJhdmdfbWVtb3J5X3BlcmNlbnQiOiBzdW0ocy5tZW1vcnlfcGVyY2VudCBmb3IgcyBpbiBzYW1wbGVzKSAvIGxlbihzYW1wbGVzKSwKICAgICAgICAgICAgImF2Z19kaXNrX3BlcmNlbnQiOiBzdW0ocy5kaXNrX3BlcmNlbnQgZm9yIHMgaW4gc2FtcGxlcykgLyBsZW4oc2FtcGxlcyksCiAgICAgICAgICAgICJ0b3RhbF9kaXNrX2lvX3JlYWRzIjogc3VtKHMuZGlza19pb19yZWFkcyBmb3IgcyBpbiBzYW1wbGVzKSwKICAgICAgICAgICAgInRvdGFsX2Rpc2tfaW9fd3JpdGVzIjogc3VtKHMuZGlza19pb193cml0ZXMgZm9yIHMgaW4gc2FtcGxlcyksCiAgICAgICAgICAgICJ0b3RhbF9uZXR3b3JrX3NlbnRfbWIiOiBzdW0ocy5uZXR3b3JrX3NlbnRfbWIgZm9yIHMgaW4gc2FtcGxlcyksCiAgICAgICAgICAgICJ0b3RhbF9uZXR3b3JrX3JlY3ZfbWIiOiBzdW0ocy5uZXR3b3JrX3JlY3ZfbWIgZm9yIHMgaW4gc2FtcGxlcyksCiAgICAgICAgfQoKICAgIGRlZiBnZXRfcmVzb3VyY2VfcmVwb3J0KHNlbGYpIC0+IHN0cjoKICAgICAgICAiIiJHZW5lcmF0ZSBhIGh1bWFuLXJlYWRhYmxlIHJlc291cmNlIHJlcG9ydC4iIiIKICAgICAgICBzdGF0cyA9IHNlbGYuY29sbGVjdF9zdGF0cygpCiAgICAgICAgYXZnX3N0YXRzID0gc2VsZi5nZXRfYXZlcmFnZV9zdGF0cygpCiAgICAgICAgZGlza19pbmZvID0gc2VsZi5nZXRfZGlza19pbmZvKCkKCiAgICAgICAgbGluZXMgPSBbCiAgICAgICAgICAgICI9PT0gUmVzb3VyY2UgVXNhZ2UgUmVwb3J0ID09PSIsCiAgICAgICAgICAgIGYiVGltZXN0YW1wOiB7ZGF0ZXRpbWUuZnJvbXRpbWVzdGFtcChzdGF0cy50aW1lc3RhbXApLmlzb2Zvcm1hdCgpfSIsCiAgICAgICAgICAgICIiLAogICAgICAgICAgICAiQ3VycmVudCBVc2FnZToiLAogICAgICAgICAgICBmIiAgQ1BVOiAgICAge3N0YXRzLmNwdV9wZXJjZW50Oi4xZn0lIiwKICAgICAgICAgICAgZiIgIE1lbW9yeTogIHtzdGF0cy5tZW1vcnlfdXNlZF9tYjouMGZ9IE1CICh7c3RhdHMubWVtb3J5X3BlcmNlbnQ6LjFmfSUpIiwKICAgICAgICAgICAgZiIgIERpc2s6ICAgIHtzdGF0cy5kaXNrX3VzZWRfZ2I6LjJmfSBHQiAoe3N0YXRzLmRpc2tfcGVyY2VudDouMWZ9JSkiLAogICAgICAgICAgICAiIiwKICAgICAgICAgICAgIkRpc2sgSW5mbzoiLAogICAgICAgICAgICBmIiAgVG90YWw6ICAge2Rpc2tfaW5mby50b3RhbF9nYjouMmZ9IEdCIiwKICAgICAgICAgICAgZiIgIFVzZWQ6ICAgIHtkaXNrX2luZm8udXNlZF9nYjouMmZ9IEdCIiwKICAgICAgICAgICAgZiIgIEZyZWU6ICAgIHtkaXNrX2luZm8uZnJlZV9nYjouMmZ9IEdCIiwKICAgICAgICAgICAgIiIsCiAgICAgICAgICAgICJSZWNlbnQgQXZlcmFnZXMgKGxhc3QgMTAwIHNhbXBsZXMpOiIsCiAgICAgICAgICAgIGYiICBDUFU6ICAgICB7YXZnX3N0YXRzLmdldCgnYXZnX2NwdV9wZXJjZW50JywgMCk6LjFmfSUiLAogICAgICAgICAgICBmIiAgTWVtb3J5OiAge2F2Z19zdGF0cy5nZXQoJ2F2Z19tZW1vcnlfcGVyY2VudCcsIDApOi4xZn0lIiwKICAgICAgICAgICAgZiIgIERpc2s6ICAgIHthdmdfc3RhdHMuZ2V0KCdhdmdfZGlza19wZXJjZW50JywgMCk6LjFmfSUiLAogICAgICAgICAgICAiIiwKICAgICAgICAgICAgIkkvTyBTdGF0aXN0aWNzOiIsCiAgICAgICAgICAgIGYiICBEaXNrIFJlYWRzOiAge2F2Z19zdGF0cy5nZXQoJ3RvdGFsX2Rpc2tfaW9fcmVhZHMnLCAwKTosfSIsCiAgICAgICAgICAgIGYiICBEaXNrIFdyaXRlczoge2F2Z19zdGF0cy5nZXQoJ3RvdGFsX2Rpc2tfaW9fd3JpdGVzJywgMCk6LH0iLAogICAgICAgICAgICBmIiAgTmV0d29yayBTZW50OiAgICB7YXZnX3N0YXRzLmdldCgndG90YWxfbmV0d29ya19zZW50X21iJywgMCk6LjJmfSBNQiIsCiAgICAgICAgICAgIGYiICBOZXR3b3JrIFJlY3Y6ICAge2F2Z19zdGF0cy5nZXQoJ3RvdGFsX25ldHdvcmtfcmVjdl9tYicsIDApOi4yZn0gTUIiLAogICAgICAgIF0KCiAgICAgICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykKCgojIEdsb2JhbCByZXNvdXJjZSBtb25pdG9yIGluc3RhbmNlCl9yZXNvdXJjZV9tb25pdG9yOiBPcHRpb25hbFtSZXNvdXJjZU1vbml0b3JdID0gTm9uZQoKCmRlZiBnZXRfcmVzb3VyY2VfbW9uaXRvcihkYXRhX2RpcjogT3B0aW9uYWxbUGF0aF0gPSBOb25lKSAtPiBSZXNvdXJjZU1vbml0b3I6CiAgICAiIiJHZXQgb3IgY3JlYXRlIHRoZSBnbG9iYWwgcmVzb3VyY2UgbW9uaXRvci4iIiIKICAgIGdsb2JhbCBfcmVzb3VyY2VfbW9uaXRvcgogICAgaWYgX3Jlc291cmNlX21vbml0b3IgaXMgTm9uZToKICAgICAgICBfcmVzb3VyY2VfbW9uaXRvciA9IFJlc291cmNlTW9uaXRvcihkYXRhX2RpcikKICAgIHJldHVybiBfcmVzb3VyY2VfbW9uaXRvcgoKCmNsYXNzIFJlc291cmNlR3VhcmQ6CiAgICAiIiJDb250ZXh0IG1hbmFnZXIgdG8gZW5zdXJlIHJlc291cmNlIGF2YWlsYWJpbGl0eSBiZWZvcmUgb3BlcmF0aW9ucy4iIiIKCiAgICBkZWYgX19pbml0X18oCiAgICAgICAgc2VsZiwKICAgICAgICBtaW5fZGlza19nYjogZmxvYXQgPSAxLjAsCiAgICAgICAgbWF4X21lbW9yeV9wZXJjZW50OiBmbG9hdCA9IDkwLjAsCiAgICAgICAgbW9uaXRvcjogT3B0aW9uYWxbUmVzb3VyY2VNb25pdG9yXSA9IE5vbmUsCiAgICApOgogICAgICAgIHNlbGYubWluX2Rpc2tfZ2IgPSBtaW5fZGlza19nYgogICAgICAgIHNlbGYubWF4X21lbW9yeV9wZXJjZW50ID0gbWF4X21lbW9yeV9wZXJjZW50CiAgICAgICAgc2VsZi5tb25pdG9yID0gbW9uaXRvciBvciBnZXRfcmVzb3VyY2VfbW9uaXRvcigpCgogICAgZGVmIGNoZWNrKHNlbGYpIC0+IFR1cGxlW2Jvb2wsIHN0cl06CiAgICAgICAgIiIiQ2hlY2sgaWYgcmVzb3VyY2VzIGFyZSBhdmFpbGFibGUuIFJldHVybnMgKG9rLCBtZXNzYWdlKS4iIiIKICAgICAgICBkaXNrX2luZm8gPSBzZWxmLm1vbml0b3IuZ2V0X2Rpc2tfaW5mbygpCiAgICAgICAgbWVtX3VzZWQsIG1lbV9hdmFpbCwgbWVtX3BjdCA9IHNlbGYubW9uaXRvci5nZXRfbWVtb3J5X2luZm8oKQoKICAgICAgICAjIENoZWNrIGRpc2sgc3BhY2UKICAgICAgICBpZiBkaXNrX2luZm8uZnJlZV9nYiA8IHNlbGYubWluX2Rpc2tfZ2I6CiAgICAgICAgICAgIHJldHVybiBGYWxzZSwgZiJMb3cgZGlzayBzcGFjZTogb25seSB7ZGlza19pbmZvLmZyZWVfZ2I6LjJmfSBHQiBmcmVlIgoKICAgICAgICAjIENoZWNrIG1lbW9yeQogICAgICAgIGlmIG1lbV9wY3QgPiBzZWxmLm1heF9tZW1vcnlfcGVyY2VudDoKICAgICAgICAgICAgcmV0dXJuIEZhbHNlLCBmIkhpZ2ggbWVtb3J5IHVzYWdlOiB7bWVtX3BjdDouMWZ9JSIKCiAgICAgICAgcmV0dXJuIFRydWUsICJSZXNvdXJjZXMgT0siCgogICAgZGVmIF9fZW50ZXJfXyhzZWxmKToKICAgICAgICBvaywgbXNnID0gc2VsZi5jaGVjaygpCiAgICAgICAgaWYgbm90IG9rOgogICAgICAgICAgICByYWlzZSBSZXNvdXJjZVdhcm5pbmcobXNnKQogICAgICAgIHJldHVybiBzZWxmCgogICAgZGVmIF9fZXhpdF9fKHNlbGYsIGV4Y190eXBlLCBleGNfdmFsLCBleGNfdGIpOgogICAgICAgIHBhc3MKCgpjbGFzcyBBUElCdWRnZXRUcmFja2VyOgogICAgIiIiVHJhY2sgQVBJIHVzYWdlIGFuZCBjb3N0cyAoaW5zcGlyZWQgYnkgbWluaW1pemluZyBjbG91ZCBjb3N0cykuIiIiCgogICAgZGVmIF9faW5pdF9fKHNlbGYsIG1vbnRobHlfYnVkZ2V0X3VzZDogZmxvYXQgPSAxMDAuMCk6CiAgICAgICAgc2VsZi5tb250aGx5X2J1ZGdldF91c2QgPSBtb250aGx5X2J1ZGdldF91c2QKICAgICAgICBzZWxmLmFwaV9jYWxsczogTGlzdFtEaWN0XSA9IFtdCiAgICAgICAgc2VsZi5fY2FsbF9jb3VudCA9IDAKICAgICAgICBzZWxmLl9jb3N0X2VzdGltYXRlID0gMC4wCgogICAgZGVmIHJlY29yZF9hcGlfY2FsbCgKICAgICAgICBzZWxmLCBwcm92aWRlcjogc3RyLCBlbmRwb2ludDogc3RyLCB0b2tlbnNfdXNlZDogaW50ID0gMCwgY29zdF9wZXJfMWs6IGZsb2F0ID0gMC4wCiAgICApOgogICAgICAgICIiIlJlY29yZCBhbiBBUEkgY2FsbC4iIiIKICAgICAgICBzZWxmLl9jYWxsX2NvdW50ICs9IDEKICAgICAgICBjYWxsX2Nvc3QgPSAodG9rZW5zX3VzZWQgLyAxMDAwKSAqIGNvc3RfcGVyXzFrCiAgICAgICAgc2VsZi5fY29zdF9lc3RpbWF0ZSArPSBjYWxsX2Nvc3QKCiAgICAgICAgc2VsZi5hcGlfY2FsbHMuYXBwZW5kKAogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAidGltZXN0YW1wIjogdGltZS50aW1lKCksCiAgICAgICAgICAgICAgICAicHJvdmlkZXIiOiBwcm92aWRlciwKICAgICAgICAgICAgICAgICJlbmRwb2ludCI6IGVuZHBvaW50LAogICAgICAgICAgICAgICAgInRva2VucyI6IHRva2Vuc191c2VkLAogICAgICAgICAgICAgICAgImNvc3QiOiBjYWxsX2Nvc3QsCiAgICAgICAgICAgICAgICAidG90YWxfY29zdCI6IHNlbGYuX2Nvc3RfZXN0aW1hdGUsCiAgICAgICAgICAgIH0KICAgICAgICApCgogICAgZGVmIGdldF91c2FnZV9yZXBvcnQoc2VsZikgLT4gRGljdDoKICAgICAgICAiIiJHZXQgdXNhZ2UgcmVwb3J0LiIiIgogICAgICAgIHJldHVybiB7CiAgICAgICAgICAgICJ0b3RhbF9jYWxscyI6IHNlbGYuX2NhbGxfY291bnQsCiAgICAgICAgICAgICJlc3RpbWF0ZWRfY29zdF91c2QiOiBzZWxmLl9jb3N0X2VzdGltYXRlLAogICAgICAgICAgICAiYnVkZ2V0X3JlbWFpbmluZ191c2QiOiBzZWxmLm1vbnRobHlfYnVkZ2V0X3VzZCAtIHNlbGYuX2Nvc3RfZXN0aW1hdGUsCiAgICAgICAgICAgICJidWRnZXRfdXNlZF9wZXJjZW50IjogKHNlbGYuX2Nvc3RfZXN0aW1hdGUgLyBzZWxmLm1vbnRobHlfYnVkZ2V0X3VzZCkgKiAxMDAKICAgICAgICAgICAgaWYgc2VsZi5tb250aGx5X2J1ZGdldF91c2QgPiAwCiAgICAgICAgICAgIGVsc2UgMCwKICAgICAgICAgICAgInJlY2VudF9jYWxscyI6IGxlbihzZWxmLmFwaV9jYWxsc1stMTAwOl0pLCAgIyBMYXN0IDEwMCBjYWxscwogICAgICAgIH0KCiAgICBkZWYgc2hvdWxkX21ha2VfYXBpX2NhbGwoc2VsZiwgZXN0aW1hdGVkX2Nvc3Q6IGZsb2F0ID0gMC4wMSkgLT4gYm9vbDoKICAgICAgICAiIiJDaGVjayBpZiB3ZSBzaG91bGQgbWFrZSBhbiBBUEkgY2FsbCBiYXNlZCBvbiBidWRnZXQuIiIiCiAgICAgICAgcmV0dXJuIChzZWxmLl9jb3N0X2VzdGltYXRlICsgZXN0aW1hdGVkX2Nvc3QpIDw9IHNlbGYubW9udGhseV9idWRnZXRfdXNkCgoKIyBHbG9iYWwgQVBJIGJ1ZGdldCB0cmFja2VyCl9hcGlfYnVkZ2V0X3RyYWNrZXI6IE9wdGlvbmFsW0FQSUJ1ZGdldFRyYWNrZXJdID0gTm9uZQoKCmRlZiBnZXRfYXBpX2J1ZGdldF90cmFja2VyKG1vbnRobHlfYnVkZ2V0X3VzZDogZmxvYXQgPSAxMDAuMCkgLT4gQVBJQnVkZ2V0VHJhY2tlcjoKICAgICIiIkdldCBvciBjcmVhdGUgdGhlIGdsb2JhbCBBUEkgYnVkZ2V0IHRyYWNrZXIuIiIiCiAgICBnbG9iYWwgX2FwaV9idWRnZXRfdHJhY2tlcgogICAgaWYgX2FwaV9idWRnZXRfdHJhY2tlciBpcyBOb25lOgogICAgICAgIF9hcGlfYnVkZ2V0X3RyYWNrZXIgPSBBUElCdWRnZXRUcmFja2VyKG1vbnRobHlfYnVkZ2V0X3VzZCkKICAgIHJldHVybiBfYXBpX2J1ZGdldF90cmFja2VyCg==
+"""
+Local Resource Monitor and Manager.
+
+Inspired by cloud optimization principles:
+- Minimize remote API calls (reduce costs)
+- Optimize local disk I/O (like SSD optimization in the cloud)
+- Monitor resource usage (avoid resource exhaustion)
+- Efficient memory management
+"""
+
+import time
+import psutil
+import logging
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+from dataclasses import dataclass
+from datetime import datetime
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class ResourceStats:
+    """Resource usage statistics."""
+
+    timestamp: float
+    cpu_percent: float
+    memory_used_mb: float
+    memory_percent: float
+    disk_used_gb: float
+    disk_percent: float
+    disk_io_reads: int = 0
+    disk_io_writes: int = 0
+    network_sent_mb: float = 0.0
+    network_recv_mb: float = 0.0
+
+
+@dataclass
+class DiskInfo:
+    """Disk usage information."""
+
+    path: Path
+    total_gb: float
+    used_gb: float
+    free_gb: float
+    percent: float
+
+
+class ResourceMonitor:
+    """Monitor local system resources."""
+
+    def __init__(self, data_dir: Optional[Path] = None):
+        self.data_dir = data_dir or self._get_default_data_dir()
+        self._disk_io_start = psutil.disk_io_counters()
+        self._net_io_start = psutil.net_io_counters()
+        self._history: List[ResourceStats] = []
+        self._max_history = 1000  # Keep last 1000 samples
+
+    @staticmethod
+    def _get_default_data_dir() -> Path:
+        """Get default data directory."""
+        return Path.home() / ".cache" / "ai_research_os"
+
+    def get_disk_info(self, path: Optional[Path] = None) -> DiskInfo:
+        """Get disk usage information for a path."""
+        target = path or self.data_dir
+        usage = psutil.disk_usage(str(target))
+        return DiskInfo(
+            path=target,
+            total_gb=usage.total / (1024**3),
+            used_gb=usage.used / (1024**3),
+            free_gb=usage.free / (1024**3),
+            percent=usage.percent,
+        )
+
+    def get_memory_info(self) -> Tuple[float, float, float]:
+        """Get memory information (used_mb, available_mb, percent)."""
+        mem = psutil.virtual_memory()
+        return (
+            mem.used / (1024**2),  # used_mb
+            mem.available / (1024**2),  # available_mb
+            mem.percent,  # percent
+        )
+
+    def get_cpu_info(self) -> Tuple[float, int]:
+        """Get CPU information (percent, count)."""
+        return (psutil.cpu_percent(interval=0.1), psutil.cpu_count())
+
+    def get_io_stats(self) -> Dict[str, int]:
+        """Get disk I/O statistics."""
+        try:
+            io = psutil.disk_io_counters()
+            start = self._disk_io_start
+            return {
+                "read_count": io.read_count - start.read_count if start else io.read_count,
+                "write_count": io.write_count - start.write_count if start else io.write_count,
+                "read_mb": (io.read_bytes - start.read_bytes) / (1024**2)
+                if start
+                else io.read_bytes / (1024**2),
+                "write_mb": (io.write_bytes - start.write_bytes) / (1024**2)
+                if start
+                else io.write_bytes / (1024**2),
+            }
+        except Exception as e:
+            logger.warning(f"Failed to get I/O stats: {e}")
+            return {"read_count": 0, "write_count": 0, "read_mb": 0.0, "write_mb": 0.0}  # type: ignore[dict-item]
+
+    def get_network_stats(self) -> Dict[str, float]:
+        """Get network I/O statistics."""
+        try:
+            net = psutil.net_io_counters()
+            start = self._net_io_start
+            return {
+                "sent_mb": (net.bytes_sent - start.bytes_sent) / (1024**2)
+                if start
+                else net.bytes_sent / (1024**2),
+                "recv_mb": (net.bytes_recv - start.bytes_recv) / (1024**2)
+                if start
+                else net.bytes_recv / (1024**2),
+            }
+        except Exception as e:
+            logger.warning(f"Failed to get network stats: {e}")
+            return {"sent_mb": 0.0, "recv_mb": 0.0}
+
+    def collect_stats(self) -> ResourceStats:
+        """Collect all resource statistics."""
+        mem_used, mem_avail, mem_pct = self.get_memory_info()
+        cpu_pct, cpu_count = self.get_cpu_info()
+        disk_info = self.get_disk_info()
+        io_stats = self.get_io_stats()
+        net_stats = self.get_network_stats()
+
+        stats = ResourceStats(
+            timestamp=time.time(),
+            cpu_percent=cpu_pct,
+            memory_used_mb=mem_used,
+            memory_percent=mem_pct,
+            disk_used_gb=disk_info.used_gb,
+            disk_percent=disk_info.percent,
+            disk_io_reads=io_stats.get("read_count", 0),
+            disk_io_writes=io_stats.get("write_count", 0),
+            network_sent_mb=net_stats.get("sent_mb", 0.0),
+            network_recv_mb=net_stats.get("recv_mb", 0.0),
+        )
+
+        # Store in history
+        self._history.append(stats)
+        if len(self._history) > self._max_history:
+            self._history.pop(0)
+
+        return stats
+
+    def get_recent_stats(self, count: int = 10) -> List[ResourceStats]:
+        """Get recent resource statistics."""
+        return self._history[-count:]
+
+    def get_average_stats(self, count: int = 100) -> Dict[str, float]:
+        """Get average resource statistics over recent samples."""
+        samples = self._history[-count:]
+        if not samples:
+            return {}
+
+        return {
+            "avg_cpu_percent": sum(s.cpu_percent for s in samples) / len(samples),
+            "avg_memory_percent": sum(s.memory_percent for s in samples) / len(samples),
+            "avg_disk_percent": sum(s.disk_percent for s in samples) / len(samples),
+            "total_disk_io_reads": sum(s.disk_io_reads for s in samples),
+            "total_disk_io_writes": sum(s.disk_io_writes for s in samples),
+            "total_network_sent_mb": sum(s.network_sent_mb for s in samples),
+            "total_network_recv_mb": sum(s.network_recv_mb for s in samples),
+        }
+
+    def get_resource_report(self) -> str:
+        """Generate a human-readable resource report."""
+        stats = self.collect_stats()
+        avg_stats = self.get_average_stats()
+        disk_info = self.get_disk_info()
+
+        lines = [
+            "=== Resource Usage Report ===",
+            f"Timestamp: {datetime.fromtimestamp(stats.timestamp).isoformat()}",
+            "",
+            "Current Usage:",
+            f"  CPU:     {stats.cpu_percent:.1f}%",
+            f"  Memory:  {stats.memory_used_mb:.0f} MB ({stats.memory_percent:.1f}%)",
+            f"  Disk:    {stats.disk_used_gb:.2f} GB ({stats.disk_percent:.1f}%)",
+            "",
+            "Disk Info:",
+            f"  Total:   {disk_info.total_gb:.2f} GB",
+            f"  Used:    {disk_info.used_gb:.2f} GB",
+            f"  Free:    {disk_info.free_gb:.2f} GB",
+            "",
+            "Recent Averages (last 100 samples):",
+            f"  CPU:     {avg_stats.get('avg_cpu_percent', 0):.1f}%",
+            f"  Memory:  {avg_stats.get('avg_memory_percent', 0):.1f}%",
+            f"  Disk:    {avg_stats.get('avg_disk_percent', 0):.1f}%",
+            "",
+            "I/O Statistics:",
+            f"  Disk Reads:  {avg_stats.get('total_disk_io_reads', 0):,}",
+            f"  Disk Writes: {avg_stats.get('total_disk_io_writes', 0):,}",
+            f"  Network Sent:    {avg_stats.get('total_network_sent_mb', 0):.2f} MB",
+            f"  Network Recv:   {avg_stats.get('total_network_recv_mb', 0):.2f} MB",
+        ]
+
+        return "\n".join(lines)
+
+
+# Global resource monitor instance
+_resource_monitor: Optional[ResourceMonitor] = None
+
+
+def get_resource_monitor(data_dir: Optional[Path] = None) -> ResourceMonitor:
+    """Get or create the global resource monitor."""
+    global _resource_monitor
+    if _resource_monitor is None:
+        _resource_monitor = ResourceMonitor(data_dir)
+    return _resource_monitor
+
+
+class ResourceGuard:
+    """Context manager to ensure resource availability before operations."""
+
+    def __init__(
+        self,
+        min_disk_gb: float = 1.0,
+        max_memory_percent: float = 90.0,
+        monitor: Optional[ResourceMonitor] = None,
+    ):
+        self.min_disk_gb = min_disk_gb
+        self.max_memory_percent = max_memory_percent
+        self.monitor = monitor or get_resource_monitor()
+
+    def check(self) -> Tuple[bool, str]:
+        """Check if resources are available. Returns (ok, message)."""
+        disk_info = self.monitor.get_disk_info()
+        mem_used, mem_avail, mem_pct = self.monitor.get_memory_info()
+
+        # Check disk space
+        if disk_info.free_gb < self.min_disk_gb:
+            return False, f"Low disk space: only {disk_info.free_gb:.2f} GB free"
+
+        # Check memory
+        if mem_pct > self.max_memory_percent:
+            return False, f"High memory usage: {mem_pct:.1f}%"
+
+        return True, "Resources OK"
+
+    def __enter__(self):
+        ok, msg = self.check()
+        if not ok:
+            raise ResourceWarning(msg)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+
+class APIBudgetTracker:
+    """Track API usage and costs (inspired by minimizing cloud costs)."""
+
+    def __init__(self, monthly_budget_usd: float = 100.0):
+        self.monthly_budget_usd = monthly_budget_usd
+        self.api_calls: List[Dict] = []
+        self._call_count = 0
+        self._cost_estimate = 0.0
+
+    def record_api_call(
+        self, provider: str, endpoint: str, tokens_used: int = 0, cost_per_1k: float = 0.0
+    ):
+        """Record an API call."""
+        self._call_count += 1
+        call_cost = (tokens_used / 1000) * cost_per_1k
+        self._cost_estimate += call_cost
+
+        self.api_calls.append(
+            {
+                "timestamp": time.time(),
+                "provider": provider,
+                "endpoint": endpoint,
+                "tokens": tokens_used,
+                "cost": call_cost,
+                "total_cost": self._cost_estimate,
+            }
+        )
+
+    def get_usage_report(self) -> Dict:
+        """Get usage report."""
+        return {
+            "total_calls": self._call_count,
+            "estimated_cost_usd": self._cost_estimate,
+            "budget_remaining_usd": self.monthly_budget_usd - self._cost_estimate,
+            "budget_used_percent": (self._cost_estimate / self.monthly_budget_usd) * 100
+            if self.monthly_budget_usd > 0
+            else 0,
+            "recent_calls": len(self.api_calls[-100:]),  # Last 100 calls
+        }
+
+    def should_make_api_call(self, estimated_cost: float = 0.01) -> bool:
+        """Check if we should make an API call based on budget."""
+        return (self._cost_estimate + estimated_cost) <= self.monthly_budget_usd
+
+
+# Global API budget tracker
+_api_budget_tracker: Optional[APIBudgetTracker] = None
+
+
+def get_api_budget_tracker(monthly_budget_usd: float = 100.0) -> APIBudgetTracker:
+    """Get or create the global API budget tracker."""
+    global _api_budget_tracker
+    if _api_budget_tracker is None:
+        _api_budget_tracker = APIBudgetTracker(monthly_budget_usd)
+    return _api_budget_tracker

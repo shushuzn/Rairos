@@ -1,1 +1,386 @@
-IiIiVGVzdHMgZm9yIHJlc2VhcmNoIGdhcCBkZXRlY3Rvci4iIiIKCmZyb20gbGxtLmdhcF9kZXRlY3RvciBpbXBvcnQgKAogICAgR2FwRGV0ZWN0b3IsCiAgICBHYXBUeXBlLAogICAgR2FwU2V2ZXJpdHksCiAgICBSZXNlYXJjaEdhcCwKICAgIFJlc2VhcmNoUXVlc3Rpb24sCiAgICBHYXBBbmFseXNpc1Jlc3VsdCwKKQoKCmNsYXNzIFRlc3RHYXBEZXRlY3RvcjoKICAgICIiIlRlc3QgR2FwRGV0ZWN0b3IuIiIiCgogICAgZGVmIHRlc3RfZW1wdHlfcmVzdWx0X3doZW5fbm9fZGIoc2VsZik6CiAgICAgICAgIiIiVGVzdCBlbXB0eSByZXN1bHQgd2hlbiBubyBEQiBhdmFpbGFibGUuIiIiCiAgICAgICAgZGV0ZWN0b3IgPSBHYXBEZXRlY3RvcihkYj1Ob25lKQogICAgICAgIHJlc3VsdCA9IGRldGVjdG9yLmFuYWx5emUoIm5vbmV4aXN0ZW50X3RvcGljX3h5el8xMjMiLCB1c2VfbGxtPUZhbHNlKQoKICAgICAgICBhc3NlcnQgaXNpbnN0YW5jZShyZXN1bHQsIEdhcEFuYWx5c2lzUmVzdWx0KQogICAgICAgIGFzc2VydCByZXN1bHQudG9waWMgPT0gIm5vbmV4aXN0ZW50X3RvcGljX3h5el8xMjMiCgogICAgZGVmIHRlc3RfZ2FwX3NldmVyaXR5X2VudW0oc2VsZik6CiAgICAgICAgIiIiVGVzdCBHYXBTZXZlcml0eSBlbnVtIHZhbHVlcy4iIiIKICAgICAgICBhc3NlcnQgR2FwU2V2ZXJpdHkuSElHSC52YWx1ZSA9PSAiaGlnaCIKICAgICAgICBhc3NlcnQgR2FwU2V2ZXJpdHkuTUVESVVNLnZhbHVlID09ICJtZWRpdW0iCiAgICAgICAgYXNzZXJ0IEdhcFNldmVyaXR5LkxPVy52YWx1ZSA9PSAibG93IgoKICAgIGRlZiB0ZXN0X2dhcF90eXBlX2VudW0oc2VsZik6CiAgICAgICAgIiIiVGVzdCBHYXBUeXBlIGVudW0gdmFsdWVzLiIiIgogICAgICAgIGFzc2VydCBHYXBUeXBlLlVORVhQTE9SRURfQVBQTElDQVRJT04udmFsdWUgPT0gInVuZXhwbG9yZWRfYXBwbGljYXRpb24iCiAgICAgICAgYXNzZXJ0IEdhcFR5cGUuTUVUSE9EX0xJTUlUQVRJT04udmFsdWUgPT0gIm1ldGhvZF9saW1pdGF0aW9uIgogICAgICAgIGFzc2VydCBHYXBUeXBlLkNPTlRSQURJQ1RJT04udmFsdWUgPT0gImNvbnRyYWRpY3Rpb24iCiAgICAgICAgYXNzZXJ0IEdhcFR5cGUuRVZBTFVBVElPTl9HQVAudmFsdWUgPT0gImV2YWx1YXRpb25fZ2FwIgoKICAgIGRlZiB0ZXN0X3Jlc2VhcmNoX2dhcF9jcmVhdGlvbihzZWxmKToKICAgICAgICAiIiJUZXN0IFJlc2VhcmNoR2FwIGRhdGFjbGFzcy4iIiIKICAgICAgICBnYXAgPSBSZXNlYXJjaEdhcCgKICAgICAgICAgICAgZ2FwX3R5cGU9R2FwVHlwZS5NRVRIT0RfTElNSVRBVElPTiwKICAgICAgICAgICAgZGVzY3JpcHRpb249IlRlc3QgZ2FwIGRlc2NyaXB0aW9uIiwKICAgICAgICAgICAgZXZpZGVuY2VfcGFwZXJzPVsiUGFwZXIgQSIsICJQYXBlciBCIl0sCiAgICAgICAgICAgIHNldmVyaXR5PUdhcFNldmVyaXR5LkhJR0gsCiAgICAgICAgICAgIGNvbmZpZGVuY2U9MC44LAogICAgICAgICkKCiAgICAgICAgYXNzZXJ0IGdhcC5nYXBfdHlwZSA9PSBHYXBUeXBlLk1FVEhPRF9MSU1JVEFUSU9OCiAgICAgICAgYXNzZXJ0IGdhcC5kZXNjcmlwdGlvbiA9PSAiVGVzdCBnYXAgZGVzY3JpcHRpb24iCiAgICAgICAgYXNzZXJ0IGxlbihnYXAuZXZpZGVuY2VfcGFwZXJzKSA9PSAyCiAgICAgICAgYXNzZXJ0IGdhcC5zZXZlcml0eSA9PSBHYXBTZXZlcml0eS5ISUdICiAgICAgICAgYXNzZXJ0IGdhcC5jb25maWRlbmNlID09IDAuOAoKICAgIGRlZiB0ZXN0X3Jlc2VhcmNoX3F1ZXN0aW9uX2NyZWF0aW9uKHNlbGYpOgogICAgICAgICIiIlRlc3QgUmVzZWFyY2hRdWVzdGlvbiBkYXRhY2xhc3MuIiIiCiAgICAgICAgZ2FwID0gUmVzZWFyY2hHYXAoCiAgICAgICAgICAgIGdhcF90eXBlPUdhcFR5cGUuVU5FWFBMT1JFRF9BUFBMSUNBVElPTiwKICAgICAgICAgICAgZGVzY3JpcHRpb249IlRlc3QiLAogICAgICAgICAgICBldmlkZW5jZV9wYXBlcnM9W10sCiAgICAgICAgKQogICAgICAgIHEgPSBSZXNlYXJjaFF1ZXN0aW9uKAogICAgICAgICAgICBxdWVzdGlvbj0iSG93IHRvIGFwcGx5IFggdG8gWT8iLAogICAgICAgICAgICBnYXA9Z2FwLAogICAgICAgICAgICBoeXBvdGhlc2lzPSJYIHdpbGwgd29yayBpbiBZIHNjZW5hcmlvIiwKICAgICAgICAgICAgbWV0aG9kb2xvZ3lfc3VnZ2VzdGlvbj0iRXhwZXJpbWVudCB3aXRoIGRpZmZlcmVudCBZIGNvbmZpZ3VyYXRpb25zIiwKICAgICAgICAgICAgZXhwZWN0ZWRfaW1wYWN0PSJFbmFibGUgbmV3IGFwcGxpY2F0aW9ucyIsCiAgICAgICAgICAgIGZlYXNpYmlsaXR5PTAuNywKICAgICAgICAgICAgbm92ZWx0eV9zY29yZT0wLjgsCiAgICAgICAgKQoKICAgICAgICBhc3NlcnQgcS5xdWVzdGlvbiA9PSAiSG93IHRvIGFwcGx5IFggdG8gWT8iCiAgICAgICAgYXNzZXJ0IHEuZ2FwID09IGdhcAogICAgICAgIGFzc2VydCBxLmh5cG90aGVzaXMgPT0gIlggd2lsbCB3b3JrIGluIFkgc2NlbmFyaW8iCiAgICAgICAgYXNzZXJ0IHEuZmVhc2liaWxpdHkgPT0gMC43CiAgICAgICAgYXNzZXJ0IHEubm92ZWx0eV9zY29yZSA9PSAwLjgKCiAgICBkZWYgdGVzdF9kZXRlY3RfZ2Fwc19ydWxlcyhzZWxmKToKICAgICAgICAiIiJUZXN0IHJ1bGUtYmFzZWQgZ2FwIGRldGVjdGlvbi4iIiIKICAgICAgICBkZXRlY3RvciA9IEdhcERldGVjdG9yKCkKICAgICAgICBwYXBlcl90ZXh0ID0gIiIiCiAgICAgICAgVGhpcyBtZXRob2QgaGFzIGxpbWl0YXRpb25zIGluIHNjYWxhYmlsaXR5LgogICAgICAgIEhvd2V2ZXIsIG90aGVyIGFwcHJvYWNoZXMgc2hvdyBjb25mbGljdGluZyByZXN1bHRzLgogICAgICAgIEZ1dHVyZSB3b3JrIHNob3VsZCBleHBsb3JlIHBvdGVudGlhbCBhcHBsaWNhdGlvbnMuCiAgICAgICAgIiIiCgogICAgICAgIGdhcHMgPSBkZXRlY3Rvci5fZGV0ZWN0X2dhcHNfcnVsZXMocGFwZXJfdGV4dCkKCiAgICAgICAgYXNzZXJ0IGxlbihnYXBzKSA+IDAKICAgICAgICBnYXBfdHlwZXMgPSB7Zy5nYXBfdHlwZSBmb3IgZyBpbiBnYXBzfQogICAgICAgIGFzc2VydCBHYXBUeXBlLk1FVEhPRF9MSU1JVEFUSU9OIGluIGdhcF90eXBlcwoKICAgIGRlZiB0ZXN0X2dlbmVyYXRlX3F1ZXN0aW9uc19ydWxlcyhzZWxmKToKICAgICAgICAiIiJUZXN0IHJ1bGUtYmFzZWQgcXVlc3Rpb24gZ2VuZXJhdGlvbi4iIiIKICAgICAgICBkZXRlY3RvciA9IEdhcERldGVjdG9yKCkKICAgICAgICBnYXBzID0gWwogICAgICAgICAgICBSZXNlYXJjaEdhcCgKICAgICAgICAgICAgICAgIGdhcF90eXBlPUdhcFR5cGUuTUVUSE9EX0xJTUlUQVRJT04sCiAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbj0iU2NhbGFiaWxpdHkgaXNzdWUiLAogICAgICAgICAgICAgICAgZXZpZGVuY2VfcGFwZXJzPVsiUGFwZXIgQSJdLAogICAgICAgICAgICApLAogICAgICAgICAgICBSZXNlYXJjaEdhcCgKICAgICAgICAgICAgICAgIGdhcF90eXBlPUdhcFR5cGUuVU5FWFBMT1JFRF9BUFBMSUNBVElPTiwKICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uPSJOZXcgZG9tYWluIHVuZXhwbG9yZWQiLAogICAgICAgICAgICAgICAgZXZpZGVuY2VfcGFwZXJzPVsiUGFwZXIgQiJdLAogICAgICAgICAgICApLAogICAgICAgIF0KCiAgICAgICAgcXVlc3Rpb25zID0gZGV0ZWN0b3IuX2dlbmVyYXRlX3F1ZXN0aW9uc19ydWxlcyhnYXBzKQoKICAgICAgICBhc3NlcnQgbGVuKHF1ZXN0aW9ucykgPiAwCiAgICAgICAgYXNzZXJ0IGFsbChpc2luc3RhbmNlKHEsIFJlc2VhcmNoUXVlc3Rpb24pIGZvciBxIGluIHF1ZXN0aW9ucykKICAgICAgICBhc3NlcnQgYWxsKHEuZ2FwIGluIGdhcHMgZm9yIHEgaW4gcXVlc3Rpb25zKQoKICAgIGRlZiB0ZXN0X2NhbGN1bGF0ZV9jb3ZlcmFnZShzZWxmKToKICAgICAgICAiIiJUZXN0IGNvdmVyYWdlIHNjb3JlIGNhbGN1bGF0aW9uLiIiIgogICAgICAgIGRldGVjdG9yID0gR2FwRGV0ZWN0b3IoKQogICAgICAgIHBhcGVycyA9IFsKICAgICAgICAgICAgeyJ5ZWFyIjogMjAyNCwgImFic3RyYWN0IjogIkdvb2QgYWJzdHJhY3QifSwKICAgICAgICAgICAgeyJ5ZWFyIjogMjAyMywgImFic3RyYWN0IjogIkFub3RoZXIgYWJzdHJhY3QifSwKICAgICAgICAgICAgeyJ5ZWFyIjogMjAyMiwgImFic3RyYWN0IjogIiJ9LAogICAgICAgIF0KCiAgICAgICAgc2NvcmUgPSBkZXRlY3Rvci5fY2FsY3VsYXRlX2NvdmVyYWdlKHBhcGVycykKICAgICAgICBhc3NlcnQgMCA8PSBzY29yZSA8PSAxCgogICAgZGVmIHRlc3RfY2FsY3VsYXRlX2NvdmVyYWdlX2VtcHR5KHNlbGYpOgogICAgICAgICIiIlRlc3QgY292ZXJhZ2Ugd2l0aCBlbXB0eSBwYXBlcnMuIiIiCiAgICAgICAgZGV0ZWN0b3IgPSBHYXBEZXRlY3RvcigpCiAgICAgICAgc2NvcmUgPSBkZXRlY3Rvci5fY2FsY3VsYXRlX2NvdmVyYWdlKFtdKQogICAgICAgIGFzc2VydCBzY29yZSA9PSAwLjAKCiAgICBkZWYgdGVzdF9nZW5lcmF0ZV9zdW1tYXJ5KHNlbGYpOgogICAgICAgICIiIlRlc3Qgc3VtbWFyeSBnZW5lcmF0aW9uLiIiIgogICAgICAgIGRldGVjdG9yID0gR2FwRGV0ZWN0b3IoKQogICAgICAgIHJlc3VsdCA9IEdhcEFuYWx5c2lzUmVzdWx0KAogICAgICAgICAgICB0b3BpYz0iVGVzdCBUb3BpYyIsCiAgICAgICAgICAgIGdhcHM9WwogICAgICAgICAgICAgICAgUmVzZWFyY2hHYXAoCiAgICAgICAgICAgICAgICAgICAgZ2FwX3R5cGU9R2FwVHlwZS5NRVRIT0RfTElNSVRBVElPTiwKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbj0iR2FwIDEiLAogICAgICAgICAgICAgICAgICAgIGV2aWRlbmNlX3BhcGVycz1bXSwKICAgICAgICAgICAgICAgICAgICBzZXZlcml0eT1HYXBTZXZlcml0eS5ISUdILAogICAgICAgICAgICAgICAgKSwKICAgICAgICAgICAgICAgIFJlc2VhcmNoR2FwKAogICAgICAgICAgICAgICAgICAgIGdhcF90eXBlPUdhcFR5cGUuVU5FWFBMT1JFRF9BUFBMSUNBVElPTiwKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbj0iR2FwIDIiLAogICAgICAgICAgICAgICAgICAgIGV2aWRlbmNlX3BhcGVycz1bXSwKICAgICAgICAgICAgICAgICAgICBzZXZlcml0eT1HYXBTZXZlcml0eS5NRURJVU0sCiAgICAgICAgICAgICAgICApLAogICAgICAgICAgICBdLAogICAgICAgICAgICBxdWVzdGlvbnM9WwogICAgICAgICAgICAgICAgUmVzZWFyY2hRdWVzdGlvbihxdWVzdGlvbj0iUTEiLCBnYXA9Tm9uZSksCiAgICAgICAgICAgICAgICBSZXNlYXJjaFF1ZXN0aW9uKHF1ZXN0aW9uPSJRMiIsIGdhcD1Ob25lKSwKICAgICAgICAgICAgXSwKICAgICAgICAgICAgY292ZXJhZ2Vfc2NvcmU9MC41LAogICAgICAgICAgICBvcHBvcnR1bml0aWVzX3Njb3JlPTIuMCwKICAgICAgICAgICAgYW5hbHl6ZWRfcGFwZXJzX2NvdW50PTEwLAogICAgICAgICkKCiAgICAgICAgc3VtbWFyeSA9IGRldGVjdG9yLl9nZW5lcmF0ZV9zdW1tYXJ5KHJlc3VsdCkKCiAgICAgICAgYXNzZXJ0ICLpq5jkvJjlhYjnuqciIGluIHN1bW1hcnkgb3IgImhpZ2giIGluIHN1bW1hcnkubG93ZXIoKQogICAgICAgIGFzc2VydCAiMiDkuKoiIGluIHN1bW1hcnkgb3IgIjIiIGluIHN1bW1hcnkKCiAgICBkZWYgdGVzdF9yZW5kZXJfcmVzdWx0KHNlbGYpOgogICAgICAgICIiIlRlc3QgcmVzdWx0IHJlbmRlcmluZy4iIiIKICAgICAgICBkZXRlY3RvciA9IEdhcERldGVjdG9yKCkKICAgICAgICByZXN1bHQgPSBHYXBBbmFseXNpc1Jlc3VsdCgKICAgICAgICAgICAgdG9waWM9IlRyYW5zZm9ybWVyIiwKICAgICAgICAgICAgZ2Fwcz1bCiAgICAgICAgICAgICAgICBSZXNlYXJjaEdhcCgKICAgICAgICAgICAgICAgICAgICBnYXBfdHlwZT1HYXBUeXBlLk1FVEhPRF9MSU1JVEFUSU9OLAogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uPSJTY2FsYWJpbGl0eSBsaW1pdGF0aW9uIiwKICAgICAgICAgICAgICAgICAgICBldmlkZW5jZV9wYXBlcnM9WyJBdHRlbnRpb24gSXMgQWxsIFlvdSBOZWVkIl0sCiAgICAgICAgICAgICAgICAgICAgc2V2ZXJpdHk9R2FwU2V2ZXJpdHkuSElHSCwKICAgICAgICAgICAgICAgICAgICBjb25maWRlbmNlPTAuOSwKICAgICAgICAgICAgICAgICksCiAgICAgICAgICAgIF0sCiAgICAgICAgICAgIHF1ZXN0aW9ucz1bCiAgICAgICAgICAgICAgICBSZXNlYXJjaFF1ZXN0aW9uKAogICAgICAgICAgICAgICAgICAgIHF1ZXN0aW9uPSJIb3cgdG8gc2NhbGUgdHJhbnNmb3JtZXJzPyIsCiAgICAgICAgICAgICAgICAgICAgZ2FwPU5vbmUsCiAgICAgICAgICAgICAgICAgICAgaHlwb3RoZXNpcz0iTGFyZ2VyIG1vZGVscyB3aWxsIHNob3cgYmV0dGVyIHBlcmZvcm1hbmNlIiwKICAgICAgICAgICAgICAgICksCiAgICAgICAgICAgIF0sCiAgICAgICAgICAgIGNvdmVyYWdlX3Njb3JlPTAuNywKICAgICAgICAgICAgb3Bwb3J0dW5pdGllc19zY29yZT0zLjAsCiAgICAgICAgICAgIGFuYWx5emVkX3BhcGVyc19jb3VudD01LAogICAgICAgICkKCiAgICAgICAgb3V0cHV0ID0gZGV0ZWN0b3IucmVuZGVyX3Jlc3VsdChyZXN1bHQpCgogICAgICAgIGFzc2VydCAiVHJhbnNmb3JtZXIiIGluIG91dHB1dAogICAgICAgICMgR2FwIGRlc2NyaXB0aW9ucyBhcmUgcHJpbnRlZCB2aWEgYy5wcmludCgpIOKAlCBub3QgY2FwdHVyZWQgaW4gcmV0dXJuIHN0cmluZwogICAgICAgICMgUXVlc3Rpb24gdGV4dCBtYXkgYmUgaW4gY29uc29sZSBvdXRwdXQ7IGNoZWNrIHdoYXQncyBhY3R1YWxseSByZXR1cm5lZAogICAgICAgICMgVGhlIHJldHVybmVkIHN0cmluZyBjb250YWlucyB0aGUgcGFuZWwgKyBzdW1tYXJ5IHRleHQgb25seQoKICAgIGRlZiB0ZXN0X3JlbmRlcl9qc29uKHNlbGYpOgogICAgICAgICIiIlRlc3QgSlNPTiByZW5kZXJpbmcuIiIiCiAgICAgICAgaW1wb3J0IGpzb24KCiAgICAgICAgZGV0ZWN0b3IgPSBHYXBEZXRlY3RvcigpCiAgICAgICAgcmVzdWx0ID0gR2FwQW5hbHlzaXNSZXN1bHQoCiAgICAgICAgICAgIHRvcGljPSJSTEhGIiwKICAgICAgICAgICAgZ2Fwcz1bCiAgICAgICAgICAgICAgICBSZXNlYXJjaEdhcCgKICAgICAgICAgICAgICAgICAgICBnYXBfdHlwZT1HYXBUeXBlLkVWQUxVQVRJT05fR0FQLAogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uPSJObyBzdGFuZGFyZCBiZW5jaG1hcmsiLAogICAgICAgICAgICAgICAgICAgIGV2aWRlbmNlX3BhcGVycz1bIkluc3RydWN0R1BUIl0sCiAgICAgICAgICAgICAgICAgICAgc2V2ZXJpdHk9R2FwU2V2ZXJpdHkuSElHSCwKICAgICAgICAgICAgICAgICksCiAgICAgICAgICAgIF0sCiAgICAgICAgICAgIHF1ZXN0aW9ucz1bXSwKICAgICAgICAgICAgY292ZXJhZ2Vfc2NvcmU9MC42LAogICAgICAgICAgICBvcHBvcnR1bml0aWVzX3Njb3JlPTIuNSwKICAgICAgICAgICAgYW5hbHl6ZWRfcGFwZXJzX2NvdW50PTgsCiAgICAgICAgKQoKICAgICAgICBqc29uX291dHB1dCA9IGRldGVjdG9yLnJlbmRlcl9qc29uKHJlc3VsdCkKICAgICAgICBkYXRhID0ganNvbi5sb2Fkcyhqc29uX291dHB1dCkKCiAgICAgICAgYXNzZXJ0IGRhdGFbInRvcGljIl0gPT0gIlJMSEYiCiAgICAgICAgYXNzZXJ0IGxlbihkYXRhWyJnYXBzIl0pID09IDEKICAgICAgICBhc3NlcnQgZGF0YVsiZ2FwcyJdWzBdWyJ0eXBlIl0gPT0gImV2YWx1YXRpb25fZ2FwIgogICAgICAgIGFzc2VydCBkYXRhWyJjb3ZlcmFnZV9zY29yZSJdID09IDAuNgoKICAgIGRlZiB0ZXN0X2VtcHR5X3Jlc3VsdChzZWxmKToKICAgICAgICAiIiJUZXN0IGVtcHR5IHJlc3VsdCBoYW5kbGluZy4iIiIKICAgICAgICBkZXRlY3RvciA9IEdhcERldGVjdG9yKCkKICAgICAgICByZXN1bHQgPSBkZXRlY3Rvci5fZW1wdHlfcmVzdWx0KCJUZXN0IFRvcGljIikKCiAgICAgICAgYXNzZXJ0IHJlc3VsdC50b3BpYyA9PSAiVGVzdCBUb3BpYyIKICAgICAgICBhc3NlcnQgbGVuKHJlc3VsdC5nYXBzKSA9PSAwCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHQucXVlc3Rpb25zKSA9PSAwCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIF9wYXJzZV9nYXBzIOKAlCBwdXJlIHN0cmluZy9yZWdleCBwYXJzaW5nCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFBhcnNlR2FwczoKICAgICIiIlRlc3QgX3BhcnNlX2dhcHMg4oCUIHB1cmUgcGFyc2luZywgbm8gSS9PLiIiIgoKICAgIGRlZiB0ZXN0X3BhcnNlc193ZWxsX2Zvcm1lZF9yZXNwb25zZShzZWxmKToKICAgICAgICBkZXRlY3RvciA9IEdhcERldGVjdG9yKCkKICAgICAgICByZXNwb25zZSA9ICIiIgpbbWV0aG9kX2xpbWl0YXRpb25dIFRyYW5zZm9ybWVycyBoYXZlIHF1YWRyYXRpYyBjb21wbGV4aXR5IHwgQXR0ZW50aW9uIElzIEFsbCBZb3UgTmVlZCB8IDAuOSB8IGhpZ2gKW3VuZXhwbG9yZWRfYXBwbGljYXRpb25dIFJBRyBmb3IgY29kZSBnZW5lcmF0aW9uIG5vdCBleHBsb3JlZCB8IFJBRyBQYXBlciwgQ29kZUxsYW1hIFBhcGVyIHwgMC43IHwgbWVkaXVtCiIiIgogICAgICAgIGdhcHMgPSBkZXRlY3Rvci5fcGFyc2VfZ2FwcyhyZXNwb25zZSwgIlRyYW5zZm9ybWVycyIpCgogICAgICAgIGFzc2VydCBsZW4oZ2FwcykgPT0gMgogICAgICAgIGFzc2VydCBnYXBzWzBdLmdhcF90eXBlID09IEdhcFR5cGUuTUVUSE9EX0xJTUlUQVRJT04KICAgICAgICBhc3NlcnQgInF1YWRyYXRpYyIgaW4gZ2Fwc1swXS5kZXNjcmlwdGlvbi5sb3dlcigpCiAgICAgICAgYXNzZXJ0IGdhcHNbMF0uc2V2ZXJpdHkgPT0gR2FwU2V2ZXJpdHkuSElHSAogICAgICAgIGFzc2VydCBnYXBzWzFdLmdhcF90eXBlID09IEdhcFR5cGUuVU5FWFBMT1JFRF9BUFBMSUNBVElPTgoKICAgIGRlZiB0ZXN0X21hcHNfYWxsX2dhcF90eXBlcyhzZWxmKToKICAgICAgICBkZXRlY3RvciA9IEdhcERldGVjdG9yKCkKICAgICAgICByZXNwb25zZSA9ICIiIgpbbWV0aG9kX2xpbWl0YXRpb25dIExpbWl0YXRpb24gfCBQYXBlcjEgfCAwLjggfCBoaWdoClt1bmV4cGxvcmVkX2FwcGxpY2F0aW9uXSBVbmV4cGxvcmVkIHwgUGFwZXIyIHwgMC43IHwgbWVkaXVtCltjb250cmFkaWN0aW9uXSBDb250cmFkaWN0aW9uIHwgUGFwZXIzIHwgMC42IHwgaGlnaApbZXZhbHVhdGlvbl9nYXBdIE5vIGJlbmNobWFyayB8IFBhcGVyNCB8IDAuNSB8IG1lZGl1bQoiIiIKICAgICAgICBnYXBzID0gZGV0ZWN0b3IuX3BhcnNlX2dhcHMocmVzcG9uc2UsICJUZXN0IikKICAgICAgICB0eXBlcyA9IHtnLmdhcF90eXBlIGZvciBnIGluIGdhcHN9CiAgICAgICAgYXNzZXJ0IEdhcFR5cGUuTUVUSE9EX0xJTUlUQVRJT04gaW4gdHlwZXMKICAgICAgICBhc3NlcnQgR2FwVHlwZS5VTkVYUExPUkVEX0FQUExJQ0FUSU9OIGluIHR5cGVzCiAgICAgICAgYXNzZXJ0IEdhcFR5cGUuQ09OVFJBRElDVElPTiBpbiB0eXBlcwogICAgICAgIGFzc2VydCBHYXBUeXBlLkVWQUxVQVRJT05fR0FQIGluIHR5cGVzCgogICAgZGVmIHRlc3RfdW5rbm93bl90eXBlX2RlZmF1bHRzX3RvX21ldGhvZF9saW1pdGF0aW9uKHNlbGYpOgogICAgICAgIGRldGVjdG9yID0gR2FwRGV0ZWN0b3IoKQogICAgICAgIHJlc3BvbnNlID0gIlt1bmtub3duX3R5cGVdIFNvbWUgZ2FwIHwgUGFwZXIxIHwgMC41IHwgbWVkaXVtIgogICAgICAgIGdhcHMgPSBkZXRlY3Rvci5fcGFyc2VfZ2FwcyhyZXNwb25zZSwgIlRlc3QiKQogICAgICAgIGFzc2VydCBsZW4oZ2FwcykgPT0gMQogICAgICAgIGFzc2VydCBnYXBzWzBdLmdhcF90eXBlID09IEdhcFR5cGUuTUVUSE9EX0xJTUlUQVRJT04gICMgZGVmYXVsdCBmYWxsYmFjawoKICAgIGRlZiB0ZXN0X3BhcnNlc19ldmlkZW5jZV9wYXBlcnMoc2VsZik6CiAgICAgICAgZGV0ZWN0b3IgPSBHYXBEZXRlY3RvcigpCiAgICAgICAgcmVzcG9uc2UgPSAiW21ldGhvZF9saW1pdGF0aW9uXSBHYXAgfCBQYXBlciBBLCBQYXBlciBCLCBQYXBlciBDIHwgMC44IHwgaGlnaCIKICAgICAgICBnYXBzID0gZGV0ZWN0b3IuX3BhcnNlX2dhcHMocmVzcG9uc2UsICJUZXN0IikKICAgICAgICBhc3NlcnQgbGVuKGdhcHMpID09IDEKICAgICAgICBhc3NlcnQgIlBhcGVyIEEiIGluIGdhcHNbMF0uZXZpZGVuY2VfcGFwZXJzCiAgICAgICAgYXNzZXJ0ICJQYXBlciBCIiBpbiBnYXBzWzBdLmV2aWRlbmNlX3BhcGVycwogICAgICAgIGFzc2VydCAiUGFwZXIgQyIgaW4gZ2Fwc1swXS5ldmlkZW5jZV9wYXBlcnMKCiAgICBkZWYgdGVzdF9lbXB0eV9yZXNwb25zZV9yZXR1cm5zX2VtcHR5X2xpc3Qoc2VsZik6CiAgICAgICAgZGV0ZWN0b3IgPSBHYXBEZXRlY3RvcigpCiAgICAgICAgZ2FwcyA9IGRldGVjdG9yLl9wYXJzZV9nYXBzKCIiLCAiVGVzdCIpCiAgICAgICAgYXNzZXJ0IGdhcHMgPT0gW10KCiAgICBkZWYgdGVzdF9za2lwc19jb21tZW50c19hbmRfZW1wdHlfbGluZXMoc2VsZik6CiAgICAgICAgZGV0ZWN0b3IgPSBHYXBEZXRlY3RvcigpCiAgICAgICAgcmVzcG9uc2UgPSAiIiIKIyBUaGlzIGlzIGEgY29tbWVudApbbWV0aG9kX2xpbWl0YXRpb25dIFZhbGlkIGdhcCB8IFBhcGVyMSB8IDAuOCB8IGhpZ2gKCiAgICMgYW5vdGhlciBjb21tZW50Clt1bmV4cGxvcmVkX2FwcGxpY2F0aW9uXSBBbm90aGVyIHwgUGFwZXIyIHwgMC43IHwgbWVkaXVtCiIiIgogICAgICAgIGdhcHMgPSBkZXRlY3Rvci5fcGFyc2VfZ2FwcyhyZXNwb25zZSwgIlRlc3QiKQogICAgICAgIGFzc2VydCBsZW4oZ2FwcykgPT0gMgoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBfcGFyc2VfcXVlc3Rpb25zIOKAlCBwdXJlIHN0cmluZyBwYXJzaW5nCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFBhcnNlUXVlc3Rpb25zOgogICAgIiIiVGVzdCBfcGFyc2VfcXVlc3Rpb25zIOKAlCBwdXJlIHBhcnNpbmcsIG5vIEkvTy4iIiIKCiAgICBkZWYgdGVzdF9wYXJzZXNfd2VsbF9mb3JtZWRfcmVzcG9uc2Uoc2VsZik6CiAgICAgICAgZGV0ZWN0b3IgPSBHYXBEZXRlY3RvcigpCiAgICAgICAgcmVzcG9uc2UgPSAiIiIKSG93IHRvIGltcHJvdmUgc2NhbGFiaWxpdHk/IHwgSHlwb3RoZXNpcyB0ZXh0IHwgVXNlIGFsdGVybmF0aXZlIG1ldGhvZHMgfCBIaWdoIGltcGFjdCB8IDAuNyB8IDAuOApXaGF0IG1ldHJpY3MgdG8gdXNlPyB8IE1ldHJpYyBoeXBvdGhlc2lzIHwgRGVzaWduIG5ldyBtZXRyaWNzIHwgTWVkaXVtIGltcGFjdCB8IDAuNiB8IDAuNQoiIiIKICAgICAgICBnYXBzID0gWwogICAgICAgICAgICBSZXNlYXJjaEdhcCgKICAgICAgICAgICAgICAgIGdhcF90eXBlPUdhcFR5cGUuTUVUSE9EX0xJTUlUQVRJT04sIGRlc2NyaXB0aW9uPSJUZXN0IiwgZXZpZGVuY2VfcGFwZXJzPVsicDEiXQogICAgICAgICAgICApCiAgICAgICAgXQogICAgICAgIHF1ZXN0aW9ucyA9IGRldGVjdG9yLl9wYXJzZV9xdWVzdGlvbnMocmVzcG9uc2UsIGdhcHMpCgogICAgICAgIGFzc2VydCBsZW4ocXVlc3Rpb25zKSA9PSAyCiAgICAgICAgYXNzZXJ0ICJzY2FsYWJpbGl0eSIgaW4gcXVlc3Rpb25zWzBdLnF1ZXN0aW9uLmxvd2VyKCkKICAgICAgICBhc3NlcnQgIm1ldHJpY3MiIGluIHF1ZXN0aW9uc1sxXS5xdWVzdGlvbi5sb3dlcigpCiAgICAgICAgYXNzZXJ0IHF1ZXN0aW9uc1swXS5oeXBvdGhlc2lzID09ICJIeXBvdGhlc2lzIHRleHQiCiAgICAgICAgYXNzZXJ0IHF1ZXN0aW9uc1swXS5tZXRob2RvbG9neV9zdWdnZXN0aW9uID09ICJVc2UgYWx0ZXJuYXRpdmUgbWV0aG9kcyIKCiAgICBkZWYgdGVzdF9wYXJzZXNfbWluaW1hbF9waXBlX2RlbGltaXRlZChzZWxmKToKICAgICAgICBkZXRlY3RvciA9IEdhcERldGVjdG9yKCkKICAgICAgICByZXNwb25zZSA9ICJKdXN0IGEgcXVlc3Rpb24/IgogICAgICAgIGdhcHMgPSBbCiAgICAgICAgICAgIFJlc2VhcmNoR2FwKGdhcF90eXBlPUdhcFR5cGUuTUVUSE9EX0xJTUlUQVRJT04sIGRlc2NyaXB0aW9uPSJUZXN0IiwgZXZpZGVuY2VfcGFwZXJzPVtdKQogICAgICAgIF0KICAgICAgICBxdWVzdGlvbnMgPSBkZXRlY3Rvci5fcGFyc2VfcXVlc3Rpb25zKHJlc3BvbnNlLCBnYXBzKQogICAgICAgIGFzc2VydCBsZW4ocXVlc3Rpb25zKSA9PSAxCiAgICAgICAgYXNzZXJ0IHF1ZXN0aW9uc1swXS5xdWVzdGlvbiA9PSAiSnVzdCBhIHF1ZXN0aW9uPyIKICAgICAgICBhc3NlcnQgcXVlc3Rpb25zWzBdLmZlYXNpYmlsaXR5ID09IDAuNSAgIyBkZWZhdWx0CiAgICAgICAgYXNzZXJ0IHF1ZXN0aW9uc1swXS5ub3ZlbHR5X3Njb3JlID09IDAuNSAgIyBkZWZhdWx0CgogICAgZGVmIHRlc3RfZW1wdHlfcmVzcG9uc2VfcmV0dXJuc19lbXB0eV9saXN0KHNlbGYpOgogICAgICAgIGRldGVjdG9yID0gR2FwRGV0ZWN0b3IoKQogICAgICAgIHF1ZXN0aW9ucyA9IGRldGVjdG9yLl9wYXJzZV9xdWVzdGlvbnMoIiIsIFtdKQogICAgICAgIGFzc2VydCBxdWVzdGlvbnMgPT0gW10KCiAgICBkZWYgdGVzdF9za2lwc19jb21tZW50c19hbmRfZW1wdHlfbGluZXMoc2VsZik6CiAgICAgICAgZGV0ZWN0b3IgPSBHYXBEZXRlY3RvcigpCiAgICAgICAgcmVzcG9uc2UgPSAiIiIKIyBUaGlzIGlzIGEgY29tbWVudAoKVmFsaWQgcXVlc3Rpb24/IHwgSHlwb3RoZXNpcyB8IE1ldGhvZCB8IEltcGFjdCB8IDAuNyB8IDAuOAoKICAgIyB3aGl0ZXNwYWNlLW9ubHkKIiIiCiAgICAgICAgZ2FwcyA9IFsKICAgICAgICAgICAgUmVzZWFyY2hHYXAoZ2FwX3R5cGU9R2FwVHlwZS5NRVRIT0RfTElNSVRBVElPTiwgZGVzY3JpcHRpb249IlRlc3QiLCBldmlkZW5jZV9wYXBlcnM9W10pCiAgICAgICAgXQogICAgICAgIHF1ZXN0aW9ucyA9IGRldGVjdG9yLl9wYXJzZV9xdWVzdGlvbnMocmVzcG9uc2UsIGdhcHMpCiAgICAgICAgYXNzZXJ0IGxlbihxdWVzdGlvbnMpID09IDEKICAgICAgICBhc3NlcnQgcXVlc3Rpb25zWzBdLnF1ZXN0aW9uID09ICJWYWxpZCBxdWVzdGlvbj8iCgogICAgZGVmIHRlc3RfdXNlc19maXJzdF9nYXBfd2hlbl9ub19nYXBzX3Byb3ZpZGVkKHNlbGYpOgogICAgICAgICIiIldoZW4gZ2FwcyBsaXN0IGlzIGVtcHR5LCBkZWZhdWx0X2dhcCBpcyBOb25lIOKAlCBzaG91bGQgbm90IGNyYXNoLiIiIgogICAgICAgIGRldGVjdG9yID0gR2FwRGV0ZWN0b3IoKQogICAgICAgIHJlc3BvbnNlID0gIlF1ZXN0aW9uIHRleHQiCiAgICAgICAgcXVlc3Rpb25zID0gZGV0ZWN0b3IuX3BhcnNlX3F1ZXN0aW9ucyhyZXNwb25zZSwgW10pCiAgICAgICAgYXNzZXJ0IGxlbihxdWVzdGlvbnMpID09IDEKICAgICAgICBhc3NlcnQgcXVlc3Rpb25zWzBdLmdhcCBpcyBOb25lCgogICAgZGVmIHRlc3RfcGFydGlhbF9waXBlX2ZpZWxkc19kZWZhdWx0KHNlbGYpOgogICAgICAgIGRldGVjdG9yID0gR2FwRGV0ZWN0b3IoKQogICAgICAgICMgVHdvIHBpcGVzOiBwYXJ0c1swXT1xdWVzdGlvbiwgcGFydHNbMV09aHlwb3RoZXNpcywgcGFydHNbMl09bWV0aG9kb2xvZ3kKICAgICAgICByZXNwb25zZSA9ICJRdWVzdGlvbiB0ZXh0IHwgSHlwb3RoZXNpcyBmaWVsZCB8IE1ldGhvZG9sb2d5IGZpZWxkIgogICAgICAgIGdhcHMgPSBbCiAgICAgICAgICAgIFJlc2VhcmNoR2FwKGdhcF90eXBlPUdhcFR5cGUuTUVUSE9EX0xJTUlUQVRJT04sIGRlc2NyaXB0aW9uPSJUZXN0IiwgZXZpZGVuY2VfcGFwZXJzPVtdKQogICAgICAgIF0KICAgICAgICBxdWVzdGlvbnMgPSBkZXRlY3Rvci5fcGFyc2VfcXVlc3Rpb25zKHJlc3BvbnNlLCBnYXBzKQogICAgICAgIGFzc2VydCBsZW4ocXVlc3Rpb25zKSA9PSAxCiAgICAgICAgYXNzZXJ0IHF1ZXN0aW9uc1swXS5xdWVzdGlvbiA9PSAiUXVlc3Rpb24gdGV4dCIKICAgICAgICBhc3NlcnQgcXVlc3Rpb25zWzBdLmh5cG90aGVzaXMgPT0gIkh5cG90aGVzaXMgZmllbGQiCiAgICAgICAgYXNzZXJ0IHF1ZXN0aW9uc1swXS5tZXRob2RvbG9neV9zdWdnZXN0aW9uID09ICJNZXRob2RvbG9neSBmaWVsZCIKICAgICAgICAjIFdpdGggMyBwYXJ0cywgaW1wYWN0L2ZlYXNpYmlsaXR5L25vdmVsdHkgZ2V0IGRlZmF1bHRzCiAgICAgICAgYXNzZXJ0IHF1ZXN0aW9uc1swXS5leHBlY3RlZF9pbXBhY3QgPT0gIiIKICAgICAgICBhc3NlcnQgcXVlc3Rpb25zWzBdLmZlYXNpYmlsaXR5ID09IDAuNQogICAgICAgIGFzc2VydCBxdWVzdGlvbnNbMF0ubm92ZWx0eV9zY29yZSA9PSAwLjUK
+"""Tests for research gap detector."""
+
+from llm.gap_detector import (
+    GapDetector,
+    GapType,
+    GapSeverity,
+    ResearchGap,
+    ResearchQuestion,
+    GapAnalysisResult,
+)
+
+
+class TestGapDetector:
+    """Test GapDetector."""
+
+    def test_empty_result_when_no_db(self):
+        """Test empty result when no DB available."""
+        detector = GapDetector(db=None)
+        result = detector.analyze("nonexistent_topic_xyz_123", use_llm=False)
+
+        assert isinstance(result, GapAnalysisResult)
+        assert result.topic == "nonexistent_topic_xyz_123"
+
+    def test_gap_severity_enum(self):
+        """Test GapSeverity enum values."""
+        assert GapSeverity.HIGH.value == "high"
+        assert GapSeverity.MEDIUM.value == "medium"
+        assert GapSeverity.LOW.value == "low"
+
+    def test_gap_type_enum(self):
+        """Test GapType enum values."""
+        assert GapType.UNEXPLORED_APPLICATION.value == "unexplored_application"
+        assert GapType.METHOD_LIMITATION.value == "method_limitation"
+        assert GapType.CONTRADICTION.value == "contradiction"
+        assert GapType.EVALUATION_GAP.value == "evaluation_gap"
+
+    def test_research_gap_creation(self):
+        """Test ResearchGap dataclass."""
+        gap = ResearchGap(
+            gap_type=GapType.METHOD_LIMITATION,
+            description="Test gap description",
+            evidence_papers=["Paper A", "Paper B"],
+            severity=GapSeverity.HIGH,
+            confidence=0.8,
+        )
+
+        assert gap.gap_type == GapType.METHOD_LIMITATION
+        assert gap.description == "Test gap description"
+        assert len(gap.evidence_papers) == 2
+        assert gap.severity == GapSeverity.HIGH
+        assert gap.confidence == 0.8
+
+    def test_research_question_creation(self):
+        """Test ResearchQuestion dataclass."""
+        gap = ResearchGap(
+            gap_type=GapType.UNEXPLORED_APPLICATION,
+            description="Test",
+            evidence_papers=[],
+        )
+        q = ResearchQuestion(
+            question="How to apply X to Y?",
+            gap=gap,
+            hypothesis="X will work in Y scenario",
+            methodology_suggestion="Experiment with different Y configurations",
+            expected_impact="Enable new applications",
+            feasibility=0.7,
+            novelty_score=0.8,
+        )
+
+        assert q.question == "How to apply X to Y?"
+        assert q.gap == gap
+        assert q.hypothesis == "X will work in Y scenario"
+        assert q.feasibility == 0.7
+        assert q.novelty_score == 0.8
+
+    def test_detect_gaps_rules(self):
+        """Test rule-based gap detection."""
+        detector = GapDetector()
+        paper_text = """
+        This method has limitations in scalability.
+        However, other approaches show conflicting results.
+        Future work should explore potential applications.
+        """
+
+        gaps = detector._detect_gaps_rules(paper_text)
+
+        assert len(gaps) > 0
+        gap_types = {g.gap_type for g in gaps}
+        assert GapType.METHOD_LIMITATION in gap_types
+
+    def test_generate_questions_rules(self):
+        """Test rule-based question generation."""
+        detector = GapDetector()
+        gaps = [
+            ResearchGap(
+                gap_type=GapType.METHOD_LIMITATION,
+                description="Scalability issue",
+                evidence_papers=["Paper A"],
+            ),
+            ResearchGap(
+                gap_type=GapType.UNEXPLORED_APPLICATION,
+                description="New domain unexplored",
+                evidence_papers=["Paper B"],
+            ),
+        ]
+
+        questions = detector._generate_questions_rules(gaps)
+
+        assert len(questions) > 0
+        assert all(isinstance(q, ResearchQuestion) for q in questions)
+        assert all(q.gap in gaps for q in questions)
+
+    def test_calculate_coverage(self):
+        """Test coverage score calculation."""
+        detector = GapDetector()
+        papers = [
+            {"year": 2024, "abstract": "Good abstract"},
+            {"year": 2023, "abstract": "Another abstract"},
+            {"year": 2022, "abstract": ""},
+        ]
+
+        score = detector._calculate_coverage(papers)
+        assert 0 <= score <= 1
+
+    def test_calculate_coverage_empty(self):
+        """Test coverage with empty papers."""
+        detector = GapDetector()
+        score = detector._calculate_coverage([])
+        assert score == 0.0
+
+    def test_generate_summary(self):
+        """Test summary generation."""
+        detector = GapDetector()
+        result = GapAnalysisResult(
+            topic="Test Topic",
+            gaps=[
+                ResearchGap(
+                    gap_type=GapType.METHOD_LIMITATION,
+                    description="Gap 1",
+                    evidence_papers=[],
+                    severity=GapSeverity.HIGH,
+                ),
+                ResearchGap(
+                    gap_type=GapType.UNEXPLORED_APPLICATION,
+                    description="Gap 2",
+                    evidence_papers=[],
+                    severity=GapSeverity.MEDIUM,
+                ),
+            ],
+            questions=[
+                ResearchQuestion(question="Q1", gap=None),
+                ResearchQuestion(question="Q2", gap=None),
+            ],
+            coverage_score=0.5,
+            opportunities_score=2.0,
+            analyzed_papers_count=10,
+        )
+
+        summary = detector._generate_summary(result)
+
+        assert "高优先级" in summary or "high" in summary.lower()
+        assert "2 个" in summary or "2" in summary
+
+    def test_render_result(self):
+        """Test result rendering."""
+        detector = GapDetector()
+        result = GapAnalysisResult(
+            topic="Transformer",
+            gaps=[
+                ResearchGap(
+                    gap_type=GapType.METHOD_LIMITATION,
+                    description="Scalability limitation",
+                    evidence_papers=["Attention Is All You Need"],
+                    severity=GapSeverity.HIGH,
+                    confidence=0.9,
+                ),
+            ],
+            questions=[
+                ResearchQuestion(
+                    question="How to scale transformers?",
+                    gap=None,
+                    hypothesis="Larger models will show better performance",
+                ),
+            ],
+            coverage_score=0.7,
+            opportunities_score=3.0,
+            analyzed_papers_count=5,
+        )
+
+        output = detector.render_result(result)
+
+        assert "Transformer" in output
+        # Gap descriptions are printed via c.print() — not captured in return string
+        # Question text may be in console output; check what's actually returned
+        # The returned string contains the panel + summary text only
+
+    def test_render_json(self):
+        """Test JSON rendering."""
+        import json
+
+        detector = GapDetector()
+        result = GapAnalysisResult(
+            topic="RLHF",
+            gaps=[
+                ResearchGap(
+                    gap_type=GapType.EVALUATION_GAP,
+                    description="No standard benchmark",
+                    evidence_papers=["InstructGPT"],
+                    severity=GapSeverity.HIGH,
+                ),
+            ],
+            questions=[],
+            coverage_score=0.6,
+            opportunities_score=2.5,
+            analyzed_papers_count=8,
+        )
+
+        json_output = detector.render_json(result)
+        data = json.loads(json_output)
+
+        assert data["topic"] == "RLHF"
+        assert len(data["gaps"]) == 1
+        assert data["gaps"][0]["type"] == "evaluation_gap"
+        assert data["coverage_score"] == 0.6
+
+    def test_empty_result(self):
+        """Test empty result handling."""
+        detector = GapDetector()
+        result = detector._empty_result("Test Topic")
+
+        assert result.topic == "Test Topic"
+        assert len(result.gaps) == 0
+        assert len(result.questions) == 0
+
+
+# =============================================================================
+# _parse_gaps — pure string/regex parsing
+# =============================================================================
+class TestParseGaps:
+    """Test _parse_gaps — pure parsing, no I/O."""
+
+    def test_parses_well_formed_response(self):
+        detector = GapDetector()
+        response = """
+[method_limitation] Transformers have quadratic complexity | Attention Is All You Need | 0.9 | high
+[unexplored_application] RAG for code generation not explored | RAG Paper, CodeLlama Paper | 0.7 | medium
+"""
+        gaps = detector._parse_gaps(response, "Transformers")
+
+        assert len(gaps) == 2
+        assert gaps[0].gap_type == GapType.METHOD_LIMITATION
+        assert "quadratic" in gaps[0].description.lower()
+        assert gaps[0].severity == GapSeverity.HIGH
+        assert gaps[1].gap_type == GapType.UNEXPLORED_APPLICATION
+
+    def test_maps_all_gap_types(self):
+        detector = GapDetector()
+        response = """
+[method_limitation] Limitation | Paper1 | 0.8 | high
+[unexplored_application] Unexplored | Paper2 | 0.7 | medium
+[contradiction] Contradiction | Paper3 | 0.6 | high
+[evaluation_gap] No benchmark | Paper4 | 0.5 | medium
+"""
+        gaps = detector._parse_gaps(response, "Test")
+        types = {g.gap_type for g in gaps}
+        assert GapType.METHOD_LIMITATION in types
+        assert GapType.UNEXPLORED_APPLICATION in types
+        assert GapType.CONTRADICTION in types
+        assert GapType.EVALUATION_GAP in types
+
+    def test_unknown_type_defaults_to_method_limitation(self):
+        detector = GapDetector()
+        response = "[unknown_type] Some gap | Paper1 | 0.5 | medium"
+        gaps = detector._parse_gaps(response, "Test")
+        assert len(gaps) == 1
+        assert gaps[0].gap_type == GapType.METHOD_LIMITATION  # default fallback
+
+    def test_parses_evidence_papers(self):
+        detector = GapDetector()
+        response = "[method_limitation] Gap | Paper A, Paper B, Paper C | 0.8 | high"
+        gaps = detector._parse_gaps(response, "Test")
+        assert len(gaps) == 1
+        assert "Paper A" in gaps[0].evidence_papers
+        assert "Paper B" in gaps[0].evidence_papers
+        assert "Paper C" in gaps[0].evidence_papers
+
+    def test_empty_response_returns_empty_list(self):
+        detector = GapDetector()
+        gaps = detector._parse_gaps("", "Test")
+        assert gaps == []
+
+    def test_skips_comments_and_empty_lines(self):
+        detector = GapDetector()
+        response = """
+# This is a comment
+[method_limitation] Valid gap | Paper1 | 0.8 | high
+
+   # another comment
+[unexplored_application] Another | Paper2 | 0.7 | medium
+"""
+        gaps = detector._parse_gaps(response, "Test")
+        assert len(gaps) == 2
+
+
+# =============================================================================
+# _parse_questions — pure string parsing
+# =============================================================================
+class TestParseQuestions:
+    """Test _parse_questions — pure parsing, no I/O."""
+
+    def test_parses_well_formed_response(self):
+        detector = GapDetector()
+        response = """
+How to improve scalability? | Hypothesis text | Use alternative methods | High impact | 0.7 | 0.8
+What metrics to use? | Metric hypothesis | Design new metrics | Medium impact | 0.6 | 0.5
+"""
+        gaps = [
+            ResearchGap(
+                gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=["p1"]
+            )
+        ]
+        questions = detector._parse_questions(response, gaps)
+
+        assert len(questions) == 2
+        assert "scalability" in questions[0].question.lower()
+        assert "metrics" in questions[1].question.lower()
+        assert questions[0].hypothesis == "Hypothesis text"
+        assert questions[0].methodology_suggestion == "Use alternative methods"
+
+    def test_parses_minimal_pipe_delimited(self):
+        detector = GapDetector()
+        response = "Just a question?"
+        gaps = [
+            ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=[])
+        ]
+        questions = detector._parse_questions(response, gaps)
+        assert len(questions) == 1
+        assert questions[0].question == "Just a question?"
+        assert questions[0].feasibility == 0.5  # default
+        assert questions[0].novelty_score == 0.5  # default
+
+    def test_empty_response_returns_empty_list(self):
+        detector = GapDetector()
+        questions = detector._parse_questions("", [])
+        assert questions == []
+
+    def test_skips_comments_and_empty_lines(self):
+        detector = GapDetector()
+        response = """
+# This is a comment
+
+Valid question? | Hypothesis | Method | Impact | 0.7 | 0.8
+
+   # whitespace-only
+"""
+        gaps = [
+            ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=[])
+        ]
+        questions = detector._parse_questions(response, gaps)
+        assert len(questions) == 1
+        assert questions[0].question == "Valid question?"
+
+    def test_uses_first_gap_when_no_gaps_provided(self):
+        """When gaps list is empty, default_gap is None — should not crash."""
+        detector = GapDetector()
+        response = "Question text"
+        questions = detector._parse_questions(response, [])
+        assert len(questions) == 1
+        assert questions[0].gap is None
+
+    def test_partial_pipe_fields_default(self):
+        detector = GapDetector()
+        # Two pipes: parts[0]=question, parts[1]=hypothesis, parts[2]=methodology
+        response = "Question text | Hypothesis field | Methodology field"
+        gaps = [
+            ResearchGap(gap_type=GapType.METHOD_LIMITATION, description="Test", evidence_papers=[])
+        ]
+        questions = detector._parse_questions(response, gaps)
+        assert len(questions) == 1
+        assert questions[0].question == "Question text"
+        assert questions[0].hypothesis == "Hypothesis field"
+        assert questions[0].methodology_suggestion == "Methodology field"
+        # With 3 parts, impact/feasibility/novelty get defaults
+        assert questions[0].expected_impact == ""
+        assert questions[0].feasibility == 0.5
+        assert questions[0].novelty_score == 0.5

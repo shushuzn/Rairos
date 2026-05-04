@@ -1,1 +1,248 @@
-IiIiQnJpZWZpbmcgRGlzdHJpYnV0b3Ig4oCUIGF1ZGllbmNlLXNwZWNpZmljIHJlc2VhcmNoIGRpZ2VzdHMuCgpSZW5kZXJzIGEgcGFwZXIgYnJpZWZpbmcgaW4gZGlmZmVyZW50IGF1ZGllbmNlIGZvcm1hdHM6CiAgcGhkX2Fkdmlzb3IsIGluZHVzdHJ5X2VuZ2luZWVyLCBwb2xpY3lfbWFrZXIsIHJlc2VhcmNoZXIKQWxzbyBnZW5lcmF0ZXMgc2hhcmVhYmxlIHNob3J0IGxpbmtzIHZpYSBzaG9ydF9pZCDihpIgYnJpZWZpbmcgbWFwcGluZy4KIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgaGFzaGxpYgppbXBvcnQganNvbgppbXBvcnQgcmUKZnJvbSBkYXRldGltZSBpbXBvcnQgZGF0ZXRpbWUKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBBbnksIERpY3QsIExpc3QsIE9wdGlvbmFsCgpCUklFRklOR1NfRElSID0gUGF0aC5ob21lKCkgLyAiLmFpX3Jlc2VhcmNoX29zIiAvICJicmllZmluZ3MiCkxJTktTX0ZJTEUgPSBQYXRoLmhvbWUoKSAvICIuYWlfcmVzZWFyY2hfb3MiIC8gImJyaWVmaW5nX2xpbmtzLmpzb24iClNIT1JUQ09ERV9DSEFSUyA9ICJhYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ekFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaMDEyMzQ1Njc4OSIKCgpkZWYgX2xvYWRfbGlua3MoKSAtPiBEaWN0W3N0ciwgQW55XToKICAgIGlmIG5vdCBMSU5LU19GSUxFLmV4aXN0cygpOgogICAgICAgIHJldHVybiB7fQogICAgcmV0dXJuIGpzb24ubG9hZHMoTElOS1NfRklMRS5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikpCgoKZGVmIF9zYXZlX2xpbmtzKGxpbmtzOiBEaWN0W3N0ciwgQW55XSkgLT4gTm9uZToKICAgIExJTktTX0ZJTEUucGFyZW50Lm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgIExJTktTX0ZJTEUud3JpdGVfdGV4dChqc29uLmR1bXBzKGxpbmtzLCBpbmRlbnQ9MiwgZW5zdXJlX2FzY2lpPUZhbHNlKSwgZW5jb2Rpbmc9InV0Zi04IikKCgpkZWYgbWFrZV9zaG9ydF9pZCh0aXRsZTogc3RyLCBhcnhpdl9pZDogc3RyKSAtPiBzdHI6CiAgICByYXcgPSBmInthcnhpdl9pZH06e3RpdGxlWzozMF19IgogICAgaCA9IGhhc2hsaWIuc2hhMjU2KHJhdy5lbmNvZGUoKSkuZGlnZXN0KCkKICAgIGNvZGUgPSAiIi5qb2luKFNIT1JUQ09ERV9DSEFSU1toW2ldICUgbGVuKFNIT1JUQ09ERV9DSEFSUyldIGZvciBpIGluIHJhbmdlKDYpKQogICAgcmV0dXJuIGNvZGUKCgpkZWYgY3JlYXRlX3NoYXJlX2xpbmsoYXJ4aXZfaWQ6IHN0ciwgdGl0bGU6IHN0ciwgYXVkaWVuY2U6IHN0ciA9ICJyZXNlYXJjaGVyIikgLT4gc3RyOgogICAgbGlua3MgPSBfbG9hZF9saW5rcygpCiAgICBzaG9ydF9pZCA9IG1ha2Vfc2hvcnRfaWQodGl0bGUsIGFyeGl2X2lkKQogICAgbGlua3Nbc2hvcnRfaWRdID0gewogICAgICAgICJhcnhpdl9pZCI6IGFyeGl2X2lkLAogICAgICAgICJ0aXRsZSI6IHRpdGxlLAogICAgICAgICJhdWRpZW5jZSI6IGF1ZGllbmNlLAogICAgICAgICJjcmVhdGVkX2F0IjogZGF0ZXRpbWUubm93KCkuaXNvZm9ybWF0KCksCiAgICAgICAgImNsaWNrcyI6IDAsCiAgICB9CiAgICBfc2F2ZV9saW5rcyhsaW5rcykKICAgIHJldHVybiBzaG9ydF9pZAoKCmRlZiBnZXRfbGF0ZXN0X2JyaWVmaW5nX21hcmtkb3duKGFyeGl2X2lkOiBzdHIpIC0+IE9wdGlvbmFsW3N0cl06CiAgICBpZiBub3QgQlJJRUZJTkdTX0RJUi5leGlzdHMoKToKICAgICAgICByZXR1cm4gTm9uZQogICAgY2FuZGlkYXRlcyA9IGxpc3QoQlJJRUZJTkdTX0RJUi5nbG9iKGYiKnthcnhpdl9pZH0qYnJpZWZpbmcqIikpCiAgICBpZiBub3QgY2FuZGlkYXRlczoKICAgICAgICByZXR1cm4gTm9uZQogICAgbGF0ZXN0ID0gbWF4KGNhbmRpZGF0ZXMsIGtleT1sYW1iZGEgcDogcC5zdGF0KCkuc3RfbXRpbWUpCiAgICByZXR1cm4gbGF0ZXN0LnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQoKCkFVRElFTkNFX1BST01QVFMgPSB7CiAgICAicGhkX2Fkdmlzb3IiOiAiWW91IGFyZSByZXZpZXdpbmcgdGhpcyBmb3IgYSBQaEQgc3R1ZGVudC4gRm9jdXMgb246IG1ldGhvZG9sb2d5IHJpZ29yLCBvcGVuIHJlc2VhcmNoIHF1ZXN0aW9ucywgaG93IHRoaXMgcmVsYXRlcyB0byB0aGUgc3R1ZGVudCdzIGV4aXN0aW5nIHdvcmssIGFuZCB3aGF0IGV4cGVyaW1lbnRzIHRvIHJ1biBuZXh0LiIsCiAgICAiaW5kdXN0cnlfZW5naW5lZXIiOiAiWW91IGFyZSBhbiBNTCBlbmdpbmVlciBhdCBhIHRlY2ggY29tcGFueS4gRm9jdXMgb246IGhvdyB0byBhY3R1YWxseSBpbXBsZW1lbnQgb3IgdXNlIHRoaXMsIGNvbXB1dGUvYmVuY2htYXJrIHJlcXVpcmVtZW50cywgY29kZSBhdmFpbGFiaWxpdHksIGFuZCBwcmFjdGljYWwgZGVwbG95bWVudCBjb25zaWRlcmF0aW9ucy4iLAogICAgInBvbGljeV9tYWtlciI6ICJZb3UgYXJlIGEgcG9saWN5IGFkdmlzb3IuIEZvY3VzIG9uOiBzb2NpZXRhbCBpbXBhY3QsIHJlZ3VsYXRvcnkgaW1wbGljYXRpb25zLCB0aW1lbGluZSBmb3IgcmVhbC13b3JsZCBkZXBsb3ltZW50LCBhZmZlY3RlZCBzdGFrZWhvbGRlcnMsIGFuZCByaXNrIGZhY3RvcnMuIiwKICAgICJyZXNlYXJjaGVyIjogIllvdSBhcmUgYSByZXNlYXJjaCBwZWVyLiBQcm92aWRlIGEgY29uY2lzZSBjcml0aWNhbCBzdW1tYXJ5OiBrZXkgY29udHJpYnV0aW9uLCBsaW1pdGF0aW9ucywgcmVsYXRpb25zaGlwIHRvIGV4aXN0aW5nIHdvcmssIGFuZCBjb25jcmV0ZSBuZXh0IHN0ZXBzLiIsCn0KCgpkZWYgX3BhcnNlX21hcmtkb3duX3NlY3Rpb25zKG1kOiBzdHIpIC0+IERpY3Rbc3RyLCBzdHJdOgogICAgc2VjdGlvbnM6IERpY3Rbc3RyLCBzdHJdID0ge30KICAgIGN1cnJlbnQgPSAiaGVhZGVyIgogICAgYm9keV9saW5lczogTGlzdFtzdHJdID0gW10KCiAgICBmb3IgbGluZSBpbiBtZC5zcGxpdGxpbmVzKCk6CiAgICAgICAgbGluZSA9IGxpbmUuc3RyaXAoKQogICAgICAgIGlmIGxpbmUuc3RhcnRzd2l0aCgiIyMgIik6CiAgICAgICAgICAgIGlmIGJvZHlfbGluZXM6CiAgICAgICAgICAgICAgICBzZWN0aW9uc1tjdXJyZW50XSA9ICJcbiIuam9pbihib2R5X2xpbmVzKS5zdHJpcCgpCiAgICAgICAgICAgICAgICBib2R5X2xpbmVzID0gW10KICAgICAgICAgICAgY3VycmVudCA9IGxpbmVbMzpdLnN0cmlwKCkubG93ZXIoKS5yZXBsYWNlKCIgIiwgIl8iKQogICAgICAgIGVsaWYgbGluZS5zdGFydHN3aXRoKCIjICIpOgogICAgICAgICAgICBzZWN0aW9uc1siX3RpdGxlIl0gPSBsaW5lWzI6XS5zdHJpcCgpCiAgICAgICAgZWxzZToKICAgICAgICAgICAgYm9keV9saW5lcy5hcHBlbmQobGluZSkKCiAgICBpZiBib2R5X2xpbmVzIGFuZCBjdXJyZW50ICE9ICJoZWFkZXIiOgogICAgICAgIHNlY3Rpb25zW2N1cnJlbnRdID0gIlxuIi5qb2luKGJvZHlfbGluZXMpLnN0cmlwKCkKICAgIGVsaWYgY3VycmVudCA9PSAiaGVhZGVyIjoKICAgICAgICBzZWN0aW9uc1siX2JvZHkiXSA9ICJcbiIuam9pbihib2R5X2xpbmVzKS5zdHJpcCgpCgogICAgcmV0dXJuIHNlY3Rpb25zCgoKZGVmIF9lc2NhcGVfaHRtbCh0ZXh0OiBzdHIpIC0+IHN0cjoKICAgIHJldHVybiAoCiAgICAgICAgdGV4dC5yZXBsYWNlKCImIiwgIiZhbXA7IikKICAgICAgICAucmVwbGFjZSgiPCIsICImbHQ7IikKICAgICAgICAucmVwbGFjZSgiPiIsICImZ3Q7IikKICAgICAgICAucmVwbGFjZSgnIicsICImcXVvdDsiKQogICAgICAgIC5yZXBsYWNlKCInIiwgIiYjMzk7IikKICAgICkKCgpkZWYgX3JlbmRlcl9waGRfYWR2aXNvcihzZWN0aW9uczogRGljdFtzdHIsIHN0cl0sIHJhdzogc3RyKSAtPiBzdHI6CiAgICBkZWYgZXh0cmFjdCh0KToKICAgICAgICByZXR1cm4gc2VjdGlvbnMuZ2V0KHQsICIiKVs6MzAwXSBvciByYXdbMjAwOjUwMF0KCiAgICByZXR1cm4gKAogICAgICAgIF9zZWN0aW9uX2h0bWwoCiAgICAgICAgICAgICLwn5OaIFBhcGVyIFN1bW1hcnkiLCBzZWN0aW9ucy5nZXQoIl9ib2R5Iiwgc2VjdGlvbnMuZ2V0KCJzdW1tYXJ5IiwgcmF3WzozMDBdKSlbOjQwMF0KICAgICAgICApCiAgICAgICAgKyBfc2VjdGlvbl9odG1sKCLwn5SsIE1ldGhvZG9sb2d5IEFzc2Vzc21lbnQiLCBleHRyYWN0KCJtZXRob2RvbG9neSIpKQogICAgICAgICsgX3NlY3Rpb25faHRtbCgi4p2TIE9wZW4gUXVlc3Rpb25zIGZvciBTdHVkZW50IiwgZXh0cmFjdCgicmVzZWFyY2hfZ2FwcyIpKQogICAgKQoKCmRlZiBfcmVuZGVyX2luZHVzdHJ5X2VuZ2luZWVyKHNlY3Rpb25zOiBEaWN0W3N0ciwgc3RyXSwgcmF3OiBzdHIpIC0+IHN0cjoKICAgIGRlZiBleHRyYWN0KHQpOgogICAgICAgIHJldHVybiBzZWN0aW9ucy5nZXQodCwgIiIpWzozMDBdIG9yIHJhd1syMDA6NTAwXQoKICAgIHJldHVybiAoCiAgICAgICAgX3NlY3Rpb25faHRtbCgKICAgICAgICAgICAgIuKaoSBXaGF0IEl0IERvZXMiLCBzZWN0aW9ucy5nZXQoIl9ib2R5Iiwgc2VjdGlvbnMuZ2V0KCJzdW1tYXJ5IiwgcmF3WzozMDBdKSlbOjIwMF0KICAgICAgICApCiAgICAgICAgKyBfc2VjdGlvbl9odG1sKCLwn5ug77iPIEltcGxlbWVudGF0aW9uIFNpZ25hbHMiLCBleHRyYWN0KCJtZXRob2RvbG9neSIpKQogICAgICAgICsgX3NlY3Rpb25faHRtbCgi8J+TiiBCZW5jaG1hcmsgLyBDb21wdXRlIiwgZXh0cmFjdCgiZXhwZXJpbWVudHMiKSkKICAgICkKCgpkZWYgX3JlbmRlcl9wb2xpY3lfbWFrZXIoc2VjdGlvbnM6IERpY3Rbc3RyLCBzdHJdLCByYXc6IHN0cikgLT4gc3RyOgogICAgZGVmIGV4dHJhY3QodCk6CiAgICAgICAgcmV0dXJuIHNlY3Rpb25zLmdldCh0LCAiIilbOjMwMF0gb3IgcmF3WzMwMDo2MDBdCgogICAgcmV0dXJuICgKICAgICAgICBfc2VjdGlvbl9odG1sKAogICAgICAgICAgICAi8J+Pm++4jyBXaGF0IFRoaXMgTWVhbnMiLCBzZWN0aW9ucy5nZXQoIl9ib2R5Iiwgc2VjdGlvbnMuZ2V0KCJzdW1tYXJ5IiwgcmF3WzozMDBdKSlbOjMwMF0KICAgICAgICApCiAgICAgICAgKyBfc2VjdGlvbl9odG1sKCLimqDvuI8gUmlza3MgJiBDb25jZXJucyIsIGV4dHJhY3QoImxpbWl0YXRpb25zIikpCiAgICAgICAgKyBfc2VjdGlvbl9odG1sKCLwn5OFIERlcGxveW1lbnQgVGltZWxpbmUiLCByYXdbMjAwOjUwMF0pCiAgICApCgoKZGVmIF9yZW5kZXJfcmVzZWFyY2hlcihzZWN0aW9uczogRGljdFtzdHIsIHN0cl0sIHJhdzogc3RyKSAtPiBzdHI6CiAgICB2ID0gc2VjdGlvbnMuZ2V0KCJ2ZXJkaWN0IiwgIm5ldXRyYWwiKS5sb3dlcigpCiAgICBiYWRnZV9tYXAgPSB7CiAgICAgICAgInZhbGlkYXRlcyI6ICgi4pyFIFZhbGlkYXRlcyIsICJ2ZXJkaWN0LXZhbGlkYXRlcyIpLAogICAgICAgICJjb250cmFkaWN0cyI6ICgi4p2MIENvbnRyYWRpY3RzIiwgInZlcmRpY3QtY29udHJhZGljdHMiKSwKICAgIH0KICAgIGJhZGdlX3RleHQsIGJhZGdlX2NscyA9IGJhZGdlX21hcC5nZXQodiwgKCLinpYgTmV1dHJhbCIsICJ2ZXJkaWN0LW5ldXRyYWwiKSkKCiAgICBsaW5lcyA9IFtmIjxzcGFuIGNsYXNzPSd2ZXJkaWN0LWJhZGdlIHtiYWRnZV9jbHN9Jz57YmFkZ2VfdGV4dH08L3NwYW4+Il0KICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICBmIjxwIHN0eWxlPSdtYXJnaW4tdG9wOjhweCc+e3NlY3Rpb25zLmdldCgnX2JvZHknLCBzZWN0aW9ucy5nZXQoJ3N1bW1hcnknLCByYXdbOjQwMF0pKVs6NDAwXX08L3A+IgogICAgKQoKICAgIGdhcHMgPSBzZWN0aW9ucy5nZXQoInJlc2VhcmNoX2dhcHMiLCBzZWN0aW9ucy5nZXQoImdhcHMiLCAiIikpCiAgICBpZiBnYXBzOgogICAgICAgIGxpbmVzLmFwcGVuZChfc2VjdGlvbl9odG1sKCLwn46vIFJlc2VhcmNoIEdhcHMiLCBnYXBzWzozMDBdKSkKCiAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQoKCmRlZiBfc2VjdGlvbl9odG1sKGhlYWRpbmc6IHN0ciwgY29udGVudDogc3RyKSAtPiBzdHI6CiAgICByZXR1cm4gZiI8ZGl2IGNsYXNzPSdkaWdlc3Qtc2VjdGlvbic+PGg0PntoZWFkaW5nfTwvaDQ+PHA+e2NvbnRlbnRbOjMwMF0gaWYgY29udGVudCBlbHNlICcnfTwvcD48L2Rpdj4iCgoKZGVmIHJlbmRlcl9kaXN0cmlidXRlZF9icmllZmluZyhhcnhpdl9pZDogc3RyLCB0aXRsZTogc3RyLCBtYXJrZG93bjogc3RyLCBhdWRpZW5jZTogc3RyKSAtPiBzdHI6CiAgICBhdWRpZW5jZV9sYWJlbHMgPSB7CiAgICAgICAgInBoZF9hZHZpc29yIjogIvCfjpMgUGhEIEFkdmlzb3IgRGlnZXN0IiwKICAgICAgICAiaW5kdXN0cnlfZW5naW5lZXIiOiAi4pqZ77iPIEluZHVzdHJ5IEVuZ2luZWVyIERpZ2VzdCIsCiAgICAgICAgInBvbGljeV9tYWtlciI6ICLwn4+b77iPIFBvbGljeSBNYWtlciBEaWdlc3QiLAogICAgICAgICJyZXNlYXJjaGVyIjogIvCflKwgUmVzZWFyY2hlciBEaWdlc3QiLAogICAgfQogICAgbGFiZWwgPSBhdWRpZW5jZV9sYWJlbHMuZ2V0KGF1ZGllbmNlLCBhdWRpZW5jZSkKICAgIHNob3J0X2lkID0gY3JlYXRlX3NoYXJlX2xpbmsoYXJ4aXZfaWQsIHRpdGxlLCBhdWRpZW5jZSkKICAgIHNlY3Rpb25zID0gX3BhcnNlX21hcmtkb3duX3NlY3Rpb25zKG1hcmtkb3duKQoKICAgIGlmIGF1ZGllbmNlID09ICJwaGRfYWR2aXNvciI6CiAgICAgICAgYm9keV9jb250ZW50ID0gX3JlbmRlcl9waGRfYWR2aXNvcihzZWN0aW9ucywgbWFya2Rvd24pCiAgICBlbGlmIGF1ZGllbmNlID09ICJpbmR1c3RyeV9lbmdpbmVlciI6CiAgICAgICAgYm9keV9jb250ZW50ID0gX3JlbmRlcl9pbmR1c3RyeV9lbmdpbmVlcihzZWN0aW9ucywgbWFya2Rvd24pCiAgICBlbGlmIGF1ZGllbmNlID09ICJwb2xpY3lfbWFrZXIiOgogICAgICAgIGJvZHlfY29udGVudCA9IF9yZW5kZXJfcG9saWN5X21ha2VyKHNlY3Rpb25zLCBtYXJrZG93bikKICAgIGVsc2U6CiAgICAgICAgYm9keV9jb250ZW50ID0gX3JlbmRlcl9yZXNlYXJjaGVyKHNlY3Rpb25zLCBtYXJrZG93bikKCiAgICBsaW5lcyA9IFsnPGRpdiBjbGFzcz0iYnJpZWZpbmctZGlzdCI+J10KICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiPGRpdiBzdHlsZT0nZGlzcGxheTpmbGV4O2p1c3RpZnktY29udGVudDpzcGFjZS1iZXR3ZWVuO2FsaWduLWl0ZW1zOmNlbnRlcjttYXJnaW4tYm90dG9tOjE2cHgnPiIKICAgICkKICAgIGxpbmVzLmFwcGVuZChmIjxoMyBzdHlsZT0nbWFyZ2luOjAnPntsYWJlbH08L2gzPiIpCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgZiI8c3BhbiBzdHlsZT0nZm9udC1zaXplOjExcHg7Y29sb3I6I0E4OUU4QztiYWNrZ3JvdW5kOiNmNWYwZTg7cGFkZGluZzozcHggMTBweDtib3JkZXItcmFkaXVzOjEycHgnPiIKICAgICAgICBmIlNoYXJlOiA8Y29kZSBzdHlsZT0nZm9udC1zaXplOjExcHgnPnJhaXJvcy5hcHAvYi97c2hvcnRfaWR9PC9jb2RlPjwvc3Bhbj4iCiAgICApCiAgICBsaW5lcy5hcHBlbmQoIjwvZGl2PiIpCiAgICBsaW5lcy5hcHBlbmQoZiI8ZGl2IGNsYXNzPSdkaWdlc3QtYm9keSc+e2JvZHlfY29udGVudH08L2Rpdj4iKQogICAgbGluZXMuYXBwZW5kKCI8ZGV0YWlscyBzdHlsZT0nbWFyZ2luLXRvcDoyMHB4Jz4iKQogICAgbGluZXMuYXBwZW5kKAogICAgICAgICI8c3VtbWFyeSBzdHlsZT0nY3Vyc29yOnBvaW50ZXI7Zm9udC1zaXplOjEycHg7Y29sb3I6I0E4OUU4Qyc+VmlldyBSYXcgQnJpZWZpbmc8L3N1bW1hcnk+IgogICAgKQogICAgbGluZXMuYXBwZW5kKAogICAgICAgIGYiPHByZSBzdHlsZT0nZm9udC1zaXplOjExcHg7YmFja2dyb3VuZDojZjhmNGVmO3BhZGRpbmc6MTJweDtib3JkZXItcmFkaXVzOjRweDtvdmVyZmxvdzphdXRvJz4iCiAgICAgICAgZiJ7X2VzY2FwZV9odG1sKG1hcmtkb3duWzoyMDAwXSl9PC9wcmU+IgogICAgKQogICAgbGluZXMuYXBwZW5kKCI8L2RldGFpbHM+IikKICAgIGxpbmVzLmFwcGVuZCgiPHN0eWxlPiIpCiAgICBsaW5lcy5hcHBlbmQoIi5icmllZmluZy1kaXN0IHsgZm9udC1mYW1pbHk6IEdlb3JnaWEsIHNlcmlmOyBtYXgtd2lkdGg6IDgwMHB4OyB9IikKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiLmRpZ2VzdC1zZWN0aW9uIHsgbWFyZ2luLWJvdHRvbTogMTZweDsgcGFkZGluZy1ib3R0b206IDE2cHg7IGJvcmRlci1ib3R0b206IDFweCBzb2xpZCAjZThlNGRjOyB9IgogICAgKQogICAgbGluZXMuYXBwZW5kKAogICAgICAgICIuZGlnZXN0LXNlY3Rpb24gaDQgeyBmb250LXNpemU6IDEzcHg7IGZvbnQtd2VpZ2h0OiA3MDA7IGNvbG9yOiAjMmE0YTZhOyBtYXJnaW4tYm90dG9tOiA2cHg7IH0iCiAgICApCiAgICBsaW5lcy5hcHBlbmQoIi5kaWdlc3Qtc2VjdGlvbiBwIHsgZm9udC1zaXplOiAxM3B4OyBjb2xvcjogIzQ0NDsgbGluZS1oZWlnaHQ6IDEuNjsgbWFyZ2luOiAwOyB9IikKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiLnZlcmRpY3QtYmFkZ2UgeyBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IHBhZGRpbmc6IDJweCAxMHB4OyBib3JkZXItcmFkaXVzOiAxMnB4OyBmb250LXNpemU6IDExcHg7IGZvbnQtd2VpZ2h0OiA2MDA7IH0iCiAgICApCiAgICBsaW5lcy5hcHBlbmQoIi52ZXJkaWN0LXZhbGlkYXRlcyB7IGJhY2tncm91bmQ6IHJnYmEoMTA3LDE5MSwxMzgsMC4xNSk7IGNvbG9yOiAjNGE4YTVhOyB9IikKICAgIGxpbmVzLmFwcGVuZCgiLnZlcmRpY3QtY29udHJhZGljdHMgeyBiYWNrZ3JvdW5kOiByZ2JhKDE5NiwxMTIsMTA2LDAuMTUpOyBjb2xvcjogI0M0NzA2QTsgfSIpCiAgICBsaW5lcy5hcHBlbmQoIi52ZXJkaWN0LW5ldXRyYWwgeyBiYWNrZ3JvdW5kOiByZ2JhKDE2OCwxNTgsMTQwLDAuMTUpOyBjb2xvcjogIzdhNzU3MDsgfSIpCiAgICBsaW5lcy5hcHBlbmQoIjwvc3R5bGU+IikKICAgIGxpbmVzLmFwcGVuZCgiPC9kaXY+IikKICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCgoKZGVmIHJlbmRlcl9kaXN0cmlidXRvcl9wYW5lbChhcnhpdl9pZDogc3RyLCB0aXRsZTogc3RyKSAtPiBzdHI6CiAgICBjcmVhdGVfc2hhcmVfbGluayhhcnhpdl9pZCwgdGl0bGUsICJyZXNlYXJjaGVyIikKCiAgICBsaW5lcyA9IFsnPGRpdiBjbGFzcz0iZGlzdC1wYW5lbCI+J10KICAgIGxpbmVzLmFwcGVuZCgiPGgzPvCfk6wgQnJpZWZpbmcgRGlzdHJpYnV0b3I8L2gzPiIpCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIjxwIHN0eWxlPSdmb250LXNpemU6MTNweDtjb2xvcjojQTg5RThDO21hcmdpbi1ib3R0b206MTRweCc+IgogICAgICAgICJSZW5kZXIgdGhpcyBicmllZmluZyBmb3IgZGlmZmVyZW50IGF1ZGllbmNlcywgb3Igc2hhcmUgYSBwdWJsaWMgbGluay48L3A+IgogICAgKQoKICAgIGF1ZGllbmNlcyA9IFsKICAgICAgICAoInJlc2VhcmNoZXIiLCAi8J+UrCBSZXNlYXJjaGVyIiwgIkNvbmNpc2UgdGVjaG5pY2FsIHN1bW1hcnkgd2l0aCBnYXAgYW5hbHlzaXMiKSwKICAgICAgICAoInBoZF9hZHZpc29yIiwgIvCfjpMgUGhEIEFkdmlzb3IiLCAiTWV0aG9kb2xvZ3kgY3JpdGlxdWUgYW5kIG9wZW4gcXVlc3Rpb25zIiksCiAgICAgICAgKCJpbmR1c3RyeV9lbmdpbmVlciIsICLimpnvuI8gSW5kdXN0cnkgRW5naW5lZXIiLCAiUHJhY3RpY2FsIGFwcGxpY2FiaWxpdHkgYW5kIGJlbmNobWFya3MiKSwKICAgICAgICAoInBvbGljeV9tYWtlciIsICLwn4+b77iPIFBvbGljeSBNYWtlciIsICJTb2NpZXRhbCBpbXBhY3QgYW5kIHJlZ3VsYXRvcnkgaW1wbGljYXRpb25zIiksCiAgICBdCgogICAgZm9yIGF1ZF9pZCwgYXVkX25hbWUsIGF1ZF9kZXNjIGluIGF1ZGllbmNlczoKICAgICAgICBzID0gY3JlYXRlX3NoYXJlX2xpbmsoYXJ4aXZfaWQsIHRpdGxlLCBhdWRfaWQpCiAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICAiPGRpdiBzdHlsZT0nbWFyZ2luLWJvdHRvbToxNHB4O3BhZGRpbmc6MTJweDtiYWNrZ3JvdW5kOiNmOGY0ZWY7Ym9yZGVyLXJhZGl1czo2cHgnPiIKICAgICAgICApCiAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICBmIjxkaXYgc3R5bGU9J2ZvbnQtd2VpZ2h0OjcwMDtmb250LXNpemU6MTNweDttYXJnaW4tYm90dG9tOjJweCc+e2F1ZF9uYW1lfTwvZGl2PiIKICAgICAgICApCiAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICBmIjxkaXYgc3R5bGU9J2ZvbnQtc2l6ZToxMnB4O2NvbG9yOiNBODlFOEM7bWFyZ2luLWJvdHRvbTo2cHgnPnthdWRfZGVzY308L2Rpdj4iCiAgICAgICAgKQogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgZiI8YnV0dG9uIGlkPSdidG4te2F1ZF9pZH0nIHN0eWxlPSdiYWNrZ3JvdW5kOiM2QjhGQjU7Y29sb3I6d2hpdGU7Ym9yZGVyOm5vbmU7Ym9yZGVyLXJhZGl1czo0cHg7IgogICAgICAgICAgICBmInBhZGRpbmc6NXB4IDEycHg7Y3Vyc29yOnBvaW50ZXI7Zm9udC1zaXplOjEycHgnPlByZXZpZXc8L2J1dHRvbj4gIgogICAgICAgICkKICAgICAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgICAgIGYiPGJ1dHRvbiBvbmNsaWNrPVwiY29weVNoYXJlTGluaygne3N9JylcIiAiCiAgICAgICAgICAgIGYic3R5bGU9J2JhY2tncm91bmQ6dHJhbnNwYXJlbnQ7Y29sb3I6IzZCOEZCNTtib3JkZXI6MXB4IHNvbGlkICM2QjhGQjU7IgogICAgICAgICAgICBmImJvcmRlci1yYWRpdXM6NHB4O3BhZGRpbmc6NXB4IDEycHg7Y3Vyc29yOnBvaW50ZXI7Zm9udC1zaXplOjEycHg7bWFyZ2luLWxlZnQ6NnB4Jz4iCiAgICAgICAgICAgIGYiQ29weSBMaW5rPC9idXR0b24+IgogICAgICAgICkKICAgICAgICBsaW5lcy5hcHBlbmQoIjwvZGl2PiIpCgogICAgbGluZXMuYXBwZW5kKCI8ZGl2IGlkPSdhdWRpZW5jZS1wcmV2aWV3JyBzdHlsZT0nbWFyZ2luLXRvcDoxNnB4Jz48L2Rpdj4iKQoKICAgIGxpbmVzLmFwcGVuZChmIiIiCjxzY3JpcHQ+CmRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoJ2J1dHRvbltpZF49ImJ0bi0iXScpLmZvckVhY2goZnVuY3Rpb24oYnRuKSB7ewogICAgdmFyIGF1ZCA9IGJ0bi5pZC5yZXBsYWNlKCdidG4tJywgJycpOwogICAgYnRuLmFkZEV2ZW50TGlzdGVuZXIoJ2NsaWNrJywgZnVuY3Rpb24oKSB7ewogICAgICAgIHZhciBwcmV2aWV3ID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2F1ZGllbmNlLXByZXZpZXcnKTsKICAgICAgICBwcmV2aWV3LmlubmVyVGV4dCA9ICdMb2FkaW5nLi4uJzsKICAgICAgICBmZXRjaCgnL2JyaWVmaW5nL2Rpc3RyaWJ1dGUve2FyeGl2X2lkfT9hdWRpZW5jZT0nICsgYXVkKQogICAgICAgICAgLnRoZW4oZnVuY3Rpb24ocikge3sgcmV0dXJuIHIudGV4dCgpOyB9fSkKICAgICAgICAgIC50aGVuKGZ1bmN0aW9uKGh0bWwpIHt7CiAgICAgICAgICAgICAgdmFyIHRtcCA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpOwogICAgICAgICAgICAgIHRtcC5pbm5lckhUTUwgPSBodG1sOwogICAgICAgICAgICAgIHByZXZpZXcuaW5uZXJIVE1MID0gdG1wLnF1ZXJ5U2VsZWN0b3IoJy5icmllZmluZy1kaXN0JykgPyB0bXAucXVlcnlTZWxlY3RvcignLmJyaWVmaW5nLWRpc3QnKS5pbm5lckhUTUwgOiBodG1sOwogICAgICAgICAgfX0pOwogICAgfX0pOwp9fSk7CmZ1bmN0aW9uIGNvcHlTaGFyZUxpbmsoc2hvcnRJZCkge3sKICAgIG5hdmlnYXRvci5jbGlwYm9hcmQud3JpdGVUZXh0KHdpbmRvdy5sb2NhdGlvbi5vcmlnaW4gKyAnL2IvJyArIHNob3J0SWQpCiAgICAgIC50aGVuKGZ1bmN0aW9uKCkge3sgYWxlcnQoJ0xpbmsgY29waWVkIScpOyB9fSk7Cn19Cjwvc2NyaXB0PiIiIikKCiAgICBsaW5lcy5hcHBlbmQoIjxzdHlsZT4uZGlzdC1wYW5lbCB7IGZvbnQtZmFtaWx5OiBHZW9yZ2lhLCBzZXJpZjsgfTwvc3R5bGU+IikKICAgIGxpbmVzLmFwcGVuZCgiPC9kaXY+IikKICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCg==
+"""Briefing Distributor — audience-specific research digests.
+
+Renders a paper briefing in different audience formats:
+  phd_advisor, industry_engineer, policy_maker, researcher
+Also generates shareable short links via short_id → briefing mapping.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import re
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+BRIEFINGS_DIR = Path.home() / ".ai_research_os" / "briefings"
+LINKS_FILE = Path.home() / ".ai_research_os" / "briefing_links.json"
+SHORTCODE_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+
+def _load_links() -> Dict[str, Any]:
+    if not LINKS_FILE.exists():
+        return {}
+    return json.loads(LINKS_FILE.read_text(encoding="utf-8"))
+
+
+def _save_links(links: Dict[str, Any]) -> None:
+    LINKS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    LINKS_FILE.write_text(json.dumps(links, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def make_short_id(title: str, arxiv_id: str) -> str:
+    raw = f"{arxiv_id}:{title[:30]}"
+    h = hashlib.sha256(raw.encode()).digest()
+    code = "".join(SHORTCODE_CHARS[h[i] % len(SHORTCODE_CHARS)] for i in range(6))
+    return code
+
+
+def create_share_link(arxiv_id: str, title: str, audience: str = "researcher") -> str:
+    links = _load_links()
+    short_id = make_short_id(title, arxiv_id)
+    links[short_id] = {
+        "arxiv_id": arxiv_id,
+        "title": title,
+        "audience": audience,
+        "created_at": datetime.now().isoformat(),
+        "clicks": 0,
+    }
+    _save_links(links)
+    return short_id
+
+
+def get_latest_briefing_markdown(arxiv_id: str) -> Optional[str]:
+    if not BRIEFINGS_DIR.exists():
+        return None
+    candidates = list(BRIEFINGS_DIR.glob(f"*{arxiv_id}*briefing*"))
+    if not candidates:
+        return None
+    latest = max(candidates, key=lambda p: p.stat().st_mtime)
+    return latest.read_text(encoding="utf-8")
+
+
+AUDIENCE_PROMPTS = {
+    "phd_advisor": "You are reviewing this for a PhD student. Focus on: methodology rigor, open research questions, how this relates to the student's existing work, and what experiments to run next.",
+    "industry_engineer": "You are an ML engineer at a tech company. Focus on: how to actually implement or use this, compute/benchmark requirements, code availability, and practical deployment considerations.",
+    "policy_maker": "You are a policy advisor. Focus on: societal impact, regulatory implications, timeline for real-world deployment, affected stakeholders, and risk factors.",
+    "researcher": "You are a research peer. Provide a concise critical summary: key contribution, limitations, relationship to existing work, and concrete next steps.",
+}
+
+
+def _parse_markdown_sections(md: str) -> Dict[str, str]:
+    sections: Dict[str, str] = {}
+    current = "header"
+    body_lines: List[str] = []
+
+    for line in md.splitlines():
+        line = line.strip()
+        if line.startswith("## "):
+            if body_lines:
+                sections[current] = "\n".join(body_lines).strip()
+                body_lines = []
+            current = line[3:].strip().lower().replace(" ", "_")
+        elif line.startswith("# "):
+            sections["_title"] = line[2:].strip()
+        else:
+            body_lines.append(line)
+
+    if body_lines and current != "header":
+        sections[current] = "\n".join(body_lines).strip()
+    elif current == "header":
+        sections["_body"] = "\n".join(body_lines).strip()
+
+    return sections
+
+
+def _escape_html(text: str) -> str:
+    return (text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+             .replace('"', "&quot;").replace("'", "&#39;"))
+
+
+def _render_phd_advisor(sections: Dict[str, str], raw: str) -> str:
+    def extract(t):
+        return sections.get(t, "")[:300] or raw[200:500]
+    return _section_html("📚 Paper Summary", sections.get("_body", sections.get("summary", raw[:300]))[:400]) + \
+           _section_html("🔬 Methodology Assessment", extract("methodology")) + \
+           _section_html("❓ Open Questions for Student", extract("research_gaps"))
+
+
+def _render_industry_engineer(sections: Dict[str, str], raw: str) -> str:
+    def extract(t):
+        return sections.get(t, "")[:300] or raw[200:500]
+    return _section_html("⚡ What It Does", sections.get("_body", sections.get("summary", raw[:300]))[:200]) + \
+           _section_html("🛠️ Implementation Signals", extract("methodology")) + \
+           _section_html("📊 Benchmark / Compute", extract("experiments"))
+
+
+def _render_policy_maker(sections: Dict[str, str], raw: str) -> str:
+    def extract(t):
+        return sections.get(t, "")[:300] or raw[300:600]
+    return _section_html("🏛️ What This Means", sections.get("_body", sections.get("summary", raw[:300]))[:300]) + \
+           _section_html("⚠️ Risks & Concerns", extract("limitations")) + \
+           _section_html("📅 Deployment Timeline", raw[200:500])
+
+
+def _render_researcher(sections: Dict[str, str], raw: str) -> str:
+    v = sections.get("verdict", "neutral").lower()
+    badge_map = {
+        "validates": ("✅ Validates", "verdict-validates"),
+        "contradicts": ("❌ Contradicts", "verdict-contradicts"),
+    }
+    badge_text, badge_cls = badge_map.get(v, ("➖ Neutral", "verdict-neutral"))
+
+    lines = [f"<span class='verdict-badge {badge_cls}'>{badge_text}</span>"]
+    lines.append(f"<p style='margin-top:8px'>{sections.get('_body', sections.get('summary', raw[:400]))[:400]}</p>")
+
+    gaps = sections.get("research_gaps", sections.get("gaps", ""))
+    if gaps:
+        lines.append(_section_html("🎯 Research Gaps", gaps[:300]))
+
+    return "\n".join(lines)
+
+
+def _section_html(heading: str, content: str) -> str:
+    return f"<div class='digest-section'><h4>{heading}</h4><p>{content[:300] if content else ''}</p></div>"
+
+
+def render_distributed_briefing(arxiv_id: str, title: str, markdown: str, audience: str) -> str:
+    audience_labels = {
+        "phd_advisor": "🎓 PhD Advisor Digest",
+        "industry_engineer": "⚙️ Industry Engineer Digest",
+        "policy_maker": "🏛️ Policy Maker Digest",
+        "researcher": "🔬 Researcher Digest",
+    }
+    label = audience_labels.get(audience, audience)
+    short_id = create_share_link(arxiv_id, title, audience)
+    sections = _parse_markdown_sections(markdown)
+
+    if audience == "phd_advisor":
+        body_content = _render_phd_advisor(sections, markdown)
+    elif audience == "industry_engineer":
+        body_content = _render_industry_engineer(sections, markdown)
+    elif audience == "policy_maker":
+        body_content = _render_policy_maker(sections, markdown)
+    else:
+        body_content = _render_researcher(sections, markdown)
+
+    lines = ['<div class="briefing-dist">']
+    lines.append("<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:16px'>")
+    lines.append(f"<h3 style='margin:0'>{label}</h3>")
+    lines.append(f"<span style='font-size:11px;color:#A89E8C;background:#f5f0e8;padding:3px 10px;border-radius:12px'>"
+                f"Share: <code style='font-size:11px'>rairos.app/b/{short_id}</code></span>")
+    lines.append("</div>")
+    lines.append(f"<div class='digest-body'>{body_content}</div>")
+    lines.append("<details style='margin-top:20px'>")
+    lines.append("<summary style='cursor:pointer;font-size:12px;color:#A89E8C'>View Raw Briefing</summary>")
+    lines.append(f"<pre style='font-size:11px;background:#f8f4ef;padding:12px;border-radius:4px;overflow:auto'>"
+                f"{_escape_html(markdown[:2000])}</pre>")
+    lines.append("</details>")
+    lines.append("<style>")
+    lines.append(".briefing-dist { font-family: Georgia, serif; max-width: 800px; }")
+    lines.append(".digest-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e8e4dc; }")
+    lines.append(".digest-section h4 { font-size: 13px; font-weight: 700; color: #2a4a6a; margin-bottom: 6px; }")
+    lines.append(".digest-section p { font-size: 13px; color: #444; line-height: 1.6; margin: 0; }")
+    lines.append(".verdict-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }")
+    lines.append(".verdict-validates { background: rgba(107,191,138,0.15); color: #4a8a5a; }")
+    lines.append(".verdict-contradicts { background: rgba(196,112,106,0.15); color: #C4706A; }")
+    lines.append(".verdict-neutral { background: rgba(168,158,140,0.15); color: #7a7570; }")
+    lines.append("</style>")
+    lines.append("</div>")
+    return "\n".join(lines)
+
+
+def render_distributor_panel(arxiv_id: str, title: str) -> str:
+    create_share_link(arxiv_id, title, "researcher")
+
+    lines = ['<div class="dist-panel">']
+    lines.append("<h3>📬 Briefing Distributor</h3>")
+    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
+                "Render this briefing for different audiences, or share a public link.</p>")
+
+    audiences = [
+        ("researcher", "🔬 Researcher", "Concise technical summary with gap analysis"),
+        ("phd_advisor", "🎓 PhD Advisor", "Methodology critique and open questions"),
+        ("industry_engineer", "⚙️ Industry Engineer", "Practical applicability and benchmarks"),
+        ("policy_maker", "🏛️ Policy Maker", "Societal impact and regulatory implications"),
+    ]
+
+    for aud_id, aud_name, aud_desc in audiences:
+        s = create_share_link(arxiv_id, title, aud_id)
+        lines.append("<div style='margin-bottom:14px;padding:12px;background:#f8f4ef;border-radius:6px'>")
+        lines.append(f"<div style='font-weight:700;font-size:13px;margin-bottom:2px'>{aud_name}</div>")
+        lines.append(f"<div style='font-size:12px;color:#A89E8C;margin-bottom:6px'>{aud_desc}</div>")
+        lines.append(f"<button id='btn-{aud_id}' style='background:#6B8FB5;color:white;border:none;border-radius:4px;"
+                    f"padding:5px 12px;cursor:pointer;font-size:12px'>Preview</button> ")
+        lines.append(f"<button onclick=\"copyShareLink('{s}')\" "
+                    f"style='background:transparent;color:#6B8FB5;border:1px solid #6B8FB5;"
+                    f"border-radius:4px;padding:5px 12px;cursor:pointer;font-size:12px;margin-left:6px'>"
+                    f"Copy Link</button>")
+        lines.append("</div>")
+
+    lines.append("<div id='audience-preview' style='margin-top:16px'></div>")
+
+    lines.append(f"""
+<script>
+document.querySelectorAll('button[id^="btn-"]').forEach(function(btn) {{
+    var aud = btn.id.replace('btn-', '');
+    btn.addEventListener('click', function() {{
+        var preview = document.getElementById('audience-preview');
+        preview.innerText = 'Loading...';
+        fetch('/briefing/distribute/{arxiv_id}?audience=' + aud)
+          .then(function(r) {{ return r.text(); }})
+          .then(function(html) {{
+              var tmp = document.createElement('div');
+              tmp.innerHTML = html;
+              preview.innerHTML = tmp.querySelector('.briefing-dist') ? tmp.querySelector('.briefing-dist').innerHTML : html;
+          }});
+    }});
+}});
+function copyShareLink(shortId) {{
+    navigator.clipboard.writeText(window.location.origin + '/b/' + shortId)
+      .then(function() {{ alert('Link copied!'); }});
+}}
+</script>""")
+
+    lines.append("<style>.dist-panel { font-family: Georgia, serif; }</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

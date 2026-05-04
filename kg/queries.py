@@ -1,1 +1,86 @@
-IiIiSGlnaC1sZXZlbCBncmFwaCBxdWVyeSBmdW5jdGlvbnMgYnVpbHQgb24gS0dNYW5hZ2VyLiIiIgoKZnJvbSBrZy5tYW5hZ2VyIGltcG9ydCBLR01hbmFnZXIKZnJvbSB0eXBpbmcgaW1wb3J0IE9wdGlvbmFsCgoKY2xhc3MgS0dRdWVyaWVzOgogICAgIiIiQWR2YW5jZWQgcXVlcnkgbGF5ZXIgb24gdG9wIG9mIEtHTWFuYWdlci4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZiwga2c6IEtHTWFuYWdlcik6CiAgICAgICAgc2VsZi5rZyA9IGtnCgogICAgZGVmIGdldF9wYXBlcl9zdWJncmFwaCgKICAgICAgICBzZWxmLAogICAgICAgIHBhcGVyX3VpZDogc3RyLAogICAgICAgIGRlcHRoOiBpbnQgPSAyLAogICAgICAgIGluY2x1ZGVfbm90ZXM6IGJvb2wgPSBUcnVlLAogICAgKSAtPiBkaWN0OgogICAgICAgICIiIkdldCBhIHBhcGVyJ3MgZWdvIHN1YmdyYXBoLiIiIgogICAgICAgIHBhcGVyX25vZGUgPSBzZWxmLmtnLmdldF9ub2RlX2J5X2VudGl0eSgiUGFwZXIiLCBwYXBlcl91aWQpCiAgICAgICAgaWYgcGFwZXJfbm9kZSBpcyBOb25lOgogICAgICAgICAgICByZXR1cm4geyJub2RlcyI6IFtdLCAiZWRnZXMiOiBbXSwgImNlbnRlciI6IE5vbmV9CgogICAgICAgIG5vZGVzID0gW3BhcGVyX25vZGVdCiAgICAgICAgZWRnZXMgPSBbXQogICAgICAgIHZpc2l0ZWQgPSB7cGFwZXJfbm9kZVsiaWQiXX0KICAgICAgICBxdWV1ZSA9IFsocGFwZXJfbm9kZVsiaWQiXSwgMCldCiAgICAgICAgc2Vlbl9lZGdlX2lkcyA9IHNldCgpCgogICAgICAgIHdoaWxlIHF1ZXVlOgogICAgICAgICAgICBjdXJyZW50X2lkLCBkID0gcXVldWUucG9wKDApCiAgICAgICAgICAgIGlmIGQgPj0gZGVwdGg6CiAgICAgICAgICAgICAgICBjb250aW51ZQoKICAgICAgICAgICAgbm9kZV9lZGdlcyA9IHNlbGYua2cuZ2V0X2VkZ2VzX2J1bGsoW2N1cnJlbnRfaWRdLCBkaXJlY3Rpb249ImJvdGgiKQogICAgICAgICAgICBmb3IgZWRnZSBpbiBub2RlX2VkZ2VzOgogICAgICAgICAgICAgICAgaWYgZWRnZVsiaWQiXSBub3QgaW4gc2Vlbl9lZGdlX2lkczoKICAgICAgICAgICAgICAgICAgICBzZWVuX2VkZ2VfaWRzLmFkZChlZGdlWyJpZCJdKQogICAgICAgICAgICAgICAgICAgIGVkZ2VzLmFwcGVuZChlZGdlKQoKICAgICAgICAgICAgICAgIG5laWdoYm9yX2lkID0gKAogICAgICAgICAgICAgICAgICAgIGVkZ2VbInRhcmdldF9pZCJdIGlmIGVkZ2VbInNvdXJjZV9pZCJdID09IGN1cnJlbnRfaWQgZWxzZSBlZGdlWyJzb3VyY2VfaWQiXQogICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgaWYgbmVpZ2hib3JfaWQgaW4gdmlzaXRlZDoKICAgICAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICAgICAgdmlzaXRlZC5hZGQobmVpZ2hib3JfaWQpCgogICAgICAgICAgICAgICAgbmVpZ2hib3JzID0gc2VsZi5rZy5nZXRfbm9kZXNfYnVsayhbbmVpZ2hib3JfaWRdKQogICAgICAgICAgICAgICAgbmVpZ2hib3IgPSBuZWlnaGJvcnMuZ2V0KG5laWdoYm9yX2lkKQogICAgICAgICAgICAgICAgaWYgbmVpZ2hib3IgaXMgTm9uZToKICAgICAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICAgICAgaWYgbm90IGluY2x1ZGVfbm90ZXMgYW5kIG5laWdoYm9yWyJ0eXBlIl0gaW4gKCJQLU5vdGUiLCAiQy1Ob3RlIiwgIk0tTm90ZSIpOgogICAgICAgICAgICAgICAgICAgIGNvbnRpbnVlCgogICAgICAgICAgICAgICAgbm9kZXMuYXBwZW5kKG5laWdoYm9yKQogICAgICAgICAgICAgICAgcXVldWUuYXBwZW5kKChuZWlnaGJvcl9pZCwgZCArIDEpKQoKICAgICAgICByZXR1cm4geyJub2RlcyI6IG5vZGVzLCAiZWRnZXMiOiBlZGdlcywgImNlbnRlciI6IHBhcGVyX25vZGV9CgogICAgZGVmIGdldF90YWdfZWNvc3lzdGVtKHNlbGYsIHRhZzogc3RyKSAtPiBkaWN0OgogICAgICAgICIiIkdldCBhbGwgcGFwZXJzIGFuZCBNLU5vdGVzIHJlbGF0ZWQgdG8gYSB0YWcuIiIiCiAgICAgICAgcGFwZXJfbm9kZXMgPSBzZWxmLmtnLmZpbmRfcGFwZXJzX2J5X3RhZyh0YWcpCiAgICAgICAgbW5vdGVfbm9kZXMgPSBzZWxmLmtnLmZpbmRfbW5vdGVzX2J5X3RhZyh0YWcpCiAgICAgICAgbm9kZV9pZHMgPSB7blsiaWQiXSBmb3IgbiBpbiBwYXBlcl9ub2RlcyArIG1ub3RlX25vZGVzfQogICAgICAgIGlmIG5vdCBub2RlX2lkczoKICAgICAgICAgICAgcmV0dXJuIHsibm9kZXMiOiBbXSwgImVkZ2VzIjogW10sICJ0YWciOiB0YWd9CiAgICAgICAgIyBCdWxrIGZldGNoIGFsbCBlZGdlcyBpbiBvbmUgcXVlcnkgaW5zdGVhZCBvZiBOIHF1ZXJpZXMKICAgICAgICBlZGdlcyA9IFsKICAgICAgICAgICAgZQogICAgICAgICAgICBmb3IgZSBpbiBzZWxmLmtnLmdldF9lZGdlc19idWxrKGxpc3Qobm9kZV9pZHMpLCBkaXJlY3Rpb249ImJvdGgiKQogICAgICAgICAgICBpZiBlWyJzb3VyY2VfaWQiXSBpbiBub2RlX2lkcyBhbmQgZVsidGFyZ2V0X2lkIl0gaW4gbm9kZV9pZHMKICAgICAgICBdCiAgICAgICAgcmV0dXJuIHsibm9kZXMiOiBwYXBlcl9ub2RlcyArIG1ub3RlX25vZGVzLCAiZWRnZXMiOiBlZGdlcywgInRhZyI6IHRhZ30KCiAgICBkZWYgZXhwb3J0X2dyYXBoX2pzb24oc2VsZiwgbm9kZV9pZHM6IE9wdGlvbmFsW2xpc3Rbc3RyXV0gPSBOb25lKSAtPiBkaWN0OgogICAgICAgICIiIkV4cG9ydCBzdWJncmFwaCBhcyBKU09OLXNlcmlhbGl6YWJsZSBkaWN0IGZvciBEMy5qcyAvIFB5VmlzLiIiIgogICAgICAgIGlmIG5vZGVfaWRzOgogICAgICAgICAgICBub2RlcyA9IFtuIGZvciBuIGluIHNlbGYua2cuZ2V0X25vZGVzX2J1bGsobm9kZV9pZHMpLnZhbHVlcygpIGlmIG4gaXMgbm90IE5vbmVdCiAgICAgICAgZWxzZToKICAgICAgICAgICAgbm9kZXMgPSBzZWxmLmtnLmdldF9hbGxfbm9kZXMoKSAgIyB0eXBlOiBpZ25vcmVbYXNzaWdubWVudF0KCiAgICAgICAgaWYgbm90IG5vZGVzOgogICAgICAgICAgICByZXR1cm4geyJub2RlcyI6IFtdLCAiZWRnZXMiOiBbXX0KCiAgICAgICAgbmlkX3NldCA9IHtuWyJpZCJdIGZvciBuIGluIG5vZGVzfQogICAgICAgIGFsbF9lZGdlcyA9IHNlbGYua2cuZ2V0X2VkZ2VzX2J1bGsobGlzdChuaWRfc2V0KSwgZGlyZWN0aW9uPSJib3RoIikKICAgICAgICBlZGdlcyA9IFtlIGZvciBlIGluIGFsbF9lZGdlcyBpZiBlWyJzb3VyY2VfaWQiXSBpbiBuaWRfc2V0IGFuZCBlWyJ0YXJnZXRfaWQiXSBpbiBuaWRfc2V0XQoKICAgICAgICByZXR1cm4geyJub2RlcyI6IG5vZGVzLCAiZWRnZXMiOiBlZGdlc30K
+"""High-level graph query functions built on KGManager."""
+
+from kg.manager import KGManager
+from typing import Optional
+
+
+class KGQueries:
+    """Advanced query layer on top of KGManager."""
+
+    def __init__(self, kg: KGManager):
+        self.kg = kg
+
+    def get_paper_subgraph(
+        self,
+        paper_uid: str,
+        depth: int = 2,
+        include_notes: bool = True,
+    ) -> dict:
+        """Get a paper's ego subgraph."""
+        paper_node = self.kg.get_node_by_entity("Paper", paper_uid)
+        if paper_node is None:
+            return {"nodes": [], "edges": [], "center": None}
+
+        nodes = [paper_node]
+        edges = []
+        visited = {paper_node["id"]}
+        queue = [(paper_node["id"], 0)]
+        seen_edge_ids = set()
+
+        while queue:
+            current_id, d = queue.pop(0)
+            if d >= depth:
+                continue
+
+            node_edges = self.kg.get_edges_bulk([current_id], direction="both")
+            for edge in node_edges:
+                if edge["id"] not in seen_edge_ids:
+                    seen_edge_ids.add(edge["id"])
+                    edges.append(edge)
+
+                neighbor_id = edge["target_id"] if edge["source_id"] == current_id else edge["source_id"]
+                if neighbor_id in visited:
+                    continue
+                visited.add(neighbor_id)
+
+                neighbors = self.kg.get_nodes_bulk([neighbor_id])
+                neighbor = neighbors.get(neighbor_id)
+                if neighbor is None:
+                    continue
+                if not include_notes and neighbor["type"] in ("P-Note", "C-Note", "M-Note"):
+                    continue
+
+                nodes.append(neighbor)
+                queue.append((neighbor_id, d + 1))
+
+        return {"nodes": nodes, "edges": edges, "center": paper_node}
+
+    def get_tag_ecosystem(self, tag: str) -> dict:
+        """Get all papers and M-Notes related to a tag."""
+        paper_nodes = self.kg.find_papers_by_tag(tag)
+        mnote_nodes = self.kg.find_mnotes_by_tag(tag)
+        node_ids = {n["id"] for n in paper_nodes + mnote_nodes}
+        if not node_ids:
+            return {"nodes": [], "edges": [], "tag": tag}
+        # Bulk fetch all edges in one query instead of N queries
+        edges = [
+            e for e in self.kg.get_edges_bulk(list(node_ids), direction="both")
+            if e["source_id"] in node_ids and e["target_id"] in node_ids
+        ]
+        return {"nodes": paper_nodes + mnote_nodes, "edges": edges, "tag": tag}
+
+    def export_graph_json(self, node_ids: Optional[list[str]] = None) -> dict:
+        """Export subgraph as JSON-serializable dict for D3.js / PyVis."""
+        if node_ids:
+            nodes = [n for n in self.kg.get_nodes_bulk(node_ids).values() if n is not None]
+        else:
+            nodes = self.kg.get_all_nodes()  # type: ignore[assignment]
+
+        if not nodes:
+            return {"nodes": [], "edges": []}
+
+        nid_set = {n["id"] for n in nodes}
+        all_edges = self.kg.get_edges_bulk(list(nid_set), direction="both")
+        edges = [e for e in all_edges if e["source_id"] in nid_set and e["target_id"] in nid_set]
+
+        return {"nodes": nodes, "edges": edges}

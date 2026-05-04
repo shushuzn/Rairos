@@ -1,1 +1,169 @@
-IiIiVGVzdHMgZm9yIGtnL2ludGVncmF0aW9uLnB5IHJlYnVpbGQg4oCUIGZ1bGwgYW5kIGluY3JlbWVudGFsIG1vZGVzLiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGpzb24KaW1wb3J0IHB5dGVzdAoKZnJvbSBrZy5tYW5hZ2VyIGltcG9ydCBLR01hbmFnZXIKZnJvbSBrZy5pbnRlZ3JhdGlvbiBpbXBvcnQgS0dJbnRlZ3JhdGlvbgoKCkBweXRlc3QuZml4dHVyZQpkZWYga2dfaW50ZWcodG1wX3BhdGgpOgogICAgIiIiRnJlc2ggS0dNYW5hZ2VyICsgS0dJbnRlZ3JhdGlvbiBiYWNrZWQgYnkgYSB0ZW1wb3JhcnkgREIuIiIiCiAgICBkYiA9IHRtcF9wYXRoIC8gInRlc3Rfa2cuZGIiCiAgICBrZyA9IEtHTWFuYWdlcihkYl9wYXRoPXN0cihkYikpCiAgICByZXR1cm4ga2csIEtHSW50ZWdyYXRpb24oa2cpLCB0bXBfcGF0aAoKCmRlZiBfd3JpdGVfcGFwZXJzX2pzb24odG1wX3BhdGgsIHBhcGVycywgY2l0YXRpb25fZ3JhcGg9Tm9uZSk6CiAgICAiIiJIZWxwZXI6IHdyaXRlIGEgcGFwZXJzLmpzb24gZmlsZSBhbmQgcmV0dXJuIGl0cyBwYXRoLiIiIgogICAgcGF0aCA9IHRtcF9wYXRoIC8gInBhcGVycy5qc29uIgogICAgcGF0aC53cml0ZV90ZXh0KAogICAgICAgIGpzb24uZHVtcHMoCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICJwYXBlcnMiOiBwYXBlcnMsCiAgICAgICAgICAgICAgICAiY2l0YXRpb25fZ3JhcGgiOiBjaXRhdGlvbl9ncmFwaCBvciB7fSwKICAgICAgICAgICAgfQogICAgICAgICksCiAgICAgICAgZW5jb2Rpbmc9InV0Zi04IiwKICAgICkKICAgIHJldHVybiBwYXRoCgoKY2xhc3MgVGVzdFJlYnVpbGRGdWxsOgogICAgZGVmIHRlc3RfcmVidWlsZF9wcm9jZXNzZXNfYWxsX3BhcGVycyhzZWxmLCBrZ19pbnRlZyk6CiAgICAgICAga2csIGludGVnLCB0bXBfcGF0aCA9IGtnX2ludGVnCiAgICAgICAgcGFwZXJzID0gewogICAgICAgICAgICAicDEiOiB7InRpdGxlIjogIlBhcGVyIE9uZSIsICJ0YWdzIjogWyJMTE0iXSwgImF1dGhvcnMiOiBbXSwgInllYXIiOiAyMDI0fSwKICAgICAgICAgICAgInAyIjogeyJ0aXRsZSI6ICJQYXBlciBUd28iLCAidGFncyI6IFsiUkwiXSwgImF1dGhvcnMiOiBbXSwgInllYXIiOiAyMDIzfSwKICAgICAgICB9CiAgICAgICAgcGF0aCA9IF93cml0ZV9wYXBlcnNfanNvbih0bXBfcGF0aCwgcGFwZXJzKQoKICAgICAgICBpbnRlZy5yZWJ1aWxkX2Zyb21fcGFwZXJzX2pzb24ocGF0aCkKCiAgICAgICAgIyBCb3RoIHBhcGVycyBpbmRleGVkCiAgICAgICAgYXNzZXJ0IGtnLmdldF9ub2RlX2J5X2VudGl0eSgiUGFwZXIiLCAicDEiKSBpcyBub3QgTm9uZQogICAgICAgIGFzc2VydCBrZy5nZXRfbm9kZV9ieV9lbnRpdHkoIlBhcGVyIiwgInAyIikgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQga2cuZ2V0X25vZGVfYnlfZW50aXR5KCJUYWciLCAiTExNIikgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQga2cuZ2V0X25vZGVfYnlfZW50aXR5KCJUYWciLCAiUkwiKSBpcyBub3QgTm9uZQoKICAgIGRlZiB0ZXN0X3JlYnVpbGRfc3RvcmVzX3JlYnVpbGRfbWV0YShzZWxmLCBrZ19pbnRlZyk6CiAgICAgICAga2csIGludGVnLCB0bXBfcGF0aCA9IGtnX2ludGVnCiAgICAgICAgcGFwZXJzID0geyJwMSI6IHsidGl0bGUiOiAiUDEiLCAidGFncyI6IFtdLCAiYXV0aG9ycyI6IFtdLCAieWVhciI6IDIwMjR9fQogICAgICAgIHBhdGggPSBfd3JpdGVfcGFwZXJzX2pzb24odG1wX3BhdGgsIHBhcGVycykKCiAgICAgICAgaW50ZWcucmVidWlsZF9mcm9tX3BhcGVyc19qc29uKHBhdGgpCgogICAgICAgIG1ldGEgPSBrZy5nZXRfcmVidWlsZF9tZXRhKCkKICAgICAgICBhc3NlcnQgbWV0YVsibGFzdF9yZWJ1aWxkX2F0Il0gaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQgbWV0YVsiaW5kZXhlZF9wYXBlcl91aWRzIl0gPT0geyJwMSJ9CgogICAgZGVmIHRlc3RfcmVidWlsZF9pZGVtcG90ZW50X29uX3NlY29uZF9ydW4oc2VsZiwga2dfaW50ZWcpOgogICAgICAgIGtnLCBpbnRlZywgdG1wX3BhdGggPSBrZ19pbnRlZwogICAgICAgIHBhcGVycyA9IHsicDEiOiB7InRpdGxlIjogIlAxIiwgInRhZ3MiOiBbXSwgImF1dGhvcnMiOiBbXSwgInllYXIiOiAyMDI0fX0KICAgICAgICBwYXRoID0gX3dyaXRlX3BhcGVyc19qc29uKHRtcF9wYXRoLCBwYXBlcnMpCgogICAgICAgIGludGVnLnJlYnVpbGRfZnJvbV9wYXBlcnNfanNvbihwYXRoKQogICAgICAgIHN0YXRzMSA9IGtnLnN0YXRzKClbInRvdGFsX25vZGVzIl0KICAgICAgICBpbnRlZy5yZWJ1aWxkX2Zyb21fcGFwZXJzX2pzb24ocGF0aCkgICMgc2Vjb25kIGZ1bGwgcnVuCiAgICAgICAgc3RhdHMyID0ga2cuc3RhdHMoKVsidG90YWxfbm9kZXMiXQoKICAgICAgICAjIFNob3VsZCBiZSBzYW1lIOKAlCBubyBkdXBsaWNhdGUgbm9kZXMKICAgICAgICBhc3NlcnQgc3RhdHMxID09IHN0YXRzMgoKCmNsYXNzIFRlc3RSZWJ1aWxkSW5jcmVtZW50YWw6CiAgICBkZWYgdGVzdF9pbmNyZW1lbnRhbF9za2lwc19hbHJlYWR5X2luZGV4ZWQoc2VsZiwga2dfaW50ZWcpOgogICAgICAgIGtnLCBpbnRlZywgdG1wX3BhdGggPSBrZ19pbnRlZwogICAgICAgIHBhcGVycyA9IHsicDEiOiB7InRpdGxlIjogIlAxIiwgInRhZ3MiOiBbXSwgImF1dGhvcnMiOiBbXSwgInllYXIiOiAyMDI0fX0KICAgICAgICBwYXRoID0gX3dyaXRlX3BhcGVyc19qc29uKHRtcF9wYXRoLCBwYXBlcnMpCgogICAgICAgICMgRmlyc3Q6IGZ1bGwgcmVidWlsZAogICAgICAgIGludGVnLnJlYnVpbGRfZnJvbV9wYXBlcnNfanNvbihwYXRoKQoKICAgICAgICAjIFNlY29uZDogaW5jcmVtZW50YWwg4oCUIHAxIGFscmVhZHkgaW5kZXhlZCwgbm90aGluZyBuZXcKICAgICAgICBpbnRlZy5yZWJ1aWxkX2Zyb21fcGFwZXJzX2pzb24ocGF0aCwgaW5jcmVtZW50YWw9VHJ1ZSkKCiAgICAgICAgIyBwMSBzdGlsbCBvbmx5IGFwcGVhcnMgb25jZQogICAgICAgIGFzc2VydCBsZW4oa2cuZ2V0X2FsbF9ub2Rlcyhub2RlX3R5cGU9IlBhcGVyIikpID09IDEKCiAgICBkZWYgdGVzdF9pbmNyZW1lbnRhbF9vbmx5X3Byb2Nlc3Nlc19uZXdfcGFwZXJzKHNlbGYsIGtnX2ludGVnKToKICAgICAgICBrZywgaW50ZWcsIHRtcF9wYXRoID0ga2dfaW50ZWcKICAgICAgICBwYXBlcnNfdjEgPSB7InAxIjogeyJ0aXRsZSI6ICJQMSIsICJ0YWdzIjogW10sICJhdXRob3JzIjogW10sICJ5ZWFyIjogMjAyNH19CiAgICAgICAgcGF0aCA9IF93cml0ZV9wYXBlcnNfanNvbih0bXBfcGF0aCwgcGFwZXJzX3YxKQoKICAgICAgICAjIEZpcnN0IHJlYnVpbGQKICAgICAgICBpbnRlZy5yZWJ1aWxkX2Zyb21fcGFwZXJzX2pzb24ocGF0aCkKCiAgICAgICAgIyBBZGQgbmV3IHBhcGVyCiAgICAgICAgcGFwZXJzX3YyID0gewogICAgICAgICAgICAicDEiOiB7InRpdGxlIjogIlAxIiwgInRhZ3MiOiBbXSwgImF1dGhvcnMiOiBbXSwgInllYXIiOiAyMDI0fSwKICAgICAgICAgICAgInAyIjogeyJ0aXRsZSI6ICJQMiIsICJ0YWdzIjogWyJMTE0iXSwgImF1dGhvcnMiOiBbXSwgInllYXIiOiAyMDIzfSwKICAgICAgICB9CiAgICAgICAgcGF0aCA9IF93cml0ZV9wYXBlcnNfanNvbih0bXBfcGF0aCwgcGFwZXJzX3YyKQoKICAgICAgICBpbnRlZy5yZWJ1aWxkX2Zyb21fcGFwZXJzX2pzb24ocGF0aCwgaW5jcmVtZW50YWw9VHJ1ZSkKCiAgICAgICAgYXNzZXJ0IGtnLmdldF9ub2RlX2J5X2VudGl0eSgiUGFwZXIiLCAicDEiKSBpcyBub3QgTm9uZQogICAgICAgIGFzc2VydCBrZy5nZXRfbm9kZV9ieV9lbnRpdHkoIlBhcGVyIiwgInAyIikgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQga2cuZ2V0X25vZGVfYnlfZW50aXR5KCJUYWciLCAiTExNIikgaXMgbm90IE5vbmUKCiAgICBkZWYgdGVzdF9pbmNyZW1lbnRhbF9jaXRhdGlvbnNfb25seV9mb3JfbmV3X3BhcGVycyhzZWxmLCBrZ19pbnRlZyk6CiAgICAgICAga2csIGludGVnLCB0bXBfcGF0aCA9IGtnX2ludGVnCiAgICAgICAgcGFwZXJzX3YxID0gewogICAgICAgICAgICAicDEiOiB7InRpdGxlIjogIlAxIiwgInRhZ3MiOiBbXSwgImF1dGhvcnMiOiBbXSwgInllYXIiOiAyMDI0fSwKICAgICAgICAgICAgInAyIjogeyJ0aXRsZSI6ICJQMiIsICJ0YWdzIjogW10sICJhdXRob3JzIjogW10sICJ5ZWFyIjogMjAyM30sCiAgICAgICAgfQogICAgICAgIGNpdGF0aW9uc192MSA9IHsKICAgICAgICAgICAgInAxIjogeyJjaXRlZCI6IFtdLCAiY2l0aW5nIjogWyJwMiJdfSwKICAgICAgICAgICAgInAyIjogeyJjaXRlZCI6IFtdLCAiY2l0aW5nIjogW119LAogICAgICAgIH0KICAgICAgICBwYXRoID0gX3dyaXRlX3BhcGVyc19qc29uKHRtcF9wYXRoLCBwYXBlcnNfdjEsIGNpdGF0aW9uc192MSkKICAgICAgICBpbnRlZy5yZWJ1aWxkX2Zyb21fcGFwZXJzX2pzb24ocGF0aCkKCiAgICAgICAgcGFwZXJzX3YyID0gewogICAgICAgICAgICAicDEiOiB7InRpdGxlIjogIlAxIiwgInRhZ3MiOiBbXSwgImF1dGhvcnMiOiBbXSwgInllYXIiOiAyMDI0fSwKICAgICAgICAgICAgInAyIjogeyJ0aXRsZSI6ICJQMiIsICJ0YWdzIjogW10sICJhdXRob3JzIjogW10sICJ5ZWFyIjogMjAyM30sCiAgICAgICAgICAgICJwMyI6IHsidGl0bGUiOiAiUDMiLCAidGFncyI6IFtdLCAiYXV0aG9ycyI6IFtdLCAieWVhciI6IDIwMjJ9LAogICAgICAgIH0KICAgICAgICBjaXRhdGlvbnNfdjIgPSB7CiAgICAgICAgICAgICJwMSI6IHsiY2l0ZWQiOiBbXSwgImNpdGluZyI6IFsicDIiXX0sCiAgICAgICAgICAgICJwMiI6IHsiY2l0ZWQiOiBbInAxIl0sICJjaXRpbmciOiBbXX0sCiAgICAgICAgICAgICJwMyI6IHsiY2l0ZWQiOiBbXSwgImNpdGluZyI6IFtdfSwKICAgICAgICB9CiAgICAgICAgcGF0aCA9IF93cml0ZV9wYXBlcnNfanNvbih0bXBfcGF0aCwgcGFwZXJzX3YyLCBjaXRhdGlvbnNfdjIpCgogICAgICAgICMgSW5jcmVtZW50YWwg4oCUIG9ubHkgcDMgaXMgbmV3CiAgICAgICAgaW50ZWcucmVidWlsZF9mcm9tX3BhcGVyc19qc29uKHBhdGgsIGluY3JlbWVudGFsPVRydWUpCgogICAgICAgIGFzc2VydCBrZy5nZXRfbm9kZV9ieV9lbnRpdHkoIlBhcGVyIiwgInAzIikgaXMgbm90IE5vbmUKCiAgICBkZWYgdGVzdF9pbmNyZW1lbnRhbF9mYWxsYmFja190b19mdWxsX3doZW5fbm9fcHJpb3JfbWV0YShzZWxmLCBrZ19pbnRlZyk6CiAgICAgICAga2csIGludGVnLCB0bXBfcGF0aCA9IGtnX2ludGVnCiAgICAgICAgcGFwZXJzID0geyJwMSI6IHsidGl0bGUiOiAiUDEiLCAidGFncyI6IFtdLCAiYXV0aG9ycyI6IFtdLCAieWVhciI6IDIwMjR9fQogICAgICAgIHBhdGggPSBfd3JpdGVfcGFwZXJzX2pzb24odG1wX3BhdGgsIHBhcGVycykKCiAgICAgICAgIyBJbmNyZW1lbnRhbCB3aXRoIG5vIHByaW9yIHJlYnVpbGQg4oCUIHNob3VsZCBwcm9jZXNzIGFsbCAoc2FtZSBhcyBmdWxsKQogICAgICAgIGludGVnLnJlYnVpbGRfZnJvbV9wYXBlcnNfanNvbihwYXRoLCBpbmNyZW1lbnRhbD1UcnVlKQoKICAgICAgICBhc3NlcnQga2cuZ2V0X25vZGVfYnlfZW50aXR5KCJQYXBlciIsICJwMSIpIGlzIG5vdCBOb25lCiAgICAgICAgbWV0YSA9IGtnLmdldF9yZWJ1aWxkX21ldGEoKQogICAgICAgIGFzc2VydCAicDEiIGluIG1ldGFbImluZGV4ZWRfcGFwZXJfdWlkcyJdCgogICAgZGVmIHRlc3RfaW5jcmVtZW50YWxfbWV0YV91cGRhdGVkX2FmdGVyX3J1bihzZWxmLCBrZ19pbnRlZyk6CiAgICAgICAga2csIGludGVnLCB0bXBfcGF0aCA9IGtnX2ludGVnCiAgICAgICAgcGFwZXJzX3YxID0geyJwMSI6IHsidGl0bGUiOiAiUDEiLCAidGFncyI6IFtdLCAiYXV0aG9ycyI6IFtdLCAieWVhciI6IDIwMjR9fQogICAgICAgIHBhdGggPSBfd3JpdGVfcGFwZXJzX2pzb24odG1wX3BhdGgsIHBhcGVyc192MSkKICAgICAgICBpbnRlZy5yZWJ1aWxkX2Zyb21fcGFwZXJzX2pzb24ocGF0aCkKCiAgICAgICAgcGFwZXJzX3YyID0gewogICAgICAgICAgICAicDEiOiB7InRpdGxlIjogIlAxIiwgInRhZ3MiOiBbXSwgImF1dGhvcnMiOiBbXSwgInllYXIiOiAyMDI0fSwKICAgICAgICAgICAgInAyIjogeyJ0aXRsZSI6ICJQMiIsICJ0YWdzIjogW10sICJhdXRob3JzIjogW10sICJ5ZWFyIjogMjAyM30sCiAgICAgICAgfQogICAgICAgIHBhdGggPSBfd3JpdGVfcGFwZXJzX2pzb24odG1wX3BhdGgsIHBhcGVyc192MikKICAgICAgICBpbnRlZy5yZWJ1aWxkX2Zyb21fcGFwZXJzX2pzb24ocGF0aCwgaW5jcmVtZW50YWw9VHJ1ZSkKCiAgICAgICAgbWV0YSA9IGtnLmdldF9yZWJ1aWxkX21ldGEoKQogICAgICAgIGFzc2VydCBtZXRhWyJpbmRleGVkX3BhcGVyX3VpZHMiXSA9PSB7InAxIiwgInAyIn0K
+"""Tests for kg/integration.py rebuild — full and incremental modes."""
+
+from __future__ import annotations
+
+import json
+import pytest
+
+from kg.manager import KGManager
+from kg.integration import KGIntegration
+
+
+@pytest.fixture
+def kg_integ(tmp_path):
+    """Fresh KGManager + KGIntegration backed by a temporary DB."""
+    db = tmp_path / "test_kg.db"
+    kg = KGManager(db_path=str(db))
+    return kg, KGIntegration(kg), tmp_path
+
+
+def _write_papers_json(tmp_path, papers, citation_graph=None):
+    """Helper: write a papers.json file and return its path."""
+    path = tmp_path / "papers.json"
+    path.write_text(
+        json.dumps(
+            {
+                "papers": papers,
+                "citation_graph": citation_graph or {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    return path
+
+
+class TestRebuildFull:
+    def test_rebuild_processes_all_papers(self, kg_integ):
+        kg, integ, tmp_path = kg_integ
+        papers = {
+            "p1": {"title": "Paper One", "tags": ["LLM"], "authors": [], "year": 2024},
+            "p2": {"title": "Paper Two", "tags": ["RL"], "authors": [], "year": 2023},
+        }
+        path = _write_papers_json(tmp_path, papers)
+
+        integ.rebuild_from_papers_json(path)
+
+        # Both papers indexed
+        assert kg.get_node_by_entity("Paper", "p1") is not None
+        assert kg.get_node_by_entity("Paper", "p2") is not None
+        assert kg.get_node_by_entity("Tag", "LLM") is not None
+        assert kg.get_node_by_entity("Tag", "RL") is not None
+
+    def test_rebuild_stores_rebuild_meta(self, kg_integ):
+        kg, integ, tmp_path = kg_integ
+        papers = {"p1": {"title": "P1", "tags": [], "authors": [], "year": 2024}}
+        path = _write_papers_json(tmp_path, papers)
+
+        integ.rebuild_from_papers_json(path)
+
+        meta = kg.get_rebuild_meta()
+        assert meta["last_rebuild_at"] is not None
+        assert meta["indexed_paper_uids"] == {"p1"}
+
+    def test_rebuild_idempotent_on_second_run(self, kg_integ):
+        kg, integ, tmp_path = kg_integ
+        papers = {"p1": {"title": "P1", "tags": [], "authors": [], "year": 2024}}
+        path = _write_papers_json(tmp_path, papers)
+
+        integ.rebuild_from_papers_json(path)
+        stats1 = kg.stats()["total_nodes"]
+        integ.rebuild_from_papers_json(path)  # second full run
+        stats2 = kg.stats()["total_nodes"]
+
+        # Should be same — no duplicate nodes
+        assert stats1 == stats2
+
+
+class TestRebuildIncremental:
+    def test_incremental_skips_already_indexed(self, kg_integ):
+        kg, integ, tmp_path = kg_integ
+        papers = {"p1": {"title": "P1", "tags": [], "authors": [], "year": 2024}}
+        path = _write_papers_json(tmp_path, papers)
+
+        # First: full rebuild
+        integ.rebuild_from_papers_json(path)
+
+        # Second: incremental — p1 already indexed, nothing new
+        integ.rebuild_from_papers_json(path, incremental=True)
+
+        # p1 still only appears once
+        assert len(kg.get_all_nodes(node_type="Paper")) == 1
+
+    def test_incremental_only_processes_new_papers(self, kg_integ):
+        kg, integ, tmp_path = kg_integ
+        papers_v1 = {"p1": {"title": "P1", "tags": [], "authors": [], "year": 2024}}
+        path = _write_papers_json(tmp_path, papers_v1)
+
+        # First rebuild
+        integ.rebuild_from_papers_json(path)
+
+        # Add new paper
+        papers_v2 = {
+            "p1": {"title": "P1", "tags": [], "authors": [], "year": 2024},
+            "p2": {"title": "P2", "tags": ["LLM"], "authors": [], "year": 2023},
+        }
+        path = _write_papers_json(tmp_path, papers_v2)
+
+        integ.rebuild_from_papers_json(path, incremental=True)
+
+        assert kg.get_node_by_entity("Paper", "p1") is not None
+        assert kg.get_node_by_entity("Paper", "p2") is not None
+        assert kg.get_node_by_entity("Tag", "LLM") is not None
+
+    def test_incremental_citations_only_for_new_papers(self, kg_integ):
+        kg, integ, tmp_path = kg_integ
+        papers_v1 = {
+            "p1": {"title": "P1", "tags": [], "authors": [], "year": 2024},
+            "p2": {"title": "P2", "tags": [], "authors": [], "year": 2023},
+        }
+        citations_v1 = {
+            "p1": {"cited": [], "citing": ["p2"]},
+            "p2": {"cited": [], "citing": []},
+        }
+        path = _write_papers_json(tmp_path, papers_v1, citations_v1)
+        integ.rebuild_from_papers_json(path)
+
+        papers_v2 = {
+            "p1": {"title": "P1", "tags": [], "authors": [], "year": 2024},
+            "p2": {"title": "P2", "tags": [], "authors": [], "year": 2023},
+            "p3": {"title": "P3", "tags": [], "authors": [], "year": 2022},
+        }
+        citations_v2 = {
+            "p1": {"cited": [], "citing": ["p2"]},
+            "p2": {"cited": ["p1"], "citing": []},
+            "p3": {"cited": [], "citing": []},
+        }
+        path = _write_papers_json(tmp_path, papers_v2, citations_v2)
+
+        # Incremental — only p3 is new
+        integ.rebuild_from_papers_json(path, incremental=True)
+
+        assert kg.get_node_by_entity("Paper", "p3") is not None
+
+    def test_incremental_fallback_to_full_when_no_prior_meta(self, kg_integ):
+        kg, integ, tmp_path = kg_integ
+        papers = {"p1": {"title": "P1", "tags": [], "authors": [], "year": 2024}}
+        path = _write_papers_json(tmp_path, papers)
+
+        # Incremental with no prior rebuild — should process all (same as full)
+        integ.rebuild_from_papers_json(path, incremental=True)
+
+        assert kg.get_node_by_entity("Paper", "p1") is not None
+        meta = kg.get_rebuild_meta()
+        assert "p1" in meta["indexed_paper_uids"]
+
+    def test_incremental_meta_updated_after_run(self, kg_integ):
+        kg, integ, tmp_path = kg_integ
+        papers_v1 = {"p1": {"title": "P1", "tags": [], "authors": [], "year": 2024}}
+        path = _write_papers_json(tmp_path, papers_v1)
+        integ.rebuild_from_papers_json(path)
+
+        papers_v2 = {
+            "p1": {"title": "P1", "tags": [], "authors": [], "year": 2024},
+            "p2": {"title": "P2", "tags": [], "authors": [], "year": 2023},
+        }
+        path = _write_papers_json(tmp_path, papers_v2)
+        integ.rebuild_from_papers_json(path, incremental=True)
+
+        meta = kg.get_rebuild_meta()
+        assert meta["indexed_paper_uids"] == {"p1", "p2"}

@@ -1,1 +1,31 @@
-IiIiU2hhcmVkIHRleHQgcHJvY2Vzc2luZyB1dGlsaXRpZXMgZm9yIHJlc2VhcmNoIGFuYWx5c2lzLiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IHJlCmZyb20gdHlwaW5nIGltcG9ydCBMaXN0CgojIFN0b3B3b3JkcyBleGNsdWRlZCBmcm9tIGtleXdvcmQgZXh0cmFjdGlvbgpfS0VZV09SRF9TVE9QV09SRFM6IGZyb3plbnNldCA9IGZyb3plbnNldCgKICAgIHsKICAgICAgICAidGhlIiwKICAgICAgICAiYW5kIiwKICAgICAgICAiZm9yIiwKICAgICAgICAiYXJlIiwKICAgICAgICAiYnV0IiwKICAgICAgICAibm90IiwKICAgICAgICAieW91IiwKICAgICAgICAiYWxsIiwKICAgICAgICAiY2FuIiwKICAgICAgICAiaGFkIiwKICAgICAgICAiaGVyIiwKICAgICAgICAid2FzIiwKICAgICAgICAib25lIiwKICAgICAgICAib3VyIiwKICAgICAgICAib3V0IiwKICAgICAgICAiaGFzIiwKICAgICAgICAiaGF2ZSIsCiAgICAgICAgImJlZW4iLAogICAgICAgICJ3aXRoIiwKICAgICAgICAidGhleSIsCiAgICAgICAgInRoaXMiLAogICAgICAgICJ0aGF0IiwKICAgICAgICAiZnJvbSIsCiAgICAgICAgIndpbGwiLAogICAgICAgICJ3b3VsZCIsCiAgICAgICAgInRoZXJlIiwKICAgICAgICAidGhlaXIiLAogICAgICAgICJ3aGF0IiwKICAgICAgICAiYWJvdXQiLAogICAgICAgICJ3aGljaCIsCiAgICAgICAgIndoZW4iLAogICAgICAgICJtYWtlIiwKICAgICAgICAianVzdCIsCiAgICAgICAgIm92ZXIiLAogICAgICAgICJzdWNoIiwKICAgICAgICAiaW50byIsCiAgICAgICAgInRoYW4iLAogICAgICAgICJudWxsIiwKICAgICAgICAibm9uZSIsCiAgICAgICAgImFsc28iLAogICAgICAgICJob3ciLAogICAgICAgICJtYXkiLAogICAgICAgICJkb2VzIiwKICAgICAgICAibWV0aG9kIiwKICAgICAgICAiYXBwcm9hY2giLAogICAgICAgICJnYXAiLAogICAgICAgICJpc3N1ZSIsCiAgICAgICAgInByb2JsZW0iLAogICAgICAgICJsaW1pdGF0aW9uIiwKICAgICAgICAic3R1ZHkiLAogICAgICAgICJ3b3JrIiwKICAgICAgICAicGFwZXIiLAogICAgICAgICJyZXNlYXJjaCIsCiAgICAgICAgImJhc2VkIiwKICAgICAgICAidXNpbmciLAogICAgfQopCgoKZGVmIGV4dHJhY3Rfa2V5d29yZHModGV4dDogc3RyLCBtaW5fbGVuOiBpbnQgPSAzKSAtPiBMaXN0W3N0cl06CiAgICAiIiJFeHRyYWN0IHJlc2VhcmNoLXJlbGV2YW50IGtleXdvcmRzIGZyb20gdGV4dC4KCiAgICBBcmdzOgogICAgICAgIHRleHQ6IElucHV0IHRleHQgdG8gZXh0cmFjdCBrZXl3b3JkcyBmcm9tLgogICAgICAgIG1pbl9sZW46IE1pbmltdW0ga2V5d29yZCBsZW5ndGggKGRlZmF1bHQgMykuCgogICAgUmV0dXJuczoKICAgICAgICBMb3dlcmNhc2Uga2V5d29yZHMgb2YgbWluX2xlbisgY2hhcmFjdGVycywgZXhjbHVkaW5nIGNvbW1vbiBzdG9wd29yZHMuCiAgICAiIiIKICAgIHdvcmRzID0gcmUuZmluZGFsbChyIltBLVphLXowLTldKyIsIHRleHQubG93ZXIoKSkKICAgIHJldHVybiBbdyBmb3IgdyBpbiB3b3JkcyBpZiBsZW4odykgPj0gbWluX2xlbiBhbmQgdyBub3QgaW4gX0tFWVdPUkRfU1RPUFdPUkRTXQo=
+"""Shared text processing utilities for research analysis."""
+from __future__ import annotations
+
+import re
+from typing import List
+
+# Stopwords excluded from keyword extraction
+_KEYWORD_STOPWORDS: frozenset = frozenset({
+    "the", "and", "for", "are", "but", "not", "you", "all",
+    "can", "had", "her", "was", "one", "our", "out", "has",
+    "have", "been", "with", "they", "this", "that", "from",
+    "will", "would", "there", "their", "what", "about", "which",
+    "when", "make", "just", "over", "such", "into", "than",
+    "null", "none", "also", "how", "may", "does",
+    "method", "approach", "gap", "issue", "problem", "limitation",
+    "study", "work", "paper", "research", "based", "using",
+})
+
+
+def extract_keywords(text: str, min_len: int = 3) -> List[str]:
+    """Extract research-relevant keywords from text.
+
+    Args:
+        text: Input text to extract keywords from.
+        min_len: Minimum keyword length (default 3).
+
+    Returns:
+        Lowercase keywords of min_len+ characters, excluding common stopwords.
+    """
+    words = re.findall(r"[A-Za-z0-9]+", text.lower())
+    return [w for w in words if len(w) >= min_len and w not in _KEYWORD_STOPWORDS]

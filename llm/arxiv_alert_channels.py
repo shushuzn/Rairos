@@ -1,1 +1,211 @@
-IiIiYXJYaXYgV2F0Y2ggQWxlcnQgQ2hhbm5lbHMg4oCUIG11bHRpcGxlIGZlZWQgY29uZmlndXJhdGlvbnMgd2l0aCBkaWZmZXJlbnQgbWF0Y2hpbmcgY3JpdGVyaWEuCgpDaGFubmVsczoKICAtIGdlbmVyYWw6IGJyb2FkIE1ML0FJIGNvdmVyYWdlCiAgLSBjbGltYXRlOiBjbGltYXRlICsgQUkgaW50ZXJzZWN0aW9uCiAgLSBhaV9zYWZldHk6IGFsaWdubWVudCwgcm9idXN0bmVzcywgaW50ZXJwcmV0YWJpbGl0eQogIC0gcmVndWxhdGlvbjogQUkgcG9saWN5LCBnb3Zlcm5hbmNlLCBsYXcKIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQganNvbgppbXBvcnQgcmUKZnJvbSBkYXRhY2xhc3NlcyBpbXBvcnQgZGF0YWNsYXNzLCBmaWVsZApmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKZnJvbSB0eXBpbmcgaW1wb3J0IEFueSwgRGljdCwgTGlzdCwgT3B0aW9uYWwKCkNIQU5ORUxTX0ZJTEUgPSBQYXRoLmhvbWUoKSAvICIuYWlfcmVzZWFyY2hfb3MiIC8gImFyeGl2X2NoYW5uZWxzLmpzb24iCgpERUZBVUxUX0NIQU5ORUxTID0gewogICAgImdlbmVyYWwiOiB7CiAgICAgICAgIm5hbWUiOiAiR2VuZXJhbCBBSS9NTCIsCiAgICAgICAgImNhdGVnb3JpZXMiOiBbImNzLkFJIiwgImNzLkxHIiwgImNzLkNMIiwgImNzLkNWIiwgImNzLk5FIl0sCiAgICAgICAgImtleXdvcmRzIjogW10sCiAgICAgICAgInByaW9yaXR5IjogMSwKICAgICAgICAiZW5hYmxlZCI6IFRydWUsCiAgICB9LAogICAgImNsaW1hdGUiOiB7CiAgICAgICAgIm5hbWUiOiAiQ2xpbWF0ZSBBSSIsCiAgICAgICAgImNhdGVnb3JpZXMiOiBbImNzLkFJIiwgImNzLkxHIiwgImNzLkVUIiwgImVudmlyLkFyWGl2Il0sCiAgICAgICAgImtleXdvcmRzIjogWwogICAgICAgICAgICAiY2xpbWF0ZSIsCiAgICAgICAgICAgICJjYXJib24iLAogICAgICAgICAgICAiZW1pc3Npb25zIiwKICAgICAgICAgICAgInJlbmV3YWJsZSIsCiAgICAgICAgICAgICJlbmVyZ3kiLAogICAgICAgICAgICAic3VzdGFpbmFiaWxpdHkiLAogICAgICAgICAgICAiZ3JlZW4gQUkiLAogICAgICAgIF0sCiAgICAgICAgInByaW9yaXR5IjogMywKICAgICAgICAiZW5hYmxlZCI6IFRydWUsCiAgICB9LAogICAgImFpX3NhZmV0eSI6IHsKICAgICAgICAibmFtZSI6ICJBSSBTYWZldHkiLAogICAgICAgICJjYXRlZ29yaWVzIjogWyJjcy5BSSIsICJjcy5MRyJdLAogICAgICAgICJrZXl3b3JkcyI6IFsKICAgICAgICAgICAgInNhZmV0eSIsCiAgICAgICAgICAgICJhbGlnbm1lbnQiLAogICAgICAgICAgICAicm9idXN0bmVzcyIsCiAgICAgICAgICAgICJpbnRlcnByZXRhYmlsaXR5IiwKICAgICAgICAgICAgImZhaXJuZXNzIiwKICAgICAgICAgICAgInRydXN0d29ydGh5IiwKICAgICAgICAgICAgImhhemFyZCIsCiAgICAgICAgICAgICJyaXNrIiwKICAgICAgICBdLAogICAgICAgICJwcmlvcml0eSI6IDMsCiAgICAgICAgImVuYWJsZWQiOiBUcnVlLAogICAgfSwKICAgICJyZWd1bGF0aW9uIjogewogICAgICAgICJuYW1lIjogIkFJIFJlZ3VsYXRpb24iLAogICAgICAgICJjYXRlZ29yaWVzIjogWyJjcy5BSSIsICJjcy5DWSIsICJjcy5TSSJdLAogICAgICAgICJrZXl3b3JkcyI6IFsKICAgICAgICAgICAgInJlZ3VsYXRpb24iLAogICAgICAgICAgICAicG9saWN5IiwKICAgICAgICAgICAgImdvdmVybmFuY2UiLAogICAgICAgICAgICAibGF3IiwKICAgICAgICAgICAgIkdEUFIiLAogICAgICAgICAgICAiY29tcGxpYW5jZSIsCiAgICAgICAgICAgICJsZWdhbCIsCiAgICAgICAgICAgICJsZWdpc2xhdGlvbiIsCiAgICAgICAgXSwKICAgICAgICAicHJpb3JpdHkiOiAyLAogICAgICAgICJlbmFibGVkIjogVHJ1ZSwKICAgIH0sCn0KCgpkZWYgX2xvYWRfY2hhbm5lbHMoKSAtPiBEaWN0W3N0ciwgQW55XToKICAgIGlmIG5vdCBDSEFOTkVMU19GSUxFLmV4aXN0cygpOgogICAgICAgIENIQU5ORUxTX0ZJTEUucGFyZW50Lm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgICAgICBDSEFOTkVMU19GSUxFLndyaXRlX3RleHQoCiAgICAgICAgICAgIGpzb24uZHVtcHMoREVGQVVMVF9DSEFOTkVMUywgaW5kZW50PTIsIGVuc3VyZV9hc2NpaT1GYWxzZSksIGVuY29kaW5nPSJ1dGYtOCIKICAgICAgICApCiAgICAgICAgcmV0dXJuIERFRkFVTFRfQ0hBTk5FTFMKICAgIHJldHVybiBqc29uLmxvYWRzKENIQU5ORUxTX0ZJTEUucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpKQoKCmRlZiBfc2F2ZV9jaGFubmVscyhjaGFubmVsczogRGljdFtzdHIsIEFueV0pIC0+IE5vbmU6CiAgICBDSEFOTkVMU19GSUxFLnBhcmVudC5ta2RpcihwYXJlbnRzPVRydWUsIGV4aXN0X29rPVRydWUpCiAgICBDSEFOTkVMU19GSUxFLndyaXRlX3RleHQoanNvbi5kdW1wcyhjaGFubmVscywgaW5kZW50PTIsIGVuc3VyZV9hc2NpaT1GYWxzZSksIGVuY29kaW5nPSJ1dGYtOCIpCgoKZGVmIG1hdGNoX3BhcGVyX3RvX2NoYW5uZWxzKHBhcGVyOiBEaWN0W3N0ciwgQW55XSkgLT4gTGlzdFtzdHJdOgogICAgIiIiUmV0dXJuIGxpc3Qgb2YgY2hhbm5lbCBJRHMgYSBwYXBlciBtYXRjaGVzLiIiIgogICAgY2hhbm5lbHMgPSBfbG9hZF9jaGFubmVscygpCiAgICBjYXRzID0gc2V0KHBhcGVyLmdldCgiY2F0ZWdvcmllcyIsIFtdKSBvciBbXSkKICAgIGFic3RyYWN0ID0gKHBhcGVyLmdldCgiYWJzdHJhY3QiLCAiIikgKyAiICIgKyBwYXBlci5nZXQoInRpdGxlIiwgIiIpKS5sb3dlcigpCiAgICBfdGl0bGUgPSBwYXBlci5nZXQoInRpdGxlIiwgIiIpLmxvd2VyKCkKICAgIG1hdGNoZWQ6IExpc3Rbc3RyXSA9IFtdCgogICAgZm9yIGNpZCwgY2ZnIGluIGNoYW5uZWxzLml0ZW1zKCk6CiAgICAgICAgaWYgbm90IGNmZy5nZXQoImVuYWJsZWQiLCBUcnVlKToKICAgICAgICAgICAgY29udGludWUKICAgICAgICAjIENhdGVnb3J5IG1hdGNoCiAgICAgICAgaWYgYW55KGMgaW4gY2F0cyBmb3IgYyBpbiBjZmcuZ2V0KCJjYXRlZ29yaWVzIiwgW10pKToKICAgICAgICAgICAgbWF0Y2hlZC5hcHBlbmQoY2lkKQogICAgICAgICAgICBjb250aW51ZQogICAgICAgICMgS2V5d29yZCBtYXRjaAogICAgICAgIGtleXdvcmRzID0gY2ZnLmdldCgia2V5d29yZHMiLCBbXSkKICAgICAgICBpZiBrZXl3b3JkcyBhbmQgYW55KGt3Lmxvd2VyKCkgaW4gYWJzdHJhY3QgZm9yIGt3IGluIGtleXdvcmRzKToKICAgICAgICAgICAgbWF0Y2hlZC5hcHBlbmQoY2lkKQoKICAgIHJldHVybiBtYXRjaGVkCgoKQGRhdGFjbGFzcwpjbGFzcyBDaGFubmVsQ29uZmlnOgogICAgaWQ6IHN0cgogICAgbmFtZTogc3RyCiAgICBjYXRlZ29yaWVzOiBMaXN0W3N0cl0KICAgIGtleXdvcmRzOiBMaXN0W3N0cl0KICAgIHByaW9yaXR5OiBpbnQKICAgIGVuYWJsZWQ6IGJvb2wKCgpkZWYgZ2V0X2NoYW5uZWxzKCkgLT4gTGlzdFtDaGFubmVsQ29uZmlnXToKICAgIGNoYW5uZWxzID0gX2xvYWRfY2hhbm5lbHMoKQogICAgcmV0dXJuIFsKICAgICAgICBDaGFubmVsQ29uZmlnKAogICAgICAgICAgICBpZD1jaWQsCiAgICAgICAgICAgIG5hbWU9Y2ZnWyJuYW1lIl0sCiAgICAgICAgICAgIGNhdGVnb3JpZXM9Y2ZnLmdldCgiY2F0ZWdvcmllcyIsIFtdKSwKICAgICAgICAgICAga2V5d29yZHM9Y2ZnLmdldCgia2V5d29yZHMiLCBbXSksCiAgICAgICAgICAgIHByaW9yaXR5PWNmZy5nZXQoInByaW9yaXR5IiwgMSksCiAgICAgICAgICAgIGVuYWJsZWQ9Y2ZnLmdldCgiZW5hYmxlZCIsIFRydWUpLAogICAgICAgICkKICAgICAgICBmb3IgY2lkLCBjZmcgaW4gY2hhbm5lbHMuaXRlbXMoKQogICAgXQoKCmRlZiB1cGRhdGVfY2hhbm5lbChjaWQ6IHN0ciwgdXBkYXRlczogRGljdFtzdHIsIEFueV0pIC0+IGJvb2w6CiAgICBjaGFubmVscyA9IF9sb2FkX2NoYW5uZWxzKCkKICAgIGlmIGNpZCBub3QgaW4gY2hhbm5lbHM6CiAgICAgICAgcmV0dXJuIEZhbHNlCiAgICBjaGFubmVsc1tjaWRdLnVwZGF0ZSh1cGRhdGVzKQogICAgX3NhdmVfY2hhbm5lbHMoY2hhbm5lbHMpCiAgICByZXR1cm4gVHJ1ZQoKCmRlZiByZW5kZXJfY2hhbm5lbHNfaHRtbChjaGVja19yZXN1bHRzOiBPcHRpb25hbFtEaWN0W3N0ciwgTGlzdFtEaWN0W3N0ciwgQW55XV1dXSA9IE5vbmUpIC0+IHN0cjoKICAgIGNoYW5uZWxzID0gZ2V0X2NoYW5uZWxzKCkKICAgIGNoZWNrX3Jlc3VsdHMgPSBjaGVja19yZXN1bHRzIG9yIHt9CgogICAgbGluZXMgPSBbJzxkaXYgY2xhc3M9ImNoYW5uZWxzLXBhbmVsIj4nXQogICAgbGluZXMuYXBwZW5kKCI8aDM+8J+ToSBhclhpdiBXYXRjaCBBbGVydCBDaGFubmVsczwvaDM+IikKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiPHAgc3R5bGU9J2ZvbnQtc2l6ZToxM3B4O2NvbG9yOiNBODlFOEM7bWFyZ2luLWJvdHRvbToxNnB4Jz4iCiAgICAgICAgIkNvbmZpZ3VyZSBtdWx0aXBsZSBmZWVkIGNoYW5uZWxzIHdpdGggZGlmZmVyZW50IG1hdGNoaW5nIGNyaXRlcmlhLiAiCiAgICAgICAgIkhpZ2hlciBwcmlvcml0eSA9IHNob3duIGZpcnN0IGluIGFsZXJ0cy48L3A+IgogICAgKQoKICAgICMgUnVuIENoZWNrIGJ1dHRvbgogICAgbGluZXMuYXBwZW5kKCIiIgogICAgPGRpdiBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMjBweDsiPgogICAgICA8YnV0dG9uIGlkPSJydW4tY2hlY2stYnRuIiBvbmNsaWNrPSJydW5DaGVjaygpIiBzdHlsZT0iCiAgICAgICAgYmFja2dyb3VuZDogIzFhNzNlODsgY29sb3I6ICNmZmY7IGJvcmRlcjogbm9uZTsgYm9yZGVyLXJhZGl1czogNnB4OwogICAgICAgIHBhZGRpbmc6IDEwcHggMjBweDsgZm9udC1zaXplOiAxNHB4OyBjdXJzb3I6IHBvaW50ZXI7IGZvbnQtZmFtaWx5OiBHZW9yZ2lhLCBzZXJpZjsiPgogICAgICAgIPCflI0gUnVuIENoZWNrIE5vdwogICAgICA8L2J1dHRvbj4KICAgICAgPHNwYW4gaWQ9ImNoZWNrLXN0YXR1cyIgc3R5bGU9ImZvbnQtc2l6ZToxM3B4O2NvbG9yOiM4ODg7bWFyZ2luLWxlZnQ6MTJweDtkaXNwbGF5Om5vbmU7Ij48L3NwYW4+CiAgICA8L2Rpdj4KICAgIDxkaXYgaWQ9ImNoZWNrLXJlc3VsdHMiPjwvZGl2PgogICAgIiIiKQoKICAgIGZvciBjaCBpbiBjaGFubmVsczoKICAgICAgICBjb2xvciA9IHszOiAiI0M0NzA2QSIsIDI6ICIjRDRBMDU1IiwgMTogIiM2QjhGQjUifS5nZXQoY2gucHJpb3JpdHksICIjQTg5RThDIikKICAgICAgICBzdGF0dXMgPSAi4pyFIEVuYWJsZWQiIGlmIGNoLmVuYWJsZWQgZWxzZSAi4p2MIERpc2FibGVkIgogICAgICAgIGt3X3N0ciA9ICIsICIuam9pbihmIjxjb2RlPntrfTwvY29kZT4iIGZvciBrIGluIGNoLmtleXdvcmRzWzo2XSkKICAgICAgICBjYXRfc3RyID0gIiwgIi5qb2luKGNoLmNhdGVnb3JpZXNbOjRdKQogICAgICAgICMgUmVzdWx0cyBmcm9tIGxhc3QgY2hlY2sgZm9yIHRoaXMgY2hhbm5lbAogICAgICAgIGNoYW5uZWxfcmVzdWx0cyA9IGNoZWNrX3Jlc3VsdHMuZ2V0KGNoLmlkLCBbXSkKICAgICAgICByZXN1bHRfcm93cyA9ICIiCiAgICAgICAgZm9yIHJwIGluIGNoYW5uZWxfcmVzdWx0c1s6NV06CiAgICAgICAgICAgIHJlc3VsdF9yb3dzICs9IGYiIiIKICAgICAgICAgICAgPGRpdiBzdHlsZT0iZGlzcGxheTpmbGV4O2dhcDo4cHg7YWxpZ24taXRlbXM6ZmxleC1zdGFydDtwYWRkaW5nOjZweCAwO2JvcmRlci1ib3R0b206MXB4IHNvbGlkICNmMGViZTU7Ij4KICAgICAgICAgICAgICA8c3BhbiBzdHlsZT0iY29sb3I6IzRDQUY1MDtmb250LXNpemU6MTJweDsiPuKXjzwvc3Bhbj4KICAgICAgICAgICAgICA8ZGl2IHN0eWxlPSJmbGV4OjE7Ij4KICAgICAgICAgICAgICAgIDxkaXYgc3R5bGU9ImZvbnQtc2l6ZToxMnB4O2NvbG9yOiMyYTJhMmE7Zm9udC13ZWlnaHQ6NjAwOyI+e3JwLmdldCgidGl0bGUiLCAiIilbOjgwXX08L2Rpdj4KICAgICAgICAgICAgICAgIDxkaXYgc3R5bGU9ImZvbnQtc2l6ZToxMXB4O2NvbG9yOiM4ODg7Ij57cnAuZ2V0KCJwdWJsaXNoZWQiLCAiIil9IMK3IHNjb3JlPXtycC5nZXQoInNjb3JlIiwgMCk6LjJmfTwvZGl2PgogICAgICAgICAgICAgIDwvZGl2PgogICAgICAgICAgICA8L2Rpdj4iIiIKICAgICAgICBpZiBub3QgcmVzdWx0X3Jvd3M6CiAgICAgICAgICAgIHJlc3VsdF9yb3dzID0gIjxkaXYgc3R5bGU9J2ZvbnQtc2l6ZToxMnB4O2NvbG9yOiNiYmI7cGFkZGluZzo0cHggMDsnPk5vIG5ldyBwYXBlcnMgaW4gbGFzdCBjaGVjazwvZGl2PiIKCiAgICAgICAgbGluZXMuYXBwZW5kKGYiIiIKPGRpdiBzdHlsZT0nYm9yZGVyOiAxcHggc29saWQgI2UwZGJkNDsgYm9yZGVyLXJhZGl1czogNnB4OyBwYWRkaW5nOiAxNHB4OyBtYXJnaW4tYm90dG9tOiAxMnB4OyBib3JkZXItbGVmdDogNHB4IHNvbGlkIHtjb2xvcn07Jz4KICA8ZGl2IHN0eWxlPSdkaXNwbGF5OiBmbGV4OyBqdXN0aWZ5LWNvbnRlbnQ6IHNwYWNlLWJldHdlZW47IGFsaWduLWl0ZW1zOiBjZW50ZXI7IG1hcmdpbi1ib3R0b206IDZweDsnPgogICAgPGRpdiBzdHlsZT0nZm9udC13ZWlnaHQ6IDcwMDsgZm9udC1zaXplOiAxNHB4OyBjb2xvcjogIzJhMmEyYSc+e2NoLm5hbWV9PC9kaXY+CiAgICA8ZGl2IHN0eWxlPSdmb250LXNpemU6IDExcHg7IGNvbG9yOiAjQTg5RThDJz5wcmlvcml0eSB7Y2gucHJpb3JpdHl9IMK3IHtzdGF0dXN9PC9kaXY+CiAgPC9kaXY+CiAgPGRpdiBzdHlsZT0nZm9udC1zaXplOiAxMnB4OyBjb2xvcjogIzdhNzU3MDsgbWFyZ2luLWJvdHRvbTogNHB4Jz5DYXRlZ29yaWVzOiB7Y2F0X3N0cn08L2Rpdj4KICA8ZGl2IHN0eWxlPSdmb250LXNpemU6IDEycHg7IGNvbG9yOiAjQTg5RThDOyBtYXJnaW4tYm90dG9tOiA4cHgnPktleXdvcmRzOiB7a3dfc3RyIG9yICIobm9uZSkifTwvZGl2PgogIDxkaXYgc3R5bGU9J21hcmdpbi1ib3R0b206IDEwcHg7IHBhZGRpbmc6IDhweDsgYmFja2dyb3VuZDogI2ZhZjlmNzsgYm9yZGVyLXJhZGl1czogNHB4Oyc+CiAgICA8ZGl2IHN0eWxlPSdmb250LXNpemU6MTFweDtjb2xvcjojODg4O21hcmdpbi1ib3R0b206NnB4Oyc+UmVjZW50IHBhcGVycyBmcm9tIHRoaXMgY2hhbm5lbDo8L2Rpdj4KICAgIHtyZXN1bHRfcm93c30KICA8L2Rpdj4KICA8ZGl2IHN0eWxlPSdkaXNwbGF5OiBmbGV4OyBnYXA6IDhweDsnPgogICAgPGJ1dHRvbiBvbmNsaWNrPSJ0b2dnbGVDaGFubmVsKCd7Y2guaWR9JykiIHN0eWxlPSJmb250LXNpemU6IDExcHg7IHBhZGRpbmc6IDNweCAxMHB4OyBjdXJzb3I6IHBvaW50ZXI7IGJvcmRlci1yYWRpdXM6IDNweDsgYm9yZGVyOiAxcHggc29saWQgI2NjYzsgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQiPgogICAgICBUb2dnbGUKICAgIDwvYnV0dG9uPgogIDwvZGl2Pgo8L2Rpdj4iIiIpCgogICAgbGluZXMuYXBwZW5kKCIiIgo8c2NyaXB0PgpmdW5jdGlvbiB0b2dnbGVDaGFubmVsKGNpZCkgewogICAgZmV0Y2goJy9hcnhpdi1jaGFubmVscy90b2dnbGUvJyArIGNpZCwge21ldGhvZDogJ1BPU1QnfSkKICAgICAgLnRoZW4oZnVuY3Rpb24ocikgeyByZXR1cm4gci5qc29uKCk7IH0pCiAgICAgIC50aGVuKGZ1bmN0aW9uKGQpIHsgaWYgKGQuc3VjY2VzcykgbG9jYXRpb24ucmVsb2FkKCk7IH0pOwp9CmZ1bmN0aW9uIHJ1bkNoZWNrKCkgewogICAgdmFyIGJ0biA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdydW4tY2hlY2stYnRuJyk7CiAgICB2YXIgc3RhdHVzID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2NoZWNrLXN0YXR1cycpOwogICAgYnRuLmRpc2FibGVkID0gdHJ1ZTsKICAgIGJ0bi50ZXh0Q29udGVudCA9ICfij7MgQ2hlY2tpbmcuLi4nOwogICAgc3RhdHVzLnN0eWxlLmRpc3BsYXkgPSAnaW5saW5lJzsKICAgIHN0YXR1cy50ZXh0Q29udGVudCA9ICdRdWVyeWluZyBhclhpdi4uLic7CiAgICBmZXRjaCgnL2FyeGl2LWNoYW5uZWxzL2NoZWNrJywge21ldGhvZDogJ1BPU1QnfSkKICAgICAgLnRoZW4oZnVuY3Rpb24ocikgeyByZXR1cm4gci5qc29uKCk7IH0pCiAgICAgIC50aGVuKGZ1bmN0aW9uKGQpIHsKICAgICAgICAgIGJ0bi5kaXNhYmxlZCA9IGZhbHNlOwogICAgICAgICAgYnRuLnRleHRDb250ZW50ID0gJ/CflI0gUnVuIENoZWNrIE5vdyc7CiAgICAgICAgICBzdGF0dXMudGV4dENvbnRlbnQgPSAnJzsKICAgICAgICAgIGxvY2F0aW9uLnJlbG9hZCgpOwogICAgICB9KQogICAgICAuY2F0Y2goZnVuY3Rpb24oZSkgewogICAgICAgICAgYnRuLmRpc2FibGVkID0gZmFsc2U7CiAgICAgICAgICBidG4udGV4dENvbnRlbnQgPSAn8J+UjSBSdW4gQ2hlY2sgTm93JzsKICAgICAgICAgIHN0YXR1cy50ZXh0Q29udGVudCA9ICdFcnJvcjogJyArIGUubWVzc2FnZTsKICAgICAgfSk7Cn0KPC9zY3JpcHQ+IiIiKQoKICAgIGxpbmVzLmFwcGVuZCgiPHN0eWxlPi5jaGFubmVscy1wYW5lbCB7IGZvbnQtZmFtaWx5OiBHZW9yZ2lhLCBzZXJpZjsgfTwvc3R5bGU+IikKICAgIGxpbmVzLmFwcGVuZCgiPC9kaXY+IikKICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCg==
+"""arXiv Watch Alert Channels — multiple feed configurations with different matching criteria.
+
+Channels:
+  - general: broad ML/AI coverage
+  - climate: climate + AI intersection
+  - ai_safety: alignment, robustness, interpretability
+  - regulation: AI policy, governance, law
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+CHANNELS_FILE = Path.home() / ".ai_research_os" / "arxiv_channels.json"
+
+DEFAULT_CHANNELS = {
+    "general": {
+        "name": "General AI/ML",
+        "categories": ["cs.AI", "cs.LG", "cs.CL", "cs.CV", "cs.NE"],
+        "keywords": [],
+        "priority": 1,
+        "enabled": True,
+    },
+    "climate": {
+        "name": "Climate AI",
+        "categories": ["cs.AI", "cs.LG", "cs.ET", "envir.ArXiv"],
+        "keywords": ["climate", "carbon", "emissions", "renewable", "energy", "sustainability", "green AI"],
+        "priority": 3,
+        "enabled": True,
+    },
+    "ai_safety": {
+        "name": "AI Safety",
+        "categories": ["cs.AI", "cs.LG"],
+        "keywords": ["safety", "alignment", "robustness", "interpretability", "fairness", "trustworthy", "hazard", "risk"],
+        "priority": 3,
+        "enabled": True,
+    },
+    "regulation": {
+        "name": "AI Regulation",
+        "categories": ["cs.AI", "cs.CY", "cs.SI"],
+        "keywords": ["regulation", "policy", "governance", "law", "GDPR", "compliance", "legal", "legislation"],
+        "priority": 2,
+        "enabled": True,
+    },
+}
+
+
+def _load_channels() -> Dict[str, Any]:
+    if not CHANNELS_FILE.exists():
+        CHANNELS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        CHANNELS_FILE.write_text(json.dumps(DEFAULT_CHANNELS, indent=2, ensure_ascii=False), encoding="utf-8")
+        return DEFAULT_CHANNELS
+    return json.loads(CHANNELS_FILE.read_text(encoding="utf-8"))
+
+
+def _save_channels(channels: Dict[str, Any]) -> None:
+    CHANNELS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    CHANNELS_FILE.write_text(json.dumps(channels, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def match_paper_to_channels(paper: Dict[str, Any]) -> List[str]:
+    """Return list of channel IDs a paper matches."""
+    channels = _load_channels()
+    cats = set(paper.get("categories", []) or [])
+    abstract = (paper.get("abstract", "") + " " + paper.get("title", "")).lower()
+    _title = paper.get("title", "").lower()
+    matched: List[str] = []
+
+    for cid, cfg in channels.items():
+        if not cfg.get("enabled", True):
+            continue
+        # Category match
+        if any(c in cats for c in cfg.get("categories", [])):
+            matched.append(cid)
+            continue
+        # Keyword match
+        keywords = cfg.get("keywords", [])
+        if keywords and any(kw.lower() in abstract for kw in keywords):
+            matched.append(cid)
+
+    return matched
+
+
+@dataclass
+class ChannelConfig:
+    id: str
+    name: str
+    categories: List[str]
+    keywords: List[str]
+    priority: int
+    enabled: bool
+
+
+def get_channels() -> List[ChannelConfig]:
+    channels = _load_channels()
+    return [
+        ChannelConfig(id=cid, name=cfg["name"], categories=cfg.get("categories", []),
+                     keywords=cfg.get("keywords", []), priority=cfg.get("priority", 1),
+                     enabled=cfg.get("enabled", True))
+        for cid, cfg in channels.items()
+    ]
+
+
+def update_channel(cid: str, updates: Dict[str, Any]) -> bool:
+    channels = _load_channels()
+    if cid not in channels:
+        return False
+    channels[cid].update(updates)
+    _save_channels(channels)
+    return True
+
+
+def render_channels_html(check_results: Optional[Dict[str, List[Dict[str, Any]]]] = None) -> str:
+    channels = get_channels()
+    check_results = check_results or {}
+
+    lines = ['<div class="channels-panel">']
+    lines.append("<h3>📡 arXiv Watch Alert Channels</h3>")
+    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
+                "Configure multiple feed channels with different matching criteria. "
+                "Higher priority = shown first in alerts.</p>")
+
+    # Run Check button
+    lines.append("""
+    <div style="margin-bottom: 20px;">
+      <button id="run-check-btn" onclick="runCheck()" style="
+        background: #1a73e8; color: #fff; border: none; border-radius: 6px;
+        padding: 10px 20px; font-size: 14px; cursor: pointer; font-family: Georgia, serif;">
+        🔍 Run Check Now
+      </button>
+      <span id="check-status" style="font-size:13px;color:#888;margin-left:12px;display:none;"></span>
+    </div>
+    <div id="check-results"></div>
+    """)
+
+    for ch in channels:
+        color = {3: "#C4706A", 2: "#D4A055", 1: "#6B8FB5"}.get(ch.priority, "#A89E8C")
+        status = "✅ Enabled" if ch.enabled else "❌ Disabled"
+        kw_str = ", ".join(f"<code>{k}</code>" for k in ch.keywords[:6])
+        cat_str = ", ".join(ch.categories[:4])
+        # Results from last check for this channel
+        channel_results = check_results.get(ch.id, [])
+        result_rows = ""
+        for rp in channel_results[:5]:
+            result_rows += f"""
+            <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #f0ebe5;">
+              <span style="color:#4CAF50;font-size:12px;">●</span>
+              <div style="flex:1;">
+                <div style="font-size:12px;color:#2a2a2a;font-weight:600;">{rp.get('title','')[:80]}</div>
+                <div style="font-size:11px;color:#888;">{rp.get('published','')} · score={rp.get('score',0):.2f}</div>
+              </div>
+            </div>"""
+        if not result_rows:
+            result_rows = "<div style='font-size:12px;color:#bbb;padding:4px 0;'>No new papers in last check</div>"
+
+        lines.append(f"""
+<div style='border: 1px solid #e0dbd4; border-radius: 6px; padding: 14px; margin-bottom: 12px; border-left: 4px solid {color};'>
+  <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;'>
+    <div style='font-weight: 700; font-size: 14px; color: #2a2a2a'>{ch.name}</div>
+    <div style='font-size: 11px; color: #A89E8C'>priority {ch.priority} · {status}</div>
+  </div>
+  <div style='font-size: 12px; color: #7a7570; margin-bottom: 4px'>Categories: {cat_str}</div>
+  <div style='font-size: 12px; color: #A89E8C; margin-bottom: 8px'>Keywords: {kw_str or '(none)'}</div>
+  <div style='margin-bottom: 10px; padding: 8px; background: #faf9f7; border-radius: 4px;'>
+    <div style='font-size:11px;color:#888;margin-bottom:6px;'>Recent papers from this channel:</div>
+    {result_rows}
+  </div>
+  <div style='display: flex; gap: 8px;'>
+    <button onclick="toggleChannel('{ch.id}')" style="font-size: 11px; padding: 3px 10px; cursor: pointer; border-radius: 3px; border: 1px solid #ccc; background: transparent">
+      Toggle
+    </button>
+  </div>
+</div>""")
+
+    lines.append("""
+<script>
+function toggleChannel(cid) {
+    fetch('/arxiv-channels/toggle/' + cid, {method: 'POST'})
+      .then(function(r) { return r.json(); })
+      .then(function(d) { if (d.success) location.reload(); });
+}
+function runCheck() {
+    var btn = document.getElementById('run-check-btn');
+    var status = document.getElementById('check-status');
+    btn.disabled = true;
+    btn.textContent = '⏳ Checking...';
+    status.style.display = 'inline';
+    status.textContent = 'Querying arXiv...';
+    fetch('/arxiv-channels/check', {method: 'POST'})
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+          btn.disabled = false;
+          btn.textContent = '🔍 Run Check Now';
+          status.textContent = '';
+          location.reload();
+      })
+      .catch(function(e) {
+          btn.disabled = false;
+          btn.textContent = '🔍 Run Check Now';
+          status.textContent = 'Error: ' + e.message;
+      });
+}
+</script>""")
+
+    lines.append("<style>.channels-panel { font-family: Georgia, serif; }</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

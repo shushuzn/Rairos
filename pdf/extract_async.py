@@ -1,1 +1,57 @@
-IiIiQXN5bmMgUERGIGRvd25sb2FkIHVzaW5nIGFpb2h0dHAuIiIiCgpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKZnJvbSB0eXBpbmcgaW1wb3J0IE9wdGlvbmFsCgppbXBvcnQgYWlvaHR0cAoKX2Nvbm5lY3RvciA9IGFpb2h0dHAuVENQQ29ubmVjdG9yKGxpbWl0PTEwLCBrZWVwYWxpdmVfdGltZW91dD0zMCkKX3Nlc3Npb246IE9wdGlvbmFsW2Fpb2h0dHAuQ2xpZW50U2Vzc2lvbl0gPSBOb25lCgoKYXN5bmMgZGVmIF9nZXRfc2Vzc2lvbigpIC0+IGFpb2h0dHAuQ2xpZW50U2Vzc2lvbjoKICAgIGdsb2JhbCBfc2Vzc2lvbgogICAgaWYgX3Nlc3Npb24gaXMgTm9uZSBvciBfc2Vzc2lvbi5jbG9zZWQ6CiAgICAgICAgX3Nlc3Npb24gPSBhaW9odHRwLkNsaWVudFNlc3Npb24oY29ubmVjdG9yPV9jb25uZWN0b3IpCiAgICByZXR1cm4gX3Nlc3Npb24KCgphc3luYyBkZWYgZG93bmxvYWRfcGRmX2FzeW5jKAogICAgcGRmX3VybDogc3RyLAogICAgb3V0X3BhdGg6IFBhdGgsCiAgICB0aW1lb3V0OiBpbnQgPSA2MCwKICAgIHJlc3VtZV9zaXplOiBpbnQgPSAwLAopIC0+IE5vbmU6CiAgICAiIiJEb3dubG9hZCBQREYgd2l0aCByZXN1bWUgc3VwcG9ydCB2aWEgYWlvaHR0cC4gT3ZlcndyaXRlcyBvdXRfcGF0aCBvbiBzdWNjZXNzLiIiIgogICAgb3V0X3BhdGgucGFyZW50Lm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgIHJlc3VtZV9wYXRoID0gb3V0X3BhdGgud2l0aF9zdWZmaXgoIi5wYXJ0IikKICAgIGhlYWRlcnM6IGRpY3Rbc3RyLCBzdHJdID0ge30KICAgIGlmIHJlc3VtZV9zaXplID4gMDoKICAgICAgICBoZWFkZXJzWyJSYW5nZSJdID0gZiJieXRlcz17cmVzdW1lX3NpemV9LSIKCiAgICB0aW1lb3V0X2NmZyA9IGFpb2h0dHAuQ2xpZW50VGltZW91dCh0b3RhbD10aW1lb3V0KQogICAgc2Vzc2lvbiA9IGF3YWl0IF9nZXRfc2Vzc2lvbigpCgogICAgYXN5bmMgd2l0aCBzZXNzaW9uLmdldCgKICAgICAgICBwZGZfdXJsLCBoZWFkZXJzPWhlYWRlcnMsIHJhaXNlX2Zvcl9zdGF0dXM9VHJ1ZSwgdGltZW91dD10aW1lb3V0X2NmZwogICAgKSBhcyByOgogICAgICAgIHN1cHBvcnRzX3JhbmdlID0gci5zdGF0dXMgPT0gMjA2IG9yICgKICAgICAgICAgICAgcmVzdW1lX3NpemUgPiAwIGFuZCByLmhlYWRlcnMuZ2V0KCJBY2NlcHQtUmFuZ2VzIiwgIm5vbmUiKSAhPSAibm9uZSIKICAgICAgICApCiAgICAgICAgaWYgc3VwcG9ydHNfcmFuZ2UgYW5kIHJlc3VtZV9zaXplID4gMDoKICAgICAgICAgICAgIyBSZXN1bWU6IGFwcGVuZCB0byBleGlzdGluZyBwYXJ0aWFsIGZpbGUKICAgICAgICAgICAgd2l0aCBvcGVuKHJlc3VtZV9wYXRoLCAiYWIiKSBhcyBmOgogICAgICAgICAgICAgICAgYXN5bmMgZm9yIGNodW5rIGluIHIuY29udGVudC5pdGVyX2NodW5rZWQoMTAyNCAqIDEwMjQpOgogICAgICAgICAgICAgICAgICAgIGlmIGNodW5rOgogICAgICAgICAgICAgICAgICAgICAgICBmLndyaXRlKGNodW5rKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgICMgTm8gcmVzdW1lIHN1cHBvcnQgb3Igbm8gcGFydGlhbCBmaWxlOiBvdmVyd3JpdGUKICAgICAgICAgICAgcmVzdW1lX3BhdGgudW5saW5rKG1pc3Npbmdfb2s9VHJ1ZSkKICAgICAgICAgICAgd2l0aCBvcGVuKG91dF9wYXRoLCAid2IiKSBhcyBmOgogICAgICAgICAgICAgICAgYXN5bmMgZm9yIGNodW5rIGluIHIuY29udGVudC5pdGVyX2NodW5rZWQoMTAyNCAqIDEwMjQpOgogICAgICAgICAgICAgICAgICAgIGlmIGNodW5rOgogICAgICAgICAgICAgICAgICAgICAgICBmLndyaXRlKGNodW5rKQogICAgICAgICAgICByZXR1cm4KCiAgICAjIEZpbmFsaXplOiByZW5hbWUgLnBhcnQg4oaSIHRhcmdldAogICAgaWYgcmVzdW1lX3BhdGguZXhpc3RzKCkgYW5kIHJlc3VtZV9wYXRoLnN0YXQoKS5zdF9zaXplID4gMDoKICAgICAgICByZXN1bWVfcGF0aC5yZW5hbWUob3V0X3BhdGgpCiAgICBlbGlmIG5vdCBvdXRfcGF0aC5leGlzdHMoKToKICAgICAgICByYWlzZSBSdW50aW1lRXJyb3IoZiJEb3dubG9hZCBmYWlsZWQgZm9yIHtwZGZfdXJsfTogbm8gY29udGVudCByZWNlaXZlZCIpCg==
+"""Async PDF download using aiohttp."""
+from pathlib import Path
+from typing import Optional
+
+import aiohttp
+
+_connector = aiohttp.TCPConnector(limit=10, keepalive_timeout=30)
+_session: Optional[aiohttp.ClientSession] = None
+
+
+async def _get_session() -> aiohttp.ClientSession:
+    global _session
+    if _session is None or _session.closed:
+        _session = aiohttp.ClientSession(connector=_connector)
+    return _session
+
+
+async def download_pdf_async(
+    pdf_url: str,
+    out_path: Path,
+    timeout: int = 60,
+    resume_size: int = 0,
+) -> None:
+    """Download PDF with resume support via aiohttp. Overwrites out_path on success."""
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    resume_path = out_path.with_suffix(".part")
+    headers: dict[str, str] = {}
+    if resume_size > 0:
+        headers["Range"] = f"bytes={resume_size}-"
+
+    timeout_cfg = aiohttp.ClientTimeout(total=timeout)
+    session = await _get_session()
+
+    async with session.get(pdf_url, headers=headers, raise_for_status=True, timeout=timeout_cfg) as r:
+        supports_range = r.status == 206 or (
+            resume_size > 0 and r.headers.get("Accept-Ranges", "none") != "none"
+        )
+        if supports_range and resume_size > 0:
+            # Resume: append to existing partial file
+            with open(resume_path, "ab") as f:
+                async for chunk in r.content.iter_chunked(1024 * 1024):
+                    if chunk:
+                        f.write(chunk)
+        else:
+            # No resume support or no partial file: overwrite
+            resume_path.unlink(missing_ok=True)
+            with open(out_path, "wb") as f:
+                async for chunk in r.content.iter_chunked(1024 * 1024):
+                    if chunk:
+                        f.write(chunk)
+            return
+
+    # Finalize: rename .part → target
+    if resume_path.exists() and resume_path.stat().st_size > 0:
+        resume_path.rename(out_path)
+    elif not out_path.exists():
+        raise RuntimeError(f"Download failed for {pdf_url}: no content received")

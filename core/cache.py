@@ -1,1 +1,156 @@
-IiIiSFRUUCByZXNwb25zZSBjYWNoZSBmb3IgYXJYaXYgYW5kIENyb3NzcmVmIEFQSSBjYWxscy4iIiIKCmltcG9ydCBvcmpzb24KaW1wb3J0IHRpbWUKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBBbnksIERpY3QsIE9wdGlvbmFsLCBUdXBsZQpmcm9tIHVybGxpYi5wYXJzZSBpbXBvcnQgcXVvdGUKCmZyb20gY29uZmlnIGltcG9ydCBDQUNIRV9ESVIsIENBQ0hFX1RUTF9TRUNPTkRTLCBNQVhfQ0FDSEVfRklMRVMsIE1FTU9SWV9DQUNIRV9NQVhfU0laRQoKX0NBQ0hFX0RJUiA9IFBhdGgoQ0FDSEVfRElSKQpfQVJYSVZfQ0FDSEVfRElSID0gX0NBQ0hFX0RJUiAvICJhcnhpdiIKX0NST1NTUkVGX0NBQ0hFX0RJUiA9IF9DQUNIRV9ESVIgLyAiY3Jvc3NyZWYiCl9UVExfU0VDT05EUzogaW50ID0gQ0FDSEVfVFRMX1NFQ09ORFMKX01BWF9DQUNIRV9GSUxFUzogaW50ID0gTUFYX0NBQ0hFX0ZJTEVTICAjIG1heCBmaWxlcyBwZXIgY2FjaGUgZGlyCgojIEluLW1lbW9yeSBjYWNoZSBsYXllciB0byByZWR1Y2UgZGlzayBJL08KX01FTU9SWV9DQUNIRTogRGljdFtUdXBsZVtzdHIsIHN0cl0sIFR1cGxlW2Zsb2F0LCBkaWN0XV0gPSB7fSAgIyAoc291cmNlLCBrZXkpIC0+ICh0aW1lc3RhbXAsIGRhdGEpCl9NRU1PUllfQ0FDSEVfTUFYX1NJWkUgPSBNRU1PUllfQ0FDSEVfTUFYX1NJWkUgICMgTWF4aW11bSBudW1iZXIgb2YgaXRlbXMgaW4gbWVtb3J5IGNhY2hlCgoKZGVmIF9jYWNoZV9kaXIoc291cmNlOiBzdHIpIC0+IFBhdGg6CiAgICBkID0gX0NBQ0hFX0RJUiAvIHNvdXJjZQogICAgZC5ta2RpcihwYXJlbnRzPVRydWUsIGV4aXN0X29rPVRydWUpCiAgICByZXR1cm4gZAoKCmRlZiBfY2FjaGVfcGF0aChzb3VyY2U6IHN0ciwga2V5OiBzdHIpIC0+IFBhdGg6CiAgICBzYWZlID0gcXVvdGUoa2V5LCBzYWZlPSIiKQogICAgcmV0dXJuIF9jYWNoZV9kaXIoc291cmNlKSAvIGYie3NhZmV9Lmpzb24iCgoKZGVmIF9ldmljdF9pZl9uZWVkZWQoc291cmNlOiBzdHIpIC0+IE5vbmU6CiAgICAiIiJFdmljdCBvbGRlc3QgZmlsZXMgaWYgY2FjaGUgZXhjZWVkcyBNQVhfQ0FDSEVfRklMRVMgKHNpbXBsZSBMUlUtaXNoIGV2aWN0aW9uKS4iIiIKICAgIGNhY2hlX3BhdGggPSBfY2FjaGVfZGlyKHNvdXJjZSkKICAgIHRyeToKICAgICAgICBmaWxlcyA9IHNvcnRlZChjYWNoZV9wYXRoLmdsb2IoIiouanNvbiIpLCBrZXk9bGFtYmRhIGY6IGYuc3RhdCgpLnN0X210aW1lKQogICAgZXhjZXB0IE9TRXJyb3I6CiAgICAgICAgcmV0dXJuCiAgICBpZiBsZW4oZmlsZXMpID4gX01BWF9DQUNIRV9GSUxFUzoKICAgICAgICAjIFJlbW92ZSBvbGRlc3QgMTAlCiAgICAgICAgZXZpY3RfY291bnQgPSBtYXgoMSwgbGVuKGZpbGVzKSAvLyAxMCkKICAgICAgICBmb3IgZiBpbiBmaWxlc1s6ZXZpY3RfY291bnRdOgogICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICBmLnVubGluaygpCiAgICAgICAgICAgIGV4Y2VwdCBPU0Vycm9yOgogICAgICAgICAgICAgICAgcGFzcwoKCmRlZiBfZXZpY3RfbWVtb3J5X2NhY2hlX2lmX25lZWRlZCgpIC0+IE5vbmU6CiAgICAiIiJFdmljdCBvbGRlc3QgaXRlbXMgZnJvbSBtZW1vcnkgY2FjaGUgaWYgaXQgZXhjZWVkcyB0aGUgbGltaXQuIiIiCiAgICBpZiBsZW4oX01FTU9SWV9DQUNIRSkgPiBfTUVNT1JZX0NBQ0hFX01BWF9TSVpFOgogICAgICAgICMgU29ydCBpdGVtcyBieSB0aW1lc3RhbXAgYW5kIHJlbW92ZSBvbGRlc3QgMjAlCiAgICAgICAgc29ydGVkX2l0ZW1zID0gc29ydGVkKF9NRU1PUllfQ0FDSEUuaXRlbXMoKSwga2V5PWxhbWJkYSB4OiB4WzFdWzBdKQogICAgICAgIGV2aWN0X2NvdW50ID0gbWF4KDEsIGxlbihfTUVNT1JZX0NBQ0hFKSAvLyA1KQogICAgICAgIGZvciBpdGVtIGluIHNvcnRlZF9pdGVtc1s6ZXZpY3RfY291bnRdOgogICAgICAgICAgICBkZWwgX01FTU9SWV9DQUNIRVtpdGVtWzBdXQoKCmRlZiBnZXRfY2FjaGVkKHNvdXJjZTogc3RyLCBrZXk6IHN0cikgLT4gT3B0aW9uYWxbZGljdF06CiAgICAiIiJHZXQgY2FjaGVkIGRhdGEsIGNoZWNraW5nIG1lbW9yeSBjYWNoZSBmaXJzdCwgdGhlbiBkaXNrLiIiIgogICAgIyBDaGVjayBtZW1vcnkgY2FjaGUgZmlyc3QKICAgIGNhY2hlX2tleSA9IChzb3VyY2UsIGtleSkKICAgIGlmIGNhY2hlX2tleSBpbiBfTUVNT1JZX0NBQ0hFOgogICAgICAgIHRpbWVzdGFtcCwgZGF0YSA9IF9NRU1PUllfQ0FDSEVbY2FjaGVfa2V5XQogICAgICAgIGlmIHRpbWUudGltZSgpIC0gdGltZXN0YW1wIDwgX1RUTF9TRUNPTkRTOgogICAgICAgICAgICByZXR1cm4gZGF0YQogICAgICAgIGVsc2U6CiAgICAgICAgICAgICMgUmVtb3ZlIGV4cGlyZWQgaXRlbSBmcm9tIG1lbW9yeSBjYWNoZQogICAgICAgICAgICBkZWwgX01FTU9SWV9DQUNIRVtjYWNoZV9rZXldCgogICAgIyBDaGVjayBkaXNrIGNhY2hlCiAgICBwID0gX2NhY2hlX3BhdGgoc291cmNlLCBrZXkpCiAgICBpZiBub3QgcC5leGlzdHMoKToKICAgICAgICByZXR1cm4gTm9uZQogICAgdHJ5OgogICAgICAgIG10aW1lID0gcC5zdGF0KCkuc3RfbXRpbWUKICAgICAgICBpZiB0aW1lLnRpbWUoKSAtIG10aW1lID4gX1RUTF9TRUNPTkRTOgogICAgICAgICAgICByZXR1cm4gTm9uZQogICAgICAgIGRhdGEgPSBvcmpzb24ubG9hZHMocC5yZWFkX2J5dGVzKCkpCiAgICAgICAgIyBBZGQgdG8gbWVtb3J5IGNhY2hlCiAgICAgICAgX01FTU9SWV9DQUNIRVtjYWNoZV9rZXldID0gKHRpbWUudGltZSgpLCBkYXRhKQogICAgICAgIF9ldmljdF9tZW1vcnlfY2FjaGVfaWZfbmVlZGVkKCkKICAgICAgICByZXR1cm4gZGF0YSAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KICAgIGV4Y2VwdCAoT1NFcnJvciwgb3Jqc29uLkpTT05EZWNvZGVFcnJvcik6CiAgICAgICAgcmV0dXJuIE5vbmUKCgpkZWYgc2V0X2NhY2hlZChzb3VyY2U6IHN0ciwga2V5OiBzdHIsIGRhdGE6IGRpY3QpIC0+IE5vbmU6CiAgICAiIiJTZXQgY2FjaGVkIGRhdGEsIHVwZGF0aW5nIGJvdGggbWVtb3J5IGFuZCBkaXNrIGNhY2hlcy4iIiIKICAgICMgVXBkYXRlIG1lbW9yeSBjYWNoZQogICAgY2FjaGVfa2V5ID0gKHNvdXJjZSwga2V5KQogICAgX01FTU9SWV9DQUNIRVtjYWNoZV9rZXldID0gKHRpbWUudGltZSgpLCBkYXRhKQogICAgX2V2aWN0X21lbW9yeV9jYWNoZV9pZl9uZWVkZWQoKQoKICAgICMgVXBkYXRlIGRpc2sgY2FjaGUKICAgIF9ldmljdF9pZl9uZWVkZWQoc291cmNlKQogICAgcCA9IF9jYWNoZV9wYXRoKHNvdXJjZSwga2V5KQogICAgdHJ5OgogICAgICAgIHAud3JpdGVfYnl0ZXMob3Jqc29uLmR1bXBzKGRhdGEsIG9wdGlvbj1vcmpzb24uT1BUX0lOREVOVF8yKSkKICAgIGV4Y2VwdCBPU0Vycm9yOgogICAgICAgIHBhc3MgICMgZGlzayBmdWxsIG9yIHBlcm1pc3Npb24gaXNzdWUg4oCUIG5vbi1mYXRhbAoKCmRlZiBjbGVhcl9jYWNoZShzb3VyY2U6IE9wdGlvbmFsW3N0cl0gPSBOb25lKSAtPiBOb25lOgogICAgIiIiQ2xlYXIgY2FjaGUgZm9yIGEgc3BlY2lmaWMgc291cmNlIG9yIGFsbCBzb3VyY2VzLiIiIgoKICAgICMgQ2xlYXIgbWVtb3J5IGNhY2hlCiAgICBpZiBzb3VyY2U6CiAgICAgICAgIyBSZW1vdmUgb25seSBpdGVtcyBmb3IgdGhlIHNwZWNpZmllZCBzb3VyY2UKICAgICAgICBrZXlzX3RvX3JlbW92ZSA9IFtrIGZvciBrIGluIF9NRU1PUllfQ0FDSEUgaWYga1swXSA9PSBzb3VyY2VdCiAgICAgICAgZm9yIGtleSBpbiBrZXlzX3RvX3JlbW92ZToKICAgICAgICAgICAgZGVsIF9NRU1PUllfQ0FDSEVba2V5XQogICAgZWxzZToKICAgICAgICAjIENsZWFyIGFsbCBtZW1vcnkgY2FjaGUKICAgICAgICBfTUVNT1JZX0NBQ0hFLmNsZWFyKCkKCiAgICAjIENsZWFyIGRpc2sgY2FjaGUKICAgIGlmIHNvdXJjZToKICAgICAgICBjYWNoZV9kaXIgPSBfY2FjaGVfZGlyKHNvdXJjZSkKICAgICAgICB0cnk6CiAgICAgICAgICAgIGZvciBmIGluIGNhY2hlX2Rpci5nbG9iKCIqLmpzb24iKToKICAgICAgICAgICAgICAgIGYudW5saW5rKCkKICAgICAgICBleGNlcHQgT1NFcnJvcjoKICAgICAgICAgICAgcGFzcwogICAgZWxzZToKICAgICAgICB0cnk6CiAgICAgICAgICAgIGZvciBzdWJkaXIgaW4gX0NBQ0hFX0RJUi5pdGVyZGlyKCk6CiAgICAgICAgICAgICAgICBpZiBzdWJkaXIuaXNfZGlyKCk6CiAgICAgICAgICAgICAgICAgICAgZm9yIGYgaW4gc3ViZGlyLmdsb2IoIiouanNvbiIpOgogICAgICAgICAgICAgICAgICAgICAgICBmLnVubGluaygpCiAgICAgICAgZXhjZXB0IE9TRXJyb3I6CiAgICAgICAgICAgIHBhc3MKCgpkZWYgZ2V0X2NhY2hlX3N0YXRzKCkgLT4gRGljdFtzdHIsIEFueV06CiAgICAiIiJHZXQgY2FjaGUgc3RhdGlzdGljcy4iIiIKICAgIHN0YXRzID0gewogICAgICAgICJtZW1vcnlfY2FjaGVfc2l6ZSI6IGxlbihfTUVNT1JZX0NBQ0hFKSwKICAgICAgICAibWVtb3J5X2NhY2hlX21heF9zaXplIjogX01FTU9SWV9DQUNIRV9NQVhfU0laRSwKICAgICAgICAiZGlza19jYWNoZV9kaXIiOiBzdHIoX0NBQ0hFX0RJUiksCiAgICAgICAgInR0bF9zZWNvbmRzIjogX1RUTF9TRUNPTkRTLAogICAgICAgICJtYXhfY2FjaGVfZmlsZXMiOiBfTUFYX0NBQ0hFX0ZJTEVTLAogICAgICAgICJkaXNrX2NhY2hlX3NpemVzIjoge30sCiAgICB9CgogICAgIyBDYWxjdWxhdGUgZGlzayBjYWNoZSBzaXplcwogICAgdHJ5OgogICAgICAgIGZvciBzdWJkaXIgaW4gX0NBQ0hFX0RJUi5pdGVyZGlyKCk6CiAgICAgICAgICAgIGlmIHN1YmRpci5pc19kaXIoKToKICAgICAgICAgICAgICAgIGZpbGVzID0gbGlzdChzdWJkaXIuZ2xvYigiKi5qc29uIikpCiAgICAgICAgICAgICAgICBzdGF0c1siZGlza19jYWNoZV9zaXplcyJdW3N1YmRpci5uYW1lXSA9IGxlbihmaWxlcykgICMgdHlwZTogaWdub3JlW2luZGV4XQogICAgZXhjZXB0IE9TRXJyb3I6CiAgICAgICAgcGFzcwoKICAgIHJldHVybiBzdGF0cwo=
+"""HTTP response cache for arXiv and Crossref API calls."""
+
+import orjson
+import time
+from pathlib import Path
+from typing import Any, Dict, Optional, Tuple
+from urllib.parse import quote
+
+from config import CACHE_DIR, CACHE_TTL_SECONDS, MAX_CACHE_FILES, MEMORY_CACHE_MAX_SIZE
+
+_CACHE_DIR = Path(CACHE_DIR)
+_ARXIV_CACHE_DIR = _CACHE_DIR / "arxiv"
+_CROSSREF_CACHE_DIR = _CACHE_DIR / "crossref"
+_TTL_SECONDS: int = CACHE_TTL_SECONDS
+_MAX_CACHE_FILES: int = MAX_CACHE_FILES  # max files per cache dir
+
+# In-memory cache layer to reduce disk I/O
+_MEMORY_CACHE: Dict[Tuple[str, str], Tuple[float, dict]] = {}  # (source, key) -> (timestamp, data)
+_MEMORY_CACHE_MAX_SIZE = MEMORY_CACHE_MAX_SIZE  # Maximum number of items in memory cache
+
+
+def _cache_dir(source: str) -> Path:
+    d = _CACHE_DIR / source
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def _cache_path(source: str, key: str) -> Path:
+    safe = quote(key, safe="")
+    return _cache_dir(source) / f"{safe}.json"
+
+
+def _evict_if_needed(source: str) -> None:
+    """Evict oldest files if cache exceeds MAX_CACHE_FILES (simple LRU-ish eviction)."""
+    cache_path = _cache_dir(source)
+    try:
+        files = sorted(cache_path.glob("*.json"), key=lambda f: f.stat().st_mtime)
+    except OSError:
+        return
+    if len(files) > _MAX_CACHE_FILES:
+        # Remove oldest 10%
+        evict_count = max(1, len(files) // 10)
+        for f in files[:evict_count]:
+            try:
+                f.unlink()
+            except OSError:
+                pass
+
+
+def _evict_memory_cache_if_needed() -> None:
+    """Evict oldest items from memory cache if it exceeds the limit."""
+    if len(_MEMORY_CACHE) > _MEMORY_CACHE_MAX_SIZE:
+        # Sort items by timestamp and remove oldest 20%
+        sorted_items = sorted(_MEMORY_CACHE.items(), key=lambda x: x[1][0])
+        evict_count = max(1, len(_MEMORY_CACHE) // 5)
+        for item in sorted_items[:evict_count]:
+            del _MEMORY_CACHE[item[0]]
+
+
+def get_cached(source: str, key: str) -> Optional[dict]:
+    """Get cached data, checking memory cache first, then disk."""
+    # Check memory cache first
+    cache_key = (source, key)
+    if cache_key in _MEMORY_CACHE:
+        timestamp, data = _MEMORY_CACHE[cache_key]
+        if time.time() - timestamp < _TTL_SECONDS:
+            return data
+        else:
+            # Remove expired item from memory cache
+            del _MEMORY_CACHE[cache_key]
+
+    # Check disk cache
+    p = _cache_path(source, key)
+    if not p.exists():
+        return None
+    try:
+        mtime = p.stat().st_mtime
+        if time.time() - mtime > _TTL_SECONDS:
+            return None
+        data = orjson.loads(p.read_bytes())
+        # Add to memory cache
+        _MEMORY_CACHE[cache_key] = (time.time(), data)
+        _evict_memory_cache_if_needed()
+        return data  # type: ignore[no-any-return]
+    except (OSError, orjson.JSONDecodeError):
+        return None
+
+
+def set_cached(source: str, key: str, data: dict) -> None:
+    """Set cached data, updating both memory and disk caches."""
+    # Update memory cache
+    cache_key = (source, key)
+    _MEMORY_CACHE[cache_key] = (time.time(), data)
+    _evict_memory_cache_if_needed()
+
+    # Update disk cache
+    _evict_if_needed(source)
+    p = _cache_path(source, key)
+    try:
+        p.write_bytes(orjson.dumps(data, option=orjson.OPT_INDENT_2))
+    except OSError:
+        pass  # disk full or permission issue — non-fatal
+
+
+def clear_cache(source: Optional[str] = None) -> None:
+    """Clear cache for a specific source or all sources."""
+
+    # Clear memory cache
+    if source:
+        # Remove only items for the specified source
+        keys_to_remove = [k for k in _MEMORY_CACHE if k[0] == source]
+        for key in keys_to_remove:
+            del _MEMORY_CACHE[key]
+    else:
+        # Clear all memory cache
+        _MEMORY_CACHE.clear()
+
+    # Clear disk cache
+    if source:
+        cache_dir = _cache_dir(source)
+        try:
+            for f in cache_dir.glob("*.json"):
+                f.unlink()
+        except OSError:
+            pass
+    else:
+        try:
+            for subdir in _CACHE_DIR.iterdir():
+                if subdir.is_dir():
+                    for f in subdir.glob("*.json"):
+                        f.unlink()
+        except OSError:
+            pass
+
+
+def get_cache_stats() -> Dict[str, Any]:
+    """Get cache statistics."""
+    stats = {
+        "memory_cache_size": len(_MEMORY_CACHE),
+        "memory_cache_max_size": _MEMORY_CACHE_MAX_SIZE,
+        "disk_cache_dir": str(_CACHE_DIR),
+        "ttl_seconds": _TTL_SECONDS,
+        "max_cache_files": _MAX_CACHE_FILES,
+        "disk_cache_sizes": {},
+    }
+
+    # Calculate disk cache sizes
+    try:
+        for subdir in _CACHE_DIR.iterdir():
+            if subdir.is_dir():
+                files = list(subdir.glob("*.json"))
+                stats["disk_cache_sizes"][subdir.name] = len(files)  # type: ignore[index]
+    except OSError:
+        pass
+
+    return stats

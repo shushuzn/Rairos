@@ -1,1 +1,222 @@
-IiIiVGVzdHMgZm9yIEZUUzUgZnVsbC10ZXh0IHNlYXJjaCBpbiBkYXRhYmFzZS5weSIiIgoKaW1wb3J0IHB5dGVzdAppbXBvcnQgdGVtcGZpbGUKaW1wb3J0IG9zCmltcG9ydCBzeXMKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCgpzeXMucGF0aC5pbnNlcnQoMCwgc3RyKFBhdGgoX19maWxlX18pLnJlc29sdmUoKS5wYXJlbnQucGFyZW50KSkKZnJvbSBkYi5kYXRhYmFzZSBpbXBvcnQgRGF0YWJhc2UsIFNlYXJjaFJlc3VsdAoKCkBweXRlc3QuZml4dHVyZQpkZWYgZGIoKToKICAgICIiIkZyZXNoIGluLW1lbW9yeSBkYXRhYmFzZSBwZXIgdGVzdC4iIiIKICAgIHRtcCA9IHRlbXBmaWxlLk5hbWVkVGVtcG9yYXJ5RmlsZShzdWZmaXg9Ii5kYiIsIGRlbGV0ZT1GYWxzZSkKICAgIHBhdGggPSB0bXAubmFtZQogICAgdG1wLmNsb3NlKCkKICAgIGRiID0gRGF0YWJhc2UocGF0aCkKICAgIGRiLmluaXQoKQogICAgeWllbGQgZGIKICAgIGRiLmNsb3NlKCkKICAgIHRyeToKICAgICAgICBvcy51bmxpbmsocGF0aCkKICAgIGV4Y2VwdCBPU0Vycm9yOgogICAgICAgIHBhc3MKCgpjbGFzcyBUZXN0U2VhcmNoUmVzdWx0RGF0YWNsYXNzOgogICAgZGVmIHRlc3Rfc2VhcmNoX3Jlc3VsdF9maWVsZHMoc2VsZik6CiAgICAgICAgciA9IFNlYXJjaFJlc3VsdCgKICAgICAgICAgICAgcGFwZXJfaWQ9IjIzMTIuMTIzNDUiLAogICAgICAgICAgICB0aXRsZT0iQXR0ZW50aW9uIElzIEFsbCBZb3UgTmVlZCIsCiAgICAgICAgICAgIGF1dGhvcnM9WyJWYXN3YW5pIiwgIlNoYXplZXIiXSwKICAgICAgICAgICAgcHVibGlzaGVkPSIyMDIzLTAxLTAxIiwKICAgICAgICAgICAgcHJpbWFyeV9jYXRlZ29yeT0iY3MuQ0wiLAogICAgICAgICAgICBzY29yZT0tMS41LAogICAgICAgICAgICBzbmlwcGV0PSIqKmF0dGVudGlvbioqIG1lY2hhbmlzbXMiLAogICAgICAgICAgICBwYXJzZV9zdGF0dXM9ImRvbmUiLAogICAgICAgICAgICBzb3VyY2U9ImFyeGl2IiwKICAgICAgICAgICAgYWJzX3VybD0iaHR0cHM6Ly9hcnhpdi5vcmcvYWJzLzIzMTIuMTIzNDUiLAogICAgICAgICAgICBwZGZfdXJsPSJodHRwczovL2FyeGl2Lm9yZy9wZGYvMjMxMi4xMjM0NSIsCiAgICAgICAgKQogICAgICAgIGFzc2VydCByLnBhcGVyX2lkID09ICIyMzEyLjEyMzQ1IgogICAgICAgIGFzc2VydCByLnRpdGxlID09ICJBdHRlbnRpb24gSXMgQWxsIFlvdSBOZWVkIgogICAgICAgIGFzc2VydCByLnNjb3JlID09IC0xLjUKICAgICAgICBhc3NlcnQgci5zbmlwcGV0ID09ICIqKmF0dGVudGlvbioqIG1lY2hhbmlzbXMiCiAgICAgICAgYXNzZXJ0IHIuc291cmNlID09ICJhcnhpdiIKCiAgICBkZWYgdGVzdF9zZWFyY2hfcmVzdWx0X2RlZmF1bHRzKHNlbGYpOgogICAgICAgIHIgPSBTZWFyY2hSZXN1bHQoCiAgICAgICAgICAgIHBhcGVyX2lkPSIyMzEyLjEyMzQ1IiwKICAgICAgICAgICAgdGl0bGU9IlQiLAogICAgICAgICAgICBhdXRob3JzPVtdLAogICAgICAgICAgICBwdWJsaXNoZWQ9IiIsCiAgICAgICAgICAgIHByaW1hcnlfY2F0ZWdvcnk9IiIsCiAgICAgICAgICAgIHNjb3JlPTAuMCwKICAgICAgICAgICAgc25pcHBldD0iIiwKICAgICAgICAgICAgcGFyc2Vfc3RhdHVzPSJwZW5kaW5nIiwKICAgICAgICAgICAgc291cmNlPSIiLAogICAgICAgICAgICBhYnNfdXJsPSIiLAogICAgICAgICAgICBwZGZfdXJsPSIiLAogICAgICAgICkKICAgICAgICBhc3NlcnQgci5wYXBlcl9pZCA9PSAiMjMxMi4xMjM0NSIKICAgICAgICBhc3NlcnQgci5zb3VyY2UgPT0gIiIKCgpjbGFzcyBUZXN0RlRTNUluaXQ6CiAgICBkZWYgdGVzdF9mdHNfdGFibGVfY3JlYXRlZChzZWxmLCBkYik6CiAgICAgICAgcmVzdWx0ID0gZGIuY29ubi5leGVjdXRlKAogICAgICAgICAgICAiU0VMRUNUIG5hbWUgRlJPTSBzcWxpdGVfbWFzdGVyIFdIRVJFIHR5cGU9J3RhYmxlJyBBTkQgbmFtZT0ncGFwZXJzX2Z0cyciCiAgICAgICAgKS5mZXRjaG9uZSgpCiAgICAgICAgYXNzZXJ0IHJlc3VsdCBpcyBub3QgTm9uZQoKICAgIGRlZiB0ZXN0X2Z0c190YWJsZV9zY2hlbWEoc2VsZiwgZGIpOgogICAgICAgIHJlc3VsdCA9IGRiLmNvbm4uZXhlY3V0ZSgiUFJBR01BIHRhYmxlX2luZm8ocGFwZXJzX2Z0cykiKS5mZXRjaGFsbCgpCiAgICAgICAgbmFtZXMgPSBbclsxXSBmb3IgciBpbiByZXN1bHRdCiAgICAgICAgYXNzZXJ0ICJwYXBlcl9pZCIgaW4gbmFtZXMKICAgICAgICBhc3NlcnQgInRpdGxlIiBpbiBuYW1lcwogICAgICAgIGFzc2VydCAiYWJzdHJhY3QiIGluIG5hbWVzCiAgICAgICAgYXNzZXJ0ICJwbGFpbl90ZXh0IiBpbiBuYW1lcwoKCmNsYXNzIFRlc3RGVFM1SW5zZXJ0OgogICAgZGVmIHRlc3RfdXBzZXJ0X2luZGV4ZXNfcGFwZXIoc2VsZiwgZGIpOgogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMxMi4wMDAwMSIsICJhcnhpdiIsIHRpdGxlPSJEZWVwIExlYXJuaW5nIiwgYWJzdHJhY3Q9Ik5ldXJhbCBuZXR3b3JrcyIpCiAgICAgICAgcmVzdWx0cywgdG90YWwgPSBkYi5zZWFyY2hfcGFwZXJzKCJkZWVwIikKICAgICAgICBhc3NlcnQgdG90YWwgPT0gMQogICAgICAgIGFzc2VydCByZXN1bHRzWzBdLnBhcGVyX2lkID09ICIyMzEyLjAwMDAxIgoKICAgIGRlZiB0ZXN0X3Vwc2VydF91cGRhdGVzX2Z0cyhzZWxmLCBkYik6CiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzEyLjAwMDAyIiwgImFyeGl2IiwgdGl0bGU9Ik1hY2hpbmUgTGVhcm5pbmciKQogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMxMi4wMDAwMiIsICJhcnhpdiIsIHRpdGxlPSJEZWVwIExlYXJuaW5nIikKICAgICAgICByZXN1bHRzLCB0b3RhbCA9IGRiLnNlYXJjaF9wYXBlcnMoImRlZXAiKQogICAgICAgIGFzc2VydCB0b3RhbCA9PSAxCiAgICAgICAgYXNzZXJ0IHJlc3VsdHNbMF0udGl0bGUgPT0gIkRlZXAgTGVhcm5pbmciCgoKY2xhc3MgVGVzdEZUUzVEZWxldGU6CiAgICBkZWYgdGVzdF9mdHNfZGVsZXRlX29uX3BhcGVyX2RlbGV0ZShzZWxmLCBkYik6CiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzEyLjAwMDAzIiwgImFyeGl2IiwgdGl0bGU9IlRvIEJlIERlbGV0ZWQiKQogICAgICAgIGRiLmRlbGV0ZV9wYXBlcigiMjMxMi4wMDAwMyIpCiAgICAgICAgcmVzdWx0cywgdG90YWwgPSBkYi5zZWFyY2hfcGFwZXJzKCJkZWxldGVkIikKICAgICAgICBhc3NlcnQgdG90YWwgPT0gMAoKCmNsYXNzIFRlc3RTZWFyY2hQYXBlcnNRdWVyeToKICAgIGRlZiB0ZXN0X3NlYXJjaF9ieV90aXRsZShzZWxmLCBkYik6CiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzEyLjAwMDA0IiwgImFyeGl2IiwgdGl0bGU9IkF0dGVudGlvbiBJcyBBbGwgWW91IE5lZWQiKQogICAgICAgIHJlc3VsdHMsIHRvdGFsID0gZGIuc2VhcmNoX3BhcGVycygiYXR0ZW50aW9uIikKICAgICAgICBhc3NlcnQgdG90YWwgPT0gMQogICAgICAgIGFzc2VydCAiYXR0ZW50aW9uIiBpbiByZXN1bHRzWzBdLnRpdGxlLmxvd2VyKCkKCiAgICBkZWYgdGVzdF9zZWFyY2hfYnlfYWJzdHJhY3Qoc2VsZiwgZGIpOgogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMxMi4wMDAwNSIsICJhcnhpdiIsIGFic3RyYWN0PSJOb3ZlbCBuZXVyYWwgYXJjaGl0ZWN0dXJlIikKICAgICAgICByZXN1bHRzLCB0b3RhbCA9IGRiLnNlYXJjaF9wYXBlcnMoIm5ldXJhbCIpCiAgICAgICAgYXNzZXJ0IHRvdGFsID49IDEKCiAgICBkZWYgdGVzdF9zZWFyY2hfcmV0dXJuc19zbmlwcGV0KHNlbGYsIGRiKToKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMTIuMDAwMDYiLCAiYXJ4aXYiLCB0aXRsZT0iRGVlcCBOZXVyYWwgTmV0d29ya3MiKQogICAgICAgIHJlc3VsdHMsIHRvdGFsID0gZGIuc2VhcmNoX3BhcGVycygibmV1cmFsIikKICAgICAgICBhc3NlcnQgdG90YWwgPT0gMQogICAgICAgIGFzc2VydCByZXN1bHRzWzBdLnNuaXBwZXQgaXMgbm90IE5vbmUKCiAgICBkZWYgdGVzdF9zZWFyY2hfbm9fcmVzdWx0cyhzZWxmLCBkYik6CiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzEyLjAwMDA3IiwgImFyeGl2IiwgdGl0bGU9IlVucmVsYXRlZCBXb3JrIikKICAgICAgICByZXN1bHRzLCB0b3RhbCA9IGRiLnNlYXJjaF9wYXBlcnMoInh5em5vbmV4aXN0ZW50IikKICAgICAgICBhc3NlcnQgdG90YWwgPT0gMAoKCmNsYXNzIFRlc3RTZWFyY2hQYXBlcnNGaWx0ZXI6CiAgICBkZWYgdGVzdF9zZWFyY2hfZmlsdGVyX2J5X3NvdXJjZShzZWxmLCBkYik6CiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCJ0ZXN0LnNyYy4xIiwgImFyeGl2IiwgdGl0bGU9IkFyeGl2IFBhcGVyIE9uZSIpCiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCJ0ZXN0LnNyYy4yIiwgImRvaSIsIHRpdGxlPSJET0kgUGFwZXIgVHdvIikKICAgICAgICByZXN1bHRzLCB0b3RhbCA9IGRiLnNlYXJjaF9wYXBlcnMoInBhcGVyIiwgc291cmNlPSJhcnhpdiIpCiAgICAgICAgYXNzZXJ0IHRvdGFsID09IDEKICAgICAgICBhc3NlcnQgcmVzdWx0c1swXS5wYXBlcl9pZCA9PSAidGVzdC5zcmMuMSIKCiAgICBkZWYgdGVzdF9zZWFyY2hfZmlsdGVyX2J5X2NhdGVnb3J5KHNlbGYsIGRiKToKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMTIuMDAwMTAiLCAiYXJ4aXYiLCB0aXRsZT0iQ0wgUGFwZXIiLCBwcmltYXJ5X2NhdGVnb3J5PSJjcy5DTCIpCiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzEyLjAwMDExIiwgImFyeGl2IiwgdGl0bGU9IkNWIFBhcGVyIiwgcHJpbWFyeV9jYXRlZ29yeT0iY3MuQ1YiKQogICAgICAgIHJlc3VsdHMsIHRvdGFsID0gZGIuc2VhcmNoX3BhcGVycygicGFwZXIiLCBjYXRlZ29yeT0iY3MuQ0wiKQogICAgICAgIGFzc2VydCB0b3RhbCA9PSAxCiAgICAgICAgYXNzZXJ0IHJlc3VsdHNbMF0ucHJpbWFyeV9jYXRlZ29yeSA9PSAiY3MuQ0wiCgogICAgZGVmIHRlc3Rfc2VhcmNoX2ZpbHRlcl9ieV9wYXJzZV9zdGF0dXMoc2VsZiwgZGIpOgogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMxMi4wMDAxMiIsICJhcnhpdiIsIHRpdGxlPSJQYXJzZWQgUGFwZXIiKQogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMxMi4wMDAxMyIsICJhcnhpdiIsIHRpdGxlPSJQZW5kaW5nIFBhcGVyIikKICAgICAgICBkYi51cGRhdGVfcGFyc2Vfc3RhdHVzKCIyMzEyLjAwMDEyIiwgImRvbmUiKQogICAgICAgIHJlc3VsdHMsIHRvdGFsID0gZGIuc2VhcmNoX3BhcGVycygicGFwZXIiLCBwYXJzZV9zdGF0dXM9ImRvbmUiKQogICAgICAgIGFzc2VydCB0b3RhbCA9PSAxCiAgICAgICAgYXNzZXJ0IHJlc3VsdHNbMF0ucGFyc2Vfc3RhdHVzID09ICJkb25lIgoKICAgIGRlZiB0ZXN0X3NlYXJjaF9jb21iaW5lZF9maWx0ZXJzKHNlbGYsIGRiKToKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMTIuMDAwMTQiLCAiYXJ4aXYiLCB0aXRsZT0iQ0wgUGFwZXIiLCBwcmltYXJ5X2NhdGVnb3J5PSJjcy5DTCIpCiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzEyLjAwMDE1IiwgImFyeGl2IiwgdGl0bGU9IkNWIFBhcGVyIiwgcHJpbWFyeV9jYXRlZ29yeT0iY3MuQ1YiKQogICAgICAgIHJlc3VsdHMsIHRvdGFsID0gZGIuc2VhcmNoX3BhcGVycygicGFwZXIiLCBjYXRlZ29yeT0iY3MuQ0wiLCBzb3VyY2U9ImFyeGl2IikKICAgICAgICBhc3NlcnQgdG90YWwgPT0gMQoKCmNsYXNzIFRlc3RTZWFyY2hQYXBlcnNTb3J0OgogICAgZGVmIHRlc3Rfc2VhcmNoX3NvcnRfYnlfcmVsZXZhbmNlKHNlbGYsIGRiKToKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMTIuMDAwMjAiLCAiYXJ4aXYiLCB0aXRsZT0iRmlyc3QgUGFwZXIiKQogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMxMi4wMDAyMSIsICJhcnhpdiIsIHRpdGxlPSJTZWNvbmQgUGFwZXIiKQogICAgICAgIHJlc3VsdHMsIHRvdGFsID0gZGIuc2VhcmNoX3BhcGVycygicGFwZXIiKQogICAgICAgIGFzc2VydCB0b3RhbCA9PSAyCgogICAgZGVmIHRlc3Rfc2VhcmNoX3NvcnRfYnlfcHVibGlzaGVkKHNlbGYsIGRiKToKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMTIuMDAwMjIiLCAiYXJ4aXYiLCB0aXRsZT0iTmV3IFBhcGVyIiwgcHVibGlzaGVkPSIyMDI0LTAxLTAxIikKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMTIuMDAwMjMiLCAiYXJ4aXYiLCB0aXRsZT0iT2xkIFBhcGVyIiwgcHVibGlzaGVkPSIyMDIzLTAxLTAxIikKICAgICAgICByZXN1bHRzLCB0b3RhbCA9IGRiLnNlYXJjaF9wYXBlcnMoInBhcGVyIikKICAgICAgICBhc3NlcnQgdG90YWwgPT0gMgoKCmNsYXNzIFRlc3RTZWFyY2hQYXBlcnNQYWdpbmF0aW9uOgogICAgZGVmIHRlc3Rfc2VhcmNoX3dpdGhfbGltaXQoc2VsZiwgZGIpOgogICAgICAgIGZvciBpIGluIHJhbmdlKDUpOgogICAgICAgICAgICBkYi51cHNlcnRfcGFwZXIoZiIyMzEyLjAwezMwICsgaTowMmR9IiwgImFyeGl2IiwgdGl0bGU9ZiJQYXBlciB7aX0iKQogICAgICAgIHJlc3VsdHMsIHRvdGFsID0gZGIuc2VhcmNoX3BhcGVycygicGFwZXIiLCBsaW1pdD0zKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0cykgPT0gMwogICAgICAgIGFzc2VydCB0b3RhbCA9PSA1CgogICAgZGVmIHRlc3Rfc2VhcmNoX3dpdGhfb2Zmc2V0KHNlbGYsIGRiKToKICAgICAgICBmb3IgaSBpbiByYW5nZSg1KToKICAgICAgICAgICAgZGIudXBzZXJ0X3BhcGVyKGYiMjMxMi4wMHs0MCArIGk6MDJkfSIsICJhcnhpdiIsIHRpdGxlPWYiUGFwZXIge2l9IikKICAgICAgICBwYWdlMSwgXyA9IGRiLnNlYXJjaF9wYXBlcnMoInBhcGVyIiwgbGltaXQ9Mywgb2Zmc2V0PTApCiAgICAgICAgcGFnZTIsIF8gPSBkYi5zZWFyY2hfcGFwZXJzKCJwYXBlciIsIGxpbWl0PTMsIG9mZnNldD0zKQogICAgICAgIGFzc2VydCBsZW4ocGFnZTEpID09IDMKICAgICAgICBhc3NlcnQgbGVuKHBhZ2UyKSA9PSAyCgoKY2xhc3MgVGVzdExpc3RQYXBlcnM6CiAgICBkZWYgdGVzdF9saXN0X3BhcGVyc19iYXNpYyhzZWxmLCBkYik6CiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzEyLjAwMDUwIiwgImFyeGl2IiwgdGl0bGU9IlBhcGVyIEEiKQogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMxMi4wMDA1MSIsICJhcnhpdiIsIHRpdGxlPSJQYXBlciBCIikKICAgICAgICBwYXBlcnMsIHRvdGFsID0gZGIubGlzdF9wYXBlcnMoKQogICAgICAgIGFzc2VydCB0b3RhbCA9PSAyCgogICAgZGVmIHRlc3RfbGlzdF9wYXBlcnNfcGFnaW5hdGlvbihzZWxmLCBkYik6CiAgICAgICAgZm9yIGkgaW4gcmFuZ2UoNSk6CiAgICAgICAgICAgIGRiLnVwc2VydF9wYXBlcihmIjIzMTIuMDB7NjAgKyBpOjAyZH0iLCAiYXJ4aXYiLCB0aXRsZT1mIlBhcGVyIHtpfSIpCiAgICAgICAgcGFnZTEsIF8gPSBkYi5saXN0X3BhcGVycyhvZmZzZXQ9MCwgbGltaXQ9MykKICAgICAgICBwYWdlMiwgXyA9IGRiLmxpc3RfcGFwZXJzKG9mZnNldD0zLCBsaW1pdD0zKQogICAgICAgIGFzc2VydCBsZW4ocGFnZTEpID09IDMKICAgICAgICBhc3NlcnQgbGVuKHBhZ2UyKSA9PSAyCgogICAgZGVmIHRlc3RfbGlzdF9wYXBlcnNfZmlsdGVyX2J5X3NvdXJjZShzZWxmLCBkYik6CiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzEyLjAwMDcwIiwgImFyeGl2IiwgdGl0bGU9IkFyeGl2IFBhcGVyIikKICAgICAgICBkYi51cHNlcnRfcGFwZXIoIjIzMTIuMDAwNzEiLCAiZG9pIiwgdGl0bGU9IkRPSSBQYXBlciIpCiAgICAgICAgcGFwZXJzLCBfID0gZGIubGlzdF9wYXBlcnMoc291cmNlPSJhcnhpdiIpCiAgICAgICAgYXNzZXJ0IGFsbChwLnNvdXJjZSA9PSAiYXJ4aXYiIGZvciBwIGluIHBhcGVycykKCgpjbGFzcyBUZXN0UmVidWlsZEZUUzoKICAgIGRlZiB0ZXN0X3JlYnVpbGRfY2xlYXJzX29ycGhhbnMoc2VsZiwgZGIpOgogICAgICAgIGRiLnVwc2VydF9wYXBlcigiMjMxMi4wMDA4MCIsICJhcnhpdiIsIHRpdGxlPSJGaXJzdCBQYXBlciIpCiAgICAgICAgZGIudXBzZXJ0X3BhcGVyKCIyMzEyLjAwMDgxIiwgImFyeGl2IiwgdGl0bGU9IlNlY29uZCBQYXBlciIpCiAgICAgICAgcmVzdWx0cywgdG90YWwgPSBkYi5zZWFyY2hfcGFwZXJzKCJwYXBlciIpCiAgICAgICAgYXNzZXJ0IHRvdGFsID09IDIKICAgICAgICBkYi5yZWJ1aWxkX2Z0c19pbmRleCgpCiAgICAgICAgcmVzdWx0cywgdG90YWwgPSBkYi5zZWFyY2hfcGFwZXJzKCJwYXBlciIpCiAgICAgICAgYXNzZXJ0IHRvdGFsID09IDIK
+"""Tests for FTS5 full-text search in database.py"""
+
+import pytest
+import tempfile
+import os
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from db.database import Database, SearchResult
+
+
+@pytest.fixture
+def db():
+    """Fresh in-memory database per test."""
+    tmp = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
+    path = tmp.name
+    tmp.close()
+    db = Database(path)
+    db.init()
+    yield db
+    db.close()
+    try:
+        os.unlink(path)
+    except OSError:
+        pass
+
+
+class TestSearchResultDataclass:
+    def test_search_result_fields(self):
+        r = SearchResult(
+            paper_id="2312.12345",
+            title="Attention Is All You Need",
+            authors=["Vaswani", "Shazeer"],
+            published="2023-01-01",
+            primary_category="cs.CL",
+            score=-1.5,
+            snippet="**attention** mechanisms",
+            parse_status="done",
+            source="arxiv",
+            abs_url="https://arxiv.org/abs/2312.12345",
+            pdf_url="https://arxiv.org/pdf/2312.12345",
+        )
+        assert r.paper_id == "2312.12345"
+        assert r.title == "Attention Is All You Need"
+        assert r.score == -1.5
+        assert r.snippet == "**attention** mechanisms"
+        assert r.source == "arxiv"
+
+    def test_search_result_defaults(self):
+        r = SearchResult(
+            paper_id="2312.12345",
+            title="T",
+            authors=[],
+            published="",
+            primary_category="",
+            score=0.0,
+            snippet="",
+            parse_status="pending",
+            source="",
+            abs_url="",
+            pdf_url="",
+        )
+        assert r.paper_id == "2312.12345"
+        assert r.source == ""
+
+
+class TestFTS5Init:
+    def test_fts_table_created(self, db):
+        result = db.conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='papers_fts'"
+        ).fetchone()
+        assert result is not None
+
+    def test_fts_table_schema(self, db):
+        result = db.conn.execute("PRAGMA table_info(papers_fts)").fetchall()
+        names = [r[1] for r in result]
+        assert "paper_id" in names
+        assert "title" in names
+        assert "abstract" in names
+        assert "plain_text" in names
+
+
+class TestFTS5Insert:
+    def test_upsert_indexes_paper(self, db):
+        db.upsert_paper("2312.00001", "arxiv", title="Deep Learning", abstract="Neural networks")
+        results, total = db.search_papers("deep")
+        assert total == 1
+        assert results[0].paper_id == "2312.00001"
+
+    def test_upsert_updates_fts(self, db):
+        db.upsert_paper("2312.00002", "arxiv", title="Machine Learning")
+        db.upsert_paper("2312.00002", "arxiv", title="Deep Learning")
+        results, total = db.search_papers("deep")
+        assert total == 1
+        assert results[0].title == "Deep Learning"
+
+
+class TestFTS5Delete:
+    def test_fts_delete_on_paper_delete(self, db):
+        db.upsert_paper("2312.00003", "arxiv", title="To Be Deleted")
+        db.delete_paper("2312.00003")
+        results, total = db.search_papers("deleted")
+        assert total == 0
+
+
+class TestSearchPapersQuery:
+    def test_search_by_title(self, db):
+        db.upsert_paper("2312.00004", "arxiv", title="Attention Is All You Need")
+        results, total = db.search_papers("attention")
+        assert total == 1
+        assert "attention" in results[0].title.lower()
+
+    def test_search_by_abstract(self, db):
+        db.upsert_paper("2312.00005", "arxiv", abstract="Novel neural architecture")
+        results, total = db.search_papers("neural")
+        assert total >= 1
+
+    def test_search_returns_snippet(self, db):
+        db.upsert_paper("2312.00006", "arxiv", title="Deep Neural Networks")
+        results, total = db.search_papers("neural")
+        assert total == 1
+        assert results[0].snippet is not None
+
+    def test_search_no_results(self, db):
+        db.upsert_paper("2312.00007", "arxiv", title="Unrelated Work")
+        results, total = db.search_papers("xyznonexistent")
+        assert total == 0
+
+
+class TestSearchPapersFilter:
+    def test_search_filter_by_source(self, db):
+        db.upsert_paper("test.src.1", "arxiv", title="Arxiv Paper One")
+        db.upsert_paper("test.src.2", "doi", title="DOI Paper Two")
+        results, total = db.search_papers("paper", source="arxiv")
+        assert total == 1
+        assert results[0].paper_id == "test.src.1"
+
+    def test_search_filter_by_category(self, db):
+        db.upsert_paper("2312.00010", "arxiv", title="CL Paper", primary_category="cs.CL")
+        db.upsert_paper("2312.00011", "arxiv", title="CV Paper", primary_category="cs.CV")
+        results, total = db.search_papers("paper", category="cs.CL")
+        assert total == 1
+        assert results[0].primary_category == "cs.CL"
+
+    def test_search_filter_by_parse_status(self, db):
+        db.upsert_paper("2312.00012", "arxiv", title="Parsed Paper")
+        db.upsert_paper("2312.00013", "arxiv", title="Pending Paper")
+        db.update_parse_status("2312.00012", "done")
+        results, total = db.search_papers("paper", parse_status="done")
+        assert total == 1
+        assert results[0].parse_status == "done"
+
+    def test_search_combined_filters(self, db):
+        db.upsert_paper("2312.00014", "arxiv", title="CL Paper", primary_category="cs.CL")
+        db.upsert_paper("2312.00015", "arxiv", title="CV Paper", primary_category="cs.CV")
+        results, total = db.search_papers("paper", category="cs.CL", source="arxiv")
+        assert total == 1
+
+
+class TestSearchPapersSort:
+    def test_search_sort_by_relevance(self, db):
+        db.upsert_paper("2312.00020", "arxiv", title="First Paper")
+        db.upsert_paper("2312.00021", "arxiv", title="Second Paper")
+        results, total = db.search_papers("paper")
+        assert total == 2
+
+    def test_search_sort_by_published(self, db):
+        db.upsert_paper("2312.00022", "arxiv", title="New Paper", published="2024-01-01")
+        db.upsert_paper("2312.00023", "arxiv", title="Old Paper", published="2023-01-01")
+        results, total = db.search_papers("paper")
+        assert total == 2
+
+
+class TestSearchPapersPagination:
+    def test_search_with_limit(self, db):
+        for i in range(5):
+            db.upsert_paper(f"2312.00{30 + i:02d}", "arxiv", title=f"Paper {i}")
+        results, total = db.search_papers("paper", limit=3)
+        assert len(results) == 3
+        assert total == 5
+
+    def test_search_with_offset(self, db):
+        for i in range(5):
+            db.upsert_paper(f"2312.00{40 + i:02d}", "arxiv", title=f"Paper {i}")
+        page1, _ = db.search_papers("paper", limit=3, offset=0)
+        page2, _ = db.search_papers("paper", limit=3, offset=3)
+        assert len(page1) == 3
+        assert len(page2) == 2
+
+
+class TestListPapers:
+    def test_list_papers_basic(self, db):
+        db.upsert_paper("2312.00050", "arxiv", title="Paper A")
+        db.upsert_paper("2312.00051", "arxiv", title="Paper B")
+        papers, total = db.list_papers()
+        assert total == 2
+
+    def test_list_papers_pagination(self, db):
+        for i in range(5):
+            db.upsert_paper(f"2312.00{60 + i:02d}", "arxiv", title=f"Paper {i}")
+        page1, _ = db.list_papers(offset=0, limit=3)
+        page2, _ = db.list_papers(offset=3, limit=3)
+        assert len(page1) == 3
+        assert len(page2) == 2
+
+    def test_list_papers_filter_by_source(self, db):
+        db.upsert_paper("2312.00070", "arxiv", title="Arxiv Paper")
+        db.upsert_paper("2312.00071", "doi", title="DOI Paper")
+        papers, _ = db.list_papers(source="arxiv")
+        assert all(p.source == "arxiv" for p in papers)
+
+
+class TestRebuildFTS:
+    def test_rebuild_clears_orphans(self, db):
+        db.upsert_paper("2312.00080", "arxiv", title="First Paper")
+        db.upsert_paper("2312.00081", "arxiv", title="Second Paper")
+        results, total = db.search_papers("paper")
+        assert total == 2
+        db.rebuild_fts_index()
+        results, total = db.search_papers("paper")
+        assert total == 2

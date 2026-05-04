@@ -1,1 +1,90 @@
-IiIiVGVzdHMgZm9yIGludGVybmF0aW9uYWxpemF0aW9uIChpMThuKSBmdW5jdGlvbmFsaXR5LiIiIgoKZnJvbSBjb3JlLmkxOG4gaW1wb3J0IHNldF9sYW5nLCBnZXRfbGFuZywgXywgX01TR1MKCgpkZWYgdGVzdF9nZXRfbGFuZ19kZWZhdWx0KCk6CiAgICAiIiJUZXN0IGRlZmF1bHQgbGFuZ3VhZ2UgaXMgemguIiIiCiAgICBvcmlnaW5hbF9sYW5nID0gZ2V0X2xhbmcoKQogICAgc2V0X2xhbmcoInpoIikKICAgIGFzc2VydCBnZXRfbGFuZygpID09ICJ6aCIKICAgICMgUmVzdG9yZSBvcmlnaW5hbAogICAgc2V0X2xhbmcob3JpZ2luYWxfbGFuZykKCgpkZWYgdGVzdF9zZXRfbGFuZ196aCgpOgogICAgIiIiVGVzdCBzZXR0aW5nIGxhbmd1YWdlIHRvIENoaW5lc2UuIiIiCiAgICBzZXRfbGFuZygiemgiKQogICAgYXNzZXJ0IGdldF9sYW5nKCkgPT0gInpoIgoKCmRlZiB0ZXN0X3NldF9sYW5nX2VuKCk6CiAgICAiIiJUZXN0IHNldHRpbmcgbGFuZ3VhZ2UgdG8gRW5nbGlzaC4iIiIKICAgIHNldF9sYW5nKCJlbiIpCiAgICBhc3NlcnQgZ2V0X2xhbmcoKSA9PSAiZW4iCgoKZGVmIHRlc3Rfc2V0X2xhbmdfc2hvcnRfZSgpOgogICAgIiIiVGVzdCBzZXR0aW5nIGxhbmd1YWdlIHdpdGggc2hvcnQgY29kZSAnZScuIiIiCiAgICBzZXRfbGFuZygiZSIpCiAgICBhc3NlcnQgZ2V0X2xhbmcoKSA9PSAiZW4iCgoKZGVmIHRlc3Rfc2V0X2xhbmdfc2hvcnRfeigpOgogICAgIiIiVGVzdCBzZXR0aW5nIGxhbmd1YWdlIHdpdGggc2hvcnQgY29kZSAneicuIiIiCiAgICBzZXRfbGFuZygieiIpCiAgICBhc3NlcnQgZ2V0X2xhbmcoKSA9PSAiemgiCgoKZGVmIHRlc3Rfc2V0X2xhbmdfaW52YWxpZCgpOgogICAgIiIiVGVzdCBzZXR0aW5nIGludmFsaWQgbGFuZ3VhZ2UgZGVmYXVsdHMgdG8gemguIiIiCiAgICBzZXRfbGFuZygiaW52YWxpZCIpCiAgICBhc3NlcnQgZ2V0X2xhbmcoKSA9PSAiemgiCgoKZGVmIHRlc3RfdW5kZXJzY29yZV96aCgpOgogICAgIiIiVGVzdCB0cmFuc2xhdGlvbiBmdW5jdGlvbiB3aXRoIENoaW5lc2UuIiIiCiAgICBzZXRfbGFuZygiemgiKQogICAgbXNnID0gXygicmVzZWFyY2hfc2VhcmNoaW5nIiwgcXVlcnk9IkxMTSIpCiAgICBhc3NlcnQgIkxMTSIgaW4gbXNnCiAgICBhc3NlcnQgIuaQnOe0oiIgaW4gbXNnCgoKZGVmIHRlc3RfdW5kZXJzY29yZV9lbigpOgogICAgIiIiVGVzdCB0cmFuc2xhdGlvbiBmdW5jdGlvbiB3aXRoIEVuZ2xpc2guIiIiCiAgICBzZXRfbGFuZygiZW4iKQogICAgbXNnID0gXygicmVzZWFyY2hfc2VhcmNoaW5nIiwgcXVlcnk9IkxMTSIpCiAgICBhc3NlcnQgIkxMTSIgaW4gbXNnCiAgICBhc3NlcnQgIlNlYXJjaGluZyIgaW4gbXNnCgoKZGVmIHRlc3RfdW5kZXJzY29yZV9ub19rd2FyZ3MoKToKICAgICIiIlRlc3QgdHJhbnNsYXRpb24gZnVuY3Rpb24gd2l0aG91dCBrd2FyZ3MuIiIiCiAgICBzZXRfbGFuZygiemgiKQogICAgbXNnID0gXygicmVzZWFyY2hfbm9fcGFwZXJzIikKICAgIGFzc2VydCAi5pyq5om+5YiwIiBpbiBtc2cKCgpkZWYgdGVzdF91bmRlcnNjb3JlX2ZhbGxiYWNrKCk6CiAgICAiIiJUZXN0IHRyYW5zbGF0aW9uIGZ1bmN0aW9uIGZhbGxzIGJhY2sgdG8ga2V5IGZvciB1bmtub3duIGtleS4iIiIKICAgIHNldF9sYW5nKCJ6aCIpCiAgICBtc2cgPSBfKCJ1bmtub3duX2tleSIpCiAgICBhc3NlcnQgbXNnID09ICJ1bmtub3duX2tleSIKCgpkZWYgdGVzdF9hbGxfemhfa2V5c19leGlzdCgpOgogICAgIiIiVGVzdCBhbGwga2V5cyBleGlzdCBpbiBDaGluZXNlIG1lc3NhZ2VzLiIiIgogICAgc2V0X2xhbmcoInpoIikKICAgIHpoX2tleXMgPSBfTVNHU1siemgiXS5rZXlzKCkKICAgIGFzc2VydCAicmVzZWFyY2hfc2VhcmNoaW5nIiBpbiB6aF9rZXlzCiAgICBhc3NlcnQgInJlc2VhcmNoX25vX3BhcGVycyIgaW4gemhfa2V5cwogICAgYXNzZXJ0ICJyZXNlYXJjaF9mb3VuZCIgaW4gemhfa2V5cwoKCmRlZiB0ZXN0X2FsbF9lbl9rZXlzX2V4aXN0KCk6CiAgICAiIiJUZXN0IGFsbCBrZXlzIGV4aXN0IGluIEVuZ2xpc2ggbWVzc2FnZXMuIiIiCiAgICBzZXRfbGFuZygiZW4iKQogICAgZW5fa2V5cyA9IF9NU0dTWyJlbiJdLmtleXMoKQogICAgYXNzZXJ0ICJyZXNlYXJjaF9zZWFyY2hpbmciIGluIGVuX2tleXMKICAgIGFzc2VydCAicmVzZWFyY2hfbm9fcGFwZXJzIiBpbiBlbl9rZXlzCiAgICBhc3NlcnQgInJlc2VhcmNoX2ZvdW5kIiBpbiBlbl9rZXlzCg==
+"""Tests for internationalization (i18n) functionality."""
+
+from core.i18n import set_lang, get_lang, _, _MSGS
+
+
+def test_get_lang_default():
+    """Test default language is zh."""
+    original_lang = get_lang()
+    set_lang("zh")
+    assert get_lang() == "zh"
+    # Restore original
+    set_lang(original_lang)
+
+
+def test_set_lang_zh():
+    """Test setting language to Chinese."""
+    set_lang("zh")
+    assert get_lang() == "zh"
+
+
+def test_set_lang_en():
+    """Test setting language to English."""
+    set_lang("en")
+    assert get_lang() == "en"
+
+
+def test_set_lang_short_e():
+    """Test setting language with short code 'e'."""
+    set_lang("e")
+    assert get_lang() == "en"
+
+
+def test_set_lang_short_z():
+    """Test setting language with short code 'z'."""
+    set_lang("z")
+    assert get_lang() == "zh"
+
+
+def test_set_lang_invalid():
+    """Test setting invalid language defaults to zh."""
+    set_lang("invalid")
+    assert get_lang() == "zh"
+
+
+def test_underscore_zh():
+    """Test translation function with Chinese."""
+    set_lang("zh")
+    msg = _("research_searching", query="LLM")
+    assert "LLM" in msg
+    assert "搜索" in msg
+
+
+def test_underscore_en():
+    """Test translation function with English."""
+    set_lang("en")
+    msg = _("research_searching", query="LLM")
+    assert "LLM" in msg
+    assert "Searching" in msg
+
+
+def test_underscore_no_kwargs():
+    """Test translation function without kwargs."""
+    set_lang("zh")
+    msg = _("research_no_papers")
+    assert "未找到" in msg
+
+
+def test_underscore_fallback():
+    """Test translation function falls back to key for unknown key."""
+    set_lang("zh")
+    msg = _("unknown_key")
+    assert msg == "unknown_key"
+
+
+def test_all_zh_keys_exist():
+    """Test all keys exist in Chinese messages."""
+    set_lang("zh")
+    zh_keys = _MSGS["zh"].keys()
+    assert "research_searching" in zh_keys
+    assert "research_no_papers" in zh_keys
+    assert "research_found" in zh_keys
+
+
+def test_all_en_keys_exist():
+    """Test all keys exist in English messages."""
+    set_lang("en")
+    en_keys = _MSGS["en"].keys()
+    assert "research_searching" in en_keys
+    assert "research_no_papers" in en_keys
+    assert "research_found" in en_keys

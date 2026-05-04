@@ -1,1 +1,144 @@
-IiIiVGVzdHMgZm9yIGNoYXRfdHVpIC5lbnYgbG9hZGluZyBhbmQgQ0xJIGFyZ3VtZW50IHBhcnNpbmcuIiIiCgppbXBvcnQgb3MKZnJvbSB1bml0dGVzdC5tb2NrIGltcG9ydCBwYXRjaAoKCmNsYXNzIFRlc3RDaGF0VHVpRW52TG9hZGluZzoKICAgICIiIlRlc3QgdGhhdCAuZW52IGlzIGxvYWRlZCBmcm9tIGN1cnJlbnQgd29ya2luZyBkaXJlY3RvcnkuIiIiCgogICAgZGVmIHRlc3RfZW52X2ZpbGVfbG9hZGVkX2Zyb21fY3dkKHNlbGYsIHRtcF9wYXRoKToKICAgICAgICAiIiJXaGVuIC5lbnYgZXhpc3RzIGluIGN3ZCwgaXRzIHZhbHVlcyBzaG91bGQgYmUgbG9hZGVkIGludG8gb3MuZW52aXJvbi4iIiIKICAgICAgICBlbnZfZmlsZSA9IHRtcF9wYXRoIC8gIi5lbnYiCiAgICAgICAgZW52X2ZpbGUud3JpdGVfdGV4dCgiT1BFTkFJX0FQSV9LRVk9dGVzdC1rZXktMTIzXG5NSU5JTUFYX1RFU1Q9dmFsdWVcbiIpCgogICAgICAgICMgU2F2ZSBvcmlnaW5hbCB2YWx1ZXMgdG8gcmVzdG9yZSBhZnRlciB0ZXN0CiAgICAgICAgb3JpZ19rZXkgPSBvcy5lbnZpcm9uLmdldCgiT1BFTkFJX0FQSV9LRVkiKQogICAgICAgIG9yaWdfbWluaW1heCA9IG9zLmVudmlyb24uZ2V0KCJNSU5JTUFYX1RFU1QiKQoKICAgICAgICB0cnk6CiAgICAgICAgICAgICMgQ2xlYXIgdGhlIHNwZWNpZmljIGtleXMgd2UncmUgdGVzdGluZyAobm90IGFsbCBlbnYpCiAgICAgICAgICAgIG9zLmVudmlyb24ucG9wKCJPUEVOQUlfQVBJX0tFWSIsIE5vbmUpCiAgICAgICAgICAgIG9zLmVudmlyb24ucG9wKCJNSU5JTUFYX1RFU1QiLCBOb25lKQoKICAgICAgICAgICAgd2l0aCBwYXRjaCgicGF0aGxpYi5QYXRoLmN3ZCIsIHJldHVybl92YWx1ZT10bXBfcGF0aCk6CiAgICAgICAgICAgICAgICAjIFNpbXVsYXRlIHRoZSBlbnYgbG9hZGluZyBmcm9tIGNsaS9fc2hhcmVkLnB5CiAgICAgICAgICAgICAgICBfY3dkX2VudiA9IHRtcF9wYXRoIC8gIi5lbnYiCiAgICAgICAgICAgICAgICBpZiBfY3dkX2Vudi5leGlzdHMoKToKICAgICAgICAgICAgICAgICAgICB3aXRoIG9wZW4oX2N3ZF9lbnYsIGVuY29kaW5nPSJ1dGYtOCIpIGFzIGY6CiAgICAgICAgICAgICAgICAgICAgICAgIGZvciBsaW5lIGluIGY6CiAgICAgICAgICAgICAgICAgICAgICAgICAgICBsaW5lID0gbGluZS5zdHJpcCgpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZiBsaW5lIGFuZCBub3QgbGluZS5zdGFydHN3aXRoKCIjIikgYW5kICI9IiBpbiBsaW5lOgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGtleSwgXywgdmFsdWUgPSBsaW5lLnBhcnRpdGlvbigiPSIpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgb3MuZW52aXJvbi5zZXRkZWZhdWx0KGtleS5zdHJpcCgpLCB2YWx1ZS5zdHJpcCgpKQoKICAgICAgICAgICAgICAgIGFzc2VydCBvcy5lbnZpcm9uLmdldCgiT1BFTkFJX0FQSV9LRVkiKSA9PSAidGVzdC1rZXktMTIzIgogICAgICAgICAgICAgICAgYXNzZXJ0IG9zLmVudmlyb24uZ2V0KCJNSU5JTUFYX1RFU1QiKSA9PSAidmFsdWUiCiAgICAgICAgZmluYWxseToKICAgICAgICAgICAgIyBSZXN0b3JlIG9yaWdpbmFsIHZhbHVlcwogICAgICAgICAgICBpZiBvcmlnX2tleSBpcyBub3QgTm9uZToKICAgICAgICAgICAgICAgIG9zLmVudmlyb25bIk9QRU5BSV9BUElfS0VZIl0gPSBvcmlnX2tleQogICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgb3MuZW52aXJvbi5wb3AoIk9QRU5BSV9BUElfS0VZIiwgTm9uZSkKICAgICAgICAgICAgaWYgb3JpZ19taW5pbWF4IGlzIG5vdCBOb25lOgogICAgICAgICAgICAgICAgb3MuZW52aXJvblsiTUlOSU1BWF9URVNUIl0gPSBvcmlnX21pbmltYXgKICAgICAgICAgICAgZWxzZToKICAgICAgICAgICAgICAgIG9zLmVudmlyb24ucG9wKCJNSU5JTUFYX1RFU1QiLCBOb25lKQoKICAgIGRlZiB0ZXN0X2V4aXN0aW5nX2Vudl92YXJzX25vdF9vdmVyd3JpdHRlbihzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgIiIiRXhpc3RpbmcgZW52aXJvbm1lbnQgdmFyaWFibGVzIHNob3VsZCBub3QgYmUgb3ZlcndyaXR0ZW4gYnkgLmVudi4iIiIKICAgICAgICBlbnZfZmlsZSA9IHRtcF9wYXRoIC8gIi5lbnYiCiAgICAgICAgZW52X2ZpbGUud3JpdGVfdGV4dCgiT1BFTkFJX0FQSV9LRVk9bmV3LWtleS1mcm9tLWVudlxuIikKCiAgICAgICAgd2l0aCBwYXRjaC5kaWN0KG9zLmVudmlyb24sIHsiT1BFTkFJX0FQSV9LRVkiOiAib3JpZ2luYWwta2V5In0sIGNsZWFyPUZhbHNlKToKICAgICAgICAgICAgd2l0aCBwYXRjaCgicGF0aGxpYi5QYXRoLmN3ZCIsIHJldHVybl92YWx1ZT10bXBfcGF0aCk6CiAgICAgICAgICAgICAgICBfY3dkX2VudiA9IHRtcF9wYXRoIC8gIi5lbnYiCiAgICAgICAgICAgICAgICBpZiBfY3dkX2Vudi5leGlzdHMoKToKICAgICAgICAgICAgICAgICAgICB3aXRoIG9wZW4oX2N3ZF9lbnYsIGVuY29kaW5nPSJ1dGYtOCIpIGFzIGY6CiAgICAgICAgICAgICAgICAgICAgICAgIGZvciBsaW5lIGluIGY6CiAgICAgICAgICAgICAgICAgICAgICAgICAgICBsaW5lID0gbGluZS5zdHJpcCgpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZiBsaW5lIGFuZCBub3QgbGluZS5zdGFydHN3aXRoKCIjIikgYW5kICI9IiBpbiBsaW5lOgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGtleSwgXywgdmFsdWUgPSBsaW5lLnBhcnRpdGlvbigiPSIpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgb3MuZW52aXJvbi5zZXRkZWZhdWx0KGtleS5zdHJpcCgpLCB2YWx1ZS5zdHJpcCgpKQoKICAgICAgICAgICAgICAgICMgc2V0ZGVmYXVsdCBzaG91bGQgTk9UIG92ZXJ3cml0ZSBleGlzdGluZyB2YWx1ZQogICAgICAgICAgICAgICAgYXNzZXJ0IG9zLmVudmlyb24uZ2V0KCJPUEVOQUlfQVBJX0tFWSIpID09ICJvcmlnaW5hbC1rZXkiCgogICAgZGVmIHRlc3RfY29tbWVudHNfYW5kX2VtcHR5X2xpbmVzX2lnbm9yZWQoc2VsZiwgdG1wX3BhdGgpOgogICAgICAgICIiIkNvbW1lbnRzIGFuZCBlbXB0eSBsaW5lcyBpbiAuZW52IHNob3VsZCBiZSBpZ25vcmVkLiIiIgogICAgICAgIGVudl9maWxlID0gdG1wX3BhdGggLyAiLmVudiIKICAgICAgICBlbnZfZmlsZS53cml0ZV90ZXh0KCIjIFRoaXMgaXMgYSBjb21tZW50XG5cbktFWT12YWx1ZVxuICAjIGFub3RoZXIgY29tbWVudFxuIikKCiAgICAgICAgd2l0aCBwYXRjaC5kaWN0KG9zLmVudmlyb24sIHt9LCBjbGVhcj1UcnVlKToKICAgICAgICAgICAgd2l0aCBwYXRjaCgicGF0aGxpYi5QYXRoLmN3ZCIsIHJldHVybl92YWx1ZT10bXBfcGF0aCk6CiAgICAgICAgICAgICAgICBfY3dkX2VudiA9IHRtcF9wYXRoIC8gIi5lbnYiCiAgICAgICAgICAgICAgICBpZiBfY3dkX2Vudi5leGlzdHMoKToKICAgICAgICAgICAgICAgICAgICB3aXRoIG9wZW4oX2N3ZF9lbnYsIGVuY29kaW5nPSJ1dGYtOCIpIGFzIGY6CiAgICAgICAgICAgICAgICAgICAgICAgIGZvciBsaW5lIGluIGY6CiAgICAgICAgICAgICAgICAgICAgICAgICAgICBsaW5lID0gbGluZS5zdHJpcCgpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZiBsaW5lIGFuZCBub3QgbGluZS5zdGFydHN3aXRoKCIjIikgYW5kICI9IiBpbiBsaW5lOgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGtleSwgXywgdmFsdWUgPSBsaW5lLnBhcnRpdGlvbigiPSIpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgb3MuZW52aXJvbi5zZXRkZWZhdWx0KGtleS5zdHJpcCgpLCB2YWx1ZS5zdHJpcCgpKQoKICAgICAgICAgICAgICAgIGFzc2VydCBvcy5lbnZpcm9uLmdldCgiS0VZIikgPT0gInZhbHVlIgogICAgICAgICAgICAgICAgYXNzZXJ0ICJjb21tZW50IiBub3QgaW4gb3MuZW52aXJvbgoKICAgIGRlZiB0ZXN0X21pc3NpbmdfZW52X2ZpbGVfaXNfc2lsZW50KHNlbGYsIHRtcF9wYXRoKToKICAgICAgICAiIiJXaGVuIC5lbnYgZG9lc24ndCBleGlzdCwgbG9hZGluZyBzaG91bGQgYmUgc2lsZW50IChubyBlcnJvcikuIiIiCiAgICAgICAgbm9uX2V4aXN0ZW50ID0gdG1wX3BhdGggLyAiLmVudiIKICAgICAgICBhc3NlcnQgbm90IG5vbl9leGlzdGVudC5leGlzdHMoKQoKICAgICAgICAjIFNob3VsZCBub3QgcmFpc2UKICAgICAgICBfY3dkX2VudiA9IG5vbl9leGlzdGVudAogICAgICAgIGlmIF9jd2RfZW52LmV4aXN0cygpOgogICAgICAgICAgICB3aXRoIG9wZW4oX2N3ZF9lbnYsIGVuY29kaW5nPSJ1dGYtOCIpOgogICAgICAgICAgICAgICAgcGFzcyAgIyBXb3VsZCBzZXQgdmFycyBpZiBmaWxlIGV4aXN0ZWQKCgpjbGFzcyBUZXN0Q2hhdFR1aVBhcnNlcjoKICAgICIiIlRlc3QgY2hhdC10dWkgYXJndW1lbnQgcGFyc2VyIHJlZ2lzdHJhdGlvbi4iIiIKCiAgICBkZWYgdGVzdF9jaGF0X3R1aV9zdWJjb21tYW5kX3JlZ2lzdGVyZWQoc2VsZik6CiAgICAgICAgIiIiY2hhdC10dWkgc2hvdWxkIGJlIHJlZ2lzdGVyZWQgYXMgYSBzdWJjb21tYW5kIGluIHRoZSBDTEkgcmVnaXN0cnkuIiIiCiAgICAgICAgZnJvbSBjbGkuX3JlZ2lzdHJ5IGltcG9ydCBfU1VCQ09NTUFORF9UQUJMRQoKICAgICAgICBzdWJjb21tYW5kcyA9IFtuYW1lIGZvciBuYW1lLCBfLCBfIGluIF9TVUJDT01NQU5EX1RBQkxFXQogICAgICAgIGFzc2VydCAiY2hhdC10dWkiIGluIHN1YmNvbW1hbmRzLCBmImNoYXQtdHVpIG5vdCBpbiB7c3ViY29tbWFuZHN9IgoKICAgIGRlZiB0ZXN0X2NoYXRfdHVpX2Rpc3BhdGNoX2V4aXN0cyhzZWxmKToKICAgICAgICAiIiJjaGF0LXR1aSBzaG91bGQgaGF2ZSBhIGhhbmRsZXIgaW4gdGhlIGRpc3BhdGNoIHRhYmxlLiIiIgogICAgICAgIGZyb20gY2xpLl9yZWdpc3RyeSBpbXBvcnQgX1NVQkNPTU1BTkRfVEFCTEUKCiAgICAgICAgbmFtZXMgPSBbbmFtZSBmb3IgbmFtZSwgXywgXyBpbiBfU1VCQ09NTUFORF9UQUJMRV0KICAgICAgICBhc3NlcnQgImNoYXQtdHVpIiBpbiBuYW1lcwoKCmRlZiBfZ2V0X3N1YmNvbW1hbmRfdGFibGUoKToKICAgICIiIkhlbHBlciB0byBnZXQgc3ViY29tbWFuZCB0YWJsZS4iIiIKICAgIGZyb20gY2xpLl9yZWdpc3RyeSBpbXBvcnQgX1NVQkNPTU1BTkRfVEFCTEUKCiAgICByZXR1cm4gX1NVQkNPTU1BTkRfVEFCTEUKCgpjbGFzcyBUZXN0Q2hhdFR1aUFyZ3M6CiAgICAiIiJUZXN0IGNoYXQtdHVpIGNvbW1hbmQgbGluZSBhcmd1bWVudHMuIiIiCgogICAgZGVmIHRlc3RfZGVmYXVsdF9tb2RlbF9mcm9tX2NvbmZpZyhzZWxmKToKICAgICAgICAiIiJEZWZhdWx0IG1vZGVsIHNob3VsZCBjb21lIGZyb20gY29uZmlnLkRFRkFVTFRfTExNX01PREVMX0NMSS4iIiIKICAgICAgICB0cnk6CiAgICAgICAgICAgIGZyb20gY29uZmlnIGltcG9ydCBERUZBVUxUX0xMTV9NT0RFTF9DTEkKCiAgICAgICAgICAgIGFzc2VydCBpc2luc3RhbmNlKERFRkFVTFRfTExNX01PREVMX0NMSSwgc3RyKQogICAgICAgICAgICBhc3NlcnQgbGVuKERFRkFVTFRfTExNX01PREVMX0NMSSkgPiAwCiAgICAgICAgZXhjZXB0IEltcG9ydEVycm9yOgogICAgICAgICAgICBweXRlc3Quc2tpcCgiY29uZmlnIG1vZHVsZSBub3QgaW4gdGVzdCBlbnZpcm9ubWVudCIpCgogICAgZGVmIHRlc3RfZGVmYXVsdF9iYXNlX3VybF9mcm9tX2NvbmZpZyhzZWxmKToKICAgICAgICAiIiJEZWZhdWx0IGJhc2UgVVJMIHNob3VsZCBjb21lIGZyb20gY29uZmlnLkRFRkFVTFRfT1BFTkFJX0JBU0VfVVJMLiIiIgogICAgICAgIHRyeToKICAgICAgICAgICAgZnJvbSBjb25maWcgaW1wb3J0IERFRkFVTFRfT1BFTkFJX0JBU0VfVVJMCgogICAgICAgICAgICBhc3NlcnQgaXNpbnN0YW5jZShERUZBVUxUX09QRU5BSV9CQVNFX1VSTCwgc3RyKQogICAgICAgICAgICBhc3NlcnQgREVGQVVMVF9PUEVOQUlfQkFTRV9VUkwuc3RhcnRzd2l0aCgiaHR0cCIpCiAgICAgICAgZXhjZXB0IEltcG9ydEVycm9yOgogICAgICAgICAgICBweXRlc3Quc2tpcCgiY29uZmlnIG1vZHVsZSBub3QgaW4gdGVzdCBlbnZpcm9ubWVudCIpCg==
+"""Tests for chat_tui .env loading and CLI argument parsing."""
+
+import os
+from unittest.mock import patch
+
+
+class TestChatTuiEnvLoading:
+    """Test that .env is loaded from current working directory."""
+
+    def test_env_file_loaded_from_cwd(self, tmp_path):
+        """When .env exists in cwd, its values should be loaded into os.environ."""
+        env_file = tmp_path / ".env"
+        env_file.write_text("OPENAI_API_KEY=test-key-123\nMINIMAX_TEST=value\n")
+
+        # Save original values to restore after test
+        orig_key = os.environ.get("OPENAI_API_KEY")
+        orig_minimax = os.environ.get("MINIMAX_TEST")
+
+        try:
+            # Clear the specific keys we're testing (not all env)
+            os.environ.pop("OPENAI_API_KEY", None)
+            os.environ.pop("MINIMAX_TEST", None)
+
+            with patch("pathlib.Path.cwd", return_value=tmp_path):
+                # Simulate the env loading from cli/_shared.py
+                _cwd_env = tmp_path / ".env"
+                if _cwd_env.exists():
+                    with open(_cwd_env, encoding="utf-8") as f:
+                        for line in f:
+                            line = line.strip()
+                            if line and not line.startswith("#") and "=" in line:
+                                key, _, value = line.partition("=")
+                                os.environ.setdefault(key.strip(), value.strip())
+
+                assert os.environ.get("OPENAI_API_KEY") == "test-key-123"
+                assert os.environ.get("MINIMAX_TEST") == "value"
+        finally:
+            # Restore original values
+            if orig_key is not None:
+                os.environ["OPENAI_API_KEY"] = orig_key
+            else:
+                os.environ.pop("OPENAI_API_KEY", None)
+            if orig_minimax is not None:
+                os.environ["MINIMAX_TEST"] = orig_minimax
+            else:
+                os.environ.pop("MINIMAX_TEST", None)
+
+    def test_existing_env_vars_not_overwritten(self, tmp_path):
+        """Existing environment variables should not be overwritten by .env."""
+        env_file = tmp_path / ".env"
+        env_file.write_text("OPENAI_API_KEY=new-key-from-env\n")
+
+        with patch.dict(os.environ, {"OPENAI_API_KEY": "original-key"}, clear=False):
+            with patch("pathlib.Path.cwd", return_value=tmp_path):
+                _cwd_env = tmp_path / ".env"
+                if _cwd_env.exists():
+                    with open(_cwd_env, encoding="utf-8") as f:
+                        for line in f:
+                            line = line.strip()
+                            if line and not line.startswith("#") and "=" in line:
+                                key, _, value = line.partition("=")
+                                os.environ.setdefault(key.strip(), value.strip())
+
+                # setdefault should NOT overwrite existing value
+                assert os.environ.get("OPENAI_API_KEY") == "original-key"
+
+    def test_comments_and_empty_lines_ignored(self, tmp_path):
+        """Comments and empty lines in .env should be ignored."""
+        env_file = tmp_path / ".env"
+        env_file.write_text("# This is a comment\n\nKEY=value\n  # another comment\n")
+
+        with patch.dict(os.environ, {}, clear=True):
+            with patch("pathlib.Path.cwd", return_value=tmp_path):
+                _cwd_env = tmp_path / ".env"
+                if _cwd_env.exists():
+                    with open(_cwd_env, encoding="utf-8") as f:
+                        for line in f:
+                            line = line.strip()
+                            if line and not line.startswith("#") and "=" in line:
+                                key, _, value = line.partition("=")
+                                os.environ.setdefault(key.strip(), value.strip())
+
+                assert os.environ.get("KEY") == "value"
+                assert "comment" not in os.environ
+
+    def test_missing_env_file_is_silent(self, tmp_path):
+        """When .env doesn't exist, loading should be silent (no error)."""
+        non_existent = tmp_path / ".env"
+        assert not non_existent.exists()
+
+        # Should not raise
+        _cwd_env = non_existent
+        if _cwd_env.exists():
+            with open(_cwd_env, encoding="utf-8"):
+                pass  # Would set vars if file existed
+
+
+class TestChatTuiParser:
+    """Test chat-tui argument parser registration."""
+
+    def test_chat_tui_subcommand_registered(self):
+        """chat-tui should be registered as a subcommand in the CLI registry."""
+        from cli._registry import _SUBCOMMAND_TABLE
+
+        subcommands = [name for name, _, _ in _SUBCOMMAND_TABLE]
+        assert "chat-tui" in subcommands, f"chat-tui not in {subcommands}"
+
+    def test_chat_tui_dispatch_exists(self):
+        """chat-tui should have a handler in the dispatch table."""
+        from cli._registry import _SUBCOMMAND_TABLE
+
+        names = [name for name, _, _ in _SUBCOMMAND_TABLE]
+        assert "chat-tui" in names
+
+
+def _get_subcommand_table():
+    """Helper to get subcommand table."""
+    from cli._registry import _SUBCOMMAND_TABLE
+
+    return _SUBCOMMAND_TABLE
+
+
+class TestChatTuiArgs:
+    """Test chat-tui command line arguments."""
+
+    def test_default_model_from_config(self):
+        """Default model should come from config.DEFAULT_LLM_MODEL_CLI."""
+        try:
+            from config import DEFAULT_LLM_MODEL_CLI
+
+            assert isinstance(DEFAULT_LLM_MODEL_CLI, str)
+            assert len(DEFAULT_LLM_MODEL_CLI) > 0
+        except ImportError:
+            pytest.skip("config module not in test environment")
+
+    def test_default_base_url_from_config(self):
+        """Default base URL should come from config.DEFAULT_OPENAI_BASE_URL."""
+        try:
+            from config import DEFAULT_OPENAI_BASE_URL
+
+            assert isinstance(DEFAULT_OPENAI_BASE_URL, str)
+            assert DEFAULT_OPENAI_BASE_URL.startswith("http")
+        except ImportError:
+            pytest.skip("config module not in test environment")

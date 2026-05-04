@@ -1,1 +1,52 @@
-IiIiQ29yZSBkYXRhIHN0cnVjdHVyZXMgYW5kIGNvbnN0YW50cy4iIiIKCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcwpmcm9tIHR5cGluZyBpbXBvcnQgTGlzdAoKZnJvbSBjb3JlLl9jb25zdGFudHMgaW1wb3J0ICgKICAgIEFSWElWX0FQSSwKICAgIENST1NTUkVGX1dPUktTLAogICAgRE9JX1JFU09MVkVSLAogICAgUkFEQVJfRklMRSwKICAgIFRJTUVMSU5FX0ZJTEUsCikKCl9fYWxsX18gPSBbCiAgICAiUGFwZXIiLAogICAgInRvZGF5X2lzbyIsCiAgICAiQVJYSVZfQVBJIiwKICAgICJDUk9TU1JFRl9XT1JLUyIsCiAgICAiRE9JX1JFU09MVkVSIiwKICAgICJSQURBUl9GSUxFIiwKICAgICJUSU1FTElORV9GSUxFIiwKXQoKCkBkYXRhY2xhc3MKY2xhc3MgUGFwZXI6CiAgICBzb3VyY2U6IHN0ciAgIyAiYXJ4aXYiIG9yICJkb2kiCiAgICB1aWQ6IHN0ciAgIyBhclhpdiBpZCBvciBET0kKICAgIHRpdGxlOiBzdHIKICAgIGF1dGhvcnM6IExpc3Rbc3RyXQogICAgYWJzdHJhY3Q6IHN0cgogICAgcHVibGlzaGVkOiBzdHIgICMgWVlZWS1NTS1ERCBiZXN0LWVmZm9ydAogICAgdXBkYXRlZDogc3RyICAjIFlZWVktTU0tREQgYmVzdC1lZmZvcnQKICAgIGFic191cmw6IHN0ciAgIyBsYW5kaW5nIHBhZ2UKICAgIHBkZl91cmw6IHN0ciAgIyBkaXJlY3QgcGRmIHdoZW4ga25vd24KICAgIHByaW1hcnlfY2F0ZWdvcnk6IHN0ciA9ICIiCiAgICAjIC0tLSBleHRlbmRlZCBmaWVsZHMgKGFsbCBvcHRpb25hbCkgLS0tCiAgICBqb3VybmFsOiBzdHIgPSAiIiAgIyBqb3VybmFsIC8gY29udGFpbmVyIHRpdGxlCiAgICB2b2x1bWU6IHN0ciA9ICIiCiAgICBpc3N1ZTogc3RyID0gIiIKICAgIHBhZ2U6IHN0ciA9ICIiCiAgICBkb2k6IHN0ciA9ICIiICAjIERPSSB3aGVuIHNvdXJjZSBpcyBhcnhpdgogICAgY29tbWVudDogc3RyID0gIiIgICMgYXJYaXYgYXV0aG9yIGNvbW1lbnQgKGUuZy4gcGFnZSBjb3VudCwgdjEvdjIpCiAgICBqb3VybmFsX3JlZjogc3RyID0gIiIgICMg5q2j5byP5Y+R6KGo5pyf5YiK5byV55SoCiAgICBjYXRlZ29yaWVzOiBzdHIgPSAiIiAgIyBjb21tYS1zZXBhcmF0ZWQgZnVsbCBjYXRlZ29yeSBsaXN0CiAgICByZWZlcmVuY2VfY291bnQ6IGludCA9IDAgICMgY2l0YXRpb24gLyByZWZlcmVuY2UgY291bnQKCgpkZWYgdG9kYXlfaXNvKCkgLT4gc3RyOgogICAgaW1wb3J0IGRhdGV0aW1lIGFzIGR0CgogICAgcmV0dXJuIGR0LmRhdGUudG9kYXkoKS5pc29mb3JtYXQoKQo=
+"""Core data structures and constants."""
+
+from dataclasses import dataclass
+from typing import List
+
+from core._constants import (
+    ARXIV_API,
+    CROSSREF_WORKS,
+    DOI_RESOLVER,
+    RADAR_FILE,
+    TIMELINE_FILE,
+)
+
+__all__ = [
+    "Paper",
+    "today_iso",
+    "ARXIV_API",
+    "CROSSREF_WORKS",
+    "DOI_RESOLVER",
+    "RADAR_FILE",
+    "TIMELINE_FILE",
+]
+
+
+@dataclass
+class Paper:
+    source: str  # "arxiv" or "doi"
+    uid: str  # arXiv id or DOI
+    title: str
+    authors: List[str]
+    abstract: str
+    published: str  # YYYY-MM-DD best-effort
+    updated: str  # YYYY-MM-DD best-effort
+    abs_url: str  # landing page
+    pdf_url: str  # direct pdf when known
+    primary_category: str = ""
+    # --- extended fields (all optional) ---
+    journal: str = ""  # journal / container title
+    volume: str = ""
+    issue: str = ""
+    page: str = ""
+    doi: str = ""  # DOI when source is arxiv
+    comment: str = ""  # arXiv author comment (e.g. page count, v1/v2)
+    journal_ref: str = ""  # 正式发表期刊引用
+    categories: str = ""  # comma-separated full category list
+    reference_count: int = 0  # citation / reference count
+
+
+def today_iso() -> str:
+    import datetime as dt
+
+    return dt.date.today().isoformat()

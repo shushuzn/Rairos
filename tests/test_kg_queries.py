@@ -1,1 +1,97 @@
-IiIiVGVzdHMgZm9yIGtnL3F1ZXJpZXMucHkg4oCUIEtHUXVlcmllcyBoaWdoLWxldmVsIGdyYXBoIHF1ZXJpZXMuIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgcHl0ZXN0Cgpmcm9tIGtnLm1hbmFnZXIgaW1wb3J0IEtHTWFuYWdlcgpmcm9tIGtnLnF1ZXJpZXMgaW1wb3J0IEtHUXVlcmllcwoKCkBweXRlc3QuZml4dHVyZQpkZWYga3EodG1wX3BhdGgpOgogICAgZGIgPSB0bXBfcGF0aCAvICJ0ZXN0X2tnLmRiIgogICAga2cgPSBLR01hbmFnZXIoZGJfcGF0aD1zdHIoZGIpKQogICAgcmV0dXJuIEtHUXVlcmllcyhrZykKCgpAcHl0ZXN0LmZpeHR1cmUKZGVmIGtxX3BvcHVsYXRlZChrcSk6CiAgICAiIiJLR1F1ZXJpZXMgd2l0aCBhIHNpbXBsZSAzLWhvcCBncmFwaDogcDEg4oaSIHAyIOKGkiBwMywgcGx1cyBhIHRhZy4iIiIKICAgIHAxID0ga3Eua2cuYWRkX25vZGUoIlBhcGVyIiwgInAxIiwgIlBhcGVyIDEiLCB5ZWFyPTIwMjMpCiAgICBwMiA9IGtxLmtnLmFkZF9ub2RlKCJQYXBlciIsICJwMiIsICJQYXBlciAyIiwgeWVhcj0yMDIyKQogICAgcDMgPSBrcS5rZy5hZGRfbm9kZSgiUGFwZXIiLCAicDMiLCAiUGFwZXIgMyIsIHllYXI9MjAyMSkKICAgIHQxID0ga3Eua2cuYWRkX25vZGUoIlRhZyIsICJMTE0iLCAiTExNIikKCiAgICBrcS5rZy5hZGRfZWRnZShwMSwgcDIsICJjaXRlIikKICAgIGtxLmtnLmFkZF9lZGdlKHAyLCBwMywgImNpdGUiKQogICAga3Eua2cuYWRkX2VkZ2UocDEsIHQxLCAic2FtZV90YWciKQogICAga3Eua2cuYWRkX2VkZ2UocDIsIHQxLCAic2FtZV90YWciKQoKICAgIHJldHVybiB7InAxIjogcDEsICJwMiI6IHAyLCAicDMiOiBwMywgInQxIjogdDF9CgoKY2xhc3MgVGVzdEtHUGFwZXJTdWJncmFwaDoKICAgIGRlZiB0ZXN0X3JldHVybnNfZW1wdHlfZm9yX3Vua25vd25fcGFwZXIoc2VsZiwga3EpOgogICAgICAgIHJlc3VsdCA9IGtxLmdldF9wYXBlcl9zdWJncmFwaCgiZ2hvc3QtcGFwZXIiKQogICAgICAgIGFzc2VydCByZXN1bHRbIm5vZGVzIl0gPT0gW10KICAgICAgICBhc3NlcnQgcmVzdWx0WyJlZGdlcyJdID09IFtdCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsiY2VudGVyIl0gaXMgTm9uZQoKICAgIGRlZiB0ZXN0X3N1YmdyYXBoX2RlcHRoMShzZWxmLCBrcSwga3FfcG9wdWxhdGVkKToKICAgICAgICByZXN1bHQgPSBrcS5nZXRfcGFwZXJfc3ViZ3JhcGgoInAxIiwgZGVwdGg9MSkKICAgICAgICBhc3NlcnQgcmVzdWx0WyJjZW50ZXIiXVsiZW50aXR5X2lkIl0gPT0gInAxIgogICAgICAgIG5vZGVfaWRzID0ge25bImVudGl0eV9pZCJdIGZvciBuIGluIHJlc3VsdFsibm9kZXMiXX0KICAgICAgICAjIGRlcHRoPTE6IGRpcmVjdCBuZWlnaGJvcnMgb25seSAocDIgYW5kIHRoZSB0YWcpCiAgICAgICAgYXNzZXJ0ICJwMSIgaW4gbm9kZV9pZHMKCiAgICBkZWYgdGVzdF9zdWJncmFwaF9kZXB0aDIoc2VsZiwga3EsIGtxX3BvcHVsYXRlZCk6CiAgICAgICAgcmVzdWx0ID0ga3EuZ2V0X3BhcGVyX3N1YmdyYXBoKCJwMSIsIGRlcHRoPTIpCiAgICAgICAgbm9kZV9pZHMgPSB7blsiZW50aXR5X2lkIl0gZm9yIG4gaW4gcmVzdWx0WyJub2RlcyJdfQogICAgICAgICMgZGVwdGg9MjogcDEsIHAyIChkaXJlY3QpLCBwMyAodmlhIHAyKQogICAgICAgIGFzc2VydCAicDEiIGluIG5vZGVfaWRzCiAgICAgICAgYXNzZXJ0ICJwMiIgaW4gbm9kZV9pZHMKICAgICAgICBhc3NlcnQgInAzIiBpbiBub2RlX2lkcwoKICAgIGRlZiB0ZXN0X3N1YmdyYXBoX2V4Y2x1ZGVzX25vdGVzX3doZW5fZmxhZ19mYWxzZShzZWxmLCBrcSk6CiAgICAgICAgcDEgPSBrcS5rZy5hZGRfbm9kZSgiUGFwZXIiLCAicDEiLCAiUGFwZXIgMSIpCiAgICAgICAgbm90ZSA9IGtxLmtnLmFkZF9ub2RlKCJQLU5vdGUiLCAibjEiLCAiTm90ZSBvbiBwMSIpCiAgICAgICAga3Eua2cuYWRkX2VkZ2UocDEsIG5vdGUsICJoYXNfbm90ZSIpCiAgICAgICAgcmVzdWx0ID0ga3EuZ2V0X3BhcGVyX3N1YmdyYXBoKCJwMSIsIGluY2x1ZGVfbm90ZXM9RmFsc2UpCiAgICAgICAgbm90ZV9ub2RlcyA9IFtuIGZvciBuIGluIHJlc3VsdFsibm9kZXMiXSBpZiBuWyJ0eXBlIl0gPT0gIlAtTm90ZSJdCiAgICAgICAgYXNzZXJ0IG5vdGVfbm9kZXMgPT0gW10KCiAgICBkZWYgdGVzdF9zdWJncmFwaF9pbmNsdWRlc19ub3Rlc193aGVuX2ZsYWdfdHJ1ZShzZWxmLCBrcSk6CiAgICAgICAgcDEgPSBrcS5rZy5hZGRfbm9kZSgiUGFwZXIiLCAicDEiLCAiUGFwZXIgMSIpCiAgICAgICAgbm90ZSA9IGtxLmtnLmFkZF9ub2RlKCJQLU5vdGUiLCAibjEiLCAiTm90ZSBvbiBwMSIpCiAgICAgICAga3Eua2cuYWRkX2VkZ2UocDEsIG5vdGUsICJoYXNfbm90ZSIpCiAgICAgICAgcmVzdWx0ID0ga3EuZ2V0X3BhcGVyX3N1YmdyYXBoKCJwMSIsIGluY2x1ZGVfbm90ZXM9VHJ1ZSkKICAgICAgICBub3RlX25vZGVzID0gW24gZm9yIG4gaW4gcmVzdWx0WyJub2RlcyJdIGlmIG5bInR5cGUiXSA9PSAiUC1Ob3RlIl0KICAgICAgICBhc3NlcnQgbGVuKG5vdGVfbm9kZXMpID09IDEKCgpjbGFzcyBUZXN0S0dUYWdFY29zeXN0ZW06CiAgICBkZWYgdGVzdF90YWdfZWNvc3lzdGVtKHNlbGYsIGtxLCBrcV9wb3B1bGF0ZWQpOgogICAgICAgIHJlc3VsdCA9IGtxLmdldF90YWdfZWNvc3lzdGVtKCJMTE0iKQogICAgICAgIG5vZGVfdHlwZXMgPSB7blsidHlwZSJdIGZvciBuIGluIHJlc3VsdFsibm9kZXMiXX0KICAgICAgICAjIFRhZyBlY29zeXN0ZW0gcmV0dXJucyBwYXBlcnMgcmVsYXRlZCB0byB0aGUgdGFnCiAgICAgICAgYXNzZXJ0ICJQYXBlciIgaW4gbm9kZV90eXBlcwogICAgICAgIGFzc2VydCByZXN1bHRbInRhZyJdID09ICJMTE0iCgogICAgZGVmIHRlc3RfdGFnX2Vjb3N5c3RlbV9lbXB0eV9mb3JfdW5rbm93bl90YWcoc2VsZiwga3EpOgogICAgICAgIHJlc3VsdCA9IGtxLmdldF90YWdfZWNvc3lzdGVtKCJOb25FeGlzdGVudFRhZyIpCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsibm9kZXMiXSA9PSBbXQogICAgICAgIGFzc2VydCByZXN1bHRbImVkZ2VzIl0gPT0gW10KCgpjbGFzcyBUZXN0S0dFeHBvcnRHcmFwaEpzb246CiAgICBkZWYgdGVzdF9leHBvcnRfYWxsKHNlbGYsIGtxLCBrcV9wb3B1bGF0ZWQpOgogICAgICAgIHJlc3VsdCA9IGtxLmV4cG9ydF9ncmFwaF9qc29uKCkKICAgICAgICBhc3NlcnQgbGVuKHJlc3VsdFsibm9kZXMiXSkgPT0gNAogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0WyJlZGdlcyJdKSA9PSA0CgogICAgZGVmIHRlc3RfZXhwb3J0X3N1YnNldF9ieV9ub2RlX2lkcyhzZWxmLCBrcSwga3FfcG9wdWxhdGVkKToKICAgICAgICByZXN1bHQgPSBrcS5leHBvcnRfZ3JhcGhfanNvbihub2RlX2lkcz1ba3FfcG9wdWxhdGVkWyJwMSJdXSkKICAgICAgICAjIG9ubHkgcDEgKyBpdHMgZWRnZXMKICAgICAgICBhc3NlcnQgbGVuKHJlc3VsdFsibm9kZXMiXSkgPT0gMQogICAgICAgIGFzc2VydCByZXN1bHRbIm5vZGVzIl1bMF1bImVudGl0eV9pZCJdID09ICJwMSIK
+"""Tests for kg/queries.py — KGQueries high-level graph queries."""
+
+from __future__ import annotations
+
+import pytest
+
+from kg.manager import KGManager
+from kg.queries import KGQueries
+
+
+@pytest.fixture
+def kq(tmp_path):
+    db = tmp_path / "test_kg.db"
+    kg = KGManager(db_path=str(db))
+    return KGQueries(kg)
+
+
+@pytest.fixture
+def kq_populated(kq):
+    """KGQueries with a simple 3-hop graph: p1 → p2 → p3, plus a tag."""
+    p1 = kq.kg.add_node("Paper", "p1", "Paper 1", year=2023)
+    p2 = kq.kg.add_node("Paper", "p2", "Paper 2", year=2022)
+    p3 = kq.kg.add_node("Paper", "p3", "Paper 3", year=2021)
+    t1 = kq.kg.add_node("Tag", "LLM", "LLM")
+
+    kq.kg.add_edge(p1, p2, "cite")
+    kq.kg.add_edge(p2, p3, "cite")
+    kq.kg.add_edge(p1, t1, "same_tag")
+    kq.kg.add_edge(p2, t1, "same_tag")
+
+    return {"p1": p1, "p2": p2, "p3": p3, "t1": t1}
+
+
+class TestKGPaperSubgraph:
+    def test_returns_empty_for_unknown_paper(self, kq):
+        result = kq.get_paper_subgraph("ghost-paper")
+        assert result["nodes"] == []
+        assert result["edges"] == []
+        assert result["center"] is None
+
+    def test_subgraph_depth1(self, kq, kq_populated):
+        result = kq.get_paper_subgraph("p1", depth=1)
+        assert result["center"]["entity_id"] == "p1"
+        node_ids = {n["entity_id"] for n in result["nodes"]}
+        # depth=1: direct neighbors only (p2 and the tag)
+        assert "p1" in node_ids
+
+    def test_subgraph_depth2(self, kq, kq_populated):
+        result = kq.get_paper_subgraph("p1", depth=2)
+        node_ids = {n["entity_id"] for n in result["nodes"]}
+        # depth=2: p1, p2 (direct), p3 (via p2)
+        assert "p1" in node_ids
+        assert "p2" in node_ids
+        assert "p3" in node_ids
+
+    def test_subgraph_excludes_notes_when_flag_false(self, kq):
+        p1 = kq.kg.add_node("Paper", "p1", "Paper 1")
+        note = kq.kg.add_node("P-Note", "n1", "Note on p1")
+        kq.kg.add_edge(p1, note, "has_note")
+        result = kq.get_paper_subgraph("p1", include_notes=False)
+        note_nodes = [n for n in result["nodes"] if n["type"] == "P-Note"]
+        assert note_nodes == []
+
+    def test_subgraph_includes_notes_when_flag_true(self, kq):
+        p1 = kq.kg.add_node("Paper", "p1", "Paper 1")
+        note = kq.kg.add_node("P-Note", "n1", "Note on p1")
+        kq.kg.add_edge(p1, note, "has_note")
+        result = kq.get_paper_subgraph("p1", include_notes=True)
+        note_nodes = [n for n in result["nodes"] if n["type"] == "P-Note"]
+        assert len(note_nodes) == 1
+
+
+class TestKGTagEcosystem:
+    def test_tag_ecosystem(self, kq, kq_populated):
+        result = kq.get_tag_ecosystem("LLM")
+        node_types = {n["type"] for n in result["nodes"]}
+        # Tag ecosystem returns papers related to the tag
+        assert "Paper" in node_types
+        assert result["tag"] == "LLM"
+
+    def test_tag_ecosystem_empty_for_unknown_tag(self, kq):
+        result = kq.get_tag_ecosystem("NonExistentTag")
+        assert result["nodes"] == []
+        assert result["edges"] == []
+
+
+class TestKGExportGraphJson:
+    def test_export_all(self, kq, kq_populated):
+        result = kq.export_graph_json()
+        assert len(result["nodes"]) == 4
+        assert len(result["edges"]) == 4
+
+    def test_export_subset_by_node_ids(self, kq, kq_populated):
+        result = kq.export_graph_json(node_ids=[kq_populated["p1"]])
+        # only p1 + its edges
+        assert len(result["nodes"]) == 1
+        assert result["nodes"][0]["entity_id"] == "p1"

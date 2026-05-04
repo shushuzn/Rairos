@@ -1,1 +1,588 @@
-IiIiClJlc2VhcmNoIFF1ZXN0aW9uIFZhbGlkYXRvcjogVmFsaWRhdGUgbm92ZWx0eSBhbmQgZmVhc2liaWxpdHkgb2YgcmVzZWFyY2ggcXVlc3Rpb25zLgoK56CU56m26Zeu6aKY6aqM6K+B5Zmo77ya6aqM6K+B56CU56m26Zeu6aKY55qE5paw6aKW5oCn5ZKM5Y+v6KGM5oCn44CCCgrmoLjlv4Pnrpfms5XvvJoKMS4g6Zeu6aKY5omp5bGV77ya5bCG56CU56m26Zeu6aKY5omp5bGV5Li65YWz6ZSu6K+N57uE5ZCICjIuIOaWh+eMruWMuemFje+8mkJNMjUgKyBFbWJlZGRpbmcg5Y+M5bGC5qOA57SiCjMuIOaWsOmiluaAp+WIhuaekO+8muS4jueOsOacieW3peS9nOWvueavlAo0LiDmlrnlkJHlu7rorq7vvJrnlJ/miJDlhbfkvZPmlLnov5vlu7rorq4KIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgcmUKZnJvbSBkYXRhY2xhc3NlcyBpbXBvcnQgZGF0YWNsYXNzLCBmaWVsZApmcm9tIGVudW0gaW1wb3J0IEVudW0KZnJvbSB0eXBpbmcgaW1wb3J0IE9wdGlvbmFsLCBMaXN0Cgpmcm9tIGxsbS5jb25zdGFudHMgaW1wb3J0IEFJX1JFU0VBUkNIX0tFWVdPUkRTLCBMTE1fQkFTRV9VUkwsIExMTV9NT0RFTAoKIyBPcHRpb25hbCBMTE0gaW1wb3J0CnRyeToKICAgIGZyb20gbGxtLmNoYXQgaW1wb3J0IGNhbGxfbGxtX2NoYXRfY29tcGxldGlvbnMKCiAgICBMTE1fQVZBSUxBQkxFID0gVHJ1ZQpleGNlcHQgSW1wb3J0RXJyb3I6CiAgICBMTE1fQVZBSUxBQkxFID0gRmFsc2UKCgojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIFByb21wdCBjb25zdGFudHMgZm9yIExMTS1iYXNlZCBhbmFseXNpcwojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpfSU5OT1ZBVElPTl9BTkFMWVNJU19TWVNURU1fUFJPTVBUID0gIiIi5YiG5p6Q56CU56m26Zeu6aKY55qE5paw6aKW5oCn77yM5LuO5Lul5LiL57u05bqm5omT5YiG77yIMC0xMO+8ie+8mgoxLiBtZXRob2Q6IOaWueazleWIm+aWsOaApyAtIOaYr+WQpuaPkOWHuuS6huaWsOaWueazlS/mnrbmnoQv5oqA5pyvCjIuIHRhc2s6IOS7u+WKoeWIm+aWsOaApyAtIOaYr+WQpuW6lOeUqOS6juaWsOS7u+WKoS/lnLrmma8v6aKG5Z+fCjMuIGV2YWx1YXRpb246IOivhOS8sOWIm+aWsOaApyAtIOaYr+WQpuaPkOWHuuS6huaWsOivhOS8sOagh+WHhi/ln7rlh4YKCui+k+WHuuagvOW8j++8mgptZXRob2Q6IFgKdGFzazogWApldmFsdWF0aW9uOiBYCnJlYXNvbmluZzog566A55+t55qE6K+E5YiG55CG55SxIiIiCgpfSU5OT1ZBVElPTl9BTkFMWVNJU19VU0VSX1BST01QVF9URU1QTEFURSA9ICIiIueglOeptumXrumimDoge3F1ZXN0aW9ufQoK55u45YWz5bel5L2cOgp7cmVsYXRlZF90ZXh0fQoK6K+35YiG5p6Q6L+Z5Liq6Zeu6aKY55qE5Yib5paw5r2c5Yqb77yaIiIiCgpfU1VHR0VTVElPTl9TWVNURU1fUFJPTVBUID0gIiIi5Z+65LqO56CU56m26Zeu6aKY5ZKM55u45YWz5bel5L2c77yM5o+Q5Ye6My015p2h5YW35L2T5pS56L+b5bu66K6u44CCCuavj+adoeW7uuiuruagvOW8j++8mlvmlrnlkJFdIOWFt+S9k+W7uuiurgoK5pa55ZCR5Y+v6YCJ77ya5pa55rOV44CB5Lu75Yqh44CB6K+E5Lyw44CB5pWw5o2u44CB55CG6K66IiIiCgpfU1VHR0VTVElPTl9VU0VSX1BST01QVF9URU1QTEFURSA9ICIiIumXrumimDoge3F1ZXN0aW9ufQoK5Yib5paw6K+E5YiGOiDmlrnms5V7IG1ldGhvZH0vMTAsIOS7u+WKoXsgdGFza30vMTAsIOivhOS8sHsgZXZhbHVhdGlvbn0vMTAKCuebuOWFs+W3peS9nDoKe3JlbGF0ZWRfdGV4dH0KCuivt+aPkOWHuuaUuei/m+W7uuiuru+8miIiIgoKCmNsYXNzIE5vdmVsdHlMZXZlbChFbnVtKToKICAgICIiIk5vdmVsdHkgbGV2ZWwgZm9yIHJlc2VhcmNoIHF1ZXN0aW9ucy4iIiIKCiAgICBISUdIID0gImhpZ2giICAjIOmrmOWIm+aWsOaApwogICAgTUVESVVNID0gIm1lZGl1bSIgICMg5Lit562J5Yib5paw5oCnCiAgICBMT1cgPSAibG93IiAgIyDkvY7liJvmlrDmgKcgKOW3suiiq+WFheWIhueglOeptikKICAgIFVOS05PV04gPSAidW5rbm93biIgICMg5peg5rOV5Yik5patCgoKY2xhc3MgSW5ub3ZhdGlvbkRpbWVuc2lvbihFbnVtKToKICAgICIiIkRpbWVuc2lvbnMgb2YgcmVzZWFyY2ggaW5ub3ZhdGlvbi4iIiIKCiAgICBNRVRIT0QgPSAibWV0aG9kIiAgIyDmlrnms5XliJvmlrAKICAgIFRBU0sgPSAidGFzayIgICMg5Lu75Yqh5Yib5pawCiAgICBFVkFMVUFUSU9OID0gImV2YWx1YXRpb24iICAjIOivhOS8sOWIm+aWsAogICAgVEhFT1JZID0gInRoZW9yeSIgICMg55CG6K665Yib5pawCiAgICBBUFBMSUNBVElPTiA9ICJhcHBsaWNhdGlvbiIgICMg5bqU55So5Yib5pawCgoKQGRhdGFjbGFzcwpjbGFzcyBSZWxhdGVkV29yazoKICAgICIiIkEgcmVsYXRlZCBwYXBlciB0aGF0IGFkZHJlc3NlcyBzaW1pbGFyIHF1ZXN0aW9ucy4iIiIKCiAgICBwYXBlcl9pZDogc3RyCiAgICB0aXRsZTogc3RyCiAgICB5ZWFyOiBpbnQKICAgIHJlbGV2YW5jZV9zY29yZTogZmxvYXQKICAgIG92ZXJsYXBfYXNwZWN0czogTGlzdFtzdHJdICAjIOmHjeWPoOeahOaWuemdogogICAgZGlmZmVyZW5jZV9hc3BlY3RzOiBMaXN0W3N0cl0gICMg5beu5byC5pa56Z2iCiAgICBjb25jbHVzaW9uOiBzdHIgICMg57uT6K6677yI5piv5ZCm6Kej5Yaz5LqG6Zeu6aKY77yJCgoKQGRhdGFjbGFzcwpjbGFzcyBJbm5vdmF0aW9uU2NvcmU6CiAgICAiIiJJbm5vdmF0aW9uIHNjb3JlIGZvciBhIHJlc2VhcmNoIHF1ZXN0aW9uLiIiIgoKICAgIG92ZXJhbGw6IGZsb2F0ICAjIDAtMTAKICAgIG1ldGhvZDogZmxvYXQgICMg5pa55rOV5Yib5pawCiAgICB0YXNrOiBmbG9hdCAgIyDku7vliqHliJvmlrAKICAgIGV2YWx1YXRpb246IGZsb2F0ICAjIOivhOS8sOWIm+aWsAogICAgZGltZW5zaW9uczogTGlzdFtJbm5vdmF0aW9uRGltZW5zaW9uXQogICAgcmVhc29uaW5nOiBzdHIgICMg5omT5YiG55CG55SxCgoKQGRhdGFjbGFzcwpjbGFzcyBWYWxpZGF0aW9uUmVzdWx0OgogICAgIiIiUmVzdWx0IG9mIHF1ZXN0aW9uIHZhbGlkYXRpb24uIiIiCgogICAgcXVlc3Rpb246IHN0cgogICAgaXNfbm92ZWw6IGJvb2wKICAgIG5vdmVsdHlfbGV2ZWw6IE5vdmVsdHlMZXZlbAogICAgaW5ub3ZhdGlvbl9zY29yZTogSW5ub3ZhdGlvblNjb3JlCiAgICByZWxhdGVkX3dvcmtzOiBMaXN0W1JlbGF0ZWRXb3JrXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgZ2FwX3N1bW1hcnk6IHN0ciA9ICIiCiAgICBzdWdnZXN0aW9uczogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICBjb25maWRlbmNlOiBmbG9hdCA9IDAuNSAgIyDnva7kv6HluqYgMC0xCgoKY2xhc3MgUXVlc3Rpb25WYWxpZGF0b3I6CiAgICAiIiJWYWxpZGF0ZSBub3ZlbHR5IGFuZCBmZWFzaWJpbGl0eSBvZiByZXNlYXJjaCBxdWVzdGlvbnMuIiIiCgogICAgIyBRdWVzdGlvbiB0eXBlIHBhdHRlcm5zCiAgICBRVUVTVElPTl9QQVRURVJOUyA9IFsKICAgICAgICByImNhblxzK1x3K1xzKyhsZWFybnxkb3xhY2hpZXZlfHVuZGVyc3RhbmQpXHMrLisiLAogICAgICAgIHIiaG93XHMrdG9ccysuKyIsCiAgICAgICAgciJ3aGF0XHMraXNccysuKyIsCiAgICAgICAgciJ3aHlccysuKyIsCiAgICAgICAgciJpc1xzKy4rXHMrYmV0dGVyXHMrdGhhblxzKy4rIiwKICAgICAgICByImRvZXNccysuK1xzK3dvcmtccytmb3JccysuKyIsCiAgICAgICAgciJjYW5ccyt3ZVxzKy4rIiwKICAgICAgICByImlzXHMraXRccytwb3NzaWJsZVxzK3RvXHMrLisiLAogICAgXQoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBkYj1Ob25lKToKICAgICAgICBzZWxmLmRiID0gZGIKCiAgICBkZWYgdmFsaWRhdGUoCiAgICAgICAgc2VsZiwKICAgICAgICBxdWVzdGlvbjogc3RyLAogICAgICAgIHVzZV9sbG06IGJvb2wgPSBUcnVlLAogICAgICAgIGFwaV9rZXk6IE9wdGlvbmFsW3N0cl0gPSBOb25lLAogICAgICAgIGJhc2VfdXJsOiBPcHRpb25hbFtzdHJdID0gTm9uZSwKICAgICAgICBtb2RlbDogT3B0aW9uYWxbc3RyXSA9IE5vbmUsCiAgICAgICAgZGVwdGg6IHN0ciA9ICJxdWljayIsCiAgICApIC0+IFZhbGlkYXRpb25SZXN1bHQ6CiAgICAgICAgIiIiCiAgICAgICAgVmFsaWRhdGUgYSByZXNlYXJjaCBxdWVzdGlvbi4KCiAgICAgICAgQXJnczoKICAgICAgICAgICAgcXVlc3Rpb246IFJlc2VhcmNoIHF1ZXN0aW9uIHRvIHZhbGlkYXRlCiAgICAgICAgICAgIHVzZV9sbG06IFdoZXRoZXIgdG8gdXNlIExMTSBmb3IgYW5hbHlzaXMKICAgICAgICAgICAgYXBpX2tleTogTExNIEFQSSBrZXkKICAgICAgICAgICAgYmFzZV91cmw6IExMTSBBUEkgYmFzZSBVUkwKICAgICAgICAgICAgbW9kZWw6IE1vZGVsIG5hbWUKICAgICAgICAgICAgZGVwdGg6IEFuYWx5c2lzIGRlcHRoICgicXVpY2siIG9yICJmdWxsIikKCiAgICAgICAgUmV0dXJuczoKICAgICAgICAgICAgVmFsaWRhdGlvblJlc3VsdCB3aXRoIG5vdmVsdHkgYW5hbHlzaXMKICAgICAgICAiIiIKICAgICAgICByZXN1bHQgPSBWYWxpZGF0aW9uUmVzdWx0KAogICAgICAgICAgICBxdWVzdGlvbj1xdWVzdGlvbiwKICAgICAgICAgICAgaXNfbm92ZWw9RmFsc2UsCiAgICAgICAgICAgIG5vdmVsdHlfbGV2ZWw9Tm92ZWx0eUxldmVsLlVOS05PV04sCiAgICAgICAgICAgIGlubm92YXRpb25fc2NvcmU9SW5ub3ZhdGlvblNjb3JlKAogICAgICAgICAgICAgICAgb3ZlcmFsbD0wLjAsCiAgICAgICAgICAgICAgICBtZXRob2Q9MC4wLAogICAgICAgICAgICAgICAgdGFzaz0wLjAsCiAgICAgICAgICAgICAgICBldmFsdWF0aW9uPTAuMCwKICAgICAgICAgICAgICAgIGRpbWVuc2lvbnM9W10sCiAgICAgICAgICAgICAgICByZWFzb25pbmc9IiIsCiAgICAgICAgICAgICksCiAgICAgICAgKQoKICAgICAgICAjIDEuIEV4cGFuZCBxdWVzdGlvbiB0byBrZXl3b3JkcwogICAgICAgIGtleXdvcmRzID0gc2VsZi5fZXhwYW5kX3F1ZXN0aW9uKHF1ZXN0aW9uKQogICAgICAgIHJlc3VsdC5nYXBfc3VtbWFyeSA9IGYi5YWz6ZSu6K+NOiB7JywgJy5qb2luKGtleXdvcmRzWzo1XSl9IgoKICAgICAgICAjIDIuIEZpbmQgcmVsYXRlZCB3b3JrcwogICAgICAgIHJlbGF0ZWQgPSBzZWxmLl9maW5kX3JlbGF0ZWRfd29ya3Moa2V5d29yZHMsIGxpbWl0PTUgaWYgZGVwdGggPT0gInF1aWNrIiBlbHNlIDEwKQogICAgICAgIHJlc3VsdC5yZWxhdGVkX3dvcmtzID0gcmVsYXRlZAoKICAgICAgICAjIDMuIEFuYWx5emUgaW5ub3ZhdGlvbgogICAgICAgIGlmIHVzZV9sbG0gYW5kIExMTV9BVkFJTEFCTEU6CiAgICAgICAgICAgIGlubm92YXRpb24gPSBzZWxmLl9hbmFseXplX2lubm92YXRpb25fbGxtKHF1ZXN0aW9uLCByZWxhdGVkLCBhcGlfa2V5LCBiYXNlX3VybCwgbW9kZWwpCiAgICAgICAgICAgIHJlc3VsdC5pbm5vdmF0aW9uX3Njb3JlID0gaW5ub3ZhdGlvbgogICAgICAgICAgICByZXN1bHQuc3VnZ2VzdGlvbnMgPSBzZWxmLl9nZW5lcmF0ZV9zdWdnZXN0aW9uc19sbG0oCiAgICAgICAgICAgICAgICBxdWVzdGlvbiwgcmVsYXRlZCwgaW5ub3ZhdGlvbiwgYXBpX2tleSwgYmFzZV91cmwsIG1vZGVsCiAgICAgICAgICAgICkKICAgICAgICBlbHNlOgogICAgICAgICAgICBpbm5vdmF0aW9uID0gc2VsZi5fYW5hbHl6ZV9pbm5vdmF0aW9uX3J1bGVzKHJlbGF0ZWQpCiAgICAgICAgICAgIHJlc3VsdC5pbm5vdmF0aW9uX3Njb3JlID0gaW5ub3ZhdGlvbgogICAgICAgICAgICByZXN1bHQuc3VnZ2VzdGlvbnMgPSBzZWxmLl9nZW5lcmF0ZV9zdWdnZXN0aW9uc19ydWxlcyhyZWxhdGVkKQoKICAgICAgICAjIDQuIERldGVybWluZSBub3ZlbHR5IGxldmVsCiAgICAgICAgcmVzdWx0Lm5vdmVsdHlfbGV2ZWwgPSBzZWxmLl9kZXRlcm1pbmVfbm92ZWx0eShpbm5vdmF0aW9uLCByZWxhdGVkKQogICAgICAgIHJlc3VsdC5pc19ub3ZlbCA9IHJlc3VsdC5ub3ZlbHR5X2xldmVsICE9IE5vdmVsdHlMZXZlbC5MT1cKCiAgICAgICAgIyA1LiBDYWxjdWxhdGUgY29uZmlkZW5jZQogICAgICAgIHJlc3VsdC5jb25maWRlbmNlID0gc2VsZi5fY2FsY3VsYXRlX2NvbmZpZGVuY2UocmVsYXRlZCwgaW5ub3ZhdGlvbikKCiAgICAgICAgcmV0dXJuIHJlc3VsdAoKICAgIGRlZiBfZXhwYW5kX3F1ZXN0aW9uKHNlbGYsIHF1ZXN0aW9uOiBzdHIpIC0+IExpc3Rbc3RyXToKICAgICAgICAiIiJFeHBhbmQgcXVlc3Rpb24gaW50byBzZWFyY2hhYmxlIGtleXdvcmRzLiIiIgogICAgICAgICMgUmVtb3ZlIGNvbW1vbiBxdWVzdGlvbiB3b3JkcwogICAgICAgIGNsZWFuZWQgPSByZS5zdWIociJcYihjYW58aG93fHdoYXR8d2h5fGlzfGRvZXN8dG98dGhlfGF8YW4pXGIiLCAiIiwgcXVlc3Rpb24ubG93ZXIoKSkKICAgICAgICBjbGVhbmVkID0gcmUuc3ViKHIiW15cd1xzXSIsICIgIiwgY2xlYW5lZCkKICAgICAgICB3b3JkcyA9IFt3LnN0cmlwKCkgZm9yIHcgaW4gY2xlYW5lZC5zcGxpdCgpIGlmIGxlbih3LnN0cmlwKCkpID4gMl0KCiAgICAgICAgIyBBZGQga2V5IHRlY2huaWNhbCB0ZXJtcwogICAgICAgIGZvciB0ZXJtIGluIEFJX1JFU0VBUkNIX0tFWVdPUkRTOgogICAgICAgICAgICBpZiB0ZXJtIGluIHF1ZXN0aW9uLmxvd2VyKCk6CiAgICAgICAgICAgICAgICB3b3Jkcy5hcHBlbmQodGVybSkKCiAgICAgICAgcmV0dXJuIGxpc3Qoc2V0KHdvcmRzKSlbOjEwXQoKICAgIGRlZiBfZmluZF9yZWxhdGVkX3dvcmtzKAogICAgICAgIHNlbGYsCiAgICAgICAga2V5d29yZHM6IExpc3Rbc3RyXSwKICAgICAgICBsaW1pdDogaW50ID0gNSwKICAgICkgLT4gTGlzdFtSZWxhdGVkV29ya106CiAgICAgICAgIiIiRmluZCByZWxhdGVkIHdvcmtzIGZyb20gZGF0YWJhc2UuIiIiCiAgICAgICAgaWYgbm90IHNlbGYuZGI6CiAgICAgICAgICAgIHJldHVybiBbXQoKICAgICAgICByZWxhdGVkOiBMaXN0W1JlbGF0ZWRXb3JrXSA9IFtdCiAgICAgICAgdHJ5OgogICAgICAgICAgICAjIFNlYXJjaCBieSBlYWNoIGtleXdvcmQKICAgICAgICAgICAgZm9yIGt3IGluIGtleXdvcmRzWzozXToKICAgICAgICAgICAgICAgIHJvd3MsIF8gPSBzZWxmLmRiLnNlYXJjaF9wYXBlcnMoa3csIGxpbWl0PWxpbWl0KQogICAgICAgICAgICAgICAgZm9yIHJvdyBpbiByb3dzOgogICAgICAgICAgICAgICAgICAgIHBhcGVyX2lkID0gZ2V0YXR0cihyb3csICJpZCIsICIiKQogICAgICAgICAgICAgICAgICAgIHRpdGxlID0gZ2V0YXR0cihyb3csICJ0aXRsZSIsICIiKSBvciAiIgogICAgICAgICAgICAgICAgICAgIHllYXIgPSBnZXRhdHRyKHJvdywgInllYXIiLCAwKSBvciAwCiAgICAgICAgICAgICAgICAgICAgYWJzdHJhY3QgPSBnZXRhdHRyKHJvdywgImFic3RyYWN0IiwgIiIpIG9yICIiCgogICAgICAgICAgICAgICAgICAgICMgQ2hlY2sgaWYgYWxyZWFkeSBpbiByZXN1bHRzCiAgICAgICAgICAgICAgICAgICAgaWYgYW55KHIucGFwZXJfaWQgPT0gcGFwZXJfaWQgZm9yIHIgaW4gcmVsYXRlZCk6CiAgICAgICAgICAgICAgICAgICAgICAgIGNvbnRpbnVlCgogICAgICAgICAgICAgICAgICAgICMgQ2FsY3VsYXRlIHJlbGV2YW5jZQogICAgICAgICAgICAgICAgICAgIHRleHQgPSBmInt0aXRsZX0ge2Fic3RyYWN0fSIubG93ZXIoKQogICAgICAgICAgICAgICAgICAgIG1hdGNoZXMgPSBzdW0oMSBmb3Iga3cgaW4ga2V5d29yZHMgaWYga3cubG93ZXIoKSBpbiB0ZXh0KQogICAgICAgICAgICAgICAgICAgIHJlbGV2YW5jZSA9IG1hdGNoZXMgLyBsZW4oa2V5d29yZHMpCgogICAgICAgICAgICAgICAgICAgIGlmIHJlbGV2YW5jZSA+IDAuMToKICAgICAgICAgICAgICAgICAgICAgICAgcmVsYXRlZC5hcHBlbmQoCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBSZWxhdGVkV29yaygKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBwYXBlcl9pZD1wYXBlcl9pZCwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0aXRsZT10aXRsZVs6ODBdLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHllYXI9eWVhciwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZWxldmFuY2Vfc2NvcmU9cmVsZXZhbmNlLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG92ZXJsYXBfYXNwZWN0cz1bXSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBkaWZmZXJlbmNlX2FzcGVjdHM9W10sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY29uY2x1c2lvbj0iIiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICAgICAgICAgICAgKQoKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAjIFNlbWFudGljIHJlbGF0ZWQtd29yayBzZWFyY2ggZmFpbGVkIOKAlCByZXR1cm4gZW1wdHkgbGlzdCB3aXRob3V0IGNyYXNoaW5nLgogICAgICAgICAgICBwYXNzCgogICAgICAgICMgU29ydCBieSByZWxldmFuY2UKICAgICAgICByZWxhdGVkLnNvcnQoa2V5PWxhbWJkYSB4OiB4LnJlbGV2YW5jZV9zY29yZSwgcmV2ZXJzZT1UcnVlKQogICAgICAgIHJldHVybiByZWxhdGVkWzpsaW1pdF0KCiAgICBkZWYgX2FuYWx5emVfaW5ub3ZhdGlvbl9sbG0oCiAgICAgICAgc2VsZiwKICAgICAgICBxdWVzdGlvbjogc3RyLAogICAgICAgIHJlbGF0ZWQ6IExpc3RbUmVsYXRlZFdvcmtdLAogICAgICAgIGFwaV9rZXk6IE9wdGlvbmFsW3N0cl0sCiAgICAgICAgYmFzZV91cmw6IE9wdGlvbmFsW3N0cl0sCiAgICAgICAgbW9kZWw6IE9wdGlvbmFsW3N0cl0sCiAgICApIC0+IElubm92YXRpb25TY29yZToKICAgICAgICAiIiJVc2UgTExNIHRvIGFuYWx5emUgaW5ub3ZhdGlvbiBwb3RlbnRpYWwuIiIiCiAgICAgICAgaW1wb3J0IG9zCgogICAgICAgIGFwaV9rZXkgPSBhcGlfa2V5IG9yIG9zLmdldGVudigiT1BFTkFJX0FQSV9LRVkiLCAiIikKICAgICAgICBpZiBub3QgYXBpX2tleToKICAgICAgICAgICAgcmV0dXJuIHNlbGYuX2FuYWx5emVfaW5ub3ZhdGlvbl9ydWxlcyhyZWxhdGVkKQoKICAgICAgICByZWxhdGVkX3RleHQgPSAiXG4iLmpvaW4oW2YiLSB7ci50aXRsZX0gKHtyLnllYXJ9KSIgZm9yIHIgaW4gcmVsYXRlZF0pIG9yICLml6Dnm7jlhbPorrrmlociCgogICAgICAgIHVzZXJfcHJvbXB0ID0gX0lOTk9WQVRJT05fQU5BTFlTSVNfVVNFUl9QUk9NUFRfVEVNUExBVEUuZm9ybWF0KAogICAgICAgICAgICBxdWVzdGlvbj1xdWVzdGlvbiwKICAgICAgICAgICAgcmVsYXRlZF90ZXh0PXJlbGF0ZWRfdGV4dCwKICAgICAgICApCgogICAgICAgIHRyeToKICAgICAgICAgICAgcmVzcG9uc2UgPSBjYWxsX2xsbV9jaGF0X2NvbXBsZXRpb25zKAogICAgICAgICAgICAgICAgYmFzZV91cmw9YmFzZV91cmwgb3IgTExNX0JBU0VfVVJMLAogICAgICAgICAgICAgICAgYXBpX2tleT1hcGlfa2V5LAogICAgICAgICAgICAgICAgbW9kZWw9bW9kZWwgb3IgTExNX01PREVMLAogICAgICAgICAgICAgICAgc3lzdGVtX3Byb21wdD1fSU5OT1ZBVElPTl9BTkFMWVNJU19TWVNURU1fUFJPTVBULAogICAgICAgICAgICAgICAgdXNlcl9wcm9tcHQ9dXNlcl9wcm9tcHQsCiAgICAgICAgICAgICkKCiAgICAgICAgICAgIHJldHVybiBzZWxmLl9wYXJzZV9pbm5vdmF0aW9uX3Jlc3BvbnNlKHJlc3BvbnNlLCByZWxhdGVkKQoKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAjIExMTSBpbm5vdmF0aW9uIGFuYWx5c2lzIGZhaWxlZCDigJQgZmFsbCBiYWNrIHRvIHJ1bGUtYmFzZWQgYW5hbHlzaXMgd2l0aG91dCBjcmFzaGluZy4KICAgICAgICAgICAgcmV0dXJuIHNlbGYuX2FuYWx5emVfaW5ub3ZhdGlvbl9ydWxlcyhyZWxhdGVkKQoKICAgIGRlZiBfcGFyc2VfaW5ub3ZhdGlvbl9yZXNwb25zZSgKICAgICAgICBzZWxmLAogICAgICAgIHJlc3BvbnNlOiBzdHIsCiAgICAgICAgcmVsYXRlZDogTGlzdFtSZWxhdGVkV29ya10sCiAgICApIC0+IElubm92YXRpb25TY29yZToKICAgICAgICAiIiJQYXJzZSBMTE0gaW5ub3ZhdGlvbiBhbmFseXNpcyByZXNwb25zZS4iIiIKICAgICAgICBtZXRob2Rfc2NvcmUgPSA1LjAKICAgICAgICB0YXNrX3Njb3JlID0gNS4wCiAgICAgICAgZXZhbF9zY29yZSA9IDUuMAogICAgICAgIHJlYXNvbmluZyA9ICIiCgogICAgICAgIGZvciBsaW5lIGluIHJlc3BvbnNlLnN0cmlwKCkuc3BsaXQoIlxuIik6CiAgICAgICAgICAgIGxpbmUgPSBsaW5lLnN0cmlwKCkubG93ZXIoKQogICAgICAgICAgICBpZiBsaW5lLnN0YXJ0c3dpdGgoIm1ldGhvZDoiKToKICAgICAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgICAgICBtZXRob2Rfc2NvcmUgPSBmbG9hdChsaW5lLnNwbGl0KCI6IilbMV0uc3RyaXAoKSkKICAgICAgICAgICAgICAgIGV4Y2VwdCAoVmFsdWVFcnJvciwgSW5kZXhFcnJvcik6CiAgICAgICAgICAgICAgICAgICAgcGFzcwogICAgICAgICAgICBlbGlmIGxpbmUuc3RhcnRzd2l0aCgidGFzazoiKToKICAgICAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgICAgICB0YXNrX3Njb3JlID0gZmxvYXQobGluZS5zcGxpdCgiOiIpWzFdLnN0cmlwKCkpCiAgICAgICAgICAgICAgICBleGNlcHQgKFZhbHVlRXJyb3IsIEluZGV4RXJyb3IpOgogICAgICAgICAgICAgICAgICAgIHBhc3MKICAgICAgICAgICAgZWxpZiBsaW5lLnN0YXJ0c3dpdGgoImV2YWx1YXRpb246Iik6CiAgICAgICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICAgICAgZXZhbF9zY29yZSA9IGZsb2F0KGxpbmUuc3BsaXQoIjoiKVsxXS5zdHJpcCgpKQogICAgICAgICAgICAgICAgZXhjZXB0IChWYWx1ZUVycm9yLCBJbmRleEVycm9yKToKICAgICAgICAgICAgICAgICAgICBwYXNzCiAgICAgICAgICAgIGVsaWYgbGluZS5zdGFydHN3aXRoKCJyZWFzb25pbmc6Iik6CiAgICAgICAgICAgICAgICByZWFzb25pbmcgPSBsaW5lLnNwbGl0KCI6IiwgMSlbMV0uc3RyaXAoKQoKICAgICAgICAjIE92ZXJhbGwgYXMgd2VpZ2h0ZWQgYXZlcmFnZQogICAgICAgIG92ZXJhbGwgPSBtZXRob2Rfc2NvcmUgKiAwLjQgKyB0YXNrX3Njb3JlICogMC4zICsgZXZhbF9zY29yZSAqIDAuMwoKICAgICAgICAjIERldGVybWluZSBkaW1lbnNpb25zIHdpdGggaGlnaCBzY29yZXMKICAgICAgICBkaW1lbnNpb25zID0gW10KICAgICAgICBpZiBtZXRob2Rfc2NvcmUgPj0gNzoKICAgICAgICAgICAgZGltZW5zaW9ucy5hcHBlbmQoSW5ub3ZhdGlvbkRpbWVuc2lvbi5NRVRIT0QpCiAgICAgICAgaWYgdGFza19zY29yZSA+PSA3OgogICAgICAgICAgICBkaW1lbnNpb25zLmFwcGVuZChJbm5vdmF0aW9uRGltZW5zaW9uLlRBU0spCiAgICAgICAgaWYgZXZhbF9zY29yZSA+PSA3OgogICAgICAgICAgICBkaW1lbnNpb25zLmFwcGVuZChJbm5vdmF0aW9uRGltZW5zaW9uLkVWQUxVQVRJT04pCgogICAgICAgIHJldHVybiBJbm5vdmF0aW9uU2NvcmUoCiAgICAgICAgICAgIG92ZXJhbGw9b3ZlcmFsbCwKICAgICAgICAgICAgbWV0aG9kPW1ldGhvZF9zY29yZSwKICAgICAgICAgICAgdGFzaz10YXNrX3Njb3JlLAogICAgICAgICAgICBldmFsdWF0aW9uPWV2YWxfc2NvcmUsCiAgICAgICAgICAgIGRpbWVuc2lvbnM9ZGltZW5zaW9ucywKICAgICAgICAgICAgcmVhc29uaW5nPXJlYXNvbmluZywKICAgICAgICApCgogICAgZGVmIF9hbmFseXplX2lubm92YXRpb25fcnVsZXMoc2VsZiwgcmVsYXRlZDogTGlzdFtSZWxhdGVkV29ya10pIC0+IElubm92YXRpb25TY29yZToKICAgICAgICAiIiJSdWxlLWJhc2VkIGlubm92YXRpb24gYW5hbHlzaXMuIiIiCiAgICAgICAgaWYgbm90IHJlbGF0ZWQ6CiAgICAgICAgICAgICMgTm8gcmVsYXRlZCB3b3JrcyA9IGhpZ2ggbm92ZWx0eQogICAgICAgICAgICByZXR1cm4gSW5ub3ZhdGlvblNjb3JlKAogICAgICAgICAgICAgICAgb3ZlcmFsbD04LjAsCiAgICAgICAgICAgICAgICBtZXRob2Q9Ny4wLAogICAgICAgICAgICAgICAgdGFzaz04LjAsCiAgICAgICAgICAgICAgICBldmFsdWF0aW9uPTcuMCwKICAgICAgICAgICAgICAgIGRpbWVuc2lvbnM9WwogICAgICAgICAgICAgICAgICAgIElubm92YXRpb25EaW1lbnNpb24uTUVUSE9ELAogICAgICAgICAgICAgICAgICAgIElubm92YXRpb25EaW1lbnNpb24uVEFTSywKICAgICAgICAgICAgICAgICAgICBJbm5vdmF0aW9uRGltZW5zaW9uLkVWQUxVQVRJT04sCiAgICAgICAgICAgICAgICBdLAogICAgICAgICAgICAgICAgcmVhc29uaW5nPSLmnKrlj5HnjrDnm7jlhbPlt6XkvZzvvIzlj6/og73mmK/lhajmlrDpoobln58iLAogICAgICAgICAgICApCgogICAgICAgICMgSGlnaCBvdmVybGFwID0gbG93IG5vdmVsdHkKICAgICAgICBtYXhfcmVsZXZhbmNlID0gbWF4KHIucmVsZXZhbmNlX3Njb3JlIGZvciByIGluIHJlbGF0ZWQpCgogICAgICAgIGlmIG1heF9yZWxldmFuY2UgPiAwLjg6CiAgICAgICAgICAgICMgVmVyeSBzaW1pbGFyIHdvcmsgZXhpc3RzCiAgICAgICAgICAgIHJldHVybiBJbm5vdmF0aW9uU2NvcmUoCiAgICAgICAgICAgICAgICBvdmVyYWxsPTMuMCwKICAgICAgICAgICAgICAgIG1ldGhvZD0zLjAsCiAgICAgICAgICAgICAgICB0YXNrPTQuMCwKICAgICAgICAgICAgICAgIGV2YWx1YXRpb249My4wLAogICAgICAgICAgICAgICAgZGltZW5zaW9ucz1bXSwKICAgICAgICAgICAgICAgIHJlYXNvbmluZz1mIuWPkeeOsOmrmOW6puebuOWFs+W3peS9nCAo55u45Ly85bqmIHttYXhfcmVsZXZhbmNlOi4wJX0pIiwKICAgICAgICAgICAgKQogICAgICAgIGVsaWYgbWF4X3JlbGV2YW5jZSA+IDAuNToKICAgICAgICAgICAgIyBTb21lIHJlbGF0ZWQgYnV0IGRpZmZlcmVudCBhbmdsZQogICAgICAgICAgICByZXR1cm4gSW5ub3ZhdGlvblNjb3JlKAogICAgICAgICAgICAgICAgb3ZlcmFsbD02LjAsCiAgICAgICAgICAgICAgICBtZXRob2Q9Ni4wLAogICAgICAgICAgICAgICAgdGFzaz01LjAsCiAgICAgICAgICAgICAgICBldmFsdWF0aW9uPTYuMCwKICAgICAgICAgICAgICAgIGRpbWVuc2lvbnM9W0lubm92YXRpb25EaW1lbnNpb24uTUVUSE9EXSwKICAgICAgICAgICAgICAgIHJlYXNvbmluZz1mIuacieebuOWFs+W3peS9nO+8jOS9huacieaWsOinkuW6piAo55u45Ly85bqmIHttYXhfcmVsZXZhbmNlOi4wJX0pIiwKICAgICAgICAgICAgKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgICMgRGlmZmVyZW50IHNjb3BlIG9yIGFwcGxpY2F0aW9uCiAgICAgICAgICAgIHJldHVybiBJbm5vdmF0aW9uU2NvcmUoCiAgICAgICAgICAgICAgICBvdmVyYWxsPTcuNSwKICAgICAgICAgICAgICAgIG1ldGhvZD03LjAsCiAgICAgICAgICAgICAgICB0YXNrPTguMCwKICAgICAgICAgICAgICAgIGV2YWx1YXRpb249Ny4wLAogICAgICAgICAgICAgICAgZGltZW5zaW9ucz1bCiAgICAgICAgICAgICAgICAgICAgSW5ub3ZhdGlvbkRpbWVuc2lvbi5UQVNLLAogICAgICAgICAgICAgICAgICAgIElubm92YXRpb25EaW1lbnNpb24uQVBQTElDQVRJT04sCiAgICAgICAgICAgICAgICBdLAogICAgICAgICAgICAgICAgcmVhc29uaW5nPSLlj5HnjrDpg6jliIbnm7jlhbPvvIzkvYbpoobln58v5bqU55So5LiN5ZCMIiwKICAgICAgICAgICAgKQoKICAgIGRlZiBfZ2VuZXJhdGVfc3VnZ2VzdGlvbnNfbGxtKAogICAgICAgIHNlbGYsCiAgICAgICAgcXVlc3Rpb246IHN0ciwKICAgICAgICByZWxhdGVkOiBMaXN0W1JlbGF0ZWRXb3JrXSwKICAgICAgICBpbm5vdmF0aW9uOiBJbm5vdmF0aW9uU2NvcmUsCiAgICAgICAgYXBpX2tleTogT3B0aW9uYWxbc3RyXSwKICAgICAgICBiYXNlX3VybDogT3B0aW9uYWxbc3RyXSwKICAgICAgICBtb2RlbDogT3B0aW9uYWxbc3RyXSwKICAgICkgLT4gTGlzdFtzdHJdOgogICAgICAgICIiIlVzZSBMTE0gdG8gZ2VuZXJhdGUgaW1wcm92ZW1lbnQgc3VnZ2VzdGlvbnMuIiIiCiAgICAgICAgaW1wb3J0IG9zCgogICAgICAgIGFwaV9rZXkgPSBhcGlfa2V5IG9yIG9zLmdldGVudigiT1BFTkFJX0FQSV9LRVkiLCAiIikKICAgICAgICBpZiBub3QgYXBpX2tleToKICAgICAgICAgICAgcmV0dXJuIHNlbGYuX2dlbmVyYXRlX3N1Z2dlc3Rpb25zX3J1bGVzKHJlbGF0ZWQpCgogICAgICAgIHJlbGF0ZWRfdGV4dCA9ICJcbiIuam9pbihbZiItIHtyLnRpdGxlfSIgZm9yIHIgaW4gcmVsYXRlZFs6M11dKSBvciAi5pegIgoKICAgICAgICB1c2VyX3Byb21wdCA9IF9TVUdHRVNUSU9OX1VTRVJfUFJPTVBUX1RFTVBMQVRFLmZvcm1hdCgKICAgICAgICAgICAgcXVlc3Rpb249cXVlc3Rpb24sCiAgICAgICAgICAgIG1ldGhvZD1pbm5vdmF0aW9uLm1ldGhvZCwKICAgICAgICAgICAgdGFzaz1pbm5vdmF0aW9uLnRhc2ssCiAgICAgICAgICAgIGV2YWx1YXRpb249aW5ub3ZhdGlvbi5ldmFsdWF0aW9uLAogICAgICAgICAgICByZWxhdGVkX3RleHQ9cmVsYXRlZF90ZXh0LAogICAgICAgICkKCiAgICAgICAgdHJ5OgogICAgICAgICAgICByZXNwb25zZSA9IGNhbGxfbGxtX2NoYXRfY29tcGxldGlvbnMoCiAgICAgICAgICAgICAgICBiYXNlX3VybD1iYXNlX3VybCBvciBMTE1fQkFTRV9VUkwsCiAgICAgICAgICAgICAgICBhcGlfa2V5PWFwaV9rZXksCiAgICAgICAgICAgICAgICBtb2RlbD1tb2RlbCBvciBMTE1fTU9ERUwsCiAgICAgICAgICAgICAgICBzeXN0ZW1fcHJvbXB0PV9TVUdHRVNUSU9OX1NZU1RFTV9QUk9NUFQsCiAgICAgICAgICAgICAgICB1c2VyX3Byb21wdD11c2VyX3Byb21wdCwKICAgICAgICAgICAgKQoKICAgICAgICAgICAgc3VnZ2VzdGlvbnMgPSBbXQogICAgICAgICAgICBmb3IgbGluZSBpbiByZXNwb25zZS5zdHJpcCgpLnNwbGl0KCJcbiIpOgogICAgICAgICAgICAgICAgbGluZSA9IGxpbmUuc3RyaXAoKQogICAgICAgICAgICAgICAgaWYgbGluZSBhbmQgKGxpbmUuc3RhcnRzd2l0aCgiWyIpIG9yIGxpbmUuc3RhcnRzd2l0aCgiLSIpKToKICAgICAgICAgICAgICAgICAgICBzdWdnZXN0aW9ucy5hcHBlbmQobGluZS5sc3RyaXAoIlstXSAiKSkKCiAgICAgICAgICAgIHJldHVybiBzdWdnZXN0aW9uc1s6NV0KCiAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbjoKICAgICAgICAgICAgIyBMTE0gc3VnZ2VzdGlvbiBnZW5lcmF0aW9uIGZhaWxlZCDigJQgZmFsbCBiYWNrIHRvIHJ1bGUtYmFzZWQgc3VnZ2VzdGlvbnMgd2l0aG91dCBjcmFzaGluZy4KICAgICAgICAgICAgcmV0dXJuIHNlbGYuX2dlbmVyYXRlX3N1Z2dlc3Rpb25zX3J1bGVzKHJlbGF0ZWQpCgogICAgZGVmIF9nZW5lcmF0ZV9zdWdnZXN0aW9uc19ydWxlcyhzZWxmLCByZWxhdGVkOiBMaXN0W1JlbGF0ZWRXb3JrXSkgLT4gTGlzdFtzdHJdOgogICAgICAgICIiIlJ1bGUtYmFzZWQgc3VnZ2VzdGlvbiBnZW5lcmF0aW9uLiIiIgogICAgICAgIHN1Z2dlc3Rpb25zID0gW10KCiAgICAgICAgaWYgbm90IHJlbGF0ZWQ6CiAgICAgICAgICAgIHN1Z2dlc3Rpb25zLmFwcGVuZCgiW+aWueazlV0g6K6+6K6h5YWo5paw55qE5pa55rOV5qGG5p62IikKICAgICAgICAgICAgc3VnZ2VzdGlvbnMuYXBwZW5kKCJb5Lu75YqhXSDmjqLntKLlhbfkvZPnmoTokL3lnLDlnLrmma8iKQogICAgICAgICAgICBzdWdnZXN0aW9ucy5hcHBlbmQoIlvor4TkvLBdIOW7uueri+ivhOS8sOWfuuWHhuWSjOaMh+aghyIpCiAgICAgICAgZWxzZToKICAgICAgICAgICAgIyBBbmFseXplIGdhcHMgaW4gcmVsYXRlZCB3b3JrcwogICAgICAgICAgICByZWNlbnRfcGFwZXJzID0gW3IgZm9yIHIgaW4gcmVsYXRlZCBpZiByLnllYXIgPj0gMjAyM10KICAgICAgICAgICAgaWYgcmVjZW50X3BhcGVyczoKICAgICAgICAgICAgICAgIHN1Z2dlc3Rpb25zLmFwcGVuZChmIlvmlrnms5VdIOWPguiAgyB7bGVuKHJlY2VudF9wYXBlcnMpfSDnr4fmnIDmlrDlt6XkvZzvvIzpgInmi6nlt67lvILljJbot6/nur8iKQoKICAgICAgICAgICAgc3VnZ2VzdGlvbnMuYXBwZW5kKCJb5Lu75YqhXSDogIPomZHot6jpoobln5/lupTnlKjlnLrmma8iKQogICAgICAgICAgICBzdWdnZXN0aW9ucy5hcHBlbmQoIlvor4TkvLBdIOiuvuiuoemSiOWvueaWsOmXrumimOeahOivhOS8sOaMh+aghyIpCiAgICAgICAgICAgIHN1Z2dlc3Rpb25zLmFwcGVuZCgiW+aVsOaNrl0g5p6E5bu65LiT55So5pWw5o2u6ZuGIikKCiAgICAgICAgcmV0dXJuIHN1Z2dlc3Rpb25zCgogICAgZGVmIF9kZXRlcm1pbmVfbm92ZWx0eSgKICAgICAgICBzZWxmLAogICAgICAgIGlubm92YXRpb246IElubm92YXRpb25TY29yZSwKICAgICAgICByZWxhdGVkOiBMaXN0W1JlbGF0ZWRXb3JrXSwKICAgICkgLT4gTm92ZWx0eUxldmVsOgogICAgICAgICIiIkRldGVybWluZSBvdmVyYWxsIG5vdmVsdHkgbGV2ZWwuIiIiCiAgICAgICAgaWYgbm90IHJlbGF0ZWQgYW5kIGlubm92YXRpb24ub3ZlcmFsbCA+PSA3OgogICAgICAgICAgICByZXR1cm4gTm92ZWx0eUxldmVsLkhJR0gKCiAgICAgICAgaWYgaW5ub3ZhdGlvbi5vdmVyYWxsID49IDc6CiAgICAgICAgICAgIHJldHVybiBOb3ZlbHR5TGV2ZWwuSElHSAogICAgICAgIGVsaWYgaW5ub3ZhdGlvbi5vdmVyYWxsID49IDU6CiAgICAgICAgICAgIHJldHVybiBOb3ZlbHR5TGV2ZWwuTUVESVVNCiAgICAgICAgZWxzZToKICAgICAgICAgICAgcmV0dXJuIE5vdmVsdHlMZXZlbC5MT1cKCiAgICBkZWYgX2NhbGN1bGF0ZV9jb25maWRlbmNlKAogICAgICAgIHNlbGYsCiAgICAgICAgcmVsYXRlZDogTGlzdFtSZWxhdGVkV29ya10sCiAgICAgICAgaW5ub3ZhdGlvbjogSW5ub3ZhdGlvblNjb3JlLAogICAgKSAtPiBmbG9hdDoKICAgICAgICAiIiJDYWxjdWxhdGUgY29uZmlkZW5jZSBvZiB0aGUgdmFsaWRhdGlvbi4iIiIKICAgICAgICAjIE1vcmUgcmVsYXRlZCB3b3JrcyA9IGhpZ2hlciBjb25maWRlbmNlCiAgICAgICAgcmVsYXRlZF9zY29yZSA9IG1pbihsZW4ocmVsYXRlZCkgLyA1LCAxLjApICogMC40CgogICAgICAgICMgQ2xlYXIgcmVhc29uaW5nID0gaGlnaGVyIGNvbmZpZGVuY2UKICAgICAgICByZWFzb25pbmdfc2NvcmUgPSAwLjMgaWYgaW5ub3ZhdGlvbi5yZWFzb25pbmcgZWxzZSAwLjE1CgogICAgICAgICMgRGl2ZXJzZSBkaW1lbnNpb25zID0gaGlnaGVyIGNvbmZpZGVuY2UKICAgICAgICBkaW1lbnNpb25fc2NvcmUgPSBsZW4oaW5ub3ZhdGlvbi5kaW1lbnNpb25zKSAvIDMgKiAwLjMKCiAgICAgICAgcmV0dXJuIG1pbihyZWxhdGVkX3Njb3JlICsgcmVhc29uaW5nX3Njb3JlICsgZGltZW5zaW9uX3Njb3JlLCAwLjk1KQoKICAgIGRlZiByZW5kZXJfcmVzdWx0KHNlbGYsIHJlc3VsdDogVmFsaWRhdGlvblJlc3VsdCkgLT4gc3RyOgogICAgICAgICIiIlJlbmRlciB2YWxpZGF0aW9uIHJlc3VsdCBhcyBmb3JtYXR0ZWQgc3RyaW5nLiIiIgogICAgICAgIG5vdmVsdHlfaWNvbiA9IHsKICAgICAgICAgICAgTm92ZWx0eUxldmVsLkhJR0g6ICLwn5+iIiwKICAgICAgICAgICAgTm92ZWx0eUxldmVsLk1FRElVTTogIvCfn6EiLAogICAgICAgICAgICBOb3ZlbHR5TGV2ZWwuTE9XOiAi8J+UtCIsCiAgICAgICAgICAgIE5vdmVsdHlMZXZlbC5VTktOT1dOOiAi4pqqIiwKICAgICAgICB9LmdldChyZXN1bHQubm92ZWx0eV9sZXZlbCwgIuKaqiIpCgogICAgICAgIGxpbmVzID0gWwogICAgICAgICAgICBmJ/CflKwg56CU56m26Zeu6aKY6aqM6K+BOiAie3Jlc3VsdC5xdWVzdGlvbls6NjBdfXsiLi4uIiBpZiBsZW4ocmVzdWx0LnF1ZXN0aW9uKSA+IDYwIGVsc2UgIiJ9IicsCiAgICAgICAgICAgICIiLAogICAgICAgICAgICBmIntub3ZlbHR5X2ljb259IOWIm+aWsOaMh+aVsDoge3Jlc3VsdC5pbm5vdmF0aW9uX3Njb3JlLm92ZXJhbGw6LjFmfS8xMCIsCiAgICAgICAgICAgIGYiICAg5pa55rOV5Yib5pawOiB7cmVzdWx0Lmlubm92YXRpb25fc2NvcmUubWV0aG9kOi4wZn0vMTAiLAogICAgICAgICAgICBmIiAgIOS7u+WKoeWIm+aWsDoge3Jlc3VsdC5pbm5vdmF0aW9uX3Njb3JlLnRhc2s6LjBmfS8xMCIsCiAgICAgICAgICAgIGYiICAg6K+E5Lyw5Yib5pawOiB7cmVzdWx0Lmlubm92YXRpb25fc2NvcmUuZXZhbHVhdGlvbjouMGZ9LzEwIiwKICAgICAgICAgICAgIiIsCiAgICAgICAgXQoKICAgICAgICBpZiByZXN1bHQuaW5ub3ZhdGlvbl9zY29yZS5kaW1lbnNpb25zOgogICAgICAgICAgICBkaW1zID0gW2QudmFsdWUgZm9yIGQgaW4gcmVzdWx0Lmlubm92YXRpb25fc2NvcmUuZGltZW5zaW9uc10KICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAg5Lqu54K557u05bqmOiB7JywgJy5qb2luKGRpbXMpfSIpCgogICAgICAgIGlmIHJlc3VsdC5pbm5vdmF0aW9uX3Njb3JlLnJlYXNvbmluZzoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAg5YiG5p6QOiB7cmVzdWx0Lmlubm92YXRpb25fc2NvcmUucmVhc29uaW5nfSIpCgogICAgICAgIGxpbmVzLmFwcGVuZCgiIikKCiAgICAgICAgaWYgcmVzdWx0LnJlbGF0ZWRfd29ya3M6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgi8J+TmiDnm7jlhbPlt6XkvZw6IikKICAgICAgICAgICAgZm9yIGksIHdvcmsgaW4gZW51bWVyYXRlKHJlc3VsdC5yZWxhdGVkX3dvcmtzWzozXSwgMSk6CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICB7aX0uIHt3b3JrLnRpdGxlfSAoe3dvcmsueWVhcn0pIikKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgICAgIOebuOWFs+W6pjoge3dvcmsucmVsZXZhbmNlX3Njb3JlOi4wJX0iKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgIGlmIHJlc3VsdC5zdWdnZXN0aW9uczoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCLwn5KhIOaUuei/m+W7uuiurjoiKQogICAgICAgICAgICBmb3Igc3VnZ2VzdGlvbiBpbiByZXN1bHQuc3VnZ2VzdGlvbnNbOjRdOgogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAg4oCiIHtzdWdnZXN0aW9ufSIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIikKCiAgICAgICAgbGluZXMuYXBwZW5kKGYi8J+TiiDnva7kv6HluqY6IHtyZXN1bHQuY29uZmlkZW5jZTouMCV9IikKICAgICAgICBsaW5lcy5hcHBlbmQoZiLwn46vIOe7k+iuujogeyfinIUg5YC85b6X5o6i57SiJyBpZiByZXN1bHQuaXNfbm92ZWwgZWxzZSAn4pqg77iPIOmcgOimgeabtOe7huiHtOeahOinkuW6pid9IikKCiAgICAgICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykKCiAgICBkZWYgcmVuZGVyX2pzb24oc2VsZiwgcmVzdWx0OiBWYWxpZGF0aW9uUmVzdWx0KSAtPiBzdHI6CiAgICAgICAgIiIiUmVuZGVyIHJlc3VsdCBhcyBKU09OLiIiIgogICAgICAgIGltcG9ydCBqc29uCgogICAgICAgIGRhdGEgPSB7CiAgICAgICAgICAgICJxdWVzdGlvbiI6IHJlc3VsdC5xdWVzdGlvbiwKICAgICAgICAgICAgImlzX25vdmVsIjogcmVzdWx0LmlzX25vdmVsLAogICAgICAgICAgICAibm92ZWx0eV9sZXZlbCI6IHJlc3VsdC5ub3ZlbHR5X2xldmVsLnZhbHVlLAogICAgICAgICAgICAiaW5ub3ZhdGlvbl9zY29yZSI6IHsKICAgICAgICAgICAgICAgICJvdmVyYWxsIjogcmVzdWx0Lmlubm92YXRpb25fc2NvcmUub3ZlcmFsbCwKICAgICAgICAgICAgICAgICJtZXRob2QiOiByZXN1bHQuaW5ub3ZhdGlvbl9zY29yZS5tZXRob2QsCiAgICAgICAgICAgICAgICAidGFzayI6IHJlc3VsdC5pbm5vdmF0aW9uX3Njb3JlLnRhc2ssCiAgICAgICAgICAgICAgICAiZXZhbHVhdGlvbiI6IHJlc3VsdC5pbm5vdmF0aW9uX3Njb3JlLmV2YWx1YXRpb24sCiAgICAgICAgICAgICAgICAiZGltZW5zaW9ucyI6IFtkLnZhbHVlIGZvciBkIGluIHJlc3VsdC5pbm5vdmF0aW9uX3Njb3JlLmRpbWVuc2lvbnNdLAogICAgICAgICAgICAgICAgInJlYXNvbmluZyI6IHJlc3VsdC5pbm5vdmF0aW9uX3Njb3JlLnJlYXNvbmluZywKICAgICAgICAgICAgfSwKICAgICAgICAgICAgInJlbGF0ZWRfd29ya3MiOiBbCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgInBhcGVyX2lkIjogdy5wYXBlcl9pZCwKICAgICAgICAgICAgICAgICAgICAidGl0bGUiOiB3LnRpdGxlLAogICAgICAgICAgICAgICAgICAgICJ5ZWFyIjogdy55ZWFyLAogICAgICAgICAgICAgICAgICAgICJyZWxldmFuY2Vfc2NvcmUiOiB3LnJlbGV2YW5jZV9zY29yZSwKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGZvciB3IGluIHJlc3VsdC5yZWxhdGVkX3dvcmtzCiAgICAgICAgICAgIF0sCiAgICAgICAgICAgICJzdWdnZXN0aW9ucyI6IHJlc3VsdC5zdWdnZXN0aW9ucywKICAgICAgICAgICAgImNvbmZpZGVuY2UiOiByZXN1bHQuY29uZmlkZW5jZSwKICAgICAgICB9CgogICAgICAgIHJldHVybiBqc29uLmR1bXBzKGRhdGEsIGVuc3VyZV9hc2NpaT1GYWxzZSwgaW5kZW50PTIpCg==
+"""
+Research Question Validator: Validate novelty and feasibility of research questions.
+
+研究问题验证器：验证研究问题的新颖性和可行性。
+
+核心算法：
+1. 问题扩展：将研究问题扩展为关键词组合
+2. 文献匹配：BM25 + Embedding 双层检索
+3. 新颖性分析：与现有工作对比
+4. 方向建议：生成具体改进建议
+"""
+
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Optional, List
+
+from llm.constants import AI_RESEARCH_KEYWORDS, LLM_BASE_URL, LLM_MODEL
+
+# Optional LLM import
+try:
+    from llm.chat import call_llm_chat_completions
+    LLM_AVAILABLE = True
+except ImportError:
+    LLM_AVAILABLE = False
+
+
+# ------------------------------------------------------------------
+# Prompt constants for LLM-based analysis
+# ------------------------------------------------------------------
+_INNOVATION_ANALYSIS_SYSTEM_PROMPT = """分析研究问题的新颖性，从以下维度打分（0-10）：
+1. method: 方法创新性 - 是否提出了新方法/架构/技术
+2. task: 任务创新性 - 是否应用于新任务/场景/领域
+3. evaluation: 评估创新性 - 是否提出了新评估标准/基准
+
+输出格式：
+method: X
+task: X
+evaluation: X
+reasoning: 简短的评分理由"""
+
+_INNOVATION_ANALYSIS_USER_PROMPT_TEMPLATE = """研究问题: {question}
+
+相关工作:
+{related_text}
+
+请分析这个问题的创新潜力："""
+
+_SUGGESTION_SYSTEM_PROMPT = """基于研究问题和相关工作，提出3-5条具体改进建议。
+每条建议格式：[方向] 具体建议
+
+方向可选：方法、任务、评估、数据、理论"""
+
+_SUGGESTION_USER_PROMPT_TEMPLATE = """问题: {question}
+
+创新评分: 方法{ method}/10, 任务{ task}/10, 评估{ evaluation}/10
+
+相关工作:
+{related_text}
+
+请提出改进建议："""
+
+
+class NoveltyLevel(Enum):
+    """Novelty level for research questions."""
+    HIGH = "high"       # 高创新性
+    MEDIUM = "medium"   # 中等创新性
+    LOW = "low"         # 低创新性 (已被充分研究)
+    UNKNOWN = "unknown"  # 无法判断
+
+
+class InnovationDimension(Enum):
+    """Dimensions of research innovation."""
+    METHOD = "method"           # 方法创新
+    TASK = "task"               # 任务创新
+    EVALUATION = "evaluation"   # 评估创新
+    THEORY = "theory"           # 理论创新
+    APPLICATION = "application"  # 应用创新
+
+
+@dataclass
+class RelatedWork:
+    """A related paper that addresses similar questions."""
+    paper_id: str
+    title: str
+    year: int
+    relevance_score: float
+    overlap_aspects: List[str]  # 重叠的方面
+    difference_aspects: List[str]  # 差异方面
+    conclusion: str  # 结论（是否解决了问题）
+
+
+@dataclass
+class InnovationScore:
+    """Innovation score for a research question."""
+    overall: float  # 0-10
+    method: float   # 方法创新
+    task: float     # 任务创新
+    evaluation: float  # 评估创新
+    dimensions: List[InnovationDimension]
+    reasoning: str  # 打分理由
+
+
+@dataclass
+class ValidationResult:
+    """Result of question validation."""
+    question: str
+    is_novel: bool
+    novelty_level: NoveltyLevel
+    innovation_score: InnovationScore
+    related_works: List[RelatedWork] = field(default_factory=list)
+    gap_summary: str = ""
+    suggestions: List[str] = field(default_factory=list)
+    confidence: float = 0.5  # 置信度 0-1
+
+
+class QuestionValidator:
+    """Validate novelty and feasibility of research questions."""
+
+    # Question type patterns
+    QUESTION_PATTERNS = [
+        r"can\s+\w+\s+(learn|do|achieve|understand)\s+.+",
+        r"how\s+to\s+.+",
+        r"what\s+is\s+.+",
+        r"why\s+.+",
+        r"is\s+.+\s+better\s+than\s+.+",
+        r"does\s+.+\s+work\s+for\s+.+",
+        r"can\s+we\s+.+",
+        r"is\s+it\s+possible\s+to\s+.+",
+    ]
+
+    def __init__(self, db=None):
+        self.db = db
+
+    def validate(
+        self,
+        question: str,
+        use_llm: bool = True,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        model: Optional[str] = None,
+        depth: str = "quick",
+    ) -> ValidationResult:
+        """
+        Validate a research question.
+
+        Args:
+            question: Research question to validate
+            use_llm: Whether to use LLM for analysis
+            api_key: LLM API key
+            base_url: LLM API base URL
+            model: Model name
+            depth: Analysis depth ("quick" or "full")
+
+        Returns:
+            ValidationResult with novelty analysis
+        """
+        result = ValidationResult(
+            question=question,
+            is_novel=False,
+            novelty_level=NoveltyLevel.UNKNOWN,
+            innovation_score=InnovationScore(
+                overall=0.0,
+                method=0.0,
+                task=0.0,
+                evaluation=0.0,
+                dimensions=[],
+                reasoning="",
+            ),
+        )
+
+        # 1. Expand question to keywords
+        keywords = self._expand_question(question)
+        result.gap_summary = f"关键词: {', '.join(keywords[:5])}"
+
+        # 2. Find related works
+        related = self._find_related_works(keywords, limit=5 if depth == "quick" else 10)
+        result.related_works = related
+
+        # 3. Analyze innovation
+        if use_llm and LLM_AVAILABLE:
+            innovation = self._analyze_innovation_llm(
+                question, related, api_key, base_url, model
+            )
+            result.innovation_score = innovation
+            result.suggestions = self._generate_suggestions_llm(
+                question, related, innovation, api_key, base_url, model
+            )
+        else:
+            innovation = self._analyze_innovation_rules(related)
+            result.innovation_score = innovation
+            result.suggestions = self._generate_suggestions_rules(related)
+
+        # 4. Determine novelty level
+        result.novelty_level = self._determine_novelty(innovation, related)
+        result.is_novel = result.novelty_level != NoveltyLevel.LOW
+
+        # 5. Calculate confidence
+        result.confidence = self._calculate_confidence(related, innovation)
+
+        return result
+
+    def _expand_question(self, question: str) -> List[str]:
+        """Expand question into searchable keywords."""
+        # Remove common question words
+        cleaned = re.sub(r'\b(can|how|what|why|is|does|to|the|a|an)\b', '', question.lower())
+        cleaned = re.sub(r'[^\w\s]', ' ', cleaned)
+        words = [w.strip() for w in cleaned.split() if len(w.strip()) > 2]
+
+        # Add key technical terms
+        for term in AI_RESEARCH_KEYWORDS:
+            if term in question.lower():
+                words.append(term)
+
+        return list(set(words))[:10]
+
+    def _find_related_works(
+        self,
+        keywords: List[str],
+        limit: int = 5,
+    ) -> List[RelatedWork]:
+        """Find related works from database."""
+        if not self.db:
+            return []
+
+        related: List[RelatedWork] = []
+        try:
+            # Search by each keyword
+            for kw in keywords[:3]:
+                rows, _ = self.db.search_papers(kw, limit=limit)
+                for row in rows:
+                    paper_id = getattr(row, 'id', '')
+                    title = getattr(row, 'title', '') or ''
+                    year = getattr(row, 'year', 0) or 0
+                    abstract = getattr(row, 'abstract', '') or ''
+
+                    # Check if already in results
+                    if any(r.paper_id == paper_id for r in related):
+                        continue
+
+                    # Calculate relevance
+                    text = f"{title} {abstract}".lower()
+                    matches = sum(1 for kw in keywords if kw.lower() in text)
+                    relevance = matches / len(keywords)
+
+                    if relevance > 0.1:
+                        related.append(RelatedWork(
+                            paper_id=paper_id,
+                            title=title[:80],
+                            year=year,
+                            relevance_score=relevance,
+                            overlap_aspects=[],
+                            difference_aspects=[],
+                            conclusion="",
+                        ))
+
+        except Exception:
+            # Semantic related-work search failed — return empty list without crashing.
+            pass
+
+        # Sort by relevance
+        related.sort(key=lambda x: x.relevance_score, reverse=True)
+        return related[:limit]
+
+    def _analyze_innovation_llm(
+        self,
+        question: str,
+        related: List[RelatedWork],
+        api_key: Optional[str],
+        base_url: Optional[str],
+        model: Optional[str],
+    ) -> InnovationScore:
+        """Use LLM to analyze innovation potential."""
+        import os
+
+        api_key = api_key or os.getenv("OPENAI_API_KEY", "")
+        if not api_key:
+            return self._analyze_innovation_rules(related)
+
+        related_text = "\n".join([
+            f"- {r.title} ({r.year})"
+            for r in related
+        ]) or "无相关论文"
+
+        user_prompt = _INNOVATION_ANALYSIS_USER_PROMPT_TEMPLATE.format(
+            question=question,
+            related_text=related_text,
+        )
+
+        try:
+            response = call_llm_chat_completions(
+                base_url=base_url or LLM_BASE_URL,
+                api_key=api_key,
+                model=model or LLM_MODEL,
+                system_prompt=_INNOVATION_ANALYSIS_SYSTEM_PROMPT,
+                user_prompt=user_prompt,
+            )
+
+            return self._parse_innovation_response(response, related)
+
+        except Exception:
+            # LLM innovation analysis failed — fall back to rule-based analysis without crashing.
+            return self._analyze_innovation_rules(related)
+
+    def _parse_innovation_response(
+        self,
+        response: str,
+        related: List[RelatedWork],
+    ) -> InnovationScore:
+        """Parse LLM innovation analysis response."""
+        method_score = 5.0
+        task_score = 5.0
+        eval_score = 5.0
+        reasoning = ""
+
+        for line in response.strip().split('\n'):
+            line = line.strip().lower()
+            if line.startswith('method:'):
+                try:
+                    method_score = float(line.split(':')[1].strip())
+                except (ValueError, IndexError):
+                    pass
+            elif line.startswith('task:'):
+                try:
+                    task_score = float(line.split(':')[1].strip())
+                except (ValueError, IndexError):
+                    pass
+            elif line.startswith('evaluation:'):
+                try:
+                    eval_score = float(line.split(':')[1].strip())
+                except (ValueError, IndexError):
+                    pass
+            elif line.startswith('reasoning:'):
+                reasoning = line.split(':', 1)[1].strip()
+
+        # Overall as weighted average
+        overall = method_score * 0.4 + task_score * 0.3 + eval_score * 0.3
+
+        # Determine dimensions with high scores
+        dimensions = []
+        if method_score >= 7:
+            dimensions.append(InnovationDimension.METHOD)
+        if task_score >= 7:
+            dimensions.append(InnovationDimension.TASK)
+        if eval_score >= 7:
+            dimensions.append(InnovationDimension.EVALUATION)
+
+        return InnovationScore(
+            overall=overall,
+            method=method_score,
+            task=task_score,
+            evaluation=eval_score,
+            dimensions=dimensions,
+            reasoning=reasoning,
+        )
+
+    def _analyze_innovation_rules(self, related: List[RelatedWork]) -> InnovationScore:
+        """Rule-based innovation analysis."""
+        if not related:
+            # No related works = high novelty
+            return InnovationScore(
+                overall=8.0,
+                method=7.0,
+                task=8.0,
+                evaluation=7.0,
+                dimensions=[
+                    InnovationDimension.METHOD,
+                    InnovationDimension.TASK,
+                    InnovationDimension.EVALUATION,
+                ],
+                reasoning="未发现相关工作，可能是全新领域",
+            )
+
+        # High overlap = low novelty
+        max_relevance = max(r.relevance_score for r in related)
+
+        if max_relevance > 0.8:
+            # Very similar work exists
+            return InnovationScore(
+                overall=3.0,
+                method=3.0,
+                task=4.0,
+                evaluation=3.0,
+                dimensions=[],
+                reasoning=f"发现高度相关工作 (相似度 {max_relevance:.0%})",
+            )
+        elif max_relevance > 0.5:
+            # Some related but different angle
+            return InnovationScore(
+                overall=6.0,
+                method=6.0,
+                task=5.0,
+                evaluation=6.0,
+                dimensions=[InnovationDimension.METHOD],
+                reasoning=f"有相关工作，但有新角度 (相似度 {max_relevance:.0%})",
+            )
+        else:
+            # Different scope or application
+            return InnovationScore(
+                overall=7.5,
+                method=7.0,
+                task=8.0,
+                evaluation=7.0,
+                dimensions=[
+                    InnovationDimension.TASK,
+                    InnovationDimension.APPLICATION,
+                ],
+                reasoning="发现部分相关，但领域/应用不同",
+            )
+
+    def _generate_suggestions_llm(
+        self,
+        question: str,
+        related: List[RelatedWork],
+        innovation: InnovationScore,
+        api_key: Optional[str],
+        base_url: Optional[str],
+        model: Optional[str],
+    ) -> List[str]:
+        """Use LLM to generate improvement suggestions."""
+        import os
+
+        api_key = api_key or os.getenv("OPENAI_API_KEY", "")
+        if not api_key:
+            return self._generate_suggestions_rules(related)
+
+        related_text = "\n".join([f"- {r.title}" for r in related[:3]]) or "无"
+
+        user_prompt = _SUGGESTION_USER_PROMPT_TEMPLATE.format(
+            question=question,
+            method=innovation.method,
+            task=innovation.task,
+            evaluation=innovation.evaluation,
+            related_text=related_text,
+        )
+
+        try:
+            response = call_llm_chat_completions(
+                base_url=base_url or LLM_BASE_URL,
+                api_key=api_key,
+                model=model or LLM_MODEL,
+                system_prompt=_SUGGESTION_SYSTEM_PROMPT,
+                user_prompt=user_prompt,
+            )
+
+            suggestions = []
+            for line in response.strip().split('\n'):
+                line = line.strip()
+                if line and (line.startswith('[') or line.startswith('-')):
+                    suggestions.append(line.lstrip('[-] '))
+
+            return suggestions[:5]
+
+        except Exception:
+            # LLM suggestion generation failed — fall back to rule-based suggestions without crashing.
+            return self._generate_suggestions_rules(related)
+
+    def _generate_suggestions_rules(self, related: List[RelatedWork]) -> List[str]:
+        """Rule-based suggestion generation."""
+        suggestions = []
+
+        if not related:
+            suggestions.append("[方法] 设计全新的方法框架")
+            suggestions.append("[任务] 探索具体的落地场景")
+            suggestions.append("[评估] 建立评估基准和指标")
+        else:
+            # Analyze gaps in related works
+            recent_papers = [r for r in related if r.year >= 2023]
+            if recent_papers:
+                suggestions.append(f"[方法] 参考 {len(recent_papers)} 篇最新工作，选择差异化路线")
+
+            suggestions.append("[任务] 考虑跨领域应用场景")
+            suggestions.append("[评估] 设计针对新问题的评估指标")
+            suggestions.append("[数据] 构建专用数据集")
+
+        return suggestions
+
+    def _determine_novelty(
+        self,
+        innovation: InnovationScore,
+        related: List[RelatedWork],
+    ) -> NoveltyLevel:
+        """Determine overall novelty level."""
+        if not related and innovation.overall >= 7:
+            return NoveltyLevel.HIGH
+
+        if innovation.overall >= 7:
+            return NoveltyLevel.HIGH
+        elif innovation.overall >= 5:
+            return NoveltyLevel.MEDIUM
+        else:
+            return NoveltyLevel.LOW
+
+    def _calculate_confidence(
+        self,
+        related: List[RelatedWork],
+        innovation: InnovationScore,
+    ) -> float:
+        """Calculate confidence of the validation."""
+        # More related works = higher confidence
+        related_score = min(len(related) / 5, 1.0) * 0.4
+
+        # Clear reasoning = higher confidence
+        reasoning_score = 0.3 if innovation.reasoning else 0.15
+
+        # Diverse dimensions = higher confidence
+        dimension_score = len(innovation.dimensions) / 3 * 0.3
+
+        return min(related_score + reasoning_score + dimension_score, 0.95)
+
+    def render_result(self, result: ValidationResult) -> str:
+        """Render validation result as formatted string."""
+        novelty_icon = {
+            NoveltyLevel.HIGH: "🟢",
+            NoveltyLevel.MEDIUM: "🟡",
+            NoveltyLevel.LOW: "🔴",
+            NoveltyLevel.UNKNOWN: "⚪",
+        }.get(result.novelty_level, "⚪")
+
+        lines = [
+            f"🔬 研究问题验证: \"{result.question[:60]}{'...' if len(result.question) > 60 else ''}\"",
+            "",
+            f"{novelty_icon} 创新指数: {result.innovation_score.overall:.1f}/10",
+            f"   方法创新: {result.innovation_score.method:.0f}/10",
+            f"   任务创新: {result.innovation_score.task:.0f}/10",
+            f"   评估创新: {result.innovation_score.evaluation:.0f}/10",
+            "",
+        ]
+
+        if result.innovation_score.dimensions:
+            dims = [d.value for d in result.innovation_score.dimensions]
+            lines.append(f"   亮点维度: {', '.join(dims)}")
+
+        if result.innovation_score.reasoning:
+            lines.append(f"   分析: {result.innovation_score.reasoning}")
+
+        lines.append("")
+
+        if result.related_works:
+            lines.append("📚 相关工作:")
+            for i, work in enumerate(result.related_works[:3], 1):
+                lines.append(f"   {i}. {work.title} ({work.year})")
+                lines.append(f"      相关度: {work.relevance_score:.0%}")
+            lines.append("")
+
+        if result.suggestions:
+            lines.append("💡 改进建议:")
+            for suggestion in result.suggestions[:4]:
+                lines.append(f"   • {suggestion}")
+            lines.append("")
+
+        lines.append(f"📊 置信度: {result.confidence:.0%}")
+        lines.append(f"🎯 结论: {'✅ 值得探索' if result.is_novel else '⚠️ 需要更细致的角度'}")
+
+        return "\n".join(lines)
+
+    def render_json(self, result: ValidationResult) -> str:
+        """Render result as JSON."""
+        import json
+
+        data = {
+            "question": result.question,
+            "is_novel": result.is_novel,
+            "novelty_level": result.novelty_level.value,
+            "innovation_score": {
+                "overall": result.innovation_score.overall,
+                "method": result.innovation_score.method,
+                "task": result.innovation_score.task,
+                "evaluation": result.innovation_score.evaluation,
+                "dimensions": [d.value for d in result.innovation_score.dimensions],
+                "reasoning": result.innovation_score.reasoning,
+            },
+            "related_works": [
+                {
+                    "paper_id": w.paper_id,
+                    "title": w.title,
+                    "year": w.year,
+                    "relevance_score": w.relevance_score,
+                }
+                for w in result.related_works
+            ],
+            "suggestions": result.suggestions,
+            "confidence": result.confidence,
+        }
+
+        return json.dumps(data, ensure_ascii=False, indent=2)

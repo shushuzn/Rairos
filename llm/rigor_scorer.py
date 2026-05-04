@@ -1,1 +1,265 @@
-IiIiUmVzZWFyY2ggUmlnb3IgU2NvcmVyLgoKUmF0ZXMgcGFwZXJzIGJ5IG1ldGhvZG9sb2d5IHRyYW5zcGFyZW5jeSwgcmVwcm9kdWNpYmlsaXR5IHNpZ25hbHMsIGFuZApkYXRhc2V0L2NvZGUgc2hhcmluZyBpbmRpY2F0b3JzLiBSZXR1cm5zIGEgUmlnb3JTY29yZSBiYWRnZSAoQS9CL0MvRCkuCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGpzb24KaW1wb3J0IHJlCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcwpmcm9tIHR5cGluZyBpbXBvcnQgQW55LCBEaWN0LCBMaXN0LCBPcHRpb25hbAoKZnJvbSBsbG0ubGxtX2ZhY3RvcnkgaW1wb3J0IGdldF9sbG0KCgpAZGF0YWNsYXNzCmNsYXNzIFJpZ29yU2NvcmU6CiAgICBwYXBlcl9pZDogc3RyCiAgICBvdmVyYWxsOiBmbG9hdCAgIyAwLjDigJMxLjAKICAgIGhhc19jb2RlOiBib29sCiAgICBoYXNfZGF0YXNldDogYm9vbAogICAgbWV0aG9kb2xvZ3lfY2xhcml0eTogc3RyICAjICJoaWdoIiAvICJtZWRpdW0iIC8gImxvdyIKICAgIHJlcHJvZHVjaWJpbGl0eV9zaWduYWxzOiBMaXN0W3N0cl0KICAgIGJhZGdlOiBzdHIgICMgIkEiIC8gIkIiIC8gIkMiIC8gIkQiCgogICAgZGVmIHRvX2RpY3Qoc2VsZikgLT4gRGljdFtzdHIsIEFueV06CiAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgInBhcGVyX2lkIjogc2VsZi5wYXBlcl9pZCwKICAgICAgICAgICAgIm92ZXJhbGwiOiBzZWxmLm92ZXJhbGwsCiAgICAgICAgICAgICJoYXNfY29kZSI6IHNlbGYuaGFzX2NvZGUsCiAgICAgICAgICAgICJoYXNfZGF0YXNldCI6IHNlbGYuaGFzX2RhdGFzZXQsCiAgICAgICAgICAgICJtZXRob2RvbG9neV9jbGFyaXR5Ijogc2VsZi5tZXRob2RvbG9neV9jbGFyaXR5LAogICAgICAgICAgICAicmVwcm9kdWNpYmlsaXR5X3NpZ25hbHMiOiBzZWxmLnJlcHJvZHVjaWJpbGl0eV9zaWduYWxzLAogICAgICAgICAgICAiYmFkZ2UiOiBzZWxmLmJhZGdlLAogICAgICAgIH0KCiAgICBAc3RhdGljbWV0aG9kCiAgICBkZWYgZnJvbV9kaWN0KGQ6IERpY3Rbc3RyLCBBbnldKSAtPiAiUmlnb3JTY29yZSI6CiAgICAgICAgcmV0dXJuIFJpZ29yU2NvcmUoCiAgICAgICAgICAgIHBhcGVyX2lkPWRbInBhcGVyX2lkIl0sCiAgICAgICAgICAgIG92ZXJhbGw9ZFsib3ZlcmFsbCJdLAogICAgICAgICAgICBoYXNfY29kZT1kWyJoYXNfY29kZSJdLAogICAgICAgICAgICBoYXNfZGF0YXNldD1kWyJoYXNfZGF0YXNldCJdLAogICAgICAgICAgICBtZXRob2RvbG9neV9jbGFyaXR5PWRbIm1ldGhvZG9sb2d5X2NsYXJpdHkiXSwKICAgICAgICAgICAgcmVwcm9kdWNpYmlsaXR5X3NpZ25hbHM9ZC5nZXQoInJlcHJvZHVjaWJpbGl0eV9zaWduYWxzIiwgW10pLAogICAgICAgICAgICBiYWRnZT1kWyJiYWRnZSJdLAogICAgICAgICkKCgojIFByZS1zY3JlZW5pbmcgcGF0dGVybnMg4oCUIGZhc3QgcmVnZXggcGFzcyBiZWZvcmUgTExNCl9DT0RFX1NJR05BTFMgPSBbCiAgICByImdpdGh1YlwuY29tL1thLXpBLVowLTlfXC1dKy9bYS16QS1aMC05X1wtXSsiLAogICAgciJodHRwcz86Ly9naXRodWJcLmNvbSIsCiAgICByImNvZGVccysoPzphdmFpbGFibGV8YXR8b24pXHMrZ2l0aHViIiwKICAgIHIiaW1wbGVtZW50YXRpb25ccysoPzphdmFpbGFibGV8YXR8b258b25ccytnaXRodWIpIiwKICAgIHIib3BlblxzK3NvdXJjZSIsCiAgICByInJlcG9zaXRvcnlccysoPzphdmFpbGFibGV8b24pIiwKICAgIHIic3VwcGxlbWVudGFyeVxzK2NvZGUiLAogICAgciJiaXRcLmx5L1x3KyIsICAjIHNob3J0ZW5lZCBHaXRIdWIgbGlua3MKXQoKX0RBVEFTRVRfU0lHTkFMUyA9IFsKICAgIHIiZGF0YXNldFxzKyg/OmF2YWlsYWJsZXxhdHxmcm9tfGZyb21ccyt0aGV8ZnJvbVxzK2F1dGhvcnM/KSIsCiAgICByImRhdGFccysoPzphdmFpbGFibGV8YXR8ZnJvbXx1cG9uXHMrcmVxdWVzdCkiLAogICAgciJiZW5jaG1hcmtccysoPzpkYXRhc2V0fGRhdGEpIiwKICAgIHIiZG93bmxvYWRccysoPzpkYXRhc2V0fGRhdGEpIiwKICAgIHIiaHR0cFtzXT86Ly9bXlxzXSooPzpkYXRhc2V0fGRhdGFcLmNzdnxkYXRhXC5qc29ufGRhdGFcLnppcCkiLAogICAgciJ6ZW5vZG8iLAogICAgciJmaWdzaGFyZSIsCiAgICByImRyeWFkIiwKICAgIHIib3NmXC5pbyIsCiAgICByImthZ2dsZVwuY29tIiwKICAgIHIiaHVnZ2luZ2ZhY2VcLmNvLyg/OmRhdGFzZXRzfHNwYWNlcykiLApdCgoKZGVmIF9mYXN0X3NjYW4odGV4dDogc3RyKSAtPiB0dXBsZVtib29sLCBib29sLCBMaXN0W3N0cl1dOgogICAgIiIiUXVpY2sgcmVnZXggc2NhbiBvZiBhYnN0cmFjdC90aXRsZSBmb3IgY29kZS9kYXRhc2V0IHNpZ25hbHMuIiIiCiAgICBoYXNfY29kZSA9IGFueShyZS5zZWFyY2gocCwgdGV4dCwgcmUuSSkgZm9yIHAgaW4gX0NPREVfU0lHTkFMUykKICAgIGhhc19kYXRhc2V0ID0gYW55KHJlLnNlYXJjaChwLCB0ZXh0LCByZS5JKSBmb3IgcCBpbiBfREFUQVNFVF9TSUdOQUxTKQoKICAgIHNpZ25hbHM6IExpc3Rbc3RyXSA9IFtdCiAgICBpZiBoYXNfY29kZToKICAgICAgICBzaWduYWxzLmFwcGVuZCgiQ29kZS9HaXRIdWIgbWVudGlvbmVkIikKICAgIGlmIGhhc19kYXRhc2V0OgogICAgICAgIHNpZ25hbHMuYXBwZW5kKCJEYXRhc2V0IG1lbnRpb25lZCIpCgogICAgcmV0dXJuIGhhc19jb2RlLCBoYXNfZGF0YXNldCwgc2lnbmFscwoKCmRlZiBfbGxtX3JlZmluZSh0ZXh0OiBzdHIsIGZhc3RfaGFzX2NvZGU6IGJvb2wsIGZhc3RfaGFzX2RhdGFzZXQ6IGJvb2wpIC0+IERpY3Rbc3RyLCBBbnldOgogICAgIiIiVXNlIExMTSB0byBhc3Nlc3MgbWV0aG9kb2xvZ3kgY2xhcml0eSBhbmQgcmVmaW5lIHNpZ25hbHMuIiIiCiAgICBwcm9tcHQgPSBmIiIiWW91IGFyZSBhIHJlc2VhcmNoIG1ldGhvZG9sb2d5IHJldmlld2VyLiBHaXZlbiB0aGlzIHBhcGVyIGFic3RyYWN0LCByYXRlIGl0cyByZXByb2R1Y2liaWxpdHkgYW5kIG1ldGhvZG9sb2d5IHRyYW5zcGFyZW5jeS4KClJhdGUgZWFjaCBkaW1lbnNpb246CjEuIGNvZGVfYXZhaWxhYmlsaXR5OiBEb2VzIHRoZSBwYXBlciBzaGFyZSBjb2RlLCBpbXBsZW1lbnRhdGlvbiwgb3Igc29mdHdhcmU/ICh5ZXMvcGFydGlhbC9ubykKMi4gZGF0YXNldF9hdmFpbGFiaWxpdHk6IERvZXMgdGhlIHBhcGVyIHNoYXJlIG9yIHJlZmVyZW5jZSBhIGRhdGFzZXQsIGJlbmNobWFyaywgb3IgZGF0YT8gKHllcy9wYXJ0aWFsL25vKQozLiBtZXRob2RvbG9neV9jbGFyaXR5OiBIb3cgY2xlYXJseSBpcyB0aGUgbWV0aG9kIGRlc2NyaWJlZD8gKGhpZ2gvbWVkaXVtL2xvdykKNC4gcmVwcm9kdWNpYmlsaXR5X25vdGVzOiBBbnkgb3RoZXIgcmVwcm9kdWNpYmlsaXR5IGNvbmNlcm5zIG9yIHN0cmVuZ3Rocz8gKDEtMiBzZW50ZW5jZXMpCgpSZXR1cm4gT05MWSB2YWxpZCBKU09OIHdpdGgga2V5czogY29kZV9hdmFpbGFiaWxpdHksIGRhdGFzZXRfYXZhaWxhYmlsaXR5LCBtZXRob2RvbG9neV9jbGFyaXR5LCByZXByb2R1Y2liaWxpdHlfbm90ZXMKClBBUEVSIEFCU1RSQUNUOgp7dGV4dFs6MjAwMF19CgpKU09OOiIiIgoKICAgIHRyeToKICAgICAgICBsbG0gPSBnZXRfbGxtKG1vZGVsPSJmYXN0IikKICAgICAgICByZXNwb25zZSA9IGxsbS5jb21wbGV0ZShwcm9tcHQpCiAgICAgICAgIyBUcnkgdG8gZXh0cmFjdCBKU09OCiAgICAgICAgbWF0Y2ggPSByZS5zZWFyY2gociJce1tcc1xTXSpcfSIsIHJlc3BvbnNlLnN0cmlwKCkpCiAgICAgICAgaWYgbWF0Y2g6CiAgICAgICAgICAgIHJldHVybiBqc29uLmxvYWRzKG1hdGNoLmdyb3VwKCkpCiAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgIHBhc3MKCiAgICAjIEZhbGxiYWNrOiB1c2UgZmFzdCBzY2FuIHJlc3VsdHMKICAgIHJldHVybiB7CiAgICAgICAgImNvZGVfYXZhaWxhYmlsaXR5IjogInllcyIgaWYgZmFzdF9oYXNfY29kZSBlbHNlICJubyIsCiAgICAgICAgImRhdGFzZXRfYXZhaWxhYmlsaXR5IjogInllcyIgaWYgZmFzdF9oYXNfZGF0YXNldCBlbHNlICJubyIsCiAgICAgICAgIm1ldGhvZG9sb2d5X2NsYXJpdHkiOiAibWVkaXVtIiwKICAgICAgICAicmVwcm9kdWNpYmlsaXR5X25vdGVzIjogIkNvdWxkIG5vdCBhbmFseXplIGZ1cnRoZXIuIiwKICAgIH0KCgpkZWYgX2NvbXB1dGVfYmFkZ2UoaGFzX2NvZGU6IGJvb2wsIGhhc19kYXRhc2V0OiBib29sLCBjbGFyaXR5OiBzdHIpIC0+IHN0cjoKICAgICIiIk1hcCBzaWduYWxzIHRvIEEvQi9DL0QgYmFkZ2UuIiIiCiAgICBzY29yZSA9IDAKICAgIGlmIGhhc19jb2RlOgogICAgICAgIHNjb3JlICs9IDEKICAgIGlmIGhhc19kYXRhc2V0OgogICAgICAgIHNjb3JlICs9IDEKICAgIGlmIGNsYXJpdHkgPT0gImhpZ2giOgogICAgICAgIHNjb3JlICs9IDEKICAgIGVsaWYgY2xhcml0eSA9PSAibG93IjoKICAgICAgICBzY29yZSAtPSAxCgogICAgaWYgc2NvcmUgPj0gMzoKICAgICAgICByZXR1cm4gIkEiCiAgICBlbGlmIHNjb3JlID09IDI6CiAgICAgICAgcmV0dXJuICJCIgogICAgZWxpZiBzY29yZSA9PSAxOgogICAgICAgIHJldHVybiAiQyIKICAgIGVsc2U6CiAgICAgICAgcmV0dXJuICJEIgoKCmNsYXNzIFJpZ29yU2NvcmVyOgogICAgIiIiU2NvcmUgYSBwYXBlcidzIHJlc2VhcmNoIHJpZ29yIHZpYSBmYXN0IHNjYW4gKyBMTE0gcmVmaW5lbWVudC4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZik6CiAgICAgICAgc2VsZi5fY2FjaGU6IERpY3Rbc3RyLCBSaWdvclNjb3JlXSA9IHt9CgogICAgZGVmIHNjb3JlX3BhcGVyKHNlbGYsIHBhcGVyX2lkOiBzdHIsIGFic3RyYWN0OiBzdHIgPSAiIiwgdGl0bGU6IHN0ciA9ICIiKSAtPiBSaWdvclNjb3JlOgogICAgICAgICIiIlNjb3JlIGEgcGFwZXIgYnkgSUQgKGZldGNoZXMgYWJzdHJhY3QgZnJvbSBEQiBpZiBub3QgcHJvdmlkZWQpLiIiIgogICAgICAgIGlmIHBhcGVyX2lkIGluIHNlbGYuX2NhY2hlOgogICAgICAgICAgICByZXR1cm4gc2VsZi5fY2FjaGVbcGFwZXJfaWRdCgogICAgICAgIGlmIG5vdCBhYnN0cmFjdDoKICAgICAgICAgICAgYWJzdHJhY3QgPSBzZWxmLl9mZXRjaF9hYnN0cmFjdChwYXBlcl9pZCkKICAgICAgICBpZiBub3QgdGl0bGU6CiAgICAgICAgICAgIHRpdGxlID0gc2VsZi5fZmV0Y2hfdGl0bGUocGFwZXJfaWQpCgogICAgICAgIHRleHQgPSBmInt0aXRsZX1cblxue2Fic3RyYWN0fSIKCiAgICAgICAgIyBGYXN0IHJlZ2V4IHByZS1zY2FuCiAgICAgICAgaGFzX2NvZGUsIGhhc19kYXRhc2V0LCBzaWduYWxzID0gX2Zhc3Rfc2Nhbih0ZXh0KQoKICAgICAgICAjIExMTSByZWZpbmVtZW50CiAgICAgICAgbGxtX3Jlc3VsdCA9IF9sbG1fcmVmaW5lKHRleHQsIGhhc19jb2RlLCBoYXNfZGF0YXNldCkKCiAgICAgICAgaGFzX2NvZGUgPSBsbG1fcmVzdWx0LmdldCgiY29kZV9hdmFpbGFiaWxpdHkiLCAibm8iKSBpbiAoInllcyIsICJwYXJ0aWFsIikKICAgICAgICBoYXNfZGF0YXNldCA9IGxsbV9yZXN1bHQuZ2V0KCJkYXRhc2V0X2F2YWlsYWJpbGl0eSIsICJubyIpIGluICgieWVzIiwgInBhcnRpYWwiKQogICAgICAgIGNsYXJpdHkgPSBsbG1fcmVzdWx0LmdldCgibWV0aG9kb2xvZ3lfY2xhcml0eSIsICJtZWRpdW0iKQogICAgICAgIGV4dHJhX25vdGVzID0gbGxtX3Jlc3VsdC5nZXQoInJlcHJvZHVjaWJpbGl0eV9ub3RlcyIsICIiKQogICAgICAgIGlmIGV4dHJhX25vdGVzIGFuZCBleHRyYV9ub3RlcyBub3QgaW4gc2lnbmFsczoKICAgICAgICAgICAgc2lnbmFscy5hcHBlbmQoZXh0cmFfbm90ZXNbOjEwMF0pCgogICAgICAgIG92ZXJhbGwgPSAwLjAKICAgICAgICBpZiBoYXNfY29kZToKICAgICAgICAgICAgb3ZlcmFsbCArPSAwLjM1CiAgICAgICAgaWYgaGFzX2RhdGFzZXQ6CiAgICAgICAgICAgIG92ZXJhbGwgKz0gMC4zNQogICAgICAgIGlmIGNsYXJpdHkgPT0gImhpZ2giOgogICAgICAgICAgICBvdmVyYWxsICs9IDAuMzAKICAgICAgICBlbGlmIGNsYXJpdHkgPT0gIm1lZGl1bSI6CiAgICAgICAgICAgIG92ZXJhbGwgKz0gMC4xNQoKICAgICAgICBiYWRnZSA9IF9jb21wdXRlX2JhZGdlKGhhc19jb2RlLCBoYXNfZGF0YXNldCwgY2xhcml0eSkKCiAgICAgICAgcmVzdWx0ID0gUmlnb3JTY29yZSgKICAgICAgICAgICAgcGFwZXJfaWQ9cGFwZXJfaWQsCiAgICAgICAgICAgIG92ZXJhbGw9cm91bmQob3ZlcmFsbCwgMiksCiAgICAgICAgICAgIGhhc19jb2RlPWhhc19jb2RlLAogICAgICAgICAgICBoYXNfZGF0YXNldD1oYXNfZGF0YXNldCwKICAgICAgICAgICAgbWV0aG9kb2xvZ3lfY2xhcml0eT1jbGFyaXR5LAogICAgICAgICAgICByZXByb2R1Y2liaWxpdHlfc2lnbmFscz1zaWduYWxzLAogICAgICAgICAgICBiYWRnZT1iYWRnZSwKICAgICAgICApCiAgICAgICAgc2VsZi5fY2FjaGVbcGFwZXJfaWRdID0gcmVzdWx0CiAgICAgICAgcmV0dXJuIHJlc3VsdAoKICAgIGRlZiBfZmV0Y2hfYWJzdHJhY3Qoc2VsZiwgcGFwZXJfaWQ6IHN0cikgLT4gc3RyOgogICAgICAgIHRyeToKICAgICAgICAgICAgZnJvbSBkYi5kYXRhYmFzZSBpbXBvcnQgRGF0YWJhc2UKCiAgICAgICAgICAgIGRiID0gRGF0YWJhc2UoKQogICAgICAgICAgICBkYi5pbml0KCkKICAgICAgICAgICAgcGFwZXIgPSBkYi5nZXRfcGFwZXIocGFwZXJfaWQpCiAgICAgICAgICAgIGlmIHBhcGVyOgogICAgICAgICAgICAgICAgcmV0dXJuIGdldGF0dHIocGFwZXIsICJhYnN0cmFjdCIsICIiKSBvciAiIgogICAgICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgICAgIHBhc3MKICAgICAgICByZXR1cm4gIiIKCiAgICBkZWYgX2ZldGNoX3RpdGxlKHNlbGYsIHBhcGVyX2lkOiBzdHIpIC0+IHN0cjoKICAgICAgICB0cnk6CiAgICAgICAgICAgIGZyb20gZGIuZGF0YWJhc2UgaW1wb3J0IERhdGFiYXNlCgogICAgICAgICAgICBkYiA9IERhdGFiYXNlKCkKICAgICAgICAgICAgZGIuaW5pdCgpCiAgICAgICAgICAgIHBhcGVyID0gZGIuZ2V0X3BhcGVyKHBhcGVyX2lkKQogICAgICAgICAgICBpZiBwYXBlcjoKICAgICAgICAgICAgICAgIHJldHVybiBnZXRhdHRyKHBhcGVyLCAidGl0bGUiLCAiIikgb3IgIiIKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICBwYXNzCiAgICAgICAgcmV0dXJuICIiCgogICAgQHN0YXRpY21ldGhvZAogICAgZGVmIHJlbmRlcl9iYWRnZV9odG1sKHNjb3JlOiBSaWdvclNjb3JlKSAtPiBzdHI6CiAgICAgICAgY29sb3JzID0geyJBIjogIiM3QTlFN0EiLCAiQiI6ICIjNkI4RkI1IiwgIkMiOiAiI0Q0QTg0QiIsICJEIjogIiNDNDcwNkEifQogICAgICAgIGNvbG9yID0gY29sb3JzLmdldChzY29yZS5iYWRnZSwgIiM4ODgiKQogICAgICAgIGNsYXJpdHlfbGFiZWxzID0geyJoaWdoIjogIkhpZ2giLCAibWVkaXVtIjogIk1lZGl1bSIsICJsb3ciOiAiTG93In0KICAgICAgICBzaWduYWxzX2h0bWwgPSAoCiAgICAgICAgICAgICI8YnI+Ii5qb2luKGYi4oCiIHtzfSIgZm9yIHMgaW4gc2NvcmUucmVwcm9kdWNpYmlsaXR5X3NpZ25hbHMpIG9yICJObyBzaWduYWxzIGRldGVjdGVkIgogICAgICAgICkKCiAgICAgICAgcmV0dXJuIGYiIiIKPHNwYW4gY2xhc3M9InJpZ29yLWJhZGdlIiBzdHlsZT0iCiAgICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7CiAgICBiYWNrZ3JvdW5kOiB7Y29sb3J9OwogICAgY29sb3I6IHdoaXRlOwogICAgZm9udC1mYW1pbHk6ICdDYXZlYXQnLCBjdXJzaXZlOwogICAgZm9udC1zaXplOiAxLjFlbTsKICAgIGZvbnQtd2VpZ2h0OiA3MDA7CiAgICB3aWR0aDogMmVtOwogICAgaGVpZ2h0OiAyZW07CiAgICBsaW5lLWhlaWdodDogMmVtOwogICAgdGV4dC1hbGlnbjogY2VudGVyOwogICAgYm9yZGVyLXJhZGl1czogNnB4OwogICAgY3Vyc29yOiBoZWxwOwogICAgdGl0bGU9J2NvZGU6IHtzY29yZS5oYXNfY29kZX0sIGRhdGFzZXQ6IHtzY29yZS5oYXNfZGF0YXNldH0sIGNsYXJpdHk6IHtjbGFyaXR5X2xhYmVscy5nZXQoc2NvcmUubWV0aG9kb2xvZ3lfY2xhcml0eSwgIj8iKX0nCiIgdGl0bGU9ImNvZGU6IHtzY29yZS5oYXNfY29kZX0gfCBkYXRhc2V0OiB7c2NvcmUuaGFzX2RhdGFzZXR9IHwgY2xhcml0eToge2NsYXJpdHlfbGFiZWxzLmdldChzY29yZS5tZXRob2RvbG9neV9jbGFyaXR5LCAiPyIpfSI+CiAgICB7c2NvcmUuYmFkZ2V9Cjwvc3Bhbj4KPGRpdiBjbGFzcz0icmlnb3ItdG9vbHRpcCIgc3R5bGU9ImRpc3BsYXk6bm9uZTsgcG9zaXRpb246IGFic29sdXRlOyBiYWNrZ3JvdW5kOiMyYTJhMmE7IGNvbG9yOiNlOGU0ZGU7IHBhZGRpbmc6MTBweDsgYm9yZGVyLXJhZGl1czo2cHg7IGZvbnQtc2l6ZToxM3B4OyBtYXgtd2lkdGg6MjYwcHg7IHotaW5kZXg6MTAwOyBmb250LWZhbWlseTpMb3JhLHNlcmlmOyI+CiAgICA8c3Ryb25nIHN0eWxlPSJjb2xvcjp7Y29sb3J9Ij5SaWdvcjoge3Njb3JlLmJhZGdlfTwvc3Ryb25nPgogICAgPGhyIHN0eWxlPSJib3JkZXItY29sb3I6IzU1NTsgbWFyZ2luOjZweCAwIj4KICAgIDxkaXY+T3ZlcmFsbDoge3Njb3JlLm92ZXJhbGw6LjAlfTwvZGl2PgogICAgPGRpdj5Db2RlIHNoYXJlZDogeyLinJMiIGlmIHNjb3JlLmhhc19jb2RlIGVsc2UgIuKclyJ9PC9kaXY+CiAgICA8ZGl2PkRhdGFzZXQgc2hhcmVkOiB7IuKckyIgaWYgc2NvcmUuaGFzX2RhdGFzZXQgZWxzZSAi4pyXIn08L2Rpdj4KICAgIDxkaXY+TWV0aG9kb2xvZ3k6IHtjbGFyaXR5X2xhYmVscy5nZXQoc2NvcmUubWV0aG9kb2xvZ3lfY2xhcml0eSwgIj8iKX08L2Rpdj4KICAgIDxociBzdHlsZT0iYm9yZGVyLWNvbG9yOiM1NTU7IG1hcmdpbjo2cHggMCI+CiAgICA8ZGl2IHN0eWxlPSJjb2xvcjojYWFhIj5TaWduYWxzOjwvZGl2PgogICAgPGRpdj57c2lnbmFsc19odG1sfTwvZGl2Pgo8L2Rpdj4KIiIiCg==
+"""Research Rigor Scorer.
+
+Rates papers by methodology transparency, reproducibility signals, and
+dataset/code sharing indicators. Returns a RigorScore badge (A/B/C/D).
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+
+from llm.llm_factory import get_llm
+
+
+@dataclass
+class RigorScore:
+    paper_id: str
+    overall: float  # 0.0–1.0
+    has_code: bool
+    has_dataset: bool
+    methodology_clarity: str  # "high" / "medium" / "low"
+    reproducibility_signals: List[str]
+    badge: str  # "A" / "B" / "C" / "D"
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "paper_id": self.paper_id,
+            "overall": self.overall,
+            "has_code": self.has_code,
+            "has_dataset": self.has_dataset,
+            "methodology_clarity": self.methodology_clarity,
+            "reproducibility_signals": self.reproducibility_signals,
+            "badge": self.badge,
+        }
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> "RigorScore":
+        return RigorScore(
+            paper_id=d["paper_id"],
+            overall=d["overall"],
+            has_code=d["has_code"],
+            has_dataset=d["has_dataset"],
+            methodology_clarity=d["methodology_clarity"],
+            reproducibility_signals=d.get("reproducibility_signals", []),
+            badge=d["badge"],
+        )
+
+
+# Pre-screening patterns — fast regex pass before LLM
+_CODE_SIGNALS = [
+    r"github\.com/[a-zA-Z0-9_\-]+/[a-zA-Z0-9_\-]+",
+    r"https?://github\.com",
+    r"code\s+(?:available|at|on)\s+github",
+    r"implementation\s+(?:available|at|on|on\s+github)",
+    r"open\s+source",
+    r"repository\s+(?:available|on)",
+    r"supplementary\s+code",
+    r"bit\.ly/\w+",  # shortened GitHub links
+]
+
+_DATASET_SIGNALS = [
+    r"dataset\s+(?:available|at|from|from\s+the|from\s+authors?)",
+    r"data\s+(?:available|at|from|upon\s+request)",
+    r"benchmark\s+(?:dataset|data)",
+    r"download\s+(?:dataset|data)",
+    r"http[s]?://[^\s]*(?:dataset|data\.csv|data\.json|data\.zip)",
+    r"zenodo",
+    r"figshare",
+    r"dryad",
+    r"osf\.io",
+    r"kaggle\.com",
+    r"huggingface\.co/(?:datasets|spaces)",
+]
+
+
+def _fast_scan(text: str) -> tuple[bool, bool, List[str]]:
+    """Quick regex scan of abstract/title for code/dataset signals."""
+    has_code = any(re.search(p, text, re.I) for p in _CODE_SIGNALS)
+    has_dataset = any(re.search(p, text, re.I) for p in _DATASET_SIGNALS)
+
+    signals: List[str] = []
+    if has_code:
+        signals.append("Code/GitHub mentioned")
+    if has_dataset:
+        signals.append("Dataset mentioned")
+
+    return has_code, has_dataset, signals
+
+
+def _llm_refine(text: str, fast_has_code: bool, fast_has_dataset: bool) -> Dict[str, Any]:
+    """Use LLM to assess methodology clarity and refine signals."""
+    prompt = f"""You are a research methodology reviewer. Given this paper abstract, rate its reproducibility and methodology transparency.
+
+Rate each dimension:
+1. code_availability: Does the paper share code, implementation, or software? (yes/partial/no)
+2. dataset_availability: Does the paper share or reference a dataset, benchmark, or data? (yes/partial/no)
+3. methodology_clarity: How clearly is the method described? (high/medium/low)
+4. reproducibility_notes: Any other reproducibility concerns or strengths? (1-2 sentences)
+
+Return ONLY valid JSON with keys: code_availability, dataset_availability, methodology_clarity, reproducibility_notes
+
+PAPER ABSTRACT:
+{text[:2000]}
+
+JSON:"""
+
+    try:
+        llm = get_llm(model="fast")
+        response = llm.complete(prompt)
+        # Try to extract JSON
+        match = re.search(r"\{[\s\S]*\}", response.strip())
+        if match:
+            return json.loads(match.group())
+    except Exception:
+        pass
+
+    # Fallback: use fast scan results
+    return {
+        "code_availability": "yes" if fast_has_code else "no",
+        "dataset_availability": "yes" if fast_has_dataset else "no",
+        "methodology_clarity": "medium",
+        "reproducibility_notes": "Could not analyze further.",
+    }
+
+
+def _compute_badge(has_code: bool, has_dataset: bool, clarity: str) -> str:
+    """Map signals to A/B/C/D badge."""
+    score = 0
+    if has_code:
+        score += 1
+    if has_dataset:
+        score += 1
+    if clarity == "high":
+        score += 1
+    elif clarity == "low":
+        score -= 1
+
+    if score >= 3:
+        return "A"
+    elif score == 2:
+        return "B"
+    elif score == 1:
+        return "C"
+    else:
+        return "D"
+
+
+class RigorScorer:
+    """Score a paper's research rigor via fast scan + LLM refinement."""
+
+    def __init__(self):
+        self._cache: Dict[str, RigorScore] = {}
+
+    def score_paper(self, paper_id: str, abstract: str = "", title: str = "") -> RigorScore:
+        """Score a paper by ID (fetches abstract from DB if not provided)."""
+        if paper_id in self._cache:
+            return self._cache[paper_id]
+
+        if not abstract:
+            abstract = self._fetch_abstract(paper_id)
+        if not title:
+            title = self._fetch_title(paper_id)
+
+        text = f"{title}\n\n{abstract}"
+
+        # Fast regex pre-scan
+        has_code, has_dataset, signals = _fast_scan(text)
+
+        # LLM refinement
+        llm_result = _llm_refine(text, has_code, has_dataset)
+
+        has_code = llm_result.get("code_availability", "no") in ("yes", "partial")
+        has_dataset = llm_result.get("dataset_availability", "no") in ("yes", "partial")
+        clarity = llm_result.get("methodology_clarity", "medium")
+        extra_notes = llm_result.get("reproducibility_notes", "")
+        if extra_notes and extra_notes not in signals:
+            signals.append(extra_notes[:100])
+
+        overall = 0.0
+        if has_code:
+            overall += 0.35
+        if has_dataset:
+            overall += 0.35
+        if clarity == "high":
+            overall += 0.30
+        elif clarity == "medium":
+            overall += 0.15
+
+        badge = _compute_badge(has_code, has_dataset, clarity)
+
+        result = RigorScore(
+            paper_id=paper_id,
+            overall=round(overall, 2),
+            has_code=has_code,
+            has_dataset=has_dataset,
+            methodology_clarity=clarity,
+            reproducibility_signals=signals,
+            badge=badge,
+        )
+        self._cache[paper_id] = result
+        return result
+
+    def _fetch_abstract(self, paper_id: str) -> str:
+        try:
+            from db.database import Database
+            db = Database()
+            db.init()
+            paper = db.get_paper(paper_id)
+            if paper:
+                return getattr(paper, "abstract", "") or ""
+        except Exception:
+            pass
+        return ""
+
+    def _fetch_title(self, paper_id: str) -> str:
+        try:
+            from db.database import Database
+            db = Database()
+            db.init()
+            paper = db.get_paper(paper_id)
+            if paper:
+                return getattr(paper, "title", "") or ""
+        except Exception:
+            pass
+        return ""
+
+    @staticmethod
+    def render_badge_html(score: RigorScore) -> str:
+        colors = {"A": "#7A9E7A", "B": "#6B8FB5", "C": "#D4A84B", "D": "#C4706A"}
+        color = colors.get(score.badge, "#888")
+        clarity_labels = {"high": "High", "medium": "Medium", "low": "Low"}
+        signals_html = "<br>".join(f"• {s}" for s in score.reproducibility_signals) or "No signals detected"
+
+        return f"""
+<span class="rigor-badge" style="
+    display: inline-block;
+    background: {color};
+    color: white;
+    font-family: 'Caveat', cursive;
+    font-size: 1.1em;
+    font-weight: 700;
+    width: 2em;
+    height: 2em;
+    line-height: 2em;
+    text-align: center;
+    border-radius: 6px;
+    cursor: help;
+    title='code: {score.has_code}, dataset: {score.has_dataset}, clarity: {clarity_labels.get(score.methodology_clarity, '?')}'
+" title="code: {score.has_code} | dataset: {score.has_dataset} | clarity: {clarity_labels.get(score.methodology_clarity, '?')}">
+    {score.badge}
+</span>
+<div class="rigor-tooltip" style="display:none; position: absolute; background:#2a2a2a; color:#e8e4de; padding:10px; border-radius:6px; font-size:13px; max-width:260px; z-index:100; font-family:Lora,serif;">
+    <strong style="color:{color}">Rigor: {score.badge}</strong>
+    <hr style="border-color:#555; margin:6px 0">
+    <div>Overall: {score.overall:.0%}</div>
+    <div>Code shared: {'✓' if score.has_code else '✗'}</div>
+    <div>Dataset shared: {'✓' if score.has_dataset else '✗'}</div>
+    <div>Methodology: {clarity_labels.get(score.methodology_clarity, '?')}</div>
+    <hr style="border-color:#555; margin:6px 0">
+    <div style="color:#aaa">Signals:</div>
+    <div>{signals_html}</div>
+</div>
+"""

@@ -1,1 +1,189 @@
-IiIiCkV2b1NraWxsIEludGVncmF0aW9uIE1vZHVsZQoKQnJpZGdlcyBhaS1yZXNlYXJjaC1vcyB3aXRoIEV2b1NraWxsIGZvciBiZW5jaG1hcmstZHJpdmVuIHNraWxsIGRpc2NvdmVyeS4KRXZvU2tpbGwgYXV0b21hdGljYWxseSBjcmVhdGVzIGFuZCBpbXByb3ZlcyBBSSBza2lsbHMgYmFzZWQgb24gYmVuY2htYXJrIGRhdGEuCgpVc2FnZToKICAgIGZyb20gcmVzZWFyY2hfbG9vcC5ldm9za2lsbF9pbnRlZ3JhdGlvbiBpbXBvcnQgRXZvU2tpbGxQaXBlbGluZQogICAgcGlwZWxpbmUgPSBFdm9Ta2lsbFBpcGVsaW5lKCkKICAgIHBpcGVsaW5lLmluaXQodGFzaz0ibXlfcmVzZWFyY2hfdGFzayIpCiAgICByZXN1bHQgPSBwaXBlbGluZS5ydW4oKQoiIiIKCmltcG9ydCBzdWJwcm9jZXNzCmltcG9ydCBzaHV0aWwKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBPcHRpb25hbAoKCmNsYXNzIEV2b1NraWxsUGlwZWxpbmU6CiAgICAiIiJFdm9Ta2lsbCB3cmFwcGVyIGZvciBiZW5jaG1hcmstZHJpdmVuIHNraWxsIGRpc2NvdmVyeS4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZiwgd29ya19kaXI6IHN0ciA9ICIuZXZvc2tpbGwiKToKICAgICAgICBzZWxmLndvcmtfZGlyID0gUGF0aCh3b3JrX2RpcikKICAgICAgICBzZWxmLmV2b3NraWxsX2NsaSA9IHNodXRpbC53aGljaCgiZXZvc2tpbGwiKQogICAgICAgIHNlbGYuZXZvc2tpbGxfc2tpbGwgPSBQYXRoLmhvbWUoKSAvICIuY2xhdWRlIiAvICJza2lsbHMiIC8gImV2b3NraWxsIgoKICAgIGRlZiBpc19hdmFpbGFibGUoc2VsZikgLT4gYm9vbDoKICAgICAgICAiIiJDaGVjayBpZiBldm9za2lsbCBDTEkgb3Igc2tpbGwgaXMgYXZhaWxhYmxlLiIiIgogICAgICAgIGlmIHNlbGYuZXZvc2tpbGxfY2xpOgogICAgICAgICAgICByZXR1cm4gVHJ1ZQogICAgICAgIGlmIHNlbGYuZXZvc2tpbGxfc2tpbGwuZXhpc3RzKCk6CiAgICAgICAgICAgIHJldHVybiBUcnVlCiAgICAgICAgcmV0dXJuIEZhbHNlCgogICAgZGVmIGluaXQoCiAgICAgICAgc2VsZiwKICAgICAgICB0YXNrOiBzdHIsCiAgICAgICAgZGF0YXNldF9wYXRoOiBzdHIsCiAgICAgICAgaGFybmVzczogc3RyID0gImNsYXVkZSIsCiAgICAgICAgbW9kZWw6IHN0ciA9ICJzb25uZXQiLAogICAgICAgIHF1ZXN0aW9uX2NvbDogc3RyID0gInF1ZXN0aW9uIiwKICAgICAgICBhbnN3ZXJfY29sOiBzdHIgPSAiYW5zd2VyIiwKICAgICAgICBjYXRlZ29yeV9jb2w6IE9wdGlvbmFsW3N0cl0gPSBOb25lLAogICAgKSAtPiBkaWN0OgogICAgICAgICIiIgogICAgICAgIEluaXRpYWxpemUgRXZvU2tpbGwgcHJvamVjdCBjb25maWd1cmF0aW9uLgoKICAgICAgICBBcmdzOgogICAgICAgICAgICB0YXNrOiBUYXNrIG5hbWUvaWRlbnRpZmllcgogICAgICAgICAgICBkYXRhc2V0X3BhdGg6IFBhdGggdG8gQ1NWIGJlbmNobWFyayBmaWxlCiAgICAgICAgICAgIGhhcm5lc3M6IEFnZW50IHJ1bnRpbWUgKGNsYXVkZSwgb3BlbmNvZGUsIGNvZGV4LCBnb29zZSwgb3BlbmhhbmRzKQogICAgICAgICAgICBtb2RlbDogTW9kZWwgdG8gdXNlCiAgICAgICAgICAgIHF1ZXN0aW9uX2NvbDogQ1NWIGNvbHVtbiBmb3IgcXVlc3Rpb25zCiAgICAgICAgICAgIGFuc3dlcl9jb2w6IENTViBjb2x1bW4gZm9yIGV4cGVjdGVkIGFuc3dlcnMKICAgICAgICAgICAgY2F0ZWdvcnlfY29sOiBPcHRpb25hbCBDU1YgY29sdW1uIGZvciBjYXRlZ29yaWVzCgogICAgICAgIFJldHVybnM6CiAgICAgICAgICAgIGRpY3Qgd2l0aCBwYXRocyB0byBnZW5lcmF0ZWQgY29uZmlnIGZpbGVzCiAgICAgICAgIiIiCiAgICAgICAgc2VsZi53b3JrX2Rpci5ta2RpcihleGlzdF9vaz1UcnVlKQogICAgICAgIGNvbmZpZ19wYXRoID0gc2VsZi53b3JrX2RpciAvICJjb25maWcudG9tbCIKICAgICAgICB0YXNrX3BhdGggPSBzZWxmLndvcmtfZGlyIC8gInRhc2subWQiCgogICAgICAgIHNlbGYuX3dyaXRlX2NvbmZpZygKICAgICAgICAgICAgY29uZmlnX3BhdGgsCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICJ0YXNrIjogdGFzaywKICAgICAgICAgICAgICAgICJkYXRhc2V0X3BhdGgiOiBkYXRhc2V0X3BhdGgsCiAgICAgICAgICAgICAgICAiaGFybmVzcyI6IGhhcm5lc3MsCiAgICAgICAgICAgICAgICAibW9kZWwiOiBtb2RlbCwKICAgICAgICAgICAgICAgICJxdWVzdGlvbl9jb2wiOiBxdWVzdGlvbl9jb2wsCiAgICAgICAgICAgICAgICAiYW5zd2VyX2NvbCI6IGFuc3dlcl9jb2wsCiAgICAgICAgICAgICAgICAiY2F0ZWdvcnlfY29sIjogY2F0ZWdvcnlfY29sLAogICAgICAgICAgICB9LAogICAgICAgICkKCiAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgImNvbmZpZyI6IHN0cihjb25maWdfcGF0aCksCiAgICAgICAgICAgICJ0YXNrIjogc3RyKHRhc2tfcGF0aCksCiAgICAgICAgICAgICJ3b3JrX2RpciI6IHN0cihzZWxmLndvcmtfZGlyKSwKICAgICAgICB9CgogICAgZGVmIF93cml0ZV9jb25maWcoc2VsZiwgY29uZmlnX3BhdGg6IFBhdGgsIHBhcmFtczogZGljdCkgLT4gTm9uZToKICAgICAgICAiIiJXcml0ZSBFdm9Ta2lsbCBjb25maWcudG9tbC4iIiIKICAgICAgICBjYXRlZ29yeV9zZWN0aW9uID0gKAogICAgICAgICAgICAnXG5jYXRlZ29yeV9jb2x1bW4gPSAiJyArIHN0cihwYXJhbXNbImNhdGVnb3J5X2NvbCJdKSArICciJwogICAgICAgICAgICBpZiBwYXJhbXNbImNhdGVnb3J5X2NvbCJdCiAgICAgICAgICAgIGVsc2UgIiIKICAgICAgICApCgogICAgICAgIGNvbnRlbnQgPSAiIiIjIEV2b1NraWxsIHByb2plY3QgY29uZmlndXJhdGlvbiBmb3Ige3Rhc2t9CgpbaGFybmVzc10KbmFtZSA9ICJ7aGFybmVzc30iCm1vZGVsID0gInttb2RlbH0iCmRhdGFfZGlycyA9IFtdCnRpbWVvdXRfc2Vjb25kcyA9IDEyMDAKbWF4X3JldHJpZXMgPSAzCgpbZXZvbHV0aW9uXQptb2RlID0gInNraWxsX29ubHkiCml0ZXJhdGlvbnMgPSAyMApmcm9udGllcl9zaXplID0gMwpjb25jdXJyZW5jeSA9IDQKbm9faW1wcm92ZW1lbnRfbGltaXQgPSA1CmZhaWx1cmVfc2FtcGxlcyA9IDMKCltkYXRhc2V0XQpwYXRoID0gIntkYXRhc2V0X3BhdGh9IgpxdWVzdGlvbl9jb2x1bW4gPSAie3F1ZXN0aW9uX2NvbH0iCmdyb3VuZF90cnV0aF9jb2x1bW4gPSAie2Fuc3dlcl9jb2x9IntjYXRlZ29yeV9zZWN0aW9ufQp0cmFpbl9yYXRpbyA9IDAuMTgKdmFsX3JhdGlvID0gMC4xMgoKW3Njb3Jlcl0KdHlwZSA9ICJtdWx0aV90b2xlcmFuY2UiCiIiIi5mb3JtYXQoCiAgICAgICAgICAgIHRhc2s9cGFyYW1zWyJ0YXNrIl0sCiAgICAgICAgICAgIGRhdGFzZXRfcGF0aD1wYXJhbXNbImRhdGFzZXRfcGF0aCJdLAogICAgICAgICAgICBoYXJuZXNzPXBhcmFtc1siaGFybmVzcyJdLAogICAgICAgICAgICBtb2RlbD1wYXJhbXNbIm1vZGVsIl0sCiAgICAgICAgICAgIHF1ZXN0aW9uX2NvbD1wYXJhbXNbInF1ZXN0aW9uX2NvbCJdLAogICAgICAgICAgICBhbnN3ZXJfY29sPXBhcmFtc1siYW5zd2VyX2NvbCJdLAogICAgICAgICAgICBjYXRlZ29yeV9zZWN0aW9uPWNhdGVnb3J5X3NlY3Rpb24sCiAgICAgICAgKQogICAgICAgIGNvbmZpZ19wYXRoLndyaXRlX3RleHQoY29udGVudCwgZW5jb2Rpbmc9InV0Zi04IikKCiAgICBkZWYgcnVuKHNlbGYsIGNvbnRpbnVlX21vZGU6IGJvb2wgPSBGYWxzZSwgdmVyYm9zZTogYm9vbCA9IEZhbHNlKSAtPiBkaWN0OgogICAgICAgICIiIgogICAgICAgIFJ1biB0aGUgRXZvU2tpbGwgc2VsZi1pbXByb3ZlbWVudCBsb29wLgoKICAgICAgICBBcmdzOgogICAgICAgICAgICBjb250aW51ZV9tb2RlOiBSZXN1bWUgZnJvbSBleGlzdGluZyBmcm9udGllcgogICAgICAgICAgICB2ZXJib3NlOiBTaG93IHBlci1zYW1wbGUgcGFzcy9mYWlsIHJlc3VsdHMKCiAgICAgICAgUmV0dXJuczoKICAgICAgICAgICAgZGljdCB3aXRoIHJ1biByZXN1bHRzCiAgICAgICAgIiIiCiAgICAgICAgaWYgbm90IHNlbGYuaXNfYXZhaWxhYmxlKCk6CiAgICAgICAgICAgIHJhaXNlIEZpbGVOb3RGb3VuZEVycm9yKAogICAgICAgICAgICAgICAgIkV2b1NraWxsIG5vdCBmb3VuZC4gSW5zdGFsbCB3aXRoOlxuIgogICAgICAgICAgICAgICAgIiAgcGlwIGluc3RhbGwgZXZvc2tpbGxcbiIKICAgICAgICAgICAgICAgICJPciBydW46IGV2b3NraWxsIGluaXQgaW4geW91ciBwcm9qZWN0IGRpcmVjdG9yeSIKICAgICAgICAgICAgKQoKICAgICAgICBjbWQgPSBbImV2b3NraWxsIiwgInJ1biJdCiAgICAgICAgaWYgY29udGludWVfbW9kZToKICAgICAgICAgICAgY21kLmFwcGVuZCgiLS1jb250aW51ZSIpCiAgICAgICAgaWYgdmVyYm9zZToKICAgICAgICAgICAgY21kLmFwcGVuZCgiLS12ZXJib3NlIikKCiAgICAgICAgc3VicHJvY2Vzcy5ydW4oY21kLCBjaGVjaz1UcnVlKQoKICAgICAgICByZXR1cm4gewogICAgICAgICAgICAic3RhdHVzIjogImNvbXBsZXRlZCIsCiAgICAgICAgICAgICJmcm9udGllciI6IHN0cihzZWxmLndvcmtfZGlyIC8gImZyb250aWVyIiksCiAgICAgICAgfQoKICAgIGRlZiBldmFsKHNlbGYpIC0+IGRpY3Q6CiAgICAgICAgIiIiRXZhbHVhdGUgdGhlIGJlc3QgcHJvZ3JhbSBvbiB2YWxpZGF0aW9uIHNldC4iIiIKICAgICAgICBzdWJwcm9jZXNzLnJ1bihbImV2b3NraWxsIiwgImV2YWwiXSwgY2hlY2s9VHJ1ZSkKICAgICAgICByZXR1cm4geyJzdGF0dXMiOiAiZXZhbHVhdGVkIn0KCiAgICBkZWYgbGlzdF9za2lsbHMoc2VsZikgLT4gbGlzdFtzdHJdOgogICAgICAgICIiIkxpc3QgZGlzY292ZXJlZCBza2lsbHMuIiIiCiAgICAgICAgcmVzdWx0ID0gc3VicHJvY2Vzcy5ydW4oCiAgICAgICAgICAgIFsiZXZvc2tpbGwiLCAic2tpbGxzIl0sCiAgICAgICAgICAgIGNhcHR1cmVfb3V0cHV0PVRydWUsCiAgICAgICAgICAgIHRleHQ9VHJ1ZSwKICAgICAgICAgICAgY2hlY2s9VHJ1ZSwKICAgICAgICApCiAgICAgICAgc2tpbGxzID0gW2xpbmUuc3RyaXAoKSBmb3IgbGluZSBpbiByZXN1bHQuc3Rkb3V0LnN0cmlwKCkuc3BsaXQoIlxuIikgaWYgbGluZS5zdHJpcCgpXQogICAgICAgIHJldHVybiBza2lsbHMKCiAgICBkZWYgc2hvd19kaWZmKHNlbGYsIGZyb21faXRlcjogT3B0aW9uYWxbaW50XSA9IE5vbmUsIHRvX2l0ZXI6IE9wdGlvbmFsW2ludF0gPSBOb25lKSAtPiBzdHI6CiAgICAgICAgIiIiCiAgICAgICAgU2hvdyBkaWZmIGJldHdlZW4gaXRlcmF0aW9ucy4KCiAgICAgICAgQXJnczoKICAgICAgICAgICAgZnJvbV9pdGVyOiBTb3VyY2UgaXRlcmF0aW9uIChkZWZhdWx0OiBiYXNlbGluZSkKICAgICAgICAgICAgdG9faXRlcjogVGFyZ2V0IGl0ZXJhdGlvbiAoZGVmYXVsdDogY3VycmVudCBiZXN0KQoKICAgICAgICBSZXR1cm5zOgogICAgICAgICAgICBEaWZmIG91dHB1dCBhcyBzdHJpbmcKICAgICAgICAiIiIKICAgICAgICBjbWQgPSBbImV2b3NraWxsIiwgImRpZmYiXQogICAgICAgIGlmIGZyb21faXRlciBpcyBub3QgTm9uZSBhbmQgdG9faXRlciBpcyBub3QgTm9uZToKICAgICAgICAgICAgY21kLmV4dGVuZChbc3RyKGZyb21faXRlciksIHN0cih0b19pdGVyKV0pCgogICAgICAgIHJlc3VsdCA9IHN1YnByb2Nlc3MucnVuKGNtZCwgY2FwdHVyZV9vdXRwdXQ9VHJ1ZSwgdGV4dD1UcnVlLCBjaGVjaz1UcnVlKQogICAgICAgIHJldHVybiByZXN1bHQuc3Rkb3V0CgogICAgZGVmIHJlc2V0KHNlbGYpIC0+IE5vbmU6CiAgICAgICAgIiIiUmVzZXQgYWxsIHByb2dyYW0gYnJhbmNoZXMgYW5kIHN0YXJ0IGZyZXNoLiIiIgogICAgICAgIHN1YnByb2Nlc3MucnVuKFsiZXZvc2tpbGwiLCAicmVzZXQiXSwgY2hlY2s9VHJ1ZSkK
+"""
+EvoSkill Integration Module
+
+Bridges ai-research-os with EvoSkill for benchmark-driven skill discovery.
+EvoSkill automatically creates and improves AI skills based on benchmark data.
+
+Usage:
+    from research_loop.evoskill_integration import EvoSkillPipeline
+    pipeline = EvoSkillPipeline()
+    pipeline.init(task="my_research_task")
+    result = pipeline.run()
+"""
+
+import subprocess
+import shutil
+from pathlib import Path
+from typing import Optional
+
+
+class EvoSkillPipeline:
+    """EvoSkill wrapper for benchmark-driven skill discovery."""
+
+    def __init__(self, work_dir: str = ".evoskill"):
+        self.work_dir = Path(work_dir)
+        self.evoskill_cli = shutil.which("evoskill")
+        self.evoskill_skill = Path.home() / ".claude" / "skills" / "evoskill"
+
+    def is_available(self) -> bool:
+        """Check if evoskill CLI or skill is available."""
+        if self.evoskill_cli:
+            return True
+        if self.evoskill_skill.exists():
+            return True
+        return False
+
+    def init(
+        self,
+        task: str,
+        dataset_path: str,
+        harness: str = "claude",
+        model: str = "sonnet",
+        question_col: str = "question",
+        answer_col: str = "answer",
+        category_col: Optional[str] = None,
+    ) -> dict:
+        """
+        Initialize EvoSkill project configuration.
+
+        Args:
+            task: Task name/identifier
+            dataset_path: Path to CSV benchmark file
+            harness: Agent runtime (claude, opencode, codex, goose, openhands)
+            model: Model to use
+            question_col: CSV column for questions
+            answer_col: CSV column for expected answers
+            category_col: Optional CSV column for categories
+
+        Returns:
+            dict with paths to generated config files
+        """
+        self.work_dir.mkdir(exist_ok=True)
+        config_path = self.work_dir / "config.toml"
+        task_path = self.work_dir / "task.md"
+
+        self._write_config(config_path, {
+            "task": task,
+            "dataset_path": dataset_path,
+            "harness": harness,
+            "model": model,
+            "question_col": question_col,
+            "answer_col": answer_col,
+            "category_col": category_col,
+        })
+
+        return {
+            "config": str(config_path),
+            "task": str(task_path),
+            "work_dir": str(self.work_dir),
+        }
+
+    def _write_config(self, config_path: Path, params: dict) -> None:
+        """Write EvoSkill config.toml."""
+        category_section = '\ncategory_column = "' + str(params["category_col"]) + '"' if params["category_col"] else ""
+
+        content = """# EvoSkill project configuration for {task}
+
+[harness]
+name = "{harness}"
+model = "{model}"
+data_dirs = []
+timeout_seconds = 1200
+max_retries = 3
+
+[evolution]
+mode = "skill_only"
+iterations = 20
+frontier_size = 3
+concurrency = 4
+no_improvement_limit = 5
+failure_samples = 3
+
+[dataset]
+path = "{dataset_path}"
+question_column = "{question_col}"
+ground_truth_column = "{answer_col}"{category_section}
+train_ratio = 0.18
+val_ratio = 0.12
+
+[scorer]
+type = "multi_tolerance"
+""".format(
+            task=params["task"],
+            dataset_path=params["dataset_path"],
+            harness=params["harness"],
+            model=params["model"],
+            question_col=params["question_col"],
+            answer_col=params["answer_col"],
+            category_section=category_section,
+        )
+        config_path.write_text(content, encoding="utf-8")
+
+    def run(self, continue_mode: bool = False, verbose: bool = False) -> dict:
+        """
+        Run the EvoSkill self-improvement loop.
+
+        Args:
+            continue_mode: Resume from existing frontier
+            verbose: Show per-sample pass/fail results
+
+        Returns:
+            dict with run results
+        """
+        if not self.is_available():
+            raise FileNotFoundError(
+                "EvoSkill not found. Install with:\n"
+                "  pip install evoskill\n"
+                "Or run: evoskill init in your project directory"
+            )
+
+        cmd = ["evoskill", "run"]
+        if continue_mode:
+            cmd.append("--continue")
+        if verbose:
+            cmd.append("--verbose")
+
+        subprocess.run(cmd, check=True)
+
+        return {
+            "status": "completed",
+            "frontier": str(self.work_dir / "frontier"),
+        }
+
+    def eval(self) -> dict:
+        """Evaluate the best program on validation set."""
+        subprocess.run(["evoskill", "eval"], check=True)
+        return {"status": "evaluated"}
+
+    def list_skills(self) -> list[str]:
+        """List discovered skills."""
+        result = subprocess.run(
+            ["evoskill", "skills"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        skills = [line.strip() for line in result.stdout.strip().split("\n") if line.strip()]
+        return skills
+
+    def show_diff(self, from_iter: Optional[int] = None, to_iter: Optional[int] = None) -> str:
+        """
+        Show diff between iterations.
+
+        Args:
+            from_iter: Source iteration (default: baseline)
+            to_iter: Target iteration (default: current best)
+
+        Returns:
+            Diff output as string
+        """
+        cmd = ["evoskill", "diff"]
+        if from_iter is not None and to_iter is not None:
+            cmd.extend([str(from_iter), str(to_iter)])
+
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        return result.stdout
+
+    def reset(self) -> None:
+        """Reset all program branches and start fresh."""
+        subprocess.run(["evoskill", "reset"], check=True)

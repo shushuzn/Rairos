@@ -1,1 +1,130 @@
-IiIiVGVzdHMgZm9yIGNvcmUvZWNvc3lzdGVtLnB5LiIiIgoKCmNsYXNzIFRlc3RFY29zeXN0ZW1Db21wb25lbnQ6CiAgICAiIiJUZXN0cyBmb3IgRWNvc3lzdGVtQ29tcG9uZW50IGRhdGFjbGFzcy4iIiIKCiAgICBkZWYgdGVzdF9kYXRhY2xhc3NfZmllbGRzKHNlbGYpOgogICAgICAgICIiIkNvbXBvbmVudCBzdG9yZXMgYWxsIGZpZWxkcy4iIiIKICAgICAgICBmcm9tIGNvcmUuZWNvc3lzdGVtIGltcG9ydCBFY29zeXN0ZW1Db21wb25lbnQKCiAgICAgICAgY29tcCA9IEVjb3N5c3RlbUNvbXBvbmVudCgKICAgICAgICAgICAgbmFtZT0iVGVzdCIsCiAgICAgICAgICAgIGRlc2NyaXB0aW9uPSJBIHRlc3QgY29tcG9uZW50IiwKICAgICAgICAgICAgaWNvbj0i8J+nqiIsCiAgICAgICAgICAgIHN0YXR1cz0icmVhZHkiLAogICAgICAgICAgICB1cmw9Imh0dHA6Ly90ZXN0IiwKICAgICAgICApCiAgICAgICAgYXNzZXJ0IGNvbXAubmFtZSA9PSAiVGVzdCIKICAgICAgICBhc3NlcnQgY29tcC5kZXNjcmlwdGlvbiA9PSAiQSB0ZXN0IGNvbXBvbmVudCIKICAgICAgICBhc3NlcnQgY29tcC5pY29uID09ICLwn6eqIgogICAgICAgIGFzc2VydCBjb21wLnN0YXR1cyA9PSAicmVhZHkiCiAgICAgICAgYXNzZXJ0IGNvbXAudXJsID09ICJodHRwOi8vdGVzdCIKCgpjbGFzcyBUZXN0RWNvc3lzdGVtOgogICAgIiIiVGVzdHMgZm9yIEVjb3N5c3RlbSBjbGFzcy4iIiIKCiAgICBkZWYgdGVzdF9pbml0X3JlZ2lzdGVyc19hbGxfY29tcG9uZW50cyhzZWxmKToKICAgICAgICAiIiJFY29zeXN0ZW0gaW5pdGlhbGl6ZXMgYWxsIDEwIGNvbXBvbmVudHMuIiIiCiAgICAgICAgZnJvbSBjb3JlLmVjb3N5c3RlbSBpbXBvcnQgRWNvc3lzdGVtCgogICAgICAgIGVjbyA9IEVjb3N5c3RlbSgpCiAgICAgICAgYXNzZXJ0IGxlbihlY28uY29tcG9uZW50cykgPT0gMTAKICAgICAgICBhc3NlcnQgImNsaSIgaW4gZWNvLmNvbXBvbmVudHMKICAgICAgICBhc3NlcnQgInNpbXBsZV9jbGkiIGluIGVjby5jb21wb25lbnRzCiAgICAgICAgYXNzZXJ0ICJhcGkiIGluIGVjby5jb21wb25lbnRzCiAgICAgICAgYXNzZXJ0ICJhY2hpZXZlbWVudHMiIGluIGVjby5jb21wb25lbnRzCiAgICAgICAgYXNzZXJ0ICJwZXJmb3JtYW5jZSIgaW4gZWNvLmNvbXBvbmVudHMKICAgICAgICBhc3NlcnQgInZhbHVlIiBpbiBlY28uY29tcG9uZW50cwogICAgICAgIGFzc2VydCAic2V0dXBfd2l6YXJkIiBpbiBlY28uY29tcG9uZW50cwogICAgICAgIGFzc2VydCAiZ3VpIiBpbiBlY28uY29tcG9uZW50cwogICAgICAgIGFzc2VydCAicGx1Z2lucyIgaW4gZWNvLmNvbXBvbmVudHMKICAgICAgICBhc3NlcnQgIm1hcmtldHBsYWNlIiBpbiBlY28uY29tcG9uZW50cwoKICAgIGRlZiB0ZXN0X2luaXRfc2V0c19jb3JyZWN0X3N0YXR1c192YWx1ZXMoc2VsZik6CiAgICAgICAgIiIiRWFjaCBjb21wb25lbnQgaGFzIGEgdmFsaWQgc3RhdHVzIHN0cmluZy4iIiIKICAgICAgICBmcm9tIGNvcmUuZWNvc3lzdGVtIGltcG9ydCBFY29zeXN0ZW0KCiAgICAgICAgZWNvID0gRWNvc3lzdGVtKCkKICAgICAgICB2YWxpZF9zdGF0dXNlcyA9IHsicmVhZHkiLCAicGxhbm5lZCIsICJjb21pbmdfc29vbiJ9CiAgICAgICAgZm9yIGNvbXAgaW4gZWNvLmNvbXBvbmVudHMudmFsdWVzKCk6CiAgICAgICAgICAgIGFzc2VydCBjb21wLnN0YXR1cyBpbiB2YWxpZF9zdGF0dXNlcwoKICAgIGRlZiB0ZXN0X3JlYWR5X2NvbXBvbmVudHNfaGF2ZV91cmwoc2VsZik6CiAgICAgICAgIiIiQWxsICdyZWFkeScgY29tcG9uZW50cyBoYXZlIGEgbm9uLWVtcHR5IFVSTC4iIiIKICAgICAgICBmcm9tIGNvcmUuZWNvc3lzdGVtIGltcG9ydCBFY29zeXN0ZW0KCiAgICAgICAgZWNvID0gRWNvc3lzdGVtKCkKICAgICAgICBmb3IgY29tcCBpbiBlY28uY29tcG9uZW50cy52YWx1ZXMoKToKICAgICAgICAgICAgaWYgY29tcC5zdGF0dXMgPT0gInJlYWR5IjoKICAgICAgICAgICAgICAgIGFzc2VydCBjb21wLnVybCBpcyBub3QgTm9uZQoKICAgIGRlZiB0ZXN0X2dldF9lY29zeXN0ZW1fcmVwb3J0X2NvbnRhaW5zX3Z3X3JlZmVyZW5jZShzZWxmKToKICAgICAgICAiIiJSZXBvcnQgcmVmZXJlbmNlcyBWb2xrc3dhZ2VuLiIiIgogICAgICAgIGZyb20gY29yZS5lY29zeXN0ZW0gaW1wb3J0IEVjb3N5c3RlbQoKICAgICAgICBlY28gPSBFY29zeXN0ZW0oKQogICAgICAgIHJlcG9ydCA9IGVjby5nZXRfZWNvc3lzdGVtX3JlcG9ydCgpCiAgICAgICAgYXNzZXJ0ICJWb2xrc3dhZ2VuIiBpbiByZXBvcnQKCiAgICBkZWYgdGVzdF9nZXRfZWNvc3lzdGVtX3JlcG9ydF9jb250YWluc19yZWFkeV9zZWN0aW9uKHNlbGYpOgogICAgICAgICIiIlJlcG9ydCBjb250YWlucyB0aGUgcmVhZHkgY29tcG9uZW50cyBzZWN0aW9uLiIiIgogICAgICAgIGZyb20gY29yZS5lY29zeXN0ZW0gaW1wb3J0IEVjb3N5c3RlbQoKICAgICAgICBlY28gPSBFY29zeXN0ZW0oKQogICAgICAgIHJlcG9ydCA9IGVjby5nZXRfZWNvc3lzdGVtX3JlcG9ydCgpCiAgICAgICAgYXNzZXJ0ICLlt7LlsLHnu6oiIGluIHJlcG9ydAoKICAgIGRlZiB0ZXN0X2dldF9lY29zeXN0ZW1fcmVwb3J0X2NvbnRhaW5zX3BsYW5uZWRfc2VjdGlvbihzZWxmKToKICAgICAgICAiIiJSZXBvcnQgY29udGFpbnMgdGhlIHBsYW5uZWQgY29tcG9uZW50cyBzZWN0aW9uLiIiIgogICAgICAgIGZyb20gY29yZS5lY29zeXN0ZW0gaW1wb3J0IEVjb3N5c3RlbQoKICAgICAgICBlY28gPSBFY29zeXN0ZW0oKQogICAgICAgIHJlcG9ydCA9IGVjby5nZXRfZWNvc3lzdGVtX3JlcG9ydCgpCiAgICAgICAgYXNzZXJ0ICLop4TliJLkuK0iIGluIHJlcG9ydAoKICAgIGRlZiB0ZXN0X2dldF9lY29zeXN0ZW1fcmVwb3J0X2NvbnRhaW5zX2NvbWluZ19zb29uX3NlY3Rpb24oc2VsZik6CiAgICAgICAgIiIiUmVwb3J0IGNvbnRhaW5zIHRoZSBjb21pbmcgc29vbiBzZWN0aW9uLiIiIgogICAgICAgIGZyb20gY29yZS5lY29zeXN0ZW0gaW1wb3J0IEVjb3N5c3RlbQoKICAgICAgICBlY28gPSBFY29zeXN0ZW0oKQogICAgICAgIHJlcG9ydCA9IGVjby5nZXRfZWNvc3lzdGVtX3JlcG9ydCgpCiAgICAgICAgYXNzZXJ0ICLljbPlsIbmjqjlh7oiIGluIHJlcG9ydAoKICAgIGRlZiB0ZXN0X2dldF9lY29zeXN0ZW1fcmVwb3J0X2xpc3RzX2FsbF9yZWFkeV9jb21wb25lbnRzKHNlbGYpOgogICAgICAgICIiIkVhY2ggcmVhZHkgY29tcG9uZW50IGFwcGVhcnMgaW4gdGhlIHJlcG9ydC4iIiIKICAgICAgICBmcm9tIGNvcmUuZWNvc3lzdGVtIGltcG9ydCBFY29zeXN0ZW0KCiAgICAgICAgZWNvID0gRWNvc3lzdGVtKCkKICAgICAgICByZXBvcnQgPSBlY28uZ2V0X2Vjb3N5c3RlbV9yZXBvcnQoKQogICAgICAgIHJlYWR5ID0gW2MubmFtZSBmb3IgYyBpbiBlY28uY29tcG9uZW50cy52YWx1ZXMoKSBpZiBjLnN0YXR1cyA9PSAicmVhZHkiXQogICAgICAgIGZvciBjb21wIGluIHJlYWR5OgogICAgICAgICAgICBhc3NlcnQgY29tcCBpbiByZXBvcnQKCiAgICBkZWYgdGVzdF9nZXRfZWNvc3lzdGVtX3JlcG9ydF9pbmNsdWRlc19jbGlfY29tcG9uZW50KHNlbGYpOgogICAgICAgICIiIkNMSSBjb21wb25lbnQgaXMgbGlzdGVkIGluIHJlcG9ydC4iIiIKICAgICAgICBmcm9tIGNvcmUuZWNvc3lzdGVtIGltcG9ydCBFY29zeXN0ZW0KCiAgICAgICAgZWNvID0gRWNvc3lzdGVtKCkKICAgICAgICByZXBvcnQgPSBlY28uZ2V0X2Vjb3N5c3RlbV9yZXBvcnQoKQogICAgICAgIGFzc2VydCAi5ZG95Luk6KGM5bel5YW3IiBpbiByZXBvcnQKCgpjbGFzcyBUZXN0R2xvYmFsRWNvc3lzdGVtOgogICAgIiIiVGVzdHMgZm9yIGdsb2JhbCBlY29zeXN0ZW0gc2luZ2xldG9uLiIiIgoKICAgIGRlZiB0ZXN0X2dldF9lY29zeXN0ZW1fcmV0dXJuc19pbnN0YW5jZShzZWxmKToKICAgICAgICAiIiJnZXRfZWNvc3lzdGVtIHJldHVybnMgYW4gRWNvc3lzdGVtIGluc3RhbmNlLiIiIgogICAgICAgIGZyb20gY29yZS5lY29zeXN0ZW0gaW1wb3J0IGdldF9lY29zeXN0ZW0KCiAgICAgICAgZWNvID0gZ2V0X2Vjb3N5c3RlbSgpCiAgICAgICAgYXNzZXJ0IGVjbyBpcyBub3QgTm9uZQoKICAgIGRlZiB0ZXN0X2dldF9lY29zeXN0ZW1fc2luZ2xldG9uKHNlbGYpOgogICAgICAgICIiImdldF9lY29zeXN0ZW0gcmV0dXJucyB0aGUgc2FtZSBpbnN0YW5jZSBvbiByZXBlYXRlZCBjYWxscy4iIiIKICAgICAgICBmcm9tIGNvcmUuZWNvc3lzdGVtIGltcG9ydCBnZXRfZWNvc3lzdGVtCgogICAgICAgIGVjbzEgPSBnZXRfZWNvc3lzdGVtKCkKICAgICAgICBlY28yID0gZ2V0X2Vjb3N5c3RlbSgpCiAgICAgICAgYXNzZXJ0IGVjbzEgaXMgZWNvMgo=
+"""Tests for core/ecosystem.py."""
+
+
+class TestEcosystemComponent:
+    """Tests for EcosystemComponent dataclass."""
+
+    def test_dataclass_fields(self):
+        """Component stores all fields."""
+        from core.ecosystem import EcosystemComponent
+
+        comp = EcosystemComponent(
+            name="Test",
+            description="A test component",
+            icon="🧪",
+            status="ready",
+            url="http://test",
+        )
+        assert comp.name == "Test"
+        assert comp.description == "A test component"
+        assert comp.icon == "🧪"
+        assert comp.status == "ready"
+        assert comp.url == "http://test"
+
+
+class TestEcosystem:
+    """Tests for Ecosystem class."""
+
+    def test_init_registers_all_components(self):
+        """Ecosystem initializes all 10 components."""
+        from core.ecosystem import Ecosystem
+
+        eco = Ecosystem()
+        assert len(eco.components) == 10
+        assert "cli" in eco.components
+        assert "simple_cli" in eco.components
+        assert "api" in eco.components
+        assert "achievements" in eco.components
+        assert "performance" in eco.components
+        assert "value" in eco.components
+        assert "setup_wizard" in eco.components
+        assert "gui" in eco.components
+        assert "plugins" in eco.components
+        assert "marketplace" in eco.components
+
+    def test_init_sets_correct_status_values(self):
+        """Each component has a valid status string."""
+        from core.ecosystem import Ecosystem
+
+        eco = Ecosystem()
+        valid_statuses = {"ready", "planned", "coming_soon"}
+        for comp in eco.components.values():
+            assert comp.status in valid_statuses
+
+    def test_ready_components_have_url(self):
+        """All 'ready' components have a non-empty URL."""
+        from core.ecosystem import Ecosystem
+
+        eco = Ecosystem()
+        for comp in eco.components.values():
+            if comp.status == "ready":
+                assert comp.url is not None
+
+    def test_get_ecosystem_report_contains_vw_reference(self):
+        """Report references Volkswagen."""
+        from core.ecosystem import Ecosystem
+
+        eco = Ecosystem()
+        report = eco.get_ecosystem_report()
+        assert "Volkswagen" in report
+
+    def test_get_ecosystem_report_contains_ready_section(self):
+        """Report contains the ready components section."""
+        from core.ecosystem import Ecosystem
+
+        eco = Ecosystem()
+        report = eco.get_ecosystem_report()
+        assert "已就绪" in report
+
+    def test_get_ecosystem_report_contains_planned_section(self):
+        """Report contains the planned components section."""
+        from core.ecosystem import Ecosystem
+
+        eco = Ecosystem()
+        report = eco.get_ecosystem_report()
+        assert "规划中" in report
+
+    def test_get_ecosystem_report_contains_coming_soon_section(self):
+        """Report contains the coming soon section."""
+        from core.ecosystem import Ecosystem
+
+        eco = Ecosystem()
+        report = eco.get_ecosystem_report()
+        assert "即将推出" in report
+
+    def test_get_ecosystem_report_lists_all_ready_components(self):
+        """Each ready component appears in the report."""
+        from core.ecosystem import Ecosystem
+
+        eco = Ecosystem()
+        report = eco.get_ecosystem_report()
+        ready = [c.name for c in eco.components.values() if c.status == "ready"]
+        for comp in ready:
+            assert comp in report
+
+    def test_get_ecosystem_report_includes_cli_component(self):
+        """CLI component is listed in report."""
+        from core.ecosystem import Ecosystem
+
+        eco = Ecosystem()
+        report = eco.get_ecosystem_report()
+        assert "命令行工具" in report
+
+
+class TestGlobalEcosystem:
+    """Tests for global ecosystem singleton."""
+
+    def test_get_ecosystem_returns_instance(self):
+        """get_ecosystem returns an Ecosystem instance."""
+        from core.ecosystem import get_ecosystem
+
+        eco = get_ecosystem()
+        assert eco is not None
+
+    def test_get_ecosystem_singleton(self):
+        """get_ecosystem returns the same instance on repeated calls."""
+        from core.ecosystem import get_ecosystem
+
+        eco1 = get_ecosystem()
+        eco2 = get_ecosystem()
+        assert eco1 is eco2

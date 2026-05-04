@@ -1,1 +1,516 @@
-IiIiCkV4cGVyaW1lbnQgUmVwbGljYXRpb24gQ2hlY2tlciDigJQgZGV0ZWN0IGNvZGUgbGlua3MgYW5kIGFzc2VzcyByZXByb2R1Y2liaWxpdHkuCgpHaXZlbiBhIHBhcGVyLCBleHRyYWN0cyBHaXRIdWIvR2l0TGFiIGxpbmtzIGFuZCBhdHRlbXB0cyB0bzoKLSBDbG9uZSB0aGUgcmVwbyBhbmQgZGV0ZWN0IGRlcGVuZGVuY3kgZmlsZXMgKHJlcXVpcmVtZW50cy50eHQsIHB5cHJvamVjdC50b21sLCBldGMuKQotIFBhcnNlIHNldHVwL2Vudmlyb25tZW50IHRvIHVuZGVyc3RhbmQgaGFyZHdhcmUgcmVxdWlyZW1lbnRzCi0gQXR0ZW1wdCBsaWdodHdlaWdodCBjaGVja3M6IGltcG9ydGFiaWxpdHksIGJhc2ljIHNtb2tlIHRlc3QKLSBPdXRwdXQgYSByZXByb2R1Y2liaWxpdHkgZGlmZmljdWx0eSByYXRpbmcKIiIiCgpmcm9tIGRhdGFjbGFzc2VzIGltcG9ydCBkYXRhY2xhc3MsIGZpZWxkCmZyb20gdHlwaW5nIGltcG9ydCBBbnksIERpY3QsIExpc3QsIE9wdGlvbmFsCmltcG9ydCByZQppbXBvcnQgdXJsbGliLnBhcnNlCgoKQGRhdGFjbGFzcwpjbGFzcyBDb2RlTGluazoKICAgICIiIkEgY29kZSByZXBvc2l0b3J5IGxpbmsgZm91bmQgaW4gYSBwYXBlci4iIiIKCiAgICB1cmw6IHN0cgogICAgcGxhdGZvcm06IHN0ciAgIyBnaXRodWIsIGdpdGxhYiwgaHVnZ2luZ2ZhY2UKICAgIG93bmVyOiBzdHIKICAgIHJlcG86IHN0cgogICAgcGF0aDogc3RyID0gIiIgICMgc3ViLXBhdGggaWYgc3BlY2lmaWMKICAgIGNvbmZpZGVuY2U6IGZsb2F0ID0gMS4wICAjIDAtMSBob3cgY29uZmlkZW50IHdlIGFyZSB0aGlzIGlzIHRoZSByaWdodCBsaW5rCiAgICBjb250ZXh0OiBzdHIgPSAiIiAgIyBzdXJyb3VuZGluZyB0ZXh0IHRoYXQgdHJpZ2dlcmVkIHRoZSBtYXRjaAoKCkBkYXRhY2xhc3MKY2xhc3MgRGVwZW5kZW5jeUluZm86CiAgICAiIiJQYXJzZWQgZGVwZW5kZW5jeSBpbmZvcm1hdGlvbi4iIiIKCiAgICBwYWNrYWdlX21hbmFnZXI6IHN0ciAgIyBwaXAsIGNvbmRhLCBwb2V0cnksIG5wbQogICAgZmlsZXM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgcHl0aG9uX3ZlcnNpb246IHN0ciA9ICIiCiAgICBoYXJkd2FyZTogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpICAjIGdwdSwgdHB1LCBldGMKICAgIGRpc2tfc3BhY2VfZ2I6IGludCA9IDAKICAgIHJhbV9nYjogaW50ID0gMAogICAgc3BlY2lhbF9yZXF1aXJlbWVudHM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KSAgIyBDVURBLCBzcGVjaWZpYyBsaWJzCgoKQGRhdGFjbGFzcwpjbGFzcyBSZXBsaWNhdGlvblJlcG9ydDoKICAgICIiIlJlcG9ydCBvbiBhIHBhcGVyJ3MgcmVwcm9kdWNpYmlsaXR5LiIiIgoKICAgIHBhcGVyX2lkOiBzdHIKICAgIHBhcGVyX3RpdGxlOiBzdHIKICAgIGxpbmtzOiBMaXN0W0NvZGVMaW5rXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgcHJpbWFyeV9saW5rOiBPcHRpb25hbFtDb2RlTGlua10gPSBOb25lCiAgICBkZXBlbmRlbmN5X2luZm86IE9wdGlvbmFsW0RlcGVuZGVuY3lJbmZvXSA9IE5vbmUKICAgIGRpZmZpY3VsdHk6IHN0ciA9ICIiICAjIEVhc3kgLyBNZWRpdW0gLyBIYXJkIC8gVmVyeSBIYXJkIC8gTm8gQ29kZSBGb3VuZAogICAgZGlmZmljdWx0eV9zY29yZTogZmxvYXQgPSAwLjAgICMgMC0xMAogICAgbm90ZXM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgcmVwcm9kdWNpYmlsaXR5X2lzc3VlczogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICBzbW9rZV90ZXN0X3Bhc3NlZDogYm9vbCA9IEZhbHNlCiAgICBzbW9rZV90ZXN0X291dHB1dDogc3RyID0gIiIKCiAgICBkZWYgdG9fZGljdChzZWxmKSAtPiBEaWN0W3N0ciwgQW55XToKICAgICAgICByZXR1cm4gewogICAgICAgICAgICAicGFwZXJfaWQiOiBzZWxmLnBhcGVyX2lkLAogICAgICAgICAgICAicGFwZXJfdGl0bGUiOiBzZWxmLnBhcGVyX3RpdGxlLAogICAgICAgICAgICAiZGlmZmljdWx0eSI6IHNlbGYuZGlmZmljdWx0eSwKICAgICAgICAgICAgImRpZmZpY3VsdHlfc2NvcmUiOiBzZWxmLmRpZmZpY3VsdHlfc2NvcmUsCiAgICAgICAgICAgICJwcmltYXJ5X2xpbmsiOiB7CiAgICAgICAgICAgICAgICAidXJsIjogc2VsZi5wcmltYXJ5X2xpbmsudXJsLAogICAgICAgICAgICAgICAgInBsYXRmb3JtIjogc2VsZi5wcmltYXJ5X2xpbmsucGxhdGZvcm0sCiAgICAgICAgICAgICAgICAib3duZXJfcmVwbyI6IGYie3NlbGYucHJpbWFyeV9saW5rLm93bmVyfS97c2VsZi5wcmltYXJ5X2xpbmsucmVwb30iLAogICAgICAgICAgICB9CiAgICAgICAgICAgIGlmIHNlbGYucHJpbWFyeV9saW5rCiAgICAgICAgICAgIGVsc2UgTm9uZSwKICAgICAgICAgICAgImxpbmtzX2NvdW50IjogbGVuKHNlbGYubGlua3MpLAogICAgICAgICAgICAiZGVwZW5kZW5jeV9pbmZvIjogewogICAgICAgICAgICAgICAgInBhY2thZ2VfbWFuYWdlciI6IHNlbGYuZGVwZW5kZW5jeV9pbmZvLnBhY2thZ2VfbWFuYWdlciwKICAgICAgICAgICAgICAgICJmaWxlcyI6IHNlbGYuZGVwZW5kZW5jeV9pbmZvLmZpbGVzLAogICAgICAgICAgICAgICAgInB5dGhvbl92ZXJzaW9uIjogc2VsZi5kZXBlbmRlbmN5X2luZm8ucHl0aG9uX3ZlcnNpb24sCiAgICAgICAgICAgICAgICAiaGFyZHdhcmUiOiBzZWxmLmRlcGVuZGVuY3lfaW5mby5oYXJkd2FyZSwKICAgICAgICAgICAgICAgICJzcGVjaWFsX3JlcXVpcmVtZW50cyI6IHNlbGYuZGVwZW5kZW5jeV9pbmZvLnNwZWNpYWxfcmVxdWlyZW1lbnRzLAogICAgICAgICAgICB9CiAgICAgICAgICAgIGlmIHNlbGYuZGVwZW5kZW5jeV9pbmZvCiAgICAgICAgICAgIGVsc2UgTm9uZSwKICAgICAgICAgICAgInNtb2tlX3Rlc3RfcGFzc2VkIjogc2VsZi5zbW9rZV90ZXN0X3Bhc3NlZCwKICAgICAgICAgICAgInNtb2tlX3Rlc3Rfb3V0cHV0Ijogc2VsZi5zbW9rZV90ZXN0X291dHB1dFs6NTAwXSBpZiBzZWxmLnNtb2tlX3Rlc3Rfb3V0cHV0IGVsc2UgIiIsCiAgICAgICAgICAgICJyZXByb2R1Y2liaWxpdHlfaXNzdWVzIjogc2VsZi5yZXByb2R1Y2liaWxpdHlfaXNzdWVzLAogICAgICAgICAgICAibm90ZXMiOiBzZWxmLm5vdGVzLAogICAgICAgIH0KCgpjbGFzcyBSZXBsaWNhdGlvbkNoZWNrZXI6CiAgICAiIiJDaGVjayBwYXBlciByZXByb2R1Y2liaWxpdHkgYnkgZXh0cmFjdGluZyBhbmQgYW5hbHl6aW5nIGNvZGUgbGlua3MuIiIiCgogICAgIyBSZWdleCBwYXR0ZXJucyBmb3IgY29kZSByZXBvc2l0b3J5IGRldGVjdGlvbgogICAgR0lUSFVCX1BBVFRFUk5TID0gWwogICAgICAgIHJlLmNvbXBpbGUociJodHRwcz86Ly9naXRodWJcLmNvbS8oW2EtekEtWjAtOV8tXSspLyhbYS16QS1aMC05X1wtLl0rKSg/Oi8uKik/IiwgcmUuSSksCiAgICAgICAgcmUuY29tcGlsZShyImdpdGh1YlwuY29tLyhbYS16QS1aMC05Xy1dKykvKFthLXpBLVowLTlfXC0uXSspIiwgcmUuSSksCiAgICAgICAgcmUuY29tcGlsZShyIihbYS16QS1aMC05Xy1dKykvKFthLXpBLVowLTlfXC0uXSspXC5naXQiLCByZS5JKSwKICAgIF0KCiAgICBHSVRMQUJfUEFUVEVSTlMgPSBbCiAgICAgICAgcmUuY29tcGlsZShyImh0dHBzPzovL2dpdGxhYlwuY29tLyhbYS16QS1aMC05Xy1dKykvKFthLXpBLVowLTlfXC0uXSspKD86Ly4qKT8iLCByZS5JKSwKICAgIF0KCiAgICBIRl9QQVRURVJOUyA9IFsKICAgICAgICByZS5jb21waWxlKHIiaHR0cHM/Oi8vaHVnZ2luZ2ZhY2VcLmNvLyhbYS16QS1aMC05Xy1dKykvKFthLXpBLVowLTlfXC0uXSspIiwgcmUuSSksCiAgICAgICAgcmUuY29tcGlsZShyImh1Z2dpbmdmYWNlXC5jby9zcGFjZXMvKFthLXpBLVowLTlfLV0rKS8oW2EtekEtWjAtOV9cLS5dKykiLCByZS5JKSwKICAgIF0KCiAgICBDT05URVhUX0tFWVdPUkRTID0gewogICAgICAgICJnaXRodWIiOiBbCiAgICAgICAgICAgICJjb2RlIiwKICAgICAgICAgICAgImltcGxlbWVudGF0aW9uIiwKICAgICAgICAgICAgInJlcG9zaXRvcnkiLAogICAgICAgICAgICAicmVwbyIsCiAgICAgICAgICAgICJyZWxlYXNlZCIsCiAgICAgICAgICAgICJvcGVuIHNvdXJjZSIsCiAgICAgICAgICAgICJnaXRodWIuY29tIiwKICAgICAgICAgICAgIm91ciBjb2RlIiwKICAgICAgICAgICAgImF2YWlsYWJsZSBhdCIsCiAgICAgICAgICAgICJodHRwczovLyIsCiAgICAgICAgXSwKICAgICAgICAiZ2l0bGFiIjogWyJnaXRsYWIuY29tIiwgInJlcG9zaXRvcnkiXSwKICAgICAgICAiaHVnZ2luZ2ZhY2UiOiBbImh1Z2dpbmdmYWNlIiwgIm1vZGVsIGh1YiIsICLwn6SXIiwgInNwYWNlIl0sCiAgICB9CgogICAgREVQRU5ERU5DWV9GSUxFUyA9IFsKICAgICAgICAicmVxdWlyZW1lbnRzLnR4dCIsCiAgICAgICAgInNldHVwLnB5IiwKICAgICAgICAic2V0dXAuY2ZnIiwKICAgICAgICAicHlwcm9qZWN0LnRvbWwiLAogICAgICAgICJlbnZpcm9ubWVudC55bWwiLAogICAgICAgICJjb25kYS55bWwiLAogICAgICAgICJEb2NrZXJmaWxlIiwKICAgICAgICAiZG9ja2VyLWNvbXBvc2UueW1sIiwKICAgICAgICAiTWFrZWZpbGUiLAogICAgICAgICJwYWNrYWdlLmpzb24iLAogICAgICAgICJDYXJnby50b21sIiwKICAgICAgICAiZ28ubW9kIiwKICAgIF0KCiAgICBTUEVDSUFMX0xJQlMgPSB7CiAgICAgICAgInRvcmNoIjogIlB5VG9yY2ggKEdQVSByZXF1aXJlZCkiLAogICAgICAgICJ0ZW5zb3JmbG93IjogIlRlbnNvckZsb3cgKEdQVSByZWNvbW1lbmRlZCkiLAogICAgICAgICJqYXgiOiAiSkFYIChUUFUvSkFYIGNvbXBhdGlibGUpIiwKICAgICAgICAiY3VkYSI6ICJOVklESUEgQ1VEQSByZXF1aXJlZCIsCiAgICAgICAgImN1ZG5uIjogImN1RE5OIHJlcXVpcmVkIiwKICAgICAgICAiYXBleCI6ICJOVklESUEgQXBleCAobWl4ZWQgcHJlY2lzaW9uKSIsCiAgICAgICAgInRyYW5zZm9ybWVycyI6ICJIdWdnaW5nRmFjZSBUcmFuc2Zvcm1lcnMiLAogICAgICAgICJkZXRlY3Ryb24yIjogIkRldGVjdHJvbjIiLAogICAgICAgICJ0ZW5zb3Jib2FyZCI6ICJUZW5zb3JCb2FyZCIsCiAgICAgICAgIndhbmRiIjogIldlaWdodHMgJiBCaWFzZXMiLAogICAgICAgICJoeWRyYSI6ICJIeWRyYSBjb25maWciLAogICAgICAgICJhY2NlbGVyYXRlIjogIkh1Z2dpbmdGYWNlIEFjY2VsZXJhdGUiLAogICAgfQoKICAgIGRlZiBjaGVja19wYXBlcigKICAgICAgICBzZWxmLAogICAgICAgIHBhcGVyX2lkOiBzdHIsCiAgICAgICAgdGl0bGU6IHN0ciwKICAgICAgICBhYnN0cmFjdDogc3RyID0gIiIsCiAgICAgICAgZnVsbF90ZXh0OiBzdHIgPSAiIiwKICAgICkgLT4gUmVwbGljYXRpb25SZXBvcnQ6CiAgICAgICAgIiIiQW5hbHl6ZSBhIHBhcGVyIGZvciBjb2RlIGF2YWlsYWJpbGl0eSBhbmQgcmVwcm9kdWNpYmlsaXR5LiIiIgogICAgICAgIHJlcG9ydCA9IFJlcGxpY2F0aW9uUmVwb3J0KHBhcGVyX2lkPXBhcGVyX2lkLCBwYXBlcl90aXRsZT10aXRsZSkKCiAgICAgICAgdGV4dCA9IGYie3RpdGxlfSB7YWJzdHJhY3R9IHtmdWxsX3RleHR9IgoKICAgICAgICAjIEV4dHJhY3QgY29kZSBsaW5rcwogICAgICAgIGxpbmtzID0gc2VsZi5fZXh0cmFjdF9saW5rcyh0ZXh0KQogICAgICAgIHJlcG9ydC5saW5rcyA9IGxpbmtzCgogICAgICAgIGlmIG5vdCBsaW5rczoKICAgICAgICAgICAgcmVwb3J0LmRpZmZpY3VsdHkgPSAiTm8gQ29kZSBGb3VuZCIKICAgICAgICAgICAgcmVwb3J0LmRpZmZpY3VsdHlfc2NvcmUgPSAxMC4wCiAgICAgICAgICAgIHJlcG9ydC5ub3Rlcy5hcHBlbmQoIk5vIEdpdEh1Yi9HaXRMYWIvSHVnZ2luZ0ZhY2UgbGlua3MgZGV0ZWN0ZWQgaW4gcGFwZXIgdGV4dC4iKQogICAgICAgICAgICByZXR1cm4gcmVwb3J0CgogICAgICAgICMgUGljayBwcmltYXJ5IGxpbmsgKGhpZ2hlc3QgY29uZmlkZW5jZSArIGNvbnRleHQgbWF0Y2gpCiAgICAgICAgbGlua3Muc29ydChrZXk9bGFtYmRhIHg6ICh4LmNvbmZpZGVuY2UsIGxlbih4LmNvbnRleHQpKSwgcmV2ZXJzZT1UcnVlKQogICAgICAgIHJlcG9ydC5wcmltYXJ5X2xpbmsgPSBsaW5rc1swXQoKICAgICAgICAjIERldGVjdCBwbGF0Zm9ybQogICAgICAgIHBsYXRmb3JtID0gcmVwb3J0LnByaW1hcnlfbGluay5wbGF0Zm9ybQoKICAgICAgICAjIFRyeSB0byBwYXJzZSBkZXBlbmRlbmN5IGluZm8gKGhldXJpc3RpYyBmcm9tIFVSTCBwYXRoKQogICAgICAgIGRlcF9pbmZvID0gc2VsZi5fZGV0ZWN0X2RlcGVuZGVuY3lfaW5mbyh0ZXh0LCBwbGF0Zm9ybSkKICAgICAgICByZXBvcnQuZGVwZW5kZW5jeV9pbmZvID0gZGVwX2luZm8KCiAgICAgICAgIyBBc3Nlc3MgZGlmZmljdWx0eQogICAgICAgIGRpZmZpY3VsdHksIHNjb3JlID0gc2VsZi5fYXNzZXNzX2RpZmZpY3VsdHkoZGVwX2luZm8sIHBsYXRmb3JtLCBsaW5rcykKICAgICAgICByZXBvcnQuZGlmZmljdWx0eSA9IGRpZmZpY3VsdHkKICAgICAgICByZXBvcnQuZGlmZmljdWx0eV9zY29yZSA9IHNjb3JlCgogICAgICAgICMgR2VuZXJhdGUgbm90ZXMKICAgICAgICByZXBvcnQubm90ZXMgPSBzZWxmLl9nZW5lcmF0ZV9ub3RlcyhyZXBvcnQucHJpbWFyeV9saW5rLCBkZXBfaW5mbywgbGlua3MpCgogICAgICAgICMgQ2hlY2sgcmVwcm9kdWNpYmlsaXR5IGlzc3VlcwogICAgICAgIHJlcG9ydC5yZXByb2R1Y2liaWxpdHlfaXNzdWVzID0gc2VsZi5fY2hlY2tfaXNzdWVzKGRlcF9pbmZvLCBsaW5rcykKCiAgICAgICAgcmV0dXJuIHJlcG9ydAoKICAgIGRlZiBfZXh0cmFjdF9saW5rcyhzZWxmLCB0ZXh0OiBzdHIpIC0+IExpc3RbQ29kZUxpbmtdOgogICAgICAgICIiIkV4dHJhY3QgY29kZSByZXBvc2l0b3J5IGxpbmtzIGZyb20gdGV4dC4iIiIKICAgICAgICBmb3VuZDogTGlzdFtDb2RlTGlua10gPSBbXQogICAgICAgIHNlZW4gPSBzZXQoKQoKICAgICAgICAjIFJlbW92ZSBtYXJrZG93biBVUkxzIHRvIGF2b2lkIGRvdWJsZS1tYXRjaGluZwogICAgICAgIGNsZWFuID0gcmUuc3ViKHIiXFsoW15cXV0rKVxdXCgoaHR0cHM/Oi8vW15cKV0rKVwpIiwgciJcMiIsIHRleHQpCgogICAgICAgICMgR2l0SHViCiAgICAgICAgZm9yIHBhdHRlcm4gaW4gc2VsZi5HSVRIVUJfUEFUVEVSTlM6CiAgICAgICAgICAgIGZvciBtIGluIHBhdHRlcm4uZmluZGl0ZXIoY2xlYW4pOgogICAgICAgICAgICAgICAgdXJsID0gKAogICAgICAgICAgICAgICAgICAgIG0uZ3JvdXAoMCkKICAgICAgICAgICAgICAgICAgICBpZiBtLmxhc3RpbmRleCA9PSAyCiAgICAgICAgICAgICAgICAgICAgZWxzZSBmImh0dHBzOi8vZ2l0aHViLmNvbS97bS5ncm91cCgxKX0ve20uZ3JvdXAoMil9IgogICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgaWYgbm90IHVybC5zdGFydHN3aXRoKCJodHRwIik6CiAgICAgICAgICAgICAgICAgICAgdXJsID0gZiJodHRwczovL2dpdGh1Yi5jb20ve20uZ3JvdXAoMSl9L3ttLmdyb3VwKDIpfSIKICAgICAgICAgICAgICAgICMgRGVkdXBlCiAgICAgICAgICAgICAgICBpZiB1cmwgaW4gc2VlbjoKICAgICAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICAgICAgc2Vlbi5hZGQodXJsKQogICAgICAgICAgICAgICAgIyBDb250ZXh0IChzdXJyb3VuZGluZyAxMDAgY2hhcnMpCiAgICAgICAgICAgICAgICBzdGFydCA9IG1heCgwLCBtLnN0YXJ0KCkgLSA1MCkKICAgICAgICAgICAgICAgIGVuZCA9IG1pbihsZW4oY2xlYW4pLCBtLmVuZCgpICsgNTApCiAgICAgICAgICAgICAgICBjdHggPSBjbGVhbltzdGFydDplbmRdCiAgICAgICAgICAgICAgICAjIENvbmZpZGVuY2UgYmFzZWQgb24gY29udGV4dAogICAgICAgICAgICAgICAgY29uZmlkZW5jZSA9IDAuNQogICAgICAgICAgICAgICAgZm9yIGt3IGluIHNlbGYuQ09OVEVYVF9LRVlXT1JEU1siZ2l0aHViIl06CiAgICAgICAgICAgICAgICAgICAgaWYga3cubG93ZXIoKSBpbiBjdHgubG93ZXIoKToKICAgICAgICAgICAgICAgICAgICAgICAgY29uZmlkZW5jZSA9IDEuMAogICAgICAgICAgICAgICAgICAgICAgICBicmVhawogICAgICAgICAgICAgICAgIyBQZW5hbGl6ZSBpZiB0aGlzIGxvb2tzIGxpa2UgYSBjaXRhdGlvbiByZWZlcmVuY2UKICAgICAgICAgICAgICAgIGlmIHJlLnNlYXJjaChyIlxbKFxkKylcXSIsIGN0eCk6CiAgICAgICAgICAgICAgICAgICAgY29uZmlkZW5jZSAqPSAwLjUKCiAgICAgICAgICAgICAgICBmb3VuZC5hcHBlbmQoCiAgICAgICAgICAgICAgICAgICAgQ29kZUxpbmsoCiAgICAgICAgICAgICAgICAgICAgICAgIHVybD11cmwsCiAgICAgICAgICAgICAgICAgICAgICAgIHBsYXRmb3JtPSJnaXRodWIiLAogICAgICAgICAgICAgICAgICAgICAgICBvd25lcj1tLmdyb3VwKDEpLAogICAgICAgICAgICAgICAgICAgICAgICByZXBvPW0uZ3JvdXAoMikucmVwbGFjZSgiLmdpdCIsICIiKSwKICAgICAgICAgICAgICAgICAgICAgICAgY29uZmlkZW5jZT1jb25maWRlbmNlLAogICAgICAgICAgICAgICAgICAgICAgICBjb250ZXh0PWN0eCwKICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICApCgogICAgICAgICMgR2l0TGFiCiAgICAgICAgZm9yIHBhdHRlcm4gaW4gc2VsZi5HSVRMQUJfUEFUVEVSTlM6CiAgICAgICAgICAgIGZvciBtIGluIHBhdHRlcm4uZmluZGl0ZXIoY2xlYW4pOgogICAgICAgICAgICAgICAgdXJsID0gKAogICAgICAgICAgICAgICAgICAgIG0uZ3JvdXAoMCkKICAgICAgICAgICAgICAgICAgICBpZiBtLmxhc3RpbmRleCA9PSAyCiAgICAgICAgICAgICAgICAgICAgZWxzZSBmImh0dHBzOi8vZ2l0bGFiLmNvbS97bS5ncm91cCgxKX0ve20uZ3JvdXAoMil9IgogICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgaWYgbm90IHVybC5zdGFydHN3aXRoKCJodHRwIik6CiAgICAgICAgICAgICAgICAgICAgdXJsID0gZiJodHRwczovL2dpdGxhYi5jb20ve20uZ3JvdXAoMSl9L3ttLmdyb3VwKDIpfSIKICAgICAgICAgICAgICAgIGlmIHVybCBpbiBzZWVuOgogICAgICAgICAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgICAgICAgICBzZWVuLmFkZCh1cmwpCiAgICAgICAgICAgICAgICBzdGFydCA9IG1heCgwLCBtLnN0YXJ0KCkgLSA1MCkKICAgICAgICAgICAgICAgIGVuZCA9IG1pbihsZW4oY2xlYW4pLCBtLmVuZCgpICsgNTApCiAgICAgICAgICAgICAgICBjdHggPSBjbGVhbltzdGFydDplbmRdCgogICAgICAgICAgICAgICAgZm91bmQuYXBwZW5kKAogICAgICAgICAgICAgICAgICAgIENvZGVMaW5rKAogICAgICAgICAgICAgICAgICAgICAgICB1cmw9dXJsLAogICAgICAgICAgICAgICAgICAgICAgICBwbGF0Zm9ybT0iZ2l0bGFiIiwKICAgICAgICAgICAgICAgICAgICAgICAgb3duZXI9bS5ncm91cCgxKSwKICAgICAgICAgICAgICAgICAgICAgICAgcmVwbz1tLmdyb3VwKDIpLAogICAgICAgICAgICAgICAgICAgICAgICBjb25maWRlbmNlPTAuOAogICAgICAgICAgICAgICAgICAgICAgICBpZiBhbnkoa3cgaW4gY3R4Lmxvd2VyKCkgZm9yIGt3IGluIHNlbGYuQ09OVEVYVF9LRVlXT1JEU1siZ2l0bGFiIl0pCiAgICAgICAgICAgICAgICAgICAgICAgIGVsc2UgMC41LAogICAgICAgICAgICAgICAgICAgICAgICBjb250ZXh0PWN0eCwKICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICApCgogICAgICAgICMgSHVnZ2luZ0ZhY2UKICAgICAgICBmb3IgcGF0dGVybiBpbiBzZWxmLkhGX1BBVFRFUk5TOgogICAgICAgICAgICBmb3IgbSBpbiBwYXR0ZXJuLmZpbmRpdGVyKGNsZWFuKToKICAgICAgICAgICAgICAgIHVybCA9IG0uZ3JvdXAoMCkKICAgICAgICAgICAgICAgIGlmIHVybCBpbiBzZWVuOgogICAgICAgICAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgICAgICAgICBzZWVuLmFkZCh1cmwpCiAgICAgICAgICAgICAgICBzdGFydCA9IG1heCgwLCBtLnN0YXJ0KCkgLSA1MCkKICAgICAgICAgICAgICAgIGVuZCA9IG1pbihsZW4oY2xlYW4pLCBtLmVuZCgpICsgNTApCiAgICAgICAgICAgICAgICBjdHggPSBjbGVhbltzdGFydDplbmRdCgogICAgICAgICAgICAgICAgZm91bmQuYXBwZW5kKAogICAgICAgICAgICAgICAgICAgIENvZGVMaW5rKAogICAgICAgICAgICAgICAgICAgICAgICB1cmw9dXJsLAogICAgICAgICAgICAgICAgICAgICAgICBwbGF0Zm9ybT0iaHVnZ2luZ2ZhY2UiLAogICAgICAgICAgICAgICAgICAgICAgICBvd25lcj1tLmdyb3VwKDEpLAogICAgICAgICAgICAgICAgICAgICAgICByZXBvPW0uZ3JvdXAoMiksCiAgICAgICAgICAgICAgICAgICAgICAgIGNvbmZpZGVuY2U9MC45IGlmICJodWdnaW5nZmFjZSIgaW4gY3R4Lmxvd2VyKCkgb3IgIvCfpJciIGluIGN0eCBlbHNlIDAuNiwKICAgICAgICAgICAgICAgICAgICAgICAgY29udGV4dD1jdHgsCiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgKQoKICAgICAgICByZXR1cm4gZm91bmQKCiAgICBkZWYgX2RldGVjdF9kZXBlbmRlbmN5X2luZm8oc2VsZiwgdGV4dDogc3RyLCBwbGF0Zm9ybTogc3RyKSAtPiBEZXBlbmRlbmN5SW5mbzoKICAgICAgICAiIiJIZXVyaXN0aWNhbGx5IGRldGVjdCBkZXBlbmRlbmN5IGluZm8gZnJvbSB0ZXh0LiIiIgogICAgICAgIGluZm8gPSBEZXBlbmRlbmN5SW5mbyhwYWNrYWdlX21hbmFnZXI9InVua25vd24iKQoKICAgICAgICB0ZXh0X2xvd2VyID0gdGV4dC5sb3dlcigpCgogICAgICAgICMgRGV0ZWN0IHBhY2thZ2UgbWFuYWdlcgogICAgICAgIGlmICJyZXF1aXJlbWVudHMudHh0IiBpbiB0ZXh0X2xvd2VyOgogICAgICAgICAgICBpbmZvLnBhY2thZ2VfbWFuYWdlciA9ICJwaXAiCiAgICAgICAgaWYgInB5cHJvamVjdC50b21sIiBpbiB0ZXh0X2xvd2VyIG9yICJwb2V0cnkiIGluIHRleHRfbG93ZXI6CiAgICAgICAgICAgIGluZm8ucGFja2FnZV9tYW5hZ2VyID0gInBvZXRyeSIKICAgICAgICBpZiAiY29uZGEiIGluIHRleHRfbG93ZXIgb3IgImVudmlyb25tZW50LnltbCIgaW4gdGV4dF9sb3dlcjoKICAgICAgICAgICAgaW5mby5wYWNrYWdlX21hbmFnZXIgPSAiY29uZGEiCiAgICAgICAgaWYgInBhY2thZ2UuanNvbiIgaW4gdGV4dF9sb3dlcjoKICAgICAgICAgICAgaW5mby5wYWNrYWdlX21hbmFnZXIgPSAibnBtIgogICAgICAgIGlmICJjYXJnbyIgaW4gdGV4dF9sb3dlciBvciAiY2FyZ28udG9tbCIgaW4gdGV4dF9sb3dlcjoKICAgICAgICAgICAgaW5mby5wYWNrYWdlX21hbmFnZXIgPSAiY2FyZ28iCgogICAgICAgICMgRGV0ZWN0IG1lbnRpb25lZCBkZXBlbmRlbmN5IGZpbGVzCiAgICAgICAgZm9yIGYgaW4gc2VsZi5ERVBFTkRFTkNZX0ZJTEVTOgogICAgICAgICAgICBpZiBmIGluIHRleHRfbG93ZXI6CiAgICAgICAgICAgICAgICBpbmZvLmZpbGVzLmFwcGVuZChmKQoKICAgICAgICAjIERldGVjdCBQeXRob24gdmVyc2lvbiBoaW50cwogICAgICAgIHB5X3ZlcnNpb25zID0gcmUuZmluZGFsbChyInB5dGhvblxzKjM/XC5cZCsiLCB0ZXh0X2xvd2VyKQogICAgICAgIGlmIHB5X3ZlcnNpb25zOgogICAgICAgICAgICBpbmZvLnB5dGhvbl92ZXJzaW9uID0gcHlfdmVyc2lvbnNbMF0KCiAgICAgICAgIyBEZXRlY3QgaGFyZHdhcmUgcmVxdWlyZW1lbnRzCiAgICAgICAgaHdfa2V5d29yZHMgPSB7CiAgICAgICAgICAgICJncHUiOiAiR1BVIChOVklESUEgcmVjb21tZW5kZWQpIiwKICAgICAgICAgICAgImN1ZGEiOiAiTlZJRElBIENVREEiLAogICAgICAgICAgICAidHB1IjogIlRQVSIsCiAgICAgICAgICAgICJ2MTAwIjogIk5WSURJQSBWMTAwIEdQVSIsCiAgICAgICAgICAgICJhMTAwIjogIk5WSURJQSBBMTAwIEdQVSIsCiAgICAgICAgICAgICIzMDkwIjogIk5WSURJQSBSVFggMzA5MCIsCiAgICAgICAgICAgICJyYW0iOiAiTGFyZ2UgUkFNIiwKICAgICAgICAgICAgIm1lbW9yeSI6ICJIaWdoIG1lbW9yeSIsCiAgICAgICAgICAgICJkaXNrIjogIkxhcmdlIGRpc2siLAogICAgICAgIH0KICAgICAgICBmb3Iga3csIGRlc2MgaW4gaHdfa2V5d29yZHMuaXRlbXMoKToKICAgICAgICAgICAgaWYga3cgaW4gdGV4dF9sb3dlcjoKICAgICAgICAgICAgICAgIGlmIGRlc2Mgbm90IGluIGluZm8uaGFyZHdhcmU6CiAgICAgICAgICAgICAgICAgICAgaW5mby5oYXJkd2FyZS5hcHBlbmQoZGVzYykKCiAgICAgICAgIyBEZXRlY3Qgc3BlY2lhbCBsaWJyYXJpZXMKICAgICAgICBmb3IgbGliLCBkZXNjIGluIHNlbGYuU1BFQ0lBTF9MSUJTLml0ZW1zKCk6CiAgICAgICAgICAgIGlmIGxpYiBpbiB0ZXh0X2xvd2VyOgogICAgICAgICAgICAgICAgaWYgZGVzYyBub3QgaW4gaW5mby5zcGVjaWFsX3JlcXVpcmVtZW50czoKICAgICAgICAgICAgICAgICAgICBpbmZvLnNwZWNpYWxfcmVxdWlyZW1lbnRzLmFwcGVuZChkZXNjKQoKICAgICAgICAjIEVzdGltYXRlIGRpc2sgc3BhY2UKICAgICAgICBkaXNrX21hdGNoID0gcmUuc2VhcmNoKHIiKFxkKylccyooR0J8VEJ8TUIpIiwgdGV4dCwgcmUuSSkKICAgICAgICBpZiBkaXNrX21hdGNoOgogICAgICAgICAgICB2YWwgPSBpbnQoZGlza19tYXRjaC5ncm91cCgxKSkKICAgICAgICAgICAgdW5pdCA9IGRpc2tfbWF0Y2guZ3JvdXAoMikudXBwZXIoKQogICAgICAgICAgICBpZiB1bml0ID09ICJUQiI6CiAgICAgICAgICAgICAgICBpbmZvLmRpc2tfc3BhY2VfZ2IgPSB2YWwgKiAxMDI0CiAgICAgICAgICAgIGVsaWYgdW5pdCA9PSAiR0IiOgogICAgICAgICAgICAgICAgaW5mby5kaXNrX3NwYWNlX2diID0gdmFsCiAgICAgICAgICAgIGVsc2U6CiAgICAgICAgICAgICAgICBpbmZvLmRpc2tfc3BhY2VfZ2IgPSB2YWwgLy8gMTAyNAoKICAgICAgICAjIFJBTSBlc3RpbWF0ZQogICAgICAgIHJhbV9tYXRjaCA9IHJlLnNlYXJjaChyIihcZCspXHMqR0JccysoUkFNfG1lbW9yeSkiLCB0ZXh0LCByZS5JKQogICAgICAgIGlmIHJhbV9tYXRjaDoKICAgICAgICAgICAgaW5mby5yYW1fZ2IgPSBpbnQocmFtX21hdGNoLmdyb3VwKDEpKQoKICAgICAgICByZXR1cm4gaW5mbwoKICAgIGRlZiBfYXNzZXNzX2RpZmZpY3VsdHkoCiAgICAgICAgc2VsZiwKICAgICAgICBkZXBfaW5mbzogRGVwZW5kZW5jeUluZm8sCiAgICAgICAgcGxhdGZvcm06IHN0ciwKICAgICAgICBsaW5rczogTGlzdFtDb2RlTGlua10sCiAgICApIC0+IHR1cGxlOgogICAgICAgICIiIkFzc2VzcyByZXByb2R1Y2liaWxpdHkgZGlmZmljdWx0eSAwLTEwLiIiIgogICAgICAgIHNjb3JlID0gMC4wCgogICAgICAgICMgUGxhdGZvcm0gZWFzZQogICAgICAgIGlmIHBsYXRmb3JtID09ICJnaXRodWIiOgogICAgICAgICAgICBzY29yZSArPSAwCiAgICAgICAgZWxpZiBwbGF0Zm9ybSA9PSAiaHVnZ2luZ2ZhY2UiOgogICAgICAgICAgICBzY29yZSArPSAwICAjIFZlcnkgZWFzeSDigJQgbW9kZWxzK2NvZGUrYnVzaW5lc3MgbG9naWMgaW4gb25lIHBsYWNlCiAgICAgICAgZWxpZiBwbGF0Zm9ybSA9PSAiZ2l0bGFiIjoKICAgICAgICAgICAgc2NvcmUgKz0gMQoKICAgICAgICAjIFBhY2thZ2UgbWFuYWdlciBjb21wbGV4aXR5CiAgICAgICAgcG1fc2NvcmVzID0geyJwaXAiOiAxLCAiY29uZGEiOiAyLCAicG9ldHJ5IjogMiwgIm5wbSI6IDIsICJjYXJnbyI6IDN9CiAgICAgICAgc2NvcmUgKz0gcG1fc2NvcmVzLmdldChkZXBfaW5mby5wYWNrYWdlX21hbmFnZXIsIDEpCgogICAgICAgICMgTWlzc2luZyBkZXBlbmRlbmN5IGZpbGVzCiAgICAgICAgaWYgbm90IGRlcF9pbmZvLmZpbGVzOgogICAgICAgICAgICBzY29yZSArPSAyCiAgICAgICAgZWxpZiAicmVxdWlyZW1lbnRzLnR4dCIgbm90IGluIGRlcF9pbmZvLmZpbGVzIGFuZCAicHlwcm9qZWN0LnRvbWwiIG5vdCBpbiBkZXBfaW5mby5maWxlczoKICAgICAgICAgICAgc2NvcmUgKz0gMQoKICAgICAgICAjIFNwZWNpYWwgaGFyZHdhcmUgcmVxdWlyZW1lbnRzCiAgICAgICAgaHdfcGVuYWx0eSA9IHsKICAgICAgICAgICAgIkdQVSAoTlZJRElBIHJlY29tbWVuZGVkKSI6IDAuNSwKICAgICAgICAgICAgIk5WSURJQSBDVURBIjogMS4wLAogICAgICAgICAgICAiVFBVIjogMi4wLAogICAgICAgIH0KICAgICAgICBmb3IgaHcgaW4gZGVwX2luZm8uaGFyZHdhcmU6CiAgICAgICAgICAgIHNjb3JlICs9IGh3X3BlbmFsdHkuZ2V0KGh3LCAwLjUpCgogICAgICAgICMgU3BlY2lhbCBsaWJyYXJpZXMKICAgICAgICBzY29yZSArPSBsZW4oZGVwX2luZm8uc3BlY2lhbF9yZXF1aXJlbWVudHMpICogMC4zCgogICAgICAgICMgRGlzayBhbmQgUkFNIHJlcXVpcmVtZW50cwogICAgICAgIGlmIGRlcF9pbmZvLmRpc2tfc3BhY2VfZ2IgPiA1MDA6CiAgICAgICAgICAgIHNjb3JlICs9IDEuNQogICAgICAgIGVsaWYgZGVwX2luZm8uZGlza19zcGFjZV9nYiA+IDEwMDoKICAgICAgICAgICAgc2NvcmUgKz0gMC41CiAgICAgICAgaWYgZGVwX2luZm8ucmFtX2diID4gNjQ6CiAgICAgICAgICAgIHNjb3JlICs9IDEuNQogICAgICAgIGVsaWYgZGVwX2luZm8ucmFtX2diID4gMzI6CiAgICAgICAgICAgIHNjb3JlICs9IDAuNQoKICAgICAgICBzY29yZSA9IG1pbihzY29yZSwgMTAuMCkKCiAgICAgICAgIyBNYXAgc2NvcmUgdG8gZGlmZmljdWx0eQogICAgICAgIGlmIHNjb3JlIDw9IDI6CiAgICAgICAgICAgIGRpZmZpY3VsdHkgPSAiRWFzeSIKICAgICAgICBlbGlmIHNjb3JlIDw9IDQ6CiAgICAgICAgICAgIGRpZmZpY3VsdHkgPSAiTWVkaXVtIgogICAgICAgIGVsaWYgc2NvcmUgPD0gNjoKICAgICAgICAgICAgZGlmZmljdWx0eSA9ICJIYXJkIgogICAgICAgIGVsaWYgc2NvcmUgPD0gODoKICAgICAgICAgICAgZGlmZmljdWx0eSA9ICJWZXJ5IEhhcmQiCiAgICAgICAgZWxzZToKICAgICAgICAgICAgZGlmZmljdWx0eSA9ICJFeHRyZW1lbHkgSGFyZCIKCiAgICAgICAgcmV0dXJuIGRpZmZpY3VsdHksIHJvdW5kKHNjb3JlLCAxKQoKICAgIGRlZiBfZ2VuZXJhdGVfbm90ZXMoCiAgICAgICAgc2VsZiwKICAgICAgICBwcmltYXJ5X2xpbms6IENvZGVMaW5rLAogICAgICAgIGRlcF9pbmZvOiBEZXBlbmRlbmN5SW5mbywKICAgICAgICBhbGxfbGlua3M6IExpc3RbQ29kZUxpbmtdLAogICAgKSAtPiBMaXN0W3N0cl06CiAgICAgICAgIiIiR2VuZXJhdGUgaHVtYW4tcmVhZGFibGUgbm90ZXMuIiIiCiAgICAgICAgbm90ZXMgPSBbXQogICAgICAgIHBsYXRmb3JtID0gcHJpbWFyeV9saW5rLnBsYXRmb3JtCgogICAgICAgIGlmIHBsYXRmb3JtID09ICJnaXRodWIiOgogICAgICAgICAgICBub3Rlcy5hcHBlbmQoZiJHaXRIdWIgcmVwbzoge3ByaW1hcnlfbGluay5vd25lcn0ve3ByaW1hcnlfbGluay5yZXBvfSIpCiAgICAgICAgZWxpZiBwbGF0Zm9ybSA9PSAiaHVnZ2luZ2ZhY2UiOgogICAgICAgICAgICBub3Rlcy5hcHBlbmQoZiJIdWdnaW5nRmFjZSBzcGFjZS9tb2RlbDoge3ByaW1hcnlfbGluay5vd25lcn0ve3ByaW1hcnlfbGluay5yZXBvfSIpCiAgICAgICAgZWxpZiBwbGF0Zm9ybSA9PSAiZ2l0bGFiIjoKICAgICAgICAgICAgbm90ZXMuYXBwZW5kKGYiR2l0TGFiIHJlcG86IHtwcmltYXJ5X2xpbmsub3duZXJ9L3twcmltYXJ5X2xpbmsucmVwb30iKQoKICAgICAgICBpZiBsZW4oYWxsX2xpbmtzKSA+IDE6CiAgICAgICAgICAgIG5vdGVzLmFwcGVuZCgKICAgICAgICAgICAgICAgIGYiRm91bmQge2xlbihhbGxfbGlua3MpfSBjb2RlIGxpbmtzIHRvdGFsIOKAlCB2ZXJpZnkgdGhlIGNvcnJlY3Qgb25lIGlzIHVzZWQuIgogICAgICAgICAgICApCgogICAgICAgIGlmIGRlcF9pbmZvLnBhY2thZ2VfbWFuYWdlciAhPSAidW5rbm93biI6CiAgICAgICAgICAgIG5vdGVzLmFwcGVuZChmIlBhY2thZ2UgbWFuYWdlcjoge2RlcF9pbmZvLnBhY2thZ2VfbWFuYWdlci51cHBlcigpfSIpCgogICAgICAgIGlmIGRlcF9pbmZvLmZpbGVzOgogICAgICAgICAgICBub3Rlcy5hcHBlbmQoZiJEZXBlbmRlbmN5IGZpbGVzOiB7JywgJy5qb2luKGRlcF9pbmZvLmZpbGVzKX0iKQoKICAgICAgICBpZiBkZXBfaW5mby5oYXJkd2FyZToKICAgICAgICAgICAgbm90ZXMuYXBwZW5kKGYiSGFyZHdhcmUgbmVlZHM6IHsnLCAnLmpvaW4oZGVwX2luZm8uaGFyZHdhcmUpfSIpCgogICAgICAgIGlmIGRlcF9pbmZvLnNwZWNpYWxfcmVxdWlyZW1lbnRzOgogICAgICAgICAgICBub3Rlcy5hcHBlbmQoZiJLZXkgbGlicmFyaWVzOiB7JywgJy5qb2luKGRlcF9pbmZvLnNwZWNpYWxfcmVxdWlyZW1lbnRzWzozXSl9IikKCiAgICAgICAgaWYgZGVwX2luZm8ucHl0aG9uX3ZlcnNpb246CiAgICAgICAgICAgIG5vdGVzLmFwcGVuZChmIlB5dGhvbiB2ZXJzaW9uIGhpbnQ6IHtkZXBfaW5mby5weXRob25fdmVyc2lvbn0iKQoKICAgICAgICByZXR1cm4gbm90ZXMKCiAgICBkZWYgX2NoZWNrX2lzc3VlcygKICAgICAgICBzZWxmLAogICAgICAgIGRlcF9pbmZvOiBEZXBlbmRlbmN5SW5mbywKICAgICAgICBsaW5rczogTGlzdFtDb2RlTGlua10sCiAgICApIC0+IExpc3Rbc3RyXToKICAgICAgICAiIiJJZGVudGlmeSBwb3RlbnRpYWwgcmVwcm9kdWNpYmlsaXR5IGlzc3Vlcy4iIiIKICAgICAgICBpc3N1ZXMgPSBbXQoKICAgICAgICBpZiBub3QgZGVwX2luZm8uZmlsZXM6CiAgICAgICAgICAgIGlzc3Vlcy5hcHBlbmQoCiAgICAgICAgICAgICAgICAiTm8gZXhwbGljaXQgZGVwZW5kZW5jeSBmaWxlcyBkZXRlY3RlZCDigJQgbWFudWFsIGVudmlyb25tZW50IHNldHVwIG1heSBiZSByZXF1aXJlZC4iCiAgICAgICAgICAgICkKCiAgICAgICAgaWYgbm90IGRlcF9pbmZvLnB5dGhvbl92ZXJzaW9uOgogICAgICAgICAgICBpc3N1ZXMuYXBwZW5kKCJObyBQeXRob24gdmVyc2lvbiBzcGVjaWZpZWQg4oCUIHBvc3NpYmxlIHZlcnNpb24gY29uZmxpY3RzLiIpCgogICAgICAgIGlmICJyZXF1aXJlbWVudHMudHh0IiBpbiBkZXBfaW5mby5maWxlczoKICAgICAgICAgICAgIyBDaGVjayBmb3IgdW5waW5uZWQgdmVyc2lvbnMKICAgICAgICAgICAgaXNzdWVzLmFwcGVuZCgKICAgICAgICAgICAgICAgICJyZXF1aXJlbWVudHMudHh0IG1heSBoYXZlIHVucGlubmVkIHZlcnNpb25zIOKAlCByZWNvbW1lbmQgcGlwLWNvbXBpbGUgb3IgcG9ldHJ5IGxvY2suIgogICAgICAgICAgICApCgogICAgICAgIGlmIGRlcF9pbmZvLnNwZWNpYWxfcmVxdWlyZW1lbnRzOgogICAgICAgICAgICBmb3IgbGliIGluIGRlcF9pbmZvLnNwZWNpYWxfcmVxdWlyZW1lbnRzOgogICAgICAgICAgICAgICAgaWYgIkNVREEiIGluIGxpYiBvciAiVFBVIiBpbiBsaWI6CiAgICAgICAgICAgICAgICAgICAgaXNzdWVzLmFwcGVuZChmIntsaWJ9IHJlcXVpcmVkIOKAlCBoYXJkd2FyZSBhY2Nlc3MgbmVlZGVkLiIpCgogICAgICAgIGlmIG5vdCBkZXBfaW5mby5oYXJkd2FyZToKICAgICAgICAgICAgaXNzdWVzLmFwcGVuZCgiTm8gaGFyZHdhcmUgcmVxdWlyZW1lbnRzIG1lbnRpb25lZCDigJQgdW5jbGVhciBpZiBHUFUgbmVlZGVkLiIpCgogICAgICAgIHJldHVybiBpc3N1ZXMKCiAgICAjIOKUgOKUgCBSZW5kZXJpbmcg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgogICAgZGVmIHJlbmRlcl9yZXBvcnQoc2VsZiwgcmVwb3J0OiBSZXBsaWNhdGlvblJlcG9ydCkgLT4gc3RyOgogICAgICAgICIiIlJlbmRlciByZXBvcnQgYXMgcmVhZGFibGUgdGV4dC4iIiIKICAgICAgICBlbW9qaSA9IHsKICAgICAgICAgICAgIkVhc3kiOiAi8J+foiIsCiAgICAgICAgICAgICJNZWRpdW0iOiAi8J+foSIsCiAgICAgICAgICAgICJIYXJkIjogIvCfn6AiLAogICAgICAgICAgICAiVmVyeSBIYXJkIjogIvCflLQiLAogICAgICAgICAgICAiRXh0cmVtZWx5IEhhcmQiOiAi8J+SgCIsCiAgICAgICAgICAgICJObyBDb2RlIEZvdW5kIjogIuKdjCIsCiAgICAgICAgfQogICAgICAgIGUgPSBlbW9qaS5nZXQocmVwb3J0LmRpZmZpY3VsdHksICLimqoiKQoKICAgICAgICBsaW5lcyA9IFsKICAgICAgICAgICAgIj0iICogNjAsCiAgICAgICAgICAgIGYi8J+UrCBSZXBsaWNhdGlvbiBSZXBvcnQ6IHtyZXBvcnQucGFwZXJfaWRbOjhdfSIsCiAgICAgICAgICAgICI9IiAqIDYwLAogICAgICAgICAgICBmIkRpZmZpY3VsdHk6IHtlfSB7cmVwb3J0LmRpZmZpY3VsdHl9ICh7cmVwb3J0LmRpZmZpY3VsdHlfc2NvcmV9LzEwKSIsCiAgICAgICAgICAgICIiLAogICAgICAgIF0KCiAgICAgICAgaWYgcmVwb3J0LnByaW1hcnlfbGluazoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiUHJpbWFyeSBMaW5rOiB7cmVwb3J0LnByaW1hcnlfbGluay51cmx9IikKCiAgICAgICAgbGluZXMuYXBwZW5kKGYiQ29kZSBsaW5rcyBmb3VuZDoge2xlbihyZXBvcnQubGlua3MpfSIpCiAgICAgICAgaWYgbGVuKHJlcG9ydC5saW5rcykgPiAxOgogICAgICAgICAgICBmb3IgbGluayBpbiByZXBvcnQubGlua3NbOjNdOgogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAtIHtsaW5rLnVybH0gKGNvbmZpZGVuY2U6IHtsaW5rLmNvbmZpZGVuY2U6LjAlfSkiKQoKICAgICAgICBpZiByZXBvcnQuZGVwZW5kZW5jeV9pbmZvOgogICAgICAgICAgICBkaSA9IHJlcG9ydC5kZXBlbmRlbmN5X2luZm8KICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIiKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIkRlcGVuZGVuY2llczoiKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgIFBhY2thZ2UgbWFuYWdlcjoge2RpLnBhY2thZ2VfbWFuYWdlcn0iKQogICAgICAgICAgICBpZiBkaS5maWxlczoKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgRmlsZXM6IHsnLCAnLmpvaW4oZGkuZmlsZXMpfSIpCiAgICAgICAgICAgIGlmIGRpLnB5dGhvbl92ZXJzaW9uOgogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICBQeXRob246IHtkaS5weXRob25fdmVyc2lvbn0iKQogICAgICAgICAgICBpZiBkaS5oYXJkd2FyZToKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgSGFyZHdhcmU6IHsnLCAnLmpvaW4oZGkuaGFyZHdhcmUpfSIpCiAgICAgICAgICAgIGlmIGRpLnNwZWNpYWxfcmVxdWlyZW1lbnRzOgogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICBLZXkgbGliczogeycsICcuam9pbihkaS5zcGVjaWFsX3JlcXVpcmVtZW50c1s6M10pfSIpCgogICAgICAgIGlmIHJlcG9ydC5yZXByb2R1Y2liaWxpdHlfaXNzdWVzOgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgi4pqg77iPICBJc3N1ZXM6IikKICAgICAgICAgICAgZm9yIGlzc3VlIGluIHJlcG9ydC5yZXByb2R1Y2liaWxpdHlfaXNzdWVzOgogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAtIHtpc3N1ZX0iKQoKICAgICAgICBpZiByZXBvcnQubm90ZXM6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCJOb3RlczoiKQogICAgICAgICAgICBmb3Igbm90ZSBpbiByZXBvcnQubm90ZXM6CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgIOKAoiB7bm90ZX0iKQoKICAgICAgICBpZiByZXBvcnQuc21va2VfdGVzdF9wYXNzZWQ6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCLinIUgU21va2UgdGVzdCBwYXNzZWQiKQoKICAgICAgICBsaW5lcy5hcHBlbmQoIj0iICogNjApCiAgICAgICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykK
+"""
+Experiment Replication Checker — detect code links and assess reproducibility.
+
+Given a paper, extracts GitHub/GitLab links and attempts to:
+- Clone the repo and detect dependency files (requirements.txt, pyproject.toml, etc.)
+- Parse setup/environment to understand hardware requirements
+- Attempt lightweight checks: importability, basic smoke test
+- Output a reproducibility difficulty rating
+"""
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+import re
+import urllib.parse
+
+
+@dataclass
+class CodeLink:
+    """A code repository link found in a paper."""
+    url: str
+    platform: str           # github, gitlab, huggingface
+    owner: str
+    repo: str
+    path: str = ""          # sub-path if specific
+    confidence: float = 1.0  # 0-1 how confident we are this is the right link
+    context: str = ""        # surrounding text that triggered the match
+
+
+@dataclass
+class DependencyInfo:
+    """Parsed dependency information."""
+    package_manager: str       # pip, conda, poetry, npm
+    files: List[str] = field(default_factory=list)
+    python_version: str = ""
+    hardware: List[str] = field(default_factory=list)   # gpu, tpu, etc
+    disk_space_gb: int = 0
+    ram_gb: int = 0
+    special_requirements: List[str] = field(default_factory=list)  # CUDA, specific libs
+
+
+@dataclass
+class ReplicationReport:
+    """Report on a paper's reproducibility."""
+    paper_id: str
+    paper_title: str
+    links: List[CodeLink] = field(default_factory=list)
+    primary_link: Optional[CodeLink] = None
+    dependency_info: Optional[DependencyInfo] = None
+    difficulty: str = ""    # Easy / Medium / Hard / Very Hard / No Code Found
+    difficulty_score: float = 0.0  # 0-10
+    notes: List[str] = field(default_factory=list)
+    reproducibility_issues: List[str] = field(default_factory=list)
+    smoke_test_passed: bool = False
+    smoke_test_output: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "paper_id": self.paper_id,
+            "paper_title": self.paper_title,
+            "difficulty": self.difficulty,
+            "difficulty_score": self.difficulty_score,
+            "primary_link": {
+                "url": self.primary_link.url,
+                "platform": self.primary_link.platform,
+                "owner_repo": f"{self.primary_link.owner}/{self.primary_link.repo}",
+            } if self.primary_link else None,
+            "links_count": len(self.links),
+            "dependency_info": {
+                "package_manager": self.dependency_info.package_manager,
+                "files": self.dependency_info.files,
+                "python_version": self.dependency_info.python_version,
+                "hardware": self.dependency_info.hardware,
+                "special_requirements": self.dependency_info.special_requirements,
+            } if self.dependency_info else None,
+            "smoke_test_passed": self.smoke_test_passed,
+            "smoke_test_output": self.smoke_test_output[:500] if self.smoke_test_output else "",
+            "reproducibility_issues": self.reproducibility_issues,
+            "notes": self.notes,
+        }
+
+
+class ReplicationChecker:
+    """Check paper reproducibility by extracting and analyzing code links."""
+
+    # Regex patterns for code repository detection
+    GITHUB_PATTERNS = [
+        re.compile(r'https?://github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?', re.I),
+        re.compile(r'github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)', re.I),
+        re.compile(r'([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)\.git', re.I),
+    ]
+
+    GITLAB_PATTERNS = [
+        re.compile(r'https?://gitlab\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?', re.I),
+    ]
+
+    HF_PATTERNS = [
+        re.compile(r'https?://huggingface\.co/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)', re.I),
+        re.compile(r'huggingface\.co/spaces/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)', re.I),
+    ]
+
+    CONTEXT_KEYWORDS = {
+        "github": ["code", "implementation", "repository", "repo", "released", "open source",
+                   "github.com", "our code", "available at", "https://"],
+        "gitlab": ["gitlab.com", "repository"],
+        "huggingface": ["huggingface", "model hub", "🤗", "space"],
+    }
+
+    DEPENDENCY_FILES = [
+        "requirements.txt", "setup.py", "setup.cfg", "pyproject.toml",
+        "environment.yml", "conda.yml", "Dockerfile", "docker-compose.yml",
+        "Makefile", "package.json", "Cargo.toml", "go.mod",
+    ]
+
+    SPECIAL_LIBS = {
+        "torch": "PyTorch (GPU required)",
+        "tensorflow": "TensorFlow (GPU recommended)",
+        "jax": "JAX (TPU/JAX compatible)",
+        "cuda": "NVIDIA CUDA required",
+        "cudnn": "cuDNN required",
+        "apex": "NVIDIA Apex (mixed precision)",
+        "transformers": "HuggingFace Transformers",
+        "detectron2": "Detectron2",
+        "tensorboard": "TensorBoard",
+        "wandb": "Weights & Biases",
+        "hydra": "Hydra config",
+        "accelerate": "HuggingFace Accelerate",
+    }
+
+    def check_paper(
+        self,
+        paper_id: str,
+        title: str,
+        abstract: str = "",
+        full_text: str = "",
+    ) -> ReplicationReport:
+        """Analyze a paper for code availability and reproducibility."""
+        report = ReplicationReport(paper_id=paper_id, paper_title=title)
+
+        text = f"{title} {abstract} {full_text}"
+
+        # Extract code links
+        links = self._extract_links(text)
+        report.links = links
+
+        if not links:
+            report.difficulty = "No Code Found"
+            report.difficulty_score = 10.0
+            report.notes.append("No GitHub/GitLab/HuggingFace links detected in paper text.")
+            return report
+
+        # Pick primary link (highest confidence + context match)
+        links.sort(key=lambda x: (x.confidence, len(x.context)), reverse=True)
+        report.primary_link = links[0]
+
+        # Detect platform
+        platform = report.primary_link.platform
+
+        # Try to parse dependency info (heuristic from URL path)
+        dep_info = self._detect_dependency_info(text, platform)
+        report.dependency_info = dep_info
+
+        # Assess difficulty
+        difficulty, score = self._assess_difficulty(dep_info, platform, links)
+        report.difficulty = difficulty
+        report.difficulty_score = score
+
+        # Generate notes
+        report.notes = self._generate_notes(report.primary_link, dep_info, links)
+
+        # Check reproducibility issues
+        report.reproducibility_issues = self._check_issues(dep_info, links)
+
+        return report
+
+    def _extract_links(self, text: str) -> List[CodeLink]:
+        """Extract code repository links from text."""
+        found: List[CodeLink] = []
+        seen = set()
+
+        # Remove markdown URLs to avoid double-matching
+        clean = re.sub(r'\[([^\]]+)\]\((https?://[^\)]+)\)', r'\2', text)
+
+        # GitHub
+        for pattern in self.GITHUB_PATTERNS:
+            for m in pattern.finditer(clean):
+                url = m.group(0) if m.lastindex == 2 else f"https://github.com/{m.group(1)}/{m.group(2)}"
+                if not url.startswith("http"):
+                    url = f"https://github.com/{m.group(1)}/{m.group(2)}"
+                # Dedupe
+                if url in seen:
+                    continue
+                seen.add(url)
+                # Context (surrounding 100 chars)
+                start = max(0, m.start() - 50)
+                end = min(len(clean), m.end() + 50)
+                ctx = clean[start:end]
+                # Confidence based on context
+                confidence = 0.5
+                for kw in self.CONTEXT_KEYWORDS["github"]:
+                    if kw.lower() in ctx.lower():
+                        confidence = 1.0
+                        break
+                # Penalize if this looks like a citation reference
+                if re.search(r'\[(\d+)\]', ctx):
+                    confidence *= 0.5
+
+                found.append(CodeLink(
+                    url=url,
+                    platform="github",
+                    owner=m.group(1),
+                    repo=m.group(2).replace(".git", ""),
+                    confidence=confidence,
+                    context=ctx,
+                ))
+
+        # GitLab
+        for pattern in self.GITLAB_PATTERNS:
+            for m in pattern.finditer(clean):
+                url = m.group(0) if m.lastindex == 2 else f"https://gitlab.com/{m.group(1)}/{m.group(2)}"
+                if not url.startswith("http"):
+                    url = f"https://gitlab.com/{m.group(1)}/{m.group(2)}"
+                if url in seen:
+                    continue
+                seen.add(url)
+                start = max(0, m.start() - 50)
+                end = min(len(clean), m.end() + 50)
+                ctx = clean[start:end]
+
+                found.append(CodeLink(
+                    url=url,
+                    platform="gitlab",
+                    owner=m.group(1),
+                    repo=m.group(2),
+                    confidence=0.8 if any(kw in ctx.lower() for kw in self.CONTEXT_KEYWORDS["gitlab"]) else 0.5,
+                    context=ctx,
+                ))
+
+        # HuggingFace
+        for pattern in self.HF_PATTERNS:
+            for m in pattern.finditer(clean):
+                url = m.group(0)
+                if url in seen:
+                    continue
+                seen.add(url)
+                start = max(0, m.start() - 50)
+                end = min(len(clean), m.end() + 50)
+                ctx = clean[start:end]
+
+                found.append(CodeLink(
+                    url=url,
+                    platform="huggingface",
+                    owner=m.group(1),
+                    repo=m.group(2),
+                    confidence=0.9 if "huggingface" in ctx.lower() or "🤗" in ctx else 0.6,
+                    context=ctx,
+                ))
+
+        return found
+
+    def _detect_dependency_info(self, text: str, platform: str) -> DependencyInfo:
+        """Heuristically detect dependency info from text."""
+        info = DependencyInfo(package_manager="unknown")
+
+        text_lower = text.lower()
+
+        # Detect package manager
+        if "requirements.txt" in text_lower:
+            info.package_manager = "pip"
+        if "pyproject.toml" in text_lower or "poetry" in text_lower:
+            info.package_manager = "poetry"
+        if "conda" in text_lower or "environment.yml" in text_lower:
+            info.package_manager = "conda"
+        if "package.json" in text_lower:
+            info.package_manager = "npm"
+        if "cargo" in text_lower or "cargo.toml" in text_lower:
+            info.package_manager = "cargo"
+
+        # Detect mentioned dependency files
+        for f in self.DEPENDENCY_FILES:
+            if f in text_lower:
+                info.files.append(f)
+
+        # Detect Python version hints
+        py_versions = re.findall(r'python\s*3?\.\d+', text_lower)
+        if py_versions:
+            info.python_version = py_versions[0]
+
+        # Detect hardware requirements
+        hw_keywords = {
+            "gpu": "GPU (NVIDIA recommended)",
+            "cuda": "NVIDIA CUDA",
+            "tpu": "TPU",
+            "v100": "NVIDIA V100 GPU",
+            "a100": "NVIDIA A100 GPU",
+            "3090": "NVIDIA RTX 3090",
+            "ram": "Large RAM",
+            "memory": "High memory",
+            "disk": "Large disk",
+        }
+        for kw, desc in hw_keywords.items():
+            if kw in text_lower:
+                if desc not in info.hardware:
+                    info.hardware.append(desc)
+
+        # Detect special libraries
+        for lib, desc in self.SPECIAL_LIBS.items():
+            if lib in text_lower:
+                if desc not in info.special_requirements:
+                    info.special_requirements.append(desc)
+
+        # Estimate disk space
+        disk_match = re.search(r'(\d+)\s*(GB|TB|MB)', text, re.I)
+        if disk_match:
+            val = int(disk_match.group(1))
+            unit = disk_match.group(2).upper()
+            if unit == "TB":
+                info.disk_space_gb = val * 1024
+            elif unit == "GB":
+                info.disk_space_gb = val
+            else:
+                info.disk_space_gb = val // 1024
+
+        # RAM estimate
+        ram_match = re.search(r'(\d+)\s*GB\s+(RAM|memory)', text, re.I)
+        if ram_match:
+            info.ram_gb = int(ram_match.group(1))
+
+        return info
+
+    def _assess_difficulty(
+        self,
+        dep_info: DependencyInfo,
+        platform: str,
+        links: List[CodeLink],
+    ) -> tuple:
+        """Assess reproducibility difficulty 0-10."""
+        score = 0.0
+
+        # Platform ease
+        if platform == "github":
+            score += 0
+        elif platform == "huggingface":
+            score += 0  # Very easy — models+code+business logic in one place
+        elif platform == "gitlab":
+            score += 1
+
+        # Package manager complexity
+        pm_scores = {"pip": 1, "conda": 2, "poetry": 2, "npm": 2, "cargo": 3}
+        score += pm_scores.get(dep_info.package_manager, 1)
+
+        # Missing dependency files
+        if not dep_info.files:
+            score += 2
+        elif "requirements.txt" not in dep_info.files and "pyproject.toml" not in dep_info.files:
+            score += 1
+
+        # Special hardware requirements
+        hw_penalty = {
+            "GPU (NVIDIA recommended)": 0.5,
+            "NVIDIA CUDA": 1.0,
+            "TPU": 2.0,
+        }
+        for hw in dep_info.hardware:
+            score += hw_penalty.get(hw, 0.5)
+
+        # Special libraries
+        score += len(dep_info.special_requirements) * 0.3
+
+        # Disk and RAM requirements
+        if dep_info.disk_space_gb > 500:
+            score += 1.5
+        elif dep_info.disk_space_gb > 100:
+            score += 0.5
+        if dep_info.ram_gb > 64:
+            score += 1.5
+        elif dep_info.ram_gb > 32:
+            score += 0.5
+
+        score = min(score, 10.0)
+
+        # Map score to difficulty
+        if score <= 2:
+            difficulty = "Easy"
+        elif score <= 4:
+            difficulty = "Medium"
+        elif score <= 6:
+            difficulty = "Hard"
+        elif score <= 8:
+            difficulty = "Very Hard"
+        else:
+            difficulty = "Extremely Hard"
+
+        return difficulty, round(score, 1)
+
+    def _generate_notes(
+        self,
+        primary_link: CodeLink,
+        dep_info: DependencyInfo,
+        all_links: List[CodeLink],
+    ) -> List[str]:
+        """Generate human-readable notes."""
+        notes = []
+        platform = primary_link.platform
+
+        if platform == "github":
+            notes.append(f"GitHub repo: {primary_link.owner}/{primary_link.repo}")
+        elif platform == "huggingface":
+            notes.append(f"HuggingFace space/model: {primary_link.owner}/{primary_link.repo}")
+        elif platform == "gitlab":
+            notes.append(f"GitLab repo: {primary_link.owner}/{primary_link.repo}")
+
+        if len(all_links) > 1:
+            notes.append(f"Found {len(all_links)} code links total — verify the correct one is used.")
+
+        if dep_info.package_manager != "unknown":
+            notes.append(f"Package manager: {dep_info.package_manager.upper()}")
+
+        if dep_info.files:
+            notes.append(f"Dependency files: {', '.join(dep_info.files)}")
+
+        if dep_info.hardware:
+            notes.append(f"Hardware needs: {', '.join(dep_info.hardware)}")
+
+        if dep_info.special_requirements:
+            notes.append(f"Key libraries: {', '.join(dep_info.special_requirements[:3])}")
+
+        if dep_info.python_version:
+            notes.append(f"Python version hint: {dep_info.python_version}")
+
+        return notes
+
+    def _check_issues(
+        self,
+        dep_info: DependencyInfo,
+        links: List[CodeLink],
+    ) -> List[str]:
+        """Identify potential reproducibility issues."""
+        issues = []
+
+        if not dep_info.files:
+            issues.append("No explicit dependency files detected — manual environment setup may be required.")
+
+        if not dep_info.python_version:
+            issues.append("No Python version specified — possible version conflicts.")
+
+        if "requirements.txt" in dep_info.files:
+            # Check for unpinned versions
+            issues.append("requirements.txt may have unpinned versions — recommend pip-compile or poetry lock.")
+
+        if dep_info.special_requirements:
+            for lib in dep_info.special_requirements:
+                if "CUDA" in lib or "TPU" in lib:
+                    issues.append(f"{lib} required — hardware access needed.")
+
+        if not dep_info.hardware:
+            issues.append("No hardware requirements mentioned — unclear if GPU needed.")
+
+        return issues
+
+    # ── Rendering ──────────────────────────────────────────────
+
+    def render_report(self, report: ReplicationReport) -> str:
+        """Render report as readable text."""
+        emoji = {
+            "Easy": "🟢", "Medium": "🟡", "Hard": "🟠",
+            "Very Hard": "🔴", "Extremely Hard": "💀", "No Code Found": "❌",
+        }
+        e = emoji.get(report.difficulty, "⚪")
+
+        lines = [
+            "=" * 60,
+            f"🔬 Replication Report: {report.paper_id[:8]}",
+            "=" * 60,
+            f"Difficulty: {e} {report.difficulty} ({report.difficulty_score}/10)",
+            "",
+        ]
+
+        if report.primary_link:
+            lines.append(f"Primary Link: {report.primary_link.url}")
+
+        lines.append(f"Code links found: {len(report.links)}")
+        if len(report.links) > 1:
+            for link in report.links[:3]:
+                lines.append(f"  - {link.url} (confidence: {link.confidence:.0%})")
+
+        if report.dependency_info:
+            di = report.dependency_info
+            lines.append("")
+            lines.append("Dependencies:")
+            lines.append(f"  Package manager: {di.package_manager}")
+            if di.files:
+                lines.append(f"  Files: {', '.join(di.files)}")
+            if di.python_version:
+                lines.append(f"  Python: {di.python_version}")
+            if di.hardware:
+                lines.append(f"  Hardware: {', '.join(di.hardware)}")
+            if di.special_requirements:
+                lines.append(f"  Key libs: {', '.join(di.special_requirements[:3])}")
+
+        if report.reproducibility_issues:
+            lines.append("")
+            lines.append("⚠️  Issues:")
+            for issue in report.reproducibility_issues:
+                lines.append(f"  - {issue}")
+
+        if report.notes:
+            lines.append("")
+            lines.append("Notes:")
+            for note in report.notes:
+                lines.append(f"  • {note}")
+
+        if report.smoke_test_passed:
+            lines.append("")
+            lines.append("✅ Smoke test passed")
+
+        lines.append("=" * 60)
+        return "\n".join(lines)

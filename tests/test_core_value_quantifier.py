@@ -1,1 +1,162 @@
-IiIiVGVzdHMgZm9yIGNvcmUvdmFsdWVfcXVhbnRpZmllci5weS4iIiIKCmltcG9ydCBweXRlc3QKCgpjbGFzcyBUZXN0VmFsdWVNZXRyaWM6CiAgICAiIiJUZXN0cyBmb3IgVmFsdWVNZXRyaWMgZGF0YWNsYXNzLiIiIgoKICAgIGRlZiB0ZXN0X2RhdGFjbGFzc19maWVsZHMoc2VsZik6CiAgICAgICAgIiIiVmFsdWVNZXRyaWMgc3RvcmVzIG5hbWUsIHZhbHVlLCB1bml0LCBhbmQgZGVzY3JpcHRpb24uIiIiCiAgICAgICAgZnJvbSBjb3JlLnZhbHVlX3F1YW50aWZpZXIgaW1wb3J0IFZhbHVlTWV0cmljCgogICAgICAgIG1ldHJpYyA9IFZhbHVlTWV0cmljKAogICAgICAgICAgICBuYW1lPSJBUEkgQ2FsbHMgU2F2ZWQiLAogICAgICAgICAgICB2YWx1ZT0xMDAuMCwKICAgICAgICAgICAgdW5pdD0i5qyhIiwKICAgICAgICAgICAgZGVzY3JpcHRpb249IlRocm91Z2ggY2FjaGluZyIsCiAgICAgICAgKQogICAgICAgIGFzc2VydCBtZXRyaWMubmFtZSA9PSAiQVBJIENhbGxzIFNhdmVkIgogICAgICAgIGFzc2VydCBtZXRyaWMudmFsdWUgPT0gMTAwLjAKICAgICAgICBhc3NlcnQgbWV0cmljLnVuaXQgPT0gIuasoSIKICAgICAgICBhc3NlcnQgbWV0cmljLmRlc2NyaXB0aW9uID09ICJUaHJvdWdoIGNhY2hpbmciCgoKY2xhc3MgVGVzdFZhbHVlUXVhbnRpZmllcjoKICAgICIiIlRlc3RzIGZvciBWYWx1ZVF1YW50aWZpZXIgY2xhc3MuIiIiCgogICAgZGVmIHRlc3RfaW5pdF9tZXRyaWNzX2FyZV96ZXJvZWQoc2VsZik6CiAgICAgICAgIiIiQWxsIG1ldHJpY3Mgc3RhcnQgYXQgemVyby4iIiIKICAgICAgICBmcm9tIGNvcmUudmFsdWVfcXVhbnRpZmllciBpbXBvcnQgVmFsdWVRdWFudGlmaWVyCgogICAgICAgIHEgPSBWYWx1ZVF1YW50aWZpZXIoKQogICAgICAgIGFzc2VydCBxLm1ldHJpY3NbImFwaV9jYWxsc19zYXZlZCJdID09IDAKICAgICAgICBhc3NlcnQgcS5tZXRyaWNzWyJwYXBlcnNfcHJvY2Vzc2VkIl0gPT0gMAogICAgICAgIGFzc2VydCBxLm1ldHJpY3NbInNlYXJjaGVzX3BlcmZvcm1lZCJdID09IDAKICAgICAgICBhc3NlcnQgcS5tZXRyaWNzWyJob3Vyc19zYXZlZCJdID09IDAuMAogICAgICAgIGFzc2VydCBxLm1ldHJpY3NbImNvc3Rfc2F2ZWRfdXNkIl0gPT0gMC4wCiAgICAgICAgYXNzZXJ0IHEubWV0cmljc1siZWZmaWNpZW5jeV9nYWluX3BlcmNlbnQiXSA9PSAwLjAKCiAgICBkZWYgdGVzdF91cGRhdGVfY2hhbmdlc19tZXRyaWMoc2VsZik6CiAgICAgICAgIiIidXBkYXRlKCkgY2hhbmdlcyB0aGUgc3BlY2lmaWVkIG1ldHJpYy4iIiIKICAgICAgICBmcm9tIGNvcmUudmFsdWVfcXVhbnRpZmllciBpbXBvcnQgVmFsdWVRdWFudGlmaWVyCgogICAgICAgIHEgPSBWYWx1ZVF1YW50aWZpZXIoKQogICAgICAgIHEudXBkYXRlKCJhcGlfY2FsbHNfc2F2ZWQiLCA1MC4wKQogICAgICAgIGFzc2VydCBxLm1ldHJpY3NbImFwaV9jYWxsc19zYXZlZCJdID09IDUwLjAKCiAgICBkZWYgdGVzdF91cGRhdGVfaWdub3Jlc191bmtub3duX21ldHJpYyhzZWxmKToKICAgICAgICAiIiJ1cGRhdGUoKSBzaWxlbnRseSBpZ25vcmVzIHVua25vd24gbWV0cmljIGtleXMuIiIiCiAgICAgICAgZnJvbSBjb3JlLnZhbHVlX3F1YW50aWZpZXIgaW1wb3J0IFZhbHVlUXVhbnRpZmllcgoKICAgICAgICBxID0gVmFsdWVRdWFudGlmaWVyKCkKICAgICAgICBxLnVwZGF0ZSgidW5rbm93bl9tZXRyaWMiLCA5OTkuMCkKICAgICAgICBhc3NlcnQgInVua25vd25fbWV0cmljIiBub3QgaW4gcS5tZXRyaWNzCgogICAgZGVmIHRlc3RfY2FsY3VsYXRlX3ZhbHVlX3JldHVybnNfYWxsX21ldHJpY3Moc2VsZik6CiAgICAgICAgIiIiY2FsY3VsYXRlX3ZhbHVlIHJldHVybnMgNCBWYWx1ZU1ldHJpYyBlbnRyaWVzLiIiIgogICAgICAgIGZyb20gY29yZS52YWx1ZV9xdWFudGlmaWVyIGltcG9ydCBWYWx1ZVF1YW50aWZpZXIKCiAgICAgICAgcSA9IFZhbHVlUXVhbnRpZmllcigpCiAgICAgICAgdmFsdWVzID0gcS5jYWxjdWxhdGVfdmFsdWUoKQogICAgICAgIGFzc2VydCBsZW4odmFsdWVzKSA9PSA0CiAgICAgICAgYXNzZXJ0ICJhcGlfY2FsbHNfc2F2ZWQiIGluIHZhbHVlcwogICAgICAgIGFzc2VydCAiaG91cnNfc2F2ZWQiIGluIHZhbHVlcwogICAgICAgIGFzc2VydCAiY29zdF9zYXZlZCIgaW4gdmFsdWVzCiAgICAgICAgYXNzZXJ0ICJwYXBlcnNfcHJvY2Vzc2VkIiBpbiB2YWx1ZXMKCiAgICBkZWYgdGVzdF9jYWxjdWxhdGVfdmFsdWVfZGVyaXZlZF9mcm9tX2FwaV9jYWxscyhzZWxmKToKICAgICAgICAiIiJob3Vyc19zYXZlZCA9IGFwaV9jYWxsc19zYXZlZCAqIDAuMS4iIiIKICAgICAgICBmcm9tIGNvcmUudmFsdWVfcXVhbnRpZmllciBpbXBvcnQgVmFsdWVRdWFudGlmaWVyCgogICAgICAgIHEgPSBWYWx1ZVF1YW50aWZpZXIoKQogICAgICAgIHEudXBkYXRlKCJhcGlfY2FsbHNfc2F2ZWQiLCAxMDApCiAgICAgICAgdmFsdWVzID0gcS5jYWxjdWxhdGVfdmFsdWUoKQogICAgICAgIGFzc2VydCB2YWx1ZXNbImhvdXJzX3NhdmVkIl0udmFsdWUgPT0gMTAuMAoKICAgIGRlZiB0ZXN0X2NhbGN1bGF0ZV92YWx1ZV9jb3N0X2luY2x1ZGVzX3RpbWVfdmFsdWUoc2VsZik6CiAgICAgICAgIiIiY29zdF9zYXZlZCA9IGFwaV9jYWxscyAqIDAuMDEgKyBob3Vyc19zYXZlZCAqIDUwLiIiIgogICAgICAgIGZyb20gY29yZS52YWx1ZV9xdWFudGlmaWVyIGltcG9ydCBWYWx1ZVF1YW50aWZpZXIKCiAgICAgICAgcSA9IFZhbHVlUXVhbnRpZmllcigpCiAgICAgICAgcS51cGRhdGUoImFwaV9jYWxsc19zYXZlZCIsIDEwMCkKICAgICAgICB2YWx1ZXMgPSBxLmNhbGN1bGF0ZV92YWx1ZSgpCiAgICAgICAgIyBhcGlfY29zdCA9IDEwMCAqIDAuMDEgPSAxLjAKICAgICAgICAjIHJlc2VhcmNoX3RpbWUgPSAxMC4wICogNTAgPSA1MDAuMAogICAgICAgICMgdG90YWwgPSA1MDEuMAogICAgICAgIGFzc2VydCB2YWx1ZXNbImNvc3Rfc2F2ZWQiXS52YWx1ZSA9PSBweXRlc3QuYXBwcm94KDUwMS4wKQoKICAgIGRlZiB0ZXN0X2dldF92YWx1ZV9yZXBvcnRfY29udGFpbnNfdndfcmVmZXJlbmNlKHNlbGYpOgogICAgICAgICIiIlJlcG9ydCByZWZlcmVuY2VzIFZvbGtzd2FnZW4ncyA3MDAtOTAwIGV1cm9zLiIiIgogICAgICAgIGZyb20gY29yZS52YWx1ZV9xdWFudGlmaWVyIGltcG9ydCBWYWx1ZVF1YW50aWZpZXIKCiAgICAgICAgcSA9IFZhbHVlUXVhbnRpZmllcigpCiAgICAgICAgcS51cGRhdGUoImFwaV9jYWxsc19zYXZlZCIsIDEwMCkKICAgICAgICByZXBvcnQgPSBxLmdldF92YWx1ZV9yZXBvcnQoKQogICAgICAgIGFzc2VydCAiVm9sa3N3YWdlbiIgaW4gcmVwb3J0CgogICAgZGVmIHRlc3RfZ2V0X3ZhbHVlX3JlcG9ydF9jb250YWluc192YWx1ZV9zZWN0aW9ucyhzZWxmKToKICAgICAgICAiIiJSZXBvcnQgY29udGFpbnMgZXhwZWN0ZWQgc2VjdGlvbnMuIiIiCiAgICAgICAgZnJvbSBjb3JlLnZhbHVlX3F1YW50aWZpZXIgaW1wb3J0IFZhbHVlUXVhbnRpZmllcgoKICAgICAgICBxID0gVmFsdWVRdWFudGlmaWVyKCkKICAgICAgICBxLnVwZGF0ZSgiYXBpX2NhbGxzX3NhdmVkIiwgMTAwKQogICAgICAgIHJlcG9ydCA9IHEuZ2V0X3ZhbHVlX3JlcG9ydCgpCiAgICAgICAgYXNzZXJ0ICLku7flgLzph4/ljJbmiqXlkYoiIGluIHJlcG9ydAogICAgICAgIGFzc2VydCAiQVBJ6LCD55So6IqC55yBIiBpbiByZXBvcnQKICAgICAgICBhc3NlcnQgIuaAu+S7t+WAvCIgaW4gcmVwb3J0CgogICAgZGVmIHRlc3RfZ2V0X3ZhbHVlX3JlcG9ydF9lbXB0eV93aGVuX25vX21ldHJpY3Moc2VsZik6CiAgICAgICAgIiIiUmVwb3J0IHNob3dzIG5vIHZhbHVlIHdoZW4gYWxsIG1ldHJpY3MgYXJlIHplcm8uIiIiCiAgICAgICAgZnJvbSBjb3JlLnZhbHVlX3F1YW50aWZpZXIgaW1wb3J0IFZhbHVlUXVhbnRpZmllcgoKICAgICAgICBxID0gVmFsdWVRdWFudGlmaWVyKCkKICAgICAgICByZXBvcnQgPSBxLmdldF92YWx1ZV9yZXBvcnQoKQogICAgICAgIGFzc2VydCAi5oC75Lu35YC8IiBub3QgaW4gcmVwb3J0CgogICAgZGVmIHRlc3RfZ2V0X3Z3X2NvbXBhcmlzb25fY29udGFpbnNfdndfdGV4dChzZWxmKToKICAgICAgICAiIiJWVyBjb21wYXJpc29uIHN0cmluZyByZWZlcmVuY2VzIFZvbGtzd2FnZW4uIiIiCiAgICAgICAgZnJvbSBjb3JlLnZhbHVlX3F1YW50aWZpZXIgaW1wb3J0IFZhbHVlUXVhbnRpZmllcgoKICAgICAgICBxID0gVmFsdWVRdWFudGlmaWVyKCkKICAgICAgICBxLnVwZGF0ZSgiYXBpX2NhbGxzX3NhdmVkIiwgMTAwKQogICAgICAgIGNvbXBhcmlzb24gPSBxLmdldF92d19jb21wYXJpc29uKCkKICAgICAgICBhc3NlcnQgIlZvbGtzd2FnZW4iIGluIGNvbXBhcmlzb24KCiAgICBkZWYgdGVzdF9nZXRfdndfY29tcGFyaXNvbl9hbm51YWxpemVzKHNlbGYpOgogICAgICAgICIiIlZXIGNvbXBhcmlzb24gYW5udWFsaXplcyBjdXJyZW50IHNhdmluZ3MuIiIiCiAgICAgICAgZnJvbSBjb3JlLnZhbHVlX3F1YW50aWZpZXIgaW1wb3J0IFZhbHVlUXVhbnRpZmllcgoKICAgICAgICBxID0gVmFsdWVRdWFudGlmaWVyKCkKICAgICAgICBxLnVwZGF0ZSgiYXBpX2NhbGxzX3NhdmVkIiwgMTAwKQogICAgICAgIGNvbXBhcmlzb24gPSBxLmdldF92d19jb21wYXJpc29uKCkKICAgICAgICAjIDEwMCBhcGkgY2FsbHMgKiAwLjEgaG91cnMgKiAkNTAvaG91ciA9ICQ1MDAgKyAkMSAoY29zdCkgPSAkNTAxICogMTIg4omIICQ2MDEyCiAgICAgICAgIyBhY3R1YWw6ICgxMDAgKiAwLjEgKiA1MCArIDEwMCAqIDAuMDEpICogMTIgPSA1MDEgKiAxMiA9IDYwMTIKICAgICAgICBhc3NlcnQgIuW5tOWMliIgaW4gY29tcGFyaXNvbgoKICAgIGRlZiB0ZXN0X2dldF92d19jb21wYXJpc29uX21lbnRpb25zX2FpX3Jlc2VhcmNoX29zKHNlbGYpOgogICAgICAgICIiIkNvbXBhcmlzb24gbWVudGlvbnMgQUkgUmVzZWFyY2ggT1MuIiIiCiAgICAgICAgZnJvbSBjb3JlLnZhbHVlX3F1YW50aWZpZXIgaW1wb3J0IFZhbHVlUXVhbnRpZmllcgoKICAgICAgICBxID0gVmFsdWVRdWFudGlmaWVyKCkKICAgICAgICBjb21wYXJpc29uID0gcS5nZXRfdndfY29tcGFyaXNvbigpCiAgICAgICAgYXNzZXJ0ICJBSSBSZXNlYXJjaCBPUyIgaW4gY29tcGFyaXNvbgoKCmNsYXNzIFRlc3RHbG9iYWxWYWx1ZVF1YW50aWZpZXI6CiAgICAiIiJUZXN0cyBmb3IgZ2xvYmFsIHNpbmdsZXRvbi4iIiIKCiAgICBkZWYgdGVzdF9nZXRfdmFsdWVfcXVhbnRpZmllcl9yZXR1cm5zX2luc3RhbmNlKHNlbGYpOgogICAgICAgICIiImdldF92YWx1ZV9xdWFudGlmaWVyIHJldHVybnMgYSBWYWx1ZVF1YW50aWZpZXIgaW5zdGFuY2UuIiIiCiAgICAgICAgZnJvbSBjb3JlLnZhbHVlX3F1YW50aWZpZXIgaW1wb3J0IGdldF92YWx1ZV9xdWFudGlmaWVyCgogICAgICAgIHEgPSBnZXRfdmFsdWVfcXVhbnRpZmllcigpCiAgICAgICAgYXNzZXJ0IHEgaXMgbm90IE5vbmUKCiAgICBkZWYgdGVzdF9nZXRfdmFsdWVfcXVhbnRpZmllcl9zaW5nbGV0b24oc2VsZik6CiAgICAgICAgIiIiZ2V0X3ZhbHVlX3F1YW50aWZpZXIgcmV0dXJucyB0aGUgc2FtZSBpbnN0YW5jZSBvbiByZXBlYXRlZCBjYWxscy4iIiIKICAgICAgICBmcm9tIGNvcmUudmFsdWVfcXVhbnRpZmllciBpbXBvcnQgZ2V0X3ZhbHVlX3F1YW50aWZpZXIKCiAgICAgICAgcTEgPSBnZXRfdmFsdWVfcXVhbnRpZmllcigpCiAgICAgICAgcTIgPSBnZXRfdmFsdWVfcXVhbnRpZmllcigpCiAgICAgICAgYXNzZXJ0IHExIGlzIHEyCg==
+"""Tests for core/value_quantifier.py."""
+
+import pytest
+
+
+class TestValueMetric:
+    """Tests for ValueMetric dataclass."""
+
+    def test_dataclass_fields(self):
+        """ValueMetric stores name, value, unit, and description."""
+        from core.value_quantifier import ValueMetric
+
+        metric = ValueMetric(
+            name="API Calls Saved",
+            value=100.0,
+            unit="次",
+            description="Through caching",
+        )
+        assert metric.name == "API Calls Saved"
+        assert metric.value == 100.0
+        assert metric.unit == "次"
+        assert metric.description == "Through caching"
+
+
+class TestValueQuantifier:
+    """Tests for ValueQuantifier class."""
+
+    def test_init_metrics_are_zeroed(self):
+        """All metrics start at zero."""
+        from core.value_quantifier import ValueQuantifier
+
+        q = ValueQuantifier()
+        assert q.metrics["api_calls_saved"] == 0
+        assert q.metrics["papers_processed"] == 0
+        assert q.metrics["searches_performed"] == 0
+        assert q.metrics["hours_saved"] == 0.0
+        assert q.metrics["cost_saved_usd"] == 0.0
+        assert q.metrics["efficiency_gain_percent"] == 0.0
+
+    def test_update_changes_metric(self):
+        """update() changes the specified metric."""
+        from core.value_quantifier import ValueQuantifier
+
+        q = ValueQuantifier()
+        q.update("api_calls_saved", 50.0)
+        assert q.metrics["api_calls_saved"] == 50.0
+
+    def test_update_ignores_unknown_metric(self):
+        """update() silently ignores unknown metric keys."""
+        from core.value_quantifier import ValueQuantifier
+
+        q = ValueQuantifier()
+        q.update("unknown_metric", 999.0)
+        assert "unknown_metric" not in q.metrics
+
+    def test_calculate_value_returns_all_metrics(self):
+        """calculate_value returns 4 ValueMetric entries."""
+        from core.value_quantifier import ValueQuantifier
+
+        q = ValueQuantifier()
+        values = q.calculate_value()
+        assert len(values) == 4
+        assert "api_calls_saved" in values
+        assert "hours_saved" in values
+        assert "cost_saved" in values
+        assert "papers_processed" in values
+
+    def test_calculate_value_derived_from_api_calls(self):
+        """hours_saved = api_calls_saved * 0.1."""
+        from core.value_quantifier import ValueQuantifier
+
+        q = ValueQuantifier()
+        q.update("api_calls_saved", 100)
+        values = q.calculate_value()
+        assert values["hours_saved"].value == 10.0
+
+    def test_calculate_value_cost_includes_time_value(self):
+        """cost_saved = api_calls * 0.01 + hours_saved * 50."""
+        from core.value_quantifier import ValueQuantifier
+
+        q = ValueQuantifier()
+        q.update("api_calls_saved", 100)
+        values = q.calculate_value()
+        # api_cost = 100 * 0.01 = 1.0
+        # research_time = 10.0 * 50 = 500.0
+        # total = 501.0
+        assert values["cost_saved"].value == pytest.approx(501.0)
+
+    def test_get_value_report_contains_vw_reference(self):
+        """Report references Volkswagen's 700-900 euros."""
+        from core.value_quantifier import ValueQuantifier
+
+        q = ValueQuantifier()
+        q.update("api_calls_saved", 100)
+        report = q.get_value_report()
+        assert "Volkswagen" in report
+
+    def test_get_value_report_contains_value_sections(self):
+        """Report contains expected sections."""
+        from core.value_quantifier import ValueQuantifier
+
+        q = ValueQuantifier()
+        q.update("api_calls_saved", 100)
+        report = q.get_value_report()
+        assert "价值量化报告" in report
+        assert "API调用节省" in report
+        assert "总价值" in report
+
+    def test_get_value_report_empty_when_no_metrics(self):
+        """Report shows no value when all metrics are zero."""
+        from core.value_quantifier import ValueQuantifier
+
+        q = ValueQuantifier()
+        report = q.get_value_report()
+        assert "总价值" not in report
+
+    def test_get_vw_comparison_contains_vw_text(self):
+        """VW comparison string references Volkswagen."""
+        from core.value_quantifier import ValueQuantifier
+
+        q = ValueQuantifier()
+        q.update("api_calls_saved", 100)
+        comparison = q.get_vw_comparison()
+        assert "Volkswagen" in comparison
+
+    def test_get_vw_comparison_annualizes(self):
+        """VW comparison annualizes current savings."""
+        from core.value_quantifier import ValueQuantifier
+
+        q = ValueQuantifier()
+        q.update("api_calls_saved", 100)
+        comparison = q.get_vw_comparison()
+        # 100 api calls * 0.1 hours * $50/hour = $500 + $1 (cost) = $501 * 12 ≈ $6012
+        # actual: (100 * 0.1 * 50 + 100 * 0.01) * 12 = 501 * 12 = 6012
+        assert "年化" in comparison
+
+    def test_get_vw_comparison_mentions_ai_research_os(self):
+        """Comparison mentions AI Research OS."""
+        from core.value_quantifier import ValueQuantifier
+
+        q = ValueQuantifier()
+        comparison = q.get_vw_comparison()
+        assert "AI Research OS" in comparison
+
+
+class TestGlobalValueQuantifier:
+    """Tests for global singleton."""
+
+    def test_get_value_quantifier_returns_instance(self):
+        """get_value_quantifier returns a ValueQuantifier instance."""
+        from core.value_quantifier import get_value_quantifier
+
+        q = get_value_quantifier()
+        assert q is not None
+
+    def test_get_value_quantifier_singleton(self):
+        """get_value_quantifier returns the same instance on repeated calls."""
+        from core.value_quantifier import get_value_quantifier
+
+        q1 = get_value_quantifier()
+        q2 = get_value_quantifier()
+        assert q1 is q2

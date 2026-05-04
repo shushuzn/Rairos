@@ -1,1 +1,648 @@
-IiIiClJlc2VhcmNoIFN0b3J5IFdlYXZlcjogR2VuZXJhdGUgbmFycmF0aXZlIHVuZGVyc3RhbmRpbmcgZnJvbSByZXNlYXJjaCBwYXBlcnMuCgrnoJTnqbbmlYXkuovnvJbnu4flmajvvJrku47orrrmlofkuK3nlJ/miJDlj5nkuovmgKfnkIbop6PjgIIKCuaguOW/g+eul+azle+8mgoxLiDlj5nkuovmj5Dlj5bvvJror4bliKvmoLjlv4PotKHnjK7jgIHovazmipjngrnjgIHnn5vnm74KMi4g5YWz57O75Zu+5p6E5bu677ya6K665paH6Ze055qE6YC76L6R5YWz57O7CjMuIOaVheS6i+eUn+aIkO+8muaXtumXtOe6v+e8luaOkiArIExMTSDlj5nkuosKNC4g5a+55q+U5qih5byP77ya5Lik5p2h5pWF5LqL57q/55qE5YiG5q2n5LiO5YWx6K+GCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IHJlCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcywgZmllbGQKZnJvbSBlbnVtIGltcG9ydCBFbnVtCmZyb20gdHlwaW5nIGltcG9ydCBPcHRpb25hbCwgTGlzdCwgRGljdCwgVHVwbGUKZnJvbSBjb2xsZWN0aW9ucyBpbXBvcnQgZGVmYXVsdGRpY3QKCmZyb20gbGxtLmNvbnN0YW50cyBpbXBvcnQgTExNX0JBU0VfVVJMLCBMTE1fTU9ERUwKCiMgT3B0aW9uYWwgTExNIGltcG9ydAp0cnk6CiAgICBmcm9tIGxsbS5jaGF0IGltcG9ydCBjYWxsX2xsbV9jaGF0X2NvbXBsZXRpb25zCgogICAgTExNX0FWQUlMQUJMRSA9IFRydWUKZXhjZXB0IEltcG9ydEVycm9yOgogICAgTExNX0FWQUlMQUJMRSA9IEZhbHNlCgoKIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBQcm9tcHQgY29uc3RhbnRzIGZvciBMTE0tYmFzZWQgc3RvcnkgZ2VuZXJhdGlvbgojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpfQ0hBUFRFUl9TVU1NQVJZX1NZU1RFTV9QUk9NUFQgPSAiIiLkuLrnp5HnoJTmlYXkuovnmoTkuIDkuKrnq6DoioLnlJ/miJDnroDnn63nmoTmgLvnu5PjgIIK5qC85byP77ya5Li76aKYICsgMi0z5Y+l5YWz6ZSu5YaF5a655qaC5ousIiIiCgpfQ0hBUFRFUl9TVU1NQVJZX1VTRVJfUFJPTVBUX1RFTVBMQVRFID0gIiIi56ug6IqCOiB7Y2hhcHRlcl90aXRsZX0K6K665paHOgp7cGFwZXJfdGV4dHN9Cgror7fnlJ/miJDnq6DoioLmgLvnu5PvvJoiIiIKCgpjbGFzcyBOYXJyYXRpdmVSb2xlKEVudW0pOgogICAgIiIiUm9sZSBhIHBhcGVyIHBsYXlzIGluIHRoZSBuYXJyYXRpdmUuIiIiCgogICAgUFJPVEFHT05JU1QgPSAicHJvdGFnb25pc3QiICAjIOS4u+inkiAtIOS4u+a1geaWueazlQogICAgQU5UQUdPTklTVCA9ICJhbnRhZ29uaXN0IiAgIyDlj43mtL4gLSDlvoXop6PlhrPnmoTpl67popgKICAgIFRVUk5JTkdfUE9JTlQgPSAidHVybmluZ19wb2ludCIgICMg6L2s5oqY54K5IC0g56qB56C05oCn5bel5L2cCiAgICBESVZFUkdFTkNFID0gImRpdmVyZ2VuY2UiICAjIOWIhuWPiSAtIOS6p+eUn+aWsOaWueWQkQogICAgU1lOVEhFU0lTID0gInN5bnRoZXNpcyIgICMg57u85ZCIIC0g6J6N5ZCI5aSa56eN5pa55rOVCgoKY2xhc3MgUmVsYXRpb25zaGlwVHlwZShFbnVtKToKICAgICIiIlJlbGF0aW9uc2hpcCBiZXR3ZWVuIHBhcGVycy4iIiIKCiAgICBJTkhFUklUUyA9ICJpbmhlcml0cyIgICMg57un5om/CiAgICBFWFRFTkRTID0gImV4dGVuZHMiICAjIOaJqeWxlQogICAgQ09OVFJBU1RTID0gImNvbnRyYXN0cyIgICMg5a+55q+UCiAgICBDT05UUkFESUNUUyA9ICJjb250cmFkaWN0cyIgICMg55+b55u+CiAgICBTWU5USEVTSVpFUyA9ICJzeW50aGVzaXplcyIgICMg57u85ZCICiAgICBDSVRFUyA9ICJjaXRlcyIgICMg5byV55SoCgoKQGRhdGFjbGFzcwpjbGFzcyBQYXBlck5hcnJhdGl2ZToKICAgICIiIk5hcnJhdGl2ZSBlbGVtZW50IGV4dHJhY3RlZCBmcm9tIGEgcGFwZXIuIiIiCgogICAgcGFwZXJfaWQ6IHN0cgogICAgdGl0bGU6IHN0cgogICAgeWVhcjogaW50CiAgICByb2xlOiBOYXJyYXRpdmVSb2xlCiAgICBjb3JlX2NvbnRyaWJ1dGlvbjogc3RyICAjIOaguOW/g+i0oeeMrgogICAga2V5X2luc2lnaHQ6IHN0ciAgIyDlhbPplK7mtJ7lr58KICAgIHR1cm5pbmdfcG9pbnRfdHlwZTogc3RyID0gIiIgICMg6L2s5oqY57G75Z6LCiAgICBjb25mbGljdHNfd2l0aDogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpICAjIOS4juWTquS6m+iuuuaWh+WGsueqgQoKCkBkYXRhY2xhc3MKY2xhc3MgQ2hhcHRlcjoKICAgICIiIkEgY2hhcHRlciBpbiB0aGUgcmVzZWFyY2ggc3RvcnkuIiIiCgogICAgdGl0bGU6IHN0cgogICAgdGltZV9yYW5nZTogVHVwbGVbaW50LCBpbnRdCiAgICBwYXBlcnM6IExpc3RbUGFwZXJOYXJyYXRpdmVdCiAgICBzdW1tYXJ5OiBzdHIgPSAiIgogICAgdGhlbWU6IHN0ciA9ICIiICAjIOeroOiKguS4u+mimAoKCkBkYXRhY2xhc3MKY2xhc3MgUmVsYXRpb25zaGlwOgogICAgIiIiUmVsYXRpb25zaGlwIGJldHdlZW4gdHdvIHBhcGVycy4iIiIKCiAgICBmcm9tX3BhcGVyOiBzdHIKICAgIHRvX3BhcGVyOiBzdHIKICAgIHJlbGF0aW9uc2hpcDogUmVsYXRpb25zaGlwVHlwZQogICAgZGVzY3JpcHRpb246IHN0ciA9ICIiCgoKQGRhdGFjbGFzcwpjbGFzcyBTdG9yeVJlc3VsdDoKICAgICIiIkNvbXBsZXRlIHN0b3J5IHdlYXZpbmcgcmVzdWx0LiIiIgoKICAgIHRvcGljOiBzdHIKICAgIGNoYXB0ZXJzOiBMaXN0W0NoYXB0ZXJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICByZWxhdGlvbnNoaXBzOiBMaXN0W1JlbGF0aW9uc2hpcF0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKICAgIHByb3RhZ29uaXN0X2FyYzogc3RyID0gIiIgICMg5Li76KeS5Y+R5bGV5byn57q/CiAgICBjb250cmFkaWN0aW9uczogTGlzdFtUdXBsZVtzdHIsIHN0cl1dID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpICAjIOefm+ebvuWvuQogICAgdGhlbWVzOiBMaXN0W3N0cl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkgICMg5qC45b+D5Li76aKYCiAgICBzdW1tYXJ5OiBzdHIgPSAiIiAgIyDlj5nkuovmgLvnu5MKCgpjbGFzcyBTdG9yeVdlYXZlcjoKICAgICIiIkdlbmVyYXRlIG5hcnJhdGl2ZSB1bmRlcnN0YW5kaW5nIGZyb20gcmVzZWFyY2ggcGFwZXJzLiIiIgoKICAgICMgS2V5IG5hcnJhdGl2ZSBwYXR0ZXJucwogICAgVFVSTklOR19QT0lOVF9QQVRURVJOUyA9IFsKICAgICAgICByImJyZWFrdGhyb3VnaHxyZXZvbHV0aW9ufHBhcmFkaWdtIHNoaWZ0fGdhbWUgY2hhbmdlcnxzdGF0ZS1vZi10aGUtYXJ0IiwKICAgICAgICByIm91dHBlcmZvcm1zP3xzdXJwYXNzZXM/fGV4Y2VlZHM/IHByZXZpb3VzIiwKICAgICAgICByImZpcnN0IHRvfGZvciB0aGUgZmlyc3QgdGltZXxpbnRyb2R1Y2VzPyBhIG5ldyIsCiAgICAgICAgciJkZXNwaXRlfGhvd2V2ZXJ8YnV0fG5ldmVydGhlbGVzc3xjb250cmFkaWN0IiwKICAgIF0KCiAgICBESVZFUkdFTkNFX1BBVFRFUk5TID0gWwogICAgICAgIHIiYWx0ZXJuYXRpdmV8aW5zdGVhZHxyYXRoZXJ8dW5saWtlfGNvbnRyYXN0IiwKICAgICAgICByImRpZmZlcmVudCBhcHByb2FjaHxkaWZmZXJlbnQgZnJvbXxkaXZlcmdlcyIsCiAgICAgICAgciJvbiB0aGUgb3RoZXIgaGFuZHxtZWFud2hpbGV8Y29udmVyc2VseSIsCiAgICBdCgogICAgZGVmIF9faW5pdF9fKHNlbGYsIGRiPU5vbmUpOgogICAgICAgIHNlbGYuZGIgPSBkYgoKICAgIGRlZiB3ZWF2ZSgKICAgICAgICBzZWxmLAogICAgICAgIHRvcGljOiBzdHIsCiAgICAgICAgdXNlX2xsbTogYm9vbCA9IFRydWUsCiAgICAgICAgYXBpX2tleTogT3B0aW9uYWxbc3RyXSA9IE5vbmUsCiAgICAgICAgYmFzZV91cmw6IE9wdGlvbmFsW3N0cl0gPSBOb25lLAogICAgICAgIG1vZGVsOiBPcHRpb25hbFtzdHJdID0gTm9uZSwKICAgICAgICBtYXhfcGFwZXJzOiBpbnQgPSAyMCwKICAgICkgLT4gU3RvcnlSZXN1bHQ6CiAgICAgICAgIiIiCiAgICAgICAgV2VhdmUgYSByZXNlYXJjaCBzdG9yeSBmcm9tIHBhcGVycy4KCiAgICAgICAgQXJnczoKICAgICAgICAgICAgdG9waWM6IFJlc2VhcmNoIHRvcGljL2tleXdvcmQKICAgICAgICAgICAgdXNlX2xsbTogV2hldGhlciB0byB1c2UgTExNIGZvciBuYXJyYXRpdmUgZ2VuZXJhdGlvbgogICAgICAgICAgICBhcGlfa2V5OiBMTE0gQVBJIGtleQogICAgICAgICAgICBiYXNlX3VybDogTExNIEFQSSBiYXNlIFVSTAogICAgICAgICAgICBtb2RlbDogTW9kZWwgbmFtZQogICAgICAgICAgICBtYXhfcGFwZXJzOiBNYXhpbXVtIHBhcGVycyB0byBhbmFseXplCgogICAgICAgIFJldHVybnM6CiAgICAgICAgICAgIFN0b3J5UmVzdWx0IHdpdGggbmFycmF0aXZlIHN0cnVjdHVyZQogICAgICAgICIiIgogICAgICAgICMgMS4gQ29sbGVjdCBwYXBlcnMKICAgICAgICBwYXBlcnMgPSBzZWxmLl9jb2xsZWN0X3BhcGVycyh0b3BpYywgbWF4X3BhcGVycykKICAgICAgICBpZiBub3QgcGFwZXJzOgogICAgICAgICAgICByZXR1cm4gc2VsZi5fZW1wdHlfcmVzdWx0KHRvcGljKQoKICAgICAgICAjIDIuIEV4dHJhY3QgbmFycmF0aXZlIGVsZW1lbnRzCiAgICAgICAgbmFycmF0aXZlcyA9IHNlbGYuX2V4dHJhY3RfbmFycmF0aXZlcyhwYXBlcnMpCgogICAgICAgICMgMy4gQnVpbGQgcmVsYXRpb25zaGlwIGdyYXBoCiAgICAgICAgcmVsYXRpb25zaGlwcyA9IHNlbGYuX2J1aWxkX3JlbGF0aW9uc2hpcHMobmFycmF0aXZlcykKCiAgICAgICAgIyA0LiBJZGVudGlmeSBjaGFwdGVycyBieSB0aW1lIHBlcmlvZAogICAgICAgIGNoYXB0ZXJzID0gc2VsZi5fb3JnYW5pemVfY2hhcHRlcnMobmFycmF0aXZlcykKCiAgICAgICAgIyA1LiBGaW5kIGNvbnRyYWRpY3Rpb25zCiAgICAgICAgY29udHJhZGljdGlvbnMgPSBzZWxmLl9maW5kX2NvbnRyYWRpY3Rpb25zKG5hcnJhdGl2ZXMpCgogICAgICAgICMgNi4gSWRlbnRpZnkgY29yZSB0aGVtZXMKICAgICAgICB0aGVtZXMgPSBzZWxmLl9pZGVudGlmeV90aGVtZXMobmFycmF0aXZlcykKCiAgICAgICAgcmVzdWx0ID0gU3RvcnlSZXN1bHQoCiAgICAgICAgICAgIHRvcGljPXRvcGljLAogICAgICAgICAgICBjaGFwdGVycz1jaGFwdGVycywKICAgICAgICAgICAgcmVsYXRpb25zaGlwcz1yZWxhdGlvbnNoaXBzLAogICAgICAgICAgICBjb250cmFkaWN0aW9ucz1jb250cmFkaWN0aW9ucywKICAgICAgICAgICAgdGhlbWVzPXRoZW1lcywKICAgICAgICApCgogICAgICAgICMgNy4gR2VuZXJhdGUgbmFycmF0aXZlIHN1bW1hcmllcwogICAgICAgIGlmIHVzZV9sbG0gYW5kIExMTV9BVkFJTEFCTEU6CiAgICAgICAgICAgIHJlc3VsdCA9IHNlbGYuX2VuaGFuY2Vfd2l0aF9sbG0ocmVzdWx0LCBwYXBlcnMsIGFwaV9rZXksIGJhc2VfdXJsLCBtb2RlbCkKCiAgICAgICAgIyA4LiBHZW5lcmF0ZSBvdmVyYWxsIHN1bW1hcnkKICAgICAgICByZXN1bHQuc3VtbWFyeSA9IHNlbGYuX2dlbmVyYXRlX3N1bW1hcnkocmVzdWx0KQoKICAgICAgICByZXR1cm4gcmVzdWx0CgogICAgZGVmIGNvbXBhcmUoCiAgICAgICAgc2VsZiwKICAgICAgICB0b3BpY19hOiBzdHIsCiAgICAgICAgdG9waWNfYjogc3RyLAogICAgICAgIHVzZV9sbG06IGJvb2wgPSBUcnVlLAogICAgKSAtPiBzdHI6CiAgICAgICAgIiIiCiAgICAgICAgQ29tcGFyZSB0d28gcmVzZWFyY2ggc3RvcnlsaW5lcy4KCiAgICAgICAgQXJnczoKICAgICAgICAgICAgdG9waWNfYTogRmlyc3QgcmVzZWFyY2ggdG9waWMKICAgICAgICAgICAgdG9waWNfYjogU2Vjb25kIHJlc2VhcmNoIHRvcGljCiAgICAgICAgICAgIHVzZV9sbG06IFdoZXRoZXIgdG8gdXNlIExMTQoKICAgICAgICBSZXR1cm5zOgogICAgICAgICAgICBDb21wYXJpc29uIG5hcnJhdGl2ZQogICAgICAgICIiIgogICAgICAgIHN0b3J5X2EgPSBzZWxmLndlYXZlKHRvcGljX2EsIHVzZV9sbG09dXNlX2xsbSkKICAgICAgICBzdG9yeV9iID0gc2VsZi53ZWF2ZSh0b3BpY19iLCB1c2VfbGxtPXVzZV9sbG0pCgogICAgICAgIHJldHVybiBzZWxmLl9nZW5lcmF0ZV9jb21wYXJpc29uKHN0b3J5X2EsIHN0b3J5X2IpCgogICAgZGVmIF9jb2xsZWN0X3BhcGVycyhzZWxmLCB0b3BpYzogc3RyLCBtYXhfcGFwZXJzOiBpbnQpIC0+IExpc3RbRGljdF06CiAgICAgICAgIiIiQ29sbGVjdCBwYXBlcnMgZnJvbSBEQi4iIiIKICAgICAgICBpZiBub3Qgc2VsZi5kYjoKICAgICAgICAgICAgcmV0dXJuIFtdCgogICAgICAgIHBhcGVycyA9IFtdCiAgICAgICAgdHJ5OgogICAgICAgICAgICByb3dzLCBfID0gc2VsZi5kYi5zZWFyY2hfcGFwZXJzKHRvcGljLCBsaW1pdD1tYXhfcGFwZXJzKQogICAgICAgICAgICBmb3Igcm93IGluIHJvd3M6CiAgICAgICAgICAgICAgICBwYXBlciA9IHsKICAgICAgICAgICAgICAgICAgICAiaWQiOiBnZXRhdHRyKHJvdywgImlkIiwgIiIpLAogICAgICAgICAgICAgICAgICAgICJ0aXRsZSI6IGdldGF0dHIocm93LCAidGl0bGUiLCAiIikgb3IgIiIsCiAgICAgICAgICAgICAgICAgICAgImFic3RyYWN0IjogZ2V0YXR0cihyb3csICJhYnN0cmFjdCIsICIiKSBvciAiIiwKICAgICAgICAgICAgICAgICAgICAieWVhciI6IGdldGF0dHIocm93LCAieWVhciIsIDApIG9yIDAsCiAgICAgICAgICAgICAgICAgICAgImNpdGF0aW9ucyI6IGdldGF0dHIocm93LCAiY2l0YXRpb25zIiwgMCkgb3IgMCwKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGlmIGludChwYXBlclsieWVhciJdKSA+IDIwMDA6CiAgICAgICAgICAgICAgICAgICAgcGFwZXJzLmFwcGVuZChwYXBlcikKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAjIFBhcGVyIGVucmljaG1lbnQgaXMgb3B0aW9uYWwg4oCUIHJldHVybiBwYXJ0aWFsIHJlc3VsdHMgd2l0aG91dCBjcmFzaGluZy4KICAgICAgICAgICAgcGFzcwoKICAgICAgICAjIFNvcnQgYnkgY2l0YXRpb25zIGZvciBpbXBvcnRhbmNlCiAgICAgICAgcGFwZXJzLnNvcnQoa2V5PWxhbWJkYSB4OiB4LmdldCgiY2l0YXRpb25zIiwgMCksIHJldmVyc2U9VHJ1ZSkKICAgICAgICByZXR1cm4gcGFwZXJzWzptYXhfcGFwZXJzXQoKICAgIGRlZiBfZXh0cmFjdF9uYXJyYXRpdmVzKHNlbGYsIHBhcGVyczogTGlzdFtEaWN0XSkgLT4gTGlzdFtQYXBlck5hcnJhdGl2ZV06CiAgICAgICAgIiIiRXh0cmFjdCBuYXJyYXRpdmUgZWxlbWVudHMgZnJvbSBwYXBlcnMuIiIiCiAgICAgICAgbmFycmF0aXZlcyA9IFtdCgogICAgICAgIGZvciBwYXBlciBpbiBwYXBlcnM6CiAgICAgICAgICAgIHRleHQgPSBmIntwYXBlci5nZXQoJ3RpdGxlJywgJycpfSB7cGFwZXIuZ2V0KCdhYnN0cmFjdCcsICcnKX0iLmxvd2VyKCkKICAgICAgICAgICAgeWVhciA9IHBhcGVyLmdldCgieWVhciIsIDApCiAgICAgICAgICAgIHRpdGxlID0gcGFwZXIuZ2V0KCJ0aXRsZSIsICIiKVs6NjBdCgogICAgICAgICAgICAjIERldGVybWluZSByb2xlCiAgICAgICAgICAgIHJvbGUgPSBzZWxmLl9kZXRlcm1pbmVfcm9sZSh0ZXh0LCB5ZWFyKQoKICAgICAgICAgICAgIyBFeHRyYWN0IGNvcmUgY29udHJpYnV0aW9uCiAgICAgICAgICAgIGNvbnRyaWJ1dGlvbiA9IHNlbGYuX2V4dHJhY3RfY29udHJpYnV0aW9uKHBhcGVyKQoKICAgICAgICAgICAgIyBFeHRyYWN0IGtleSBpbnNpZ2h0CiAgICAgICAgICAgIGluc2lnaHQgPSBzZWxmLl9leHRyYWN0X2luc2lnaHQodGV4dCkKCiAgICAgICAgICAgICMgQ2hlY2sgZm9yIHR1cm5pbmcgcG9pbnQKICAgICAgICAgICAgdHVybmluZ190eXBlID0gc2VsZi5fZGV0ZWN0X3R1cm5pbmdfcG9pbnQodGV4dCkKCiAgICAgICAgICAgIG5hcnJhdGl2ZXMuYXBwZW5kKAogICAgICAgICAgICAgICAgUGFwZXJOYXJyYXRpdmUoCiAgICAgICAgICAgICAgICAgICAgcGFwZXJfaWQ9cGFwZXIuZ2V0KCJpZCIsICIiKSwKICAgICAgICAgICAgICAgICAgICB0aXRsZT10aXRsZSwKICAgICAgICAgICAgICAgICAgICB5ZWFyPXllYXIsCiAgICAgICAgICAgICAgICAgICAgcm9sZT1yb2xlLAogICAgICAgICAgICAgICAgICAgIGNvcmVfY29udHJpYnV0aW9uPWNvbnRyaWJ1dGlvbiwKICAgICAgICAgICAgICAgICAgICBrZXlfaW5zaWdodD1pbnNpZ2h0LAogICAgICAgICAgICAgICAgICAgIHR1cm5pbmdfcG9pbnRfdHlwZT10dXJuaW5nX3R5cGUsCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICkKCiAgICAgICAgcmV0dXJuIG5hcnJhdGl2ZXMKCiAgICBkZWYgX2RldGVybWluZV9yb2xlKHNlbGYsIHRleHQ6IHN0ciwgeWVhcjogaW50KSAtPiBOYXJyYXRpdmVSb2xlOgogICAgICAgICIiIkRldGVybWluZSBuYXJyYXRpdmUgcm9sZSBvZiBhIHBhcGVyLiIiIgogICAgICAgICMgSGlnaCBpbXBhY3QgZWFybHkgcGFwZXJzIGFyZSBvZnRlbiBwcm90YWdvbmlzdHMKICAgICAgICBpZiB5ZWFyIDw9IDIwMTg6CiAgICAgICAgICAgIGlmIGFueShwIGluIHRleHQgZm9yIHAgaW4gWyJhdHRlbnRpb24gaXMgYWxsIHlvdSBuZWVkIiwgImJlcnQiLCAiZ3B0Il0pOgogICAgICAgICAgICAgICAgcmV0dXJuIE5hcnJhdGl2ZVJvbGUuUFJPVEFHT05JU1QKCiAgICAgICAgIyBDaGVjayBmb3IgdHVybmluZyBwb2ludHMKICAgICAgICBpZiBhbnkocmUuc2VhcmNoKHAsIHRleHQpIGZvciBwIGluIHNlbGYuVFVSTklOR19QT0lOVF9QQVRURVJOUyk6CiAgICAgICAgICAgIHJldHVybiBOYXJyYXRpdmVSb2xlLlRVUk5JTkdfUE9JTlQKCiAgICAgICAgIyBDaGVjayBmb3IgZGl2ZXJnZW5jZXMKICAgICAgICBpZiBhbnkocmUuc2VhcmNoKHAsIHRleHQpIGZvciBwIGluIHNlbGYuRElWRVJHRU5DRV9QQVRURVJOUyk6CiAgICAgICAgICAgIHJldHVybiBOYXJyYXRpdmVSb2xlLkRJVkVSR0VOQ0UKCiAgICAgICAgcmV0dXJuIE5hcnJhdGl2ZVJvbGUuUFJPVEFHT05JU1QKCiAgICBkZWYgX2V4dHJhY3RfY29udHJpYnV0aW9uKHNlbGYsIHBhcGVyOiBEaWN0KSAtPiBzdHI6CiAgICAgICAgIiIiRXh0cmFjdCBjb3JlIGNvbnRyaWJ1dGlvbiBmcm9tIHBhcGVyLiIiIgogICAgICAgIHRpdGxlID0gcGFwZXIuZ2V0KCJ0aXRsZSIsICIiKQogICAgICAgIGFic3RyYWN0ID0gcGFwZXIuZ2V0KCJhYnN0cmFjdCIsICIiKVs6MjAwXQoKICAgICAgICAjIFRyeSB0byBleHRyYWN0IGZyb20gYWJzdHJhY3QKICAgICAgICBjb250cmlidXRpb25fcGF0dGVybnMgPSBbCiAgICAgICAgICAgIHIid2UgKD86cHJvcG9zZXxwcmVzZW50fGludHJvZHVjZXxkZXZlbG9wKSAoLis/KVwuIiwKICAgICAgICAgICAgciJ0aGlzIHBhcGVyICguKz8pXC4iLAogICAgICAgICAgICByIndlIHNob3cgdGhhdCAoLis/KVwuIiwKICAgICAgICAgICAgciIoPzpwcm9wb3NlfHByZXNlbnR8aW50cm9kdWNlKSAoLis/KSg/OlwufCQpIiwKICAgICAgICBdCgogICAgICAgIGZvciBwYXR0ZXJuIGluIGNvbnRyaWJ1dGlvbl9wYXR0ZXJuczoKICAgICAgICAgICAgbWF0Y2ggPSByZS5zZWFyY2gocGF0dGVybiwgYWJzdHJhY3QubG93ZXIoKSkKICAgICAgICAgICAgaWYgbWF0Y2g6CiAgICAgICAgICAgICAgICByZXR1cm4gbWF0Y2guZ3JvdXAoMSkuc3RyaXAoKVs6MTAwXQoKICAgICAgICByZXR1cm4gdGl0bGVbOjYwXSBpZiB0aXRsZSBlbHNlICJVbmtub3duIGNvbnRyaWJ1dGlvbiIKCiAgICBkZWYgX2V4dHJhY3RfaW5zaWdodChzZWxmLCB0ZXh0OiBzdHIpIC0+IHN0cjoKICAgICAgICAiIiJFeHRyYWN0IGtleSBpbnNpZ2h0IGZyb20gdGV4dC4iIiIKICAgICAgICBpbnNpZ2h0X3BhdHRlcm5zID0gWwogICAgICAgICAgICByIig/OmtleXxjZW50cmFsfGNvcmUpIGluc2lnaHQ6P1xzKiguKz8pKD86XC58JCkiLAogICAgICAgICAgICByIndlIGZpbmQgdGhhdCAoLis/KSg/OlwufCQpIiwKICAgICAgICAgICAgciJkaXNjb3Zlcig/Onl8ZWQpIHRoYXQgKC4rPykoPzpcLnwkKSIsCiAgICAgICAgICAgIHIiKCg/OnRoZXx0aGlzKSAuKz8gaXMoPzogYWxsfCB0aGUpIC4rPykoPzpcLnwkKSIsCiAgICAgICAgXQoKICAgICAgICBmb3IgcGF0dGVybiBpbiBpbnNpZ2h0X3BhdHRlcm5zOgogICAgICAgICAgICBtYXRjaCA9IHJlLnNlYXJjaChwYXR0ZXJuLCB0ZXh0Lmxvd2VyKCkpCiAgICAgICAgICAgIGlmIG1hdGNoOgogICAgICAgICAgICAgICAgcmV0dXJuIG1hdGNoLmdyb3VwKDEpLnN0cmlwKClbOjgwXQoKICAgICAgICByZXR1cm4gIlByb3ZpZGVzIG5ldyBhcHByb2FjaCB0byB0aGUgcHJvYmxlbSIKCiAgICBkZWYgX2RldGVjdF90dXJuaW5nX3BvaW50KHNlbGYsIHRleHQ6IHN0cikgLT4gc3RyOgogICAgICAgICIiIkRldGVjdCB0eXBlIG9mIHR1cm5pbmcgcG9pbnQuIiIiCiAgICAgICAgaWYgImJyZWFrdGhyb3VnaCIgaW4gdGV4dCBvciAicmV2b2x1dGlvbiIgaW4gdGV4dDoKICAgICAgICAgICAgcmV0dXJuICLpoqDopobmgKfnqoHnoLQiCiAgICAgICAgaWYgInBhcmFkaWdtIHNoaWZ0IiBpbiB0ZXh0OgogICAgICAgICAgICByZXR1cm4gIuiMg+W8j+i9rOWPmCIKICAgICAgICBpZiAic3RhdGUtb2YtdGhlLWFydCIgaW4gdGV4dCBvciAic290YSIgaW4gdGV4dDoKICAgICAgICAgICAgcmV0dXJuICLmgKfog73nqoHnoLQiCiAgICAgICAgaWYgImZpcnN0IiBpbiB0ZXh0IGFuZCAidGltZSIgaW4gdGV4dDoKICAgICAgICAgICAgcmV0dXJuICLpppbmrKHlrp7njrAiCiAgICAgICAgcmV0dXJuICIiCgogICAgZGVmIF9idWlsZF9yZWxhdGlvbnNoaXBzKAogICAgICAgIHNlbGYsCiAgICAgICAgbmFycmF0aXZlczogTGlzdFtQYXBlck5hcnJhdGl2ZV0sCiAgICApIC0+IExpc3RbUmVsYXRpb25zaGlwXToKICAgICAgICAiIiJCdWlsZCByZWxhdGlvbnNoaXAgZ3JhcGggYmV0d2VlbiBwYXBlcnMuIiIiCiAgICAgICAgcmVsYXRpb25zaGlwcyA9IFtdCgogICAgICAgIGZvciBpLCBuYXJyYXRpdmUgaW4gZW51bWVyYXRlKG5hcnJhdGl2ZXMpOgogICAgICAgICAgICBmb3IgX2osIG90aGVyIGluIGVudW1lcmF0ZShuYXJyYXRpdmVzW2kgKyAxIDpdLCBpICsgMSk6CiAgICAgICAgICAgICAgICByZWxfdHlwZSwgZGVzYyA9IHNlbGYuX2luZmVyX3JlbGF0aW9uc2hpcChuYXJyYXRpdmUsIG90aGVyKQogICAgICAgICAgICAgICAgaWYgcmVsX3R5cGU6CiAgICAgICAgICAgICAgICAgICAgcmVsYXRpb25zaGlwcy5hcHBlbmQoCiAgICAgICAgICAgICAgICAgICAgICAgIFJlbGF0aW9uc2hpcCgKICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZyb21fcGFwZXI9bmFycmF0aXZlLnBhcGVyX2lkLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgdG9fcGFwZXI9b3RoZXIucGFwZXJfaWQsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICByZWxhdGlvbnNoaXA9cmVsX3R5cGUsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbj1kZXNjLAogICAgICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICAgICAgKQoKICAgICAgICByZXR1cm4gcmVsYXRpb25zaGlwcwoKICAgIGRlZiBfaW5mZXJfcmVsYXRpb25zaGlwKAogICAgICAgIHNlbGYsCiAgICAgICAgYTogUGFwZXJOYXJyYXRpdmUsCiAgICAgICAgYjogUGFwZXJOYXJyYXRpdmUsCiAgICApIC0+IFR1cGxlW09wdGlvbmFsW1JlbGF0aW9uc2hpcFR5cGVdLCBzdHJdOgogICAgICAgICIiIkluZmVyIHJlbGF0aW9uc2hpcCBiZXR3ZWVuIHR3byBwYXBlcnMuIiIiCiAgICAgICAgIyBUaW1lLWJhc2VkIGluaGVyaXRhbmNlCiAgICAgICAgaWYgYi55ZWFyID4gYS55ZWFyOgogICAgICAgICAgICBpZiAiZXh0ZW5kcyIgaW4gYS50aXRsZS5sb3dlcigpIG9yICJidWlsZGluZyIgaW4gYi50aXRsZS5sb3dlcigpOgogICAgICAgICAgICAgICAgcmV0dXJuIFJlbGF0aW9uc2hpcFR5cGUuRVhURU5EUywgZiJ7Yi55ZWFyfSB3b3JrIGV4dGVuZHMge2EueWVhcn0gd29yayIKCiAgICAgICAgIyBJbmhlcml0cyBmcm9tIGZvdW5kYXRpb25hbCB3b3JrCiAgICAgICAgaWYgYS55ZWFyIDw9IDIwMTc6CiAgICAgICAgICAgIGlmIGIueWVhciA+IDIwMTk6CiAgICAgICAgICAgICAgICByZXR1cm4gUmVsYXRpb25zaGlwVHlwZS5JTkhFUklUUywgZiJCYXNlZCBvbiBmb3VuZGF0aW9uYWwgd29yayBmcm9tIHthLnllYXJ9IgoKICAgICAgICAjIERpdmVyZ2VuY2UKICAgICAgICBpZiBhbnkocCBpbiBiLnRpdGxlLmxvd2VyKCkgZm9yIHAgaW4gWyJpbnN0ZWFkIiwgImFsdGVybmF0aXZlIiwgInJhdGhlciIsICJ1bmxpa2UiXSk6CiAgICAgICAgICAgIHJldHVybiBSZWxhdGlvbnNoaXBUeXBlLkNPTlRSQVNUUywgZiJQcm9wb3NlcyBhbHRlcm5hdGl2ZSB0byB7YS50aXRsZVs6MzBdfS4uLiIKCiAgICAgICAgIyBDb250cmFzdAogICAgICAgIGlmIGFueShwIGluIGEudGl0bGUubG93ZXIoKSArIGIudGl0bGUubG93ZXIoKSBmb3IgcCBpbiBbInZzIiwgInZlcnN1cyIsICLlr7nmr5QiLCAi5q+U6L6DIl0pOgogICAgICAgICAgICByZXR1cm4gUmVsYXRpb25zaGlwVHlwZS5DT05UUkFTVFMsIGYiQ29udHJhc3RzIHdpdGgge2EudGl0bGVbOjMwXX0uLi4iCgogICAgICAgIHJldHVybiBOb25lLCAiIgoKICAgIGRlZiBfb3JnYW5pemVfY2hhcHRlcnMoCiAgICAgICAgc2VsZiwKICAgICAgICBuYXJyYXRpdmVzOiBMaXN0W1BhcGVyTmFycmF0aXZlXSwKICAgICkgLT4gTGlzdFtDaGFwdGVyXToKICAgICAgICAiIiJPcmdhbml6ZSBwYXBlcnMgaW50byBjaGFwdGVycyBieSB0aW1lIHBlcmlvZC4iIiIKICAgICAgICAjIEdyb3VwIGJ5IGFwcHJveGltYXRlIHRpbWUgcGVyaW9kcwogICAgICAgIHBlcmlvZHMgPSBkZWZhdWx0ZGljdChsaXN0KQogICAgICAgIGZvciBuIGluIG5hcnJhdGl2ZXM6CiAgICAgICAgICAgIHllYXIgPSBuLnllYXIKICAgICAgICAgICAgaWYgeWVhciA8IDIwMTU6CiAgICAgICAgICAgICAgICBwZXJpb2QgPSAoMjAwOCwgMjAxNCkKICAgICAgICAgICAgZWxpZiB5ZWFyIDwgMjAxODoKICAgICAgICAgICAgICAgIHBlcmlvZCA9ICgyMDE1LCAyMDE3KQogICAgICAgICAgICBlbGlmIHllYXIgPCAyMDIwOgogICAgICAgICAgICAgICAgcGVyaW9kID0gKDIwMTgsIDIwMTkpCiAgICAgICAgICAgIGVsaWYgeWVhciA8IDIwMjI6CiAgICAgICAgICAgICAgICBwZXJpb2QgPSAoMjAyMCwgMjAyMSkKICAgICAgICAgICAgZWxpZiB5ZWFyIDwgMjAyNDoKICAgICAgICAgICAgICAgIHBlcmlvZCA9ICgyMDIyLCAyMDIzKQogICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgcGVyaW9kID0gKDIwMjQsIDIwMjYpCiAgICAgICAgICAgIHBlcmlvZHNbcGVyaW9kXS5hcHBlbmQobikKCiAgICAgICAgIyBDcmVhdGUgY2hhcHRlcnMKICAgICAgICBjaGFwdGVycyA9IFtdCiAgICAgICAgZm9yIHBlcmlvZCBpbiBzb3J0ZWQocGVyaW9kcy5rZXlzKCkpOgogICAgICAgICAgICBwYXBlcnMgPSBwZXJpb2RzW3BlcmlvZF0KICAgICAgICAgICAgcGFwZXJzLnNvcnQoa2V5PWxhbWJkYSB4OiB4LnllYXIpCgogICAgICAgICAgICAjIENoYXB0ZXIgdGl0bGUgYmFzZWQgb24gdGhlbWUKICAgICAgICAgICAgdGl0bGVzID0gewogICAgICAgICAgICAgICAgKDIwMDgsIDIwMTQpOiAi6JCM6Iq95pyfIC0gQXR0ZW50aW9uIOacuuWItueahOWPkeeOsCIsCiAgICAgICAgICAgICAgICAoMjAxNSwgMjAxNyk6ICLnqoHnoLTmnJ8gLSBBdHRlbnRpb24gSXMgQWxsIFlvdSBOZWVkIiwKICAgICAgICAgICAgICAgICgyMDE4LCAyMDE5KTogIuaJqeaVo+acnyAtIEJFUlQg5LiO6aKE6K6t57uD6Z2p5ZG9IiwKICAgICAgICAgICAgICAgICgyMDIwLCAyMDIxKTogIuinhOaooeWMluWIneacnyAtIEdQVC0zIOeahOmHjOeoi+eikSIsCiAgICAgICAgICAgICAgICAoMjAyMiwgMjAyMyk6ICLnmb7mqKHlpKfmiJggLSDlvIDmupDkuI7pl63mupDnmoTlr7nmipciLAogICAgICAgICAgICAgICAgKDIwMjQsIDIwMjYpOiAiQUdJIOaOoue0oiAtIOi2hei2iiBUcmFuc2Zvcm1lcj8iLAogICAgICAgICAgICB9CgogICAgICAgICAgICBjaGFwdGVyID0gQ2hhcHRlcigKICAgICAgICAgICAgICAgIHRpdGxlPXRpdGxlcy5nZXQocGVyaW9kLCBmIuaXtuacnyAoe3BlcmlvZFswXX0te3BlcmlvZFsxXX0pIiksCiAgICAgICAgICAgICAgICB0aW1lX3JhbmdlPXBlcmlvZCwKICAgICAgICAgICAgICAgIHBhcGVycz1wYXBlcnMsCiAgICAgICAgICAgICkKICAgICAgICAgICAgY2hhcHRlcnMuYXBwZW5kKGNoYXB0ZXIpCgogICAgICAgIHJldHVybiBjaGFwdGVycwoKICAgIGRlZiBfZmluZF9jb250cmFkaWN0aW9ucygKICAgICAgICBzZWxmLAogICAgICAgIG5hcnJhdGl2ZXM6IExpc3RbUGFwZXJOYXJyYXRpdmVdLAogICAgKSAtPiBMaXN0W1R1cGxlW3N0ciwgc3RyXV06CiAgICAgICAgIiIiRmluZCBjb250cmFkaWN0b3J5IGNsYWltcyBpbiBwYXBlcnMuIiIiCiAgICAgICAgY29udHJhZGljdGlvbnMgPSBbXQoKICAgICAgICAjIFNpbXBsZSBrZXl3b3JkLWJhc2VkIGNvbnRyYWRpY3Rpb24gZGV0ZWN0aW9uCiAgICAgICAgZWZmaWNpZW5jeV9rZXl3b3JkcyA9IFsiZWZmaWNpZW50IiwgImZhc3QiLCAibGlnaHR3ZWlnaHQiLCAic21hbGwiLCAiZGlzdGlsbCJdCiAgICAgICAgc2NhbGVfa2V5d29yZHMgPSBbImxhcmdlIiwgIm1hc3NpdmUiLCAic2NhbGUiLCAiYmlsbGlvbnMiLCAicGFyYW1ldGVycyJdCgogICAgICAgIGZvciBpLCBhIGluIGVudW1lcmF0ZShuYXJyYXRpdmVzKToKICAgICAgICAgICAgZm9yIGIgaW4gbmFycmF0aXZlc1tpICsgMSA6XToKICAgICAgICAgICAgICAgIGFfdGV4dCA9IGEudGl0bGUubG93ZXIoKQogICAgICAgICAgICAgICAgYl90ZXh0ID0gYi50aXRsZS5sb3dlcigpCgogICAgICAgICAgICAgICAgIyBFZmZpY2llbmN5IHZzIFNjYWxlIGNvbnRyYWRpY3Rpb24KICAgICAgICAgICAgICAgIGFfZWZmaWNpZW50ID0gYW55KGsgaW4gYV90ZXh0IGZvciBrIGluIGVmZmljaWVuY3lfa2V5d29yZHMpCiAgICAgICAgICAgICAgICBiX3NjYWxlID0gYW55KGsgaW4gYl90ZXh0IGZvciBrIGluIHNjYWxlX2tleXdvcmRzKQogICAgICAgICAgICAgICAgaWYgYV9lZmZpY2llbnQgYW5kIGJfc2NhbGU6CiAgICAgICAgICAgICAgICAgICAgY29udHJhZGljdGlvbnMuYXBwZW5kKChhLnRpdGxlLCBiLnRpdGxlKSkKCiAgICAgICAgICAgICAgICBhX3NjYWxlID0gYW55KGsgaW4gYV90ZXh0IGZvciBrIGluIHNjYWxlX2tleXdvcmRzKQogICAgICAgICAgICAgICAgYl9lZmZpY2llbnQgPSBhbnkoayBpbiBiX3RleHQgZm9yIGsgaW4gZWZmaWNpZW5jeV9rZXl3b3JkcykKICAgICAgICAgICAgICAgIGlmIGFfc2NhbGUgYW5kIGJfZWZmaWNpZW50OgogICAgICAgICAgICAgICAgICAgIGNvbnRyYWRpY3Rpb25zLmFwcGVuZCgoYS50aXRsZSwgYi50aXRsZSkpCgogICAgICAgIHJldHVybiBjb250cmFkaWN0aW9uc1s6NV0KCiAgICBkZWYgX2lkZW50aWZ5X3RoZW1lcyhzZWxmLCBuYXJyYXRpdmVzOiBMaXN0W1BhcGVyTmFycmF0aXZlXSkgLT4gTGlzdFtzdHJdOgogICAgICAgICIiIklkZW50aWZ5IGNvcmUgdGhlbWVzIGluIHRoZSByZXNlYXJjaCBzdG9yeS4iIiIKICAgICAgICB0aGVtZXMgPSBbXQogICAgICAgIHRoZW1lX2tleXdvcmRzID0gewogICAgICAgICAgICAiQXR0ZW50aW9uIOacuuWItiI6IFsiYXR0ZW50aW9uIiwgInNlbGYtYXR0ZW50aW9uIiwgIm11bHRpLWhlYWQiXSwKICAgICAgICAgICAgIumihOiuree7g+iMg+W8jyI6IFsicHJlLXRyYWluIiwgImZpbmUtdHVuIiwgIm1hc2siXSwKICAgICAgICAgICAgIuinhOaooeWMliI6IFsic2NhbGUiLCAibGFyZ2UiLCAiYmlsbGlvbnMiLCAicGFyYW1ldGVycyJdLAogICAgICAgICAgICAi5pWI546H5LyY5YyWIjogWyJlZmZpY2llbnQiLCAiZmFzdCIsICJkaXN0aWxsIiwgInBydW5lIiwgInF1YW50aXplIl0sCiAgICAgICAgICAgICLlpJrmqKHmgIEiOiBbIm11bHRpbW9kYWwiLCAidmlzaW9uIiwgImltYWdlIiwgInRleHQiXSwKICAgICAgICAgICAgIuaOqOeQhuiDveWKmyI6IFsicmVhc29uIiwgImNoYWluLW9mLXRob3VnaHQiLCAiY290Il0sCiAgICAgICAgICAgICLlr7npvZDkuI7lronlhagiOiBbImFsaWduIiwgInJsaGYiLCAic2FmZXR5IiwgInZhbHVlIl0sCiAgICAgICAgfQoKICAgICAgICBhbGxfdGV4dCA9ICIgIi5qb2luKG4udGl0bGUubG93ZXIoKSBmb3IgbiBpbiBuYXJyYXRpdmVzKQogICAgICAgIGZvciB0aGVtZSwga2V5d29yZHMgaW4gdGhlbWVfa2V5d29yZHMuaXRlbXMoKToKICAgICAgICAgICAgaWYgYW55KGsgaW4gYWxsX3RleHQgZm9yIGsgaW4ga2V5d29yZHMpOgogICAgICAgICAgICAgICAgdGhlbWVzLmFwcGVuZCh0aGVtZSkKCiAgICAgICAgcmV0dXJuIHRoZW1lc1s6NV0KCiAgICBkZWYgX2VuaGFuY2Vfd2l0aF9sbG0oCiAgICAgICAgc2VsZiwKICAgICAgICByZXN1bHQ6IFN0b3J5UmVzdWx0LAogICAgICAgIHBhcGVyczogTGlzdFtEaWN0XSwKICAgICAgICBhcGlfa2V5OiBPcHRpb25hbFtzdHJdLAogICAgICAgIGJhc2VfdXJsOiBPcHRpb25hbFtzdHJdLAogICAgICAgIG1vZGVsOiBPcHRpb25hbFtzdHJdLAogICAgKSAtPiBTdG9yeVJlc3VsdDoKICAgICAgICAiIiJVc2UgTExNIHRvIGVuaGFuY2UgbmFycmF0aXZlIGdlbmVyYXRpb24uIiIiCiAgICAgICAgaW1wb3J0IG9zCgogICAgICAgIGFwaV9rZXkgPSBhcGlfa2V5IG9yIG9zLmdldGVudigiT1BFTkFJX0FQSV9LRVkiLCAiIikKICAgICAgICBpZiBub3QgYXBpX2tleToKICAgICAgICAgICAgcmV0dXJuIHJlc3VsdAoKICAgICAgICAjIEdlbmVyYXRlIGNoYXB0ZXIgc3VtbWFyaWVzCiAgICAgICAgZm9yIGNoYXB0ZXIgaW4gcmVzdWx0LmNoYXB0ZXJzOgogICAgICAgICAgICBpZiBub3QgY2hhcHRlci5wYXBlcnM6CiAgICAgICAgICAgICAgICBjb250aW51ZQoKICAgICAgICAgICAgcGFwZXJfdGV4dHMgPSAiXG4iLmpvaW4oCiAgICAgICAgICAgICAgICBbZiItIHtwLnRpdGxlfSAoe3AueWVhcn0pOiB7cC5jb3JlX2NvbnRyaWJ1dGlvbn0iIGZvciBwIGluIGNoYXB0ZXIucGFwZXJzWzo1XV0KICAgICAgICAgICAgKQoKICAgICAgICAgICAgdXNlcl9wcm9tcHQgPSBfQ0hBUFRFUl9TVU1NQVJZX1VTRVJfUFJPTVBUX1RFTVBMQVRFLmZvcm1hdCgKICAgICAgICAgICAgICAgIGNoYXB0ZXJfdGl0bGU9Y2hhcHRlci50aXRsZSwKICAgICAgICAgICAgICAgIHBhcGVyX3RleHRzPXBhcGVyX3RleHRzLAogICAgICAgICAgICApCgogICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICByZXNwb25zZSA9IGNhbGxfbGxtX2NoYXRfY29tcGxldGlvbnMoCiAgICAgICAgICAgICAgICAgICAgYmFzZV91cmw9YmFzZV91cmwgb3IgTExNX0JBU0VfVVJMLAogICAgICAgICAgICAgICAgICAgIGFwaV9rZXk9YXBpX2tleSwKICAgICAgICAgICAgICAgICAgICBtb2RlbD1tb2RlbCBvciBMTE1fTU9ERUwsCiAgICAgICAgICAgICAgICAgICAgc3lzdGVtX3Byb21wdD1fQ0hBUFRFUl9TVU1NQVJZX1NZU1RFTV9QUk9NUFQsCiAgICAgICAgICAgICAgICAgICAgdXNlcl9wcm9tcHQ9dXNlcl9wcm9tcHQsCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICBjaGFwdGVyLnN1bW1hcnkgPSByZXNwb25zZS5zdHJpcCgpCiAgICAgICAgICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgICAgICAgICAjIENoYXB0ZXIgc3VtbWFyeSBnZW5lcmF0aW9uIGZhaWxlZCDigJQgY29udGludWUgd2l0aG91dCBjcmFzaGluZy4KICAgICAgICAgICAgICAgIHBhc3MKCiAgICAgICAgcmV0dXJuIHJlc3VsdAoKICAgIGRlZiBfZ2VuZXJhdGVfc3VtbWFyeShzZWxmLCByZXN1bHQ6IFN0b3J5UmVzdWx0KSAtPiBzdHI6CiAgICAgICAgIiIiR2VuZXJhdGUgb3ZlcmFsbCBzdG9yeSBzdW1tYXJ5LiIiIgogICAgICAgIGlmIG5vdCByZXN1bHQuY2hhcHRlcnM6CiAgICAgICAgICAgIHJldHVybiAi5pqC5peg6Laz5aSf5pWw5o2u55Sf5oiQ5pWF5LqLIgoKICAgICAgICAjIEJ1aWxkIHN1bW1hcnkgZnJvbSB0aGVtZXMgYW5kIHByb3RhZ29uaXN0IGFyYwogICAgICAgIHRoZW1lcyA9ICIsICIuam9pbihyZXN1bHQudGhlbWVzWzozXSkgaWYgcmVzdWx0LnRoZW1lcyBlbHNlICLmioDmnK/mvJTov5siCgogICAgICAgIHN1bW1hcnkgPSBmIiIi44CKe3Jlc3VsdC50b3BpY33jgIvnmoTmvJTov5vmmK/kuIDlnLrlhbPkuo57dGhlbWVzfeeahOaOoue0ouOAggrku44ge3Jlc3VsdC5jaGFwdGVyc1swXS50aW1lX3JhbmdlWzBdfSDlubTnmoTlvIDliJvmgKflt6XkvZzvvIzliLAge3Jlc3VsdC5jaGFwdGVyc1stMV0udGltZV9yYW5nZVstMV19IOW5tOeahOacgOaWsOeqgeegtO+8jArpoobln5/nu4/ljobkuobku47nkIborrrpqozor4HliLDlt6XnqIvljJblupTnlKjvvIzku47ljZXkuIDmqKHlnovliLDlpJrlhYPljJbnlJ/mgIHnmoTovazlj5jjgIIKIiIiCgogICAgICAgIGlmIHJlc3VsdC5jb250cmFkaWN0aW9uczoKICAgICAgICAgICAgc3VtbWFyeSArPSBmIlxu5qC45b+D5byg5YqbOiDlj5HnjrAge2xlbihyZXN1bHQuY29udHJhZGljdGlvbnMpfSDkuKrkuLvopoHnn5vnm77ngrnvvIwiCiAgICAgICAgICAgIHN1bW1hcnkgKz0gIuS9k+eOsOS6humihuWfn+WGheS4jeWQjOaKgOacr+i3r+e6v+eahOernuS6ieS4juiejeWQiOOAgiIKCiAgICAgICAgcmV0dXJuIHN1bW1hcnkKCiAgICBkZWYgX2dlbmVyYXRlX2NvbXBhcmlzb24oc2VsZiwgc3RvcnlfYTogU3RvcnlSZXN1bHQsIHN0b3J5X2I6IFN0b3J5UmVzdWx0KSAtPiBzdHI6CiAgICAgICAgIiIiR2VuZXJhdGUgY29tcGFyaXNvbiBiZXR3ZWVuIHR3byBzdG9yaWVzLiIiIgogICAgICAgIGxpbmVzID0gWwogICAgICAgICAgICBmIvCfk5Yg5pWF5LqL57q/5a+55q+UOiB7c3RvcnlfYS50b3BpY30gdnMge3N0b3J5X2IudG9waWN9IiwKICAgICAgICAgICAgIiIsCiAgICAgICAgXQoKICAgICAgICAjIENvbXBhcmUgdGhlbWVzCiAgICAgICAgc2hhcmVkX3RoZW1lcyA9IHNldChzdG9yeV9hLnRoZW1lcykgJiBzZXQoc3RvcnlfYi50aGVtZXMpCiAgICAgICAgaWYgc2hhcmVkX3RoZW1lczoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYi8J+UlyDlhbHlkIzkuLvpopg6IHsnLCAnLmpvaW4oc2hhcmVkX3RoZW1lcyl9IikKCiAgICAgICAgIyBDb21wYXJlIHRpbWUgc3BhbnMKICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCiAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICBmIvCfk4Uge3N0b3J5X2EudG9waWN9OiB7c3RvcnlfYS5jaGFwdGVyc1swXS50aW1lX3JhbmdlWzBdfS17c3RvcnlfYS5jaGFwdGVyc1stMV0udGltZV9yYW5nZVstMV19IgogICAgICAgICkKICAgICAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgICAgIGYi8J+ThSB7c3RvcnlfYi50b3BpY306IHtzdG9yeV9iLmNoYXB0ZXJzWzBdLnRpbWVfcmFuZ2VbMF19LXtzdG9yeV9iLmNoYXB0ZXJzWy0xXS50aW1lX3JhbmdlWy0xXX0iCiAgICAgICAgKQoKICAgICAgICAjIENvbXBhcmUgcHJvdGFnb25pc3RzCiAgICAgICAgbGluZXMuYXBwZW5kKCIiKQogICAgICAgIGxpbmVzLmFwcGVuZCgi8J+OrSDkuLvop5Llj5HlsZXlvKfnur86IikKICAgICAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgICAgIGYiICDigKIge3N0b3J5X2EudG9waWN9OiB7c3RvcnlfYS5wcm90YWdvbmlzdF9hcmNbOjgwXSBpZiBzdG9yeV9hLnByb3RhZ29uaXN0X2FyYyBlbHNlICfkvKDnu5/mlrnms5XmvJTov5snfSIKICAgICAgICApCiAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICBmIiAg4oCiIHtzdG9yeV9iLnRvcGljfToge3N0b3J5X2IucHJvdGFnb25pc3RfYXJjWzo4MF0gaWYgc3RvcnlfYi5wcm90YWdvbmlzdF9hcmMgZWxzZSAn5paw5pa55rOV5o6i57SiJ30iCiAgICAgICAgKQoKICAgICAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQoKICAgIGRlZiBfZW1wdHlfcmVzdWx0KHNlbGYsIHRvcGljOiBzdHIpIC0+IFN0b3J5UmVzdWx0OgogICAgICAgICIiIlJldHVybiBlbXB0eSByZXN1bHQuIiIiCiAgICAgICAgcmV0dXJuIFN0b3J5UmVzdWx0KHRvcGljPXRvcGljKQoKICAgIGRlZiByZW5kZXJfcmVzdWx0KHNlbGYsIHJlc3VsdDogU3RvcnlSZXN1bHQpIC0+IHN0cjoKICAgICAgICAiIiJSZW5kZXIgc3RvcnkgYXMgZm9ybWF0dGVkIHRleHQuIiIiCiAgICAgICAgbGluZXMgPSBbCiAgICAgICAgICAgIGYi8J+TliDnoJTnqbbmlYXkuos6IHtyZXN1bHQudG9waWN9IiwKICAgICAgICAgICAgIiIsCiAgICAgICAgXQoKICAgICAgICAjIENoYXB0ZXJzCiAgICAgICAgZm9yIGksIGNoYXB0ZXIgaW4gZW51bWVyYXRlKHJlc3VsdC5jaGFwdGVycywgMSk6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIuesrHtpfeeroDoge2NoYXB0ZXIudGl0bGV9IikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAg5pe26Ze0OiB7Y2hhcHRlci50aW1lX3JhbmdlWzBdfS17Y2hhcHRlci50aW1lX3JhbmdlWzFdfSIpCgogICAgICAgICAgICBpZiBjaGFwdGVyLnN1bW1hcnk6CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICB7Y2hhcHRlci5zdW1tYXJ5fSIpCiAgICAgICAgICAgIGVsc2U6CiAgICAgICAgICAgICAgICAjIEF1dG8tZ2VuZXJhdGUgc3VtbWFyeSBmcm9tIHBhcGVycwogICAgICAgICAgICAgICAgY29udHJpYnV0aW9ucyA9IFtwLmNvcmVfY29udHJpYnV0aW9uWzo1MF0gZm9yIHAgaW4gY2hhcHRlci5wYXBlcnNbOjNdXQogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAg5YWz6ZSu6LSh54yuOiB7JyB8ICcuam9pbihjb250cmlidXRpb25zKX0iKQoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIiKQoKICAgICAgICAgICAgZm9yIHBhcGVyIGluIGNoYXB0ZXIucGFwZXJzWzozXToKICAgICAgICAgICAgICAgIHJvbGVfaWNvbiA9IHsKICAgICAgICAgICAgICAgICAgICBOYXJyYXRpdmVSb2xlLlBST1RBR09OSVNUOiAi4pSc4pSAIiwKICAgICAgICAgICAgICAgICAgICBOYXJyYXRpdmVSb2xlLlRVUk5JTkdfUE9JTlQ6ICLilJTilIAiLAogICAgICAgICAgICAgICAgICAgIE5hcnJhdGl2ZVJvbGUuRElWRVJHRU5DRTogIuKUnOKUgCIsCiAgICAgICAgICAgICAgICAgICAgTmFycmF0aXZlUm9sZS5BTlRBR09OSVNUOiAi4pSc4pSAIiwKICAgICAgICAgICAgICAgICAgICBOYXJyYXRpdmVSb2xlLlNZTlRIRVNJUzogIuKUlOKUgCIsCiAgICAgICAgICAgICAgICB9LmdldChwYXBlci5yb2xlLCAi4pSc4pSAIikKCiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICB7cm9sZV9pY29ufSB7cGFwZXIudGl0bGV9ICh7cGFwZXIueWVhcn0pIikKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgIOKUgiAg4pSU4pSAIPCfkqEge3BhcGVyLmtleV9pbnNpZ2h0Wzo2MF19IikKCiAgICAgICAgICAgICAgICBpZiBwYXBlci50dXJuaW5nX3BvaW50X3R5cGU6CiAgICAgICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAg4pSCICAgICDwn5SlIHtwYXBlci50dXJuaW5nX3BvaW50X3R5cGV9IikKCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIikKCiAgICAgICAgIyBDb250cmFkaWN0aW9ucwogICAgICAgIGlmIHJlc3VsdC5jb250cmFkaWN0aW9uczoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCLimqEg5qC45b+D55+b55u+OiIpCiAgICAgICAgICAgIGZvciBhLCBiIGluIHJlc3VsdC5jb250cmFkaWN0aW9uc1s6M106CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICDigKIge2FbOjQwXX0uLi4iKQogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAgICDihpQge2JbOjQwXX0uLi4iKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgICMgVGhlbWVzCiAgICAgICAgaWYgcmVzdWx0LnRoZW1lczoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYi8J+nrSDmoLjlv4PkuLvpopg6IHsnLCAnLmpvaW4ocmVzdWx0LnRoZW1lc1s6NF0pfSIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIikKCiAgICAgICAgIyBTdW1tYXJ5CiAgICAgICAgaWYgcmVzdWx0LnN1bW1hcnk6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIvCfk50ge3Jlc3VsdC5zdW1tYXJ5fSIpCgogICAgICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCgogICAgZGVmIHJlbmRlcl9tZXJtYWlkKHNlbGYsIHJlc3VsdDogU3RvcnlSZXN1bHQpIC0+IHN0cjoKICAgICAgICAiIiJSZW5kZXIgc3RvcnkgYXMgTWVybWFpZCBmbG93Y2hhcnQuIiIiCiAgICAgICAgbGluZXMgPSBbCiAgICAgICAgICAgICJgYGBtZXJtYWlkIiwKICAgICAgICAgICAgImZsb3djaGFydCBURCIsCiAgICAgICAgICAgIGYnICAgIHRpdGxlWyLwn5OWIHtyZXN1bHQudG9waWN9Il0nLAogICAgICAgICAgICAiIiwKICAgICAgICBdCgogICAgICAgICMgQWRkIG5vZGVzIGZvciBrZXkgcGFwZXJzCiAgICAgICAgZm9yIGksIGNoYXB0ZXIgaW4gZW51bWVyYXRlKHJlc3VsdC5jaGFwdGVycyk6CiAgICAgICAgICAgIGZvciBwYXBlciBpbiBjaGFwdGVyLnBhcGVyc1s6Ml06CiAgICAgICAgICAgICAgICBub2RlX2lkID0gZiJQe3BhcGVyLnllYXJ9e2l9IgogICAgICAgICAgICAgICAgcm9sZV9jbGFzcyA9IHsKICAgICAgICAgICAgICAgICAgICBOYXJyYXRpdmVSb2xlLlRVUk5JTkdfUE9JTlQ6ICJmaWxsOiNmZjZiNmIiLAogICAgICAgICAgICAgICAgICAgIE5hcnJhdGl2ZVJvbGUuRElWRVJHRU5DRTogImZpbGw6IzRlY2RjNCIsCiAgICAgICAgICAgICAgICB9LmdldChwYXBlci5yb2xlLCAiZmlsbDojZGRkIikKCiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZicgICAge25vZGVfaWR9WyJ7cGFwZXIudGl0bGVbOjMwXX0uLi4iXTo6OntwYXBlci5yb2xlLnZhbHVlfScpCiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICAgY2xhc3NEZWYge3BhcGVyLnJvbGUudmFsdWV9IHtyb2xlX2NsYXNzfSIpCgogICAgICAgIGxpbmVzLmFwcGVuZCgiYGBgIikKICAgICAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQo=
+"""
+Research Story Weaver: Generate narrative understanding from research papers.
+
+研究故事编织器：从论文中生成叙事性理解。
+
+核心算法：
+1. 叙事提取：识别核心贡献、转折点、矛盾
+2. 关系图构建：论文间的逻辑关系
+3. 故事生成：时间线编排 + LLM 叙事
+4. 对比模式：两条故事线的分歧与共识
+"""
+
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Optional, List, Dict, Tuple
+from collections import defaultdict
+
+from llm.constants import LLM_BASE_URL, LLM_MODEL
+
+# Optional LLM import
+try:
+    from llm.chat import call_llm_chat_completions
+    LLM_AVAILABLE = True
+except ImportError:
+    LLM_AVAILABLE = False
+
+
+# ------------------------------------------------------------------
+# Prompt constants for LLM-based story generation
+# ------------------------------------------------------------------
+_CHAPTER_SUMMARY_SYSTEM_PROMPT = """为科研故事的一个章节生成简短的总结。
+格式：主题 + 2-3句关键内容概括"""
+
+_CHAPTER_SUMMARY_USER_PROMPT_TEMPLATE = """章节: {chapter_title}
+论文:
+{paper_texts}
+
+请生成章节总结："""
+
+
+class NarrativeRole(Enum):
+    """Role a paper plays in the narrative."""
+    PROTAGONIST = "protagonist"   # 主角 - 主流方法
+    ANTAGONIST = "antagonist"     # 反派 - 待解决的问题
+    TURNING_POINT = "turning_point"  # 转折点 - 突破性工作
+    DIVERGENCE = "divergence"    # 分叉 - 产生新方向
+    SYNTHESIS = "synthesis"      # 综合 - 融合多种方法
+
+
+class RelationshipType(Enum):
+    """Relationship between papers."""
+    INHERITS = "inherits"        # 继承
+    EXTENDS = "extends"          # 扩展
+    CONTRASTS = "contrasts"     # 对比
+    CONTRADICTS = "contradicts" # 矛盾
+    SYNTHESIZES = "synthesizes" # 综合
+    CITES = "cites"             # 引用
+
+
+@dataclass
+class PaperNarrative:
+    """Narrative element extracted from a paper."""
+    paper_id: str
+    title: str
+    year: int
+    role: NarrativeRole
+    core_contribution: str  # 核心贡献
+    key_insight: str  # 关键洞察
+    turning_point_type: str = ""  # 转折类型
+    conflicts_with: List[str] = field(default_factory=list)  # 与哪些论文冲突
+
+
+@dataclass
+class Chapter:
+    """A chapter in the research story."""
+    title: str
+    time_range: Tuple[int, int]
+    papers: List[PaperNarrative]
+    summary: str = ""
+    theme: str = ""  # 章节主题
+
+
+@dataclass
+class Relationship:
+    """Relationship between two papers."""
+    from_paper: str
+    to_paper: str
+    relationship: RelationshipType
+    description: str = ""
+
+
+@dataclass
+class StoryResult:
+    """Complete story weaving result."""
+    topic: str
+    chapters: List[Chapter] = field(default_factory=list)
+    relationships: List[Relationship] = field(default_factory=list)
+    protagonist_arc: str = ""  # 主角发展弧线
+    contradictions: List[Tuple[str, str]] = field(default_factory=list)  # 矛盾对
+    themes: List[str] = field(default_factory=list)  # 核心主题
+    summary: str = ""  # 叙事总结
+
+
+class StoryWeaver:
+    """Generate narrative understanding from research papers."""
+
+    # Key narrative patterns
+    TURNING_POINT_PATTERNS = [
+        r'breakthrough|revolution|paradigm shift|game changer|state-of-the-art',
+        r'outperforms?|surpasses?|exceeds? previous',
+        r'first to|for the first time|introduces? a new',
+        r'despite|however|but|nevertheless|contradict',
+    ]
+
+    DIVERGENCE_PATTERNS = [
+        r'alternative|instead|rather|unlike|contrast',
+        r'different approach|different from|diverges',
+        r'on the other hand|meanwhile|conversely',
+    ]
+
+    def __init__(self, db=None):
+        self.db = db
+
+    def weave(
+        self,
+        topic: str,
+        use_llm: bool = True,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        model: Optional[str] = None,
+        max_papers: int = 20,
+    ) -> StoryResult:
+        """
+        Weave a research story from papers.
+
+        Args:
+            topic: Research topic/keyword
+            use_llm: Whether to use LLM for narrative generation
+            api_key: LLM API key
+            base_url: LLM API base URL
+            model: Model name
+            max_papers: Maximum papers to analyze
+
+        Returns:
+            StoryResult with narrative structure
+        """
+        # 1. Collect papers
+        papers = self._collect_papers(topic, max_papers)
+        if not papers:
+            return self._empty_result(topic)
+
+        # 2. Extract narrative elements
+        narratives = self._extract_narratives(papers)
+
+        # 3. Build relationship graph
+        relationships = self._build_relationships(narratives)
+
+        # 4. Identify chapters by time period
+        chapters = self._organize_chapters(narratives)
+
+        # 5. Find contradictions
+        contradictions = self._find_contradictions(narratives)
+
+        # 6. Identify core themes
+        themes = self._identify_themes(narratives)
+
+        result = StoryResult(
+            topic=topic,
+            chapters=chapters,
+            relationships=relationships,
+            contradictions=contradictions,
+            themes=themes,
+        )
+
+        # 7. Generate narrative summaries
+        if use_llm and LLM_AVAILABLE:
+            result = self._enhance_with_llm(result, papers, api_key, base_url, model)
+
+        # 8. Generate overall summary
+        result.summary = self._generate_summary(result)
+
+        return result
+
+    def compare(
+        self,
+        topic_a: str,
+        topic_b: str,
+        use_llm: bool = True,
+    ) -> str:
+        """
+        Compare two research storylines.
+
+        Args:
+            topic_a: First research topic
+            topic_b: Second research topic
+            use_llm: Whether to use LLM
+
+        Returns:
+            Comparison narrative
+        """
+        story_a = self.weave(topic_a, use_llm=use_llm)
+        story_b = self.weave(topic_b, use_llm=use_llm)
+
+        return self._generate_comparison(story_a, story_b)
+
+    def _collect_papers(self, topic: str, max_papers: int) -> List[Dict]:
+        """Collect papers from DB."""
+        if not self.db:
+            return []
+
+        papers = []
+        try:
+            rows, _ = self.db.search_papers(topic, limit=max_papers)
+            for row in rows:
+                paper = {
+                    "id": getattr(row, 'id', ''),
+                    "title": getattr(row, 'title', '') or '',
+                    "abstract": getattr(row, 'abstract', '') or '',
+                    "year": getattr(row, 'year', 0) or 0,
+                    "citations": getattr(row, 'citations', 0) or 0,
+                }
+                if int(paper["year"]) > 2000:
+                    papers.append(paper)
+        except Exception:
+            # Paper enrichment is optional — return partial results without crashing.
+            pass
+
+        # Sort by citations for importance
+        papers.sort(key=lambda x: x.get("citations", 0), reverse=True)
+        return papers[:max_papers]
+
+    def _extract_narratives(self, papers: List[Dict]) -> List[PaperNarrative]:
+        """Extract narrative elements from papers."""
+        narratives = []
+
+        for paper in papers:
+            text = f"{paper.get('title', '')} {paper.get('abstract', '')}".lower()
+            year = paper.get('year', 0)
+            title = paper.get('title', '')[:60]
+
+            # Determine role
+            role = self._determine_role(text, year)
+
+            # Extract core contribution
+            contribution = self._extract_contribution(paper)
+
+            # Extract key insight
+            insight = self._extract_insight(text)
+
+            # Check for turning point
+            turning_type = self._detect_turning_point(text)
+
+            narratives.append(PaperNarrative(
+                paper_id=paper.get('id', ''),
+                title=title,
+                year=year,
+                role=role,
+                core_contribution=contribution,
+                key_insight=insight,
+                turning_point_type=turning_type,
+            ))
+
+        return narratives
+
+    def _determine_role(self, text: str, year: int) -> NarrativeRole:
+        """Determine narrative role of a paper."""
+        # High impact early papers are often protagonists
+        if year <= 2018:
+            if any(p in text for p in ['attention is all you need', 'bert', 'gpt']):
+                return NarrativeRole.PROTAGONIST
+
+        # Check for turning points
+        if any(re.search(p, text) for p in self.TURNING_POINT_PATTERNS):
+            return NarrativeRole.TURNING_POINT
+
+        # Check for divergences
+        if any(re.search(p, text) for p in self.DIVERGENCE_PATTERNS):
+            return NarrativeRole.DIVERGENCE
+
+        return NarrativeRole.PROTAGONIST
+
+    def _extract_contribution(self, paper: Dict) -> str:
+        """Extract core contribution from paper."""
+        title = paper.get('title', '')
+        abstract = paper.get('abstract', '')[:200]
+
+        # Try to extract from abstract
+        contribution_patterns = [
+            r'we (?:propose|present|introduce|develop) (.+?)\.',
+            r'this paper (.+?)\.',
+            r'we show that (.+?)\.',
+            r'(?:propose|present|introduce) (.+?)(?:\.|$)',
+        ]
+
+        for pattern in contribution_patterns:
+            match = re.search(pattern, abstract.lower())
+            if match:
+                return match.group(1).strip()[:100]
+
+        return title[:60] if title else "Unknown contribution"
+
+    def _extract_insight(self, text: str) -> str:
+        """Extract key insight from text."""
+        insight_patterns = [
+            r'(?:key|central|core) insight:?\s*(.+?)(?:\.|$)',
+            r'we find that (.+?)(?:\.|$)',
+            r'discover(?:y|ed) that (.+?)(?:\.|$)',
+            r'((?:the|this) .+? is(?: all| the) .+?)(?:\.|$)',
+        ]
+
+        for pattern in insight_patterns:
+            match = re.search(pattern, text.lower())
+            if match:
+                return match.group(1).strip()[:80]
+
+        return "Provides new approach to the problem"
+
+    def _detect_turning_point(self, text: str) -> str:
+        """Detect type of turning point."""
+        if 'breakthrough' in text or 'revolution' in text:
+            return "颠覆性突破"
+        if 'paradigm shift' in text:
+            return "范式转变"
+        if 'state-of-the-art' in text or 'sota' in text:
+            return "性能突破"
+        if 'first' in text and 'time' in text:
+            return "首次实现"
+        return ""
+
+    def _build_relationships(
+        self,
+        narratives: List[PaperNarrative],
+    ) -> List[Relationship]:
+        """Build relationship graph between papers."""
+        relationships = []
+
+        for i, narrative in enumerate(narratives):
+            for _j, other in enumerate(narratives[i + 1:], i + 1):
+                rel_type, desc = self._infer_relationship(narrative, other)
+                if rel_type:
+                    relationships.append(Relationship(
+                        from_paper=narrative.paper_id,
+                        to_paper=other.paper_id,
+                        relationship=rel_type,
+                        description=desc,
+                    ))
+
+        return relationships
+
+    def _infer_relationship(
+        self,
+        a: PaperNarrative,
+        b: PaperNarrative,
+    ) -> Tuple[Optional[RelationshipType], str]:
+        """Infer relationship between two papers."""
+        # Time-based inheritance
+        if b.year > a.year:
+            if 'extends' in a.title.lower() or 'building' in b.title.lower():
+                return RelationshipType.EXTENDS, f"{b.year} work extends {a.year} work"
+
+        # Inherits from foundational work
+        if a.year <= 2017:
+            if b.year > 2019:
+                return RelationshipType.INHERITS, f"Based on foundational work from {a.year}"
+
+        # Divergence
+        if any(p in b.title.lower() for p in ['instead', 'alternative', 'rather', 'unlike']):
+            return RelationshipType.CONTRASTS, f"Proposes alternative to {a.title[:30]}..."
+
+        # Contrast
+        if any(p in a.title.lower() + b.title.lower() for p in ['vs', 'versus', '对比', '比较']):
+            return RelationshipType.CONTRASTS, f"Contrasts with {a.title[:30]}..."
+
+        return None, ""
+
+    def _organize_chapters(
+        self,
+        narratives: List[PaperNarrative],
+    ) -> List[Chapter]:
+        """Organize papers into chapters by time period."""
+        # Group by approximate time periods
+        periods = defaultdict(list)
+        for n in narratives:
+            year = n.year
+            if year < 2015:
+                period = (2008, 2014)
+            elif year < 2018:
+                period = (2015, 2017)
+            elif year < 2020:
+                period = (2018, 2019)
+            elif year < 2022:
+                period = (2020, 2021)
+            elif year < 2024:
+                period = (2022, 2023)
+            else:
+                period = (2024, 2026)
+            periods[period].append(n)
+
+        # Create chapters
+        chapters = []
+        for period in sorted(periods.keys()):
+            papers = periods[period]
+            papers.sort(key=lambda x: x.year)
+
+            # Chapter title based on theme
+            titles = {
+                (2008, 2014): "萌芽期 - Attention 机制的发现",
+                (2015, 2017): "突破期 - Attention Is All You Need",
+                (2018, 2019): "扩散期 - BERT 与预训练革命",
+                (2020, 2021): "规模化初期 - GPT-3 的里程碑",
+                (2022, 2023): "百模大战 - 开源与闭源的对抗",
+                (2024, 2026): "AGI 探索 - 超越 Transformer?",
+            }
+
+            chapter = Chapter(
+                title=titles.get(period, f"时期 ({period[0]}-{period[1]})"),
+                time_range=period,
+                papers=papers,
+            )
+            chapters.append(chapter)
+
+        return chapters
+
+    def _find_contradictions(
+        self,
+        narratives: List[PaperNarrative],
+    ) -> List[Tuple[str, str]]:
+        """Find contradictory claims in papers."""
+        contradictions = []
+
+        # Simple keyword-based contradiction detection
+        efficiency_keywords = ['efficient', 'fast', 'lightweight', 'small', 'distill']
+        scale_keywords = ['large', 'massive', 'scale', 'billions', 'parameters']
+
+        for i, a in enumerate(narratives):
+            for b in narratives[i + 1:]:
+                a_text = a.title.lower()
+                b_text = b.title.lower()
+
+                # Efficiency vs Scale contradiction
+                a_efficient = any(k in a_text for k in efficiency_keywords)
+                b_scale = any(k in b_text for k in scale_keywords)
+                if a_efficient and b_scale:
+                    contradictions.append((a.title, b.title))
+
+                a_scale = any(k in a_text for k in scale_keywords)
+                b_efficient = any(k in b_text for k in efficiency_keywords)
+                if a_scale and b_efficient:
+                    contradictions.append((a.title, b.title))
+
+        return contradictions[:5]
+
+    def _identify_themes(self, narratives: List[PaperNarrative]) -> List[str]:
+        """Identify core themes in the research story."""
+        themes = []
+        theme_keywords = {
+            'Attention 机制': ['attention', 'self-attention', 'multi-head'],
+            '预训练范式': ['pre-train', 'fine-tun', 'mask'],
+            '规模化': ['scale', 'large', 'billions', 'parameters'],
+            '效率优化': ['efficient', 'fast', 'distill', 'prune', 'quantize'],
+            '多模态': ['multimodal', 'vision', 'image', 'text'],
+            '推理能力': ['reason', 'chain-of-thought', 'cot'],
+            '对齐与安全': ['align', 'rlhf', 'safety', 'value'],
+        }
+
+        all_text = ' '.join(n.title.lower() for n in narratives)
+        for theme, keywords in theme_keywords.items():
+            if any(k in all_text for k in keywords):
+                themes.append(theme)
+
+        return themes[:5]
+
+    def _enhance_with_llm(
+        self,
+        result: StoryResult,
+        papers: List[Dict],
+        api_key: Optional[str],
+        base_url: Optional[str],
+        model: Optional[str],
+    ) -> StoryResult:
+        """Use LLM to enhance narrative generation."""
+        import os
+
+        api_key = api_key or os.getenv("OPENAI_API_KEY", "")
+        if not api_key:
+            return result
+
+        # Generate chapter summaries
+        for chapter in result.chapters:
+            if not chapter.papers:
+                continue
+
+            paper_texts = '\n'.join([
+                f"- {p.title} ({p.year}): {p.core_contribution}"
+                for p in chapter.papers[:5]
+            ])
+
+            user_prompt = _CHAPTER_SUMMARY_USER_PROMPT_TEMPLATE.format(
+                chapter_title=chapter.title,
+                paper_texts=paper_texts,
+            )
+
+            try:
+                response = call_llm_chat_completions(
+                    base_url=base_url or LLM_BASE_URL,
+                    api_key=api_key,
+                    model=model or LLM_MODEL,
+                    system_prompt=_CHAPTER_SUMMARY_SYSTEM_PROMPT,
+                    user_prompt=user_prompt,
+                )
+                chapter.summary = response.strip()
+            except Exception:
+                # Chapter summary generation failed — continue without crashing.
+                pass
+
+        return result
+
+    def _generate_summary(self, result: StoryResult) -> str:
+        """Generate overall story summary."""
+        if not result.chapters:
+            return "暂无足够数据生成故事"
+
+        # Build summary from themes and protagonist arc
+        themes = ', '.join(result.themes[:3]) if result.themes else '技术演进'
+
+        summary = f"""《{result.topic}》的演进是一场关于{themes}的探索。
+从 {result.chapters[0].time_range[0]} 年的开创性工作，到 {result.chapters[-1].time_range[-1]} 年的最新突破，
+领域经历了从理论验证到工程化应用，从单一模型到多元化生态的转变。
+"""
+
+        if result.contradictions:
+            summary += f"\n核心张力: 发现 {len(result.contradictions)} 个主要矛盾点，"
+            summary += "体现了领域内不同技术路线的竞争与融合。"
+
+        return summary
+
+    def _generate_comparison(self, story_a: StoryResult, story_b: StoryResult) -> str:
+        """Generate comparison between two stories."""
+        lines = [
+            f"📖 故事线对比: {story_a.topic} vs {story_b.topic}",
+            "",
+        ]
+
+        # Compare themes
+        shared_themes = set(story_a.themes) & set(story_b.themes)
+        if shared_themes:
+            lines.append(f"🔗 共同主题: {', '.join(shared_themes)}")
+
+        # Compare time spans
+        lines.append("")
+        lines.append(f"📅 {story_a.topic}: {story_a.chapters[0].time_range[0]}-{story_a.chapters[-1].time_range[-1]}")
+        lines.append(f"📅 {story_b.topic}: {story_b.chapters[0].time_range[0]}-{story_b.chapters[-1].time_range[-1]}")
+
+        # Compare protagonists
+        lines.append("")
+        lines.append("🎭 主角发展弧线:")
+        lines.append(f"  • {story_a.topic}: {story_a.protagonist_arc[:80] if story_a.protagonist_arc else '传统方法演进'}")
+        lines.append(f"  • {story_b.topic}: {story_b.protagonist_arc[:80] if story_b.protagonist_arc else '新方法探索'}")
+
+        return '\n'.join(lines)
+
+    def _empty_result(self, topic: str) -> StoryResult:
+        """Return empty result."""
+        return StoryResult(topic=topic)
+
+    def render_result(self, result: StoryResult) -> str:
+        """Render story as formatted text."""
+        lines = [
+            f"📖 研究故事: {result.topic}",
+            "",
+        ]
+
+        # Chapters
+        for i, chapter in enumerate(result.chapters, 1):
+            lines.append(f"第{i}章: {chapter.title}")
+            lines.append(f"   时间: {chapter.time_range[0]}-{chapter.time_range[1]}")
+
+            if chapter.summary:
+                lines.append(f"   {chapter.summary}")
+            else:
+                # Auto-generate summary from papers
+                contributions = [p.core_contribution[:50] for p in chapter.papers[:3]]
+                lines.append(f"   关键贡献: {' | '.join(contributions)}")
+
+            lines.append("")
+
+            for paper in chapter.papers[:3]:
+                role_icon = {
+                    NarrativeRole.PROTAGONIST: "├─",
+                    NarrativeRole.TURNING_POINT: "└─",
+                    NarrativeRole.DIVERGENCE: "├─",
+                    NarrativeRole.ANTAGONIST: "├─",
+                    NarrativeRole.SYNTHESIS: "└─",
+                }.get(paper.role, "├─")
+
+                lines.append(f"   {role_icon} {paper.title} ({paper.year})")
+                lines.append(f"   │  └─ 💡 {paper.key_insight[:60]}")
+
+                if paper.turning_point_type:
+                    lines.append(f"   │     🔥 {paper.turning_point_type}")
+
+            lines.append("")
+
+        # Contradictions
+        if result.contradictions:
+            lines.append("⚡ 核心矛盾:")
+            for a, b in result.contradictions[:3]:
+                lines.append(f"   • {a[:40]}...")
+                lines.append(f"     ↔ {b[:40]}...")
+            lines.append("")
+
+        # Themes
+        if result.themes:
+            lines.append(f"🧭 核心主题: {', '.join(result.themes[:4])}")
+            lines.append("")
+
+        # Summary
+        if result.summary:
+            lines.append(f"📝 {result.summary}")
+
+        return '\n'.join(lines)
+
+    def render_mermaid(self, result: StoryResult) -> str:
+        """Render story as Mermaid flowchart."""
+        lines = [
+            "```mermaid",
+            "flowchart TD",
+            f'    title["📖 {result.topic}"]',
+            "",
+        ]
+
+        # Add nodes for key papers
+        for i, chapter in enumerate(result.chapters):
+            for paper in chapter.papers[:2]:
+                node_id = f"P{paper.year}{i}"
+                role_class = {
+                    NarrativeRole.TURNING_POINT: "fill:#ff6b6b",
+                    NarrativeRole.DIVERGENCE: "fill:#4ecdc4",
+                }.get(paper.role, "fill:#ddd")
+
+                lines.append(f'    {node_id}["{paper.title[:30]}..."]:::{paper.role.value}')
+                lines.append(f'    classDef {paper.role.value} {role_class}')
+
+        lines.append("```")
+        return '\n'.join(lines)

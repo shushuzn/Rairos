@@ -1,1 +1,5 @@
-IiIiVHJlbmQgRm9yZWNhc3RpbmcgbW9kdWxlLiIiIgoKZnJvbSB0cmVuZHMuZm9yZWNhc3RlciBpbXBvcnQgVHJlbmRGb3JlY2FzdGVyCgpfX2FsbF9fID0gWyJUcmVuZEZvcmVjYXN0ZXIiXQo=
+"""Trend Forecasting module."""
+
+from trends.forecaster import TrendForecaster
+
+__all__ = ["TrendForecaster"]

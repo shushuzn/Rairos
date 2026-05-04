@@ -1,1 +1,238 @@
-IiIiClBhcGVyIOKGkiBTbGlkZXMgQ0xJIENvbW1hbmQKClVzYWdlOgogICAgYWlyb3Mgc2xpZGVzIDIxMDYuMDk2ODUgICAgICAgICAgICAgICAgICAgICMg5Y2V6K665paH55Sf5oiQCiAgICBhaXJvcyBzbGlkZXMgMjEwNi4wOTY4NSAxNzA2LjAzNzYyICAgICAgICAjIOWkmuiuuuaWh+WvueavlAogICAgYWlyb3Mgc2xpZGVzIC0tbGlzdCAgICAgICAgICAgICAgICAgICAgICAgICMg5LuO5pWw5o2u5bqT6YCJ5oupCiAgICBhaXJvcyBzbGlkZXMgLS1pbnRlcmFjdGl2ZSAgICAgICAgICAgICAgICAgIyDkuqTkupLmqKHlvI8KIiIiCgppbXBvcnQgY2xpY2sKaW1wb3J0IHN5cwppbXBvcnQgcmUKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBPcHRpb25hbCwgTGlzdAoKIyBBZGQgcGFyZW50IHRvIHBhdGggZm9yIGltcG9ydHMKc3lzLnBhdGguaW5zZXJ0KDAsIHN0cihQYXRoKF9fZmlsZV9fKS5wYXJlbnQucGFyZW50LnBhcmVudCkpCgpmcm9tIGNsaS5fc2hhcmVkIGltcG9ydCBwcmludF9zdWNjZXNzLCBwcmludF9lcnJvciwgcHJpbnRfaW5mbwpmcm9tIGNsaS53YXJwIGltcG9ydCBXYXJwQmxvY2tzCmZyb20gbGxtLnNsaWRlcyBpbXBvcnQgUGFwZXJTbGlkZXNHZW5lcmF0b3IsIFNsaWRlc0NvbmZpZwoKCmRlZiBfYnVpbGRfc2xpZGVzX3BhcnNlcihzdWJwYXJzZXJzKToKICAgICIiIlJlZ2lzdGVyIHNsaWRlcyBzdWJjb21tYW5kLiIiIgogICAgcCA9IHN1YnBhcnNlcnMuYWRkX3BhcnNlcigic2xpZGVzIiwgaGVscD0i5LuO6K665paH6Ieq5Yqo55Sf5oiQ5ryU56S65paH56i/IikKICAgIHAuYWRkX2FyZ3VtZW50KCJhcnhpdl9pZHMiLCBuYXJncz0iKiIsIGhlbHA9ImFyWGl2IElEKHMp77yM5pSv5oyB5aSa5Liq6K665paH5a+55q+UIikKICAgIHAuYWRkX2FyZ3VtZW50KCItLWxpc3QiLCAiLWwiLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSLku47mnKzlnLDlupPpgInmi6norrrmlociKQogICAgcC5hZGRfYXJndW1lbnQoIi0taW50ZXJhY3RpdmUiLCAiLWkiLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSLkuqTkupLmqKHlvI8iKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tZm9ybWF0IiwKICAgICAgICAiLWYiLAogICAgICAgIGRlZmF1bHQ9InBwdHgiLAogICAgICAgIHR5cGU9Y2xpY2suQ2hvaWNlKFsicHB0eCIsICJtZCIsICJodG1sIl0pLAogICAgICAgIGhlbHA9Iui+k+WHuuagvOW8jyAo6buY6K6kIHBwdHgpIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLXRlbXBsYXRlIiwKICAgICAgICAiLXQiLAogICAgICAgIGRlZmF1bHQ9ImFjYWRlbWljIiwKICAgICAgICB0eXBlPWNsaWNrLkNob2ljZShbImFjYWRlbWljIiwgIm1pbmltYWwiLCAibW9kZXJuIl0pLAogICAgICAgIGhlbHA9IuW5u+eBr+eJh+aooeadvyIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgiLS1zbGlkZXMiLCAiLXMiLCB0eXBlPWludCwgZGVmYXVsdD0xMCwgaGVscD0i5bm754Gv54mH5pWw6YePICjpu5jorqQgMTApIikKICAgIHAuYWRkX2FyZ3VtZW50KCItLW91dHB1dCIsICItbyIsIHR5cGU9Y2xpY2suUGF0aCgpLCBkZWZhdWx0PU5vbmUsIGhlbHA9Iui+k+WHuui3r+W+hCIpCiAgICBwLmFkZF9hcmd1bWVudCgiLS1pbmNsdWRlLW5vdGVzIiwgYWN0aW9uPSJzdG9yZV90cnVlIiwgaGVscD0i5YyF5ZCr5ryU6K6y6ICF5aSH5rOoIikKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWxhbmciLCBkZWZhdWx0PSJ6aCIsIHR5cGU9Y2xpY2suQ2hvaWNlKFsiemgiLCAiZW4iLCAiYmlsaW5ndWFsIl0pLCBoZWxwPSLovpPlh7ror63oqIAiCiAgICApCiAgICBwLnNldF9kZWZhdWx0cygKICAgICAgICBmdW5jPWxhbWJkYSBhOiBzbGlkZXNfbWFpbigKICAgICAgICAgICAgYS5hcnhpdl9pZHMsCiAgICAgICAgICAgIGEubGlzdCwKICAgICAgICAgICAgYS5pbnRlcmFjdGl2ZSwKICAgICAgICAgICAgYS5mb3JtYXQsCiAgICAgICAgICAgIGEudGVtcGxhdGUsCiAgICAgICAgICAgIGEuc2xpZGVzLAogICAgICAgICAgICBhLm91dHB1dCwKICAgICAgICAgICAgYS5pbmNsdWRlX25vdGVzLAogICAgICAgICAgICBhLmxhbmcsCiAgICAgICAgKQogICAgKQoKCmRlZiBzbGlkZXNfbWFpbigKICAgIGFyeGl2X2lkczogTGlzdFtzdHJdLAogICAgdXNlX2xpc3Q6IGJvb2wsCiAgICBpbnRlcmFjdGl2ZTogYm9vbCwKICAgIGZtdDogc3RyLAogICAgdGVtcGxhdGU6IHN0ciwKICAgIG51bV9zbGlkZXM6IGludCwKICAgIG91dHB1dF9wYXRoOiBPcHRpb25hbFtzdHJdLAogICAgaW5jbHVkZV9ub3RlczogYm9vbCwKICAgIGxhbmc6IHN0ciwKKToKICAgICIiIk1haW4gc2xpZGVzIGdlbmVyYXRpb24gZW50cnkgcG9pbnQuIiIiCiAgICB0cnk6CiAgICAgICAgZnJvbSBkYi5kYXRhYmFzZSBpbXBvcnQgRGF0YWJhc2UKICAgIGV4Y2VwdCBJbXBvcnRFcnJvcjoKICAgICAgICBwcmludF9lcnJvcigi5pWw5o2u5bqT5qih5Z2X5LiN5Y+v55SoIikKICAgICAgICBzeXMuZXhpdCgxKQoKICAgIGRiID0gRGF0YWJhc2UoKQoKICAgICMg5Lqk5LqS5qih5byPCiAgICBpZiBpbnRlcmFjdGl2ZSBvciAobm90IGFyeGl2X2lkcyBhbmQgbm90IHVzZV9saXN0KToKICAgICAgICBpbnRlcmFjdGl2ZV9tb2RlKGRiKQogICAgICAgIHJldHVybgoKICAgICMg5LuO5YiX6KGo6YCJ5oupCiAgICBwYXBlcnNfdG9fcHJvY2VzcyA9IFtdCiAgICBpZiB1c2VfbGlzdDoKICAgICAgICBwYXBlcnNfdG9fcHJvY2VzcyA9IHNlbGVjdF9wYXBlcnNfZnJvbV9kYihkYikKICAgIGVsc2U6CiAgICAgICAgIyDop6PmnpAgYXJYaXYgSUQKICAgICAgICBmb3IgYWlkIGluIGFyeGl2X2lkczoKICAgICAgICAgICAgbWF0Y2ggPSByZS5zZWFyY2gociIoXGQrXC5cZCspIiwgYWlkKQogICAgICAgICAgICBpZiBtYXRjaDoKICAgICAgICAgICAgICAgIHBhcGVyc190b19wcm9jZXNzLmFwcGVuZChtYXRjaC5ncm91cCgxKSkKCiAgICBpZiBub3QgcGFwZXJzX3RvX3Byb2Nlc3M6CiAgICAgICAgcHJpbnRfZXJyb3IoIuayoeaciemAieaLqeS7u+S9leiuuuaWhyIpCiAgICAgICAgcmV0dXJuCgogICAgIyDnlJ/miJDlubvnga/niYcKICAgIGdlbmVyYXRvciA9IFBhcGVyU2xpZGVzR2VuZXJhdG9yKGRiKQogICAgY29uZmlnID0gU2xpZGVzQ29uZmlnKAogICAgICAgIHRlbXBsYXRlPXRlbXBsYXRlLAogICAgICAgIG51bV9zbGlkZXM9bnVtX3NsaWRlcywKICAgICAgICBvdXRwdXRfZm9ybWF0PWZtdCwKICAgICAgICBvdXRwdXRfcGF0aD1vdXRwdXRfcGF0aCwKICAgICAgICBpbmNsdWRlX25vdGVzPWluY2x1ZGVfbm90ZXMsCiAgICAgICAgbGFuZ3VhZ2U9bGFuZywKICAgICkKCiAgICB0cnk6CiAgICAgICAgcmVzdWx0ID0gZ2VuZXJhdG9yLmdlbmVyYXRlKHBhcGVyc190b19wcm9jZXNzLCBjb25maWcpCiAgICAgICAgZnJvbSByaWNoLmNvbnNvbGUgaW1wb3J0IENvbnNvbGUKCiAgICAgICAgYyA9IENvbnNvbGUoKQogICAgICAgIGMucnVsZSgiW2JvbGQgI0ZGODI3Ml0gIFNsaWRlcyBHZW5lcmF0ZWQgIFsvXSIpCiAgICAgICAgYy5wcmludCgpCiAgICAgICAgcm93cyA9IFsKICAgICAgICAgICAgWyJQYXBlcnMiLCBmIlsjQTVENUZFXXtyZXN1bHQucGFwZXJfY291bnR9Wy9dIl0sCiAgICAgICAgICAgIFsiU2xpZGVzIiwgZiJbI0I0RkE3Ml17cmVzdWx0LnNsaWRlX2NvdW50fVsvXSJdLAogICAgICAgICAgICBbIlRlbXBsYXRlIiwgZiJbI0QwRDFGRV17dGVtcGxhdGV9Wy9dIl0sCiAgICAgICAgICAgIFsiRm9ybWF0IiwgZiJbI0QwRDFGRV17Zm10fVsvXSJdLAogICAgICAgIF0KICAgICAgICBjLnByaW50KFdhcnBCbG9ja3MudGFibGUoWyJQcm9wZXJ0eSIsICJWYWx1ZSJdLCByb3dzLCB0aXRsZT0iR2VuZXJhdGlvbiBTdW1tYXJ5IikpCiAgICAgICAgYy5wcmludCgpCiAgICAgICAgcHJpbnQoV2FycEJsb2Nrcy5wYW5lbCgiT3V0cHV0IEZpbGUiLCBmIlsjQjRGQTcyXXtyZXN1bHQub3V0cHV0X3BhdGh9Wy9dIikpCiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgcHJpbnRfZXJyb3IoZiLnlJ/miJDlpLHotKU6IHtlfSIpCiAgICAgICAgc3lzLmV4aXQoMSkKCgpkZWYgaW50ZXJhY3RpdmVfbW9kZShkYik6CiAgICAiIiLkuqTkupLlvI/pgInmi6norrrmloflubbnlJ/miJDlubvnga/niYcuIiIiCiAgICBwcmludF9pbmZvKCI9PT0gUGFwZXIg4oaSIFNsaWRlcyDkuqTkupLmqKHlvI8gPT09IikKICAgIHByaW50X2luZm8oIui+k+WFpeiuuuaWh+e8luWPt++8iOmAl+WPt+WIhumalO+8ie+8jOaIliAncScg6YCA5Ye6OlxuIikKCiAgICAjIOiOt+WPluacrOWcsOiuuuaWhwogICAgcGFwZXJzID0gZGIuZ2V0X2FsbF9wYXBlcnMobGltaXQ9NTApCiAgICBpZiBub3QgcGFwZXJzOgogICAgICAgIHByaW50X2Vycm9yKCLmnKzlnLDmlbDmja7lupPkuLrnqbrvvIzlhYjlr7zlhaXkuIDkupvorrrmlociKQogICAgICAgIHJldHVybgoKICAgIGZyb20gcmljaC5jb25zb2xlIGltcG9ydCBDb25zb2xlCgogICAgYyA9IENvbnNvbGUoKQogICAgcm93cyA9IFtdCiAgICBmb3IgaSwgcGFwZXIgaW4gZW51bWVyYXRlKHBhcGVycywgMSk6CiAgICAgICAgdGl0bGUgPSBwYXBlci5nZXQoInRpdGxlIiwgIlVudGl0bGVkIilbOjUwXQogICAgICAgIHllYXIgPSBwYXBlci5nZXQoInB1Ymxpc2hlZCIsICIiKVs6NF0gb3IgIj8iCiAgICAgICAgcm93cy5hcHBlbmQoW2YiWyNGRUZEQzJdW3tpfV1bL10iLCB5ZWFyLCB0aXRsZV0pCiAgICBjLnByaW50KAogICAgICAgIFdhcnBCbG9ja3MudGFibGUoWyIjIiwgIlllYXIiLCAiVGl0bGUiXSwgcm93cywgdGl0bGU9ZiJBdmFpbGFibGUgUGFwZXJzICh7bGVuKHBhcGVycyl9KSIpCiAgICApCiAgICBwcmludCgpCiAgICBjaG9pY2UgPSBpbnB1dCgi6YCJ5oupOiAiKS5zdHJpcCgpCgogICAgaWYgY2hvaWNlLmxvd2VyKCkgaW4gKCJxIiwgInF1aXQiLCAiZXhpdCIpOgogICAgICAgIHJldHVybgoKICAgIHRyeToKICAgICAgICBpbmRpY2VzID0gW2ludCh4LnN0cmlwKCkpIC0gMSBmb3IgeCBpbiBjaG9pY2Uuc3BsaXQoIiwiKV0KICAgICAgICBzZWxlY3RlZCA9IFtwYXBlcnNbaV0gZm9yIGkgaW4gaW5kaWNlcyBpZiAwIDw9IGkgPCBsZW4ocGFwZXJzKV0KICAgICAgICBwYXBlcl9pZHMgPSBbcFsidWlkIl0gb3IgcC5nZXQoImFyeGl2X2lkIiwgIiIpIGZvciBwIGluIHNlbGVjdGVkXQoKICAgICAgICBnZW5lcmF0b3IgPSBQYXBlclNsaWRlc0dlbmVyYXRvcihkYikKICAgICAgICByZXN1bHQgPSBnZW5lcmF0b3IuZ2VuZXJhdGUocGFwZXJfaWRzLCBTbGlkZXNDb25maWcoKSkKICAgICAgICBwcmludF9zdWNjZXNzKGYiXG7nlJ/miJDmiJDlip86IHtyZXN1bHRbJ291dHB1dF9wYXRoJ119IikKICAgIGV4Y2VwdCAoVmFsdWVFcnJvciwgSW5kZXhFcnJvcikgYXMgZToKICAgICAgICBwcmludF9lcnJvcihmIumAieaLqeaXoOaViDoge2V9IikKCgpkZWYgc2VsZWN0X3BhcGVyc19mcm9tX2RiKGRiKSAtPiBMaXN0W3N0cl06CiAgICAiIiLku47mlbDmja7lupPpgInmi6norrrmlocuIiIiCiAgICBwYXBlcnMgPSBkYi5nZXRfYWxsX3BhcGVycyhsaW1pdD0yMCkKICAgIGlmIG5vdCBwYXBlcnM6CiAgICAgICAgcHJpbnRfZXJyb3IoIuayoeacieaJvuWIsOacrOWcsOiuuuaWhyIpCiAgICAgICAgcmV0dXJuIFtdCgogICAgZnJvbSByaWNoLmNvbnNvbGUgaW1wb3J0IENvbnNvbGUKCiAgICBjID0gQ29uc29sZSgpCiAgICByb3dzID0gW10KICAgIGZvciBpLCBwYXBlciBpbiBlbnVtZXJhdGUocGFwZXJzLCAxKToKICAgICAgICB0aXRsZSA9IHBhcGVyLmdldCgidGl0bGUiLCAiVW50aXRsZWQiKVs6NDVdCiAgICAgICAgeWVhciA9IHBhcGVyLmdldCgicHVibGlzaGVkIiwgIiIpWzo0XSBvciAiPyIKICAgICAgICByb3dzLmFwcGVuZChbZiJbI0ZFRkRDMl1be2l9XVsvXSIsIHllYXIsIHRpdGxlXSkKICAgIGMucHJpbnQoCiAgICAgICAgV2FycEJsb2Nrcy50YWJsZShbIiMiLCAiWWVhciIsICJUaXRsZSJdLCByb3dzLCB0aXRsZT1mIkF2YWlsYWJsZSBQYXBlcnMgKHtsZW4ocGFwZXJzKX0pIikKICAgICkKCiAgICBjaG9pY2UgPSBpbnB1dCgiXG7pgInmi6kgKOmAl+WPt+WIhumalCk6ICIpLnN0cmlwKCkKICAgIHRyeToKICAgICAgICBpbmRpY2VzID0gW2ludCh4LnN0cmlwKCkpIC0gMSBmb3IgeCBpbiBjaG9pY2Uuc3BsaXQoIiwiKV0KICAgICAgICByZXR1cm4gWwogICAgICAgICAgICBwYXBlcnNbaV1bInVpZCJdIG9yIHBhcGVyc1tpXS5nZXQoImFyeGl2X2lkIiwgIiIpCiAgICAgICAgICAgIGZvciBpIGluIGluZGljZXMKICAgICAgICAgICAgaWYgMCA8PSBpIDwgbGVuKHBhcGVycykKICAgICAgICBdCiAgICBleGNlcHQgKFZhbHVlRXJyb3IsIEluZGV4RXJyb3IpOgogICAgICAgIHByaW50X2Vycm9yKCLml6DmlYjpgInmi6kiKQogICAgICAgIHJldHVybiBbXQoKCiMgQ2xpY2sg5ZG95Luk5YWl5Y+jICjnm7TmjqXov5DooYwpCkBjbGljay5jb21tYW5kKCJzbGlkZXMiKQpAY2xpY2suYXJndW1lbnQoImFyeGl2X2lkcyIsIG5hcmdzPS0xLCB0eXBlPXN0cikKQGNsaWNrLm9wdGlvbigiLS1saXN0IiwgIi1sIiwgaXNfZmxhZz1UcnVlLCBoZWxwPSLku47mnKzlnLDlupPpgInmi6kiKQpAY2xpY2sub3B0aW9uKCItLWludGVyYWN0aXZlIiwgIi1pIiwgaXNfZmxhZz1UcnVlLCBoZWxwPSLkuqTkupLmqKHlvI8iKQpAY2xpY2sub3B0aW9uKCItLWZvcm1hdCIsICItZiIsIGRlZmF1bHQ9InBwdHgiLCB0eXBlPWNsaWNrLkNob2ljZShbInBwdHgiLCAibWQiLCAiaHRtbCJdKSkKQGNsaWNrLm9wdGlvbigiLS10ZW1wbGF0ZSIsICItdCIsIGRlZmF1bHQ9ImFjYWRlbWljIikKQGNsaWNrLm9wdGlvbigiLS1zbGlkZXMiLCAiLXMiLCB0eXBlPWludCwgZGVmYXVsdD0xMCkKQGNsaWNrLm9wdGlvbigiLS1vdXRwdXQiLCAiLW8iLCB0eXBlPXN0ciwgZGVmYXVsdD1Ob25lKQpAY2xpY2sub3B0aW9uKCItLWluY2x1ZGUtbm90ZXMiLCBpc19mbGFnPVRydWUpCkBjbGljay5vcHRpb24oIi0tbGFuZyIsIGRlZmF1bHQ9InpoIiwgdHlwZT1jbGljay5DaG9pY2UoWyJ6aCIsICJlbiIsICJiaWxpbmd1YWwiXSkpCmRlZiBzbGlkZXMoCiAgICBhcnhpdl9pZHM6IHR1cGxlLAogICAgbGlzdF9tb2RlOiBib29sLAogICAgaW50ZXJhY3RpdmU6IGJvb2wsCiAgICBmb3JtYXQ6IHN0ciwKICAgIHRlbXBsYXRlOiBzdHIsCiAgICBzbGlkZXM6IGludCwKICAgIG91dHB1dDogc3RyLAogICAgaW5jbHVkZV9ub3RlczogYm9vbCwKICAgIGxhbmc6IHN0ciwKKToKICAgICIiIuS7juiuuuaWh+iHquWKqOeUn+aIkOa8lOekuuaWh+eovy4iIiIKICAgIHNsaWRlc19tYWluKAogICAgICAgIGxpc3QoYXJ4aXZfaWRzKSwKICAgICAgICBsaXN0X21vZGUsCiAgICAgICAgaW50ZXJhY3RpdmUsCiAgICAgICAgZm9ybWF0LAogICAgICAgIHRlbXBsYXRlLAogICAgICAgIHNsaWRlcywKICAgICAgICBvdXRwdXQsCiAgICAgICAgaW5jbHVkZV9ub3RlcywKICAgICAgICBsYW5nLAogICAgKQoKCmRlZiBfcnVuX3NsaWRlcyhhcmdzKSAtPiBOb25lOgogICAgIiIiUnVuIHNsaWRlcyBjb21tYW5kIGZyb20gYXJncGFyc2UgYXJncy4iIiIKICAgIHNsaWRlc19tYWluKAogICAgICAgIGFyZ3MuYXJ4aXZfaWRzIG9yIFtdLAogICAgICAgIGFyZ3MubGlzdCwKICAgICAgICBhcmdzLmludGVyYWN0aXZlLAogICAgICAgIGFyZ3MuZm9ybWF0LAogICAgICAgIGFyZ3MudGVtcGxhdGUsCiAgICAgICAgYXJncy5zbGlkZXMsCiAgICAgICAgYXJncy5vdXRwdXQsCiAgICAgICAgYXJncy5pbmNsdWRlX25vdGVzLAogICAgICAgIGFyZ3MubGFuZywKICAgICkKCgppZiBfX25hbWVfXyA9PSAiX19tYWluX18iOgogICAgc2xpZGVzKCkK
+"""
+Paper → Slides CLI Command
+
+Usage:
+    airos slides 2106.09685                    # 单论文生成
+    airos slides 2106.09685 1706.03762        # 多论文对比
+    airos slides --list                        # 从数据库选择
+    airos slides --interactive                 # 交互模式
+"""
+
+import click
+import sys
+import re
+from pathlib import Path
+from typing import Optional, List
+
+# Add parent to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+from cli._shared import print_success, print_error, print_info
+from cli.warp import WarpBlocks
+from llm.slides import PaperSlidesGenerator, SlidesConfig
+
+
+def _build_slides_parser(subparsers):
+    """Register slides subcommand."""
+    p = subparsers.add_parser("slides", help="从论文自动生成演示文稿")
+    p.add_argument("arxiv_ids", nargs="*", help="arXiv ID(s)，支持多个论文对比")
+    p.add_argument("--list", "-l", action="store_true", help="从本地库选择论文")
+    p.add_argument("--interactive", "-i", action="store_true", help="交互模式")
+    p.add_argument("--format", "-f", default="pptx",
+                   type=click.Choice(["pptx", "md", "html"]),
+                   help="输出格式 (默认 pptx)")
+    p.add_argument("--template", "-t", default="academic",
+                   type=click.Choice(["academic", "minimal", "modern"]),
+                   help="幻灯片模板")
+    p.add_argument("--slides", "-s", type=int, default=10,
+                   help="幻灯片数量 (默认 10)")
+    p.add_argument("--output", "-o", type=click.Path(), default=None,
+                   help="输出路径")
+    p.add_argument("--include-notes", action="store_true",
+                   help="包含演讲者备注")
+    p.add_argument("--lang", default="zh",
+                   type=click.Choice(["zh", "en", "bilingual"]),
+                   help="输出语言")
+    p.set_defaults(func=lambda a: slides_main(
+        a.arxiv_ids, a.list, a.interactive, a.format, a.template,
+        a.slides, a.output, a.include_notes, a.lang
+    ))
+
+
+def slides_main(
+    arxiv_ids: List[str],
+    use_list: bool,
+    interactive: bool,
+    fmt: str,
+    template: str,
+    num_slides: int,
+    output_path: Optional[str],
+    include_notes: bool,
+    lang: str,
+):
+    """Main slides generation entry point."""
+    try:
+        from db.database import Database
+    except ImportError:
+        print_error("数据库模块不可用")
+        sys.exit(1)
+
+    db = Database()
+
+    # 交互模式
+    if interactive or (not arxiv_ids and not use_list):
+        interactive_mode(db)
+        return
+
+    # 从列表选择
+    papers_to_process = []
+    if use_list:
+        papers_to_process = select_papers_from_db(db)
+    else:
+        # 解析 arXiv ID
+        for aid in arxiv_ids:
+            match = re.search(r"(\d+\.\d+)", aid)
+            if match:
+                papers_to_process.append(match.group(1))
+
+    if not papers_to_process:
+        print_error("没有选择任何论文")
+        return
+
+    # 生成幻灯片
+    generator = PaperSlidesGenerator(db)
+    config = SlidesConfig(
+        template=template,
+        num_slides=num_slides,
+        output_format=fmt,
+        output_path=output_path,
+        include_notes=include_notes,
+        language=lang,
+    )
+
+    try:
+        result = generator.generate(papers_to_process, config)
+        from rich.console import Console
+        c = Console()
+        c.rule("[bold #FF8272]  Slides Generated  [/]")
+        c.print()
+        rows = [
+            ["Papers", f"[#A5D5FE]{result.paper_count}[/]"],
+            ["Slides", f"[#B4FA72]{result.slide_count}[/]"],
+            ["Template", f"[#D0D1FE]{template}[/]"],
+            ["Format", f"[#D0D1FE]{fmt}[/]"],
+        ]
+        c.print(WarpBlocks.table(["Property", "Value"], rows, title="Generation Summary"))
+        c.print()
+        print(WarpBlocks.panel(
+            "Output File",
+            f"[#B4FA72]{result.output_path}[/]"
+        ))
+    except Exception as e:
+        print_error(f"生成失败: {e}")
+        sys.exit(1)
+
+
+def interactive_mode(db):
+    """交互式选择论文并生成幻灯片."""
+    print_info("=== Paper → Slides 交互模式 ===")
+    print_info("输入论文编号（逗号分隔），或 'q' 退出:\n")
+
+    # 获取本地论文
+    papers = db.get_all_papers(limit=50)
+    if not papers:
+        print_error("本地数据库为空，先导入一些论文")
+        return
+
+    from rich.console import Console
+    c = Console()
+    rows = []
+    for i, paper in enumerate(papers, 1):
+        title = paper.get("title", "Untitled")[:50]
+        year = paper.get("published", "")[:4] or "?"
+        rows.append([f"[#FEFDC2][{i}][/]", year, title])
+    c.print(WarpBlocks.table(
+        ["#", "Year", "Title"],
+        rows,
+        title=f"Available Papers ({len(papers)})"
+    ))
+    print()
+    choice = input("选择: ").strip()
+
+    if choice.lower() in ("q", "quit", "exit"):
+        return
+
+    try:
+        indices = [int(x.strip()) - 1 for x in choice.split(",")]
+        selected = [papers[i] for i in indices if 0 <= i < len(papers)]
+        paper_ids = [p["uid"] or p.get("arxiv_id", "") for p in selected]
+
+        generator = PaperSlidesGenerator(db)
+        result = generator.generate(paper_ids, SlidesConfig())
+        print_success(f"\n生成成功: {result['output_path']}")
+    except (ValueError, IndexError) as e:
+        print_error(f"选择无效: {e}")
+
+
+def select_papers_from_db(db) -> List[str]:
+    """从数据库选择论文."""
+    papers = db.get_all_papers(limit=20)
+    if not papers:
+        print_error("没有找到本地论文")
+        return []
+
+    from rich.console import Console
+    c = Console()
+    rows = []
+    for i, paper in enumerate(papers, 1):
+        title = paper.get("title", "Untitled")[:45]
+        year = paper.get("published", "")[:4] or "?"
+        rows.append([f"[#FEFDC2][{i}][/]", year, title])
+    c.print(WarpBlocks.table(["#", "Year", "Title"], rows, title=f"Available Papers ({len(papers)})"))
+
+    choice = input("\n选择 (逗号分隔): ").strip()
+    try:
+        indices = [int(x.strip()) - 1 for x in choice.split(",")]
+        return [papers[i]["uid"] or papers[i].get("arxiv_id", "")
+                for i in indices if 0 <= i < len(papers)]
+    except (ValueError, IndexError):
+        print_error("无效选择")
+        return []
+
+
+# Click 命令入口 (直接运行)
+@click.command("slides")
+@click.argument("arxiv_ids", nargs=-1, type=str)
+@click.option("--list", "-l", is_flag=True, help="从本地库选择")
+@click.option("--interactive", "-i", is_flag=True, help="交互模式")
+@click.option("--format", "-f", default="pptx", type=click.Choice(["pptx", "md", "html"]))
+@click.option("--template", "-t", default="academic")
+@click.option("--slides", "-s", type=int, default=10)
+@click.option("--output", "-o", type=str, default=None)
+@click.option("--include-notes", is_flag=True)
+@click.option("--lang", default="zh", type=click.Choice(["zh", "en", "bilingual"]))
+def slides(
+    arxiv_ids: tuple,
+    list_mode: bool,
+    interactive: bool,
+    format: str,
+    template: str,
+    slides: int,
+    output: str,
+    include_notes: bool,
+    lang: str,
+):
+    """从论文自动生成演示文稿."""
+    slides_main(
+        list(arxiv_ids), list_mode, interactive,
+        format, template, slides, output, include_notes, lang
+    )
+
+
+def _run_slides(args) -> None:
+    """Run slides command from argparse args."""
+    slides_main(
+        args.arxiv_ids or [],
+        args.list,
+        args.interactive,
+        args.format,
+        args.template,
+        args.slides,
+        args.output,
+        args.include_notes,
+        args.lang
+    )
+
+
+if __name__ == "__main__":
+    slides()

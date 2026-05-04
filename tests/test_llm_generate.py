@@ -1,1 +1,347 @@
-IiIiVGllciAyIHVuaXQgdGVzdHMg4oCUIGxsbS9nZW5lcmF0ZS5weSwgcHVyZSBmdW5jdGlvbnMsIG5vIEkvTy4iIiIKCmltcG9ydCBweXRlc3QKZnJvbSBsbG0uZ2VuZXJhdGUgaW1wb3J0ICgKICAgIGVzdGltYXRlX3Rva2VucywKICAgIGdldF9tb2RlbF9wcmljZSwKICAgIGVzdGltYXRlX2Nvc3QsCikKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgZXN0aW1hdGVfdG9rZW5zIOKAlCB0b2tlbiBlc3RpbWF0aW9uCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdEVzdGltYXRlVG9rZW5zOgogICAgIiIiVGVzdCB0b2tlbiBlc3RpbWF0aW9uIGxvZ2ljLiIiIgoKICAgIGRlZiB0ZXN0X2VtcHR5X3N0cmluZ19yZXR1cm5zX3plcm8oc2VsZik6CiAgICAgICAgIiIiRW1wdHkgaW5wdXQgcmV0dXJucyAwIHRva2Vucy4iIiIKICAgICAgICBhc3NlcnQgZXN0aW1hdGVfdG9rZW5zKCIiKSA9PSAwCiAgICAgICAgYXNzZXJ0IGVzdGltYXRlX3Rva2VucyhOb25lKSA9PSAwICAjIHR5cGUgY2hlY2sKCiAgICBkZWYgdGVzdF9zaG9ydF90ZXh0X3JldHVybnNfbWluaW11bV9vbmUoc2VsZik6CiAgICAgICAgIiIiVmVyeSBzaG9ydCB0ZXh0IHJldHVybnMgYXQgbGVhc3QgMSB0b2tlbi4iIiIKICAgICAgICBhc3NlcnQgZXN0aW1hdGVfdG9rZW5zKCJhIikgPT0gMQogICAgICAgIGFzc2VydCBlc3RpbWF0ZV90b2tlbnMoImhpIikgPT0gMQoKICAgIGRlZiB0ZXN0X2RpdmlkZXNfYnlfZm91cihzZWxmKToKICAgICAgICAiIiJUb2tlbiBlc3RpbWF0ZSA9IGNoYXJzIC8gNC4iIiIKICAgICAgICBhc3NlcnQgZXN0aW1hdGVfdG9rZW5zKCJhYmNkIikgPT0gMQogICAgICAgIGFzc2VydCBlc3RpbWF0ZV90b2tlbnMoImEiICogOCkgPT0gMgogICAgICAgIGFzc2VydCBlc3RpbWF0ZV90b2tlbnMoImEiICogMTIpID09IDMKCiAgICBkZWYgdGVzdF9jaGluZXNlX3RleHRfZXN0aW1hdGlvbihzZWxmKToKICAgICAgICAiIiJDaGluZXNlIGNoYXJhY3RlcnM6IH4xIHRva2VuIHBlciBjaGFyICg0IGNoYXJzID0gMSB0b2tlbikuIiIiCiAgICAgICAgcmVzdWx0ID0gZXN0aW1hdGVfdG9rZW5zKCLmt7HluqblrabkuaAiKQogICAgICAgIGFzc2VydCByZXN1bHQgPT0gMSAgIyA0IGNoYXJzIC8gNAoKICAgIGRlZiB0ZXN0X21peGVkX2NoaW5lc2VfZW5nbGlzaChzZWxmKToKICAgICAgICAiIiJNaXhlZCBjb250ZW50OiB0b3RhbCBjaGFycyAvIDQuIiIiCiAgICAgICAgcmVzdWx0ID0gZXN0aW1hdGVfdG9rZW5zKCJBdHRlbnRpb24gaXMgYWxsIHlvdSBuZWVkIikKICAgICAgICAjIDI3IGNoYXJzIC8gNCA9IDYKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IDYKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgZ2V0X21vZGVsX3ByaWNlIOKAlCBtb2RlbCBwcmljaW5nIGxvb2t1cAojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RHZXRNb2RlbFByaWNlOgogICAgIiIiVGVzdCBtb2RlbCBwcmljZSBsb29rdXAgbG9naWMuIiIiCgogICAgZGVmIHRlc3RfcmV0dXJuc190dXBsZShzZWxmKToKICAgICAgICAiIiJSZXR1cm5zIChpbnB1dF9wZXJfMU0sIG91dHB1dF9wZXJfMU0pIHR1cGxlLiIiIgogICAgICAgIHByaWNlID0gZ2V0X21vZGVsX3ByaWNlKCJncHQtNG8iKQogICAgICAgIGFzc2VydCBpc2luc3RhbmNlKHByaWNlLCB0dXBsZSkKICAgICAgICBhc3NlcnQgbGVuKHByaWNlKSA9PSAyCgogICAgZGVmIHRlc3RfZ3B0NG9fcHJpY2luZyhzZWxmKToKICAgICAgICAiIiJHUFQtNG8gcHJpY2luZyBsb29rdXAuIiIiCiAgICAgICAgaW5wLCBvdXQgPSBnZXRfbW9kZWxfcHJpY2UoImdwdC00byIpCiAgICAgICAgYXNzZXJ0IGlucCA+IDAKICAgICAgICBhc3NlcnQgb3V0ID4gMAogICAgICAgIGFzc2VydCBpbnAgPCBvdXQgICMgT3V0cHV0IHR5cGljYWxseSBtb3JlIGV4cGVuc2l2ZQoKICAgIGRlZiB0ZXN0X2dwdDM1X3R1cmJvX3ByaWNpbmcoc2VsZik6CiAgICAgICAgIiIiR1BULTMuNS10dXJibyBwcmljaW5nIGxvb2t1cC4iIiIKICAgICAgICBpbnAsIG91dCA9IGdldF9tb2RlbF9wcmljZSgiZ3B0LTMuNS10dXJibyIpCiAgICAgICAgYXNzZXJ0IGlucCA+PSAwCiAgICAgICAgYXNzZXJ0IG91dCA+PSAwCgogICAgZGVmIHRlc3RfY2FzZV9pbnNlbnNpdGl2ZShzZWxmKToKICAgICAgICAiIiJNb2RlbCBsb29rdXAgaXMgY2FzZS1pbnNlbnNpdGl2ZS4iIiIKICAgICAgICBwcmljZV9sb3dlciA9IGdldF9tb2RlbF9wcmljZSgiZ3B0LTRvIikKICAgICAgICBwcmljZV91cHBlciA9IGdldF9tb2RlbF9wcmljZSgiR1BULTRPIikKICAgICAgICBwcmljZV9taXhlZCA9IGdldF9tb2RlbF9wcmljZSgiR3B0LTRvIikKICAgICAgICBhc3NlcnQgcHJpY2VfbG93ZXIgPT0gcHJpY2VfdXBwZXIgPT0gcHJpY2VfbWl4ZWQKCiAgICBkZWYgdGVzdF9wYXJ0aWFsX21hdGNoKHNlbGYpOgogICAgICAgICIiIlBhcnRpYWwgbW9kZWwgbmFtZSBtYXRjaGVzLiIiIgogICAgICAgICMgU2hvdWxkIG1hdGNoICdncHQnIGluICdncHQtNG8tbWluaScKICAgICAgICBwcmljZTEgPSBnZXRfbW9kZWxfcHJpY2UoImdwdC00by1taW5pIikKICAgICAgICBnZXRfbW9kZWxfcHJpY2UoImdwdC00byIpCiAgICAgICAgIyBCb3RoIHNob3VsZCByZXR1cm4gZ3B0IHByaWNlcwogICAgICAgIGFzc2VydCBwcmljZTFbMF0gPiAwCgogICAgZGVmIHRlc3RfdW5rbm93bl9tb2RlbF9kZWZhdWx0cyhzZWxmKToKICAgICAgICAiIiJVbmtub3duIG1vZGVsIHJldHVybnMgZGVmYXVsdCBwcmljaW5nLiIiIgogICAgICAgIHByaWNlID0gZ2V0X21vZGVsX3ByaWNlKCJjb21wbGV0ZWx5LXVua25vd24tbW9kZWwteHl6IikKICAgICAgICBkZWZhdWx0ID0gZ2V0X21vZGVsX3ByaWNlKCJkZWZhdWx0IikKICAgICAgICBhc3NlcnQgcHJpY2UgPT0gZGVmYXVsdAoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBlc3RpbWF0ZV9jb3N0IOKAlCBjb3N0IGNhbGN1bGF0aW9uCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdEVzdGltYXRlQ29zdDoKICAgICIiIlRlc3QgY29zdCBlc3RpbWF0aW9uIGxvZ2ljLiIiIgoKICAgIGRlZiB0ZXN0X3JldHVybnNfZGljdF93aXRoX2FsbF9rZXlzKHNlbGYpOgogICAgICAgICIiIlJldHVybnMgZGljdCB3aXRoIGFsbCBleHBlY3RlZCBrZXlzLiIiIgogICAgICAgIHJlc3VsdCA9IGVzdGltYXRlX2Nvc3QoImdwdC00byIsICJpbnB1dCB0ZXh0IiwgIm91dHB1dCB0ZXh0IikKICAgICAgICBhc3NlcnQgImlucHV0X3Rva2VucyIgaW4gcmVzdWx0CiAgICAgICAgYXNzZXJ0ICJvdXRwdXRfdG9rZW5zIiBpbiByZXN1bHQKICAgICAgICBhc3NlcnQgInRvdGFsX3Rva2VucyIgaW4gcmVzdWx0CiAgICAgICAgYXNzZXJ0ICJpbnB1dF9jb3N0X3VzZCIgaW4gcmVzdWx0CiAgICAgICAgYXNzZXJ0ICJvdXRwdXRfY29zdF91c2QiIGluIHJlc3VsdAogICAgICAgIGFzc2VydCAidG90YWxfY29zdF91c2QiIGluIHJlc3VsdAoKICAgIGRlZiB0ZXN0X3RvdGFsX2VxdWFsc19zdW1fb2ZfcGFydHMoc2VsZik6CiAgICAgICAgIiIiVG90YWwgY29zdCA9IGlucHV0ICsgb3V0cHV0IGNvc3QuIiIiCiAgICAgICAgcmVzdWx0ID0gZXN0aW1hdGVfY29zdCgiZ3B0LTRvIiwgImhlbGxvIHdvcmxkIiwgInJlc3BvbnNlIikKICAgICAgICBhc3NlcnQgcmVzdWx0WyJ0b3RhbF9jb3N0X3VzZCJdID09IHB5dGVzdC5hcHByb3goCiAgICAgICAgICAgIHJlc3VsdFsiaW5wdXRfY29zdF91c2QiXSArIHJlc3VsdFsib3V0cHV0X2Nvc3RfdXNkIl0KICAgICAgICApCgogICAgZGVmIHRlc3RfdG90YWxfdG9rZW5zX2VxdWFsc19zdW0oc2VsZik6CiAgICAgICAgIiIiVG90YWwgdG9rZW5zID0gaW5wdXQgKyBvdXRwdXQgdG9rZW5zLiIiIgogICAgICAgIHJlc3VsdCA9IGVzdGltYXRlX2Nvc3QoImdwdC00byIsICJoZWxsbyIsICJ3b3JsZCIpCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsidG90YWxfdG9rZW5zIl0gPT0gcmVzdWx0WyJpbnB1dF90b2tlbnMiXSArIHJlc3VsdFsib3V0cHV0X3Rva2VucyJdCgogICAgZGVmIHRlc3RfZW1wdHlfaW5wdXQoc2VsZik6CiAgICAgICAgIiIiRW1wdHkgaW5wdXQgdGV4dCBoYW5kbGVkIGNvcnJlY3RseS4iIiIKICAgICAgICByZXN1bHQgPSBlc3RpbWF0ZV9jb3N0KCJncHQtNG8iLCAiIiwgIm91dHB1dCIpCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsiaW5wdXRfdG9rZW5zIl0gPT0gMAogICAgICAgIGFzc2VydCByZXN1bHRbImlucHV0X2Nvc3RfdXNkIl0gPT0gMC4wCgogICAgZGVmIHRlc3RfZW1wdHlfb3V0cHV0KHNlbGYpOgogICAgICAgICIiIkVtcHR5IG91dHB1dCB0ZXh0IGhhbmRsZWQgY29ycmVjdGx5LiIiIgogICAgICAgIHJlc3VsdCA9IGVzdGltYXRlX2Nvc3QoImdwdC00byIsICJpbnB1dCIsICIiKQogICAgICAgIGFzc2VydCByZXN1bHRbIm91dHB1dF90b2tlbnMiXSA9PSAwCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsib3V0cHV0X2Nvc3RfdXNkIl0gPT0gMC4wCgogICAgZGVmIHRlc3RfY29zdF9wcm9wb3J0aW9uYWxfdG9fdG9rZW5zKHNlbGYpOgogICAgICAgICIiIkNvc3QgaW5jcmVhc2VzIHdpdGggdG9rZW4gY291bnQuIiIiCiAgICAgICAgc2hvcnQgPSBlc3RpbWF0ZV9jb3N0KCJncHQtNG8iLCAiYSIsICJiIikKICAgICAgICBsb25nID0gZXN0aW1hdGVfY29zdCgiZ3B0LTRvIiwgImEiICogMTAwLCAiYiIgKiAxMDApCiAgICAgICAgYXNzZXJ0IGxvbmdbInRvdGFsX2Nvc3RfdXNkIl0gPiBzaG9ydFsidG90YWxfY29zdF91c2QiXQoKICAgIGRlZiB0ZXN0X2Nvc3RfcHJlY2lzaW9uKHNlbGYpOgogICAgICAgICIiIkNvc3QgaXMgcm91bmRlZCB0byA2IGRlY2ltYWwgcGxhY2VzLiIiIgogICAgICAgIHJlc3VsdCA9IGVzdGltYXRlX2Nvc3QoImdwdC00byIsICJ0ZXN0IiwgInJlc3VsdCIpCiAgICAgICAgIyBDaGVjayBwcmVjaXNpb24gaXMgcmVhc29uYWJsZSAobm90IHJhdyBmbG9hdCkKICAgICAgICBjb3N0X3N0ciA9IHN0cihyZXN1bHRbInRvdGFsX2Nvc3RfdXNkIl0pCiAgICAgICAgZGVjaW1hbF9wbGFjZXMgPSBsZW4oY29zdF9zdHIuc3BsaXQoIi4iKVstMV0pIGlmICIuIiBpbiBjb3N0X3N0ciBlbHNlIDAKICAgICAgICBhc3NlcnQgZGVjaW1hbF9wbGFjZXMgPD0gNgoKICAgIGRlZiB0ZXN0X2RpZmZlcmVudF9tb2RlbHNfZGlmZmVyZW50X2Nvc3RzKHNlbGYpOgogICAgICAgICIiIkRpZmZlcmVudCBtb2RlbHMgaGF2ZSBkaWZmZXJlbnQgcHJpY2luZy4iIiIKICAgICAgICBjaGVhcF9tb2RlbCA9ICJncHQtMy41LXR1cmJvIgogICAgICAgIGV4cGVuc2l2ZV9tb2RlbCA9ICJncHQtNG8iCiAgICAgICAgdGV4dCA9ICJhIiAqIDEwMDAKCiAgICAgICAgY29zdF9jaGVhcCA9IGVzdGltYXRlX2Nvc3QoY2hlYXBfbW9kZWwsIHRleHQsIHRleHQpCiAgICAgICAgY29zdF9leHBlbnNpdmUgPSBlc3RpbWF0ZV9jb3N0KGV4cGVuc2l2ZV9tb2RlbCwgdGV4dCwgdGV4dCkKCiAgICAgICAgIyBFeHBlbnNpdmUgbW9kZWwgc2hvdWxkIGNvc3QgbW9yZQogICAgICAgIGFzc2VydCBjb3N0X2V4cGVuc2l2ZVsidG90YWxfY29zdF91c2QiXSA+IGNvc3RfY2hlYXBbInRvdGFsX2Nvc3RfdXNkIl0KCiAgICBkZWYgdGVzdF9jb3N0X3JlYXNvbmFibGVfbWFnbml0dWRlKHNlbGYpOgogICAgICAgICIiIlR5cGljYWwgY29zdHMgYXJlIGluIHJlYXNvbmFibGUgcmFuZ2UgKG5vdCBhc3Ryb25vbWljYWwpLiIiIgogICAgICAgIHJlc3VsdCA9IGVzdGltYXRlX2Nvc3QoImdwdC00byIsICJhIiAqIDEwMDAsICJiIiAqIDEwMDApCiAgICAgICAgIyA1MDAgdG9rZW5zICogJDUvMU0gaW5wdXQgKyAkMTUvMU0gb3V0cHV0IOKJiCAkMC4wMQogICAgICAgIGFzc2VydCByZXN1bHRbInRvdGFsX2Nvc3RfdXNkIl0gPCAxLjAgICMgU2hvdWxkIGJlIHVuZGVyICQxIGZvciB0aGlzIHNpemUKICAgICAgICBhc3NlcnQgcmVzdWx0WyJ0b3RhbF9jb3N0X3VzZCJdID4gMAoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBUZW1wbGF0ZSBmb3JtYXQgdmFsaWRhdGlvbgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RQbm90ZVRlbXBsYXRlOgogICAgIiIiVGVzdCBQLU5vdGUgdGVtcGxhdGUgc3RydWN0dXJlLiIiIgoKICAgIGRlZiB0ZXN0X3Bub3RlX3VzZXJfdGVtcGxhdGVfaGFzX3JlcXVpcmVkX3NlY3Rpb25zKHNlbGYpOgogICAgICAgICIiIlAtTm90ZSB0ZW1wbGF0ZSBpbmNsdWRlcyBhbGwgcmVxdWlyZWQgc2VjdGlvbnMuIiIiCiAgICAgICAgZnJvbSBsbG0uZ2VuZXJhdGUgaW1wb3J0IF9QTk9URV9VU0VSX1BST01QVF9URU1QTEFURQoKICAgICAgICByZXF1aXJlZF9zZWN0aW9ucyA9IFsKICAgICAgICAgICAgInBhcGVyX3RpdGxlIiwKICAgICAgICAgICAgInBhcGVyX2F1dGhvcnMiLAogICAgICAgICAgICAicGFwZXJfYWJzdHJhY3QiLAogICAgICAgICAgICAicGFwZXJfYm9keSIsCiAgICAgICAgICAgICIjIyAxLiDog4zmma8iLAogICAgICAgICAgICAiIyMgMi4g5qC45b+D6Zeu6aKYIiwKICAgICAgICAgICAgIiMjIDMuIOaWueazlee7k+aehCIsCiAgICAgICAgICAgICIjIyA0LiDlhbPplK7liJvmlrAiLAogICAgICAgICAgICAiIyMgNS4g5a6e6aqM5YiG5p6QIiwKICAgICAgICAgICAgIiMjIDYuIOWvueaKl+W8j+WuoeeovyIsCiAgICAgICAgICAgICIjIyA3LiDkvJjlir8iLAogICAgICAgICAgICAiIyMgOC4g5bGA6ZmQIiwKICAgICAgICAgICAgIiMjIDE0LiDor4TliIbph4/ooagiLAogICAgICAgIF0KCiAgICAgICAgZm9yIHNlY3Rpb24gaW4gcmVxdWlyZWRfc2VjdGlvbnM6CiAgICAgICAgICAgIGFzc2VydCBzZWN0aW9uIGluIF9QTk9URV9VU0VSX1BST01QVF9URU1QTEFURSwgZiJNaXNzaW5nOiB7c2VjdGlvbn0iCgogICAgZGVmIHRlc3RfcG5vdGVfdXNlcl90ZW1wbGF0ZV9oYXNfcnVicmljX2Zvcm1hdChzZWxmKToKICAgICAgICAiIiJQLU5vdGUgdGVtcGxhdGUgaW5jbHVkZXMgcnVicmljIHNjb3JpbmcgZm9ybWF0LiIiIgogICAgICAgIGZyb20gbGxtLmdlbmVyYXRlIGltcG9ydCBfUE5PVEVfVVNFUl9QUk9NUFRfVEVNUExBVEUKCiAgICAgICAgYXNzZXJ0ICJOb3ZlbHR5ICgxLTUpIiBpbiBfUE5PVEVfVVNFUl9QUk9NUFRfVEVNUExBVEUKICAgICAgICBhc3NlcnQgIkxldmVyYWdlIiBpbiBfUE5PVEVfVVNFUl9QUk9NUFRfVEVNUExBVEUKICAgICAgICBhc3NlcnQgIkV2aWRlbmNlIiBpbiBfUE5PVEVfVVNFUl9QUk9NUFRfVEVNUExBVEUKICAgICAgICBhc3NlcnQgIuivhOWIhumHj+ihqCIgaW4gX1BOT1RFX1VTRVJfUFJPTVBUX1RFTVBMQVRFCgogICAgZGVmIHRlc3RfcG5vdGVfc3lzdGVtX3Byb21wdF9oYXNfaGFyZF9ydWxlcyhzZWxmKToKICAgICAgICAiIiJTeXN0ZW0gcHJvbXB0IGluY2x1ZGVzIGhhcmQgcnVsZXMuIiIiCiAgICAgICAgZnJvbSBsbG0uZ2VuZXJhdGUgaW1wb3J0IF9QTk9URV9TWVNURU1fUFJPTVBUCgogICAgICAgIGFzc2VydCAiW+i/neinhF0iIGluIF9QTk9URV9TWVNURU1fUFJPTVBUCiAgICAgICAgYXNzZXJ0ICJDbGFpbXMiIGluIF9QTk9URV9TWVNURU1fUFJPTVBUCiAgICAgICAgYXNzZXJ0ICJNYXJrZG93biIgaW4gX1BOT1RFX1NZU1RFTV9QUk9NUFQKCgpjbGFzcyBUZXN0Q25vdGVUZW1wbGF0ZToKICAgICIiIlRlc3QgQy1Ob3RlIHRlbXBsYXRlIHN0cnVjdHVyZS4iIiIKCiAgICBkZWYgdGVzdF9jbm90ZV91c2VyX3RlbXBsYXRlX2hhc19yZXF1aXJlZF9zZWN0aW9ucyhzZWxmKToKICAgICAgICAiIiJDLU5vdGUgdGVtcGxhdGUgaW5jbHVkZXMgYWxsIHJlcXVpcmVkIHNlY3Rpb25zLiIiIgogICAgICAgIGZyb20gbGxtLmdlbmVyYXRlIGltcG9ydCBfQ05PVEVfVVNFUl9QUk9NUFRfVEVNUExBVEUKCiAgICAgICAgcmVxdWlyZWRfc2VjdGlvbnMgPSBbCiAgICAgICAgICAgICIjIyDmoLjlv4PlrprkuYkiLAogICAgICAgICAgICAiIyMg5Lqn55Sf6IOM5pmvIiwKICAgICAgICAgICAgIiMjIOaKgOacr+acrOi0qCIsCiAgICAgICAgICAgICIjIyDluLjop4Hlrp7njrDot6/lvoQiLAogICAgICAgICAgICAiIyMg5LyY5Yq/IiwKICAgICAgICAgICAgIiMjIOWxgOmZkCIsCiAgICAgICAgICAgICIjIyDku6PooajorrrmlociLAogICAgICAgICAgICAiIyMg5ryU5YyW5pe26Ze057q/IiwKICAgICAgICAgICAgIiMjIOacquadpei2i+WKvyIsCiAgICAgICAgXQoKICAgICAgICBmb3Igc2VjdGlvbiBpbiByZXF1aXJlZF9zZWN0aW9uczoKICAgICAgICAgICAgYXNzZXJ0IHNlY3Rpb24gaW4gX0NOT1RFX1VTRVJfUFJPTVBUX1RFTVBMQVRFLCBmIk1pc3Npbmc6IHtzZWN0aW9ufSIKCiAgICBkZWYgdGVzdF9jbm90ZV9zeXN0ZW1fcHJvbXB0X2hhc19oYXJkX3J1bGVzKHNlbGYpOgogICAgICAgICIiIlN5c3RlbSBwcm9tcHQgaW5jbHVkZXMgaGFyZCBydWxlcy4iIiIKICAgICAgICBmcm9tIGxsbS5nZW5lcmF0ZSBpbXBvcnQgX0NOT1RFX1NZU1RFTV9QUk9NUFQKCiAgICAgICAgYXNzZXJ0ICJb6L+d6KeEXSIgaW4gX0NOT1RFX1NZU1RFTV9QUk9NUFQKICAgICAgICBhc3NlcnQgIkNsYWltcyIgaW4gX0NOT1RFX1NZU1RFTV9QUk9NUFQKCgpjbGFzcyBUZXN0UmVjb21tZW5kYXRpb25UZW1wbGF0ZToKICAgICIiIlRlc3QgcmVhZGluZyByZWNvbW1lbmRhdGlvbiB0ZW1wbGF0ZSBzdHJ1Y3R1cmUuIiIiCgogICAgZGVmIHRlc3RfcmVjb21tZW5kYXRpb25fdGVtcGxhdGVfaGFzX3JlcXVpcmVkX3NlY3Rpb25zKHNlbGYpOgogICAgICAgICIiIlJlY29tbWVuZGF0aW9uIHRlbXBsYXRlIGluY2x1ZGVzIHJlcXVpcmVkIHNlY3Rpb25zLiIiIgogICAgICAgIGZyb20gbGxtLmdlbmVyYXRlIGltcG9ydCBfUkVBRF9RVUVVRV9FWFBMQU5BVElPTl9VU0VSX1BST01QVF9URU1QTEFURQoKICAgICAgICByZXF1aXJlZF9zZWN0aW9ucyA9IFsKICAgICAgICAgICAgIiMjIOaOqOiNkOeQhueUsSIsCiAgICAgICAgICAgICIjIyDkuI7lt7Lor7vorrrmlofnmoTlhbPogZQiLAogICAgICAgICAgICAiIyMg6YCC5ZCI6ZiF6K+755qE5Zy65pmvIiwKICAgICAgICAgICAgInBhcGVyX3RpdGxlIiwKICAgICAgICAgICAgInNjb3JlIiwKICAgICAgICAgICAgInNlbWFudGljX3Njb3JlIiwKICAgICAgICAgICAgImNpdGF0aW9uX3Njb3JlIiwKICAgICAgICAgICAgInRhZ19zY29yZSIsCiAgICAgICAgICAgICJyZWNlbmN5X3Njb3JlIiwKICAgICAgICBdCgogICAgICAgIGZvciBzZWN0aW9uIGluIHJlcXVpcmVkX3NlY3Rpb25zOgogICAgICAgICAgICBhc3NlcnQgc2VjdGlvbiBpbiBfUkVBRF9RVUVVRV9FWFBMQU5BVElPTl9VU0VSX1BST01QVF9URU1QTEFURSwgZiJNaXNzaW5nOiB7c2VjdGlvbn0iCgogICAgZGVmIHRlc3RfcmVjb21tZW5kYXRpb25fc3lzdGVtX3Byb21wdF9ydWxlcyhzZWxmKToKICAgICAgICAiIiJTeXN0ZW0gcHJvbXB0IGhhcyBvdXRwdXQgcnVsZXMuIiIiCiAgICAgICAgZnJvbSBsbG0uZ2VuZXJhdGUgaW1wb3J0IF9SRUFEX1FVRVVFX0VYUExBTkFUSU9OX1NZU1RFTV9QUk9NUFQKCiAgICAgICAgYXNzZXJ0ICJNYXJrZG93biIgaW4gX1JFQURfUVVFVUVfRVhQTEFOQVRJT05fU1lTVEVNX1BST01QVAogICAgICAgIGFzc2VydCAiMTUwIiBpbiBfUkVBRF9RVUVVRV9FWFBMQU5BVElPTl9TWVNURU1fUFJPTVBUICAjIDE1MCBjaGFycyBsaW1pdAoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBUZW1wbGF0ZSBmb3JtYXR0aW5nIGludGVncmF0aW9uCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFBub3RlRm9ybWF0dGluZzoKICAgICIiIlRlc3QgUC1Ob3RlIHRlbXBsYXRlIGZvcm1hdHRpbmcuIiIiCgogICAgZGVmIHRlc3RfcG5vdGVfdGVtcGxhdGVfZm9ybWF0X3JlcGxhY2VzX2FsbF9wbGFjZWhvbGRlcnMoc2VsZik6CiAgICAgICAgIiIiVGVtcGxhdGUgZm9ybWF0IHJlcGxhY2VzIGFsbCBwbGFjZWhvbGRlcnMuIiIiCiAgICAgICAgZnJvbSBsbG0uZ2VuZXJhdGUgaW1wb3J0IF9QTk9URV9VU0VSX1BST01QVF9URU1QTEFURQoKICAgICAgICBmb3JtYXR0ZWQgPSBfUE5PVEVfVVNFUl9QUk9NUFRfVEVNUExBVEUuZm9ybWF0KAogICAgICAgICAgICBwYXBlcl90aXRsZT0iVGVzdCBQYXBlciIsCiAgICAgICAgICAgIHBhcGVyX2F1dGhvcnM9IkF1dGhvciBPbmUsIEF1dGhvciBUd28iLAogICAgICAgICAgICBwYXBlcl9zb3VyY2U9ImFyeGl2IiwKICAgICAgICAgICAgcGFwZXJfdWlkPSIyMzAxLjAwMDAxIiwKICAgICAgICAgICAgcGFwZXJfcHVibGlzaGVkPSIyMDIzIiwKICAgICAgICAgICAgcGFwZXJfdGFncz0iQUksIE1MIiwKICAgICAgICAgICAgcGFwZXJfYWJzdHJhY3Q9IlRoaXMgaXMgYSB0ZXN0IGFic3RyYWN0LiIsCiAgICAgICAgICAgIHBhcGVyX2JvZHk9IiMjIFRlc3QgQ29udGVudFxuXG5UZXN0IGJvZHkgdGV4dC4iLAogICAgICAgICkKCiAgICAgICAgIyBDaGVjayBwbGFjZWhvbGRlcnMgYXJlIHJlcGxhY2VkCiAgICAgICAgYXNzZXJ0ICJ7cGFwZXJfdGl0bGV9IiBub3QgaW4gZm9ybWF0dGVkCiAgICAgICAgYXNzZXJ0ICJ7cGFwZXJfYXV0aG9yc30iIG5vdCBpbiBmb3JtYXR0ZWQKICAgICAgICBhc3NlcnQgIntwYXBlcl9hYnN0cmFjdH0iIG5vdCBpbiBmb3JtYXR0ZWQKCiAgICAgICAgIyBDaGVjayBjb250ZW50IGlzIHByZXNlbnQKICAgICAgICBhc3NlcnQgIlRlc3QgUGFwZXIiIGluIGZvcm1hdHRlZAogICAgICAgIGFzc2VydCAiVGhpcyBpcyBhIHRlc3QgYWJzdHJhY3QuIiBpbiBmb3JtYXR0ZWQKCgpjbGFzcyBUZXN0Q25vdGVGb3JtYXR0aW5nOgogICAgIiIiVGVzdCBDLU5vdGUgdGVtcGxhdGUgZm9ybWF0dGluZy4iIiIKCiAgICBkZWYgdGVzdF9jbm90ZV90ZW1wbGF0ZV9mb3JtYXRfcmVwbGFjZXNfcGxhY2Vob2xkZXJzKHNlbGYpOgogICAgICAgICIiIlRlbXBsYXRlIGZvcm1hdCByZXBsYWNlcyBjb25jZXB0IGFuZCBwYXBlciBwbGFjZWhvbGRlcnMuIiIiCiAgICAgICAgZnJvbSBsbG0uZ2VuZXJhdGUgaW1wb3J0IF9DTk9URV9VU0VSX1BST01QVF9URU1QTEFURQoKICAgICAgICBmb3JtYXR0ZWQgPSBfQ05PVEVfVVNFUl9QUk9NUFRfVEVNUExBVEUuZm9ybWF0KAogICAgICAgICAgICBjb25jZXB0PSJBdHRlbnRpb24gTWVjaGFuaXNtIiwKICAgICAgICAgICAgcG5vdGVzX3RleHQ9IuiuuuaWhzHvvJrmoIfpopgiLAogICAgICAgICAgICBudW1fcGFwZXJzPTUsCiAgICAgICAgKQoKICAgICAgICBhc3NlcnQgIkF0dGVudGlvbiBNZWNoYW5pc20iIGluIGZvcm1hdHRlZAogICAgICAgIGFzc2VydCAiNSIgaW4gZm9ybWF0dGVkICAjIG51bV9wYXBlcnMKICAgICAgICBhc3NlcnQgIntjb25jZXB0fSIgbm90IGluIGZvcm1hdHRlZAoKCmNsYXNzIFRlc3RSZWNvbW1lbmRhdGlvbkZvcm1hdHRpbmc6CiAgICAiIiJUZXN0IHJlY29tbWVuZGF0aW9uIHRlbXBsYXRlIGZvcm1hdHRpbmcuIiIiCgogICAgZGVmIHRlc3RfcmVjb21tZW5kYXRpb25fdGVtcGxhdGVfZm9ybWF0X2NvbXBsZXRlKHNlbGYpOgogICAgICAgICIiIlRlbXBsYXRlIGZvcm1hdCByZXBsYWNlcyBhbGwgcGxhY2Vob2xkZXJzLiIiIgogICAgICAgIGZyb20gbGxtLmdlbmVyYXRlIGltcG9ydCBfUkVBRF9RVUVVRV9FWFBMQU5BVElPTl9VU0VSX1BST01QVF9URU1QTEFURQoKICAgICAgICBmb3JtYXR0ZWQgPSBfUkVBRF9RVUVVRV9FWFBMQU5BVElPTl9VU0VSX1BST01QVF9URU1QTEFURS5mb3JtYXQoCiAgICAgICAgICAgIHBhcGVyX3RpdGxlPSJUcmFuc2Zvcm1lciBQYXBlciIsCiAgICAgICAgICAgIHBhcGVyX2F1dGhvcnM9IlZhc3dhbmkgZXQgYWwiLAogICAgICAgICAgICBwYXBlcl95ZWFyPSIyMDE3IiwKICAgICAgICAgICAgcGFwZXJfY2F0ZWdvcnk9Ik5MUCIsCiAgICAgICAgICAgIHNjb3JlPTAuODUsCiAgICAgICAgICAgIHNlbWFudGljX3Njb3JlPTAuOSwKICAgICAgICAgICAgY2l0YXRpb25fc2NvcmU9MC44LAogICAgICAgICAgICB0YWdfc2NvcmU9MC43LAogICAgICAgICAgICByZWNlbmN5X3Njb3JlPTAuNiwKICAgICAgICAgICAgdG9wX3NpZ25hbD0i6K+t5LmJ55u45Ly85bqmIiwKICAgICAgICAgICAgdG9wX3ZhbHVlPTAuOSwKICAgICAgICAgICAgcmVhZF9wYXBlcnNfc3RyPSLorrrmlodBLCDorrrmlodCIiwKICAgICAgICApCgogICAgICAgIGFzc2VydCAiVHJhbnNmb3JtZXIgUGFwZXIiIGluIGZvcm1hdHRlZAogICAgICAgIGFzc2VydCAiMC44NSIgaW4gZm9ybWF0dGVkCiAgICAgICAgYXNzZXJ0ICIwLjkiIGluIGZvcm1hdHRlZAogICAgICAgIGFzc2VydCAi6K+t5LmJ55u45Ly85bqmIiBpbiBmb3JtYXR0ZWQK
+"""Tier 2 unit tests — llm/generate.py, pure functions, no I/O."""
+
+import pytest
+from llm.generate import (
+    estimate_tokens,
+    get_model_price,
+    estimate_cost,
+)
+
+
+# =============================================================================
+# estimate_tokens — token estimation
+# =============================================================================
+class TestEstimateTokens:
+    """Test token estimation logic."""
+
+    def test_empty_string_returns_zero(self):
+        """Empty input returns 0 tokens."""
+        assert estimate_tokens("") == 0
+        assert estimate_tokens(None) == 0  # type check
+
+    def test_short_text_returns_minimum_one(self):
+        """Very short text returns at least 1 token."""
+        assert estimate_tokens("a") == 1
+        assert estimate_tokens("hi") == 1
+
+    def test_divides_by_four(self):
+        """Token estimate = chars / 4."""
+        assert estimate_tokens("abcd") == 1
+        assert estimate_tokens("a" * 8) == 2
+        assert estimate_tokens("a" * 12) == 3
+
+    def test_chinese_text_estimation(self):
+        """Chinese characters: ~1 token per char (4 chars = 1 token)."""
+        result = estimate_tokens("深度学习")
+        assert result == 1  # 4 chars / 4
+
+    def test_mixed_chinese_english(self):
+        """Mixed content: total chars / 4."""
+        result = estimate_tokens("Attention is all you need")
+        # 27 chars / 4 = 6
+        assert result == 6
+
+
+# =============================================================================
+# get_model_price — model pricing lookup
+# =============================================================================
+class TestGetModelPrice:
+    """Test model price lookup logic."""
+
+    def test_returns_tuple(self):
+        """Returns (input_per_1M, output_per_1M) tuple."""
+        price = get_model_price("gpt-4o")
+        assert isinstance(price, tuple)
+        assert len(price) == 2
+
+    def test_gpt4o_pricing(self):
+        """GPT-4o pricing lookup."""
+        inp, out = get_model_price("gpt-4o")
+        assert inp > 0
+        assert out > 0
+        assert inp < out  # Output typically more expensive
+
+    def test_gpt35_turbo_pricing(self):
+        """GPT-3.5-turbo pricing lookup."""
+        inp, out = get_model_price("gpt-3.5-turbo")
+        assert inp >= 0
+        assert out >= 0
+
+    def test_case_insensitive(self):
+        """Model lookup is case-insensitive."""
+        price_lower = get_model_price("gpt-4o")
+        price_upper = get_model_price("GPT-4O")
+        price_mixed = get_model_price("Gpt-4o")
+        assert price_lower == price_upper == price_mixed
+
+    def test_partial_match(self):
+        """Partial model name matches."""
+        # Should match 'gpt' in 'gpt-4o-mini'
+        price1 = get_model_price("gpt-4o-mini")
+        get_model_price("gpt-4o")
+        # Both should return gpt prices
+        assert price1[0] > 0
+
+    def test_unknown_model_defaults(self):
+        """Unknown model returns default pricing."""
+        price = get_model_price("completely-unknown-model-xyz")
+        default = get_model_price("default")
+        assert price == default
+
+
+# =============================================================================
+# estimate_cost — cost calculation
+# =============================================================================
+class TestEstimateCost:
+    """Test cost estimation logic."""
+
+    def test_returns_dict_with_all_keys(self):
+        """Returns dict with all expected keys."""
+        result = estimate_cost("gpt-4o", "input text", "output text")
+        assert "input_tokens" in result
+        assert "output_tokens" in result
+        assert "total_tokens" in result
+        assert "input_cost_usd" in result
+        assert "output_cost_usd" in result
+        assert "total_cost_usd" in result
+
+    def test_total_equals_sum_of_parts(self):
+        """Total cost = input + output cost."""
+        result = estimate_cost("gpt-4o", "hello world", "response")
+        assert result["total_cost_usd"] == pytest.approx(
+            result["input_cost_usd"] + result["output_cost_usd"]
+        )
+
+    def test_total_tokens_equals_sum(self):
+        """Total tokens = input + output tokens."""
+        result = estimate_cost("gpt-4o", "hello", "world")
+        assert result["total_tokens"] == result["input_tokens"] + result["output_tokens"]
+
+    def test_empty_input(self):
+        """Empty input text handled correctly."""
+        result = estimate_cost("gpt-4o", "", "output")
+        assert result["input_tokens"] == 0
+        assert result["input_cost_usd"] == 0.0
+
+    def test_empty_output(self):
+        """Empty output text handled correctly."""
+        result = estimate_cost("gpt-4o", "input", "")
+        assert result["output_tokens"] == 0
+        assert result["output_cost_usd"] == 0.0
+
+    def test_cost_proportional_to_tokens(self):
+        """Cost increases with token count."""
+        short = estimate_cost("gpt-4o", "a", "b")
+        long = estimate_cost("gpt-4o", "a" * 100, "b" * 100)
+        assert long["total_cost_usd"] > short["total_cost_usd"]
+
+    def test_cost_precision(self):
+        """Cost is rounded to 6 decimal places."""
+        result = estimate_cost("gpt-4o", "test", "result")
+        # Check precision is reasonable (not raw float)
+        cost_str = str(result["total_cost_usd"])
+        decimal_places = len(cost_str.split(".")[-1]) if "." in cost_str else 0
+        assert decimal_places <= 6
+
+    def test_different_models_different_costs(self):
+        """Different models have different pricing."""
+        cheap_model = "gpt-3.5-turbo"
+        expensive_model = "gpt-4o"
+        text = "a" * 1000
+
+        cost_cheap = estimate_cost(cheap_model, text, text)
+        cost_expensive = estimate_cost(expensive_model, text, text)
+
+        # Expensive model should cost more
+        assert cost_expensive["total_cost_usd"] > cost_cheap["total_cost_usd"]
+
+    def test_cost_reasonable_magnitude(self):
+        """Typical costs are in reasonable range (not astronomical)."""
+        result = estimate_cost("gpt-4o", "a" * 1000, "b" * 1000)
+        # 500 tokens * $5/1M input + $15/1M output ≈ $0.01
+        assert result["total_cost_usd"] < 1.0  # Should be under $1 for this size
+        assert result["total_cost_usd"] > 0
+
+
+# =============================================================================
+# Template format validation
+# =============================================================================
+class TestPnoteTemplate:
+    """Test P-Note template structure."""
+
+    def test_pnote_user_template_has_required_sections(self):
+        """P-Note template includes all required sections."""
+        from llm.generate import _PNOTE_USER_PROMPT_TEMPLATE
+
+        required_sections = [
+            "paper_title",
+            "paper_authors",
+            "paper_abstract",
+            "paper_body",
+            "## 1. 背景",
+            "## 2. 核心问题",
+            "## 3. 方法结构",
+            "## 4. 关键创新",
+            "## 5. 实验分析",
+            "## 6. 对抗式审稿",
+            "## 7. 优势",
+            "## 8. 局限",
+            "## 14. 评分量表",
+        ]
+
+        for section in required_sections:
+            assert section in _PNOTE_USER_PROMPT_TEMPLATE, f"Missing: {section}"
+
+    def test_pnote_user_template_has_rubric_format(self):
+        """P-Note template includes rubric scoring format."""
+        from llm.generate import _PNOTE_USER_PROMPT_TEMPLATE
+
+        assert "Novelty (1-5)" in _PNOTE_USER_PROMPT_TEMPLATE
+        assert "Leverage" in _PNOTE_USER_PROMPT_TEMPLATE
+        assert "Evidence" in _PNOTE_USER_PROMPT_TEMPLATE
+        assert "评分量表" in _PNOTE_USER_PROMPT_TEMPLATE
+
+    def test_pnote_system_prompt_has_hard_rules(self):
+        """System prompt includes hard rules."""
+        from llm.generate import _PNOTE_SYSTEM_PROMPT
+
+        assert "[违规]" in _PNOTE_SYSTEM_PROMPT
+        assert "Claims" in _PNOTE_SYSTEM_PROMPT
+        assert "Markdown" in _PNOTE_SYSTEM_PROMPT
+
+
+class TestCnoteTemplate:
+    """Test C-Note template structure."""
+
+    def test_cnote_user_template_has_required_sections(self):
+        """C-Note template includes all required sections."""
+        from llm.generate import _CNOTE_USER_PROMPT_TEMPLATE
+
+        required_sections = [
+            "## 核心定义",
+            "## 产生背景",
+            "## 技术本质",
+            "## 常见实现路径",
+            "## 优势",
+            "## 局限",
+            "## 代表论文",
+            "## 演化时间线",
+            "## 未来趋势",
+        ]
+
+        for section in required_sections:
+            assert section in _CNOTE_USER_PROMPT_TEMPLATE, f"Missing: {section}"
+
+    def test_cnote_system_prompt_has_hard_rules(self):
+        """System prompt includes hard rules."""
+        from llm.generate import _CNOTE_SYSTEM_PROMPT
+
+        assert "[违规]" in _CNOTE_SYSTEM_PROMPT
+        assert "Claims" in _CNOTE_SYSTEM_PROMPT
+
+
+class TestRecommendationTemplate:
+    """Test reading recommendation template structure."""
+
+    def test_recommendation_template_has_required_sections(self):
+        """Recommendation template includes required sections."""
+        from llm.generate import _READ_QUEUE_EXPLANATION_USER_PROMPT_TEMPLATE
+
+        required_sections = [
+            "## 推荐理由",
+            "## 与已读论文的关联",
+            "## 适合阅读的场景",
+            "paper_title",
+            "score",
+            "semantic_score",
+            "citation_score",
+            "tag_score",
+            "recency_score",
+        ]
+
+        for section in required_sections:
+            assert section in _READ_QUEUE_EXPLANATION_USER_PROMPT_TEMPLATE, f"Missing: {section}"
+
+    def test_recommendation_system_prompt_rules(self):
+        """System prompt has output rules."""
+        from llm.generate import _READ_QUEUE_EXPLANATION_SYSTEM_PROMPT
+
+        assert "Markdown" in _READ_QUEUE_EXPLANATION_SYSTEM_PROMPT
+        assert "150" in _READ_QUEUE_EXPLANATION_SYSTEM_PROMPT  # 150 chars limit
+
+
+# =============================================================================
+# Template formatting integration
+# =============================================================================
+class TestPnoteFormatting:
+    """Test P-Note template formatting."""
+
+    def test_pnote_template_format_replaces_all_placeholders(self):
+        """Template format replaces all placeholders."""
+        from llm.generate import _PNOTE_USER_PROMPT_TEMPLATE
+
+        formatted = _PNOTE_USER_PROMPT_TEMPLATE.format(
+            paper_title="Test Paper",
+            paper_authors="Author One, Author Two",
+            paper_source="arxiv",
+            paper_uid="2301.00001",
+            paper_published="2023",
+            paper_tags="AI, ML",
+            paper_abstract="This is a test abstract.",
+            paper_body="## Test Content\n\nTest body text.",
+        )
+
+        # Check placeholders are replaced
+        assert "{paper_title}" not in formatted
+        assert "{paper_authors}" not in formatted
+        assert "{paper_abstract}" not in formatted
+
+        # Check content is present
+        assert "Test Paper" in formatted
+        assert "This is a test abstract." in formatted
+
+
+class TestCnoteFormatting:
+    """Test C-Note template formatting."""
+
+    def test_cnote_template_format_replaces_placeholders(self):
+        """Template format replaces concept and paper placeholders."""
+        from llm.generate import _CNOTE_USER_PROMPT_TEMPLATE
+
+        formatted = _CNOTE_USER_PROMPT_TEMPLATE.format(
+            concept="Attention Mechanism",
+            pnotes_text="论文1：标题",
+            num_papers=5,
+        )
+
+        assert "Attention Mechanism" in formatted
+        assert "5" in formatted  # num_papers
+        assert "{concept}" not in formatted
+
+
+class TestRecommendationFormatting:
+    """Test recommendation template formatting."""
+
+    def test_recommendation_template_format_complete(self):
+        """Template format replaces all placeholders."""
+        from llm.generate import _READ_QUEUE_EXPLANATION_USER_PROMPT_TEMPLATE
+
+        formatted = _READ_QUEUE_EXPLANATION_USER_PROMPT_TEMPLATE.format(
+            paper_title="Transformer Paper",
+            paper_authors="Vaswani et al",
+            paper_year="2017",
+            paper_category="NLP",
+            score=0.85,
+            semantic_score=0.9,
+            citation_score=0.8,
+            tag_score=0.7,
+            recency_score=0.6,
+            top_signal="语义相似度",
+            top_value=0.9,
+            read_papers_str="论文A, 论文B",
+        )
+
+        assert "Transformer Paper" in formatted
+        assert "0.85" in formatted
+        assert "0.9" in formatted
+        assert "语义相似度" in formatted

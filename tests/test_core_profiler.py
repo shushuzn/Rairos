@@ -1,1 +1,244 @@
-IiIiVGVzdHMgZm9yIGNvcmUvcHJvZmlsZXIucHkuIiIiCgppbXBvcnQgdGltZQppbXBvcnQgc3lzCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAppbXBvcnQgcHl0ZXN0CgpzeXMucGF0aC5pbnNlcnQoMCwgc3RyKFBhdGgoX19maWxlX18pLnBhcmVudC5wYXJlbnQpKQpmcm9tIGNvcmUucHJvZmlsZXIgaW1wb3J0ICgKICAgIFBlcmZvcm1hbmNlUHJvZmlsZXIsCiAgICBGdW5jdGlvblByb2ZpbGUsCiAgICBNZW1vcnlQcm9maWxlciwKICAgIFByb2ZpbGVyQ29udGV4dCwKICAgIGdldF9wcm9maWxlciwKICAgIHByb2ZpbGUsCiAgICBwcm9maWxlX2Jsb2NrLAopCgoKY2xhc3MgVGVzdEZ1bmN0aW9uUHJvZmlsZToKICAgICIiIlRlc3RzIGZvciBGdW5jdGlvblByb2ZpbGUgZGF0YWNsYXNzLiIiIgoKICAgIGRlZiB0ZXN0X2luaXRpYWxpemF0aW9uKHNlbGYpOgogICAgICAgIGZwID0gRnVuY3Rpb25Qcm9maWxlKG5hbWU9InRlc3RfZnVuYyIpCiAgICAgICAgYXNzZXJ0IGZwLm5hbWUgPT0gInRlc3RfZnVuYyIKICAgICAgICBhc3NlcnQgZnAuY2FsbF9jb3VudCA9PSAwCiAgICAgICAgYXNzZXJ0IGZwLnRvdGFsX3RpbWUgPT0gMC4wCiAgICAgICAgYXNzZXJ0IGZwLm1pbl90aW1lID09IGZsb2F0KCJpbmYiKQogICAgICAgIGFzc2VydCBmcC5tYXhfdGltZSA9PSAwLjAKICAgICAgICBhc3NlcnQgZnAuYXZnX3RpbWUgPT0gMC4wCgogICAgZGVmIHRlc3RfdXBkYXRlX3NpbmdsZV9jYWxsKHNlbGYpOgogICAgICAgIGZwID0gRnVuY3Rpb25Qcm9maWxlKG5hbWU9InRlc3RfZnVuYyIpCiAgICAgICAgZnAudXBkYXRlKDAuMDUpCiAgICAgICAgYXNzZXJ0IGZwLmNhbGxfY291bnQgPT0gMQogICAgICAgIGFzc2VydCBmcC50b3RhbF90aW1lID09IDAuMDUKICAgICAgICBhc3NlcnQgZnAubWluX3RpbWUgPT0gMC4wNQogICAgICAgIGFzc2VydCBmcC5tYXhfdGltZSA9PSAwLjA1CiAgICAgICAgYXNzZXJ0IGZwLmF2Z190aW1lID09IDAuMDUKCiAgICBkZWYgdGVzdF91cGRhdGVfbXVsdGlwbGVfY2FsbHMoc2VsZik6CiAgICAgICAgZnAgPSBGdW5jdGlvblByb2ZpbGUobmFtZT0idGVzdF9mdW5jIikKICAgICAgICBmcC51cGRhdGUoMC4wMykKICAgICAgICBmcC51cGRhdGUoMC4wNykKICAgICAgICBmcC51cGRhdGUoMC4wNSkKICAgICAgICBhc3NlcnQgZnAuY2FsbF9jb3VudCA9PSAzCiAgICAgICAgYXNzZXJ0IGZwLnRvdGFsX3RpbWUgPT0gcHl0ZXN0LmFwcHJveCgwLjE1KQogICAgICAgIGFzc2VydCBmcC5taW5fdGltZSA9PSBweXRlc3QuYXBwcm94KDAuMDMpCiAgICAgICAgYXNzZXJ0IGZwLm1heF90aW1lID09IHB5dGVzdC5hcHByb3goMC4wNykKICAgICAgICBhc3NlcnQgZnAuYXZnX3RpbWUgPT0gcHl0ZXN0LmFwcHJveCgwLjA1KQoKCmNsYXNzIFRlc3RQZXJmb3JtYW5jZVByb2ZpbGVyOgogICAgIiIiVGVzdHMgZm9yIFBlcmZvcm1hbmNlUHJvZmlsZXIuIiIiCgogICAgZGVmIHRlc3RfZW5hYmxlX2Rpc2FibGUoc2VsZik6CiAgICAgICAgcHJvZmlsZXIgPSBQZXJmb3JtYW5jZVByb2ZpbGVyKCkKICAgICAgICBhc3NlcnQgcHJvZmlsZXIuX2VuYWJsZWQgaXMgVHJ1ZQogICAgICAgIHByb2ZpbGVyLmRpc2FibGUoKQogICAgICAgIGFzc2VydCBwcm9maWxlci5fZW5hYmxlZCBpcyBGYWxzZQogICAgICAgIHByb2ZpbGVyLmVuYWJsZSgpCiAgICAgICAgYXNzZXJ0IHByb2ZpbGVyLl9lbmFibGVkIGlzIFRydWUKCiAgICBkZWYgdGVzdF9wcm9maWxlX2Z1bmN0aW9uX2RlY29yYXRvcihzZWxmKToKICAgICAgICBwcm9maWxlciA9IFBlcmZvcm1hbmNlUHJvZmlsZXIoKQoKICAgICAgICBAcHJvZmlsZXIucHJvZmlsZV9mdW5jdGlvbihuYW1lPSJteV9mdW5jIikKICAgICAgICBkZWYgbXlfZnVuYyh4KToKICAgICAgICAgICAgcmV0dXJuIHggKiAyCgogICAgICAgIHJlc3VsdCA9IG15X2Z1bmMoNSkKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IDEwCiAgICAgICAgcCA9IHByb2ZpbGVyLmdldF9wcm9maWxlKCJteV9mdW5jIikKICAgICAgICBhc3NlcnQgcCBpcyBub3QgTm9uZQogICAgICAgIGFzc2VydCBwLmNhbGxfY291bnQgPT0gMQoKICAgIGRlZiB0ZXN0X3Byb2ZpbGVfZnVuY3Rpb25fZGlzYWJsZWQoc2VsZik6CiAgICAgICAgcHJvZmlsZXIgPSBQZXJmb3JtYW5jZVByb2ZpbGVyKCkKICAgICAgICBwcm9maWxlci5kaXNhYmxlKCkKCiAgICAgICAgQHByb2ZpbGVyLnByb2ZpbGVfZnVuY3Rpb24obmFtZT0iZGlzYWJsZWRfZnVuYyIpCiAgICAgICAgZGVmIGRpc2FibGVkX2Z1bmMoKToKICAgICAgICAgICAgcmV0dXJuIDQyCgogICAgICAgIHJlc3VsdCA9IGRpc2FibGVkX2Z1bmMoKQogICAgICAgIGFzc2VydCByZXN1bHQgPT0gNDIKICAgICAgICBhc3NlcnQgcHJvZmlsZXIuZ2V0X3Byb2ZpbGUoImRpc2FibGVkX2Z1bmMiKSBpcyBOb25lCgogICAgZGVmIHRlc3RfcHJvZmlsZV9ibG9jayhzZWxmKToKICAgICAgICBwcm9maWxlciA9IFBlcmZvcm1hbmNlUHJvZmlsZXIoKQogICAgICAgIHdpdGggcHJvZmlsZXIucHJvZmlsZV9ibG9jaygiYmxvY2sxIik6CiAgICAgICAgICAgIHRpbWUuc2xlZXAoMC4wNSkKICAgICAgICBwID0gcHJvZmlsZXIuZ2V0X3Byb2ZpbGUoImJsb2NrMSIpCiAgICAgICAgYXNzZXJ0IHAgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQgcC5jYWxsX2NvdW50ID09IDEKICAgICAgICBhc3NlcnQgcC50b3RhbF90aW1lID49IDAKCiAgICBkZWYgdGVzdF9wcm9maWxlX2Jsb2NrX2Rpc2FibGVkKHNlbGYpOgogICAgICAgIHByb2ZpbGVyID0gUGVyZm9ybWFuY2VQcm9maWxlcigpCiAgICAgICAgcHJvZmlsZXIuZGlzYWJsZSgpCiAgICAgICAgd2l0aCBwcm9maWxlci5wcm9maWxlX2Jsb2NrKCJkaXNhYmxlZF9ibG9jayIpOgogICAgICAgICAgICBwYXNzCiAgICAgICAgYXNzZXJ0IHByb2ZpbGVyLmdldF9wcm9maWxlKCJkaXNhYmxlZF9ibG9jayIpIGlzIE5vbmUKCiAgICBkZWYgdGVzdF9nZXRfYWxsX3Byb2ZpbGVzX3NvcnRlZChzZWxmKToKICAgICAgICBwcm9maWxlciA9IFBlcmZvcm1hbmNlUHJvZmlsZXIoKQogICAgICAgIHdpdGggcHJvZmlsZXIucHJvZmlsZV9ibG9jaygic2xvdyIpOgogICAgICAgICAgICB0aW1lLnNsZWVwKDAuMDUpCiAgICAgICAgd2l0aCBwcm9maWxlci5wcm9maWxlX2Jsb2NrKCJmYXN0Iik6CiAgICAgICAgICAgIHBhc3MKICAgICAgICBwcm9maWxlcyA9IHByb2ZpbGVyLmdldF9hbGxfcHJvZmlsZXMoKQogICAgICAgIGFzc2VydCBwcm9maWxlc1swXS5uYW1lID09ICJzbG93IgogICAgICAgIGFzc2VydCBwcm9maWxlc1sxXS5uYW1lID09ICJmYXN0IgoKICAgIGRlZiB0ZXN0X2dldF9zbG93ZXN0X2Z1bmN0aW9ucyhzZWxmKToKICAgICAgICBwcm9maWxlciA9IFBlcmZvcm1hbmNlUHJvZmlsZXIoKQogICAgICAgIGZvciBpIGluIHJhbmdlKDE1KToKICAgICAgICAgICAgd2l0aCBwcm9maWxlci5wcm9maWxlX2Jsb2NrKGYiZnVuY197aX0iKToKICAgICAgICAgICAgICAgIHRpbWUuc2xlZXAoMC4wMDEgKiAoMTUgLSBpKSkKICAgICAgICBzbG93ZXN0ID0gcHJvZmlsZXIuZ2V0X3Nsb3dlc3RfZnVuY3Rpb25zKDUpCiAgICAgICAgYXNzZXJ0IGxlbihzbG93ZXN0KSA9PSA1CiAgICAgICAgYXNzZXJ0IHNsb3dlc3RbMF0ubmFtZSA9PSAiZnVuY18wIgoKICAgIGRlZiB0ZXN0X2dldF9tb3N0X2NhbGxlZChzZWxmKToKICAgICAgICBwcm9maWxlciA9IFBlcmZvcm1hbmNlUHJvZmlsZXIoKQoKICAgICAgICBAcHJvZmlsZXIucHJvZmlsZV9mdW5jdGlvbihuYW1lPSJob3RfZnVuYyIpCiAgICAgICAgZGVmIGhvdF9mdW5jKCk6CiAgICAgICAgICAgIHBhc3MKCiAgICAgICAgZm9yIF8gaW4gcmFuZ2UoMTAwKToKICAgICAgICAgICAgaG90X2Z1bmMoKQoKICAgICAgICBAcHJvZmlsZXIucHJvZmlsZV9mdW5jdGlvbihuYW1lPSJjb2xkX2Z1bmMiKQogICAgICAgIGRlZiBjb2xkX2Z1bmMoKToKICAgICAgICAgICAgcGFzcwoKICAgICAgICBjb2xkX2Z1bmMoKQogICAgICAgIG1vc3RfY2FsbGVkID0gcHJvZmlsZXIuZ2V0X21vc3RfY2FsbGVkKDUpCiAgICAgICAgYXNzZXJ0IG1vc3RfY2FsbGVkWzBdLm5hbWUgPT0gImhvdF9mdW5jIgogICAgICAgIGFzc2VydCBtb3N0X2NhbGxlZFswXS5jYWxsX2NvdW50ID09IDEwMAoKICAgIGRlZiB0ZXN0X3Jlc2V0KHNlbGYpOgogICAgICAgIHByb2ZpbGVyID0gUGVyZm9ybWFuY2VQcm9maWxlcigpCiAgICAgICAgd2l0aCBwcm9maWxlci5wcm9maWxlX2Jsb2NrKCJ0b19yZXNldCIpOgogICAgICAgICAgICBwYXNzCiAgICAgICAgYXNzZXJ0IHByb2ZpbGVyLmdldF9wcm9maWxlKCJ0b19yZXNldCIpIGlzIG5vdCBOb25lCiAgICAgICAgcHJvZmlsZXIucmVzZXQoKQogICAgICAgIGFzc2VydCBsZW4ocHJvZmlsZXIuX3Byb2ZpbGVzKSA9PSAwCgogICAgZGVmIHRlc3RfZ2V0X3N0YXRzX2RpY3Qoc2VsZik6CiAgICAgICAgcHJvZmlsZXIgPSBQZXJmb3JtYW5jZVByb2ZpbGVyKCkKICAgICAgICB3aXRoIHByb2ZpbGVyLnByb2ZpbGVfYmxvY2soInN0YXRfZnVuYyIpOgogICAgICAgICAgICBwYXNzCiAgICAgICAgc3RhdHMgPSBwcm9maWxlci5nZXRfc3RhdHNfZGljdCgpCiAgICAgICAgYXNzZXJ0ICJ0b3RhbF9mdW5jdGlvbnMiIGluIHN0YXRzCiAgICAgICAgYXNzZXJ0ICJzbG93ZXN0IiBpbiBzdGF0cwogICAgICAgIGFzc2VydCAibW9zdF9jYWxsZWQiIGluIHN0YXRzCiAgICAgICAgYXNzZXJ0IHN0YXRzWyJ0b3RhbF9mdW5jdGlvbnMiXSA9PSAxCgoKY2xhc3MgVGVzdE1lbW9yeVByb2ZpbGVyOgogICAgIiIiVGVzdHMgZm9yIE1lbW9yeVByb2ZpbGVyIChwc3V0aWwgb3B0aW9uYWwpLiIiIgoKICAgIGRlZiB0ZXN0X2dldF9jdXJyZW50X21lbW9yeV9yZXR1cm5zX2Zsb2F0KHNlbGYpOgogICAgICAgIHByb2ZpbGVyID0gTWVtb3J5UHJvZmlsZXIoKQogICAgICAgIG1lbSA9IHByb2ZpbGVyLl9nZXRfY3VycmVudF9tZW1vcnkoKQogICAgICAgIGFzc2VydCBpc2luc3RhbmNlKG1lbSwgZmxvYXQpCiAgICAgICAgYXNzZXJ0IG1lbSA+PSAwLjAKCiAgICBkZWYgdGVzdF90cmFja19jb250ZXh0X21hbmFnZXIoc2VsZik6CiAgICAgICAgcHJvZmlsZXIgPSBNZW1vcnlQcm9maWxlcigpCiAgICAgICAgd2l0aCBwcm9maWxlci50cmFjaygidGVzdF9vcGVyYXRpb24iKToKICAgICAgICAgICAgcGFzcwogICAgICAgIHNuYXBzaG90cyA9IHByb2ZpbGVyLmdldF9zbmFwc2hvdHMoKQogICAgICAgIGFzc2VydCBsZW4oc25hcHNob3RzKSA9PSAxCiAgICAgICAgYXNzZXJ0IHNuYXBzaG90c1swXVsibmFtZSJdID09ICJ0ZXN0X29wZXJhdGlvbiIKCiAgICBkZWYgdGVzdF9nZXRfcGVha19pbmNyZWFzZShzZWxmKToKICAgICAgICBwcm9maWxlciA9IE1lbW9yeVByb2ZpbGVyKCkKICAgICAgICBhc3NlcnQgcHJvZmlsZXIuZ2V0X3BlYWtfaW5jcmVhc2UoKSA9PSAwLjAKICAgICAgICB3aXRoIHByb2ZpbGVyLnRyYWNrKCJvcDEiKToKICAgICAgICAgICAgcGFzcwogICAgICAgIGFzc2VydCBwcm9maWxlci5nZXRfcGVha19pbmNyZWFzZSgpID49IDAuMAoKICAgIGRlZiB0ZXN0X2dldF9yZXBvcnRfZW1wdHkoc2VsZik6CiAgICAgICAgcHJvZmlsZXIgPSBNZW1vcnlQcm9maWxlcigpCiAgICAgICAgcmVwb3J0ID0gcHJvZmlsZXIuZ2V0X3JlcG9ydCgpCiAgICAgICAgYXNzZXJ0ICJObyBtZW1vcnkgc25hcHNob3RzIiBpbiByZXBvcnQKCiAgICBkZWYgdGVzdF9nZXRfcmVwb3J0X3dpdGhfZGF0YShzZWxmKToKICAgICAgICBwcm9maWxlciA9IE1lbW9yeVByb2ZpbGVyKCkKICAgICAgICB3aXRoIHByb2ZpbGVyLnRyYWNrKCJ0ZXN0X29wIik6CiAgICAgICAgICAgIHBhc3MKICAgICAgICByZXBvcnQgPSBwcm9maWxlci5nZXRfcmVwb3J0KCkKICAgICAgICBhc3NlcnQgIk1FTU9SWSBQUk9GSUxJTkcgUkVQT1JUIiBpbiByZXBvcnQKICAgICAgICBhc3NlcnQgInRlc3Rfb3AiIGluIHJlcG9ydAoKCmNsYXNzIFRlc3RQcm9maWxlckNvbnRleHQ6CiAgICAiIiJUZXN0cyBmb3IgUHJvZmlsZXJDb250ZXh0IChjUHJvZmlsZSB3cmFwcGVyKS4iIiIKCiAgICBkZWYgdGVzdF9lbnRlcl9leGl0KHNlbGYpOgogICAgICAgIGN0eCA9IFByb2ZpbGVyQ29udGV4dCgpCiAgICAgICAgYXNzZXJ0IGN0eC5lbmFibGVkIGlzIFRydWUKICAgICAgICB3aXRoIGN0eDoKICAgICAgICAgICAgcGFzcwogICAgICAgIGFzc2VydCBjdHguc3RhdHMgaXMgTm9uZSAgIyBOb3QgY29tcHV0ZWQgdW50aWwgZ2V0X3N0YXRzIGNhbGxlZAoKICAgIGRlZiB0ZXN0X2Rpc2FibGVkX2NvbnRleHQoc2VsZik6CiAgICAgICAgY3R4ID0gUHJvZmlsZXJDb250ZXh0KGVuYWJsZWQ9RmFsc2UpCiAgICAgICAgd2l0aCBjdHg6CiAgICAgICAgICAgIHBhc3MKICAgICAgICAjIFdoZW4gZGlzYWJsZWQsIG5vIHByb2ZpbGluZyBkYXRhIC0gZ2V0X3N0YXRzIHJhaXNlcyBUeXBlRXJyb3IKICAgICAgICAjIChwc3RhdHMuU3RhdHMgY2Fubm90IGNvbnN0cnVjdCBmcm9tIGRpc2FibGVkIHByb2ZpbGVyKQogICAgICAgIHdpdGggcHl0ZXN0LnJhaXNlcyhUeXBlRXJyb3IpOgogICAgICAgICAgICBjdHguZ2V0X3N0YXRzKCkKCgpjbGFzcyBUZXN0R2xvYmFsRnVuY3Rpb25zOgogICAgIiIiVGVzdHMgZm9yIG1vZHVsZS1sZXZlbCBmdW5jdGlvbnMuIiIiCgogICAgZGVmIHRlc3RfZ2V0X3Byb2ZpbGVyX3NpbmdsZXRvbihzZWxmKToKICAgICAgICBwMSA9IGdldF9wcm9maWxlcigpCiAgICAgICAgcDIgPSBnZXRfcHJvZmlsZXIoKQogICAgICAgIGFzc2VydCBwMSBpcyBwMgoKICAgIGRlZiB0ZXN0X3Byb2ZpbGVfZGVjb3JhdG9yKHNlbGYpOgogICAgICAgIEBwcm9maWxlKG5hbWU9ImRlY29yYXRlZF9mdW5jIikKICAgICAgICBkZWYgZGVjb3JhdGVkX2Z1bmMoKToKICAgICAgICAgICAgcmV0dXJuIDEyMwoKICAgICAgICByZXN1bHQgPSBkZWNvcmF0ZWRfZnVuYygpCiAgICAgICAgYXNzZXJ0IHJlc3VsdCA9PSAxMjMKICAgICAgICBwID0gZ2V0X3Byb2ZpbGVyKCkuZ2V0X3Byb2ZpbGUoImRlY29yYXRlZF9mdW5jIikKICAgICAgICBhc3NlcnQgcCBpcyBub3QgTm9uZQogICAgICAgIGdldF9wcm9maWxlcigpLnJlc2V0KCkgICMgQ2xlYW4gdXAKCiAgICBkZWYgdGVzdF9wcm9maWxlX2Jsb2NrX2dsb2JhbChzZWxmKToKICAgICAgICB3aXRoIHByb2ZpbGVfYmxvY2soImdsb2JhbF9ibG9jayIpOgogICAgICAgICAgICB0aW1lLnNsZWVwKDAuMDAxKQogICAgICAgIHAgPSBnZXRfcHJvZmlsZXIoKS5nZXRfcHJvZmlsZSgiZ2xvYmFsX2Jsb2NrIikKICAgICAgICBhc3NlcnQgcCBpcyBub3QgTm9uZQogICAgICAgIGdldF9wcm9maWxlcigpLnJlc2V0KCkgICMgQ2xlYW4gdXAK
+"""Tests for core/profiler.py."""
+
+import time
+import sys
+from pathlib import Path
+import pytest
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from core.profiler import (
+    PerformanceProfiler,
+    FunctionProfile,
+    MemoryProfiler,
+    ProfilerContext,
+    get_profiler,
+    profile,
+    profile_block,
+)
+
+
+class TestFunctionProfile:
+    """Tests for FunctionProfile dataclass."""
+
+    def test_initialization(self):
+        fp = FunctionProfile(name="test_func")
+        assert fp.name == "test_func"
+        assert fp.call_count == 0
+        assert fp.total_time == 0.0
+        assert fp.min_time == float("inf")
+        assert fp.max_time == 0.0
+        assert fp.avg_time == 0.0
+
+    def test_update_single_call(self):
+        fp = FunctionProfile(name="test_func")
+        fp.update(0.05)
+        assert fp.call_count == 1
+        assert fp.total_time == 0.05
+        assert fp.min_time == 0.05
+        assert fp.max_time == 0.05
+        assert fp.avg_time == 0.05
+
+    def test_update_multiple_calls(self):
+        fp = FunctionProfile(name="test_func")
+        fp.update(0.03)
+        fp.update(0.07)
+        fp.update(0.05)
+        assert fp.call_count == 3
+        assert fp.total_time == pytest.approx(0.15)
+        assert fp.min_time == pytest.approx(0.03)
+        assert fp.max_time == pytest.approx(0.07)
+        assert fp.avg_time == pytest.approx(0.05)
+
+
+class TestPerformanceProfiler:
+    """Tests for PerformanceProfiler."""
+
+    def test_enable_disable(self):
+        profiler = PerformanceProfiler()
+        assert profiler._enabled is True
+        profiler.disable()
+        assert profiler._enabled is False
+        profiler.enable()
+        assert profiler._enabled is True
+
+    def test_profile_function_decorator(self):
+        profiler = PerformanceProfiler()
+
+        @profiler.profile_function(name="my_func")
+        def my_func(x):
+            return x * 2
+
+        result = my_func(5)
+        assert result == 10
+        p = profiler.get_profile("my_func")
+        assert p is not None
+        assert p.call_count == 1
+
+    def test_profile_function_disabled(self):
+        profiler = PerformanceProfiler()
+        profiler.disable()
+
+        @profiler.profile_function(name="disabled_func")
+        def disabled_func():
+            return 42
+
+        result = disabled_func()
+        assert result == 42
+        assert profiler.get_profile("disabled_func") is None
+
+    def test_profile_block(self):
+        profiler = PerformanceProfiler()
+        with profiler.profile_block("block1"):
+            time.sleep(0.05)
+        p = profiler.get_profile("block1")
+        assert p is not None
+        assert p.call_count == 1
+        assert p.total_time >= 0
+
+    def test_profile_block_disabled(self):
+        profiler = PerformanceProfiler()
+        profiler.disable()
+        with profiler.profile_block("disabled_block"):
+            pass
+        assert profiler.get_profile("disabled_block") is None
+
+    def test_get_all_profiles_sorted(self):
+        profiler = PerformanceProfiler()
+        with profiler.profile_block("slow"):
+            time.sleep(0.05)
+        with profiler.profile_block("fast"):
+            pass
+        profiles = profiler.get_all_profiles()
+        assert profiles[0].name == "slow"
+        assert profiles[1].name == "fast"
+
+    def test_get_slowest_functions(self):
+        profiler = PerformanceProfiler()
+        for i in range(15):
+            with profiler.profile_block(f"func_{i}"):
+                time.sleep(0.001 * (15 - i))
+        slowest = profiler.get_slowest_functions(5)
+        assert len(slowest) == 5
+        assert slowest[0].name == "func_0"
+
+    def test_get_most_called(self):
+        profiler = PerformanceProfiler()
+
+        @profiler.profile_function(name="hot_func")
+        def hot_func():
+            pass
+
+        for _ in range(100):
+            hot_func()
+
+        @profiler.profile_function(name="cold_func")
+        def cold_func():
+            pass
+
+        cold_func()
+        most_called = profiler.get_most_called(5)
+        assert most_called[0].name == "hot_func"
+        assert most_called[0].call_count == 100
+
+    def test_reset(self):
+        profiler = PerformanceProfiler()
+        with profiler.profile_block("to_reset"):
+            pass
+        assert profiler.get_profile("to_reset") is not None
+        profiler.reset()
+        assert len(profiler._profiles) == 0
+
+    def test_get_stats_dict(self):
+        profiler = PerformanceProfiler()
+        with profiler.profile_block("stat_func"):
+            pass
+        stats = profiler.get_stats_dict()
+        assert "total_functions" in stats
+        assert "slowest" in stats
+        assert "most_called" in stats
+        assert stats["total_functions"] == 1
+
+
+class TestMemoryProfiler:
+    """Tests for MemoryProfiler (psutil optional)."""
+
+    def test_get_current_memory_returns_float(self):
+        profiler = MemoryProfiler()
+        mem = profiler._get_current_memory()
+        assert isinstance(mem, float)
+        assert mem >= 0.0
+
+    def test_track_context_manager(self):
+        profiler = MemoryProfiler()
+        with profiler.track("test_operation"):
+            pass
+        snapshots = profiler.get_snapshots()
+        assert len(snapshots) == 1
+        assert snapshots[0]["name"] == "test_operation"
+
+    def test_get_peak_increase(self):
+        profiler = MemoryProfiler()
+        assert profiler.get_peak_increase() == 0.0
+        with profiler.track("op1"):
+            pass
+        assert profiler.get_peak_increase() >= 0.0
+
+    def test_get_report_empty(self):
+        profiler = MemoryProfiler()
+        report = profiler.get_report()
+        assert "No memory snapshots" in report
+
+    def test_get_report_with_data(self):
+        profiler = MemoryProfiler()
+        with profiler.track("test_op"):
+            pass
+        report = profiler.get_report()
+        assert "MEMORY PROFILING REPORT" in report
+        assert "test_op" in report
+
+
+class TestProfilerContext:
+    """Tests for ProfilerContext (cProfile wrapper)."""
+
+    def test_enter_exit(self):
+        ctx = ProfilerContext()
+        assert ctx.enabled is True
+        with ctx:
+            pass
+        assert ctx.stats is None  # Not computed until get_stats called
+
+    def test_disabled_context(self):
+        ctx = ProfilerContext(enabled=False)
+        with ctx:
+            pass
+        # When disabled, no profiling data - get_stats raises TypeError
+        # (pstats.Stats cannot construct from disabled profiler)
+        with pytest.raises(TypeError):
+            ctx.get_stats()
+
+
+class TestGlobalFunctions:
+    """Tests for module-level functions."""
+
+    def test_get_profiler_singleton(self):
+        p1 = get_profiler()
+        p2 = get_profiler()
+        assert p1 is p2
+
+    def test_profile_decorator(self):
+        @profile(name="decorated_func")
+        def decorated_func():
+            return 123
+
+        result = decorated_func()
+        assert result == 123
+        p = get_profiler().get_profile("decorated_func")
+        assert p is not None
+        get_profiler().reset()  # Clean up
+
+    def test_profile_block_global(self):
+        with profile_block("global_block"):
+            time.sleep(0.001)
+        p = get_profiler().get_profile("global_block")
+        assert p is not None
+        get_profiler().reset()  # Clean up

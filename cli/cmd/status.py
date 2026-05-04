@@ -1,1 +1,26 @@
-IiIiQ0xJIGNvbW1hbmQ6IHN0YXR1cy4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBhcmdwYXJzZQoKZnJvbSBjbGkuX3NoYXJlZCBpbXBvcnQgZ2V0X2RiCgoKZGVmIF9idWlsZF9zdGF0dXNfcGFyc2VyKHN1YnBhcnNlcnMpIC0+IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyOgogICAgcCA9IHN1YnBhcnNlcnMuYWRkX3BhcnNlcigic3RhdHVzIiwgaGVscD0iU2hvdyBkYXRhYmFzZSBzdGF0dXMiKQogICAgcmV0dXJuIHAgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgoKZGVmIF9ydW5fc3RhdHVzKGFyZ3M6IGFyZ3BhcnNlLk5hbWVzcGFjZSkgLT4gaW50OgogICAgZGIgPSBnZXRfZGIoKQogICAgZGIuaW5pdCgpCiAgICBwYXBlcnMgPSBkYi5nZXRfcGFwZXJzKGxpbWl0PTEwMDAwKQogICAgcHJpbnQoZiJUb3RhbCBwYXBlcnM6IHtsZW4ocGFwZXJzKX0iKQogICAgYnlfc291cmNlOiBkaWN0W3N0ciwgaW50XSA9IHt9CiAgICBieV9zdGF0dXM6IGRpY3Rbc3RyLCBpbnRdID0ge30KICAgIGZvciBwIGluIHBhcGVyczoKICAgICAgICBieV9zb3VyY2VbcC5zb3VyY2Ugb3IgIj8iXSA9IGJ5X3NvdXJjZS5nZXQocC5zb3VyY2Ugb3IgIj8iLCAwKSArIDEKICAgICAgICBieV9zdGF0dXNbcC5wYXJzZV9zdGF0dXMgb3IgIj8iXSA9IGJ5X3N0YXR1cy5nZXQocC5wYXJzZV9zdGF0dXMgb3IgIj8iLCAwKSArIDEKICAgIHByaW50KCJCeSBzb3VyY2U6IiwgIiwgIi5qb2luKGYie2t9PXt2fSIgZm9yIGssIHYgaW4gc29ydGVkKGJ5X3NvdXJjZS5pdGVtcygpKSkpCiAgICBwcmludCgiQnkgc3RhdHVzOiIsICIsICIuam9pbihmIntrfT17dn0iIGZvciBrLCB2IGluIHNvcnRlZChieV9zdGF0dXMuaXRlbXMoKSkpKQogICAgcmV0dXJuIDAgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCg==
+"""CLI command: status."""
+from __future__ import annotations
+
+import argparse
+
+from cli._shared import get_db
+
+
+def _build_status_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser("status", help="Show database status")
+    return p  # type: ignore[no-any-return]
+
+
+def _run_status(args: argparse.Namespace) -> int:
+    db = get_db()
+    db.init()
+    papers = db.get_papers(limit=10000)
+    print(f"Total papers: {len(papers)}")
+    by_source: dict[str, int] = {}
+    by_status: dict[str, int] = {}
+    for p in papers:
+        by_source[p.source or "?"] = by_source.get(p.source or "?", 0) + 1
+        by_status[p.parse_status or "?"] = by_status.get(p.parse_status or "?", 0) + 1
+    print("By source:", ", ".join(f"{k}={v}" for k, v in sorted(by_source.items())))
+    print("By status:", ", ".join(f"{k}={v}" for k, v in sorted(by_status.items())))
+    return 0  # type: ignore[no-any-return]

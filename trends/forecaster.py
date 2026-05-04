@@ -1,1 +1,175 @@
-IiIiVHJlbmQgRm9yZWNhc3RpbmcgdXNpbmcgdGltZS1zZXJpZXMgYW5hbHlzaXMgb24gUmFkYXIgZGF0YS4KClVzZXMgc2ltcGxlIGxpbmVhciByZWdyZXNzaW9uIHNsb3BlIGZvciB0cmVuZCBkZXRlY3Rpb24KYW5kIGV4cG9uZW50aWFsIHNtb290aGluZyAoSG9sdCdzIG1ldGhvZCkgZm9yIHByZWRpY3Rpb24uClB1cmUgUHl0aG9uIGZhbGxiYWNrIHdoZW4gbnVtcHkgdW5hdmFpbGFibGUuCiIiIgoKaW1wb3J0IG1hdGgKCmltcG9ydCBvcmpzb24KZnJvbSBkYXRldGltZSBpbXBvcnQgZGF0ZXRpbWUsIHRpbWV6b25lCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgT3B0aW9uYWwKCgp0cnk6CiAgICBpbXBvcnQgbnVtcHkgYXMgbnAKCiAgICBfSEFTX05VTVBZID0gVHJ1ZQpleGNlcHQgSW1wb3J0RXJyb3I6CiAgICBfSEFTX05VTVBZID0gRmFsc2UKCmZyb20ga2cubWFuYWdlciBpbXBvcnQgS0dNYW5hZ2VyCgoKY2xhc3MgVHJlbmRGb3JlY2FzdGVyOgogICAgIiIiQW5hbHl6ZSBhbmQgZm9yZWNhc3QgdGFnIHRyZW5kcyBiYXNlZCBvbiBSYWRhciBoZWF0IGhpc3RvcnkuIiIiCgogICAgZGVmIF9faW5pdF9fKHNlbGYsIGtnOiBPcHRpb25hbFtLR01hbmFnZXJdID0gTm9uZSk6CiAgICAgICAgc2VsZi5rZyA9IGtnIG9yIEtHTWFuYWdlcigpCiAgICAgICAgc2VsZi5faGlzdG9yeV9wYXRoID0gUGF0aCgiZGF0YS9yYWRhcl9oaXN0b3J5Lmpzb24iKQogICAgICAgIHNlbGYuX2hpc3RvcnlfcGF0aC5wYXJlbnQubWtkaXIocGFyZW50cz1UcnVlLCBleGlzdF9vaz1UcnVlKQogICAgICAgIHNlbGYuX2hpc3Rvcnk6IGRpY3Rbc3RyLCBsaXN0W2RpY3RdXSA9IHNlbGYuX2xvYWRfaGlzdG9yeSgpCgogICAgZGVmIF9sb2FkX2hpc3Rvcnkoc2VsZikgLT4gZGljdDoKICAgICAgICBpZiBzZWxmLl9oaXN0b3J5X3BhdGguZXhpc3RzKCk6CiAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgIHJldHVybiBvcmpzb24ubG9hZHMoc2VsZi5faGlzdG9yeV9wYXRoLnJlYWRfYnl0ZXMoKSkgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCiAgICAgICAgICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgICAgICAgICBwYXNzCiAgICAgICAgcmV0dXJuIHt9CgogICAgZGVmIHNhdmVfaGlzdG9yeShzZWxmKToKICAgICAgICBzZWxmLl9oaXN0b3J5X3BhdGgud3JpdGVfYnl0ZXMob3Jqc29uLmR1bXBzKHNlbGYuX2hpc3RvcnkpKQoKICAgIGRlZiByZWNvcmRfcmFkYXJfc25hcHNob3Qoc2VsZiwgcmFkYXJfZGF0YTogZGljdFtzdHIsIGRpY3RdKToKICAgICAgICAiIiJSZWNvcmQgY3VycmVudCByYWRhciBzY29yZXMgYXMgYSB0aW1lc3RhbXBlZCBzbmFwc2hvdC4iIiIKICAgICAgICB0cyA9IGRhdGV0aW1lLm5vdyh0aW1lem9uZS51dGMpLmlzb2Zvcm1hdCgpCiAgICAgICAgZm9yIHRhZywgZGF0YSBpbiByYWRhcl9kYXRhLml0ZW1zKCk6CiAgICAgICAgICAgIGlmIHRhZyBub3QgaW4gc2VsZi5faGlzdG9yeToKICAgICAgICAgICAgICAgIHNlbGYuX2hpc3RvcnlbdGFnXSA9IFtdCiAgICAgICAgICAgIHNlbGYuX2hpc3RvcnlbdGFnXS5hcHBlbmQoCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgInRpbWVzdGFtcCI6IHRzLAogICAgICAgICAgICAgICAgICAgICJzY29yZSI6IGRhdGEuZ2V0KCJzY29yZSIsIDApLAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICApCiAgICAgICAgc2VsZi5zYXZlX2hpc3RvcnkoKQoKICAgIGRlZiBidWlsZF90aW1lc2VyaWVzKHNlbGYsIHRhZzogc3RyLCBtb250aHM6IGludCA9IDEyKSAtPiBsaXN0W3R1cGxlW3N0ciwgZmxvYXRdXToKICAgICAgICAiIiJSZXR1cm4gWyhtb250aCwgc2NvcmUpXSBmb3IgYSB0YWcsIGNvdmVyaW5nIGxhc3QgTiBtb250aHMuIiIiCiAgICAgICAgZW50cmllcyA9IHNlbGYuX2hpc3RvcnkuZ2V0KHRhZywgW10pCiAgICAgICAgaWYgbm90IGVudHJpZXM6CiAgICAgICAgICAgIHJldHVybiBbXQogICAgICAgIHJldHVybiBbKGVbInRpbWVzdGFtcCJdWzo3XSwgZVsic2NvcmUiXSkgZm9yIGUgaW4gZW50cmllc1stbW9udGhzOl1dCgogICAgZGVmIGRldGVjdF90cmVuZGluZyhzZWxmLCB0aHJlc2hvbGQ6IGZsb2F0ID0gMC41KSAtPiBsaXN0W3R1cGxlW3N0ciwgZmxvYXRdXToKICAgICAgICAiIiJGaW5kIHRhZ3Mgd2l0aCByaXNpbmcgdHJlbmQgKHBvc2l0aXZlIHNsb3BlIGFib3ZlIHRocmVzaG9sZCkuIiIiCiAgICAgICAgcmVzdWx0cyA9IFtdCiAgICAgICAgZm9yIHRhZyBpbiBzZWxmLl9oaXN0b3J5OgogICAgICAgICAgICB0cyA9IHNlbGYuYnVpbGRfdGltZXNlcmllcyh0YWcsIG1vbnRocz02KQogICAgICAgICAgICBpZiBsZW4odHMpIDwgMjoKICAgICAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgICAgIF8sIHNjb3JlcyA9IHppcCgqdHMpCiAgICAgICAgICAgIHNsb3BlID0gc2VsZi5fbGluZWFyX3Nsb3BlKGxpc3Qoc2NvcmVzKSkKICAgICAgICAgICAgaWYgc2xvcGUgPiB0aHJlc2hvbGQ6CiAgICAgICAgICAgICAgICByZXN1bHRzLmFwcGVuZCgodGFnLCByb3VuZChzbG9wZSwgNCkpKQoKICAgICAgICByZXN1bHRzLnNvcnQoa2V5PWxhbWJkYSB4OiB4WzFdLCByZXZlcnNlPVRydWUpCiAgICAgICAgcmV0dXJuIHJlc3VsdHMKCiAgICBkZWYgcHJlZGljdF9uZXh0KHNlbGYsIHRhZzogc3RyKSAtPiBkaWN0OgogICAgICAgICIiIlByZWRpY3QgbmV4dCBtb250aCdzIGhlYXQgdXNpbmcgSG9sdCdzIGV4cG9uZW50aWFsIHNtb290aGluZy4iIiIKICAgICAgICB0cyA9IHNlbGYuYnVpbGRfdGltZXNlcmllcyh0YWcsIG1vbnRocz0xMikKICAgICAgICBpZiBsZW4odHMpIDwgMzoKICAgICAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgICAgICJwcmVkaWN0ZWQiOiBOb25lLAogICAgICAgICAgICAgICAgImNvbmZpZGVuY2UiOiAwLjAsCiAgICAgICAgICAgICAgICAicmVhc29uIjogImluc3VmZmljaWVudCBkYXRhIiwKICAgICAgICAgICAgICAgICJ0cmVuZCI6ICJ1bmtub3duIiwKICAgICAgICAgICAgfQoKICAgICAgICB0aW1lc3RhbXBzLCBzY29yZXMgPSB6aXAoKnRzKQogICAgICAgIHNjb3JlcyA9IGxpc3Qoc2NvcmVzKSAgIyB0eXBlOiBpZ25vcmVbYXNzaWdubWVudF0KCiAgICAgICAgIyBIb2x0J3MgbGluZWFyIGV4cG9uZW50aWFsIHNtb290aGluZwogICAgICAgIGFscGhhID0gMC4zCiAgICAgICAgYmV0YSA9IDAuMQogICAgICAgIGxldmVsID0gc2NvcmVzWzBdCiAgICAgICAgdHJlbmQgPSBzY29yZXNbMV0gLSBzY29yZXNbMF0KICAgICAgICBmb3IgcyBpbiBzY29yZXNbMTpdOgogICAgICAgICAgICBuZXdfbGV2ZWwgPSBhbHBoYSAqIHMgKyAoMSAtIGFscGhhKSAqIChsZXZlbCArIHRyZW5kKQogICAgICAgICAgICBuZXdfdHJlbmQgPSBiZXRhICogKG5ld19sZXZlbCAtIGxldmVsKSArICgxIC0gYmV0YSkgKiB0cmVuZAogICAgICAgICAgICBsZXZlbCA9IG5ld19sZXZlbAogICAgICAgICAgICB0cmVuZCA9IG5ld190cmVuZAoKICAgICAgICBwcmVkaWN0ZWQgPSBsZXZlbCArIHRyZW5kCiAgICAgICAgbWVhbiA9IHN1bShzY29yZXMpIC8gbGVuKHNjb3JlcykKICAgICAgICB2YXJpYW5jZSA9IHN1bSgocyAtIG1lYW4pICoqIDIgZm9yIHMgaW4gc2NvcmVzKSAvIGxlbihzY29yZXMpCiAgICAgICAgc3RkID0gbWF0aC5zcXJ0KHZhcmlhbmNlKQogICAgICAgIGNvbmZpZGVuY2UgPSAxLjAgLSAoc3RkIC8gbWF4KG1lYW4sIDEpKSBpZiBtZWFuID4gMCBlbHNlIDAuMAogICAgICAgIGNvbmZpZGVuY2UgPSBtYXgoMC4wLCBtaW4oMS4wLCBjb25maWRlbmNlKSkKCiAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgInByZWRpY3RlZCI6IHJvdW5kKHByZWRpY3RlZCwgMiksCiAgICAgICAgICAgICJjb25maWRlbmNlIjogcm91bmQoY29uZmlkZW5jZSwgMyksCiAgICAgICAgICAgICJyZWFzb24iOiBmImJhc2VkIG9uIHtsZW4oc2NvcmVzKX0gb2JzZXJ2YXRpb25zIiwKICAgICAgICAgICAgImxhc3Rfc2NvcmUiOiBzY29yZXNbLTFdLAogICAgICAgICAgICAidHJlbmQiOiAicmlzaW5nIiBpZiB0cmVuZCA+IDAuMSBlbHNlICJzdGFibGUiIGlmIGFicyh0cmVuZCkgPD0gMC4xIGVsc2UgImZhbGxpbmciLAogICAgICAgIH0KCiAgICBkZWYgZ2V0X3RvcF9wcmVkaWN0aW9ucyhzZWxmLCB0b3BfazogaW50ID0gNSkgLT4gbGlzdFtkaWN0XToKICAgICAgICAiIiJQcmVkaWN0IG5leHQtaG90IHRhZ3MsIHNvcnRlZCBieSBwcmVkaWN0ZWQgc2NvcmUgKiBjb25maWRlbmNlLiIiIgogICAgICAgIHByZWRpY3Rpb25zID0gW10KICAgICAgICBmb3IgdGFnIGluIHNlbGYuX2hpc3Rvcnk6CiAgICAgICAgICAgIHByZWQgPSBzZWxmLnByZWRpY3RfbmV4dCh0YWcpCiAgICAgICAgICAgIGlmIHByZWRbInByZWRpY3RlZCJdIGlzIG5vdCBOb25lOgogICAgICAgICAgICAgICAgcHJlZFsidGFnIl0gPSB0YWcKICAgICAgICAgICAgICAgIHByZWRbImNvbWJpbmVkIl0gPSBwcmVkWyJwcmVkaWN0ZWQiXSAqIHByZWRbImNvbmZpZGVuY2UiXQogICAgICAgICAgICAgICAgcHJlZGljdGlvbnMuYXBwZW5kKHByZWQpCgogICAgICAgIHByZWRpY3Rpb25zLnNvcnQoa2V5PWxhbWJkYSB4OiB4WyJjb21iaW5lZCJdLCByZXZlcnNlPVRydWUpCiAgICAgICAgcmV0dXJuIHByZWRpY3Rpb25zWzp0b3Bfa10KCiAgICBkZWYgY29tcGFyZV90YWdzKHNlbGYsIHRhZ19hOiBzdHIsIHRhZ19iOiBzdHIpIC0+IGRpY3Q6CiAgICAgICAgIiIiQ29tcGFyZSB0d28gdGFncyBvbiBoZWF0LCB0cmVuZCwgYW5kIHByZWRpY3Rpb24uIiIiCiAgICAgICAgdHNfYSA9IHNlbGYuYnVpbGRfdGltZXNlcmllcyh0YWdfYSwgbW9udGhzPTYpCiAgICAgICAgdHNfYiA9IHNlbGYuYnVpbGRfdGltZXNlcmllcyh0YWdfYiwgbW9udGhzPTYpCiAgICAgICAgc2xvcGVfYSA9IHNlbGYuX2xpbmVhcl9zbG9wZShbcyBmb3IgXywgcyBpbiB0c19hXSkgaWYgbGVuKHRzX2EpID49IDIgZWxzZSAwLjAKICAgICAgICBzbG9wZV9iID0gc2VsZi5fbGluZWFyX3Nsb3BlKFtzIGZvciBfLCBzIGluIHRzX2JdKSBpZiBsZW4odHNfYikgPj0gMiBlbHNlIDAuMAogICAgICAgIHByZWRfYSA9IHNlbGYucHJlZGljdF9uZXh0KHRhZ19hKQogICAgICAgIHByZWRfYiA9IHNlbGYucHJlZGljdF9uZXh0KHRhZ19iKQoKICAgICAgICByZXR1cm4gewogICAgICAgICAgICAidGFnX2EiOiB0YWdfYSwKICAgICAgICAgICAgInRhZ19iIjogdGFnX2IsCiAgICAgICAgICAgICJzbG9wZV9hIjogcm91bmQoc2xvcGVfYSwgNCksCiAgICAgICAgICAgICJzbG9wZV9iIjogcm91bmQoc2xvcGVfYiwgNCksCiAgICAgICAgICAgICJ0cmVuZF9hIjogcHJlZF9hWyJ0cmVuZCJdLAogICAgICAgICAgICAidHJlbmRfYiI6IHByZWRfYlsidHJlbmQiXSwKICAgICAgICAgICAgInByZWRpY3RlZF9hIjogcHJlZF9hWyJwcmVkaWN0ZWQiXSwKICAgICAgICAgICAgInByZWRpY3RlZF9iIjogcHJlZF9iWyJwcmVkaWN0ZWQiXSwKICAgICAgICAgICAgImNvbmZpZGVuY2VfYSI6IHByZWRfYVsiY29uZmlkZW5jZSJdLAogICAgICAgICAgICAiY29uZmlkZW5jZV9iIjogcHJlZF9iWyJjb25maWRlbmNlIl0sCiAgICAgICAgICAgICJzY29yZXNfYSI6IHRzX2FbLTY6XSwKICAgICAgICAgICAgInNjb3Jlc19iIjogdHNfYlstNjpdLAogICAgICAgIH0KCiAgICBkZWYgX2xpbmVhcl9zbG9wZShzZWxmLCB2YWx1ZXM6IGxpc3RbZmxvYXRdKSAtPiBmbG9hdDoKICAgICAgICAiIiJTaW1wbGUgT0xTIGxpbmVhciByZWdyZXNzaW9uIHNsb3BlLiIiIgogICAgICAgIGlmIGxlbih2YWx1ZXMpIDwgMjoKICAgICAgICAgICAgcmV0dXJuIDAuMAogICAgICAgIGlmIF9IQVNfTlVNUFk6CiAgICAgICAgICAgIHggPSBucC5hcmFuZ2UobGVuKHZhbHVlcyksIGR0eXBlPWZsb2F0KQogICAgICAgICAgICB5ID0gbnAuYXJyYXkodmFsdWVzLCBkdHlwZT1mbG9hdCkKICAgICAgICAgICAgcmV0dXJuIGZsb2F0KG5wLnBvbHlmaXQoeCwgeSwgMSlbMF0pCgogICAgICAgIG4gPSBsZW4odmFsdWVzKQogICAgICAgIHggPSBsaXN0KHJhbmdlKG4pKSAgIyB0eXBlOiBpZ25vcmVbYXNzaWdubWVudF0KICAgICAgICB4X21lYW4gPSAobiAtIDEpIC8gMi4wCiAgICAgICAgeV9tZWFuID0gc3VtKHZhbHVlcykgLyBuCiAgICAgICAgbnVtID0gc3VtKCh4W2ldIC0geF9tZWFuKSAqICh2YWx1ZXNbaV0gLSB5X21lYW4pIGZvciBpIGluIHJhbmdlKG4pKQogICAgICAgIGRlbiA9IHN1bSgoeFtpXSAtIHhfbWVhbikgKiogMiBmb3IgaSBpbiByYW5nZShuKSkKICAgICAgICBpZiBkZW4gPT0gMDoKICAgICAgICAgICAgcmV0dXJuIDAuMAogICAgICAgIHJldHVybiBudW0gLyBkZW4gICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgZGVmIHJlY29yZF9jdXJyZW50X3JhZGFyKHNlbGYpOgogICAgICAgICIiIlJlY29yZCBhIHNuYXBzaG90IGZyb20gY3VycmVudCByYWRhci5qc29uLiIiIgogICAgICAgIGNhbmRpZGF0ZXMgPSBbUGF0aCgiZGF0YS9yYWRhci5qc29uIiksIFBhdGgoInJhZGFyLmpzb24iKV0KICAgICAgICBmb3IgcCBpbiBjYW5kaWRhdGVzOgogICAgICAgICAgICBpZiBwLmV4aXN0cygpOgogICAgICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgICAgIGRhdGEgPSBvcmpzb24ubG9hZHMocC5yZWFkX2J5dGVzKCkpCiAgICAgICAgICAgICAgICAgICAgc2VsZi5yZWNvcmRfcmFkYXJfc25hcHNob3QoZGF0YSkKICAgICAgICAgICAgICAgICAgICByZXR1cm4KICAgICAgICAgICAgICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgICAgICAgICAgICAgcGFzcwo=
+"""Trend Forecasting using time-series analysis on Radar data.
+
+Uses simple linear regression slope for trend detection
+and exponential smoothing (Holt's method) for prediction.
+Pure Python fallback when numpy unavailable.
+"""
+
+import math
+
+import orjson
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Optional
+
+
+
+try:
+    import numpy as np
+    _HAS_NUMPY = True
+except ImportError:
+    _HAS_NUMPY = False
+
+from kg.manager import KGManager
+
+
+class TrendForecaster:
+    """Analyze and forecast tag trends based on Radar heat history."""
+
+    def __init__(self, kg: Optional[KGManager] = None):
+        self.kg = kg or KGManager()
+        self._history_path = Path("data/radar_history.json")
+        self._history_path.parent.mkdir(parents=True, exist_ok=True)
+        self._history: dict[str, list[dict]] = self._load_history()
+
+    def _load_history(self) -> dict:
+        if self._history_path.exists():
+            try:
+                return orjson.loads(self._history_path.read_bytes())  # type: ignore[no-any-return]
+            except Exception:
+                pass
+        return {}
+
+    def save_history(self):
+        self._history_path.write_bytes(orjson.dumps(self._history))
+
+    def record_radar_snapshot(self, radar_data: dict[str, dict]):
+        """Record current radar scores as a timestamped snapshot."""
+        ts = datetime.now(timezone.utc).isoformat()
+        for tag, data in radar_data.items():
+            if tag not in self._history:
+                self._history[tag] = []
+            self._history[tag].append({
+                "timestamp": ts,
+                "score": data.get("score", 0),
+            })
+        self.save_history()
+
+    def build_timeseries(self, tag: str, months: int = 12) -> list[tuple[str, float]]:
+        """Return [(month, score)] for a tag, covering last N months."""
+        entries = self._history.get(tag, [])
+        if not entries:
+            return []
+        return [(e["timestamp"][:7], e["score"]) for e in entries[-months:]]
+
+    def detect_trending(self, threshold: float = 0.5) -> list[tuple[str, float]]:
+        """Find tags with rising trend (positive slope above threshold)."""
+        results = []
+        for tag in self._history:
+            ts = self.build_timeseries(tag, months=6)
+            if len(ts) < 2:
+                continue
+            _, scores = zip(*ts)
+            slope = self._linear_slope(list(scores))
+            if slope > threshold:
+                results.append((tag, round(slope, 4)))
+
+        results.sort(key=lambda x: x[1], reverse=True)
+        return results
+
+    def predict_next(self, tag: str) -> dict:
+        """Predict next month's heat using Holt's exponential smoothing."""
+        ts = self.build_timeseries(tag, months=12)
+        if len(ts) < 3:
+            return {"predicted": None, "confidence": 0.0, "reason": "insufficient data", "trend": "unknown"}
+
+        timestamps, scores = zip(*ts)
+        scores = list(scores)  # type: ignore[assignment]
+
+        # Holt's linear exponential smoothing
+        alpha = 0.3
+        beta = 0.1
+        level = scores[0]
+        trend = scores[1] - scores[0]
+        for s in scores[1:]:
+            new_level = alpha * s + (1 - alpha) * (level + trend)
+            new_trend = beta * (new_level - level) + (1 - beta) * trend
+            level = new_level
+            trend = new_trend
+
+        predicted = level + trend
+        mean = sum(scores) / len(scores)
+        variance = sum((s - mean) ** 2 for s in scores) / len(scores)
+        std = math.sqrt(variance)
+        confidence = 1.0 - (std / max(mean, 1)) if mean > 0 else 0.0
+        confidence = max(0.0, min(1.0, confidence))
+
+        return {
+            "predicted": round(predicted, 2),
+            "confidence": round(confidence, 3),
+            "reason": f"based on {len(scores)} observations",
+            "last_score": scores[-1],
+            "trend": "rising" if trend > 0.1 else "stable" if abs(trend) <= 0.1 else "falling",
+        }
+
+    def get_top_predictions(self, top_k: int = 5) -> list[dict]:
+        """Predict next-hot tags, sorted by predicted score * confidence."""
+        predictions = []
+        for tag in self._history:
+            pred = self.predict_next(tag)
+            if pred["predicted"] is not None:
+                pred["tag"] = tag
+                pred["combined"] = pred["predicted"] * pred["confidence"]
+                predictions.append(pred)
+
+        predictions.sort(key=lambda x: x["combined"], reverse=True)
+        return predictions[:top_k]
+
+    def compare_tags(self, tag_a: str, tag_b: str) -> dict:
+        """Compare two tags on heat, trend, and prediction."""
+        ts_a = self.build_timeseries(tag_a, months=6)
+        ts_b = self.build_timeseries(tag_b, months=6)
+        slope_a = self._linear_slope([s for _, s in ts_a]) if len(ts_a) >= 2 else 0.0
+        slope_b = self._linear_slope([s for _, s in ts_b]) if len(ts_b) >= 2 else 0.0
+        pred_a = self.predict_next(tag_a)
+        pred_b = self.predict_next(tag_b)
+
+        return {
+            "tag_a": tag_a, "tag_b": tag_b,
+            "slope_a": round(slope_a, 4), "slope_b": round(slope_b, 4),
+            "trend_a": pred_a["trend"], "trend_b": pred_b["trend"],
+            "predicted_a": pred_a["predicted"], "predicted_b": pred_b["predicted"],
+            "confidence_a": pred_a["confidence"], "confidence_b": pred_b["confidence"],
+            "scores_a": ts_a[-6:], "scores_b": ts_b[-6:],
+        }
+
+    def _linear_slope(self, values: list[float]) -> float:
+        """Simple OLS linear regression slope."""
+        if len(values) < 2:
+            return 0.0
+        if _HAS_NUMPY:
+            x = np.arange(len(values), dtype=float)
+            y = np.array(values, dtype=float)
+            return float(np.polyfit(x, y, 1)[0])
+
+        n = len(values)
+        x = list(range(n))  # type: ignore[assignment]
+        x_mean = (n - 1) / 2.0
+        y_mean = sum(values) / n
+        num = sum((x[i] - x_mean) * (values[i] - y_mean) for i in range(n))
+        den = sum((x[i] - x_mean) ** 2 for i in range(n))
+        if den == 0:
+            return 0.0
+        return num / den  # type: ignore[no-any-return]
+
+    def record_current_radar(self):
+        """Record a snapshot from current radar.json."""
+        candidates = [Path("data/radar.json"), Path("radar.json")]
+        for p in candidates:
+            if p.exists():
+                try:
+                    data = orjson.loads(p.read_bytes())
+                    self.record_radar_snapshot(data)
+                    return
+                except Exception:
+                    pass

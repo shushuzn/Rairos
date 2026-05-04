@@ -1,1 +1,98 @@
-IiIiQ0xJIGNvbW1hbmQ6IHJvdXRlIOKAlCBzZW1hbnRpYyBjb21tYW5kIHJvdXRpbmcuIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgYXJncGFyc2UKaW1wb3J0IGpzb24KCmZyb20gY2xpLl9zaGFyZWQgaW1wb3J0IHByaW50X3dhcm5pbmcKZnJvbSBsbG0uc2VtYW50aWNfcm91dGVyIGltcG9ydCBTZW1hbnRpY1JvdXRlcgoKCmRlZiBfYnVpbGRfcm91dGVfcGFyc2VyKHN1YnBhcnNlcnMpIC0+IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyOgogICAgcCA9IHN1YnBhcnNlcnMuYWRkX3BhcnNlcigKICAgICAgICAicm91dGUiLAogICAgICAgIGhlbHA9IlJvdXRlIGEgbmF0dXJhbC1sYW5ndWFnZSBxdWVyeSB0byB0aGUgYXBwcm9wcmlhdGUgQ0xJIGNvbW1hbmQiLAogICAgICAgIGRlc2NyaXB0aW9uPSgKICAgICAgICAgICAgIkNsYXNzaWZ5IGEgcmVzZWFyY2ggcXVlcnkgYW5kIG9wdGlvbmFsbHkgZXhlY3V0ZSB0aGUgcm91dGVkIGNvbW1hbmQocykuICIKICAgICAgICAgICAgIlVzZXMgTExNIGNsYXNzaWZpY2F0aW9uIHdpdGggZ3JhY2VmdWwgZmFsbGJhY2sgdG8gZW1iZWRkaW5nIHNpbWlsYXJpdHkgIgogICAgICAgICAgICAiYW5kIGtleXdvcmQgbWF0Y2hpbmcuIgogICAgICAgICksCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAicXVlcnkiLAogICAgICAgIG5hcmdzPSIqIiwKICAgICAgICBkZWZhdWx0PVtdLAogICAgICAgIGhlbHA9IlJlc2VhcmNoIHF1ZXJ5IHRvIHJvdXRlIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWpzb24iLAogICAgICAgICItaiIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBoZWxwPSJPdXRwdXQgZnVsbCByb3V0ZSBvYmplY3QgYXMgSlNPTiIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1leGVjIiwKICAgICAgICAiLWUiLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iRXhlY3V0ZSB0aGUgcm91dGVkIGNvbW1hbmQocykgYW5kIHByaW50IG91dHB1dHMiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tYWxsIiwKICAgICAgICAiLWEiLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iRXhlY3V0ZSBhbGwgcm91dGVkIGNvbW1hbmRzIChmb3IgbXVsdGktaW50ZW50IHF1ZXJpZXMsIGltcGxpZXMgLS1leGVjKSIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1tb2RlbCIsCiAgICAgICAgIi1tIiwKICAgICAgICB0eXBlPXN0ciwKICAgICAgICBkZWZhdWx0PU5vbmUsCiAgICAgICAgaGVscD0iTExNIG1vZGVsIGZvciBjbGFzc2lmaWNhdGlvbiAoZGVmYXVsdDogcXdlbjMuNS1wbHVzKSIsCiAgICApCiAgICByZXR1cm4gcCAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCgpkZWYgX3J1bl9yb3V0ZShhcmdzOiBhcmdwYXJzZS5OYW1lc3BhY2UpIC0+IGludDoKICAgIGlmIG5vdCBhcmdzLnF1ZXJ5OgogICAgICAgIHByaW50X3dhcm5pbmcoIlVzYWdlOiBhaXJvcyByb3V0ZSA8cXVlcnk+IikKICAgICAgICByZXR1cm4gMSAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCiAgICBxdWVyeSA9ICIgIi5qb2luKGFyZ3MucXVlcnkpCiAgICByb3V0ZXIgPSBTZW1hbnRpY1JvdXRlcihtb2RlbD1hcmdzLm1vZGVsKQoKICAgIHRyeToKICAgICAgICByb3V0ZSA9IHJvdXRlci5yb3V0ZShxdWVyeSkKICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToKICAgICAgICBwcmludF93YXJuaW5nKGYiUm91dGluZyBmYWlsZWQ6IHtlfSIpCiAgICAgICAgcmV0dXJuIDEgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgZXhlY19hbGwgPSBhcmdzLmFsbCBvciBhcmdzLmV4ZWMKCiAgICBpZiBhcmdzLmpzb246CiAgICAgICAgcHJpbnQoanNvbi5kdW1wcyhyb3V0ZS50b19kaWN0KCksIGluZGVudD0yLCBlbnN1cmVfYXNjaWk9RmFsc2UpKQogICAgICAgIHJldHVybiAwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKICAgICMgSHVtYW4tcmVhZGFibGUgb3V0cHV0CiAgICBfcHJpbnRfcm91dGUocm91dGUsIHF1ZXJ5KQoKICAgIGlmIGV4ZWNfYWxsOgogICAgICAgIHByaW50KCkKICAgICAgICB0cnk6CiAgICAgICAgICAgIG91dHB1dHMgPSByb3V0ZXIuZXhlY3V0ZShyb3V0ZSwgcXVlcnksIGV4ZWNfYWxsPVRydWUpCiAgICAgICAgICAgIGZvciBuYW1lLCBvdXQgaW4gb3V0cHV0cy5pdGVtcygpOgogICAgICAgICAgICAgICAgcHJpbnQoZiI9PT0ge25hbWV9ID09PSIpCiAgICAgICAgICAgICAgICBwcmludChvdXQgaWYgb3V0LnN0cmlwKCkgZWxzZSAiW25vIG91dHB1dF0iKQogICAgICAgICAgICAgICAgcHJpbnQoKQogICAgICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToKICAgICAgICAgICAgcHJpbnRfd2FybmluZyhmIkV4ZWN1dGlvbiBmYWlsZWQ6IHtlfSIpCgogICAgcmV0dXJuIDAKCgpkZWYgX3ByaW50X3JvdXRlKHJvdXRlLCBxdWVyeTogc3RyKSAtPiBOb25lOgogICAgYmFyID0gIuKWiCIgKiBpbnQocm91dGUuY29uZmlkZW5jZSAqIDEwKSArICLilpEiICogKDEwIC0gaW50KHJvdXRlLmNvbmZpZGVuY2UgKiAxMCkpCiAgICBwcmludChmIvCflI0gUXVlcnk6IHtxdWVyeX0iKQogICAgcHJpbnQoZiIgICBUeXBlOiAgICAgICAgICB7cm91dGUucXVlcnlfdHlwZS52YWx1ZX0iKQogICAgcHJpbnQoZiIgICBDb21tYW5kOiAgICAgICB7cm91dGUucHJpbWFyeV9jb21tYW5kfSIpCiAgICBwcmludChmIiAgIENvbmZpZGVuY2U6ICAgIHtiYXJ9IHtyb3V0ZS5jb25maWRlbmNlOi4wJX0iKQogICAgaWYgcm91dGUubXVsdGlfaW50ZW50OgogICAgICAgIHByaW50KAogICAgICAgICAgICBmIiAgIFNlY29uZGFyeTogICAgIHtyb3V0ZS5zZWNvbmRhcnlfcXVlcnlfdHlwZS52YWx1ZSBpZiByb3V0ZS5zZWNvbmRhcnlfcXVlcnlfdHlwZSBlbHNlICfigJQnfSIKICAgICAgICApCiAgICAgICAgcHJpbnQoZiIgICBTdWItY29tbWFuZHM6ICB7JyDihpIgJy5qb2luKHJvdXRlLnN1Yl9jb21tYW5kcyl9IikKICAgIGlmIHJvdXRlLnJlYXNvbmluZzoKICAgICAgICBwcmludChmIiAgIFJlYXNvbmluZzogICAgIHtyb3V0ZS5yZWFzb25pbmd9IikK
+"""CLI command: route — semantic command routing."""
+from __future__ import annotations
+
+import argparse
+import json
+
+from cli._shared import print_warning
+from llm.semantic_router import SemanticRouter
+
+
+def _build_route_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "route",
+        help="Route a natural-language query to the appropriate CLI command",
+        description=(
+            "Classify a research query and optionally execute the routed command(s). "
+            "Uses LLM classification with graceful fallback to embedding similarity "
+            "and keyword matching."
+        ),
+    )
+    p.add_argument(
+        "query",
+        nargs="*",
+        default=[],
+        help="Research query to route",
+    )
+    p.add_argument(
+        "--json", "-j",
+        action="store_true",
+        help="Output full route object as JSON",
+    )
+    p.add_argument(
+        "--exec", "-e",
+        action="store_true",
+        help="Execute the routed command(s) and print outputs",
+    )
+    p.add_argument(
+        "--all", "-a",
+        action="store_true",
+        help="Execute all routed commands (for multi-intent queries, implies --exec)",
+    )
+    p.add_argument(
+        "--model", "-m",
+        type=str,
+        default=None,
+        help="LLM model for classification (default: qwen3.5-plus)",
+    )
+    return p  # type: ignore[no-any-return]
+
+
+def _run_route(args: argparse.Namespace) -> int:
+    if not args.query:
+        print_warning("Usage: airos route <query>")
+        return 1  # type: ignore[no-any-return]
+
+    query = " ".join(args.query)
+    router = SemanticRouter(model=args.model)
+
+    try:
+        route = router.route(query)
+    except Exception as e:
+        print_warning(f"Routing failed: {e}")
+        return 1  # type: ignore[no-any-return]
+
+    exec_all = args.all or args.exec
+
+    if args.json:
+        print(json.dumps(route.to_dict(), indent=2, ensure_ascii=False))
+        return 0  # type: ignore[no-any-return]
+
+    # Human-readable output
+    _print_route(route, query)
+
+    if exec_all:
+        print()
+        try:
+            outputs = router.execute(route, query, exec_all=True)
+            for name, out in outputs.items():
+                print(f"=== {name} ===")
+                print(out if out.strip() else "[no output]")
+                print()
+        except Exception as e:
+            print_warning(f"Execution failed: {e}")
+
+    return 0
+
+
+def _print_route(route, query: str) -> None:
+    bar = "█" * int(route.confidence * 10) + "░" * (10 - int(route.confidence * 10))
+    print(f"🔍 Query: {query}")
+    print(f"   Type:          {route.query_type.value}")
+    print(f"   Command:       {route.primary_command}")
+    print(f"   Confidence:    {bar} {route.confidence:.0%}")
+    if route.multi_intent:
+        print(f"   Secondary:     {route.secondary_query_type.value if route.secondary_query_type else '—'}")
+        print(f"   Sub-commands:  {' → '.join(route.sub_commands)}")
+    if route.reasoning:
+        print(f"   Reasoning:     {route.reasoning}")

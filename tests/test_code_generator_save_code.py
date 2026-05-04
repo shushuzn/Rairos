@@ -1,1 +1,259 @@
-IiIiDQpSZWdyZXNzaW9uIHRlc3RzIGZvciByZXNlYXJjaF9sb29wLmNvZGVfZ2VuZXJhdG9yLnNhdmVfY29kZQ0KDQpDb3ZlcnM6DQotIFBsYWluLXRleHQgcHJlYW1ibGUgc3RyaXBwaW5nIChNaW5pTWF4IG1vZGVsIHNjZW5hcmlvKQ0KLSBNYXJrZG93biBgYGBweXRob25gYGAgYmxvY2sgZXh0cmFjdGlvbiAoZXhpc3RpbmcgYmVoYXZpb3IpDQotIEJhY2t0aWNrIGBgIGBgIG1hcmtlciBzdHJpcHBpbmcgKGV4aXN0aW5nIGJlaGF2aW9yKQ0KIiIiDQoNCmltcG9ydCBhc3QNCmltcG9ydCByZQ0KaW1wb3J0IHRlbXBmaWxlDQpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgNCg0KaW1wb3J0IHB5dGVzdA0KDQoNCmNsYXNzIFRlc3RTYXZlQ29kZVBsYWluVGV4dFByZWFtYmxlOg0KICAgICIiIlJlZ3Jlc3Npb246IE1pbmlNYXggbW9kZWwgb3V0cHV0cyBwbGFpbi10ZXh0IGRlc2NyaXB0aW9uIGJlZm9yZSBQeXRob24gY29kZS4iIiINCg0KICAgIGRlZiB0ZXN0X3N0cmlwc19wbGFpbl90ZXh0X3ByZWFtYmxlX2JlZm9yZV9pbXBvcnRfc3RhdGVtZW50KHNlbGYsIHRtcF9wYXRoKToNCiAgICAgICAgIiIiTWluaU1heC1zdHlsZSBvdXRwdXQ6IGRlc2NyaXB0aW9uIHRleHQsIHRoZW4gJ2ltcG9ydCB0b3JjaCcuIiIiDQogICAgICAgIGNvZGUgPSAiIiJUaGUgZm9sbG93aW5nIGlzIGEgcmVmYWN0b3JlZCBhbmQgd2VsbC1kb2N1bWVudGVkIHZlcnNpb24gb2YgdGhlIExvUkEgaW1wbGVtZW50YXRpb24uDQoNCmltcG9ydCB0b3JjaA0KaW1wb3J0IHRvcmNoLm5uIGFzIG5uDQoNCg0KY2xhc3MgTG9SQUxpbmVhcihubi5Nb2R1bGUpOg0KICAgIGRlZiBfX2luaXRfXyhzZWxmLCBpbl9mZWF0dXJlcywgb3V0X2ZlYXR1cmVzLCByYW5rPTQsIGFscGhhPTEuMCk6DQogICAgICAgIHN1cGVyKCkuX19pbml0X18oKQ0KICAgICAgICBzZWxmLnJhbmsgPSByYW5rDQogICAgICAgIHNlbGYuYWxwaGEgPSBhbHBoYQ0KICAgICAgICBzZWxmLnNjYWxpbmcgPSBhbHBoYSAvIHJhbmsNCg0KICAgICAgICBzZWxmLmxvcmFfQSA9IG5uLlBhcmFtZXRlcih0b3JjaC5yYW5kbihpbl9mZWF0dXJlcywgcmFuaykpDQogICAgICAgIHNlbGYubG9yYV9CID0gbm4uUGFyYW1ldGVyKHRvcmNoLnJhbmRuKHJhbmssIG91dF9mZWF0dXJlcykpDQogICAgICAgIHNlbGYucmVzZXRfcGFyYW1ldGVycygpDQoNCiAgICBkZWYgcmVzZXRfcGFyYW1ldGVycyhzZWxmKToNCiAgICAgICAgbm4uaW5pdC56ZXJvc18oc2VsZi5sb3JhX0EpDQogICAgICAgIG5uLmluaXQuemVyb3NfKHNlbGYubG9yYV9CKQ0KDQogICAgZGVmIGZvcndhcmQoc2VsZiwgeCk6DQogICAgICAgIHJldHVybiAoc2VsZi5sb3JhX0EgQCBzZWxmLmxvcmFfQiBAIHguVCkuVCAqIHNlbGYuc2NhbGluZw0KIiIiDQogICAgICAgIGZyb20gcmVzZWFyY2hfbG9vcC5jb2RlX2dlbmVyYXRvciBpbXBvcnQgc2F2ZV9jb2RlDQoNCiAgICAgICAgcmVzdWx0ID0gc2F2ZV9jb2RlKGNvZGUsIHRtcF9wYXRoLCBtb2R1bGVfbmFtZT0ibG9yYV90ZXN0IikNCiAgICAgICAgY29udGVudCA9IHJlc3VsdC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikNCg0KICAgICAgICBhc3QucGFyc2UoY29udGVudCkNCiAgICAgICAgZmlyc3RfbGluZSA9IGNvbnRlbnQuc3BsaXQoIlxuIilbMF0ubHN0cmlwKCkNCiAgICAgICAgYXNzZXJ0IG5vdCBmaXJzdF9saW5lLnN0YXJ0c3dpdGgoIlRoZSBmb2xsb3dpbmciKSwgZiJQcmVhbWJsZSBub3Qgc3RyaXBwZWQ6IHtmaXJzdF9saW5lfSINCiAgICAgICAgYXNzZXJ0ICJpbXBvcnQgdG9yY2giIGluIGNvbnRlbnQNCg0KICAgIGRlZiB0ZXN0X3N0cmlwc19wbGFpbl90ZXh0X3ByZWFtYmxlX2JlZm9yZV9jbGFzc19kZWZpbml0aW9uKHNlbGYsIHRtcF9wYXRoKToNCiAgICAgICAgIiIiVmFyaWFudDogcGxhaW4gdGV4dCBkZXNjcmlwdGlvbiBiZWZvcmUgYSBjbGFzcyBvciBkZWYgYXQgbW9kdWxlIGxldmVsLiIiIg0KICAgICAgICBjb2RlID0gIiIiVGhpcyBwYXBlciBwcm9wb3NlcyBhIG5vdmVsIGF0dGVudGlvbiBtZWNoYW5pc20uDQoNCmNsYXNzIE11bHRpSGVhZEF0dGVudGlvbihubi5Nb2R1bGUpOg0KICAgIGRlZiBfX2luaXRfXyhzZWxmLCBkX21vZGVsLCBudW1faGVhZHMpOg0KICAgICAgICBzdXBlcigpLl9faW5pdF9fKCkNCiAgICAgICAgYXNzZXJ0IGRfbW9kZWwgJSBudW1faGVhZHMgPT0gMA0KICAgICAgICBzZWxmLmRfbW9kZWwgPSBkX21vZGVsDQogICAgICAgIHNlbGYubnVtX2hlYWRzID0gbnVtX2hlYWRzDQogICAgICAgIHNlbGYuZGVwdGggPSBkX21vZGVsIC8vIG51bV9oZWFkcw0KDQogICAgZGVmIHNwbGl0X2hlYWRzKHNlbGYsIHgpOg0KICAgICAgICBiYXRjaF9zaXplID0geC5zaXplKDApDQogICAgICAgIHggPSB4LnZpZXcoYmF0Y2hfc2l6ZSwgLTEsIHNlbGYubnVtX2hlYWRzLCBzZWxmLmRlcHRoKQ0KICAgICAgICByZXR1cm4geC5wZXJtdXRlKDAsIDIsIDEsIDMpDQoiIiINCiAgICAgICAgZnJvbSByZXNlYXJjaF9sb29wLmNvZGVfZ2VuZXJhdG9yIGltcG9ydCBzYXZlX2NvZGUNCg0KICAgICAgICByZXN1bHQgPSBzYXZlX2NvZGUoY29kZSwgdG1wX3BhdGgsIG1vZHVsZV9uYW1lPSJhdHRlbnRpb25fdGVzdCIpDQogICAgICAgIGNvbnRlbnQgPSByZXN1bHQucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpDQoNCiAgICAgICAgYXN0LnBhcnNlKGNvbnRlbnQpDQogICAgICAgIGZpcnN0X2xpbmUgPSBjb250ZW50LnNwbGl0KCJcbiIpWzBdLmxzdHJpcCgpDQogICAgICAgIGFzc2VydCBub3QgZmlyc3RfbGluZS5zdGFydHN3aXRoKCJUaGlzIHBhcGVyIiksIGYiUHJlYW1ibGUgbm90IHN0cmlwcGVkOiB7Zmlyc3RfbGluZX0iDQogICAgICAgIGFzc2VydCAiY2xhc3MgTXVsdGlIZWFkQXR0ZW50aW9uIiBpbiBjb250ZW50DQoNCiAgICBkZWYgdGVzdF9zdHJpcHNfcGxhaW5fdGV4dF9wcmVhbWJsZV9iZWZvcmVfYXN5bmNfb3JfZGVjb3JhdG9yKHNlbGYsIHRtcF9wYXRoKToNCiAgICAgICAgIiIiVmFyaWFudDogcGxhaW4gdGV4dCBiZWZvcmUgYW4gYXN5bmMgZGVmIG9yIGRlY29yYXRlZCBmdW5jdGlvbi4iIiINCiAgICAgICAgY29kZSA9ICIiIldlIHJlZmFjdG9yIHRoZSBvcmlnaW5hbCBpbXBsZW1lbnRhdGlvbiB3aXRoIGJldHRlciBwYXR0ZXJucy4NCg0KYXN5bmMgZGVmIGNvbXB1dGVfaGlkZGVuX3N0YXRlcyhtb2RlbCwgaW5wdXRfaWRzLCBhdHRlbnRpb25fbWFzaz1Ob25lKToNCiAgICBcIlwiXCJBc3luYyB3cmFwcGVyIGZvciBtb2RlbCBpbmZlcmVuY2UuXCJcIlwiDQogICAgcmV0dXJuIGF3YWl0IG1vZGVsKGlucHV0X2lkcywgYXR0ZW50aW9uX21hc2s9YXR0ZW50aW9uX21hc2spDQoiIiINCiAgICAgICAgZnJvbSByZXNlYXJjaF9sb29wLmNvZGVfZ2VuZXJhdG9yIGltcG9ydCBzYXZlX2NvZGUNCg0KICAgICAgICByZXN1bHQgPSBzYXZlX2NvZGUoY29kZSwgdG1wX3BhdGgsIG1vZHVsZV9uYW1lPSJhc3luY190ZXN0IikNCiAgICAgICAgY29udGVudCA9IHJlc3VsdC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikNCg0KICAgICAgICBhc3QucGFyc2UoY29udGVudCkNCiAgICAgICAgZmlyc3RfbGluZSA9IGNvbnRlbnQuc3BsaXQoIlxuIilbMF0ubHN0cmlwKCkNCiAgICAgICAgYXNzZXJ0IG5vdCBmaXJzdF9saW5lLnN0YXJ0c3dpdGgoIldlIHJlZmFjdG9yIiksIGYiUHJlYW1ibGUgbm90IHN0cmlwcGVkOiB7Zmlyc3RfbGluZX0iDQoNCiAgICBkZWYgdGVzdF9zdHJpcHNfcGxhaW5fdGV4dF9wcmVhbWJsZV93aXRoX2RvY3N0cmluZyhzZWxmLCB0bXBfcGF0aCk6DQogICAgICAgICIiIlByZWFtYmxlIGZvbGxvd2VkIGJ5IGEgbW9kdWxlLWxldmVsIGRvY3N0cmluZyBiZWZvcmUgY29kZS4iIiINCiAgICAgICAgY29kZSA9ICIiIkhlcmUgaXMgdGhlIHJlZmFjdG9yZWQgaW1wbGVtZW50YXRpb24uDQoNClwiXCJcIk1vZHVsZS1sZXZlbCBkb2NzdHJpbmcgZGVzY3JpYmluZyB0aGUgYWxnb3JpdGhtLlwiXCJcIg0KDQpkZWYgZm9yd2FyZCh4LCB3ZWlnaHQsIGJpYXM9Tm9uZSk6DQogICAgcmV0dXJuIEYubGluZWFyKHgsIHdlaWdodCwgYmlhcykNCiIiIg0KICAgICAgICBmcm9tIHJlc2VhcmNoX2xvb3AuY29kZV9nZW5lcmF0b3IgaW1wb3J0IHNhdmVfY29kZQ0KDQogICAgICAgIHJlc3VsdCA9IHNhdmVfY29kZShjb2RlLCB0bXBfcGF0aCwgbW9kdWxlX25hbWU9ImRvY3N0cmluZ190ZXN0IikNCiAgICAgICAgY29udGVudCA9IHJlc3VsdC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikNCg0KICAgICAgICBhc3QucGFyc2UoY29udGVudCkNCiAgICAgICAgYXNzZXJ0ICJkZWYgZm9yd2FyZCIgaW4gY29udGVudA0KDQoNCmNsYXNzIFRlc3RTYXZlQ29kZUV4aXN0aW5nQmVoYXZpb3JQcmVzZXJ2ZWQ6DQogICAgIiIiRW5zdXJlIGV4aXN0aW5nIG1hcmtlci1iYXNlZCBleHRyYWN0aW9uIGlzIE5PVCBicm9rZW4gYnkgdGhlIGhldXJpc3RpYyBmaXguIiIiDQoNCiAgICBkZWYgdGVzdF9leHRyYWN0c19weXRob25fY29kZV9ibG9ja193aXRoX2xhbmd1YWdlX21hcmtlcihzZWxmLCB0bXBfcGF0aCk6DQogICAgICAgICIiIlN0YW5kYXJkIGBgYHB5dGhvbmBgYCBibG9jayDigJQgZXhpc3RpbmcgYmVoYXZpb3IuIiIiDQogICAgICAgIGNvZGUgPSAiIiJIZXJlIGlzIHRoZSBpbXBsZW1lbnRhdGlvbjoNCg0KYGBgcHl0aG9uDQppbXBvcnQgdG9yY2gNCmltcG9ydCB0b3JjaC5ubi5mdW5jdGlvbmFsIGFzIEYNCg0KDQpjbGFzcyBMb1JBUHl0b3JjaDoNCiAgICBkZWYgX19pbml0X18oc2VsZiwgcmFuaz00KToNCiAgICAgICAgc2VsZi5yYW5rID0gcmFuaw0KYGBgDQoiIiINCiAgICAgICAgZnJvbSByZXNlYXJjaF9sb29wLmNvZGVfZ2VuZXJhdG9yIGltcG9ydCBzYXZlX2NvZGUNCg0KICAgICAgICByZXN1bHQgPSBzYXZlX2NvZGUoY29kZSwgdG1wX3BhdGgsIG1vZHVsZV9uYW1lPSJibG9ja190ZXN0IikNCiAgICAgICAgY29udGVudCA9IHJlc3VsdC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikNCg0KICAgICAgICBhc3QucGFyc2UoY29udGVudCkNCiAgICAgICAgYXNzZXJ0ICJpbXBvcnQgdG9yY2giIGluIGNvbnRlbnQNCiAgICAgICAgYXNzZXJ0ICJjbGFzcyBMb1JBUHl0b3JjaCIgaW4gY29udGVudA0KDQogICAgZGVmIHRlc3RfZXh0cmFjdHNfd2l0aF9jaGluZXNlX21hcmtlcihzZWxmLCB0bXBfcGF0aCk6DQogICAgICAgICIiIkV4aXN0aW5nIENoaW5lc2Xmg7PljrsgbWFya2VyLiIiIg0KICAgICAgICBjb2RlID0gIiIiIOS7o+eggeWmguS4i++8mg0KIGBgYHB5dGhvbg0KaW1wb3J0IHRvcmNoDQpgYGANCiIiIg0KICAgICAgICBmcm9tIHJlc2VhcmNoX2xvb3AuY29kZV9nZW5lcmF0b3IgaW1wb3J0IHNhdmVfY29kZQ0KDQogICAgICAgIHJlc3VsdCA9IHNhdmVfY29kZShjb2RlLCB0bXBfcGF0aCwgbW9kdWxlX25hbWU9ImNoaW5lc2VfdGVzdCIpDQogICAgICAgIGNvbnRlbnQgPSByZXN1bHQucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpDQoNCiAgICAgICAgYXN0LnBhcnNlKGNvbnRlbnQpDQogICAgICAgIGFzc2VydCAiaW1wb3J0IHRvcmNoIiBpbiBjb250ZW50DQoNCg0KY2xhc3MgVGVzdFNhdmVDb2RlRWRnZUNhc2VzOg0KICAgICIiIkVkZ2UgY2FzZXMgZm9yIHRoZSBwcmVhbWJsZSBzdHJpcHBpbmcgaGV1cmlzdGljLiIiIg0KDQogICAgZGVmIHRlc3RfcmVhbF9taW5pbWF4X291dHB1dF9wYXJzZXMoc2VsZiwgdG1wX3BhdGgpOg0KICAgICAgICAiIiJGdWxsIHJlYWxpc3RpYyBNaW5pTWF4IG91dHB1dCB0aGF0IHByZXZpb3VzbHkgY2F1c2VkIHVudGVybWluYXRlZCBzdHJpbmcgbGl0ZXJhbC4iIiINCiAgICAgICAgY29kZSA9ICIiIlRoZSBmb2xsb3dpbmcgaXMgYSByZWZhY3RvcmVkIGFuZCB3ZWxsLWRvY3VtZW50ZWQgdmVyc2lvbiBvZiB0aGUgY29kZS4NCg0KXCJcIlwiTG9SQTogTG93LVJhbmsgQWRhcHRhdGlvbiBvZiBMYXJnZSBMYW5ndWFnZSBNb2RlbHMNClBhcGVyOiBhclhpdjoyMTA2LjA5Njg1DQpcIlwiXCINCg0KaW1wb3J0IHRvcmNoDQppbXBvcnQgdG9yY2gubm4gYXMgbm4NCmltcG9ydCBtYXRoDQoNCg0KY2xhc3MgTG9SQUxpbmVhcihubi5Nb2R1bGUpOg0KICAgIFwiXCJcIkxvUkEgbGluZWFyIGxheWVyIGltcGxlbWVudGF0aW9uLlwiXCJcIg0KDQogICAgZGVmIF9faW5pdF9fKHNlbGYsIGluX2ZlYXR1cmVzOiBpbnQsIG91dF9mZWF0dXJlczogaW50LCByYW5rOiBpbnQgPSA4LCBhbHBoYTogZmxvYXQgPSAxLjApOg0KICAgICAgICBzdXBlcigpLl9faW5pdF9fKCkNCiAgICAgICAgc2VsZi5yYW5rID0gcmFuaw0KICAgICAgICBzZWxmLmFscGhhID0gYWxwaGENCiAgICAgICAgaWYgcmFuayA+IDA6DQogICAgICAgICAgICBzZWxmLmxvcmFfQSA9IG5uLlBhcmFtZXRlcih0b3JjaC5yYW5kbihpbl9mZWF0dXJlcywgcmFuaykpDQogICAgICAgICAgICBzZWxmLmxvcmFfQiA9IG5uLlBhcmFtZXRlcih0b3JjaC5yYW5kbihyYW5rLCBvdXRfZmVhdHVyZXMpKQ0KICAgICAgICAgICAgc2VsZi5zY2FsaW5nID0gYWxwaGEgLyByYW5rDQogICAgICAgIGVsc2U6DQogICAgICAgICAgICBzZWxmLmxvcmFfQSA9IE5vbmUNCiAgICAgICAgICAgIHNlbGYubG9yYV9CID0gTm9uZQ0KICAgICAgICAgICAgc2VsZi5zY2FsaW5nID0gMS4wDQoNCiAgICBkZWYgcmVzZXRfcGFyYW1ldGVycyhzZWxmKToNCiAgICAgICAgaWYgc2VsZi5sb3JhX0EgaXMgbm90IE5vbmU6DQogICAgICAgICAgICBubi5pbml0Lnplcm9zXyhzZWxmLmxvcmFfQSkNCiAgICAgICAgICAgIG5uLmluaXQuemVyb3NfKHNlbGYubG9yYV9CKQ0KDQogICAgZGVmIGZvcndhcmQoc2VsZiwgeDogdG9yY2guVGVuc29yKSAtPiB0b3JjaC5UZW5zb3I6DQogICAgICAgIGlmIHNlbGYucmFuayA9PSAwOg0KICAgICAgICAgICAgcmV0dXJuIHgNCiAgICAgICAgcmV0dXJuIHggKyAoeCBAIHNlbGYubG9yYV9BIEAgc2VsZi5sb3JhX0IpICogc2VsZi5zY2FsaW5nDQoiIiINCiAgICAgICAgZnJvbSByZXNlYXJjaF9sb29wLmNvZGVfZ2VuZXJhdG9yIGltcG9ydCBzYXZlX2NvZGUNCg0KICAgICAgICByZXN1bHQgPSBzYXZlX2NvZGUoY29kZSwgdG1wX3BhdGgsIG1vZHVsZV9uYW1lPSJsb3JhX3JlZ3Jlc3Npb24iKQ0KICAgICAgICBjb250ZW50ID0gcmVzdWx0LnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQ0KDQogICAgICAgIGFzdC5wYXJzZShjb250ZW50KQ0KICAgICAgICBmaXJzdF9saW5lID0gY29udGVudC5zcGxpdCgiXG4iKVswXS5sc3RyaXAoKQ0KICAgICAgICBhc3NlcnQgZmlyc3RfbGluZS5zdGFydHN3aXRoKCciIiInKSwgZiJFeHBlY3RlZCBkb2NzdHJpbmcgc3RhcnQsIGdvdDoge2ZpcnN0X2xpbmV9Ig0KICAgICAgICBhc3NlcnQgImNsYXNzIExvUkFMaW5lYXIiIGluIGNvbnRlbnQNCg0KICAgIGRlZiB0ZXN0X3R5cGVfY2hlY2tpbmdfYmxvY2tfYm9keV9wcmVzZXJ2ZWQoc2VsZiwgdG1wX3BhdGgpOg0KICAgICAgICAiIiJUWVBFX0NIRUNLSU5HIGJsb2NrOiBwcmVhbWJsZSBzdHJpcHBlZCwgJ2Zyb20gdHlwaW5nIGltcG9ydCBBbnknIHByZXNlcnZlZC4iIiINCiAgICAgICAgY29kZSA9ICIiIlRoaXMgZGVzY3JpYmVzIHRoZSBpbXBsZW1lbnRhdGlvbi4NCg0KaWYgVFlQRV9DSEVDS0lORzoNCiAgICBmcm9tIHR5cGluZyBpbXBvcnQgQW55DQoiIiINCiAgICAgICAgZnJvbSByZXNlYXJjaF9sb29wLmNvZGVfZ2VuZXJhdG9yIGltcG9ydCBzYXZlX2NvZGUNCg0KICAgICAgICByZXN1bHQgPSBzYXZlX2NvZGUoY29kZSwgdG1wX3BhdGgsIG1vZHVsZV9uYW1lPSJ0eXBlX2NoZWNrX3Rlc3QiKQ0KICAgICAgICBjb250ZW50ID0gcmVzdWx0LnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQ0KDQogICAgICAgIGFzdC5wYXJzZShjb250ZW50KQ0KICAgICAgICAjICdmcm9tIHR5cGluZyBpbXBvcnQgQW55JyAobHN0cmlwcGVkKSBtYXRjaGVzIF5mcm9tLCBzbyBpdCBiZWNvbWVzIGZpcnN0DQogICAgICAgICMgY29kZSBsaW5lLiBFdmVyeXRoaW5nIGJlZm9yZSBpdCAoaW5jbHVkaW5nICdpZiBUWVBFX0NIRUNLSU5HOicpIGlzDQogICAgICAgICMgc3RyaXBwZWQuIFRoZSByZXN1bHQgaXMgdmFsaWQgUHl0aG9uIOKAlCBhIHRvcC1sZXZlbCBpbXBvcnQgc3RhdGVtZW50Lg0KICAgICAgICBhc3NlcnQgImZyb20gdHlwaW5nIGltcG9ydCBBbnkiIGluIGNvbnRlbnQNCg0KICAgIGRlZiB0ZXN0X2NvbW1lbnRfb25seV9saW5lc19wcmVzZXJ2ZWQoc2VsZiwgdG1wX3BhdGgpOg0KICAgICAgICAiIiJMaW5lcyBzdGFydGluZyB3aXRoICMgdGhhdCBhcmUgTk9UIHZhbGlkIFB5dGhvbiBtb2R1bGUtbGV2ZWwgc3RhcnRzIHNob3VsZCBub3QgY3V0LiIiIg0KICAgICAgICBjb2RlID0gIiIiIyBUaGlzIGlzIGEgY29tbWVudCBoZWFkZXINCiMgQW5vdGhlciBjb21tZW50IGxpbmUNCg0KaW1wb3J0IG9zDQoiIiINCiAgICAgICAgZnJvbSByZXNlYXJjaF9sb29wLmNvZGVfZ2VuZXJhdG9yIGltcG9ydCBzYXZlX2NvZGUNCg0KICAgICAgICByZXN1bHQgPSBzYXZlX2NvZGUoY29kZSwgdG1wX3BhdGgsIG1vZHVsZV9uYW1lPSJjb21tZW50X3Rlc3QiKQ0KICAgICAgICBjb250ZW50ID0gcmVzdWx0LnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQ0KDQogICAgICAgIGFzdC5wYXJzZShjb250ZW50KQ0KICAgICAgICBhc3NlcnQgImltcG9ydCBvcyIgaW4gY29udGVudA0KDQogICAgZGVmIHRlc3Rfc2luZ2xlX2xpbmVfZGVzY3JpcHRpb25fc3RyaXBwZWQoc2VsZiwgdG1wX3BhdGgpOg0KICAgICAgICAiIiJPbmUtbGluZSBwcmVhbWJsZSArIGJsYW5rIGxpbmUgKyBpbXBvcnQgaXMgc3RyaXBwZWQuIiIiDQogICAgICAgIGNvZGUgPSAiIiJIZXJlIGlzIHRoZSBpbXBsZW1lbnRhdGlvbi4NCg0KaW1wb3J0IG9zDQoiIiINCiAgICAgICAgZnJvbSByZXNlYXJjaF9sb29wLmNvZGVfZ2VuZXJhdG9yIGltcG9ydCBzYXZlX2NvZGUNCg0KICAgICAgICByZXN1bHQgPSBzYXZlX2NvZGUoY29kZSwgdG1wX3BhdGgsIG1vZHVsZV9uYW1lPSJzaW5nbGVfcHJlYW1ibGUiKQ0KICAgICAgICBjb250ZW50ID0gcmVzdWx0LnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQ0KDQogICAgICAgIGFzdC5wYXJzZShjb250ZW50KQ0KICAgICAgICBhc3NlcnQgImltcG9ydCBvcyIgaW4gY29udGVudA0KICAgICAgICBhc3NlcnQgIkhlcmUgaXMiIG5vdCBpbiBjb250ZW50DQo=
+"""
+Regression tests for research_loop.code_generator.save_code
+
+Covers:
+- Plain-text preamble stripping (MiniMax model scenario)
+- Markdown ```python``` block extraction (existing behavior)
+- Backtick `` `` marker stripping (existing behavior)
+"""
+
+import ast
+import re
+import tempfile
+from pathlib import Path
+
+import pytest
+
+
+class TestSaveCodePlainTextPreamble:
+    """Regression: MiniMax model outputs plain-text description before Python code."""
+
+    def test_strips_plain_text_preamble_before_import_statement(self, tmp_path):
+        """MiniMax-style output: description text, then 'import torch'."""
+        code = """The following is a refactored and well-documented version of the LoRA implementation.
+
+import torch
+import torch.nn as nn
+
+
+class LoRALinear(nn.Module):
+    def __init__(self, in_features, out_features, rank=4, alpha=1.0):
+        super().__init__()
+        self.rank = rank
+        self.alpha = alpha
+        self.scaling = alpha / rank
+
+        self.lora_A = nn.Parameter(torch.randn(in_features, rank))
+        self.lora_B = nn.Parameter(torch.randn(rank, out_features))
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        nn.init.zeros_(self.lora_A)
+        nn.init.zeros_(self.lora_B)
+
+    def forward(self, x):
+        return (self.lora_A @ self.lora_B @ x.T).T * self.scaling
+"""
+        from research_loop.code_generator import save_code
+
+        result = save_code(code, tmp_path, module_name="lora_test")
+        content = result.read_text(encoding="utf-8")
+
+        ast.parse(content)
+        first_line = content.split("\n")[0].lstrip()
+        assert not first_line.startswith("The following"), f"Preamble not stripped: {first_line}"
+        assert "import torch" in content
+
+    def test_strips_plain_text_preamble_before_class_definition(self, tmp_path):
+        """Variant: plain text description before a class or def at module level."""
+        code = """This paper proposes a novel attention mechanism.
+
+class MultiHeadAttention(nn.Module):
+    def __init__(self, d_model, num_heads):
+        super().__init__()
+        assert d_model % num_heads == 0
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.depth = d_model // num_heads
+
+    def split_heads(self, x):
+        batch_size = x.size(0)
+        x = x.view(batch_size, -1, self.num_heads, self.depth)
+        return x.permute(0, 2, 1, 3)
+"""
+        from research_loop.code_generator import save_code
+
+        result = save_code(code, tmp_path, module_name="attention_test")
+        content = result.read_text(encoding="utf-8")
+
+        ast.parse(content)
+        first_line = content.split("\n")[0].lstrip()
+        assert not first_line.startswith("This paper"), f"Preamble not stripped: {first_line}"
+        assert "class MultiHeadAttention" in content
+
+    def test_strips_plain_text_preamble_before_async_or_decorator(self, tmp_path):
+        """Variant: plain text before an async def or decorated function."""
+        code = """We refactor the original implementation with better patterns.
+
+async def compute_hidden_states(model, input_ids, attention_mask=None):
+    \"\"\"Async wrapper for model inference.\"\"\"
+    return await model(input_ids, attention_mask=attention_mask)
+"""
+        from research_loop.code_generator import save_code
+
+        result = save_code(code, tmp_path, module_name="async_test")
+        content = result.read_text(encoding="utf-8")
+
+        ast.parse(content)
+        first_line = content.split("\n")[0].lstrip()
+        assert not first_line.startswith("We refactor"), f"Preamble not stripped: {first_line}"
+
+    def test_strips_plain_text_preamble_with_docstring(self, tmp_path):
+        """Preamble followed by a module-level docstring before code."""
+        code = """Here is the refactored implementation.
+
+\"\"\"Module-level docstring describing the algorithm.\"\"\"
+
+def forward(x, weight, bias=None):
+    return F.linear(x, weight, bias)
+"""
+        from research_loop.code_generator import save_code
+
+        result = save_code(code, tmp_path, module_name="docstring_test")
+        content = result.read_text(encoding="utf-8")
+
+        ast.parse(content)
+        assert "def forward" in content
+
+
+class TestSaveCodeExistingBehaviorPreserved:
+    """Ensure existing marker-based extraction is NOT broken by the heuristic fix."""
+
+    def test_extracts_python_code_block_with_language_marker(self, tmp_path):
+        """Standard ```python``` block — existing behavior."""
+        code = """Here is the implementation:
+
+```python
+import torch
+import torch.nn.functional as F
+
+
+class LoRAPytorch:
+    def __init__(self, rank=4):
+        self.rank = rank
+```
+"""
+        from research_loop.code_generator import save_code
+
+        result = save_code(code, tmp_path, module_name="block_test")
+        content = result.read_text(encoding="utf-8")
+
+        ast.parse(content)
+        assert "import torch" in content
+        assert "class LoRAPytorch" in content
+
+    def test_extracts_with_chinese_marker(self, tmp_path):
+        """Existing Chinese想去 marker."""
+        code = """ 代码如下：
+ ```python
+import torch
+```
+"""
+        from research_loop.code_generator import save_code
+
+        result = save_code(code, tmp_path, module_name="chinese_test")
+        content = result.read_text(encoding="utf-8")
+
+        ast.parse(content)
+        assert "import torch" in content
+
+
+class TestSaveCodeEdgeCases:
+    """Edge cases for the preamble stripping heuristic."""
+
+    def test_real_minimax_output_parses(self, tmp_path):
+        """Full realistic MiniMax output that previously caused unterminated string literal."""
+        code = """The following is a refactored and well-documented version of the code.
+
+\"\"\"LoRA: Low-Rank Adaptation of Large Language Models
+Paper: arXiv:2106.09685
+\"\"\"
+
+import torch
+import torch.nn as nn
+import math
+
+
+class LoRALinear(nn.Module):
+    \"\"\"LoRA linear layer implementation.\"\"\"
+
+    def __init__(self, in_features: int, out_features: int, rank: int = 8, alpha: float = 1.0):
+        super().__init__()
+        self.rank = rank
+        self.alpha = alpha
+        if rank > 0:
+            self.lora_A = nn.Parameter(torch.randn(in_features, rank))
+            self.lora_B = nn.Parameter(torch.randn(rank, out_features))
+            self.scaling = alpha / rank
+        else:
+            self.lora_A = None
+            self.lora_B = None
+            self.scaling = 1.0
+
+    def reset_parameters(self):
+        if self.lora_A is not None:
+            nn.init.zeros_(self.lora_A)
+            nn.init.zeros_(self.lora_B)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if self.rank == 0:
+            return x
+        return x + (x @ self.lora_A @ self.lora_B) * self.scaling
+"""
+        from research_loop.code_generator import save_code
+
+        result = save_code(code, tmp_path, module_name="lora_regression")
+        content = result.read_text(encoding="utf-8")
+
+        ast.parse(content)
+        first_line = content.split("\n")[0].lstrip()
+        assert first_line.startswith('"""'), f"Expected docstring start, got: {first_line}"
+        assert "class LoRALinear" in content
+
+    def test_type_checking_block_body_preserved(self, tmp_path):
+        """TYPE_CHECKING block: preamble stripped, 'from typing import Any' preserved."""
+        code = """This describes the implementation.
+
+if TYPE_CHECKING:
+    from typing import Any
+"""
+        from research_loop.code_generator import save_code
+
+        result = save_code(code, tmp_path, module_name="type_check_test")
+        content = result.read_text(encoding="utf-8")
+
+        ast.parse(content)
+        # 'from typing import Any' (lstripped) matches ^from, so it becomes first
+        # code line. Everything before it (including 'if TYPE_CHECKING:') is
+        # stripped. The result is valid Python — a top-level import statement.
+        assert "from typing import Any" in content
+
+    def test_comment_only_lines_preserved(self, tmp_path):
+        """Lines starting with # that are NOT valid Python module-level starts should not cut."""
+        code = """# This is a comment header
+# Another comment line
+
+import os
+"""
+        from research_loop.code_generator import save_code
+
+        result = save_code(code, tmp_path, module_name="comment_test")
+        content = result.read_text(encoding="utf-8")
+
+        ast.parse(content)
+        assert "import os" in content
+
+    def test_single_line_description_stripped(self, tmp_path):
+        """One-line preamble + blank line + import is stripped."""
+        code = """Here is the implementation.
+
+import os
+"""
+        from research_loop.code_generator import save_code
+
+        result = save_code(code, tmp_path, module_name="single_preamble")
+        content = result.read_text(encoding="utf-8")
+
+        ast.parse(content)
+        assert "import os" in content
+        assert "Here is" not in content

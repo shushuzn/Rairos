@@ -1,1 +1,111 @@
-IiIiClNlYXJjaCBPcHRpbWl6ZXIuCgpJbXByb3ZlcyBzZWFyY2ggcmVsZXZhbmNlIGFuZCBwZXJmb3JtYW5jZS4KIiIiCgppbXBvcnQgdGhyZWFkaW5nCmZyb20gdHlwaW5nIGltcG9ydCBMaXN0LCBEaWN0LCBBbnkKCgpjbGFzcyBTZWFyY2hPcHRpbWl6ZXI6CiAgICAiIiIKICAgIE9wdGltaXplIHNlYXJjaCBxdWVyaWVzIGFuZCByZXN1bHRzLgoKICAgIEZlYXR1cmVzOgogICAgLSBRdWVyeSBleHBhbnNpb24KICAgIC0gUmVsZXZhbmNlIHNjb3JpbmcKICAgIC0gUmVzdWx0IHJhbmtpbmcKICAgIC0gU2VhcmNoIHN1Z2dlc3Rpb25zCiAgICAiIiIKCiAgICBNQVhfSElTVE9SWSA9IDEwMDAKCiAgICBkZWYgX19pbml0X18oc2VsZik6CiAgICAgICAgc2VsZi5zZWFyY2hfaGlzdG9yeTogTGlzdFtzdHJdID0gW10KICAgICAgICBzZWxmLl9oaXN0b3J5X2xvY2sgPSB0aHJlYWRpbmcuTG9jaygpCgogICAgZGVmIG9wdGltaXplX3F1ZXJ5KHNlbGYsIHF1ZXJ5OiBzdHIpIC0+IHN0cjoKICAgICAgICAiIiJPcHRpbWl6ZSBhIHNlYXJjaCBxdWVyeS4iIiIKICAgICAgICAjIEFkZCB0byBoaXN0b3J5IHdpdGggYm91bmRlZCBzaXplCiAgICAgICAgd2l0aCBzZWxmLl9oaXN0b3J5X2xvY2s6CiAgICAgICAgICAgIHNlbGYuc2VhcmNoX2hpc3RvcnkuYXBwZW5kKHF1ZXJ5KQogICAgICAgICAgICBpZiBsZW4oc2VsZi5zZWFyY2hfaGlzdG9yeSkgPiBzZWxmLk1BWF9ISVNUT1JZOgogICAgICAgICAgICAgICAgc2VsZi5zZWFyY2hfaGlzdG9yeSA9IHNlbGYuc2VhcmNoX2hpc3RvcnlbLXNlbGYuTUFYX0hJU1RPUlkgOl0KCiAgICAgICAgIyBCYXNpYyBvcHRpbWl6YXRpb24KICAgICAgICBxdWVyeSA9IHF1ZXJ5LnN0cmlwKCkubG93ZXIoKQoKICAgICAgICByZXR1cm4gcXVlcnkKCiAgICBkZWYgZXhwYW5kX3F1ZXJ5KHNlbGYsIHF1ZXJ5OiBzdHIpIC0+IExpc3Rbc3RyXToKICAgICAgICAiIiJFeHBhbmQgcXVlcnkgd2l0aCBzeW5vbnltcy4iIiIKICAgICAgICBleHBhbnNpb25zID0gW3F1ZXJ5XQoKICAgICAgICAjIENvbW1vbiBleHBhbnNpb25zCiAgICAgICAgc3lub255bXMgPSB7CiAgICAgICAgICAgICJtbCI6IFsibWFjaGluZSBsZWFybmluZyIsICJtbCJdLAogICAgICAgICAgICAiYWkiOiBbImFydGlmaWNpYWwgaW50ZWxsaWdlbmNlIiwgImFpIl0sCiAgICAgICAgICAgICJubiI6IFsibmV1cmFsIG5ldHdvcmsiLCAiZGVlcCBsZWFybmluZyJdLAogICAgICAgICAgICAibmxwIjogWyJuYXR1cmFsIGxhbmd1YWdlIHByb2Nlc3NpbmciXSwKICAgICAgICAgICAgImN2IjogWyJjb21wdXRlciB2aXNpb24iXSwKICAgICAgICB9CgogICAgICAgIHdvcmRzID0gcXVlcnkubG93ZXIoKS5zcGxpdCgpCiAgICAgICAgZm9yIHdvcmQgaW4gd29yZHM6CiAgICAgICAgICAgIGlmIHdvcmQgaW4gc3lub255bXM6CiAgICAgICAgICAgICAgICBleHBhbnNpb25zLmV4dGVuZChzeW5vbnltc1t3b3JkXSkKCiAgICAgICAgcmV0dXJuIGxpc3Qoc2V0KGV4cGFuc2lvbnMpKQoKICAgIGRlZiByYW5rX3Jlc3VsdHMoc2VsZiwgcmVzdWx0czogTGlzdFtEaWN0W3N0ciwgQW55XV0sIHF1ZXJ5OiBzdHIpIC0+IExpc3RbRGljdFtzdHIsIEFueV1dOgogICAgICAgICIiIlJhbmsgc2VhcmNoIHJlc3VsdHMgYnkgcmVsZXZhbmNlLiIiIgogICAgICAgIHNjb3JlZCA9IFtdCgogICAgICAgIHF1ZXJ5X3dvcmRzID0gc2V0KHF1ZXJ5Lmxvd2VyKCkuc3BsaXQoKSkKCiAgICAgICAgZm9yIHJlc3VsdCBpbiByZXN1bHRzOgogICAgICAgICAgICBzY29yZSA9IDAKCiAgICAgICAgICAgICMgU2NvcmUgdGl0bGUgbWF0Y2hlcwogICAgICAgICAgICB0aXRsZSA9IHJlc3VsdC5nZXQoInRpdGxlIiwgIiIpLmxvd2VyKCkKICAgICAgICAgICAgaWYgYW55KHdvcmQgaW4gdGl0bGUgZm9yIHdvcmQgaW4gcXVlcnlfd29yZHMpOgogICAgICAgICAgICAgICAgc2NvcmUgKz0gMTAKCiAgICAgICAgICAgICMgU2NvcmUgYWJzdHJhY3QgbWF0Y2hlcwogICAgICAgICAgICBhYnN0cmFjdCA9IHJlc3VsdC5nZXQoImFic3RyYWN0IiwgIiIpLmxvd2VyKCkKICAgICAgICAgICAgaWYgYW55KHdvcmQgaW4gYWJzdHJhY3QgZm9yIHdvcmQgaW4gcXVlcnlfd29yZHMpOgogICAgICAgICAgICAgICAgc2NvcmUgKz0gNQoKICAgICAgICAgICAgc2NvcmVkLmFwcGVuZCgoc2NvcmUsIHJlc3VsdCkpCgogICAgICAgIHNjb3JlZC5zb3J0KGtleT1sYW1iZGEgeDogeFswXSwgcmV2ZXJzZT1UcnVlKQogICAgICAgIHJldHVybiBbclsxXSBmb3IgciBpbiBzY29yZWRdCgogICAgZGVmIGdldF9zdWdnZXN0aW9ucyhzZWxmLCBwYXJ0aWFsOiBzdHIpIC0+IExpc3Rbc3RyXToKICAgICAgICAiIiJHZXQgc2VhcmNoIHN1Z2dlc3Rpb25zIGJhc2VkIG9uIHBhcnRpYWwgcXVlcnkuIiIiCiAgICAgICAgc3VnZ2VzdGlvbnMgPSBbXQogICAgICAgIHBhcnRpYWwgPSBwYXJ0aWFsLmxvd2VyKCkKCiAgICAgICAgd2l0aCBzZWxmLl9oaXN0b3J5X2xvY2s6CiAgICAgICAgICAgIGZvciBxdWVyeSBpbiBzZWxmLnNlYXJjaF9oaXN0b3J5OgogICAgICAgICAgICAgICAgaWYgcGFydGlhbCBpbiBxdWVyeS5sb3dlcigpIGFuZCBxdWVyeSBub3QgaW4gc3VnZ2VzdGlvbnM6CiAgICAgICAgICAgICAgICAgICAgc3VnZ2VzdGlvbnMuYXBwZW5kKHF1ZXJ5KQoKICAgICAgICByZXR1cm4gc3VnZ2VzdGlvbnNbOjVdCgoKIyBHbG9iYWwgc2VhcmNoIG9wdGltaXplciDigJQgdGhyZWFkLXNhZmUgaW5pdApfc2VhcmNoX29wdGltaXplciA9IE5vbmUKX3NlYXJjaF9vcHRpbWl6ZXJfbG9jayA9IHRocmVhZGluZy5Mb2NrKCkKCgpkZWYgZ2V0X3NlYXJjaF9vcHRpbWl6ZXIoKSAtPiBTZWFyY2hPcHRpbWl6ZXI6CiAgICAiIiJHZXQgdGhlIGdsb2JhbCBzZWFyY2ggb3B0aW1pemVyICh0aHJlYWQtc2FmZSkuIiIiCiAgICBnbG9iYWwgX3NlYXJjaF9vcHRpbWl6ZXIKICAgIGlmIF9zZWFyY2hfb3B0aW1pemVyIGlzIE5vbmU6CiAgICAgICAgd2l0aCBfc2VhcmNoX29wdGltaXplcl9sb2NrOgogICAgICAgICAgICAjIERvdWJsZS1jaGVja2VkIGxvY2tpbmcKICAgICAgICAgICAgaWYgX3NlYXJjaF9vcHRpbWl6ZXIgaXMgTm9uZToKICAgICAgICAgICAgICAgIF9zZWFyY2hfb3B0aW1pemVyID0gU2VhcmNoT3B0aW1pemVyKCkKICAgIHJldHVybiBfc2VhcmNoX29wdGltaXplcgo=
+"""
+Search Optimizer.
+
+Improves search relevance and performance.
+"""
+
+import threading
+from typing import List, Dict, Any
+
+
+class SearchOptimizer:
+    """
+    Optimize search queries and results.
+
+    Features:
+    - Query expansion
+    - Relevance scoring
+    - Result ranking
+    - Search suggestions
+    """
+
+    MAX_HISTORY = 1000
+
+    def __init__(self):
+        self.search_history: List[str] = []
+        self._history_lock = threading.Lock()
+
+    def optimize_query(self, query: str) -> str:
+        """Optimize a search query."""
+        # Add to history with bounded size
+        with self._history_lock:
+            self.search_history.append(query)
+            if len(self.search_history) > self.MAX_HISTORY:
+                self.search_history = self.search_history[-self.MAX_HISTORY :]
+
+        # Basic optimization
+        query = query.strip().lower()
+
+        return query
+
+    def expand_query(self, query: str) -> List[str]:
+        """Expand query with synonyms."""
+        expansions = [query]
+
+        # Common expansions
+        synonyms = {
+            "ml": ["machine learning", "ml"],
+            "ai": ["artificial intelligence", "ai"],
+            "nn": ["neural network", "deep learning"],
+            "nlp": ["natural language processing"],
+            "cv": ["computer vision"],
+        }
+
+        words = query.lower().split()
+        for word in words:
+            if word in synonyms:
+                expansions.extend(synonyms[word])
+
+        return list(set(expansions))
+
+    def rank_results(self, results: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
+        """Rank search results by relevance."""
+        scored = []
+
+        query_words = set(query.lower().split())
+
+        for result in results:
+            score = 0
+
+            # Score title matches
+            title = result.get("title", "").lower()
+            if any(word in title for word in query_words):
+                score += 10
+
+            # Score abstract matches
+            abstract = result.get("abstract", "").lower()
+            if any(word in abstract for word in query_words):
+                score += 5
+
+            scored.append((score, result))
+
+        scored.sort(key=lambda x: x[0], reverse=True)
+        return [r[1] for r in scored]
+
+    def get_suggestions(self, partial: str) -> List[str]:
+        """Get search suggestions based on partial query."""
+        suggestions = []
+        partial = partial.lower()
+
+        with self._history_lock:
+            for query in self.search_history:
+                if partial in query.lower() and query not in suggestions:
+                    suggestions.append(query)
+
+        return suggestions[:5]
+
+
+# Global search optimizer — thread-safe init
+_search_optimizer = None
+_search_optimizer_lock = threading.Lock()
+
+
+def get_search_optimizer() -> SearchOptimizer:
+    """Get the global search optimizer (thread-safe)."""
+    global _search_optimizer
+    if _search_optimizer is None:
+        with _search_optimizer_lock:
+            # Double-checked locking
+            if _search_optimizer is None:
+                _search_optimizer = SearchOptimizer()
+    return _search_optimizer

@@ -1,1 +1,225 @@
-IiIiVGVzdHMgZm9yIGxsbS9zZW1hbnRpY19yb3V0ZXIg4oCUIHB1cmUgbG9naWMsIG5vIEkvTy4iIiIKCmZyb20gbGxtLnNlbWFudGljX3JvdXRlciBpbXBvcnQgKAogICAgUXVlcnlUeXBlLAogICAgUm91dGUsCiAgICBfcm91dGVfYnlfa2V5d29yZCwKICAgIF9RVUVSWV9UWVBFX1RPX0NPTU1BTkQsCikKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgUXVlcnlUeXBlIGFuZCBtYXBwaW5nCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFF1ZXJ5VHlwZToKICAgIGRlZiB0ZXN0X2FsbF92YWx1ZXMoc2VsZik6CiAgICAgICAgYXNzZXJ0IFF1ZXJ5VHlwZS5HQVBfQU5BTFlTSVMudmFsdWUgPT0gImdhcF9hbmFseXNpcyIKICAgICAgICBhc3NlcnQgUXVlcnlUeXBlLkhZUE9USEVTSVNfR0VORVJBVElPTi52YWx1ZSA9PSAiaHlwb3RoZXNpc19nZW5lcmF0aW9uIgogICAgICAgIGFzc2VydCBRdWVyeVR5cGUuRVhQRVJJTUVOVC52YWx1ZSA9PSAiZXhwZXJpbWVudCIKICAgICAgICBhc3NlcnQgUXVlcnlUeXBlLklOU0lHSFQudmFsdWUgPT0gImluc2lnaHQiCiAgICAgICAgYXNzZXJ0IFF1ZXJ5VHlwZS5OQVJSQVRJVkUudmFsdWUgPT0gIm5hcnJhdGl2ZSIKICAgICAgICBhc3NlcnQgUXVlcnlUeXBlLlBBUEVSX1NFQVJDSC52YWx1ZSA9PSAicGFwZXJfc2VhcmNoIgogICAgICAgIGFzc2VydCBRdWVyeVR5cGUuUVVFU1RJT05fQU5TV0VSLnZhbHVlID09ICJxdWVzdGlvbl9hbnN3ZXIiCiAgICAgICAgYXNzZXJ0IFF1ZXJ5VHlwZS5HRU5FUkFMLnZhbHVlID09ICJnZW5lcmFsIgoKCmNsYXNzIFRlc3RRdWVyeVR5cGVUb0NvbW1hbmQ6CiAgICBkZWYgdGVzdF9nYXAoc2VsZik6CiAgICAgICAgYXNzZXJ0IF9RVUVSWV9UWVBFX1RPX0NPTU1BTkRbUXVlcnlUeXBlLkdBUF9BTkFMWVNJU10gPT0gImdhcCIKCiAgICBkZWYgdGVzdF9oeXBvdGhlc2lzKHNlbGYpOgogICAgICAgIGFzc2VydCBfUVVFUllfVFlQRV9UT19DT01NQU5EW1F1ZXJ5VHlwZS5IWVBPVEhFU0lTX0dFTkVSQVRJT05dID09ICJoeXBvdGhlc2l6ZSIKCiAgICBkZWYgdGVzdF9leHBlcmltZW50KHNlbGYpOgogICAgICAgIGFzc2VydCBfUVVFUllfVFlQRV9UT19DT01NQU5EW1F1ZXJ5VHlwZS5FWFBFUklNRU5UXSA9PSAiZXhwZXJpbWVudCIKCiAgICBkZWYgdGVzdF9pbnNpZ2h0KHNlbGYpOgogICAgICAgIGFzc2VydCBfUVVFUllfVFlQRV9UT19DT01NQU5EW1F1ZXJ5VHlwZS5JTlNJR0hUXSA9PSAiaW5zaWdodCIKCiAgICBkZWYgdGVzdF9uYXJyYXRpdmUoc2VsZik6CiAgICAgICAgYXNzZXJ0IF9RVUVSWV9UWVBFX1RPX0NPTU1BTkRbUXVlcnlUeXBlLk5BUlJBVElWRV0gPT0gIm5hcnJhdGl2ZSIKCiAgICBkZWYgdGVzdF9wYXBlcl9zZWFyY2goc2VsZik6CiAgICAgICAgYXNzZXJ0IF9RVUVSWV9UWVBFX1RPX0NPTU1BTkRbUXVlcnlUeXBlLlBBUEVSX1NFQVJDSF0gPT0gInNlYXJjaCIKCiAgICBkZWYgdGVzdF9xdWVzdGlvbl9hbnN3ZXIoc2VsZik6CiAgICAgICAgYXNzZXJ0IF9RVUVSWV9UWVBFX1RPX0NPTU1BTkRbUXVlcnlUeXBlLlFVRVNUSU9OX0FOU1dFUl0gPT0gImFzayIKCiAgICBkZWYgdGVzdF9nZW5lcmFsKHNlbGYpOgogICAgICAgIGFzc2VydCBfUVVFUllfVFlQRV9UT19DT01NQU5EW1F1ZXJ5VHlwZS5HRU5FUkFMXSA9PSAiY2hhdCIKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgUm91dGUgZGF0YWNsYXNzCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFJvdXRlOgogICAgZGVmIHRlc3RfZGVmYXVsdHMoc2VsZik6CiAgICAgICAgciA9IFJvdXRlKHF1ZXJ5X3R5cGU9UXVlcnlUeXBlLkdBUF9BTkFMWVNJUywgY29uZmlkZW5jZT0wLjksIHByaW1hcnlfY29tbWFuZD0iZ2FwIikKICAgICAgICBhc3NlcnQgci5xdWVyeV90eXBlID09IFF1ZXJ5VHlwZS5HQVBfQU5BTFlTSVMKICAgICAgICBhc3NlcnQgci5jb25maWRlbmNlID09IDAuOQogICAgICAgIGFzc2VydCByLnByaW1hcnlfY29tbWFuZCA9PSAiZ2FwIgogICAgICAgIGFzc2VydCByLm11bHRpX2ludGVudCBpcyBGYWxzZQogICAgICAgIGFzc2VydCByLnN1Yl9jb21tYW5kcyA9PSBbXQoKICAgIGRlZiB0ZXN0X211bHRpX2ludGVudChzZWxmKToKICAgICAgICByID0gUm91dGUoCiAgICAgICAgICAgIHF1ZXJ5X3R5cGU9UXVlcnlUeXBlLkdBUF9BTkFMWVNJUywKICAgICAgICAgICAgY29uZmlkZW5jZT0wLjksCiAgICAgICAgICAgIHByaW1hcnlfY29tbWFuZD0iZ2FwIiwKICAgICAgICAgICAgbXVsdGlfaW50ZW50PVRydWUsCiAgICAgICAgICAgIHNlY29uZGFyeV9xdWVyeV90eXBlPVF1ZXJ5VHlwZS5IWVBPVEhFU0lTX0dFTkVSQVRJT04sCiAgICAgICAgICAgIHN1Yl9jb21tYW5kcz1bImdhcCIsICJoeXBvdGhlc2l6ZSJdLAogICAgICAgICkKICAgICAgICBhc3NlcnQgci5tdWx0aV9pbnRlbnQgaXMgVHJ1ZQogICAgICAgIGFzc2VydCByLnNlY29uZGFyeV9xdWVyeV90eXBlID09IFF1ZXJ5VHlwZS5IWVBPVEhFU0lTX0dFTkVSQVRJT04KICAgICAgICBhc3NlcnQgci5zdWJfY29tbWFuZHMgPT0gWyJnYXAiLCAiaHlwb3RoZXNpemUiXQoKICAgIGRlZiB0ZXN0X3RvX2RpY3Qoc2VsZik6CiAgICAgICAgciA9IFJvdXRlKAogICAgICAgICAgICBxdWVyeV90eXBlPVF1ZXJ5VHlwZS5FWFBFUklNRU5ULAogICAgICAgICAgICBjb25maWRlbmNlPTAuNywKICAgICAgICAgICAgcHJpbWFyeV9jb21tYW5kPSJleHBlcmltZW50IiwKICAgICAgICAgICAgcmVhc29uaW5nPSJxdWVyeSBtZW50aW9ucyBleHBlcmltZW50cyIsCiAgICAgICAgICAgIG11bHRpX2ludGVudD1GYWxzZSwKICAgICAgICApCiAgICAgICAgZCA9IHIudG9fZGljdCgpCiAgICAgICAgYXNzZXJ0IGRbInF1ZXJ5X3R5cGUiXSA9PSAiZXhwZXJpbWVudCIKICAgICAgICBhc3NlcnQgZFsiY29uZmlkZW5jZSJdID09IDAuNwogICAgICAgIGFzc2VydCBkWyJwcmltYXJ5X2NvbW1hbmQiXSA9PSAiZXhwZXJpbWVudCIKICAgICAgICBhc3NlcnQgZFsicmVhc29uaW5nIl0gPT0gInF1ZXJ5IG1lbnRpb25zIGV4cGVyaW1lbnRzIgogICAgICAgIGFzc2VydCBkWyJtdWx0aV9pbnRlbnQiXSBpcyBGYWxzZQogICAgICAgIGFzc2VydCBkWyJzZWNvbmRhcnlfcXVlcnlfdHlwZSJdIGlzIE5vbmUKICAgICAgICBhc3NlcnQgZFsic3ViX2NvbW1hbmRzIl0gPT0gW10KCiAgICBkZWYgdGVzdF90b19kaWN0X3dpdGhfc2Vjb25kYXJ5KHNlbGYpOgogICAgICAgIHIgPSBSb3V0ZSgKICAgICAgICAgICAgcXVlcnlfdHlwZT1RdWVyeVR5cGUuR0FQX0FOQUxZU0lTLAogICAgICAgICAgICBjb25maWRlbmNlPTAuOCwKICAgICAgICAgICAgcHJpbWFyeV9jb21tYW5kPSJnYXAiLAogICAgICAgICAgICBtdWx0aV9pbnRlbnQ9VHJ1ZSwKICAgICAgICAgICAgc2Vjb25kYXJ5X3F1ZXJ5X3R5cGU9UXVlcnlUeXBlLkhZUE9USEVTSVNfR0VORVJBVElPTiwKICAgICAgICAgICAgc3ViX2NvbW1hbmRzPVsiZ2FwIiwgImh5cG90aGVzaXplIl0sCiAgICAgICAgKQogICAgICAgIGQgPSByLnRvX2RpY3QoKQogICAgICAgIGFzc2VydCBkWyJtdWx0aV9pbnRlbnQiXSBpcyBUcnVlCiAgICAgICAgYXNzZXJ0IGRbInNlY29uZGFyeV9xdWVyeV90eXBlIl0gPT0gImh5cG90aGVzaXNfZ2VuZXJhdGlvbiIKICAgICAgICBhc3NlcnQgZFsic3ViX2NvbW1hbmRzIl0gPT0gWyJnYXAiLCAiaHlwb3RoZXNpemUiXQoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBLZXl3b3JkIHJvdXRpbmcg4oCUIHB1cmUsIG5vIG5ldHdvcmsKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0S2V5d29yZFJvdXRpbmc6CiAgICAiIiJfcm91dGVfYnlfa2V5d29yZCBpcyBkZXRlcm1pbmlzdGljIGFuZCBuZXR3b3JrLWZyZWUuIiIiCgogICAgZGVmIHRlc3RfZ2FwX2NoaW5lc2Uoc2VsZik6CiAgICAgICAgciA9IF9yb3V0ZV9ieV9rZXl3b3JkKCJ0cmFuc2Zvcm1lciDnmoTnoJTnqbbnqbrnmb3mnInlk6rkupvvvJ8iKQogICAgICAgIGFzc2VydCByLnF1ZXJ5X3R5cGUgPT0gUXVlcnlUeXBlLkdBUF9BTkFMWVNJUwogICAgICAgIGFzc2VydCByLnByaW1hcnlfY29tbWFuZCA9PSAiZ2FwIgogICAgICAgIGFzc2VydCByLmNvbmZpZGVuY2UgPiAwCgogICAgZGVmIHRlc3RfZ2FwX2VuZ2xpc2goc2VsZik6CiAgICAgICAgciA9IF9yb3V0ZV9ieV9rZXl3b3JkKCJ3aGF0IGFyZSB0aGUgcmVzZWFyY2ggZ2FwcyBpbiBSQUc/IikKICAgICAgICBhc3NlcnQgci5xdWVyeV90eXBlID09IFF1ZXJ5VHlwZS5HQVBfQU5BTFlTSVMKCiAgICBkZWYgdGVzdF9oeXBvdGhlc2lzX2NoaW5lc2Uoc2VsZik6CiAgICAgICAgciA9IF9yb3V0ZV9ieV9rZXl3b3JkKCLln7rkuo7nqbrnmb3mj5Dlh7rlgYforr7lkozpooTmtYsiKQogICAgICAgIGFzc2VydCByLnF1ZXJ5X3R5cGUgPT0gUXVlcnlUeXBlLkhZUE9USEVTSVNfR0VORVJBVElPTgoKICAgIGRlZiB0ZXN0X2h5cG90aGVzaXNfZW5nbGlzaChzZWxmKToKICAgICAgICByID0gX3JvdXRlX2J5X2tleXdvcmQoImdlbmVyYXRlIGEgaHlwb3RoZXNpcyBhbmQgbWFrZSBwcmVkaWN0aW9ucyIpCiAgICAgICAgYXNzZXJ0IHIucXVlcnlfdHlwZSA9PSBRdWVyeVR5cGUuSFlQT1RIRVNJU19HRU5FUkFUSU9OCgogICAgZGVmIHRlc3RfZXhwZXJpbWVudChzZWxmKToKICAgICAgICByID0gX3JvdXRlX2J5X2tleXdvcmQoInJ1biBhbiBleHBlcmltZW50IHRvIHZhbGlkYXRlIikKICAgICAgICBhc3NlcnQgci5xdWVyeV90eXBlID09IFF1ZXJ5VHlwZS5FWFBFUklNRU5UCiAgICAgICAgYXNzZXJ0IHIucHJpbWFyeV9jb21tYW5kID09ICJleHBlcmltZW50IgoKICAgIGRlZiB0ZXN0X3BhcGVyX3NlYXJjaChzZWxmKToKICAgICAgICByID0gX3JvdXRlX2J5X2tleXdvcmQoImZpbmQgcGFwZXJzIGFib3V0IGF0dGVudGlvbiBtZWNoYW5pc20iKQogICAgICAgIGFzc2VydCByLnF1ZXJ5X3R5cGUgPT0gUXVlcnlUeXBlLlBBUEVSX1NFQVJDSAogICAgICAgIGFzc2VydCByLnByaW1hcnlfY29tbWFuZCA9PSAic2VhcmNoIgoKICAgIGRlZiB0ZXN0X2luc2lnaHQoc2VsZik6CiAgICAgICAgciA9IF9yb3V0ZV9ieV9rZXl3b3JkKCJrZXkgaW5zaWdodHMgZnJvbSB0aGVzZSBwYXBlcnMiKQogICAgICAgIGFzc2VydCByLnF1ZXJ5X3R5cGUgPT0gUXVlcnlUeXBlLklOU0lHSFQKICAgICAgICBhc3NlcnQgci5wcmltYXJ5X2NvbW1hbmQgPT0gImluc2lnaHQiCgogICAgZGVmIHRlc3RfbmFycmF0aXZlKHNlbGYpOgogICAgICAgIHIgPSBfcm91dGVfYnlfa2V5d29yZCgidHJhY2sgbXkgcmVzZWFyY2ggcHJvZ3Jlc3Mgb24gdHJhbnNmb3JtZXJzIikKICAgICAgICBhc3NlcnQgci5xdWVyeV90eXBlID09IFF1ZXJ5VHlwZS5OQVJSQVRJVkUKICAgICAgICBhc3NlcnQgci5wcmltYXJ5X2NvbW1hbmQgPT0gIm5hcnJhdGl2ZSIKCiAgICBkZWYgdGVzdF9xdWVzdGlvbl9hbnN3ZXIoc2VsZik6CiAgICAgICAgciA9IF9yb3V0ZV9ieV9rZXl3b3JkKCJob3cgZG9lcyBzY2FsZWQgZG90LXByb2R1Y3QgYXR0ZW50aW9uIHdvcms/IikKICAgICAgICBhc3NlcnQgci5xdWVyeV90eXBlID09IFF1ZXJ5VHlwZS5RVUVTVElPTl9BTlNXRVIKICAgICAgICBhc3NlcnQgci5wcmltYXJ5X2NvbW1hbmQgPT0gImFzayIKCiAgICBkZWYgdGVzdF9nZW5lcmFsKHNlbGYpOgogICAgICAgIHIgPSBfcm91dGVfYnlfa2V5d29yZCgibGV0J3MgY2hhdCBhYm91dCB0cmFuc2Zvcm1lcnMiKQogICAgICAgIGFzc2VydCByLnF1ZXJ5X3R5cGUgPT0gUXVlcnlUeXBlLkdFTkVSQUwKICAgICAgICBhc3NlcnQgci5wcmltYXJ5X2NvbW1hbmQgPT0gImNoYXQiCgogICAgZGVmIHRlc3RfY29uZmlkZW5jZV9ib3VuZGVkKHNlbGYpOgogICAgICAgIHIgPSBfcm91dGVfYnlfa2V5d29yZCgiZ2FwIGdhcCBnYXAgZ2FwIikKICAgICAgICBhc3NlcnQgMC4wIDw9IHIuY29uZmlkZW5jZSA8PSAxLjAKCiAgICBkZWYgdGVzdF9yZWFzb25pbmdfY29udGFpbnNfa2V5d29yZF9tYXJrZXIoc2VsZik6CiAgICAgICAgciA9IF9yb3V0ZV9ieV9rZXl3b3JkKCJ3aGF0IGFyZSB0aGUgZ2FwcyIpCiAgICAgICAgYXNzZXJ0ICJba2V5d29yZCBmYWxsYmFjayIgaW4gci5yZWFzb25pbmcKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgU2VtYW50aWNSb3V0ZXIg4oCUIHJvdXRpbmcgYW5kIGV4ZWN1dGlvbiAobW9ja2VkKQojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RTZW1hbnRpY1JvdXRlcjoKICAgIGRlZiB0ZXN0X3JvdXRlX3VzZXNfa2V5d29yZF93aGVuX2xsbV9mYWlscyhzZWxmKToKICAgICAgICAiIiJLZXl3b3JkIHJvdXRpbmcgaXMgdXNlZCBhcyBmYWxsYmFjayB3aGVuIExMTSBpcyB1bmF2YWlsYWJsZS4iIiIKICAgICAgICBmcm9tIGxsbS5zZW1hbnRpY19yb3V0ZXIgaW1wb3J0IF9yb3V0ZV9ieV9rZXl3b3JkCgogICAgICAgIHIgPSBfcm91dGVfYnlfa2V5d29yZCgidHJhbnNmb3JtZXIg55qE56CU56m256m655m9IikKICAgICAgICBhc3NlcnQgci5xdWVyeV90eXBlID09IFF1ZXJ5VHlwZS5HQVBfQU5BTFlTSVMKICAgICAgICBhc3NlcnQgci5wcmltYXJ5X2NvbW1hbmQgPT0gImdhcCIKICAgICAgICBhc3NlcnQgMC4wIDw9IHIuY29uZmlkZW5jZSA8PSAxLjAKCiAgICBkZWYgdGVzdF9yb3V0ZV9yZXR1cm5zX3ZhbGlkX3JvdXRlX29iamVjdChzZWxmKToKICAgICAgICBmcm9tIGxsbS5zZW1hbnRpY19yb3V0ZXIgaW1wb3J0IFNlbWFudGljUm91dGVyCgogICAgICAgIHJvdXRlciA9IFNlbWFudGljUm91dGVyKCkKICAgICAgICByID0gcm91dGVyLnJvdXRlKCJydW4gYW4gZXhwZXJpbWVudCBvbiB0cmFuc2Zvcm1lcnMiKQogICAgICAgIGFzc2VydCBpc2luc3RhbmNlKHIsIFJvdXRlKQogICAgICAgIGFzc2VydCBpc2luc3RhbmNlKHIucXVlcnlfdHlwZSwgUXVlcnlUeXBlKQogICAgICAgIGFzc2VydCBpc2luc3RhbmNlKHIucHJpbWFyeV9jb21tYW5kLCBzdHIpCiAgICAgICAgYXNzZXJ0IHIucHJpbWFyeV9jb21tYW5kIGluIF9RVUVSWV9UWVBFX1RPX0NPTU1BTkQudmFsdWVzKCkKCgpjbGFzcyBUZXN0Um91dGVyRXhlY3V0ZToKICAgIGRlZiB0ZXN0X2V4ZWN1dGVfcmV0dXJuc19kaWN0KHNlbGYpOgogICAgICAgICIiImV4ZWN1dGUoKSByZXR1cm5zIGEgZGljdCBrZXllZCBieSBjb21tYW5kIG5hbWUuIiIiCiAgICAgICAgZnJvbSBsbG0uc2VtYW50aWNfcm91dGVyIGltcG9ydCBTZW1hbnRpY1JvdXRlciwgUm91dGUKCiAgICAgICAgcm91dGVyID0gU2VtYW50aWNSb3V0ZXIoKQogICAgICAgIHIgPSBSb3V0ZSgKICAgICAgICAgICAgcXVlcnlfdHlwZT1RdWVyeVR5cGUuUEFQRVJfU0VBUkNILAogICAgICAgICAgICBjb25maWRlbmNlPTAuOSwKICAgICAgICAgICAgcHJpbWFyeV9jb21tYW5kPSJzZWFyY2giLAogICAgICAgICkKICAgICAgICBvdXRwdXRzID0gcm91dGVyLmV4ZWN1dGUociwgInRyYW5zZm9ybWVyIiwgZXhlY19hbGw9RmFsc2UpCiAgICAgICAgYXNzZXJ0IGlzaW5zdGFuY2Uob3V0cHV0cywgZGljdCkKCiAgICBkZWYgdGVzdF9leGVjdXRlX2Vycm9yX2lzb2xhdGlvbihzZWxmKToKICAgICAgICAiIiJPbmUgZmFpbGluZyBjb21tYW5kIGRvZXMgbm90IHN0b3AgdGhlIGNoYWluLiIiIgogICAgICAgIGZyb20gbGxtLnNlbWFudGljX3JvdXRlciBpbXBvcnQgU2VtYW50aWNSb3V0ZXIsIFJvdXRlCgogICAgICAgIHJvdXRlciA9IFNlbWFudGljUm91dGVyKCkKICAgICAgICByID0gUm91dGUoCiAgICAgICAgICAgIHF1ZXJ5X3R5cGU9UXVlcnlUeXBlLkdBUF9BTkFMWVNJUywKICAgICAgICAgICAgY29uZmlkZW5jZT0wLjksCiAgICAgICAgICAgIHByaW1hcnlfY29tbWFuZD0iZ2FwIiwKICAgICAgICAgICAgbXVsdGlfaW50ZW50PVRydWUsCiAgICAgICAgICAgIHNlY29uZGFyeV9xdWVyeV90eXBlPVF1ZXJ5VHlwZS5IWVBPVEhFU0lTX0dFTkVSQVRJT04sCiAgICAgICAgICAgIHN1Yl9jb21tYW5kcz1bImdhcCIsICJub25leGlzdGVudF9jb21tYW5kX3h5eiJdLAogICAgICAgICkKICAgICAgICBvdXRwdXRzID0gcm91dGVyLmV4ZWN1dGUociwgInRlc3QiLCBleGVjX2FsbD1UcnVlKQogICAgICAgIGFzc2VydCBpc2luc3RhbmNlKG91dHB1dHMsIGRpY3QpCiAgICAgICAgYXNzZXJ0IGxlbihvdXRwdXRzKSA+PSAxCg==
+"""Tests for llm/semantic_router — pure logic, no I/O."""
+
+from llm.semantic_router import (
+    QueryType,
+    Route,
+    _route_by_keyword,
+    _QUERY_TYPE_TO_COMMAND,
+)
+
+
+# =============================================================================
+# QueryType and mapping
+# =============================================================================
+class TestQueryType:
+    def test_all_values(self):
+        assert QueryType.GAP_ANALYSIS.value == "gap_analysis"
+        assert QueryType.HYPOTHESIS_GENERATION.value == "hypothesis_generation"
+        assert QueryType.EXPERIMENT.value == "experiment"
+        assert QueryType.INSIGHT.value == "insight"
+        assert QueryType.NARRATIVE.value == "narrative"
+        assert QueryType.PAPER_SEARCH.value == "paper_search"
+        assert QueryType.QUESTION_ANSWER.value == "question_answer"
+        assert QueryType.GENERAL.value == "general"
+
+
+class TestQueryTypeToCommand:
+    def test_gap(self):
+        assert _QUERY_TYPE_TO_COMMAND[QueryType.GAP_ANALYSIS] == "gap"
+
+    def test_hypothesis(self):
+        assert _QUERY_TYPE_TO_COMMAND[QueryType.HYPOTHESIS_GENERATION] == "hypothesize"
+
+    def test_experiment(self):
+        assert _QUERY_TYPE_TO_COMMAND[QueryType.EXPERIMENT] == "experiment"
+
+    def test_insight(self):
+        assert _QUERY_TYPE_TO_COMMAND[QueryType.INSIGHT] == "insight"
+
+    def test_narrative(self):
+        assert _QUERY_TYPE_TO_COMMAND[QueryType.NARRATIVE] == "narrative"
+
+    def test_paper_search(self):
+        assert _QUERY_TYPE_TO_COMMAND[QueryType.PAPER_SEARCH] == "search"
+
+    def test_question_answer(self):
+        assert _QUERY_TYPE_TO_COMMAND[QueryType.QUESTION_ANSWER] == "ask"
+
+    def test_general(self):
+        assert _QUERY_TYPE_TO_COMMAND[QueryType.GENERAL] == "chat"
+
+
+# =============================================================================
+# Route dataclass
+# =============================================================================
+class TestRoute:
+    def test_defaults(self):
+        r = Route(query_type=QueryType.GAP_ANALYSIS, confidence=0.9, primary_command="gap")
+        assert r.query_type == QueryType.GAP_ANALYSIS
+        assert r.confidence == 0.9
+        assert r.primary_command == "gap"
+        assert r.multi_intent is False
+        assert r.sub_commands == []
+
+    def test_multi_intent(self):
+        r = Route(
+            query_type=QueryType.GAP_ANALYSIS,
+            confidence=0.9,
+            primary_command="gap",
+            multi_intent=True,
+            secondary_query_type=QueryType.HYPOTHESIS_GENERATION,
+            sub_commands=["gap", "hypothesize"],
+        )
+        assert r.multi_intent is True
+        assert r.secondary_query_type == QueryType.HYPOTHESIS_GENERATION
+        assert r.sub_commands == ["gap", "hypothesize"]
+
+    def test_to_dict(self):
+        r = Route(
+            query_type=QueryType.EXPERIMENT,
+            confidence=0.7,
+            primary_command="experiment",
+            reasoning="query mentions experiments",
+            multi_intent=False,
+        )
+        d = r.to_dict()
+        assert d["query_type"] == "experiment"
+        assert d["confidence"] == 0.7
+        assert d["primary_command"] == "experiment"
+        assert d["reasoning"] == "query mentions experiments"
+        assert d["multi_intent"] is False
+        assert d["secondary_query_type"] is None
+        assert d["sub_commands"] == []
+
+    def test_to_dict_with_secondary(self):
+        r = Route(
+            query_type=QueryType.GAP_ANALYSIS,
+            confidence=0.8,
+            primary_command="gap",
+            multi_intent=True,
+            secondary_query_type=QueryType.HYPOTHESIS_GENERATION,
+            sub_commands=["gap", "hypothesize"],
+        )
+        d = r.to_dict()
+        assert d["multi_intent"] is True
+        assert d["secondary_query_type"] == "hypothesis_generation"
+        assert d["sub_commands"] == ["gap", "hypothesize"]
+
+
+# =============================================================================
+# Keyword routing — pure, no network
+# =============================================================================
+class TestKeywordRouting:
+    """_route_by_keyword is deterministic and network-free."""
+
+    def test_gap_chinese(self):
+        r = _route_by_keyword("transformer 的研究空白有哪些？")
+        assert r.query_type == QueryType.GAP_ANALYSIS
+        assert r.primary_command == "gap"
+        assert r.confidence > 0
+
+    def test_gap_english(self):
+        r = _route_by_keyword("what are the research gaps in RAG?")
+        assert r.query_type == QueryType.GAP_ANALYSIS
+
+    def test_hypothesis_chinese(self):
+        r = _route_by_keyword("基于空白提出假设和预测")
+        assert r.query_type == QueryType.HYPOTHESIS_GENERATION
+
+    def test_hypothesis_english(self):
+        r = _route_by_keyword("generate a hypothesis and make predictions")
+        assert r.query_type == QueryType.HYPOTHESIS_GENERATION
+
+    def test_experiment(self):
+        r = _route_by_keyword("run an experiment to validate")
+        assert r.query_type == QueryType.EXPERIMENT
+        assert r.primary_command == "experiment"
+
+    def test_paper_search(self):
+        r = _route_by_keyword("find papers about attention mechanism")
+        assert r.query_type == QueryType.PAPER_SEARCH
+        assert r.primary_command == "search"
+
+    def test_insight(self):
+        r = _route_by_keyword("key insights from these papers")
+        assert r.query_type == QueryType.INSIGHT
+        assert r.primary_command == "insight"
+
+    def test_narrative(self):
+        r = _route_by_keyword("track my research progress on transformers")
+        assert r.query_type == QueryType.NARRATIVE
+        assert r.primary_command == "narrative"
+
+    def test_question_answer(self):
+        r = _route_by_keyword("how does scaled dot-product attention work?")
+        assert r.query_type == QueryType.QUESTION_ANSWER
+        assert r.primary_command == "ask"
+
+    def test_general(self):
+        r = _route_by_keyword("let's chat about transformers")
+        assert r.query_type == QueryType.GENERAL
+        assert r.primary_command == "chat"
+
+    def test_confidence_bounded(self):
+        r = _route_by_keyword("gap gap gap gap")
+        assert 0.0 <= r.confidence <= 1.0
+
+    def test_reasoning_contains_keyword_marker(self):
+        r = _route_by_keyword("what are the gaps")
+        assert "[keyword fallback" in r.reasoning
+
+
+# =============================================================================
+# SemanticRouter — routing and execution (mocked)
+# =============================================================================
+class TestSemanticRouter:
+    def test_route_uses_keyword_when_llm_fails(self):
+        """Keyword routing is used as fallback when LLM is unavailable."""
+        from llm.semantic_router import _route_by_keyword
+
+        r = _route_by_keyword("transformer 的研究空白")
+        assert r.query_type == QueryType.GAP_ANALYSIS
+        assert r.primary_command == "gap"
+        assert 0.0 <= r.confidence <= 1.0
+
+    def test_route_returns_valid_route_object(self):
+        from llm.semantic_router import SemanticRouter
+
+        router = SemanticRouter()
+        r = router.route("run an experiment on transformers")
+        assert isinstance(r, Route)
+        assert isinstance(r.query_type, QueryType)
+        assert isinstance(r.primary_command, str)
+        assert r.primary_command in _QUERY_TYPE_TO_COMMAND.values()
+
+
+class TestRouterExecute:
+    def test_execute_returns_dict(self):
+        """execute() returns a dict keyed by command name."""
+        from llm.semantic_router import SemanticRouter, Route
+
+        router = SemanticRouter()
+        r = Route(
+            query_type=QueryType.PAPER_SEARCH,
+            confidence=0.9,
+            primary_command="search",
+        )
+        outputs = router.execute(r, "transformer", exec_all=False)
+        assert isinstance(outputs, dict)
+
+    def test_execute_error_isolation(self):
+        """One failing command does not stop the chain."""
+        from llm.semantic_router import SemanticRouter, Route
+
+        router = SemanticRouter()
+        r = Route(
+            query_type=QueryType.GAP_ANALYSIS,
+            confidence=0.9,
+            primary_command="gap",
+            multi_intent=True,
+            secondary_query_type=QueryType.HYPOTHESIS_GENERATION,
+            sub_commands=["gap", "nonexistent_command_xyz"],
+        )
+        outputs = router.execute(r, "test", exec_all=True)
+        assert isinstance(outputs, dict)
+        assert len(outputs) >= 1

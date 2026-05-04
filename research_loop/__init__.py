@@ -1,1 +1,39 @@
-IiIiUmVzZWFyY2ggTG9vcCBNb2R1bGVzDQ0NDVVuaWZpZWQgYWNjZXNzIHRvIGFsbCByZXNlYXJjaCBhdXRvbWF0aW9uIHBpcGVsaW5lczoNDS0gcmVzZWFyY2hfbG9vcC5jb3JlOiBBdXRvbm9tb3VzIHJlc2VhcmNoIGxvb3AgKHNlYXJjaCDihpIgZXh0cmFjdCDihpIgc3VtbWFyaXplKQ0NLSByZXNlYXJjaF9sb29wLnBhcGVyMmNvZGU6IENpdGF0aW9uLWFuY2hvcmVkIGNvZGUgZ2VuZXJhdGlvbg0NLSByZXNlYXJjaF9sb29wLmV2b3NraWxsOiBCZW5jaG1hcmstZHJpdmVuIHNraWxsIGRpc2NvdmVyeQ0NLSByZXNlYXJjaF9sb29wLnJhZzogQ29tcGxldGXpl63njq8gKHBhcGVyIOKGkiBjb2RlIOKGkiB0ZXN0cyDihpIgc2tpbGxzKQ0NDQ1Vc2FnZToNDSAgICBmcm9tIHJlc2VhcmNoX2xvb3AgaW1wb3J0IFBhcGVyUGlwZWxpbmUsIEV2b1NraWxsUGlwZWxpbmUsIFJhZ1BpcGVsaW5lDQ0gICAgZnJvbSByZXNlYXJjaF9sb29wLmNvcmUgaW1wb3J0IHJ1bl9yZXNlYXJjaA0NIiIiDQ1mcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zDQ0NIyBDb3JlIHJlc2VhcmNoIGxvb3AgZnVuY3Rpb25zDQ1mcm9tIHJlc2VhcmNoX2xvb3AuY29yZSBpbXBvcnQgKA0gICAgcnVuX3Jlc2VhcmNoLA0gICAgYXJ1bl9yZXNlYXJjaCwNICAgIE1ldHJpY3MsDSAgICBfYnVpbGRfcmVzZWFyY2hfbm90ZSwNICAgIHdhcm1fY2FjaGVfcmVzZWFyY2gsDSkNDSMgUGlwZWxpbmUgY2xhc3Nlcw0NZnJvbSByZXNlYXJjaF9sb29wLnBhcGVyMmNvZGVfaW50ZWdyYXRpb24gaW1wb3J0IFBhcGVyUGlwZWxpbmUNDWZyb20gcmVzZWFyY2hfbG9vcC5ldm9za2lsbF9pbnRlZ3JhdGlvbiBpbXBvcnQgRXZvU2tpbGxQaXBlbGluZQ0NZnJvbSByZXNlYXJjaF9sb29wLnJhZ19waXBlbGluZSBpbXBvcnQgUmFnUGlwZWxpbmUNDQ1fX2FsbF9fID0gWw0gICAgIyBDb3JlIGZ1bmN0aW9ucw0gICAgInJ1bl9yZXNlYXJjaCIsDSAgICAiYXJ1bl9yZXNlYXJjaCIsDSAgICAiTWV0cmljcyIsDSAgICAiX2J1aWxkX3Jlc2VhcmNoX25vdGUiLA0gICAgIndhcm1fY2FjaGVfcmVzZWFyY2giLA0gICAgIyBQaXBlbGluZSBjbGFzc2VzDSAgICAiUGFwZXJQaXBlbGluZSIsDSAgICAiRXZvU2tpbGxQaXBlbGluZSIsDSAgICAiUmFnUGlwZWxpbmUiLA1dDQ==
+"""Research Loop Modules
+
+Unified access to all research automation pipelines:
+- research_loop.core: Autonomous research loop (search → extract → summarize)
+- research_loop.paper2code: Citation-anchored code generation
+- research_loop.evoskill: Benchmark-driven skill discovery
+- research_loop.rag: Complete闭环 (paper → code → tests → skills)
+
+Usage:
+    from research_loop import PaperPipeline, EvoSkillPipeline, RagPipeline
+    from research_loop.core import run_research
+"""
+from __future__ import annotations
+
+# Core research loop functions
+from research_loop.core import (
+    run_research,
+    arun_research,
+    Metrics,
+    _build_research_note,
+    warm_cache_research,
+)
+# Pipeline classes
+from research_loop.paper2code_integration import PaperPipeline
+from research_loop.evoskill_integration import EvoSkillPipeline
+from research_loop.rag_pipeline import RagPipeline
+
+__all__ = [
+    # Core functions
+    "run_research",
+    "arun_research",
+    "Metrics",
+    "_build_research_note",
+    "warm_cache_research",
+    # Pipeline classes
+    "PaperPipeline",
+    "EvoSkillPipeline",
+    "RagPipeline",
+]

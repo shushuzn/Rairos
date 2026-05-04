@@ -1,1 +1,620 @@
-IiIiVGllciAyIHVuaXQgdGVzdHMg4oCUIGxsbS9yZXNlYXJjaF9wYXRoLnB5LCBwdXJlIGZ1bmN0aW9ucywgbm8gSS9PLiIiIgoKZnJvbSBsbG0ucmVzZWFyY2hfcGF0aCBpbXBvcnQgKAogICAgUmVhZGluZ0xldmVsLAogICAgUGFwZXJOb2RlLAogICAgUmVhZGluZ1N0ZXAsCiAgICBSZWFkaW5nUGF0aCwKICAgIFJlc2VhcmNoUGF0aFBsYW5uZXIsCikKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgRGF0YWNsYXNzIHRlc3RzCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFJlYWRpbmdMZXZlbDoKICAgICIiIlRlc3QgUmVhZGluZ0xldmVsIGVudW0uIiIiCgogICAgZGVmIHRlc3RfdmFsdWVzKHNlbGYpOgogICAgICAgIGFzc2VydCBSZWFkaW5nTGV2ZWwuSU5UUk8udmFsdWUgPT0gImludHJvIgogICAgICAgIGFzc2VydCBSZWFkaW5nTGV2ZWwuSU5URVJNRURJQVRFLnZhbHVlID09ICJpbnRlcm1lZGlhdGUiCiAgICAgICAgYXNzZXJ0IFJlYWRpbmdMZXZlbC5BRFZBTkNFRC52YWx1ZSA9PSAiYWR2YW5jZWQiCgogICAgZGVmIHRlc3RfYWxsX2RlZmluZWQoc2VsZik6CiAgICAgICAgYXNzZXJ0IGxlbihSZWFkaW5nTGV2ZWwpID09IDMKCgpjbGFzcyBUZXN0UGFwZXJOb2RlOgogICAgIiIiVGVzdCBQYXBlck5vZGUgZGF0YWNsYXNzLiIiIgoKICAgIGRlZiB0ZXN0X3JlcXVpcmVkX2ZpZWxkcyhzZWxmKToKICAgICAgICBub2RlID0gUGFwZXJOb2RlKHBhcGVyX2lkPSJwMDAxIiwgdGl0bGU9IkF0dGVudGlvbiBJcyBBbGwgWW91IE5lZWQiKQogICAgICAgIGFzc2VydCBub2RlLnBhcGVyX2lkID09ICJwMDAxIgogICAgICAgIGFzc2VydCBub2RlLnRpdGxlID09ICJBdHRlbnRpb24gSXMgQWxsIFlvdSBOZWVkIgogICAgICAgIGFzc2VydCBub2RlLnllYXIgPT0gMAogICAgICAgIGFzc2VydCBub2RlLmF1dGhvcnMgPT0gW10KICAgICAgICBhc3NlcnQgbm9kZS5jaXRlZF9ieSA9PSBbXQogICAgICAgIGFzc2VydCBub2RlLmNpdGVzID09IFtdCgogICAgZGVmIHRlc3RfY2l0YXRpb25fZmllbGRzX2RlZmF1bHQoc2VsZik6CiAgICAgICAgbm9kZSA9IFBhcGVyTm9kZShwYXBlcl9pZD0icDAwMSIsIHRpdGxlPSJUIikKICAgICAgICBhc3NlcnQgbm9kZS5jaXRlZF9ieSA9PSBbXQogICAgICAgIGFzc2VydCBub2RlLmNpdGVzID09IFtdCgogICAgZGVmIHRlc3RfYWxsX2ZpZWxkcyhzZWxmKToKICAgICAgICBub2RlID0gUGFwZXJOb2RlKAogICAgICAgICAgICBwYXBlcl9pZD0icDAwMSIsCiAgICAgICAgICAgIHRpdGxlPSJUIiwKICAgICAgICAgICAgeWVhcj0yMDE3LAogICAgICAgICAgICBhdXRob3JzPVsiVmFzd2FuaSIsICJTaGF6ZWVyIl0sCiAgICAgICAgICAgIGNpdGVkX2J5PVsicDAwMiIsICJwMDAzIl0sCiAgICAgICAgICAgIGNpdGVzPVsicDAwNCJdLAogICAgICAgICAgICByZWxldmFuY2Vfc2NvcmU9MC45LAogICAgICAgICAgICBwYWdlcmFuaz0wLjE1LAogICAgICAgICAgICBpc19mb3VuZGF0aW9uYWw9VHJ1ZSwKICAgICAgICAgICAgaXNfbWlsZXN0b25lPVRydWUsCiAgICAgICAgKQogICAgICAgIGFzc2VydCBub2RlLnllYXIgPT0gMjAxNwogICAgICAgIGFzc2VydCBub2RlLmF1dGhvcnMgPT0gWyJWYXN3YW5pIiwgIlNoYXplZXIiXQogICAgICAgIGFzc2VydCBub2RlLmNpdGVkX2J5ID09IFsicDAwMiIsICJwMDAzIl0KICAgICAgICBhc3NlcnQgbm9kZS5jaXRlcyA9PSBbInAwMDQiXQogICAgICAgIGFzc2VydCBub2RlLnJlbGV2YW5jZV9zY29yZSA9PSAwLjkKICAgICAgICBhc3NlcnQgbm9kZS5wYWdlcmFuayA9PSAwLjE1CiAgICAgICAgYXNzZXJ0IG5vZGUuaXNfZm91bmRhdGlvbmFsIGlzIFRydWUKICAgICAgICBhc3NlcnQgbm9kZS5pc19taWxlc3RvbmUgaXMgVHJ1ZQoKCmNsYXNzIFRlc3RSZWFkaW5nU3RlcDoKICAgICIiIlRlc3QgUmVhZGluZ1N0ZXAgZGF0YWNsYXNzLiIiIgoKICAgIGRlZiB0ZXN0X3JlcXVpcmVkX2ZpZWxkcyhzZWxmKToKICAgICAgICBwYXBlciA9IFBhcGVyTm9kZShwYXBlcl9pZD0icDAwMSIsIHRpdGxlPSJUIikKICAgICAgICBzdGVwID0gUmVhZGluZ1N0ZXAob3JkZXI9MSwgcGFwZXI9cGFwZXIsIHJvbGU9ImNvcmUiLCByZWFzb249IuW/heivuyIpCiAgICAgICAgYXNzZXJ0IHN0ZXAub3JkZXIgPT0gMQogICAgICAgIGFzc2VydCBzdGVwLnBhcGVyLnBhcGVyX2lkID09ICJwMDAxIgogICAgICAgIGFzc2VydCBzdGVwLnJvbGUgPT0gImNvcmUiCiAgICAgICAgYXNzZXJ0IHN0ZXAucmVhc29uID09ICLlv4Xor7siCiAgICAgICAgYXNzZXJ0IHN0ZXAuZXN0aW1hdGVkX3JlYWRfdGltZV9taW51dGVzID09IDE1ICAjIGRlZmF1bHQKCgpjbGFzcyBUZXN0UmVhZGluZ1BhdGg6CiAgICAiIiJUZXN0IFJlYWRpbmdQYXRoIGRhdGFjbGFzcy4iIiIKCiAgICBkZWYgdGVzdF9yZXF1aXJlZF9maWVsZHMoc2VsZik6CiAgICAgICAgcGF0aCA9IFJlYWRpbmdQYXRoKAogICAgICAgICAgICB0b3BpYz0idHJhbnNmb3JtZXIiLAogICAgICAgICAgICBsZXZlbD1SZWFkaW5nTGV2ZWwuSU5URVJNRURJQVRFLAogICAgICAgICAgICB0b3RhbF9wYXBlcnM9MCwKICAgICAgICAgICAgdG90YWxfcmVhZGluZ190aW1lX21pbnV0ZXM9MCwKICAgICAgICAgICAgc3RlcHM9W10sCiAgICAgICAgKQogICAgICAgIGFzc2VydCBwYXRoLnRvcGljID09ICJ0cmFuc2Zvcm1lciIKICAgICAgICBhc3NlcnQgcGF0aC5sZXZlbCA9PSBSZWFkaW5nTGV2ZWwuSU5URVJNRURJQVRFCiAgICAgICAgYXNzZXJ0IHBhdGgudG90YWxfcGFwZXJzID09IDAKICAgICAgICBhc3NlcnQgcGF0aC5zdGVwcyA9PSBbXQogICAgICAgIGFzc2VydCBwYXRoLmFsdGVybmF0aXZlX3BhdGhzID09IFtdICAjIGRlZmF1bHQKICAgICAgICBhc3NlcnQgcGF0aC5za2lwcGVkX3BhcGVycyA9PSBbXSAgIyBkZWZhdWx0CgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIFJlc2VhcmNoUGF0aFBsYW5uZXIg4oCUIG5vIGtnL2RiLCBzbyBwbGFuX3BhdGggcmV0dXJucyBlbXB0eSBwYXRoCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFJlc2VhcmNoUGF0aFBsYW5uZXJJbml0OgogICAgIiIiVGVzdCBSZXNlYXJjaFBhdGhQbGFubmVyIGluc3RhbnRpYXRpb24gYW5kIG1ldGhvZHMuIiIiCgogICAgZGVmIHRlc3RfaW5zdGFudGlhdGVfd2l0aG91dF9kZXBzKHNlbGYpOgogICAgICAgIHBsYW5uZXIgPSBSZXNlYXJjaFBhdGhQbGFubmVyKCkKICAgICAgICBhc3NlcnQgcGxhbm5lci5rZyBpcyBOb25lCiAgICAgICAgYXNzZXJ0IHBsYW5uZXIuZGIgaXMgTm9uZQoKICAgIGRlZiB0ZXN0X2hhc19leHBlY3RlZF9tZXRob2RzKHNlbGYpOgogICAgICAgIHBsYW5uZXIgPSBSZXNlYXJjaFBhdGhQbGFubmVyKCkKICAgICAgICBhc3NlcnQgaGFzYXR0cihwbGFubmVyLCAicGxhbl9wYXRoIikKICAgICAgICBhc3NlcnQgaGFzYXR0cihwbGFubmVyLCAicmVuZGVyX3BhdGgiKQogICAgICAgIGFzc2VydCBoYXNhdHRyKHBsYW5uZXIsICJyZW5kZXJfbWVybWFpZCIpCgogICAgZGVmIHRlc3RfcGxhbl9wYXRoX25vX3BhcGVyc19yZXR1cm5zX2VtcHR5KHNlbGYpOgogICAgICAgIHBsYW5uZXIgPSBSZXNlYXJjaFBhdGhQbGFubmVyKCkKICAgICAgICBwYXRoID0gcGxhbm5lci5wbGFuX3BhdGgoIm5vbmV4aXN0ZW50X3RvcGljX3h5eiIpCiAgICAgICAgYXNzZXJ0IHBhdGgudG90YWxfcGFwZXJzID09IDAKICAgICAgICBhc3NlcnQgcGF0aC5zdGVwcyA9PSBbXQogICAgICAgIGFzc2VydCBwYXRoLnRvcGljID09ICJub25leGlzdGVudF90b3BpY194eXoiCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIF9wYXJzZV9hdXRob3JzIOKAlCBwdXJlIHN0cmluZyBwYXJzaW5nCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFBhcnNlQXV0aG9yczoKICAgICIiIlRlc3QgX3BhcnNlX2F1dGhvcnMuIiIiCgogICAgcGxhbm5lciA9IFJlc2VhcmNoUGF0aFBsYW5uZXIoKQoKICAgIGRlZiB0ZXN0X2VtcHR5X3N0cmluZyhzZWxmKToKICAgICAgICBhc3NlcnQgc2VsZi5wbGFubmVyLl9wYXJzZV9hdXRob3JzKCIiKSA9PSBbXQoKICAgIGRlZiB0ZXN0X3NpbmdsZV9hdXRob3Ioc2VsZik6CiAgICAgICAgYXNzZXJ0IHNlbGYucGxhbm5lci5fcGFyc2VfYXV0aG9ycygiVmFzd2FuaSIpID09IFsiVmFzd2FuaSJdCgogICAgZGVmIHRlc3RfYW5kX3NlcGFyYXRvcihzZWxmKToKICAgICAgICByZXN1bHQgPSBzZWxmLnBsYW5uZXIuX3BhcnNlX2F1dGhvcnMoIlZhc3dhbmkgYW5kIFNoYXplZXIiKQogICAgICAgIGFzc2VydCByZXN1bHQgPT0gWyJWYXN3YW5pIiwgIlNoYXplZXIiXQoKICAgIGRlZiB0ZXN0X2NvbW1hX3NlcGFyYXRlZChzZWxmKToKICAgICAgICByZXN1bHQgPSBzZWxmLnBsYW5uZXIuX3BhcnNlX2F1dGhvcnMoIlZhc3dhbmksIFNoYXplZXIsIFBhcm1hciIpCiAgICAgICAgYXNzZXJ0IHJlc3VsdCA9PSBbIlZhc3dhbmkiLCAiU2hhemVlciIsICJQYXJtYXIiXQoKICAgIGRlZiB0ZXN0X3N0cmlwc193aGl0ZXNwYWNlKHNlbGYpOgogICAgICAgIHJlc3VsdCA9IHNlbGYucGxhbm5lci5fcGFyc2VfYXV0aG9ycygiIFZhc3dhbmkgLCAgU2hhemVlciAiKQogICAgICAgIGFzc2VydCByZXN1bHQgPT0gWyJWYXN3YW5pIiwgIlNoYXplZXIiXQoKICAgIGRlZiB0ZXN0X2VtcHR5X3BhcnRzX2lnbm9yZWQoc2VsZik6CiAgICAgICAgcmVzdWx0ID0gc2VsZi5wbGFubmVyLl9wYXJzZV9hdXRob3JzKCJWYXN3YW5pLCAsIFNoYXplZXIiKQogICAgICAgIGFzc2VydCAiVmFzd2FuaSIgaW4gcmVzdWx0CiAgICAgICAgYXNzZXJ0ICJTaGF6ZWVyIiBpbiByZXN1bHQKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgX2NhbGN1bGF0ZV9wYWdlcmFuayDigJQgcHVyZSBudW1weSBhbGdvcml0aG0KIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0Q2FsY3VsYXRlUGFnZXJhbms6CiAgICAiIiJUZXN0IF9jYWxjdWxhdGVfcGFnZXJhbmsuIiIiCgogICAgZGVmIF9ncmFwaChzZWxmLCAqcGFwZXJzKToKICAgICAgICByZXR1cm4ge3AucGFwZXJfaWQ6IHAgZm9yIHAgaW4gcGFwZXJzfQoKICAgIGRlZiB0ZXN0X2VtcHR5X2dyYXBoKHNlbGYpOgogICAgICAgIHBsYW5uZXIgPSBSZXNlYXJjaFBhdGhQbGFubmVyKCkKICAgICAgICBwbGFubmVyLl9jYWxjdWxhdGVfcGFnZXJhbmsoe30pCiAgICAgICAgIyBObyBlcnJvciwgbm8gY2hhbmdlCgogICAgZGVmIHRlc3Rfc2luZ2xlX25vZGUoc2VsZik6CiAgICAgICAgcGxhbm5lciA9IFJlc2VhcmNoUGF0aFBsYW5uZXIoKQogICAgICAgIHAgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAxIiwgdGl0bGU9IlNpbmdsZSBQYXBlciIpCiAgICAgICAgZyA9IHNlbGYuX2dyYXBoKHApCiAgICAgICAgcGxhbm5lci5fY2FsY3VsYXRlX3BhZ2VyYW5rKGcpCiAgICAgICAgYXNzZXJ0IGdbInAxIl0ucGFnZXJhbmsgPiAwCgogICAgZGVmIHRlc3RfdHdvX25vZGVzX25vX2VkZ2VzKHNlbGYpOgogICAgICAgIHBsYW5uZXIgPSBSZXNlYXJjaFBhdGhQbGFubmVyKCkKICAgICAgICBwMSA9IFBhcGVyTm9kZShwYXBlcl9pZD0icDEiLCB0aXRsZT0iUGFwZXIgMSIpCiAgICAgICAgcDIgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAyIiwgdGl0bGU9IlBhcGVyIDIiKQogICAgICAgIGcgPSBzZWxmLl9ncmFwaChwMSwgcDIpCiAgICAgICAgcGxhbm5lci5fY2FsY3VsYXRlX3BhZ2VyYW5rKGcpCiAgICAgICAgIyBCb3RoIGdldCBzb21lIFBhZ2VSYW5rCiAgICAgICAgYXNzZXJ0IGdbInAxIl0ucGFnZXJhbmsgPj0gMAogICAgICAgIGFzc2VydCBnWyJwMiJdLnBhZ2VyYW5rID49IDAKCiAgICBkZWYgdGVzdF90d29fbm9kZXNfY2l0YXRpb24oc2VsZik6CiAgICAgICAgIyBwMiBoYXMgY2l0ZWRfYnk9WyJwMSJdIG1lYW5zIHAxIGNpdGVzIHAyIC0+IHAyIHNob3VsZCBoYXZlIGhpZ2hlciBQYWdlUmFuawogICAgICAgIHBsYW5uZXIgPSBSZXNlYXJjaFBhdGhQbGFubmVyKCkKICAgICAgICBwMSA9IFBhcGVyTm9kZShwYXBlcl9pZD0icDEiLCB0aXRsZT0iT2xkZXIgUGFwZXIiKQogICAgICAgIHAyID0gUGFwZXJOb2RlKHBhcGVyX2lkPSJwMiIsIHRpdGxlPSJOZXdlciBQYXBlciIsIGNpdGVkX2J5PVsicDEiXSkKICAgICAgICBnID0gc2VsZi5fZ3JhcGgocDEsIHAyKQogICAgICAgIHBsYW5uZXIuX2NhbGN1bGF0ZV9wYWdlcmFuayhnKQogICAgICAgIGFzc2VydCBnWyJwMiJdLnBhZ2VyYW5rID4gZ1sicDEiXS5wYWdlcmFuawoKICAgIGRlZiB0ZXN0X3BhZ2VyYW5rX3N1bV9hcHByb3hpbWF0ZWx5X29uZShzZWxmKToKICAgICAgICBwbGFubmVyID0gUmVzZWFyY2hQYXRoUGxhbm5lcigpCiAgICAgICAgcGFwZXJzID0gW1BhcGVyTm9kZShwYXBlcl9pZD1mInB7aX0iLCB0aXRsZT1mIlBhcGVyIHtpfSIpIGZvciBpIGluIHJhbmdlKDUpXQogICAgICAgIGcgPSB7cC5wYXBlcl9pZDogcCBmb3IgcCBpbiBwYXBlcnN9CiAgICAgICAgcGxhbm5lci5fY2FsY3VsYXRlX3BhZ2VyYW5rKGcpCiAgICAgICAgdG90YWwgPSBzdW0ocC5wYWdlcmFuayBmb3IgcCBpbiBnLnZhbHVlcygpKQogICAgICAgIGFzc2VydCAwLjEgPCB0b3RhbCA8PSAxLjUgICMgUGFnZVJhbmsgc3VtIHZhcmllcyBieSBncmFwaCBzdHJ1Y3R1cmUKCiAgICBkZWYgdGVzdF9kYW1waW5nX2NvbnZlcmdlcyhzZWxmKToKICAgICAgICBwbGFubmVyID0gUmVzZWFyY2hQYXRoUGxhbm5lcigpCiAgICAgICAgcGFwZXJzID0gW1BhcGVyTm9kZShwYXBlcl9pZD1mInB7aX0iLCB0aXRsZT1mIlBhcGVyIHtpfSIpIGZvciBpIGluIHJhbmdlKDMpXQogICAgICAgIGcgPSB7cC5wYXBlcl9pZDogcCBmb3IgcCBpbiBwYXBlcnN9CiAgICAgICAgIyBObyBlcnJvciBldmVuIHdpdGggbm8gZWRnZXMKICAgICAgICBwbGFubmVyLl9jYWxjdWxhdGVfcGFnZXJhbmsoZykKICAgICAgICBhc3NlcnQgYWxsKHAucGFnZXJhbmsgPj0gMCBmb3IgcCBpbiBnLnZhbHVlcygpKQoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBfaWRlbnRpZnlfa2V5X3BhcGVycyDigJQgcHVyZSBzb3J0aW5nIGxvZ2ljCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdElkZW50aWZ5S2V5UGFwZXJzOgogICAgIiIiVGVzdCBfaWRlbnRpZnlfa2V5X3BhcGVycy4iIiIKCiAgICBkZWYgX2coc2VsZiwgKnBhcGVycyk6CiAgICAgICAgcmV0dXJuIHtwLnBhcGVyX2lkOiBwIGZvciBwIGluIHBhcGVyc30KCiAgICBkZWYgdGVzdF9lbXB0eV9ncmFwaChzZWxmKToKICAgICAgICBwbGFubmVyID0gUmVzZWFyY2hQYXRoUGxhbm5lcigpCiAgICAgICAgcGxhbm5lci5faWRlbnRpZnlfa2V5X3BhcGVycyh7fSwgUmVhZGluZ0xldmVsLklOVEVSTUVESUFURSkKICAgICAgICAjIE5vIGVycm9yCgogICAgZGVmIHRlc3Rfc2luZ2xlX3BhcGVyX21hcmtlZF9mb3VuZGF0aW9uYWwoc2VsZik6CiAgICAgICAgcGxhbm5lciA9IFJlc2VhcmNoUGF0aFBsYW5uZXIoKQogICAgICAgIHAgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAxIiwgdGl0bGU9IlBhcGVyIDEiLCBwYWdlcmFuaz0xLjApCiAgICAgICAgZyA9IHNlbGYuX2cocCkKICAgICAgICBwbGFubmVyLl9pZGVudGlmeV9rZXlfcGFwZXJzKGcsIFJlYWRpbmdMZXZlbC5JTlRFUk1FRElBVEUpCiAgICAgICAgIyB0b3AgMjUlID0gMSBwYXBlciAtPiBmb3VuZGF0aW9uYWwKICAgICAgICBhc3NlcnQgcC5pc19mb3VuZGF0aW9uYWwgaXMgVHJ1ZQoKICAgIGRlZiB0ZXN0X2ZvdXJfcGFwZXJzX3RvcF9xdWFydGVyX2ZvdW5kYXRpb25hbChzZWxmKToKICAgICAgICBwbGFubmVyID0gUmVzZWFyY2hQYXRoUGxhbm5lcigpCiAgICAgICAgcGFwZXJzID0gWwogICAgICAgICAgICBQYXBlck5vZGUocGFwZXJfaWQ9ZiJwe2l9IiwgdGl0bGU9ZiJQYXBlciB7aX0iLCBwYWdlcmFuaz1mbG9hdChpKSkKICAgICAgICAgICAgZm9yIGkgaW4gcmFuZ2UoMSwgNSkgICMgcDEuLnA0LCBwYWdlcmFua3MgMSwyLDMsNAogICAgICAgIF0KICAgICAgICBnID0gc2VsZi5fZygqcGFwZXJzKQogICAgICAgIHBsYW5uZXIuX2lkZW50aWZ5X2tleV9wYXBlcnMoZywgUmVhZGluZ0xldmVsLklOVEVSTUVESUFURSkKICAgICAgICAjIHRvcCAyNSUgPSAxIHBhcGVyIChwNCB3aXRoIHBhZ2VyYW5rIDQpCiAgICAgICAgZm91bmRhdGlvbmFsID0gW3AgZm9yIHAgaW4gcGFwZXJzIGlmIHAuaXNfZm91bmRhdGlvbmFsXQogICAgICAgIGFzc2VydCBsZW4oZm91bmRhdGlvbmFsKSA9PSAxCiAgICAgICAgYXNzZXJ0IGZvdW5kYXRpb25hbFswXS5wYXBlcl9pZCA9PSAicDQiCgogICAgZGVmIHRlc3RfbWlsZXN0b25lX2lkZW50aWZpZWRfYnlfZWFybHlfeWVhcihzZWxmKToKICAgICAgICBwbGFubmVyID0gUmVzZWFyY2hQYXRoUGxhbm5lcigpCiAgICAgICAgcGFwZXJzID0gWwogICAgICAgICAgICBQYXBlck5vZGUocGFwZXJfaWQ9InBfb2xkIiwgdGl0bGU9Ik9sZCBQYXBlciIsIHllYXI9MjAxMCwgcGFnZXJhbms9MS4wKSwKICAgICAgICAgICAgUGFwZXJOb2RlKHBhcGVyX2lkPSJwX25ldyIsIHRpdGxlPSJOZXcgUGFwZXIiLCB5ZWFyPTIwMjAsIHBhZ2VyYW5rPTAuNSksCiAgICAgICAgXQogICAgICAgIGcgPSBzZWxmLl9nKCpwYXBlcnMpCiAgICAgICAgcGxhbm5lci5faWRlbnRpZnlfa2V5X3BhcGVycyhnLCBSZWFkaW5nTGV2ZWwuSU5URVJNRURJQVRFKQogICAgICAgICMgcF9vbGQgaXMgZWFybGllc3Qgd2l0aCBkZWNlbnQgUGFnZVJhbmsgLT4gbWlsZXN0b25lCiAgICAgICAgYXNzZXJ0IHBhcGVyc1swXS5pc19taWxlc3RvbmUgaXMgVHJ1ZQoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBfdG9wb2xvZ2ljYWxfc29ydCDigJQgcHVyZSBncmFwaCBhbGdvcml0aG0KIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0VG9wb2xvZ2ljYWxTb3J0OgogICAgIiIiVGVzdCBfdG9wb2xvZ2ljYWxfc29ydC4iIiIKCiAgICBkZWYgX2coc2VsZiwgKnBhcGVycyk6CiAgICAgICAgcmV0dXJuIHtwLnBhcGVyX2lkOiBwIGZvciBwIGluIHBhcGVyc30KCiAgICBkZWYgdGVzdF9lbXB0eV9ncmFwaChzZWxmKToKICAgICAgICBwbGFubmVyID0gUmVzZWFyY2hQYXRoUGxhbm5lcigpCiAgICAgICAgcmVzdWx0ID0gcGxhbm5lci5fdG9wb2xvZ2ljYWxfc29ydCh7fSwgUmVhZGluZ0xldmVsLklOVEVSTUVESUFURSkKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IFtdCgogICAgZGVmIHRlc3Rfc2luZ2xlX25vZGUoc2VsZik6CiAgICAgICAgcGxhbm5lciA9IFJlc2VhcmNoUGF0aFBsYW5uZXIoKQogICAgICAgIHAgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAxIiwgdGl0bGU9IlNpbmdsZSBQYXBlciIpCiAgICAgICAgcmVzdWx0ID0gcGxhbm5lci5fdG9wb2xvZ2ljYWxfc29ydChzZWxmLl9nKHApLCBSZWFkaW5nTGV2ZWwuSU5URVJNRURJQVRFKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0KSA9PSAxCiAgICAgICAgYXNzZXJ0IHJlc3VsdFswXS5wYXBlcl9pZCA9PSAicDEiCgogICAgZGVmIHRlc3RfdHdvX25vZGVzX2luZGVwZW5kZW50KHNlbGYpOgogICAgICAgIHBsYW5uZXIgPSBSZXNlYXJjaFBhdGhQbGFubmVyKCkKICAgICAgICBwMSA9IFBhcGVyTm9kZShwYXBlcl9pZD0icDEiLCB0aXRsZT0iUGFwZXIgMSIpCiAgICAgICAgcDIgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAyIiwgdGl0bGU9IlBhcGVyIDIiKQogICAgICAgIGcgPSBzZWxmLl9nKHAxLCBwMikKICAgICAgICByZXN1bHQgPSBwbGFubmVyLl90b3BvbG9naWNhbF9zb3J0KGcsIFJlYWRpbmdMZXZlbC5JTlRFUk1FRElBVEUpCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHQpID09IDIKICAgICAgICBpZHMgPSB7ci5wYXBlcl9pZCBmb3IgciBpbiByZXN1bHR9CiAgICAgICAgYXNzZXJ0IGlkcyA9PSB7InAxIiwgInAyIn0KCiAgICBkZWYgdGVzdF9jaXRhdGlvbl9vcmRlcihzZWxmKToKICAgICAgICAjIHAyIGNpdGVzIHAxIChwMi5jaXRlZF9ieSA9IFsicDEiXSkgLT4gcDEgbXVzdCBjb21lIGJlZm9yZSBwMgogICAgICAgIHBsYW5uZXIgPSBSZXNlYXJjaFBhdGhQbGFubmVyKCkKICAgICAgICBwMSA9IFBhcGVyTm9kZShwYXBlcl9pZD0icDEiLCB0aXRsZT0iT2xkZXIgUGFwZXIiKQogICAgICAgIHAyID0gUGFwZXJOb2RlKHBhcGVyX2lkPSJwMiIsIHRpdGxlPSJOZXdlciBQYXBlciIsIGNpdGVkX2J5PVsicDEiXSkKICAgICAgICBnID0gc2VsZi5fZyhwMSwgcDIpCiAgICAgICAgcmVzdWx0ID0gcGxhbm5lci5fdG9wb2xvZ2ljYWxfc29ydChnLCBSZWFkaW5nTGV2ZWwuSU5URVJNRURJQVRFKQogICAgICAgIGlkcyA9IFtyLnBhcGVyX2lkIGZvciByIGluIHJlc3VsdF0KICAgICAgICAjIHAxIG11c3QgYXBwZWFyIGJlZm9yZSBwMiBzaW5jZSBwMSBjaXRlcyBwMiAocDEgaXMgaW4gcDIuY2l0ZWRfYnkpCiAgICAgICAgaWR4MSA9IGlkcy5pbmRleCgicDEiKQogICAgICAgIGlkeDIgPSBpZHMuaW5kZXgoInAyIikKICAgICAgICBhc3NlcnQgaWR4MSA8IGlkeDIKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgX2Fzc2lnbl9yb2xlIOKAlCBwdXJlIGNvbmRpdGlvbmFsIGxvZ2ljCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdEFzc2lnblJvbGU6CiAgICAiIiJUZXN0IF9hc3NpZ25fcm9sZS4iIiIKCiAgICBwbGFubmVyID0gUmVzZWFyY2hQYXRoUGxhbm5lcigpCgogICAgZGVmIF9yb2xlKHNlbGYsIHBhcGVyLCBwb3NpdGlvbiwgbGV2ZWw9UmVhZGluZ0xldmVsLklOVEVSTUVESUFURSk6CiAgICAgICAgc2VlbiA9IHNldCgpCiAgICAgICAgcmV0dXJuIHNlbGYucGxhbm5lci5fYXNzaWduX3JvbGUocGFwZXIsIHBvc2l0aW9uLCBsZXZlbCwgc2VlbikKCiAgICBkZWYgdGVzdF9mb3VuZGF0aW9uYWxfcHJlXzIwMTgoc2VsZik6CiAgICAgICAgcCA9IFBhcGVyTm9kZShwYXBlcl9pZD0icDEiLCB0aXRsZT0iVCIsIGlzX2ZvdW5kYXRpb25hbD1UcnVlLCB5ZWFyPTIwMTUpCiAgICAgICAgcm9sZSwgcmVhc29uID0gc2VsZi5fcm9sZShwLCAwKQogICAgICAgIGFzc2VydCByb2xlID09ICJmb3VuZGF0aW9uIgogICAgICAgIGFzc2VydCAi5Z+656GAIiBpbiByZWFzb24KCiAgICBkZWYgdGVzdF9mb3VuZGF0aW9uYWxfcG9zdF8yMDE4KHNlbGYpOgogICAgICAgIHAgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAxIiwgdGl0bGU9IlQiLCBpc19mb3VuZGF0aW9uYWw9VHJ1ZSwgeWVhcj0yMDE5KQogICAgICAgIHJvbGUsIHJlYXNvbiA9IHNlbGYuX3JvbGUocCwgMCkKICAgICAgICBhc3NlcnQgcm9sZSA9PSAiY29yZSIKCiAgICBkZWYgdGVzdF9maXJzdF9wb3NpdGlvbl9pc19jb3JlKHNlbGYpOgogICAgICAgIHAgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAxIiwgdGl0bGU9IkVudHJ5IiwgeWVhcj0yMDIwKQogICAgICAgIHJvbGUsIHJlYXNvbiA9IHNlbGYuX3JvbGUocCwgMCkKICAgICAgICBhc3NlcnQgcm9sZSA9PSAiY29yZSIKCiAgICBkZWYgdGVzdF9sYXRlc3RfcGFwZXIoc2VsZik6CiAgICAgICAgcCA9IFBhcGVyTm9kZShwYXBlcl9pZD0icDEiLCB0aXRsZT0iVCIsIHllYXI9MjAyNCkKICAgICAgICByb2xlLCByZWFzb24gPSBzZWxmLl9yb2xlKHAsIDMpCiAgICAgICAgYXNzZXJ0IHJvbGUgPT0gImxhdGVzdCIKICAgICAgICBhc3NlcnQgIjIwMjQiIGluIHJlYXNvbgoKICAgIGRlZiB0ZXN0X2hpZ2hseV9jaXRlZF9pbXByb3ZlbWVudChzZWxmKToKICAgICAgICBwID0gUGFwZXJOb2RlKHBhcGVyX2lkPSJwMSIsIHRpdGxlPSJUIiwgeWVhcj0yMDIxLCBjaXRlZF9ieT1bImEiLCAiYiIsICJjIl0pCiAgICAgICAgcm9sZSwgcmVhc29uID0gc2VsZi5fcm9sZShwLCAyKQogICAgICAgIGFzc2VydCByb2xlID09ICJpbXByb3ZlbWVudCIKCiAgICBkZWYgdGVzdF9pbnRyb19sZXZlbF9wcmVmZXJzX29sZGVyKHNlbGYpOgogICAgICAgIHAgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAxIiwgdGl0bGU9IlQiLCB5ZWFyPTIwMTksIGlzX2ZvdW5kYXRpb25hbD1GYWxzZSkKICAgICAgICByb2xlLCByZWFzb24gPSBzZWxmLl9yb2xlKHAsIDEsIFJlYWRpbmdMZXZlbC5JTlRSTykKICAgICAgICBhc3NlcnQgcm9sZSA9PSAiY29yZSIKCiAgICBkZWYgdGVzdF9pbnRyb19sZXZlbF92YXJpYW50cyhzZWxmKToKICAgICAgICBwID0gUGFwZXJOb2RlKHBhcGVyX2lkPSJwMSIsIHRpdGxlPSJUIiwgeWVhcj0yMDIxLCBpc19mb3VuZGF0aW9uYWw9RmFsc2UpCiAgICAgICAgcm9sZSwgcmVhc29uID0gc2VsZi5fcm9sZShwLCAxLCBSZWFkaW5nTGV2ZWwuSU5UUk8pCiAgICAgICAgYXNzZXJ0IHJvbGUgPT0gInZhcmlhbnQiCiAgICAgICAgYXNzZXJ0ICIyMDIxIiBpbiByZWFzb24KCiAgICBkZWYgdGVzdF9kZWZhdWx0X2ltcHJvdmVtZW50KHNlbGYpOgogICAgICAgIHAgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAxIiwgdGl0bGU9IlQiLCB5ZWFyPTIwMjAsIGNpdGVkX2J5PVtdKQogICAgICAgIHJvbGUsIHJlYXNvbiA9IHNlbGYuX3JvbGUocCwgMikKICAgICAgICBhc3NlcnQgcm9sZSA9PSAiaW1wcm92ZW1lbnQiCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIF9lc3RpbWF0ZV9yZWFkX3RpbWUg4oCUIHB1cmUgY29tcHV0YXRpb24KIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0RXN0aW1hdGVSZWFkVGltZToKICAgICIiIlRlc3QgX2VzdGltYXRlX3JlYWRfdGltZS4iIiIKCiAgICBwbGFubmVyID0gUmVzZWFyY2hQYXRoUGxhbm5lcigpCgogICAgZGVmIHRlc3RfYmFzZV90aW1lKHNlbGYpOgogICAgICAgIHAgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAxIiwgdGl0bGU9IlNob3J0IikKICAgICAgICBhc3NlcnQgc2VsZi5wbGFubmVyLl9lc3RpbWF0ZV9yZWFkX3RpbWUocCkgPT0gMTUKCiAgICBkZWYgdGVzdF9sb25nX3RpdGxlKHNlbGYpOgogICAgICAgICMgRXZlcnkgNTAgY2hhcnMgYWRkcyAxIG1pbgogICAgICAgIHAgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAxIiwgdGl0bGU9IkEiICogMjAwKQogICAgICAgIHRpbWUgPSBzZWxmLnBsYW5uZXIuX2VzdGltYXRlX3JlYWRfdGltZShwKQogICAgICAgIGFzc2VydCB0aW1lID4gMTUKCiAgICBkZWYgdGVzdF9tYW55X2NpdGF0aW9ucyhzZWxmKToKICAgICAgICBwID0gUGFwZXJOb2RlKAogICAgICAgICAgICBwYXBlcl9pZD0icDEiLAogICAgICAgICAgICB0aXRsZT0iVCIsCiAgICAgICAgICAgIGNpdGVkX2J5PVsiYSIsICJiIiwgImMiLCAiZCIsICJlIiwgImYiXSwKICAgICAgICApCiAgICAgICAgdGltZSA9IHNlbGYucGxhbm5lci5fZXN0aW1hdGVfcmVhZF90aW1lKHApCiAgICAgICAgYXNzZXJ0IHRpbWUgPj0gMTUgKyAxMCAgIyBiYXNlICsgMTAgZm9yID41IGNpdGF0aW9ucwoKICAgIGRlZiB0ZXN0X2NhcHBlZF9hdF80NShzZWxmKToKICAgICAgICBwID0gUGFwZXJOb2RlKAogICAgICAgICAgICBwYXBlcl9pZD0icDEiLAogICAgICAgICAgICB0aXRsZT0iQSIgKiAzMDAwLCAgIyBsb25nIHRpdGxlIGFkZHMgfjYwIG1pbgogICAgICAgICAgICBjaXRlZF9ieT1bImEiLCAiYiIsICJjIiwgImQiLCAiZSIsICJmIiwgImciLCAiaCJdLAogICAgICAgICkKICAgICAgICB0aW1lID0gc2VsZi5wbGFubmVyLl9lc3RpbWF0ZV9yZWFkX3RpbWUocCkKICAgICAgICBhc3NlcnQgdGltZSA9PSA0NSAgIyBjYXBwZWQKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgX2VtcHR5X3BhdGgg4oCUIHB1cmUgZmFjdG9yeQojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RFbXB0eVBhdGg6CiAgICAiIiJUZXN0IF9lbXB0eV9wYXRoLiIiIgoKICAgIGRlZiB0ZXN0X3JldHVybnNfZW1wdHlfcGF0aChzZWxmKToKICAgICAgICBwbGFubmVyID0gUmVzZWFyY2hQYXRoUGxhbm5lcigpCiAgICAgICAgcGF0aCA9IHBsYW5uZXIuX2VtcHR5X3BhdGgoInVua25vd24iLCBSZWFkaW5nTGV2ZWwuQURWQU5DRUQpCiAgICAgICAgYXNzZXJ0IHBhdGgudG90YWxfcGFwZXJzID09IDAKICAgICAgICBhc3NlcnQgcGF0aC5zdGVwcyA9PSBbXQogICAgICAgIGFzc2VydCBwYXRoLnRvcGljID09ICJ1bmtub3duIgogICAgICAgIGFzc2VydCBwYXRoLmxldmVsID09IFJlYWRpbmdMZXZlbC5BRFZBTkNFRAogICAgICAgIGFzc2VydCBwYXRoLmFsdGVybmF0aXZlX3BhdGhzID09IFtdCiAgICAgICAgYXNzZXJ0IHBhdGguc2tpcHBlZF9wYXBlcnMgPT0gW10KCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgcmVuZGVyX3BhdGgg4oCUIHB1cmUgc3RyaW5nIGZvcm1hdHRpbmcKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0UmVuZGVyUGF0aDoKICAgICIiIlRlc3QgcmVuZGVyX3BhdGguIiIiCgogICAgcGxhbm5lciA9IFJlc2VhcmNoUGF0aFBsYW5uZXIoKQoKICAgIGRlZiB0ZXN0X2VtcHR5X3JldHVybnNfbm90X2ZvdW5kKHNlbGYpOgogICAgICAgIHBhdGggPSBSZXNlYXJjaFBhdGhQbGFubmVyKCkuX2VtcHR5X3BhdGgoInh5eiIsIFJlYWRpbmdMZXZlbC5JTlRFUk1FRElBVEUpCiAgICAgICAgb3V0cHV0ID0gc2VsZi5wbGFubmVyLnJlbmRlcl9wYXRoKHBhdGgpCiAgICAgICAgYXNzZXJ0ICJ4eXoiIGluIG91dHB1dAogICAgICAgIGFzc2VydCAi5pyq5om+5YiwIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9oZWFkZXJfd2l0aF90b3BpYyhzZWxmKToKICAgICAgICBwYXRoID0gUmVzZWFyY2hQYXRoUGxhbm5lcigpLl9lbXB0eV9wYXRoKCJ0cmFuc2Zvcm1lciIsIFJlYWRpbmdMZXZlbC5JTlRSTykKICAgICAgICBvdXRwdXQgPSBzZWxmLnBsYW5uZXIucmVuZGVyX3BhdGgocGF0aCkKICAgICAgICBhc3NlcnQgInRyYW5zZm9ybWVyIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9zaW5nbGVfc3RlcChzZWxmKToKICAgICAgICBwYXBlciA9IFBhcGVyTm9kZShwYXBlcl9pZD0icDEiLCB0aXRsZT0iQXR0ZW50aW9uIElzIEFsbCBZb3UgTmVlZCIsIHllYXI9MjAxNykKICAgICAgICBzdGVwID0gUmVhZGluZ1N0ZXAoCiAgICAgICAgICAgIG9yZGVyPTEsCiAgICAgICAgICAgIHBhcGVyPXBhcGVyLAogICAgICAgICAgICByb2xlPSJmb3VuZGF0aW9uIiwKICAgICAgICAgICAgcmVhc29uPSLlvIDliJvmgKflt6XkvZwiLAogICAgICAgICAgICBlc3RpbWF0ZWRfcmVhZF90aW1lX21pbnV0ZXM9MjAsCiAgICAgICAgKQogICAgICAgIHBhdGggPSBSZWFkaW5nUGF0aCgKICAgICAgICAgICAgdG9waWM9InRyYW5zZm9ybWVyIiwKICAgICAgICAgICAgbGV2ZWw9UmVhZGluZ0xldmVsLklOVEVSTUVESUFURSwKICAgICAgICAgICAgdG90YWxfcGFwZXJzPTEsCiAgICAgICAgICAgIHRvdGFsX3JlYWRpbmdfdGltZV9taW51dGVzPTIwLAogICAgICAgICAgICBzdGVwcz1bc3RlcF0sCiAgICAgICAgKQogICAgICAgIG91dHB1dCA9IHNlbGYucGxhbm5lci5yZW5kZXJfcGF0aChwYXRoKQogICAgICAgIGFzc2VydCAiQXR0ZW50aW9uIiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIjIwMTciIGluIG91dHB1dAogICAgICAgIGFzc2VydCAi8J+Pm++4jyIgaW4gb3V0cHV0ICAjIGZvdW5kYXRpb24gaWNvbgogICAgICAgIGFzc2VydCAi5byA5Yib5oCnIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9ub195ZWFyX3Nob3duX2FzX2VtcHR5KHNlbGYpOgogICAgICAgIHBhcGVyID0gUGFwZXJOb2RlKHBhcGVyX2lkPSJwMSIsIHRpdGxlPSJQYXBlciIsIHllYXI9MCkKICAgICAgICBzdGVwID0gUmVhZGluZ1N0ZXAoCiAgICAgICAgICAgIG9yZGVyPTEsIHBhcGVyPXBhcGVyLCByb2xlPSJjb3JlIiwgcmVhc29uPSJSIiwgZXN0aW1hdGVkX3JlYWRfdGltZV9taW51dGVzPTE1CiAgICAgICAgKQogICAgICAgIHBhdGggPSBSZWFkaW5nUGF0aCgKICAgICAgICAgICAgdG9waWM9IlQiLAogICAgICAgICAgICBsZXZlbD1SZWFkaW5nTGV2ZWwuSU5URVJNRURJQVRFLAogICAgICAgICAgICB0b3RhbF9wYXBlcnM9MSwKICAgICAgICAgICAgdG90YWxfcmVhZGluZ190aW1lX21pbnV0ZXM9MTUsCiAgICAgICAgICAgIHN0ZXBzPVtzdGVwXSwKICAgICAgICApCiAgICAgICAgb3V0cHV0ID0gc2VsZi5wbGFubmVyLnJlbmRlcl9wYXRoKHBhdGgpCiAgICAgICAgYXNzZXJ0ICJbMF0iIG5vdCBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF90aXRsZV90cnVuY2F0ZWRfdG9fNTAoc2VsZik6CiAgICAgICAgcGFwZXIgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAxIiwgdGl0bGU9IkEiICogNjApCiAgICAgICAgc3RlcCA9IFJlYWRpbmdTdGVwKAogICAgICAgICAgICBvcmRlcj0xLCBwYXBlcj1wYXBlciwgcm9sZT0iY29yZSIsIHJlYXNvbj0iUiIsIGVzdGltYXRlZF9yZWFkX3RpbWVfbWludXRlcz0xNQogICAgICAgICkKICAgICAgICBwYXRoID0gUmVhZGluZ1BhdGgoCiAgICAgICAgICAgIHRvcGljPSJUIiwKICAgICAgICAgICAgbGV2ZWw9UmVhZGluZ0xldmVsLklOVEVSTUVESUFURSwKICAgICAgICAgICAgdG90YWxfcGFwZXJzPTEsCiAgICAgICAgICAgIHRvdGFsX3JlYWRpbmdfdGltZV9taW51dGVzPTE1LAogICAgICAgICAgICBzdGVwcz1bc3RlcF0sCiAgICAgICAgKQogICAgICAgIG91dHB1dCA9IHNlbGYucGxhbm5lci5yZW5kZXJfcGF0aChwYXRoKQogICAgICAgIGFzc2VydCAoIkEiICogNTApIGluIG91dHB1dAogICAgICAgIGFzc2VydCAoIkEiICogNTEpIG5vdCBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9hdXRob3JzX3RydW5jYXRlZF90b190d28oc2VsZik6CiAgICAgICAgcGFwZXIgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAxIiwgdGl0bGU9IlQiLCBhdXRob3JzPVsiQSIsICJCIiwgIkMiXSkKICAgICAgICBzdGVwID0gUmVhZGluZ1N0ZXAoCiAgICAgICAgICAgIG9yZGVyPTEsIHBhcGVyPXBhcGVyLCByb2xlPSJjb3JlIiwgcmVhc29uPSJSIiwgZXN0aW1hdGVkX3JlYWRfdGltZV9taW51dGVzPTE1CiAgICAgICAgKQogICAgICAgIHBhdGggPSBSZWFkaW5nUGF0aCgKICAgICAgICAgICAgdG9waWM9IlQiLAogICAgICAgICAgICBsZXZlbD1SZWFkaW5nTGV2ZWwuSU5URVJNRURJQVRFLAogICAgICAgICAgICB0b3RhbF9wYXBlcnM9MSwKICAgICAgICAgICAgdG90YWxfcmVhZGluZ190aW1lX21pbnV0ZXM9MTUsCiAgICAgICAgICAgIHN0ZXBzPVtzdGVwXSwKICAgICAgICApCiAgICAgICAgb3V0cHV0ID0gc2VsZi5wbGFubmVyLnJlbmRlcl9wYXRoKHBhdGgpCiAgICAgICAgYXNzZXJ0ICJBLCBCIiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgImV0IGFsLiIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3Rfc2tpcHBlZF9wYXBlcnNfc2hvd24oc2VsZik6CiAgICAgICAgcGFwZXIgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAxIiwgdGl0bGU9IkluY2x1ZGVkIikKICAgICAgICBzdGVwID0gUmVhZGluZ1N0ZXAoCiAgICAgICAgICAgIG9yZGVyPTEsIHBhcGVyPXBhcGVyLCByb2xlPSJjb3JlIiwgcmVhc29uPSJSIiwgZXN0aW1hdGVkX3JlYWRfdGltZV9taW51dGVzPTE1CiAgICAgICAgKQogICAgICAgIHBhdGggPSBSZWFkaW5nUGF0aCgKICAgICAgICAgICAgdG9waWM9IlQiLAogICAgICAgICAgICBsZXZlbD1SZWFkaW5nTGV2ZWwuSU5URVJNRURJQVRFLAogICAgICAgICAgICB0b3RhbF9wYXBlcnM9MSwKICAgICAgICAgICAgdG90YWxfcmVhZGluZ190aW1lX21pbnV0ZXM9MTUsCiAgICAgICAgICAgIHN0ZXBzPVtzdGVwXSwKICAgICAgICAgICAgc2tpcHBlZF9wYXBlcnM9WyJTa2lwcGVkIFBhcGVyIEEiLCAiU2tpcHBlZCBQYXBlciBCIl0sCiAgICAgICAgKQogICAgICAgIG91dHB1dCA9IHNlbGYucGxhbm5lci5yZW5kZXJfcGF0aChwYXRoKQogICAgICAgIGFzc2VydCAiMiDnr4ciIGluIG91dHB1dAoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyByZW5kZXJfbWVybWFpZCDigJQgcHVyZSBzdHJpbmcgZm9ybWF0dGluZwojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RSZW5kZXJNZXJtYWlkOgogICAgIiIiVGVzdCByZW5kZXJfbWVybWFpZC4iIiIKCiAgICBwbGFubmVyID0gUmVzZWFyY2hQYXRoUGxhbm5lcigpCgogICAgZGVmIHRlc3RfZW1wdHkoc2VsZik6CiAgICAgICAgcGF0aCA9IFJlc2VhcmNoUGF0aFBsYW5uZXIoKS5fZW1wdHlfcGF0aCgiVCIsIFJlYWRpbmdMZXZlbC5JTlRFUk1FRElBVEUpCiAgICAgICAgb3V0cHV0ID0gc2VsZi5wbGFubmVyLnJlbmRlcl9tZXJtYWlkKHBhdGgpCiAgICAgICAgYXNzZXJ0ICJFbXB0eSIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3Rfc2luZ2xlX25vZGUoc2VsZik6CiAgICAgICAgcGFwZXIgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAwMDEiLCB0aXRsZT0iRmlyc3QgUGFwZXIiKQogICAgICAgIHN0ZXAgPSBSZWFkaW5nU3RlcCgKICAgICAgICAgICAgb3JkZXI9MSwgcGFwZXI9cGFwZXIsIHJvbGU9ImNvcmUiLCByZWFzb249IlIiLCBlc3RpbWF0ZWRfcmVhZF90aW1lX21pbnV0ZXM9MTUKICAgICAgICApCiAgICAgICAgcGF0aCA9IFJlYWRpbmdQYXRoKAogICAgICAgICAgICB0b3BpYz0iVCIsCiAgICAgICAgICAgIGxldmVsPVJlYWRpbmdMZXZlbC5JTlRFUk1FRElBVEUsCiAgICAgICAgICAgIHRvdGFsX3BhcGVycz0xLAogICAgICAgICAgICB0b3RhbF9yZWFkaW5nX3RpbWVfbWludXRlcz0xNSwKICAgICAgICAgICAgc3RlcHM9W3N0ZXBdLAogICAgICAgICkKICAgICAgICBvdXRwdXQgPSBzZWxmLnBsYW5uZXIucmVuZGVyX21lcm1haWQocGF0aCkKICAgICAgICBhc3NlcnQgImdyYXBoIFREIiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIlJlYWRpbmcgUGF0aCIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICJwMDAxIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF9ub2RlX3RpdGxlX3RydW5jYXRlZChzZWxmKToKICAgICAgICBwYXBlciA9IFBhcGVyTm9kZShwYXBlcl9pZD0icDAwMSIsIHRpdGxlPSJBIiAqIDQwKQogICAgICAgIHN0ZXAgPSBSZWFkaW5nU3RlcCgKICAgICAgICAgICAgb3JkZXI9MSwgcGFwZXI9cGFwZXIsIHJvbGU9ImZvdW5kYXRpb24iLCByZWFzb249IlIiLCBlc3RpbWF0ZWRfcmVhZF90aW1lX21pbnV0ZXM9MTUKICAgICAgICApCiAgICAgICAgcGF0aCA9IFJlYWRpbmdQYXRoKAogICAgICAgICAgICB0b3BpYz0iVCIsCiAgICAgICAgICAgIGxldmVsPVJlYWRpbmdMZXZlbC5JTlRFUk1FRElBVEUsCiAgICAgICAgICAgIHRvdGFsX3BhcGVycz0xLAogICAgICAgICAgICB0b3RhbF9yZWFkaW5nX3RpbWVfbWludXRlcz0xNSwKICAgICAgICAgICAgc3RlcHM9W3N0ZXBdLAogICAgICAgICkKICAgICAgICBvdXRwdXQgPSBzZWxmLnBsYW5uZXIucmVuZGVyX21lcm1haWQocGF0aCkKICAgICAgICAjIFNob3VsZCBub3QgY3Jhc2g7IHRpdGxlIHRydW5jYXRlZCB0byAzMAogICAgICAgIGFzc2VydCAiZ3JhcGggVEQiIGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X2Fycm93c19iZXR3ZWVuX3N0ZXBzKHNlbGYpOgogICAgICAgIHBhcGVycyA9IFtQYXBlck5vZGUocGFwZXJfaWQ9ZiJwe2k6MDNkfSIsIHRpdGxlPWYiUGFwZXIge2l9IikgZm9yIGkgaW4gcmFuZ2UoMSwgNCldCiAgICAgICAgc3RlcHMgPSBbCiAgICAgICAgICAgIFJlYWRpbmdTdGVwKAogICAgICAgICAgICAgICAgb3JkZXI9aSwKICAgICAgICAgICAgICAgIHBhcGVyPXBhcGVyc1tpIC0gMV0sCiAgICAgICAgICAgICAgICByb2xlPSJjb3JlIiwKICAgICAgICAgICAgICAgIHJlYXNvbj0iUiIsCiAgICAgICAgICAgICAgICBlc3RpbWF0ZWRfcmVhZF90aW1lX21pbnV0ZXM9MTUsCiAgICAgICAgICAgICkKICAgICAgICAgICAgZm9yIGkgaW4gcmFuZ2UoMSwgNCkKICAgICAgICBdCiAgICAgICAgcGF0aCA9IFJlYWRpbmdQYXRoKAogICAgICAgICAgICB0b3BpYz0iVCIsCiAgICAgICAgICAgIGxldmVsPVJlYWRpbmdMZXZlbC5JTlRFUk1FRElBVEUsCiAgICAgICAgICAgIHRvdGFsX3BhcGVycz0zLAogICAgICAgICAgICB0b3RhbF9yZWFkaW5nX3RpbWVfbWludXRlcz00NSwKICAgICAgICAgICAgc3RlcHM9c3RlcHMsCiAgICAgICAgKQogICAgICAgIG91dHB1dCA9IHNlbGYucGxhbm5lci5yZW5kZXJfbWVybWFpZChwYXRoKQogICAgICAgICMgU2hvdWxkIGhhdmUgYXJyb3dzIGJldHdlZW4gYWRqYWNlbnQgc3RlcHMKICAgICAgICBhc3NlcnQgIi0tPiIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3Rfcm9sZV9jbGFzc2VzX2RlZmluZWQoc2VsZik6CiAgICAgICAgcGFwZXIgPSBQYXBlck5vZGUocGFwZXJfaWQ9InAwMDEiLCB0aXRsZT0iVCIpCiAgICAgICAgc3RlcCA9IFJlYWRpbmdTdGVwKAogICAgICAgICAgICBvcmRlcj0xLCBwYXBlcj1wYXBlciwgcm9sZT0iZm91bmRhdGlvbiIsIHJlYXNvbj0iUiIsIGVzdGltYXRlZF9yZWFkX3RpbWVfbWludXRlcz0xNQogICAgICAgICkKICAgICAgICBwYXRoID0gUmVhZGluZ1BhdGgoCiAgICAgICAgICAgIHRvcGljPSJUIiwKICAgICAgICAgICAgbGV2ZWw9UmVhZGluZ0xldmVsLklOVEVSTUVESUFURSwKICAgICAgICAgICAgdG90YWxfcGFwZXJzPTEsCiAgICAgICAgICAgIHRvdGFsX3JlYWRpbmdfdGltZV9taW51dGVzPTE1LAogICAgICAgICAgICBzdGVwcz1bc3RlcF0sCiAgICAgICAgKQogICAgICAgIG91dHB1dCA9IHNlbGYucGxhbm5lci5yZW5kZXJfbWVybWFpZChwYXRoKQogICAgICAgIGFzc2VydCAiY2xhc3NEZWYgZm91bmRhdGlvbiIgaW4gb3V0cHV0CgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIEludGVncmF0aW9uOiBwbGFuX3BhdGggd2l0aCBtb2NrZWQgZGVwcyByZXR1cm5zIGVtcHR5IHBhdGgKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0UGxhblBhdGhJbnRlZ3JhdGlvbjoKICAgICIiIlRlc3QgcGxhbl9wYXRoIGVuZC10by1lbmQgd2l0aCBubyBkZXBlbmRlbmNpZXMuIiIiCgogICAgZGVmIHRlc3RfcGxhbl9wYXRoX3Vua25vd25fdG9waWMoc2VsZik6CiAgICAgICAgcGxhbm5lciA9IFJlc2VhcmNoUGF0aFBsYW5uZXIoKQogICAgICAgIHBhdGggPSBwbGFubmVyLnBsYW5fcGF0aCgiZGVmaW5pdGVseV9ub19wYXBlcnNfbWF0Y2hfdGhpc19xdWVyeV94eXoiKQogICAgICAgIGFzc2VydCBwYXRoLnRvdGFsX3BhcGVycyA9PSAwCiAgICAgICAgYXNzZXJ0IHBhdGguc3RlcHMgPT0gW10KCiAgICBkZWYgdGVzdF9wbGFuX3BhdGhfaG9ub3JzX21heF9wYXBlcnMoc2VsZik6CiAgICAgICAgcGxhbm5lciA9IFJlc2VhcmNoUGF0aFBsYW5uZXIoKQogICAgICAgIHBhdGggPSBwbGFubmVyLnBsYW5fcGF0aCgieCIsIG1heF9wYXBlcnM9MykKICAgICAgICBhc3NlcnQgcGF0aC50b3RhbF9wYXBlcnMgPD0gMwo=
+"""Tier 2 unit tests — llm/research_path.py, pure functions, no I/O."""
+
+from llm.research_path import (
+    ReadingLevel,
+    PaperNode,
+    ReadingStep,
+    ReadingPath,
+    ResearchPathPlanner,
+)
+
+
+# =============================================================================
+# Dataclass tests
+# =============================================================================
+class TestReadingLevel:
+    """Test ReadingLevel enum."""
+
+    def test_values(self):
+        assert ReadingLevel.INTRO.value == "intro"
+        assert ReadingLevel.INTERMEDIATE.value == "intermediate"
+        assert ReadingLevel.ADVANCED.value == "advanced"
+
+    def test_all_defined(self):
+        assert len(ReadingLevel) == 3
+
+
+class TestPaperNode:
+    """Test PaperNode dataclass."""
+
+    def test_required_fields(self):
+        node = PaperNode(paper_id="p001", title="Attention Is All You Need")
+        assert node.paper_id == "p001"
+        assert node.title == "Attention Is All You Need"
+        assert node.year == 0
+        assert node.authors == []
+        assert node.cited_by == []
+        assert node.cites == []
+
+    def test_citation_fields_default(self):
+        node = PaperNode(paper_id="p001", title="T")
+        assert node.cited_by == []
+        assert node.cites == []
+
+    def test_all_fields(self):
+        node = PaperNode(
+            paper_id="p001",
+            title="T",
+            year=2017,
+            authors=["Vaswani", "Shazeer"],
+            cited_by=["p002", "p003"],
+            cites=["p004"],
+            relevance_score=0.9,
+            pagerank=0.15,
+            is_foundational=True,
+            is_milestone=True,
+        )
+        assert node.year == 2017
+        assert node.authors == ["Vaswani", "Shazeer"]
+        assert node.cited_by == ["p002", "p003"]
+        assert node.cites == ["p004"]
+        assert node.relevance_score == 0.9
+        assert node.pagerank == 0.15
+        assert node.is_foundational is True
+        assert node.is_milestone is True
+
+
+class TestReadingStep:
+    """Test ReadingStep dataclass."""
+
+    def test_required_fields(self):
+        paper = PaperNode(paper_id="p001", title="T")
+        step = ReadingStep(order=1, paper=paper, role="core", reason="必读")
+        assert step.order == 1
+        assert step.paper.paper_id == "p001"
+        assert step.role == "core"
+        assert step.reason == "必读"
+        assert step.estimated_read_time_minutes == 15  # default
+
+
+class TestReadingPath:
+    """Test ReadingPath dataclass."""
+
+    def test_required_fields(self):
+        path = ReadingPath(
+            topic="transformer",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=0,
+            total_reading_time_minutes=0,
+            steps=[],
+        )
+        assert path.topic == "transformer"
+        assert path.level == ReadingLevel.INTERMEDIATE
+        assert path.total_papers == 0
+        assert path.steps == []
+        assert path.alternative_paths == []  # default
+        assert path.skipped_papers == []  # default
+
+
+# =============================================================================
+# ResearchPathPlanner — no kg/db, so plan_path returns empty path
+# =============================================================================
+class TestResearchPathPlannerInit:
+    """Test ResearchPathPlanner instantiation and methods."""
+
+    def test_instantiate_without_deps(self):
+        planner = ResearchPathPlanner()
+        assert planner.kg is None
+        assert planner.db is None
+
+    def test_has_expected_methods(self):
+        planner = ResearchPathPlanner()
+        assert hasattr(planner, "plan_path")
+        assert hasattr(planner, "render_path")
+        assert hasattr(planner, "render_mermaid")
+
+    def test_plan_path_no_papers_returns_empty(self):
+        planner = ResearchPathPlanner()
+        path = planner.plan_path("nonexistent_topic_xyz")
+        assert path.total_papers == 0
+        assert path.steps == []
+        assert path.topic == "nonexistent_topic_xyz"
+
+
+# =============================================================================
+# _parse_authors — pure string parsing
+# =============================================================================
+class TestParseAuthors:
+    """Test _parse_authors."""
+
+    planner = ResearchPathPlanner()
+
+    def test_empty_string(self):
+        assert self.planner._parse_authors("") == []
+
+    def test_single_author(self):
+        assert self.planner._parse_authors("Vaswani") == ["Vaswani"]
+
+    def test_and_separator(self):
+        result = self.planner._parse_authors("Vaswani and Shazeer")
+        assert result == ["Vaswani", "Shazeer"]
+
+    def test_comma_separated(self):
+        result = self.planner._parse_authors("Vaswani, Shazeer, Parmar")
+        assert result == ["Vaswani", "Shazeer", "Parmar"]
+
+    def test_strips_whitespace(self):
+        result = self.planner._parse_authors(" Vaswani ,  Shazeer ")
+        assert result == ["Vaswani", "Shazeer"]
+
+    def test_empty_parts_ignored(self):
+        result = self.planner._parse_authors("Vaswani, , Shazeer")
+        assert "Vaswani" in result
+        assert "Shazeer" in result
+
+
+# =============================================================================
+# _calculate_pagerank — pure numpy algorithm
+# =============================================================================
+class TestCalculatePagerank:
+    """Test _calculate_pagerank."""
+
+    def _graph(self, *papers):
+        return {p.paper_id: p for p in papers}
+
+    def test_empty_graph(self):
+        planner = ResearchPathPlanner()
+        planner._calculate_pagerank({})
+        # No error, no change
+
+    def test_single_node(self):
+        planner = ResearchPathPlanner()
+        p = PaperNode(paper_id="p1", title="Single Paper")
+        g = self._graph(p)
+        planner._calculate_pagerank(g)
+        assert g["p1"].pagerank > 0
+
+    def test_two_nodes_no_edges(self):
+        planner = ResearchPathPlanner()
+        p1 = PaperNode(paper_id="p1", title="Paper 1")
+        p2 = PaperNode(paper_id="p2", title="Paper 2")
+        g = self._graph(p1, p2)
+        planner._calculate_pagerank(g)
+        # Both get some PageRank
+        assert g["p1"].pagerank >= 0
+        assert g["p2"].pagerank >= 0
+
+    def test_two_nodes_citation(self):
+        # p2 has cited_by=["p1"] means p1 cites p2 -> p2 should have higher PageRank
+        planner = ResearchPathPlanner()
+        p1 = PaperNode(paper_id="p1", title="Older Paper")
+        p2 = PaperNode(paper_id="p2", title="Newer Paper", cited_by=["p1"])
+        g = self._graph(p1, p2)
+        planner._calculate_pagerank(g)
+        assert g["p2"].pagerank > g["p1"].pagerank
+
+    def test_pagerank_sum_approximately_one(self):
+        planner = ResearchPathPlanner()
+        papers = [PaperNode(paper_id=f"p{i}", title=f"Paper {i}") for i in range(5)]
+        g = {p.paper_id: p for p in papers}
+        planner._calculate_pagerank(g)
+        total = sum(p.pagerank for p in g.values())
+        assert 0.1 < total <= 1.5  # PageRank sum varies by graph structure
+
+    def test_damping_converges(self):
+        planner = ResearchPathPlanner()
+        papers = [PaperNode(paper_id=f"p{i}", title=f"Paper {i}") for i in range(3)]
+        g = {p.paper_id: p for p in papers}
+        # No error even with no edges
+        planner._calculate_pagerank(g)
+        assert all(p.pagerank >= 0 for p in g.values())
+
+
+# =============================================================================
+# _identify_key_papers — pure sorting logic
+# =============================================================================
+class TestIdentifyKeyPapers:
+    """Test _identify_key_papers."""
+
+    def _g(self, *papers):
+        return {p.paper_id: p for p in papers}
+
+    def test_empty_graph(self):
+        planner = ResearchPathPlanner()
+        planner._identify_key_papers({}, ReadingLevel.INTERMEDIATE)
+        # No error
+
+    def test_single_paper_marked_foundational(self):
+        planner = ResearchPathPlanner()
+        p = PaperNode(paper_id="p1", title="Paper 1", pagerank=1.0)
+        g = self._g(p)
+        planner._identify_key_papers(g, ReadingLevel.INTERMEDIATE)
+        # top 25% = 1 paper -> foundational
+        assert p.is_foundational is True
+
+    def test_four_papers_top_quarter_foundational(self):
+        planner = ResearchPathPlanner()
+        papers = [
+            PaperNode(paper_id=f"p{i}", title=f"Paper {i}", pagerank=float(i))
+            for i in range(1, 5)  # p1..p4, pageranks 1,2,3,4
+        ]
+        g = self._g(*papers)
+        planner._identify_key_papers(g, ReadingLevel.INTERMEDIATE)
+        # top 25% = 1 paper (p4 with pagerank 4)
+        foundational = [p for p in papers if p.is_foundational]
+        assert len(foundational) == 1
+        assert foundational[0].paper_id == "p4"
+
+    def test_milestone_identified_by_early_year(self):
+        planner = ResearchPathPlanner()
+        papers = [
+            PaperNode(paper_id="p_old", title="Old Paper", year=2010, pagerank=1.0),
+            PaperNode(paper_id="p_new", title="New Paper", year=2020, pagerank=0.5),
+        ]
+        g = self._g(*papers)
+        planner._identify_key_papers(g, ReadingLevel.INTERMEDIATE)
+        # p_old is earliest with decent PageRank -> milestone
+        assert papers[0].is_milestone is True
+
+
+# =============================================================================
+# _topological_sort — pure graph algorithm
+# =============================================================================
+class TestTopologicalSort:
+    """Test _topological_sort."""
+
+    def _g(self, *papers):
+        return {p.paper_id: p for p in papers}
+
+    def test_empty_graph(self):
+        planner = ResearchPathPlanner()
+        result = planner._topological_sort({}, ReadingLevel.INTERMEDIATE)
+        assert result == []
+
+    def test_single_node(self):
+        planner = ResearchPathPlanner()
+        p = PaperNode(paper_id="p1", title="Single Paper")
+        result = planner._topological_sort(self._g(p), ReadingLevel.INTERMEDIATE)
+        assert len(result) == 1
+        assert result[0].paper_id == "p1"
+
+    def test_two_nodes_independent(self):
+        planner = ResearchPathPlanner()
+        p1 = PaperNode(paper_id="p1", title="Paper 1")
+        p2 = PaperNode(paper_id="p2", title="Paper 2")
+        g = self._g(p1, p2)
+        result = planner._topological_sort(g, ReadingLevel.INTERMEDIATE)
+        assert len(result) == 2
+        ids = {r.paper_id for r in result}
+        assert ids == {"p1", "p2"}
+
+    def test_citation_order(self):
+        # p2 cites p1 (p2.cited_by = ["p1"]) -> p1 must come before p2
+        planner = ResearchPathPlanner()
+        p1 = PaperNode(paper_id="p1", title="Older Paper")
+        p2 = PaperNode(paper_id="p2", title="Newer Paper", cited_by=["p1"])
+        g = self._g(p1, p2)
+        result = planner._topological_sort(g, ReadingLevel.INTERMEDIATE)
+        ids = [r.paper_id for r in result]
+        # p1 must appear before p2 since p1 cites p2 (p1 is in p2.cited_by)
+        idx1 = ids.index("p1")
+        idx2 = ids.index("p2")
+        assert idx1 < idx2
+
+
+# =============================================================================
+# _assign_role — pure conditional logic
+# =============================================================================
+class TestAssignRole:
+    """Test _assign_role."""
+
+    planner = ResearchPathPlanner()
+
+    def _role(self, paper, position, level=ReadingLevel.INTERMEDIATE):
+        seen = set()
+        return self.planner._assign_role(paper, position, level, seen)
+
+    def test_foundational_pre_2018(self):
+        p = PaperNode(paper_id="p1", title="T", is_foundational=True, year=2015)
+        role, reason = self._role(p, 0)
+        assert role == "foundation"
+        assert "基础" in reason
+
+    def test_foundational_post_2018(self):
+        p = PaperNode(paper_id="p1", title="T", is_foundational=True, year=2019)
+        role, reason = self._role(p, 0)
+        assert role == "core"
+
+    def test_first_position_is_core(self):
+        p = PaperNode(paper_id="p1", title="Entry", year=2020)
+        role, reason = self._role(p, 0)
+        assert role == "core"
+
+    def test_latest_paper(self):
+        p = PaperNode(paper_id="p1", title="T", year=2024)
+        role, reason = self._role(p, 3)
+        assert role == "latest"
+        assert "2024" in reason
+
+    def test_highly_cited_improvement(self):
+        p = PaperNode(paper_id="p1", title="T", year=2021, cited_by=["a", "b", "c"])
+        role, reason = self._role(p, 2)
+        assert role == "improvement"
+
+    def test_intro_level_prefers_older(self):
+        p = PaperNode(paper_id="p1", title="T", year=2019, is_foundational=False)
+        role, reason = self._role(p, 1, ReadingLevel.INTRO)
+        assert role == "core"
+
+    def test_intro_level_variants(self):
+        p = PaperNode(paper_id="p1", title="T", year=2021, is_foundational=False)
+        role, reason = self._role(p, 1, ReadingLevel.INTRO)
+        assert role == "variant"
+        assert "2021" in reason
+
+    def test_default_improvement(self):
+        p = PaperNode(paper_id="p1", title="T", year=2020, cited_by=[])
+        role, reason = self._role(p, 2)
+        assert role == "improvement"
+
+
+# =============================================================================
+# _estimate_read_time — pure computation
+# =============================================================================
+class TestEstimateReadTime:
+    """Test _estimate_read_time."""
+
+    planner = ResearchPathPlanner()
+
+    def test_base_time(self):
+        p = PaperNode(paper_id="p1", title="Short")
+        assert self.planner._estimate_read_time(p) == 15
+
+    def test_long_title(self):
+        # Every 50 chars adds 1 min
+        p = PaperNode(paper_id="p1", title="A" * 200)
+        time = self.planner._estimate_read_time(p)
+        assert time > 15
+
+    def test_many_citations(self):
+        p = PaperNode(
+            paper_id="p1",
+            title="T",
+            cited_by=["a", "b", "c", "d", "e", "f"],
+        )
+        time = self.planner._estimate_read_time(p)
+        assert time >= 15 + 10  # base + 10 for >5 citations
+
+    def test_capped_at_45(self):
+        p = PaperNode(
+            paper_id="p1",
+            title="A" * 3000,  # long title adds ~60 min
+            cited_by=["a", "b", "c", "d", "e", "f", "g", "h"],
+        )
+        time = self.planner._estimate_read_time(p)
+        assert time == 45  # capped
+
+
+# =============================================================================
+# _empty_path — pure factory
+# =============================================================================
+class TestEmptyPath:
+    """Test _empty_path."""
+
+    def test_returns_empty_path(self):
+        planner = ResearchPathPlanner()
+        path = planner._empty_path("unknown", ReadingLevel.ADVANCED)
+        assert path.total_papers == 0
+        assert path.steps == []
+        assert path.topic == "unknown"
+        assert path.level == ReadingLevel.ADVANCED
+        assert path.alternative_paths == []
+        assert path.skipped_papers == []
+
+
+# =============================================================================
+# render_path — pure string formatting
+# =============================================================================
+class TestRenderPath:
+    """Test render_path."""
+
+    planner = ResearchPathPlanner()
+
+    def test_empty_returns_not_found(self):
+        path = ResearchPathPlanner()._empty_path("xyz", ReadingLevel.INTERMEDIATE)
+        output = self.planner.render_path(path)
+        assert "xyz" in output
+        assert "未找到" in output
+
+    def test_header_with_topic(self):
+        path = ResearchPathPlanner()._empty_path("transformer", ReadingLevel.INTRO)
+        output = self.planner.render_path(path)
+        assert "transformer" in output
+
+    def test_single_step(self):
+        paper = PaperNode(paper_id="p1", title="Attention Is All You Need", year=2017)
+        step = ReadingStep(
+            order=1,
+            paper=paper,
+            role="foundation",
+            reason="开创性工作",
+            estimated_read_time_minutes=20,
+        )
+        path = ReadingPath(
+            topic="transformer",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=20,
+            steps=[step],
+        )
+        output = self.planner.render_path(path)
+        assert "Attention" in output
+        assert "2017" in output
+        assert "🏛️" in output  # foundation icon
+        assert "开创性" in output
+
+    def test_no_year_shown_as_empty(self):
+        paper = PaperNode(paper_id="p1", title="Paper", year=0)
+        step = ReadingStep(
+            order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15
+        )
+        path = ReadingPath(
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
+        )
+        output = self.planner.render_path(path)
+        assert "[0]" not in output
+
+    def test_title_truncated_to_50(self):
+        paper = PaperNode(paper_id="p1", title="A" * 60)
+        step = ReadingStep(
+            order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15
+        )
+        path = ReadingPath(
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
+        )
+        output = self.planner.render_path(path)
+        assert ("A" * 50) in output
+        assert ("A" * 51) not in output
+
+    def test_authors_truncated_to_two(self):
+        paper = PaperNode(paper_id="p1", title="T", authors=["A", "B", "C"])
+        step = ReadingStep(
+            order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15
+        )
+        path = ReadingPath(
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
+        )
+        output = self.planner.render_path(path)
+        assert "A, B" in output
+        assert "et al." in output
+
+    def test_skipped_papers_shown(self):
+        paper = PaperNode(paper_id="p1", title="Included")
+        step = ReadingStep(
+            order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15
+        )
+        path = ReadingPath(
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
+            skipped_papers=["Skipped Paper A", "Skipped Paper B"],
+        )
+        output = self.planner.render_path(path)
+        assert "2 篇" in output
+
+
+# =============================================================================
+# render_mermaid — pure string formatting
+# =============================================================================
+class TestRenderMermaid:
+    """Test render_mermaid."""
+
+    planner = ResearchPathPlanner()
+
+    def test_empty(self):
+        path = ResearchPathPlanner()._empty_path("T", ReadingLevel.INTERMEDIATE)
+        output = self.planner.render_mermaid(path)
+        assert "Empty" in output
+
+    def test_single_node(self):
+        paper = PaperNode(paper_id="p001", title="First Paper")
+        step = ReadingStep(
+            order=1, paper=paper, role="core", reason="R", estimated_read_time_minutes=15
+        )
+        path = ReadingPath(
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
+        )
+        output = self.planner.render_mermaid(path)
+        assert "graph TD" in output
+        assert "Reading Path" in output
+        assert "p001" in output
+
+    def test_node_title_truncated(self):
+        paper = PaperNode(paper_id="p001", title="A" * 40)
+        step = ReadingStep(
+            order=1, paper=paper, role="foundation", reason="R", estimated_read_time_minutes=15
+        )
+        path = ReadingPath(
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
+        )
+        output = self.planner.render_mermaid(path)
+        # Should not crash; title truncated to 30
+        assert "graph TD" in output
+
+    def test_arrows_between_steps(self):
+        papers = [PaperNode(paper_id=f"p{i:03d}", title=f"Paper {i}") for i in range(1, 4)]
+        steps = [
+            ReadingStep(
+                order=i,
+                paper=papers[i - 1],
+                role="core",
+                reason="R",
+                estimated_read_time_minutes=15,
+            )
+            for i in range(1, 4)
+        ]
+        path = ReadingPath(
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=3,
+            total_reading_time_minutes=45,
+            steps=steps,
+        )
+        output = self.planner.render_mermaid(path)
+        # Should have arrows between adjacent steps
+        assert "-->" in output
+
+    def test_role_classes_defined(self):
+        paper = PaperNode(paper_id="p001", title="T")
+        step = ReadingStep(
+            order=1, paper=paper, role="foundation", reason="R", estimated_read_time_minutes=15
+        )
+        path = ReadingPath(
+            topic="T",
+            level=ReadingLevel.INTERMEDIATE,
+            total_papers=1,
+            total_reading_time_minutes=15,
+            steps=[step],
+        )
+        output = self.planner.render_mermaid(path)
+        assert "classDef foundation" in output
+
+
+# =============================================================================
+# Integration: plan_path with mocked deps returns empty path
+# =============================================================================
+class TestPlanPathIntegration:
+    """Test plan_path end-to-end with no dependencies."""
+
+    def test_plan_path_unknown_topic(self):
+        planner = ResearchPathPlanner()
+        path = planner.plan_path("definitely_no_papers_match_this_query_xyz")
+        assert path.total_papers == 0
+        assert path.steps == []
+
+    def test_plan_path_honors_max_papers(self):
+        planner = ResearchPathPlanner()
+        path = planner.plan_path("x", max_papers=3)
+        assert path.total_papers <= 3

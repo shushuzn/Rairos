@@ -1,1 +1,2 @@
-ZnJvbSBrZyBpbXBvcnQgS0dNYW5hZ2VyDQpmcm9tIGNsaS5jbWQua2cua2cgaW1wb3J0IF9idWlsZF9rZ19wYXJzZXINCg==
+from kg import KGManager
+from cli.cmd.kg.kg import _build_kg_parser

@@ -1,1 +1,131 @@
-IiIiQ3Jvc3MtRG9tYWluIEdhcCBCcmlkZ2Ug4oCUIHN1Z2dlc3QgR2VuZSBQb29sIGNvbm5lY3Rpb25zIGJldHdlZW4gZGlzdGFudCByZXNlYXJjaCBkb21haW5zLgoKSWRlbnRpZmllcyBjYXBzdWxlcyB3aG9zZSB0cmlnZ2VyX2tleXdvcmRzIG92ZXJsYXAgd2l0aCBtZXRob2RzIGZyb20gdW5yZWxhdGVkIGNhdGVnb3JpZXMsCmUuZy4gcGh5c2ljcyB0ZWNobmlxdWVzIGFwcGxpZWQgdG8gTUwsIGJpb2xvZ3kg4oaSIEFJLCBldGMuCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGpzb24KZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBBbnksIERpY3QsIExpc3QsIE9wdGlvbmFsLCBUdXBsZQoKZnJvbSBsbG0uZ2VuZV9wb29sX2lvIGltcG9ydCBsb2FkX2NhcHN1bGVzCgojIE1ldGhvZCBrZXl3b3JkcyB0aGF0IGJyaWRnZSBtdWx0aXBsZSBkb21haW5zCkJSSURHRV9NRVRIT0RTID0gewogICAgIm9wdGltaXphdGlvbiIsCiAgICAiZ3JhZGllbnQiLAogICAgImVudHJvcHkiLAogICAgImRpZmZ1c2lvbiIsCiAgICAicHJvYmFiaWxpdHkiLAogICAgIm1hbmlmb2xkIiwKICAgICJsYXRlbnQiLAogICAgImVtYmVkZGluZyIsCiAgICAiYXR0ZW50aW9uIiwKICAgICJncmFkaWVudCBkZXNjZW50IiwKICAgICJiYXllc2lhbiIsCiAgICAic2FtcGxpbmciLAogICAgIm1hcmtvdiIsCiAgICAibmV1cmFsIG5ldHdvcmsiLAogICAgInRyYW5zZm9ybWVyIiwKICAgICJhZHZlcnNhcmlhbCIsCiAgICAicmVpbmZvcmNlbWVudCBsZWFybmluZyIsCiAgICAic3VwZXJ2aXNlZCIsCiAgICAidW5zdXBlcnZpc2VkIiwKICAgICJzZW1pLXN1cGVydmlzZWQiLAogICAgImZldy1zaG90IiwKICAgICJ6ZXJvLXNob3QiLAogICAgInRyYW5zZmVyIGxlYXJuaW5nIiwKICAgICJjYXVzYWwiLAogICAgImNvdW50ZXJmYWN0dWFsIiwKICAgICJ2YXJpYXRpb25hbCIsCiAgICAiaW5mb3JtYXRpb24gdGhlb3J5IiwKfQoKIyBEb21haW4gcGFpcnMgdGhhdCByYXJlbHkgaW50ZXJhY3QgYnV0IGhhdmUgYnJpZGdpbmcgcG90ZW50aWFsCkRPTUFJTl9QQUlSUyA9IFsKICAgICgicGh5c2ljcyIsICJjcy5BSSIpLAogICAgKCJiaW9sb2d5IiwgImNzLkxHIiksCiAgICAoImNoZW1pc3RyeSIsICJjcy5DTCIpLAogICAgKCJtYXRoIiwgImNzLkNWIiksCiAgICAoImVjb25vbWljcyIsICJjcy5BSSIpLAogICAgKCJuZXVyb3NjaWVuY2UiLCAiY3MuTkUiKSwKXQoKCmRlZiBfamFjY2FyZChhOiBMaXN0W3N0cl0sIGI6IExpc3Rbc3RyXSkgLT4gZmxvYXQ6CiAgICBzX2EsIHNfYiA9IHNldChhKSwgc2V0KGIpCiAgICBpZiBub3Qgc19hIG9yIG5vdCBzX2I6CiAgICAgICAgcmV0dXJuIDAuMAogICAgcmV0dXJuIGxlbihzX2EgJiBzX2IpIC8gbGVuKHNfYSB8IHNfYikKCgpkZWYgX2tleXdvcmRfb3ZlcmxhcChrdzE6IExpc3Rbc3RyXSwga3cyOiBMaXN0W3N0cl0pIC0+IGZsb2F0OgogICAgczEgPSB7ay5sb3dlcigpIGZvciBrIGluIGt3MX0KICAgIHMyID0ge2subG93ZXIoKSBmb3IgayBpbiBrdzJ9CiAgICBpZiBub3QgczEgb3Igbm90IHMyOgogICAgICAgIHJldHVybiAwLjAKICAgIHJldHVybiBsZW4oczEgJiBzMikgLyBtaW4obGVuKHMxKSwgbGVuKHMyKSkKCgpkZWYgZmluZF9jcm9zc19kb21haW5fYnJpZGdlcygpIC0+IExpc3RbRGljdFtzdHIsIEFueV1dOgogICAgIiIiRmluZCBjYXBzdWxlcyBmcm9tIGRpZmZlcmVudCBkb21haW5zIHdob3NlIGtleXdvcmRzIHNoYXJlIGJyaWRnaW5nIG1ldGhvZHMuIiIiCiAgICBjYXBzdWxlcyA9IGxvYWRfY2Fwc3VsZXMoKQogICAgcmVzdWx0czogTGlzdFtEaWN0W3N0ciwgQW55XV0gPSBbXQoKICAgIGZvciBpLCBjYXBfYSBpbiBlbnVtZXJhdGUoY2Fwc3VsZXMpOgogICAgICAgIGlmIGNhcF9hLmdldCgic3RhdHVzIikgbm90IGluICgiIiwgImFjdGl2ZSIpOgogICAgICAgICAgICBjb250aW51ZQogICAgICAgIGt3X2EgPSBjYXBfYS5nZXQoInRyaWdnZXJfa2V5d29yZHMiLCBbXSkKICAgICAgICBjYXRfYSA9IGNhcF9hLmdldCgic291cmNlX2NhdGVnb3J5IiwgIiIpCgogICAgICAgIGZvciBjYXBfYiBpbiBjYXBzdWxlc1tpICsgMSA6XToKICAgICAgICAgICAgaWYgY2FwX2IuZ2V0KCJzdGF0dXMiKSBub3QgaW4gKCIiLCAiYWN0aXZlIik6CiAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICBrd19iID0gY2FwX2IuZ2V0KCJ0cmlnZ2VyX2tleXdvcmRzIiwgW10pCiAgICAgICAgICAgIGNhdF9iID0gY2FwX2IuZ2V0KCJzb3VyY2VfY2F0ZWdvcnkiLCAiIikKCiAgICAgICAgICAgICMgU2tpcCBpZiBzYW1lIGNhdGVnb3J5IGNsdXN0ZXIKICAgICAgICAgICAgaWYgY2F0X2EgYW5kIGNhdF9iOgogICAgICAgICAgICAgICAgY2x1c3RlcnMgPSB7CiAgICAgICAgICAgICAgICAgICAgImNzLkFJfGNzLkxHfGNzLkNMfGNzLkNWIjogIkFJL01MIiwKICAgICAgICAgICAgICAgICAgICAicGh5c2ljcyI6ICJwaHlzaWNzIiwKICAgICAgICAgICAgICAgICAgICAiYmlvbG9neXxtZWRpY2luZSI6ICJiaW8iLAogICAgICAgICAgICAgICAgICAgICJtYXRofHN0YXRzIjogIm1hdGgiLAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZm9yIGNsdXN0ZXIsIF9sYWJlbCBpbiBjbHVzdGVycy5pdGVtcygpOgogICAgICAgICAgICAgICAgICAgIGlmIGNhdF9hIGluIGNsdXN0ZXIgYW5kIGNhdF9iIGluIGNsdXN0ZXI6CiAgICAgICAgICAgICAgICAgICAgICAgIGJyZWFrCiAgICAgICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgICAgICMgRGlmZmVyZW50IGNsdXN0ZXJzIOKAlCBjaGVjayBmb3IgYnJpZGdpbmcKICAgICAgICAgICAgICAgICAgICBvdmVybGFwID0gX2tleXdvcmRfb3ZlcmxhcChrd19hLCBrd19iKQogICAgICAgICAgICAgICAgICAgIGlmIG92ZXJsYXAgPj0gMC4xNToKICAgICAgICAgICAgICAgICAgICAgICAgYnJpZGdlX2t3ID0gc2V0KGsubG93ZXIoKSBmb3IgayBpbiBrd19hKSAmIHNldChrLmxvd2VyKCkgZm9yIGsgaW4ga3dfYikKICAgICAgICAgICAgICAgICAgICAgICAgcmVzdWx0cy5hcHBlbmQoCiAgICAgICAgICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgImNhcHN1bGVfYSI6IGNhcF9hLmdldCgiYWN0aW9uX2dhcF90aXRsZSIsICIiKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiY2Fwc3VsZV9iIjogY2FwX2IuZ2V0KCJhY3Rpb25fZ2FwX3RpdGxlIiwgIiIpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJjYXBfYV9pZCI6IGNhcF9hLmdldCgiY2Fwc3VsZV9pZCIsICIiKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiY2FwX2JfaWQiOiBjYXBfYi5nZXQoImNhcHN1bGVfaWQiLCAiIiksCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgImNhdGVnb3J5X2EiOiBjYXRfYSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiY2F0ZWdvcnlfYiI6IGNhdF9iLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJicmlkZ2Vfa2V5d29yZHMiOiBsaXN0KGJyaWRnZV9rdylbOjVdLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJvdmVybGFwX3Njb3JlIjogcm91bmQob3ZlcmxhcCwgMyksCiAgICAgICAgICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgICAgICkKCiAgICByZXN1bHRzLnNvcnQoa2V5PWxhbWJkYSB4OiAteFsib3ZlcmxhcF9zY29yZSJdKQogICAgcmV0dXJuIHJlc3VsdHNbOjIwXQoKCmRlZiByZW5kZXJfY3Jvc3NfZG9tYWluX2h0bWwoYnJpZGdlczogT3B0aW9uYWxbTGlzdFtEaWN0W3N0ciwgQW55XV1dID0gTm9uZSkgLT4gc3RyOgogICAgaWYgYnJpZGdlcyBpcyBOb25lOgogICAgICAgIGJyaWRnZXMgPSBmaW5kX2Nyb3NzX2RvbWFpbl9icmlkZ2VzKCkKCiAgICBsaW5lcyA9IFsnPGRpdiBjbGFzcz0iY3Jvc3MtZG9tYWluIj4nXQogICAgbGluZXMuYXBwZW5kKCI8aDM+8J+UgCBDcm9zcy1Eb21haW4gR2FwIEJyaWRnZTwvaDM+IikKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiPHAgc3R5bGU9J2ZvbnQtc2l6ZToxM3B4O2NvbG9yOiNBODlFOEM7bWFyZ2luLWJvdHRvbToxNnB4Jz4iCiAgICAgICAgIkNhcHN1bGVzIGZyb20gZGlmZmVyZW50IHJlc2VhcmNoIGRvbWFpbnMgY29ubmVjdGVkIGJ5IHNoYXJlZCBtZXRob2Qga2V5d29yZHMuICIKICAgICAgICAiVGhlc2UgYnJpZGdlcyBzdWdnZXN0IG9wcG9ydHVuaXRpZXMgZm9yIGNyb3NzLXBvbGxpbmF0aW9uLjwvcD4iCiAgICApCgogICAgaWYgbm90IGJyaWRnZXM6CiAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICAiPHAgc3R5bGU9J2NvbG9yOiNBODlFOEM7Zm9udC1zaXplOjEzcHgnPk5vIHN0cm9uZyBjcm9zcy1kb21haW4gYnJpZGdlcyB5ZXQuICIKICAgICAgICAgICAgIkV4dHJhY3QgZ2FwcyBmcm9tIHBhcGVycyBhY3Jvc3MgbXVsdGlwbGUgZmllbGRzIHRvIGRpc2NvdmVyIGNvbm5lY3Rpb25zLjwvcD4iCiAgICAgICAgKQogICAgZWxzZToKICAgICAgICBmb3IgYiBpbiBicmlkZ2VzOgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIiIgo8ZGl2IHN0eWxlPSdkaXNwbGF5OmZsZXg7Z2FwOjEycHg7bWFyZ2luLWJvdHRvbToxNHB4O3BhZGRpbmc6MTJweDtiYWNrZ3JvdW5kOiNmOGY0ZWY7Ym9yZGVyLXJhZGl1czo2cHgnPgogIDxkaXYgc3R5bGU9J2ZsZXg6MSc+CiAgICA8ZGl2IHN0eWxlPSdmb250LXNpemU6MTFweDtjb2xvcjojNkI4RkI1O2ZvbnQtd2VpZ2h0OjcwMDttYXJnaW4tYm90dG9tOjJweCc+e2JbImNhdGVnb3J5X2EiXSBvciAidW5rbm93biJ9PC9kaXY+CiAgICA8ZGl2IHN0eWxlPSdmb250LXNpemU6MTNweDtmb250LXdlaWdodDo2MDA7Y29sb3I6IzJhMmEyYSc+e2JbImNhcHN1bGVfYSJdWzo2MF19PC9kaXY+CiAgPC9kaXY+CiAgPGRpdiBzdHlsZT0nZGlzcGxheTpmbGV4O2ZsZXgtZGlyZWN0aW9uOmNvbHVtbjthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OmNlbnRlcjt3aWR0aDo4MHB4Jz4KICAgIDxkaXYgc3R5bGU9J2ZvbnQtc2l6ZToxOHB4Jz7in7c8L2Rpdj4KICAgIDxkaXYgc3R5bGU9J2ZvbnQtc2l6ZToxMHB4O2NvbG9yOiNBODlFOEMnPm92ZXJsYXA9e2JbIm92ZXJsYXBfc2NvcmUiXTouMCV9PC9kaXY+CiAgPC9kaXY+CiAgPGRpdiBzdHlsZT0nZmxleDoxJz4KICAgIDxkaXYgc3R5bGU9J2ZvbnQtc2l6ZToxMXB4O2NvbG9yOiNDNDcwNkE7Zm9udC13ZWlnaHQ6NzAwO21hcmdpbi1ib3R0b206MnB4O3RleHQtYWxpZ246cmlnaHQnPntiWyJjYXRlZ29yeV9iIl0gb3IgInVua25vd24ifTwvZGl2PgogICAgPGRpdiBzdHlsZT0nZm9udC1zaXplOjEzcHg7Zm9udC13ZWlnaHQ6NjAwO2NvbG9yOiMyYTJhMmEnPntiWyJjYXBzdWxlX2IiXVs6NjBdfTwvZGl2PgogIDwvZGl2Pgo8L2Rpdj4KPGRpdiBzdHlsZT0nbWFyZ2luLWxlZnQ6OTBweDttYXJnaW4tYm90dG9tOjE0cHg7Zm9udC1zaXplOjExcHg7Y29sb3I6I0E4OUU4Qyc+CiAgQnJpZGdlOiB7IiwgIi5qb2luKGYiPGNvZGU+e2t9PC9jb2RlPiIgZm9yIGsgaW4gYlsiYnJpZGdlX2tleXdvcmRzIl0pfQo8L2Rpdj4iIiIpCgogICAgbGluZXMuYXBwZW5kKCI8c3R5bGU+LmNyb3NzLWRvbWFpbiB7IGZvbnQtZmFtaWx5OiBHZW9yZ2lhLCBzZXJpZjsgfTwvc3R5bGU+IikKICAgIGxpbmVzLmFwcGVuZCgiPC9kaXY+IikKICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCg==
+"""Cross-Domain Gap Bridge — suggest Gene Pool connections between distant research domains.
+
+Identifies capsules whose trigger_keywords overlap with methods from unrelated categories,
+e.g. physics techniques applied to ML, biology → AI, etc.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+from llm.gene_pool_io import load_capsules
+
+# Method keywords that bridge multiple domains
+BRIDGE_METHODS = {
+    "optimization", "gradient", "entropy", "diffusion", "probability",
+    "manifold", "latent", "embedding", "attention", "gradient descent",
+    "bayesian", "sampling", "markov", "neural network", "transformer",
+    "adversarial", "reinforcement learning", "supervised", "unsupervised",
+    "semi-supervised", "few-shot", "zero-shot", "transfer learning",
+    "causal", "counterfactual", "variational", "information theory",
+}
+
+# Domain pairs that rarely interact but have bridging potential
+DOMAIN_PAIRS = [
+    ("physics", "cs.AI"), ("biology", "cs.LG"), ("chemistry", "cs.CL"),
+    ("math", "cs.CV"), ("economics", "cs.AI"), ("neuroscience", "cs.NE"),
+]
+
+
+def _jaccard(a: List[str], b: List[str]) -> float:
+    s_a, s_b = set(a), set(b)
+    if not s_a or not s_b:
+        return 0.0
+    return len(s_a & s_b) / len(s_a | s_b)
+
+
+def _keyword_overlap(kw1: List[str], kw2: List[str]) -> float:
+    s1 = {k.lower() for k in kw1}
+    s2 = {k.lower() for k in kw2}
+    if not s1 or not s2:
+        return 0.0
+    return len(s1 & s2) / min(len(s1), len(s2))
+
+
+def find_cross_domain_bridges() -> List[Dict[str, Any]]:
+    """Find capsules from different domains whose keywords share bridging methods."""
+    capsules = load_capsules()
+    results: List[Dict[str, Any]] = []
+
+    for i, cap_a in enumerate(capsules):
+        if cap_a.get("status") not in ("", "active"):
+            continue
+        kw_a = cap_a.get("trigger_keywords", [])
+        cat_a = cap_a.get("source_category", "")
+
+        for cap_b in capsules[i+1:]:
+            if cap_b.get("status") not in ("", "active"):
+                continue
+            kw_b = cap_b.get("trigger_keywords", [])
+            cat_b = cap_b.get("source_category", "")
+
+            # Skip if same category cluster
+            if cat_a and cat_b:
+                clusters = {
+                    "cs.AI|cs.LG|cs.CL|cs.CV": "AI/ML",
+                    "physics": "physics",
+                    "biology|medicine": "bio",
+                    "math|stats": "math",
+                }
+                for cluster, _label in clusters.items():
+                    if cat_a in cluster and cat_b in cluster:
+                        break
+                else:
+                    # Different clusters — check for bridging
+                    overlap = _keyword_overlap(kw_a, kw_b)
+                    if overlap >= 0.15:
+                        bridge_kw = set(k.lower() for k in kw_a) & set(k.lower() for k in kw_b)
+                        results.append({
+                            "capsule_a": cap_a.get("action_gap_title", ""),
+                            "capsule_b": cap_b.get("action_gap_title", ""),
+                            "cap_a_id": cap_a.get("capsule_id", ""),
+                            "cap_b_id": cap_b.get("capsule_id", ""),
+                            "category_a": cat_a,
+                            "category_b": cat_b,
+                            "bridge_keywords": list(bridge_kw)[:5],
+                            "overlap_score": round(overlap, 3),
+                        })
+
+    results.sort(key=lambda x: -x["overlap_score"])
+    return results[:20]
+
+
+def render_cross_domain_html(bridges: Optional[List[Dict[str, Any]]] = None) -> str:
+    if bridges is None:
+        bridges = find_cross_domain_bridges()
+
+    lines = ['<div class="cross-domain">']
+    lines.append("<h3>🔀 Cross-Domain Gap Bridge</h3>")
+    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
+                "Capsules from different research domains connected by shared method keywords. "
+                "These bridges suggest opportunities for cross-pollination.</p>")
+
+    if not bridges:
+        lines.append("<p style='color:#A89E8C;font-size:13px'>No strong cross-domain bridges yet. "
+                    "Extract gaps from papers across multiple fields to discover connections.</p>")
+    else:
+        for b in bridges:
+            lines.append(f"""
+<div style='display:flex;gap:12px;margin-bottom:14px;padding:12px;background:#f8f4ef;border-radius:6px'>
+  <div style='flex:1'>
+    <div style='font-size:11px;color:#6B8FB5;font-weight:700;margin-bottom:2px'>{b['category_a'] or 'unknown'}</div>
+    <div style='font-size:13px;font-weight:600;color:#2a2a2a'>{b['capsule_a'][:60]}</div>
+  </div>
+  <div style='display:flex;flex-direction:column;align-items:center;justify-content:center;width:80px'>
+    <div style='font-size:18px'>⟷</div>
+    <div style='font-size:10px;color:#A89E8C'>overlap={b['overlap_score']:.0%}</div>
+  </div>
+  <div style='flex:1'>
+    <div style='font-size:11px;color:#C4706A;font-weight:700;margin-bottom:2px;text-align:right'>{b['category_b'] or 'unknown'}</div>
+    <div style='font-size:13px;font-weight:600;color:#2a2a2a'>{b['capsule_b'][:60]}</div>
+  </div>
+</div>
+<div style='margin-left:90px;margin-bottom:14px;font-size:11px;color:#A89E8C'>
+  Bridge: {', '.join(f'<code>{k}</code>' for k in b['bridge_keywords'])}
+</div>""")
+
+    lines.append("<style>.cross-domain { font-family: Georgia, serif; }</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

@@ -1,1 +1,252 @@
-IiIiVGVzdHMgZm9yIHJlc2VhcmNoIGNoYXQuIiIiCgppbXBvcnQgcHl0ZXN0CmZyb20gdW5pdHRlc3QubW9jayBpbXBvcnQgTWFnaWNNb2NrLCBwYXRjaAoKZnJvbSBsbG0ucmVzZWFyY2hfY2hhdCBpbXBvcnQgKAogICAgUmVzZWFyY2hDaGF0LAogICAgUmVzZWFyY2hDb250ZXh0LAogICAgUGFwZXJDb250ZXh0LAogICAgUXVlcnlUeXBlLAopCgoKY2xhc3MgVGVzdFF1ZXJ5Q2xhc3NpZmljYXRpb246CiAgICAiIiJUZXN0IHF1ZXJ5IGNsYXNzaWZpY2F0aW9uLiIiIgoKICAgIEBweXRlc3QuZml4dHVyZQogICAgZGVmIGNoYXQoc2VsZik6CiAgICAgICAgcmV0dXJuIFJlc2VhcmNoQ2hhdCgpCgogICAgZGVmIHRlc3RfZmFjdHVhbF9xdWVyeShzZWxmLCBjaGF0KToKICAgICAgICAiIiJUZXN0IGZhY3R1YWwgcXVlcnkgY2xhc3NpZmljYXRpb24uIiIiCiAgICAgICAgcSA9ICJSQUcg55qE5Li76KaB5pa55rOV5pyJ5ZOq5Lqb77yfIgogICAgICAgIGFzc2VydCBjaGF0LmNsYXNzaWZ5X3F1ZXJ5KHEpID09IFF1ZXJ5VHlwZS5GQUNUVUFMCgogICAgZGVmIHRlc3RfY29tcGFyaXNvbl9xdWVyeShzZWxmLCBjaGF0KToKICAgICAgICAiIiJUZXN0IGNvbXBhcmlzb24gcXVlcnkgY2xhc3NpZmljYXRpb24uIiIiCiAgICAgICAgcSA9ICJTZWxmLVJBRyDlkowgQ29ycmVjdGl2ZS1SQUcg5pyJ5LuA5LmI5Yy65Yir77yfIgogICAgICAgIGFzc2VydCBjaGF0LmNsYXNzaWZ5X3F1ZXJ5KHEpID09IFF1ZXJ5VHlwZS5DT01QQVJJU09OCgogICAgZGVmIHRlc3RfZGlzY292ZXJ5X3F1ZXJ5KHNlbGYsIGNoYXQpOgogICAgICAgICIiIlRlc3QgZGlzY292ZXJ5IHF1ZXJ5IGNsYXNzaWZpY2F0aW9uLiIiIgogICAgICAgIHEgPSAiUkFHIOi/mOacieS7gOS5iOacquino+WGs+eahOmXrumimO+8nyIKICAgICAgICBhc3NlcnQgY2hhdC5jbGFzc2lmeV9xdWVyeShxKSA9PSBRdWVyeVR5cGUuRElTQ09WRVJZCgogICAgZGVmIHRlc3RfaW5mZXJlbnRpYWxfcXVlcnkoc2VsZiwgY2hhdCk6CiAgICAgICAgIiIiVGVzdCBpbmZlcmVudGlhbCBxdWVyeSBjbGFzc2lmaWNhdGlvbi4iIiIKICAgICAgICBxID0gIuS4uuS7gOS5iOajgOe0ouWinuW8uuiDveaPkOmrmOeUn+aIkOi0qOmHj++8nyIKICAgICAgICBhc3NlcnQgY2hhdC5jbGFzc2lmeV9xdWVyeShxKSA9PSBRdWVyeVR5cGUuSU5GRVJFTlRJQUwKCiAgICBkZWYgdGVzdF9lbmdsaXNoX3F1ZXJpZXMoc2VsZiwgY2hhdCk6CiAgICAgICAgIiIiVGVzdCBFbmdsaXNoIHF1ZXJ5IGNsYXNzaWZpY2F0aW9uLiIiIgogICAgICAgIGFzc2VydCBjaGF0LmNsYXNzaWZ5X3F1ZXJ5KCJXaGF0IGlzIFJBRz8iKSA9PSBRdWVyeVR5cGUuRkFDVFVBTAogICAgICAgIGFzc2VydCBjaGF0LmNsYXNzaWZ5X3F1ZXJ5KCJDb21wYXJlIFJBRyBhbmQgZmluZS10dW5pbmciKSA9PSBRdWVyeVR5cGUuQ09NUEFSSVNPTgoKCmNsYXNzIFRlc3RUb3BpY0V4dHJhY3Rpb246CiAgICAiIiJUZXN0IHRvcGljIGV4dHJhY3Rpb24gZnJvbSBxdWVyaWVzLiIiIgoKICAgIEBweXRlc3QuZml4dHVyZQogICAgZGVmIGNoYXQoc2VsZik6CiAgICAgICAgcmV0dXJuIFJlc2VhcmNoQ2hhdCgpCgogICAgZGVmIHRlc3RfZXh0cmFjdF9jaGluZXNlX3RvcGljKHNlbGYsIGNoYXQpOgogICAgICAgICIiIlRlc3QgQ2hpbmVzZSB0b3BpYyBleHRyYWN0aW9uLiIiIgogICAgICAgIHRvcGljID0gY2hhdC5fZXh0cmFjdF90b3BpYygiUkFHIOWcqOmVv+aWh+aho+WcuuaZr+eahOS4u+imgeaMkeaImOaYr+S7gOS5iO+8nyIpCiAgICAgICAgYXNzZXJ0ICJSQUciIGluIHRvcGljCiAgICAgICAgIyBDaGluZXNlIGNoYXJhY3RlcnMgd2l0aG91dCBzcGFjZXMgbWlnaHQgc3RheSB0b2dldGhlcgoKICAgIGRlZiB0ZXN0X2V4dHJhY3RfZW5nbGlzaF90b3BpYyhzZWxmLCBjaGF0KToKICAgICAgICAiIiJUZXN0IEVuZ2xpc2ggdG9waWMgZXh0cmFjdGlvbi4iIiIKICAgICAgICB0b3BpYyA9IGNoYXQuX2V4dHJhY3RfdG9waWMoIldoYXQgYXJlIHRoZSBtZXRob2RzIGZvciBSQUc/IikKICAgICAgICBhc3NlcnQgIlJBRyIgaW4gdG9waWMKCiAgICBkZWYgdGVzdF9leHRyYWN0X2VtcHR5X3F1ZXJ5KHNlbGYsIGNoYXQpOgogICAgICAgICIiIlRlc3QgZW1wdHkgcXVlcnkgaGFuZGxpbmcuIiIiCiAgICAgICAgdG9waWMgPSBjaGF0Ll9leHRyYWN0X3RvcGljKCIiKQogICAgICAgIGFzc2VydCBsZW4odG9waWMpIDw9IDIwCgoKY2xhc3MgVGVzdENvbnRleHRCdWlsZGluZzoKICAgICIiIlRlc3QgcmVzZWFyY2ggY29udGV4dCBidWlsZGluZy4iIiIKCiAgICBAcHl0ZXN0LmZpeHR1cmUKICAgIGRlZiBtb2NrX2RiKHNlbGYpOgogICAgICAgICIiIkNyZWF0ZSBtb2NrIGRhdGFiYXNlLiIiIgogICAgICAgIGRiID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX3BhcGVyID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX3BhcGVyLnVpZCA9ICJwMSIKICAgICAgICBtb2NrX3BhcGVyLnRpdGxlID0gIlRlc3QgUGFwZXIiCiAgICAgICAgbW9ja19wYXBlci5hYnN0cmFjdCA9ICJUZXN0IGFic3RyYWN0IgogICAgICAgIG1vY2tfcGFwZXIuYXV0aG9ycyA9ICJBdXRob3IgQSIKICAgICAgICBtb2NrX3BhcGVyLnllYXIgPSAyMDIzCiAgICAgICAgZGIuc2VhcmNoX3BhcGVycy5yZXR1cm5fdmFsdWUgPSAoW21vY2tfcGFwZXJdLCBOb25lKQogICAgICAgIHJldHVybiBkYgoKICAgIEBweXRlc3QuZml4dHVyZQogICAgZGVmIG1vY2tfaW5zaWdodF9tYW5hZ2VyKHNlbGYpOgogICAgICAgICIiIkNyZWF0ZSBtb2NrIGluc2lnaHQgbWFuYWdlci4iIiIKICAgICAgICBtYW5hZ2VyID0gTWFnaWNNb2NrKCkKICAgICAgICBtYW5hZ2VyLnNlYXJjaF9jYXJkcy5yZXR1cm5fdmFsdWUgPSBbXQogICAgICAgIHJldHVybiBtYW5hZ2VyCgogICAgZGVmIHRlc3RfYnVpbGRfY29udGV4dF93aXRoX2RiKHNlbGYsIG1vY2tfZGIpOgogICAgICAgICIiIlRlc3QgY29udGV4dCBidWlsZGluZyB3aXRoIGRhdGFiYXNlLiIiIgogICAgICAgIGNoYXQgPSBSZXNlYXJjaENoYXQoZGI9bW9ja19kYikKICAgICAgICBjdHggPSBjaGF0LmJ1aWxkX2NvbnRleHQoIlJBRyBtZXRob2RzIikKCiAgICAgICAgYXNzZXJ0IGN0eC50b3BpYyBpcyBub3QgTm9uZQogICAgICAgIGFzc2VydCBsZW4oY3R4LnBhcGVycykgPT0gMQogICAgICAgIGFzc2VydCBjdHgucGFwZXJzWzBdLnRpdGxlID09ICJUZXN0IFBhcGVyIgoKICAgIGRlZiB0ZXN0X2J1aWxkX2NvbnRleHRfd2l0aG91dF9kYihzZWxmKToKICAgICAgICAiIiJUZXN0IGNvbnRleHQgYnVpbGRpbmcgd2l0aG91dCBkYXRhYmFzZS4iIiIKICAgICAgICBjaGF0ID0gUmVzZWFyY2hDaGF0KGRiPU5vbmUpCiAgICAgICAgY3R4ID0gY2hhdC5idWlsZF9jb250ZXh0KCJSQUcgbWV0aG9kcyIpCgogICAgICAgIGFzc2VydCBjdHgucGFwZXJzID09IFtdCgogICAgZGVmIHRlc3RfYnVpbGRfY29udGV4dF93aXRoX2luc2lnaHRzKHNlbGYsIG1vY2tfZGIsIG1vY2tfaW5zaWdodF9tYW5hZ2VyKToKICAgICAgICAiIiJUZXN0IGNvbnRleHQgYnVpbGRpbmcgd2l0aCBpbnNpZ2h0cy4iIiIKICAgICAgICBtb2NrX2luc2lnaHQgPSBNYWdpY01vY2soKQogICAgICAgIG1vY2tfaW5zaWdodC5jb250ZW50ID0gIktleSBmaW5kaW5nIgogICAgICAgIG1vY2tfaW5zaWdodF9tYW5hZ2VyLnNlYXJjaF9jYXJkcy5yZXR1cm5fdmFsdWUgPSBbbW9ja19pbnNpZ2h0XQoKICAgICAgICBjaGF0ID0gUmVzZWFyY2hDaGF0KGRiPW1vY2tfZGIsIGluc2lnaHRfbWFuYWdlcj1tb2NrX2luc2lnaHRfbWFuYWdlcikKICAgICAgICBjdHggPSBjaGF0LmJ1aWxkX2NvbnRleHQoIlJBRyIpCgogICAgICAgIGFzc2VydCBsZW4oY3R4Lmluc2lnaHRzKSA9PSAxCgogICAgZGVmIHRlc3RfYnVpbGRfY29udGV4dF93aXRoX2hpbnQoc2VsZiwgbW9ja19kYik6CiAgICAgICAgIiIiVGVzdCBjb250ZXh0IGJ1aWxkaW5nIHdpdGggdG9waWMgaGludC4iIiIKICAgICAgICBjaGF0ID0gUmVzZWFyY2hDaGF0KGRiPW1vY2tfZGIpCiAgICAgICAgY3R4ID0gY2hhdC5idWlsZF9jb250ZXh0KCJtZXRob2RzPyIsIHRvcGljX2hpbnQ9IlJBRyIpCgogICAgICAgIGFzc2VydCBjdHgudG9waWMgPT0gIlJBRyIKCgpjbGFzcyBUZXN0UHJvbXB0QnVpbGRpbmc6CiAgICAiIiJUZXN0IHByb21wdCBidWlsZGluZy4iIiIKCiAgICBAcHl0ZXN0LmZpeHR1cmUKICAgIGRlZiBjaGF0KHNlbGYpOgogICAgICAgIHJldHVybiBSZXNlYXJjaENoYXQoKQoKICAgIEBweXRlc3QuZml4dHVyZQogICAgZGVmIHNhbXBsZV9jb250ZXh0KHNlbGYpOgogICAgICAgICIiIkNyZWF0ZSBzYW1wbGUgcmVzZWFyY2ggY29udGV4dC4iIiIKICAgICAgICBwYXBlciA9IFBhcGVyQ29udGV4dCgKICAgICAgICAgICAgdWlkPSJwMSIsCiAgICAgICAgICAgIHRpdGxlPSJUZXN0IFBhcGVyIiwKICAgICAgICAgICAgYWJzdHJhY3Q9IlRlc3QgYWJzdHJhY3QiLAogICAgICAgICAgICBhdXRob3JzPVsiQXV0aG9yIEEiXSwKICAgICAgICAgICAgeWVhcj0yMDIzLAogICAgICAgICkKICAgICAgICByZXR1cm4gUmVzZWFyY2hDb250ZXh0KAogICAgICAgICAgICB0b3BpYz0iUkFHIiwKICAgICAgICAgICAgcGFwZXJzPVtwYXBlcl0sCiAgICAgICAgICAgIGluc2lnaHRzPVtdLAogICAgICAgICkKCiAgICBkZWYgdGVzdF9zeXN0ZW1fcHJvbXB0X2luY2x1ZGVzX3RvcGljKHNlbGYsIGNoYXQsIHNhbXBsZV9jb250ZXh0KToKICAgICAgICAiIiJUZXN0IHN5c3RlbSBwcm9tcHQgaW5jbHVkZXMgdG9waWMuIiIiCiAgICAgICAgcHJvbXB0ID0gY2hhdC5fYnVpbGRfc3lzdGVtX3Byb21wdChzYW1wbGVfY29udGV4dCkKICAgICAgICBhc3NlcnQgIlJBRyIgaW4gcHJvbXB0CgogICAgZGVmIHRlc3Rfc3lzdGVtX3Byb21wdF9pbmNsdWRlc19wYXBlcnMoc2VsZiwgY2hhdCwgc2FtcGxlX2NvbnRleHQpOgogICAgICAgICIiIlRlc3Qgc3lzdGVtIHByb21wdCBpbmNsdWRlcyBwYXBlcnMuIiIiCiAgICAgICAgcHJvbXB0ID0gY2hhdC5fYnVpbGRfc3lzdGVtX3Byb21wdChzYW1wbGVfY29udGV4dCkKICAgICAgICBhc3NlcnQgIlRlc3QgUGFwZXIiIGluIHByb21wdAoKICAgIGRlZiB0ZXN0X3VzZXJfcHJvbXB0X2ZhY3R1YWwoc2VsZiwgY2hhdCwgc2FtcGxlX2NvbnRleHQpOgogICAgICAgICIiIlRlc3QgZmFjdHVhbCB1c2VyIHByb21wdC4iIiIKICAgICAgICBwcm9tcHQgPSBjaGF0Ll9idWlsZF91c2VyX3Byb21wdCgKICAgICAgICAgICAgIldoYXQgaXMgUkFHPyIsCiAgICAgICAgICAgIHNhbXBsZV9jb250ZXh0LAogICAgICAgICAgICBRdWVyeVR5cGUuRkFDVFVBTCwKICAgICAgICApCiAgICAgICAgYXNzZXJ0ICJXaGF0IGlzIFJBRyIgaW4gcHJvbXB0CgogICAgZGVmIHRlc3RfdXNlcl9wcm9tcHRfZGlzY292ZXJ5KHNlbGYsIGNoYXQsIHNhbXBsZV9jb250ZXh0KToKICAgICAgICAiIiJUZXN0IGRpc2NvdmVyeSB1c2VyIHByb21wdC4iIiIKICAgICAgICBwcm9tcHQgPSBjaGF0Ll9idWlsZF91c2VyX3Byb21wdCgKICAgICAgICAgICAgIldoYXQgYXJlIHRoZSBnYXBzPyIsCiAgICAgICAgICAgIHNhbXBsZV9jb250ZXh0LAogICAgICAgICAgICBRdWVyeVR5cGUuRElTQ09WRVJZLAogICAgICAgICkKICAgICAgICBhc3NlcnQgImdhcCIgaW4gcHJvbXB0Lmxvd2VyKCkKCgpjbGFzcyBUZXN0Q2hhdEhpc3Rvcnk6CiAgICAiIiJUZXN0IGNoYXQgaGlzdG9yeSBtYW5hZ2VtZW50LiIiIgoKICAgIEBweXRlc3QuZml4dHVyZQogICAgZGVmIGNoYXQoc2VsZik6CiAgICAgICAgcmV0dXJuIFJlc2VhcmNoQ2hhdCgpCgogICAgQHB5dGVzdC5maXh0dXJlCiAgICBkZWYgbW9ja19sbG1fcmVzcG9uc2Uoc2VsZik6CiAgICAgICAgIiIiTW9jayBMTE0gcmVzcG9uc2UuIiIiCiAgICAgICAgd2l0aCBwYXRjaCgibGxtLmNsaWVudC5jYWxsX2xsbV9jaGF0X2NvbXBsZXRpb25zIikgYXMgbW9jazoKICAgICAgICAgICAgbW9jay5yZXR1cm5fdmFsdWUgPSAiVGVzdCByZXNwb25zZSIKICAgICAgICAgICAgeWllbGQgbW9jawoKICAgIGRlZiB0ZXN0X2dldF9oaXN0b3J5X2VtcHR5KHNlbGYsIGNoYXQpOgogICAgICAgICIiIlRlc3QgZW1wdHkgaGlzdG9yeS4iIiIKICAgICAgICBhc3NlcnQgY2hhdC5nZXRfaGlzdG9yeSgpID09IFtdCgogICAgZGVmIHRlc3RfY2xlYXJfaGlzdG9yeShzZWxmLCBjaGF0KToKICAgICAgICAiIiJUZXN0IGNsZWFyaW5nIGhpc3RvcnkuIiIiCiAgICAgICAgY2hhdC5fY2hhdF9oaXN0b3J5LmFwcGVuZCh7InJvbGUiOiAidXNlciIsICJjb250ZW50IjogInRlc3QifSkKICAgICAgICBjaGF0LmNsZWFyX2hpc3RvcnkoKQogICAgICAgIGFzc2VydCBjaGF0LmdldF9oaXN0b3J5KCkgPT0gW10KCiAgICBkZWYgdGVzdF9oaXN0b3J5X2FmdGVyX2NoYXQoc2VsZiwgY2hhdCwgbW9ja19sbG1fcmVzcG9uc2UpOgogICAgICAgICIiIlRlc3QgaGlzdG9yeSBhZnRlciBjaGF0LiIiIgogICAgICAgIGNoYXQuY2hhdCgiV2hhdCBpcyBSQUc/IikKICAgICAgICBoaXN0b3J5ID0gY2hhdC5nZXRfaGlzdG9yeSgpCgogICAgICAgIGFzc2VydCBsZW4oaGlzdG9yeSkgPT0gMgogICAgICAgIGFzc2VydCBoaXN0b3J5WzBdWyJyb2xlIl0gPT0gInVzZXIiCiAgICAgICAgYXNzZXJ0IGhpc3RvcnlbMV1bInJvbGUiXSA9PSAiYXNzaXN0YW50IgoKCmNsYXNzIFRlc3RSZXNlYXJjaENoYXRJbnRlZ3JhdGlvbjoKICAgICIiIkludGVncmF0aW9uIHRlc3RzIGZvciBSZXNlYXJjaENoYXQuIiIiCgogICAgQHB5dGVzdC5maXh0dXJlCiAgICBkZWYgbW9ja19kYihzZWxmKToKICAgICAgICAiIiJDcmVhdGUgbW9jayBkYXRhYmFzZS4iIiIKICAgICAgICBkYiA9IE1hZ2ljTW9jaygpCiAgICAgICAgbW9ja19wYXBlciA9IE1hZ2ljTW9jaygpCiAgICAgICAgbW9ja19wYXBlci51aWQgPSAicDEiCiAgICAgICAgbW9ja19wYXBlci50aXRsZSA9ICJSQUcgUGFwZXIiCiAgICAgICAgbW9ja19wYXBlci5hYnN0cmFjdCA9ICJSZXRyaWV2YWwgYXVnbWVudGVkIGdlbmVyYXRpb24iCiAgICAgICAgbW9ja19wYXBlci5hdXRob3JzID0gIkF1dGhvciBBLCBBdXRob3IgQiIKICAgICAgICBtb2NrX3BhcGVyLnllYXIgPSAyMDIzCiAgICAgICAgZGIuc2VhcmNoX3BhcGVycy5yZXR1cm5fdmFsdWUgPSAoW21vY2tfcGFwZXJdLCBOb25lKQogICAgICAgIHJldHVybiBkYgoKICAgIGRlZiB0ZXN0X2NoYXRfcmV0dXJuc19yZXNwb25zZShzZWxmLCBtb2NrX2RiKToKICAgICAgICAiIiJUZXN0IGNoYXQgcmV0dXJucyBhIHJlc3BvbnNlLiIiIgogICAgICAgIGNoYXQgPSBSZXNlYXJjaENoYXQoZGI9bW9ja19kYikKCiAgICAgICAgd2l0aCBwYXRjaCgibGxtLmNsaWVudC5jYWxsX2xsbV9jaGF0X2NvbXBsZXRpb25zIikgYXMgbW9jazoKICAgICAgICAgICAgbW9jay5yZXR1cm5fdmFsdWUgPSAiVGVzdCByZXNwb25zZSIKICAgICAgICAgICAgcmVzdWx0ID0gY2hhdC5jaGF0KCJXaGF0IGlzIFJBRz8iKQoKICAgICAgICBhc3NlcnQgcmVzdWx0ID09ICJUZXN0IHJlc3BvbnNlIgoKICAgIGRlZiB0ZXN0X2NoYXRfY2xhc3NpZmllc19xdWVyeShzZWxmLCBtb2NrX2RiKToKICAgICAgICAiIiJUZXN0IGNoYXQgY2xhc3NpZmllcyBxdWVyeSBjb3JyZWN0bHkuIiIiCiAgICAgICAgY2hhdCA9IFJlc2VhcmNoQ2hhdChkYj1tb2NrX2RiKQoKICAgICAgICB3aXRoIHBhdGNoKCJsbG0uY2xpZW50LmNhbGxfbGxtX2NoYXRfY29tcGxldGlvbnMiKToKICAgICAgICAgICAgIyBDb21wYXJpc29uIHF1ZXJ5CiAgICAgICAgICAgIGNoYXQuY2hhdCgiQ29tcGFyZSBSQUcgYW5kIGZpbmUtdHVuaW5nIikKICAgICAgICAgICAgYXNzZXJ0IGNoYXQuY2xhc3NpZnlfcXVlcnkoIkNvbXBhcmUgUkFHIGFuZCBmaW5lLXR1bmluZyIpID09IFF1ZXJ5VHlwZS5DT01QQVJJU09OCgogICAgICAgICAgICAjIERpc2NvdmVyeSBxdWVyeQogICAgICAgICAgICBjaGF0LmNoYXQoIldoYXQgYXJlIHRoZSByZXNlYXJjaCBnYXBzPyIpCiAgICAgICAgICAgIGFzc2VydCBjaGF0LmNsYXNzaWZ5X3F1ZXJ5KCJXaGF0IGFyZSB0aGUgcmVzZWFyY2ggZ2Fwcz8iKSA9PSBRdWVyeVR5cGUuRElTQ09WRVJZCg==
+"""Tests for research chat."""
+
+import pytest
+from unittest.mock import MagicMock, patch
+
+from llm.research_chat import (
+    ResearchChat,
+    ResearchContext,
+    PaperContext,
+    QueryType,
+)
+
+
+class TestQueryClassification:
+    """Test query classification."""
+
+    @pytest.fixture
+    def chat(self):
+        return ResearchChat()
+
+    def test_factual_query(self, chat):
+        """Test factual query classification."""
+        q = "RAG 的主要方法有哪些？"
+        assert chat.classify_query(q) == QueryType.FACTUAL
+
+    def test_comparison_query(self, chat):
+        """Test comparison query classification."""
+        q = "Self-RAG 和 Corrective-RAG 有什么区别？"
+        assert chat.classify_query(q) == QueryType.COMPARISON
+
+    def test_discovery_query(self, chat):
+        """Test discovery query classification."""
+        q = "RAG 还有什么未解决的问题？"
+        assert chat.classify_query(q) == QueryType.DISCOVERY
+
+    def test_inferential_query(self, chat):
+        """Test inferential query classification."""
+        q = "为什么检索增强能提高生成质量？"
+        assert chat.classify_query(q) == QueryType.INFERENTIAL
+
+    def test_english_queries(self, chat):
+        """Test English query classification."""
+        assert chat.classify_query("What is RAG?") == QueryType.FACTUAL
+        assert chat.classify_query("Compare RAG and fine-tuning") == QueryType.COMPARISON
+
+
+class TestTopicExtraction:
+    """Test topic extraction from queries."""
+
+    @pytest.fixture
+    def chat(self):
+        return ResearchChat()
+
+    def test_extract_chinese_topic(self, chat):
+        """Test Chinese topic extraction."""
+        topic = chat._extract_topic("RAG 在长文档场景的主要挑战是什么？")
+        assert "RAG" in topic
+        # Chinese characters without spaces might stay together
+
+    def test_extract_english_topic(self, chat):
+        """Test English topic extraction."""
+        topic = chat._extract_topic("What are the methods for RAG?")
+        assert "RAG" in topic
+
+    def test_extract_empty_query(self, chat):
+        """Test empty query handling."""
+        topic = chat._extract_topic("")
+        assert len(topic) <= 20
+
+
+class TestContextBuilding:
+    """Test research context building."""
+
+    @pytest.fixture
+    def mock_db(self):
+        """Create mock database."""
+        db = MagicMock()
+        mock_paper = MagicMock()
+        mock_paper.uid = "p1"
+        mock_paper.title = "Test Paper"
+        mock_paper.abstract = "Test abstract"
+        mock_paper.authors = "Author A"
+        mock_paper.year = 2023
+        db.search_papers.return_value = ([mock_paper], None)
+        return db
+
+    @pytest.fixture
+    def mock_insight_manager(self):
+        """Create mock insight manager."""
+        manager = MagicMock()
+        manager.search_cards.return_value = []
+        return manager
+
+    def test_build_context_with_db(self, mock_db):
+        """Test context building with database."""
+        chat = ResearchChat(db=mock_db)
+        ctx = chat.build_context("RAG methods")
+
+        assert ctx.topic is not None
+        assert len(ctx.papers) == 1
+        assert ctx.papers[0].title == "Test Paper"
+
+    def test_build_context_without_db(self):
+        """Test context building without database."""
+        chat = ResearchChat(db=None)
+        ctx = chat.build_context("RAG methods")
+
+        assert ctx.papers == []
+
+    def test_build_context_with_insights(self, mock_db, mock_insight_manager):
+        """Test context building with insights."""
+        mock_insight = MagicMock()
+        mock_insight.content = "Key finding"
+        mock_insight_manager.search_cards.return_value = [mock_insight]
+
+        chat = ResearchChat(db=mock_db, insight_manager=mock_insight_manager)
+        ctx = chat.build_context("RAG")
+
+        assert len(ctx.insights) == 1
+
+    def test_build_context_with_hint(self, mock_db):
+        """Test context building with topic hint."""
+        chat = ResearchChat(db=mock_db)
+        ctx = chat.build_context("methods?", topic_hint="RAG")
+
+        assert ctx.topic == "RAG"
+
+
+class TestPromptBuilding:
+    """Test prompt building."""
+
+    @pytest.fixture
+    def chat(self):
+        return ResearchChat()
+
+    @pytest.fixture
+    def sample_context(self):
+        """Create sample research context."""
+        paper = PaperContext(
+            uid="p1",
+            title="Test Paper",
+            abstract="Test abstract",
+            authors=["Author A"],
+            year=2023,
+        )
+        return ResearchContext(
+            topic="RAG",
+            papers=[paper],
+            insights=[],
+        )
+
+    def test_system_prompt_includes_topic(self, chat, sample_context):
+        """Test system prompt includes topic."""
+        prompt = chat._build_system_prompt(sample_context)
+        assert "RAG" in prompt
+
+    def test_system_prompt_includes_papers(self, chat, sample_context):
+        """Test system prompt includes papers."""
+        prompt = chat._build_system_prompt(sample_context)
+        assert "Test Paper" in prompt
+
+    def test_user_prompt_factual(self, chat, sample_context):
+        """Test factual user prompt."""
+        prompt = chat._build_user_prompt(
+            "What is RAG?",
+            sample_context,
+            QueryType.FACTUAL,
+        )
+        assert "What is RAG" in prompt
+
+    def test_user_prompt_discovery(self, chat, sample_context):
+        """Test discovery user prompt."""
+        prompt = chat._build_user_prompt(
+            "What are the gaps?",
+            sample_context,
+            QueryType.DISCOVERY,
+        )
+        assert "gap" in prompt.lower()
+
+
+class TestChatHistory:
+    """Test chat history management."""
+
+    @pytest.fixture
+    def chat(self):
+        return ResearchChat()
+
+    @pytest.fixture
+    def mock_llm_response(self):
+        """Mock LLM response."""
+        with patch("llm.client.call_llm_chat_completions") as mock:
+            mock.return_value = "Test response"
+            yield mock
+
+    def test_get_history_empty(self, chat):
+        """Test empty history."""
+        assert chat.get_history() == []
+
+    def test_clear_history(self, chat):
+        """Test clearing history."""
+        chat._chat_history.append({"role": "user", "content": "test"})
+        chat.clear_history()
+        assert chat.get_history() == []
+
+    def test_history_after_chat(self, chat, mock_llm_response):
+        """Test history after chat."""
+        chat.chat("What is RAG?")
+        history = chat.get_history()
+
+        assert len(history) == 2
+        assert history[0]["role"] == "user"
+        assert history[1]["role"] == "assistant"
+
+
+class TestResearchChatIntegration:
+    """Integration tests for ResearchChat."""
+
+    @pytest.fixture
+    def mock_db(self):
+        """Create mock database."""
+        db = MagicMock()
+        mock_paper = MagicMock()
+        mock_paper.uid = "p1"
+        mock_paper.title = "RAG Paper"
+        mock_paper.abstract = "Retrieval augmented generation"
+        mock_paper.authors = "Author A, Author B"
+        mock_paper.year = 2023
+        db.search_papers.return_value = ([mock_paper], None)
+        return db
+
+    def test_chat_returns_response(self, mock_db):
+        """Test chat returns a response."""
+        chat = ResearchChat(db=mock_db)
+
+        with patch("llm.client.call_llm_chat_completions") as mock:
+            mock.return_value = "Test response"
+            result = chat.chat("What is RAG?")
+
+        assert result == "Test response"
+
+    def test_chat_classifies_query(self, mock_db):
+        """Test chat classifies query correctly."""
+        chat = ResearchChat(db=mock_db)
+
+        with patch("llm.client.call_llm_chat_completions"):
+            # Comparison query
+            chat.chat("Compare RAG and fine-tuning")
+            assert chat.classify_query("Compare RAG and fine-tuning") == QueryType.COMPARISON
+
+            # Discovery query
+            chat.chat("What are the research gaps?")
+            assert chat.classify_query("What are the research gaps?") == QueryType.DISCOVERY

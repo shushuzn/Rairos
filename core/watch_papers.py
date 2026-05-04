@@ -1,1 +1,121 @@
-IiIiV2F0Y2ggcGFwZXJzLmpzb24gZm9yIGNoYW5nZXMgYW5kIHRyaWdnZXIgaW5jcmVtZW50YWwgS0cgcmVidWlsZHMuCgpVc2VzIGEgc2ltcGxlIGZpbGUtaGFzaCBwb2xsaW5nIGxvb3Ag4oCUIG5vIGV4dGVybmFsIGRlcGVuZGVuY2llcywgY3Jvc3MtcGxhdGZvcm0uCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGhhc2hsaWIKaW1wb3J0IHNpZ25hbAppbXBvcnQgc3lzCmltcG9ydCB0aW1lCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgQ2FsbGFibGUsIE9wdGlvbmFsCgojIOKUgOKUgCBTaWduYWwgaGFuZGxpbmcg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgoKY2xhc3MgV2F0Y2hlcjoKICAgICIiIldhdGNoIGEgc2luZ2xlIGZpbGUgZm9yIGNvbnRlbnQgY2hhbmdlcywgY2FsbGluZyBhIGNhbGxiYWNrIG9uIGVhY2ggY2hhbmdlLiIiIgoKICAgIGRlZiBfX2luaXRfXygKICAgICAgICBzZWxmLAogICAgICAgIHBhdGg6IHN0ciB8IFBhdGgsCiAgICAgICAgaW50ZXJ2YWw6IGZsb2F0ID0gNS4wLAogICAgICAgIG9uX2NoYW5nZTogT3B0aW9uYWxbQ2FsbGFibGVdID0gTm9uZSwKICAgICk6CiAgICAgICAgc2VsZi5wYXRoID0gUGF0aChwYXRoKQogICAgICAgIHNlbGYuaW50ZXJ2YWwgPSBpbnRlcnZhbAogICAgICAgIHNlbGYub25fY2hhbmdlID0gb25fY2hhbmdlCiAgICAgICAgc2VsZi5fcnVubmluZyA9IEZhbHNlCiAgICAgICAgc2VsZi5fbGFzdF9oYXNoOiBPcHRpb25hbFtzdHJdID0gTm9uZQoKICAgIGRlZiBfaGFzaChzZWxmKSAtPiBPcHRpb25hbFtzdHJdOgogICAgICAgIGlmIG5vdCBzZWxmLnBhdGguZXhpc3RzKCk6CiAgICAgICAgICAgIHJldHVybiBOb25lCiAgICAgICAgcmV0dXJuIGhhc2hsaWIubWQ1KHNlbGYucGF0aC5yZWFkX2J5dGVzKCkpLmhleGRpZ2VzdCgpCgogICAgZGVmIF9kZXRlY3RfY2hhbmdlKHNlbGYpIC0+IGJvb2w6CiAgICAgICAgY3VycmVudCA9IHNlbGYuX2hhc2goKQogICAgICAgIGlmIGN1cnJlbnQgaXMgTm9uZToKICAgICAgICAgICAgcmV0dXJuIEZhbHNlCiAgICAgICAgaWYgc2VsZi5fbGFzdF9oYXNoIGlzIE5vbmU6CiAgICAgICAgICAgIHNlbGYuX2xhc3RfaGFzaCA9IGN1cnJlbnQKICAgICAgICAgICAgcmV0dXJuIEZhbHNlICAjIGZpcnN0IHBvbGwg4oCUIGRvbid0IGZpcmUsIGp1c3QgcmVjb3JkCiAgICAgICAgaWYgY3VycmVudCAhPSBzZWxmLl9sYXN0X2hhc2g6CiAgICAgICAgICAgIHNlbGYuX2xhc3RfaGFzaCA9IGN1cnJlbnQKICAgICAgICAgICAgcmV0dXJuIFRydWUKICAgICAgICByZXR1cm4gRmFsc2UKCiAgICBkZWYgc3RhcnQoc2VsZik6CiAgICAgICAgIiIiU3RhcnQgdGhlIHdhdGNoIGxvb3AuIEJsb2NrcyB1bnRpbCBzdG9wKCkgaXMgY2FsbGVkLiIiIgogICAgICAgIHNlbGYuX3J1bm5pbmcgPSBUcnVlCiAgICAgICAgc2VsZi5fbGFzdF9oYXNoID0gc2VsZi5faGFzaCgpICAjIGluaXRpYWxpc2UgaGFzaCBpbW1lZGlhdGVseQogICAgICAgIHByaW50KGYiW3dhdGNoXSBNb25pdG9yaW5nIHtzZWxmLnBhdGh9IChwb2xsIGV2ZXJ5IHtzZWxmLmludGVydmFsfXMpIikKCiAgICAgICAgd2hpbGUgc2VsZi5fcnVubmluZzoKICAgICAgICAgICAgdGltZS5zbGVlcChzZWxmLmludGVydmFsKQogICAgICAgICAgICBpZiBub3Qgc2VsZi5fcnVubmluZzoKICAgICAgICAgICAgICAgIGJyZWFrCiAgICAgICAgICAgIGlmIHNlbGYuX2RldGVjdF9jaGFuZ2UoKToKICAgICAgICAgICAgICAgIHByaW50KGYiW3dhdGNoXSBDaGFuZ2UgZGV0ZWN0ZWQgaW4ge3NlbGYucGF0aH0iKQogICAgICAgICAgICAgICAgaWYgc2VsZi5vbl9jaGFuZ2U6CiAgICAgICAgICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgICAgICAgICBzZWxmLm9uX2NoYW5nZShzdHIoc2VsZi5wYXRoKSkKICAgICAgICAgICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGV4YzogICMgbm9xYTogQkxFMDAxCiAgICAgICAgICAgICAgICAgICAgICAgIHByaW50KGYiW3dhdGNoXSBDYWxsYmFjayBlcnJvcjoge2V4Y30iKQoKICAgIGRlZiBzdG9wKHNlbGYpOgogICAgICAgICIiIlN0b3AgdGhlIHdhdGNoIGxvb3AuIiIiCiAgICAgICAgc2VsZi5fcnVubmluZyA9IEZhbHNlCgoKIyDilIDilIAgQ0xJIGVudHJ5IHBvaW50IOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmRlZiB3YXRjaF9hbmRfcmVidWlsZCgKICAgIHBhcGVyc19qc29uOiBPcHRpb25hbFtzdHJdID0gTm9uZSwKICAgIGludGVydmFsOiBmbG9hdCA9IDUuMCwKICAgIGluY3JlbWVudGFsOiBib29sID0gVHJ1ZSwKKToKICAgICIiIldhdGNoIHBhcGVycy5qc29uIGFuZCBydW4gaW5jcmVtZW50YWwgS0cgcmVidWlsZCBvbiBlYWNoIGNoYW5nZS4iIiIKICAgIGZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAoKICAgIGlmIHBhcGVyc19qc29uIGlzIE5vbmU6CiAgICAgICAgY2FuZGlkYXRlcyA9IFtQYXRoKCJwYXBlcnMuanNvbiIpLCBQYXRoKCJkYXRhL3BhcGVycy5qc29uIildCiAgICAgICAgZm9yIGMgaW4gY2FuZGlkYXRlczoKICAgICAgICAgICAgaWYgYy5leGlzdHMoKToKICAgICAgICAgICAgICAgIHBhcGVyc19qc29uID0gc3RyKGMpCiAgICAgICAgICAgICAgICBicmVhawogICAgICAgIGlmIHBhcGVyc19qc29uIGlzIE5vbmU6CiAgICAgICAgICAgIHByaW50KCJwYXBlcnMuanNvbiBub3QgZm91bmQuIFVzZSAtLXBhcGVycy1qc29uIHRvIHNwZWNpZnkuIikKICAgICAgICAgICAgc3lzLmV4aXQoMSkKCiAgICBmcm9tIGtnLm1hbmFnZXIgaW1wb3J0IEtHTWFuYWdlcgogICAgZnJvbSBrZy5pbnRlZ3JhdGlvbiBpbXBvcnQgS0dJbnRlZ3JhdGlvbgoKICAgIGtnID0gS0dNYW5hZ2VyKCkKICAgIGludGVnID0gS0dJbnRlZ3JhdGlvbihrZykKCiAgICBkZWYgb25fY2hhbmdlKHBhdGg6IHN0cik6CiAgICAgICAgcHJpbnQoZiJbd2F0Y2hdIFJlYnVpbGRpbmcgS0cgZnJvbSB7cGF0aH0gLi4uIikKICAgICAgICBpbnRlZy5yZWJ1aWxkX2Zyb21fcGFwZXJzX2pzb24ocGF0aCwgaW5jcmVtZW50YWw9aW5jcmVtZW50YWwpCiAgICAgICAgc3RhdHMgPSBrZy5zdGF0cygpCiAgICAgICAgcHJpbnQoZiJbd2F0Y2hdIERvbmU6IHtzdGF0c1sndG90YWxfbm9kZXMnXX0gbm9kZXMsIHtzdGF0c1sndG90YWxfZWRnZXMnXX0gZWRnZXMuIikKCiAgICB3YXRjaGVyID0gV2F0Y2hlcihwYXBlcnNfanNvbiwgaW50ZXJ2YWw9aW50ZXJ2YWwsIG9uX2NoYW5nZT1vbl9jaGFuZ2UpCgogICAgIyBIYW5kbGUgQ3RybCtDIGdyYWNlZnVsbHkKICAgIGRlZiBzaWduYWxfaGFuZGxlcihzaWcsIGZyYW1lKToKICAgICAgICBwcmludCgiXG5bd2F0Y2hdIFN0b3BwaW5nLi4uIikKICAgICAgICB3YXRjaGVyLnN0b3AoKQogICAgICAgIHN5cy5leGl0KDApCgogICAgc2lnbmFsLnNpZ25hbChzaWduYWwuU0lHSU5ULCBzaWduYWxfaGFuZGxlcikKICAgIHRyeToKICAgICAgICBzaWduYWwuc2lnbmFsKHNpZ25hbC5TSUdURVJNLCBzaWduYWxfaGFuZGxlcikKICAgIGV4Y2VwdCAoQXR0cmlidXRlRXJyb3IsIFZhbHVlRXJyb3IpOgogICAgICAgICMgU0lHVEVSTSBub3QgYXZhaWxhYmxlIG9uIFdpbmRvd3MKICAgICAgICBwYXNzCgogICAgd2F0Y2hlci5zdGFydCgpCg==
+"""Watch papers.json for changes and trigger incremental KG rebuilds.
+
+Uses a simple file-hash polling loop — no external dependencies, cross-platform.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import signal
+import sys
+import time
+from pathlib import Path
+from typing import Callable, Optional
+
+# ── Signal handling ────────────────────────────────────────────────────────────
+
+
+class Watcher:
+    """Watch a single file for content changes, calling a callback on each change."""
+
+    def __init__(
+        self,
+        path: str | Path,
+        interval: float = 5.0,
+        on_change: Optional[Callable] = None,
+    ):
+        self.path = Path(path)
+        self.interval = interval
+        self.on_change = on_change
+        self._running = False
+        self._last_hash: Optional[str] = None
+
+    def _hash(self) -> Optional[str]:
+        if not self.path.exists():
+            return None
+        return hashlib.md5(self.path.read_bytes()).hexdigest()
+
+    def _detect_change(self) -> bool:
+        current = self._hash()
+        if current is None:
+            return False
+        if self._last_hash is None:
+            self._last_hash = current
+            return False  # first poll — don't fire, just record
+        if current != self._last_hash:
+            self._last_hash = current
+            return True
+        return False
+
+    def start(self):
+        """Start the watch loop. Blocks until stop() is called."""
+        self._running = True
+        self._last_hash = self._hash()  # initialise hash immediately
+        print(f"[watch] Monitoring {self.path} (poll every {self.interval}s)")
+
+        while self._running:
+            time.sleep(self.interval)
+            if not self._running:
+                break
+            if self._detect_change():
+                print(f"[watch] Change detected in {self.path}")
+                if self.on_change:
+                    try:
+                        self.on_change(str(self.path))
+                    except Exception as exc:  # noqa: BLE001
+                        print(f"[watch] Callback error: {exc}")
+
+    def stop(self):
+        """Stop the watch loop."""
+        self._running = False
+
+
+# ── CLI entry point ─────────────────────────────────────────────────────────
+
+
+def watch_and_rebuild(
+    papers_json: Optional[str] = None,
+    interval: float = 5.0,
+    incremental: bool = True,
+):
+    """Watch papers.json and run incremental KG rebuild on each change."""
+    from pathlib import Path
+
+    if papers_json is None:
+        candidates = [Path("papers.json"), Path("data/papers.json")]
+        for c in candidates:
+            if c.exists():
+                papers_json = str(c)
+                break
+        if papers_json is None:
+            print("papers.json not found. Use --papers-json to specify.")
+            sys.exit(1)
+
+    from kg.manager import KGManager
+    from kg.integration import KGIntegration
+
+    kg = KGManager()
+    integ = KGIntegration(kg)
+
+    def on_change(path: str):
+        print(f"[watch] Rebuilding KG from {path} ...")
+        integ.rebuild_from_papers_json(path, incremental=incremental)
+        stats = kg.stats()
+        print(f"[watch] Done: {stats['total_nodes']} nodes, {stats['total_edges']} edges.")
+
+    watcher = Watcher(papers_json, interval=interval, on_change=on_change)
+
+    # Handle Ctrl+C gracefully
+    def signal_handler(sig, frame):
+        print("\n[watch] Stopping...")
+        watcher.stop()
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+    try:
+        signal.signal(signal.SIGTERM, signal_handler)
+    except (AttributeError, ValueError):
+        # SIGTERM not available on Windows
+        pass
+
+    watcher.start()

@@ -1,1 +1,95 @@
-IiIiVGVzdHMgZm9yIGNvcmUvd29ya2Zsb3cucHkuIiIiCgppbXBvcnQgc3lzCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHVuaXR0ZXN0Lm1vY2sgaW1wb3J0IE1hZ2ljTW9jawoKc3lzLnBhdGguaW5zZXJ0KDAsIHN0cihQYXRoKF9fZmlsZV9fKS5wYXJlbnQucGFyZW50KSkKZnJvbSBjb3JlLndvcmtmbG93IGltcG9ydCBXb3JrZmxvdywgcmVnaXN0ZXJfd29ya2Zsb3csIGdldF93b3JrZmxvdwoKCmNsYXNzIFRlc3RXb3JrZmxvdzoKICAgICIiIlRlc3RzIGZvciBXb3JrZmxvdyBjbGFzcy4iIiIKCiAgICBkZWYgdGVzdF9pbml0KHNlbGYpOgogICAgICAgIHdmID0gV29ya2Zsb3coInRlc3Rfd29ya2Zsb3ciKQogICAgICAgIGFzc2VydCB3Zi5uYW1lID09ICJ0ZXN0X3dvcmtmbG93IgogICAgICAgIGFzc2VydCB3Zi5zdGVwcyA9PSBbXQoKICAgIGRlZiB0ZXN0X2FkZF9zdGVwKHNlbGYpOgogICAgICAgIHdmID0gV29ya2Zsb3coInRlc3QiKQogICAgICAgIG1vY2tfZm4gPSBNYWdpY01vY2soKQogICAgICAgIHdmLmFkZF9zdGVwKG1vY2tfZm4sICJzdGVwIDEiKQogICAgICAgIGFzc2VydCBsZW4od2Yuc3RlcHMpID09IDEKICAgICAgICBhc3NlcnQgd2Yuc3RlcHNbMF1bMF0gaXMgbW9ja19mbgogICAgICAgIGFzc2VydCB3Zi5zdGVwc1swXVsxXSA9PSAic3RlcCAxIgoKICAgIGRlZiB0ZXN0X2FkZF9tdWx0aXBsZV9zdGVwcyhzZWxmKToKICAgICAgICB3ZiA9IFdvcmtmbG93KCJ0ZXN0IikKICAgICAgICBmMSwgZjIsIGYzID0gTWFnaWNNb2NrKCksIE1hZ2ljTW9jaygpLCBNYWdpY01vY2soKQogICAgICAgIHdmLmFkZF9zdGVwKGYxLCAiZmlyc3QiKQogICAgICAgIHdmLmFkZF9zdGVwKGYyLCAic2Vjb25kIikKICAgICAgICB3Zi5hZGRfc3RlcChmMywgInRoaXJkIikKICAgICAgICBhc3NlcnQgbGVuKHdmLnN0ZXBzKSA9PSAzCgogICAgZGVmIHRlc3RfcnVuX2NhbGxzX2FsbF9zdGVwcyhzZWxmLCBjYXBzeXMpOgogICAgICAgIHdmID0gV29ya2Zsb3coInRlc3QiKQogICAgICAgIGYxLCBmMiA9IE1hZ2ljTW9jaygpLCBNYWdpY01vY2soKQogICAgICAgIHdmLmFkZF9zdGVwKGYxLCAic3RlcCBvbmUiKQogICAgICAgIHdmLmFkZF9zdGVwKGYyLCAic3RlcCB0d28iKQogICAgICAgIHdmLnJ1bigpCiAgICAgICAgZjEuYXNzZXJ0X2NhbGxlZF9vbmNlKCkKICAgICAgICBmMi5hc3NlcnRfY2FsbGVkX29uY2UoKQogICAgICAgIGNhcHR1cmVkID0gY2Fwc3lzLnJlYWRvdXRlcnIoKQogICAgICAgIGFzc2VydCAic3RlcCBvbmUiIGluIGNhcHR1cmVkLm91dAogICAgICAgIGFzc2VydCAic3RlcCB0d28iIGluIGNhcHR1cmVkLm91dAoKICAgIGRlZiB0ZXN0X3J1bl9zZXF1ZW50aWFsKHNlbGYsIGNhcHN5cyk6CiAgICAgICAgd2YgPSBXb3JrZmxvdygidGVzdCIpCiAgICAgICAgb3JkZXIgPSBbXQoKICAgICAgICBkZWYgbWFrZV9mdW5jKG5hbWUpOgogICAgICAgICAgICBkZWYgZm4oKToKICAgICAgICAgICAgICAgIG9yZGVyLmFwcGVuZChuYW1lKQoKICAgICAgICAgICAgcmV0dXJuIGZuCgogICAgICAgIHdmLmFkZF9zdGVwKG1ha2VfZnVuYygiQSIpLCAiQSBkZXNjIikKICAgICAgICB3Zi5hZGRfc3RlcChtYWtlX2Z1bmMoIkIiKSwgIkIgZGVzYyIpCiAgICAgICAgd2YucnVuKCkKICAgICAgICBhc3NlcnQgb3JkZXIgPT0gWyJBIiwgIkIiXQoKICAgIGRlZiB0ZXN0X3J1bl9lbXB0eShzZWxmLCBjYXBzeXMpOgogICAgICAgIHdmID0gV29ya2Zsb3coImVtcHR5IikKICAgICAgICB3Zi5ydW4oKQogICAgICAgICMgTm8gZXJyb3IsIG5vIG91dHB1dAogICAgICAgIGNhcHR1cmVkID0gY2Fwc3lzLnJlYWRvdXRlcnIoKQogICAgICAgIGFzc2VydCBjYXB0dXJlZC5vdXQgPT0gIiIKCgpjbGFzcyBUZXN0UmVnaXN0cnk6CiAgICAiIiJUZXN0cyBmb3Igd29ya2Zsb3cgcmVnaXN0cnkgZnVuY3Rpb25zLiIiIgoKICAgIGRlZiB0ZXN0X3JlZ2lzdGVyX2FuZF9nZXQoc2VsZik6CiAgICAgICAgd2YgPSBXb3JrZmxvdygibXlfd29ya2Zsb3ciKQogICAgICAgIHJlZ2lzdGVyX3dvcmtmbG93KCJteV93b3JrZmxvdyIsIHdmKQogICAgICAgIHJldHJpZXZlZCA9IGdldF93b3JrZmxvdygibXlfd29ya2Zsb3ciKQogICAgICAgIGFzc2VydCByZXRyaWV2ZWQgaXMgd2YKCiAgICBkZWYgdGVzdF9nZXRfbWlzc2luZ19yZXR1cm5zX25vbmUoc2VsZik6CiAgICAgICAgcmVzdWx0ID0gZ2V0X3dvcmtmbG93KCJub25leGlzdGVudF93b3JrZmxvd194eXoiKQogICAgICAgIGFzc2VydCByZXN1bHQgaXMgTm9uZQoKICAgIGRlZiB0ZXN0X3JlZ2lzdGVyX292ZXJ3cml0ZXMoc2VsZik6CiAgICAgICAgd2YxID0gV29ya2Zsb3coIncxIikKICAgICAgICB3ZjIgPSBXb3JrZmxvdygidzIiKQogICAgICAgIHJlZ2lzdGVyX3dvcmtmbG93KCJzaGFyZWRfbmFtZSIsIHdmMSkKICAgICAgICByZWdpc3Rlcl93b3JrZmxvdygic2hhcmVkX25hbWUiLCB3ZjIpCiAgICAgICAgYXNzZXJ0IGdldF93b3JrZmxvdygic2hhcmVkX25hbWUiKSBpcyB3ZjIKCiAgICBkZWYgdGVzdF9tdWx0aXBsZV93b3JrZmxvd3Moc2VsZik6CiAgICAgICAgd2ZzID0ge2Yid2Zfe2l9IjogV29ya2Zsb3coZiJ3b3JrZmxvd197aX0iKSBmb3IgaSBpbiByYW5nZSg1KX0KICAgICAgICBmb3IgbmFtZSwgd2YgaW4gd2ZzLml0ZW1zKCk6CiAgICAgICAgICAgIHJlZ2lzdGVyX3dvcmtmbG93KG5hbWUsIHdmKQogICAgICAgIGZvciBuYW1lLCB3ZiBpbiB3ZnMuaXRlbXMoKToKICAgICAgICAgICAgYXNzZXJ0IGdldF93b3JrZmxvdyhuYW1lKSBpcyB3Zgo=
+"""Tests for core/workflow.py."""
+
+import sys
+from pathlib import Path
+from unittest.mock import MagicMock
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from core.workflow import Workflow, register_workflow, get_workflow
+
+
+class TestWorkflow:
+    """Tests for Workflow class."""
+
+    def test_init(self):
+        wf = Workflow("test_workflow")
+        assert wf.name == "test_workflow"
+        assert wf.steps == []
+
+    def test_add_step(self):
+        wf = Workflow("test")
+        mock_fn = MagicMock()
+        wf.add_step(mock_fn, "step 1")
+        assert len(wf.steps) == 1
+        assert wf.steps[0][0] is mock_fn
+        assert wf.steps[0][1] == "step 1"
+
+    def test_add_multiple_steps(self):
+        wf = Workflow("test")
+        f1, f2, f3 = MagicMock(), MagicMock(), MagicMock()
+        wf.add_step(f1, "first")
+        wf.add_step(f2, "second")
+        wf.add_step(f3, "third")
+        assert len(wf.steps) == 3
+
+    def test_run_calls_all_steps(self, capsys):
+        wf = Workflow("test")
+        f1, f2 = MagicMock(), MagicMock()
+        wf.add_step(f1, "step one")
+        wf.add_step(f2, "step two")
+        wf.run()
+        f1.assert_called_once()
+        f2.assert_called_once()
+        captured = capsys.readouterr()
+        assert "step one" in captured.out
+        assert "step two" in captured.out
+
+    def test_run_sequential(self, capsys):
+        wf = Workflow("test")
+        order = []
+
+        def make_func(name):
+            def fn():
+                order.append(name)
+
+            return fn
+
+        wf.add_step(make_func("A"), "A desc")
+        wf.add_step(make_func("B"), "B desc")
+        wf.run()
+        assert order == ["A", "B"]
+
+    def test_run_empty(self, capsys):
+        wf = Workflow("empty")
+        wf.run()
+        # No error, no output
+        captured = capsys.readouterr()
+        assert captured.out == ""
+
+
+class TestRegistry:
+    """Tests for workflow registry functions."""
+
+    def test_register_and_get(self):
+        wf = Workflow("my_workflow")
+        register_workflow("my_workflow", wf)
+        retrieved = get_workflow("my_workflow")
+        assert retrieved is wf
+
+    def test_get_missing_returns_none(self):
+        result = get_workflow("nonexistent_workflow_xyz")
+        assert result is None
+
+    def test_register_overwrites(self):
+        wf1 = Workflow("w1")
+        wf2 = Workflow("w2")
+        register_workflow("shared_name", wf1)
+        register_workflow("shared_name", wf2)
+        assert get_workflow("shared_name") is wf2
+
+    def test_multiple_workflows(self):
+        wfs = {f"wf_{i}": Workflow(f"workflow_{i}") for i in range(5)}
+        for name, wf in wfs.items():
+            register_workflow(name, wf)
+        for name, wf in wfs.items():
+            assert get_workflow(name) is wf

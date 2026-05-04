@@ -1,1 +1,26 @@
-IiIiQy1Ob3RlIChjb25jZXB0IG5vdGUpIHJlbmRlcmVyLiIiIg0KDQppbXBvcnQgdGV4dHdyYXANCg0KDQpkZWYgcmVuZGVyX2Nub3RlKGNvbmNlcHQ6IHN0cikgLT4gc3RyOg0KICAgIGVzY2FwZWQgPSBjb25jZXB0LnJlcGxhY2UoIiMiLCAiXFwjIikNCiAgICBtZCA9IGYiIiJcDQp0eXBlOiBjb25jZXB0DQpzdGF0dXM6IGV2ZXJncmVlbg0KLS0tLS0tLS0tLS0tLS0tLS0NCg0KIyB7ZXNjYXBlZH0NCg0KIyMg5qC45b+D5a6a5LmJDQojIyDkuqfnlJ/og4zmma8NCiMjIOaKgOacr+acrOi0qA0KIyMg5bi46KeB5a6e546w6Lev5b6EDQojIyDkvJjlir8NCiMjIOWxgOmZkA0KIyMg5LiO5YW25LuW5oCd5oOz55qE5YWz57O7DQojIyDku6PooajorrrmlocNCiMjIOa8lOWMluaXtumXtOe6vw0KIyMg5pyq5p2l6LaL5Yq/DQojIyDlhbPogZTnrJTorrANCiIiIg0KICAgIHJldHVybiB0ZXh0d3JhcC5kZWRlbnQobWQpLnN0cmlwKCkgKyAiXG4iDQo=
+"""C-Note (concept note) renderer."""
+import textwrap
+
+
+def render_cnote(concept: str) -> str:
+    escaped = concept.replace("#", "\\#")
+    md = f"""\
+type: concept
+status: evergreen
+-----------------
+
+# {escaped}
+
+## 核心定义
+## 产生背景
+## 技术本质
+## 常见实现路径
+## 优势
+## 局限
+## 与其他思想的关系
+## 代表论文
+## 演化时间线
+## 未来趋势
+## 关联笔记
+"""
+    return textwrap.dedent(md).strip() + "\n"

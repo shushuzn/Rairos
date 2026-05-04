@@ -1,1 +1,434 @@
-IiIiU2VtYW50aWMgUm91dGVyIOKAlCBuYXR1cmFsLWxhbmd1YWdlIENMSSBjb21tYW5kIHJvdXRpbmcgd2l0aCBncmFjZWZ1bCBkZWdyYWRhdGlvbi4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBhcmdwYXJzZQppbXBvcnQganNvbgppbXBvcnQgbG9nZ2luZwppbXBvcnQgbWF0aApmcm9tIGRhdGFjbGFzc2VzIGltcG9ydCBkYXRhY2xhc3MsIGZpZWxkCmZyb20gZW51bSBpbXBvcnQgRW51bQpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKZnJvbSB0eXBpbmcgaW1wb3J0IEFueSwgQ2FsbGFibGUsIERpY3QsIExpc3QsIE9wdGlvbmFsLCBUdXBsZQoKZnJvbSBsbG0uY2xpZW50IGltcG9ydCBjYWxsX2xsbV9jaGF0X2NvbXBsZXRpb25zCgpsb2dnZXIgPSBsb2dnaW5nLmdldExvZ2dlcihfX25hbWVfXykKCgojIOKUgOKUgOKUgCBRdWVyeVR5cGUgdGF4b25vbXkg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgoKY2xhc3MgUXVlcnlUeXBlKEVudW0pOgogICAgR0FQX0FOQUxZU0lTID0gImdhcF9hbmFseXNpcyIKICAgIEhZUE9USEVTSVNfR0VORVJBVElPTiA9ICJoeXBvdGhlc2lzX2dlbmVyYXRpb24iCiAgICBFWFBFUklNRU5UID0gImV4cGVyaW1lbnQiCiAgICBJTlNJR0hUID0gImluc2lnaHQiCiAgICBOQVJSQVRJVkUgPSAibmFycmF0aXZlIgogICAgUEFQRVJfU0VBUkNIID0gInBhcGVyX3NlYXJjaCIKICAgIFFVRVNUSU9OX0FOU1dFUiA9ICJxdWVzdGlvbl9hbnN3ZXIiCiAgICBHRU5FUkFMID0gImdlbmVyYWwiCgoKIyDilIDilIDilIAgUXVlcnlUeXBlIOKGkiBDTEkgc3ViY29tbWFuZCBtYXAg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgpfUVVFUllfVFlQRV9UT19DT01NQU5EOiBEaWN0W1F1ZXJ5VHlwZSwgc3RyXSA9IHsKICAgIFF1ZXJ5VHlwZS5HQVBfQU5BTFlTSVM6ICJnYXAiLAogICAgUXVlcnlUeXBlLkhZUE9USEVTSVNfR0VORVJBVElPTjogImh5cG90aGVzaXplIiwKICAgIFF1ZXJ5VHlwZS5FWFBFUklNRU5UOiAiZXhwZXJpbWVudCIsCiAgICBRdWVyeVR5cGUuSU5TSUdIVDogImluc2lnaHQiLAogICAgUXVlcnlUeXBlLk5BUlJBVElWRTogIm5hcnJhdGl2ZSIsCiAgICBRdWVyeVR5cGUuUEFQRVJfU0VBUkNIOiAic2VhcmNoIiwKICAgIFF1ZXJ5VHlwZS5RVUVTVElPTl9BTlNXRVI6ICJhc2siLAogICAgUXVlcnlUeXBlLkdFTkVSQUw6ICJjaGF0IiwKfQoKIyBDTEkgc3ViY29tbWFuZCDihpIgKG1vZHVsZV9wYXRoLCBwYXJzZXJfYnVpbGRlcl9uYW1lKSBsb29rdXAgZm9yIHByb2dyYW1tYXRpYyBleGVjdXRpb24KX1NVQkNPTU1BTkRfVEFCTEVfTE9PS1VQOiBEaWN0W3N0ciwgVHVwbGVbc3RyLCBzdHJdXSA9IHsKICAgICJnYXAiOiAoImNsaS5jbWQuZ2FwIiwgIl9idWlsZF9nYXBfcGFyc2VyIiksCiAgICAiaHlwb3RoZXNpemUiOiAoImNsaS5jbWQuaHlwb3RoZXNpemUiLCAiX2J1aWxkX2h5cG90aGVzaXplX3BhcnNlciIpLAogICAgImV4cGVyaW1lbnQiOiAoImNsaS5jbWQuZXhwZXJpbWVudCIsICJfYnVpbGRfZXhwZXJpbWVudF9wYXJzZXIiKSwKICAgICJpbnNpZ2h0IjogKCJjbGkuY21kLmluc2lnaHQiLCAiX2J1aWxkX2luc2lnaHRfcGFyc2VyIiksCiAgICAibmFycmF0aXZlIjogKCJjbGkuY21kLm5hcnJhdGl2ZSIsICJfYnVpbGRfbmFycmF0aXZlX3BhcnNlciIpLAogICAgImFzayI6ICgiY2xpLmNtZC5hc2siLCAiX2J1aWxkX2Fza19wYXJzZXIiKSwKICAgICJzZWFyY2giOiAoImNsaS5jbWQuc2VhcmNoIiwgIl9idWlsZF9zZWFyY2hfcGFyc2VyIiksCiAgICAiY2hhdCI6ICgiY2xpLmNtZC5jaGF0IiwgIl9idWlsZF9jaGF0X3BhcnNlciIpLAp9CgoKIyDilIDilIDilIAgUm91dGUgZGF0YWNsYXNzIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCkBkYXRhY2xhc3MKY2xhc3MgUm91dGU6CiAgICBxdWVyeV90eXBlOiBRdWVyeVR5cGUKICAgIGNvbmZpZGVuY2U6IGZsb2F0ICAjIDAuMOKAkzEuMAogICAgcHJpbWFyeV9jb21tYW5kOiBzdHIgICMgZS5nLiAiZ2FwIgogICAgcmVhc29uaW5nOiBzdHIgPSAiIgogICAgbXVsdGlfaW50ZW50OiBib29sID0gRmFsc2UKICAgIHNlY29uZGFyeV9xdWVyeV90eXBlOiBPcHRpb25hbFtRdWVyeVR5cGVdID0gTm9uZQogICAgc3ViX2NvbW1hbmRzOiBMaXN0W3N0cl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKCiAgICBkZWYgdG9fZGljdChzZWxmKSAtPiBEaWN0W3N0ciwgQW55XToKICAgICAgICByZXR1cm4gewogICAgICAgICAgICAicXVlcnlfdHlwZSI6IHNlbGYucXVlcnlfdHlwZS52YWx1ZSwKICAgICAgICAgICAgImNvbmZpZGVuY2UiOiBzZWxmLmNvbmZpZGVuY2UsCiAgICAgICAgICAgICJwcmltYXJ5X2NvbW1hbmQiOiBzZWxmLnByaW1hcnlfY29tbWFuZCwKICAgICAgICAgICAgInJlYXNvbmluZyI6IHNlbGYucmVhc29uaW5nLAogICAgICAgICAgICAibXVsdGlfaW50ZW50Ijogc2VsZi5tdWx0aV9pbnRlbnQsCiAgICAgICAgICAgICJzZWNvbmRhcnlfcXVlcnlfdHlwZSI6ICgKICAgICAgICAgICAgICAgIHNlbGYuc2Vjb25kYXJ5X3F1ZXJ5X3R5cGUudmFsdWUgaWYgc2VsZi5zZWNvbmRhcnlfcXVlcnlfdHlwZSBlbHNlIE5vbmUKICAgICAgICAgICAgKSwKICAgICAgICAgICAgInN1Yl9jb21tYW5kcyI6IHNlbGYuc3ViX2NvbW1hbmRzLAogICAgICAgIH0KCgojIOKUgOKUgOKUgCBUb29sIGNhcGFiaWxpdHkgaW5kZXgg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgpfSU5ERVg6IE9wdGlvbmFsW0RpY3Rbc3RyLCBBbnldXSA9IE5vbmUKCl9DQVBBQklMSVRZX0RFU0NSSVBUSU9OUzogRGljdFtRdWVyeVR5cGUsIHN0cl0gPSB7CiAgICBRdWVyeVR5cGUuR0FQX0FOQUxZU0lTOiAiSWRlbnRpZnkgcmVzZWFyY2ggZ2FwcywgdW5hbnN3ZXJlZCBxdWVzdGlvbnMsIG9yIHVuZGVyZXhwbG9yZWQgYXJlYXMgaW4gYSB0b3BpYyIsCiAgICBRdWVyeVR5cGUuSFlQT1RIRVNJU19HRU5FUkFUSU9OOiAiR2VuZXJhdGUgdGVzdGFibGUgcmVzZWFyY2ggaHlwb3RoZXNlcyBvciBjb25qZWN0dXJlcyBiYXNlZCBvbiBnYXBzIiwKICAgIFF1ZXJ5VHlwZS5FWFBFUklNRU5UOiAiRGVzaWduLCBydW4sIG9yIHRyYWNrIGV4cGVyaW1lbnRzIHRvIHZhbGlkYXRlIGh5cG90aGVzZXMiLAogICAgUXVlcnlUeXBlLklOU0lHSFQ6ICJFeHRyYWN0IGtleSBpbnNpZ2h0cywgcGF0dGVybnMsIG9yIHN5bnRoZXNpcyBmcm9tIHJlc2VhcmNoIHBhcGVycyIsCiAgICBRdWVyeVR5cGUuTkFSUkFUSVZFOiAiVHJhY2sgcmVzZWFyY2ggbmFycmF0aXZlIHRocmVhZHMsIHBoYXNlcywgb3Igc3RvcnkgYXJjcyBhY3Jvc3MgdGhlIHJlc2VhcmNoIiwKICAgIFF1ZXJ5VHlwZS5QQVBFUl9TRUFSQ0g6ICJTZWFyY2ggZm9yIHBhcGVycyBvciByZXNlYXJjaCBwdWJsaWNhdGlvbnMgYnkga2V5d29yZHMgb3IgdG9waWMiLAogICAgUXVlcnlUeXBlLlFVRVNUSU9OX0FOU1dFUjogIkFzayBhIHJlc2VhcmNoIHF1ZXN0aW9uIHRoYXQgY2FuIGJlIGFuc3dlcmVkIGZyb20gdGhlIHBhcGVyIGxpYnJhcnkiLAogICAgUXVlcnlUeXBlLkdFTkVSQUw6ICJHZW5lcmFsIHJlc2VhcmNoIGNvbnZlcnNhdGlvbiBvciBvcGVuLWVuZGVkIGRpc2N1c3Npb24iLAp9CgoKZGVmIF9sb2FkX2luZGV4KCkgLT4gRGljdFtzdHIsIEFueV06CiAgICBnbG9iYWwgX0lOREVYCiAgICBpZiBfSU5ERVggaXMgTm9uZToKICAgICAgICBwYXRoID0gUGF0aChfX2ZpbGVfXykucGFyZW50LnBhcmVudCAvICJkYXRhIiAvICJzZW1hbnRpY19yb3V0ZXJfaW5kZXguanNvbiIKICAgICAgICBpZiBwYXRoLmV4aXN0cygpOgogICAgICAgICAgICBfSU5ERVggPSBqc29uLmxvYWRzKHBhdGgucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIF9JTkRFWCA9IHt9CiAgICByZXR1cm4gX0lOREVYCgoKIyDilIDilIDilIAgS2V5d29yZCBzY29yaW5nIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKX1FVRVJZX1RZUEVfS0VZV09SRFM6IERpY3RbUXVlcnlUeXBlLCBMaXN0W3N0cl1dID0gewogICAgUXVlcnlUeXBlLkdBUF9BTkFMWVNJUzogWwogICAgICAgICJnYXAiLAogICAgICAgICJnYXBzIiwKICAgICAgICAi56m655m9IiwKICAgICAgICAi5pyq6Kej5YazIiwKICAgICAgICAibWlzc2luZyIsCiAgICAgICAgInVucmVzb2x2ZWQiLAogICAgICAgICJvcHBvcnR1bml0eSIsCiAgICAgICAgIuW3rui3nSIsCiAgICAgICAgImxpbWl0YXRpb24iLAogICAgICAgICJsaW1pdGF0aW9ucyIsCiAgICAgICAgIuS4jei2syIsCiAgICAgICAgInVudG91Y2hlZCIsCiAgICAgICAgIm92ZXJsb29rZWQiLAogICAgICAgICJvcGVuIHByb2JsZW0iLAogICAgICAgICJvcGVuIHF1ZXN0aW9uIiwKICAgIF0sCiAgICBRdWVyeVR5cGUuSFlQT1RIRVNJU19HRU5FUkFUSU9OOiBbCiAgICAgICAgImh5cG90aGVzaXMiLAogICAgICAgICLlgYforr4iLAogICAgICAgICLlgYforr7nlJ/miJAiLAogICAgICAgICJjb25qZWN0dXJlIiwKICAgICAgICAicHJlZGljdCIsCiAgICAgICAgIumihOa1iyIsCiAgICAgICAgIuWunumqjOiuvuiuoSIsCiAgICAgICAgImh5cG90aGVzaXplIiwKICAgICAgICAiaWYtdGhlbiIsCiAgICBdLAogICAgUXVlcnlUeXBlLkVYUEVSSU1FTlQ6IFsKICAgICAgICAiZXhwZXJpbWVudCIsCiAgICAgICAgIuWunumqjCIsCiAgICAgICAgImFiIHRlc3QiLAogICAgICAgICJldmFsdWF0ZSIsCiAgICAgICAgIuivhOS8sCIsCiAgICAgICAgInZhbGlkYXRlIiwKICAgICAgICAi6aqM6K+BIiwKICAgICAgICAidHJpYWwiLAogICAgICAgICLot5Hlrp7pqowiLAogICAgICAgICLlrp7pqoznu5PmnpwiLAogICAgICAgICJiZW5jaG1hcmsiLAogICAgICAgICJiZW5jaG1hcmtpbmciLAogICAgXSwKICAgIFF1ZXJ5VHlwZS5JTlNJR0hUOiBbCiAgICAgICAgImluc2lnaHQiLAogICAgICAgICJpbnNpZ2h0cyIsCiAgICAgICAgIuWPkeeOsCIsCiAgICAgICAgIua0nuWvnyIsCiAgICAgICAgInBhdHRlcm4iLAogICAgICAgICJwYXR0ZXJucyIsCiAgICAgICAgIuWPkeeOsCIsCiAgICAgICAgImtleSBmaW5kaW5nIiwKICAgICAgICAidGFrZWF3YXkiLAogICAgICAgICJzeW50aGVzaXMiLAogICAgXSwKICAgIFF1ZXJ5VHlwZS5OQVJSQVRJVkU6IFsKICAgICAgICAibmFycmF0aXZlIiwKICAgICAgICAic3RvcnkiLAogICAgICAgICLnur/nqIsiLAogICAgICAgICJwcm9ncmVzcyIsCiAgICAgICAgInBoYXNlIiwKICAgICAgICAi6Lef6LiqIiwKICAgICAgICAi6Lef6LiqIiwKICAgICAgICAi6L+b5bGVIiwKICAgICAgICAi54q25oCBIiwKICAgICAgICAic3RvcnkgYXJjIiwKICAgIF0sCiAgICBRdWVyeVR5cGUuUEFQRVJfU0VBUkNIOiBbCiAgICAgICAgInBhcGVyIiwKICAgICAgICAicGFwZXJzIiwKICAgICAgICAic2VhcmNoIiwKICAgICAgICAiZmluZCIsCiAgICAgICAgIuiuuuaWhyIsCiAgICAgICAgIuaQnOe0oiIsCiAgICAgICAgImFyeGl2IiwKICAgICAgICAi5om+6K665paHIiwKICAgICAgICAi5paH54yuIiwKICAgICAgICAicHVibGljYXRpb24iLAogICAgXSwKICAgIFF1ZXJ5VHlwZS5RVUVTVElPTl9BTlNXRVI6IFsKICAgICAgICAid2hhdCIsCiAgICAgICAgIndobyIsCiAgICAgICAgImhvdyIsCiAgICAgICAgIndoeSIsCiAgICAgICAgImV4cGxhaW4iLAogICAgICAgICLku4DkuYgiLAogICAgICAgICLlpoLkvZUiLAogICAgICAgICLkuLrku4DkuYgiLAogICAgICAgICLor7fpl64iLAogICAgICAgICLlm57nrZQiLAogICAgICAgICJhbnN3ZXIiLAogICAgICAgICJjYW4geW91IiwKICAgIF0sCiAgICBRdWVyeVR5cGUuR0VORVJBTDogWwogICAgICAgICJjaGF0IiwKICAgICAgICAidGFsayIsCiAgICAgICAgImRpc2N1c3MiLAogICAgICAgICLlr7nor50iLAogICAgICAgICLogYrogYoiLAogICAgICAgICJ0ZWxsIG1lIiwKICAgICAgICAiYWJvdXQiLAogICAgICAgICJpbnRyb2R1Y3Rpb24iLAogICAgICAgICLku4vnu40iLAogICAgXSwKfQoKCiMg4pSA4pSA4pSAIExMTS1iYXNlZCByb3V0aW5nIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmRlZiBfcm91dGVfYnlfbGxtKHF1ZXJ5OiBzdHIsIG1vZGVsOiBPcHRpb25hbFtzdHJdID0gTm9uZSkgLT4gUm91dGU6CiAgICAiIiJQcmltYXJ5IHJvdXRlcjogY2xhc3NpZnkgdmlhIExMTS4iIiIKICAgIG1vZGVsID0gbW9kZWwgb3IgInF3ZW4zLjUtcGx1cyIKCiAgICBjYXBhYmlsaXR5X2xpbmVzID0gIlxuIi5qb2luKAogICAgICAgIGYiICAtIHtxdC52YWx1ZX06IHtkZXNjfSIgZm9yIHF0LCBkZXNjIGluIF9DQVBBQklMSVRZX0RFU0NSSVBUSU9OUy5pdGVtcygpCiAgICApCgogICAgc3lzdGVtX3Byb21wdCA9ICgKICAgICAgICAiWW91IGFyZSBhIENMSSByZXNlYXJjaC1jb21tYW5kIGNsYXNzaWZpZXIuICIKICAgICAgICAiR2l2ZW4gYSB1c2VyJ3MgbmF0dXJhbC1sYW5ndWFnZSByZXNlYXJjaCBxdWVyeSwgY2xhc3NpZnkgaXQgaW50byBleGFjdGx5IG9uZSB0eXBlLlxuXG4iCiAgICAgICAgZiJBdmFpbGFibGUgdHlwZXM6XG57Y2FwYWJpbGl0eV9saW5lc31cblxuIgogICAgICAgICJSZXR1cm4gT05MWSB2YWxpZCBKU09OIHdpdGggdGhpcyBleGFjdCBzaGFwZTpcbiIKICAgICAgICAnICB7InF1ZXJ5X3R5cGUiOiAiLi4uIiwgImNvbmZpZGVuY2UiOiAwLjAtMS4wLCAnCiAgICAgICAgJyJyZWFzb25pbmciOiAiLi4uIiwgIm11bHRpX2ludGVudCI6IGZhbHNlfVxuXG4nCiAgICAgICAgIlJ1bGVzOlxuIgogICAgICAgICIgIC0gY29uZmlkZW5jZSA8IDAuNSBtZWFucyB5b3UgYXJlIHVuY2VydGFpblxuIgogICAgICAgICIgIC0gbXVsdGlfaW50ZW50PXRydWUgb25seSB3aGVuIHF1ZXJ5IGNsZWFybHkgY29udGFpbnMgVFdPIGRpc3RpbmN0IGludGVudHMgIgogICAgICAgICIoZS5nLiAn5YiG5p6QZ2Fw5bm25o+Q5Ye65YGH6K6+JyA9IGdhcF9hbmFseXNpcyArIGh5cG90aGVzaXNfZ2VuZXJhdGlvbilcbiIKICAgICAgICAiICAtIElmIG11bHRpX2ludGVudD10cnVlLCBhbHNvIGluY2x1ZGU6ICIKICAgICAgICAnInNlY29uZGFyeV9xdWVyeV90eXBlIjogIi4uLiInCiAgICApCgogICAgbWVzc2FnZXM6IExpc3RbRGljdFtzdHIsIHN0cl1dID0gWwogICAgICAgIHsicm9sZSI6ICJ1c2VyIiwgImNvbnRlbnQiOiBxdWVyeX0sCiAgICBdCgogICAgdHJ5OgogICAgICAgIHJhdyA9IGNhbGxfbGxtX2NoYXRfY29tcGxldGlvbnMoCiAgICAgICAgICAgIG1lc3NhZ2VzPW1lc3NhZ2VzLAogICAgICAgICAgICBtb2RlbD1tb2RlbCwKICAgICAgICAgICAgc3lzdGVtX3Byb21wdD1zeXN0ZW1fcHJvbXB0LAogICAgICAgICkKICAgIGV4Y2VwdCAoVmFsdWVFcnJvciwgRXhjZXB0aW9uKToKICAgICAgICAjIE5vIEFQSSBrZXkgb3Igb3RoZXIgTExNIGVycm9yIOKAlCBsZXQgcm91dGUoKSBmYWxsIGJhY2sKICAgICAgICByYWlzZQoKICAgIHBhcnNlZCA9IGpzb24ubG9hZHMocmF3KQogICAgcXQgPSBRdWVyeVR5cGUocGFyc2VkWyJxdWVyeV90eXBlIl0pCgogICAgcm91dGUgPSBSb3V0ZSgKICAgICAgICBxdWVyeV90eXBlPXF0LAogICAgICAgIGNvbmZpZGVuY2U9ZmxvYXQocGFyc2VkWyJjb25maWRlbmNlIl0pLAogICAgICAgIHByaW1hcnlfY29tbWFuZD1fUVVFUllfVFlQRV9UT19DT01NQU5EW3F0XSwKICAgICAgICByZWFzb25pbmc9cGFyc2VkLmdldCgicmVhc29uaW5nIiwgIiIpLAogICAgICAgIG11bHRpX2ludGVudD1wYXJzZWQuZ2V0KCJtdWx0aV9pbnRlbnQiLCBGYWxzZSksCiAgICApCgogICAgaWYgcm91dGUubXVsdGlfaW50ZW50OgogICAgICAgIHNlY29uZGFyeV9zdHIgPSBwYXJzZWQuZ2V0KCJzZWNvbmRhcnlfcXVlcnlfdHlwZSIpCiAgICAgICAgaWYgc2Vjb25kYXJ5X3N0cjoKICAgICAgICAgICAgcm91dGUuc2Vjb25kYXJ5X3F1ZXJ5X3R5cGUgPSBRdWVyeVR5cGUoc2Vjb25kYXJ5X3N0cikKICAgICAgICAgICAgcm91dGUuc3ViX2NvbW1hbmRzID0gWwogICAgICAgICAgICAgICAgcm91dGUucHJpbWFyeV9jb21tYW5kLAogICAgICAgICAgICAgICAgX1FVRVJZX1RZUEVfVE9fQ09NTUFORFtyb3V0ZS5zZWNvbmRhcnlfcXVlcnlfdHlwZV0sCiAgICAgICAgICAgIF0KICAgICAgICBlbHNlOgogICAgICAgICAgICByb3V0ZS5tdWx0aV9pbnRlbnQgPSBGYWxzZQoKICAgIHJldHVybiByb3V0ZQoKCiMg4pSA4pSA4pSAIEVtYmVkZGluZy1iYXNlZCBmYWxsYmFjayDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpkZWYgX2Nvc2luZV9zaW0oYTogTGlzdFtmbG9hdF0sIGI6IExpc3RbZmxvYXRdKSAtPiBmbG9hdDoKICAgIGRvdCA9IHN1bSh4ICogeSBmb3IgeCwgeSBpbiB6aXAoYSwgYikpCiAgICBub3JtX2EgPSBtYXRoLnNxcnQoc3VtKHggKiB4IGZvciB4IGluIGEpKQogICAgbm9ybV9iID0gbWF0aC5zcXJ0KHN1bSh4ICogeCBmb3IgeCBpbiBiKSkKICAgIGlmIG5vcm1fYSA9PSAwIG9yIG5vcm1fYiA9PSAwOgogICAgICAgIHJldHVybiAwLjAKICAgIHJldHVybiBkb3QgLyAobm9ybV9hICogbm9ybV9iKQoKCmRlZiBfcm91dGVfYnlfZW1iZWRkaW5nKHF1ZXJ5OiBzdHIpIC0+IFJvdXRlOgogICAgIiIiQ29zaW5lLXNpbWlsYXJpdHkgZmFsbGJhY2s6IGNvbXBhcmUgcXVlcnkgZW1iZWRkaW5nIGFnYWluc3QgY2FwYWJpbGl0eSBkZXNjcmlwdGlvbnMuIiIiCiAgICB0cnk6CiAgICAgICAgZnJvbSBjbGkuY21kLmRlZHVwX3NlbWFudGljIGltcG9ydCBfZ2V0X29sbGFtYV9lbWJlZGRpbmdfYmF0Y2gKCiAgICAgICAgdGV4dHMgPSBbcXVlcnldICsgW19DQVBBQklMSVRZX0RFU0NSSVBUSU9OU1txdF0gZm9yIHF0IGluIFF1ZXJ5VHlwZV0KICAgICAgICBlbWJlZGRpbmdzID0gX2dldF9vbGxhbWFfZW1iZWRkaW5nX2JhdGNoKHRleHRzKQogICAgICAgIGlmIG5vdCBlbWJlZGRpbmdzIG9yIGVtYmVkZGluZ3NbMF0gaXMgTm9uZToKICAgICAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKCJFbWJlZGRpbmcgc2VydmljZSB1bmF2YWlsYWJsZSIpCiAgICAgICAgcXVlcnlfZW1iID0gZW1iZWRkaW5nc1swXQogICAgICAgIGNhcF9lbWJzID0gW2UgZm9yIGUgaW4gZW1iZWRkaW5nc1sxOl0gaWYgZSBpcyBub3QgTm9uZV0KCiAgICAgICAgc2NvcmVzOiBMaXN0W2Zsb2F0XSA9IFtfY29zaW5lX3NpbShxdWVyeV9lbWIsIGVtYikgZm9yIGVtYiBpbiBjYXBfZW1ic10KCiAgICAgICAgYmVzdF9pZHggPSBpbnQobWF4KHJhbmdlKGxlbihzY29yZXMpKSwga2V5PWxhbWJkYSBpOiBzY29yZXNbaV0pKQogICAgICAgIGJlc3RfcXQgPSBsaXN0KFF1ZXJ5VHlwZSlbYmVzdF9pZHhdCgogICAgICAgIHJldHVybiBSb3V0ZSgKICAgICAgICAgICAgcXVlcnlfdHlwZT1iZXN0X3F0LAogICAgICAgICAgICBjb25maWRlbmNlPWZsb2F0KHNjb3Jlc1tiZXN0X2lkeF0pLAogICAgICAgICAgICBwcmltYXJ5X2NvbW1hbmQ9X1FVRVJZX1RZUEVfVE9fQ09NTUFORFtiZXN0X3F0XSwKICAgICAgICAgICAgcmVhc29uaW5nPSJbZW1iZWRkaW5nIGZhbGxiYWNrXSIsCiAgICAgICAgKQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgIGxvZ2dlci5kZWJ1ZygiRW1iZWRkaW5nIHJvdXRpbmcgZmFpbGVkOiAlcyIsIGUpCiAgICAgICAgcmFpc2UKCgojIOKUgOKUgOKUgCBLZXl3b3JkLWJhc2VkIGZhbGxiYWNrIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmRlZiBfcm91dGVfYnlfa2V5d29yZChxdWVyeTogc3RyKSAtPiBSb3V0ZToKICAgICIiIkxhc3QtcmVzb3J0OiBzY29yZSBieSBrZXl3b3JkIG92ZXJsYXAuIiIiCiAgICBxX2xvd2VyID0gcXVlcnkubG93ZXIoKQogICAgYmVzdF9zY29yZSA9IDAuMAogICAgYmVzdF9xdCA9IFF1ZXJ5VHlwZS5HRU5FUkFMCgogICAgZm9yIHF0LCBrZXl3b3JkcyBpbiBfUVVFUllfVFlQRV9LRVlXT1JEUy5pdGVtcygpOgogICAgICAgIHNjb3JlID0gc3VtKDEuMCBmb3Iga3cgaW4ga2V5d29yZHMgaWYga3cgaW4gcV9sb3dlcikKICAgICAgICBpZiBzY29yZSA+IGJlc3Rfc2NvcmU6CiAgICAgICAgICAgIGJlc3Rfc2NvcmUgPSBzY29yZQogICAgICAgICAgICBiZXN0X3F0ID0gcXQKCiAgICByZXR1cm4gUm91dGUoCiAgICAgICAgcXVlcnlfdHlwZT1iZXN0X3F0LAogICAgICAgIGNvbmZpZGVuY2U9bWluKGJlc3Rfc2NvcmUgLyAzLjAsIDEuMCksICAjIDMrIGtleXdvcmQgaGl0cyDihpIgMTAwJQogICAgICAgIHByaW1hcnlfY29tbWFuZD1fUVVFUllfVFlQRV9UT19DT01NQU5EW2Jlc3RfcXRdLAogICAgICAgIHJlYXNvbmluZz1mIltrZXl3b3JkIGZhbGxiYWNrOiBzY29yZT17YmVzdF9zY29yZTouMWZ9XSIsCiAgICApCgoKIyDilIDilIDilIAgU2VtYW50aWNSb3V0ZXIg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgoKY2xhc3MgU2VtYW50aWNSb3V0ZXI6CiAgICAiIiJSb3V0ZSBhIG5hdHVyYWwtbGFuZ3VhZ2UgcXVlcnkgdG8gdGhlIGFwcHJvcHJpYXRlIENMSSBzdWJjb21tYW5kLgoKICAgIERlZ3JhZGF0aW9uIGNoYWluOiBMTE0gY2xhc3NpZmljYXRpb24g4oaSIGVtYmVkZGluZyBzaW1pbGFyaXR5IOKGkiBrZXl3b3JkIGhldXJpc3RpYy4KICAgICIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBtb2RlbDogT3B0aW9uYWxbc3RyXSA9IE5vbmUpOgogICAgICAgIHNlbGYubW9kZWwgPSBtb2RlbCBvciAicXdlbjMuNS1wbHVzIgoKICAgIGRlZiByb3V0ZShzZWxmLCBxdWVyeTogc3RyKSAtPiBSb3V0ZToKICAgICAgICAjIFByaW1hcnk6IExMTQogICAgICAgIHRyeToKICAgICAgICAgICAgcmV0dXJuIF9yb3V0ZV9ieV9sbG0ocXVlcnksIHNlbGYubW9kZWwpCiAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgICAgICBsb2dnZXIuZGVidWcoIkxMTSByb3V0aW5nIGZhaWxlZCwgdHJ5aW5nIGVtYmVkZGluZzogJXMiLCBlKQoKICAgICAgICAjIEZhbGxiYWNrIDE6IGVtYmVkZGluZyBzaW1pbGFyaXR5CiAgICAgICAgdHJ5OgogICAgICAgICAgICByZXR1cm4gX3JvdXRlX2J5X2VtYmVkZGluZyhxdWVyeSkKICAgICAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgICAgIGxvZ2dlci5kZWJ1ZygiRW1iZWRkaW5nIHJvdXRpbmcgZmFpbGVkLCB1c2luZyBrZXl3b3JkOiAlcyIsIGUpCgogICAgICAgICMgRmFsbGJhY2sgMjoga2V5d29yZCBoZXVyaXN0aWMKICAgICAgICByZXR1cm4gX3JvdXRlX2J5X2tleXdvcmQocXVlcnkpCgogICAgZGVmIGV4ZWN1dGUoc2VsZiwgcm91dGU6IFJvdXRlLCBxdWVyeTogc3RyLCBleGVjX2FsbDogYm9vbCA9IEZhbHNlKSAtPiBEaWN0W3N0ciwgc3RyXToKICAgICAgICAiIiJFeGVjdXRlIHJvdXRlZCBjb21tYW5kKHMpLCBjYXB0dXJlIHN0ZG91dC4gUmV0dXJucyB7Y29tbWFuZDogb3V0cHV0fS4iIiIKICAgICAgICBjb21tYW5kcyA9ICgKICAgICAgICAgICAgcm91dGUuc3ViX2NvbW1hbmRzIGlmIChyb3V0ZS5tdWx0aV9pbnRlbnQgYW5kIGV4ZWNfYWxsKSBlbHNlIFtyb3V0ZS5wcmltYXJ5X2NvbW1hbmRdCiAgICAgICAgKQogICAgICAgIG91dHB1dHM6IERpY3Rbc3RyLCBzdHJdID0ge30KCiAgICAgICAgZm9yIGNtZCBpbiBjb21tYW5kczoKICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgb3V0cHV0ID0gX3J1bl9jb21tYW5kX2J5X25hbWUoY21kLCBxdWVyeSkKICAgICAgICAgICAgICAgIG91dHB1dHNbY21kXSA9IG91dHB1dAogICAgICAgICAgICBleGNlcHQgKEV4Y2VwdGlvbiwgU3lzdGVtRXhpdCkgYXMgZXhjOgogICAgICAgICAgICAgICAgbG9nZ2VyLndhcm5pbmcoIkNvbW1hbmQgJXMgZmFpbGVkOiAlcyIsIGNtZCwgZXhjKQogICAgICAgICAgICAgICAgb3V0cHV0c1tjbWRdID0gZiJbRVJST1IgaW4ge2NtZH06IHtleGN9XSIKCiAgICAgICAgcmV0dXJuIG91dHB1dHMKCgojIOKUgOKUgOKUgCBJbnRlcm5hbCBjb21tYW5kIHJ1bm5lciDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpkZWYgX3J1bl9jb21tYW5kX2J5X25hbWUoc3ViY21kOiBzdHIsIHF1ZXJ5OiBzdHIpIC0+IHN0cjoKICAgICIiIlJ1biBhIENMSSBzdWJjb21tYW5kIGJ5IG5hbWUsIGNhcHR1cmluZyBzdGRvdXQgYXMgYSBzdHJpbmcuCgogICAgQnlwYXNzZXMgYXJncGFyc2UgZW50aXJlbHkg4oCUIGRpcmVjdGx5IGNvbnN0cnVjdHMgTmFtZXNwYWNlIG9iamVjdHMgZnJvbSB0aGUKICAgIG5hdHVyYWwtbGFuZ3VhZ2UgcXVlcnkgc3RyaW5nLiAgVGhpcyBhdm9pZHMgdGhlIGZ1bmRhbWVudGFsIG1pc21hdGNoIGJldHdlZW4KICAgIGZyZWUtZm9ybSBxdWVyeSB0ZXh0IGFuZCBhcmdwYXJzZSdzIHRva2VuLWJhc2VkIHBvc2l0aW9uYWwgYXJndW1lbnQgcGFyc2luZy4KICAgICIiIgogICAgaW1wb3J0IGFyZ3BhcnNlCiAgICBpbXBvcnQgY29udGV4dGxpYgogICAgZnJvbSBpbyBpbXBvcnQgU3RyaW5nSU8KCiAgICAjIOKUgOKUgCBCdWlsZCB0aGUgYXJncyBuYW1lc3BhY2UgZGlyZWN0bHkgZnJvbSB0aGUgcXVlcnkgc3RyaW5nIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgIwogICAgIyBFYWNoIGNvbW1hbmQgaGFzIGEgcHJpbWFyeSBwb3NpdGlvbmFsICh0b3BpYyAvIHF1ZXJ5IC8gcXVlc3Rpb24pIHRoYXQKICAgICMgcmVjZWl2ZXMgdGhlIGZ1bGwgcXVlcnkgdGV4dC4gIE9wdGlvbmFsIGZsYWdzIGFyZSBsZWZ0IGF0IHRoZWlyIGRlZmF1bHRzLgogICAgIyBDb21tYW5kcyB3aXRoIHJlcXVpcmVkIHN1Yi1hY3Rpb25zIChlLmcuIGluc2lnaHQpIHVzZSBzZW5zaWJsZSBkZWZhdWx0cy4KICAgICMKICAgICMgTWFwOiBzdWJjbWQg4oaSIHByaW1hcnkgcG9zaXRpb25hbCBhdHRyaWJ1dGUgbmFtZQogICAgX1BPU0lUSU9OQUxfTUFQOiBEaWN0W3N0ciwgc3RyXSA9IHsKICAgICAgICAiZ2FwIjogInRvcGljIiwKICAgICAgICAiaHlwb3RoZXNpemUiOiAidG9waWMiLAogICAgICAgICJleHBlcmltZW50IjogInF1ZXJ5IiwKICAgICAgICAiaW5zaWdodCI6ICJhY3Rpb24iLCAgIyByZXF1aXJlZDsgc2V0IHRvICJsaXN0IiAoc2VlIGJlbG93KQogICAgICAgICJuYXJyYXRpdmUiOiAicXVlc3Rpb24iLAogICAgICAgICJhc2siOiAicXVlcnkiLAogICAgICAgICJzZWFyY2giOiAidG9waWMiLAogICAgICAgICJjaGF0IjogInRvcGljIiwKICAgIH0KCiAgICBhdHRyID0gX1BPU0lUSU9OQUxfTUFQLmdldChzdWJjbWQsICJ0b3BpYyIpCgogICAgIyBpbnNpZ2h0IHVzZXMgYSByZXF1aXJlZCAiYWN0aW9uIiBwb3NpdGlvbmFsOyBhbGwgb3RoZXIgZmllbGRzIHVzZSAtLXF1ZXJ5CiAgICBpZiBzdWJjbWQgPT0gImluc2lnaHQiOgogICAgICAgIGFyZ3MgPSBhcmdwYXJzZS5OYW1lc3BhY2UoCiAgICAgICAgICAgIHN1YmNtZD1zdWJjbWQsCiAgICAgICAgICAgIGFjdGlvbj0ibGlzdCIsCiAgICAgICAgICAgIHF1ZXJ5PXF1ZXJ5IG9yICIiLAogICAgICAgICAgICB0YWdzPU5vbmUsCiAgICAgICAgICAgIG1hcmtkb3duPUZhbHNlLAogICAgICAgICAgICB0eXBlPSJmaW5kaW5nIiwKICAgICAgICApCiAgICBlbGlmIHN1YmNtZCA9PSAiZ2FwIjoKICAgICAgICAjIEFsbCBvcHRpb25hbCBmbGFncyBkZWZhdWx0IHRvIEZhbHNlL05vbmUgc28gdGhlIGNvbW1hbmQgdXNlcyBpdHMgb3duIGRlZmF1bHRzCiAgICAgICAgYXJncyA9IGFyZ3BhcnNlLk5hbWVzcGFjZSgKICAgICAgICAgICAgc3ViY21kPXN1YmNtZCwKICAgICAgICAgICAgdG9waWM9cXVlcnksCiAgICAgICAgICAgIG5vX2xsbT1GYWxzZSwKICAgICAgICAgICAganNvbj1GYWxzZSwKICAgICAgICAgICAgbWluX3BhcGVycz0zLAogICAgICAgICAgICBtb2RlbD1Ob25lLAogICAgICAgICAgICBpbnRlcmFjdGl2ZT1GYWxzZSwKICAgICAgICAgICAgZW5oYW5jZWQ9RmFsc2UsCiAgICAgICAgICAgIG5vX2luc2lnaHRzPUZhbHNlLAogICAgICAgICAgICBoeXBvdGhlc2lzPUZhbHNlLAogICAgICAgICAgICBwcm9maWxlPUZhbHNlLAogICAgICAgICAgICBoaXN0b3J5PUZhbHNlLAogICAgICAgICAgICBzdGF0cz1GYWxzZSwKICAgICAgICAgICAgcHJlZnNfaGlzdG9yeT1GYWxzZSwKICAgICAgICApCiAgICBlbGlmIHN1YmNtZCA9PSAiYXNrIjoKICAgICAgICBhcmdzID0gYXJncGFyc2UuTmFtZXNwYWNlKAogICAgICAgICAgICBzdWJjbWQ9c3ViY21kLAogICAgICAgICAgICBxdWVyeT1xdWVyeSwKICAgICAgICAgICAgY29udGV4dD1Ob25lLAogICAgICAgICAgICB2ZXJib3NlPUZhbHNlLAogICAgICAgICAgICBub19pbnNpZ2h0cz1GYWxzZSwKICAgICAgICAgICAgbWF4X3BhcGVycz0xMCwKICAgICAgICAgICAgcm91dGU9RmFsc2UsCiAgICAgICAgKQogICAgZWxzZToKICAgICAgICBhcmdzID0gYXJncGFyc2UuTmFtZXNwYWNlKHN1YmNtZD1zdWJjbWQsICoqe2F0dHI6IHF1ZXJ5fSkKCiAgICAjIOKUgOKUgCBDYXB0dXJlIHN0ZG91dCBhbmQgZGlzcGF0Y2gg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICBidWYgPSBTdHJpbmdJTygpCiAgICB3aXRoIGNvbnRleHRsaWIucmVkaXJlY3Rfc3Rkb3V0KGJ1Zik6CiAgICAgICAgX2Rpc3BhdGNoX2NvbW1hbmQoc3ViY21kLCBhcmdzKQoKICAgIHJldHVybiBidWYuZ2V0dmFsdWUoKQoKCmRlZiBfZGlzcGF0Y2hfY29tbWFuZChzdWJjbWQ6IHN0ciwgYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKSAtPiBOb25lOgogICAgIiIiRGlzcGF0Y2ggdG8gdGhlIGFwcHJvcHJpYXRlIF9ydW5fPHN1YmNtZD4gZnVuY3Rpb24uIiIiCiAgICBmcm9tIGNsaSBpbXBvcnQgX3J1bl9nYXAsIF9ydW5faHlwb3RoZXNpemUsIF9ydW5fZXhwZXJpbWVudAogICAgZnJvbSBjbGkgaW1wb3J0IF9ydW5faW5zaWdodCwgX3J1bl9uYXJyYXRpdmUsIF9ydW5fYXNrCiAgICBmcm9tIGNsaSBpbXBvcnQgX3J1bl9zZWFyY2gsIF9ydW5fY2hhdAoKICAgIGRpc3BhdGNoOiBEaWN0W3N0ciwgQ2FsbGFibGVdID0gewogICAgICAgICJnYXAiOiBfcnVuX2dhcCwKICAgICAgICAiaHlwb3RoZXNpemUiOiBfcnVuX2h5cG90aGVzaXplLAogICAgICAgICJleHBlcmltZW50IjogX3J1bl9leHBlcmltZW50LAogICAgICAgICJpbnNpZ2h0IjogX3J1bl9pbnNpZ2h0LAogICAgICAgICJuYXJyYXRpdmUiOiBfcnVuX25hcnJhdGl2ZSwKICAgICAgICAiYXNrIjogX3J1bl9hc2ssCiAgICAgICAgInNlYXJjaCI6IF9ydW5fc2VhcmNoLAogICAgICAgICJjaGF0IjogX3J1bl9jaGF0LAogICAgfQoKICAgIGZuID0gZGlzcGF0Y2guZ2V0KHN1YmNtZCkKICAgIGlmIGZuIGlzIE5vbmU6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcihmIk5vIGRpc3BhdGNoZXIgZm9yIGNvbW1hbmQ6IHtzdWJjbWR9IikKICAgIGZuKGFyZ3MpCg==
+"""Semantic Router — natural-language CLI command routing with graceful degradation."""
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import math
+from dataclasses import dataclass, field
+from enum import Enum
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Tuple
+
+from llm.client import call_llm_chat_completions
+
+logger = logging.getLogger(__name__)
+
+
+# ─── QueryType taxonomy ────────────────────────────────────────────────────────
+
+class QueryType(Enum):
+    GAP_ANALYSIS           = "gap_analysis"
+    HYPOTHESIS_GENERATION  = "hypothesis_generation"
+    EXPERIMENT             = "experiment"
+    INSIGHT                = "insight"
+    NARRATIVE              = "narrative"
+    PAPER_SEARCH           = "paper_search"
+    QUESTION_ANSWER        = "question_answer"
+    GENERAL                = "general"
+
+
+# ─── QueryType → CLI subcommand map ─────────────────────────────────────────
+
+_QUERY_TYPE_TO_COMMAND: Dict[QueryType, str] = {
+    QueryType.GAP_ANALYSIS:           "gap",
+    QueryType.HYPOTHESIS_GENERATION:  "hypothesize",
+    QueryType.EXPERIMENT:              "experiment",
+    QueryType.INSIGHT:                "insight",
+    QueryType.NARRATIVE:              "narrative",
+    QueryType.PAPER_SEARCH:           "search",
+    QueryType.QUESTION_ANSWER:         "ask",
+    QueryType.GENERAL:                "chat",
+}
+
+# CLI subcommand → (module_path, parser_builder_name) lookup for programmatic execution
+_SUBCOMMAND_TABLE_LOOKUP: Dict[str, Tuple[str, str]] = {
+    "gap":          ("cli.cmd.gap",          "_build_gap_parser"),
+    "hypothesize":  ("cli.cmd.hypothesize",  "_build_hypothesize_parser"),
+    "experiment":   ("cli.cmd.experiment",   "_build_experiment_parser"),
+    "insight":      ("cli.cmd.insight",      "_build_insight_parser"),
+    "narrative":    ("cli.cmd.narrative",    "_build_narrative_parser"),
+    "ask":          ("cli.cmd.ask",          "_build_ask_parser"),
+    "search":       ("cli.cmd.search",       "_build_search_parser"),
+    "chat":         ("cli.cmd.chat",         "_build_chat_parser"),
+}
+
+
+# ─── Route dataclass ──────────────────────────────────────────────────────────
+
+@dataclass
+class Route:
+    query_type: QueryType
+    confidence: float           # 0.0–1.0
+    primary_command: str       # e.g. "gap"
+    reasoning: str = ""
+    multi_intent: bool = False
+    secondary_query_type: Optional[QueryType] = None
+    sub_commands: List[str] = field(default_factory=list)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "query_type":         self.query_type.value,
+            "confidence":         self.confidence,
+            "primary_command":    self.primary_command,
+            "reasoning":         self.reasoning,
+            "multi_intent":       self.multi_intent,
+            "secondary_query_type": (
+                self.secondary_query_type.value
+                if self.secondary_query_type else None
+            ),
+            "sub_commands":       self.sub_commands,
+        }
+
+
+# ─── Tool capability index ────────────────────────────────────────────────────
+
+_INDEX: Optional[Dict[str, Any]] = None
+
+_CAPABILITY_DESCRIPTIONS: Dict[QueryType, str] = {
+    QueryType.GAP_ANALYSIS:
+        "Identify research gaps, unanswered questions, or underexplored areas in a topic",
+    QueryType.HYPOTHESIS_GENERATION:
+        "Generate testable research hypotheses or conjectures based on gaps",
+    QueryType.EXPERIMENT:
+        "Design, run, or track experiments to validate hypotheses",
+    QueryType.INSIGHT:
+        "Extract key insights, patterns, or synthesis from research papers",
+    QueryType.NARRATIVE:
+        "Track research narrative threads, phases, or story arcs across the research",
+    QueryType.PAPER_SEARCH:
+        "Search for papers or research publications by keywords or topic",
+    QueryType.QUESTION_ANSWER:
+        "Ask a research question that can be answered from the paper library",
+    QueryType.GENERAL:
+        "General research conversation or open-ended discussion",
+}
+
+
+def _load_index() -> Dict[str, Any]:
+    global _INDEX
+    if _INDEX is None:
+        path = Path(__file__).parent.parent / "data" / "semantic_router_index.json"
+        if path.exists():
+            _INDEX = json.loads(path.read_text(encoding="utf-8"))
+        else:
+            _INDEX = {}
+    return _INDEX
+
+
+# ─── Keyword scoring ──────────────────────────────────────────────────────────
+
+_QUERY_TYPE_KEYWORDS: Dict[QueryType, List[str]] = {
+    QueryType.GAP_ANALYSIS: [
+        "gap", "gaps", "空白", "未解决", "missing", "unresolved",
+        "opportunity", "差距", "limitation", "limitations", "不足",
+        "untouched", "overlooked", "open problem", "open question",
+    ],
+    QueryType.HYPOTHESIS_GENERATION: [
+        "hypothesis", "假设", "假设生成", "conjecture", "predict",
+        "预测", "实验设计", "hypothesize", "if-then",
+    ],
+    QueryType.EXPERIMENT: [
+        "experiment", "实验", "ab test", "evaluate", "评估",
+        "validate", "验证", "trial", "跑实验", "实验结果",
+        "benchmark", "benchmarking",
+    ],
+    QueryType.INSIGHT: [
+        "insight", "insights", "发现", "洞察", "pattern", "patterns",
+        "发现", "key finding", "takeaway", "synthesis",
+    ],
+    QueryType.NARRATIVE: [
+        "narrative", "story", "线程", "progress", "phase", "跟踪",
+        "跟踪", "进展", "状态", "story arc",
+    ],
+    QueryType.PAPER_SEARCH: [
+        "paper", "papers", "search", "find", "论文", "搜索",
+        "arxiv", "找论文", "文献", "publication",
+    ],
+    QueryType.QUESTION_ANSWER: [
+        "what", "who", "how", "why", "explain", "什么", "如何",
+        "为什么", "请问", "回答", "answer", "can you",
+    ],
+    QueryType.GENERAL: [
+        "chat", "talk", "discuss", "对话", "聊聊", "tell me",
+        "about", "introduction", "介绍",
+    ],
+}
+
+
+# ─── LLM-based routing ───────────────────────────────────────────────────────
+
+def _route_by_llm(query: str, model: Optional[str] = None) -> Route:
+    """Primary router: classify via LLM."""
+    model = model or "qwen3.5-plus"
+
+    capability_lines = "\n".join(
+        f"  - {qt.value}: {desc}"
+        for qt, desc in _CAPABILITY_DESCRIPTIONS.items()
+    )
+
+    system_prompt = (
+        "You are a CLI research-command classifier. "
+        "Given a user's natural-language research query, classify it into exactly one type.\n\n"
+        f"Available types:\n{capability_lines}\n\n"
+        "Return ONLY valid JSON with this exact shape:\n"
+        "  {\"query_type\": \"...\", \"confidence\": 0.0-1.0, "
+        "\"reasoning\": \"...\", \"multi_intent\": false}\n\n"
+        "Rules:\n"
+        "  - confidence < 0.5 means you are uncertain\n"
+        "  - multi_intent=true only when query clearly contains TWO distinct intents "
+        "(e.g. '分析gap并提出假设' = gap_analysis + hypothesis_generation)\n"
+        "  - If multi_intent=true, also include: "
+        "\"secondary_query_type\": \"...\""
+    )
+
+    messages: List[Dict[str, str]] = [
+        {"role": "user", "content": query},
+    ]
+
+    try:
+        raw = call_llm_chat_completions(
+            messages=messages,
+            model=model,
+            system_prompt=system_prompt,
+        )
+    except (ValueError, Exception):
+        # No API key or other LLM error — let route() fall back
+        raise
+
+    parsed = json.loads(raw)
+    qt = QueryType(parsed["query_type"])
+
+    route = Route(
+        query_type=qt,
+        confidence=float(parsed["confidence"]),
+        primary_command=_QUERY_TYPE_TO_COMMAND[qt],
+        reasoning=parsed.get("reasoning", ""),
+        multi_intent=parsed.get("multi_intent", False),
+    )
+
+    if route.multi_intent:
+        secondary_str = parsed.get("secondary_query_type")
+        if secondary_str:
+            route.secondary_query_type = QueryType(secondary_str)
+            route.sub_commands = [
+                route.primary_command,
+                _QUERY_TYPE_TO_COMMAND[route.secondary_query_type],
+            ]
+        else:
+            route.multi_intent = False
+
+    return route
+
+
+# ─── Embedding-based fallback ────────────────────────────────────────────────
+
+def _cosine_sim(a: List[float], b: List[float]) -> float:
+    dot = sum(x * y for x, y in zip(a, b))
+    norm_a = math.sqrt(sum(x * x for x in a))
+    norm_b = math.sqrt(sum(x * x for x in b))
+    if norm_a == 0 or norm_b == 0:
+        return 0.0
+    return dot / (norm_a * norm_b)
+
+
+def _route_by_embedding(query: str) -> Route:
+    """Cosine-similarity fallback: compare query embedding against capability descriptions."""
+    try:
+        from cli.cmd.dedup_semantic import _get_ollama_embedding_batch
+
+        texts = [query] + [
+            _CAPABILITY_DESCRIPTIONS[qt] for qt in QueryType
+        ]
+        embeddings = _get_ollama_embedding_batch(texts)
+        if not embeddings or embeddings[0] is None:
+            raise RuntimeError("Embedding service unavailable")
+        query_emb = embeddings[0]
+        cap_embs = [e for e in embeddings[1:] if e is not None]
+
+        scores: List[float] = [
+            _cosine_sim(query_emb, emb) for emb in cap_embs
+        ]
+
+        best_idx = int(max(range(len(scores)), key=lambda i: scores[i]))
+        best_qt  = list(QueryType)[best_idx]
+
+        return Route(
+            query_type=best_qt,
+            confidence=float(scores[best_idx]),
+            primary_command=_QUERY_TYPE_TO_COMMAND[best_qt],
+            reasoning="[embedding fallback]",
+        )
+    except Exception as e:
+        logger.debug("Embedding routing failed: %s", e)
+        raise
+
+
+# ─── Keyword-based fallback ───────────────────────────────────────────────────
+
+def _route_by_keyword(query: str) -> Route:
+    """Last-resort: score by keyword overlap."""
+    q_lower = query.lower()
+    best_score = 0.0
+    best_qt = QueryType.GENERAL
+
+    for qt, keywords in _QUERY_TYPE_KEYWORDS.items():
+        score = sum(1.0 for kw in keywords if kw in q_lower)
+        if score > best_score:
+            best_score = score
+            best_qt = qt
+
+    return Route(
+        query_type=best_qt,
+        confidence=min(best_score / 3.0, 1.0),   # 3+ keyword hits → 100%
+        primary_command=_QUERY_TYPE_TO_COMMAND[best_qt],
+        reasoning=f"[keyword fallback: score={best_score:.1f}]",
+    )
+
+
+# ─── SemanticRouter ───────────────────────────────────────────────────────────
+
+class SemanticRouter:
+    """Route a natural-language query to the appropriate CLI subcommand.
+
+    Degradation chain: LLM classification → embedding similarity → keyword heuristic.
+    """
+
+    def __init__(self, model: Optional[str] = None):
+        self.model = model or "qwen3.5-plus"
+
+    def route(self, query: str) -> Route:
+        # Primary: LLM
+        try:
+            return _route_by_llm(query, self.model)
+        except Exception as e:
+            logger.debug("LLM routing failed, trying embedding: %s", e)
+
+        # Fallback 1: embedding similarity
+        try:
+            return _route_by_embedding(query)
+        except Exception as e:
+            logger.debug("Embedding routing failed, using keyword: %s", e)
+
+        # Fallback 2: keyword heuristic
+        return _route_by_keyword(query)
+
+    def execute(self, route: Route, query: str, exec_all: bool = False) -> Dict[str, str]:
+        """Execute routed command(s), capture stdout. Returns {command: output}."""
+        commands = route.sub_commands if (route.multi_intent and exec_all) else [route.primary_command]
+        outputs: Dict[str, str] = {}
+
+        for cmd in commands:
+            try:
+                output = _run_command_by_name(cmd, query)
+                outputs[cmd] = output
+            except (Exception, SystemExit) as exc:
+                logger.warning("Command %s failed: %s", cmd, exc)
+                outputs[cmd] = f"[ERROR in {cmd}: {exc}]"
+
+        return outputs
+
+
+# ─── Internal command runner ───────────────────────────────────────────────────
+
+def _run_command_by_name(subcmd: str, query: str) -> str:
+    """Run a CLI subcommand by name, capturing stdout as a string.
+
+    Bypasses argparse entirely — directly constructs Namespace objects from the
+    natural-language query string.  This avoids the fundamental mismatch between
+    free-form query text and argparse's token-based positional argument parsing.
+    """
+    import argparse
+    import contextlib
+    from io import StringIO
+
+    # ── Build the args namespace directly from the query string ──────────────
+    #
+    # Each command has a primary positional (topic / query / question) that
+    # receives the full query text.  Optional flags are left at their defaults.
+    # Commands with required sub-actions (e.g. insight) use sensible defaults.
+    #
+    # Map: subcmd → primary positional attribute name
+    _POSITIONAL_MAP: Dict[str, str] = {
+        "gap":          "topic",
+        "hypothesize":  "topic",
+        "experiment":   "query",
+        "insight":      "action",   # required; set to "list" (see below)
+        "narrative":    "question",
+        "ask":          "query",
+        "search":       "topic",
+        "chat":         "topic",
+    }
+
+    attr = _POSITIONAL_MAP.get(subcmd, "topic")
+
+    # insight uses a required "action" positional; all other fields use --query
+    if subcmd == "insight":
+        args = argparse.Namespace(
+            subcmd=subcmd,
+            action="list",
+            query=query or "",
+            tags=None,
+            markdown=False,
+            type="finding",
+        )
+    elif subcmd == "gap":
+        # All optional flags default to False/None so the command uses its own defaults
+        args = argparse.Namespace(
+            subcmd=subcmd,
+            topic=query,
+            no_llm=False,
+            json=False,
+            min_papers=3,
+            model=None,
+            interactive=False,
+            enhanced=False,
+            no_insights=False,
+            hypothesis=False,
+            profile=False,
+            history=False,
+            stats=False,
+            prefs_history=False,
+        )
+    elif subcmd == "ask":
+        args = argparse.Namespace(
+            subcmd=subcmd,
+            query=query,
+            context=None,
+            verbose=False,
+            no_insights=False,
+            max_papers=10,
+            route=False,
+        )
+    else:
+        args = argparse.Namespace(subcmd=subcmd, **{attr: query})
+
+    # ── Capture stdout and dispatch ──────────────────────────────────────────
+    buf = StringIO()
+    with contextlib.redirect_stdout(buf):
+        _dispatch_command(subcmd, args)
+
+    return buf.getvalue()
+
+
+def _dispatch_command(subcmd: str, args: argparse.Namespace) -> None:
+    """Dispatch to the appropriate _run_<subcmd> function."""
+    from cli import _run_gap, _run_hypothesize, _run_experiment
+    from cli import _run_insight, _run_narrative, _run_ask
+    from cli import _run_search, _run_chat
+
+    dispatch: Dict[str, Callable] = {
+        "gap":          _run_gap,
+        "hypothesize":  _run_hypothesize,
+        "experiment":   _run_experiment,
+        "insight":      _run_insight,
+        "narrative":    _run_narrative,
+        "ask":          _run_ask,
+        "search":       _run_search,
+        "chat":         _run_chat,
+    }
+
+    fn = dispatch.get(subcmd)
+    if fn is None:
+        raise ValueError(f"No dispatcher for command: {subcmd}")
+    fn(args)

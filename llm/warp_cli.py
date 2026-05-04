@@ -1,1 +1,196 @@
-IiIiTExNIHByb3ZpZGVyIHVzaW5nIFdhcnAgQ0xJIOKAlCB6ZXJvIEFQSSBrZXkgcmVxdWlyZWQhCgpVc2VzIHRoZSBpbnN0YWxsZWQgV2FycCB0ZXJtaW5hbCB0byBtYWtlIExMTSBjYWxscyB2aWEgaXRzIGJ1aWx0LWluCmFnZW50aWMgQUkgZmVhdHVyZXMuIE5vIEFQSSBrZXkgY29uZmlndXJhdGlvbiBuZWVkZWQuCgpXYXJwIHN1cHBvcnRzIHZhcmlvdXMgQUkgbW9kZWxzIGFuZCBwcm92aWRlcyBhIGNsZWFuIHRlcm1pbmFsIGludGVyZmFjZQpmb3IgQUktYXNzaXN0ZWQgZGV2ZWxvcG1lbnQuCgpVc2FnZToKICAgIGZyb20gbGxtLndhcnBfY2xpIGltcG9ydCBXYXJwQ0xJQ2xpZW50CiAgICBjbGllbnQgPSBXYXJwQ0xJQ2xpZW50KCkKICAgIHJlc3BvbnNlID0gY2xpZW50LmNoYXQoIldoYXQgaXMgUkFHPyIsIG1vZGVsPSJjbGF1ZGUtMy01LXNvbm5ldC1sYXRlc3QiKQoiIiIKCmltcG9ydCBqc29uCmltcG9ydCBzdWJwcm9jZXNzCmltcG9ydCBzeXMKZnJvbSB0eXBpbmcgaW1wb3J0IE9wdGlvbmFsCgoKZGVmIF9nZXRfd2FycF9leGVjdXRhYmxlKCkgLT4gc3RyOgogICAgIiIiR2V0IHRoZSBjb3JyZWN0IFdhcnAgZXhlY3V0YWJsZSBmb3IgdGhlIHBsYXRmb3JtLiIiIgogICAgaWYgc3lzLnBsYXRmb3JtICE9ICJ3aW4zMiI6CiAgICAgICAgZm9yIG5hbWUgaW4gWyJ3YXJwIiwgIldhcnAiXToKICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgcmVzdWx0ID0gc3VicHJvY2Vzcy5ydW4oCiAgICAgICAgICAgICAgICAgICAgW25hbWUsICItLXZlcnNpb24iXSwKICAgICAgICAgICAgICAgICAgICBjYXB0dXJlX291dHB1dD1UcnVlLAogICAgICAgICAgICAgICAgICAgIHRleHQ9VHJ1ZSwKICAgICAgICAgICAgICAgICAgICB0aW1lb3V0PTEwLAogICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgaWYgcmVzdWx0LnJldHVybmNvZGUgPT0gMDoKICAgICAgICAgICAgICAgICAgICByZXR1cm4gbmFtZQogICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAgICAgY29udGludWUKICAgICAgICByZXR1cm4gIndhcnAiCgogICAgIyBPbiBXaW5kb3dzLCB0cnkgZGlmZmVyZW50IHZhcmlhbnRzCiAgICBmb3IgbmFtZSBpbiBbIndhcnAuY21kIiwgIndhcnAuZXhlIiwgIndhcnAiXToKICAgICAgICB0cnk6CiAgICAgICAgICAgIHJlc3VsdCA9IHN1YnByb2Nlc3MucnVuKAogICAgICAgICAgICAgICAgW25hbWUsICItLXZlcnNpb24iXSwKICAgICAgICAgICAgICAgIGNhcHR1cmVfb3V0cHV0PVRydWUsCiAgICAgICAgICAgICAgICB0ZXh0PVRydWUsCiAgICAgICAgICAgICAgICB0aW1lb3V0PTEwLAogICAgICAgICAgICApCiAgICAgICAgICAgIGlmIHJlc3VsdC5yZXR1cm5jb2RlID09IDA6CiAgICAgICAgICAgICAgICByZXR1cm4gbmFtZQogICAgICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgICAgIGNvbnRpbnVlCgogICAgcmV0dXJuICJ3YXJwIgoKCmNsYXNzIFdhcnBDTElDbGllbnQ6CiAgICAiIiJMTE0gY2xpZW50IHVzaW5nIFdhcnAgQ0xJIGFzIHRoZSBiYWNrZW5kLgoKICAgIEFkdmFudGFnZXM6CiAgICAtIE5vIEFQSSBrZXkgbmVlZGVkIOKAlCB1c2VzIFdhcnAncyBidWlsdC1pbiBhdXRoZW50aWNhdGlvbgogICAgLSBTdXBwb3J0cyBtdWx0aXBsZSBBSSBtb2RlbHMKICAgIC0gV29ya3Mgb3V0IG9mIHRoZSBib3ggaWYgV2FycCBpcyBpbnN0YWxsZWQKCiAgICBMaW1pdGF0aW9uczoKICAgIC0gUmVxdWlyZXMgV2FycCBDTEkgdG8gYmUgaW5zdGFsbGVkCiAgICAtIFNsb3dlciB0aGFuIGRpcmVjdCBBUEkgY2FsbHMgKHN1YnByb2Nlc3Mgb3ZlcmhlYWQpCiAgICAtIFdpbmRvd3Mgc3VwcG9ydCBtYXkgYmUgbGltaXRlZAogICAgIiIiCgogICAgZGVmIF9faW5pdF9fKHNlbGYsIGNsaV9wYXRoOiBPcHRpb25hbFtzdHJdID0gTm9uZSk6CiAgICAgICAgIiIiSW5pdGlhbGl6ZSB0aGUgV2FycCBDTEkgY2xpZW50LgoKICAgICAgICBBcmdzOgogICAgICAgICAgICBjbGlfcGF0aDogUGF0aCB0byBXYXJwIGV4ZWN1dGFibGUgKGF1dG8tZGV0ZWN0ZWQgYnkgZGVmYXVsdCkKICAgICAgICAiIiIKICAgICAgICBzZWxmLmNsaV9wYXRoID0gY2xpX3BhdGggb3IgX2dldF93YXJwX2V4ZWN1dGFibGUoKQoKICAgIGRlZiBjaGF0KAogICAgICAgIHNlbGYsCiAgICAgICAgcHJvbXB0OiBzdHIsCiAgICAgICAgbW9kZWw6IHN0ciA9ICJjbGF1ZGUtMy01LXNvbm5ldC1sYXRlc3QiLAogICAgICAgIHN5c3RlbV9wcm9tcHQ6IE9wdGlvbmFsW3N0cl0gPSBOb25lLAogICAgICAgIHRlbXBlcmF0dXJlOiBmbG9hdCA9IDAuMiwKICAgICAgICBtYXhfdG9rZW5zOiBpbnQgPSA0MDk2LAogICAgKSAtPiBzdHI6CiAgICAgICAgIiIiU2VuZCBhIGNoYXQgbWVzc2FnZSBhbmQgZ2V0IGEgcmVzcG9uc2UuCgogICAgICAgIEFyZ3M6CiAgICAgICAgICAgIHByb21wdDogVXNlciBtZXNzYWdlCiAgICAgICAgICAgIG1vZGVsOiBNb2RlbCB0byB1c2UgKGNsYXVkZS0zLTUtc29ubmV0LWxhdGVzdCwgZ3B0LTRvLCBldGMuKQogICAgICAgICAgICBzeXN0ZW1fcHJvbXB0OiBPcHRpb25hbCBzeXN0ZW0gbWVzc2FnZQogICAgICAgICAgICB0ZW1wZXJhdHVyZTogU2FtcGxpbmcgdGVtcGVyYXR1cmUKICAgICAgICAgICAgbWF4X3Rva2VuczogTWF4aW11bSB0b2tlbnMgaW4gcmVzcG9uc2UKCiAgICAgICAgUmV0dXJuczoKICAgICAgICAgICAgTW9kZWwncyB0ZXh0IHJlc3BvbnNlCiAgICAgICAgIiIiCiAgICAgICAgZnVsbF9wcm9tcHQgPSBwcm9tcHQKICAgICAgICBpZiBzeXN0ZW1fcHJvbXB0OgogICAgICAgICAgICBmdWxsX3Byb21wdCA9IGYiW1N5c3RlbToge3N5c3RlbV9wcm9tcHR9XVxuXG57cHJvbXB0fSIKCiAgICAgICAgdHJ5OgogICAgICAgICAgICAjIFdhcnAgQ0xJIHVzYWdlIChiYXNlZCBvbiB3YXJwLmRldiBhZ2VudCBwbGF0Zm9ybSBkb2NzKToKICAgICAgICAgICAgIyB3YXJwIGFpIC0tbW9kZWwgPG1vZGVsPiBbLS1wcm9tcHQgPHRleHQ+XSBbLS1vdXRwdXQganNvbl0KICAgICAgICAgICAgcmVzdWx0ID0gc3VicHJvY2Vzcy5ydW4oCiAgICAgICAgICAgICAgICBbCiAgICAgICAgICAgICAgICAgICAgc2VsZi5jbGlfcGF0aCwKICAgICAgICAgICAgICAgICAgICAiYWkiLAogICAgICAgICAgICAgICAgICAgICItLW1vZGVsIiwKICAgICAgICAgICAgICAgICAgICBtb2RlbCwKICAgICAgICAgICAgICAgICAgICAiLS1wcm9tcHQiLAogICAgICAgICAgICAgICAgICAgIGZ1bGxfcHJvbXB0LAogICAgICAgICAgICAgICAgICAgICItLW91dHB1dC1mb3JtYXQiLAogICAgICAgICAgICAgICAgICAgICJqc29uIiwKICAgICAgICAgICAgICAgIF0sCiAgICAgICAgICAgICAgICBjYXB0dXJlX291dHB1dD1UcnVlLAogICAgICAgICAgICAgICAgdGV4dD1UcnVlLAogICAgICAgICAgICAgICAgdGltZW91dD0xMjAsCiAgICAgICAgICAgICAgICBlbmNvZGluZz0idXRmLTgiLAogICAgICAgICAgICApCgogICAgICAgICAgICBpZiByZXN1bHQucmV0dXJuY29kZSAhPSAwOgogICAgICAgICAgICAgICAgc3RkZXJyID0gcmVzdWx0LnN0ZGVyci5zdHJpcCgpCiAgICAgICAgICAgICAgICByYWlzZSBSdW50aW1lRXJyb3IoZiJXYXJwIENMSSBlcnJvcjoge3N0ZGVycn0iKQoKICAgICAgICAgICAgIyBQYXJzZSBKU09OIHJlc3BvbnNlIHRvIGV4dHJhY3QgcmVzdWx0CiAgICAgICAgICAgIG91dHB1dCA9IHJlc3VsdC5zdGRvdXQuc3RyaXAoKQogICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICBkYXRhID0ganNvbi5sb2FkcyhvdXRwdXQpCiAgICAgICAgICAgICAgICAjIFRyeSBjb21tb24gSlNPTiByZXNwb25zZSBmb3JtYXRzCiAgICAgICAgICAgICAgICBpZiBpc2luc3RhbmNlKGRhdGEsIGRpY3QpOgogICAgICAgICAgICAgICAgICAgICMgV2FycCBtaWdodCByZXR1cm4geyJyZXNwb25zZSI6ICIuLi4iLCAuLi59IG9yIHsicmVzdWx0IjogIi4uLiIsIC4uLn0KICAgICAgICAgICAgICAgICAgICByZXR1cm4gKAogICAgICAgICAgICAgICAgICAgICAgICBkYXRhLmdldCgicmVzcG9uc2UiKSBvciBkYXRhLmdldCgicmVzdWx0Iikgb3IgZGF0YS5nZXQoInRleHQiKSBvciBzdHIoZGF0YSkKICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICByZXR1cm4gc3RyKGRhdGEpCiAgICAgICAgICAgIGV4Y2VwdCBqc29uLkpTT05EZWNvZGVFcnJvcjoKICAgICAgICAgICAgICAgICMgRmFsbGJhY2s6IHJldHVybiByYXcgb3V0cHV0IGlmIG5vdCBKU09OCiAgICAgICAgICAgICAgICByZXR1cm4gb3V0cHV0CgogICAgICAgIGV4Y2VwdCBzdWJwcm9jZXNzLlRpbWVvdXRFeHBpcmVkOgogICAgICAgICAgICByYWlzZSBSdW50aW1lRXJyb3IoIldhcnAgQ0xJIHRpbWVkIG91dCBhZnRlciAxMjAgc2Vjb25kcyIpIGZyb20gTm9uZQogICAgICAgIGV4Y2VwdCBGaWxlTm90Rm91bmRFcnJvcjoKICAgICAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKAogICAgICAgICAgICAgICAgZiJXYXJwIG5vdCBmb3VuZCBhdCAne3NlbGYuY2xpX3BhdGh9Jy4gUGxlYXNlIGluc3RhbGwgV2FycDogaHR0cHM6Ly93YXJwLmRldiIKICAgICAgICAgICAgKSBmcm9tIE5vbmUKICAgICAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgICAgIHJhaXNlIFJ1bnRpbWVFcnJvcihmIldhcnAgQ0xJIGNhbGwgZmFpbGVkOiB7ZX0iKSBmcm9tIGUKCiAgICBkZWYgaXNfYXZhaWxhYmxlKHNlbGYpIC0+IGJvb2w6CiAgICAgICAgIiIiQ2hlY2sgaWYgV2FycCBDTEkgaXMgYXZhaWxhYmxlIGFuZCB3b3JraW5nLgoKICAgICAgICBSZXR1cm5zOgogICAgICAgICAgICBUcnVlIGlmIFdhcnAgY2FuIGJlIGludm9rZWQsIEZhbHNlIG90aGVyd2lzZQogICAgICAgICIiIgogICAgICAgIHRyeToKICAgICAgICAgICAgcmVzdWx0ID0gc3VicHJvY2Vzcy5ydW4oCiAgICAgICAgICAgICAgICBbc2VsZi5jbGlfcGF0aCwgIi0tdmVyc2lvbiJdLAogICAgICAgICAgICAgICAgY2FwdHVyZV9vdXRwdXQ9VHJ1ZSwKICAgICAgICAgICAgICAgIHRleHQ9VHJ1ZSwKICAgICAgICAgICAgICAgIHRpbWVvdXQ9MTAsCiAgICAgICAgICAgICkKICAgICAgICAgICAgcmV0dXJuIHJlc3VsdC5yZXR1cm5jb2RlID09IDAKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICByZXR1cm4gRmFsc2UKCiAgICBkZWYgZ2V0X3ZlcnNpb24oc2VsZikgLT4gT3B0aW9uYWxbc3RyXToKICAgICAgICAiIiJHZXQgV2FycCB2ZXJzaW9uIGlmIGF2YWlsYWJsZS4KCiAgICAgICAgUmV0dXJuczoKICAgICAgICAgICAgVmVyc2lvbiBzdHJpbmcgb3IgTm9uZSBpZiBub3QgYXZhaWxhYmxlCiAgICAgICAgIiIiCiAgICAgICAgdHJ5OgogICAgICAgICAgICByZXN1bHQgPSBzdWJwcm9jZXNzLnJ1bigKICAgICAgICAgICAgICAgIFtzZWxmLmNsaV9wYXRoLCAiLS12ZXJzaW9uIl0sCiAgICAgICAgICAgICAgICBjYXB0dXJlX291dHB1dD1UcnVlLAogICAgICAgICAgICAgICAgdGV4dD1UcnVlLAogICAgICAgICAgICAgICAgdGltZW91dD0xMCwKICAgICAgICAgICAgICAgIGVuY29kaW5nPSJ1dGYtOCIsCiAgICAgICAgICAgICkKICAgICAgICAgICAgaWYgcmVzdWx0LnJldHVybmNvZGUgPT0gMDoKICAgICAgICAgICAgICAgIHJldHVybiByZXN1bHQuc3Rkb3V0LnN0cmlwKCkKICAgICAgICAgICAgcmV0dXJuIE5vbmUKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICByZXR1cm4gTm9uZQoKCiMgU2luZ2xldG9uIGluc3RhbmNlIGZvciBjb252ZW5pZW5jZQpfZGVmYXVsdF9jbGllbnQ6IE9wdGlvbmFsW1dhcnBDTElDbGllbnRdID0gTm9uZQoKCmRlZiBnZXRfd2FycF9jbGlfY2xpZW50KCkgLT4gV2FycENMSUNsaWVudDoKICAgICIiIkdldCBvciBjcmVhdGUgdGhlIGRlZmF1bHQgV2FycCBDTEkgY2xpZW50IGluc3RhbmNlLiIiIgogICAgZ2xvYmFsIF9kZWZhdWx0X2NsaWVudAogICAgaWYgX2RlZmF1bHRfY2xpZW50IGlzIE5vbmU6CiAgICAgICAgX2RlZmF1bHRfY2xpZW50ID0gV2FycENMSUNsaWVudCgpCiAgICByZXR1cm4gX2RlZmF1bHRfY2xpZW50CgoKZGVmIGlzX3dhcnBfY2xpX2F2YWlsYWJsZSgpIC0+IGJvb2w6CiAgICAiIiJRdWljayBjaGVjayBpZiBXYXJwIENMSSBpcyBhdmFpbGFibGUuIiIiCiAgICByZXR1cm4gZ2V0X3dhcnBfY2xpX2NsaWVudCgpLmlzX2F2YWlsYWJsZSgpCg==
+"""LLM provider using Warp CLI — zero API key required!
+
+Uses the installed Warp terminal to make LLM calls via its built-in
+agentic AI features. No API key configuration needed.
+
+Warp supports various AI models and provides a clean terminal interface
+for AI-assisted development.
+
+Usage:
+    from llm.warp_cli import WarpCLIClient
+    client = WarpCLIClient()
+    response = client.chat("What is RAG?", model="claude-3-5-sonnet-latest")
+"""
+import json
+import subprocess
+import sys
+from typing import Optional
+
+
+def _get_warp_executable() -> str:
+    """Get the correct Warp executable for the platform."""
+    if sys.platform != "win32":
+        for name in ["warp", "Warp"]:
+            try:
+                result = subprocess.run(
+                    [name, "--version"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                if result.returncode == 0:
+                    return name
+            except Exception:
+                continue
+        return "warp"
+
+    # On Windows, try different variants
+    for name in ["warp.cmd", "warp.exe", "warp"]:
+        try:
+            result = subprocess.run(
+                [name, "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            if result.returncode == 0:
+                return name
+        except Exception:
+            continue
+
+    return "warp"
+
+
+class WarpCLIClient:
+    """LLM client using Warp CLI as the backend.
+
+    Advantages:
+    - No API key needed — uses Warp's built-in authentication
+    - Supports multiple AI models
+    - Works out of the box if Warp is installed
+
+    Limitations:
+    - Requires Warp CLI to be installed
+    - Slower than direct API calls (subprocess overhead)
+    - Windows support may be limited
+    """
+
+    def __init__(self, cli_path: Optional[str] = None):
+        """Initialize the Warp CLI client.
+
+        Args:
+            cli_path: Path to Warp executable (auto-detected by default)
+        """
+        self.cli_path = cli_path or _get_warp_executable()
+
+    def chat(
+        self,
+        prompt: str,
+        model: str = "claude-3-5-sonnet-latest",
+        system_prompt: Optional[str] = None,
+        temperature: float = 0.2,
+        max_tokens: int = 4096,
+    ) -> str:
+        """Send a chat message and get a response.
+
+        Args:
+            prompt: User message
+            model: Model to use (claude-3-5-sonnet-latest, gpt-4o, etc.)
+            system_prompt: Optional system message
+            temperature: Sampling temperature
+            max_tokens: Maximum tokens in response
+
+        Returns:
+            Model's text response
+        """
+        full_prompt = prompt
+        if system_prompt:
+            full_prompt = f"[System: {system_prompt}]\n\n{prompt}"
+
+        try:
+            # Warp CLI usage (based on warp.dev agent platform docs):
+            # warp ai --model <model> [--prompt <text>] [--output json]
+            result = subprocess.run(
+                [
+                    self.cli_path,
+                    "ai",
+                    "--model", model,
+                    "--prompt", full_prompt,
+                    "--output-format", "json",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=120,
+                encoding='utf-8',
+            )
+
+            if result.returncode != 0:
+                stderr = result.stderr.strip()
+                raise RuntimeError(f"Warp CLI error: {stderr}")
+
+            # Parse JSON response to extract result
+            output = result.stdout.strip()
+            try:
+                data = json.loads(output)
+                # Try common JSON response formats
+                if isinstance(data, dict):
+                    # Warp might return {"response": "...", ...} or {"result": "...", ...}
+                    return data.get("response") or data.get("result") or data.get("text") or str(data)
+                return str(data)
+            except json.JSONDecodeError:
+                # Fallback: return raw output if not JSON
+                return output
+
+        except subprocess.TimeoutExpired:
+            raise RuntimeError("Warp CLI timed out after 120 seconds") from None
+        except FileNotFoundError:
+            raise RuntimeError(
+                f"Warp not found at '{self.cli_path}'. "
+                "Please install Warp: https://warp.dev"
+            ) from None
+        except Exception as e:
+            raise RuntimeError(f"Warp CLI call failed: {e}") from e
+
+    def is_available(self) -> bool:
+        """Check if Warp CLI is available and working.
+
+        Returns:
+            True if Warp can be invoked, False otherwise
+        """
+        try:
+            result = subprocess.run(
+                [self.cli_path, "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            return result.returncode == 0
+        except Exception:
+            return False
+
+    def get_version(self) -> Optional[str]:
+        """Get Warp version if available.
+
+        Returns:
+            Version string or None if not available
+        """
+        try:
+            result = subprocess.run(
+                [self.cli_path, "--version"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+                encoding='utf-8',
+            )
+            if result.returncode == 0:
+                return result.stdout.strip()
+            return None
+        except Exception:
+            return None
+
+
+# Singleton instance for convenience
+_default_client: Optional[WarpCLIClient] = None
+
+
+def get_warp_cli_client() -> WarpCLIClient:
+    """Get or create the default Warp CLI client instance."""
+    global _default_client
+    if _default_client is None:
+        _default_client = WarpCLIClient()
+    return _default_client
+
+
+def is_warp_cli_available() -> bool:
+    """Quick check if Warp CLI is available."""
+    return get_warp_cli_client().is_available()

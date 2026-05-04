@@ -1,1 +1,85 @@
-IiIiQ0xJIGNvbW1hbmQ6IHJldmlldyDigJQgR2VuZXJhdGUgbGl0ZXJhdHVyZSByZXZpZXcuIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgYXJncGFyc2UKCmZyb20gY2xpLl9zaGFyZWQgaW1wb3J0IGdldF9kYiwgcHJpbnRfaW5mbwpmcm9tIGxsbS5yZXZpZXdfZ2VuZXJhdG9yIGltcG9ydCBSZXZpZXdHZW5lcmF0b3IKCgpkZWYgX2J1aWxkX3Jldmlld19wYXJzZXIoc3VicGFyc2VycykgLT4gYXJncGFyc2UuQXJndW1lbnRQYXJzZXI6CiAgICAiIiJCdWlsZCB0aGUgcmV2aWV3IHN1YmNvbW1hbmQgcGFyc2VyLiIiIgogICAgcCA9IHN1YnBhcnNlcnMuYWRkX3BhcnNlcigKICAgICAgICAicmV2aWV3IiwKICAgICAgICBoZWxwPSJHZW5lcmF0ZSBsaXRlcmF0dXJlIHJldmlldyIsCiAgICAgICAgZGVzY3JpcHRpb249IkdlbmVyYXRlIHN0cnVjdHVyZWQgbGl0ZXJhdHVyZSByZXZpZXcgZm9yIGEgcmVzZWFyY2ggdG9waWMuIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICJ0b3BpYyIsCiAgICAgICAgbmFyZ3M9Ij8iLAogICAgICAgIGRlZmF1bHQ9Tm9uZSwKICAgICAgICBoZWxwPSJSZXNlYXJjaCB0b3BpYyIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1kZXB0aCIsCiAgICAgICAgY2hvaWNlcz1bInNob3J0IiwgImZ1bGwiXSwKICAgICAgICBkZWZhdWx0PSJmdWxsIiwKICAgICAgICBoZWxwPSJSZXZpZXcgZGVwdGggKHNob3J0IG9yIGZ1bGwpIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLXNlY3Rpb25zIiwKICAgICAgICBuYXJncz0iKyIsCiAgICAgICAgY2hvaWNlcz1bIm92ZXJ2aWV3IiwgInN0cmVhbXMiLCAiY29udHJvdmVyc2llcyIsICJ0aW1lbGluZSIsICJnYXBzIl0sCiAgICAgICAgaGVscD0iU3BlY2lmaWMgc2VjdGlvbnMgdG8gZ2VuZXJhdGUiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tbWF4LXBhcGVycyIsCiAgICAgICAgdHlwZT1pbnQsCiAgICAgICAgZGVmYXVsdD01MCwKICAgICAgICBoZWxwPSJNYXhpbXVtIHBhcGVycyB0byBhbmFseXplIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWpzb24iLAogICAgICAgICItaiIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBoZWxwPSJKU09OIG91dHB1dCIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1leHBvcnQtbWQiLAogICAgICAgIHR5cGU9c3RyLAogICAgICAgIGRlZmF1bHQ9Tm9uZSwKICAgICAgICBoZWxwPSJFeHBvcnQgYXMgTWFya2Rvd24gZmlsZSIsCiAgICApCiAgICByZXR1cm4gcCAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCgpkZWYgX3J1bl9yZXZpZXcoYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKSAtPiBpbnQ6CiAgICAiIiJSdW4gbGl0ZXJhdHVyZSByZXZpZXcgY29tbWFuZC4iIiIKICAgIGRiID0gZ2V0X2RiKCkKICAgIGRiLmluaXQoKQoKICAgIGdlbmVyYXRvciA9IFJldmlld0dlbmVyYXRvcihkYj1kYikKCiAgICBpZiBub3QgYXJncy50b3BpYzoKICAgICAgICBwcmludCgi4p2MIOivt+aPkOS+myB0b3BpYyIpCiAgICAgICAgcmV0dXJuIDEgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgcHJpbnRfaW5mbyhmIvCfk5ogR2VuZXJhdGluZyBsaXRlcmF0dXJlIHJldmlldzoge2FyZ3MudG9waWN9IikKCiAgICByZXZpZXcgPSBnZW5lcmF0b3IuZ2VuZXJhdGUoCiAgICAgICAgdG9waWM9YXJncy50b3BpYywKICAgICAgICBtYXhfcGFwZXJzPWFyZ3MubWF4X3BhcGVycywKICAgICAgICBkZXB0aD1hcmdzLmRlcHRoLAogICAgICAgIHNlY3Rpb25zPWFyZ3Muc2VjdGlvbnMsCiAgICApCgogICAgaWYgYXJncy5qc29uOgogICAgICAgIHByaW50KGdlbmVyYXRvci5yZW5kZXJfanNvbihyZXZpZXcpKQogICAgZWxpZiBhcmdzLmV4cG9ydF9tZDoKICAgICAgICB3aXRoIG9wZW4oYXJncy5leHBvcnRfbWQsICJ3IiwgZW5jb2Rpbmc9InV0Zi04IikgYXMgZjoKICAgICAgICAgICAgZi53cml0ZShnZW5lcmF0b3IucmVuZGVyX21hcmtkb3duKHJldmlldykpCiAgICAgICAgcHJpbnQoZiLinJMgRXhwb3J0ZWQgdG8ge2FyZ3MuZXhwb3J0X21kfSIpCiAgICBlbHNlOgogICAgICAgIHByaW50KCkKICAgICAgICBwcmludChnZW5lcmF0b3IucmVuZGVyX21hcmtkb3duKHJldmlldykpCgogICAgcmV0dXJuIDAK
+"""CLI command: review — Generate literature review."""
+from __future__ import annotations
+
+import argparse
+
+from cli._shared import get_db, print_info
+from llm.review_generator import ReviewGenerator
+
+
+def _build_review_parser(subparsers) -> argparse.ArgumentParser:
+    """Build the review subcommand parser."""
+    p = subparsers.add_parser(
+        "review",
+        help="Generate literature review",
+        description="Generate structured literature review for a research topic.",
+    )
+    p.add_argument(
+        "topic",
+        nargs="?",
+        default=None,
+        help="Research topic",
+    )
+    p.add_argument(
+        "--depth",
+        choices=["short", "full"],
+        default="full",
+        help="Review depth (short or full)",
+    )
+    p.add_argument(
+        "--sections",
+        nargs="+",
+        choices=["overview", "streams", "controversies", "timeline", "gaps"],
+        help="Specific sections to generate",
+    )
+    p.add_argument(
+        "--max-papers",
+        type=int,
+        default=50,
+        help="Maximum papers to analyze",
+    )
+    p.add_argument(
+        "--json", "-j",
+        action="store_true",
+        help="JSON output",
+    )
+    p.add_argument(
+        "--export-md",
+        type=str,
+        default=None,
+        help="Export as Markdown file",
+    )
+    return p  # type: ignore[no-any-return]
+
+
+def _run_review(args: argparse.Namespace) -> int:
+    """Run literature review command."""
+    db = get_db()
+    db.init()
+
+    generator = ReviewGenerator(db=db)
+
+    if not args.topic:
+        print("❌ 请提供 topic")
+        return 1  # type: ignore[no-any-return]
+
+    print_info(f"📚 Generating literature review: {args.topic}")
+
+    review = generator.generate(
+        topic=args.topic,
+        max_papers=args.max_papers,
+        depth=args.depth,
+        sections=args.sections,
+    )
+
+    if args.json:
+        print(generator.render_json(review))
+    elif args.export_md:
+        with open(args.export_md, 'w', encoding='utf-8') as f:
+            f.write(generator.render_markdown(review))
+        print(f"✓ Exported to {args.export_md}")
+    else:
+        print()
+        print(generator.render_markdown(review))
+
+    return 0

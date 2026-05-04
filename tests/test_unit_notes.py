@@ -1,1 +1,578 @@
-IiIiVGllciA0IHVuaXQgdGVzdHMgZm9yIG5vdGVzLXJlbGF0ZWQgZnVuY3Rpb25zIChlbnN1cmVfY25vdGUsIHRpbWVsaW5lLCBjb2xsZWN0X3Bub3RlcywgZXRjLikuIiIiCgoKY2xhc3MgVGVzdFRvZGF5SXNvVGllcjQ6CiAgICBkZWYgdGVzdF9yZXR1cm5zX2lzb19mb3JtYXQoc2VsZik6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgcmVzdWx0ID0gYWlyby50b2RheV9pc28oKQogICAgICAgICMgRnJvemVuIHRvIDIwMjQtMDYtMTUgYnkgY29uZnRlc3QucHkgYXV0b3VzZSBmaXh0dXJlCiAgICAgICAgYXNzZXJ0IHJlc3VsdCA9PSAiMjAyNC0wNi0xNSIKCiAgICBkZWYgdGVzdF9yZXR1cm5zX3RvZGF5c19kYXRlKHNlbGYpOgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIHJlc3VsdCA9IGFpcm8udG9kYXlfaXNvKCkKICAgICAgICAjIEZyb3plbiB0byAyMDI0LTA2LTE1IGJ5IGNvbmZ0ZXN0LnB5IGF1dG91c2UgZml4dHVyZQogICAgICAgIGFzc2VydCByZXN1bHQgPT0gIjIwMjQtMDYtMTUiCgoKY2xhc3MgVGVzdFNsdWdpZnlUaXRsZVRpZXI0OgogICAgZGVmIHRlc3RfYmFzaWMoc2VsZik6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgYXNzZXJ0IGFpcm8uc2x1Z2lmeV90aXRsZSgiSGVsbG8gV29ybGQiKSA9PSAiSGVsbG8tV29ybGQiCgogICAgZGVmIHRlc3RfZW1wdHkoc2VsZik6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgYXNzZXJ0IGFpcm8uc2x1Z2lmeV90aXRsZSgiIikgPT0gIlBhcGVyIgoKICAgIGRlZiB0ZXN0X21heF9sZW4oc2VsZik6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgbG9uZ190aXRsZSA9ICJBIiAqIDIwMAogICAgICAgIHJlc3VsdCA9IGFpcm8uc2x1Z2lmeV90aXRsZShsb25nX3RpdGxlKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0KSA8PSAyMDAKCiAgICBkZWYgdGVzdF9zdHJpcHNfc3BlY2lhbF9jaGFycyhzZWxmKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICByZXN1bHQgPSBhaXJvLnNsdWdpZnlfdGl0bGUoIkhlbGxvISBXb3JsZD8gI1Rlc3QiKQogICAgICAgIGFzc2VydCAiISIgbm90IGluIHJlc3VsdAogICAgICAgIGFzc2VydCAiPyIgbm90IGluIHJlc3VsdAogICAgICAgIGFzc2VydCAiIyIgbm90IGluIHJlc3VsdAoKICAgIGRlZiB0ZXN0X3VuaWNvZGVfbGV0dGVyc19rZXB0KHNlbGYpOgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIHJlc3VsdCA9IGFpcm8uc2x1Z2lmeV90aXRsZSgi5py65Zmo5a2m5LmgIikKICAgICAgICBhc3NlcnQgcmVzdWx0ID09ICLmnLrlmajlrabkuaAiCgoKY2xhc3MgVGVzdElzUHJvYmFibHlEb2lUaWVyNDoKICAgIGRlZiB0ZXN0X3RydWVfcGF0dGVybnMoc2VsZik6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgYXNzZXJ0IGFpcm8uaXNfcHJvYmFibHlfZG9pKCIxMC4xMDAxL3Rlc3QiKQogICAgICAgIGFzc2VydCBhaXJvLmlzX3Byb2JhYmx5X2RvaSgiMTAuMTIzNC9hYmMiKQoKICAgIGRlZiB0ZXN0X2ZhbHNlX3BhdHRlcm5zKHNlbGYpOgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIGFzc2VydCBub3QgYWlyby5pc19wcm9iYWJseV9kb2koIm5vdCBhIGRvaSIpCiAgICAgICAgYXNzZXJ0IG5vdCBhaXJvLmlzX3Byb2JhYmx5X2RvaSgiIikKCgpjbGFzcyBUZXN0Tm9ybWFsaXplRG9pVGllcjQ6CiAgICBkZWYgdGVzdF91cmxfc3RyaXBwZWQoc2VsZik6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgYXNzZXJ0IGFpcm8ubm9ybWFsaXplX2RvaSgiaHR0cHM6Ly9kb2kub3JnLzEwLjEwMDEvdGVzdCIpID09ICIxMC4xMDAxL3Rlc3QiCiAgICAgICAgYXNzZXJ0IGFpcm8ubm9ybWFsaXplX2RvaSgiaHR0cDovL2R4LmRvaS5vcmcvMTAuMTAwMS90ZXN0IikgPT0gIjEwLjEwMDEvdGVzdCIKCiAgICBkZWYgdGVzdF9wbGFpbihzZWxmKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICBhc3NlcnQgYWlyby5ub3JtYWxpemVfZG9pKCIxMC4xMDAxL3Rlc3QiKSA9PSAiMTAuMTAwMS90ZXN0IgoKICAgIGRlZiB0ZXN0X25vbmVfaW5wdXQoc2VsZik6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgYXNzZXJ0IGFpcm8ubm9ybWFsaXplX2RvaShOb25lKSBpcyBOb25lCgoKY2xhc3MgVGVzdE5vcm1hbGl6ZUFyeGl2SWRUaWVyNDoKICAgIGRlZiB0ZXN0X3VybF9mb3JtYXRzKHNlbGYpOgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIGFzc2VydCBhaXJvLm5vcm1hbGl6ZV9hcnhpdl9pZCgiaHR0cHM6Ly9hcnhpdi5vcmcvYWJzLzIzMDEuMDAwMDEiKSA9PSAiMjMwMS4wMDAwMSIKICAgICAgICBhc3NlcnQgYWlyby5ub3JtYWxpemVfYXJ4aXZfaWQoImh0dHBzOi8vYXJ4aXYub3JnL2Ficy8yMzAxLjAwMDAxdjIiKSA9PSAiMjMwMS4wMDAwMXYyIgoKICAgIGRlZiB0ZXN0X25ld19zdHlsZV9iYXJlKHNlbGYpOgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIGFzc2VydCBhaXJvLm5vcm1hbGl6ZV9hcnhpdl9pZCgiMjMwMS4wMDAwMSIpID09ICIyMzAxLjAwMDAxIgogICAgICAgIGFzc2VydCBhaXJvLm5vcm1hbGl6ZV9hcnhpdl9pZCgiMjMwMS4wMDAwMXYyIikgPT0gIjIzMDEuMDAwMDF2MiIKCiAgICBkZWYgdGVzdF9vbGRfc3R5bGVfYmFyZShzZWxmKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICBhc3NlcnQgYWlyby5ub3JtYWxpemVfYXJ4aXZfaWQoImhlcC10aC85OTAxMDAxIikgPT0gImhlcC10aC85OTAxMDAxIgoKICAgIGRlZiB0ZXN0X2RvaV9mb3JtYXQoc2VsZik6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgYXNzZXJ0IGFpcm8ubm9ybWFsaXplX2FyeGl2X2lkKCIxMC4xMDAxL3Rlc3QiKSBpcyBOb25lCgogICAgZGVmIHRlc3Rfbm9uZV9pbnB1dChzZWxmKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICBhc3NlcnQgYWlyby5ub3JtYWxpemVfYXJ4aXZfaWQoTm9uZSkgaXMgTm9uZQoKCmNsYXNzIFRlc3RQYXJzZUZyb250bWF0dGVyVGllcjQ6CiAgICBkZWYgdGVzdF9wYXJzZXNfeWFtbF9ibG9jayhzZWxmKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICBjb250ZW50ID0gIi0tLVxudGl0bGU6IFRlc3RcbnRhZ3M6XG4gIC0gQVxuICAtIEJcbi0tLVxuYm9keSIKICAgICAgICByZXN1bHQgPSBhaXJvLnBhcnNlX2Zyb250bWF0dGVyKGNvbnRlbnQpCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsidGl0bGUiXSA9PSAiVGVzdCIKICAgICAgICBhc3NlcnQgcmVzdWx0WyJ0YWdzIl0gPT0gWyJBIiwgIkIiXQoKICAgIGRlZiB0ZXN0X2VtcHR5X2RpY3RfZm9yX25vX2Zyb250bWF0dGVyKHNlbGYpOgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIGFzc2VydCBhaXJvLnBhcnNlX2Zyb250bWF0dGVyKCJubyBmcm9udG1hdHRlciIpID09IHt9CgogICAgZGVmIHRlc3RfaGFuZGxlc19tdWx0aWxpbmVfdmFsdWVzKHNlbGYpOgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIGNvbnRlbnQgPSAiLS0tXG50aXRsZTogTXVsdGlcbiAgTGluZVxuLS0tXG5ib2R5IgogICAgICAgIHJlc3VsdCA9IGFpcm8ucGFyc2VfZnJvbnRtYXR0ZXIoY29udGVudCkKICAgICAgICBhc3NlcnQgInRpdGxlIiBpbiByZXN1bHQKCiAgICBkZWYgdGVzdF9pbmxpbmVfdGFncyhzZWxmKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICBjb250ZW50ID0gIi0tLVxudGFnczogW0FnZW50LCBSQUddXG4tLS1cbmJvZHkiCiAgICAgICAgcmVzdWx0ID0gYWlyby5wYXJzZV9mcm9udG1hdHRlcihjb250ZW50KQogICAgICAgIGFzc2VydCByZXN1bHQuZ2V0KCJ0YWdzIikgPT0gIltBZ2VudCwgUkFHXSIKCgpjbGFzcyBUZXN0UGFyc2VEYXRlRnJvbUZyb250bWF0dGVyVGllcjQ6CiAgICBkZWYgdGVzdF9yZXR1cm5zX2lzb19mb3JtYXQoc2VsZik6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgY29udGVudCA9ICItLS1cbmRhdGU6IDIwMjQtMDMtMTVcbi0tLVxuIgogICAgICAgIGZtID0gYWlyby5wYXJzZV9mcm9udG1hdHRlcihjb250ZW50KQogICAgICAgIHJlc3VsdCA9IGFpcm8ucGFyc2VfZGF0ZV9mcm9tX2Zyb250bWF0dGVyKGZtKQogICAgICAgIGFzc2VydCByZXN1bHQgPT0gIjIwMjQtMDMtMTUiCgogICAgZGVmIHRlc3RfcmV0dXJuc19lbXB0eV9mb3JfbWlzc2luZ19kYXRlKHNlbGYpOgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIGNvbnRlbnQgPSAiLS0tXG50aXRsZTogVGVzdFxuLS0tXG4iCiAgICAgICAgZm0gPSBhaXJvLnBhcnNlX2Zyb250bWF0dGVyKGNvbnRlbnQpCiAgICAgICAgcmVzdWx0ID0gYWlyby5wYXJzZV9kYXRlX2Zyb21fZnJvbnRtYXR0ZXIoZm0pCiAgICAgICAgYXNzZXJ0IHJlc3VsdCA9PSAiIgoKICAgIGRlZiB0ZXN0X3JldHVybnNfYmFkX2Zvcm1hdF93aXRoX3dhcm5pbmcoc2VsZik6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KICAgICAgICBpbXBvcnQgd2FybmluZ3MKCiAgICAgICAgY29udGVudCA9ICItLS1cbmRhdGU6IG5vdC1hLWRhdGVcbi0tLVxuIgogICAgICAgIGZtID0gYWlyby5wYXJzZV9mcm9udG1hdHRlcihjb250ZW50KQogICAgICAgIHdpdGggd2FybmluZ3MuY2F0Y2hfd2FybmluZ3MocmVjb3JkPVRydWUpIGFzIHJlYzoKICAgICAgICAgICAgd2FybmluZ3Muc2ltcGxlZmlsdGVyKCJhbHdheXMiKQogICAgICAgICAgICByZXN1bHQgPSBhaXJvLnBhcnNlX2RhdGVfZnJvbV9mcm9udG1hdHRlcihmbSkKICAgICAgICBhc3NlcnQgcmVzdWx0ID09ICJub3QtYS1kYXRlIgogICAgICAgIGFzc2VydCBhbnkoIlVucmVjb2duaXplZCBkYXRlIGZvcm1hdCIgaW4gc3RyKHcubWVzc2FnZSkgZm9yIHcgaW4gcmVjKQoKCmNsYXNzIFRlc3RSZW5kZXJDbm90ZVRpZXI0OgogICAgZGVmIHRlc3RfaGFzX3JlcXVpcmVkX3NlY3Rpb25zKHNlbGYpOgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIHJlc3VsdCA9IGFpcm8ucmVuZGVyX2Nub3RlKCJUZXN0IENvbmNlcHQiKQogICAgICAgIGFzc2VydCAiVGVzdCBDb25jZXB0IiBpbiByZXN1bHQKICAgICAgICBhc3NlcnQgInR5cGU6IGNvbmNlcHQiIGluIHJlc3VsdAogICAgICAgIGFzc2VydCAiIyMg5qC45b+D5a6a5LmJIiBpbiByZXN1bHQKCiAgICBkZWYgdGVzdF90eXBlX2lzX2NvbmNlcHQoc2VsZik6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgcmVzdWx0ID0gYWlyby5yZW5kZXJfY25vdGUoIlRlc3QgQ29uY2VwdCIpCiAgICAgICAgYXNzZXJ0ICJjb25jZXB0IiBpbiByZXN1bHQubG93ZXIoKQoKICAgIGRlZiB0ZXN0X2hhc2hfZXNjYXBlZF9pbl90aXRsZShzZWxmKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICByZXN1bHQgPSBhaXJvLnJlbmRlcl9jbm90ZSgiTExNIyB2cyBDTk4jIikKICAgICAgICBsaW5lcyA9IHJlc3VsdC5zcGxpdCgiXG4iKQogICAgICAgIHRpdGxlX2xpbmUgPSBsaW5lc1s0XQogICAgICAgIGFzc2VydCByIlwjIiBpbiB0aXRsZV9saW5lCiAgICAgICAgYXNzZXJ0IG5vdCB0aXRsZV9saW5lLnN0YXJ0c3dpdGgoIiMgIikgb3IgdGl0bGVfbGluZS5zdGFydHN3aXRoKCIjIExMTSIpCgoKY2xhc3MgVGVzdEVuc3VyZUNub3RlVGllcjQ6CiAgICBkZWYgdGVzdF9jcmVhdGVzX2Nub3RlX2ZpbGUoc2VsZiwgdG1wX3BhdGgpOgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIHJvb3QgPSB0bXBfcGF0aCAvICJub3RlcyIKICAgICAgICByb290Lm1rZGlyKCkKICAgICAgICBwYXRoID0gYWlyby5lbnN1cmVfY25vdGUocm9vdCwgIlRlc3QgQ29uY2VwdCIpCiAgICAgICAgYXNzZXJ0IHBhdGguZXhpc3RzKCkKICAgICAgICBhc3NlcnQgIlRlc3QiIGluIHBhdGgubmFtZQoKICAgIGRlZiB0ZXN0X3JldHVybnNfZXhpc3RpbmdfZmlsZShzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgcm9vdCA9IHRtcF9wYXRoIC8gIm5vdGVzIgogICAgICAgIHJvb3QubWtkaXIoKQogICAgICAgIHAxID0gYWlyby5lbnN1cmVfY25vdGUocm9vdCwgIlRlc3QiKQogICAgICAgIHAyID0gYWlyby5lbnN1cmVfY25vdGUocm9vdCwgIlRlc3QiKQogICAgICAgIGFzc2VydCBwMSA9PSBwMgoKCmNsYXNzIFRlc3RFbnN1cmVUaW1lbGluZVRpZXI0OgogICAgZGVmIHRlc3RfY3JlYXRlc190aW1lbGluZV9maWxlKHNlbGYsIHRtcF9wYXRoKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICByb290ID0gdG1wX3BhdGgKICAgICAgICBwYXRoID0gYWlyby5lbnN1cmVfdGltZWxpbmUocm9vdCkKICAgICAgICBhc3NlcnQgcGF0aC5leGlzdHMoKQogICAgICAgIGFzc2VydCBwYXRoLm5hbWUgPT0gIlRpbWVsaW5lLm1kIgoKICAgIGRlZiB0ZXN0X2lzX2lkZW1wb3RlbnQoc2VsZiwgdG1wX3BhdGgpOgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIHJvb3QgPSB0bXBfcGF0aAogICAgICAgIHAxID0gYWlyby5lbnN1cmVfdGltZWxpbmUocm9vdCkKICAgICAgICBwMiA9IGFpcm8uZW5zdXJlX3RpbWVsaW5lKHJvb3QpCiAgICAgICAgYXNzZXJ0IHAxID09IHAyCiAgICAgICAgYXNzZXJ0IHAyLmV4aXN0cygpCgoKY2xhc3MgVGVzdFVwZGF0ZVRpbWVsaW5lVGllcjQ6CiAgICBkZWYgdGVzdF9hcHBlbmRzX3RvX25ld195ZWFyX3NlY3Rpb24oc2VsZiwgdG1wX3BhdGgpOgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIHJvb3QgPSB0bXBfcGF0aAogICAgICAgIGFpcm8uZW5zdXJlX3RpbWVsaW5lKHJvb3QpCiAgICAgICAgcGFwZXJzX2RpciA9IHJvb3QgLyAiMDItUGFwZXJzIgogICAgICAgIHBhcGVyc19kaXIubWtkaXIocGFyZW50cz1UcnVlKQogICAgICAgIHBub3RlID0gcGFwZXJzX2RpciAvICJQIC0gMjAyNC0wMS0wMSAtIFRlc3QgRXZlbnQubWQiCiAgICAgICAgcG5vdGUud3JpdGVfdGV4dCgiLS0tXG5wdWJsaXNoZWQ6IDIwMjQtMDEtMDFcbi0tLVxuIiwgZW5jb2Rpbmc9InV0Zi04IikKICAgICAgICB5ZWFyID0gIjIwMjQiICAjIGZyb3plbiB5ZWFyIGZyb20gY29uZnRlc3QKICAgICAgICByZXN1bHQgPSBhaXJvLnVwZGF0ZV90aW1lbGluZShyb290LCB5ZWFyLCBwbm90ZSwgIlRlc3QgRXZlbnQiKQogICAgICAgIGFzc2VydCByZXN1bHQuZXhpc3RzKCkKICAgICAgICBjb250ZW50ID0gcmVzdWx0LnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQogICAgICAgIGFzc2VydCB5ZWFyIGluIGNvbnRlbnQKCiAgICBkZWYgdGVzdF9ub19jaGFuZ2VfZm9yX2V4aXN0aW5nX2J1bGxldChzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgcm9vdCA9IHRtcF9wYXRoCiAgICAgICAgYWlyby5lbnN1cmVfdGltZWxpbmUocm9vdCkKICAgICAgICBwYXBlcnNfZGlyID0gcm9vdCAvICIwMi1QYXBlcnMiCiAgICAgICAgcGFwZXJzX2Rpci5ta2RpcihwYXJlbnRzPVRydWUpCiAgICAgICAgcG5vdGUgPSBwYXBlcnNfZGlyIC8gIlAgLSAyMDI0LTAxLTAxIC0gVGVzdCBFdmVudC5tZCIKICAgICAgICBwbm90ZS53cml0ZV90ZXh0KCItLS1cbnB1Ymxpc2hlZDogMjAyNC0wMS0wMVxuLS0tXG4iLCBlbmNvZGluZz0idXRmLTgiKQogICAgICAgIHllYXIgPSAiMjAyNCIgICMgZnJvemVuIHllYXIgZnJvbSBjb25mdGVzdAogICAgICAgIHIxID0gYWlyby51cGRhdGVfdGltZWxpbmUocm9vdCwgeWVhciwgcG5vdGUsICJUZXN0IEV2ZW50IikKICAgICAgICByMiA9IGFpcm8udXBkYXRlX3RpbWVsaW5lKHJvb3QsIHllYXIsIHBub3RlLCAiVGVzdCBFdmVudCIpCiAgICAgICAgYXNzZXJ0IHIxLmV4aXN0cygpCiAgICAgICAgYXNzZXJ0IHIyLmV4aXN0cygpCgogICAgZGVmIHRlc3RfaW5zZXJ0c19iZWZvcmVfbmV4dF95ZWFyKHNlbGYsIHRtcF9wYXRoKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICByb290ID0gdG1wX3BhdGgKICAgICAgICBhaXJvLmVuc3VyZV90aW1lbGluZShyb290KQogICAgICAgIHBhcGVyc19kaXIgPSByb290IC8gIjAyLVBhcGVycyIKICAgICAgICBwYXBlcnNfZGlyLm1rZGlyKHBhcmVudHM9VHJ1ZSkKICAgICAgICBwbm90ZSA9IHBhcGVyc19kaXIgLyAiUCAtIDIwMjQtMDEtMDEgLSBDdXJyZW50IEV2ZW50Lm1kIgogICAgICAgIHBub3RlLndyaXRlX3RleHQoIi0tLVxucHVibGlzaGVkOiAyMDI0LTAxLTAxXG4tLS1cbiIsIGVuY29kaW5nPSJ1dGYtOCIpCiAgICAgICAgbmV4dF95ZWFyID0gIjIwMjUiICAjIGZyb3plbiB5ZWFyICsgMQogICAgICAgIGNvbnRlbnQgPSBmIiMjIHtuZXh0X3llYXJ9XG4tIEZ1dHVyZSBldmVudFxuIgogICAgICAgIHRsX3BhdGggPSByb290IC8gIjAwLVJhZGFyIiAvICJUaW1lbGluZS5tZCIKICAgICAgICB0bF9wYXRoLndyaXRlX3RleHQoY29udGVudCwgZW5jb2Rpbmc9InV0Zi04IikKICAgICAgICB5ZWFyID0gIjIwMjQiICAjIGZyb3plbiB5ZWFyIGZyb20gY29uZnRlc3QKICAgICAgICByZXN1bHQgPSBhaXJvLnVwZGF0ZV90aW1lbGluZShyb290LCB5ZWFyLCBwbm90ZSwgIkN1cnJlbnQgRXZlbnQiKQogICAgICAgIGFzc2VydCByZXN1bHQuZXhpc3RzKCkKICAgICAgICByZXN1bHRfY29udGVudCA9IHJlc3VsdC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikKICAgICAgICBhc3NlcnQgbmV4dF95ZWFyIGluIHJlc3VsdF9jb250ZW50CgoKY2xhc3MgVGVzdENvbGxlY3RQbm90ZXNUaWVyNDoKICAgIGRlZiB0ZXN0X3JldHVybnNfZW1wdHlfZm9yX25vX2ZpbGVzKHNlbGYsIHRtcF9wYXRoKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICByb290ID0gdG1wX3BhdGggLyAibm90ZXMiCiAgICAgICAgcm9vdC5ta2RpcigpCiAgICAgICAgcmVzdWx0ID0gYWlyby5jb2xsZWN0X3Bub3Rlcyhyb290KQogICAgICAgIGFzc2VydCByZXN1bHQgPT0gW10KCiAgICBkZWYgdGVzdF9zb3J0c19ieV9kYXRlX2Rlc2NlbmRpbmcoc2VsZiwgdG1wX3BhdGgpOgogICAgICAgICIiImNvbGxlY3RfcG5vdGVzIHNvcnRzIGJ5IHBhdGggKGxleGljb2dyYXBoaWMpLCB3aGljaCBvbiBXaW5kb3dzIHNvcnRzIDIwMjQtMDEgPCAyMDI0LTA2LiIiIgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIHJvb3QgPSB0bXBfcGF0aCAvICJub3RlcyIKICAgICAgICByb290Lm1rZGlyKCkKICAgICAgICBwYXBlcnNfZGlyID0gcm9vdCAvICJQYXBlcnMiCiAgICAgICAgcGFwZXJzX2Rpci5ta2RpcigpCiAgICAgICAgIyBPbiBXaW5kb3dzLCBmaWxlc3lzdGVtIHNvcnRzOiAiMjAyNC0wMSIgPCAiMjAyNC0wNiIgKGNoYXJhY3RlciBjb21wYXJpc29uKQogICAgICAgICMgU28gcGF0aCBvcmRlciBpczogQiAoMjAyNC0wMSkgYmVmb3JlIEEgKDIwMjQtMDYpCiAgICAgICAgZjEgPSBwYXBlcnNfZGlyIC8gIlAgLSAyMDI0LTA2LTAxIC0gQS5tZCIKICAgICAgICBmMiA9IHBhcGVyc19kaXIgLyAiUCAtIDIwMjQtMDEtMDEgLSBCLm1kIgogICAgICAgIGYxLndyaXRlX3RleHQoIi0tLVxucHVibGlzaGVkOiAyMDI0LTA2LTAxXG4tLS1cbiIsIGVuY29kaW5nPSJ1dGYtOCIpCiAgICAgICAgZjIud3JpdGVfdGV4dCgiLS0tXG5wdWJsaXNoZWQ6IDIwMjQtMDEtMDFcbi0tLVxuIiwgZW5jb2Rpbmc9InV0Zi04IikKICAgICAgICBhc3NlcnQgZjEuZXhpc3RzKCkgYW5kIGYyLmV4aXN0cygpICAjIHNldHVwIHZlcmlmaWNhdGlvbgogICAgICAgIGltcG9ydCByZQoKICAgICAgICByZXN1bHQgPSBhaXJvLmNvbGxlY3RfcG5vdGVzKHJvb3QpCiAgICAgICAgZGF0ZXMgPSBbcmUuc2VhcmNoKHIiXGR7NH0tXGR7Mn0tXGR7Mn0iLCBwLnN0ZW0pLmdyb3VwKCkgZm9yIHAgaW4gcmVzdWx0XQogICAgICAgICMgVmVyaWZ5OiByZXN1bHQgc2hvdWxkIGJlIHNvcnRlZCAobGV4aWNvZ3JhcGhpYyksIGFuZCBkYXRlcyBhcmUgY29ycmVjdGx5IGV4dHJhY3RlZAogICAgICAgIGFzc2VydCBkYXRlcyA9PSBzb3J0ZWQoZGF0ZXMpLCBmInJlc3VsdCBub3Qgc29ydGVkOiB7ZGF0ZXN9IgogICAgICAgIGFzc2VydCBzZXQoZGF0ZXMpID09IHsiMjAyNC0wMS0wMSIsICIyMDI0LTA2LTAxIn0gICMgYm90aCBkYXRlcyBwcmVzZW50CgoKY2xhc3MgVGVzdFBub3Rlc0J5VGFnVGllcjQ6CiAgICBkZWYgdGVzdF9ncm91cHNfYnlfdGFnKHNlbGYsIHRtcF9wYXRoKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICByb290ID0gdG1wX3BhdGggLyAibm90ZXMiCiAgICAgICAgcm9vdC5ta2RpcigpCiAgICAgICAgcGFwZXJzX2RpciA9IHJvb3QgLyAiMDItUGFwZXJzIgogICAgICAgIHBhcGVyc19kaXIubWtkaXIocGFyZW50cz1UcnVlKQogICAgICAgIGYxID0gcGFwZXJzX2RpciAvICJQIC0gMjAyNC0wMS0wMSAtIEEubWQiCiAgICAgICAgZjIgPSBwYXBlcnNfZGlyIC8gIlAgLSAyMDI0LTAyLTAxIC0gQi5tZCIKICAgICAgICBmMS53cml0ZV90ZXh0KCItLS1cbnB1Ymxpc2hlZDogMjAyNC0wMS0wMVxudGFnczpcbiAgLSBBZ2VudFxuLS0tXG4iLCBlbmNvZGluZz0idXRmLTgiKQogICAgICAgIGYyLndyaXRlX3RleHQoIi0tLVxucHVibGlzaGVkOiAyMDI0LTAyLTAxXG50YWdzOlxuICAtIEFnZW50XG4tLS1cbiIsIGVuY29kaW5nPSJ1dGYtOCIpCiAgICAgICAgYXNzZXJ0IGYxLmV4aXN0cygpIGFuZCBmMi5leGlzdHMoKSAgIyBzZXR1cCB2ZXJpZmljYXRpb24KICAgICAgICByZXN1bHQgPSBhaXJvLnBub3Rlc19ieV90YWcocm9vdCkKICAgICAgICBhc3NlcnQgIkFnZW50IiBpbiByZXN1bHQKICAgICAgICBhc3NlcnQgbGVuKHJlc3VsdFsiQWdlbnQiXSkgPT0gMiAgIyB2ZXJpZnkgYm90aCBmaWxlcyBncm91cGVkCgoKY2xhc3MgVGVzdFBpY2tUb3AzUG5vdGVzRm9yVGFnVGllcjQ6CiAgICBkZWYgdGVzdF9yZXR1cm5zX25vbmVfZm9yX2Zld2VyX3RoYW5fMyhzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgcm9vdCA9IHRtcF9wYXRoIC8gIm5vdGVzIgogICAgICAgIHJvb3QubWtkaXIoKQogICAgICAgIHBhcGVyc19kaXIgPSByb290IC8gIjAyLVBhcGVycyIKICAgICAgICBwYXBlcnNfZGlyLm1rZGlyKHBhcmVudHM9VHJ1ZSkKICAgICAgICAocGFwZXJzX2RpciAvICJQIC0gMjAyNC0wMS0wMSAtIEEubWQiKS53cml0ZV90ZXh0KAogICAgICAgICAgICAiLS0tXG5wdWJsaXNoZWQ6IDIwMjQtMDEtMDFcbnRhZ3M6XG4gIC0gQWdlbnRcbi0tLVxuIiwgZW5jb2Rpbmc9InV0Zi04IgogICAgICAgICkKICAgICAgICAocGFwZXJzX2RpciAvICJQIC0gMjAyNC0wMi0wMSAtIEIubWQiKS53cml0ZV90ZXh0KAogICAgICAgICAgICAiLS0tXG5wdWJsaXNoZWQ6IDIwMjQtMDItMDFcbnRhZ3M6XG4gIC0gQWdlbnRcbi0tLVxuIiwgZW5jb2Rpbmc9InV0Zi04IgogICAgICAgICkKICAgICAgICB0YWdfbWFwID0gYWlyby5wbm90ZXNfYnlfdGFnKHJvb3QpCiAgICAgICAgcmVzdWx0ID0gYWlyby5waWNrX3RvcDNfcG5vdGVzX2Zvcl90YWcoIkFnZW50IiwgdGFnX21hcCkKICAgICAgICBhc3NlcnQgcmVzdWx0IGlzIE5vbmUKCiAgICBkZWYgdGVzdF9yZXR1cm5zXzNfb2xkZXN0X2Zvcl9tb3JlX3RoYW5fMyhzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgcm9vdCA9IHRtcF9wYXRoIC8gIm5vdGVzIgogICAgICAgIHJvb3QubWtkaXIoKQogICAgICAgIHBhcGVyc19kaXIgPSByb290IC8gIjAyLVBhcGVycyIKICAgICAgICBwYXBlcnNfZGlyLm1rZGlyKHBhcmVudHM9VHJ1ZSkKICAgICAgICBmaWxlcyA9IFtdCiAgICAgICAgZm9yIGkgaW4gcmFuZ2UoNSk6CiAgICAgICAgICAgIGYgPSBwYXBlcnNfZGlyIC8gZiJQIC0gMjAyNC0we2kgKyAxfS0wMSAtIHtpfS5tZCIKICAgICAgICAgICAgZi53cml0ZV90ZXh0KAogICAgICAgICAgICAgICAgZiItLS1cbnB1Ymxpc2hlZDogMjAyNC0we2kgKyAxfS0wMVxudGFnczpcbiAgLSBBZ2VudFxuLS0tXG4iLCBlbmNvZGluZz0idXRmLTgiCiAgICAgICAgICAgICkKICAgICAgICAgICAgZmlsZXMuYXBwZW5kKGYpCiAgICAgICAgYXNzZXJ0IGFsbChmLmV4aXN0cygpIGZvciBmIGluIGZpbGVzKSAgIyBzZXR1cCB2ZXJpZmljYXRpb24KICAgICAgICB0YWdfbWFwID0gYWlyby5wbm90ZXNfYnlfdGFnKHJvb3QpCiAgICAgICAgcmVzdWx0ID0gYWlyby5waWNrX3RvcDNfcG5vdGVzX2Zvcl90YWcoIkFnZW50IiwgdGFnX21hcCkKICAgICAgICBhc3NlcnQgcmVzdWx0IGlzIG5vdCBOb25lCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHQpID09IDMKICAgICAgICAjIFZlcmlmeSB0aGV5IGFyZSB0aGUgMyBvbGRlc3QgKGVhcmxpZXN0IGRhdGVzKQogICAgICAgIGltcG9ydCByZQoKICAgICAgICByZXN1bHRfc3RlbXMgPSBzb3J0ZWQoW3JlLnNlYXJjaChyIlxkezR9LVxkezJ9LVxkezJ9IiwgcC5zdGVtKS5ncm91cCgpIGZvciBwIGluIHJlc3VsdF0pCiAgICAgICAgYXNzZXJ0IHJlc3VsdF9zdGVtcyA9PSBbIjIwMjQtMDEtMDEiLCAiMjAyNC0wMi0wMSIsICIyMDI0LTAzLTAxIl0gICMgb2xkZXN0IDMKCiAgICBkZWYgdGVzdF9yZXR1cm5zX25vbmVfZm9yX3Vua25vd25fdGFnKHNlbGYsIHRtcF9wYXRoKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICByb290ID0gdG1wX3BhdGggLyAibm90ZXMiCiAgICAgICAgcm9vdC5ta2RpcigpCiAgICAgICAgcGFwZXJzX2RpciA9IHJvb3QgLyAiMDItUGFwZXJzIgogICAgICAgIHBhcGVyc19kaXIubWtkaXIocGFyZW50cz1UcnVlKQogICAgICAgIChwYXBlcnNfZGlyIC8gIlAgLSAyMDI0LTAxLTAxIC0gQS5tZCIpLndyaXRlX3RleHQoCiAgICAgICAgICAgICItLS1cbnB1Ymxpc2hlZDogMjAyNC0wMS0wMVxudGFnczpcbiAgLSBBZ2VudFxuLS0tXG4iLCBlbmNvZGluZz0idXRmLTgiCiAgICAgICAgKQogICAgICAgIHRhZ19tYXAgPSBhaXJvLnBub3Rlc19ieV90YWcocm9vdCkKICAgICAgICByZXN1bHQgPSBhaXJvLnBpY2tfdG9wM19wbm90ZXNfZm9yX3RhZygiVW5rbm93blRhZyIsIHRhZ19tYXApCiAgICAgICAgYXNzZXJ0IHJlc3VsdCBpcyBOb25lCgoKY2xhc3MgVGVzdFdpa2lsaW5rRm9yUG5vdGVUaWVyNDoKICAgIGRlZiB0ZXN0X3N0ZW1fb25seShzZWxmKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwogICAgICAgIGZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAoKICAgICAgICBwID0gUGF0aCgiUCAtIDIwMjQtMDMtMTUgLSBUZXN0IFBhcGVyLm1kIikKICAgICAgICByZXN1bHQgPSBhaXJvLndpa2lsaW5rX2Zvcl9wbm90ZShwKQogICAgICAgIGFzc2VydCByZXN1bHQgPT0gIltbUCAtIDIwMjQtMDMtMTUgLSBUZXN0IFBhcGVyXV0iCgoKY2xhc3MgVGVzdFVwc2VydExpbmtVbmRlckhlYWRpbmdUaWVyNDoKICAgIGRlZiB0ZXN0X2hlYWRpbmdfd2l0aG91dF9oYXNoX3ByZWZpeChzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgbWQgPSAiIyMg5YWz6IGU56yU6K6wXG4tIG9sZCBsaW5rXG4iCiAgICAgICAgcmVzdWx0ID0gYWlyby51cHNlcnRfbGlua191bmRlcl9oZWFkaW5nKG1kLCAi5YWz6IGU56yU6K6wIiwgIi0gW1tQMV1dIikKICAgICAgICBhc3NlcnQgIltbUDFdXSIgaW4gcmVzdWx0CiAgICAgICAgYXNzZXJ0IHJlc3VsdC5jb3VudCgiLSBbW1AxXV0iKSA9PSAxCgogICAgZGVmIHRlc3RfaGVhZGluZ19ub3RfZm91bmRfYXBwZW5kc19zZWN0aW9uKHNlbGYsIHRtcF9wYXRoKToKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICBtZCA9ICIjIE90aGVyXG5ObyBoZWFkaW5nIGhlcmUiCiAgICAgICAgcmVzdWx0ID0gYWlyby51cHNlcnRfbGlua191bmRlcl9oZWFkaW5nKG1kLCAiTmV3IFNlY3Rpb24iLCAiLSBbW1AxXV0iKQogICAgICAgIGFzc2VydCAiTmV3IFNlY3Rpb24iIGluIHJlc3VsdAogICAgICAgIGFzc2VydCAiW1tQMV1dIiBpbiByZXN1bHQKCiAgICBkZWYgdGVzdF9zcGVjaWFsX2NoYXJzX2luX2hlYWRpbmcoc2VsZiwgdG1wX3BhdGgpOgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIG1kID0gIiMjIOacuuWZqOWtpuS5oFxuIgogICAgICAgIHJlc3VsdCA9IGFpcm8udXBzZXJ0X2xpbmtfdW5kZXJfaGVhZGluZyhtZCwgIuacuuWZqOWtpuS5oCIsICItIFtbUDFdXSIpCiAgICAgICAgYXNzZXJ0ICJbW1AxXV0iIGluIHJlc3VsdAoKCmNsYXNzIFRlc3RSZWFkUG5vdGVNZXRhZGF0YVRpZXI0OgogICAgZGVmIHRlc3RfcmVhZF9wbm90ZV9tZXRhZGF0YV9iYXNpYyhzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgcG5vdGUgPSB0bXBfcGF0aCAvICJQIC0gMjAyNCAtIFRlc3QgUGFwZXIubWQiCiAgICAgICAgcG5vdGUud3JpdGVfdGV4dCgKICAgICAgICAgICAgInR5cGU6IHBhcGVyXG4iCiAgICAgICAgICAgICJzdGF0dXM6IGRyYWZ0XG4iCiAgICAgICAgICAgICJkYXRlOiAyMDI0LTAzLTE1XG4iCiAgICAgICAgICAgICJ0YWdzOiBbTExNLCBBZ2VudF1cbiIKICAgICAgICAgICAgIi0tLS0tLS0tLS0tLS0tLS0tLVxuIgogICAgICAgICAgICAiXG4iCiAgICAgICAgICAgICIjIFRlc3QgUGFwZXIgVGl0bGVcbiIKICAgICAgICAgICAgIlxuIgogICAgICAgICAgICAiKipTb3VyY2U6KiogQVJYSVY6IDIzMDEuMDAwMDFcbiIKICAgICAgICApCiAgICAgICAgcmVzdWx0ID0gYWlyby5yZWFkX3Bub3RlX21ldGFkYXRhKHBub3RlKQogICAgICAgIGFzc2VydCByZXN1bHRbInRpdGxlIl0gPT0gIlRlc3QgUGFwZXIgVGl0bGUiCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsieWVhciJdID09ICIyMDI0IgogICAgICAgIGFzc2VydCByZXN1bHRbImRhdGUiXSA9PSAiMjAyNC0wMy0xNSIKICAgICAgICBhc3NlcnQgcmVzdWx0WyJzb3VyY2UiXSA9PSAiYXJ4aXYiCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsidWlkIl0gPT0gIjIzMDEuMDAwMDEiCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsidGFncyJdID09IFsiTExNIiwgIkFnZW50Il0KCiAgICBkZWYgdGVzdF9yZWFkX3Bub3RlX21ldGFkYXRhX2ZhbGxiYWNrX3VpZChzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgaW1wb3J0IGFpX3Jlc2VhcmNoX29zIGFzIGFpcm8KCiAgICAgICAgcG5vdGUgPSB0bXBfcGF0aCAvICJQIC0gMjAyMyAtIE5vIFNvdXJjZS5tZCIKICAgICAgICBwbm90ZS53cml0ZV90ZXh0KAogICAgICAgICAgICAidHlwZTogcGFwZXJcbiIKICAgICAgICAgICAgInN0YXR1czogZHJhZnRcbiIKICAgICAgICAgICAgImRhdGU6IDIwMjMtMTEtMDFcbiIKICAgICAgICAgICAgInRhZ3M6IFtSQUddXG4iCiAgICAgICAgICAgICItLS0tLS0tLS0tLS0tLS0tLS1cbiIKICAgICAgICAgICAgIlxuIgogICAgICAgICAgICAiIyBObyBTb3VyY2UgSW5mb1xuIgogICAgICAgICkKICAgICAgICByZXN1bHQgPSBhaXJvLnJlYWRfcG5vdGVfbWV0YWRhdGEocG5vdGUpCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsidGl0bGUiXSA9PSAiTm8gU291cmNlIEluZm8iCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsieWVhciJdID09ICIyMDIzIgogICAgICAgIGFzc2VydCByZXN1bHRbInVpZCJdID09ICIiICAjIG5vIFNvdXJjZSBsaW5lIGluIGJvZHksIHVpZCBzdGF5cyBlbXB0eQoKCmNsYXNzIFRlc3RFbnN1cmVPclVwZGF0ZU1ub3RlQUJDVXBkYXRlOgogICAgIiIiQ292ZXIgbW5vdGUucHkgbGluZXMgODYtOTI6IGN1ckEvQi9DIGV4aXN0IGJ1dCBuZWVkIHVwZGF0aW5nLiIiIgoKICAgIGRlZiB0ZXN0X3VwZGF0ZXNfYWJjX2FuZF9hcHBlbmRzX3ZpZXdfZXZvbHV0aW9uX2xvZyhzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgIiIiV2hlbiBleGlzdGluZyBtbm90ZSBoYXMgY3VyQS9CL0MgdGhhdCBkaWZmZXIgZnJvbSBuZXcgdG9wMywgcmUuc3ViICsgZXZvbHV0aW9uIGxvZy4iIiIKICAgICAgICBpbXBvcnQgYWlfcmVzZWFyY2hfb3MgYXMgYWlybwoKICAgICAgICBtbm90ZV9kaXIgPSB0bXBfcGF0aCAvICJub3RlcyIKICAgICAgICBtbm90ZV9kaXIubWtkaXIocGFyZW50cz1UcnVlKQoKICAgICAgICAjIG1ub3RlX2ZpbGVuYW1lIHN0cmlwcyAiUCAtIFhYWFggLSAiIHByZWZpeCB0aGVuIHRydW5jYXRlcyB0byAxOSBjaGFycy4KICAgICAgICAjICJQIC0gMjAyNC0wNi0xNSAtIE9sZFBhcGVyQSIg4oaSICJPbGRQYXBlckEiIChzdHJpcCBwcmVmaXgsIGxlbmd0aCDiiaQgMTkpCiAgICAgICAgIyAiUCAtIDIwMjQtMDYtMTUgLSBOZXdQYXBlckEiIOKGkiAiTmV3UGFwZXJBIgogICAgICAgICMgQm90aCBzaGFyZSB0aGUgc2FtZSB7dGFnfSA9ICJBZ2VudCIuCiAgICAgICAgZXhpc3RpbmdfZm5hbWUgPSAiTSAtIEFnZW50IC0gT2xkUGFwZXJBIHZzIE9sZFBhcGVyQiB2cyBPbGRQYXBlckMubWQiCiAgICAgICAgZXhpc3RpbmdfY29udGVudCA9ICgKICAgICAgICAgICAgIi0tLVxuIgogICAgICAgICAgICAidHlwZTogY29tcGFyaXNvblxuIgogICAgICAgICAgICAiZGF0ZTogMjAyNC0wNi0wMVxuIgogICAgICAgICAgICAiLS0tXG4iCiAgICAgICAgICAgICItLS0tLS0tLS0tLS0tLS0tLS1cbiIKICAgICAgICAgICAgIlxuIgogICAgICAgICAgICAiIyBBZ2VudDogUGFwZXJBIHZzIFBhcGVyQiB2cyBQYXBlckNcbiIKICAgICAgICAgICAgIlxuIgogICAgICAgICAgICAiIyMg5b2T5YmNIEEvQi9D77yI6Ieq5Yqo6KGl6b2Q77yJXG4iCiAgICAgICAgICAgICJcbiIKICAgICAgICAgICAgIi0gQTogUCAtIDIwMjQtMDYtMTUgLSBPbGRQYXBlckFcbiIKICAgICAgICAgICAgIi0gQjogUCAtIDIwMjQtMDYtMTQgLSBPbGRQYXBlckJcbiIKICAgICAgICAgICAgIi0gQzogUCAtIDIwMjQtMDYtMTMgLSBPbGRQYXBlckNcbiIKICAgICAgICApCiAgICAgICAgZXhpc3RpbmdfZmlsZSA9IG1ub3RlX2RpciAvIGV4aXN0aW5nX2ZuYW1lCiAgICAgICAgZXhpc3RpbmdfZmlsZS53cml0ZV90ZXh0KGV4aXN0aW5nX2NvbnRlbnQsIGVuY29kaW5nPSJ1dGYtOCIpCgogICAgICAgICMgTmV3IHRvcDMgcGF0aHMgd2l0aCBkaWZmZXJlbnQgc3RlbXMKICAgICAgICB0b3AzX2RpciA9IHRtcF9wYXRoIC8gInBhcGVycyIKICAgICAgICB0b3AzX2Rpci5ta2RpcigpCiAgICAgICAgYV9wYXRoID0gdG9wM19kaXIgLyAiUCAtIDIwMjQtMDYtMTUgLSBOZXdQYXBlckEubWQiCiAgICAgICAgYl9wYXRoID0gdG9wM19kaXIgLyAiUCAtIDIwMjQtMDYtMTQgLSBOZXdQYXBlckIubWQiCiAgICAgICAgY19wYXRoID0gdG9wM19kaXIgLyAiUCAtIDIwMjQtMDYtMTMgLSBOZXdQYXBlckMubWQiCiAgICAgICAgYV9wYXRoLndyaXRlX3RleHQoIi0tLVxuIiwgZW5jb2Rpbmc9InV0Zi04IikKICAgICAgICBiX3BhdGgud3JpdGVfdGV4dCgiLS0tXG4iLCBlbmNvZGluZz0idXRmLTgiKQogICAgICAgIGNfcGF0aC53cml0ZV90ZXh0KCItLS1cbiIsIGVuY29kaW5nPSJ1dGYtOCIpCgogICAgICAgIHJlc3VsdCA9IGFpcm8uZW5zdXJlX29yX3VwZGF0ZV9tbm90ZShtbm90ZV9kaXIsICJBZ2VudCIsIFthX3BhdGgsIGJfcGF0aCwgY19wYXRoXSkKCiAgICAgICAgYXNzZXJ0IHJlc3VsdCBpcyBub3QgTm9uZQogICAgICAgIHVwZGF0ZWQgPSByZXN1bHQucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpCiAgICAgICAgIyBBL0IvQyBsaW5lcyBzaG91bGQgYmUgdXBkYXRlZCB0byBuZXcgc3RlbXMKICAgICAgICBhc3NlcnQgIi0gQTogUCAtIDIwMjQtMDYtMTUgLSBOZXdQYXBlckEiIGluIHVwZGF0ZWQKICAgICAgICBhc3NlcnQgIi0gQjogUCAtIDIwMjQtMDYtMTQgLSBOZXdQYXBlckIiIGluIHVwZGF0ZWQKICAgICAgICBhc3NlcnQgIi0gQzogUCAtIDIwMjQtMDYtMTMgLSBOZXdQYXBlckMiIGluIHVwZGF0ZWQKICAgICAgICAjIFZpZXcgRXZvbHV0aW9uIExvZyBzaG91bGQgYmUgYXBwZW5kZWQKICAgICAgICBhc3NlcnQgIlZpZXcgRXZvbHV0aW9uIExvZyIgaW4gdXBkYXRlZAogICAgICAgIGFzc2VydCAi5pen6KeC54K5IiBpbiB1cGRhdGVkCiAgICAgICAgYXNzZXJ0ICLmlrDor4Hmja4iIGluIHVwZGF0ZWQKCiAgICBkZWYgdGVzdF9hYmNfYWxsX21pc3NpbmdfYXBwZW5kc19zZWN0aW9uKHNlbGYsIHRtcF9wYXRoKToKICAgICAgICAiIiJMaW5lcyA4MS04NDogd2hlbiBleGlzdGluZyBtbm90ZSBoYXMgbm8gQS9CL0MgYXQgYWxsLCBhcHBlbmRzIHRoZSBzZWN0aW9uLiIiIgogICAgICAgIGltcG9ydCBhaV9yZXNlYXJjaF9vcyBhcyBhaXJvCgogICAgICAgIG1ub3RlX2RpciA9IHRtcF9wYXRoIC8gIm5vdGVzIgogICAgICAgIG1ub3RlX2Rpci5ta2RpcihwYXJlbnRzPVRydWUpCgogICAgICAgICMgRXhpc3RpbmcgbW5vdGUgd2l0aCBOTyBBL0IvQyBsaW5lcyBhdCBhbGwuCiAgICAgICAgIyBVc2Ugc3RlbXMgdGhhdCBkb24ndCBoYXZlICJQIC0gWFhYWCAtICIgcHJlZml4IHNvIHNob3J0KCkgaXMgaWRlbnRpdHkuCiAgICAgICAgIyAiT2xkQWxwaGEiICg5IGNoYXJzKSA8IDE5LCBubyB0cnVuY2F0aW9uLCBubyBwcmVmaXggc3RyaXAuCiAgICAgICAgZXhpc3RpbmdfZm5hbWUgPSAiTSAtIEFnZW50IC0gT2xkQWxwaGEgdnMgT2xkQmV0YSB2cyBPbGRHYW1tYS5tZCIKICAgICAgICBleGlzdGluZ19jb250ZW50ID0gKAogICAgICAgICAgICAiLS0tXG4iCiAgICAgICAgICAgICJ0eXBlOiBjb21wYXJpc29uXG4iCiAgICAgICAgICAgICItLS1cbiIKICAgICAgICAgICAgIi0tLS0tLS0tLS0tLS0tLS0tLVxuIgogICAgICAgICAgICAiXG4iCiAgICAgICAgICAgICIjIEFnZW50IENvbXBhcmlzb25cbiIKICAgICAgICAgICAgIlxuIgogICAgICAgICAgICAiU29tZSBjb250ZW50IHdpdGhvdXQgQS9CL0MgbWFya2Vycy5cbiIKICAgICAgICApCiAgICAgICAgZXhpc3RpbmdfZmlsZSA9IG1ub3RlX2RpciAvIGV4aXN0aW5nX2ZuYW1lCiAgICAgICAgZXhpc3RpbmdfZmlsZS53cml0ZV90ZXh0KGV4aXN0aW5nX2NvbnRlbnQsIGVuY29kaW5nPSJ1dGYtOCIpCgogICAgICAgICMgTmV3IHRvcDMgcGF0aHMgd2l0aCBkaWZmZXJlbnQgc3RlbXMKICAgICAgICAjIHNob3J0KCJQIC0gMjAyNC0wNi0xNSAtIE5ld0FscGhhIikg4oaSIHN0cmlwcyBwcmVmaXgg4oaSICJOZXdBbHBoYSIKICAgICAgICAjIHNob3J0KCJQIC0gMjAyNC0wNi0xNSAtIE5ld0JldGEiKSAg4oaSIHN0cmlwcyBwcmVmaXgg4oaSICJOZXdCZXRhIgogICAgICAgICMgc2hvcnQoIlAgLSAyMDI0LTA2LTE1IC0gTmV3R2FtbWEiKSDihpIgc3RyaXBzIHByZWZpeCDihpIgIk5ld0dhbW1hIgogICAgICAgIHRvcDNfZGlyID0gdG1wX3BhdGggLyAicGFwZXJzIgogICAgICAgIHRvcDNfZGlyLm1rZGlyKCkKICAgICAgICBhX3BhdGggPSB0b3AzX2RpciAvICJQIC0gMjAyNC0wNi0xNSAtIE5ld0FscGhhLm1kIgogICAgICAgIGJfcGF0aCA9IHRvcDNfZGlyIC8gIlAgLSAyMDI0LTA2LTE0IC0gTmV3QmV0YS5tZCIKICAgICAgICBjX3BhdGggPSB0b3AzX2RpciAvICJQIC0gMjAyNC0wNi0xMyAtIE5ld0dhbW1hLm1kIgogICAgICAgIGFfcGF0aC53cml0ZV90ZXh0KCItLS1cbiIsIGVuY29kaW5nPSJ1dGYtOCIpCiAgICAgICAgYl9wYXRoLndyaXRlX3RleHQoIi0tLVxuIiwgZW5jb2Rpbmc9InV0Zi04IikKICAgICAgICBjX3BhdGgud3JpdGVfdGV4dCgiLS0tXG4iLCBlbmNvZGluZz0idXRmLTgiKQoKICAgICAgICByZXN1bHQgPSBhaXJvLmVuc3VyZV9vcl91cGRhdGVfbW5vdGUobW5vdGVfZGlyLCAiQWdlbnQiLCBbYV9wYXRoLCBiX3BhdGgsIGNfcGF0aF0pCgogICAgICAgIGFzc2VydCByZXN1bHQgaXMgbm90IE5vbmUKICAgICAgICB1cGRhdGVkID0gcmVzdWx0LnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQogICAgICAgICMgU2hvdWxkIGFwcGVuZCB0aGUgQS9CL0Mgc2VjdGlvbiAobGluZXMgODItODMpCiAgICAgICAgIyBUaGUgc3RlbXMgZ2V0IHRoZSAiUCAtIFhYWFggLSAiIHByZWZpeCBzdHJpcHBlZCBieSBzaG9ydCgpCiAgICAgICAgIyBzbyBjdXJBL0IvQyBhcmUgTm9uZSAobm8gIi0gQTogLi4uIiBsaW5lcyBleGlzdCkg4oaSIGxpbmVzIDgyLTgzIHJ1bgogICAgICAgICMgVGhlIGFwcGVuZCB1c2VzIGZ1bGwgc3RlbXMgKGEuc3RlbSA9ICJQIC0gMjAyNC0wNi0xNSAtIE5ld0FscGhhIikKICAgICAgICBhc3NlcnQgIi0gQTogUCAtIDIwMjQtMDYtMTUgLSBOZXdBbHBoYSIgaW4gdXBkYXRlZAogICAgICAgIGFzc2VydCAiLSBCOiBQIC0gMjAyNC0wNi0xNCAtIE5ld0JldGEiIGluIHVwZGF0ZWQKICAgICAgICBhc3NlcnQgIi0gQzogUCAtIDIwMjQtMDYtMTMgLSBOZXdHYW1tYSIgaW4gdXBkYXRlZAo=
+"""Tier 4 unit tests for notes-related functions (ensure_cnote, timeline, collect_pnotes, etc.)."""
+
+
+class TestTodayIsoTier4:
+    def test_returns_iso_format(self):
+        import ai_research_os as airo
+
+        result = airo.today_iso()
+        # Frozen to 2024-06-15 by conftest.py autouse fixture
+        assert result == "2024-06-15"
+
+    def test_returns_todays_date(self):
+        import ai_research_os as airo
+
+        result = airo.today_iso()
+        # Frozen to 2024-06-15 by conftest.py autouse fixture
+        assert result == "2024-06-15"
+
+
+class TestSlugifyTitleTier4:
+    def test_basic(self):
+        import ai_research_os as airo
+
+        assert airo.slugify_title("Hello World") == "Hello-World"
+
+    def test_empty(self):
+        import ai_research_os as airo
+
+        assert airo.slugify_title("") == "Paper"
+
+    def test_max_len(self):
+        import ai_research_os as airo
+
+        long_title = "A" * 200
+        result = airo.slugify_title(long_title)
+        assert len(result) <= 200
+
+    def test_strips_special_chars(self):
+        import ai_research_os as airo
+
+        result = airo.slugify_title("Hello! World? #Test")
+        assert "!" not in result
+        assert "?" not in result
+        assert "#" not in result
+
+    def test_unicode_letters_kept(self):
+        import ai_research_os as airo
+
+        result = airo.slugify_title("机器学习")
+        assert result == "机器学习"
+
+
+class TestIsProbablyDoiTier4:
+    def test_true_patterns(self):
+        import ai_research_os as airo
+
+        assert airo.is_probably_doi("10.1001/test")
+        assert airo.is_probably_doi("10.1234/abc")
+
+    def test_false_patterns(self):
+        import ai_research_os as airo
+
+        assert not airo.is_probably_doi("not a doi")
+        assert not airo.is_probably_doi("")
+
+
+class TestNormalizeDoiTier4:
+    def test_url_stripped(self):
+        import ai_research_os as airo
+
+        assert airo.normalize_doi("https://doi.org/10.1001/test") == "10.1001/test"
+        assert airo.normalize_doi("http://dx.doi.org/10.1001/test") == "10.1001/test"
+
+    def test_plain(self):
+        import ai_research_os as airo
+
+        assert airo.normalize_doi("10.1001/test") == "10.1001/test"
+
+    def test_none_input(self):
+        import ai_research_os as airo
+
+        assert airo.normalize_doi(None) is None
+
+
+class TestNormalizeArxivIdTier4:
+    def test_url_formats(self):
+        import ai_research_os as airo
+
+        assert airo.normalize_arxiv_id("https://arxiv.org/abs/2301.00001") == "2301.00001"
+        assert airo.normalize_arxiv_id("https://arxiv.org/abs/2301.00001v2") == "2301.00001v2"
+
+    def test_new_style_bare(self):
+        import ai_research_os as airo
+
+        assert airo.normalize_arxiv_id("2301.00001") == "2301.00001"
+        assert airo.normalize_arxiv_id("2301.00001v2") == "2301.00001v2"
+
+    def test_old_style_bare(self):
+        import ai_research_os as airo
+
+        assert airo.normalize_arxiv_id("hep-th/9901001") == "hep-th/9901001"
+
+    def test_doi_format(self):
+        import ai_research_os as airo
+
+        assert airo.normalize_arxiv_id("10.1001/test") is None
+
+    def test_none_input(self):
+        import ai_research_os as airo
+
+        assert airo.normalize_arxiv_id(None) is None
+
+
+class TestParseFrontmatterTier4:
+    def test_parses_yaml_block(self):
+        import ai_research_os as airo
+
+        content = "---\ntitle: Test\ntags:\n  - A\n  - B\n---\nbody"
+        result = airo.parse_frontmatter(content)
+        assert result["title"] == "Test"
+        assert result["tags"] == ["A", "B"]
+
+    def test_empty_dict_for_no_frontmatter(self):
+        import ai_research_os as airo
+
+        assert airo.parse_frontmatter("no frontmatter") == {}
+
+    def test_handles_multiline_values(self):
+        import ai_research_os as airo
+
+        content = "---\ntitle: Multi\n  Line\n---\nbody"
+        result = airo.parse_frontmatter(content)
+        assert "title" in result
+
+    def test_inline_tags(self):
+        import ai_research_os as airo
+
+        content = "---\ntags: [Agent, RAG]\n---\nbody"
+        result = airo.parse_frontmatter(content)
+        assert result.get("tags") == "[Agent, RAG]"
+
+
+class TestParseDateFromFrontmatterTier4:
+    def test_returns_iso_format(self):
+        import ai_research_os as airo
+
+        content = "---\ndate: 2024-03-15\n---\n"
+        fm = airo.parse_frontmatter(content)
+        result = airo.parse_date_from_frontmatter(fm)
+        assert result == "2024-03-15"
+
+    def test_returns_empty_for_missing_date(self):
+        import ai_research_os as airo
+
+        content = "---\ntitle: Test\n---\n"
+        fm = airo.parse_frontmatter(content)
+        result = airo.parse_date_from_frontmatter(fm)
+        assert result == ""
+
+    def test_returns_bad_format_with_warning(self):
+        import ai_research_os as airo
+        import warnings
+
+        content = "---\ndate: not-a-date\n---\n"
+        fm = airo.parse_frontmatter(content)
+        with warnings.catch_warnings(record=True) as rec:
+            warnings.simplefilter("always")
+            result = airo.parse_date_from_frontmatter(fm)
+        assert result == "not-a-date"
+        assert any("Unrecognized date format" in str(w.message) for w in rec)
+
+
+class TestRenderCnoteTier4:
+    def test_has_required_sections(self):
+        import ai_research_os as airo
+
+        result = airo.render_cnote("Test Concept")
+        assert "Test Concept" in result
+        assert "type: concept" in result
+        assert "## 核心定义" in result
+
+    def test_type_is_concept(self):
+        import ai_research_os as airo
+
+        result = airo.render_cnote("Test Concept")
+        assert "concept" in result.lower()
+
+    def test_hash_escaped_in_title(self):
+        import ai_research_os as airo
+
+        result = airo.render_cnote("LLM# vs CNN#")
+        lines = result.split("\n")
+        title_line = lines[4]
+        assert r"\#" in title_line
+        assert not title_line.startswith("# ") or title_line.startswith("# LLM")
+
+
+class TestEnsureCnoteTier4:
+    def test_creates_cnote_file(self, tmp_path):
+        import ai_research_os as airo
+
+        root = tmp_path / "notes"
+        root.mkdir()
+        path = airo.ensure_cnote(root, "Test Concept")
+        assert path.exists()
+        assert "Test" in path.name
+
+    def test_returns_existing_file(self, tmp_path):
+        import ai_research_os as airo
+
+        root = tmp_path / "notes"
+        root.mkdir()
+        p1 = airo.ensure_cnote(root, "Test")
+        p2 = airo.ensure_cnote(root, "Test")
+        assert p1 == p2
+
+
+class TestEnsureTimelineTier4:
+    def test_creates_timeline_file(self, tmp_path):
+        import ai_research_os as airo
+
+        root = tmp_path
+        path = airo.ensure_timeline(root)
+        assert path.exists()
+        assert path.name == "Timeline.md"
+
+    def test_is_idempotent(self, tmp_path):
+        import ai_research_os as airo
+
+        root = tmp_path
+        p1 = airo.ensure_timeline(root)
+        p2 = airo.ensure_timeline(root)
+        assert p1 == p2
+        assert p2.exists()
+
+
+class TestUpdateTimelineTier4:
+    def test_appends_to_new_year_section(self, tmp_path):
+        import ai_research_os as airo
+
+        root = tmp_path
+        airo.ensure_timeline(root)
+        papers_dir = root / "02-Papers"
+        papers_dir.mkdir(parents=True)
+        pnote = papers_dir / "P - 2024-01-01 - Test Event.md"
+        pnote.write_text("---\npublished: 2024-01-01\n---\n", encoding="utf-8")
+        year = "2024"  # frozen year from conftest
+        result = airo.update_timeline(root, year, pnote, "Test Event")
+        assert result.exists()
+        content = result.read_text(encoding="utf-8")
+        assert year in content
+
+    def test_no_change_for_existing_bullet(self, tmp_path):
+        import ai_research_os as airo
+
+        root = tmp_path
+        airo.ensure_timeline(root)
+        papers_dir = root / "02-Papers"
+        papers_dir.mkdir(parents=True)
+        pnote = papers_dir / "P - 2024-01-01 - Test Event.md"
+        pnote.write_text("---\npublished: 2024-01-01\n---\n", encoding="utf-8")
+        year = "2024"  # frozen year from conftest
+        r1 = airo.update_timeline(root, year, pnote, "Test Event")
+        r2 = airo.update_timeline(root, year, pnote, "Test Event")
+        assert r1.exists()
+        assert r2.exists()
+
+    def test_inserts_before_next_year(self, tmp_path):
+        import ai_research_os as airo
+
+        root = tmp_path
+        airo.ensure_timeline(root)
+        papers_dir = root / "02-Papers"
+        papers_dir.mkdir(parents=True)
+        pnote = papers_dir / "P - 2024-01-01 - Current Event.md"
+        pnote.write_text("---\npublished: 2024-01-01\n---\n", encoding="utf-8")
+        next_year = "2025"  # frozen year + 1
+        content = f"## {next_year}\n- Future event\n"
+        tl_path = root / "00-Radar" / "Timeline.md"
+        tl_path.write_text(content, encoding="utf-8")
+        year = "2024"  # frozen year from conftest
+        result = airo.update_timeline(root, year, pnote, "Current Event")
+        assert result.exists()
+        result_content = result.read_text(encoding="utf-8")
+        assert next_year in result_content
+
+
+class TestCollectPnotesTier4:
+    def test_returns_empty_for_no_files(self, tmp_path):
+        import ai_research_os as airo
+
+        root = tmp_path / "notes"
+        root.mkdir()
+        result = airo.collect_pnotes(root)
+        assert result == []
+
+    def test_sorts_by_date_descending(self, tmp_path):
+        """collect_pnotes sorts by path (lexicographic), which on Windows sorts 2024-01 < 2024-06."""
+        import ai_research_os as airo
+
+        root = tmp_path / "notes"
+        root.mkdir()
+        papers_dir = root / "Papers"
+        papers_dir.mkdir()
+        # On Windows, filesystem sorts: "2024-01" < "2024-06" (character comparison)
+        # So path order is: B (2024-01) before A (2024-06)
+        f1 = papers_dir / "P - 2024-06-01 - A.md"
+        f2 = papers_dir / "P - 2024-01-01 - B.md"
+        f1.write_text("---\npublished: 2024-06-01\n---\n", encoding="utf-8")
+        f2.write_text("---\npublished: 2024-01-01\n---\n", encoding="utf-8")
+        assert f1.exists() and f2.exists()  # setup verification
+        import re
+
+        result = airo.collect_pnotes(root)
+        dates = [re.search(r"\d{4}-\d{2}-\d{2}", p.stem).group() for p in result]
+        # Verify: result should be sorted (lexicographic), and dates are correctly extracted
+        assert dates == sorted(dates), f"result not sorted: {dates}"
+        assert set(dates) == {"2024-01-01", "2024-06-01"}  # both dates present
+
+
+class TestPnotesByTagTier4:
+    def test_groups_by_tag(self, tmp_path):
+        import ai_research_os as airo
+
+        root = tmp_path / "notes"
+        root.mkdir()
+        papers_dir = root / "02-Papers"
+        papers_dir.mkdir(parents=True)
+        f1 = papers_dir / "P - 2024-01-01 - A.md"
+        f2 = papers_dir / "P - 2024-02-01 - B.md"
+        f1.write_text("---\npublished: 2024-01-01\ntags:\n  - Agent\n---\n", encoding="utf-8")
+        f2.write_text("---\npublished: 2024-02-01\ntags:\n  - Agent\n---\n", encoding="utf-8")
+        assert f1.exists() and f2.exists()  # setup verification
+        result = airo.pnotes_by_tag(root)
+        assert "Agent" in result
+        assert len(result["Agent"]) == 2  # verify both files grouped
+
+
+class TestPickTop3PnotesForTagTier4:
+    def test_returns_none_for_fewer_than_3(self, tmp_path):
+        import ai_research_os as airo
+
+        root = tmp_path / "notes"
+        root.mkdir()
+        papers_dir = root / "02-Papers"
+        papers_dir.mkdir(parents=True)
+        (papers_dir / "P - 2024-01-01 - A.md").write_text(
+            "---\npublished: 2024-01-01\ntags:\n  - Agent\n---\n", encoding="utf-8"
+        )
+        (papers_dir / "P - 2024-02-01 - B.md").write_text(
+            "---\npublished: 2024-02-01\ntags:\n  - Agent\n---\n", encoding="utf-8"
+        )
+        tag_map = airo.pnotes_by_tag(root)
+        result = airo.pick_top3_pnotes_for_tag("Agent", tag_map)
+        assert result is None
+
+    def test_returns_3_oldest_for_more_than_3(self, tmp_path):
+        import ai_research_os as airo
+
+        root = tmp_path / "notes"
+        root.mkdir()
+        papers_dir = root / "02-Papers"
+        papers_dir.mkdir(parents=True)
+        files = []
+        for i in range(5):
+            f = papers_dir / f"P - 2024-0{i + 1}-01 - {i}.md"
+            f.write_text(
+                f"---\npublished: 2024-0{i + 1}-01\ntags:\n  - Agent\n---\n", encoding="utf-8"
+            )
+            files.append(f)
+        assert all(f.exists() for f in files)  # setup verification
+        tag_map = airo.pnotes_by_tag(root)
+        result = airo.pick_top3_pnotes_for_tag("Agent", tag_map)
+        assert result is not None
+        assert len(result) == 3
+        # Verify they are the 3 oldest (earliest dates)
+        import re
+
+        result_stems = sorted([re.search(r"\d{4}-\d{2}-\d{2}", p.stem).group() for p in result])
+        assert result_stems == ["2024-01-01", "2024-02-01", "2024-03-01"]  # oldest 3
+
+    def test_returns_none_for_unknown_tag(self, tmp_path):
+        import ai_research_os as airo
+
+        root = tmp_path / "notes"
+        root.mkdir()
+        papers_dir = root / "02-Papers"
+        papers_dir.mkdir(parents=True)
+        (papers_dir / "P - 2024-01-01 - A.md").write_text(
+            "---\npublished: 2024-01-01\ntags:\n  - Agent\n---\n", encoding="utf-8"
+        )
+        tag_map = airo.pnotes_by_tag(root)
+        result = airo.pick_top3_pnotes_for_tag("UnknownTag", tag_map)
+        assert result is None
+
+
+class TestWikilinkForPnoteTier4:
+    def test_stem_only(self):
+        import ai_research_os as airo
+        from pathlib import Path
+
+        p = Path("P - 2024-03-15 - Test Paper.md")
+        result = airo.wikilink_for_pnote(p)
+        assert result == "[[P - 2024-03-15 - Test Paper]]"
+
+
+class TestUpsertLinkUnderHeadingTier4:
+    def test_heading_without_hash_prefix(self, tmp_path):
+        import ai_research_os as airo
+
+        md = "## 关联笔记\n- old link\n"
+        result = airo.upsert_link_under_heading(md, "关联笔记", "- [[P1]]")
+        assert "[[P1]]" in result
+        assert result.count("- [[P1]]") == 1
+
+    def test_heading_not_found_appends_section(self, tmp_path):
+        import ai_research_os as airo
+
+        md = "# Other\nNo heading here"
+        result = airo.upsert_link_under_heading(md, "New Section", "- [[P1]]")
+        assert "New Section" in result
+        assert "[[P1]]" in result
+
+    def test_special_chars_in_heading(self, tmp_path):
+        import ai_research_os as airo
+
+        md = "## 机器学习\n"
+        result = airo.upsert_link_under_heading(md, "机器学习", "- [[P1]]")
+        assert "[[P1]]" in result
+
+
+class TestReadPnoteMetadataTier4:
+    def test_read_pnote_metadata_basic(self, tmp_path):
+        import ai_research_os as airo
+
+        pnote = tmp_path / "P - 2024 - Test Paper.md"
+        pnote.write_text(
+            "type: paper\n"
+            "status: draft\n"
+            "date: 2024-03-15\n"
+            "tags: [LLM, Agent]\n"
+            "------------------\n"
+            "\n"
+            "# Test Paper Title\n"
+            "\n"
+            "**Source:** ARXIV: 2301.00001\n"
+        )
+        result = airo.read_pnote_metadata(pnote)
+        assert result["title"] == "Test Paper Title"
+        assert result["year"] == "2024"
+        assert result["date"] == "2024-03-15"
+        assert result["source"] == "arxiv"
+        assert result["uid"] == "2301.00001"
+        assert result["tags"] == ["LLM", "Agent"]
+
+    def test_read_pnote_metadata_fallback_uid(self, tmp_path):
+        import ai_research_os as airo
+
+        pnote = tmp_path / "P - 2023 - No Source.md"
+        pnote.write_text(
+            "type: paper\n"
+            "status: draft\n"
+            "date: 2023-11-01\n"
+            "tags: [RAG]\n"
+            "------------------\n"
+            "\n"
+            "# No Source Info\n"
+        )
+        result = airo.read_pnote_metadata(pnote)
+        assert result["title"] == "No Source Info"
+        assert result["year"] == "2023"
+        assert result["uid"] == ""  # no Source line in body, uid stays empty
+
+
+class TestEnsureOrUpdateMnoteABCUpdate:
+    """Cover mnote.py lines 86-92: curA/B/C exist but need updating."""
+
+    def test_updates_abc_and_appends_view_evolution_log(self, tmp_path):
+        """When existing mnote has curA/B/C that differ from new top3, re.sub + evolution log."""
+        import ai_research_os as airo
+
+        mnote_dir = tmp_path / "notes"
+        mnote_dir.mkdir(parents=True)
+
+        # mnote_filename strips "P - XXXX - " prefix then truncates to 19 chars.
+        # "P - 2024-06-15 - OldPaperA" → "OldPaperA" (strip prefix, length ≤ 19)
+        # "P - 2024-06-15 - NewPaperA" → "NewPaperA"
+        # Both share the same {tag} = "Agent".
+        existing_fname = "M - Agent - OldPaperA vs OldPaperB vs OldPaperC.md"
+        existing_content = (
+            "---\n"
+            "type: comparison\n"
+            "date: 2024-06-01\n"
+            "---\n"
+            "------------------\n"
+            "\n"
+            "# Agent: PaperA vs PaperB vs PaperC\n"
+            "\n"
+            "## 当前 A/B/C（自动补齐）\n"
+            "\n"
+            "- A: P - 2024-06-15 - OldPaperA\n"
+            "- B: P - 2024-06-14 - OldPaperB\n"
+            "- C: P - 2024-06-13 - OldPaperC\n"
+        )
+        existing_file = mnote_dir / existing_fname
+        existing_file.write_text(existing_content, encoding="utf-8")
+
+        # New top3 paths with different stems
+        top3_dir = tmp_path / "papers"
+        top3_dir.mkdir()
+        a_path = top3_dir / "P - 2024-06-15 - NewPaperA.md"
+        b_path = top3_dir / "P - 2024-06-14 - NewPaperB.md"
+        c_path = top3_dir / "P - 2024-06-13 - NewPaperC.md"
+        a_path.write_text("---\n", encoding="utf-8")
+        b_path.write_text("---\n", encoding="utf-8")
+        c_path.write_text("---\n", encoding="utf-8")
+
+        result = airo.ensure_or_update_mnote(mnote_dir, "Agent", [a_path, b_path, c_path])
+
+        assert result is not None
+        updated = result.read_text(encoding="utf-8")
+        # A/B/C lines should be updated to new stems
+        assert "- A: P - 2024-06-15 - NewPaperA" in updated
+        assert "- B: P - 2024-06-14 - NewPaperB" in updated
+        assert "- C: P - 2024-06-13 - NewPaperC" in updated
+        # View Evolution Log should be appended
+        assert "View Evolution Log" in updated
+        assert "旧观点" in updated
+        assert "新证据" in updated
+
+    def test_abc_all_missing_appends_section(self, tmp_path):
+        """Lines 81-84: when existing mnote has no A/B/C at all, appends the section."""
+        import ai_research_os as airo
+
+        mnote_dir = tmp_path / "notes"
+        mnote_dir.mkdir(parents=True)
+
+        # Existing mnote with NO A/B/C lines at all.
+        # Use stems that don't have "P - XXXX - " prefix so short() is identity.
+        # "OldAlpha" (9 chars) < 19, no truncation, no prefix strip.
+        existing_fname = "M - Agent - OldAlpha vs OldBeta vs OldGamma.md"
+        existing_content = (
+            "---\n"
+            "type: comparison\n"
+            "---\n"
+            "------------------\n"
+            "\n"
+            "# Agent Comparison\n"
+            "\n"
+            "Some content without A/B/C markers.\n"
+        )
+        existing_file = mnote_dir / existing_fname
+        existing_file.write_text(existing_content, encoding="utf-8")
+
+        # New top3 paths with different stems
+        # short("P - 2024-06-15 - NewAlpha") → strips prefix → "NewAlpha"
+        # short("P - 2024-06-15 - NewBeta")  → strips prefix → "NewBeta"
+        # short("P - 2024-06-15 - NewGamma") → strips prefix → "NewGamma"
+        top3_dir = tmp_path / "papers"
+        top3_dir.mkdir()
+        a_path = top3_dir / "P - 2024-06-15 - NewAlpha.md"
+        b_path = top3_dir / "P - 2024-06-14 - NewBeta.md"
+        c_path = top3_dir / "P - 2024-06-13 - NewGamma.md"
+        a_path.write_text("---\n", encoding="utf-8")
+        b_path.write_text("---\n", encoding="utf-8")
+        c_path.write_text("---\n", encoding="utf-8")
+
+        result = airo.ensure_or_update_mnote(mnote_dir, "Agent", [a_path, b_path, c_path])
+
+        assert result is not None
+        updated = result.read_text(encoding="utf-8")
+        # Should append the A/B/C section (lines 82-83)
+        # The stems get the "P - XXXX - " prefix stripped by short()
+        # so curA/B/C are None (no "- A: ..." lines exist) → lines 82-83 run
+        # The append uses full stems (a.stem = "P - 2024-06-15 - NewAlpha")
+        assert "- A: P - 2024-06-15 - NewAlpha" in updated
+        assert "- B: P - 2024-06-14 - NewBeta" in updated
+        assert "- C: P - 2024-06-13 - NewGamma" in updated

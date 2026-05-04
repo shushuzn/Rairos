@@ -1,1 +1,211 @@
-IiIiV2ViIENoYXQg4oCUIEZhc3RBUEkgcm91dGVzIGZvciBzdHJlYW1pbmcgUkFHIGNoYXQgb3ZlciB0aGUgcGFwZXIgbGlicmFyeS4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBqc29uCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgQW55LCBBc3luY0l0ZXJhdG9yLCBEaWN0LCBMaXN0Cgpmcm9tIGZhc3RhcGkgaW1wb3J0IEFQSVJvdXRlciwgUmVxdWVzdApmcm9tIGZhc3RhcGkucmVzcG9uc2VzIGltcG9ydCBKU09OUmVzcG9uc2UsIFN0cmVhbWluZ1Jlc3BvbnNlCgpyb3V0ZXIgPSBBUElSb3V0ZXIoKQoKU0VTU0lPTl9GSUxFID0gUGF0aC5ob21lKCkgLyAiLmFpX3Jlc2VhcmNoX29zIiAvICJjaGF0X3Nlc3Npb25zLmpzb24iClNFU1NJT05fRklMRS5wYXJlbnQubWtkaXIocGFyZW50cz1UcnVlLCBleGlzdF9vaz1UcnVlKQoKCmRlZiBfbG9hZF9zZXNzaW9ucygpIC0+IERpY3Rbc3RyLCBBbnldOgogICAgaWYgbm90IFNFU1NJT05fRklMRS5leGlzdHMoKToKICAgICAgICByZXR1cm4ge30KICAgIHJldHVybiBqc29uLmxvYWRzKFNFU1NJT05fRklMRS5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikpCgoKZGVmIF9zYXZlX3Nlc3Npb25zKHNlc3Npb25zOiBEaWN0W3N0ciwgQW55XSkgLT4gTm9uZToKICAgIFNFU1NJT05fRklMRS53cml0ZV90ZXh0KGpzb24uZHVtcHMoc2Vzc2lvbnMsIGluZGVudD0yLCBlbnN1cmVfYXNjaWk9RmFsc2UpLCBlbmNvZGluZz0idXRmLTgiKQoKCmFzeW5jIGRlZiBjaGF0X3N0cmVhbShyZXF1ZXN0OiBSZXF1ZXN0KSAtPiBTdHJlYW1pbmdSZXNwb25zZToKICAgICIiIlN0cmVhbWluZyBjaGF0IGVuZHBvaW50IOKAlCBQT1NUIEpTT04ge3F1ZXJ5fSwgcmV0dXJucyBTU0UuIiIiCiAgICB0cnk6CiAgICAgICAgYm9keSA9IGF3YWl0IHJlcXVlc3QuanNvbigpCiAgICAgICAgcXVlcnkgPSBib2R5LmdldCgicXVlcnkiLCAiIikuc3RyaXAoKQogICAgICAgIHNlc3Npb25faWQgPSBib2R5LmdldCgic2Vzc2lvbl9pZCIsICJkZWZhdWx0IikKICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgcXVlcnkgPSAiIgoKICAgIGlmIG5vdCBxdWVyeToKICAgICAgICByZXR1cm4gU3RyZWFtaW5nUmVzcG9uc2UoCiAgICAgICAgICAgIGl0ZXIoW2YiZGF0YToge2pzb24uZHVtcHMoeydlcnJvcic6ICdlbXB0eSBxdWVyeSd9KX1cblxuIl0pLAogICAgICAgICAgICBtZWRpYV90eXBlPSJ0ZXh0L2V2ZW50LXN0cmVhbSIsCiAgICAgICAgKQoKICAgIGNvbnRleHRzOiBMaXN0W0RpY3Rbc3RyLCBBbnldXSA9IFtdCiAgICB0cnk6CiAgICAgICAgZnJvbSBsbG0uY2hhdCBpbXBvcnQgUkFHQ2hhdAoKICAgICAgICByYWcgPSBSQUdDaGF0KCkKICAgICAgICByZXN1bHRzID0gcmFnLmFuc3dlcihxdWVyeSwgdXNlX2xsbT1GYWxzZSwgY29uY2VwdD1Ob25lLCB0b3Bfaz01KQogICAgICAgIGNvbnRleHRzID0gcmVzdWx0cy5nZXQoInJldHJpZXZlZF9jb250ZXh0cyIsIFtdKVs6NV0KICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgcGFzcwoKICAgIGFzeW5jIGRlZiBldmVudF9zdHJlYW0oKSAtPiBBc3luY0l0ZXJhdG9yW3N0cl06CiAgICAgICAgeWllbGQgZiJkYXRhOiB7anNvbi5kdW1wcyh7J3R5cGUnOiAnY29udGV4dCcsICdjb3VudCc6IGxlbihjb250ZXh0cyl9KX1cblxuIgoKICAgICAgICBmdWxsX3Jlc3BvbnNlID0gIiIKICAgICAgICB0cnk6CiAgICAgICAgICAgIGZyb20gbGxtLmNoYXQgaW1wb3J0IHN0cmVhbV9sbG1fY2hhdF9jb21wbGV0aW9ucwogICAgICAgICAgICBmcm9tIGxsbS5jbGllbnQgaW1wb3J0IGJ1aWxkX3JhZ19wcm9tcHQKCiAgICAgICAgICAgIHN5c3RlbV9wcm9tcHQgPSAoCiAgICAgICAgICAgICAgICAiWW91IGFyZSBhbiBleHBlcnQgcmVzZWFyY2ggYXNzaXN0YW50LiBBbnN3ZXIgcXVlc3Rpb25zIGFib3V0IHRoZSB1c2VyJ3MgcGFwZXIgbGlicmFyeS4gIgogICAgICAgICAgICAgICAgIlVzZSB0aGUgcHJvdmlkZWQgY29udGV4dCBzbmlwcGV0cyB0byBncm91bmQgeW91ciBhbnN3ZXJzLiIKICAgICAgICAgICAgKQogICAgICAgICAgICBjb250ZXh0X3RleHQgPSAiXG5cbiIuam9pbigKICAgICAgICAgICAgICAgIGYiW1BhcGVyOiB7Yy5nZXQoJ3RpdGxlJywgJ1Vua25vd24nKX1dXG57Yy5nZXQoJ2NodW5rJywgYy5nZXQoJ3RleHQnLCAnJykpfSIKICAgICAgICAgICAgICAgIGZvciBjIGluIGNvbnRleHRzCiAgICAgICAgICAgICkKICAgICAgICAgICAgdXNlcl9wcm9tcHQgPSBidWlsZF9yYWdfcHJvbXB0KHF1ZXJ5LCBjb250ZXh0X3RleHQpCiAgICAgICAgICAgIG1lc3NhZ2VzID0gWwogICAgICAgICAgICAgICAgeyJyb2xlIjogInN5c3RlbSIsICJjb250ZW50Ijogc3lzdGVtX3Byb21wdH0sCiAgICAgICAgICAgICAgICB7InJvbGUiOiAidXNlciIsICJjb250ZW50IjogdXNlcl9wcm9tcHR9LAogICAgICAgICAgICBdCiAgICAgICAgICAgIGFzeW5jIGZvciBjaHVuayBpbiBzdHJlYW1fbGxtX2NoYXRfY29tcGxldGlvbnMoCiAgICAgICAgICAgICAgICBtZXNzYWdlcywgbW9kZWw9Tm9uZSwgYmFzZV91cmw9Tm9uZSwgYXBpX2tleT1Ob25lCiAgICAgICAgICAgICk6CiAgICAgICAgICAgICAgICBmdWxsX3Jlc3BvbnNlICs9IGNodW5rCiAgICAgICAgICAgICAgICB5aWVsZCBmImRhdGE6IHtqc29uLmR1bXBzKHsndHlwZSc6ICdjaHVuaycsICdjb250ZW50JzogY2h1bmt9KX1cblxuIgogICAgICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToKICAgICAgICAgICAgeWllbGQgZiJkYXRhOiB7anNvbi5kdW1wcyh7J3R5cGUnOiAnZXJyb3InLCAnY29udGVudCc6IHN0cihlKX0pfVxuXG4iCgogICAgICAgICMgU2F2ZSB0byBzZXNzaW9uCiAgICAgICAgc2Vzc2lvbnMgPSBfbG9hZF9zZXNzaW9ucygpCiAgICAgICAgaWYgc2Vzc2lvbl9pZCBub3QgaW4gc2Vzc2lvbnM6CiAgICAgICAgICAgIHNlc3Npb25zW3Nlc3Npb25faWRdID0geyJtZXNzYWdlcyI6IFtdfQogICAgICAgIHNlc3Npb25zW3Nlc3Npb25faWRdWyJtZXNzYWdlcyJdLmFwcGVuZCh7InJvbGUiOiAidXNlciIsICJjb250ZW50IjogcXVlcnl9KQogICAgICAgIHNlc3Npb25zW3Nlc3Npb25faWRdWyJtZXNzYWdlcyJdLmFwcGVuZCh7InJvbGUiOiAiYXNzaXN0YW50IiwgImNvbnRlbnQiOiBmdWxsX3Jlc3BvbnNlfSkKICAgICAgICBzZXNzaW9uc1tzZXNzaW9uX2lkXVsidXBkYXRlZF9hdCJdID0gc3RyKF9faW1wb3J0X18oImRhdGV0aW1lIikuZGF0ZXRpbWUubm93KCkuaXNvZm9ybWF0KCkpCiAgICAgICAgX3NhdmVfc2Vzc2lvbnMoc2Vzc2lvbnMpCgogICAgICAgIHlpZWxkIGYiZGF0YToge2pzb24uZHVtcHMoeyd0eXBlJzogJ2RvbmUnfSl9XG5cbiIKCiAgICByZXR1cm4gU3RyZWFtaW5nUmVzcG9uc2UoZXZlbnRfc3RyZWFtKCksIG1lZGlhX3R5cGU9InRleHQvZXZlbnQtc3RyZWFtIikKCgpkZWYgcmVuZGVyX2NoYXRfaHRtbCgpIC0+IHN0cjoKICAgIGxpbmVzID0gWyc8ZGl2IGNsYXNzPSJ3ZWItY2hhdCI+J10KICAgIGxpbmVzLmFwcGVuZCgiPGgzPvCfkqwgUmVzZWFyY2ggQ2hhdDwvaDM+IikKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiPHAgc3R5bGU9J2ZvbnQtc2l6ZToxM3B4O2NvbG9yOiNBODlFOEM7bWFyZ2luLWJvdHRvbToxNHB4Jz4iCiAgICAgICAgIkFzayBxdWVzdGlvbnMgYWJvdXQgeW91ciBwYXBlciBsaWJyYXJ5LiBBbnN3ZXJzIGFyZSBncm91bmRlZCBpbiB5b3VyIHBhcGVycy48L3A+IgogICAgKQoKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiPGRpdiBpZD0nY2hhdE1lc3NhZ2VzJyBzdHlsZT0nbWF4LWhlaWdodDo0MDBweDtvdmVyZmxvdy15OmF1dG87IgogICAgICAgICJib3JkZXI6MXB4IHNvbGlkICNlMGRiZDQ7Ym9yZGVyLXJhZGl1czo2cHg7cGFkZGluZzoxMnB4O21hcmdpbi1ib3R0b206MTJweDsiCiAgICAgICAgImJhY2tncm91bmQ6I2ZhZjhmNSc+IgogICAgKQogICAgbGluZXMuYXBwZW5kKAogICAgICAgICI8cCBpZD0nZW1wdHlIaW50JyBzdHlsZT0ndGV4dC1hbGlnbjpjZW50ZXI7Y29sb3I6I0E4OUU4Qztmb250LXNpemU6MTNweDtwYWRkaW5nOjIwcHg7bWFyZ2luOjAnPiIKICAgICAgICAiQXNrIHlvdXIgZmlyc3QgcXVlc3Rpb24gYmVsb3c8L3A+IgogICAgKQogICAgbGluZXMuYXBwZW5kKCI8L2Rpdj4iKQoKICAgIGxpbmVzLmFwcGVuZCgiPGRpdiBzdHlsZT0nZGlzcGxheTpmbGV4O2dhcDo4cHgnPiIpCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIjxpbnB1dCB0eXBlPSd0ZXh0JyBpZD0nY2hhdElucHV0JyBwbGFjZWhvbGRlcj0nQXNrIGFib3V0IHlvdXIgcGFwZXJzLi4uJyAiCiAgICAgICAgInN0eWxlPSdmbGV4OjE7Zm9udC1zaXplOjEzcHg7cGFkZGluZzo4cHggMTJweDtib3JkZXI6MXB4IHNvbGlkICNjY2M7IgogICAgICAgICJib3JkZXItcmFkaXVzOjRweDtmb250LWZhbWlseTpHZW9yZ2lhLHNlcmlmJyAiCiAgICAgICAgIm9ua2V5ZG93bj0naWYoZXZlbnQua2V5PT09XCJFbnRlclwiKXNlbmRDaGF0KCknPiIKICAgICkKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiPGJ1dHRvbiBpZD0nc2VuZEJ0bicgIgogICAgICAgICJzdHlsZT0nYmFja2dyb3VuZDojNkI4RkI1O2NvbG9yOndoaXRlO2JvcmRlcjpub25lO2JvcmRlci1yYWRpdXM6NHB4OyIKICAgICAgICAicGFkZGluZzo4cHggMTZweDtjdXJzb3I6cG9pbnRlcjtmb250LXNpemU6MTNweCc+U2VuZDwvYnV0dG9uPiIKICAgICkKICAgIGxpbmVzLmFwcGVuZCgiPC9kaXY+IikKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiPHAgaWQ9J2NoYXRTdGF0dXMnIHN0eWxlPSdmb250LXNpemU6MTFweDtjb2xvcjojQTg5RThDO21hcmdpbi10b3A6NnB4O21hcmdpbi1ib3R0b206MDtoZWlnaHQ6MTZweCc+PC9wPiIKICAgICkKCiAgICBsaW5lcy5hcHBlbmQoIiIiCjxzY3JpcHQ+CihmdW5jdGlvbigpIHsKICAgIHZhciBzZXNzaW9uSWQgPSAnZGVmYXVsdCc7CiAgICB2YXIgY2hhdENvbnRhaW5lciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdjaGF0TWVzc2FnZXMnKTsKICAgIHZhciBlbXB0eUhpbnQgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnZW1wdHlIaW50Jyk7CiAgICB2YXIgaW5wdXQgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnY2hhdElucHV0Jyk7CiAgICB2YXIgc2VuZEJ0biA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdzZW5kQnRuJyk7CiAgICB2YXIgc3RhdHVzRWwgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnY2hhdFN0YXR1cycpOwoKICAgIGZ1bmN0aW9uIGNyZWF0ZU1zZ0Rpdihyb2xlLCB0ZXh0KSB7CiAgICAgICAgdmFyIGRpdiA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpOwogICAgICAgIGRpdi5zdHlsZS5tYXJnaW5Cb3R0b20gPSAnMTBweCc7CiAgICAgICAgZGl2LnN0eWxlLnBhZGRpbmcgPSAnOHB4IDEwcHgnOwogICAgICAgIGRpdi5zdHlsZS5ib3JkZXJSYWRpdXMgPSAnNnB4JzsKICAgICAgICB2YXIgbGFiZWwgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdzcGFuJyk7CiAgICAgICAgbGFiZWwuc3R5bGUuZm9udFNpemUgPSAnMTFweCc7CiAgICAgICAgbGFiZWwuc3R5bGUuZm9udFdlaWdodCA9ICc3MDAnOwogICAgICAgIGlmIChyb2xlID09PSAndXNlcicpIHsKICAgICAgICAgICAgZGl2LnN0eWxlLmJhY2tncm91bmQgPSAncmdiYSgxMDcsMTQzLDE4MSwwLjEyKSc7CiAgICAgICAgICAgIGRpdi5zdHlsZS50ZXh0QWxpZ24gPSAncmlnaHQnOwogICAgICAgICAgICBsYWJlbC5zdHlsZS5jb2xvciA9ICcjNkI4RkI1JzsKICAgICAgICAgICAgbGFiZWwudGV4dENvbnRlbnQgPSAnWW91JzsKICAgICAgICB9IGVsc2UgewogICAgICAgICAgICBkaXYuc3R5bGUuYmFja2dyb3VuZCA9ICcjZjBlYmU1JzsKICAgICAgICAgICAgbGFiZWwuc3R5bGUuY29sb3IgPSAnI0E4OUU4Qyc7CiAgICAgICAgICAgIGxhYmVsLnRleHRDb250ZW50ID0gJ1JhaXJvcyc7CiAgICAgICAgfQogICAgICAgIHZhciBjb250ZW50ID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnc3BhbicpOwogICAgICAgIGNvbnRlbnQuc3R5bGUuZm9udFNpemUgPSAnMTNweCc7CiAgICAgICAgY29udGVudC5zdHlsZS5jb2xvciA9ICcjMmEyYTJhJzsKICAgICAgICBjb250ZW50LnN0eWxlLndoaXRlU3BhY2UgPSAncHJlLXdyYXAnOwogICAgICAgIGNvbnRlbnQudGV4dENvbnRlbnQgPSB0ZXh0OwogICAgICAgIGRpdi5hcHBlbmRDaGlsZChsYWJlbCk7CiAgICAgICAgZGl2LmFwcGVuZENoaWxkKGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2JyJykpOwogICAgICAgIGRpdi5hcHBlbmRDaGlsZChjb250ZW50KTsKICAgICAgICByZXR1cm4gZGl2OwogICAgfQoKICAgIGZ1bmN0aW9uIHNlbmRDaGF0KCkgewogICAgICAgIHZhciBxdWVyeSA9IGlucHV0LnZhbHVlLnRyaW0oKTsKICAgICAgICBpZiAoIXF1ZXJ5KSByZXR1cm47CiAgICAgICAgaWYgKGVtcHR5SGludCkgZW1wdHlIaW50LnN0eWxlLmRpc3BsYXkgPSAnbm9uZSc7CiAgICAgICAgY2hhdENvbnRhaW5lci5hcHBlbmRDaGlsZChjcmVhdGVNc2dEaXYoJ3VzZXInLCBxdWVyeSkpOwogICAgICAgIGlucHV0LnZhbHVlID0gJyc7CiAgICAgICAgc2VuZEJ0bi5kaXNhYmxlZCA9IHRydWU7CiAgICAgICAgc3RhdHVzRWwudGV4dENvbnRlbnQgPSAnVGhpbmtpbmcuLi4nOwoKICAgICAgICB2YXIgYXNzaXN0YW50RGl2ID0gY3JlYXRlTXNnRGl2KCdhc3Npc3RhbnQnLCAnJyk7CiAgICAgICAgY2hhdENvbnRhaW5lci5hcHBlbmRDaGlsZChhc3Npc3RhbnREaXYpOwogICAgICAgIHZhciBhc3Npc3RhbnRDb250ZW50ID0gYXNzaXN0YW50RGl2LnF1ZXJ5U2VsZWN0b3IoJ3NwYW46bGFzdC1jaGlsZCcpOwoKICAgICAgICBmZXRjaCgnL2NoYXQvc3RyZWFtJywgewogICAgICAgICAgICBtZXRob2Q6ICdQT1NUJywKICAgICAgICAgICAgaGVhZGVyczogeydDb250ZW50LVR5cGUnOiAnYXBwbGljYXRpb24vanNvbid9LAogICAgICAgICAgICBib2R5OiBKU09OLnN0cmluZ2lmeSh7cXVlcnk6IHF1ZXJ5LCBzZXNzaW9uX2lkOiBzZXNzaW9uSWR9KQogICAgICAgIH0pLnRoZW4oZnVuY3Rpb24ocikgewogICAgICAgICAgICB2YXIgcmVhZGVyID0gci5ib2R5LmdldFJlYWRlcigpOwogICAgICAgICAgICB2YXIgZGVjb2RlciA9IG5ldyBUZXh0RGVjb2RlcigpOwogICAgICAgICAgICB2YXIgZnVsbFRleHQgPSAnJzsKICAgICAgICAgICAgZnVuY3Rpb24gcmVhZCgpIHsKICAgICAgICAgICAgICAgIHJlYWRlci5yZWFkKCkudGhlbihmdW5jdGlvbihyZXN1bHQpIHsKICAgICAgICAgICAgICAgICAgICBpZiAocmVzdWx0LmRvbmUpIHJldHVybjsKICAgICAgICAgICAgICAgICAgICB2YXIgdGV4dCA9IGRlY29kZXIuZGVjb2RlKHJlc3VsdC52YWx1ZSk7CiAgICAgICAgICAgICAgICAgICAgdmFyIGxpbmVzID0gdGV4dC5zcGxpdCgnXFxuJyk7CiAgICAgICAgICAgICAgICAgICAgZm9yICh2YXIgaSA9IDA7IGkgPCBsaW5lcy5sZW5ndGg7IGkrKykgewogICAgICAgICAgICAgICAgICAgICAgICB2YXIgbG4gPSBsaW5lc1tpXS50cmltKCk7CiAgICAgICAgICAgICAgICAgICAgICAgIGlmICghbG4uc3RhcnRzV2l0aCgnZGF0YTogJykpIGNvbnRpbnVlOwogICAgICAgICAgICAgICAgICAgICAgICB0cnkgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgdmFyIGRhdGEgPSBKU09OLnBhcnNlKGxuLnNsaWNlKDYpKTsKICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmIChkYXRhLnR5cGUgPT09ICdjaHVuaycpIHsKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBmdWxsVGV4dCArPSBkYXRhLmNvbnRlbnQ7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgYXNzaXN0YW50Q29udGVudC50ZXh0Q29udGVudCA9IGZ1bGxUZXh0OwogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNoYXRDb250YWluZXIuc2Nyb2xsVG9wID0gY2hhdENvbnRhaW5lci5zY3JvbGxIZWlnaHQ7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICB9IGVsc2UgaWYgKGRhdGEudHlwZSA9PT0gJ2RvbmUnKSB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc2VuZEJ0bi5kaXNhYmxlZCA9IGZhbHNlOwogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1c0VsLnRleHRDb250ZW50ID0gJyc7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgICAgIH0gY2F0Y2goZSkge30KICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgcmVhZCgpOwogICAgICAgICAgICAgICAgfSk7CiAgICAgICAgICAgIH0KICAgICAgICAgICAgcmVhZCgpOwogICAgICAgIH0pLmNhdGNoKGZ1bmN0aW9uKGVycikgewogICAgICAgICAgICBhc3Npc3RhbnRDb250ZW50LnRleHRDb250ZW50ID0gJ0Vycm9yOiAnICsgZXJyLm1lc3NhZ2U7CiAgICAgICAgICAgIHNlbmRCdG4uZGlzYWJsZWQgPSBmYWxzZTsKICAgICAgICAgICAgc3RhdHVzRWwudGV4dENvbnRlbnQgPSAnJzsKICAgICAgICB9KTsKICAgIH0KCiAgICBzZW5kQnRuLmFkZEV2ZW50TGlzdGVuZXIoJ2NsaWNrJywgc2VuZENoYXQpOwp9KSgpOwo8L3NjcmlwdD4iIiIpCgogICAgbGluZXMuYXBwZW5kKCI8c3R5bGU+LndlYi1jaGF0IHsgZm9udC1mYW1pbHk6IEdlb3JnaWEsIHNlcmlmOyB9PC9zdHlsZT4iKQogICAgbGluZXMuYXBwZW5kKCI8L2Rpdj4iKQogICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykK
+"""Web Chat — FastAPI routes for streaming RAG chat over the paper library."""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any, AsyncIterator, Dict, List
+
+from fastapi import APIRouter, Request
+from fastapi.responses import JSONResponse, StreamingResponse
+
+router = APIRouter()
+
+SESSION_FILE = Path.home() / ".ai_research_os" / "chat_sessions.json"
+SESSION_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+
+def _load_sessions() -> Dict[str, Any]:
+    if not SESSION_FILE.exists():
+        return {}
+    return json.loads(SESSION_FILE.read_text(encoding="utf-8"))
+
+
+def _save_sessions(sessions: Dict[str, Any]) -> None:
+    SESSION_FILE.write_text(json.dumps(sessions, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+async def chat_stream(request: Request) -> StreamingResponse:
+    """Streaming chat endpoint — POST JSON {query}, returns SSE."""
+    try:
+        body = await request.json()
+        query = body.get("query", "").strip()
+        session_id = body.get("session_id", "default")
+    except Exception:
+        query = ""
+
+    if not query:
+        return StreamingResponse(iter([f"data: {json.dumps({'error': 'empty query'})}\n\n"]), media_type="text/event-stream")
+
+    contexts: List[Dict[str, Any]] = []
+    try:
+        from llm.chat import RAGChat
+        rag = RAGChat()
+        results = rag.answer(query, use_llm=False, concept=None, top_k=5)
+        contexts = results.get("retrieved_contexts", [])[:5]
+    except Exception:
+        pass
+
+    async def event_stream() -> AsyncIterator[str]:
+        yield f"data: {json.dumps({'type': 'context', 'count': len(contexts)})}\n\n"
+
+        full_response = ""
+        try:
+            from llm.chat import stream_llm_chat_completions
+            from llm.client import build_rag_prompt
+
+            system_prompt = (
+                "You are an expert research assistant. Answer questions about the user's paper library. "
+                "Use the provided context snippets to ground your answers."
+            )
+            context_text = "\n\n".join(
+                f"[Paper: {c.get('title', 'Unknown')}]\n{c.get('chunk', c.get('text', ''))}"
+                for c in contexts
+            )
+            user_prompt = build_rag_prompt(query, context_text)
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ]
+            async for chunk in stream_llm_chat_completions(messages, model=None, base_url=None, api_key=None):
+                full_response += chunk
+                yield f"data: {json.dumps({'type': 'chunk', 'content': chunk})}\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"
+
+        # Save to session
+        sessions = _load_sessions()
+        if session_id not in sessions:
+            sessions[session_id] = {"messages": []}
+        sessions[session_id]["messages"].append({"role": "user", "content": query})
+        sessions[session_id]["messages"].append({"role": "assistant", "content": full_response})
+        sessions[session_id]["updated_at"] = str(__import__("datetime").datetime.now().isoformat())
+        _save_sessions(sessions)
+
+        yield f"data: {json.dumps({'type': 'done'})}\n\n"
+
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
+
+
+def render_chat_html() -> str:
+    lines = ['<div class="web-chat">']
+    lines.append("<h3>💬 Research Chat</h3>")
+    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
+                "Ask questions about your paper library. Answers are grounded in your papers.</p>")
+
+    lines.append("<div id='chatMessages' style='max-height:400px;overflow-y:auto;"
+                "border:1px solid #e0dbd4;border-radius:6px;padding:12px;margin-bottom:12px;"
+                "background:#faf8f5'>")
+    lines.append("<p id='emptyHint' style='text-align:center;color:#A89E8C;font-size:13px;padding:20px;margin:0'>"
+                "Ask your first question below</p>")
+    lines.append("</div>")
+
+    lines.append("<div style='display:flex;gap:8px'>")
+    lines.append("<input type='text' id='chatInput' placeholder='Ask about your papers...' "
+                "style='flex:1;font-size:13px;padding:8px 12px;border:1px solid #ccc;"
+                "border-radius:4px;font-family:Georgia,serif' "
+                "onkeydown='if(event.key===\"Enter\")sendChat()'>")
+    lines.append("<button id='sendBtn' "
+                "style='background:#6B8FB5;color:white;border:none;border-radius:4px;"
+                "padding:8px 16px;cursor:pointer;font-size:13px'>Send</button>")
+    lines.append("</div>")
+    lines.append("<p id='chatStatus' style='font-size:11px;color:#A89E8C;margin-top:6px;margin-bottom:0;height:16px'></p>")
+
+    lines.append("""
+<script>
+(function() {
+    var sessionId = 'default';
+    var chatContainer = document.getElementById('chatMessages');
+    var emptyHint = document.getElementById('emptyHint');
+    var input = document.getElementById('chatInput');
+    var sendBtn = document.getElementById('sendBtn');
+    var statusEl = document.getElementById('chatStatus');
+
+    function createMsgDiv(role, text) {
+        var div = document.createElement('div');
+        div.style.marginBottom = '10px';
+        div.style.padding = '8px 10px';
+        div.style.borderRadius = '6px';
+        var label = document.createElement('span');
+        label.style.fontSize = '11px';
+        label.style.fontWeight = '700';
+        if (role === 'user') {
+            div.style.background = 'rgba(107,143,181,0.12)';
+            div.style.textAlign = 'right';
+            label.style.color = '#6B8FB5';
+            label.textContent = 'You';
+        } else {
+            div.style.background = '#f0ebe5';
+            label.style.color = '#A89E8C';
+            label.textContent = 'Rairos';
+        }
+        var content = document.createElement('span');
+        content.style.fontSize = '13px';
+        content.style.color = '#2a2a2a';
+        content.style.whiteSpace = 'pre-wrap';
+        content.textContent = text;
+        div.appendChild(label);
+        div.appendChild(document.createElement('br'));
+        div.appendChild(content);
+        return div;
+    }
+
+    function sendChat() {
+        var query = input.value.trim();
+        if (!query) return;
+        if (emptyHint) emptyHint.style.display = 'none';
+        chatContainer.appendChild(createMsgDiv('user', query));
+        input.value = '';
+        sendBtn.disabled = true;
+        statusEl.textContent = 'Thinking...';
+
+        var assistantDiv = createMsgDiv('assistant', '');
+        chatContainer.appendChild(assistantDiv);
+        var assistantContent = assistantDiv.querySelector('span:last-child');
+
+        fetch('/chat/stream', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({query: query, session_id: sessionId})
+        }).then(function(r) {
+            var reader = r.body.getReader();
+            var decoder = new TextDecoder();
+            var fullText = '';
+            function read() {
+                reader.read().then(function(result) {
+                    if (result.done) return;
+                    var text = decoder.decode(result.value);
+                    var lines = text.split('\\n');
+                    for (var i = 0; i < lines.length; i++) {
+                        var ln = lines[i].trim();
+                        if (!ln.startsWith('data: ')) continue;
+                        try {
+                            var data = JSON.parse(ln.slice(6));
+                            if (data.type === 'chunk') {
+                                fullText += data.content;
+                                assistantContent.textContent = fullText;
+                                chatContainer.scrollTop = chatContainer.scrollHeight;
+                            } else if (data.type === 'done') {
+                                sendBtn.disabled = false;
+                                statusEl.textContent = '';
+                            }
+                        } catch(e) {}
+                    }
+                    read();
+                });
+            }
+            read();
+        }).catch(function(err) {
+            assistantContent.textContent = 'Error: ' + err.message;
+            sendBtn.disabled = false;
+            statusEl.textContent = '';
+        });
+    }
+
+    sendBtn.addEventListener('click', sendChat);
+})();
+</script>""")
+
+    lines.append("<style>.web-chat { font-family: Georgia, serif; }</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

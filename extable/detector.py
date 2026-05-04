@@ -1,1 +1,159 @@
-IiIiUERGIHRhYmxlIGRldGVjdGlvbiB1c2luZyBQeU11UERGLiIiIgoKaW1wb3J0IHJlCmZyb20gdHlwaW5nIGltcG9ydCBPcHRpb25hbCwgVW5pb24KZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCgoKX01FVFJJQ19LRVlXT1JEUyA9IFsKICAgICJhY2N1cmFjeSIsCiAgICAicHJlY2lzaW9uIiwKICAgICJyZWNhbGwiLAogICAgImYxIiwKICAgICJibGV1IiwKICAgICJyb3VnZSIsCiAgICAicGVycGxleGl0eSIsCiAgICAibG9zcyIsCiAgICAiYXVjIiwKICAgICJtYXAiLAogICAgIm5kY2ciLAogICAgIm1yciIsCiAgICAiY2VyIiwKICAgICJ3ZXIiLAogICAgImJlYW0iLAogICAgImxhdGVuY3kiLAogICAgInRocm91Z2hwdXQiLAogICAgInBhcmFtIiwKICAgICJicGMiLAogICAgImJpdHNfcGVyX2NoYXIiLAogICAgInBwbCIsCiAgICAiZ2x1ZSIsCiAgICAic3VwZXIgZ2wiLAogICAgInNxdWFkIiwKICAgICJhcmMiLAogICAgImhlbGxhIiwKICAgICJsYW1iYWRhIiwKXQoKX0RBVEFTRVRfS0VZV09SRFMgPSBbCiAgICAic3F1YWQiLAogICAgImdsdWUiLAogICAgImNvY28iLAogICAgImltYWdlbmV0IiwKICAgICJtbmlzdCIsCiAgICAiY2lmYXIiLAogICAgIndpa2l0ZXh0IiwKICAgICJvcGVud2VidGV4dCIsCiAgICAiYm9va2NvcnB1cyIsCiAgICAiYXJ4aXYiLAogICAgInB1Ym1lZCIsCiAgICAiY3VzdG9tIiwKICAgICJzc3QiLAogICAgInNzdC0yIiwKICAgICJxcXAiLAogICAgIm1ubGkiLAogICAgInFubGkiLAogICAgInJ0ZSIsCiAgICAiY29sYSIsCl0KCgpjbGFzcyBUYWJsZURldGVjdG9yOgogICAgIiIiRGV0ZWN0IGFuZCBleHRyYWN0IHRhYmxlcyBmcm9tIFBERiBwYWdlcyB1c2luZyBQeU11UERGIChmaXR6KS4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZik6CiAgICAgICAgc2VsZi5faGFzX2ZpdHogPSBUcnVlCgogICAgZGVmIGRldGVjdF90YWJsZXMoCiAgICAgICAgc2VsZiwgcGFnZV9zb3VyY2U6IFVuaW9uW3N0ciwgUGF0aCwgaW50XSwgcGRmX3BhdGg6IE9wdGlvbmFsW1BhdGhdID0gTm9uZQogICAgKSAtPiBsaXN0W2RpY3RdOgogICAgICAgICIiIkRldGVjdCB0YWJsZXMgb24gYSBwYWdlLgoKICAgICAgICBwYWdlX3NvdXJjZTogcGFnZSBudW1iZXIgKGludCkgT1IgcGF0aCB0byBwYWdlIGltYWdlIChmb3IgT0NSIGZhbGxiYWNrKQogICAgICAgIFJldHVybnMgbGlzdCBvZiB7YmJveCwgcm93cywgY29scywgaXNfZXhwZXJpbWVudF90YWJsZX0uCiAgICAgICAgIiIiCiAgICAgICAgdHJ5OgogICAgICAgICAgICBpbXBvcnQgZml0egogICAgICAgIGV4Y2VwdCBJbXBvcnRFcnJvcjoKICAgICAgICAgICAgcmV0dXJuIFtdCiAgICAgICAgaWYgbm90IHNlbGYuX2hhc19maXR6OgogICAgICAgICAgICByZXR1cm4gW10KICAgICAgICBpZiBwZGZfcGF0aCBpcyBOb25lOgogICAgICAgICAgICByZXR1cm4gW10KCiAgICAgICAgaWYgaXNpbnN0YW5jZShwYWdlX3NvdXJjZSwgKGludCwpKToKICAgICAgICAgICAgcGFnZV9udW0gPSBpbnQocGFnZV9zb3VyY2UpCiAgICAgICAgZWxzZToKICAgICAgICAgICAgcGFnZV9udW0gPSAwCgogICAgICAgIGRvYyA9IGZpdHoub3BlbihzdHIocGRmX3BhdGgpKQogICAgICAgIHBhZ2UgPSBkb2NbcGFnZV9udW1dCiAgICAgICAgYmxvY2tzID0gcGFnZS5nZXRfdGV4dCgiZGljdCIpWyJibG9ja3MiXQoKICAgICAgICB0YWJsZXMgPSBbXQogICAgICAgIGZvciBibG9jayBpbiBibG9ja3M6CiAgICAgICAgICAgIGlmIGJsb2NrLmdldCgidHlwZSIpICE9IDA6ICAjIG5vdCB0ZXh0IGJsb2NrCiAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICB0YWJsZV9iYm94ID0gYmxvY2suZ2V0KCJiYm94IikKICAgICAgICAgICAgaWYgbm90IHRhYmxlX2Jib3g6CiAgICAgICAgICAgICAgICBjb250aW51ZQoKICAgICAgICAgICAgIyBFeHRyYWN0IHRhYmxlIGRhdGEKICAgICAgICAgICAgdGFibGVfZGF0YSA9IHNlbGYuX2V4dHJhY3RfdGFibGVfZnJvbV9ibG9jayhwYWdlLCBibG9jaykKICAgICAgICAgICAgaWYgbm90IHRhYmxlX2RhdGEgb3IgbGVuKHRhYmxlX2RhdGEpIDwgMjoKICAgICAgICAgICAgICAgIGNvbnRpbnVlCgogICAgICAgICAgICBpc19leHAgPSBzZWxmLl9pc19leHBlcmltZW50X3RhYmxlKHRhYmxlX2RhdGEpCiAgICAgICAgICAgIHRhYmxlcy5hcHBlbmQoCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgImJib3giOiB0YWJsZV9iYm94LAogICAgICAgICAgICAgICAgICAgICJkYXRhIjogdGFibGVfZGF0YSwKICAgICAgICAgICAgICAgICAgICAiaXNfZXhwZXJpbWVudCI6IGlzX2V4cCwKICAgICAgICAgICAgICAgICAgICAicGFnZSI6IHBhZ2VfbnVtLAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICApCgogICAgICAgIGRvYy5jbG9zZSgpCiAgICAgICAgcmV0dXJuIHRhYmxlcwoKICAgIGRlZiBfZXh0cmFjdF90YWJsZV9mcm9tX2Jsb2NrKHNlbGYsIHBhZ2UsIGJsb2NrOiBkaWN0KSAtPiBsaXN0W2xpc3Rbc3RyXV06CiAgICAgICAgIiIiRXh0cmFjdCByb3dzIGZyb20gYSB0YWJsZSBibG9jay4iIiIKICAgICAgICAjIFVzZSB0YWJ1bGEtc3R5bGUgZXh0cmFjdGlvbjogbG9vayBmb3IgY29uc2lzdGVudCBob3Jpem9udGFsIHNlcGFyYXRvcnMKICAgICAgICBsaW5lcyA9IGJsb2NrLmdldCgibGluZXMiLCBbXSkKICAgICAgICBpZiBub3QgbGluZXM6CiAgICAgICAgICAgIHJldHVybiBbXQoKICAgICAgICAjIFNvcnQgbGluZXMgYnkgeSBjb29yZGluYXRlIChyb3cpCiAgICAgICAgcm93c19kYXRhOiBkaWN0W2Zsb2F0LCBsaXN0W3R1cGxlW2Zsb2F0LCBzdHJdXV0gPSB7fQogICAgICAgIGZvciBsaW5lIGluIGxpbmVzOgogICAgICAgICAgICB5MCA9IGxpbmVbImJib3giXVsxXQogICAgICAgICAgICByb3dfa2V5ID0gcm91bmQoeTAsIDEpCiAgICAgICAgICAgIGlmIHJvd19rZXkgbm90IGluIHJvd3NfZGF0YToKICAgICAgICAgICAgICAgIHJvd3NfZGF0YVtyb3dfa2V5XSA9IFtdCiAgICAgICAgICAgIGZvciBzcGFuIGluIGxpbmUuZ2V0KCJzcGFucyIsIFtdKToKICAgICAgICAgICAgICAgIHgwID0gc3BhblsiYmJveCJdWzBdCiAgICAgICAgICAgICAgICB0ZXh0ID0gc3BhblsidGV4dCJdLnN0cmlwKCkKICAgICAgICAgICAgICAgIGlmIHRleHQ6CiAgICAgICAgICAgICAgICAgICAgcm93c19kYXRhW3Jvd19rZXldLmFwcGVuZCgoeDAsIHRleHQpKQoKICAgICAgICAjIFNvcnQgZWFjaCByb3cgYnkgeCBjb29yZGluYXRlIGFuZCBmbGF0dGVuCiAgICAgICAgdGFibGUgPSBbXQogICAgICAgIGZvciB5IGluIHNvcnRlZChyb3dzX2RhdGEua2V5cygpKToKICAgICAgICAgICAgY2VsbHMgPSByb3dzX2RhdGFbeV0KICAgICAgICAgICAgY2VsbHMuc29ydChrZXk9bGFtYmRhIHg6IHhbMF0pCiAgICAgICAgICAgIHJvdyA9IFtjWzFdIGZvciBjIGluIGNlbGxzXQogICAgICAgICAgICB0YWJsZS5hcHBlbmQocm93KQoKICAgICAgICByZXR1cm4gdGFibGUKCiAgICBkZWYgX2lzX2V4cGVyaW1lbnRfdGFibGUoc2VsZiwgdGFibGVfZGF0YTogbGlzdFtsaXN0W3N0cl1dKSAtPiBib29sOgogICAgICAgICIiIkhldXJpc3RpYzogaXMgdGhpcyBhbiBleHBlcmltZW50IHJlc3VsdHMgdGFibGU/IiIiCiAgICAgICAgaWYgbGVuKHRhYmxlX2RhdGEpIDwgMjoKICAgICAgICAgICAgcmV0dXJuIEZhbHNlCgogICAgICAgIGhlYWRlciA9ICIgIi5qb2luKHRhYmxlX2RhdGFbMF0pLmxvd2VyKCkKICAgICAgICBib2R5ID0gIiAiLmpvaW4oIiAiLmpvaW4ocikgZm9yIHIgaW4gdGFibGVfZGF0YVsxOl0pLmxvd2VyKCkKCiAgICAgICAgc2NvcmVfY291bnQgPSAwCiAgICAgICAgZm9yIGt3IGluIF9NRVRSSUNfS0VZV09SRFM6CiAgICAgICAgICAgIGlmIGt3IGluIGhlYWRlciBvciBrdyBpbiBib2R5OgogICAgICAgICAgICAgICAgc2NvcmVfY291bnQgKz0gMQoKICAgICAgICBkYXRhc2V0X2NvdW50ID0gMAogICAgICAgIGZvciBrdyBpbiBfREFUQVNFVF9LRVlXT1JEUzoKICAgICAgICAgICAgaWYga3cgaW4gYm9keToKICAgICAgICAgICAgICAgIGRhdGFzZXRfY291bnQgKz0gMQoKICAgICAgICAjIExvb2sgZm9yIG51bWVyaWMgcGF0dGVybnMgKHJlc3VsdHMgdGFibGVzIGhhdmUgbG90cyBvZiBudW1iZXJzKQogICAgICAgIG51bWVyaWNfY2VsbHMgPSBzdW0oCiAgICAgICAgICAgIDEgZm9yIHJvdyBpbiB0YWJsZV9kYXRhWzE6XSBmb3IgY2VsbCBpbiByb3cgaWYgcmUuc2VhcmNoKHIiXGQrXC4/XGQqIiwgY2VsbCkKICAgICAgICApCgogICAgICAgIHJldHVybiAoc2NvcmVfY291bnQgPj0gMSBhbmQgbnVtZXJpY19jZWxscyA+PSA0KSBvciAoCiAgICAgICAgICAgIGRhdGFzZXRfY291bnQgPj0gMiBhbmQgbnVtZXJpY19jZWxscyA+PSA2CiAgICAgICAgKQoKICAgIGRlZiBleHRyYWN0X2FsbF90YWJsZXMoc2VsZiwgcGRmX3BhdGg6IFVuaW9uW3N0ciwgUGF0aF0sIG1heF9wYWdlczogaW50ID0gMCkgLT4gbGlzdFtkaWN0XToKICAgICAgICAiIiJFeHRyYWN0IGFsbCBleHBlcmltZW50IHRhYmxlcyBmcm9tIGEgUERGLiIiIgogICAgICAgIHRyeToKICAgICAgICAgICAgaW1wb3J0IGZpdHoKICAgICAgICBleGNlcHQgSW1wb3J0RXJyb3I6CiAgICAgICAgICAgIHJldHVybiBbXQogICAgICAgIGlmIG5vdCBzZWxmLl9oYXNfZml0ejoKICAgICAgICAgICAgcmV0dXJuIFtdCiAgICAgICAgcGRmX3BhdGggPSBQYXRoKHBkZl9wYXRoKQogICAgICAgIGRvYyA9IGZpdHoub3BlbihzdHIocGRmX3BhdGgpKQogICAgICAgIGFsbF90YWJsZXMgPSBbXQogICAgICAgIHBhZ2VzID0gcmFuZ2UobGVuKGRvYykpIGlmIG1heF9wYWdlcyA8PSAwIGVsc2UgcmFuZ2UobWluKG1heF9wYWdlcywgbGVuKGRvYykpKQoKICAgICAgICBmb3IgcGFnZV9udW0gaW4gcGFnZXM6CiAgICAgICAgICAgIHRhYmxlcyA9IHNlbGYuZGV0ZWN0X3RhYmxlcyhwYWdlX251bSwgcGRmX3BhdGgpCiAgICAgICAgICAgIGFsbF90YWJsZXMuZXh0ZW5kKHRhYmxlcykKCiAgICAgICAgZG9jLmNsb3NlKCkKICAgICAgICByZXR1cm4gYWxsX3RhYmxlcwo=
+"""PDF table detection using PyMuPDF."""
+
+import re
+from typing import Optional, Union
+from pathlib import Path
+
+
+
+
+_METRIC_KEYWORDS = [
+    "accuracy", "precision", "recall", "f1", "bleu", "rouge", "perplexity",
+    "loss", "auc", "map", "ndcg", "mrr", "cer", "wer", "beam", "latency",
+    "throughput", "param", "bpc", "bits_per_char", "ppl",
+    "glue", "super gl", "squad", "arc", "hella", "lambada",
+]
+
+_DATASET_KEYWORDS = [
+    "squad", "glue", "coco", "imagenet", "mnist", "cifar", "wikitext",
+    "openwebtext", "bookcorpus", "arxiv", "pubmed", "custom", "sst",
+    "sst-2", "qqp", "mnli", "qnli", "rte", "cola",
+]
+
+
+class TableDetector:
+    """Detect and extract tables from PDF pages using PyMuPDF (fitz)."""
+
+    def __init__(self):
+        self._has_fitz = True
+
+    def detect_tables(self, page_source: Union[str, Path, int],
+                     pdf_path: Optional[Path] = None) -> list[dict]:
+        """Detect tables on a page.
+
+        page_source: page number (int) OR path to page image (for OCR fallback)
+        Returns list of {bbox, rows, cols, is_experiment_table}.
+        """
+        try:
+            import fitz
+        except ImportError:
+            return []
+        if not self._has_fitz:
+            return []
+        if pdf_path is None:
+            return []
+
+        if isinstance(page_source, (int,)):
+            page_num = int(page_source)
+        else:
+            page_num = 0
+
+        doc = fitz.open(str(pdf_path))
+        page = doc[page_num]
+        blocks = page.get_text("dict")["blocks"]
+
+        tables = []
+        for block in blocks:
+            if block.get("type") != 0:  # not text block
+                continue
+            table_bbox = block.get("bbox")
+            if not table_bbox:
+                continue
+
+            # Extract table data
+            table_data = self._extract_table_from_block(page, block)
+            if not table_data or len(table_data) < 2:
+                continue
+
+            is_exp = self._is_experiment_table(table_data)
+            tables.append({
+                "bbox": table_bbox,
+                "data": table_data,
+                "is_experiment": is_exp,
+                "page": page_num,
+            })
+
+        doc.close()
+        return tables
+
+    def _extract_table_from_block(self, page, block: dict) -> list[list[str]]:
+        """Extract rows from a table block."""
+        # Use tabula-style extraction: look for consistent horizontal separators
+        lines = block.get("lines", [])
+        if not lines:
+            return []
+
+        # Sort lines by y coordinate (row)
+        rows_data: dict[float, list[tuple[float, str]]] = {}
+        for line in lines:
+            y0 = line["bbox"][1]
+            row_key = round(y0, 1)
+            if row_key not in rows_data:
+                rows_data[row_key] = []
+            for span in line.get("spans", []):
+                x0 = span["bbox"][0]
+                text = span["text"].strip()
+                if text:
+                    rows_data[row_key].append((x0, text))
+
+        # Sort each row by x coordinate and flatten
+        table = []
+        for y in sorted(rows_data.keys()):
+            cells = rows_data[y]
+            cells.sort(key=lambda x: x[0])
+            row = [c[1] for c in cells]
+            table.append(row)
+
+        return table
+
+    def _is_experiment_table(self, table_data: list[list[str]]) -> bool:
+        """Heuristic: is this an experiment results table?"""
+        if len(table_data) < 2:
+            return False
+
+        header = " ".join(table_data[0]).lower()
+        body = " ".join(" ".join(r) for r in table_data[1:]).lower()
+
+        score_count = 0
+        for kw in _METRIC_KEYWORDS:
+            if kw in header or kw in body:
+                score_count += 1
+
+        dataset_count = 0
+        for kw in _DATASET_KEYWORDS:
+            if kw in body:
+                dataset_count += 1
+
+        # Look for numeric patterns (results tables have lots of numbers)
+        numeric_cells = sum(
+            1 for row in table_data[1:]
+            for cell in row
+            if re.search(r"\d+\.?\d*", cell)
+        )
+
+        return (
+            score_count >= 1 and numeric_cells >= 4
+        ) or (
+            dataset_count >= 2 and numeric_cells >= 6
+        )
+
+    def extract_all_tables(self, pdf_path: Union[str, Path],
+                          max_pages: int = 0) -> list[dict]:
+        """Extract all experiment tables from a PDF."""
+        try:
+            import fitz
+        except ImportError:
+            return []
+        if not self._has_fitz:
+            return []
+        pdf_path = Path(pdf_path)
+        doc = fitz.open(str(pdf_path))
+        all_tables = []
+        pages = range(len(doc)) if max_pages <= 0 else range(min(max_pages, len(doc)))
+
+        for page_num in pages:
+            tables = self.detect_tables(page_num, pdf_path)
+            all_tables.extend(tables)
+
+        doc.close()
+        return all_tables

@@ -1,1 +1,355 @@
-IiIiVGllciAyIHVuaXQgdGVzdHMg4oCUIGxsbS9yZXNlYXJjaF9jaGF0LnB5LCBwdXJlIGZ1bmN0aW9ucywgbm8gSS9PLiIiIgoKZnJvbSBsbG0ucmVzZWFyY2hfY2hhdCBpbXBvcnQgKAogICAgUXVlcnlUeXBlLAogICAgUGFwZXJDb250ZXh0LAogICAgUmVzZWFyY2hDb250ZXh0LAogICAgUmVzZWFyY2hDaGF0LAopCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIFF1ZXJ5VHlwZSBlbnVtIHRlc3RzCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFF1ZXJ5VHlwZToKICAgICIiIlRlc3QgUXVlcnlUeXBlIGVudW0uIiIiCgogICAgZGVmIHRlc3RfdmFsdWVzKHNlbGYpOgogICAgICAgIGFzc2VydCBRdWVyeVR5cGUuRkFDVFVBTC52YWx1ZSA9PSAiZmFjdHVhbCIKICAgICAgICBhc3NlcnQgUXVlcnlUeXBlLklORkVSRU5USUFMLnZhbHVlID09ICJpbmZlcmVudGlhbCIKICAgICAgICBhc3NlcnQgUXVlcnlUeXBlLkRJU0NPVkVSWS52YWx1ZSA9PSAiZGlzY292ZXJ5IgogICAgICAgIGFzc2VydCBRdWVyeVR5cGUuQ09NUEFSSVNPTi52YWx1ZSA9PSAiY29tcGFyaXNvbiIKCiAgICBkZWYgdGVzdF9jb3VudChzZWxmKToKICAgICAgICBhc3NlcnQgbGVuKFF1ZXJ5VHlwZSkgPT0gNAoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBQYXBlckNvbnRleHQgZGF0YWNsYXNzIHRlc3RzCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFBhcGVyQ29udGV4dDoKICAgICIiIlRlc3QgUGFwZXJDb250ZXh0IGRhdGFjbGFzcy4iIiIKCiAgICBkZWYgdGVzdF9yZXF1aXJlZF9maWVsZHMoc2VsZik6CiAgICAgICAgcCA9IFBhcGVyQ29udGV4dCgKICAgICAgICAgICAgdWlkPSJwMDAxIiwKICAgICAgICAgICAgdGl0bGU9IkF0dGVudGlvbiBJcyBBbGwgWW91IE5lZWQiLAogICAgICAgICAgICBhYnN0cmFjdD0iQSBuZXcgbmV1cmFsIG5ldHdvcmsgYXJjaGl0ZWN0dXJlIiwKICAgICAgICAgICAgYXV0aG9ycz1bIlZhc3dhbmkiXSwKICAgICAgICAgICAgeWVhcj0yMDE3LAogICAgICAgICkKICAgICAgICBhc3NlcnQgcC51aWQgPT0gInAwMDEiCiAgICAgICAgYXNzZXJ0IHAudGl0bGUgPT0gIkF0dGVudGlvbiBJcyBBbGwgWW91IE5lZWQiCiAgICAgICAgYXNzZXJ0IHAuYWJzdHJhY3QgPT0gIkEgbmV3IG5ldXJhbCBuZXR3b3JrIGFyY2hpdGVjdHVyZSIKICAgICAgICBhc3NlcnQgcC5hdXRob3JzID09IFsiVmFzd2FuaSJdCiAgICAgICAgYXNzZXJ0IHAueWVhciA9PSAyMDE3CgogICAgZGVmIHRlc3Rfb3B0aW9uYWxfZmllbGRzX2RlZmF1bHQoc2VsZik6CiAgICAgICAgcCA9IFBhcGVyQ29udGV4dCh1aWQ9InAwMDEiLCB0aXRsZT0iVCIsIGFic3RyYWN0PSJBIiwgYXV0aG9ycz1bXSwgeWVhcj0wKQogICAgICAgIGFzc2VydCBwLmtleV9maW5kaW5ncyA9PSBbXSAgIyBkZWZhdWx0CgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIFJlc2VhcmNoQ29udGV4dCBkYXRhY2xhc3MgdGVzdHMKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0UmVzZWFyY2hDb250ZXh0OgogICAgIiIiVGVzdCBSZXNlYXJjaENvbnRleHQgZGF0YWNsYXNzLiIiIgoKICAgIGRlZiB0ZXN0X3JlcXVpcmVkX2ZpZWxkcyhzZWxmKToKICAgICAgICBjdHggPSBSZXNlYXJjaENvbnRleHQodG9waWM9InRyYW5zZm9ybWVyIikKICAgICAgICBhc3NlcnQgY3R4LnRvcGljID09ICJ0cmFuc2Zvcm1lciIKICAgICAgICBhc3NlcnQgY3R4LnBhcGVycyA9PSBbXSAgIyBkZWZhdWx0CiAgICAgICAgYXNzZXJ0IGN0eC5pbnNpZ2h0cyA9PSBbXSAgIyBkZWZhdWx0CiAgICAgICAgYXNzZXJ0IGN0eC5yZWxhdGlvbnMgPT0ge30gICMgZGVmYXVsdAogICAgICAgIGFzc2VydCBjdHguY2l0YXRpb25zID09IHt9ICAjIGRlZmF1bHQKCiAgICBkZWYgdGVzdF93aXRoX2RhdGEoc2VsZik6CiAgICAgICAgcGFwZXIgPSBQYXBlckNvbnRleHQodWlkPSJwMDAxIiwgdGl0bGU9IlQiLCBhYnN0cmFjdD0iQSIsIGF1dGhvcnM9W10sIHllYXI9MCkKICAgICAgICBjdHggPSBSZXNlYXJjaENvbnRleHQoCiAgICAgICAgICAgIHRvcGljPSJubHAiLAogICAgICAgICAgICBwYXBlcnM9W3BhcGVyXSwKICAgICAgICAgICAgaW5zaWdodHM9WyJpbnNpZ2h0MSJdLAogICAgICAgICAgICByZWxhdGlvbnM9eyJwMDAxIjogWyJwMDAyIl19LAogICAgICAgICkKICAgICAgICBhc3NlcnQgbGVuKGN0eC5wYXBlcnMpID09IDEKICAgICAgICBhc3NlcnQgbGVuKGN0eC5pbnNpZ2h0cykgPT0gMQogICAgICAgIGFzc2VydCBjdHgucmVsYXRpb25zID09IHsicDAwMSI6IFsicDAwMiJdfQoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBTVE9QV09SRFMgY29uc3RhbnQKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0U3RvcHdvcmRzOgogICAgIiIiVGVzdCBSZXNlYXJjaENoYXQuU1RPUFdPUkRTLiIiIgoKICAgIGRlZiB0ZXN0X2hhc19jaGluZXNlX3N0b3B3b3JkcyhzZWxmKToKICAgICAgICBhc3NlcnQgIueahCIgaW4gUmVzZWFyY2hDaGF0LlNUT1BXT1JEUwogICAgICAgIGFzc2VydCAi5pivIiBpbiBSZXNlYXJjaENoYXQuU1RPUFdPUkRTCiAgICAgICAgYXNzZXJ0ICLku4DkuYgiIGluIFJlc2VhcmNoQ2hhdC5TVE9QV09SRFMKCiAgICBkZWYgdGVzdF9oYXNfZW5nbGlzaF9zdG9wd29yZHMoc2VsZik6CiAgICAgICAgYXNzZXJ0ICJ0aGUiIGluIFJlc2VhcmNoQ2hhdC5TVE9QV09SRFMKICAgICAgICBhc3NlcnQgImlzIiBpbiBSZXNlYXJjaENoYXQuU1RPUFdPUkRTCiAgICAgICAgYXNzZXJ0ICJ3aGF0IiBpbiBSZXNlYXJjaENoYXQuU1RPUFdPUkRTCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIF9leHRyYWN0X3RvcGljIHRlc3RzCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdEV4dHJhY3RUb3BpYzoKICAgICIiIlRlc3QgX2V4dHJhY3RfdG9waWMg4oCUIHB1cmUgc3RyaW5nIHBhcnNpbmcuIiIiCgogICAgY2hhdCA9IFJlc2VhcmNoQ2hhdCgpCgogICAgZGVmIHRlc3RfcmV0dXJuc19maWx0ZXJlZF93b3JkcyhzZWxmKToKICAgICAgICByZXN1bHQgPSBzZWxmLmNoYXQuX2V4dHJhY3RfdG9waWMoIuS7gOS5iOaYryB0cmFuc2Zvcm1lcj8iKQogICAgICAgIGFzc2VydCAidHJhbnNmb3JtZXIiIGluIHJlc3VsdAogICAgICAgICMgQ2hpbmVzZSBzZXF1ZW5jZXMgKDIrIGNoYXJzKSBhcmUgYXRvbWljIHRva2VuczsgIuS7gOS5iOaYryIgbm90IGluIFNUT1BXT1JEUwoKICAgIGRlZiB0ZXN0X3JlbW92ZXNfcXVlc3Rpb25fbWFya3Moc2VsZik6CiAgICAgICAgcmVzdWx0ID0gc2VsZi5jaGF0Ll9leHRyYWN0X3RvcGljKCJ0cmFuc2Zvcm1lcj8iKQogICAgICAgIGFzc2VydCAiPyIgbm90IGluIHJlc3VsdAoKICAgIGRlZiB0ZXN0X3JlbW92ZXNfY2hpbmVzZV9wdW5jdHVhdGlvbihzZWxmKToKICAgICAgICBzZWxmLmNoYXQuX2V4dHJhY3RfdG9waWMoInRyYW5zZm9ybWVy77yM5piv5LuA5LmIIikKICAgICAgICAjICLmmK/ku4DkuYgiICgyKyBjaGFycykgaXMgYXRvbWljLCBub3QgaW5kaXZpZHVhbGx5IG1hdGNoZWQgdG8gU1RPUFdPUkRTCgogICAgZGVmIHRlc3RfcmVtb3Zlc19lbmdsaXNoX3B1bmN0dWF0aW9uKHNlbGYpOgogICAgICAgIHJlc3VsdCA9IHNlbGYuY2hhdC5fZXh0cmFjdF90b3BpYygidHJhbnNmb3JtZXIsIGF0dGVudGlvbiIpCiAgICAgICAgYXNzZXJ0ICIsIiBub3QgaW4gcmVzdWx0CgogICAgZGVmIHRlc3RfbWF4X3RocmVlX2NhbmRpZGF0ZXMoc2VsZik6CiAgICAgICAgcmVzdWx0ID0gc2VsZi5jaGF0Ll9leHRyYWN0X3RvcGljKCJ0cmFuc2Zvcm1lciBhdHRlbnRpb24gZ3B0IGJlcnQgbmxwIGRlZXAgbGVhcm5pbmciKQogICAgICAgIHdvcmRzID0gcmVzdWx0LnNwbGl0KCkKICAgICAgICBhc3NlcnQgbGVuKHdvcmRzKSA8PSAzCgogICAgZGVmIHRlc3Rfc2hvcnRfd29yZHNfZmlsdGVyZWQoc2VsZik6CiAgICAgICAgcmVzdWx0ID0gc2VsZi5jaGF0Ll9leHRyYWN0X3RvcGljKCJhIHRyYW5zZm9ybWVyIikKICAgICAgICAjICJhIiBpcyBpbiBTVE9QV09SRFMgLT4gZmlsdGVyZWQ7ICJ0cmFuc2Zvcm1lciIga2VwdAogICAgICAgIGFzc2VydCAiYSIgbm90IGluIHJlc3VsdC5zcGxpdCgpICAjIHdvcmQgYm91bmRhcnkgY2hlY2sKICAgICAgICBhc3NlcnQgInRyYW5zZm9ybWVyIiBpbiByZXN1bHQKCiAgICBkZWYgdGVzdF9mYWxsYmFja190b19wcmVmaXgoc2VsZik6CiAgICAgICAgcmVzdWx0ID0gc2VsZi5jaGF0Ll9leHRyYWN0X3RvcGljKCLnmoQg5pivIikKICAgICAgICAjIEFsbCBzdG9wd29yZHMg4oaSIGZhbGxiYWNrIHRvIGZpcnN0IDIwIGNoYXJzCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHQpIDw9IDIwCgogICAgZGVmIHRlc3RfbWl4ZWRfbGFuZ3VhZ2Uoc2VsZik6CiAgICAgICAgcmVzdWx0ID0gc2VsZi5jaGF0Ll9leHRyYWN0X3RvcGljKCJ0cmFuc2Zvcm1lciDmmK/ku4DkuYgiKQogICAgICAgIGFzc2VydCAidHJhbnNmb3JtZXIiIGluIHJlc3VsdAogICAgICAgICMgIuaYr+S7gOS5iCIgaXMgYXRvbWljIHRva2VuLCBub3QgaW5kaXZpZHVhbGx5IG1hdGNoZWQgdG8gU1RPUFdPUkRTCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIF9idWlsZF9yZWxhdGlvbnMgdGVzdHMKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0QnVpbGRSZWxhdGlvbnM6CiAgICAiIiJUZXN0IF9idWlsZF9yZWxhdGlvbnMuIiIiCgogICAgY2hhdCA9IFJlc2VhcmNoQ2hhdCgpCgogICAgZGVmIHRlc3RfcmV0dXJuc19lbXB0eV9kaWN0cyhzZWxmKToKICAgICAgICByZWxhdGlvbnMsIGNpdGF0aW9ucyA9IHNlbGYuY2hhdC5fYnVpbGRfcmVsYXRpb25zKFtdKQogICAgICAgIGFzc2VydCByZWxhdGlvbnMgPT0ge30KICAgICAgICBhc3NlcnQgY2l0YXRpb25zID09IHt9CgogICAgZGVmIHRlc3RfcmV0dXJuc19lbXB0eV9mb3JfYW55X2lucHV0KHNlbGYpOgogICAgICAgIHBhcGVycyA9IFtQYXBlckNvbnRleHQodWlkPSJwMDAxIiwgdGl0bGU9IlQiLCBhYnN0cmFjdD0iQSIsIGF1dGhvcnM9W10sIHllYXI9MCldCiAgICAgICAgcmVsYXRpb25zLCBjaXRhdGlvbnMgPSBzZWxmLmNoYXQuX2J1aWxkX3JlbGF0aW9ucyhwYXBlcnMpCiAgICAgICAgYXNzZXJ0IHJlbGF0aW9ucyA9PSB7fQogICAgICAgIGFzc2VydCBjaXRhdGlvbnMgPT0ge30KCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgY2xhc3NpZnlfcXVlcnkgdGVzdHMKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0Q2xhc3NpZnlRdWVyeToKICAgICIiIlRlc3QgY2xhc3NpZnlfcXVlcnkuIiIiCgogICAgY2hhdCA9IFJlc2VhcmNoQ2hhdCgpCgogICAgIyBDT01QQVJJU09OCiAgICBkZWYgdGVzdF9jb21wYXJlX+WvueavlChzZWxmKToKICAgICAgICBhc3NlcnQgc2VsZi5jaGF0LmNsYXNzaWZ5X3F1ZXJ5KCLlr7nmr5QgQkVSVCDlkowgR1BUIikgPT0gUXVlcnlUeXBlLkNPTVBBUklTT04KCiAgICBkZWYgdGVzdF9jb21wYXJlX2RpZmZlcmVuY2Uoc2VsZik6CiAgICAgICAgYXNzZXJ0IHNlbGYuY2hhdC5jbGFzc2lmeV9xdWVyeSgid2hhdCBpcyB0aGUgZGlmZmVyZW5jZT8iKSA9PSBRdWVyeVR5cGUuQ09NUEFSSVNPTgoKICAgIGRlZiB0ZXN0X2NvbXBhcmVf5Yy65YirKHNlbGYpOgogICAgICAgIGFzc2VydCBzZWxmLmNoYXQuY2xhc3NpZnlfcXVlcnkoIuS4pOenjeaWueazleeahOWMuuWIq+aYr+S7gOS5iO+8nyIpID09IFF1ZXJ5VHlwZS5DT01QQVJJU09OCgogICAgZGVmIHRlc3RfY29tcGFyZV9jb21wYXJlKHNlbGYpOgogICAgICAgIGFzc2VydCBzZWxmLmNoYXQuY2xhc3NpZnlfcXVlcnkoImNvbXBhcmUgdHJhbnNmb3JtZXIgYW5kIExTVE0iKSA9PSBRdWVyeVR5cGUuQ09NUEFSSVNPTgoKICAgICMgRElTQ09WRVJZCiAgICBkZWYgdGVzdF9kaXNjb3ZlcnlfZ2FwKHNlbGYpOgogICAgICAgIGFzc2VydCBzZWxmLmNoYXQuY2xhc3NpZnlfcXVlcnkoIueglOeptuepuueZveWcqOWTqumHjD8iKSA9PSBRdWVyeVR5cGUuRElTQ09WRVJZCgogICAgZGVmIHRlc3RfZGlzY292ZXJ5X3VucmVzb2x2ZWQoc2VsZik6CiAgICAgICAgYXNzZXJ0IHNlbGYuY2hhdC5jbGFzc2lmeV9xdWVyeSgid2hhdCBhcmUgdGhlIHVucmVzb2x2ZWQgcHJvYmxlbXM/IikgPT0gUXVlcnlUeXBlLkRJU0NPVkVSWQoKICAgIGRlZiB0ZXN0X2Rpc2NvdmVyeV/ov5jmnInku4DkuYgoc2VsZik6CiAgICAgICAgYXNzZXJ0IHNlbGYuY2hhdC5jbGFzc2lmeV9xdWVyeSgi6L+Y5pyJ5LuA5LmI5pyq6Kej5Yaz55qE6Zeu6aKY77yfIikgPT0gUXVlcnlUeXBlLkRJU0NPVkVSWQoKICAgIGRlZiB0ZXN0X2Rpc2NvdmVyeV/mnLrkvJooc2VsZik6CiAgICAgICAgYXNzZXJ0IHNlbGYuY2hhdC5jbGFzc2lmeV9xdWVyeSgi56CU56m25py65Lya5Zyo5ZOq6YeMIikgPT0gUXVlcnlUeXBlLkRJU0NPVkVSWQoKICAgICMgSU5GRVJFTlRJQUwKICAgIGRlZiB0ZXN0X2luZmVyZW50aWFsX+S4uuS7gOS5iChzZWxmKToKICAgICAgICBhc3NlcnQgc2VsZi5jaGF0LmNsYXNzaWZ5X3F1ZXJ5KCLkuLrku4DkuYggYXR0ZW50aW9uIOacieaViO+8nyIpID09IFF1ZXJ5VHlwZS5JTkZFUkVOVElBTAoKICAgIGRlZiB0ZXN0X2luZmVyZW50aWFsX3doeShzZWxmKToKICAgICAgICBhc3NlcnQgc2VsZi5jaGF0LmNsYXNzaWZ5X3F1ZXJ5KCJ3aHkgZG9lcyB0aGlzIHdvcms/IikgPT0gUXVlcnlUeXBlLklORkVSRU5USUFMCgogICAgZGVmIHRlc3RfaW5mZXJlbnRpYWxfY2F1c2Uoc2VsZik6CiAgICAgICAgYXNzZXJ0IHNlbGYuY2hhdC5jbGFzc2lmeV9xdWVyeSgid2hhdCBjYXVzZXMgdGhpcyBwaGVub21lbm9uPyIpID09IFF1ZXJ5VHlwZS5JTkZFUkVOVElBTAoKICAgIGRlZiB0ZXN0X2luZmVyZW50aWFsX2JlY2F1c2Uoc2VsZik6CiAgICAgICAgYXNzZXJ0ICgKICAgICAgICAgICAgc2VsZi5jaGF0LmNsYXNzaWZ5X3F1ZXJ5KCJiZWNhdXNlIG9mIHRoZSBhdHRlbnRpb24gbWVjaGFuaXNtIikgPT0gUXVlcnlUeXBlLklORkVSRU5USUFMCiAgICAgICAgKQoKICAgICMgRkFDVFVBTCAoZGVmYXVsdCkKICAgIGRlZiB0ZXN0X2ZhY3R1YWxfZGVmYXVsdChzZWxmKToKICAgICAgICBhc3NlcnQgc2VsZi5jaGF0LmNsYXNzaWZ5X3F1ZXJ5KCLku4DkuYjmmK8gdHJhbnNmb3JtZXI/IikgPT0gUXVlcnlUeXBlLkZBQ1RVQUwKCiAgICBkZWYgdGVzdF9mYWN0dWFsX25ldXRyYWwoc2VsZik6CiAgICAgICAgYXNzZXJ0IHNlbGYuY2hhdC5jbGFzc2lmeV9xdWVyeSgi6L+Z56+H5paH56ug55qE5Li76KaB5YaF5a655piv5LuA5LmIIikgPT0gUXVlcnlUeXBlLkZBQ1RVQUwKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgX2J1aWxkX3N5c3RlbV9wcm9tcHQgdGVzdHMKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0QnVpbGRTeXN0ZW1Qcm9tcHQ6CiAgICAiIiJUZXN0IF9idWlsZF9zeXN0ZW1fcHJvbXB0IHN0cmluZyBidWlsZGluZy4iIiIKCiAgICBjaGF0ID0gUmVzZWFyY2hDaGF0KCkKCiAgICBkZWYgdGVzdF9lbXB0eV9wYXBlcnMoc2VsZik6CiAgICAgICAgY3R4ID0gUmVzZWFyY2hDb250ZXh0KHRvcGljPSJubHAiKQogICAgICAgIHByb21wdCA9IHNlbGYuY2hhdC5fYnVpbGRfc3lzdGVtX3Byb21wdChjdHgpCiAgICAgICAgYXNzZXJ0ICJObyByZWxldmFudCBwYXBlcnMgZm91bmQiIGluIHByb21wdAogICAgICAgIGFzc2VydCAibmxwIiBpbiBwcm9tcHQKCiAgICBkZWYgdGVzdF9wYXBlcnNfbGlzdGVkKHNlbGYpOgogICAgICAgIHBhcGVyID0gUGFwZXJDb250ZXh0KAogICAgICAgICAgICB1aWQ9InAwMDEiLCB0aXRsZT0iQXR0ZW50aW9uIFBhcGVyIiwgYWJzdHJhY3Q9IkEiLCBhdXRob3JzPVtdLCB5ZWFyPTIwMTcKICAgICAgICApCiAgICAgICAgY3R4ID0gUmVzZWFyY2hDb250ZXh0KHRvcGljPSJubHAiLCBwYXBlcnM9W3BhcGVyXSkKICAgICAgICBwcm9tcHQgPSBzZWxmLmNoYXQuX2J1aWxkX3N5c3RlbV9wcm9tcHQoY3R4KQogICAgICAgIGFzc2VydCAiQXR0ZW50aW9uIFBhcGVyIiBpbiBwcm9tcHQKICAgICAgICBhc3NlcnQgIjIwMTciIGluIHByb21wdAoKICAgIGRlZiB0ZXN0X21heF9maXZlX3BhcGVycyhzZWxmKToKICAgICAgICBwYXBlcnMgPSBbCiAgICAgICAgICAgIFBhcGVyQ29udGV4dCh1aWQ9ZiJwe2k6MDNkfSIsIHRpdGxlPWYiUGFwZXIge2l9IiwgYWJzdHJhY3Q9IkEiLCBhdXRob3JzPVtdLCB5ZWFyPTIwMjApCiAgICAgICAgICAgIGZvciBpIGluIHJhbmdlKDgpCiAgICAgICAgXQogICAgICAgIGN0eCA9IFJlc2VhcmNoQ29udGV4dCh0b3BpYz0idCIsIHBhcGVycz1wYXBlcnMpCiAgICAgICAgcHJvbXB0ID0gc2VsZi5jaGF0Ll9idWlsZF9zeXN0ZW1fcHJvbXB0KGN0eCkKICAgICAgICBhc3NlcnQgIlBhcGVyIDAiIGluIHByb21wdAogICAgICAgIGFzc2VydCAiUGFwZXIgNCIgaW4gcHJvbXB0CiAgICAgICAgYXNzZXJ0ICJQYXBlciA3IiBub3QgaW4gcHJvbXB0CgogICAgZGVmIHRlc3RfZW1wdHlfaW5zaWdodHMoc2VsZik6CiAgICAgICAgY3R4ID0gUmVzZWFyY2hDb250ZXh0KHRvcGljPSJubHAiKQogICAgICAgIHByb21wdCA9IHNlbGYuY2hhdC5fYnVpbGRfc3lzdGVtX3Byb21wdChjdHgpCiAgICAgICAgYXNzZXJ0ICJObyByZWxldmFudCBpbnNpZ2h0cyIgaW4gcHJvbXB0CgogICAgZGVmIHRlc3RfaW5zaWdodHNfbGlzdGVkKHNlbGYpOgogICAgICAgICMgTW9jayBJbnNpZ2h0Q2FyZCB3aXRoIC5jb250ZW50IGF0dHJpYnV0ZQogICAgICAgIGNsYXNzIE1vY2tDYXJkOgogICAgICAgICAgICBkZWYgX19pbml0X18oc2VsZiwgY29udGVudCk6CiAgICAgICAgICAgICAgICBzZWxmLmNvbnRlbnQgPSBjb250ZW50CgogICAgICAgIGN0eCA9IFJlc2VhcmNoQ29udGV4dCh0b3BpYz0ibmxwIiwgaW5zaWdodHM9W01vY2tDYXJkKCJhdHRlbnRpb24gaXMgcG93ZXJmdWwiKV0pCiAgICAgICAgcHJvbXB0ID0gc2VsZi5jaGF0Ll9idWlsZF9zeXN0ZW1fcHJvbXB0KGN0eCkKICAgICAgICBhc3NlcnQgImF0dGVudGlvbiIgaW4gcHJvbXB0CgogICAgZGVmIHRlc3RfY29udGFpbnNfZ3VpZGVsaW5lcyhzZWxmKToKICAgICAgICBjdHggPSBSZXNlYXJjaENvbnRleHQodG9waWM9Im5scCIpCiAgICAgICAgcHJvbXB0ID0gc2VsZi5jaGF0Ll9idWlsZF9zeXN0ZW1fcHJvbXB0KGN0eCkKICAgICAgICBhc3NlcnQgIlJlZmVyZW5jZSBzcGVjaWZpYyBwYXBlcnMiIGluIHByb21wdAoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBfYnVpbGRfdXNlcl9wcm9tcHQgdGVzdHMKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0QnVpbGRVc2VyUHJvbXB0OgogICAgIiIiVGVzdCBfYnVpbGRfdXNlcl9wcm9tcHQgcGVyIHF1ZXJ5IHR5cGUuIiIiCgogICAgY2hhdCA9IFJlc2VhcmNoQ2hhdCgpCgogICAgZGVmIHRlc3RfZmFjdHVhbF9wcm9tcHQoc2VsZik6CiAgICAgICAgY3R4ID0gUmVzZWFyY2hDb250ZXh0KHRvcGljPSJubHAiKQogICAgICAgIHJlc3VsdCA9IHNlbGYuY2hhdC5fYnVpbGRfdXNlcl9wcm9tcHQoIldoYXQgaXMgQkVSVD8iLCBjdHgsIFF1ZXJ5VHlwZS5GQUNUVUFMKQogICAgICAgIGFzc2VydCAiV2hhdCBpcyBCRVJUPyIgaW4gcmVzdWx0CgogICAgZGVmIHRlc3RfaW5mZXJlbnRpYWxfcHJvbXB0KHNlbGYpOgogICAgICAgIGN0eCA9IFJlc2VhcmNoQ29udGV4dCh0b3BpYz0ibmxwIikKICAgICAgICByZXN1bHQgPSBzZWxmLmNoYXQuX2J1aWxkX3VzZXJfcHJvbXB0KCJXaHkgZG9lcyBpdCB3b3JrPyIsIGN0eCwgUXVlcnlUeXBlLklORkVSRU5USUFMKQogICAgICAgIGFzc2VydCAiV2h5IGRvZXMgaXQgd29yaz8iIGluIHJlc3VsdAogICAgICAgIGFzc2VydCAicmVhc29uIiBpbiByZXN1bHQubG93ZXIoKQoKICAgIGRlZiB0ZXN0X2Rpc2NvdmVyeV9wcm9tcHQoc2VsZik6CiAgICAgICAgY3R4ID0gUmVzZWFyY2hDb250ZXh0KHRvcGljPSJubHAiKQogICAgICAgIHJlc3VsdCA9IHNlbGYuY2hhdC5fYnVpbGRfdXNlcl9wcm9tcHQoIkdhcHM/IiwgY3R4LCBRdWVyeVR5cGUuRElTQ09WRVJZKQogICAgICAgIGFzc2VydCAiZ2FwcyIgaW4gcmVzdWx0Lmxvd2VyKCkgb3IgIkdhcCIgaW4gcmVzdWx0CgogICAgZGVmIHRlc3RfY29tcGFyaXNvbl9wcm9tcHQoc2VsZik6CiAgICAgICAgY3R4ID0gUmVzZWFyY2hDb250ZXh0KHRvcGljPSJubHAiKQogICAgICAgIHJlc3VsdCA9IHNlbGYuY2hhdC5fYnVpbGRfdXNlcl9wcm9tcHQoIkNvbXBhcmUgQSBhbmQgQiIsIGN0eCwgUXVlcnlUeXBlLkNPTVBBUklTT04pCiAgICAgICAgYXNzZXJ0ICJDb21wYXJlIiBpbiByZXN1bHQgb3IgImNvbXBhcmUiIGluIHJlc3VsdAoKICAgIGRlZiB0ZXN0X3Vua25vd25fdHlwZV9mYWxsc19iYWNrX3RvX3F1ZXJ5KHNlbGYpOgogICAgICAgIGN0eCA9IFJlc2VhcmNoQ29udGV4dCh0b3BpYz0ibmxwIikKICAgICAgICAjIFF1ZXJ5VHlwZSBpcyBhbiBlbnVtLCBzbyB3ZSBjYW4ndCByZWFsbHkgcGFzcyB1bmtub3duIOKAlCBidXQgdmVyaWZ5IGRlZmF1bHQKICAgICAgICByZXN1bHQgPSBzZWxmLmNoYXQuX2J1aWxkX3VzZXJfcHJvbXB0KCJIZWxsbyIsIGN0eCwgUXVlcnlUeXBlLkZBQ1RVQUwpCiAgICAgICAgYXNzZXJ0ICJIZWxsbyIgaW4gcmVzdWx0CgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIGdldF9oaXN0b3J5IC8gY2xlYXJfaGlzdG9yeSB0ZXN0cwojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RDaGF0SGlzdG9yeToKICAgICIiIlRlc3QgaGlzdG9yeSBtYW5hZ2VtZW50LiIiIgoKICAgIGRlZiB0ZXN0X2luaXRpYWxfaGlzdG9yeV9lbXB0eShzZWxmKToKICAgICAgICBjaGF0ID0gUmVzZWFyY2hDaGF0KCkKICAgICAgICBhc3NlcnQgY2hhdC5nZXRfaGlzdG9yeSgpID09IFtdCgogICAgZGVmIHRlc3RfY2xlYXJfaGlzdG9yeShzZWxmKToKICAgICAgICBjaGF0ID0gUmVzZWFyY2hDaGF0KCkKICAgICAgICBjaGF0Ll9jaGF0X2hpc3RvcnkuYXBwZW5kKHsicm9sZSI6ICJ1c2VyIiwgImNvbnRlbnQiOiAidGVzdCJ9KQogICAgICAgIGNoYXQuY2xlYXJfaGlzdG9yeSgpCiAgICAgICAgYXNzZXJ0IGNoYXQuZ2V0X2hpc3RvcnkoKSA9PSBbXQoKICAgIGRlZiB0ZXN0X2dldF9oaXN0b3J5X3JldHVybnNfY29weShzZWxmKToKICAgICAgICBjaGF0ID0gUmVzZWFyY2hDaGF0KCkKICAgICAgICBjaGF0Ll9jaGF0X2hpc3RvcnkuYXBwZW5kKHsicm9sZSI6ICJ1c2VyIiwgImNvbnRlbnQiOiAidGVzdCJ9KQogICAgICAgIGhpc3RvcnkgPSBjaGF0LmdldF9oaXN0b3J5KCkKICAgICAgICBoaXN0b3J5LmFwcGVuZCh7InJvbGUiOiAieCIsICJjb250ZW50IjogInkifSkKICAgICAgICAjIE9yaWdpbmFsIHVuY2hhbmdlZAogICAgICAgIGFzc2VydCBsZW4oY2hhdC5nZXRfaGlzdG9yeSgpKSA9PSAxCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIFJlc2VhcmNoQ2hhdCBpbnN0YW50aWF0aW9uCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFJlc2VhcmNoQ2hhdEluaXQ6CiAgICAiIiJUZXN0IFJlc2VhcmNoQ2hhdCBjbGFzcy4iIiIKCiAgICBkZWYgdGVzdF9pbnN0YW50aWF0ZV93aXRob3V0X2RlcHMoc2VsZik6CiAgICAgICAgY2hhdCA9IFJlc2VhcmNoQ2hhdCgpCiAgICAgICAgYXNzZXJ0IGNoYXQuZGIgaXMgTm9uZQogICAgICAgIGFzc2VydCBjaGF0Lmluc2lnaHRfbWFuYWdlciBpcyBOb25lCgogICAgZGVmIHRlc3RfaGFzX2V4cGVjdGVkX21ldGhvZHMoc2VsZik6CiAgICAgICAgY2hhdCA9IFJlc2VhcmNoQ2hhdCgpCiAgICAgICAgYXNzZXJ0IGhhc2F0dHIoY2hhdCwgIl9leHRyYWN0X3RvcGljIikKICAgICAgICBhc3NlcnQgaGFzYXR0cihjaGF0LCAiX2J1aWxkX3JlbGF0aW9ucyIpCiAgICAgICAgYXNzZXJ0IGhhc2F0dHIoY2hhdCwgImNsYXNzaWZ5X3F1ZXJ5IikKICAgICAgICBhc3NlcnQgaGFzYXR0cihjaGF0LCAiX2J1aWxkX3N5c3RlbV9wcm9tcHQiKQogICAgICAgIGFzc2VydCBoYXNhdHRyKGNoYXQsICJfYnVpbGRfdXNlcl9wcm9tcHQiKQogICAgICAgIGFzc2VydCBoYXNhdHRyKGNoYXQsICJnZXRfaGlzdG9yeSIpCiAgICAgICAgYXNzZXJ0IGhhc2F0dHIoY2hhdCwgImNsZWFyX2hpc3RvcnkiKQo=
+"""Tier 2 unit tests — llm/research_chat.py, pure functions, no I/O."""
+
+from llm.research_chat import (
+    QueryType,
+    PaperContext,
+    ResearchContext,
+    ResearchChat,
+)
+
+
+# =============================================================================
+# QueryType enum tests
+# =============================================================================
+class TestQueryType:
+    """Test QueryType enum."""
+
+    def test_values(self):
+        assert QueryType.FACTUAL.value == "factual"
+        assert QueryType.INFERENTIAL.value == "inferential"
+        assert QueryType.DISCOVERY.value == "discovery"
+        assert QueryType.COMPARISON.value == "comparison"
+
+    def test_count(self):
+        assert len(QueryType) == 4
+
+
+# =============================================================================
+# PaperContext dataclass tests
+# =============================================================================
+class TestPaperContext:
+    """Test PaperContext dataclass."""
+
+    def test_required_fields(self):
+        p = PaperContext(
+            uid="p001",
+            title="Attention Is All You Need",
+            abstract="A new neural network architecture",
+            authors=["Vaswani"],
+            year=2017,
+        )
+        assert p.uid == "p001"
+        assert p.title == "Attention Is All You Need"
+        assert p.abstract == "A new neural network architecture"
+        assert p.authors == ["Vaswani"]
+        assert p.year == 2017
+
+    def test_optional_fields_default(self):
+        p = PaperContext(uid="p001", title="T", abstract="A", authors=[], year=0)
+        assert p.key_findings == []  # default
+
+
+# =============================================================================
+# ResearchContext dataclass tests
+# =============================================================================
+class TestResearchContext:
+    """Test ResearchContext dataclass."""
+
+    def test_required_fields(self):
+        ctx = ResearchContext(topic="transformer")
+        assert ctx.topic == "transformer"
+        assert ctx.papers == []  # default
+        assert ctx.insights == []  # default
+        assert ctx.relations == {}  # default
+        assert ctx.citations == {}  # default
+
+    def test_with_data(self):
+        paper = PaperContext(uid="p001", title="T", abstract="A", authors=[], year=0)
+        ctx = ResearchContext(
+            topic="nlp",
+            papers=[paper],
+            insights=["insight1"],
+            relations={"p001": ["p002"]},
+        )
+        assert len(ctx.papers) == 1
+        assert len(ctx.insights) == 1
+        assert ctx.relations == {"p001": ["p002"]}
+
+
+# =============================================================================
+# STOPWORDS constant
+# =============================================================================
+class TestStopwords:
+    """Test ResearchChat.STOPWORDS."""
+
+    def test_has_chinese_stopwords(self):
+        assert "的" in ResearchChat.STOPWORDS
+        assert "是" in ResearchChat.STOPWORDS
+        assert "什么" in ResearchChat.STOPWORDS
+
+    def test_has_english_stopwords(self):
+        assert "the" in ResearchChat.STOPWORDS
+        assert "is" in ResearchChat.STOPWORDS
+        assert "what" in ResearchChat.STOPWORDS
+
+
+# =============================================================================
+# _extract_topic tests
+# =============================================================================
+class TestExtractTopic:
+    """Test _extract_topic — pure string parsing."""
+
+    chat = ResearchChat()
+
+    def test_returns_filtered_words(self):
+        result = self.chat._extract_topic("什么是 transformer?")
+        assert "transformer" in result
+        # Chinese sequences (2+ chars) are atomic tokens; "什么是" not in STOPWORDS
+
+    def test_removes_question_marks(self):
+        result = self.chat._extract_topic("transformer?")
+        assert "?" not in result
+
+    def test_removes_chinese_punctuation(self):
+        self.chat._extract_topic("transformer，是什么")
+        # "是什么" (2+ chars) is atomic, not individually matched to STOPWORDS
+
+    def test_removes_english_punctuation(self):
+        result = self.chat._extract_topic("transformer, attention")
+        assert "," not in result
+
+    def test_max_three_candidates(self):
+        result = self.chat._extract_topic("transformer attention gpt bert nlp deep learning")
+        words = result.split()
+        assert len(words) <= 3
+
+    def test_short_words_filtered(self):
+        result = self.chat._extract_topic("a transformer")
+        # "a" is in STOPWORDS -> filtered; "transformer" kept
+        assert "a" not in result.split()  # word boundary check
+        assert "transformer" in result
+
+    def test_fallback_to_prefix(self):
+        result = self.chat._extract_topic("的 是")
+        # All stopwords → fallback to first 20 chars
+        assert len(result) <= 20
+
+    def test_mixed_language(self):
+        result = self.chat._extract_topic("transformer 是什么")
+        assert "transformer" in result
+        # "是什么" is atomic token, not individually matched to STOPWORDS
+
+
+# =============================================================================
+# _build_relations tests
+# =============================================================================
+class TestBuildRelations:
+    """Test _build_relations."""
+
+    chat = ResearchChat()
+
+    def test_returns_empty_dicts(self):
+        relations, citations = self.chat._build_relations([])
+        assert relations == {}
+        assert citations == {}
+
+    def test_returns_empty_for_any_input(self):
+        papers = [PaperContext(uid="p001", title="T", abstract="A", authors=[], year=0)]
+        relations, citations = self.chat._build_relations(papers)
+        assert relations == {}
+        assert citations == {}
+
+
+# =============================================================================
+# classify_query tests
+# =============================================================================
+class TestClassifyQuery:
+    """Test classify_query."""
+
+    chat = ResearchChat()
+
+    # COMPARISON
+    def test_compare_对比(self):
+        assert self.chat.classify_query("对比 BERT 和 GPT") == QueryType.COMPARISON
+
+    def test_compare_difference(self):
+        assert self.chat.classify_query("what is the difference?") == QueryType.COMPARISON
+
+    def test_compare_区别(self):
+        assert self.chat.classify_query("两种方法的区别是什么？") == QueryType.COMPARISON
+
+    def test_compare_compare(self):
+        assert self.chat.classify_query("compare transformer and LSTM") == QueryType.COMPARISON
+
+    # DISCOVERY
+    def test_discovery_gap(self):
+        assert self.chat.classify_query("研究空白在哪里?") == QueryType.DISCOVERY
+
+    def test_discovery_unresolved(self):
+        assert self.chat.classify_query("what are the unresolved problems?") == QueryType.DISCOVERY
+
+    def test_discovery_还有什么(self):
+        assert self.chat.classify_query("还有什么未解决的问题？") == QueryType.DISCOVERY
+
+    def test_discovery_机会(self):
+        assert self.chat.classify_query("研究机会在哪里") == QueryType.DISCOVERY
+
+    # INFERENTIAL
+    def test_inferential_为什么(self):
+        assert self.chat.classify_query("为什么 attention 有效？") == QueryType.INFERENTIAL
+
+    def test_inferential_why(self):
+        assert self.chat.classify_query("why does this work?") == QueryType.INFERENTIAL
+
+    def test_inferential_cause(self):
+        assert self.chat.classify_query("what causes this phenomenon?") == QueryType.INFERENTIAL
+
+    def test_inferential_because(self):
+        assert (
+            self.chat.classify_query("because of the attention mechanism") == QueryType.INFERENTIAL
+        )
+
+    # FACTUAL (default)
+    def test_factual_default(self):
+        assert self.chat.classify_query("什么是 transformer?") == QueryType.FACTUAL
+
+    def test_factual_neutral(self):
+        assert self.chat.classify_query("这篇文章的主要内容是什么") == QueryType.FACTUAL
+
+
+# =============================================================================
+# _build_system_prompt tests
+# =============================================================================
+class TestBuildSystemPrompt:
+    """Test _build_system_prompt string building."""
+
+    chat = ResearchChat()
+
+    def test_empty_papers(self):
+        ctx = ResearchContext(topic="nlp")
+        prompt = self.chat._build_system_prompt(ctx)
+        assert "No relevant papers found" in prompt
+        assert "nlp" in prompt
+
+    def test_papers_listed(self):
+        paper = PaperContext(
+            uid="p001", title="Attention Paper", abstract="A", authors=[], year=2017
+        )
+        ctx = ResearchContext(topic="nlp", papers=[paper])
+        prompt = self.chat._build_system_prompt(ctx)
+        assert "Attention Paper" in prompt
+        assert "2017" in prompt
+
+    def test_max_five_papers(self):
+        papers = [
+            PaperContext(uid=f"p{i:03d}", title=f"Paper {i}", abstract="A", authors=[], year=2020)
+            for i in range(8)
+        ]
+        ctx = ResearchContext(topic="t", papers=papers)
+        prompt = self.chat._build_system_prompt(ctx)
+        assert "Paper 0" in prompt
+        assert "Paper 4" in prompt
+        assert "Paper 7" not in prompt
+
+    def test_empty_insights(self):
+        ctx = ResearchContext(topic="nlp")
+        prompt = self.chat._build_system_prompt(ctx)
+        assert "No relevant insights" in prompt
+
+    def test_insights_listed(self):
+        # Mock InsightCard with .content attribute
+        class MockCard:
+            def __init__(self, content):
+                self.content = content
+
+        ctx = ResearchContext(topic="nlp", insights=[MockCard("attention is powerful")])
+        prompt = self.chat._build_system_prompt(ctx)
+        assert "attention" in prompt
+
+    def test_contains_guidelines(self):
+        ctx = ResearchContext(topic="nlp")
+        prompt = self.chat._build_system_prompt(ctx)
+        assert "Reference specific papers" in prompt
+
+
+# =============================================================================
+# _build_user_prompt tests
+# =============================================================================
+class TestBuildUserPrompt:
+    """Test _build_user_prompt per query type."""
+
+    chat = ResearchChat()
+
+    def test_factual_prompt(self):
+        ctx = ResearchContext(topic="nlp")
+        result = self.chat._build_user_prompt("What is BERT?", ctx, QueryType.FACTUAL)
+        assert "What is BERT?" in result
+
+    def test_inferential_prompt(self):
+        ctx = ResearchContext(topic="nlp")
+        result = self.chat._build_user_prompt("Why does it work?", ctx, QueryType.INFERENTIAL)
+        assert "Why does it work?" in result
+        assert "reason" in result.lower()
+
+    def test_discovery_prompt(self):
+        ctx = ResearchContext(topic="nlp")
+        result = self.chat._build_user_prompt("Gaps?", ctx, QueryType.DISCOVERY)
+        assert "gaps" in result.lower() or "Gap" in result
+
+    def test_comparison_prompt(self):
+        ctx = ResearchContext(topic="nlp")
+        result = self.chat._build_user_prompt("Compare A and B", ctx, QueryType.COMPARISON)
+        assert "Compare" in result or "compare" in result
+
+    def test_unknown_type_falls_back_to_query(self):
+        ctx = ResearchContext(topic="nlp")
+        # QueryType is an enum, so we can't really pass unknown — but verify default
+        result = self.chat._build_user_prompt("Hello", ctx, QueryType.FACTUAL)
+        assert "Hello" in result
+
+
+# =============================================================================
+# get_history / clear_history tests
+# =============================================================================
+class TestChatHistory:
+    """Test history management."""
+
+    def test_initial_history_empty(self):
+        chat = ResearchChat()
+        assert chat.get_history() == []
+
+    def test_clear_history(self):
+        chat = ResearchChat()
+        chat._chat_history.append({"role": "user", "content": "test"})
+        chat.clear_history()
+        assert chat.get_history() == []
+
+    def test_get_history_returns_copy(self):
+        chat = ResearchChat()
+        chat._chat_history.append({"role": "user", "content": "test"})
+        history = chat.get_history()
+        history.append({"role": "x", "content": "y"})
+        # Original unchanged
+        assert len(chat.get_history()) == 1
+
+
+# =============================================================================
+# ResearchChat instantiation
+# =============================================================================
+class TestResearchChatInit:
+    """Test ResearchChat class."""
+
+    def test_instantiate_without_deps(self):
+        chat = ResearchChat()
+        assert chat.db is None
+        assert chat.insight_manager is None
+
+    def test_has_expected_methods(self):
+        chat = ResearchChat()
+        assert hasattr(chat, "_extract_topic")
+        assert hasattr(chat, "_build_relations")
+        assert hasattr(chat, "classify_query")
+        assert hasattr(chat, "_build_system_prompt")
+        assert hasattr(chat, "_build_user_prompt")
+        assert hasattr(chat, "get_history")
+        assert hasattr(chat, "clear_history")
