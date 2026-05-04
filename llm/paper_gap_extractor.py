@@ -1713,140 +1713,22 @@ Respond ONLY with the JSON object.
         }
 
 
-# =============================================================================
-# RESEARCH LOG — per-paper research notes stored in ~/.ai_research_os/gene_pool/research_log.jsonl
-# =============================================================================
 
 
-def add_research_note(
-    paper_id: str,
-    note: str,
-    tags: Optional[List[str]] = None,
-) -> bool:
-    """Append a research note to the log file.
 
-    Writes to ~/.ai_research_os/gene_pool/research_log.jsonl
-    Each entry: {timestamp, paper_id, note, tags}
-    """
-    try:
-        log_path = Path.home() / ".ai_research_os" / "gene_pool" / "research_log.jsonl"
-        log_path.parent.mkdir(parents=True, exist_ok=True)
-        entry = {
-            "timestamp": datetime.now().isoformat(),
-            "paper_id": paper_id,
-            "note": note,
-            "tags": tags or [],
-        }
-        with open(log_path, "a", encoding="utf-8") as f:
-            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
-        return True
-    except Exception:
-        return False
+def add_research_note(paper_id, note, tags=None):
+    from llm.research_log import add_note
+    return add_note(paper_id, note, tags)
 
 
-def get_research_notes(
-    paper_id: Optional[str] = None,
-    limit: int = 20,
-) -> List[Dict[str, Any]]:
-    """Read research notes, optionally filtered by paper_id."""
-    try:
-        log_path = Path.home() / ".ai_research_os" / "gene_pool" / "research_log.jsonl"
-        if not log_path.exists():
-            return []
-
-        notes = []
-        with open(log_path, encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    entry = json.loads(line)
-                except Exception:
-                    continue
-                if paper_id and entry.get("paper_id") != paper_id:
-                    continue
-                notes.append(entry)
-
-        # Sort by timestamp descending
-        notes.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
-        return notes[:limit]
-    except Exception:
-        return []
+def get_research_notes(paper_id=None, limit=20):
+    from llm.research_log import get_notes
+    return get_notes(paper_id, limit)
 
 
-def render_research_log(paper_id: Optional[str] = None) -> str:
-    """Return HTML timeline of research notes.
-
-    Each note: timestamp (top-right), paper title, note content, tags as small pills.
-    Sorted newest first. Uses font-family: var(--font-display).
-    """
-    notes = get_research_notes(paper_id=paper_id, limit=50)
-
-    if not notes:
-        empty_msg = "No research notes yet."
-        if paper_id:
-            empty_msg = f"No notes for paper {paper_id} yet."
-        return f"""
-        <div style="text-align:center;padding:60px 20px;color:#888;font-family:var(--font-display);">
-          <div style="font-size:48px;margin-bottom:12px;">📝</div>
-          <div style="font-size:15px;font-weight:600;margin-bottom:6px;">{empty_msg}</div>
-          <div style="font-size:13px;">Add notes from a paper detail page.</div>
-        </div>"""
-
-    # Fetch paper titles for display
-    paper_titles: Dict[str, str] = {}
-    if paper_id is None:
-        # Collect all paper_ids to bulk-fetch titles
-        seen_ids = list(dict.fromkeys(n.get("paper_id", "") for n in notes if n.get("paper_id")))
-        if seen_ids:
-            try:
-                from db.database import Database
-
-                db = Database()
-                db.init()
-                for pid in seen_ids:
-                    p = db.get_paper(pid)
-                    if p:
-                        paper_titles[pid] = p.title
-            except Exception:
-                pass
-
-    cards = ""
-    for n in notes:
-        ts = n.get("timestamp", "")
-        # Format: YYYY-MM-DD HH:MM
-        date_str = ts[:16].replace("T", " ") if ts else "—"
-        pid = n.get("paper_id", "")
-        title = paper_titles.get(pid, pid[:20] if pid else "—")
-        note_text = n.get("note", "")
-        tags = n.get("tags", [])
-
-        tags_html = ""
-        if tags:
-            tags_html = "".join(
-                f"<span style='display:inline-block;background:#e8f0fe;color:#1a73e8;padding:2px 8px;border-radius:12px;font-size:11px;margin:2px;'>{t}</span>"
-                for t in tags
-            )
-
-        cards += f"""
-        <div style="background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:16px 20px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,0.05);position:relative;font-family:var(--font-display);">
-          <div style="position:absolute;top:12px;right:16px;font-size:11px;color:#aaa;">{date_str}</div>
-          <div style="font-size:12px;color:#888;margin-bottom:6px;">{title}</div>
-          <div style="font-size:14px;color:#222;line-height:1.6;margin-bottom:8px;">{note_text}</div>
-          {('<div style="display:flex;flex-wrap:wrap;gap:4px;">' + tags_html + "</div>" if tags_html else "")}
-        </div>"""
-
-    filter_label = ""
-    if paper_id:
-        filter_label = f" for <strong>{paper_titles.get(paper_id, paper_id[:20])}</strong>"
-
-    return f"""
-    <style>
-    .rl-header {{ font-family: var(--font-display); font-size: 14px; color: #888; margin-bottom: 16px; }}
-    </style>
-    <div class="rl-header">{len(notes)} note(s){filter_label}</div>
-    <div>{cards}</div>"""
+def render_research_log(paper_id=None):
+    from llm.research_log import render_log
+    return render_log(paper_id)
 
 
 # =============================================================================

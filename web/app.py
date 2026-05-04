@@ -2739,9 +2739,9 @@ def _get_tracker():
 @app.get("/research-log")
 async def research_log(request: Request, paper_id: str = ""):
     """Research Log page — view and add research notes."""
-    from llm.paper_gap_extractor import render_research_log
+    from llm.research_log import render_log
 
-    html = render_research_log(paper_id or None)
+    html = render_log(paper_id or None)
     return templates.TemplateResponse(
         request,
         "generic.html",
@@ -2762,9 +2762,9 @@ async def add_note(request: Request):
     paper_id = body.get("paper_id", "")
     note = body.get("note", "")
     tags = body.get("tags", [])
-    from llm.paper_gap_extractor import add_research_note
+    from llm.research_log import add_note
 
-    ok = add_research_note(paper_id, note, tags)
+    ok = add_note(paper_id, note, tags)
     return JSONResponse({"success": ok})
 
 
@@ -2772,9 +2772,9 @@ async def add_note(request: Request):
 async def get_notes(request: Request, paper_id: str = ""):
     """Get notes JSON, optionally filtered by paper_id."""
     from fastapi.responses import JSONResponse
-    from llm.paper_gap_extractor import get_research_notes
+    from llm.research_log import get_notes
 
-    notes = get_research_notes(paper_id or None)
+    notes = get_notes(paper_id or None)
     return JSONResponse({"notes": notes})
 
 
