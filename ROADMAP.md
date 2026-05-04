@@ -172,7 +172,7 @@ rairos daemon start
 
 - [x] Q1: 物理 Latent Reasoning 最优表征：离散 vs 连续？ (already answered in paper)
 - [x] Q2: LAPO vs PPO trade-off — **executed**. ArXiv: found LAPO paper. Gene Pool: 6 capsules, gap: "no systematic comparison study exists". Key finding: ablation with matched compute budgets is missing.
-- [ ] Q3: 推理链长度与任务复杂度 — pipeline: `rairos gap "adaptive latent chain length" --no-llm`
+- [x] Q3: 推理链长度与任务复杂度 — **executed**. ArXiv: found LongNav-R1 (horizon-adaptive), VLA-Thinker, Re-FORC. Key insight: LaST-R1's adaptive mechanism implies saturation — if longer chains were always better, adaptation would be unnecessary. Report: docs/research_q3.md
 - [ ] Q3: 推理链长度与任务复杂度 — pipeline: `rairos gap "adaptive latent chain length" --no-llm`
 - [ ] Q4: Zero-shot 泛化 — pipeline: `rairos research "zero-shot VLA generalization" --no-ai`
 - [ ] Q5: 推理与动作交替调度 — pipeline: `rairos subscribe add "hierarchical VLA reasoning"`
