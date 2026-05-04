@@ -19,6 +19,17 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from web.shared import templates, get_db, get_tracker
+from web.suggestions import (
+    generate_suggestions,
+    mark_capsule_consumed,
+    _get_consumed_suggestions,
+    _mark_suggestion_consumed,
+    get_experiment_queue,
+    save_experiment,
+    render_experiments_html,
+)
+
 app = FastAPI(title="Rairos", description="AI Research OS — Hand-drawn UI")
 
 
@@ -2358,7 +2369,7 @@ async def insights(request: Request):
 
         # ── Actionable Project Suggestions ────────────────────────────────────────
         # Analyze Gene Pool patterns to generate concrete next-step suggestions
-        suggestions = _generate_suggestions(capsules, gap_prefs, topic_freq, archetype, tracker)
+        suggestions = generate_suggestions(capsules, gap_prefs, topic_freq, archetype, tracker)
 
         # ── Gene Pool Prefetch ─────────────────────────────────────────────────────
         # Find capsules matching the top research topic for prefetch indicator
@@ -2439,7 +2450,7 @@ async def accept_suggestion(request: Request):
 
         # Mark source capsule as 'consumed' — prevents duplicate suggestions
         if source_cap_id:
-            _mark_capule_consumed(source_cap_id, tracker)
+            mark_capsule_consumed(source_cap_id, tracker)
 
         # Trigger evolution闭环 — this is what actually IMPROVES the Gene Pool
         try:
@@ -2460,255 +2471,6 @@ async def accept_suggestion(request: Request):
         logging.getLogger(__name__).warning(f"accept_suggestion failed: {e}")
         return {"success": False, "error": str(e)}
 
-
-@app.post("/insights/archive-capsule")
-async def archive_capsule(request: Request):
-    """Archive a capsule from both Gene Pool stores (active → archived)."""
-    body = await request.json()
-    capsule_id = body.get("capsule_id", "")
-    if not capsule_id:
-        return {"success": False, "error": "capsule_id required"}
-    try:
-        from llm.insight.tracker import EvolutionTracker
-
-        tracker = EvolutionTracker()
-        archived = tracker.archive_capsule(capsule_id)
-        return {"success": archived}
-    except Exception as e:
-        import logging
-
-        logging.getLogger(__name__).warning(f"archive_capsule failed: {e}")
-        return {"success": False, "error": str(e)}
-
-
-# Gap types the user has NOT explored yet but might find valuable
-_UNDERREPRESENTED_GAPS = [
-    (
-        "theoretical_gap",
-        "Theoretical foundations",
-        "Develop formal theory or proofs for observed empirical patterns in your work",
-    ),
-    (
-        "dataset_gap",
-        "Dataset gap",
-        "Build or curate a benchmark dataset addressing an under-explored problem domain",
-    ),
-    (
-        "generalization_gap",
-        "Generalization gap",
-        "Test existing methods on out-of-distribution data to expose failure modes",
-    ),
-    (
-        "scalability_issue",
-        "Scalability issue",
-        "Push current methods to larger scales and characterize runtime/cost tradeoffs",
-    ),
-    ("contradiction", "Contradiction", "Reproduce or challenge published findings in this area"),
-    (
-        "evaluation_gap",
-        "Evaluation gap",
-        "Design proper evaluation protocols and baselines for this problem",
-    ),
-]
-
-
-def _get_consumed_suggestions() -> set:
-    """Return set of suggestion keys that have been consumed by the user."""
-    try:
-        path = Path.home() / ".ai_research_os" / "consumed_suggestions.json"
-        if path.exists():
-            import json
-
-            return set(json.loads(path.read_text(encoding="utf-8")))
-    except Exception:
-        pass
-    return set()
-
-
-def _mark_capule_consumed(capsule_id: str, tracker) -> None:
-    """Mark a capsule as consumed in both Gene Pool stores."""
-    try:
-        consumed_title = ""
-        consumed_gap_type = ""
-        # Update gene_pool.jsonl
-        capsules = tracker._load_capsules()
-        updated = False
-        for c in capsules:
-            if c.capsule_id == capsule_id:
-                c.status = "consumed"
-                updated = True
-                consumed_title = c.action_gap_title
-                consumed_gap_type = c.action_gap_type
-                break
-        if updated:
-            tracker._save_capsules(capsules)
-
-        tracker.record_capsule_lifecycle_event(
-            capsule_id=capsule_id,
-            action="consumed",
-            gap_title=consumed_title,
-            gap_type=consumed_gap_type,
-        )
-    except Exception:
-        pass
-
-
-def _mark_suggestion_consumed(gap_type: str, topic_hint: str, title: str, s_type: str = "") -> None:
-    """Mark a suggestion as consumed so it won't appear again."""
-    try:
-        import json
-
-        consumed = _get_consumed_suggestions()
-        if s_type == "archetype_advice":
-            key = f"archetype:{title}"
-        else:
-            key = f"{gap_type}:{topic_hint[:20]}:{title[:30]}"
-        consumed.add(key)
-        path = Path.home() / ".ai_research_os" / "consumed_suggestions.json"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(list(consumed), ensure_ascii=False), encoding="utf-8")
-    except Exception:
-        pass
-
-
-def _generate_suggestions(capsules, gap_prefs, topic_freq, archetype, tracker) -> list:
-    """Analyze Gene Pool patterns and generate actionable project suggestions."""
-    suggestions = []
-
-    if not capsules and not gap_prefs:
-        return []
-
-    consumed = _get_consumed_suggestions()
-    explored_gaps = set(gap_prefs.keys())
-    explored_topics = set(topic_freq.keys())
-
-    # 1. High-performing gap types with low exploration → suggest exploring them
-    high_score_gaps = {k: v for k, v in gap_prefs.items() if v > 0.3}
-    suggested_gap_types = set()  # avoid duplicate suggestions
-    for gap_type, score in high_score_gaps.items():
-        for candidate_gap, label, description in _UNDERREPRESENTED_GAPS:
-            if candidate_gap not in explored_gaps and candidate_gap not in suggested_gap_types:
-                # Suggest applying this successful gap type to a new domain
-                suggestions.append(
-                    {
-                        "type": "explore_new_gap",
-                        "icon": "🔍",
-                        "title": f"Explore {label} in your research",
-                        "body": f"You've had success with {gap_type} (score {score:.2f}). "
-                        f"Consider investigating {description.lower()}.",
-                        "gap_type": candidate_gap,
-                        "confidence": min(score, 0.9),
-                        "topic_hint": list(explored_topics)[0] if explored_topics else "your field",
-                        "consumed": False,
-                    }
-                )
-                suggested_gap_types.add(candidate_gap)
-                break
-
-    # 2. Top topics with no evaluation_gap explored → suggest evaluation
-    top_topics = list(topic_freq.items())[:3]
-    evaluated = [g for g in explored_gaps if "evaluation" in g or "benchmark" in g]
-    if not evaluated and top_topics:
-        topic_name = top_topics[0][0][:40]
-        suggestions.append(
-            {
-                "type": "evaluation_gap",
-                "icon": "📏",
-                "title": f"Evaluate {topic_name} rigorously",
-                "body": f"You've explored '{topic_name}' ({topic_freq[topic_name]}×) "
-                "but haven't investigated evaluation gaps. "
-                "Proper benchmarks and controlled experiments could unlock significant improvements.",
-                "gap_type": "evaluation_gap",
-                "confidence": 0.7,
-                "topic_hint": topic_name,
-            }
-        )
-
-    # 3. From capsule keywords — find high-scoring capsules and suggest projects
-    high_perf_capsules = [c for c in capsules if len(c) >= 5 and c[4] >= 0.7]
-    if high_perf_capsules:
-        best = high_perf_capsules[0]  # top capsule by score
-        cap_id, topic, gap_type, gap_title, score, date, keywords, status = best
-        suggestions.append(
-            {
-                "type": "build_on_success",
-                "icon": "🚀",
-                "title": f"Build on: {gap_title[:60]}",
-                "body": f"This pattern scored {score * 100:.0f}% success. "
-                "Try extending it: add more keywords, test in adjacent domains, "
-                "or compose with another high-performing capsule.",
-                "gap_type": gap_type,
-                "confidence": score,
-                "topic_hint": topic[:40],
-                "keywords": keywords,
-                "consumed": False,
-                "source_cap_id": cap_id,
-            }
-        )
-
-    # 4. Dominant archetype-driven suggestion
-    arch_dim = archetype.get("dominant", "")
-    if arch_dim == "method_focused":
-        suggestions.append(
-            {
-                "type": "archetype_advice",
-                "icon": "⚙️",
-                "title": "Your archetype: Method Hunter",
-                "body": "Focus on novel architectures, training procedures, or inference optimizations. "
-                "Look for published methods with surprising results and improve or extend them.",
-                "gap_type": "method_limitation",
-                "confidence": archetype.get("confidence", 0.5),
-                "topic_hint": list(explored_topics)[0][:40] if explored_topics else "ML",
-                "consumed": False,
-            }
-        )
-    elif arch_dim == "high_risk":
-        suggestions.append(
-            {
-                "type": "archetype_advice",
-                "icon": "🧗",
-                "title": "Your archetype: Risk Taker",
-                "body": "Pursue high-uncertainty problems with high payoff: "
-                "new domains, controversial claims, unproven scalability. "
-                "Your profile suggests you can handle the volatility.",
-                "gap_type": "unexplored_application",
-                "confidence": archetype.get("confidence", 0.5),
-                "topic_hint": list(explored_topics)[0][:40] if explored_topics else "research",
-                "consumed": False,
-            }
-        )
-
-    # 5. Cross-domain suggestion if applicable
-    if archetype.get("dimensions", {}).get("cross_domain", (0, 0, "", ""))[1] >= 0.3:
-        suggestions.append(
-            {
-                "type": "cross_domain",
-                "icon": "🌉",
-                "title": "Bridge domains with your cross-domain profile",
-                "body": "Your research spans multiple areas. Try combining RL concepts with "
-                "transformer architectures, or apply your NLP insights to graph problems.",
-                "gap_type": "generalization_gap",
-                "confidence": 0.65,
-                "topic_hint": list(explored_topics)[0][:40]
-                if explored_topics
-                else "interdisciplinary",
-                "consumed": False,
-            }
-        )
-
-    # Filter out already-consumed suggestions
-    # For archetype advice, deduplicate by type so consuming "Your archetype: Risk Taker"
-    # once removes it regardless of which topic it's paired with
-    filtered = []
-    for s in suggestions:
-        if s["type"] == "archetype_advice":
-            key = f"archetype:{s['title']}"
-        else:
-            key = f"{s['gap_type']}:{s.get('topic_hint', '')[:20]}:{s.get('title', '')[:30]}"
-        if key not in consumed:
-            filtered.append(s)
-
-    return sorted(filtered, key=lambda s: s.get("confidence", 0), reverse=True)[:5]
 
 
 @app.get("/impact")
@@ -3021,115 +2783,21 @@ def _render_rq_html(
 
 # ── Experiment Proposals ─────────────────────────────────────────────────────
 
-EXPERIMENTS_DIR = Path.home() / ".ai_research_os" / "experiments"
-EXPERIMENTS_DIR.mkdir(parents=True, exist_ok=True)
-
-
-def _get_experiment_queue() -> List[Dict[str, Any]]:
-    try:
-        if not EXPERIMENTS_DIR.exists():
-            return []
-        files = sorted(
-            EXPERIMENTS_DIR.glob("experiment_*.json"), key=lambda p: p.stat().st_mtime, reverse=True
-        )
-        results = []
-        for f in files[:20]:
-            results.append(json.loads(f.read_text(encoding="utf-8")))
-        return results
-    except Exception:
-        return []
-
-
-def _save_experiment(exp: Dict[str, Any]) -> None:
-    slug = exp.get("id", "unknown").replace(":", "_")
-    path = EXPERIMENTS_DIR / f"experiment_{slug}.json"
-    path.write_text(json.dumps(exp, indent=2, ensure_ascii=False), encoding="utf-8")
-
 
 @app.get("/insights/experiments")
 async def insights_experiments(request: Request):
     """List queued experiment proposals."""
-    queue = _get_experiment_queue()
+    queue = get_experiment_queue()
     return templates.TemplateResponse(
         request,
         "generic.html",
         {
             "page": "experiments",
             "title": "🔬 Experiment Proposals",
-            "content": _render_experiments_html(queue),
+            "content": render_experiments_html(queue),
         },
     )
 
-
-def _render_experiments_html(queue: List[Dict[str, Any]]) -> str:
-    if not queue:
-        return """
-        <div style="text-align:center;padding:40px;color:#888;">
-          <div style="font-size:40px;margin-bottom:12px;">🔬</div>
-          <div style="font-size:15px;font-weight:600;margin-bottom:6px;">No experiment proposals yet</div>
-          <div style="font-size:13px;">Accept a suggestion with a concrete gap, then come back here to run the experiment.</div>
-        </div>"""
-    rows = ""
-    for i, exp in enumerate(queue, 1):
-        status = exp.get("status", "pending")
-        status_color = {
-            "pending": "#FF9800",
-            "running": "#2196F3",
-            "done": "#4CAF50",
-            "failed": "#F44336",
-        }.get(status, "#888")
-        hypothesis = exp.get("hypothesis", "")
-        exp_id_js = exp["id"].replace("'", "\\'")
-        run_btn = (
-            (
-                f"<button onclick=\"runExperiment('{exp_id_js}')\" "
-                f'style="background:#4CAF50;color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:12px;cursor:pointer;">'
-                f"▶ Run Experiment</button>"
-            )
-            if status == "pending"
-            else ""
-        )
-        paper_id = exp.get("paper_id", "")
-        paper_link = (
-            f'<span style="font-size:12px;color:#555;margin-bottom:6px;"><span style="color:#888;">paper:</span> '
-            f'<a href="/paper/{paper_id}" style="color:#6B8FB5;">{paper_id}</a>'
-            f' <span style="font-size:10px;color:var(--pen-green);">⚡ Paper2Code</span></span>'
-            if paper_id
-            else ""
-        )
-        rows += f"""
-        <div style="border: 1px solid #e0e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
-            <div style="font-size:14px;font-weight:700;color:#1a2a3a;">{i}. {exp.get("title", "Untitled")[:80]}</div>
-            <span style="font-size:11px;font-weight:700;color:{status_color};background:{status_color}22;padding:3px 10px;border-radius:12px;">{status.upper()}</span>
-          </div>
-          <div style="font-size:12px;color:#555;margin-bottom:6px;"><span style="color:#888;">gap_type:</span> {exp.get("gap_type", "")}</div>
-          <div style="font-size:12px;color:#555;margin-bottom:6px;"><span style="color:#888;">difficulty:</span> {exp.get("difficulty", "")}</div>
-          {paper_link}
-          {('<div style="font-size:12px;color:#666;margin-bottom:6px;font-style:italic;">&#128161; Hypothesis: ' + hypothesis[:150] + "</div>" if hypothesis else "")}
-          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
-            {run_btn}
-            <button onclick="removeExperiment('{exp_id_js}')" style="background:transparent;color:#888;border:1px solid #ccc;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;">Remove</button>
-          </div>
-        </div>"""
-    return f"""
-    <div style="margin-bottom:20px;">
-      <div style="font-size:13px;color:#888;margin-bottom:12px;">{len(queue)} experiment proposal(s)</div>
-      {rows}
-    </div>
-    <script>
-    function runExperiment(id) {{
-      if (!confirm('Run this experiment? It will execute in the background.')) return;
-      fetch('/insights/run-experiment', {{method:'POST', headers:{{'Content-Type':'application/json'}}, body: JSON.stringify({{id}})}})
-        .then(function(r) {{ return r.json(); }})
-        .then(function(d) {{ alert('Experiment started: ' + d.message); location.reload(); }})
-        .catch(function(e) {{ alert('Error: ' + e.message); }});
-    }}
-    function removeExperiment(id) {{
-      fetch('/insights/experiments/remove', {{method:'POST', headers:{{'Content-Type':'application/json'}}, body: JSON.stringify({{id}})}})
-        .then(function(r) {{ location.reload(); }});
-    }}
-    </script>"""
 
 
 @app.post("/insights/generate-experiment")
@@ -3194,7 +2862,7 @@ async def generate_experiment(request: Request):
             "status": "pending",
             "created_at": datetime.now().isoformat(),
         }
-        _save_experiment(exp)
+        save_experiment(exp)
         return {"success": True, "experiment": exp}
     except Exception as e:
         import logging
@@ -3208,7 +2876,7 @@ async def run_experiment(request: Request):
     """Trigger paper2code pipeline for an experiment proposal (background)."""
     body = await request.json()
     exp_id = body.get("id", "")
-    queue = _get_experiment_queue()
+    queue = get_experiment_queue()
     exp = next((e for e in queue if e.get("id") == exp_id), None)
     if not exp:
         return {"success": False, "error": "Experiment not found"}
@@ -3246,7 +2914,7 @@ async def run_experiment(request: Request):
             exp["status"] = "failed"
             exp["error"] = str(e)
         finally:
-            _save_experiment(exp)
+            save_experiment(exp)
 
     t = threading.Thread(target=_run, daemon=True)
     t.start()
