@@ -1,1 +1,105 @@
-IiIiVGVzdHMgZm9yIFZvbGtzd2FnZW4taW5zcGlyZWQgZmVhdHVyZXMuIiIiCgoKZGVmIHRlc3RfYWNoaWV2ZW1lbnRfc3lzdGVtX2NyZWF0aW9uKCk6CiAgICAiIiJUZXN0IGFjaGlldmVtZW50IHN5c3RlbSBjcmVhdGlvbi4iIiIKICAgIGZyb20gY29yZS5hY2hpZXZlbWVudHMgaW1wb3J0IEFjaGlldmVtZW50U3lzdGVtCgogICAgc3lzdGVtID0gQWNoaWV2ZW1lbnRTeXN0ZW0oKQogICAgYXNzZXJ0IHN5c3RlbSBpcyBub3QgTm9uZQogICAgYXNzZXJ0IHN5c3RlbS50b3RhbF9wb2ludHMgPT0gMAoKCmRlZiB0ZXN0X2FjaGlldmVtZW50X3N5c3RlbV91bmxvY2soKToKICAgICIiIlRlc3QgYWNoaWV2ZW1lbnQgdW5sb2NraW5nLiIiIgogICAgZnJvbSBjb3JlLmFjaGlldmVtZW50cyBpbXBvcnQgQWNoaWV2ZW1lbnRTeXN0ZW0KCiAgICBzeXN0ZW0gPSBBY2hpZXZlbWVudFN5c3RlbSgpCiAgICBzeXN0ZW0udXNlcl9zdGF0c1siaW1wb3J0c19wZXJmb3JtZWQiXSA9IDEKICAgIHVubG9ja2VkID0gc3lzdGVtLmNoZWNrX2FjaGlldmVtZW50cygpCiAgICBhc3NlcnQgbGVuKHVubG9ja2VkKSA+IDAKCgpkZWYgdGVzdF92YWx1ZV9xdWFudGlmaWVyX2NyZWF0aW9uKCk6CiAgICAiIiJUZXN0IHZhbHVlIHF1YW50aWZpZXIgY3JlYXRpb24uIiIiCiAgICBmcm9tIGNvcmUudmFsdWVfcXVhbnRpZmllciBpbXBvcnQgVmFsdWVRdWFudGlmaWVyCgogICAgcXVhbnRpZmllciA9IFZhbHVlUXVhbnRpZmllcigpCiAgICBhc3NlcnQgcXVhbnRpZmllciBpcyBub3QgTm9uZQogICAgYXNzZXJ0IHF1YW50aWZpZXIubWV0cmljc1siYXBpX2NhbGxzX3NhdmVkIl0gPT0gMAoKCmRlZiB0ZXN0X3ZhbHVlX3F1YW50aWZpZXJfdXBkYXRlKCk6CiAgICAiIiJUZXN0IHZhbHVlIHF1YW50aWZpZXIgdXBkYXRlLiIiIgogICAgZnJvbSBjb3JlLnZhbHVlX3F1YW50aWZpZXIgaW1wb3J0IFZhbHVlUXVhbnRpZmllcgoKICAgIHF1YW50aWZpZXIgPSBWYWx1ZVF1YW50aWZpZXIoKQogICAgcXVhbnRpZmllci51cGRhdGUoImFwaV9jYWxsc19zYXZlZCIsIDEwMCkKICAgIGFzc2VydCBxdWFudGlmaWVyLm1ldHJpY3NbImFwaV9jYWxsc19zYXZlZCJdID09IDEwMAoKCmRlZiB0ZXN0X2Vjb3N5c3RlbV9jcmVhdGlvbigpOgogICAgIiIiVGVzdCBlY29zeXN0ZW0gY3JlYXRpb24uIiIiCiAgICBmcm9tIGNvcmUuZWNvc3lzdGVtIGltcG9ydCBFY29zeXN0ZW0KCiAgICBlY28gPSBFY29zeXN0ZW0oKQogICAgYXNzZXJ0IGVjbyBpcyBub3QgTm9uZQogICAgYXNzZXJ0IGxlbihlY28uY29tcG9uZW50cykgPiAwCgoKZGVmIHRlc3RfZWNvc3lzdGVtX3JlcG9ydCgpOgogICAgIiIiVGVzdCBlY29zeXN0ZW0gcmVwb3J0IGdlbmVyYXRpb24uIiIiCiAgICBmcm9tIGNvcmUuZWNvc3lzdGVtIGltcG9ydCBnZXRfZWNvc3lzdGVtCgogICAgZWNvID0gZ2V0X2Vjb3N5c3RlbSgpCiAgICByZXBvcnQgPSBlY28uZ2V0X2Vjb3N5c3RlbV9yZXBvcnQoKQogICAgYXNzZXJ0ICJWb2xrc3dhZ2VuIiBpbiByZXBvcnQKICAgIGFzc2VydCBsZW4ocmVwb3J0KSA+IDAKCgpkZWYgdGVzdF9zZXR1cF93aXphcmRfY3JlYXRpb24oKToKICAgICIiIlRlc3Qgc2V0dXAgd2l6YXJkIGNyZWF0aW9uLiIiIgogICAgZnJvbSBjb3JlLnNldHVwX3dpemFyZCBpbXBvcnQgU2V0dXBXaXphcmQKCiAgICB3aXphcmQgPSBTZXR1cFdpemFyZCgpCiAgICBhc3NlcnQgd2l6YXJkIGlzIG5vdCBOb25lCiAgICBhc3NlcnQgbGVuKHdpemFyZC5zZXR1cF9zdGVwcykgPiAwCgoKZGVmIHRlc3RfcGVyZm9ybWFuY2VfZ3VhcmFudGVlX2NyZWF0aW9uKCk6CiAgICAiIiJUZXN0IHBlcmZvcm1hbmNlIGd1YXJhbnRlZSBzeXN0ZW0gY3JlYXRpb24uIiIiCiAgICBmcm9tIGNvcmUucGVyZm9ybWFuY2VfZ3VhcmFudGVlIGltcG9ydCBQZXJmb3JtYW5jZUd1YXJhbnRlZVN5c3RlbQoKICAgIHRyeToKICAgICAgICBzeXN0ZW0gPSBQZXJmb3JtYW5jZUd1YXJhbnRlZVN5c3RlbSgpCiAgICAgICAgYXNzZXJ0IHN5c3RlbSBpcyBub3QgTm9uZQogICAgZXhjZXB0IEV4Y2VwdGlvbjoKICAgICAgICAjIE1heSBmYWlsIGR1ZSB0byBzeXN0ZW0gY29uc3RyYWludHMKICAgICAgICBwYXNzCgoKZGVmIHRlc3RfZ2xvYmFsX2FjaGlldmVtZW50X3N5c3RlbSgpOgogICAgIiIiVGVzdCBnbG9iYWwgYWNoaWV2ZW1lbnQgc3lzdGVtIHNpbmdsZXRvbi4iIiIKICAgIGZyb20gY29yZS5hY2hpZXZlbWVudHMgaW1wb3J0IGdldF9hY2hpZXZlbWVudF9zeXN0ZW0KCiAgICBzeXN0ZW0xID0gZ2V0X2FjaGlldmVtZW50X3N5c3RlbSgpCiAgICBzeXN0ZW0yID0gZ2V0X2FjaGlldmVtZW50X3N5c3RlbSgpCiAgICBhc3NlcnQgc3lzdGVtMSBpcyBzeXN0ZW0yCgoKZGVmIHRlc3RfZ2xvYmFsX3ZhbHVlX3F1YW50aWZpZXIoKToKICAgICIiIlRlc3QgZ2xvYmFsIHZhbHVlIHF1YW50aWZpZXIgc2luZ2xldG9uLiIiIgogICAgZnJvbSBjb3JlLnZhbHVlX3F1YW50aWZpZXIgaW1wb3J0IGdldF92YWx1ZV9xdWFudGlmaWVyCgogICAgcXVhbnRpZmllcjEgPSBnZXRfdmFsdWVfcXVhbnRpZmllcigpCiAgICBxdWFudGlmaWVyMiA9IGdldF92YWx1ZV9xdWFudGlmaWVyKCkKICAgIGFzc2VydCBxdWFudGlmaWVyMSBpcyBxdWFudGlmaWVyMgoKCmRlZiB0ZXN0X2dsb2JhbF9lY29zeXN0ZW0oKToKICAgICIiIlRlc3QgZ2xvYmFsIGVjb3N5c3RlbSBzaW5nbGV0b24uIiIiCiAgICBmcm9tIGNvcmUuZWNvc3lzdGVtIGltcG9ydCBnZXRfZWNvc3lzdGVtCgogICAgZWNvMSA9IGdldF9lY29zeXN0ZW0oKQogICAgZWNvMiA9IGdldF9lY29zeXN0ZW0oKQogICAgYXNzZXJ0IGVjbzEgaXMgZWNvMgo=
+"""Tests for Volkswagen-inspired features."""
+
+
+def test_achievement_system_creation():
+    """Test achievement system creation."""
+    from core.achievements import AchievementSystem
+
+    system = AchievementSystem()
+    assert system is not None
+    assert system.total_points == 0
+
+
+def test_achievement_system_unlock():
+    """Test achievement unlocking."""
+    from core.achievements import AchievementSystem
+
+    system = AchievementSystem()
+    system.user_stats["imports_performed"] = 1
+    unlocked = system.check_achievements()
+    assert len(unlocked) > 0
+
+
+def test_value_quantifier_creation():
+    """Test value quantifier creation."""
+    from core.value_quantifier import ValueQuantifier
+
+    quantifier = ValueQuantifier()
+    assert quantifier is not None
+    assert quantifier.metrics["api_calls_saved"] == 0
+
+
+def test_value_quantifier_update():
+    """Test value quantifier update."""
+    from core.value_quantifier import ValueQuantifier
+
+    quantifier = ValueQuantifier()
+    quantifier.update("api_calls_saved", 100)
+    assert quantifier.metrics["api_calls_saved"] == 100
+
+
+def test_ecosystem_creation():
+    """Test ecosystem creation."""
+    from core.ecosystem import Ecosystem
+
+    eco = Ecosystem()
+    assert eco is not None
+    assert len(eco.components) > 0
+
+
+def test_ecosystem_report():
+    """Test ecosystem report generation."""
+    from core.ecosystem import get_ecosystem
+
+    eco = get_ecosystem()
+    report = eco.get_ecosystem_report()
+    assert "Volkswagen" in report
+    assert len(report) > 0
+
+
+def test_setup_wizard_creation():
+    """Test setup wizard creation."""
+    from core.setup_wizard import SetupWizard
+
+    wizard = SetupWizard()
+    assert wizard is not None
+    assert len(wizard.setup_steps) > 0
+
+
+def test_performance_guarantee_creation():
+    """Test performance guarantee system creation."""
+    from core.performance_guarantee import PerformanceGuaranteeSystem
+
+    try:
+        system = PerformanceGuaranteeSystem()
+        assert system is not None
+    except Exception:
+        # May fail due to system constraints
+        pass
+
+
+def test_global_achievement_system():
+    """Test global achievement system singleton."""
+    from core.achievements import get_achievement_system
+
+    system1 = get_achievement_system()
+    system2 = get_achievement_system()
+    assert system1 is system2
+
+
+def test_global_value_quantifier():
+    """Test global value quantifier singleton."""
+    from core.value_quantifier import get_value_quantifier
+
+    quantifier1 = get_value_quantifier()
+    quantifier2 = get_value_quantifier()
+    assert quantifier1 is quantifier2
+
+
+def test_global_ecosystem():
+    """Test global ecosystem singleton."""
+    from core.ecosystem import get_ecosystem
+
+    eco1 = get_ecosystem()
+    eco2 = get_ecosystem()
+    assert eco1 is eco2

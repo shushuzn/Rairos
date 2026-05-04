@@ -1,1 +1,191 @@
-IiIiQ2VudHJhbGlzZWQgY29uZmlndXJhdGlvbiBsb2FkZWQgZnJvbSBlbnZpcm9ubWVudCB2YXJpYWJsZXMuCgpBbGwgaGFyZGNvZGVkIG1hZ2ljIG51bWJlcnMgaW4gdGhlIGNvZGViYXNlIG11c3QgYmUgYWNjZXNzZWQgdmlhIHRoaXMgbW9kdWxlCnJhdGhlciB0aGFuIGlubGluZWQuICBEZWZhdWx0cyBtYXRjaCB0aGUgaGlzdG9yaWNhbCB2YWx1ZXMgc28gdGhlIG1vZHVsZSBpcwpzYWZlIHRvIGltcG9ydCBldmVuIHdoZW4gbm8gLmVudiBmaWxlIGlzIHByZXNlbnQuCgpFbnZpcm9ubWVudCB2YXJpYWJsZXMgZm9sbG93IHRoZSBwYXR0ZXJuIEFJUk9TXzxDT05GSUdfTkFNRT4gZm9yIGNvbnNpc3RlbmN5LgoiIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBvcwpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKZnJvbSB0eXBpbmcgaW1wb3J0IFR1cGxlLCBEaWN0LCBBbnkKCiMgTG9hZCAuZW52IGZpbGUgaWYgcHJlc2VudApfZW52X2ZpbGUgPSBQYXRoKF9fZmlsZV9fKS5wYXJlbnQgLyAiLmVudiIKaWYgX2Vudl9maWxlLmV4aXN0cygpOgogICAgd2l0aCBvcGVuKF9lbnZfZmlsZSwgZW5jb2Rpbmc9InV0Zi04IikgYXMgZjoKICAgICAgICBmb3IgbGluZSBpbiBmOgogICAgICAgICAgICBsaW5lID0gbGluZS5zdHJpcCgpCiAgICAgICAgICAgIGlmIGxpbmUgYW5kIG5vdCBsaW5lLnN0YXJ0c3dpdGgoIiMiKSBhbmQgIj0iIGluIGxpbmU6CiAgICAgICAgICAgICAgICBrZXksIF8sIHZhbHVlID0gbGluZS5wYXJ0aXRpb24oIj0iKQogICAgICAgICAgICAgICAgb3MuZW52aXJvbi5zZXRkZWZhdWx0KGtleS5zdHJpcCgpLCB2YWx1ZS5zdHJpcCgpKQoKIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBFbWJlZGRpbmcKIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KRU1CRURESU5HX0RJTTogaW50ID0gaW50KG9zLmdldGVudigiQUlST1NfRU1CRURESU5HX0RJTSIsICI3NjgiKSkKIiIiRW1iZWRkaW5nIHZlY3RvciBkaW1lbnNpb24gKG5vbWljLWVtYmVkLXRleHQgdXNlcyA3NjgpLiIiIgoKIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBIVFRQIGNhY2hlCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkNBQ0hFX1RUTF9TRUNPTkRTOiBpbnQgPSBpbnQob3MuZ2V0ZW52KCJBSVJPU19DQUNIRV9UVExfU0VDT05EUyIsIHN0cigyNCAqIDM2MDApKSkKIiIiSG93IGxvbmcgY2FjaGVkIGFyWGl2IC8gQ3Jvc3NyZWYgQVBJIHJlc3BvbnNlcyBsaXZlLCBpbiBzZWNvbmRzLiIiIgoKQ0FDSEVfRElSOiBzdHIgPSBvcy5nZXRlbnYoIkFJUk9TX0NBQ0hFX0RJUiIsIHN0cihQYXRoKF9fZmlsZV9fKS5wYXJlbnQgLyAiZGF0YSIpKQoiIiJEaXJlY3RvcnkgZm9yIGRpc2sgY2FjaGUgc3RvcmFnZS4iIiIKCk1BWF9DQUNIRV9GSUxFUzogaW50ID0gaW50KG9zLmdldGVudigiQUlST1NfTUFYX0NBQ0hFX0ZJTEVTIiwgIjIwMDAiKSkKIiIiTWF4aW11bSBudW1iZXIgb2YgY2FjaGUgZmlsZXMgcGVyIGRpcmVjdG9yeS4iIiIKCk1FTU9SWV9DQUNIRV9NQVhfU0laRTogaW50ID0gaW50KG9zLmdldGVudigiQUlST1NfTUVNT1JZX0NBQ0hFX01BWF9TSVpFIiwgIjEwMDAiKSkKIiIiTWF4aW11bSBudW1iZXIgb2YgaXRlbXMgaW4gbWVtb3J5IGNhY2hlLiIiIgoKCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMgTExNIGNvc3QgdGFibGUgIChpbnB1dF9wcmljZV9wZXJfMU0sIG91dHB1dF9wcmljZV9wZXJfMU0pCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCmRlZiBfbG9hZF9tb2RlbF9wcmljZXMoKSAtPiBkaWN0W3N0ciwgVHVwbGVbZmxvYXQsIGZsb2F0XV06CiAgICAiIiJQYXJzZSBBSVJPU19NT0RFTF9QUklDRVMgZnJvbSB0aGUgZW52aXJvbm1lbnQuCgogICAgRm9ybWF0OiBjb21tYS1zZXBhcmF0ZWQgYGBtb2RlbF9wcmVmaXg6aW5wdXQ6b3V0cHV0YGAgdHJpcGxlcywgZS5nLgogICAgYGBncHQtNG86Mi41OjEwLjAsZ3B0LTRvLW1pbmk6MC4xNTowLjZgYC4KCiAgICBJZiB0aGUgZW52IHZhciBpcyBhYnNlbnQgb3IgbWFsZm9ybWVkIHdlIGZhbGwgYmFjayB0byB0aGUgYnVpbHQtaW4gdGFibGUuCiAgICAiIiIKICAgIHJhdyA9IG9zLmdldGVudigiQUlST1NfTU9ERUxfUFJJQ0VTIiwgIiIpLnN0cmlwKCkKICAgIGlmIG5vdCByYXc6CiAgICAgICAgcmV0dXJuIHt9CiAgICBwcmljZXM6IGRpY3Rbc3RyLCBUdXBsZVtmbG9hdCwgZmxvYXRdXSA9IHt9CiAgICBmb3IgZW50cnkgaW4gcmF3LnNwbGl0KCIsIik6CiAgICAgICAgcGFydHMgPSBlbnRyeS5zdHJpcCgpLnNwbGl0KCI6IikKICAgICAgICBpZiBsZW4ocGFydHMpICE9IDM6CiAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgdHJ5OgogICAgICAgICAgICBtb2RlbCwgaW5wLCBvdXQgPSBwYXJ0c1swXS5zdHJpcCgpLCBmbG9hdChwYXJ0c1sxXSksIGZsb2F0KHBhcnRzWzJdKQogICAgICAgICAgICBwcmljZXNbbW9kZWxdID0gKGlucCwgb3V0KQogICAgICAgIGV4Y2VwdCBWYWx1ZUVycm9yOgogICAgICAgICAgICBwYXNzCiAgICByZXR1cm4gcHJpY2VzCgoKIyBCdWlsdC1pbiB0YWJsZSDigJMgbWlycm9ycyB0aGUgb3JpZ2luYWwgaGFyZGNvZGVkIHZhbHVlcyBpbiBsbG0vZ2VuZXJhdGUucHkKX0JVSUxUSU5fTU9ERUxfUFJJQ0VTOiBkaWN0W3N0ciwgVHVwbGVbZmxvYXQsIGZsb2F0XV0gPSB7CiAgICAiZ3B0LTRvIjogKDIuNSwgMTAuMCksCiAgICAiZ3B0LTRvLW1pbmkiOiAoMC4xNSwgMC42KSwKICAgICJncHQtNC10dXJibyI6ICgxMC4wLCAzMC4wKSwKICAgICJncHQtMy41LXR1cmJvIjogKDAuNSwgMS41KSwKICAgICJvMS1wcmV2aWV3IjogKDE1LjAsIDYwLjApLAogICAgIm8xLW1pbmkiOiAoMy4wLCAxMi4wKSwKICAgICJxd2VuMy41LXBsdXMiOiAoMC4xLCAwLjMpLAogICAgInF3ZW4zLjUiOiAoMC4xLCAwLjMpLAogICAgInF3ZW4yLjUiOiAoMC4xLCAwLjMpLAogICAgImRlZXBzZWVrLWNoYXQiOiAoMC4xNCwgMC4yOCksCiAgICAiY2xhdWRlLTMtNS1zb25uZXQiOiAoMy4wLCAxNS4wKSwKICAgICJjbGF1ZGUtMy01LWhhaWt1IjogKDAuOCwgNC4wKSwKICAgICJtaW5pbWF4LW0yLjctaGlnaHNwZWVkIjogKDAuMSwgMC4xKSwgICMgTWluaU1heCBNMi43IOmrmOmAn+eJiAogICAgImRlZmF1bHQiOiAoMS4wLCA0LjApLAp9CgpNT0RFTF9QUklDRVM6IGRpY3Rbc3RyLCBUdXBsZVtmbG9hdCwgZmxvYXRdXSA9IHsKICAgICoqX0JVSUxUSU5fTU9ERUxfUFJJQ0VTLAogICAgKipfbG9hZF9tb2RlbF9wcmljZXMoKSwKfQoiIiJUb2tlbiBwcmljZSB0YWJsZSwgY2FuIGJlIGV4dGVuZGVkIHZpYSBBSVJPU19NT0RFTF9QUklDRVMgZW52IHZhci4iIiIKCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMgRGVmYXVsdCBtb2RlbHMKIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KREVGQVVMVF9MTE1fTU9ERUxfQ0xJOiBzdHIgPSBvcy5nZXRlbnYoIkFJUk9TX0RFRkFVTFRfTU9ERUxfQ0xJIiwgInF3ZW4zLjUtcGx1cyIpCiIiIkRlZmF1bHQgTExNIG1vZGVsIHVzZWQgYnkgdGhlIENMSS4iIiIKCkRFRkFVTFRfTExNX01PREVMX1JFU0VBUkNIOiBzdHIgPSBvcy5nZXRlbnYoIkFJUk9TX0RFRkFVTFRfTU9ERUxfUkVTRUFSQ0giLCAiZ3B0LTRvLW1pbmkiKQoiIiJEZWZhdWx0IExMTSBtb2RlbCB1c2VkIGJ5IHRoZSByZXNlYXJjaCBsb29wLiIiIgoKREVGQVVMVF9MTE1fTU9ERUw6IHN0ciA9IG9zLmdldGVudigKICAgICJERUZBVUxUX0xMTV9NT0RFTCIsCiAgICBERUZBVUxUX0xMTV9NT0RFTF9SRVNFQVJDSCwgICMgZmFsbGJhY2sgdG8gZ3B0LTRvLW1pbmkKKQoKIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBMTE0gQVBJIGNvbmZpZ3VyYXRpb24KIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KREVGQVVMVF9PUEVOQUlfQkFTRV9VUkw6IHN0ciA9IG9zLmdldGVudigKICAgICJPUEVOQUlfQkFTRV9VUkwiLCBvcy5nZXRlbnYoIkFJUk9TX0RFRkFVTFRfT1BFTkFJX0JBU0VfVVJMIiwgImh0dHBzOi8vYXBpLm9wZW5haS5jb20vdjEiKQopCiIiIkRlZmF1bHQgT3BlbkFJLWNvbXBhdGlibGUgQVBJIGJhc2UgVVJMLiIiIgoKREVGQVVMVF9MTE1fVElNRU9VVDogaW50ID0gaW50KG9zLmdldGVudigiQUlST1NfTExNX1RJTUVPVVQiLCAiMTgwIikpCiIiIkRlZmF1bHQgdGltZW91dCBmb3IgTExNIEFQSSBjYWxscyBpbiBzZWNvbmRzLiIiIgoKIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBQREYgcHJvY2Vzc2luZwojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpQREZfTUFYX1BBR0VTOiBpbnQgPSBpbnQob3MuZ2V0ZW52KCJBSVJPU19QREZfTUFYX1BBR0VTIiwgIjEwMCIpKQoiIiJNYXhpbXVtIG51bWJlciBvZiBwYWdlcyB0byBwcm9jZXNzIGZyb20gYSBQREYuIiIiCgpQREZfT0NSX1pPT006IGZsb2F0ID0gZmxvYXQob3MuZ2V0ZW52KCJBSVJPU19QREZfT0NSX1pPT00iLCAiMi4wIikpCiIiIlpvb20gZmFjdG9yIGZvciBPQ1IgcHJvY2Vzc2luZy4iIiIKClBERl9PQ1JfTEFORzogc3RyID0gb3MuZ2V0ZW52KCJBSVJPU19QREZfT0NSX0xBTkciLCAiY2hpX3NpbStlbmciKQoiIiJEZWZhdWx0IE9DUiBsYW5ndWFnZShzKS4iIiIKCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMgVGFnZ2luZwojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpNQVhfVEFHUzogaW50ID0gaW50KG9zLmdldGVudigiQUlST1NfTUFYX1RBR1MiLCAiNSIpKQoiIiJNYXhpbXVtIG51bWJlciBvZiB0YWdzIHRvIGluZmVyIGZvciBhIHBhcGVyLiIiIgoKIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBSZXNlYXJjaCBsb29wCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tClJFU0VBUkNIX0xPT1BfREVGQVVMVF9MSU1JVDogaW50ID0gaW50KG9zLmdldGVudigiQUlST1NfUkVTRUFSQ0hfTE9PUF9ERUZBVUxUX0xJTUlUIiwgIjUiKSkKIiIiRGVmYXVsdCBudW1iZXIgb2YgcGFwZXJzIHRvIHByb2Nlc3MgaW4gcmVzZWFyY2ggbG9vcC4iIiIKClJFU0VBUkNIX0xPT1BfREVGQVVMVF9PVVRQVVRfRElSOiBzdHIgPSBvcy5nZXRlbnYoIkFJUk9TX1JFU0VBUkNIX0xPT1BfREVGQVVMVF9PVVRQVVRfRElSIiwgIiIpCiIiIkRlZmF1bHQgb3V0cHV0IGRpcmVjdG9yeSBmb3IgcmVzZWFyY2ggbG9vcC4iIiIKCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMgTWlzY2VsbGFuZW91cwojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpNQVhfUEFSU0VfQVVUSE9SU19DQUNIRV9TSVpFOiBpbnQgPSBpbnQob3MuZ2V0ZW52KCJBSVJPU19QQVJTRV9BVVRIT1JTX0NBQ0hFX1NJWkUiLCAiNDA5NiIpKQoiIiJNYXhzaXplIHBhc3NlZCB0byB0aGUgYGBscnVfY2FjaGVgYCB3cmFwcGluZyB0aGUgYXV0aG9yIEpTT04gcGFyc2VyLiIiIgoKQ09OQ1VSUkVOVF9XT1JLRVJTOiBpbnQgPSBpbnQob3MuZ2V0ZW52KCJBSVJPU19DT05DVVJSRU5UX1dPUktFUlMiLCAiOCIpKQoiIiJOdW1iZXIgb2YgY29uY3VycmVudCB3b3JrZXJzIGZvciBwYXJhbGxlbCBvcGVyYXRpb25zLiIiIgoKCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMgSGVscGVyIGZ1bmN0aW9ucwojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpkZWYgZ2V0X2NvbmZpZygpIC0+IERpY3Rbc3RyLCBBbnldOgogICAgIiIiR2V0IGFsbCBjb25maWd1cmF0aW9uIHZhbHVlcyBhcyBhIGRpY3Rpb25hcnkuIiIiCiAgICByZXR1cm4gewogICAgICAgICJFTUJFRERJTkdfRElNIjogRU1CRURESU5HX0RJTSwKICAgICAgICAiQ0FDSEVfVFRMX1NFQ09ORFMiOiBDQUNIRV9UVExfU0VDT05EUywKICAgICAgICAiQ0FDSEVfRElSIjogQ0FDSEVfRElSLAogICAgICAgICJNQVhfQ0FDSEVfRklMRVMiOiBNQVhfQ0FDSEVfRklMRVMsCiAgICAgICAgIk1FTU9SWV9DQUNIRV9NQVhfU0laRSI6IE1FTU9SWV9DQUNIRV9NQVhfU0laRSwKICAgICAgICAiTU9ERUxfUFJJQ0VTIjogTU9ERUxfUFJJQ0VTLAogICAgICAgICJERUZBVUxUX0xMTV9NT0RFTF9DTEkiOiBERUZBVUxUX0xMTV9NT0RFTF9DTEksCiAgICAgICAgIkRFRkFVTFRfTExNX01PREVMX1JFU0VBUkNIIjogREVGQVVMVF9MTE1fTU9ERUxfUkVTRUFSQ0gsCiAgICAgICAgIkRFRkFVTFRfT1BFTkFJX0JBU0VfVVJMIjogREVGQVVMVF9PUEVOQUlfQkFTRV9VUkwsCiAgICAgICAgIkRFRkFVTFRfTExNX1RJTUVPVVQiOiBERUZBVUxUX0xMTV9USU1FT1VULAogICAgICAgICJQREZfTUFYX1BBR0VTIjogUERGX01BWF9QQUdFUywKICAgICAgICAiUERGX09DUl9aT09NIjogUERGX09DUl9aT09NLAogICAgICAgICJQREZfT0NSX0xBTkciOiBQREZfT0NSX0xBTkcsCiAgICAgICAgIk1BWF9UQUdTIjogTUFYX1RBR1MsCiAgICAgICAgIlJFU0VBUkNIX0xPT1BfREVGQVVMVF9MSU1JVCI6IFJFU0VBUkNIX0xPT1BfREVGQVVMVF9MSU1JVCwKICAgICAgICAiUkVTRUFSQ0hfTE9PUF9ERUZBVUxUX09VVFBVVF9ESVIiOiBSRVNFQVJDSF9MT09QX0RFRkFVTFRfT1VUUFVUX0RJUiwKICAgICAgICAiTUFYX1BBUlNFX0FVVEhPUlNfQ0FDSEVfU0laRSI6IE1BWF9QQVJTRV9BVVRIT1JTX0NBQ0hFX1NJWkUsCiAgICAgICAgIkNPTkNVUlJFTlRfV09SS0VSUyI6IENPTkNVUlJFTlRfV09SS0VSUywKICAgIH0KCgpkZWYgdmFsaWRhdGVfY29uZmlnKCkgLT4gYm9vbDoKICAgICIiIlZhbGlkYXRlIGNvbmZpZ3VyYXRpb24gdmFsdWVzLiIiIgogICAgIyBBZGQgdmFsaWRhdGlvbiBsb2dpYyBoZXJlIGlmIG5lZWRlZAogICAgcmV0dXJuIFRydWUK
+"""Centralised configuration loaded from environment variables.
+
+All hardcoded magic numbers in the codebase must be accessed via this module
+rather than inlined.  Defaults match the historical values so the module is
+safe to import even when no .env file is present.
+
+Environment variables follow the pattern AIROS_<CONFIG_NAME> for consistency.
+"""
+
+from __future__ import annotations
+
+import os
+from pathlib import Path
+from typing import Tuple, Dict, Any
+
+# Load .env file if present
+_env_file = Path(__file__).parent / ".env"
+if _env_file.exists():
+    with open(_env_file, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, _, value = line.partition("=")
+                os.environ.setdefault(key.strip(), value.strip())
+
+# ---------------------------------------------------------------------------
+# Embedding
+# ---------------------------------------------------------------------------
+EMBEDDING_DIM: int = int(os.getenv("AIROS_EMBEDDING_DIM", "768"))
+"""Embedding vector dimension (nomic-embed-text uses 768)."""
+
+# ---------------------------------------------------------------------------
+# HTTP cache
+# ---------------------------------------------------------------------------
+CACHE_TTL_SECONDS: int = int(os.getenv("AIROS_CACHE_TTL_SECONDS", str(24 * 3600)))
+"""How long cached arXiv / Crossref API responses live, in seconds."""
+
+CACHE_DIR: str = os.getenv("AIROS_CACHE_DIR", str(Path(__file__).parent / "data"))
+"""Directory for disk cache storage."""
+
+MAX_CACHE_FILES: int = int(os.getenv("AIROS_MAX_CACHE_FILES", "2000"))
+"""Maximum number of cache files per directory."""
+
+MEMORY_CACHE_MAX_SIZE: int = int(os.getenv("AIROS_MEMORY_CACHE_MAX_SIZE", "1000"))
+"""Maximum number of items in memory cache."""
+
+
+# ---------------------------------------------------------------------------
+# LLM cost table  (input_price_per_1M, output_price_per_1M)
+# ---------------------------------------------------------------------------
+def _load_model_prices() -> dict[str, Tuple[float, float]]:
+    """Parse AIROS_MODEL_PRICES from the environment.
+
+    Format: comma-separated ``model_prefix:input:output`` triples, e.g.
+    ``gpt-4o:2.5:10.0,gpt-4o-mini:0.15:0.6``.
+
+    If the env var is absent or malformed we fall back to the built-in table.
+    """
+    raw = os.getenv("AIROS_MODEL_PRICES", "").strip()
+    if not raw:
+        return {}
+    prices: dict[str, Tuple[float, float]] = {}
+    for entry in raw.split(","):
+        parts = entry.strip().split(":")
+        if len(parts) != 3:
+            continue
+        try:
+            model, inp, out = parts[0].strip(), float(parts[1]), float(parts[2])
+            prices[model] = (inp, out)
+        except ValueError:
+            pass
+    return prices
+
+
+# Built-in table – mirrors the original hardcoded values in llm/generate.py
+_BUILTIN_MODEL_PRICES: dict[str, Tuple[float, float]] = {
+    "gpt-4o": (2.5, 10.0),
+    "gpt-4o-mini": (0.15, 0.6),
+    "gpt-4-turbo": (10.0, 30.0),
+    "gpt-3.5-turbo": (0.5, 1.5),
+    "o1-preview": (15.0, 60.0),
+    "o1-mini": (3.0, 12.0),
+    "qwen3.5-plus": (0.1, 0.3),
+    "qwen3.5": (0.1, 0.3),
+    "qwen2.5": (0.1, 0.3),
+    "deepseek-chat": (0.14, 0.28),
+    "claude-3-5-sonnet": (3.0, 15.0),
+    "claude-3-5-haiku": (0.8, 4.0),
+    "minimax-m2.7-highspeed": (0.1, 0.1),  # MiniMax M2.7 高速版
+    "default": (1.0, 4.0),
+}
+
+MODEL_PRICES: dict[str, Tuple[float, float]] = {
+    **_BUILTIN_MODEL_PRICES,
+    **_load_model_prices(),
+}
+"""Token price table, can be extended via AIROS_MODEL_PRICES env var."""
+
+# ---------------------------------------------------------------------------
+# Default models
+# ---------------------------------------------------------------------------
+DEFAULT_LLM_MODEL_CLI: str = os.getenv("AIROS_DEFAULT_MODEL_CLI", "qwen3.5-plus")
+"""Default LLM model used by the CLI."""
+
+DEFAULT_LLM_MODEL_RESEARCH: str = os.getenv("AIROS_DEFAULT_MODEL_RESEARCH", "gpt-4o-mini")
+"""Default LLM model used by the research loop."""
+
+DEFAULT_LLM_MODEL: str = os.getenv(
+    "DEFAULT_LLM_MODEL",
+    DEFAULT_LLM_MODEL_RESEARCH,  # fallback to gpt-4o-mini
+)
+
+# ---------------------------------------------------------------------------
+# LLM API configuration
+# ---------------------------------------------------------------------------
+DEFAULT_OPENAI_BASE_URL: str = os.getenv(
+    "OPENAI_BASE_URL", os.getenv("AIROS_DEFAULT_OPENAI_BASE_URL", "https://api.openai.com/v1")
+)
+"""Default OpenAI-compatible API base URL."""
+
+DEFAULT_LLM_TIMEOUT: int = int(os.getenv("AIROS_LLM_TIMEOUT", "180"))
+"""Default timeout for LLM API calls in seconds."""
+
+# ---------------------------------------------------------------------------
+# PDF processing
+# ---------------------------------------------------------------------------
+PDF_MAX_PAGES: int = int(os.getenv("AIROS_PDF_MAX_PAGES", "100"))
+"""Maximum number of pages to process from a PDF."""
+
+PDF_OCR_ZOOM: float = float(os.getenv("AIROS_PDF_OCR_ZOOM", "2.0"))
+"""Zoom factor for OCR processing."""
+
+PDF_OCR_LANG: str = os.getenv("AIROS_PDF_OCR_LANG", "chi_sim+eng")
+"""Default OCR language(s)."""
+
+# ---------------------------------------------------------------------------
+# Tagging
+# ---------------------------------------------------------------------------
+MAX_TAGS: int = int(os.getenv("AIROS_MAX_TAGS", "5"))
+"""Maximum number of tags to infer for a paper."""
+
+# ---------------------------------------------------------------------------
+# Research loop
+# ---------------------------------------------------------------------------
+RESEARCH_LOOP_DEFAULT_LIMIT: int = int(os.getenv("AIROS_RESEARCH_LOOP_DEFAULT_LIMIT", "5"))
+"""Default number of papers to process in research loop."""
+
+RESEARCH_LOOP_DEFAULT_OUTPUT_DIR: str = os.getenv("AIROS_RESEARCH_LOOP_DEFAULT_OUTPUT_DIR", "")
+"""Default output directory for research loop."""
+
+# ---------------------------------------------------------------------------
+# Miscellaneous
+# ---------------------------------------------------------------------------
+MAX_PARSE_AUTHORS_CACHE_SIZE: int = int(os.getenv("AIROS_PARSE_AUTHORS_CACHE_SIZE", "4096"))
+"""Maxsize passed to the ``lru_cache`` wrapping the author JSON parser."""
+
+CONCURRENT_WORKERS: int = int(os.getenv("AIROS_CONCURRENT_WORKERS", "8"))
+"""Number of concurrent workers for parallel operations."""
+
+
+# ---------------------------------------------------------------------------
+# Helper functions
+# ---------------------------------------------------------------------------
+def get_config() -> Dict[str, Any]:
+    """Get all configuration values as a dictionary."""
+    return {
+        "EMBEDDING_DIM": EMBEDDING_DIM,
+        "CACHE_TTL_SECONDS": CACHE_TTL_SECONDS,
+        "CACHE_DIR": CACHE_DIR,
+        "MAX_CACHE_FILES": MAX_CACHE_FILES,
+        "MEMORY_CACHE_MAX_SIZE": MEMORY_CACHE_MAX_SIZE,
+        "MODEL_PRICES": MODEL_PRICES,
+        "DEFAULT_LLM_MODEL_CLI": DEFAULT_LLM_MODEL_CLI,
+        "DEFAULT_LLM_MODEL_RESEARCH": DEFAULT_LLM_MODEL_RESEARCH,
+        "DEFAULT_OPENAI_BASE_URL": DEFAULT_OPENAI_BASE_URL,
+        "DEFAULT_LLM_TIMEOUT": DEFAULT_LLM_TIMEOUT,
+        "PDF_MAX_PAGES": PDF_MAX_PAGES,
+        "PDF_OCR_ZOOM": PDF_OCR_ZOOM,
+        "PDF_OCR_LANG": PDF_OCR_LANG,
+        "MAX_TAGS": MAX_TAGS,
+        "RESEARCH_LOOP_DEFAULT_LIMIT": RESEARCH_LOOP_DEFAULT_LIMIT,
+        "RESEARCH_LOOP_DEFAULT_OUTPUT_DIR": RESEARCH_LOOP_DEFAULT_OUTPUT_DIR,
+        "MAX_PARSE_AUTHORS_CACHE_SIZE": MAX_PARSE_AUTHORS_CACHE_SIZE,
+        "CONCURRENT_WORKERS": CONCURRENT_WORKERS,
+    }
+
+
+def validate_config() -> bool:
+    """Validate configuration values."""
+    # Add validation logic here if needed
+    return True

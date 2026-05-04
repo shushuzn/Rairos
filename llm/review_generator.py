@@ -1,1 +1,311 @@
-IiIiCkxpdGVyYXR1cmUgUmV2aWV3IEdlbmVyYXRvcjogR2VuZXJhdGUgc3RydWN0dXJlZCBsaXRlcmF0dXJlIHJldmlld3MuCgpHZW5lcmF0ZXMgY29tcHJlaGVuc2l2ZSByZXZpZXdzIHdpdGg6Ci0gUmVzZWFyY2ggc3RyZWFtIGNsYXNzaWZpY2F0aW9uCi0gQ29udHJvdmVyc3kgZGV0ZWN0aW9uIGJldHdlZW4gc3RyZWFtcwotIEV2b2x1dGlvbiB0aW1lbGluZSBjb25zdHJ1Y3Rpb24KLSBPcGVuIHByb2JsZW0gaWRlbnRpZmljYXRpb24KIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgpmcm9tIGRhdGFjbGFzc2VzIGltcG9ydCBkYXRhY2xhc3MsIGZpZWxkCmZyb20gdHlwaW5nIGltcG9ydCBMaXN0LCBPcHRpb25hbCwgVHVwbGUsIEFueSwgY2FzdAoKCkBkYXRhY2xhc3MKY2xhc3MgUmVzZWFyY2hTdHJlYW06CiAgICAiIiJBIHJlc2VhcmNoIHN0cmVhbS9zY2hvb2wgaW4gdGhlIGxpdGVyYXR1cmUuIiIiCgogICAgbmFtZTogc3RyCiAgICBwYXBlcnM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgbWV0aG9kczogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICBrZXlfY29udHJpYnV0aW9uczogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCgoKQGRhdGFjbGFzcwpjbGFzcyBDb250cm92ZXJzeToKICAgICIiIkEgY29udHJvdmVyc3kgYmV0d2VlbiByZXNlYXJjaCBzdHJlYW1zLiIiIgoKICAgIHRvcGljOiBzdHIKICAgIHN0cmVhbV9hOiBzdHIKICAgIHN0cmVhbV9iOiBzdHIKICAgIHBvc2l0aW9uX2E6IHN0cgogICAgcG9zaXRpb25fYjogc3RyCiAgICBwYXBlcnM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQoKCkBkYXRhY2xhc3MKY2xhc3MgUmV2aWV3U2VjdGlvbjoKICAgICIiIkEgc2VjdGlvbiBvZiB0aGUgcmV2aWV3LiIiIgoKICAgIHRpdGxlOiBzdHIKICAgIGNvbnRlbnQ6IHN0cgogICAgc3Vic2VjdGlvbnM6IExpc3RbIlJldmlld1NlY3Rpb24iXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQoKCkBkYXRhY2xhc3MKY2xhc3MgTGl0ZXJhdHVyZVJldmlldzoKICAgICIiIkdlbmVyYXRlZCBsaXRlcmF0dXJlIHJldmlldy4iIiIKCiAgICB0b3BpYzogc3RyCiAgICBzdHJlYW1zOiBMaXN0W1Jlc2VhcmNoU3RyZWFtXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgY29udHJvdmVyc2llczogTGlzdFtDb250cm92ZXJzeV0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKICAgIHRpbWVsaW5lOiBMaXN0W1R1cGxlW2ludCwgc3RyXV0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKICAgIG9wZW5fcHJvYmxlbXM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgc2VjdGlvbnM6IExpc3RbUmV2aWV3U2VjdGlvbl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKCgpjbGFzcyBSZXZpZXdHZW5lcmF0b3I6CiAgICAiIiJHZW5lcmF0ZSBzdHJ1Y3R1cmVkIGxpdGVyYXR1cmUgcmV2aWV3cy4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZiwgZGI9Tm9uZSk6CiAgICAgICAgc2VsZi5kYiA9IGRiCgogICAgZGVmIGdlbmVyYXRlKAogICAgICAgIHNlbGYsCiAgICAgICAgdG9waWM6IHN0ciwKICAgICAgICBtYXhfcGFwZXJzOiBpbnQgPSA1MCwKICAgICAgICBkZXB0aDogc3RyID0gImZ1bGwiLAogICAgICAgIHNlY3Rpb25zOiBPcHRpb25hbFtMaXN0W3N0cl1dID0gTm9uZSwKICAgICkgLT4gTGl0ZXJhdHVyZVJldmlldzoKICAgICAgICAiIiIKICAgICAgICBHZW5lcmF0ZSBhIGxpdGVyYXR1cmUgcmV2aWV3IGZvciB0aGUgdG9waWMuCgogICAgICAgIEFyZ3M6CiAgICAgICAgICAgIHRvcGljOiBSZXNlYXJjaCB0b3BpYwogICAgICAgICAgICBtYXhfcGFwZXJzOiBNYXhpbXVtIHBhcGVycyB0byBhbmFseXplCiAgICAgICAgICAgIGRlcHRoOiAic2hvcnQiIG9yICJmdWxsIgogICAgICAgICAgICBzZWN0aW9uczogU3BlY2lmaWMgc2VjdGlvbnMgdG8gZ2VuZXJhdGUKCiAgICAgICAgUmV0dXJuczoKICAgICAgICAgICAgTGl0ZXJhdHVyZVJldmlldyB3aXRoIHN0cnVjdHVyZWQgY29udGVudAogICAgICAgICIiIgogICAgICAgICMgMS4gQ29sbGVjdCBwYXBlcnMKICAgICAgICBwYXBlcnMgPSBzZWxmLl9jb2xsZWN0X3BhcGVycyh0b3BpYywgbWF4X3BhcGVycykKCiAgICAgICAgIyAyLiBDbGFzc2lmeSBpbnRvIHN0cmVhbXMKICAgICAgICBzdHJlYW1zID0gc2VsZi5fY2xhc3NpZnlfc3RyZWFtcyhwYXBlcnMpCgogICAgICAgICMgMy4gRGV0ZWN0IGNvbnRyb3ZlcnNpZXMKICAgICAgICBjb250cm92ZXJzaWVzID0gc2VsZi5fZGV0ZWN0X2NvbnRyb3ZlcnNpZXMoc3RyZWFtcykKCiAgICAgICAgIyA0LiBCdWlsZCB0aW1lbGluZQogICAgICAgIHRpbWVsaW5lID0gc2VsZi5fYnVpbGRfdGltZWxpbmUocGFwZXJzKQoKICAgICAgICAjIDUuIElkZW50aWZ5IG9wZW4gcHJvYmxlbXMKICAgICAgICBvcGVuX3Byb2JsZW1zID0gc2VsZi5faWRlbnRpZnlfZ2FwcyhwYXBlcnMsIHN0cmVhbXMpCgogICAgICAgICMgNi4gR2VuZXJhdGUgc3RydWN0dXJlZCBzZWN0aW9ucwogICAgICAgIHJldmlld19zZWN0aW9ucyA9IHNlbGYuX2dlbmVyYXRlX3NlY3Rpb25zKAogICAgICAgICAgICB0b3BpYywgc3RyZWFtcywgY29udHJvdmVyc2llcywgdGltZWxpbmUsIG9wZW5fcHJvYmxlbXMsIGRlcHRoCiAgICAgICAgKQoKICAgICAgICByZXR1cm4gTGl0ZXJhdHVyZVJldmlldygKICAgICAgICAgICAgdG9waWM9dG9waWMsCiAgICAgICAgICAgIHN0cmVhbXM9c3RyZWFtcywKICAgICAgICAgICAgY29udHJvdmVyc2llcz1jb250cm92ZXJzaWVzLAogICAgICAgICAgICB0aW1lbGluZT10aW1lbGluZSwKICAgICAgICAgICAgb3Blbl9wcm9ibGVtcz1vcGVuX3Byb2JsZW1zLAogICAgICAgICAgICBzZWN0aW9ucz1yZXZpZXdfc2VjdGlvbnMsCiAgICAgICAgKQoKICAgIGRlZiBfY29sbGVjdF9wYXBlcnMoc2VsZiwgdG9waWM6IHN0ciwgbWF4X3BhcGVyczogaW50KSAtPiBMaXN0W0FueV06CiAgICAgICAgIiIiQ29sbGVjdCByZWxldmFudCBwYXBlcnMgZnJvbSBkYXRhYmFzZS4iIiIKICAgICAgICBpZiBub3Qgc2VsZi5kYjoKICAgICAgICAgICAgcmV0dXJuIFtdCiAgICAgICAgcm93cywgXyA9IHNlbGYuZGIuc2VhcmNoX3BhcGVycyh0b3BpYywgbGltaXQ9bWF4X3BhcGVycykKICAgICAgICByZXR1cm4gY2FzdChMaXN0W0FueV0sIHJvd3MpCgogICAgZGVmIF9jbGFzc2lmeV9zdHJlYW1zKHNlbGYsIHBhcGVyczogTGlzdFtBbnldKSAtPiBMaXN0W1Jlc2VhcmNoU3RyZWFtXToKICAgICAgICAiIiJDbGFzc2lmeSBwYXBlcnMgaW50byByZXNlYXJjaCBzdHJlYW1zLiIiIgogICAgICAgIHN0cmVhbXM6IGRpY3QgPSB7fQoKICAgICAgICBmb3IgcGFwZXIgaW4gcGFwZXJzOgogICAgICAgICAgICB0ZXh0ID0gKGdldGF0dHIocGFwZXIsICJ0aXRsZSIsICIiKSArICIgIiArIGdldGF0dHIocGFwZXIsICJhYnN0cmFjdCIsICIiKSkubG93ZXIoKQoKICAgICAgICAgICAgaWYgYW55KGsgaW4gdGV4dCBmb3IgayBpbiBbInJldHJpZXZhbCIsICJyZXRyaWV2ZXIiLCAic2VhcmNoIiwgImluZGV4Il0pOgogICAgICAgICAgICAgICAgc3RyZWFtX25hbWUgPSAi5qOA57Si5aKe5by65Z6LIgogICAgICAgICAgICBlbGlmIGFueShrIGluIHRleHQgZm9yIGsgaW4gWyJnZW5lcmF0aW9uIiwgImdlbmVyYXRvciIsICJkZWNvZGVyIiwgImxsbSIsICJncHQiXSk6CiAgICAgICAgICAgICAgICBzdHJlYW1fbmFtZSA9ICLnlJ/miJDkvJjljJblnosiCiAgICAgICAgICAgIGVsaWYgYW55KGsgaW4gdGV4dCBmb3IgayBpbiBbImh5YnJpZCIsICJmdXNpb24iLCAiY29tYmluZSIsICJlbnNlbWJsZSJdKToKICAgICAgICAgICAgICAgIHN0cmVhbV9uYW1lID0gIua3t+WQiOaWueazlSIKICAgICAgICAgICAgZWxpZiBhbnkoayBpbiB0ZXh0IGZvciBrIGluIFsiZmluZS10dW4iLCAidHVuaW5nIiwgImFkYXB0YXRpb24iLCAidHJhbnNmZXIiXSk6CiAgICAgICAgICAgICAgICBzdHJlYW1fbmFtZSA9ICLpgILphY3kvJjljJblnosiCiAgICAgICAgICAgIGVsc2U6CiAgICAgICAgICAgICAgICBzdHJlYW1fbmFtZSA9ICLlhbbku5bmlrnms5UiCgogICAgICAgICAgICBpZiBzdHJlYW1fbmFtZSBub3QgaW4gc3RyZWFtczoKICAgICAgICAgICAgICAgIHN0cmVhbXNbc3RyZWFtX25hbWVdID0gUmVzZWFyY2hTdHJlYW0oCiAgICAgICAgICAgICAgICAgICAgbmFtZT1zdHJlYW1fbmFtZSwKICAgICAgICAgICAgICAgICAgICBwYXBlcnM9W10sCiAgICAgICAgICAgICAgICAgICAgbWV0aG9kcz1bXSwKICAgICAgICAgICAgICAgICAgICBrZXlfY29udHJpYnV0aW9ucz1bXSwKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgc3RyZWFtc1tzdHJlYW1fbmFtZV0ucGFwZXJzLmFwcGVuZChnZXRhdHRyKHBhcGVyLCAidWlkIiwgIiIpKQoKICAgICAgICByZXR1cm4gbGlzdChzdHJlYW1zLnZhbHVlcygpKQoKICAgIGRlZiBfZGV0ZWN0X2NvbnRyb3ZlcnNpZXMoc2VsZiwgc3RyZWFtczogTGlzdFtSZXNlYXJjaFN0cmVhbV0pIC0+IExpc3RbQ29udHJvdmVyc3ldOgogICAgICAgICIiIkRldGVjdCBjb250cm92ZXJzaWVzIGJldHdlZW4gc3RyZWFtcy4iIiIKICAgICAgICBjb250cm92ZXJzaWVzID0gW10KCiAgICAgICAgc3RyZWFtX25hbWVzID0gW3MubmFtZSBmb3IgcyBpbiBzdHJlYW1zXQoKICAgICAgICAjIEVmZmljaWVuY3kgdnMgcXVhbGl0eSB0cmFkZS1vZmYKICAgICAgICBpZiAi5qOA57Si5aKe5by65Z6LIiBpbiBzdHJlYW1fbmFtZXMgYW5kICLnlJ/miJDkvJjljJblnosiIGluIHN0cmVhbV9uYW1lczoKICAgICAgICAgICAgY29udHJvdmVyc2llcy5hcHBlbmQoCiAgICAgICAgICAgICAgICBDb250cm92ZXJzeSgKICAgICAgICAgICAgICAgICAgICB0b3BpYz0i5pWI546HIHZzIOi0qOmHjyIsCiAgICAgICAgICAgICAgICAgICAgc3RyZWFtX2E9IuajgOe0ouWinuW8uuWeiyIsCiAgICAgICAgICAgICAgICAgICAgc3RyZWFtX2I9IueUn+aIkOS8mOWMluWeiyIsCiAgICAgICAgICAgICAgICAgICAgcG9zaXRpb25fYT0i5qOA57Si5o+Q5L6b5aSW6YOo55+l6K+G77yM5YeP5bCR55Sf5oiQ5Y+C5pWwIiwKICAgICAgICAgICAgICAgICAgICBwb3NpdGlvbl9iPSLnq6/liLDnq6/orq3nu4PvvIznn6Xor4blhoXljJYiLAogICAgICAgICAgICAgICAgICAgIHBhcGVycz1bXSwKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgKQoKICAgICAgICAjIEh5YnJpZCB2cyBzcGVjaWFsaXplZAogICAgICAgIGlmICLmt7flkIjmlrnms5UiIGluIHN0cmVhbV9uYW1lcyBhbmQgbGVuKHN0cmVhbXMpID4gMToKICAgICAgICAgICAgY29udHJvdmVyc2llcy5hcHBlbmQoCiAgICAgICAgICAgICAgICBDb250cm92ZXJzeSgKICAgICAgICAgICAgICAgICAgICB0b3BpYz0i6YCa55So5oCnIHZzIOS4k+eUqOaApyIsCiAgICAgICAgICAgICAgICAgICAgc3RyZWFtX2E9Iua3t+WQiOaWueazlSIsCiAgICAgICAgICAgICAgICAgICAgc3RyZWFtX2I9IuS4k+eUqOaWueazlSIsCiAgICAgICAgICAgICAgICAgICAgcG9zaXRpb25fYT0i6J6N5ZCI5aSa56eN5oqA5pyv77yM6L+95rGC6YCa55So5oCnIiwKICAgICAgICAgICAgICAgICAgICBwb3NpdGlvbl9iPSLpkojlr7nnibnlrprlnLrmma/kvJjljJbvvIzov73msYLmgKfog70iLAogICAgICAgICAgICAgICAgICAgIHBhcGVycz1bXSwKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgKQoKICAgICAgICByZXR1cm4gY29udHJvdmVyc2llcwoKICAgIGRlZiBfYnVpbGRfdGltZWxpbmUoc2VsZiwgcGFwZXJzOiBMaXN0W0FueV0pIC0+IExpc3RbVHVwbGVbaW50LCBzdHJdXToKICAgICAgICAiIiJCdWlsZCBldm9sdXRpb24gdGltZWxpbmUuIiIiCiAgICAgICAgdGltZWxpbmU6IExpc3RbVHVwbGVbaW50LCBzdHJdXSA9IFtdCgogICAgICAgIGZvciBwYXBlciBpbiBwYXBlcnM6CiAgICAgICAgICAgIHllYXIgPSBnZXRhdHRyKHBhcGVyLCAieWVhciIsIE5vbmUpIG9yIDIwMjAKICAgICAgICAgICAgdGl0bGUgPSBnZXRhdHRyKHBhcGVyLCAidGl0bGUiLCAiIilbOjUwXQogICAgICAgICAgICBpZiB5ZWFyIGFuZCB0aXRsZToKICAgICAgICAgICAgICAgIHRpbWVsaW5lLmFwcGVuZCgoaW50KHllYXIpLCB0aXRsZSkpCgogICAgICAgIHRpbWVsaW5lLnNvcnQoa2V5PWxhbWJkYSB4OiB4WzBdKQogICAgICAgIHJldHVybiB0aW1lbGluZVs6MjBdCgogICAgZGVmIF9pZGVudGlmeV9nYXBzKHNlbGYsIHBhcGVyczogTGlzdFtBbnldLCBzdHJlYW1zOiBMaXN0W1Jlc2VhcmNoU3RyZWFtXSkgLT4gTGlzdFtzdHJdOgogICAgICAgICIiIklkZW50aWZ5IG9wZW4gcHJvYmxlbXMgYW5kIGdhcHMuIiIiCiAgICAgICAgZ2FwcyA9IFtdCiAgICAgICAgc3RyZWFtX25hbWVzID0gW3MubmFtZSBmb3IgcyBpbiBzdHJlYW1zXQoKICAgICAgICAjIENoZWNrIGZvciB1bmRlcmV4cGxvcmVkIGNvbWJpbmF0aW9ucwogICAgICAgIGlmICLmo4DntKLlop7lvLrlnosiIGluIHN0cmVhbV9uYW1lcyBhbmQgIueUn+aIkOS8mOWMluWeiyIgbm90IGluIHN0cmVhbV9uYW1lczoKICAgICAgICAgICAgZ2Fwcy5hcHBlbmQoIuajgOe0ouWinuW8uuS4jueUn+aIkOS8mOWMlueahOe7k+WQiOWwmuacquWFheWIhuaOoue0oiIpCgogICAgICAgICMgR2VuZXJpYyBnYXBzIGJhc2VkIG9uIHBhcGVyIGNvdW50CiAgICAgICAgaWYgbGVuKHBhcGVycykgPCAxMDoKICAgICAgICAgICAgZ2Fwcy5hcHBlbmQoIuivpemihuWfn+iuuuaWh+aVsOmHj+i+g+Wwke+8jOeglOeptua3seW6puaciemZkCIpCiAgICAgICAgaWYgbGVuKHN0cmVhbXMpIDwgMjoKICAgICAgICAgICAgZ2Fwcy5hcHBlbmQoIumihuWfn+aWueazleWNleS4gO+8jOe8uuS5j+aWueazleWkmuagt+aApyIpCgogICAgICAgICMgQ29tbW9uIG9wZW4gcHJvYmxlbXMKICAgICAgICBnYXBzLmV4dGVuZCgKICAgICAgICAgICAgWwogICAgICAgICAgICAgICAgIumVv+aWh+aho+WcuuaZr+S4i+eahOajgOe0ouaViOeOh+mXrumimCIsCiAgICAgICAgICAgICAgICAi5qOA57Si57uT5p6c5LiO55Sf5oiQ6LSo6YeP55qE5LiA6Ie05oCn5L+d6K+BIiwKICAgICAgICAgICAgICAgICLot6jpoobln5/nn6Xor4bov4Hnp7vnmoTmnInmlYjmgKfor4TkvLAiLAogICAgICAgICAgICBdCiAgICAgICAgKQoKICAgICAgICByZXR1cm4gZ2Fwc1s6NV0KCiAgICBkZWYgX2dlbmVyYXRlX3NlY3Rpb25zKAogICAgICAgIHNlbGYsCiAgICAgICAgdG9waWM6IHN0ciwKICAgICAgICBzdHJlYW1zOiBMaXN0W1Jlc2VhcmNoU3RyZWFtXSwKICAgICAgICBjb250cm92ZXJzaWVzOiBMaXN0W0NvbnRyb3ZlcnN5XSwKICAgICAgICB0aW1lbGluZTogTGlzdFtUdXBsZVtpbnQsIHN0cl1dLAogICAgICAgIG9wZW5fcHJvYmxlbXM6IExpc3Rbc3RyXSwKICAgICAgICBkZXB0aDogc3RyLAogICAgKSAtPiBMaXN0W1Jldmlld1NlY3Rpb25dOgogICAgICAgICIiIkdlbmVyYXRlIHN0cnVjdHVyZWQgcmV2aWV3IHNlY3Rpb25zLiIiIgogICAgICAgIHNlY3Rpb25zID0gW10KCiAgICAgICAgIyBPdmVydmlldwogICAgICAgIHNlY3Rpb25zLmFwcGVuZCgKICAgICAgICAgICAgUmV2aWV3U2VjdGlvbigKICAgICAgICAgICAgICAgIHRpdGxlPSLmpoLov7AiLAogICAgICAgICAgICAgICAgY29udGVudD1mIuacrOe7vOi/sOimhuebliB7dG9waWN9IOmihuWfn+eahOWFs+mUrueglOeptu+8jOa2ieWPiiB7bGVuKHN0cmVhbXMpfSDkuKrkuLvopoHmtYHmtL7jgIIiLAogICAgICAgICAgICApCiAgICAgICAgKQoKICAgICAgICAjIE1ldGhvZCBTdHJlYW1zCiAgICAgICAgaWYgc3RyZWFtczoKICAgICAgICAgICAgc3RyZWFtX2NvbnRlbnQgPSAiXG4iLmpvaW4oCiAgICAgICAgICAgICAgICBbCiAgICAgICAgICAgICAgICAgICAgZiIjIyMge3MubmFtZX1cbiIKICAgICAgICAgICAgICAgICAgICBmIi0g6K665paH5pWwOiB7bGVuKHMucGFwZXJzKX1cbiIKICAgICAgICAgICAgICAgICAgICBmIi0g5Luj6KGo5pa55rOVOiB7JywgJy5qb2luKHMubWV0aG9kc1s6M10pIG9yICflvoXor4bliKsnfSIKICAgICAgICAgICAgICAgICAgICBmb3IgcyBpbiBzdHJlYW1zCiAgICAgICAgICAgICAgICBdCiAgICAgICAgICAgICkKICAgICAgICAgICAgc2VjdGlvbnMuYXBwZW5kKAogICAgICAgICAgICAgICAgUmV2aWV3U2VjdGlvbigKICAgICAgICAgICAgICAgICAgICB0aXRsZT0i5pa55rOV5rWB5rS+IiwKICAgICAgICAgICAgICAgICAgICBjb250ZW50PXN0cmVhbV9jb250ZW50LAogICAgICAgICAgICAgICAgKQogICAgICAgICAgICApCgogICAgICAgICMgQ29udHJvdmVyc2llcwogICAgICAgIGlmIGNvbnRyb3ZlcnNpZXM6CiAgICAgICAgICAgIGNvbnRyb3ZlcnN5X2NvbnRlbnQgPSAiXG4iLmpvaW4oCiAgICAgICAgICAgICAgICBbCiAgICAgICAgICAgICAgICAgICAgZiIjIyMge2MudG9waWN9XG4iCiAgICAgICAgICAgICAgICAgICAgZiItIHtjLnN0cmVhbV9hfeingueCuToge2MucG9zaXRpb25fYX1cbiIKICAgICAgICAgICAgICAgICAgICBmIi0ge2Muc3RyZWFtX2J96KeC54K5OiB7Yy5wb3NpdGlvbl9ifSIKICAgICAgICAgICAgICAgICAgICBmb3IgYyBpbiBjb250cm92ZXJzaWVzCiAgICAgICAgICAgICAgICBdCiAgICAgICAgICAgICkKICAgICAgICAgICAgc2VjdGlvbnMuYXBwZW5kKAogICAgICAgICAgICAgICAgUmV2aWV3U2VjdGlvbigKICAgICAgICAgICAgICAgICAgICB0aXRsZT0i5qC45b+D5LqJ6K66IiwKICAgICAgICAgICAgICAgICAgICBjb250ZW50PWNvbnRyb3ZlcnN5X2NvbnRlbnQsCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICkKCiAgICAgICAgIyBUaW1lbGluZSAoc2hvcnQgbW9kZSBza2lwcyB0aGlzKQogICAgICAgIGlmIHRpbWVsaW5lIGFuZCBkZXB0aCA9PSAiZnVsbCI6CiAgICAgICAgICAgIHRpbWVsaW5lX2NvbnRlbnQgPSAiXG4iLmpvaW4oW2YiLSB7eWVhcn06IHtldmVudH0iIGZvciB5ZWFyLCBldmVudCBpbiB0aW1lbGluZVs6MTBdXSkKICAgICAgICAgICAgc2VjdGlvbnMuYXBwZW5kKAogICAgICAgICAgICAgICAgUmV2aWV3U2VjdGlvbigKICAgICAgICAgICAgICAgICAgICB0aXRsZT0i5ryU5YyW6ISJ57ucIiwKICAgICAgICAgICAgICAgICAgICBjb250ZW50PXRpbWVsaW5lX2NvbnRlbnQsCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICkKCiAgICAgICAgIyBPcGVuIFByb2JsZW1zCiAgICAgICAgaWYgb3Blbl9wcm9ibGVtczoKICAgICAgICAgICAgcHJvYmxlbXNfY29udGVudCA9ICJcbiIuam9pbihbZiItIHtpICsgMX0uIHtwfSIgZm9yIGksIHAgaW4gZW51bWVyYXRlKG9wZW5fcHJvYmxlbXMpXSkKICAgICAgICAgICAgc2VjdGlvbnMuYXBwZW5kKAogICAgICAgICAgICAgICAgUmV2aWV3U2VjdGlvbigKICAgICAgICAgICAgICAgICAgICB0aXRsZT0i5b6F6Kej5Yaz6Zeu6aKYIiwKICAgICAgICAgICAgICAgICAgICBjb250ZW50PXByb2JsZW1zX2NvbnRlbnQsCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICkKCiAgICAgICAgcmV0dXJuIHNlY3Rpb25zCgogICAgZGVmIHJlbmRlcl9tYXJrZG93bihzZWxmLCByZXZpZXc6IExpdGVyYXR1cmVSZXZpZXcpIC0+IHN0cjoKICAgICAgICAiIiJSZW5kZXIgcmV2aWV3IGFzIE1hcmtkb3duLiIiIgogICAgICAgIGxpbmVzID0gWwogICAgICAgICAgICBmIiMge3Jldmlldy50b3BpY30g5paH54yu57u86L+wIiwKICAgICAgICAgICAgIiIsCiAgICAgICAgXQoKICAgICAgICBmb3Igc2VjdGlvbiBpbiByZXZpZXcuc2VjdGlvbnM6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiMjIHtzZWN0aW9uLnRpdGxlfSIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChzZWN0aW9uLmNvbnRlbnQpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIikKCiAgICAgICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykKCiAgICBkZWYgcmVuZGVyX2pzb24oc2VsZiwgcmV2aWV3OiBMaXRlcmF0dXJlUmV2aWV3KSAtPiBzdHI6CiAgICAgICAgIiIiUmVuZGVyIHJldmlldyBhcyBKU09OLiIiIgogICAgICAgIGltcG9ydCBqc29uCgogICAgICAgIHJldHVybiBqc29uLmR1bXBzKAogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAidG9waWMiOiByZXZpZXcudG9waWMsCiAgICAgICAgICAgICAgICAic3RyZWFtcyI6IFt7Im5hbWUiOiBzLm5hbWUsICJwYXBlcl9jb3VudCI6IGxlbihzLnBhcGVycyl9IGZvciBzIGluIHJldmlldy5zdHJlYW1zXSwKICAgICAgICAgICAgICAgICJjb250cm92ZXJzaWVzIjogWwogICAgICAgICAgICAgICAgICAgIHsidG9waWMiOiBjLnRvcGljLCAic2lkZXMiOiBbYy5zdHJlYW1fYSwgYy5zdHJlYW1fYl19CiAgICAgICAgICAgICAgICAgICAgZm9yIGMgaW4gcmV2aWV3LmNvbnRyb3ZlcnNpZXMKICAgICAgICAgICAgICAgIF0sCiAgICAgICAgICAgICAgICAib3Blbl9wcm9ibGVtcyI6IHJldmlldy5vcGVuX3Byb2JsZW1zLAogICAgICAgICAgICB9LAogICAgICAgICAgICBlbnN1cmVfYXNjaWk9RmFsc2UsCiAgICAgICAgICAgIGluZGVudD0yLAogICAgICAgICkK
+"""
+Literature Review Generator: Generate structured literature reviews.
+
+Generates comprehensive reviews with:
+- Research stream classification
+- Controversy detection between streams
+- Evolution timeline construction
+- Open problem identification
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import List, Optional, Tuple, Any, cast
+
+
+@dataclass
+class ResearchStream:
+    """A research stream/school in the literature."""
+    name: str
+    papers: List[str] = field(default_factory=list)
+    methods: List[str] = field(default_factory=list)
+    key_contributions: List[str] = field(default_factory=list)
+
+
+@dataclass
+class Controversy:
+    """A controversy between research streams."""
+    topic: str
+    stream_a: str
+    stream_b: str
+    position_a: str
+    position_b: str
+    papers: List[str] = field(default_factory=list)
+
+
+@dataclass
+class ReviewSection:
+    """A section of the review."""
+    title: str
+    content: str
+    subsections: List['ReviewSection'] = field(default_factory=list)
+
+
+@dataclass
+class LiteratureReview:
+    """Generated literature review."""
+    topic: str
+    streams: List[ResearchStream] = field(default_factory=list)
+    controversies: List[Controversy] = field(default_factory=list)
+    timeline: List[Tuple[int, str]] = field(default_factory=list)
+    open_problems: List[str] = field(default_factory=list)
+    sections: List[ReviewSection] = field(default_factory=list)
+
+
+class ReviewGenerator:
+    """Generate structured literature reviews."""
+
+    def __init__(self, db=None):
+        self.db = db
+
+    def generate(
+        self,
+        topic: str,
+        max_papers: int = 50,
+        depth: str = "full",
+        sections: Optional[List[str]] = None,
+    ) -> LiteratureReview:
+        """
+        Generate a literature review for the topic.
+
+        Args:
+            topic: Research topic
+            max_papers: Maximum papers to analyze
+            depth: "short" or "full"
+            sections: Specific sections to generate
+
+        Returns:
+            LiteratureReview with structured content
+        """
+        # 1. Collect papers
+        papers = self._collect_papers(topic, max_papers)
+
+        # 2. Classify into streams
+        streams = self._classify_streams(papers)
+
+        # 3. Detect controversies
+        controversies = self._detect_controversies(streams)
+
+        # 4. Build timeline
+        timeline = self._build_timeline(papers)
+
+        # 5. Identify open problems
+        open_problems = self._identify_gaps(papers, streams)
+
+        # 6. Generate structured sections
+        review_sections = self._generate_sections(
+            topic, streams, controversies, timeline, open_problems, depth
+        )
+
+        return LiteratureReview(
+            topic=topic,
+            streams=streams,
+            controversies=controversies,
+            timeline=timeline,
+            open_problems=open_problems,
+            sections=review_sections,
+        )
+
+    def _collect_papers(self, topic: str, max_papers: int) -> List[Any]:
+        """Collect relevant papers from database."""
+        if not self.db:
+            return []
+        rows, _ = self.db.search_papers(topic, limit=max_papers)
+        return cast(List[Any], rows)
+
+    def _classify_streams(self, papers: List[Any]) -> List[ResearchStream]:
+        """Classify papers into research streams."""
+        streams: dict = {}
+
+        for paper in papers:
+            text = (getattr(paper, 'title', '') + " " +
+                    getattr(paper, 'abstract', '')).lower()
+
+            if any(k in text for k in ['retrieval', 'retriever', 'search', 'index']):
+                stream_name = "检索增强型"
+            elif any(k in text for k in ['generation', 'generator', 'decoder', 'llm', 'gpt']):
+                stream_name = "生成优化型"
+            elif any(k in text for k in ['hybrid', 'fusion', 'combine', 'ensemble']):
+                stream_name = "混合方法"
+            elif any(k in text for k in ['fine-tun', 'tuning', 'adaptation', 'transfer']):
+                stream_name = "适配优化型"
+            else:
+                stream_name = "其他方法"
+
+            if stream_name not in streams:
+                streams[stream_name] = ResearchStream(
+                    name=stream_name,
+                    papers=[],
+                    methods=[],
+                    key_contributions=[],
+                )
+            streams[stream_name].papers.append(getattr(paper, 'uid', ''))
+
+        return list(streams.values())
+
+    def _detect_controversies(self, streams: List[ResearchStream]) -> List[Controversy]:
+        """Detect controversies between streams."""
+        controversies = []
+
+        stream_names = [s.name for s in streams]
+
+        # Efficiency vs quality trade-off
+        if "检索增强型" in stream_names and "生成优化型" in stream_names:
+            controversies.append(Controversy(
+                topic="效率 vs 质量",
+                stream_a="检索增强型",
+                stream_b="生成优化型",
+                position_a="检索提供外部知识，减少生成参数",
+                position_b="端到端训练，知识内化",
+                papers=[],
+            ))
+
+        # Hybrid vs specialized
+        if "混合方法" in stream_names and len(streams) > 1:
+            controversies.append(Controversy(
+                topic="通用性 vs 专用性",
+                stream_a="混合方法",
+                stream_b="专用方法",
+                position_a="融合多种技术，追求通用性",
+                position_b="针对特定场景优化，追求性能",
+                papers=[],
+            ))
+
+        return controversies
+
+    def _build_timeline(self, papers: List[Any]) -> List[Tuple[int, str]]:
+        """Build evolution timeline."""
+        timeline: List[Tuple[int, str]] = []
+
+        for paper in papers:
+            year = getattr(paper, 'year', None) or 2020
+            title = getattr(paper, 'title', '')[:50]
+            if year and title:
+                timeline.append((int(year), title))
+
+        timeline.sort(key=lambda x: x[0])
+        return timeline[:20]
+
+    def _identify_gaps(self, papers: List[Any], streams: List[ResearchStream]) -> List[str]:
+        """Identify open problems and gaps."""
+        gaps = []
+        stream_names = [s.name for s in streams]
+
+        # Check for underexplored combinations
+        if "检索增强型" in stream_names and "生成优化型" not in stream_names:
+            gaps.append("检索增强与生成优化的结合尚未充分探索")
+
+        # Generic gaps based on paper count
+        if len(papers) < 10:
+            gaps.append("该领域论文数量较少，研究深度有限")
+        if len(streams) < 2:
+            gaps.append("领域方法单一，缺乏方法多样性")
+
+        # Common open problems
+        gaps.extend([
+            "长文档场景下的检索效率问题",
+            "检索结果与生成质量的一致性保证",
+            "跨领域知识迁移的有效性评估",
+        ])
+
+        return gaps[:5]
+
+    def _generate_sections(
+        self,
+        topic: str,
+        streams: List[ResearchStream],
+        controversies: List[Controversy],
+        timeline: List[Tuple[int, str]],
+        open_problems: List[str],
+        depth: str,
+    ) -> List[ReviewSection]:
+        """Generate structured review sections."""
+        sections = []
+
+        # Overview
+        sections.append(ReviewSection(
+            title="概述",
+            content=f"本综述覆盖 {topic} 领域的关键研究，"
+                    f"涉及 {len(streams)} 个主要流派。",
+        ))
+
+        # Method Streams
+        if streams:
+            stream_content = "\n".join([
+                f"### {s.name}\n"
+                f"- 论文数: {len(s.papers)}\n"
+                f"- 代表方法: {', '.join(s.methods[:3]) or '待识别'}"
+                for s in streams
+            ])
+            sections.append(ReviewSection(
+                title="方法流派",
+                content=stream_content,
+            ))
+
+        # Controversies
+        if controversies:
+            controversy_content = "\n".join([
+                f"### {c.topic}\n"
+                f"- {c.stream_a}观点: {c.position_a}\n"
+                f"- {c.stream_b}观点: {c.position_b}"
+                for c in controversies
+            ])
+            sections.append(ReviewSection(
+                title="核心争论",
+                content=controversy_content,
+            ))
+
+        # Timeline (short mode skips this)
+        if timeline and depth == "full":
+            timeline_content = "\n".join([
+                f"- {year}: {event}"
+                for year, event in timeline[:10]
+            ])
+            sections.append(ReviewSection(
+                title="演化脉络",
+                content=timeline_content,
+            ))
+
+        # Open Problems
+        if open_problems:
+            problems_content = "\n".join([
+                f"- {i+1}. {p}"
+                for i, p in enumerate(open_problems)
+            ])
+            sections.append(ReviewSection(
+                title="待解决问题",
+                content=problems_content,
+            ))
+
+        return sections
+
+    def render_markdown(self, review: LiteratureReview) -> str:
+        """Render review as Markdown."""
+        lines = [
+            f"# {review.topic} 文献综述",
+            "",
+        ]
+
+        for section in review.sections:
+            lines.append(f"## {section.title}")
+            lines.append(section.content)
+            lines.append("")
+
+        return '\n'.join(lines)
+
+    def render_json(self, review: LiteratureReview) -> str:
+        """Render review as JSON."""
+        import json
+        return json.dumps({
+            "topic": review.topic,
+            "streams": [
+                {"name": s.name, "paper_count": len(s.papers)}
+                for s in review.streams
+            ],
+            "controversies": [
+                {"topic": c.topic, "sides": [c.stream_a, c.stream_b]}
+                for c in review.controversies
+            ],
+            "open_problems": review.open_problems,
+        }, ensure_ascii=False, indent=2)

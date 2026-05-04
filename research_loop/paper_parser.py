@@ -1,1 +1,190 @@
-IiIiClBhcGVyIFBhcnNlciDigJQgRG93bmxvYWQgYW5kIHBhcnNlIHJlc2VhcmNoIHBhcGVycyBpbnRvIHN0cnVjdHVyZWQgUGFwZXJDb250ZW50LgoKVXNlZCBieSB0aGUgcGFwZXIyY29kZSBpbnRlZ3JhdGlvbiBwaXBlbGluZToKICBkb3dubG9hZF9hbmRfcGFyc2UoYXJ4aXZfaWQpIOKGkiBQYXBlckNvbnRlbnQKICBwYXJzZV9leGlzdGluZ19wZGYocGRmX3BhdGgsIGFyeGl2X2lkKSDihpIgUGFwZXJDb250ZW50CgpQYXBlckNvbnRlbnQgZmVlZHMgaW50bzoKICAtIGNvZGVfZ2VuZXJhdG9yOiBnZW5lcmF0ZSBjb2RlIHNrZWxldG9uIGZyb20gcGFwZXIgY29udGVudAogIC0gdGVzdF9leHRyYWN0b3I6IGV4dHJhY3QgdGVzdGFibGUgYXNzZXJ0aW9ucyBmcm9tIHBhcGVyIGNvbnRlbnQKIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgcmUKaW1wb3J0IHN1YnByb2Nlc3MKaW1wb3J0IHN5cwpmcm9tIGRhdGFjbGFzc2VzIGltcG9ydCBkYXRhY2xhc3MsIGZpZWxkCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgTGlzdCwgT3B0aW9uYWwsIERpY3QKCgpAZGF0YWNsYXNzCmNsYXNzIFBhcGVyQ29udGVudDoKICAgICIiIlN0cnVjdHVyZWQgcGFwZXIgY29udGVudCBmb3IgY29kZSBnZW5lcmF0aW9uIGFuZCB0ZXN0aW5nLiIiIgoKICAgIGFyeGl2X2lkOiBzdHIKICAgIHRpdGxlOiBzdHIKICAgIGF1dGhvcnM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgYWJzdHJhY3Q6IHN0ciA9ICIiCiAgICBwdWJsaXNoZWQ6IHN0ciA9ICIiCiAgICB1cGRhdGVkOiBzdHIgPSAiIgogICAgIyBBbGdvcml0aG0vcGFwZXItc3BlY2lmaWMgZmllbGRzCiAgICBhbGdvcml0aG1fZGVzY3JpcHRpb25zOiBMaXN0W3N0cl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKICAgIGVxdWF0aW9uczogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICBjbGFpbXM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgaHlwZXJwYXJhbWV0ZXJzOiBEaWN0W3N0ciwgc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1kaWN0KQogICAgZGF0YXNldHM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgbWV0aG9kczogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICBjYXRlZ29yaWVzOiBMaXN0W3N0cl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKCgpkZWYgZG93bmxvYWRfYW5kX3BhcnNlKGFyeGl2X2lkOiBzdHIpIC0+IFBhcGVyQ29udGVudDoKICAgICIiIkRvd25sb2FkIHBhcGVyIG1ldGFkYXRhIGZyb20gYXJYaXYgQVBJIGFuZCBwYXJzZSBpbnRvIFBhcGVyQ29udGVudC4KCiAgICBVc2VzIHBhcnNlcnMuYXJ4aXYuZmV0Y2hfYXJ4aXZfbWV0YWRhdGEgZm9yIG1ldGFkYXRhIGV4dHJhY3Rpb24uCiAgICBGYWxscyBiYWNrIHRvIG1pbmltYWwgbWV0YWRhdGEgaWYgQVBJIGlzIHVuYXZhaWxhYmxlLgogICAgIiIiCiAgICB0cnk6CiAgICAgICAgZnJvbSBwYXJzZXJzLmFyeGl2IGltcG9ydCBmZXRjaF9hcnhpdl9tZXRhZGF0YQoKICAgICAgICAjIE5vcm1hbGl6ZSBhcnhpdl9pZAogICAgICAgIGFpZCA9IGFyeGl2X2lkLnN0cmlwKCkKICAgICAgICBpZiAiLm9yZy9hYnMvIiBpbiBhaWQ6CiAgICAgICAgICAgIGFpZCA9IGFpZC5zcGxpdCgiLm9yZy9hYnMvIilbLTFdCiAgICAgICAgYWlkID0gcmUuc3ViKHIidlxkKyQiLCAiIiwgYWlkKSAgIyBzdHJpcCB2ZXJzaW9uCgogICAgICAgIHBhcGVyID0gZmV0Y2hfYXJ4aXZfbWV0YWRhdGEoYWlkKQoKICAgICAgICAjIEV4dHJhY3QgY29udGVudCBmcm9tIFBERiBmb3IgcmljaGVyIGFuYWx5c2lzCiAgICAgICAgcGRmX3BhdGggPSBOb25lCiAgICAgICAgaWYgcGFwZXIucGRmX3VybDoKICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgaW1wb3J0IHJlcXVlc3RzCgogICAgICAgICAgICAgICAgcmVzcCA9IHJlcXVlc3RzLmdldChwYXBlci5wZGZfdXJsLCB0aW1lb3V0PTMwLCBzdHJlYW09VHJ1ZSkKICAgICAgICAgICAgICAgIHJlc3AucmFpc2VfZm9yX3N0YXR1cygpCiAgICAgICAgICAgICAgICBwZGZfcGF0aCA9IFBhdGgoZiJ7YWlkLnJlcGxhY2UoJy4nLCAnXycpfS5wZGYiKQogICAgICAgICAgICAgICAgd2l0aCBvcGVuKHBkZl9wYXRoLCAid2IiKSBhcyBmOgogICAgICAgICAgICAgICAgICAgIGZvciBjaHVuayBpbiByZXNwLml0ZXJfY29udGVudChjaHVua19zaXplPTgxOTIpOgogICAgICAgICAgICAgICAgICAgICAgICBmLndyaXRlKGNodW5rKQogICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAgICAgcGRmX3BhdGggPSBOb25lCgogICAgICAgIGNvbnRlbnQgPSBQYXBlckNvbnRlbnQoCiAgICAgICAgICAgIGFyeGl2X2lkPWFpZCwKICAgICAgICAgICAgdGl0bGU9cGFwZXIudGl0bGUsCiAgICAgICAgICAgIGF1dGhvcnM9cGFwZXIuYXV0aG9ycywKICAgICAgICAgICAgYWJzdHJhY3Q9cGFwZXIuYWJzdHJhY3QsCiAgICAgICAgICAgIHB1Ymxpc2hlZD1wYXBlci5wdWJsaXNoZWQsCiAgICAgICAgICAgIHVwZGF0ZWQ9cGFwZXIudXBkYXRlZCwKICAgICAgICAgICAgY2F0ZWdvcmllcz1wYXBlci5jYXRlZ29yaWVzLnNwbGl0KCIsIikgaWYgcGFwZXIuY2F0ZWdvcmllcyBlbHNlIFtdLAogICAgICAgICkKCiAgICAgICAgIyBJZiBQREYgYXZhaWxhYmxlLCBleHRyYWN0IHJpY2hlciBjb250ZW50CiAgICAgICAgaWYgcGRmX3BhdGggYW5kIHBkZl9wYXRoLmV4aXN0cygpOgogICAgICAgICAgICBfZW5yaWNoX2Zyb21fcGRmKGNvbnRlbnQsIHBkZl9wYXRoKQogICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICBwZGZfcGF0aC51bmxpbmsoKQogICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAgICAgcGFzcwoKICAgICAgICByZXR1cm4gY29udGVudAoKICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgcmV0dXJuIF9taW5pbWFsX2NvbnRlbnQoYXJ4aXZfaWQpCgoKZGVmIHBhcnNlX2V4aXN0aW5nX3BkZihwZGZfcGF0aDogc3RyLCBhcnhpdl9pZDogc3RyKSAtPiBQYXBlckNvbnRlbnQ6CiAgICAiIiJQYXJzZSBhbiBhbHJlYWR5LWRvd25sb2FkZWQgUERGIGludG8gUGFwZXJDb250ZW50LiIiIgogICAgcGF0aCA9IFBhdGgocGRmX3BhdGgpCiAgICBpZiBub3QgcGF0aC5leGlzdHMoKToKICAgICAgICByZXR1cm4gX21pbmltYWxfY29udGVudChhcnhpdl9pZCkKCiAgICBjb250ZW50ID0gX21pbmltYWxfY29udGVudChhcnhpdl9pZCkKICAgIF9lbnJpY2hfZnJvbV9wZGYoY29udGVudCwgcGF0aCkKICAgIHJldHVybiBjb250ZW50CgoKZGVmIF9lbnJpY2hfZnJvbV9wZGYoY29udGVudDogUGFwZXJDb250ZW50LCBwZGZfcGF0aDogUGF0aCkgLT4gTm9uZToKICAgICIiIkV4dHJhY3QgYWxnb3JpdGhtIGRlc2NyaXB0aW9ucywgZXF1YXRpb25zLCBjbGFpbXMgZnJvbSBQREYgdGV4dC4iIiIKICAgIHRyeToKICAgICAgICBpbXBvcnQgZml0eiAgIyBQeU11UERGCiAgICBleGNlcHQgSW1wb3J0RXJyb3I6CiAgICAgICAgdHJ5OgogICAgICAgICAgICBpbXBvcnQgcHltdXBkZiBhcyBmaXR6CiAgICAgICAgZXhjZXB0IEltcG9ydEVycm9yOgogICAgICAgICAgICByZXR1cm4KCiAgICB0cnk6CiAgICAgICAgZG9jID0gZml0ei5vcGVuKHBkZl9wYXRoKQogICAgICAgIHRleHQgPSAiIgogICAgICAgIGZvciBwYWdlIGluIGRvYzoKICAgICAgICAgICAgdGV4dCArPSBwYWdlLmdldF90ZXh0KCkKCiAgICAgICAgIyBFeHRyYWN0IHNlY3Rpb25zCiAgICAgICAgdGV4dF9sb3dlciA9IHRleHQubG93ZXIoKQoKICAgICAgICAjIEFsZ29yaXRobSBkZXNjcmlwdGlvbnM6IGxvb2sgZm9yICJhbGdvcml0aG0iLCAibWV0aG9kIiwgImFwcHJvYWNoIiBzZWN0aW9ucwogICAgICAgIGFsZ29fcGF0dGVybiA9IHJlLmNvbXBpbGUoCiAgICAgICAgICAgIHIiKD86YWxnb3JpdGhtfG1ldGhvZHxhcHByb2FjaHxwcm9jZWR1cmV8dGVjaG5pcXVlKXM/Wzpcc10rKFtBLVpdW14uIT9cbl17NTAsNTAwfT8oPzpcZCtcLnxcbil7MSwzfSkiLAogICAgICAgICAgICByZS5JR05PUkVDQVNFLAogICAgICAgICkKICAgICAgICBmb3IgbWF0Y2ggaW4gYWxnb19wYXR0ZXJuLmZpbmRpdGVyKHRleHRbOjEwMDAwXSk6ICAjIEZpcnN0IDEwayBjaGFycwogICAgICAgICAgICBkZXNjID0gbWF0Y2guZ3JvdXAoMSkuc3RyaXAoKQogICAgICAgICAgICBpZiBsZW4oZGVzYykgPiAzMDoKICAgICAgICAgICAgICAgIGNvbnRlbnQuYWxnb3JpdGhtX2Rlc2NyaXB0aW9ucy5hcHBlbmQoZGVzY1s6MzAwXSkKCiAgICAgICAgIyBFcXVhdGlvbnM6IGxvb2sgZm9yIGRpc3BsYXkgbWF0aAogICAgICAgIGVxX3BhdHRlcm4gPSByZS5jb21waWxlKHIiXCRcJCguKz8pXCRcJHxcJCguKz8pXCQiKQogICAgICAgIGZvciBtYXRjaCBpbiBlcV9wYXR0ZXJuLmZpbmRpdGVyKHRleHQpOgogICAgICAgICAgICBlcSA9IChtYXRjaC5ncm91cCgxKSBvciBtYXRjaC5ncm91cCgyKSBvciAiIikuc3RyaXAoKQogICAgICAgICAgICBpZiBlcSBhbmQgbGVuKGVxKSA+IDU6CiAgICAgICAgICAgICAgICBjb250ZW50LmVxdWF0aW9ucy5hcHBlbmQoZXFbOjIwMF0pCgogICAgICAgICMgQ2xhaW1zOiBsb29rIGZvciAid2Ugc2hvdyIsICJwcm92ZSIsICJkZW1vbnN0cmF0ZSIsICJvdXIgcmVzdWx0cyIKICAgICAgICBjbGFpbV9wYXR0ZXJucyA9IFsKICAgICAgICAgICAgciIoPzp3ZSBzaG93fHdlIHByb3ZlfHdlIGRlbW9uc3RyYXRlfG91ciByZXN1bHRzPyBzaG93KVteLiE/XG5dezEwLDIwMH0iLAogICAgICAgICAgICByIig/OnRoZSAoPzptb2RlbHxtZXRob2R8YWxnb3JpdGhtKSBhY2hpZXZlcz98cGVyZm9ybWFuY2UgcmVhY2hlcz8pW14uIT9cbl17MTAsMjAwfSIsCiAgICAgICAgXQogICAgICAgIGZvciBwYXQgaW4gY2xhaW1fcGF0dGVybnM6CiAgICAgICAgICAgIGZvciBtYXRjaCBpbiByZS5maW5kaXRlcihwYXQsIHRleHRfbG93ZXIpOgogICAgICAgICAgICAgICAgY2xhaW0gPSBtYXRjaC5ncm91cCgwKS5zdHJpcCgpCiAgICAgICAgICAgICAgICBpZiBsZW4oY2xhaW0pID4gMjA6CiAgICAgICAgICAgICAgICAgICAgY29udGVudC5jbGFpbXMuYXBwZW5kKGNsYWltWzozMDBdKQoKICAgICAgICAjIEh5cGVycGFyYW1ldGVyczogbG9vayBmb3IgImxlYXJuaW5nIHJhdGUiLCAiYmF0Y2ggc2l6ZSIsIGV0Yy4KICAgICAgICBocF9wYXR0ZXJucyA9IFsKICAgICAgICAgICAgKHIibGVhcm5pbmdccypyYXRlWzpcc10rW1xkLmVcLV0rIiwgImxlYXJuaW5nX3JhdGUiKSwKICAgICAgICAgICAgKHIiYmF0Y2hccypzaXplWzpcc10rXGQrIiwgImJhdGNoX3NpemUiKSwKICAgICAgICAgICAgKHIiZXBvY2hzP1s6XHNdK1xkKyIsICJlcG9jaHMiKSwKICAgICAgICAgICAgKHIiZHJvcG91dFs6XHNdK1tcZC5dKyIsICJkcm9wb3V0IiksCiAgICAgICAgICAgIChyImhpZGRlblxzKmxheWVyW3NdP1s6XHNdK1xkKyIsICJoaWRkZW5fc2l6ZSIpLAogICAgICAgIF0KICAgICAgICBmb3IgcGF0LCBuYW1lIGluIGhwX3BhdHRlcm5zOgogICAgICAgICAgICBmb3IgbWF0Y2ggaW4gcmUuZmluZGl0ZXIocGF0LCB0ZXh0X2xvd2VyKToKICAgICAgICAgICAgICAgIHZhbCA9IG1hdGNoLmdyb3VwKDApLnNwbGl0KCI6IilbLTFdLnN0cmlwKCkKICAgICAgICAgICAgICAgIGNvbnRlbnQuaHlwZXJwYXJhbWV0ZXJzW25hbWVdID0gdmFsCgogICAgICAgICMgRGF0YXNldHM6IGxvb2sgZm9yIGNvbW1vbiBkYXRhc2V0IG5hbWVzCiAgICAgICAgZGF0YXNldF9uYW1lcyA9IFsKICAgICAgICAgICAgImltYWdlbmV0IiwKICAgICAgICAgICAgImNpZmFyLTEwIiwKICAgICAgICAgICAgImNpZmFyLTEwMCIsCiAgICAgICAgICAgICJtbmlzdCIsCiAgICAgICAgICAgICJ3aWtpdGV4dCIsCiAgICAgICAgICAgICJnbHVlIiwKICAgICAgICAgICAgInNxdWFkIiwKICAgICAgICAgICAgImFyeGl2IiwKICAgICAgICAgICAgInB1Ym1lZCIsCiAgICAgICAgICAgICJvcGVud2VidGV4dCIsCiAgICAgICAgICAgICJwaWxlIiwKICAgICAgICAgICAgInRoZSBwaWxlIiwKICAgICAgICAgICAgImFscGFjYSIsCiAgICAgICAgICAgICJkb2xseSIsCiAgICAgICAgICAgICJoaC1ybGhmIiwKICAgICAgICBdCiAgICAgICAgdGV4dF9sb3dlcl9mb3JfZHMgPSB0ZXh0X2xvd2VyWzoyMDAwMF0KICAgICAgICBmb3IgZHMgaW4gZGF0YXNldF9uYW1lczoKICAgICAgICAgICAgaWYgZHMgaW4gdGV4dF9sb3dlcl9mb3JfZHM6CiAgICAgICAgICAgICAgICBjb250ZW50LmRhdGFzZXRzLmFwcGVuZChkcykKCiAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgIHBhc3MKCgpkZWYgX21pbmltYWxfY29udGVudChhcnhpdl9pZDogc3RyKSAtPiBQYXBlckNvbnRlbnQ6CiAgICAiIiJSZXR1cm4gbWluaW1hbCBQYXBlckNvbnRlbnQgd2hlbiBmdWxsIHBhcnNpbmcgZmFpbHMuIiIiCiAgICBhaWQgPSByZS5zdWIociJ2XGQrJCIsICIiLCBhcnhpdl9pZC5zdHJpcCgpKQogICAgcmV0dXJuIFBhcGVyQ29udGVudCgKICAgICAgICBhcnhpdl9pZD1haWQsCiAgICAgICAgdGl0bGU9ZiJQYXBlciB7YWlkfSIsCiAgICAgICAgYXV0aG9ycz1bXSwKICAgICAgICBhYnN0cmFjdD0iIiwKICAgICkK
+"""
+Paper Parser — Download and parse research papers into structured PaperContent.
+
+Used by the paper2code integration pipeline:
+  download_and_parse(arxiv_id) → PaperContent
+  parse_existing_pdf(pdf_path, arxiv_id) → PaperContent
+
+PaperContent feeds into:
+  - code_generator: generate code skeleton from paper content
+  - test_extractor: extract testable assertions from paper content
+"""
+from __future__ import annotations
+
+import re
+import subprocess
+import sys
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import List, Optional, Dict
+
+
+@dataclass
+class PaperContent:
+    """Structured paper content for code generation and testing."""
+    arxiv_id: str
+    title: str
+    authors: List[str] = field(default_factory=list)
+    abstract: str = ""
+    published: str = ""
+    updated: str = ""
+    # Algorithm/paper-specific fields
+    algorithm_descriptions: List[str] = field(default_factory=list)
+    equations: List[str] = field(default_factory=list)
+    claims: List[str] = field(default_factory=list)
+    hyperparameters: Dict[str, str] = field(default_factory=dict)
+    datasets: List[str] = field(default_factory=list)
+    methods: List[str] = field(default_factory=list)
+    categories: List[str] = field(default_factory=list)
+
+
+def download_and_parse(arxiv_id: str) -> PaperContent:
+    """Download paper metadata from arXiv API and parse into PaperContent.
+
+    Uses parsers.arxiv.fetch_arxiv_metadata for metadata extraction.
+    Falls back to minimal metadata if API is unavailable.
+    """
+    try:
+        from parsers.arxiv import fetch_arxiv_metadata
+
+        # Normalize arxiv_id
+        aid = arxiv_id.strip()
+        if ".org/abs/" in aid:
+            aid = aid.split(".org/abs/")[-1]
+        aid = re.sub(r'v\d+$', '', aid)  # strip version
+
+        paper = fetch_arxiv_metadata(aid)
+
+        # Extract content from PDF for richer analysis
+        pdf_path = None
+        if paper.pdf_url:
+            try:
+                import requests
+                resp = requests.get(paper.pdf_url, timeout=30, stream=True)
+                resp.raise_for_status()
+                pdf_path = Path(f'{aid.replace(".", "_")}.pdf')
+                with open(pdf_path, 'wb') as f:
+                    for chunk in resp.iter_content(chunk_size=8192):
+                        f.write(chunk)
+            except Exception:
+                pdf_path = None
+
+        content = PaperContent(
+            arxiv_id=aid,
+            title=paper.title,
+            authors=paper.authors,
+            abstract=paper.abstract,
+            published=paper.published,
+            updated=paper.updated,
+            categories=paper.categories.split(',') if paper.categories else [],
+        )
+
+        # If PDF available, extract richer content
+        if pdf_path and pdf_path.exists():
+            _enrich_from_pdf(content, pdf_path)
+            try:
+                pdf_path.unlink()
+            except Exception:
+                pass
+
+        return content
+
+    except Exception:
+        return _minimal_content(arxiv_id)
+
+
+def parse_existing_pdf(pdf_path: str, arxiv_id: str) -> PaperContent:
+    """Parse an already-downloaded PDF into PaperContent."""
+    path = Path(pdf_path)
+    if not path.exists():
+        return _minimal_content(arxiv_id)
+
+    content = _minimal_content(arxiv_id)
+    _enrich_from_pdf(content, path)
+    return content
+
+
+def _enrich_from_pdf(content: PaperContent, pdf_path: Path) -> None:
+    """Extract algorithm descriptions, equations, claims from PDF text."""
+    try:
+        import fitz  # PyMuPDF
+    except ImportError:
+        try:
+            import pymupdf as fitz
+        except ImportError:
+            return
+
+    try:
+        doc = fitz.open(pdf_path)
+        text = ""
+        for page in doc:
+            text += page.get_text()
+
+        # Extract sections
+        text_lower = text.lower()
+
+        # Algorithm descriptions: look for "algorithm", "method", "approach" sections
+        algo_pattern = re.compile(
+            r'(?:algorithm|method|approach|procedure|technique)s?[:\s]+([A-Z][^.!?\n]{50,500}?(?:\d+\.|\n){1,3})',
+            re.IGNORECASE
+        )
+        for match in algo_pattern.finditer(text[:10000]):  # First 10k chars
+            desc = match.group(1).strip()
+            if len(desc) > 30:
+                content.algorithm_descriptions.append(desc[:300])
+
+        # Equations: look for display math
+        eq_pattern = re.compile(r'\$\$(.+?)\$\$|\$(.+?)\$')
+        for match in eq_pattern.finditer(text):
+            eq = (match.group(1) or match.group(2) or "").strip()
+            if eq and len(eq) > 5:
+                content.equations.append(eq[:200])
+
+        # Claims: look for "we show", "prove", "demonstrate", "our results"
+        claim_patterns = [
+            r'(?:we show|we prove|we demonstrate|our results? show)[^.!?\n]{10,200}',
+            r'(?:the (?:model|method|algorithm) achieves?|performance reaches?)[^.!?\n]{10,200}',
+        ]
+        for pat in claim_patterns:
+            for match in re.finditer(pat, text_lower):
+                claim = match.group(0).strip()
+                if len(claim) > 20:
+                    content.claims.append(claim[:300])
+
+        # Hyperparameters: look for "learning rate", "batch size", etc.
+        hp_patterns = [
+            (r'learning\s*rate[:\s]+[\d.e\-]+', 'learning_rate'),
+            (r'batch\s*size[:\s]+\d+', 'batch_size'),
+            (r'epochs?[:\s]+\d+', 'epochs'),
+            (r'dropout[:\s]+[\d.]+', 'dropout'),
+            (r'hidden\s*layer[s]?[:\s]+\d+', 'hidden_size'),
+        ]
+        for pat, name in hp_patterns:
+            for match in re.finditer(pat, text_lower):
+                val = match.group(0).split(':')[-1].strip()
+                content.hyperparameters[name] = val
+
+        # Datasets: look for common dataset names
+        dataset_names = [
+            'imagenet', 'cifar-10', 'cifar-100', 'mnist', 'wikitext',
+            'glue', 'squad', 'arxiv', 'pubmed', 'openwebtext',
+            'pile', 'the pile', 'alpaca', 'dolly', 'hh-rlhf'
+        ]
+        text_lower_for_ds = text_lower[:20000]
+        for ds in dataset_names:
+            if ds in text_lower_for_ds:
+                content.datasets.append(ds)
+
+    except Exception:
+        pass
+
+
+def _minimal_content(arxiv_id: str) -> PaperContent:
+    """Return minimal PaperContent when full parsing fails."""
+    aid = re.sub(r'v\d+$', '', arxiv_id.strip())
+    return PaperContent(
+        arxiv_id=aid,
+        title=f"Paper {aid}",
+        authors=[],
+        abstract="",
+    )

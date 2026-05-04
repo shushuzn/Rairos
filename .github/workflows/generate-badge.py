@@ -1,1 +1,28 @@
-IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMw0KIiIiR2VuZXJhdGUgY292ZXJhZ2UgYmFkZ2UgU1ZHIGZyb20gY292ZXJhZ2UuanNvbi4iIiINCg0KaW1wb3J0IGpzb24NCmltcG9ydCBzeXMNCg0KdHJ5Og0KICAgIHdpdGggb3BlbigiY292ZXJhZ2UuanNvbiIpIGFzIGY6DQogICAgICAgIGRhdGEgPSBqc29uLmxvYWQoZikNCiAgICBwY3QgPSByb3VuZChkYXRhWyJ0b3RhbHMiXVsicGVyY2VudF9jb3ZlcmVkIl0sIDEpDQpleGNlcHQgKEZpbGVOb3RGb3VuZEVycm9yLCBLZXlFcnJvciwganNvbi5KU09ORGVjb2RlRXJyb3IpIGFzIGU6DQogICAgcHJpbnQoZiJFcnJvciByZWFkaW5nIGNvdmVyYWdlOiB7ZX0iLCBmaWxlPXN5cy5zdGRlcnIpDQogICAgc3lzLmV4aXQoMSkNCg0Kc3ZnID0gZiIiIjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTEwIiBoZWlnaHQ9IjIwIj4gICMgbm9xYTogRTUwMQ0KPGxpbmVhckdyYWRpZW50IGlkPSJiIiB4Mj0iMCIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2JiYiIgc3RvcC1vcGFjaXR5PSIuMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1vcGFjaXR5PSIuMSIvPjwvbGluZWFyR3JhZGllbnQ+DQo8bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxMDAlIj48c3RvcCBzdG9wLWNvbG9yPSIjNGMxIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNGMxIi8+PC9saW5lYXJHcmFkaWVudD4NCjxnIHJ5PSIzIj4NCjx0ZXh0IHg9IjUiIHk9IjE1IiBmaWxsPSIjZmZmIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9ImJvbGQiPmNvdmVyYWdlPC90ZXh0Pg0KPHRleHQgeD0iNjUiIHk9IjE1IiBmaWxsPSIjZmZmIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMSI+e3BjdH0lPC90ZXh0Pg0KPHJlY3Qgd2lkdGg9IjExMCIgaGVpZ2h0PSIyMCIgZmlsbD0idXJsKCNhKSIvPg0KPHJlY3Qgd2lkdGg9IjExMCIgaGVpZ2h0PSIyMCIgZmlsbD0idXJsKCNiKSIvPg0KPC9nPg0KPC9zdmc+IiIiDQoNCndpdGggb3BlbigiY292ZXJhZ2UtYmFkZ2Uuc3ZnIiwgInciKSBhcyBmOg0KICAgIGYud3JpdGUoc3ZnKQ0KDQpwcmludChmIkJhZGdlIGdlbmVyYXRlZDoge3BjdH0lIikNCg==
+#!/usr/bin/env python3
+"""Generate coverage badge SVG from coverage.json."""
+import json
+import sys
+
+try:
+    with open("coverage.json") as f:
+        data = json.load(f)
+    pct = round(data["totals"]["percent_covered"], 1)
+except (FileNotFoundError, KeyError, json.JSONDecodeError) as e:
+    print(f"Error reading coverage: {e}", file=sys.stderr)
+    sys.exit(1)
+
+svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="110" height="20">  # noqa: E501
+<linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient>
+<linearGradient id="a" x1="0" y1="0" x2="0" y2="100%"><stop stop-color="#4c1"/><stop offset="1" stop-color="#4c1"/></linearGradient>
+<g ry="3">
+<text x="5" y="15" fill="#fff" font-family="Verdana" font-size="11" font-weight="bold">coverage</text>
+<text x="65" y="15" fill="#fff" font-family="Verdana" font-size="11">{pct}%</text>
+<rect width="110" height="20" fill="url(#a)"/>
+<rect width="110" height="20" fill="url(#b)"/>
+</g>
+</svg>'''
+
+with open("coverage-badge.svg", "w") as f:
+    f.write(svg)
+
+print(f"Badge generated: {pct}%")

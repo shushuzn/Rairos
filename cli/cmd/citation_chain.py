@@ -1,1 +1,102 @@
-IiIiQ0xJIGNvbW1hbmQ6IGNpdGF0aW9uLWNoYWluIOKAlCBCdWlsZCBhbmQgdmlzdWFsaXplIGNpdGF0aW9uIGNoYWlucy4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBhcmdwYXJzZQoKZnJvbSBjbGkuX3NoYXJlZCBpbXBvcnQgZ2V0X2RiLCBwcmludF9pbmZvLCBwcmludF9lcnJvcgpmcm9tIGxsbS5jaXRhdGlvbl9jaGFpbiBpbXBvcnQgQ2l0YXRpb25DaGFpbkJ1aWxkZXIKCgpkZWYgX2J1aWxkX2NpdGF0aW9uX2NoYWluX3BhcnNlcihzdWJwYXJzZXJzKSAtPiBhcmdwYXJzZS5Bcmd1bWVudFBhcnNlcjoKICAgICIiIkJ1aWxkIHRoZSBjaXRhdGlvbi1jaGFpbiBzdWJjb21tYW5kIHBhcnNlci4iIiIKICAgIHAgPSBzdWJwYXJzZXJzLmFkZF9wYXJzZXIoCiAgICAgICAgImNpdGF0aW9uLWNoYWluIiwKICAgICAgICBoZWxwPSJCdWlsZCBjaXRhdGlvbiBjaGFpbnMiLAogICAgICAgIGRlc2NyaXB0aW9uPSJCdWlsZCBhbmQgdmlzdWFsaXplIGNpdGF0aW9uIHJlbGF0aW9uc2hpcHMuIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KCJwYXBlcl9pZCIsIG5hcmdzPSI/IiwgaGVscD0iU3RhcnRpbmcgcGFwZXIgSUQiKQogICAgcC5hZGRfYXJndW1lbnQoIi0tZGVwdGgiLCAiLWQiLCB0eXBlPWludCwgZGVmYXVsdD0yLCBoZWxwPSJDaGFpbiBkZXB0aCAoZGVmYXVsdDogMikiKQogICAgcC5hZGRfYXJndW1lbnQoIi0tZ3JhcGh2aXoiLCAiLWciLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSJPdXRwdXQgR3JhcGh2aXogRE9UIikKICAgIHAuYWRkX2FyZ3VtZW50KCItLW1lcm1haWQiLCAiLW0iLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSJPdXRwdXQgTWVybWFpZCBmbG93Y2hhcnQiKQogICAgcC5hZGRfYXJndW1lbnQoIi0taW5mbHVlbmNlcnMiLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSJTaG93IHBhcGVycyB0aGF0IGluZmx1ZW5jZWQgdGhpcyIpCiAgICBwLmFkZF9hcmd1bWVudCgiLS1pbXBhY3QiLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSJTaG93IHBhcGVycyBpbmZsdWVuY2VkIGJ5IHRoaXMiKQogICAgcC5hZGRfYXJndW1lbnQoIi0tcGF0aCIsIGhlbHA9IkZpbmQgcGF0aCB0byBhbm90aGVyIHBhcGVyIElEIikKICAgIHJldHVybiBwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKCmRlZiBfcnVuX2NpdGF0aW9uX2NoYWluKGFyZ3M6IGFyZ3BhcnNlLk5hbWVzcGFjZSkgLT4gaW50OgogICAgIiIiUnVuIGNpdGF0aW9uIGNoYWluIGNvbW1hbmQuIiIiCiAgICBkYiA9IGdldF9kYigpCiAgICBkYi5pbml0KCkKCiAgICBidWlsZGVyID0gQ2l0YXRpb25DaGFpbkJ1aWxkZXIoZGI9ZGIpCgogICAgaWYgYXJncy5pbmZsdWVuY2VycyBvciBhcmdzLmltcGFjdDoKICAgICAgICAjIEJ1aWxkIHNpbmdsZSBwYXBlciB2aWV3CiAgICAgICAgaWYgbm90IGFyZ3MucGFwZXJfaWQ6CiAgICAgICAgICAgIHByaW50X2Vycm9yKCJVc2FnZTogY2l0YXRpb24tY2hhaW4gPHBhcGVyX2lkPiAtLWluZmx1ZW5jZXJzfC0taW1wYWN0IikKICAgICAgICAgICAgcmV0dXJuIDEgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgICAgIHBhcGVyID0gZGIuZ2V0X3BhcGVyKGFyZ3MucGFwZXJfaWQpIGlmIGhhc2F0dHIoZGIsICJnZXRfcGFwZXIiKSBlbHNlIE5vbmUKICAgICAgICBpZiBub3QgcGFwZXI6CiAgICAgICAgICAgIHByaW50X2Vycm9yKGYiUGFwZXIgW3thcmdzLnBhcGVyX2lkfV0gbm90IGZvdW5kIikKICAgICAgICAgICAgcmV0dXJuIDEgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgICAgIGJ1aWxkZXIuYWRkX3BhcGVyKAogICAgICAgICAgICBwYXBlcl9pZD1hcmdzLnBhcGVyX2lkLAogICAgICAgICAgICB0aXRsZT1nZXRhdHRyKHBhcGVyLCAidGl0bGUiLCBhcmdzLnBhcGVyX2lkKSwKICAgICAgICAgICAgeWVhcj1nZXRhdHRyKHBhcGVyLCAieWVhciIsIDApIG9yIDAsCiAgICAgICAgKQoKICAgICAgICBpZiBhcmdzLmluZmx1ZW5jZXJzOgogICAgICAgICAgICBwcmludF9pbmZvKGYiRmluZGluZyBpbmZsdWVuY2VzIGZvcjoge2FyZ3MucGFwZXJfaWR9IikKICAgICAgICAgICAgaW5mbHVlbmNlcnMgPSBidWlsZGVyLmZpbmRfaW5mbHVlbmNlcnMoYXJncy5wYXBlcl9pZCwgZGVwdGg9YXJncy5kZXB0aCkKICAgICAgICAgICAgcHJpbnQoKQogICAgICAgICAgICBpZiBpbmZsdWVuY2VyczoKICAgICAgICAgICAgICAgIHByaW50KGYiRm91bmQge2xlbihpbmZsdWVuY2Vycyl9IGluZmx1ZW5jaW5nIHBhcGVyczoiKQogICAgICAgICAgICAgICAgZm9yIGksIHAgaW4gZW51bWVyYXRlKGluZmx1ZW5jZXJzWzoxMF0sIDEpOgogICAgICAgICAgICAgICAgICAgIHByaW50KGYiICB7aX0uIFt7cC5wYXBlcl9pZFs6OF19XSB7cC50aXRsZVs6NTBdfSIpCiAgICAgICAgICAgIGVsc2U6CiAgICAgICAgICAgICAgICBwcmludCgiTm8gaW5mbHVlbmNlcnMgZm91bmQuIikKCiAgICAgICAgaWYgYXJncy5pbXBhY3Q6CiAgICAgICAgICAgIHByaW50X2luZm8oZiJGaW5kaW5nIGltcGFjdCBmb3I6IHthcmdzLnBhcGVyX2lkfSIpCiAgICAgICAgICAgIGltcGFjdCA9IGJ1aWxkZXIuZmluZF9pbXBhY3QoYXJncy5wYXBlcl9pZCwgZGVwdGg9YXJncy5kZXB0aCkKICAgICAgICAgICAgcHJpbnQoKQogICAgICAgICAgICBpZiBpbXBhY3Q6CiAgICAgICAgICAgICAgICBwcmludChmIkZvdW5kIHtsZW4oaW1wYWN0KX0gaW5mbHVlbmNlZCBwYXBlcnM6IikKICAgICAgICAgICAgICAgIGZvciBpLCBwIGluIGVudW1lcmF0ZShpbXBhY3RbOjEwXSwgMSk6CiAgICAgICAgICAgICAgICAgICAgcHJpbnQoZiIgIHtpfS4gW3twLnBhcGVyX2lkWzo4XX1dIHtwLnRpdGxlWzo1MF19IikKICAgICAgICAgICAgZWxzZToKICAgICAgICAgICAgICAgIHByaW50KCJObyBpbXBhY3QgZm91bmQuIikKCiAgICAgICAgcmV0dXJuIDAKCiAgICBpZiBhcmdzLnBhcGVyX2lkOgogICAgICAgICMgQnVpbGQgY2hhaW4KICAgICAgICBwcmludF9pbmZvKGYiQnVpbGRpbmcgY2l0YXRpb24gY2hhaW4gZm9yOiB7YXJncy5wYXBlcl9pZH0iKQogICAgICAgIGNoYWluID0gYnVpbGRlci5idWlsZF9mcm9tX2RiKGFyZ3MucGFwZXJfaWQsIGRlcHRoPWFyZ3MuZGVwdGgpCgogICAgICAgIGlmIGFyZ3MuZ3JhcGh2aXo6CiAgICAgICAgICAgIHByaW50KGJ1aWxkZXIucmVuZGVyX2dyYXBodml6KGNoYWluKSkKICAgICAgICBlbGlmIGFyZ3MubWVybWFpZDoKICAgICAgICAgICAgcHJpbnQoYnVpbGRlci5yZW5kZXJfbWVybWFpZChjaGFpbikpCiAgICAgICAgZWxzZToKICAgICAgICAgICAgcHJpbnQoYnVpbGRlci5yZW5kZXJfdGV4dChjaGFpbikpCgogICAgICAgICMgUGF0aCBmaW5kaW5nCiAgICAgICAgaWYgYXJncy5wYXRoOgogICAgICAgICAgICBwYXRoID0gYnVpbGRlci5maW5kX3BhdGgoYXJncy5wYXBlcl9pZCwgYXJncy5wYXRoKQogICAgICAgICAgICBpZiBwYXRoOgogICAgICAgICAgICAgICAgcHJpbnQoKQogICAgICAgICAgICAgICAgcHJpbnQoIvCfk40gUGF0aCBmb3VuZDoiKQogICAgICAgICAgICAgICAgZm9yIGksIHAgaW4gZW51bWVyYXRlKHBhdGgsIDEpOiAgIyB0eXBlOiBpZ25vcmVbYXNzaWdubWVudF0KICAgICAgICAgICAgICAgICAgICBwcmludChmIiAge2l9LiB7cH0iKQogICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgcHJpbnQoKQogICAgICAgICAgICAgICAgcHJpbnQoIk5vIHBhdGggZm91bmQuIikKCiAgICAgICAgcmV0dXJuIDAKCiAgICBwcmludF9lcnJvcigiVXNhZ2U6IGNpdGF0aW9uLWNoYWluIDxwYXBlcl9pZD4gW29wdGlvbnNdIikKICAgIHJldHVybiAxCg==
+"""CLI command: citation-chain — Build and visualize citation chains."""
+from __future__ import annotations
+
+import argparse
+
+from cli._shared import get_db, print_info, print_error
+from llm.citation_chain import CitationChainBuilder
+
+
+def _build_citation_chain_parser(subparsers) -> argparse.ArgumentParser:
+    """Build the citation-chain subcommand parser."""
+    p = subparsers.add_parser(
+        "citation-chain",
+        help="Build citation chains",
+        description="Build and visualize citation relationships.",
+    )
+    p.add_argument("paper_id", nargs="?", help="Starting paper ID")
+    p.add_argument("--depth", "-d", type=int, default=2, help="Chain depth (default: 2)")
+    p.add_argument("--graphviz", "-g", action="store_true", help="Output Graphviz DOT")
+    p.add_argument("--mermaid", "-m", action="store_true", help="Output Mermaid flowchart")
+    p.add_argument("--influencers", action="store_true", help="Show papers that influenced this")
+    p.add_argument("--impact", action="store_true", help="Show papers influenced by this")
+    p.add_argument("--path", help="Find path to another paper ID")
+    return p  # type: ignore[no-any-return]
+
+
+def _run_citation_chain(args: argparse.Namespace) -> int:
+    """Run citation chain command."""
+    db = get_db()
+    db.init()
+
+    builder = CitationChainBuilder(db=db)
+
+    if args.influencers or args.impact:
+        # Build single paper view
+        if not args.paper_id:
+            print_error("Usage: citation-chain <paper_id> --influencers|--impact")
+            return 1  # type: ignore[no-any-return]
+
+        paper = db.get_paper(args.paper_id) if hasattr(db, 'get_paper') else None
+        if not paper:
+            print_error(f"Paper [{args.paper_id}] not found")
+            return 1  # type: ignore[no-any-return]
+
+        builder.add_paper(
+            paper_id=args.paper_id,
+            title=getattr(paper, 'title', args.paper_id),
+            year=getattr(paper, 'year', 0) or 0,
+        )
+
+        if args.influencers:
+            print_info(f"Finding influences for: {args.paper_id}")
+            influencers = builder.find_influencers(args.paper_id, depth=args.depth)
+            print()
+            if influencers:
+                print(f"Found {len(influencers)} influencing papers:")
+                for i, p in enumerate(influencers[:10], 1):
+                    print(f"  {i}. [{p.paper_id[:8]}] {p.title[:50]}")
+            else:
+                print("No influencers found.")
+
+        if args.impact:
+            print_info(f"Finding impact for: {args.paper_id}")
+            impact = builder.find_impact(args.paper_id, depth=args.depth)
+            print()
+            if impact:
+                print(f"Found {len(impact)} influenced papers:")
+                for i, p in enumerate(impact[:10], 1):
+                    print(f"  {i}. [{p.paper_id[:8]}] {p.title[:50]}")
+            else:
+                print("No impact found.")
+
+        return 0
+
+    if args.paper_id:
+        # Build chain
+        print_info(f"Building citation chain for: {args.paper_id}")
+        chain = builder.build_from_db(args.paper_id, depth=args.depth)
+
+        if args.graphviz:
+            print(builder.render_graphviz(chain))
+        elif args.mermaid:
+            print(builder.render_mermaid(chain))
+        else:
+            print(builder.render_text(chain))
+
+        # Path finding
+        if args.path:
+            path = builder.find_path(args.paper_id, args.path)
+            if path:
+                print()
+                print("📍 Path found:")
+                for i, p in enumerate(path, 1):  # type: ignore[assignment]
+                    print(f"  {i}. {p}")
+            else:
+                print()
+                print("No path found.")
+
+        return 0
+
+    print_error("Usage: citation-chain <paper_id> [options]")
+    return 1

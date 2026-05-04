@@ -1,1 +1,143 @@
-IiIiVGVzdHMgZm9yIHJlbmRlcmVycyBtb2R1bGUgZnVuY3Rpb25hbGl0eS4iIiIKCmZyb20gY29yZSBpbXBvcnQgUGFwZXIKCgpkZWYgdGVzdF9yZW5kZXJfcG5vdGVfYmFzaWMoKToKICAgICIiIlRlc3QgYmFzaWMgUC1ub3RlIHJlbmRlcmluZyBmdW5jdGlvbmFsaXR5LiIiIgogICAgZnJvbSByZW5kZXJlcnMucG5vdGUgaW1wb3J0IHJlbmRlcl9wbm90ZQoKICAgIHBhcGVyID0gUGFwZXIoCiAgICAgICAgc291cmNlPSJhcnhpdiIsCiAgICAgICAgdWlkPSIyMzAxLjAwMSIsCiAgICAgICAgdGl0bGU9IlRlc3QgUGFwZXIgVGl0bGUiLAogICAgICAgIGF1dGhvcnM9WyJBdXRob3IgMSIsICJBdXRob3IgMiJdLAogICAgICAgIGFic3RyYWN0PSJUaGlzIGlzIGEgdGVzdCBhYnN0cmFjdC4iLAogICAgICAgIHB1Ymxpc2hlZD0iMjAyMy0wMS0wMSIsCiAgICAgICAgdXBkYXRlZD0iMjAyMy0wMS0wMiIsCiAgICAgICAgYWJzX3VybD0iaHR0cHM6Ly9hcnhpdi5vcmcvYWJzLzIzMDEuMDAxIiwKICAgICAgICBwZGZfdXJsPSJodHRwczovL2FyeGl2Lm9yZy9wZGYvMjMwMS4wMDEucGRmIiwKICAgICAgICBwcmltYXJ5X2NhdGVnb3J5PSJjcy5BSSIsCiAgICApCgogICAgcmVzdWx0ID0gcmVuZGVyX3Bub3RlKAogICAgICAgIHA9cGFwZXIsCiAgICAgICAgdGFncz1bIkxMTSIsICJBZ2VudCJdLAogICAgICAgIGV4dHJhY3RlZF9zZWN0aW9uc19tZD0iIyBJbnRyb2R1Y3Rpb25cblRlc3QgY29udGVudCIsCiAgICApCgogICAgIyBDaGVjayB0aGF0IGtleSBlbGVtZW50cyBhcmUgcHJlc2VudAogICAgYXNzZXJ0ICJ0eXBlOiBwYXBlciIgaW4gcmVzdWx0CiAgICBhc3NlcnQgIlRlc3QgUGFwZXIgVGl0bGUiIGluIHJlc3VsdAogICAgYXNzZXJ0ICJBUlhJVjogMjMwMS4wMDEiIGluIHJlc3VsdCAgIyBOb3RlOiBzb3VyY2UgaXMgdXBwZXJjYXNlZCBpbiByZW5kZXIKICAgIGFzc2VydCAiQXV0aG9yIDEsIEF1dGhvciAyIiBpbiByZXN1bHQKCgpkZWYgdGVzdF9yZW5kZXJfcG5vdGVfd2l0aF90YWdzKCk6CiAgICAiIiJUZXN0IFAtbm90ZSByZW5kZXJpbmcgd2l0aCB0YWdzLiIiIgogICAgZnJvbSByZW5kZXJlcnMucG5vdGUgaW1wb3J0IHJlbmRlcl9wbm90ZQoKICAgIHBhcGVyID0gUGFwZXIoCiAgICAgICAgc291cmNlPSJkb2kiLAogICAgICAgIHVpZD0iMTAuMTIzNC90ZXN0IiwKICAgICAgICB0aXRsZT0iRE9JIFBhcGVyIiwKICAgICAgICBhdXRob3JzPVsiQXV0aG9yIl0sCiAgICAgICAgYWJzdHJhY3Q9IkFic3RyYWN0IiwKICAgICAgICBwdWJsaXNoZWQ9IjIwMjMtMDYtMTUiLAogICAgICAgIHVwZGF0ZWQ9IjIwMjMtMDYtMTUiLAogICAgICAgIGFic191cmw9Imh0dHBzOi8vZG9pLm9yZy8xMC4xMjM0L3Rlc3QiLAogICAgICAgIHBkZl91cmw9IiIsCiAgICApCgogICAgdGFncyA9IFsiUkFHIiwgIkV2YWx1YXRpb24iLCAiU2FmZXR5Il0KICAgIHJlc3VsdCA9IHJlbmRlcl9wbm90ZSgKICAgICAgICBwPXBhcGVyLAogICAgICAgIHRhZ3M9dGFncywKICAgICAgICBleHRyYWN0ZWRfc2VjdGlvbnNfbWQ9IiIsCiAgICApCgogICAgYXNzZXJ0ICJ0YWdzOiBbUkFHLCBFdmFsdWF0aW9uLCBTYWZldHldIiBpbiByZXN1bHQKCgpkZWYgdGVzdF9yZW5kZXJfcG5vdGVfZW1wdHlfYXV0aG9ycygpOgogICAgIiIiVGVzdCBQLW5vdGUgcmVuZGVyaW5nIHdpdGggZW1wdHkgYXV0aG9ycy4iIiIKICAgIGZyb20gcmVuZGVyZXJzLnBub3RlIGltcG9ydCByZW5kZXJfcG5vdGUKCiAgICBwYXBlciA9IFBhcGVyKAogICAgICAgIHNvdXJjZT0iYXJ4aXYiLAogICAgICAgIHVpZD0iMjMwMS4wMDEiLAogICAgICAgIHRpdGxlPSJBbm9ueW1vdXMgUGFwZXIiLAogICAgICAgIGF1dGhvcnM9W10sCiAgICAgICAgYWJzdHJhY3Q9IkFic3RyYWN0IiwKICAgICAgICBwdWJsaXNoZWQ9IjIwMjMtMDEtMDEiLAogICAgICAgIHVwZGF0ZWQ9IjIwMjMtMDEtMDEiLAogICAgICAgIGFic191cmw9Imh0dHBzOi8vYXJ4aXYub3JnL2Ficy8yMzAxLjAwMSIsCiAgICAgICAgcGRmX3VybD0iIiwKICAgICkKCiAgICByZXN1bHQgPSByZW5kZXJfcG5vdGUoCiAgICAgICAgcD1wYXBlciwKICAgICAgICB0YWdzPVtdLAogICAgICAgIGV4dHJhY3RlZF9zZWN0aW9uc19tZD0iIiwKICAgICkKCiAgICBhc3NlcnQgIlVua25vd24iIGluIHJlc3VsdAogICAgYXNzZXJ0ICJBbm9ueW1vdXMgUGFwZXIiIGluIHJlc3VsdAoKCmRlZiB0ZXN0X3JlbmRlcl9wbm90ZV93aXRoX2FpX2RyYWZ0KCk6CiAgICAiIiJUZXN0IFAtbm90ZSByZW5kZXJpbmcgd2l0aCBBSSBkcmFmdC4iIiIKICAgIGZyb20gcmVuZGVyZXJzLnBub3RlIGltcG9ydCByZW5kZXJfcG5vdGUKCiAgICBwYXBlciA9IFBhcGVyKAogICAgICAgIHNvdXJjZT0iYXJ4aXYiLAogICAgICAgIHVpZD0iMjMwMS4wMDEiLAogICAgICAgIHRpdGxlPSJBSSBEcmFmdCBQYXBlciIsCiAgICAgICAgYXV0aG9ycz1bIkF1dGhvciJdLAogICAgICAgIGFic3RyYWN0PSJBYnN0cmFjdCIsCiAgICAgICAgcHVibGlzaGVkPSIyMDIzLTAxLTAxIiwKICAgICAgICB1cGRhdGVkPSIyMDIzLTAxLTAxIiwKICAgICAgICBhYnNfdXJsPSJodHRwczovL2FyeGl2Lm9yZy9hYnMvMjMwMS4wMDEiLAogICAgICAgIHBkZl91cmw9IiIsCiAgICApCgogICAgYWlfZHJhZnQgPSAiIyMgQUkgRHJhZnRcblRoaXMgaXMgdGhlIEFJIGdlbmVyYXRlZCBkcmFmdC4iCiAgICByZXN1bHQgPSByZW5kZXJfcG5vdGUoCiAgICAgICAgcD1wYXBlciwKICAgICAgICB0YWdzPVsiVGVzdCJdLAogICAgICAgIGV4dHJhY3RlZF9zZWN0aW9uc19tZD0iIiwKICAgICAgICBhaV9kcmFmdF9tZD1haV9kcmFmdCwKICAgICkKCiAgICBhc3NlcnQgImFpX2dlbmVyYXRlZDogdHJ1ZSIgaW4gcmVzdWx0IG9yICJydWJyaWM6IGRyYWZ0LWFpIiBpbiByZXN1bHQKICAgIGFzc2VydCAiQUkgRHJhZnQiIGluIHJlc3VsdAoKCmRlZiB0ZXN0X3JlbmRlcl9wbm90ZV9mcm9udG1hdHRlcl9mb3JtYXQoKToKICAgICIiIlRlc3QgUC1ub3RlIGZyb250bWF0dGVyIGZvcm1hdC4iIiIKICAgIGZyb20gcmVuZGVyZXJzLnBub3RlIGltcG9ydCByZW5kZXJfcG5vdGUKCiAgICBwYXBlciA9IFBhcGVyKAogICAgICAgIHNvdXJjZT0iYXJ4aXYiLAogICAgICAgIHVpZD0iMjMwMS4wMDEiLAogICAgICAgIHRpdGxlPSJGcm9udG1hdHRlciBUZXN0IiwKICAgICAgICBhdXRob3JzPVsiQXV0aG9yIl0sCiAgICAgICAgYWJzdHJhY3Q9IkFic3RyYWN0IiwKICAgICAgICBwdWJsaXNoZWQ9IjIwMjMtMDEtMDEiLAogICAgICAgIHVwZGF0ZWQ9IjIwMjMtMDEtMDEiLAogICAgICAgIGFic191cmw9Imh0dHBzOi8vYXJ4aXYub3JnL2Ficy8yMzAxLjAwMSIsCiAgICAgICAgcGRmX3VybD0iIiwKICAgICkKCiAgICByZXN1bHQgPSByZW5kZXJfcG5vdGUoCiAgICAgICAgcD1wYXBlciwKICAgICAgICB0YWdzPVsiVGFnMSJdLAogICAgICAgIGV4dHJhY3RlZF9zZWN0aW9uc19tZD0iIiwKICAgICkKCiAgICAjIENoZWNrIGZyb250bWF0dGVyIGZvcm1hdAogICAgYXNzZXJ0ICItLS0iIGluIHJlc3VsdAogICAgYXNzZXJ0ICJ0eXBlOiBwYXBlciIgaW4gcmVzdWx0CiAgICBhc3NlcnQgInN0YXR1czogZHJhZnQiIGluIHJlc3VsdAogICAgYXNzZXJ0ICJkYXRlOiIgaW4gcmVzdWx0CiAgICBhc3NlcnQgInRhZ3M6IiBpbiByZXN1bHQK
+"""Tests for renderers module functionality."""
+
+from core import Paper
+
+
+def test_render_pnote_basic():
+    """Test basic P-note rendering functionality."""
+    from renderers.pnote import render_pnote
+
+    paper = Paper(
+        source="arxiv",
+        uid="2301.001",
+        title="Test Paper Title",
+        authors=["Author 1", "Author 2"],
+        abstract="This is a test abstract.",
+        published="2023-01-01",
+        updated="2023-01-02",
+        abs_url="https://arxiv.org/abs/2301.001",
+        pdf_url="https://arxiv.org/pdf/2301.001.pdf",
+        primary_category="cs.AI",
+    )
+
+    result = render_pnote(
+        p=paper,
+        tags=["LLM", "Agent"],
+        extracted_sections_md="# Introduction\nTest content",
+    )
+
+    # Check that key elements are present
+    assert "type: paper" in result
+    assert "Test Paper Title" in result
+    assert "ARXIV: 2301.001" in result  # Note: source is uppercased in render
+    assert "Author 1, Author 2" in result
+
+
+def test_render_pnote_with_tags():
+    """Test P-note rendering with tags."""
+    from renderers.pnote import render_pnote
+
+    paper = Paper(
+        source="doi",
+        uid="10.1234/test",
+        title="DOI Paper",
+        authors=["Author"],
+        abstract="Abstract",
+        published="2023-06-15",
+        updated="2023-06-15",
+        abs_url="https://doi.org/10.1234/test",
+        pdf_url="",
+    )
+
+    tags = ["RAG", "Evaluation", "Safety"]
+    result = render_pnote(
+        p=paper,
+        tags=tags,
+        extracted_sections_md="",
+    )
+
+    assert "tags: [RAG, Evaluation, Safety]" in result
+
+
+def test_render_pnote_empty_authors():
+    """Test P-note rendering with empty authors."""
+    from renderers.pnote import render_pnote
+
+    paper = Paper(
+        source="arxiv",
+        uid="2301.001",
+        title="Anonymous Paper",
+        authors=[],
+        abstract="Abstract",
+        published="2023-01-01",
+        updated="2023-01-01",
+        abs_url="https://arxiv.org/abs/2301.001",
+        pdf_url="",
+    )
+
+    result = render_pnote(
+        p=paper,
+        tags=[],
+        extracted_sections_md="",
+    )
+
+    assert "Unknown" in result
+    assert "Anonymous Paper" in result
+
+
+def test_render_pnote_with_ai_draft():
+    """Test P-note rendering with AI draft."""
+    from renderers.pnote import render_pnote
+
+    paper = Paper(
+        source="arxiv",
+        uid="2301.001",
+        title="AI Draft Paper",
+        authors=["Author"],
+        abstract="Abstract",
+        published="2023-01-01",
+        updated="2023-01-01",
+        abs_url="https://arxiv.org/abs/2301.001",
+        pdf_url="",
+    )
+
+    ai_draft = "## AI Draft\nThis is the AI generated draft."
+    result = render_pnote(
+        p=paper,
+        tags=["Test"],
+        extracted_sections_md="",
+        ai_draft_md=ai_draft,
+    )
+
+    assert "ai_generated: true" in result or "rubric: draft-ai" in result
+    assert "AI Draft" in result
+
+
+def test_render_pnote_frontmatter_format():
+    """Test P-note frontmatter format."""
+    from renderers.pnote import render_pnote
+
+    paper = Paper(
+        source="arxiv",
+        uid="2301.001",
+        title="Frontmatter Test",
+        authors=["Author"],
+        abstract="Abstract",
+        published="2023-01-01",
+        updated="2023-01-01",
+        abs_url="https://arxiv.org/abs/2301.001",
+        pdf_url="",
+    )
+
+    result = render_pnote(
+        p=paper,
+        tags=["Tag1"],
+        extracted_sections_md="",
+    )
+
+    # Check frontmatter format
+    assert "---" in result
+    assert "type: paper" in result
+    assert "status: draft" in result
+    assert "date:" in result
+    assert "tags:" in result

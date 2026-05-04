@@ -1,1 +1,146 @@
-IiIiR2VuZSBQb29sIEJhY2t1cCBTY2hlZHVsZXIg4oCUIGRhaWx5IHNuYXBzaG90cyB3aXRoIDMwLXZlcnNpb24gcmV0ZW50aW9uLgoKQmFja3MgdXA6CiAgLSBnZW5lX3Bvb2wuanNvbmwgKEV2b2x1dGlvblRyYWNrZXIgcmF3IGdlbmVzKQogIC0gY2Fwc3VsZXMuanNvbiAoY2Fwc3VsZSBtZXRhZGF0YSkKIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQganNvbgppbXBvcnQgc2h1dGlsCmZyb20gZGF0ZXRpbWUgaW1wb3J0IGRhdGV0aW1lCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgTGlzdCwgT3B0aW9uYWwKCkJBQ0tVUF9ESVIgPSBQYXRoLmhvbWUoKSAvICIuYWlfcmVzZWFyY2hfb3MiIC8gImJhY2t1cHMiCkdQX0RJUiA9IFBhdGguaG9tZSgpIC8gIi5haV9yZXNlYXJjaF9vcyIgLyAiZ2VuZV9wb29sIgpNQVhfQkFDS1VQUyA9IDMwClRJTUVTVEFNUF9GT1JNQVQgPSAiJVklbSVkIgoKCmRlZiBfYmFja3VwX25hbWUoc3RhbXA6IHN0cikgLT4gc3RyOgogICAgcmV0dXJuIGYiZ2VuZV9wb29sX3tzdGFtcH0udGFyLmd6IgoKCmRlZiBfbGlzdF9iYWNrdXBzKCkgLT4gTGlzdFtzdHJdOgogICAgaWYgbm90IEJBQ0tVUF9ESVIuZXhpc3RzKCk6CiAgICAgICAgcmV0dXJuIFtdCiAgICBuYW1lcyA9IFtwLnN0ZW0ucmVwbGFjZSgiZ2VuZV9wb29sXyIsICIiKSBmb3IgcCBpbiBCQUNLVVBfRElSLmdsb2IoImdlbmVfcG9vbF8qLnRhci5neiIpXQogICAgbmFtZXMuc29ydChyZXZlcnNlPVRydWUpCiAgICByZXR1cm4gbmFtZXMKCgpkZWYgY3JlYXRlX2JhY2t1cCgpIC0+IHN0cjoKICAgICIiIkNyZWF0ZSBhIHRpbWVzdGFtcGVkIGJhY2t1cCBvZiBib3RoIEdlbmUgUG9vbCBzdG9yZXMuIiIiCiAgICBCQUNLVVBfRElSLm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgIHN0YW1wID0gZGF0ZXRpbWUubm93KCkuc3RyZnRpbWUoVElNRVNUQU1QX0ZPUk1BVCkKCiAgICBpbXBvcnQgdGFyZmlsZQogICAgaW1wb3J0IHRlbXBmaWxlCiAgICBpbXBvcnQgb3MKCiAgICB3aXRoIHRlbXBmaWxlLlRlbXBvcmFyeURpcmVjdG9yeSgpIGFzIHRtcGRpcjoKICAgICAgICB0YXJfcGF0aCA9IG9zLnBhdGguam9pbih0bXBkaXIsIGYiZ2VuZV9wb29sX3tzdGFtcH0udGFyLmd6IikKICAgICAgICB3aXRoIHRhcmZpbGUub3Blbih0YXJfcGF0aCwgInc6Z3oiKSBhcyB0YXI6CiAgICAgICAgICAgIGZvciBmbmFtZSBpbiBbImdlbmVfcG9vbC5qc29ubCIsICJjYXBzdWxlcy5qc29uIl06CiAgICAgICAgICAgICAgICBzcmMgPSBHUF9ESVIgLyBmbmFtZQogICAgICAgICAgICAgICAgaWYgc3JjLmV4aXN0cygpOgogICAgICAgICAgICAgICAgICAgIHRhci5hZGQoc3JjLCBhcmNuYW1lPWZuYW1lKQogICAgICAgIHNodXRpbC5jb3B5Mih0YXJfcGF0aCwgQkFDS1VQX0RJUiAvIGYiZ2VuZV9wb29sX3tzdGFtcH0udGFyLmd6IikKCiAgICBfcHJ1bmVfb2xkKCkKICAgIHJldHVybiBzdGFtcAoKCmRlZiBfcHJ1bmVfb2xkKCkgLT4gTm9uZToKICAgICIiIlJlbW92ZSBiYWNrdXBzIGJleW9uZCBNQVhfQkFDS1VQUywga2VlcGluZyBuZXdlc3QuIiIiCiAgICBiYWNrdXBzID0gX2xpc3RfYmFja3VwcygpCiAgICBmb3Igb2xkIGluIGJhY2t1cHNbTUFYX0JBQ0tVUFM6XToKICAgICAgICBmb3IgcCBpbiBCQUNLVVBfRElSLmdsb2IoZiJnZW5lX3Bvb2xfe29sZH0udGFyLmd6Iik6CiAgICAgICAgICAgIHAudW5saW5rKCkKCgpkZWYgcmVzdG9yZV9iYWNrdXAoc3RhbXA6IHN0cikgLT4gYm9vbDoKICAgICIiIlJlc3RvcmUgR2VuZSBQb29sIGZyb20gYSBzcGVjaWZpYyBiYWNrdXAgc3RhbXAuIiIiCiAgICBpbXBvcnQgdGFyZmlsZQoKICAgIGJhY2t1cF9maWxlID0gQkFDS1VQX0RJUiAvIGYiZ2VuZV9wb29sX3tzdGFtcH0udGFyLmd6IgogICAgaWYgbm90IGJhY2t1cF9maWxlLmV4aXN0cygpOgogICAgICAgIHJldHVybiBGYWxzZQoKICAgIGltcG9ydCB0ZW1wZmlsZQogICAgaW1wb3J0IG9zCgogICAgd2l0aCB0ZW1wZmlsZS5UZW1wb3JhcnlEaXJlY3RvcnkoKSBhcyB0bXBkaXI6CiAgICAgICAgd2l0aCB0YXJmaWxlLm9wZW4oYmFja3VwX2ZpbGUsICJyOmd6IikgYXMgdGFyOgogICAgICAgICAgICB0YXIuZXh0cmFjdGFsbCh0bXBkaXIpCiAgICAgICAgZm9yIGZuYW1lIGluIFsiZ2VuZV9wb29sLmpzb25sIiwgImNhcHN1bGVzLmpzb24iXToKICAgICAgICAgICAgc3JjID0gUGF0aCh0bXBkaXIpIC8gZm5hbWUKICAgICAgICAgICAgaWYgc3JjLmV4aXN0cygpOgogICAgICAgICAgICAgICAgc2h1dGlsLmNvcHkyKHNyYywgR1BfRElSIC8gZm5hbWUpCiAgICByZXR1cm4gVHJ1ZQoKCmRlZiBnZXRfYmFja3VwX2luZm8oKSAtPiBkaWN0OgogICAgIiIiUmV0dXJuIGluZm8gYWJvdXQgYXZhaWxhYmxlIGJhY2t1cHMuIiIiCiAgICBiYWNrdXBzID0gX2xpc3RfYmFja3VwcygpCiAgICB0b3RhbF9zaXplID0gc3VtKAogICAgICAgIChCQUNLVVBfRElSIC8gZiJnZW5lX3Bvb2xfe2J9LnRhci5neiIpLnN0YXQoKS5zdF9zaXplCiAgICAgICAgZm9yIGIgaW4gYmFja3VwcwogICAgICAgIGlmIChCQUNLVVBfRElSIC8gZiJnZW5lX3Bvb2xfe2J9LnRhci5neiIpLmV4aXN0cygpCiAgICApCiAgICByZXR1cm4gewogICAgICAgICJhdmFpbGFibGUiOiBsZW4oYmFja3VwcyksCiAgICAgICAgInN0YW1wcyI6IGJhY2t1cHNbOjEwXSwKICAgICAgICAidG90YWxfc2l6ZV9tYiI6IHJvdW5kKHRvdGFsX3NpemUgLyAxMDI0IC8gMTAyNCwgMiksCiAgICAgICAgIm1heF9iYWNrdXBzIjogTUFYX0JBQ0tVUFMsCiAgICB9CgoKZGVmIHJlbmRlcl9iYWNrdXBfaHRtbChpbmZvOiBPcHRpb25hbFtkaWN0XSA9IE5vbmUpIC0+IHN0cjoKICAgIGlmIGluZm8gaXMgTm9uZToKICAgICAgICBpbmZvID0gZ2V0X2JhY2t1cF9pbmZvKCkKCiAgICBsaW5lcyA9IFsnPGRpdiBjbGFzcz0iYmFja3VwLXBhbmVsIj4nXQogICAgbGluZXMuYXBwZW5kKCI8aDM+8J+SviBHZW5lIFBvb2wgQmFja3VwPC9oMz4iKQogICAgbGluZXMuYXBwZW5kKAogICAgICAgIGYiPHAgc3R5bGU9J2ZvbnQtc2l6ZToxM3B4O2NvbG9yOiNBODlFOEM7bWFyZ2luLWJvdHRvbToxNnB4Jz4iCiAgICAgICAgZiI8Yj57aW5mb1snYXZhaWxhYmxlJ119PC9iPiBiYWNrdXBzIMK3ICIKICAgICAgICBmIntpbmZvWyd0b3RhbF9zaXplX21iJ119TUIgdG90YWwgwrcgIgogICAgICAgIGYibWF4IHtpbmZvWydtYXhfYmFja3VwcyddfSB2ZXJzaW9ucyByZXRhaW5lZDwvcD4iCiAgICApCgogICAgbGluZXMuYXBwZW5kKCI8ZGl2IHN0eWxlPSdtYXJnaW4tYm90dG9tOjE2cHgnPiIpCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIjxidXR0b24gb25jbGljaz0ndHJpZ2dlckJhY2t1cCgpJyBzdHlsZT0nYmFja2dyb3VuZDojNkI4RkI1O2NvbG9yOndoaXRlO2JvcmRlcjpub25lOyIKICAgICAgICAiYm9yZGVyLXJhZGl1czo0cHg7cGFkZGluZzo4cHggMTZweDtjdXJzb3I6cG9pbnRlcjtmb250LXNpemU6MTNweCc+IgogICAgICAgICLimIHvuI8gVGFrZSBCYWNrdXAgTm93PC9idXR0b24+IgogICAgKQogICAgbGluZXMuYXBwZW5kKCI8L2Rpdj4iKQoKICAgIGlmIGluZm9bInN0YW1wcyJdOgogICAgICAgIGxpbmVzLmFwcGVuZCgiPHRhYmxlIHN0eWxlPSd3aWR0aDoxMDAlO2JvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtmb250LXNpemU6MTNweCc+IikKICAgICAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgICAgICI8dHIgc3R5bGU9J2JvcmRlci1ib3R0b206MXB4IHNvbGlkICNlMGRiZDQnPjx0aCBzdHlsZT0ndGV4dC1hbGlnbjpsZWZ0O3BhZGRpbmc6NnB4IDhweCc+RGF0ZTwvdGg+IgogICAgICAgICAgICAiPHRoIHN0eWxlPSd0ZXh0LWFsaWduOnJpZ2h0O3BhZGRpbmc6NnB4IDhweCc+QWN0aW9uPC90aD48L3RyPiIKICAgICAgICApCiAgICAgICAgZm9yIHN0YW1wIGluIGluZm9bInN0YW1wcyJdOgogICAgICAgICAgICB5ciwgbW8sIGRheSA9IHN0YW1wWzo0XSwgc3RhbXBbNDo2XSwgc3RhbXBbNjo4XQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgICAgICAgICBmIjx0ciBzdHlsZT0nYm9yZGVyLWJvdHRvbToxcHggc29saWQgI2YwZWJlNSc+IgogICAgICAgICAgICAgICAgZiI8dGQgc3R5bGU9J3BhZGRpbmc6NnB4IDhweCc+e3lyfS17bW99LXtkYXl9PC90ZD4iCiAgICAgICAgICAgICAgICBmIjx0ZCBzdHlsZT0ndGV4dC1hbGlnbjpyaWdodDtwYWRkaW5nOjZweCA4cHgnPiIKICAgICAgICAgICAgICAgIGYiPGJ1dHRvbiBvbmNsaWNrPSdyZXN0b3JlQmFja3VwKFwie3N0YW1wfVwiKScgc3R5bGU9J2ZvbnQtc2l6ZToxMXB4O3BhZGRpbmc6MnB4IDhweDsiCiAgICAgICAgICAgICAgICBmImN1cnNvcjpwb2ludGVyO2JhY2tncm91bmQ6dHJhbnNwYXJlbnQ7Ym9yZGVyOjFweCBzb2xpZCAjY2NjO2JvcmRlci1yYWRpdXM6M3B4Jz5SZXN0b3JlPC9idXR0b24+IgogICAgICAgICAgICAgICAgZiI8L3RkPjwvdHI+IgogICAgICAgICAgICApCiAgICAgICAgbGluZXMuYXBwZW5kKCI8L3RhYmxlPiIpCiAgICBlbHNlOgogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgIjxwIHN0eWxlPSdjb2xvcjojQTg5RThDO2ZvbnQtc2l6ZToxM3B4Jz5ObyBiYWNrdXBzIHlldC4gQ2xpY2sgJ1Rha2UgQmFja3VwIE5vdycgdG8gY3JlYXRlIHlvdXIgZmlyc3Qgc25hcHNob3QuPC9wPiIKICAgICAgICApCgogICAgbGluZXMuYXBwZW5kKCIiIgo8c2NyaXB0PgpmdW5jdGlvbiB0cmlnZ2VyQmFja3VwKCkgewogICAgZmV0Y2goJy9nZW5lLXBvb2wvYmFja3VwL2NyZWF0ZScsIHttZXRob2Q6J1BPU1QnfSkKICAgICAgLnRoZW4ociA9PiByLmpzb24oKSkKICAgICAgLnRoZW4oZCA9PiB7IGFsZXJ0KCdCYWNrdXAgY3JlYXRlZDogJyArIGQuc3RhbXApOyBsb2NhdGlvbi5yZWxvYWQoKTsgfSk7Cn0KZnVuY3Rpb24gcmVzdG9yZUJhY2t1cChzdGFtcCkgewogICAgaWYgKCFjb25maXJtKCdSZXN0b3JlIGJhY2t1cCBmcm9tICcgKyBzdGFtcCArICc/IEN1cnJlbnQgR2VuZSBQb29sIHdpbGwgYmUgb3ZlcndyaXR0ZW4uJykpIHJldHVybjsKICAgIGZldGNoKCcvZ2VuZS1wb29sL2JhY2t1cC9yZXN0b3JlLycgKyBzdGFtcCwge21ldGhvZDonUE9TVCd9KQogICAgICAudGhlbihyID0+IHIuanNvbigpKQogICAgICAudGhlbihkID0+IHsgYWxlcnQoZC5tZXNzYWdlKTsgbG9jYXRpb24ucmVsb2FkKCk7IH0pOwp9Cjwvc2NyaXB0PiIiIikKCiAgICBsaW5lcy5hcHBlbmQoIjxzdHlsZT4uYmFja3VwLXBhbmVsIHsgZm9udC1mYW1pbHk6IEdlb3JnaWEsIHNlcmlmOyB9PC9zdHlsZT4iKQogICAgbGluZXMuYXBwZW5kKCI8L2Rpdj4iKQogICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykK
+"""Gene Pool Backup Scheduler — daily snapshots with 30-version retention.
+
+Backs up:
+  - gene_pool.jsonl (EvolutionTracker raw genes)
+  - capsules.json (capsule metadata)
+"""
+
+from __future__ import annotations
+
+import json
+import shutil
+from datetime import datetime
+from pathlib import Path
+from typing import List, Optional
+
+BACKUP_DIR = Path.home() / ".ai_research_os" / "backups"
+GP_DIR = Path.home() / ".ai_research_os" / "gene_pool"
+MAX_BACKUPS = 30
+TIMESTAMP_FORMAT = "%Y%m%d"
+
+
+def _backup_name(stamp: str) -> str:
+    return f"gene_pool_{stamp}.tar.gz"
+
+
+def _list_backups() -> List[str]:
+    if not BACKUP_DIR.exists():
+        return []
+    names = [p.stem.replace("gene_pool_", "") for p in BACKUP_DIR.glob("gene_pool_*.tar.gz")]
+    names.sort(reverse=True)
+    return names
+
+
+def create_backup() -> str:
+    """Create a timestamped backup of both Gene Pool stores."""
+    BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now().strftime(TIMESTAMP_FORMAT)
+
+    import tarfile
+    import tempfile
+    import os
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tar_path = os.path.join(tmpdir, f"gene_pool_{stamp}.tar.gz")
+        with tarfile.open(tar_path, "w:gz") as tar:
+            for fname in ["gene_pool.jsonl", "capsules.json"]:
+                src = GP_DIR / fname
+                if src.exists():
+                    tar.add(src, arcname=fname)
+        shutil.copy2(tar_path, BACKUP_DIR / f"gene_pool_{stamp}.tar.gz")
+
+    _prune_old()
+    return stamp
+
+
+def _prune_old() -> None:
+    """Remove backups beyond MAX_BACKUPS, keeping newest."""
+    backups = _list_backups()
+    for old in backups[MAX_BACKUPS:]:
+        for p in BACKUP_DIR.glob(f"gene_pool_{old}.tar.gz"):
+            p.unlink()
+
+
+def restore_backup(stamp: str) -> bool:
+    """Restore Gene Pool from a specific backup stamp."""
+    import tarfile
+
+    backup_file = BACKUP_DIR / f"gene_pool_{stamp}.tar.gz"
+    if not backup_file.exists():
+        return False
+
+    import tempfile
+    import os
+    with tempfile.TemporaryDirectory() as tmpdir:
+        with tarfile.open(backup_file, "r:gz") as tar:
+            tar.extractall(tmpdir)
+        for fname in ["gene_pool.jsonl", "capsules.json"]:
+            src = Path(tmpdir) / fname
+            if src.exists():
+                shutil.copy2(src, GP_DIR / fname)
+    return True
+
+
+def get_backup_info() -> dict:
+    """Return info about available backups."""
+    backups = _list_backups()
+    total_size = sum((BACKUP_DIR / f"gene_pool_{b}.tar.gz").stat().st_size for b in backups if (BACKUP_DIR / f"gene_pool_{b}.tar.gz").exists())
+    return {
+        "available": len(backups),
+        "stamps": backups[:10],
+        "total_size_mb": round(total_size / 1024 / 1024, 2),
+        "max_backups": MAX_BACKUPS,
+    }
+
+
+def render_backup_html(info: Optional[dict] = None) -> str:
+    if info is None:
+        info = get_backup_info()
+
+    lines = ['<div class="backup-panel">']
+    lines.append("<h3>💾 Gene Pool Backup</h3>")
+    lines.append(f"<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
+                 f"<b>{info['available']}</b> backups · "
+                 f"{info['total_size_mb']}MB total · "
+                 f"max {info['max_backups']} versions retained</p>")
+
+    lines.append("<div style='margin-bottom:16px'>")
+    lines.append("<button onclick='triggerBackup()' style='background:#6B8FB5;color:white;border:none;"
+                "border-radius:4px;padding:8px 16px;cursor:pointer;font-size:13px'>"
+                "☁️ Take Backup Now</button>")
+    lines.append("</div>")
+
+    if info["stamps"]:
+        lines.append("<table style='width:100%;border-collapse:collapse;font-size:13px'>")
+        lines.append("<tr style='border-bottom:1px solid #e0dbd4'><th style='text-align:left;padding:6px 8px'>Date</th>"
+                    "<th style='text-align:right;padding:6px 8px'>Action</th></tr>")
+        for stamp in info["stamps"]:
+            yr, mo, day = stamp[:4], stamp[4:6], stamp[6:8]
+            lines.append(f"<tr style='border-bottom:1px solid #f0ebe5'>"
+                        f"<td style='padding:6px 8px'>{yr}-{mo}-{day}</td>"
+                        f"<td style='text-align:right;padding:6px 8px'>"
+                        f"<button onclick='restoreBackup(\"{stamp}\")' style='font-size:11px;padding:2px 8px;"
+                        f"cursor:pointer;background:transparent;border:1px solid #ccc;border-radius:3px'>Restore</button>"
+                        f"</td></tr>")
+        lines.append("</table>")
+    else:
+        lines.append("<p style='color:#A89E8C;font-size:13px'>No backups yet. Click 'Take Backup Now' to create your first snapshot.</p>")
+
+    lines.append("""
+<script>
+function triggerBackup() {
+    fetch('/gene-pool/backup/create', {method:'POST'})
+      .then(r => r.json())
+      .then(d => { alert('Backup created: ' + d.stamp); location.reload(); });
+}
+function restoreBackup(stamp) {
+    if (!confirm('Restore backup from ' + stamp + '? Current Gene Pool will be overwritten.')) return;
+    fetch('/gene-pool/backup/restore/' + stamp, {method:'POST'})
+      .then(r => r.json())
+      .then(d => { alert(d.message); location.reload(); });
+}
+</script>""")
+
+    lines.append("<style>.backup-panel { font-family: Georgia, serif; }</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

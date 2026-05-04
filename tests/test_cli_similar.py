@@ -1,1 +1,153 @@
-IiIiVW5pdCB0ZXN0cyBmb3Igc2ltaWxhciBDTEkgc3ViY29tbWFuZCDigJQgc2VtYW50aWMgc2ltaWxhcml0eSBzZWFyY2guIiIiCgpmcm9tIHVuaXR0ZXN0Lm1vY2sgaW1wb3J0IHBhdGNoCgoKY2xhc3MgRmFrZUFyZ3M6CiAgICBkZWYgX19pbml0X18oc2VsZiwgKiprd2FyZ3MpOgogICAgICAgIGZvciBrLCB2IGluIGt3YXJncy5pdGVtcygpOgogICAgICAgICAgICBzZXRhdHRyKHNlbGYsIGssIHYpCgoKY2xhc3MgRmFrZVBhcGVyOgogICAgZGVmIF9faW5pdF9fKHNlbGYsIGlkPSIyMzAxLjAwMDAxIiwgdGl0bGU9IlRlc3QgUGFwZXIiLCBhYnN0cmFjdD0iIik6CiAgICAgICAgc2VsZi5pZCA9IGlkCiAgICAgICAgc2VsZi50aXRsZSA9IHRpdGxlCiAgICAgICAgc2VsZi5hYnN0cmFjdCA9IGFic3RyYWN0CgoKY2xhc3MgRmFrZURCOgogICAgZGVmIF9faW5pdF9fKHNlbGYsIHBhcGVycz1Ob25lKToKICAgICAgICBzZWxmLnBhcGVycyA9IHBhcGVycyBvciB7fQogICAgICAgIHNlbGYuaW5pdF9jYWxsZWQgPSBGYWxzZQoKICAgIGRlZiBpbml0KHNlbGYpOgogICAgICAgIHNlbGYuaW5pdF9jYWxsZWQgPSBUcnVlCgogICAgZGVmIHBhcGVyX2V4aXN0cyhzZWxmLCBwaWQpOgogICAgICAgIHJldHVybiBwaWQgaW4gc2VsZi5wYXBlcnMKCiAgICBkZWYgZ2V0X3BhcGVyKHNlbGYsIHBpZCk6CiAgICAgICAgcmV0dXJuIHNlbGYucGFwZXJzLmdldChwaWQpCgogICAgZGVmIGZpbmRfc2ltaWxhcihzZWxmLCBwYXBlcl9pZCwgdGhyZXNob2xkPTAuODUsIGxpbWl0PTIwKToKICAgICAgICByZXR1cm4gW10KCgojIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAojIFBhcnNlciB0ZXN0cwojIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmNsYXNzIFRlc3RTaW1pbGFyUGFyc2VyOgogICAgZGVmIHRlc3RfcGFyc2VyX2hlbHBfdGV4dChzZWxmLCBtb25rZXlwYXRjaCk6CiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05IT01FIiwgIkM6L1VzZXJzL2FkbS9BcHBEYXRhL0xvY2FsL1Byb2dyYW1zL1B5dGhvbi9QeXRob24zMTIiKQogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OUEFUSCIsICIiKQogICAgICAgIGZyb20gY2xpLmNtZC5zaW1pbGFyIGltcG9ydCBfYnVpbGRfc2ltaWxhcl9wYXJzZXIKICAgICAgICBpbXBvcnQgYXJncGFyc2UKCiAgICAgICAgcCA9IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyKCkKICAgICAgICBzdWIgPSBwLmFkZF9zdWJwYXJzZXJzKCkKICAgICAgICBfYnVpbGRfc2ltaWxhcl9wYXJzZXIoc3ViKQogICAgICAgIGFzc2VydCBUcnVlICAjIHNtb2tlCgogICAgZGVmIHRlc3RfcGFyc2VyX2FjY2VwdHNfdGhyZXNob2xkX2FuZF9saW1pdChzZWxmLCBtb25rZXlwYXRjaCk6CiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05IT01FIiwgIkM6L1VzZXJzL2FkbS9BcHBEYXRhL0xvY2FsL1Byb2dyYW1zL1B5dGhvbi9QeXRob24zMTIiKQogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OUEFUSCIsICIiKQogICAgICAgIGZyb20gY2xpLmNtZC5zaW1pbGFyIGltcG9ydCBfYnVpbGRfc2ltaWxhcl9wYXJzZXIKICAgICAgICBpbXBvcnQgYXJncGFyc2UKCiAgICAgICAgcCA9IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyKCkKICAgICAgICBzdWIgPSBwLmFkZF9zdWJwYXJzZXJzKCkKICAgICAgICBfYnVpbGRfc2ltaWxhcl9wYXJzZXIoc3ViKQogICAgICAgIGFzc2VydCBUcnVlICAjIHNtb2tlCgoKIyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKIyBfcnVuX3NpbWlsYXJfdGV4dCB1bml0IHRlc3RzCiMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgoKY2xhc3MgVGVzdFJ1blNpbWlsYXJUZXh0OgogICAgZGVmIHRlc3Rfbm9fcGFwZXJfaWRfcHJpbnRzX3N0YXRzKHNlbGYsIG1vbmtleXBhdGNoLCBjYXBzeXMpOgogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OSE9NRSIsICJDOi9Vc2Vycy9hZG0vQXBwRGF0YS9Mb2NhbC9Qcm9ncmFtcy9QeXRob24vUHl0aG9uMzEyIikKICAgICAgICBtb25rZXlwYXRjaC5zZXRlbnYoIlBZVEhPTlBBVEgiLCAiIikKICAgICAgICBmcm9tIGNsaS5jbWQuc2ltaWxhciBpbXBvcnQgX3J1bl9zaW1pbGFyX3RleHQKCiAgICAgICAgY2xhc3MgRmFrZURCV2l0aFN0YXRzKEZha2VEQik6CiAgICAgICAgICAgIGRlZiBnZXRfZW1iZWRkaW5nX3N0YXRzKHNlbGYpOgogICAgICAgICAgICAgICAgcmV0dXJuIHsidG90YWxfd2l0aF90ZXh0IjogMTAsICJ3aXRoX2VtYmVkZGluZyI6IDd9CgogICAgICAgIGFyZ3MgPSBGYWtlQXJncygKICAgICAgICAgICAgcGFwZXJfaWQ9IiIsCiAgICAgICAgICAgIHRocmVzaG9sZD0wLjg1LAogICAgICAgICAgICBsaW1pdD0yMCwKICAgICAgICAgICAgZm9ybWF0PSJ0ZXh0IiwKICAgICAgICApCiAgICAgICAgd2l0aCBwYXRjaCgiY2xpLmNtZC5zaW1pbGFyLmdldF9kYiIpIGFzIG1vY2tfZ2V0X2RiOgogICAgICAgICAgICBtb2NrX2dldF9kYi5yZXR1cm5fdmFsdWUgPSBGYWtlREJXaXRoU3RhdHMoKQogICAgICAgICAgICByYyA9IF9ydW5fc2ltaWxhcl90ZXh0KGFyZ3MpCiAgICAgICAgICAgIGFzc2VydCByYyA9PSAxICAjIHJlcXVpcmVzIHBhcGVyX2lkCgogICAgZGVmIHRlc3RfcGFwZXJfbm90X2ZvdW5kX3JldHVybnNfZXJyb3Ioc2VsZiwgbW9ua2V5cGF0Y2gsIGNhcHN5cyk6CiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05IT01FIiwgIkM6L1VzZXJzL2FkbS9BcHBEYXRhL0xvY2FsL1Byb2dyYW1zL1B5dGhvbi9QeXRob24zMTIiKQogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OUEFUSCIsICIiKQogICAgICAgIGZyb20gY2xpLmNtZC5zaW1pbGFyIGltcG9ydCBfcnVuX3NpbWlsYXJfdGV4dAoKICAgICAgICBhcmdzID0gRmFrZUFyZ3MoCiAgICAgICAgICAgIHBhcGVyX2lkPSJub25leGlzdGVudC4wMDAwMSIsCiAgICAgICAgICAgIHRocmVzaG9sZD0wLjg1LAogICAgICAgICAgICBsaW1pdD0yMCwKICAgICAgICAgICAgZm9ybWF0PSJ0ZXh0IiwKICAgICAgICApCiAgICAgICAgd2l0aCBwYXRjaCgiY2xpLmNtZC5zaW1pbGFyLmdldF9kYiIpIGFzIG1vY2tfZ2V0X2RiOgogICAgICAgICAgICBtb2NrX2dldF9kYi5yZXR1cm5fdmFsdWUgPSBGYWtlREIoKQogICAgICAgICAgICByYyA9IF9ydW5fc2ltaWxhcl90ZXh0KGFyZ3MpCiAgICAgICAgICAgIGFzc2VydCByYyA9PSAxCgogICAgZGVmIHRlc3RfcGFwZXJfZm91bmRfd2l0aF9zaW1zX2NzdihzZWxmLCBtb25rZXlwYXRjaCwgY2Fwc3lzKToKICAgICAgICBtb25rZXlwYXRjaC5zZXRlbnYoIlBZVEhPTkhPTUUiLCAiQzovVXNlcnMvYWRtL0FwcERhdGEvTG9jYWwvUHJvZ3JhbXMvUHl0aG9uL1B5dGhvbjMxMiIpCiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05QQVRIIiwgIiIpCiAgICAgICAgZnJvbSBjbGkuY21kLnNpbWlsYXIgaW1wb3J0IF9ydW5fc2ltaWxhcl90ZXh0CgogICAgICAgIGNsYXNzIEZha2VEQldpdGhTaW0oRmFrZURCKToKICAgICAgICAgICAgZGVmIF9faW5pdF9fKHNlbGYpOgogICAgICAgICAgICAgICAgc3VwZXIoKS5fX2luaXRfXygpCiAgICAgICAgICAgICAgICBzZWxmLnBhcGVycyA9IHsiMjMwMS4wMDAwMSI6IEZha2VQYXBlcigpfQoKICAgICAgICAgICAgZGVmIGZpbmRfc2ltaWxhcihzZWxmLCBwYXBlcl9pZCwgdGhyZXNob2xkPTAuODUsIGxpbWl0PTIwKToKICAgICAgICAgICAgICAgIHNpbV9wYXBlciA9IEZha2VQYXBlcihpZD0iMjMwMS4wMDAwMiIsIHRpdGxlPSJSZWxhdGVkIFBhcGVyIikKICAgICAgICAgICAgICAgIHJldHVybiBbKHNpbV9wYXBlciwgMC45MSldCgogICAgICAgIGFyZ3MgPSBGYWtlQXJncygKICAgICAgICAgICAgcGFwZXJfaWQ9IjIzMDEuMDAwMDEiLAogICAgICAgICAgICB0aHJlc2hvbGQ9MC44NSwKICAgICAgICAgICAgbGltaXQ9MjAsCiAgICAgICAgICAgIGZvcm1hdD0iY3N2IiwKICAgICAgICApCiAgICAgICAgd2l0aCBwYXRjaCgiY2xpLmNtZC5zaW1pbGFyLmdldF9kYiIpIGFzIG1vY2tfZ2V0X2RiOgogICAgICAgICAgICBtb2NrX2dldF9kYi5yZXR1cm5fdmFsdWUgPSBGYWtlREJXaXRoU2ltKCkKICAgICAgICAgICAgcmMgPSBfcnVuX3NpbWlsYXJfdGV4dChhcmdzKQogICAgICAgICAgICBhc3NlcnQgcmMgPT0gMAoKCiMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiMgX3J1bl9zaW1pbGFyX3ZpZXcgdW5pdCB0ZXN0cwojIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmNsYXNzIFRlc3RSdW5TaW1pbGFyVmlldzoKICAgIGRlZiB0ZXN0X3ZpZXdfcGFwZXJfbm90X2ZvdW5kX3JldHVybnNfZXJyb3Ioc2VsZiwgbW9ua2V5cGF0Y2gsIGNhcHN5cyk6CiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05IT01FIiwgIkM6L1VzZXJzL2FkbS9BcHBEYXRhL0xvY2FsL1Byb2dyYW1zL1B5dGhvbi9QeXRob24zMTIiKQogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OUEFUSCIsICIiKQogICAgICAgIGZyb20gY2xpLmNtZC5zaW1pbGFyIGltcG9ydCBfcnVuX3NpbWlsYXJfdmlldwoKICAgICAgICBhcmdzID0gRmFrZUFyZ3MoCiAgICAgICAgICAgIHBhcGVyX2lkPSJub25leGlzdGVudC4wMDAwMSIsCiAgICAgICAgICAgIHNpbWlsYXJfc3ViY21kPSJ2aWV3IiwKICAgICAgICAgICAgdGhyZXNob2xkPTAuODUsCiAgICAgICAgKQogICAgICAgIHdpdGggcGF0Y2goImNsaS5jbWQuc2ltaWxhci5nZXRfZGIiKSBhcyBtb2NrX2dldF9kYjoKICAgICAgICAgICAgbW9ja19nZXRfZGIucmV0dXJuX3ZhbHVlID0gRmFrZURCKCkgICMgZW1wdHkKICAgICAgICAgICAgcmMgPSBfcnVuX3NpbWlsYXJfdmlldyhhcmdzKQogICAgICAgICAgICBhc3NlcnQgcmMgPT0gMSAgIyBwYXBlciBub3QgZm91bmQK
+"""Unit tests for similar CLI subcommand — semantic similarity search."""
+
+from unittest.mock import patch
+
+
+class FakeArgs:
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+
+class FakePaper:
+    def __init__(self, id="2301.00001", title="Test Paper", abstract=""):
+        self.id = id
+        self.title = title
+        self.abstract = abstract
+
+
+class FakeDB:
+    def __init__(self, papers=None):
+        self.papers = papers or {}
+        self.init_called = False
+
+    def init(self):
+        self.init_called = True
+
+    def paper_exists(self, pid):
+        return pid in self.papers
+
+    def get_paper(self, pid):
+        return self.papers.get(pid)
+
+    def find_similar(self, paper_id, threshold=0.85, limit=20):
+        return []
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Parser tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestSimilarParser:
+    def test_parser_help_text(self, monkeypatch):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.similar import _build_similar_parser
+        import argparse
+
+        p = argparse.ArgumentParser()
+        sub = p.add_subparsers()
+        _build_similar_parser(sub)
+        assert True  # smoke
+
+    def test_parser_accepts_threshold_and_limit(self, monkeypatch):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.similar import _build_similar_parser
+        import argparse
+
+        p = argparse.ArgumentParser()
+        sub = p.add_subparsers()
+        _build_similar_parser(sub)
+        assert True  # smoke
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_similar_text unit tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestRunSimilarText:
+    def test_no_paper_id_prints_stats(self, monkeypatch, capsys):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.similar import _run_similar_text
+
+        class FakeDBWithStats(FakeDB):
+            def get_embedding_stats(self):
+                return {"total_with_text": 10, "with_embedding": 7}
+
+        args = FakeArgs(
+            paper_id="",
+            threshold=0.85,
+            limit=20,
+            format="text",
+        )
+        with patch("cli.cmd.similar.get_db") as mock_get_db:
+            mock_get_db.return_value = FakeDBWithStats()
+            rc = _run_similar_text(args)
+            assert rc == 1  # requires paper_id
+
+    def test_paper_not_found_returns_error(self, monkeypatch, capsys):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.similar import _run_similar_text
+
+        args = FakeArgs(
+            paper_id="nonexistent.00001",
+            threshold=0.85,
+            limit=20,
+            format="text",
+        )
+        with patch("cli.cmd.similar.get_db") as mock_get_db:
+            mock_get_db.return_value = FakeDB()
+            rc = _run_similar_text(args)
+            assert rc == 1
+
+    def test_paper_found_with_sims_csv(self, monkeypatch, capsys):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.similar import _run_similar_text
+
+        class FakeDBWithSim(FakeDB):
+            def __init__(self):
+                super().__init__()
+                self.papers = {"2301.00001": FakePaper()}
+
+            def find_similar(self, paper_id, threshold=0.85, limit=20):
+                sim_paper = FakePaper(id="2301.00002", title="Related Paper")
+                return [(sim_paper, 0.91)]
+
+        args = FakeArgs(
+            paper_id="2301.00001",
+            threshold=0.85,
+            limit=20,
+            format="csv",
+        )
+        with patch("cli.cmd.similar.get_db") as mock_get_db:
+            mock_get_db.return_value = FakeDBWithSim()
+            rc = _run_similar_text(args)
+            assert rc == 0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_similar_view unit tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestRunSimilarView:
+    def test_view_paper_not_found_returns_error(self, monkeypatch, capsys):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.similar import _run_similar_view
+
+        args = FakeArgs(
+            paper_id="nonexistent.00001",
+            similar_subcmd="view",
+            threshold=0.85,
+        )
+        with patch("cli.cmd.similar.get_db") as mock_get_db:
+            mock_get_db.return_value = FakeDB()  # empty
+            rc = _run_similar_view(args)
+            assert rc == 1  # paper not found

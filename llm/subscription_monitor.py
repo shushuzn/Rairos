@@ -1,1 +1,181 @@
-IiIiU3Vic2NyaXB0aW9uIG1vbml0b3I6IENoZWNrcyBhclhpdiBmb3IgbmV3IHBhcGVycyBtYXRjaGluZyBzdWJzY3JpcHRpb25zLiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGpzb24KaW1wb3J0IGxvZ2dpbmcKaW1wb3J0IHhtbC5ldHJlZS5FbGVtZW50VHJlZSBhcyBFVApmcm9tIHR5cGluZyBpbXBvcnQgRGljdCwgTGlzdCwgQW55LCBPcHRpb25hbAoKZnJvbSBsbG0uc3Vic2NyaXB0aW9uX3Njb3JlciBpbXBvcnQgU3Vic2NyaXB0aW9uU2NvcmVyCgpsb2dnZXIgPSBsb2dnaW5nLmdldExvZ2dlcihfX25hbWVfXykKCgpjbGFzcyBTdWJzY3JpcHRpb25Nb25pdG9yOgogICAgIiIiTW9uaXRvcnMgYXJYaXYgZm9yIHBhcGVycyBtYXRjaGluZyBzdWJzY3JpcHRpb25zLgoKICAgIFVzZXMgdGhlIGFyWGl2IEFQSSB0byBzZWFyY2ggZm9yIHBhcGVycyBzaW5jZSB0aGUgbGFzdCBjaGVjawogICAgYW5kIHNjb3JlcyB0aGVtIGFnYWluc3QgdGhlIHN1YnNjcmlwdGlvbiBjcml0ZXJpYS4KICAgICIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBkYiwgc2NvcmVyOiBPcHRpb25hbFtTdWJzY3JpcHRpb25TY29yZXJdID0gTm9uZSk6CiAgICAgICAgc2VsZi5kYiA9IGRiCiAgICAgICAgc2VsZi5zY29yZXIgPSBzY29yZXIgb3IgU3Vic2NyaXB0aW9uU2NvcmVyKGRiKQoKICAgIGRlZiBjaGVja19zdWJzY3JpcHRpb24oc2VsZiwgc3ViX2lkOiBzdHIpIC0+IExpc3RbRGljdFtzdHIsIEFueV1dOgogICAgICAgICIiIkNoZWNrIGEgc2luZ2xlIHN1YnNjcmlwdGlvbiBmb3IgbmV3IHBhcGVycy4KCiAgICAgICAgQXJnczoKICAgICAgICAgICAgc3ViX2lkOiBTdWJzY3JpcHRpb24gSUQgdG8gY2hlY2sKCiAgICAgICAgUmV0dXJuczoKICAgICAgICAgICAgTGlzdCBvZiBwYXBlciBkaWN0cyB0aGF0IHNjb3JlZCBhYm92ZSB0aGUgdGhyZXNob2xkCiAgICAgICAgIiIiCiAgICAgICAgc3ViID0gc2VsZi5kYi5nZXRfYXJ4aXZfc3Vic2NyaXB0aW9uKHN1Yl9pZCkKICAgICAgICBpZiBub3Qgc3ViOgogICAgICAgICAgICBsb2dnZXIud2FybmluZyhmIlN1YnNjcmlwdGlvbiB7c3ViX2lkfSBub3QgZm91bmQiKQogICAgICAgICAgICByZXR1cm4gW10KCiAgICAgICAgaWYgbm90IHN1Yi5nZXQoImVuYWJsZWQiLCBUcnVlKToKICAgICAgICAgICAgbG9nZ2VyLmluZm8oZiJTdWJzY3JpcHRpb24ge3N1Yl9pZH0gaXMgZGlzYWJsZWQsIHNraXBwaW5nIikKICAgICAgICAgICAgcmV0dXJuIFtdCgogICAgICAgICMgQnVpbGQgc2VhcmNoIHF1ZXJ5IGZyb20gdG9waWMgYW5kIGtleXdvcmRzCiAgICAgICAgdG9waWMgPSBzdWIuZ2V0KCJ0b3BpYyIsICIiKQogICAgICAgIGtleXdvcmRzID0gc3ViLmdldCgia2V5d29yZHMiLCBbXSkKICAgICAgICBpZiBpc2luc3RhbmNlKGtleXdvcmRzLCBzdHIpOgogICAgICAgICAgICBrZXl3b3JkcyA9IGpzb24ubG9hZHMoa2V5d29yZHMpIGlmIGtleXdvcmRzIGVsc2UgW10KICAgICAgICBrZXl3b3JkcyA9IGtleXdvcmRzIG9yIFtdCgogICAgICAgIHF1ZXJ5ID0gc2VsZi5fYnVpbGRfcXVlcnkodG9waWMsIGtleXdvcmRzKQogICAgICAgIG1heF9yZXN1bHRzID0gc3ViLmdldCgibWF4X3Jlc3VsdHMiLCAxMCkKCiAgICAgICAgIyBTZWFyY2ggYXJYaXYKICAgICAgICBwYXBlcnMgPSBzZWxmLl9zZWFyY2hfYXJ4aXYocXVlcnksIG1heF9yZXN1bHRzKQoKICAgICAgICBpZiBub3QgcGFwZXJzOgogICAgICAgICAgICByZXR1cm4gW10KCiAgICAgICAgIyBTY29yZSBwYXBlcnMKICAgICAgICBzY29yZWQgPSBzZWxmLnNjb3Jlci5iYXRjaF9zY29yZShwYXBlcnMsIHN1YikKCiAgICAgICAgIyBSZWNvcmQgcmVzdWx0cyBhbmQgdXBkYXRlIGxhc3QgY2hlY2sKICAgICAgICBuZXdfcGFwZXJzID0gW10KICAgICAgICBsYXN0X2NoZWNrX2lkID0gIiIKCiAgICAgICAgZm9yIHBhcGVyIGluIHNjb3JlZDoKICAgICAgICAgICAgYXJ4aXZfaWQgPSBwYXBlci5nZXQoImFyeGl2X2lkIiwgIiIpCiAgICAgICAgICAgIGxhc3RfY2hlY2tfaWQgPSBhcnhpdl9pZAoKICAgICAgICAgICAgIyBDaGVjayBpZiBhbHJlYWR5IHJlY29yZGVkCiAgICAgICAgICAgIGV4aXN0aW5nID0gc2VsZi5kYi5nZXRfc3Vic2NyaXB0aW9uX3BhcGVycyhzdWJfaWQsIGxpbWl0PTEpCiAgICAgICAgICAgIGFscmVhZHlfcmVjb3JkZWQgPSBhbnkocC5nZXQoImFyeGl2X2lkIikgPT0gYXJ4aXZfaWQgZm9yIHAgaW4gZXhpc3RpbmcpCgogICAgICAgICAgICBpZiBub3QgYWxyZWFkeV9yZWNvcmRlZDoKICAgICAgICAgICAgICAgIHNlbGYuZGIucmVjb3JkX3N1YnNjcmlwdGlvbl9wYXBlcigKICAgICAgICAgICAgICAgICAgICBzdWJfaWQ9c3ViX2lkLAogICAgICAgICAgICAgICAgICAgIGFyeGl2X2lkPWFyeGl2X2lkLAogICAgICAgICAgICAgICAgICAgIHRpdGxlPXBhcGVyLmdldCgidGl0bGUiLCAiIiksCiAgICAgICAgICAgICAgICAgICAgc2NvcmU9cGFwZXIuZ2V0KCJzY29yZSIsIDApLAogICAgICAgICAgICAgICAgICAgIGdhcF9jb3ZlcmFnZT1wYXBlci5nZXQoImdhcF9jb3ZlcmFnZSIsIDApLAogICAgICAgICAgICAgICAgICAgIHNlbWFudGljX3NpbT1wYXBlci5nZXQoInNlbWFudGljX3NpbSIsIDApLAogICAgICAgICAgICAgICAgICAgIHB1Ymxpc2hlZD1wYXBlci5nZXQoInB1Ymxpc2hlZCIsICIiKSwKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICAgIG5ld19wYXBlcnMuYXBwZW5kKHBhcGVyKQoKICAgICAgICAjIFVwZGF0ZSBsYXN0IGNoZWNrIHBvc2l0aW9uCiAgICAgICAgaWYgbGFzdF9jaGVja19pZDoKICAgICAgICAgICAgc2VsZi5kYi51cGRhdGVfc3Vic2NyaXB0aW9uX2xhc3RfY2hlY2soc3ViX2lkLCBsYXN0X2NoZWNrX2lkKQoKICAgICAgICBsb2dnZXIuaW5mbygKICAgICAgICAgICAgZiJDaGVja2VkIHN1YnNjcmlwdGlvbiBbe3N1Yl9pZH1dICd7dG9waWN9JzogIgogICAgICAgICAgICBmIntsZW4ocGFwZXJzKX0gZm91bmQsIHtsZW4obmV3X3BhcGVycyl9IG5ldyBhYm92ZSB0aHJlc2hvbGQiCiAgICAgICAgKQoKICAgICAgICByZXR1cm4gbmV3X3BhcGVycwoKICAgIGRlZiBjaGVja19hbGwoc2VsZikgLT4gRGljdFtzdHIsIExpc3RbRGljdFtzdHIsIEFueV1dXToKICAgICAgICAiIiJDaGVjayBhbGwgZW5hYmxlZCBzdWJzY3JpcHRpb25zLgoKICAgICAgICBSZXR1cm5zOgogICAgICAgICAgICBEaWN0IG1hcHBpbmcgc3Vic2NyaXB0aW9uIElEIHRvIGxpc3Qgb2YgbmV3IHBhcGVycwogICAgICAgICIiIgogICAgICAgIHN1YnMgPSBzZWxmLmRiLmxpc3RfYXJ4aXZfc3Vic2NyaXB0aW9ucygpCiAgICAgICAgcmVzdWx0cyA9IHt9CgogICAgICAgIGZvciBzdWIgaW4gc3ViczoKICAgICAgICAgICAgaWYgc3ViLmdldCgiZW5hYmxlZCIsIFRydWUpOgogICAgICAgICAgICAgICAgc3ViX2lkID0gc3ViLmdldCgiaWQiLCAiIikKICAgICAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgICAgICBwYXBlcnMgPSBzZWxmLmNoZWNrX3N1YnNjcmlwdGlvbihzdWJfaWQpCiAgICAgICAgICAgICAgICAgICAgcmVzdWx0c1tzdWJfaWRdID0gcGFwZXJzCiAgICAgICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgICAgICAgICAgICAgbG9nZ2VyLmVycm9yKGYiRXJyb3IgY2hlY2tpbmcgc3Vic2NyaXB0aW9uIHtzdWJfaWR9OiB7ZX0iKQogICAgICAgICAgICAgICAgICAgIHJlc3VsdHNbc3ViX2lkXSA9IFtdCgogICAgICAgIHJldHVybiByZXN1bHRzCgogICAgZGVmIF9idWlsZF9xdWVyeShzZWxmLCB0b3BpYzogc3RyLCBrZXl3b3JkczogTGlzdFtzdHJdKSAtPiBzdHI6CiAgICAgICAgIiIiQnVpbGQgYXJYaXYgc2VhcmNoIHF1ZXJ5IGZyb20gdG9waWMgYW5kIGtleXdvcmRzLiIiIgogICAgICAgIHBhcnRzID0gW3RvcGljXQoKICAgICAgICAjIEFkZCBrZXl3b3JkcyBhcyBhZGRpdGlvbmFsIHNlYXJjaCB0ZXJtcwogICAgICAgIGZvciBrdyBpbiBrZXl3b3JkczoKICAgICAgICAgICAgaWYga3cgbm90IGluIHRvcGljLmxvd2VyKCk6CiAgICAgICAgICAgICAgICBwYXJ0cy5hcHBlbmQoa3cpCgogICAgICAgICMgSm9pbiB3aXRoIEFORCBmb3Igc3BlY2lmaWNpdHkKICAgICAgICBxdWVyeSA9ICIgQU5EICIuam9pbihmJyJ7cH0iJyBpZiAiICIgaW4gcCBlbHNlIHAgZm9yIHAgaW4gcGFydHMpCiAgICAgICAgcmV0dXJuIHF1ZXJ5CgogICAgZGVmIF9zZWFyY2hfYXJ4aXYoc2VsZiwgcXVlcnk6IHN0ciwgbWF4X3Jlc3VsdHM6IGludCkgLT4gTGlzdFtEaWN0W3N0ciwgQW55XV06CiAgICAgICAgcmV0dXJuIHNlYXJjaF9hcnhpdihxdWVyeSwgbWF4X3Jlc3VsdHMpCgoKIyBTdGFuZGFsb25lIHB1YmxpYyBmdW5jdGlvbiDigJQgcmV1c2UgaW4gZW1ib2RpZWRfcGxhbm5pbmdfc2VhcmNoCmRlZiBzZWFyY2hfYXJ4aXYocXVlcnk6IHN0ciwgbWF4X3Jlc3VsdHM6IGludCA9IDEwKSAtPiBMaXN0W0RpY3Rbc3RyLCBBbnldXToKICAgICIiIlNlYXJjaCBhclhpdiBBUEkgYW5kIHJldHVybiBwYXBlciBkaWN0cy4gUmV1c2VzIFN1YnNjcmlwdGlvbk1vbml0b3IgcGFyc2luZy4iIiIKICAgIGltcG9ydCB1cmxsaWIucGFyc2UKICAgIGltcG9ydCB1cmxsaWIucmVxdWVzdAoKICAgIGVuY29kZWRfcXVlcnkgPSB1cmxsaWIucGFyc2UucXVvdGVfcGx1cyhxdWVyeSkKICAgIHVybCA9ICgKICAgICAgICBmImh0dHBzOi8vZXhwb3J0LmFyeGl2Lm9yZy9hcGkvcXVlcnk/IgogICAgICAgIGYic2VhcmNoX3F1ZXJ5PWFsbDp7ZW5jb2RlZF9xdWVyeX0mIgogICAgICAgIGYic3RhcnQ9MCYiCiAgICAgICAgZiJtYXhfcmVzdWx0cz17bWF4X3Jlc3VsdHN9JiIKICAgICAgICBmInNvcnRCeT1zdWJtaXR0ZWREYXRlJiIKICAgICAgICBmInNvcnRPcmRlcj1kZXNjZW5kaW5nIgogICAgKQogICAgdHJ5OgogICAgICAgIHdpdGggdXJsbGliLnJlcXVlc3QudXJsb3Blbih1cmwsIHRpbWVvdXQ9MzApIGFzIHJlc3BvbnNlOgogICAgICAgICAgICBjb250ZW50ID0gcmVzcG9uc2UucmVhZCgpLmRlY29kZSgidXRmLTgiKQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgIGxvZ2dlci5lcnJvcihmImFyWGl2IHNlYXJjaCBmYWlsZWQ6IHtlfSIpCiAgICAgICAgcmV0dXJuIFtdCiAgICByZXR1cm4gX3BhcnNlX2F0b21fZmVlZF9zdGF0aWMoY29udGVudCkKCgpkZWYgX3BhcnNlX2F0b21fZmVlZF9zdGF0aWMoeG1sX2NvbnRlbnQ6IHN0cikgLT4gTGlzdFtEaWN0W3N0ciwgQW55XV06CiAgICAiIiJQYXJzZSBhclhpdiBBdG9tIGZlZWQgaW50byBwYXBlciBkaWN0cyAoc3RhdGljIHZlcnNpb24sIG5vIHNlbGYpLiIiIgogICAgcGFwZXJzID0gW10KICAgIHRyeToKICAgICAgICByb290ID0gRVQuZnJvbXN0cmluZyh4bWxfY29udGVudCkKICAgICAgICBucyA9IHsiYXRvbSI6ICJodHRwOi8vd3d3LnczLm9yZy8yMDA1L0F0b20ifQogICAgICAgIGZvciBlbnRyeSBpbiByb290LmZpbmRhbGwoImF0b206ZW50cnkiLCBucyk6CiAgICAgICAgICAgIGFyeGl2X2lkX2VsZW0gPSBlbnRyeS5maW5kKCJhdG9tOmlkIiwgbnMpCiAgICAgICAgICAgIGFyeGl2X2lkID0gIiIKICAgICAgICAgICAgaWYgYXJ4aXZfaWRfZWxlbSBpcyBub3QgTm9uZSBhbmQgYXJ4aXZfaWRfZWxlbS50ZXh0OgogICAgICAgICAgICAgICAgYXJ4aXZfaWQgPSBhcnhpdl9pZF9lbGVtLnRleHQuc3BsaXQoIi8iKVstMV0KICAgICAgICAgICAgdGl0bGVfZWxlbSA9IGVudHJ5LmZpbmQoImF0b206dGl0bGUiLCBucykKICAgICAgICAgICAgdGl0bGUgPSAoCiAgICAgICAgICAgICAgICB0aXRsZV9lbGVtLnRleHQuc3RyaXAoKS5yZXBsYWNlKCJcbiIsICIgIikKICAgICAgICAgICAgICAgIGlmIHRpdGxlX2VsZW0gaXMgbm90IE5vbmUgYW5kIHRpdGxlX2VsZW0udGV4dAogICAgICAgICAgICAgICAgZWxzZSAiIgogICAgICAgICAgICApCiAgICAgICAgICAgIHN1bW1hcnlfZWxlbSA9IGVudHJ5LmZpbmQoImF0b206c3VtbWFyeSIsIG5zKQogICAgICAgICAgICBhYnN0cmFjdCA9ICgKICAgICAgICAgICAgICAgIHN1bW1hcnlfZWxlbS50ZXh0LnN0cmlwKCkucmVwbGFjZSgiXG4iLCAiICIpCiAgICAgICAgICAgICAgICBpZiBzdW1tYXJ5X2VsZW0gaXMgbm90IE5vbmUgYW5kIHN1bW1hcnlfZWxlbS50ZXh0CiAgICAgICAgICAgICAgICBlbHNlICIiCiAgICAgICAgICAgICkKICAgICAgICAgICAgcHVibGlzaGVkX2VsZW0gPSBlbnRyeS5maW5kKCJhdG9tOnB1Ymxpc2hlZCIsIG5zKQogICAgICAgICAgICBwdWJsaXNoZWQgPSAoCiAgICAgICAgICAgICAgICBwdWJsaXNoZWRfZWxlbS50ZXh0WzoxMF0KICAgICAgICAgICAgICAgIGlmIHB1Ymxpc2hlZF9lbGVtIGlzIG5vdCBOb25lIGFuZCBwdWJsaXNoZWRfZWxlbS50ZXh0CiAgICAgICAgICAgICAgICBlbHNlICIiCiAgICAgICAgICAgICkKICAgICAgICAgICAgcGFwZXJzLmFwcGVuZCgKICAgICAgICAgICAgICAgIHsiYXJ4aXZfaWQiOiBhcnhpdl9pZCwgInRpdGxlIjogdGl0bGUsICJhYnN0cmFjdCI6IGFic3RyYWN0LCAicHVibGlzaGVkIjogcHVibGlzaGVkfQogICAgICAgICAgICApCiAgICBleGNlcHQgRVQuUGFyc2VFcnJvciBhcyBlOgogICAgICAgIGxvZ2dlci5lcnJvcihmIkZhaWxlZCB0byBwYXJzZSBhclhpdiBmZWVkOiB7ZX0iKQogICAgcmV0dXJuIHBhcGVycwo=
+"""Subscription monitor: Checks arXiv for new papers matching subscriptions."""
+from __future__ import annotations
+
+import json
+import logging
+import xml.etree.ElementTree as ET
+from typing import Dict, List, Any, Optional
+
+from llm.subscription_scorer import SubscriptionScorer
+
+logger = logging.getLogger(__name__)
+
+
+class SubscriptionMonitor:
+    """Monitors arXiv for papers matching subscriptions.
+
+    Uses the arXiv API to search for papers since the last check
+    and scores them against the subscription criteria.
+    """
+
+    def __init__(self, db, scorer: Optional[SubscriptionScorer] = None):
+        self.db = db
+        self.scorer = scorer or SubscriptionScorer(db)
+
+    def check_subscription(self, sub_id: str) -> List[Dict[str, Any]]:
+        """Check a single subscription for new papers.
+
+        Args:
+            sub_id: Subscription ID to check
+
+        Returns:
+            List of paper dicts that scored above the threshold
+        """
+        sub = self.db.get_arxiv_subscription(sub_id)
+        if not sub:
+            logger.warning(f"Subscription {sub_id} not found")
+            return []
+
+        if not sub.get("enabled", True):
+            logger.info(f"Subscription {sub_id} is disabled, skipping")
+            return []
+
+        # Build search query from topic and keywords
+        topic = sub.get("topic", "")
+        keywords = sub.get("keywords", [])
+        if isinstance(keywords, str):
+            keywords = json.loads(keywords) if keywords else []
+        keywords = keywords or []
+
+        query = self._build_query(topic, keywords)
+        max_results = sub.get("max_results", 10)
+
+        # Search arXiv
+        papers = self._search_arxiv(query, max_results)
+
+        if not papers:
+            return []
+
+        # Score papers
+        scored = self.scorer.batch_score(papers, sub)
+
+        # Record results and update last check
+        new_papers = []
+        last_check_id = ""
+
+        for paper in scored:
+            arxiv_id = paper.get("arxiv_id", "")
+            last_check_id = arxiv_id
+
+            # Check if already recorded
+            existing = self.db.get_subscription_papers(sub_id, limit=1)
+            already_recorded = any(
+                p.get("arxiv_id") == arxiv_id for p in existing
+            )
+
+            if not already_recorded:
+                self.db.record_subscription_paper(
+                    sub_id=sub_id,
+                    arxiv_id=arxiv_id,
+                    title=paper.get("title", ""),
+                    score=paper.get("score", 0),
+                    gap_coverage=paper.get("gap_coverage", 0),
+                    semantic_sim=paper.get("semantic_sim", 0),
+                    published=paper.get("published", ""),
+                )
+                new_papers.append(paper)
+
+        # Update last check position
+        if last_check_id:
+            self.db.update_subscription_last_check(sub_id, last_check_id)
+
+        logger.info(
+            f"Checked subscription [{sub_id}] '{topic}': "
+            f"{len(papers)} found, {len(new_papers)} new above threshold"
+        )
+
+        return new_papers
+
+    def check_all(self) -> Dict[str, List[Dict[str, Any]]]:
+        """Check all enabled subscriptions.
+
+        Returns:
+            Dict mapping subscription ID to list of new papers
+        """
+        subs = self.db.list_arxiv_subscriptions()
+        results = {}
+
+        for sub in subs:
+            if sub.get("enabled", True):
+                sub_id = sub.get("id", "")
+                try:
+                    papers = self.check_subscription(sub_id)
+                    results[sub_id] = papers
+                except Exception as e:
+                    logger.error(f"Error checking subscription {sub_id}: {e}")
+                    results[sub_id] = []
+
+        return results
+
+    def _build_query(self, topic: str, keywords: List[str]) -> str:
+        """Build arXiv search query from topic and keywords."""
+        parts = [topic]
+
+        # Add keywords as additional search terms
+        for kw in keywords:
+            if kw not in topic.lower():
+                parts.append(kw)
+
+        # Join with AND for specificity
+        query = " AND ".join(f'"{p}"' if " " in p else p for p in parts)
+        return query
+
+    def _search_arxiv(self, query: str, max_results: int) -> List[Dict[str, Any]]:
+        return search_arxiv(query, max_results)
+
+
+# Standalone public function — reuse in embodied_planning_search
+def search_arxiv(query: str, max_results: int = 10) -> List[Dict[str, Any]]:
+    """Search arXiv API and return paper dicts. Reuses SubscriptionMonitor parsing."""
+    import urllib.parse
+    import urllib.request
+
+    encoded_query = urllib.parse.quote_plus(query)
+    url = (
+        f"https://export.arxiv.org/api/query?"
+        f"search_query=all:{encoded_query}&"
+        f"start=0&"
+        f"max_results={max_results}&"
+        f"sortBy=submittedDate&"
+        f"sortOrder=descending"
+    )
+    try:
+        with urllib.request.urlopen(url, timeout=30) as response:
+            content = response.read().decode("utf-8")
+    except Exception as e:
+        logger.error(f"arXiv search failed: {e}")
+        return []
+    return _parse_atom_feed_static(content)
+
+
+def _parse_atom_feed_static(xml_content: str) -> List[Dict[str, Any]]:
+    """Parse arXiv Atom feed into paper dicts (static version, no self)."""
+    papers = []
+    try:
+        root = ET.fromstring(xml_content)
+        ns = {"atom": "http://www.w3.org/2005/Atom"}
+        for entry in root.findall("atom:entry", ns):
+            arxiv_id_elem = entry.find("atom:id", ns)
+            arxiv_id = ""
+            if arxiv_id_elem is not None and arxiv_id_elem.text:
+                arxiv_id = arxiv_id_elem.text.split("/")[-1]
+            title_elem = entry.find("atom:title", ns)
+            title = title_elem.text.strip().replace("\n", " ") if title_elem is not None and title_elem.text else ""
+            summary_elem = entry.find("atom:summary", ns)
+            abstract = summary_elem.text.strip().replace("\n", " ") if summary_elem is not None and summary_elem.text else ""
+            published_elem = entry.find("atom:published", ns)
+            published = published_elem.text[:10] if published_elem is not None and published_elem.text else ""
+            papers.append({"arxiv_id": arxiv_id, "title": title, "abstract": abstract, "published": published})
+    except ET.ParseError as e:
+        logger.error(f"Failed to parse arXiv feed: {e}")
+    return papers

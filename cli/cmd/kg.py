@@ -1,1 +1,282 @@
-IiIiQ0xJIGNvbW1hbmQ6IGtnLiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGFyZ3BhcnNlCmltcG9ydCBqc29uCmZyb20gdHlwaW5nIGltcG9ydCBBbnksIERpY3QsIE9wdGlvbmFsLCBjYXN0Cgpmcm9tIGNsaS53YXJwIGltcG9ydCBXYXJwQmxvY2tzCmZyb20ga2cgaW1wb3J0IEtHTWFuYWdlcgoKCmRlZiBfYnVpbGRfa2dfcGFyc2VyKHN1YnBhcnNlcnMpIC0+IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyOgogICAgcCA9IHN1YnBhcnNlcnMuYWRkX3BhcnNlcigKICAgICAgICAia2ciLAogICAgICAgIGhlbHA9Iktub3dsZWRnZSBncmFwaCDigJQgcXVlcnksIHZpc3VhbGl6ZSwgYW5kIG1hbmFnZSB0aGUgcmVzZWFyY2ggS0ciLAogICAgICAgIHByb2c9ImFpcm9zIGtnIiwKICAgICAgICBkZXNjcmlwdGlvbj0iUXVlcnksIHZpc3VhbGl6ZSwgYW5kIG1hbmFnZSB0aGUgcmVzZWFyY2gga25vd2xlZGdlIGdyYXBoLiIsCiAgICAgICAgZXBpbG9nPSIiIlwKRXhhbXBsZXM6CiAgJShwcm9nKXMgZ3JhcGggMjMwMS4wMDAwMSAtLWRlcHRoIDMgICAgICAjIGVnbyBncmFwaCB3aXRoIDMgaG9wcwogICUocHJvZylzIHBhdGggMjMwMS4wMDAwMSAyMzAxLjAwMDAyICAgICAjIHNob3J0ZXN0IHBhdGggYmV0d2VlbiBwYXBlcnMKICAlKHByb2cpcyBzZWFyY2ggLS10YWcgTExNICAgICAgICAgICAgICAgICMgZmluZCBhbGwgTExNLXJlbGF0ZWQgbm9kZXMKICAlKHByb2cpcyBzdGF0cyAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIEtHIHN0YXRpc3RpY3MKICAlKHByb2cpcyByZWJ1aWxkIC0taW5jcmVtZW50YWwgICAgICAgICAgICAjIHJlYnVpbGQgS0cgaW5jcmVtZW50YWxseSIiIiwKICAgICkKCiAgICBzdWIgPSBwLmFkZF9zdWJwYXJzZXJzKGRlc3Q9ImtnX2NtZCIsIGhlbHA9IktHIHN1YmNvbW1hbmRzIikKCiAgICAjIGtnIGdyYXBoCiAgICBncCA9IHN1Yi5hZGRfcGFyc2VyKCJncmFwaCIsIGhlbHA9IlNob3cgcGFwZXIncyBlZ28gZ3JhcGggKG5laWdoYm9ycyB1cCB0byBOIGhvcHMpIikKICAgIGdwLmFkZF9hcmd1bWVudCgicGFwZXJfaWQiLCBoZWxwPSJQYXBlciBVSUQiKQogICAgZ3AuYWRkX2FyZ3VtZW50KCItLWRlcHRoIiwgdHlwZT1pbnQsIGRlZmF1bHQ9MiwgaGVscD0iQkZTIGRlcHRoIChkZWZhdWx0IDIpIikKICAgIGdwLmFkZF9hcmd1bWVudCgiLS1mb3JtYXQiLCBjaG9pY2VzPVsidGV4dCIsICJqc29uIiwgIndhcnAiXSwgZGVmYXVsdD0idGV4dCIpCgogICAgIyBrZyBwYXRoCiAgICBwcCA9IHN1Yi5hZGRfcGFyc2VyKCJwYXRoIiwgaGVscD0iRmluZCBzaG9ydGVzdCBwYXRoIGJldHdlZW4gdHdvIG5vZGVzIikKICAgIHBwLmFkZF9hcmd1bWVudCgiaWRBIiwgaGVscD0iRmlyc3Qgbm9kZSBJRCBvciBwYXBlciBVSUQiKQogICAgcHAuYWRkX2FyZ3VtZW50KCJpZEIiLCBoZWxwPSJTZWNvbmQgbm9kZSBJRCBvciBwYXBlciBVSUQiKQoKICAgICMga2cgc3RhdHMKICAgIHNwID0gc3ViLmFkZF9wYXJzZXIoInN0YXRzIiwgaGVscD0iS0cgc3RhdGlzdGljcyAobm9kZXMvZWRnZXMgYnkgdHlwZSkiKQogICAgc3AuYWRkX2FyZ3VtZW50KCItLWZvcm1hdCIsIGNob2ljZXM9WyJ0ZXh0IiwgIndhcnAiXSwgZGVmYXVsdD0idGV4dCIpCgogICAgIyBrZyByZWJ1aWxkCiAgICBycCA9IHN1Yi5hZGRfcGFyc2VyKCJyZWJ1aWxkIiwgaGVscD0iUmVidWlsZCBLRyBmcm9tIHBhcGVycy5qc29uIikKICAgIHJwLmFkZF9hcmd1bWVudCgiLS1wYXBlcnMtanNvbiIsIGRlZmF1bHQ9IiIsIGhlbHA9IlBhdGggdG8gcGFwZXJzLmpzb24gKGRlZmF1bHQ6IGF1dG8tZGV0ZWN0KSIpCiAgICBycC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0taW5jcmVtZW50YWwiLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iT25seSBwcm9jZXNzIG5ldy9jaGFuZ2VkIHBhcGVycyBzaW5jZSBsYXN0IHJlYnVpbGQiLAogICAgKQoKICAgICMga2cgc2VhcmNoCiAgICBmcCA9IHN1Yi5hZGRfcGFyc2VyKCJzZWFyY2giLCBoZWxwPSJGaW5kIG5vZGVzIGJ5IHRhZyBvciB0eXBlIikKICAgIGZwLmFkZF9hcmd1bWVudCgiLS10YWciLCBoZWxwPSJGaWx0ZXIgYnkgdGFnIikKICAgIGZwLmFkZF9hcmd1bWVudCgiLS10eXBlIiwgaGVscD0iRmlsdGVyIGJ5IG5vZGUgdHlwZSAoUGFwZXIvUC1Ob3RlL0MtTm90ZS9NLU5vdGUvVGFnKSIpCiAgICBmcC5hZGRfYXJndW1lbnQoIi0tZm9ybWF0IiwgY2hvaWNlcz1bInRhYmxlIiwgImpzb24iLCAid2FycCJdLCBkZWZhdWx0PSJ0YWJsZSIpCgogICAgIyBrZyB2aWV3CiAgICB2cCA9IHN1Yi5hZGRfcGFyc2VyKCJ2aWV3IiwgaGVscD0iT3BlbiBpbnRlcmFjdGl2ZSBEMy5qcyBmb3JjZSBncmFwaCBpbiBicm93c2VyIikKICAgIHZwLmFkZF9hcmd1bWVudCgiLS1wYXBlciIsIGhlbHA9IlBhcGVyIFVJRCDigJQgc2hvdyBlZ28gZ3JhcGggKGRlZmF1bHQ6IGZ1bGwgZ3JhcGgpIikKICAgIHZwLmFkZF9hcmd1bWVudCgiLS10YWciLCBoZWxwPSJTaG93IGFsbCBwYXBlcnMgZm9yIGEgdGFnIGFzIGdyYXBoIikKICAgIHZwLmFkZF9hcmd1bWVudCgiLS1kZXB0aCIsIHR5cGU9aW50LCBkZWZhdWx0PTIsIGhlbHA9IkJGUyBkZXB0aCBmb3IgZWdvIGdyYXBoIChkZWZhdWx0IDIpIikKICAgIHZwLmFkZF9hcmd1bWVudCgiLS1tYXgtbm9kZXMiLCB0eXBlPWludCwgZGVmYXVsdD0zMDAsIGhlbHA9Ik1heCBub2RlcyB0byByZW5kZXIgKGRlZmF1bHQgMzAwKSIpCiAgICB2cC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tb3BlbiIsIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsIGRlZmF1bHQ9VHJ1ZSwgaGVscD0iT3BlbiBpbiBkZWZhdWx0IGJyb3dzZXIgKGRlZmF1bHQ6IG9uKSIKICAgICkKICAgIHZwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1uby1vcGVuIiwKICAgICAgICBkZXN0PSJvcGVuIiwKICAgICAgICBhY3Rpb249InN0b3JlX2ZhbHNlIiwKICAgICAgICBoZWxwPSJXcml0ZSBIVE1MIHRvIHN0ZG91dCBpbnN0ZWFkIG9mIG9wZW5pbmcgYnJvd3NlciIsCiAgICApCgogICAgcmV0dXJuIHAgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgoKZGVmIF9ydW5fa2coYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKSAtPiBpbnQ6CiAgICBrZyA9IEtHTWFuYWdlcigpCgogICAgaWYgYXJncy5rZ19jbWQgPT0gInN0YXRzIjoKICAgICAgICBzdGF0cyA9IGtnLnN0YXRzKCkKICAgICAgICB1c2Vfd2FycCA9IGdldGF0dHIoYXJncywgImZvcm1hdCIsICJ0ZXh0IikgPT0gIndhcnAiCiAgICAgICAgaWYgdXNlX3dhcnA6CiAgICAgICAgICAgIHJvd3MgPSBbXQogICAgICAgICAgICBmb3IgbnR5cGUsIGNudCBpbiBzb3J0ZWQoc3RhdHNbIm5vZGVzX2J5X3R5cGUiXS5pdGVtcygpKToKICAgICAgICAgICAgICAgIGJhZGdlID0gIlsjQjRGQTcyXeKXj1svXSIgaWYgY250ID4gMCBlbHNlICJbIzhFOEU4RV3il4tbL10iCiAgICAgICAgICAgICAgICByb3dzLmFwcGVuZChbYmFkZ2UsIG50eXBlLCBmIlsjQTVENUZFXXtjbnR9Wy9dIl0pCiAgICAgICAgICAgIHByaW50KAogICAgICAgICAgICAgICAgV2FycEJsb2Nrcy50YWJsZSgKICAgICAgICAgICAgICAgICAgICBbIiIsICJOb2RlIFR5cGUiLCAiQ291bnQiXSwgcm93cywgdGl0bGU9ZiJOb2RlcyAoe3N0YXRzWyd0b3RhbF9ub2RlcyddfSB0b3RhbCkiCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICkKICAgICAgICAgICAgcm93cyA9IFtdCiAgICAgICAgICAgIGZvciBydHlwZSwgY250IGluIHNvcnRlZChzdGF0c1siZWRnZXNfYnlfdHlwZSJdLml0ZW1zKCkpOgogICAgICAgICAgICAgICAgYmFkZ2UgPSAiWyNCNEZBNzJd4pePWy9dIiBpZiBjbnQgPiAwIGVsc2UgIlsjOEU4RThFXeKXi1svXSIKICAgICAgICAgICAgICAgIHJvd3MuYXBwZW5kKFtiYWRnZSwgcnR5cGUsIGYiWyNBNUQ1RkVde2NudH1bL10iXSkKICAgICAgICAgICAgcHJpbnQoCiAgICAgICAgICAgICAgICBXYXJwQmxvY2tzLnRhYmxlKAogICAgICAgICAgICAgICAgICAgIFsiIiwgIkVkZ2UgVHlwZSIsICJDb3VudCJdLCByb3dzLCB0aXRsZT1mIkVkZ2VzICh7c3RhdHNbJ3RvdGFsX2VkZ2VzJ119IHRvdGFsKSIKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIHByaW50KCI9PT0gS25vd2xlZGdlIEdyYXBoIFN0YXRzID09PSIpCiAgICAgICAgICAgIHByaW50KGYiVG90YWwgbm9kZXMgOiB7c3RhdHNbJ3RvdGFsX25vZGVzJ119IikKICAgICAgICAgICAgcHJpbnQoZiJUb3RhbCBlZGdlcyA6IHtzdGF0c1sndG90YWxfZWRnZXMnXX0iKQogICAgICAgICAgICBwcmludCgiXG5Ob2RlcyBieSB0eXBlOiIpCiAgICAgICAgICAgIGZvciBudHlwZSwgY250IGluIHNvcnRlZChzdGF0c1sibm9kZXNfYnlfdHlwZSJdLml0ZW1zKCkpOgogICAgICAgICAgICAgICAgcHJpbnQoZiIgIHtudHlwZToxMnN9OiB7Y250OjZkfSIpCiAgICAgICAgICAgIHByaW50KCJcbkVkZ2VzIGJ5IHJlbGF0aW9uOiIpCiAgICAgICAgICAgIGZvciBydHlwZSwgY250IGluIHNvcnRlZChzdGF0c1siZWRnZXNfYnlfdHlwZSJdLml0ZW1zKCkpOgogICAgICAgICAgICAgICAgcHJpbnQoZiIgIHtydHlwZToxMnN9OiB7Y250OjZkfSIpCiAgICAgICAgcmV0dXJuIDAgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgZWxpZiBhcmdzLmtnX2NtZCA9PSAiZ3JhcGgiOgogICAgICAgIHBhcGVyX25vZGUgPSBrZy5nZXRfbm9kZV9ieV9lbnRpdHkoIlBhcGVyIiwgYXJncy5wYXBlcl9pZCkKICAgICAgICBpZiBwYXBlcl9ub2RlIGlzIE5vbmU6CiAgICAgICAgICAgIHByaW50KGYiUGFwZXIgJ3thcmdzLnBhcGVyX2lkfScgbm90IGZvdW5kIGluIEtHLiIpCiAgICAgICAgICAgIHJldHVybiAxICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQogICAgICAgIG5laWdoYm9ycyA9IGtnLmZpbmRfbmVpZ2hib3JzKHBhcGVyX25vZGVbImlkIl0sIGRlcHRoPWFyZ3MuZGVwdGgpCiAgICAgICAgaWYgYXJncy5mb3JtYXQgPT0gImpzb24iOgogICAgICAgICAgICBvdXQgPSB7CiAgICAgICAgICAgICAgICAiY2VudGVyIjogcGFwZXJfbm9kZSwKICAgICAgICAgICAgICAgICJuZWlnaGJvcnMiOiBbeyJub2RlIjogbiwgImVkZ2UiOiBlLCAiZGVwdGgiOiBkfSBmb3IgbiwgZSwgZCBpbiBuZWlnaGJvcnNdLAogICAgICAgICAgICB9CiAgICAgICAgICAgIHByaW50KGpzb24uZHVtcHMob3V0LCBpbmRlbnQ9MikpCiAgICAgICAgZWxpZiBhcmdzLmZvcm1hdCA9PSAid2FycCI6CiAgICAgICAgICAgIGZyb20gcmljaC5jb25zb2xlIGltcG9ydCBDb25zb2xlCgogICAgICAgICAgICBjID0gQ29uc29sZSgpCiAgICAgICAgICAgIGMucnVsZSgiW2JvbGQgI0ZGODI3Ml0gIEtHIEVnbyBHcmFwaCAgWy9dIikKICAgICAgICAgICAgcHJpbnQoCiAgICAgICAgICAgICAgICBXYXJwQmxvY2tzLnNlY3Rpb24oCiAgICAgICAgICAgICAgICAgICAgZiJDZW50ZXI6IHthcmdzLnBhcGVyX2lkfSIsCiAgICAgICAgICAgICAgICAgICAgZiJbI0E1RDVGRV1UeXBlOlsvXSB7cGFwZXJfbm9kZVsndHlwZSddfSIsCiAgICAgICAgICAgICAgICAgICAgZiJbI0E1RDVGRV1MYWJlbDpbL10ge3BhcGVyX25vZGVbJ2xhYmVsJ11bOjYwXX0iLAogICAgICAgICAgICAgICAgICAgIGYiWyNBNUQ1RkVdTmVpZ2hib3JzOlsvXSB7bGVuKG5laWdoYm9ycyl9IChkZXB0aD17YXJncy5kZXB0aH0pIiwKICAgICAgICAgICAgICAgICAgICB3aWR0aD02NSwKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgKQogICAgICAgICAgICBpZiBuZWlnaGJvcnM6CiAgICAgICAgICAgICAgICByb3dzID0gW10KICAgICAgICAgICAgICAgIGZvciBub2RlLCBlZGdlLCBkZXB0aCBpbiBzb3J0ZWQobmVpZ2hib3JzLCBrZXk9bGFtYmRhIHg6IHhbMl0pWzozMF06CiAgICAgICAgICAgICAgICAgICAgcmVsID0gZWRnZVsicmVsYXRpb25fdHlwZSJdWzoyMF0KICAgICAgICAgICAgICAgICAgICBsYWJlbCA9IG5vZGVbImxhYmVsIl1bOjQ1XQogICAgICAgICAgICAgICAgICAgIHR5cGVfYmFkZ2UgPSBmIlsjRDBEMUZFXXtub2RlWyd0eXBlJ119Wy9dIgogICAgICAgICAgICAgICAgICAgIHJvd3MuYXBwZW5kKFtmIlsjRkVGREMyXWR7ZGVwdGh9Wy9dIiwgdHlwZV9iYWRnZSwgcmVsLCBsYWJlbF0pCiAgICAgICAgICAgICAgICBjLnByaW50KAogICAgICAgICAgICAgICAgICAgIFdhcnBCbG9ja3MudGFibGUoCiAgICAgICAgICAgICAgICAgICAgICAgIFsiRCIsICJUeXBlIiwgIlJlbGF0aW9uIiwgIk5vZGUiXSwKICAgICAgICAgICAgICAgICAgICAgICAgcm93cywKICAgICAgICAgICAgICAgICAgICAgICAgdGl0bGU9ZiIgIHtsZW4obmVpZ2hib3JzKX0gTmVpZ2hib3JzIiwKICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgIGVsc2U6CiAgICAgICAgICAgICAgICBwcmludChXYXJwQmxvY2tzLnBhbmVsKCJOZWlnaGJvcnMiLCAiWyM4RThFOEVdTm8gbmVpZ2hib3JzIGZvdW5kWy9dIikpCiAgICAgICAgZWxzZToKICAgICAgICAgICAgcHJpbnQoZiI9PT0gS0cgR3JhcGggZm9yICd7YXJncy5wYXBlcl9pZH0nIChkZXB0aD17YXJncy5kZXB0aH0pID09PSIpCiAgICAgICAgICAgIHByaW50KGYiQ2VudGVyOiBbe3BhcGVyX25vZGVbJ3R5cGUnXX1dIHtwYXBlcl9ub2RlWydsYWJlbCddfSIpCiAgICAgICAgICAgIHByaW50KGYiXG57bGVuKG5laWdoYm9ycyl9IG5laWdoYm9yKHMpOiIpCiAgICAgICAgICAgIGZvciBub2RlLCBlZGdlLCBkZXB0aCBpbiBzb3J0ZWQobmVpZ2hib3JzLCBrZXk9bGFtYmRhIHg6IHhbMl0pOgogICAgICAgICAgICAgICAgcHJpbnQoCiAgICAgICAgICAgICAgICAgICAgZiIgIFtkZXB0aD17ZGVwdGh9XSB7bm9kZVsndHlwZSddOjhzfSB8IHtlZGdlWydyZWxhdGlvbl90eXBlJ106MTJzfSB8IHtub2RlWydsYWJlbCddWzo1MF19IgogICAgICAgICAgICAgICAgKQogICAgICAgIHJldHVybiAwCgogICAgZWxpZiBhcmdzLmtnX2NtZCA9PSAicGF0aCI6CiAgICAgICAgbm9kZUEgPSBrZy5nZXRfbm9kZV9ieV9lbnRpdHkoIlBhcGVyIiwgYXJncy5pZEEpIG9yIGtnLmdldF9ub2RlKGFyZ3MuaWRBKQogICAgICAgIG5vZGVCID0ga2cuZ2V0X25vZGVfYnlfZW50aXR5KCJQYXBlciIsIGFyZ3MuaWRCKSBvciBrZy5nZXRfbm9kZShhcmdzLmlkQikKICAgICAgICBpZiBub3Qgbm9kZUE6CiAgICAgICAgICAgIHByaW50KGYiTm9kZSBBICgne2FyZ3MuaWRBfScpIG5vdCBmb3VuZC4iKQogICAgICAgICAgICByZXR1cm4gMQogICAgICAgIGlmIG5vdCBub2RlQjoKICAgICAgICAgICAgcHJpbnQoZiJOb2RlIEIgKCd7YXJncy5pZEJ9Jykgbm90IGZvdW5kLiIpCiAgICAgICAgICAgIHJldHVybiAxCiAgICAgICAgcGF0aCA9IGtnLmZpbmRfc2hvcnRlc3RfcGF0aChub2RlQVsiaWQiXSwgbm9kZUJbImlkIl0pCiAgICAgICAgaWYgcGF0aCBpcyBOb25lOgogICAgICAgICAgICBwcmludChmIk5vIHBhdGggZm91bmQgYmV0d2VlbiAne2FyZ3MuaWRBfScgYW5kICd7YXJncy5pZEJ9Jy4iKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIHByaW50KGYiUGF0aCAoe2xlbihwYXRoKX0gaG9wcyk6IikKICAgICAgICAgICAgZm9yIGksIG5pZCBpbiBlbnVtZXJhdGUocGF0aCk6CiAgICAgICAgICAgICAgICBwYXRoX25vZGU6IE9wdGlvbmFsW0RpY3Rbc3RyLCBBbnldXSA9IGtnLmdldF9ub2RlKG5pZCkKICAgICAgICAgICAgICAgIGlmIG5vdCBwYXRoX25vZGU6CiAgICAgICAgICAgICAgICAgICAgY29udGludWUKICAgICAgICAgICAgICAgIGxhYmVsID0gcGF0aF9ub2RlWyJsYWJlbCJdWzo1MF0KICAgICAgICAgICAgICAgIHByaW50KGYiICB7aSArIDF9LiBbe3BhdGhfbm9kZVsndHlwZSddfV0ge2xhYmVsfSIpCiAgICAgICAgcmV0dXJuIDAKCiAgICBlbGlmIGFyZ3Mua2dfY21kID09ICJyZWJ1aWxkIjoKICAgICAgICBmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKCiAgICAgICAgcGFwZXJzX2pzb24gPSBhcmdzLnBhcGVyc19qc29uCiAgICAgICAgaWYgbm90IHBhcGVyc19qc29uOgogICAgICAgICAgICBjYW5kaWRhdGVzID0gW1BhdGgoInBhcGVycy5qc29uIiksIFBhdGgoImRhdGEvcGFwZXJzLmpzb24iKV0KICAgICAgICAgICAgZm9yIGNhbmRpZGF0ZSBpbiBjYW5kaWRhdGVzOgogICAgICAgICAgICAgICAgaWYgY2FuZGlkYXRlLmV4aXN0cygpOgogICAgICAgICAgICAgICAgICAgIHBhcGVyc19qc29uID0gc3RyKGNhbmRpZGF0ZSkKICAgICAgICAgICAgICAgICAgICBicmVhawogICAgICAgIGlmIG5vdCBwYXBlcnNfanNvbjoKICAgICAgICAgICAgcHJpbnQoInBhcGVycy5qc29uIG5vdCBmb3VuZC4gVXNlIC0tcGFwZXJzLWpzb24gdG8gc3BlY2lmeS4iKQogICAgICAgICAgICByZXR1cm4gMQogICAgICAgIGZyb20ga2cuaW50ZWdyYXRpb24gaW1wb3J0IEtHSW50ZWdyYXRpb24KCiAgICAgICAgaW50ZWcgPSBLR0ludGVncmF0aW9uKGtnKQogICAgICAgIHByaW50KGYiUmVidWlsZGluZyBLRyBmcm9tIHtwYXBlcnNfanNvbn0gLi4uIikKICAgICAgICBpbnRlZy5yZWJ1aWxkX2Zyb21fcGFwZXJzX2pzb24ocGFwZXJzX2pzb24sIGluY3JlbWVudGFsPWFyZ3MuaW5jcmVtZW50YWwpCiAgICAgICAgc3RhdHMgPSBrZy5zdGF0cygpCiAgICAgICAgcHJpbnQoZiJEb25lOiB7c3RhdHNbJ3RvdGFsX25vZGVzJ119IG5vZGVzLCB7c3RhdHNbJ3RvdGFsX2VkZ2VzJ119IGVkZ2VzLiIpCiAgICAgICAgcmV0dXJuIDAKCiAgICBlbGlmIGFyZ3Mua2dfY21kID09ICJzZWFyY2giOgogICAgICAgIG5vZGVzID0gW10KICAgICAgICBpZiBhcmdzLnRhZzoKICAgICAgICAgICAgbm9kZXMgPSBrZy5maW5kX3BhcGVyc19ieV90YWcoYXJncy50YWcpCiAgICAgICAgZWxpZiBhcmdzLnR5cGU6CiAgICAgICAgICAgIG5vZGVzID0ga2cuZ2V0X2FsbF9ub2Rlcyhub2RlX3R5cGU9YXJncy50eXBlKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIG5vZGVzID0ga2cuZ2V0X2FsbF9ub2RlcygpCiAgICAgICAgaWYgbm90IG5vZGVzOgogICAgICAgICAgICBpZiBhcmdzLmZvcm1hdCA9PSAid2FycCI6CiAgICAgICAgICAgICAgICBwcmludChXYXJwQmxvY2tzLnBhbmVsKCJLRyBTZWFyY2giLCAiWyM4RThFOEVdTm8gbm9kZXMgZm91bmRbL10iKSkKICAgICAgICAgICAgZWxzZToKICAgICAgICAgICAgICAgIHByaW50KCJObyBub2RlcyBmb3VuZC4iKQogICAgICAgICAgICByZXR1cm4gMAogICAgICAgIGlmIGFyZ3MuZm9ybWF0ID09ICJqc29uIjoKICAgICAgICAgICAgcHJpbnQoanNvbi5kdW1wcyhub2RlcywgaW5kZW50PTIpKQogICAgICAgIGVsaWYgYXJncy5mb3JtYXQgPT0gIndhcnAiOgogICAgICAgICAgICByb3dzID0gW10KICAgICAgICAgICAgZm9yIG4gaW4gbm9kZXNbOjUwXToKICAgICAgICAgICAgICAgIHR5cGVfYmFkZ2UgPSBmIlsjRDBEMUZFXXtuWyd0eXBlJ119Wy9dIgogICAgICAgICAgICAgICAgbGFiZWwgPSBuWyJsYWJlbCJdWzo1NV0KICAgICAgICAgICAgICAgIHJvd3MuYXBwZW5kKFt0eXBlX2JhZGdlLCBsYWJlbF0pCiAgICAgICAgICAgIHByaW50KAogICAgICAgICAgICAgICAgV2FycEJsb2Nrcy50YWJsZSgKICAgICAgICAgICAgICAgICAgICBbIlR5cGUiLCAiTGFiZWwiXSwgcm93cywgdGl0bGU9ZiJTZWFyY2ggUmVzdWx0cyAoe2xlbihub2Rlcyl9IGZvdW5kKSIKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgKQogICAgICAgICAgICBpZiBsZW4obm9kZXMpID4gNTA6CiAgICAgICAgICAgICAgICBwcmludChmIlsjOEU4RThFXSAgLi4uIGFuZCB7bGVuKG5vZGVzKSAtIDUwfSBtb3JlWy9dIikKICAgICAgICBlbHNlOgogICAgICAgICAgICBwcmludChmIntsZW4obm9kZXMpfSBub2RlKHMpOiIpCiAgICAgICAgICAgIGZvciBuIGluIG5vZGVzWzo1MF06CiAgICAgICAgICAgICAgICBwcmludChmIiAgW3tuWyd0eXBlJ106OHN9XSB7blsnbGFiZWwnXVs6NTVdfSIpCiAgICAgICAgICAgIGlmIGxlbihub2RlcykgPiA1MDoKICAgICAgICAgICAgICAgIHByaW50KGYiICAuLi4gYW5kIHtsZW4obm9kZXMpIC0gNTB9IG1vcmUiKQogICAgICAgIHJldHVybiAwCgogICAgZWxpZiBhcmdzLmtnX2NtZCA9PSAidmlldyI6CiAgICAgICAgcmV0dXJuIF9ydW5fa2dfdmlldyhhcmdzKQoKICAgIHByaW50KGYiVW5rbm93biBrZyBzdWJjb21tYW5kOiB7YXJncy5rZ19jbWR9IikKICAgIHJldHVybiAxCgoKZGVmIF9ydW5fa2dfdmlldyhhcmdzOiBhcmdwYXJzZS5OYW1lc3BhY2UpIC0+IGludDoKICAgICIiIlJlbmRlciBpbnRlcmFjdGl2ZSBEMy5qcyBmb3JjZSBncmFwaCBhbmQgb3BlbiBpbiBicm93c2VyIChvciB3cml0ZSB0byBzdGRvdXQpLiIiIgogICAgaW1wb3J0IHRlbXBmaWxlCiAgICBpbXBvcnQganNvbgogICAgaW1wb3J0IHdlYmJyb3dzZXIKICAgIGZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAogICAgZnJvbSB2aXouZDNfcmVuZGVyZXIgaW1wb3J0IEQzRm9yY2VHcmFwaAoKICAgIGtnID0gS0dNYW5hZ2VyKCkKICAgIHJlbmRlcmVyID0gRDNGb3JjZUdyYXBoKGtnKQoKICAgIHBhcGVyX3VpZHMgPSBbYXJncy5wYXBlcl0gaWYgYXJncy5wYXBlciBlbHNlIE5vbmUKICAgIHRhZyA9IGFyZ3MudGFnIGlmIGhhc2F0dHIoYXJncywgInRhZyIpIGVsc2UgTm9uZQoKICAgIGdyYXBoX2RhdGEgPSByZW5kZXJlci50b19qc29uKAogICAgICAgIHBhcGVyX3VpZHM9cGFwZXJfdWlkcywKICAgICAgICB0YWc9dGFnLAogICAgICAgIG1heF9ub2Rlcz1hcmdzLm1heF9ub2RlcywKICAgICkKCiAgICBpZiBub3QgZ3JhcGhfZGF0YVsibm9kZXMiXToKICAgICAgICBwcmludCgiTm8gbm9kZXMgZm91bmQgaW4gdGhlIHNlbGVjdGVkIHNjb3BlLiIsIGZpbGU9X19pbXBvcnRfXygic3lzIikuc3RkZXJyKQogICAgICAgIHJldHVybiAxCgogICAgIyBMb2FkIHRlbXBsYXRlCiAgICB0ZW1wbGF0ZV9wYXRoID0gKAogICAgICAgIFBhdGgoX19maWxlX18pLnBhcmVudC5wYXJlbnQucGFyZW50IC8gInZpeiIgLyAidGVtcGxhdGVzIiAvICJrZ192aXpfdGVtcGxhdGVfZDMuaHRtbCIKICAgICkKICAgIGh0bWxfY29udGVudCA9IHRlbXBsYXRlX3BhdGgucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpCgogICAgIyBJbmplY3QgZGF0YSDigJQgSlNPTi1lc2NhcGUgZm9yIHNhZmUgSlMgZW1iZWRkaW5nCiAgICBub2Rlc19qc29uID0ganNvbi5kdW1wcyhncmFwaF9kYXRhWyJub2RlcyJdLCBlbnN1cmVfYXNjaWk9RmFsc2UpCiAgICBsaW5rc19qc29uID0ganNvbi5kdW1wcyhncmFwaF9kYXRhWyJsaW5rcyJdLCBlbnN1cmVfYXNjaWk9RmFsc2UpCiAgICBodG1sX2NvbnRlbnQgPSBodG1sX2NvbnRlbnQucmVwbGFjZSgnIklOSkVDVF9OT0RFUyInLCBub2Rlc19qc29uKQogICAgaHRtbF9jb250ZW50ID0gaHRtbF9jb250ZW50LnJlcGxhY2UoJyJJTkpFQ1RfTElOS1MiJywgbGlua3NfanNvbikKCiAgICBpZiBub3QgYXJncy5vcGVuOgogICAgICAgIF9faW1wb3J0X18oInN5cyIpLnN0ZG91dC53cml0ZShodG1sX2NvbnRlbnQpCiAgICAgICAgcmV0dXJuIDAKCiAgICB3aXRoIHRlbXBmaWxlLk5hbWVkVGVtcG9yYXJ5RmlsZShtb2RlPSJ3Iiwgc3VmZml4PSIuaHRtbCIsIGRlbGV0ZT1GYWxzZSwgZW5jb2Rpbmc9InV0Zi04IikgYXMgZjoKICAgICAgICBmLndyaXRlKGh0bWxfY29udGVudCkKICAgICAgICB0bXBfcGF0aCA9IGYubmFtZQoKICAgIHdlYmJyb3dzZXIub3BlbihmImZpbGU6Ly97dG1wX3BhdGh9IikKICAgIHByaW50KGYiT3BlbmVkIHtsZW4oZ3JhcGhfZGF0YVsnbm9kZXMnXSl9IG5vZGVzLCB7bGVuKGdyYXBoX2RhdGFbJ2xpbmtzJ10pfSBlZGdlcyBpbiBicm93c2VyLiIpCiAgICBwcmludChmIihIVE1MIGFsc28gc2F2ZWQgdG86IHt0bXBfcGF0aH0pIikKICAgIHJldHVybiAwCg==
+"""CLI command: kg."""
+from __future__ import annotations
+
+import argparse
+import json
+from typing import Any, Dict, Optional, cast
+
+from cli.warp import WarpBlocks
+from kg import KGManager
+
+
+def _build_kg_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "kg",
+        help="Knowledge graph — query, visualize, and manage the research KG",
+        prog="airos kg",
+        description="Query, visualize, and manage the research knowledge graph.",
+        epilog="""\
+Examples:
+  %(prog)s graph 2301.00001 --depth 3      # ego graph with 3 hops
+  %(prog)s path 2301.00001 2301.00002     # shortest path between papers
+  %(prog)s search --tag LLM                # find all LLM-related nodes
+  %(prog)s stats                            # KG statistics
+  %(prog)s rebuild --incremental            # rebuild KG incrementally""",
+    )
+
+    sub = p.add_subparsers(dest="kg_cmd", help="KG subcommands")
+
+    # kg graph
+    gp = sub.add_parser("graph", help="Show paper's ego graph (neighbors up to N hops)")
+    gp.add_argument("paper_id", help="Paper UID")
+    gp.add_argument("--depth", type=int, default=2, help="BFS depth (default 2)")
+    gp.add_argument("--format", choices=["text", "json", "warp"], default="text")
+
+    # kg path
+    pp = sub.add_parser("path", help="Find shortest path between two nodes")
+    pp.add_argument("idA", help="First node ID or paper UID")
+    pp.add_argument("idB", help="Second node ID or paper UID")
+
+    # kg stats
+    sp = sub.add_parser("stats", help="KG statistics (nodes/edges by type)")
+    sp.add_argument("--format", choices=["text", "warp"], default="text")
+
+    # kg rebuild
+    rp = sub.add_parser("rebuild", help="Rebuild KG from papers.json")
+    rp.add_argument("--papers-json", default="", help="Path to papers.json (default: auto-detect)")
+    rp.add_argument("--incremental", action="store_true", help="Only process new/changed papers since last rebuild")
+
+    # kg search
+    fp = sub.add_parser("search", help="Find nodes by tag or type")
+    fp.add_argument("--tag", help="Filter by tag")
+    fp.add_argument("--type", help="Filter by node type (Paper/P-Note/C-Note/M-Note/Tag)")
+    fp.add_argument("--format", choices=["table", "json", "warp"], default="table")
+
+    # kg view
+    vp = sub.add_parser("view", help="Open interactive D3.js force graph in browser")
+    vp.add_argument("--paper", help="Paper UID — show ego graph (default: full graph)")
+    vp.add_argument("--tag", help="Show all papers for a tag as graph")
+    vp.add_argument("--depth", type=int, default=2, help="BFS depth for ego graph (default 2)")
+    vp.add_argument("--max-nodes", type=int, default=300, help="Max nodes to render (default 300)")
+    vp.add_argument("--open", action="store_true", default=True, help="Open in default browser (default: on)")
+    vp.add_argument("--no-open", dest="open", action="store_false", help="Write HTML to stdout instead of opening browser")
+
+    return p  # type: ignore[no-any-return]
+
+
+def _run_kg(args: argparse.Namespace) -> int:
+    kg = KGManager()
+
+    if args.kg_cmd == "stats":
+        stats = kg.stats()
+        use_warp = getattr(args, 'format', 'text') == 'warp'
+        if use_warp:
+            rows = []
+            for ntype, cnt in sorted(stats["nodes_by_type"].items()):
+                badge = "[#B4FA72]●[/]" if cnt > 0 else "[#8E8E8E]○[/]"
+                rows.append([badge, ntype, f"[#A5D5FE]{cnt}[/]"])
+            print(WarpBlocks.table(
+                ["", "Node Type", "Count"],
+                rows,
+                title=f"Nodes ({stats['total_nodes']} total)"
+            ))
+            rows = []
+            for rtype, cnt in sorted(stats["edges_by_type"].items()):
+                badge = "[#B4FA72]●[/]" if cnt > 0 else "[#8E8E8E]○[/]"
+                rows.append([badge, rtype, f"[#A5D5FE]{cnt}[/]"])
+            print(WarpBlocks.table(
+                ["", "Edge Type", "Count"],
+                rows,
+                title=f"Edges ({stats['total_edges']} total)"
+            ))
+        else:
+            print("=== Knowledge Graph Stats ===")
+            print(f"Total nodes : {stats['total_nodes']}")
+            print(f"Total edges : {stats['total_edges']}")
+            print("\nNodes by type:")
+            for ntype, cnt in sorted(stats["nodes_by_type"].items()):
+                print(f"  {ntype:12s}: {cnt:6d}")
+            print("\nEdges by relation:")
+            for rtype, cnt in sorted(stats["edges_by_type"].items()):
+                print(f"  {rtype:12s}: {cnt:6d}")
+        return 0  # type: ignore[no-any-return]
+
+    elif args.kg_cmd == "graph":
+        paper_node = kg.get_node_by_entity("Paper", args.paper_id)
+        if paper_node is None:
+            print(f"Paper '{args.paper_id}' not found in KG.")
+            return 1  # type: ignore[no-any-return]
+        neighbors = kg.find_neighbors(paper_node["id"], depth=args.depth)
+        if args.format == "json":
+            out = {
+                "center": paper_node,
+                "neighbors": [{"node": n, "edge": e, "depth": d} for n, e, d in neighbors],
+            }
+            print(json.dumps(out, indent=2))
+        elif args.format == "warp":
+            from rich.console import Console
+            c = Console()
+            c.rule("[bold #FF8272]  KG Ego Graph  [/]")
+            print(WarpBlocks.section(
+                f"Center: {args.paper_id}",
+                f"[#A5D5FE]Type:[/] {paper_node['type']}",
+                f"[#A5D5FE]Label:[/] {paper_node['label'][:60]}",
+                f"[#A5D5FE]Neighbors:[/] {len(neighbors)} (depth={args.depth})",
+                width=65
+            ))
+            if neighbors:
+                rows = []
+                for node, edge, depth in sorted(neighbors, key=lambda x: x[2])[:30]:
+                    rel = edge['relation_type'][:20]
+                    label = node['label'][:45]
+                    type_badge = f"[#D0D1FE]{node['type']}[/]"
+                    rows.append([f"[#FEFDC2]d{depth}[/]", type_badge, rel, label])
+                c.print(WarpBlocks.table(
+                    ["D", "Type", "Relation", "Node"],
+                    rows,
+                    title=f"  {len(neighbors)} Neighbors"
+                ))
+            else:
+                print(WarpBlocks.panel("Neighbors", "[#8E8E8E]No neighbors found[/]"))
+        else:
+            print(f"=== KG Graph for '{args.paper_id}' (depth={args.depth}) ===")
+            print(f"Center: [{paper_node['type']}] {paper_node['label']}")
+            print(f"\n{len(neighbors)} neighbor(s):")
+            for node, edge, depth in sorted(neighbors, key=lambda x: x[2]):
+                print(f"  [depth={depth}] {node['type']:8s} | {edge['relation_type']:12s} | {node['label'][:50]}")
+        return 0
+
+    elif args.kg_cmd == "path":
+        nodeA = kg.get_node_by_entity("Paper", args.idA) or kg.get_node(args.idA)
+        nodeB = kg.get_node_by_entity("Paper", args.idB) or kg.get_node(args.idB)
+        if not nodeA:
+            print(f"Node A ('{args.idA}') not found.")
+            return 1
+        if not nodeB:
+            print(f"Node B ('{args.idB}') not found.")
+            return 1
+        path = kg.find_shortest_path(nodeA["id"], nodeB["id"])
+        if path is None:
+            print(f"No path found between '{args.idA}' and '{args.idB}'.")
+        else:
+            print(f"Path ({len(path)} hops):")
+            for i, nid in enumerate(path):
+                path_node: Optional[Dict[str, Any]] = kg.get_node(nid)
+                if not path_node:
+                    continue
+                label = path_node["label"][:50]
+                print(f"  {i+1}. [{path_node['type']}] {label}")
+        return 0
+
+    elif args.kg_cmd == "rebuild":
+        from pathlib import Path
+        papers_json = args.papers_json
+        if not papers_json:
+            candidates = [Path("papers.json"), Path("data/papers.json")]
+            for candidate in candidates:
+                if candidate.exists():
+                    papers_json = str(candidate)
+                    break
+        if not papers_json:
+            print("papers.json not found. Use --papers-json to specify.")
+            return 1
+        from kg.integration import KGIntegration
+        integ = KGIntegration(kg)
+        print(f"Rebuilding KG from {papers_json} ...")
+        integ.rebuild_from_papers_json(papers_json, incremental=args.incremental)
+        stats = kg.stats()
+        print(f"Done: {stats['total_nodes']} nodes, {stats['total_edges']} edges.")
+        return 0
+
+    elif args.kg_cmd == "search":
+        nodes = []
+        if args.tag:
+            nodes = kg.find_papers_by_tag(args.tag)
+        elif args.type:
+            nodes = kg.get_all_nodes(node_type=args.type)
+        else:
+            nodes = kg.get_all_nodes()
+        if not nodes:
+            if args.format == "warp":
+                print(WarpBlocks.panel("KG Search", "[#8E8E8E]No nodes found[/]"))
+            else:
+                print("No nodes found.")
+            return 0
+        if args.format == "json":
+            print(json.dumps(nodes, indent=2))
+        elif args.format == "warp":
+            rows = []
+            for n in nodes[:50]:
+                type_badge = f"[#D0D1FE]{n['type']}[/]"
+                label = n['label'][:55]
+                rows.append([type_badge, label])
+            print(WarpBlocks.table(
+                ["Type", "Label"],
+                rows,
+                title=f"Search Results ({len(nodes)} found)"
+            ))
+            if len(nodes) > 50:
+                print(f"[#8E8E8E]  ... and {len(nodes) - 50} more[/]")
+        else:
+            print(f"{len(nodes)} node(s):")
+            for n in nodes[:50]:
+                print(f"  [{n['type']:8s}] {n['label'][:55]}")
+            if len(nodes) > 50:
+                print(f"  ... and {len(nodes)-50} more")
+        return 0
+
+    elif args.kg_cmd == "view":
+        return _run_kg_view(args)
+
+    print(f"Unknown kg subcommand: {args.kg_cmd}")
+    return 1
+
+
+def _run_kg_view(args: argparse.Namespace) -> int:
+    """Render interactive D3.js force graph and open in browser (or write to stdout)."""
+    import tempfile
+    import json
+    import webbrowser
+    from pathlib import Path
+    from viz.d3_renderer import D3ForceGraph
+
+    kg = KGManager()
+    renderer = D3ForceGraph(kg)
+
+    paper_uids = [args.paper] if args.paper else None
+    tag = args.tag if hasattr(args, "tag") else None
+
+    graph_data = renderer.to_json(
+        paper_uids=paper_uids,
+        tag=tag,
+        max_nodes=args.max_nodes,
+    )
+
+    if not graph_data["nodes"]:
+        print("No nodes found in the selected scope.", file=__import__("sys").stderr)
+        return 1
+
+    # Load template
+    template_path = Path(__file__).parent.parent.parent / "viz" / "templates" / "kg_viz_template_d3.html"
+    html_content = template_path.read_text(encoding="utf-8")
+
+    # Inject data — JSON-escape for safe JS embedding
+    nodes_json = json.dumps(graph_data["nodes"], ensure_ascii=False)
+    links_json = json.dumps(graph_data["links"], ensure_ascii=False)
+    html_content = html_content.replace('"INJECT_NODES"', nodes_json)
+    html_content = html_content.replace('"INJECT_LINKS"', links_json)
+
+    if not args.open:
+        __import__("sys").stdout.write(html_content)
+        return 0
+
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".html", delete=False, encoding="utf-8"
+    ) as f:
+        f.write(html_content)
+        tmp_path = f.name
+
+    webbrowser.open(f"file://{tmp_path}")
+    print(f"Opened {len(graph_data['nodes'])} nodes, {len(graph_data['links'])} edges in browser.")
+    print(f"(HTML also saved to: {tmp_path})")
+    return 0

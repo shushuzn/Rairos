@@ -1,1 +1,5 @@
-IiIiUmVzZWFyY2ggTW9tZW50dW0gU2NvcmluZyBtb2R1bGUuIiIiCgpmcm9tIHNjb3JpbmcubW9tZW50dW0gaW1wb3J0IFJlc2VhcmNoTW9tZW50dW0KCl9fYWxsX18gPSBbIlJlc2VhcmNoTW9tZW50dW0iXQo=
+"""Research Momentum Scoring module."""
+
+from scoring.momentum import ResearchMomentum
+
+__all__ = ["ResearchMomentum"]

@@ -1,1 +1,140 @@
-IiIiVGVzdHMgZm9yIHJlcGxpY2F0aW9uIHRyYWNrZXIuIiIiCgppbXBvcnQgcHl0ZXN0CmZyb20gbGxtLnJlcGxpY2F0aW9uX3RyYWNrZXIgaW1wb3J0ICgKICAgIFJlcGxpY2F0aW9uVHJhY2tlciwKICAgIFJlcGxpY2F0aW9uQXR0ZW1wdCwKICAgIFJlcGxpY2F0aW9uUmVwb3J0LAopCgoKY2xhc3MgVGVzdFJlcGxpY2F0aW9uVHJhY2tlcjoKICAgICIiIlRlc3QgUmVwbGljYXRpb25UcmFja2VyLiIiIgoKICAgIEBweXRlc3QuZml4dHVyZQogICAgZGVmIHRyYWNrZXIoc2VsZiwgdG1wX3BhdGgpOgogICAgICAgIHJldHVybiBSZXBsaWNhdGlvblRyYWNrZXIoZGF0YV9kaXI9dG1wX3BhdGgpCgogICAgZGVmIHRlc3RfY3JlYXRlX2F0dGVtcHQoc2VsZiwgdHJhY2tlcik6CiAgICAgICAgIiIiVGVzdCBjcmVhdGluZyBhIHJlcGxpY2F0aW9uIGF0dGVtcHQuIiIiCiAgICAgICAgYXR0ZW1wdCA9IHRyYWNrZXIuY3JlYXRlX2F0dGVtcHQoInAxIiwgIlRlc3QgUGFwZXIiKQogICAgICAgIGFzc2VydCBhdHRlbXB0LnBhcGVyX2lkID09ICJwMSIKICAgICAgICBhc3NlcnQgYXR0ZW1wdC5wYXBlcl90aXRsZSA9PSAiVGVzdCBQYXBlciIKICAgICAgICBhc3NlcnQgYXR0ZW1wdC5zdGF0dXMgPT0gImluX3Byb2dyZXNzIgoKICAgIGRlZiB0ZXN0X3VwZGF0ZV9hdHRlbXB0KHNlbGYsIHRyYWNrZXIpOgogICAgICAgICIiIlRlc3QgdXBkYXRpbmcgYW4gYXR0ZW1wdC4iIiIKICAgICAgICBhdHRlbXB0ID0gdHJhY2tlci5jcmVhdGVfYXR0ZW1wdCgicDEiLCAiVGVzdCBQYXBlciIpCiAgICAgICAgcmVzdWx0ID0gdHJhY2tlci51cGRhdGVfYXR0ZW1wdCgKICAgICAgICAgICAgYXR0ZW1wdC5hdHRlbXB0X2lkLAogICAgICAgICAgICBzdGF0dXM9InN1Y2Nlc3MiLAogICAgICAgICAgICBub3Rlcz0iQWxsIHRlc3RzIHBhc3NlZCIsCiAgICAgICAgKQogICAgICAgIGFzc2VydCByZXN1bHQgaXMgVHJ1ZQoKICAgICAgICB1cGRhdGVkID0gdHJhY2tlci5nZXRfYXR0ZW1wdChhdHRlbXB0LmF0dGVtcHRfaWQpCiAgICAgICAgYXNzZXJ0IHVwZGF0ZWQuc3RhdHVzID09ICJzdWNjZXNzIgogICAgICAgIGFzc2VydCB1cGRhdGVkLm5vdGVzID09ICJBbGwgdGVzdHMgcGFzc2VkIgoKICAgIGRlZiB0ZXN0X2dldF9hdHRlbXB0KHNlbGYsIHRyYWNrZXIpOgogICAgICAgICIiIlRlc3QgZ2V0dGluZyBhbiBhdHRlbXB0IGJ5IElELiIiIgogICAgICAgIGNyZWF0ZWQgPSB0cmFja2VyLmNyZWF0ZV9hdHRlbXB0KCJwMSIsICJUZXN0IFBhcGVyIikKICAgICAgICBmZXRjaGVkID0gdHJhY2tlci5nZXRfYXR0ZW1wdChjcmVhdGVkLmF0dGVtcHRfaWQpCiAgICAgICAgYXNzZXJ0IGZldGNoZWQgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQgZmV0Y2hlZC5hdHRlbXB0X2lkID09IGNyZWF0ZWQuYXR0ZW1wdF9pZAoKICAgIGRlZiB0ZXN0X2dldF9wYXBlcl9hdHRlbXB0cyhzZWxmLCB0cmFja2VyKToKICAgICAgICAiIiJUZXN0IGdldHRpbmcgYWxsIGF0dGVtcHRzIGZvciBhIHBhcGVyLiIiIgogICAgICAgIHRyYWNrZXIuY3JlYXRlX2F0dGVtcHQoInAxIiwgIlBhcGVyIE9uZSIpCiAgICAgICAgdHJhY2tlci5jcmVhdGVfYXR0ZW1wdCgicDEiLCAiUGFwZXIgT25lIikKICAgICAgICB0cmFja2VyLmNyZWF0ZV9hdHRlbXB0KCJwMiIsICJQYXBlciBUd28iKQoKICAgICAgICBwMV9hdHRlbXB0cyA9IHRyYWNrZXIuZ2V0X3BhcGVyX2F0dGVtcHRzKCJwMSIpCiAgICAgICAgYXNzZXJ0IGxlbihwMV9hdHRlbXB0cykgPT0gMgoKICAgIGRlZiB0ZXN0X2dldF9hbGxfYXR0ZW1wdHMoc2VsZiwgdHJhY2tlcik6CiAgICAgICAgIiIiVGVzdCBnZXR0aW5nIGFsbCBhdHRlbXB0cy4iIiIKICAgICAgICB0cmFja2VyLmNyZWF0ZV9hdHRlbXB0KCJwMSIsICJQYXBlciBPbmUiKQogICAgICAgIHRyYWNrZXIuY3JlYXRlX2F0dGVtcHQoInAyIiwgIlBhcGVyIFR3byIpCgogICAgICAgIGFsbF9hdHRlbXB0cyA9IHRyYWNrZXIuZ2V0X2FsbF9hdHRlbXB0cygpCiAgICAgICAgYXNzZXJ0IGxlbihhbGxfYXR0ZW1wdHMpID09IDIKCiAgICBkZWYgdGVzdF9nZXRfYWxsX2F0dGVtcHRzX2ZpbHRlcmVkKHNlbGYsIHRyYWNrZXIpOgogICAgICAgICIiIlRlc3QgZmlsdGVyaW5nIGF0dGVtcHRzIGJ5IHN0YXR1cy4iIiIKICAgICAgICBhMSA9IHRyYWNrZXIuY3JlYXRlX2F0dGVtcHQoInAxIiwgIlBhcGVyIE9uZSIpCiAgICAgICAgdHJhY2tlci5jcmVhdGVfYXR0ZW1wdCgicDIiLCAiUGFwZXIgVHdvIikKICAgICAgICB0cmFja2VyLnVwZGF0ZV9hdHRlbXB0KGExLmF0dGVtcHRfaWQsIHN0YXR1cz0ic3VjY2VzcyIpCgogICAgICAgIHN1Y2Nlc3MgPSB0cmFja2VyLmdldF9hbGxfYXR0ZW1wdHMoc3RhdHVzPSJzdWNjZXNzIikKICAgICAgICBhc3NlcnQgbGVuKHN1Y2Nlc3MpID09IDEKCiAgICBkZWYgdGVzdF9nZXRfc3RhdGlzdGljcyhzZWxmLCB0cmFja2VyKToKICAgICAgICAiIiJUZXN0IGdldHRpbmcgc3RhdGlzdGljcy4iIiIKICAgICAgICBhMSA9IHRyYWNrZXIuY3JlYXRlX2F0dGVtcHQoInAxIiwgIlBhcGVyIE9uZSIpCiAgICAgICAgdHJhY2tlci5jcmVhdGVfYXR0ZW1wdCgicDIiLCAiUGFwZXIgVHdvIikKICAgICAgICB0cmFja2VyLnVwZGF0ZV9hdHRlbXB0KGExLmF0dGVtcHRfaWQsIHN0YXR1cz0ic3VjY2VzcyIpCgogICAgICAgIHN0YXRzID0gdHJhY2tlci5nZXRfc3RhdGlzdGljcygpCiAgICAgICAgYXNzZXJ0IHN0YXRzWyJ0b3RhbCJdID09IDIKICAgICAgICBhc3NlcnQgc3RhdHNbInN1Y2Nlc3MiXSA9PSAxCiAgICAgICAgYXNzZXJ0IHN0YXRzWyJmYWlsZWQiXSA9PSAwCgogICAgZGVmIHRlc3RfZ2VuZXJhdGVfcmVwb3J0KHNlbGYsIHRyYWNrZXIpOgogICAgICAgICIiIlRlc3QgZ2VuZXJhdGluZyBhIHJlcG9ydC4iIiIKICAgICAgICBhdHRlbXB0ID0gdHJhY2tlci5jcmVhdGVfYXR0ZW1wdCgicDEiLCAiVGVzdCBQYXBlciIpCiAgICAgICAgdHJhY2tlci51cGRhdGVfYXR0ZW1wdCgKICAgICAgICAgICAgYXR0ZW1wdC5hdHRlbXB0X2lkLAogICAgICAgICAgICBzdGF0dXM9InN1Y2Nlc3MiLAogICAgICAgICAgICBub3Rlcz0iQWxsIGdvb2QiLAogICAgICAgICkKCiAgICAgICAgcmVwb3J0ID0gdHJhY2tlci5nZW5lcmF0ZV9yZXBvcnQoYXR0ZW1wdC5hdHRlbXB0X2lkKQogICAgICAgIGFzc2VydCByZXBvcnQgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQgIlN1Y2Nlc3NmdWxseSIgaW4gcmVwb3J0LnN1bW1hcnkKCiAgICBkZWYgdGVzdF9yZW5kZXJfdGV4dChzZWxmLCB0cmFja2VyKToKICAgICAgICAiIiJUZXN0IHRleHQgcmVuZGVyaW5nLiIiIgogICAgICAgIHRyYWNrZXIuY3JlYXRlX2F0dGVtcHQoInAxIiwgIlBhcGVyIE9uZSIpCgogICAgICAgIG91dHB1dCA9IHRyYWNrZXIucmVuZGVyX3RleHQodHJhY2tlci5nZXRfYWxsX2F0dGVtcHRzKCkpCiAgICAgICAgYXNzZXJ0ICJSZXBsaWNhdGlvbiBUcmFja2VyIiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIlBhcGVyIE9uZSIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfcmVuZGVyX21hcmtkb3duKHNlbGYsIHRyYWNrZXIpOgogICAgICAgICIiIlRlc3QgTWFya2Rvd24gcmVuZGVyaW5nLiIiIgogICAgICAgIHRyYWNrZXIuY3JlYXRlX2F0dGVtcHQoInAxIiwgIlBhcGVyIE9uZSIpCgogICAgICAgIG91dHB1dCA9IHRyYWNrZXIucmVuZGVyX21hcmtkb3duKHRyYWNrZXIuZ2V0X2FsbF9hdHRlbXB0cygpKQogICAgICAgIGFzc2VydCAiIyBSZXBsaWNhdGlvbiBUcmFja2VyIiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIlRvdGFsIiBpbiBvdXRwdXQKCgpjbGFzcyBUZXN0UmVwbGljYXRpb25BdHRlbXB0OgogICAgIiIiVGVzdCBSZXBsaWNhdGlvbkF0dGVtcHQuIiIiCgogICAgZGVmIHRlc3RfY3JlYXRpb24oc2VsZik6CiAgICAgICAgIiIiVGVzdCBjcmVhdGluZyBhbiBhdHRlbXB0LiIiIgogICAgICAgIGF0dGVtcHQgPSBSZXBsaWNhdGlvbkF0dGVtcHQoCiAgICAgICAgICAgIGF0dGVtcHRfaWQ9InRlc3QxIiwKICAgICAgICAgICAgcGFwZXJfaWQ9InAxIiwKICAgICAgICAgICAgcGFwZXJfdGl0bGU9IlRlc3QgUGFwZXIiLAogICAgICAgICkKICAgICAgICBhc3NlcnQgYXR0ZW1wdC5hdHRlbXB0X2lkID09ICJ0ZXN0MSIKICAgICAgICBhc3NlcnQgYXR0ZW1wdC5zdGF0dXMgPT0gImluX3Byb2dyZXNzIgogICAgICAgIGFzc2VydCBsZW4oYXR0ZW1wdC5kaWZmZXJlbmNlcykgPT0gMAoKCmNsYXNzIFRlc3RSZXBsaWNhdGlvblJlcG9ydDoKICAgICIiIlRlc3QgUmVwbGljYXRpb25SZXBvcnQuIiIiCgogICAgZGVmIHRlc3RfY3JlYXRpb24oc2VsZik6CiAgICAgICAgIiIiVGVzdCBjcmVhdGluZyBhIHJlcG9ydC4iIiIKICAgICAgICBhdHRlbXB0ID0gUmVwbGljYXRpb25BdHRlbXB0KAogICAgICAgICAgICBhdHRlbXB0X2lkPSJ0ZXN0MSIsCiAgICAgICAgICAgIHBhcGVyX2lkPSJwMSIsCiAgICAgICAgICAgIHBhcGVyX3RpdGxlPSJUZXN0IiwKICAgICAgICApCiAgICAgICAgcmVwb3J0ID0gUmVwbGljYXRpb25SZXBvcnQoYXR0ZW1wdD1hdHRlbXB0KQogICAgICAgIGFzc2VydCByZXBvcnQuYXR0ZW1wdC5hdHRlbXB0X2lkID09ICJ0ZXN0MSIKICAgICAgICBhc3NlcnQgbGVuKHJlcG9ydC5maW5kaW5ncykgPT0gMAo=
+"""Tests for replication tracker."""
+
+import pytest
+from llm.replication_tracker import (
+    ReplicationTracker,
+    ReplicationAttempt,
+    ReplicationReport,
+)
+
+
+class TestReplicationTracker:
+    """Test ReplicationTracker."""
+
+    @pytest.fixture
+    def tracker(self, tmp_path):
+        return ReplicationTracker(data_dir=tmp_path)
+
+    def test_create_attempt(self, tracker):
+        """Test creating a replication attempt."""
+        attempt = tracker.create_attempt("p1", "Test Paper")
+        assert attempt.paper_id == "p1"
+        assert attempt.paper_title == "Test Paper"
+        assert attempt.status == "in_progress"
+
+    def test_update_attempt(self, tracker):
+        """Test updating an attempt."""
+        attempt = tracker.create_attempt("p1", "Test Paper")
+        result = tracker.update_attempt(
+            attempt.attempt_id,
+            status="success",
+            notes="All tests passed",
+        )
+        assert result is True
+
+        updated = tracker.get_attempt(attempt.attempt_id)
+        assert updated.status == "success"
+        assert updated.notes == "All tests passed"
+
+    def test_get_attempt(self, tracker):
+        """Test getting an attempt by ID."""
+        created = tracker.create_attempt("p1", "Test Paper")
+        fetched = tracker.get_attempt(created.attempt_id)
+        assert fetched is not None
+        assert fetched.attempt_id == created.attempt_id
+
+    def test_get_paper_attempts(self, tracker):
+        """Test getting all attempts for a paper."""
+        tracker.create_attempt("p1", "Paper One")
+        tracker.create_attempt("p1", "Paper One")
+        tracker.create_attempt("p2", "Paper Two")
+
+        p1_attempts = tracker.get_paper_attempts("p1")
+        assert len(p1_attempts) == 2
+
+    def test_get_all_attempts(self, tracker):
+        """Test getting all attempts."""
+        tracker.create_attempt("p1", "Paper One")
+        tracker.create_attempt("p2", "Paper Two")
+
+        all_attempts = tracker.get_all_attempts()
+        assert len(all_attempts) == 2
+
+    def test_get_all_attempts_filtered(self, tracker):
+        """Test filtering attempts by status."""
+        a1 = tracker.create_attempt("p1", "Paper One")
+        tracker.create_attempt("p2", "Paper Two")
+        tracker.update_attempt(a1.attempt_id, status="success")
+
+        success = tracker.get_all_attempts(status="success")
+        assert len(success) == 1
+
+    def test_get_statistics(self, tracker):
+        """Test getting statistics."""
+        a1 = tracker.create_attempt("p1", "Paper One")
+        tracker.create_attempt("p2", "Paper Two")
+        tracker.update_attempt(a1.attempt_id, status="success")
+
+        stats = tracker.get_statistics()
+        assert stats["total"] == 2
+        assert stats["success"] == 1
+        assert stats["failed"] == 0
+
+    def test_generate_report(self, tracker):
+        """Test generating a report."""
+        attempt = tracker.create_attempt("p1", "Test Paper")
+        tracker.update_attempt(
+            attempt.attempt_id,
+            status="success",
+            notes="All good",
+        )
+
+        report = tracker.generate_report(attempt.attempt_id)
+        assert report is not None
+        assert "Successfully" in report.summary
+
+    def test_render_text(self, tracker):
+        """Test text rendering."""
+        tracker.create_attempt("p1", "Paper One")
+
+        output = tracker.render_text(tracker.get_all_attempts())
+        assert "Replication Tracker" in output
+        assert "Paper One" in output
+
+    def test_render_markdown(self, tracker):
+        """Test Markdown rendering."""
+        tracker.create_attempt("p1", "Paper One")
+
+        output = tracker.render_markdown(tracker.get_all_attempts())
+        assert "# Replication Tracker" in output
+        assert "Total" in output
+
+
+class TestReplicationAttempt:
+    """Test ReplicationAttempt."""
+
+    def test_creation(self):
+        """Test creating an attempt."""
+        attempt = ReplicationAttempt(
+            attempt_id="test1",
+            paper_id="p1",
+            paper_title="Test Paper",
+        )
+        assert attempt.attempt_id == "test1"
+        assert attempt.status == "in_progress"
+        assert len(attempt.differences) == 0
+
+
+class TestReplicationReport:
+    """Test ReplicationReport."""
+
+    def test_creation(self):
+        """Test creating a report."""
+        attempt = ReplicationAttempt(
+            attempt_id="test1",
+            paper_id="p1",
+            paper_title="Test",
+        )
+        report = ReplicationReport(attempt=attempt)
+        assert report.attempt.attempt_id == "test1"
+        assert len(report.findings) == 0

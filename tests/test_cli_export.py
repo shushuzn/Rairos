@@ -1,1 +1,107 @@
-IiIiVGllciAxIHRlc3RzIOKAlCBDTEkgZXhwb3J0IGNvbW1hbmQuIiIiCgppbXBvcnQgcHl0ZXN0CmZyb20gdW5pdHRlc3QubW9jayBpbXBvcnQgcGF0Y2gsIE1hZ2ljTW9jawpmcm9tIGNsaSBpbXBvcnQgX3J1bl9leHBvcnQsIF9idWlsZF9leHBvcnRfcGFyc2VyCmltcG9ydCBhcmdwYXJzZQoKCmNsYXNzIFRlc3RFeHBvcnRQYXJzZXI6CiAgICAiIiJUZXN0IGV4cG9ydCBwYXJzZXIgY29uc3RydWN0aW9uLiIiIgoKICAgIGRlZiB0ZXN0X2J1aWxkX3BhcnNlcl9hY2NlcHRzX2Zvcm1hdF9saW1pdF9vdXRfcGFwZXJfZmxhZ3Moc2VsZik6CiAgICAgICAgIiIiX2J1aWxkX2V4cG9ydF9wYXJzZXIgYWRkcyAtLWZvcm1hdC8tLWxpbWl0Ly0tb3V0Ly0tcGFwZXIgZmxhZ3MuIiIiCiAgICAgICAgcCA9IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyKCkKICAgICAgICBzdWIgPSBwLmFkZF9zdWJwYXJzZXJzKCkKICAgICAgICByZXN1bHQgPSBfYnVpbGRfZXhwb3J0X3BhcnNlcihzdWIpCiAgICAgICAgYXNzZXJ0IHJlc3VsdCBpcyBub3QgTm9uZQoKCmNsYXNzIFRlc3RSdW5FeHBvcnQ6CiAgICAiIiJUZXN0IF9ydW5fZXhwb3J0IGZ1bmN0aW9uIHdpdGggbW9ja2VkIGRhdGFiYXNlLiIiIgoKICAgIEBwYXRjaCgiY2xpLkRhdGFiYXNlIikKICAgIGRlZiB0ZXN0X2V4cG9ydF9jc3Zfbm9fcGFwZXJzKHNlbGYsIG1vY2tfZGJfY2xzLCBjYXBzeXMpOgogICAgICAgICIiIl9ydW5fZXhwb3J0IC0tZm9ybWF0IGNzdiB3aXRoIGVtcHR5IERCIHJldHVybnMgaGVhZGVyIHJvdy4iIiIKICAgICAgICBtb2NrX2RiID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX2RiLmluaXQucmV0dXJuX3ZhbHVlID0gTm9uZQogICAgICAgIG1vY2tfZGIuZXhwb3J0X3BhcGVycy5yZXR1cm5fdmFsdWUgPSAoWyJpZCIsICJ0aXRsZSJdLCBbXSkKICAgICAgICBtb2NrX2RiX2Nscy5yZXR1cm5fdmFsdWUgPSBtb2NrX2RiCiAgICAgICAgYXJncyA9IGFyZ3BhcnNlLk5hbWVzcGFjZShmb3JtYXQ9ImNzdiIsIGxpbWl0PTAsIG91dD1Ob25lLCBwYXBlcj1Ob25lKQogICAgICAgIHJjID0gX3J1bl9leHBvcnQoYXJncykKICAgICAgICBhc3NlcnQgcmMgPT0gMAogICAgICAgIGNhcHR1cmVkID0gY2Fwc3lzLnJlYWRvdXRlcnIoKQogICAgICAgIGFzc2VydCAiaWQiIGluIGNhcHR1cmVkLm91dAogICAgICAgIGFzc2VydCAidGl0bGUiIGluIGNhcHR1cmVkLm91dAoKICAgIEBwYXRjaCgiY2xpLkRhdGFiYXNlIikKICAgIGRlZiB0ZXN0X2V4cG9ydF9qc29uX25vX3BhcGVycyhzZWxmLCBtb2NrX2RiX2NscywgY2Fwc3lzKToKICAgICAgICAiIiJfcnVuX2V4cG9ydCAtLWZvcm1hdCBqc29uIHdpdGggZW1wdHkgREIgcmV0dXJucyBlbXB0eSBsaXN0LiIiIgogICAgICAgIG1vY2tfZGIgPSBNYWdpY01vY2soKQogICAgICAgIG1vY2tfZGIuaW5pdC5yZXR1cm5fdmFsdWUgPSBOb25lCiAgICAgICAgbW9ja19kYi5leHBvcnRfcGFwZXJzLnJldHVybl92YWx1ZSA9IChbImlkIiwgInRpdGxlIl0sIFtdKQogICAgICAgIG1vY2tfZGJfY2xzLnJldHVybl92YWx1ZSA9IG1vY2tfZGIKICAgICAgICBhcmdzID0gYXJncGFyc2UuTmFtZXNwYWNlKGZvcm1hdD0ianNvbiIsIGxpbWl0PTAsIG91dD1Ob25lLCBwYXBlcj1Ob25lKQogICAgICAgIHJjID0gX3J1bl9leHBvcnQoYXJncykKICAgICAgICBhc3NlcnQgcmMgPT0gMAogICAgICAgIGNhcHR1cmVkID0gY2Fwc3lzLnJlYWRvdXRlcnIoKQogICAgICAgIGFzc2VydCAiW10iIGluIGNhcHR1cmVkLm91dAoKICAgIEBwYXRjaCgiY2xpLkRhdGFiYXNlIikKICAgIGRlZiB0ZXN0X2V4cG9ydF9iaWJ0ZXhfbm9fcGFwZXJzKHNlbGYsIG1vY2tfZGJfY2xzLCBjYXBzeXMpOgogICAgICAgICIiIl9ydW5fZXhwb3J0IC0tZm9ybWF0IGJpYnRleCB3aXRoIGVtcHR5IERCIHJldHVybnMgZW1wdHkgb3V0cHV0LiIiIgogICAgICAgIG1vY2tfZGIgPSBNYWdpY01vY2soKQogICAgICAgIG1vY2tfZGIuaW5pdC5yZXR1cm5fdmFsdWUgPSBOb25lCiAgICAgICAgbW9ja19kYi5leHBvcnRfcGFwZXJzLnJldHVybl92YWx1ZSA9IChbImlkIiwgInRpdGxlIl0sIFtdKQogICAgICAgIG1vY2tfZGJfY2xzLnJldHVybl92YWx1ZSA9IG1vY2tfZGIKICAgICAgICBhcmdzID0gYXJncGFyc2UuTmFtZXNwYWNlKGZvcm1hdD0iYmlidGV4IiwgbGltaXQ9MCwgb3V0PU5vbmUsIHBhcGVyPU5vbmUpCiAgICAgICAgcmMgPSBfcnVuX2V4cG9ydChhcmdzKQogICAgICAgIGFzc2VydCByYyA9PSAwCgogICAgQHBhdGNoKCJjbGkuRGF0YWJhc2UiKQogICAgZGVmIHRlc3RfZXhwb3J0X3NpbmdsZV9wYXBlcl9ub3RfZm91bmQoc2VsZiwgbW9ja19kYl9jbHMsIGNhcHN5cyk6CiAgICAgICAgIiIiX3J1bl9leHBvcnQgLS1wYXBlciA8aWQ+IHdpdGggbm9uLWV4aXN0ZW50IElEIGV4aXRzIDEuIiIiCiAgICAgICAgbW9ja19kYiA9IE1hZ2ljTW9jaygpCiAgICAgICAgbW9ja19kYi5pbml0LnJldHVybl92YWx1ZSA9IE5vbmUKICAgICAgICBtb2NrX2RiLnBhcGVyX2V4aXN0cy5yZXR1cm5fdmFsdWUgPSBGYWxzZQogICAgICAgIG1vY2tfZGJfY2xzLnJldHVybl92YWx1ZSA9IG1vY2tfZGIKICAgICAgICBhcmdzID0gYXJncGFyc2UuTmFtZXNwYWNlKGZvcm1hdD0iY3N2IiwgbGltaXQ9MCwgb3V0PU5vbmUsIHBhcGVyPSJub25leGlzdGVudC1pZCIpCiAgICAgICAgcmMgPSBfcnVuX2V4cG9ydChhcmdzKQogICAgICAgIGFzc2VydCByYyA9PSAxCgogICAgQHBhdGNoKCJjbGkuRGF0YWJhc2UiKQogICAgZGVmIHRlc3RfZXhwb3J0X3NpbmdsZV9wYXBlcl9qc29uKHNlbGYsIG1vY2tfZGJfY2xzLCBjYXBzeXMpOgogICAgICAgICIiIl9ydW5fZXhwb3J0IC0tcGFwZXIgPGlkPiAtLWZvcm1hdCBqc29uIGV4cG9ydHMgc2luZ2xlIHBhcGVyLiIiIgogICAgICAgIG1vY2tfcGFwZXIgPSBNYWdpY01vY2soKQogICAgICAgIG1vY2tfcGFwZXIuaWQgPSAiMjMwMS4xMjM0NSIKICAgICAgICBtb2NrX3BhcGVyLnRpdGxlID0gIlRlc3QgUGFwZXIiCiAgICAgICAgbW9ja19wYXBlci5hdXRob3JzID0gWyJTbWl0aCwgSm9obiJdCiAgICAgICAgbW9ja19wYXBlci5hYnN0cmFjdCA9ICJBYnN0cmFjdCB0ZXh0IgogICAgICAgIG1vY2tfcGFwZXIucHVibGlzaGVkID0gIjIwMjMtMDEtMTUiCiAgICAgICAgbW9ja19wYXBlci5kb2kgPSAiMTAuMTIzNC90ZXN0IgogICAgICAgIG1vY2tfcGFwZXIuam91cm5hbCA9ICJUZXN0IEpvdXJuYWwiCiAgICAgICAgbW9ja19wYXBlci5wcmltYXJ5X2NhdGVnb3J5ID0gImNzLkFJIgogICAgICAgIG1vY2tfZGIgPSBNYWdpY01vY2soKQogICAgICAgIG1vY2tfZGIuaW5pdC5yZXR1cm5fdmFsdWUgPSBOb25lCiAgICAgICAgbW9ja19kYi5wYXBlcl9leGlzdHMucmV0dXJuX3ZhbHVlID0gVHJ1ZQogICAgICAgIG1vY2tfZGIuZ2V0X3BhcGVyLnJldHVybl92YWx1ZSA9IG1vY2tfcGFwZXIKICAgICAgICBtb2NrX2RiX2Nscy5yZXR1cm5fdmFsdWUgPSBtb2NrX2RiCiAgICAgICAgYXJncyA9IGFyZ3BhcnNlLk5hbWVzcGFjZShmb3JtYXQ9Impzb24iLCBsaW1pdD0wLCBvdXQ9Tm9uZSwgcGFwZXI9IjIzMDEuMTIzNDUiKQogICAgICAgIHJjID0gX3J1bl9leHBvcnQoYXJncykKICAgICAgICBhc3NlcnQgcmMgPT0gMAogICAgICAgIGNhcHR1cmVkID0gY2Fwc3lzLnJlYWRvdXRlcnIoKQogICAgICAgIGFzc2VydCAiVGVzdCBQYXBlciIgaW4gY2FwdHVyZWQub3V0CgogICAgQHBhdGNoKCJjbGkuRGF0YWJhc2UiKQogICAgZGVmIHRlc3RfZXhwb3J0X2xpbWl0X3Bhc3NlZF90b19kYihzZWxmLCBtb2NrX2RiX2Nscyk6CiAgICAgICAgIiIiX3J1bl9leHBvcnQgLS1saW1pdCAxMCBwYXNzZXMgbGltaXQgdG8gZGIuZXhwb3J0X3BhcGVycy4iIiIKICAgICAgICBtb2NrX2RiID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX2RiLmluaXQucmV0dXJuX3ZhbHVlID0gTm9uZQogICAgICAgIG1vY2tfZGIuZXhwb3J0X3BhcGVycy5yZXR1cm5fdmFsdWUgPSAoWyJpZCJdLCBbXSkKICAgICAgICBtb2NrX2RiX2Nscy5yZXR1cm5fdmFsdWUgPSBtb2NrX2RiCiAgICAgICAgYXJncyA9IGFyZ3BhcnNlLk5hbWVzcGFjZShmb3JtYXQ9ImNzdiIsIGxpbWl0PTEwLCBvdXQ9Tm9uZSwgcGFwZXI9Tm9uZSkKICAgICAgICByYyA9IF9ydW5fZXhwb3J0KGFyZ3MpCiAgICAgICAgYXNzZXJ0IHJjID09IDAKICAgICAgICBtb2NrX2RiLmV4cG9ydF9wYXBlcnMuYXNzZXJ0X2NhbGxlZF9vbmNlKCkKICAgICAgICBjYWxsX2t3YXJncyA9IG1vY2tfZGIuZXhwb3J0X3BhcGVycy5jYWxsX2FyZ3MKICAgICAgICBhc3NlcnQgY2FsbF9rd2FyZ3NbMV1bImxpbWl0Il0gPT0gMTAK
+"""Tier 1 tests — CLI export command."""
+
+import pytest
+from unittest.mock import patch, MagicMock
+from cli import _run_export, _build_export_parser
+import argparse
+
+
+class TestExportParser:
+    """Test export parser construction."""
+
+    def test_build_parser_accepts_format_limit_out_paper_flags(self):
+        """_build_export_parser adds --format/--limit/--out/--paper flags."""
+        p = argparse.ArgumentParser()
+        sub = p.add_subparsers()
+        result = _build_export_parser(sub)
+        assert result is not None
+
+
+class TestRunExport:
+    """Test _run_export function with mocked database."""
+
+    @patch("cli.Database")
+    def test_export_csv_no_papers(self, mock_db_cls, capsys):
+        """_run_export --format csv with empty DB returns header row."""
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.export_papers.return_value = (["id", "title"], [])
+        mock_db_cls.return_value = mock_db
+        args = argparse.Namespace(format="csv", limit=0, out=None, paper=None)
+        rc = _run_export(args)
+        assert rc == 0
+        captured = capsys.readouterr()
+        assert "id" in captured.out
+        assert "title" in captured.out
+
+    @patch("cli.Database")
+    def test_export_json_no_papers(self, mock_db_cls, capsys):
+        """_run_export --format json with empty DB returns empty list."""
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.export_papers.return_value = (["id", "title"], [])
+        mock_db_cls.return_value = mock_db
+        args = argparse.Namespace(format="json", limit=0, out=None, paper=None)
+        rc = _run_export(args)
+        assert rc == 0
+        captured = capsys.readouterr()
+        assert "[]" in captured.out
+
+    @patch("cli.Database")
+    def test_export_bibtex_no_papers(self, mock_db_cls, capsys):
+        """_run_export --format bibtex with empty DB returns empty output."""
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.export_papers.return_value = (["id", "title"], [])
+        mock_db_cls.return_value = mock_db
+        args = argparse.Namespace(format="bibtex", limit=0, out=None, paper=None)
+        rc = _run_export(args)
+        assert rc == 0
+
+    @patch("cli.Database")
+    def test_export_single_paper_not_found(self, mock_db_cls, capsys):
+        """_run_export --paper <id> with non-existent ID exits 1."""
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.paper_exists.return_value = False
+        mock_db_cls.return_value = mock_db
+        args = argparse.Namespace(format="csv", limit=0, out=None, paper="nonexistent-id")
+        rc = _run_export(args)
+        assert rc == 1
+
+    @patch("cli.Database")
+    def test_export_single_paper_json(self, mock_db_cls, capsys):
+        """_run_export --paper <id> --format json exports single paper."""
+        mock_paper = MagicMock()
+        mock_paper.id = "2301.12345"
+        mock_paper.title = "Test Paper"
+        mock_paper.authors = ["Smith, John"]
+        mock_paper.abstract = "Abstract text"
+        mock_paper.published = "2023-01-15"
+        mock_paper.doi = "10.1234/test"
+        mock_paper.journal = "Test Journal"
+        mock_paper.primary_category = "cs.AI"
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.paper_exists.return_value = True
+        mock_db.get_paper.return_value = mock_paper
+        mock_db_cls.return_value = mock_db
+        args = argparse.Namespace(format="json", limit=0, out=None, paper="2301.12345")
+        rc = _run_export(args)
+        assert rc == 0
+        captured = capsys.readouterr()
+        assert "Test Paper" in captured.out
+
+    @patch("cli.Database")
+    def test_export_limit_passed_to_db(self, mock_db_cls):
+        """_run_export --limit 10 passes limit to db.export_papers."""
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.export_papers.return_value = (["id"], [])
+        mock_db_cls.return_value = mock_db
+        args = argparse.Namespace(format="csv", limit=10, out=None, paper=None)
+        rc = _run_export(args)
+        assert rc == 0
+        mock_db.export_papers.assert_called_once()
+        call_kwargs = mock_db.export_papers.call_args
+        assert call_kwargs[1]["limit"] == 10

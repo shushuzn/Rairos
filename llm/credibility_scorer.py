@@ -1,1 +1,160 @@
-IiIiR2VuZSBQb29sIENyZWRpYmlsaXR5IFNjb3Jlci4KCkNvbXB1dGVzIHBlci1jYXBzdWxlIG5vdmVsdHkgc2NvcmVzIGJhc2VkIG9uIGtleXdvcmQgb3ZlcmxhcCAoSmFjY2FyZCkuCkZsYWdzIGNhcHN1bGVzIHdpdGggaGlnaCBrZXl3b3JkIHJlZHVuZGFuY3kgYXMgInRyZW5kc2xvcCIuCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGpzb24KZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcwpmcm9tIHR5cGluZyBpbXBvcnQgQW55LCBEaWN0LCBMaXN0LCBPcHRpb25hbAoKCkNBUFNVTEVfUEFUSCA9IFBhdGguaG9tZSgpIC8gIi5haV9yZXNlYXJjaF9vcyIgLyAiZ2VuZV9wb29sIiAvICJjYXBzdWxlcy5qc29uIgpUUkVORFNMT1BfVEhSRVNIT0xEID0gMC43ICAjIEphY2NhcmQgb3ZlcmxhcCBhYm92ZSB0aGlzID0gInRyZW5kc2xvcCIKCgpkZWYgamFjY2FyZChhOiBMaXN0W3N0cl0sIGI6IExpc3Rbc3RyXSkgLT4gZmxvYXQ6CiAgICBzX2EsIHNfYiA9IHNldChhKSwgc2V0KGIpCiAgICBpZiBub3Qgc19hIG9yIG5vdCBzX2I6CiAgICAgICAgcmV0dXJuIDAuMAogICAgcmV0dXJuIGxlbihzX2EgJiBzX2IpIC8gbGVuKHNfYSB8IHNfYikKCgpAZGF0YWNsYXNzCmNsYXNzIENhcHN1bGVDcmVkaWJpbGl0eToKICAgIGNhcHN1bGVfaWQ6IHN0cgogICAgZ2FwX3RpdGxlOiBzdHIKICAgIGdhcF90eXBlOiBzdHIKICAgIG91dGNvbWVfc2NvcmU6IGZsb2F0CiAgICBub3ZlbHR5X3Njb3JlOiBmbG9hdCAgIyAxIC0gbWF4X292ZXJsYXAgKGhpZ2ggPSBvcmlnaW5hbCkKICAgIG1heF9vdmVybGFwOiBmbG9hdCAgIyBKYWNjYXJkIHdpdGggbW9zdC1zaW1pbGFyIGNhcHN1bGUKICAgIGlzX3RyZW5kc2xvcDogYm9vbAogICAgdHJpZ2dlcl9rZXl3b3JkczogTGlzdFtzdHJdCgogICAgZGVmIHRvX2RpY3Qoc2VsZikgLT4gRGljdFtzdHIsIEFueV06CiAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgImNhcHN1bGVfaWQiOiBzZWxmLmNhcHN1bGVfaWQsCiAgICAgICAgICAgICJnYXBfdGl0bGUiOiBzZWxmLmdhcF90aXRsZSwKICAgICAgICAgICAgImdhcF90eXBlIjogc2VsZi5nYXBfdHlwZSwKICAgICAgICAgICAgIm91dGNvbWVfc2NvcmUiOiBzZWxmLm91dGNvbWVfc2NvcmUsCiAgICAgICAgICAgICJub3ZlbHR5X3Njb3JlIjogc2VsZi5ub3ZlbHR5X3Njb3JlLAogICAgICAgICAgICAibWF4X292ZXJsYXAiOiBzZWxmLm1heF9vdmVybGFwLAogICAgICAgICAgICAiaXNfdHJlbmRzbG9wIjogc2VsZi5pc190cmVuZHNsb3AsCiAgICAgICAgICAgICJ0cmlnZ2VyX2tleXdvcmRzIjogc2VsZi50cmlnZ2VyX2tleXdvcmRzLAogICAgICAgIH0KCgpjbGFzcyBDcmVkaWJpbGl0eVNjb3JlcjoKICAgICIiIkNvbXB1dGUgcGVyLWNhcHN1bGUgbm92ZWx0eSBzY29yZXMgZnJvbSBHZW5lIFBvb2wgY2Fwc3VsZSBoaXN0b3J5LiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmKToKICAgICAgICBzZWxmLl9jcmVkaWJpbGl0eTogT3B0aW9uYWxbTGlzdFtDYXBzdWxlQ3JlZGliaWxpdHldXSA9IE5vbmUKCiAgICAjIOKUgOKUgCBDb3JlIGNvbXB1dGF0aW9uIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKICAgIGRlZiBjb21wdXRlX2NyZWRpYmlsaXR5KHNlbGYsIGZvcmNlOiBib29sID0gRmFsc2UpIC0+IExpc3RbQ2Fwc3VsZUNyZWRpYmlsaXR5XToKICAgICAgICAiIiJDb21wdXRlIG5vdmVsdHkgKyB0cmVuZHNsb3AgZmxhZyBmb3IgYWxsIGNhcHN1bGVzLgoKICAgICAgICBBIGNhcHN1bGUncyBub3ZlbHR5X3Njb3JlID0gMSAtIG1heF9qYWNjYXJkLCB3aGVyZSBtYXhfamFjY2FyZCBpcwogICAgICAgIHRoZSBoaWdoZXN0IEphY2NhcmQgc2ltaWxhcml0eSBhZ2FpbnN0IGFueSBvdGhlciBjYXBzdWxlIGluIHRoZSBwb29sLgogICAgICAgICIiIgogICAgICAgIGlmIHNlbGYuX2NyZWRpYmlsaXR5IGlzIG5vdCBOb25lIGFuZCBub3QgZm9yY2U6CiAgICAgICAgICAgIHJldHVybiBzZWxmLl9jcmVkaWJpbGl0eQoKICAgICAgICBpZiBub3QgQ0FQU1VMRV9QQVRILmV4aXN0cygpOgogICAgICAgICAgICBzZWxmLl9jcmVkaWJpbGl0eSA9IFtdCiAgICAgICAgICAgIHJldHVybiBzZWxmLl9jcmVkaWJpbGl0eQoKICAgICAgICBkYXRhID0ganNvbi5sb2FkcyhDQVBTVUxFX1BBVEgucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpKQogICAgICAgIGNhcHN1bGVzID0gZGF0YS5nZXQoImNhcHN1bGVzIiwgW10pCgogICAgICAgIHJlc3VsdHM6IExpc3RbQ2Fwc3VsZUNyZWRpYmlsaXR5XSA9IFtdCiAgICAgICAgX24gPSBsZW4oY2Fwc3VsZXMpCgogICAgICAgIGZvciBpLCBjYXAgaW4gZW51bWVyYXRlKGNhcHN1bGVzKToKICAgICAgICAgICAga3cgPSBjYXAuZ2V0KCJ0cmlnZ2VyX2tleXdvcmRzIiwgW10pCiAgICAgICAgICAgIGNhcF9pZCA9IGNhcC5nZXQoImNhcHN1bGVfaWQiLCBmImNhcC17aX0iKQoKICAgICAgICAgICAgIyBDb21wdXRlIG1heCBKYWNjYXJkIGFnYWluc3QgYWxsIG90aGVyIGNhcHN1bGVzCiAgICAgICAgICAgIG1heF9vdmVybGFwID0gMC4wCiAgICAgICAgICAgIGZvciBqLCBvdGhlciBpbiBlbnVtZXJhdGUoY2Fwc3VsZXMpOgogICAgICAgICAgICAgICAgaWYgaSA9PSBqOgogICAgICAgICAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgICAgICAgICBvdiA9IGphY2NhcmQoa3csIG90aGVyLmdldCgidHJpZ2dlcl9rZXl3b3JkcyIsIFtdKSkKICAgICAgICAgICAgICAgIGlmIG92ID4gbWF4X292ZXJsYXA6CiAgICAgICAgICAgICAgICAgICAgbWF4X292ZXJsYXAgPSBvdgoKICAgICAgICAgICAgbm92ZWx0eSA9IDEuMCAtIG1heF9vdmVybGFwCiAgICAgICAgICAgIHJlc3VsdHMuYXBwZW5kKAogICAgICAgICAgICAgICAgQ2Fwc3VsZUNyZWRpYmlsaXR5KAogICAgICAgICAgICAgICAgICAgIGNhcHN1bGVfaWQ9Y2FwX2lkLAogICAgICAgICAgICAgICAgICAgIGdhcF90aXRsZT1jYXAuZ2V0KCJhY3Rpb25fZ2FwX3RpdGxlIiwgIiIpLAogICAgICAgICAgICAgICAgICAgIGdhcF90eXBlPWNhcC5nZXQoImFjdGlvbl9nYXBfdHlwZSIsICIiKSwKICAgICAgICAgICAgICAgICAgICBvdXRjb21lX3Njb3JlPWNhcC5nZXQoIm91dGNvbWVfc3VjY2Vzc19zY29yZSIsIDAuMCksCiAgICAgICAgICAgICAgICAgICAgbm92ZWx0eV9zY29yZT1yb3VuZChub3ZlbHR5LCAzKSwKICAgICAgICAgICAgICAgICAgICBtYXhfb3ZlcmxhcD1yb3VuZChtYXhfb3ZlcmxhcCwgMyksCiAgICAgICAgICAgICAgICAgICAgaXNfdHJlbmRzbG9wPW1heF9vdmVybGFwID4gVFJFTkRTTE9QX1RIUkVTSE9MRCwKICAgICAgICAgICAgICAgICAgICB0cmlnZ2VyX2tleXdvcmRzPWt3LAogICAgICAgICAgICAgICAgKQogICAgICAgICAgICApCgogICAgICAgICMgU29ydDogbW9zdCBvcmlnaW5hbCBmaXJzdAogICAgICAgIHJlc3VsdHMuc29ydChrZXk9bGFtYmRhIHg6IC14Lm5vdmVsdHlfc2NvcmUpCiAgICAgICAgc2VsZi5fY3JlZGliaWxpdHkgPSByZXN1bHRzCiAgICAgICAgcmV0dXJuIHJlc3VsdHMKCiAgICBkZWYgZ2V0X3RyZW5kc2xvcF9jYXBzdWxlcyhzZWxmKSAtPiBMaXN0W0NhcHN1bGVDcmVkaWJpbGl0eV06CiAgICAgICAgIiIiUmV0dXJuIG9ubHkgY2Fwc3VsZXMgZmxhZ2dlZCBhcyB0cmVuZHNsb3AuIiIiCiAgICAgICAgcmV0dXJuIFtjIGZvciBjIGluIHNlbGYuY29tcHV0ZV9jcmVkaWJpbGl0eSgpIGlmIGMuaXNfdHJlbmRzbG9wXQoKICAgIGRlZiBnZXRfYWxsX2NyZWRpYmlsaXR5KHNlbGYpIC0+IExpc3RbQ2Fwc3VsZUNyZWRpYmlsaXR5XToKICAgICAgICAiIiJSZXR1cm4gYWxsIGNhcHN1bGVzIHNvcnRlZCBieSBub3ZlbHR5IGRlc2MuIiIiCiAgICAgICAgcmV0dXJuIHNlbGYuY29tcHV0ZV9jcmVkaWJpbGl0eSgpCgogICAgIyDilIDilIAgSFRNTCByZW5kZXJpbmcg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgogICAgZGVmIHJlbmRlcl9odG1sKHNlbGYpIC0+IHN0cjoKICAgICAgICAiIiJSZW5kZXIgY3JlZGliaWxpdHkgc2NvcmVzIGFzIGFuIEhUTUwgZnJhZ21lbnQgZm9yIHRoZSB3ZWIgVUkuIiIiCiAgICAgICAgY2Fwc3VsZXMgPSBzZWxmLmdldF9hbGxfY3JlZGliaWxpdHkoKQogICAgICAgIGlmIG5vdCBjYXBzdWxlczoKICAgICAgICAgICAgcmV0dXJuICI8cD5ObyBjYXBzdWxlcyB5ZXQuIENyZWF0ZSBzb21lIGNhcHN1bGVzIGZpcnN0LjwvcD4iCgogICAgICAgIHRyZW5kc2xvcF9jb3VudCA9IGxlbihzZWxmLmdldF90cmVuZHNsb3BfY2Fwc3VsZXMoKSkKCiAgICAgICAgbGluZXMgPSBbJzxkaXYgY2xhc3M9ImNyZWRpYmlsaXR5LXBhbmVsIj4nXQogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgZiI8aDM+R2FwIENyZWRpYmlsaXR5IFNjb3JlcyA8c21hbGwgc3R5bGU9J2NvbG9yOiM4ODgnPih7bGVuKGNhcHN1bGVzKX0gY2Fwc3VsZXMsIHt0cmVuZHNsb3BfY291bnR9IHRyZW5kc2xvcCk8L3NtYWxsPjwvaDM+IgogICAgICAgICkKICAgICAgICBsaW5lcy5hcHBlbmQoJzx0YWJsZSBjbGFzcz0iY3JlZGliaWxpdHktdGFibGUiPicpCiAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICAiPHRoZWFkPjx0cj4iCiAgICAgICAgICAgICI8dGg+R2FwIFRpdGxlPC90aD4iCiAgICAgICAgICAgICI8dGg+VHlwZTwvdGg+IgogICAgICAgICAgICAiPHRoPk91dGNvbWU8L3RoPiIKICAgICAgICAgICAgIjx0aD5Ob3ZlbHR5PC90aD4iCiAgICAgICAgICAgICI8dGg+TWF4IE92ZXJsYXA8L3RoPiIKICAgICAgICAgICAgIjx0aD5TdGF0dXM8L3RoPiIKICAgICAgICAgICAgIjwvdHI+PC90aGVhZD4iCiAgICAgICAgKQogICAgICAgIGxpbmVzLmFwcGVuZCgiPHRib2R5PiIpCgogICAgICAgIGZvciBjIGluIGNhcHN1bGVzOgogICAgICAgICAgICBub3ZlbHR5X3BjdCA9IGludChjLm5vdmVsdHlfc2NvcmUgKiAxMDApCiAgICAgICAgICAgIF9jb2xvciA9ICIjQzQ3MDZBIiBpZiBjLmlzX3RyZW5kc2xvcCBlbHNlICIjN0E5RTdBIgogICAgICAgICAgICBiYWRnZSA9ICgKICAgICAgICAgICAgICAgICc8c3BhbiBzdHlsZT0iYmFja2dyb3VuZDojQzQ3MDZBO2NvbG9yOndoaXRlO3BhZGRpbmc6MnB4IDhweDtib3JkZXItcmFkaXVzOjEwcHg7Zm9udC1zaXplOjExcHgiPuKaoO+4jyBUUkVORFNMT1A8L3NwYW4+JwogICAgICAgICAgICAgICAgaWYgYy5pc190cmVuZHNsb3AKICAgICAgICAgICAgICAgIGVsc2UgJzxzcGFuIHN0eWxlPSJiYWNrZ3JvdW5kOiM3QTlFN0E7Y29sb3I6d2hpdGU7cGFkZGluZzoycHggOHB4O2JvcmRlci1yYWRpdXM6MTBweDtmb250LXNpemU6MTFweCI+4pyTIE9yaWdpbmFsPC9zcGFuPicKICAgICAgICAgICAgKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIjx0cj4iKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgICAgICAgICBmIjx0ZCBzdHlsZT0nbWF4LXdpZHRoOjI2MHB4O292ZXJmbG93OmhpZGRlbjt0ZXh0LW92ZXJmbG93OmVsbGlwc2lzO3doaXRlLXNwYWNlOm5vd3JhcCc+PGNvZGUgdGl0bGU9J3tjLmdhcF90aXRsZX0nPntjLmdhcF90aXRsZVs6NDBdfTwvY29kZT48L3RkPiIKICAgICAgICAgICAgKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiI8dGQ+PGNvZGU+e2MuZ2FwX3R5cGV9PC9jb2RlPjwvdGQ+IikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiPHRkPntjLm91dGNvbWVfc2NvcmU6LjJmfTwvdGQ+IikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiPHRkPntub3ZlbHR5X3BjdH0lPC90ZD4iKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiI8dGQ+e2ludChjLm1heF9vdmVybGFwICogMTAwKX0lPC90ZD4iKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiI8dGQ+e2JhZGdlfTwvdGQ+IikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCI8L3RyPiIpCgogICAgICAgIGxpbmVzLmFwcGVuZCgiPC90Ym9keT48L3RhYmxlPiIpCiAgICAgICAgbGluZXMuYXBwZW5kKCI8c3R5bGU+IikKICAgICAgICBsaW5lcy5hcHBlbmQoIi5jcmVkaWJpbGl0eS1wYW5lbCB7IGZvbnQtZmFtaWx5OiBHZW9yZ2lhLCBzZXJpZjsgfSIpCiAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICAiLmNyZWRpYmlsaXR5LXRhYmxlIHsgd2lkdGg6IDEwMCU7IGJvcmRlci1jb2xsYXBzZTogY29sbGFwc2U7IG1hcmdpbi10b3A6IDFyZW07IH0iCiAgICAgICAgKQogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgIi5jcmVkaWJpbGl0eS10YWJsZSB0aCwgLmNyZWRpYmlsaXR5LXRhYmxlIHRkIHsgcGFkZGluZzogMC40cmVtIDAuOHJlbTsgYm9yZGVyLWJvdHRvbTogMXB4IHNvbGlkICNlOGU0ZGU7IHRleHQtYWxpZ246IGxlZnQ7IH0iCiAgICAgICAgKQogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgIi5jcmVkaWJpbGl0eS10YWJsZSB0aCB7IGZvbnQtc2l6ZTogMC43NXJlbTsgdGV4dC10cmFuc2Zvcm06IHVwcGVyY2FzZTsgbGV0dGVyLXNwYWNpbmc6IDAuMDVlbTsgY29sb3I6ICM3YTc1NzA7IH0iCiAgICAgICAgKQogICAgICAgIGxpbmVzLmFwcGVuZCgiPC9zdHlsZT4iKQogICAgICAgIGxpbmVzLmFwcGVuZCgiPC9kaXY+IikKICAgICAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQo=
+"""Gene Pool Credibility Scorer.
+
+Computes per-capsule novelty scores based on keyword overlap (Jaccard).
+Flags capsules with high keyword redundancy as "trendslop".
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+
+
+CAPSULE_PATH = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+TRENDSLOP_THRESHOLD = 0.7  # Jaccard overlap above this = "trendslop"
+
+
+def jaccard(a: List[str], b: List[str]) -> float:
+    s_a, s_b = set(a), set(b)
+    if not s_a or not s_b:
+        return 0.0
+    return len(s_a & s_b) / len(s_a | s_b)
+
+
+@dataclass
+class CapsuleCredibility:
+    capsule_id: str
+    gap_title: str
+    gap_type: str
+    outcome_score: float
+    novelty_score: float  # 1 - max_overlap (high = original)
+    max_overlap: float  # Jaccard with most-similar capsule
+    is_trendslop: bool
+    trigger_keywords: List[str]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "capsule_id": self.capsule_id,
+            "gap_title": self.gap_title,
+            "gap_type": self.gap_type,
+            "outcome_score": self.outcome_score,
+            "novelty_score": self.novelty_score,
+            "max_overlap": self.max_overlap,
+            "is_trendslop": self.is_trendslop,
+            "trigger_keywords": self.trigger_keywords,
+        }
+
+
+
+class CredibilityScorer:
+    """Compute per-capsule novelty scores from Gene Pool capsule history."""
+
+    def __init__(self):
+        self._credibility: Optional[List[CapsuleCredibility]] = None
+
+    # ── Core computation ────────────────────────────────────────────────
+
+    def compute_credibility(self, force: bool = False) -> List[CapsuleCredibility]:
+        """Compute novelty + trendslop flag for all capsules.
+
+        A capsule's novelty_score = 1 - max_jaccard, where max_jaccard is
+        the highest Jaccard similarity against any other capsule in the pool.
+        """
+        if self._credibility is not None and not force:
+            return self._credibility
+
+        if not CAPSULE_PATH.exists():
+            self._credibility = []
+            return self._credibility
+
+        data = json.loads(CAPSULE_PATH.read_text(encoding="utf-8"))
+        capsules = data.get("capsules", [])
+
+        results: List[CapsuleCredibility] = []
+        _n = len(capsules)
+
+        for i, cap in enumerate(capsules):
+            kw = cap.get("trigger_keywords", [])
+            cap_id = cap.get("capsule_id", f"cap-{i}")
+
+            # Compute max Jaccard against all other capsules
+            max_overlap = 0.0
+            for j, other in enumerate(capsules):
+                if i == j:
+                    continue
+                ov = jaccard(kw, other.get("trigger_keywords", []))
+                if ov > max_overlap:
+                    max_overlap = ov
+
+            novelty = 1.0 - max_overlap
+            results.append(CapsuleCredibility(
+                capsule_id=cap_id,
+                gap_title=cap.get("action_gap_title", ""),
+                gap_type=cap.get("action_gap_type", ""),
+                outcome_score=cap.get("outcome_success_score", 0.0),
+                novelty_score=round(novelty, 3),
+                max_overlap=round(max_overlap, 3),
+                is_trendslop=max_overlap > TRENDSLOP_THRESHOLD,
+                trigger_keywords=kw,
+            ))
+
+        # Sort: most original first
+        results.sort(key=lambda x: -x.novelty_score)
+        self._credibility = results
+        return results
+
+    def get_trendslop_capsules(self) -> List[CapsuleCredibility]:
+        """Return only capsules flagged as trendslop."""
+        return [c for c in self.compute_credibility() if c.is_trendslop]
+
+    def get_all_credibility(self) -> List[CapsuleCredibility]:
+        """Return all capsules sorted by novelty desc."""
+        return self.compute_credibility()
+
+    # ── HTML rendering ─────────────────────────────────────────────────
+
+    def render_html(self) -> str:
+        """Render credibility scores as an HTML fragment for the web UI."""
+        capsules = self.get_all_credibility()
+        if not capsules:
+            return "<p>No capsules yet. Create some capsules first.</p>"
+
+        trendslop_count = len(self.get_trendslop_capsules())
+
+        lines = ['<div class="credibility-panel">']
+        lines.append(f"<h3>Gap Credibility Scores <small style='color:#888'>({len(capsules)} capsules, {trendslop_count} trendslop)</small></h3>")
+        lines.append('<table class="credibility-table">')
+        lines.append("<thead><tr>"
+                     "<th>Gap Title</th>"
+                     "<th>Type</th>"
+                     "<th>Outcome</th>"
+                     "<th>Novelty</th>"
+                     "<th>Max Overlap</th>"
+                     "<th>Status</th>"
+                     "</tr></thead>")
+        lines.append("<tbody>")
+
+        for c in capsules:
+            novelty_pct = int(c.novelty_score * 100)
+            _color = "#C4706A" if c.is_trendslop else "#7A9E7A"
+            badge = '<span style="background:#C4706A;color:white;padding:2px 8px;border-radius:10px;font-size:11px">⚠️ TRENDSLOP</span>' if c.is_trendslop else '<span style="background:#7A9E7A;color:white;padding:2px 8px;border-radius:10px;font-size:11px">✓ Original</span>'
+            lines.append("<tr>")
+            lines.append(f"<td style='max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'><code title='{c.gap_title}'>{c.gap_title[:40]}</code></td>")
+            lines.append(f"<td><code>{c.gap_type}</code></td>")
+            lines.append(f"<td>{c.outcome_score:.2f}</td>")
+            lines.append(f"<td>{novelty_pct}%</td>")
+            lines.append(f"<td>{int(c.max_overlap * 100)}%</td>")
+            lines.append(f"<td>{badge}</td>")
+            lines.append("</tr>")
+
+        lines.append("</tbody></table>")
+        lines.append("<style>")
+        lines.append(".credibility-panel { font-family: Georgia, serif; }")
+        lines.append(".credibility-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }")
+        lines.append(".credibility-table th, .credibility-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }")
+        lines.append(".credibility-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }")
+        lines.append("</style>")
+        lines.append("</div>")
+        return "\n".join(lines)

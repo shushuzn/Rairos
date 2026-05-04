@@ -1,1 +1,180 @@
-IiIiVm9pY2UtdG8tQ2Fwc3VsZSDigJQgdXBsb2FkIGF1ZGlvIOKGkiBXaGlzcGVyIHRyYW5zY3JpcHRpb24g4oaSIExMTSBnYXAgZXh0cmFjdGlvbiDihpIgc2F2ZSB0byBHZW5lIFBvb2wuIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQganNvbgppbXBvcnQgb3MKaW1wb3J0IHRlbXBmaWxlCmltcG9ydCB1dWlkCmZyb20gZGF0ZXRpbWUgaW1wb3J0IGRhdGV0aW1lCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgQW55LCBEaWN0LCBPcHRpb25hbAoKUEFQRVJTX0RJUiA9IFBhdGguaG9tZSgpIC8gIi5haV9yZXNlYXJjaF9vcyIKQ0FQU1VMRVNfUEFUSCA9IFBBUEVSU19ESVIgLyAiZ2VuZV9wb29sIiAvICJjYXBzdWxlcy5qc29uIgoKCmRlZiB0cmFuc2NyaWJlX2F1ZGlvKGF1ZGlvX2J5dGVzOiBieXRlcykgLT4gc3RyOgogICAgIiIiVHJhbnNjcmliZSBhdWRpbyB1c2luZyBPcGVuQUkgV2hpc3Blci4iIiIKICAgIHRyeToKICAgICAgICBpbXBvcnQgb3BlbmFpCgogICAgICAgIHdpdGggdGVtcGZpbGUuTmFtZWRUZW1wb3JhcnlGaWxlKHN1ZmZpeD0iLndlYm0iLCBkZWxldGU9RmFsc2UpIGFzIGY6CiAgICAgICAgICAgIGYud3JpdGUoYXVkaW9fYnl0ZXMpCiAgICAgICAgICAgIHRtcF9wYXRoID0gZi5uYW1lCiAgICAgICAgY2xpZW50ID0gb3BlbmFpLk9wZW5BSSgpCiAgICAgICAgd2l0aCBvcGVuKHRtcF9wYXRoLCAicmIiKSBhcyBhdWRpb19maWxlOgogICAgICAgICAgICB0cmFuc2NyaXB0ID0gY2xpZW50LmF1ZGlvLnRyYW5zY3JpcHRpb25zLmNyZWF0ZShtb2RlbD0id2hpc3Blci0xIiwgZmlsZT1hdWRpb19maWxlKQogICAgICAgIG9zLnVubGluayh0bXBfcGF0aCkKICAgICAgICByZXR1cm4gdHJhbnNjcmlwdC50ZXh0CiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgcmV0dXJuIGYiW1RyYW5zY3JpcHRpb24gZXJyb3I6IHtlfV0iCgoKZGVmIGV4dHJhY3RfZ2FwX2Zyb21fdGV4dCh0ZXh0OiBzdHIsIHNvdXJjZTogc3RyID0gInZvaWNlIikgLT4gRGljdFtzdHIsIEFueV06CiAgICAiIiJFeHRyYWN0IHJlc2VhcmNoIGdhcCBmcm9tIHRyYW5zY3JpYmVkIHRleHQgdXNpbmcgTExNLiIiIgogICAgdHJ5OgogICAgICAgIGZyb20gb3BlbmFpIGltcG9ydCBPcGVuQUkKCiAgICAgICAgY2xpZW50ID0gT3BlbkFJKCkKICAgICAgICBwcm9tcHQgPSAoCiAgICAgICAgICAgICJZb3UgYXJlIGEgcmVzZWFyY2ggZ2FwIGV4dHJhY3Rvci4gR2l2ZW4gYSB0cmFuc2NyaXB0aW9uIG9mIGEgcmVzZWFyY2ggZGlzY3Vzc2lvbiwgIgogICAgICAgICAgICAiaWRlbnRpZnkgdGhlIGtleSByZXNlYXJjaCBnYXBzIG1lbnRpb25lZC4gUmV0dXJuIEpTT04gd2l0aDpcbiIKICAgICAgICAgICAgJy0gImdhcF90aXRsZXMiOiBsaXN0IG9mIGdhcCB0aXRsZXMgKG1heCAzKVxuJwogICAgICAgICAgICAnLSAiZ2FwX3R5cGVzIjogbGlzdCBmcm9tOiB0aGVvcmV0aWNhbF9nYXAsIG1ldGhvZF9saW1pdGF0aW9uLCBldmFsdWF0aW9uX2dhcCwgJwogICAgICAgICAgICAic2NhbGFiaWxpdHlfaXNzdWUsIGRhdGFzZXRfZ2FwLCBnZW5lcmFsaXphdGlvbl9nYXAsIGNvbnRyYWRpY3Rpb24sIHVuZXhwbG9yZWRfYXBwbGljYXRpb25cbiIKICAgICAgICAgICAgJy0gImtleXdvcmRzIjogbGlzdCBvZiAzLTUga2V5d29yZHNcbicKICAgICAgICAgICAgJy0gInBvbGFyaXR5IjogInBvc2l0aXZlIiBvciAibmVnYXRpdmUiXG4nCiAgICAgICAgICAgICctICJzdW1tYXJ5IjogMS1zZW50ZW5jZSBzdW1tYXJ5XG5cbicKICAgICAgICAgICAgZiJUcmFuc2NyaXB0aW9uOlxue3RleHRbOjMwMDBdfSIKICAgICAgICApCiAgICAgICAgcmVzcG9uc2UgPSBjbGllbnQuY2hhdC5jb21wbGV0aW9ucy5jcmVhdGUoCiAgICAgICAgICAgIG1vZGVsPSJncHQtNG8tbWluaSIsCiAgICAgICAgICAgIG1lc3NhZ2VzPVt7InJvbGUiOiAidXNlciIsICJjb250ZW50IjogcHJvbXB0fV0sCiAgICAgICAgICAgIHJlc3BvbnNlX2Zvcm1hdD17InR5cGUiOiAianNvbl9vYmplY3QifSwKICAgICAgICApCiAgICAgICAgcmV0dXJuIGpzb24ubG9hZHMocmVzcG9uc2UuY2hvaWNlc1swXS5tZXNzYWdlLmNvbnRlbnQpCiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgcmV0dXJuIHsiZXJyb3IiOiBzdHIoZSl9CgoKZGVmIF9sb2FkX2NhcHN1bGVzKCkgLT4gRGljdFtzdHIsIEFueV06CiAgICBpZiBub3QgQ0FQU1VMRVNfUEFUSC5leGlzdHMoKToKICAgICAgICByZXR1cm4geyJ2ZXJzaW9uIjogIjEuMCIsICJjYXBzdWxlcyI6IFtdfQogICAgcmV0dXJuIGpzb24ubG9hZHMoQ0FQU1VMRVNfUEFUSC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikpCgoKZGVmIF9zYXZlX2NhcHN1bGVzKGRhdGE6IERpY3Rbc3RyLCBBbnldKSAtPiBOb25lOgogICAgQ0FQU1VMRVNfUEFUSC5wYXJlbnQubWtkaXIocGFyZW50cz1UcnVlLCBleGlzdF9vaz1UcnVlKQogICAgQ0FQU1VMRVNfUEFUSC53cml0ZV90ZXh0KGpzb24uZHVtcHMoZGF0YSwgaW5kZW50PTIsIGVuc3VyZV9hc2NpaT1GYWxzZSksIGVuY29kaW5nPSJ1dGYtOCIpCgoKZGVmIHNhdmVfdm9pY2VfY2Fwc3VsZShnYXBfZGF0YTogRGljdFtzdHIsIEFueV0sIHNvdXJjZTogc3RyID0gInZvaWNlIikgLT4gc3RyOgogICAgY2Fwc3VsZV9pZCA9IHV1aWQudXVpZDQoKS5oZXhbOjEyXQogICAgbm93ID0gZGF0ZXRpbWUubm93KCkuaXNvZm9ybWF0KCkKICAgIGNhcHN1bGUgPSB7CiAgICAgICAgImNhcHN1bGVfaWQiOiBjYXBzdWxlX2lkLAogICAgICAgICJhY3Rpb25fZ2FwX3RpdGxlIjogKGdhcF9kYXRhLmdldCgiZ2FwX3RpdGxlcyIpIG9yIFsiVm9pY2UgZ2FwIl0pWzBdLAogICAgICAgICJhY3Rpb25fZ2FwX3R5cGUiOiAoZ2FwX2RhdGEuZ2V0KCJnYXBfdHlwZXMiKSBvciBbInRoZW9yZXRpY2FsX2dhcCJdKVswXSwKICAgICAgICAidHJpZ2dlcl9rZXl3b3JkcyI6IChnYXBfZGF0YS5nZXQoImtleXdvcmRzIikgb3IgW10pWzo1XSwKICAgICAgICAicG9sYXJpdHkiOiBnYXBfZGF0YS5nZXQoInBvbGFyaXR5IiwgInBvc2l0aXZlIiksCiAgICAgICAgIm91dGNvbWVfc3VjY2Vzc19zY29yZSI6IDAuNSwKICAgICAgICAibG93X3Njb3JlX3N0cmVhayI6IDAsCiAgICAgICAgInN0YXR1cyI6ICJhY3RpdmUiLAogICAgICAgICJzb3VyY2UiOiBzb3VyY2UsCiAgICAgICAgImNyZWF0ZWRfYXQiOiBub3csCiAgICB9CiAgICBkYXRhID0gX2xvYWRfY2Fwc3VsZXMoKQogICAgZGF0YVsiY2Fwc3VsZXMiXS5hcHBlbmQoY2Fwc3VsZSkKICAgIF9zYXZlX2NhcHN1bGVzKGRhdGEpCiAgICByZXR1cm4gY2Fwc3VsZV9pZAoKCmRlZiByZW5kZXJfdm9pY2VfdXBsb2FkX2h0bWwoKSAtPiBzdHI6CiAgICBsaW5lcyA9IFsnPGRpdiBjbGFzcz0idm9pY2UtY2Fwc3VsZSI+J10KICAgIGxpbmVzLmFwcGVuZCgiPGgzPvCfjqQgVm9pY2UtdG8tQ2Fwc3VsZTwvaDM+IikKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiPHAgc3R5bGU9J2ZvbnQtc2l6ZToxM3B4O2NvbG9yOiNBODlFOEM7bWFyZ2luLWJvdHRvbToxNHB4Jz4iCiAgICAgICAgIlVwbG9hZCBhbiBhdWRpbyByZWNvcmRpbmcgb2YgYSByZXNlYXJjaCBkaXNjdXNzaW9uLiAiCiAgICAgICAgIlRyYW5zY3JpYmUgKyBleHRyYWN0IHJlc2VhcmNoIGdhcHMgYXV0b21hdGljYWxseS48L3A+IgogICAgKQoKICAgIGxpbmVzLmFwcGVuZCgiIiIKPGRpdiBzdHlsZT0iYm9yZGVyOiAycHggZGFzaGVkICNjY2M7IGJvcmRlci1yYWRpdXM6IDhweDsgcGFkZGluZzogMjRweDsgdGV4dC1hbGlnbjogY2VudGVyOyBtYXJnaW4tYm90dG9tOiAxNnB4OyI+CiAgPGlucHV0IHR5cGU9ImZpbGUiIGlkPSJhdWRpb0ZpbGUiIGFjY2VwdD0iYXVkaW8vKiIgc3R5bGU9Im1hcmdpbi1ib3R0b206IDEycHgiPgogIDxidXR0b24gaWQ9InRyYW5zY3JpYmVCdG4iIHN0eWxlPSJiYWNrZ3JvdW5kOiM2QjhGQjU7Y29sb3I6d2hpdGU7Ym9yZGVyOm5vbmU7Ym9yZGVyLXJhZGl1czo0cHg7cGFkZGluZzo4cHggMThweDtjdXJzb3I6cG9pbnRlcjtmb250LXNpemU6MTNweCI+CiAgICDwn46kIFRyYW5zY3JpYmUgJmFtcDsgRXh0cmFjdCBHYXAKICA8L2J1dHRvbj4KICA8cCBpZD0ic3RhdHVzVGV4dCIgc3R5bGU9ImZvbnQtc2l6ZToxMnB4O2NvbG9yOiNBODlFOEM7bWFyZ2luLXRvcDo4cHg7ZGlzcGxheTpub25lIj48L3A+CjwvZGl2Pgo8ZGl2IGlkPSJyZXN1bHRBcmVhIiBzdHlsZT0iZGlzcGxheTpub25lIj4KICA8aDQgc3R5bGU9ImZvbnQtc2l6ZToxM3B4O2ZvbnQtd2VpZ2h0OjcwMDtjb2xvcjojMmE0YTZhO21hcmdpbi1ib3R0b206OHB4Ij5FeHRyYWN0ZWQgR2FwPC9oND4KICA8ZGl2IGlkPSJnYXBQcmV2aWV3IiBzdHlsZT0iYmFja2dyb3VuZDojZjhmNGVmO3BhZGRpbmc6MTJweDtib3JkZXItcmFkaXVzOjZweDttYXJnaW4tYm90dG9tOjEycHgiPjwvZGl2PgogIDxidXR0b24gaWQ9InNhdmVCdG4iIHN0eWxlPSJiYWNrZ3JvdW5kOiM2QkJGOEE7Y29sb3I6d2hpdGU7Ym9yZGVyOm5vbmU7Ym9yZGVyLXJhZGl1czo0cHg7cGFkZGluZzo4cHggMTZweDtjdXJzb3I6cG9pbnRlcjtmb250LXNpemU6MTNweCI+CiAgICDinIUgU2F2ZSB0byBHZW5lIFBvb2wKICA8L2J1dHRvbj4KPC9kaXY+IiIiKQoKICAgIGxpbmVzLmFwcGVuZCgiIiIKPHNjcmlwdD4KdmFyIGV4dHJhY3RlZERhdGEgPSBudWxsOwpkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgndHJhbnNjcmliZUJ0bicpLmFkZEV2ZW50TGlzdGVuZXIoJ2NsaWNrJywgZnVuY3Rpb24oKSB7CiAgICB2YXIgZmlsZSA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdhdWRpb0ZpbGUnKS5maWxlc1swXTsKICAgIGlmICghZmlsZSkgeyBhbGVydCgnUGxlYXNlIHNlbGVjdCBhbiBhdWRpbyBmaWxlIGZpcnN0LicpOyByZXR1cm47IH0KICAgIHZhciBzdGF0dXMgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnc3RhdHVzVGV4dCcpOwogICAgc3RhdHVzLnRleHRDb250ZW50ID0gJ1RyYW5zY3JpYmluZy4uLic7CiAgICBzdGF0dXMuc3R5bGUuZGlzcGxheSA9ICdibG9jayc7CgogICAgdmFyIGZvcm1EYXRhID0gbmV3IEZvcm1EYXRhKCk7CiAgICBmb3JtRGF0YS5hcHBlbmQoJ2F1ZGlvJywgZmlsZSk7CgogICAgZmV0Y2goJy92b2ljZS1jYXBzdWxlL3RyYW5zY3JpYmUnLCB7bWV0aG9kOiAnUE9TVCcsIGJvZHk6IGZvcm1EYXRhfSkKICAgICAgLnRoZW4oZnVuY3Rpb24ocikgeyByZXR1cm4gci5qc29uKCk7IH0pCiAgICAgIC50aGVuKGZ1bmN0aW9uKGQpIHsKICAgICAgICAgIHN0YXR1cy50ZXh0Q29udGVudCA9ICdFeHRyYWN0aW5nIGdhcHMuLi4nOwogICAgICAgICAgaWYgKGQuZXJyb3IpIHsKICAgICAgICAgICAgICBzdGF0dXMudGV4dENvbnRlbnQgPSAnRXJyb3I6ICcgKyBkLmVycm9yOwogICAgICAgICAgfSBlbHNlIHsKICAgICAgICAgICAgICBleHRyYWN0ZWREYXRhID0gZDsKICAgICAgICAgICAgICB2YXIgcHJldmlldyA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdnYXBQcmV2aWV3Jyk7CiAgICAgICAgICAgICAgdmFyIHRpdGxlcyA9IChkLmdhcF90aXRsZXMgfHwgW10pLmpvaW4oJywgJykgfHwgJ04vQSc7CiAgICAgICAgICAgICAgdmFyIHR5cGVzID0gKGQuZ2FwX3R5cGVzIHx8IFtdKS5qb2luKCcsICcpIHx8ICdOL0EnOwogICAgICAgICAgICAgIHZhciBrd3MgPSAoKGQua2V5d29yZHMgfHwgW10pLmpvaW4oJywgJykpIHx8ICdOL0EnOwogICAgICAgICAgICAgIHZhciBzdW1tYXJ5ID0gZC5zdW1tYXJ5IHx8ICcnOwogICAgICAgICAgICAgIC8vIEJ1aWxkIHRleHQgc2FmZWx5IHdpdGhvdXQgaW5uZXJIVE1MCiAgICAgICAgICAgICAgcHJldmlldy5pbm5lclRleHQgPSAnJzsKICAgICAgICAgICAgICB2YXIgdCA9IGRvY3VtZW50LmNyZWF0ZVRleHROb2RlKCcnKTsKICAgICAgICAgICAgICBwcmV2aWV3LmFwcGVuZENoaWxkKGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpLmFwcGVuZENoaWxkKGRvY3VtZW50LmNyZWF0ZVRleHROb2RlKCdUaXRsZTogJyArIHRpdGxlcykpLnBhcmVudE5vZGUgfHwgZG9jdW1lbnQuY3JlYXRlVGV4dE5vZGUoJycpKTsKICAgICAgICAgICAgICB2YXIgZGl2ID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7CiAgICAgICAgICAgICAgZGl2LmlubmVyVGV4dCA9ICdUeXBlOiAnICsgdHlwZXM7CiAgICAgICAgICAgICAgcHJldmlldy5hcHBlbmRDaGlsZChkaXYpOwogICAgICAgICAgICAgIHZhciBkaXYyID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7CiAgICAgICAgICAgICAgZGl2Mi5pbm5lclRleHQgPSAnS2V5d29yZHM6ICcgKyBrd3M7CiAgICAgICAgICAgICAgcHJldmlldy5hcHBlbmRDaGlsZChkaXYyKTsKICAgICAgICAgICAgICB2YXIgZGl2MyA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpOwogICAgICAgICAgICAgIGRpdjMuc3R5bGUubWFyZ2luVG9wID0gJzRweCc7CiAgICAgICAgICAgICAgZGl2My5pbm5lclRleHQgPSBzdW1tYXJ5OwogICAgICAgICAgICAgIHByZXZpZXcuYXBwZW5kQ2hpbGQoZGl2Myk7CiAgICAgICAgICAgICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3Jlc3VsdEFyZWEnKS5zdHlsZS5kaXNwbGF5ID0gJ2Jsb2NrJzsKICAgICAgICAgICAgICBzdGF0dXMuc3R5bGUuZGlzcGxheSA9ICdub25lJzsKICAgICAgICAgIH0KICAgICAgfSk7Cn0pOwpkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnc2F2ZUJ0bicpLmFkZEV2ZW50TGlzdGVuZXIoJ2NsaWNrJywgZnVuY3Rpb24oKSB7CiAgICBpZiAoIWV4dHJhY3RlZERhdGEpIHJldHVybjsKICAgIGZldGNoKCcvdm9pY2UtY2Fwc3VsZS9zYXZlJywgewogICAgICAgIG1ldGhvZDogJ1BPU1QnLAogICAgICAgIGhlYWRlcnM6IHsnQ29udGVudC1UeXBlJzogJ2FwcGxpY2F0aW9uL2pzb24nfSwKICAgICAgICBib2R5OiBKU09OLnN0cmluZ2lmeShleHRyYWN0ZWREYXRhKQogICAgfSkudGhlbihmdW5jdGlvbihyKSB7IHJldHVybiByLmpzb24oKTsgfSkKICAgICAgLnRoZW4oZnVuY3Rpb24oZCkgewogICAgICAgICAgaWYgKGQuc3VjY2VzcykgewogICAgICAgICAgICAgIGFsZXJ0KCdTYXZlZCB0byBHZW5lIFBvb2whIENhcHN1bGUgSUQ6ICcgKyBkLmNhcHN1bGVfaWQpOwogICAgICAgICAgICAgIGxvY2F0aW9uLnJlbG9hZCgpOwogICAgICAgICAgfSBlbHNlIHsKICAgICAgICAgICAgICBhbGVydCgnRXJyb3I6ICcgKyAoZC5lcnJvciB8fCAndW5rbm93bicpKTsKICAgICAgICAgIH0KICAgICAgfSk7Cn0pOwo8L3NjcmlwdD4iIiIpCgogICAgbGluZXMuYXBwZW5kKCI8c3R5bGU+LnZvaWNlLWNhcHN1bGUgeyBmb250LWZhbWlseTogR2VvcmdpYSwgc2VyaWY7IH08L3N0eWxlPiIpCiAgICBsaW5lcy5hcHBlbmQoIjwvZGl2PiIpCiAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQo=
+"""Voice-to-Capsule — upload audio → Whisper transcription → LLM gap extraction → save to Gene Pool."""
+
+from __future__ import annotations
+
+import json
+import os
+import tempfile
+import uuid
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+PAPERS_DIR = Path.home() / ".ai_research_os"
+CAPSULES_PATH = PAPERS_DIR / "gene_pool" / "capsules.json"
+
+
+def transcribe_audio(audio_bytes: bytes) -> str:
+    """Transcribe audio using OpenAI Whisper."""
+    try:
+        import openai
+        with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as f:
+            f.write(audio_bytes)
+            tmp_path = f.name
+        client = openai.OpenAI()
+        with open(tmp_path, "rb") as audio_file:
+            transcript = client.audio.transcriptions.create(
+                model="whisper-1", file=audio_file)
+        os.unlink(tmp_path)
+        return transcript.text
+    except Exception as e:
+        return f"[Transcription error: {e}]"
+
+
+def extract_gap_from_text(text: str, source: str = "voice") -> Dict[str, Any]:
+    """Extract research gap from transcribed text using LLM."""
+    try:
+        from openai import OpenAI
+        client = OpenAI()
+        prompt = (
+            "You are a research gap extractor. Given a transcription of a research discussion, "
+            "identify the key research gaps mentioned. Return JSON with:\n"
+            '- "gap_titles": list of gap titles (max 3)\n'
+            '- "gap_types": list from: theoretical_gap, method_limitation, evaluation_gap, '
+            "scalability_issue, dataset_gap, generalization_gap, contradiction, unexplored_application\n"
+            '- "keywords": list of 3-5 keywords\n'
+            '- "polarity": "positive" or "negative"\n'
+            '- "summary": 1-sentence summary\n\n'
+            f"Transcription:\n{text[:3000]}"
+        )
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+        )
+        return json.loads(response.choices[0].message.content)
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def _load_capsules() -> Dict[str, Any]:
+    if not CAPSULES_PATH.exists():
+        return {"version": "1.0", "capsules": []}
+    return json.loads(CAPSULES_PATH.read_text(encoding="utf-8"))
+
+
+def _save_capsules(data: Dict[str, Any]) -> None:
+    CAPSULES_PATH.parent.mkdir(parents=True, exist_ok=True)
+    CAPSULES_PATH.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def save_voice_capsule(gap_data: Dict[str, Any], source: str = "voice") -> str:
+    capsule_id = uuid.uuid4().hex[:12]
+    now = datetime.now().isoformat()
+    capsule = {
+        "capsule_id": capsule_id,
+        "action_gap_title": (gap_data.get("gap_titles") or ["Voice gap"])[0],
+        "action_gap_type": (gap_data.get("gap_types") or ["theoretical_gap"])[0],
+        "trigger_keywords": (gap_data.get("keywords") or [])[:5],
+        "polarity": gap_data.get("polarity", "positive"),
+        "outcome_success_score": 0.5,
+        "low_score_streak": 0,
+        "status": "active",
+        "source": source,
+        "created_at": now,
+    }
+    data = _load_capsules()
+    data["capsules"].append(capsule)
+    _save_capsules(data)
+    return capsule_id
+
+
+def render_voice_upload_html() -> str:
+    lines = ['<div class="voice-capsule">']
+    lines.append("<h3>🎤 Voice-to-Capsule</h3>")
+    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
+                "Upload an audio recording of a research discussion. "
+                "Transcribe + extract research gaps automatically.</p>")
+
+    lines.append("""
+<div style="border: 2px dashed #ccc; border-radius: 8px; padding: 24px; text-align: center; margin-bottom: 16px;">
+  <input type="file" id="audioFile" accept="audio/*" style="margin-bottom: 12px">
+  <button id="transcribeBtn" style="background:#6B8FB5;color:white;border:none;border-radius:4px;padding:8px 18px;cursor:pointer;font-size:13px">
+    🎤 Transcribe &amp; Extract Gap
+  </button>
+  <p id="statusText" style="font-size:12px;color:#A89E8C;margin-top:8px;display:none"></p>
+</div>
+<div id="resultArea" style="display:none">
+  <h4 style="font-size:13px;font-weight:700;color:#2a4a6a;margin-bottom:8px">Extracted Gap</h4>
+  <div id="gapPreview" style="background:#f8f4ef;padding:12px;border-radius:6px;margin-bottom:12px"></div>
+  <button id="saveBtn" style="background:#6BBF8A;color:white;border:none;border-radius:4px;padding:8px 16px;cursor:pointer;font-size:13px">
+    ✅ Save to Gene Pool
+  </button>
+</div>""")
+
+    lines.append("""
+<script>
+var extractedData = null;
+document.getElementById('transcribeBtn').addEventListener('click', function() {
+    var file = document.getElementById('audioFile').files[0];
+    if (!file) { alert('Please select an audio file first.'); return; }
+    var status = document.getElementById('statusText');
+    status.textContent = 'Transcribing...';
+    status.style.display = 'block';
+
+    var formData = new FormData();
+    formData.append('audio', file);
+
+    fetch('/voice-capsule/transcribe', {method: 'POST', body: formData})
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+          status.textContent = 'Extracting gaps...';
+          if (d.error) {
+              status.textContent = 'Error: ' + d.error;
+          } else {
+              extractedData = d;
+              var preview = document.getElementById('gapPreview');
+              var titles = (d.gap_titles || []).join(', ') || 'N/A';
+              var types = (d.gap_types || []).join(', ') || 'N/A';
+              var kws = ((d.keywords || []).join(', ')) || 'N/A';
+              var summary = d.summary || '';
+              // Build text safely without innerHTML
+              preview.innerText = '';
+              var t = document.createTextNode('');
+              preview.appendChild(document.createElement('div').appendChild(document.createTextNode('Title: ' + titles)).parentNode || document.createTextNode(''));
+              var div = document.createElement('div');
+              div.innerText = 'Type: ' + types;
+              preview.appendChild(div);
+              var div2 = document.createElement('div');
+              div2.innerText = 'Keywords: ' + kws;
+              preview.appendChild(div2);
+              var div3 = document.createElement('div');
+              div3.style.marginTop = '4px';
+              div3.innerText = summary;
+              preview.appendChild(div3);
+              document.getElementById('resultArea').style.display = 'block';
+              status.style.display = 'none';
+          }
+      });
+});
+document.getElementById('saveBtn').addEventListener('click', function() {
+    if (!extractedData) return;
+    fetch('/voice-capsule/save', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(extractedData)
+    }).then(function(r) { return r.json(); })
+      .then(function(d) {
+          if (d.success) {
+              alert('Saved to Gene Pool! Capsule ID: ' + d.capsule_id);
+              location.reload();
+          } else {
+              alert('Error: ' + (d.error || 'unknown'));
+          }
+      });
+});
+</script>""")
+
+    lines.append("<style>.voice-capsule { font-family: Georgia, serif; }</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

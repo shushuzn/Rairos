@@ -1,1 +1,148 @@
-IiIiVGVzdHMgZm9yIHJlc291cmNlIG1vbml0b3JpbmcgZnVuY3Rpb25hbGl0eS4iIiIKCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIGNvcmUucmVzb3VyY2VfbW9uaXRvciBpbXBvcnQgKAogICAgUmVzb3VyY2VNb25pdG9yLAogICAgUmVzb3VyY2VHdWFyZCwKICAgIEFQSUJ1ZGdldFRyYWNrZXIsCiAgICBnZXRfcmVzb3VyY2VfbW9uaXRvciwKICAgIGdldF9hcGlfYnVkZ2V0X3RyYWNrZXIsCikKCgpkZWYgdGVzdF9yZXNvdXJjZV9tb25pdG9yX2NyZWF0aW9uKCk6CiAgICAiIiJUZXN0IHJlc291cmNlIG1vbml0b3IgY2FuIGJlIGNyZWF0ZWQuIiIiCiAgICBtb25pdG9yID0gUmVzb3VyY2VNb25pdG9yKCkKICAgIGFzc2VydCBtb25pdG9yIGlzIG5vdCBOb25lCiAgICBhc3NlcnQgaXNpbnN0YW5jZShtb25pdG9yLmRhdGFfZGlyLCBQYXRoKQoKCmRlZiB0ZXN0X2dldF9kaXNrX2luZm8oKToKICAgICIiIlRlc3QgZ2V0dGluZyBkaXNrIGluZm9ybWF0aW9uLiIiIgogICAgbW9uaXRvciA9IFJlc291cmNlTW9uaXRvcigpCiAgICBkaXNrX2luZm8gPSBtb25pdG9yLmdldF9kaXNrX2luZm8oKQoKICAgIGFzc2VydCBkaXNrX2luZm8udG90YWxfZ2IgPiAwCiAgICBhc3NlcnQgZGlza19pbmZvLnVzZWRfZ2IgPj0gMAogICAgYXNzZXJ0IGRpc2tfaW5mby5mcmVlX2diID49IDAKICAgIGFzc2VydCBkaXNrX2luZm8ucGVyY2VudCA+PSAwCiAgICBhc3NlcnQgZGlza19pbmZvLnBlcmNlbnQgPD0gMTAwCgoKZGVmIHRlc3RfZ2V0X21lbW9yeV9pbmZvKCk6CiAgICAiIiJUZXN0IGdldHRpbmcgbWVtb3J5IGluZm9ybWF0aW9uLiIiIgogICAgbW9uaXRvciA9IFJlc291cmNlTW9uaXRvcigpCiAgICBtZW1fdXNlZCwgbWVtX2F2YWlsLCBtZW1fcGN0ID0gbW9uaXRvci5nZXRfbWVtb3J5X2luZm8oKQoKICAgIGFzc2VydCBtZW1fdXNlZCA+PSAwCiAgICBhc3NlcnQgbWVtX2F2YWlsID49IDAKICAgIGFzc2VydCBtZW1fcGN0ID49IDAKICAgIGFzc2VydCBtZW1fcGN0IDw9IDEwMAoKCmRlZiB0ZXN0X2dldF9jcHVfaW5mbygpOgogICAgIiIiVGVzdCBnZXR0aW5nIENQVSBpbmZvcm1hdGlvbi4iIiIKICAgIG1vbml0b3IgPSBSZXNvdXJjZU1vbml0b3IoKQogICAgY3B1X3BjdCwgY3B1X2NvdW50ID0gbW9uaXRvci5nZXRfY3B1X2luZm8oKQoKICAgIGFzc2VydCBjcHVfcGN0ID49IDAKICAgIGFzc2VydCBjcHVfcGN0IDw9IDEwMAogICAgYXNzZXJ0IGNwdV9jb3VudCA+IDAKCgpkZWYgdGVzdF9jb2xsZWN0X3N0YXRzKCk6CiAgICAiIiJUZXN0IGNvbGxlY3RpbmcgcmVzb3VyY2Ugc3RhdGlzdGljcy4iIiIKICAgIG1vbml0b3IgPSBSZXNvdXJjZU1vbml0b3IoKQogICAgc3RhdHMgPSBtb25pdG9yLmNvbGxlY3Rfc3RhdHMoKQoKICAgIGFzc2VydCBzdGF0cy50aW1lc3RhbXAgPiAwCiAgICBhc3NlcnQgc3RhdHMuY3B1X3BlcmNlbnQgPj0gMAogICAgYXNzZXJ0IHN0YXRzLm1lbW9yeV91c2VkX21iID49IDAKICAgIGFzc2VydCBzdGF0cy5kaXNrX3VzZWRfZ2IgPj0gMAoKCmRlZiB0ZXN0X2dldF9yZWNlbnRfc3RhdHMoKToKICAgICIiIlRlc3QgZ2V0dGluZyByZWNlbnQgc3RhdGlzdGljcy4iIiIKICAgIG1vbml0b3IgPSBSZXNvdXJjZU1vbml0b3IoKQogICAgIyBDb2xsZWN0IHNvbWUgc3RhdHMKICAgIGZvciBfIGluIHJhbmdlKDUpOgogICAgICAgIG1vbml0b3IuY29sbGVjdF9zdGF0cygpCgogICAgcmVjZW50ID0gbW9uaXRvci5nZXRfcmVjZW50X3N0YXRzKDMpCiAgICBhc3NlcnQgbGVuKHJlY2VudCkgPD0gMwoKCmRlZiB0ZXN0X3Jlc291cmNlX2d1YXJkX2NoZWNrKCk6CiAgICAiIiJUZXN0IHJlc291cmNlIGd1YXJkIGNoZWNrLiIiIgogICAgZ3VhcmQgPSBSZXNvdXJjZUd1YXJkKAogICAgICAgIG1pbl9kaXNrX2diPTAuMDAxLCAgIyBWZXJ5IGxvdyB0aHJlc2hvbGQgZm9yIHRlc3RpbmcKICAgICAgICBtYXhfbWVtb3J5X3BlcmNlbnQ9OTkuMCwgICMgVmVyeSBoaWdoIHRocmVzaG9sZCBmb3IgdGVzdGluZwogICAgKQoKICAgIG9rLCBtc2cgPSBndWFyZC5jaGVjaygpCiAgICBhc3NlcnQgb2sgaXMgVHJ1ZQoKCmRlZiB0ZXN0X2FwaV9idWRnZXRfdHJhY2tlcl9jcmVhdGlvbigpOgogICAgIiIiVGVzdCBBUEkgYnVkZ2V0IHRyYWNrZXIgY3JlYXRpb24uIiIiCiAgICB0cmFja2VyID0gQVBJQnVkZ2V0VHJhY2tlcihtb250aGx5X2J1ZGdldF91c2Q9NTAuMCkKICAgIGFzc2VydCB0cmFja2VyLm1vbnRobHlfYnVkZ2V0X3VzZCA9PSA1MC4wCiAgICBhc3NlcnQgdHJhY2tlci5fY2FsbF9jb3VudCA9PSAwCgoKZGVmIHRlc3RfYXBpX2J1ZGdldF90cmFja2VyX3JlY29yZCgpOgogICAgIiIiVGVzdCByZWNvcmRpbmcgQVBJIGNhbGxzLiIiIgogICAgdHJhY2tlciA9IEFQSUJ1ZGdldFRyYWNrZXIobW9udGhseV9idWRnZXRfdXNkPTEwLjApCiAgICB0cmFja2VyLnJlY29yZF9hcGlfY2FsbCgKICAgICAgICBwcm92aWRlcj0ib3BlbmFpIiwgZW5kcG9pbnQ9Ii9jaGF0L2NvbXBsZXRpb25zIiwgdG9rZW5zX3VzZWQ9MTAwMCwgY29zdF9wZXJfMWs9MC4wMDIKICAgICkKCiAgICBhc3NlcnQgdHJhY2tlci5fY2FsbF9jb3VudCA9PSAxCiAgICBhc3NlcnQgdHJhY2tlci5fY29zdF9lc3RpbWF0ZSA9PSAwLjAwMgoKCmRlZiB0ZXN0X2FwaV9idWRnZXRfdHJhY2tlcl9zaG91bGRfbWFrZV9jYWxsKCk6CiAgICAiIiJUZXN0IGNoZWNraW5nIGlmIEFQSSBjYWxsIHNob3VsZCBiZSBtYWRlLiIiIgogICAgdHJhY2tlciA9IEFQSUJ1ZGdldFRyYWNrZXIobW9udGhseV9idWRnZXRfdXNkPTEwLjApCgogICAgIyBTaG91bGQgYWxsb3cgY2FsbCB3aXRoaW4gYnVkZ2V0CiAgICBhc3NlcnQgdHJhY2tlci5zaG91bGRfbWFrZV9hcGlfY2FsbCgwLjAxKSBpcyBUcnVlCgogICAgIyBSZWNvcmQgZXhwZW5zaXZlIGNhbGxzCiAgICB0cmFja2VyLnJlY29yZF9hcGlfY2FsbCgib3BlbmFpIiwgIi9jaGF0IiwgdG9rZW5zX3VzZWQ9MTAwMDAwMCwgY29zdF9wZXJfMWs9MC4wMDIpCgogICAgIyBNYXkgb3IgbWF5IG5vdCBhbGxvdyBkZXBlbmRpbmcgb24gcmVtYWluaW5nIGJ1ZGdldAogICAgIyBKdXN0IHRlc3QgdGhlIG1ldGhvZCB3b3JrcwogICAgcmVzdWx0ID0gdHJhY2tlci5zaG91bGRfbWFrZV9hcGlfY2FsbCgwLjAxKQogICAgYXNzZXJ0IGlzaW5zdGFuY2UocmVzdWx0LCBib29sKQoKCmRlZiB0ZXN0X2FwaV9idWRnZXRfdXNhZ2VfcmVwb3J0KCk6CiAgICAiIiJUZXN0IGdldHRpbmcgdXNhZ2UgcmVwb3J0LiIiIgogICAgdHJhY2tlciA9IEFQSUJ1ZGdldFRyYWNrZXIobW9udGhseV9idWRnZXRfdXNkPTEwMC4wKQogICAgdHJhY2tlci5yZWNvcmRfYXBpX2NhbGwoIm9wZW5haSIsICIvY2hhdCIsIHRva2Vuc191c2VkPTEwMDAsIGNvc3RfcGVyXzFrPTAuMDAyKQoKICAgIHJlcG9ydCA9IHRyYWNrZXIuZ2V0X3VzYWdlX3JlcG9ydCgpCgogICAgYXNzZXJ0IHJlcG9ydFsidG90YWxfY2FsbHMiXSA9PSAxCiAgICBhc3NlcnQgcmVwb3J0WyJlc3RpbWF0ZWRfY29zdF91c2QiXSA9PSAwLjAwMgogICAgYXNzZXJ0IHJlcG9ydFsiYnVkZ2V0X3JlbWFpbmluZ191c2QiXSA+IDAKICAgIGFzc2VydCByZXBvcnRbImJ1ZGdldF91c2VkX3BlcmNlbnQiXSA+PSAwCgoKZGVmIHRlc3RfZ2V0X3Jlc291cmNlX21vbml0b3IoKToKICAgICIiIlRlc3QgZ2V0dGluZyBnbG9iYWwgcmVzb3VyY2UgbW9uaXRvci4iIiIKICAgIG1vbml0b3IxID0gZ2V0X3Jlc291cmNlX21vbml0b3IoKQogICAgbW9uaXRvcjIgPSBnZXRfcmVzb3VyY2VfbW9uaXRvcigpCgogICAgIyBTaG91bGQgcmV0dXJuIHRoZSBzYW1lIGluc3RhbmNlCiAgICBhc3NlcnQgbW9uaXRvcjEgaXMgbW9uaXRvcjIKCgpkZWYgdGVzdF9nZXRfYXBpX2J1ZGdldF90cmFja2VyKCk6CiAgICAiIiJUZXN0IGdldHRpbmcgZ2xvYmFsIEFQSSBidWRnZXQgdHJhY2tlci4iIiIKICAgIHRyYWNrZXIxID0gZ2V0X2FwaV9idWRnZXRfdHJhY2tlcigpCiAgICB0cmFja2VyMiA9IGdldF9hcGlfYnVkZ2V0X3RyYWNrZXIoKQoKICAgICMgU2hvdWxkIHJldHVybiB0aGUgc2FtZSBpbnN0YW5jZQogICAgYXNzZXJ0IHRyYWNrZXIxIGlzIHRyYWNrZXIyCg==
+"""Tests for resource monitoring functionality."""
+
+from pathlib import Path
+from core.resource_monitor import (
+    ResourceMonitor,
+    ResourceGuard,
+    APIBudgetTracker,
+    get_resource_monitor,
+    get_api_budget_tracker,
+)
+
+
+def test_resource_monitor_creation():
+    """Test resource monitor can be created."""
+    monitor = ResourceMonitor()
+    assert monitor is not None
+    assert isinstance(monitor.data_dir, Path)
+
+
+def test_get_disk_info():
+    """Test getting disk information."""
+    monitor = ResourceMonitor()
+    disk_info = monitor.get_disk_info()
+
+    assert disk_info.total_gb > 0
+    assert disk_info.used_gb >= 0
+    assert disk_info.free_gb >= 0
+    assert disk_info.percent >= 0
+    assert disk_info.percent <= 100
+
+
+def test_get_memory_info():
+    """Test getting memory information."""
+    monitor = ResourceMonitor()
+    mem_used, mem_avail, mem_pct = monitor.get_memory_info()
+
+    assert mem_used >= 0
+    assert mem_avail >= 0
+    assert mem_pct >= 0
+    assert mem_pct <= 100
+
+
+def test_get_cpu_info():
+    """Test getting CPU information."""
+    monitor = ResourceMonitor()
+    cpu_pct, cpu_count = monitor.get_cpu_info()
+
+    assert cpu_pct >= 0
+    assert cpu_pct <= 100
+    assert cpu_count > 0
+
+
+def test_collect_stats():
+    """Test collecting resource statistics."""
+    monitor = ResourceMonitor()
+    stats = monitor.collect_stats()
+
+    assert stats.timestamp > 0
+    assert stats.cpu_percent >= 0
+    assert stats.memory_used_mb >= 0
+    assert stats.disk_used_gb >= 0
+
+
+def test_get_recent_stats():
+    """Test getting recent statistics."""
+    monitor = ResourceMonitor()
+    # Collect some stats
+    for _ in range(5):
+        monitor.collect_stats()
+
+    recent = monitor.get_recent_stats(3)
+    assert len(recent) <= 3
+
+
+def test_resource_guard_check():
+    """Test resource guard check."""
+    guard = ResourceGuard(
+        min_disk_gb=0.001,  # Very low threshold for testing
+        max_memory_percent=99.0,  # Very high threshold for testing
+    )
+
+    ok, msg = guard.check()
+    assert ok is True
+
+
+def test_api_budget_tracker_creation():
+    """Test API budget tracker creation."""
+    tracker = APIBudgetTracker(monthly_budget_usd=50.0)
+    assert tracker.monthly_budget_usd == 50.0
+    assert tracker._call_count == 0
+
+
+def test_api_budget_tracker_record():
+    """Test recording API calls."""
+    tracker = APIBudgetTracker(monthly_budget_usd=10.0)
+    tracker.record_api_call(
+        provider="openai", endpoint="/chat/completions", tokens_used=1000, cost_per_1k=0.002
+    )
+
+    assert tracker._call_count == 1
+    assert tracker._cost_estimate == 0.002
+
+
+def test_api_budget_tracker_should_make_call():
+    """Test checking if API call should be made."""
+    tracker = APIBudgetTracker(monthly_budget_usd=10.0)
+
+    # Should allow call within budget
+    assert tracker.should_make_api_call(0.01) is True
+
+    # Record expensive calls
+    tracker.record_api_call("openai", "/chat", tokens_used=1000000, cost_per_1k=0.002)
+
+    # May or may not allow depending on remaining budget
+    # Just test the method works
+    result = tracker.should_make_api_call(0.01)
+    assert isinstance(result, bool)
+
+
+def test_api_budget_usage_report():
+    """Test getting usage report."""
+    tracker = APIBudgetTracker(monthly_budget_usd=100.0)
+    tracker.record_api_call("openai", "/chat", tokens_used=1000, cost_per_1k=0.002)
+
+    report = tracker.get_usage_report()
+
+    assert report["total_calls"] == 1
+    assert report["estimated_cost_usd"] == 0.002
+    assert report["budget_remaining_usd"] > 0
+    assert report["budget_used_percent"] >= 0
+
+
+def test_get_resource_monitor():
+    """Test getting global resource monitor."""
+    monitor1 = get_resource_monitor()
+    monitor2 = get_resource_monitor()
+
+    # Should return the same instance
+    assert monitor1 is monitor2
+
+
+def test_get_api_budget_tracker():
+    """Test getting global API budget tracker."""
+    tracker1 = get_api_budget_tracker()
+    tracker2 = get_api_budget_tracker()
+
+    # Should return the same instance
+    assert tracker1 is tracker2

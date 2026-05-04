@@ -1,1 +1,61 @@
-IiIiQ0xJIGNvbW1hbmQ6IGRpZ2VzdCDigJQgV2Vla2x5IHJlc2VhcmNoIGRpZ2VzdC4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBhcmdwYXJzZQoKZnJvbSBjbGkuX3NoYXJlZCBpbXBvcnQgcHJpbnRfaW5mbwpmcm9tIGxsbS53ZWVrbHlfZGlnZXN0IGltcG9ydCBXZWVrbHlEaWdlc3QKCgpkZWYgX2J1aWxkX2RpZ2VzdF9wYXJzZXIoc3VicGFyc2VycykgLT4gYXJncGFyc2UuQXJndW1lbnRQYXJzZXI6CiAgICAiIiJCdWlsZCB0aGUgZGlnZXN0IHN1YmNvbW1hbmQgcGFyc2VyLiIiIgogICAgcCA9IHN1YnBhcnNlcnMuYWRkX3BhcnNlcigKICAgICAgICAiZGlnZXN0IiwKICAgICAgICBoZWxwPSJXZWVrbHkgcmVzZWFyY2ggZGlnZXN0IiwKICAgICAgICBkZXNjcmlwdGlvbj0iR2VuZXJhdGUgd2Vla2x5IHJlc2VhcmNoIHN1bW1hcnkuIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWRheXMiLAogICAgICAgICItZCIsCiAgICAgICAgdHlwZT1pbnQsCiAgICAgICAgZGVmYXVsdD03LAogICAgICAgIGhlbHA9Ik51bWJlciBvZiBkYXlzIHRvIHN1bW1hcml6ZSAoZGVmYXVsdDogNykiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tbGFzdC13ZWVrIiwKICAgICAgICBhY3Rpb249InN0b3JlX3RydWUiLAogICAgICAgIGhlbHA9IlN1bW1hcml6ZSBsYXN0IDcgZGF5cyIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1tYXJrZG93biIsCiAgICAgICAgIi1tIiwKICAgICAgICBhY3Rpb249InN0b3JlX3RydWUiLAogICAgICAgIGhlbHA9Ik91dHB1dCBhcyBNYXJrZG93biIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1leHBvcnQiLAogICAgICAgIHR5cGU9c3RyLAogICAgICAgIGhlbHA9IkV4cG9ydCB0byBmaWxlIiwKICAgICkKICAgIHJldHVybiBwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKCmRlZiBfcnVuX2RpZ2VzdChhcmdzOiBhcmdwYXJzZS5OYW1lc3BhY2UpIC0+IGludDoKICAgICIiIlJ1biBkaWdlc3QgY29tbWFuZC4iIiIKICAgIGRpZ2VzdCA9IFdlZWtseURpZ2VzdCgpCgogICAgZGF5cyA9IDE0IGlmIGFyZ3MubGFzdF93ZWVrIGVsc2UgKGFyZ3MuZGF5cyBvciA3KQogICAgZGF0YSA9IGRpZ2VzdC5jb2xsZWN0X3dlZWtfZGF0YShkYXlzPWRheXMpCgogICAgaWYgYXJncy5tYXJrZG93bjoKICAgICAgICBvdXRwdXQgPSBkaWdlc3QucmVuZGVyX21hcmtkb3duKGRhdGEpCiAgICBlbHNlOgogICAgICAgIG91dHB1dCA9IGRpZ2VzdC5nZW5lcmF0ZV9zdW1tYXJ5KGRhdGEpCgogICAgaWYgYXJncy5leHBvcnQ6CiAgICAgICAgd2l0aCBvcGVuKGFyZ3MuZXhwb3J0LCAidyIsIGVuY29kaW5nPSJ1dGYtOCIpIGFzIGY6CiAgICAgICAgICAgIGYud3JpdGUob3V0cHV0KQogICAgICAgIHByaW50X2luZm8oZiLinJMgRXhwb3J0ZWQgdG8ge2FyZ3MuZXhwb3J0fSIpCiAgICBlbHNlOgogICAgICAgIHByaW50KCkKICAgICAgICBwcmludChvdXRwdXQpCgogICAgcmV0dXJuIDAgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCg==
+"""CLI command: digest — Weekly research digest."""
+from __future__ import annotations
+
+import argparse
+
+from cli._shared import print_info
+from llm.weekly_digest import WeeklyDigest
+
+
+def _build_digest_parser(subparsers) -> argparse.ArgumentParser:
+    """Build the digest subcommand parser."""
+    p = subparsers.add_parser(
+        "digest",
+        help="Weekly research digest",
+        description="Generate weekly research summary.",
+    )
+    p.add_argument(
+        "--days", "-d",
+        type=int,
+        default=7,
+        help="Number of days to summarize (default: 7)",
+    )
+    p.add_argument(
+        "--last-week",
+        action="store_true",
+        help="Summarize last 7 days",
+    )
+    p.add_argument(
+        "--markdown", "-m",
+        action="store_true",
+        help="Output as Markdown",
+    )
+    p.add_argument(
+        "--export",
+        type=str,
+        help="Export to file",
+    )
+    return p  # type: ignore[no-any-return]
+
+
+def _run_digest(args: argparse.Namespace) -> int:
+    """Run digest command."""
+    digest = WeeklyDigest()
+
+    days = 14 if args.last_week else (args.days or 7)
+    data = digest.collect_week_data(days=days)
+
+    if args.markdown:
+        output = digest.render_markdown(data)
+    else:
+        output = digest.generate_summary(data)
+
+    if args.export:
+        with open(args.export, 'w', encoding='utf-8') as f:
+            f.write(output)
+        print_info(f"✓ Exported to {args.export}")
+    else:
+        print()
+        print(output)
+
+    return 0  # type: ignore[no-any-return]

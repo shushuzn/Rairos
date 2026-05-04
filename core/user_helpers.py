@@ -1,1 +1,185 @@
-IiIiClVzZXItRnJpZW5kbHkgRXJyb3IgTWVzc2FnZXMgYW5kIEhlbHBlcnMuCgpQcm92aWRlcyBjbGVhciwgaGVscGZ1bCBlcnJvciBtZXNzYWdlcyBhbmQgc3VnZ2VzdGlvbnMgZm9yIHVzZXJzLgpJbnNwaXJlZCBieSB0aGUgInNpbXBsaWZ5IGNvbXBsZXhpdHkiIHBoaWxvc29waHkuCiIiIgoKZnJvbSB0eXBpbmcgaW1wb3J0IE9wdGlvbmFsLCBEaWN0LCBBbnkKCgpjbGFzcyBVc2VyRXJyb3IoRXhjZXB0aW9uKToKICAgICIiIkJhc2UgdXNlci1mcmllbmRseSBlcnJvci4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZiwgbWVzc2FnZTogc3RyLCBzdWdnZXN0aW9uOiBPcHRpb25hbFtzdHJdID0gTm9uZSk6CiAgICAgICAgc3VwZXIoKS5fX2luaXRfXyhtZXNzYWdlKQogICAgICAgIHNlbGYuc3VnZ2VzdGlvbiA9IHN1Z2dlc3Rpb24KCiAgICBkZWYgZ2V0X2hlbHBmdWxfbWVzc2FnZShzZWxmKSAtPiBzdHI6CiAgICAgICAgIiIiR2V0IGVycm9yIG1lc3NhZ2Ugd2l0aCBzdWdnZXN0aW9uLiIiIgogICAgICAgIG1zZyA9IGYi4p2MIHtzdXBlcigpLl9fc3RyX18oKX0iCiAgICAgICAgaWYgc2VsZi5zdWdnZXN0aW9uOgogICAgICAgICAgICBtc2cgKz0gZiJcbvCfkqEg5bu66K6uOiB7c2VsZi5zdWdnZXN0aW9ufSIKICAgICAgICByZXR1cm4gbXNnCgoKY2xhc3MgRGF0YWJhc2VFcnJvcihVc2VyRXJyb3IpOgogICAgIiIiRGF0YWJhc2UtcmVsYXRlZCBlcnJvci4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZiwgbWVzc2FnZTogc3RyLCBzdWdnZXN0aW9uOiBPcHRpb25hbFtzdHJdID0gTm9uZSk6CiAgICAgICAgc3VwZXIoKS5fX2luaXRfXyhtZXNzYWdlLCBzdWdnZXN0aW9uKQoKICAgIEBzdGF0aWNtZXRob2QKICAgIGRlZiBub3RfZm91bmQoaXRlbTogc3RyLCBpdGVtX2lkOiBzdHIpIC0+ICJEYXRhYmFzZUVycm9yIjoKICAgICAgICAiIiJDcmVhdGUgYSBub3QgZm91bmQgZXJyb3IuIiIiCiAgICAgICAgcmV0dXJuIERhdGFiYXNlRXJyb3IoCiAgICAgICAgICAgIG1lc3NhZ2U9ZiLmnKrmib7liLAge2l0ZW19OiB7aXRlbV9pZH0iLAogICAgICAgICAgICBzdWdnZXN0aW9uPWYi6K+35qOA5p+lIHtpdGVtX2lkfSDmmK/lkKbmraPnoa7vvIzmiJbkvb/nlKggJ3NlYXJjaCcg5ZG95Luk5pCc57Si55u45YWzIHtpdGVtfSIsCiAgICAgICAgKQoKICAgIEBzdGF0aWNtZXRob2QKICAgIGRlZiBjb25uZWN0aW9uX2ZhaWxlZCgpIC0+ICJEYXRhYmFzZUVycm9yIjoKICAgICAgICAiIiJDcmVhdGUgYSBjb25uZWN0aW9uIGZhaWxlZCBlcnJvci4iIiIKICAgICAgICByZXR1cm4gRGF0YWJhc2VFcnJvcigKICAgICAgICAgICAgbWVzc2FnZT0i5pWw5o2u5bqT6L+e5o6l5aSx6LSlIiwKICAgICAgICAgICAgc3VnZ2VzdGlvbj0i6K+356Gu5L+d5pWw5o2u5bqT5paH5Lu25a2Y5Zyo77yM5oiW6L+Q6KGMICdweXRob24gY2xpLnB5IGluaXQnIOWIneWni+WMluaVsOaNruW6kyIsCiAgICAgICAgKQoKCmNsYXNzIEFQSUVycm9yKFVzZXJFcnJvcik6CiAgICAiIiJBUEktcmVsYXRlZCBlcnJvci4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZiwgbWVzc2FnZTogc3RyLCBzdWdnZXN0aW9uOiBPcHRpb25hbFtzdHJdID0gTm9uZSk6CiAgICAgICAgc3VwZXIoKS5fX2luaXRfXyhtZXNzYWdlLCBzdWdnZXN0aW9uKQoKICAgIEBzdGF0aWNtZXRob2QKICAgIGRlZiByYXRlX2xpbWl0KGVuZHBvaW50OiBzdHIsIHdhaXRfc2Vjb25kczogaW50KSAtPiAiQVBJRXJyb3IiOgogICAgICAgICIiIkNyZWF0ZSBhIHJhdGUgbGltaXQgZXJyb3IuIiIiCiAgICAgICAgcmV0dXJuIEFQSUVycm9yKAogICAgICAgICAgICBtZXNzYWdlPWYiQVBJ6K+35rGC6L+H5LqO6aKR57mBICh7ZW5kcG9pbnR9KSIsCiAgICAgICAgICAgIHN1Z2dlc3Rpb249ZiLor7fnrYnlvoUge3dhaXRfc2Vjb25kc30g56eS5ZCO6YeN6K+V77yM5oiW5L2/55SoICdyYXRlLWxpbWl0JyDlkb3ku6Tmn6XnnItBUEnkvb/nlKjnu5/orqEiLAogICAgICAgICkKCiAgICBAc3RhdGljbWV0aG9kCiAgICBkZWYgbmV0d29ya19mYWlsZWQoKSAtPiAiQVBJRXJyb3IiOgogICAgICAgICIiIkNyZWF0ZSBhIG5ldHdvcmsgZmFpbGVkIGVycm9yLiIiIgogICAgICAgIHJldHVybiBBUElFcnJvcihtZXNzYWdlPSLnvZHnu5zov57mjqXlpLHotKUiLCBzdWdnZXN0aW9uPSLor7fmo4Dmn6XnvZHnu5zov57mjqXvvIzmiJbkvb/nlKjku6PnkIborr7nva4iKQoKICAgIEBzdGF0aWNtZXRob2QKICAgIGRlZiBhdXRoX2ZhaWxlZCgpIC0+ICJBUElFcnJvciI6CiAgICAgICAgIiIiQ3JlYXRlIGFuIGF1dGhlbnRpY2F0aW9uIGVycm9yLiIiIgogICAgICAgIHJldHVybiBBUElFcnJvcigKICAgICAgICAgICAgbWVzc2FnZT0iQVBJ6K6k6K+B5aSx6LSlIiwKICAgICAgICAgICAgc3VnZ2VzdGlvbj0i6K+35qOA5p+lQVBJ5a+G6ZKl5piv5ZCm5q2j56Gu77yM5oiW5L2/55SoICdleHBvcnQgT1BFTkFJX0FQSV9LRVk9eW91ci1rZXknIOiuvue9riIsCiAgICAgICAgKQoKCmNsYXNzIFBhcnNlRXJyb3IoVXNlckVycm9yKToKICAgICIiIlBhcGVyIHBhcnNpbmcgZXJyb3IuIiIiCgogICAgZGVmIF9faW5pdF9fKHNlbGYsIG1lc3NhZ2U6IHN0ciwgc3VnZ2VzdGlvbjogT3B0aW9uYWxbc3RyXSA9IE5vbmUpOgogICAgICAgIHN1cGVyKCkuX19pbml0X18obWVzc2FnZSwgc3VnZ2VzdGlvbikKCiAgICBAc3RhdGljbWV0aG9kCiAgICBkZWYgcGRmX2ZhaWxlZChwYXBlcl9pZDogc3RyKSAtPiAiUGFyc2VFcnJvciI6CiAgICAgICAgIiIiQ3JlYXRlIGEgUERGIHBhcnNpbmcgZXJyb3IuIiIiCiAgICAgICAgcmV0dXJuIFBhcnNlRXJyb3IoCiAgICAgICAgICAgIG1lc3NhZ2U9ZiLop6PmnpDorrrmloflpLHotKU6IHtwYXBlcl9pZH0iLAogICAgICAgICAgICBzdWdnZXN0aW9uPSLor7fmo4Dmn6VQREbmlofku7bmmK/lkKblj6/orr/pl67vvIzmiJbkvb/nlKggJy0tbm8tcGRmJyDot7Pov4dQREbkuIvovb0iLAogICAgICAgICkKCgpkZWYgZm9ybWF0X2Vycm9yKGVycm9yOiBFeGNlcHRpb24pIC0+IHN0cjoKICAgICIiIkZvcm1hdCBhbiBlcnJvciBmb3IgdXNlciBkaXNwbGF5LiIiIgogICAgaWYgaXNpbnN0YW5jZShlcnJvciwgVXNlckVycm9yKToKICAgICAgICByZXR1cm4gZXJyb3IuZ2V0X2hlbHBmdWxfbWVzc2FnZSgpCiAgICBlbHNlOgogICAgICAgIHJldHVybiBmIuKdjCDlj5HnlJ/plJnor686IHtlcnJvcn0iCgoKZGVmIHByaW50X2Vycm9yKGVycm9yOiBFeGNlcHRpb24pOgogICAgIiIiUHJpbnQgZXJyb3IgbWVzc2FnZSB0byBjb25zb2xlLiIiIgogICAgcHJpbnQoZm9ybWF0X2Vycm9yKGVycm9yKSwgZmlsZT1fX2ltcG9ydF9fKCJzeXMiKS5zdGRlcnIpCgoKY2xhc3MgUHJvZ3Jlc3NJbmRpY2F0b3I6CiAgICAiIiJTaW1wbGUgcHJvZ3Jlc3MgaW5kaWNhdG9yIGZvciBsb25nIG9wZXJhdGlvbnMuIiIiCgogICAgZGVmIF9faW5pdF9fKHNlbGYsIHRvdGFsOiBpbnQsIGRlc2NyaXB0aW9uOiBzdHIgPSAi5aSE55CG5LitIik6CiAgICAgICAgc2VsZi50b3RhbCA9IHRvdGFsCiAgICAgICAgc2VsZi5jdXJyZW50ID0gMAogICAgICAgIHNlbGYuZGVzY3JpcHRpb24gPSBkZXNjcmlwdGlvbgoKICAgIGRlZiB1cGRhdGUoc2VsZiwgaW5jcmVtZW50OiBpbnQgPSAxKToKICAgICAgICAiIiJVcGRhdGUgcHJvZ3Jlc3MuIiIiCiAgICAgICAgc2VsZi5jdXJyZW50ICs9IGluY3JlbWVudAogICAgICAgIHBlcmNlbnRhZ2UgPSAoc2VsZi5jdXJyZW50IC8gc2VsZi50b3RhbCAqIDEwMCkgaWYgc2VsZi50b3RhbCA+IDAgZWxzZSAwCiAgICAgICAgcHJpbnQoZiJccntzZWxmLmRlc2NyaXB0aW9ufToge3NlbGYuY3VycmVudH0ve3NlbGYudG90YWx9ICh7cGVyY2VudGFnZTouMGZ9JSkiLCBlbmQ9IiIpCgogICAgZGVmIGZpbmlzaChzZWxmKToKICAgICAgICAiIiJGaW5pc2ggcHJvZ3Jlc3MgaW5kaWNhdG9yLiIiIgogICAgICAgIHByaW50KGYiXHJ7c2VsZi5kZXNjcmlwdGlvbn06IOWujOaIkO+8gXtzZWxmLmN1cnJlbnR9L3tzZWxmLnRvdGFsfSIpCgogICAgZGVmIF9fZW50ZXJfXyhzZWxmKToKICAgICAgICByZXR1cm4gc2VsZgoKICAgIGRlZiBfX2V4aXRfXyhzZWxmLCBleGNfdHlwZSwgZXhjX3ZhbCwgZXhjX3RiKToKICAgICAgICBzZWxmLmZpbmlzaCgpCgoKZGVmIGNvbmZpcm1fYWN0aW9uKHByb21wdDogc3RyKSAtPiBib29sOgogICAgIiIiQXNrIHVzZXIgZm9yIGNvbmZpcm1hdGlvbi4iIiIKICAgIHJlc3BvbnNlID0gaW5wdXQoZiJ7cHJvbXB0fSAoeS9uKTogIikuc3RyaXAoKS5sb3dlcigpCiAgICByZXR1cm4gcmVzcG9uc2UgaW4gWyJ5IiwgInllcyJdCgoKZGVmIHNlbGVjdF9vcHRpb24ob3B0aW9uczogbGlzdCwgcHJvbXB0OiBzdHIgPSAi6K+36YCJ5oupIikgLT4gaW50OgogICAgIiIiTGV0IHVzZXIgc2VsZWN0IGFuIG9wdGlvbi4iIiIKICAgIHByaW50KGYiXG57cHJvbXB0fToiKQogICAgZm9yIGksIG9wdGlvbiBpbiBlbnVtZXJhdGUob3B0aW9ucywgMSk6CiAgICAgICAgcHJpbnQoZiIgIHtpfS4ge29wdGlvbn0iKQoKICAgIHdoaWxlIFRydWU6CiAgICAgICAgdHJ5OgogICAgICAgICAgICBjaG9pY2UgPSBpbnQoaW5wdXQoIlxu6K+36L6T5YWl6YCJ6aG557yW5Y+3OiAiKS5zdHJpcCgpKQogICAgICAgICAgICBpZiAxIDw9IGNob2ljZSA8PSBsZW4ob3B0aW9ucyk6CiAgICAgICAgICAgICAgICByZXR1cm4gY2hvaWNlIC0gMQogICAgICAgICAgICBwcmludChmIuivt+i+k+WFpSAxLXtsZW4ob3B0aW9ucyl9IOS5i+mXtOeahOaVsOWtlyIpCiAgICAgICAgZXhjZXB0IFZhbHVlRXJyb3I6CiAgICAgICAgICAgIHByaW50KCLor7fovpPlhaXmnInmlYjnmoTmlbDlrZciKQoKCmRlZiBwcmludF90YWJsZShoZWFkZXJzOiBsaXN0LCByb3dzOiBsaXN0LCBtYXhfd2lkdGg6IGludCA9IDUwKToKICAgICIiIlByaW50IGRhdGEgYXMgYSBmb3JtYXR0ZWQgdGFibGUuIiIiCiAgICAjIENhbGN1bGF0ZSBjb2x1bW4gd2lkdGhzCiAgICBjb2xfd2lkdGhzID0gW2xlbihoKSBmb3IgaCBpbiBoZWFkZXJzXQogICAgZm9yIHJvdyBpbiByb3dzOgogICAgICAgIGZvciBpLCBjZWxsIGluIGVudW1lcmF0ZShyb3cpOgogICAgICAgICAgICBjb2xfd2lkdGhzW2ldID0gbWF4KGNvbF93aWR0aHNbaV0sIG1pbihsZW4oc3RyKGNlbGwpKSwgbWF4X3dpZHRoKSkKCiAgICAjIFByaW50IGhlYWRlcnMKICAgIGhlYWRlcl9saW5lID0gIiB8ICIuam9pbihoLmxqdXN0KGNvbF93aWR0aHNbaV0pIGZvciBpLCBoIGluIGVudW1lcmF0ZShoZWFkZXJzKSkKICAgIHByaW50KGhlYWRlcl9saW5lKQogICAgcHJpbnQoIi0iICogbGVuKGhlYWRlcl9saW5lKSkKCiAgICAjIFByaW50IHJvd3MKICAgIGZvciByb3cgaW4gcm93czoKICAgICAgICByb3dfbGluZSA9ICIgfCAiLmpvaW4oCiAgICAgICAgICAgIHN0cihjZWxsKS5sanVzdChjb2xfd2lkdGhzW2ldKVs6IGNvbF93aWR0aHNbaV1dIGZvciBpLCBjZWxsIGluIGVudW1lcmF0ZShyb3cpCiAgICAgICAgKQogICAgICAgIHByaW50KHJvd19saW5lKQoKCmRlZiBwcmludF9qc29uKGRhdGE6IERpY3Rbc3RyLCBBbnldLCBpbmRlbnQ6IGludCA9IDIpOgogICAgIiIiUHJpbnQgZGF0YSBhcyBmb3JtYXR0ZWQgSlNPTi4iIiIKICAgIGltcG9ydCBqc29uCgogICAgcHJpbnQoanNvbi5kdW1wcyhkYXRhLCBpbmRlbnQ9aW5kZW50LCBlbnN1cmVfYXNjaWk9RmFsc2UpKQoKCmRlZiBwcmludF9iYW5uZXIodGV4dDogc3RyLCB3aWR0aDogaW50ID0gNjApOgogICAgIiIiUHJpbnQgYSBiYW5uZXIuIiIiCiAgICBwYWRkaW5nID0gKHdpZHRoIC0gbGVuKHRleHQpIC0gMikgLy8gMgogICAgcHJpbnQoIj0iICogd2lkdGgpCiAgICBwcmludCgiICIgKiBwYWRkaW5nICsgdGV4dCkKICAgIHByaW50KCI9IiAqIHdpZHRoKQo=
+"""
+User-Friendly Error Messages and Helpers.
+
+Provides clear, helpful error messages and suggestions for users.
+Inspired by the "simplify complexity" philosophy.
+"""
+
+from typing import Optional, Dict, Any
+
+
+class UserError(Exception):
+    """Base user-friendly error."""
+
+    def __init__(self, message: str, suggestion: Optional[str] = None):
+        super().__init__(message)
+        self.suggestion = suggestion
+
+    def get_helpful_message(self) -> str:
+        """Get error message with suggestion."""
+        msg = f"❌ {super().__str__()}"
+        if self.suggestion:
+            msg += f"\n💡 建议: {self.suggestion}"
+        return msg
+
+
+class DatabaseError(UserError):
+    """Database-related error."""
+
+    def __init__(self, message: str, suggestion: Optional[str] = None):
+        super().__init__(message, suggestion)
+
+    @staticmethod
+    def not_found(item: str, item_id: str) -> "DatabaseError":
+        """Create a not found error."""
+        return DatabaseError(
+            message=f"未找到 {item}: {item_id}",
+            suggestion=f"请检查 {item_id} 是否正确，或使用 'search' 命令搜索相关 {item}",
+        )
+
+    @staticmethod
+    def connection_failed() -> "DatabaseError":
+        """Create a connection failed error."""
+        return DatabaseError(
+            message="数据库连接失败",
+            suggestion="请确保数据库文件存在，或运行 'python cli.py init' 初始化数据库",
+        )
+
+
+class APIError(UserError):
+    """API-related error."""
+
+    def __init__(self, message: str, suggestion: Optional[str] = None):
+        super().__init__(message, suggestion)
+
+    @staticmethod
+    def rate_limit(endpoint: str, wait_seconds: int) -> "APIError":
+        """Create a rate limit error."""
+        return APIError(
+            message=f"API请求过于频繁 ({endpoint})",
+            suggestion=f"请等待 {wait_seconds} 秒后重试，或使用 'rate-limit' 命令查看API使用统计",
+        )
+
+    @staticmethod
+    def network_failed() -> "APIError":
+        """Create a network failed error."""
+        return APIError(message="网络连接失败", suggestion="请检查网络连接，或使用代理设置")
+
+    @staticmethod
+    def auth_failed() -> "APIError":
+        """Create an authentication error."""
+        return APIError(
+            message="API认证失败",
+            suggestion="请检查API密钥是否正确，或使用 'export OPENAI_API_KEY=your-key' 设置",
+        )
+
+
+class ParseError(UserError):
+    """Paper parsing error."""
+
+    def __init__(self, message: str, suggestion: Optional[str] = None):
+        super().__init__(message, suggestion)
+
+    @staticmethod
+    def pdf_failed(paper_id: str) -> "ParseError":
+        """Create a PDF parsing error."""
+        return ParseError(
+            message=f"解析论文失败: {paper_id}",
+            suggestion="请检查PDF文件是否可访问，或使用 '--no-pdf' 跳过PDF下载",
+        )
+
+
+def format_error(error: Exception) -> str:
+    """Format an error for user display."""
+    if isinstance(error, UserError):
+        return error.get_helpful_message()
+    else:
+        return f"❌ 发生错误: {error}"
+
+
+def print_error(error: Exception):
+    """Print error message to console."""
+    print(format_error(error), file=__import__("sys").stderr)
+
+
+class ProgressIndicator:
+    """Simple progress indicator for long operations."""
+
+    def __init__(self, total: int, description: str = "处理中"):
+        self.total = total
+        self.current = 0
+        self.description = description
+
+    def update(self, increment: int = 1):
+        """Update progress."""
+        self.current += increment
+        percentage = (self.current / self.total * 100) if self.total > 0 else 0
+        print(f"\r{self.description}: {self.current}/{self.total} ({percentage:.0f}%)", end="")
+
+    def finish(self):
+        """Finish progress indicator."""
+        print(f"\r{self.description}: 完成！{self.current}/{self.total}")
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.finish()
+
+
+def confirm_action(prompt: str) -> bool:
+    """Ask user for confirmation."""
+    response = input(f"{prompt} (y/n): ").strip().lower()
+    return response in ["y", "yes"]
+
+
+def select_option(options: list, prompt: str = "请选择") -> int:
+    """Let user select an option."""
+    print(f"\n{prompt}:")
+    for i, option in enumerate(options, 1):
+        print(f"  {i}. {option}")
+
+    while True:
+        try:
+            choice = int(input("\n请输入选项编号: ").strip())
+            if 1 <= choice <= len(options):
+                return choice - 1
+            print(f"请输入 1-{len(options)} 之间的数字")
+        except ValueError:
+            print("请输入有效的数字")
+
+
+def print_table(headers: list, rows: list, max_width: int = 50):
+    """Print data as a formatted table."""
+    # Calculate column widths
+    col_widths = [len(h) for h in headers]
+    for row in rows:
+        for i, cell in enumerate(row):
+            col_widths[i] = max(col_widths[i], min(len(str(cell)), max_width))
+
+    # Print headers
+    header_line = " | ".join(h.ljust(col_widths[i]) for i, h in enumerate(headers))
+    print(header_line)
+    print("-" * len(header_line))
+
+    # Print rows
+    for row in rows:
+        row_line = " | ".join(
+            str(cell).ljust(col_widths[i])[: col_widths[i]] for i, cell in enumerate(row)
+        )
+        print(row_line)
+
+
+def print_json(data: Dict[str, Any], indent: int = 2):
+    """Print data as formatted JSON."""
+    import json
+
+    print(json.dumps(data, indent=indent, ensure_ascii=False))
+
+
+def print_banner(text: str, width: int = 60):
+    """Print a banner."""
+    padding = (width - len(text) - 2) // 2
+    print("=" * width)
+    print(" " * padding + text)
+    print("=" * width)

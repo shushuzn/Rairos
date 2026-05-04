@@ -1,1 +1,290 @@
-IiIiClJlcGxpY2F0aW9uIFRyYWNrZXI6IFRyYWNrIHBhcGVyIHJlcGxpY2F0aW9uIGF0dGVtcHRzLgoiIiIKCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcywgZmllbGQKZnJvbSB0eXBpbmcgaW1wb3J0IExpc3QsIE9wdGlvbmFsLCBEaWN0LCBBbnkKZnJvbSBkYXRldGltZSBpbXBvcnQgZGF0ZXRpbWUKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCgpmcm9tIGxsbS50cmFja2VyX2Jhc2UgaW1wb3J0IEpzb25GaWxlU3RvcmUKCgpAZGF0YWNsYXNzCmNsYXNzIFJlcGxpY2F0aW9uQXR0ZW1wdDoKICAgICIiIkEgcmVwbGljYXRpb24gYXR0ZW1wdC4iIiIKCiAgICBhdHRlbXB0X2lkOiBzdHIKICAgIHBhcGVyX2lkOiBzdHIKICAgIHBhcGVyX3RpdGxlOiBzdHIKICAgIHN0YXR1czogc3RyID0gImluX3Byb2dyZXNzIiAgIyBpbl9wcm9ncmVzcywgc3VjY2VzcywgZmFpbGVkLCBwYXJ0aWFsCiAgICBhdHRlbXB0X2RhdGU6IHN0ciA9ICIiCiAgICBlbnZpcm9ubWVudDogRGljdFtzdHIsIHN0cl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9ZGljdCkKICAgIHJlc3VsdHM6IERpY3Rbc3RyLCBBbnldID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWRpY3QpCiAgICBkaWZmZXJlbmNlczogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICBub3Rlczogc3RyID0gIiIKICAgIGNvbmZpZzogRGljdFtzdHIsIEFueV0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9ZGljdCkKCgpAZGF0YWNsYXNzCmNsYXNzIFJlcGxpY2F0aW9uUmVwb3J0OgogICAgIiIiQSByZXBsaWNhdGlvbiByZXBvcnQuIiIiCgogICAgYXR0ZW1wdDogUmVwbGljYXRpb25BdHRlbXB0CiAgICBzdW1tYXJ5OiBzdHIgPSAiIgogICAgbWV0aG9kb2xvZ3k6IHN0ciA9ICIiCiAgICBmaW5kaW5nczogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICByZWNvbW1lbmRhdGlvbnM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQoKCmNsYXNzIFJlcGxpY2F0aW9uVHJhY2tlcihKc29uRmlsZVN0b3JlKToKICAgICIiIlRyYWNrIHBhcGVyIHJlcGxpY2F0aW9uIGF0dGVtcHRzLiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBkYXRhX2RpcjogT3B0aW9uYWxbUGF0aF0gPSBOb25lKToKICAgICAgICBzZWxmLmRhdGFfZGlyID0gZGF0YV9kaXIgb3IgUGF0aC5ob21lKCkgLyAiLmFpX3Jlc2VhcmNoX29zIgogICAgICAgIHNlbGYuZGF0YV9kaXIubWtkaXIocGFyZW50cz1UcnVlLCBleGlzdF9vaz1UcnVlKQogICAgICAgIHNlbGYuZGF0YV9maWxlID0gc2VsZi5kYXRhX2RpciAvICJyZXBsaWNhdGlvbnMuanNvbiIKCiAgICBkZWYgX3Bvc3RfbG9hZChzZWxmLCByYXc6IExpc3RbZGljdF0pIC0+IExpc3RbZGljdF06CiAgICAgICAgcmV0dXJuIHJhdwoKICAgIGRlZiBfcHJlX3NhdmUoc2VsZiwgZGF0YTogTGlzdFtkaWN0XSkgLT4gTGlzdFtkaWN0XToKICAgICAgICByZXR1cm4gZGF0YQoKICAgIGRlZiBjcmVhdGVfYXR0ZW1wdCgKICAgICAgICBzZWxmLAogICAgICAgIHBhcGVyX2lkOiBzdHIsCiAgICAgICAgcGFwZXJfdGl0bGU6IHN0ciwKICAgICAgICBjb25maWc6IE9wdGlvbmFsW0RpY3RdID0gTm9uZSwKICAgICkgLT4gUmVwbGljYXRpb25BdHRlbXB0OgogICAgICAgICIiIkNyZWF0ZSBhIG5ldyByZXBsaWNhdGlvbiBhdHRlbXB0LiIiIgogICAgICAgIGRhdGEgPSBzZWxmLl9sb2FkKCkKCiAgICAgICAgYXR0ZW1wdF9pZCA9IGYie3BhcGVyX2lkfV97bGVuKGRhdGEpICsgMX0iCiAgICAgICAgYXR0ZW1wdCA9IFJlcGxpY2F0aW9uQXR0ZW1wdCgKICAgICAgICAgICAgYXR0ZW1wdF9pZD1hdHRlbXB0X2lkLAogICAgICAgICAgICBwYXBlcl9pZD1wYXBlcl9pZCwKICAgICAgICAgICAgcGFwZXJfdGl0bGU9cGFwZXJfdGl0bGUsCiAgICAgICAgICAgIGF0dGVtcHRfZGF0ZT1kYXRldGltZS5ub3coKS5pc29mb3JtYXQoKVs6MTBdLAogICAgICAgICAgICBjb25maWc9Y29uZmlnIG9yIHt9LAogICAgICAgICkKCiAgICAgICAgZGF0YS5hcHBlbmQoCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICJhdHRlbXB0X2lkIjogYXR0ZW1wdC5hdHRlbXB0X2lkLAogICAgICAgICAgICAgICAgInBhcGVyX2lkIjogYXR0ZW1wdC5wYXBlcl9pZCwKICAgICAgICAgICAgICAgICJwYXBlcl90aXRsZSI6IGF0dGVtcHQucGFwZXJfdGl0bGUsCiAgICAgICAgICAgICAgICAic3RhdHVzIjogYXR0ZW1wdC5zdGF0dXMsCiAgICAgICAgICAgICAgICAiYXR0ZW1wdF9kYXRlIjogYXR0ZW1wdC5hdHRlbXB0X2RhdGUsCiAgICAgICAgICAgICAgICAiZW52aXJvbm1lbnQiOiBhdHRlbXB0LmVudmlyb25tZW50LAogICAgICAgICAgICAgICAgInJlc3VsdHMiOiBhdHRlbXB0LnJlc3VsdHMsCiAgICAgICAgICAgICAgICAiZGlmZmVyZW5jZXMiOiBhdHRlbXB0LmRpZmZlcmVuY2VzLAogICAgICAgICAgICAgICAgIm5vdGVzIjogYXR0ZW1wdC5ub3RlcywKICAgICAgICAgICAgICAgICJjb25maWciOiBhdHRlbXB0LmNvbmZpZywKICAgICAgICAgICAgfQogICAgICAgICkKCiAgICAgICAgc2VsZi5fc2F2ZShkYXRhKQogICAgICAgIHJldHVybiBhdHRlbXB0CgogICAgZGVmIHVwZGF0ZV9hdHRlbXB0KAogICAgICAgIHNlbGYsCiAgICAgICAgYXR0ZW1wdF9pZDogc3RyLAogICAgICAgIHN0YXR1czogT3B0aW9uYWxbc3RyXSA9IE5vbmUsCiAgICAgICAgcmVzdWx0czogT3B0aW9uYWxbRGljdF0gPSBOb25lLAogICAgICAgIGRpZmZlcmVuY2VzOiBPcHRpb25hbFtMaXN0W3N0cl1dID0gTm9uZSwKICAgICAgICBub3RlczogT3B0aW9uYWxbc3RyXSA9IE5vbmUsCiAgICAgICAgZW52aXJvbm1lbnQ6IE9wdGlvbmFsW0RpY3RdID0gTm9uZSwKICAgICkgLT4gYm9vbDoKICAgICAgICAiIiJVcGRhdGUgYSByZXBsaWNhdGlvbiBhdHRlbXB0LiIiIgogICAgICAgIGRhdGEgPSBzZWxmLl9sb2FkKCkKCiAgICAgICAgZm9yIGl0ZW0gaW4gZGF0YToKICAgICAgICAgICAgaWYgaXRlbVsiYXR0ZW1wdF9pZCJdID09IGF0dGVtcHRfaWQ6CiAgICAgICAgICAgICAgICBpZiBzdGF0dXMgaXMgbm90IE5vbmU6CiAgICAgICAgICAgICAgICAgICAgaXRlbVsic3RhdHVzIl0gPSBzdGF0dXMKICAgICAgICAgICAgICAgIGlmIHJlc3VsdHMgaXMgbm90IE5vbmU6CiAgICAgICAgICAgICAgICAgICAgaXRlbVsicmVzdWx0cyJdLnVwZGF0ZShyZXN1bHRzKQogICAgICAgICAgICAgICAgaWYgZGlmZmVyZW5jZXMgaXMgbm90IE5vbmU6CiAgICAgICAgICAgICAgICAgICAgaXRlbVsiZGlmZmVyZW5jZXMiXS5leHRlbmQoZGlmZmVyZW5jZXMpCiAgICAgICAgICAgICAgICBpZiBub3RlcyBpcyBub3QgTm9uZToKICAgICAgICAgICAgICAgICAgICBpdGVtWyJub3RlcyJdID0gbm90ZXMKICAgICAgICAgICAgICAgIGlmIGVudmlyb25tZW50IGlzIG5vdCBOb25lOgogICAgICAgICAgICAgICAgICAgIGl0ZW1bImVudmlyb25tZW50Il0udXBkYXRlKGVudmlyb25tZW50KQogICAgICAgICAgICAgICAgc2VsZi5fc2F2ZShkYXRhKQogICAgICAgICAgICAgICAgcmV0dXJuIFRydWUKICAgICAgICByZXR1cm4gRmFsc2UKCiAgICBkZWYgZ2V0X2F0dGVtcHQoc2VsZiwgYXR0ZW1wdF9pZDogc3RyKSAtPiBPcHRpb25hbFtSZXBsaWNhdGlvbkF0dGVtcHRdOgogICAgICAgICIiIkdldCBhIHJlcGxpY2F0aW9uIGF0dGVtcHQgYnkgSUQuIiIiCiAgICAgICAgZGF0YSA9IHNlbGYuX2xvYWQoKQoKICAgICAgICBmb3IgaXRlbSBpbiBkYXRhOgogICAgICAgICAgICBpZiBpdGVtWyJhdHRlbXB0X2lkIl0gPT0gYXR0ZW1wdF9pZDoKICAgICAgICAgICAgICAgIHJldHVybiBSZXBsaWNhdGlvbkF0dGVtcHQoKippdGVtKQogICAgICAgIHJldHVybiBOb25lCgogICAgZGVmIGdldF9wYXBlcl9hdHRlbXB0cyhzZWxmLCBwYXBlcl9pZDogc3RyKSAtPiBMaXN0W1JlcGxpY2F0aW9uQXR0ZW1wdF06CiAgICAgICAgIiIiR2V0IGFsbCBhdHRlbXB0cyBmb3IgYSBwYXBlci4iIiIKICAgICAgICBkYXRhID0gc2VsZi5fbG9hZCgpCiAgICAgICAgYXR0ZW1wdHMgPSBbXQoKICAgICAgICBmb3IgaXRlbSBpbiBkYXRhOgogICAgICAgICAgICBpZiBpdGVtWyJwYXBlcl9pZCJdID09IHBhcGVyX2lkOgogICAgICAgICAgICAgICAgYXR0ZW1wdHMuYXBwZW5kKFJlcGxpY2F0aW9uQXR0ZW1wdCgqKml0ZW0pKQoKICAgICAgICByZXR1cm4gYXR0ZW1wdHMKCiAgICBkZWYgZ2V0X2FsbF9hdHRlbXB0cyhzZWxmLCBzdGF0dXM6IE9wdGlvbmFsW3N0cl0gPSBOb25lKSAtPiBMaXN0W1JlcGxpY2F0aW9uQXR0ZW1wdF06CiAgICAgICAgIiIiR2V0IGFsbCByZXBsaWNhdGlvbiBhdHRlbXB0cy4iIiIKICAgICAgICBkYXRhID0gc2VsZi5fbG9hZCgpCiAgICAgICAgYXR0ZW1wdHMgPSBbXQoKICAgICAgICBmb3IgaXRlbSBpbiBkYXRhOgogICAgICAgICAgICBpZiBzdGF0dXMgaXMgTm9uZSBvciBpdGVtWyJzdGF0dXMiXSA9PSBzdGF0dXM6CiAgICAgICAgICAgICAgICBhdHRlbXB0cy5hcHBlbmQoUmVwbGljYXRpb25BdHRlbXB0KCoqaXRlbSkpCgogICAgICAgICMgU29ydCBieSBkYXRlIGRlc2NlbmRpbmcKICAgICAgICBhdHRlbXB0cy5zb3J0KGtleT1sYW1iZGEgeDogeC5hdHRlbXB0X2RhdGUsIHJldmVyc2U9VHJ1ZSkKICAgICAgICByZXR1cm4gYXR0ZW1wdHMKCiAgICBkZWYgZ2V0X3N0YXRpc3RpY3Moc2VsZikgLT4gRGljdFtzdHIsIEFueV06CiAgICAgICAgIiIiR2V0IHJlcGxpY2F0aW9uIHN0YXRpc3RpY3MuIiIiCiAgICAgICAgZGF0YSA9IHNlbGYuX2xvYWQoKQoKICAgICAgICB0b3RhbCA9IGxlbihkYXRhKQogICAgICAgIHN1Y2Nlc3MgPSBzdW0oMSBmb3IgZCBpbiBkYXRhIGlmIGRbInN0YXR1cyJdID09ICJzdWNjZXNzIikKICAgICAgICBmYWlsZWQgPSBzdW0oMSBmb3IgZCBpbiBkYXRhIGlmIGRbInN0YXR1cyJdID09ICJmYWlsZWQiKQogICAgICAgIHBhcnRpYWwgPSBzdW0oMSBmb3IgZCBpbiBkYXRhIGlmIGRbInN0YXR1cyJdID09ICJwYXJ0aWFsIikKICAgICAgICBpbl9wcm9ncmVzcyA9IHN1bSgxIGZvciBkIGluIGRhdGEgaWYgZFsic3RhdHVzIl0gPT0gImluX3Byb2dyZXNzIikKCiAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgInRvdGFsIjogdG90YWwsCiAgICAgICAgICAgICJzdWNjZXNzIjogc3VjY2VzcywKICAgICAgICAgICAgImZhaWxlZCI6IGZhaWxlZCwKICAgICAgICAgICAgInBhcnRpYWwiOiBwYXJ0aWFsLAogICAgICAgICAgICAiaW5fcHJvZ3Jlc3MiOiBpbl9wcm9ncmVzcywKICAgICAgICAgICAgInN1Y2Nlc3NfcmF0ZSI6IChzdWNjZXNzIC8gdG90YWwgKiAxMDApIGlmIHRvdGFsID4gMCBlbHNlIDAsCiAgICAgICAgfQoKICAgIGRlZiBnZW5lcmF0ZV9yZXBvcnQoc2VsZiwgYXR0ZW1wdF9pZDogc3RyKSAtPiBPcHRpb25hbFtSZXBsaWNhdGlvblJlcG9ydF06CiAgICAgICAgIiIiR2VuZXJhdGUgYSByZXBsaWNhdGlvbiByZXBvcnQuIiIiCiAgICAgICAgYXR0ZW1wdCA9IHNlbGYuZ2V0X2F0dGVtcHQoYXR0ZW1wdF9pZCkKICAgICAgICBpZiBub3QgYXR0ZW1wdDoKICAgICAgICAgICAgcmV0dXJuIE5vbmUKCiAgICAgICAgcmVwb3J0ID0gUmVwbGljYXRpb25SZXBvcnQoYXR0ZW1wdD1hdHRlbXB0KQoKICAgICAgICAjIEdlbmVyYXRlIHN1bW1hcnkgYmFzZWQgb24gc3RhdHVzCiAgICAgICAgaWYgYXR0ZW1wdC5zdGF0dXMgPT0gInN1Y2Nlc3MiOgogICAgICAgICAgICByZXBvcnQuc3VtbWFyeSA9IGYiU3VjY2Vzc2Z1bGx5IHJlcGxpY2F0ZWQgJ3thdHRlbXB0LnBhcGVyX3RpdGxlfSciCiAgICAgICAgZWxpZiBhdHRlbXB0LnN0YXR1cyA9PSAiZmFpbGVkIjoKICAgICAgICAgICAgcmVwb3J0LnN1bW1hcnkgPSBmIkZhaWxlZCB0byByZXBsaWNhdGUgJ3thdHRlbXB0LnBhcGVyX3RpdGxlfSciCiAgICAgICAgICAgIGlmIGF0dGVtcHQuZGlmZmVyZW5jZXM6CiAgICAgICAgICAgICAgICByZXBvcnQuZmluZGluZ3MuYXBwZW5kKGYiRm91bmQge2xlbihhdHRlbXB0LmRpZmZlcmVuY2VzKX0ga2V5IGRpZmZlcmVuY2VzIikKICAgICAgICBlbGlmIGF0dGVtcHQuc3RhdHVzID09ICJwYXJ0aWFsIjoKICAgICAgICAgICAgcmVwb3J0LnN1bW1hcnkgPSBmIlBhcnRpYWxseSByZXBsaWNhdGVkICd7YXR0ZW1wdC5wYXBlcl90aXRsZX0nIgogICAgICAgICAgICByZXBvcnQuZmluZGluZ3MuYXBwZW5kKCJTb21lIHJlc3VsdHMgbWF0Y2hlZCwgb3RoZXJzIGRpdmVyZ2VkIikKCiAgICAgICAgIyBBZGQgbWV0aG9kb2xvZ3kKICAgICAgICByZXBvcnQubWV0aG9kb2xvZ3kgPSBzZWxmLl9mb3JtYXRfbWV0aG9kb2xvZ3koYXR0ZW1wdCkKCiAgICAgICAgIyBBZGQgcmVjb21tZW5kYXRpb25zCiAgICAgICAgcmVwb3J0LnJlY29tbWVuZGF0aW9ucyA9IHNlbGYuX2dlbmVyYXRlX3JlY29tbWVuZGF0aW9ucyhhdHRlbXB0KQoKICAgICAgICByZXR1cm4gcmVwb3J0CgogICAgZGVmIF9mb3JtYXRfbWV0aG9kb2xvZ3koc2VsZiwgYXR0ZW1wdDogUmVwbGljYXRpb25BdHRlbXB0KSAtPiBzdHI6CiAgICAgICAgIiIiRm9ybWF0IG1ldGhvZG9sb2d5IGZyb20gY29uZmlnIGFuZCBlbnZpcm9ubWVudC4iIiIKICAgICAgICBwYXJ0cyA9IFsiIyMgTWV0aG9kb2xvZ3lcbiJdCgogICAgICAgIGlmIGF0dGVtcHQuY29uZmlnOgogICAgICAgICAgICBwYXJ0cy5hcHBlbmQoIiMjIyBDb25maWd1cmF0aW9uIikKICAgICAgICAgICAgZm9yIGssIHYgaW4gYXR0ZW1wdC5jb25maWcuaXRlbXMoKToKICAgICAgICAgICAgICAgIHBhcnRzLmFwcGVuZChmIi0ge2t9OiB7dn0iKQoKICAgICAgICBpZiBhdHRlbXB0LmVudmlyb25tZW50OgogICAgICAgICAgICBwYXJ0cy5hcHBlbmQoIlxuIyMjIEVudmlyb25tZW50IikKICAgICAgICAgICAgZm9yIGssIHYgaW4gYXR0ZW1wdC5lbnZpcm9ubWVudC5pdGVtcygpOgogICAgICAgICAgICAgICAgcGFydHMuYXBwZW5kKGYiLSB7a306IHt2fSIpCgogICAgICAgIHJldHVybiAiXG4iLmpvaW4ocGFydHMpCgogICAgZGVmIF9nZW5lcmF0ZV9yZWNvbW1lbmRhdGlvbnMoc2VsZiwgYXR0ZW1wdDogUmVwbGljYXRpb25BdHRlbXB0KSAtPiBMaXN0W3N0cl06CiAgICAgICAgIiIiR2VuZXJhdGUgcmVjb21tZW5kYXRpb25zIGJhc2VkIG9uIHJlc3VsdHMuIiIiCiAgICAgICAgcmVjcyA9IFtdCgogICAgICAgIGlmIGF0dGVtcHQuc3RhdHVzID09ICJmYWlsZWQiOgogICAgICAgICAgICByZWNzLmFwcGVuZCgiUmV2aWV3IG9yaWdpbmFsIHBhcGVyJ3MgZXhwZXJpbWVudGFsIHNldHVwIGluIGRldGFpbCIpCiAgICAgICAgICAgIHJlY3MuYXBwZW5kKCJDaGVjayBmb3IgbWlzc2luZyBpbXBsZW1lbnRhdGlvbiBkZXRhaWxzIG9yIGh5cGVycGFyYW1ldGVycyIpCgogICAgICAgICAgICBpZiBub3QgYXR0ZW1wdC5lbnZpcm9ubWVudC5nZXQoImdwdSIpOgogICAgICAgICAgICAgICAgcmVjcy5hcHBlbmQoIkNvbnNpZGVyIHVzaW5nIEdQVSBmb3IgcmVzb3VyY2UtaW50ZW5zaXZlIGV4cGVyaW1lbnRzIikKCiAgICAgICAgaWYgYXR0ZW1wdC5kaWZmZXJlbmNlczoKICAgICAgICAgICAgcmVjcy5hcHBlbmQoIkRvY3VtZW50IGFsbCBkZXZpYXRpb25zIGZyb20gb3JpZ2luYWwgbWV0aG9kb2xvZ3kiKQogICAgICAgICAgICByZWNzLmFwcGVuZCgiQW5hbHl6ZSB3aGljaCBkaWZmZXJlbmNlcyBtb3N0IGFmZmVjdGVkIHJlc3VsdHMiKQoKICAgICAgICBpZiBhdHRlbXB0LnJlc3VsdHM6CiAgICAgICAgICAgIHJlY3MuYXBwZW5kKCJDb21wYXJlIHNwZWNpZmljIG1ldHJpY3MgcXVhbnRpdGF0aXZlbHkgd2hlbiBwb3NzaWJsZSIpCgogICAgICAgIHJldHVybiByZWNzCgogICAgZGVmIHJlbmRlcl90ZXh0KHNlbGYsIGF0dGVtcHRzOiBMaXN0W1JlcGxpY2F0aW9uQXR0ZW1wdF0pIC0+IHN0cjoKICAgICAgICAiIiJSZW5kZXIgYXR0ZW1wdHMgYXMgdGV4dCBsaXN0LiIiIgogICAgICAgIGlmIG5vdCBhdHRlbXB0czoKICAgICAgICAgICAgcmV0dXJuICJObyByZXBsaWNhdGlvbiBhdHRlbXB0cyByZWNvcmRlZC4iCgogICAgICAgIGxpbmVzID0gWyI9IiAqIDcwLCAi8J+UrCBSZXBsaWNhdGlvbiBUcmFja2VyIiwgIj0iICogNzAsICIiXQoKICAgICAgICBzdGF0cyA9IHNlbGYuZ2V0X3N0YXRpc3RpY3MoKQogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgZiJUb3RhbDoge3N0YXRzWyd0b3RhbCddfSB8IFN1Y2Nlc3M6IHtzdGF0c1snc3VjY2VzcyddfSB8ICIKICAgICAgICAgICAgZiJGYWlsZWQ6IHtzdGF0c1snZmFpbGVkJ119IHwgUGFydGlhbDoge3N0YXRzWydwYXJ0aWFsJ119IHwgIgogICAgICAgICAgICBmIkluIFByb2dyZXNzOiB7c3RhdHNbJ2luX3Byb2dyZXNzJ119IgogICAgICAgICkKICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgIGZvciBhdHRlbXB0IGluIGF0dGVtcHRzWzoyMF06CiAgICAgICAgICAgIHN0YXR1c19pY29uID0gewogICAgICAgICAgICAgICAgInN1Y2Nlc3MiOiAi4pyFIiwKICAgICAgICAgICAgICAgICJmYWlsZWQiOiAi4p2MIiwKICAgICAgICAgICAgICAgICJwYXJ0aWFsIjogIuKaoO+4jyIsCiAgICAgICAgICAgICAgICAiaW5fcHJvZ3Jlc3MiOiAi4o+zIiwKICAgICAgICAgICAgfS5nZXQoYXR0ZW1wdC5zdGF0dXMsICLinZMiKQoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYie3N0YXR1c19pY29ufSBbe2F0dGVtcHQuYXR0ZW1wdF9pZH1dIikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAgUGFwZXI6IHthdHRlbXB0LnBhcGVyX3RpdGxlWzo1MF19IikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAgRGF0ZToge2F0dGVtcHQuYXR0ZW1wdF9kYXRlfSB8IFN0YXR1czoge2F0dGVtcHQuc3RhdHVzfSIpCgogICAgICAgICAgICBpZiBhdHRlbXB0LnJlc3VsdHM6CiAgICAgICAgICAgICAgICBtZXRyaWNzID0gbGlzdChhdHRlbXB0LnJlc3VsdHMua2V5cygpKVs6M10KICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgIFJlc3VsdHM6IHsnLCAnLmpvaW4obWV0cmljcyl9IikKCiAgICAgICAgICAgIGlmIGF0dGVtcHQuZGlmZmVyZW5jZXM6CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICBEaWZmZXJlbmNlczoge2xlbihhdHRlbXB0LmRpZmZlcmVuY2VzKX0iKQoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIiKQoKICAgICAgICBsaW5lcy5hcHBlbmQoIj0iICogNzApCiAgICAgICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykKCiAgICBkZWYgcmVuZGVyX21hcmtkb3duKHNlbGYsIGF0dGVtcHRzOiBMaXN0W1JlcGxpY2F0aW9uQXR0ZW1wdF0pIC0+IHN0cjoKICAgICAgICAiIiJSZW5kZXIgYXR0ZW1wdHMgYXMgTWFya2Rvd24uIiIiCiAgICAgICAgbGluZXMgPSBbIiMgUmVwbGljYXRpb24gVHJhY2tlclxuIl0KCiAgICAgICAgc3RhdHMgPSBzZWxmLmdldF9zdGF0aXN0aWNzKCkKICAgICAgICBsaW5lcy5hcHBlbmQoInwgTWV0cmljIHwgVmFsdWUgfCIpCiAgICAgICAgbGluZXMuYXBwZW5kKCJ8LS0tLS0tLS18LS0tLS0tLXwiKQogICAgICAgIGxpbmVzLmFwcGVuZChmInwgVG90YWwgfCB7c3RhdHNbJ3RvdGFsJ119IHwiKQogICAgICAgIGxpbmVzLmFwcGVuZChmInwgU3VjY2VzcyB8IHtzdGF0c1snc3VjY2VzcyddfSB8IikKICAgICAgICBsaW5lcy5hcHBlbmQoZiJ8IEZhaWxlZCB8IHtzdGF0c1snZmFpbGVkJ119IHwiKQogICAgICAgIGxpbmVzLmFwcGVuZChmInwgUGFydGlhbCB8IHtzdGF0c1sncGFydGlhbCddfSB8IikKICAgICAgICBsaW5lcy5hcHBlbmQoZiJ8IFN1Y2Nlc3MgUmF0ZSB8IHtzdGF0c1snc3VjY2Vzc19yYXRlJ106LjFmfSUgfCIpCiAgICAgICAgbGluZXMuYXBwZW5kKCIiKQoKICAgICAgICBpZiBhdHRlbXB0czoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIjIyBSZWNlbnQgQXR0ZW1wdHNcbiIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgifCBQYXBlciB8IFN0YXR1cyB8IERhdGUgfCIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgifC0tLS0tLS18LS0tLS0tLS18LS0tLS0tfCIpCgogICAgICAgICAgICBmb3IgYXR0ZW1wdCBpbiBhdHRlbXB0c1s6MTBdOgogICAgICAgICAgICAgICAgdGl0bGUgPSAoCiAgICAgICAgICAgICAgICAgICAgYXR0ZW1wdC5wYXBlcl90aXRsZVs6NDBdICsgIi4uLiIKICAgICAgICAgICAgICAgICAgICBpZiBsZW4oYXR0ZW1wdC5wYXBlcl90aXRsZSkgPiA0MAogICAgICAgICAgICAgICAgICAgIGVsc2UgYXR0ZW1wdC5wYXBlcl90aXRsZQogICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYifCB7dGl0bGV9IHwge2F0dGVtcHQuc3RhdHVzfSB8IHthdHRlbXB0LmF0dGVtcHRfZGF0ZX0gfCIpCgogICAgICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCg==
+"""
+Replication Tracker: Track paper replication attempts.
+"""
+from dataclasses import dataclass, field
+from typing import List, Optional, Dict, Any
+from datetime import datetime
+from pathlib import Path
+
+from llm.tracker_base import JsonFileStore
+
+
+@dataclass
+class ReplicationAttempt:
+    """A replication attempt."""
+    attempt_id: str
+    paper_id: str
+    paper_title: str
+    status: str = "in_progress"  # in_progress, success, failed, partial
+    attempt_date: str = ""
+    environment: Dict[str, str] = field(default_factory=dict)
+    results: Dict[str, Any] = field(default_factory=dict)
+    differences: List[str] = field(default_factory=list)
+    notes: str = ""
+    config: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ReplicationReport:
+    """A replication report."""
+    attempt: ReplicationAttempt
+    summary: str = ""
+    methodology: str = ""
+    findings: List[str] = field(default_factory=list)
+    recommendations: List[str] = field(default_factory=list)
+
+
+class ReplicationTracker(JsonFileStore):
+    """Track paper replication attempts."""
+
+    def __init__(self, data_dir: Optional[Path] = None):
+        self.data_dir = data_dir or Path.home() / ".ai_research_os"
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.data_file = self.data_dir / "replications.json"
+
+    def _post_load(self, raw: List[dict]) -> List[dict]:
+        return raw
+
+    def _pre_save(self, data: List[dict]) -> List[dict]:
+        return data
+
+    def create_attempt(
+        self,
+        paper_id: str,
+        paper_title: str,
+        config: Optional[Dict] = None,
+    ) -> ReplicationAttempt:
+        """Create a new replication attempt."""
+        data = self._load()
+
+        attempt_id = f"{paper_id}_{len(data) + 1}"
+        attempt = ReplicationAttempt(
+            attempt_id=attempt_id,
+            paper_id=paper_id,
+            paper_title=paper_title,
+            attempt_date=datetime.now().isoformat()[:10],
+            config=config or {},
+        )
+
+        data.append({
+            "attempt_id": attempt.attempt_id,
+            "paper_id": attempt.paper_id,
+            "paper_title": attempt.paper_title,
+            "status": attempt.status,
+            "attempt_date": attempt.attempt_date,
+            "environment": attempt.environment,
+            "results": attempt.results,
+            "differences": attempt.differences,
+            "notes": attempt.notes,
+            "config": attempt.config,
+        })
+
+        self._save(data)
+        return attempt
+
+    def update_attempt(
+        self,
+        attempt_id: str,
+        status: Optional[str] = None,
+        results: Optional[Dict] = None,
+        differences: Optional[List[str]] = None,
+        notes: Optional[str] = None,
+        environment: Optional[Dict] = None,
+    ) -> bool:
+        """Update a replication attempt."""
+        data = self._load()
+
+        for item in data:
+            if item["attempt_id"] == attempt_id:
+                if status is not None:
+                    item["status"] = status
+                if results is not None:
+                    item["results"].update(results)
+                if differences is not None:
+                    item["differences"].extend(differences)
+                if notes is not None:
+                    item["notes"] = notes
+                if environment is not None:
+                    item["environment"].update(environment)
+                self._save(data)
+                return True
+        return False
+
+    def get_attempt(self, attempt_id: str) -> Optional[ReplicationAttempt]:
+        """Get a replication attempt by ID."""
+        data = self._load()
+
+        for item in data:
+            if item["attempt_id"] == attempt_id:
+                return ReplicationAttempt(**item)
+        return None
+
+    def get_paper_attempts(self, paper_id: str) -> List[ReplicationAttempt]:
+        """Get all attempts for a paper."""
+        data = self._load()
+        attempts = []
+
+        for item in data:
+            if item["paper_id"] == paper_id:
+                attempts.append(ReplicationAttempt(**item))
+
+        return attempts
+
+    def get_all_attempts(self, status: Optional[str] = None) -> List[ReplicationAttempt]:
+        """Get all replication attempts."""
+        data = self._load()
+        attempts = []
+
+        for item in data:
+            if status is None or item["status"] == status:
+                attempts.append(ReplicationAttempt(**item))
+
+        # Sort by date descending
+        attempts.sort(key=lambda x: x.attempt_date, reverse=True)
+        return attempts
+
+    def get_statistics(self) -> Dict[str, Any]:
+        """Get replication statistics."""
+        data = self._load()
+
+        total = len(data)
+        success = sum(1 for d in data if d["status"] == "success")
+        failed = sum(1 for d in data if d["status"] == "failed")
+        partial = sum(1 for d in data if d["status"] == "partial")
+        in_progress = sum(1 for d in data if d["status"] == "in_progress")
+
+        return {
+            "total": total,
+            "success": success,
+            "failed": failed,
+            "partial": partial,
+            "in_progress": in_progress,
+            "success_rate": (success / total * 100) if total > 0 else 0,
+        }
+
+    def generate_report(self, attempt_id: str) -> Optional[ReplicationReport]:
+        """Generate a replication report."""
+        attempt = self.get_attempt(attempt_id)
+        if not attempt:
+            return None
+
+        report = ReplicationReport(attempt=attempt)
+
+        # Generate summary based on status
+        if attempt.status == "success":
+            report.summary = f"Successfully replicated '{attempt.paper_title}'"
+        elif attempt.status == "failed":
+            report.summary = f"Failed to replicate '{attempt.paper_title}'"
+            if attempt.differences:
+                report.findings.append(
+                    f"Found {len(attempt.differences)} key differences"
+                )
+        elif attempt.status == "partial":
+            report.summary = f"Partially replicated '{attempt.paper_title}'"
+            report.findings.append("Some results matched, others diverged")
+
+        # Add methodology
+        report.methodology = self._format_methodology(attempt)
+
+        # Add recommendations
+        report.recommendations = self._generate_recommendations(attempt)
+
+        return report
+
+    def _format_methodology(self, attempt: ReplicationAttempt) -> str:
+        """Format methodology from config and environment."""
+        parts = ["## Methodology\n"]
+
+        if attempt.config:
+            parts.append("### Configuration")
+            for k, v in attempt.config.items():
+                parts.append(f"- {k}: {v}")
+
+        if attempt.environment:
+            parts.append("\n### Environment")
+            for k, v in attempt.environment.items():
+                parts.append(f"- {k}: {v}")
+
+        return "\n".join(parts)
+
+    def _generate_recommendations(self, attempt: ReplicationAttempt) -> List[str]:
+        """Generate recommendations based on results."""
+        recs = []
+
+        if attempt.status == "failed":
+            recs.append("Review original paper's experimental setup in detail")
+            recs.append("Check for missing implementation details or hyperparameters")
+
+            if not attempt.environment.get("gpu"):
+                recs.append("Consider using GPU for resource-intensive experiments")
+
+        if attempt.differences:
+            recs.append("Document all deviations from original methodology")
+            recs.append("Analyze which differences most affected results")
+
+        if attempt.results:
+            recs.append("Compare specific metrics quantitatively when possible")
+
+        return recs
+
+    def render_text(self, attempts: List[ReplicationAttempt]) -> str:
+        """Render attempts as text list."""
+        if not attempts:
+            return "No replication attempts recorded."
+
+        lines = ["=" * 70, "🔬 Replication Tracker", "=" * 70, ""]
+
+        stats = self.get_statistics()
+        lines.append(f"Total: {stats['total']} | Success: {stats['success']} | "
+                    f"Failed: {stats['failed']} | Partial: {stats['partial']} | "
+                    f"In Progress: {stats['in_progress']}")
+        lines.append("")
+
+        for attempt in attempts[:20]:
+            status_icon = {
+                "success": "✅",
+                "failed": "❌",
+                "partial": "⚠️",
+                "in_progress": "⏳",
+            }.get(attempt.status, "❓")
+
+            lines.append(f"{status_icon} [{attempt.attempt_id}]")
+            lines.append(f"   Paper: {attempt.paper_title[:50]}")
+            lines.append(f"   Date: {attempt.attempt_date} | Status: {attempt.status}")
+
+            if attempt.results:
+                metrics = list(attempt.results.keys())[:3]
+                lines.append(f"   Results: {', '.join(metrics)}")
+
+            if attempt.differences:
+                lines.append(f"   Differences: {len(attempt.differences)}")
+
+            lines.append("")
+
+        lines.append("=" * 70)
+        return "\n".join(lines)
+
+    def render_markdown(self, attempts: List[ReplicationAttempt]) -> str:
+        """Render attempts as Markdown."""
+        lines = ["# Replication Tracker\n"]
+
+        stats = self.get_statistics()
+        lines.append("| Metric | Value |")
+        lines.append("|--------|-------|")
+        lines.append(f"| Total | {stats['total']} |")
+        lines.append(f"| Success | {stats['success']} |")
+        lines.append(f"| Failed | {stats['failed']} |")
+        lines.append(f"| Partial | {stats['partial']} |")
+        lines.append(f"| Success Rate | {stats['success_rate']:.1f}% |")
+        lines.append("")
+
+        if attempts:
+            lines.append("## Recent Attempts\n")
+            lines.append("| Paper | Status | Date |")
+            lines.append("|-------|--------|------|")
+
+            for attempt in attempts[:10]:
+                title = attempt.paper_title[:40] + "..." if len(attempt.paper_title) > 40 else attempt.paper_title
+                lines.append(f"| {title} | {attempt.status} | {attempt.attempt_date} |")
+
+        return "\n".join(lines)

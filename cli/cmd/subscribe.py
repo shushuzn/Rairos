@@ -1,1 +1,346 @@
-IiIiQ0xJIGNvbW1hbmQ6IHN1YnNjcmliZSDigJQgU21hcnQgYXJYaXYgc3Vic2NyaXB0aW9uIG1hbmFnZW1lbnQgd2l0aCBhdXRvcGlsb3Qgd2F0Y2guIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgYXJncGFyc2UKaW1wb3J0IGpzb24KaW1wb3J0IGxvZ2dpbmcKaW1wb3J0IHN5cwppbXBvcnQgdGhyZWFkaW5nCmltcG9ydCB0aW1lCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAoKZnJvbSBjbGkuX3NoYXJlZCBpbXBvcnQgZ2V0X2RiLCBwcmludF9pbmZvLCBwcmludF9lcnJvciwgcHJpbnRfc3VjY2VzcwoKbG9nZ2VyID0gbG9nZ2luZy5nZXRMb2dnZXIoX19uYW1lX18pCgojIOKUgOKUgOKUgCBQZXJzaXN0ZW50IHdhdGNoIHN0YXRlIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmRlZiBfZ2V0X3dhdGNoX3N0YXRlX3BhdGgoKSAtPiBQYXRoOgogICAgc3RhdGVfZGlyID0gUGF0aC5ob21lKCkgLyAiLmFpX3Jlc2VhcmNoX29zIiAvICJzdWJzY3JpcHRpb25zIgogICAgc3RhdGVfZGlyLm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgIHJldHVybiBzdGF0ZV9kaXIgLyAid2F0Y2hfc3RhdGUuanNvbiIKCgpkZWYgX2xvYWRfd2F0Y2hfc3RhdGUoKSAtPiBkaWN0OgogICAgcGF0aCA9IF9nZXRfd2F0Y2hfc3RhdGVfcGF0aCgpCiAgICBpZiBwYXRoLmV4aXN0cygpOgogICAgICAgIHRyeToKICAgICAgICAgICAgcmV0dXJuIGpzb24ubG9hZHMocGF0aC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikpCiAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbjoKICAgICAgICAgICAgcGFzcwogICAgcmV0dXJuIHsicnVubmluZyI6IEZhbHNlLCAiaW50ZXJ2YWxfbWludXRlcyI6IDYwLCAibGFzdF9jaGVjayI6ICIifQoKCmRlZiBfc2F2ZV93YXRjaF9zdGF0ZShzdGF0ZTogZGljdCkgLT4gTm9uZToKICAgIHBhdGggPSBfZ2V0X3dhdGNoX3N0YXRlX3BhdGgoKQogICAgcGF0aC53cml0ZV90ZXh0KGpzb24uZHVtcHMoc3RhdGUsIGluZGVudD0yLCBlbnN1cmVfYXNjaWk9RmFsc2UpLCBlbmNvZGluZz0idXRmLTgiKQoKCiMg4pSA4pSA4pSAIFdhdGNoIGxvb3Ag4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgoKZGVmIF9ydW5fd2F0Y2hfbG9vcChpbnRlcnZhbF9taW51dGVzOiBpbnQsIHN0b3BfZXZlbnQ6IHRocmVhZGluZy5FdmVudCkgLT4gTm9uZToKICAgICIiIkJhY2tncm91bmQgd2F0Y2ggbG9vcC4gUnVucyB1bnRpbCBzdG9wX2V2ZW50IGlzIHNldC4iIiIKICAgIGZyb20gY29yZS5ub3RpZmljYXRpb25zIGltcG9ydCBnZXRfd2ViaG9va19ub3RpZmllcgogICAgZnJvbSBjb3JlLm5vdGlmaWNhdGlvbnMgaW1wb3J0IGNvbmZpZ3VyZV93ZWJob29rCiAgICBmcm9tIGxsbS5zdWJzY3JpcHRpb25fbW9uaXRvciBpbXBvcnQgU3Vic2NyaXB0aW9uTW9uaXRvcgogICAgZnJvbSBsbG0uc3Vic2NyaXB0aW9uX3Njb3JlciBpbXBvcnQgU3Vic2NyaXB0aW9uU2NvcmVyCgogICAgZGIgPSBnZXRfZGIoKQogICAgZGIuaW5pdCgpCiAgICBtb25pdG9yID0gU3Vic2NyaXB0aW9uTW9uaXRvcihkYiwgU3Vic2NyaXB0aW9uU2NvcmVyKGRiKSkKICAgIHdlYmhvb2sgPSBnZXRfd2ViaG9va19ub3RpZmllcigpCgogICAgcHJpbnRfc3VjY2VzcyhmIltBdXRvcGlsb3RdIFdhdGNoIHN0YXJ0ZWQg4oCUIGNoZWNraW5nIGV2ZXJ5IHtpbnRlcnZhbF9taW51dGVzfSBtaW4iKQogICAgc3RhdGUgPSBfbG9hZF93YXRjaF9zdGF0ZSgpCiAgICBzdGF0ZVsicnVubmluZyJdID0gVHJ1ZQogICAgc3RhdGVbImludGVydmFsX21pbnV0ZXMiXSA9IGludGVydmFsX21pbnV0ZXMKICAgIF9zYXZlX3dhdGNoX3N0YXRlKHN0YXRlKQoKICAgIHdoaWxlIG5vdCBzdG9wX2V2ZW50LmlzX3NldCgpOgogICAgICAgIHRyeToKICAgICAgICAgICAgYWxsX3Jlc3VsdHMgPSBtb25pdG9yLmNoZWNrX2FsbCgpCiAgICAgICAgICAgIHRvdGFsID0gc3VtKGxlbihwYXBlcnMpIGZvciBwYXBlcnMgaW4gYWxsX3Jlc3VsdHMudmFsdWVzKCkpCgogICAgICAgICAgICBpZiB0b3RhbCA+IDA6CiAgICAgICAgICAgICAgICBwcmludF9pbmZvKAogICAgICAgICAgICAgICAgICAgIGYiW0F1dG9waWxvdF0gRm91bmQge3RvdGFsfSBuZXcgcGFwZXIocykgYWNyb3NzIHtsZW4oYWxsX3Jlc3VsdHMpfSBzdWJzY3JpcHRpb24ocykiCiAgICAgICAgICAgICAgICApCgogICAgICAgICAgICAgICAgIyBTZW5kIHdlYmhvb2sgbm90aWZpY2F0aW9ucwogICAgICAgICAgICAgICAgZm9yIHN1Yl9pZCwgcGFwZXJzIGluIGFsbF9yZXN1bHRzLml0ZW1zKCk6CiAgICAgICAgICAgICAgICAgICAgaWYgcGFwZXJzOgogICAgICAgICAgICAgICAgICAgICAgICBzdWIgPSBkYi5nZXRfYXJ4aXZfc3Vic2NyaXB0aW9uKHN1Yl9pZCkKICAgICAgICAgICAgICAgICAgICAgICAgdG9waWMgPSBzdWIuZ2V0KCJ0b3BpYyIsIHN1Yl9pZCkgaWYgc3ViIGVsc2Ugc3ViX2lkCiAgICAgICAgICAgICAgICAgICAgICAgIHdlYmhvb2subm90aWZ5X3BhcGVyc19mb3VuZCh0b3BpYywgcGFwZXJzLCBtaW5fc2NvcmU9MC41KQogICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgcHJpbnRfaW5mbygiW0F1dG9waWxvdF0gTm8gbmV3IHBhcGVycyBmb3VuZCIpCgogICAgICAgICAgICBzdGF0ZVsibGFzdF9jaGVjayJdID0gdGltZS5zdHJmdGltZSgiJVktJW0tJWRUJUg6JU06JVMiKQogICAgICAgICAgICBfc2F2ZV93YXRjaF9zdGF0ZShzdGF0ZSkKCiAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgICAgICBsb2dnZXIuZXJyb3IoZiJbQXV0b3BpbG90XSBDaGVjayBmYWlsZWQ6IHtlfSIpCiAgICAgICAgICAgIHByaW50X2Vycm9yKGYiW0F1dG9waWxvdF0gRXJyb3I6IHtlfSIpCgogICAgICAgICMgV2FpdCBmb3IgaW50ZXJ2YWwgb3Igc3RvcCBzaWduYWwKICAgICAgICBzdG9wX2V2ZW50LndhaXQodGltZW91dD1pbnRlcnZhbF9taW51dGVzICogNjApCgogICAgc3RhdGVbInJ1bm5pbmciXSA9IEZhbHNlCiAgICBfc2F2ZV93YXRjaF9zdGF0ZShzdGF0ZSkKICAgIHByaW50X2luZm8oIltBdXRvcGlsb3RdIFdhdGNoIHN0b3BwZWQiKQoKCiMg4pSA4pSA4pSAIFBhcnNlciDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpkZWYgX2J1aWxkX3N1YnNjcmliZV9wYXJzZXIoc3VicGFyc2VycykgLT4gYXJncGFyc2UuQXJndW1lbnRQYXJzZXI6CiAgICAiIiJCdWlsZCB0aGUgc3Vic2NyaWJlIHN1YmNvbW1hbmQgcGFyc2VyLiIiIgogICAgcCA9IHN1YnBhcnNlcnMuYWRkX3BhcnNlcigKICAgICAgICAic3Vic2NyaWJlIiwKICAgICAgICBoZWxwPSJTbWFydCBhclhpdiBzdWJzY3JpcHRpb25zIiwKICAgICAgICBkZXNjcmlwdGlvbj0iU3Vic2NyaWJlIHRvIHJlc2VhcmNoIHRvcGljcyBhbmQgZ2V0IEFJLXNjb3JlZCBwYXBlciByZWNvbW1lbmRhdGlvbnMuIiwKICAgICkKCiAgICBzdWIgPSBwLmFkZF9zdWJwYXJzZXJzKGRlc3Q9ImFjdGlvbiIsIGhlbHA9IlN1YnNjcmlwdGlvbiBhY3Rpb25zIikKCiAgICAjIGFkZAogICAgcF9hZGQgPSBzdWIuYWRkX3BhcnNlcigiYWRkIiwgaGVscD0iQWRkIGEgbmV3IHN1YnNjcmlwdGlvbiIpCiAgICBwX2FkZC5hZGRfYXJndW1lbnQoInRvcGljIiwgaGVscD0iUmVzZWFyY2ggdG9waWMga2V5d29yZHMgKGUuZy4sICd0cmFuc2Zvcm1lciBhdHRlbnRpb24nKSIpCiAgICBwX2FkZC5hZGRfYXJndW1lbnQoIi0ta2V5d29yZHMiLCAiLWsiLCB0eXBlPXN0ciwgaGVscD0iQWRkaXRpb25hbCBrZXl3b3JkcyAoY29tbWEtc2VwYXJhdGVkKSIpCiAgICBwX2FkZC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tbWluLXNjb3JlIiwKICAgICAgICAiLXMiLAogICAgICAgIHR5cGU9ZmxvYXQsCiAgICAgICAgZGVmYXVsdD0wLjUsCiAgICAgICAgaGVscD0iTWluaW11bSByZWxldmFuY2Ugc2NvcmUgKDAuMC0xLjAsIGRlZmF1bHQ6IDAuNSkiLAogICAgKQogICAgcF9hZGQuYWRkX2FyZ3VtZW50KAogICAgICAgICItLW1heC1yZXN1bHRzIiwgIi1uIiwgdHlwZT1pbnQsIGRlZmF1bHQ9MTAsIGhlbHA9Ik1heCBwYXBlcnMgcGVyIGNoZWNrIChkZWZhdWx0OiAxMCkiCiAgICApCgogICAgIyBsaXN0CiAgICBzdWIuYWRkX3BhcnNlcigibGlzdCIsIGhlbHA9Ikxpc3QgYWxsIHN1YnNjcmlwdGlvbnMiKQoKICAgICMgY2hlY2sKICAgIHBfY2hlY2sgPSBzdWIuYWRkX3BhcnNlcigiY2hlY2siLCBoZWxwPSJDaGVjayBzdWJzY3JpcHRpb25zIGZvciBuZXcgcGFwZXJzIikKICAgIHBfY2hlY2suYWRkX2FyZ3VtZW50KCJpZCIsIG5hcmdzPSI/IiwgaGVscD0iU3Vic2NyaXB0aW9uIElEIChvcHRpb25hbCwgY2hlY2tzIGFsbCBpZiBvbWl0dGVkKSIpCiAgICBwX2NoZWNrLmFkZF9hcmd1bWVudCgiLS1kaXNjb3JkIiwgdHlwZT1zdHIsIGRlZmF1bHQ9IiIsIGhlbHA9IkRpc2NvcmQgd2ViaG9vayBVUkwgdG8gdGVzdCIpCiAgICBwX2NoZWNrLmFkZF9hcmd1bWVudCgiLS1mZWlzaHUiLCB0eXBlPXN0ciwgZGVmYXVsdD0iIiwgaGVscD0iRmVpc2h1IHdlYmhvb2sgVVJMIHRvIHRlc3QiKQoKICAgICMgcmVjb21tZW5kYXRpb25zCiAgICBwX3JlYyA9IHN1Yi5hZGRfcGFyc2VyKCJyZWNvbW1lbmRhdGlvbnMiLCBoZWxwPSJTaG93IHJlY29tbWVuZGVkIHBhcGVycyIpCiAgICBwX3JlYy5hZGRfYXJndW1lbnQoImlkIiwgaGVscD0iU3Vic2NyaXB0aW9uIElEIikKICAgIHBfcmVjLmFkZF9hcmd1bWVudCgiLS1saW1pdCIsICItbiIsIHR5cGU9aW50LCBkZWZhdWx0PTIwLCBoZWxwPSJNYXggcGFwZXJzIHRvIHNob3ciKQoKICAgICMgZGVsZXRlCiAgICBwX2RlbGV0ZSA9IHN1Yi5hZGRfcGFyc2VyKCJkZWxldGUiLCBoZWxwPSJEZWxldGUgYSBzdWJzY3JpcHRpb24iKQogICAgcF9kZWxldGUuYWRkX2FyZ3VtZW50KCJpZCIsIGhlbHA9IlN1YnNjcmlwdGlvbiBJRCIpCgogICAgIyB3YXRjaAogICAgcF93YXRjaCA9IHN1Yi5hZGRfcGFyc2VyKCJ3YXRjaCIsIGhlbHA9IlN0YXJ0IGF1dG9waWxvdCB3YXRjaCAoYmFja2dyb3VuZCBtb25pdG9yaW5nKSIpCiAgICBwX3dhdGNoLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1pbnRlcnZhbCIsICItaSIsIHR5cGU9aW50LCBkZWZhdWx0PTYwLCBoZWxwPSJDaGVjayBpbnRlcnZhbCBpbiBtaW51dGVzIChkZWZhdWx0OiA2MCkiCiAgICApCiAgICBwX3dhdGNoLmFkZF9hcmd1bWVudCgiLS1kaXNjb3JkIiwgdHlwZT1zdHIsIGRlZmF1bHQ9IiIsIGhlbHA9IkRpc2NvcmQgd2ViaG9vayBVUkwiKQogICAgcF93YXRjaC5hZGRfYXJndW1lbnQoIi0tZmVpc2h1IiwgdHlwZT1zdHIsIGRlZmF1bHQ9IiIsIGhlbHA9IkZlaXNodSB3ZWJob29rIFVSTCIpCiAgICBwX3dhdGNoLmFkZF9hcmd1bWVudCgiLS1kYWVtb24iLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSJSdW4gYXMgZGFlbW9uIChiYWNrZ3JvdW5kIHByb2Nlc3MpIikKCiAgICAjIHN0b3Agd2F0Y2gKICAgIHN1Yi5hZGRfcGFyc2VyKCJzdG9wIiwgaGVscD0iU3RvcCB0aGUgYXV0b3BpbG90IHdhdGNoIikKCiAgICByZXR1cm4gcCAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCgojIOKUgOKUgOKUgCBSdW5uZXIg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgoKIyBNb2R1bGUtbGV2ZWwgc3RhdGUgZm9yIHRoZSB3YXRjaCB0aHJlYWQgKHN1cnZpdmVzIGFjcm9zcyBDTEkgaW52b2NhdGlvbnMpCl93YXRjaF90aHJlYWQ6IHRocmVhZGluZy5UaHJlYWQgfCBOb25lID0gTm9uZQpfd2F0Y2hfc3RvcF9ldmVudDogdGhyZWFkaW5nLkV2ZW50IHwgTm9uZSA9IE5vbmUKCgpkZWYgX3J1bl9zdWJzY3JpYmUoYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKSAtPiBpbnQ6CiAgICAiIiJSdW4gc3Vic2NyaWJlIGNvbW1hbmQuIiIiCiAgICBnbG9iYWwgX3dhdGNoX3RocmVhZCwgX3dhdGNoX3N0b3BfZXZlbnQKCiAgICBpZiBub3QgYXJncy5hY3Rpb246CiAgICAgICAgcHJpbnRfZXJyb3IoIlVzYWdlOiBzdWJzY3JpYmUgPGFkZHxsaXN0fGNoZWNrfHJlY29tbWVuZGF0aW9uc3xkZWxldGV8d2F0Y2h8c3RvcD4iKQogICAgICAgIHJldHVybiAxICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKICAgIGRiID0gZ2V0X2RiKCkKICAgIGRiLmluaXQoKQoKICAgICMg4pSA4pSAIGFkZCDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgIGlmIGFyZ3MuYWN0aW9uID09ICJhZGQiOgogICAgICAgIGtleXdvcmRzID0gW10KICAgICAgICBpZiBnZXRhdHRyKGFyZ3MsICJrZXl3b3JkcyIsIE5vbmUpOgogICAgICAgICAgICBrZXl3b3JkcyA9IFtrLnN0cmlwKCkgZm9yIGsgaW4gYXJncy5rZXl3b3Jkcy5zcGxpdCgiLCIpIGlmIGsuc3RyaXAoKV0KCiAgICAgICAgc3ViX2lkID0gZGIuYWRkX2FyeGl2X3N1YnNjcmlwdGlvbigKICAgICAgICAgICAgdG9waWM9YXJncy50b3BpYywKICAgICAgICAgICAga2V5d29yZHM9a2V5d29yZHMsCiAgICAgICAgICAgIG1pbl9zY29yZT1nZXRhdHRyKGFyZ3MsICJtaW5fc2NvcmUiLCAwLjUpLAogICAgICAgICAgICBtYXhfcmVzdWx0cz1nZXRhdHRyKGFyZ3MsICJtYXhfcmVzdWx0cyIsIDEwKSwKICAgICAgICApCiAgICAgICAgcHJpbnRfc3VjY2VzcyhmIkFkZGVkIHN1YnNjcmlwdGlvbiBbe3N1Yl9pZH1dOiB7YXJncy50b3BpY30iKQogICAgICAgIGlmIGtleXdvcmRzOgogICAgICAgICAgICBwcmludF9pbmZvKGYiICBLZXl3b3JkczogeycsICcuam9pbihrZXl3b3Jkcyl9IikKICAgICAgICByZXR1cm4gMCAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCiAgICAjIOKUgOKUgCBsaXN0IOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgaWYgYXJncy5hY3Rpb24gPT0gImxpc3QiOgogICAgICAgIHN1YnMgPSBkYi5saXN0X2FyeGl2X3N1YnNjcmlwdGlvbnMoKQogICAgICAgIGlmIG5vdCBzdWJzOgogICAgICAgICAgICBwcmludF9pbmZvKCJObyBzdWJzY3JpcHRpb25zLiBVc2UgJ3N1YnNjcmliZSBhZGQgPHRvcGljPicgdG8gY3JlYXRlIG9uZS4iKQogICAgICAgICAgICByZXR1cm4gMCAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCiAgICAgICAgc3RhdGUgPSBfbG9hZF93YXRjaF9zdGF0ZSgpCiAgICAgICAgd2F0Y2hfc3RhdHVzID0gInJ1bm5pbmciIGlmIHN0YXRlLmdldCgicnVubmluZyIpIGVsc2UgInN0b3BwZWQiCgogICAgICAgIHByaW50X2luZm8oZiJGb3VuZCB7bGVuKHN1YnMpfSBzdWJzY3JpcHRpb24ocykgW3dhdGNoOiB7d2F0Y2hfc3RhdHVzfV06IikKICAgICAgICBmb3IgcyBpbiBzdWJzOgogICAgICAgICAgICBrZXl3b3JkcyA9IHMuZ2V0KCJrZXl3b3JkcyIsIFtdKSBvciBbXQogICAgICAgICAgICBsYXN0X2NoZWNrZWQgPSBzLmdldCgibGFzdF9jaGVja2VkIikgb3IgIm5ldmVyIgogICAgICAgICAgICBwcmludChmIiAgW3tzWydpZCddfV0ge3NbJ3RvcGljJ119IikKICAgICAgICAgICAgcHJpbnQoZiIgICAgICAgIG1pbl9zY29yZT17c1snbWluX3Njb3JlJ119LCBtYXhfcmVzdWx0cz17c1snbWF4X3Jlc3VsdHMnXX0iKQogICAgICAgICAgICBpZiBrZXl3b3JkczoKICAgICAgICAgICAgICAgIHByaW50KGYiICAgICAgICBrZXl3b3JkczogeycsICcuam9pbihrZXl3b3Jkcyl9IikKICAgICAgICAgICAgcHJpbnQoZiIgICAgICAgIGxhc3QgY2hlY2tlZDoge2xhc3RfY2hlY2tlZH0iKQogICAgICAgIHJldHVybiAwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKICAgICMg4pSA4pSAIGNoZWNrIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgaWYgYXJncy5hY3Rpb24gPT0gImNoZWNrIjoKICAgICAgICBmcm9tIGNvcmUubm90aWZpY2F0aW9ucyBpbXBvcnQgZ2V0X3dlYmhvb2tfbm90aWZpZXIsIGNvbmZpZ3VyZV93ZWJob29rCiAgICAgICAgZnJvbSBsbG0uc3Vic2NyaXB0aW9uX21vbml0b3IgaW1wb3J0IFN1YnNjcmlwdGlvbk1vbml0b3IKICAgICAgICBmcm9tIGxsbS5zdWJzY3JpcHRpb25fc2NvcmVyIGltcG9ydCBTdWJzY3JpcHRpb25TY29yZXIKICAgICAgICBmcm9tIGxsbS5saXRyZXZpZXdfYW5hbHl6ZXIgaW1wb3J0IExpdFJldmlld0FuYWx5emVyCgogICAgICAgICMgQ29uZmlndXJlIHdlYmhvb2sgaWYgcHJvdmlkZWQKICAgICAgICB3ZWJob29rX3VybCA9IGdldGF0dHIoYXJncywgImRpc2NvcmQiLCAiIikgb3IgZ2V0YXR0cihhcmdzLCAiZmVpc2h1IiwgIiIpIG9yICIiCiAgICAgICAgaWYgd2ViaG9va191cmw6CiAgICAgICAgICAgIGNvbmZpZ3VyZV93ZWJob29rKHdlYmhvb2tfdXJsKQogICAgICAgICAgICBwcmludF9zdWNjZXNzKAogICAgICAgICAgICAgICAgIldlYmhvb2sgY29uZmlndXJlZDogIiArICgiRGlzY29yZCIgaWYgZ2V0YXR0cihhcmdzLCAiZGlzY29yZCIsICIiKSBlbHNlICJGZWlzaHUiKQogICAgICAgICAgICApCgogICAgICAgIG1vbml0b3IgPSBTdWJzY3JpcHRpb25Nb25pdG9yKGRiLCBTdWJzY3JpcHRpb25TY29yZXIoZGIpKQogICAgICAgIGFuYWx5emVyID0gTGl0UmV2aWV3QW5hbHl6ZXIoZGIpCiAgICAgICAgd2ViaG9vayA9IGdldF93ZWJob29rX25vdGlmaWVyKCkKCiAgICAgICAgaWYgYXJncy5pZDoKICAgICAgICAgICAgcmVzdWx0cyA9IG1vbml0b3IuY2hlY2tfc3Vic2NyaXB0aW9uKGFyZ3MuaWQpCiAgICAgICAgICAgIGlmIG5vdCByZXN1bHRzOgogICAgICAgICAgICAgICAgcHJpbnRfaW5mbygiTm8gbmV3IHBhcGVycyBhYm92ZSB0aHJlc2hvbGQuIikKICAgICAgICAgICAgZWxzZToKICAgICAgICAgICAgICAgIHByaW50X3N1Y2Nlc3MoZiJGb3VuZCB7bGVuKHJlc3VsdHMpfSBwYXBlcihzKToiKQogICAgICAgICAgICAgICAgZm9yIHIgaW4gcmVzdWx0czoKICAgICAgICAgICAgICAgICAgICBwcmludChmIiAgW3tyWydhcnhpdl9pZCddfV0ge3JbJ3RpdGxlJ11bOjYwXX0uLi4iKQogICAgICAgICAgICAgICAgICAgIHByaW50KGYiICAgICAgICBzY29yZT17clsnc2NvcmUnXTouMmZ9IikKCiAgICAgICAgICAgICAgICAjIE5vdGlmeSB2aWEgd2ViaG9vawogICAgICAgICAgICAgICAgc3ViID0gZGIuZ2V0X2FyeGl2X3N1YnNjcmlwdGlvbihhcmdzLmlkKQogICAgICAgICAgICAgICAgdG9waWMgPSBzdWIuZ2V0KCJ0b3BpYyIsIGFyZ3MuaWQpIGlmIHN1YiBlbHNlIGFyZ3MuaWQKICAgICAgICAgICAgICAgIHdlYmhvb2subm90aWZ5X3BhcGVyc19mb3VuZCh0b3BpYywgcmVzdWx0cywgbWluX3Njb3JlPTAuNSkKCiAgICAgICAgICAgICAgICAjIEF1dG8tdXBkYXRlIGxpdGVyYXR1cmUgcmV2aWV3CiAgICAgICAgICAgICAgICB1cGRhdGVkX2ZpbGUgPSBhbmFseXplci51cGRhdGVfZm9yX3N1YnNjcmlwdGlvbihhcmdzLmlkLCByZXN1bHRzKQogICAgICAgICAgICAgICAgaWYgdXBkYXRlZF9maWxlOgogICAgICAgICAgICAgICAgICAgIHByaW50X2luZm8oZiIgIFVwZGF0ZWQgbGl0cmV2aWV3OiB7dXBkYXRlZF9maWxlfSIpCiAgICAgICAgZWxzZToKICAgICAgICAgICAgYWxsX3Jlc3VsdHMgPSBtb25pdG9yLmNoZWNrX2FsbCgpCiAgICAgICAgICAgIGZvciBzdWJfaWQsIHBhcGVycyBpbiBhbGxfcmVzdWx0cy5pdGVtcygpOgogICAgICAgICAgICAgICAgc3ViID0gZGIuZ2V0X2FyeGl2X3N1YnNjcmlwdGlvbihzdWJfaWQpCiAgICAgICAgICAgICAgICB0b3BpYyA9IHN1Yi5nZXQoInRvcGljIiwgc3ViX2lkKSBpZiBzdWIgZWxzZSBzdWJfaWQKICAgICAgICAgICAgICAgIHByaW50X2luZm8oZiJcblN1YnNjcmlwdGlvbiBbe3N1Yl9pZH1dICh7dG9waWN9KToge2xlbihwYXBlcnMpfSBuZXcgcGFwZXIocykiKQogICAgICAgICAgICAgICAgZm9yIHIgaW4gcGFwZXJzWzozXToKICAgICAgICAgICAgICAgICAgICBwcmludChmIiAgW3tyWydhcnhpdl9pZCddfV0ge3JbJ3RpdGxlJ11bOjUwXX0uLi4gKHNjb3JlPXtyWydzY29yZSddOi4yZn0pIikKCiAgICAgICAgICAgICAgICBpZiBwYXBlcnM6CiAgICAgICAgICAgICAgICAgICAgd2ViaG9vay5ub3RpZnlfcGFwZXJzX2ZvdW5kKHRvcGljLCBwYXBlcnMsIG1pbl9zY29yZT0wLjUpCiAgICAgICAgICAgICAgICAgICAgdXBkYXRlZF9maWxlID0gYW5hbHl6ZXIudXBkYXRlX2Zvcl9zdWJzY3JpcHRpb24oc3ViX2lkLCBwYXBlcnMpCiAgICAgICAgICAgICAgICAgICAgaWYgdXBkYXRlZF9maWxlOgogICAgICAgICAgICAgICAgICAgICAgICBwcmludF9pbmZvKGYiICBVcGRhdGVkIGxpdHJldmlldzoge3VwZGF0ZWRfZmlsZX0iKQogICAgICAgIHJldHVybiAwCgogICAgIyDilIDilIAgcmVjb21tZW5kYXRpb25zIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgaWYgYXJncy5hY3Rpb24gPT0gInJlY29tbWVuZGF0aW9ucyI6CiAgICAgICAgcGFwZXJzID0gZGIuZ2V0X3N1YnNjcmlwdGlvbl9wYXBlcnMoYXJncy5pZCwgbGltaXQ9Z2V0YXR0cihhcmdzLCAibGltaXQiLCAyMCkpCiAgICAgICAgaWYgbm90IHBhcGVyczoKICAgICAgICAgICAgcHJpbnRfaW5mbygiTm8gcmVjb21tZW5kYXRpb25zIHlldC4gUnVuICdzdWJzY3JpYmUgY2hlY2snIGZpcnN0LiIpCiAgICAgICAgICAgIHJldHVybiAwCgogICAgICAgIHByaW50X3N1Y2Nlc3MoZiJGb3VuZCB7bGVuKHBhcGVycyl9IHJlY29tbWVuZGF0aW9uKHMpOiIpCiAgICAgICAgZm9yIHAgaW4gcGFwZXJzOgogICAgICAgICAgICBwcmludChmIiAgW3twWydhcnhpdl9pZCddfV0iKQogICAgICAgICAgICBwcmludChmIiAgICBUaXRsZToge3AuZ2V0KCd0aXRsZScsICdOL0EnKVs6NjBdfSIpCiAgICAgICAgICAgIHByaW50KGYiICAgIFNjb3JlOiB7cC5nZXQoJ3Njb3JlJywgMCk6LjJmfSIpCiAgICAgICAgICAgIHByaW50KGYiICAgIFB1Ymxpc2hlZDoge3AuZ2V0KCdwdWJsaXNoZWQnLCAnTi9BJyl9IikKICAgICAgICByZXR1cm4gMAoKICAgICMg4pSA4pSAIGRlbGV0ZSDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgIGlmIGFyZ3MuYWN0aW9uID09ICJkZWxldGUiOgogICAgICAgIGRlbGV0ZWQgPSBkYi5kZWxldGVfYXJ4aXZfc3Vic2NyaXB0aW9uKGFyZ3MuaWQpCiAgICAgICAgaWYgZGVsZXRlZDoKICAgICAgICAgICAgcHJpbnRfc3VjY2VzcyhmIkRlbGV0ZWQgc3Vic2NyaXB0aW9uIFt7YXJncy5pZH1dIikKICAgICAgICBlbHNlOgogICAgICAgICAgICBwcmludF9lcnJvcihmIlN1YnNjcmlwdGlvbiBbe2FyZ3MuaWR9XSBub3QgZm91bmQiKQogICAgICAgIHJldHVybiAwCgogICAgIyDilIDilIAgd2F0Y2gg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICBpZiBhcmdzLmFjdGlvbiA9PSAid2F0Y2giOgogICAgICAgIHN0YXRlID0gX2xvYWRfd2F0Y2hfc3RhdGUoKQogICAgICAgIGlmIHN0YXRlLmdldCgicnVubmluZyIpIGFuZCBfd2F0Y2hfdGhyZWFkIGFuZCBfd2F0Y2hfdGhyZWFkLmlzX2FsaXZlKCk6CiAgICAgICAgICAgIHByaW50X2Vycm9yKCJbQXV0b3BpbG90XSBXYXRjaCBpcyBhbHJlYWR5IHJ1bm5pbmcuIFVzZSAnc3Vic2NyaWJlIHN0b3AnIGZpcnN0LiIpCiAgICAgICAgICAgIHJldHVybiAxCgogICAgICAgIGludGVydmFsID0gZ2V0YXR0cihhcmdzLCAiaW50ZXJ2YWwiLCA2MCkKICAgICAgICBpZiBpbnRlcnZhbCA8IDU6CiAgICAgICAgICAgIHByaW50X2Vycm9yKCJJbnRlcnZhbCBtdXN0IGJlIGF0IGxlYXN0IDUgbWludXRlcy4iKQogICAgICAgICAgICByZXR1cm4gMQoKICAgICAgICAjIENvbmZpZ3VyZSB3ZWJob29rCiAgICAgICAgZnJvbSBjb3JlLm5vdGlmaWNhdGlvbnMgaW1wb3J0IGNvbmZpZ3VyZV93ZWJob29rCgogICAgICAgIGRpc2NvcmRfdXJsID0gZ2V0YXR0cihhcmdzLCAiZGlzY29yZCIsICIiKSBvciAiIgogICAgICAgIGZlaXNodV91cmwgPSBnZXRhdHRyKGFyZ3MsICJmZWlzaHUiLCAiIikgb3IgIiIKCiAgICAgICAgIyBQcmVmZXIgRGlzY29yZCBpZiBzZXQsIGVsc2UgRmVpc2h1CiAgICAgICAgd2ViaG9va191cmwgPSBkaXNjb3JkX3VybCBvciBmZWlzaHVfdXJsCiAgICAgICAgaWYgd2ViaG9va191cmw6CiAgICAgICAgICAgIGNvbmZpZ3VyZV93ZWJob29rKHdlYmhvb2tfdXJsKQogICAgICAgICAgICBwbGF0Zm9ybSA9ICJEaXNjb3JkIiBpZiBkaXNjb3JkX3VybCBlbHNlICJGZWlzaHUiCiAgICAgICAgICAgIHByaW50X3N1Y2Nlc3MoZiJbQXV0b3BpbG90XSBXZWJob29rIGNvbmZpZ3VyZWQ6IHtwbGF0Zm9ybX0iKQoKICAgICAgICBpZiBnZXRhdHRyKGFyZ3MsICJkYWVtb24iLCBGYWxzZSk6CiAgICAgICAgICAgICMgRGFlbW9uIG1vZGU6IHNwYXduIGJhY2tncm91bmQgdGhyZWFkIGFuZCBleGl0CiAgICAgICAgICAgIHN0b3BfZXZlbnQgPSB0aHJlYWRpbmcuRXZlbnQoKQogICAgICAgICAgICB0aHJlYWQgPSB0aHJlYWRpbmcuVGhyZWFkKAogICAgICAgICAgICAgICAgdGFyZ2V0PV9ydW5fd2F0Y2hfbG9vcCwKICAgICAgICAgICAgICAgIGFyZ3M9KGludGVydmFsLCBzdG9wX2V2ZW50KSwKICAgICAgICAgICAgICAgIG5hbWU9ImF1dG9waWxvdC13YXRjaCIsCiAgICAgICAgICAgICAgICBkYWVtb249VHJ1ZSwKICAgICAgICAgICAgKQogICAgICAgICAgICB0aHJlYWQuc3RhcnQoKQogICAgICAgICAgICBwcmludF9zdWNjZXNzKGYiW0F1dG9waWxvdF0gU3RhcnRlZCBpbiBiYWNrZ3JvdW5kIChQSUQ9e3RocmVhZC5uYXRpdmVfaWR9KSIpCiAgICAgICAgICAgIHJldHVybiAwCiAgICAgICAgZWxzZToKICAgICAgICAgICAgIyBGb3JlZ3JvdW5kIG1vZGU6IHJ1biBpbiBjdXJyZW50IHRocmVhZCAoZm9yIGNyb24vQ0kpCiAgICAgICAgICAgIHByaW50X2luZm8oIltBdXRvcGlsb3RdIFJ1bm5pbmcgb25lIGN5Y2xlLi4uIikKICAgICAgICAgICAgc3RvcF9ldmVudCA9IHRocmVhZGluZy5FdmVudCgpCiAgICAgICAgICAgIF9ydW5fd2F0Y2hfbG9vcChpbnRlcnZhbCwgc3RvcF9ldmVudCkKICAgICAgICAgICAgcmV0dXJuIDAKCiAgICAjIOKUgOKUgCBzdG9wIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgaWYgYXJncy5hY3Rpb24gPT0gInN0b3AiOgogICAgICAgIHN0YXRlID0gX2xvYWRfd2F0Y2hfc3RhdGUoKQogICAgICAgIGlmIG5vdCBzdGF0ZS5nZXQoInJ1bm5pbmciKToKICAgICAgICAgICAgcHJpbnRfaW5mbygiV2F0Y2ggaXMgbm90IHJ1bm5pbmcuIikKICAgICAgICAgICAgcmV0dXJuIDAKCiAgICAgICAgIyBTaWduYWwgdGhlIHdhdGNoIHRvIHN0b3AgdmlhIHN0YXRlIGZpbGUgKGNyb3NzLXByb2Nlc3MpCiAgICAgICAgc3RhdGVbInJ1bm5pbmciXSA9IEZhbHNlCiAgICAgICAgc3RhdGVbInN0b3BfcmVxdWVzdGVkIl0gPSBUcnVlCiAgICAgICAgX3NhdmVfd2F0Y2hfc3RhdGUoc3RhdGUpCgogICAgICAgIGlmIF93YXRjaF9zdG9wX2V2ZW50OgogICAgICAgICAgICBfd2F0Y2hfc3RvcF9ldmVudC5zZXQoKQoKICAgICAgICBwcmludF9zdWNjZXNzKCJbQXV0b3BpbG90XSBTdG9wIHNpZ25hbCBzZW50LiIpCiAgICAgICAgcmV0dXJuIDAKCiAgICBwcmludF9lcnJvcihmIlVua25vd24gYWN0aW9uOiB7YXJncy5hY3Rpb259IikKICAgIHJldHVybiAxCg==
+"""CLI command: subscribe — Smart arXiv subscription management with autopilot watch."""
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import sys
+import threading
+import time
+from pathlib import Path
+
+from cli._shared import get_db, print_info, print_error, print_success
+
+logger = logging.getLogger(__name__)
+
+# ─── Persistent watch state ────────────────────────────────────────────────────
+
+
+def _get_watch_state_path() -> Path:
+    state_dir = Path.home() / ".ai_research_os" / "subscriptions"
+    state_dir.mkdir(parents=True, exist_ok=True)
+    return state_dir / "watch_state.json"
+
+
+def _load_watch_state() -> dict:
+    path = _get_watch_state_path()
+    if path.exists():
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {"running": False, "interval_minutes": 60, "last_check": ""}
+
+
+def _save_watch_state(state: dict) -> None:
+    path = _get_watch_state_path()
+    path.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+# ─── Watch loop ────────────────────────────────────────────────────────────────
+
+
+def _run_watch_loop(interval_minutes: int, stop_event: threading.Event) -> None:
+    """Background watch loop. Runs until stop_event is set."""
+    from core.notifications import get_webhook_notifier
+    from core.notifications import configure_webhook
+    from llm.subscription_monitor import SubscriptionMonitor
+    from llm.subscription_scorer import SubscriptionScorer
+
+    db = get_db()
+    db.init()
+    monitor = SubscriptionMonitor(db, SubscriptionScorer(db))
+    webhook = get_webhook_notifier()
+
+    print_success(f"[Autopilot] Watch started — checking every {interval_minutes} min")
+    state = _load_watch_state()
+    state["running"] = True
+    state["interval_minutes"] = interval_minutes
+    _save_watch_state(state)
+
+    while not stop_event.is_set():
+        try:
+            all_results = monitor.check_all()
+            total = sum(len(papers) for papers in all_results.values())
+
+            if total > 0:
+                print_info(f"[Autopilot] Found {total} new paper(s) across {len(all_results)} subscription(s)")
+
+                # Send webhook notifications
+                for sub_id, papers in all_results.items():
+                    if papers:
+                        sub = db.get_arxiv_subscription(sub_id)
+                        topic = sub.get("topic", sub_id) if sub else sub_id
+                        webhook.notify_papers_found(topic, papers, min_score=0.5)
+            else:
+                print_info("[Autopilot] No new papers found")
+
+            state["last_check"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+            _save_watch_state(state)
+
+        except Exception as e:
+            logger.error(f"[Autopilot] Check failed: {e}")
+            print_error(f"[Autopilot] Error: {e}")
+
+        # Wait for interval or stop signal
+        stop_event.wait(timeout=interval_minutes * 60)
+
+    state["running"] = False
+    _save_watch_state(state)
+    print_info("[Autopilot] Watch stopped")
+
+
+# ─── Parser ───────────────────────────────────────────────────────────────────
+
+
+def _build_subscribe_parser(subparsers) -> argparse.ArgumentParser:
+    """Build the subscribe subcommand parser."""
+    p = subparsers.add_parser(
+        "subscribe",
+        help="Smart arXiv subscriptions",
+        description="Subscribe to research topics and get AI-scored paper recommendations.",
+    )
+
+    sub = p.add_subparsers(dest="action", help="Subscription actions")
+
+    # add
+    p_add = sub.add_parser("add", help="Add a new subscription")
+    p_add.add_argument("topic", help="Research topic keywords (e.g., 'transformer attention')")
+    p_add.add_argument("--keywords", "-k", type=str,
+                       help="Additional keywords (comma-separated)")
+    p_add.add_argument("--min-score", "-s", type=float, default=0.5,
+                       help="Minimum relevance score (0.0-1.0, default: 0.5)")
+    p_add.add_argument("--max-results", "-n", type=int, default=10,
+                       help="Max papers per check (default: 10)")
+
+    # list
+    sub.add_parser("list", help="List all subscriptions")
+
+    # check
+    p_check = sub.add_parser("check", help="Check subscriptions for new papers")
+    p_check.add_argument("id", nargs="?", help="Subscription ID (optional, checks all if omitted)")
+    p_check.add_argument("--discord", type=str, default="", help="Discord webhook URL to test")
+    p_check.add_argument("--feishu", type=str, default="", help="Feishu webhook URL to test")
+
+    # recommendations
+    p_rec = sub.add_parser("recommendations", help="Show recommended papers")
+    p_rec.add_argument("id", help="Subscription ID")
+    p_rec.add_argument("--limit", "-n", type=int, default=20, help="Max papers to show")
+
+    # delete
+    p_delete = sub.add_parser("delete", help="Delete a subscription")
+    p_delete.add_argument("id", help="Subscription ID")
+
+    # watch
+    p_watch = sub.add_parser("watch", help="Start autopilot watch (background monitoring)")
+    p_watch.add_argument("--interval", "-i", type=int, default=60,
+                         help="Check interval in minutes (default: 60)")
+    p_watch.add_argument("--discord", type=str, default="",
+                         help="Discord webhook URL")
+    p_watch.add_argument("--feishu", type=str, default="",
+                         help="Feishu webhook URL")
+    p_watch.add_argument("--daemon", action="store_true",
+                         help="Run as daemon (background process)")
+
+    # stop watch
+    sub.add_parser("stop", help="Stop the autopilot watch")
+
+    return p  # type: ignore[no-any-return]
+
+
+# ─── Runner ───────────────────────────────────────────────────────────────────
+
+
+# Module-level state for the watch thread (survives across CLI invocations)
+_watch_thread: threading.Thread | None = None
+_watch_stop_event: threading.Event | None = None
+
+
+def _run_subscribe(args: argparse.Namespace) -> int:
+    """Run subscribe command."""
+    global _watch_thread, _watch_stop_event
+
+    if not args.action:
+        print_error("Usage: subscribe <add|list|check|recommendations|delete|watch|stop>")
+        return 1  # type: ignore[no-any-return]
+
+    db = get_db()
+    db.init()
+
+    # ── add ──────────────────────────────────────────────────────────────────
+    if args.action == "add":
+        keywords = []
+        if getattr(args, "keywords", None):
+            keywords = [k.strip() for k in args.keywords.split(",") if k.strip()]
+
+        sub_id = db.add_arxiv_subscription(
+            topic=args.topic,
+            keywords=keywords,
+            min_score=getattr(args, "min_score", 0.5),
+            max_results=getattr(args, "max_results", 10),
+        )
+        print_success(f"Added subscription [{sub_id}]: {args.topic}")
+        if keywords:
+            print_info(f"  Keywords: {', '.join(keywords)}")
+        return 0  # type: ignore[no-any-return]
+
+    # ── list ─────────────────────────────────────────────────────────────────
+    if args.action == "list":
+        subs = db.list_arxiv_subscriptions()
+        if not subs:
+            print_info("No subscriptions. Use 'subscribe add <topic>' to create one.")
+            return 0  # type: ignore[no-any-return]
+
+        state = _load_watch_state()
+        watch_status = "running" if state.get("running") else "stopped"
+
+        print_info(f"Found {len(subs)} subscription(s) [watch: {watch_status}]:")
+        for s in subs:
+            keywords = s.get("keywords", []) or []
+            last_checked = s.get("last_checked") or "never"
+            print(f"  [{s['id']}] {s['topic']}")
+            print(f"        min_score={s['min_score']}, max_results={s['max_results']}")
+            if keywords:
+                print(f"        keywords: {', '.join(keywords)}")
+            print(f"        last checked: {last_checked}")
+        return 0  # type: ignore[no-any-return]
+
+    # ── check ────────────────────────────────────────────────────────────────
+    if args.action == "check":
+        from core.notifications import get_webhook_notifier, configure_webhook
+        from llm.subscription_monitor import SubscriptionMonitor
+        from llm.subscription_scorer import SubscriptionScorer
+        from llm.litreview_analyzer import LitReviewAnalyzer
+
+        # Configure webhook if provided
+        webhook_url = getattr(args, "discord", "") or getattr(args, "feishu", "") or ""
+        if webhook_url:
+            configure_webhook(webhook_url)
+            print_success("Webhook configured: " + ("Discord" if getattr(args, "discord", "") else "Feishu"))
+
+        monitor = SubscriptionMonitor(db, SubscriptionScorer(db))
+        analyzer = LitReviewAnalyzer(db)
+        webhook = get_webhook_notifier()
+
+        if args.id:
+            results = monitor.check_subscription(args.id)
+            if not results:
+                print_info("No new papers above threshold.")
+            else:
+                print_success(f"Found {len(results)} paper(s):")
+                for r in results:
+                    print(f"  [{r['arxiv_id']}] {r['title'][:60]}...")
+                    print(f"        score={r['score']:.2f}")
+
+                # Notify via webhook
+                sub = db.get_arxiv_subscription(args.id)
+                topic = sub.get("topic", args.id) if sub else args.id
+                webhook.notify_papers_found(topic, results, min_score=0.5)
+
+                # Auto-update literature review
+                updated_file = analyzer.update_for_subscription(args.id, results)
+                if updated_file:
+                    print_info(f"  Updated litreview: {updated_file}")
+        else:
+            all_results = monitor.check_all()
+            for sub_id, papers in all_results.items():
+                sub = db.get_arxiv_subscription(sub_id)
+                topic = sub.get("topic", sub_id) if sub else sub_id
+                print_info(f"\nSubscription [{sub_id}] ({topic}): {len(papers)} new paper(s)")
+                for r in papers[:3]:
+                    print(f"  [{r['arxiv_id']}] {r['title'][:50]}... (score={r['score']:.2f})")
+
+                if papers:
+                    webhook.notify_papers_found(topic, papers, min_score=0.5)
+                    updated_file = analyzer.update_for_subscription(sub_id, papers)
+                    if updated_file:
+                        print_info(f"  Updated litreview: {updated_file}")
+        return 0
+
+    # ── recommendations ─────────────────────────────────────────────────────
+    if args.action == "recommendations":
+        papers = db.get_subscription_papers(args.id, limit=getattr(args, "limit", 20))
+        if not papers:
+            print_info("No recommendations yet. Run 'subscribe check' first.")
+            return 0
+
+        print_success(f"Found {len(papers)} recommendation(s):")
+        for p in papers:
+            print(f"  [{p['arxiv_id']}]")
+            print(f"    Title: {p.get('title', 'N/A')[:60]}")
+            print(f"    Score: {p.get('score', 0):.2f}")
+            print(f"    Published: {p.get('published', 'N/A')}")
+        return 0
+
+    # ── delete ──────────────────────────────────────────────────────────────
+    if args.action == "delete":
+        deleted = db.delete_arxiv_subscription(args.id)
+        if deleted:
+            print_success(f"Deleted subscription [{args.id}]")
+        else:
+            print_error(f"Subscription [{args.id}] not found")
+        return 0
+
+    # ── watch ───────────────────────────────────────────────────────────────
+    if args.action == "watch":
+        state = _load_watch_state()
+        if state.get("running") and _watch_thread and _watch_thread.is_alive():
+            print_error("[Autopilot] Watch is already running. Use 'subscribe stop' first.")
+            return 1
+
+        interval = getattr(args, "interval", 60)
+        if interval < 5:
+            print_error("Interval must be at least 5 minutes.")
+            return 1
+
+        # Configure webhook
+        from core.notifications import configure_webhook
+        discord_url = getattr(args, "discord", "") or ""
+        feishu_url = getattr(args, "feishu", "") or ""
+
+        # Prefer Discord if set, else Feishu
+        webhook_url = discord_url or feishu_url
+        if webhook_url:
+            configure_webhook(webhook_url)
+            platform = "Discord" if discord_url else "Feishu"
+            print_success(f"[Autopilot] Webhook configured: {platform}")
+
+        if getattr(args, "daemon", False):
+            # Daemon mode: spawn background thread and exit
+            stop_event = threading.Event()
+            thread = threading.Thread(
+                target=_run_watch_loop,
+                args=(interval, stop_event),
+                name="autopilot-watch",
+                daemon=True,
+            )
+            thread.start()
+            print_success(f"[Autopilot] Started in background (PID={thread.native_id})")
+            return 0
+        else:
+            # Foreground mode: run in current thread (for cron/CI)
+            print_info("[Autopilot] Running one cycle...")
+            stop_event = threading.Event()
+            _run_watch_loop(interval, stop_event)
+            return 0
+
+    # ── stop ────────────────────────────────────────────────────────────────
+    if args.action == "stop":
+        state = _load_watch_state()
+        if not state.get("running"):
+            print_info("Watch is not running.")
+            return 0
+
+        # Signal the watch to stop via state file (cross-process)
+        state["running"] = False
+        state["stop_requested"] = True
+        _save_watch_state(state)
+
+        if _watch_stop_event:
+            _watch_stop_event.set()
+
+        print_success("[Autopilot] Stop signal sent.")
+        return 0
+
+    print_error(f"Unknown action: {args.action}")
+    return 1

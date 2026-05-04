@@ -1,1 +1,104 @@
-IiIiRW5kLXRvLWVuZCB0ZXN0cyBmb3IgQ0xJIGNvbW1hbmRzLgoKVGhlc2UgdGVzdHMgdmVyaWZ5IHRoYXQgQ0xJIGNvbW1hbmQgbW9kdWxlcyBjYW4gYmUgaW1wb3J0ZWQgYW5kIGluaXRpYWxpemVkIGNvcnJlY3RseS4KIiIiCgppbXBvcnQgc3lzCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAoKIyBBZGQgcHJvamVjdCByb290IHRvIHBhdGgKcHJvamVjdF9yb290ID0gUGF0aChfX2ZpbGVfXykucGFyZW50LnBhcmVudC5wYXJlbnQKc3lzLnBhdGguaW5zZXJ0KDAsIHN0cihwcm9qZWN0X3Jvb3QpKQoKCmNsYXNzIFRlc3RDTElDb21tYW5kSW1wb3J0czoKICAgICIiIlRlc3QgdGhhdCBDTEkgY29tbWFuZHMgY2FuIGJlIGltcG9ydGVkIGFuZCBpbml0aWFsaXplZC4iIiIKCiAgICBkZWYgdGVzdF9pbXBvcnRfcmVnaXN0cnkoc2VsZik6CiAgICAgICAgIiIiVGVzdCB0aGF0IF9yZWdpc3RyeSBjYW4gYmUgaW1wb3J0ZWQuIiIiCiAgICAgICAgZnJvbSBjbGkuX3JlZ2lzdHJ5IGltcG9ydCBTVUJDT01NQU5EUwoKICAgICAgICBhc3NlcnQgInNlYXJjaCIgaW4gU1VCQ09NTUFORFMKICAgICAgICBhc3NlcnQgImltcG9ydCIgaW4gU1VCQ09NTUFORFMKICAgICAgICBhc3NlcnQgInJhZyIgaW4gU1VCQ09NTUFORFMKICAgICAgICBhc3NlcnQgInZpc3VhbCIgaW4gU1VCQ09NTUFORFMKCiAgICBkZWYgdGVzdF9pbXBvcnRfY21kX21vZHVsZXMoc2VsZik6CiAgICAgICAgIiIiVGVzdCB0aGF0IGNvbW1hbmQgbW9kdWxlcyBjYW4gYmUgaW1wb3J0ZWQuIiIiCiAgICAgICAgZnJvbSBjbGkuY21kLnNlYXJjaCBpbXBvcnQgX2J1aWxkX3NlYXJjaF9wYXJzZXIKICAgICAgICBmcm9tIGNsaS5jbWQuaW1wb3J0XyBpbXBvcnQgX2J1aWxkX2ltcG9ydF9wYXJzZXIKICAgICAgICBmcm9tIGNsaS5jbWQucmFnIGltcG9ydCBfYnVpbGRfcmFnX3BhcnNlcgogICAgICAgIGZyb20gY2xpLmNtZC52aXN1YWwgaW1wb3J0IF9idWlsZF92aXN1YWxfcGFyc2VyCgogICAgICAgICMgQWxsIHNob3VsZCBiZSBjYWxsYWJsZQogICAgICAgIGFzc2VydCBjYWxsYWJsZShfYnVpbGRfc2VhcmNoX3BhcnNlcikKICAgICAgICBhc3NlcnQgY2FsbGFibGUoX2J1aWxkX2ltcG9ydF9wYXJzZXIpCiAgICAgICAgYXNzZXJ0IGNhbGxhYmxlKF9idWlsZF9yYWdfcGFyc2VyKQogICAgICAgIGFzc2VydCBjYWxsYWJsZShfYnVpbGRfdmlzdWFsX3BhcnNlcikKCiAgICBkZWYgdGVzdF9yZXNlYXJjaF9sb29wX2ltcG9ydHMoc2VsZik6CiAgICAgICAgIiIiVGVzdCB0aGF0IHJlc2VhcmNoX2xvb3AgbW9kdWxlcyBjYW4gYmUgaW1wb3J0ZWQuIiIiCiAgICAgICAgZnJvbSByZXNlYXJjaF9sb29wIGltcG9ydCBQYXBlclBpcGVsaW5lLCBSYWdQaXBlbGluZQogICAgICAgIGZyb20gcmVzZWFyY2hfbG9vcC5jb3JlIGltcG9ydCBydW5fcmVzZWFyY2gKCiAgICAgICAgYXNzZXJ0IFBhcGVyUGlwZWxpbmUgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQgUmFnUGlwZWxpbmUgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQgY2FsbGFibGUocnVuX3Jlc2VhcmNoKQoKICAgIGRlZiB0ZXN0X3Zpc3VhbF9leHRyYWN0b3JfaW1wb3J0cyhzZWxmKToKICAgICAgICAiIiJUZXN0IHRoYXQgdmlzdWFsIGV4dHJhY3Rpb24gbW9kdWxlIGltcG9ydHMgY29ycmVjdGx5LiIiIgogICAgICAgIGZyb20gcGRmLnZpc3VhbCBpbXBvcnQgVmlzdWFsRXh0cmFjdG9yLCBWaXN1YWxDb250ZW50CgogICAgICAgIGFzc2VydCBWaXN1YWxFeHRyYWN0b3IgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQgVmlzdWFsQ29udGVudCBpcyBub3QgTm9uZQoKICAgIGRlZiB0ZXN0X2FsbF9zdWJjb21tYW5kc19hdmFpbGFibGUoc2VsZik6CiAgICAgICAgIiIiVGVzdCBhbGwgc3ViY29tbWFuZHMgYXJlIHJlZ2lzdGVyZWQuIiIiCiAgICAgICAgZnJvbSBjbGkuX3JlZ2lzdHJ5IGltcG9ydCBTVUJDT01NQU5EUwoKICAgICAgICBleHBlY3RlZCA9IHsKICAgICAgICAgICAgInNlYXJjaCIsCiAgICAgICAgICAgICJsaXN0IiwKICAgICAgICAgICAgInN0YXR1cyIsCiAgICAgICAgICAgICJxdWV1ZSIsCiAgICAgICAgICAgICJjYWNoZSIsCiAgICAgICAgICAgICJkZWR1cCIsCiAgICAgICAgICAgICJtZXJnZSIsCiAgICAgICAgICAgICJzdGF0cyIsCiAgICAgICAgICAgICJpbXBvcnQiLAogICAgICAgICAgICAiZXhwb3J0IiwKICAgICAgICAgICAgImNpdGF0aW9ucyIsCiAgICAgICAgICAgICJjaXRlLWdyYXBoIiwKICAgICAgICAgICAgImNpdGUtaW1wb3J0IiwKICAgICAgICAgICAgImNpdGUtZmV0Y2giLAogICAgICAgICAgICAiY2l0ZS1zdGF0cyIsCiAgICAgICAgICAgICJkZWR1cC1zZW1hbnRpYyIsCiAgICAgICAgICAgICJyZXNlYXJjaCIsCiAgICAgICAgICAgICJzaW1pbGFyIiwKICAgICAgICAgICAgImtnIiwKICAgICAgICAgICAgInBhcGVyMmNvZGUiLAogICAgICAgICAgICAiZXZvc2tpbGwiLAogICAgICAgICAgICAicmFnIiwKICAgICAgICAgICAgInZpc3VhbCIsCiAgICAgICAgfQogICAgICAgIGFzc2VydCBleHBlY3RlZC5pc3N1YnNldChTVUJDT01NQU5EUykKCgpjbGFzcyBUZXN0Q0xJUGFyc2VyczoKICAgICIiIlRlc3QgQ0xJIHBhcnNlcnMgY2FuIGJlIGJ1aWx0LiIiIgoKICAgIGRlZiB0ZXN0X2J1aWxkX2FsbF9wYXJzZXJzKHNlbGYpOgogICAgICAgICIiIlRlc3QgdGhhdCBhbGwgcGFyc2VycyBjYW4gYmUgYnVpbHQgd2l0aG91dCBlcnJvci4iIiIKICAgICAgICBpbXBvcnQgYXJncGFyc2UKICAgICAgICBmcm9tIGNsaS5fcmVnaXN0cnkgaW1wb3J0IF9idWlsZF9hbGxfcGFyc2VycwoKICAgICAgICBwYXJzZXIgPSBhcmdwYXJzZS5Bcmd1bWVudFBhcnNlcigpCiAgICAgICAgc3VicGFyc2VycyA9IHBhcnNlci5hZGRfc3VicGFyc2VycygpCgogICAgICAgICMgU2hvdWxkIG5vdCByYWlzZQogICAgICAgIF9idWlsZF9hbGxfcGFyc2VycyhzdWJwYXJzZXJzKQoKICAgICAgICAjIFZlcmlmeSBzb21lIHN1YmNvbW1hbmRzIGV4aXN0CiAgICAgICAgYXNzZXJ0ICJzZWFyY2giIGluIHN1YnBhcnNlcnMuY2hvaWNlcwogICAgICAgIGFzc2VydCAiaW1wb3J0IiBpbiBzdWJwYXJzZXJzLmNob2ljZXMKICAgICAgICBhc3NlcnQgInJhZyIgaW4gc3VicGFyc2Vycy5jaG9pY2VzCg==
+"""End-to-end tests for CLI commands.
+
+These tests verify that CLI command modules can be imported and initialized correctly.
+"""
+
+import sys
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+
+class TestCLICommandImports:
+    """Test that CLI commands can be imported and initialized."""
+
+    def test_import_registry(self):
+        """Test that _registry can be imported."""
+        from cli._registry import SUBCOMMANDS
+
+        assert "search" in SUBCOMMANDS
+        assert "import" in SUBCOMMANDS
+        assert "rag" in SUBCOMMANDS
+        assert "visual" in SUBCOMMANDS
+
+    def test_import_cmd_modules(self):
+        """Test that command modules can be imported."""
+        from cli.cmd.search import _build_search_parser
+        from cli.cmd.import_ import _build_import_parser
+        from cli.cmd.rag import _build_rag_parser
+        from cli.cmd.visual import _build_visual_parser
+
+        # All should be callable
+        assert callable(_build_search_parser)
+        assert callable(_build_import_parser)
+        assert callable(_build_rag_parser)
+        assert callable(_build_visual_parser)
+
+    def test_research_loop_imports(self):
+        """Test that research_loop modules can be imported."""
+        from research_loop import PaperPipeline, RagPipeline
+        from research_loop.core import run_research
+
+        assert PaperPipeline is not None
+        assert RagPipeline is not None
+        assert callable(run_research)
+
+    def test_visual_extractor_imports(self):
+        """Test that visual extraction module imports correctly."""
+        from pdf.visual import VisualExtractor, VisualContent
+
+        assert VisualExtractor is not None
+        assert VisualContent is not None
+
+    def test_all_subcommands_available(self):
+        """Test all subcommands are registered."""
+        from cli._registry import SUBCOMMANDS
+
+        expected = {
+            "search",
+            "list",
+            "status",
+            "queue",
+            "cache",
+            "dedup",
+            "merge",
+            "stats",
+            "import",
+            "export",
+            "citations",
+            "cite-graph",
+            "cite-import",
+            "cite-fetch",
+            "cite-stats",
+            "dedup-semantic",
+            "research",
+            "similar",
+            "kg",
+            "paper2code",
+            "evoskill",
+            "rag",
+            "visual",
+        }
+        assert expected.issubset(SUBCOMMANDS)
+
+
+class TestCLIParsers:
+    """Test CLI parsers can be built."""
+
+    def test_build_all_parsers(self):
+        """Test that all parsers can be built without error."""
+        import argparse
+        from cli._registry import _build_all_parsers
+
+        parser = argparse.ArgumentParser()
+        subparsers = parser.add_subparsers()
+
+        # Should not raise
+        _build_all_parsers(subparsers)
+
+        # Verify some subcommands exist
+        assert "search" in subparsers.choices
+        assert "import" in subparsers.choices
+        assert "rag" in subparsers.choices

@@ -1,1 +1,130 @@
-IiIiQm9sZCBIeXBvdGhlc2lzIFZhdWx0LgoKU2VwYXJhdGVseSB0cmFja2VkIGhpZ2gtcmlzay9oaWdoLXJld2FyZCBHZW5lIFBvb2wgY2Fwc3VsZXMuCkJvbGQgPSB0aGVvcmV0aWNhbF9nYXAgT1IgbmVnYXRpdmUgcG9sYXJpdHkgT1IgaGlnaCBub3ZlbHR5IHNjb3JlLgoiIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBqc29uCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcywgZmllbGQKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBBbnksIERpY3QsIExpc3QsIE9wdGlvbmFsCgoKQ0FQU1VMRV9QQVRIID0gUGF0aC5ob21lKCkgLyAiLmFpX3Jlc2VhcmNoX29zIiAvICJnZW5lX3Bvb2wiIC8gImNhcHN1bGVzLmpzb24iCk5PVkVMVFlfVEhSRVNIT0xEID0gMC43CgoKQGRhdGFjbGFzcwpjbGFzcyBCb2xkQ2Fwc3VsZToKICAgIGNhcHN1bGVfaWQ6IHN0cgogICAgZ2FwX3RpdGxlOiBzdHIKICAgIGdhcF90eXBlOiBzdHIKICAgIHBvbGFyaXR5OiBzdHIKICAgIG91dGNvbWVfc2NvcmU6IGZsb2F0CiAgICBub3ZlbHR5X3Njb3JlOiBmbG9hdAogICAgdHJpZ2dlcl9rZXl3b3JkczogTGlzdFtzdHJdCiAgICByZWFzb246IHN0ciAgIyB3aHkgaXQncyBib2xkOiAidGhlb3JldGljYWwiLCAibmVnYXRpdmUiLCAiaGlnaC1ub3ZlbHR5IgoKCmRlZiBfbG9hZF9jYXBzdWxlcygpIC0+IExpc3RbRGljdFtzdHIsIEFueV1dOgogICAgaWYgbm90IENBUFNVTEVfUEFUSC5leGlzdHMoKToKICAgICAgICByZXR1cm4gW10KICAgIGRhdGEgPSBqc29uLmxvYWRzKENBUFNVTEVfUEFUSC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikpCiAgICByZXR1cm4gZGF0YS5nZXQoImNhcHN1bGVzIiwgW10pCgoKZGVmIF9qYWNjYXJkKGE6IExpc3Rbc3RyXSwgYjogTGlzdFtzdHJdKSAtPiBmbG9hdDoKICAgIHNfYSwgc19iID0gc2V0KGEpLCBzZXQoYikKICAgIGlmIG5vdCBzX2Egb3Igbm90IHNfYjoKICAgICAgICByZXR1cm4gMC4wCiAgICByZXR1cm4gbGVuKHNfYSAmIHNfYikgLyBsZW4oc19hIHwgc19iKQoKCmRlZiBnZXRfYm9sZF9jYXBzdWxlcygpIC0+IExpc3RbQm9sZENhcHN1bGVdOgogICAgIiIiUmV0dXJuIGNhcHN1bGVzIGZsYWdnZWQgYXMgYm9sZCBoeXBvdGhlc2lzIChoaWdoLXJpc2svaGlnaC1yZXdhcmQpLiIiIgogICAgY2Fwc3VsZXMgPSBfbG9hZF9jYXBzdWxlcygpCiAgICByZXN1bHRzOiBMaXN0W0JvbGRDYXBzdWxlXSA9IFtdCgogICAgZm9yIGNhcCBpbiBjYXBzdWxlczoKICAgICAgICBpZiBjYXAuZ2V0KCJzdGF0dXMiKSBub3QgaW4gKCJhY3RpdmUiLCAiIik6CiAgICAgICAgICAgIGNvbnRpbnVlCgogICAgICAgIGdhcF90eXBlID0gY2FwLmdldCgiYWN0aW9uX2dhcF90eXBlIiwgIiIpIG9yIGNhcC5nZXQoInRyaWdnZXJfZ2FwX3R5cGUiLCAiIikKICAgICAgICBwb2xhcml0eSA9IGNhcC5nZXQoInBvbGFyaXR5IiwgInBvc2l0aXZlIikKICAgICAgICBrZXl3b3JkcyA9IGNhcC5nZXQoInRyaWdnZXJfa2V5d29yZHMiLCBbXSkKCiAgICAgICAgIyBDb21wdXRlIG5vdmVsdHkgdnMgb3RoZXIgY2Fwc3VsZXMKICAgICAgICBtYXhfb3ZlcmxhcCA9IDAuMAogICAgICAgIGZvciBvdGhlciBpbiBjYXBzdWxlczoKICAgICAgICAgICAgaWYgb3RoZXIuZ2V0KCJjYXBzdWxlX2lkIikgPT0gY2FwLmdldCgiY2Fwc3VsZV9pZCIpOgogICAgICAgICAgICAgICAgY29udGludWUKICAgICAgICAgICAgb3YgPSBfamFjY2FyZChrZXl3b3Jkcywgb3RoZXIuZ2V0KCJ0cmlnZ2VyX2tleXdvcmRzIiwgW10pKQogICAgICAgICAgICBpZiBvdiA+IG1heF9vdmVybGFwOgogICAgICAgICAgICAgICAgbWF4X292ZXJsYXAgPSBvdgogICAgICAgIG5vdmVsdHkgPSAxLjAgLSBtYXhfb3ZlcmxhcAoKICAgICAgICByZWFzb25zOiBMaXN0W3N0cl0gPSBbXQogICAgICAgIGlmIGdhcF90eXBlID09ICJ0aGVvcmV0aWNhbF9nYXAiOgogICAgICAgICAgICByZWFzb25zLmFwcGVuZCgidGhlb3JldGljYWwiKQogICAgICAgIGlmIHBvbGFyaXR5ID09ICJuZWdhdGl2ZSI6CiAgICAgICAgICAgIHJlYXNvbnMuYXBwZW5kKCJuZWdhdGl2ZSIpCiAgICAgICAgaWYgbm92ZWx0eSA+IE5PVkVMVFlfVEhSRVNIT0xEOgogICAgICAgICAgICByZWFzb25zLmFwcGVuZChmImhpZ2gtbm92ZWx0eSh7bm92ZWx0eTouMCV9KSIpCgogICAgICAgIGlmIG5vdCByZWFzb25zOgogICAgICAgICAgICBjb250aW51ZQoKICAgICAgICByZXN1bHRzLmFwcGVuZCgKICAgICAgICAgICAgQm9sZENhcHN1bGUoCiAgICAgICAgICAgICAgICBjYXBzdWxlX2lkPWNhcC5nZXQoImNhcHN1bGVfaWQiLCAiIiksCiAgICAgICAgICAgICAgICBnYXBfdGl0bGU9Y2FwLmdldCgiYWN0aW9uX2dhcF90aXRsZSIsICIiKSwKICAgICAgICAgICAgICAgIGdhcF90eXBlPWdhcF90eXBlLAogICAgICAgICAgICAgICAgcG9sYXJpdHk9cG9sYXJpdHksCiAgICAgICAgICAgICAgICBvdXRjb21lX3Njb3JlPWNhcC5nZXQoIm91dGNvbWVfc3VjY2Vzc19zY29yZSIsIDAuMCksCiAgICAgICAgICAgICAgICBub3ZlbHR5X3Njb3JlPXJvdW5kKG5vdmVsdHksIDMpLAogICAgICAgICAgICAgICAgdHJpZ2dlcl9rZXl3b3Jkcz1rZXl3b3JkcywKICAgICAgICAgICAgICAgIHJlYXNvbj0iLCAiLmpvaW4ocmVhc29ucyksCiAgICAgICAgICAgICkKICAgICAgICApCgogICAgcmVzdWx0cy5zb3J0KGtleT1sYW1iZGEgeDogLXgubm92ZWx0eV9zY29yZSkKICAgIHJldHVybiByZXN1bHRzCgoKZGVmIHJlbmRlcl9odG1sKGNhcHN1bGVzOiBPcHRpb25hbFtMaXN0W0JvbGRDYXBzdWxlXV0gPSBOb25lKSAtPiBzdHI6CiAgICBpZiBjYXBzdWxlcyBpcyBOb25lOgogICAgICAgIGNhcHN1bGVzID0gZ2V0X2JvbGRfY2Fwc3VsZXMoKQoKICAgIGlmIG5vdCBjYXBzdWxlczoKICAgICAgICByZXR1cm4gIjxwPk5vIGJvbGQgaHlwb3RoZXNlcyB5ZXQuIFRoZW9yZXRpY2FsIGdhcHMgYW5kIG5lZ2F0aXZlLXBvbGFyaXR5IGNhcHN1bGVzIHdpbGwgYXBwZWFyIGhlcmUuPC9wPiIKCiAgICBsaW5lcyA9IFsnPGRpdiBjbGFzcz0iYm9sZC12YXVsdCI+J10KICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiPGgzPvCflLQgQm9sZCBIeXBvdGhlc2lzIFZhdWx0IDxzbWFsbCBzdHlsZT0nY29sb3I6Izg4OCc+KGhpZ2gtcmlzayAvIGhpZ2gtcmV3YXJkIGdhcHMpPC9zbWFsbD48L2gzPiIKICAgICkKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICBmIjxwIHN0eWxlPSdmb250LXNpemU6MTNweDtjb2xvcjojQTg5RThDO21hcmdpbi1ib3R0b206MTZweCc+e2xlbihjYXBzdWxlcyl9IGJvbGQgY2Fwc3VsZXMgdHJhY2tlZC48L3A+IgogICAgKQogICAgbGluZXMuYXBwZW5kKCI8ZGl2IGNsYXNzPSdib2xkLWdyaWQnPiIpCgogICAgZm9yIGMgaW4gY2Fwc3VsZXM6CiAgICAgICAgdGl0bGVfc2hvcnQgPSBjLmdhcF90aXRsZVs6NzBdIGlmIGMuZ2FwX3RpdGxlIGVsc2UgIihubyB0aXRsZSkiCiAgICAgICAga3dfc3RyID0gIiwgIi5qb2luKGMudHJpZ2dlcl9rZXl3b3Jkc1s6NF0pCiAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICBmIjxkaXYgY2xhc3M9J2JvbGQtY2FyZCc+IgogICAgICAgICAgICBmIjxkaXYgY2xhc3M9J2JvbGQtcmVhc29uJz57Yy5yZWFzb259PC9kaXY+IgogICAgICAgICAgICBmIjxkaXYgY2xhc3M9J2JvbGQtdGl0bGUnIHRpdGxlPSd7Yy5nYXBfdGl0bGV9Jz57dGl0bGVfc2hvcnR9PC9kaXY+IgogICAgICAgICAgICBmIjxkaXYgY2xhc3M9J2JvbGQtbWV0YSc+IgogICAgICAgICAgICBmIjxjb2RlPntjLmdhcF90eXBlfTwvY29kZT4gwrcge2MucG9sYXJpdHl9IMK3IHNjb3JlPXtjLm91dGNvbWVfc2NvcmU6LjJmfSDCtyBub3ZlbHR5PXtjLm5vdmVsdHlfc2NvcmU6LjAlfSIKICAgICAgICAgICAgZiI8L2Rpdj4iCiAgICAgICAgICAgIGYiPGRpdiBjbGFzcz0nYm9sZC1rdyc+e2t3X3N0cn08L2Rpdj4iCiAgICAgICAgICAgIGYiPC9kaXY+IgogICAgICAgICkKCiAgICBsaW5lcy5hcHBlbmQoIjwvZGl2PiIpCiAgICBsaW5lcy5hcHBlbmQoIjxzdHlsZT4iKQogICAgbGluZXMuYXBwZW5kKCIuYm9sZC12YXVsdCB7IGZvbnQtZmFtaWx5OiBHZW9yZ2lhLCBzZXJpZjsgfSIpCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIi5ib2xkLWNhcmQgeyBib3JkZXI6IDJweCBzb2xpZCAjQzQ3MDZBOyBib3JkZXItcmFkaXVzOiA2cHg7IHBhZGRpbmc6IDEycHggMTRweDsgbWFyZ2luLWJvdHRvbTogMTBweDsgYmFja2dyb3VuZDogcmdiYSgxOTYsMTEyLDEwNiwwLjA2KTsgfSIKICAgICkKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiLmJvbGQtcmVhc29uIHsgZm9udC1zaXplOiAxMHB4OyB0ZXh0LXRyYW5zZm9ybTogdXBwZXJjYXNlOyBsZXR0ZXItc3BhY2luZzogMC41cHg7IGNvbG9yOiAjQzQ3MDZBOyBmb250LXdlaWdodDogNzAwOyBtYXJnaW4tYm90dG9tOiA0cHg7IH0iCiAgICApCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIi5ib2xkLXRpdGxlIHsgZm9udC1zaXplOiAxNHB4OyBmb250LXdlaWdodDogNjAwOyBjb2xvcjogIzJhMmEyYTsgbWFyZ2luLWJvdHRvbTogNnB4OyBsaW5lLWhlaWdodDogMS40OyB9IgogICAgKQogICAgbGluZXMuYXBwZW5kKCIuYm9sZC1tZXRhIHsgZm9udC1zaXplOiAxMXB4OyBjb2xvcjogIzdhNzU3MDsgbWFyZ2luLWJvdHRvbTogNHB4OyB9IikKICAgIGxpbmVzLmFwcGVuZCgiLmJvbGQta3cgeyBmb250LXNpemU6IDExcHg7IGNvbG9yOiAjQTg5RThDOyBmb250LXN0eWxlOiBpdGFsaWM7IH0iKQogICAgbGluZXMuYXBwZW5kKCI8L3N0eWxlPiIpCiAgICBsaW5lcy5hcHBlbmQoIjwvZGl2PiIpCiAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQo=
+"""Bold Hypothesis Vault.
+
+Separately tracked high-risk/high-reward Gene Pool capsules.
+Bold = theoretical_gap OR negative polarity OR high novelty score.
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+
+CAPSULE_PATH = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+NOVELTY_THRESHOLD = 0.7
+
+
+@dataclass
+class BoldCapsule:
+    capsule_id: str
+    gap_title: str
+    gap_type: str
+    polarity: str
+    outcome_score: float
+    novelty_score: float
+    trigger_keywords: List[str]
+    reason: str  # why it's bold: "theoretical", "negative", "high-novelty"
+
+
+def _load_capsules() -> List[Dict[str, Any]]:
+    if not CAPSULE_PATH.exists():
+        return []
+    data = json.loads(CAPSULE_PATH.read_text(encoding="utf-8"))
+    return data.get("capsules", [])
+
+
+def _jaccard(a: List[str], b: List[str]) -> float:
+    s_a, s_b = set(a), set(b)
+    if not s_a or not s_b:
+        return 0.0
+    return len(s_a & s_b) / len(s_a | s_b)
+
+
+def get_bold_capsules() -> List[BoldCapsule]:
+    """Return capsules flagged as bold hypothesis (high-risk/high-reward)."""
+    capsules = _load_capsules()
+    results: List[BoldCapsule] = []
+
+    for cap in capsules:
+        if cap.get("status") not in ("active", ""):
+            continue
+
+        gap_type = cap.get("action_gap_type", "") or cap.get("trigger_gap_type", "")
+        polarity = cap.get("polarity", "positive")
+        keywords = cap.get("trigger_keywords", [])
+
+        # Compute novelty vs other capsules
+        max_overlap = 0.0
+        for other in capsules:
+            if other.get("capsule_id") == cap.get("capsule_id"):
+                continue
+            ov = _jaccard(keywords, other.get("trigger_keywords", []))
+            if ov > max_overlap:
+                max_overlap = ov
+        novelty = 1.0 - max_overlap
+
+        reasons: List[str] = []
+        if gap_type == "theoretical_gap":
+            reasons.append("theoretical")
+        if polarity == "negative":
+            reasons.append("negative")
+        if novelty > NOVELTY_THRESHOLD:
+            reasons.append(f"high-novelty({novelty:.0%})")
+
+        if not reasons:
+            continue
+
+        results.append(BoldCapsule(
+            capsule_id=cap.get("capsule_id", ""),
+            gap_title=cap.get("action_gap_title", ""),
+            gap_type=gap_type,
+            polarity=polarity,
+            outcome_score=cap.get("outcome_success_score", 0.0),
+            novelty_score=round(novelty, 3),
+            trigger_keywords=keywords,
+            reason=", ".join(reasons),
+        ))
+
+    results.sort(key=lambda x: -x.novelty_score)
+    return results
+
+
+def render_html(capsules: Optional[List[BoldCapsule]] = None) -> str:
+    if capsules is None:
+        capsules = get_bold_capsules()
+
+    if not capsules:
+        return "<p>No bold hypotheses yet. Theoretical gaps and negative-polarity capsules will appear here.</p>"
+
+    lines = ['<div class="bold-vault">']
+    lines.append("<h3>🔴 Bold Hypothesis Vault <small style='color:#888'>(high-risk / high-reward gaps)</small></h3>")
+    lines.append(f"<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>{len(capsules)} bold capsules tracked.</p>")
+    lines.append("<div class='bold-grid'>")
+
+    for c in capsules:
+        title_short = c.gap_title[:70] if c.gap_title else "(no title)"
+        kw_str = ", ".join(c.trigger_keywords[:4])
+        lines.append(
+            f"<div class='bold-card'>"
+            f"<div class='bold-reason'>{c.reason}</div>"
+            f"<div class='bold-title' title='{c.gap_title}'>{title_short}</div>"
+            f"<div class='bold-meta'>"
+            f"<code>{c.gap_type}</code> · {c.polarity} · score={c.outcome_score:.2f} · novelty={c.novelty_score:.0%}"
+            f"</div>"
+            f"<div class='bold-kw'>{kw_str}</div>"
+            f"</div>"
+        )
+
+    lines.append("</div>")
+    lines.append("<style>")
+    lines.append(".bold-vault { font-family: Georgia, serif; }")
+    lines.append(".bold-card { border: 2px solid #C4706A; border-radius: 6px; padding: 12px 14px; margin-bottom: 10px; background: rgba(196,112,106,0.06); }")
+    lines.append(".bold-reason { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #C4706A; font-weight: 700; margin-bottom: 4px; }")
+    lines.append(".bold-title { font-size: 14px; font-weight: 600; color: #2a2a2a; margin-bottom: 6px; line-height: 1.4; }")
+    lines.append(".bold-meta { font-size: 11px; color: #7a7570; margin-bottom: 4px; }")
+    lines.append(".bold-kw { font-size: 11px; color: #A89E8C; font-style: italic; }")
+    lines.append("</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

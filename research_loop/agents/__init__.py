@@ -1,1 +1,20 @@
-IiIiUmVzZWFyY2ggU3F1YWQg4oCUIG11bHRpLWFnZW50IGNvb3JkaW5hdGlvbiBsYXllci4iIiIKCmZyb20gcmVzZWFyY2hfbG9vcC5hZ2VudHMuYmFzZSBpbXBvcnQgQmFzZUFnZW50LCBBZ2VudE1lc3NhZ2UsIEFnZW50U3RhdHVzLCBNZXNzYWdlQnVzCmZyb20gcmVzZWFyY2hfbG9vcC5hZ2VudHMuc2NvdXQgaW1wb3J0IFNjb3V0QWdlbnQKZnJvbSByZXNlYXJjaF9sb29wLmFnZW50cy5hbmFseXplciBpbXBvcnQgQW5hbHl6ZXJBZ2VudApmcm9tIHJlc2VhcmNoX2xvb3AuYWdlbnRzLmNpdGF0aW9uX2h1bnRlciBpbXBvcnQgQ2l0YXRpb25IdW50ZXJBZ2VudApmcm9tIHJlc2VhcmNoX2xvb3AuYWdlbnRzLmN1cmF0b3IgaW1wb3J0IEN1cmF0b3JBZ2VudApmcm9tIHJlc2VhcmNoX2xvb3AuYWdlbnRzLnNxdWFkIGltcG9ydCBTcXVhZENvb3JkaW5hdG9yCgpfX2FsbF9fID0gWwogICAgIkJhc2VBZ2VudCIsCiAgICAiQWdlbnRNZXNzYWdlIiwKICAgICJBZ2VudFN0YXR1cyIsCiAgICAiTWVzc2FnZUJ1cyIsCiAgICAiU2NvdXRBZ2VudCIsCiAgICAiQW5hbHl6ZXJBZ2VudCIsCiAgICAiQ2l0YXRpb25IdW50ZXJBZ2VudCIsCiAgICAiQ3VyYXRvckFnZW50IiwKICAgICJTcXVhZENvb3JkaW5hdG9yIiwKXQo=
+"""Research Squad — multi-agent coordination layer."""
+
+from research_loop.agents.base import BaseAgent, AgentMessage, AgentStatus, MessageBus
+from research_loop.agents.scout import ScoutAgent
+from research_loop.agents.analyzer import AnalyzerAgent
+from research_loop.agents.citation_hunter import CitationHunterAgent
+from research_loop.agents.curator import CuratorAgent
+from research_loop.agents.squad import SquadCoordinator
+
+__all__ = [
+    "BaseAgent",
+    "AgentMessage",
+    "AgentStatus",
+    "MessageBus",
+    "ScoutAgent",
+    "AnalyzerAgent",
+    "CitationHunterAgent",
+    "CuratorAgent",
+    "SquadCoordinator",
+]

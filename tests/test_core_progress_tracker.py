@@ -1,1 +1,78 @@
-IiIiVGVzdHMgZm9yIGNvcmUvcHJvZ3Jlc3NfdHJhY2tlci5weS4iIiIKCmltcG9ydCBzeXMKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCgpzeXMucGF0aC5pbnNlcnQoMCwgc3RyKFBhdGgoX19maWxlX18pLnBhcmVudC5wYXJlbnQpKQpmcm9tIGNvcmUucHJvZ3Jlc3NfdHJhY2tlciBpbXBvcnQgUHJvZ3Jlc3NUcmFja2VyLCBnZXRfdHJhY2tlcgoKCmNsYXNzIFRlc3RQcm9ncmVzc1RyYWNrZXI6CiAgICBkZWYgc2V0dXBfbWV0aG9kKHNlbGYpOgogICAgICAgIHNlbGYudHJhY2tlciA9IFByb2dyZXNzVHJhY2tlcigpCgogICAgZGVmIHRlc3RfYWRkX3Rhc2soc2VsZik6CiAgICAgICAgc2VsZi50cmFja2VyLmFkZF90YXNrKCJ0YXNrMSIsICJUZXN0IHRhc2siKQogICAgICAgIGFzc2VydCAidGFzazEiIGluIHNlbGYudHJhY2tlci50YXNrcwogICAgICAgIGFzc2VydCBzZWxmLnRyYWNrZXIudGFza3NbInRhc2sxIl1bImRlc2NyaXB0aW9uIl0gPT0gIlRlc3QgdGFzayIKICAgICAgICBhc3NlcnQgc2VsZi50cmFja2VyLnRhc2tzWyJ0YXNrMSJdWyJzdGF0dXMiXSA9PSAicGVuZGluZyIKCiAgICBkZWYgdGVzdF9jb21wbGV0ZV90YXNrKHNlbGYpOgogICAgICAgIHNlbGYudHJhY2tlci5hZGRfdGFzaygidGFzazEiLCAiVGVzdCB0YXNrIikKICAgICAgICBzZWxmLnRyYWNrZXIuY29tcGxldGVfdGFzaygidGFzazEiKQogICAgICAgIGFzc2VydCBzZWxmLnRyYWNrZXIudGFza3NbInRhc2sxIl1bInN0YXR1cyJdID09ICJjb21wbGV0ZWQiCiAgICAgICAgYXNzZXJ0IHNlbGYudHJhY2tlci50YXNrc1sidGFzazEiXVsiY29tcGxldGVkIl0gaXMgbm90IE5vbmUKCiAgICBkZWYgdGVzdF9jb21wbGV0ZV9ub25leGlzdGVudF90YXNrKHNlbGYpOgogICAgICAgIHNlbGYudHJhY2tlci5jb21wbGV0ZV90YXNrKCJub25leGlzdGVudCIpICAjIHNob3VsZCBub3QgcmFpc2UKICAgICAgICBhc3NlcnQgbGVuKHNlbGYudHJhY2tlci50YXNrcykgPT0gMAoKICAgIGRlZiB0ZXN0X2dldF9wcm9ncmVzc19lbXB0eShzZWxmKToKICAgICAgICBhc3NlcnQgc2VsZi50cmFja2VyLmdldF9wcm9ncmVzcygpID09IDAuMAoKICAgIGRlZiB0ZXN0X2dldF9wcm9ncmVzc19ub19jb21wbGV0ZWQoc2VsZik6CiAgICAgICAgc2VsZi50cmFja2VyLmFkZF90YXNrKCJ0YXNrMSIsICJ0MSIpCiAgICAgICAgc2VsZi50cmFja2VyLmFkZF90YXNrKCJ0YXNrMiIsICJ0MiIpCiAgICAgICAgYXNzZXJ0IHNlbGYudHJhY2tlci5nZXRfcHJvZ3Jlc3MoKSA9PSAwLjAKCiAgICBkZWYgdGVzdF9nZXRfcHJvZ3Jlc3NfcGFydGlhbChzZWxmKToKICAgICAgICBzZWxmLnRyYWNrZXIuYWRkX3Rhc2soInRhc2sxIiwgInQxIikKICAgICAgICBzZWxmLnRyYWNrZXIuYWRkX3Rhc2soInRhc2syIiwgInQyIikKICAgICAgICBzZWxmLnRyYWNrZXIuY29tcGxldGVfdGFzaygidGFzazEiKQogICAgICAgIGFzc2VydCBzZWxmLnRyYWNrZXIuZ2V0X3Byb2dyZXNzKCkgPT0gNTAuMAoKICAgIGRlZiB0ZXN0X2dldF9wcm9ncmVzc19hbGxfY29tcGxldGVkKHNlbGYpOgogICAgICAgIHNlbGYudHJhY2tlci5hZGRfdGFzaygidGFzazEiLCAidDEiKQogICAgICAgIHNlbGYudHJhY2tlci5hZGRfdGFzaygidGFzazIiLCAidDIiKQogICAgICAgIHNlbGYudHJhY2tlci5jb21wbGV0ZV90YXNrKCJ0YXNrMSIpCiAgICAgICAgc2VsZi50cmFja2VyLmNvbXBsZXRlX3Rhc2soInRhc2syIikKICAgICAgICBhc3NlcnQgc2VsZi50cmFja2VyLmdldF9wcm9ncmVzcygpID09IDEwMC4wCgogICAgZGVmIHRlc3RfdGFza190aW1lc3RhbXBzKHNlbGYpOgogICAgICAgIHNlbGYudHJhY2tlci5hZGRfdGFzaygidGFzazEiLCAidDEiKQogICAgICAgIGFzc2VydCAiY3JlYXRlZCIgaW4gc2VsZi50cmFja2VyLnRhc2tzWyJ0YXNrMSJdCiAgICAgICAgc2VsZi50cmFja2VyLmNvbXBsZXRlX3Rhc2soInRhc2sxIikKICAgICAgICBhc3NlcnQgImNvbXBsZXRlZCIgaW4gc2VsZi50cmFja2VyLnRhc2tzWyJ0YXNrMSJdCgoKY2xhc3MgVGVzdEdldFRyYWNrZXI6CiAgICBkZWYgc2V0dXBfbWV0aG9kKHNlbGYpOgogICAgICAgIGltcG9ydCBjb3JlLnByb2dyZXNzX3RyYWNrZXIgYXMgcHQKCiAgICAgICAgcHQuX3RyYWNrZXIgPSBOb25lCgogICAgZGVmIHRlYXJkb3duX21ldGhvZChzZWxmKToKICAgICAgICBpbXBvcnQgY29yZS5wcm9ncmVzc190cmFja2VyIGFzIHB0CgogICAgICAgIHB0Ll90cmFja2VyID0gTm9uZQoKICAgIGRlZiB0ZXN0X3NpbmdsZXRvbihzZWxmKToKICAgICAgICB0MSA9IGdldF90cmFja2VyKCkKICAgICAgICB0MiA9IGdldF90cmFja2VyKCkKICAgICAgICBhc3NlcnQgdDEgaXMgdDIKCiAgICBkZWYgdGVzdF9zaW5nbGV0b25fcGVyc2lzdHNfc3RhdGUoc2VsZik6CiAgICAgICAgdDEgPSBnZXRfdHJhY2tlcigpCiAgICAgICAgdDEuYWRkX3Rhc2soInRhc2sxIiwgInQxIikKICAgICAgICB0MiA9IGdldF90cmFja2VyKCkKICAgICAgICBhc3NlcnQgInRhc2sxIiBpbiB0Mi50YXNrcwo=
+"""Tests for core/progress_tracker.py."""
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from core.progress_tracker import ProgressTracker, get_tracker
+
+
+class TestProgressTracker:
+    def setup_method(self):
+        self.tracker = ProgressTracker()
+
+    def test_add_task(self):
+        self.tracker.add_task("task1", "Test task")
+        assert "task1" in self.tracker.tasks
+        assert self.tracker.tasks["task1"]["description"] == "Test task"
+        assert self.tracker.tasks["task1"]["status"] == "pending"
+
+    def test_complete_task(self):
+        self.tracker.add_task("task1", "Test task")
+        self.tracker.complete_task("task1")
+        assert self.tracker.tasks["task1"]["status"] == "completed"
+        assert self.tracker.tasks["task1"]["completed"] is not None
+
+    def test_complete_nonexistent_task(self):
+        self.tracker.complete_task("nonexistent")  # should not raise
+        assert len(self.tracker.tasks) == 0
+
+    def test_get_progress_empty(self):
+        assert self.tracker.get_progress() == 0.0
+
+    def test_get_progress_no_completed(self):
+        self.tracker.add_task("task1", "t1")
+        self.tracker.add_task("task2", "t2")
+        assert self.tracker.get_progress() == 0.0
+
+    def test_get_progress_partial(self):
+        self.tracker.add_task("task1", "t1")
+        self.tracker.add_task("task2", "t2")
+        self.tracker.complete_task("task1")
+        assert self.tracker.get_progress() == 50.0
+
+    def test_get_progress_all_completed(self):
+        self.tracker.add_task("task1", "t1")
+        self.tracker.add_task("task2", "t2")
+        self.tracker.complete_task("task1")
+        self.tracker.complete_task("task2")
+        assert self.tracker.get_progress() == 100.0
+
+    def test_task_timestamps(self):
+        self.tracker.add_task("task1", "t1")
+        assert "created" in self.tracker.tasks["task1"]
+        self.tracker.complete_task("task1")
+        assert "completed" in self.tracker.tasks["task1"]
+
+
+class TestGetTracker:
+    def setup_method(self):
+        import core.progress_tracker as pt
+
+        pt._tracker = None
+
+    def teardown_method(self):
+        import core.progress_tracker as pt
+
+        pt._tracker = None
+
+    def test_singleton(self):
+        t1 = get_tracker()
+        t2 = get_tracker()
+        assert t1 is t2
+
+    def test_singleton_persists_state(self):
+        t1 = get_tracker()
+        t1.add_task("task1", "t1")
+        t2 = get_tracker()
+        assert "task1" in t2.tasks

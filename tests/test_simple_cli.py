@@ -1,1 +1,102 @@
-IiIiVGVzdHMgZm9yIHNpbXBsZSBDTEkgZnVuY3Rpb25hbGl0eS4iIiIKCmZyb20gY29yZS5zaW1wbGVfY2xpIGltcG9ydCBTaW1wbGVDTEkKCgpkZWYgdGVzdF9zaW1wbGVfY2xpX2NyZWF0aW9uKCk6CiAgICAiIiJUZXN0IFNpbXBsZUNMSSBjcmVhdGlvbi4iIiIKICAgIGNsaSA9IFNpbXBsZUNMSSgpCiAgICBhc3NlcnQgY2xpIGlzIG5vdCBOb25lCiAgICBhc3NlcnQgY2xpLnBhcnNlciBpcyBub3QgTm9uZQoKCmRlZiB0ZXN0X3NpbXBsZV9jbGlfaGVscCgpOgogICAgIiIiVGVzdCBDTEkgaGVscCBkaXNwbGF5LiIiIgogICAgY2xpID0gU2ltcGxlQ0xJKCkKICAgICMgU2hvdWxkIG5vdCByYWlzZSBleGNlcHRpb24KICAgIGNsaS5fc2hvd19oZWxwKCkKCgpkZWYgdGVzdF9zaW1wbGVfY2xpX3N0YXR1cygpOgogICAgIiIiVGVzdCBzdGF0dXMgY29tbWFuZC4iIiIKICAgIGNsaSA9IFNpbXBsZUNMSSgpCiAgICAjIFNob3VsZCBub3QgcmFpc2UgZXhjZXB0aW9uIChtYXkgZmFpbCBpZiBEQiBub3QgaW5pdGlhbGl6ZWQpCiAgICB0cnk6CiAgICAgICAgY2xpLl9oYW5kbGVfc3RhdHVzKGNsaS5wYXJzZXIucGFyc2VfYXJncyhbXSkpCiAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgIHBhc3MgICMgRXhwZWN0ZWQgaWYgREIgbm90IGluaXRpYWxpemVkCgoKZGVmIHRlc3Rfc2ltcGxlX2NsaV9saXN0KCk6CiAgICAiIiJUZXN0IGxpc3QgY29tbWFuZC4iIiIKICAgIGNsaSA9IFNpbXBsZUNMSSgpCiAgICAjIFNob3VsZCBub3QgcmFpc2UgZXhjZXB0aW9uIChtYXkgZmFpbCBpZiBEQiBub3QgaW5pdGlhbGl6ZWQpCiAgICB0cnk6CiAgICAgICAgY2xpLl9oYW5kbGVfbGlzdChjbGkucGFyc2VyLnBhcnNlX2FyZ3MoW10pKQogICAgZXhjZXB0IEV4Y2VwdGlvbjoKICAgICAgICBwYXNzICAjIEV4cGVjdGVkIGlmIERCIG5vdCBpbml0aWFsaXplZAoKCmRlZiB0ZXN0X3NpbXBsZV9jbGlfc3RhdHMoKToKICAgICIiIlRlc3Qgc3RhdHMgY29tbWFuZC4iIiIKICAgIGNsaSA9IFNpbXBsZUNMSSgpCiAgICAjIFNob3VsZCBub3QgcmFpc2UgZXhjZXB0aW9uIChtYXkgZmFpbCBpZiBEQiBub3QgaW5pdGlhbGl6ZWQpCiAgICB0cnk6CiAgICAgICAgY2xpLl9oYW5kbGVfc3RhdHMoY2xpLnBhcnNlci5wYXJzZV9hcmdzKFtdKSkKICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgcGFzcyAgIyBFeHBlY3RlZCBpZiBEQiBub3QgaW5pdGlhbGl6ZWQKCgpkZWYgdGVzdF9zaW1wbGVfY2xpX3BhcnNlcigpOgogICAgIiIiVGVzdCBhcmd1bWVudCBwYXJzZXIuIiIiCiAgICBjbGkgPSBTaW1wbGVDTEkoKQoKICAgICMgVGVzdCBzZWFyY2ggY29tbWFuZAogICAgYXJncyA9IGNsaS5wYXJzZXIucGFyc2VfYXJncyhbInNlYXJjaCIsICJ0ZXN0Il0pCiAgICBhc3NlcnQgYXJncy5jb21tYW5kID09ICJzZWFyY2giCiAgICBhc3NlcnQgYXJncy5xdWVyeSA9PSAidGVzdCIKCiAgICAjIFRlc3QgaW1wb3J0IGNvbW1hbmQKICAgIGFyZ3MgPSBjbGkucGFyc2VyLnBhcnNlX2FyZ3MoWyJpbXBvcnQiLCAiMjMwMS4wMDEiXSkKICAgIGFzc2VydCBhcmdzLmNvbW1hbmQgPT0gImltcG9ydCIKICAgIGFzc2VydCBhcmdzLnBhcGVyX2lkID09ICIyMzAxLjAwMSIKCiAgICAjIFRlc3QgbGlzdCBjb21tYW5kCiAgICBhcmdzID0gY2xpLnBhcnNlci5wYXJzZV9hcmdzKFsibGlzdCIsICItbiIsICIxMCJdKQogICAgYXNzZXJ0IGFyZ3MuY29tbWFuZCA9PSAibGlzdCIKICAgIGFzc2VydCBhcmdzLmxpbWl0ID09IDEwCgoKZGVmIHRlc3Rfc2ltcGxlX2NsaV9jb21tYW5kcygpOgogICAgIiIiVGVzdCBhbGwgQ0xJIGNvbW1hbmRzIGFyZSByZWdpc3RlcmVkLiIiIgogICAgY2xpID0gU2ltcGxlQ0xJKCkKCiAgICAjIENoZWNrIGFsbCBjb21tYW5kcyBleGlzdAogICAgYXJncyA9IGNsaS5wYXJzZXIucGFyc2VfYXJncyhbInNlYXJjaCIsICJ0ZXN0Il0pCiAgICBhc3NlcnQgYXJncy5jb21tYW5kID09ICJzZWFyY2giCgogICAgYXJncyA9IGNsaS5wYXJzZXIucGFyc2VfYXJncyhbImltcG9ydCIsICJ0ZXN0Il0pCiAgICBhc3NlcnQgYXJncy5jb21tYW5kID09ICJpbXBvcnQiCgogICAgYXJncyA9IGNsaS5wYXJzZXIucGFyc2VfYXJncyhbImxpc3QiXSkKICAgIGFzc2VydCBhcmdzLmNvbW1hbmQgPT0gImxpc3QiCgogICAgYXJncyA9IGNsaS5wYXJzZXIucGFyc2VfYXJncyhbInN0YXR1cyJdKQogICAgYXNzZXJ0IGFyZ3MuY29tbWFuZCA9PSAic3RhdHVzIgoKICAgIGFyZ3MgPSBjbGkucGFyc2VyLnBhcnNlX2FyZ3MoWyJzdGF0cyJdKQogICAgYXNzZXJ0IGFyZ3MuY29tbWFuZCA9PSAic3RhdHMiCgogICAgYXJncyA9IGNsaS5wYXJzZXIucGFyc2VfYXJncyhbImV4cG9ydCIsICJqc29uIl0pCiAgICBhc3NlcnQgYXJncy5jb21tYW5kID09ICJleHBvcnQiCgogICAgYXJncyA9IGNsaS5wYXJzZXIucGFyc2VfYXJncyhbImhlbHAiXSkKICAgIGFzc2VydCBhcmdzLmNvbW1hbmQgPT0gImhlbHAiCgoKZGVmIHRlc3Rfc2ltcGxlX2NsaV9ydW5fbm9fYXJncygpOgogICAgIiIiVGVzdCBDTEkgcnVuIHdpdGggbm8gYXJndW1lbnRzLiIiIgogICAgY2xpID0gU2ltcGxlQ0xJKCkKICAgICMgU2hvdWxkIHByaW50IGhlbHAKICAgIHJlc3VsdCA9IGNsaS5ydW4oW10pCiAgICBhc3NlcnQgcmVzdWx0ID09IDAK
+"""Tests for simple CLI functionality."""
+
+from core.simple_cli import SimpleCLI
+
+
+def test_simple_cli_creation():
+    """Test SimpleCLI creation."""
+    cli = SimpleCLI()
+    assert cli is not None
+    assert cli.parser is not None
+
+
+def test_simple_cli_help():
+    """Test CLI help display."""
+    cli = SimpleCLI()
+    # Should not raise exception
+    cli._show_help()
+
+
+def test_simple_cli_status():
+    """Test status command."""
+    cli = SimpleCLI()
+    # Should not raise exception (may fail if DB not initialized)
+    try:
+        cli._handle_status(cli.parser.parse_args([]))
+    except Exception:
+        pass  # Expected if DB not initialized
+
+
+def test_simple_cli_list():
+    """Test list command."""
+    cli = SimpleCLI()
+    # Should not raise exception (may fail if DB not initialized)
+    try:
+        cli._handle_list(cli.parser.parse_args([]))
+    except Exception:
+        pass  # Expected if DB not initialized
+
+
+def test_simple_cli_stats():
+    """Test stats command."""
+    cli = SimpleCLI()
+    # Should not raise exception (may fail if DB not initialized)
+    try:
+        cli._handle_stats(cli.parser.parse_args([]))
+    except Exception:
+        pass  # Expected if DB not initialized
+
+
+def test_simple_cli_parser():
+    """Test argument parser."""
+    cli = SimpleCLI()
+
+    # Test search command
+    args = cli.parser.parse_args(["search", "test"])
+    assert args.command == "search"
+    assert args.query == "test"
+
+    # Test import command
+    args = cli.parser.parse_args(["import", "2301.001"])
+    assert args.command == "import"
+    assert args.paper_id == "2301.001"
+
+    # Test list command
+    args = cli.parser.parse_args(["list", "-n", "10"])
+    assert args.command == "list"
+    assert args.limit == 10
+
+
+def test_simple_cli_commands():
+    """Test all CLI commands are registered."""
+    cli = SimpleCLI()
+
+    # Check all commands exist
+    args = cli.parser.parse_args(["search", "test"])
+    assert args.command == "search"
+
+    args = cli.parser.parse_args(["import", "test"])
+    assert args.command == "import"
+
+    args = cli.parser.parse_args(["list"])
+    assert args.command == "list"
+
+    args = cli.parser.parse_args(["status"])
+    assert args.command == "status"
+
+    args = cli.parser.parse_args(["stats"])
+    assert args.command == "stats"
+
+    args = cli.parser.parse_args(["export", "json"])
+    assert args.command == "export"
+
+    args = cli.parser.parse_args(["help"])
+    assert args.command == "help"
+
+
+def test_simple_cli_run_no_args():
+    """Test CLI run with no arguments."""
+    cli = SimpleCLI()
+    # Should print help
+    result = cli.run([])
+    assert result == 0

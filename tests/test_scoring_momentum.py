@@ -1,1 +1,147 @@
-IiIiVGVzdHMgZm9yIHNjb3JpbmcvbW9tZW50dW0ucHkg4oCUIFJlc2VhcmNoTW9tZW50dW0gc2NvcmluZy4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBqc29uCgppbXBvcnQgcHl0ZXN0Cgpmcm9tIGtnLm1hbmFnZXIgaW1wb3J0IEtHTWFuYWdlcgpmcm9tIHNjb3JpbmcubW9tZW50dW0gaW1wb3J0IFJlc2VhcmNoTW9tZW50dW0KCgpAcHl0ZXN0LmZpeHR1cmUKZGVmIHJtKHRtcF9wYXRoKToKICAgIGRiID0gdG1wX3BhdGggLyAidGVzdF9rZy5kYiIKICAgIGtnID0gS0dNYW5hZ2VyKGRiX3BhdGg9c3RyKGRiKSkKICAgIHJtX29iaiA9IFJlc2VhcmNoTW9tZW50dW0oa2c9a2cpCiAgICBybV9vYmouX3Njb3Jlc19wYXRoID0gdG1wX3BhdGggLyAic2NvcmVzLmpzb24iCiAgICByZXR1cm4gcm1fb2JqCgoKQHB5dGVzdC5maXh0dXJlCmRlZiBybV9wb3B1bGF0ZWQocm0pOgogICAgIiIiS0cgd2l0aCB0d28gcGFwZXJzIHNoYXJpbmcgYSB0YWcsIG9uZSBjaXRpbmcgdGhlIG90aGVyLiIiIgogICAgcDEgPSBybS5rZy5hZGRfbm9kZSgiUGFwZXIiLCAicDEiLCAiUGFwZXIgMSIsIHllYXI9MjAyNCkKICAgIHAyID0gcm0ua2cuYWRkX25vZGUoIlBhcGVyIiwgInAyIiwgIlBhcGVyIDIiLCB5ZWFyPTIwMjMpCiAgICB0MSA9IHJtLmtnLmFkZF9ub2RlKCJUYWciLCAiTExNIiwgIkxMTSIpCiAgICBybS5rZy5hZGRfZWRnZShwMiwgcDEsICJjaXRlIikKICAgIHJtLmtnLmFkZF9lZGdlKHAxLCB0MSwgInNhbWVfdGFnIikKICAgIHJtLmtnLmFkZF9lZGdlKHAyLCB0MSwgInNhbWVfdGFnIikKICAgIHJldHVybiB7InAxIjogcDEsICJwMiI6IHAyLCAidDEiOiB0MSwgImtnIjogcm0ua2d9CgoKQHB5dGVzdC5maXh0dXJlCmRlZiByYWRhcl9maWxlKHRtcF9wYXRoLCBtb25rZXlwYXRjaCk6CiAgICAiIiJDcmVhdGUgYSBkYXRhLyBkaXJlY3Rvcnkgd2l0aCByYWRhci5qc29uIGZvciBfbG9hZF9yYWRhciB0ZXN0cy4iIiIKICAgIGRhdGFfZGlyID0gdG1wX3BhdGggLyAiZGF0YSIKICAgIGRhdGFfZGlyLm1rZGlyKCkKICAgIHJhZGFyID0gZGF0YV9kaXIgLyAicmFkYXIuanNvbiIKICAgIHJhZGFyLndyaXRlX3RleHQoanNvbi5kdW1wcyh7IkxMTSI6IHsic2NvcmUiOiA4MH19KSwgZW5jb2Rpbmc9InV0Zi04IikKICAgIG1vbmtleXBhdGNoLmNoZGlyKHRtcF9wYXRoKQoKCmNsYXNzIFRlc3RSZXNlYXJjaE1vbWVudHVtU2NvcmluZzoKICAgIGRlZiB0ZXN0X3Njb3JlX3BhcGVyX3JldHVybnNfemVyb19mb3JfdW5rbm93bihzZWxmLCBybSk6CiAgICAgICAgYXNzZXJ0IHJtLnNjb3JlX3BhcGVyKCJnaG9zdCIpID09IDAuMAoKICAgIGRlZiB0ZXN0X3Njb3JlX3BhcGVyX2lzX2NhY2hlZChzZWxmLCBybSwgcm1fcG9wdWxhdGVkKToKICAgICAgICBzY29yZTEgPSBybS5zY29yZV9wYXBlcigicDEiKQogICAgICAgIHNjb3JlMiA9IHJtLnNjb3JlX3BhcGVyKCJwMSIpCiAgICAgICAgYXNzZXJ0IHNjb3JlMSA9PSBzY29yZTIKICAgICAgICBhc3NlcnQgInAxIiBpbiBybS5fc2NvcmVzCgogICAgZGVmIHRlc3Rfc2NvcmVfcGFwZXJfdW5rbm93bl9ub2RlX3JldHVybnNfemVybyhzZWxmLCBybSk6CiAgICAgICAgYXNzZXJ0IHJtLnNjb3JlX3BhcGVyKCJub25leGlzdGVudCIpID09IDAuMAoKICAgIGRlZiB0ZXN0X2NvbXB1dGVfc2NvcmVfcmV0dXJuc19mbG9hdF9iZXR3ZWVuXzBfYW5kXzEwMChzZWxmLCBybSwgcm1fcG9wdWxhdGVkKToKICAgICAgICBub2RlID0gcm0ua2cuZ2V0X25vZGVfYnlfZW50aXR5KCJQYXBlciIsICJwMSIpCiAgICAgICAgc2NvcmUgPSBybS5fY29tcHV0ZV9zY29yZShub2RlKQogICAgICAgIGFzc2VydCAwLjAgPD0gc2NvcmUgPD0gMTAwLjAKCiAgICBkZWYgdGVzdF9jb21wdXRlX3Njb3JlX2NpdGVkX3BhcGVyX2hhc19jaXRhdGlvbl9jb21wb25lbnQoc2VsZiwgcm0sIHJtX3BvcHVsYXRlZCk6CiAgICAgICAgbm9kZSA9IHJtLmtnLmdldF9ub2RlX2J5X2VudGl0eSgiUGFwZXIiLCAicDEiKQogICAgICAgIHNjb3JlID0gcm0uX2NvbXB1dGVfc2NvcmUobm9kZSkKICAgICAgICBhc3NlcnQgc2NvcmUgPiAwLjAKCiAgICBkZWYgdGVzdF9jb21wdXRlX3Njb3JlX3VuY2l0ZWRfcGFwZXIoc2VsZiwgcm0sIHJtX3BvcHVsYXRlZCk6CiAgICAgICAgbm9kZSA9IHJtLmtnLmdldF9ub2RlX2J5X2VudGl0eSgiUGFwZXIiLCAicDIiKQogICAgICAgIHNjb3JlID0gcm0uX2NvbXB1dGVfc2NvcmUobm9kZSkKICAgICAgICBhc3NlcnQgMC4wIDw9IHNjb3JlIDw9IDEwMC4wCgogICAgZGVmIHRlc3RfcmF3X2NpdGVfc2NvcmUoc2VsZiwgcm0sIHJtX3BvcHVsYXRlZCk6CiAgICAgICAgbm9kZSA9IHJtLmtnLmdldF9ub2RlX2J5X2VudGl0eSgiUGFwZXIiLCAicDEiKQogICAgICAgIHNjb3JlID0gcm0uX3Jhd19jaXRlX3Njb3JlKG5vZGUpCiAgICAgICAgYXNzZXJ0IHNjb3JlID09IDEKCiAgICBkZWYgdGVzdF9yYXdfY2l0ZV9zY29yZV9ub25lX25vZGUoc2VsZiwgcm0pOgogICAgICAgIGFzc2VydCBybS5fcmF3X2NpdGVfc2NvcmUoTm9uZSkgPT0gMC4wCgoKY2xhc3MgVGVzdFJlc2VhcmNoTW9tZW50dW1UYWdTY29yaW5nOgogICAgZGVmIHRlc3Rfc2NvcmVfdGFnX3Vua25vd24oc2VsZiwgcm0pOgogICAgICAgIHJlc3VsdCA9IHJtLnNjb3JlX3RhZygiVW5rbm93blRhZyIpCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsicmF3X3Njb3JlIl0gPT0gMC4wCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsicGFwZXJzX2NvdW50Il0gPT0gMAogICAgICAgIGFzc2VydCByZXN1bHRbIm1vbWVudHVtX2xhYmVsIl0gPT0gIm5pY2hlIgoKICAgIGRlZiB0ZXN0X3Njb3JlX3RhZ193aXRoX3BhcGVycyhzZWxmLCBybSwgcm1fcG9wdWxhdGVkKToKICAgICAgICByZXN1bHQgPSBybS5zY29yZV90YWcoIkxMTSIpCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsicGFwZXJzX2NvdW50Il0gPT0gMgogICAgICAgIGFzc2VydCByZXN1bHRbInJhd19zY29yZSJdID49IDAuMAoKICAgIGRlZiB0ZXN0X3Njb3JlX3RhZ19oZWF0X3RyZW5kX3Jpc2luZyhzZWxmLCBybV9wb3B1bGF0ZWQsIHJhZGFyX2ZpbGUpOgogICAgICAgICIiIlRhZyB3aXRoIHJhZGFyIHNjb3JlID4gNzAgc2hvdWxkIGJlIGxhYmVsZWQgJ3Jpc2luZycvJ2hvdCcuIiIiCiAgICAgICAgaW1wb3J0IHNjb3JpbmcubW9tZW50dW0gYXMgbQoKICAgICAgICBvcmlnX2xvYWQgPSBtLlJlc2VhcmNoTW9tZW50dW0uX2xvYWRfcmFkYXIKCiAgICAgICAgZGVmIGZha2VfbG9hZChzZWxmKToKICAgICAgICAgICAgcmV0dXJuIHsiTExNIjogeyJzY29yZSI6IDgwfX0KCiAgICAgICAgbS5SZXNlYXJjaE1vbWVudHVtLl9sb2FkX3JhZGFyID0gZmFrZV9sb2FkCiAgICAgICAgdHJ5OgogICAgICAgICAgICBybSA9IFJlc2VhcmNoTW9tZW50dW0oa2c9cm1fcG9wdWxhdGVkWyJrZyJdKQogICAgICAgICAgICByZXN1bHQgPSBybS5zY29yZV90YWcoIkxMTSIpCiAgICAgICAgICAgIGFzc2VydCByZXN1bHRbImhlYXRfdHJlbmQiXSA9PSAicmlzaW5nIgogICAgICAgICAgICBhc3NlcnQgcmVzdWx0WyJtb21lbnR1bV9sYWJlbCJdID09ICJob3QiCiAgICAgICAgZmluYWxseToKICAgICAgICAgICAgbS5SZXNlYXJjaE1vbWVudHVtLl9sb2FkX3JhZGFyID0gb3JpZ19sb2FkCgogICAgZGVmIHRlc3Rfc2NvcmVfdGFnX2hlYXRfdHJlbmRfdW5rbm93bl9mb3Jfbm9faGlzdG9yeShzZWxmLCBybSk6CiAgICAgICAgcmVzdWx0ID0gcm0uc2NvcmVfdGFnKCJHaG9zdFRhZyIpCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsiaGVhdF90cmVuZCJdID09ICJ1bmtub3duIgogICAgICAgIGFzc2VydCByZXN1bHRbIm1vbWVudHVtX2xhYmVsIl0gPT0gIm5pY2hlIgoKCmNsYXNzIFRlc3RSZXNlYXJjaE1vbWVudHVtTGVhZGVyYm9hcmQ6CiAgICBkZWYgdGVzdF9nZXRfdG9wX3BhcGVycyhzZWxmLCBybSwgcm1fcG9wdWxhdGVkKToKICAgICAgICB0b3AgPSBybS5nZXRfdG9wX3BhcGVycyh0b3Bfbj01KQogICAgICAgIGFzc2VydCBpc2luc3RhbmNlKHRvcCwgbGlzdCkKICAgICAgICBhc3NlcnQgYWxsKGlzaW5zdGFuY2UoeCwgdHVwbGUpIGZvciB4IGluIHRvcCkKICAgICAgICBhc3NlcnQgbGVuKHRvcCkgPT0gMgoKICAgIGRlZiB0ZXN0X2dldF90b3BfcGFwZXJzX2ZpbHRlcmVkX2J5X3RhZyhzZWxmLCBybSwgcm1fcG9wdWxhdGVkKToKICAgICAgICB0b3AgPSBybS5nZXRfdG9wX3BhcGVycyh0YWc9IkxMTSIsIHRvcF9uPTUpCiAgICAgICAgYXNzZXJ0IGxlbih0b3ApID09IDIKCiAgICBkZWYgdGVzdF9nZXRfdGFnX2xlYWRlcmJvYXJkKHNlbGYsIHJtLCBybV9wb3B1bGF0ZWQpOgogICAgICAgIGxiID0gcm0uZ2V0X3RhZ19sZWFkZXJib2FyZCgpCiAgICAgICAgYXNzZXJ0IGlzaW5zdGFuY2UobGIsIGxpc3QpCiAgICAgICAgYXNzZXJ0IGxlbihsYikgPT0gMQoKCmNsYXNzIFRlc3RSZXNlYXJjaE1vbWVudHVtUmVmcmVzaDoKICAgIGRlZiB0ZXN0X3JlZnJlc2hfYWxsX2NsZWFyc19hbmRfcmVjb21wdXRlcyhzZWxmLCBybSwgcm1fcG9wdWxhdGVkKToKICAgICAgICBybS5fc2NvcmVzLmNsZWFyKCkKICAgICAgICBybS5yZWZyZXNoX2FsbCgpCiAgICAgICAgYXNzZXJ0ICJwMSIgaW4gcm0uX3Njb3JlcwogICAgICAgIGFzc2VydCAicDIiIGluIHJtLl9zY29yZXMKCiAgICBkZWYgdGVzdF9zYXZlX2FuZF9sb2FkX3Njb3JlcyhzZWxmLCBybSwgcm1fcG9wdWxhdGVkKToKICAgICAgICBybS5yZWZyZXNoX2FsbCgpICAjIHBvcHVsYXRlIF9zY29yZXMgYmVmb3JlIHNhdmluZwogICAgICAgIHJtLnNhdmVfc2NvcmVzKCkKICAgICAgICBybTIgPSBSZXNlYXJjaE1vbWVudHVtKGtnPXJtLmtnKQogICAgICAgIHJtMi5fc2NvcmVzX3BhdGggPSBybS5fc2NvcmVzX3BhdGgKICAgICAgICBybTIuX3Njb3JlcyA9IHJtMi5fbG9hZF9zY29yZXMoKSAgIyByZS1sb2FkIGZyb20gdGhlIHNhdmVkIHBhdGgKICAgICAgICBhc3NlcnQgInAxIiBpbiBybTIuX3Njb3Jlcwo=
+"""Tests for scoring/momentum.py — ResearchMomentum scoring."""
+
+from __future__ import annotations
+
+import json
+
+import pytest
+
+from kg.manager import KGManager
+from scoring.momentum import ResearchMomentum
+
+
+@pytest.fixture
+def rm(tmp_path):
+    db = tmp_path / "test_kg.db"
+    kg = KGManager(db_path=str(db))
+    rm_obj = ResearchMomentum(kg=kg)
+    rm_obj._scores_path = tmp_path / "scores.json"
+    return rm_obj
+
+
+@pytest.fixture
+def rm_populated(rm):
+    """KG with two papers sharing a tag, one citing the other."""
+    p1 = rm.kg.add_node("Paper", "p1", "Paper 1", year=2024)
+    p2 = rm.kg.add_node("Paper", "p2", "Paper 2", year=2023)
+    t1 = rm.kg.add_node("Tag", "LLM", "LLM")
+    rm.kg.add_edge(p2, p1, "cite")
+    rm.kg.add_edge(p1, t1, "same_tag")
+    rm.kg.add_edge(p2, t1, "same_tag")
+    return {"p1": p1, "p2": p2, "t1": t1, "kg": rm.kg}
+
+
+@pytest.fixture
+def radar_file(tmp_path, monkeypatch):
+    """Create a data/ directory with radar.json for _load_radar tests."""
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    radar = data_dir / "radar.json"
+    radar.write_text(json.dumps({"LLM": {"score": 80}}), encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+
+
+class TestResearchMomentumScoring:
+    def test_score_paper_returns_zero_for_unknown(self, rm):
+        assert rm.score_paper("ghost") == 0.0
+
+    def test_score_paper_is_cached(self, rm, rm_populated):
+        score1 = rm.score_paper("p1")
+        score2 = rm.score_paper("p1")
+        assert score1 == score2
+        assert "p1" in rm._scores
+
+    def test_score_paper_unknown_node_returns_zero(self, rm):
+        assert rm.score_paper("nonexistent") == 0.0
+
+    def test_compute_score_returns_float_between_0_and_100(self, rm, rm_populated):
+        node = rm.kg.get_node_by_entity("Paper", "p1")
+        score = rm._compute_score(node)
+        assert 0.0 <= score <= 100.0
+
+    def test_compute_score_cited_paper_has_citation_component(self, rm, rm_populated):
+        node = rm.kg.get_node_by_entity("Paper", "p1")
+        score = rm._compute_score(node)
+        assert score > 0.0
+
+    def test_compute_score_uncited_paper(self, rm, rm_populated):
+        node = rm.kg.get_node_by_entity("Paper", "p2")
+        score = rm._compute_score(node)
+        assert 0.0 <= score <= 100.0
+
+    def test_raw_cite_score(self, rm, rm_populated):
+        node = rm.kg.get_node_by_entity("Paper", "p1")
+        score = rm._raw_cite_score(node)
+        assert score == 1
+
+    def test_raw_cite_score_none_node(self, rm):
+        assert rm._raw_cite_score(None) == 0.0
+
+
+class TestResearchMomentumTagScoring:
+    def test_score_tag_unknown(self, rm):
+        result = rm.score_tag("UnknownTag")
+        assert result["raw_score"] == 0.0
+        assert result["papers_count"] == 0
+        assert result["momentum_label"] == "niche"
+
+    def test_score_tag_with_papers(self, rm, rm_populated):
+        result = rm.score_tag("LLM")
+        assert result["papers_count"] == 2
+        assert result["raw_score"] >= 0.0
+
+    def test_score_tag_heat_trend_rising(self, rm_populated, radar_file):
+        """Tag with radar score > 70 should be labeled 'rising'/'hot'."""
+        import scoring.momentum as m
+
+        orig_load = m.ResearchMomentum._load_radar
+
+        def fake_load(self):
+            return {"LLM": {"score": 80}}
+
+        m.ResearchMomentum._load_radar = fake_load
+        try:
+            rm = ResearchMomentum(kg=rm_populated["kg"])
+            result = rm.score_tag("LLM")
+            assert result["heat_trend"] == "rising"
+            assert result["momentum_label"] == "hot"
+        finally:
+            m.ResearchMomentum._load_radar = orig_load
+
+    def test_score_tag_heat_trend_unknown_for_no_history(self, rm):
+        result = rm.score_tag("GhostTag")
+        assert result["heat_trend"] == "unknown"
+        assert result["momentum_label"] == "niche"
+
+
+class TestResearchMomentumLeaderboard:
+    def test_get_top_papers(self, rm, rm_populated):
+        top = rm.get_top_papers(top_n=5)
+        assert isinstance(top, list)
+        assert all(isinstance(x, tuple) for x in top)
+        assert len(top) == 2
+
+    def test_get_top_papers_filtered_by_tag(self, rm, rm_populated):
+        top = rm.get_top_papers(tag="LLM", top_n=5)
+        assert len(top) == 2
+
+    def test_get_tag_leaderboard(self, rm, rm_populated):
+        lb = rm.get_tag_leaderboard()
+        assert isinstance(lb, list)
+        assert len(lb) == 1
+
+
+class TestResearchMomentumRefresh:
+    def test_refresh_all_clears_and_recomputes(self, rm, rm_populated):
+        rm._scores.clear()
+        rm.refresh_all()
+        assert "p1" in rm._scores
+        assert "p2" in rm._scores
+
+    def test_save_and_load_scores(self, rm, rm_populated):
+        rm.refresh_all()  # populate _scores before saving
+        rm.save_scores()
+        rm2 = ResearchMomentum(kg=rm.kg)
+        rm2._scores_path = rm._scores_path
+        rm2._scores = rm2._load_scores()  # re-load from the saved path
+        assert "p1" in rm2._scores

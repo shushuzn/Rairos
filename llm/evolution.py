@@ -1,1 +1,355 @@
-IiIiCkV2b2x1dGlvbiBNZW1vcnk6IFVzZXIgRmVlZGJhY2sgJiBQYXR0ZXJuIExlYXJuaW5nCgrorrDlvZXnlKjmiLflj43ppojlkozlrabkuaDmqKHlvI/vvIzkuLrns7vnu5/oh6rov5vljJbmj5DkvpvmlbDmja7ln7rnoYDjgIIKIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQganNvbgppbXBvcnQgdGltZQpmcm9tIGRhdGFjbGFzc2VzIGltcG9ydCBkYXRhY2xhc3MsIGFzZGljdApmcm9tIGRhdGV0aW1lIGltcG9ydCBkYXRldGltZQpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKZnJvbSB0eXBpbmcgaW1wb3J0IE9wdGlvbmFsLCBMaXN0LCBEaWN0LCBBbnksIGNhc3QKZnJvbSBlbnVtIGltcG9ydCBFbnVtCgoKY2xhc3MgRmVlZGJhY2tUeXBlKEVudW0pOgogICAgIiIi5Y+N6aaI57G75Z6LLiIiIgoKICAgIFBPU0lUSVZFID0gInBvc2l0aXZlIiAgIyDnlKjmiLfmu6HmhI8KICAgIE5FR0FUSVZFID0gIm5lZ2F0aXZlIiAgIyDnlKjmiLfkuI3mu6HmhI8KICAgIE5FVVRSQUwgPSAibmV1dHJhbCIgICMg5Lit5oCnCgoKY2xhc3MgU2lnbmFsVHlwZShFbnVtKToKICAgICIiIuS/oeWPt+exu+Weiy4iIiIKCiAgICBDSEFUX1NVQ0NFU1MgPSAiY2hhdF9zdWNjZXNzIgogICAgQ0hBVF9GQUlMVVJFID0gImNoYXRfZmFpbHVyZSIKICAgIFJFVFJJRVZBTF9ISVQgPSAicmV0cmlldmFsX2hpdCIKICAgIFJFVFJJRVZBTF9NSVNTID0gInJldHJpZXZhbF9taXNzIgogICAgU0xJREVfUVVBTElUWSA9ICJzbGlkZV9xdWFsaXR5IgogICAgU0VBUkNIX1NVQ0NFU1MgPSAic2VhcmNoX3N1Y2Nlc3MiCgoKQGRhdGFjbGFzcwpjbGFzcyBGZWVkYmFjazoKICAgICIiIueUqOaIt+WPjemmiOiusOW9lS4iIiIKCiAgICBpZDogc3RyCiAgICB0eXBlOiBzdHIgICMgRmVlZGJhY2tUeXBlLnZhbHVlCiAgICBjb21tYW5kOiBzdHIgICMgY2hhdCwgc2xpZGVzLCBzZWFyY2gKICAgIHF1ZXJ5OiBzdHIKICAgIHBhcGVyX2lkczogTGlzdFtzdHJdCiAgICBvdXRjb21lOiBzdHIgICMgc3VjY2VzcywgcGFydGlhbCwgZmFpbHVyZQogICAgc2NvcmU6IGZsb2F0ICAjIDAtMSDnva7kv6HluqYKICAgIG5vdGU6IHN0ciA9ICIiICAjIOeUqOaIt+Wkh+azqAogICAgdGltZXN0YW1wOiBzdHIgPSAiIgoKICAgIGRlZiBfX3Bvc3RfaW5pdF9fKHNlbGYpOgogICAgICAgIGlmIG5vdCBzZWxmLnRpbWVzdGFtcDoKICAgICAgICAgICAgc2VsZi50aW1lc3RhbXAgPSBkYXRldGltZS5ub3coKS5pc29mb3JtYXQoKQogICAgICAgIGlmIG5vdCBzZWxmLmlkOgogICAgICAgICAgICBzZWxmLmlkID0gZiJmYl97aW50KHRpbWUudGltZSgpICogMTAwMCl9IgoKCkBkYXRhY2xhc3MKY2xhc3MgRXZvbHV0aW9uRXZlbnQ6CiAgICAiIiLov5vljJbkuovku7borrDlvZUuIiIiCgogICAgaWQ6IHN0cgogICAgc2lnbmFsX3R5cGU6IHN0ciAgIyBTaWduYWxUeXBlLnZhbHVlCiAgICB0cmlnZ2VyOiBEaWN0W3N0ciwgQW55XSAgIyDop6blj5HmnaHku7YKICAgIGFjdGlvbjogc3RyICAjIOmHh+WPlueahOihjOWKqAogICAgb3V0Y29tZTogc3RyICAjIOe7k+aenAogICAgc2NvcmU6IGZsb2F0ICAjIOivhOWIhiAwLTEKICAgIGdlbmVzX2FwcGxpZWQ6IE9wdGlvbmFsW0xpc3Rbc3RyXV0gPSBOb25lICAjIOW6lOeUqOeahOWfuuWboAogICAgdGltZXN0YW1wOiBzdHIgPSAiIgoKICAgIGRlZiBfX3Bvc3RfaW5pdF9fKHNlbGYpOgogICAgICAgIGlmIG5vdCBzZWxmLnRpbWVzdGFtcDoKICAgICAgICAgICAgc2VsZi50aW1lc3RhbXAgPSBkYXRldGltZS5ub3coKS5pc29mb3JtYXQoKQogICAgICAgIGlmIG5vdCBzZWxmLmlkOgogICAgICAgICAgICBzZWxmLmlkID0gZiJldl97aW50KHRpbWUudGltZSgpICogMTAwMCl9IgogICAgICAgIGlmIHNlbGYuZ2VuZXNfYXBwbGllZCBpcyBOb25lOgogICAgICAgICAgICBzZWxmLmdlbmVzX2FwcGxpZWQgPSBbXQoKCkBkYXRhY2xhc3MKY2xhc3MgTGVhcm5lZFBhdHRlcm46CiAgICAiIiLlrabliLDnmoTmqKHlvI8uIiIiCgogICAgbmFtZTogc3RyCiAgICBzaWduYWxfdHlwZTogc3RyCiAgICB0cmlnZ2VyX2NvbmRpdGlvbnM6IERpY3Rbc3RyLCBBbnldCiAgICBzdWNjZXNzX2NvdW50OiBpbnQgPSAwCiAgICBmYWlsdXJlX2NvdW50OiBpbnQgPSAwCiAgICBsYXN0X3VzZWQ6IHN0ciA9ICIiCiAgICBlZmZlY3RpdmVuZXNzOiBmbG9hdCA9IDAuMCAgIyDmiJDlip/njocKCiAgICBAcHJvcGVydHkKICAgIGRlZiB0b3RhbF9hdHRlbXB0cyhzZWxmKSAtPiBpbnQ6CiAgICAgICAgcmV0dXJuIHNlbGYuc3VjY2Vzc19jb3VudCArIHNlbGYuZmFpbHVyZV9jb3VudAoKICAgIEBwcm9wZXJ0eQogICAgZGVmIGlzX3JlbGlhYmxlKHNlbGYpIC0+IGJvb2w6CiAgICAgICAgcmV0dXJuIHNlbGYudG90YWxfYXR0ZW1wdHMgPj0gMyBhbmQgc2VsZi5lZmZlY3RpdmVuZXNzID49IDAuNwoKCmNsYXNzIEV2b2x1dGlvbk1lbW9yeToKICAgICIiIkV2b2x1dGlvbiBNZW1vcnkgU3RvcmUg4oCUIOWtmOWCqOWSjOeuoeeQhui/m+WMluaVsOaNri4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZiwgbWVtb3J5X2RpcjogT3B0aW9uYWxbUGF0aF0gPSBOb25lKToKICAgICAgICBpZiBtZW1vcnlfZGlyIGlzIE5vbmU6CiAgICAgICAgICAgIG1lbW9yeV9kaXIgPSBQYXRoKCJtZW1vcnkvZXZvbHV0aW9uIikKICAgICAgICBzZWxmLm1lbW9yeV9kaXIgPSBQYXRoKG1lbW9yeV9kaXIpCiAgICAgICAgc2VsZi5tZW1vcnlfZGlyLm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKCiAgICAgICAgc2VsZi5mZWVkYmFja19maWxlID0gc2VsZi5tZW1vcnlfZGlyIC8gImZlZWRiYWNrLmpzb25sIgogICAgICAgIHNlbGYuZXZlbnRzX2ZpbGUgPSBzZWxmLm1lbW9yeV9kaXIgLyAiZXZvbHV0aW9uX2V2ZW50cy5qc29ubCIKICAgICAgICBzZWxmLnBhdHRlcm5zX2ZpbGUgPSBzZWxmLm1lbW9yeV9kaXIgLyAibGVhcm5lZF9wYXR0ZXJucy5qc29uIgoKICAgICAgICAjIOehruS/neaWh+S7tuWtmOWcqAogICAgICAgIGZvciBmIGluIFtzZWxmLmZlZWRiYWNrX2ZpbGUsIHNlbGYuZXZlbnRzX2ZpbGVdOgogICAgICAgICAgICBpZiBub3QgZi5leGlzdHMoKToKICAgICAgICAgICAgICAgIGYud3JpdGVfdGV4dCgiIiwgZW5jb2Rpbmc9InV0Zi04IikKICAgICAgICBpZiBub3Qgc2VsZi5wYXR0ZXJuc19maWxlLmV4aXN0cygpOgogICAgICAgICAgICBzZWxmLl9zYXZlX3BhdHRlcm5zKHt9KQoKICAgICMgPT09IEZlZWRiYWNrIE9wZXJhdGlvbnMgPT09CgogICAgZGVmIGFkZF9mZWVkYmFjayhzZWxmLCBmZWVkYmFjazogRmVlZGJhY2spIC0+IE5vbmU6CiAgICAgICAgIiIi6K6w5b2V55So5oi35Y+N6aaILiIiIgogICAgICAgIHdpdGggb3BlbihzZWxmLmZlZWRiYWNrX2ZpbGUsICJhIiwgZW5jb2Rpbmc9InV0Zi04IikgYXMgZjoKICAgICAgICAgICAgZi53cml0ZShqc29uLmR1bXBzKGFzZGljdChmZWVkYmFjayksIGVuc3VyZV9hc2NpaT1GYWxzZSkgKyAiXG4iKQoKICAgIGRlZiByZWNvcmRfY2hhdF9mZWVkYmFjaygKICAgICAgICBzZWxmLAogICAgICAgIHF1ZXJ5OiBzdHIsCiAgICAgICAgcGFwZXJfaWRzOiBMaXN0W3N0cl0sCiAgICAgICAgaXNfcG9zaXRpdmU6IGJvb2wsCiAgICAgICAgb3V0Y29tZTogc3RyID0gInN1Y2Nlc3MiLAogICAgICAgIHNjb3JlOiBmbG9hdCA9IDAuOCwKICAgICAgICBub3RlOiBzdHIgPSAiIiwKICAgICkgLT4gTm9uZToKICAgICAgICAiIiLlv6vmjbfmlrnms5XvvJrorrDlvZXogYrlpKnlj43ppoguIiIiCiAgICAgICAgZmIgPSBGZWVkYmFjaygKICAgICAgICAgICAgaWQ9ZiJmYl97aW50KHRpbWUudGltZSgpICogMTAwMCl9IiwKICAgICAgICAgICAgdHlwZT1GZWVkYmFja1R5cGUuUE9TSVRJVkUudmFsdWUgaWYgaXNfcG9zaXRpdmUgZWxzZSBGZWVkYmFja1R5cGUuTkVHQVRJVkUudmFsdWUsCiAgICAgICAgICAgIGNvbW1hbmQ9ImNoYXQiLAogICAgICAgICAgICBxdWVyeT1xdWVyeSwKICAgICAgICAgICAgcGFwZXJfaWRzPXBhcGVyX2lkcywKICAgICAgICAgICAgb3V0Y29tZT1vdXRjb21lLAogICAgICAgICAgICBzY29yZT1zY29yZSwKICAgICAgICAgICAgbm90ZT1ub3RlLAogICAgICAgICkKICAgICAgICBzZWxmLmFkZF9mZWVkYmFjayhmYikKCiAgICAgICAgIyDlkIzmraXliJvlu7ogRXZvbHV0aW9uIEV2ZW50CiAgICAgICAgc2lnbmFsID0gU2lnbmFsVHlwZS5DSEFUX1NVQ0NFU1MgaWYgaXNfcG9zaXRpdmUgZWxzZSBTaWduYWxUeXBlLkNIQVRfRkFJTFVSRQogICAgICAgIHNlbGYucmVjb3JkX2V2b2x1dGlvbl9ldmVudCgKICAgICAgICAgICAgc2lnbmFsX3R5cGU9c2lnbmFsLnZhbHVlLAogICAgICAgICAgICB0cmlnZ2VyPXsicXVlcnkiOiBxdWVyeSwgInBhcGVycyI6IHBhcGVyX2lkc30sCiAgICAgICAgICAgIGFjdGlvbj0iY2hhdF9yZXNwb25zZSIsCiAgICAgICAgICAgIG91dGNvbWU9b3V0Y29tZSwKICAgICAgICAgICAgc2NvcmU9c2NvcmUsCiAgICAgICAgKQoKICAgICMgPT09IFBhc3NpdmUgRmVlZGJhY2sgSW5mZXJlbmNlID09PQoKICAgIGRlZiBpbmZlcl9wYXNzaXZlX2ZlZWRiYWNrKAogICAgICAgIHNlbGYsCiAgICAgICAgcXVlcnk6IHN0ciwKICAgICAgICBwYXBlcl9pZHM6IExpc3Rbc3RyXSwKICAgICAgICB1c2VyX2FjdGlvbjogc3RyLAogICAgKSAtPiBOb25lOgogICAgICAgICIiIuagueaNrueUqOaIt+ihjOS4uuaZuuiDveaOqOaWreWPjemmiO+8jOaXoOmcgOaYvuW8j+ivoumXri4KCiAgICAgICAgQXJnczoKICAgICAgICAgICAgcXVlcnk6IOeUqOaIt+eahOmXrumimAogICAgICAgICAgICBwYXBlcl9pZHM6IOS9v+eUqOeahOiuuuaWhyBJRAogICAgICAgICAgICB1c2VyX2FjdGlvbjog55So5oi36KGM5Li677yaCiAgICAgICAgICAgICAgICAtICJjb250aW51ZWQiOiDnu6fnu63ov73pl67miJbmn6XnnIvlvJXnlKgg4oaSIOato+mdogogICAgICAgICAgICAgICAgLSAiY29waWVkIjog5aSN5Yi25LqG5Zue562UIOKGkiDmraPpnaIKICAgICAgICAgICAgICAgIC0gImV4aXRlZCI6IOebtOaOpemAgOWHuiDihpIg5Lit5oCnCiAgICAgICAgICAgICAgICAtICJkaXNtaXNzZWQiOiDot7Pov4cv5b+955WlIOKGkiDkuK3mgKcKICAgICAgICAgICAgICAgIC0gInJlcGVhdGVkIjog6YeN5aSN6Zeu57G75Ly86Zeu6aKYIOKGkiDkuK3mgKcKICAgICAgICAiIiIKICAgICAgICBhY3Rpb25fc2lnbmFscyA9IHsKICAgICAgICAgICAgImNvbnRpbnVlZCI6IChUcnVlLCAwLjcsICLnlKjmiLfnu6fnu63ov73pl64iKSwKICAgICAgICAgICAgImNvcGllZCI6IChUcnVlLCAwLjksICLnlKjmiLflpI3liLbkuoblm57nrZQiKSwKICAgICAgICAgICAgImV4aXRlZCI6IChOb25lLCAwLjUsICLnlKjmiLfpgIDlh7rvvIzmnKrmmI7noa7lj43ppogiKSwKICAgICAgICAgICAgImRpc21pc3NlZCI6IChOb25lLCAwLjUsICLnlKjmiLfot7Pov4flj43ppogiKSwKICAgICAgICAgICAgInJlcGVhdGVkIjogKE5vbmUsIDAuNCwgIumHjeWkjemXrumimO+8jOWPr+iDveWbnuetlOS4jeWkn+WlvSIpLAogICAgICAgIH0KCiAgICAgICAgaWYgdXNlcl9hY3Rpb24gbm90IGluIGFjdGlvbl9zaWduYWxzOgogICAgICAgICAgICByZXR1cm4KCiAgICAgICAgaXNfcG9zaXRpdmUsIGluZmVycmVkX3Njb3JlLCByZWFzb24gPSBhY3Rpb25fc2lnbmFsc1t1c2VyX2FjdGlvbl0KCiAgICAgICAgaWYgaXNfcG9zaXRpdmUgaXMgTm9uZToKICAgICAgICAgICAgIyDkuK3mgKfkv6Hlj7fvvJrorrDlvZXkvYbkuI3orqHlhaXmraPpnaIv6LSf6Z2iCiAgICAgICAgICAgIGZiID0gRmVlZGJhY2soCiAgICAgICAgICAgICAgICBpZD1mImZiX3tpbnQodGltZS50aW1lKCkgKiAxMDAwKX0iLAogICAgICAgICAgICAgICAgdHlwZT1GZWVkYmFja1R5cGUuTkVVVFJBTC52YWx1ZSwKICAgICAgICAgICAgICAgIGNvbW1hbmQ9ImNoYXQiLAogICAgICAgICAgICAgICAgcXVlcnk9cXVlcnksCiAgICAgICAgICAgICAgICBwYXBlcl9pZHM9cGFwZXJfaWRzLAogICAgICAgICAgICAgICAgb3V0Y29tZT0ibmV1dHJhbCIsCiAgICAgICAgICAgICAgICBzY29yZT1pbmZlcnJlZF9zY29yZSwKICAgICAgICAgICAgICAgIG5vdGU9ZiJb6KKr5YqoXSB7cmVhc29ufSIsCiAgICAgICAgICAgICkKICAgICAgICAgICAgc2VsZi5hZGRfZmVlZGJhY2soZmIpCiAgICAgICAgZWxzZToKICAgICAgICAgICAgIyDmraPpnaLkv6Hlj7cKICAgICAgICAgICAgc2VsZi5yZWNvcmRfY2hhdF9mZWVkYmFjaygKICAgICAgICAgICAgICAgIHF1ZXJ5PXF1ZXJ5LAogICAgICAgICAgICAgICAgcGFwZXJfaWRzPXBhcGVyX2lkcywKICAgICAgICAgICAgICAgIGlzX3Bvc2l0aXZlPWlzX3Bvc2l0aXZlLAogICAgICAgICAgICAgICAgb3V0Y29tZT0ic3VjY2VzcyIsCiAgICAgICAgICAgICAgICBzY29yZT1pbmZlcnJlZF9zY29yZSwKICAgICAgICAgICAgICAgIG5vdGU9ZiJb6KKr5YqoXSB7cmVhc29ufSIsCiAgICAgICAgICAgICkKCiAgICAjID09PSBFdm9sdXRpb24gRXZlbnRzID09PQoKICAgIGRlZiByZWNvcmRfZXZvbHV0aW9uX2V2ZW50KAogICAgICAgIHNlbGYsCiAgICAgICAgc2lnbmFsX3R5cGU6IHN0ciwKICAgICAgICB0cmlnZ2VyOiBEaWN0W3N0ciwgQW55XSwKICAgICAgICBhY3Rpb246IHN0ciwKICAgICAgICBvdXRjb21lOiBzdHIsCiAgICAgICAgc2NvcmU6IGZsb2F0LAogICAgICAgIGdlbmVzX2FwcGxpZWQ6IE9wdGlvbmFsW0xpc3Rbc3RyXV0gPSBOb25lLAogICAgKSAtPiBOb25lOgogICAgICAgICIiIuiusOW9lei/m+WMluS6i+S7ti4iIiIKICAgICAgICBldmVudCA9IEV2b2x1dGlvbkV2ZW50KAogICAgICAgICAgICBpZD1mImV2X3tpbnQodGltZS50aW1lKCkgKiAxMDAwKX0iLAogICAgICAgICAgICBzaWduYWxfdHlwZT1zaWduYWxfdHlwZSwKICAgICAgICAgICAgdHJpZ2dlcj10cmlnZ2VyLAogICAgICAgICAgICBhY3Rpb249YWN0aW9uLAogICAgICAgICAgICBvdXRjb21lPW91dGNvbWUsCiAgICAgICAgICAgIHNjb3JlPXNjb3JlLAogICAgICAgICAgICBnZW5lc19hcHBsaWVkPWdlbmVzX2FwcGxpZWQgb3IgW10sCiAgICAgICAgKQogICAgICAgIHdpdGggb3BlbihzZWxmLmV2ZW50c19maWxlLCAiYSIsIGVuY29kaW5nPSJ1dGYtOCIpIGFzIGY6CiAgICAgICAgICAgIGYud3JpdGUoanNvbi5kdW1wcyhhc2RpY3QoZXZlbnQpLCBlbnN1cmVfYXNjaWk9RmFsc2UpICsgIlxuIikKCiAgICAgICAgIyDmm7TmlrDmqKHlvI8KICAgICAgICBzZWxmLl91cGRhdGVfcGF0dGVybl9mcm9tX2V2ZW50KGV2ZW50KQoKICAgIGRlZiBfdXBkYXRlX3BhdHRlcm5fZnJvbV9ldmVudChzZWxmLCBldmVudDogRXZvbHV0aW9uRXZlbnQpIC0+IE5vbmU6CiAgICAgICAgIiIi5LuO5LqL5Lu25pu05paw5a2m5Lmg5Yiw55qE5qih5byPLiIiIgogICAgICAgIHBhdHRlcm5zID0gc2VsZi5fbG9hZF9wYXR0ZXJucygpCgogICAgICAgICMg5Z+65LqO5L+h5Y+357G75Z6L5Yib5bu6L+abtOaWsOaooeW8jwogICAgICAgIHBhdHRlcm5fa2V5ID0gZiJ7ZXZlbnQuc2lnbmFsX3R5cGV9X3tldmVudC5hY3Rpb259IgogICAgICAgIGlmIHBhdHRlcm5fa2V5IG5vdCBpbiBwYXR0ZXJuczoKICAgICAgICAgICAgcGF0dGVybnNbcGF0dGVybl9rZXldID0gewogICAgICAgICAgICAgICAgIm5hbWUiOiBwYXR0ZXJuX2tleSwKICAgICAgICAgICAgICAgICJzaWduYWxfdHlwZSI6IGV2ZW50LnNpZ25hbF90eXBlLAogICAgICAgICAgICAgICAgInRyaWdnZXJfY29uZGl0aW9ucyI6IGV2ZW50LnRyaWdnZXIsCiAgICAgICAgICAgICAgICAic3VjY2Vzc19jb3VudCI6IDAsCiAgICAgICAgICAgICAgICAiZmFpbHVyZV9jb3VudCI6IDAsCiAgICAgICAgICAgICAgICAibGFzdF91c2VkIjogIiIsCiAgICAgICAgICAgICAgICAiZWZmZWN0aXZlbmVzcyI6IDAuMCwKICAgICAgICAgICAgfQoKICAgICAgICBwID0gcGF0dGVybnNbcGF0dGVybl9rZXldCiAgICAgICAgaWYgZXZlbnQuc2NvcmUgPj0gMC42OgogICAgICAgICAgICBwWyJzdWNjZXNzX2NvdW50Il0gKz0gMQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIHBbImZhaWx1cmVfY291bnQiXSArPSAxCgogICAgICAgIHRvdGFsID0gcFsic3VjY2Vzc19jb3VudCJdICsgcFsiZmFpbHVyZV9jb3VudCJdCiAgICAgICAgcFsiZWZmZWN0aXZlbmVzcyJdID0gcFsic3VjY2Vzc19jb3VudCJdIC8gdG90YWwgaWYgdG90YWwgPiAwIGVsc2UgMC4wCiAgICAgICAgcFsibGFzdF91c2VkIl0gPSBldmVudC50aW1lc3RhbXAKCiAgICAgICAgc2VsZi5fc2F2ZV9wYXR0ZXJucyhwYXR0ZXJucykKCiAgICAjID09PSBQYXR0ZXJuIE9wZXJhdGlvbnMgPT09CgogICAgZGVmIF9sb2FkX3BhdHRlcm5zKHNlbGYpIC0+IERpY3Rbc3RyLCBBbnldOgogICAgICAgICIiIuWKoOi9veaooeW8j+W6ky4iIiIKICAgICAgICB0cnk6CiAgICAgICAgICAgIHJldHVybiBjYXN0KAogICAgICAgICAgICAgICAgRGljdFtzdHIsIEFueV0sIGpzb24ubG9hZHMoc2VsZi5wYXR0ZXJuc19maWxlLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKSBvciAie30iKQogICAgICAgICAgICApCiAgICAgICAgZXhjZXB0IChqc29uLkpTT05EZWNvZGVFcnJvciwgRmlsZU5vdEZvdW5kRXJyb3IpOgogICAgICAgICAgICByZXR1cm4ge30KCiAgICBkZWYgX3NhdmVfcGF0dGVybnMoc2VsZiwgcGF0dGVybnM6IERpY3Rbc3RyLCBBbnldKSAtPiBOb25lOgogICAgICAgICIiIuS/neWtmOaooeW8j+W6ky4iIiIKICAgICAgICBzZWxmLnBhdHRlcm5zX2ZpbGUud3JpdGVfdGV4dCgKICAgICAgICAgICAganNvbi5kdW1wcyhwYXR0ZXJucywgaW5kZW50PTIsIGVuc3VyZV9hc2NpaT1GYWxzZSksIGVuY29kaW5nPSJ1dGYtOCIKICAgICAgICApCgogICAgZGVmIGdldF9yZWxpYWJsZV9wYXR0ZXJucyhzZWxmKSAtPiBMaXN0W0RpY3Rbc3RyLCBBbnldXToKICAgICAgICAiIiLojrflj5blj6/pnaDmqKHlvI/vvIjmiJDlip/njocgPjcwJe+8jOWwneivlSA+PTMg5qyh77yJLiIiIgogICAgICAgIHBhdHRlcm5zID0gc2VsZi5fbG9hZF9wYXR0ZXJucygpCiAgICAgICAgcmV0dXJuIFsKICAgICAgICAgICAgcAogICAgICAgICAgICBmb3IgcCBpbiBwYXR0ZXJucy52YWx1ZXMoKQogICAgICAgICAgICBpZiBwWyJzdWNjZXNzX2NvdW50Il0gKyBwWyJmYWlsdXJlX2NvdW50Il0gPj0gMyBhbmQgcFsiZWZmZWN0aXZlbmVzcyJdID49IDAuNwogICAgICAgIF0KCiAgICBkZWYgZ2V0X2FsbF9wYXR0ZXJucyhzZWxmKSAtPiBMaXN0W0RpY3Rbc3RyLCBBbnldXToKICAgICAgICAiIiLojrflj5bmiYDmnInmqKHlvI8uIiIiCiAgICAgICAgcmV0dXJuIGxpc3Qoc2VsZi5fbG9hZF9wYXR0ZXJucygpLnZhbHVlcygpKQoKICAgICMgPT09IFN0YXRpc3RpY3MgPT09CgogICAgZGVmIGdldF9zdGF0cyhzZWxmKSAtPiBEaWN0W3N0ciwgQW55XToKICAgICAgICAiIiLojrflj5bnu5/orqHkv6Hmga8uIiIiCiAgICAgICAgcGF0dGVybnMgPSBzZWxmLl9sb2FkX3BhdHRlcm5zKCkKCiAgICAgICAgIyDor7vlj5blj43ppojmlbAKICAgICAgICBmZWVkYmFja19jb3VudCA9IDAKICAgICAgICBwb3NpdGl2ZV9jb3VudCA9IDAKICAgICAgICB0cnk6CiAgICAgICAgICAgIHdpdGggb3BlbihzZWxmLmZlZWRiYWNrX2ZpbGUsIGVuY29kaW5nPSJ1dGYtOCIpIGFzIGY6CiAgICAgICAgICAgICAgICBmb3IgbGluZSBpbiBmOgogICAgICAgICAgICAgICAgICAgIGlmIGxpbmUuc3RyaXAoKToKICAgICAgICAgICAgICAgICAgICAgICAgZmVlZGJhY2tfY291bnQgKz0gMQogICAgICAgICAgICAgICAgICAgICAgICBkYXRhID0ganNvbi5sb2FkcyhsaW5lKQogICAgICAgICAgICAgICAgICAgICAgICBpZiBkYXRhLmdldCgidHlwZSIpID09IEZlZWRiYWNrVHlwZS5QT1NJVElWRS52YWx1ZToKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBvc2l0aXZlX2NvdW50ICs9IDEKICAgICAgICBleGNlcHQgRmlsZU5vdEZvdW5kRXJyb3I6CiAgICAgICAgICAgIHBhc3MKCiAgICAgICAgIyDor7vlj5bkuovku7bmlbAKICAgICAgICBldmVudF9jb3VudCA9IDAKICAgICAgICB0cnk6CiAgICAgICAgICAgIHdpdGggb3BlbihzZWxmLmV2ZW50c19maWxlLCBlbmNvZGluZz0idXRmLTgiKSBhcyBmOgogICAgICAgICAgICAgICAgZXZlbnRfY291bnQgPSBzdW0oMSBmb3IgbGluZSBpbiBmIGlmIGxpbmUuc3RyaXAoKSkKICAgICAgICBleGNlcHQgRmlsZU5vdEZvdW5kRXJyb3I6CiAgICAgICAgICAgIHBhc3MKCiAgICAgICAgcmVsaWFibGVfY291bnQgPSBsZW4oc2VsZi5nZXRfcmVsaWFibGVfcGF0dGVybnMoKSkKCiAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgInRvdGFsX2ZlZWRiYWNrIjogZmVlZGJhY2tfY291bnQsCiAgICAgICAgICAgICJwb3NpdGl2ZV9mZWVkYmFjayI6IHBvc2l0aXZlX2NvdW50LAogICAgICAgICAgICAibmVnYXRpdmVfZmVlZGJhY2siOiBmZWVkYmFja19jb3VudCAtIHBvc2l0aXZlX2NvdW50LAogICAgICAgICAgICAicG9zaXRpdmVfcmF0ZSI6IHBvc2l0aXZlX2NvdW50IC8gZmVlZGJhY2tfY291bnQgaWYgZmVlZGJhY2tfY291bnQgPiAwIGVsc2UgMCwKICAgICAgICAgICAgInRvdGFsX2V2ZW50cyI6IGV2ZW50X2NvdW50LAogICAgICAgICAgICAidG90YWxfcGF0dGVybnMiOiBsZW4ocGF0dGVybnMpLAogICAgICAgICAgICAicmVsaWFibGVfcGF0dGVybnMiOiByZWxpYWJsZV9jb3VudCwKICAgICAgICAgICAgImxlYXJuaW5nX3Byb2dyZXNzIjogcmVsaWFibGVfY291bnQgLyAxMCBpZiByZWxpYWJsZV9jb3VudCA8IDEwIGVsc2UgMS4wLAogICAgICAgIH0KCiAgICBkZWYgY2xlYXIoc2VsZikgLT4gTm9uZToKICAgICAgICAiIiLmuIXnqbrmiYDmnInmlbDmja7vvIjosKjmhY7kvb/nlKjvvIkuIiIiCiAgICAgICAgZm9yIGYgaW4gW3NlbGYuZmVlZGJhY2tfZmlsZSwgc2VsZi5ldmVudHNfZmlsZSwgc2VsZi5wYXR0ZXJuc19maWxlXToKICAgICAgICAgICAgaWYgZi5leGlzdHMoKToKICAgICAgICAgICAgICAgIGYudW5saW5rKCkKICAgICAgICAgICAgICAgIGYudG91Y2goKQoKCiMg5YWo5bGA5a6e5L6LCl9ldm9sdXRpb25fbWVtb3J5OiBPcHRpb25hbFtFdm9sdXRpb25NZW1vcnldID0gTm9uZQoKCmRlZiBnZXRfZXZvbHV0aW9uX21lbW9yeSgpIC0+IEV2b2x1dGlvbk1lbW9yeToKICAgICIiIuiOt+WPluWFqOWxgCBFdm9sdXRpb24gTWVtb3J5IOWunuS+iy4iIiIKICAgIGdsb2JhbCBfZXZvbHV0aW9uX21lbW9yeQogICAgaWYgX2V2b2x1dGlvbl9tZW1vcnkgaXMgTm9uZToKICAgICAgICBfZXZvbHV0aW9uX21lbW9yeSA9IEV2b2x1dGlvbk1lbW9yeSgpCiAgICByZXR1cm4gX2V2b2x1dGlvbl9tZW1vcnkK
+"""
+Evolution Memory: User Feedback & Pattern Learning
+
+记录用户反馈和学习模式，为系统自进化提供数据基础。
+"""
+
+from __future__ import annotations
+
+import json
+import time
+from dataclasses import dataclass, asdict
+from datetime import datetime
+from pathlib import Path
+from typing import Optional, List, Dict, Any, cast
+from enum import Enum
+
+
+class FeedbackType(Enum):
+    """反馈类型."""
+    POSITIVE = "positive"      # 用户满意
+    NEGATIVE = "negative"      # 用户不满意
+    NEUTRAL = "neutral"         # 中性
+
+
+class SignalType(Enum):
+    """信号类型."""
+    CHAT_SUCCESS = "chat_success"
+    CHAT_FAILURE = "chat_failure"
+    RETRIEVAL_HIT = "retrieval_hit"
+    RETRIEVAL_MISS = "retrieval_miss"
+    SLIDE_QUALITY = "slide_quality"
+    SEARCH_SUCCESS = "search_success"
+
+
+@dataclass
+class Feedback:
+    """用户反馈记录."""
+    id: str
+    type: str  # FeedbackType.value
+    command: str  # chat, slides, search
+    query: str
+    paper_ids: List[str]
+    outcome: str  # success, partial, failure
+    score: float  # 0-1 置信度
+    note: str = ""  # 用户备注
+    timestamp: str = ""
+
+    def __post_init__(self):
+        if not self.timestamp:
+            self.timestamp = datetime.now().isoformat()
+        if not self.id:
+            self.id = f"fb_{int(time.time()*1000)}"
+
+
+@dataclass
+class EvolutionEvent:
+    """进化事件记录."""
+    id: str
+    signal_type: str  # SignalType.value
+    trigger: Dict[str, Any]  # 触发条件
+    action: str  # 采取的行动
+    outcome: str  # 结果
+    score: float  # 评分 0-1
+    genes_applied: Optional[List[str]] = None  # 应用的基因
+    timestamp: str = ""
+
+    def __post_init__(self):
+        if not self.timestamp:
+            self.timestamp = datetime.now().isoformat()
+        if not self.id:
+            self.id = f"ev_{int(time.time()*1000)}"
+        if self.genes_applied is None:
+            self.genes_applied = []
+
+
+@dataclass
+class LearnedPattern:
+    """学到的模式."""
+    name: str
+    signal_type: str
+    trigger_conditions: Dict[str, Any]
+    success_count: int = 0
+    failure_count: int = 0
+    last_used: str = ""
+    effectiveness: float = 0.0  # 成功率
+
+    @property
+    def total_attempts(self) -> int:
+        return self.success_count + self.failure_count
+
+    @property
+    def is_reliable(self) -> bool:
+        return self.total_attempts >= 3 and self.effectiveness >= 0.7
+
+
+class EvolutionMemory:
+    """Evolution Memory Store — 存储和管理进化数据."""
+
+    def __init__(self, memory_dir: Optional[Path] = None):
+        if memory_dir is None:
+            memory_dir = Path("memory/evolution")
+        self.memory_dir = Path(memory_dir)
+        self.memory_dir.mkdir(parents=True, exist_ok=True)
+
+        self.feedback_file = self.memory_dir / "feedback.jsonl"
+        self.events_file = self.memory_dir / "evolution_events.jsonl"
+        self.patterns_file = self.memory_dir / "learned_patterns.json"
+
+        # 确保文件存在
+        for f in [self.feedback_file, self.events_file]:
+            if not f.exists():
+                f.write_text("", encoding="utf-8")
+        if not self.patterns_file.exists():
+            self._save_patterns({})
+
+    # === Feedback Operations ===
+
+    def add_feedback(self, feedback: Feedback) -> None:
+        """记录用户反馈."""
+        with open(self.feedback_file, "a", encoding="utf-8") as f:
+            f.write(json.dumps(asdict(feedback), ensure_ascii=False) + "\n")
+
+    def record_chat_feedback(
+        self,
+        query: str,
+        paper_ids: List[str],
+        is_positive: bool,
+        outcome: str = "success",
+        score: float = 0.8,
+        note: str = "",
+    ) -> None:
+        """快捷方法：记录聊天反馈."""
+        fb = Feedback(
+            id=f"fb_{int(time.time()*1000)}",
+            type=FeedbackType.POSITIVE.value if is_positive else FeedbackType.NEGATIVE.value,
+            command="chat",
+            query=query,
+            paper_ids=paper_ids,
+            outcome=outcome,
+            score=score,
+            note=note,
+        )
+        self.add_feedback(fb)
+
+        # 同步创建 Evolution Event
+        signal = SignalType.CHAT_SUCCESS if is_positive else SignalType.CHAT_FAILURE
+        self.record_evolution_event(
+            signal_type=signal.value,
+            trigger={"query": query, "papers": paper_ids},
+            action="chat_response",
+            outcome=outcome,
+            score=score,
+        )
+
+    # === Passive Feedback Inference ===
+
+    def infer_passive_feedback(
+        self,
+        query: str,
+        paper_ids: List[str],
+        user_action: str,
+    ) -> None:
+        """根据用户行为智能推断反馈，无需显式询问.
+
+        Args:
+            query: 用户的问题
+            paper_ids: 使用的论文 ID
+            user_action: 用户行为：
+                - "continued": 继续追问或查看引用 → 正面
+                - "copied": 复制了回答 → 正面
+                - "exited": 直接退出 → 中性
+                - "dismissed": 跳过/忽略 → 中性
+                - "repeated": 重复问类似问题 → 中性
+        """
+        action_signals = {
+            "continued": (True, 0.7, "用户继续追问"),
+            "copied": (True, 0.9, "用户复制了回答"),
+            "exited": (None, 0.5, "用户退出，未明确反馈"),
+            "dismissed": (None, 0.5, "用户跳过反馈"),
+            "repeated": (None, 0.4, "重复问题，可能回答不够好"),
+        }
+
+        if user_action not in action_signals:
+            return
+
+        is_positive, inferred_score, reason = action_signals[user_action]
+
+        if is_positive is None:
+            # 中性信号：记录但不计入正面/负面
+            fb = Feedback(
+                id=f"fb_{int(time.time()*1000)}",
+                type=FeedbackType.NEUTRAL.value,
+                command="chat",
+                query=query,
+                paper_ids=paper_ids,
+                outcome="neutral",
+                score=inferred_score,
+                note=f"[被动] {reason}",
+            )
+            self.add_feedback(fb)
+        else:
+            # 正面信号
+            self.record_chat_feedback(
+                query=query,
+                paper_ids=paper_ids,
+                is_positive=is_positive,
+                outcome="success",
+                score=inferred_score,
+                note=f"[被动] {reason}",
+            )
+
+    # === Evolution Events ===
+
+    def record_evolution_event(
+        self,
+        signal_type: str,
+        trigger: Dict[str, Any],
+        action: str,
+        outcome: str,
+        score: float,
+        genes_applied: Optional[List[str]] = None,
+    ) -> None:
+        """记录进化事件."""
+        event = EvolutionEvent(
+            id=f"ev_{int(time.time()*1000)}",
+            signal_type=signal_type,
+            trigger=trigger,
+            action=action,
+            outcome=outcome,
+            score=score,
+            genes_applied=genes_applied or [],
+        )
+        with open(self.events_file, "a", encoding="utf-8") as f:
+            f.write(json.dumps(asdict(event), ensure_ascii=False) + "\n")
+
+        # 更新模式
+        self._update_pattern_from_event(event)
+
+    def _update_pattern_from_event(self, event: EvolutionEvent) -> None:
+        """从事件更新学习到的模式."""
+        patterns = self._load_patterns()
+
+        # 基于信号类型创建/更新模式
+        pattern_key = f"{event.signal_type}_{event.action}"
+        if pattern_key not in patterns:
+            patterns[pattern_key] = {
+                "name": pattern_key,
+                "signal_type": event.signal_type,
+                "trigger_conditions": event.trigger,
+                "success_count": 0,
+                "failure_count": 0,
+                "last_used": "",
+                "effectiveness": 0.0,
+            }
+
+        p = patterns[pattern_key]
+        if event.score >= 0.6:
+            p["success_count"] += 1
+        else:
+            p["failure_count"] += 1
+
+        total = p["success_count"] + p["failure_count"]
+        p["effectiveness"] = p["success_count"] / total if total > 0 else 0.0
+        p["last_used"] = event.timestamp
+
+        self._save_patterns(patterns)
+
+    # === Pattern Operations ===
+
+    def _load_patterns(self) -> Dict[str, Any]:
+        """加载模式库."""
+        try:
+            return cast(Dict[str, Any], json.loads(self.patterns_file.read_text(encoding="utf-8") or "{}"))
+        except (json.JSONDecodeError, FileNotFoundError):
+            return {}
+
+    def _save_patterns(self, patterns: Dict[str, Any]) -> None:
+        """保存模式库."""
+        self.patterns_file.write_text(
+            json.dumps(patterns, indent=2, ensure_ascii=False),
+            encoding="utf-8"
+        )
+
+    def get_reliable_patterns(self) -> List[Dict[str, Any]]:
+        """获取可靠模式（成功率 >70%，尝试 >=3 次）."""
+        patterns = self._load_patterns()
+        return [
+            p for p in patterns.values()
+            if p["success_count"] + p["failure_count"] >= 3
+            and p["effectiveness"] >= 0.7
+        ]
+
+    def get_all_patterns(self) -> List[Dict[str, Any]]:
+        """获取所有模式."""
+        return list(self._load_patterns().values())
+
+    # === Statistics ===
+
+    def get_stats(self) -> Dict[str, Any]:
+        """获取统计信息."""
+        patterns = self._load_patterns()
+
+        # 读取反馈数
+        feedback_count = 0
+        positive_count = 0
+        try:
+            with open(self.feedback_file, encoding="utf-8") as f:
+                for line in f:
+                    if line.strip():
+                        feedback_count += 1
+                        data = json.loads(line)
+                        if data.get("type") == FeedbackType.POSITIVE.value:
+                            positive_count += 1
+        except FileNotFoundError:
+            pass
+
+        # 读取事件数
+        event_count = 0
+        try:
+            with open(self.events_file, encoding="utf-8") as f:
+                event_count = sum(1 for line in f if line.strip())
+        except FileNotFoundError:
+            pass
+
+        reliable_count = len(self.get_reliable_patterns())
+
+        return {
+            "total_feedback": feedback_count,
+            "positive_feedback": positive_count,
+            "negative_feedback": feedback_count - positive_count,
+            "positive_rate": positive_count / feedback_count if feedback_count > 0 else 0,
+            "total_events": event_count,
+            "total_patterns": len(patterns),
+            "reliable_patterns": reliable_count,
+            "learning_progress": reliable_count / 10 if reliable_count < 10 else 1.0,
+        }
+
+    def clear(self) -> None:
+        """清空所有数据（谨慎使用）."""
+        for f in [self.feedback_file, self.events_file, self.patterns_file]:
+            if f.exists():
+                f.unlink()
+                f.touch()
+
+
+# 全局实例
+_evolution_memory: Optional[EvolutionMemory] = None
+
+
+def get_evolution_memory() -> EvolutionMemory:
+    """获取全局 Evolution Memory 实例."""
+    global _evolution_memory
+    if _evolution_memory is None:
+        _evolution_memory = EvolutionMemory()
+    return _evolution_memory

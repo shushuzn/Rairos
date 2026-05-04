@@ -1,1 +1,84 @@
-IiIiQ0xJIGNvbW1hbmQ6IGNvbXBhcmUg4oCUIENvbXBhcmUgbXVsdGlwbGUgcGFwZXJzIHNpZGUtYnktc2lkZS4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBhcmdwYXJzZQoKZnJvbSBjbGkuX3NoYXJlZCBpbXBvcnQgZ2V0X2RiLCBwcmludF9pbmZvLCBwcmludF9lcnJvcgpmcm9tIGxsbS5wYXBlcl9jb21wYXJpc29uIGltcG9ydCBQYXBlckNvbXBhcmF0b3IKCgpkZWYgX2J1aWxkX2NvbXBhcmVfcGFyc2VyKHN1YnBhcnNlcnMpIC0+IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyOgogICAgIiIiQnVpbGQgdGhlIGNvbXBhcmUgc3ViY29tbWFuZCBwYXJzZXIuIiIiCiAgICBwID0gc3VicGFyc2Vycy5hZGRfcGFyc2VyKAogICAgICAgICJjb21wYXJlIiwKICAgICAgICBoZWxwPSJDb21wYXJlIHBhcGVycyIsCiAgICAgICAgZGVzY3JpcHRpb249IkNvbXBhcmUgbXVsdGlwbGUgcGFwZXJzIHNpZGUtYnktc2lkZS4iLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoInBhcGVyX2lkcyIsIG5hcmdzPSIrIiwgaGVscD0iUGFwZXIgSURzIHRvIGNvbXBhcmUiKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tYXNwZWN0IiwKICAgICAgICAiLWEiLAogICAgICAgIGFjdGlvbj0iYXBwZW5kIiwKICAgICAgICBjaG9pY2VzPVsibWV0aG9kcyIsICJkYXRhc2V0cyIsICJtZXRyaWNzIiwgImF1dGhvcnMiLCAieWVhciIsICJhYnN0cmFjdCJdLAogICAgICAgIGhlbHA9IkFzcGVjdHMgdG8gY29tcGFyZSAoY2FuIGJlIHJlcGVhdGVkKSIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgiLS1tYXJrZG93biIsICItbSIsIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsIGhlbHA9Ik91dHB1dCBhcyBNYXJrZG93biIpCiAgICBwLmFkZF9hcmd1bWVudCgiLS1kaWZmIiwgaGVscD0iR2VuZXJhdGUgZGlmZiBiZXR3ZWVuIHR3byBwYXBlcnMgKHBhcGVyX2lkX2E6cGFwZXJfaWRfYikiKQogICAgcmV0dXJuIHAgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgoKZGVmIF9ydW5fY29tcGFyZShhcmdzOiBhcmdwYXJzZS5OYW1lc3BhY2UpIC0+IGludDoKICAgICIiIlJ1biBjb21wYXJlIGNvbW1hbmQuIiIiCiAgICBkYiA9IGdldF9kYigpCiAgICBkYi5pbml0KCkKCiAgICBjb21wYXJhdG9yID0gUGFwZXJDb21wYXJhdG9yKGRiPWRiKQoKICAgICMgRGlmZiBtb2RlCiAgICBpZiBhcmdzLmRpZmY6CiAgICAgICAgcGFydHMgPSBhcmdzLmRpZmYuc3BsaXQoIjoiKQogICAgICAgIGlmIGxlbihwYXJ0cykgIT0gMjoKICAgICAgICAgICAgcHJpbnRfZXJyb3IoIkRpZmYgZm9ybWF0OiA8cGFwZXJfaWRfYT46PHBhcGVyX2lkX2I+IikKICAgICAgICAgICAgcmV0dXJuIDEgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgICAgIHBpZF9hLCBwaWRfYiA9IHBhcnRzCiAgICAgICAgcGFwZXJfYSA9IGRiLmdldF9wYXBlcihwaWRfYSkgaWYgaGFzYXR0cihkYiwgImdldF9wYXBlciIpIGVsc2UgTm9uZQogICAgICAgIHBhcGVyX2IgPSBkYi5nZXRfcGFwZXIocGlkX2IpIGlmIGhhc2F0dHIoZGIsICJnZXRfcGFwZXIiKSBlbHNlIE5vbmUKCiAgICAgICAgaWYgbm90IHBhcGVyX2E6CiAgICAgICAgICAgIHByaW50X2Vycm9yKGYiUGFwZXIgW3twaWRfYX1dIG5vdCBmb3VuZCIpCiAgICAgICAgICAgIHJldHVybiAxICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQogICAgICAgIGlmIG5vdCBwYXBlcl9iOgogICAgICAgICAgICBwcmludF9lcnJvcihmIlBhcGVyIFt7cGlkX2J9XSBub3QgZm91bmQiKQogICAgICAgICAgICByZXR1cm4gMSAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCiAgICAgICAgcHJpbnQoY29tcGFyYXRvci5yZW5kZXJfZGlmZihwYXBlcl9hLCBwYXBlcl9iKSkKICAgICAgICByZXR1cm4gMCAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCiAgICAjIENvbXBhcmlzb24gbW9kZQogICAgcGFwZXJzID0gW10KICAgIGZvciBwaWQgaW4gYXJncy5wYXBlcl9pZHM6CiAgICAgICAgcGFwZXIgPSBkYi5nZXRfcGFwZXIocGlkKSBpZiBoYXNhdHRyKGRiLCAiZ2V0X3BhcGVyIikgZWxzZSBOb25lCiAgICAgICAgaWYgcGFwZXI6CiAgICAgICAgICAgIHBhcGVycy5hcHBlbmQocGlkKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIHByaW50X3dhcm5pbmcoZiJQYXBlciBbe3BpZH1dIG5vdCBmb3VuZCwgc2tpcHBpbmciKQoKICAgIGlmIGxlbihwYXBlcnMpIDwgMjoKICAgICAgICBwcmludF9lcnJvcigiTmVlZCBhdCBsZWFzdCAyIHZhbGlkIHBhcGVyIElEcyIpCiAgICAgICAgcmV0dXJuIDEgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgcHJpbnRfaW5mbyhmIkNvbXBhcmluZyB7bGVuKHBhcGVycyl9IHBhcGVycy4uLiIpCgogICAgcmVzdWx0ID0gY29tcGFyYXRvci5jb21wYXJlKHBhcGVycywgYXNwZWN0cz1hcmdzLmFzcGVjdCBvciBOb25lKQoKICAgIGlmIGFyZ3MubWFya2Rvd246CiAgICAgICAgcHJpbnQoY29tcGFyYXRvci5yZW5kZXJfbWFya2Rvd24ocmVzdWx0KSkKICAgIGVsc2U6CiAgICAgICAgcHJpbnQoY29tcGFyYXRvci5yZW5kZXJfdGV4dChyZXN1bHQpKQoKICAgIHJldHVybiAwCgoKZGVmIHByaW50X3dhcm5pbmcobXNnOiBzdHIpOgogICAgIiIiUHJpbnQgd2FybmluZyBtZXNzYWdlLiIiIgogICAgcHJpbnQoZiLimqDvuI8gIHttc2d9IikK
+"""CLI command: compare — Compare multiple papers side-by-side."""
+from __future__ import annotations
+
+import argparse
+
+from cli._shared import get_db, print_info, print_error
+from llm.paper_comparison import PaperComparator
+
+
+def _build_compare_parser(subparsers) -> argparse.ArgumentParser:
+    """Build the compare subcommand parser."""
+    p = subparsers.add_parser(
+        "compare",
+        help="Compare papers",
+        description="Compare multiple papers side-by-side.",
+    )
+    p.add_argument("paper_ids", nargs="+", help="Paper IDs to compare")
+    p.add_argument(
+        "--aspect", "-a",
+        action="append",
+        choices=["methods", "datasets", "metrics", "authors", "year", "abstract"],
+        help="Aspects to compare (can be repeated)",
+    )
+    p.add_argument("--markdown", "-m", action="store_true", help="Output as Markdown")
+    p.add_argument("--diff", help="Generate diff between two papers (paper_id_a:paper_id_b)")
+    return p  # type: ignore[no-any-return]
+
+
+def _run_compare(args: argparse.Namespace) -> int:
+    """Run compare command."""
+    db = get_db()
+    db.init()
+
+    comparator = PaperComparator(db=db)
+
+    # Diff mode
+    if args.diff:
+        parts = args.diff.split(':')
+        if len(parts) != 2:
+            print_error("Diff format: <paper_id_a>:<paper_id_b>")
+            return 1  # type: ignore[no-any-return]
+
+        pid_a, pid_b = parts
+        paper_a = db.get_paper(pid_a) if hasattr(db, 'get_paper') else None
+        paper_b = db.get_paper(pid_b) if hasattr(db, 'get_paper') else None
+
+        if not paper_a:
+            print_error(f"Paper [{pid_a}] not found")
+            return 1  # type: ignore[no-any-return]
+        if not paper_b:
+            print_error(f"Paper [{pid_b}] not found")
+            return 1  # type: ignore[no-any-return]
+
+        print(comparator.render_diff(paper_a, paper_b))
+        return 0  # type: ignore[no-any-return]
+
+    # Comparison mode
+    papers = []
+    for pid in args.paper_ids:
+        paper = db.get_paper(pid) if hasattr(db, 'get_paper') else None
+        if paper:
+            papers.append(pid)
+        else:
+            print_warning(f"Paper [{pid}] not found, skipping")
+
+    if len(papers) < 2:
+        print_error("Need at least 2 valid paper IDs")
+        return 1  # type: ignore[no-any-return]
+
+    print_info(f"Comparing {len(papers)} papers...")
+
+    result = comparator.compare(papers, aspects=args.aspect or None)
+
+    if args.markdown:
+        print(comparator.render_markdown(result))
+    else:
+        print(comparator.render_text(result))
+
+    return 0
+
+
+def print_warning(msg: str):
+    """Print warning message."""
+    print(f"⚠️  {msg}")

@@ -1,1 +1,240 @@
-IiIiCk5vdGlmaWNhdGlvbiBTeXN0ZW0uCgpQcm92aWRlcyBub3RpZmljYXRpb25zIGZvciBpbXBvcnRhbnQgZXZlbnRzIGFuZCBleHRlcm5hbCB3ZWJob29rIGRlbGl2ZXJ5LgoiIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBqc29uCmltcG9ydCBsb2dnaW5nCmltcG9ydCB0aW1lCmltcG9ydCB1cmxsaWIucmVxdWVzdApmcm9tIGRhdGFjbGFzc2VzIGltcG9ydCBkYXRhY2xhc3MsIGFzZGljdApmcm9tIGVudW0gaW1wb3J0IEVudW0KZnJvbSB0eXBpbmcgaW1wb3J0IEFueSwgRGljdCwgTGlzdCwgT3B0aW9uYWwKCgpsb2dnZXIgPSBsb2dnaW5nLmdldExvZ2dlcihfX25hbWVfXykKCgpjbGFzcyBOb3RpZmljYXRpb25MZXZlbChFbnVtKToKICAgICIiIk5vdGlmaWNhdGlvbiBsZXZlbHMuIiIiCgogICAgSU5GTyA9ICJpbmZvIgogICAgU1VDQ0VTUyA9ICJzdWNjZXNzIgogICAgV0FSTklORyA9ICJ3YXJuaW5nIgogICAgRVJST1IgPSAiZXJyb3IiCgoKQGRhdGFjbGFzcwpjbGFzcyBOb3RpZmljYXRpb246CiAgICAiIiJBIG5vdGlmaWNhdGlvbiBtZXNzYWdlLiIiIgoKICAgIGxldmVsOiBOb3RpZmljYXRpb25MZXZlbAogICAgdGl0bGU6IHN0cgogICAgbWVzc2FnZTogc3RyCiAgICB0aW1lc3RhbXA6IGZsb2F0CgoKY2xhc3MgTm90aWZpY2F0aW9uTWFuYWdlcjoKICAgICIiIk1hbmFnZSBub3RpZmljYXRpb25zLiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmKToKICAgICAgICBzZWxmLm5vdGlmaWNhdGlvbnM6IExpc3RbTm90aWZpY2F0aW9uXSA9IFtdCgogICAgZGVmIGFkZChzZWxmLCBsZXZlbDogTm90aWZpY2F0aW9uTGV2ZWwsIHRpdGxlOiBzdHIsIG1lc3NhZ2U6IHN0cik6CiAgICAgICAgIiIiQWRkIGEgbm90aWZpY2F0aW9uLiIiIgogICAgICAgIG5vdGlmaWNhdGlvbiA9IE5vdGlmaWNhdGlvbigKICAgICAgICAgICAgbGV2ZWw9bGV2ZWwsIHRpdGxlPXRpdGxlLCBtZXNzYWdlPW1lc3NhZ2UsIHRpbWVzdGFtcD10aW1lLnRpbWUoKQogICAgICAgICkKICAgICAgICBzZWxmLm5vdGlmaWNhdGlvbnMuYXBwZW5kKG5vdGlmaWNhdGlvbikKCiAgICBkZWYgaW5mbyhzZWxmLCB0aXRsZTogc3RyLCBtZXNzYWdlOiBzdHIpOgogICAgICAgICIiIkFkZCBpbmZvIG5vdGlmaWNhdGlvbi4iIiIKICAgICAgICBzZWxmLmFkZChOb3RpZmljYXRpb25MZXZlbC5JTkZPLCB0aXRsZSwgbWVzc2FnZSkKCiAgICBkZWYgc3VjY2VzcyhzZWxmLCB0aXRsZTogc3RyLCBtZXNzYWdlOiBzdHIpOgogICAgICAgICIiIkFkZCBzdWNjZXNzIG5vdGlmaWNhdGlvbi4iIiIKICAgICAgICBzZWxmLmFkZChOb3RpZmljYXRpb25MZXZlbC5TVUNDRVNTLCB0aXRsZSwgbWVzc2FnZSkKCiAgICBkZWYgd2FybmluZyhzZWxmLCB0aXRsZTogc3RyLCBtZXNzYWdlOiBzdHIpOgogICAgICAgICIiIkFkZCB3YXJuaW5nIG5vdGlmaWNhdGlvbi4iIiIKICAgICAgICBzZWxmLmFkZChOb3RpZmljYXRpb25MZXZlbC5XQVJOSU5HLCB0aXRsZSwgbWVzc2FnZSkKCiAgICBkZWYgZXJyb3Ioc2VsZiwgdGl0bGU6IHN0ciwgbWVzc2FnZTogc3RyKToKICAgICAgICAiIiJBZGQgZXJyb3Igbm90aWZpY2F0aW9uLiIiIgogICAgICAgIHNlbGYuYWRkKE5vdGlmaWNhdGlvbkxldmVsLkVSUk9SLCB0aXRsZSwgbWVzc2FnZSkKCiAgICBkZWYgZ2V0X2FsbChzZWxmKSAtPiBMaXN0W05vdGlmaWNhdGlvbl06CiAgICAgICAgIiIiR2V0IGFsbCBub3RpZmljYXRpb25zLiIiIgogICAgICAgIHJldHVybiBzZWxmLm5vdGlmaWNhdGlvbnMKCiAgICBkZWYgZ2V0X2J5X2xldmVsKHNlbGYsIGxldmVsOiBOb3RpZmljYXRpb25MZXZlbCkgLT4gTGlzdFtOb3RpZmljYXRpb25dOgogICAgICAgICIiIkdldCBub3RpZmljYXRpb25zIGJ5IGxldmVsLiIiIgogICAgICAgIHJldHVybiBbbiBmb3IgbiBpbiBzZWxmLm5vdGlmaWNhdGlvbnMgaWYgbi5sZXZlbCA9PSBsZXZlbF0KCiAgICBkZWYgY2xlYXIoc2VsZik6CiAgICAgICAgIiIiQ2xlYXIgYWxsIG5vdGlmaWNhdGlvbnMuIiIiCiAgICAgICAgc2VsZi5ub3RpZmljYXRpb25zLmNsZWFyKCkKCgojIEdsb2JhbCBub3RpZmljYXRpb24gbWFuYWdlcgpfbm90aWZpY2F0aW9uX21hbmFnZXI6IE9wdGlvbmFsW05vdGlmaWNhdGlvbk1hbmFnZXJdID0gTm9uZQoKCmRlZiBnZXRfbm90aWZpY2F0aW9uX21hbmFnZXIoKSAtPiBOb3RpZmljYXRpb25NYW5hZ2VyOgogICAgIiIiR2V0IHRoZSBnbG9iYWwgbm90aWZpY2F0aW9uIG1hbmFnZXIuIiIiCiAgICBnbG9iYWwgX25vdGlmaWNhdGlvbl9tYW5hZ2VyCiAgICBpZiBfbm90aWZpY2F0aW9uX21hbmFnZXIgaXMgTm9uZToKICAgICAgICBfbm90aWZpY2F0aW9uX21hbmFnZXIgPSBOb3RpZmljYXRpb25NYW5hZ2VyKCkKICAgIHJldHVybiBfbm90aWZpY2F0aW9uX21hbmFnZXIKCgojIOKUgOKUgOKUgCBXZWJob29rIE5vdGlmaWVyIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmNsYXNzIFdlYmhvb2tOb3RpZmllcjoKICAgICIiIlNlbmQgbm90aWZpY2F0aW9ucyB0byBleHRlcm5hbCB3ZWJob29rcyAoRGlzY29yZCwgRmVpc2h1LCBldGMuKS4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZiwgd2ViaG9va191cmw6IHN0ciA9ICIiKToKICAgICAgICBzZWxmLndlYmhvb2tfdXJsID0gd2ViaG9va191cmwKCiAgICBkZWYgX3NlbmQoc2VsZiwgcGF5bG9hZDogRGljdFtzdHIsIEFueV0pIC0+IGJvb2w6CiAgICAgICAgIiIiU2VuZCBwYXlsb2FkIHRvIHdlYmhvb2sgVVJMLiBSZXR1cm5zIFRydWUgb24gc3VjY2Vzcy4iIiIKICAgICAgICBpZiBub3Qgc2VsZi53ZWJob29rX3VybDoKICAgICAgICAgICAgcmV0dXJuIEZhbHNlCiAgICAgICAgdHJ5OgogICAgICAgICAgICBkYXRhID0ganNvbi5kdW1wcyhwYXlsb2FkKS5lbmNvZGUoInV0Zi04IikKICAgICAgICAgICAgcmVxID0gdXJsbGliLnJlcXVlc3QuUmVxdWVzdCgKICAgICAgICAgICAgICAgIHNlbGYud2ViaG9va191cmwsCiAgICAgICAgICAgICAgICBkYXRhPWRhdGEsCiAgICAgICAgICAgICAgICBoZWFkZXJzPXsiQ29udGVudC1UeXBlIjogImFwcGxpY2F0aW9uL2pzb24ifSwKICAgICAgICAgICAgICAgIG1ldGhvZD0iUE9TVCIsCiAgICAgICAgICAgICkKICAgICAgICAgICAgd2l0aCB1cmxsaWIucmVxdWVzdC51cmxvcGVuKHJlcSwgdGltZW91dD0xMCkgYXMgcmVzcDoKICAgICAgICAgICAgICAgIHJldHVybiByZXNwLnN0YXR1cyBpbiAoMjAwLCAyMDQpCiAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgICAgICBsb2dnZXIud2FybmluZyhmIldlYmhvb2sgc2VuZCBmYWlsZWQ6IHtlfSIpCiAgICAgICAgICAgIHJldHVybiBGYWxzZQoKICAgIGRlZiBzZW5kX2Rpc2NvcmQoCiAgICAgICAgc2VsZiwKICAgICAgICB0aXRsZTogc3RyLAogICAgICAgIGRlc2NyaXB0aW9uOiBzdHIsCiAgICAgICAgY29sb3I6IGludCA9IDB4NTg2NUYyLAogICAgICAgIGZpZWxkczogT3B0aW9uYWxbTGlzdFtEaWN0W3N0ciwgQW55XV1dID0gTm9uZSwKICAgICkgLT4gYm9vbDoKICAgICAgICAiIiJTZW5kIGEgRGlzY29yZCBlbWJlZCBub3RpZmljYXRpb24uCgogICAgICAgIEFyZ3M6CiAgICAgICAgICAgIHRpdGxlOiBFbWJlZCB0aXRsZQogICAgICAgICAgICBkZXNjcmlwdGlvbjogTWFpbiB0ZXh0CiAgICAgICAgICAgIGNvbG9yOiBEZWNpbWFsIGNvbG9yIGNvZGUgKGUuZy4gMHgwMEZGMDAgPSBncmVlbikKICAgICAgICAgICAgZmllbGRzOiBMaXN0IG9mIHtuYW1lLCB2YWx1ZSwgaW5saW5lfSBkaWN0cwogICAgICAgICIiIgogICAgICAgIGlmIG5vdCBzZWxmLndlYmhvb2tfdXJsOgogICAgICAgICAgICByZXR1cm4gRmFsc2UKCiAgICAgICAgZW1iZWQ6IERpY3Rbc3RyLCBBbnldID0gewogICAgICAgICAgICAidGl0bGUiOiB0aXRsZSwKICAgICAgICAgICAgImRlc2NyaXB0aW9uIjogZGVzY3JpcHRpb24sCiAgICAgICAgICAgICJjb2xvciI6IGNvbG9yLAogICAgICAgIH0KICAgICAgICBpZiBmaWVsZHM6CiAgICAgICAgICAgIGVtYmVkWyJmaWVsZHMiXSA9IFsKICAgICAgICAgICAgICAgIHsibmFtZSI6IGZbIm5hbWUiXSwgInZhbHVlIjogZlsidmFsdWUiXSwgImlubGluZSI6IGYuZ2V0KCJpbmxpbmUiLCBGYWxzZSl9CiAgICAgICAgICAgICAgICBmb3IgZiBpbiBmaWVsZHMKICAgICAgICAgICAgXQoKICAgICAgICBwYXlsb2FkID0geyJlbWJlZHMiOiBbZW1iZWRdfQogICAgICAgIHJldHVybiBzZWxmLl9zZW5kKHBheWxvYWQpCgogICAgZGVmIHNlbmRfZmVpc2h1KAogICAgICAgIHNlbGYsCiAgICAgICAgdGl0bGU6IHN0ciwKICAgICAgICBjb250ZW50OiBzdHIsCiAgICAgICAgbXNnX3R5cGU6IHN0ciA9ICJ0ZXh0IiwKICAgICkgLT4gYm9vbDoKICAgICAgICAiIiJTZW5kIGEgRmVpc2h1IHRleHQgbm90aWZpY2F0aW9uLgoKICAgICAgICBBcmdzOgogICAgICAgICAgICB0aXRsZTogQ2FyZCB0aXRsZSAoZm9yIGludGVyYWN0aXZlIGNhcmQpIG9yIGlnbm9yZWQgZm9yIHRleHQKICAgICAgICAgICAgY29udGVudDogTWVzc2FnZSB0ZXh0CiAgICAgICAgICAgIG1zZ190eXBlOiAidGV4dCIgb3IgImludGVyYWN0aXZlIgogICAgICAgICIiIgogICAgICAgIGlmIG5vdCBzZWxmLndlYmhvb2tfdXJsOgogICAgICAgICAgICByZXR1cm4gRmFsc2UKCiAgICAgICAgaWYgbXNnX3R5cGUgPT0gImludGVyYWN0aXZlIjoKICAgICAgICAgICAgcGF5bG9hZCA9IHsKICAgICAgICAgICAgICAgICJtc2dfdHlwZSI6ICJpbnRlcmFjdGl2ZSIsCiAgICAgICAgICAgICAgICAiY2FyZCI6IHsKICAgICAgICAgICAgICAgICAgICAiaGVhZGVyIjogeyJ0aXRsZSI6IHsidGFnIjogInBsYWluX3RleHQiLCAiY29udGVudCI6IHRpdGxlfX0sCiAgICAgICAgICAgICAgICAgICAgImVsZW1lbnRzIjogW3sidGFnIjogImRpdiIsICJ0ZXh0IjogeyJ0YWciOiAibGFya19tZCIsICJjb250ZW50IjogY29udGVudH19XSwKICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgIH0KICAgICAgICBlbHNlOgogICAgICAgICAgICBwYXlsb2FkID0geyJtc2dfdHlwZSI6ICJ0ZXh0IiwgImNvbnRlbnQiOiB7InRleHQiOiBmInt0aXRsZX1cbntjb250ZW50fSJ9fQoKICAgICAgICByZXR1cm4gc2VsZi5fc2VuZChwYXlsb2FkKQoKICAgIGRlZiBub3RpZnlfcGFwZXJzX2ZvdW5kKAogICAgICAgIHNlbGYsCiAgICAgICAgc3Vic2NyaXB0aW9uX3RvcGljOiBzdHIsCiAgICAgICAgcGFwZXJzOiBMaXN0W0RpY3Rbc3RyLCBBbnldXSwKICAgICAgICBtaW5fc2NvcmU6IGZsb2F0ID0gMC41LAogICAgKSAtPiBpbnQ6CiAgICAgICAgIiIiU2VuZCBub3RpZmljYXRpb24gZm9yIG5ld2x5IGZvdW5kIHBhcGVycy4KCiAgICAgICAgUmV0dXJucyBudW1iZXIgb2Ygc3VjY2Vzc2Z1bGx5IG5vdGlmaWVkIHBhcGVycy4KICAgICAgICAiIiIKICAgICAgICBpZiBub3QgcGFwZXJzOgogICAgICAgICAgICByZXR1cm4gMAoKICAgICAgICBjb3VudCA9IDAKICAgICAgICB0b3BfcGFwZXJzID0gcGFwZXJzWzo1XSAgIyBOb3RpZnkgdG9wIDUgYXQgbW9zdAoKICAgICAgICBmb3IgcGFwZXIgaW4gdG9wX3BhcGVyczoKICAgICAgICAgICAgc2NvcmUgPSBwYXBlci5nZXQoInNjb3JlIiwgMCkKICAgICAgICAgICAgaWYgc2NvcmUgPCBtaW5fc2NvcmU6CiAgICAgICAgICAgICAgICBjb250aW51ZQoKICAgICAgICAgICAgdGl0bGUgPSBwYXBlci5nZXQoInRpdGxlIiwgIlVudGl0bGVkIilbOjIwMF0KICAgICAgICAgICAgYXJ4aXZfaWQgPSBwYXBlci5nZXQoImFyeGl2X2lkIiwgIiIpCiAgICAgICAgICAgIHVybCA9IGYiaHR0cHM6Ly9hcnhpdi5vcmcvYWJzL3thcnhpdl9pZH0iIGlmIGFyeGl2X2lkIGVsc2UgIiIKCiAgICAgICAgICAgICMgVHJ5IERpc2NvcmQgZmlyc3QKICAgICAgICAgICAgc2VsZi5zZW5kX2Rpc2NvcmQoCiAgICAgICAgICAgICAgICB0aXRsZT1mIvCfk4QgTmV3IFBhcGVyIOKAlCB7c3Vic2NyaXB0aW9uX3RvcGljfSIsCiAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbj1mIioqe3RpdGxlfSoqXG5TY29yZToge3Njb3JlOi4yZn0iLAogICAgICAgICAgICAgICAgY29sb3I9MHgwMEZGMDAsCiAgICAgICAgICAgICAgICBmaWVsZHM9W3sibmFtZSI6ICJhclhpdiIsICJ2YWx1ZSI6IGYiW3thcnhpdl9pZH1dKHt1cmx9KSIsICJpbmxpbmUiOiBUcnVlfV0KICAgICAgICAgICAgICAgIGlmIGFyeGl2X2lkCiAgICAgICAgICAgICAgICBlbHNlIE5vbmUsCiAgICAgICAgICAgICkKCiAgICAgICAgICAgICMgVHJ5IEZlaXNodQogICAgICAgICAgICBzZWxmLnNlbmRfZmVpc2h1KAogICAgICAgICAgICAgICAgdGl0bGU9ZiLwn5OEIE5ldyBQYXBlciDigJQge3N1YnNjcmlwdGlvbl90b3BpY30iLAogICAgICAgICAgICAgICAgY29udGVudD1mIioqe3RpdGxlfSoqXG5TY29yZToge3Njb3JlOi4yZn1cbnt1cmx9IiwKICAgICAgICAgICAgKQoKICAgICAgICAgICAgY291bnQgKz0gMQoKICAgICAgICByZXR1cm4gY291bnQKCgojIEdsb2JhbCB3ZWJob29rIG5vdGlmaWVyIChsYXp5KQpfd2ViaG9va19ub3RpZmllcjogT3B0aW9uYWxbV2ViaG9va05vdGlmaWVyXSA9IE5vbmUKCgpkZWYgZ2V0X3dlYmhvb2tfbm90aWZpZXIoKSAtPiBXZWJob29rTm90aWZpZXI6CiAgICAiIiJHZXQgdGhlIGdsb2JhbCB3ZWJob29rIG5vdGlmaWVyLiIiIgogICAgZ2xvYmFsIF93ZWJob29rX25vdGlmaWVyCiAgICBpZiBfd2ViaG9va19ub3RpZmllciBpcyBOb25lOgogICAgICAgIF93ZWJob29rX25vdGlmaWVyID0gV2ViaG9va05vdGlmaWVyKCkKICAgIHJldHVybiBfd2ViaG9va19ub3RpZmllcgoKCmRlZiBjb25maWd1cmVfd2ViaG9vayh1cmw6IHN0cikgLT4gV2ViaG9va05vdGlmaWVyOgogICAgIiIiQ29uZmlndXJlIHRoZSBnbG9iYWwgd2ViaG9vayBVUkwgYW5kIHJldHVybiB0aGUgbm90aWZpZXIuIiIiCiAgICBnbG9iYWwgX3dlYmhvb2tfbm90aWZpZXIKICAgIF93ZWJob29rX25vdGlmaWVyID0gV2ViaG9va05vdGlmaWVyKHdlYmhvb2tfdXJsPXVybCkKICAgIHJldHVybiBfd2ViaG9va19ub3RpZmllcgo=
+"""
+Notification System.
+
+Provides notifications for important events and external webhook delivery.
+"""
+from __future__ import annotations
+
+import json
+import logging
+import time
+import urllib.request
+from dataclasses import dataclass, asdict
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+
+logger = logging.getLogger(__name__)
+
+
+class NotificationLevel(Enum):
+    """Notification levels."""
+    INFO = "info"
+    SUCCESS = "success"
+    WARNING = "warning"
+    ERROR = "error"
+
+
+@dataclass
+class Notification:
+    """A notification message."""
+    level: NotificationLevel
+    title: str
+    message: str
+    timestamp: float
+
+
+class NotificationManager:
+    """Manage notifications."""
+
+    def __init__(self):
+        self.notifications: List[Notification] = []
+
+    def add(self, level: NotificationLevel, title: str, message: str):
+        """Add a notification."""
+        notification = Notification(
+            level=level, title=title, message=message, timestamp=time.time()
+        )
+        self.notifications.append(notification)
+
+    def info(self, title: str, message: str):
+        """Add info notification."""
+        self.add(NotificationLevel.INFO, title, message)
+
+    def success(self, title: str, message: str):
+        """Add success notification."""
+        self.add(NotificationLevel.SUCCESS, title, message)
+
+    def warning(self, title: str, message: str):
+        """Add warning notification."""
+        self.add(NotificationLevel.WARNING, title, message)
+
+    def error(self, title: str, message: str):
+        """Add error notification."""
+        self.add(NotificationLevel.ERROR, title, message)
+
+    def get_all(self) -> List[Notification]:
+        """Get all notifications."""
+        return self.notifications
+
+    def get_by_level(self, level: NotificationLevel) -> List[Notification]:
+        """Get notifications by level."""
+        return [n for n in self.notifications if n.level == level]
+
+    def clear(self):
+        """Clear all notifications."""
+        self.notifications.clear()
+
+
+# Global notification manager
+_notification_manager: Optional[NotificationManager] = None
+
+
+def get_notification_manager() -> NotificationManager:
+    """Get the global notification manager."""
+    global _notification_manager
+    if _notification_manager is None:
+        _notification_manager = NotificationManager()
+    return _notification_manager
+
+
+# ─── Webhook Notifier ──────────────────────────────────────────────────────────
+
+
+class WebhookNotifier:
+    """Send notifications to external webhooks (Discord, Feishu, etc.)."""
+
+    def __init__(self, webhook_url: str = ""):
+        self.webhook_url = webhook_url
+
+    def _send(self, payload: Dict[str, Any]) -> bool:
+        """Send payload to webhook URL. Returns True on success."""
+        if not self.webhook_url:
+            return False
+        try:
+            data = json.dumps(payload).encode("utf-8")
+            req = urllib.request.Request(
+                self.webhook_url,
+                data=data,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                return resp.status in (200, 204)
+        except Exception as e:
+            logger.warning(f"Webhook send failed: {e}")
+            return False
+
+    def send_discord(
+        self,
+        title: str,
+        description: str,
+        color: int = 0x5865F2,
+        fields: Optional[List[Dict[str, Any]]] = None,
+    ) -> bool:
+        """Send a Discord embed notification.
+
+        Args:
+            title: Embed title
+            description: Main text
+            color: Decimal color code (e.g. 0x00FF00 = green)
+            fields: List of {name, value, inline} dicts
+        """
+        if not self.webhook_url:
+            return False
+
+        embed: Dict[str, Any] = {
+            "title": title,
+            "description": description,
+            "color": color,
+        }
+        if fields:
+            embed["fields"] = [
+                {"name": f["name"], "value": f["value"], "inline": f.get("inline", False)}
+                for f in fields
+            ]
+
+        payload = {"embeds": [embed]}
+        return self._send(payload)
+
+    def send_feishu(
+        self,
+        title: str,
+        content: str,
+        msg_type: str = "text",
+    ) -> bool:
+        """Send a Feishu text notification.
+
+        Args:
+            title: Card title (for interactive card) or ignored for text
+            content: Message text
+            msg_type: "text" or "interactive"
+        """
+        if not self.webhook_url:
+            return False
+
+        if msg_type == "interactive":
+            payload = {
+                "msg_type": "interactive",
+                "card": {
+                    "header": {"title": {"tag": "plain_text", "content": title}},
+                    "elements": [{"tag": "div", "text": {"tag": "lark_md", "content": content}}],
+                },
+            }
+        else:
+            payload = {"msg_type": "text", "content": {"text": f"{title}\n{content}"}}
+
+        return self._send(payload)
+
+    def notify_papers_found(
+        self,
+        subscription_topic: str,
+        papers: List[Dict[str, Any]],
+        min_score: float = 0.5,
+    ) -> int:
+        """Send notification for newly found papers.
+
+        Returns number of successfully notified papers.
+        """
+        if not papers:
+            return 0
+
+        count = 0
+        top_papers = papers[:5]  # Notify top 5 at most
+
+        for paper in top_papers:
+            score = paper.get("score", 0)
+            if score < min_score:
+                continue
+
+            title = paper.get("title", "Untitled")[:200]
+            arxiv_id = paper.get("arxiv_id", "")
+            url = f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else ""
+
+            # Try Discord first
+            self.send_discord(
+                title=f"📄 New Paper — {subscription_topic}",
+                description=f"**{title}**\nScore: {score:.2f}",
+                color=0x00FF00,
+                fields=[{"name": "arXiv", "value": f"[{arxiv_id}]({url})", "inline": True}]
+                if arxiv_id else None,
+            )
+
+            # Try Feishu
+            self.send_feishu(
+                title=f"📄 New Paper — {subscription_topic}",
+                content=f"**{title}**\nScore: {score:.2f}\n{url}",
+            )
+
+            count += 1
+
+        return count
+
+
+# Global webhook notifier (lazy)
+_webhook_notifier: Optional[WebhookNotifier] = None
+
+
+def get_webhook_notifier() -> WebhookNotifier:
+    """Get the global webhook notifier."""
+    global _webhook_notifier
+    if _webhook_notifier is None:
+        _webhook_notifier = WebhookNotifier()
+    return _webhook_notifier
+
+
+def configure_webhook(url: str) -> WebhookNotifier:
+    """Configure the global webhook URL and return the notifier."""
+    global _webhook_notifier
+    _webhook_notifier = WebhookNotifier(webhook_url=url)
+    return _webhook_notifier

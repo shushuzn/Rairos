@@ -1,1 +1,172 @@
-IiIiUmVzZWFyY2ggR2FtZSBNb2RlIOKAlCBiYWRnZXMgYW5kIHByb2dyZXNzaW9uIHN5c3RlbS4KCkJhZGdlczoKICAtIENvbnRyYWRpY3Rpb24gSHVudGVyOiAzKyBjb250cmFkaWN0aW9uIHBhaXJzIGRldGVjdGVkCiAgLSBHYXAgRXh0cmFjdG9yOiAxMCsgY2Fwc3VsZXMgaW4gR2VuZSBQb29sCiAgLSBFdm9sdXRpb24gTWFzdGVyOiAxKyBjYXBzdWxlIHRoYXQgaGFzIGJlZW4gZXZvbHZlZAogIC0gQm9sZCBFeHBsb3JlcjogNSsgYm9sZCBoeXBvdGhlc2lzIGNhcHN1bGVzCiAgLSBSaWdvciBSYXRlcjogMTArIHBhcGVycyB3aXRoIHJpZ29yIHNjb3JlcwogIC0gUGFyYWRpZ20gU2VudGluZWw6IHBhcmFkaWdtIGNvbmNlbnRyYXRpb24gYWxlcnQgdHJpZ2dlcmVkCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGpzb24KZnJvbSBkYXRhY2xhc3NlcyBpbXBvcnQgZGF0YWNsYXNzCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgTGlzdCwgT3B0aW9uYWwKCkNBUFNVTEVTX1BBVEggPSBQYXRoLmhvbWUoKSAvICIuYWlfcmVzZWFyY2hfb3MiIC8gImdlbmVfcG9vbCIgLyAiY2Fwc3VsZXMuanNvbiIKQkFER0VTX1BBVEggPSBQYXRoLmhvbWUoKSAvICIuYWlfcmVzZWFyY2hfb3MiIC8gImJhZGdlcy5qc29uIgoKCkBkYXRhY2xhc3MKY2xhc3MgQmFkZ2U6CiAgICBpZDogc3RyCiAgICBuYW1lOiBzdHIKICAgIGRlc2NyaXB0aW9uOiBzdHIKICAgIGljb246IHN0cgogICAgZWFybmVkOiBib29sID0gRmFsc2UKICAgIGVhcm5lZF9hdDogT3B0aW9uYWxbc3RyXSA9IE5vbmUKCgpkZWYgX2xvYWRfY2Fwc3VsZXMoKSAtPiBMaXN0W2RpY3RdOgogICAgaWYgbm90IENBUFNVTEVTX1BBVEguZXhpc3RzKCk6CiAgICAgICAgcmV0dXJuIFtdCiAgICByZXR1cm4ganNvbi5sb2FkcyhDQVBTVUxFU19QQVRILnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKSkuZ2V0KCJjYXBzdWxlcyIsIFtdKQoKCmRlZiBfbG9hZF9iYWRnZXMoKSAtPiBkaWN0OgogICAgaWYgbm90IEJBREdFU19QQVRILmV4aXN0cygpOgogICAgICAgIHJldHVybiB7fQogICAgcmV0dXJuIGpzb24ubG9hZHMoQkFER0VTX1BBVEgucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpKQoKCmRlZiBfc2F2ZV9iYWRnZXMoYmFkZ2VzOiBkaWN0KSAtPiBOb25lOgogICAgQkFER0VTX1BBVEgucGFyZW50Lm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgIEJBREdFU19QQVRILndyaXRlX3RleHQoanNvbi5kdW1wcyhiYWRnZXMsIGluZGVudD0yLCBlbnN1cmVfYXNjaWk9RmFsc2UpLCBlbmNvZGluZz0idXRmLTgiKQoKCmRlZiBfY2hlY2tfY29udHJhZGljdGlvbl9odW50ZXIoKSAtPiBib29sOgogICAgdHJ5OgogICAgICAgIGZyb20gbGxtLmNvbnRyYWRpY3Rpb25faGVhdG1hcCBpbXBvcnQgY29tcHV0ZV9wYXBlcl9jb250cmFkaWN0aW9ucwoKICAgICAgICByZXN1bHQgPSBjb21wdXRlX3BhcGVyX2NvbnRyYWRpY3Rpb25zKCkKICAgICAgICB0b3RhbCA9IHN1bSh2LmdldCgiY291bnQiLCAwKSBmb3IgdiBpbiByZXN1bHQudmFsdWVzKCkpCiAgICAgICAgcmV0dXJuIHRvdGFsID49IDMKICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgcmV0dXJuIEZhbHNlCgoKZGVmIF9jaGVja19nYXBfZXh0cmFjdG9yKCkgLT4gYm9vbDoKICAgIGNhcHN1bGVzID0gX2xvYWRfY2Fwc3VsZXMoKQogICAgYWN0aXZlID0gW2MgZm9yIGMgaW4gY2Fwc3VsZXMgaWYgYy5nZXQoInN0YXR1cyIpIGluICgiYWN0aXZlIiwgIiIpXQogICAgcmV0dXJuIGxlbihhY3RpdmUpID49IDEwCgoKZGVmIF9jaGVja19ldm9sdXRpb25fbWFzdGVyKCkgLT4gYm9vbDoKICAgIGNhcHN1bGVzID0gX2xvYWRfY2Fwc3VsZXMoKQogICAgcmV0dXJuIGFueShjLmdldCgiZXZvbHZlZF9mcm9tIikgb3IgYy5nZXQoInNvdXJjZV9jYXBfaWQiKSBmb3IgYyBpbiBjYXBzdWxlcykKCgpkZWYgX2NoZWNrX2JvbGRfZXhwbG9yZXIoKSAtPiBib29sOgogICAgY2Fwc3VsZXMgPSBfbG9hZF9jYXBzdWxlcygpCiAgICBib2xkX3R5cGVzID0geyJ0aGVvcmV0aWNhbF9nYXAifQogICAgYm9sZF9wb2xhcml0eSA9IHsibmVnYXRpdmUifQogICAgY291bnQgPSAwCiAgICBmb3IgYyBpbiBjYXBzdWxlczoKICAgICAgICBnYXBfdHlwZSA9IGMuZ2V0KCJhY3Rpb25fZ2FwX3R5cGUiLCAiIikgb3IgYy5nZXQoInRyaWdnZXJfZ2FwX3R5cGUiLCAiIikKICAgICAgICBwb2xhcml0eSA9IGMuZ2V0KCJwb2xhcml0eSIsICJwb3NpdGl2ZSIpCiAgICAgICAgaWYgZ2FwX3R5cGUgaW4gYm9sZF90eXBlcyBvciBwb2xhcml0eSBpbiBib2xkX3BvbGFyaXR5OgogICAgICAgICAgICBjb3VudCArPSAxCiAgICByZXR1cm4gY291bnQgPj0gNQoKCmRlZiBfY2hlY2tfcmlnb3JfcmF0ZXIoKSAtPiBib29sOgogICAgIyBUcmFjayBzY29yZWQgcGFwZXJzIHZpYSBhIGZsYWcgZmlsZQogICAgZmxhZyA9IFBhdGguaG9tZSgpIC8gIi5haV9yZXNlYXJjaF9vcyIgLyAiLnJpZ29yX3JhdGVkIgogICAgaWYgbm90IGZsYWcuZXhpc3RzKCk6CiAgICAgICAgcmV0dXJuIEZhbHNlCiAgICBjb3VudCA9IGludChmbGFnLnJlYWRfdGV4dCgpLnN0cmlwKCkpIGlmIGZsYWcucmVhZF90ZXh0KCkuc3RyaXAoKS5pc2RpZ2l0KCkgZWxzZSAwCiAgICByZXR1cm4gY291bnQgPj0gMTAKCgpkZWYgX2NoZWNrX3BhcmFkaWdtX3NlbnRpbmVsKCkgLT4gYm9vbDoKICAgIGZyb20gbGxtLnBhcmFkaWdtX21vbml0b3IgaW1wb3J0IGNoZWNrX3BhcmFkaWdtX2NvbmNlbnRyYXRpb24KCiAgICB0cnk6CiAgICAgICAgcmVzdWx0ID0gY2hlY2tfcGFyYWRpZ21fY29uY2VudHJhdGlvbigpCiAgICAgICAgcmV0dXJuIHJlc3VsdC5nZXQoImFsZXJ0X3RyaWdnZXJlZCIsIEZhbHNlKQogICAgZXhjZXB0IEV4Y2VwdGlvbjoKICAgICAgICByZXR1cm4gRmFsc2UKCgpkZWYgY29tcHV0ZV9iYWRnZXMoKSAtPiBMaXN0W0JhZGdlXToKICAgIGNoZWNrcyA9IHsKICAgICAgICAiY29udHJhZGljdGlvbl9odW50ZXIiOiAoCiAgICAgICAgICAgICJDb250cmFkaWN0aW9uIEh1bnRlciIsCiAgICAgICAgICAgICJEZXRlY3QgMysgY29udHJhZGljdGlvbiBwYWlycyIsCiAgICAgICAgICAgICLwn46vIiwKICAgICAgICAgICAgX2NoZWNrX2NvbnRyYWRpY3Rpb25faHVudGVyLAogICAgICAgICksCiAgICAgICAgImdhcF9leHRyYWN0b3IiOiAoCiAgICAgICAgICAgICJHYXAgRXh0cmFjdG9yIiwKICAgICAgICAgICAgIkJ1aWxkIEdlbmUgUG9vbCB0byAxMCsgY2Fwc3VsZXMiLAogICAgICAgICAgICAi8J+nrCIsCiAgICAgICAgICAgIF9jaGVja19nYXBfZXh0cmFjdG9yLAogICAgICAgICksCiAgICAgICAgImV2b2x1dGlvbl9tYXN0ZXIiOiAoCiAgICAgICAgICAgICJFdm9sdXRpb24gTWFzdGVyIiwKICAgICAgICAgICAgIkhhdmUgMSBjYXBzdWxlIGV2b2x2ZWQiLAogICAgICAgICAgICAi8J+UhCIsCiAgICAgICAgICAgIF9jaGVja19ldm9sdXRpb25fbWFzdGVyLAogICAgICAgICksCiAgICAgICAgImJvbGRfZXhwbG9yZXIiOiAoCiAgICAgICAgICAgICJCb2xkIEV4cGxvcmVyIiwKICAgICAgICAgICAgIkNvbGxlY3QgNSBib2xkIGh5cG90aGVzaXMgY2Fwc3VsZXMiLAogICAgICAgICAgICAi8J+UtCIsCiAgICAgICAgICAgIF9jaGVja19ib2xkX2V4cGxvcmVyLAogICAgICAgICksCiAgICAgICAgInJpZ29yX3JhdGVyIjogKAogICAgICAgICAgICAiUmlnb3IgUmF0ZXIiLAogICAgICAgICAgICAiU2NvcmUgMTArIHBhcGVycyBmb3IgcmVzZWFyY2ggcmlnb3IiLAogICAgICAgICAgICAi8J+PhiIsCiAgICAgICAgICAgIF9jaGVja19yaWdvcl9yYXRlciwKICAgICAgICApLAogICAgICAgICJwYXJhZGlnbV9zZW50aW5lbCI6ICgKICAgICAgICAgICAgIlBhcmFkaWdtIFNlbnRpbmVsIiwKICAgICAgICAgICAgIlRyaWdnZXIgYSBwYXJhZGlnbSBjb25jZW50cmF0aW9uIGFsZXJ0IiwKICAgICAgICAgICAgIuKaoO+4jyIsCiAgICAgICAgICAgIF9jaGVja19wYXJhZGlnbV9zZW50aW5lbCwKICAgICAgICApLAogICAgfQoKICAgIHNhdmVkID0gX2xvYWRfYmFkZ2VzKCkKICAgIGJhZGdlczogTGlzdFtCYWRnZV0gPSBbXQoKICAgIGZvciBiaWQsIChuYW1lLCBkZXNjLCBpY29uLCBjaGVja19mbikgaW4gY2hlY2tzLml0ZW1zKCk6CiAgICAgICAgZWFybmVkID0gY2hlY2tfZm4oKQogICAgICAgIGVhcm5lZF9hdCA9IHNhdmVkLmdldChiaWQsIHt9KS5nZXQoImVhcm5lZF9hdCIpIGlmIGVhcm5lZCBlbHNlIE5vbmUKICAgICAgICBpZiBlYXJuZWQgYW5kIG5vdCBlYXJuZWRfYXQ6CiAgICAgICAgICAgIGZyb20gZGF0ZXRpbWUgaW1wb3J0IGRhdGV0aW1lCgogICAgICAgICAgICBlYXJuZWRfYXQgPSBkYXRldGltZS5ub3coKS5pc29mb3JtYXQoKQogICAgICAgICAgICBzYXZlZFtiaWRdID0geyJlYXJuZWRfYXQiOiBlYXJuZWRfYXR9CiAgICAgICAgaWYgZWFybmVkOgogICAgICAgICAgICBzYXZlZFtiaWRdID0geyJlYXJuZWRfYXQiOiBlYXJuZWRfYXQgb3Igc2F2ZWQuZ2V0KGJpZCwge30pLmdldCgiZWFybmVkX2F0Iil9CiAgICAgICAgYmFkZ2VzLmFwcGVuZCgKICAgICAgICAgICAgQmFkZ2UoCiAgICAgICAgICAgICAgICBpZD1iaWQsIG5hbWU9bmFtZSwgZGVzY3JpcHRpb249ZGVzYywgaWNvbj1pY29uLCBlYXJuZWQ9ZWFybmVkLCBlYXJuZWRfYXQ9ZWFybmVkX2F0CiAgICAgICAgICAgICkKICAgICAgICApCgogICAgX3NhdmVfYmFkZ2VzKHNhdmVkKQogICAgcmV0dXJuIGJhZGdlcwoKCmRlZiByZW5kZXJfZ2FtZV9tb2RlX2h0bWwoYmFkZ2VzOiBPcHRpb25hbFtMaXN0W0JhZGdlXV0gPSBOb25lKSAtPiBzdHI6CiAgICBpZiBiYWRnZXMgaXMgTm9uZToKICAgICAgICBiYWRnZXMgPSBjb21wdXRlX2JhZGdlcygpCgogICAgZWFybmVkID0gW2IgZm9yIGIgaW4gYmFkZ2VzIGlmIGIuZWFybmVkXQogICAgbG9ja2VkID0gW2IgZm9yIGIgaW4gYmFkZ2VzIGlmIG5vdCBiLmVhcm5lZF0KCiAgICBsaW5lcyA9IFsnPGRpdiBjbGFzcz0iZ2FtZS1tb2RlIj4nXQogICAgbGluZXMuYXBwZW5kKCI8aDM+8J+OriBSZXNlYXJjaCBHYW1lIE1vZGU8L2gzPiIpCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgZiI8cCBzdHlsZT0nZm9udC1zaXplOjEzcHg7Y29sb3I6I0E4OUU4QzttYXJnaW4tYm90dG9tOjIwcHgnPntsZW4oZWFybmVkKX0ve2xlbihiYWRnZXMpfSBiYWRnZXMgZWFybmVkPC9wPiIKICAgICkKCiAgICBpZiBlYXJuZWQ6CiAgICAgICAgbGluZXMuYXBwZW5kKCI8ZGl2IGNsYXNzPSdiYWRnZS1ncmlkJz4iKQogICAgICAgIGZvciBiIGluIGVhcm5lZDoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICAgICAgZiI8ZGl2IGNsYXNzPSdiYWRnZS1jYXJkIGVhcm5lZCc+IgogICAgICAgICAgICAgICAgZiI8ZGl2IGNsYXNzPSdiYWRnZS1pY29uJz57Yi5pY29ufTwvZGl2PiIKICAgICAgICAgICAgICAgIGYiPGRpdiBjbGFzcz0nYmFkZ2UtbmFtZSc+e2IubmFtZX08L2Rpdj4iCiAgICAgICAgICAgICAgICBmIjxkaXYgY2xhc3M9J2JhZGdlLWRlc2MnPntiLmRlc2NyaXB0aW9ufTwvZGl2PiIKICAgICAgICAgICAgICAgIGYiPC9kaXY+IgogICAgICAgICAgICApCiAgICAgICAgbGluZXMuYXBwZW5kKCI8L2Rpdj4iKQoKICAgIGlmIGxvY2tlZDoKICAgICAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgICAgICI8ZGl2IHN0eWxlPSdtYXJnaW4tdG9wOjE2cHg7Zm9udC1zaXplOjEycHg7Y29sb3I6I0E4OUU4Qzt0ZXh0LXRyYW5zZm9ybTp1cHBlcmNhc2U7bGV0dGVyLXNwYWNpbmc6MC41cHg7bWFyZ2luLWJvdHRvbTo4cHgnPkxvY2tlZDwvZGl2PiIKICAgICAgICApCiAgICAgICAgbGluZXMuYXBwZW5kKCI8ZGl2IGNsYXNzPSdiYWRnZS1ncmlkJz4iKQogICAgICAgIGZvciBiIGluIGxvY2tlZDoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICAgICAgZiI8ZGl2IGNsYXNzPSdiYWRnZS1jYXJkIGxvY2tlZCc+IgogICAgICAgICAgICAgICAgZiI8ZGl2IGNsYXNzPSdiYWRnZS1pY29uJyBzdHlsZT0nb3BhY2l0eTowLjMnPntiLmljb259PC9kaXY+IgogICAgICAgICAgICAgICAgZiI8ZGl2IGNsYXNzPSdiYWRnZS1uYW1lJyBzdHlsZT0nY29sb3I6I0E4OUU4Qyc+e2IubmFtZX08L2Rpdj4iCiAgICAgICAgICAgICAgICBmIjxkaXYgY2xhc3M9J2JhZGdlLWRlc2MnIHN0eWxlPSdjb2xvcjojQzBCOEFFJz57Yi5kZXNjcmlwdGlvbn08L2Rpdj4iCiAgICAgICAgICAgICAgICBmIjwvZGl2PiIKICAgICAgICAgICAgKQogICAgICAgIGxpbmVzLmFwcGVuZCgiPC9kaXY+IikKCiAgICBsaW5lcy5hcHBlbmQoIjxzdHlsZT4iKQogICAgbGluZXMuYXBwZW5kKAogICAgICAgICIuYmFkZ2UtZ3JpZCB7IGRpc3BsYXk6IGdyaWQ7IGdyaWQtdGVtcGxhdGUtY29sdW1uczogcmVwZWF0KGF1dG8tZmlsbCwgbWlubWF4KDE2MHB4LCAxZnIpKTsgZ2FwOiAxMHB4OyB9IgogICAgKQogICAgbGluZXMuYXBwZW5kKCIuYmFkZ2UtY2FyZCB7IGJvcmRlci1yYWRpdXM6IDhweDsgcGFkZGluZzogMTRweDsgdGV4dC1hbGlnbjogY2VudGVyOyB9IikKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiLmJhZGdlLWNhcmQuZWFybmVkIHsgYm9yZGVyOiAycHggc29saWQgIzZCOEZCNTsgYmFja2dyb3VuZDogcmdiYSgxMDcsMTQzLDE4MSwwLjA4KTsgfSIKICAgICkKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiLmJhZGdlLWNhcmQubG9ja2VkIHsgYm9yZGVyOiAxcHggZGFzaGVkICNBODlFOEM7IGJhY2tncm91bmQ6IHJnYmEoMTY4LDE1OCwxNDAsMC4wNCk7IH0iCiAgICApCiAgICBsaW5lcy5hcHBlbmQoIi5iYWRnZS1pY29uIHsgZm9udC1zaXplOiAyOHB4OyBtYXJnaW4tYm90dG9tOiA2cHg7IH0iKQogICAgbGluZXMuYXBwZW5kKAogICAgICAgICIuYmFkZ2UtbmFtZSB7IGZvbnQtd2VpZ2h0OiA3MDA7IGZvbnQtc2l6ZTogMTNweDsgbWFyZ2luLWJvdHRvbTogNHB4OyBjb2xvcjogIzJhMmEyYTsgfSIKICAgICkKICAgIGxpbmVzLmFwcGVuZCgiLmJhZGdlLWRlc2MgeyBmb250LXNpemU6IDExcHg7IGNvbG9yOiAjN2E3NTcwOyBsaW5lLWhlaWdodDogMS40OyB9IikKICAgIGxpbmVzLmFwcGVuZCgiPC9zdHlsZT4iKQogICAgbGluZXMuYXBwZW5kKCI8L2Rpdj4iKQogICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykK
+"""Research Game Mode — badges and progression system.
+
+Badges:
+  - Contradiction Hunter: 3+ contradiction pairs detected
+  - Gap Extractor: 10+ capsules in Gene Pool
+  - Evolution Master: 1+ capsule that has been evolved
+  - Bold Explorer: 5+ bold hypothesis capsules
+  - Rigor Rater: 10+ papers with rigor scores
+  - Paradigm Sentinel: paradigm concentration alert triggered
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass
+from pathlib import Path
+from typing import List, Optional
+
+CAPSULES_PATH = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+BADGES_PATH = Path.home() / ".ai_research_os" / "badges.json"
+
+
+@dataclass
+class Badge:
+    id: str
+    name: str
+    description: str
+    icon: str
+    earned: bool = False
+    earned_at: Optional[str] = None
+
+
+def _load_capsules() -> List[dict]:
+    if not CAPSULES_PATH.exists():
+        return []
+    return json.loads(CAPSULES_PATH.read_text(encoding="utf-8")).get("capsules", [])
+
+
+def _load_badges() -> dict:
+    if not BADGES_PATH.exists():
+        return {}
+    return json.loads(BADGES_PATH.read_text(encoding="utf-8"))
+
+
+def _save_badges(badges: dict) -> None:
+    BADGES_PATH.parent.mkdir(parents=True, exist_ok=True)
+    BADGES_PATH.write_text(json.dumps(badges, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def _check_contradiction_hunter() -> bool:
+    try:
+        from llm.contradiction_heatmap import compute_paper_contradictions
+        result = compute_paper_contradictions()
+        total = sum(v.get("count", 0) for v in result.values())
+        return total >= 3
+    except Exception:
+        return False
+
+
+def _check_gap_extractor() -> bool:
+    capsules = _load_capsules()
+    active = [c for c in capsules if c.get("status") in ("active", "")]
+    return len(active) >= 10
+
+
+def _check_evolution_master() -> bool:
+    capsules = _load_capsules()
+    return any(c.get("evolved_from") or c.get("source_cap_id") for c in capsules)
+
+
+def _check_bold_explorer() -> bool:
+    capsules = _load_capsules()
+    bold_types = {"theoretical_gap"}
+    bold_polarity = {"negative"}
+    count = 0
+    for c in capsules:
+        gap_type = c.get("action_gap_type", "") or c.get("trigger_gap_type", "")
+        polarity = c.get("polarity", "positive")
+        if gap_type in bold_types or polarity in bold_polarity:
+            count += 1
+    return count >= 5
+
+
+def _check_rigor_rater() -> bool:
+    # Track scored papers via a flag file
+    flag = Path.home() / ".ai_research_os" / ".rigor_rated"
+    if not flag.exists():
+        return False
+    count = int(flag.read_text().strip()) if flag.read_text().strip().isdigit() else 0
+    return count >= 10
+
+
+def _check_paradigm_sentinel() -> bool:
+    from llm.paradigm_monitor import check_paradigm_concentration
+    try:
+        result = check_paradigm_concentration()
+        return result.get("alert_triggered", False)
+    except Exception:
+        return False
+
+
+def compute_badges() -> List[Badge]:
+    checks = {
+        "contradiction_hunter": ("Contradiction Hunter", "Detect 3+ contradiction pairs", "🎯", _check_contradiction_hunter),
+        "gap_extractor": ("Gap Extractor", "Build Gene Pool to 10+ capsules", "🧬", _check_gap_extractor),
+        "evolution_master": ("Evolution Master", "Have 1 capsule evolved", "🔄", _check_evolution_master),
+        "bold_explorer": ("Bold Explorer", "Collect 5 bold hypothesis capsules", "🔴", _check_bold_explorer),
+        "rigor_rater": ("Rigor Rater", "Score 10+ papers for research rigor", "🏆", _check_rigor_rater),
+        "paradigm_sentinel": ("Paradigm Sentinel", "Trigger a paradigm concentration alert", "⚠️", _check_paradigm_sentinel),
+    }
+
+    saved = _load_badges()
+    badges: List[Badge] = []
+
+    for bid, (name, desc, icon, check_fn) in checks.items():
+        earned = check_fn()
+        earned_at = saved.get(bid, {}).get("earned_at") if earned else None
+        if earned and not earned_at:
+            from datetime import datetime
+            earned_at = datetime.now().isoformat()
+            saved[bid] = {"earned_at": earned_at}
+        if earned:
+            saved[bid] = {"earned_at": earned_at or saved.get(bid, {}).get("earned_at")}
+        badges.append(Badge(id=bid, name=name, description=desc, icon=icon, earned=earned, earned_at=earned_at))
+
+    _save_badges(saved)
+    return badges
+
+
+def render_game_mode_html(badges: Optional[List[Badge]] = None) -> str:
+    if badges is None:
+        badges = compute_badges()
+
+    earned = [b for b in badges if b.earned]
+    locked = [b for b in badges if not b.earned]
+
+    lines = ['<div class="game-mode">']
+    lines.append("<h3>🎮 Research Game Mode</h3>")
+    lines.append(f"<p style='font-size:13px;color:#A89E8C;margin-bottom:20px'>{len(earned)}/{len(badges)} badges earned</p>")
+
+    if earned:
+        lines.append("<div class='badge-grid'>")
+        for b in earned:
+            lines.append(f"<div class='badge-card earned'>"
+                        f"<div class='badge-icon'>{b.icon}</div>"
+                        f"<div class='badge-name'>{b.name}</div>"
+                        f"<div class='badge-desc'>{b.description}</div>"
+                        f"</div>")
+        lines.append("</div>")
+
+    if locked:
+        lines.append("<div style='margin-top:16px;font-size:12px;color:#A89E8C;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px'>Locked</div>")
+        lines.append("<div class='badge-grid'>")
+        for b in locked:
+            lines.append(f"<div class='badge-card locked'>"
+                        f"<div class='badge-icon' style='opacity:0.3'>{b.icon}</div>"
+                        f"<div class='badge-name' style='color:#A89E8C'>{b.name}</div>"
+                        f"<div class='badge-desc' style='color:#C0B8AE'>{b.description}</div>"
+                        f"</div>")
+        lines.append("</div>")
+
+    lines.append("<style>")
+    lines.append(".badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }")
+    lines.append(".badge-card { border-radius: 8px; padding: 14px; text-align: center; }")
+    lines.append(".badge-card.earned { border: 2px solid #6B8FB5; background: rgba(107,143,181,0.08); }")
+    lines.append(".badge-card.locked { border: 1px dashed #A89E8C; background: rgba(168,158,140,0.04); }")
+    lines.append(".badge-icon { font-size: 28px; margin-bottom: 6px; }")
+    lines.append(".badge-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; color: #2a2a2a; }")
+    lines.append(".badge-desc { font-size: 11px; color: #7a7570; line-height: 1.4; }")
+    lines.append("</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

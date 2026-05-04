@@ -1,1 +1,73 @@
-IiIiQ0xJIGNvbW1hbmQ6IGRhc2hib2FyZCDigJQgUmVzZWFyY2ggcHJvZ3Jlc3MgZGFzaGJvYXJkLiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGFyZ3BhcnNlCgpmcm9tIGNsaS5fc2hhcmVkIGltcG9ydCBnZXRfZGIKZnJvbSBsbG0uZGFzaGJvYXJkIGltcG9ydCBEYXNoYm9hcmQKCgpkZWYgX2J1aWxkX2Rhc2hib2FyZF9wYXJzZXIoc3VicGFyc2VycykgLT4gYXJncGFyc2UuQXJndW1lbnRQYXJzZXI6CiAgICAiIiJCdWlsZCB0aGUgZGFzaGJvYXJkIHN1YmNvbW1hbmQgcGFyc2VyLiIiIgogICAgcCA9IHN1YnBhcnNlcnMuYWRkX3BhcnNlcigKICAgICAgICAiZGFzaGJvYXJkIiwKICAgICAgICBoZWxwPSJSZXNlYXJjaCBwcm9ncmVzcyBkYXNoYm9hcmQiLAogICAgICAgIGRlc2NyaXB0aW9uPSJWaWV3IGFnZ3JlZ2F0ZWQgcmVzZWFyY2ggcHJvZ3Jlc3Mgc3VtbWFyeS4iLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tcXVlc3Rpb25zIiwKICAgICAgICAiLXEiLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iRm9jdXMgb24gcXVlc3Rpb25zIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWV4cGVyaW1lbnRzIiwKICAgICAgICAiLWUiLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iRm9jdXMgb24gZXhwZXJpbWVudHMiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tcGFwZXJzIiwKICAgICAgICAiLXAiLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iRm9jdXMgb24gcGFwZXJzIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWpzb24iLAogICAgICAgICItaiIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBoZWxwPSJKU09OIG91dHB1dCIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1leHBvcnQtbWQiLAogICAgICAgIHR5cGU9c3RyLAogICAgICAgIGhlbHA9IkV4cG9ydCBhcyBNYXJrZG93biBmaWxlIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLW5vLXBhcGVycyIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBoZWxwPSJTa2lwIHBhcGVyIHN0YXRpc3RpY3MgKGZhc3RlcikiLAogICAgKQogICAgcmV0dXJuIHAgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgoKZGVmIF9ydW5fZGFzaGJvYXJkKGFyZ3M6IGFyZ3BhcnNlLk5hbWVzcGFjZSkgLT4gaW50OgogICAgIiIiUnVuIGRhc2hib2FyZCBjb21tYW5kLiIiIgogICAgZGIgPSBnZXRfZGIoKQogICAgZGIuaW5pdCgpCgogICAgZGFzaGJvYXJkID0gRGFzaGJvYXJkKGRiPWRiKQogICAgZGF0YSA9IGRhc2hib2FyZC5jb2xsZWN0KGluY2x1ZGVfcGFwZXJzPW5vdCBhcmdzLm5vX3BhcGVycykKCiAgICBpZiBhcmdzLmpzb246CiAgICAgICAgcHJpbnQoZGFzaGJvYXJkLnJlbmRlcl9qc29uKGRhdGEpKQogICAgZWxpZiBhcmdzLmV4cG9ydF9tZDoKICAgICAgICAjIE1hcmtkb3duIGV4cG9ydAogICAgICAgIGxpbmVzID0gWyIjIFJlc2VhcmNoIERhc2hib2FyZCIsICIiXQogICAgICAgIGxpbmVzLmFwcGVuZChmIkdlbmVyYXRlZDoge2RhdGEuZ2VuZXJhdGVkX2F0WzoxMF19IikKICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCiAgICAgICAgbGluZXMuYXBwZW5kKGRhc2hib2FyZC5yZW5kZXJfdGV4dChkYXRhKSkKICAgICAgICB3aXRoIG9wZW4oYXJncy5leHBvcnRfbWQsICJ3IiwgZW5jb2Rpbmc9InV0Zi04IikgYXMgZjoKICAgICAgICAgICAgZi53cml0ZSgiXG4iLmpvaW4obGluZXMpKQogICAgICAgIHByaW50KGYi4pyTIEV4cG9ydGVkIHRvIHthcmdzLmV4cG9ydF9tZH0iKQogICAgZWxzZToKICAgICAgICBwcmludCgpCiAgICAgICAgcHJpbnQoZGFzaGJvYXJkLnJlbmRlcl90ZXh0KGRhdGEpKQoKICAgIHJldHVybiAwCg==
+"""CLI command: dashboard — Research progress dashboard."""
+from __future__ import annotations
+
+import argparse
+
+from cli._shared import get_db
+from llm.dashboard import Dashboard
+
+
+def _build_dashboard_parser(subparsers) -> argparse.ArgumentParser:
+    """Build the dashboard subcommand parser."""
+    p = subparsers.add_parser(
+        "dashboard",
+        help="Research progress dashboard",
+        description="View aggregated research progress summary.",
+    )
+    p.add_argument(
+        "--questions", "-q",
+        action="store_true",
+        help="Focus on questions",
+    )
+    p.add_argument(
+        "--experiments", "-e",
+        action="store_true",
+        help="Focus on experiments",
+    )
+    p.add_argument(
+        "--papers", "-p",
+        action="store_true",
+        help="Focus on papers",
+    )
+    p.add_argument(
+        "--json", "-j",
+        action="store_true",
+        help="JSON output",
+    )
+    p.add_argument(
+        "--export-md",
+        type=str,
+        help="Export as Markdown file",
+    )
+    p.add_argument(
+        "--no-papers",
+        action="store_true",
+        help="Skip paper statistics (faster)",
+    )
+    return p  # type: ignore[no-any-return]
+
+
+def _run_dashboard(args: argparse.Namespace) -> int:
+    """Run dashboard command."""
+    db = get_db()
+    db.init()
+
+    dashboard = Dashboard(db=db)
+    data = dashboard.collect(include_papers=not args.no_papers)
+
+    if args.json:
+        print(dashboard.render_json(data))
+    elif args.export_md:
+        # Markdown export
+        lines = ["# Research Dashboard", ""]
+        lines.append(f"Generated: {data.generated_at[:10]}")
+        lines.append("")
+        lines.append(dashboard.render_text(data))
+        with open(args.export_md, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(lines))
+        print(f"✓ Exported to {args.export_md}")
+    else:
+        print()
+        print(dashboard.render_text(data))
+
+    return 0

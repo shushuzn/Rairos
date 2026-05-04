@@ -1,1 +1,174 @@
-IiIiQ0xJIGNvbW1hbmQ6IHBpcGVsaW5lIOKAlCBGdWxsIHJlc2VhcmNoIHBpcGVsaW5lOiBnYXAg4oaSIGh5cG90aGVzaXMg4oaSIGV4cGVyaW1lbnQuCgpSdW5zIGdhcCBhbmFseXNpcyArIGh5cG90aGVzaXMgZ2VuZXJhdGlvbiArIG9wdGlvbmFsbHkgY3JlYXRlcyBleHBlcmltZW50IHJlY29yZHMuCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGFyZ3BhcnNlCgpmcm9tIGNsaS5fc2hhcmVkIGltcG9ydCAoCiAgICBDb2xvcnMsCiAgICBjb2xvcmVkLAogICAgZ2V0X2RiLAogICAgcHJpbnRfZXJyb3IsCiAgICBwcmludF9pbmZvLAogICAgcHJpbnRfc3VjY2VzcywKKQpmcm9tIGxsbS5leHBlcmltZW50X3RyYWNrZXIgaW1wb3J0IEV4cGVyaW1lbnRUcmFja2VyCmZyb20gbGxtLmdhcF9hbmFseXplciBpbXBvcnQgR2FwQW5hbHl6ZXJWMiwgcmVuZGVyX2NvbWJpbmVkX3JlcG9ydApmcm9tIGxsbS5pbnNpZ2h0X2V2b2x1dGlvbiBpbXBvcnQgRXZvbHV0aW9uVHJhY2tlcgoKCmRlZiBfYnVpbGRfcGlwZWxpbmVfcGFyc2VyKHN1YnBhcnNlcnMpIC0+IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyOgogICAgcCA9IHN1YnBhcnNlcnMuYWRkX3BhcnNlcigKICAgICAgICAicGlwZWxpbmUiLAogICAgICAgIGhlbHA9IkZ1bGwgcmVzZWFyY2ggcGlwZWxpbmU6IGdhcCBhbmFseXNpcyDihpIgaHlwb3RoZXNpcyDihpIgZXhwZXJpbWVudCIsCiAgICAgICAgZGVzY3JpcHRpb249IlJ1biBnYXAgYW5hbHlzaXMsIGdlbmVyYXRlIGh5cG90aGVzZXMsIGFuZCBvcHRpb25hbGx5IGNyZWF0ZSBleHBlcmltZW50IHJlY29yZHMuIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICJ0b3BpYyIsCiAgICAgICAgbmFyZ3M9Ij8iLAogICAgICAgIGRlZmF1bHQ9IiIsCiAgICAgICAgaGVscD0iUmVzZWFyY2ggdG9waWMgb3Iga2V5d29yZCIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1oeXBvdGhlc2lzLW9ubHkiLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iUnVuIGdhcCBhbmFseXNpcyArIGh5cG90aGVzaXMgb25seSAoc2tpcCBleHBlcmltZW50IGNyZWF0aW9uKSIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1leHBlcmltZW50cyIsCiAgICAgICAgZGVzdD0iY3JlYXRlX2V4cGVyaW1lbnRzIiwKICAgICAgICBhY3Rpb249InN0b3JlX3RydWUiLAogICAgICAgIGhlbHA9IkNyZWF0ZSBleHBlcmltZW50IHJlY29yZHMgZnJvbSB0b3AgaHlwb3RoZXNlcyAoZGVmYXVsdDogeWVzKSIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS10b3AiLAogICAgICAgICItbiIsCiAgICAgICAgdHlwZT1pbnQsCiAgICAgICAgZGVmYXVsdD0zLAogICAgICAgIGRlc3Q9InRvcF9oeXBvdGhlc2VzIiwKICAgICAgICBoZWxwPSJOdW1iZXIgb2YgdG9wIGh5cG90aGVzZXMgdG8gY29udmVydCB0byBleHBlcmltZW50cyAoZGVmYXVsdDogMykiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tbWluLXBhcGVycyIsCiAgICAgICAgdHlwZT1pbnQsCiAgICAgICAgZGVmYXVsdD01LAogICAgICAgIGhlbHA9Ik1pbmltdW0gcGFwZXJzIGZvciBnYXAgYW5hbHlzaXMgKGRlZmF1bHQ6IDUpIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLW1vZGVsIiwKICAgICAgICB0eXBlPXN0ciwKICAgICAgICBkZWZhdWx0PU5vbmUsCiAgICAgICAgaGVscD0iTExNIG1vZGVsIG92ZXJyaWRlIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWpzb24iLAogICAgICAgICItaiIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBoZWxwPSJPdXRwdXQgY29tYmluZWQgcmVwb3J0IGFzIEpTT04iLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tbm8tbGxtIiwKICAgICAgICBhY3Rpb249InN0b3JlX3RydWUiLAogICAgICAgIGhlbHA9IlNraXAgTExNIGVuaGFuY2VtZW50IGZvciBnYXAgYW5hbHlzaXMiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tdmVyYm9zZSIsCiAgICAgICAgIi12IiwKICAgICAgICBhY3Rpb249InN0b3JlX3RydWUiLAogICAgICAgIGhlbHA9IlZlcmJvc2Ugb3V0cHV0IiwKICAgICkKICAgIHJldHVybiBwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKCmRlZiBfcnVuX3BpcGVsaW5lKGFyZ3M6IGFyZ3BhcnNlLk5hbWVzcGFjZSkgLT4gaW50OgogICAgZGIgPSBnZXRfZGIoKQogICAgZGIuaW5pdCgpCgogICAgaWYgbm90IGFyZ3MudG9waWM6CiAgICAgICAgcHJpbnRfZXJyb3IoIlBsZWFzZSBwcm92aWRlIGEgcmVzZWFyY2ggdG9waWMuIikKICAgICAgICByZXR1cm4gMQoKICAgIHByaW50X2luZm8oZiJTdGFydGluZyBwaXBlbGluZSBmb3I6IHthcmdzLnRvcGljfSIpCgogICAgIyBTdGVwIDE6IEdhcCBhbmFseXNpcyArIGh5cG90aGVzaXMgZ2VuZXJhdGlvbgogICAgdHJhY2tlciA9IEV2b2x1dGlvblRyYWNrZXIoKQogICAgYW5hbHl6ZXIgPSBHYXBBbmFseXplclYyKGRiPWRiLCBldm9sdXRpb25fdHJhY2tlcj10cmFja2VyKQogICAgZ2FwX3Jlc3VsdCwgaHlwb3RoZXNpc19yZXN1bHQgPSBhbmFseXplci5hbmFseXplX3dpdGhfaHlwb3RoZXNlcygKICAgICAgICB0b3BpYz1hcmdzLnRvcGljLAogICAgICAgIG1pbl9wYXBlcnM9YXJncy5taW5fcGFwZXJzLAogICAgICAgIHVzZV9sbG09bm90IGFyZ3Mubm9fbGxtLAogICAgICAgIG1vZGVsPWFyZ3MubW9kZWwsCiAgICApCgogICAgIyBTdGVwIDI6IFJlbmRlciByZXBvcnQKICAgIGlmIGFyZ3MuanNvbjoKICAgICAgICBpbXBvcnQganNvbgoKICAgICAgICBvdXRwdXQgPSB7CiAgICAgICAgICAgICJ0b3BpYyI6IGFyZ3MudG9waWMsCiAgICAgICAgICAgICJnYXBzIjogWwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICJ0aXRsZSI6IGcudGl0bGUsCiAgICAgICAgICAgICAgICAgICAgInR5cGUiOiBnLmdhcF90eXBlLnZhbHVlLAogICAgICAgICAgICAgICAgICAgICJzZXZlcml0eSI6IGcuc2V2ZXJpdHkudmFsdWUsCiAgICAgICAgICAgICAgICAgICAgImRlc2NyaXB0aW9uIjogZy5kZXNjcmlwdGlvbiwKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGZvciBnIGluIGdhcF9yZXN1bHQuZ2FwcwogICAgICAgICAgICBdLAogICAgICAgICAgICAiaHlwb3RoZXNlcyI6IFsKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAidGl0bGUiOiBoLnRpdGxlLAogICAgICAgICAgICAgICAgICAgICJ0eXBlIjogaC5oeXBvdGhlc2lzX3R5cGUudmFsdWUsCiAgICAgICAgICAgICAgICAgICAgInN0YXRlbWVudCI6IGguY29yZV9zdGF0ZW1lbnQsCiAgICAgICAgICAgICAgICAgICAgImV4cGVyaW1lbnQiOiB7CiAgICAgICAgICAgICAgICAgICAgICAgICJiYXNlbGluZSI6IGguZXhwZXJpbWVudF9kZXNpZ24uYmFzZWxpbmUsCiAgICAgICAgICAgICAgICAgICAgICAgICJ2YXJpYWJsZXMiOiBoLmV4cGVyaW1lbnRfZGVzaWduLnZhcmlhYmxlcywKICAgICAgICAgICAgICAgICAgICAgICAgImNvbnRyb2xzIjogaC5leHBlcmltZW50X2Rlc2lnbi5jb250cm9scywKICAgICAgICAgICAgICAgICAgICAgICAgIm1ldHJpY3MiOiBoLmV4cGVyaW1lbnRfZGVzaWduLmV2YWx1YXRpb25fbWV0cmljcywKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgaWYgaC5leHBlcmltZW50X2Rlc2lnbgogICAgICAgICAgICAgICAgICAgIGVsc2UgTm9uZSwKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGZvciBoIGluIGh5cG90aGVzaXNfcmVzdWx0Lmh5cG90aGVzZXMKICAgICAgICAgICAgXSwKICAgICAgICB9CiAgICAgICAgcHJpbnQoanNvbi5kdW1wcyhvdXRwdXQsIGVuc3VyZV9hc2NpaT1GYWxzZSwgaW5kZW50PTIpKQogICAgZWxzZToKICAgICAgICBwcmludChyZW5kZXJfY29tYmluZWRfcmVwb3J0KGdhcF9yZXN1bHQsIGh5cG90aGVzaXNfcmVzdWx0KSkKCiAgICAjIFN0ZXAgMzogQ3JlYXRlIGV4cGVyaW1lbnRzIGZyb20gdG9wIGh5cG90aGVzZXMKICAgIGlmIG5vdCBhcmdzLmh5cG90aGVzaXNfb25seSBhbmQgaHlwb3RoZXNpc19yZXN1bHQuaHlwb3RoZXNlczoKICAgICAgICBleHBfdHJhY2tlciA9IEV4cGVyaW1lbnRUcmFja2VyKCkKICAgICAgICBjcmVhdGVkID0gW10KICAgICAgICBmb3IgaCBpbiBoeXBvdGhlc2lzX3Jlc3VsdC5oeXBvdGhlc2VzWzogYXJncy50b3BfaHlwb3RoZXNlc106CiAgICAgICAgICAgIGVkID0gaC5leHBlcmltZW50X2Rlc2lnbgogICAgICAgICAgICBpZiBub3QgZWQ6CiAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICB0cmFja2VyLnJlY29yZF9oeXBvdGhlc2lzX2dlbmVyYXRlZCgKICAgICAgICAgICAgICAgIHRvcGljPWFyZ3MudG9waWMsCiAgICAgICAgICAgICAgICBnYXBfdHlwZT1oLmdhcF90eXBlLAogICAgICAgICAgICAgICAgZ2FwX3RpdGxlPWgudGl0bGUsCiAgICAgICAgICAgICAgICBoeXBvdGhlc2lzX2lkPWguaWQsCiAgICAgICAgICAgICkKICAgICAgICAgICAgZXhwID0gZXhwX3RyYWNrZXIucnVuKAogICAgICAgICAgICAgICAgbmFtZT1oLnRpdGxlLAogICAgICAgICAgICAgICAgZGVzY3JpcHRpb249aC5jb3JlX3N0YXRlbWVudCwKICAgICAgICAgICAgICAgIGh5cG90aGVzaXNfaWQ9aC5pZCwKICAgICAgICAgICAgICAgIGNvbmZpZz17CiAgICAgICAgICAgICAgICAgICAgImJhc2VsaW5lIjogZWQuYmFzZWxpbmUsCiAgICAgICAgICAgICAgICAgICAgInZhcmlhYmxlcyI6IGVkLnZhcmlhYmxlcywKICAgICAgICAgICAgICAgICAgICAiY29udHJvbHMiOiBlZC5jb250cm9scywKICAgICAgICAgICAgICAgICAgICAiZXZhbHVhdGlvbl9tZXRyaWNzIjogZWQuZXZhbHVhdGlvbl9tZXRyaWNzLAogICAgICAgICAgICAgICAgICAgICJleHBlY3RlZF9yZXN1bHRzIjogZWQuZXhwZWN0ZWRfcmVzdWx0cywKICAgICAgICAgICAgICAgICAgICAiaHlwb3RoZXNpc190eXBlIjogaC5oeXBvdGhlc2lzX3R5cGUudmFsdWUsCiAgICAgICAgICAgICAgICAgICAgImdhcF90eXBlIjogaC5nYXBfdHlwZSwKICAgICAgICAgICAgICAgICAgICAiYmFzZWRfb24iOiBoLmJhc2VkX29uLAogICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgIHRhZ3M9W2FyZ3MudG9waWMsIGguaHlwb3RoZXNpc190eXBlLnZhbHVlXSwKICAgICAgICAgICAgKQogICAgICAgICAgICBjcmVhdGVkLmFwcGVuZChleHApCiAgICAgICAgICAgIHByaW50X3N1Y2Nlc3MoZiIgIENyZWF0ZWQgZXhwZXJpbWVudCBbe2V4cC5pZH1dOiB7Y29sb3JlZChleHAubmFtZSwgQ29sb3JzLk9LQkxVRSl9IikKCiAgICAgICAgaWYgY3JlYXRlZDoKICAgICAgICAgICAgcHJpbnRfc3VjY2VzcyhmIlxue2xlbihjcmVhdGVkKX0gZXhwZXJpbWVudChzKSByZWdpc3RlcmVkIGluIGV4cGVyaW1lbnQgdHJhY2tlci4iKQogICAgICAgICAgICBwcmludF9pbmZvKAogICAgICAgICAgICAgICAgIlJ1biBgYWlyb3MgZXhwZXJpbWVudGAgdG8gbGlzdCB0aGVtLCBvciBgYWlyb3MgZXhwZXJpbWVudCAtLWNvbXBsZXRlIDxpZD5gIHdoZW4gZG9uZS4iCiAgICAgICAgICAgICkKCiAgICByZXR1cm4gMAo=
+"""CLI command: pipeline — Full research pipeline: gap → hypothesis → experiment.
+
+Runs gap analysis + hypothesis generation + optionally creates experiment records.
+"""
+from __future__ import annotations
+
+import argparse
+
+from cli._shared import (
+    Colors,
+    colored,
+    get_db,
+    print_error,
+    print_info,
+    print_success,
+)
+from llm.experiment_tracker import ExperimentTracker
+from llm.gap_analyzer import GapAnalyzerV2, render_combined_report
+from llm.insight_evolution import EvolutionTracker
+
+
+def _build_pipeline_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "pipeline",
+        help="Full research pipeline: gap analysis → hypothesis → experiment",
+        description="Run gap analysis, generate hypotheses, and optionally create experiment records.",
+    )
+    p.add_argument(
+        "topic",
+        nargs="?",
+        default="",
+        help="Research topic or keyword",
+    )
+    p.add_argument(
+        "--hypothesis-only",
+        action="store_true",
+        help="Run gap analysis + hypothesis only (skip experiment creation)",
+    )
+    p.add_argument(
+        "--experiments",
+        dest="create_experiments",
+        action="store_true",
+        help="Create experiment records from top hypotheses (default: yes)",
+    )
+    p.add_argument(
+        "--top", "-n",
+        type=int,
+        default=3,
+        dest="top_hypotheses",
+        help="Number of top hypotheses to convert to experiments (default: 3)",
+    )
+    p.add_argument(
+        "--min-papers",
+        type=int,
+        default=5,
+        help="Minimum papers for gap analysis (default: 5)",
+    )
+    p.add_argument(
+        "--model",
+        type=str,
+        default=None,
+        help="LLM model override",
+    )
+    p.add_argument(
+        "--json", "-j",
+        action="store_true",
+        help="Output combined report as JSON",
+    )
+    p.add_argument(
+        "--no-llm",
+        action="store_true",
+        help="Skip LLM enhancement for gap analysis",
+    )
+    p.add_argument(
+        "--verbose", "-v",
+        action="store_true",
+        help="Verbose output",
+    )
+    return p  # type: ignore[no-any-return]
+
+
+def _run_pipeline(args: argparse.Namespace) -> int:
+    db = get_db()
+    db.init()
+
+    if not args.topic:
+        print_error("Please provide a research topic.")
+        return 1
+
+    print_info(f"Starting pipeline for: {args.topic}")
+
+    # Step 1: Gap analysis + hypothesis generation
+    tracker = EvolutionTracker()
+    analyzer = GapAnalyzerV2(db=db, evolution_tracker=tracker)
+    gap_result, hypothesis_result = analyzer.analyze_with_hypotheses(
+        topic=args.topic,
+        min_papers=args.min_papers,
+        use_llm=not args.no_llm,
+        model=args.model,
+    )
+
+    # Step 2: Render report
+    if args.json:
+        import json
+        output = {
+            "topic": args.topic,
+            "gaps": [
+                {
+                    "title": g.title,
+                    "type": g.gap_type.value,
+                    "severity": g.severity.value,
+                    "description": g.description,
+                }
+                for g in gap_result.gaps
+            ],
+            "hypotheses": [
+                {
+                    "title": h.title,
+                    "type": h.hypothesis_type.value,
+                    "statement": h.core_statement,
+                    "experiment": {
+                        "baseline": h.experiment_design.baseline,
+                        "variables": h.experiment_design.variables,
+                        "controls": h.experiment_design.controls,
+                        "metrics": h.experiment_design.evaluation_metrics,
+                    } if h.experiment_design else None,
+                }
+                for h in hypothesis_result.hypotheses
+            ],
+        }
+        print(json.dumps(output, ensure_ascii=False, indent=2))
+    else:
+        print(render_combined_report(gap_result, hypothesis_result))
+
+    # Step 3: Create experiments from top hypotheses
+    if not args.hypothesis_only and hypothesis_result.hypotheses:
+        exp_tracker = ExperimentTracker()
+        created = []
+        for h in hypothesis_result.hypotheses[:args.top_hypotheses]:
+            ed = h.experiment_design
+            if not ed:
+                continue
+            tracker.record_hypothesis_generated(
+                topic=args.topic,
+                gap_type=h.gap_type,
+                gap_title=h.title,
+                hypothesis_id=h.id,
+            )
+            exp = exp_tracker.run(
+                name=h.title,
+                description=h.core_statement,
+                hypothesis_id=h.id,
+                config={
+                    "baseline": ed.baseline,
+                    "variables": ed.variables,
+                    "controls": ed.controls,
+                    "evaluation_metrics": ed.evaluation_metrics,
+                    "expected_results": ed.expected_results,
+                    "hypothesis_type": h.hypothesis_type.value,
+                    "gap_type": h.gap_type,
+                    "based_on": h.based_on,
+                },
+                tags=[args.topic, h.hypothesis_type.value],
+            )
+            created.append(exp)
+            print_success(
+                f"  Created experiment [{exp.id}]: {colored(exp.name, Colors.OKBLUE)}"
+            )
+
+        if created:
+            print_success(f"\n{len(created)} experiment(s) registered in experiment tracker.")
+            print_info("Run `airos experiment` to list them, or `airos experiment --complete <id>` when done.")
+
+    return 0

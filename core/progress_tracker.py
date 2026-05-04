@@ -1,1 +1,42 @@
-IiIiClByb2dyZXNzIFRyYWNrZXIgLSDov5vluqbov73ouKrns7vnu58KIiIiCgpmcm9tIGRhdGV0aW1lIGltcG9ydCBkYXRldGltZQoKCmNsYXNzIFByb2dyZXNzVHJhY2tlcjoKICAgICIiIlRyYWNrIHByb2dyZXNzIG9mIHJlc2VhcmNoIHRhc2tzLiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmKToKICAgICAgICBzZWxmLnRhc2tzID0ge30KCiAgICBkZWYgYWRkX3Rhc2soc2VsZiwgdGFza19pZDogc3RyLCBkZXNjcmlwdGlvbjogc3RyKToKICAgICAgICBzZWxmLnRhc2tzW3Rhc2tfaWRdID0gewogICAgICAgICAgICAiZGVzY3JpcHRpb24iOiBkZXNjcmlwdGlvbiwKICAgICAgICAgICAgInN0YXR1cyI6ICJwZW5kaW5nIiwKICAgICAgICAgICAgImNyZWF0ZWQiOiBkYXRldGltZS5ub3coKS5pc29mb3JtYXQoKSwKICAgICAgICAgICAgImNvbXBsZXRlZCI6IE5vbmUsCiAgICAgICAgfQoKICAgIGRlZiBjb21wbGV0ZV90YXNrKHNlbGYsIHRhc2tfaWQ6IHN0cik6CiAgICAgICAgaWYgdGFza19pZCBpbiBzZWxmLnRhc2tzOgogICAgICAgICAgICBzZWxmLnRhc2tzW3Rhc2tfaWRdWyJzdGF0dXMiXSA9ICJjb21wbGV0ZWQiCiAgICAgICAgICAgIHNlbGYudGFza3NbdGFza19pZF1bImNvbXBsZXRlZCJdID0gZGF0ZXRpbWUubm93KCkuaXNvZm9ybWF0KCkKCiAgICBkZWYgZ2V0X3Byb2dyZXNzKHNlbGYpIC0+IGZsb2F0OgogICAgICAgIHRvdGFsID0gbGVuKHNlbGYudGFza3MpCiAgICAgICAgaWYgdG90YWwgPT0gMDoKICAgICAgICAgICAgcmV0dXJuIDAuMAogICAgICAgIGNvbXBsZXRlZCA9IHN1bSgxIGZvciB0IGluIHNlbGYudGFza3MudmFsdWVzKCkgaWYgdFsic3RhdHVzIl0gPT0gImNvbXBsZXRlZCIpCiAgICAgICAgcmV0dXJuIGNvbXBsZXRlZCAvIHRvdGFsICogMTAwCgoKX3RyYWNrZXIgPSBOb25lCgoKZGVmIGdldF90cmFja2VyKCkgLT4gUHJvZ3Jlc3NUcmFja2VyOgogICAgZ2xvYmFsIF90cmFja2VyCiAgICBpZiBfdHJhY2tlciBpcyBOb25lOgogICAgICAgIF90cmFja2VyID0gUHJvZ3Jlc3NUcmFja2VyKCkKICAgIHJldHVybiBfdHJhY2tlcgo=
+"""
+Progress Tracker - 进度追踪系统
+"""
+
+from datetime import datetime
+
+
+class ProgressTracker:
+    """Track progress of research tasks."""
+
+    def __init__(self):
+        self.tasks = {}
+
+    def add_task(self, task_id: str, description: str):
+        self.tasks[task_id] = {
+            "description": description,
+            "status": "pending",
+            "created": datetime.now().isoformat(),
+            "completed": None,
+        }
+
+    def complete_task(self, task_id: str):
+        if task_id in self.tasks:
+            self.tasks[task_id]["status"] = "completed"
+            self.tasks[task_id]["completed"] = datetime.now().isoformat()
+
+    def get_progress(self) -> float:
+        total = len(self.tasks)
+        if total == 0:
+            return 0.0
+        completed = sum(1 for t in self.tasks.values() if t["status"] == "completed")
+        return completed / total * 100
+
+
+_tracker = None
+
+
+def get_tracker() -> ProgressTracker:
+    global _tracker
+    if _tracker is None:
+        _tracker = ProgressTracker()
+    return _tracker

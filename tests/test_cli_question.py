@@ -1,1 +1,168 @@
-IiIiVW5pdCB0ZXN0cyBmb3IgcXVlc3Rpb24gQ0xJIHN1YmNvbW1hbmQg4oCUIHJlc2VhcmNoIHF1ZXN0aW9uIHRyYWNraW5nLiIiIgoKZnJvbSB1bml0dGVzdC5tb2NrIGltcG9ydCBwYXRjaAoKCmNsYXNzIEZha2VBcmdzOgogICAgZGVmIF9faW5pdF9fKHNlbGYsICoqa3dhcmdzKToKICAgICAgICBmb3IgaywgdiBpbiBrd2FyZ3MuaXRlbXMoKToKICAgICAgICAgICAgc2V0YXR0cihzZWxmLCBrLCB2KQoKCiMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiMgUGFyc2VyIHRlc3RzCiMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgoKY2xhc3MgVGVzdFF1ZXN0aW9uUGFyc2VyOgogICAgZGVmIHRlc3RfcGFyc2VyX2hlbHBfdGV4dChzZWxmLCBtb25rZXlwYXRjaCk6CiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05IT01FIiwgIkM6L1VzZXJzL2FkbS9BcHBEYXRhL0xvY2FsL1Byb2dyYW1zL1B5dGhvbi9QeXRob24zMTIiKQogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OUEFUSCIsICIiKQogICAgICAgIGZyb20gY2xpLmNtZC5xdWVzdGlvbiBpbXBvcnQgX2J1aWxkX3F1ZXN0aW9uX3BhcnNlcgogICAgICAgIGltcG9ydCBhcmdwYXJzZQoKICAgICAgICBwID0gYXJncGFyc2UuQXJndW1lbnRQYXJzZXIoKQogICAgICAgIHN1YiA9IHAuYWRkX3N1YnBhcnNlcnMoKQogICAgICAgIF9idWlsZF9xdWVzdGlvbl9wYXJzZXIoc3ViKQogICAgICAgIGFzc2VydCBUcnVlICAjIHNtb2tlCgogICAgZGVmIHRlc3RfcGFyc2VyX2FjY2VwdHNfYWxsX2FjdGlvbnMoc2VsZiwgbW9ua2V5cGF0Y2gpOgogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OSE9NRSIsICJDOi9Vc2Vycy9hZG0vQXBwRGF0YS9Mb2NhbC9Qcm9ncmFtcy9QeXRob24vUHl0aG9uMzEyIikKICAgICAgICBtb25rZXlwYXRjaC5zZXRlbnYoIlBZVEhPTlBBVEgiLCAiIikKICAgICAgICBmcm9tIGNsaS5jbWQucXVlc3Rpb24gaW1wb3J0IF9idWlsZF9xdWVzdGlvbl9wYXJzZXIKICAgICAgICBpbXBvcnQgYXJncGFyc2UKCiAgICAgICAgcCA9IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyKCkKICAgICAgICBzdWIgPSBwLmFkZF9zdWJwYXJzZXJzKCkKICAgICAgICBfYnVpbGRfcXVlc3Rpb25fcGFyc2VyKHN1YikKICAgICAgICBhc3NlcnQgVHJ1ZSAgIyBzbW9rZQoKCiMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiMgX3J1bl9xdWVzdGlvbiB1bml0IHRlc3RzCiMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgoKY2xhc3MgVGVzdFJ1blF1ZXN0aW9uOgogICAgZGVmIHRlc3RfbGlzdF9hY3Rpb25fY2FsbHNfdHJhY2tlcihzZWxmLCBtb25rZXlwYXRjaCwgY2Fwc3lzKToKICAgICAgICBtb25rZXlwYXRjaC5zZXRlbnYoIlBZVEhPTkhPTUUiLCAiQzovVXNlcnMvYWRtL0FwcERhdGEvTG9jYWwvUHJvZ3JhbXMvUHl0aG9uL1B5dGhvbjMxMiIpCiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05QQVRIIiwgIiIpCiAgICAgICAgZnJvbSBjbGkuY21kLnF1ZXN0aW9uIGltcG9ydCBfcnVuX3F1ZXN0aW9uCgogICAgICAgIGNsYXNzIEZha2VRdWVzdGlvblRyYWNrZXI6CiAgICAgICAgICAgIGRlZiBsaXN0X3F1ZXN0aW9ucyhzZWxmLCBzdGF0dXM9Tm9uZSwgdG9waWM9Tm9uZSwgc291cmNlPU5vbmUpOgogICAgICAgICAgICAgICAgcmV0dXJuIFtdCgogICAgICAgICAgICBkZWYgcmVuZGVyX2xpc3Qoc2VsZiwgcXVlc3Rpb25zLCB2ZXJib3NlPUZhbHNlKToKICAgICAgICAgICAgICAgIHJldHVybiAiTm8gcXVlc3Rpb25zLiIKCiAgICAgICAgYXJncyA9IEZha2VBcmdzKAogICAgICAgICAgICBhY3Rpb249Imxpc3QiLAogICAgICAgICAgICBzdGF0dXM9Tm9uZSwKICAgICAgICAgICAgdG9waWM9Tm9uZSwKICAgICAgICAgICAgc291cmNlPU5vbmUsCiAgICAgICAgICAgIHZlcmJvc2U9RmFsc2UsCiAgICAgICAgICAgIHF1ZXN0aW9uPU5vbmUsCiAgICAgICAgICAgIHByaW9yaXR5PTUsCiAgICAgICAgICAgIG5vdGVzPU5vbmUsCiAgICAgICAgICAgIGlkPU5vbmUsCiAgICAgICAgICAgIHBhcGVyX2lkPU5vbmUsCiAgICAgICAgKQogICAgICAgIHdpdGggcGF0Y2goImNsaS5jbWQucXVlc3Rpb24uUXVlc3Rpb25UcmFja2VyIikgYXMgTW9ja1RyYWNrZXI6CiAgICAgICAgICAgIE1vY2tUcmFja2VyLnJldHVybl92YWx1ZSA9IEZha2VRdWVzdGlvblRyYWNrZXIoKQogICAgICAgICAgICByYyA9IF9ydW5fcXVlc3Rpb24oYXJncykKICAgICAgICAgICAgYXNzZXJ0IHJjID09IDAKCiAgICBkZWYgdGVzdF9zdGF0c19hY3Rpb25fY2FsbHNfdHJhY2tlcihzZWxmLCBtb25rZXlwYXRjaCwgY2Fwc3lzKToKICAgICAgICBtb25rZXlwYXRjaC5zZXRlbnYoIlBZVEhPTkhPTUUiLCAiQzovVXNlcnMvYWRtL0FwcERhdGEvTG9jYWwvUHJvZ3JhbXMvUHl0aG9uL1B5dGhvbjMxMiIpCiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05QQVRIIiwgIiIpCiAgICAgICAgZnJvbSBjbGkuY21kLnF1ZXN0aW9uIGltcG9ydCBfcnVuX3F1ZXN0aW9uCgogICAgICAgIGNsYXNzIEZha2VRdWVzdGlvblRyYWNrZXI6CiAgICAgICAgICAgIGRlZiBnZXRfc3RhdHMoc2VsZik6CiAgICAgICAgICAgICAgICByZXR1cm4gewogICAgICAgICAgICAgICAgICAgICJ0b3RhbCI6IDAsCiAgICAgICAgICAgICAgICAgICAgImFuc3dlcmVkIjogMCwKICAgICAgICAgICAgICAgICAgICAidW5hbnN3ZXJlZCI6IDAsCiAgICAgICAgICAgICAgICAgICAgImJ5X3N0YXR1cyI6IHt9LAogICAgICAgICAgICAgICAgICAgICJieV9zb3VyY2UiOiB7fSwKICAgICAgICAgICAgICAgICAgICAiYnlfdG9waWMiOiB7fSwKICAgICAgICAgICAgICAgIH0KCiAgICAgICAgYXJncyA9IEZha2VBcmdzKAogICAgICAgICAgICBhY3Rpb249InN0YXRzIiwKICAgICAgICAgICAgc3RhdHVzPU5vbmUsCiAgICAgICAgICAgIHRvcGljPU5vbmUsCiAgICAgICAgICAgIHNvdXJjZT1Ob25lLAogICAgICAgICAgICB2ZXJib3NlPUZhbHNlLAogICAgICAgICAgICBxdWVzdGlvbj1Ob25lLAogICAgICAgICAgICBwcmlvcml0eT01LAogICAgICAgICAgICBub3Rlcz1Ob25lLAogICAgICAgICAgICBpZD1Ob25lLAogICAgICAgICAgICBwYXBlcl9pZD1Ob25lLAogICAgICAgICkKICAgICAgICB3aXRoIHBhdGNoKCJjbGkuY21kLnF1ZXN0aW9uLlF1ZXN0aW9uVHJhY2tlciIpIGFzIE1vY2tUcmFja2VyOgogICAgICAgICAgICBNb2NrVHJhY2tlci5yZXR1cm5fdmFsdWUgPSBGYWtlUXVlc3Rpb25UcmFja2VyKCkKICAgICAgICAgICAgcmMgPSBfcnVuX3F1ZXN0aW9uKGFyZ3MpCiAgICAgICAgICAgIGFzc2VydCByYyA9PSAwCgogICAgZGVmIHRlc3RfYWRkX2FjdGlvbl9jYWxsc190cmFja2VyKHNlbGYsIG1vbmtleXBhdGNoLCBjYXBzeXMpOgogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OSE9NRSIsICJDOi9Vc2Vycy9hZG0vQXBwRGF0YS9Mb2NhbC9Qcm9ncmFtcy9QeXRob24vUHl0aG9uMzEyIikKICAgICAgICBtb25rZXlwYXRjaC5zZXRlbnYoIlBZVEhPTlBBVEgiLCAiIikKICAgICAgICBmcm9tIGNsaS5jbWQucXVlc3Rpb24gaW1wb3J0IF9ydW5fcXVlc3Rpb24KCiAgICAgICAgY2xhc3MgRmFrZVF1ZXN0aW9uVHJhY2tlcjoKICAgICAgICAgICAgZGVmIGFkZChzZWxmLCBxdWVzdGlvbiwgc291cmNlLCB0b3BpYywgcHJpb3JpdHksIG5vdGVzKToKICAgICAgICAgICAgICAgICMgQ2FwdHVyZSBwYXJhbXMgYmVmb3JlIGVudGVyaW5nIGNsYXNzIGJvZHkgKHdoaWNoIGNyZWF0ZXMgYSBsb2NhbCBzY29wZSkKICAgICAgICAgICAgICAgIF9xLCBfc3JjLCBfcHJpID0gcXVlc3Rpb24sIHNvdXJjZSwgcHJpb3JpdHkKCiAgICAgICAgICAgICAgICBjbGFzcyBGYWtlUToKICAgICAgICAgICAgICAgICAgICBpZCA9ICJxLTEiCiAgICAgICAgICAgICAgICAgICAgcXVlc3Rpb24gPSBfcQogICAgICAgICAgICAgICAgICAgIHNvdXJjZSA9IF9zcmMKICAgICAgICAgICAgICAgICAgICBwcmlvcml0eSA9IF9wcmkKCiAgICAgICAgICAgICAgICByZXR1cm4gRmFrZVEoKQoKICAgICAgICBhcmdzID0gRmFrZUFyZ3MoCiAgICAgICAgICAgIGFjdGlvbj0iYWRkIiwKICAgICAgICAgICAgc3RhdHVzPU5vbmUsCiAgICAgICAgICAgIHRvcGljPU5vbmUsCiAgICAgICAgICAgIHNvdXJjZT1Ob25lLAogICAgICAgICAgICB2ZXJib3NlPUZhbHNlLAogICAgICAgICAgICBxdWVzdGlvbj0iV2hhdCBpcyBhdHRlbnRpb24/IiwKICAgICAgICAgICAgcHJpb3JpdHk9NSwKICAgICAgICAgICAgbm90ZXM9IiIsCiAgICAgICAgICAgIGlkPU5vbmUsCiAgICAgICAgICAgIHBhcGVyX2lkPU5vbmUsCiAgICAgICAgKQogICAgICAgIHdpdGggcGF0Y2goImNsaS5jbWQucXVlc3Rpb24uUXVlc3Rpb25UcmFja2VyIikgYXMgTW9ja1RyYWNrZXI6CiAgICAgICAgICAgIE1vY2tUcmFja2VyLnJldHVybl92YWx1ZSA9IEZha2VRdWVzdGlvblRyYWNrZXIoKQogICAgICAgICAgICByYyA9IF9ydW5fcXVlc3Rpb24oYXJncykKICAgICAgICAgICAgYXNzZXJ0IHJjID09IDAKCiAgICBkZWYgdGVzdF9zeW5jX2FjdGlvbl9jYWxsc190cmFja2VyKHNlbGYsIG1vbmtleXBhdGNoLCBjYXBzeXMpOgogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OSE9NRSIsICJDOi9Vc2Vycy9hZG0vQXBwRGF0YS9Mb2NhbC9Qcm9ncmFtcy9QeXRob24vUHl0aG9uMzEyIikKICAgICAgICBtb25rZXlwYXRjaC5zZXRlbnYoIlBZVEhPTlBBVEgiLCAiIikKICAgICAgICBmcm9tIGNsaS5jbWQucXVlc3Rpb24gaW1wb3J0IF9ydW5fcXVlc3Rpb24KCiAgICAgICAgY2xhc3MgRmFrZVF1ZXN0aW9uVHJhY2tlcjoKICAgICAgICAgICAgZGVmIHN5bmNfZnJvbV9nYXBzKHNlbGYsIGdhcHM9Tm9uZSwgdG9waWM9Tm9uZSwgcHJpb3JpdHk9Nyk6CiAgICAgICAgICAgICAgICByZXR1cm4gW10gICMgbm8gbmV3IHF1ZXN0aW9ucwoKICAgICAgICBhcmdzID0gRmFrZUFyZ3MoCiAgICAgICAgICAgIGFjdGlvbj0ic3luYyIsCiAgICAgICAgICAgIHN0YXR1cz1Ob25lLAogICAgICAgICAgICB0b3BpYz1Ob25lLAogICAgICAgICAgICBzb3VyY2U9Tm9uZSwKICAgICAgICAgICAgdmVyYm9zZT1GYWxzZSwKICAgICAgICAgICAgcXVlc3Rpb249Tm9uZSwKICAgICAgICAgICAgcHJpb3JpdHk9NywKICAgICAgICAgICAgbm90ZXM9Tm9uZSwKICAgICAgICAgICAgaWQ9Tm9uZSwKICAgICAgICAgICAgcGFwZXJfaWQ9Tm9uZSwKICAgICAgICApCiAgICAgICAgd2l0aCBwYXRjaCgiY2xpLmNtZC5xdWVzdGlvbi5RdWVzdGlvblRyYWNrZXIiKSBhcyBNb2NrVHJhY2tlcjoKICAgICAgICAgICAgTW9ja1RyYWNrZXIucmV0dXJuX3ZhbHVlID0gRmFrZVF1ZXN0aW9uVHJhY2tlcigpCiAgICAgICAgICAgIHJjID0gX3J1bl9xdWVzdGlvbihhcmdzKQogICAgICAgICAgICBhc3NlcnQgcmMgPT0gMAo=
+"""Unit tests for question CLI subcommand — research question tracking."""
+
+from unittest.mock import patch
+
+
+class FakeArgs:
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Parser tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestQuestionParser:
+    def test_parser_help_text(self, monkeypatch):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.question import _build_question_parser
+        import argparse
+
+        p = argparse.ArgumentParser()
+        sub = p.add_subparsers()
+        _build_question_parser(sub)
+        assert True  # smoke
+
+    def test_parser_accepts_all_actions(self, monkeypatch):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.question import _build_question_parser
+        import argparse
+
+        p = argparse.ArgumentParser()
+        sub = p.add_subparsers()
+        _build_question_parser(sub)
+        assert True  # smoke
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_question unit tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestRunQuestion:
+    def test_list_action_calls_tracker(self, monkeypatch, capsys):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.question import _run_question
+
+        class FakeQuestionTracker:
+            def list_questions(self, status=None, topic=None, source=None):
+                return []
+
+            def render_list(self, questions, verbose=False):
+                return "No questions."
+
+        args = FakeArgs(
+            action="list",
+            status=None,
+            topic=None,
+            source=None,
+            verbose=False,
+            question=None,
+            priority=5,
+            notes=None,
+            id=None,
+            paper_id=None,
+        )
+        with patch("cli.cmd.question.QuestionTracker") as MockTracker:
+            MockTracker.return_value = FakeQuestionTracker()
+            rc = _run_question(args)
+            assert rc == 0
+
+    def test_stats_action_calls_tracker(self, monkeypatch, capsys):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.question import _run_question
+
+        class FakeQuestionTracker:
+            def get_stats(self):
+                return {
+                    "total": 0,
+                    "answered": 0,
+                    "unanswered": 0,
+                    "by_status": {},
+                    "by_source": {},
+                    "by_topic": {},
+                }
+
+        args = FakeArgs(
+            action="stats",
+            status=None,
+            topic=None,
+            source=None,
+            verbose=False,
+            question=None,
+            priority=5,
+            notes=None,
+            id=None,
+            paper_id=None,
+        )
+        with patch("cli.cmd.question.QuestionTracker") as MockTracker:
+            MockTracker.return_value = FakeQuestionTracker()
+            rc = _run_question(args)
+            assert rc == 0
+
+    def test_add_action_calls_tracker(self, monkeypatch, capsys):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.question import _run_question
+
+        class FakeQuestionTracker:
+            def add(self, question, source, topic, priority, notes):
+                # Capture params before entering class body (which creates a local scope)
+                _q, _src, _pri = question, source, priority
+
+                class FakeQ:
+                    id = "q-1"
+                    question = _q
+                    source = _src
+                    priority = _pri
+
+                return FakeQ()
+
+        args = FakeArgs(
+            action="add",
+            status=None,
+            topic=None,
+            source=None,
+            verbose=False,
+            question="What is attention?",
+            priority=5,
+            notes="",
+            id=None,
+            paper_id=None,
+        )
+        with patch("cli.cmd.question.QuestionTracker") as MockTracker:
+            MockTracker.return_value = FakeQuestionTracker()
+            rc = _run_question(args)
+            assert rc == 0
+
+    def test_sync_action_calls_tracker(self, monkeypatch, capsys):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.question import _run_question
+
+        class FakeQuestionTracker:
+            def sync_from_gaps(self, gaps=None, topic=None, priority=7):
+                return []  # no new questions
+
+        args = FakeArgs(
+            action="sync",
+            status=None,
+            topic=None,
+            source=None,
+            verbose=False,
+            question=None,
+            priority=7,
+            notes=None,
+            id=None,
+            paper_id=None,
+        )
+        with patch("cli.cmd.question.QuestionTracker") as MockTracker:
+            MockTracker.return_value = FakeQuestionTracker()
+            rc = _run_question(args)
+            assert rc == 0
