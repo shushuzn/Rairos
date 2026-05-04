@@ -125,33 +125,45 @@ def _run_flash(args) -> None:
     from llm.mcp_jin10 import flash as _flash
 
     data = _flash(getattr(args, "cursor", ""))
-    items = data.get("items", data.get("data", []))
-    nc = data.get("next_cursor", "")
-    hm = data.get("has_more", False)
+    inner = data.get("data", data)
+    items = inner.get("items", [])
+    if isinstance(items, str):
+        items = [items]
+    nc = inner.get("next_cursor", "")
+    hm = inner.get("has_more", False)
 
     print(f"\n  {Colors.CYAN}Flash News{Colors.END} ({len(items)} items)")
     if nc:
         print(f"  Next cursor: {nc}  |  More: {hm}")
     print()
     for item in items:
-        ts = str(item.get("time", ""))[:16]
-        content = str(item.get("content", item.get("title", "")))[:80]
-        print(f"  [{ts}] {content}")
+        if isinstance(item, str):
+            print(f"  {item[:80]}")
+        else:
+            ts = str(item.get("time", ""))[:16]
+            content = str(item.get("content", item.get("title", "")))[:80]
+            print(f"  [{ts}] {content}")
     print()
 
 
 def _run_search_flash(args) -> None:
     from llm.mcp_jin10 import search_flash as _sf
 
-    data = _sf(args.keyword)
-    items = data if isinstance(data, list) else data.get("items", data.get("data", []))
+    raw = _sf(args.keyword)
+    inner = raw.get("data", raw) if isinstance(raw, dict) else {"items": raw if isinstance(raw, list) else []}
+    items = inner.get("items", [])
+    if isinstance(items, str):
+        items = [items]
 
     print(f"\n  {Colors.CYAN}Flash News: {args.keyword}{Colors.END} ({len(items)} results)")
     print()
     for item in items:
-        ts = str(item.get("time", ""))[:16]
-        content = str(item.get("content", item.get("title", "")))[:80]
-        print(f"  [{ts}] {content}")
+        if isinstance(item, str):
+            print(f"  {item[:80]}")
+        else:
+            ts = str(item.get("time", ""))[:16]
+            content = str(item.get("content", item.get("title", "")))[:80]
+            print(f"  [{ts}] {content}")
     print()
 
 
@@ -176,18 +188,23 @@ def _run_news(args) -> None:
 def _run_search_news(args) -> None:
     from llm.mcp_jin10 import search_news as _sn
 
-    data = _sn(args.keyword, getattr(args, "cursor", ""))
-    items = data.get("items", data.get("data", []))
-    nc = data.get("next_cursor", "")
-    hm = data.get("has_more", False)
+    raw = _sn(args.keyword, getattr(args, "cursor", ""))
+    inner = raw.get("data", raw) if isinstance(raw, dict) else {"items": raw if isinstance(raw, list) else []}
+    items = inner.get("items", [])
+    nc = inner.get("next_cursor", "")
+    hm = inner.get("has_more", False)
 
     print(f"\n  {Colors.CYAN}News: {args.keyword}{Colors.END} ({len(items)} results)")
     if nc:
         print(f"  Next cursor: {nc}  |  More: {hm}")
     print()
     for item in items:
-        print(f"  [{item.get('id', '?')}] {str(item.get('title', ''))[:70]}")
-        print(f"       {str(item.get('time', ''))[:16]}")
+        if isinstance(item, str):
+            print(f"  {item[:70]}")
+        else:
+            print(f"  [{item.get('id', '?')}] {str(item.get('title', ''))[:70]}")
+            if item.get('time'):
+                print(f"       {str(item.get('time', ''))[:16]}")
     print()
 
 
@@ -205,9 +222,13 @@ def _run_news_detail(args) -> None:
 def _run_calendar(args) -> None:
     from llm.mcp_jin10 import calendar as _cal
 
-    data = _cal() if isinstance(_cal(), list) else []
-    if not data:
-        data = _cal().get("data", _cal().get("items", []))
+    raw = _cal()
+    if isinstance(raw, dict):
+        data = raw.get("data", raw.get("items", []))
+    elif isinstance(raw, list):
+        data = raw
+    else:
+        data = []
 
     print(f"\n  {Colors.CYAN}Economic Calendar{Colors.END} ({len(data)} items)")
     print()
