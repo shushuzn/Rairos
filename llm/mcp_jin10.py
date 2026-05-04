@@ -24,15 +24,24 @@ class MCPError(Exception):
     pass
 
 
-# Load .env if present
-_env_file = Path(__file__).parent.parent / ".env"
-if _env_file.exists():
-    with open(_env_file, encoding="utf-8") as _f:
-        for _line in _f:
-            _line = _line.strip()
-            if _line and not _line.startswith("#") and "=" in _line:
-                _key, _, _value = _line.partition("=")
-                os.environ.setdefault(_key.strip(), _value.strip())
+def _fix_mojibake(text: str) -> str:
+    """Fix UTF-8 bytes misinterpreted as Latin-1 (mojibake).
+
+    Jin10 MCP server returns UTF-8 bytes as Latin-1, causing CJK text
+    like '阿联酋' to appear as 'é¿èé'. This reverses that.
+    """
+    if not text or not any(ord(c) > 0x7F for c in text):
+        return text
+    try:
+        fixed = text.encode("latin-1", errors="replace").decode("utf-8", errors="replace")
+        if fixed != text:
+            has_cjk = any(ord(c) > 0x4E00 for c in fixed)
+            more_alpha = sum(1 for c in fixed if c.isalpha()) > sum(1 for c in text if c.isalpha())
+            if has_cjk or more_alpha:
+                return fixed
+    except Exception:
+        pass
+    return text
 
 
 class Jin10Client:
@@ -51,6 +60,16 @@ class Jin10Client:
         self._session_id: str = ""
         self._tools: Dict[str, Any] = {}
         self._resources: Dict[str, Any] = {}
+
+    def _fix_encoding(self, obj):
+        """Recursively fix mojibake in all string values of a result dict/list."""
+        if isinstance(obj, str):
+            return _fix_mojibake(obj)
+        elif isinstance(obj, dict):
+            return {k: self._fix_encoding(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [self._fix_encoding(item) for item in obj]
+        return obj
 
     def _call(self, method: str, params: Any = None, id: int = 0) -> Dict[str, Any]:
         """Send a JSON-RPC request. Handles SSE (Streamable HTTP) responses."""
@@ -87,7 +106,8 @@ class Jin10Client:
                             err = data["error"]
                             raise MCPError(f"JSON-RPC error [{err.get('code')}]: {err.get('message')}")
                         if data.get("id") == id:
-                            return data.get("result", {})
+                            return self._fix_encoding(data.get("result", {}))
+
                 raise MCPError(f"No matching response in SSE for method '{method}'")
 
             # Plain JSON response
@@ -95,7 +115,7 @@ class Jin10Client:
             if "error" in data:
                 err = data["error"]
                 raise MCPError(f"JSON-RPC error [{err.get('code')}]: {err.get('message')}")
-            return data.get("result", {})
+            return self._fix_encoding(data.get("result", {}))
 
         except requests.RequestException as e:
             raise MCPError(f"HTTP error: {e}") from e
