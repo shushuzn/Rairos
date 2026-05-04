@@ -251,7 +251,7 @@ def _equation_test(eq: str, module_name: str) -> TestCase | None:
         return TestCase(
             name="test_softmax_equation_property",
             doc=f"Verify softmax equation: exp(x_i) / sum(exp(x_i)) (from equation: {eq[:50]})",
-            test_code=f"""\
+            test_code="""\
 pytest.importorskip("torch")
 # Verify softmax formula: for any input x, softmax(x)_i = exp(x_i) / sum_j(exp(x_j))
 x = torch.randn(4, 8)
@@ -267,7 +267,7 @@ assert torch.allclose(softmax_x, expected, atol=1e-5)
         return TestCase(
             name="test_layernorm_formula",
             doc=f"LayerNorm formula: (x - mean) / sqrt(var + eps) * gamma + beta (from equation: {eq[:50]})",
-            test_code=f"""\
+            test_code="""\
 pytest.importorskip("torch")
 # Verify LayerNorm formula
 # x = torch.randn(2, 10, 512)
@@ -332,7 +332,7 @@ assert callable(getattr(m, "{func_name}")), "{func_name} should be callable"
 def _render_conftest(suite: TestSuite) -> str:
     """Render conftest.py with any shared fixtures."""
     fixtures = []
-    for name, code in suite.fixtures.items():
+    for _name, code in suite.fixtures.items():
         fixtures.append(code)
 
     return f"""\
