@@ -1,111 +1,106 @@
-"""Live situation report — regenerated from live data on each call."""
+"""Research report — written analysis, not capsule dump."""
 
 from __future__ import annotations
-
-import json
-import os
-import time
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 from llm.insight.tracker import EvolutionTracker
 
 
 def generate() -> str:
-    """Generate a fresh situation report from current system state."""
     tracker = EvolutionTracker()
     caps = tracker._load_capsules()
+    research = [c for c in caps if getattr(c, "source_arxiv_category", "") not in ("cs.GL", "")]
+    events = [c for c in caps if getattr(c, "source_arxiv_category", "") == "cs.GL"]
 
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
     lines = []
-    def w(s=""):
-        lines.append(s)
+    def w(s=""): lines.append(s)
 
-    w("=" * 60)
-    w("RAIROS LIVE SITUATION REPORT")
-    w(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    w("=" * 60)
-    w()
+    w("RAIROS RESEARCH REPORT")
+    w(now)
+    w("")
+    w("This report summarizes the current state of the system's Gene Pool,")
+    w("organized by research themes and live events.")
+    w("")
 
-    # 1. Gene Pool overview
-    w("1. GENE POOL OVERVIEW")
-    w("-" * 60)
-    w(f"Total: {len(caps)} capsules")
-    by_type = {}
-    for c in caps:
-        by_type[c.action_gap_type] = by_type.get(c.action_gap_type, 0) + 1
-    w(f"Gap types: {by_type}")
-    avg_s = sum(c.outcome_success_score for c in caps) / len(caps) if caps else 0
-    w(f"Avg score: {avg_s:.3f}")
-    w(f"High credibility: {sum(1 for c in caps if c.credibility_badge == 'high')}")
-    w()
+    w("─" * 60)
+    w("")
 
-    # 2. Geopolitical capsules (cs.GL)
-    geo = [c for c in caps if getattr(c, "source_arxiv_category", "") == "cs.GL"]
-    w("2. GEOPOLITICAL INTELLIGENCE")
-    w("-" * 60)
-    for c in sorted(geo, key=lambda x: x.outcome_success_score, reverse=True):
-        w(f"  score={c.outcome_success_score:.2f} [{c.credibility_badge.upper()}] {c.action_gap_title[:70]}")
-    w()
+    # Research section
+    w("RESEARCH")
+    w("")
+    w(f"The system is tracking {len(research)} research capsules across VLA")
+    w("robotics, representation learning, and evaluation methodology.")
+    w("")
+    w("VLA & ROBOTICS")
+    w(f"  {len([c for c in research if 'lapo' in c.action_gap_title.lower() or 'vla' in c.action_gap_title.lower() or 'libero' in c.action_gap_title.lower() or 'robot' in c.action_gap_title.lower() or 'diffusion' in c.action_gap_title.lower()])} capsules")
+    w("  Covers LAPO vs PPO convergence, LIBERO benchmark analysis,")
+    w("  diffusion policy representations, and generalist vs specialist")
+    w("  policy trade-offs.")
+    w("")
 
-    # 3. Research capsules
-    research = [c for c in caps if getattr(c, "source_arxiv_category", "") != "cs.GL"]
-    w("3. RESEARCH KNOWLEDGE (top 10)")
-    w("-" * 60)
-    for c in sorted(research, key=lambda x: x.outcome_success_score, reverse=True)[:10]:
-        w(f"  score={c.outcome_success_score:.2f} [{c.credibility_badge.upper()}] {c.action_gap_title[:65]}")
-    w()
+    w("REPRESENTATION & THEORY")
+    w(f"  {len([c for c in research if 'latent' in c.action_gap_title.lower() or 'reasoning' in c.action_gap_title.lower() or 'attention' in c.action_gap_title.lower() or 'representation' in c.action_gap_title.lower()])} capsules")
+    w("  Latent reasoning chain length saturation, visual vs physical")
+    w("  attention, diffusion vs token-based representations.")
+    w("")
 
-    # 4. Discovered patterns
-    pfile = Path.home() / ".ai_research_os" / "patterns.json"
-    w("4. DISCOVERED PATTERNS")
-    w("-" * 60)
-    if pfile.exists():
-        data = json.loads(pfile.read_text(encoding="utf-8"))
-        for p in data.get("correlations", []):
-            w(f"  [{p.get('type', '?')}]")
-            for k, v in p.items():
-                if k not in ("type", "discovered_at") and v is not None:
-                    w(f"    {k}: {v}")
-            w()
-    w()
+    w("EVALUATION & BENCHMARKING")
+    w(f"  {len([c for c in research if 'benchmark' in c.action_gap_title.lower() or 'evaluation' in c.action_gap_title.lower() or 'liberoo' in c.action_gap_title.lower()])} capsules")
+    w("  LIBERO coverage gaps, missing zero-shot evaluation protocols,")
+    w("  and the need for standardized VLA manipulation benchmarks.")
+    w("")
 
-    # 5. Event signals
-    w("5. KEYWORD SIGNALS")
-    w("-" * 60)
-    for kw in ["oil", "military", "Hormuz", "earthquake", "ceasefire"]:
-        matches = []
-        for c in caps:
-            score = c.trigger_match(kw, c.trigger_gap_type, c.trigger_keywords)
-            if score > 0.3:
-                matches.append((score, c))
-        matches.sort(key=lambda x: x[0], reverse=True)
-        if matches:
-            w(f"  '{kw}': {len(matches)} matches")
-            for score, c in matches[:3]:
-                w(f"    {score:.2f} {c.action_gap_title[:60]}")
-    w()
+    # Events section
+    w("LIVE EVENTS")
+    w("")
+    w(f"The system is monitoring {len(events)} real-world events.")
+    w("")
 
-    # 6. Stats
-    w("6. SYSTEM STATS")
-    w("-" * 60)
-    w(f"Total CLI commands: 30+")
-    w(f"Web UI routes: 90")
-    w(f"Data sources: ArXiv + Jin10 MCP + RSS News")
-    w(f"Run modes: CLI + Web UI + Docker + Daemon")
-    w()
+    geo = [c for c in events if 'iran' in c.action_gap_title.lower() or 'hormuz' in c.action_gap_title.lower() or 'oil' in c.action_gap_title.lower() or 'military' in c.action_gap_title.lower()]
+    econ = [c for c in events if 'treasury' in c.action_gap_title.lower() or 'debt' in c.action_gap_title.lower()]
+    safety = [c for c in events if 'fireworks' in c.action_gap_title.lower() or 'explosion' in c.action_gap_title.lower() or 'earthquake' in c.action_gap_title.lower()]
 
-    w("=" * 60)
-    w("REPORT AUTO-GENERATED BY RAIROS")
-    w("=" * 60)
+    if geo:
+        w("GEOPOLITICAL")
+        w(f"  {len(geo)} capsules")
+        for c in sorted(geo, key=lambda x: x.outcome_success_score, reverse=True)[:3]:
+            w(f"  \u2022 {c.action_gap_title[:60]}")
+        w("")
+
+    if econ:
+        w("ECONOMIC")
+        w(f"  {len(econ)} capsules")
+        for c in econ:
+            w(f"  \u2022 {c.action_gap_title[:60]}")
+        w("")
+
+    if safety:
+        w("SAFETY")
+        w(f"  {len(safety)} capsules")
+        for c in safety:
+            w(f"  \u2022 {c.action_gap_title[:60]}")
+        w("")
+
+    # Stats
+    w("STATS")
+    w("")
+    w(f"  Total capsules: {len(caps)}")
+    w(f"  Research: {len(research)}")
+    w(f"  Events: {len(events)}")
+    w(f"  Gap types: {len(set(c.action_gap_type for c in caps))}")
+    w(f"  Avg score: {sum(c.outcome_success_score for c in caps)/len(caps):.2f}")
+    w(f"  High credibility: {sum(1 for c in caps if c.credibility_badge == 'high')}")
+    w("")
+
+    w("─" * 60)
+    w("End")
 
     return "\n".join(lines)
 
 
 def save() -> str:
-    """Generate and save the report to disk."""
-    report = generate()
-    path = "SITUATION_REPORT.md"
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(report)
-    return path
+    r = generate()
+    with open("SITUATION_REPORT.md", "w", encoding="utf-8") as f:
+        f.write(r)
+    return "SITUATION_REPORT.md"
