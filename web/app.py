@@ -48,14 +48,14 @@ app.include_router(routes_briefing.router)
 from web import routes_papers
 app.include_router(routes_papers.router)
 
+from web import routes_daemon
+app.include_router(routes_daemon.router)
+
 from web import routes_research
 app.include_router(routes_research.router)
 
 from web import routes_gene_pool
 app.include_router(routes_gene_pool.router)
-
-from web import routes_daemon
-app.include_router(routes_daemon.router)
 
 from web import routes_news
 app.include_router(routes_news.router)
