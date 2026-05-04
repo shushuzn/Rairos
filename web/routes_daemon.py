@@ -82,11 +82,13 @@ async def daemon_dashboard(request: Request):
 
 @router.post("/daemon/start")
 async def daemon_start(request: Request):
+    from llm.watch import WatchDaemon
     WatchDaemon(interval=300).start()
     return RedirectResponse(url="/daemon", status_code=303)
 
 @router.post("/daemon/stop")
 async def daemon_stop(request: Request):
+    from llm.watch import WatchDaemon
     WatchDaemon().stop()
     return RedirectResponse(url="/daemon", status_code=303)
 
@@ -94,6 +96,8 @@ async def daemon_stop(request: Request):
 async def daemon_cycle(request: Request):
     from llm.report import save
     from llm.discover import discover
+    from llm.watch import WatchDaemon
     save()
     discover()
+    WatchDaemon(interval=300).start()
     return RedirectResponse(url="/daemon", status_code=303)
