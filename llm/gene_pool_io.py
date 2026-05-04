@@ -20,7 +20,11 @@ def load_capsules(
     status: Optional[str] = None,
     source_paper_id: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
-    """Load capsules with optional filtering by gap_type, status, source_paper_id."""
+    """Load capsules with optional filtering by gap_type, status, source_paper_id.
+
+    gene_pool.jsonl is the authoritative store. After reading, this function
+    syncs capsules.json so the web UI cache stays fresh.
+    """
     if not GP_DIR.exists():
         return []
     try:
@@ -28,6 +32,10 @@ def load_capsules(
         capsules = [json.loads(l) for l in text.split("\n") if l.strip()]
     except Exception:
         return []
+
+    # Sync capsules.json for backward compat (web UI, evolution.py reads)
+    _sync_capsules_json(capsules)
+
     if gap_type is not None:
         capsules = [c for c in capsules if c.get("action_gap_type") == gap_type]
     if status is not None:
@@ -37,6 +45,19 @@ def load_capsules(
             c for c in capsules if c.get("archetype", {}).get("source_paper_id") == source_paper_id
         ]
     return capsules
+
+
+def _sync_capsules_json(capsules: List[Dict[str, Any]]) -> None:
+    """Rebuild capsules.json from gene_pool.jsonl data (one-way sync)."""
+    try:
+        cpath = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+        cpath.parent.mkdir(parents=True, exist_ok=True)
+        cpath.write_text(
+            json.dumps({"version": "1.0", "capsules": capsules}, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+    except Exception:
+        pass
 
 
 def get_capsule_by_paper(paper_id: str, gap_type: Optional[str] = None) -> Optional[Dict[str, Any]]:

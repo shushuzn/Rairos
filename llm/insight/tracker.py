@@ -1828,16 +1828,15 @@ class EvolutionTracker:
         return [capsule for capsule, _ in scored]
 
     def archive_capsule(self, capsule_id: str) -> bool:
-        """Archive a capsule from both Gene Pool stores.
+        """Archive a capsule from the Gene Pool (gene_pool.jsonl).
 
-        Sets status='archived' in gene_pool.jsonl AND removes from capsules.json.
-        Call this when a capsule should no longer appear in active suggestions.
+        Sets status='archived'. capsules.json is synced automatically
+        via gene_pool_io.load_capsules() on next read.
         """
         archived = False
         archived_title = ""
         archived_gap_type = ""
 
-        # 1. Mark archived in gene_pool.jsonl
         capsules = self._load_capsules()
         for c in capsules:
             if c.capsule_id == capsule_id:
@@ -1848,24 +1847,6 @@ class EvolutionTracker:
                 break
         if archived:
             self._save_capsules(capsules)
-
-        # 2. Remove from capsules.json (web UI store)
-        capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-        if capsules_path.exists():
-            try:
-                data = json.loads(capsules_path.read_text(encoding="utf-8"))
-                raw = data.get("capsules", []) if isinstance(data, dict) else data
-                original_len = len(raw)
-                raw = [c for c in raw if c.get("capsule_id", "") != capsule_id]
-                if len(raw) < original_len:
-                    data["capsules"] = raw
-                    capsules_path.write_text(
-                        json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
-                    )
-            except Exception:
-                pass
-
-        if archived:
             self.record_capsule_lifecycle_event(
                 capsule_id=capsule_id,
                 action="archived",

@@ -609,20 +609,6 @@ Respond with JSON:
         # Rewrite gene pool (remove retired)
         self._save_capsules(updated)
 
-        # Also remove from capsules.json (web UI store)
-        capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-        if capsules_path.exists():
-            try:
-                data = json.loads(capsules_path.read_text(encoding="utf-8"))
-                raw = data.get("capsules", []) if isinstance(data, dict) else data
-                raw = [c for c in raw if c.get("capsule_id", "") != capsule_id]
-                data["capsules"] = raw
-                capsules_path.write_text(
-                    json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
-                )
-            except Exception:
-                pass
-
         # Log retirement
         retire_file = self.tracker.data_dir / "retired.jsonl"
         with open(retire_file, "a", encoding="utf-8") as f:
@@ -864,20 +850,6 @@ Respond with JSON:
                     details=details,
                 )
 
-        # Also clean capsules.json
-        capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-        if capsules_path.exists():
-            try:
-                data = json.loads(capsules_path.read_text(encoding="utf-8"))
-                raw = data.get("capsules", []) if isinstance(data, dict) else data
-                raw = [c for c in raw if c.get("capsule_id", "") not in to_archive]
-                data["capsules"] = raw
-                capsules_path.write_text(
-                    json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
-                )
-            except Exception:
-                pass
-
         return len(to_archive)
 
     LOW_SCORE_THRESHOLD = 0.30
@@ -918,23 +890,6 @@ Respond with JSON:
             return 0
 
         self._save_capsules(updated)
-
-        # Also update capsules.json
-        capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-        if capsules_path.exists():
-            try:
-                data = json.loads(capsules_path.read_text(encoding="utf-8"))
-                raw = data.get("capsules", []) if isinstance(data, dict) else data
-                archived_ids = set(to_archive)
-                for c in raw:
-                    if c.get("capsule_id", "") in archived_ids:
-                        c["status"] = "archived"
-                data["capsules"] = raw
-                capsules_path.write_text(
-                    json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
-                )
-            except Exception:
-                pass
 
         return len(to_archive)
 

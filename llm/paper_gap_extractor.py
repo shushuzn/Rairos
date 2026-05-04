@@ -1158,17 +1158,7 @@ def save_gap_to_gene_pool(
             "status": "active",
         }
 
-        # Write to capsules.json (briefing_generator reads this)
-        capsule_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-        capsule_path.parent.mkdir(parents=True, exist_ok=True)
-        if capsule_path.exists():
-            data = json.loads(capsule_path.read_text(encoding="utf-8"))
-        else:
-            data = {"version": 1, "capsules": []}
-        data["capsules"].append(capsule)
-        capsule_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-
-        # Write to gene_pool.jsonl (EvolutionTracker.find_capsule reads this)
+        # Write to gene_pool.jsonl (authoritative store; capsules.json synced via gene_pool_io.load_capsules)
         try:
             from llm.insight.tracker import EvolutionTracker
 
