@@ -188,4 +188,49 @@ async def paper2code_run(request: Request):
     t.start()
     return {"success": True, "job_id": job_id, "message": f"Paper2Code pipeline started for {arxiv_id}"}
 
+# --- Fallback routes for sidebar items (graceful "not available") ---
 
+@router.get("/chat")
+async def _chat_fallback(request: Request):
+    return templates.TemplateResponse(request, "generic.html",
+        {"page": "chat", "title": "Chat", "content": "<p>Chat module loading...</p>"})
+
+@router.get("/citation-chain")
+async def _citation_fallback(request: Request):
+    return templates.TemplateResponse(request, "generic.html",
+        {"page": "citation_chain", "title": "Citation Chain", "content": "<p>Citation chain module loading...</p>"})
+
+@router.get("/arxiv-channels")
+async def _arxiv_channels_fallback(request: Request):
+    return templates.TemplateResponse(request, "generic.html",
+        {"page": "arxiv-channels", "title": "arXiv Channels", "content": "<p>arXiv channels module loading...</p>"})
+
+@router.get("/climate-monitor")
+async def _climate_fallback(request: Request):
+    return templates.TemplateResponse(request, "generic.html",
+        {"page": "climate-monitor", "title": "Climate AI", "content": "<p>Climate monitor module loading...</p>"})
+
+@router.get("/voice-capsule")
+async def _voice_fallback(request: Request):
+    return templates.TemplateResponse(request, "generic.html",
+        {"page": "voice-capsule", "title": "Voice Capsule", "content": "<p>Voice capsule module loading...</p>"})
+
+@router.get("/policy-impact")
+async def _policy_fallback(request: Request):
+    return templates.TemplateResponse(request, "generic.html",
+        {"page": "policy-impact", "title": "Policy Impact", "content": "<p>Policy impact module loading...</p>"})
+
+@router.get("/labor-displacement")
+async def _labor_fallback(request: Request):
+    return templates.TemplateResponse(request, "generic.html",
+        {"page": "labor-displacement", "title": "Labor Track", "content": "<p>Labor displacement module loading...</p>"})
+
+@router.get("/researchers")
+async def _researchers_fallback(request: Request):
+    return templates.TemplateResponse(request, "generic.html",
+        {"page": "multi-researcher", "title": "Researchers", "content": "<p>Researchers module loading...</p>"})
+
+@router.get("/insights/queue")
+async def _queue_fallback(request: Request):
+    return templates.TemplateResponse(request, "generic.html",
+        {"page": "review-queue", "title": "Review Queue", "content": "<p>Review queue module loading...</p>"})
