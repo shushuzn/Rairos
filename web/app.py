@@ -3263,6 +3263,202 @@ async def get_notes(request: Request, paper_id: str = ""):
     return JSONResponse({"notes": notes})
 
 
+# ── Paper2Code Dashboard ─────────────────────────────────────────────────────
+
+PAPER2CODE_DIR = Path.home() / ".ai_research_os" / "paper2code"
+PAPER2CODE_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _get_paper2code_results() -> List[Dict[str, Any]]:
+    try:
+        if not PAPER2CODE_DIR.exists():
+            return []
+        files = sorted(
+            PAPER2CODE_DIR.glob("result_*.json"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+        return [json.loads(f.read_text(encoding="utf-8")) for f in files[:50]]
+    except Exception:
+        return []
+
+
+def _save_paper2code_result(result: Dict[str, Any]) -> None:
+    slug = result.get("arxiv_id", "unknown").replace("/", "_").replace(":", "_")
+    path = PAPER2CODE_DIR / f"result_{slug}.json"
+    path.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def _render_paper2code_html(results: List[Dict[str, Any]]) -> str:
+    lines = ['<div class="paper2code-dash">']
+
+    # Run form
+    lines.append("""
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-title">⚡ Run Paper2Code Pipeline</div>
+      <p style="font-size:13px;color:var(--ink-faint);margin-bottom:12px;">
+        Download an arXiv paper, generate code skeleton, extract tests, run benchmarks, and encode results to the Gene Pool.
+      </p>
+      <form id="p2c-form" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+        <div>
+          <label style="font-size:11px;color:var(--ink-faint);display:block;margin-bottom:4px;">arXiv ID</label>
+          <input type="text" id="arxiv-id" placeholder="e.g. 1706.03762" required
+                 style="padding:8px 12px;border:1px solid var(--border);border-radius:4px;font-size:13px;width:200px;">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--ink-faint);display:block;margin-bottom:4px;">Framework</label>
+          <select id="framework" style="padding:8px 12px;border:1px solid var(--border);border-radius:4px;font-size:13px;">
+            <option value="pytorch">PyTorch</option>
+            <option value="jax">JAX</option>
+            <option value="numpy">NumPy</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="font-size:14px;">▶ Run</button>
+      </form>
+      <div id="p2c-status" style="margin-top:12px;font-size:13px;"></div>
+    </div>
+    <script>
+    document.getElementById('p2c-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var btn = this.querySelector('button[type=submit]');
+      var statusEl = document.getElementById('p2c-status');
+      btn.disabled = true; btn.textContent = 'Running...';
+      statusEl.textContent = 'Pipeline started in background. Refresh to see results.';
+      fetch('/paper2code/run', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          arxiv_id: document.getElementById('arxiv-id').value.trim(),
+          framework: document.getElementById('framework').value,
+        }),
+      }).then(function(r) { return r.json(); }).then(function(d) {
+        statusEl.textContent = d.success ? '✅ ' + d.message : '❌ ' + (d.error || 'Failed');
+        if (d.success) setTimeout(function() { location.reload(); }, 2000);
+      }).catch(function(err) {
+        statusEl.textContent = '❌ ' + err.message;
+      }).finally(function() {
+        btn.disabled = false; btn.textContent = '▶ Run';
+      });
+    });
+    </script>
+    """)
+
+    # History
+    if not results:
+        lines.append("""
+        <div class="card">
+          <div class="card-title">📋 Run History</div>
+          <div class="empty-state">
+            <div class="empty-state-icon">⚡</div>
+            <div class="empty-state-text">No paper2code runs yet. Submit an arXiv ID above to get started.</div>
+          </div>
+        </div>""")
+    else:
+        lines.append('<div class="card"><div class="card-title">📋 Run History</div>')
+        lines.append("""
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border);">
+            <th style="padding:8px 10px;text-align:left;color:var(--ink-faint);">arXiv</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--ink-faint);">Framework</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--ink-faint);">Pass</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--ink-faint);">Fail</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--ink-faint);">Gene Pool</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--ink-faint);">When</th>
+          </tr>
+        </thead>
+        <tbody>""")
+        for r in results:
+            arxiv = r.get("arxiv_id", "?")
+            fw = r.get("framework", "pytorch")
+            passed = r.get("passed", 0)
+            failed = r.get("failed", 0)
+            skipped = r.get("skipped", 0)
+            gp = r.get("gene_pool_encoded", False)
+            ts = r.get("created_at", "")[:19]
+            status = r.get("status", "done")
+            status_dot = {"done": "✅", "failed": "❌", "running": "⏳", "pending": "⏳"}.get(status, "❓")
+            lines.append(f"""
+            <tr style="border-bottom:1px solid var(--border-light);">
+              <td style="padding:8px 10px;"><a href="/paper/{arxiv}" style="color:var(--pen-blue);">{arxiv}</a></td>
+              <td style="padding:8px 10px;">{fw}</td>
+              <td style="padding:8px 10px;color:var(--pen-green);">{passed}</td>
+              <td style="padding:8px 10px;color:#e05050;">{failed}</td>
+              <td style="padding:8px 10px;">{"✅" if gp else "—"}</td>
+              <td style="padding:8px 10px;color:var(--ink-faint);">{ts}</td>
+            </tr>""")
+        lines.append("</tbody></table></div>")
+
+    lines.append("</div>")
+    return "\n".join(lines)
+
+
+@app.get("/paper2code")
+async def paper2code_dashboard(request: Request):
+    """Paper2Code pipeline dashboard — run and view results."""
+    results = _get_paper2code_results()
+    html = _render_paper2code_html(results)
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {"page": "paper2code", "title": "⚡ Paper2Code Pipeline", "content": html},
+    )
+
+
+@app.post("/paper2code/run")
+async def paper2code_run(request: Request):
+    """Run the Paper2Code pipeline for a given arXiv ID."""
+    body = await request.json()
+    arxiv_id = body.get("arxiv_id", "").strip()
+    framework = body.get("framework", "pytorch")
+
+    if not arxiv_id:
+        return {"success": False, "error": "arxiv_id is required"}
+
+    # Save pending record
+    record = {
+        "arxiv_id": arxiv_id,
+        "framework": framework,
+        "status": "running",
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "gene_pool_encoded": False,
+        "created_at": datetime.now().isoformat(),
+    }
+    _save_paper2code_result(record)
+
+    import threading
+
+    def _run():
+        try:
+            from research_loop.paper2code_integration import PaperPipeline
+
+            pipeline = PaperPipeline()
+            result = pipeline.run(arxiv_id, framework=framework)
+
+            if result and isinstance(result, dict):
+                record["passed"] = result.get("passed", 0)
+                record["failed"] = result.get("failed", 0)
+                record["skipped"] = result.get("skipped", 0)
+                record["gene_pool_encoded"] = (
+                    result.get("gene_pool_encoded", False) or result.get("capsule_id") is not None
+                )
+                record["status"] = "done" if record["failed"] == 0 else "failed"
+            else:
+                record["status"] = "done"
+        except Exception as e:
+            record["status"] = "failed"
+            import logging
+            logging.getLogger(__name__).warning(f"paper2code run failed for {arxiv_id}: {e}")
+        finally:
+            _save_paper2code_result(record)
+
+    t = threading.Thread(target=_run, daemon=True)
+    t.start()
+    return {"success": True, "message": f"Paper2Code pipeline started for {arxiv_id}"}
+
+
 if __name__ == "__main__":
     import uvicorn
 
