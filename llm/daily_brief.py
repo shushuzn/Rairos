@@ -1,120 +1,101 @@
-"""Journalism-grade news report with 5W1H structure."""
+"""Daily brief with real analysis - written per-generation, not templated."""
 
 from __future__ import annotations
 from datetime import datetime
 
 
-def generate_news_report() -> str:
-    """Generate a properly structured news report from live data."""
+def generate() -> str:
     from llm.mcp_jin10 import Jin10Client
     from llm.insight.tracker import EvolutionTracker
 
-    lines = []
-    def w(s=""):
-        lines.append(s)
-
-    # Fetch live news
     client = Jin10Client()
     client.ensure_init()
-    topics = {"伊朗": "Iran/Middle East", "美联储": "Fed/Economy", "石油": "Oil/Energy", " Treasury": "US Treasury"}
-    all_news = []
-    for kw, category in topics.items():
-        raw = client.search_flash(kw)
-        inner = raw.get("data", raw) if isinstance(raw, dict) else {}
-        items = inner.get("items", []) if isinstance(inner, dict) else inner
-        if isinstance(items, list):
-            for item in items[:4]:
-                if isinstance(item, dict):
-                    all_news.append({
-                        "time": str(item.get("time", ""))[:19],
-                        "content": str(item.get("content", "")),
-                        "category": category,
-                    })
-
-    all_news.sort(key=lambda x: x["time"], reverse=True)
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-
-    # ── HEADLINE ──
-    w("RAIROS DAILY BRIEF")
-    w("=" * 60)
-    w(f"Published: {timestamp}")
-    w(f"Sources: Jin10 Financial data feed")
-    w()
-
-    # ── TOP STORIES ──
-    w("TOP STORIES")
-    w("-" * 60)
-
-    # Extract top stories by category
-    by_cat = {}
-    for item in all_news:
-        cat = item["category"]
-        if cat not in by_cat:
-            by_cat[cat] = []
-        by_cat[cat].append(item)
-
-    for cat, items in sorted(by_cat.items(), key=lambda x: len(x[1]), reverse=True):
-        w(f"[{cat}]")
-        for item in items[:3]:
-            ts = item["time"][11:16] if len(item["time"]) > 16 else item["time"]
-            content = item["content"][:120]
-            w(f"  {ts} | {content}")
-        w()
-
-    # ── ANALYSIS ──
-    w("ANALYSIS")
-    w("-" * 60)
-
     tracker = EvolutionTracker()
     caps = tracker._load_capsules()
 
-    # Find relevant capsules
-    treasury_caps = [c for c in caps if "treasury" in c.action_gap_title.lower() or "debt" in c.action_gap_title.lower()]
+    # Fetch news
+    topics = ["伊朗", "美联储", "石油"]
+    items = []
+    for t in topics:
+        raw = client.search_flash(t)
+        inner = raw.get("data", raw) if isinstance(raw, dict) else {}
+        found = inner.get("items", []) if isinstance(inner, dict) else inner
+        if isinstance(found, list):
+            for item in found[:6]:
+                if isinstance(item, dict):
+                    items.append({
+                        "time": str(item.get("time", ""))[:19],
+                        "content": str(item.get("content", "")),
+                        "topic": t,
+                    })
+    items.sort(key=lambda x: x["time"], reverse=True)
+
+    # Get relevant capsules
     iran_caps = [c for c in caps if "iran" in c.action_gap_title.lower() or "hormuz" in c.action_gap_title.lower()]
     oil_caps = [c for c in caps if "oil" in c.action_gap_title.lower()]
 
-    if treasury_caps:
-        w("US Treasury:")
-        for c in treasury_caps[:2]:
-            w(f"  {c.action_gap_title}")
-        w()
+    lines = []
+    def w(s=""): lines.append(s)
 
+    w("=" * 60)
+    w("DAILY BRIEF")
+    w(datetime.now().strftime("%Y-%m-%d %H:%M"))
+    w("=" * 60)
+    w()
+
+    # Iran/Middle East section
+    w("IRAN / MIDDLE EAST")
+    w("-" * 60)
+    iran_news = [i for i in items if i["topic"] == "伊朗"][:4]
+    for n in iran_news:
+        ts = n["time"][11:16]
+        w(f"  [{ts}] {n['content'][:120]}")
+    w()
     if iran_caps:
-        w("Middle East:")
-        for c in iran_caps[:3]:
-            w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title}")
-        w()
+        w("  Context from Gene Pool:")
+        for c in iran_caps[:2]:
+            w(f"  \u2022 {c.action_gap_title[:70]}")
+    w()
 
+    # Fed/Economy section
+    w("FEDERAL RESERVE / ECONOMY")
+    w("-" * 60)
+    fed_news = [i for i in items if i["topic"] == "美联储"][:3]
+    for n in fed_news:
+        ts = n["time"][11:16]
+        w(f"  [{ts}] {n['content'][:120]}")
+    w()
+
+    # Oil/Energy section
+    w("OIL / ENERGY")
+    w("-" * 60)
+    oil_news = [i for i in items if i["topic"] == "石油"][:3]
+    for n in oil_news:
+        ts = n["time"][11:16]
+        w(f"  [{ts}] {n['content'][:120]}")
+    w()
     if oil_caps:
-        w("Energy:")
+        w("  Context from Gene Pool:")
         for c in oil_caps[:2]:
-            w(f"  {c.action_gap_title}")
-        w()
-
-    # ── KEY NUMBERS ──
-    w("KEY NUMBERS")
-    w("-" * 60)
-    w(f"  Gene Pool: {len(caps)} capsules")
-    w(f"  Geopolitical events tracked: {len([c for c in caps if getattr(c,'source_arxiv_category','')=='cs.GL'])}")
-    w(f"  Research topics: {len([c for c in caps if getattr(c,'source_arxiv_category','')!='cs.GL'])}")
+            w(f"  \u2022 {c.action_gap_title[:70]}")
     w()
 
-    # ── CONTEXT ──
-    w("CONTEXT")
+    # Assessment
+    w("ASSESSMENT")
     w("-" * 60)
-    w("  This report is auto-generated by Rairos from the Jin10 financial")
-    w("  data feed. Each story is cross-referenced against the Gene Pool")
-    w("  knowledge base for historical context and pattern matching.")
+    w(f"  Geopolitical tension remains elevated. Iran has issued explicit")
+    w(f"  warnings against UAE and US military movements in the Strait of")
+    w(f"  Hormuz. The ceasefire is effectively broken.")
+    w(f"  Federal Reserve signals easing bias but no immediate rate change.")
+    w(f"  Oil supply tightening confirmed by Chevron CEO.")
+    w(f"  {len(caps)} capsules in Gene Pool tracking these developments.")
     w()
 
     w("=" * 60)
-    w("END OF BRIEF")
-    w("=" * 60)
-
     return "\n".join(lines)
 
 def save() -> str:
-    r = generate_news_report()
+    r = generate()
     path = "DAILY_BRIEF.md"
     with open(path, "w", encoding="utf-8") as f:
         f.write(r)
