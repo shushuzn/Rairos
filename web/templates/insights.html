@@ -118,6 +118,10 @@
             onclick="acceptSuggestion(this, {{ s.confidence }}, {{ s.gap_type|tojson }}, {{ s.topic_hint|tojson }}, {{ s.title|tojson }}, {{ s.body|tojson }}, {{ s.type|tojson }}, {{ s.source_cap_id|tojson }})">
             Take this on →
           </button>
+          <button class="btn btn-blue" style="font-size: 12px; padding: 4px 14px;"
+            onclick="generateExperiment(this, {{ s.gap_type|tojson }}, {{ s.topic_hint|tojson }}, {{ s.title|tojson }}, {{ s.body|tojson }}, {{ s.keywords|tojson }}, {{ s.source_cap_id|tojson }})">
+            🔬 Experiment
+          </button>
         </div>
         {% if s.keywords %}
         <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px;">
@@ -213,6 +217,32 @@
 
 {% block scripts %}
 <script>
+function generateExperiment(btn, gapType, topic, title, body, keywords, sourceCapId) {
+  btn.disabled = true;
+  btn.textContent = 'Generating…';
+  fetch('/insights/generate-experiment', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({gap_type: gapType, topic: topic, title: title, body: body, keywords: keywords || [], source_cap_id: sourceCapId || null}),
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        btn.textContent = '✅ Created';
+        btn.className = 'btn btn-secondary';
+      } else {
+        btn.disabled = false;
+        btn.textContent = '🔬 Experiment';
+        alert('Failed: ' + (data.error || 'unknown error'));
+      }
+    })
+    .catch(function(e) {
+      btn.disabled = false;
+      btn.textContent = '🔬 Experiment';
+      alert('Network error: ' + e);
+    });
+}
+
 function acceptSuggestion(btn, confidence, gapType, topic, title, body, sType, sourceCapId) {
   btn.disabled = true;
   btn.textContent = 'Accepting…';

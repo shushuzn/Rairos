@@ -3089,6 +3089,14 @@ def _render_experiments_html(queue: List[Dict[str, Any]]) -> str:
             if status == "pending"
             else ""
         )
+        paper_id = exp.get("paper_id", "")
+        paper_link = (
+            f'<span style="font-size:12px;color:#555;margin-bottom:6px;"><span style="color:#888;">paper:</span> '
+            f'<a href="/paper/{paper_id}" style="color:#6B8FB5;">{paper_id}</a>'
+            f' <span style="font-size:10px;color:var(--pen-green);">⚡ Paper2Code</span></span>'
+            if paper_id
+            else ""
+        )
         rows += f"""
         <div style="border: 1px solid #e0e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
@@ -3097,6 +3105,7 @@ def _render_experiments_html(queue: List[Dict[str, Any]]) -> str:
           </div>
           <div style="font-size:12px;color:#555;margin-bottom:6px;"><span style="color:#888;">gap_type:</span> {exp.get("gap_type", "")}</div>
           <div style="font-size:12px;color:#555;margin-bottom:6px;"><span style="color:#888;">difficulty:</span> {exp.get("difficulty", "")}</div>
+          {paper_link}
           {('<div style="font-size:12px;color:#666;margin-bottom:6px;font-style:italic;">&#128161; Hypothesis: ' + hypothesis[:150] + "</div>" if hypothesis else "")}
           <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
             {run_btn}
@@ -3125,13 +3134,31 @@ def _render_experiments_html(queue: List[Dict[str, Any]]) -> str:
 
 @app.post("/insights/generate-experiment")
 async def generate_experiment(request: Request):
-    """Generate a concrete experiment proposal from a gap/suggestion."""
+    """Generate a concrete experiment proposal from a gap/suggestion.
+
+    If source_cap_id is provided, resolves it to a paper_id so the
+    experiment can run Paper2Code when executed.
+    """
     body = await request.json()
     gap_type = body.get("gap_type", "")
     topic = body.get("topic", "")
     gap_title = body.get("title", "")
     description = body.get("body", "")
     keywords = body.get("keywords", [])
+    source_cap_id = body.get("source_cap_id", "")
+
+    # Resolve source_cap_id → paper_id
+    paper_id = ""
+    if source_cap_id:
+        try:
+            from llm.gene_pool_io import load_capsules
+            capsules = load_capsules()
+            for c in capsules:
+                if c.get("capsule_id", "") == source_cap_id:
+                    paper_id = c.get("archetype", {}).get("source_paper_id", "") or ""
+                    break
+        except Exception:
+            pass
 
     try:
         from llm.paper_gap_extractor import gaps_to_research_questions
@@ -3158,6 +3185,7 @@ async def generate_experiment(request: Request):
             "title": exp_title,
             "gap_type": gap_type,
             "topic": topic,
+            "paper_id": paper_id,
             "description": q.get("question", description),
             "hypothesis": q.get("hypothesis", ""),
             "difficulty": q.get("difficulty", "medium"),
