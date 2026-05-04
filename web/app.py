@@ -57,6 +57,9 @@ app.include_router(routes_gene_pool.router)
 from web import routes_daemon
 app.include_router(routes_daemon.router)
 
+from web import routes_news
+app.include_router(routes_news.router)
+
 
 
 # Graceful error handler — catches ALL exceptions in route handlers
