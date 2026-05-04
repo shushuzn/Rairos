@@ -1,151 +1,129 @@
-"""Live situation report — analysis, not just data dump."""
+"""Report organized by research themes/topics."""
 
 from __future__ import annotations
-import json
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List
 
 from llm.insight.tracker import EvolutionTracker
 
 
-def _fetch_live_news() -> list:
-    """Fetch latest headlines from Jin10 MCP."""
-    try:
-        from llm.mcp_jin10 import Jin10Client
-        client = Jin10Client()
-        client.ensure_init()
-        topics = ["伊朗", "霍尔木兹", "石油", "美联储"]
-        items = []
-        for t in topics:
-            raw = client.search_flash(t)
-            inner = raw.get("data", raw) if isinstance(raw, dict) else {}
-            found = inner.get("items", []) if isinstance(inner, dict) else inner
-            if isinstance(found, list):
-                for item in found[:2]:
-                    if isinstance(item, dict):
-                        items.append((str(item.get("time", ""))[11:16], str(item.get("content", ""))[:80]))
-        return items[:8]
-    except Exception:
-        return []
+def _theme(capsules, keywords) -> list:
+    """Filter capsules matching any of the given keywords."""
+    result = []
+    for c in capsules:
+        text = (c.action_gap_title + " " + c.trigger_topic).lower()
+        if any(kw in text for kw in keywords):
+            result.append(c)
+    return result
 
 
 def generate() -> str:
-    """Generate a readable situation report with analysis."""
     tracker = EvolutionTracker()
     caps = tracker._load_capsules()
-    geo = [c for c in caps if getattr(c, "source_arxiv_category", "") == "cs.GL"]
-    research = [c for c in caps if getattr(c, "source_arxiv_category", "") != "cs.GL"]
 
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
     lines = []
-    def w(s=""):
-        lines.append(s)
+    def w(s=""): lines.append(s)
 
-    # ── Header ──
     w("=" * 60)
-    w("RAIROS SITUATION REPORT")
-    w(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-    w(f"Data age: real-time")
+    w("RAIROS REPORT")
+    w(now)
     w("=" * 60)
+    w(f"Total: {len(caps)} capsules")
     w()
 
-    # ── 1. Executive Summary ──
-    w("EXECUTIVE SUMMARY")
-    w("-" * 60)
-    top_geo = sorted(geo, key=lambda x: x.outcome_success_score, reverse=True)
-    if top_geo:
-        w(f"  Geopolitical risk level: ELEVATED")
-        w(f"  Top concern: {top_geo[0].action_gap_title[:70]}")
-        w(f"  Active events tracked: {len(geo)}")
-    w(f"  Gene Pool: {len(caps)} capsules ({len(research)} research, {len(geo)} geopolitical)")
-    w(f"  Gap types covered: {len(set(c.action_gap_type for c in caps))}")
-    w()
-
-    # ── 2. Live News ──
-    live = _fetch_live_news()
-    if live:
-        w("LIVE NEWS")
+    # Theme 1: VLA / Robotics
+    vla = _theme(caps, ["lapo", "vla", "liberoo", "diffusion policy", "octo", "gr-2",
+                        "robot", "manipulation", "embodied"])
+    if vla:
+        w("1. VLA / ROBOTICS")
         w("-" * 60)
-        for ts, content in live:
-            w(f"  [{ts}] {content}")
-        w()
+        for c in sorted(vla, key=lambda x: x.outcome_success_score, reverse=True):
+            w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:70]}")
+            w(f"  score={c.outcome_success_score:.2f} | {c.action_gap_type}")
         w()
 
-    # ── 3. Active Geopolitical Situation ──
-    w("ACTIVE GEOPOLITICAL SITUATION")
-    w("-" * 60)
-    for c in top_geo[:5]:
-        w(f"  Score: {c.outcome_success_score:.2f}")
-        w(f"  {c.action_gap_title}")
-        w(f"  Type: {c.action_gap_type} | Badge: {c.credibility_badge.upper()}")
+    # Theme 2: Geopolitics / Energy
+    geo = _theme(caps, ["iran", "hormuz", "oil", "uae", "military", "ceasefire",
+                        "能源", "drone", "missile"])
+    if geo:
+        w("2. GEOPOLITICS / ENERGY")
+        w("-" * 60)
+        for c in sorted(geo, key=lambda x: x.outcome_success_score, reverse=True):
+            w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:70]}")
+            w(f"  score={c.outcome_success_score:.2f} | {c.action_gap_type}")
         w()
-    w()
 
-    # ── 4. Research Landscape ──
-    w("RESEARCH LANDSCAPE")
+    # Theme 3: Economy / Markets (not in VLA or Geo)
+    taken = set(c.capsule_id for c in vla + geo)
+    econ_raw = _theme(caps, ["treasury", "debt", "borrowing", "fed", "inflation"])
+    econ = [c for c in econ_raw if c.capsule_id not in taken]
+    if econ:
+        w("3. ECONOMY / MARKETS")
+        w("-" * 60)
+        for c in sorted(econ, key=lambda x: x.outcome_success_score, reverse=True):
+            w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:70]}")
+            w(f"  score={c.outcome_success_score:.2f} | {c.action_gap_type}")
+        w()
+
+    # Theme 4: Theory / Methods (only if not already in VLA)
+    all_vla = set(c.capsule_id for c in vla)
+    theory_raw = _theme(caps, ["latent", "reasoning", "attention", "representation",
+                                "interpretability", "method", "theoretical"])
+    theory = [c for c in theory_raw if c.capsule_id not in all_vla]
+    if theory:
+        w("4. THEORY / METHODS")
+        w("-" * 60)
+        for c in sorted(theory, key=lambda x: x.outcome_success_score, reverse=True):
+            w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:70]}")
+            w(f"  score={c.outcome_success_score:.2f} | {c.action_gap_type}")
+        w()
+
+    # Theme 5: Safety / Incidents (not in any previous theme)
+    taken = set(c.capsule_id for c in vla + geo + econ + theory)
+    safety_raw = _theme(caps, ["fireworks", "explosion", "earthquake", "safety", "injured"])
+    safety = [c for c in safety_raw if c.capsule_id not in taken]
+    if safety:
+        w("5. SAFETY / INCIDENTS")
+        w("-" * 60)
+        for c in sorted(safety, key=lambda x: x.outcome_success_score, reverse=True):
+            w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:70]}")
+            w(f"  score={c.outcome_success_score:.2f} | {c.action_gap_type}")
+        w()
+
+    # Theme 6: Other
+    all_tagged = set()
+    for group in [vla, geo, econ, theory, safety]:
+        for c in group:
+            all_tagged.add(c.capsule_id)
+    other = [c for c in caps if c.capsule_id not in all_tagged]
+    if other:
+        w("6. OTHER")
+        w("-" * 60)
+        for c in sorted(other, key=lambda x: x.outcome_success_score, reverse=True)[:5]:
+            w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:70]}")
+            w(f"  score={c.outcome_success_score:.2f} | {c.action_gap_type}")
+        if len(other) > 5:
+            w(f"  ... and {len(other)-5} more")
+        w()
+
+    # Stats
+    w("STATS")
     w("-" * 60)
-    w(f"  Active research topics: {len(research)} capsules")
     by_type = {}
-    for c in research:
+    for c in caps:
         by_type[c.action_gap_type] = by_type.get(c.action_gap_type, 0) + 1
-    for t, n in sorted(by_type.items(), key=lambda x: -x[1]):
-        w(f"  {t}: {n} capsules")
-    w()
-    top_res = sorted(research, key=lambda x: x.outcome_success_score, reverse=True)[:3]
-    for c in top_res:
-        w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:65]}")
-    w()
-
-    # ── 5. Discovered Patterns ──
-    pfile = Path.home() / ".ai_research_os" / "patterns.json"
-    if pfile.exists():
-        data = json.loads(pfile.read_text(encoding="utf-8"))
-        patterns = data.get("correlations", [])
-        if patterns:
-            w("DISCOVERED PATTERNS")
-            w("-" * 60)
-            for p in patterns:
-                ptype = p.get("type", "?")
-                if "hormuz" in ptype:
-                    w(f"  Hormuz events -> Oil price volatility")
-                    w(f"    Events tracked: {p.get('event_count', 0)}")
-                    w(f"    Confidence: supported by Gene Pool capsules")
-                elif "military" in ptype:
-                    w(f"  Military escalation -> Gold safe haven")
-                    w(f"    Direction: {p.get('direction', '?')}")
-                    w(f"    Note: {p.get('note', '')}")
-                elif "composition" in ptype:
-                    w(f"  Gene Pool composition: {p.get('note', '')}")
-                w()
-            w()
-
-    # ── 6. Key Numbers ──
-    w("KEY NUMBERS")
-    w("-" * 60)
-    w(f"  Total capsules:     {len(caps)}")
-    w(f"  Geopolitical:       {len(geo)}")
-    w(f"  Research:           {len(research)}")
-    w(f"  High credibility:   {sum(1 for c in caps if c.credibility_badge == 'high')}")
-    w(f"  Avg score:          {sum(c.outcome_success_score for c in caps)/len(caps):.2f}")
-    w()
-
-    # ── 7. Assessment ──
-    w("ASSESSMENT")
-    w("-" * 60)
-    w(f"  The system is tracking {len(caps)} capsules across {len(set(c.action_gap_type for c in caps))} gap types.")
-    w(f"  Geopolitical monitoring is active with {len(geo)} event capsules.")
-    w(f"  The highest-signal area is the Iran/Hormuz situation ({len([c for c in geo if 'iran' in str(c.action_gap_title).lower() or 'hormuz' in str(c.action_gap_title).lower()])} capsules).")
+    w(f"  Gap types: {by_type}")
+    w(f"  Avg score: {sum(c.outcome_success_score for c in caps)/len(caps):.2f}")
+    w(f"  High credibility: {sum(1 for c in caps if c.credibility_badge == 'high')}")
     w()
 
     w("=" * 60)
-    w("REPORT AUTO-GENERATED BY RAIROS")
-    w("=" * 60)
-
     return "\n".join(lines)
 
+
 def save() -> str:
-    report = generate()
+    r = generate()
     path = "SITUATION_REPORT.md"
     with open(path, "w", encoding="utf-8") as f:
-        f.write(report)
+        f.write(r)
     return path
