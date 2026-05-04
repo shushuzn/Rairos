@@ -475,11 +475,11 @@ def analyze_gap(
         result["confidence"] = 0.5  # default
         for line in lines:
             # Strip markdown bold/heading markers from both ends before parsing
-            stripped = line.strip().strip("**").strip()
+            stripped = line.strip().strip("*").strip()
             for field in result_fields:
                 prefix = field + ":"
                 if stripped.startswith(prefix):
-                    val = stripped.split(":", 1)[1].strip().strip("**`-").strip()
+                    val = stripped.split(":", 1)[1].strip().strip("*`-").strip()
                     if field == "confidence":
                         try:
                             result[field] = float(val)
@@ -1808,7 +1808,7 @@ def render_confidence_calibration() -> str:
 
     # Build HTML table
     table_rows = ""
-    for label, lo, hi in buckets:
+    for label, _lo, _hi in buckets:
         stats = bucket_stats[label]
         total = stats["verified"] + stats["contradicted"] + stats["unknown"]
         v = stats["verified"]
@@ -1896,17 +1896,17 @@ def generate_hypothesis_from_contradiction(contradiction_pair: dict) -> str:
     patterns = [
         # (rep_a, rep_b, eff_a, eff_b, hypothesis_template)
         ("discrete", "continuous", "effective", "ineffective",
-         f"探索离散的符号化推理与连续的潜空间推理的混合架构，结合两者的精确性与鲁棒性优势"),
+         "探索离散的符号化推理与连续的潜空间推理的混合架构，结合两者的精确性与鲁棒性优势"),
         ("continuous", "discrete", "effective", "ineffective",
-         f"探索连续的潜空间推理与离散的符号化推理的混合架构，结合两者的表达力与可解释性"),
+         "探索连续的潜空间推理与离散的符号化推理的混合架构，结合两者的表达力与可解释性"),
         ("discrete", "continuous", "ineffective", "effective",
-         f"探索混合架构能否结合离散的组合泛化能力与连续的空间推理能力"),
+         "探索混合架构能否结合离散的组合泛化能力与连续的空间推理能力"),
         ("continuous", "discrete", "ineffective", "effective",
-         f"探索混合架构能否融合连续表示的平滑性与离散表示的结构化优势"),
+         "探索混合架构能否融合连续表示的平滑性与离散表示的结构化优势"),
         ("discrete", "hybrid", "effective", "ineffective",
-         f"离到混合的渐进式过渡：能否在离散推理基础上引入连续层提升鲁棒性？"),
+         "离到混合的渐进式过渡：能否在离散推理基础上引入连续层提升鲁棒性？"),
         ("hybrid", "discrete", "ineffective", "effective",
-         f"混合到离散的模块化拆解：混合架构中哪些连续组件可以离散化而不损失性能？"),
+         "混合到离散的模块化拆解：混合架构中哪些连续组件可以离散化而不损失性能？"),
     ]
 
     hypothesis = None
