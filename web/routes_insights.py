@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
+import json
+from pathlib import Path
 from web.shared import templates, get_db
 
 router = APIRouter()
@@ -9,114 +11,40 @@ router = APIRouter()
 
 @router.get("/insights")
 async def insights(request: Request):
-    """Research Insights — Gene Pool knowledge, user archetype, exploration history."""
+    """Research Insights board."""
+    suggestions = []
+    prefetched_ids = set()
+    capsules = []
+    stats = {}
+    archetype = {}
+    gap_prefs = {}
+    topic_freq = {}
+    events_display = []
+    exp_stats = {}
     try:
+        from pathlib import Path
+        import json
         from llm.insight.tracker import EvolutionTracker
 
         tracker = EvolutionTracker()
-
-        # Gene Pool capsules
-        capsules_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-        capsules = []
-        if capsules_path.exists():
-            data = json.loads(capsules_path.read_text(encoding="utf-8"))
-            raw = data.get("capsules", []) if isinstance(data, dict) else data
-            for c in raw[-20:]:  # newest 20
-                status = c.get("status", "active")
-                capsules.append(
-                    (
-                        c.get("capsule_id", "")[:12],
-                        c.get("trigger_topic", "")[:60],
-                        c.get("action_gap_type", ""),
-                        c.get("action_gap_title", "")[:80],
-                        c.get("outcome_success_score", 0.0),
-                        c.get("created_at", "")[:10],
-                        c.get("trigger_keywords", [])[:5],
-                        status,
-                    )
-                )
-
-        # Gene Pool stats from tracker
+        caps = tracker._load_capsules()
+        for c in caps[-20:]:
+            capsules.append((c.capsule_id[:12], c.trigger_topic[:60], c.action_gap_type,
+                           c.action_gap_title[:80], c.outcome_success_score,
+                           c.created_at[:10], c.trigger_keywords[:5], c.status))
         stats = tracker.get_gene_pool_stats()
-
-        # User archetype
-        archetype = tracker.get_archetype()
-
-        # Top gap type preferences
         profile = tracker.get_profile()
-        gap_prefs = dict(
-            sorted((profile.gap_type_preferences or {}).items(), key=lambda x: x[1], reverse=True)
-        )
-
-        # Top topics
-        topic_freq = dict(
-            sorted((profile.topic_frequency or {}).items(), key=lambda x: x[1], reverse=True)[:8]
-        )
-
-        # Recent events (last 15)
-        recent_events = tracker.get_recent_events(limit=15)
-        events_display = []
-        for e in reversed(recent_events):
-            ts = e.timestamp[11:16] if e.timestamp else ""
-            date = e.timestamp[:10] if e.timestamp else ""
-            events_display.append(
-                (
-                    ts,
-                    date,
-                    e.action.value if hasattr(e.action, "value") else str(e.action),
-                    e.topic[:40] if e.topic else "—",
-                    e.gap_type or "—",
-                    e.gap_title[:50] if e.gap_title else "—",
-                )
-            )
-
-        # Exploration stats
+        gap_prefs = dict(sorted((profile.gap_type_preferences or {}).items(), key=lambda x: x[1], reverse=True))
+        topic_freq = dict(sorted((profile.topic_frequency or {}).items(), key=lambda x: x[1], reverse=True)[:8])
         exp_stats = tracker.get_exploration_stats()
-
-        # ── Actionable Project Suggestions ────────────────────────────────────────
-        # Analyze Gene Pool patterns to generate concrete next-step suggestions
-        suggestions = generate_suggestions(capsules, gap_prefs, topic_freq, archetype, tracker)
-
-        # ── Gene Pool Prefetch ─────────────────────────────────────────────────────
-        # Find capsules matching the top research topic for prefetch indicator
-        prefetched_ids: set = set()
-        if topic_freq:
-            top_topic = max(topic_freq.items(), key=lambda x: x[1])[0] if topic_freq else ""
-            if top_topic:
-                from llm.briefing_generator import _match_gene_pool
-
-                matches = _match_gene_pool(top_topic, "", "")
-                prefetched_ids = {m.get("capsule_id", "")[:12] for m in matches}
-
-    except Exception as e:
-        capsules, stats, archetype, gap_prefs, topic_freq, events_display, exp_stats = (
-            [],
-            {},
-            {},
-            {},
-            {},
-            [],
-            {},
-        )
-        import logging
-
-        logging.getLogger(__name__).warning(f"Insights unavailable: {e}")
-
+    except Exception:
+        pass
     return templates.TemplateResponse(
-        request,
-        "insights.html",
-        {
-            "page": "insights",
-            "capsules": capsules,
-            "gene_pool_stats": stats,
-            "archetype": archetype,
-            "gap_prefs": gap_prefs,
-            "topic_freq": topic_freq,
-            "events": events_display,
-            "exp_stats": exp_stats,
-            "suggestions": suggestions,
-            "prefetched_ids": prefetched_ids,
-        },
+        request, "insights.html",
+        {"page": "insights", "capsules": capsules, "gene_pool_stats": stats,
+         "archetype": archetype, "gap_prefs": gap_prefs, "topic_freq": topic_freq,
+         "events": events_display, "exp_stats": exp_stats,
+         "suggestions": suggestions, "prefetched_ids": prefetched_ids},
     )
 
 
