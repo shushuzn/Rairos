@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 
-from cli._shared import get_db, print_info, print_error
+from cli._shared import get_db, print_info, print_error, print_success
 from llm.gap_detector import GapDetector
 from llm.insight_evolution import EvolutionTracker
 
@@ -56,6 +56,12 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
     path_p.add_argument("paper_id", help="Starting paper ID")
     path_p.add_argument("--depth", type=int, default=3, help="Max path depth (default: 3)")
     path_p.add_argument("--json", "-j", action="store_true", help="Output as JSON")
+
+    # gap delete — remove a capsule by ID
+    del_p = sub.add_parser("delete", help="Delete a capsule from Gene Pool")
+    del_p.add_argument("capsule_id", help="Capsule ID to delete")
+    del_p.add_argument("--yes", "-y", action="store_true", help="Skip confirmation")
+    del_p.set_defaults(func=_run_gap_delete)
 
     p.add_argument(
         "topic",
@@ -742,6 +748,61 @@ def _run_gap_path(args: argparse.Namespace) -> int:
             print(f"    {indent}{'└─ ' if j == len(path) - 1 else '├─ '}{pid[:12]} {title}{suffix}")
         print(f"       score={score:.2f}  cap={capsule_id[:16]}")
         print()
+    return 0
+
+
+def _run_gap_delete(args: argparse.Namespace) -> int:
+    """Delete a capsule from Gene Pool by ID."""
+    from llm.insight.tracker import EvolutionTracker
+
+    cid = args.capsule_id
+    tracker = EvolutionTracker()
+    capsules = tracker._load_capsules()
+    found = [c for c in capsules if c.capsule_id == cid]
+
+    if not found:
+        # Check legacy JSON
+        legacy_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+        if legacy_path.exists():
+            import json as _json
+            data = _json.loads(legacy_path.read_text(encoding="utf-8"))
+            old_caps = data.get("capsules", [])
+            old_found = [c for c in old_caps if c.get("capsule_id") == cid]
+            if old_found:
+                if args.yes:
+                    confirm = "y"
+                else:
+                    try:
+                        confirm = input(f"Delete legacy capsule '{old_found[0].get('action_gap_title', '?')[:40]}'? [y/N] ").strip().lower()
+                    except (EOFError, KeyboardInterrupt):
+                        confirm = "n"
+                if confirm == "y":
+                    data["capsules"] = [c for c in old_caps if c.get("capsule_id") != cid]
+                    legacy_path.write_text(_json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+                    print_success(f"Deleted legacy capsule {cid}")
+                    return 0
+                else:
+                    print_info("Skipped.")
+                    return 0
+
+        print_error(f"Capsule not found: {cid}")
+        return 1
+
+    if args.yes:
+        confirm = "y"
+    else:
+        title = found[0].action_gap_title[:50]
+        try:
+            confirm = input(f"Delete capsule '{title}'? [y/N] ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            confirm = "n"
+
+    if confirm == "y":
+        capsules = [c for c in capsules if c.capsule_id != cid]
+        tracker._save_capsules(capsules)
+        print_success(f"Deleted capsule {cid}")
+    else:
+        print_info("Skipped.")
     return 0
 
 
