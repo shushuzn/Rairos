@@ -234,13 +234,14 @@ def _encode_to_gene_pool(
         archetype={},
     )
 
-    # Persist via tracker
+    # Persist via tracker with source_paper_id for Gene Pool → paper linkage
     tracker.encode_capsule(
         topic=config.paper_topic,
         gap_type="implementation",
         gap_title=f"{config.arxiv_id} implementation",
         gap_description=f"Passed {result.passed}/{result.passed + result.failed} tests",
         success_score=success_score,
+        source_paper_id=config.arxiv_id,
     )
 
 
