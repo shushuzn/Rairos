@@ -219,11 +219,6 @@ async def _policy_fallback(request: Request):
     return templates.TemplateResponse(request, "generic.html",
         {"page": "policy-impact", "title": "Policy Impact", "content": "<p>Policy impact module loading...</p>"})
 
-@router.get("/labor-displacement")
-async def _labor_fallback(request: Request):
-    return templates.TemplateResponse(request, "generic.html",
-        {"page": "labor-displacement", "title": "Labor Track", "content": "<p>Labor displacement module loading...</p>"})
-
 @router.get("/researchers")
 async def _researchers_fallback(request: Request):
     return templates.TemplateResponse(request, "generic.html",
@@ -295,10 +290,6 @@ async def voice_fb(request: Request):
 @router.get("/policy-impact")
 async def policy_fb(request: Request):
     return templates.TemplateResponse(request, "generic.html", {"page": "policy-impact", "title": "Policy Impact", "content": "<p>Policy impact not available</p>"})
-
-@router.get("/labor-displacement")
-async def labor_fb(request: Request):
-    return templates.TemplateResponse(request, "generic.html", {"page": "labor-displacement", "title": "Labor Track", "content": "<p>Labor track not available</p>"})
 
 @router.get("/researchers")
 async def researchers_fb(request: Request):
