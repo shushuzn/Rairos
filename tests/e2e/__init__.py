@@ -1,5 +1,1 @@
-"""End-to-end tests for ai-research-os.
-
-These tests run full workflows from CLI to verify end-to-end functionality.
-Run with: pytest tests/e2e/ -v
-"""
+IiIiRW5kLXRvLWVuZCB0ZXN0cyBmb3IgYWktcmVzZWFyY2gtb3MuCgpUaGVzZSB0ZXN0cyBydW4gZnVsbCB3b3JrZmxvd3MgZnJvbSBDTEkgdG8gdmVyaWZ5IGVuZC10by1lbmQgZnVuY3Rpb25hbGl0eS4KUnVuIHdpdGg6IHB5dGVzdCB0ZXN0cy9lMmUvIC12CiIiIgo=
