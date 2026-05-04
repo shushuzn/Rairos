@@ -194,10 +194,6 @@ async def paper2code_run(request: Request):
     return templates.TemplateResponse(request, "generic.html",
         {"page": "chat", "title": "Chat", "content": "<p>Chat module loading...</p>"})
 
-@router.get("/climate-monitor")
-async def _climate_fallback(request: Request):
-    return templates.TemplateResponse(request, "generic.html",
-        {"page": "climate-monitor", "title": "Climate AI", "content": "<p>Climate monitor module loading...</p>"})
 
 @router.get("/chat")
 async def chat_page(request: Request):
