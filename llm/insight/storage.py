@@ -34,10 +34,13 @@ class CapsuleStorageMixin:
         success_score: float = 0.8,
         status: str = "active",
         source_paper_id: str = "",
+        source_arxiv_category: str = "",
     ) -> CapsuleGene:
         archetype = self.get_archetype()
         if source_paper_id:
             archetype["source_paper_id"] = source_paper_id
+        if source_arxiv_category:
+            archetype["source_arxiv_category"] = source_arxiv_category
         capsule = CapsuleGene(
             capsule_id=uuid.uuid4().hex[:12],
             created_at=self._get_timestamp(),
@@ -51,7 +54,14 @@ class CapsuleStorageMixin:
             evolved_generation=0,
             archetype=archetype,
             status=status,
+            source_arxiv_category=source_arxiv_category,
         )
+
+        # Compute credibility for new capsule
+        try:
+            self._update_credibility(capsule)
+        except Exception:
+            pass
 
         with open(self._gene_pool_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(capsule.to_dict(), ensure_ascii=False) + "\n")
@@ -64,6 +74,30 @@ class CapsuleStorageMixin:
         )
 
         return capsule
+
+    def _update_credibility(self, capsule: CapsuleGene) -> None:
+        """Set credibility fields on a capsule by comparing against pool."""
+        from llm.insight.credibility import CredibilityScorer
+
+        all_capsules = self._load_capsules()
+        scorer = CredibilityScorer()
+        is_trendslop, overlap, reason = scorer.is_trendslop(capsule, all_capsules)
+        capsule.trendslop = is_trendslop
+        capsule.trendslop_reason = reason
+
+        # Credibility score: weighted combination
+        n = max(capsule.feedback_count, 1)
+        evidence = capsule.outcome_success_score * (1.0 - 1.0 / (n + 1))
+        novelty = max(0.0, 1.0 - overlap)
+        base = 0.4 * evidence + 0.4 * novelty + 0.2 * 0.5  # source_trust defaults to 0.5
+        capsule.credibility_score = min(1.0, max(0.0, base))
+
+        if capsule.credibility_score >= 0.70:
+            capsule.credibility_badge = "high"
+        elif capsule.credibility_score < 0.35:
+            capsule.credibility_badge = "low"
+        else:
+            capsule.credibility_badge = "medium"
 
     def find_capsule(
         self,

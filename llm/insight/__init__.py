@@ -15,6 +15,8 @@ from llm.insight.evolution import (
     CapsuleCandidate,
     EvaluationResult,
 )
+from llm.insight.credibility import CredibilityScorer, CredibilityScore
+from llm.insight.trust_tracker import SourceTrustTracker, SourceTrustEntry
 
 __all__ = [
     "CapsuleGene",
@@ -30,4 +32,8 @@ __all__ = [
     "AuditResult",
     "CapsuleCandidate",
     "EvaluationResult",
+    "CredibilityScorer",
+    "CredibilityScore",
+    "SourceTrustTracker",
+    "SourceTrustEntry",
 ]

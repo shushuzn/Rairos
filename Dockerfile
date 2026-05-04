@@ -46,4 +46,4 @@ USER airos
 EXPOSE 8501
 
 ENTRYPOINT ["uvicorn"]
-CMD ["web.app_new:app", "--host", "0.0.0.0", "--port", "8501"]
+CMD ["web.app:app", "--host", "0.0.0.0", "--port", "8501"]

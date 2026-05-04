@@ -56,6 +56,9 @@ class ResearchGapV2:
     # Gene Pool signal — success pattern match from accepted gaps
     gene_pool_score: float = 0.0  # 0.0–1.0, from best matching CapsuleGene
 
+    # Credibility — from best matching CapsuleGene credibility_score
+    credibility_score: float = 0.5  # 0.0–1.0
+
 
 @dataclass
 class GapAnalysisResultV2:
@@ -340,6 +343,7 @@ class GapAnalyzerV2(GapDetector):
             # This is the "success pattern match" — if user accepted similar gaps before,
             # we boost this gap because it matches their proven interest pattern.
             gene_pool_score = self._get_gene_pool_score(topic, gap)
+            credibility_score = self._get_gene_pool_credibility(topic, gap)
 
             enhanced.append(
                 ResearchGapV2(
@@ -352,6 +356,7 @@ class GapAnalyzerV2(GapDetector):
                     priority=priority,
                     novelty_score=trend_boost,  # reuse field to carry trend signal
                     gene_pool_score=gene_pool_score,
+                    credibility_score=credibility_score,
                 )
             )
 
@@ -388,6 +393,32 @@ class GapAnalyzerV2(GapDetector):
             return best.outcome_success_score * match_score
         except Exception:
             return 0.0
+
+    def _get_gene_pool_credibility(self, topic: str, gap: ResearchGap) -> float:
+        """Look up Gene Pool and return the credibility score of the best capsule match.
+
+        Returns 0.5 (neutral) if no match or error.
+        """
+        try:
+            gap_keywords = extract_keywords(gap.description or "")
+            gap_type_str = (
+                gap.gap_type.value if hasattr(gap.gap_type, "value") else str(gap.gap_type)
+            )
+
+            capsules = self.evolution_tracker.find_capsule(
+                topic=topic,
+                gap_type=gap_type_str,
+                keywords=gap_keywords,
+                min_score=0.1,
+            )
+
+            if not capsules:
+                return 0.5
+
+            best = capsules[0]
+            return getattr(best, "credibility_score", 0.5)
+        except Exception:
+            return 0.5
 
     def _matches_trending_keyword(self, gap: ResearchGap, hot_keywords: set) -> float:
         """Check if a gap matches a trending keyword, return boost score."""
@@ -481,13 +512,18 @@ class GapAnalyzerV2(GapDetector):
                 1.0,
             )
 
-            # Composite: Gene Pool is dominant (40%), rest weighted
+            # Credibility: from best matching capsule's credibility_score
+            # Penalizes gaps backed by trendslop capsules
+            credibility = getattr(gap, "credibility_score", 0.5)
+
+            # Composite: Gene Pool is dominant (35%), rest weighted
             composite = (
-                0.40 * gene_pool
-                + 0.25 * pref_normalized
-                + 0.20 * trend_normalized
+                0.35 * gene_pool
+                + 0.20 * pref_normalized
+                + 0.15 * trend_normalized
                 + 0.10 * severity_normalized
                 + 0.05 * keyword_normalized
+                + 0.15 * credibility
             )
 
             # Primary: gene_pool; Tiebreaker: composite

@@ -19,7 +19,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
-    command: ["uvicorn", "web.app_new:app", "--host", "0.0.0.0", "--port", "8501"]
+    command: ["uvicorn", "web.app:app", "--host", "0.0.0.0", "--port", "8501"]
 
   # ── Ollama — local embeddings & LLM ────────────────────────────────
   ollama:

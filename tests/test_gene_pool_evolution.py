@@ -356,7 +356,8 @@ class TestScoreCapsule:
             created_at=datetime.now().isoformat(),
         )
         q = evolver._score_capsule(capsule)
-        expected_overall = 0.5 * 0.6 + 0.2 * 0.5 + 0.2 * 1.0 + 0.1 * 0.6
+        # New formula adds credibility dimension (0.25 weight)
+        expected_overall = 0.35 * 0.6 + 0.15 * 0.5 + 0.15 * 1.0 + 0.10 * 0.6 + 0.25 * 0.5
         assert q.overall == pytest.approx(expected_overall)
 
 

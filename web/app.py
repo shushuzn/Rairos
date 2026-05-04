@@ -717,11 +717,10 @@ async def briefing_history(request: Request):
 @app.get("/trust-scores")
 async def trust_scores(request: Request):
     """Source Trust Scores — per-arXiv-category credibility ratings."""
-    from llm.trust_scorer import TrustScorer
+    from llm.insight.trust_tracker import SourceTrustTracker
 
-    scorer = TrustScorer()
-    scorer.load_trust_map() or scorer.compute_trust_map()
-    html = scorer.render_html()
+    tracker = SourceTrustTracker()
+    html = tracker.render_html()
     return templates.TemplateResponse(
         request,
         "generic.html",
@@ -736,10 +735,19 @@ async def trust_scores(request: Request):
 @app.get("/gene-pool/credibility")
 async def gene_pool_credibility(request: Request):
     """Gap Credibility — flags trendslop capsules with high keyword overlap."""
-    from llm.credibility_scorer import CredibilityScorer
+    from llm.insight.credibility import CredibilityScorer
 
     scorer = CredibilityScorer()
-    _html = scorer.render_html()
+    html = scorer.render_html()
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "gene-pool-credibility",
+            "title": "Gap Credibility",
+            "content": html,
+        },
+    )
 
 
 @app.get("/gene-pool/graph")
