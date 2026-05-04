@@ -1,6 +1,6 @@
 """
 Rairos — FastAPI + Jinja2 Hand-Drawn UI.
-Run: uvicorn web.app_new:app --reload --port 8501
+Run: uvicorn web.app:app --reload --port 8501
 """
 
 from __future__ import annotations
