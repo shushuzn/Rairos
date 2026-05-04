@@ -162,11 +162,13 @@ async def contradiction_heatmap(request: Request):
 @router.get("/game-mode")
 async def game_mode(request: Request):
     """Research Game Mode — badges and progression."""
-    from llm.game_mode import compute_badges, render_game_mode_html
-    render_game_mode_html = lambda b: '<p>Game mode not available</p>'
-
-    badges = compute_badges()
-    html = render_game_mode_html(badges)
+    html = '<p>Game mode unavailable</p>'
+    try:
+        from llm.game_mode import compute_badges, render_game_mode_html
+        badges = compute_badges()
+        html = render_game_mode_html(badges)
+    except Exception:
+        pass
     return templates.TemplateResponse(
         request, "generic.html",
         {"page": "game-mode", "title": "Research Game Mode", "content": html},
@@ -189,11 +191,13 @@ async def paradigm_alert(request: Request):
 @router.get("/alerts/eval-gap")
 async def eval_gap_alert(request: Request):
     """Evaluation Gap Monitor."""
-    from llm.eval_gap_monitor import check_eval_gaps, render_eval_gap_html
-    render_eval_gap_html = lambda d: '<p>Eval gap monitor not available</p>'
-
-    data = check_eval_gaps()
-    html = render_eval_gap_html(data)
+    html = "<p>Evaluation gap monitor unavailable</p>"
+    try:
+        from llm.eval_gap_monitor import check_eval_gaps, render_eval_gap_html
+        data = check_eval_gaps()
+        html = render_eval_gap_html(data)
+    except Exception:
+        pass
     return templates.TemplateResponse(
         request, "generic.html",
         {"page": "eval-gap-alert", "title": "Evaluation Gap", "content": html},
@@ -216,11 +220,14 @@ async def gene_pool_bold(request: Request):
 @router.get("/gene-pool/backup")
 async def gene_pool_backup(request: Request):
     """Gene Pool Backup — create and restore snapshots."""
-    from llm.gene_pool_backup import get_backup_info, create_backup as _create_backup
-    _create_backup = lambda: ''
-
-    backups = get_backup_info()
-    html = _render_backup_html(backups)
+    html = "<p>Backup module unavailable</p>"
+    try:
+        from llm.gene_pool_backup import get_backup_info
+        backups = get_backup_info()
+        if isinstance(backups, list):
+            html = _render_backup_html(backups)
+    except Exception:
+        pass
     return templates.TemplateResponse(
         request, "generic.html",
         {"page": "gene-pool-backup", "title": "Gene Pool Backup", "content": html},
