@@ -76,21 +76,24 @@ def check_policy_impact(paper: Dict[str, Any]) -> List[Dict[str, Any]]:
         # Category match
         cat_match = any(c in cats for c in reg["affected_domains"])
         if kw_match or cat_match:
-            results.append({
-                "regulation_id": rid,
-                "regulation_name": reg["name"],
-                "jurisdiction": reg["jurisdiction"],
-                "effective_date": reg["effective_date"],
-                "affected_domains": reg["affected_domains"],
-                "priority_boost": reg["priority_boost"],
-                "match_reason": "keyword" if kw_match else "category",
-            })
+            results.append(
+                {
+                    "regulation_id": rid,
+                    "regulation_name": reg["name"],
+                    "jurisdiction": reg["jurisdiction"],
+                    "effective_date": reg["effective_date"],
+                    "affected_domains": reg["affected_domains"],
+                    "priority_boost": reg["priority_boost"],
+                    "match_reason": "keyword" if kw_match else "category",
+                }
+            )
     return results
 
 
 def get_impacted_capsules() -> List[Dict[str, Any]]:
     """Return Gene Pool capsules whose gap types are affected by current regulations."""
     from llm.bold_vault import _load_capsules as _load
+
     capsules = _load()
     impacted: List[Dict[str, Any]] = []
 
@@ -100,13 +103,15 @@ def get_impacted_capsules() -> List[Dict[str, Any]]:
         gap_type = cap.get("action_gap_type", "") or cap.get("trigger_gap_type", "")
         for reg in REGULATIONS.values():
             if gap_type in reg["affected_gap_types"]:
-                impacted.append({
-                    "capsule_id": cap.get("capsule_id", ""),
-                    "gap_title": cap.get("action_gap_title", ""),
-                    "gap_type": gap_type,
-                    "regulation": reg["name"],
-                    "priority_boost": reg["priority_boost"].get(gap_type, 0),
-                })
+                impacted.append(
+                    {
+                        "capsule_id": cap.get("capsule_id", ""),
+                        "gap_title": cap.get("action_gap_title", ""),
+                        "gap_type": gap_type,
+                        "regulation": reg["name"],
+                        "priority_boost": reg["priority_boost"].get(gap_type, 0),
+                    }
+                )
                 break
     impacted.sort(key=lambda x: -x["priority_boost"])
     return impacted
@@ -118,35 +123,41 @@ def render_policy_tracer_html() -> str:
 
     lines = ['<div class="policy-tracer">']
     lines.append("<h3>🏛️ Policy Impact Tracer</h3>")
-    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
-                "Maps AI regulations to affected Gene Pool gaps. "
-                "Priority weights increase for gap types targeted by new policies.</p>")
+    lines.append(
+        "<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
+        "Maps AI regulations to affected Gene Pool gaps. "
+        "Priority weights increase for gap types targeted by new policies.</p>"
+    )
 
     # Regulation list
     for _rid, reg in REGULATIONS.items():
         lines.append(f"""
 <div style='border:1px solid #e0dbd4;border-radius:6px;padding:12px;margin-bottom:10px;border-left:4px solid #D4A055'>
   <div style='display:flex;justify-content:space-between'>
-    <div style='font-weight:700;font-size:13px'>{reg['name']}</div>
-    <div style='font-size:11px;color:#A89E8C'>{reg['jurisdiction']} · effective {reg['effective_date']}</div>
+    <div style='font-weight:700;font-size:13px'>{reg["name"]}</div>
+    <div style='font-size:11px;color:#A89E8C'>{reg["jurisdiction"]} · effective {reg["effective_date"]}</div>
   </div>
-  <div style='font-size:12px;color:#7a7570;margin-top:4px'>Affected: {', '.join(reg['affected_domains'])}</div>
+  <div style='font-size:12px;color:#7a7570;margin-top:4px'>Affected: {", ".join(reg["affected_domains"])}</div>
 </div>""")
 
     # Impacted capsules
-    lines.append("<h4 style='font-size:13px;font-weight:700;color:#333;margin-top:20px;margin-bottom:10px'>"
-                f"Policy-Impacted Capsules ({len(impacted)})</h4>")
+    lines.append(
+        "<h4 style='font-size:13px;font-weight:700;color:#333;margin-top:20px;margin-bottom:10px'>"
+        f"Policy-Impacted Capsules ({len(impacted)})</h4>"
+    )
 
     if not impacted:
-        lines.append("<p style='color:#A89E8C;font-size:13px'>No capsules directly affected by current regulations.</p>")
+        lines.append(
+            "<p style='color:#A89E8C;font-size:13px'>No capsules directly affected by current regulations.</p>"
+        )
     else:
         for cap in impacted[:10]:
             boost_pct = int(cap["priority_boost"] * 100)
             lines.append(f"""
 <div style='display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f8f4ef;border-radius:4px;margin-bottom:6px'>
   <div>
-    <div style='font-size:12px;font-weight:600;color:#2a2a2a'>{cap['gap_title'][:55]}</div>
-    <div style='font-size:11px;color:#A89E8C'>{cap['gap_type']} · {cap['regulation']}</div>
+    <div style='font-size:12px;font-weight:600;color:#2a2a2a'>{cap["gap_title"][:55]}</div>
+    <div style='font-size:11px;color:#A89E8C'>{cap["gap_type"]} · {cap["regulation"]}</div>
   </div>
   <div style='color:#6BBF8A;font-size:12px;font-weight:700'>+{boost_pct}% priority</div>
 </div>""")

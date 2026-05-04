@@ -95,32 +95,52 @@ def _parse_markdown_sections(md: str) -> Dict[str, str]:
 
 
 def _escape_html(text: str) -> str:
-    return (text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-             .replace('"', "&quot;").replace("'", "&#39;"))
+    return (
+        text.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+        .replace("'", "&#39;")
+    )
 
 
 def _render_phd_advisor(sections: Dict[str, str], raw: str) -> str:
     def extract(t):
         return sections.get(t, "")[:300] or raw[200:500]
-    return _section_html("📚 Paper Summary", sections.get("_body", sections.get("summary", raw[:300]))[:400]) + \
-           _section_html("🔬 Methodology Assessment", extract("methodology")) + \
-           _section_html("❓ Open Questions for Student", extract("research_gaps"))
+
+    return (
+        _section_html(
+            "📚 Paper Summary", sections.get("_body", sections.get("summary", raw[:300]))[:400]
+        )
+        + _section_html("🔬 Methodology Assessment", extract("methodology"))
+        + _section_html("❓ Open Questions for Student", extract("research_gaps"))
+    )
 
 
 def _render_industry_engineer(sections: Dict[str, str], raw: str) -> str:
     def extract(t):
         return sections.get(t, "")[:300] or raw[200:500]
-    return _section_html("⚡ What It Does", sections.get("_body", sections.get("summary", raw[:300]))[:200]) + \
-           _section_html("🛠️ Implementation Signals", extract("methodology")) + \
-           _section_html("📊 Benchmark / Compute", extract("experiments"))
+
+    return (
+        _section_html(
+            "⚡ What It Does", sections.get("_body", sections.get("summary", raw[:300]))[:200]
+        )
+        + _section_html("🛠️ Implementation Signals", extract("methodology"))
+        + _section_html("📊 Benchmark / Compute", extract("experiments"))
+    )
 
 
 def _render_policy_maker(sections: Dict[str, str], raw: str) -> str:
     def extract(t):
         return sections.get(t, "")[:300] or raw[300:600]
-    return _section_html("🏛️ What This Means", sections.get("_body", sections.get("summary", raw[:300]))[:300]) + \
-           _section_html("⚠️ Risks & Concerns", extract("limitations")) + \
-           _section_html("📅 Deployment Timeline", raw[200:500])
+
+    return (
+        _section_html(
+            "🏛️ What This Means", sections.get("_body", sections.get("summary", raw[:300]))[:300]
+        )
+        + _section_html("⚠️ Risks & Concerns", extract("limitations"))
+        + _section_html("📅 Deployment Timeline", raw[200:500])
+    )
 
 
 def _render_researcher(sections: Dict[str, str], raw: str) -> str:
@@ -132,7 +152,9 @@ def _render_researcher(sections: Dict[str, str], raw: str) -> str:
     badge_text, badge_cls = badge_map.get(v, ("➖ Neutral", "verdict-neutral"))
 
     lines = [f"<span class='verdict-badge {badge_cls}'>{badge_text}</span>"]
-    lines.append(f"<p style='margin-top:8px'>{sections.get('_body', sections.get('summary', raw[:400]))[:400]}</p>")
+    lines.append(
+        f"<p style='margin-top:8px'>{sections.get('_body', sections.get('summary', raw[:400]))[:400]}</p>"
+    )
 
     gaps = sections.get("research_gaps", sections.get("gaps", ""))
     if gaps:
@@ -166,23 +188,37 @@ def render_distributed_briefing(arxiv_id: str, title: str, markdown: str, audien
         body_content = _render_researcher(sections, markdown)
 
     lines = ['<div class="briefing-dist">']
-    lines.append("<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:16px'>")
+    lines.append(
+        "<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:16px'>"
+    )
     lines.append(f"<h3 style='margin:0'>{label}</h3>")
-    lines.append(f"<span style='font-size:11px;color:#A89E8C;background:#f5f0e8;padding:3px 10px;border-radius:12px'>"
-                f"Share: <code style='font-size:11px'>rairos.app/b/{short_id}</code></span>")
+    lines.append(
+        f"<span style='font-size:11px;color:#A89E8C;background:#f5f0e8;padding:3px 10px;border-radius:12px'>"
+        f"Share: <code style='font-size:11px'>rairos.app/b/{short_id}</code></span>"
+    )
     lines.append("</div>")
     lines.append(f"<div class='digest-body'>{body_content}</div>")
     lines.append("<details style='margin-top:20px'>")
-    lines.append("<summary style='cursor:pointer;font-size:12px;color:#A89E8C'>View Raw Briefing</summary>")
-    lines.append(f"<pre style='font-size:11px;background:#f8f4ef;padding:12px;border-radius:4px;overflow:auto'>"
-                f"{_escape_html(markdown[:2000])}</pre>")
+    lines.append(
+        "<summary style='cursor:pointer;font-size:12px;color:#A89E8C'>View Raw Briefing</summary>"
+    )
+    lines.append(
+        f"<pre style='font-size:11px;background:#f8f4ef;padding:12px;border-radius:4px;overflow:auto'>"
+        f"{_escape_html(markdown[:2000])}</pre>"
+    )
     lines.append("</details>")
     lines.append("<style>")
     lines.append(".briefing-dist { font-family: Georgia, serif; max-width: 800px; }")
-    lines.append(".digest-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e8e4dc; }")
-    lines.append(".digest-section h4 { font-size: 13px; font-weight: 700; color: #2a4a6a; margin-bottom: 6px; }")
+    lines.append(
+        ".digest-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e8e4dc; }"
+    )
+    lines.append(
+        ".digest-section h4 { font-size: 13px; font-weight: 700; color: #2a4a6a; margin-bottom: 6px; }"
+    )
     lines.append(".digest-section p { font-size: 13px; color: #444; line-height: 1.6; margin: 0; }")
-    lines.append(".verdict-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }")
+    lines.append(
+        ".verdict-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }"
+    )
     lines.append(".verdict-validates { background: rgba(107,191,138,0.15); color: #4a8a5a; }")
     lines.append(".verdict-contradicts { background: rgba(196,112,106,0.15); color: #C4706A; }")
     lines.append(".verdict-neutral { background: rgba(168,158,140,0.15); color: #7a7570; }")
@@ -196,8 +232,10 @@ def render_distributor_panel(arxiv_id: str, title: str) -> str:
 
     lines = ['<div class="dist-panel">']
     lines.append("<h3>📬 Briefing Distributor</h3>")
-    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
-                "Render this briefing for different audiences, or share a public link.</p>")
+    lines.append(
+        "<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
+        "Render this briefing for different audiences, or share a public link.</p>"
+    )
 
     audiences = [
         ("researcher", "🔬 Researcher", "Concise technical summary with gap analysis"),
@@ -208,15 +246,25 @@ def render_distributor_panel(arxiv_id: str, title: str) -> str:
 
     for aud_id, aud_name, aud_desc in audiences:
         s = create_share_link(arxiv_id, title, aud_id)
-        lines.append("<div style='margin-bottom:14px;padding:12px;background:#f8f4ef;border-radius:6px'>")
-        lines.append(f"<div style='font-weight:700;font-size:13px;margin-bottom:2px'>{aud_name}</div>")
-        lines.append(f"<div style='font-size:12px;color:#A89E8C;margin-bottom:6px'>{aud_desc}</div>")
-        lines.append(f"<button id='btn-{aud_id}' style='background:#6B8FB5;color:white;border:none;border-radius:4px;"
-                    f"padding:5px 12px;cursor:pointer;font-size:12px'>Preview</button> ")
-        lines.append(f"<button onclick=\"copyShareLink('{s}')\" "
-                    f"style='background:transparent;color:#6B8FB5;border:1px solid #6B8FB5;"
-                    f"border-radius:4px;padding:5px 12px;cursor:pointer;font-size:12px;margin-left:6px'>"
-                    f"Copy Link</button>")
+        lines.append(
+            "<div style='margin-bottom:14px;padding:12px;background:#f8f4ef;border-radius:6px'>"
+        )
+        lines.append(
+            f"<div style='font-weight:700;font-size:13px;margin-bottom:2px'>{aud_name}</div>"
+        )
+        lines.append(
+            f"<div style='font-size:12px;color:#A89E8C;margin-bottom:6px'>{aud_desc}</div>"
+        )
+        lines.append(
+            f"<button id='btn-{aud_id}' style='background:#6B8FB5;color:white;border:none;border-radius:4px;"
+            f"padding:5px 12px;cursor:pointer;font-size:12px'>Preview</button> "
+        )
+        lines.append(
+            f"<button onclick=\"copyShareLink('{s}')\" "
+            f"style='background:transparent;color:#6B8FB5;border:1px solid #6B8FB5;"
+            f"border-radius:4px;padding:5px 12px;cursor:pointer;font-size:12px;margin-left:6px'>"
+            f"Copy Link</button>"
+        )
         lines.append("</div>")
 
     lines.append("<div id='audience-preview' style='margin-top:16px'></div>")

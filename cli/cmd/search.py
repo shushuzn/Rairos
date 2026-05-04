@@ -1,4 +1,5 @@
 """CLI command: search."""
+
 from __future__ import annotations
 
 import argparse
@@ -43,7 +44,9 @@ Examples:
 
     p.add_argument("--year", type=int, default=0, help="Filter by year")
 
-    p.add_argument("--tag", dest="tags", action="append", default=[], help="Filter by tag (repeatable)")
+    p.add_argument(
+        "--tag", dest="tags", action="append", default=[], help="Filter by tag (repeatable)"
+    )
 
     p.add_argument("--status", default="", help="Filter by parse status")
 
@@ -68,27 +71,54 @@ def _run_search(args: argparse.Namespace) -> int:
     if args.format == "json":
         out = []
         for r in results:
-            out.append({
-                "paper_id": r.paper_id,
-                "title": r.title,
-                "authors": r.authors,
-                "published": r.published,
-                "primary_category": r.primary_category,
-                "score": round(r.score, 3) if r.score else None,
-                "snippet": r.snippet,
-                "source": r.source,
-                "abs_url": r.abs_url,
-                "pdf_url": r.pdf_url,
-                "parse_status": r.parse_status,
-            })
+            out.append(
+                {
+                    "paper_id": r.paper_id,
+                    "title": r.title,
+                    "authors": r.authors,
+                    "published": r.published,
+                    "primary_category": r.primary_category,
+                    "score": round(r.score, 3) if r.score else None,
+                    "snippet": r.snippet,
+                    "source": r.source,
+                    "abs_url": r.abs_url,
+                    "pdf_url": r.pdf_url,
+                    "parse_status": r.parse_status,
+                }
+            )
         print(json.dumps({"total": total, "results": out}, option=json.OPT_INDENT_2).decode())
 
     elif args.format == "csv":
         writer = csv.writer(_sys.stdout)
-        writer.writerow(["paper_id", "title", "authors", "published", "primary_category", "score", "snippet", "source", "abs_url", "parse_status"])
+        writer.writerow(
+            [
+                "paper_id",
+                "title",
+                "authors",
+                "published",
+                "primary_category",
+                "score",
+                "snippet",
+                "source",
+                "abs_url",
+                "parse_status",
+            ]
+        )
         for r in results:
-            writer.writerow([r.paper_id, r.title, r.authors, r.published, r.primary_category,
-                             round(r.score, 3) if r.score else "", r.snippet, r.source, r.abs_url, r.parse_status or ""])
+            writer.writerow(
+                [
+                    r.paper_id,
+                    r.title,
+                    r.authors,
+                    r.published,
+                    r.primary_category,
+                    round(r.score, 3) if r.score else "",
+                    r.snippet,
+                    r.source,
+                    r.abs_url,
+                    r.parse_status or "",
+                ]
+            )
 
     elif args.format == "warp":
         _run_search_warp(results, total)
@@ -100,7 +130,9 @@ def _run_search(args: argparse.Namespace) -> int:
             score_str = f"[{r.score:.2f}]" if r.score else "     "
             print(f"  {colored(score_str, Colors.BOLD)} {r.title}")
             print(f"         {colored(r.authors, Colors.OKBLUE)}")
-            print(f"         {r.published} | {colored(r.source, Colors.OKGREEN)} | {r.primary_category}")
+            print(
+                f"         {r.published} | {colored(r.source, Colors.OKGREEN)} | {r.primary_category}"
+            )
             if r.snippet:
                 print(f"         ...{r.snippet}...")
             print()
@@ -114,10 +146,12 @@ def _run_search_warp(results, total) -> None:
     blocks = []
 
     # Header panel
-    blocks.append(WarpBlocks.panel(
-        "Search Results",
-        f"[#A5D5FE]{len(results)}[/] shown · [#B4FA72]{total}[/] total",
-    ))
+    blocks.append(
+        WarpBlocks.panel(
+            "Search Results",
+            f"[#A5D5FE]{len(results)}[/] shown · [#B4FA72]{total}[/] total",
+        )
+    )
 
     if not results:
         blocks.append(WarpBlocks.panel("No Results", "[#8E8E8E]No papers matched your query.[/]"))
@@ -134,11 +168,12 @@ def _run_search_warp(results, total) -> None:
         title = r.title[:50] + "..." if len(r.title) > 50 else r.title
         table_rows.append([title, year, score, category])
 
-    blocks.append(WarpBlocks.table(
-        ["Title", "Year", "Score", "Category"],
-        table_rows,
-        title=f"Results ({len(results)})",
-    ))
+    blocks.append(
+        WarpBlocks.table(
+            ["Title", "Year", "Score", "Category"],
+            table_rows,
+            title=f"Results ({len(results)})",
+        )
+    )
 
     print("\n\n".join(blocks))
-

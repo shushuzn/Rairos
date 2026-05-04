@@ -1,4 +1,5 @@
 """Semantic Router — natural-language CLI command routing with graceful degradation."""
+
 from __future__ import annotations
 
 import argparse
@@ -17,50 +18,52 @@ logger = logging.getLogger(__name__)
 
 # ─── QueryType taxonomy ────────────────────────────────────────────────────────
 
+
 class QueryType(Enum):
-    GAP_ANALYSIS           = "gap_analysis"
-    HYPOTHESIS_GENERATION  = "hypothesis_generation"
-    EXPERIMENT             = "experiment"
-    INSIGHT                = "insight"
-    NARRATIVE              = "narrative"
-    PAPER_SEARCH           = "paper_search"
-    QUESTION_ANSWER        = "question_answer"
-    GENERAL                = "general"
+    GAP_ANALYSIS = "gap_analysis"
+    HYPOTHESIS_GENERATION = "hypothesis_generation"
+    EXPERIMENT = "experiment"
+    INSIGHT = "insight"
+    NARRATIVE = "narrative"
+    PAPER_SEARCH = "paper_search"
+    QUESTION_ANSWER = "question_answer"
+    GENERAL = "general"
 
 
 # ─── QueryType → CLI subcommand map ─────────────────────────────────────────
 
 _QUERY_TYPE_TO_COMMAND: Dict[QueryType, str] = {
-    QueryType.GAP_ANALYSIS:           "gap",
-    QueryType.HYPOTHESIS_GENERATION:  "hypothesize",
-    QueryType.EXPERIMENT:              "experiment",
-    QueryType.INSIGHT:                "insight",
-    QueryType.NARRATIVE:              "narrative",
-    QueryType.PAPER_SEARCH:           "search",
-    QueryType.QUESTION_ANSWER:         "ask",
-    QueryType.GENERAL:                "chat",
+    QueryType.GAP_ANALYSIS: "gap",
+    QueryType.HYPOTHESIS_GENERATION: "hypothesize",
+    QueryType.EXPERIMENT: "experiment",
+    QueryType.INSIGHT: "insight",
+    QueryType.NARRATIVE: "narrative",
+    QueryType.PAPER_SEARCH: "search",
+    QueryType.QUESTION_ANSWER: "ask",
+    QueryType.GENERAL: "chat",
 }
 
 # CLI subcommand → (module_path, parser_builder_name) lookup for programmatic execution
 _SUBCOMMAND_TABLE_LOOKUP: Dict[str, Tuple[str, str]] = {
-    "gap":          ("cli.cmd.gap",          "_build_gap_parser"),
-    "hypothesize":  ("cli.cmd.hypothesize",  "_build_hypothesize_parser"),
-    "experiment":   ("cli.cmd.experiment",   "_build_experiment_parser"),
-    "insight":      ("cli.cmd.insight",      "_build_insight_parser"),
-    "narrative":    ("cli.cmd.narrative",    "_build_narrative_parser"),
-    "ask":          ("cli.cmd.ask",          "_build_ask_parser"),
-    "search":       ("cli.cmd.search",       "_build_search_parser"),
-    "chat":         ("cli.cmd.chat",         "_build_chat_parser"),
+    "gap": ("cli.cmd.gap", "_build_gap_parser"),
+    "hypothesize": ("cli.cmd.hypothesize", "_build_hypothesize_parser"),
+    "experiment": ("cli.cmd.experiment", "_build_experiment_parser"),
+    "insight": ("cli.cmd.insight", "_build_insight_parser"),
+    "narrative": ("cli.cmd.narrative", "_build_narrative_parser"),
+    "ask": ("cli.cmd.ask", "_build_ask_parser"),
+    "search": ("cli.cmd.search", "_build_search_parser"),
+    "chat": ("cli.cmd.chat", "_build_chat_parser"),
 }
 
 
 # ─── Route dataclass ──────────────────────────────────────────────────────────
 
+
 @dataclass
 class Route:
     query_type: QueryType
-    confidence: float           # 0.0–1.0
-    primary_command: str       # e.g. "gap"
+    confidence: float  # 0.0–1.0
+    primary_command: str  # e.g. "gap"
     reasoning: str = ""
     multi_intent: bool = False
     secondary_query_type: Optional[QueryType] = None
@@ -68,16 +71,15 @@ class Route:
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "query_type":         self.query_type.value,
-            "confidence":         self.confidence,
-            "primary_command":    self.primary_command,
-            "reasoning":         self.reasoning,
-            "multi_intent":       self.multi_intent,
+            "query_type": self.query_type.value,
+            "confidence": self.confidence,
+            "primary_command": self.primary_command,
+            "reasoning": self.reasoning,
+            "multi_intent": self.multi_intent,
             "secondary_query_type": (
-                self.secondary_query_type.value
-                if self.secondary_query_type else None
+                self.secondary_query_type.value if self.secondary_query_type else None
             ),
-            "sub_commands":       self.sub_commands,
+            "sub_commands": self.sub_commands,
         }
 
 
@@ -86,22 +88,14 @@ class Route:
 _INDEX: Optional[Dict[str, Any]] = None
 
 _CAPABILITY_DESCRIPTIONS: Dict[QueryType, str] = {
-    QueryType.GAP_ANALYSIS:
-        "Identify research gaps, unanswered questions, or underexplored areas in a topic",
-    QueryType.HYPOTHESIS_GENERATION:
-        "Generate testable research hypotheses or conjectures based on gaps",
-    QueryType.EXPERIMENT:
-        "Design, run, or track experiments to validate hypotheses",
-    QueryType.INSIGHT:
-        "Extract key insights, patterns, or synthesis from research papers",
-    QueryType.NARRATIVE:
-        "Track research narrative threads, phases, or story arcs across the research",
-    QueryType.PAPER_SEARCH:
-        "Search for papers or research publications by keywords or topic",
-    QueryType.QUESTION_ANSWER:
-        "Ask a research question that can be answered from the paper library",
-    QueryType.GENERAL:
-        "General research conversation or open-ended discussion",
+    QueryType.GAP_ANALYSIS: "Identify research gaps, unanswered questions, or underexplored areas in a topic",
+    QueryType.HYPOTHESIS_GENERATION: "Generate testable research hypotheses or conjectures based on gaps",
+    QueryType.EXPERIMENT: "Design, run, or track experiments to validate hypotheses",
+    QueryType.INSIGHT: "Extract key insights, patterns, or synthesis from research papers",
+    QueryType.NARRATIVE: "Track research narrative threads, phases, or story arcs across the research",
+    QueryType.PAPER_SEARCH: "Search for papers or research publications by keywords or topic",
+    QueryType.QUESTION_ANSWER: "Ask a research question that can be answered from the paper library",
+    QueryType.GENERAL: "General research conversation or open-ended discussion",
 }
 
 
@@ -120,51 +114,120 @@ def _load_index() -> Dict[str, Any]:
 
 _QUERY_TYPE_KEYWORDS: Dict[QueryType, List[str]] = {
     QueryType.GAP_ANALYSIS: [
-        "gap", "gaps", "空白", "未解决", "missing", "unresolved",
-        "opportunity", "差距", "limitation", "limitations", "不足",
-        "untouched", "overlooked", "open problem", "open question",
+        "gap",
+        "gaps",
+        "空白",
+        "未解决",
+        "missing",
+        "unresolved",
+        "opportunity",
+        "差距",
+        "limitation",
+        "limitations",
+        "不足",
+        "untouched",
+        "overlooked",
+        "open problem",
+        "open question",
     ],
     QueryType.HYPOTHESIS_GENERATION: [
-        "hypothesis", "假设", "假设生成", "conjecture", "predict",
-        "预测", "实验设计", "hypothesize", "if-then",
+        "hypothesis",
+        "假设",
+        "假设生成",
+        "conjecture",
+        "predict",
+        "预测",
+        "实验设计",
+        "hypothesize",
+        "if-then",
     ],
     QueryType.EXPERIMENT: [
-        "experiment", "实验", "ab test", "evaluate", "评估",
-        "validate", "验证", "trial", "跑实验", "实验结果",
-        "benchmark", "benchmarking",
+        "experiment",
+        "实验",
+        "ab test",
+        "evaluate",
+        "评估",
+        "validate",
+        "验证",
+        "trial",
+        "跑实验",
+        "实验结果",
+        "benchmark",
+        "benchmarking",
     ],
     QueryType.INSIGHT: [
-        "insight", "insights", "发现", "洞察", "pattern", "patterns",
-        "发现", "key finding", "takeaway", "synthesis",
+        "insight",
+        "insights",
+        "发现",
+        "洞察",
+        "pattern",
+        "patterns",
+        "发现",
+        "key finding",
+        "takeaway",
+        "synthesis",
     ],
     QueryType.NARRATIVE: [
-        "narrative", "story", "线程", "progress", "phase", "跟踪",
-        "跟踪", "进展", "状态", "story arc",
+        "narrative",
+        "story",
+        "线程",
+        "progress",
+        "phase",
+        "跟踪",
+        "跟踪",
+        "进展",
+        "状态",
+        "story arc",
     ],
     QueryType.PAPER_SEARCH: [
-        "paper", "papers", "search", "find", "论文", "搜索",
-        "arxiv", "找论文", "文献", "publication",
+        "paper",
+        "papers",
+        "search",
+        "find",
+        "论文",
+        "搜索",
+        "arxiv",
+        "找论文",
+        "文献",
+        "publication",
     ],
     QueryType.QUESTION_ANSWER: [
-        "what", "who", "how", "why", "explain", "什么", "如何",
-        "为什么", "请问", "回答", "answer", "can you",
+        "what",
+        "who",
+        "how",
+        "why",
+        "explain",
+        "什么",
+        "如何",
+        "为什么",
+        "请问",
+        "回答",
+        "answer",
+        "can you",
     ],
     QueryType.GENERAL: [
-        "chat", "talk", "discuss", "对话", "聊聊", "tell me",
-        "about", "introduction", "介绍",
+        "chat",
+        "talk",
+        "discuss",
+        "对话",
+        "聊聊",
+        "tell me",
+        "about",
+        "introduction",
+        "介绍",
     ],
 }
 
 
 # ─── LLM-based routing ───────────────────────────────────────────────────────
 
+
 def _route_by_llm(query: str, model: Optional[str] = None) -> Route:
     """Primary router: classify via LLM."""
     model = model or "qwen3.5-plus"
 
     capability_lines = "\n".join(
-        f"  - {qt.value}: {desc}"
-        for qt, desc in _CAPABILITY_DESCRIPTIONS.items()
+        f"  - {qt.value}: {desc}" for qt, desc in _CAPABILITY_DESCRIPTIONS.items()
     )
 
     system_prompt = (
@@ -172,14 +235,14 @@ def _route_by_llm(query: str, model: Optional[str] = None) -> Route:
         "Given a user's natural-language research query, classify it into exactly one type.\n\n"
         f"Available types:\n{capability_lines}\n\n"
         "Return ONLY valid JSON with this exact shape:\n"
-        "  {\"query_type\": \"...\", \"confidence\": 0.0-1.0, "
-        "\"reasoning\": \"...\", \"multi_intent\": false}\n\n"
+        '  {"query_type": "...", "confidence": 0.0-1.0, '
+        '"reasoning": "...", "multi_intent": false}\n\n'
         "Rules:\n"
         "  - confidence < 0.5 means you are uncertain\n"
         "  - multi_intent=true only when query clearly contains TWO distinct intents "
         "(e.g. '分析gap并提出假设' = gap_analysis + hypothesis_generation)\n"
         "  - If multi_intent=true, also include: "
-        "\"secondary_query_type\": \"...\""
+        '"secondary_query_type": "..."'
     )
 
     messages: List[Dict[str, str]] = [
@@ -223,6 +286,7 @@ def _route_by_llm(query: str, model: Optional[str] = None) -> Route:
 
 # ─── Embedding-based fallback ────────────────────────────────────────────────
 
+
 def _cosine_sim(a: List[float], b: List[float]) -> float:
     dot = sum(x * y for x, y in zip(a, b))
     norm_a = math.sqrt(sum(x * x for x in a))
@@ -237,21 +301,17 @@ def _route_by_embedding(query: str) -> Route:
     try:
         from cli.cmd.dedup_semantic import _get_ollama_embedding_batch
 
-        texts = [query] + [
-            _CAPABILITY_DESCRIPTIONS[qt] for qt in QueryType
-        ]
+        texts = [query] + [_CAPABILITY_DESCRIPTIONS[qt] for qt in QueryType]
         embeddings = _get_ollama_embedding_batch(texts)
         if not embeddings or embeddings[0] is None:
             raise RuntimeError("Embedding service unavailable")
         query_emb = embeddings[0]
         cap_embs = [e for e in embeddings[1:] if e is not None]
 
-        scores: List[float] = [
-            _cosine_sim(query_emb, emb) for emb in cap_embs
-        ]
+        scores: List[float] = [_cosine_sim(query_emb, emb) for emb in cap_embs]
 
         best_idx = int(max(range(len(scores)), key=lambda i: scores[i]))
-        best_qt  = list(QueryType)[best_idx]
+        best_qt = list(QueryType)[best_idx]
 
         return Route(
             query_type=best_qt,
@@ -265,6 +325,7 @@ def _route_by_embedding(query: str) -> Route:
 
 
 # ─── Keyword-based fallback ───────────────────────────────────────────────────
+
 
 def _route_by_keyword(query: str) -> Route:
     """Last-resort: score by keyword overlap."""
@@ -280,13 +341,14 @@ def _route_by_keyword(query: str) -> Route:
 
     return Route(
         query_type=best_qt,
-        confidence=min(best_score / 3.0, 1.0),   # 3+ keyword hits → 100%
+        confidence=min(best_score / 3.0, 1.0),  # 3+ keyword hits → 100%
         primary_command=_QUERY_TYPE_TO_COMMAND[best_qt],
         reasoning=f"[keyword fallback: score={best_score:.1f}]",
     )
 
 
 # ─── SemanticRouter ───────────────────────────────────────────────────────────
+
 
 class SemanticRouter:
     """Route a natural-language query to the appropriate CLI subcommand.
@@ -315,7 +377,9 @@ class SemanticRouter:
 
     def execute(self, route: Route, query: str, exec_all: bool = False) -> Dict[str, str]:
         """Execute routed command(s), capture stdout. Returns {command: output}."""
-        commands = route.sub_commands if (route.multi_intent and exec_all) else [route.primary_command]
+        commands = (
+            route.sub_commands if (route.multi_intent and exec_all) else [route.primary_command]
+        )
         outputs: Dict[str, str] = {}
 
         for cmd in commands:
@@ -330,6 +394,7 @@ class SemanticRouter:
 
 
 # ─── Internal command runner ───────────────────────────────────────────────────
+
 
 def _run_command_by_name(subcmd: str, query: str) -> str:
     """Run a CLI subcommand by name, capturing stdout as a string.
@@ -350,14 +415,14 @@ def _run_command_by_name(subcmd: str, query: str) -> str:
     #
     # Map: subcmd → primary positional attribute name
     _POSITIONAL_MAP: Dict[str, str] = {
-        "gap":          "topic",
-        "hypothesize":  "topic",
-        "experiment":   "query",
-        "insight":      "action",   # required; set to "list" (see below)
-        "narrative":    "question",
-        "ask":          "query",
-        "search":       "topic",
-        "chat":         "topic",
+        "gap": "topic",
+        "hypothesize": "topic",
+        "experiment": "query",
+        "insight": "action",  # required; set to "list" (see below)
+        "narrative": "question",
+        "ask": "query",
+        "search": "topic",
+        "chat": "topic",
     }
 
     attr = _POSITIONAL_MAP.get(subcmd, "topic")
@@ -418,14 +483,14 @@ def _dispatch_command(subcmd: str, args: argparse.Namespace) -> None:
     from cli import _run_search, _run_chat
 
     dispatch: Dict[str, Callable] = {
-        "gap":          _run_gap,
-        "hypothesize":  _run_hypothesize,
-        "experiment":   _run_experiment,
-        "insight":      _run_insight,
-        "narrative":    _run_narrative,
-        "ask":          _run_ask,
-        "search":       _run_search,
-        "chat":         _run_chat,
+        "gap": _run_gap,
+        "hypothesize": _run_hypothesize,
+        "experiment": _run_experiment,
+        "insight": _run_insight,
+        "narrative": _run_narrative,
+        "ask": _run_ask,
+        "search": _run_search,
+        "chat": _run_chat,
     }
 
     fn = dispatch.get(subcmd)

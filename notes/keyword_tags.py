@@ -1,4 +1,5 @@
 """Keyword tag inference and predefined keyword tag patterns."""
+
 import re
 from functools import lru_cache
 from typing import List, Tuple
@@ -11,16 +12,24 @@ from core import Paper
 KEYWORD_TAGS = [
     # Core AI concepts
     (re.compile(r"\bagent(s)?\b|tool\s*use|function\s*calling|autonomous\s*system", re.I), "Agent"),
-    (re.compile(r"\brag\b|retrieval-augmented|retrieval augmented|knowledge\s*retrieval", re.I), "RAG"),
+    (
+        re.compile(r"\brag\b|retrieval-augmented|retrieval augmented|knowledge\s*retrieval", re.I),
+        "RAG",
+    ),
     (re.compile(r"\bmoe\b|mixture of experts", re.I), "MoE"),
     (re.compile(r"\brlhf\b|preference optimization|dpo\b|alignment", re.I), "Alignment"),
     (re.compile(r"\bevaluation\b|benchmark|performance\s*metric", re.I), "Evaluation"),
-    (re.compile(r"\bcompiler\b|kernel|cuda|inference|hardware|accelerator", re.I), "Infrastructure"),
+    (
+        re.compile(r"\bcompiler\b|kernel|cuda|inference|hardware|accelerator", re.I),
+        "Infrastructure",
+    ),
     (re.compile(r"\bmultimodal\b|vision|audio|text\s*image|cross\s*modal", re.I), "Multimodal"),
-    (re.compile(r"\bcompression\b|quantization|distillation|model\s*reduction", re.I), "Optimization"),
+    (
+        re.compile(r"\bcompression\b|quantization|distillation|model\s*reduction", re.I),
+        "Optimization",
+    ),
     (re.compile(r"\blong context\b|context length|extended\s*context", re.I), "LongContext"),
     (re.compile(r"\bsafety\b|jailbreak|red teaming|adversarial\s*attack", re.I), "Safety"),
-
     # Additional AI research areas
     (re.compile(r"\bllm\b|large\s*language\s*model|transformer", re.I), "LLM"),
     (re.compile(r"\bgpt\b|generative\s*pre-trained", re.I), "GPT"),
@@ -89,6 +98,7 @@ def infer_tags_if_empty(tags: List[str], paper: Paper) -> List[str]:
             final_tags.append(tag)
 
     from config import MAX_TAGS
+
     # Limit to maximum tags to avoid over-tagging
     final_tags = final_tags[:MAX_TAGS]
 

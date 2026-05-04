@@ -20,6 +20,7 @@ from typing import Optional, List, Dict, Any
 # Optional LLM import
 try:
     from llm.chat import call_llm_chat_completions
+
     LLM_AVAILABLE = True
 except ImportError:
     LLM_AVAILABLE = False
@@ -79,6 +80,7 @@ _QUESTION_GENERATION_USER_PROMPT_TEMPLATE = """领域：{topic}
 
 class GapType(Enum):
     """Types of research gaps."""
+
     UNEXPLORED_APPLICATION = "unexplored_application"  # 未探索的应用场景
     METHOD_LIMITATION = "method_limitation"  # 方法局限
     CONTRADICTION = "contradiction"  # 论文间的矛盾
@@ -91,6 +93,7 @@ class GapType(Enum):
 
 class GapSeverity(Enum):
     """Severity of the research gap."""
+
     HIGH = "high"  # 高 - 核心问题，影响领域发展
     MEDIUM = "medium"  # 中 - 重要但非核心
     LOW = "low"  # 低 - 边缘问题
@@ -100,20 +103,20 @@ class GapSeverity(Enum):
 # All 8 GapType values are defined here; detection only uses a subset.
 _GAP_TYPE_PATTERNS: Dict[GapType, List[str]] = {
     GapType.UNEXPLORED_APPLICATION: [
-        r'未探索|未研究|future work|future directions|open problem',
-        r'potential application|limitation.*future|future research',
+        r"未探索|未研究|future work|future directions|open problem",
+        r"potential application|limitation.*future|future research",
     ],
     GapType.METHOD_LIMITATION: [
-        r'limitation|不足|weakness|shortcoming|constraint',
-        r'does not scale|only works for|restricted to',
+        r"limitation|不足|weakness|shortcoming|constraint",
+        r"does not scale|only works for|restricted to",
     ],
     GapType.CONTRADICTION: [
-        r'however|but|in contrast|on the contrary',
-        r'conflicting|disagree|differ|contradict',
+        r"however|but|in contrast|on the contrary",
+        r"conflicting|disagree|differ|contradict",
     ],
     GapType.EVALUATION_GAP: [
-        r'no benchmark|lack.*evaluation|evaluation.*limited',
-        r'no standard|without baseline',
+        r"no benchmark|lack.*evaluation|evaluation.*limited",
+        r"no standard|without baseline",
     ],
 }
 
@@ -132,6 +135,7 @@ _GAP_QUESTION_TEMPLATES: Dict[GapType, str] = {
 @dataclass
 class ResearchGap:
     """Represents a research gap."""
+
     gap_type: GapType
     description: str  # 空白描述
     evidence_papers: List[str]  # 支持证据的论文
@@ -144,6 +148,7 @@ class ResearchGap:
 @dataclass
 class ResearchQuestion:
     """A generated research question."""
+
     question: str
     gap: Optional[ResearchGap]  # 来源的空白
     hypothesis: str = ""  # 研究假设
@@ -156,6 +161,7 @@ class ResearchQuestion:
 @dataclass
 class GapAnalysisResult:
     """Result of gap analysis."""
+
     topic: str
     gaps: List[ResearchGap] = field(default_factory=list)
     questions: List[ResearchQuestion] = field(default_factory=list)
@@ -209,12 +215,8 @@ class GapDetector:
 
         if use_llm and LLM_AVAILABLE:
             # LLM-powered gap analysis
-            gaps = self._detect_gaps_llm(
-                topic, paper_summaries, api_key, base_url, model
-            )
-            questions = self._generate_questions_llm(
-                gaps, topic, api_key, base_url, model
-            )
+            gaps = self._detect_gaps_llm(topic, paper_summaries, api_key, base_url, model)
+            questions = self._generate_questions_llm(gaps, topic, api_key, base_url, model)
         else:
             # Rule-based fallback
             gaps = self._detect_gaps_rules(paper_summaries)
@@ -254,9 +256,9 @@ class GapDetector:
                     paper = {
                         "id": paper_id,
                         "title": full.title or topic,
-                        "abstract": full.abstract or '',
-                        "year": full.published[:4] if full.published else '',
-                        "authors": full.authors or '',
+                        "abstract": full.abstract or "",
+                        "year": full.published[:4] if full.published else "",
+                        "authors": full.authors or "",
                     }
                     papers.append(paper)
         except Exception:
@@ -269,9 +271,9 @@ class GapDetector:
         """Create a summary of papers for LLM analysis."""
         summaries = []
         for p in papers[:10]:  # Limit to 10 papers
-            title = p.get('title', '')[:80]
-            abstract = p.get('abstract', '')[:200]
-            year = p.get('year', '')
+            title = p.get("title", "")[:80]
+            abstract = p.get("abstract", "")[:200]
+            year = p.get("year", "")
             summaries.append(f"- [{year}] {title}")
             if abstract:
                 summaries.append(f"  摘要: {abstract}...")
@@ -333,22 +335,22 @@ class GapDetector:
         }
 
         # Strip thinking tags for MiniMax/M2.7 models
-        clean_response = re.sub(r'<think>.*?</think>', '', response, flags=re.DOTALL).strip()
+        clean_response = re.sub(r"<think>.*?</think>", "", response, flags=re.DOTALL).strip()
 
-        for line in clean_response.split('\n'):
+        for line in clean_response.split("\n"):
             line = line.strip()
-            if not line or line.startswith('#'):
+            if not line or line.startswith("#"):
                 continue
 
             # Parse [TYPE] description | papers | confidence | severity
-            match = re.match(r'\[(\w+)\]\s*(.+?)\s*\|\s*(.+?)\s*\|\s*([\d.]+)\s*\|\s*(\w+)', line)
+            match = re.match(r"\[(\w+)\]\s*(.+?)\s*\|\s*(.+?)\s*\|\s*([\d.]+)\s*\|\s*(\w+)", line)
             if match:
                 gap_type_str, description, papers_str, conf_str, severity_str = match.groups()
 
                 gap_type = type_map.get(gap_type_str, GapType.METHOD_LIMITATION)
                 severity = severity_map.get(severity_str, GapSeverity.MEDIUM)
                 confidence = float(conf_str) if conf_str else 0.5
-                papers = [p.strip() for p in papers_str.split(',') if p.strip()]
+                papers = [p.strip() for p in papers_str.split(",") if p.strip()]
 
                 gap = ResearchGap(
                     gap_type=gap_type,
@@ -368,12 +370,14 @@ class GapDetector:
         for gap_type, type_patterns in _GAP_TYPE_PATTERNS.items():
             for pattern in type_patterns:
                 if re.search(pattern, paper_summaries, re.IGNORECASE):
-                    gaps.append(ResearchGap(
-                        gap_type=gap_type,
-                        description=f"基于关键词 '{pattern}' 发现的潜在研究空白",
-                        evidence_papers=["从摘要中推断"],
-                        confidence=0.3,
-                    ))
+                    gaps.append(
+                        ResearchGap(
+                            gap_type=gap_type,
+                            description=f"基于关键词 '{pattern}' 发现的潜在研究空白",
+                            evidence_papers=["从摘要中推断"],
+                            confidence=0.3,
+                        )
+                    )
                     break
 
         return gaps
@@ -393,10 +397,7 @@ class GapDetector:
         if not api_key or not gaps:
             return self._generate_questions_rules(gaps)
 
-        gaps_text = "\n".join([
-            f"- {g.gap_type.value}: {g.description}"
-            for g in gaps
-        ])
+        gaps_text = "\n".join([f"- {g.gap_type.value}: {g.description}" for g in gaps])
 
         user_prompt = _QUESTION_GENERATION_USER_PROMPT_TEMPLATE.format(
             topic=topic,
@@ -423,12 +424,12 @@ class GapDetector:
         questions: List[ResearchQuestion] = []
         default_gap = gaps[0] if gaps else None
 
-        for line in response.strip().split('\n'):
+        for line in response.strip().split("\n"):
             line = line.strip()
-            if not line or line.startswith('#'):
+            if not line or line.startswith("#"):
                 continue
 
-            parts = [p.strip() for p in line.split('|')]
+            parts = [p.strip() for p in line.split("|")]
             if len(parts) >= 1:
                 question_text = parts[0]
                 hypothesis = parts[1] if len(parts) > 1 else ""
@@ -480,7 +481,7 @@ class GapDetector:
         recency_scores = []
         for p in papers:
             try:
-                year = int(p.get('year', 0))
+                year = int(p.get("year", 0))
             except (ValueError, TypeError):
                 year = 0
             if year >= 2024:
@@ -495,9 +496,9 @@ class GapDetector:
         recency = sum(recency_scores) / len(recency_scores) if recency_scores else 0
 
         # Abstract quality
-        has_abstract = sum(1 for p in papers if p.get('abstract')) / len(papers)
+        has_abstract = sum(1 for p in papers if p.get("abstract")) / len(papers)
 
-        return (count_score * 0.4 + recency * 0.4 + has_abstract * 0.2)
+        return count_score * 0.4 + recency * 0.4 + has_abstract * 0.2
 
     def _generate_summary(self, result: GapAnalysisResult) -> str:
         """Generate a human-readable summary."""
@@ -535,11 +536,12 @@ class GapDetector:
         """Render analysis result (WarpBlocks Rich)."""
         from rich.console import Console
         from cli.warp import WarpBlocks
+
         c = Console()
 
         stats_rows = [
-            ["Papers Analyzed",  f"[#A5D5FE]{result.analyzed_papers_count}[/]"],
-            ["Coverage",          f"[#A5D5FE]{result.coverage_score:.0%}[/]"],
+            ["Papers Analyzed", f"[#A5D5FE]{result.analyzed_papers_count}[/]"],
+            ["Coverage", f"[#A5D5FE]{result.coverage_score:.0%}[/]"],
             ["Opportunity Score", f"[#A5D5FE]{result.opportunities_score:.1f}/10[/]"],
         ]
 
@@ -562,19 +564,23 @@ class GapDetector:
                 GapSeverity.LOW: "🟢",
             }.get(gap.severity, "⚪")
             type_name = gap_type_names.get(gap.gap_type, gap.gap_type.value)
-            gap_rows.append([
-                f"[#FEFDC2]{i}.[/]",
-                sev_icon,
-                f"[#D0D1FE]{type_name}[/]",
-                gap.description[:50],
-            ])
+            gap_rows.append(
+                [
+                    f"[#FEFDC2]{i}.[/]",
+                    sev_icon,
+                    f"[#D0D1FE]{type_name}[/]",
+                    gap.description[:50],
+                ]
+            )
 
         q_rows = []
         for i, q in enumerate(result.questions, 1):
-            q_rows.append([
-                f"[#FEFDC2]{i}.[/]",
-                q.question[:55],
-            ])
+            q_rows.append(
+                [
+                    f"[#FEFDC2]{i}.[/]",
+                    q.question[:55],
+                ]
+            )
 
         parts = [
             WarpBlocks.panel(
@@ -587,18 +593,20 @@ class GapDetector:
         c.print(WarpBlocks.table(["Metric", "Value"], stats_rows))
         c.print()
         if gap_rows:
-            c.print(WarpBlocks.table(
-                ["#", "", "Type", "Gap Description"],
-                gap_rows,
-                title=f"Research Gaps ({len(gap_rows)})"
-            ))
+            c.print(
+                WarpBlocks.table(
+                    ["#", "", "Type", "Gap Description"],
+                    gap_rows,
+                    title=f"Research Gaps ({len(gap_rows)})",
+                )
+            )
             c.print()
         if q_rows:
-            c.print(WarpBlocks.table(
-                ["#", "Research Question"],
-                q_rows,
-                title=f"Suggested Questions ({len(q_rows)})"
-            ))
+            c.print(
+                WarpBlocks.table(
+                    ["#", "Research Question"], q_rows, title=f"Suggested Questions ({len(q_rows)})"
+                )
+            )
             c.print()
         parts.append(f"[#A5D5FE]📊[/] {result.summary}")
         return "\n".join(parts)

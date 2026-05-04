@@ -38,7 +38,9 @@ class KGQueries:
                     seen_edge_ids.add(edge["id"])
                     edges.append(edge)
 
-                neighbor_id = edge["target_id"] if edge["source_id"] == current_id else edge["source_id"]
+                neighbor_id = (
+                    edge["target_id"] if edge["source_id"] == current_id else edge["source_id"]
+                )
                 if neighbor_id in visited:
                     continue
                 visited.add(neighbor_id)
@@ -64,7 +66,8 @@ class KGQueries:
             return {"nodes": [], "edges": [], "tag": tag}
         # Bulk fetch all edges in one query instead of N queries
         edges = [
-            e for e in self.kg.get_edges_bulk(list(node_ids), direction="both")
+            e
+            for e in self.kg.get_edges_bulk(list(node_ids), direction="both")
             if e["source_id"] in node_ids and e["target_id"] in node_ids
         ]
         return {"nodes": paper_nodes + mnote_nodes, "edges": edges, "tag": tag}

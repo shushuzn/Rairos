@@ -205,6 +205,7 @@ class RigorScorer:
     def _fetch_abstract(self, paper_id: str) -> str:
         try:
             from db.database import Database
+
             db = Database()
             db.init()
             paper = db.get_paper(paper_id)
@@ -217,6 +218,7 @@ class RigorScorer:
     def _fetch_title(self, paper_id: str) -> str:
         try:
             from db.database import Database
+
             db = Database()
             db.init()
             paper = db.get_paper(paper_id)
@@ -231,7 +233,9 @@ class RigorScorer:
         colors = {"A": "#7A9E7A", "B": "#6B8FB5", "C": "#D4A84B", "D": "#C4706A"}
         color = colors.get(score.badge, "#888")
         clarity_labels = {"high": "High", "medium": "Medium", "low": "Low"}
-        signals_html = "<br>".join(f"• {s}" for s in score.reproducibility_signals) or "No signals detected"
+        signals_html = (
+            "<br>".join(f"• {s}" for s in score.reproducibility_signals) or "No signals detected"
+        )
 
         return f"""
 <span class="rigor-badge" style="
@@ -247,17 +251,17 @@ class RigorScorer:
     text-align: center;
     border-radius: 6px;
     cursor: help;
-    title='code: {score.has_code}, dataset: {score.has_dataset}, clarity: {clarity_labels.get(score.methodology_clarity, '?')}'
-" title="code: {score.has_code} | dataset: {score.has_dataset} | clarity: {clarity_labels.get(score.methodology_clarity, '?')}">
+    title='code: {score.has_code}, dataset: {score.has_dataset}, clarity: {clarity_labels.get(score.methodology_clarity, "?")}'
+" title="code: {score.has_code} | dataset: {score.has_dataset} | clarity: {clarity_labels.get(score.methodology_clarity, "?")}">
     {score.badge}
 </span>
 <div class="rigor-tooltip" style="display:none; position: absolute; background:#2a2a2a; color:#e8e4de; padding:10px; border-radius:6px; font-size:13px; max-width:260px; z-index:100; font-family:Lora,serif;">
     <strong style="color:{color}">Rigor: {score.badge}</strong>
     <hr style="border-color:#555; margin:6px 0">
     <div>Overall: {score.overall:.0%}</div>
-    <div>Code shared: {'✓' if score.has_code else '✗'}</div>
-    <div>Dataset shared: {'✓' if score.has_dataset else '✗'}</div>
-    <div>Methodology: {clarity_labels.get(score.methodology_clarity, '?')}</div>
+    <div>Code shared: {"✓" if score.has_code else "✗"}</div>
+    <div>Dataset shared: {"✓" if score.has_dataset else "✗"}</div>
+    <div>Methodology: {clarity_labels.get(score.methodology_clarity, "?")}</div>
     <hr style="border-color:#555; margin:6px 0">
     <div style="color:#aaa">Signals:</div>
     <div>{signals_html}</div>

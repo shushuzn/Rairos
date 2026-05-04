@@ -1,4 +1,5 @@
 """Base abstractions for ranking strategies."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

@@ -18,13 +18,35 @@ PAPERS_DB = PAPERS_DIR / "papers.json"
 CLIMATE_WATCH_FILE = PAPERS_DIR / "climate_watch.json"
 
 CLIMATE_KEYWORDS = [
-    "climate change", "global warming", "carbon", "emissions", "greenhouse gas",
-    "renewable energy", "solar", "wind power", "energy efficiency",
-    "sustainable", "sustainability", "fossil fuel", "net-zero", "carbon neutral",
-    "climate model", "weather prediction", "earth system", "carbon capture",
-    "data center", "water consumption", "e-waste", "environmental impact",
-    "green AI", "energy-aware", "low-carbon", "carbon footprint",
-    "FLOPs per watt", "compute efficiency", "model efficiency",
+    "climate change",
+    "global warming",
+    "carbon",
+    "emissions",
+    "greenhouse gas",
+    "renewable energy",
+    "solar",
+    "wind power",
+    "energy efficiency",
+    "sustainable",
+    "sustainability",
+    "fossil fuel",
+    "net-zero",
+    "carbon neutral",
+    "climate model",
+    "weather prediction",
+    "earth system",
+    "carbon capture",
+    "data center",
+    "water consumption",
+    "e-waste",
+    "environmental impact",
+    "green AI",
+    "energy-aware",
+    "low-carbon",
+    "carbon footprint",
+    "FLOPs per watt",
+    "compute efficiency",
+    "model efficiency",
 ]
 
 CLIMATE_CATS = ["cs.AI", "cs.LG", "cs.ET", "physics.ao-ph", "atm.ph"]
@@ -68,10 +90,7 @@ def get_watch_stats() -> Dict[str, Any]:
     watch_list = _load_watch_list()
     watched_ids = set(watch_list.get("watched_ids", []))
 
-    recent = [
-        p for p in climate_papers
-        if p.get("published", "") >= "2025-01-01"
-    ]
+    recent = [p for p in climate_papers if p.get("published", "") >= "2025-01-01"]
 
     return {
         "total_climate_papers": len(climate_papers),
@@ -91,26 +110,34 @@ def render_climate_monitor_html(stats: Optional[Dict[str, Any]] = None) -> str:
 
     lines = ['<div class="climate-monitor">']
     lines.append("<h3>🌍 Climate AI Monitor</h3>")
-    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
-                "Papers at the intersection of climate science and AI. "
-                "High priority in gap watch matching.</p>")
+    lines.append(
+        "<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
+        "Papers at the intersection of climate science and AI. "
+        "High priority in gap watch matching.</p>"
+    )
 
     # Stats row
-    lines.append("<div style='display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px'>")
+    lines.append(
+        "<div style='display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px'>"
+    )
     stats_cells = [
         ("Total Climate Papers", stats.get("total_climate_papers", 0), "#6B8FB5"),
         ("In Your Watch List", stats.get("watched_count", 0), "#6BBF8A"),
         ("Published 2025+", stats.get("recent_count", 0), "#D4A055"),
     ]
     for label, val, color in stats_cells:
-        lines.append(f"<div style='background:#f8f4ef;border-radius:6px;padding:12px;text-align:center'>"
-                    f"<div style='font-size:22px;font-weight:700;color:{color}'>{val}</div>"
-                    f"<div style='font-size:11px;color:#A89E8C;margin-top:2px'>{label}</div></div>")
+        lines.append(
+            f"<div style='background:#f8f4ef;border-radius:6px;padding:12px;text-align:center'>"
+            f"<div style='font-size:22px;font-weight:700;color:{color}'>{val}</div>"
+            f"<div style='font-size:11px;color:#A89E8C;margin-top:2px'>{label}</div></div>"
+        )
     lines.append("</div>")
 
     # Paper list
     if not climate_papers:
-        lines.append("<p style='color:#A89E8C;font-size:13px'>No climate-related papers in your library yet.</p>")
+        lines.append(
+            "<p style='color:#A89E8C;font-size:13px'>No climate-related papers in your library yet.</p>"
+        )
     else:
         for p in climate_papers[:15]:
             pid = p.get("id", "")
@@ -119,8 +146,11 @@ def render_climate_monitor_html(stats: Optional[Dict[str, Any]] = None) -> str:
             title = p.get("title", "")[:70]
             published = p.get("published", "")[:4]
 
-            kw_matches = [kw for kw in CLIMATE_KEYWORDS
-                         if kw.lower() in (p.get("title", "") + " " + p.get("abstract", "")).lower()]
+            kw_matches = [
+                kw
+                for kw in CLIMATE_KEYWORDS
+                if kw.lower() in (p.get("title", "") + " " + p.get("abstract", "")).lower()
+            ]
             kw_display = ", ".join(f"<code>{k}</code>" for k in kw_matches[:3])
 
             lines.append(f"""
@@ -134,7 +164,7 @@ def render_climate_monitor_html(stats: Optional[Dict[str, Any]] = None) -> str:
     <button onclick="toggleWatch('{pid}', this)"
       style='font-size: 10px; padding: 3px 8px; cursor: pointer; border-radius: 3px;
              border: 1px solid #ccc; background: transparent; color: {"#6BBF8A" if is_watched else "#A89E8C"}'>
-      {'✓ Watched' if is_watched else '+ Watch'}
+      {"✓ Watched" if is_watched else "+ Watch"}
     </button>
   </div>
 </div>""")

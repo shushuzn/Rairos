@@ -84,12 +84,14 @@ def check_paradigm_concentration(category: str = "all") -> Dict[str, Any]:
     total = sum(r[1] for r in rows)
     top_papers = []
     for paper_id, cnt, title in rows[:TOP_N]:
-        top_papers.append({
-            "paper_id": paper_id,
-            "title": (title or paper_id)[:80],
-            "citation_count": cnt,
-            "ratio": round(cnt / total, 3) if total else 0,
-        })
+        top_papers.append(
+            {
+                "paper_id": paper_id,
+                "title": (title or paper_id)[:80],
+                "citation_count": cnt,
+                "ratio": round(cnt / total, 3) if total else 0,
+            }
+        )
 
     top3_count = sum(r[1] for r in rows[:TOP_N])
     concentration_ratio = round(top3_count / total, 3) if total else 0
@@ -137,40 +139,52 @@ def render_html(result: Optional[Dict[str, Any]] = None) -> str:
         lines.append(
             f'<div class="alert-banner" style="background:#e74c3c;color:white;padding:12px 16px;border-radius:6px;margin-bottom:16px;font-family:Georgia,serif;">'
             f'<strong style="font-size:16px">⚠️ PARADIGM CONCENTRATION ALERT</strong><br>'
-            f'<span style="font-size:13px">{int(ratio*100)}% of citations point to the top {len(top)} references — field may be locked into a single paradigm.</span>'
-            f'</div>'
+            f'<span style="font-size:13px">{int(ratio * 100)}% of citations point to the top {len(top)} references — field may be locked into a single paradigm.</span>'
+            f"</div>"
         )
     else:
         lines.append(
             f'<div class="alert-banner" style="background:#7A9E7A;color:white;padding:12px 16px;border-radius:6px;margin-bottom:16px;font-family:Georgia,serif;">'
             f'<strong style="font-size:14px">✓ Citation landscape is diverse</strong> '
-            f'<span style="font-size:13px">Top {len(top)} papers receive {int(ratio*100)}% of citations.</span>'
-            f'</div>'
+            f'<span style="font-size:13px">Top {len(top)} papers receive {int(ratio * 100)}% of citations.</span>'
+            f"</div>"
         )
 
-    lines.append(f"<p style='font-size:13px;color:#7a7570;margin-bottom:16px;'>"
-                f"Domain: <strong>{cat}</strong> · {total} total outgoing citations · "
-                f"Concentration: <strong>{int(ratio*100)}%</strong> (alert at {int(ALERT_THRESHOLD*100)}%)</p>")
+    lines.append(
+        f"<p style='font-size:13px;color:#7a7570;margin-bottom:16px;'>"
+        f"Domain: <strong>{cat}</strong> · {total} total outgoing citations · "
+        f"Concentration: <strong>{int(ratio * 100)}%</strong> (alert at {int(ALERT_THRESHOLD * 100)}%)</p>"
+    )
 
     if top:
         lines.append("<table class='paradigm-table'>")
-        lines.append("<thead><tr><th>Paper</th><th>Cit.</th><th>Share</th><th>Bar</th></tr></thead>")
+        lines.append(
+            "<thead><tr><th>Paper</th><th>Cit.</th><th>Share</th><th>Bar</th></tr></thead>"
+        )
         lines.append("<tbody>")
         for p in top:
             bar_w = int(p["ratio"] * 100)
             lines.append("<tr>")
-            lines.append(f"<td style='max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'><code title='{p['paper_id']}'>{p['title']}</code></td>")
+            lines.append(
+                f"<td style='max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'><code title='{p['paper_id']}'>{p['title']}</code></td>"
+            )
             lines.append(f"<td style='text-align:right;font-weight:600'>{p['citation_count']}</td>")
             lines.append(f"<td style='text-align:right'>{p['ratio']:.1%}</td>")
-            lines.append(f"<td style='width:120px'><div style='background:#e8e4de;border-radius:3px;height:8px'><div style='background:{'#e74c3c' if is_alert else '#7A9E7A'};height:100%;width:{bar_w}%;border-radius:3px'></div></div></td>")
+            lines.append(
+                f"<td style='width:120px'><div style='background:#e8e4de;border-radius:3px;height:8px'><div style='background:{'#e74c3c' if is_alert else '#7A9E7A'};height:100%;width:{bar_w}%;border-radius:3px'></div></div></td>"
+            )
             lines.append("</tr>")
         lines.append("</tbody></table>")
 
     lines.append("<style>")
     lines.append(".paradigm-panel { font-family: Georgia, serif; }")
     lines.append(".paradigm-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }")
-    lines.append(".paradigm-table th, .paradigm-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }")
-    lines.append(".paradigm-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }")
+    lines.append(
+        ".paradigm-table th, .paradigm-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }"
+    )
+    lines.append(
+        ".paradigm-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }"
+    )
     lines.append("</style>")
     lines.append("</div>")
     return "\n".join(lines)

@@ -9,6 +9,7 @@ Usage:
     airos ingest 2301.00001 --skip-postprocess  # import + kg only
     airos ingest --file ids.txt --no-pdf     # batch, no PDF
 """
+
 from __future__ import annotations
 
 import argparse
@@ -35,6 +36,7 @@ def _resolve_pdf_path(db, paper_id: str, root: Path) -> Optional[Path]:
         return cached
     try:
         from pdf.extract import download_pdf
+
         download_pdf(pdf_url, cached)
         return cached
     except Exception as e:
@@ -46,6 +48,7 @@ def _extract_text(pdf_path: Path, max_pages: int = 30) -> str:
     """Extract text from PDF with graceful fallback."""
     try:
         from pdf.extract import extract_pdf_text_hybrid
+
         return extract_pdf_text_hybrid(pdf_path, max_pages=max_pages)
     except Exception as e:
         print_warning(f"PDF extraction failed: {e}")
@@ -90,6 +93,7 @@ def _run_import_phase(paper_ids: list[str], db, source: str) -> tuple[list[str],
 def _run_embed_phase(paper_ids: list[str], db, delay: float = 0.0) -> tuple[int, int]:
     """Generate semantic embeddings via Ollama. Returns (generated, failed)."""
     from cli.cmd.dedup_semantic import _generate_missing_embeddings
+
     return _generate_missing_embeddings(db, delay=delay)
 
 
@@ -123,6 +127,7 @@ def _run_postprocess_phase(
 
     # Build paper object for the pipeline
     from core import Paper
+
     paper = Paper(
         source=getattr(rec, "source", "") or "arxiv",
         uid=paper_id,
@@ -138,6 +143,7 @@ def _run_postprocess_phase(
     pnote_dir = root / (getattr(rec, "category", "") or "02-Models")
     pnote_dir.mkdir(parents=True, exist_ok=True)
     from core.basics import slugify_title
+
     year = (getattr(rec, "published", "") or "")[:4] or time.strftime("%Y")
     pnote_path = pnote_dir / f"P - {year} - {slugify_title(paper.title)}.md"
     pnote_path.parent.mkdir(parents=True, exist_ok=True)
@@ -177,6 +183,7 @@ def _run_kg_sync_phase(db) -> bool:
     try:
         from kg.integration import KGIntegration
         from kg import KGManager
+
         kg = KGManager()
         integ = KGIntegration(kg)
         integ.rebuild_from_papers_json("data/papers.json", incremental=True)
@@ -211,22 +218,41 @@ Examples:
     p.add_argument("--source", default="ingest", help="Source label (default: ingest)")
 
     g = p.add_mutually_exclusive_group()
-    g.add_argument("--skip-postprocess", action="store_true", help="Skip deep analysis / postprocess")
-    g.add_argument("--only-postprocess", action="store_true", help="Skip import, only run postprocess on existing papers")
+    g.add_argument(
+        "--skip-postprocess", action="store_true", help="Skip deep analysis / postprocess"
+    )
+    g.add_argument(
+        "--only-postprocess",
+        action="store_true",
+        help="Skip import, only run postprocess on existing papers",
+    )
 
     p.add_argument("--skip-embed", action="store_true", help="Skip semantic embedding generation")
     p.add_argument("--skip-kg", action="store_true", help="Skip KG sync")
     p.add_argument("--skip-pdf", action="store_true", help="Skip PDF download in postprocess")
-    p.add_argument("--stages", nargs="+",
-        choices=["paper_analysis", "benchmark", "cross_reference", "insight", "kg_sync", "pnote_update"],
-        help="Specific postprocess stages to run (default: all)")
-    p.add_argument("--skip-llm", action="store_true", help="Skip LLM calls in postprocess (keyword-only)")
+    p.add_argument(
+        "--stages",
+        nargs="+",
+        choices=[
+            "paper_analysis",
+            "benchmark",
+            "cross_reference",
+            "insight",
+            "kg_sync",
+            "pnote_update",
+        ],
+        help="Specific postprocess stages to run (default: all)",
+    )
+    p.add_argument(
+        "--skip-llm", action="store_true", help="Skip LLM calls in postprocess (keyword-only)"
+    )
     p.add_argument("--format", choices=["text", "warp"], default="warp", help="Output format")
     return p  # type: ignore[no-any-return]
 
 
 def _run_ingest(args: argparse.Namespace) -> int:
     from rich.console import Console
+
     c = Console()
 
     root = Path(args.root)
@@ -236,7 +262,9 @@ def _run_ingest(args: argparse.Namespace) -> int:
     if getattr(args, "file", None):
         fpath = Path(args.file)
         if fpath.exists():
-            paper_ids += [l.strip() for l in fpath.read_text(encoding="utf-8").splitlines() if l.strip()]
+            paper_ids += [
+                l.strip() for l in fpath.read_text(encoding="utf-8").splitlines() if l.strip()
+            ]
         else:
             print_error(f"File not found: {args.file}")
             return 1  # type: ignore[no-any-return]
@@ -257,7 +285,9 @@ def _run_ingest(args: argparse.Namespace) -> int:
         if skipped_import:
             print_warning(f"Skipped (not in DB): {', '.join(skipped_import)}")
         if not import_ids:
-            print_error("None of the papers are in the database. Run without --only-postprocess first.")
+            print_error(
+                "None of the papers are in the database. Run without --only-postprocess first."
+            )
             return 1
     else:
         print_info("Phase 1/4: Importing metadata...")
@@ -300,10 +330,10 @@ def _run_ingest(args: argparse.Namespace) -> int:
     # ── Summary ─────────────────────────────────────────────────────────────
     c.rule("[bold #FF8272]  Ingest Complete  [/]")
     rows = [
-        ["[#A5D5FE]Imported[/#A5D5FE]",     f"[#B4FA72]{len(import_ids)}[/]"],
+        ["[#A5D5FE]Imported[/#A5D5FE]", f"[#B4FA72]{len(import_ids)}[/]"],
         ["[#A5D5FE]Postprocess OK[/#A5D5FE]", f"[#B4FA72]{len(postprocess_ok)}[/]"],
         ["[#A5D5FE]Postprocess fail[/#A5D5FE]", f"[#FF8272]{len(postprocess_fail)}[/]"],
-        ["[#A5D5FE]Embeddings[/#A5D5FE]",    f"[#B4FA72]{len(embed_ids)}[/]"],
+        ["[#A5D5FE]Embeddings[/#A5D5FE]", f"[#B4FA72]{len(embed_ids)}[/]"],
     ]
     c.print(WarpBlocks.table(["Phase", "Count"], rows, title="Pipeline Summary"))
     return 0

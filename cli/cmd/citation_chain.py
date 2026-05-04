@@ -1,4 +1,5 @@
 """CLI command: citation-chain — Build and visualize citation chains."""
+
 from __future__ import annotations
 
 import argparse
@@ -37,15 +38,15 @@ def _run_citation_chain(args: argparse.Namespace) -> int:
             print_error("Usage: citation-chain <paper_id> --influencers|--impact")
             return 1  # type: ignore[no-any-return]
 
-        paper = db.get_paper(args.paper_id) if hasattr(db, 'get_paper') else None
+        paper = db.get_paper(args.paper_id) if hasattr(db, "get_paper") else None
         if not paper:
             print_error(f"Paper [{args.paper_id}] not found")
             return 1  # type: ignore[no-any-return]
 
         builder.add_paper(
             paper_id=args.paper_id,
-            title=getattr(paper, 'title', args.paper_id),
-            year=getattr(paper, 'year', 0) or 0,
+            title=getattr(paper, "title", args.paper_id),
+            year=getattr(paper, "year", 0) or 0,
         )
 
         if args.influencers:

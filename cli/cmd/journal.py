@@ -1,4 +1,5 @@
 """CLI command: journal — Research journal."""
+
 from __future__ import annotations
 
 import argparse
@@ -55,17 +56,17 @@ def _run_journal(args: argparse.Namespace) -> int:
     journal = Journal()
 
     if not args.action or args.action == "add":
-        if not getattr(args, 'content', None):
+        if not getattr(args, "content", None):
             print_error("Usage: journal add <content> [options]")
             return 1  # type: ignore[no-any-return]
 
         entry = journal.add(
             content=args.content,
-            tags=getattr(args, 'tag', None),
-            question_id=getattr(args, 'question', ''),
-            experiment_id=getattr(args, 'experiment', ''),
-            paper_id=getattr(args, 'paper', ''),
-            mood=getattr(args, 'mood', ''),
+            tags=getattr(args, "tag", None),
+            question_id=getattr(args, "question", ""),
+            experiment_id=getattr(args, "experiment", ""),
+            paper_id=getattr(args, "paper", ""),
+            mood=getattr(args, "mood", ""),
         )
         print_info(f"✓ Entry [{entry.id}] added")
         return 0  # type: ignore[no-any-return]
@@ -73,13 +74,13 @@ def _run_journal(args: argparse.Namespace) -> int:
     elif args.action == "list":
         entries = journal.list_entries(
             limit=args.limit,
-            tag=getattr(args, 'tag', '') or '',
-            question_id=getattr(args, 'question', '') or '',
-            experiment_id=getattr(args, 'experiment', '') or '',
-            today=getattr(args, 'today', False),
-            days=getattr(args, 'days', 0) or 0,
+            tag=getattr(args, "tag", "") or "",
+            question_id=getattr(args, "question", "") or "",
+            experiment_id=getattr(args, "experiment", "") or "",
+            today=getattr(args, "today", False),
+            days=getattr(args, "days", 0) or 0,
         )
-        print(journal.render_list(entries, verbose=getattr(args, 'verbose', False)))
+        print(journal.render_list(entries, verbose=getattr(args, "verbose", False)))
         return 0  # type: ignore[no-any-return]
 
     elif args.action == "search":
@@ -94,9 +95,9 @@ def _run_journal(args: argparse.Namespace) -> int:
         print(f"   Total entries: {stats['total']}")
         print(f"   This week: {stats['this_week']}")
         print(f"   This month: {stats['this_month']}")
-        if stats.get('top_tags'):
+        if stats.get("top_tags"):
             print("   Top tags:")
-            for tag, count in stats['top_tags'][:5]:
+            for tag, count in stats["top_tags"][:5]:
                 print(f"     {tag}: {count}")
         return 0  # type: ignore[no-any-return]
 

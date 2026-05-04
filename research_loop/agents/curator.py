@@ -36,6 +36,7 @@ class CuratorAgent(BaseAgent):
             return
         try:
             from llm.insight.tracker import EvolutionTracker
+
             self._tracker = EvolutionTracker()
         except Exception as e:
             self._log("init_failed", error=str(e))
@@ -106,6 +107,7 @@ class CuratorAgent(BaseAgent):
         # Trigger feedback-descent evolution cycle
         try:
             from llm.insight.evolution import InsightEvolution
+
             evo = InsightEvolution(tracker=self._tracker)
             evo_result = evo.evolve(topic=topic)
             improved = evo_result.get("result", {}).get("added", 0)

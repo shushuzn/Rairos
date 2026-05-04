@@ -1,4 +1,5 @@
 """CLI command: list."""
+
 from __future__ import annotations
 
 import argparse
@@ -30,7 +31,9 @@ Examples:
 
     p.add_argument("--year", type=int, default=0, help="Filter by year")
 
-    p.add_argument("--tag", dest="tags", action="append", default=[], help="Filter by tag (repeatable)")
+    p.add_argument(
+        "--tag", dest="tags", action="append", default=[], help="Filter by tag (repeatable)"
+    )
 
     p.add_argument("--limit", type=int, default=20, help="Max results")
 
@@ -64,15 +67,45 @@ def _run_list(args: argparse.Namespace) -> int:
 
     if args.format == "csv":
         writer = csv.writer(_sys.stdout)
-        writer.writerow(["id", "title", "authors", "published", "source", "primary_category", "parse_status", "added_at"])
+        writer.writerow(
+            [
+                "id",
+                "title",
+                "authors",
+                "published",
+                "source",
+                "primary_category",
+                "parse_status",
+                "added_at",
+            ]
+        )
         for p in papers:
-            writer.writerow([p.id, p.title, p.authors, p.published, p.source,
-                             p.primary_category, p.parse_status or "", p.added_at])
+            writer.writerow(
+                [
+                    p.id,
+                    p.title,
+                    p.authors,
+                    p.published,
+                    p.source,
+                    p.primary_category,
+                    p.parse_status or "",
+                    p.added_at,
+                ]
+            )
 
     elif args.format == "json":
-        out = [{"paper_id": p.id, "title": p.title, "authors": p.authors,
-                "published": p.published, "primary_category": p.primary_category,
-                "source": p.source, "abs_url": p.abs_url} for p in papers]
+        out = [
+            {
+                "paper_id": p.id,
+                "title": p.title,
+                "authors": p.authors,
+                "published": p.published,
+                "primary_category": p.primary_category,
+                "source": p.source,
+                "abs_url": p.abs_url,
+            }
+            for p in papers
+        ]
         print(json.dumps(out, option=json.OPT_INDENT_2).decode())
 
     elif args.format == "warp":
@@ -90,10 +123,12 @@ def _run_list_warp(papers, total) -> None:
     blocks = []
 
     # Header panel
-    blocks.append(WarpBlocks.panel(
-        "Paper Library",
-        f"Showing {len(papers)} of {total} papers",
-    ))
+    blocks.append(
+        WarpBlocks.panel(
+            "Paper Library",
+            f"Showing {len(papers)} of {total} papers",
+        )
+    )
 
     if not papers:
         blocks.append(WarpBlocks.section("No Papers", "No papers match your filters."))
@@ -105,19 +140,22 @@ def _run_list_warp(papers, total) -> None:
     for p in papers:
         status = p.parse_status or "—"
         cat = p.primary_category or "—"
-        rows.append([
-            p.id,
-            p.published or "—",
-            p.source or "—",
-            status,
-            cat,
-            p.title,
-        ])
+        rows.append(
+            [
+                p.id,
+                p.published or "—",
+                p.source or "—",
+                status,
+                cat,
+                p.title,
+            ]
+        )
 
-    blocks.append(WarpBlocks.table(
-        ["ID", "Published", "Source", "Status", "Category", "Title"],
-        rows,
-    ))
+    blocks.append(
+        WarpBlocks.table(
+            ["ID", "Published", "Source", "Status", "Category", "Title"],
+            rows,
+        )
+    )
 
     print("\n\n".join(blocks))
-

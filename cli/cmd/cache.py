@@ -1,4 +1,5 @@
 """CLI command: cache."""
+
 from __future__ import annotations
 
 import argparse
@@ -15,7 +16,9 @@ def _build_cache_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--clear", action="store_true", help="Clear all cache entries")
     p.add_argument("--stats", action="store_true", help="Show cache statistics")
     # LLM cache options
-    p.add_argument("--llm", action="store_true", help="Operate on LLM response cache instead of paper cache")
+    p.add_argument(
+        "--llm", action="store_true", help="Operate on LLM response cache instead of paper cache"
+    )
     p.add_argument("--llm-clear", action="store_true", help="Clear LLM response cache")
     return p  # type: ignore[no-any-return]
 
@@ -23,7 +26,14 @@ def _build_cache_parser(subparsers) -> argparse.ArgumentParser:
 def _run_cache(args: argparse.Namespace) -> int:
     # LLM cache operations
     if args.llm or args.llm_clear:
-        from llm.client import clear_llm_cache, get_llm_cache_size, _cache_stats, get_cache_stats, reset_cache_stats
+        from llm.client import (
+            clear_llm_cache,
+            get_llm_cache_size,
+            _cache_stats,
+            get_cache_stats,
+            reset_cache_stats,
+        )
+
         if args.llm_clear:
             clear_llm_cache()
             reset_cache_stats()
@@ -32,11 +42,11 @@ def _run_cache(args: argparse.Namespace) -> int:
             size = get_llm_cache_size()
             disk_stats = _cache_stats()
             hit_stats = get_cache_stats()
-            entries = disk_stats.get('entries', size)
-            expired = disk_stats.get('expired', 0)
-            hits = hit_stats.get('hits', 0)
-            misses = hit_stats.get('misses', 0)
-            hit_rate = hit_stats.get('hit_rate', 0)
+            entries = disk_stats.get("entries", size)
+            expired = disk_stats.get("expired", 0)
+            hits = hit_stats.get("hits", 0)
+            misses = hit_stats.get("misses", 0)
+            hit_rate = hit_stats.get("hit_rate", 0)
 
             # Color-coded hit rate
             if hit_rate >= 80:
@@ -46,14 +56,16 @@ def _run_cache(args: argparse.Namespace) -> int:
             else:
                 rate_color = "[#FF5555]✗ {hit_rate}%[/]"
 
-            print(WarpBlocks.panel(
-                "LLM Response Cache",
-                f"""  Entries:    [#A5D5FE]{entries}[/]
+            print(
+                WarpBlocks.panel(
+                    "LLM Response Cache",
+                    f"""  Entries:    [#A5D5FE]{entries}[/]
   Expired:    [#8E8E8E]{expired}[/]
   Hits:       [#B4FA72]{hits}[/]
   Misses:     [#FF8272]{misses}[/]
-  Hit Rate:   {rate_color.format(hit_rate=hit_rate)}"""
-            ))
+  Hit Rate:   {rate_color.format(hit_rate=hit_rate)}""",
+                )
+            )
         return 0  # type: ignore[no-any-return]
 
     db = get_db()

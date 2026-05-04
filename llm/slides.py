@@ -18,6 +18,7 @@ from typing import Optional, List, Dict, Any, cast
 try:
     from pptx import Presentation
     from pptx.util import Inches, Pt
+
     HAS_PPTX = True
 except ImportError:
     HAS_PPTX = False
@@ -29,17 +30,19 @@ from sections.segment import segment_into_sections, format_section_snippets
 @dataclass
 class SlidesConfig:
     """幻灯片生成配置."""
-    template: str = "academic"       # academic | minimal | modern
-    num_slides: int = 10            # 幻灯片数量
-    output_format: str = "pptx"      # pptx | md | html
+
+    template: str = "academic"  # academic | minimal | modern
+    num_slides: int = 10  # 幻灯片数量
+    output_format: str = "pptx"  # pptx | md | html
     output_path: Optional[str] = None
-    include_notes: bool = False      # 包含演讲者备注
-    language: str = "zh"             # zh | en | bilingual
+    include_notes: bool = False  # 包含演讲者备注
+    language: str = "zh"  # zh | en | bilingual
 
 
 @dataclass
 class Slide:
     """单个幻灯片."""
+
     title: str
     content: str
     notes: str = ""
@@ -49,6 +52,7 @@ class Slide:
 @dataclass
 class SlidesResult:
     """生成结果."""
+
     output_path: str
     slide_count: int
     paper_count: int
@@ -86,6 +90,7 @@ class PaperSlidesGenerator:
         """延迟加载 LLM 客户端."""
         if self._llm_client is None:
             from llm.client import get_default_client
+
             self._llm_client = get_default_client()
         return self._llm_client
 
@@ -136,7 +141,9 @@ class PaperSlidesGenerator:
                 "title": paper_dict.get("title", ""),
                 "authors": paper_dict.get("authors", ""),
                 "abstract": paper_dict.get("abstract", ""),
-                "year": (paper_dict.get("published") or "")[:4] if paper_dict.get("published") else "",
+                "year": (paper_dict.get("published") or "")[:4]
+                if paper_dict.get("published")
+                else "",
                 "tags": paper_dict.get("tags", []),
                 "plain_text": paper_dict.get("plain_text", ""),
             }
@@ -184,71 +191,87 @@ class PaperSlidesGenerator:
         slides = []
 
         # 1. 标题页
-        slides.append(Slide(
-            title=paper["title"],
-            content=f"{paper['authors']}\n{paper['year']}",
-            notes="开场介绍论文标题和作者",
-            slide_type="title",
-        ))
+        slides.append(
+            Slide(
+                title=paper["title"],
+                content=f"{paper['authors']}\n{paper['year']}",
+                notes="开场介绍论文标题和作者",
+                slide_type="title",
+            )
+        )
 
         # 2. 摘要/动机
         abstract = paper.get("abstract", "")[:500]
-        slides.append(Slide(
-            title="研究动机",
-            content=abstract,
-            notes="介绍研究背景和动机，强调问题的重要性",
-            slide_type="content",
-        ))
+        slides.append(
+            Slide(
+                title="研究动机",
+                content=abstract,
+                notes="介绍研究背景和动机，强调问题的重要性",
+                slide_type="content",
+            )
+        )
 
         # 3. 关键方法
         sections = paper.get("sections", [])
-        method_sections = [s for s in sections if any(
-            kw in s[0].lower() for kw in ["method", "approach", "model", "architecture"]
-        )]
+        method_sections = [
+            s
+            for s in sections
+            if any(kw in s[0].lower() for kw in ["method", "approach", "model", "architecture"])
+        ]
 
         if method_sections:
             for title, content in method_sections[:2]:
-                slides.append(Slide(
-                    title=f"方法: {title}",
-                    content=content[:800],
-                    notes=f"详细讲解{title}部分的技术细节",
-                    slide_type="content",
-                ))
+                slides.append(
+                    Slide(
+                        title=f"方法: {title}",
+                        content=content[:800],
+                        notes=f"详细讲解{title}部分的技术细节",
+                        slide_type="content",
+                    )
+                )
 
         # 4. 实验结果
-        results_sections = [s for s in sections if any(
-            kw in s[0].lower() for kw in ["experiment", "result", "evaluation"]
-        )]
+        results_sections = [
+            s
+            for s in sections
+            if any(kw in s[0].lower() for kw in ["experiment", "result", "evaluation"])
+        ]
 
         if results_sections:
             for _title, content in results_sections[:1]:
-                slides.append(Slide(
-                    title="实验结果",
-                    content=content[:600],
-                    notes="展示关键实验数据和方法对比",
-                    slide_type="content",
-                ))
+                slides.append(
+                    Slide(
+                        title="实验结果",
+                        content=content[:600],
+                        notes="展示关键实验数据和方法对比",
+                        slide_type="content",
+                    )
+                )
 
         # 5. 结论
         conclusion_sections = [s for s in sections if "conclusion" in s[0].lower()]
         if conclusion_sections:
             title, content = conclusion_sections[0]
-            slides.append(Slide(
-                title="结论",
-                content=content[:500],
-                notes="总结论文贡献和未来工作方向",
-                slide_type="summary",
-            ))
+            slides.append(
+                Slide(
+                    title="结论",
+                    content=content[:500],
+                    notes="总结论文贡献和未来工作方向",
+                    slide_type="summary",
+                )
+            )
 
         # 6. 限制/未来工作
-        slides.append(Slide(
-            title="参考与引用",
-            content=f"Tags: {', '.join(paper.get('tags', []))}",
-            notes="提供进一步阅读的建议",
-            slide_type="content",
-        ))
+        slides.append(
+            Slide(
+                title="参考与引用",
+                content=f"Tags: {', '.join(paper.get('tags', []))}",
+                notes="提供进一步阅读的建议",
+                slide_type="content",
+            )
+        )
 
-        return slides[:config.num_slides]
+        return slides[: config.num_slides]
 
     def _generate_comparison_slides(
         self,
@@ -260,46 +283,55 @@ class PaperSlidesGenerator:
 
         # 标题页
         titles = [p["title"][:40] for p in papers]
-        slides.append(Slide(
-            title="论文对比分析",
-            content="\n".join(f"• {t}" for t in titles),
-            notes="介绍即将对比的论文",
-            slide_type="title",
-        ))
+        slides.append(
+            Slide(
+                title="论文对比分析",
+                content="\n".join(f"• {t}" for t in titles),
+                notes="介绍即将对比的论文",
+                slide_type="title",
+            )
+        )
 
         # 对比表格
         comparison = self._generate_comparison_table(papers)
-        slides.append(Slide(
-            title="论文概览对比",
-            content=comparison,
-            notes="展示各论文基本信息",
-            slide_type="comparison",
-        ))
+        slides.append(
+            Slide(
+                title="论文概览对比",
+                content=comparison,
+                notes="展示各论文基本信息",
+                slide_type="comparison",
+            )
+        )
 
         # 逐个论文简介
         for paper in papers:
-            slides.append(Slide(
-                title=paper["title"][:50],
-                content=f"年份: {paper['year']}\n\n{paper.get('abstract', '')[:400]}",
-                notes=f"介绍{paper['title']}的核心内容",
-                slide_type="content",
-            ))
+            slides.append(
+                Slide(
+                    title=paper["title"][:50],
+                    content=f"年份: {paper['year']}\n\n{paper.get('abstract', '')[:400]}",
+                    notes=f"介绍{paper['title']}的核心内容",
+                    slide_type="content",
+                )
+            )
 
-        return slides[:config.num_slides]
+        return slides[: config.num_slides]
 
     def _generate_comparison_table(self, papers: List[Dict[str, Any]]) -> str:
         """生成对比表格（Markdown 格式）."""
         headers = ["论文", "年份", "标签"]
         rows = []
         for p in papers:
-            rows.append([
-                p["title"][:30],
-                p["year"],
-                ", ".join(p.get("tags", [])[:3]),
-            ])
+            rows.append(
+                [
+                    p["title"][:30],
+                    p["year"],
+                    ", ".join(p.get("tags", [])[:3]),
+                ]
+            )
 
-        col_widths = [max(len(str(row[i])) for row in [headers] + rows) + 2
-                      for i in range(len(headers))]
+        col_widths = [
+            max(len(str(row[i])) for row in [headers] + rows) + 2 for i in range(len(headers))
+        ]
 
         lines = []
         # 表头
@@ -400,7 +432,7 @@ class PaperSlidesGenerator:
     </style>
 </head>
 <body>
-    {''.join(slide_htmls)}
+    {"".join(slide_htmls)}
 </body>
 </html>
 """
@@ -431,9 +463,7 @@ class PaperSlidesGenerator:
                 slide = prs.slides.add_slide(prs.slide_layouts[6])
 
             # 添加标题
-            title_box = slide.shapes.add_textbox(
-                Inches(0.5), Inches(0.5), Inches(12), Inches(1)
-            )
+            title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.5), Inches(12), Inches(1))
             title_frame = title_box.text_frame
             title_frame.text = slide_data.title
             for paragraph in title_frame.paragraphs:
@@ -441,9 +471,7 @@ class PaperSlidesGenerator:
                 paragraph.font.bold = True
 
             # 添加内容
-            content_box = slide.shapes.add_textbox(
-                Inches(0.5), Inches(1.8), Inches(12), Inches(5)
-            )
+            content_box = slide.shapes.add_textbox(Inches(0.5), Inches(1.8), Inches(12), Inches(5))
             content_frame = content_box.text_frame
             content_frame.word_wrap = True
             content_frame.text = slide_data.content[:2000]  # 限制长度
@@ -463,9 +491,11 @@ class PaperSlidesGenerator:
 def main(argv=None):
     """CLI 入口点."""
     import sys
+
     sys.path.insert(0, str(Path(__file__).parent.parent))
 
     from cli.cmd.slides import slides
+
     slides.main(standalone_mode=False)
 
 

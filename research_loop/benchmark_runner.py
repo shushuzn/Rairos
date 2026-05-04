@@ -28,6 +28,7 @@ from llm.insight.tracker import EvolutionTracker
 @dataclass
 class BenchmarkResult:
     """Result of a single benchmark run."""
+
     arxiv_id: str
     test_dir: Path
     passed: int
@@ -43,6 +44,7 @@ class BenchmarkResult:
 @dataclass
 class BenchmarkConfig:
     """Configuration for a benchmark run."""
+
     arxiv_id: str
     paper_topic: str
     algorithm_description: str
@@ -72,7 +74,9 @@ def run_benchmark(
     json_report = test_dir / "report.json"
 
     cmd = [
-        sys.executable, "-m", "pytest",
+        sys.executable,
+        "-m",
+        "pytest",
         str(test_dir),
         "-v",
         "--tb=short",
@@ -81,7 +85,10 @@ def run_benchmark(
     ]
 
     # Prepend src_dir to PYTHONPATH so pytest can import the generated module
-    env = {**os.environ, "PYTHONPATH": f"{config.code_path.parent}{os.pathsep}{os.environ.get('PYTHONPATH', '')}"}
+    env = {
+        **os.environ,
+        "PYTHONPATH": f"{config.code_path.parent}{os.pathsep}{os.environ.get('PYTHONPATH', '')}",
+    }
 
     result = BenchmarkResult(
         arxiv_id=config.arxiv_id,
@@ -145,13 +152,14 @@ def run_benchmark(
 def _parse_pytest_output(result: BenchmarkResult, output: str) -> None:
     """Parse pytest stdout/stderr for pass/fail counts."""
     import re
+
     # Matches: "N passed", "N passed, M failed", "N passed, M failed, K skipped"
     # Also handles all-skipped case: "N skipped"
     m = re.search(
-        r'(\d+)\s+passed'
-        r'(?:,\s+(\d+)\s+failed)?'
-        r'(?:,\s+(\d+)\s+skipped)?',
-        output
+        r"(\d+)\s+passed"
+        r"(?:,\s+(\d+)\s+failed)?"
+        r"(?:,\s+(\d+)\s+skipped)?",
+        output,
     )
     if m:
         result.passed = int(m.group(1))
@@ -159,14 +167,14 @@ def _parse_pytest_output(result: BenchmarkResult, output: str) -> None:
         result.skipped = int(m.group(3)) if m.group(3) else 0
     else:
         # Handle all-skipped or all-failed output: "N skipped in Xs" or "N failed in Xs"
-        skipped_m = re.search(r'(\d+)\s+skipped', output)
+        skipped_m = re.search(r"(\d+)\s+skipped", output)
         if skipped_m:
             result.skipped = int(skipped_m.group(1))
-        failed_m = re.search(r'(\d+)\s+failed', output)
+        failed_m = re.search(r"(\d+)\s+failed", output)
         if failed_m:
             result.failed = int(failed_m.group(1))
         # Handle collection errors: "N error" during collection
-        error_m = re.search(r'(\d+)\s+error', output)
+        error_m = re.search(r"(\d+)\s+error", output)
         if error_m:
             result.failed = int(error_m.group(1))
 
@@ -200,7 +208,11 @@ def _encode_to_gene_pool(
     Called when tests pass. The fact that this paper's algorithm
     was implementable AND passed tests is worth recording as a CapsuleGene.
     """
-    pass_rate = result.passed / (result.passed + result.failed) if (result.passed + result.failed) > 0 else 0
+    pass_rate = (
+        result.passed / (result.passed + result.failed)
+        if (result.passed + result.failed) > 0
+        else 0
+    )
 
     if pass_rate < config.min_pass_rate:
         return  # Not successful enough to encode
@@ -282,7 +294,9 @@ def _trigger_evolution(
         # Log summary to stderr for visibility
         improved = summary.get("applied", [])
         if improved:
-            print(f"[evolution] Applied {len(improved)} V2 capsule(s) for topic: {paper_topic[:60]}")
+            print(
+                f"[evolution] Applied {len(improved)} V2 capsule(s) for topic: {paper_topic[:60]}"
+            )
         else:
             print(f"[evolution] No improvements applied for topic: {paper_topic[:60]}")
     except Exception as e:
@@ -293,14 +307,57 @@ def _trigger_evolution(
 def _extract_keywords(text: str) -> list[str]:
     """Simple keyword extraction from text."""
     import re
+
     stopwords = {
-        "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for",
-        "of", "with", "by", "from", "is", "are", "was", "were", "be", "been",
-        "being", "have", "has", "had", "do", "does", "did", "will", "would",
-        "could", "should", "may", "might", "can", "this", "that", "these",
-        "those", "it", "its", "we", "our", "you", "your", "i", "my",
+        "the",
+        "a",
+        "an",
+        "and",
+        "or",
+        "but",
+        "in",
+        "on",
+        "at",
+        "to",
+        "for",
+        "of",
+        "with",
+        "by",
+        "from",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "have",
+        "has",
+        "had",
+        "do",
+        "does",
+        "did",
+        "will",
+        "would",
+        "could",
+        "should",
+        "may",
+        "might",
+        "can",
+        "this",
+        "that",
+        "these",
+        "those",
+        "it",
+        "its",
+        "we",
+        "our",
+        "you",
+        "your",
+        "i",
+        "my",
     }
-    words = re.findall(r'[a-zA-Z]{3,}', text.lower())
+    words = re.findall(r"[a-zA-Z]{3,}", text.lower())
     keywords = [w for w in words if w not in stopwords]
     seen = set()
     unique = []
@@ -314,15 +371,19 @@ def _extract_keywords(text: str) -> list[str]:
 def _timestamp() -> str:
     """Return ISO timestamp."""
     from datetime import datetime
+
     return datetime.utcnow().isoformat()
 
 
 # ─── Test run utilities ───────────────────────────────────────────────────────
 
+
 def run_tests_locally(test_dir: Path, verbose: bool = True) -> subprocess.CompletedProcess:
     """Run tests and return the subprocess result (for CLI use)."""
     cmd = [
-        sys.executable, "-m", "pytest",
+        sys.executable,
+        "-m",
+        "pytest",
         str(test_dir),
         "-v" if verbose else "-q",
         "--tb=short",

@@ -1,6 +1,7 @@
 """
 Experiment Tracker: Track experiments for research roadmaps.
 """
+
 import logging
 import uuid
 from dataclasses import dataclass, asdict, field
@@ -11,11 +12,13 @@ from typing import List, Dict
 
 from llm.tracker_base import JsonFileStore
 
+
 class ExperimentStatus(Enum):
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+
 
 @dataclass
 class Metric:
@@ -23,6 +26,7 @@ class Metric:
     value: float
     unit: str = ""
     timestamp: str = ""
+
 
 @dataclass
 class Experiment:
@@ -44,14 +48,16 @@ class Experiment:
         if not self.created_at:
             self.created_at = datetime.now().isoformat()
 
-    def to_dict(self): return asdict(self)
+    def to_dict(self):
+        return asdict(self)
 
     @classmethod
     def from_dict(cls, data):
         data = data.copy()
-        if 'metrics' in data:
-            data['metrics'] = [Metric(**m) if isinstance(m, dict) else m for m in data['metrics']]
+        if "metrics" in data:
+            data["metrics"] = [Metric(**m) if isinstance(m, dict) else m for m in data["metrics"]]
         return cls(**data)
+
 
 class ExperimentTracker(JsonFileStore):
     def __init__(self, data_dir=None):
@@ -65,11 +71,19 @@ class ExperimentTracker(JsonFileStore):
     def _pre_save(self, exps: List[Experiment]) -> List[dict]:
         return [e.to_dict() for e in exps]
 
-    def run(self, name, description="", roadmap_milestone="", hypothesis_id="", config=None, tags=None):
+    def run(
+        self, name, description="", roadmap_milestone="", hypothesis_id="", config=None, tags=None
+    ):
         exps = self._load()
-        e = Experiment(id=str(uuid.uuid4())[:8], name=name, description=description,
-                      roadmap_milestone=roadmap_milestone, hypothesis_id=hypothesis_id,
-                      config=config or {}, tags=tags or [])
+        e = Experiment(
+            id=str(uuid.uuid4())[:8],
+            name=name,
+            description=description,
+            roadmap_milestone=roadmap_milestone,
+            hypothesis_id=hypothesis_id,
+            config=config or {},
+            tags=tags or [],
+        )
         exps.append(e)
         self._save(exps)
         return e
@@ -105,6 +119,7 @@ class ExperimentTracker(JsonFileStore):
                 if e.hypothesis_id:
                     try:
                         from llm.insight_evolution import EvolutionTracker, ExplorationAction
+
                         ev = EvolutionTracker()
                         ev.record_event(
                             topic="; ".join(e.tags) if e.tags else e.name,
@@ -113,7 +128,11 @@ class ExperimentTracker(JsonFileStore):
                             gap_type=e.config.get("hypothesis_type", ""),
                         )
                     except Exception as exc:
-                        logging.warning("EvolutionTracker integration skipped for hypothesis %s: %s", e.hypothesis_id, exc)
+                        logging.warning(
+                            "EvolutionTracker integration skipped for hypothesis %s: %s",
+                            e.hypothesis_id,
+                            exc,
+                        )
 
                 return e
         raise KeyError(f"Experiment not found: {eid}")
@@ -134,6 +153,7 @@ class ExperimentTracker(JsonFileStore):
                 if e.hypothesis_id:
                     try:
                         from llm.insight_evolution import EvolutionTracker, ExplorationAction
+
                         ev = EvolutionTracker()
                         ev.record_event(
                             topic="; ".join(e.tags) if e.tags else e.name,
@@ -142,7 +162,11 @@ class ExperimentTracker(JsonFileStore):
                             gap_type=e.config.get("hypothesis_type", ""),
                         )
                     except Exception as exc:
-                        logging.warning("EvolutionTracker integration skipped for hypothesis %s: %s", e.hypothesis_id, exc)
+                        logging.warning(
+                            "EvolutionTracker integration skipped for hypothesis %s: %s",
+                            e.hypothesis_id,
+                            exc,
+                        )
 
                 return e
         raise KeyError(f"Experiment not found: {eid}")
@@ -194,11 +218,13 @@ class ExperimentTracker(JsonFileStore):
         for e in exps:
             by_status[e.status] = by_status.get(e.status, 0) + 1
         total = len(exps)
-        summary = f"Total: {total}  |  " + "  |  ".join(f"{s}: {c}" for s, c in sorted(by_status.items()))
+        summary = f"Total: {total}  |  " + "  |  ".join(
+            f"{s}: {c}" for s, c in sorted(by_status.items())
+        )
 
-        lines, icons = [summary, ""], {"running":"⚡","completed":"✓","failed":"✗"}
+        lines, icons = [summary, ""], {"running": "⚡", "completed": "✓", "failed": "✗"}
         for e in exps:
-            lines.append(f"{icons.get(e.status,'?')} [{e.id}] {e.name} ({e.status})")
+            lines.append(f"{icons.get(e.status, '?')} [{e.id}] {e.name} ({e.status})")
             if e.roadmap_milestone:
                 lines.append(f"  Milestone: {e.roadmap_milestone}")
             if verbose and e.metrics:
@@ -208,7 +234,12 @@ class ExperimentTracker(JsonFileStore):
     def render_compare(self, comp):
         if "error" in comp:
             return f"Error: {comp['error']}"
-        lines = ["## Experiment Comparison", "", "| Exp | " + " | ".join(comp["metrics"]) + " |", "|---| " + "|---".join([""]*len(comp["metrics"]))]
+        lines = [
+            "## Experiment Comparison",
+            "",
+            "| Exp | " + " | ".join(comp["metrics"]) + " |",
+            "|---| " + "|---".join([""] * len(comp["metrics"])),
+        ]
         for r in comp["experiments"]:
             vals = [str(r.get(m, "-")) for m in comp["metrics"]]
             lines.append(f"| {r['name'][:15]} | " + " | ".join(vals) + " |")

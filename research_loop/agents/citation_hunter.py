@@ -31,6 +31,7 @@ class CitationHunterAgent(BaseAgent):
             return
         try:
             from llm.citation_chain import CitationChainBuilder
+
             self._chain_builder = CitationChainBuilder()
         except Exception as e:
             self._log("init_failed", error=str(e))

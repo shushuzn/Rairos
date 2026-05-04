@@ -17,17 +17,29 @@ from pathlib import Path
 try:
     from playwright.sync_api import sync_playwright
 except ImportError:
-    print("Error: playwright not installed. Run: pip install playwright && playwright install chromium")
+    print(
+        "Error: playwright not installed. Run: pip install playwright && playwright install chromium"
+    )
     raise SystemExit(1) from None
 
 DEMO_STEPS = [
     {"name": "homepage", "url": "/", "wait": 2, "desc": "Rairos Dashboard"},
     {"name": "papers", "url": "/papers", "wait": 2, "desc": "Paper Library"},
     {"name": "gene_pool", "url": "/gene-pool", "wait": 2, "desc": "Gene Pool Overview"},
-    {"name": "credibility", "url": "/gene-pool/credibility", "wait": 2, "desc": "Credibility Filter"},
+    {
+        "name": "credibility",
+        "url": "/gene-pool/credibility",
+        "wait": 2,
+        "desc": "Credibility Filter",
+    },
     {"name": "research_briefing", "url": "/briefing", "wait": 2, "desc": "Research Briefings"},
     {"name": "chat", "url": "/chat", "wait": 3, "desc": "Research Chat"},
-    {"name": "citation_pathfinder", "url": "/citation-pathfinder", "wait": 2, "desc": "Citation Pathfinder"},
+    {
+        "name": "citation_pathfinder",
+        "url": "/citation-pathfinder",
+        "wait": 2,
+        "desc": "Citation Pathfinder",
+    },
     {"name": "channels", "url": "/arxiv-channels", "wait": 2, "desc": "arXiv Alert Channels"},
     {"name": "climate", "url": "/climate-monitor", "wait": 2, "desc": "Climate AI Monitor"},
     {"name": "voice_capsule", "url": "/voice-capsule", "wait": 2, "desc": "Voice to Capsule"},
@@ -50,21 +62,25 @@ def run_demo(url: str, output: str, headless: bool = True):
             try:
                 page.goto(step_url, wait_until="networkidle", timeout=10000)
                 page.wait_for_timeout(step["wait"])
-                results.append({
-                    "name": step["name"],
-                    "desc": step["desc"],
-                    "url": step_url,
-                    "timestamp": round(ts, 1),
-                    "status": "ok",
-                })
+                results.append(
+                    {
+                        "name": step["name"],
+                        "desc": step["desc"],
+                        "url": step_url,
+                        "timestamp": round(ts, 1),
+                        "status": "ok",
+                    }
+                )
             except Exception as e:
-                results.append({
-                    "name": step["name"],
-                    "desc": step["desc"],
-                    "url": step_url,
-                    "timestamp": round(ts, 1),
-                    "status": f"error: {e}",
-                })
+                results.append(
+                    {
+                        "name": step["name"],
+                        "desc": step["desc"],
+                        "url": step_url,
+                        "timestamp": round(ts, 1),
+                        "status": f"error: {e}",
+                    }
+                )
                 print(f"  ERROR: {e}")
 
         browser.close()
@@ -81,8 +97,12 @@ def run_demo(url: str, output: str, headless: bool = True):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Automate Rairos demo navigation")
     parser.add_argument("--url", default="http://localhost:8765", help="Base URL of Rairos web UI")
-    parser.add_argument("--output", "-o", default="demo_steps.json", help="Output JSON with timestamps")
-    parser.add_argument("--visible", action="store_true", help="Show browser window during recording")
+    parser.add_argument(
+        "--output", "-o", default="demo_steps.json", help="Output JSON with timestamps"
+    )
+    parser.add_argument(
+        "--visible", action="store_true", help="Show browser window during recording"
+    )
     args = parser.parse_args()
 
     run_demo(args.url, args.output, headless=not args.visible)

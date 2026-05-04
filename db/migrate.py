@@ -4,6 +4,7 @@ Tracks schema version in the `settings` table and applies incremental migrations
 forward only. Each migration is a callable that takes a connection and raises
 no error if it is a no-op (idempotent).
 """
+
 from __future__ import annotations
 
 import logging
@@ -82,7 +83,9 @@ def _m2_add_reading_status(conn: sqlite3.Connection) -> None:
         pass
     # Create index for faster reading status queries
     try:
-        conn.execute("CREATE INDEX IF NOT EXISTS idx_papers_reading_status ON papers(reading_status)")
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_papers_reading_status ON papers(reading_status)"
+        )
     except sqlite3.OperationalError:
         pass
 
@@ -180,9 +183,7 @@ _MIGRATIONS: dict[int, Migration] = {
 def get_schema_version(conn: sqlite3.Connection) -> int:
     """Return the stored schema version, or 0 if not yet recorded."""
     try:
-        cur = conn.execute(
-            "SELECT value FROM settings WHERE key = 'schema_version'"
-        )
+        cur = conn.execute("SELECT value FROM settings WHERE key = 'schema_version'")
         row = cur.fetchone()
         return int(row[0]) if row else 0
     except sqlite3.OperationalError:

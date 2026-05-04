@@ -98,6 +98,7 @@ class TrustScorer:
         if not self.db:
             try:
                 from db.database import Database
+
                 self.db = Database()
                 self.db.init()
             except Exception:
@@ -145,7 +146,9 @@ class TrustScorer:
         TRUST_MAP_PATH.parent.mkdir(parents=True, exist_ok=True)
         data = {cat: t.to_dict() for cat, t in self._trust_map.items()}
         TRUST_MAP_PATH.write_text(
-            json.dumps({"version": 1, "computed_at": str(Path(__file__).stat().st_mtime), "map": data}),
+            json.dumps(
+                {"version": 1, "computed_at": str(Path(__file__).stat().st_mtime), "map": data}
+            ),
             encoding="utf-8",
         )
         return True
@@ -156,9 +159,7 @@ class TrustScorer:
             return False
         try:
             data = json.loads(TRUST_MAP_PATH.read_text(encoding="utf-8"))
-            self._trust_map = {
-                cat: CategoryTrust(**v) for cat, v in data.get("map", {}).items()
-            }
+            self._trust_map = {cat: CategoryTrust(**v) for cat, v in data.get("map", {}).items()}
             return True
         except Exception:
             return False
@@ -174,7 +175,9 @@ class TrustScorer:
         lines = ['<div class="trust-panel">']
         lines.append("<h3>Source Trust Scores</h3>")
         lines.append('<table class="trust-table">')
-        lines.append("<thead><tr><th>Category</th><th>Capsules</th><th>Trusted</th><th>Avg Score</th><th>Trust Ratio</th></tr></thead>")
+        lines.append(
+            "<thead><tr><th>Category</th><th>Capsules</th><th>Trusted</th><th>Avg Score</th><th>Trust Ratio</th></tr></thead>"
+        )
         lines.append("<tbody>")
 
         for t in trusts:
@@ -185,16 +188,24 @@ class TrustScorer:
             lines.append(f"<td>{t.total_capsules}</td>")
             lines.append(f"<td>{t.trusted_capsules}</td>")
             lines.append(f"<td>{t.avg_score:.2f}</td>")
-            lines.append(f'<td><div class="trust-bar" style="width:{bar_width}%;background:{color}">{t.trust_ratio:.0%}</div></td>')
+            lines.append(
+                f'<td><div class="trust-bar" style="width:{bar_width}%;background:{color}">{t.trust_ratio:.0%}</div></td>'
+            )
             lines.append("</tr>")
 
         lines.append("</tbody></table>")
         lines.append("<style>")
         lines.append(".trust-panel { font-family: Georgia, serif; }")
         lines.append(".trust-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }")
-        lines.append(".trust-table th, .trust-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }")
-        lines.append(".trust-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }")
-        lines.append(".trust-bar { height: 1.2em; border-radius: 4px; font-size: 0.75rem; color: white; padding: 0 0.4em; min-width: 3em; display: inline-block; }")
+        lines.append(
+            ".trust-table th, .trust-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }"
+        )
+        lines.append(
+            ".trust-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }"
+        )
+        lines.append(
+            ".trust-bar { height: 1.2em; border-radius: 4px; font-size: 0.75rem; color: white; padding: 0 0.4em; min-width: 3em; display: inline-block; }"
+        )
         lines.append("</style>")
         lines.append("</div>")
         return "\n".join(lines)

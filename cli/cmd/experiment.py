@@ -1,6 +1,8 @@
 """CLI command: experiment — Track experiments."""
+
 from cli._shared import print_info, print_error
 from llm.experiment_tracker import ExperimentTracker
+
 
 def _build_experiment_parser(subparsers):
     p = subparsers.add_parser("experiment", help="Track experiments")
@@ -37,11 +39,14 @@ def _build_experiment_parser(subparsers):
     p_delete = sub.add_parser("delete", help="Delete experiment")
     p_delete.add_argument("id")
 
-    p_simulate = sub.add_parser("simulate", help="Simulate experiment outcome for testing feedback loop")
+    p_simulate = sub.add_parser(
+        "simulate", help="Simulate experiment outcome for testing feedback loop"
+    )
     p_simulate.add_argument("id", help="Experiment ID")
     p_simulate.add_argument("result", choices=["success", "fail"], help="Simulated outcome")
 
     return p  # type: ignore[no-any-return]
+
 
 def _run_experiment(args):
     tracker = ExperimentTracker()
@@ -51,7 +56,12 @@ def _run_experiment(args):
         print(tracker.render_list(exps, verbose=args.verbose))
 
     elif args.action == "run":
-        e = tracker.run(args.name, description=args.desc or "", roadmap_milestone=args.milestone or "", tags=args.tag or [])
+        e = tracker.run(
+            args.name,
+            description=args.desc or "",
+            roadmap_milestone=args.milestone or "",
+            tags=args.tag or [],
+        )
         print(f"⚡ Started experiment [{e.id}]: {e.name}")
 
     elif args.action == "get":
@@ -70,6 +80,7 @@ def _run_experiment(args):
 
     elif args.action == "complete":
         import json
+
         results = json.loads(args.metrics) if args.metrics else None
         try:
             e = tracker.complete(args.id, results)

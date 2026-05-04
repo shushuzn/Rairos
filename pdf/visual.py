@@ -11,6 +11,7 @@ Usage:
     extractor = VisualExtractor(output_dir="output/figures")
     result = extractor.extract_visual_content("paper.pdf")
 """
+
 from __future__ import annotations
 
 import re
@@ -29,6 +30,7 @@ def _ensure_deps():
         try:
             import fitz
             from PIL import Image
+
             _fitz = fitz
             _Image = Image
         except ImportError as e:
@@ -38,6 +40,7 @@ def _ensure_deps():
 @dataclass
 class RenderedFormula:
     """A rendered LaTeX formula."""
+
     latex: str
     is_display: bool
     page: int
@@ -48,6 +51,7 @@ class RenderedFormula:
 @dataclass
 class ExtractedFigure:
     """An extracted figure from the PDF."""
+
     page: int
     image_path: Optional[str] = None
     caption: str = ""
@@ -57,6 +61,7 @@ class ExtractedFigure:
 @dataclass
 class TableAsMarkdown:
     """A table formatted as markdown."""
+
     headers: List[str]
     rows: List[List[str]]
     page: int
@@ -67,6 +72,7 @@ class TableAsMarkdown:
 @dataclass
 class VisualContent:
     """All visual content extracted from a PDF."""
+
     paper_id: str
     figures: List[ExtractedFigure] = field(default_factory=list)
     rendered_formulas: List[RenderedFormula] = field(default_factory=list)
@@ -125,9 +131,7 @@ class VisualExtractor:
 
         return visual
 
-    def _extract_figures(
-        self, page, page_idx: int, paper_id: str
-    ) -> List[ExtractedFigure]:
+    def _extract_figures(self, page, page_idx: int, paper_id: str) -> List[ExtractedFigure]:
         """Extract embedded images as figures."""
         figures = []
         image_list = page.get_images(full=True)
@@ -161,29 +165,29 @@ class VisualExtractor:
                 bbox = img.get("bbox", (0, 0, 0, 0))
                 caption = self._find_caption_near(page, bbox)
 
-                figures.append(ExtractedFigure(
-                    page=page_idx,
-                    image_path=str(image_path) if image_path else None,
-                    caption=caption,
-                    bbox=bbox,
-                ))
+                figures.append(
+                    ExtractedFigure(
+                        page=page_idx,
+                        image_path=str(image_path) if image_path else None,
+                        caption=caption,
+                        bbox=bbox,
+                    )
+                )
             except Exception:
                 continue
 
         return figures
 
-    def _extract_formulas(
-        self, page, page_idx: int, paper_id: str
-    ) -> List[RenderedFormula]:
+    def _extract_formulas(self, page, page_idx: int, paper_id: str) -> List[RenderedFormula]:
         """Extract LaTeX formulas and optionally render as images."""
         formulas = []
         self._formula_count = 0
 
         # Pattern for inline math: $...$
-        inline_pattern = re.compile(r'\$([^\$]+)\$')
+        inline_pattern = re.compile(r"\$([^\$]+)\$")
 
         # Pattern for display math: $$...$$
-        display_pattern = re.compile(r'\$\$([^\$]+)\$\$')
+        display_pattern = re.compile(r"\$\$([^\$]+)\$\$")
 
         # Extract text with bbox info
         assert _fitz is not None, "Call _ensure_deps() first"
@@ -239,13 +243,25 @@ class VisualExtractor:
 
                 fig = plt.figure(figsize=(4, 0.8) if not is_display else (6, 1))
                 ax = fig.add_axes((0, 0, 1, 1))
-                ax.text(0.5, 0.5, f"${latex}$", fontsize=12,
-                       ha='center', va='center', transform=ax.transAxes)
-                ax.axis('off')
+                ax.text(
+                    0.5,
+                    0.5,
+                    f"${latex}$",
+                    fontsize=12,
+                    ha="center",
+                    va="center",
+                    transform=ax.transAxes,
+                )
+                ax.axis("off")
 
                 if image_path:
-                    fig.savefig(image_path, dpi=self.dpi, transparent=True,
-                               bbox_inches='tight', pad_inches=0.1)
+                    fig.savefig(
+                        image_path,
+                        dpi=self.dpi,
+                        transparent=True,
+                        bbox_inches="tight",
+                        pad_inches=0.1,
+                    )
                 plt.close(fig)
                 return str(image_path) if image_path else None
 
@@ -256,9 +272,7 @@ class VisualExtractor:
         except Exception:
             return None
 
-    def _extract_tables_markdown(
-        self, page, page_idx: int
-    ) -> List[TableAsMarkdown]:
+    def _extract_tables_markdown(self, page, page_idx: int) -> List[TableAsMarkdown]:
         """Extract tables and format as markdown."""
         tables = []
 
@@ -273,10 +287,7 @@ class VisualExtractor:
                         continue
 
                     headers = [str(h).strip() if h else "" for h in data[0]]
-                    rows = [
-                        [str(cell).strip() if cell else "" for cell in row]
-                        for row in data[1:]
-                    ]
+                    rows = [[str(cell).strip() if cell else "" for cell in row] for row in data[1:]]
 
                     # Build markdown
                     md = self._build_markdown_table(headers, rows)
@@ -285,13 +296,15 @@ class VisualExtractor:
                     bbox = table.bbox
                     caption = self._find_caption_near(page, bbox)
 
-                    tables.append(TableAsMarkdown(
-                        headers=headers,
-                        rows=rows,
-                        page=page_idx,
-                        caption=caption,
-                        markdown=md,
-                    ))
+                    tables.append(
+                        TableAsMarkdown(
+                            headers=headers,
+                            rows=rows,
+                            page=page_idx,
+                            caption=caption,
+                            markdown=md,
+                        )
+                    )
                 except Exception:
                     continue
 
@@ -300,9 +313,7 @@ class VisualExtractor:
 
         return tables
 
-    def _build_markdown_table(
-        self, headers: List[str], rows: List[List[str]]
-    ) -> str:
+    def _build_markdown_table(self, headers: List[str], rows: List[List[str]]) -> str:
         """Build markdown table from headers and rows."""
         lines = []
 
@@ -317,7 +328,7 @@ class VisualExtractor:
             # Pad row to match header count
             while len(row) < len(headers):
                 row.append("")
-            lines.append("| " + " | ".join(row[:len(headers)]) + " |")
+            lines.append("| " + " | ".join(row[: len(headers)]) + " |")
 
         return "\n".join(lines)
 
@@ -346,7 +357,7 @@ class VisualExtractor:
                 # Check if text is below and close to the figure
                 if block_bbox[1] > y_bottom and block_bbox[1] - y_bottom < max_distance:
                     # Check if it looks like a caption (starts with Fig, Table, etc.)
-                    if re.match(r'^(Figure|Fig\.|Table|表|图)', block_text, re.I):
+                    if re.match(r"^(Figure|Fig\.|Table|表|图)", block_text, re.I):
                         captions.append((block_bbox[1], block_text))
 
             if captions:

@@ -58,7 +58,13 @@ summary: [2-sentence analysis]""",
     # Q2: rl_efficiency — LAPO vs PPO convergence speed
     "rl_efficiency": {
         "gap_type": "rl_efficiency",
-        "result_fields": ["algorithm", "convergence_speed", "sample_efficiency", "gap_title", "summary"],
+        "result_fields": [
+            "algorithm",
+            "convergence_speed",
+            "sample_efficiency",
+            "gap_title",
+            "summary",
+        ],
         "prompt_template": """You are a research analyst specializing in reinforcement learning.
 
 PAPER:
@@ -90,7 +96,13 @@ summary: [2-sentence analysis]""",
     # Q3: reasoning_scaling — inference chain length vs task complexity
     "reasoning_scaling": {
         "gap_type": "reasoning_scaling",
-        "result_fields": ["chain_length", "task_complexity", "scaling_behavior", "gap_title", "summary"],
+        "result_fields": [
+            "chain_length",
+            "task_complexity",
+            "scaling_behavior",
+            "gap_title",
+            "summary",
+        ],
         "prompt_template": """You are a research analyst specializing in reasoning systems.
 
 PAPER:
@@ -121,7 +133,13 @@ summary: [2-sentence analysis]""",
     # Q4: sim_to_real — zero-shot generalization
     "sim_to_real": {
         "gap_type": "sim_to_real",
-        "result_fields": ["generalization_level", "domain_gap", "transfer_quality", "gap_title", "summary"],
+        "result_fields": [
+            "generalization_level",
+            "domain_gap",
+            "transfer_quality",
+            "gap_title",
+            "summary",
+        ],
         "prompt_template": """You are a research analyst specializing in sim-to-real transfer.
 
 PAPER:
@@ -147,12 +165,24 @@ domain_gap: [small|medium|large|unknown]
 transfer_quality: [high|medium|low|unknown]
 gap_title: [specific research question about sim-to-real]
 summary: [2-sentence analysis]""",
-        "keywords": ["sim-to-real", "zero-shot", "generalization", "domain randomization", "transfer"],
+        "keywords": [
+            "sim-to-real",
+            "zero-shot",
+            "generalization",
+            "domain randomization",
+            "transfer",
+        ],
     },
     # Q5: planning_control — reasoning/action alternation frequency
     "planning_control": {
         "gap_type": "planning_control",
-        "result_fields": ["alternation_freq", "planning_depth", "control_type", "gap_title", "summary"],
+        "result_fields": [
+            "alternation_freq",
+            "planning_depth",
+            "control_type",
+            "gap_title",
+            "summary",
+        ],
         "prompt_template": """You are a research analyst specializing in planning and control systems.
 
 PAPER:
@@ -183,7 +213,13 @@ summary: [2-sentence analysis]""",
     # Q6: representation_learning — visual vs physical latent attention
     "representation_learning": {
         "gap_type": "representation_learning",
-        "result_fields": ["attention_type", "modality_focus", "latent_structure", "gap_title", "summary"],
+        "result_fields": [
+            "attention_type",
+            "modality_focus",
+            "latent_structure",
+            "gap_title",
+            "summary",
+        ],
         "prompt_template": """You are a research analyst specializing in representation learning.
 
 PAPER:
@@ -214,7 +250,13 @@ summary: [2-sentence analysis]""",
     # Q7: rl_pretraining — warm-start strategy quality vs diversity
     "rl_pretraining": {
         "gap_type": "rl_pretraining",
-        "result_fields": ["pretrain_strategy", "quality_diversity", "transfer_gain", "gap_title", "summary"],
+        "result_fields": [
+            "pretrain_strategy",
+            "quality_diversity",
+            "transfer_gain",
+            "gap_title",
+            "summary",
+        ],
         "prompt_template": """You are a research analyst specializing in RL pretraining.
 
 PAPER:
@@ -245,7 +287,13 @@ summary: [2-sentence analysis]""",
     # Q8: benchmark_coverage — LIBERO vs real robot evaluation
     "benchmark_coverage": {
         "gap_type": "benchmark_coverage",
-        "result_fields": ["benchmark_used", "real_robot_eval", "coverage_gap", "gap_title", "summary"],
+        "result_fields": [
+            "benchmark_used",
+            "real_robot_eval",
+            "coverage_gap",
+            "gap_title",
+            "summary",
+        ],
         "prompt_template": """You are a research analyst specializing in robot learning benchmarks.
 
 PAPER:
@@ -276,7 +324,13 @@ summary: [2-sentence analysis]""",
     # Q9: architecture_agnostic — non-VLA architecture transfer
     "architecture_agnostic": {
         "gap_type": "architecture_agnostic",
-        "result_fields": ["architecture_type", "transfer_scope", "model_agnostic", "gap_title", "summary"],
+        "result_fields": [
+            "architecture_type",
+            "transfer_scope",
+            "model_agnostic",
+            "gap_title",
+            "summary",
+        ],
         "prompt_template": """You are a research analyst specializing in robot learning architectures.
 
 PAPER:
@@ -307,7 +361,13 @@ summary: [2-sentence analysis]""",
     # Q10: human_ai_collaboration — human intervention corrects latent paths
     "human_ai_collaboration": {
         "gap_type": "human_ai_collaboration",
-        "result_fields": ["intervention_type", "latent_correction", "collaboration_mode", "gap_title", "summary"],
+        "result_fields": [
+            "intervention_type",
+            "latent_correction",
+            "collaboration_mode",
+            "gap_title",
+            "summary",
+        ],
         "prompt_template": """You are a research analyst specializing in human-AI collaboration.
 
 PAPER:
@@ -503,7 +563,8 @@ def analyze_gap(
             gap_type=gap_type,
             gap_title=result.get("gap_title") or f"{gap_type}: {title[:60]}",
             keywords=keywords + [str(result.get(result_fields[0], ""))],
-            summary=result.get("summary") or f"{gap_type} analysis. {result_fields[0]}: {result.get(result_fields[0], 'unknown')}",
+            summary=result.get("summary")
+            or f"{gap_type} analysis. {result_fields[0]}: {result.get(result_fields[0], 'unknown')}",
             polarity="open",
             extra_fields=gap_extra,
         )
@@ -527,7 +588,8 @@ def analyze_gap(
                 title=title,
                 representation_type=result.get("representation_type", "unknown"),
                 confidence=result.get("confidence", 0.5),
-                gap_title=result.get("gap_title") or f"Latent Reasoning: {result.get('representation_type', 'unknown')}",
+                gap_title=result.get("gap_title")
+                or f"Latent Reasoning: {result.get('representation_type', 'unknown')}",
             )
 
         return result
@@ -573,6 +635,7 @@ def batch_analyze_embodied_planning(
     """
     if db is None:
         from db.database import Database
+
         db = Database()
 
     results = []
@@ -612,17 +675,24 @@ def batch_analyze_embodied_planning(
         "dominant_type": max(by_type, key=lambda k: len(by_type[k])) if total > 0 else "unknown",
     }
 
-
     # Contradiction pairs via unified detect_evidence_contradiction
     contradictions = detect_evidence_contradiction(results)
 
     return {
         "summary": summary,
-        "by_type": {k: [{"paper_id": r["paper_id"], "paper_title": r["paper_title"],
-                          "confidence": r["confidence"], "gap_title": r.get("gap_title", ""),
-                          "evidence": r.get("evidence", [])}
-                         for r in v]
-                     for k, v in by_type.items()},
+        "by_type": {
+            k: [
+                {
+                    "paper_id": r["paper_id"],
+                    "paper_title": r["paper_title"],
+                    "confidence": r["confidence"],
+                    "gap_title": r.get("gap_title", ""),
+                    "evidence": r.get("evidence", []),
+                }
+                for r in v
+            ]
+            for k, v in by_type.items()
+        },
         "contradictions": contradictions[:5],
         "total_analyzed": total,
     }
@@ -646,7 +716,8 @@ def render_embodied_planning_dashboard() -> str:
 
     # Filter embodied_planning gap types
     embodied = [
-        c for c in capsules
+        c
+        for c in capsules
         if c.get("action_gap_type") == "embodied_planning"
         or c.get("trigger_gap_type") == "embodied_planning"
     ]
@@ -700,21 +771,22 @@ def render_embodied_planning_dashboard() -> str:
           <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;">Unclear</div>
         </div>
       </div>
-    """.format(
-        dc=len(discrete), cc=len(continuous),
-        hc=len(hybrid), uc=len(unknown)
-    )
+    """.format(dc=len(discrete), cc=len(continuous), hc=len(hybrid), uc=len(unknown))
 
     # Mermaid graph
     graph = render_embodied_planning_graph()
     if graph:
-        html += """
+        html += (
+            """
     <div style="margin-bottom:24px;">
       <div style="font-size:14px;font-weight:700;color:#555;margin-bottom:12px;">🕸️ Representation Atlas</div>
       <div style="background:#fafaf7;border:1px solid #e0dbd4;border-radius:8px;padding:16px;overflow-x:auto;">
-        """ + graph + """
+        """
+            + graph
+            + """
       </div>
     </div>"""
+        )
 
     # Papers list by type
     def _render_list(capsules, color, type_label):
@@ -732,10 +804,7 @@ def render_embodied_planning_dashboard() -> str:
                 <div style="font-size:11px;color:#aaa;">{paper_id}</div>
               </div>
               <div style="font-size:11px;color:{color};font-weight:700;margin-left:8px;">{score:.0%}</div>
-            </div>""".format(
-                title=title, paper_id=paper_id[:20],
-                color=color, score=score
-            )
+            </div>""".format(title=title, paper_id=paper_id[:20], color=color, score=score)
         return """
         <div style="margin-bottom:20px;">
           <div style="font-size:14px;font-weight:700;color:{color};margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid {color};">{label} ({count})</div>
@@ -777,10 +846,7 @@ def render_embodied_planning_graph() -> str:
     data = _json.loads(capsule_path.read_text(encoding="utf-8"))
     capsules = data.get("capsules", [])
 
-    embodied = [
-        c for c in capsules
-        if c.get("action_gap_type") == "embodied_planning"
-    ]
+    embodied = [c for c in capsules if c.get("action_gap_type") == "embodied_planning"]
 
     if len(embodied) < 1:
         return ""
@@ -810,7 +876,7 @@ def render_embodied_planning_graph() -> str:
     contradiction_edges = set()
     pids = list(nodes_info.keys())
     for i, p1 in enumerate(pids):
-        for p2 in pids[i+1:]:
+        for p2 in pids[i + 1 :]:
             if p1 == p2:
                 continue
             r1, title1, _ = nodes_info[p1]
@@ -849,12 +915,12 @@ def render_embodied_planning_graph() -> str:
         lines.append(f"    {e1} -.->|{r1}/{r2}| {e2}")
 
     lines.append("")
-    lines.append("    subgraph legend[\"\"]")
+    lines.append('    subgraph legend[""]')
     lines.append("        direction LR")
-    lines.append("        L1[\"\"] --- L2[\"\"]")
-    lines.append("        L1[\"\"] -..- L3[\"\"]")
-    lines.append("        LS1[\"same type (same color)\"]")
-    lines.append("        LS2[\"contradiction (cross-type)\"]")
+    lines.append('        L1[""] --- L2[""]')
+    lines.append('        L1[""] -..- L3[""]')
+    lines.append('        LS1["same type (same color)"]')
+    lines.append('        LS2["contradiction (cross-type)"]')
     lines.append("    end")
     lines.append("```")
     return "\n".join(lines)
@@ -872,17 +938,34 @@ def render_compare_view(paper_ids: List[str], db=None) -> str:
         paper_ids = paper_ids[:2]
     if db is None:
         from db.database import Database
+
         db = Database()
 
     import json as _json
+
     capsule_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
     capsules = []
     if capsule_path.exists():
         capsules = _json.loads(capsule_path.read_text(encoding="utf-8")).get("capsules", [])
 
-    color_map = {"discrete": "#7A9E7A", "continuous": "#6B8FB5", "hybrid": "#D4A84B", "unknown": "#aaa"}
-    type_labels = {"discrete": "Discrete", "continuous": "Continuous", "hybrid": "Hybrid", "unknown": "Unclear"}
-    badge_colors = {"discrete": "#7A9E7A", "continuous": "#6B8FB5", "hybrid": "#D4A84B", "unknown": "#aaa"}
+    color_map = {
+        "discrete": "#7A9E7A",
+        "continuous": "#6B8FB5",
+        "hybrid": "#D4A84B",
+        "unknown": "#aaa",
+    }
+    type_labels = {
+        "discrete": "Discrete",
+        "continuous": "Continuous",
+        "hybrid": "Hybrid",
+        "unknown": "Unclear",
+    }
+    badge_colors = {
+        "discrete": "#7A9E7A",
+        "continuous": "#6B8FB5",
+        "hybrid": "#D4A84B",
+        "unknown": "#aaa",
+    }
 
     paper_data = []
     for pid in paper_ids:
@@ -891,7 +974,10 @@ def render_compare_view(paper_ids: List[str], db=None) -> str:
         capsule = None
         for c in capsules:
             src = c.get("archetype", {}).get("source_paper_id", "")
-            if src == pid and (c.get("action_gap_type") == "embodied_planning" or c.get("trigger_gap_type") == "embodied_planning"):
+            if src == pid and (
+                c.get("action_gap_type") == "embodied_planning"
+                or c.get("trigger_gap_type") == "embodied_planning"
+            ):
                 capsule = c
                 break
         rep_type = "unknown"
@@ -907,25 +993,34 @@ def render_compare_view(paper_ids: List[str], db=None) -> str:
             title = paper.title
         else:
             title = f"Paper {pid[:12]}"
-        paper_data.append({
-            "id": pid,
-            "title": title,
-            "representation_type": rep_type,
-            "confidence": confidence,
-            "evidence": evidence,
-            "gap_title": gap_title,
-        })
+        paper_data.append(
+            {
+                "id": pid,
+                "title": title,
+                "representation_type": rep_type,
+                "confidence": confidence,
+                "evidence": evidence,
+                "gap_title": gap_title,
+            }
+        )
 
     if len(paper_data) == 1:
         pd = paper_data[0]
-        badge = f"<span style='background:{badge_colors.get(pd['representation_type'],'#aaa')};color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;'>{type_labels.get(pd['representation_type'],'Unknown')}</span>"
-        conf_pct = int(pd['confidence'] * 100)
-        conf_bar = f"<div style='background:#eee;border-radius:4px;height:8px;width:100%;'><div style='background:{color_map.get(pd['representation_type'],'#aaa')};height:8px;border-radius:4px;width:{conf_pct}%;'></div></div>"
-        evidence_html = "".join(f"<li style='font-size:13px;color:#555;margin-bottom:4px;'>{e}</li>" for e in pd['evidence']) if pd['evidence'] else "<li style='font-size:13px;color:#aaa;'>No evidence extracted.</li>"
+        badge = f"<span style='background:{badge_colors.get(pd['representation_type'], '#aaa')};color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;'>{type_labels.get(pd['representation_type'], 'Unknown')}</span>"
+        conf_pct = int(pd["confidence"] * 100)
+        conf_bar = f"<div style='background:#eee;border-radius:4px;height:8px;width:100%;'><div style='background:{color_map.get(pd['representation_type'], '#aaa')};height:8px;border-radius:4px;width:{conf_pct}%;'></div></div>"
+        evidence_html = (
+            "".join(
+                f"<li style='font-size:13px;color:#555;margin-bottom:4px;'>{e}</li>"
+                for e in pd["evidence"]
+            )
+            if pd["evidence"]
+            else "<li style='font-size:13px;color:#aaa;'>No evidence extracted.</li>"
+        )
         gap_html = f"<div style='font-size:13px;color:#333;margin-top:8px;'><strong>Gap:</strong> {pd['gap_title'] or '—'}</div>"
         return f"""
 <div style="font-family:var(--font-display);max-width:600px;">
-  <div style="font-size:16px;font-weight:700;margin-bottom:16px;">{pd['title'][:80]}</div>
+  <div style="font-size:16px;font-weight:700;margin-bottom:16px;">{pd["title"][:80]}</div>
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">{badge} <span style="font-size:12px;color:#888;">{conf_pct}% confidence</span></div>
   {conf_bar}
   <ul style="margin-top:12px;padding-left:18px;">{evidence_html}</ul>
@@ -933,20 +1028,30 @@ def render_compare_view(paper_ids: List[str], db=None) -> str:
 </div>"""
 
     pd1, pd2 = paper_data[0], paper_data[1]
-    same_type = pd1['representation_type'] == pd2['representation_type'] and pd1['representation_type'] != 'unknown'
+    same_type = (
+        pd1["representation_type"] == pd2["representation_type"]
+        and pd1["representation_type"] != "unknown"
+    )
     verdict_color = "#4caf50" if same_type else "#e53935"
     verdict_text = "一致" if same_type else "矛盾"
     verdict_icon = "&#10004;" if same_type else "&#10006;"
 
     def paper_card(pd):
-        badge = f"<span style='background:{badge_colors.get(pd['representation_type'],'#aaa')};color:#fff;padding:2px 10px;border-radius:4px;font-size:12px;font-weight:700;'>{type_labels.get(pd['representation_type'],'Unknown')}</span>"
-        conf_pct = int(pd['confidence'] * 100)
-        conf_bar = f"<div style='background:#eee;border-radius:4px;height:8px;width:100%;'><div style='background:{color_map.get(pd['representation_type'],'#aaa')};height:8px;border-radius:4px;width:{conf_pct}%;'></div></div>"
-        evidence_html = "".join(f"<li style='font-size:13px;color:#555;margin-bottom:6px;'>{e}</li>" for e in pd['evidence']) if pd['evidence'] else "<li style='font-size:13px;color:#aaa;'>No evidence extracted.</li>"
+        badge = f"<span style='background:{badge_colors.get(pd['representation_type'], '#aaa')};color:#fff;padding:2px 10px;border-radius:4px;font-size:12px;font-weight:700;'>{type_labels.get(pd['representation_type'], 'Unknown')}</span>"
+        conf_pct = int(pd["confidence"] * 100)
+        conf_bar = f"<div style='background:#eee;border-radius:4px;height:8px;width:100%;'><div style='background:{color_map.get(pd['representation_type'], '#aaa')};height:8px;border-radius:4px;width:{conf_pct}%;'></div></div>"
+        evidence_html = (
+            "".join(
+                f"<li style='font-size:13px;color:#555;margin-bottom:6px;'>{e}</li>"
+                for e in pd["evidence"]
+            )
+            if pd["evidence"]
+            else "<li style='font-size:13px;color:#aaa;'>No evidence extracted.</li>"
+        )
         gap_html = f"<div style='font-size:13px;color:#333;margin-top:10px;padding-top:10px;border-top:1px solid #eee;'><strong>Gap:</strong> {pd['gap_title'] or '—'}</div>"
         return f"""
   <td style="vertical-align:top;padding:16px;background:#fafafa;border-radius:8px;border:1px solid #eee;width:40%;">
-    <div style="font-size:14px;font-weight:700;color:#222;margin-bottom:10px;line-height:1.4;">{pd['title'][:80]}</div>
+    <div style="font-size:14px;font-weight:700;color:#222;margin-bottom:10px;line-height:1.4;">{pd["title"][:80]}</div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">{badge} <span style="font-size:11px;color:#888;">{conf_pct}%</span></div>
     {conf_bar}
     <ul style="margin-top:10px;padding-left:18px;">{evidence_html}</ul>
@@ -975,7 +1080,29 @@ def render_compare_view(paper_ids: List[str], db=None) -> str:
 def _extract_keywords(text: str) -> List[str]:
     """Simple keyword extraction from text."""
     words = text.lower().split()
-    stop = {"the", "a", "an", "of", "in", "to", "for", "and", "or", "with", "is", "are", "that", "this", "we", "our", "by", "on", "as", "at", "from"}
+    stop = {
+        "the",
+        "a",
+        "an",
+        "of",
+        "in",
+        "to",
+        "for",
+        "and",
+        "or",
+        "with",
+        "is",
+        "are",
+        "that",
+        "this",
+        "we",
+        "our",
+        "by",
+        "on",
+        "as",
+        "at",
+        "from",
+    }
     keywords = [w.strip(".,;:!?()[]{}") for w in words if len(w) > 4 and w not in stop]
     return list(dict.fromkeys(keywords))[:6]
 
@@ -1044,6 +1171,7 @@ def save_gap_to_gene_pool(
         # Write to gene_pool.jsonl (EvolutionTracker.find_capsule reads this)
         try:
             from llm.insight.tracker import EvolutionTracker
+
             tracker = EvolutionTracker()
             tracker.encode_capsule(
                 topic=title[:200],
@@ -1055,6 +1183,7 @@ def save_gap_to_gene_pool(
             )
         except Exception as e:
             import logging
+
             logging.getLogger(__name__).warning(f"gene_pool.jsonl write failed (non-critical): {e}")
 
         return capsule_id
@@ -1098,6 +1227,7 @@ def render_evolution_timeline() -> str:
     Shows how the field's representation-type 'belief' evolved over time.
     """
     import json as _json
+
     timeline_path = Path.home() / ".ai_research_os" / "gene_pool" / "embodied_timeline.jsonl"
     if not timeline_path.exists():
         return ""
@@ -1119,7 +1249,12 @@ def render_evolution_timeline() -> str:
     # Sort by timestamp
     entries.sort(key=lambda x: x.get("timestamp", ""))
 
-    type_colors = {"discrete": "#7A9E7A", "continuous": "#6B8FB5", "hybrid": "#D4A84B", "unknown": "#aaa"}
+    type_colors = {
+        "discrete": "#7A9E7A",
+        "continuous": "#6B8FB5",
+        "hybrid": "#D4A84B",
+        "unknown": "#aaa",
+    }
 
     lines = ["```mermaid", "gantt"]
     lines.append("    title Embodied Planning: Field Belief Evolution")
@@ -1143,7 +1278,7 @@ def render_evolution_timeline() -> str:
             prev_type = rt
             section_open = True
 
-        lines.append(f"    {label} :done, {short_id}, {i}, {i+1}d")
+        lines.append(f"    {label} :done, {short_id}, {i}, {i + 1}d")
 
     lines.append("```")
     return "\n".join(lines)
@@ -1169,7 +1304,10 @@ def detect_field_contradiction(
             continue
         ex_val = c.get("archetype", {}).get(primary_field, "unknown")
         if ex_val != current_val and ex_val != "unknown":
-            return {"source_paper_id": c["archetype"]["source_paper_id"], "conflicting_value": ex_val}
+            return {
+                "source_paper_id": c["archetype"]["source_paper_id"],
+                "conflicting_value": ex_val,
+            }
     return None
 
 
@@ -1182,6 +1320,7 @@ def detect_polarity_contradiction(
     Returns list of {gap_type, positive_capsule, negative_capsule, shared_keywords}.
     """
     from collections import defaultdict
+
     if capsules is None:
         capsules = load_capsules(gap_type=gap_type, status="active")
 
@@ -1197,12 +1336,14 @@ def detect_polarity_contradiction(
         for neg_c in by_polarity.get("negative", []):
             shared = set(pos_c.get("trigger_keywords", [])) & set(neg_c.get("trigger_keywords", []))
             if shared:
-                contradictions.append({
-                    "gap_type": gap_type,
-                    "positive_capsule": pos_c,
-                    "negative_capsule": neg_c,
-                    "shared_keywords": list(shared),
-                })
+                contradictions.append(
+                    {
+                        "gap_type": gap_type,
+                        "positive_capsule": pos_c,
+                        "negative_capsule": neg_c,
+                        "shared_keywords": list(shared),
+                    }
+                )
     return contradictions
 
 
@@ -1221,11 +1362,13 @@ def detect_evidence_contradiction(
             dc_ev = " ".join(dc.get("evidence", [])).lower()
             cc_ev = " ".join(cc.get("evidence", [])).lower()
             if any(w in cc_ev for w in dc_ev.split() if len(w) > 4):
-                contradictions.append({
-                    "discrete_paper": dc.get("paper_id"),
-                    "continuous_paper": cc.get("paper_id"),
-                    "evidence_overlap": True,
-                })
+                contradictions.append(
+                    {
+                        "discrete_paper": dc.get("paper_id"),
+                        "continuous_paper": cc.get("paper_id"),
+                        "evidence_overlap": True,
+                    }
+                )
     return contradictions
 
 
@@ -1233,6 +1376,7 @@ def detect_evidence_contradiction(
 def detect_contradictions(capsules: list) -> list:
     """Legacy wrapper — dispatches to polarity-based detection per gap_type."""
     from collections import defaultdict
+
     by_type = defaultdict(list)
     for c in capsules:
         gt = c.get("action_gap_type") or c.get("trigger_gap_type", "")
@@ -1264,7 +1408,7 @@ def analyze_multi_paper_gaps(
         }
 
     papers_str = "\n\n".join(
-        f"Paper {i+1} (ID: {p.get('id', '?')}):\nTitle: {p.get('title', '?')}\nAbstract: {p.get('abstract', '?')[:400]}"
+        f"Paper {i + 1} (ID: {p.get('id', '?')}):\nTitle: {p.get('title', '?')}\nAbstract: {p.get('abstract', '?')[:400]}"
         for i, p in enumerate(papers)
     )
 
@@ -1371,6 +1515,7 @@ def semantic_search_papers(
         # Fetch paper details from db
         if db is None:
             from db.database import Database
+
             db = Database()
 
         paper_map = db.get_papers_bulk(paper_ids)
@@ -1406,13 +1551,15 @@ def semantic_search_papers(
                 continue
             title = getattr(p, "title", "") or ""
             abstract = getattr(p, "abstract", "") or ""
-            results.append({
-                "paper_id": pid,
-                "title": title,
-                "abstract": abstract[:300],
-                "score": float(scores[idx]),
-                "matched_terms": [],
-            })
+            results.append(
+                {
+                    "paper_id": pid,
+                    "title": title,
+                    "abstract": abstract[:300],
+                    "score": float(scores[idx]),
+                    "matched_terms": [],
+                }
+            )
         return results
 
     except ImportError:
@@ -1443,6 +1590,7 @@ def _keyword_search_fallback(
 
     if db is None:
         from db.database import Database
+
         db = Database()
 
     paper_map = db.get_papers_bulk(paper_ids)
@@ -1477,13 +1625,15 @@ def _keyword_search_fallback(
 
         # Score: title hits weighted 3x, abstract hits 1x
         score = title_hits * 3 + abstract_hits
-        scored.append({
-            "paper_id": pid,
-            "title": title,
-            "abstract": abstract[:300],
-            "score": score,
-            "matched_terms": list(matched),
-        })
+        scored.append(
+            {
+                "paper_id": pid,
+                "title": title,
+                "abstract": abstract[:300],
+                "score": score,
+                "matched_terms": list(matched),
+            }
+        )
 
     scored.sort(key=lambda x: x["score"], reverse=True)
     return scored[:top_k]
@@ -1508,9 +1658,9 @@ def gaps_to_research_questions(
         return {"questions": [], "gap_count": 0}
 
     gaps_str = "\n".join(
-        f"- Gap {i+1}: {g.get('gap_title','?')} [{g.get('gap_type','?')}] "
-        f"keywords={', '.join(g.get('keywords',[])[:5])} "
-        f"summary={g.get('summary','?')}"
+        f"- Gap {i + 1}: {g.get('gap_title', '?')} [{g.get('gap_type', '?')}] "
+        f"keywords={', '.join(g.get('keywords', [])[:5])} "
+        f"summary={g.get('summary', '?')}"
         for i, g in enumerate(frontier_gaps)
     )
 
@@ -1576,6 +1726,7 @@ Respond ONLY with the JSON object.
 # =============================================================================
 # RESEARCH LOG — per-paper research notes stored in ~/.ai_research_os/gene_pool/research_log.jsonl
 # =============================================================================
+
 
 def add_research_note(
     paper_id: str,
@@ -1661,6 +1812,7 @@ def render_research_log(paper_id: Optional[str] = None) -> str:
         if seen_ids:
             try:
                 from db.database import Database
+
                 db = Database()
                 db.init()
                 for pid in seen_ids:
@@ -1692,7 +1844,7 @@ def render_research_log(paper_id: Optional[str] = None) -> str:
           <div style="position:absolute;top:12px;right:16px;font-size:11px;color:#aaa;">{date_str}</div>
           <div style="font-size:12px;color:#888;margin-bottom:6px;">{title}</div>
           <div style="font-size:14px;color:#222;line-height:1.6;margin-bottom:8px;">{note_text}</div>
-          {('<div style="display:flex;flex-wrap:wrap;gap:4px;">' + tags_html + '</div>' if tags_html else '')}
+          {('<div style="display:flex;flex-wrap:wrap;gap:4px;">' + tags_html + "</div>" if tags_html else "")}
         </div>"""
 
     filter_label = ""
@@ -1710,6 +1862,7 @@ def render_research_log(paper_id: Optional[str] = None) -> str:
 # =============================================================================
 # CONFIDENCE CALIBRATION TRACKING
 # =============================================================================
+
 
 def render_confidence_calibration() -> str:
     """Return HTML displaying confidence calibration statistics.
@@ -1764,15 +1917,16 @@ def render_confidence_calibration() -> str:
     ]
 
     bucket_stats: Dict[str, Dict[str, int]] = {
-        b[0]: {"verified": 0, "contradicted": 0, "unknown": 0}
-        for b in buckets
+        b[0]: {"verified": 0, "contradicted": 0, "unknown": 0} for b in buckets
     }
 
     # For each entry, look at subsequent entries with same/similar title keywords
     for i, entry in enumerate(entries):
         conf = entry.get("confidence", 0.5)
         rt = entry.get("representation_type", "unknown")
-        title_words = set((entry.get("paper_title", "") + " " + entry.get("gap_title", "")).lower().split())
+        title_words = set(
+            (entry.get("paper_title", "") + " " + entry.get("gap_title", "")).lower().split()
+        )
 
         # Find bucket
         bucket_label = "unknown"
@@ -1789,7 +1943,9 @@ def render_confidence_calibration() -> str:
         for j in range(i + 1, len(entries)):
             later = entries[j]
             later_rt = later.get("representation_type", "unknown")
-            later_title_words = set((later.get("paper_title", "") + " " + later.get("gap_title", "")).split())
+            later_title_words = set(
+                (later.get("paper_title", "") + " " + later.get("gap_title", "")).split()
+            )
             overlap = title_words & later_title_words
 
             if overlap and len(overlap) >= 2:  # significant keyword overlap
@@ -1868,6 +2024,7 @@ def render_confidence_calibration() -> str:
 # HYPOTHESIS GENERATION FROM CONTRADICTIONS
 # =============================================================================
 
+
 def generate_hypothesis_from_contradiction(contradiction_pair: dict) -> str:
     """Generate a new hypothesis suggestion from a contradiction pair.
 
@@ -1895,24 +2052,58 @@ def generate_hypothesis_from_contradiction(contradiction_pair: dict) -> str:
     # Rule patterns
     patterns = [
         # (rep_a, rep_b, eff_a, eff_b, hypothesis_template)
-        ("discrete", "continuous", "effective", "ineffective",
-         "探索离散的符号化推理与连续的潜空间推理的混合架构，结合两者的精确性与鲁棒性优势"),
-        ("continuous", "discrete", "effective", "ineffective",
-         "探索连续的潜空间推理与离散的符号化推理的混合架构，结合两者的表达力与可解释性"),
-        ("discrete", "continuous", "ineffective", "effective",
-         "探索混合架构能否结合离散的组合泛化能力与连续的空间推理能力"),
-        ("continuous", "discrete", "ineffective", "effective",
-         "探索混合架构能否融合连续表示的平滑性与离散表示的结构化优势"),
-        ("discrete", "hybrid", "effective", "ineffective",
-         "离到混合的渐进式过渡：能否在离散推理基础上引入连续层提升鲁棒性？"),
-        ("hybrid", "discrete", "ineffective", "effective",
-         "混合到离散的模块化拆解：混合架构中哪些连续组件可以离散化而不损失性能？"),
+        (
+            "discrete",
+            "continuous",
+            "effective",
+            "ineffective",
+            "探索离散的符号化推理与连续的潜空间推理的混合架构，结合两者的精确性与鲁棒性优势",
+        ),
+        (
+            "continuous",
+            "discrete",
+            "effective",
+            "ineffective",
+            "探索连续的潜空间推理与离散的符号化推理的混合架构，结合两者的表达力与可解释性",
+        ),
+        (
+            "discrete",
+            "continuous",
+            "ineffective",
+            "effective",
+            "探索混合架构能否结合离散的组合泛化能力与连续的空间推理能力",
+        ),
+        (
+            "continuous",
+            "discrete",
+            "ineffective",
+            "effective",
+            "探索混合架构能否融合连续表示的平滑性与离散表示的结构化优势",
+        ),
+        (
+            "discrete",
+            "hybrid",
+            "effective",
+            "ineffective",
+            "离到混合的渐进式过渡：能否在离散推理基础上引入连续层提升鲁棒性？",
+        ),
+        (
+            "hybrid",
+            "discrete",
+            "ineffective",
+            "effective",
+            "混合到离散的模块化拆解：混合架构中哪些连续组件可以离散化而不损失性能？",
+        ),
     ]
 
     hypothesis = None
     for pat in patterns:
-        if (rep_a_lower == pat[0] and rep_b_lower == pat[1] and
-                eff_a_lower == pat[2] and eff_b_lower == pat[3]):
+        if (
+            rep_a_lower == pat[0]
+            and rep_b_lower == pat[1]
+            and eff_a_lower == pat[2]
+            and eff_b_lower == pat[3]
+        ):
             hypothesis = pat[4]
             break
 
@@ -1925,10 +2116,7 @@ def generate_hypothesis_from_contradiction(contradiction_pair: dict) -> str:
                 f"在高效性与泛化能力间取得更好平衡？"
             )
         else:
-            hypothesis = (
-                f"针对同一{rep_a}表示的内部变体，"
-                f"探索其在不同任务尺度下的适应性边界。"
-            )
+            hypothesis = f"针对同一{rep_a}表示的内部变体，探索其在不同任务尺度下的适应性边界。"
 
     return hypothesis
 
@@ -1969,7 +2157,10 @@ def append_hypothesis_to_roadmap(
                         j += 1
                     # Insert before the next section (or end)
                     insert_pos = j if j < len(lines) else len(lines)
-                    new_lines.insert(insert_pos, f"- [ ] HYPOTHESIS: {hypothesis} (from: {paper_id_a} vs {paper_id_b})")
+                    new_lines.insert(
+                        insert_pos,
+                        f"- [ ] HYPOTHESIS: {hypothesis} (from: {paper_id_a} vs {paper_id_b})",
+                    )
                     content = "\n".join(new_lines)
                     break
         else:
@@ -1986,6 +2177,7 @@ def append_hypothesis_to_roadmap(
 # Shared embodied planning analysis pipeline
 # =============================================================================
 
+
 def run_embodied_analysis(
     paper_ids: List[str],
     db=None,
@@ -1999,6 +2191,7 @@ def run_embodied_analysis(
     """
     if db is None:
         from db.database import Database
+
         db = Database()
         db.init()
 

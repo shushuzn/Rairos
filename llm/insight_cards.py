@@ -1,6 +1,7 @@
 """
 Key Insight Cards: Extract and manage research insights.
 """
+
 from dataclasses import dataclass, field
 from typing import Any, cast, List, Optional, Dict
 from datetime import datetime
@@ -12,6 +13,7 @@ import re
 @dataclass
 class InsightCard:
     """A key insight extracted from a paper."""
+
     card_id: str
     paper_id: str
     paper_title: str
@@ -22,14 +24,15 @@ class InsightCard:
     page_ref: str = ""
     created_at: str = ""
     references: List[str] = field(default_factory=list)  # other card_ids
-    quality_rating: int = 0   # 1-5 stars, 0 = unrated
+    quality_rating: int = 0  # 1-5 stars, 0 = unrated
     usefulness_score: float = 0.0  # accumulated weighted score from feedback
-    times_rated: int = 0      # how many times rated
+    times_rated: int = 0  # how many times rated
 
 
 @dataclass
 class InsightCollection:
     """A collection of insight cards around a topic."""
+
     collection_id: str
     title: str
     description: str = ""
@@ -92,21 +95,23 @@ class InsightManager:
             created_at=datetime.now().isoformat()[:10],
         )
 
-        data.append({
-            "card_id": card.card_id,
-            "paper_id": card.paper_id,
-            "paper_title": card.paper_title,
-            "content": card.content,
-            "insight_type": card.insight_type,
-            "tags": card.tags,
-            "evidence": card.evidence,
-            "page_ref": card.page_ref,
-            "created_at": card.created_at,
-            "references": card.references,
-            "quality_rating": card.quality_rating,
-            "usefulness_score": card.usefulness_score,
-            "times_rated": card.times_rated,
-        })
+        data.append(
+            {
+                "card_id": card.card_id,
+                "paper_id": card.paper_id,
+                "paper_title": card.paper_title,
+                "content": card.content,
+                "insight_type": card.insight_type,
+                "tags": card.tags,
+                "evidence": card.evidence,
+                "page_ref": card.page_ref,
+                "created_at": card.created_at,
+                "references": card.references,
+                "quality_rating": card.quality_rating,
+                "usefulness_score": card.usefulness_score,
+                "times_rated": card.times_rated,
+            }
+        )
 
         self._save_cards(data)
         return card
@@ -153,7 +158,9 @@ class InsightManager:
                 # Accumulate using exponential moving average
                 if times_rated > 0:
                     item["usefulness_score"] = round(
-                        (item.get("usefulness_score", 0.0) * times_rated + rating) / (times_rated + 1), 3
+                        (item.get("usefulness_score", 0.0) * times_rated + rating)
+                        / (times_rated + 1),
+                        3,
                     )
                 else:
                     item["usefulness_score"] = float(rating)
@@ -178,7 +185,10 @@ class InsightManager:
         data = self._load_cards()
         results = []
         for item in data:
-            if item.get("quality_rating", 0) >= min_rating and item.get("times_rated", 0) >= min_scores:
+            if (
+                item.get("quality_rating", 0) >= min_rating
+                and item.get("times_rated", 0) >= min_scores
+            ):
                 results.append(InsightCard(**item))
         results.sort(key=lambda x: x.usefulness_score, reverse=True)
         return results
@@ -188,7 +198,10 @@ class InsightManager:
         data = self._load_cards()
         results = []
         for item in data:
-            if 0 < item.get("quality_rating", 0) <= max_rating and item.get("times_rated", 0) >= min_scores:
+            if (
+                0 < item.get("quality_rating", 0) <= max_rating
+                and item.get("times_rated", 0) >= min_scores
+            ):
                 results.append(InsightCard(**item))
         results.sort(key=lambda x: x.usefulness_score)
         return results
@@ -264,13 +277,15 @@ class InsightManager:
             tags=tags or [],
         )
 
-        collections.append({
-            "collection_id": collection.collection_id,
-            "title": collection.title,
-            "description": collection.description,
-            "card_ids": collection.card_ids,
-            "tags": collection.tags,
-        })
+        collections.append(
+            {
+                "collection_id": collection.collection_id,
+                "title": collection.title,
+                "description": collection.description,
+                "card_ids": collection.card_ids,
+                "tags": collection.tags,
+            }
+        )
 
         self._save_collections(collections)
         return collection
@@ -303,7 +318,7 @@ class InsightManager:
                 context_start = max(0, match.start() - 100)
                 context_end = min(len(text), match.end() + 100)
                 context = text[context_start:context_end].strip()
-                context = re.sub(r'\s+', ' ', context)
+                context = re.sub(r"\s+", " ", context)
 
                 if len(context) > 20:
                     card = self.add_card(
@@ -339,7 +354,9 @@ class InsightManager:
                 lines.append(f"   Tags: {', '.join(card.tags)}")
             if card.quality_rating > 0:
                 stars = "★" * card.quality_rating + "☆" * (5 - card.quality_rating)
-                lines.append(f"   Rating: {stars} ({card.usefulness_score:.2f}, {card.times_rated} vote{'s' if card.times_rated != 1 else ''})")
+                lines.append(
+                    f"   Rating: {stars} ({card.usefulness_score:.2f}, {card.times_rated} vote{'s' if card.times_rated != 1 else ''})"
+                )
             lines.append("")
 
         lines.append(f"Total: {len(cards)} cards")

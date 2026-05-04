@@ -1,4 +1,5 @@
 """Cosine similarity ranking strategy — numpy-accelerated."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, List
@@ -67,7 +68,7 @@ class CosineSimilarityRanker(Ranker):
 
         # Batch unpack all embeddings into a 2D numpy array
         embeddings: List[np.ndarray] = []
-        orig_indices: List[int] = []   # maps array index → original row index
+        orig_indices: List[int] = []  # maps array index → original row index
         for i, row in enumerate(rows):
             blob = row[idx_emb]
             if blob is None:
@@ -79,8 +80,8 @@ class CosineSimilarityRanker(Ranker):
         if not embeddings:
             return []
 
-        emb_matrix = np.stack(embeddings)                     # (N, D)
-        norms = np.linalg.norm(emb_matrix, axis=1)             # (N,)
+        emb_matrix = np.stack(embeddings)  # (N, D)
+        norms = np.linalg.norm(emb_matrix, axis=1)  # (N,)
         nonzero = norms > 0
 
         # Compute cosine similarities only for non-zero-norm rows
@@ -88,7 +89,7 @@ class CosineSimilarityRanker(Ranker):
         nz_norms = norms[nonzero]
 
         # Prevent div-by-zero in similarity: q_norm is already checked above
-        nz_sims = (nz_matrix @ q_vec) / (nz_norms * q_norm)   # (M,)
+        nz_sims = (nz_matrix @ q_vec) / (nz_norms * q_norm)  # (M,)
 
         # Build full (N,) sims array with -inf for zero-norm rows
         sims = np.full(len(nonzero), -np.inf, dtype=np.float32)
@@ -104,6 +105,7 @@ class CosineSimilarityRanker(Ranker):
         top = threshold_sims[:limit]
 
         from db.database import PaperRecord
+
         results: List[RankedResult] = []
         for sim, orig_idx in top:
             row = rows[orig_idx]

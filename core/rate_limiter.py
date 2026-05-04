@@ -3,6 +3,7 @@ API Rate Limiter and Request Manager.
 
 Helps control API call frequency to avoid rate limits and quota exhaustion.
 """
+
 import time
 import threading
 import logging
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class RateLimitConfig:
     """Rate limit configuration for an API."""
+
     requests_per_second: float = 10.0
     requests_per_minute: float = 100.0
     requests_per_hour: float = 1000.0
@@ -172,7 +174,7 @@ class RateLimiter:
                 "per_minute": self.config.requests_per_minute,
                 "per_hour": self.config.requests_per_hour,
                 "burst_size": self.config.burst_size,
-            }
+            },
         }
 
     def reset_stats(self):
@@ -213,10 +215,7 @@ class APIRateLimitManager:
 
     def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
         """Get statistics for all endpoints."""
-        return {
-            endpoint: limiter.get_stats()
-            for endpoint, limiter in self._limiters.items()
-        }
+        return {endpoint: limiter.get_stats() for endpoint, limiter in self._limiters.items()}
 
 
 # Global rate limit manager
@@ -250,14 +249,14 @@ def create_limiter(
     requests_per_second: float = 10.0,
     requests_per_minute: float = 100.0,
     requests_per_hour: float = 1000.0,
-    burst_size: int = 5
+    burst_size: int = 5,
 ) -> RateLimiter:
     """Create a new rate limiter with custom settings."""
     config = RateLimitConfig(
         requests_per_second=requests_per_second,
         requests_per_minute=requests_per_minute,
         requests_per_hour=requests_per_hour,
-        burst_size=burst_size
+        burst_size=burst_size,
     )
     return RateLimiter(config)
 
@@ -268,7 +267,7 @@ def rate_limit(
     requests_per_second: float = 10.0,
     requests_per_minute: float = 100.0,
     requests_per_hour: float = 1000.0,
-    burst_size: int = 5
+    burst_size: int = 5,
 ) -> Callable:
     """
     Decorator to rate-limit a function.
@@ -279,12 +278,13 @@ def rate_limit(
             # Make API call
             pass
     """
+
     def decorator(func: Callable) -> Callable:
         config = RateLimitConfig(
             requests_per_second=requests_per_second,
             requests_per_minute=requests_per_minute,
             requests_per_hour=requests_per_hour,
-            burst_size=burst_size
+            burst_size=burst_size,
         )
         manager = get_rate_limit_manager()
 

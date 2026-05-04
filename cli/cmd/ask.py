@@ -1,4 +1,5 @@
 """CLI command: ask — Research chat."""
+
 from __future__ import annotations
 
 import argparse
@@ -21,11 +22,13 @@ def _build_ask_parser(subparsers) -> argparse.ArgumentParser:
         help="Your research question",
     )
     p.add_argument(
-        "--context", "-c",
+        "--context",
+        "-c",
         help="Limit to papers with tag/topic",
     )
     p.add_argument(
-        "--verbose", "-v",
+        "--verbose",
+        "-v",
         action="store_true",
         help="Show retrieved context",
     )
@@ -41,7 +44,8 @@ def _build_ask_parser(subparsers) -> argparse.ArgumentParser:
         help="Max papers to retrieve (default: 10)",
     )
     p.add_argument(
-        "--route", "-r",
+        "--route",
+        "-r",
         action="store_true",
         help="Use semantic routing to delegate to specialized commands",
     )
@@ -55,6 +59,7 @@ def _run_ask(args: argparse.Namespace) -> int:
     # Semantic routing: delegate to specialized commands instead of RAG chat
     if args.route:
         from llm.semantic_router import SemanticRouter
+
         router = SemanticRouter()
         try:
             route = router.route(query)

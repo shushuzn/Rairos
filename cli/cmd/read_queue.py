@@ -1,4 +1,5 @@
 """CLI command: read-queue — Smart reading priority queue."""
+
 from __future__ import annotations
 
 import argparse
@@ -14,6 +15,7 @@ from cli._shared import get_db, Colors, colored, print_info
 @dataclass
 class QueuedPaper:
     """A paper in the reading queue with scoring breakdown."""
+
     paper_id: str
     title: str
     score: float
@@ -32,27 +34,23 @@ class ReadQueueScorer:
     def __init__(self, db):
         self.db = db
         # Default weights (can be adjusted)
-        self.alpha = 0.4   # semantic similarity weight
-        self.beta = 0.3     # citation relationship weight
-        self.gamma = 0.2    # tag overlap weight
-        self.delta = 0.1    # recency weight
+        self.alpha = 0.4  # semantic similarity weight
+        self.beta = 0.3  # citation relationship weight
+        self.gamma = 0.2  # tag overlap weight
+        self.delta = 0.1  # recency weight
 
     def _get_read_papers(self, limit: int = 50) -> list:
         """Get papers the user has already read (parsed/completed)."""
         results, _ = self.db.search_papers(
             query="",
             limit=limit,
-            parse_status="parsed"  # Only fully parsed papers
+            parse_status="parsed",  # Only fully parsed papers
         )
         return results  # type: ignore[no-any-return]
 
     def get_read_papers_context(self, limit: int = 10) -> list[dict]:
         """Return list of dicts for LLM context."""
-        results, _ = self.db.search_papers(
-            query="",
-            limit=limit,
-            parse_status="parsed"
-        )
+        results, _ = self.db.search_papers(query="", limit=limit, parse_status="parsed")
         return [
             {
                 "title": p.title or "",
@@ -92,12 +90,16 @@ class ReadQueueScorer:
             score = 0.0
             # Check if this candidate cites any read paper
             try:
-                edges = self.db.get_edges_by_node(candidate.paper_id, direction="out", rel_type="cite")
+                edges = self.db.get_edges_by_node(
+                    candidate.paper_id, direction="out", rel_type="cite"
+                )
                 for edge in edges:
                     if edge.get("target_id") in read_ids:
                         score += 1.0
                 # Check if any read paper cites this candidate
-                edges_in = self.db.get_edges_by_node(candidate.paper_id, direction="in", rel_type="cite")
+                edges_in = self.db.get_edges_by_node(
+                    candidate.paper_id, direction="in", rel_type="cite"
+                )
                 for edge in edges_in:
                     if edge.get("source_id") in read_ids:
                         score += 0.5  # Slightly lower weight for being cited
@@ -128,6 +130,7 @@ class ReadQueueScorer:
     def _compute_recency_scores(self, candidates: list) -> dict:
         """Score based on paper recency (prefer recent papers)."""
         import time
+
         scores = {}
         current_year = int(time.strftime("%Y"))
 
@@ -163,28 +166,29 @@ class ReadQueueScorer:
 
             # Weighted combination
             combined = (
-                self.alpha * s_sem +
-                self.beta * s_cit +
-                self.gamma * s_tag +
-                self.delta * s_rec
+                self.alpha * s_sem + self.beta * s_cit + self.gamma * s_tag + self.delta * s_rec
             )
 
             # Boost if we have any strong signal
             if max(s_sem, s_cit, s_tag) > 0.5:
                 combined = min(combined * 1.2, 1.0)
 
-            results.append(QueuedPaper(
-                paper_id=candidate.paper_id,
-                title=candidate.title,
-                score=combined,
-                semantic_score=s_sem,
-                citation_score=s_cit,
-                tag_score=s_tag,
-                recency_score=s_rec,
-                authors=candidate.authors if hasattr(candidate, "authors") else [],
-                published=candidate.published if hasattr(candidate, "published") else "",
-                primary_category=candidate.primary_category if hasattr(candidate, "primary_category") else "",
-            ))
+            results.append(
+                QueuedPaper(
+                    paper_id=candidate.paper_id,
+                    title=candidate.title,
+                    score=combined,
+                    semantic_score=s_sem,
+                    citation_score=s_cit,
+                    tag_score=s_tag,
+                    recency_score=s_rec,
+                    authors=candidate.authors if hasattr(candidate, "authors") else [],
+                    published=candidate.published if hasattr(candidate, "published") else "",
+                    primary_category=candidate.primary_category
+                    if hasattr(candidate, "primary_category")
+                    else "",
+                )
+            )
 
         # Sort by combined score
         results.sort(key=lambda x: x.score, reverse=True)
@@ -197,48 +201,65 @@ def _build_read_queue_parser(subparsers) -> argparse.ArgumentParser:
         help="Smart reading priority queue based on your reading history",
     )
     p.add_argument(
-        "--limit", type=int, default=10,
+        "--limit",
+        type=int,
+        default=10,
         help="Max papers to return (default: 10)",
     )
     p.add_argument(
-        "--tag", action="append",
+        "--tag",
+        action="append",
         help="Filter by tag/field of interest (repeatable)",
     )
     p.add_argument(
-        "--year", type=int,
+        "--year",
+        type=int,
         help="Filter by minimum year",
     )
     p.add_argument(
-        "--min-similarity", type=float, default=0.0,
+        "--min-similarity",
+        type=float,
+        default=0.0,
         help="Minimum semantic similarity threshold (default: 0.0)",
     )
     p.add_argument(
-        "--format", choices=["table", "json", "score-breakdown", "warp"], default="table",
+        "--format",
+        choices=["table", "json", "score-breakdown", "warp"],
+        default="table",
         help="Output format (default: table)",
     )
     p.add_argument(
-        "--explain", action="store_true",
+        "--explain",
+        action="store_true",
         help="Generate LLM explanations for why each paper is recommended",
     )
     p.add_argument(
-        "--explain-model", type=str, default=None,
+        "--explain-model",
+        type=str,
+        default=None,
         help="LLM model for explanations (default: from config)",
     )
     # Reading status management
     p.add_argument(
-        "--start", metavar="PAPER_ID",
+        "--start",
+        metavar="PAPER_ID",
         help="Start reading a paper (set status to 'reading')",
     )
     p.add_argument(
-        "--done", metavar="PAPER_ID",
+        "--done",
+        metavar="PAPER_ID",
         help="Mark a paper as completed",
     )
     p.add_argument(
-        "--status", metavar="PAPER_ID", nargs="?", const="",
+        "--status",
+        metavar="PAPER_ID",
+        nargs="?",
+        const="",
         help="Check reading status of a paper, or list all reading papers",
     )
     p.add_argument(
-        "--reset", metavar="PAPER_ID",
+        "--reset",
+        metavar="PAPER_ID",
         help="Reset reading status to 'unread'",
     )
     return p  # type: ignore[no-any-return]
@@ -331,6 +352,7 @@ def _handle_status_action(args: argparse.Namespace, db) -> Optional[int]:
 
 def _run_read_queue(args: argparse.Namespace) -> int:
     from cli._shared import load_dotenv
+
     load_dotenv()
 
     db = get_db()
@@ -362,10 +384,14 @@ def _run_read_queue(args: argparse.Namespace) -> int:
         candidates = filtered
 
     if args.year:
-        candidates = [p for p in candidates
-                     if hasattr(p, "published") and p.published
-                     and p.published[:4].isdigit()
-                     and int(p.published[:4]) >= args.year]
+        candidates = [
+            p
+            for p in candidates
+            if hasattr(p, "published")
+            and p.published
+            and p.published[:4].isdigit()
+            and int(p.published[:4]) >= args.year
+        ]
 
     # Score and rank
     scorer = ReadQueueScorer(db)
@@ -376,7 +402,9 @@ def _run_read_queue(args: argparse.Namespace) -> int:
         results = [r for r in results if r.semantic_score >= args.min_similarity]
 
     if not results:
-        print_info("No papers match your criteria. Try relaxing filters or add more papers to your library.")
+        print_info(
+            "No papers match your criteria. Try relaxing filters or add more papers to your library."
+        )
         return 0
 
     # Generate LLM explanations if requested
@@ -384,7 +412,9 @@ def _run_read_queue(args: argparse.Namespace) -> int:
     if args.explain:
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
-            print_info("OPENAI_API_KEY not set. Skipping explanations. Set it to enable LLM explanations.")
+            print_info(
+                "OPENAI_API_KEY not set. Skipping explanations. Set it to enable LLM explanations."
+            )
         else:
             from config import DEFAULT_LLM_MODEL_CLI, DEFAULT_OPENAI_BASE_URL
             from llm.generate import ai_generate_reading_recommendation_explanation
@@ -417,44 +447,57 @@ def _run_read_queue(args: argparse.Namespace) -> int:
 
     if args.format == "warp":
         from cli.warp import WarpBlocks
+
         rows = []
         for i, r in enumerate(results, 1):
             bar_len = int(r.score * 20)
             bar = "█" * bar_len + "░" * (20 - bar_len)
             rows.append([str(i), f"[{bar}] {r.score:.2f}", r.paper_id, r.title[:45]])
-        print(WarpBlocks.table(
-            ["#", "Score", "Paper ID", "Title"],
-            rows,
-            title=f"📖 Reading Queue — {len(results)} papers",
-        ))
+        print(
+            WarpBlocks.table(
+                ["#", "Score", "Paper ID", "Title"],
+                rows,
+                title=f"📖 Reading Queue — {len(results)} papers",
+            )
+        )
         if args.explain:
             for r in results:
                 if explanations.get(r.paper_id):
-                    print(WarpBlocks.panel(
-                        f"💡 {r.paper_id} — Why read this?",
-                        (explanations[r.paper_id] or "").strip(),
-                    ))
+                    print(
+                        WarpBlocks.panel(
+                            f"💡 {r.paper_id} — Why read this?",
+                            (explanations[r.paper_id] or "").strip(),
+                        )
+                    )
     elif args.format == "json":
         import json
-        output = [{
-            "paper_id": r.paper_id,
-            "title": r.title,
-            "score": round(r.score, 3),
-            "authors": r.authors,
-            "published": r.published,
-            "category": r.primary_category,
-            "explanation": explanations.get(r.paper_id),
-        } for r in results]
+
+        output = [
+            {
+                "paper_id": r.paper_id,
+                "title": r.title,
+                "score": round(r.score, 3),
+                "authors": r.authors,
+                "published": r.published,
+                "category": r.primary_category,
+                "explanation": explanations.get(r.paper_id),
+            }
+            for r in results
+        ]
         print(json.dumps(output, indent=2, ensure_ascii=False))
     elif args.format == "score-breakdown":
         print(colored("=== Reading Priority Queue ===", Colors.HEADER))
-        print(f"Scoring: semantic={scorer.alpha}, citation={scorer.beta}, tag={scorer.gamma}, recency={scorer.delta}\n")
+        print(
+            f"Scoring: semantic={scorer.alpha}, citation={scorer.beta}, tag={scorer.gamma}, recency={scorer.delta}\n"
+        )
         for i, r in enumerate(results, 1):
             bar_len = int(r.score * 20)
             bar = "█" * bar_len + "░" * (20 - bar_len)
             print(f"{i:2}. [{bar}] {r.score:.2f}  {r.paper_id}")
             print(f"    {r.title[:70]}")
-            print(f"    Sem:{r.semantic_score:.2f} Cit:{r.citation_score:.2f} Tag:{r.tag_score:.2f} New:{r.recency_score:.2f}")
+            print(
+                f"    Sem:{r.semantic_score:.2f} Cit:{r.citation_score:.2f} Tag:{r.tag_score:.2f} New:{r.recency_score:.2f}"
+            )
             if r.published:
                 print(f"    {r.published[:4]} | {r.primary_category or 'N/A'}")
 
@@ -473,7 +516,9 @@ def _run_read_queue(args: argparse.Namespace) -> int:
         print(f"{'#':>2}  {'Score':>5}  {'ID':<15}  {'Title'}")
         print("-" * 80)
         for i, r in enumerate(results, 1):
-            score_str = colored(f"{r.score:.2f}", Colors.OKGREEN if r.score > 0.5 else Colors.WARNING)
+            score_str = colored(
+                f"{r.score:.2f}", Colors.OKGREEN if r.score > 0.5 else Colors.WARNING
+            )
             print(f"{i:2}.  {score_str}  {r.paper_id:<15}  {r.title[:45]}")
 
             # Show brief LLM explanation if available
@@ -481,7 +526,11 @@ def _run_read_queue(args: argparse.Namespace) -> int:
                 exp = explanations[r.paper_id] or ""
                 if exp:
                     # Extract first meaningful line
-                    lines = [l.strip() for l in exp.strip().split("\n") if l.strip() and not l.strip().startswith("#")]
+                    lines = [
+                        l.strip()
+                        for l in exp.strip().split("\n")
+                        if l.strip() and not l.strip().startswith("#")
+                    ]
                     brief = lines[0][:80] if lines else ""
                     if brief:
                         print(f"       {colored('→', Colors.OKBLUE)} {brief}...")

@@ -1,4 +1,5 @@
 """CLI command: trend — Research trend analysis."""
+
 from __future__ import annotations
 
 import argparse
@@ -21,35 +22,41 @@ def _build_trend_parser(subparsers) -> argparse.ArgumentParser:
         help="Research topic to analyze",
     )
     p.add_argument(
-        "--year-start", "-s",
+        "--year-start",
+        "-s",
         type=int,
         default=None,
         help="Start year for analysis (default: 6 years ago)",
     )
     p.add_argument(
-        "--year-end", "-e",
+        "--year-end",
+        "-e",
         type=int,
         default=None,
         help="End year for analysis (default: current year)",
     )
     p.add_argument(
-        "--min-papers", "-n",
+        "--min-papers",
+        "-n",
         type=int,
         default=10,
         help="Minimum papers needed (default: 10)",
     )
     p.add_argument(
-        "--mermaid", "-m",
+        "--mermaid",
+        "-m",
         action="store_true",
         help="Output as Mermaid timeline",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="Output as JSON",
     )
     p.add_argument(
-        "--interactive", "-i",
+        "--interactive",
+        "-i",
         action="store_true",
         help="Interactive exploration mode",
     )
@@ -83,6 +90,7 @@ def _run_trend(args: argparse.Namespace) -> int:
 
     if args.json:
         import json
+
         data = {
             "topic": result.topic,
             "year_range": result.year_range,
@@ -152,6 +160,7 @@ def _run_interactive(analyzer: TrendAnalyzer, args: argparse.Namespace) -> int:
             print("  未找到足够的相关论文")
         elif use_json:
             import json
+
             data = {
                 "topic": result.topic,
                 "year_range": result.year_range,

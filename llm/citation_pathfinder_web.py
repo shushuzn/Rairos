@@ -29,9 +29,9 @@ def _load_capsules() -> List[Dict[str, Any]]:
     return json.loads(CAPSULES_PATH.read_text(encoding="utf-8")).get("capsules", [])
 
 
-def build_citation_graph(paper_id: str, paper_title: str,
-                          cited_paper_ids: List[str],
-                          cited_capsule_ids: List[str]) -> Dict[str, Any]:
+def build_citation_graph(
+    paper_id: str, paper_title: str, cited_paper_ids: List[str], cited_capsule_ids: List[str]
+) -> Dict[str, Any]:
     capsules = _load_capsules()
     capsule_map = {c.get("capsule_id", ""): c for c in capsules}
 
@@ -39,14 +39,18 @@ def build_citation_graph(paper_id: str, paper_title: str,
     edges = []
 
     # Source paper node
-    nodes.append({"id": paper_id, "label": paper_title[:50], "type": "source_paper", "x": 300, "y": 50})
+    nodes.append(
+        {"id": paper_id, "label": paper_title[:50], "type": "source_paper", "x": 300, "y": 50}
+    )
 
     # Cited paper nodes
     _n_cited = len(cited_paper_ids)
     for i, cpid in enumerate(cited_paper_ids[:8]):
         x = 120 + (i % 4) * 140
         y = 160 + (i // 4) * 80
-        nodes.append({"id": cpid, "label": f"Paper {cpid[:8]}", "type": "cited_paper", "x": x, "y": y})
+        nodes.append(
+            {"id": cpid, "label": f"Paper {cpid[:8]}", "type": "cited_paper", "x": x, "y": y}
+        )
         edges.append({"from": paper_id, "to": cpid})
 
     # Capsule nodes
@@ -56,24 +60,29 @@ def build_citation_graph(paper_id: str, paper_title: str,
         color = GAP_COLORS.get(gap_type, "#A89E8C")
         x = 100 + (i % 3) * 220
         y = 360 + (i // 3) * 120
-        nodes.append({
-            "id": ccid,
-            "label": cap.get("action_gap_title", ccid)[:40],
-            "type": "capsule",
-            "gap_type": gap_type,
-            "color": color,
-            "x": x,
-            "y": y,
-        })
+        nodes.append(
+            {
+                "id": ccid,
+                "label": cap.get("action_gap_title", ccid)[:40],
+                "type": "capsule",
+                "gap_type": gap_type,
+                "color": color,
+                "x": x,
+                "y": y,
+            }
+        )
         edges.append({"from": paper_id, "to": ccid, "style": "dashed"})
 
     return {"nodes": nodes, "edges": edges}
 
 
-def render_citation_graph_svg(graph_data: Optional[Dict[str, Any]] = None,
-                                paper_id: str = "", paper_title: str = "",
-                                cited_paper_ids: Optional[List[str]] = None,
-                                cited_capsule_ids: Optional[List[str]] = None) -> str:
+def render_citation_graph_svg(
+    graph_data: Optional[Dict[str, Any]] = None,
+    paper_id: str = "",
+    paper_title: str = "",
+    cited_paper_ids: Optional[List[str]] = None,
+    cited_capsule_ids: Optional[List[str]] = None,
+) -> str:
     if graph_data is None:
         cited_paper_ids = cited_paper_ids or []
         cited_capsule_ids = cited_capsule_ids or []
@@ -127,8 +136,8 @@ def render_citation_graph_svg(graph_data: Optional[Dict[str, Any]] = None,
     all_edges_svg = "\n    ".join(svg_edges)
 
     legend_items = "".join(
-        f"<rect x='0' y='{i*18}' width='10' height='10' rx='2' fill='{c}'/>"
-        f"<text x='14' y='{i*18 + 9}' font-size='10' fill='#555'>{gt.replace('_', ' ')}</text>"
+        f"<rect x='0' y='{i * 18}' width='10' height='10' rx='2' fill='{c}'/>"
+        f"<text x='14' y='{i * 18 + 9}' font-size='10' fill='#555'>{gt.replace('_', ' ')}</text>"
         for i, (gt, c) in enumerate(GAP_COLORS.items())
     )
 
@@ -138,8 +147,8 @@ def render_citation_graph_svg(graph_data: Optional[Dict[str, Any]] = None,
         f"<g transform='translate(10,10)'>"
         f"<text x='0' y='0' font-size='11' font-weight='700' fill='#333' dy='-2'>Legend</text>"
         f"{legend_items}"
-        f"<rect x='0' y='{n_legend*18+8}' width='10' height='10' fill='#2a4a6a' rx='1'/><text x='14' y='{n_legend*18+17}' font-size='10' fill='#555'>Source Paper</text>"
-        f"<rect x='0' y='{n_legend*18+22}' width='10' height='10' fill='#e8e4dc' stroke='#ccc' rx='1'/><text x='14' y='{n_legend*18+31}' font-size='10' fill='#555'>Cited Paper</text>"
+        f"<rect x='0' y='{n_legend * 18 + 8}' width='10' height='10' fill='#2a4a6a' rx='1'/><text x='14' y='{n_legend * 18 + 17}' font-size='10' fill='#555'>Source Paper</text>"
+        f"<rect x='0' y='{n_legend * 18 + 22}' width='10' height='10' fill='#e8e4dc' stroke='#ccc' rx='1'/><text x='14' y='{n_legend * 18 + 31}' font-size='10' fill='#555'>Cited Paper</text>"
         f"</g>"
         f"<g>{all_edges_svg}</g>"
         f"<g>{all_nodes_svg}</g>"
@@ -148,9 +157,9 @@ def render_citation_graph_svg(graph_data: Optional[Dict[str, Any]] = None,
     return svg
 
 
-def render_citation_chain_html(paper_id: str, paper_title: str,
-                                cited_paper_ids: List[str],
-                                cited_capsule_ids: List[str]) -> str:
+def render_citation_chain_html(
+    paper_id: str, paper_title: str, cited_paper_ids: List[str], cited_capsule_ids: List[str]
+) -> str:
     capsules = _load_capsules()
     capsule_map = {c.get("capsule_id", ""): c for c in capsules}
     graph_svg = render_citation_graph_svg(
@@ -162,22 +171,28 @@ def render_citation_chain_html(paper_id: str, paper_title: str,
 
     lines = ['<div class="citation-pathfinder">']
     lines.append("<h3>🔗 Citation Pathfinder</h3>")
-    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
-                "Paper → cited references → Gene Pool capsules</p>")
+    lines.append(
+        "<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
+        "Paper → cited references → Gene Pool capsules</p>"
+    )
     lines.append(f"<div style='overflow:auto'>{graph_svg}</div>")
 
     if cited_capsule_ids:
         lines.append("<div style='margin-top:16px'>")
-        lines.append("<h4 style='font-size:13px;font-weight:700;color:#333;margin-bottom:8px'>Gene Pool Capsules Cited</h4>")
+        lines.append(
+            "<h4 style='font-size:13px;font-weight:700;color:#333;margin-bottom:8px'>Gene Pool Capsules Cited</h4>"
+        )
         for ccid in cited_capsule_ids[:6]:
             cap = capsule_map.get(ccid, {})
             if cap:
                 gt = cap.get("action_gap_type", "") or cap.get("trigger_gap_type", "unknown")
                 color = GAP_COLORS.get(gt, "#A89E8C")
-                lines.append(f"<div style='border-left:3px solid {color};padding-left:10px;margin-bottom:8px'>"
-                            f"<div style='font-size:12px;font-weight:600;color:#2a2a2a'>{cap.get('action_gap_title', ccid)[:70]}</div>"
-                            f"<div style='font-size:11px;color:#A89E8C'>{gt} &middot; score={cap.get('outcome_success_score', 0):.2f}</div>"
-                            f"</div>")
+                lines.append(
+                    f"<div style='border-left:3px solid {color};padding-left:10px;margin-bottom:8px'>"
+                    f"<div style='font-size:12px;font-weight:600;color:#2a2a2a'>{cap.get('action_gap_title', ccid)[:70]}</div>"
+                    f"<div style='font-size:11px;color:#A89E8C'>{gt} &middot; score={cap.get('outcome_success_score', 0):.2f}</div>"
+                    f"</div>"
+                )
         lines.append("</div>")
 
     lines.append("<style>.citation-pathfinder { font-family: Georgia, serif; }</style>")

@@ -18,13 +18,13 @@ def transcribe_audio(audio_bytes: bytes) -> str:
     """Transcribe audio using OpenAI Whisper."""
     try:
         import openai
+
         with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as f:
             f.write(audio_bytes)
             tmp_path = f.name
         client = openai.OpenAI()
         with open(tmp_path, "rb") as audio_file:
-            transcript = client.audio.transcriptions.create(
-                model="whisper-1", file=audio_file)
+            transcript = client.audio.transcriptions.create(model="whisper-1", file=audio_file)
         os.unlink(tmp_path)
         return transcript.text
     except Exception as e:
@@ -35,6 +35,7 @@ def extract_gap_from_text(text: str, source: str = "voice") -> Dict[str, Any]:
     """Extract research gap from transcribed text using LLM."""
     try:
         from openai import OpenAI
+
         client = OpenAI()
         prompt = (
             "You are a research gap extractor. Given a transcription of a research discussion, "
@@ -92,9 +93,11 @@ def save_voice_capsule(gap_data: Dict[str, Any], source: str = "voice") -> str:
 def render_voice_upload_html() -> str:
     lines = ['<div class="voice-capsule">']
     lines.append("<h3>🎤 Voice-to-Capsule</h3>")
-    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
-                "Upload an audio recording of a research discussion. "
-                "Transcribe + extract research gaps automatically.</p>")
+    lines.append(
+        "<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
+        "Upload an audio recording of a research discussion. "
+        "Transcribe + extract research gaps automatically.</p>"
+    )
 
     lines.append("""
 <div style="border: 2px dashed #ccc; border-radius: 8px; padding: 24px; text-align: center; margin-bottom: 16px;">

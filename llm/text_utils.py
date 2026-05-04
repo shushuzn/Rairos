@@ -1,20 +1,70 @@
 """Shared text processing utilities for research analysis."""
+
 from __future__ import annotations
 
 import re
 from typing import List
 
 # Stopwords excluded from keyword extraction
-_KEYWORD_STOPWORDS: frozenset = frozenset({
-    "the", "and", "for", "are", "but", "not", "you", "all",
-    "can", "had", "her", "was", "one", "our", "out", "has",
-    "have", "been", "with", "they", "this", "that", "from",
-    "will", "would", "there", "their", "what", "about", "which",
-    "when", "make", "just", "over", "such", "into", "than",
-    "null", "none", "also", "how", "may", "does",
-    "method", "approach", "gap", "issue", "problem", "limitation",
-    "study", "work", "paper", "research", "based", "using",
-})
+_KEYWORD_STOPWORDS: frozenset = frozenset(
+    {
+        "the",
+        "and",
+        "for",
+        "are",
+        "but",
+        "not",
+        "you",
+        "all",
+        "can",
+        "had",
+        "her",
+        "was",
+        "one",
+        "our",
+        "out",
+        "has",
+        "have",
+        "been",
+        "with",
+        "they",
+        "this",
+        "that",
+        "from",
+        "will",
+        "would",
+        "there",
+        "their",
+        "what",
+        "about",
+        "which",
+        "when",
+        "make",
+        "just",
+        "over",
+        "such",
+        "into",
+        "than",
+        "null",
+        "none",
+        "also",
+        "how",
+        "may",
+        "does",
+        "method",
+        "approach",
+        "gap",
+        "issue",
+        "problem",
+        "limitation",
+        "study",
+        "work",
+        "paper",
+        "research",
+        "based",
+        "using",
+    }
+)
 
 
 def extract_keywords(text: str, min_len: int = 3) -> List[str]:

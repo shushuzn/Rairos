@@ -1,4 +1,5 @@
 """CLI command: dashboard — Research progress dashboard."""
+
 from __future__ import annotations
 
 import argparse
@@ -15,22 +16,26 @@ def _build_dashboard_parser(subparsers) -> argparse.ArgumentParser:
         description="View aggregated research progress summary.",
     )
     p.add_argument(
-        "--questions", "-q",
+        "--questions",
+        "-q",
         action="store_true",
         help="Focus on questions",
     )
     p.add_argument(
-        "--experiments", "-e",
+        "--experiments",
+        "-e",
         action="store_true",
         help="Focus on experiments",
     )
     p.add_argument(
-        "--papers", "-p",
+        "--papers",
+        "-p",
         action="store_true",
         help="Focus on papers",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="JSON output",
     )
@@ -63,8 +68,8 @@ def _run_dashboard(args: argparse.Namespace) -> int:
         lines.append(f"Generated: {data.generated_at[:10]}")
         lines.append("")
         lines.append(dashboard.render_text(data))
-        with open(args.export_md, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(lines))
+        with open(args.export_md, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
         print(f"✓ Exported to {args.export_md}")
     else:
         print()

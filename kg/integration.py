@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 _HAS_YAML = False
 try:
     import yaml  # type: ignore[import-untyped]
+
     _HAS_YAML = True
 except ImportError:
     pass
@@ -106,18 +107,23 @@ class KGIntegration:
             paper_year = paper_year or meta.get("year")
 
         paper_node_id = self.kg.add_node(
-            "Paper", paper_uid, paper_title,
-            authors=paper_authors, year=paper_year,
+            "Paper",
+            paper_uid,
+            paper_title,
+            authors=paper_authors,
+            year=paper_year,
         )
 
         if pnote_path and pnote_path.exists():
             pnote_node_id = self.kg.add_node(
-                "P-Note", paper_uid, f"P-Note: {paper_title}",
+                "P-Note",
+                paper_uid,
+                f"P-Note: {paper_title}",
                 path=str(pnote_path),
             )
             self.kg.add_edge(paper_node_id, pnote_node_id, "has_note")
 
-        for tag in (paper_tags or []):
+        for tag in paper_tags or []:
             tag_clean = tag.strip()
             if not tag_clean:
                 continue
@@ -126,7 +132,9 @@ class KGIntegration:
 
             cnote_path = self._find_cnote_path(pnote_path, tag_clean) if pnote_path else None
             cnote_node_id = self.kg.add_node(
-                "C-Note", f"{paper_uid}_{tag_clean}", f"C-Note: {tag_clean}",
+                "C-Note",
+                f"{paper_uid}_{tag_clean}",
+                f"C-Note: {tag_clean}",
                 path=str(cnote_path) if cnote_path else None,
             )
             self.kg.add_edge(paper_node_id, cnote_node_id, "has_note")
@@ -156,16 +164,24 @@ class KGIntegration:
     ):
         """Create cite edges when citation data is fetched."""
         paper_node = self.kg.get_node_by_entity("Paper", paper_uid)
-        paper_node_id = paper_node["id"] if paper_node else self.kg.add_node("Paper", paper_uid, paper_uid)
+        paper_node_id = (
+            paper_node["id"] if paper_node else self.kg.add_node("Paper", paper_uid, paper_uid)
+        )
 
-        for cited_uid in (cited_uids or []):
+        for cited_uid in cited_uids or []:
             cited_node = self.kg.get_node_by_entity("Paper", cited_uid)
-            cited_node_id = cited_node["id"] if cited_node else self.kg.add_node("Paper", cited_uid, cited_uid)
+            cited_node_id = (
+                cited_node["id"] if cited_node else self.kg.add_node("Paper", cited_uid, cited_uid)
+            )
             self.kg.add_edge(paper_node_id, cited_node_id, "cite", weight=1.0)
 
-        for citing_uid in (citing_uids or []):
+        for citing_uid in citing_uids or []:
             citing_node = self.kg.get_node_by_entity("Paper", citing_uid)
-            citing_node_id = citing_node["id"] if citing_node else self.kg.add_node("Paper", citing_uid, citing_uid)
+            citing_node_id = (
+                citing_node["id"]
+                if citing_node
+                else self.kg.add_node("Paper", citing_uid, citing_uid)
+            )
             self.kg.add_edge(citing_node_id, paper_node_id, "cite", weight=1.0)
 
     def on_mnote_created(
@@ -197,8 +213,11 @@ class KGIntegration:
 
         mnote_label = meta.get("title", f"M-Note: {tag}")
         mnote_node_id = self.kg.add_node(
-            "M-Note", str(mnote_path), mnote_label,
-            path=str(mnote_path), tag=tag,
+            "M-Note",
+            str(mnote_path),
+            mnote_label,
+            path=str(mnote_path),
+            tag=tag,
         )
         tag_node_id = self.kg.upsert_node("Tag", tag, tag)
         self.kg.add_edge(mnote_node_id, tag_node_id, "about_tag")
@@ -249,7 +268,9 @@ class KGIntegration:
             # Link figure to paper if not already linked
             existing = self.kg.get_node_by_entity("Figure", fig.entity_id)
             if existing:
-                edges = self.kg.get_edges_by_node(existing["id"], direction="out", rel_type="has_figure")
+                edges = self.kg.get_edges_by_node(
+                    existing["id"], direction="out", rel_type="has_figure"
+                )
                 if not edges:
                     self.kg.add_edge(paper_node_id, existing["id"], "has_figure")
 
@@ -267,11 +288,15 @@ class KGIntegration:
             # Link table to paper if not already linked
             existing = self.kg.get_node_by_entity("Table", tbl.entity_id)
             if existing:
-                edges = self.kg.get_edges_by_node(existing["id"], direction="out", rel_type="has_table")
+                edges = self.kg.get_edges_by_node(
+                    existing["id"], direction="out", rel_type="has_table"
+                )
                 if not edges:
                     self.kg.add_edge(paper_node_id, existing["id"], "has_table")
 
-        logger.info(f"Indexed {len(figure_nodes)} figures and {len(table_nodes)} tables for paper {paper_uid}")
+        logger.info(
+            f"Indexed {len(figure_nodes)} figures and {len(table_nodes)} tables for paper {paper_uid}"
+        )
 
     def rebuild_from_papers_json(
         self,
@@ -298,7 +323,9 @@ class KGIntegration:
             meta = self.kg.get_rebuild_meta()
             already_indexed = meta["indexed_paper_uids"]
             new_count = sum(1 for uid in papers if uid not in already_indexed)
-            logger.info(f"Incremental mode: {len(already_indexed)} already indexed, {new_count} new papers to process.")
+            logger.info(
+                f"Incremental mode: {len(already_indexed)} already indexed, {new_count} new papers to process."
+            )
 
         processed_uids: list[str] = []
 
@@ -311,9 +338,14 @@ class KGIntegration:
             year = paper_data.get("year")
             base = papers_json_path.parent
             pnote_path = base / "notes" / uid / f"{uid}_pnote.md"
-            self.on_paper_processed(uid, pnote_path,
-                paper_title=title, paper_tags=tags,
-                paper_authors=authors, paper_year=year)
+            self.on_paper_processed(
+                uid,
+                pnote_path,
+                paper_title=title,
+                paper_tags=tags,
+                paper_authors=authors,
+                paper_year=year,
+            )
             processed_uids.append(uid)
 
         for uid, citations in citation_graph.items():

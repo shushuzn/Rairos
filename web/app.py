@@ -2,6 +2,7 @@
 Rairos — FastAPI + Jinja2 Hand-Drawn UI.
 Run: uvicorn web.app_new:app --reload --port 8501
 """
+
 from __future__ import annotations
 
 import json
@@ -20,10 +21,12 @@ from fastapi.templating import Jinja2Templates
 
 app = FastAPI(title="Rairos", description="AI Research OS — Hand-drawn UI")
 
+
 # Auth middleware — skip if auth not enabled
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
     from llm.auth import is_auth_enabled, validate_session
+
     if not is_auth_enabled():
         return await call_next(request)
     # Skip auth routes
@@ -38,23 +41,32 @@ async def auth_middleware(request: Request, call_next):
     request.state.username = username
     return await call_next(request)
 
+
 # Static files + templates
 WEB_DIR = Path(__file__).parent
 app.mount("/static", StaticFiles(directory=str(WEB_DIR / "static")), name="static")
-app.mount("/data/briefings", StaticFiles(directory=str(PROJECT_ROOT / "data" / "briefings")), name="briefings")
+app.mount(
+    "/data/briefings",
+    StaticFiles(directory=str(PROJECT_ROOT / "data" / "briefings")),
+    name="briefings",
+)
 templates = Jinja2Templates(directory=str(WEB_DIR / "templates"))
+
 
 # Jinja filters
 def _jinja_truncate(value, length=80):
     s = str(value)
     return s[:length] + "…" if len(s) > length else s
 
+
 def _jinja_timestamp(value):
     from datetime import datetime
+
     try:
         return datetime.fromtimestamp(float(value)).strftime("%H:%M:%S")
     except Exception:
         return str(value)[:8]
+
 
 templates.env.filters["truncate"] = _jinja_truncate
 templates.env.filters["timestamp"] = _jinja_timestamp
@@ -64,8 +76,10 @@ templates.env.filters["timestamp"] = _jinja_timestamp
 # Database helper
 # ════════════════════════════════════════════
 
+
 def _get_db():
     from db.database import Database
+
     db = Database()
     db.init()
     return db
@@ -74,6 +88,7 @@ def _get_db():
 # ════════════════════════════════════════════
 # Pages
 # ════════════════════════════════════════════
+
 
 @app.get("/")
 async def dashboard(request: Request):
@@ -86,7 +101,7 @@ async def dashboard(request: Request):
     for r in rows:
         authors = ", ".join((r.authors or [])[:3])
         year = (r.published or "")[:4] if r.published else "?"
-        pid = r.paper_id if hasattr(r, 'paper_id') and r.paper_id else (r.id or "")
+        pid = r.paper_id if hasattr(r, "paper_id") and r.paper_id else (r.id or "")
         recent.append((pid, r.title, authors, year, r.source, f"/paper/{pid}"))
 
     # Queue jobs + papers being parsed
@@ -95,12 +110,14 @@ async def dashboard(request: Request):
     for row in queue_jobs:
         pid = row.paper_id or ""
         title = db.get_paper_title(pid) if pid else ""
-        queue_list.append((
-            pid,
-            title[:70] if title else "(unknown)",
-            row.status or "queued",
-            row.job_type or "parse",
-        ))
+        queue_list.append(
+            (
+                pid,
+                title[:70] if title else "(unknown)",
+                row.status or "queued",
+                row.job_type or "parse",
+            )
+        )
 
     # Papers currently parsing
     parsing_rows, _ = db.list_papers(limit=10, parse_status="running")
@@ -108,14 +125,18 @@ async def dashboard(request: Request):
 
     # Category distribution
     cur = db.conn.cursor()
-    cur.execute("SELECT primary_category, COUNT(*) FROM papers WHERE primary_category != '' GROUP BY primary_category ORDER BY COUNT(*) DESC LIMIT 8")
+    cur.execute(
+        "SELECT primary_category, COUNT(*) FROM papers WHERE primary_category != '' GROUP BY primary_category ORDER BY COUNT(*) DESC LIMIT 8"
+    )
     by_category = tuple((r[0] or "uncategorized", r[1]) for r in cur.fetchall())
 
     # Activity: papers added in last 7 days
-    cur.execute("SELECT id, title, added_at FROM papers WHERE added_at != '' ORDER BY added_at DESC LIMIT 7")
+    cur.execute(
+        "SELECT id, title, added_at FROM papers WHERE added_at != '' ORDER BY added_at DESC LIMIT 7"
+    )
     activity = []
     for r in cur.fetchall():
-        pid = getattr(r, 'paper_id', None) or r.id if hasattr(r, 'id') else r[0]
+        pid = getattr(r, "paper_id", None) or r.id if hasattr(r, "id") else r[0]
         added = r[2] or ""
         date_str = added[:10] if added else "?"
         activity.append((r[0], r[1][:60], date_str))
@@ -136,15 +157,27 @@ async def dashboard(request: Request):
     return templates.TemplateResponse(
         request,
         "dashboard.html",
-        {"page": "dashboard", "stats": stats_flat, "recent": recent,
-         "queue_list": queue_list, "parsing": parsing,
-         "by_category": by_category, "activity": activity},
+        {
+            "page": "dashboard",
+            "stats": stats_flat,
+            "recent": recent,
+            "queue_list": queue_list,
+            "parsing": parsing,
+            "by_category": by_category,
+            "activity": activity,
+        },
     )
 
 
 @app.get("/papers")
-async def papers(request: Request, q: str = "", source: str = "", page: int = 1,
-                 year_from: str = "", year_to: str = ""):
+async def papers(
+    request: Request,
+    q: str = "",
+    source: str = "",
+    page: int = 1,
+    year_from: str = "",
+    year_to: str = "",
+):
     """Papers — search and list with pagination."""
     db = _get_db()
     limit = 20
@@ -158,35 +191,48 @@ async def papers(request: Request, q: str = "", source: str = "", page: int = 1,
         rows, total = db.search_papers(q, limit=limit, offset=offset)
     else:
         rows, total = db.list_papers(
-            limit=limit, offset=offset,
+            limit=limit,
+            offset=offset,
             source=source if source else None,
-            date_from=date_from, date_to=date_to,
+            date_from=date_from,
+            date_to=date_to,
         )
 
     papers_list = []
     for r in rows:
         authors = ", ".join((r.authors or [])[:3])
         year = (r.published or "")[:4] if r.published else "?"
-        snippet = getattr(r, 'snippet', '') or (r.abstract or "")[:150]
-        pid = getattr(r, 'paper_id', None) or getattr(r, 'id', '') or ''
-        papers_list.append((
-            pid, r.title, authors, year, r.source,
-            getattr(r, 'primary_category', '') or "",
-            snippet, f"/paper/{pid}",
-        ))
+        snippet = getattr(r, "snippet", "") or (r.abstract or "")[:150]
+        pid = getattr(r, "paper_id", None) or getattr(r, "id", "") or ""
+        papers_list.append(
+            (
+                pid,
+                r.title,
+                authors,
+                year,
+                r.source,
+                getattr(r, "primary_category", "") or "",
+                snippet,
+                f"/paper/{pid}",
+            )
+        )
 
     total_pages = max(1, (total + limit - 1) // limit)
 
-    return templates.TemplateResponse(request, "papers.html", {
-        "page": page,
-        "papers": papers_list,
-        "query": q,
-        "total": total,
-        "total_pages": total_pages,
-        "year_from": year_from,
-        "year_to": year_to,
-        "contradiction_map": {},
-    })
+    return templates.TemplateResponse(
+        request,
+        "papers.html",
+        {
+            "page": page,
+            "papers": papers_list,
+            "query": q,
+            "total": total,
+            "total_pages": total_pages,
+            "year_from": year_from,
+            "year_to": year_to,
+            "contradiction_map": {},
+        },
+    )
 
 
 @app.get("/paper/{paper_id}")
@@ -196,12 +242,16 @@ async def paper_detail(request: Request, paper_id: str):
     paper = db.get_paper(paper_id)
 
     if not paper:
-        return templates.TemplateResponse(request, "paper_detail.html", {
-            "page": "paper",
-            "paper": None,
-            "paper_id": paper_id,
-            "error": f"Paper '{paper_id}' not found.",
-        })
+        return templates.TemplateResponse(
+            request,
+            "paper_detail.html",
+            {
+                "page": "paper",
+                "paper": None,
+                "paper_id": paper_id,
+                "error": f"Paper '{paper_id}' not found.",
+            },
+        )
 
     authors = ", ".join((paper.authors or [])[:10])
     year = (paper.published or "")[:4] if paper.published else "?"
@@ -209,6 +259,7 @@ async def paper_detail(request: Request, paper_id: str):
 
     # Gene Pool matches
     from llm.briefing_generator import _match_gene_pool
+
     gene_matches_raw = _match_gene_pool(paper.id, paper.title, paper.abstract or "")
     gene_matches = tuple(
         (m["gap_title"], m["gap_type"], m["outcome_score"], m["match_reason"])
@@ -230,7 +281,7 @@ async def paper_detail(request: Request, paper_id: str):
         paper.journal or "",
         paper.doi or "",
         paper.reference_count or 0,
-        paper.citation_count if hasattr(paper, 'citation_count') and paper.citation_count else 0,
+        paper.citation_count if hasattr(paper, "citation_count") and paper.citation_count else 0,
         paper.page_count or 0,
         paper.word_count or 0,
         paper.parse_status or "unknown",
@@ -239,14 +290,18 @@ async def paper_detail(request: Request, paper_id: str):
         all_categories,
     )
 
-    return templates.TemplateResponse(request, "paper_detail.html", {
-        "page": "paper",
-        "paper": paper_tuple,
-        "paper_id": paper_id,
-        "error": None,
-        "gene_matches": gene_matches,
-        "rigor_score": None,  # lazy — use /paper/{id}/rigor to compute
-    })
+    return templates.TemplateResponse(
+        request,
+        "paper_detail.html",
+        {
+            "page": "paper",
+            "paper": paper_tuple,
+            "paper_id": paper_id,
+            "error": None,
+            "gene_matches": gene_matches,
+            "rigor_score": None,  # lazy — use /paper/{id}/rigor to compute
+        },
+    )
 
 
 @app.delete("/paper/{paper_id}")
@@ -261,6 +316,7 @@ async def delete_paper(paper_id: str):
 async def delete_papers_bulk(request: Request):
     """Bulk delete papers. Accepts JSON body with list of paper_ids."""
     from starlette.datastructures import URL
+
     try:
         body = await request.json()
         paper_ids = body.get("paper_ids", [])
@@ -288,6 +344,7 @@ async def extract_paper_gap(request: Request, paper_id: str):
         return {"error": f"Paper '{paper_id}' not found."}
 
     from llm.paper_gap_extractor import extract_gap_from_paper
+
     result = extract_gap_from_paper(
         paper_id=paper_id,
         title=paper.title,
@@ -312,6 +369,7 @@ async def embodied_planning_batch(request: Request, ids: str = ""):
         return {"error": "No valid paper IDs provided"}
 
     from llm.paper_gap_extractor import batch_analyze_embodied_planning
+
     result = batch_analyze_embodied_planning(paper_ids=paper_ids)
     return result
 
@@ -324,39 +382,54 @@ async def embodied_planning_dashboard(request: Request):
     continuous/hybrid), with confidence scores and contradiction pairs.
     """
     from llm.paper_gap_extractor import render_embodied_planning_dashboard
+
     html = render_embodied_planning_dashboard()
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "embodied-planning-dashboard",
-        "title": "🦾 Embodied Planning — Representation Atlas",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "embodied-planning-dashboard",
+            "title": "🦾 Embodied Planning — Representation Atlas",
+            "content": html,
+        },
+    )
 
 
 @app.get("/embodied-planning/evolution")
 async def embodied_evolution_timeline(request: Request):
     """Render Mermaid Gantt chart showing belief evolution over time."""
     from llm.paper_gap_extractor import render_evolution_timeline
+
     graph = render_evolution_timeline()
     if not graph:
         graph = "<div style='text-align:center;padding:40px;color:#888;'>No timeline data yet — analyze some papers first.</div>"
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "embodied-evolution",
-        "title": "🦾 Belief Evolution Timeline",
-        "content": f"<div style='overflow-x:auto;'>{graph}</div>",
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "embodied-evolution",
+            "title": "🦾 Belief Evolution Timeline",
+            "content": f"<div style='overflow-x:auto;'>{graph}</div>",
+        },
+    )
 
 
 @app.get("/embodied-planning/compare")
 async def embodied_planning_compare(request: Request, ids: str = ""):
     """Compare representation types across 2 papers side-by-side."""
     from llm.paper_gap_extractor import render_compare_view
+
     paper_ids = [p.strip() for p in ids.split(",") if p.strip()][:2]
     html = render_compare_view(paper_ids)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "embodied-compare",
-        "title": "🦾 Embodied Planning — Compare",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "embodied-compare",
+            "title": "🦾 Embodied Planning — Compare",
+            "content": html,
+        },
+    )
 
 
 @app.get("/embodied-planning/semantic-search")
@@ -364,6 +437,7 @@ async def semantic_search(request: Request, q: str = "", top_k: int = 5):
     """Semantic search across analyzed papers."""
     from fastapi.responses import JSONResponse
     from llm.paper_gap_extractor import semantic_search_papers
+
     results = semantic_search_papers(q, top_k=top_k)
     return JSONResponse({"query": q, "results": results})
 
@@ -378,6 +452,7 @@ async def save_paper_gap(request: Request, paper_id: str):
     summary = body.get("summary", "")
 
     from llm.paper_gap_extractor import save_gap_to_gene_pool
+
     db = _get_db()
     paper = db.get_paper(paper_id)
     title = paper.title if paper else paper_id
@@ -397,6 +472,7 @@ async def save_paper_gap(request: Request, paper_id: str):
 async def paper_rigor(request: Request, paper_id: str):
     """Compute and return research rigor score for a paper as JSON."""
     from llm.rigor_scorer import RigorScorer
+
     db = _get_db()
     paper = db.get_paper(paper_id)
     if not paper:
@@ -410,6 +486,7 @@ async def paper_rigor(request: Request, paper_id: str):
 async def paper_replication(request: Request, paper_id: str):
     """Run replication checker on a paper — returns JSON report."""
     from llm.replication_checker import ReplicationChecker
+
     db = _get_db()
     paper = db.get_paper(paper_id)
     if not paper:
@@ -427,12 +504,16 @@ async def paper_replication(request: Request, paper_id: str):
 @app.get("/briefing")
 async def briefing(request: Request, arxiv_id: str = ""):
     """Research Briefing — generate or show."""
-    return templates.TemplateResponse(request, "briefing.html", {
-        "page": "briefing",
-        "arxiv_id": arxiv_id,
-        "result": None,
-        "error": None,
-    })
+    return templates.TemplateResponse(
+        request,
+        "briefing.html",
+        {
+            "page": "briefing",
+            "arxiv_id": arxiv_id,
+            "result": None,
+            "error": None,
+        },
+    )
 
 
 @app.post("/briefing")
@@ -443,15 +524,20 @@ async def briefing_generate(
 ):
     """Generate a research briefing."""
     if not arxiv_id.strip():
-        return templates.TemplateResponse(request, "briefing.html", {
-            "page": "briefing",
-            "arxiv_id": arxiv_id,
-            "result": None,
-            "error": "Please enter an arXiv ID.",
-        })
+        return templates.TemplateResponse(
+            request,
+            "briefing.html",
+            {
+                "page": "briefing",
+                "arxiv_id": arxiv_id,
+                "result": None,
+                "error": "Please enter an arXiv ID.",
+            },
+        )
 
     try:
         from llm.briefing_generator import BriefingGenerator
+
         gen = BriefingGenerator()
         result = gen.generate(
             arxiv_id=arxiv_id.strip(),
@@ -462,27 +548,39 @@ async def briefing_generate(
         if result.success:
             slug = "".join(c if c.isalnum() else "_" for c in arxiv_id.strip().lower())
             md_path = f"/data/briefings/briefing_{slug}.md"
-            return templates.TemplateResponse(request, "briefing.html", {
-                "page": "briefing",
-                "arxiv_id": arxiv_id,
-                "result": result,
-                "markdown_path": md_path,
-                "error": None,
-            })
+            return templates.TemplateResponse(
+                request,
+                "briefing.html",
+                {
+                    "page": "briefing",
+                    "arxiv_id": arxiv_id,
+                    "result": result,
+                    "markdown_path": md_path,
+                    "error": None,
+                },
+            )
         else:
-            return templates.TemplateResponse(request, "briefing.html", {
+            return templates.TemplateResponse(
+                request,
+                "briefing.html",
+                {
+                    "page": "briefing",
+                    "arxiv_id": arxiv_id,
+                    "result": None,
+                    "error": result.error,
+                },
+            )
+    except Exception as e:
+        return templates.TemplateResponse(
+            request,
+            "briefing.html",
+            {
                 "page": "briefing",
                 "arxiv_id": arxiv_id,
                 "result": None,
-                "error": result.error,
-            })
-    except Exception as e:
-        return templates.TemplateResponse(request, "briefing.html", {
-            "page": "briefing",
-            "arxiv_id": arxiv_id,
-            "result": None,
-            "error": str(e),
-        })
+                "error": str(e),
+            },
+        )
 
 
 @app.get("/briefing/distribute/{arxiv_id}")
@@ -492,28 +590,42 @@ async def distribute_briefing(request: Request, arxiv_id: str, audience: str = "
         get_latest_briefing_markdown,
         render_distributed_briefing,
     )
+
     markdown = get_latest_briefing_markdown(arxiv_id)
     if not markdown:
         return {"error": "No briefing found for " + arxiv_id}
     html = render_distributed_briefing(arxiv_id, arxiv_id, markdown, audience)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "briefing",
-        "title": f"Briefing — {audience}",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "briefing",
+            "title": f"Briefing — {audience}",
+            "content": html,
+        },
+    )
 
 
 @app.get("/b/{short_id}")
 async def shared_briefing(request: Request, short_id: str):
     """Resolve a short share link to the appropriate briefing."""
-    from llm.briefing_distributor import _load_links, get_latest_briefing_markdown, render_distributed_briefing
+    from llm.briefing_distributor import (
+        _load_links,
+        get_latest_briefing_markdown,
+        render_distributed_briefing,
+    )
+
     links = _load_links()
     info = links.get(short_id)
     if not info:
-        return templates.TemplateResponse(request, "error.html", {
-            "page": "error",
-            "error": "Link not found or expired.",
-        })
+        return templates.TemplateResponse(
+            request,
+            "error.html",
+            {
+                "page": "error",
+                "error": "Link not found or expired.",
+            },
+        )
     arxiv_id = info.get("arxiv_id", "")
     title = info.get("title", arxiv_id)
     audience = info.get("audience", "researcher")
@@ -521,11 +633,15 @@ async def shared_briefing(request: Request, short_id: str):
     if not markdown:
         markdown = f"# {title}\n\nNo briefing available."
     html = render_distributed_briefing(arxiv_id, title, markdown, audience)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "briefing",
-        "title": f"Shared Briefing — {title[:40]}",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "briefing",
+            "title": f"Shared Briefing — {title[:40]}",
+            "content": html,
+        },
+    )
 
 
 @app.get("/briefing/history")
@@ -540,59 +656,76 @@ async def briefing_history(request: Request):
                 text = f.read_text(encoding="utf-8")
                 lines = text.split("\n", 4)
                 # Line 0: # Research Briefing: Title
-                title = lines[0][len("# Research Briefing: "):] if len(lines) > 0 and lines[0].startswith("# Research Briefing: ") else f.stem
+                title = (
+                    lines[0][len("# Research Briefing: ") :]
+                    if len(lines) > 0 and lines[0].startswith("# Research Briefing: ")
+                    else f.stem
+                )
                 # Line 1: metadata — "**arXiv:** [id](url) | **Authors:** ... | **Generated:** ..."
                 arxiv_id = ""
                 generated = ""
                 if len(lines) > 1:
                     import re
-                    aid_match = re.search(r'\*\*arXiv:\*\* \[([^\]]+)\]', lines[1])
+
+                    aid_match = re.search(r"\*\*arXiv:\*\* \[([^\]]+)\]", lines[1])
                     if aid_match:
                         arxiv_id = aid_match.group(1)
-                    gen_match = re.search(r'\*\*Generated:\*\* (\S+)', lines[1])
+                    gen_match = re.search(r"\*\*Generated:\*\* (\S+)", lines[1])
                     if gen_match:
                         generated = gen_match.group(1)
                 verdict = ""
                 verdict_emoji = ""
                 if len(lines) > 2:
-                    v_match = re.search(r'\*\*Verdict:\*\* (.) \*\*([A-Z]+)\*\*', lines[2])
+                    v_match = re.search(r"\*\*Verdict:\*\* (.) \*\*([A-Z]+)\*\*", lines[2])
                     if v_match:
                         verdict_emoji = v_match.group(1)
                         verdict = v_match.group(2).lower()
-                briefings.append((
-                    arxiv_id,
-                    title[:90],
-                    generated,
-                    verdict,
-                    verdict_emoji,
-                ))
+                briefings.append(
+                    (
+                        arxiv_id,
+                        title[:90],
+                        generated,
+                        verdict,
+                        verdict_emoji,
+                    )
+                )
             except Exception:
                 pass
 
-    return templates.TemplateResponse(request, "briefing_history.html", {
-        "page": "briefing-history",
-        "briefings": briefings,
-    })
+    return templates.TemplateResponse(
+        request,
+        "briefing_history.html",
+        {
+            "page": "briefing-history",
+            "briefings": briefings,
+        },
+    )
 
 
 @app.get("/trust-scores")
 async def trust_scores(request: Request):
     """Source Trust Scores — per-arXiv-category credibility ratings."""
     from llm.trust_scorer import TrustScorer
+
     scorer = TrustScorer()
     scorer.load_trust_map() or scorer.compute_trust_map()
     html = scorer.render_html()
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "trust-scores",
-        "title": "Source Trust Scores",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "trust-scores",
+            "title": "Source Trust Scores",
+            "content": html,
+        },
+    )
 
 
 @app.get("/gene-pool/credibility")
 async def gene_pool_credibility(request: Request):
     """Gap Credibility — flags trendslop capsules with high keyword overlap."""
     from llm.credibility_scorer import CredibilityScorer
+
     scorer = CredibilityScorer()
     _html = scorer.render_html()
 
@@ -606,6 +739,7 @@ async def gene_pool_graph(request: Request):
     Returns HTML page with embedded D3.js visualization.
     """
     from llm.gene_pool_io import load_capsules
+
     capsules = load_capsules()
 
     GAP_TYPE_COLORS = {
@@ -626,14 +760,16 @@ async def gene_pool_graph(request: Request):
     for c in capsules:
         gap_type = c.get("action_gap_type", "other")
         color = GAP_TYPE_COLORS.get(gap_type, GAP_TYPE_COLORS["other"])
-        nodes.append({
-            "id": c.get("capsule_id", ""),
-            "label": (c.get("action_gap_title") or c.get("trigger_topic") or "?")[:60],
-            "gap_type": gap_type,
-            "color": color,
-            "score": c.get("outcome_success_score", 0.0),
-            "source": c.get("trigger_topic", "")[:40],
-        })
+        nodes.append(
+            {
+                "id": c.get("capsule_id", ""),
+                "label": (c.get("action_gap_title") or c.get("trigger_topic") or "?")[:60],
+                "gap_type": gap_type,
+                "color": color,
+                "score": c.get("outcome_success_score", 0.0),
+                "source": c.get("trigger_topic", "")[:40],
+            }
+        )
 
     # Build edges: same gap_type + different title → red solid (contradiction)
     # same gap_type + same title → gray dashed (same conclusion)
@@ -646,23 +782,27 @@ async def gene_pool_graph(request: Request):
                 continue
             same_title = a.get("action_gap_title") == b.get("action_gap_title")
             if not same_title:
-                links.append({
-                    "source": a.get("capsule_id", ""),
-                    "target": b.get("capsule_id", ""),
-                    "type": "contradiction",
-                    "stroke": "#D9534F",
-                    "strokeWidth": 2.5,
-                    "strokeDasharray": None,
-                })
+                links.append(
+                    {
+                        "source": a.get("capsule_id", ""),
+                        "target": b.get("capsule_id", ""),
+                        "type": "contradiction",
+                        "stroke": "#D9534F",
+                        "strokeWidth": 2.5,
+                        "strokeDasharray": None,
+                    }
+                )
             else:
-                links.append({
-                    "source": a.get("capsule_id", ""),
-                    "target": b.get("capsule_id", ""),
-                    "type": "same_gap",
-                    "stroke": "#999999",
-                    "strokeWidth": 1.0,
-                    "strokeDasharray": "4,4",
-                })
+                links.append(
+                    {
+                        "source": a.get("capsule_id", ""),
+                        "target": b.get("capsule_id", ""),
+                        "type": "same_gap",
+                        "stroke": "#999999",
+                        "strokeWidth": 1.0,
+                        "strokeDasharray": "4,4",
+                    }
+                )
 
     nodes_json = json.dumps(nodes, ensure_ascii=False)
     links_json = json.dumps(links, ensure_ascii=False)
@@ -776,6 +916,7 @@ simulation.on("tick", () => {{
 </body>
 </html>"""
     from fastapi.responses import HTMLResponse
+
     return HTMLResponse(content=html)
 
 
@@ -783,14 +924,19 @@ simulation.on("tick", () => {{
 async def gene_pool_evolution_log(request: Request):
     """Evolution Log — shows what the Gene Pool learned over time."""
     from llm.insight.tracker import EvolutionTracker
+
     tracker = EvolutionTracker()
     events = tracker.get_evolution_log(limit=100)
     html = _render_evolution_log_html(events)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "gene-pool-evolution-log",
-        "title": "Evolution Log",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "gene-pool-evolution-log",
+            "title": "Evolution Log",
+            "content": html,
+        },
+    )
 
 
 def _render_evolution_log_html(events: list) -> str:
@@ -829,7 +975,7 @@ def _render_evolution_log_html(events: list) -> str:
             <span class='ev-icon'>{icon}</span>
             <div class='ev-body'>
                 <div class='ev-header'>
-                    <span class='ev-action' style='color:{color}'>{ev['action'].upper()}</span>
+                    <span class='ev-action' style='color:{color}'>{ev["action"].upper()}</span>
                     <span class='ev-time'>{date_str}</span>
                 </div>
                 <div class='ev-title'>{gap_title}</div>
@@ -873,86 +1019,123 @@ def _render_evolution_log_html(events: list) -> str:
     """
 
 
-
 @app.get("/heatmap")
 async def contradiction_heatmap(request: Request):
     """Contradiction Heatmap — papers colored by contradiction count."""
     from llm.contradiction_heatmap import compute_paper_contradictions, render_heatmap_html
+
     db = _get_db()
     rows, _ = db.list_papers(limit=200, offset=0)
-    papers = [{"id": r.id, "title": r.title, "primary_category": getattr(r, "primary_category", "") or "", "published": r.published} for r in rows]
+    papers = [
+        {
+            "id": r.id,
+            "title": r.title,
+            "primary_category": getattr(r, "primary_category", "") or "",
+            "published": r.published,
+        }
+        for r in rows
+    ]
     contrad_map = compute_paper_contradictions()
     html = render_heatmap_html(papers, contrad_map)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "heatmap",
-        "title": "Contradiction Heatmap",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "heatmap",
+            "title": "Contradiction Heatmap",
+            "content": html,
+        },
+    )
 
 
 @app.get("/game-mode")
 async def game_mode(request: Request):
     """Research Game Mode — badges and progression."""
     from llm.game_mode import compute_badges, render_game_mode_html
+
     badges = compute_badges()
     html = render_game_mode_html(badges)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "game-mode",
-        "title": "Research Game Mode",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "game-mode",
+            "title": "Research Game Mode",
+            "content": html,
+        },
+    )
 
 
 @app.get("/alerts/paradigm")
 async def paradigm_alert(request: Request):
     """Paradigm Concentration Alert — flags when >60% citations cluster around ≤3 papers."""
     from llm.paradigm_monitor import check_paradigm_concentration, render_html
+
     result = check_paradigm_concentration("all")
     html = render_html(result)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "paradigm-alert",
-        "title": "Paradigm Alert",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "paradigm-alert",
+            "title": "Paradigm Alert",
+            "content": html,
+        },
+    )
 
 
 @app.get("/alerts/eval-gap")
 async def eval_gap_alert(request: Request):
     """Evaluation Gap Monitor — flags domains where deployment outpaces benchmark research."""
     from llm.eval_gap_monitor import check_eval_gaps, render_eval_gap_html
+
     data = check_eval_gaps()
     html = render_eval_gap_html(data)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "eval-gap-alert",
-        "title": "Evaluation Gap",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "eval-gap-alert",
+            "title": "Evaluation Gap",
+            "content": html,
+        },
+    )
 
 
 @app.get("/gene-pool/bold")
 async def gene_pool_bold(request: Request):
     """Bold Hypothesis Vault — high-risk/high-reward Gene Pool capsules."""
     from llm.bold_vault import get_bold_capsules, render_html
+
     capsules = get_bold_capsules()
     html = render_html(capsules)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "gene-pool-bold",
-        "title": "Bold Hypothesis Vault",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "gene-pool-bold",
+            "title": "Bold Hypothesis Vault",
+            "content": html,
+        },
+    )
 
 
 @app.get("/gene-pool/backup")
 async def gene_pool_backup(request: Request):
     """Gene Pool Backup — view snapshots and restore."""
     from llm.gene_pool_backup import get_backup_info, render_backup_html
+
     info = get_backup_info()
     html = render_backup_html(info)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "gene-pool-backup",
-        "title": "Gene Pool Backup",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "gene-pool-backup",
+            "title": "Gene Pool Backup",
+            "content": html,
+        },
+    )
 
 
 @app.post("/gene-pool/backup/create")
@@ -960,6 +1143,7 @@ async def create_backup(request: Request):
     """Trigger an immediate backup."""
     from llm.gene_pool_backup import create_backup
     from fastapi.responses import JSONResponse
+
     try:
         stamp = create_backup()
         return JSONResponse({"success": True, "stamp": stamp})
@@ -972,6 +1156,7 @@ async def restore_backup(stamp: str, request: Request):
     """Restore Gene Pool from a specific backup stamp."""
     from llm.gene_pool_backup import restore_backup
     from fastapi.responses import JSONResponse
+
     ok = restore_backup(stamp)
     return JSONResponse({"success": ok, "message": "Restored" if ok else "Failed"})
 
@@ -980,19 +1165,25 @@ async def restore_backup(stamp: str, request: Request):
 async def gene_pool_at_risk(request: Request):
     """Show at-risk capsules (low_score_streak >= 2) with keep/pin actions."""
     from llm.at_risk_scanner import get_at_risk_capsules, render_html
+
     capsules = get_at_risk_capsules()
     html = render_html(capsules)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "gene-pool-at-risk",
-        "title": "At-Risk Capsules",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "gene-pool-at-risk",
+            "title": "At-Risk Capsules",
+            "content": html,
+        },
+    )
 
 
 @app.post("/gene-pool/at-risk/keep-active")
 async def at_risk_keep_active(request: Request):
     """Reset low_score_streak for a capsule (keep active)."""
     from llm.at_risk_scanner import keep_active
+
     body = await request.json()
     capsule_id = body.get("capsule_id", "")
     success = keep_active(capsule_id)
@@ -1003,6 +1194,7 @@ async def at_risk_keep_active(request: Request):
 async def at_risk_pin(request: Request):
     """Pin a capsule to TTL cycles."""
     from llm.at_risk_scanner import pin_to_ttl
+
     body = await request.json()
     capsule_id = body.get("capsule_id", "")
     ttl = int(body.get("ttl", 3))
@@ -1014,51 +1206,73 @@ async def at_risk_pin(request: Request):
 async def login_page(request: Request):
     """Login page — redirects to / if already authenticated."""
     from llm.auth import is_auth_enabled, validate_session
+
     if not is_auth_enabled():
         return RedirectResponse(url="/", status_code=303)
     token = request.cookies.get("session_token", "")
     if validate_session(token):
         return RedirectResponse(url="/", status_code=303)
-    return templates.TemplateResponse("login.html", {"request": request, "error": None, "not_setup": False})
+    return templates.TemplateResponse(
+        "login.html", {"request": request, "error": None, "not_setup": False}
+    )
 
 
 @app.post("/auth/login")
 async def login_submit(request: Request, username: str = Form(""), password: str = Form("")):
     from llm.auth import create_session, verify_login
+
     if verify_login(username, password):
         token = create_session(username)
         response = RedirectResponse(url="/", status_code=303)
-        response.set_cookie(key="session_token", value=token, httponly=True, samesite="lax", max_age=86400 * 7)
+        response.set_cookie(
+            key="session_token", value=token, httponly=True, samesite="lax", max_age=86400 * 7
+        )
         return response
-    return templates.TemplateResponse("login.html", {"request": request, "error": "Invalid credentials", "not_setup": False})
+    return templates.TemplateResponse(
+        "login.html", {"request": request, "error": "Invalid credentials", "not_setup": False}
+    )
 
 
 @app.get("/auth/setup")
 async def setup_page(request: Request):
     """First-time setup — create admin account."""
     from llm.auth import is_auth_enabled
+
     if is_auth_enabled():
         return RedirectResponse(url="/auth/login", status_code=303)
     return templates.TemplateResponse("setup.html", {"request": request, "error": None})
 
 
 @app.post("/auth/setup")
-async def setup_submit(request: Request, username: str = Form(""), password: str = Form(""), password2: str = Form("")):
+async def setup_submit(
+    request: Request, username: str = Form(""), password: str = Form(""), password2: str = Form("")
+):
     from llm.auth import is_auth_enabled, setup_admin
+
     if is_auth_enabled():
         return RedirectResponse(url="/auth/login", status_code=303)
     if not username or len(username) < 3:
-        return templates.TemplateResponse("setup.html", {"request": request, "error": "Username must be at least 3 characters"})
+        return templates.TemplateResponse(
+            "setup.html", {"request": request, "error": "Username must be at least 3 characters"}
+        )
     if not password or len(password) < 8:
-        return templates.TemplateResponse("setup.html", {"request": request, "error": "Password must be at least 8 characters"})
+        return templates.TemplateResponse(
+            "setup.html", {"request": request, "error": "Password must be at least 8 characters"}
+        )
     if password != password2:
-        return templates.TemplateResponse("setup.html", {"request": request, "error": "Passwords do not match"})
+        return templates.TemplateResponse(
+            "setup.html", {"request": request, "error": "Passwords do not match"}
+        )
     ok = setup_admin(username, password)
     if not ok:
-        return templates.TemplateResponse("setup.html", {"request": request, "error": "Setup failed"})
+        return templates.TemplateResponse(
+            "setup.html", {"request": request, "error": "Setup failed"}
+        )
     token = create_session(username)
     response = RedirectResponse(url="/", status_code=303)
-    response.set_cookie(key="session_token", value=token, httponly=True, samesite="lax", max_age=86400 * 7)
+    response.set_cookie(
+        key="session_token", value=token, httponly=True, samesite="lax", max_age=86400 * 7
+    )
     return response
 
 
@@ -1066,6 +1280,7 @@ async def setup_submit(request: Request, username: str = Form(""), password: str
 async def logout(request: Request):
     from llm.auth import revoke_session
     from fastapi.responses import JSONResponse
+
     token = request.cookies.get("session_token", "")
     if token:
         revoke_session(token)
@@ -1078,18 +1293,24 @@ async def logout(request: Request):
 async def chat(request: Request):
     """Web Chat — streaming RAG chat over the paper library."""
     from llm.web_chat import render_chat_html
+
     html = render_chat_html()
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "chat",
-        "title": "Research Chat",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "chat",
+            "title": "Research Chat",
+            "content": html,
+        },
+    )
 
 
 @app.post("/chat/stream")
 async def chat_stream(request: Request):
     """Streaming chat endpoint — SSE."""
     from llm.web_chat import chat_stream as ws_chat_stream
+
     return await ws_chat_stream(request)
 
 
@@ -1097,13 +1318,18 @@ async def chat_stream(request: Request):
 async def review_queue(request: Request):
     """Capsule Review Queue — new capsules pending first feedback."""
     from llm.review_queue import get_review_queue, render_review_queue_html
+
     queue = get_review_queue()
     html = render_review_queue_html(queue)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "review-queue",
-        "title": "Capsule Review Queue",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "review-queue",
+            "title": "Capsule Review Queue",
+            "content": html,
+        },
+    )
 
 
 @app.post("/insights/queue/verdict")
@@ -1111,6 +1337,7 @@ async def submit_verdict(request: Request):
     """Record a user's verdict on a queued capsule."""
     from llm.insight.tracker import record_gap_accept
     from llm.review_queue import _load_capsules
+
     body = await request.json()
     capsule_id = body.get("capsule_id", "")
     verdict = body.get("verdict", "")
@@ -1131,12 +1358,17 @@ async def submit_verdict(request: Request):
 async def gene_pool_io(request: Request):
     """Gene Pool Import/Export — backup and restore as JSON."""
     from llm.gene_pool_io import render_io_html
+
     html = render_io_html()
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "gene-pool-io",
-        "title": "Gene Pool Import/Export",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "gene-pool-io",
+            "title": "Gene Pool Import/Export",
+            "content": html,
+        },
+    )
 
 
 @app.get("/gene-pool/io/export")
@@ -1144,6 +1376,7 @@ async def export_pool(request: Request):
     """Export full Gene Pool as JSON."""
     from llm.gene_pool_io import export_pool
     from fastapi.responses import JSONResponse
+
     return JSONResponse(export_pool())
 
 
@@ -1152,6 +1385,7 @@ async def import_pool(request: Request):
     """Import Gene Pool from JSON."""
     from llm.gene_pool_io import import_pool
     from fastapi.responses import JSONResponse
+
     body = await request.json()
     stats = import_pool(body, merge=True)
     return JSONResponse({"success": True, **stats})
@@ -1161,17 +1395,22 @@ async def import_pool(request: Request):
 async def arxiv_channels(request: Request):
     """arXiv Watch Alert Channels — configure multiple feed configs."""
     from llm.arxiv_alert_channels import render_channels_html
+
     db = _get_db()
     try:
         recent = db.get_recent_subscription_papers_grouped(limit_per=5)
     except Exception:
         recent = {}
     html = render_channels_html(check_results=recent)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "arxiv-channels",
-        "title": "arXiv Watch Channels",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "arxiv-channels",
+            "title": "arXiv Watch Channels",
+            "content": html,
+        },
+    )
 
 
 @app.post("/arxiv-channels/toggle/{channel_id}")
@@ -1180,6 +1419,7 @@ async def toggle_channel(channel_id: str, request: Request):
     from llm.arxiv_alert_channels import update_channel
     from fastapi.responses import JSONResponse
     from llm.arxiv_alert_channels import _load_channels
+
     channels = _load_channels()
     if channel_id not in channels:
         return JSONResponse({"success": False}, status_code=404)
@@ -1192,13 +1432,21 @@ async def toggle_channel(channel_id: str, request: Request):
 async def arxiv_check(request: Request):
     """Run arXiv subscription check across all enabled subscriptions."""
     from fastapi.responses import JSONResponse
+
     try:
         db = _get_db()
         from llm.subscription_monitor import SubscriptionMonitor
+
         monitor = SubscriptionMonitor(db)
         results = monitor.check_all()
         total = sum(len(v) for v in results.values())
-        return JSONResponse({"success": True, "new_papers": total, "details": {k: len(v) for k, v in results.items()}})
+        return JSONResponse(
+            {
+                "success": True,
+                "new_papers": total,
+                "details": {k: len(v) for k, v in results.items()},
+            }
+        )
     except Exception as e:
         return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
@@ -1206,6 +1454,7 @@ async def arxiv_check(request: Request):
 def _get_global_rep_type_counts() -> dict:
     """Count representation types across all embodied_planning capsules in Gene Pool."""
     from llm.gene_pool_io import load_capsules
+
     capsules = load_capsules(gap_type="embodied_planning")
     counts: Dict[str, int] = {"discrete": 0, "continuous": 0, "hybrid": 0, "unknown": 0}
     for c in capsules:
@@ -1223,6 +1472,7 @@ async def embodied_planning_auto_scan(request: Request):
     embodied planning representation type and saves to Gene Pool.
     """
     from fastapi.responses import JSONResponse
+
     try:
         db = _get_db()
         from llm.subscription_monitor import SubscriptionMonitor
@@ -1236,7 +1486,8 @@ async def embodied_planning_auto_scan(request: Request):
 
         # Filter to VLA/robotics papers only, then run shared analysis pipeline
         vla_ids = [
-            pid for pid in all_new_ids
+            pid
+            for pid in all_new_ids
             if any(
                 c in (db.get_paper(pid).categories or "").lower()
                 for c in ["cs.ro", "cs.cv", "cs.ai", "cs.lg"]
@@ -1257,8 +1508,10 @@ async def embodied_planning_auto_scan(request: Request):
         underrep = min(all_counts, key=all_counts.get) if all_counts else "hybrid"
         recommend_msg = ""
         if total_analyzed > 0:
-            recommend_msg = (f"Only {type_counts.get(underrep,0)}/{total_analyzed} papers "
-                             f"in this batch used {underrep} — consider searching for more.")
+            recommend_msg = (
+                f"Only {type_counts.get(underrep, 0)}/{total_analyzed} papers "
+                f"in this batch used {underrep} — consider searching for more."
+            )
 
         notification = None
         if contradictions:
@@ -1276,6 +1529,7 @@ async def embodied_planning_auto_scan(request: Request):
                     generate_hypothesis_from_contradiction,
                     append_hypothesis_to_roadmap,
                 )
+
                 for contra in contradictions:
                     pid_a = contra.get("paper_id", "")
                     pid_b = contra.get("contradiction_with", "")
@@ -1297,7 +1551,7 @@ async def embodied_planning_auto_scan(request: Request):
             notification = {
                 "type": "trend",
                 "uid": f"trend_{all_new_ids[0] if all_new_ids else 'none'}",
-                "message": f"📊 Strong trend: {trend} representation dominates ({int(trend_pct*100)}% of this batch)",
+                "message": f"📊 Strong trend: {trend} representation dominates ({int(trend_pct * 100)}% of this batch)",
             }
             _notification_store.append(notification)
 
@@ -1312,6 +1566,7 @@ async def embodied_planning_auto_scan(request: Request):
                 )
                 if rec_paper:
                     from pathlib import Path as _Path
+
                     _rm_path = _Path("D:/OpenClaw/workspace/80-PROJECTS/ai_research_os/ROADMAP.md")
                     if _rm_path.exists():
                         existing_content = _rm_path.read_text(encoding="utf-8")
@@ -1357,13 +1612,15 @@ async def embodied_planning_auto_scan(request: Request):
                         gap_type=GAP,
                     )
                     capsule_id = r.get("saved_to_pool")
-                    new_analyzed.append({
-                        "paper_id": arxiv_id,
-                        "title": p.get("title", "")[:80],
-                        "representation_type": r.get("representation_type", "unknown"),
-                        "confidence": r.get("confidence", 0),
-                        "capsule_id": capsule_id,
-                    })
+                    new_analyzed.append(
+                        {
+                            "paper_id": arxiv_id,
+                            "title": p.get("title", "")[:80],
+                            "representation_type": r.get("representation_type", "unknown"),
+                            "confidence": r.get("confidence", 0),
+                            "capsule_id": capsule_id,
+                        }
+                    )
                 if new_analyzed:
                     all_new_ids = [p["paper_id"] for p in new_analyzed]
                     analyzed = new_analyzed
@@ -1375,17 +1632,19 @@ async def embodied_planning_auto_scan(request: Request):
             except Exception:
                 pass  # Non-critical fallback
 
-        return JSONResponse({
-            "success": True,
-            "total_new": len(all_new_ids),
-            "analyzed": len(analyzed),
-            "results": analyzed,
-            "contradictions": contradictions,
-            "trend": {"dominant": trend, "pct": int(trend_pct * 100), "counts": type_counts},
-            "recommended_next_type": underrep,
-            "recommend_msg": recommend_msg,
-            "notification": notification,
-        })
+        return JSONResponse(
+            {
+                "success": True,
+                "total_new": len(all_new_ids),
+                "analyzed": len(analyzed),
+                "results": analyzed,
+                "contradictions": contradictions,
+                "trend": {"dominant": trend, "pct": int(trend_pct * 100), "counts": type_counts},
+                "recommended_next_type": underrep,
+                "recommend_msg": recommend_msg,
+                "notification": notification,
+            }
+        )
     except Exception as e:
         return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
@@ -1398,6 +1657,7 @@ _notification_store: List[Dict[str, Any]] = []
 async def get_notifications(request: Request):
     """Get current notifications (contradictions, trends, alerts)."""
     from fastapi.responses import JSONResponse
+
     return JSONResponse({"notifications": _notification_store})
 
 
@@ -1405,6 +1665,7 @@ async def get_notifications(request: Request):
 async def dismiss_notification(request: Request):
     """Dismiss all or specific notifications."""
     from fastapi.responses import JSONResponse
+
     try:
         body = await request.json()
         uid = body.get("uid")
@@ -1418,6 +1679,7 @@ async def dismiss_notification(request: Request):
 
 
 # ── Task 5: arXiv主动搜索 ──────────────────────────────────────────────────
+
 
 @app.post("/embodied-planning/search")
 async def embodied_planning_search(request: Request):
@@ -1435,6 +1697,7 @@ async def embodied_planning_search(request: Request):
 
         # Use SubscriptionMonitor.search_arxiv — unified, no duplicate XML parsing
         from llm.subscription_monitor import search_arxiv
+
         papers = search_arxiv(query, max_results)
 
         if not papers:
@@ -1442,6 +1705,7 @@ async def embodied_planning_search(request: Request):
 
         # Analyze each paper with analyze_embodied_planning
         from llm.paper_gap_extractor import analyze_embodied_planning
+
         analyzed = []
         for p in papers:
             result = analyze_embodied_planning(
@@ -1453,13 +1717,15 @@ async def embodied_planning_search(request: Request):
             result["published"] = p["published"]
             analyzed.append(result)
 
-        return JSONResponse({
-            "success": True,
-            "query": query,
-            "total": len(papers),
-            "analyzed": len(analyzed),
-            "results": analyzed,
-        })
+        return JSONResponse(
+            {
+                "success": True,
+                "query": query,
+                "total": len(papers),
+                "analyzed": len(analyzed),
+                "results": analyzed,
+            }
+        )
     except Exception as e:
         return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
@@ -1468,26 +1734,36 @@ async def embodied_planning_search(request: Request):
 async def cross_domain_bridge(request: Request):
     """Cross-Domain Gap Bridge — find Gene Pool connections across research fields."""
     from llm.cross_domain_bridge import find_cross_domain_bridges, render_cross_domain_html
+
     bridges = find_cross_domain_bridges()
     html = render_cross_domain_html(bridges)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "cross-domain",
-        "title": "Cross-Domain Gap Bridge",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "cross-domain",
+            "title": "Cross-Domain Gap Bridge",
+            "content": html,
+        },
+    )
 
 
 @app.get("/climate-monitor")
 async def climate_monitor(request: Request):
     """Climate AI Monitor — papers at climate+AI intersection."""
     from llm.climate_ai_monitor import get_watch_stats, render_climate_monitor_html
+
     stats = get_watch_stats()
     html = render_climate_monitor_html(stats)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "climate-monitor",
-        "title": "Climate AI Monitor",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "climate-monitor",
+            "title": "Climate AI Monitor",
+            "content": html,
+        },
+    )
 
 
 @app.post("/climate-monitor/toggle-watch")
@@ -1495,6 +1771,7 @@ async def climate_toggle_watch(request: Request):
     """Toggle watch status for a climate paper."""
     from llm.climate_ai_monitor import _load_watch_list, _save_watch_list
     from fastapi.responses import JSONResponse
+
     body = await request.json()
     paper_id = body.get("paper_id", "")
     watch = _load_watch_list()
@@ -1511,36 +1788,52 @@ async def climate_toggle_watch(request: Request):
 @app.get("/citation-chain")
 async def citation_chain(request: Request, arxiv_id: str = ""):
     """Citation Chain — build and visualize."""
-    return templates.TemplateResponse(request, "citation_chain.html", {
-        "page": "citation_chain",
-        "arxiv_id": arxiv_id,
-        "chain_data": None,
-        "error": None,
-    })
+    return templates.TemplateResponse(
+        request,
+        "citation_chain.html",
+        {
+            "page": "citation_chain",
+            "arxiv_id": arxiv_id,
+            "chain_data": None,
+            "error": None,
+        },
+    )
 
 
 @app.get("/citation-chain/graph")
 async def citation_chain_graph(request: Request, paper_id: str = "", title: str = ""):
     """Interactive SVG citation graph: paper → cited refs → Gene Pool capsules."""
     from llm.citation_pathfinder_web import render_citation_chain_html
+
     cited_paper_ids = ["p1", "p2", "p3"]  # placeholders; real impl reads from DB
     cited_capsule_ids = []
     html = render_citation_chain_html(paper_id, title, cited_paper_ids, cited_capsule_ids)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "citation_chain",
-        "title": "Citation Pathfinder",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "citation_chain",
+            "title": "Citation Pathfinder",
+            "content": html,
+        },
+    )
 
 
 @app.get("/voice-capsule")
 async def voice_capsule(request: Request):
     """Voice-to-Capsule — upload audio, transcribe, extract gap, save to Gene Pool."""
     from llm.voice_to_capsule import render_voice_upload_html
+
     html = render_voice_upload_html()
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "voice-capsule", "title": "Voice-to-Capsule", "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "voice-capsule",
+            "title": "Voice-to-Capsule",
+            "content": html,
+        },
+    )
 
 
 @app.post("/voice-capsule/transcribe")
@@ -1548,6 +1841,7 @@ async def voice_transcribe(request: Request):
     """Receive audio file, transcribe with Whisper, extract gap with LLM."""
     from llm.voice_to_capsule import extract_gap_from_text, transcribe_audio
     from fastapi.responses import JSONResponse
+
     try:
         form = await request.form()
         audio_file = form.get("audio")
@@ -1568,6 +1862,7 @@ async def voice_save(request: Request):
     """Save extracted voice gap to Gene Pool."""
     from llm.voice_to_capsule import save_voice_capsule
     from fastapi.responses import JSONResponse
+
     try:
         body = await request.json()
         cid = save_voice_capsule(body)
@@ -1580,36 +1875,58 @@ async def voice_save(request: Request):
 async def policy_impact(request: Request):
     """Policy Impact Tracer — map regulations to Gene Pool priority weights."""
     from llm.policy_impact_tracer import render_policy_tracer_html
+
     html = render_policy_tracer_html()
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "policy-impact", "title": "Policy Impact Tracer", "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "policy-impact",
+            "title": "Policy Impact Tracer",
+            "content": html,
+        },
+    )
 
 
 @app.get("/labor-displacement")
 async def labor_displacement(request: Request):
     """Labor Displacement Tracker — AI vs. human labor gaps."""
     from llm.labor_displacement_tracker import render_labor_tracker_html
+
     html = render_labor_tracker_html()
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "labor-displacement", "title": "Labor Displacement Tracker", "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "labor-displacement",
+            "title": "Labor Displacement Tracker",
+            "content": html,
+        },
+    )
 
 
 @app.get("/researchers")
 async def multi_researcher(request: Request):
     """Multi-Researcher Support — shared Gene Pool with source_user tags."""
     from llm.multi_researcher import render_multi_researcher_html
+
     html = render_multi_researcher_html()
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "multi-researcher", "title": "Multi-Researcher", "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "multi-researcher",
+            "title": "Multi-Researcher",
+            "content": html,
+        },
+    )
 
 
 @app.post("/researchers/add")
 async def add_researcher_route(request: Request):
     from llm.multi_researcher import add_researcher
     from fastapi.responses import JSONResponse
+
     body = await request.json()
     uid = body.get("user_id", "")
     name = body.get("name", "")
@@ -1621,6 +1938,7 @@ async def add_researcher_route(request: Request):
 async def researcher_capsules(user_id: str, request: Request):
     from llm.multi_researcher import get_capsules_for_user
     from fastapi.responses import JSONResponse
+
     capsules = get_capsules_for_user(user_id)
     return JSONResponse({"count": len(capsules), "capsules": capsules[:10]})
 
@@ -1634,15 +1952,20 @@ async def citation_chain_build(
 ):
     """Build a citation chain."""
     if not arxiv_id.strip():
-        return templates.TemplateResponse(request, "citation_chain.html", {
-            "page": "citation_chain",
-            "arxiv_id": arxiv_id,
-            "chain_data": None,
-            "error": "Please enter an arXiv ID.",
-        })
+        return templates.TemplateResponse(
+            request,
+            "citation_chain.html",
+            {
+                "page": "citation_chain",
+                "arxiv_id": arxiv_id,
+                "chain_data": None,
+                "error": "Please enter an arXiv ID.",
+            },
+        )
 
     try:
         from llm.citation_chain import CitationChainBuilder
+
         builder = CitationChainBuilder()
         chain = builder.build_chain(seed_arxiv_id=arxiv_id.strip(), max_depth=max_depth)
 
@@ -1653,59 +1976,77 @@ async def citation_chain_build(
         else:
             rendered = builder.render_mermaid(chain)
 
-        return templates.TemplateResponse(request, "citation_chain.html", {
-            "page": "citation_chain",
-            "arxiv_id": arxiv_id,
-            "chain_data": {
-                "nodes": [(n.paper_id, n.title, n.year, n.citation_count) for n in chain.nodes],
-                "edges": chain.edges,
-                "rendered": rendered,
-                "fmt": fmt,
-                "nodes_count": len(chain.nodes),
-                "edges_count": len(chain.edges),
+        return templates.TemplateResponse(
+            request,
+            "citation_chain.html",
+            {
+                "page": "citation_chain",
+                "arxiv_id": arxiv_id,
+                "chain_data": {
+                    "nodes": [(n.paper_id, n.title, n.year, n.citation_count) for n in chain.nodes],
+                    "edges": chain.edges,
+                    "rendered": rendered,
+                    "fmt": fmt,
+                    "nodes_count": len(chain.nodes),
+                    "edges_count": len(chain.edges),
+                },
+                "error": None,
             },
-            "error": None,
-        })
+        )
     except Exception as e:
-        return templates.TemplateResponse(request, "citation_chain.html", {
-            "page": "citation_chain",
-            "arxiv_id": arxiv_id,
-            "chain_data": None,
-            "error": str(e),
-        })
+        return templates.TemplateResponse(
+            request,
+            "citation_chain.html",
+            {
+                "page": "citation_chain",
+                "arxiv_id": arxiv_id,
+                "chain_data": None,
+                "error": str(e),
+            },
+        )
 
 
 # ── Research Loop ────────────────────────────────────────────────────────────────
+
 
 @app.get("/research-loop")
 async def research_loop(request: Request):
     """Research Loop dashboard — status, alerts, subscriptions."""
     try:
         from research_loop.orchestrator import AutonomousOrchestrator
+
         orch = AutonomousOrchestrator(webhook_enabled=False)
         status = orch.get_status()
         alerts_raw = orch.get_recent_alerts(limit=20)
     except Exception:
-        status = {"running": False, "interval_minutes": 30, "last_check": "", "alerts_count": 0, "error": "Orchestrator unavailable"}
+        status = {
+            "running": False,
+            "interval_minutes": 30,
+            "last_check": "",
+            "alerts_count": 0,
+            "error": "Orchestrator unavailable",
+        }
         alerts_raw = []
 
     alerts = []
     for a in alerts_raw:
-        created = a.created_at if hasattr(a, 'created_at') else a.get('created_at', '')
-        alerts.append((
-            a.alert_id,
-            a.session_id,
-            a.topic,
-            a.triggered_by,
-            a.trigger_title,
-            a.gaps_found,
-            a.top_gap_title,
-            a.top_gap_type,
-            a.severity,
-            a.gene_pool_score,
-            a.preference_boost,
-            created,
-        ))
+        created = a.created_at if hasattr(a, "created_at") else a.get("created_at", "")
+        alerts.append(
+            (
+                a.alert_id,
+                a.session_id,
+                a.topic,
+                a.triggered_by,
+                a.trigger_title,
+                a.gaps_found,
+                a.top_gap_title,
+                a.top_gap_type,
+                a.severity,
+                a.gene_pool_score,
+                a.preference_boost,
+                created,
+            )
+        )
 
     try:
         db = _get_db()
@@ -1715,17 +2056,23 @@ async def research_loop(request: Request):
 
     subscriptions = []
     for s in subs_raw:
-        subscriptions.append({
-            "id": s.get("id", ""),
-            "topic": s.get("topic", ""),
-        })
+        subscriptions.append(
+            {
+                "id": s.get("id", ""),
+                "topic": s.get("topic", ""),
+            }
+        )
 
-    return templates.TemplateResponse(request, "research_loop.html", {
-        "page": "research-loop",
-        "status": status,
-        "alerts": alerts,
-        "subscriptions": subscriptions,
-    })
+    return templates.TemplateResponse(
+        request,
+        "research_loop.html",
+        {
+            "page": "research-loop",
+            "status": status,
+            "alerts": alerts,
+            "subscriptions": subscriptions,
+        },
+    )
 
 
 @app.post("/research-loop/start")
@@ -1733,10 +2080,12 @@ async def research_loop_start(request: Request):
     """Start the autonomous watch loop."""
     try:
         from research_loop.orchestrator import AutonomousOrchestrator
+
         orch = AutonomousOrchestrator(webhook_enabled=False)
         orch.start_watch(interval_minutes=30)
     except Exception as e:
         import logging
+
         logging.getLogger(__name__).warning(f"Could not start orchestrator: {e}")
     return RedirectResponse(url="/research-loop", status_code=303)
 
@@ -1746,6 +2095,7 @@ async def research_loop_stop(request: Request):
     """Stop the autonomous watch loop."""
     try:
         from research_loop.orchestrator import AutonomousOrchestrator
+
         orch = AutonomousOrchestrator(webhook_enabled=False)
         orch.stop_watch()
     except Exception:
@@ -1757,40 +2107,56 @@ async def research_loop_stop(request: Request):
 async def research_loop_run_cycle(request: Request):
     """Manually trigger one orchestrator cycle."""
     import threading
+
     def run():
         try:
             from research_loop.orchestrator import AutonomousOrchestrator
+
             orch = AutonomousOrchestrator(webhook_enabled=False)
             orch.run_cycle()
         except Exception as e:
             import logging
+
             logging.getLogger(__name__).error(f"Run cycle failed: {e}")
+
     threading.Thread(target=run, daemon=True).start()
     return RedirectResponse(url="/research-loop", status_code=303)
 
 
 # ── Squad Coordinator ────────────────────────────────────────────────────────────
 
+
 @app.get("/research-loop/squad")
 async def squad_dashboard(request: Request):
     """Squad dashboard — multi-agent activity stream."""
     try:
         from research_loop.agents.squad import SquadCoordinator
+
         coord = SquadCoordinator()
         squad_status = coord.get_status()
         activity = coord.get_activity(limit=50)
         alerts = coord.get_alerts(limit=20)
     except Exception as e:
-        squad_status = {"running": False, "agents": {}, "error": str(e), "interval_minutes": 30, "last_cycle": ""}
+        squad_status = {
+            "running": False,
+            "agents": {},
+            "error": str(e),
+            "interval_minutes": 30,
+            "last_cycle": "",
+        }
         activity = []
         alerts = []
 
-    return templates.TemplateResponse(request, "squad_dashboard.html", {
-        "page": "squad-dashboard",
-        "squad_status": squad_status,
-        "activity": activity,
-        "alerts": alerts,
-    })
+    return templates.TemplateResponse(
+        request,
+        "squad_dashboard.html",
+        {
+            "page": "squad-dashboard",
+            "squad_status": squad_status,
+            "activity": activity,
+            "alerts": alerts,
+        },
+    )
 
 
 @app.post("/research-loop/squad/start")
@@ -1798,10 +2164,12 @@ async def squad_start(request: Request):
     """Start the multi-agent squad."""
     try:
         from research_loop.agents.squad import SquadCoordinator
+
         coord = SquadCoordinator()
         coord.start_watch(interval_minutes=30)
     except Exception as e:
         import logging
+
         logging.getLogger(__name__).warning(f"Could not start squad: {e}")
     return RedirectResponse(url="/research-loop/squad", status_code=303)
 
@@ -1811,6 +2179,7 @@ async def squad_stop(request: Request):
     """Stop the multi-agent squad."""
     try:
         from research_loop.agents.squad import SquadCoordinator
+
         coord = SquadCoordinator()
         coord.stop_watch()
     except Exception:
@@ -1822,14 +2191,18 @@ async def squad_stop(request: Request):
 async def squad_run_cycle(request: Request):
     """Manually trigger one squad cycle."""
     import threading
+
     def run():
         try:
             from research_loop.agents.squad import SquadCoordinator
+
             coord = SquadCoordinator()
             coord.run_cycle()
         except Exception as e:
             import logging
+
             logging.getLogger(__name__).error(f"Squad cycle failed: {e}")
+
     threading.Thread(target=run, daemon=True).start()
     return RedirectResponse(url="/research-loop/squad", status_code=303)
 
@@ -1842,9 +2215,11 @@ async def squad_stream():
 
     async def event_generator():
         import time as _time
+
         _last_len = 0
         try:
             from research_loop.agents.squad import SquadCoordinator
+
             coord = SquadCoordinator()
             while True:
                 activity = coord.get_activity(limit=50)
@@ -1882,6 +2257,7 @@ async def squad_activity():
     """JSON endpoint for squad activity stream + gap watch stats."""
     try:
         from research_loop.agents.squad import SquadCoordinator
+
         coord = SquadCoordinator()
         activity = coord.get_activity(limit=50)
 
@@ -1906,6 +2282,7 @@ async def insights(request: Request):
     """Research Insights — Gene Pool knowledge, user archetype, exploration history."""
     try:
         from llm.insight.tracker import EvolutionTracker
+
         tracker = EvolutionTracker()
 
         # Gene Pool capsules
@@ -1916,16 +2293,18 @@ async def insights(request: Request):
             raw = data.get("capsules", []) if isinstance(data, dict) else data
             for c in raw[-20:]:  # newest 20
                 status = c.get("status", "active")
-                capsules.append((
-                    c.get("capsule_id", "")[:12],
-                    c.get("trigger_topic", "")[:60],
-                    c.get("action_gap_type", ""),
-                    c.get("action_gap_title", "")[:80],
-                    c.get("outcome_success_score", 0.0),
-                    c.get("created_at", "")[:10],
-                    c.get("trigger_keywords", [])[:5],
-                    status,
-                ))
+                capsules.append(
+                    (
+                        c.get("capsule_id", "")[:12],
+                        c.get("trigger_topic", "")[:60],
+                        c.get("action_gap_type", ""),
+                        c.get("action_gap_title", "")[:80],
+                        c.get("outcome_success_score", 0.0),
+                        c.get("created_at", "")[:10],
+                        c.get("trigger_keywords", [])[:5],
+                        status,
+                    )
+                )
 
         # Gene Pool stats from tracker
         stats = tracker.get_gene_pool_stats()
@@ -1935,16 +2314,14 @@ async def insights(request: Request):
 
         # Top gap type preferences
         profile = tracker.get_profile()
-        gap_prefs = dict(sorted(
-            (profile.gap_type_preferences or {}).items(),
-            key=lambda x: x[1], reverse=True
-        ))
+        gap_prefs = dict(
+            sorted((profile.gap_type_preferences or {}).items(), key=lambda x: x[1], reverse=True)
+        )
 
         # Top topics
-        topic_freq = dict(sorted(
-            (profile.topic_frequency or {}).items(),
-            key=lambda x: x[1], reverse=True
-        )[:8])
+        topic_freq = dict(
+            sorted((profile.topic_frequency or {}).items(), key=lambda x: x[1], reverse=True)[:8]
+        )
 
         # Recent events (last 15)
         recent_events = tracker.get_recent_events(limit=15)
@@ -1952,13 +2329,16 @@ async def insights(request: Request):
         for e in reversed(recent_events):
             ts = e.timestamp[11:16] if e.timestamp else ""
             date = e.timestamp[:10] if e.timestamp else ""
-            events_display.append((
-                ts, date,
-                e.action.value if hasattr(e.action, 'value') else str(e.action),
-                e.topic[:40] if e.topic else "—",
-                e.gap_type or "—",
-                e.gap_title[:50] if e.gap_title else "—",
-            ))
+            events_display.append(
+                (
+                    ts,
+                    date,
+                    e.action.value if hasattr(e.action, "value") else str(e.action),
+                    e.topic[:40] if e.topic else "—",
+                    e.gap_type or "—",
+                    e.gap_title[:50] if e.gap_title else "—",
+                )
+            )
 
         # Exploration stats
         exp_stats = tracker.get_exploration_stats()
@@ -1974,33 +2354,47 @@ async def insights(request: Request):
             top_topic = max(topic_freq.items(), key=lambda x: x[1])[0] if topic_freq else ""
             if top_topic:
                 from llm.briefing_generator import _match_gene_pool
+
                 matches = _match_gene_pool(top_topic, "", "")
                 prefetched_ids = {m.get("capsule_id", "")[:12] for m in matches}
 
     except Exception as e:
-        capsules, stats, archetype, gap_prefs, topic_freq, events_display, exp_stats = [], {}, {}, {}, {}, [], {}
+        capsules, stats, archetype, gap_prefs, topic_freq, events_display, exp_stats = (
+            [],
+            {},
+            {},
+            {},
+            {},
+            [],
+            {},
+        )
         import logging
+
         logging.getLogger(__name__).warning(f"Insights unavailable: {e}")
 
-    return templates.TemplateResponse(request, "insights.html", {
-        "page": "insights",
-        "capsules": capsules,
-        "gene_pool_stats": stats,
-        "archetype": archetype,
-        "gap_prefs": gap_prefs,
-        "topic_freq": topic_freq,
-        "events": events_display,
-        "exp_stats": exp_stats,
-        "suggestions": suggestions,
-        "prefetched_ids": prefetched_ids,
-    })
+    return templates.TemplateResponse(
+        request,
+        "insights.html",
+        {
+            "page": "insights",
+            "capsules": capsules,
+            "gene_pool_stats": stats,
+            "archetype": archetype,
+            "gap_prefs": gap_prefs,
+            "topic_freq": topic_freq,
+            "events": events_display,
+            "exp_stats": exp_stats,
+            "suggestions": suggestions,
+            "prefetched_ids": prefetched_ids,
+        },
+    )
 
 
 @app.post("/insights/accept-suggestion")
 async def accept_suggestion(request: Request):
     """Accept an actionable suggestion — record it as a gap acceptance event.
 
-   闭环: marks the source capsule as 'consumed' so it won't repeat.
+    闭环: marks the source capsule as 'consumed' so it won't repeat.
     """
     body = await request.json()
     topic = body.get("topic", "")
@@ -2012,6 +2406,7 @@ async def accept_suggestion(request: Request):
 
     try:
         from llm.insight.tracker import EvolutionTracker
+
         tracker = EvolutionTracker()
         tracker.record_gap_accept(
             topic=topic or "insights",
@@ -2036,18 +2431,22 @@ async def accept_suggestion(request: Request):
         # Trigger evolution闭环 — this is what actually IMPROVES the Gene Pool
         try:
             from llm.insight.evolution import InsightEvolution
+
             evo = InsightEvolution(tracker=tracker)
             evo_result = evo.evolve(topic=topic or "insights")
             improved = evo_result.get("result", {}).get("added", 0)
             return {"success": True, "evolved": improved}
         except Exception as evo_err:
             import logging
+
             logging.getLogger(__name__).warning(f"Evolution trigger failed: {evo_err}")
             return {"success": True, "evolved": 0}
     except Exception as e:
         import logging
+
         logging.getLogger(__name__).warning(f"accept_suggestion failed: {e}")
         return {"success": False, "error": str(e)}
+
 
 @app.post("/insights/archive-capsule")
 async def archive_capsule(request: Request):
@@ -2058,23 +2457,45 @@ async def archive_capsule(request: Request):
         return {"success": False, "error": "capsule_id required"}
     try:
         from llm.insight.tracker import EvolutionTracker
+
         tracker = EvolutionTracker()
         archived = tracker.archive_capsule(capsule_id)
         return {"success": archived}
     except Exception as e:
         import logging
+
         logging.getLogger(__name__).warning(f"archive_capsule failed: {e}")
         return {"success": False, "error": str(e)}
 
 
 # Gap types the user has NOT explored yet but might find valuable
 _UNDERREPRESENTED_GAPS = [
-    ("theoretical_gap", "Theoretical foundations", "Develop formal theory or proofs for observed empirical patterns in your work"),
-    ("dataset_gap", "Dataset gap", "Build or curate a benchmark dataset addressing an under-explored problem domain"),
-    ("generalization_gap", "Generalization gap", "Test existing methods on out-of-distribution data to expose failure modes"),
-    ("scalability_issue", "Scalability issue", "Push current methods to larger scales and characterize runtime/cost tradeoffs"),
+    (
+        "theoretical_gap",
+        "Theoretical foundations",
+        "Develop formal theory or proofs for observed empirical patterns in your work",
+    ),
+    (
+        "dataset_gap",
+        "Dataset gap",
+        "Build or curate a benchmark dataset addressing an under-explored problem domain",
+    ),
+    (
+        "generalization_gap",
+        "Generalization gap",
+        "Test existing methods on out-of-distribution data to expose failure modes",
+    ),
+    (
+        "scalability_issue",
+        "Scalability issue",
+        "Push current methods to larger scales and characterize runtime/cost tradeoffs",
+    ),
     ("contradiction", "Contradiction", "Reproduce or challenge published findings in this area"),
-    ("evaluation_gap", "Evaluation gap", "Design proper evaluation protocols and baselines for this problem"),
+    (
+        "evaluation_gap",
+        "Evaluation gap",
+        "Design proper evaluation protocols and baselines for this problem",
+    ),
 ]
 
 
@@ -2084,6 +2505,7 @@ def _get_consumed_suggestions() -> set:
         path = Path.home() / ".ai_research_os" / "consumed_suggestions.json"
         if path.exists():
             import json
+
             return set(json.loads(path.read_text(encoding="utf-8")))
     except Exception:
         pass
@@ -2119,7 +2541,9 @@ def _mark_capule_consumed(capsule_id: str, tracker) -> None:
                         c["status"] = "consumed"
                         break
                 data["capsules"] = raw
-                capsules_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+                capsules_path.write_text(
+                    json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
+                )
             except Exception:
                 pass
 
@@ -2137,6 +2561,7 @@ def _mark_suggestion_consumed(gap_type: str, topic_hint: str, title: str, s_type
     """Mark a suggestion as consumed so it won't appear again."""
     try:
         import json
+
         consumed = _get_consumed_suggestions()
         if s_type == "archetype_advice":
             key = f"archetype:{title}"
@@ -2168,17 +2593,19 @@ def _generate_suggestions(capsules, gap_prefs, topic_freq, archetype, tracker) -
         for candidate_gap, label, description in _UNDERREPRESENTED_GAPS:
             if candidate_gap not in explored_gaps and candidate_gap not in suggested_gap_types:
                 # Suggest applying this successful gap type to a new domain
-                suggestions.append({
-                    "type": "explore_new_gap",
-                    "icon": "🔍",
-                    "title": f"Explore {label} in your research",
-                    "body": f"You've had success with {gap_type} (score {score:.2f}). "
-                             f"Consider investigating {description.lower()}.",
-                    "gap_type": candidate_gap,
-                    "confidence": min(score, 0.9),
-                    "topic_hint": list(explored_topics)[0] if explored_topics else "your field",
-                    "consumed": False,
-                })
+                suggestions.append(
+                    {
+                        "type": "explore_new_gap",
+                        "icon": "🔍",
+                        "title": f"Explore {label} in your research",
+                        "body": f"You've had success with {gap_type} (score {score:.2f}). "
+                        f"Consider investigating {description.lower()}.",
+                        "gap_type": candidate_gap,
+                        "confidence": min(score, 0.9),
+                        "topic_hint": list(explored_topics)[0] if explored_topics else "your field",
+                        "consumed": False,
+                    }
+                )
                 suggested_gap_types.add(candidate_gap)
                 break
 
@@ -2187,79 +2614,91 @@ def _generate_suggestions(capsules, gap_prefs, topic_freq, archetype, tracker) -
     evaluated = [g for g in explored_gaps if "evaluation" in g or "benchmark" in g]
     if not evaluated and top_topics:
         topic_name = top_topics[0][0][:40]
-        suggestions.append({
-            "type": "evaluation_gap",
-            "icon": "📏",
-            "title": f"Evaluate {topic_name} rigorously",
-            "body": f"You've explored '{topic_name}' ({topic_freq[topic_name]}×) "
-                     "but haven't investigated evaluation gaps. "
-                     "Proper benchmarks and controlled experiments could unlock significant improvements.",
-            "gap_type": "evaluation_gap",
-            "confidence": 0.7,
-            "topic_hint": topic_name,
-        })
+        suggestions.append(
+            {
+                "type": "evaluation_gap",
+                "icon": "📏",
+                "title": f"Evaluate {topic_name} rigorously",
+                "body": f"You've explored '{topic_name}' ({topic_freq[topic_name]}×) "
+                "but haven't investigated evaluation gaps. "
+                "Proper benchmarks and controlled experiments could unlock significant improvements.",
+                "gap_type": "evaluation_gap",
+                "confidence": 0.7,
+                "topic_hint": topic_name,
+            }
+        )
 
     # 3. From capsule keywords — find high-scoring capsules and suggest projects
     high_perf_capsules = [c for c in capsules if len(c) >= 5 and c[4] >= 0.7]
     if high_perf_capsules:
         best = high_perf_capsules[0]  # top capsule by score
         cap_id, topic, gap_type, gap_title, score, date, keywords, status = best
-        suggestions.append({
-            "type": "build_on_success",
-            "icon": "🚀",
-            "title": f"Build on: {gap_title[:60]}",
-            "body": f"This pattern scored {score*100:.0f}% success. "
-                     "Try extending it: add more keywords, test in adjacent domains, "
-                     "or compose with another high-performing capsule.",
-            "gap_type": gap_type,
-            "confidence": score,
-            "topic_hint": topic[:40],
-            "keywords": keywords,
-            "consumed": False,
-            "source_cap_id": cap_id,
-        })
+        suggestions.append(
+            {
+                "type": "build_on_success",
+                "icon": "🚀",
+                "title": f"Build on: {gap_title[:60]}",
+                "body": f"This pattern scored {score * 100:.0f}% success. "
+                "Try extending it: add more keywords, test in adjacent domains, "
+                "or compose with another high-performing capsule.",
+                "gap_type": gap_type,
+                "confidence": score,
+                "topic_hint": topic[:40],
+                "keywords": keywords,
+                "consumed": False,
+                "source_cap_id": cap_id,
+            }
+        )
 
     # 4. Dominant archetype-driven suggestion
     arch_dim = archetype.get("dominant", "")
     if arch_dim == "method_focused":
-        suggestions.append({
-            "type": "archetype_advice",
-            "icon": "⚙️",
-            "title": "Your archetype: Method Hunter",
-            "body": "Focus on novel architectures, training procedures, or inference optimizations. "
-                    "Look for published methods with surprising results and improve or extend them.",
-            "gap_type": "method_limitation",
-            "confidence": archetype.get("confidence", 0.5),
-            "topic_hint": list(explored_topics)[0][:40] if explored_topics else "ML",
-            "consumed": False,
-        })
+        suggestions.append(
+            {
+                "type": "archetype_advice",
+                "icon": "⚙️",
+                "title": "Your archetype: Method Hunter",
+                "body": "Focus on novel architectures, training procedures, or inference optimizations. "
+                "Look for published methods with surprising results and improve or extend them.",
+                "gap_type": "method_limitation",
+                "confidence": archetype.get("confidence", 0.5),
+                "topic_hint": list(explored_topics)[0][:40] if explored_topics else "ML",
+                "consumed": False,
+            }
+        )
     elif arch_dim == "high_risk":
-        suggestions.append({
-            "type": "archetype_advice",
-            "icon": "🧗",
-            "title": "Your archetype: Risk Taker",
-            "body": "Pursue high-uncertainty problems with high payoff: "
-                    "new domains, controversial claims, unproven scalability. "
-                    "Your profile suggests you can handle the volatility.",
-            "gap_type": "unexplored_application",
-            "confidence": archetype.get("confidence", 0.5),
-            "topic_hint": list(explored_topics)[0][:40] if explored_topics else "research",
-            "consumed": False,
-        })
+        suggestions.append(
+            {
+                "type": "archetype_advice",
+                "icon": "🧗",
+                "title": "Your archetype: Risk Taker",
+                "body": "Pursue high-uncertainty problems with high payoff: "
+                "new domains, controversial claims, unproven scalability. "
+                "Your profile suggests you can handle the volatility.",
+                "gap_type": "unexplored_application",
+                "confidence": archetype.get("confidence", 0.5),
+                "topic_hint": list(explored_topics)[0][:40] if explored_topics else "research",
+                "consumed": False,
+            }
+        )
 
     # 5. Cross-domain suggestion if applicable
     if archetype.get("dimensions", {}).get("cross_domain", (0, 0, "", ""))[1] >= 0.3:
-        suggestions.append({
-            "type": "cross_domain",
-            "icon": "🌉",
-            "title": "Bridge domains with your cross-domain profile",
-            "body": "Your research spans multiple areas. Try combining RL concepts with "
-                    "transformer architectures, or apply your NLP insights to graph problems.",
-            "gap_type": "generalization_gap",
-            "confidence": 0.65,
-            "topic_hint": list(explored_topics)[0][:40] if explored_topics else "interdisciplinary",
-            "consumed": False,
-        })
+        suggestions.append(
+            {
+                "type": "cross_domain",
+                "icon": "🌉",
+                "title": "Bridge domains with your cross-domain profile",
+                "body": "Your research spans multiple areas. Try combining RL concepts with "
+                "transformer architectures, or apply your NLP insights to graph problems.",
+                "gap_type": "generalization_gap",
+                "confidence": 0.65,
+                "topic_hint": list(explored_topics)[0][:40]
+                if explored_topics
+                else "interdisciplinary",
+                "consumed": False,
+            }
+        )
 
     # Filter out already-consumed suggestions
     # For archetype advice, deduplicate by type so consuming "Your archetype: Risk Taker"
@@ -2269,7 +2708,7 @@ def _generate_suggestions(capsules, gap_prefs, topic_freq, archetype, tracker) -
         if s["type"] == "archetype_advice":
             key = f"archetype:{s['title']}"
         else:
-            key = f"{s['gap_type']}:{s.get('topic_hint','')[:20]}:{s.get('title','')[:30]}"
+            key = f"{s['gap_type']}:{s.get('topic_hint', '')[:20]}:{s.get('title', '')[:30]}"
         if key not in consumed:
             filtered.append(s)
 
@@ -2280,25 +2719,29 @@ def _generate_suggestions(capsules, gap_prefs, topic_freq, archetype, tracker) -
 async def impact(request: Request):
     """Impact Ranking — leaderboard."""
     db = _get_db()
-    rows, _ = db.list_papers(limit=100)  # no citation_count column — sort in Python after fetching real counts
+    rows, _ = db.list_papers(
+        limit=100
+    )  # no citation_count column — sort in Python after fetching real counts
 
     papers = []
     for r in rows:
-        pid = getattr(r, 'paper_id', '') or getattr(r, 'id', '')
+        pid = getattr(r, "paper_id", "") or getattr(r, "id", "")
         if not pid:
             continue
         citation_data = db.get_citation_count(pid)
-        year_raw = getattr(r, 'published', '') or ''
+        year_raw = getattr(r, "published", "") or ""
         try:
             year = int(str(year_raw)[:4]) if year_raw else 2020
         except (ValueError, TypeError):
             year = 2020
-        papers.append({
-            "paper_id": pid,
-            "title": r.title,
-            "year": year,
-            "citation_count": citation_data.get("forward", 0) or 0,
-        })
+        papers.append(
+            {
+                "paper_id": pid,
+                "title": r.title,
+                "year": year,
+                "citation_count": citation_data.get("forward", 0) or 0,
+            }
+        )
 
     # Sort by citation_count desc, then score in Python
     papers.sort(key=lambda p: p["citation_count"], reverse=True)
@@ -2306,45 +2749,57 @@ async def impact(request: Request):
 
     try:
         from llm.impact_scorer import ImpactScorer
+
         scorer = ImpactScorer(db=db)
         ranking = scorer.rank_papers(papers, top_k=min(20, len(papers)))
     except Exception:
         ranking = []
 
-    return templates.TemplateResponse(request, "impact.html", {
-        "page": "impact",
-        "ranking": ranking,
-    })
-
+    return templates.TemplateResponse(
+        request,
+        "impact.html",
+        {
+            "page": "impact",
+            "ranking": ranking,
+        },
+    )
 
 
 @app.get("/papers/gap-analysis")
 async def papers_gap_analysis(request: Request, ids: str = ""):
     """Multi-paper gap analysis — surface shared and frontier gaps across N papers."""
     if not ids:
-        return templates.TemplateResponse(request, "generic.html", {
-            "page": "papers-gap-analysis",
-            "title": "Gap Analysis",
-            "content": """
+        return templates.TemplateResponse(
+            request,
+            "generic.html",
+            {
+                "page": "papers-gap-analysis",
+                "title": "Gap Analysis",
+                "content": """
             <div class="gap-analysis-empty">
                 <div class="gap-analysis-empty-icon">🔬</div>
                 <div class="gap-analysis-empty-msg">No papers selected.</div>
                 <div class="gap-analysis-empty-sub">Select 2+ papers from the Papers page, then click "Analyze Gaps".</div>
             </div>""",
-        })
+            },
+        )
 
     paper_ids = [i.strip() for i in ids.split(",") if i.strip()]
     if len(paper_ids) < 2:
-        return templates.TemplateResponse(request, "generic.html", {
-            "page": "papers-gap-analysis",
-            "title": "Gap Analysis",
-            "content": """
+        return templates.TemplateResponse(
+            request,
+            "generic.html",
+            {
+                "page": "papers-gap-analysis",
+                "title": "Gap Analysis",
+                "content": """
             <div class="gap-analysis-empty">
                 <div class="gap-analysis-empty-icon">🔬</div>
                 <div class="gap-analysis-empty-msg">Need at least 2 papers.</div>
                 <div class="gap-analysis-empty-sub">Select more papers from the Papers page.</div>
             </div>""",
-        })
+            },
+        )
 
     db = _get_db()
     paper_map = db.get_papers_bulk(paper_ids)
@@ -2354,13 +2809,18 @@ async def papers_gap_analysis(request: Request, ids: str = ""):
     ]
 
     from llm.paper_gap_extractor import analyze_multi_paper_gaps
+
     result = analyze_multi_paper_gaps(papers)
     html = _render_gap_analysis_html(result, papers)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "papers-gap-analysis",
-        "title": f"Gap Analysis ({len(papers)} papers)",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "papers-gap-analysis",
+            "title": f"Gap Analysis ({len(papers)} papers)",
+            "content": html,
+        },
+    )
 
 
 def _render_gap_analysis_html(result: Dict[str, Any], papers: List[Dict[str, Any]]) -> str:
@@ -2382,7 +2842,7 @@ def _render_gap_analysis_html(result: Dict[str, Any], papers: List[Dict[str, Any
         theme_rows = ""
         for t in themes:
             pids = t.get("papers", [])
-            theme_rows += f"<tr><td>{t.get('theme','')}</td><td>{', '.join(pids)}</td><td>{t.get('strength','')}</td><td>{t.get('description','')}</td></tr>"
+            theme_rows += f"<tr><td>{t.get('theme', '')}</td><td>{', '.join(pids)}</td><td>{t.get('strength', '')}</td><td>{t.get('description', '')}</td></tr>"
         sections.append(f"""
         <div class='ga-section'>
           <div class='ga-section-title'>🧠 Shared Themes ({len(themes)})</div>
@@ -2397,7 +2857,7 @@ def _render_gap_analysis_html(result: Dict[str, Any], papers: List[Dict[str, Any
     if frontier:
         gap_rows = ""
         for g in frontier:
-            gap_rows += f"<tr><td>{g.get('gap_title','')}</td><td><span class='ga-tag'>{g.get('gap_type','')}</span></td><td>{', '.join(g.get('keywords',[]))}</td><td>{g.get('summary','')}</td></tr>"
+            gap_rows += f"<tr><td>{g.get('gap_title', '')}</td><td><span class='ga-tag'>{g.get('gap_type', '')}</span></td><td>{', '.join(g.get('keywords', []))}</td><td>{g.get('summary', '')}</td></tr>"
         sections.append(f"""
         <div class='ga-section'>
           <div class='ga-section-title'>🚀 Frontier Gaps ({len(frontier)})</div>
@@ -2412,7 +2872,7 @@ def _render_gap_analysis_html(result: Dict[str, Any], papers: List[Dict[str, Any
     if comp:
         comp_rows = ""
         for g in comp:
-            comp_rows += f"<tr><td>{g.get('gap_title','')}</td><td><span class='ga-tag'>{g.get('gap_type','')}</span></td><td>{g.get('description','')}</td></tr>"
+            comp_rows += f"<tr><td>{g.get('gap_title', '')}</td><td><span class='ga-tag'>{g.get('gap_type', '')}</span></td><td>{g.get('description', '')}</td></tr>"
         sections.append(f"""
         <div class='ga-section'>
           <div class='ga-section-title'>🔗 Complementary Gaps ({len(comp)})</div>
@@ -2427,7 +2887,7 @@ def _render_gap_analysis_html(result: Dict[str, Any], papers: List[Dict[str, Any
     if contrad:
         contrad_rows = ""
         for c in contrad:
-            contrad_rows += f"<tr><td><span class='ga-tag'>{c.get('gap_type','')}</span></td><td>{c.get('description','')}</td></tr>"
+            contrad_rows += f"<tr><td><span class='ga-tag'>{c.get('gap_type', '')}</span></td><td>{c.get('description', '')}</td></tr>"
         sections.append(f"""
         <div class='ga-section'>
           <div class='ga-section-title'>⚡ Contradictions ({len(contrad)})</div>
@@ -2438,7 +2898,9 @@ def _render_gap_analysis_html(result: Dict[str, Any], papers: List[Dict[str, Any
         </div>""")
 
     if not sections:
-        sections.append("<div class='ga-empty'>No gaps identified. Try papers with more diverse abstracts.</div>")
+        sections.append(
+            "<div class='ga-empty'>No gaps identified. Try papers with more diverse abstracts.</div>"
+        )
 
     return f"""
     <style>
@@ -2456,26 +2918,34 @@ def _render_gap_analysis_html(result: Dict[str, Any], papers: List[Dict[str, Any
     .gap-analysis-empty-msg {{ font-size: 18px; color: #444; margin-bottom: 8px; }}
     .gap-analysis-empty-sub {{ font-size: 13px; color: #999; }}
     </style>
-    {''.join(sections)}"""
+    {"".join(sections)}"""
 
 
 @app.get("/papers/gap-analysis/questions")
 async def gap_analysis_questions(request: Request, ids: str = ""):
     """Generate research questions from frontier gaps for selected papers."""
     if not ids:
-        return templates.TemplateResponse(request, "generic.html", {
-            "page": "gap-questions",
-            "title": "Research Questions",
-            "content": "<div class='gap-analysis-empty'><div class='gap-analysis-empty-icon'>🔬</div><div class='gap-analysis-empty-msg'>No papers selected.</div></div>",
-        })
+        return templates.TemplateResponse(
+            request,
+            "generic.html",
+            {
+                "page": "gap-questions",
+                "title": "Research Questions",
+                "content": "<div class='gap-analysis-empty'><div class='gap-analysis-empty-icon'>🔬</div><div class='gap-analysis-empty-msg'>No papers selected.</div></div>",
+            },
+        )
 
     paper_ids = [i.strip() for i in ids.split(",") if i.strip()]
     if len(paper_ids) < 2:
-        return templates.TemplateResponse(request, "generic.html", {
-            "page": "gap-questions",
-            "title": "Research Questions",
-            "content": "<div class='gap-analysis-empty'><div class='gap-analysis-empty-icon'>🔬</div><div class='gap-analysis-empty-msg'>Need at least 2 papers.</div></div>",
-        })
+        return templates.TemplateResponse(
+            request,
+            "generic.html",
+            {
+                "page": "gap-questions",
+                "title": "Research Questions",
+                "content": "<div class='gap-analysis-empty'><div class='gap-analysis-empty-icon'>🔬</div><div class='gap-analysis-empty-msg'>Need at least 2 papers.</div></div>",
+            },
+        )
 
     db = _get_db()
     paper_map = db.get_papers_bulk(paper_ids)
@@ -2485,20 +2955,26 @@ async def gap_analysis_questions(request: Request, ids: str = ""):
     ]
 
     from llm.paper_gap_extractor import analyze_multi_paper_gaps, gaps_to_research_questions
+
     gap_result = analyze_multi_paper_gaps(papers)
     frontier = gap_result.get("frontier_gaps", [])
     paper_titles = {p["id"]: p["title"] for p in papers}
     questions_result = gaps_to_research_questions(frontier, paper_titles)
     html = _render_rq_html(questions_result, frontier, paper_titles)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "gap-questions",
-        "title": f"Research Questions ({len(papers)} papers)",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "gap-questions",
+            "title": f"Research Questions ({len(papers)} papers)",
+            "content": html,
+        },
+    )
 
 
-def _render_rq_html(result: Dict[str, Any], frontier_gaps: List[Dict[str, Any]],
-                    paper_titles: Dict[str, str]) -> str:
+def _render_rq_html(
+    result: Dict[str, Any], frontier_gaps: List[Dict[str, Any]], paper_titles: Dict[str, str]
+) -> str:
     DIFFICULTY_COLOR = {"easy": "#4CAF50", "medium": "#FF9800", "hard": "#F44336"}
 
     questions = result.get("questions", [])
@@ -2519,7 +2995,7 @@ def _render_rq_html(result: Dict[str, Any], frontier_gaps: List[Dict[str, Any]],
         <div class='rq-item'>
           <div class='rq-header'>
             <span class='rq-num'>{i}</span>
-            <div class='rq-question'>{q.get('question', '?')}</div>
+            <div class='rq-question'>{q.get("question", "?")}</div>
             <span class='rq-diff' style='color:{diff_color};'>{diff.upper()}</span>
           </div>
           <div class='rq-meta'>
@@ -2557,7 +3033,9 @@ def _get_experiment_queue() -> List[Dict[str, Any]]:
     try:
         if not EXPERIMENTS_DIR.exists():
             return []
-        files = sorted(EXPERIMENTS_DIR.glob("experiment_*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+        files = sorted(
+            EXPERIMENTS_DIR.glob("experiment_*.json"), key=lambda p: p.stat().st_mtime, reverse=True
+        )
         results = []
         for f in files[:20]:
             results.append(json.loads(f.read_text(encoding="utf-8")))
@@ -2576,11 +3054,15 @@ def _save_experiment(exp: Dict[str, Any]) -> None:
 async def insights_experiments(request: Request):
     """List queued experiment proposals."""
     queue = _get_experiment_queue()
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "experiments",
-        "title": "🔬 Experiment Proposals",
-        "content": _render_experiments_html(queue),
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "experiments",
+            "title": "🔬 Experiment Proposals",
+            "content": _render_experiments_html(queue),
+        },
+    )
 
 
 def _render_experiments_html(queue: List[Dict[str, Any]]) -> str:
@@ -2594,21 +3076,32 @@ def _render_experiments_html(queue: List[Dict[str, Any]]) -> str:
     rows = ""
     for i, exp in enumerate(queue, 1):
         status = exp.get("status", "pending")
-        status_color = {"pending": "#FF9800", "running": "#2196F3", "done": "#4CAF50", "failed": "#F44336"}.get(status, "#888")
+        status_color = {
+            "pending": "#FF9800",
+            "running": "#2196F3",
+            "done": "#4CAF50",
+            "failed": "#F44336",
+        }.get(status, "#888")
         hypothesis = exp.get("hypothesis", "")
         exp_id_js = exp["id"].replace("'", "\\'")
-        run_btn = (f'<button onclick="runExperiment(\'{exp_id_js}\')" '
-                   f'style="background:#4CAF50;color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:12px;cursor:pointer;">'
-                   f'▶ Run Experiment</button>') if status == "pending" else ""
+        run_btn = (
+            (
+                f"<button onclick=\"runExperiment('{exp_id_js}')\" "
+                f'style="background:#4CAF50;color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:12px;cursor:pointer;">'
+                f"▶ Run Experiment</button>"
+            )
+            if status == "pending"
+            else ""
+        )
         rows += f"""
         <div style="border: 1px solid #e0e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
-            <div style="font-size:14px;font-weight:700;color:#1a2a3a;">{i}. {exp.get('title', 'Untitled')[:80]}</div>
+            <div style="font-size:14px;font-weight:700;color:#1a2a3a;">{i}. {exp.get("title", "Untitled")[:80]}</div>
             <span style="font-size:11px;font-weight:700;color:{status_color};background:{status_color}22;padding:3px 10px;border-radius:12px;">{status.upper()}</span>
           </div>
-          <div style="font-size:12px;color:#555;margin-bottom:6px;"><span style="color:#888;">gap_type:</span> {exp.get('gap_type','')}</div>
-          <div style="font-size:12px;color:#555;margin-bottom:6px;"><span style="color:#888;">difficulty:</span> {exp.get('difficulty','')}</div>
-          {('<div style="font-size:12px;color:#666;margin-bottom:6px;font-style:italic;">&#128161; Hypothesis: ' + hypothesis[:150] + '</div>' if hypothesis else '')}
+          <div style="font-size:12px;color:#555;margin-bottom:6px;"><span style="color:#888;">gap_type:</span> {exp.get("gap_type", "")}</div>
+          <div style="font-size:12px;color:#555;margin-bottom:6px;"><span style="color:#888;">difficulty:</span> {exp.get("difficulty", "")}</div>
+          {('<div style="font-size:12px;color:#666;margin-bottom:6px;font-style:italic;">&#128161; Hypothesis: ' + hypothesis[:150] + "</div>" if hypothesis else "")}
           <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
             {run_btn}
             <button onclick="removeExperiment('{exp_id_js}')" style="background:transparent;color:#888;border:1px solid #ccc;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;">Remove</button>
@@ -2646,12 +3139,15 @@ async def generate_experiment(request: Request):
 
     try:
         from llm.paper_gap_extractor import gaps_to_research_questions
-        frontier_gaps = [{
-            "gap_title": gap_title or topic or "Research gap",
-            "gap_type": gap_type,
-            "keywords": keywords,
-            "summary": description,
-        }]
+
+        frontier_gaps = [
+            {
+                "gap_title": gap_title or topic or "Research gap",
+                "gap_type": gap_type,
+                "keywords": keywords,
+                "summary": description,
+            }
+        ]
         questions_result = gaps_to_research_questions(frontier_gaps)
         questions = questions_result.get("questions", [])
         if questions:
@@ -2678,6 +3174,7 @@ async def generate_experiment(request: Request):
         return {"success": True, "experiment": exp}
     except Exception as e:
         import logging
+
         logging.getLogger(__name__).warning(f"Experiment generation failed: {e}")
         return {"success": False, "error": str(e)}
 
@@ -2705,6 +3202,7 @@ async def run_experiment(request: Request):
             paper_id = exp.get("paper_id", "")
             if paper_id:
                 from research_loop.paper2code_integration import PaperPipeline
+
                 pipeline = PaperPipeline()
                 result = pipeline.run(paper_id)
                 exp["status"] = "done"
@@ -2733,32 +3231,41 @@ async def run_experiment(request: Request):
 
 def _get_tracker():
     from llm.insight.tracker import EvolutionTracker
+
     return EvolutionTracker()
 
 
 # ── Research Log ────────────────────────────────────────────────────────────────
 
+
 @app.get("/research-log")
 async def research_log(request: Request, paper_id: str = ""):
     """Research Log page — view and add research notes."""
     from llm.paper_gap_extractor import render_research_log
+
     html = render_research_log(paper_id or None)
-    return templates.TemplateResponse(request, "generic.html", {
-        "page": "research-log",
-        "title": "Research Log",
-        "content": html,
-    })
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "research-log",
+            "title": "Research Log",
+            "content": html,
+        },
+    )
 
 
 @app.post("/research-log/note")
 async def add_note(request: Request):
     """Append a research note."""
     from fastapi.responses import JSONResponse
+
     body = await request.json()
     paper_id = body.get("paper_id", "")
     note = body.get("note", "")
     tags = body.get("tags", [])
     from llm.paper_gap_extractor import add_research_note
+
     ok = add_research_note(paper_id, note, tags)
     return JSONResponse({"success": ok})
 
@@ -2768,10 +3275,12 @@ async def get_notes(request: Request, paper_id: str = ""):
     """Get notes JSON, optionally filtered by paper_id."""
     from fastapi.responses import JSONResponse
     from llm.paper_gap_extractor import get_research_notes
+
     notes = get_research_notes(paper_id or None)
     return JSONResponse({"notes": notes})
 
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8501)

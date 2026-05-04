@@ -23,6 +23,7 @@ from llm.evolution import get_evolution_memory, FeedbackType
 @dataclass
 class PaperInsight:
     """论文洞察."""
+
     paper_id: str
     title: str
     positive_count: int = 0
@@ -42,6 +43,7 @@ class PaperInsight:
 @dataclass
 class QueryInsight:
     """查询洞察."""
+
     keywords: List[str]
     avg_score: float
     success_rate: float
@@ -52,6 +54,7 @@ class QueryInsight:
 @dataclass
 class LearningReport:
     """学习报告."""
+
     period_start: str
     period_end: str
     total_queries: int
@@ -73,12 +76,14 @@ class LearningReport:
         lines = []
 
         # 开场：学习伙伴的视角
-        lines.extend([
-            "# 🧬 AI Research OS 学习报告",
-            "",
-            f"*{self.period_start[:10]} ~ {self.period_end[:10]}*",
-            "",
-        ])
+        lines.extend(
+            [
+                "# 🧬 AI Research OS 学习报告",
+                "",
+                f"*{self.period_start[:10]} ~ {self.period_end[:10]}*",
+                "",
+            ]
+        )
 
         # 叙事开场
         if self.user_journey:
@@ -87,28 +92,34 @@ class LearningReport:
 
         # 系统学会了什么
         if self.system_learned:
-            lines.extend([
-                "## 🎯 系统学会了什么",
-                "",
-                f"_{self.system_learned}_",
-                "",
-            ])
+            lines.extend(
+                [
+                    "## 🎯 系统学会了什么",
+                    "",
+                    f"_{self.system_learned}_",
+                    "",
+                ]
+            )
 
         # 核心指标 - 叙事化
-        lines.extend([
-            "## 📊 回顾这一周",
-            "",
-            f"你一共问了 **{self.total_queries}** 个问题，",
-            f"其中 **{self.positive_rate * 100:.0f}%** 让你感到满意。",
-            "",
-        ])
+        lines.extend(
+            [
+                "## 📊 回顾这一周",
+                "",
+                f"你一共问了 **{self.total_queries}** 个问题，",
+                f"其中 **{self.positive_rate * 100:.0f}%** 让你感到满意。",
+                "",
+            ]
+        )
 
         # 热门论文 - 带故事
         if self.top_papers:
-            lines.extend([
-                "### 📚 你最常引用的论文",
-                "",
-            ])
+            lines.extend(
+                [
+                    "### 📚 你最常引用的论文",
+                    "",
+                ]
+            )
             top = self.top_papers[0]
             lines.append(f"**{top.title}** 是你的「老朋友」——")
             lines.append(f"你引用了 {top.positive_count} 次，每次都有收获。")
@@ -122,19 +133,23 @@ class LearningReport:
         # 关注热点 - 叙事化
         if self.top_keywords:
             topics = "、".join(self.top_keywords[:3])
-            lines.extend([
-                "### 🔑 你的研究焦点",
-                "",
-                f"这周你主要探索了 **{topics}**。",
-                "",
-            ])
+            lines.extend(
+                [
+                    "### 🔑 你的研究焦点",
+                    "",
+                    f"这周你主要探索了 **{topics}**。",
+                    "",
+                ]
+            )
 
         # 探索建议 - 对话式
         if self.questions_to_explore:
-            lines.extend([
-                "### 💡 你可能想问",
-                "",
-            ])
+            lines.extend(
+                [
+                    "### 💡 你可能想问",
+                    "",
+                ]
+            )
             # 只显示最有价值的一个
             if self.questions_to_explore:
                 lines.append("你问过类似的问题，也许可以深入一步：")
@@ -145,33 +160,39 @@ class LearningReport:
         # 趋势预测 - 故事化
         if self.predicted_interests:
             interest = self.predicted_interests[0]
-            lines.extend([
-                "### 🔮 系统预测",
-                "",
-                f"基于你的探索轨迹，我猜你接下来会感兴趣：**{interest}**。",
-                "",
-            ])
+            lines.extend(
+                [
+                    "### 🔮 系统预测",
+                    "",
+                    f"基于你的探索轨迹，我猜你接下来会感兴趣：**{interest}**。",
+                    "",
+                ]
+            )
 
         # 高光时刻
         if self.highlight_moment:
-            lines.extend([
-                "### ⭐ 高光时刻",
-                "",
-                f"_{self.highlight_moment}_",
-                "",
-            ])
+            lines.extend(
+                [
+                    "### ⭐ 高光时刻",
+                    "",
+                    f"_{self.highlight_moment}_",
+                    "",
+                ]
+            )
 
         # 进化进度
-        lines.extend([
-            "---",
-            "",
-            f"📍 {self.evolution_stage}",
-            "",
-            f"**下一步**: {self.progress_towards_next}",
-            "",
-            "---",
-            "_由 AI Research OS 自进化系统生成_",
-        ])
+        lines.extend(
+            [
+                "---",
+                "",
+                f"📍 {self.evolution_stage}",
+                "",
+                f"**下一步**: {self.progress_towards_next}",
+                "",
+                "---",
+                "_由 AI Research OS 自进化系统生成_",
+            ]
+        )
 
         return "\n".join(lines)
 
@@ -202,7 +223,18 @@ class LearningReport:
                 lines.append("")
 
         if self.top_keywords:
-            lines.extend(["## 🔑 关注热点", "", "你最近最关心的话题：", "", "```", "  " + " | ".join(self.top_keywords[:5]), "```", ""])
+            lines.extend(
+                [
+                    "## 🔑 关注热点",
+                    "",
+                    "你最近最关心的话题：",
+                    "",
+                    "```",
+                    "  " + " | ".join(self.top_keywords[:5]),
+                    "```",
+                    "",
+                ]
+            )
 
         if self.questions_to_explore:
             lines.extend(["## 💡 建议探索", "", "基于你的阅读历史，系统推荐以下问题：", ""])
@@ -281,7 +313,9 @@ class EvolutionReporter:
         return feedbacks
 
     def _analyze_paper_insights(self, feedbacks: List[Dict]) -> List[PaperInsight]:
-        paper_data: Dict[str, Dict[str, Any]] = defaultdict(lambda: {"positive": 0, "negative": 0, "scores": [], "queries": []})
+        paper_data: Dict[str, Dict[str, Any]] = defaultdict(
+            lambda: {"positive": 0, "negative": 0, "scores": [], "queries": []}
+        )
         for fb in feedbacks:
             if fb.get("command") != "chat":
                 continue
@@ -296,27 +330,53 @@ class EvolutionReporter:
 
         insights = []
         for paper_id, pdata in paper_data.items():
-            insights.append(PaperInsight(
-                paper_id=paper_id,
-                title=paper_id,
-                positive_count=pdata["positive"],
-                negative_count=pdata["negative"],
-                avg_score=sum(pdata["scores"]) / len(pdata["scores"]) if pdata["scores"] else 0,
-                related_queries=pdata["queries"][:3],
-            ))
+            insights.append(
+                PaperInsight(
+                    paper_id=paper_id,
+                    title=paper_id,
+                    positive_count=pdata["positive"],
+                    negative_count=pdata["negative"],
+                    avg_score=sum(pdata["scores"]) / len(pdata["scores"]) if pdata["scores"] else 0,
+                    related_queries=pdata["queries"][:3],
+                )
+            )
         return insights
 
     def _extract_top_keywords(self, feedbacks: List[Dict]) -> List[str]:
-        all_text = " ".join([fb.get("query", "") + " " + " ".join(fb.get("paper_ids", [])) for fb in feedbacks])
-        stopwords = {"the", "is", "are", "a", "an", "what", "how", "why", "this", "that", "and", "or", "的", "是", "如何", "什么", "怎么"}
-        words = re.findall(r'[\u4e00-\u9fff]+|[a-zA-Z]{3,}', all_text.lower())
+        all_text = " ".join(
+            [fb.get("query", "") + " " + " ".join(fb.get("paper_ids", [])) for fb in feedbacks]
+        )
+        stopwords = {
+            "the",
+            "is",
+            "are",
+            "a",
+            "an",
+            "what",
+            "how",
+            "why",
+            "this",
+            "that",
+            "and",
+            "or",
+            "的",
+            "是",
+            "如何",
+            "什么",
+            "怎么",
+        }
+        words = re.findall(r"[\u4e00-\u9fff]+|[a-zA-Z]{3,}", all_text.lower())
         filtered = [w for w in words if w not in stopwords and len(w) > 2]
         return [w for w, _ in Counter(filtered).most_common(10)]
 
     def _find_emerging_patterns(self, feedbacks: List[Dict]) -> List[str]:
         patterns = []
         compare_keywords = ["vs", "versus", "比较", "区别", "diff", "对比"]
-        compare_count = sum(1 for fb in feedbacks if any(kw in fb.get("query", "").lower() for kw in compare_keywords))
+        compare_count = sum(
+            1
+            for fb in feedbacks
+            if any(kw in fb.get("query", "").lower() for kw in compare_keywords)
+        )
         if compare_count > len(feedbacks) * 0.2:
             patterns.append("你开始关注论文间的比较分析")
 
@@ -326,11 +386,13 @@ class EvolutionReporter:
 
         return patterns
 
-    def _generate_suggestions(self, feedbacks: List[Dict], paper_insights: List, db=None) -> List[str]:
+    def _generate_suggestions(
+        self, feedbacks: List[Dict], paper_insights: List, db=None
+    ) -> List[str]:
         suggestions = []
         if paper_insights:
             top_paper = paper_insights[0]
-            suggestions.append(f"深入探索 \"{top_paper.paper_id}\" 的相关工作")
+            suggestions.append(f'深入探索 "{top_paper.paper_id}" 的相关工作')
         keywords = self._extract_top_keywords(feedbacks)
         if keywords:
             suggestions.append(f"了解 {keywords[0]} 的最新研究进展")
@@ -382,7 +444,9 @@ class EvolutionReporter:
             return "你开始了新的探索旅程，提出了第一个问题。"
         return ""
 
-    def _generate_system_learned(self, feedbacks: List[Dict], paper_insights: List, stats: Dict) -> str:
+    def _generate_system_learned(
+        self, feedbacks: List[Dict], paper_insights: List, stats: Dict
+    ) -> str:
         """生成系统学会的内容叙事."""
         reliable = stats.get("reliable_patterns", 0)
         total = len(feedbacks)
@@ -405,7 +469,7 @@ class EvolutionReporter:
             return ""
 
         top = paper_insights[0]
-        pos_count = getattr(top, 'positive_count', 0)
+        pos_count = getattr(top, "positive_count", 0)
 
         if pos_count >= 5:
             return f"「{top.title}」是你最信赖的参考资料，被引用了 {pos_count} 次！"
@@ -418,14 +482,21 @@ class EvolutionReporter:
 
     def _empty_report(self, start: str, end: str) -> LearningReport:
         return LearningReport(
-            period_start=start, period_end=end, total_queries=0, positive_rate=0.0,
-            top_papers=[], top_keywords=[], emerging_patterns=["开始使用系统，开始你的研究之旅"],
-            predicted_interests=[], questions_to_explore=[
+            period_start=start,
+            period_end=end,
+            total_queries=0,
+            positive_rate=0.0,
+            top_papers=[],
+            top_keywords=[],
+            emerging_patterns=["开始使用系统，开始你的研究之旅"],
+            predicted_interests=[],
+            questions_to_explore=[
                 "尝试用 airos chat 问一个关于论文的问题",
                 "探索 airos search 发现新论文",
                 "用 airos slides 生成论文幻灯片",
             ],
-            evolution_stage="🌱 种子期", progress_towards_next="开始使用，获得你的第一个满意回答",
+            evolution_stage="🌱 种子期",
+            progress_towards_next="开始使用，获得你的第一个满意回答",
         )
 
     def save_report(self, report: LearningReport, output_path: Optional[Path] = None) -> Path:
@@ -463,11 +534,17 @@ class AdaptiveRetrieval:
             self.boost_data = {}
 
     def _save_boost(self):
-        self.boost_file.write_text(json.dumps(self.boost_data, indent=2, ensure_ascii=False), encoding="utf-8")
+        self.boost_file.write_text(
+            json.dumps(self.boost_data, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
 
     def record_retrieval(self, paper_id: str, query: str, was_useful: bool):
         if paper_id not in self.boost_data:
-            self.boost_data[paper_id] = {"positive_mentions": 0, "negative_mentions": 0, "queries": []}
+            self.boost_data[paper_id] = {
+                "positive_mentions": 0,
+                "negative_mentions": 0,
+                "queries": [],
+            }
         data = self.boost_data[paper_id]
         if was_useful:
             data["positive_mentions"] += 1
@@ -478,11 +555,7 @@ class AdaptiveRetrieval:
             data["queries"] = data["queries"][-20:]
         total = data["positive_mentions"] + data["negative_mentions"]
         # Wilson Score Interval - 提供置信度加权的 boost
-        data["boost_score"] = self._wilson_score(
-            data["positive_mentions"],
-            total,
-            confidence=0.95
-        )
+        data["boost_score"] = self._wilson_score(data["positive_mentions"], total, confidence=0.95)
         data["confidence"] = min(total / self.CONFIDENCE_THRESHOLD, 1.0)
         data["last_update"] = datetime.now().isoformat()
         self._save_boost()
@@ -528,19 +601,23 @@ class AdaptiveRetrieval:
             topic_counts[topic] = topic_counts.get(topic, 0) + 1
             diversity_penalty = self._calc_diversity_penalty(topic, topic_counts, len(results))
 
-            boosted.append({
-                **r,
-                "score": final_score * diversity_penalty,
-                "boost": decayed_boost,
-                "confidence": confidence,
-                "topic": topic,
-            })
+            boosted.append(
+                {
+                    **r,
+                    "score": final_score * diversity_penalty,
+                    "boost": decayed_boost,
+                    "confidence": confidence,
+                    "topic": topic,
+                }
+            )
 
         # 先按 score 排序，再应用多样性重排
         boosted.sort(key=lambda x: x["score"], reverse=True)
         return self._apply_diversity_rerank(boosted)
 
-    def _calc_diversity_penalty(self, topic: str, topic_counts: Dict[str, int], total: int) -> float:
+    def _calc_diversity_penalty(
+        self, topic: str, topic_counts: Dict[str, int], total: int
+    ) -> float:
         """计算多样性惩罚，同类过多时降权."""
         if total == 0:
             return 1.0
@@ -595,22 +672,24 @@ def get_adaptive_retrieval() -> AdaptiveRetrieval:
 # === Smart Follow-Up System ===
 class FollowUpType:
     """追问类型."""
-    MATH = "math"           # 数学原理
-    CODE = "code"           # 代码实现
-    COMPARE = "compare"      # 历史对比
+
+    MATH = "math"  # 数学原理
+    CODE = "code"  # 代码实现
+    COMPARE = "compare"  # 历史对比
     EVOLUTION = "evolution"  # 演进关系
-    PRACTICE = "practice"    # 实践应用
-    CITATION = "citation"    # 引用论文
+    PRACTICE = "practice"  # 实践应用
+    CITATION = "citation"  # 引用论文
 
 
 @dataclass
 class FollowUp:
     """追问选项."""
-    text: str           # 显示文本
-    type: str           # 追问类型
-    query: str          # 自动生成的查询
-    icon: str           # 图标
-    depth: int = 1      # 追问深度
+
+    text: str  # 显示文本
+    type: str  # 追问类型
+    query: str  # 自动生成的查询
+    icon: str  # 图标
+    depth: int = 1  # 追问深度
 
 
 class SmartFollowUp:
@@ -622,20 +701,44 @@ class SmartFollowUp:
     _BASE = list(SMART_FOLLOWUP_BASE)
 
     TOPIC_KEYWORDS = {
-        FollowUpType.MATH: _BASE + [
-            "score", "参数", "矩阵", "注意力", "梯度", "优化", "计算",
+        FollowUpType.MATH: _BASE
+        + [
+            "score",
+            "参数",
+            "矩阵",
+            "注意力",
+            "梯度",
+            "优化",
+            "计算",
         ],
-        FollowUpType.CODE: _BASE + [
-            "实现", "代码", "函数", "模块",
+        FollowUpType.CODE: _BASE
+        + [
+            "实现",
+            "代码",
+            "函数",
+            "模块",
         ],
-        FollowUpType.COMPARE: _BASE + [
-            "different", "相比", "优于", "区别", "对比",
+        FollowUpType.COMPARE: _BASE
+        + [
+            "different",
+            "相比",
+            "优于",
+            "区别",
+            "对比",
         ],
-        FollowUpType.EVOLUTION: _BASE + [
-            "演进", "改进", "基于", "后续",
+        FollowUpType.EVOLUTION: _BASE
+        + [
+            "演进",
+            "改进",
+            "基于",
+            "后续",
         ],
-        FollowUpType.PRACTICE: _BASE + [
-            "应用", "实践", "工业", "部署",
+        FollowUpType.PRACTICE: _BASE
+        + [
+            "应用",
+            "实践",
+            "工业",
+            "部署",
         ],
     }
 
@@ -687,7 +790,7 @@ class SmartFollowUp:
 
         # 从第一篇（最相关）论文提取概念
         primary = citations[0]
-        paper_title = getattr(primary, 'paper_title', '') or ''
+        paper_title = getattr(primary, "paper_title", "") or ""
 
         # 提取论文中的技术关键词
         tech_keywords = self._extract_technical_terms(answer)
@@ -695,24 +798,28 @@ class SmartFollowUp:
         # 生成引用导向的追问
         if paper_title and tech_keywords:
             # 追问这篇论文被谁引用/影响了谁
-            options.append(FollowUp(
-                text="📑 引用这篇论文的后续工作有哪些？",
-                type=FollowUpType.CITATION,
-                query=f"papers citing {paper_title}",
-                icon="📑",
-                depth=1,
-            ))
+            options.append(
+                FollowUp(
+                    text="📑 引用这篇论文的后续工作有哪些？",
+                    type=FollowUpType.CITATION,
+                    query=f"papers citing {paper_title}",
+                    icon="📑",
+                    depth=1,
+                )
+            )
 
             # 基于技术术语的追问
             if tech_keywords:
                 main_term = tech_keywords[0]
-                options.append(FollowUp(
-                    text=f"🔗 {main_term} 在其他论文中如何应用？",
-                    type=FollowUpType.EVOLUTION,
-                    query=f"{main_term} application in other papers",
-                    icon="🔗",
-                    depth=1,
-                ))
+                options.append(
+                    FollowUp(
+                        text=f"🔗 {main_term} 在其他论文中如何应用？",
+                        type=FollowUpType.EVOLUTION,
+                        query=f"{main_term} application in other papers",
+                        icon="🔗",
+                        depth=1,
+                    )
+                )
 
         return options
 
@@ -720,9 +827,9 @@ class SmartFollowUp:
         """从文本中提取技术术语."""
         # 技术术语模式
         patterns = [
-            r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:mechanism|model|network|architecture|method|algorithm)\b',
-            r'\b(?:self-|cross-|multi-|hierarchical)\s*\w+(?:-\w+)*\b',
-            r'\b\w+(?:-\w+){1,3}\b',  # 连字符术语
+            r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:mechanism|model|network|architecture|method|algorithm)\b",
+            r"\b(?:self-|cross-|multi-|hierarchical)\s*\w+(?:-\w+)*\b",
+            r"\b\w+(?:-\w+){1,3}\b",  # 连字符术语
         ]
 
         terms = []
@@ -815,9 +922,28 @@ class SmartFollowUp:
 
         # 移除常见词
         stopwords = {
-            "what", "is", "are", "how", "why", "when", "where",
-            "the", "a", "an", "this", "that", "these", "those",
-            "的", "是", "如何", "什么", "怎么", "为什么", "please", "explain"
+            "what",
+            "is",
+            "are",
+            "how",
+            "why",
+            "when",
+            "where",
+            "the",
+            "a",
+            "an",
+            "this",
+            "that",
+            "these",
+            "those",
+            "的",
+            "是",
+            "如何",
+            "什么",
+            "怎么",
+            "为什么",
+            "please",
+            "explain",
         }
 
         words = text.split()

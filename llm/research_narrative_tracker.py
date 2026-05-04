@@ -7,6 +7,7 @@ Aggregates state from all existing trackers to provide a "research thread" view:
 
 This is a VIEW layer — it reads from all trackers, never writes back to them.
 """
+
 from __future__ import annotations
 
 import logging
@@ -27,10 +28,11 @@ logger = logging.getLogger(__name__)
 
 class NarrativePhase(Enum):
     """Phase of a research thread."""
-    EXPLORATION = "exploration"   # gaps + questions identified
-    HYPOTHESIS  = "hypothesis"   # hypotheses generated
-    VALIDATION  = "validation"   # experiments running/completed
-    PUBLICATION = "publication"   # ready to write / published
+
+    EXPLORATION = "exploration"  # gaps + questions identified
+    HYPOTHESIS = "hypothesis"  # hypotheses generated
+    VALIDATION = "validation"  # experiments running/completed
+    PUBLICATION = "publication"  # ready to write / published
 
 
 # ─── Data model ────────────────────────────────────────────────────────────────
@@ -39,6 +41,7 @@ class NarrativePhase(Enum):
 @dataclass
 class ResearchThread:
     """A research topic trajectory — unified view across all trackers."""
+
     id: str
     topic: str
     phase: NarrativePhase
@@ -54,9 +57,9 @@ class ResearchThread:
     # Counts
     gap_count: int = 0
     hypothesis_count: int = 0
-    validated_count: int = 0   # experiments with status=completed
-    rejected_count: int = 0   # experiments with status=failed
-    running_count: int = 0     # experiments with status=running
+    validated_count: int = 0  # experiments with status=completed
+    rejected_count: int = 0  # experiments with status=failed
+    running_count: int = 0  # experiments with status=running
 
     # Computed readiness scores (0.0–1.0)
     contribution_score: float = 0.0
@@ -175,9 +178,12 @@ class ResearchNarrativeService:
         # Aggregate from each tracker
         thread.question_ids = self._from_question_tracker(topic)
         thread.hypothesis_ids = self._from_evolution_tracker(topic)
-        thread.experiment_ids, thread.validated_count, thread.rejected_count, thread.running_count = (
-            self._from_experiment_tracker(thread.hypothesis_ids)
-        )
+        (
+            thread.experiment_ids,
+            thread.validated_count,
+            thread.rejected_count,
+            thread.running_count,
+        ) = self._from_experiment_tracker(thread.hypothesis_ids)
         thread.insight_card_ids, thread.gap_count = self._from_insight_manager(topic)
         thread.paper_ids = self._from_papers_db(topic)
 
@@ -208,6 +214,7 @@ class ResearchNarrativeService:
         """Pull question IDs matching this topic."""
         try:
             from llm.question_tracker import QuestionTracker
+
             qt = QuestionTracker()
             qs = qt.list_questions(topic=topic)
             return [q.id for q in qs]
@@ -219,6 +226,7 @@ class ResearchNarrativeService:
         """Pull hypothesis_ids from hypothesized events."""
         try:
             from llm.insight_evolution import EvolutionTracker
+
             ev = EvolutionTracker()
             events = ev.get_recent_events(limit=10000)
             hypothesis_ids = []
@@ -243,6 +251,7 @@ class ResearchNarrativeService:
             return [], 0, 0, 0
         try:
             from llm.experiment_tracker import ExperimentTracker
+
             et = ExperimentTracker()
             all_exps = et.list_experiments()
             linked = [e for e in all_exps if e.hypothesis_id in hypothesis_ids]
@@ -259,6 +268,7 @@ class ResearchNarrativeService:
         """Search insight cards for this topic."""
         try:
             from llm.insight_cards import InsightManager, InsightCard
+
             im = InsightManager()
             cards = im.search_cards(query=topic)
             ids = []
@@ -280,6 +290,7 @@ class ResearchNarrativeService:
         """Find paper IDs matching this topic."""
         try:
             from db.database import Database
+
             db = Database()
             db.init()
             results, _ = db.search_papers(topic, limit=20)
@@ -300,9 +311,7 @@ class ResearchNarrativeService:
             return NarrativePhase.HYPOTHESIS
         return NarrativePhase.EXPLORATION
 
-    def _compute_readiness(
-        self, thread: ResearchThread
-    ) -> Tuple[float, float, float]:
+    def _compute_readiness(self, thread: ResearchThread) -> Tuple[float, float, float]:
         """Compute contribution, experiment, and narrative scores (0.0–1.0)."""
         contrib = self._contribution_score(thread)
         exp = self._experiment_score(thread)
@@ -352,9 +361,7 @@ class ResearchNarrativeService:
             score += 0.2
         return min(score, 1.0)
 
-    def _narrative_score(
-        self, thread: ResearchThread, contrib: float, exp: float
-    ) -> float:
+    def _narrative_score(self, thread: ResearchThread, contrib: float, exp: float) -> float:
         """How coherent is the research story."""
         score = 0.5  # baseline
         # Coherent flow: questions → hypotheses → experiments: +0.3
@@ -381,64 +388,91 @@ class ResearchNarrativeService:
 
         if thread.phase == NarrativePhase.EXPLORATION:
             if thread.gap_count == 0:
-                steps.append({
-                    "action": f"Run gap analysis on '{thread.topic}'",
-                    "reason": "No gaps identified yet — start with landscape analysis",
-                })
+                steps.append(
+                    {
+                        "action": f"Run gap analysis on '{thread.topic}'",
+                        "reason": "No gaps identified yet — start with landscape analysis",
+                    }
+                )
             elif thread.question_ids == 0:
-                steps.append({
-                    "action": "Generate research questions from gaps",
-                    "reason": f"{thread.gap_count} gaps found — convert to actionable questions",
-                })
+                steps.append(
+                    {
+                        "action": "Generate research questions from gaps",
+                        "reason": f"{thread.gap_count} gaps found — convert to actionable questions",
+                    }
+                )
             else:
-                steps.append({
-                    "action": "Generate hypotheses from questions",
-                    "reason": f"{len(thread.question_ids)} questions ready — move to hypothesis phase",
-                })
+                steps.append(
+                    {
+                        "action": "Generate hypotheses from questions",
+                        "reason": f"{len(thread.question_ids)} questions ready — move to hypothesis phase",
+                    }
+                )
 
         elif thread.phase == NarrativePhase.HYPOTHESIS:
-            steps.append({
-                "action": "Run `airos hypothesize '{topic}'` with gap context".format(topic=thread.topic),
-                "reason": f"{thread.hypothesis_count} hypotheses generated — design experiments",
-            })
+            steps.append(
+                {
+                    "action": "Run `airos hypothesize '{topic}'` with gap context".format(
+                        topic=thread.topic
+                    ),
+                    "reason": f"{thread.hypothesis_count} hypotheses generated — design experiments",
+                }
+            )
             if thread.insight_card_ids == 0:
-                steps.append({
-                    "action": "Extract insight cards from related papers",
-                    "reason": "No insight cards linked — build supporting evidence",
-                })
+                steps.append(
+                    {
+                        "action": "Extract insight cards from related papers",
+                        "reason": "No insight cards linked — build supporting evidence",
+                    }
+                )
 
         elif thread.phase == NarrativePhase.VALIDATION:
             if thread.validated_count == 0:
-                steps.append({
-                    "action": "Design first experiment for hypothesis " + (thread.hypothesis_ids[0] if thread.hypothesis_ids else ""),
-                    "reason": "Hypotheses exist but no experiments completed yet",
-                })
+                steps.append(
+                    {
+                        "action": "Design first experiment for hypothesis "
+                        + (thread.hypothesis_ids[0] if thread.hypothesis_ids else ""),
+                        "reason": "Hypotheses exist but no experiments completed yet",
+                    }
+                )
             if thread.running_count == 0:
-                steps.append({
-                    "action": "Run `airos experiment --hypothesis-id <id>`",
-                    "reason": "No experiments in progress — start validation",
-                })
+                steps.append(
+                    {
+                        "action": "Run `airos experiment --hypothesis-id <id>`",
+                        "reason": "No experiments in progress — start validation",
+                    }
+                )
             if thread.experiment_score < 0.5:
-                steps.append({
-                    "action": "Expand benchmark coverage (need ≥3 benchmarks)",
-                    "reason": f"Experiment score {thread.experiment_score:.0%} — add more benchmarks",
-                })
+                steps.append(
+                    {
+                        "action": "Expand benchmark coverage (need ≥3 benchmarks)",
+                        "reason": f"Experiment score {thread.experiment_score:.0%} — add more benchmarks",
+                    }
+                )
             if thread.contribution_score < 0.5:
-                steps.append({
-                    "action": "Collect more insight cards to strengthen narrative",
-                    "reason": f"Contribution score {thread.contribution_score:.0%} — build supporting evidence",
-                })
+                steps.append(
+                    {
+                        "action": "Collect more insight cards to strengthen narrative",
+                        "reason": f"Contribution score {thread.contribution_score:.0%} — build supporting evidence",
+                    }
+                )
 
         elif thread.phase == NarrativePhase.PUBLICATION:
-            steps.append({
-                "action": "Draft paper structure using `airos story '{topic}'`".format(topic=thread.topic),
-                "reason": "Research is publication-ready — start writing",
-            })
+            steps.append(
+                {
+                    "action": "Draft paper structure using `airos story '{topic}'`".format(
+                        topic=thread.topic
+                    ),
+                    "reason": "Research is publication-ready — start writing",
+                }
+            )
             if thread.narrative_score < 0.8:
-                steps.append({
-                    "action": "Strengthen narrative coherence (add more insight cards)",
-                    "reason": f"Narrative score {thread.narrative_score:.0%} — polish story",
-                })
+                steps.append(
+                    {
+                        "action": "Strengthen narrative coherence (add more insight cards)",
+                        "reason": f"Narrative score {thread.narrative_score:.0%} — polish story",
+                    }
+                )
 
         return steps
 
@@ -449,7 +483,7 @@ class ResearchNarrativeService:
 def _phase_icon(phase: NarrativePhase) -> str:
     return {
         NarrativePhase.EXPLORATION: "🔍 EXPLORATION",
-        NarrativePhase.HYPOTHESIS:  "💡 HYPOTHESIS",
+        NarrativePhase.HYPOTHESIS: "💡 HYPOTHESIS",
         NarrativePhase.VALIDATION: "🔬 VALIDATION",
         NarrativePhase.PUBLICATION: "📄 PUBLICATION",
     }.get(phase, "??")
@@ -490,11 +524,14 @@ def render_thread(thread: ResearchThread, service: ResearchNarrativeService) -> 
         lines.append(f"HYPOTHESIS STATUS ({thread.hypothesis_count} generated)")
         try:
             from llm.insight_evolution import EvolutionTracker
+
             ev = EvolutionTracker()
             for hid in thread.hypothesis_ids[:5]:
                 events = ev.get_hypothesis_events(hid)
                 verdict, detail = _compute_verdict(events)
-                icon = {"VALIDATED": "✅", "REJECTED": "❌", "MIXED": "⚠", "INCONCLUSIVE": "○"}.get(verdict, "?")
+                icon = {"VALIDATED": "✅", "REJECTED": "❌", "MIXED": "⚠", "INCONCLUSIVE": "○"}.get(
+                    verdict, "?"
+                )
                 lines.append(f"  {icon} [{hid}] {verdict} — {detail}")
         except Exception:
             for hid in thread.hypothesis_ids[:5]:
@@ -581,9 +618,9 @@ def render_dashboard(threads: List[ResearchThread]) -> str:
 
     phase_col = {
         NarrativePhase.EXPLORATION: "🔍 EXPL",
-        NarrativePhase.HYPOTHESIS:  "💡 HYP",
-        NarrativePhase.VALIDATION:  "🔬 VAL",
-        NarrativePhase.PUBLICATION:  "📄 PUB",
+        NarrativePhase.HYPOTHESIS: "💡 HYP",
+        NarrativePhase.VALIDATION: "🔬 VAL",
+        NarrativePhase.PUBLICATION: "📄 PUB",
     }
     lines = [
         "═" * 70,
@@ -591,7 +628,7 @@ def render_dashboard(threads: List[ResearchThread]) -> str:
         "═" * 70,
         f"  {'Topic':<22} {'Phase':<10} {'Gaps':>4} {'Hyps':>4} "
         f"{'Exp':>4} {'Val':>4} {'Contrib':>7} {'ExpScore':>8} {'Narr':>5}",
-        f"  {'-'*22} {'-'*10} {'-'*4} {'-'*4} {'-'*4} {'-'*4} {'-'*7} {'-'*8} {'-'*5}",
+        f"  {'-' * 22} {'-' * 10} {'-' * 4} {'-' * 4} {'-' * 4} {'-' * 4} {'-' * 7} {'-' * 8} {'-' * 5}",
     ]
     for t in sorted(threads, key=lambda x: x.phase.value):
         phase_str = phase_col.get(t.phase, "??")

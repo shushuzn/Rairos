@@ -7,6 +7,7 @@ Given a paper, extracts GitHub/GitLab links and attempts to:
 - Attempt lightweight checks: importability, basic smoke test
 - Output a reproducibility difficulty rating
 """
+
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 import re
@@ -16,22 +17,24 @@ import urllib.parse
 @dataclass
 class CodeLink:
     """A code repository link found in a paper."""
+
     url: str
-    platform: str           # github, gitlab, huggingface
+    platform: str  # github, gitlab, huggingface
     owner: str
     repo: str
-    path: str = ""          # sub-path if specific
+    path: str = ""  # sub-path if specific
     confidence: float = 1.0  # 0-1 how confident we are this is the right link
-    context: str = ""        # surrounding text that triggered the match
+    context: str = ""  # surrounding text that triggered the match
 
 
 @dataclass
 class DependencyInfo:
     """Parsed dependency information."""
-    package_manager: str       # pip, conda, poetry, npm
+
+    package_manager: str  # pip, conda, poetry, npm
     files: List[str] = field(default_factory=list)
     python_version: str = ""
-    hardware: List[str] = field(default_factory=list)   # gpu, tpu, etc
+    hardware: List[str] = field(default_factory=list)  # gpu, tpu, etc
     disk_space_gb: int = 0
     ram_gb: int = 0
     special_requirements: List[str] = field(default_factory=list)  # CUDA, specific libs
@@ -40,12 +43,13 @@ class DependencyInfo:
 @dataclass
 class ReplicationReport:
     """Report on a paper's reproducibility."""
+
     paper_id: str
     paper_title: str
     links: List[CodeLink] = field(default_factory=list)
     primary_link: Optional[CodeLink] = None
     dependency_info: Optional[DependencyInfo] = None
-    difficulty: str = ""    # Easy / Medium / Hard / Very Hard / No Code Found
+    difficulty: str = ""  # Easy / Medium / Hard / Very Hard / No Code Found
     difficulty_score: float = 0.0  # 0-10
     notes: List[str] = field(default_factory=list)
     reproducibility_issues: List[str] = field(default_factory=list)
@@ -62,7 +66,9 @@ class ReplicationReport:
                 "url": self.primary_link.url,
                 "platform": self.primary_link.platform,
                 "owner_repo": f"{self.primary_link.owner}/{self.primary_link.repo}",
-            } if self.primary_link else None,
+            }
+            if self.primary_link
+            else None,
             "links_count": len(self.links),
             "dependency_info": {
                 "package_manager": self.dependency_info.package_manager,
@@ -70,7 +76,9 @@ class ReplicationReport:
                 "python_version": self.dependency_info.python_version,
                 "hardware": self.dependency_info.hardware,
                 "special_requirements": self.dependency_info.special_requirements,
-            } if self.dependency_info else None,
+            }
+            if self.dependency_info
+            else None,
             "smoke_test_passed": self.smoke_test_passed,
             "smoke_test_output": self.smoke_test_output[:500] if self.smoke_test_output else "",
             "reproducibility_issues": self.reproducibility_issues,
@@ -83,31 +91,50 @@ class ReplicationChecker:
 
     # Regex patterns for code repository detection
     GITHUB_PATTERNS = [
-        re.compile(r'https?://github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?', re.I),
-        re.compile(r'github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)', re.I),
-        re.compile(r'([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)\.git', re.I),
+        re.compile(r"https?://github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?", re.I),
+        re.compile(r"github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)", re.I),
+        re.compile(r"([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)\.git", re.I),
     ]
 
     GITLAB_PATTERNS = [
-        re.compile(r'https?://gitlab\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?', re.I),
+        re.compile(r"https?://gitlab\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)(?:/.*)?", re.I),
     ]
 
     HF_PATTERNS = [
-        re.compile(r'https?://huggingface\.co/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)', re.I),
-        re.compile(r'huggingface\.co/spaces/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)', re.I),
+        re.compile(r"https?://huggingface\.co/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)", re.I),
+        re.compile(r"huggingface\.co/spaces/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_\-.]+)", re.I),
     ]
 
     CONTEXT_KEYWORDS = {
-        "github": ["code", "implementation", "repository", "repo", "released", "open source",
-                   "github.com", "our code", "available at", "https://"],
+        "github": [
+            "code",
+            "implementation",
+            "repository",
+            "repo",
+            "released",
+            "open source",
+            "github.com",
+            "our code",
+            "available at",
+            "https://",
+        ],
         "gitlab": ["gitlab.com", "repository"],
         "huggingface": ["huggingface", "model hub", "🤗", "space"],
     }
 
     DEPENDENCY_FILES = [
-        "requirements.txt", "setup.py", "setup.cfg", "pyproject.toml",
-        "environment.yml", "conda.yml", "Dockerfile", "docker-compose.yml",
-        "Makefile", "package.json", "Cargo.toml", "go.mod",
+        "requirements.txt",
+        "setup.py",
+        "setup.cfg",
+        "pyproject.toml",
+        "environment.yml",
+        "conda.yml",
+        "Dockerfile",
+        "docker-compose.yml",
+        "Makefile",
+        "package.json",
+        "Cargo.toml",
+        "go.mod",
     ]
 
     SPECIAL_LIBS = {
@@ -177,12 +204,16 @@ class ReplicationChecker:
         seen = set()
 
         # Remove markdown URLs to avoid double-matching
-        clean = re.sub(r'\[([^\]]+)\]\((https?://[^\)]+)\)', r'\2', text)
+        clean = re.sub(r"\[([^\]]+)\]\((https?://[^\)]+)\)", r"\2", text)
 
         # GitHub
         for pattern in self.GITHUB_PATTERNS:
             for m in pattern.finditer(clean):
-                url = m.group(0) if m.lastindex == 2 else f"https://github.com/{m.group(1)}/{m.group(2)}"
+                url = (
+                    m.group(0)
+                    if m.lastindex == 2
+                    else f"https://github.com/{m.group(1)}/{m.group(2)}"
+                )
                 if not url.startswith("http"):
                     url = f"https://github.com/{m.group(1)}/{m.group(2)}"
                 # Dedupe
@@ -200,22 +231,28 @@ class ReplicationChecker:
                         confidence = 1.0
                         break
                 # Penalize if this looks like a citation reference
-                if re.search(r'\[(\d+)\]', ctx):
+                if re.search(r"\[(\d+)\]", ctx):
                     confidence *= 0.5
 
-                found.append(CodeLink(
-                    url=url,
-                    platform="github",
-                    owner=m.group(1),
-                    repo=m.group(2).replace(".git", ""),
-                    confidence=confidence,
-                    context=ctx,
-                ))
+                found.append(
+                    CodeLink(
+                        url=url,
+                        platform="github",
+                        owner=m.group(1),
+                        repo=m.group(2).replace(".git", ""),
+                        confidence=confidence,
+                        context=ctx,
+                    )
+                )
 
         # GitLab
         for pattern in self.GITLAB_PATTERNS:
             for m in pattern.finditer(clean):
-                url = m.group(0) if m.lastindex == 2 else f"https://gitlab.com/{m.group(1)}/{m.group(2)}"
+                url = (
+                    m.group(0)
+                    if m.lastindex == 2
+                    else f"https://gitlab.com/{m.group(1)}/{m.group(2)}"
+                )
                 if not url.startswith("http"):
                     url = f"https://gitlab.com/{m.group(1)}/{m.group(2)}"
                 if url in seen:
@@ -225,14 +262,18 @@ class ReplicationChecker:
                 end = min(len(clean), m.end() + 50)
                 ctx = clean[start:end]
 
-                found.append(CodeLink(
-                    url=url,
-                    platform="gitlab",
-                    owner=m.group(1),
-                    repo=m.group(2),
-                    confidence=0.8 if any(kw in ctx.lower() for kw in self.CONTEXT_KEYWORDS["gitlab"]) else 0.5,
-                    context=ctx,
-                ))
+                found.append(
+                    CodeLink(
+                        url=url,
+                        platform="gitlab",
+                        owner=m.group(1),
+                        repo=m.group(2),
+                        confidence=0.8
+                        if any(kw in ctx.lower() for kw in self.CONTEXT_KEYWORDS["gitlab"])
+                        else 0.5,
+                        context=ctx,
+                    )
+                )
 
         # HuggingFace
         for pattern in self.HF_PATTERNS:
@@ -245,14 +286,16 @@ class ReplicationChecker:
                 end = min(len(clean), m.end() + 50)
                 ctx = clean[start:end]
 
-                found.append(CodeLink(
-                    url=url,
-                    platform="huggingface",
-                    owner=m.group(1),
-                    repo=m.group(2),
-                    confidence=0.9 if "huggingface" in ctx.lower() or "🤗" in ctx else 0.6,
-                    context=ctx,
-                ))
+                found.append(
+                    CodeLink(
+                        url=url,
+                        platform="huggingface",
+                        owner=m.group(1),
+                        repo=m.group(2),
+                        confidence=0.9 if "huggingface" in ctx.lower() or "🤗" in ctx else 0.6,
+                        context=ctx,
+                    )
+                )
 
         return found
 
@@ -280,7 +323,7 @@ class ReplicationChecker:
                 info.files.append(f)
 
         # Detect Python version hints
-        py_versions = re.findall(r'python\s*3?\.\d+', text_lower)
+        py_versions = re.findall(r"python\s*3?\.\d+", text_lower)
         if py_versions:
             info.python_version = py_versions[0]
 
@@ -308,7 +351,7 @@ class ReplicationChecker:
                     info.special_requirements.append(desc)
 
         # Estimate disk space
-        disk_match = re.search(r'(\d+)\s*(GB|TB|MB)', text, re.I)
+        disk_match = re.search(r"(\d+)\s*(GB|TB|MB)", text, re.I)
         if disk_match:
             val = int(disk_match.group(1))
             unit = disk_match.group(2).upper()
@@ -320,7 +363,7 @@ class ReplicationChecker:
                 info.disk_space_gb = val // 1024
 
         # RAM estimate
-        ram_match = re.search(r'(\d+)\s*GB\s+(RAM|memory)', text, re.I)
+        ram_match = re.search(r"(\d+)\s*GB\s+(RAM|memory)", text, re.I)
         if ram_match:
             info.ram_gb = int(ram_match.group(1))
 
@@ -409,7 +452,9 @@ class ReplicationChecker:
             notes.append(f"GitLab repo: {primary_link.owner}/{primary_link.repo}")
 
         if len(all_links) > 1:
-            notes.append(f"Found {len(all_links)} code links total — verify the correct one is used.")
+            notes.append(
+                f"Found {len(all_links)} code links total — verify the correct one is used."
+            )
 
         if dep_info.package_manager != "unknown":
             notes.append(f"Package manager: {dep_info.package_manager.upper()}")
@@ -437,14 +482,18 @@ class ReplicationChecker:
         issues = []
 
         if not dep_info.files:
-            issues.append("No explicit dependency files detected — manual environment setup may be required.")
+            issues.append(
+                "No explicit dependency files detected — manual environment setup may be required."
+            )
 
         if not dep_info.python_version:
             issues.append("No Python version specified — possible version conflicts.")
 
         if "requirements.txt" in dep_info.files:
             # Check for unpinned versions
-            issues.append("requirements.txt may have unpinned versions — recommend pip-compile or poetry lock.")
+            issues.append(
+                "requirements.txt may have unpinned versions — recommend pip-compile or poetry lock."
+            )
 
         if dep_info.special_requirements:
             for lib in dep_info.special_requirements:
@@ -461,8 +510,12 @@ class ReplicationChecker:
     def render_report(self, report: ReplicationReport) -> str:
         """Render report as readable text."""
         emoji = {
-            "Easy": "🟢", "Medium": "🟡", "Hard": "🟠",
-            "Very Hard": "🔴", "Extremely Hard": "💀", "No Code Found": "❌",
+            "Easy": "🟢",
+            "Medium": "🟡",
+            "Hard": "🟠",
+            "Very Hard": "🔴",
+            "Extremely Hard": "💀",
+            "No Code Found": "❌",
         }
         e = emoji.get(report.difficulty, "⚪")
 

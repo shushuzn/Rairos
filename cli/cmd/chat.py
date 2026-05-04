@@ -1,4 +1,5 @@
 """CLI command: chat — RAG Chat with your paper library."""
+
 from __future__ import annotations
 
 import argparse
@@ -18,51 +19,73 @@ def _build_chat_parser(subparsers) -> argparse.ArgumentParser:
         description="Ask questions about papers in your library with source citations.",
     )
     p.add_argument(
-        "question", nargs="?", default=None,
+        "question",
+        nargs="?",
+        default=None,
         help="Question to ask (omit for interactive mode)",
     )
     p.add_argument(
-        "--paper", metavar="ID",
+        "--paper",
+        metavar="ID",
         help="Target specific paper by ID",
     )
     p.add_argument(
-        "--concept", "-c", metavar="TAG",
+        "--concept",
+        "-c",
+        metavar="TAG",
         help="Filter by concept/tag",
     )
     p.add_argument(
-        "--limit", "-n", type=int, default=5,
+        "--limit",
+        "-n",
+        type=int,
+        default=5,
         help="Number of papers to retrieve (default: 5)",
     )
     p.add_argument(
-        "--interactive", "-i", action="store_true",
+        "--interactive",
+        "-i",
+        action="store_true",
         help="Interactive REPL mode",
     )
     p.add_argument(
-        "--no-cite", action="store_true",
+        "--no-cite",
+        action="store_true",
         help="Hide citations in output",
     )
     p.add_argument(
-        "--model", type=str, default=None,
+        "--model",
+        type=str,
+        default=None,
         help="LLM model to use",
     )
     p.add_argument(
-        "--verbose", "-v", action="store_true",
+        "--verbose",
+        "-v",
+        action="store_true",
         help="Verbose output (show retrieval debug info)",
     )
     p.add_argument(
-        "--stream", action="store_true",
+        "--stream",
+        action="store_true",
         help="Stream the response as it generates (for interactive mode)",
     )
     p.add_argument(
-        "--export", "-e", metavar="FILE",
+        "--export",
+        "-e",
+        metavar="FILE",
         help="Export chat history (auto-detect format by extension, or use --format)",
     )
     p.add_argument(
-        "--format", "-f", choices=["markdown", "html", "pdf"],
+        "--format",
+        "-f",
+        choices=["markdown", "html", "pdf"],
         help="Export format (default: auto-detect from extension)",
     )
     p.add_argument(
-        "--session", "-s", metavar="ID",
+        "--session",
+        "-s",
+        metavar="ID",
         help="Continue from a saved chat session",
     )
     return p  # type: ignore[no-any-return]
@@ -71,6 +94,7 @@ def _build_chat_parser(subparsers) -> argparse.ArgumentParser:
 def _run_chat(args: argparse.Namespace) -> int:
     """Run the chat command."""
     from cli._shared import load_dotenv
+
     load_dotenv()
 
     db = get_db()
@@ -95,6 +119,7 @@ def _run_chat(args: argparse.Namespace) -> int:
     if not model:
         try:
             from config import DEFAULT_LLM_MODEL_CLI
+
             model = DEFAULT_LLM_MODEL_CLI
         except Exception:
             model = "gpt-4o-mini"
@@ -102,6 +127,7 @@ def _run_chat(args: argparse.Namespace) -> int:
     # Get base URL
     try:
         from config import DEFAULT_OPENAI_BASE_URL
+
         base_url = DEFAULT_OPENAI_BASE_URL
     except Exception:
         base_url = "https://api.openai.com/v1"
@@ -202,11 +228,13 @@ def _run_single_question(chat, args) -> int:
 
         # Export if requested
         if args.export:
-            history = [{
-                "question": args.question,
-                "answer": result.answer,
-                "citations": result.citations or [],
-            }]
+            history = [
+                {
+                    "question": args.question,
+                    "answer": result.answer,
+                    "citations": result.citations or [],
+                }
+            ]
             export_chat(history, args.export, args.format)
             print(colored(f"✓ 已导出到 {args.export}", Colors.OKGREEN))
 
@@ -216,6 +244,7 @@ def _run_single_question(chat, args) -> int:
         print_error(f"Chat failed: {e}")
         if args.verbose:
             import traceback
+
             traceback.print_exc()
         return 1
 
@@ -246,7 +275,12 @@ def _run_interactive(chat, args) -> int:
         try:
             prev_messages = chat.db.get_chat_messages(session_id)
             if prev_messages:
-                print(colored(f"📂 已加载会话 {session_id}（{len(prev_messages)} 条消息）\n", Colors.OKBLUE))
+                print(
+                    colored(
+                        f"📂 已加载会话 {session_id}（{len(prev_messages)} 条消息）\n",
+                        Colors.OKBLUE,
+                    )
+                )
                 for msg in prev_messages:
                     role = "❓" if msg["role"] == "user" else "🤖"
                     print(colored(f"{role} {msg['content'][:80]}...", Colors.OKBLUE))
@@ -258,6 +292,7 @@ def _run_interactive(chat, args) -> int:
     # Create session if not loading
     if not session_id:
         import uuid
+
         session_id = str(uuid.uuid4())[:8]
         chat.db.create_chat_session(session_id, "新对话")
 
@@ -278,9 +313,7 @@ def _run_interactive(chat, args) -> int:
             if history:
                 last = history[-1]
                 _record_passive_feedback(
-                    last["question"],
-                    [c.paper_id for c in last.get("citations", [])],
-                    "exited"
+                    last["question"], [c.paper_id for c in last.get("citations", [])], "exited"
                 )
                 # Auto-export if file specified
                 if args.export:
@@ -289,9 +322,9 @@ def _run_interactive(chat, args) -> int:
                 else:
                     # Prompt to export
                     try:
-                        export_choice = input(
-                            colored("导出对话？(y/n): ", Colors.OKBLUE)
-                        ).strip().lower()
+                        export_choice = (
+                            input(colored("导出对话？(y/n): ", Colors.OKBLUE)).strip().lower()
+                        )
                         if export_choice == "y":
                             default_path = f"chat_export_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
                             export_chat(history, default_path, "html")
@@ -351,7 +384,9 @@ def _run_interactive(chat, args) -> int:
                 print("─" * 60)
 
                 citations = chat._extract_citations(contexts)
-                _record_passive_feedback(question, [c.paper_id for c in citations] if citations else [], "continued")
+                _record_passive_feedback(
+                    question, [c.paper_id for c in citations] if citations else [], "continued"
+                )
                 _show_suggestions_by_context(question, citations)
                 print()
                 history.append({"question": question, "answer": answer, "citations": citations})
@@ -383,7 +418,7 @@ def _run_interactive(chat, args) -> int:
             _record_passive_feedback(
                 question,
                 [c.paper_id for c in result.citations] if result.citations else [],
-                "continued"
+                "continued",
             )
 
             # Show smart follow-up suggestions
@@ -392,18 +427,24 @@ def _run_interactive(chat, args) -> int:
             print()
 
             # Save to history
-            history.append({
-                "question": question,
-                "answer": result.answer,
-                "citations": result.citations,
-            })
+            history.append(
+                {
+                    "question": question,
+                    "answer": result.answer,
+                    "citations": result.citations,
+                }
+            )
 
             # Persist to database
             try:
-                citations_data = [
-                    {"paper_id": c.paper_id, "title": c.paper_title, "score": c.relevance_score}
-                    for c in result.citations
-                ] if result.citations else []
+                citations_data = (
+                    [
+                        {"paper_id": c.paper_id, "title": c.paper_title, "score": c.relevance_score}
+                        for c in result.citations
+                    ]
+                    if result.citations
+                    else []
+                )
                 chat.db.add_chat_message(session_id, "user", question, [])
                 chat.db.add_chat_message(session_id, "assistant", result.answer, citations_data)
             except Exception:
@@ -414,6 +455,7 @@ def _run_interactive(chat, args) -> int:
             print_error(f"⚠️ 回答失败: {e}")
             if args.verbose:
                 import traceback
+
                 traceback.print_exc()
             print()
 
@@ -428,6 +470,7 @@ def _collect_feedback(question: str, result, chat, auto_mode: bool = True) -> No
     """
     try:
         from llm.evolution import get_evolution_memory
+
         evo = get_evolution_memory()
 
         # Get paper IDs from citations
@@ -475,6 +518,7 @@ def _record_passive_feedback(query: str, paper_ids: List[str], action: str) -> N
     """
     try:
         from llm.evolution import get_evolution_memory
+
         evo = get_evolution_memory()
         evo.infer_passive_feedback(query, paper_ids, action)
     except Exception:
@@ -488,6 +532,7 @@ def _show_suggestions(result, question: str = "") -> None:
 
     try:
         from llm.evolution_report import get_smart_followup
+
         followup = get_smart_followup()
 
         options = followup.generate_options(
@@ -510,17 +555,23 @@ def _show_suggestions_by_context(question: str, citations) -> None:
         return
     try:
         from llm.evolution_report import get_smart_followup
+
         followup = get_smart_followup()
         # Convert citations to ChatContext-like objects
         ctx_list = [
-            type('Ctx', (), {
-                'paper_id': c.paper_id,
-                'paper_title': c.paper_title,
-                'authors': c.authors,
-                'published': c.published,
-                'snippet': c.snippet,
-                'relevance_score': c.relevance_score
-            }) for c in citations
+            type(
+                "Ctx",
+                (),
+                {
+                    "paper_id": c.paper_id,
+                    "paper_title": c.paper_title,
+                    "authors": c.authors,
+                    "published": c.published,
+                    "snippet": c.snippet,
+                    "relevance_score": c.relevance_score,
+                },
+            )
+            for c in citations
         ]
         options = followup.generate_options(
             question=question,
@@ -541,6 +592,7 @@ def _show_suggestions_legacy(result) -> None:
 
     try:
         from llm.evolution_report import generate_evolution_report
+
         report = generate_evolution_report(days=30)
 
         if report.questions_to_explore:
@@ -576,18 +628,18 @@ def export_chat_to_markdown(history: List[dict], filepath: str) -> bool:
             for i, entry in enumerate(history, 1):
                 f.write(f"## Q{i}: {entry.get('question', '')}\n\n")
 
-                answer = entry.get('answer', '')
+                answer = entry.get("answer", "")
                 if answer:
                     f.write(f"**A**: {answer}\n\n")
 
-                citations = entry.get('citations', [])
+                citations = entry.get("citations", [])
                 if citations:
                     f.write("### 引用来源\n\n")
                     for j, cite in enumerate(citations, 1):
-                        title = getattr(cite, 'paper_title', 'Unknown')
-                        pid = getattr(cite, 'paper_id', '')
-                        score = getattr(cite, 'relevance_score', 0)
-                        snippet = getattr(cite, 'snippet', '')[:200]
+                        title = getattr(cite, "paper_title", "Unknown")
+                        pid = getattr(cite, "paper_id", "")
+                        score = getattr(cite, "relevance_score", 0)
+                        snippet = getattr(cite, "snippet", "")[:200]
                         f.write(f"**[{j}] {title}**  \n")
                         f.write(f"ID: `{pid}` | 相关度: {score:.2f}\n\n")
                         if snippet:
@@ -649,7 +701,9 @@ def export_chat_to_pdf(history: List[dict], filepath: str) -> bool:
 
         # Title
         write_line("AI Research OS — Chat Export", font_size_title, bold=True)
-        write_line(f"导出时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", font_size_body)
+        write_line(
+            f"导出时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", font_size_body
+        )
         y += 20
 
         # Each Q&A pair
@@ -662,21 +716,21 @@ def export_chat_to_pdf(history: List[dict], filepath: str) -> bool:
             write_line(f"Q{i}: {entry.get('question', '')}", font_size_body, bold=True)
             y += 5
 
-            answer = entry.get('answer', '')
+            answer = entry.get("answer", "")
             if answer:
                 # Truncate long answers for PDF
                 if len(answer) > 500:
                     answer = answer[:500] + "..."
                 write_line(answer, font_size_body)
 
-            citations = entry.get('citations', [])
+            citations = entry.get("citations", [])
             if citations:
                 y += 5
                 write_line("引用来源:", font_size_body, bold=True)
                 for j, cite in enumerate(citations[:3], 1):  # Max 3 citations per entry
-                    title = getattr(cite, 'paper_title', 'Unknown')
-                    pid = getattr(cite, 'paper_id', '')
-                    score = getattr(cite, 'relevance_score', 0)
+                    title = getattr(cite, "paper_title", "Unknown")
+                    pid = getattr(cite, "paper_id", "")
+                    score = getattr(cite, "relevance_score", 0)
                     write_line(f"  [{j}] {title}", font_size_body)
                     write_line(f"      ID: {pid} | 相关度: {score:.2f}", font_size_body - 1)
 
@@ -711,33 +765,43 @@ def export_chat_to_html(history: List[dict], filepath: str) -> bool:
             f.write("<meta charset='UTF-8'>\n")
             f.write("<title>AI Research OS — Chat Export</title>\n")
             f.write("<style>\n")
-            f.write("body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }\n")
-            f.write("h1 { color: #1a1a2e; border-bottom: 2px solid #4a4a8a; padding-bottom: 10px; }\n")
-            f.write(".qa-block { background: #f8f9fa; border-radius: 8px; padding: 15px; margin: 15px 0; }\n")
+            f.write(
+                "body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }\n"
+            )
+            f.write(
+                "h1 { color: #1a1a2e; border-bottom: 2px solid #4a4a8a; padding-bottom: 10px; }\n"
+            )
+            f.write(
+                ".qa-block { background: #f8f9fa; border-radius: 8px; padding: 15px; margin: 15px 0; }\n"
+            )
             f.write(".question { color: #2a5a2a; font-weight: bold; font-size: 1.1em; }\n")
             f.write(".answer { color: #333; margin-top: 10px; line-height: 1.6; }\n")
-            f.write(".citations { background: #e8f4f8; border-left: 3px solid #4a90a4; padding: 10px; margin-top: 10px; }\n")
+            f.write(
+                ".citations { background: #e8f4f8; border-left: 3px solid #4a90a4; padding: 10px; margin-top: 10px; }\n"
+            )
             f.write(".citation { margin: 5px 0; font-size: 0.9em; }\n")
             f.write(".meta { color: #666; font-size: 0.85em; }\n")
             f.write("</style>\n</head>\n<body>\n")
             f.write("<h1>AI Research OS — Chat Export</h1>\n")
-            f.write(f"<p class='meta'>导出时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>\n")
+            f.write(
+                f"<p class='meta'>导出时间: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>\n"
+            )
 
             for i, entry in enumerate(history, 1):
                 f.write("<div class='qa-block'>\n")
                 f.write(f"<div class='question'>Q{i}: {entry.get('question', '')}</div>\n")
-                answer = entry.get('answer', '')
+                answer = entry.get("answer", "")
                 if answer:
                     f.write(f"<div class='answer'>{answer}</div>\n")
 
-                citations = entry.get('citations', [])
+                citations = entry.get("citations", [])
                 if citations:
                     f.write("<div class='citations'><strong>引用来源:</strong>\n")
                     for j, cite in enumerate(citations, 1):
-                        title = getattr(cite, 'paper_title', 'Unknown')
-                        pid = getattr(cite, 'paper_id', '')
-                        score = getattr(cite, 'relevance_score', 0)
-                        snippet = getattr(cite, 'snippet', '')[:150]
+                        title = getattr(cite, "paper_title", "Unknown")
+                        pid = getattr(cite, "paper_id", "")
+                        score = getattr(cite, "relevance_score", 0)
+                        snippet = getattr(cite, "snippet", "")[:150]
                         f.write(f"<div class='citation'>[{j}] <strong>{title}</strong><br>\n")
                         f.write(f"<span class='meta'>ID: {pid} | 相关度: {score:.2f}</span><br>\n")
                         if snippet:

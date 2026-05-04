@@ -1,4 +1,5 @@
 """CLI command: replicate — Track paper replication attempts."""
+
 from __future__ import annotations
 
 import argparse
@@ -15,8 +16,12 @@ def _build_replicate_parser(subparsers) -> argparse.ArgumentParser:
         description="Track paper replication attempts and results.",
     )
     p.add_argument("paper_id", nargs="?", help="Paper ID to track")
-    p.add_argument("--status", "-s", choices=["success", "failed", "partial", "in_progress"],
-                   help="Set replication status")
+    p.add_argument(
+        "--status",
+        "-s",
+        choices=["success", "failed", "partial", "in_progress"],
+        help="Set replication status",
+    )
     p.add_argument("--note", "-n", help="Add a note")
     p.add_argument("--diff", "-d", action="append", help="Add a difference found")
     p.add_argument("--metric", help="Add a result metric (key=value)")
@@ -119,9 +124,9 @@ def _run_replicate(args: argparse.Namespace) -> int:
     paper_title = args.paper_id
     db = get_db()
     db.init()
-    paper = db.get_paper(args.paper_id) if hasattr(db, 'get_paper') else None
+    paper = db.get_paper(args.paper_id) if hasattr(db, "get_paper") else None
     if paper:
-        paper_title = getattr(paper, 'title', args.paper_id)
+        paper_title = getattr(paper, "title", args.paper_id)
 
     # Check for existing attempt
     existing = tracker.get_paper_attempts(args.paper_id)

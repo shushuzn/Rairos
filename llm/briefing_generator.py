@@ -3,6 +3,7 @@
 Generates structured research briefings from papers, enriched with
 Gene Pool and Research Memory context for decision-relevant intelligence.
 """
+
 from __future__ import annotations
 
 import json
@@ -18,6 +19,7 @@ from llm.constants import LLM_BASE_URL, LLM_MODEL
 @dataclass
 class BriefingSection:
     """A section of the briefing."""
+
     title: str
     content: str
     level: int = 2  # markdown heading level
@@ -26,12 +28,13 @@ class BriefingSection:
 @dataclass
 class Briefing:
     """A complete research briefing."""
+
     paper_arxiv_id: str
     paper_title: str
     sections: List[BriefingSection] = field(default_factory=list)
     gene_pool_matches: List[Dict[str, Any]] = field(default_factory=list)
     memory_stances: List[Dict[str, Any]] = field(default_factory=list)
-    verdict: str = ""   # validates / contradicts / neutral / irrelevant
+    verdict: str = ""  # validates / contradicts / neutral / irrelevant
     verdict_reason: str = ""
     generated_at: str = ""
 
@@ -39,6 +42,7 @@ class Briefing:
 @dataclass
 class BriefingResult:
     """Result of briefing generation."""
+
     success: bool
     briefing: Optional[Briefing] = None
     markdown: str = ""
@@ -49,6 +53,7 @@ def _load_gene_pool() -> List[Dict[str, Any]]:
     """Load Gene Pool entries for context."""
     try:
         from pathlib import Path
+
         path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
         if path.exists():
             data = json.loads(path.read_text(encoding="utf-8"))
@@ -65,6 +70,7 @@ def _load_research_memory() -> List[Dict[str, Any]]:
     """Load Research Memory stances for context."""
     try:
         from pathlib import Path
+
         path = Path.home() / ".ai_research_os" / "research_memory" / "stances.json"
         if path.exists():
             return json.loads(path.read_text(encoding="utf-8"))
@@ -85,20 +91,34 @@ def _match_gene_pool(topic: str, title: str, abstract: str) -> List[Dict[str, An
     matches = []
     for capsule in gene_pool:
         # Support multiple field name variants from different versions
-        gap_title = (capsule.get("gap_title") or capsule.get("action_gap_title") or capsule.get("trigger_gap_title") or "").lower()
-        gap_type = capsule.get("gap_type") or capsule.get("trigger_gap_type") or capsule.get("action_gap_type") or ""
-        keywords = [k.lower() for k in (capsule.get("keywords") or capsule.get("trigger_keywords") or [])]
+        gap_title = (
+            capsule.get("gap_title")
+            or capsule.get("action_gap_title")
+            or capsule.get("trigger_gap_title")
+            or ""
+        ).lower()
+        gap_type = (
+            capsule.get("gap_type")
+            or capsule.get("trigger_gap_type")
+            or capsule.get("action_gap_type")
+            or ""
+        )
+        keywords = [
+            k.lower() for k in (capsule.get("keywords") or capsule.get("trigger_keywords") or [])
+        ]
         outcome_score = capsule.get("outcome_success_score") or capsule.get("score") or 0.0
 
         # Simple keyword overlap
         overlap = sum(1 for kw in keywords if kw in text)
         if overlap >= 1 or any(kw in topic_lower for kw in keywords) or gap_title and overlap > 0:
-            matches.append({
-                "gap_title": gap_title,
-                "gap_type": gap_type,
-                "outcome_score": outcome_score,
-                "match_reason": f"keyword overlap: {overlap}" if overlap else "topic match",
-            })
+            matches.append(
+                {
+                    "gap_title": gap_title,
+                    "gap_type": gap_type,
+                    "outcome_score": outcome_score,
+                    "match_reason": f"keyword overlap: {overlap}" if overlap else "topic match",
+                }
+            )
 
     # Sort by score, return top 3
     matches.sort(key=lambda x: x.get("outcome_score", 0), reverse=True)
@@ -124,14 +144,16 @@ def _match_research_memory(topic: str, title: str, abstract: str) -> List[Dict[s
         topic_words = set(topic_s.split()) & set(text.split())
 
         if claim_words or topic_words:
-            matches.append({
-                "stance_id": stance.get("stance_id", ""),
-                "topic": stance.get("topic", ""),
-                "claim": stance.get("claim", ""),
-                "stance_type": stance.get("stance", ""),
-                "confidence": stance.get("confidence", 0.0),
-                "evidence_refs": stance.get("evidence_refs", []),
-            })
+            matches.append(
+                {
+                    "stance_id": stance.get("stance_id", ""),
+                    "topic": stance.get("topic", ""),
+                    "claim": stance.get("claim", ""),
+                    "stance_type": stance.get("stance", ""),
+                    "confidence": stance.get("confidence", 0.0),
+                    "evidence_refs": stance.get("evidence_refs", []),
+                }
+            )
 
     return matches[:3]
 
@@ -165,7 +187,6 @@ class BriefingGenerator:
             BriefingResult with the generated briefing
         """
         import os
-
 
         # Step 1: Fetch paper from DB
         paper = self._fetch_paper(arxiv_id)
@@ -232,6 +253,7 @@ class BriefingGenerator:
         if self.db is None:
             try:
                 from db.database import Database
+
                 db = Database()
                 db.init()
                 self.db = db
@@ -286,28 +308,41 @@ class BriefingGenerator:
         # Check Gene Pool gaps
         # OPPORTUNITY_SEIZED: paper's gap type matches a Gene Pool entry (directly addresses a known gap)
         gap_type_matches = [
-            m for m in gene_pool_matches
-            if m.get("gap_type") and m.get("gap_type") in text
+            m for m in gene_pool_matches if m.get("gap_type") and m.get("gap_type") in text
         ]
         if gap_type_matches:
-            return "opportunity_seized", "Paper directly addresses a known research gap in Gene Pool"
+            return (
+                "opportunity_seized",
+                "Paper directly addresses a known research gap in Gene Pool",
+            )
 
         # Check outcome scores
-        validates_gaps = any(
-            m.get("outcome_score", 0) >= 0.5 for m in gene_pool_matches
-        )
+        validates_gaps = any(m.get("outcome_score", 0) >= 0.5 for m in gene_pool_matches)
 
         # Check Research Memory stances
-        contradiction_signals = ["fail to", "does not", "cannot", "ineffective", "worse than", "no evidence", "contrary to", "challenges"]
-        contradicts = any(
-            sig in text for sig in contradiction_signals
-        )
+        contradiction_signals = [
+            "fail to",
+            "does not",
+            "cannot",
+            "ineffective",
+            "worse than",
+            "no evidence",
+            "contrary to",
+            "challenges",
+        ]
+        contradicts = any(sig in text for sig in contradiction_signals)
 
         if contradicts:
-            return "contradicts", "Paper contains language suggesting it challenges existing approaches"
+            return (
+                "contradicts",
+                "Paper contains language suggesting it challenges existing approaches",
+            )
         if validates_gaps:
             return "validates", "Paper addresses Gene Pool gaps with high outcome scores"
-        return "neutral", "Paper is related but does not directly validate or contradict existing knowledge"
+        return (
+            "neutral",
+            "Paper is related but does not directly validate or contradict existing knowledge",
+        )
 
     def _generate_llm_briefing(
         self,
@@ -335,13 +370,17 @@ class BriefingGenerator:
         if gene_pool_matches:
             gene_context += "\n\n**Relevant Gene Pool Gaps:**\n"
             for m in gene_pool_matches:
-                gene_context += f"- {m['gap_title']} (type: {m['gap_type']}, score: {m['outcome_score']:.2f})\n"
+                gene_context += (
+                    f"- {m['gap_title']} (type: {m['gap_type']}, score: {m['outcome_score']:.2f})\n"
+                )
 
         memory_context = ""
         if memory_stances:
             memory_context += "\n\n**Relevant Research Memory Stances:**\n"
             for s in memory_stances:
-                memory_context += f"- [{s['stance_type'].upper()}] {s['topic']}: {s['claim'][:80]}\n"
+                memory_context += (
+                    f"- [{s['stance_type'].upper()}] {s['topic']}: {s['claim'][:80]}\n"
+                )
 
         prompt = f"""Generate a structured research briefing for the following paper.
 
@@ -401,10 +440,12 @@ Respond with ONLY valid markdown. Be concise and critical."""
             if line.startswith("## ") or line.startswith("**") and line.endswith("**"):
                 # Save previous section
                 if current_lines:
-                    sections.append(BriefingSection(
-                        title=current_title,
-                        content="\n".join(current_lines).strip(),
-                    ))
+                    sections.append(
+                        BriefingSection(
+                            title=current_title,
+                            content="\n".join(current_lines).strip(),
+                        )
+                    )
                     current_lines = []
 
                 title = line.lstrip("#* ").rstrip("*").strip()
@@ -415,10 +456,12 @@ Respond with ONLY valid markdown. Be concise and critical."""
                 current_lines.append(line)
 
         if current_lines:
-            sections.append(BriefingSection(
-                title=current_title,
-                content="\n".join(current_lines).strip(),
-            ))
+            sections.append(
+                BriefingSection(
+                    title=current_title,
+                    content="\n".join(current_lines).strip(),
+                )
+            )
 
         return sections
 
@@ -432,7 +475,6 @@ Respond with ONLY valid markdown. Be concise and critical."""
         memory_stances: List[Dict[str, Any]],
     ) -> List[BriefingSection]:
         """Generate a metadata-only briefing without LLM."""
-
 
         sections = [
             BriefingSection(
@@ -448,7 +490,9 @@ Respond with ONLY valid markdown. Be concise and critical."""
         if gene_pool_matches:
             lines = [f"**Relevant Gene Pool Gaps ({len(gene_pool_matches)}):**"]
             for m in gene_pool_matches:
-                lines.append(f"- [{m['gap_type']}] {m['gap_title']} (score: {m['outcome_score']:.2f})")
+                lines.append(
+                    f"- [{m['gap_type']}] {m['gap_title']} (score: {m['outcome_score']:.2f})"
+                )
             sections.append(BriefingSection(title="Gene Pool Relevance", content="\n".join(lines)))
 
         if memory_stances:
@@ -462,10 +506,14 @@ Respond with ONLY valid markdown. Be concise and critical."""
     def _render_markdown(self, briefing: Briefing, authors: List[str]) -> str:
         """Render Briefing as markdown string."""
 
-
         now = datetime.datetime.now().strftime("%Y-%m-%d")
 
-        verdict_emoji = {"validates": "✅", "contradicts": "❌", "neutral": "⚪", "irrelevant": "🚫"}
+        verdict_emoji = {
+            "validates": "✅",
+            "contradicts": "❌",
+            "neutral": "⚪",
+            "irrelevant": "🚫",
+        }
         emoji = verdict_emoji.get(briefing.verdict, "⚪")
 
         lines = [
@@ -489,7 +537,9 @@ Respond with ONLY valid markdown. Be concise and critical."""
             lines.append("## Gene Pool Matches")
             lines.append("")
             for m in briefing.gene_pool_matches:
-                lines.append(f"- **[{m['gap_type']}]** {m['gap_title']} (score: {m['outcome_score']:.2f}) — {m['match_reason']}")
+                lines.append(
+                    f"- **[{m['gap_type']}]** {m['gap_title']} (score: {m['outcome_score']:.2f}) — {m['match_reason']}"
+                )
             lines.append("")
 
         if briefing.memory_stances:

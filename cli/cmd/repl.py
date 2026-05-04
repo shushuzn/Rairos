@@ -1,4 +1,5 @@
 """CLI command: repl — interactive REPL for AI Research OS."""
+
 from __future__ import annotations
 
 import argparse
@@ -11,7 +12,13 @@ except ImportError:
     readline = None  # type: ignore
 
 from cli._shared import (
-    Colors, colored, print_success, print_error, print_warning, print_info, print_header,
+    Colors,
+    colored,
+    print_success,
+    print_error,
+    print_warning,
+    print_info,
+    print_header,
     get_db,
 )
 from kg import KGManager
@@ -209,7 +216,7 @@ class AIROSRepl:
         for i, nid in enumerate(path):
             node = self.kg.get_node(nid)
             label = (node["label"][:50] if node else nid) if node else nid
-            print(f"  {i+1}. [{node['type'] if node else '?'}] {label}")
+            print(f"  {i + 1}. [{node['type'] if node else '?'}] {label}")
         return False
 
     def _kg_tag(self, args: str) -> bool:
@@ -237,7 +244,9 @@ class AIROSRepl:
         neighbors = self.kg.find_neighbors(paper_node["id"], depth=2)
         print_info(f"[Graph for '{paper_id}': {len(neighbors)} neighbors]")
         for node, edge, depth in sorted(neighbors, key=lambda x: x[2])[: self.limit]:
-            print(f"  [{depth}] {node['type']:8s} | {edge['relation_type']:12s} | {node['label'][:50]}")
+            print(
+                f"  [{depth}] {node['type']:8s} | {edge['relation_type']:12s} | {node['label'][:50]}"
+            )
         self.current_paper = paper_id
         return False
 
@@ -331,35 +340,37 @@ class AIROSRepl:
 
 # ── Command Registry ────────────────────────────────────────────────────────────
 
+
 def _make_handler(name: str):
     def handler(self: AIROSRepl, args: str) -> bool:
         return getattr(self, f"_cmd_{name}")(args)  # type: ignore[no-any-return]
+
     return handler
 
 
 _COMMAND_HANDLERS: dict = {
-    "search":    AIROSRepl._cmd_search,
-    "kg":        AIROSRepl._cmd_kg,
+    "search": AIROSRepl._cmd_search,
+    "kg": AIROSRepl._cmd_kg,
     "neighbors": AIROSRepl._cmd_neighbors,
-    "path":      AIROSRepl._cmd_path,
-    "stats":     AIROSRepl._cmd_stats,
-    "graph":     AIROSRepl._cmd_graph,
-    "paper":     AIROSRepl._cmd_paper,
-    "tag":       AIROSRepl._cmd_tag,
-    "cd":        AIROSRepl._cmd_cd,
-    "pwd":       AIROSRepl._cmd_pwd,
-    "help":      AIROSRepl._cmd_help,
-    "exit":      AIROSRepl._cmd_exit,
-    "quit":      AIROSRepl._cmd_exit,
-    "?":         AIROSRepl._cmd_help,
+    "path": AIROSRepl._cmd_path,
+    "stats": AIROSRepl._cmd_stats,
+    "graph": AIROSRepl._cmd_graph,
+    "paper": AIROSRepl._cmd_paper,
+    "tag": AIROSRepl._cmd_tag,
+    "cd": AIROSRepl._cmd_cd,
+    "pwd": AIROSRepl._cmd_pwd,
+    "help": AIROSRepl._cmd_help,
+    "exit": AIROSRepl._cmd_exit,
+    "quit": AIROSRepl._cmd_exit,
+    "?": AIROSRepl._cmd_help,
 }
 
 _KG_SUB_HANDLERS: dict = {
-    "stats":     AIROSRepl._kg_stats,
+    "stats": AIROSRepl._kg_stats,
     "neighbors": AIROSRepl._kg_neighbors,
-    "path":      AIROSRepl._kg_path,
-    "tag":       AIROSRepl._kg_tag,
-    "graph":     AIROSRepl._kg_graph,
+    "path": AIROSRepl._kg_path,
+    "tag": AIROSRepl._kg_tag,
+    "graph": AIROSRepl._kg_graph,
 }
 
 _ALL_COMMANDS = list(_COMMAND_HANDLERS.keys()) + ["kg"]
@@ -385,19 +396,19 @@ _HELP_ALL = """
 """
 
 _HELP_MAP = {
-    "search":    "search <query> — Full-text search indexed papers using SQLite FTS5",
-    "kg":        "kg <sub> — Knowledge graph: stats | neighbors | path | tag | graph",
+    "search": "search <query> — Full-text search indexed papers using SQLite FTS5",
+    "kg": "kg <sub> — Knowledge graph: stats | neighbors | path | tag | graph",
     "neighbors": "neighbors [uid] — Show KG BFS neighbors (uses current paper if omitted)",
-    "path":      "path <idA> <idB> — Shortest path between two KG nodes",
-    "stats":     "stats — KG statistics (node/edge counts by type)",
-    "graph":     "graph [uid] — Ego subgraph for a paper (shortcut: kg graph)",
-    "paper":     "paper <uid> — Set current paper context",
-    "tag":       "tag <name> — Set current tag context",
-    "cd":        "cd paper <uid> | cd tag <name> — Change current context",
-    "pwd":       "pwd — Print current context (paper/tag)",
-    "help":      "help [command] — Show help",
-    "exit":      "exit — Exit the REPL",
-    "quit":      "quit — Alias for exit",
+    "path": "path <idA> <idB> — Shortest path between two KG nodes",
+    "stats": "stats — KG statistics (node/edge counts by type)",
+    "graph": "graph [uid] — Ego subgraph for a paper (shortcut: kg graph)",
+    "paper": "paper <uid> — Set current paper context",
+    "tag": "tag <name> — Set current tag context",
+    "cd": "cd paper <uid> | cd tag <name> — Change current context",
+    "pwd": "pwd — Print current context (paper/tag)",
+    "help": "help [command] — Show help",
+    "exit": "exit — Exit the REPL",
+    "quit": "quit — Alias for exit",
 }
 
 
@@ -416,7 +427,9 @@ Examples:
 """,
     )
     p.add_argument(
-        "--limit", type=int, default=DEFAULT_LIMIT,
+        "--limit",
+        type=int,
+        default=DEFAULT_LIMIT,
         help=f"Result limit per command (default {DEFAULT_LIMIT})",
     )
     return p  # type: ignore[no-any-return]

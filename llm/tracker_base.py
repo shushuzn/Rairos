@@ -1,4 +1,5 @@
 """JsonFileStore: reusable JSON file persistence mixin for tracker classes."""
+
 from __future__ import annotations
 
 import json

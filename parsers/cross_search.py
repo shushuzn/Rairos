@@ -1,4 +1,5 @@
 """Cross-source paper search: arXiv + Semantic Scholar."""
+
 import asyncio
 import logging
 from concurrent.futures import ThreadPoolExecutor
@@ -29,9 +30,7 @@ def search_papers_multi(
     """
     loop = asyncio.new_event_loop()
     try:
-        return loop.run_until_complete(
-            _search_multi_async(query, max_per_source, sources)
-        )
+        return loop.run_until_complete(_search_multi_async(query, max_per_source, sources))
     finally:
         loop.close()
 
@@ -66,6 +65,7 @@ async def _search_multi_async(
 def _search_arxiv(query: str, max_results: int) -> List[Paper]:
     """Sync wrapper for arXiv search."""
     from parsers.arxiv_search import search_arxiv
+
     try:
         return search_arxiv(query, max_results=max_results)
     except Exception as e:
@@ -76,6 +76,7 @@ def _search_arxiv(query: str, max_results: int) -> List[Paper]:
 def _search_semantic(query: str, max_results: int) -> List[Paper]:
     """Sync wrapper for Semantic Scholar search."""
     from parsers.semantic_scholar import search_semantic_scholar
+
     try:
         s2_papers = search_semantic_scholar(query, max_results=max_results)
         return [p.to_paper() for p in s2_papers]

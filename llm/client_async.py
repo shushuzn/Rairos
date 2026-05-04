@@ -1,4 +1,5 @@
 """Async LLM API client using aiohttp."""
+
 import os
 from typing import Any, Callable, Dict, List, Optional
 
@@ -63,7 +64,9 @@ async def call_llm_chat_completions_async(
         return data["choices"][0]["message"]["content"]  # type: ignore[no-any-return]
 
 
-async def _stream_to_string_async(session: aiohttp.ClientSession, response: aiohttp.ClientResponse) -> str:
+async def _stream_to_string_async(
+    session: aiohttp.ClientSession, response: aiohttp.ClientResponse
+) -> str:
     """Yield content deltas from SSE stream asynchronously."""
     parts: List[str] = []
     async for line in response.content:

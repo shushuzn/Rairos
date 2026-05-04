@@ -1,4 +1,5 @@
 """P-Note (paper note) renderer."""
+
 import json
 import math
 import textwrap
@@ -9,6 +10,7 @@ from core import Paper, today_iso
 
 
 # ── Radar chart ────────────────────────────────────────────────────────────────
+
 
 def render_radar_chart(scores: Dict[str, int], size: int = 280) -> str:
     """Render a 6-axis radar chart SVG from rubric scores.
@@ -37,9 +39,10 @@ def render_radar_chart(scores: Dict[str, int], size: int = 280) -> str:
         return ""
 
     # Only include axes that have valid scores
-    valid_axes = [(AXES[i][0], AXES[i][1], scores.get(AXES[i][0].lower(), 0))
-                  for i in range(n)]
-    valid_axes = [(a, b, s) for a, b, s in valid_axes if isinstance(s, (int, float)) and 1 <= s <= 5]
+    valid_axes = [(AXES[i][0], AXES[i][1], scores.get(AXES[i][0].lower(), 0)) for i in range(n)]
+    valid_axes = [
+        (a, b, s) for a, b, s in valid_axes if isinstance(s, (int, float)) and 1 <= s <= 5
+    ]
     if len(valid_axes) < 3:
         return ""
 
@@ -52,16 +55,16 @@ def render_radar_chart(scores: Dict[str, int], size: int = 280) -> str:
     rings = 5  # 1-5 scale
 
     # Colour palette (professional, accessible)
-    fill_colour   = "#3b82f6"   # blue-500, ~60% opacity
-    stroke_colour = "#1d4ed8"   # blue-700
-    grid_colour   = "#94a3b8"  # slate-400
-    label_colour  = "#334155"   # slate-700
-    bg_colour     = "#f8fafc"   # slate-50
+    fill_colour = "#3b82f6"  # blue-500, ~60% opacity
+    stroke_colour = "#1d4ed8"  # blue-700
+    grid_colour = "#94a3b8"  # slate-400
+    label_colour = "#334155"  # slate-700
+    bg_colour = "#f8fafc"  # slate-50
 
     parts = [
         f'<svg viewBox="0 0 {size} {size}" xmlns="http://www.w3.org/2000/svg" '
         f'role="img" aria-label="论文评分雷达图">',
-        '  <title>论文评分雷达图</title>',
+        "  <title>论文评分雷达图</title>",
         f'  <rect width="{size}" height="{size}" fill="{bg_colour}" rx="8"/>',
     ]
 
@@ -73,8 +76,10 @@ def render_radar_chart(scores: Dict[str, int], size: int = 280) -> str:
             f"{cy + r * math.cos(i * angle_step - math.pi / 2):.1f}"
             for i in range(n)
         )
-        parts.append(f'  <polygon points="{ring_pts}" fill="none" stroke="{grid_colour}" '
-                     f'stroke-width="0.6" stroke-dasharray="2,2"/>')
+        parts.append(
+            f'  <polygon points="{ring_pts}" fill="none" stroke="{grid_colour}" '
+            f'stroke-width="0.6" stroke-dasharray="2,2"/>'
+        )
         # Ring label (only on outermost)
         if ring == rings:
             parts.append(
@@ -95,8 +100,10 @@ def render_radar_chart(scores: Dict[str, int], size: int = 280) -> str:
         angle = i * angle_step - math.pi / 2
         x2 = cx + max_radius * math.sin(angle)
         y2 = cy + max_radius * math.cos(angle)
-        parts.append(f'  <line x1="{cx:.1f}" y1="{cy:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
-                     f'stroke="{grid_colour}" stroke-width="0.8"/>')
+        parts.append(
+            f'  <line x1="{cx:.1f}" y1="{cy:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
+            f'stroke="{grid_colour}" stroke-width="0.8"/>'
+        )
 
     # ── Data polygon ────────────────────────────────────────────────────────
     data_pts = " ".join(
@@ -134,7 +141,7 @@ def render_radar_chart(scores: Dict[str, int], size: int = 280) -> str:
         parts.append(
             f'  <text x="{lx:.1f}" y="{ly + 13:.1f}" text-anchor="{anchor}" '
             f'dominant-baseline="middle" font-size="9" fill="{grid_colour}">'
-            f'{en}={s}</text>'
+            f"{en}={s}</text>"
         )
 
     # ── Summary badge ───────────────────────────────────────────────────────
@@ -149,7 +156,7 @@ def render_radar_chart(scores: Dict[str, int], size: int = 280) -> str:
     parts.append(
         f'  <text x="{bx:.1f}" y="{by - 3}" text-anchor="middle" '
         f'dominant-baseline="middle" font-size="11" font-weight="bold" fill="white">'
-        f'{avg:.1f}</text>'
+        f"{avg:.1f}</text>"
     )
     parts.append(
         f'  <text x="{bx:.1f}" y="{by + 9}" text-anchor="middle" '
@@ -240,9 +247,7 @@ def render_pnote(
         else ""
     )
     sections_block = (
-        extracted_sections_md
-        if extracted_sections_md
-        else "_（未能从 PDF 抽取到可用文本）_"
+        extracted_sections_md if extracted_sections_md else "_（未能从 PDF 抽取到可用文本）_"
     )
 
     # Build section content from parsed_ai (for injection into template sections)
@@ -459,12 +464,7 @@ def _build_ai_block(
 def _extract_rubric_scores(rubric: Dict[str, Any]) -> Dict[str, int]:
     """Extract valid integer rubric scores (1-5) from rubric dict."""
     score_keys = ["novelty", "leverage", "evidence", "cost", "moat", "adoption"]
-    return {
-        k: v
-        for k in score_keys
-        for v in [rubric.get(k)]
-        if isinstance(v, int) and 1 <= v <= 5
-    }
+    return {k: v for k in score_keys for v in [rubric.get(k)] if isinstance(v, int) and 1 <= v <= 5}
 
 
 def _render_page_heatmap(
@@ -585,15 +585,17 @@ def _render_cross_paper_comparison(
             if not label:
                 label = title[:60] if title else pid
 
-            papers.append({
-                "paper_id": pid,
-                "label": label,
-                "verified": verified,
-                "unverified": len(unverified),
-                "total": total,
-                "rate": rate,
-                "is_current": pid == paper_id,
-            })
+            papers.append(
+                {
+                    "paper_id": pid,
+                    "label": label,
+                    "verified": verified,
+                    "unverified": len(unverified),
+                    "total": total,
+                    "rate": rate,
+                    "is_current": pid == paper_id,
+                }
+            )
     except Exception:
         return ""
 
@@ -646,10 +648,7 @@ def _render_cross_paper_comparison(
                 flag = "🟡"
             else:
                 flag = "🔴"
-            rows.append(
-                f"| **{flag} {paper_id}** "
-                f"| {verified} | {len(unverified)} | {rate:.0f}% |"
-            )
+            rows.append(f"| **{flag} {paper_id}** | {verified} | {len(unverified)} | {rate:.0f}% |")
 
     return "\n".join(rows)
 
@@ -696,14 +695,16 @@ def _build_claims_section(
         parts.append("")
 
     _TYPE_ICONS = {
-        "numerical":   "📊",
+        "numerical": "📊",
         "methodology": "🔧",
         "descriptive": "📝",
     }
 
     def _type_label(claim_type: str) -> str:
         icon = _TYPE_ICONS.get(claim_type, "📝")
-        label = {"numerical": "数字类", "methodology": "方法论", "descriptive": "描述性"}.get(claim_type, "描述性")
+        label = {"numerical": "数字类", "methodology": "方法论", "descriptive": "描述性"}.get(
+            claim_type, "描述性"
+        )
         return f"{icon} {label}"
 
     # Verified claims
@@ -739,4 +740,3 @@ def _build_claims_section(
         parts.append("")
 
     return "\n".join(parts)
-

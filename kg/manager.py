@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 
-
 class KGManager:
     """Manages a SQLite-backed knowledge graph with nodes and edges.
 
@@ -66,7 +65,9 @@ class KGManager:
                 indexed_papers_json TEXT NOT NULL DEFAULT '[]'
             )
         """)
-        conn.execute("INSERT OR IGNORE INTO rebuild_meta (id, indexed_papers_json) VALUES (1, '[]')")
+        conn.execute(
+            "INSERT OR IGNORE INTO rebuild_meta (id, indexed_papers_json) VALUES (1, '[]')"
+        )
         conn.commit()
 
     def _conn(self) -> sqlite3.Connection:
@@ -233,7 +234,8 @@ class KGManager:
             params = (node_id, node_id, rel_type, rel_type)  # type: ignore[assignment]
 
         rows = conn.execute(
-            f"SELECT * FROM kg_edges WHERE {clause}", params,
+            f"SELECT * FROM kg_edges WHERE {clause}",
+            params,
         ).fetchall()
         return [self._row_to_edge(r) for r in rows]
 
@@ -280,12 +282,14 @@ class KGManager:
 
     def stats(self) -> dict:
         conn = self._conn()
-        node_counts = dict(conn.execute(
-            "SELECT type, COUNT(*) FROM kg_nodes GROUP BY type"
-        ).fetchall())
-        edge_counts = dict(conn.execute(
-            "SELECT relation_type, COUNT(*) FROM kg_edges GROUP BY relation_type"
-        ).fetchall())
+        node_counts = dict(
+            conn.execute("SELECT type, COUNT(*) FROM kg_nodes GROUP BY type").fetchall()
+        )
+        edge_counts = dict(
+            conn.execute(
+                "SELECT relation_type, COUNT(*) FROM kg_edges GROUP BY relation_type"
+            ).fetchall()
+        )
         total_nodes = sum(node_counts.values())
         total_edges = sum(edge_counts.values())
         return {
@@ -300,7 +304,9 @@ class KGManager:
     def get_rebuild_meta(self) -> dict:
         """Return last rebuild timestamp and set of indexed paper UIDs."""
         conn = self._conn()
-        row = conn.execute("SELECT last_rebuild_at, indexed_papers_json FROM rebuild_meta WHERE id=1").fetchone()
+        row = conn.execute(
+            "SELECT last_rebuild_at, indexed_papers_json FROM rebuild_meta WHERE id=1"
+        ).fetchone()
         indexed = orjson.loads(row[1]) if row and row[1] else []
         return {
             "last_rebuild_at": row[0] if row else None,
@@ -390,7 +396,9 @@ class KGManager:
 
             edges = self.get_edges_bulk([current_id], direction="both", rel_type=relation_type)
             for edge in edges:
-                neighbor_id = edge["target_id"] if edge["source_id"] == current_id else edge["source_id"]
+                neighbor_id = (
+                    edge["target_id"] if edge["source_id"] == current_id else edge["source_id"]
+                )
                 if neighbor_id in visited:
                     continue
                 visited.add(neighbor_id)
@@ -414,7 +422,9 @@ class KGManager:
             current_id, path = queue.pop(0)
             edges = self.get_edges_bulk([current_id], direction="both")
             for edge in edges:
-                neighbor_id = edge["target_id"] if edge["source_id"] == current_id else edge["source_id"]
+                neighbor_id = (
+                    edge["target_id"] if edge["source_id"] == current_id else edge["source_id"]
+                )
                 if neighbor_id in visited:
                     continue
                 new_path = path + [neighbor_id]

@@ -1,4 +1,5 @@
 """CLI command: roadmap — Generate research roadmaps."""
+
 from __future__ import annotations
 
 import argparse
@@ -16,17 +17,20 @@ def _build_roadmap_parser(subparsers) -> argparse.ArgumentParser:
         description="Generate structured research roadmaps from questions and hypotheses.",
     )
     p.add_argument(
-        "--question", "-q",
+        "--question",
+        "-q",
         type=str,
         help="Question ID to generate roadmap for",
     )
     p.add_argument(
-        "--text", "-t",
+        "--text",
+        "-t",
         type=str,
         help="Research question text (if not using --question)",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="JSON output",
     )
@@ -72,7 +76,7 @@ def _run_roadmap(args: argparse.Namespace) -> int:
     if args.json:
         print(generator.render_json(roadmap))
     elif args.export_md:
-        with open(args.export_md, 'w', encoding='utf-8') as f:
+        with open(args.export_md, "w", encoding="utf-8") as f:
             f.write(generator.render_markdown(roadmap))
         print(f"✓ 导出到 {args.export_md}")
     else:

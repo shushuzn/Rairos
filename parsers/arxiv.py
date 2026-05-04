@@ -1,4 +1,5 @@
 """arXiv API metadata fetching."""
+
 import logging
 import threading
 import time
@@ -16,6 +17,7 @@ def _lazy_feedparser():
     global _feedparser
     if _feedparser is None:
         import feedparser
+
         _feedparser = feedparser
     return _feedparser
 
@@ -24,8 +26,10 @@ def _lazy_requests():
     global _requests
     if _requests is None:
         import requests  # type: ignore[import-untyped]
+
         _requests = requests
     return _requests
+
 
 logger = logging.getLogger(__name__)
 from core.cache import get_cached, set_cached
@@ -40,6 +44,7 @@ def _get_session():
     if _http_session is None:
         _http_session = _lazy_requests().Session()
     return _http_session
+
 
 # ─── Rate limiting ────────────────────────────────────────────────────────────
 # arXiv API guidelines: < 1 request per 3 seconds
@@ -237,7 +242,9 @@ def fetch_arxiv_metadata_batch(arxiv_ids: List[str], timeout: int = 60) -> List[
     # Fallback: parallel individual fetches for missing IDs
     if missing_ids:
         with ThreadPoolExecutor(max_workers=min(len(missing_ids), 8)) as executor:
-            futures = {executor.submit(fetch_arxiv_metadata, aid, timeout): aid for aid in missing_ids}
+            futures = {
+                executor.submit(fetch_arxiv_metadata, aid, timeout): aid for aid in missing_ids
+            }
             for future in as_completed(futures):
                 try:
                     paper = future.result()

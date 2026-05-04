@@ -31,6 +31,7 @@ class AnalyzerAgent(BaseAgent):
             return
         try:
             from llm.gap_analyzer import GapAnalyzerV2
+
             self._analyzer = GapAnalyzerV2()
         except Exception as e:
             self._log("init_failed", error=str(e))
@@ -68,7 +69,11 @@ class AnalyzerAgent(BaseAgent):
             return []
 
         for gap in (result.gaps or [])[:5]:
-            gap_type_name = gap.gap_type.value if hasattr(gap.gap_type, "value") else str(gap.gap_type or "improvement")
+            gap_type_name = (
+                gap.gap_type.value
+                if hasattr(gap.gap_type, "value")
+                else str(gap.gap_type or "improvement")
+            )
             gaps_found.append(
                 AgentMessage(
                     id="",
@@ -80,7 +85,9 @@ class AnalyzerAgent(BaseAgent):
                         "gap_type": gap_type_name,
                         "gap_title": gap.title or "",
                         "description": gap.description or "",
-                        "severity": gap.severity.value if hasattr(gap.severity, "value") else "MEDIUM",
+                        "severity": gap.severity.value
+                        if hasattr(gap.severity, "value")
+                        else "MEDIUM",
                         "matched_papers": [arxiv_id],
                         "triggered_by": arxiv_id,
                         "trigger_title": title,

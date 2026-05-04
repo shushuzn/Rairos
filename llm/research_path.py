@@ -17,7 +17,8 @@ import numpy as np
 
 class ReadingLevel(Enum):
     """Reading level / depth preference."""
-    INTRO = "intro"      # 入门：基础概念
+
+    INTRO = "intro"  # 入门：基础概念
     INTERMEDIATE = "intermediate"  # 进阶：核心论文
     ADVANCED = "advanced"  # 深入：最新进展
 
@@ -25,6 +26,7 @@ class ReadingLevel(Enum):
 @dataclass
 class PaperNode:
     """Represents a paper in the reading path."""
+
     paper_id: str
     title: str
     year: int = 0
@@ -40,6 +42,7 @@ class PaperNode:
 @dataclass
 class ReadingStep:
     """A single step in the reading path."""
+
     order: int
     paper: PaperNode
     role: str  # "foundation", "core", "improvement", "variant", "latest"
@@ -50,6 +53,7 @@ class ReadingStep:
 @dataclass
 class ReadingPath:
     """A complete reading path recommendation."""
+
     topic: str
     level: ReadingLevel
     total_papers: int
@@ -191,18 +195,18 @@ class ResearchPathPlanner:
             # Use FTS search
             rows, _ = self.db.search_papers(topic, limit=50)
             for row in rows:
-                year = getattr(row, 'year', 0) or 0
+                year = getattr(row, "year", 0) or 0
                 if min_year and year < min_year:
                     continue
                 if max_year and year > max_year:
                     continue
 
                 paper = PaperNode(
-                    paper_id=str(getattr(row, 'id', '')),
-                    title=getattr(row, 'title', topic) or topic,
+                    paper_id=str(getattr(row, "id", "")),
+                    title=getattr(row, "title", topic) or topic,
                     year=year,
-                    authors=self._parse_authors(getattr(row, 'authors', '')),
-                    relevance_score=getattr(row, 'bm25_score', 0) or 0.5,
+                    authors=self._parse_authors(getattr(row, "authors", "")),
+                    relevance_score=getattr(row, "bm25_score", 0) or 0.5,
                 )
                 results.append(paper)
         except Exception:
@@ -216,8 +220,8 @@ class ResearchPathPlanner:
         if not authors_str:
             return []
         # Handle common formats
-        authors_str = authors_str.replace(' and ', ', ')
-        return [a.strip() for a in authors_str.split(',') if a.strip()]
+        authors_str = authors_str.replace(" and ", ", ")
+        return [a.strip() for a in authors_str.split(",") if a.strip()]
 
     def _build_citation_graph(self, papers: List[PaperNode]) -> Dict[str, PaperNode]:
         """Build citation graph from papers."""
@@ -234,11 +238,7 @@ class ResearchPathPlanner:
         try:
             # Get all Paper nodes
             paper_nodes = self.kg.get_all_nodes(node_type="Paper")
-            paper_id_map = {
-                n["entity_id"]: n["id"]
-                for n in paper_nodes
-                if n["entity_id"] in graph
-            }
+            paper_id_map = {n["entity_id"]: n["id"] for n in paper_nodes if n["entity_id"] in graph}
 
             for paper_id, kg_id in paper_id_map.items():
                 edges = self.kg.get_edges_by_node(kg_id, direction="both", rel_type="cite")
@@ -264,7 +264,9 @@ class ResearchPathPlanner:
         node = self.kg.get_node(kg_id)
         return node["entity_id"] if node else None
 
-    def _calculate_pagerank(self, graph: Dict[str, PaperNode], damping: float = 0.85, iterations: int = 30):
+    def _calculate_pagerank(
+        self, graph: Dict[str, PaperNode], damping: float = 0.85, iterations: int = 30
+    ):
         """
         Calculate PageRank for papers.
 
@@ -520,7 +522,9 @@ class ResearchPathPlanner:
             lines.append(f"   💡 {step.reason}")
             if step.paper.authors:
                 authors_str = ", ".join(step.paper.authors[:2])
-                lines.append(f"   👥 {authors_str}" + (" et al." if len(step.paper.authors) > 2 else ""))
+                lines.append(
+                    f"   👥 {authors_str}" + (" et al." if len(step.paper.authors) > 2 else "")
+                )
             lines.append(f"   ⏱️ {step.estimated_read_time_minutes} min")
             lines.append("")
 
@@ -532,7 +536,7 @@ class ResearchPathPlanner:
     def render_mermaid(self, path: ReadingPath) -> str:
         """Render reading path as Mermaid graph."""
         if not path.steps:
-            return "graph TD\n    Empty[\"No papers found\"]"
+            return 'graph TD\n    Empty["No papers found"]'
 
         lines = ["graph TD"]
         lines.append('    subgraph "Reading Path"')
@@ -547,7 +551,7 @@ class ResearchPathPlanner:
         for i in range(len(path.steps) - 1):
             curr = path.steps[i].paper.paper_id.replace("-", "_")
             next_pid = path.steps[i + 1].paper.paper_id.replace("-", "_")
-            lines.append(f"    {i+1}_{curr} --> {i+2}_{next_pid}")
+            lines.append(f"    {i + 1}_{curr} --> {i + 2}_{next_pid}")
 
         lines.append("    end")
         lines.append("")

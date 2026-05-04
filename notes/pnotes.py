@@ -1,4 +1,5 @@
 """P-Note collection and tag-based queries."""
+
 import datetime as dt
 import re
 from pathlib import Path
@@ -8,7 +9,11 @@ _RE_TITLE = re.compile(r"^#\s+(.+)$", re.MULTILINE)
 _RE_SOURCE = re.compile(r"\*\*Source:\*\*\s+(\w+):\s+(\S+)")
 
 from core.basics import read_text
-from notes.frontmatter import parse_date_from_frontmatter, parse_frontmatter, parse_tags_from_frontmatter
+from notes.frontmatter import (
+    parse_date_from_frontmatter,
+    parse_frontmatter,
+    parse_tags_from_frontmatter,
+)
 
 
 def collect_pnotes(root: Path) -> List[Path]:

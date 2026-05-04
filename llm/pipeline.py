@@ -19,6 +19,7 @@ from typing import Optional, List, Any
 
 class PipelineStage(Enum):
     """Pipeline execution stages."""
+
     TREND = "trend"
     STORY = "story"
     VALIDATE = "validate"
@@ -28,6 +29,7 @@ class PipelineStage(Enum):
 @dataclass
 class PipelineResult:
     """Complete research pipeline result."""
+
     topic: str
     stage: PipelineStage  # Current/completed stage
     trend_result: Optional[Any] = None
@@ -99,9 +101,7 @@ class ResearchPipeline:
         # Stage 4: Hypothesis Generation
         if PipelineStage.HYPOTHESIZE in stages:
             try:
-                result.hypothesis_result = self._run_hypothesize(
-                    topic, result, use_llm, model
-                )
+                result.hypothesis_result = self._run_hypothesize(topic, result, use_llm, model)
             except Exception as e:
                 result.errors.append(f"Hypothesize: {str(e)}")
 
@@ -110,6 +110,7 @@ class ResearchPipeline:
     def _run_trend(self, topic: str, quick: bool) -> Any:
         """Run trend analysis stage."""
         from llm.trend_analyzer import TrendAnalyzer
+
         analyzer = TrendAnalyzer(db=self.db)
         return analyzer.analyze(
             topic,
@@ -119,6 +120,7 @@ class ResearchPipeline:
     def _run_story(self, topic: str, quick: bool) -> Any:
         """Run story weaving stage."""
         from llm.story_weaver import StoryWeaver
+
         weaver = StoryWeaver(db=self.db)
         return weaver.weave(
             topic,
@@ -129,6 +131,7 @@ class ResearchPipeline:
     def _run_validate(self, question: str, use_llm: bool, model: Optional[str]) -> Any:
         """Run question validation stage."""
         from llm.question_validator import QuestionValidator
+
         validator = QuestionValidator()
         return validator.validate(
             question,
@@ -165,31 +168,31 @@ class ResearchPipeline:
         """Extract trend context for hypothesis generator."""
         if not trend_result:
             return ""
-        keywords = getattr(trend_result, 'hot_keywords', [])[:5]
-        growth = getattr(trend_result, 'growth_rate', 0)
+        keywords = getattr(trend_result, "hot_keywords", [])[:5]
+        growth = getattr(trend_result, "growth_rate", 0)
         return f"热点关键词: {', '.join(keywords)}, 增长率: {growth:.0%}"
 
     def _build_story_context(self, story_result) -> str:
         """Extract story context for hypothesis generator."""
         if not story_result:
             return ""
-        themes = getattr(story_result, 'themes', [])[:3]
-        contradictions = getattr(story_result, 'contradictions', [])
-        summary = getattr(story_result, 'summary', '')
+        themes = getattr(story_result, "themes", [])[:3]
+        contradictions = getattr(story_result, "contradictions", [])
+        summary = getattr(story_result, "summary", "")
         return f"主题: {', '.join(themes)}, 矛盾点: {len(contradictions)}个, {summary}"
 
     def _build_gap_context(self, validate_result) -> str:
         """Extract gap context for hypothesis generator."""
         if not validate_result:
             return ""
-        return getattr(validate_result, 'gap_summary', '')
+        return getattr(validate_result, "gap_summary", "")
 
     def _extract_question(self, pipeline_result: PipelineResult) -> str:
         """Extract a research question from pipeline results."""
         topic = pipeline_result.topic
         # Try to form a question from themes
         if pipeline_result.story_result:
-            themes = getattr(pipeline_result.story_result, 'themes', [])
+            themes = getattr(pipeline_result.story_result, "themes", [])
             if themes:
                 return f"How to improve {themes[0]}?"
         return f"What are the research gaps in {topic}?"
@@ -225,12 +228,12 @@ class ResearchPipeline:
             for err in result.errors:
                 lines.append(f"  • {err}")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def _render_trend(self, trend_result) -> List[str]:
         """Render trend analysis summary."""
-        keywords = getattr(trend_result, 'hot_keywords', [])[:5]
-        growth = getattr(trend_result, 'growth_rate', 0)
+        keywords = getattr(trend_result, "hot_keywords", [])[:5]
+        growth = getattr(trend_result, "growth_rate", 0)
         return [
             "",
             "📈 趋势分析",
@@ -240,8 +243,8 @@ class ResearchPipeline:
 
     def _render_story(self, story_result) -> List[str]:
         """Render story weaving summary."""
-        themes = getattr(story_result, 'themes', [])[:3]
-        contradictions = getattr(story_result, 'contradictions', [])
+        themes = getattr(story_result, "themes", [])[:3]
+        contradictions = getattr(story_result, "contradictions", [])
         return [
             "",
             "📖 研究故事",
@@ -251,9 +254,9 @@ class ResearchPipeline:
 
     def _render_validation(self, validate_result) -> List[str]:
         """Render validation summary."""
-        score = getattr(validate_result, 'innovation_score', None)
+        score = getattr(validate_result, "innovation_score", None)
         score_val = score.overall if score else 0
-        is_novel = getattr(validate_result, 'is_novel', False)
+        is_novel = getattr(validate_result, "is_novel", False)
         return [
             "",
             "✅ 问题验证",

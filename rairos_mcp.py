@@ -13,6 +13,7 @@ Or configure in Claude Code settings.json:
   }
 }
 """
+
 import sys
 import os
 from pathlib import Path
@@ -66,16 +67,16 @@ def get_tools() -> List[Dict]:
                 "properties": {
                     "identifier": {
                         "type": "string",
-                        "description": "arXiv ID (e.g. '2601.00155'), DOI, or path to PDF file"
+                        "description": "arXiv ID (e.g. '2601.00155'), DOI, or path to PDF file",
                     },
                     "tags": {
                         "type": "array",
                         "items": {"type": "string"},
-                        "description": "Topic tags for the paper"
-                    }
+                        "description": "Topic tags for the paper",
+                    },
                 },
-                "required": ["identifier"]
-            }
+                "required": ["identifier"],
+            },
         },
         {
             "name": "paper_search",
@@ -85,11 +86,20 @@ def get_tools() -> List[Dict]:
                 "properties": {
                     "query": {"type": "string", "description": "Search query"},
                     "tag": {"type": "string", "description": "Filter by tag (local only)"},
-                    "limit": {"type": "integer", "default": 10, "description": "Max results per source"},
-                    "source": {"type": "string", "enum": ["local", "web", "both"], "default": "local", "description": "Search source: local DB, web (arXiv+SemanticScholar), or both"}
+                    "limit": {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Max results per source",
+                    },
+                    "source": {
+                        "type": "string",
+                        "enum": ["local", "web", "both"],
+                        "default": "local",
+                        "description": "Search source: local DB, web (arXiv+SemanticScholar), or both",
+                    },
                 },
-                "required": ["query"]
-            }
+                "required": ["query"],
+            },
         },
         {
             "name": "paper_chat",
@@ -98,10 +108,10 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "question": {"type": "string", "description": "Question to ask"},
-                    "paper_id": {"type": "string", "description": "Specific paper ID (optional)"}
+                    "paper_id": {"type": "string", "description": "Specific paper ID (optional)"},
                 },
-                "required": ["question"]
-            }
+                "required": ["question"],
+            },
         },
         {
             "name": "paper_recommend",
@@ -109,12 +119,29 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "limit": {"type": "integer", "default": 5, "description": "Max recommendations to return"},
-                    "focus_tags": {"type": "array", "items": {"type": "string"}, "description": "Prefer papers with these tags (optional)"},
-                    "exclude_read": {"type": "boolean", "default": True, "description": "Exclude already-read papers from recommendations"},
-                    "strategy": {"type": "string", "enum": ["similar_tags", "complementary", "influential", "diverse"], "default": "similar_tags", "description": "Recommendation strategy"}
-                }
-            }
+                    "limit": {
+                        "type": "integer",
+                        "default": 5,
+                        "description": "Max recommendations to return",
+                    },
+                    "focus_tags": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Prefer papers with these tags (optional)",
+                    },
+                    "exclude_read": {
+                        "type": "boolean",
+                        "default": True,
+                        "description": "Exclude already-read papers from recommendations",
+                    },
+                    "strategy": {
+                        "type": "string",
+                        "enum": ["similar_tags", "complementary", "influential", "diverse"],
+                        "default": "similar_tags",
+                        "description": "Recommendation strategy",
+                    },
+                },
+            },
         },
         {
             "name": "pdf_download",
@@ -123,10 +150,13 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "arxiv_id": {"type": "string", "description": "arXiv ID of the paper"},
-                    "out_path": {"type": "string", "description": "Output path (optional, defaults to temp file)"}
+                    "out_path": {
+                        "type": "string",
+                        "description": "Output path (optional, defaults to temp file)",
+                    },
                 },
-                "required": ["arxiv_id"]
-            }
+                "required": ["arxiv_id"],
+            },
         },
         {
             "name": "pdf_extract_text",
@@ -135,12 +165,23 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "pdf_path": {"type": "string", "description": "Path to PDF file"},
-                    "max_pages": {"type": "integer", "description": "Max pages to extract (optional, extracts all by default)"},
-                    "ocr": {"type": "boolean", "default": False, "description": "Enable OCR for scanned pages"},
-                    "use_pdfminer_fallback": {"type": "boolean", "default": False, "description": "Fall back to pdfminer if PyMuPDF fails"}
+                    "max_pages": {
+                        "type": "integer",
+                        "description": "Max pages to extract (optional, extracts all by default)",
+                    },
+                    "ocr": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Enable OCR for scanned pages",
+                    },
+                    "use_pdfminer_fallback": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Fall back to pdfminer if PyMuPDF fails",
+                    },
                 },
-                "required": ["pdf_path"]
-            }
+                "required": ["pdf_path"],
+            },
         },
         {
             "name": "pdf_extract_structured",
@@ -149,10 +190,13 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "pdf_path": {"type": "string", "description": "Path to PDF file"},
-                    "max_pages": {"type": "integer", "description": "Max pages to extract (optional, extracts all by default)"}
+                    "max_pages": {
+                        "type": "integer",
+                        "description": "Max pages to extract (optional, extracts all by default)",
+                    },
                 },
-                "required": ["pdf_path"]
-            }
+                "required": ["pdf_path"],
+            },
         },
         {
             "name": "kg_query",
@@ -160,12 +204,18 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "query": {"type": "string", "description": "Query type: 'stats', 'papers', 'tags', 'neighbors'"},
-                    "entity_id": {"type": "string", "description": "Entity ID for neighbor queries"},
-                    "tag": {"type": "string", "description": "Tag to filter papers"}
+                    "query": {
+                        "type": "string",
+                        "description": "Query type: 'stats', 'papers', 'tags', 'neighbors'",
+                    },
+                    "entity_id": {
+                        "type": "string",
+                        "description": "Entity ID for neighbor queries",
+                    },
+                    "tag": {"type": "string", "description": "Tag to filter papers"},
                 },
-                "required": ["query"]
-            }
+                "required": ["query"],
+            },
         },
         {
             "name": "kg_paper_subgraph",
@@ -174,21 +224,23 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "paper_id": {"type": "string", "description": "arXiv ID of the paper"},
-                    "depth": {"type": "integer", "default": 2, "description": "Traversal depth (1-3)"}
+                    "depth": {
+                        "type": "integer",
+                        "default": 2,
+                        "description": "Traversal depth (1-3)",
+                    },
                 },
-                "required": ["paper_id"]
-            }
+                "required": ["paper_id"],
+            },
         },
         {
             "name": "kg_tag_graph",
             "description": "Get all papers and notes related to a tag as graph JSON",
             "inputSchema": {
                 "type": "object",
-                "properties": {
-                    "tag": {"type": "string", "description": "Tag name"}
-                },
-                "required": ["tag"]
-            }
+                "properties": {"tag": {"type": "string", "description": "Tag name"}},
+                "required": ["tag"],
+            },
         },
         {
             "name": "kg_full_graph",
@@ -196,9 +248,13 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "max_nodes": {"type": "integer", "default": 500, "description": "Max nodes to return"}
-                }
-            }
+                    "max_nodes": {
+                        "type": "integer",
+                        "default": 500,
+                        "description": "Max nodes to return",
+                    }
+                },
+            },
         },
         {
             "name": "tag_add",
@@ -207,10 +263,10 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "paper_id": {"type": "string", "description": "arXiv ID of the paper"},
-                    "tag": {"type": "string", "description": "Tag name to add"}
+                    "tag": {"type": "string", "description": "Tag name to add"},
                 },
-                "required": ["paper_id", "tag"]
-            }
+                "required": ["paper_id", "tag"],
+            },
         },
         {
             "name": "tag_remove",
@@ -219,10 +275,10 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "paper_id": {"type": "string", "description": "arXiv ID of the paper"},
-                    "tag": {"type": "string", "description": "Tag name to remove"}
+                    "tag": {"type": "string", "description": "Tag name to remove"},
                 },
-                "required": ["paper_id", "tag"]
-            }
+                "required": ["paper_id", "tag"],
+            },
         },
         {
             "name": "tag_list",
@@ -232,16 +288,13 @@ def get_tools() -> List[Dict]:
                 "properties": {
                     "paper_id": {"type": "string", "description": "arXiv ID of the paper"}
                 },
-                "required": ["paper_id"]
-            }
+                "required": ["paper_id"],
+            },
         },
         {
             "name": "tag_all",
             "description": "List all tags in the system",
-            "inputSchema": {
-                "type": "object",
-                "properties": {}
-            }
+            "inputSchema": {"type": "object", "properties": {}},
         },
         {
             "name": "trends_detect_trending",
@@ -249,20 +302,22 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "threshold": {"type": "number", "default": 0.5, "description": "Trending threshold (0-1)"}
-                }
-            }
+                    "threshold": {
+                        "type": "number",
+                        "default": 0.5,
+                        "description": "Trending threshold (0-1)",
+                    }
+                },
+            },
         },
         {
             "name": "trends_predict_next",
             "description": "Predict next value for a tag",
             "inputSchema": {
                 "type": "object",
-                "properties": {
-                    "tag": {"type": "string", "description": "Tag name"}
-                },
-                "required": ["tag"]
-            }
+                "properties": {"tag": {"type": "string", "description": "Tag name"}},
+                "required": ["tag"],
+            },
         },
         {
             "name": "trends_top_predictions",
@@ -270,9 +325,13 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "top_k": {"type": "integer", "default": 5, "description": "Number of predictions"}
-                }
-            }
+                    "top_k": {
+                        "type": "integer",
+                        "default": 5,
+                        "description": "Number of predictions",
+                    }
+                },
+            },
         },
         {
             "name": "trends_compare_tags",
@@ -281,10 +340,10 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "tag_a": {"type": "string", "description": "First tag"},
-                    "tag_b": {"type": "string", "description": "Second tag"}
+                    "tag_b": {"type": "string", "description": "Second tag"},
                 },
-                "required": ["tag_a", "tag_b"]
-            }
+                "required": ["tag_a", "tag_b"],
+            },
         },
         {
             "name": "chart_query",
@@ -296,12 +355,15 @@ def get_tools() -> List[Dict]:
                     "action": {
                         "type": "string",
                         "enum": ["list", "figure", "table"],
-                        "description": "Action: list all, query figure, or query table"
+                        "description": "Action: list all, query figure, or query table",
                     },
-                    "label": {"type": "string", "description": "Figure/Table label like 'Figure 3'"}
+                    "label": {
+                        "type": "string",
+                        "description": "Figure/Table label like 'Figure 3'",
+                    },
                 },
-                "required": ["paper_id", "action"]
-            }
+                "required": ["paper_id", "action"],
+            },
         },
         {
             "name": "research_run",
@@ -310,10 +372,14 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "topic": {"type": "string", "description": "Research topic"},
-                    "limit": {"type": "integer", "default": 5, "description": "Max papers to process"}
+                    "limit": {
+                        "type": "integer",
+                        "default": 5,
+                        "description": "Max papers to process",
+                    },
                 },
-                "required": ["topic"]
-            }
+                "required": ["topic"],
+            },
         },
         {
             "name": "slides_generate",
@@ -322,10 +388,10 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "paper_id": {"type": "string", "description": "Paper ID"},
-                    "output_path": {"type": "string", "description": "Output PPTX file path"}
+                    "output_path": {"type": "string", "description": "Output PPTX file path"},
                 },
-                "required": ["paper_id"]
-            }
+                "required": ["paper_id"],
+            },
         },
         {
             "name": "cite_fetch",
@@ -337,22 +403,20 @@ def get_tools() -> List[Dict]:
                     "direction": {
                         "type": "string",
                         "enum": ["cited", "citing", "both"],
-                        "default": "both"
-                    }
+                        "default": "both",
+                    },
                 },
-                "required": ["paper_id"]
-            }
+                "required": ["paper_id"],
+            },
         },
         {
             "name": "paper_analyze",
             "description": "Get analysis of a paper including summary, novelty, evidence scores",
             "inputSchema": {
                 "type": "object",
-                "properties": {
-                    "paper_id": {"type": "string", "description": "Paper ID"}
-                },
-                "required": ["paper_id"]
-            }
+                "properties": {"paper_id": {"type": "string", "description": "Paper ID"}},
+                "required": ["paper_id"],
+            },
         },
         {
             "name": "paper2code_run",
@@ -360,14 +424,34 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "arxiv_id": {"type": "string", "description": "arXiv ID (e.g. 1706.03762) or full URL"},
-                    "framework": {"type": "string", "enum": ["pytorch", "jax", "numpy"], "default": "pytorch", "description": "Target framework"},
-                    "skip_gene_pool": {"type": "boolean", "default": False, "description": "Skip Gene Pool encoding (for dry runs)"},
-                    "continuous": {"type": "boolean", "default": False, "description": "Run continuously, polling ArXiv channels for new papers"},
-                    "interval_minutes": {"type": "integer", "default": 15, "description": "Polling interval in minutes (only for continuous mode)"}
+                    "arxiv_id": {
+                        "type": "string",
+                        "description": "arXiv ID (e.g. 1706.03762) or full URL",
+                    },
+                    "framework": {
+                        "type": "string",
+                        "enum": ["pytorch", "jax", "numpy"],
+                        "default": "pytorch",
+                        "description": "Target framework",
+                    },
+                    "skip_gene_pool": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Skip Gene Pool encoding (for dry runs)",
+                    },
+                    "continuous": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Run continuously, polling ArXiv channels for new papers",
+                    },
+                    "interval_minutes": {
+                        "type": "integer",
+                        "default": 15,
+                        "description": "Polling interval in minutes (only for continuous mode)",
+                    },
                 },
-                "required": ["arxiv_id"]
-            }
+                "required": ["arxiv_id"],
+            },
         },
         {
             "name": "citation_graph",
@@ -376,11 +460,19 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "paper_id": {"type": "string", "description": "Paper ID (arXiv ID)"},
-                    "depth": {"type": "integer", "default": 2, "description": "Depth: 1=direct, 2=2-hop"},
-                    "max_nodes": {"type": "integer", "default": 100, "description": "Max nodes per direction"}
+                    "depth": {
+                        "type": "integer",
+                        "default": 2,
+                        "description": "Depth: 1=direct, 2=2-hop",
+                    },
+                    "max_nodes": {
+                        "type": "integer",
+                        "default": 100,
+                        "description": "Max nodes per direction",
+                    },
                 },
-                "required": ["paper_id"]
-            }
+                "required": ["paper_id"],
+            },
         },
         {
             "name": "gap_detect",
@@ -388,11 +480,18 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "topic": {"type": "string", "description": "Research topic or keyword to analyze"},
-                    "use_llm": {"type": "boolean", "default": False, "description": "Use LLM for deep analysis"}
+                    "topic": {
+                        "type": "string",
+                        "description": "Research topic or keyword to analyze",
+                    },
+                    "use_llm": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Use LLM for deep analysis",
+                    },
                 },
-                "required": ["topic"]
-            }
+                "required": ["topic"],
+            },
         },
         {
             "name": "gap_submit",
@@ -400,14 +499,49 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "topic": {"type": "string", "description": "Research topic or domain (e.g. RLHF, world models)"},
-                    "gap_type": {"type": "string", "description": "Gap type", "enum": ["capability", "method_limitation", "embodied_planning", "improvement", "evaluation_gap", "theoretical_gap", "dataset_gap", "unexplored_application", "sim_to_real", "planning_control", "rl_efficiency", "reasoning_scaling", "representation_learning", "rl_pretraining", "benchmark_coverage", "architecture_agnostic", "human_ai_collaboration"]},
-                    "title": {"type": "string", "description": "Short descriptive title of the gap"},
-                    "description": {"type": "string", "description": "Detailed description of the gap, what makes it a gap, and why it matters"},
-                    "success_score": {"type": "number", "default": 0.8, "description": "Initial success score (0.0-1.0)"}
+                    "topic": {
+                        "type": "string",
+                        "description": "Research topic or domain (e.g. RLHF, world models)",
+                    },
+                    "gap_type": {
+                        "type": "string",
+                        "description": "Gap type",
+                        "enum": [
+                            "capability",
+                            "method_limitation",
+                            "embodied_planning",
+                            "improvement",
+                            "evaluation_gap",
+                            "theoretical_gap",
+                            "dataset_gap",
+                            "unexplored_application",
+                            "sim_to_real",
+                            "planning_control",
+                            "rl_efficiency",
+                            "reasoning_scaling",
+                            "representation_learning",
+                            "rl_pretraining",
+                            "benchmark_coverage",
+                            "architecture_agnostic",
+                            "human_ai_collaboration",
+                        ],
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Short descriptive title of the gap",
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Detailed description of the gap, what makes it a gap, and why it matters",
+                    },
+                    "success_score": {
+                        "type": "number",
+                        "default": 0.8,
+                        "description": "Initial success score (0.0-1.0)",
+                    },
                 },
-                "required": ["topic", "gap_type", "title", "description"]
-            }
+                "required": ["topic", "gap_type", "title", "description"],
+            },
         },
         {
             "name": "gap_evolve",
@@ -415,11 +549,17 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "topic": {"type": "string", "description": "Research topic to evolve (e.g. RLHF, world models)"},
-                    "gap_type": {"type": "string", "description": "Optional gap type filter (e.g. capability, method_limitation)"}
+                    "topic": {
+                        "type": "string",
+                        "description": "Research topic to evolve (e.g. RLHF, world models)",
+                    },
+                    "gap_type": {
+                        "type": "string",
+                        "description": "Optional gap type filter (e.g. capability, method_limitation)",
+                    },
                 },
-                "required": ["topic"]
-            }
+                "required": ["topic"],
+            },
         },
         {
             "name": "research_agent_start",
@@ -427,17 +567,21 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "interval_minutes": {"type": "integer", "default": 30, "description": "Check interval in minutes"}
-                }
-            }
+                    "interval_minutes": {
+                        "type": "integer",
+                        "default": 30,
+                        "description": "Check interval in minutes",
+                    }
+                },
+            },
         },
         {
             "name": "research_agent_stop",
-            "description": "Stop the autonomous research agent watch loop"
+            "description": "Stop the autonomous research agent watch loop",
         },
         {
             "name": "research_agent_status",
-            "description": "Get status of the autonomous research agent (running state, alerts, last check)"
+            "description": "Get status of the autonomous research agent (running state, alerts, last check)",
         },
         {
             "name": "research_agent_trigger",
@@ -445,9 +589,12 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "topic": {"type": "string", "description": "Specific topic to analyze (optional, analyzes all subscriptions if omitted)"}
-                }
-            }
+                    "topic": {
+                        "type": "string",
+                        "description": "Specific topic to analyze (optional, analyzes all subscriptions if omitted)",
+                    }
+                },
+            },
         },
         {
             "name": "hypothesis_generate",
@@ -456,16 +603,26 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "topic": {"type": "string", "description": "Research topic"},
-                    "gap_context": {"type": "string", "description": "Gap description from gap detection"},
-                    "gap_type": {"type": "string", "description": "Gap type: method_limitation, unexplored_application, contradiction, evaluation_gap, scalability_issue"},
-                    "creative": {"type": "boolean", "default": False, "description": "Include creative cross-domain hypotheses"}
+                    "gap_context": {
+                        "type": "string",
+                        "description": "Gap description from gap detection",
+                    },
+                    "gap_type": {
+                        "type": "string",
+                        "description": "Gap type: method_limitation, unexplored_application, contradiction, evaluation_gap, scalability_issue",
+                    },
+                    "creative": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Include creative cross-domain hypotheses",
+                    },
                 },
-                "required": ["topic"]
-            }
+                "required": ["topic"],
+            },
         },
         {
             "name": "hypothesis_list",
-            "description": "List all tracked hypotheses with their verdict status"
+            "description": "List all tracked hypotheses with their verdict status",
         },
         {
             "name": "experiment_record",
@@ -473,13 +630,22 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "hypothesis_id": {"type": "string", "description": "Hypothesis ID to link the experiment to"},
+                    "hypothesis_id": {
+                        "type": "string",
+                        "description": "Hypothesis ID to link the experiment to",
+                    },
                     "name": {"type": "string", "description": "Experiment name"},
-                    "result": {"type": "string", "description": "Experiment result: validated, rejected, failed"},
-                    "metrics": {"type": "object", "description": "Key metrics as key-value pairs, e.g. {\"accuracy\": 0.92}"}
+                    "result": {
+                        "type": "string",
+                        "description": "Experiment result: validated, rejected, failed",
+                    },
+                    "metrics": {
+                        "type": "object",
+                        "description": 'Key metrics as key-value pairs, e.g. {"accuracy": 0.92}',
+                    },
                 },
-                "required": ["hypothesis_id", "name", "result"]
-            }
+                "required": ["hypothesis_id", "name", "result"],
+            },
         },
         {
             "name": "litreview_generate",
@@ -488,16 +654,21 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "topic": {"type": "string", "description": "Research topic to review"},
-                    "limit": {"type": "integer", "default": 30, "description": "Max papers to include (default 30)"},
-                    "use_llm": {"type": "boolean", "default": False, "description": "Use LLM for generation (default true)"}
+                    "limit": {
+                        "type": "integer",
+                        "default": 30,
+                        "description": "Max papers to include (default 30)",
+                    },
+                    "use_llm": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Use LLM for generation (default true)",
+                    },
                 },
-                "required": ["topic"]
-            }
+                "required": ["topic"],
+            },
         },
-        {
-            "name": "litreview_list",
-            "description": "List all saved literature reviews"
-        },
+        {"name": "litreview_list", "description": "List all saved literature reviews"},
         {
             "name": "research_memory_add_stance",
             "description": "Record a research stance (supported/rejected/deferred) on a claim",
@@ -505,18 +676,28 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "topic": {"type": "string", "description": "Research topic or question"},
-                    "claim": {"type": "string", "description": "The specific claim or hypothesis you took a stance on"},
-                    "stance": {"type": "string", "description": "Your stance: supported, rejected, deferred, qualified"},
-                    "evidence_refs": {"type": "array", "items": {"type": "string"}, "description": "arXiv IDs that support this stance"},
+                    "claim": {
+                        "type": "string",
+                        "description": "The specific claim or hypothesis you took a stance on",
+                    },
+                    "stance": {
+                        "type": "string",
+                        "description": "Your stance: supported, rejected, deferred, qualified",
+                    },
+                    "evidence_refs": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "arXiv IDs that support this stance",
+                    },
                     "reasoning": {"type": "string", "description": "Why you hold this stance"},
-                    "confidence": {"type": "number", "description": "Confidence 0.0–1.0"}
+                    "confidence": {"type": "number", "description": "Confidence 0.0–1.0"},
                 },
-                "required": ["topic", "claim", "stance"]
-            }
+                "required": ["topic", "claim", "stance"],
+            },
         },
         {
             "name": "research_memory_list_stances",
-            "description": "List all research stances in your memory"
+            "description": "List all research stances in your memory",
         },
         {
             "name": "research_memory_check_paper",
@@ -525,14 +706,18 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "arxiv_id": {"type": "string", "description": "arXiv ID of the paper to check"},
-                    "use_llm": {"type": "boolean", "default": False, "description": "Use LLM for deep anomaly detection"}
+                    "use_llm": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Use LLM for deep anomaly detection",
+                    },
                 },
-                "required": ["arxiv_id"]
-            }
+                "required": ["arxiv_id"],
+            },
         },
         {
             "name": "research_memory_anomalies",
-            "description": "List recent anomaly alerts — papers that contradict your stances"
+            "description": "List recent anomaly alerts — papers that contradict your stances",
         },
         {
             "name": "review_simulate",
@@ -541,33 +726,36 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "arxiv_id": {"type": "string", "description": "arXiv ID of paper to review"},
-                    "persona": {"type": "string", "description": "Reviewer persona: methodology, contributions, clarity, ethics, or all (default: all)"},
-                    "use_llm": {"type": "boolean", "default": False}
+                    "persona": {
+                        "type": "string",
+                        "description": "Reviewer persona: methodology, contributions, clarity, ethics, or all (default: all)",
+                    },
+                    "use_llm": {"type": "boolean", "default": False},
                 },
-                "required": ["arxiv_id"]
-            }
+                "required": ["arxiv_id"],
+            },
         },
-        {
-            "name": "review_list",
-            "description": "List saved simulated reviews"
-        },
+        {"name": "review_list", "description": "List saved simulated reviews"},
         {
             "name": "routeplan_create",
             "description": "Create a research route plan from a hypothesis",
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "hypothesis": {"type": "string", "description": "Research hypothesis to investigate"},
+                    "hypothesis": {
+                        "type": "string",
+                        "description": "Research hypothesis to investigate",
+                    },
                     "goal": {"type": "string", "description": "What the plan should determine"},
-                    "known_papers": {"type": "array", "description": "Known relevant papers as {arxiv_id, title} objects"}
+                    "known_papers": {
+                        "type": "array",
+                        "description": "Known relevant papers as {arxiv_id, title} objects",
+                    },
                 },
-                "required": ["hypothesis", "goal"]
-            }
+                "required": ["hypothesis", "goal"],
+            },
         },
-        {
-            "name": "routeplan_list",
-            "description": "List all research plans"
-        },
+        {"name": "routeplan_list", "description": "List all research plans"},
         {
             "name": "routeplan_update_step",
             "description": "Update a step status in a research plan",
@@ -576,12 +764,15 @@ def get_tools() -> List[Dict]:
                 "properties": {
                     "plan_id": {"type": "string"},
                     "step_id": {"type": "string"},
-                    "status": {"type": "string", "description": "pending, in_progress, completed, failed, skipped"},
+                    "status": {
+                        "type": "string",
+                        "description": "pending, in_progress, completed, failed, skipped",
+                    },
                     "result": {"type": "string", "description": "What the step produced"},
-                    "notes": {"type": "string"}
+                    "notes": {"type": "string"},
                 },
-                "required": ["plan_id", "step_id", "status"]
-            }
+                "required": ["plan_id", "step_id", "status"],
+            },
         },
         {
             "name": "routeplan_revise",
@@ -590,10 +781,10 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "plan_id": {"type": "string"},
-                    "reason": {"type": "string", "description": "Why revision is needed"}
+                    "reason": {"type": "string", "description": "Why revision is needed"},
                 },
-                "required": ["plan_id", "reason"]
-            }
+                "required": ["plan_id", "reason"],
+            },
         },
         {
             "name": "briefing_generate",
@@ -602,10 +793,10 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "arxiv_id": {"type": "string", "description": "arXiv ID of the paper"},
-                    "use_llm": {"type": "boolean", "default": False}
+                    "use_llm": {"type": "boolean", "default": False},
                 },
-                "required": ["arxiv_id"]
-            }
+                "required": ["arxiv_id"],
+            },
         },
         {
             "name": "citation_chain_build",
@@ -614,10 +805,14 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "arxiv_id": {"type": "string", "description": "Seed arXiv ID"},
-                    "max_depth": {"type": "integer", "default": 2, "description": "Max traversal depth"}
+                    "max_depth": {
+                        "type": "integer",
+                        "default": 2,
+                        "description": "Max traversal depth",
+                    },
                 },
-                "required": ["arxiv_id"]
-            }
+                "required": ["arxiv_id"],
+            },
         },
         {
             "name": "citation_chain_families",
@@ -625,19 +820,20 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "arxiv_id": {"type": "string", "description": "Seed arXiv ID to build chain first"}
-                }
-            }
+                    "arxiv_id": {
+                        "type": "string",
+                        "description": "Seed arXiv ID to build chain first",
+                    }
+                },
+            },
         },
         {
             "name": "citation_chain_silent",
             "description": "Detect potential silent citations between papers in a chain",
             "inputSchema": {
                 "type": "object",
-                "properties": {
-                    "arxiv_id": {"type": "string", "description": "Seed arXiv ID"}
-                }
-            }
+                "properties": {"arxiv_id": {"type": "string", "description": "Seed arXiv ID"}},
+            },
         },
         {
             "name": "citation_chain_render",
@@ -646,10 +842,14 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "arxiv_id": {"type": "string", "description": "Seed arXiv ID"},
-                    "format": {"type": "string", "enum": ["text", "mermaid", "graphviz"], "default": "text"}
+                    "format": {
+                        "type": "string",
+                        "enum": ["text", "mermaid", "graphviz"],
+                        "default": "text",
+                    },
                 },
-                "required": ["arxiv_id"]
-            }
+                "required": ["arxiv_id"],
+            },
         },
         {
             "name": "impact_rank",
@@ -657,11 +857,22 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "topic": {"type": "string", "description": "Topic/keyword to search papers for"},
-                    "top_k": {"type": "integer", "default": 10, "description": "Return top K papers"},
-                    "min_citations": {"type": "integer", "default": 0, "description": "Minimum citation count"}
-                }
-            }
+                    "topic": {
+                        "type": "string",
+                        "description": "Topic/keyword to search papers for",
+                    },
+                    "top_k": {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Return top K papers",
+                    },
+                    "min_citations": {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Minimum citation count",
+                    },
+                },
+            },
         },
         {
             "name": "impact_score_paper",
@@ -671,8 +882,8 @@ def get_tools() -> List[Dict]:
                 "properties": {
                     "arxiv_id": {"type": "string", "description": "arXiv ID of the paper"}
                 },
-                "required": ["arxiv_id"]
-            }
+                "required": ["arxiv_id"],
+            },
         },
         {
             "name": "impact_leaderboard",
@@ -680,10 +891,14 @@ def get_tools() -> List[Dict]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "limit": {"type": "integer", "default": 20, "description": "Number of papers to return"},
-                    "year_min": {"type": "integer", "default": 2020, "description": "Minimum year"}
-                }
-            }
+                    "limit": {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Number of papers to return",
+                    },
+                    "year_min": {"type": "integer", "default": 2020, "description": "Minimum year"},
+                },
+            },
         },
         {
             "name": "replication_check",
@@ -692,10 +907,14 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "arxiv_id": {"type": "string", "description": "arXiv ID of the paper"},
-                    "include_abstract": {"type": "boolean", "default": False, "description": "Include abstract in analysis"}
+                    "include_abstract": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Include abstract in analysis",
+                    },
                 },
-                "required": ["arxiv_id"]
-            }
+                "required": ["arxiv_id"],
+            },
         },
         {
             "name": "replication_compare",
@@ -704,11 +923,11 @@ def get_tools() -> List[Dict]:
                 "type": "object",
                 "properties": {
                     "arxiv_id_1": {"type": "string", "description": "First arXiv ID"},
-                    "arxiv_id_2": {"type": "string", "description": "Second arXiv ID"}
+                    "arxiv_id_2": {"type": "string", "description": "Second arXiv ID"},
                 },
-                "required": ["arxiv_id_1", "arxiv_id_2"]
-            }
-        }
+                "required": ["arxiv_id_1", "arxiv_id_2"],
+            },
+        },
     ]
 
 
@@ -740,14 +959,17 @@ def tool_paper_ingest(identifier: str, tags: Optional[List[str]] = None) -> Dict
         # Check if already exists
         existing = db.get_paper(arxiv_id)
         if existing:
-            return success_response({
-                "paper_id": arxiv_id,
-                "status": "already_exists",
-                "title": existing.title if hasattr(existing, 'title') else arxiv_id
-            })
+            return success_response(
+                {
+                    "paper_id": arxiv_id,
+                    "status": "already_exists",
+                    "title": existing.title if hasattr(existing, "title") else arxiv_id,
+                }
+            )
 
         # Fetch metadata
         from parsers.arxiv import fetch_arxiv_paper
+
         paper_data = fetch_arxiv_paper(arxiv_id)
         if not paper_data:
             return error_response("FETCH_FAILED", f"Could not fetch paper: {arxiv_id}")
@@ -770,18 +992,16 @@ def tool_paper_ingest(identifier: str, tags: Optional[List[str]] = None) -> Dict
 
         db.close()
 
-        return success_response({
-            "paper_id": arxiv_id,
-            "status": "imported",
-            "title": paper.title
-        })
+        return success_response({"paper_id": arxiv_id, "status": "imported", "title": paper.title})
 
     except Exception as e:
         logger.error(f"paper_ingest error: {e}")
         return error_response("INGEST_ERROR", str(e))
 
 
-def tool_paper_search(query: str, tag: Optional[str] = None, limit: int = 10, source: str = "local") -> Dict:
+def tool_paper_search(
+    query: str, tag: Optional[str] = None, limit: int = 10, source: str = "local"
+) -> Dict:
     """Search papers from local DB and/or web sources."""
     try:
         results = []
@@ -789,46 +1009,54 @@ def tool_paper_search(query: str, tag: Optional[str] = None, limit: int = 10, so
 
         if source in ("local", "both"):
             from db.database import Database
+
             db = Database()
             db.init()
             local_results, total = db.search_papers(query, limit=limit)
             db.close()
-            results.extend([
-                {
-                    "paper_id": r.paper_id,
-                    "title": r.title,
-                    "authors": r.authors,
-                    "published": r.published,
-                    "source": "local"
-                }
-                for r in local_results[:limit]
-            ])
+            results.extend(
+                [
+                    {
+                        "paper_id": r.paper_id,
+                        "title": r.title,
+                        "authors": r.authors,
+                        "published": r.published,
+                        "source": "local",
+                    }
+                    for r in local_results[:limit]
+                ]
+            )
             sources_used.append(f"local({total})")
 
         if source in ("web", "both"):
             try:
                 from parsers.cross_search import search_papers_multi
+
                 web_papers = search_papers_multi(query, max_per_source=limit)
-                results.extend([
-                    {
-                        "paper_id": p.uid,
-                        "title": p.title,
-                        "authors": p.authors,
-                        "published": p.published[:10] if p.published else "",
-                        "source": getattr(p, "source", "web")
-                    }
-                    for p in web_papers
-                ])
+                results.extend(
+                    [
+                        {
+                            "paper_id": p.uid,
+                            "title": p.title,
+                            "authors": p.authors,
+                            "published": p.published[:10] if p.published else "",
+                            "source": getattr(p, "source", "web"),
+                        }
+                        for p in web_papers
+                    ]
+                )
                 sources_used.append(f"web({len(web_papers)})")
             except Exception as e:
                 logger.warning(f"Web search failed: {e}")
 
-        return success_response({
-            "query": query,
-            "sources": sources_used,
-            "count": len(results),
-            "results": results[:limit * 2] if source == "both" else results[:limit]
-        })
+        return success_response(
+            {
+                "query": query,
+                "sources": sources_used,
+                "count": len(results),
+                "results": results[: limit * 2] if source == "both" else results[:limit],
+            }
+        )
 
     except Exception as e:
         logger.error(f"paper_search error: {e}")
@@ -842,11 +1070,7 @@ def tool_paper_chat(question: str, paper_id: Optional[str] = None) -> Dict:
 
         answer = research_chat(question, paper_id=paper_id)
 
-        return success_response({
-            "question": question,
-            "answer": answer,
-            "paper_id": paper_id
-        })
+        return success_response({"question": question, "answer": answer, "paper_id": paper_id})
 
     except Exception as e:
         logger.error(f"paper_chat error: {e}")
@@ -857,7 +1081,7 @@ def tool_paper_recommend(
     limit: int = 5,
     focus_tags: Optional[List[str]] = None,
     exclude_read: bool = True,
-    strategy: str = "similar_tags"
+    strategy: str = "similar_tags",
 ) -> Dict:
     """Recommend papers based on reading history and collaborative filtering."""
     try:
@@ -876,7 +1100,9 @@ def tool_paper_recommend(
         db.init()
 
         # Get user's reading history — completed and in-progress papers
-        read_status = ["completed", "reading"] if exclude_read else ["completed", "reading", "unread"]
+        read_status = (
+            ["completed", "reading"] if exclude_read else ["completed", "reading", "unread"]
+        )
         history = []
         for status in read_status:
             rows = db.get_papers_by_reading_status(status)
@@ -888,8 +1114,8 @@ def tool_paper_recommend(
         # Extract tags from read papers (weighted by recency and completion)
         tag_weights: Dict[str, float] = {}
         for paper in history:
-            tags = db.get_tags(getattr(paper, 'paper_id', None) or getattr(paper, 'id', None))
-            weight = 1.0 if getattr(paper, 'reading_status', None) == "completed" else 0.5
+            tags = db.get_tags(getattr(paper, "paper_id", None) or getattr(paper, "id", None))
+            weight = 1.0 if getattr(paper, "reading_status", None) == "completed" else 0.5
             for tag in tags:
                 tag_weights[tag] = tag_weights.get(tag, 0) + weight
 
@@ -903,10 +1129,14 @@ def tool_paper_recommend(
         top_tag_names = [t for t, _ in top_tags]
 
         # Build candidate pool: all papers not in history (or all if !exclude_read)
-        read_ids = {getattr(p, 'paper_id', None) or getattr(p, 'id', None) for p in history}
+        read_ids = {getattr(p, "paper_id", None) or getattr(p, "id", None) for p in history}
         all_rows, _ = db.list_papers(limit=500)  # get all papers
         if exclude_read:
-            candidates = [r for r in all_rows if ((getattr(r, 'paper_id', None) or getattr(r, 'id', None)) not in read_ids)]
+            candidates = [
+                r
+                for r in all_rows
+                if ((getattr(r, "paper_id", None) or getattr(r, "id", None)) not in read_ids)
+            ]
         else:
             candidates = list(all_rows)
 
@@ -916,7 +1146,7 @@ def tool_paper_recommend(
         # Score candidates by tag overlap
         scored: List[tuple] = []
         for paper in candidates:
-            pid = getattr(paper, 'paper_id', None) or getattr(paper, 'id', None)
+            pid = getattr(paper, "paper_id", None) or getattr(paper, "id", None)
             paper_tags = db.get_tags(pid)
             score = sum(tag_weights.get(t, 0) for t in paper_tags)
 
@@ -927,7 +1157,7 @@ def tool_paper_recommend(
                 score += len(new_tags) * 2.0
             elif strategy == "influential":
                 # Boost by citation count
-                score += (getattr(paper, 'citation_count', 0) or 0) * 0.01
+                score += (getattr(paper, "citation_count", 0) or 0) * 0.01
             elif strategy == "diverse":
                 # Penalize if too many same tags as top recommendation
                 pass
@@ -941,25 +1171,33 @@ def tool_paper_recommend(
             if pid in seen:
                 continue
             seen.add(pid)
-            recommendations.append({
-                "paper_id": pid,
-                "title": getattr(paper, 'title', ''),
-                "authors": getattr(paper, 'authors', ''),
-                "published": getattr(paper, 'published', '')[:10] if getattr(paper, 'published', None) else '',
-                "score": round(score, 2),
-                "reason": f"tag_match:{','.join(paper_tags[:3])}" if paper_tags else "content_similarity",
-            })
+            recommendations.append(
+                {
+                    "paper_id": pid,
+                    "title": getattr(paper, "title", ""),
+                    "authors": getattr(paper, "authors", ""),
+                    "published": getattr(paper, "published", "")[:10]
+                    if getattr(paper, "published", None)
+                    else "",
+                    "score": round(score, 2),
+                    "reason": f"tag_match:{','.join(paper_tags[:3])}"
+                    if paper_tags
+                    else "content_similarity",
+                }
+            )
             if len(recommendations) >= limit:
                 break
 
         db.close()
 
-        return success_response({
-            "strategy": strategy,
-            "history_count": len(history),
-            "top_tags": top_tag_names,
-            "recommendations": recommendations,
-        })
+        return success_response(
+            {
+                "strategy": strategy,
+                "history_count": len(history),
+                "top_tags": top_tag_names,
+                "recommendations": recommendations,
+            }
+        )
 
     except Exception as e:
         logger.error(f"paper_recommend error: {e}")
@@ -986,17 +1224,20 @@ def tool_pdf_download(arxiv_id: str, out_path: Optional[str] = None) -> Dict:
             target = Path(out_path)
         else:
             import tempfile
+
             tmp_dir = Path(tempfile.gettempdir()) / "rairos_pdfs"
             target = tmp_dir / f"{arxiv_id}.pdf"
 
         download_pdf(pdf_url, target)
 
-        return success_response({
-            "arxiv_id": arxiv_id,
-            "pdf_url": pdf_url,
-            "saved_path": str(target),
-            "size_bytes": target.stat().st_size
-        })
+        return success_response(
+            {
+                "arxiv_id": arxiv_id,
+                "pdf_url": pdf_url,
+                "saved_path": str(target),
+                "size_bytes": target.stat().st_size,
+            }
+        )
 
     except Exception as e:
         logger.error(f"pdf_download error: {e}")
@@ -1007,7 +1248,7 @@ def tool_pdf_extract_text(
     pdf_path: str,
     max_pages: Optional[int] = None,
     ocr: bool = False,
-    use_pdfminer_fallback: bool = True
+    use_pdfminer_fallback: bool = True,
 ) -> Dict:
     """Extract plain text from a PDF file."""
     try:
@@ -1019,28 +1260,24 @@ def tool_pdf_extract_text(
             return error_response("FILE_NOT_FOUND", f"PDF not found: {pdf_path}")
 
         text = extract_pdf_text_hybrid(
-            path,
-            max_pages=max_pages,
-            ocr=ocr,
-            use_pdfminer_fallback=use_pdfminer_fallback
+            path, max_pages=max_pages, ocr=ocr, use_pdfminer_fallback=use_pdfminer_fallback
         )
 
-        return success_response({
-            "pdf_path": pdf_path,
-            "text": text,
-            "char_count": len(text),
-            "pages_extracted": max_pages or "all"
-        })
+        return success_response(
+            {
+                "pdf_path": pdf_path,
+                "text": text,
+                "char_count": len(text),
+                "pages_extracted": max_pages or "all",
+            }
+        )
 
     except Exception as e:
         logger.error(f"pdf_extract_text error: {e}")
         return error_response("PDF_EXTRACT_ERROR", str(e))
 
 
-def tool_pdf_extract_structured(
-    pdf_path: str,
-    max_pages: Optional[int] = None
-) -> Dict:
+def tool_pdf_extract_structured(pdf_path: str, max_pages: Optional[int] = None) -> Dict:
     """Extract structured content from a PDF: text blocks, tables, math."""
     try:
         from pathlib import Path
@@ -1052,27 +1289,29 @@ def tool_pdf_extract_structured(
 
         content = extract_pdf_structured(path, max_pages=max_pages)
 
-        return success_response({
-            "pdf_path": pdf_path,
-            "blocks": [
-                {
-                    "type": b.type.value if hasattr(b.type, "value") else str(b.type),
-                    "text": b.text,
-                    "page": b.page,
-                }
-                for b in content.blocks
-            ],
-            "tables": [
-                {
-                    "headers": t.headers,
-                    "rows": t.rows,
-                    "page": t.page,
-                }
-                for t in content.tables
-            ],
-            "math_count": len(content.math_blocks),
-            "pages_extracted": max_pages or "all"
-        })
+        return success_response(
+            {
+                "pdf_path": pdf_path,
+                "blocks": [
+                    {
+                        "type": b.type.value if hasattr(b.type, "value") else str(b.type),
+                        "text": b.text,
+                        "page": b.page,
+                    }
+                    for b in content.blocks
+                ],
+                "tables": [
+                    {
+                        "headers": t.headers,
+                        "rows": t.rows,
+                        "page": t.page,
+                    }
+                    for t in content.tables
+                ],
+                "math_count": len(content.math_blocks),
+                "pages_extracted": max_pages or "all",
+            }
+        )
 
     except Exception as e:
         logger.error(f"pdf_extract_structured error: {e}")
@@ -1092,17 +1331,16 @@ def tool_kg_query(query: str, entity_id: Optional[str] = None, tag: Optional[str
 
         elif query == "papers":
             nodes = kg.get_all_nodes("Paper")
-            return success_response({
-                "count": len(nodes),
-                "papers": [{"id": n["entity_id"], "label": n["label"]} for n in nodes[:50]]
-            })
+            return success_response(
+                {
+                    "count": len(nodes),
+                    "papers": [{"id": n["entity_id"], "label": n["label"]} for n in nodes[:50]],
+                }
+            )
 
         elif query == "tags":
             nodes = kg.get_all_nodes("Tag")
-            return success_response({
-                "count": len(nodes),
-                "tags": [n["label"] for n in nodes]
-            })
+            return success_response({"count": len(nodes), "tags": [n["label"] for n in nodes]})
 
         elif query == "neighbors" and entity_id:
             parts = entity_id.split(":", 1)
@@ -1113,21 +1351,24 @@ def tool_kg_query(query: str, entity_id: Optional[str] = None, tag: Optional[str
             if not node:
                 return error_response("NOT_FOUND", f"Entity not found: {entity_id}")
             neighbors = kg.find_neighbors(node["id"], depth=2)
-            return success_response({
-                "entity": entity_id,
-                "neighbors": [
-                    {"node": n[0], "edge": n[1], "depth": n[2]}
-                    for n in neighbors[:20]
-                ]
-            })
+            return success_response(
+                {
+                    "entity": entity_id,
+                    "neighbors": [
+                        {"node": n[0], "edge": n[1], "depth": n[2]} for n in neighbors[:20]
+                    ],
+                }
+            )
 
         elif query == "papers" and tag:
             nodes = kg.find_papers_by_tag(tag)
-            return success_response({
-                "tag": tag,
-                "count": len(nodes),
-                "papers": [{"id": n["entity_id"], "label": n["label"]} for n in nodes]
-            })
+            return success_response(
+                {
+                    "tag": tag,
+                    "count": len(nodes),
+                    "papers": [{"id": n["entity_id"], "label": n["label"]} for n in nodes],
+                }
+            )
 
         else:
             return error_response("INVALID_QUERY", f"Unknown query: {query}")
@@ -1147,29 +1388,31 @@ def tool_kg_paper_subgraph(paper_id: str, depth: int = 2) -> Dict:
         q = KGQueries(kg)
         subgraph = q.get_paper_subgraph(paper_id, depth=depth)
 
-        return success_response({
-            "paper_id": paper_id,
-            "depth": depth,
-            "nodes": [
-                {
-                    "id": n["id"],
-                    "entity_type": n.get("entity_type"),
-                    "entity_id": n.get("entity_id"),
-                    "label": n.get("label"),
-                }
-                for n in subgraph.get("nodes", [])
-            ],
-            "edges": [
-                {
-                    "id": e["id"],
-                    "source_id": e["source_id"],
-                    "target_id": e["target_id"],
-                    "relation": e.get("relation"),
-                }
-                for e in subgraph.get("edges", [])
-            ],
-            "center": subgraph.get("center"),
-        })
+        return success_response(
+            {
+                "paper_id": paper_id,
+                "depth": depth,
+                "nodes": [
+                    {
+                        "id": n["id"],
+                        "entity_type": n.get("entity_type"),
+                        "entity_id": n.get("entity_id"),
+                        "label": n.get("label"),
+                    }
+                    for n in subgraph.get("nodes", [])
+                ],
+                "edges": [
+                    {
+                        "id": e["id"],
+                        "source_id": e["source_id"],
+                        "target_id": e["target_id"],
+                        "relation": e.get("relation"),
+                    }
+                    for e in subgraph.get("edges", [])
+                ],
+                "center": subgraph.get("center"),
+            }
+        )
 
     except Exception as e:
         logger.error(f"kg_paper_subgraph error: {e}")
@@ -1186,27 +1429,29 @@ def tool_kg_tag_graph(tag: str) -> Dict:
         q = KGQueries(kg)
         ecosystem = q.get_tag_ecosystem(tag)
 
-        return success_response({
-            "tag": tag,
-            "nodes": [
-                {
-                    "id": n["id"],
-                    "entity_type": n.get("entity_type"),
-                    "entity_id": n.get("entity_id"),
-                    "label": n.get("label"),
-                }
-                for n in ecosystem.get("nodes", [])
-            ],
-            "edges": [
-                {
-                    "id": e["id"],
-                    "source_id": e["source_id"],
-                    "target_id": e["target_id"],
-                    "relation": e.get("relation"),
-                }
-                for e in ecosystem.get("edges", [])
-            ],
-        })
+        return success_response(
+            {
+                "tag": tag,
+                "nodes": [
+                    {
+                        "id": n["id"],
+                        "entity_type": n.get("entity_type"),
+                        "entity_id": n.get("entity_id"),
+                        "label": n.get("label"),
+                    }
+                    for n in ecosystem.get("nodes", [])
+                ],
+                "edges": [
+                    {
+                        "id": e["id"],
+                        "source_id": e["source_id"],
+                        "target_id": e["target_id"],
+                        "relation": e.get("relation"),
+                    }
+                    for e in ecosystem.get("edges", [])
+                ],
+            }
+        )
 
     except Exception as e:
         logger.error(f"kg_tag_graph error: {e}")
@@ -1225,35 +1470,34 @@ def tool_kg_full_graph(max_nodes: int = 500) -> Dict:
 
         nodes = export["nodes"][:max_nodes]
         nids = {n["id"] for n in nodes}
-        edges = [
-            e for e in export["edges"]
-            if e["source_id"] in nids and e["target_id"] in nids
-        ]
+        edges = [e for e in export["edges"] if e["source_id"] in nids and e["target_id"] in nids]
 
-        return success_response({
-            "total_nodes": len(export["nodes"]),
-            "total_edges": len(export["edges"]),
-            "returned_nodes": len(nodes),
-            "returned_edges": len(edges),
-            "nodes": [
-                {
-                    "id": n["id"],
-                    "entity_type": n.get("entity_type"),
-                    "entity_id": n.get("entity_id"),
-                    "label": n.get("label"),
-                }
-                for n in nodes
-            ],
-            "edges": [
-                {
-                    "id": e["id"],
-                    "source_id": e["source_id"],
-                    "target_id": e["target_id"],
-                    "relation": e.get("relation"),
-                }
-                for e in edges
-            ],
-        })
+        return success_response(
+            {
+                "total_nodes": len(export["nodes"]),
+                "total_edges": len(export["edges"]),
+                "returned_nodes": len(nodes),
+                "returned_edges": len(edges),
+                "nodes": [
+                    {
+                        "id": n["id"],
+                        "entity_type": n.get("entity_type"),
+                        "entity_id": n.get("entity_id"),
+                        "label": n.get("label"),
+                    }
+                    for n in nodes
+                ],
+                "edges": [
+                    {
+                        "id": e["id"],
+                        "source_id": e["source_id"],
+                        "target_id": e["target_id"],
+                        "relation": e.get("relation"),
+                    }
+                    for e in edges
+                ],
+            }
+        )
 
     except Exception as e:
         logger.error(f"kg_full_graph error: {e}")
@@ -1264,6 +1508,7 @@ def tool_tag_add(paper_id: str, tag: str) -> Dict:
     """Add a tag to a paper."""
     try:
         from db.database import Database
+
         db = Database()
         db.init()
         db.add_tag(paper_id, tag)
@@ -1277,6 +1522,7 @@ def tool_tag_remove(paper_id: str, tag: str) -> Dict:
     """Remove a tag from a paper."""
     try:
         from db.database import Database
+
         db = Database()
         db.init()
         db.remove_tag(paper_id, tag)
@@ -1290,6 +1536,7 @@ def tool_tag_list(paper_id: str) -> Dict:
     """List all tags for a paper."""
     try:
         from db.database import Database
+
         db = Database()
         db.init()
         tags = db.get_tags(paper_id)
@@ -1303,6 +1550,7 @@ def tool_tag_all() -> Dict:
     """List all tags in the system."""
     try:
         from db.database import Database
+
         db = Database()
         db.init()
         cur = db.conn.cursor()
@@ -1318,6 +1566,7 @@ def tool_trends_detect_trending(threshold: float = 0.5) -> Dict:
     """Detect trending tags based on radar snapshots."""
     try:
         from trends.forecaster import TrendForecaster
+
         f = TrendForecaster()
         results = f.detect_trending(threshold=threshold)
         return success_response({"trending": results, "count": len(results)})
@@ -1330,6 +1579,7 @@ def tool_trends_predict_next(tag: str) -> Dict:
     """Predict next value for a tag."""
     try:
         from trends.forecaster import TrendForecaster
+
         f = TrendForecaster()
         prediction = f.predict_next(tag)
         return success_response({"tag": tag, "prediction": prediction})
@@ -1342,6 +1592,7 @@ def tool_trends_top_predictions(top_k: int = 5) -> Dict:
     """Get top-K predicted trending tags."""
     try:
         from trends.forecaster import TrendForecaster
+
         f = TrendForecaster()
         predictions = f.get_top_predictions(top_k=top_k)
         return success_response({"predictions": predictions, "count": len(predictions)})
@@ -1354,6 +1605,7 @@ def tool_trends_compare_tags(tag_a: str, tag_b: str) -> Dict:
     """Compare two tags by their trajectories."""
     try:
         from trends.forecaster import TrendForecaster
+
         f = TrendForecaster()
         comparison = f.compare_tags(tag_a, tag_b)
         return success_response({"tag_a": tag_a, "tag_b": tag_b, "comparison": comparison})
@@ -1374,40 +1626,44 @@ def tool_chart_query(paper_id: str, action: str, label: Optional[str] = None) ->
         if action == "list":
             figures = extractor.get_paper_figures(paper_id)
             tables = extractor.get_paper_tables(paper_id)
-            return success_response({
-                "paper_id": paper_id,
-                "figures": [
-                    {
-                        "label": f["label"],
-                        "page": f.get("properties", {}).get("page", 0) + 1,
-                        "description": f.get("properties", {}).get("description", "")
-                    }
-                    for f in figures
-                ],
-                "tables": [
-                    {
-                        "label": t["label"],
-                        "page": t.get("properties", {}).get("page", 0) + 1,
-                        "description": t.get("properties", {}).get("description", "")
-                    }
-                    for t in tables
-                ]
-            })
+            return success_response(
+                {
+                    "paper_id": paper_id,
+                    "figures": [
+                        {
+                            "label": f["label"],
+                            "page": f.get("properties", {}).get("page", 0) + 1,
+                            "description": f.get("properties", {}).get("description", ""),
+                        }
+                        for f in figures
+                    ],
+                    "tables": [
+                        {
+                            "label": t["label"],
+                            "page": t.get("properties", {}).get("page", 0) + 1,
+                            "description": t.get("properties", {}).get("description", ""),
+                        }
+                        for t in tables
+                    ],
+                }
+            )
 
         elif action == "figure" and label:
             fig = extractor.query_figure(paper_id, label)
             if not fig:
                 return error_response("NOT_FOUND", f"Figure not found: {label}")
             props = fig.get("properties", {})
-            return success_response({
-                "paper_id": paper_id,
-                "type": "figure",
-                "label": fig["label"],
-                "page": props.get("page", 0) + 1,
-                "caption": props.get("caption", ""),
-                "description": props.get("description", ""),
-                "image_path": props.get("image_path", "")
-            })
+            return success_response(
+                {
+                    "paper_id": paper_id,
+                    "type": "figure",
+                    "label": fig["label"],
+                    "page": props.get("page", 0) + 1,
+                    "caption": props.get("caption", ""),
+                    "description": props.get("description", ""),
+                    "image_path": props.get("image_path", ""),
+                }
+            )
 
         elif action == "table" and label:
             tables = extractor.get_paper_tables(paper_id)
@@ -1419,15 +1675,17 @@ def tool_chart_query(paper_id: str, action: str, label: Optional[str] = None) ->
             if not tbl:
                 return error_response("NOT_FOUND", f"Table not found: {label}")
             props = tbl.get("properties", {})
-            return success_response({
-                "paper_id": paper_id,
-                "type": "table",
-                "label": tbl["label"],
-                "page": props.get("page", 0) + 1,
-                "caption": props.get("caption", ""),
-                "description": props.get("description", ""),
-                "markdown": props.get("markdown", "")
-            })
+            return success_response(
+                {
+                    "paper_id": paper_id,
+                    "type": "table",
+                    "label": tbl["label"],
+                    "page": props.get("page", 0) + 1,
+                    "caption": props.get("caption", ""),
+                    "description": props.get("description", ""),
+                    "markdown": props.get("markdown", ""),
+                }
+            )
 
         else:
             return error_response("INVALID_ACTION", f"Unknown action: {action}")
@@ -1445,11 +1703,9 @@ def tool_research_run(topic: str, limit: int = 5) -> Dict:
         loop = ResearchLoop()
         results = loop.run(topic=topic, limit=limit)
 
-        return success_response({
-            "topic": topic,
-            "papers_found": len(results.get("papers", [])),
-            "status": "completed"
-        })
+        return success_response(
+            {"topic": topic, "papers_found": len(results.get("papers", [])), "status": "completed"}
+        )
 
     except Exception as e:
         logger.error(f"research_run error: {e}")
@@ -1466,10 +1722,7 @@ def tool_slides_generate(paper_id: str, output_path: Optional[str] = None) -> Di
 
         generate_slides(paper_id, output_path)
 
-        return success_response({
-            "paper_id": paper_id,
-            "output_path": output_path
-        })
+        return success_response({"paper_id": paper_id, "output_path": output_path})
 
     except Exception as e:
         logger.error(f"slides_generate error: {e}")
@@ -1484,12 +1737,14 @@ def tool_cite_fetch(paper_id: str, direction: str = "both") -> Dict:
         builder = CitationChainBuilder()
         result = builder.fetch_citations(paper_id, direction=direction)
 
-        return success_response({
-            "paper_id": paper_id,
-            "cited": result.get("cited", []),
-            "citing": result.get("citing", []),
-            "count": len(result.get("cited", [])) + len(result.get("citing", []))
-        })
+        return success_response(
+            {
+                "paper_id": paper_id,
+                "cited": result.get("cited", []),
+                "citing": result.get("citing", []),
+                "count": len(result.get("cited", [])) + len(result.get("citing", [])),
+            }
+        )
 
     except Exception as e:
         logger.error(f"cite_fetch error: {e}")
@@ -1520,15 +1775,17 @@ def tool_paper_analyze(paper_id: str) -> Dict:
         )
 
         if isinstance(result, PaperAnalysisResult):
-            return success_response({
-                "paper_id": result.paper_id,
-                "sections": result.sections,
-                "rubric": result.rubric,
-                "extracted_methods": result.extracted_methods,
-                "extracted_datasets": result.extracted_datasets,
-                "extracted_metrics": result.extracted_metrics,
-                "llm_used": result.llm_used,
-            })
+            return success_response(
+                {
+                    "paper_id": result.paper_id,
+                    "sections": result.sections,
+                    "rubric": result.rubric,
+                    "extracted_methods": result.extracted_methods,
+                    "extracted_datasets": result.extracted_datasets,
+                    "extracted_metrics": result.extracted_metrics,
+                    "llm_used": result.llm_used,
+                }
+            )
         return success_response(result)
 
     except Exception as e:
@@ -1536,7 +1793,13 @@ def tool_paper_analyze(paper_id: str) -> Dict:
         return error_response("ANALYZE_ERROR", str(e))
 
 
-def tool_paper2code_run(arxiv_id: str, framework: str = "pytorch", skip_gene_pool: bool = False, continuous: bool = False, interval_minutes: int = 15) -> Dict:
+def tool_paper2code_run(
+    arxiv_id: str,
+    framework: str = "pytorch",
+    skip_gene_pool: bool = False,
+    continuous: bool = False,
+    interval_minutes: int = 15,
+) -> Dict:
     """Run full paper2code pipeline: download → parse → generate → test → benchmark → Gene Pool.
 
     If continuous=True, starts a background thread that polls ArXiv subscriptions
@@ -1556,14 +1819,16 @@ def tool_paper2code_run(arxiv_id: str, framework: str = "pytorch", skip_gene_poo
                 framework=framework,
                 skip_gene_pool=skip_gene_pool,
             )
-            return success_response({
-                "arxiv_id": result["arxiv_id"],
-                "paper_dir": result["paper_dir"],
-                "src_dir": result["src_dir"],
-                "test_dir": result["test_dir"],
-                "readme": result["readme"],
-                "benchmark": result.get("benchmark"),
-            })
+            return success_response(
+                {
+                    "arxiv_id": result["arxiv_id"],
+                    "paper_dir": result["paper_dir"],
+                    "src_dir": result["src_dir"],
+                    "test_dir": result["test_dir"],
+                    "readme": result["readme"],
+                    "benchmark": result.get("benchmark"),
+                }
+            )
 
         # Continuous mode: daemon thread polling ArXiv channels
         def _continuous_loop(stop_event):
@@ -1583,7 +1848,12 @@ def tool_paper2code_run(arxiv_id: str, framework: str = "pytorch", skip_gene_poo
                                 total_new += 1
                                 logger.info(f"[paper2code continuous] New paper: {paper_id}")
                                 p = PaperPipeline(work_dir=tempfile.mkdtemp())
-                                p.run(arxiv_id=paper_id, mode="minimal", framework=framework, skip_gene_pool=skip_gene_pool)
+                                p.run(
+                                    arxiv_id=paper_id,
+                                    mode="minimal",
+                                    framework=framework,
+                                    skip_gene_pool=skip_gene_pool,
+                                )
                     if total_new > 0:
                         logger.info(f"[paper2code continuous] Processed {total_new} new papers")
                 except Exception as e:
@@ -1591,14 +1861,18 @@ def tool_paper2code_run(arxiv_id: str, framework: str = "pytorch", skip_gene_poo
                 stop_event.wait(timeout=interval_minutes * 60)
 
         stop_event = threading.Event()
-        thread = threading.Thread(target=_continuous_loop, args=(stop_event,), daemon=True, name="paper2code-continuous")
+        thread = threading.Thread(
+            target=_continuous_loop, args=(stop_event,), daemon=True, name="paper2code-continuous"
+        )
         thread.start()
-        return success_response({
-            "status": "started",
-            "mode": "continuous",
-            "interval_minutes": interval_minutes,
-            "message": f"paper2code continuous mode started. Polling every {interval_minutes}min.",
-        })
+        return success_response(
+            {
+                "status": "started",
+                "mode": "continuous",
+                "interval_minutes": interval_minutes,
+                "message": f"paper2code continuous mode started. Polling every {interval_minutes}min.",
+            }
+        )
 
     except Exception as e:
         logger.error(f"paper2code_run error: {e}")
@@ -1623,28 +1897,38 @@ def tool_citation_graph(paper_id: str, depth: int = 2, max_nodes: int = 30) -> D
             if nid in node_ids:
                 return
             node_ids.add(nid)
-            nodes.append({
-                "id": nid,
-                "entity_id": pid,
-                "label": label[:60] if label else pid,
-                "type": "Paper",
-                "is_root": is_root,
-            })
+            nodes.append(
+                {
+                    "id": nid,
+                    "entity_id": pid,
+                    "label": label[:60] if label else pid,
+                    "type": "Paper",
+                    "is_root": is_root,
+                }
+            )
 
         add_node(root.paper_id, root.title, is_root=True)
 
         citing = get_citations(root.paper_id, limit=max_nodes)
         for p in citing[:max_nodes]:
             add_node(p.paper_id, p.title)
-            links.append({"source": f"s2:{p.paper_id}", "target": f"s2:{root.paper_id}", "relation": "cited_by"})
+            links.append(
+                {
+                    "source": f"s2:{p.paper_id}",
+                    "target": f"s2:{root.paper_id}",
+                    "relation": "cited_by",
+                }
+            )
 
-        return success_response({
-            "paper_id": paper_id,
-            "root": f"s2:{root.paper_id}",
-            "nodes": nodes,
-            "links": links,
-            "count": len(nodes)
-        })
+        return success_response(
+            {
+                "paper_id": paper_id,
+                "root": f"s2:{root.paper_id}",
+                "nodes": nodes,
+                "links": links,
+                "count": len(nodes),
+            }
+        )
 
     except Exception as e:
         logger.error(f"citation_graph error: {e}")
@@ -1665,29 +1949,31 @@ def tool_gap_detect(topic: str, use_llm: bool = True) -> Dict:
 
         db.close()
 
-        return success_response({
-            "topic": topic,
-            "analyzed_papers_count": result.analyzed_papers_count,
-            "coverage_score": result.coverage_score,
-            "gaps": [
-                {
-                    "type": g.gap_type,
-                    "description": g.description,
-                    "evidence": g.evidence,
-                    "confidence": g.confidence,
-                    "severity": g.severity
-                }
-                for g in result.gaps
-            ],
-            "questions": [
-                {
-                    "question": q.question,
-                    "gap_type": q.gap_type,
-                    "verifiability": q.verifiability
-                }
-                for q in result.questions
-            ]
-        })
+        return success_response(
+            {
+                "topic": topic,
+                "analyzed_papers_count": result.analyzed_papers_count,
+                "coverage_score": result.coverage_score,
+                "gaps": [
+                    {
+                        "type": g.gap_type,
+                        "description": g.description,
+                        "evidence": g.evidence,
+                        "confidence": g.confidence,
+                        "severity": g.severity,
+                    }
+                    for g in result.gaps
+                ],
+                "questions": [
+                    {
+                        "question": q.question,
+                        "gap_type": q.gap_type,
+                        "verifiability": q.verifiability,
+                    }
+                    for q in result.questions
+                ],
+            }
+        )
 
     except Exception as e:
         logger.error(f"gap_detect error: {e}")
@@ -1695,11 +1981,7 @@ def tool_gap_detect(topic: str, use_llm: bool = True) -> Dict:
 
 
 def tool_gap_submit(
-    topic: str,
-    gap_type: str,
-    title: str,
-    description: str,
-    success_score: float = 0.8
+    topic: str, gap_type: str, title: str, description: str, success_score: float = 0.8
 ) -> Dict:
     """Submit a new research gap directly to the Gene Pool as a CapsuleGene."""
     try:
@@ -1714,24 +1996,23 @@ def tool_gap_submit(
             success_score=success_score,
         )
 
-        return success_response({
-            "capsule_id": capsule.capsule_id,
-            "topic": topic,
-            "gap_type": gap_type,
-            "title": title,
-            "status": capsule.status,
-            "message": f"Gap '{title}' submitted to Gene Pool successfully"
-        })
+        return success_response(
+            {
+                "capsule_id": capsule.capsule_id,
+                "topic": topic,
+                "gap_type": gap_type,
+                "title": title,
+                "status": capsule.status,
+                "message": f"Gap '{title}' submitted to Gene Pool successfully",
+            }
+        )
 
     except Exception as e:
         logger.error(f"gap_submit error: {e}")
         return error_response("GAP_SUBMIT_ERROR", str(e))
 
 
-def tool_gap_evolve(
-    topic: str,
-    gap_type: Optional[str] = None
-) -> Dict:
+def tool_gap_evolve(topic: str, gap_type: Optional[str] = None) -> Dict:
     """Run Gene Pool evolution cycle for a topic — audit, propose, evaluate, apply."""
     try:
         from llm.insight.tracker import EvolutionTracker
@@ -1744,24 +2025,26 @@ def tool_gap_evolve(
         audit = result["audit"]
         ev_result = result["result"]
 
-        return success_response({
-            "topic": topic,
-            "gap_type": gap_type,
-            "audit": {
-                "total_capsules": audit["total"],
-                "avg_quality": round(audit["avg_quality"], 3),
-                "candidates": audit["candidates"],
-                "to_retire": audit["to_retire"],
-            },
-            "proposed": result["proposed"],
-            "evaluated": result["evaluations"],
-            "result": {
-                "added": ev_result["added"],
-                "retired": ev_result["retired"],
-                "total_capsules": ev_result["total_capsules"],
-                "avg_quality": round(ev_result["avg_quality"], 3),
+        return success_response(
+            {
+                "topic": topic,
+                "gap_type": gap_type,
+                "audit": {
+                    "total_capsules": audit["total"],
+                    "avg_quality": round(audit["avg_quality"], 3),
+                    "candidates": audit["candidates"],
+                    "to_retire": audit["to_retire"],
+                },
+                "proposed": result["proposed"],
+                "evaluated": result["evaluations"],
+                "result": {
+                    "added": ev_result["added"],
+                    "retired": ev_result["retired"],
+                    "total_capsules": ev_result["total_capsules"],
+                    "avg_quality": round(ev_result["avg_quality"], 3),
+                },
             }
-        })
+        )
 
     except Exception as e:
         logger.error(f"gap_evolve error: {e}")
@@ -1772,15 +2055,18 @@ def tool_research_agent_start(interval_minutes: int = 30) -> Dict:
     """Start the autonomous research agent in background watch mode."""
     try:
         from research_loop.orchestrator import AutonomousOrchestrator
+
         orch = AutonomousOrchestrator(webhook_enabled=True)
         orch.start_watch(interval_minutes=interval_minutes)
         status = orch.get_status()
-        return success_response({
-            "status": "started",
-            "interval_minutes": interval_minutes,
-            "running": status["running"],
-            "message": f"Autonomous research agent started. Will check subscriptions every {interval_minutes} minutes."
-        })
+        return success_response(
+            {
+                "status": "started",
+                "interval_minutes": interval_minutes,
+                "running": status["running"],
+                "message": f"Autonomous research agent started. Will check subscriptions every {interval_minutes} minutes.",
+            }
+        )
     except Exception as e:
         logger.error(f"research_agent_start error: {e}")
         return error_response("AGENT_ERROR", str(e))
@@ -1790,12 +2076,12 @@ def tool_research_agent_stop() -> Dict:
     """Stop the autonomous research agent watch loop."""
     try:
         from research_loop.orchestrator import AutonomousOrchestrator
+
         orch = AutonomousOrchestrator()
         orch.stop_watch()
-        return success_response({
-            "status": "stopped",
-            "message": "Autonomous research agent stopped."
-        })
+        return success_response(
+            {"status": "stopped", "message": "Autonomous research agent stopped."}
+        )
     except Exception as e:
         logger.error(f"research_agent_stop error: {e}")
         return error_response("AGENT_ERROR", str(e))
@@ -1805,13 +2091,13 @@ def tool_research_agent_status() -> Dict:
     """Get status of the autonomous research agent."""
     try:
         from research_loop.orchestrator import AutonomousOrchestrator
+
         orch = AutonomousOrchestrator()
         status = orch.get_status()
         recent_alerts = orch.get_recent_alerts(limit=10)
-        return success_response({
-            "status": status,
-            "recent_alerts": [a.to_dict() for a in recent_alerts]
-        })
+        return success_response(
+            {"status": status, "recent_alerts": [a.to_dict() for a in recent_alerts]}
+        )
     except Exception as e:
         logger.error(f"research_agent_status error: {e}")
         return error_response("AGENT_ERROR", str(e))
@@ -1821,13 +2107,16 @@ def tool_research_agent_trigger(topic: Optional[str] = None) -> Dict:
     """Manually trigger one cycle of the autonomous research agent."""
     try:
         from research_loop.orchestrator import AutonomousOrchestrator
+
         orch = AutonomousOrchestrator(webhook_enabled=True)
         alerts = orch.run_cycle()
-        return success_response({
-            "status": "cycle_complete",
-            "alerts_generated": len(alerts),
-            "alerts": [a.to_dict() for a in alerts]
-        })
+        return success_response(
+            {
+                "status": "cycle_complete",
+                "alerts_generated": len(alerts),
+                "alerts": [a.to_dict() for a in alerts],
+            }
+        )
     except Exception as e:
         logger.error(f"research_agent_trigger error: {e}")
         return error_response("AGENT_ERROR", str(e))
@@ -1851,33 +2140,41 @@ def tool_hypothesis_generate(
             creative=creative,
         )
 
-        return success_response({
-            "topic": topic,
-            "summary": result.summary,
-            "hypotheses": [
-                {
-                    "id": h.id,
-                    "title": h.title,
-                    "type": h.hypothesis_type.value,
-                    "core_statement": h.core_statement,
-                    "based_on": h.based_on,
-                    "novelty_score": h.novelty_score,
-                    "feasibility_score": h.feasibility_score,
-                    "experiment_design": {
-                        "baseline": h.experiment_design.baseline,
-                        "variables": h.experiment_design.variables,
-                        "controls": h.experiment_design.controls,
-                        "evaluation_metrics": h.experiment_design.evaluation_metrics,
-                        "expected_results": h.experiment_design.expected_results,
-                    },
-                    "risk": {
-                        "technical": h.risk_assessment.technical_risk.value if h.risk_assessment else "unknown",
-                        "hypothesis": h.risk_assessment.hypothesis_risk.value if h.risk_assessment else "unknown",
-                    } if h.risk_assessment else None,
-                }
-                for h in result.hypotheses
-            ]
-        })
+        return success_response(
+            {
+                "topic": topic,
+                "summary": result.summary,
+                "hypotheses": [
+                    {
+                        "id": h.id,
+                        "title": h.title,
+                        "type": h.hypothesis_type.value,
+                        "core_statement": h.core_statement,
+                        "based_on": h.based_on,
+                        "novelty_score": h.novelty_score,
+                        "feasibility_score": h.feasibility_score,
+                        "experiment_design": {
+                            "baseline": h.experiment_design.baseline,
+                            "variables": h.experiment_design.variables,
+                            "controls": h.experiment_design.controls,
+                            "evaluation_metrics": h.experiment_design.evaluation_metrics,
+                            "expected_results": h.experiment_design.expected_results,
+                        },
+                        "risk": {
+                            "technical": h.risk_assessment.technical_risk.value
+                            if h.risk_assessment
+                            else "unknown",
+                            "hypothesis": h.risk_assessment.hypothesis_risk.value
+                            if h.risk_assessment
+                            else "unknown",
+                        }
+                        if h.risk_assessment
+                        else None,
+                    }
+                    for h in result.hypotheses
+                ],
+            }
+        )
 
     except Exception as e:
         logger.error(f"hypothesis_generate error: {e}")
@@ -1910,21 +2207,19 @@ def tool_hypothesis_list() -> Dict:
             evts = ev.get_hypothesis_events(hid)
             verdict, detail = _compute_verdict(evts)
             linked = exp_by_hid.get(hid, [])
-            rows.append({
-                "hypothesis_id": hid,
-                "verdict": verdict,
-                "detail": detail,
-                "linked_experiments": len(linked),
-                "experiments": [
-                    {"id": e.id, "name": e.name, "status": e.status}
-                    for e in linked
-                ]
-            })
+            rows.append(
+                {
+                    "hypothesis_id": hid,
+                    "verdict": verdict,
+                    "detail": detail,
+                    "linked_experiments": len(linked),
+                    "experiments": [
+                        {"id": e.id, "name": e.name, "status": e.status} for e in linked
+                    ],
+                }
+            )
 
-        return success_response({
-            "total": len(rows),
-            "hypotheses": rows
-        })
+        return success_response({"total": len(rows), "hypotheses": rows})
 
     except Exception as e:
         logger.error(f"hypothesis_list error: {e}")
@@ -1935,7 +2230,7 @@ def _compute_verdict(events):
     """Compute verdict from hypothesis events."""
     if not events:
         return "INCONCLUSIVE", "no experiments recorded"
-    action_vals = {e.action.value if hasattr(e.action, 'value') else str(e.action) for e in events}
+    action_vals = {e.action.value if hasattr(e.action, "value") else str(e.action) for e in events}
     has_completed = "validated" in action_vals
     has_failed = "rejected" in action_vals
     if has_completed and has_failed:
@@ -1977,12 +2272,14 @@ def tool_experiment_record(
         )
         tracker.save_experiment(experiment)
 
-        return success_response({
-            "experiment_id": exp_id,
-            "hypothesis_id": hypothesis_id,
-            "status": status.value,
-            "message": f"Experiment recorded: {name} → {result}"
-        })
+        return success_response(
+            {
+                "experiment_id": exp_id,
+                "hypothesis_id": hypothesis_id,
+                "status": status.value,
+                "message": f"Experiment recorded: {name} → {result}",
+            }
+        )
 
     except Exception as e:
         logger.error(f"experiment_record error: {e}")
@@ -2003,13 +2300,15 @@ def tool_litreview_generate(topic: str, limit: int = 30, use_llm: bool = True) -
         )
 
         if result.success:
-            return success_response({
-                "topic": topic,
-                "total_papers": result.review.total_papers if result.review else 0,
-                "sections_count": len(result.review.sections) if result.review else 0,
-                "markdown": result.markdown,
-                "generated_at": result.review.generated_at if result.review else "",
-            })
+            return success_response(
+                {
+                    "topic": topic,
+                    "total_papers": result.review.total_papers if result.review else 0,
+                    "sections_count": len(result.review.sections) if result.review else 0,
+                    "markdown": result.markdown,
+                    "generated_at": result.review.generated_at if result.review else "",
+                }
+            )
         else:
             return error_response("LITREVIEW_ERROR", result.error)
 
@@ -2035,12 +2334,14 @@ def tool_litreview_list() -> Dict:
                     if "Generated:" in line:
                         date = line.split("Generated:")[-1].strip()
                         break
-                reviews.append({
-                    "filename": f.name,
-                    "topic": title,
-                    "date": date,
-                    "size_bytes": f.stat().st_size,
-                })
+                reviews.append(
+                    {
+                        "filename": f.name,
+                        "topic": title,
+                        "date": date,
+                        "size_bytes": f.stat().st_size,
+                    }
+                )
 
         return success_response({"reviews": reviews, "count": len(reviews)})
 
@@ -2071,13 +2372,15 @@ def tool_research_memory_add_stance(
             reasoning=reasoning,
             confidence=confidence,
         )
-        return success_response({
-            "stance_id": s.stance_id,
-            "topic": s.topic,
-            "stance": s.stance.value,
-            "claim": s.claim[:80],
-            "created_at": datetime.fromtimestamp(s.created_at).isoformat(),
-        })
+        return success_response(
+            {
+                "stance_id": s.stance_id,
+                "topic": s.topic,
+                "stance": s.stance.value,
+                "claim": s.claim[:80],
+                "created_at": datetime.fromtimestamp(s.created_at).isoformat(),
+            }
+        )
 
     except Exception as e:
         logger.error(f"research_memory_add_stance error: {e}")
@@ -2093,22 +2396,24 @@ def tool_research_memory_list_stances() -> Dict:
         summary = memory.get_summary()
         stances = memory.get_stances()
 
-        return success_response({
-            "summary": summary,
-            "stances": [
-                {
-                    "stance_id": s.stance_id,
-                    "topic": s.topic,
-                    "claim": s.claim[:100],
-                    "stance": s.stance.value,
-                    "confidence": s.confidence,
-                    "evidence_count": len(s.evidence_refs),
-                    "created_at": datetime.fromtimestamp(s.created_at).isoformat(),
-                    "updated_at": datetime.fromtimestamp(s.updated_at).isoformat(),
-                }
-                for s in stances
-            ],
-        })
+        return success_response(
+            {
+                "summary": summary,
+                "stances": [
+                    {
+                        "stance_id": s.stance_id,
+                        "topic": s.topic,
+                        "claim": s.claim[:100],
+                        "stance": s.stance.value,
+                        "confidence": s.confidence,
+                        "evidence_count": len(s.evidence_refs),
+                        "created_at": datetime.fromtimestamp(s.created_at).isoformat(),
+                        "updated_at": datetime.fromtimestamp(s.updated_at).isoformat(),
+                    }
+                    for s in stances
+                ],
+            }
+        )
 
     except Exception as e:
         logger.error(f"research_memory_list_stances error: {e}")
@@ -2124,6 +2429,7 @@ def tool_research_memory_check_paper(arxiv_id: str, use_llm: bool = True) -> Dic
 
         # Fetch paper from DB
         from db.database import Database
+
         db = Database()
         db.init()
         rows, _ = db.search_papers(arxiv_id, limit=1)
@@ -2140,30 +2446,34 @@ def tool_research_memory_check_paper(arxiv_id: str, use_llm: bool = True) -> Dic
         anomalies = memory.check_paper_against_stances(paper, use_llm=use_llm)
 
         if not anomalies:
-            return success_response({
-                "arxiv_id": arxiv_id,
-                "anomalies_found": 0,
-                "message": "No contradictions detected",
-            })
-
-        return success_response({
-            "arxiv_id": arxiv_id,
-            "anomalies_found": len(anomalies),
-            "anomalies": [
+            return success_response(
                 {
-                    "anomaly_id": a.anomaly_id,
-                    "stance_id": a.stance_id,
-                    "topic": a.topic,
-                    "stance_claim": a.stance_claim[:80],
-                    "paper_title": a.paper_title,
-                    "anomaly_type": a.anomaly_type,
-                    "severity": a.severity.value,
-                    "description": a.description,
-                    "created_at": datetime.fromtimestamp(a.created_at).isoformat(),
+                    "arxiv_id": arxiv_id,
+                    "anomalies_found": 0,
+                    "message": "No contradictions detected",
                 }
-                for a in anomalies
-            ],
-        })
+            )
+
+        return success_response(
+            {
+                "arxiv_id": arxiv_id,
+                "anomalies_found": len(anomalies),
+                "anomalies": [
+                    {
+                        "anomaly_id": a.anomaly_id,
+                        "stance_id": a.stance_id,
+                        "topic": a.topic,
+                        "stance_claim": a.stance_claim[:80],
+                        "paper_title": a.paper_title,
+                        "anomaly_type": a.anomaly_type,
+                        "severity": a.severity.value,
+                        "description": a.description,
+                        "created_at": datetime.fromtimestamp(a.created_at).isoformat(),
+                    }
+                    for a in anomalies
+                ],
+            }
+        )
 
     except Exception as e:
         logger.error(f"research_memory_check_paper error: {e}")
@@ -2179,23 +2489,25 @@ def tool_research_memory_anomalies() -> Dict:
         anomalies = memory.get_recent_anomalies(limit=20)
         summary = memory.get_summary()
 
-        return success_response({
-            "summary": summary,
-            "anomalies": [
-                {
-                    "anomaly_id": a.anomaly_id,
-                    "stance_id": a.stance_id,
-                    "topic": a.topic,
-                    "paper_title": a.paper_title,
-                    "paper_arxiv_id": a.paper_arxiv_id,
-                    "anomaly_type": a.anomaly_type,
-                    "severity": a.severity.value,
-                    "description": a.description,
-                    "created_at": datetime.fromtimestamp(a.created_at).isoformat(),
-                }
-                for a in anomalies
-            ],
-        })
+        return success_response(
+            {
+                "summary": summary,
+                "anomalies": [
+                    {
+                        "anomaly_id": a.anomaly_id,
+                        "stance_id": a.stance_id,
+                        "topic": a.topic,
+                        "paper_title": a.paper_title,
+                        "paper_arxiv_id": a.paper_arxiv_id,
+                        "anomaly_type": a.anomaly_type,
+                        "severity": a.severity.value,
+                        "description": a.description,
+                        "created_at": datetime.fromtimestamp(a.created_at).isoformat(),
+                    }
+                    for a in anomalies
+                ],
+            }
+        )
 
     except Exception as e:
         logger.error(f"research_memory_anomalies error: {e}")
@@ -2209,6 +2521,7 @@ def tool_review_simulate(arxiv_id: str, persona: str = "all", use_llm: bool = Tr
 
         # Fetch paper
         from db.database import Database
+
         db = Database()
         db.init()
         rows, _ = db.search_papers(arxiv_id, limit=1)
@@ -2235,19 +2548,22 @@ def tool_review_simulate(arxiv_id: str, persona: str = "all", use_llm: bool = Tr
 
         # Save review
         from llm.review_simulator import save_review
+
         save_review(review)
 
-        return success_response({
-            "review_id": review.review_id,
-            "persona": review.persona,
-            "overall_score": review.overall_score,
-            "recommendation": review.recommendation,
-            "summary": review.summary,
-            "strengths": review.strengths,
-            "weaknesses": review.weaknesses,
-            "annotation_count": len(review.annotations),
-            "annotations": [a.to_dict() for a in review.annotations[:6]],
-        })
+        return success_response(
+            {
+                "review_id": review.review_id,
+                "persona": review.persona,
+                "overall_score": review.overall_score,
+                "recommendation": review.recommendation,
+                "summary": review.summary,
+                "strengths": review.strengths,
+                "weaknesses": review.weaknesses,
+                "annotation_count": len(review.annotations),
+                "annotations": [a.to_dict() for a in review.annotations[:6]],
+            }
+        )
 
     except Exception as e:
         logger.error(f"review_simulate error: {e}")
@@ -2258,6 +2574,7 @@ def tool_review_list() -> Dict:
     """List saved simulated reviews."""
     try:
         from llm.review_simulator import list_reviews
+
         reviews = list_reviews(limit=20)
         return success_response({"reviews": reviews, "count": len(reviews)})
     except Exception as e:
@@ -2282,16 +2599,18 @@ def tool_routeplan_create(
         )
 
         progress = plan.get_progress()
-        return success_response({
-            "plan_id": plan.plan_id,
-            "hypothesis": plan.hypothesis,
-            "goal": plan.goal,
-            "step_count": len(plan.steps),
-            "estimated_hours": progress["estimated_hours"],
-            "progress_pct": progress["progress_pct"],
-            "steps": [s.to_dict() for s in plan.steps],
-            "created_at": datetime.fromtimestamp(plan.created_at).isoformat(),
-        })
+        return success_response(
+            {
+                "plan_id": plan.plan_id,
+                "hypothesis": plan.hypothesis,
+                "goal": plan.goal,
+                "step_count": len(plan.steps),
+                "estimated_hours": progress["estimated_hours"],
+                "progress_pct": progress["progress_pct"],
+                "steps": [s.to_dict() for s in plan.steps],
+                "created_at": datetime.fromtimestamp(plan.created_at).isoformat(),
+            }
+        )
 
     except Exception as e:
         logger.error(f"routeplan_create error: {e}")
@@ -2306,23 +2625,25 @@ def tool_routeplan_list() -> Dict:
         planner = RoutePlanner()
         plans = planner.list_plans(limit=20)
 
-        return success_response({
-            "plans": [
-                {
-                    "plan_id": p.plan_id,
-                    "hypothesis": p.hypothesis[:80],
-                    "goal": p.goal[:80],
-                    "status": p.status.value,
-                    "step_count": len(p.steps),
-                    "progress": p.get_progress()["progress_pct"],
-                    "revision_count": p.revision_count,
-                    "created_at": datetime.fromtimestamp(p.created_at).isoformat(),
-                    "updated_at": datetime.fromtimestamp(p.updated_at).isoformat(),
-                }
-                for p in plans
-            ],
-            "count": len(plans),
-        })
+        return success_response(
+            {
+                "plans": [
+                    {
+                        "plan_id": p.plan_id,
+                        "hypothesis": p.hypothesis[:80],
+                        "goal": p.goal[:80],
+                        "status": p.status.value,
+                        "step_count": len(p.steps),
+                        "progress": p.get_progress()["progress_pct"],
+                        "revision_count": p.revision_count,
+                        "created_at": datetime.fromtimestamp(p.created_at).isoformat(),
+                        "updated_at": datetime.fromtimestamp(p.updated_at).isoformat(),
+                    }
+                    for p in plans
+                ],
+                "count": len(plans),
+            }
+        )
 
     except Exception as e:
         logger.error(f"routeplan_list error: {e}")
@@ -2353,13 +2674,18 @@ def tool_routeplan_update_step(
         if not plan:
             return error_response("NOT_FOUND", f"Plan {plan_id} or step {step_id} not found")
 
-        return success_response({
-            "plan_id": plan.plan_id,
-            "step_id": step_id,
-            "status": status_enum.value,
-            "progress": plan.get_progress(),
-            "ready_steps": [{"step_id": s.step_id, "description": s.description} for s in plan.get_ready_steps()],
-        })
+        return success_response(
+            {
+                "plan_id": plan.plan_id,
+                "step_id": step_id,
+                "status": status_enum.value,
+                "progress": plan.get_progress(),
+                "ready_steps": [
+                    {"step_id": s.step_id, "description": s.description}
+                    for s in plan.get_ready_steps()
+                ],
+            }
+        )
 
     except Exception as e:
         logger.error(f"routeplan_update_step error: {e}")
@@ -2377,14 +2703,16 @@ def tool_routeplan_revise(plan_id: str, reason: str) -> Dict:
         if not new_plan:
             return error_response("NOT_FOUND", f"Plan {plan_id} not found")
 
-        return success_response({
-            "new_plan_id": new_plan.plan_id,
-            "old_plan_id": plan_id,
-            "revision_count": new_plan.revision_count,
-            "step_count": len(new_plan.steps),
-            "progress": new_plan.get_progress(),
-            "steps": [s.to_dict() for s in new_plan.steps],
-        })
+        return success_response(
+            {
+                "new_plan_id": new_plan.plan_id,
+                "old_plan_id": plan_id,
+                "revision_count": new_plan.revision_count,
+                "step_count": len(new_plan.steps),
+                "progress": new_plan.get_progress(),
+                "steps": [s.to_dict() for s in new_plan.steps],
+            }
+        )
 
     except Exception as e:
         logger.error(f"routeplan_revise error: {e}")
@@ -2404,25 +2732,25 @@ def tool_briefing_generate(arxiv_id: str, use_llm: bool = True) -> Dict:
         )
 
         if result.success:
-            return success_response({
-                "arxiv_id": arxiv_id,
-                "title": result.briefing.paper_title,
-                "verdict": result.briefing.verdict,
-                "verdict_reason": result.briefing.verdict_reason,
-                "sections_count": len(result.briefing.sections),
-                "gene_pool_matches": len(result.briefing.gene_pool_matches),
-                "memory_stances": len(result.briefing.memory_stances),
-                "markdown": result.markdown,
-                "generated_at": result.briefing.generated_at,
-            })
+            return success_response(
+                {
+                    "arxiv_id": arxiv_id,
+                    "title": result.briefing.paper_title,
+                    "verdict": result.briefing.verdict,
+                    "verdict_reason": result.briefing.verdict_reason,
+                    "sections_count": len(result.briefing.sections),
+                    "gene_pool_matches": len(result.briefing.gene_pool_matches),
+                    "memory_stances": len(result.briefing.memory_stances),
+                    "markdown": result.markdown,
+                    "generated_at": result.briefing.generated_at,
+                }
+            )
         else:
             return error_response("BRIEFING_ERROR", result.error)
 
     except Exception as e:
         logger.error(f"briefing_generate error: {e}")
         return error_response("BRIEFING_ERROR", str(e))
-
-
 
 
 def tool_replication_check(arxiv_id: str, include_abstract: bool = True) -> Dict:
@@ -2446,10 +2774,12 @@ def tool_replication_check(arxiv_id: str, include_abstract: bool = True) -> Dict
             abstract=abstract,
         )
 
-        return success_response({
-            **report.to_dict(),
-            "rendered": checker.render_report(report),
-        })
+        return success_response(
+            {
+                **report.to_dict(),
+                "rendered": checker.render_report(report),
+            }
+        )
     except Exception as e:
         logger.error(f"replication_check error: {e}")
         return error_response("REPLICATION_ERROR", str(e))
@@ -2479,16 +2809,20 @@ def tool_replication_compare(arxiv_id_1: str, arxiv_id_2: str) -> Dict:
 
         easier = report1 if report1.difficulty_score < report2.difficulty_score else report2
 
-        return success_response({
-            "paper_1": report1.to_dict(),
-            "paper_2": report2.to_dict(),
-            "easier_to_reproduce": easier.paper_id,
-            "comparison": {
-                "difficulty_diff": round(abs(report1.difficulty_score - report2.difficulty_score), 1),
-                "report_1": checker.render_report(report1),
-                "report_2": checker.render_report(report2),
-            },
-        })
+        return success_response(
+            {
+                "paper_1": report1.to_dict(),
+                "paper_2": report2.to_dict(),
+                "easier_to_reproduce": easier.paper_id,
+                "comparison": {
+                    "difficulty_diff": round(
+                        abs(report1.difficulty_score - report2.difficulty_score), 1
+                    ),
+                    "report_1": checker.render_report(report1),
+                    "report_2": checker.render_report(report2),
+                },
+            }
+        )
     except Exception as e:
         logger.error(f"replication_compare error: {e}")
         return error_response("REPLICATION_ERROR", str(e))
@@ -2499,16 +2833,13 @@ def tool_replication_compare(arxiv_id_1: str, arxiv_id_2: str) -> Dict:
 
 def handle_initialize() -> dict:
     """Handle initialize request."""
-    return success_response({
-        "protocolVersion": MCP_VERSION,
-        "serverInfo": {
-            "name": "rairos",
-            "version": "1.5.4"
-        },
-        "capabilities": {
-            "tools": True
+    return success_response(
+        {
+            "protocolVersion": MCP_VERSION,
+            "serverInfo": {"name": "rairos", "version": "1.5.4"},
+            "capabilities": {"tools": True},
         }
-    })
+    )
 
 
 def handle_list_tools() -> dict:
@@ -2521,122 +2852,93 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
     try:
         if name == "paper_ingest":
             result = tool_paper_ingest(
-                identifier=arguments.get("identifier"),
-                tags=arguments.get("tags")
+                identifier=arguments.get("identifier"), tags=arguments.get("tags")
             )
         elif name == "paper_search":
             result = tool_paper_search(
                 query=arguments.get("query"),
                 tag=arguments.get("tag"),
                 limit=arguments.get("limit", 10),
-                source=arguments.get("source", "local")
+                source=arguments.get("source", "local"),
             )
         elif name == "paper_chat":
             result = tool_paper_chat(
-                question=arguments.get("question"),
-                paper_id=arguments.get("paper_id")
+                question=arguments.get("question"), paper_id=arguments.get("paper_id")
             )
         elif name == "paper_recommend":
             result = tool_paper_recommend(
                 limit=arguments.get("limit", 5),
                 focus_tags=arguments.get("focus_tags"),
                 exclude_read=arguments.get("exclude_read", True),
-                strategy=arguments.get("strategy", "similar_tags")
+                strategy=arguments.get("strategy", "similar_tags"),
             )
         elif name == "pdf_download":
             result = tool_pdf_download(
-                arxiv_id=arguments.get("arxiv_id"),
-                out_path=arguments.get("out_path")
+                arxiv_id=arguments.get("arxiv_id"), out_path=arguments.get("out_path")
             )
         elif name == "pdf_extract_text":
             result = tool_pdf_extract_text(
                 pdf_path=arguments.get("pdf_path"),
                 max_pages=arguments.get("max_pages"),
                 ocr=arguments.get("ocr", False),
-                use_pdfminer_fallback=arguments.get("use_pdfminer_fallback", True)
+                use_pdfminer_fallback=arguments.get("use_pdfminer_fallback", True),
             )
         elif name == "pdf_extract_structured":
             result = tool_pdf_extract_structured(
-                pdf_path=arguments.get("pdf_path"),
-                max_pages=arguments.get("max_pages")
+                pdf_path=arguments.get("pdf_path"), max_pages=arguments.get("max_pages")
             )
         elif name == "kg_query":
             result = tool_kg_query(
                 query=arguments.get("query"),
                 entity_id=arguments.get("entity_id"),
-                tag=arguments.get("tag")
+                tag=arguments.get("tag"),
             )
         elif name == "kg_paper_subgraph":
             result = tool_kg_paper_subgraph(
-                paper_id=arguments.get("paper_id"),
-                depth=arguments.get("depth", 2)
+                paper_id=arguments.get("paper_id"), depth=arguments.get("depth", 2)
             )
         elif name == "kg_tag_graph":
-            result = tool_kg_tag_graph(
-                tag=arguments.get("tag")
-            )
+            result = tool_kg_tag_graph(tag=arguments.get("tag"))
         elif name == "kg_full_graph":
-            result = tool_kg_full_graph(
-                max_nodes=arguments.get("max_nodes", 500)
-            )
+            result = tool_kg_full_graph(max_nodes=arguments.get("max_nodes", 500))
         elif name == "tag_add":
-            result = tool_tag_add(
-                paper_id=arguments.get("paper_id"),
-                tag=arguments.get("tag")
-            )
+            result = tool_tag_add(paper_id=arguments.get("paper_id"), tag=arguments.get("tag"))
         elif name == "tag_remove":
-            result = tool_tag_remove(
-                paper_id=arguments.get("paper_id"),
-                tag=arguments.get("tag")
-            )
+            result = tool_tag_remove(paper_id=arguments.get("paper_id"), tag=arguments.get("tag"))
         elif name == "tag_list":
-            result = tool_tag_list(
-                paper_id=arguments.get("paper_id")
-            )
+            result = tool_tag_list(paper_id=arguments.get("paper_id"))
         elif name == "tag_all":
             result = tool_tag_all()
         elif name == "trends_detect_trending":
-            result = tool_trends_detect_trending(
-                threshold=arguments.get("threshold", 0.5)
-            )
+            result = tool_trends_detect_trending(threshold=arguments.get("threshold", 0.5))
         elif name == "trends_predict_next":
-            result = tool_trends_predict_next(
-                tag=arguments.get("tag")
-            )
+            result = tool_trends_predict_next(tag=arguments.get("tag"))
         elif name == "trends_top_predictions":
-            result = tool_trends_top_predictions(
-                top_k=arguments.get("top_k", 5)
-            )
+            result = tool_trends_top_predictions(top_k=arguments.get("top_k", 5))
         elif name == "trends_compare_tags":
             result = tool_trends_compare_tags(
-                tag_a=arguments.get("tag_a"),
-                tag_b=arguments.get("tag_b")
+                tag_a=arguments.get("tag_a"), tag_b=arguments.get("tag_b")
             )
         elif name == "chart_query":
             result = tool_chart_query(
                 paper_id=arguments.get("paper_id"),
                 action=arguments.get("action"),
-                label=arguments.get("label")
+                label=arguments.get("label"),
             )
         elif name == "research_run":
             result = tool_research_run(
-                topic=arguments.get("topic"),
-                limit=arguments.get("limit", 5)
+                topic=arguments.get("topic"), limit=arguments.get("limit", 5)
             )
         elif name == "slides_generate":
             result = tool_slides_generate(
-                paper_id=arguments.get("paper_id"),
-                output_path=arguments.get("output_path")
+                paper_id=arguments.get("paper_id"), output_path=arguments.get("output_path")
             )
         elif name == "cite_fetch":
             result = tool_cite_fetch(
-                paper_id=arguments.get("paper_id"),
-                direction=arguments.get("direction", "both")
+                paper_id=arguments.get("paper_id"), direction=arguments.get("direction", "both")
             )
         elif name == "paper_analyze":
-            result = tool_paper_analyze(
-                paper_id=arguments.get("paper_id")
-            )
+            result = tool_paper_analyze(paper_id=arguments.get("paper_id"))
         elif name == "paper2code_run":
             result = tool_paper2code_run(
                 arxiv_id=arguments.get("arxiv_id"),
@@ -2649,12 +2951,11 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
             result = tool_citation_graph(
                 paper_id=arguments.get("paper_id"),
                 depth=arguments.get("depth", 2),
-                max_nodes=arguments.get("max_nodes", 100)
+                max_nodes=arguments.get("max_nodes", 100),
             )
         elif name == "gap_detect":
             result = tool_gap_detect(
-                topic=arguments.get("topic"),
-                use_llm=arguments.get("use_llm", True)
+                topic=arguments.get("topic"), use_llm=arguments.get("use_llm", True)
             )
         elif name == "gap_submit":
             result = tool_gap_submit(
@@ -2662,12 +2963,11 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
                 gap_type=arguments.get("gap_type"),
                 title=arguments.get("title"),
                 description=arguments.get("description"),
-                success_score=arguments.get("success_score", 0.8)
+                success_score=arguments.get("success_score", 0.8),
             )
         elif name == "gap_evolve":
             result = tool_gap_evolve(
-                topic=arguments.get("topic"),
-                gap_type=arguments.get("gap_type")
+                topic=arguments.get("topic"), gap_type=arguments.get("gap_type")
             )
         elif name == "research_agent_start":
             result = tool_research_agent_start(
@@ -2678,15 +2978,13 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
         elif name == "research_agent_status":
             result = tool_research_agent_status()
         elif name == "research_agent_trigger":
-            result = tool_research_agent_trigger(
-                topic=arguments.get("topic")
-            )
+            result = tool_research_agent_trigger(topic=arguments.get("topic"))
         elif name == "hypothesis_generate":
             result = tool_hypothesis_generate(
                 topic=arguments.get("topic"),
                 gap_context=arguments.get("gap_context", ""),
                 gap_type=arguments.get("gap_type", ""),
-                creative=arguments.get("creative", False)
+                creative=arguments.get("creative", False),
             )
         elif name == "hypothesis_list":
             result = tool_hypothesis_list()
@@ -2695,13 +2993,13 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
                 hypothesis_id=arguments.get("hypothesis_id"),
                 name=arguments.get("name"),
                 result=arguments.get("result"),
-                metrics=arguments.get("metrics")
+                metrics=arguments.get("metrics"),
             )
         elif name == "litreview_generate":
             result = tool_litreview_generate(
                 topic=arguments.get("topic"),
                 limit=arguments.get("limit", 30),
-                use_llm=arguments.get("use_llm", True)
+                use_llm=arguments.get("use_llm", True),
             )
         elif name == "litreview_list":
             result = tool_litreview_list()
@@ -2817,10 +3115,7 @@ def handle_request(method: str, params: Dict) -> dict:
     elif method == "tools/list":
         return handle_list_tools()
     elif method == "tools/call":
-        return handle_call_tool(
-            name=params.get("name"),
-            arguments=params.get("arguments", {})
-        )
+        return handle_call_tool(name=params.get("name"), arguments=params.get("arguments", {}))
     else:
         return error_response("UNKNOWN_METHOD", f"Unknown method: {method}")
 
@@ -2863,6 +3158,7 @@ def main():
 if __name__ == "__main__":
     main()
 
+
 def tool_citation_chain_build(arxiv_id: str, max_depth: int = 2) -> Dict:
     """Build a citation chain using Semantic Scholar API."""
     try:
@@ -2871,23 +3167,25 @@ def tool_citation_chain_build(arxiv_id: str, max_depth: int = 2) -> Dict:
         builder = CitationChainBuilder()
         _chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=max_depth)
 
-        return success_response({
-            "arxiv_id": arxiv_id,
-            "nodes_count": len(_chain.nodes),
-            "edges_count": len(_chain.edges),
-            "nodes": [
-                {
-                    "paper_id": n.paper_id,
-                    "title": n.title,
-                    "year": n.year,
-                    "citations": n.citations,
-                    "cited_by": n.cited_by,
-                    "citation_count": n.citation_count,
-                }
-                for n in _chain.nodes
-            ],
-            "edges": [{"from": e[0], "to": e[1]} for e in _chain.edges],
-        })
+        return success_response(
+            {
+                "arxiv_id": arxiv_id,
+                "nodes_count": len(_chain.nodes),
+                "edges_count": len(_chain.edges),
+                "nodes": [
+                    {
+                        "paper_id": n.paper_id,
+                        "title": n.title,
+                        "year": n.year,
+                        "citations": n.citations,
+                        "cited_by": n.cited_by,
+                        "citation_count": n.citation_count,
+                    }
+                    for n in _chain.nodes
+                ],
+                "edges": [{"from": e[0], "to": e[1]} for e in _chain.edges],
+            }
+        )
     except Exception as e:
         logger.error(f"citation_chain_build error: {e}")
         return error_response("CHAIN_ERROR", str(e))
@@ -2902,11 +3200,13 @@ def tool_citation_chain_families(arxiv_id: str) -> Dict:
         _chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
         families = builder.cluster_families()
 
-        return success_response({
-            "arxiv_id": arxiv_id,
-            "families_count": len(families),
-            "families": [f.to_dict() for f in families],
-        })
+        return success_response(
+            {
+                "arxiv_id": arxiv_id,
+                "families_count": len(families),
+                "families": [f.to_dict() for f in families],
+            }
+        )
     except Exception as e:
         logger.error(f"citation_chain_families error: {e}")
         return error_response("CHAIN_ERROR", str(e))
@@ -2921,11 +3221,13 @@ def tool_citation_chain_silent(arxiv_id: str) -> Dict:
         _chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
         silent = builder.detect_silent_citations()
 
-        return success_response({
-            "arxiv_id": arxiv_id,
-            "silent_count": len(silent),
-            "silent_citations": silent,
-        })
+        return success_response(
+            {
+                "arxiv_id": arxiv_id,
+                "silent_count": len(silent),
+                "silent_citations": silent,
+            }
+        )
     except Exception as e:
         logger.error(f"citation_chain_silent error: {e}")
         return error_response("CHAIN_ERROR", str(e))
@@ -2946,18 +3248,18 @@ def tool_citation_chain_render(arxiv_id: str, format: str = "text") -> Dict:
         else:
             rendered = builder.render_text(chain)
 
-        return success_response({
-            "arxiv_id": arxiv_id,
-            "format": format,
-            "rendered": rendered,
-            "nodes_count": len(chain.nodes),
-            "edges_count": len(chain.edges),
-        })
+        return success_response(
+            {
+                "arxiv_id": arxiv_id,
+                "format": format,
+                "rendered": rendered,
+                "nodes_count": len(chain.nodes),
+                "edges_count": len(chain.edges),
+            }
+        )
     except Exception as e:
         logger.error(f"citation_chain_render error: {e}")
         return error_response("CHAIN_ERROR", str(e))
-
-
 
 
 def tool_impact_rank(topic: str, top_k: int = 10, min_citations: int = 0) -> Dict:
@@ -2975,25 +3277,29 @@ def tool_impact_rank(topic: str, top_k: int = 10, min_citations: int = 0) -> Dic
 
         papers = []
         for r in rows:
-            cid = getattr(r, 'citation_count', 0) or 0
+            cid = getattr(r, "citation_count", 0) or 0
             if cid < min_citations:
                 continue
-            papers.append({
-                "paper_id": getattr(r, 'paper_id', '') or getattr(r, 'arxiv_id', ''),
-                "title": getattr(r, 'title', ''),
-                "year": getattr(r, 'year', 2020) or 2020,
-                "citation_count": cid,
-            })
+            papers.append(
+                {
+                    "paper_id": getattr(r, "paper_id", "") or getattr(r, "arxiv_id", ""),
+                    "title": getattr(r, "title", ""),
+                    "year": getattr(r, "year", 2020) or 2020,
+                    "citation_count": cid,
+                }
+            )
 
         scorer = ImpactScorer(db=db)
         ranking = scorer.rank_papers(papers, top_k=top_k)
 
-        return success_response({
-            "topic": topic,
-            "total_ranked": len(ranking),
-            "ranking": ranking,
-            "rendered": scorer.render_ranking(ranking),
-        })
+        return success_response(
+            {
+                "topic": topic,
+                "total_ranked": len(ranking),
+                "ranking": ranking,
+                "rendered": scorer.render_ranking(ranking),
+            }
+        )
     except Exception as e:
         logger.error(f"impact_rank error: {e}")
         return error_response("IMPACT_ERROR", str(e))
@@ -3017,10 +3323,12 @@ def tool_impact_score_paper(arxiv_id: str) -> Dict:
             raw_citations=paper.citation_count or 0,
         )
 
-        return success_response({
-            **score.to_dict(),
-            "explanation": scorer._explain_score(score),
-        })
+        return success_response(
+            {
+                **score.to_dict(),
+                "explanation": scorer._explain_score(score),
+            }
+        )
     except Exception as e:
         logger.error(f"impact_score_paper error: {e}")
         return error_response("IMPACT_ERROR", str(e))
@@ -3039,29 +3347,30 @@ def tool_impact_leaderboard(limit: int = 20, year_min: int = 2020) -> Dict:
 
         papers = []
         for r in rows:
-            year = getattr(r, 'year', 2020) or 2020
+            year = getattr(r, "year", 2020) or 2020
             if year < year_min:
                 continue
-            papers.append({
-                "paper_id": getattr(r, 'paper_id', '') or getattr(r, 'arxiv_id', ''),
-                "title": getattr(r, 'title', ''),
-                "year": year,
-                "citation_count": getattr(r, 'citation_count', 0) or 0,
-            })
+            papers.append(
+                {
+                    "paper_id": getattr(r, "paper_id", "") or getattr(r, "arxiv_id", ""),
+                    "title": getattr(r, "title", ""),
+                    "year": year,
+                    "citation_count": getattr(r, "citation_count", 0) or 0,
+                }
+            )
 
         scorer = ImpactScorer(db=db)
         ranking = scorer.rank_papers(papers, top_k=limit)
 
-        return success_response({
-            "limit": limit,
-            "year_min": year_min,
-            "total_ranked": len(ranking),
-            "ranking": ranking,
-            "rendered": scorer.render_ranking(ranking),
-        })
+        return success_response(
+            {
+                "limit": limit,
+                "year_min": year_min,
+                "total_ranked": len(ranking),
+                "ranking": ranking,
+                "rendered": scorer.render_ranking(ranking),
+            }
+        )
     except Exception as e:
         logger.error(f"impact_leaderboard error: {e}")
         return error_response("IMPACT_ERROR", str(e))
-
-
-

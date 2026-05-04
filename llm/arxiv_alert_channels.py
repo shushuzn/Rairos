@@ -28,21 +28,47 @@ DEFAULT_CHANNELS = {
     "climate": {
         "name": "Climate AI",
         "categories": ["cs.AI", "cs.LG", "cs.ET", "envir.ArXiv"],
-        "keywords": ["climate", "carbon", "emissions", "renewable", "energy", "sustainability", "green AI"],
+        "keywords": [
+            "climate",
+            "carbon",
+            "emissions",
+            "renewable",
+            "energy",
+            "sustainability",
+            "green AI",
+        ],
         "priority": 3,
         "enabled": True,
     },
     "ai_safety": {
         "name": "AI Safety",
         "categories": ["cs.AI", "cs.LG"],
-        "keywords": ["safety", "alignment", "robustness", "interpretability", "fairness", "trustworthy", "hazard", "risk"],
+        "keywords": [
+            "safety",
+            "alignment",
+            "robustness",
+            "interpretability",
+            "fairness",
+            "trustworthy",
+            "hazard",
+            "risk",
+        ],
         "priority": 3,
         "enabled": True,
     },
     "regulation": {
         "name": "AI Regulation",
         "categories": ["cs.AI", "cs.CY", "cs.SI"],
-        "keywords": ["regulation", "policy", "governance", "law", "GDPR", "compliance", "legal", "legislation"],
+        "keywords": [
+            "regulation",
+            "policy",
+            "governance",
+            "law",
+            "GDPR",
+            "compliance",
+            "legal",
+            "legislation",
+        ],
         "priority": 2,
         "enabled": True,
     },
@@ -52,7 +78,9 @@ DEFAULT_CHANNELS = {
 def _load_channels() -> Dict[str, Any]:
     if not CHANNELS_FILE.exists():
         CHANNELS_FILE.parent.mkdir(parents=True, exist_ok=True)
-        CHANNELS_FILE.write_text(json.dumps(DEFAULT_CHANNELS, indent=2, ensure_ascii=False), encoding="utf-8")
+        CHANNELS_FILE.write_text(
+            json.dumps(DEFAULT_CHANNELS, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
         return DEFAULT_CHANNELS
     return json.loads(CHANNELS_FILE.read_text(encoding="utf-8"))
 
@@ -98,9 +126,14 @@ class ChannelConfig:
 def get_channels() -> List[ChannelConfig]:
     channels = _load_channels()
     return [
-        ChannelConfig(id=cid, name=cfg["name"], categories=cfg.get("categories", []),
-                     keywords=cfg.get("keywords", []), priority=cfg.get("priority", 1),
-                     enabled=cfg.get("enabled", True))
+        ChannelConfig(
+            id=cid,
+            name=cfg["name"],
+            categories=cfg.get("categories", []),
+            keywords=cfg.get("keywords", []),
+            priority=cfg.get("priority", 1),
+            enabled=cfg.get("enabled", True),
+        )
         for cid, cfg in channels.items()
     ]
 
@@ -120,9 +153,11 @@ def render_channels_html(check_results: Optional[Dict[str, List[Dict[str, Any]]]
 
     lines = ['<div class="channels-panel">']
     lines.append("<h3>📡 arXiv Watch Alert Channels</h3>")
-    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
-                "Configure multiple feed channels with different matching criteria. "
-                "Higher priority = shown first in alerts.</p>")
+    lines.append(
+        "<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
+        "Configure multiple feed channels with different matching criteria. "
+        "Higher priority = shown first in alerts.</p>"
+    )
 
     # Run Check button
     lines.append("""
@@ -150,8 +185,8 @@ def render_channels_html(check_results: Optional[Dict[str, List[Dict[str, Any]]]
             <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #f0ebe5;">
               <span style="color:#4CAF50;font-size:12px;">●</span>
               <div style="flex:1;">
-                <div style="font-size:12px;color:#2a2a2a;font-weight:600;">{rp.get('title','')[:80]}</div>
-                <div style="font-size:11px;color:#888;">{rp.get('published','')} · score={rp.get('score',0):.2f}</div>
+                <div style="font-size:12px;color:#2a2a2a;font-weight:600;">{rp.get("title", "")[:80]}</div>
+                <div style="font-size:11px;color:#888;">{rp.get("published", "")} · score={rp.get("score", 0):.2f}</div>
               </div>
             </div>"""
         if not result_rows:
@@ -164,7 +199,7 @@ def render_channels_html(check_results: Optional[Dict[str, List[Dict[str, Any]]]
     <div style='font-size: 11px; color: #A89E8C'>priority {ch.priority} · {status}</div>
   </div>
   <div style='font-size: 12px; color: #7a7570; margin-bottom: 4px'>Categories: {cat_str}</div>
-  <div style='font-size: 12px; color: #A89E8C; margin-bottom: 8px'>Keywords: {kw_str or '(none)'}</div>
+  <div style='font-size: 12px; color: #A89E8C; margin-bottom: 8px'>Keywords: {kw_str or "(none)"}</div>
   <div style='margin-bottom: 10px; padding: 8px; background: #faf9f7; border-radius: 4px;'>
     <div style='font-size:11px;color:#888;margin-bottom:6px;'>Recent papers from this channel:</div>
     {result_rows}

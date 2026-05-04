@@ -1,4 +1,5 @@
 """PDF download and text extraction."""
+
 import re
 from dataclasses import dataclass, field
 from enum import Enum
@@ -25,11 +26,12 @@ def download_pdf(pdf_url: str, out_path: Path, timeout: int = 60) -> None:
         if existing_size > 0:
             headers["Range"] = f"bytes={existing_size}-"
     try:
-        with requests.get(pdf_url, headers=headers, stream=True, timeout=timeout, allow_redirects=True) as r:
+        with requests.get(
+            pdf_url, headers=headers, stream=True, timeout=timeout, allow_redirects=True
+        ) as r:
             # Check if server supports Range
             supports_range = r.status_code == 206 or (
-                existing_size > 0
-                and r.headers.get("Accept-Ranges", "none") != "none"
+                existing_size > 0 and r.headers.get("Accept-Ranges", "none") != "none"
             )
             if supports_range and existing_size > 0:
                 # Resume: append to existing partial file
@@ -61,14 +63,17 @@ def download_pdf(pdf_url: str, out_path: Path, timeout: int = 60) -> None:
 # PyMuPDF dependency (lazy-loaded once)
 _fitz_pdf = None
 
+
 def _ensure_fitz():
     global _fitz_pdf
     if _fitz_pdf is None:
         try:
             import fitz
+
             _fitz_pdf = fitz
         except Exception as err:
             raise RuntimeError("PyMuPDF not installed. Install with: pip install pymupdf") from err
+
 
 def extract_pdf_text(pdf_path: Path, max_pages: Optional[int] = None) -> str:
     """Fast text-layer extraction (PyMuPDF)."""
@@ -129,6 +134,7 @@ def _ensure_ocr_deps():
     if _fitz is None:
         try:
             import fitz
+
             _fitz = fitz
         except Exception:
             pass
@@ -136,12 +142,14 @@ def _ensure_ocr_deps():
         try:
             import pytesseract
             from PIL import Image
+
             _pytesseract = pytesseract
             _Image = Image
         except Exception:
             pass
     if _pytesseract is None or _Image is None or _fitz is None:
         raise RuntimeError("OCR deps missing. Install with: pip install pytesseract pillow pymupdf")
+
 
 def _ocr_page(page, ocr_lang: str = "chi_sim+eng", zoom: float = 2.0) -> str:
     _ensure_ocr_deps()
@@ -175,6 +183,7 @@ def extract_pdf_text_hybrid(
     if use_pdfminer_fallback:
         try:
             from pdfminer.high_level import extract_text as _pdfminer_extract_text
+
             pdfminer_extract_text = _pdfminer_extract_text
         except Exception:
             pass
@@ -300,9 +309,13 @@ _DISPLAY_MATH_PATTERNS = [
     re.compile(r"^\s*\$\$[\s\S]+?\$\$\s*$"),
     re.compile(r"^\s*\\\[\s*[\s\S]+?\s*\\\]\s*$"),
     # AMS align environment
-    re.compile(r"^\s*\\begin\{(align|align\*|gather|gather\*|eqnarray)\}[\s\S]+?\\end\{\1\}\s*$", re.M),
+    re.compile(
+        r"^\s*\\begin\{(align|align\*|gather|gather\*|eqnarray)\}[\s\S]+?\\end\{\1\}\s*$", re.M
+    ),
     # Unicode math operators often appear as standalone lines
-    re.compile(r"^\s*[\u2200-\u22FF\u2A00-\u2BFF]\s*[\u2200-\u22FF\u2A00-\u2BFF\s]+\s*=\s*[\u2200-\u22FF\u2A00-\u2BFF\s]+\s*$"),
+    re.compile(
+        r"^\s*[\u2200-\u22FF\u2A00-\u2BFF]\s*[\u2200-\u22FF\u2A00-\u2BFF\s]+\s*=\s*[\u2200-\u22FF\u2A00-\u2BFF\s]+\s*$"
+    ),
 ]
 _INLINE_MATH_PAT = re.compile(r"\$([^\$\n]+?)\$|\\\([^)]+\\\)")
 
@@ -366,10 +379,18 @@ def extract_pdf_structured(
                     col_count = max(len(r) for r in rows) if rows else 0
                     md_lines = []
                     header = rows[0] if rows else []
-                    md_lines.append("| " + " | ".join(header[i] if i < len(header) else "" for i in range(col_count)) + " |")
+                    md_lines.append(
+                        "| "
+                        + " | ".join(header[i] if i < len(header) else "" for i in range(col_count))
+                        + " |"
+                    )
                     md_lines.append("|" + "|".join(" --- " for _ in range(col_count)) + "|")
                     for row in rows[1:]:
-                        md_lines.append("| " + " | ".join(row[i] if i < len(row) else "" for i in range(col_count)) + " |")
+                        md_lines.append(
+                            "| "
+                            + " | ".join(row[i] if i < len(row) else "" for i in range(col_count))
+                            + " |"
+                        )
 
                     table_text = "\n".join(md_lines)
                     bbox = tbl.bbox if hasattr(tbl, "bbox") else (0, 0, 0, 0)
@@ -394,8 +415,6 @@ def extract_pdf_structured(
             if block.get("type") != 0:  # only care about text blocks
                 continue
 
-
-
             for line in block.get("lines", []):
                 line_text_parts = []
                 for span in line.get("spans", []):
@@ -413,11 +432,13 @@ def extract_pdf_structured(
                 if block_type == BlockType.BODY and len(line_text.strip()) < 3:
                     continue
 
-                content.text_blocks.append(TextBlock(
-                    type=block_type,
-                    text=line_text,
-                    page=page_idx,
-                ))
+                content.text_blocks.append(
+                    TextBlock(
+                        type=block_type,
+                        text=line_text,
+                        page=page_idx,
+                    )
+                )
 
                 # Extract inline math from this line
                 inline_maths = _extract_inline_math(line_text)
@@ -429,11 +450,13 @@ def extract_pdf_structured(
         # Reuse page_text_full already fetched above (avoids second get_text call)
         for raw_line in (page_text_full or "").splitlines():
             if _is_display_math(raw_line):
-                content.math_blocks.append(MathBlock(
-                    text=raw_line.strip(),
-                    is_display=True,
-                    page=page_idx,
-                ))
+                content.math_blocks.append(
+                    MathBlock(
+                        text=raw_line.strip(),
+                        is_display=True,
+                        page=page_idx,
+                    )
+                )
 
     return content
 

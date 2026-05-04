@@ -117,11 +117,11 @@ class ResearchMomentum:
             radar_heat = max(radar_heat, heat)  # take highest tag heat
 
         total = (
-            citation_score * 0.30 +
-            tag_popularity * 0.25 +
-            recency_boost * 0.20 +
-            novelty_factor * 0.15 +
-            radar_heat * 0.10
+            citation_score * 0.30
+            + tag_popularity * 0.25
+            + recency_boost * 0.20
+            + novelty_factor * 0.15
+            + radar_heat * 0.10
         )
         return round(min(100.0, total), 2)
 
@@ -159,12 +159,19 @@ class ResearchMomentum:
         """Score a tag by aggregate paper momentum."""
         papers = self.kg.find_papers_by_tag(tag)
         if not papers:
-            return {"raw_score": 0.0, "papers_count": 0, "avg_citation": 0.0,
-                    "heat_trend": "unknown", "momentum_label": "niche"}
+            return {
+                "raw_score": 0.0,
+                "papers_count": 0,
+                "avg_citation": 0.0,
+                "heat_trend": "unknown",
+                "momentum_label": "niche",
+            }
 
         papers_scores = [self.score_paper(p["entity_id"]) for p in papers]
         raw_score = sum(papers_scores) / len(papers_scores)
-        citations = [len(self.kg.get_edges_by_node(p["id"], direction="in", rel_type="cite")) for p in papers]
+        citations = [
+            len(self.kg.get_edges_by_node(p["id"], direction="in", rel_type="cite")) for p in papers
+        ]
         avg_cite = sum(citations) / max(1, len(citations))
 
         radar_data = self._load_radar()

@@ -1,4 +1,5 @@
 """CLI command: gap — Research gap detection."""
+
 from __future__ import annotations
 
 import argparse
@@ -21,8 +22,12 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
 
     # gap list — show Gene Pool capsules
     list_p = sub.add_parser("list", help="List Gene Pool capsules")
-    list_p.add_argument("--status", choices=["all", "active", "consumed", "archived"],
-                        default="active", help="Filter by status (default: active)")
+    list_p.add_argument(
+        "--status",
+        choices=["all", "active", "consumed", "archived"],
+        default="active",
+        help="Filter by status (default: active)",
+    )
     list_p.add_argument("--json", "-j", action="store_true", help="Output as JSON")
 
     # gap extract — extract gap from a paper
@@ -32,15 +37,18 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
 
     # gap watch — monitor arXiv for papers matching Gene Pool
     watch_p = sub.add_parser("watch", help="Monitor arXiv for papers matching Gene Pool entries")
-    watch_p.add_argument("--interval", type=int, default=30,
-                         help="Check interval in minutes (default: 30)")
-    watch_p.add_argument("--daemon", action="store_true",
-                         help="Run as background daemon")
-    watch_p.add_argument("--new-only", action="store_true",
-                         help="Only report papers not yet in database")
+    watch_p.add_argument(
+        "--interval", type=int, default=30, help="Check interval in minutes (default: 30)"
+    )
+    watch_p.add_argument("--daemon", action="store_true", help="Run as background daemon")
+    watch_p.add_argument(
+        "--new-only", action="store_true", help="Only report papers not yet in database"
+    )
 
     # gap contradictions — find Gene Pool pairs with same gap_type but opposite polarity
-    con_p = sub.add_parser("contradictions", help="Find Gene Pool capsule pairs with opposite polarity")
+    con_p = sub.add_parser(
+        "contradictions", help="Find Gene Pool capsule pairs with opposite polarity"
+    )
     con_p.add_argument("--json", "-j", action="store_true", help="Output as JSON")
 
     # gap path — trace citation path from paper to Gene Pool capsule
@@ -61,29 +69,34 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
         help="Disable LLM analysis (rule-based only)",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="Output as JSON",
     )
     p.add_argument(
-        "--min-papers", "-n",
+        "--min-papers",
+        "-n",
         type=int,
         default=3,
         help="Minimum papers needed (default: 3)",
     )
     p.add_argument(
-        "--model", "-m",
+        "--model",
+        "-m",
         type=str,
         default=None,
         help="LLM model to use",
     )
     p.add_argument(
-        "--interactive", "-i",
+        "--interactive",
+        "-i",
         action="store_true",
         help="Interactive exploration mode",
     )
     p.add_argument(
-        "--enhanced", "-e",
+        "--enhanced",
+        "-e",
         action="store_true",
         help="Use enhanced analysis with user insights",
     )
@@ -93,7 +106,8 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
         help="Don't use user insights in enhanced mode",
     )
     p.add_argument(
-        "--hypothesis", "-H",
+        "--hypothesis",
+        "-H",
         action="store_true",
         help="Generate hypotheses from gaps",
     )
@@ -238,6 +252,7 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
 
     # Pass tracker for preference-based reordering + trend analyzer for trend-aware sorting
     from llm.trend_analyzer import TrendAnalyzer
+
     trend_analyzer = TrendAnalyzer(db=db)
     analyzer = GapAnalyzerV2(
         db=db,
@@ -278,11 +293,27 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
 
         if args.json:
             import json
-            print(json.dumps({
-                "topic": gap_result.topic,
-                "gaps": [{"title": g.title, "type": g.gap_type.value, "severity": g.severity.name} for g in gap_result.gaps],
-                "hypotheses": [{"statement": h.core_statement, "type": h.hypothesis_type.value} for h in hypothesis_result.hypotheses],
-            }, indent=2))
+
+            print(
+                json.dumps(
+                    {
+                        "topic": gap_result.topic,
+                        "gaps": [
+                            {
+                                "title": g.title,
+                                "type": g.gap_type.value,
+                                "severity": g.severity.name,
+                            }
+                            for g in gap_result.gaps
+                        ],
+                        "hypotheses": [
+                            {"statement": h.core_statement, "type": h.hypothesis_type.value}
+                            for h in hypothesis_result.hypotheses
+                        ],
+                    },
+                    indent=2,
+                )
+            )
         else:
             print()
             print(render_combined_report(gap_result, hypothesis_result))
@@ -315,23 +346,29 @@ def _run_gap_enhanced(args: argparse.Namespace) -> int:
 
     if args.json:
         import json
-        print(json.dumps({
-            "topic": result.topic,
-            "gaps": [
+
+        print(
+            json.dumps(
                 {
-                    "title": g.title,
-                    "type": g.gap_type.value,
-                    "severity": g.severity.name,
-                    "insights": g.user_insights,
-                    "priority": g.priority,
-                }
-                for g in result.gaps
-            ],
-            "stats": {
-                "papers": result.total_papers_analyzed,
-                "insights": result.total_insights_used,
-            }
-        }, indent=2))
+                    "topic": result.topic,
+                    "gaps": [
+                        {
+                            "title": g.title,
+                            "type": g.gap_type.value,
+                            "severity": g.severity.name,
+                            "insights": g.user_insights,
+                            "priority": g.priority,
+                        }
+                        for g in result.gaps
+                    ],
+                    "stats": {
+                        "papers": result.total_papers_analyzed,
+                        "insights": result.total_insights_used,
+                    },
+                },
+                indent=2,
+            )
+        )
     else:
         print()
         print(render_gap_report(result))
@@ -395,7 +432,7 @@ def _run_interactive(detector: GapDetector, args: argparse.Namespace) -> int:
                     continue
                 gap = last_gaps[idx]
                 action_name = "采纳" if parts[0] == "accept" else "忽略"
-                print(f"  {action_name}: [{idx+1}] {gap.title}")
+                print(f"  {action_name}: [{idx + 1}] {gap.title}")
                 # Tracker is not available in interactive mode without args
                 # Just acknowledge — the user can re-run with --feedback
             except ValueError:
@@ -481,6 +518,7 @@ def _run_gap_extract(args: argparse.Namespace) -> int:
     print_info(f"Extracting gap from: {paper.title[:60]}")
 
     from llm.paper_gap_extractor import extract_gap_from_paper, save_gap_to_gene_pool
+
     result = extract_gap_from_paper(
         paper_id=paper.id,
         title=paper.title,
@@ -533,7 +571,6 @@ def _run_gap_extract(args: argparse.Namespace) -> int:
     return 0
 
 
-
 def _run_gap_watch(args):
     import threading
     import urllib.request
@@ -577,7 +614,9 @@ def _run_gap_watch(args):
             for arxiv_id, title, matches in matched:
                 print(f"  [{arxiv_id}] {title[:60]}")
                 for m in matches:
-                    print(f"    -> {m['gap_title'][:60]} type={m['gap_type']} score={m['outcome_score']:.2f}")
+                    print(
+                        f"    -> {m['gap_title'][:60]} type={m['gap_type']} score={m['outcome_score']:.2f}"
+                    )
         else:
             print("  (no matches this cycle)")
 
@@ -608,6 +647,7 @@ def _run_gap_contradictions(args: argparse.Namespace) -> int:
     capsules = data.get("capsules", [])
 
     from llm.paper_gap_extractor import detect_contradictions
+
     contradictions = detect_contradictions(capsules)
 
     if args.json:
@@ -625,10 +665,12 @@ def _run_gap_contradictions(args: argparse.Namespace) -> int:
         shared = c["shared_keywords"]
         pc = c["positive_capsule"]
         nc = c["negative_capsule"]
-        print(f"  [{i+1}] {gap_type}")
+        print(f"  [{i + 1}] {gap_type}")
         print(f"      ADVANCE: {pc.get('action_gap_title', pc.get('trigger_gap_title', '?'))[:60]}")
         print(f"             ↕ {pc.get('capsule_id', '?')}")
-        print(f"      CHALLENGE: {nc.get('action_gap_title', nc.get('trigger_gap_title', '?'))[:60]}")
+        print(
+            f"      CHALLENGE: {nc.get('action_gap_title', nc.get('trigger_gap_title', '?'))[:60]}"
+        )
         print(f"             ↕ {nc.get('capsule_id', '?')}")
         print(f"      Shared keywords: {', '.join(shared[:6])}")
         print()
@@ -648,6 +690,7 @@ def _run_gap_path(args: argparse.Namespace) -> int:
         return 1
 
     from llm.citation_chain import CitationChainBuilder
+
     builder = CitationChainBuilder(db=db)
     paths = builder.find_paths_to_gene_pool(
         seed_paper_id=args.paper_id,
@@ -677,7 +720,7 @@ def _run_gap_path(args: argparse.Namespace) -> int:
         source = result["source_paper_id"]
 
         arrow = "→" if polarity == "positive" else "⇄"
-        print(f"  [{i+1}] {gap_type} {arrow}")
+        print(f"  [{i + 1}] {gap_type} {arrow}")
         for j, pid in enumerate(path):
             p = db.get_paper(pid) if hasattr(db, "get_paper") else None
             title = getattr(p, "title", pid)[:50] if p else pid[:50]
@@ -705,7 +748,7 @@ def _collect_gap_feedback(topic: str, gaps, tracker: EvolutionTracker) -> None:
     print()
 
     for i, gap in enumerate(gaps):
-        print(f"  [{i+1}] {gap.title}")
+        print(f"  [{i + 1}] {gap.title}")
         print(f"      type={gap.gap_type.value}  severity={gap.severity.name}")
         if gap.description:
             desc = gap.description[:80] + ("..." if len(gap.description) > 80 else "")
@@ -760,7 +803,7 @@ def _collect_gap_feedback(topic: str, gaps, tracker: EvolutionTracker) -> None:
                 gap_description=gap.description,
             )
             accepted.append(gap.title)
-            print(f"  ✓ 采纳: [{idx+1}] {gap.title}")
+            print(f"  ✓ 采纳: [{idx + 1}] {gap.title}")
         elif action == "reject":
             tracker.record_gap_reject(
                 topic=topic,
@@ -769,7 +812,7 @@ def _collect_gap_feedback(topic: str, gaps, tracker: EvolutionTracker) -> None:
                 reason="user_rejected",
             )
             rejected.append(gap.title)
-            print(f"  ✗ 忽略: [{idx+1}] {gap.title}")
+            print(f"  ✗ 忽略: [{idx + 1}] {gap.title}")
         else:
             print("  未知命令: accept / reject / done")
 

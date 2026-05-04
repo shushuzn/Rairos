@@ -2,6 +2,7 @@
 
 Provides natural language Q&A over your paper corpus with source citation.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -20,7 +21,13 @@ import urllib.error
 import urllib.request
 
 from llm.client import call_llm_chat_completions, stream_llm_chat_completions
-from llm.constants import LLM_BASE_URL, LLM_MODEL, OLLAMA_API_EMBEDDINGS_ENDPOINT, OLLAMA_BASE_URL, OLLAMA_EMBEDDING_MODEL
+from llm.constants import (
+    LLM_BASE_URL,
+    LLM_MODEL,
+    OLLAMA_API_EMBEDDINGS_ENDPOINT,
+    OLLAMA_BASE_URL,
+    OLLAMA_EMBEDDING_MODEL,
+)
 from llm.research_session import get_session_tracker
 
 logger = logging.getLogger(__name__)
@@ -43,6 +50,7 @@ def _get_retrieval_cache_key(query: str, concept: Optional[str], limit: int) -> 
 def _get_cached_retrieval(cache_key: str) -> Optional[List]:
     """Get cached retrieval results if valid."""
     import time
+
     if cache_key in _RETRIEVAL_CACHE:
         timestamp, contexts = _RETRIEVAL_CACHE[cache_key]
         if time.time() - timestamp < _RETRIEVAL_CACHE_TTL:
@@ -55,6 +63,7 @@ def _get_cached_retrieval(cache_key: str) -> Optional[List]:
 def _cache_retrieval(cache_key: str, contexts: List) -> None:
     """Cache retrieval results with LRU eviction."""
     import time
+
     while len(_RETRIEVAL_CACHE) >= _RETRIEVAL_CACHE_MAX:
         oldest_key = min(_RETRIEVAL_CACHE, key=lambda k: _RETRIEVAL_CACHE[k][0])
         del _RETRIEVAL_CACHE[oldest_key]
@@ -125,29 +134,30 @@ _CROSS_PAPER_USER_PROMPT_TEMPLATE = """请分析以下论文之间的关联：
 
 class QueryType(Enum):
     """Query type classification for adaptive routing."""
-    FACTUAL = "factual"      # Who, when, what (exact facts)
+
+    FACTUAL = "factual"  # Who, when, what (exact facts)
     CONCEPTUAL = "conceptual"  # Explain, how, why (understanding)
     COMPARATIVE = "comparative"  # vs, compared, difference (analysis)
-    TEMPORAL = "temporal"    # recent, latest, 2024, new (time-sensitive)
-    GENERAL = "general"       # Default fallback
+    TEMPORAL = "temporal"  # recent, latest, 2024, new (time-sensitive)
+    GENERAL = "general"  # Default fallback
 
 
 # 查询类型 → BM25权重（语义权重 = 1 - BM25权重）
 _QUERY_WEIGHTS = {
-    QueryType.FACTUAL:     0.65,  # 精确匹配权威
-    QueryType.CONCEPTUAL:  0.20,  # 语义理解主导
+    QueryType.FACTUAL: 0.65,  # 精确匹配权威
+    QueryType.CONCEPTUAL: 0.20,  # 语义理解主导
     QueryType.COMPARATIVE: 0.50,  # 平衡
-    QueryType.TEMPORAL:    0.55,  # BM25 + 时效性boost
-    QueryType.GENERAL:     0.40,  # 默认
+    QueryType.TEMPORAL: 0.55,  # BM25 + 时效性boost
+    QueryType.GENERAL: 0.40,  # 默认
 }
 
 # 查询类型 → MMR lambda（0.7=偏重相关度，0.5=平衡，0.3=偏重多样性）
 _MMR_LAMBDA = {
-    QueryType.FACTUAL:     0.8,   # 事实查询：相关度优先
-    QueryType.CONCEPTUAL:  0.6,   # 概念查询：适度多样性
-    QueryType.COMPARATIVE: 0.5,   # 比较查询：平衡相关度与多样性
-    QueryType.TEMPORAL:    0.7,   # 时序查询：相关度优先
-    QueryType.GENERAL:     0.6,   # 默认：适度多样性
+    QueryType.FACTUAL: 0.8,  # 事实查询：相关度优先
+    QueryType.CONCEPTUAL: 0.6,  # 概念查询：适度多样性
+    QueryType.COMPARATIVE: 0.5,  # 比较查询：平衡相关度与多样性
+    QueryType.TEMPORAL: 0.7,  # 时序查询：相关度优先
+    QueryType.GENERAL: 0.6,  # 默认：适度多样性
 }
 
 
@@ -157,21 +167,23 @@ _MMR_LAMBDA = {
 @dataclass
 class Citation:
     """A citation extracted from a paper with source tracing."""
+
     paper_id: str
     paper_title: str
     authors: List[str]
     published: str
     snippet: str
     relevance_score: float
-    section: str = ""           # 论文章节 (abstract, intro, method, etc.)
-    char_start: int = 0          # 在原文中的起始位置
-    char_end: int = 0            # 在原文中的结束位置
-    quote: str = ""              # 精确引用语句
+    section: str = ""  # 论文章节 (abstract, intro, method, etc.)
+    char_start: int = 0  # 在原文中的起始位置
+    char_end: int = 0  # 在原文中的结束位置
+    quote: str = ""  # 精确引用语句
 
 
 @dataclass
 class ChatContext:
     """A retrieved context from a paper."""
+
     paper_id: str
     paper_title: str
     authors: List[str]
@@ -183,11 +195,12 @@ class ChatContext:
 @dataclass
 class ConfidenceScore:
     """Confidence score for RAG answer quality."""
-    score: float              # 0-100 置信度
-    papers_count: int         # 引用的论文数
-    coverage: str            # 覆盖描述 (e.g., "3篇论文，覆盖Method章节")
-    warnings: List[str]      # 低置信度警告
-    sources: List[str]      # 主要来源章节
+
+    score: float  # 0-100 置信度
+    papers_count: int  # 引用的论文数
+    coverage: str  # 覆盖描述 (e.g., "3篇论文，覆盖Method章节")
+    warnings: List[str]  # 低置信度警告
+    sources: List[str]  # 主要来源章节
 
     @property
     def level(self) -> str:
@@ -203,6 +216,7 @@ class ConfidenceScore:
 @dataclass
 class CrossPaperInsight:
     """Cross-paper synthesis insight."""
+
     insight_type: str  # "comparison", "connection", "contradiction", "evolution"
     summary: str  # 一句话总结
     papers: List[str]  # 涉及的论文
@@ -212,6 +226,7 @@ class CrossPaperInsight:
 @dataclass
 class ChatResult:
     """Result of a RAG chat interaction."""
+
     answer: str
     citations: List[Citation] = field(default_factory=list)
     papers_used: List[str] = field(default_factory=list)
@@ -283,44 +298,49 @@ class RagChat:
         """Pre-compile regex patterns for query classification."""
         return {
             QueryType.FACTUAL: [
-                re.compile(r'\b(who|whom|whose|who\'s)\b', re.I),
-                re.compile(r'\b(when|what year|what date)\b', re.I),
-                re.compile(r'\b(which (paper|author|model))\b', re.I),
-                re.compile(r'\b(who proposed|who introduced|who published|who wrote|who created)\b', re.I),
-                re.compile(r'\b(where (published|presented|introduced|released))\b', re.I),
-                re.compile(r'\b(what organization|what institution|what company)\b', re.I),
+                re.compile(r"\b(who|whom|whose|who\'s)\b", re.I),
+                re.compile(r"\b(when|what year|what date)\b", re.I),
+                re.compile(r"\b(which (paper|author|model))\b", re.I),
+                re.compile(
+                    r"\b(who proposed|who introduced|who published|who wrote|who created)\b", re.I
+                ),
+                re.compile(r"\b(where (published|presented|introduced|released))\b", re.I),
+                re.compile(r"\b(what organization|what institution|what company)\b", re.I),
                 # 中文：事实查询
-                re.compile(r'(是谁|谁提出|谁创建|谁发布|哪篇|哪个作者|哪篇论文|何时|何时发表)'),
-                re.compile(r'(哪年|哪月|哪里|哪个机构|哪家|哪个团队|谁的工作)'),
+                re.compile(r"(是谁|谁提出|谁创建|谁发布|哪篇|哪个作者|哪篇论文|何时|何时发表)"),
+                re.compile(r"(哪年|哪月|哪里|哪个机构|哪家|哪个团队|谁的工作)"),
             ],
             QueryType.CONCEPTUAL: [
-                re.compile(r'\b(what is|what are|explain|describe|how does|how do|why does|why do|understand|definition|meaning)\b', re.I),
-                re.compile(r'(原理|机制|概念|解释|是什么|如何|为什么|理解|定义|工作原理)'),
-                re.compile(r'(什么意思|含义|理论基础|基本思想|核心思想|本质)'),
-                re.compile(r'(怎么做|如何实现|如何工作|是怎样|怎样)'),
+                re.compile(
+                    r"\b(what is|what are|explain|describe|how does|how do|why does|why do|understand|definition|meaning)\b",
+                    re.I,
+                ),
+                re.compile(r"(原理|机制|概念|解释|是什么|如何|为什么|理解|定义|工作原理)"),
+                re.compile(r"(什么意思|含义|理论基础|基本思想|核心思想|本质)"),
+                re.compile(r"(怎么做|如何实现|如何工作|是怎样|怎样)"),
             ],
             QueryType.COMPARATIVE: [
-                re.compile(r'\b(vs|versus|compared to|compared with)\b', re.I),
-                re.compile(r'\b(difference between|differences between)\b', re.I),
-                re.compile(r'\b(compare|comparison)\b', re.I),
-                re.compile(r'\b(which is better|which is worse|which is stronger)\b', re.I),
-                re.compile(r'\b(pros and cons|pros/cons|strengths? and weaknesses?)\b', re.I),
+                re.compile(r"\b(vs|versus|compared to|compared with)\b", re.I),
+                re.compile(r"\b(difference between|differences between)\b", re.I),
+                re.compile(r"\b(compare|comparison)\b", re.I),
+                re.compile(r"\b(which is better|which is worse|which is stronger)\b", re.I),
+                re.compile(r"\b(pros and cons|pros/cons|strengths? and weaknesses?)\b", re.I),
                 # 中文：比较查询
-                re.compile(r'(和.*比较|比较.*和|对比|区别|差异)'),
-                re.compile(r'(哪个更好|哪个更差|哪个更强|孰优孰劣)'),
-                re.compile(r'(优于|劣于|胜于|强于|优势|劣势)'),
+                re.compile(r"(和.*比较|比较.*和|对比|区别|差异)"),
+                re.compile(r"(哪个更好|哪个更差|哪个更强|孰优孰劣)"),
+                re.compile(r"(优于|劣于|胜于|强于|优势|劣势)"),
             ],
             QueryType.TEMPORAL: [
-                re.compile(r'\b(recent|latest|newest|recently)\b', re.I),
-                re.compile(r'\b(202[0-9]|20[2-9]\d)\b', re.I),
-                re.compile(r'\b(最近|最新|新的|202[0-9]|今年|去年|明年)\b'),
-                re.compile(r'\b(published in|released in|presented in|from 20)\b', re.I),
-                re.compile(r'\b(evolution|development|history|progress)\b', re.I),
-                re.compile(r'\b(before|after|since|until|past|future)\b', re.I),
+                re.compile(r"\b(recent|latest|newest|recently)\b", re.I),
+                re.compile(r"\b(202[0-9]|20[2-9]\d)\b", re.I),
+                re.compile(r"\b(最近|最新|新的|202[0-9]|今年|去年|明年)\b"),
+                re.compile(r"\b(published in|released in|presented in|from 20)\b", re.I),
+                re.compile(r"\b(evolution|development|history|progress)\b", re.I),
+                re.compile(r"\b(before|after|since|until|past|future)\b", re.I),
                 # 中文：时间查询
-                re.compile(r'(最近 最新 新的|今年|去年|明年|近年)'),
-                re.compile(r'(何时|什么时候|多会儿|早期|后期)'),
-                re.compile(r'(演变|发展|演进|历史|进展|进步)'),
+                re.compile(r"(最近 最新 新的|今年|去年|明年|近年)"),
+                re.compile(r"(何时|什么时候|多会儿|早期|后期)"),
+                re.compile(r"(演变|发展|演进|历史|进展|进步)"),
             ],
         }
 
@@ -372,8 +392,8 @@ class RagChat:
         is_followup = any(
             pattern.search(question.lower())
             for pattern in [
-                re.compile(r'^(它|它们|这个|有哪些|有什么|哪个|哪些|怎么|如何|为什么|有什么不同)'),
-                re.compile(r'^(what about|and how|what are the|which ones|how about)'),
+                re.compile(r"^(它|它们|这个|有哪些|有什么|哪个|哪些|怎么|如何|为什么|有什么不同)"),
+                re.compile(r"^(what about|and how|what are the|which ones|how about)"),
             ]
         )
 
@@ -391,17 +411,28 @@ class RagChat:
         """Extract the main topic/entity from a question."""
         # Remove common question patterns
         patterns = [
-            r'是什么|什么是|请问|帮我|找找|解释|说明|介绍',
-            r'what is|what are|explain|describe|introduce',
+            r"是什么|什么是|请问|帮我|找找|解释|说明|介绍",
+            r"what is|what are|explain|describe|introduce",
         ]
         cleaned = text
         for p in patterns:
-            cleaned = re.sub(p, '', cleaned, flags=re.I)
+            cleaned = re.sub(p, "", cleaned, flags=re.I)
 
         # Take first meaningful phrase (3-10 chars)
         words = cleaned.split()
         for w in words:
-            if 2 <= len(w) <= 15 and w not in {'的', '了', '是', '在', '和', 'the', 'a', 'an', 'is', 'are'}:
+            if 2 <= len(w) <= 15 and w not in {
+                "的",
+                "了",
+                "是",
+                "在",
+                "和",
+                "the",
+                "a",
+                "an",
+                "is",
+                "are",
+            }:
                 return w[:20]
 
         return None
@@ -422,21 +453,18 @@ class RagChat:
 
         # Only rewrite if this looks like a follow-up
         followup_patterns = [
-            r'^(它|它们|这个|那|这些|那些|有哪些|有什么|哪个|哪些|怎么|如何|为什么|有啥)',
-            r'^(what about|and how|what are|which ones|how about|and the|also|but|what if)',
+            r"^(它|它们|这个|那|这些|那些|有哪些|有什么|哪个|哪些|怎么|如何|为什么|有啥)",
+            r"^(what about|and how|what are|which ones|how about|and the|also|but|what if)",
         ]
-        is_followup = any(
-            re.match(p, question.lower())
-            for p in followup_patterns
-        )
+        is_followup = any(re.match(p, question.lower()) for p in followup_patterns)
         if not is_followup:
             return question
 
         # Build context from history
         context_parts = []
         for i, entry in enumerate(history[-3:], 1):  # Last 3 exchanges
-            q = entry.get('question', '')
-            a = entry.get('answer', '')
+            q = entry.get("question", "")
+            a = entry.get("answer", "")
             # Truncate answer to first 200 chars
             a_short = a[:200] + "..." if len(a) > 200 else a
             context_parts.append(f"Q{i}: {q}\nA{i}: {a_short}")
@@ -480,7 +508,7 @@ Rewrite as a standalone question (in the same language as the original question)
             return question
 
         last = history[-1]
-        topic = self._extract_topic(last.get('question', ''))
+        topic = self._extract_topic(last.get("question", ""))
         if topic:
             return f"[上文讨论: {topic}] {question}"
         return question
@@ -522,7 +550,7 @@ Rewrite as a standalone question (in the same language as the original question)
         history = []
         if session and session.queries:
             history = [
-                {"question": q.question, "answer": getattr(q, 'answer', '')}
+                {"question": q.question, "answer": getattr(q, "answer", "")}
                 for q in session.queries[-3:]
             ]
         resolved_question = self._rewrite_followup(question, history) if history else question
@@ -549,16 +577,18 @@ Rewrite as a standalone question (in the same language as the original question)
             else:
                 return ChatResult(
                     answer="⚠️ 未找到相关论文，且未配置 API Key。\n"
-                           "请确保：\n"
-                           "1. 论文已添加到数据库\n"
-                           "2. 已设置 OPENAI_API_KEY 环境变量",
+                    "请确保：\n"
+                    "1. 论文已添加到数据库\n"
+                    "2. 已设置 OPENAI_API_KEY 环境变量",
                     citations=[],
                     papers_used=[],
                 )
 
         if verbose:
             qtype_name = query_type.value
-            print(f"[{qtype_name}] Retrieved {len(contexts)} contexts from {len(set(c.paper_id for c in contexts))} papers")
+            print(
+                f"[{qtype_name}] Retrieved {len(contexts)} contexts from {len(set(c.paper_id for c in contexts))} papers"
+            )
 
         # 2. Build prompt with resolved context
         prompt = self._build_prompt(resolved_question, contexts)
@@ -623,7 +653,11 @@ Rewrite as a standalone question (in the same language as the original question)
             citations=citations,
             papers_used=unique_papers,
             session_id=session.id if session else None,
-            resolved_context={"original": question, "resolved": resolved_question, "type": query_type.value},
+            resolved_context={
+                "original": question,
+                "resolved": resolved_question,
+                "type": query_type.value,
+            },
             probing_questions=probing_questions,
             confidence=confidence,
             cross_paper_insights=cross_paper_insights,
@@ -685,20 +719,22 @@ Rewrite as a standalone question (in the same language as the original question)
 
             # Parse response into CrossPaperInsight objects
             insights = []
-            for line in response.strip().split('\n'):
+            for line in response.strip().split("\n"):
                 line = line.strip()
-                if not line or line.startswith('#'):
+                if not line or line.startswith("#"):
                     continue
 
                 # Parse line like "- type: summary [Paper1] [Paper2]"
-                match = re.match(r'[-*]\s*(\w+):\s*(.+?)\s*\[([^\]]+)\]\s*\[([^\]]+)\]', line)
+                match = re.match(r"[-*]\s*(\w+):\s*(.+?)\s*\[([^\]]+)\]\s*\[([^\]]+)\]", line)
                 if match:
-                    insights.append(CrossPaperInsight(
-                        insight_type=match.group(1),
-                        summary=match.group(2).strip(),
-                        papers=[match.group(3), match.group(4)],
-                        detail="",
-                    ))
+                    insights.append(
+                        CrossPaperInsight(
+                            insight_type=match.group(1),
+                            summary=match.group(2).strip(),
+                            papers=[match.group(3), match.group(4)],
+                            detail="",
+                        )
+                    )
 
             return insights[:3]  # Max 3 insights
 
@@ -706,7 +742,9 @@ Rewrite as a standalone question (in the same language as the original question)
             # Cross-paper synthesis is best-effort — return empty insights without crashing.
             return []
 
-    def _calculate_confidence(self, answer: str, contexts: List[ChatContext]) -> Optional[ConfidenceScore]:
+    def _calculate_confidence(
+        self, answer: str, contexts: List[ChatContext]
+    ) -> Optional[ConfidenceScore]:
         """
         Calculate confidence score for the answer based on retrieved contexts.
 
@@ -733,17 +771,23 @@ Rewrite as a standalone question (in the same language as the original question)
         for ctx in contexts:
             if ctx.snippet:
                 # Heuristic: check snippet position in paper
-                if 'abstract' in ctx.snippet.lower()[:100]:
-                    sections.add('Abstract')
-                if 'introduction' in ctx.snippet.lower()[:200]:
-                    sections.add('Introduction')
-                if any(kw in ctx.snippet.lower()[:100] for kw in ['method', 'approach', 'model', 'architecture']):
-                    sections.add('Method')
-                if any(kw in ctx.snippet.lower()[:100] for kw in ['experiment', 'result', 'evaluation', 'benchmark']):
-                    sections.add('Experiments')
+                if "abstract" in ctx.snippet.lower()[:100]:
+                    sections.add("Abstract")
+                if "introduction" in ctx.snippet.lower()[:200]:
+                    sections.add("Introduction")
+                if any(
+                    kw in ctx.snippet.lower()[:100]
+                    for kw in ["method", "approach", "model", "architecture"]
+                ):
+                    sections.add("Method")
+                if any(
+                    kw in ctx.snippet.lower()[:100]
+                    for kw in ["experiment", "result", "evaluation", "benchmark"]
+                ):
+                    sections.add("Experiments")
 
         if not sections:
-            sections.add('General')
+            sections.add("General")
 
         # Calculate score
         score = 50.0  # Base score
@@ -775,7 +819,7 @@ Rewrite as a standalone question (in the same language as the original question)
             warnings.append("仅基于单篇论文，建议补充更多证据")
         if avg_relevance < 0.6:
             warnings.append("部分检索结果相关性较低")
-        if len(sections) == 1 and 'General' not in sections:
+        if len(sections) == 1 and "General" not in sections:
             warnings.append(f"仅覆盖{sections.pop()}章节，缺少其他视角")
         elif len(sections) == 1:
             warnings.append("检索覆盖范围有限")
@@ -827,14 +871,16 @@ Rewrite as a standalone question (in the same language as the original question)
             if paper and paper.plain_text:
                 snippet, _, _, _ = self._extract_snippet(paper.plain_text, query)
                 if snippet:
-                    contexts.append(ChatContext(
-                        paper_id=paper.id,
-                        paper_title=paper.title or "Unknown",
-                        authors=paper.authors or [],
-                        published=paper.published or "",
-                        snippet=snippet,
-                        relevance_score=1.0,
-                    ))
+                    contexts.append(
+                        ChatContext(
+                            paper_id=paper.id,
+                            paper_title=paper.title or "Unknown",
+                            authors=paper.authors or [],
+                            published=paper.published or "",
+                            snippet=snippet,
+                            relevance_score=1.0,
+                        )
+                    )
                     seen_papers.add(paper.id)
         else:
             # Adaptive retrieval based on query type
@@ -850,14 +896,16 @@ Rewrite as a standalone question (in the same language as the original question)
                 if text:
                     snippet, section, char_start, char_end = self._extract_snippet(text, query)
                     if snippet:
-                        contexts.append(ChatContext(
-                            paper_id=paper.id,
-                            paper_title=paper.title or result.title,
-                            authors=paper.authors or result.authors,
-                            published=paper.published or result.published,
-                            snippet=snippet,
-                            relevance_score=abs(result.score) if result.score else 0.5,
-                        ))
+                        contexts.append(
+                            ChatContext(
+                                paper_id=paper.id,
+                                paper_title=paper.title or result.title,
+                                authors=paper.authors or result.authors,
+                                published=paper.published or result.published,
+                                snippet=snippet,
+                                relevance_score=abs(result.score) if result.score else 0.5,
+                            )
+                        )
                         seen_papers.add(paper.id)
 
                 if len(contexts) >= limit:
@@ -925,7 +973,7 @@ Rewrite as a standalone question (in the same language as the original question)
             # Extract year from published date
             score = abs(result.score) if result.score else 0.5
             if result.published:
-                year_match = re.search(r'(20[2-9]\d|19[9]\d)', result.published)
+                year_match = re.search(r"(20[2-9]\d|19[9]\d)", result.published)
                 if year_match:
                     year = int(year_match.group(1))
                     current_year = 2026
@@ -1001,7 +1049,7 @@ Rewrite as a standalone question (in the same language as the original question)
             # Extract year
             year = None
             if result.published:
-                year_match = re.search(r'(20[2-9]\d|19[9]\d)', result.published)
+                year_match = re.search(r"(20[2-9]\d|19[9]\d)", result.published)
                 if year_match:
                     year = int(year_match.group(1))
 
@@ -1058,7 +1106,7 @@ Rewrite as a standalone question (in the same language as the original question)
             # Greedy selection: pick best MMR score at each step
             while remaining and len(selected) < limit:
                 best_idx = None
-                best_mmr = -float('inf')
+                best_mmr = -float("inf")
 
                 for idx in remaining:
                     r = results[idx]
@@ -1100,7 +1148,9 @@ Rewrite as a standalone question (in the same language as the original question)
             # Fallback to original order on error
             return results[:limit]
 
-    def _extract_snippet(self, text: str, query: str, context_chars: int = 500) -> Tuple[str, str, int, int]:
+    def _extract_snippet(
+        self, text: str, query: str, context_chars: int = 500
+    ) -> Tuple[str, str, int, int]:
         """
         Extract a relevant snippet from text around query keywords with source tracing.
 
@@ -1113,7 +1163,12 @@ Rewrite as a standalone question (in the same language as the original question)
             Tuple of (snippet, section, char_start, char_end)
         """
         if not text or not query:
-            return text[:context_chars] if text else "", self._detect_section(text, 0), 0, min(context_chars, len(text) if text else 0)
+            return (
+                text[:context_chars] if text else "",
+                self._detect_section(text, 0),
+                0,
+                min(context_chars, len(text) if text else 0),
+            )
 
         # Find query terms in text (case-insensitive)
         query_terms = query.lower().split()
@@ -1157,20 +1212,20 @@ Rewrite as a standalone question (in the same language as the original question)
 
         # Section headers patterns (case-insensitive)
         sections = [
-            (r'\babstract\b', 'Abstract'),
-            (r'\bintroduction\b', 'Introduction'),
-            (r'\brelated work\b', 'Related Work'),
-            (r'\bbackground\b', 'Background'),
-            (r'\bpreliminaries\b', 'Preliminaries'),
-            (r'\bmethod\b', 'Method'),
-            (r'\bmethodology\b', 'Methodology'),
-            (r'\bmodel\b', 'Model'),
-            (r'\bexperiments?\b', 'Experiments'),
-            (r'\bresults?\b', 'Results'),
-            (r'\bevaluation\b', 'Evaluation'),
-            (r'\bdiscussion\b', 'Discussion'),
-            (r'\bconclusion\b', 'Conclusion'),
-            (r'\breferences?\b', 'References'),
+            (r"\babstract\b", "Abstract"),
+            (r"\bintroduction\b", "Introduction"),
+            (r"\brelated work\b", "Related Work"),
+            (r"\bbackground\b", "Background"),
+            (r"\bpreliminaries\b", "Preliminaries"),
+            (r"\bmethod\b", "Method"),
+            (r"\bmethodology\b", "Methodology"),
+            (r"\bmodel\b", "Model"),
+            (r"\bexperiments?\b", "Experiments"),
+            (r"\bresults?\b", "Results"),
+            (r"\bevaluation\b", "Evaluation"),
+            (r"\bdiscussion\b", "Discussion"),
+            (r"\bconclusion\b", "Conclusion"),
+            (r"\breferences?\b", "References"),
         ]
 
         text_lower = text[:pos].lower()
@@ -1194,14 +1249,14 @@ Rewrite as a standalone question (in the same language as the original question)
             return ""
 
         # Strip and normalize whitespace
-        text = re.sub(r'\s+', ' ', text).strip()
+        text = re.sub(r"\s+", " ", text).strip()
 
         # If already short enough, return as-is
         if len(text) <= max_chars:
             return text
 
         # Try to truncate at sentence boundary
-        sentences = re.split(r'(?<=[。！？.!?])', text)
+        sentences = re.split(r"(?<=[。！？.!?])", text)
         result = ""
         for sent in sentences:
             if len(result) + len(sent) <= max_chars:
@@ -1211,7 +1266,7 @@ Rewrite as a standalone question (in the same language as the original question)
 
         # If no sentences fit, truncate with ellipsis
         if not result:
-            result = text[:max_chars - 3] + "..."
+            result = text[: max_chars - 3] + "..."
 
         return result
 
@@ -1230,7 +1285,9 @@ Rewrite as a standalone question (in the same language as the original question)
             ctx = ctxs[0]  # Use most relevant snippet
             # Compress snippets to reduce token count
             self._compress_snippet(ctx.snippet, max_chars=400)
-            snippets = "\n\n".join([f"> {self._compress_snippet(c.snippet, max_chars=300)}" for c in ctxs[:2]])
+            snippets = "\n\n".join(
+                [f"> {self._compress_snippet(c.snippet, max_chars=300)}" for c in ctxs[:2]]
+            )
             context_parts.append(
                 f"【论文】{ctx.paper_title}\n"
                 f"作者：{', '.join(ctx.authors[:3]) if ctx.authors else 'Unknown'}\n"
@@ -1276,18 +1333,20 @@ Rewrite as a standalone question (in the same language as the original question)
             # Extract a precise quote (first sentence or key phrase)
             quote = self._extract_quote(ctx.snippet)
 
-            citations.append(Citation(
-                paper_id=ctx.paper_id,
-                paper_title=ctx.paper_title,
-                authors=ctx.authors,
-                published=ctx.published,
-                snippet=ctx.snippet[:300] + "..." if len(ctx.snippet) > 300 else ctx.snippet,
-                relevance_score=ctx.relevance_score,
-                section="",  # Section detection done in _extract_snippet
-                char_start=0,
-                char_end=0,
-                quote=quote,
-            ))
+            citations.append(
+                Citation(
+                    paper_id=ctx.paper_id,
+                    paper_title=ctx.paper_title,
+                    authors=ctx.authors,
+                    published=ctx.published,
+                    snippet=ctx.snippet[:300] + "..." if len(ctx.snippet) > 300 else ctx.snippet,
+                    relevance_score=ctx.relevance_score,
+                    section="",  # Section detection done in _extract_snippet
+                    char_start=0,
+                    char_end=0,
+                    quote=quote,
+                )
+            )
 
         return citations
 
@@ -1305,16 +1364,17 @@ Rewrite as a standalone question (in the same language as the original question)
 
         # Try to find first sentence ending with . ! or ?
         import re as regex_module
-        sentence_end = regex_module.search(r'[.!?]\s', clean)
+
+        sentence_end = regex_module.search(r"[.!?]\s", clean)
 
         if sentence_end:
-            quote = clean[:sentence_end.end()].strip()
+            quote = clean[: sentence_end.end()].strip()
         else:
             # Fall back to first 150 chars
             quote = clean[:150].strip()
 
         # Clean up quote markers
-        quote = quote.strip('"').strip('…').strip('»')
+        quote = quote.strip('"').strip("…").strip("»")
         if len(quote) > 150:
             quote = quote[:147] + "..."
 
@@ -1326,11 +1386,11 @@ Rewrite as a standalone question (in the same language as the original question)
             # Lazy initialization to avoid circular import
             if self._adaptive is None:
                 from llm.evolution_report import get_adaptive_retrieval
+
                 self._adaptive = get_adaptive_retrieval()
             # Convert to dict format for apply_boost
             result_dicts = [
-                {"paper_id": r.paper_id, "score": abs(r.score) if r.score else 0.5}
-                for r in results
+                {"paper_id": r.paper_id, "score": abs(r.score) if r.score else 0.5} for r in results
             ]
             boosted = self._adaptive.apply_boost(result_dicts, decay=0.1)
             # Re-sort results by boosted score
@@ -1341,7 +1401,14 @@ Rewrite as a standalone question (in the same language as the original question)
             # Adaptive boost is best-effort — fall back to original order without crashing.
             return results
 
-    def format_result(self, result: ChatResult, show_citations: bool = True, show_probing: bool = True, show_confidence: bool = True, show_insights: bool = True) -> str:
+    def format_result(
+        self,
+        result: ChatResult,
+        show_citations: bool = True,
+        show_probing: bool = True,
+        show_confidence: bool = True,
+        show_insights: bool = True,
+    ) -> str:
         """Format ChatResult for terminal output with all enhancements."""
         output = []
         output.append("─" * 60)
@@ -1381,7 +1448,7 @@ Rewrite as a standalone question (in the same language as the original question)
         if show_citations and result.citations:
             output.append("\n📖 引用来源：")
             for i, cite in enumerate(result.citations, 1):
-                authors = ', '.join(cite.authors[:3]) if cite.authors else "Unknown"
+                authors = ", ".join(cite.authors[:3]) if cite.authors else "Unknown"
                 year = cite.published[:4] if cite.published else "N/A"
 
                 output.append(f"\n[{i}] {cite.paper_title}")
@@ -1393,7 +1460,7 @@ Rewrite as a standalone question (in the same language as the original question)
                 output.append(f"    相关度: {cite.relevance_score:.2f}")
 
                 if cite.quote:
-                    output.append(f"    💬 \"{cite.quote}\"")
+                    output.append(f'    💬 "{cite.quote}"')
 
                 output.append(f"    🔗 arXiv: {cite.paper_id}")
 

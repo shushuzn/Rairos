@@ -21,19 +21,20 @@ from typing import Optional, List, Dict, Any, Tuple
 from llm.constants import AI_RESEARCH_KEYWORDS
 
 
-
 class TrendDirection(Enum):
     """Trend direction classification."""
-    RISING = "rising"      # 上升趋势
-    FALLING = "falling"    # 下降趋势
+
+    RISING = "rising"  # 上升趋势
+    FALLING = "falling"  # 下降趋势
     EMERGING = "emerging"  # 新兴
-    STABLE = "stable"      # 平稳
-    UNKNOWN = "unknown"    # 未知
+    STABLE = "stable"  # 平稳
+    UNKNOWN = "unknown"  # 未知
 
 
 @dataclass
 class YearlyStats:
     """Statistics for a single year."""
+
     year: int
     paper_count: int
     total_citations: int
@@ -44,6 +45,7 @@ class YearlyStats:
 @dataclass
 class TrendKeyword:
     """A keyword/method with trend data."""
+
     keyword: str
     direction: TrendDirection
     yearly_counts: Dict[int, int]  # year -> count
@@ -57,6 +59,7 @@ class TrendKeyword:
 @dataclass
 class TrendAnalysisResult:
     """Complete trend analysis result."""
+
     topic: str
     year_range: Tuple[int, int]
     total_papers: int
@@ -127,8 +130,12 @@ class TrendAnalyzer:
             emerging_trends=[t for t in trends if t.direction == TrendDirection.EMERGING],
             stable_trends=[t for t in trends if t.direction == TrendDirection.STABLE],
             hot_keywords=[t.keyword for t in trends if t.direction == TrendDirection.RISING][:5],
-            declining_keywords=[t.keyword for t in trends if t.direction == TrendDirection.FALLING][:5],
-            emerging_keywords=[t.keyword for t in trends if t.direction == TrendDirection.EMERGING][:5],
+            declining_keywords=[t.keyword for t in trends if t.direction == TrendDirection.FALLING][
+                :5
+            ],
+            emerging_keywords=[t.keyword for t in trends if t.direction == TrendDirection.EMERGING][
+                :5
+            ],
             growth_rate=growth,
         )
 
@@ -173,16 +180,16 @@ class TrendAnalyzer:
                 # Forward citations: from citations table
                 forward_cites = cite_map.get(pid, 0)
                 # Fallback: reference_count column (backward citations / references)
-                ref_count = getattr(row, 'reference_count', 0) or 0
+                ref_count = getattr(row, "reference_count", 0) or 0
 
                 paper = {
                     "id": pid,
-                    "title": row.title or '',
-                    "abstract": getattr(row, 'abstract', '') or '',
+                    "title": row.title or "",
+                    "abstract": getattr(row, "abstract", "") or "",
                     "year": year_val,
                     "citations": forward_cites,  # forward = papers that cite this one
                     "reference_count": ref_count,  # backward = papers this one cites
-                    "authors": getattr(row, 'authors', '') or '',
+                    "authors": getattr(row, "authors", "") or "",
                 }
                 if year_val > 2000:
                     papers.append(paper)
@@ -198,11 +205,13 @@ class TrendAnalyzer:
         year_range: Tuple[int, int],
     ) -> List[YearlyStats]:
         """Compute statistics per year."""
-        yearly_data: Dict[int, Dict[str, Any]] = defaultdict(lambda: {
-            "count": 0,
-            "citations": 0,
-            "keywords": defaultdict(int),
-        })
+        yearly_data: Dict[int, Dict[str, Any]] = defaultdict(
+            lambda: {
+                "count": 0,
+                "citations": 0,
+                "keywords": defaultdict(int),
+            }
+        )
 
         for paper in papers:
             year = paper.get("year", 0)
@@ -219,13 +228,15 @@ class TrendAnalyzer:
         stats = []
         for year in range(year_range[0], year_range[1] + 1):
             data = yearly_data[year]
-            stats.append(YearlyStats(
-                year=year,
-                paper_count=data["count"],
-                total_citations=data["citations"],
-                avg_citations=data["citations"] / data["count"] if data["count"] > 0 else 0,
-                keywords=dict(data["keywords"]),
-            ))
+            stats.append(
+                YearlyStats(
+                    year=year,
+                    paper_count=data["count"],
+                    total_citations=data["citations"],
+                    avg_citations=data["citations"] / data["count"] if data["count"] > 0 else 0,
+                    keywords=dict(data["keywords"]),
+                )
+            )
 
         return stats
 
@@ -355,7 +366,11 @@ class TrendAnalyzer:
         if result.rising_trends:
             lines.append("🔥 上升趋势:")
             for trend in result.rising_trends[:5]:
-                growth_str = f"+{trend.growth_rate:.0f}%" if trend.growth_rate >= 0 else f"{trend.growth_rate:.0f}%"
+                growth_str = (
+                    f"+{trend.growth_rate:.0f}%"
+                    if trend.growth_rate >= 0
+                    else f"{trend.growth_rate:.0f}%"
+                )
                 lines.append(f"   ↑ {trend.keyword}: {growth_str} ({trend.current_year_count}篇)")
             lines.append("")
 
@@ -370,7 +385,9 @@ class TrendAnalyzer:
         if result.falling_trends:
             lines.append("📉 下降趋势:")
             for trend in result.falling_trends[:5]:
-                lines.append(f"   ↓ {trend.keyword}: {trend.growth_rate:.0f}% ({trend.current_year_count}篇)")
+                lines.append(
+                    f"   ↓ {trend.keyword}: {trend.growth_rate:.0f}% ({trend.current_year_count}篇)"
+                )
             lines.append("")
 
         return "\n".join(lines)
@@ -391,7 +408,9 @@ class TrendAnalyzer:
                 start_year = min(yearly.keys())
                 end_year = max(yearly.keys())
                 status = "active" if trend.direction == TrendDirection.EMERGING else "done"
-                lines.append(f"    {trend.keyword} ({status}) :t{start_year}, {end_year - start_year + 1}y")
+                lines.append(
+                    f"    {trend.keyword} ({status}) :t{start_year}, {end_year - start_year + 1}y"
+                )
 
         return "\n".join(lines)
 
@@ -415,7 +434,7 @@ class TrendAnalyzer:
             "xychart-beta",
             f'    title "{result.topic} - Keyword Trends"',
             f"    x-axis [{', '.join(str(y) for y in year_range)}]",
-            "    y-axis \"Papers\" 0 --> 50",
+            '    y-axis "Papers" 0 --> 50',
             "",
             "    bar",
         ]

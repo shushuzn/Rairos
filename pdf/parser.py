@@ -2,6 +2,7 @@
 PDF parsing with structured extraction: LaTeX, tables, figures.
 Cache-aware. Retries on transient failures.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -187,7 +188,11 @@ class PDFParser:
         3. Empty with warning (scanned/image-only)
     """
 
-    def __init__(self, db: Optional[Database] = None, cache_dir: Union[str, Path] = "~/.cache/ai_research_os/parsed"):
+    def __init__(
+        self,
+        db: Optional[Database] = None,
+        cache_dir: Union[str, Path] = "~/.cache/ai_research_os/parsed",
+    ):
         self.db = db
         self.cache_dir = Path(cache_dir).expanduser()
         self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -338,9 +343,7 @@ class PDFParser:
         """Save parse result to file cache."""
         try:
             cache_file = self.cache_dir / f"{paper.paper_id}.json"
-            cache_file.write_bytes(
-                orjson.dumps(paper.to_cache_dict(), option=orjson.OPT_INDENT_2)
-            )
+            cache_file.write_bytes(orjson.dumps(paper.to_cache_dict(), option=orjson.OPT_INDENT_2))
         except OSError as e:
             logger.warning("[parser] failed to save file cache: %s", e)
 
@@ -551,7 +554,8 @@ class PDFParser:
 
                 if abs(block_y_center - img_y_center) < search_radius:
                     block_text = "".join(
-                        span.get("text", "") for span in block.get("lines", [[]])[0].get("spans", [])
+                        span.get("text", "")
+                        for span in block.get("lines", [[]])[0].get("spans", [])
                     )
                     if re.match(r"^(Figure|Fig\.|Table|Alg\.)", block_text, re.I):
                         captions.append(block_text)

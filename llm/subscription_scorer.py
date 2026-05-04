@@ -1,4 +1,5 @@
 """Subscription paper scorer: Smart relevance scoring for arXiv papers."""
+
 from __future__ import annotations
 
 import logging
@@ -8,9 +9,9 @@ from typing import List, Optional, Dict, Any
 logger = logging.getLogger(__name__)
 
 # Scoring weights
-_WEIGHT_GAP = 0.40       # Gap coverage
+_WEIGHT_GAP = 0.40  # Gap coverage
 _WEIGHT_SEMANTIC = 0.30  # Semantic similarity
-_WEIGHT_RECENCY = 0.20   # Freshness
+_WEIGHT_RECENCY = 0.20  # Freshness
 _WEIGHT_COMPLEMENT = 0.10  # Complementary to existing papers
 
 
@@ -50,6 +51,7 @@ class SubscriptionScorer:
         keywords = subscription.get("keywords", [])
         if isinstance(keywords, str):
             import json
+
             keywords = json.loads(keywords) if keywords else []
 
         abstract = paper.get("abstract", "") or ""
@@ -64,10 +66,10 @@ class SubscriptionScorer:
 
         # Composite score
         composite = (
-            gap_score * _WEIGHT_GAP +
-            semantic_score * _WEIGHT_SEMANTIC +
-            recency_score * _WEIGHT_RECENCY +
-            complement_score * _WEIGHT_COMPLEMENT
+            gap_score * _WEIGHT_GAP
+            + semantic_score * _WEIGHT_SEMANTIC
+            + recency_score * _WEIGHT_RECENCY
+            + complement_score * _WEIGHT_COMPLEMENT
         )
 
         return {
@@ -190,9 +192,17 @@ class SubscriptionScorer:
 
         # Signals of novel contributions
         novel_signals = [
-            "introduce", "propose", "new method", "novel",
-            "benchmark", "dataset", "framework", "architecture",
-            "improve", "state-of-the-art", "sota",
+            "introduce",
+            "propose",
+            "new method",
+            "novel",
+            "benchmark",
+            "dataset",
+            "framework",
+            "architecture",
+            "improve",
+            "state-of-the-art",
+            "sota",
         ]
 
         novel_hits = sum(1 for sig in novel_signals if sig in text)
@@ -228,10 +238,12 @@ class SubscriptionScorer:
         for paper in papers:
             scores = self.score_paper(paper, subscription)
             if scores["score"] >= min_score:
-                scored.append({
-                    **paper,
-                    **scores,
-                })
+                scored.append(
+                    {
+                        **paper,
+                        **scores,
+                    }
+                )
 
         # Sort by score descending
         scored.sort(key=lambda x: x["score"], reverse=True)

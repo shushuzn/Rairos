@@ -19,6 +19,7 @@ from typing import Optional, List, Dict
 # Optional imports
 try:
     from llm.chat import call_llm_chat_completions
+
     LLM_AVAILABLE = True
 except ImportError:
     LLM_AVAILABLE = False
@@ -26,14 +27,16 @@ except ImportError:
 
 class EvidenceType(Enum):
     """Type of evidence."""
-    SUPPORT = "support"           # 支持证据
-    CONTRADICT = "contradict"     # 反驳证据
-    QUALIFY = "qualify"          # 限定条件
+
+    SUPPORT = "support"  # 支持证据
+    CONTRADICT = "contradict"  # 反驳证据
+    QUALIFY = "qualify"  # 限定条件
     METHODOLOGICAL = "methodological"  # 方法论问题
 
 
 class ArgumentSection(Enum):
     """Standard argument sections."""
+
     INTRODUCTION = "introduction"
     RELATED_WORK = "related_work"
     METHODOLOGY = "methodology"
@@ -45,6 +48,7 @@ class ArgumentSection(Enum):
 @dataclass
 class Evidence:
     """A piece of evidence for or against a claim."""
+
     evidence_type: EvidenceType
     source: str  # paper title, insight ID, etc.
     content: str  # the actual evidence
@@ -55,6 +59,7 @@ class Evidence:
 @dataclass
 class Claim:
     """A single claim in an argument."""
+
     text: str
     evidence: List[Evidence] = field(default_factory=list)
     confidence: float = 0.5  # confidence level (0-1)
@@ -63,6 +68,7 @@ class Claim:
 @dataclass
 class Argument:
     """A structured research argument."""
+
     thesis: str  # 核心论点
     claims: List[Claim] = field(default_factory=list)
     supporting_evidence: List[Evidence] = field(default_factory=list)
@@ -74,6 +80,7 @@ class Argument:
 @dataclass
 class ArgumentResult:
     """Complete argument building result."""
+
     topic: str
     argument: Argument
     summary: str = ""
@@ -105,9 +112,7 @@ class ArgumentBuilder:
         related_gaps = self._find_related_gaps(thesis)
 
         # 4. Categorize evidence
-        supporting, contradicting = self._categorize_evidence(
-            paper_evidence + insight_evidence
-        )
+        supporting, contradicting = self._categorize_evidence(paper_evidence + insight_evidence)
 
         # 5. Generate section guidance
         section_guidance = self._generate_section_guidance(
@@ -144,13 +149,15 @@ class ArgumentBuilder:
             if not abstract:
                 continue
             year = getattr(paper, "year", None)
-            evidence_list.append(Evidence(
-                evidence_type=EvidenceType.SUPPORT,
-                source=paper.title,
-                content=abstract[:300],
-                citation=f"{paper.title} ({year})" if year else paper.title,
-                weight=0.8,
-            ))
+            evidence_list.append(
+                Evidence(
+                    evidence_type=EvidenceType.SUPPORT,
+                    source=paper.title,
+                    content=abstract[:300],
+                    citation=f"{paper.title} ({year})" if year else paper.title,
+                    weight=0.8,
+                )
+            )
 
         return evidence_list
 
@@ -166,12 +173,14 @@ class ArgumentBuilder:
             # Determine if insight supports or contradicts
             etype = self._classify_insight(card.content, thesis)
 
-            evidence_list.append(Evidence(
-                evidence_type=etype,
-                source=f"insight:{card.id}" if hasattr(card, 'id') else "user_insight",
-                content=card.content,
-                weight=0.6,  # User insights have moderate weight
-            ))
+            evidence_list.append(
+                Evidence(
+                    evidence_type=etype,
+                    source=f"insight:{card.id}" if hasattr(card, "id") else "user_insight",
+                    content=card.content,
+                    weight=0.6,  # User insights have moderate weight
+                )
+            )
 
         return evidence_list
 
@@ -238,9 +247,7 @@ class ArgumentBuilder:
         guidance = {}
 
         if use_llm and LLM_AVAILABLE:
-            guidance = self._llm_generate_guidance(
-                thesis, supporting, contradicting, model
-            )
+            guidance = self._llm_generate_guidance(thesis, supporting, contradicting, model)
         else:
             guidance = self._template_guidance(supporting, contradicting)
 
@@ -255,23 +262,19 @@ class ArgumentBuilder:
         guidance = {}
 
         guidance[ArgumentSection.INTRODUCTION] = (
-            "开篇应明确研究动机：为什么这个问题重要？"
-            "引用主要支持证据说明该方向的潜力。"
+            "开篇应明确研究动机：为什么这个问题重要？引用主要支持证据说明该方向的潜力。"
         )
 
         guidance[ArgumentSection.RELATED_WORK] = (
-            "综述现有工作，区分本文与前人贡献。"
-            f"识别 {len(contradicting)} 个需要回应的质疑。"
+            f"综述现有工作，区分本文与前人贡献。识别 {len(contradicting)} 个需要回应的质疑。"
         )
 
         guidance[ArgumentSection.METHODOLOGY] = (
-            "方法论需针对反驳证据设计消融实验。"
-            "说明如何衡量论点成立的条件边界。"
+            "方法论需针对反驳证据设计消融实验。说明如何衡量论点成立的条件边界。"
         )
 
         guidance[ArgumentSection.DISCUSSION] = (
-            "承认局限性（尤其是反驳证据指出的）。"
-            "解释为什么在特定条件下论点仍然成立。"
+            "承认局限性（尤其是反驳证据指出的）。解释为什么在特定条件下论点仍然成立。"
         )
 
         guidance[ArgumentSection.LIMITATION] = (

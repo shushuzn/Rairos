@@ -1,6 +1,7 @@
 """
 Weekly Digest: Generate weekly research summaries.
 """
+
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Dict, List
@@ -9,6 +10,7 @@ from typing import Dict, List
 @dataclass
 class WeekData:
     """Data for a week."""
+
     start_date: str
     end_date: str
     journal_entries: int = 0
@@ -39,6 +41,7 @@ class WeeklyDigest:
 
         # Journal entries
         from llm.journal import Journal
+
         journal = Journal()
         entries = journal.list_entries(days=days)
         week_data.journal_entries = len(entries)
@@ -56,6 +59,7 @@ class WeeklyDigest:
 
         # Experiments
         from llm.experiment_tracker import ExperimentTracker
+
         exp_tracker = ExperimentTracker()
         exps = exp_tracker.list_experiments()
         for e in exps:
@@ -66,6 +70,7 @@ class WeeklyDigest:
 
         # Questions
         from llm.question_tracker import QuestionTracker
+
         q_tracker = QuestionTracker()
         questions = q_tracker.list_questions()
         for q in questions:
@@ -124,7 +129,7 @@ class WeeklyDigest:
         lines.append("")
         lines.append("=" * 60)
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def _calculate_productivity_score(self, data: WeekData) -> int:
         """Calculate a simple productivity score."""
@@ -173,4 +178,4 @@ class WeeklyDigest:
         score = self._calculate_productivity_score(data)
         lines.append(f"**Productivity Score**: {score}/100")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)

@@ -21,18 +21,23 @@ from cli._shared import print_success, print_error, print_info
 
 @click.command("paper2code")
 @click.argument("arxiv_id", type=str)
-@click.option("--mode", "-m", default="minimal",
-              type=click.Choice(["minimal", "full", "educational"]),
-              help="Implementation mode (reserved)")
-@click.option("--framework", "-f", default="pytorch",
-              type=click.Choice(["pytorch", "jax", "numpy"]),
-              help="Deep learning framework")
-@click.option("--skip-tests", is_flag=True,
-              help="Skip test generation and benchmark")
-@click.option("--skip-gene-pool", is_flag=True,
-              help="Don't encode results to Gene Pool")
-@click.option("--install-deps", is_flag=True,
-              help="Install paper2code dependencies")
+@click.option(
+    "--mode",
+    "-m",
+    default="minimal",
+    type=click.Choice(["minimal", "full", "educational"]),
+    help="Implementation mode (reserved)",
+)
+@click.option(
+    "--framework",
+    "-f",
+    default="pytorch",
+    type=click.Choice(["pytorch", "jax", "numpy"]),
+    help="Deep learning framework",
+)
+@click.option("--skip-tests", is_flag=True, help="Skip test generation and benchmark")
+@click.option("--skip-gene-pool", is_flag=True, help="Don't encode results to Gene Pool")
+@click.option("--install-deps", is_flag=True, help="Install paper2code dependencies")
 def paper2code(
     arxiv_id: str,
     mode: str,
@@ -51,7 +56,7 @@ def paper2code(
     """
 
     # Normalize arXiv ID
-    match = re.search(r'(\d+\.\d+)', arxiv_id)
+    match = re.search(r"(\d+\.\d+)", arxiv_id)
     if match:
         arxiv_id = match.group(1)
 
@@ -62,6 +67,7 @@ def paper2code(
             print_info("Installing dependencies...")
             try:
                 from research_loop.paper2code_integration import install_deps as _install
+
                 _install()
             except Exception:
                 pass  # Already installed or in venv
@@ -84,9 +90,11 @@ def paper2code(
         if bench:
             total = bench["passed"] + bench["failed"]
             pass_rate = bench["passed"] / total if total > 0 else 0
-            print_info(f"Benchmark: {bench['passed']} passed, "
-                       f"{bench['failed']} failed, {bench['skipped']} skipped "
-                       f"({pass_rate:.0%}) in {bench['duration']:.1f}s")
+            print_info(
+                f"Benchmark: {bench['passed']} passed, "
+                f"{bench['failed']} failed, {bench['skipped']} skipped "
+                f"({pass_rate:.0%}) in {bench['duration']:.1f}s"
+            )
 
     except Exception as e:
         print_error(f"Pipeline failed: {e}")

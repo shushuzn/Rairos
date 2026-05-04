@@ -1,4 +1,5 @@
 """PDF section segmentation."""
+
 from __future__ import annotations
 
 import re
@@ -19,10 +20,24 @@ def looks_like_heading(line: str) -> bool:
         return True
 
     keywords = [
-        "abstract", "introduction", "background", "related work", "method",
-        "approach", "preliminaries", "experiments", "evaluation", "results",
-        "discussion", "limitations", "conclusion", "future work", "references",
-        "appendix", "acknowledgments", "ablation"
+        "abstract",
+        "introduction",
+        "background",
+        "related work",
+        "method",
+        "approach",
+        "preliminaries",
+        "experiments",
+        "evaluation",
+        "results",
+        "discussion",
+        "limitations",
+        "conclusion",
+        "future work",
+        "references",
+        "appendix",
+        "acknowledgments",
+        "ablation",
     ]
     low = s.lower()
     if any(low == k for k in keywords):
@@ -194,7 +209,12 @@ def format_section_snippets(
         if priority >= 8 and len(raw) >= min_chars_per_high_prio:
             take = min(len(raw), max(min_chars_per_high_prio, budget))
         elif priority >= 5:
-            take = min(len(raw), max(300, budget // max(1, len([x for x in indexed if _section_priority(x[1]) >= 5]))))
+            take = min(
+                len(raw),
+                max(
+                    300, budget // max(1, len([x for x in indexed if _section_priority(x[1]) >= 5]))
+                ),
+            )
         else:
             take = min(len(raw), budget)
 
@@ -206,7 +226,7 @@ def format_section_snippets(
             for punct in [". ", ".\n", "。", "！", "？"]:
                 last_punct = snippet.rfind(punct)
                 if last_punct > take * 0.6:
-                    snippet = snippet[:last_punct + len(punct)]
+                    snippet = snippet[: last_punct + len(punct)]
                     break
             else:
                 snippet = snippet.rstrip()

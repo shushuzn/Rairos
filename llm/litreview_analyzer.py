@@ -1,4 +1,5 @@
 """Literature Review Analyzer: Analyzes papers for trends and insights."""
+
 from __future__ import annotations
 
 from typing import List, Dict, Any, Optional, cast
@@ -65,9 +66,7 @@ class LitReviewAnalyzer:
 
             for signal1, signal2 in controversy_signals:
                 if signal1 in abstract and signal2 in abstract:
-                    controversies.append(
-                        f"_{title[:40]}..._: 可能在方法选择或结论上存在争议"
-                    )
+                    controversies.append(f"_{title[:40]}..._: 可能在方法选择或结论上存在争议")
                     break
 
         return controversies[:5]
@@ -111,9 +110,7 @@ class LitReviewAnalyzer:
                     context = " ".join(context.split())
 
                     if len(context) > 20:
-                        open_problems.append(
-                            f"_{title}..._: ...{context}..."
-                        )
+                        open_problems.append(f"_{title}..._: ...{context}...")
                         break
 
         return open_problems[:8]
@@ -126,46 +123,96 @@ class LitReviewAnalyzer:
         """
         method_keywords = {
             "Transformer/Attention": [
-                "transformer", "attention", "self-attention", "bert", "gpt",
-                "vit", "vision transformer", "llama", "decoder-only"
+                "transformer",
+                "attention",
+                "self-attention",
+                "bert",
+                "gpt",
+                "vit",
+                "vision transformer",
+                "llama",
+                "decoder-only",
             ],
             "CNN/卷积网络": [
-                "convolutional", "cnn", "convolution", "resnet", "vgg",
-                "efficientnet", "mobilenet", "inception"
+                "convolutional",
+                "cnn",
+                "convolution",
+                "resnet",
+                "vgg",
+                "efficientnet",
+                "mobilenet",
+                "inception",
             ],
             "图神经网络": [
-                "graph", "gnn", "gcn", "gat", "graph neural",
-                "message passing", "graph attention"
+                "graph",
+                "gnn",
+                "gcn",
+                "gat",
+                "graph neural",
+                "message passing",
+                "graph attention",
             ],
             "强化学习": [
-                "reinforcement learning", "rl ", "policy gradient",
-                "q-learning", "ddpg", "ppo", "actor-critic",
-                "reward", "environment interaction"
+                "reinforcement learning",
+                "rl ",
+                "policy gradient",
+                "q-learning",
+                "ddpg",
+                "ppo",
+                "actor-critic",
+                "reward",
+                "environment interaction",
             ],
             "扩散模型": [
-                "diffusion", "ddpm", "score-based", "stable diffusion",
-                "ddim", "latent diffusion", "generative model"
+                "diffusion",
+                "ddpm",
+                "score-based",
+                "stable diffusion",
+                "ddim",
+                "latent diffusion",
+                "generative model",
             ],
             "检索增强": [
-                "retrieval-augmented", "rag", "knowledge retrieval",
-                "retrieval", "dense retrieval", "BM25"
+                "retrieval-augmented",
+                "rag",
+                "knowledge retrieval",
+                "retrieval",
+                "dense retrieval",
+                "BM25",
             ],
             "多模态": [
-                "multimodal", "vision-language", "image-text",
-                "vqa", "visual question", "cross-modal",
-                "clip", "flamingo"
+                "multimodal",
+                "vision-language",
+                "image-text",
+                "vqa",
+                "visual question",
+                "cross-modal",
+                "clip",
+                "flamingo",
             ],
             "对比学习": [
-                "contrastive learning", "contrastive loss", "simclr",
-                "triplet loss", "infoNCE", "momentum contrast"
+                "contrastive learning",
+                "contrastive loss",
+                "simclr",
+                "triplet loss",
+                "infoNCE",
+                "momentum contrast",
             ],
             "知识蒸馏": [
-                "knowledge distillation", "distillation", "teacher-student",
-                "model compression", "pruning", "quantization"
+                "knowledge distillation",
+                "distillation",
+                "teacher-student",
+                "model compression",
+                "pruning",
+                "quantization",
             ],
             "自监督学习": [
-                "self-supervised", " pretext task", "masked",
-                "BYOL", "SwAV", "momentum encoder"
+                "self-supervised",
+                " pretext task",
+                "masked",
+                "BYOL",
+                "SwAV",
+                "momentum encoder",
             ],
         }
 
@@ -195,11 +242,7 @@ class LitReviewAnalyzer:
         evolution = []
 
         # Sort by date
-        sorted_papers = sorted(
-            papers,
-            key=lambda p: p.get("published", ""),
-            reverse=True
-        )
+        sorted_papers = sorted(papers, key=lambda p: p.get("published", ""), reverse=True)
 
         # Detect method mentions in recent papers
         recent_methods = set()
@@ -238,11 +281,7 @@ class LitReviewAnalyzer:
     def _detect_rising_topics(self, papers: List[Dict[str, Any]]) -> List[str]:
         """Detect topics that are trending upward based on recent papers."""
         # Sort by date (newest first)
-        sorted_papers = sorted(
-            papers,
-            key=lambda p: p.get("published", ""),
-            reverse=True
-        )
+        sorted_papers = sorted(papers, key=lambda p: p.get("published", ""), reverse=True)
 
         # Check recent papers (last 20) for emerging patterns
         recent_text = ""
@@ -316,6 +355,7 @@ class LitReviewAnalyzer:
 
         # Update the review
         from renderers.litreview import update_litreview
+
         updated_content = update_litreview(existing_content, new_papers, all_papers)
 
         # Write back

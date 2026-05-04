@@ -1,4 +1,5 @@
 """C-Note creation and link management."""
+
 import re
 from pathlib import Path
 
@@ -33,14 +34,14 @@ def upsert_link_under_heading(md: str, heading: str, link_line: str) -> str:
     if not m:
         return md.rstrip() + f"\n\n## {clean_heading}\n\n{link_line}\n"
 
-    match_line = m.group(0).split('\n')[0]  # just the heading line without trailing content
+    match_line = m.group(0).split("\n")[0]  # just the heading line without trailing content
     start = m.start() + len(match_line)  # end of heading line in the full string
     after = md[start:]
     m2 = _RE_BLANK_LINES.match(after)  # skip blank lines
     insert_pos = start + (m2.end() if m2 else 0)
 
     # Find section end: next ## heading or end of file
-    rest = after[m2.end() if m2 else 0:]
+    rest = after[m2.end() if m2 else 0 :]
     m3 = _RE_SECTION_END.search(rest)
     section_end = insert_pos + m3.start() if m3 else len(md)
 
@@ -52,7 +53,11 @@ def upsert_link_under_heading(md: str, heading: str, link_line: str) -> str:
     # Preserves any manual bullet lines the user may have added.
     cleaned = _RE_WIKILINK_LINE.sub("", section_content).strip("\n")
     section_content = cleaned.strip("\n")
-    new_section = link_line.rstrip() + "\n" + section_content if section_content.strip() else link_line.rstrip()
+    new_section = (
+        link_line.rstrip() + "\n" + section_content
+        if section_content.strip()
+        else link_line.rstrip()
+    )
 
     return md[:insert_pos] + new_section + md[section_end:]
 
@@ -88,7 +93,7 @@ def _fill_cnote_section(md: str, section: str, new_content: str) -> str:
         # Section doesn't exist; append it
         return md.rstrip() + f"\n\n## {section}\n\n{new_content.strip()}\n"
     heading = m.group(1)  # includes trailing newlines
-    return md[:m.start()] + heading + new_content.strip() + md[m.end():]
+    return md[: m.start()] + heading + new_content.strip() + md[m.end() :]
 
 
 def _parse_cnote_sections(draft: str) -> dict:

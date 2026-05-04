@@ -6,6 +6,7 @@ Produces a PaperAnalysisResult with:
 - rubric_dict: {novelty, leverage, evidence, cost, moat, adoption} each 1-5
 - extracted_methods/datasets/metrics: keyword lists
 """
+
 from __future__ import annotations
 
 import json
@@ -54,32 +55,105 @@ _SECTION_KEYS = [
 _RUBRIC_KEYS = ["novelty", "leverage", "evidence", "cost", "moat", "adoption"]
 
 _METHOD_KEYWORDS = [
-    "transformer", "attention", "cnn", "rnn", "lstm", "gru", "bert", "gpt",
-    "diffusion", "gan", "vae", "resnet", "unet", "mlp", "graph neural",
-    "reinforcement learning", "rl", "fine-tuning", "prompt", "instruction tuning",
-    "retrieval augmented", "rerank", "fusion", "encoder", "decoder",
-    "quantization", "distillation", "pruning", "contrastive", "adversarial",
-    "normalization", "self-supervised", "multi-modal", "multimodal",
+    "transformer",
+    "attention",
+    "cnn",
+    "rnn",
+    "lstm",
+    "gru",
+    "bert",
+    "gpt",
+    "diffusion",
+    "gan",
+    "vae",
+    "resnet",
+    "unet",
+    "mlp",
+    "graph neural",
+    "reinforcement learning",
+    "rl",
+    "fine-tuning",
+    "prompt",
+    "instruction tuning",
+    "retrieval augmented",
+    "rerank",
+    "fusion",
+    "encoder",
+    "decoder",
+    "quantization",
+    "distillation",
+    "pruning",
+    "contrastive",
+    "adversarial",
+    "normalization",
+    "self-supervised",
+    "multi-modal",
+    "multimodal",
 ]
 
 _DATASET_KEYWORDS = [
-    "imagenet", "cifar", "mnist", "svhn", "squad", "glue", "superglue",
-    "mmlu", "gsm8k", "humaneval", "mbpp", "hellaswag", "arc", "truthfulqa",
-    "coco", "cityscapes", "wikitext", "librispeech", "pascal", "ade20k",
-    "sst", "cola", "mrpc", "qnli", "rte", "wnli", "boolq", "piqa",
-    "winogrande", "lambada", "enwik8", "text8",
+    "imagenet",
+    "cifar",
+    "mnist",
+    "svhn",
+    "squad",
+    "glue",
+    "superglue",
+    "mmlu",
+    "gsm8k",
+    "humaneval",
+    "mbpp",
+    "hellaswag",
+    "arc",
+    "truthfulqa",
+    "coco",
+    "cityscapes",
+    "wikitext",
+    "librispeech",
+    "pascal",
+    "ade20k",
+    "sst",
+    "cola",
+    "mrpc",
+    "qnli",
+    "rte",
+    "wnli",
+    "boolq",
+    "piqa",
+    "winogrande",
+    "lambada",
+    "enwik8",
+    "text8",
 ]
 
 _METRIC_KEYWORDS = [
-    "accuracy", "bleu", "rouge", "f1", "precision", "recall", "perplexity",
-    "wer", "cer", "map", "ndcg", "auc", "mse", "mae", "rmse",
-    "top-1", "top-5", "latency", "throughput", "params",
+    "accuracy",
+    "bleu",
+    "rouge",
+    "f1",
+    "precision",
+    "recall",
+    "perplexity",
+    "wer",
+    "cer",
+    "map",
+    "ndcg",
+    "auc",
+    "mse",
+    "mae",
+    "rmse",
+    "top-1",
+    "top-5",
+    "latency",
+    "throughput",
+    "params",
 ]
 
 
 @dataclass
 class PaperAnalysisResult:
     """Result of a deep paper analysis."""
+
     paper_id: str
     sections: Dict[str, str] = field(default_factory=dict)
     rubric: Dict[str, Any] = field(default_factory=dict)
@@ -96,6 +170,7 @@ class PaperAnalysisResult:
 @dataclass
 class CitationClaim:
     """A single claim in the analysis linked to source text."""
+
     text: str  # The claim text
     page: int  # 0-indexed page number in original PDF
     block_idx: int  # Index within the page's text blocks
@@ -222,11 +297,20 @@ class PaperAnalyzer:
         """
         if use_llm and self.llm_config.get("api_key"):
             return self._analyze_with_llm(
-                paper_id, title, abstract, body_text, tags or [], authors,
+                paper_id,
+                title,
+                abstract,
+                body_text,
+                tags or [],
+                authors,
                 structured_content,
             )
         return self._analyze_fallback(
-            paper_id, title, abstract, body_text, tags or [],
+            paper_id,
+            title,
+            abstract,
+            body_text,
+            tags or [],
         )
 
     # ── LLM path ──────────────────────────────────────────────────────────
@@ -301,12 +385,9 @@ class PaperAnalyzer:
             sections[key] = needs_ai
 
         sections["## 1. 背景"] = (
-            f"> **Abstract（原文）**\n> {abstract}\n\n"
-            "_（关键词匹配摘要，建议 AI 深入分析）_"
+            f"> **Abstract（原文）**\n> {abstract}\n\n_（关键词匹配摘要，建议 AI 深入分析）_"
         )
-        sections["## 2. 核心问题"] = (
-            "_基于摘要推断：_" + needs_ai
-        )
+        sections["## 2. 核心问题"] = "_基于摘要推断：_" + needs_ai
 
         methods = self._extract_keywords(body_text, _METHOD_KEYWORDS)
         datasets = self._extract_keywords(body_text, _DATASET_KEYWORDS)
@@ -366,7 +447,9 @@ class PaperAnalyzer:
         rubric: Dict[str, Any] = {}
 
         # Try JSON code fence first
-        pattern = r"```(?:json)?\s*\n?(\{[\s\S]*?" + '"' + r"(?:novelty|overall)[\s\S]*?\})\s*\n?```"
+        pattern = (
+            r"```(?:json)?\s*\n?(\{[\s\S]*?" + '"' + r"(?:novelty|overall)[\s\S]*?\})\s*\n?```"
+        )
         m = re.search(pattern, text, re.IGNORECASE)
         if m:
             try:
@@ -377,7 +460,7 @@ class PaperAnalyzer:
         if rubric:
             # Remove the JSON block from text for section parsing
             assert m is not None
-            remaining = text[:m.start()].rstrip()
+            remaining = text[: m.start()].rstrip()
             return rubric, remaining
 
         # Try bare JSON at end of text
@@ -388,7 +471,7 @@ class PaperAnalyzer:
                 data = json.loads(m.group(1))
                 if "novelty" in data or "overall" in data:
                     rubric = data
-                    remaining = text[:m.start()].rstrip()
+                    remaining = text[: m.start()].rstrip()
                     return rubric, remaining
             except json.JSONDecodeError:
                 pass
@@ -456,10 +539,11 @@ class PaperAnalyzer:
     def _extract_keywords(text: str, keywords: List[str]) -> List[str]:
         """Extract known keywords from text using word boundaries, deduplicated in order."""
         import re
+
         found = []
         seen: set = set()
         for kw in keywords:
-            pattern = re.compile(r'\b' + re.escape(kw) + r'\b', re.IGNORECASE)
+            pattern = re.compile(r"\b" + re.escape(kw) + r"\b", re.IGNORECASE)
             if pattern.search(text) and kw not in seen:
                 found.append(kw)
                 seen.add(kw)
@@ -476,7 +560,9 @@ class PaperAnalyzer:
                 parts.append(f"{page_label} {block.text}")
         return "\n\n".join(parts)
 
-    def verify_claims(self, result: PaperAnalysisResult, content: "StructuredPdfContent") -> PaperAnalysisResult:
+    def verify_claims(
+        self, result: PaperAnalysisResult, content: "StructuredPdfContent"
+    ) -> PaperAnalysisResult:
         """Verify each citation claim against source text blocks with evidence strength scoring.
 
         Features:
@@ -545,16 +631,16 @@ class PaperAnalyzer:
 
         # ── Claim type classification ─────────────────────────────────
         _NUMERICAL_PATTERNS = [
-            r'\d+\.?\d*%',
-            r'\d+x',
-            r'\d+\.\d+%',
-            r'\d+倍',
-            r'(准确率|精度|提升|提高|降低|增长|超过|击败|优于)',
-            r'(accuracy|precision|recall|f1|latency|speed|throughput|improve|improve|improvement)',
+            r"\d+\.?\d*%",
+            r"\d+x",
+            r"\d+\.\d+%",
+            r"\d+倍",
+            r"(准确率|精度|提升|提高|降低|增长|超过|击败|优于)",
+            r"(accuracy|precision|recall|f1|latency|speed|throughput|improve|improve|improvement)",
         ]
         _METHODOLOGY_PATTERNS = [
-            r'(使用|基于|采用|提出|设计|架构|机制|方法|框架|原理)',
-            r'(architecture|mechanism|framework|approach|methodology)',
+            r"(使用|基于|采用|提出|设计|架构|机制|方法|框架|原理)",
+            r"(architecture|mechanism|framework|approach|methodology)",
         ]
 
         def _classify_claim(claim_text: str) -> str:
@@ -568,15 +654,18 @@ class PaperAnalyzer:
 
         # Adaptive thresholds per claim type
         _THRESHOLDS = {
-            "numerical":    (0.75, 0.20),   # stricter: exact numbers
-            "methodology":   (0.70, 0.15),   # standard
-            "descriptive":   (0.65, 0.12),   # looser: LLM paraphrase
+            "numerical": (0.75, 0.20),  # stricter: exact numbers
+            "methodology": (0.70, 0.15),  # standard
+            "descriptive": (0.65, 0.12),  # looser: LLM paraphrase
         }
         _ACCEPT_SCORE = {"numerical": 0.70, "methodology": 0.60, "descriptive": 0.55}
 
         def _verify_block(
-            claim_text: str, block_text: str, use_emb: bool,
-            emb_thresh: float = 0.70, ovlp_thresh: float = 0.15,
+            claim_text: str,
+            block_text: str,
+            use_emb: bool,
+            emb_thresh: float = 0.70,
+            ovlp_thresh: float = 0.15,
         ) -> tuple[bool, float, str]:
             """Verify claim against a single block. Returns (verified, score, note)."""
             overlap = _word_overlap(claim_text, block_text)
@@ -643,8 +732,11 @@ class PaperAnalyzer:
             if item["page"] in page_blocks:
                 for block_idx, block_text in page_blocks[item["page"]]:
                     ok, score, note = _verify_block(
-                        item["text"], block_text, use_embedding,
-                        emb_thresh=emb_thresh, ovlp_thresh=ovlp_thresh,
+                        item["text"],
+                        block_text,
+                        use_embedding,
+                        emb_thresh=emb_thresh,
+                        ovlp_thresh=ovlp_thresh,
                     )
                     if ok and score > best_score:
                         best_score, best_idx, best_chunk = score, block_idx, block_text[:200]
@@ -654,16 +746,30 @@ class PaperAnalyzer:
                             break
 
             if done:
-                verified.append(CitationClaim(
-                    text=item["text"], page=item["page"], block_idx=best_idx,
-                    chunk_text=best_chunk, verified=True, evidence_score=best_score,
-                    verification_note=note, correction_round=0, claim_type=claim_type,
-                ))
+                verified.append(
+                    CitationClaim(
+                        text=item["text"],
+                        page=item["page"],
+                        block_idx=best_idx,
+                        chunk_text=best_chunk,
+                        verified=True,
+                        evidence_score=best_score,
+                        verification_note=note,
+                        correction_round=0,
+                        claim_type=claim_type,
+                    )
+                )
             else:
-                retry_queue.append({
-                    **item, "best_score": best_score, "best_chunk": best_chunk,
-                    "best_block_idx": best_idx, "note": note, "claim_type": claim_type,
-                })
+                retry_queue.append(
+                    {
+                        **item,
+                        "best_score": best_score,
+                        "best_chunk": best_chunk,
+                        "best_block_idx": best_idx,
+                        "note": note,
+                        "claim_type": claim_type,
+                    }
+                )
 
         # ── Self-correction loop: up to 2 rounds ─────────────────────
         for round_n in range(1, 3):
@@ -680,14 +786,17 @@ class PaperAnalyzer:
                         continue
                     for block_idx, block_text in page_blocks[nb_page]:
                         ok, score, note = _verify_block(
-                            item["text"], block_text, use_embedding,
-                            emb_thresh=emb_thresh, ovlp_thresh=ovlp_thresh,
+                            item["text"],
+                            block_text,
+                            use_embedding,
+                            emb_thresh=emb_thresh,
+                            ovlp_thresh=ovlp_thresh,
                         )
                         if ok and score > item["best_score"]:
                             item["best_score"] = score
                             item["best_block_idx"] = block_idx
                             item["best_chunk"] = block_text[:200]
-                            item["note"] = f"cross-page [{item['page']+1}→{nb_page+1}]: {note}"
+                            item["note"] = f"cross-page [{item['page'] + 1}→{nb_page + 1}]: {note}"
                             item_improved = True
                             if score >= accept_score:
                                 break
@@ -695,12 +804,19 @@ class PaperAnalyzer:
                         break
 
                 if item_improved and item["best_score"] > 0.05:
-                    verified.append(CitationClaim(
-                        text=item["text"], page=item["page"], block_idx=item["best_block_idx"],
-                        chunk_text=item["best_chunk"], verified=True, evidence_score=item["best_score"],
-                        verification_note=f"Verified after correction: {item['note']}",
-                        correction_round=round_n, claim_type=claim_type,
-                    ))
+                    verified.append(
+                        CitationClaim(
+                            text=item["text"],
+                            page=item["page"],
+                            block_idx=item["best_block_idx"],
+                            chunk_text=item["best_chunk"],
+                            verified=True,
+                            evidence_score=item["best_score"],
+                            verification_note=f"Verified after correction: {item['note']}",
+                            correction_round=round_n,
+                            claim_type=claim_type,
+                        )
+                    )
                 else:
                     still.append(item)
 
@@ -712,10 +828,15 @@ class PaperAnalyzer:
         result.claims = verified
         result.unverified_claims = [
             CitationClaim(
-                text=item["text"], page=item["page"], block_idx=item["best_block_idx"],
-                chunk_text=item["best_chunk"], verified=False, evidence_score=item["best_score"],
+                text=item["text"],
+                page=item["page"],
+                block_idx=item["best_block_idx"],
+                chunk_text=item["best_chunk"],
+                verified=False,
+                evidence_score=item["best_score"],
                 verification_note=item["note"] or "No matching source text found",
-                correction_round=2, claim_type=item.get("claim_type", ""),
+                correction_round=2,
+                claim_type=item.get("claim_type", ""),
             )
             for item in retry_queue
         ]

@@ -1,4 +1,5 @@
 """Frontmatter parsing for markdown notes."""
+
 import re
 from typing import Any, Dict, List
 
@@ -56,6 +57,7 @@ def parse_tags_from_frontmatter(fm: Dict[str, Any]) -> List[str]:
 
 def parse_date_from_frontmatter(fm: Dict[str, str]) -> str:
     import warnings
+
     d = fm.get("date", "").strip()
     if not d:
         return ""

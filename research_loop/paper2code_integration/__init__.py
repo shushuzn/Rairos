@@ -105,6 +105,7 @@ def _span(name: str, attrs=None):
     tracer = _get_tracer()
     if tracer is None:
         import contextlib
+
         return contextlib.nullcontext()
 
     span_ctx = tracer.start_as_current_span(name)
@@ -150,6 +151,7 @@ class PaperPipeline:
         # Normalize
         try:
             from parsers.input_detection import normalize_arxiv_id
+
             arxiv_id = normalize_arxiv_id(arxiv_id) or arxiv_id
         except Exception:
             arxiv_id = arxiv_id.strip()
@@ -178,7 +180,9 @@ class PaperPipeline:
                             span.add_event("stage1_fallback_pdf", {"success": content is not None})
 
             if content is None:
-                raise RuntimeError(f"Could not fetch paper {arxiv_id} (download_and_parse unavailable)")
+                raise RuntimeError(
+                    f"Could not fetch paper {arxiv_id} (download_and_parse unavailable)"
+                )
 
             print(f"[paper2code] Paper title: {content.title[:80]}")
             if span:
@@ -222,20 +226,27 @@ class PaperPipeline:
                         config = BenchmarkConfig(
                             arxiv_id=arxiv_id,
                             paper_topic=content.title,
-                            algorithm_description="; ".join(content.algorithm_descriptions[:1]) if content.algorithm_descriptions else content.abstract[:200],
+                            algorithm_description="; ".join(content.algorithm_descriptions[:1])
+                            if content.algorithm_descriptions
+                            else content.abstract[:200],
                             test_dir=test_dir,
                             code_path=code_path,
                         )
                         tracker = self._get_tracker(skip_gene_pool)
                         benchmark_result = run_benchmark(config, tracker=tracker)
-                        print(f"[paper2code] Benchmark: {benchmark_result.passed} passed, "
-                              f"{benchmark_result.failed} failed, {benchmark_result.skipped} skipped")
+                        print(
+                            f"[paper2code] Benchmark: {benchmark_result.passed} passed, "
+                            f"{benchmark_result.failed} failed, {benchmark_result.skipped} skipped"
+                        )
                         print(summarize_result(benchmark_result))
                         if span:
-                            span.add_event("stage4_complete", {
-                                "passed": benchmark_result.passed,
-                                "failed": benchmark_result.failed,
-                            })
+                            span.add_event(
+                                "stage4_complete",
+                                {
+                                    "passed": benchmark_result.passed,
+                                    "failed": benchmark_result.failed,
+                                },
+                            )
 
                 except Exception as e:
                     print(f"[paper2code] Test/benchmark stage failed: {e}")
@@ -265,7 +276,9 @@ class PaperPipeline:
                 "failed": benchmark_result.failed if benchmark_result else 0,
                 "skipped": benchmark_result.skipped if benchmark_result else 0,
                 "duration": benchmark_result.duration_seconds if benchmark_result else 0,
-            } if benchmark_result else None,
+            }
+            if benchmark_result
+            else None,
         }
 
     def _get_tracker(self, skip_gene_pool: bool):
@@ -275,6 +288,7 @@ class PaperPipeline:
 
         try:
             from llm.insight.tracker import EvolutionTracker
+
             data_dir = self.tracker_data_dir or Path.home() / ".ai_research_os" / "evolution"
             return EvolutionTracker(data_dir=data_dir)
         except Exception as e:
@@ -284,6 +298,7 @@ class PaperPipeline:
     def _find_existing_pdf(self, arxiv_id: str) -> Optional[Path]:
         """Search common locations for existing PDF."""
         import os
+
         candidates = [
             Path("data") / f"{arxiv_id}.pdf",
             Path("data/arxiv") / f"{arxiv_id}.pdf",
@@ -297,16 +312,19 @@ class PaperPipeline:
     def _suggest_module_name(self, title: str) -> str:
         """Suggest a Python module name from paper title."""
         import re
+
         # Strip LaTeX
-        title = re.sub(r'\$.*?\$', '', title)
+        title = re.sub(r"\$.*?\$", "", title)
         # Keep alphanumeric
-        name = re.sub(r'[^a-zA-Z0-9]', '_', title.lower())
+        name = re.sub(r"[^a-zA-Z0-9]", "_", title.lower())
         # Strip duplicate underscores
-        name = re.sub(r'_+', '_', name).strip('_')
+        name = re.sub(r"_+", "_", name).strip("_")
         # Limit length
         return name[:40] or "paper_model"
 
-    def _generate_readme(self, content: PaperContent, framework: str, result: Optional[BenchmarkResult]) -> str:
+    def _generate_readme(
+        self, content: PaperContent, framework: str, result: Optional[BenchmarkResult]
+    ) -> str:
         """Generate README for the paper implementation."""
         benchmark_str = ""
         if result:
@@ -346,9 +364,9 @@ remember successful paper-to-code mappings for future retrieval.
 
 ## Paper Metadata
 
-- **Authors:** {', '.join(content.authors[:3])}{' et al.' if len(content.authors) > 3 else ''}
-- **Datasets:** {', '.join(content.datasets) if content.datasets else 'Not specified'}
-- **Hyperparameters:** {', '.join(f'{k}={v}' for k, v in content.hyperparameters.items()) if content.hyperparameters else 'Not specified'}
+- **Authors:** {", ".join(content.authors[:3])}{" et al." if len(content.authors) > 3 else ""}
+- **Datasets:** {", ".join(content.datasets) if content.datasets else "Not specified"}
+- **Hyperparameters:** {", ".join(f"{k}={v}" for k, v in content.hyperparameters.items()) if content.hyperparameters else "Not specified"}
 
 {benchmark_str}
 """

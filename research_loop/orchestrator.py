@@ -13,6 +13,7 @@ Closed loop:
                     → encode into Gene Pool
                     → report to Claude Code (via MCP)
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -48,7 +49,7 @@ def _load_state() -> dict:
         "interval_minutes": 30,
         "last_check": "",
         "sessions": [],  # session_ids of completed deep-research runs
-        "alerts": [],    # recent high-value alerts
+        "alerts": [],  # recent high-value alerts
     }
 
 
@@ -63,15 +64,16 @@ def _save_state(state: dict) -> None:
 @dataclass
 class ResearchAlert:
     """A high-value research opportunity discovered by the agent."""
+
     alert_id: str
     session_id: str
     topic: str
-    triggered_by: str       # arxiv_id of the paper that triggered this
+    triggered_by: str  # arxiv_id of the paper that triggered this
     trigger_title: str
     gaps_found: int
     top_gap_title: str
     top_gap_type: str
-    severity: str            # HIGH / MEDIUM / LOW
+    severity: str  # HIGH / MEDIUM / LOW
     gene_pool_score: float  # 0.0–1.0
     preference_boost: bool
     created_at: float = field(default_factory=time.time)
@@ -88,6 +90,7 @@ class ResearchAlert:
 @dataclass
 class OrchestratorConfig:
     """Configuration for the autonomous orchestrator."""
+
     interval_minutes: int = 30
     min_gap_severity_for_alert: str = "MEDIUM"  # alert only for HIGH/MEDIUM gaps
     min_gene_pool_score_for_alert: float = 0.3  # must match Gene Pool somewhat
@@ -143,6 +146,7 @@ class AutonomousOrchestrator:
         from llm.gap_analyzer import GapAnalyzerV2
 
         from db.database import Database
+
         db = Database()
         db.init()
 
@@ -189,6 +193,7 @@ class AutonomousOrchestrator:
         # Add discovered papers to session
         for p in new_papers:
             from research_loop.snapstate import PaperSnapshot
+
             snapshot = PaperSnapshot(
                 arxiv_id=p.get("arxiv_id", ""),
                 title=p.get("title", ""),
@@ -196,19 +201,28 @@ class AutonomousOrchestrator:
                 url=p.get("pdf_url", ""),
             )
             session.papers.append(snapshot)
-            agent.db.add_papers([{
-                "arxiv_id": p.get("arxiv_id", ""),
-                "title": p.get("title", ""),
-                "abstract": p.get("abstract", ""),
-                "source": "arxiv",
-            }])
+            agent.db.add_papers(
+                [
+                    {
+                        "arxiv_id": p.get("arxiv_id", ""),
+                        "title": p.get("title", ""),
+                        "abstract": p.get("abstract", ""),
+                        "source": "arxiv",
+                    }
+                ]
+            )
 
         # Run the agent loop (shortened)
         try:
             result = agent.run()
         except Exception as e:
             logger.error(f"DeepResearchAgent failed: {e}")
-            return {"gaps": [], "papers_analyzed": len(new_papers), "session_id": session.session_id, "error": str(e)}
+            return {
+                "gaps": [],
+                "papers_analyzed": len(new_papers),
+                "session_id": session.session_id,
+                "error": str(e),
+            }
 
         return {
             "gaps": result.gaps if hasattr(result, "gaps") else [],
@@ -232,7 +246,9 @@ class AutonomousOrchestrator:
 
         scored = []
         for gap in gaps:
-            gap_type_name = gap.gap_type.value if hasattr(gap.gap_type, "value") else str(gap.gap_type)
+            gap_type_name = (
+                gap.gap_type.value if hasattr(gap.gap_type, "value") else str(gap.gap_type)
+            )
 
             # Find matching capsule in Gene Pool
             capsule = self._tracker.find_capsule(
@@ -247,15 +263,17 @@ class AutonomousOrchestrator:
                 gene_pool_score = capsule.get("outcome_success_score", 0.0)
                 preference_boost = gene_pool_score >= 0.5
 
-            scored.append({
-                "gap": gap,
-                "gap_type": gap_type_name,
-                "title": gap.title if hasattr(gap, "title") else str(gap),
-                "description": gap.description if hasattr(gap, "description") else "",
-                "severity": gap.severity.value if hasattr(gap.severity, "value") else "MEDIUM",
-                "gene_pool_score": gene_pool_score,
-                "preference_boost": preference_boost,
-            })
+            scored.append(
+                {
+                    "gap": gap,
+                    "gap_type": gap_type_name,
+                    "title": gap.title if hasattr(gap, "title") else str(gap),
+                    "description": gap.description if hasattr(gap, "description") else "",
+                    "severity": gap.severity.value if hasattr(gap.severity, "value") else "MEDIUM",
+                    "gene_pool_score": gene_pool_score,
+                    "preference_boost": preference_boost,
+                }
+            )
 
         return scored
 
@@ -305,6 +323,7 @@ class AutonomousOrchestrator:
             return
         try:
             from core.notifications import get_webhook_notifier
+
             webhook = get_webhook_notifier()
             if webhook:
                 # Build a summary for the webhook
@@ -383,9 +402,7 @@ class AutonomousOrchestrator:
                 except Exception as e:
                     logger.warning(f"Gene Pool encode failed: {e}")
 
-            logger.info(
-                f"[Orchestrator] Generated {len(alerts)} alerts for '{topic}'"
-            )
+            logger.info(f"[Orchestrator] Generated {len(alerts)} alerts for '{topic}'")
 
         # Update state
         state = _load_state()

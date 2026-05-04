@@ -10,6 +10,7 @@ This module orchestrates the core research workflow:
 Inspired by karpathy/autoresearch but adapted for the paper-management workflow
 already present in ai_research_os.
 """
+
 from __future__ import annotations
 
 import datetime as dt
@@ -138,10 +139,14 @@ def run_research(
 
     # --- Step 2: Process each paper in parallel ---
     def _process_one_paper(
-        args: Tuple[Paper, int, int, Path, bool, bool, int, str, str, str, List[str], Optional[Path]],
+        args: Tuple[
+            Paper, int, int, Path, bool, bool, int, str, str, str, List[str], Optional[Path]
+        ],
     ) -> Tuple[Optional[Path], Optional[Path], Optional[str]]:
         """Worker: download → extract → LLM → write note. Returns (note_path, pdf_path, error_reason)."""
-        paper, i, total, out_dir, do_download, do_skip, max_txt, b_url, a_key, mod, tgs, rl_root = args
+        paper, i, total, out_dir, do_download, do_skip, max_txt, b_url, a_key, mod, tgs, rl_root = (
+            args
+        )
         title_short = paper.title[:60] + ("..." if len(paper.title) > 60 else "")
         if verbose:
             print(f"[research] [{i}/{total}] {paper.uid}: {title_short}")
@@ -165,7 +170,9 @@ def run_research(
                     pdf_path = Path(tempfile.gettempdir()) / f"{safe_uid(paper.uid)}.pdf"
                     _download_pdf(paper.pdf_url, pdf_path, timeout=60)
                     if verbose:
-                        print(f"  [pdf] Downloaded: {pdf_path.name} ({pdf_path.stat().st_size / 1024:.0f} KB)")
+                        print(
+                            f"  [pdf] Downloaded: {pdf_path.name} ({pdf_path.stat().st_size / 1024:.0f} KB)"
+                        )
                     extracted_text = extract_pdf_text(pdf_path, max_pages=15)
                     if len(extracted_text) > max_txt:
                         extracted_text = extracted_text[:max_txt] + "\n\n[... truncated ...]"
@@ -178,7 +185,10 @@ def run_research(
                         time.sleep(1)  # brief pause before retry
                         continue  # retry once
                     err = "pdf_failed"
-                    warnings.warn(f"PDF download/extract failed for {paper.uid} after retry: {e}", stacklevel=2)
+                    warnings.warn(
+                        f"PDF download/extract failed for {paper.uid} after retry: {e}",
+                        stacklevel=2,
+                    )
 
         note_tags = tgs or []
         draft = ""
@@ -238,7 +248,9 @@ def run_research(
 
         return note_path, pdf_path, err
 
-    def _integrate_into_tree(root: Path, note_path: Path, paper: Paper, note_tags: List[str]) -> None:
+    def _integrate_into_tree(
+        root: Path, note_path: Path, paper: Paper, note_tags: List[str]
+    ) -> None:
         """Add a newly-created research note into the research OS tree."""
         # Lazy import to avoid circular import
         from notes.cnote import ensure_cnote, update_cnote_links
@@ -260,14 +272,31 @@ def run_research(
             update_radar(root, note_tags, year, flush=False)
 
     # Build work items (filter skipped before spawning threads)
-    work_items: List[Tuple[Paper, int, int, Path, bool, bool, int, str, str, str, List[str], Optional[Path]]] = []
+    work_items: List[
+        Tuple[Paper, int, int, Path, bool, bool, int, str, str, str, List[str], Optional[Path]]
+    ] = []
     for i, paper in enumerate(papers, 1):
         slug = slugify_title(paper.title)[:60]
         note_path = output_dir / f"{safe_uid(paper.uid)}_{slug}.md"
         if skip_existing and note_path.exists():
             output_paths.append(note_path)
             continue
-        work_items.append((paper, i, len(papers), output_dir, download_pdfs, skip_existing, max_text_len, base_url, api_key, model, tags or [], root))
+        work_items.append(
+            (
+                paper,
+                i,
+                len(papers),
+                output_dir,
+                download_pdfs,
+                skip_existing,
+                max_text_len,
+                base_url,
+                api_key,
+                model,
+                tags or [],
+                root,
+            )
+        )
 
     if work_items:
         processed = 0
@@ -288,7 +317,9 @@ def run_research(
                         processed += 1
         # Summary report
         total = len(papers)
-        print(f"\n[research] Done: {processed}/{total} processed, {failed} failed, {skipped} skipped")
+        print(
+            f"\n[research] Done: {processed}/{total} processed, {failed} failed, {skipped} skipped"
+        )
         for reason, count in error_reasons.items():
             print(f"  [{reason}] {count} paper(s)")
 
@@ -481,11 +512,17 @@ async def arun_research(
                         pdf_path = Path(_tempfile.gettempdir()) / f"{safe_uid(paper.uid)}.pdf"
                         await download_pdf_async(paper.pdf_url, pdf_path, timeout=60)
                         if verbose:
-                            print(f"  [pdf] Downloaded: {pdf_path.name} ({pdf_path.stat().st_size / 1024:.0f} KB)")
+                            print(
+                                f"  [pdf] Downloaded: {pdf_path.name} ({pdf_path.stat().st_size / 1024:.0f} KB)"
+                            )
                         # CPU-bound: run in thread pool to avoid blocking the event loop
-                        extracted_text = await asyncio.to_thread(extract_pdf_text, pdf_path, max_pages=15)
+                        extracted_text = await asyncio.to_thread(
+                            extract_pdf_text, pdf_path, max_pages=15
+                        )
                         if len(extracted_text) > max_text_len:
-                            extracted_text = extracted_text[:max_text_len] + "\n\n[... truncated ...]"
+                            extracted_text = (
+                                extracted_text[:max_text_len] + "\n\n[... truncated ...]"
+                            )
                         if verbose and extracted_text:
                             print(f"  [text] Extracted {len(extracted_text)} chars")
                         break
@@ -495,7 +532,10 @@ async def arun_research(
                             await asyncio.sleep(1)
                             continue
                         err = "pdf_failed"
-                        warnings.warn(f"PDF download/extract failed for {paper.uid} after retry: {e}", stacklevel=2)
+                        warnings.warn(
+                            f"PDF download/extract failed for {paper.uid} after retry: {e}",
+                            stacklevel=2,
+                        )
 
             note_tags = list(tags) if tags else []
             draft = ""
@@ -510,16 +550,19 @@ async def arun_research(
 
                     # CPU-bound LLM call: run in executor for true streaming
                     async def _generate() -> str:
-                        return cast(str, await call_llm_chat_completions_async(
-                            messages=[],
-                            model=model,
-                            user_prompt=None,
-                            base_url=base_url,
-                            api_key=api_key,
-                            system_prompt=None,
-                            stream=True,
-                            progress_callback=progress_callback,
-                        ))
+                        return cast(
+                            str,
+                            await call_llm_chat_completions_async(
+                                messages=[],
+                                model=model,
+                                user_prompt=None,
+                                base_url=base_url,
+                                api_key=api_key,
+                                system_prompt=None,
+                                stream=True,
+                                progress_callback=progress_callback,
+                            ),
+                        )
 
                     draft = await _generate()
                     sections, rubric, _ = parse_ai_pnote_draft(draft)
@@ -560,10 +603,7 @@ async def arun_research(
             return note_path, pdf_path, err
 
     # Schedule all paper-processing tasks concurrently
-    tasks = [
-        _process_one(paper, i, len(work_items))
-        for i, paper in enumerate(work_items, 1)
-    ]
+    tasks = [_process_one(paper, i, len(work_items)) for i, paper in enumerate(work_items, 1)]
     results = await asyncio.gather(*tasks, return_exceptions=False)
 
     processed = 0
@@ -666,6 +706,8 @@ def warm_cache_research(
     warmed = sum(1 for v in results.values() if v)
 
     if verbose:
-        print(f"[research] Cache warmed: {warmed}/{len(queries)} queries cached (+{after - before} entries)")
+        print(
+            f"[research] Cache warmed: {warmed}/{len(queries)} queries cached (+{after - before} entries)"
+        )
 
     return results

@@ -3,6 +3,7 @@ Notification System.
 
 Provides notifications for important events and external webhook delivery.
 """
+
 from __future__ import annotations
 
 import json
@@ -19,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 class NotificationLevel(Enum):
     """Notification levels."""
+
     INFO = "info"
     SUCCESS = "success"
     WARNING = "warning"
@@ -28,6 +30,7 @@ class NotificationLevel(Enum):
 @dataclass
 class Notification:
     """A notification message."""
+
     level: NotificationLevel
     title: str
     message: str
@@ -207,7 +210,8 @@ class WebhookNotifier:
                 description=f"**{title}**\nScore: {score:.2f}",
                 color=0x00FF00,
                 fields=[{"name": "arXiv", "value": f"[{arxiv_id}]({url})", "inline": True}]
-                if arxiv_id else None,
+                if arxiv_id
+                else None,
             )
 
             # Try Feishu
