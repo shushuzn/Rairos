@@ -110,7 +110,6 @@ _SUBCOMMAND_TABLE = [
     ("roadmap", "cli.cmd.roadmap", "_build_roadmap_parser"),
     ("experiment", "cli.cmd.experiment", "_build_experiment_parser"),
     ("pipeline", "cli.cmd.pipeline", "_build_pipeline_parser"),
-    ("dashboard", "cli.cmd.dashboard", "_build_dashboard_parser"),
     ("journal", "cli.cmd.journal", "_build_journal_parser"),
     ("digest", "cli.cmd.digest", "_build_digest_parser"),
     ("citation-chain", "cli.cmd.citation_chain", "_build_citation_chain_parser"),
@@ -136,6 +135,7 @@ _SUBCOMMAND_TABLE = [
     ("signal", "cli.cmd.signal", "_build_signal_parser"),
     ("discover", "cli.cmd.discover", "_build_discover_parser"),
     ("report", "cli.cmd.report", "_build_report_parser"),
+    ("dashboard", "cli.cmd.dashboard", "_build_web_parser"),
 ]
 
 
