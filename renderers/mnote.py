@@ -1,4 +1,5 @@
 """M-Note (comparison note) renderer."""
+
 import textwrap
 
 from core import today_iso

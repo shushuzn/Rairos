@@ -11,6 +11,7 @@ Lean 4 Theorem Prover Integration — Formal Verification for Research Hypothese
   python -m llm.lean_verifier "交换律: forall n m : Nat, n + m = m + n"
   python -m llm.lean_verifier --hypothesis-id abc123
 """
+
 from __future__ import annotations
 
 import json
@@ -24,6 +25,7 @@ from typing import Optional, List, cast
 
 try:
     from llm.hypothesis_generator import ResearchHypothesis
+
     HYPOTHESIS_AVAILABLE = True
 except ImportError:
     HYPOTHESIS_AVAILABLE = False
@@ -145,8 +147,10 @@ Output ONLY the ```lean ... ``` code block.
 
 # ── Data structures ────────────────────────────────────────────────────────────
 
+
 class LeanInstallStatus(Enum):
     """Whether Lean is available."""
+
     AVAILABLE = "available"
     NOT_FOUND = "not_found"
     VERSION_UNKNOWN = "version_unknown"
@@ -154,15 +158,17 @@ class LeanInstallStatus(Enum):
 
 class VerificationLevel(Enum):
     """Formality level of the Lean output."""
-    L0_SYNTAX = "l0_syntax"        # Lean parsed the file without error
+
+    L0_SYNTAX = "l0_syntax"  # Lean parsed the file without error
     L1_TYPECHECK = "l1_typecheck"  # All type signatures are valid
-    L2_PROVEN = "l2_proven"        # Proofs are complete (no `sorry`)
-    L0_FAILED = "l0_failed"         # Syntax errors
+    L2_PROVEN = "l2_proven"  # Proofs are complete (no `sorry`)
+    L0_FAILED = "l0_failed"  # Syntax errors
 
 
 @dataclass
 class LeanVerificationResult:
     """Result of verifying a hypothesis in Lean 4."""
+
     hypothesis_id: str
     hypothesis_text: str
     level: VerificationLevel
@@ -225,6 +231,7 @@ Lean 4 is not installed. To install:
 
 # ── Code generation ─────────────────────────────────────────────────────────
 
+
 def translate_hypothesis_to_lean(
     hypothesis: "ResearchHypothesis",
     use_llm: bool = True,
@@ -241,7 +248,9 @@ def translate_hypothesis_to_lean(
     user_prompt = LEAN_TRANSLATION_USER_TEMPLATE.format(
         title=hypothesis.title,
         core_statement=hypothesis.core_statement,
-        hypothesis_type=hypothesis.hypothesis_type.value if hasattr(hypothesis.hypothesis_type, 'value') else str(hypothesis.hypothesis_type),
+        hypothesis_type=hypothesis.hypothesis_type.value
+        if hasattr(hypothesis.hypothesis_type, "value")
+        else str(hypothesis.hypothesis_type),
         based_on=hypothesis.based_on,
         variables=", ".join(hypothesis.experiment_design.variables),
         expected_result=hypothesis.experiment_design.expected_results,
@@ -274,6 +283,7 @@ def _extract_lean_code(response: str) -> str:
     """Extract Lean code from LLM response, stripping markdown fences."""
     # Find the first ```lean ... ``` block
     import re
+
     match = re.search(r"```lean\s*\n(.*?)```", response, re.DOTALL)
     if match:
         return match.group(1).strip()
@@ -327,36 +337,98 @@ def _template_based_translation(hypothesis: "ResearchHypothesis") -> str:
     safe_name = "".join(c if c.isalnum() else "_" for c in name)[:30]
     statement = hypothesis.core_statement
 
-    hyp_type = (hypothesis.hypothesis_type.value
-                if hasattr(hypothesis.hypothesis_type, 'value')
-                else str(hypothesis.hypothesis_type))
+    hyp_type = (
+        hypothesis.hypothesis_type.value
+        if hasattr(hypothesis.hypothesis_type, "value")
+        else str(hypothesis.hypothesis_type)
+    )
 
     # Normalize statement with Lean-compatible symbols
     statement = _translate_symbols(statement)
 
     # Detect domain indicators
-    mathy = any(w in statement for w in [
-        "∀", "∃", "→", "≤", "≥", "≠", "∧", "∨", "∈", "⊆",
-    ])
-    convergence = any(w in statement.lower() for w in [
-        "converge", "limit", "sequence", "cauchy", "tends to", "supremum", "infimum",
-    ])
-    probability = any(w in statement.lower() for w in [
-        "probability", "expectation", "measure", "random", "variance", "entropy",
-        "distribution", "bayesian", "likelihood", "posterior",
-    ])
-    causal = any(w in statement.lower() for w in [
-        "cause", "effect", "treatment", "control", "outcome", "intervention",
-        "counterfactual", "do-calculus",
-    ])
-    set_theory = any(w in statement.lower() for w in [
-        "subset", "element", "union", "intersection", "complement",
-        "partition", "equivalence", "class",
-    ])
-    functions = any(w in statement.lower() for w in [
-        "function", "injective", "surjective", "bijective", "homomorphism",
-        "isomorphism", "kernel", "image", "composition",
-    ])
+    mathy = any(
+        w in statement
+        for w in [
+            "∀",
+            "∃",
+            "→",
+            "≤",
+            "≥",
+            "≠",
+            "∧",
+            "∨",
+            "∈",
+            "⊆",
+        ]
+    )
+    convergence = any(
+        w in statement.lower()
+        for w in [
+            "converge",
+            "limit",
+            "sequence",
+            "cauchy",
+            "tends to",
+            "supremum",
+            "infimum",
+        ]
+    )
+    probability = any(
+        w in statement.lower()
+        for w in [
+            "probability",
+            "expectation",
+            "measure",
+            "random",
+            "variance",
+            "entropy",
+            "distribution",
+            "bayesian",
+            "likelihood",
+            "posterior",
+        ]
+    )
+    causal = any(
+        w in statement.lower()
+        for w in [
+            "cause",
+            "effect",
+            "treatment",
+            "control",
+            "outcome",
+            "intervention",
+            "counterfactual",
+            "do-calculus",
+        ]
+    )
+    set_theory = any(
+        w in statement.lower()
+        for w in [
+            "subset",
+            "element",
+            "union",
+            "intersection",
+            "complement",
+            "partition",
+            "equivalence",
+            "class",
+        ]
+    )
+    functions = any(
+        w in statement.lower()
+        for w in [
+            "function",
+            "injective",
+            "surjective",
+            "bijective",
+            "homomorphism",
+            "isomorphism",
+            "kernel",
+            "image",
+            "composition",
+        ]
+    )
 
     # Choose domain template
     if convergence:
@@ -386,11 +458,15 @@ def _template_based_translation(hypothesis: "ResearchHypothesis") -> str:
         ).format(safe_name=safe_name, statement=statement[:80], hyp_type=hyp_type)
     elif mathy:
         lean_code = _FALLBACK_TEMPLATES["mathy"].format(
-            safe_name=safe_name, statement=statement[:80], hyp_type=hyp_type,
+            safe_name=safe_name,
+            statement=statement[:80],
+            hyp_type=hyp_type,
         )
     else:
         lean_code = _FALLBACK_TEMPLATES["qualitative"].format(
-            safe_name=safe_name, statement=statement[:80], hyp_type=hyp_type,
+            safe_name=safe_name,
+            statement=statement[:80],
+            hyp_type=hyp_type,
         )
 
     return lean_code
@@ -407,7 +483,6 @@ _FALLBACK_TEMPLATES = {
 theorem {safe_name}_theorem
     : Prop  :=  by sorry
 """,
-
     "convergence": """\
 -- Hypothesis: {safe_name}
 -- Type: convergence/analysis
@@ -420,7 +495,6 @@ theorem {safe_name}_converges
     (ε : ℝ) (hε : ε > 0)
     : ∃ N : ℕ, ∀ n ≥ N, True  :=  by sorry
 """,
-
     "probability": """\
 -- Hypothesis: {safe_name}
 -- Type: probability/statistics
@@ -436,7 +510,6 @@ axiom ℙ : MeasureSpace Ω
 theorem {safe_name}_probability
     : ℙ = ℙ  :=  by sorry
 """,
-
     "causal": """\
 -- Hypothesis: {safe_name}
 -- Type: causal inference
@@ -451,7 +524,6 @@ theorem {safe_name}_causal_effect
     (outcome : unit → ℕ)
     : Prop  :=  by sorry
 """,
-
     "set_theory": """\
 -- Hypothesis: {safe_name}
 -- Type: set theory
@@ -465,7 +537,6 @@ theorem {safe_name}_set_theorem
     (A B C : Set α)
     : Prop  :=  by sorry
 """,
-
     "functions": """\
 -- Hypothesis: {safe_name}
 -- Type: function/map theory
@@ -479,7 +550,6 @@ theorem {safe_name}_function_theorem
     (f : α → β)
     : Prop  :=  by sorry
 """,
-
     "qualitative": """\
 -- Hypothesis: {safe_name}
 -- Type: {hyp_type}
@@ -496,6 +566,7 @@ def {safe_name}_stub : Prop := True
 
 
 # ── Verification ─────────────────────────────────────────────────────────────
+
 
 def verify_lean_code(
     lean_code: str,
@@ -562,9 +633,13 @@ def verify_lean_code(
                 msg = json.loads(line)
                 json_messages.append(msg)
                 if msg.get("severity") == "error":
-                    error_lines.append(f"{msg.get('file', '?')}:{msg.get('pos', 0)} — {msg.get('data', '')}")
+                    error_lines.append(
+                        f"{msg.get('file', '?')}:{msg.get('pos', 0)} — {msg.get('data', '')}"
+                    )
                 elif msg.get("severity") == "warning":
-                    warning_lines.append(f"{msg.get('file', '?')}:{msg.get('pos', 0)} — {msg.get('data', '')}")
+                    warning_lines.append(
+                        f"{msg.get('file', '?')}:{msg.get('pos', 0)} — {msg.get('data', '')}"
+                    )
             except json.JSONDecodeError:
                 # Plain text error message
                 if "error" in line.lower() or "failed" in line.lower():
@@ -611,6 +686,7 @@ def verify_lean_code(
 
 # ── Full pipeline ────────────────────────────────────────────────────────────
 
+
 def verify_hypothesis(
     hypothesis: "ResearchHypothesis",
     use_llm: bool = True,
@@ -640,6 +716,7 @@ def verify_hypothesis(
 
 
 # ── Rendering ────────────────────────────────────────────────────────────────
+
 
 def render_result(result: LeanVerificationResult) -> str:
     """Render a verification result as formatted text."""
@@ -697,20 +774,25 @@ def render_result(result: LeanVerificationResult) -> str:
 
 def render_result_json(result: LeanVerificationResult) -> str:
     """Render result as JSON."""
-    return json.dumps({
-        "hypothesis_id": result.hypothesis_id,
-        "hypothesis_text": result.hypothesis_text,
-        "level": result.level.value,
-        "lean_code": result.lean_code,
-        "errors": result.errors,
-        "warnings": result.warnings,
-        "install_status": result.install_status.value,
-        "translation_notes": result.translation_notes,
-        "lean_file_path": result.lean_file_path,
-    }, ensure_ascii=False, indent=2)
+    return json.dumps(
+        {
+            "hypothesis_id": result.hypothesis_id,
+            "hypothesis_text": result.hypothesis_text,
+            "level": result.level.value,
+            "lean_code": result.lean_code,
+            "errors": result.errors,
+            "warnings": result.warnings,
+            "install_status": result.install_status.value,
+            "translation_notes": result.translation_notes,
+            "lean_file_path": result.lean_file_path,
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
 
 
 # ── CLI entry point ────────────────────────────────────────────────────────────
+
 
 def main() -> int:
     """CLI entry point: python -m llm.lean_verifier [options] [hypothesis_text]"""
@@ -745,7 +827,8 @@ Examples:
         help="Skip LLM translation, use templates only",
     )
     parser.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="Output as JSON",
     )
@@ -755,7 +838,8 @@ Examples:
         help="Just check if Lean is installed",
     )
     parser.add_argument(
-        "--model", "-M",
+        "--model",
+        "-M",
         type=str,
         default=None,
         help="LLM model to use",
@@ -781,13 +865,19 @@ Examples:
 
     if args.hypothesis_id and HYPOTHESIS_AVAILABLE:
         from llm.experiment_tracker import ExperimentTracker
+
         tracker = ExperimentTracker()
         exps = tracker.list_experiments()
         found = [e for e in exps if e.hypothesis_id == args.hypothesis_id]
         if found:
             exp = found[0]
             if HYPOTHESIS_AVAILABLE:
-                from llm.hypothesis_generator import HypothesisType, ResearchHypothesis, ExperimentDesign
+                from llm.hypothesis_generator import (
+                    HypothesisType,
+                    ResearchHypothesis,
+                    ExperimentDesign,
+                )
+
                 hypothesis = ResearchHypothesis(
                     id=args.hypothesis_id,
                     title=exp.name,
@@ -810,7 +900,12 @@ Examples:
     # Build synthetic hypothesis from text
     if not hypothesis and hypothesis_text:
         if HYPOTHESIS_AVAILABLE:
-            from llm.hypothesis_generator import HypothesisType, ResearchHypothesis, ExperimentDesign
+            from llm.hypothesis_generator import (
+                HypothesisType,
+                ResearchHypothesis,
+                ExperimentDesign,
+            )
+
             hypothesis = ResearchHypothesis(
                 id=hypothesis_id,
                 title=hypothesis_text[:40],

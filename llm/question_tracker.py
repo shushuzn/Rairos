@@ -21,6 +21,7 @@ from llm.tracker_base import JsonFileStore
 
 class QuestionStatus(Enum):
     """Research question status."""
+
     OPEN = "open"
     IN_PROGRESS = "in_progress"
     RESOLVED = "resolved"
@@ -29,6 +30,7 @@ class QuestionStatus(Enum):
 
 class QuestionSource(Enum):
     """Source of the research question."""
+
     MANUAL = "manual"
     GAP_DETECTION = "gap_detection"
     HYPOTHESIS = "hypothesis"
@@ -38,6 +40,7 @@ class QuestionSource(Enum):
 @dataclass
 class ResearchQuestion:
     """A research question tracked in the system."""
+
     id: str
     question: str
     source: str  # QuestionSource value
@@ -276,4 +279,4 @@ class QuestionTracker(JsonFileStore):
 
             lines.append("")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)

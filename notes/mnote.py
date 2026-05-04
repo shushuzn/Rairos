@@ -1,4 +1,5 @@
 """M-Note (comparison note) management."""
+
 import re
 from pathlib import Path
 from typing import List, Optional, Tuple
@@ -39,8 +40,11 @@ def parse_current_abc(md: str) -> Tuple[Optional[str], Optional[str], Optional[s
     return find("A"), find("B"), find("C")
 
 
-def append_view_evolution_log(md: str, old_abc: Tuple[str, str, str], new_abc: Tuple[str, str, str]) -> str:
+def append_view_evolution_log(
+    md: str, old_abc: Tuple[str, str, str], new_abc: Tuple[str, str, str]
+) -> str:
     from core import today_iso
+
     today = today_iso()
     block = f"""
 * {today}
@@ -79,7 +83,10 @@ def ensure_or_update_mnote(mnote_dir: Path, tag: str, top3: List[Path]) -> Optio
     curA, curB, curC = parse_current_abc(md)
 
     if not (curA and curB and curC):
-        md2 = md.rstrip() + f"\n\n---\n\n## 当前 A/B/C（自动补齐）\n\n- A: {newA}\n- B: {newB}\n- C: {newC}\n"
+        md2 = (
+            md.rstrip()
+            + f"\n\n---\n\n## 当前 A/B/C（自动补齐）\n\n- A: {newA}\n- B: {newB}\n- C: {newC}\n"
+        )
         write_text(path, md2)
         return path
 

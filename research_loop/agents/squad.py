@@ -108,6 +108,7 @@ class SquadCoordinator:
                 self.run_cycle()
             except Exception as e:
                 import logging
+
                 logging.getLogger(__name__).error(f"[SquadCoordinator] cycle error: {e}")
             stop_event.wait(timeout=interval_minutes * 60)
 

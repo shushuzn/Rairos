@@ -1,4 +1,5 @@
 """C-Note (concept note) renderer."""
+
 import textwrap
 
 

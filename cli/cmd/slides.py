@@ -28,25 +28,39 @@ def _build_slides_parser(subparsers):
     p.add_argument("arxiv_ids", nargs="*", help="arXiv ID(s)，支持多个论文对比")
     p.add_argument("--list", "-l", action="store_true", help="从本地库选择论文")
     p.add_argument("--interactive", "-i", action="store_true", help="交互模式")
-    p.add_argument("--format", "-f", default="pptx",
-                   type=click.Choice(["pptx", "md", "html"]),
-                   help="输出格式 (默认 pptx)")
-    p.add_argument("--template", "-t", default="academic",
-                   type=click.Choice(["academic", "minimal", "modern"]),
-                   help="幻灯片模板")
-    p.add_argument("--slides", "-s", type=int, default=10,
-                   help="幻灯片数量 (默认 10)")
-    p.add_argument("--output", "-o", type=click.Path(), default=None,
-                   help="输出路径")
-    p.add_argument("--include-notes", action="store_true",
-                   help="包含演讲者备注")
-    p.add_argument("--lang", default="zh",
-                   type=click.Choice(["zh", "en", "bilingual"]),
-                   help="输出语言")
-    p.set_defaults(func=lambda a: slides_main(
-        a.arxiv_ids, a.list, a.interactive, a.format, a.template,
-        a.slides, a.output, a.include_notes, a.lang
-    ))
+    p.add_argument(
+        "--format",
+        "-f",
+        default="pptx",
+        type=click.Choice(["pptx", "md", "html"]),
+        help="输出格式 (默认 pptx)",
+    )
+    p.add_argument(
+        "--template",
+        "-t",
+        default="academic",
+        type=click.Choice(["academic", "minimal", "modern"]),
+        help="幻灯片模板",
+    )
+    p.add_argument("--slides", "-s", type=int, default=10, help="幻灯片数量 (默认 10)")
+    p.add_argument("--output", "-o", type=click.Path(), default=None, help="输出路径")
+    p.add_argument("--include-notes", action="store_true", help="包含演讲者备注")
+    p.add_argument(
+        "--lang", default="zh", type=click.Choice(["zh", "en", "bilingual"]), help="输出语言"
+    )
+    p.set_defaults(
+        func=lambda a: slides_main(
+            a.arxiv_ids,
+            a.list,
+            a.interactive,
+            a.format,
+            a.template,
+            a.slides,
+            a.output,
+            a.include_notes,
+            a.lang,
+        )
+    )
 
 
 def slides_main(
@@ -103,6 +117,7 @@ def slides_main(
     try:
         result = generator.generate(papers_to_process, config)
         from rich.console import Console
+
         c = Console()
         c.rule("[bold #FF8272]  Slides Generated  [/]")
         c.print()
@@ -114,10 +129,7 @@ def slides_main(
         ]
         c.print(WarpBlocks.table(["Property", "Value"], rows, title="Generation Summary"))
         c.print()
-        print(WarpBlocks.panel(
-            "Output File",
-            f"[#B4FA72]{result.output_path}[/]"
-        ))
+        print(WarpBlocks.panel("Output File", f"[#B4FA72]{result.output_path}[/]"))
     except Exception as e:
         print_error(f"生成失败: {e}")
         sys.exit(1)
@@ -135,17 +147,16 @@ def interactive_mode(db):
         return
 
     from rich.console import Console
+
     c = Console()
     rows = []
     for i, paper in enumerate(papers, 1):
         title = paper.get("title", "Untitled")[:50]
         year = paper.get("published", "")[:4] or "?"
         rows.append([f"[#FEFDC2][{i}][/]", year, title])
-    c.print(WarpBlocks.table(
-        ["#", "Year", "Title"],
-        rows,
-        title=f"Available Papers ({len(papers)})"
-    ))
+    c.print(
+        WarpBlocks.table(["#", "Year", "Title"], rows, title=f"Available Papers ({len(papers)})")
+    )
     print()
     choice = input("选择: ").strip()
 
@@ -172,19 +183,25 @@ def select_papers_from_db(db) -> List[str]:
         return []
 
     from rich.console import Console
+
     c = Console()
     rows = []
     for i, paper in enumerate(papers, 1):
         title = paper.get("title", "Untitled")[:45]
         year = paper.get("published", "")[:4] or "?"
         rows.append([f"[#FEFDC2][{i}][/]", year, title])
-    c.print(WarpBlocks.table(["#", "Year", "Title"], rows, title=f"Available Papers ({len(papers)})"))
+    c.print(
+        WarpBlocks.table(["#", "Year", "Title"], rows, title=f"Available Papers ({len(papers)})")
+    )
 
     choice = input("\n选择 (逗号分隔): ").strip()
     try:
         indices = [int(x.strip()) - 1 for x in choice.split(",")]
-        return [papers[i]["uid"] or papers[i].get("arxiv_id", "")
-                for i in indices if 0 <= i < len(papers)]
+        return [
+            papers[i]["uid"] or papers[i].get("arxiv_id", "")
+            for i in indices
+            if 0 <= i < len(papers)
+        ]
     except (ValueError, IndexError):
         print_error("无效选择")
         return []
@@ -214,8 +231,15 @@ def slides(
 ):
     """从论文自动生成演示文稿."""
     slides_main(
-        list(arxiv_ids), list_mode, interactive,
-        format, template, slides, output, include_notes, lang
+        list(arxiv_ids),
+        list_mode,
+        interactive,
+        format,
+        template,
+        slides,
+        output,
+        include_notes,
+        lang,
     )
 
 
@@ -230,7 +254,7 @@ def _run_slides(args) -> None:
         args.slides,
         args.output,
         args.include_notes,
-        args.lang
+        args.lang,
     )
 
 

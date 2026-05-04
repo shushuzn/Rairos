@@ -8,6 +8,7 @@ Schema:
     job_queue      – batch processing queue
     settings       – key-value store
 """
+
 from __future__ import annotations
 
 import logging
@@ -37,6 +38,7 @@ def _parse_authors_cached(raw: str) -> List[str]:
         return orjson.loads(raw) if raw else []
     except Exception:
         return []
+
 
 # ─── Schema ────────────────────────────────────────────────────────────────────
 
@@ -287,12 +289,18 @@ class PaperRecord:
         try:
             authors = _parse_authors_cached(authors_raw)
         except Exception:
-            warnings.warn(f"PaperRecord.from_row: failed to parse authors JSON for paper {d.get('id', '?')}: {authors_raw[:50]!r}", stacklevel=2)
+            warnings.warn(
+                f"PaperRecord.from_row: failed to parse authors JSON for paper {d.get('id', '?')}: {authors_raw[:50]!r}",
+                stacklevel=2,
+            )
             authors = []
         try:
             latex_blocks = orjson.loads(latex_raw) if latex_raw else []
         except Exception:
-            warnings.warn(f"PaperRecord.from_row: failed to parse latex_blocks JSON for paper {d.get('id', '?')}", stacklevel=2)
+            warnings.warn(
+                f"PaperRecord.from_row: failed to parse latex_blocks JSON for paper {d.get('id', '?')}",
+                stacklevel=2,
+            )
             latex_blocks = []
         return cls(authors=authors, latex_blocks=latex_blocks, tags=[], **d)
 
@@ -310,6 +318,7 @@ class Database:
     def __init__(self, db_path: Optional[Union[str, Path]] = None):
         if db_path is None:
             from config import CACHE_DIR
+
             db_path = Path(CACHE_DIR) / "research.db"
         self.db_path = Path(db_path).expanduser()
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -340,7 +349,9 @@ class Database:
         if self._init_done:
             return
         if not self.db_path.parent.exists():
-            raise DatabaseError(f"Database directory does not exist and cannot be created: {self.db_path.parent}")
+            raise DatabaseError(
+                f"Database directory does not exist and cannot be created: {self.db_path.parent}"
+            )
         try:
             with self.conn as conn:
                 conn.executescript(_SCHEMA)
@@ -532,7 +543,11 @@ class Database:
     ) -> None:
         """Update parse result fields."""
         try:
-            latex_json = orjson.dumps(latex_blocks).decode("utf-8") if not isinstance(latex_blocks, str) else latex_blocks
+            latex_json = (
+                orjson.dumps(latex_blocks).decode("utf-8")
+                if not isinstance(latex_blocks, str)
+                else latex_blocks
+            )
             now = _utcnow()
             with self.transaction():
                 cur = self.conn.cursor()
@@ -587,7 +602,9 @@ class Database:
         """Update reading status and timestamps. Returns True if paper was found."""
         valid_statuses = {"unread", "reading", "completed"}
         if status not in valid_statuses:
-            raise DatabaseError(f"Invalid reading status: {status!r}. Must be one of {valid_statuses}")
+            raise DatabaseError(
+                f"Invalid reading status: {status!r}. Must be one of {valid_statuses}"
+            )
         now = _utcnow()
         try:
             with self.transaction():
@@ -630,9 +647,7 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"get_reading_status({paper_id!r}) failed: {e}") from e
 
-    def get_papers_by_reading_status(
-        self, status: str, limit: int = 100
-    ) -> List["PaperRecord"]:
+    def get_papers_by_reading_status(self, status: str, limit: int = 100) -> List["PaperRecord"]:
         """Return papers with a given reading status."""
         try:
             cur = self.conn.cursor()
@@ -707,11 +722,7 @@ class Database:
                 )
                 tag_rows = {row[1]: row[0] for row in cur.fetchall()}
                 # 3. Insert paper_tag links in one query
-                paper_tag_rows = [
-                    (paper_id, tag_rows[t])
-                    for t in normalized
-                    if t in tag_rows
-                ]
+                paper_tag_rows = [(paper_id, tag_rows[t]) for t in normalized if t in tag_rows]
                 cur.executemany(
                     "INSERT OR IGNORE INTO paper_tags (paper_id, tag_id) VALUES (?, ?)",
                     paper_tag_rows,
@@ -1020,9 +1031,10 @@ class Database:
             def _build_query(query: str) -> str:
                 """Build FTS5 query from natural-language input."""
                 import re
+
                 # Extract Latin tokens (ASCII alphanumeric) from the full query string.
                 # CJK chars in a query are intent/meaning — DB abstracts are in English.
-                latin_tokens = re.findall(r'[A-Za-z0-9_]+', query)
+                latin_tokens = re.findall(r"[A-Za-z0-9_]+", query)
                 if not latin_tokens:
                     return f'"{query}"'
                 sanitized = [_sanitize_token(t) for t in latin_tokens if t.strip()]
@@ -1078,7 +1090,8 @@ class Database:
             # Batch-parse all author JSONs at once to avoid N individual calls.
             raw_author_list: List[Optional[str]] = [
                 paper_map.get(r["paper_id"])["authors"]  # type: ignore[index]
-                if paper_map.get(r["paper_id"]) is not None else None
+                if paper_map.get(r["paper_id"]) is not None
+                else None
                 for r in fts_rows
             ]
             for fts_row, raw_authors in zip(fts_rows, raw_author_list):
@@ -1090,7 +1103,10 @@ class Database:
                     try:
                         authors = _parse_authors_cached(raw_authors)
                     except Exception:
-                        warnings.warn(f"search_papers: failed to parse authors JSON for paper {paper['id']}", stacklevel=2)
+                        warnings.warn(
+                            f"search_papers: failed to parse authors JSON for paper {paper['id']}",
+                            stacklevel=2,
+                        )
                         authors = []
                 else:
                     authors = []
@@ -1113,7 +1129,9 @@ class Database:
             return results, total
 
         except sqlite3.OperationalError:
-            return self._search_like(query, limit, offset, source, category, date_from, date_to, parse_status)
+            return self._search_like(
+                query, limit, offset, source, category, date_from, date_to, parse_status
+            )
         except sqlite3.Error as e:
             raise DatabaseError(f"search_papers failed: {e}") from e
 
@@ -1173,7 +1191,10 @@ class Database:
                 try:
                     authors = _parse_authors_cached(row["authors"])
                 except Exception:
-                    warnings.warn(f"_search_like: failed to parse authors JSON for paper {row['id']}", stacklevel=2)
+                    warnings.warn(
+                        f"_search_like: failed to parse authors JSON for paper {row['id']}",
+                        stacklevel=2,
+                    )
                     authors = []
                 results.append(
                     SearchResult(
@@ -1312,9 +1333,7 @@ class Database:
         """Reset parse_status of all pending papers to 'idle'. Returns count cleared."""
         try:
             cur = self.conn.cursor()
-            cur.execute(
-                "UPDATE papers SET parse_status = 'idle' WHERE parse_status = 'pending'"
-            )
+            cur.execute("UPDATE papers SET parse_status = 'idle' WHERE parse_status = 'pending'")
             self.conn.commit()
             return cur.rowcount
         except sqlite3.Error as e:
@@ -1361,13 +1380,23 @@ class Database:
         except sqlite3.Error as e:
             raise DatabaseError(f"get_stats failed: {e}") from e
 
-    def export_papers(self, format: str = "csv", limit: int = 0) -> Tuple[str, List[Dict[str, Any]]]:
+    def export_papers(
+        self, format: str = "csv", limit: int = 0
+    ) -> Tuple[str, List[Dict[str, Any]]]:
         """Export all papers as CSV or JSON. Returns (header_row_or_fields, rows)."""
         try:
             cur = self.conn.cursor()
             fields = [
-                "id", "source", "title", "authors", "abstract", "published",
-                "doi", "primary_category", "parse_status", "added_at",
+                "id",
+                "source",
+                "title",
+                "authors",
+                "abstract",
+                "published",
+                "doi",
+                "primary_category",
+                "parse_status",
+                "added_at",
             ]
             sql = f"SELECT {','.join(fields)} FROM papers ORDER BY added_at DESC"
             if limit > 0:
@@ -1458,30 +1487,48 @@ class Database:
             pairs: List[Tuple[PaperRecord, PaperRecord]] = []
             for row in cur.fetchall():
                 a_record = PaperRecord(
-                    id=row["a_id"], source=row["a_source"], title=row["a_title"],
-                    authors=row["a_authors"], abstract=row["a_abstract"],
-                    published=row["a_published"], updated=row["a_updated"],
-                    abs_url=row["a_abs_url"], pdf_url=row["a_pdf_url"],
+                    id=row["a_id"],
+                    source=row["a_source"],
+                    title=row["a_title"],
+                    authors=row["a_authors"],
+                    abstract=row["a_abstract"],
+                    published=row["a_published"],
+                    updated=row["a_updated"],
+                    abs_url=row["a_abs_url"],
+                    pdf_url=row["a_pdf_url"],
                     primary_category=row["a_primary_category"],
-                    journal=row["a_journal"], volume=row["a_volume"],
-                    issue=row["a_issue"], page=row["a_page"],
-                    doi=row["a_doi"], categories=row["a_categories"],
+                    journal=row["a_journal"],
+                    volume=row["a_volume"],
+                    issue=row["a_issue"],
+                    page=row["a_page"],
+                    doi=row["a_doi"],
+                    categories=row["a_categories"],
                     parse_status=row["a_parse_status"],
                     embed_vector=row["a_embed_vector"],
-                    added_at=row["a_added_at"], updated_at=row["a_updated_at"],
+                    added_at=row["a_added_at"],
+                    updated_at=row["a_updated_at"],
                 )
                 b_record = PaperRecord(
-                    id=row["b_id"], source=row["b_source"], title=row["b_title"],
-                    authors=row["b_authors"], abstract=row["b_abstract"],
-                    published=row["b_published"], updated=row["b_updated"],
-                    abs_url=row["b_abs_url"], pdf_url=row["b_pdf_url"],
+                    id=row["b_id"],
+                    source=row["b_source"],
+                    title=row["b_title"],
+                    authors=row["b_authors"],
+                    abstract=row["b_abstract"],
+                    published=row["b_published"],
+                    updated=row["b_updated"],
+                    abs_url=row["b_abs_url"],
+                    pdf_url=row["b_pdf_url"],
                     primary_category=row["b_primary_category"],
-                    journal=row["b_journal"], volume=row["b_volume"],
-                    issue=row["b_issue"], page=row["b_page"],
-                    doi=row["b_doi"], categories=row["b_categories"],
+                    journal=row["b_journal"],
+                    volume=row["b_volume"],
+                    issue=row["b_issue"],
+                    page=row["b_page"],
+                    doi=row["b_doi"],
+                    categories=row["b_categories"],
                     parse_status=row["b_parse_status"],
                     embed_vector=row["b_embed_vector"],
-                    added_at=row["b_added_at"], updated_at=row["b_updated_at"],
+                    added_at=row["b_added_at"],
+                    updated_at=row["b_updated_at"],
                 )
                 pairs.append((a_record, b_record))
             return pairs
@@ -1518,15 +1565,42 @@ class Database:
 
                 # Fill empty parse fields on target from duplicate
                 parse_fields = [
-                    ("plain_text", "papers.plain_text = COALESCE(NULLIF(papers.plain_text, ''), excluded.plain_text)"),
-                    ("latex_blocks", "papers.latex_blocks = CASE WHEN papers.latex_blocks = '[]' THEN excluded.latex_blocks ELSE papers.latex_blocks END"),
-                    ("table_count", "papers.table_count = CASE WHEN papers.table_count = 0 THEN excluded.table_count ELSE papers.table_count END"),
-                    ("figure_count", "papers.figure_count = CASE WHEN papers.figure_count = 0 THEN excluded.figure_count ELSE papers.figure_count END"),
-                    ("word_count", "papers.word_count = CASE WHEN papers.word_count = 0 THEN excluded.word_count ELSE papers.word_count END"),
-                    ("page_count", "papers.page_count = CASE WHEN papers.page_count = 0 THEN excluded.page_count ELSE papers.page_count END"),
-                    ("pnote_path", "papers.pnote_path = CASE WHEN papers.pnote_path = '' THEN excluded.pnote_path ELSE papers.pnote_path END"),
-                    ("cnote_path", "papers.cnote_path = CASE WHEN papers.cnote_path = '' THEN excluded.cnote_path ELSE papers.cnote_path END"),
-                    ("mnote_path", "papers.mnote_path = CASE WHEN papers.mnote_path = '' THEN excluded.mnote_path ELSE papers.mnote_path END"),
+                    (
+                        "plain_text",
+                        "papers.plain_text = COALESCE(NULLIF(papers.plain_text, ''), excluded.plain_text)",
+                    ),
+                    (
+                        "latex_blocks",
+                        "papers.latex_blocks = CASE WHEN papers.latex_blocks = '[]' THEN excluded.latex_blocks ELSE papers.latex_blocks END",
+                    ),
+                    (
+                        "table_count",
+                        "papers.table_count = CASE WHEN papers.table_count = 0 THEN excluded.table_count ELSE papers.table_count END",
+                    ),
+                    (
+                        "figure_count",
+                        "papers.figure_count = CASE WHEN papers.figure_count = 0 THEN excluded.figure_count ELSE papers.figure_count END",
+                    ),
+                    (
+                        "word_count",
+                        "papers.word_count = CASE WHEN papers.word_count = 0 THEN excluded.word_count ELSE papers.word_count END",
+                    ),
+                    (
+                        "page_count",
+                        "papers.page_count = CASE WHEN papers.page_count = 0 THEN excluded.page_count ELSE papers.page_count END",
+                    ),
+                    (
+                        "pnote_path",
+                        "papers.pnote_path = CASE WHEN papers.pnote_path = '' THEN excluded.pnote_path ELSE papers.pnote_path END",
+                    ),
+                    (
+                        "cnote_path",
+                        "papers.cnote_path = CASE WHEN papers.cnote_path = '' THEN excluded.cnote_path ELSE papers.cnote_path END",
+                    ),
+                    (
+                        "mnote_path",
+                        "papers.mnote_path = CASE WHEN papers.mnote_path = '' THEN excluded.mnote_path ELSE papers.mnote_path END",
+                    ),
                 ]
                 for fname, _ in parse_fields:
                     cur.execute(f"SELECT {fname} FROM papers WHERE id = ?", (duplicate_id,))
@@ -1726,9 +1800,7 @@ class Database:
         """Return all experiment tables across all papers."""
         try:
             cur = self.conn.cursor()
-            cur.execute(
-                "SELECT * FROM experiment_tables ORDER BY paper_id, page, id"
-            )
+            cur.execute("SELECT * FROM experiment_tables ORDER BY paper_id, page, id")
             results = []
             for row in cur.fetchall():
                 try:
@@ -1835,6 +1907,7 @@ class Database:
     @property
     def EMBEDDING_DIM(self) -> int:  # type: ignore[override]
         from config import EMBEDDING_DIM as _d
+
         return _d
 
     def set_embedding(self, paper_id: str, vector: List[float]) -> bool:
@@ -2065,6 +2138,7 @@ class Database:
     ) -> str:
         """Add a new arXiv subscription. Returns subscription ID."""
         import uuid
+
         try:
             sub_id = str(uuid.uuid4())[:8]
             now = _utcnow()
@@ -2117,9 +2191,7 @@ class Database:
     def delete_arxiv_subscription(self, sub_id: str) -> bool:
         """Delete an arXiv subscription. Returns True if deleted."""
         try:
-            cur = self.conn.execute(
-                "DELETE FROM arxiv_subscriptions WHERE id = ?", (sub_id,)
-            )
+            cur = self.conn.execute("DELETE FROM arxiv_subscriptions WHERE id = ?", (sub_id,))
             self.conn.commit()
             return cur.rowcount > 0
         except sqlite3.Error as e:
@@ -2197,7 +2269,8 @@ class Database:
                 FROM arxiv_subscription_papers asp
                 JOIN arxiv_subscriptions sp ON asp.subscription_id = sp.id
                 ORDER BY asp.created_at DESC
-                """)
+                """
+            )
             rows = cur.fetchall()
             grouped: Dict[str, List[dict]] = {}
             for row in rows:
@@ -2205,13 +2278,15 @@ class Database:
                 if topic not in grouped:
                     grouped[topic] = []
                 if len(grouped[topic]) < limit_per:
-                    grouped[topic].append({
-                        "arxiv_id": row[1],
-                        "title": row[2],
-                        "score": row[3],
-                        "published": row[4],
-                        "created_at": row[5],
-                    })
+                    grouped[topic].append(
+                        {
+                            "arxiv_id": row[1],
+                            "title": row[2],
+                            "score": row[3],
+                            "published": row[4],
+                            "created_at": row[5],
+                        }
+                    )
             return grouped
         except sqlite3.Error as e:
             raise DatabaseError(f"get_recent_subscription_papers_grouped failed: {e}") from e
@@ -2226,6 +2301,7 @@ class Database:
     ) -> str:
         """Create a new literature review entry."""
         import uuid
+
         review_id = str(uuid.uuid4())[:8]
         now = _utcnow()
         try:

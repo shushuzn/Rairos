@@ -18,6 +18,7 @@ from datetime import datetime
 @dataclass
 class Milestone:
     """A milestone in the research roadmap."""
+
     id: str
     name: str
     description: str
@@ -29,6 +30,7 @@ class Milestone:
 @dataclass
 class Phase:
     """A phase of the research roadmap."""
+
     id: str
     name: str
     description: str
@@ -40,6 +42,7 @@ class Phase:
 @dataclass
 class ResearchRoadmap:
     """Generated research roadmap."""
+
     question: str
     question_id: str
     phases: List[Phase] = field(default_factory=list)
@@ -135,7 +138,7 @@ class RoadmapGenerator:
                 milestone_counter += 1
 
             phase = Phase(
-                id=f"phase{i+1}",
+                id=f"phase{i + 1}",
                 name=phase_def["name"],
                 description=phase_def["description"],
                 duration_weeks=phase_def.get("duration_weeks", 2),
@@ -177,7 +180,9 @@ class RoadmapGenerator:
                 deps = ""
                 if milestone.dependencies:
                     deps = f" ← [{', '.join(milestone.dependencies)}]"
-                lines.append(f"  └── 🎯 [{milestone.id}] {milestone.name} ({milestone.duration_weeks}周){deps}")
+                lines.append(
+                    f"  └── 🎯 [{milestone.id}] {milestone.name} ({milestone.duration_weeks}周){deps}"
+                )
                 lines.append(f"      {milestone.description}")
                 if milestone.tasks:
                     for task in milestone.tasks:
@@ -200,7 +205,7 @@ class RoadmapGenerator:
             lines.append("## 📋 备注")
             lines.append(roadmap.notes)
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def render_markdown(self, roadmap: ResearchRoadmap) -> str:
         """Render roadmap as Markdown."""
@@ -222,7 +227,9 @@ class RoadmapGenerator:
                 deps = ""
                 if milestone.dependencies:
                     deps = f" ← [{', '.join(milestone.dependencies)}]"
-                lines.append(f"- [ ] **[{milestone.id}]** {milestone.name} ({milestone.duration_weeks}周){deps}")
+                lines.append(
+                    f"- [ ] **[{milestone.id}]** {milestone.name} ({milestone.duration_weeks}周){deps}"
+                )
                 lines.append(f"  - {milestone.description}")
                 if milestone.tasks:
                     for task in milestone.tasks:
@@ -244,35 +251,40 @@ class RoadmapGenerator:
             lines.append(f"| {phase.name} | Week {current_week}-{end_week} | {milestone_names} |")
             current_week = end_week + 1
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def render_json(self, roadmap: ResearchRoadmap) -> str:
         """Render roadmap as JSON."""
         import json
-        return json.dumps({
-            "question": roadmap.question,
-            "question_id": roadmap.question_id,
-            "total_weeks": roadmap.total_weeks,
-            "created_at": roadmap.created_at,
-            "phases": [
-                {
-                    "id": p.id,
-                    "name": p.name,
-                    "description": p.description,
-                    "duration_weeks": p.duration_weeks,
-                    "order": p.order,
-                    "milestones": [
-                        {
-                            "id": m.id,
-                            "name": m.name,
-                            "description": m.description,
-                            "duration_weeks": m.duration_weeks,
-                            "tasks": m.tasks,
-                            "dependencies": m.dependencies,
-                        }
-                        for m in p.milestones
-                    ],
-                }
-                for p in roadmap.phases
-            ],
-        }, ensure_ascii=False, indent=2)
+
+        return json.dumps(
+            {
+                "question": roadmap.question,
+                "question_id": roadmap.question_id,
+                "total_weeks": roadmap.total_weeks,
+                "created_at": roadmap.created_at,
+                "phases": [
+                    {
+                        "id": p.id,
+                        "name": p.name,
+                        "description": p.description,
+                        "duration_weeks": p.duration_weeks,
+                        "order": p.order,
+                        "milestones": [
+                            {
+                                "id": m.id,
+                                "name": m.name,
+                                "description": m.description,
+                                "duration_weeks": m.duration_weeks,
+                                "tasks": m.tasks,
+                                "dependencies": m.dependencies,
+                            }
+                            for m in p.milestones
+                        ],
+                    }
+                    for p in roadmap.phases
+                ],
+            },
+            ensure_ascii=False,
+            indent=2,
+        )

@@ -12,12 +12,31 @@ from typing import Any, Dict, List, Optional
 PAPERS_DB = Path.home() / ".ai_research_os" / "papers.json"
 
 LABOR_KEYWORDS = [
-    "labor displacement", "job displacement", "automation", "unemployment",
-    "employment", "workforce", "labor market", "skill gap", "income inequality",
-    "AI and jobs", "AI impact on employment", "future of work", "automation risk",
-    "robots", "replacement", "outsourcing", "gig economy", "platform work",
-    "social protection", "universal basic income", "reskilling",
-    "cs.cyber-ph", "cs.soc", "econ.GN", "econ.GR",
+    "labor displacement",
+    "job displacement",
+    "automation",
+    "unemployment",
+    "employment",
+    "workforce",
+    "labor market",
+    "skill gap",
+    "income inequality",
+    "AI and jobs",
+    "AI impact on employment",
+    "future of work",
+    "automation risk",
+    "robots",
+    "replacement",
+    "outsourcing",
+    "gig economy",
+    "platform work",
+    "social protection",
+    "universal basic income",
+    "reskilling",
+    "cs.cyber-ph",
+    "cs.soc",
+    "econ.GN",
+    "econ.GR",
 ]
 
 LABOR_CATS = ["cs.cyber-ph", "cs.soc", "cs.HC", "econ.GN"]
@@ -47,23 +66,32 @@ def render_labor_tracker_html() -> str:
 
     lines = ['<div class="labor-tracker">']
     lines.append("<h3>👷 Labor Displacement Tracker</h3>")
-    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
-                "Papers about AI's impact on employment, workforce, and labor markets. "
-                "ArXiv: cs.cyber-ph, cs.soc, cs.HC</p>")
-    lines.append(f"<p style='font-size:13px;color:#6B8FB5;margin-bottom:14px'>"
-                f"<b>{len(papers)}</b> labor-related papers in your library.</p>")
+    lines.append(
+        "<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
+        "Papers about AI's impact on employment, workforce, and labor markets. "
+        "ArXiv: cs.cyber-ph, cs.soc, cs.HC</p>"
+    )
+    lines.append(
+        f"<p style='font-size:13px;color:#6B8FB5;margin-bottom:14px'>"
+        f"<b>{len(papers)}</b> labor-related papers in your library.</p>"
+    )
 
     if not papers:
-        lines.append("<p style='color:#A89E8C;font-size:13px'>No labor-related papers yet. "
-                    "Papers from cs.cyber-ph and cs.soc categories will appear here.</p>")
+        lines.append(
+            "<p style='color:#A89E8C;font-size:13px'>No labor-related papers yet. "
+            "Papers from cs.cyber-ph and cs.soc categories will appear here.</p>"
+        )
     else:
         for p in papers[:20]:
             cats = ", ".join((p.get("categories", []) or [])[:2])
             title = p.get("title", "")[:70]
             published = p.get("published", "")[:4]
-            kw_matches = [kw for kw in LABOR_KEYWORDS
-                         if kw.lower() in (p.get("title", "") + " " + p.get("abstract", "")).lower()
-                         and len(kw) > 4]
+            kw_matches = [
+                kw
+                for kw in LABOR_KEYWORDS
+                if kw.lower() in (p.get("title", "") + " " + p.get("abstract", "")).lower()
+                and len(kw) > 4
+            ]
             kw_display = ", ".join(f"<code>{k}</code>" for k in kw_matches[:3])
 
             lines.append(f"""

@@ -1,4 +1,5 @@
 """CLI command: session — Research session management."""
+
 from __future__ import annotations
 
 import argparse
@@ -25,7 +26,9 @@ def _build_session_parser(subparsers) -> argparse.ArgumentParser:
     # list
     sp = sub.add_parser("list", help="List recent sessions")
     sp.add_argument("--days", "-d", type=int, default=7, help="Days to look back (default: 7)")
-    sp.add_argument("--limit", "-n", type=int, default=10, help="Max sessions to show (default: 10)")
+    sp.add_argument(
+        "--limit", "-n", type=int, default=10, help="Max sessions to show (default: 10)"
+    )
 
     # current
     sub.add_parser("current", help="Show current session")
@@ -77,6 +80,7 @@ def _session_start(tracker: ResearchSessionTracker, args) -> int:
 def _session_list(tracker: ResearchSessionTracker, args) -> int:
     """List recent sessions."""
     from rich.console import Console
+
     c = Console()
 
     sessions = tracker.get_recent_sessions(days=args.days, limit=args.limit)
@@ -109,25 +113,29 @@ def _session_list(tracker: ResearchSessionTracker, args) -> int:
         intent_label = intent_names.get(s.intent, "—")
         ", ".join(s.tags[:3]) if s.tags else ""
         (s.insights[0][:45] + "...") if s.insights else ""
-        rows.append([
-            icon,
-            f"[#FF8272]{date}[/]",
-            f"[#A5D5FE]{s.title[:40]}[/]",
-            f"[#B4FA72]{len(s.queries)} Q&A[/]",
-            f"[#D0D1FE]{s.duration_minutes}m[/]",
-            f"[#FEFDC2]{intent_label}[/]",
-        ])
+        rows.append(
+            [
+                icon,
+                f"[#FF8272]{date}[/]",
+                f"[#A5D5FE]{s.title[:40]}[/]",
+                f"[#B4FA72]{len(s.queries)} Q&A[/]",
+                f"[#D0D1FE]{s.duration_minutes}m[/]",
+                f"[#FEFDC2]{intent_label}[/]",
+            ]
+        )
 
-    c.print(WarpBlocks.panel(
-        f"Recent Sessions — [#FF8272]{len(sessions)}[/] (last [#FF8272]{args.days}[/] days)",
-        "[#8E8E8E]Use airos session start to begin a research session[/]"
-    ))
+    c.print(
+        WarpBlocks.panel(
+            f"Recent Sessions — [#FF8272]{len(sessions)}[/] (last [#FF8272]{args.days}[/] days)",
+            "[#8E8E8E]Use airos session start to begin a research session[/]",
+        )
+    )
     if rows:
-        c.print(WarpBlocks.table(
-            ["", "Date", "Title", "Q&A", "Min", "Intent"],
-            rows,
-            title=f"Sessions ({len(rows)})"
-        ))
+        c.print(
+            WarpBlocks.table(
+                ["", "Date", "Title", "Q&A", "Min", "Intent"], rows, title=f"Sessions ({len(rows)})"
+            )
+        )
     c.print()
     return 0
 
@@ -135,16 +143,18 @@ def _session_list(tracker: ResearchSessionTracker, args) -> int:
 def _session_current(tracker: ResearchSessionTracker) -> int:
     """Show current session."""
     from rich.console import Console
+
     c = Console()
 
     session = tracker.get_current_session()
 
     if not session:
-        c.print(WarpBlocks.panel(
-            "Current Session",
-            "[#8E8E8E]No active session[/]\n\n"
-            "[#A5D5FE]Use airos session start to begin[/]"
-        ))
+        c.print(
+            WarpBlocks.panel(
+                "Current Session",
+                "[#8E8E8E]No active session[/]\n\n[#A5D5FE]Use airos session start to begin[/]",
+            )
+        )
         return 0
 
     intent_label = {
@@ -317,6 +327,7 @@ def _show_session_gaps(tracker, db):
 
     if result.gaps:
         from llm.gap_analyzer import render_gap_report
+
         print(render_gap_report(result))
     else:
         print(f"未发现 {topic} 的研究空白")

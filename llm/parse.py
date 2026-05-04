@@ -5,6 +5,7 @@ Extracts:
 - rubric: dict with novelty/leverage/evidence/cost/moat/adoption/overall
 - raw_md: the full raw output (unchanged, for direct rendering)
 """
+
 import re
 
 import orjson
@@ -39,12 +40,12 @@ _KNOWLEDGE_DISTRACTION_SUBSECTIONS = ["Facts", "Principles", "Insights"]
 
 # JSON code block pattern (new primary format)
 _RUBRIC_JSON_CODE_BLOCK_RE = re.compile(
-    r'```json\s*\n(\{.*?\})\s*\n```',
+    r"```json\s*\n(\{.*?\})\s*\n```",
     re.DOTALL,
 )
 # XML comment block (legacy fallback)
 _RUBRIC_BLOCK_RE = re.compile(
-    r'<!--\s*\n<RUBRIC>\s*\n(.*?)\n</RUBRIC>\s*\n-->',
+    r"<!--\s*\n<RUBRIC>\s*\n(.*?)\n</RUBRIC>\s*\n-->",
     re.DOTALL,
 )
 # Loose JSON object with novelty key
@@ -60,21 +61,21 @@ _RUBRIC_KEY_PATTERNS = {
     key: re.compile(rf'"{key}"\s*:\s*["\']?(\d)["\']?', re.IGNORECASE)
     for key in ("novelty", "leverage", "evidence", "cost", "moat", "adoption")
 }
-_RE_PAREN_COLON_NUM = re.compile(r'\)\s*:\s*(\d)')
-_RE_COLON_NUM = re.compile(r':\s*(\d)')
-_RE_OVERALL_JUDGMENT = re.compile(r'overall.*?judgment[:：]\s*(.{5,100})', re.IGNORECASE)
+_RE_PAREN_COLON_NUM = re.compile(r"\)\s*:\s*(\d)")
+_RE_COLON_NUM = re.compile(r":\s*(\d)")
+_RE_OVERALL_JUDGMENT = re.compile(r"overall.*?judgment[:：]\s*(.{5,100})", re.IGNORECASE)
 
 # ------------------------------------------------------------------
 # Precompiled patterns for rubric JSON parsing
 # ------------------------------------------------------------------
-_RE_TRAILING_COMMA = re.compile(r',(\s*})')
+_RE_TRAILING_COMMA = re.compile(r",(\s*})")
 _RE_OVERALL_QUOTED = re.compile(r'"overall"\s*:\s*"(.*?)"', re.DOTALL)
 
 # ------------------------------------------------------------------
 # Precompiled patterns for section parsing
 # ------------------------------------------------------------------
-_RE_H2 = re.compile(r'^##\s+(.+)$', re.MULTILINE)
-_RE_H3 = re.compile(r'^###\s+(.+)$', re.MULTILINE)
+_RE_H2 = re.compile(r"^##\s+(.+)$", re.MULTILINE)
+_RE_H3 = re.compile(r"^###\s+(.+)$", re.MULTILINE)
 
 
 def parse_ai_pnote_draft(raw: str) -> tuple[dict[str, str], dict[str, Any], str]:
@@ -124,7 +125,7 @@ def _parse_rubric(raw: str) -> dict[str, Any]:
 
     # 4. Line-by-line fallback: scan each line once, extract all matching keys
     line_scores: dict[str, int] = {}
-    for line in raw.split('\n'):
+    for line in raw.split("\n"):
         line_lower = line.lower()
         for key in ("novelty", "leverage", "evidence", "cost", "moat", "adoption"):
             if key in line_scores:
@@ -154,7 +155,7 @@ def _parse_rubric(raw: str) -> dict[str, Any]:
 def _parse_rubric_json(json_str: str) -> Dict[str, Any]:
     """Parse rubric JSON, handling common LLM mistakes."""
     # Remove trailing comma before }
-    json_str = _RE_TRAILING_COMMA.sub(r'\1', json_str)
+    json_str = _RE_TRAILING_COMMA.sub(r"\1", json_str)
     # Try to fix unquoted keys
     try:
         return cast(Dict[str, Any], orjson.loads(json_str))
@@ -196,8 +197,8 @@ def _parse_sections(raw: str) -> dict[str, str]:
         end = heading_positions[i + 1][0] if i + 1 < len(heading_positions) else len(raw)
         block = raw[start:end]
         # Split off the heading line, keep rest
-        first_newline = block.find('\n')
-        content = block[first_newline + 1:].strip() if first_newline >= 0 else ""
+        first_newline = block.find("\n")
+        content = block[first_newline + 1 :].strip() if first_newline >= 0 else ""
 
         # Extract ### subsections as separate keys
         subsection_positions: list[tuple[int, str]] = []
@@ -209,10 +210,14 @@ def _parse_sections(raw: str) -> dict[str, str]:
             # Build pattern to strip all subsections at once (removing from end avoids position shift)
             patterns_to_remove: list[tuple[int, int]] = []
             for j, (ss_start, ss_title) in enumerate(subsection_positions):
-                ss_end = subsection_positions[j + 1][0] if j + 1 < len(subsection_positions) else len(content)
+                ss_end = (
+                    subsection_positions[j + 1][0]
+                    if j + 1 < len(subsection_positions)
+                    else len(content)
+                )
                 ss_block = content[ss_start:ss_end]
-                ssn = ss_block.find('\n')
-                ss_content = ss_block[ssn + 1:].strip() if ssn >= 0 else ""
+                ssn = ss_block.find("\n")
+                ss_content = ss_block[ssn + 1 :].strip() if ssn >= 0 else ""
                 subsection_content_blocks[f"## {ss_title}"] = ss_content
                 patterns_to_remove.append((ss_start, ss_end))
             # Remove subsections from end to start to avoid position shifting

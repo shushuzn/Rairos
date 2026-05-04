@@ -1,4 +1,5 @@
 """CLI command: review — Generate literature review."""
+
 from __future__ import annotations
 
 import argparse
@@ -39,7 +40,8 @@ def _build_review_parser(subparsers) -> argparse.ArgumentParser:
         help="Maximum papers to analyze",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="JSON output",
     )
@@ -75,7 +77,7 @@ def _run_review(args: argparse.Namespace) -> int:
     if args.json:
         print(generator.render_json(review))
     elif args.export_md:
-        with open(args.export_md, 'w', encoding='utf-8') as f:
+        with open(args.export_md, "w", encoding="utf-8") as f:
             f.write(generator.render_markdown(review))
         print(f"✓ Exported to {args.export_md}")
     else:

@@ -53,16 +53,18 @@ def get_at_risk_capsules(threshold: int = STREAK_THRESHOLD) -> List[AtRiskCapsul
         streak = cap.get("low_score_streak", 0)
         if streak < threshold:
             continue
-        results.append(AtRiskCapsule(
-            capsule_id=cap.get("capsule_id", ""),
-            gap_title=cap.get("action_gap_title", ""),
-            gap_type=cap.get("action_gap_type", ""),
-            outcome_score=cap.get("outcome_success_score", 0.0),
-            low_score_streak=streak,
-            status=cap.get("status", "active"),
-            pinned_ttl=cap.get("pinned_ttl", 0),
-            trigger_keywords=cap.get("trigger_keywords", []),
-        ))
+        results.append(
+            AtRiskCapsule(
+                capsule_id=cap.get("capsule_id", ""),
+                gap_title=cap.get("action_gap_title", ""),
+                gap_type=cap.get("action_gap_type", ""),
+                outcome_score=cap.get("outcome_success_score", 0.0),
+                low_score_streak=streak,
+                status=cap.get("status", "active"),
+                pinned_ttl=cap.get("pinned_ttl", 0),
+                trigger_keywords=cap.get("trigger_keywords", []),
+            )
+        )
     results.sort(key=lambda x: -x.low_score_streak)
     return results
 
@@ -107,30 +109,40 @@ def render_html(capsules: Optional[List[AtRiskCapsule]] = None) -> str:
         return "<p>No at-risk capsules. All capsules are healthy.</p>"
 
     lines = ['<div class="at-risk-panel">']
-    lines.append(f"<h3>🚨 At-Risk Capsules <small style='color:#888'>({len(capsules)} need attention)</small></h3>")
+    lines.append(
+        f"<h3>🚨 At-Risk Capsules <small style='color:#888'>({len(capsules)} need attention)</small></h3>"
+    )
     lines.append('<table class="at-risk-table">')
-    lines.append("<thead><tr>"
-                 "<th>Gap Title</th>"
-                 "<th>Type</th>"
-                 "<th>Score</th>"
-                 "<th>Streak</th>"
-                 "<th>Pinned</th>"
-                 "<th>Action</th>"
-                 "</tr></thead>")
+    lines.append(
+        "<thead><tr>"
+        "<th>Gap Title</th>"
+        "<th>Type</th>"
+        "<th>Score</th>"
+        "<th>Streak</th>"
+        "<th>Pinned</th>"
+        "<th>Action</th>"
+        "</tr></thead>"
+    )
     lines.append("<tbody>")
 
     for cap in capsules:
         streak_bar = "🔴" * cap.low_score_streak
         pinned = f"TTL {cap.pinned_ttl}" if cap.pinned_ttl > 0 else "—"
         lines.append("<tr>")
-        lines.append(f"<td style='max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'><code title='{cap.gap_title}'>{cap.gap_title[:35]}</code></td>")
+        lines.append(
+            f"<td style='max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'><code title='{cap.gap_title}'>{cap.gap_title[:35]}</code></td>"
+        )
         lines.append(f"<td><code>{cap.gap_type}</code></td>")
         lines.append(f"<td>{cap.outcome_score:.2f}</td>")
         lines.append(f"<td>{streak_bar} <small>{cap.low_score_streak}</small></td>")
         lines.append(f"<td>{pinned}</td>")
         lines.append("<td>")
-        lines.append(f'<button class="btn btn-small btn-keep" onclick="keepActive(\'{cap.capsule_id}\')">✓ Keep Active</button>')
-        lines.append(f'<button class="btn btn-small btn-pin" onclick="pinToTTL(\'{cap.capsule_id}\')">📌 Pin TTL</button>')
+        lines.append(
+            f'<button class="btn btn-small btn-keep" onclick="keepActive(\'{cap.capsule_id}\')">✓ Keep Active</button>'
+        )
+        lines.append(
+            f'<button class="btn btn-small btn-pin" onclick="pinToTTL(\'{cap.capsule_id}\')">📌 Pin TTL</button>'
+        )
         lines.append("</td>")
         lines.append("</tr>")
 
@@ -138,9 +150,15 @@ def render_html(capsules: Optional[List[AtRiskCapsule]] = None) -> str:
     lines.append("<style>")
     lines.append(".at-risk-panel { font-family: Georgia, serif; }")
     lines.append(".at-risk-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }")
-    lines.append(".at-risk-table th, .at-risk-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }")
-    lines.append(".at-risk-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }")
-    lines.append(".btn-small { padding: 3px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; }")
+    lines.append(
+        ".at-risk-table th, .at-risk-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }"
+    )
+    lines.append(
+        ".at-risk-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }"
+    )
+    lines.append(
+        ".btn-small { padding: 3px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; }"
+    )
     lines.append(".btn-keep { background: #7A9E7A; color: white; border: none; }")
     lines.append(".btn-pin { background: #6B8FB5; color: white; border: none; margin-left: 4px; }")
     lines.append("</style>")

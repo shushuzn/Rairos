@@ -22,6 +22,7 @@ from llm.constants import AI_RESEARCH_KEYWORDS, LLM_BASE_URL, LLM_MODEL
 # Optional LLM import
 try:
     from llm.chat import call_llm_chat_completions
+
     LLM_AVAILABLE = True
 except ImportError:
     LLM_AVAILABLE = False
@@ -65,24 +66,27 @@ _SUGGESTION_USER_PROMPT_TEMPLATE = """问题: {question}
 
 class NoveltyLevel(Enum):
     """Novelty level for research questions."""
-    HIGH = "high"       # 高创新性
-    MEDIUM = "medium"   # 中等创新性
-    LOW = "low"         # 低创新性 (已被充分研究)
+
+    HIGH = "high"  # 高创新性
+    MEDIUM = "medium"  # 中等创新性
+    LOW = "low"  # 低创新性 (已被充分研究)
     UNKNOWN = "unknown"  # 无法判断
 
 
 class InnovationDimension(Enum):
     """Dimensions of research innovation."""
-    METHOD = "method"           # 方法创新
-    TASK = "task"               # 任务创新
-    EVALUATION = "evaluation"   # 评估创新
-    THEORY = "theory"           # 理论创新
+
+    METHOD = "method"  # 方法创新
+    TASK = "task"  # 任务创新
+    EVALUATION = "evaluation"  # 评估创新
+    THEORY = "theory"  # 理论创新
     APPLICATION = "application"  # 应用创新
 
 
 @dataclass
 class RelatedWork:
     """A related paper that addresses similar questions."""
+
     paper_id: str
     title: str
     year: int
@@ -95,9 +99,10 @@ class RelatedWork:
 @dataclass
 class InnovationScore:
     """Innovation score for a research question."""
+
     overall: float  # 0-10
-    method: float   # 方法创新
-    task: float     # 任务创新
+    method: float  # 方法创新
+    task: float  # 任务创新
     evaluation: float  # 评估创新
     dimensions: List[InnovationDimension]
     reasoning: str  # 打分理由
@@ -106,6 +111,7 @@ class InnovationScore:
 @dataclass
 class ValidationResult:
     """Result of question validation."""
+
     question: str
     is_novel: bool
     novelty_level: NoveltyLevel
@@ -181,9 +187,7 @@ class QuestionValidator:
 
         # 3. Analyze innovation
         if use_llm and LLM_AVAILABLE:
-            innovation = self._analyze_innovation_llm(
-                question, related, api_key, base_url, model
-            )
+            innovation = self._analyze_innovation_llm(question, related, api_key, base_url, model)
             result.innovation_score = innovation
             result.suggestions = self._generate_suggestions_llm(
                 question, related, innovation, api_key, base_url, model
@@ -205,8 +209,8 @@ class QuestionValidator:
     def _expand_question(self, question: str) -> List[str]:
         """Expand question into searchable keywords."""
         # Remove common question words
-        cleaned = re.sub(r'\b(can|how|what|why|is|does|to|the|a|an)\b', '', question.lower())
-        cleaned = re.sub(r'[^\w\s]', ' ', cleaned)
+        cleaned = re.sub(r"\b(can|how|what|why|is|does|to|the|a|an)\b", "", question.lower())
+        cleaned = re.sub(r"[^\w\s]", " ", cleaned)
         words = [w.strip() for w in cleaned.split() if len(w.strip()) > 2]
 
         # Add key technical terms
@@ -231,10 +235,10 @@ class QuestionValidator:
             for kw in keywords[:3]:
                 rows, _ = self.db.search_papers(kw, limit=limit)
                 for row in rows:
-                    paper_id = getattr(row, 'id', '')
-                    title = getattr(row, 'title', '') or ''
-                    year = getattr(row, 'year', 0) or 0
-                    abstract = getattr(row, 'abstract', '') or ''
+                    paper_id = getattr(row, "id", "")
+                    title = getattr(row, "title", "") or ""
+                    year = getattr(row, "year", 0) or 0
+                    abstract = getattr(row, "abstract", "") or ""
 
                     # Check if already in results
                     if any(r.paper_id == paper_id for r in related):
@@ -246,15 +250,17 @@ class QuestionValidator:
                     relevance = matches / len(keywords)
 
                     if relevance > 0.1:
-                        related.append(RelatedWork(
-                            paper_id=paper_id,
-                            title=title[:80],
-                            year=year,
-                            relevance_score=relevance,
-                            overlap_aspects=[],
-                            difference_aspects=[],
-                            conclusion="",
-                        ))
+                        related.append(
+                            RelatedWork(
+                                paper_id=paper_id,
+                                title=title[:80],
+                                year=year,
+                                relevance_score=relevance,
+                                overlap_aspects=[],
+                                difference_aspects=[],
+                                conclusion="",
+                            )
+                        )
 
         except Exception:
             # Semantic related-work search failed — return empty list without crashing.
@@ -279,10 +285,7 @@ class QuestionValidator:
         if not api_key:
             return self._analyze_innovation_rules(related)
 
-        related_text = "\n".join([
-            f"- {r.title} ({r.year})"
-            for r in related
-        ]) or "无相关论文"
+        related_text = "\n".join([f"- {r.title} ({r.year})" for r in related]) or "无相关论文"
 
         user_prompt = _INNOVATION_ANALYSIS_USER_PROMPT_TEMPLATE.format(
             question=question,
@@ -315,25 +318,25 @@ class QuestionValidator:
         eval_score = 5.0
         reasoning = ""
 
-        for line in response.strip().split('\n'):
+        for line in response.strip().split("\n"):
             line = line.strip().lower()
-            if line.startswith('method:'):
+            if line.startswith("method:"):
                 try:
-                    method_score = float(line.split(':')[1].strip())
+                    method_score = float(line.split(":")[1].strip())
                 except (ValueError, IndexError):
                     pass
-            elif line.startswith('task:'):
+            elif line.startswith("task:"):
                 try:
-                    task_score = float(line.split(':')[1].strip())
+                    task_score = float(line.split(":")[1].strip())
                 except (ValueError, IndexError):
                     pass
-            elif line.startswith('evaluation:'):
+            elif line.startswith("evaluation:"):
                 try:
-                    eval_score = float(line.split(':')[1].strip())
+                    eval_score = float(line.split(":")[1].strip())
                 except (ValueError, IndexError):
                     pass
-            elif line.startswith('reasoning:'):
-                reasoning = line.split(':', 1)[1].strip()
+            elif line.startswith("reasoning:"):
+                reasoning = line.split(":", 1)[1].strip()
 
         # Overall as weighted average
         overall = method_score * 0.4 + task_score * 0.3 + eval_score * 0.3
@@ -446,10 +449,10 @@ class QuestionValidator:
             )
 
             suggestions = []
-            for line in response.strip().split('\n'):
+            for line in response.strip().split("\n"):
                 line = line.strip()
-                if line and (line.startswith('[') or line.startswith('-')):
-                    suggestions.append(line.lstrip('[-] '))
+                if line and (line.startswith("[") or line.startswith("-")):
+                    suggestions.append(line.lstrip("[-] "))
 
             return suggestions[:5]
 
@@ -520,7 +523,7 @@ class QuestionValidator:
         }.get(result.novelty_level, "⚪")
 
         lines = [
-            f"🔬 研究问题验证: \"{result.question[:60]}{'...' if len(result.question) > 60 else ''}\"",
+            f'🔬 研究问题验证: "{result.question[:60]}{"..." if len(result.question) > 60 else ""}"',
             "",
             f"{novelty_icon} 创新指数: {result.innovation_score.overall:.1f}/10",
             f"   方法创新: {result.innovation_score.method:.0f}/10",

@@ -76,16 +76,18 @@ def get_bold_capsules() -> List[BoldCapsule]:
         if not reasons:
             continue
 
-        results.append(BoldCapsule(
-            capsule_id=cap.get("capsule_id", ""),
-            gap_title=cap.get("action_gap_title", ""),
-            gap_type=gap_type,
-            polarity=polarity,
-            outcome_score=cap.get("outcome_success_score", 0.0),
-            novelty_score=round(novelty, 3),
-            trigger_keywords=keywords,
-            reason=", ".join(reasons),
-        ))
+        results.append(
+            BoldCapsule(
+                capsule_id=cap.get("capsule_id", ""),
+                gap_title=cap.get("action_gap_title", ""),
+                gap_type=gap_type,
+                polarity=polarity,
+                outcome_score=cap.get("outcome_success_score", 0.0),
+                novelty_score=round(novelty, 3),
+                trigger_keywords=keywords,
+                reason=", ".join(reasons),
+            )
+        )
 
     results.sort(key=lambda x: -x.novelty_score)
     return results
@@ -99,8 +101,12 @@ def render_html(capsules: Optional[List[BoldCapsule]] = None) -> str:
         return "<p>No bold hypotheses yet. Theoretical gaps and negative-polarity capsules will appear here.</p>"
 
     lines = ['<div class="bold-vault">']
-    lines.append("<h3>🔴 Bold Hypothesis Vault <small style='color:#888'>(high-risk / high-reward gaps)</small></h3>")
-    lines.append(f"<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>{len(capsules)} bold capsules tracked.</p>")
+    lines.append(
+        "<h3>🔴 Bold Hypothesis Vault <small style='color:#888'>(high-risk / high-reward gaps)</small></h3>"
+    )
+    lines.append(
+        f"<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>{len(capsules)} bold capsules tracked.</p>"
+    )
     lines.append("<div class='bold-grid'>")
 
     for c in capsules:
@@ -120,9 +126,15 @@ def render_html(capsules: Optional[List[BoldCapsule]] = None) -> str:
     lines.append("</div>")
     lines.append("<style>")
     lines.append(".bold-vault { font-family: Georgia, serif; }")
-    lines.append(".bold-card { border: 2px solid #C4706A; border-radius: 6px; padding: 12px 14px; margin-bottom: 10px; background: rgba(196,112,106,0.06); }")
-    lines.append(".bold-reason { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #C4706A; font-weight: 700; margin-bottom: 4px; }")
-    lines.append(".bold-title { font-size: 14px; font-weight: 600; color: #2a2a2a; margin-bottom: 6px; line-height: 1.4; }")
+    lines.append(
+        ".bold-card { border: 2px solid #C4706A; border-radius: 6px; padding: 12px 14px; margin-bottom: 10px; background: rgba(196,112,106,0.06); }"
+    )
+    lines.append(
+        ".bold-reason { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #C4706A; font-weight: 700; margin-bottom: 4px; }"
+    )
+    lines.append(
+        ".bold-title { font-size: 14px; font-weight: 600; color: #2a2a2a; margin-bottom: 6px; line-height: 1.4; }"
+    )
     lines.append(".bold-meta { font-size: 11px; color: #7a7570; margin-bottom: 4px; }")
     lines.append(".bold-kw { font-size: 11px; color: #A89E8C; font-style: italic; }")
     lines.append("</style>")

@@ -1,4 +1,5 @@
 """Subscription monitor: Checks arXiv for new papers matching subscriptions."""
+
 from __future__ import annotations
 
 import json
@@ -69,9 +70,7 @@ class SubscriptionMonitor:
 
             # Check if already recorded
             existing = self.db.get_subscription_papers(sub_id, limit=1)
-            already_recorded = any(
-                p.get("arxiv_id") == arxiv_id for p in existing
-            )
+            already_recorded = any(p.get("arxiv_id") == arxiv_id for p in existing)
 
             if not already_recorded:
                 self.db.record_subscription_paper(
@@ -170,12 +169,26 @@ def _parse_atom_feed_static(xml_content: str) -> List[Dict[str, Any]]:
             if arxiv_id_elem is not None and arxiv_id_elem.text:
                 arxiv_id = arxiv_id_elem.text.split("/")[-1]
             title_elem = entry.find("atom:title", ns)
-            title = title_elem.text.strip().replace("\n", " ") if title_elem is not None and title_elem.text else ""
+            title = (
+                title_elem.text.strip().replace("\n", " ")
+                if title_elem is not None and title_elem.text
+                else ""
+            )
             summary_elem = entry.find("atom:summary", ns)
-            abstract = summary_elem.text.strip().replace("\n", " ") if summary_elem is not None and summary_elem.text else ""
+            abstract = (
+                summary_elem.text.strip().replace("\n", " ")
+                if summary_elem is not None and summary_elem.text
+                else ""
+            )
             published_elem = entry.find("atom:published", ns)
-            published = published_elem.text[:10] if published_elem is not None and published_elem.text else ""
-            papers.append({"arxiv_id": arxiv_id, "title": title, "abstract": abstract, "published": published})
+            published = (
+                published_elem.text[:10]
+                if published_elem is not None and published_elem.text
+                else ""
+            )
+            papers.append(
+                {"arxiv_id": arxiv_id, "title": title, "abstract": abstract, "published": published}
+            )
     except ET.ParseError as e:
         logger.error(f"Failed to parse arXiv feed: {e}")
     return papers

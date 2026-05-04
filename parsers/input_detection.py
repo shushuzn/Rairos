@@ -1,4 +1,5 @@
 """Input normalization utilities."""
+
 import re
 from typing import Optional
 

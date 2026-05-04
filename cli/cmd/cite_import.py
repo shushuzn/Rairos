@@ -1,4 +1,5 @@
 """CLI command: cite-import."""
+
 from __future__ import annotations
 
 import argparse
@@ -14,15 +15,17 @@ def _extract_references_from_text(paper_id: str, text: str) -> dict[str, list[st
     if not text or not text.strip():
         return {"arxiv_ids": [], "dois": [], "pmids": [], "isbns": []}
 
-    arXiv_PAT = _re.compile(r'\barXiv:\s*(\d+\.\d+\b)', _re.IGNORECASE)
-    DOI_PAT = _re.compile(r'\b10\.\d{4,}/[^\s]+', _re.IGNORECASE)
-    PMID_PAT = _re.compile(r'\bPMID:\s*(\d{6,})\b', _re.IGNORECASE)
-    ISBN_PAT = _re.compile(r'\bISBN(?:-13)?:?\s*([0-9-X]{10,})\b', _re.IGNORECASE)
+    arXiv_PAT = _re.compile(r"\barXiv:\s*(\d+\.\d+\b)", _re.IGNORECASE)
+    DOI_PAT = _re.compile(r"\b10\.\d{4,}/[^\s]+", _re.IGNORECASE)
+    PMID_PAT = _re.compile(r"\bPMID:\s*(\d{6,})\b", _re.IGNORECASE)
+    ISBN_PAT = _re.compile(r"\bISBN(?:-13)?:?\s*([0-9-X]{10,})\b", _re.IGNORECASE)
 
-    _REFS_SECTION_PAT = _re.compile(r'(?:\n|^)[ ]*(?:\d+\.?\s*)?(?:References|Bibliography|Citations)', _re.IGNORECASE)
+    _REFS_SECTION_PAT = _re.compile(
+        r"(?:\n|^)[ ]*(?:\d+\.?\s*)?(?:References|Bibliography|Citations)", _re.IGNORECASE
+    )
     match = _REFS_SECTION_PAT.search(text)
     if match:
-        text = text[match.start():]
+        text = text[match.start() :]
 
     arxiv_ids = list(set(arXiv_PAT.findall(text)))
     dois = list(set(DOI_PAT.findall(text)))
@@ -42,11 +45,25 @@ def _build_cite_import_parser(subparsers) -> argparse.ArgumentParser:
         nargs="?",
         help="JSON string or @filename (file prefixed with @) containing citation data",
     )
-    p.add_argument("--dry-run", action="store_true", help="Show what would be imported without writing to DB")
-    p.add_argument("--skip-missing", action="store_true", help="Skip source/target papers that don't exist in the DB")
-    p.add_argument("--extract", action="store_true", help="Extract citation references from a paper's plain_text (requires --paper)")
-    p.add_argument("--paper", metavar="PAPER_ID", dest="extract_paper", help="Paper ID for --extract mode")
-    p.add_argument("--dedup", action="store_true", help="Use upsert mode to report duplicate citation edges")
+    p.add_argument(
+        "--dry-run", action="store_true", help="Show what would be imported without writing to DB"
+    )
+    p.add_argument(
+        "--skip-missing",
+        action="store_true",
+        help="Skip source/target papers that don't exist in the DB",
+    )
+    p.add_argument(
+        "--extract",
+        action="store_true",
+        help="Extract citation references from a paper's plain_text (requires --paper)",
+    )
+    p.add_argument(
+        "--paper", metavar="PAPER_ID", dest="extract_paper", help="Paper ID for --extract mode"
+    )
+    p.add_argument(
+        "--dedup", action="store_true", help="Use upsert mode to report duplicate citation edges"
+    )
     return p  # type: ignore[no-any-return]
 
 

@@ -1,4 +1,5 @@
 """Literature Review renderer: Generates incremental review documents."""
+
 from __future__ import annotations
 
 import datetime
@@ -30,18 +31,10 @@ def render_litreview(
     date_range = _get_date_range(papers)
 
     # Sort papers by date (newest first)
-    sorted_papers = sorted(
-        papers,
-        key=lambda p: p.get("published", ""),
-        reverse=True
-    )
+    sorted_papers = sorted(papers, key=lambda p: p.get("published", ""), reverse=True)
 
     # Sort by score for top papers
-    top_papers = sorted(
-        papers,
-        key=lambda p: p.get("score", 0),
-        reverse=True
-    )[:10]
+    top_papers = sorted(papers, key=lambda p: p.get("score", 0), reverse=True)[:10]
 
     # Build markdown
     lines = [
@@ -193,7 +186,7 @@ def update_litreview(
             result.append(f"- {now[:10]}: 新增 [{title}](https://arxiv.org/abs/{arxiv_id})")
         result.append("")
         # Add the rest
-        for line in lines[changelog_start + 1:]:
+        for line in lines[changelog_start + 1 :]:
             # Skip duplicate entries we just added
             skip = False
             for p in new_papers[:5]:
@@ -231,9 +224,7 @@ def _group_by_methodology(papers: List[Dict[str, Any]]) -> Dict[str, List[Dict]]
 
     groups: Dict[str, List[Dict]] = {}
     for paper in papers:
-        text = (
-            paper.get("title", "") + " " + paper.get("abstract", "")
-        ).lower()
+        text = (paper.get("title", "") + " " + paper.get("abstract", "")).lower()
 
         for method, keywords in method_keywords.items():
             if any(kw in text for kw in keywords):

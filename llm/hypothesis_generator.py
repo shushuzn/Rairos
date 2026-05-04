@@ -42,6 +42,7 @@ _HYPOTHESIS_ENHANCEMENT_USER_PROMPT_TEMPLATE = """研究领域: {topic}
 # Optional imports
 try:
     from llm.chat import call_llm_chat_completions
+
     LLM_AVAILABLE = True
 except ImportError:
     LLM_AVAILABLE = False
@@ -49,15 +50,17 @@ except ImportError:
 
 class HypothesisType(Enum):
     """Type of research hypothesis."""
-    CAUSAL = "causal"           # 因果假说
+
+    CAUSAL = "causal"  # 因果假说
     CORRELATIONAL = "correlational"  # 相关性假说
-    COMPARATIVE = "comparative"   # 比较假说
-    MECHANISTIC = "mechanistic"   # 机制假说
-    EXPLORATORY = "exploratory"   # 探索性假说
+    COMPARATIVE = "comparative"  # 比较假说
+    MECHANISTIC = "mechanistic"  # 机制假说
+    EXPLORATORY = "exploratory"  # 探索性假说
 
 
 class RiskLevel(Enum):
     """Risk level for hypothesis."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -66,6 +69,7 @@ class RiskLevel(Enum):
 @dataclass
 class ExperimentDesign:
     """Experiment design for testing a hypothesis."""
+
     baseline: str  # 基线选择
     variables: List[str]  # 实验变量
     controls: List[str]  # 控制变量
@@ -77,6 +81,7 @@ class ExperimentDesign:
 @dataclass
 class DifferentiationPoint:
     """How hypothesis differs from existing work."""
+
     compared_work: str
     our_advantage: str
     innovation: str
@@ -85,6 +90,7 @@ class DifferentiationPoint:
 @dataclass
 class RiskAssessment:
     """Risk assessment for hypothesis."""
+
     technical_risk: RiskLevel
     hypothesis_risk: RiskLevel
     technical_reason: str
@@ -95,12 +101,17 @@ class RiskAssessment:
 @dataclass
 class ResearchHypothesis:
     """A generated research hypothesis."""
+
     id: str = ""  # Unique ID for tracking experiment → hypothesis linkage
     title: str = ""
     hypothesis_type: HypothesisType = HypothesisType.CAUSAL
     core_statement: str = ""  # 核心假说陈述
     based_on: str = ""  # 基于什么（空白、趋势、矛盾）
-    experiment_design: ExperimentDesign = field(default_factory=lambda: ExperimentDesign(baseline="", variables=[], controls=[], evaluation_metrics=[], expected_results=""))
+    experiment_design: ExperimentDesign = field(
+        default_factory=lambda: ExperimentDesign(
+            baseline="", variables=[], controls=[], evaluation_metrics=[], expected_results=""
+        )
+    )
     differentiations: List[DifferentiationPoint] = field(default_factory=list)
     risk_assessment: Optional[RiskAssessment] = None
     novelty_score: float = 0.5
@@ -111,6 +122,7 @@ class ResearchHypothesis:
 @dataclass
 class HypothesisResult:
     """Complete hypothesis generation result."""
+
     topic: str
     hypotheses: List[ResearchHypothesis] = field(default_factory=list)
     summary: str = ""
@@ -213,15 +225,12 @@ class HypothesisGenerator:
         has_story = bool(story_context)
 
         # Generate hypotheses from templates
-        hypotheses = self._generate_from_templates(
-            topic, gap_context, trend_context, creative
-        )
+        hypotheses = self._generate_from_templates(topic, gap_context, trend_context, creative)
 
         # Enhance with LLM
         if use_llm and LLM_AVAILABLE:
             hypotheses = self._enhance_with_llm(
-                topic, hypotheses, gap_context, trend_context,
-                api_key, base_url, model
+                topic, hypotheses, gap_context, trend_context, api_key, base_url, model
             )
 
         result.hypotheses = hypotheses
@@ -268,7 +277,7 @@ class HypothesisGenerator:
             # Fill in template with topic
             hypothesis = ResearchHypothesis(
                 id=str(uuid.uuid4())[:8],
-                title=f"假说 {i+1}: {topic} 研究",
+                title=f"假说 {i + 1}: {topic} 研究",
                 hypothesis_type=cast(HypothesisType, template_info["type"]),
                 core_statement=self._fill_template(cast(str, template), topic, gap_context),
                 based_on=f"基于{gap_type.replace('_', ' ')}类型",
@@ -294,7 +303,7 @@ class HypothesisGenerator:
     def _fill_template(self, template: str, topic: str, context: str) -> str:
         """Fill in hypothesis template."""
         # Extract method names from context
-        method_match = re.search(r'([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)', context[:200])
+        method_match = re.search(r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)", context[:200])
         method = method_match.group(1) if method_match else topic
 
         replacements = {
@@ -327,15 +336,15 @@ class HypothesisGenerator:
         """Infer gap type from context."""
         context_lower = context.lower()
 
-        if any(k in context_lower for k in ['limitation', '不足', 'weakness', 'scalability']):
+        if any(k in context_lower for k in ["limitation", "不足", "weakness", "scalability"]):
             return "method_limitation"
-        elif any(k in context_lower for k in ['future', 'unexplored', '未探索']):
+        elif any(k in context_lower for k in ["future", "unexplored", "未探索"]):
             return "unexplored_application"
-        elif any(k in context_lower for k in ['however', 'contradict', '矛盾']):
+        elif any(k in context_lower for k in ["however", "contradict", "矛盾"]):
             return "contradiction"
-        elif any(k in context_lower for k in ['scale', '扩展', '大规模']):
+        elif any(k in context_lower for k in ["scale", "扩展", "大规模"]):
             return "scalability_issue"
-        elif any(k in context_lower for k in ['benchmark', '评估', 'metric']):
+        elif any(k in context_lower for k in ["benchmark", "评估", "metric"]):
             return "evaluation_gap"
 
         return "method_limitation"  # Default
@@ -356,7 +365,8 @@ class HypothesisGenerator:
 
         topic_lower = topic.lower()
         detected_domains = [
-            domain for domain, keywords in domain_keywords.items()
+            domain
+            for domain, keywords in domain_keywords.items()
             if any(k in topic_lower for k in keywords)
         ]
 
@@ -414,16 +424,18 @@ class HypothesisGenerator:
             )
 
             # Parse LLM response and enhance hypotheses
-            for line in response.strip().split('\n'):
-                if line.startswith('[假说') or line.startswith('Hypothesis'):
+            for line in response.strip().split("\n"):
+                if line.startswith("[假说") or line.startswith("Hypothesis"):
                     # Add new hypothesis from LLM
-                    parts = line.split('|')
+                    parts = line.split("|")
                     if len(parts) >= 1:
                         hypothesis = ResearchHypothesis(
                             id=str(uuid.uuid4())[:8],
                             title="LLM生成假说",
                             hypothesis_type=HypothesisType.EXPLORATORY,
-                            core_statement=parts[0].split(']')[1].strip() if ']' in parts[0] else parts[0],
+                            core_statement=parts[0].split("]")[1].strip()
+                            if "]" in parts[0]
+                            else parts[0],
                             based_on="LLM增强生成",
                             gap_type=self._infer_gap_type(gap_context),
                             experiment_design=ExperimentDesign(
@@ -476,12 +488,14 @@ class HypothesisGenerator:
         try:
             rows, _ = self.db.search_papers(topic, limit=5)
             for row in rows[:3]:
-                title = getattr(row, 'title', '')[:50] or '现有方法'
-                differentiations.append(DifferentiationPoint(
-                    compared_work=title,
-                    our_advantage="创新点待确定",
-                    innovation="方法/应用/评估创新",
-                ))
+                title = getattr(row, "title", "")[:50] or "现有方法"
+                differentiations.append(
+                    DifferentiationPoint(
+                        compared_work=title,
+                        our_advantage="创新点待确定",
+                        innovation="方法/应用/评估创新",
+                    )
+                )
         except Exception:
             # Differentiation search failed — return empty list without crashing.
             pass
@@ -504,7 +518,9 @@ class HypothesisGenerator:
         return RiskAssessment(
             technical_risk=tech_risk,
             hypothesis_risk=hyp_risk,
-            technical_reason="技术实现难度适中" if tech_risk == RiskLevel.MEDIUM else "技术挑战较大",
+            technical_reason="技术实现难度适中"
+            if tech_risk == RiskLevel.MEDIUM
+            else "技术挑战较大",
             hypothesis_reason="假说具体可验证" if hyp_risk == RiskLevel.LOW else "存在不确定性",
             mitigation=[
                 "从小规模实验开始",
@@ -600,8 +616,12 @@ class HypothesisGenerator:
                     RiskLevel.HIGH: "🔴",
                 }
                 lines.append("风险评估:")
-                lines.append(f"  技术风险: {risk_icon[h.risk_assessment.technical_risk]} {h.risk_assessment.technical_reason}")
-                lines.append(f"  假设风险: {risk_icon[h.risk_assessment.hypothesis_risk]} {h.risk_assessment.hypothesis_reason}")
+                lines.append(
+                    f"  技术风险: {risk_icon[h.risk_assessment.technical_risk]} {h.risk_assessment.technical_reason}"
+                )
+                lines.append(
+                    f"  假设风险: {risk_icon[h.risk_assessment.hypothesis_risk]} {h.risk_assessment.hypothesis_reason}"
+                )
                 lines.append("")
 
             # Differentiations
@@ -617,7 +637,7 @@ class HypothesisGenerator:
         # Summary
         lines.append(f"📊 {result.summary}")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def render_json(self, result: HypothesisResult) -> str:
         """Render result as JSON."""
@@ -640,8 +660,12 @@ class HypothesisGenerator:
                         "metrics": h.experiment_design.evaluation_metrics,
                     },
                     "risk": {
-                        "technical": h.risk_assessment.technical_risk.value if h.risk_assessment else "unknown",
-                        "hypothesis": h.risk_assessment.hypothesis_risk.value if h.risk_assessment else "unknown",
+                        "technical": h.risk_assessment.technical_risk.value
+                        if h.risk_assessment
+                        else "unknown",
+                        "hypothesis": h.risk_assessment.hypothesis_risk.value
+                        if h.risk_assessment
+                        else "unknown",
                     },
                 }
                 for h in result.hypotheses

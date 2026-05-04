@@ -10,6 +10,7 @@ Usage:
 
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from llm.gap_analyzer import GapAnalyzerV2, ResearchGapV2
@@ -36,29 +37,71 @@ def make_ablation_gaps():
 
     return [
         # Gap A: trend winner (trend=2.0, others=0)
-        ResearchGapV2(gap_type=GapType.METHOD_LIMITATION, title="Gap-A-trend",
-                      description="Trending topic", severity=GapSeverity.MEDIUM, priority=50,
-                      novelty_score=2.0, gene_pool_score=0.0, preference_score=0.0),
+        ResearchGapV2(
+            gap_type=GapType.METHOD_LIMITATION,
+            title="Gap-A-trend",
+            description="Trending topic",
+            severity=GapSeverity.MEDIUM,
+            priority=50,
+            novelty_score=2.0,
+            gene_pool_score=0.0,
+            preference_score=0.0,
+        ),
         # Gap B: gene_pool winner
-        ResearchGapV2(gap_type=GapType.UNEXPLORED_APPLICATION, title="Gap-B-gene",
-                      description="Novel application", severity=GapSeverity.MEDIUM, priority=50,
-                      novelty_score=0.0, gene_pool_score=0.9, preference_score=0.0),
+        ResearchGapV2(
+            gap_type=GapType.UNEXPLORED_APPLICATION,
+            title="Gap-B-gene",
+            description="Novel application",
+            severity=GapSeverity.MEDIUM,
+            priority=50,
+            novelty_score=0.0,
+            gene_pool_score=0.9,
+            preference_score=0.0,
+        ),
         # Gap C: pref winner
-        ResearchGapV2(gap_type=GapType.CONTRADICTION, title="Gap-C-pref",
-                      description="Contradiction", severity=GapSeverity.MEDIUM, priority=50,
-                      novelty_score=0.0, gene_pool_score=0.0, preference_score=2.0),
+        ResearchGapV2(
+            gap_type=GapType.CONTRADICTION,
+            title="Gap-C-pref",
+            description="Contradiction",
+            severity=GapSeverity.MEDIUM,
+            priority=50,
+            novelty_score=0.0,
+            gene_pool_score=0.0,
+            preference_score=2.0,
+        ),
         # Gap D: severity winner
-        ResearchGapV2(gap_type=GapType.EVALUATION_GAP, title="Gap-D-severity",
-                      description="Eval gap", severity=GapSeverity.HIGH, priority=50,
-                      novelty_score=0.0, gene_pool_score=0.0, preference_score=0.0),
+        ResearchGapV2(
+            gap_type=GapType.EVALUATION_GAP,
+            title="Gap-D-severity",
+            description="Eval gap",
+            severity=GapSeverity.HIGH,
+            priority=50,
+            novelty_score=0.0,
+            gene_pool_score=0.0,
+            preference_score=0.0,
+        ),
         # Gap E: priority winner
-        ResearchGapV2(gap_type=GapType.SCALABILITY_ISSUE, title="Gap-E-priority",
-                      description="Scalability", severity=GapSeverity.MEDIUM, priority=200,
-                      novelty_score=0.0, gene_pool_score=0.0, preference_score=0.0),
+        ResearchGapV2(
+            gap_type=GapType.SCALABILITY_ISSUE,
+            title="Gap-E-priority",
+            description="Scalability",
+            severity=GapSeverity.MEDIUM,
+            priority=200,
+            novelty_score=0.0,
+            gene_pool_score=0.0,
+            preference_score=0.0,
+        ),
         # Gap F: keyword winner (has matching keyword)
-        ResearchGapV2(gap_type=GapType.THEORETICAL_GAP, title="Gap-F-keyword",
-                      description="Theoretical analysis", severity=GapSeverity.MEDIUM, priority=50,
-                      novelty_score=0.0, gene_pool_score=0.0, preference_score=0.0),
+        ResearchGapV2(
+            gap_type=GapType.THEORETICAL_GAP,
+            title="Gap-F-keyword",
+            description="Theoretical analysis",
+            severity=GapSeverity.MEDIUM,
+            priority=50,
+            novelty_score=0.0,
+            gene_pool_score=0.0,
+            preference_score=0.0,
+        ),
     ]
 
 
@@ -75,7 +118,7 @@ def run_ablation():
     gaps = make_ablation_gaps()
 
     # ── Full 6-tuple sort ─────────────────────────────────────────────────────
-    with __import__('tempfile').TemporaryDirectory() as tmpdir:
+    with __import__("tempfile").TemporaryDirectory() as tmpdir:
         tracker = EvolutionTracker(data_dir=Path(tmpdir))
         analyzer = GapAnalyzerV2()
         analyzer.evolution_tracker = tracker
@@ -124,16 +167,16 @@ def run_ablation():
 
     # ── Ablation ────────────────────────────────────────────────────────────────
     dimensions = [
-        ("1. trend     (t_trend)",    0),
-        ("2. gene_pool (s_gene)",     1),
-        ("3. keyword   (c_keyword)",  2),
-        ("4. pref      (s_pref)",     3),
+        ("1. trend     (t_trend)", 0),
+        ("2. gene_pool (s_gene)", 1),
+        ("3. keyword   (c_keyword)", 2),
+        ("4. pref      (s_pref)", 3),
         ("5. severity  (s_severity)", 4),
         ("6. priority  (p_priority)", 5),
     ]
 
     print(f"  {'Dimension removed':<30} {'Resulting order':<42} Top-1?")
-    print(f"  {'-'*30} {'-'*42} {'-'*10}")
+    print(f"  {'-' * 30} {'-' * 42} {'-' * 10}")
     for dim_name, dim_idx in dimensions:
         # Zero that dimension for all gaps and sort
         zeroed_scores = [zero_tuple_at(sc, dim_idx) for sc in scores_full]
@@ -150,23 +193,31 @@ def run_ablation():
     print("  Simulating: n accepts of method_limitation gap → gene_pool_score")
     print("=" * 72)
 
-    with __import__('tempfile').TemporaryDirectory() as tmpdir:
+    with __import__("tempfile").TemporaryDirectory() as tmpdir:
         tracker = EvolutionTracker(data_dir=Path(tmpdir))
         analyzer = GapAnalyzerV2()
         analyzer.evolution_tracker = tracker
         analyzer.insight_manager = tracker
 
         gap_method = ResearchGapV2(
-            gap_type=GapType.METHOD_LIMITATION, title="Gap-Method",
+            gap_type=GapType.METHOD_LIMITATION,
+            title="Gap-Method",
             description="RAG hallucination limitation",
-            severity=GapSeverity.HIGH, priority=100,
-            novelty_score=0.0, gene_pool_score=0.0, preference_score=0.0,
+            severity=GapSeverity.HIGH,
+            priority=100,
+            novelty_score=0.0,
+            gene_pool_score=0.0,
+            preference_score=0.0,
         )
         gap_unexp = ResearchGapV2(
-            gap_type=GapType.UNEXPLORED_APPLICATION, title="Gap-Unexplored",
+            gap_type=GapType.UNEXPLORED_APPLICATION,
+            title="Gap-Unexplored",
             description="RAG for code generation",
-            severity=GapSeverity.MEDIUM, priority=100,
-            novelty_score=0.0, gene_pool_score=0.0, preference_score=0.0,
+            severity=GapSeverity.MEDIUM,
+            priority=100,
+            novelty_score=0.0,
+            gene_pool_score=0.0,
+            preference_score=0.0,
         )
         test_gaps = [gap_method, gap_unexp]
 
@@ -176,7 +227,8 @@ def run_ablation():
         for n in [0, 1, 3, 5, 10]:
             for _ in range(n):
                 tracker.record_gap_accept(
-                    topic="RAG", gap_type="method_limitation",
+                    topic="RAG",
+                    gap_type="method_limitation",
                     gap_title="RAG hallucination limitation",
                 )
             capsules = tracker.find_capsule("RAG", "method_limitation", min_score=0.0)
@@ -193,23 +245,31 @@ def run_ablation():
     print("  Simulating: n capsules of correct type → rank-1 accuracy")
     print("=" * 72)
 
-    with __import__('tempfile').TemporaryDirectory() as tmpdir:
+    with __import__("tempfile").TemporaryDirectory() as tmpdir:
         tracker = EvolutionTracker(data_dir=Path(tmpdir))
         analyzer = GapAnalyzerV2()
         analyzer.evolution_tracker = tracker
         analyzer.insight_manager = tracker
 
         correct_gap = ResearchGapV2(
-            gap_type=GapType.METHOD_LIMITATION, title="Correct-Type",
+            gap_type=GapType.METHOD_LIMITATION,
+            title="Correct-Type",
             description="Method limitation RAG",
-            severity=GapSeverity.MEDIUM, priority=100,
-            novelty_score=0.0, gene_pool_score=0.0, preference_score=0.0,
+            severity=GapSeverity.MEDIUM,
+            priority=100,
+            novelty_score=0.0,
+            gene_pool_score=0.0,
+            preference_score=0.0,
         )
         wrong_gap = ResearchGapV2(
-            gap_type=GapType.UNEXPLORED_APPLICATION, title="Wrong-Type",
+            gap_type=GapType.UNEXPLORED_APPLICATION,
+            title="Wrong-Type",
             description="Unexplored application",
-            severity=GapSeverity.MEDIUM, priority=100,
-            novelty_score=0.0, gene_pool_score=0.0, preference_score=0.0,
+            severity=GapSeverity.MEDIUM,
+            priority=100,
+            novelty_score=0.0,
+            gene_pool_score=0.0,
+            preference_score=0.0,
         )
         test_gaps = [correct_gap, wrong_gap]
 
@@ -220,8 +280,10 @@ def run_ablation():
             for i in range(n):
                 score = min((i + 1) / n, 1.0) if n > 0 else 0.0
                 tracker.encode_capsule(
-                    topic="RAG", gap_type="method_limitation",
-                    gap_title=f"Capsule {i}", success_score=score,
+                    topic="RAG",
+                    gap_type="method_limitation",
+                    gap_title=f"Capsule {i}",
+                    success_score=score,
                 )
 
             capsules = tracker.find_capsule("RAG", "method_limitation", min_score=0.0)
@@ -239,7 +301,7 @@ def run_ablation():
     print("  Liked vs disliked gap types override gene_pool when prefs are strong")
     print("=" * 72)
 
-    with __import__('tempfile').TemporaryDirectory() as tmpdir:
+    with __import__("tempfile").TemporaryDirectory() as tmpdir:
         tracker = EvolutionTracker(data_dir=Path(tmpdir))
         analyzer = GapAnalyzerV2()
         analyzer.evolution_tracker = tracker
@@ -247,27 +309,39 @@ def run_ablation():
 
         # Give "contradiction" a high positive pref, "method_limitation" a negative pref
         tracker._gap_type_scores = {
-            "contradiction": 3.0,   # liked
+            "contradiction": 3.0,  # liked
             "method_limitation": -3.0,  # disliked
         }
 
         liked_gap = ResearchGapV2(
-            gap_type=GapType.CONTRADICTION, title="Liked-Type",
+            gap_type=GapType.CONTRADICTION,
+            title="Liked-Type",
             description="Contradiction finding",
-            severity=GapSeverity.LOW, priority=50,
-            novelty_score=0.0, gene_pool_score=0.0, preference_score=3.0,
+            severity=GapSeverity.LOW,
+            priority=50,
+            novelty_score=0.0,
+            gene_pool_score=0.0,
+            preference_score=3.0,
         )
         disliked_high_gene = ResearchGapV2(
-            gap_type=GapType.METHOD_LIMITATION, title="Disliked-HighGene",
+            gap_type=GapType.METHOD_LIMITATION,
+            title="Disliked-HighGene",
             description="Method limitation with high gene pool",
-            severity=GapSeverity.LOW, priority=50,
-            novelty_score=0.0, gene_pool_score=0.9, preference_score=-3.0,
+            severity=GapSeverity.LOW,
+            priority=50,
+            novelty_score=0.0,
+            gene_pool_score=0.9,
+            preference_score=-3.0,
         )
         neutral_gap = ResearchGapV2(
-            gap_type=GapType.UNEXPLORED_APPLICATION, title="Neutral-Gap",
+            gap_type=GapType.UNEXPLORED_APPLICATION,
+            title="Neutral-Gap",
             description="Unexplored application",
-            severity=GapSeverity.LOW, priority=50,
-            novelty_score=0.0, gene_pool_score=0.5, preference_score=0.0,
+            severity=GapSeverity.LOW,
+            priority=50,
+            novelty_score=0.0,
+            gene_pool_score=0.5,
+            preference_score=0.0,
         )
 
         test_gaps = [liked_gap, disliked_high_gene, neutral_gap]

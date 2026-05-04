@@ -13,6 +13,7 @@ Usage:
     viz = BenchmarkViz()
     viz.render_html(result, "chart.html")
 """
+
 from __future__ import annotations
 
 import json
@@ -52,16 +53,15 @@ def to_chart_json(result: BenchmarkResult) -> Dict:
     charts = []
     for match in result.matches:
         direction = "higher" if _is_higher_better(match.metric_name) else "lower"
-        data = [
-            {"label": model, "paper": pid, "value": val}
-            for pid, val, model in match.entries
-        ]
-        charts.append({
-            "benchmark": match.benchmark_name,
-            "metric": match.metric_name,
-            "direction": direction,
-            "data": data,
-        })
+        data = [{"label": model, "paper": pid, "value": val} for pid, val, model in match.entries]
+        charts.append(
+            {
+                "benchmark": match.benchmark_name,
+                "metric": match.metric_name,
+                "direction": direction,
+                "data": data,
+            }
+        )
     return {"papers": papers, "charts": charts}
 
 
@@ -114,12 +114,17 @@ def render_html(result: BenchmarkResult, output_path: str = "benchmark_chart.htm
 
     papers_str = ", ".join(result.paper_ids)
     html_template += f'  <p class="subtitle">Papers: {papers_str} &middot; {len(result.matches)} benchmark(s)</p>\n'
-    html_template += """  <div id="charts"></div>
+    html_template += (
+        """  <div id="charts"></div>
   <div class="tooltip" id="tooltip"></div>
 
 <script>
-  const DATA = """ + json_data + """;
-  const COLORS = """ + colors_json + """;
+  const DATA = """
+        + json_data
+        + """;
+  const COLORS = """
+        + colors_json
+        + """;
   const paperColors = {};
   DATA.papers.forEach((p, i) => { paperColors[p] = COLORS[i % COLORS.length]; });
 
@@ -208,6 +213,7 @@ def render_html(result: BenchmarkResult, output_path: str = "benchmark_chart.htm
 </script>
 </body>
 </html>"""
+    )
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_template)
@@ -229,14 +235,20 @@ def render_svg(result: BenchmarkResult) -> str:
 
     lines: List[str] = []
     height = _svg_height(result)
-    lines.append('<svg xmlns="http://www.w3.org/2000/svg" '
-                 f'width="720" height="{height}" '
-                 'style="font-family: -apple-system, sans-serif;">')
+    lines.append(
+        '<svg xmlns="http://www.w3.org/2000/svg" '
+        f'width="720" height="{height}" '
+        'style="font-family: -apple-system, sans-serif;">'
+    )
     lines.append('  <rect width="100%" height="100%" fill="#f8f9fa"/>')
-    lines.append('  <text x="20" y="28" font-size="16" font-weight="bold" fill="#333">'
-                 'Benchmark Comparison</text>')
-    lines.append(f'  <text x="20" y="46" font-size="12" fill="#666">'
-                 f'Papers: {", ".join(result.paper_ids)}</text>')
+    lines.append(
+        '  <text x="20" y="28" font-size="16" font-weight="bold" fill="#333">'
+        "Benchmark Comparison</text>"
+    )
+    lines.append(
+        f'  <text x="20" y="46" font-size="12" fill="#666">'
+        f"Papers: {', '.join(result.paper_ids)}</text>"
+    )
 
     y_offset = 64
     bar_height = 20
@@ -247,10 +259,16 @@ def render_svg(result: BenchmarkResult) -> str:
 
     for match in result.matches:
         # Section header
-        lines.append(f'  <text x="20" y="{y_offset + 14}" font-size="14" '
-                     f'font-weight="600" fill="#333">{match.benchmark_name} — {match.metric_name}</text>')
-        direction = "↑ higher is better" if _is_higher_better(match.metric_name) else "↓ lower is better"
-        lines.append(f'  <text x="20" y="{y_offset + 30}" font-size="11" fill="#888">{direction}</text>')
+        lines.append(
+            f'  <text x="20" y="{y_offset + 14}" font-size="14" '
+            f'font-weight="600" fill="#333">{match.benchmark_name} — {match.metric_name}</text>'
+        )
+        direction = (
+            "↑ higher is better" if _is_higher_better(match.metric_name) else "↓ lower is better"
+        )
+        lines.append(
+            f'  <text x="20" y="{y_offset + 30}" font-size="11" fill="#888">{direction}</text>'
+        )
         y_offset += 38
 
         sorted_entries = sorted(match.entries, key=lambda e: e[1], reverse=True)
@@ -263,19 +281,25 @@ def render_svg(result: BenchmarkResult) -> str:
             bar_w = max((val / max_val) * bar_max_width, 2) if val > 0 else 2
 
             color = _COLORS[color_idx % len(_COLORS)]
-            lines.append(f'  <rect x="{label_width + 10}" y="{bar_y}" '
-                         f'width="{bar_w}" height="{bar_height}" '
-                         f'fill="{color}" rx="3" opacity="0.85"/>')
-            lines.append(f'  <text x="{label_width + 6}" y="{bar_y + bar_height - 4}" '
-                         f'text-anchor="end" font-size="10" fill="#555">'
-                         f'{model[:20]}</text>')
-            lines.append(f'  <text x="{label_width + 14 + bar_w}" y="{bar_y + bar_height - 4}" '
-                         f'font-size="10" fill="#666">{val:.4f}</text>')
+            lines.append(
+                f'  <rect x="{label_width + 10}" y="{bar_y}" '
+                f'width="{bar_w}" height="{bar_height}" '
+                f'fill="{color}" rx="3" opacity="0.85"/>'
+            )
+            lines.append(
+                f'  <text x="{label_width + 6}" y="{bar_y + bar_height - 4}" '
+                f'text-anchor="end" font-size="10" fill="#555">'
+                f"{model[:20]}</text>"
+            )
+            lines.append(
+                f'  <text x="{label_width + 14 + bar_w}" y="{bar_y + bar_height - 4}" '
+                f'font-size="10" fill="#666">{val:.4f}</text>'
+            )
             color_idx += 1
 
         y_offset += len(sorted_entries) * (bar_height + row_gap) + 16
 
-    lines.append('</svg>')
+    lines.append("</svg>")
     return "\n".join(lines)
 
 

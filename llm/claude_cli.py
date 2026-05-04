@@ -8,6 +8,7 @@ Usage:
     client = ClaudeCLIClient()
     response = client.chat("What is RAG?", model="claude-3-5-sonnet-latest")
 """
+
 import json
 import subprocess
 import sys
@@ -90,15 +91,18 @@ class ClaudeCLIClient:
                 [
                     self.cli_path,
                     "--print",
-                    "--model", model,
-                    "--output-format", "json",
-                    "--input-format", "text",
+                    "--model",
+                    model,
+                    "--output-format",
+                    "json",
+                    "--input-format",
+                    "text",
                 ],
                 input=full_prompt,
                 capture_output=True,
                 text=True,
                 timeout=120,
-                encoding='utf-8',
+                encoding="utf-8",
             )
 
             if result.returncode != 0:
@@ -109,9 +113,11 @@ class ClaudeCLIClient:
                 # and continue rather than discarding the valid response.
                 if stdout_preview:
                     import logging
+
                     logging.getLogger(__name__).warning(
                         "Claude CLI exit code %d (hook error?), using stdout: %s",
-                        result.returncode, stderr[:120],
+                        result.returncode,
+                        stderr[:120],
                     )
                 else:
                     raise RuntimeError(f"Claude CLI error: {stderr}")
@@ -127,7 +133,7 @@ class ClaudeCLIClient:
                 return cast(str, data.get("result", output))
             except json.JSONDecodeError:
                 # Find first '{' and parse from there
-                brace_pos = output.find('{')
+                brace_pos = output.find("{")
                 if brace_pos >= 0:
                     try:
                         data = json.loads(output[brace_pos:])
@@ -176,7 +182,7 @@ class ClaudeCLIClient:
                 capture_output=True,
                 text=True,
                 timeout=10,
-                encoding='utf-8',
+                encoding="utf-8",
             )
             if result.returncode == 0:
                 return result.stdout.strip()

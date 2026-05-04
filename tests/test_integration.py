@@ -134,7 +134,9 @@ def make_mock_crossref_response(
 class TestArxivFullPipeline:
     """End-to-end test: arXiv ID → fetch → P-note + C-note + M-note + Radar."""
 
-    @pytest.mark.skip(reason="pre-existing failure: _main_legacy removed in edce297 — CLI no longer accepts bare arxiv ID + --root/--category flags")
+    @pytest.mark.skip(
+        reason="pre-existing failure: _main_legacy removed in edce297 — CLI no longer accepts bare arxiv ID + --root/--category flags"
+    )
     def test_full_pipeline_creates_all_note_files(self, temp_research_root, monkeypatch):
         """
         Verify that running main() with a valid arXiv ID creates:
@@ -402,7 +404,7 @@ class TestDoiFullPipeline:
                                 "Agent",
                                 "--skip-embed",
                             ]
-                            )
+                        )
 
         assert result == 0
         pnote_files = list(temp_research_root.glob("**/P - 2024 - *.md"))
@@ -420,7 +422,9 @@ class TestDoiFullPipeline:
 class TestTagInferencePipeline:
     """When --tags not provided, KEYWORD_TAGS patterns should infer tags."""
 
-    @pytest.mark.skip(reason="pre-existing: C-notes are created by research_loop, not ingest pipeline")
+    @pytest.mark.skip(
+        reason="pre-existing: C-notes are created by research_loop, not ingest pipeline"
+    )
     def test_infer_tags_from_abstract(self, temp_research_root, monkeypatch):
         """Abstract mentioning 'agent' and 'RAG' should auto-tag accordingly."""
         monkeypatch.chdir(temp_research_root)
@@ -468,7 +472,9 @@ class TestTagInferencePipeline:
             f"Expected inferred 'Agent' C-note, got: {cnote_stems}"
         )
 
-    @pytest.mark.skip(reason="pre-existing: C-notes are created by research_loop, not ingest pipeline")
+    @pytest.mark.skip(
+        reason="pre-existing: C-notes are created by research_loop, not ingest pipeline"
+    )
     def test_unsorted_when_no_pattern_matches(self, temp_research_root, monkeypatch):
         """Abstract with no matching pattern should get 'Unsorted' tag."""
         monkeypatch.chdir(temp_research_root)

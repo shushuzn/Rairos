@@ -33,31 +33,45 @@ def _build_evoskill_parser(subparsers):
     init_p.add_argument("--question-col", default="question", help="Question column name")
     init_p.add_argument("--answer-col", default="answer", help="Answer column name")
     init_p.add_argument("--category-col", default=None, help="Category column name")
-    init_p.set_defaults(func=lambda a: evoskill_init.callback(
-        task=a.task, dataset=a.dataset, harness=a.harness, model=a.model,
-        question_col=a.question_col, answer_col=a.answer_col, category_col=a.category_col))
+    init_p.set_defaults(
+        func=lambda a: evoskill_init.callback(
+            task=a.task,
+            dataset=a.dataset,
+            harness=a.harness,
+            model=a.model,
+            question_col=a.question_col,
+            answer_col=a.answer_col,
+            category_col=a.category_col,
+        )
+    )
 
     # run command
     run_p = sub.add_parser("run", help="Run EvoSkill self-improvement loop")
-    run_p.add_argument("--continue", dest="continue_mode", action="store_true", help="Resume from frontier")
+    run_p.add_argument(
+        "--continue", dest="continue_mode", action="store_true", help="Resume from frontier"
+    )
     run_p.add_argument("--verbose", "-v", action="store_true", help="Show pass/fail details")
-    run_p.set_defaults(func=lambda a: evoskill_run.callback(
-        continue_mode=a.continue_mode, verbose=a.verbose))
+    run_p.set_defaults(
+        func=lambda a: evoskill_run.callback(continue_mode=a.continue_mode, verbose=a.verbose)
+    )
 
     # eval command
     sub.add_parser("eval", help="Evaluate best program on validation set").set_defaults(
-        func=lambda a: evoskill_eval.callback())
+        func=lambda a: evoskill_eval.callback()
+    )
 
     # diff command
     diff_p = sub.add_parser("diff", help="Show diff between iterations")
     diff_p.add_argument("from_iter", type=int, nargs="?", default=None, help="Source iteration")
     diff_p.add_argument("to_iter", type=int, nargs="?", default=None, help="Target iteration")
-    diff_p.set_defaults(func=lambda a: evoskill_diff.callback(
-        from_iter=a.from_iter, to_iter=a.to_iter))
+    diff_p.set_defaults(
+        func=lambda a: evoskill_diff.callback(from_iter=a.from_iter, to_iter=a.to_iter)
+    )
 
     # reset command
     sub.add_parser("reset", help="Reset all program branches").set_defaults(
-        func=lambda a: evoskill_reset.callback())
+        func=lambda a: evoskill_reset.callback()
+    )
 
     # is-available check
     p.set_defaults(func=lambda a: evoskill_status.callback())
@@ -88,7 +102,9 @@ def evoskill(
 ):
     """Benchmark-driven skill discovery with EvoSkill."""
     if command == "init" or task:
-        evoskill_init(task or "", dataset or "", harness, model, question_col, answer_col, category_col)
+        evoskill_init(
+            task or "", dataset or "", harness, model, question_col, answer_col, category_col
+        )
     elif command == "run":
         evoskill_run(continue_mode, verbose)
     elif command == "eval":
@@ -101,8 +117,15 @@ def evoskill(
         evoskill_status()
 
 
-def evoskill_init(task: str, dataset: str, harness: str, model: str,
-                  question_col: str, answer_col: str, category_col: str):
+def evoskill_init(
+    task: str,
+    dataset: str,
+    harness: str,
+    model: str,
+    question_col: str,
+    answer_col: str,
+    category_col: str,
+):
     """Initialize EvoSkill project."""
     print_info("Initializing EvoSkill project for task: " + task)
 

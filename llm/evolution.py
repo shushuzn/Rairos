@@ -17,13 +17,15 @@ from enum import Enum
 
 class FeedbackType(Enum):
     """反馈类型."""
-    POSITIVE = "positive"      # 用户满意
-    NEGATIVE = "negative"      # 用户不满意
-    NEUTRAL = "neutral"         # 中性
+
+    POSITIVE = "positive"  # 用户满意
+    NEGATIVE = "negative"  # 用户不满意
+    NEUTRAL = "neutral"  # 中性
 
 
 class SignalType(Enum):
     """信号类型."""
+
     CHAT_SUCCESS = "chat_success"
     CHAT_FAILURE = "chat_failure"
     RETRIEVAL_HIT = "retrieval_hit"
@@ -35,6 +37,7 @@ class SignalType(Enum):
 @dataclass
 class Feedback:
     """用户反馈记录."""
+
     id: str
     type: str  # FeedbackType.value
     command: str  # chat, slides, search
@@ -49,12 +52,13 @@ class Feedback:
         if not self.timestamp:
             self.timestamp = datetime.now().isoformat()
         if not self.id:
-            self.id = f"fb_{int(time.time()*1000)}"
+            self.id = f"fb_{int(time.time() * 1000)}"
 
 
 @dataclass
 class EvolutionEvent:
     """进化事件记录."""
+
     id: str
     signal_type: str  # SignalType.value
     trigger: Dict[str, Any]  # 触发条件
@@ -68,7 +72,7 @@ class EvolutionEvent:
         if not self.timestamp:
             self.timestamp = datetime.now().isoformat()
         if not self.id:
-            self.id = f"ev_{int(time.time()*1000)}"
+            self.id = f"ev_{int(time.time() * 1000)}"
         if self.genes_applied is None:
             self.genes_applied = []
 
@@ -76,6 +80,7 @@ class EvolutionEvent:
 @dataclass
 class LearnedPattern:
     """学到的模式."""
+
     name: str
     signal_type: str
     trigger_conditions: Dict[str, Any]
@@ -131,7 +136,7 @@ class EvolutionMemory:
     ) -> None:
         """快捷方法：记录聊天反馈."""
         fb = Feedback(
-            id=f"fb_{int(time.time()*1000)}",
+            id=f"fb_{int(time.time() * 1000)}",
             type=FeedbackType.POSITIVE.value if is_positive else FeedbackType.NEGATIVE.value,
             command="chat",
             query=query,
@@ -188,7 +193,7 @@ class EvolutionMemory:
         if is_positive is None:
             # 中性信号：记录但不计入正面/负面
             fb = Feedback(
-                id=f"fb_{int(time.time()*1000)}",
+                id=f"fb_{int(time.time() * 1000)}",
                 type=FeedbackType.NEUTRAL.value,
                 command="chat",
                 query=query,
@@ -222,7 +227,7 @@ class EvolutionMemory:
     ) -> None:
         """记录进化事件."""
         event = EvolutionEvent(
-            id=f"ev_{int(time.time()*1000)}",
+            id=f"ev_{int(time.time() * 1000)}",
             signal_type=signal_type,
             trigger=trigger,
             action=action,
@@ -270,24 +275,25 @@ class EvolutionMemory:
     def _load_patterns(self) -> Dict[str, Any]:
         """加载模式库."""
         try:
-            return cast(Dict[str, Any], json.loads(self.patterns_file.read_text(encoding="utf-8") or "{}"))
+            return cast(
+                Dict[str, Any], json.loads(self.patterns_file.read_text(encoding="utf-8") or "{}")
+            )
         except (json.JSONDecodeError, FileNotFoundError):
             return {}
 
     def _save_patterns(self, patterns: Dict[str, Any]) -> None:
         """保存模式库."""
         self.patterns_file.write_text(
-            json.dumps(patterns, indent=2, ensure_ascii=False),
-            encoding="utf-8"
+            json.dumps(patterns, indent=2, ensure_ascii=False), encoding="utf-8"
         )
 
     def get_reliable_patterns(self) -> List[Dict[str, Any]]:
         """获取可靠模式（成功率 >70%，尝试 >=3 次）."""
         patterns = self._load_patterns()
         return [
-            p for p in patterns.values()
-            if p["success_count"] + p["failure_count"] >= 3
-            and p["effectiveness"] >= 0.7
+            p
+            for p in patterns.values()
+            if p["success_count"] + p["failure_count"] >= 3 and p["effectiveness"] >= 0.7
         ]
 
     def get_all_patterns(self) -> List[Dict[str, Any]]:

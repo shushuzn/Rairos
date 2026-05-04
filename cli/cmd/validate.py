@@ -1,4 +1,5 @@
 """CLI command: validate — Research question validation."""
+
 from __future__ import annotations
 
 import argparse
@@ -27,24 +28,28 @@ def _build_validate_parser(subparsers) -> argparse.ArgumentParser:
         help="Disable LLM analysis (rule-based only)",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="Output as JSON",
     )
     p.add_argument(
-        "--depth", "-d",
+        "--depth",
+        "-d",
         choices=["quick", "full"],
         default="quick",
         help="Analysis depth (default: quick)",
     )
     p.add_argument(
-        "--model", "-m",
+        "--model",
+        "-m",
         type=str,
         default=None,
         help="LLM model to use",
     )
     p.add_argument(
-        "--interactive", "-i",
+        "--interactive",
+        "-i",
         action="store_true",
         help="Interactive exploration mode",
     )

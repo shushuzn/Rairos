@@ -29,33 +29,38 @@ from llm.insight.tracker import EvolutionTracker
 
 # ─── Quality Score ──────────────────────────────────────────────────────────
 
+
 @dataclass
 class CapsuleQuality:
     """Quality score for a single capsule."""
+
     capsule_id: str
-    quality_score: float          # 0.0–1.0, composite
-    novelty: float               # 0.0–1.0, how unique is this pattern
-    utility: float               # 0.0–1.0, how often referenced/used
-    freshness: float             # 0.0–1.0, recency of use
-    overall: float               # 0.0–1.0, weighted composite
+    quality_score: float  # 0.0–1.0, composite
+    novelty: float  # 0.0–1.0, how unique is this pattern
+    utility: float  # 0.0–1.0, how often referenced/used
+    freshness: float  # 0.0–1.0, recency of use
+    overall: float  # 0.0–1.0, weighted composite
 
 
 @dataclass
 class AuditResult:
     """Result of auditing the gene pool."""
+
     total_capsules: int
     avg_quality: float
-    high_quality: List[CapsuleQuality]   # score > 0.7
-    low_quality: List[CapsuleQuality]     # score < 0.3
-    candidate_ids: List[str]             # worth evolving
-    retire_ids: List[str]                # should be removed
+    high_quality: List[CapsuleQuality]  # score > 0.7
+    low_quality: List[CapsuleQuality]  # score < 0.3
+    candidate_ids: List[str]  # worth evolving
+    retire_ids: List[str]  # should be removed
 
 
 # ─── V2 Candidate ───────────────────────────────────────────────────────────
 
+
 @dataclass
 class CapsuleCandidate:
     """A proposed V2 improvement to a capsule."""
+
     original_id: str
     candidate_id: str
     trigger_topic: str
@@ -63,21 +68,23 @@ class CapsuleCandidate:
     trigger_keywords: List[str]
     action_gap_type: str
     action_gap_title: str
-    mutation_description: str   # what changed and why
-    confidence: float          # 0.0–1.0, how confident in this mutation
-    source: str                # 'trigger_refine' | 'keyword_expand' | 'gap_type_transfer' | 'llm_suggested'
+    mutation_description: str  # what changed and why
+    confidence: float  # 0.0–1.0, how confident in this mutation
+    source: str  # 'trigger_refine' | 'keyword_expand' | 'gap_type_transfer' | 'llm_suggested'
 
 
 @dataclass
 class EvaluationResult:
     """Result of pairwise LLM evaluation between candidates."""
+
     winner_id: str
     loser_id: str
     reasoning: str
-    confidence: float           # how decisive the win was
+    confidence: float  # how decisive the win was
 
 
 # ─── InsightEvolution ────────────────────────────────────────────────────────
+
 
 class InsightEvolution:
     """
@@ -99,15 +106,15 @@ class InsightEvolution:
     # Quality score thresholds
     HIGH_QUALITY_THRESHOLD = 0.70
     LOW_QUALITY_THRESHOLD = 0.30
-    RETIRE_COUNT_THRESHOLD = 3   # retire if score < 0.3 this many times
+    RETIRE_COUNT_THRESHOLD = 3  # retire if score < 0.3 this many times
 
     # Evolution params
     MAX_CANDIDATES_PER_EVOLVE = 5
-    MAX_GENE_POOL_SIZE = 500    # cap to prevent bloat
+    MAX_GENE_POOL_SIZE = 500  # cap to prevent bloat
 
     def __init__(self, tracker: Optional[EvolutionTracker] = None):
         self.tracker = tracker or EvolutionTracker()
-        self._llm_client = None   # lazily initialized
+        self._llm_client = None  # lazily initialized
 
     # ─── LLM Client (lazy) ─────────────────────────────────────────────────
 
@@ -116,6 +123,7 @@ class InsightEvolution:
         if self._llm_client is None:
             try:
                 from llm.client import get_client
+
                 self._llm_client = get_client()
             except Exception:
                 self._llm_client = None
@@ -157,8 +165,7 @@ class InsightEvolution:
         low_q = [q for q in scored if q.overall < self.LOW_QUALITY_THRESHOLD]
         candidates = [q.capsule_id for q in scored if q.overall >= 0.5]
         # Retire: low quality AND low novelty AND old
-        retire = [q.capsule_id for q in low_q
-                  if q.novelty < 0.3 and q.freshness < 0.3]
+        retire = [q.capsule_id for q in low_q if q.novelty < 0.3 and q.freshness < 0.3]
 
         return AuditResult(
             total_capsules=len(capsules),
@@ -185,7 +192,9 @@ class InsightEvolution:
             freshness = 0.5
 
         # Composite: utility weighted heavily
-        overall = 0.5 * utility + 0.2 * novelty + 0.2 * freshness + 0.1 * capsule.outcome_success_score
+        overall = (
+            0.5 * utility + 0.2 * novelty + 0.2 * freshness + 0.1 * capsule.outcome_success_score
+        )
 
         return CapsuleQuality(
             capsule_id=capsule.capsule_id,
@@ -224,7 +233,7 @@ class InsightEvolution:
         candidates: List[CapsuleCandidate] = []
         capsules = self.tracker.find_capsule(topic, gap_type or "", min_score=0.1)
 
-        for capsule in capsules[:self.MAX_CANDIDATES_PER_EVOLVE]:
+        for capsule in capsules[: self.MAX_CANDIDATES_PER_EVOLVE]:
             # Strategy 1: trigger_refine — broaden topic
             c1 = self._mutate_trigger_broaden(capsule, topic)
             if c1:
@@ -341,7 +350,9 @@ class InsightEvolution:
             return []
 
         try:
-            capsules_json = json.dumps([c.to_dict() for c in top_capsules[:3]], indent=2, ensure_ascii=False)
+            capsules_json = json.dumps(
+                [c.to_dict() for c in top_capsules[:3]], indent=2, ensure_ascii=False
+            )
         except Exception:
             return []
 
@@ -369,19 +380,26 @@ Respond as JSON array of objects with keys: original_id, mutation_description, s
 
             candidates = []
             for p in proposals[:2]:
-                original = next((c for c in top_capsules if c.capsule_id == p.get("original_id")), top_capsules[0])
-                candidates.append(CapsuleCandidate(
-                    original_id=original.capsule_id,
-                    candidate_id=str(uuid.uuid4())[:8],
-                    trigger_topic=p.get("suggested_trigger_topic", original.trigger_topic),
-                    trigger_gap_type=p.get("suggested_trigger_gap_type", original.trigger_gap_type),
-                    trigger_keywords=p.get("suggested_keywords", original.trigger_keywords),
-                    action_gap_type=original.action_gap_type,
-                    action_gap_title=original.action_gap_title,
-                    mutation_description=p.get("mutation_description", "llm_suggested"),
-                    confidence=0.6,
-                    source="llm_suggested",
-                ))
+                original = next(
+                    (c for c in top_capsules if c.capsule_id == p.get("original_id")),
+                    top_capsules[0],
+                )
+                candidates.append(
+                    CapsuleCandidate(
+                        original_id=original.capsule_id,
+                        candidate_id=str(uuid.uuid4())[:8],
+                        trigger_topic=p.get("suggested_trigger_topic", original.trigger_topic),
+                        trigger_gap_type=p.get(
+                            "suggested_trigger_gap_type", original.trigger_gap_type
+                        ),
+                        trigger_keywords=p.get("suggested_keywords", original.trigger_keywords),
+                        action_gap_type=original.action_gap_type,
+                        action_gap_title=original.action_gap_title,
+                        mutation_description=p.get("mutation_description", "llm_suggested"),
+                        confidence=0.6,
+                        source="llm_suggested",
+                    )
+                )
             return candidates
         except Exception:
             return []
@@ -419,22 +437,26 @@ Respond as JSON array of objects with keys: original_id, mutation_description, s
                         results.append(result)
                     except Exception:
                         # Fallback: confidence=0.5
-                        results.append(EvaluationResult(
-                            winner_id=a.candidate_id,
-                            loser_id=b.candidate_id,
-                            reasoning="llm_unavailable",
-                            confidence=0.5,
-                        ))
+                        results.append(
+                            EvaluationResult(
+                                winner_id=a.candidate_id,
+                                loser_id=b.candidate_id,
+                                reasoning="llm_unavailable",
+                                confidence=0.5,
+                            )
+                        )
                 else:
                     # No LLM: use confidence scores
                     winner = a if a.confidence >= b.confidence else b
                     loser = b if winner is a else a
-                    results.append(EvaluationResult(
-                        winner_id=winner.candidate_id,
-                        loser_id=loser.candidate_id,
-                        reasoning=f"fallback: confidence {winner.confidence} vs {loser.confidence}",
-                        confidence=abs(winner.confidence - loser.confidence),
-                    ))
+                    results.append(
+                        EvaluationResult(
+                            winner_id=winner.candidate_id,
+                            loser_id=loser.candidate_id,
+                            reasoning=f"fallback: confidence {winner.confidence} vs {loser.confidence}",
+                            confidence=abs(winner.confidence - loser.confidence),
+                        )
+                    )
 
         # Sort by confidence desc
         results.sort(key=lambda r: r.confidence, reverse=True)
@@ -571,17 +593,25 @@ Respond with JSON:
                 raw = data.get("capsules", []) if isinstance(data, dict) else data
                 raw = [c for c in raw if c.get("capsule_id", "") != capsule_id]
                 data["capsules"] = raw
-                capsules_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+                capsules_path.write_text(
+                    json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
+                )
             except Exception:
                 pass
 
         # Log retirement
         retire_file = self.tracker.data_dir / "retired.jsonl"
         with open(retire_file, "a", encoding="utf-8") as f:
-            f.write(json.dumps({
-                "capsule_id": capsule_id,
-                "retired_at": datetime.now().isoformat(),
-            }, ensure_ascii=False) + "\n")
+            f.write(
+                json.dumps(
+                    {
+                        "capsule_id": capsule_id,
+                        "retired_at": datetime.now().isoformat(),
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
 
         self.tracker.record_capsule_lifecycle_event(
             capsule_id=capsule_id,
@@ -599,8 +629,10 @@ Respond with JSON:
 
         # Check for near-duplicate
         for c in capsules:
-            if (c.trigger_topic == candidate.trigger_topic
-                    and c.trigger_gap_type == candidate.trigger_gap_type):
+            if (
+                c.trigger_topic == candidate.trigger_topic
+                and c.trigger_gap_type == candidate.trigger_gap_type
+            ):
                 return False  # duplicate, skip
 
         new_capsule = CapsuleGene(
@@ -720,7 +752,7 @@ Respond with JSON:
         for i, a in enumerate(capsules):
             if a.capsule_id in to_archive:
                 continue
-            for b in capsules[i + 1:]:
+            for b in capsules[i + 1 :]:
                 if b.capsule_id in to_archive:
                     continue
                 if a.trigger_gap_type != b.trigger_gap_type:
@@ -758,10 +790,7 @@ Respond with JSON:
         _remaining = [c for c in capsules if c.capsule_id not in to_archive]
         # Add back winners (with merged keywords) + any non-active capsules
         all_capsules = self._load_capsules()
-        winners_updated = {
-            c.capsule_id: c for c in capsules
-            if c.capsule_id not in to_archive
-        }
+        winners_updated = {c.capsule_id: c for c in capsules if c.capsule_id not in to_archive}
         result = []
         for c in all_capsules:
             if c.capsule_id in to_archive:
@@ -782,10 +811,14 @@ Respond with JSON:
             loser = next((c for c in capsules if c.capsule_id == loser_id), None)
             if loser:
                 winner_id = next(
-                    (wid for wid, w in winners.items()
-                     if w.action_gap_type == loser.action_gap_type and
-                     set(k.lower() for k in w.trigger_keywords) & set(k.lower() for k in loser.trigger_keywords)),
-                    ""
+                    (
+                        wid
+                        for wid, w in winners.items()
+                        if w.action_gap_type == loser.action_gap_type
+                        and set(k.lower() for k in w.trigger_keywords)
+                        & set(k.lower() for k in loser.trigger_keywords)
+                    ),
+                    "",
                 )
                 details = f"Absorbed by {winner_id}" if winner_id else ""
                 self.tracker.record_capsule_lifecycle_event(
@@ -804,7 +837,9 @@ Respond with JSON:
                 raw = data.get("capsules", []) if isinstance(data, dict) else data
                 raw = [c for c in raw if c.get("capsule_id", "") not in to_archive]
                 data["capsules"] = raw
-                capsules_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+                capsules_path.write_text(
+                    json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
+                )
             except Exception:
                 pass
 
@@ -860,7 +895,9 @@ Respond with JSON:
                     if c.get("capsule_id", "") in archived_ids:
                         c["status"] = "archived"
                 data["capsules"] = raw
-                capsules_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+                capsules_path.write_text(
+                    json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
+                )
             except Exception:
                 pass
 

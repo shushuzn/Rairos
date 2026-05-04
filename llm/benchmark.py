@@ -10,6 +10,7 @@ Usage:
     results = bc.compare(["2604.22754", "2302.00763"])
     print(bc.render_leaderboard(results))
 """
+
 from __future__ import annotations
 
 import re
@@ -22,29 +23,117 @@ from db.database import Database, ExperimentTableRecord
 # ── Patterns for detecting benchmark-like content ─────────────────────────
 
 _METRIC_KEYWORDS = [
-    "accuracy", "bleu", "rouge", "f1", "f-score", "f-measure", "precision",
-    "recall", "perplexity", "ppl", "wer", "cer", "map", "ndcg", "auc",
-    "mse", "mae", "rmse", "r2", "psnr", "ssim", "iou", "miou",
-    "top-1", "top-5", "top1", "top5", "error", "err", "loss",
-    "latency", "throughput", "params", "flops", "macs", "gflops",
-    "win rate", "winrate", "elo", "score", "score", "pass@",
-    "humaneval", "mbpp", "gsm8k", "mmlu", "hellaswag", "arc",
-    "task", "dataset", "model", "method", "result",
+    "accuracy",
+    "bleu",
+    "rouge",
+    "f1",
+    "f-score",
+    "f-measure",
+    "precision",
+    "recall",
+    "perplexity",
+    "ppl",
+    "wer",
+    "cer",
+    "map",
+    "ndcg",
+    "auc",
+    "mse",
+    "mae",
+    "rmse",
+    "r2",
+    "psnr",
+    "ssim",
+    "iou",
+    "miou",
+    "top-1",
+    "top-5",
+    "top1",
+    "top5",
+    "error",
+    "err",
+    "loss",
+    "latency",
+    "throughput",
+    "params",
+    "flops",
+    "macs",
+    "gflops",
+    "win rate",
+    "winrate",
+    "elo",
+    "score",
+    "score",
+    "pass@",
+    "humaneval",
+    "mbpp",
+    "gsm8k",
+    "mmlu",
+    "hellaswag",
+    "arc",
+    "task",
+    "dataset",
+    "model",
+    "method",
+    "result",
 ]
 
 _BENCHMARK_NAMES = [
-    "imagenet", "cifar", "mnist", "svhn", "imagenet",
-    "coco", "pascal voc", "pascal", "cityscapes", "ade20k",
-    "squad", "glue", "superglue", "xnli", "wmt",
-    "multinli", "sst", "sst-2", "cola", "mrpc", "qnli", "rte", "wnli",
-    "wikitext", "ptb", "penn treebank", "enwik8", "text8",
-    "librispeech", "wsj", "tedlium", "voxceleb",
-    "halalbench", "halal", "openai", "truthfulqa",
-    "gsm8k", "math", "humaneval", "mbpp", "mmlu",
-    "arc-e", "arc-c", "arc-easy", "arc-challenge",
-    "hellaswag", "piqa", "winogrande", "boolq",
-    "siqa", "openbookqa", "anli", "storycloze",
-    "lambada", "wikitext-103",
+    "imagenet",
+    "cifar",
+    "mnist",
+    "svhn",
+    "imagenet",
+    "coco",
+    "pascal voc",
+    "pascal",
+    "cityscapes",
+    "ade20k",
+    "squad",
+    "glue",
+    "superglue",
+    "xnli",
+    "wmt",
+    "multinli",
+    "sst",
+    "sst-2",
+    "cola",
+    "mrpc",
+    "qnli",
+    "rte",
+    "wnli",
+    "wikitext",
+    "ptb",
+    "penn treebank",
+    "enwik8",
+    "text8",
+    "librispeech",
+    "wsj",
+    "tedlium",
+    "voxceleb",
+    "halalbench",
+    "halal",
+    "openai",
+    "truthfulqa",
+    "gsm8k",
+    "math",
+    "humaneval",
+    "mbpp",
+    "mmlu",
+    "arc-e",
+    "arc-c",
+    "arc-easy",
+    "arc-challenge",
+    "hellaswag",
+    "piqa",
+    "winogrande",
+    "boolq",
+    "siqa",
+    "openbookqa",
+    "anli",
+    "storycloze",
+    "lambada",
+    "wikitext-103",
 ]
 
 
@@ -54,7 +143,8 @@ _BENCHMARK_NAMES = [
 @dataclass
 class NormalizedMetric:
     """A single metric value normalized for comparison."""
-    raw_value: str          # original text
+
+    raw_value: str  # original text
     numeric: Optional[float] = None  # parsed float
     is_higher_better: bool = True
     confidence: float = 1.0  # how confident we are in parsing (0-1)
@@ -63,6 +153,7 @@ class NormalizedMetric:
 @dataclass
 class BenchmarkTable:
     """A table identified as containing benchmark results."""
+
     paper_id: str
     table_id: int
     caption: str
@@ -78,6 +169,7 @@ class BenchmarkTable:
 @dataclass
 class BenchmarkMatch:
     """A set of matching benchmark tables across papers."""
+
     benchmark_name: str
     metric_name: str
     entries: List[Tuple[str, float, str]] = field(default_factory=list)
@@ -87,6 +179,7 @@ class BenchmarkMatch:
 @dataclass
 class BenchmarkResult:
     """Full result of cross-paper benchmark comparison."""
+
     paper_ids: List[str]
     tables_found: Dict[str, List[BenchmarkTable]] = field(default_factory=dict)
     matches: List[BenchmarkMatch] = field(default_factory=list)
@@ -102,7 +195,7 @@ def _contains_numeric(cell: str) -> bool:
     if not cell:
         return False
     # Match: 92.5, 92.5%, 0.925, 92.5±0.3, 92.5/100, 1e-3
-    return bool(re.search(r'\d+\.?\d*', cell))
+    return bool(re.search(r"\d+\.?\d*", cell))
 
 
 def _parse_numeric(value: str) -> Optional[float]:
@@ -116,22 +209,22 @@ def _parse_numeric(value: str) -> Optional[float]:
         return None
 
     # Percentage: "92.5%"
-    m = re.match(r'^([\d.]+)\s*%$', value)
+    m = re.match(r"^([\d.]+)\s*%$", value)
     if m:
         return float(m.group(1))
 
     # Range with ±: "92.5±0.3" → take the main value
-    m = re.match(r'^([\d.]+)±', value)
+    m = re.match(r"^([\d.]+)±", value)
     if m:
         return float(m.group(1))
 
     # Fraction: "92.5/100"
-    m = re.match(r'^([\d.]+)/([\d.]+)$', value)
+    m = re.match(r"^([\d.]+)/([\d.]+)$", value)
     if m:
         return float(m.group(1)) / float(m.group(2))
 
     # Suffixes: "1.2B", "350M"
-    m = re.match(r'^([\d.]+)([BKMG])$', value.upper())
+    m = re.match(r"^([\d.]+)([BKMG])$", value.upper())
     if m:
         multipliers = {"B": 1e9, "M": 1e6, "K": 1e3, "G": 1e9}
         return float(m.group(1)) * multipliers.get(m.group(2), 1)
@@ -144,7 +237,7 @@ def _parse_numeric(value: str) -> Optional[float]:
 
     # Scientific notation
     try:
-        m = re.match(r'^([\d.]+)[eE]([+-]?\d+)$', value)
+        m = re.match(r"^([\d.]+)[eE]([+-]?\d+)$", value)
         if m:
             return float(value)
     except ValueError:
@@ -156,10 +249,28 @@ def _parse_numeric(value: str) -> Optional[float]:
 def _is_higher_better(metric_name: str) -> bool:
     """Determine if higher values are better for a given metric."""
     lower_better = {
-        "perplexity", "ppl", "wer", "cer", "mse", "mae", "rmse",
-        "loss", "error", "err", "latency", "flops", "macs", "gflops",
-        "params", "token", "time", "runtime", "cost",
-        "top-1 error", "top-5 error", "word error",
+        "perplexity",
+        "ppl",
+        "wer",
+        "cer",
+        "mse",
+        "mae",
+        "rmse",
+        "loss",
+        "error",
+        "err",
+        "latency",
+        "flops",
+        "macs",
+        "gflops",
+        "params",
+        "token",
+        "time",
+        "runtime",
+        "cost",
+        "top-1 error",
+        "top-5 error",
+        "word error",
     }
     name_lower = metric_name.lower().strip()
     for lb in lower_better:
@@ -247,17 +358,19 @@ class BenchmarkComparator:
             models = self._extract_models(tbl)
             metrics = self._extract_metrics(headers, tbl.table_caption)
 
-            result.append(BenchmarkTable(
-                paper_id=paper_id,
-                table_id=tbl.id,
-                caption=tbl.table_caption,
-                page=tbl.page,
-                headers=headers,
-                rows=normalized_rows,
-                benchmark_name=bench_name,
-                models=models,
-                metrics=metrics,
-            ))
+            result.append(
+                BenchmarkTable(
+                    paper_id=paper_id,
+                    table_id=tbl.id,
+                    caption=tbl.table_caption,
+                    page=tbl.page,
+                    headers=headers,
+                    rows=normalized_rows,
+                    benchmark_name=bench_name,
+                    models=models,
+                    metrics=metrics,
+                )
+            )
 
         return result
 
@@ -290,7 +403,11 @@ class BenchmarkComparator:
         models = []
         for row in tbl.rows:
             if isinstance(row, list) and row:
-                first = str(row[0]) if not isinstance(row[0], NormalizedMetric) else str(row[0].raw_value)
+                first = (
+                    str(row[0])
+                    if not isinstance(row[0], NormalizedMetric)
+                    else str(row[0].raw_value)
+                )
                 if first.strip() and not _contains_numeric(first) and len(first) < 60:
                     models.append(first.strip())
                 elif isinstance(row[0], NormalizedMetric):
@@ -376,11 +493,17 @@ class BenchmarkComparator:
                 for col_idx, metric_name in enumerate(metric_cols):
                     if not metric_name.strip():
                         continue
-                    for row in sorted(t.rows, key=lambda r: len(r) if isinstance(r, list) else 0, reverse=True):
+                    for row in sorted(
+                        t.rows, key=lambda r: len(r) if isinstance(r, list) else 0, reverse=True
+                    ):
                         if col_idx + 1 < len(row):
                             cell = row[col_idx + 1]
                             if isinstance(cell, NormalizedMetric) and cell.numeric is not None:
-                                model = str(row[0].raw_value) if isinstance(row[0], NormalizedMetric) else str(row[0])
+                                model = (
+                                    str(row[0].raw_value)
+                                    if isinstance(row[0], NormalizedMetric)
+                                    else str(row[0])
+                                )
                                 all_metrics[metric_name].append(
                                     (t.paper_id, model, cell.numeric, t.table_id)
                                 )
@@ -404,11 +527,13 @@ class BenchmarkComparator:
                     match_entries = [(pid, val, model) for pid, (model, val) in paper_best.items()]
                     # Sort: higher-better = descending, lower-better = ascending
                     match_entries.sort(key=lambda x: x[1], reverse=direction)
-                    matches.append(BenchmarkMatch(
-                        benchmark_name=bench_name,
-                        metric_name=metric_name,
-                        entries=match_entries,
-                    ))
+                    matches.append(
+                        BenchmarkMatch(
+                            benchmark_name=bench_name,
+                            metric_name=metric_name,
+                            entries=match_entries,
+                        )
+                    )
 
         return matches
 
@@ -429,7 +554,11 @@ class BenchmarkComparator:
         for match in result.matches:
             lines.append(f"\n{'─' * 70}")
             lines.append(f"  {match.benchmark_name} → {match.metric_name}")
-            direction = "↑ higher is better" if _is_higher_better(match.metric_name) else "↓ lower is better"
+            direction = (
+                "↑ higher is better"
+                if _is_higher_better(match.metric_name)
+                else "↓ lower is better"
+            )
             lines.append(f"  ({direction})")
             lines.append(f"{'─' * 70}")
 
@@ -471,6 +600,7 @@ class BenchmarkComparator:
     def render_json(self, result: BenchmarkResult) -> str:
         """Render as JSON string."""
         import json
+
         output = {}
         for match in result.matches:
             output[f"{match.benchmark_name}/{match.metric_name}"] = [

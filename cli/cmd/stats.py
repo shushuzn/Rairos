@@ -1,4 +1,5 @@
 """CLI command: stats."""
+
 from __future__ import annotations
 
 import argparse
@@ -18,7 +19,8 @@ def _build_stats_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("stats", help="Show database statistics summary")
     p.add_argument("--json", action="store_true", help="Output as JSON")
     p.add_argument(
-        "--format", "-f",
+        "--format",
+        "-f",
         choices=["table", "warp"],
         default="table",
         help="Output format (default: table)",
@@ -35,15 +37,19 @@ def _run_stats(args: argparse.Namespace) -> int:
         print(json.dumps(s, option=json.OPT_INDENT_2).decode())
         return 0  # type: ignore[no-any-return]
 
-    if getattr(args, 'format', 'table') == 'warp':
+    if getattr(args, "format", "table") == "warp":
         _run_stats_warp(s)
         return 0  # type: ignore[no-any-return]
 
     # Default table format
     print_header("Papers:")
     print(f"  total : {colored(s['total_papers'], Colors.BOLD)}")
-    print(f"  by source : {', '.join(f'{colored(k, Colors.OKBLUE)}={v}' for k, v in sorted(s['by_source'].items()))}")
-    print(f"  by status : {', '.join(f'{colored(k, Colors.OKGREEN)}={v}' for k, v in sorted(s['by_status'].items()))}")
+    print(
+        f"  by source : {', '.join(f'{colored(k, Colors.OKBLUE)}={v}' for k, v in sorted(s['by_source'].items()))}"
+    )
+    print(
+        f"  by status : {', '.join(f'{colored(k, Colors.OKGREEN)}={v}' for k, v in sorted(s['by_status'].items()))}"
+    )
     print_header("Queue:")
     print(f"  queued  : {s['queue_queued']}")
     print(f"  running : {s['queue_running']}")
@@ -63,9 +69,9 @@ def _run_stats_warp(s) -> None:
 
     # Papers overview table
     paper_rows = [
-        ["Total", str(s['total_papers'])],
-        *[[k, str(v)] for k, v in sorted(s['by_source'].items())],
-        *[[k, str(v)] for k, v in sorted(s['by_status'].items())],
+        ["Total", str(s["total_papers"])],
+        *[[k, str(v)] for k, v in sorted(s["by_source"].items())],
+        *[[k, str(v)] for k, v in sorted(s["by_status"].items())],
     ]
     blocks.append(WarpBlocks.table(["Papers", "Count"], paper_rows, title="Database Overview"))
 
@@ -73,7 +79,7 @@ def _run_stats_warp(s) -> None:
     llm_size = get_llm_cache_size()
     llm_disk = _cache_stats()
     llm_hit = get_cache_stats()
-    llm_rate = llm_hit.get('hit_rate', 0)
+    llm_rate = llm_hit.get("hit_rate", 0)
 
     # Color-coded hit rate
     if llm_rate >= 80:

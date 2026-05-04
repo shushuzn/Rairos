@@ -7,6 +7,7 @@ Combines:
 - Citation velocity / momentum (recent citation rate)
 - Author h-index aggregation
 """
+
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any
 import math
@@ -15,19 +16,20 @@ import math
 @dataclass
 class ImpactScore:
     """Composite impact score for a paper."""
+
     paper_id: str
     title: str
     year: int
 
     raw_citations: int = 0
-    normalized_score: float = 0.0   # age-normalized citations per year
-    pagerank_score: float = 0.0     # influence propagation score
-    momentum_score: float = 0.0     # recent citation velocity
-    author_h_index: float = 0.0     # author h-index aggregate
-    composite_score: float = 0.0    # weighted composite
+    normalized_score: float = 0.0  # age-normalized citations per year
+    pagerank_score: float = 0.0  # influence propagation score
+    momentum_score: float = 0.0  # recent citation velocity
+    author_h_index: float = 0.0  # author h-index aggregate
+    composite_score: float = 0.0  # weighted composite
 
     percentile: float = 0.0  # rank among scored papers
-    tier: str = ""           # S/A/B/C/D
+    tier: str = ""  # S/A/B/C/D
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -83,14 +85,14 @@ class ImpactScorer:
 
         # 3. Momentum: raw proxy via citations per year (no historical data needed)
         # Higher weight on recent years would need time-series; use age-normalized as proxy
-        momentum = raw_citations / (age ** 0.7)  # slight de-emphasis of age
+        momentum = raw_citations / (age**0.7)  # slight de-emphasis of age
 
         # 4. Composite
         composite = (
-            self.WEIGHT_NORMALIZED * self._normalize(normalized) +
-            self.WEIGHT_PAGERANK * pagerank +
-            self.WEIGHT_MOMENTUM * self._normalize(momentum) +
-            self.WEIGHT_AUTHOR * min(author_h_index / 50.0, 1.0)
+            self.WEIGHT_NORMALIZED * self._normalize(normalized)
+            + self.WEIGHT_PAGERANK * pagerank
+            + self.WEIGHT_MOMENTUM * self._normalize(momentum)
+            + self.WEIGHT_AUTHOR * min(author_h_index / 50.0, 1.0)
         )
 
         score = ImpactScore(

@@ -1,4 +1,5 @@
 """CLI command: status."""
+
 from __future__ import annotations
 
 import argparse

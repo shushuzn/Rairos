@@ -1,4 +1,5 @@
 """CLI command: route — semantic command routing."""
+
 from __future__ import annotations
 
 import argparse
@@ -25,22 +26,26 @@ def _build_route_parser(subparsers) -> argparse.ArgumentParser:
         help="Research query to route",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="Output full route object as JSON",
     )
     p.add_argument(
-        "--exec", "-e",
+        "--exec",
+        "-e",
         action="store_true",
         help="Execute the routed command(s) and print outputs",
     )
     p.add_argument(
-        "--all", "-a",
+        "--all",
+        "-a",
         action="store_true",
         help="Execute all routed commands (for multi-intent queries, implies --exec)",
     )
     p.add_argument(
-        "--model", "-m",
+        "--model",
+        "-m",
         type=str,
         default=None,
         help="LLM model for classification (default: qwen3.5-plus)",
@@ -92,7 +97,9 @@ def _print_route(route, query: str) -> None:
     print(f"   Command:       {route.primary_command}")
     print(f"   Confidence:    {bar} {route.confidence:.0%}")
     if route.multi_intent:
-        print(f"   Secondary:     {route.secondary_query_type.value if route.secondary_query_type else '—'}")
+        print(
+            f"   Secondary:     {route.secondary_query_type.value if route.secondary_query_type else '—'}"
+        )
         print(f"   Sub-commands:  {' → '.join(route.sub_commands)}")
     if route.reasoning:
         print(f"   Reasoning:     {route.reasoning}")

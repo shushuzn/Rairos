@@ -1,4 +1,5 @@
 """CLI command: compare — Compare multiple papers side-by-side."""
+
 from __future__ import annotations
 
 import argparse
@@ -16,7 +17,8 @@ def _build_compare_parser(subparsers) -> argparse.ArgumentParser:
     )
     p.add_argument("paper_ids", nargs="+", help="Paper IDs to compare")
     p.add_argument(
-        "--aspect", "-a",
+        "--aspect",
+        "-a",
         action="append",
         choices=["methods", "datasets", "metrics", "authors", "year", "abstract"],
         help="Aspects to compare (can be repeated)",
@@ -35,14 +37,14 @@ def _run_compare(args: argparse.Namespace) -> int:
 
     # Diff mode
     if args.diff:
-        parts = args.diff.split(':')
+        parts = args.diff.split(":")
         if len(parts) != 2:
             print_error("Diff format: <paper_id_a>:<paper_id_b>")
             return 1  # type: ignore[no-any-return]
 
         pid_a, pid_b = parts
-        paper_a = db.get_paper(pid_a) if hasattr(db, 'get_paper') else None
-        paper_b = db.get_paper(pid_b) if hasattr(db, 'get_paper') else None
+        paper_a = db.get_paper(pid_a) if hasattr(db, "get_paper") else None
+        paper_b = db.get_paper(pid_b) if hasattr(db, "get_paper") else None
 
         if not paper_a:
             print_error(f"Paper [{pid_a}] not found")
@@ -57,7 +59,7 @@ def _run_compare(args: argparse.Namespace) -> int:
     # Comparison mode
     papers = []
     for pid in args.paper_ids:
-        paper = db.get_paper(pid) if hasattr(db, 'get_paper') else None
+        paper = db.get_paper(pid) if hasattr(db, "get_paper") else None
         if paper:
             papers.append(pid)
         else:

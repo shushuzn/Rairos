@@ -1,4 +1,5 @@
 """CLI command: question — Manage research questions."""
+
 from __future__ import annotations
 
 import argparse
@@ -175,16 +176,16 @@ def _run_question(args: argparse.Namespace) -> int:
         print(f"总计: {stats['total']} 个问题")
         print("")
         print("按状态:")
-        for status, count in stats['by_status'].items():
+        for status, count in stats["by_status"].items():
             print(f"  {status}: {count}")
         print("")
         print("按来源:")
-        for source, count in stats['by_source'].items():
+        for source, count in stats["by_source"].items():
             print(f"  {source}: {count}")
-        if stats['by_topic']:
+        if stats["by_topic"]:
             print("")
             print("按主题:")
-            for topic, count in stats['by_topic'].items():
+            for topic, count in stats["by_topic"].items():
                 print(f"  {topic}: {count}")
 
     else:

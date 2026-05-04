@@ -1,6 +1,7 @@
 """
 Research Dashboard: Aggregated view of research progress.
 """
+
 import logging
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Tuple, Any
@@ -10,6 +11,7 @@ from datetime import datetime
 @dataclass
 class QuestionSummary:
     """Summary of a research question."""
+
     id: str
     question: str
     status: str
@@ -21,6 +23,7 @@ class QuestionSummary:
 @dataclass
 class ExperimentSummary:
     """Summary of an experiment."""
+
     id: str
     name: str
     status: str
@@ -31,6 +34,7 @@ class ExperimentSummary:
 @dataclass
 class PaperStats:
     """Paper reading statistics."""
+
     total_papers: int
     recent_papers: int  # Last 30 days
     by_year: Dict[str, int]
@@ -40,6 +44,7 @@ class PaperStats:
 @dataclass
 class HotPaper:
     """A paper with high citation velocity."""
+
     paper_id: str
     title: str
     year: int
@@ -50,6 +55,7 @@ class HotPaper:
 @dataclass
 class TrendKeyword:
     """A trending keyword from the corpus."""
+
     keyword: str
     direction: str  # rising / falling / emerging / stable
     paper_count: int
@@ -59,6 +65,7 @@ class TrendKeyword:
 @dataclass
 class GapPreferenceStats:
     """Summary of user's gap_type and keyword preference profile."""
+
     total_events: int
     preferred_types: List[Tuple[str, float]]
     disliked_types: List[Tuple[str, float]]
@@ -68,6 +75,7 @@ class GapPreferenceStats:
 @dataclass
 class DashboardData:
     """Aggregated dashboard data."""
+
     generated_at: str = ""
     questions: List[QuestionSummary] = field(default_factory=list)
     experiments: List[ExperimentSummary] = field(default_factory=list)
@@ -94,32 +102,38 @@ class Dashboard:
 
         # Questions
         from llm.question_tracker import QuestionTracker
+
         tracker = QuestionTracker()
         questions = tracker.list_questions()
         for q in questions:
-            hypotheses_count = len(q.hypotheses) if hasattr(q, 'hypotheses') and q.hypotheses else 0
-            roadmap_id = q.roadmap_id if hasattr(q, 'roadmap_id') and q.roadmap_id else ""
-            data.questions.append(QuestionSummary(
-                id=q.id,
-                question=q.question,
-                status=q.status,
-                priority=str(q.priority),
-                hypotheses_count=hypotheses_count,
-                roadmap_id=roadmap_id,
-            ))
+            hypotheses_count = len(q.hypotheses) if hasattr(q, "hypotheses") and q.hypotheses else 0
+            roadmap_id = q.roadmap_id if hasattr(q, "roadmap_id") and q.roadmap_id else ""
+            data.questions.append(
+                QuestionSummary(
+                    id=q.id,
+                    question=q.question,
+                    status=q.status,
+                    priority=str(q.priority),
+                    hypotheses_count=hypotheses_count,
+                    roadmap_id=roadmap_id,
+                )
+            )
 
         # Experiments
         from llm.experiment_tracker import ExperimentTracker
+
         exp_tracker = ExperimentTracker()
         exps = exp_tracker.list_experiments()
         for e in exps:
-            data.experiments.append(ExperimentSummary(
-                id=e.id,
-                name=e.name,
-                status=e.status,
-                milestone=e.roadmap_milestone,
-                metrics_count=len(e.metrics),
-            ))
+            data.experiments.append(
+                ExperimentSummary(
+                    id=e.id,
+                    name=e.name,
+                    status=e.status,
+                    milestone=e.roadmap_milestone,
+                    metrics_count=len(e.metrics),
+                )
+            )
 
         # Papers + extended analytics
         if include_papers and self.db:
@@ -135,6 +149,7 @@ class Dashboard:
         # Gap type preferences
         try:
             from llm.insight_evolution import EvolutionTracker
+
             evolution_tracker = EvolutionTracker()
             profile = evolution_tracker.get_profile()
             if profile and profile.total_events > 0:
@@ -167,21 +182,22 @@ class Dashboard:
             stats.total_papers = len(papers)
 
             from datetime import timedelta
+
             now = datetime.now()
             thirty_days_ago = (now - timedelta(days=30)).isoformat()
 
             for p in papers:
                 # By year
-                year = getattr(p, 'year', None) or 'unknown'
+                year = getattr(p, "year", None) or "unknown"
                 stats.by_year[year] = stats.by_year.get(year, 0) + 1
 
                 # Recent papers
-                created = getattr(p, 'created_at', None) or ''
+                created = getattr(p, "created_at", None) or ""
                 if created and created > thirty_days_ago:
                     stats.recent_papers += 1
 
                 # By tag
-                tags = getattr(p, 'tags', []) or []
+                tags = getattr(p, "tags", []) or []
                 for tag in tags:
                     stats.by_tag[tag] = stats.by_tag.get(tag, 0) + 1
         except Exception:
@@ -218,13 +234,15 @@ class Dashboard:
 
             scored.sort(key=lambda x: x[0], reverse=True)
             for velocity, fwd, pid, title, year in scored[:10]:
-                hot.append(HotPaper(
-                    paper_id=pid,
-                    title=title[:60] + "…" if len(title) > 60 else title,
-                    year=year,
-                    velocity=round(velocity, 1),
-                    forward_cites=fwd,
-                ))
+                hot.append(
+                    HotPaper(
+                        paper_id=pid,
+                        title=title[:60] + "…" if len(title) > 60 else title,
+                        year=year,
+                        velocity=round(velocity, 1),
+                        forward_cites=fwd,
+                    )
+                )
         except Exception:
             logging.debug("Dashboard: failed to collect hot papers: %s")
             pass
@@ -235,6 +253,7 @@ class Dashboard:
         trends = []
         try:
             from llm.trend_analyzer import TrendAnalyzer
+
             analyzer = TrendAnalyzer(db=self.db)
             result = analyzer.analyze("", min_papers=3)
             direction_map = {
@@ -244,26 +263,36 @@ class Dashboard:
                 "stable": "➡️ stable",
             }
             for t in result.rising_trends[:5]:
-                trends.append(TrendKeyword(
-                    keyword=t.keyword,
-                    direction=direction_map.get(t.direction.value, t.direction.value),
-                    paper_count=t.current_year_count,
-                    growth=f"+{max(int(t.growth_rate), 0)}%" if t.growth_rate > 0 else f"{int(t.growth_rate)}%",
-                ))
+                trends.append(
+                    TrendKeyword(
+                        keyword=t.keyword,
+                        direction=direction_map.get(t.direction.value, t.direction.value),
+                        paper_count=t.current_year_count,
+                        growth=f"+{max(int(t.growth_rate), 0)}%"
+                        if t.growth_rate > 0
+                        else f"{int(t.growth_rate)}%",
+                    )
+                )
             for t in result.falling_trends[:3]:
-                trends.append(TrendKeyword(
-                    keyword=t.keyword,
-                    direction=direction_map.get(t.direction.value, t.direction.value),
-                    paper_count=t.current_year_count,
-                    growth=f"{int(t.growth_rate)}%",
-                ))
+                trends.append(
+                    TrendKeyword(
+                        keyword=t.keyword,
+                        direction=direction_map.get(t.direction.value, t.direction.value),
+                        paper_count=t.current_year_count,
+                        growth=f"{int(t.growth_rate)}%",
+                    )
+                )
             for t in result.emerging_trends[:3]:
-                trends.append(TrendKeyword(
-                    keyword=t.keyword,
-                    direction=direction_map.get(t.direction.value, t.direction.value),
-                    paper_count=t.current_year_count,
-                    growth=f"+{max(int(t.growth_rate), 0)}%" if t.growth_rate > 0 else f"{int(t.growth_rate)}%",
-                ))
+                trends.append(
+                    TrendKeyword(
+                        keyword=t.keyword,
+                        direction=direction_map.get(t.direction.value, t.direction.value),
+                        paper_count=t.current_year_count,
+                        growth=f"+{max(int(t.growth_rate), 0)}%"
+                        if t.growth_rate > 0
+                        else f"{int(t.growth_rate)}%",
+                    )
+                )
         except Exception:
             logging.debug("Dashboard: failed to collect trends: %s")
             pass
@@ -305,10 +334,12 @@ class Dashboard:
         lines.append("## Summary")
         lines.append(f"  Questions: {s.get('total_questions', 0)}")
         lines.append(f"  Experiments: {s.get('total_experiments', 0)}")
-        lines.append(f"  Papers: {s.get('total_papers', 0)} (this month: {s.get('papers_this_month', 0)})")
-        if s.get('hot_papers_count', 0) > 0:
+        lines.append(
+            f"  Papers: {s.get('total_papers', 0)} (this month: {s.get('papers_this_month', 0)})"
+        )
+        if s.get("hot_papers_count", 0) > 0:
             lines.append(f"  Hot Papers: {s['hot_papers_count']} (citation velocity > 0)")
-        if s.get('trends_count', 0) > 0:
+        if s.get("trends_count", 0) > 0:
             lines.append(f"  Trends: {s['trends_count']} keywords tracked")
 
         # Gap Type Preferences
@@ -342,9 +373,7 @@ class Dashboard:
             lines.append("## 🔥 Hot Papers (by Citation Velocity)")
             for i, p in enumerate(data.hot_papers[:5], 1):
                 bar = "█" * min(int(p.velocity), 10)
-                lines.append(
-                    f"  {i}. {p.velocity:.1f}/y  {bar}  {p.title} ({p.year})"
-                )
+                lines.append(f"  {i}. {p.velocity:.1f}/y  {bar}  {p.title} ({p.year})")
             if len(data.hot_papers) > 5:
                 lines.append(f"  ... and {len(data.hot_papers) - 5} more")
             lines.append("")
@@ -353,9 +382,7 @@ class Dashboard:
         if data.trends:
             lines.append("## 📈 Research Trends")
             for t in data.trends[:10]:
-                lines.append(
-                    f"  {t.direction}  {t.keyword}  ({t.paper_count} papers, {t.growth})"
-                )
+                lines.append(f"  {t.direction}  {t.keyword}  ({t.paper_count} papers, {t.growth})")
             lines.append("")
 
         # Questions
@@ -413,72 +440,89 @@ class Dashboard:
         lines.append("")
         lines.append("=" * 60)
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def render_json(self, data: DashboardData) -> str:
         """Render dashboard as JSON."""
         import json
-        return json.dumps({
-            "generated_at": data.generated_at,
-            "summary": data.summary,
-            "hot_papers": [
-                {
-                    "paper_id": p.paper_id,
-                    "title": p.title,
-                    "year": p.year,
-                    "velocity": p.velocity,
-                    "forward_cites": p.forward_cites,
-                }
-                for p in data.hot_papers
-            ],
-            "trends": [
-                {
-                    "keyword": t.keyword,
-                    "direction": t.direction,
-                    "paper_count": t.paper_count,
-                    "growth": t.growth,
-                }
-                for t in data.trends
-            ],
-            "questions": [
-                {
-                    "id": q.id,
-                    "question": q.question,
-                    "status": q.status,
-                    "priority": q.priority,
-                    "hypotheses_count": q.hypotheses_count,
-                }
-                for q in data.questions
-            ],
-            "experiments": [
-                {
-                    "id": e.id,
-                    "name": e.name,
-                    "status": e.status,
-                    "milestone": e.milestone,
-                    "metrics_count": e.metrics_count,
-                }
-                for e in data.experiments
-            ],
-            "papers": {
-                "total": data.papers.total_papers if data.papers else 0,
-                "this_month": data.papers.recent_papers if data.papers else 0,
-                "by_year": data.papers.by_year if data.papers else {},
-                "by_tag": data.papers.by_tag if data.papers else {},
-            } if data.papers else None,
-            "gap_preferences": {
-                "total_events": data.gap_preferences.total_events if data.gap_preferences else 0,
-                "preferred_keywords": [
-                    {"keyword": kw, "score": float(score)}
-                    for kw, score in (data.gap_preferences.preferred_keywords if data.gap_preferences else [])
+
+        return json.dumps(
+            {
+                "generated_at": data.generated_at,
+                "summary": data.summary,
+                "hot_papers": [
+                    {
+                        "paper_id": p.paper_id,
+                        "title": p.title,
+                        "year": p.year,
+                        "velocity": p.velocity,
+                        "forward_cites": p.forward_cites,
+                    }
+                    for p in data.hot_papers
                 ],
-                "preferred_types": [
-                    {"gap_type": gt, "score": float(score)}
-                    for gt, score in (data.gap_preferences.preferred_types if data.gap_preferences else [])
+                "trends": [
+                    {
+                        "keyword": t.keyword,
+                        "direction": t.direction,
+                        "paper_count": t.paper_count,
+                        "growth": t.growth,
+                    }
+                    for t in data.trends
                 ],
-                "disliked_types": [
-                    {"gap_type": gt, "score": float(score)}
-                    for gt, score in (data.gap_preferences.disliked_types if data.gap_preferences else [])
+                "questions": [
+                    {
+                        "id": q.id,
+                        "question": q.question,
+                        "status": q.status,
+                        "priority": q.priority,
+                        "hypotheses_count": q.hypotheses_count,
+                    }
+                    for q in data.questions
                 ],
-            } if data.gap_preferences else None,
-        }, ensure_ascii=False, indent=2)
+                "experiments": [
+                    {
+                        "id": e.id,
+                        "name": e.name,
+                        "status": e.status,
+                        "milestone": e.milestone,
+                        "metrics_count": e.metrics_count,
+                    }
+                    for e in data.experiments
+                ],
+                "papers": {
+                    "total": data.papers.total_papers if data.papers else 0,
+                    "this_month": data.papers.recent_papers if data.papers else 0,
+                    "by_year": data.papers.by_year if data.papers else {},
+                    "by_tag": data.papers.by_tag if data.papers else {},
+                }
+                if data.papers
+                else None,
+                "gap_preferences": {
+                    "total_events": data.gap_preferences.total_events
+                    if data.gap_preferences
+                    else 0,
+                    "preferred_keywords": [
+                        {"keyword": kw, "score": float(score)}
+                        for kw, score in (
+                            data.gap_preferences.preferred_keywords if data.gap_preferences else []
+                        )
+                    ],
+                    "preferred_types": [
+                        {"gap_type": gt, "score": float(score)}
+                        for gt, score in (
+                            data.gap_preferences.preferred_types if data.gap_preferences else []
+                        )
+                    ],
+                    "disliked_types": [
+                        {"gap_type": gt, "score": float(score)}
+                        for gt, score in (
+                            data.gap_preferences.disliked_types if data.gap_preferences else []
+                        )
+                    ],
+                }
+                if data.gap_preferences
+                else None,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )

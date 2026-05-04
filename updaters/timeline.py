@@ -1,4 +1,5 @@
 """Timeline page management."""
+
 import re
 import textwrap
 from pathlib import Path

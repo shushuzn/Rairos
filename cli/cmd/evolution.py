@@ -25,10 +25,7 @@ from llm.evolution import get_evolution_memory
 
 def _build_evolution_parser(subparsers):
     """Register evolution subcommand."""
-    p = subparsers.add_parser(
-        "evolution",
-        help="Evolution Dashboard — 查看系统学习进度"
-    )
+    p = subparsers.add_parser("evolution", help="Evolution Dashboard — 查看系统学习进度")
     p.add_argument("--stats", "-s", action="store_true", help="显示统计信息")
     p.add_argument("--patterns", "-p", action="store_true", help="显示学习到的模式")
     p.add_argument("--feedback", "-f", action="store_true", help="显示最近反馈")
@@ -37,16 +34,18 @@ def _build_evolution_parser(subparsers):
     p.add_argument("--days", type=int, default=7, help="报告周期（天）")
     p.add_argument("--clear", "-c", action="store_true", help="清空所有进化数据")
     p.add_argument("--export", "-e", action="store_true", help="导出数据到 JSON")
-    p.set_defaults(func=lambda a: evolution_main(
-        show_stats=a.stats,
-        show_patterns=a.patterns,
-        show_feedback=a.feedback,
-        show_report=a.report,
-        show_sessions=getattr(a, 'sessions', False),
-        report_days=a.days,
-        clear=a.clear,
-        export=a.export,
-    ))
+    p.set_defaults(
+        func=lambda a: evolution_main(
+            show_stats=a.stats,
+            show_patterns=a.patterns,
+            show_feedback=a.feedback,
+            show_report=a.report,
+            show_sessions=getattr(a, "sessions", False),
+            report_days=a.days,
+            clear=a.clear,
+            export=a.export,
+        )
+    )
 
 
 def evolution_main(
@@ -146,53 +145,56 @@ def show_dashboard(evo):
     pct = int(progress * 100)
     status = "[#B4FA72]● Learning[/]" if pct < 50 else "[#B4FA72]✓ Evolving[/]"
 
-    print(WarpBlocks.section(
-        f"System Progress {pct}%",
-        f"[#A5D5FE]{bar}[/]  {status}",
-        f"Events: {stats['total_events']}  |  Patterns: {stats['total_patterns']}",
-        width=60
-    ))
+    print(
+        WarpBlocks.section(
+            f"System Progress {pct}%",
+            f"[#A5D5FE]{bar}[/]  {status}",
+            f"Events: {stats['total_events']}  |  Patterns: {stats['total_patterns']}",
+            width=60,
+        )
+    )
     c.print()
 
     # Core metrics table
-    pos_rate = stats.get('positive_rate', 0)
-    rate_str = f"[#B4FA72]{render_star(pos_rate)} {pos_rate*100:.0f}%[/]"
-    neg = stats['negative_feedback']
-    pos = stats['positive_feedback']
+    pos_rate = stats.get("positive_rate", 0)
+    rate_str = f"[#B4FA72]{render_star(pos_rate)} {pos_rate * 100:.0f}%[/]"
+    neg = stats["negative_feedback"]
+    pos = stats["positive_feedback"]
     rows = [
-        ["Total Feedback", str(stats['total_feedback']), "[#A5D5FE]Overall[/]"],
+        ["Total Feedback", str(stats["total_feedback"]), "[#A5D5FE]Overall[/]"],
         ["Positive", str(pos), rate_str],
-        ["Negative", str(neg), "[#FF5555]Needs attention[/]" if neg > pos else "[#8E8E8E]Balanced[/]"],
-        ["Patterns", str(stats['total_patterns']), "[#B4FA72]✓ Evolved[/]"],
-        ["Reliable", str(stats['reliable_patterns']), "[#D0D1FE]★ Stable[/]"],
+        [
+            "Negative",
+            str(neg),
+            "[#FF5555]Needs attention[/]" if neg > pos else "[#8E8E8E]Balanced[/]",
+        ],
+        ["Patterns", str(stats["total_patterns"]), "[#B4FA72]✓ Evolved[/]"],
+        ["Reliable", str(stats["reliable_patterns"]), "[#D0D1FE]★ Stable[/]"],
     ]
-    c.print(WarpBlocks.table(
-        ["Metric", "Value", "Status"],
-        rows,
-        title="Core Metrics"
-    ))
+    c.print(WarpBlocks.table(["Metric", "Value", "Status"], rows, title="Core Metrics"))
     c.print()
 
     # Evolution stage
     stage = get_evolution_stage(stats)
     goal = get_next_goal(stats)
-    print(WarpBlocks.section(
-        "Evolution Stage",
-        f"[#FF8272]Stage:[/] {stage}",
-        f"[#A5D5FE]Next:[/] {goal}",
-        width=60
-    ))
+    print(
+        WarpBlocks.section(
+            "Evolution Stage", f"[#FF8272]Stage:[/] {stage}", f"[#A5D5FE]Next:[/] {goal}", width=60
+        )
+    )
     c.print()
 
     # Quick links
-    print(WarpBlocks.section(
-        "Quick Actions",
-        "[#A5D5FE]--stats[/]    Detailed statistics",
-        "[#A5D5FE]--patterns[/]  View all patterns",
-        "[#A5D5FE]--feedback[/] Feedback history",
-        "[#A5D5FE]--report[/]   Learning report",
-        width=60
-    ))
+    print(
+        WarpBlocks.section(
+            "Quick Actions",
+            "[#A5D5FE]--stats[/]    Detailed statistics",
+            "[#A5D5FE]--patterns[/]  View all patterns",
+            "[#A5D5FE]--feedback[/] Feedback history",
+            "[#A5D5FE]--report[/]   Learning report",
+            width=60,
+        )
+    )
     c.print()
 
 
@@ -274,8 +276,8 @@ def show_stats_view(evo):
         neg_bar = "█" * int(bar_len * neg_rate) + "░" * (bar_len - int(bar_len * neg_rate))
 
         rows = [
-            ["[#B4FA72]Satisfied[/]", f"[#B4FA72]{pos_bar}[/]  {pos_rate*100:.0f}% ({pos})"],
-            ["[#FF5555]Unsatisfied[/]", f"[#FF5555]{neg_bar}[/]  {neg_rate*100:.0f}% ({neg})"],
+            ["[#B4FA72]Satisfied[/]", f"[#B4FA72]{pos_bar}[/]  {pos_rate * 100:.0f}% ({pos})"],
+            ["[#FF5555]Unsatisfied[/]", f"[#FF5555]{neg_bar}[/]  {neg_rate * 100:.0f}% ({neg})"],
             ["[#A5D5FE]Total[/]", f"[#A5D5FE]{total}[/]"],
         ]
         c.print(WarpBlocks.table(["Metric", "Distribution"], rows, title="User Satisfaction"))
@@ -293,24 +295,28 @@ def show_stats_view(evo):
     # Pattern analysis
     patterns = evo.get_all_patterns()
     if patterns:
-        sorted_patterns = sorted(
-            patterns,
-            key=lambda p: p.get("effectiveness", 0),
-            reverse=True
-        )[:8]
+        sorted_patterns = sorted(patterns, key=lambda p: p.get("effectiveness", 0), reverse=True)[
+            :8
+        ]
 
         rows = []
         for i, p in enumerate(sorted_patterns, 1):
             eff = p.get("effectiveness", 0)
             total_att = p.get("success_count", 0) + p.get("failure_count", 0)
-            eff_str = f"[#B4FA72]{eff*100:.0f}%[/]" if eff >= 0.7 else f"[#FEFDC2]{eff*100:.0f}%[/]" if eff >= 0.4 else f"[#FF5555]{eff*100:.0f}%[/]"
-            rows.append([str(i), p['name'][:28], eff_str, str(total_att)])
+            eff_str = (
+                f"[#B4FA72]{eff * 100:.0f}%[/]"
+                if eff >= 0.7
+                else f"[#FEFDC2]{eff * 100:.0f}%[/]"
+                if eff >= 0.4
+                else f"[#FF5555]{eff * 100:.0f}%[/]"
+            )
+            rows.append([str(i), p["name"][:28], eff_str, str(total_att)])
 
-        c.print(WarpBlocks.table(
-            ["#", "Pattern", "Effectiveness", "Attempts"],
-            rows,
-            title="Top Patterns"
-        ))
+        c.print(
+            WarpBlocks.table(
+                ["#", "Pattern", "Effectiveness", "Attempts"], rows, title="Top Patterns"
+            )
+        )
     else:
         c.print(WarpBlocks.panel("Patterns", "No pattern data yet"))
     c.print()
@@ -327,10 +333,12 @@ def show_patterns_view(evo):
     c.print()
 
     if not patterns:
-        print(WarpBlocks.panel(
-            "Pattern Library",
-            "[#8E8E8E]暂无学习到的模式\n\n使用 --chat 功能并提供反馈来积累模式[/]"
-        ))
+        print(
+            WarpBlocks.panel(
+                "Pattern Library",
+                "[#8E8E8E]暂无学习到的模式\n\n使用 --chat 功能并提供反馈来积累模式[/]",
+            )
+        )
         return
 
     reliable = [p for p in patterns if p.get("effectiveness", 0) >= 0.7]
@@ -342,14 +350,14 @@ def show_patterns_view(evo):
         for p in reliable:
             eff = p.get("effectiveness", 0)
             total = p.get("success_count", 0) + p.get("failure_count", 0)
-            eff_str = f"[#B4FA72]{eff*100:.0f}%[/]"
-            rows.append(["⭐", p['name'][:30], eff_str, f"[#A5D5FE]{total}[/]"])
+            eff_str = f"[#B4FA72]{eff * 100:.0f}%[/]"
+            rows.append(["⭐", p["name"][:30], eff_str, f"[#A5D5FE]{total}[/]"])
 
-        c.print(WarpBlocks.table(
-            ["", "Pattern", "Effectiveness", "Attempts"],
-            rows,
-            title="Reliable Patterns (>70%)"
-        ))
+        c.print(
+            WarpBlocks.table(
+                ["", "Pattern", "Effectiveness", "Attempts"], rows, title="Reliable Patterns (>70%)"
+            )
+        )
         c.print()
 
     # 实验中模式
@@ -363,13 +371,13 @@ def show_patterns_view(evo):
                 eff_str = f"[#FEFDC2]{eff_pct:.0f}%[/]"
             else:
                 eff_str = f"[#FF5555]{eff_pct:.0f}%[/]"
-            rows.append(["🔬", p['name'][:30], eff_str, f"[#A5D5FE]{total}[/]"])
+            rows.append(["🔬", p["name"][:30], eff_str, f"[#A5D5FE]{total}[/]"])
 
-        c.print(WarpBlocks.table(
-            ["", "Pattern", "Effectiveness", "Attempts"],
-            rows,
-            title="Experimental Patterns"
-        ))
+        c.print(
+            WarpBlocks.table(
+                ["", "Pattern", "Effectiveness", "Attempts"], rows, title="Experimental Patterns"
+            )
+        )
 
 
 def show_feedback_view(evo):
@@ -385,19 +393,23 @@ def show_feedback_view(evo):
         with open(evo.feedback_file, encoding="utf-8") as f:
             lines = f.readlines()
     except FileNotFoundError:
-        print(WarpBlocks.panel(
-            "Feedback History",
-            "[#8E8E8E]暂无反馈记录\n\n使用 --chat 功能并提供反馈来积累数据[/]"
-        ))
+        print(
+            WarpBlocks.panel(
+                "Feedback History",
+                "[#8E8E8E]暂无反馈记录\n\n使用 --chat 功能并提供反馈来积累数据[/]",
+            )
+        )
         return
 
     recent = lines[-20:] if len(lines) > 20 else lines
 
     if not recent:
-        print(WarpBlocks.panel(
-            "Feedback History",
-            "[#8E8E8E]暂无反馈记录\n\n使用 --chat 功能并提供反馈来积累数据[/]"
-        ))
+        print(
+            WarpBlocks.panel(
+                "Feedback History",
+                "[#8E8E8E]暂无反馈记录\n\n使用 --chat 功能并提供反馈来积累数据[/]",
+            )
+        )
         return
 
     rows = []
@@ -408,7 +420,13 @@ def show_feedback_view(evo):
         try:
             data = json.loads(line)
             fb_type = data.get("type", "")
-            icon = "[#B4FA72]✅[/]" if fb_type == "positive" else "[#FF5555]❌[/]" if fb_type == "negative" else "[#8E8E8E]➖[/]"
+            icon = (
+                "[#B4FA72]✅[/]"
+                if fb_type == "positive"
+                else "[#FF5555]❌[/]"
+                if fb_type == "negative"
+                else "[#8E8E8E]➖[/]"
+            )
             query = data.get("query", "")[:38]
             timestamp = data.get("timestamp", "")[:10]
             rows.append([icon, f"[#A5D5FE][{timestamp}][/]", query])
@@ -416,11 +434,11 @@ def show_feedback_view(evo):
             continue
 
     if rows:
-        c.print(WarpBlocks.table(
-            ["", "Time", "Query"],
-            rows,
-            title=f"Recent Feedback ({len(rows)} entries)"
-        ))
+        c.print(
+            WarpBlocks.table(
+                ["", "Time", "Query"], rows, title=f"Recent Feedback ({len(rows)} entries)"
+            )
+        )
 
 
 def export_evolution_data(evo):
@@ -487,9 +505,9 @@ def _run_evolution(args) -> int:
         show_stats=args.stats,
         show_patterns=args.patterns,
         show_feedback=args.feedback,
-        show_report=getattr(args, 'report', False),
-        show_sessions=getattr(args, 'sessions', False),
-        report_days=getattr(args, 'days', 7),
+        show_report=getattr(args, "report", False),
+        show_sessions=getattr(args, "sessions", False),
+        report_days=getattr(args, "days", 7),
         clear=args.clear,
         export=args.export,
     )
@@ -497,6 +515,7 @@ def _run_evolution(args) -> int:
 
 if __name__ == "__main__":
     import argparse
+
     p = argparse.ArgumentParser()
     sp = p.add_subparsers()
     _build_evolution_parser(sp)

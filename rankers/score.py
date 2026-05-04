@@ -1,4 +1,5 @@
 """Composite scoring strategy combining semantic similarity + paper metadata."""
+
 from __future__ import annotations
 from typing import TYPE_CHECKING, List, Optional
 
@@ -67,7 +68,11 @@ class CompositeScorer(Ranker):
         ref_year: Optional[int] = None
         for prow, _ in sim_results:
             if prow.published is not None:
-                yr = prow.published.year if hasattr(prow.published, "year") else int(str(prow.published)[:4])
+                yr = (
+                    prow.published.year
+                    if hasattr(prow.published, "year")
+                    else int(str(prow.published)[:4])
+                )
                 if ref_year is None or yr > ref_year:
                     ref_year = yr
         if ref_year is None:
@@ -81,7 +86,11 @@ class CompositeScorer(Ranker):
             # Recency: 0-1 based on distance from ref_year
             recency_norm = 0.0
             if prow.published is not None:
-                yr = prow.published.year if hasattr(prow.published, "year") else int(str(prow.published)[:4])
+                yr = (
+                    prow.published.year
+                    if hasattr(prow.published, "year")
+                    else int(str(prow.published)[:4])
+                )
                 year_dist = max(0, min(ref_year - yr, self.year_boost_range))
                 recency_norm = 1.0 - (year_dist / self.year_boost_range)
 

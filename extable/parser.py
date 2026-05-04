@@ -4,14 +4,12 @@ import json
 import re
 
 
-
-
 class ExperimentTableParser:
     """Parse raw table data into structured JSON using LLM or regex fallback."""
 
     # Regex patterns for common metric formats
     _METRIC_PAT = re.compile(r"([\w\-\.]+)\s*[:=]\s*([\d\.]+)")
-    _TABLE_NUM  = re.compile(r"^\s*[\d\.]+\s*$")
+    _TABLE_NUM = re.compile(r"^\s*[\d\.]+\s*$")
 
     def __init__(self, llm_client=None):
         """llm_client: optional OpenAI-compatible API client.
@@ -65,7 +63,20 @@ class ExperimentTableParser:
             h_clean = h.strip()
             if not h_clean:
                 continue
-            if any(kw in h_clean for kw in ["accuracy", "precision", "recall", "f1", "bleu", "rouge", "ppl", "perplexity", "auc"]):
+            if any(
+                kw in h_clean
+                for kw in [
+                    "accuracy",
+                    "precision",
+                    "recall",
+                    "f1",
+                    "bleu",
+                    "rouge",
+                    "ppl",
+                    "perplexity",
+                    "auc",
+                ]
+            ):
                 metric_cols.append((i, h_clean))
             elif any(kw in h_clean for kw in ["dataset", "bench", "task", "corpus"]):
                 dataset_cols.append((i, h_clean))
@@ -141,18 +152,20 @@ class ExperimentTableParser:
             if m["name"] not in unique_metrics or m["value"] > unique_metrics[m["name"]]:
                 unique_metrics[m["name"]] = m["value"]
 
-        tables.append({
-            "caption": title,
-            "metrics": [{"name": k, "value": v} for k, v in unique_metrics.items()],
-            "datasets": sorted(datasets),
-            "models": sorted(models),
-            "baselines": baselines,
-            "ours_best": {
-                "value": ours_best_val,
-                "dataset": ours_best_dataset,
-                "metric": ours_best_metric,
-            },
-        })
+        tables.append(
+            {
+                "caption": title,
+                "metrics": [{"name": k, "value": v} for k, v in unique_metrics.items()],
+                "datasets": sorted(datasets),
+                "models": sorted(models),
+                "baselines": baselines,
+                "ours_best": {
+                    "value": ours_best_val,
+                    "dataset": ours_best_dataset,
+                    "metric": ours_best_metric,
+                },
+            }
+        )
 
         return {"tables": tables}
 
@@ -175,16 +188,21 @@ class ExperimentTableParser:
         )
 
         api_key = os.environ.get("OPENAI_API_KEY", "")
-        base_url = os.environ.get("OPENAI_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+        base_url = os.environ.get(
+            "OPENAI_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"
+        )
 
         import urllib.request
+
         req = urllib.request.Request(
             f"{base_url}/chat/completions",
-            data=json.dumps({
-                "model": model,
-                "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.1,
-            }).encode(),
+            data=json.dumps(
+                {
+                    "model": model,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "temperature": 0.1,
+                }
+            ).encode(),
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",

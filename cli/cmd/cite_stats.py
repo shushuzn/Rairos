@@ -1,4 +1,5 @@
 """CLI command: cite-stats."""
+
 from __future__ import annotations
 
 import argparse
@@ -6,7 +7,8 @@ import sys
 
 from cli._shared import get_db
 from cli._shared import (
-    Colors, colored,
+    Colors,
+    colored,
 )
 from cli.warp import WarpBlocks
 
@@ -16,9 +18,16 @@ def _build_cite_stats_parser(subparsers) -> argparse.ArgumentParser:
         "cite-stats",
         help="Show citation statistics for papers in the database",
     )
-    p.add_argument("--paper", metavar="PAPER_ID", dest="stats_paper", help="Show stats for a specific paper")
+    p.add_argument(
+        "--paper", metavar="PAPER_ID", dest="stats_paper", help="Show stats for a specific paper"
+    )
     p.add_argument("--top", type=int, metavar="N", help="Show top N most-cited papers")
-    p.add_argument("--format", choices=["text", "csv", "warp"], default="text", help="Output format (default: text)")
+    p.add_argument(
+        "--format",
+        choices=["text", "csv", "warp"],
+        default="text",
+        help="Output format (default: text)",
+    )
     return p  # type: ignore[no-any-return]
 
 
@@ -48,7 +57,9 @@ def _run_cite_stats(args: argparse.Namespace) -> int:
     cited_papers = cur.fetchone()[0]
     cur.execute("SELECT COUNT(*) FROM papers")
     total_papers = cur.fetchone()[0]
-    cur.execute("SELECT COUNT(DISTINCT id) FROM papers WHERE id IN (SELECT source_id FROM citations UNION SELECT target_id FROM citations)")
+    cur.execute(
+        "SELECT COUNT(DISTINCT id) FROM papers WHERE id IN (SELECT source_id FROM citations UNION SELECT target_id FROM citations)"
+    )
     papers_with_any = cur.fetchone()[0]
     orphan_papers = total_papers - papers_with_any
 
@@ -62,20 +73,31 @@ def _run_cite_stats(args: argparse.Namespace) -> int:
         return 0  # type: ignore[no-any-return]
 
     if args.top:
-        cur.execute("""
+        cur.execute(
+            """
             SELECT target_id, COUNT(*) as cnt
             FROM citations
             GROUP BY target_id
             ORDER BY cnt DESC
             LIMIT ?
-        """, (args.top,))
+        """,
+            (args.top,),
+        )
         top_rows = cur.fetchall()
     else:
         top_rows = []
 
     if args.format == "warp":
-        _run_cite_stats_warp(total_citations, papers_with_any, orphan_papers,
-                              citing_papers, cited_papers, total_papers, top_rows, db)
+        _run_cite_stats_warp(
+            total_citations,
+            papers_with_any,
+            orphan_papers,
+            citing_papers,
+            cited_papers,
+            total_papers,
+            top_rows,
+            db,
+        )
         return 0
 
     # text format
@@ -93,8 +115,16 @@ def _run_cite_stats(args: argparse.Namespace) -> int:
     return 0
 
 
-def _run_cite_stats_warp(total_citations, papers_with_any, orphan_papers,
-                          citing_papers, cited_papers, total_papers, top_rows, db) -> None:
+def _run_cite_stats_warp(
+    total_citations,
+    papers_with_any,
+    orphan_papers,
+    citing_papers,
+    cited_papers,
+    total_papers,
+    top_rows,
+    db,
+) -> None:
     """Render citation stats using Warp-style blocks."""
     blocks = []
 
@@ -115,4 +145,3 @@ def _run_cite_stats_warp(total_citations, papers_with_any, orphan_papers,
         blocks.append(WarpBlocks.table(["Cites", "Paper ID", "Title"], rows))
 
     print("\n\n".join(blocks))
-

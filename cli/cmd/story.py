@@ -1,4 +1,5 @@
 """CLI command: story — Research story weaving."""
+
 from __future__ import annotations
 
 import argparse
@@ -21,13 +22,15 @@ def _build_story_parser(subparsers) -> argparse.ArgumentParser:
         help="Research topic to weave into story",
     )
     p.add_argument(
-        "--compare", "-c",
+        "--compare",
+        "-c",
         nargs=2,
         metavar=("TOPIC_A", "TOPIC_B"),
         help="Compare two research storylines",
     )
     p.add_argument(
-        "--papers", "-p",
+        "--papers",
+        "-p",
         nargs="+",
         help="Specific paper IDs to analyze",
     )
@@ -37,23 +40,27 @@ def _build_story_parser(subparsers) -> argparse.ArgumentParser:
         help="Disable LLM narrative generation",
     )
     p.add_argument(
-        "--mermaid", "-m",
+        "--mermaid",
+        "-m",
         action="store_true",
         help="Output as Mermaid flowchart",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="Output as JSON",
     )
     p.add_argument(
-        "--model", "-M",
+        "--model",
+        "-M",
         type=str,
         default=None,
         help="LLM model to use",
     )
     p.add_argument(
-        "--max-papers", "-n",
+        "--max-papers",
+        "-n",
         type=int,
         default=20,
         help="Maximum papers to analyze (default: 20)",
@@ -93,6 +100,7 @@ def _run_story(args: argparse.Namespace) -> int:
 
     if args.json:
         import json
+
         data = {
             "topic": result.topic,
             "chapters": [

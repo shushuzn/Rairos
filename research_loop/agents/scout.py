@@ -34,6 +34,7 @@ class ScoutAgent(BaseAgent):
             from llm.subscription_monitor import SubscriptionMonitor
             from llm.subscription_scorer import SubscriptionScorer
             from db.database import Database
+
             db = Database()
             db.init()
             self._db = db

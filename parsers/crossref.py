@@ -1,4 +1,5 @@
 """Crossref API metadata fetching."""
+
 import datetime as dt
 import re
 from typing import Any, List, Optional, Tuple, cast
@@ -16,7 +17,14 @@ from parsers.input_detection import normalize_arxiv_id
 
 
 def _best_effort_date_from_crossref(item: dict) -> str:
-    for key in ["published-print", "published-online", "published", "issued", "created", "deposited"]:
+    for key in [
+        "published-print",
+        "published-online",
+        "published",
+        "issued",
+        "created",
+        "deposited",
+    ]:
         obj = item.get(key)
         if not obj:
             continue

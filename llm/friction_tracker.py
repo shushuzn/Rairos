@@ -4,6 +4,7 @@ Research Friction Tracker: Detect and record research efficiency bottlenecks.
 Friction = any event that slows down or interrupts the user's research flow.
 Tracking friction is the first step toward a self-improving research experience.
 """
+
 from __future__ import annotations
 
 import json
@@ -17,15 +18,17 @@ from typing import Optional, List, Dict, Any
 
 class FrictionType(Enum):
     """Categories of research friction."""
-    COMMAND = "command"          # 命令失败/重试
-    WORKFLOW = "workflow"       # 多步骤流程中途放弃
-    RETRIEVAL = "retrieval"    # 搜不到/找不到
-    COGNITIVE = "cognitive"     # 结果质量低于预期
+
+    COMMAND = "command"  # 命令失败/重试
+    WORKFLOW = "workflow"  # 多步骤流程中途放弃
+    RETRIEVAL = "retrieval"  # 搜不到/找不到
+    COGNITIVE = "cognitive"  # 结果质量低于预期
     NAVIGATION = "navigation"  # 不知道该用什么命令
 
 
 class FrictionSeverity(Enum):
     """How severe is the friction."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -34,6 +37,7 @@ class FrictionSeverity(Enum):
 
 class Resolution(Enum):
     """How the user (or system) resolved the friction."""
+
     RETRIED = "retried"
     ABANDONED = "abandoned"
     WORKED_AROUND = "worked_around"
@@ -44,6 +48,7 @@ class Resolution(Enum):
 @dataclass
 class FrictionEvent:
     """A single friction event."""
+
     id: str
     timestamp: str
     friction_type: str

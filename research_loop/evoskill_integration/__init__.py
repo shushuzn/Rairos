@@ -62,15 +62,18 @@ class EvoSkillPipeline:
         config_path = self.work_dir / "config.toml"
         task_path = self.work_dir / "task.md"
 
-        self._write_config(config_path, {
-            "task": task,
-            "dataset_path": dataset_path,
-            "harness": harness,
-            "model": model,
-            "question_col": question_col,
-            "answer_col": answer_col,
-            "category_col": category_col,
-        })
+        self._write_config(
+            config_path,
+            {
+                "task": task,
+                "dataset_path": dataset_path,
+                "harness": harness,
+                "model": model,
+                "question_col": question_col,
+                "answer_col": answer_col,
+                "category_col": category_col,
+            },
+        )
 
         return {
             "config": str(config_path),
@@ -80,7 +83,11 @@ class EvoSkillPipeline:
 
     def _write_config(self, config_path: Path, params: dict) -> None:
         """Write EvoSkill config.toml."""
-        category_section = '\ncategory_column = "' + str(params["category_col"]) + '"' if params["category_col"] else ""
+        category_section = (
+            '\ncategory_column = "' + str(params["category_col"]) + '"'
+            if params["category_col"]
+            else ""
+        )
 
         content = """# EvoSkill project configuration for {task}
 

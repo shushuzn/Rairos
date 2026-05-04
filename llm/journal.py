@@ -1,6 +1,7 @@
 """
 Research Journal: Track research activities and thoughts.
 """
+
 import uuid
 from dataclasses import dataclass, asdict, field
 from datetime import datetime, timedelta
@@ -13,6 +14,7 @@ from llm.tracker_base import JsonFileStore
 @dataclass
 class JournalEntry:
     """A journal entry."""
+
     id: str
     content: str
     created_at: str = ""
@@ -81,7 +83,9 @@ class Journal(JsonFileStore):
                 return e
         return None
 
-    def update(self, entry_id: str, content: str = "", tags: Optional[List[str]] = None) -> Optional[JournalEntry]:
+    def update(
+        self, entry_id: str, content: str = "", tags: Optional[List[str]] = None
+    ) -> Optional[JournalEntry]:
         """Update an entry."""
         entries = cast(List[JournalEntry], self._load())
         for e in entries:
@@ -186,4 +190,4 @@ class Journal(JsonFileStore):
                     lines.append(f"   Question: {e.question_id}")
                 if e.experiment_id:
                     lines.append(f"   Experiment: {e.experiment_id}")
-        return '\n'.join(lines)
+        return "\n".join(lines)

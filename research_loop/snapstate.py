@@ -15,6 +15,7 @@ import shutil
 @dataclass
 class PaperSnapshot:
     """A paper captured during research."""
+
     arxiv_id: str
     title: str
     abstract: str
@@ -35,6 +36,7 @@ class PaperSnapshot:
 @dataclass
 class GapSnapshot:
     """A research gap captured during agent iteration."""
+
     gap_type: str
     title: str
     description: str
@@ -53,6 +55,7 @@ class GapSnapshot:
 @dataclass
 class ResearchSession:
     """Complete state of a deep research agent run."""
+
     session_id: str
     query: str
     created_at: float = field(default_factory=time.time)
@@ -138,15 +141,17 @@ class Snapstate:
         for path in sorted(self.base_dir.glob("*.json"), key=lambda p: -p.stat().st_mtime):
             try:
                 data = json.loads(path.read_text(encoding="utf-8"))
-                sessions.append({
-                    "session_id": data.get("session_id", path.stem),
-                    "query": data.get("query", ""),
-                    "status": data.get("status", "?"),
-                    "iteration": data.get("iteration", 0),
-                    "duration": round(time.time() - data.get("created_at", time.time()), 1),
-                    "papers": len(data.get("papers", [])),
-                    "gaps": len(data.get("gaps", [])),
-                })
+                sessions.append(
+                    {
+                        "session_id": data.get("session_id", path.stem),
+                        "query": data.get("query", ""),
+                        "status": data.get("status", "?"),
+                        "iteration": data.get("iteration", 0),
+                        "duration": round(time.time() - data.get("created_at", time.time()), 1),
+                        "papers": len(data.get("papers", [])),
+                        "gaps": len(data.get("gaps", [])),
+                    }
+                )
             except Exception:
                 sessions.append({"session_id": path.stem, "status": "corrupt"})
         return sessions
@@ -159,9 +164,12 @@ class Snapstate:
             return True
         return False
 
-    def new_session(self, query: str, max_iterations: int = 3, archetype: Optional[Dict[str, float]] = None) -> ResearchSession:
+    def new_session(
+        self, query: str, max_iterations: int = 3, archetype: Optional[Dict[str, float]] = None
+    ) -> ResearchSession:
         """Create a new research session."""
         from llm.insight_evolution import get_evolution_tracker
+
         tracker = get_evolution_tracker()
         profile = tracker.get_archetype()
 

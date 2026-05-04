@@ -71,6 +71,7 @@ def restore_backup(stamp: str) -> bool:
 
     import tempfile
     import os
+
     with tempfile.TemporaryDirectory() as tmpdir:
         with tarfile.open(backup_file, "r:gz") as tar:
             tar.extractall(tmpdir)
@@ -84,7 +85,11 @@ def restore_backup(stamp: str) -> bool:
 def get_backup_info() -> dict:
     """Return info about available backups."""
     backups = _list_backups()
-    total_size = sum((BACKUP_DIR / f"gene_pool_{b}.tar.gz").stat().st_size for b in backups if (BACKUP_DIR / f"gene_pool_{b}.tar.gz").exists())
+    total_size = sum(
+        (BACKUP_DIR / f"gene_pool_{b}.tar.gz").stat().st_size
+        for b in backups
+        if (BACKUP_DIR / f"gene_pool_{b}.tar.gz").exists()
+    )
     return {
         "available": len(backups),
         "stamps": backups[:10],
@@ -99,32 +104,42 @@ def render_backup_html(info: Optional[dict] = None) -> str:
 
     lines = ['<div class="backup-panel">']
     lines.append("<h3>💾 Gene Pool Backup</h3>")
-    lines.append(f"<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
-                 f"<b>{info['available']}</b> backups · "
-                 f"{info['total_size_mb']}MB total · "
-                 f"max {info['max_backups']} versions retained</p>")
+    lines.append(
+        f"<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
+        f"<b>{info['available']}</b> backups · "
+        f"{info['total_size_mb']}MB total · "
+        f"max {info['max_backups']} versions retained</p>"
+    )
 
     lines.append("<div style='margin-bottom:16px'>")
-    lines.append("<button onclick='triggerBackup()' style='background:#6B8FB5;color:white;border:none;"
-                "border-radius:4px;padding:8px 16px;cursor:pointer;font-size:13px'>"
-                "☁️ Take Backup Now</button>")
+    lines.append(
+        "<button onclick='triggerBackup()' style='background:#6B8FB5;color:white;border:none;"
+        "border-radius:4px;padding:8px 16px;cursor:pointer;font-size:13px'>"
+        "☁️ Take Backup Now</button>"
+    )
     lines.append("</div>")
 
     if info["stamps"]:
         lines.append("<table style='width:100%;border-collapse:collapse;font-size:13px'>")
-        lines.append("<tr style='border-bottom:1px solid #e0dbd4'><th style='text-align:left;padding:6px 8px'>Date</th>"
-                    "<th style='text-align:right;padding:6px 8px'>Action</th></tr>")
+        lines.append(
+            "<tr style='border-bottom:1px solid #e0dbd4'><th style='text-align:left;padding:6px 8px'>Date</th>"
+            "<th style='text-align:right;padding:6px 8px'>Action</th></tr>"
+        )
         for stamp in info["stamps"]:
             yr, mo, day = stamp[:4], stamp[4:6], stamp[6:8]
-            lines.append(f"<tr style='border-bottom:1px solid #f0ebe5'>"
-                        f"<td style='padding:6px 8px'>{yr}-{mo}-{day}</td>"
-                        f"<td style='text-align:right;padding:6px 8px'>"
-                        f"<button onclick='restoreBackup(\"{stamp}\")' style='font-size:11px;padding:2px 8px;"
-                        f"cursor:pointer;background:transparent;border:1px solid #ccc;border-radius:3px'>Restore</button>"
-                        f"</td></tr>")
+            lines.append(
+                f"<tr style='border-bottom:1px solid #f0ebe5'>"
+                f"<td style='padding:6px 8px'>{yr}-{mo}-{day}</td>"
+                f"<td style='text-align:right;padding:6px 8px'>"
+                f"<button onclick='restoreBackup(\"{stamp}\")' style='font-size:11px;padding:2px 8px;"
+                f"cursor:pointer;background:transparent;border:1px solid #ccc;border-radius:3px'>Restore</button>"
+                f"</td></tr>"
+            )
         lines.append("</table>")
     else:
-        lines.append("<p style='color:#A89E8C;font-size:13px'>No backups yet. Click 'Take Backup Now' to create your first snapshot.</p>")
+        lines.append(
+            "<p style='color:#A89E8C;font-size:13px'>No backups yet. Click 'Take Backup Now' to create your first snapshot.</p>"
+        )
 
     lines.append("""
 <script>

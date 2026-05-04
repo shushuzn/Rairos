@@ -1,4 +1,5 @@
 """CLI command: friction — Research friction report."""
+
 from __future__ import annotations
 
 import argparse
@@ -18,28 +19,32 @@ def _build_friction_parser(subparsers) -> argparse.ArgumentParser:
         "friction",
         help="Show research friction (bottlenecks) report",
         description="Detect and report research friction points — commands that fail, "
-                    "workflows that get abandoned, searches that come up empty.",
+        "workflows that get abandoned, searches that come up empty.",
     )
     p.add_argument(
-        "--type", "-t",
+        "--type",
+        "-t",
         dest="friction_type",
         choices=["command", "workflow", "retrieval", "cognitive", "navigation"],
         default=None,
         help="Filter by friction type",
     )
     p.add_argument(
-        "--days", "-d",
+        "--days",
+        "-d",
         type=int,
         default=30,
         help="Time window in days (default: 30)",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="Output as JSON",
     )
     p.add_argument(
-        "--limit", "-n",
+        "--limit",
+        "-n",
         type=int,
         default=20,
         help="Max events to show (default: 20)",
@@ -65,6 +70,7 @@ def run(args: argparse.Namespace) -> int:
 
     if args.json:
         import json
+
         print(json.dumps({"summary": summary, "events": [e.to_dict() for e in events]}, indent=2))
         return 0  # type: ignore[no-any-return]
 
@@ -115,7 +121,9 @@ def run(args: argparse.Namespace) -> int:
         for e in events[: args.limit]:
             ts = e.timestamp[:10] if len(e.timestamp) >= 10 else e.timestamp
             status = colored("[ABANDONED]", Colors.FAIL) if e.abandoned else ""
-            print(f"  {ts}  {e.friction_type:<12} {e.command or '-':<15} {e.error or e.notes[:40] or '-'} {status}")
+            print(
+                f"  {ts}  {e.friction_type:<12} {e.command or '-':<15} {e.error or e.notes[:40] or '-'} {status}"
+            )
 
     print()
     return 0

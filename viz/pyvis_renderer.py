@@ -4,6 +4,7 @@ import orjson
 
 try:
     from pyvis.network import Network
+
     _HAS_PYVIS = True
 except ImportError:
     _HAS_PYVIS = False
@@ -14,12 +15,12 @@ from typing import Optional
 
 # Node colour map by type
 _TYPE_COLORS = {
-    "Paper":    "#4A90E2",  # blue
-    "P-Note":   "#50C878",  # green
-    "C-Note":   "#F4D03F",  # yellow
-    "M-Note":   "#E74C3C",  # red
-    "Tag":      "#9B59B6",  # purple
-    "Author":   "#E67E22",  # orange
+    "Paper": "#4A90E2",  # blue
+    "P-Note": "#50C878",  # green
+    "C-Note": "#F4D03F",  # yellow
+    "M-Note": "#E74C3C",  # red
+    "Tag": "#9B59B6",  # purple
+    "Author": "#E67E22",  # orange
 }
 
 
@@ -46,8 +47,7 @@ class KGVizRenderer:
             color = _TYPE_COLORS.get(ntype, "#AAAAAA")
             label = node.get("label", "")[:60]
             title = orjson.dumps(node).decode("utf-8")
-            net.add_node(node["id"], label=label, title=title,
-                         color=color, type=ntype)
+            net.add_node(node["id"], label=label, title=title, color=color, type=ntype)
 
         seen = set()
         for edge in graph.get("edges", []):
@@ -56,7 +56,8 @@ class KGVizRenderer:
                 continue
             seen.add(eid)
             net.add_edge(
-                edge["source_id"], edge["target_id"],
+                edge["source_id"],
+                edge["target_id"],
                 title=edge.get("relation_type", ""),
                 width=edge.get("weight", 1.0),
             )
@@ -67,6 +68,7 @@ class KGVizRenderer:
             return self._paper_graph_fallback(paper_uid, depth)
 
         from kg.queries import KGQueries
+
         q = KGQueries(self.kg)
         subgraph = q.get_paper_subgraph(paper_uid, depth=depth)
 
@@ -91,6 +93,7 @@ class KGVizRenderer:
             return self._tag_graph_fallback(tag)
 
         from kg.queries import KGQueries
+
         q = KGQueries(self.kg)
         ecosystem = q.get_tag_ecosystem(tag)
 
@@ -104,6 +107,7 @@ class KGVizRenderer:
             return "<p>PyVis not installed. Run: pip install pyvis</p>"
 
         from kg.queries import KGQueries
+
         q = KGQueries(self.kg)
         export = q.export_graph_json()
 
@@ -116,11 +120,9 @@ class KGVizRenderer:
         for node in nodes:
             ntype = node.get("type", "Paper")
             color = _TYPE_COLORS.get(ntype, "#AAAAAA")
-            net.add_node(node["id"], label=node.get("label", "")[:40],
-                         color=color, type=ntype)
+            net.add_node(node["id"], label=node.get("label", "")[:40], color=color, type=ntype)
         for edge in edges:
-            net.add_edge(edge["source_id"], edge["target_id"],
-                         title=edge.get("relation_type", ""))
+            net.add_edge(edge["source_id"], edge["target_id"], title=edge.get("relation_type", ""))
         return net.generate_html()  # type: ignore[no-any-return]
 
     # ─── Fallback (no PyVis) ─────────────────────────────────────────
@@ -134,7 +136,9 @@ class KGVizRenderer:
         lines.append(f"<p>Center: [{paper_node['type']}] {paper_node['label']}</p>")
         lines.append(f"<p>{len(neighbors)} neighbor(s):</p><ul>")
         for node, edge, d in neighbors:
-            lines.append(f"<li>[depth={d}] {node['type']} | {edge['relation_type']} | {node['label'][:60]}</li>")
+            lines.append(
+                f"<li>[depth={d}] {node['type']} | {edge['relation_type']} | {node['label'][:60]}</li>"
+            )
         lines.append("</ul>")
         return "\n".join(lines)
 

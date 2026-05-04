@@ -35,11 +35,15 @@ async def chat_stream(request: Request) -> StreamingResponse:
         query = ""
 
     if not query:
-        return StreamingResponse(iter([f"data: {json.dumps({'error': 'empty query'})}\n\n"]), media_type="text/event-stream")
+        return StreamingResponse(
+            iter([f"data: {json.dumps({'error': 'empty query'})}\n\n"]),
+            media_type="text/event-stream",
+        )
 
     contexts: List[Dict[str, Any]] = []
     try:
         from llm.chat import RAGChat
+
         rag = RAGChat()
         results = rag.answer(query, use_llm=False, concept=None, top_k=5)
         contexts = results.get("retrieved_contexts", [])[:5]
@@ -67,7 +71,9 @@ async def chat_stream(request: Request) -> StreamingResponse:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ]
-            async for chunk in stream_llm_chat_completions(messages, model=None, base_url=None, api_key=None):
+            async for chunk in stream_llm_chat_completions(
+                messages, model=None, base_url=None, api_key=None
+            ):
                 full_response += chunk
                 yield f"data: {json.dumps({'type': 'chunk', 'content': chunk})}\n\n"
         except Exception as e:
@@ -90,26 +96,38 @@ async def chat_stream(request: Request) -> StreamingResponse:
 def render_chat_html() -> str:
     lines = ['<div class="web-chat">']
     lines.append("<h3>💬 Research Chat</h3>")
-    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
-                "Ask questions about your paper library. Answers are grounded in your papers.</p>")
+    lines.append(
+        "<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
+        "Ask questions about your paper library. Answers are grounded in your papers.</p>"
+    )
 
-    lines.append("<div id='chatMessages' style='max-height:400px;overflow-y:auto;"
-                "border:1px solid #e0dbd4;border-radius:6px;padding:12px;margin-bottom:12px;"
-                "background:#faf8f5'>")
-    lines.append("<p id='emptyHint' style='text-align:center;color:#A89E8C;font-size:13px;padding:20px;margin:0'>"
-                "Ask your first question below</p>")
+    lines.append(
+        "<div id='chatMessages' style='max-height:400px;overflow-y:auto;"
+        "border:1px solid #e0dbd4;border-radius:6px;padding:12px;margin-bottom:12px;"
+        "background:#faf8f5'>"
+    )
+    lines.append(
+        "<p id='emptyHint' style='text-align:center;color:#A89E8C;font-size:13px;padding:20px;margin:0'>"
+        "Ask your first question below</p>"
+    )
     lines.append("</div>")
 
     lines.append("<div style='display:flex;gap:8px'>")
-    lines.append("<input type='text' id='chatInput' placeholder='Ask about your papers...' "
-                "style='flex:1;font-size:13px;padding:8px 12px;border:1px solid #ccc;"
-                "border-radius:4px;font-family:Georgia,serif' "
-                "onkeydown='if(event.key===\"Enter\")sendChat()'>")
-    lines.append("<button id='sendBtn' "
-                "style='background:#6B8FB5;color:white;border:none;border-radius:4px;"
-                "padding:8px 16px;cursor:pointer;font-size:13px'>Send</button>")
+    lines.append(
+        "<input type='text' id='chatInput' placeholder='Ask about your papers...' "
+        "style='flex:1;font-size:13px;padding:8px 12px;border:1px solid #ccc;"
+        "border-radius:4px;font-family:Georgia,serif' "
+        "onkeydown='if(event.key===\"Enter\")sendChat()'>"
+    )
+    lines.append(
+        "<button id='sendBtn' "
+        "style='background:#6B8FB5;color:white;border:none;border-radius:4px;"
+        "padding:8px 16px;cursor:pointer;font-size:13px'>Send</button>"
+    )
     lines.append("</div>")
-    lines.append("<p id='chatStatus' style='font-size:11px;color:#A89E8C;margin-top:6px;margin-bottom:0;height:16px'></p>")
+    lines.append(
+        "<p id='chatStatus' style='font-size:11px;color:#A89E8C;margin-top:6px;margin-bottom:0;height:16px'></p>"
+    )
 
     lines.append("""
 <script>

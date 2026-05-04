@@ -9,6 +9,7 @@ PaperContent feeds into:
   - code_generator: generate code skeleton from paper content
   - test_extractor: extract testable assertions from paper content
 """
+
 from __future__ import annotations
 
 import re
@@ -22,6 +23,7 @@ from typing import List, Optional, Dict
 @dataclass
 class PaperContent:
     """Structured paper content for code generation and testing."""
+
     arxiv_id: str
     title: str
     authors: List[str] = field(default_factory=list)
@@ -51,7 +53,7 @@ def download_and_parse(arxiv_id: str) -> PaperContent:
         aid = arxiv_id.strip()
         if ".org/abs/" in aid:
             aid = aid.split(".org/abs/")[-1]
-        aid = re.sub(r'v\d+$', '', aid)  # strip version
+        aid = re.sub(r"v\d+$", "", aid)  # strip version
 
         paper = fetch_arxiv_metadata(aid)
 
@@ -60,10 +62,11 @@ def download_and_parse(arxiv_id: str) -> PaperContent:
         if paper.pdf_url:
             try:
                 import requests
+
                 resp = requests.get(paper.pdf_url, timeout=30, stream=True)
                 resp.raise_for_status()
-                pdf_path = Path(f'{aid.replace(".", "_")}.pdf')
-                with open(pdf_path, 'wb') as f:
+                pdf_path = Path(f"{aid.replace('.', '_')}.pdf")
+                with open(pdf_path, "wb") as f:
                     for chunk in resp.iter_content(chunk_size=8192):
                         f.write(chunk)
             except Exception:
@@ -76,7 +79,7 @@ def download_and_parse(arxiv_id: str) -> PaperContent:
             abstract=paper.abstract,
             published=paper.published,
             updated=paper.updated,
-            categories=paper.categories.split(',') if paper.categories else [],
+            categories=paper.categories.split(",") if paper.categories else [],
         )
 
         # If PDF available, extract richer content
@@ -125,8 +128,8 @@ def _enrich_from_pdf(content: PaperContent, pdf_path: Path) -> None:
 
         # Algorithm descriptions: look for "algorithm", "method", "approach" sections
         algo_pattern = re.compile(
-            r'(?:algorithm|method|approach|procedure|technique)s?[:\s]+([A-Z][^.!?\n]{50,500}?(?:\d+\.|\n){1,3})',
-            re.IGNORECASE
+            r"(?:algorithm|method|approach|procedure|technique)s?[:\s]+([A-Z][^.!?\n]{50,500}?(?:\d+\.|\n){1,3})",
+            re.IGNORECASE,
         )
         for match in algo_pattern.finditer(text[:10000]):  # First 10k chars
             desc = match.group(1).strip()
@@ -134,7 +137,7 @@ def _enrich_from_pdf(content: PaperContent, pdf_path: Path) -> None:
                 content.algorithm_descriptions.append(desc[:300])
 
         # Equations: look for display math
-        eq_pattern = re.compile(r'\$\$(.+?)\$\$|\$(.+?)\$')
+        eq_pattern = re.compile(r"\$\$(.+?)\$\$|\$(.+?)\$")
         for match in eq_pattern.finditer(text):
             eq = (match.group(1) or match.group(2) or "").strip()
             if eq and len(eq) > 5:
@@ -142,8 +145,8 @@ def _enrich_from_pdf(content: PaperContent, pdf_path: Path) -> None:
 
         # Claims: look for "we show", "prove", "demonstrate", "our results"
         claim_patterns = [
-            r'(?:we show|we prove|we demonstrate|our results? show)[^.!?\n]{10,200}',
-            r'(?:the (?:model|method|algorithm) achieves?|performance reaches?)[^.!?\n]{10,200}',
+            r"(?:we show|we prove|we demonstrate|our results? show)[^.!?\n]{10,200}",
+            r"(?:the (?:model|method|algorithm) achieves?|performance reaches?)[^.!?\n]{10,200}",
         ]
         for pat in claim_patterns:
             for match in re.finditer(pat, text_lower):
@@ -153,22 +156,34 @@ def _enrich_from_pdf(content: PaperContent, pdf_path: Path) -> None:
 
         # Hyperparameters: look for "learning rate", "batch size", etc.
         hp_patterns = [
-            (r'learning\s*rate[:\s]+[\d.e\-]+', 'learning_rate'),
-            (r'batch\s*size[:\s]+\d+', 'batch_size'),
-            (r'epochs?[:\s]+\d+', 'epochs'),
-            (r'dropout[:\s]+[\d.]+', 'dropout'),
-            (r'hidden\s*layer[s]?[:\s]+\d+', 'hidden_size'),
+            (r"learning\s*rate[:\s]+[\d.e\-]+", "learning_rate"),
+            (r"batch\s*size[:\s]+\d+", "batch_size"),
+            (r"epochs?[:\s]+\d+", "epochs"),
+            (r"dropout[:\s]+[\d.]+", "dropout"),
+            (r"hidden\s*layer[s]?[:\s]+\d+", "hidden_size"),
         ]
         for pat, name in hp_patterns:
             for match in re.finditer(pat, text_lower):
-                val = match.group(0).split(':')[-1].strip()
+                val = match.group(0).split(":")[-1].strip()
                 content.hyperparameters[name] = val
 
         # Datasets: look for common dataset names
         dataset_names = [
-            'imagenet', 'cifar-10', 'cifar-100', 'mnist', 'wikitext',
-            'glue', 'squad', 'arxiv', 'pubmed', 'openwebtext',
-            'pile', 'the pile', 'alpaca', 'dolly', 'hh-rlhf'
+            "imagenet",
+            "cifar-10",
+            "cifar-100",
+            "mnist",
+            "wikitext",
+            "glue",
+            "squad",
+            "arxiv",
+            "pubmed",
+            "openwebtext",
+            "pile",
+            "the pile",
+            "alpaca",
+            "dolly",
+            "hh-rlhf",
         ]
         text_lower_for_ds = text_lower[:20000]
         for ds in dataset_names:
@@ -181,7 +196,7 @@ def _enrich_from_pdf(content: PaperContent, pdf_path: Path) -> None:
 
 def _minimal_content(arxiv_id: str) -> PaperContent:
     """Return minimal PaperContent when full parsing fails."""
-    aid = re.sub(r'v\d+$', '', arxiv_id.strip())
+    aid = re.sub(r"v\d+$", "", arxiv_id.strip())
     return PaperContent(
         arxiv_id=aid,
         title=f"Paper {aid}",

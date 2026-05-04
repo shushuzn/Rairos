@@ -1,4 +1,5 @@
 """CLI command: litreview — Incremental Literature Review management."""
+
 from __future__ import annotations
 
 import argparse
@@ -22,16 +23,15 @@ def _build_litreview_parser(subparsers) -> argparse.ArgumentParser:
     # generate
     p_gen = sub.add_parser("generate", help="Generate or update a literature review")
     p_gen.add_argument("topic", help="Research topic for the review")
-    p_gen.add_argument("--subscription", "-s", type=str,
-                        help="Subscription ID to link to")
-    p_gen.add_argument("--output", "-o", type=str,
-                        help="Output file path (default: LitReview-{topic}.md)")
+    p_gen.add_argument("--subscription", "-s", type=str, help="Subscription ID to link to")
+    p_gen.add_argument(
+        "--output", "-o", type=str, help="Output file path (default: LitReview-{topic}.md)"
+    )
 
     # view
     p_view = sub.add_parser("view", help="View a literature review")
     p_view.add_argument("id", help="Review ID or topic")
-    p_view.add_argument("--file", "-f", type=str,
-                        help="Direct file path to view")
+    p_view.add_argument("--file", "-f", type=str, help="Direct file path to view")
 
     # list
     sub.add_parser("list", help="List all literature reviews")
@@ -56,8 +56,8 @@ def _run_litreview(args: argparse.Namespace) -> int:
 
     if args.action == "generate":
         topic = args.topic
-        subscription_id = getattr(args, 'subscription', None)
-        output_path = getattr(args, 'output', None)
+        subscription_id = getattr(args, "subscription", None)
+        output_path = getattr(args, "output", None)
 
         # Get papers
         papers = []
@@ -68,8 +68,8 @@ def _run_litreview(args: argparse.Namespace) -> int:
             subs = db.list_arxiv_subscriptions()
             topic_lower = topic.lower()
             for sub in subs:
-                if topic_lower in sub.get('topic', '').lower():
-                    sub_papers = db.get_subscription_papers(sub['id'], limit=100)
+                if topic_lower in sub.get("topic", "").lower():
+                    sub_papers = db.get_subscription_papers(sub["id"], limit=100)
                     papers.extend(sub_papers)
 
         # Generate review content
@@ -101,8 +101,8 @@ def _run_litreview(args: argparse.Namespace) -> int:
         return 0
 
     if args.action == "view":
-        review_id = getattr(args, 'id', '')
-        file_path = getattr(args, 'file', None)
+        review_id = getattr(args, "id", "")
+        file_path = getattr(args, "file", None)
 
         content = None
         if file_path:
@@ -117,7 +117,7 @@ def _run_litreview(args: argparse.Namespace) -> int:
             # Try to find by ID or topic
             review = db.get_literature_review(review_id)
             if review:
-                fp = review.get('file_path')
+                fp = review.get("file_path")
                 if fp and os.path.exists(fp):
                     with open(fp, "r", encoding="utf-8") as f:
                         content = f.read()
@@ -129,8 +129,8 @@ def _run_litreview(args: argparse.Namespace) -> int:
                 # Try as topic
                 reviews = db.list_literature_reviews()
                 for r in reviews:
-                    if review_id.lower() in r.get('topic', '').lower():
-                        fp = r.get('file_path')
+                    if review_id.lower() in r.get("topic", "").lower():
+                        fp = r.get("file_path")
                         if fp and os.path.exists(fp):
                             with open(fp, "r", encoding="utf-8") as f:
                                 content = f.read()
@@ -147,27 +147,34 @@ def _run_litreview(args: argparse.Namespace) -> int:
     if args.action == "list":
         reviews = db.list_literature_reviews()
         from rich.console import Console
+
         c = Console()
         c.rule("[bold #FF8272]  Literature Reviews  [/]")
         c.print()
         if not reviews:
-            print(WarpBlocks.panel("No Reviews",
-                                  "[#8E8E8E]No literature reviews yet.\n\nRun:[/] airos litreview generate <topic>"))
+            print(
+                WarpBlocks.panel(
+                    "No Reviews",
+                    "[#8E8E8E]No literature reviews yet.\n\nRun:[/] airos litreview generate <topic>",
+                )
+            )
             return 0
         rows = []
         for r in reviews:
-            topic = r['topic'][:40]
-            count = r.get('paper_count', 0)
-            updated = r.get('last_updated', 'never')[:10]
+            topic = r["topic"][:40]
+            count = r.get("paper_count", 0)
+            updated = r.get("last_updated", "never")[:10]
             rows.append([f"[#FEFDC2][{r['id']}][/]", topic, f"[#A5D5FE]{count}[/]", updated])
-        c.print(WarpBlocks.table(
-            ["#", "Topic", "Papers", "Updated"],
-            rows,
-            title=f"{len(reviews)} Review(s)"
-        ))
+        c.print(
+            WarpBlocks.table(
+                ["#", "Topic", "Papers", "Updated"], rows, title=f"{len(reviews)} Review(s)"
+            )
+        )
         c.print()
         if len(reviews) == 1:
-            print(WarpBlocks.section("Hint", "[#A5D5FE]airos litreview view[/] <id>  — view review"))
+            print(
+                WarpBlocks.section("Hint", "[#A5D5FE]airos litreview view[/] <id>  — view review")
+            )
         return 0
 
     if args.action == "delete":

@@ -20,6 +20,7 @@ Layout:
 │  ❯ [Type your question...                          ] [Enter ⏎]  │
 └──────────────────────────────────────────────────────────────────┘
 """
+
 from __future__ import annotations
 
 import argparse
@@ -33,6 +34,7 @@ from typing import Any, Callable, Dict, List, Set, cast
 
 # Load .env from current working directory (unified via cli._shared)
 from cli._shared import load_dotenv
+
 load_dotenv()
 
 from textual.app import App, ComposeResult
@@ -53,9 +55,10 @@ from llm.friction_tracker import FrictionTracker
 @dataclass
 class ChatMessage:
     """A single chat message."""
-    role: str          # "user" or "assistant"
+
+    role: str  # "user" or "assistant"
     content: str
-    citations: list    # List[Citation]
+    citations: list  # List[Citation]
     timestamp: str = ""
     edited: bool = False
 
@@ -63,7 +66,8 @@ class ChatMessage:
 @dataclass
 class StreamConfig:
     """Configuration for streaming behavior."""
-    batch_size: int = 3        # Characters per batch update
+
+    batch_size: int = 3  # Characters per batch update
     max_line_width: int = 120  # Auto-wrap at this width
     typing_indicator: bool = True  # Show typing animation
 
@@ -74,7 +78,7 @@ class StreamConfig:
 def tokenize(text: str) -> Set[str]:
     """Extract searchable tokens from text (simple word tokenization)."""
     # Lowercase, keep alphanumeric+Chinese chars, split by whitespace/punctuation
-    tokens = re.findall(r'[\w\u4e00-\u9fff]+', text.lower())
+    tokens = re.findall(r"[\w\u4e00-\u9fff]+", text.lower())
     # Filter out very short tokens (1-2 chars often noise)
     return {t for t in tokens if len(t) >= 2}
 
@@ -98,16 +102,30 @@ class SimpleMarkdown:
 
     # Re-use WarpBlocks colors for compatibility with existing CSS/text patterns
     COLORS = WarpBlocks.C
-    LANG_ALIASES = WarpBlocks.LANG_ALIASES if hasattr(WarpBlocks, 'LANG_ALIASES') else {}
-    PY_KEYWORDS = WarpBlocks.PY_KEYWORDS if hasattr(WarpBlocks, 'PY_KEYWORDS') else frozenset()
-    JS_KEYWORDS = WarpBlocks.JS_KEYWORDS if hasattr(WarpBlocks, 'JS_KEYWORDS') else frozenset()
+    LANG_ALIASES = WarpBlocks.LANG_ALIASES if hasattr(WarpBlocks, "LANG_ALIASES") else {}
+    PY_KEYWORDS = WarpBlocks.PY_KEYWORDS if hasattr(WarpBlocks, "PY_KEYWORDS") else frozenset()
+    JS_KEYWORDS = WarpBlocks.JS_KEYWORDS if hasattr(WarpBlocks, "JS_KEYWORDS") else frozenset()
 
     # Delegate tokenizers to shared module
-    _tokenize_python = staticmethod(WarpBlocks._tokenize_python) if hasattr(WarpBlocks, '_tokenize_python') else None
-    _tokenize_javascript = staticmethod(WarpBlocks._tokenize_javascript) if hasattr(WarpBlocks, '_tokenize_javascript') else None
-    _tokenize_json = staticmethod(WarpBlocks._tokenize_json) if hasattr(WarpBlocks, '_tokenize_json') else None
-    _tokenize_generic = staticmethod(WarpBlocks._tokenize_generic) if hasattr(WarpBlocks, '_tokenize_generic') else None
-    _tokenize = staticmethod(WarpBlocks._tokenize) if hasattr(WarpBlocks, '_tokenize') else None
+    _tokenize_python = (
+        staticmethod(WarpBlocks._tokenize_python)
+        if hasattr(WarpBlocks, "_tokenize_python")
+        else None
+    )
+    _tokenize_javascript = (
+        staticmethod(WarpBlocks._tokenize_javascript)
+        if hasattr(WarpBlocks, "_tokenize_javascript")
+        else None
+    )
+    _tokenize_json = (
+        staticmethod(WarpBlocks._tokenize_json) if hasattr(WarpBlocks, "_tokenize_json") else None
+    )
+    _tokenize_generic = (
+        staticmethod(WarpBlocks._tokenize_generic)
+        if hasattr(WarpBlocks, "_tokenize_generic")
+        else None
+    )
+    _tokenize = staticmethod(WarpBlocks._tokenize) if hasattr(WarpBlocks, "_tokenize") else None
 
     @classmethod
     def _render_code_block(cls, lang: str, code: str, width: int = 80) -> str:
@@ -127,46 +145,46 @@ class SimpleMarkdown:
 
         # Process code blocks first (before other markdown)
         def replace_code_block(m):
-            lang = m.group(1).strip() or 'text'
+            lang = m.group(1).strip() or "text"
             code = m.group(2)
-            return '\n' + cls._render_code_block(lang, code) + '\n'
+            return "\n" + cls._render_code_block(lang, code) + "\n"
 
-        result = re.sub(r'```(\w*)\n?(.*?)```', replace_code_block, result, flags=re.DOTALL)
+        result = re.sub(r"```(\w*)\n?(.*?)```", replace_code_block, result, flags=re.DOTALL)
 
         # Inline code (`code`)
-        result = re.sub(r'`([^`]+)`', r' [\1] ', result)
+        result = re.sub(r"`([^`]+)`", r" [\1] ", result)
 
         # Headers (# ## ###)
-        result = re.sub(r'^### (.+)$', r'\n━━━ \1 ━━━\n', result, flags=re.MULTILINE)
-        result = re.sub(r'^## (.+)$', r'\n━━ \1 �━━\n', result, flags=re.MULTILINE)
-        result = re.sub(r'^# (.+)$', r'\n━ \1 ━\n', result, flags=re.MULTILINE)
+        result = re.sub(r"^### (.+)$", r"\n━━━ \1 ━━━\n", result, flags=re.MULTILINE)
+        result = re.sub(r"^## (.+)$", r"\n━━ \1 �━━\n", result, flags=re.MULTILINE)
+        result = re.sub(r"^# (.+)$", r"\n━ \1 ━\n", result, flags=re.MULTILINE)
 
         # Bold (**text** or __text__)
-        result = re.sub(r'\*\*(.+?)\*\*', r'[\1]', result)
-        result = re.sub(r'__(.+?)__', r'[\1]', result)
+        result = re.sub(r"\*\*(.+?)\*\*", r"[\1]", result)
+        result = re.sub(r"__(.+?)__", r"[\1]", result)
 
         # Italic (*text* or _text_)
-        result = re.sub(r'\*(.+?)\*', r'/\1/', result)
-        result = re.sub(r'_(.+?)_', r'/\1/', result)
+        result = re.sub(r"\*(.+?)\*", r"/\1/", result)
+        result = re.sub(r"_(.+?)_", r"/\1/", result)
 
         # Lists (- item or * item)
-        result = re.sub(r'^[\-\*] (.+)$', r'  • \1', result, flags=re.MULTILINE)
+        result = re.sub(r"^[\-\*] (.+)$", r"  • \1", result, flags=re.MULTILINE)
 
         # Numbered lists (1. item)
-        result = re.sub(r'^\d+\. (.+)$', r'  \g<0>', result, flags=re.MULTILINE)
+        result = re.sub(r"^\d+\. (.+)$", r"  \g<0>", result, flags=re.MULTILINE)
 
         # Blockquotes (>)
-        result = re.sub(r'^> (.+)$', r'  │ \1', result, flags=re.MULTILINE)
+        result = re.sub(r"^> (.+)$", r"  │ \1", result, flags=re.MULTILINE)
 
         # Horizontal rules (---)
-        result = re.sub(r'^---+$', '─' * 50, result, flags=re.MULTILINE)
+        result = re.sub(r"^---+$", "─" * 50, result, flags=re.MULTILINE)
 
         return result
 
     @classmethod
     def wrap_lines(cls, text: str, width: int = 120) -> str:
         """Wrap text to specified width."""
-        lines = text.split('\n')
+        lines = text.split("\n")
         wrapped = []
         for line in lines:
             if len(line) <= width:
@@ -184,7 +202,7 @@ class SimpleMarkdown:
                         current = word
                 if current:
                     wrapped.append(current)
-        return '\n'.join(wrapped)
+        return "\n".join(wrapped)
 
 
 # ─── Timestamp Formatter ──────────────────────────────────────────────────────
@@ -216,7 +234,7 @@ class Timestamp:
 class LoadingDots:
     """Animated loading indicator with braille dots."""
 
-    FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+    FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
 
     def __init__(self):
         self.frame = 0
@@ -231,7 +249,7 @@ class LoadingDots:
 class TypingCursor:
     """Typing cursor with blink animation."""
 
-    CURSOR_CHARS = ['▌', '█']  # Block cursor variants
+    CURSOR_CHARS = ["▌", "█"]  # Block cursor variants
     BLINK_FRAMES = 10  # Frames per blink cycle
 
     def __init__(self):
@@ -243,7 +261,7 @@ class TypingCursor:
         self.frame += 1
         if self.frame % self.BLINK_FRAMES == 0:
             self.visible = not self.visible
-        return self.CURSOR_CHARS[0] if self.visible else ' '
+        return self.CURSOR_CHARS[0] if self.visible else " "
 
     def reset(self) -> None:
         """Reset cursor state."""
@@ -270,7 +288,7 @@ class Typewriter:
         if batch <= 0:
             return ""
 
-        result = self.text[self.index:self.index + batch]
+        result = self.text[self.index : self.index + batch]
         self.index += batch
         return result
 
@@ -292,10 +310,15 @@ class ChatBubble(Static):
     """A chat message bubble widget with markdown support and typing effect."""
 
     # Streaming indicator frames
-    STREAM_FRAMES = ['○', '◔', '◑', '◕', '●']  # Expanding circles
+    STREAM_FRAMES = ["○", "◔", "◑", "◕", "●"]  # Expanding circles
 
-    def __init__(self, msg: ChatMessage, config: StreamConfig | None = None,
-                 is_streaming: bool = False, **kwargs):
+    def __init__(
+        self,
+        msg: ChatMessage,
+        config: StreamConfig | None = None,
+        is_streaming: bool = False,
+        **kwargs,
+    ):
         self.msg = msg
         self.config = config or StreamConfig()
         self.is_streaming = is_streaming
@@ -346,12 +369,12 @@ class ChatBubble(Static):
         """Render citation hints."""
         lines = []
         for i, c in enumerate(self.msg.citations[:3], 1):
-            title = getattr(c, 'paper_title', '')[:50]
-            score = getattr(c, 'relevance_score', 0)
+            title = getattr(c, "paper_title", "")[:50]
+            score = getattr(c, "relevance_score", 0)
             lines.append(f"  {i}. 📖 {title} (score={score:.2f})")
         if len(self.msg.citations) > 3:
-            lines.append(f"  [+{len(self.msg.citations)-3} more]")
-        return Static(colored('\n'.join(lines), Colors.WARNING), classes="cite-list")
+            lines.append(f"  [+{len(self.msg.citations) - 3} more]")
+        return Static(colored("\n".join(lines), Colors.WARNING), classes="cite-list")
 
 
 class PaperCard(Static, can_focus=True):
@@ -365,24 +388,24 @@ class PaperCard(Static, can_focus=True):
         super().__init__(**kwargs)
 
     def render(self) -> str:
-        score = getattr(self.citation, 'relevance_score', 0)
-        title = getattr(self.citation, 'paper_title', 'Unknown')
-        snippet = getattr(self.citation, 'snippet', '')
-        pid = getattr(self.citation, 'paper_id', '')
-        authors = getattr(self.citation, 'authors', [])
-        published = getattr(self.citation, 'published', '')[:10]
-        abstract = getattr(self.citation, 'abstract', '')[:200]
-        categories = getattr(self.citation, 'categories', [])[:5]
+        score = getattr(self.citation, "relevance_score", 0)
+        title = getattr(self.citation, "paper_title", "Unknown")
+        snippet = getattr(self.citation, "snippet", "")
+        pid = getattr(self.citation, "paper_id", "")
+        authors = getattr(self.citation, "authors", [])
+        published = getattr(self.citation, "published", "")[:10]
+        abstract = getattr(self.citation, "abstract", "")[:200]
+        categories = getattr(self.citation, "categories", [])[:5]
 
         # Collapsed view
         expand_icon = "▼" if self.expanded else "▶"
-        header = f"{expand_icon} [{self.index+1}] {title[:45]}"
+        header = f"{expand_icon} [{self.index + 1}] {title[:45]}"
         meta = f"    📄 {pid} | ⭐ {score:.2f} | 📅 {published}"
 
         if not self.expanded:
             # Compact view with preview
             preview = snippet[:80] + "..." if len(snippet) > 80 else snippet
-            return '\n'.join(filter(None, [header, meta, f"    💬 {preview}"]))
+            return "\n".join(filter(None, [header, meta, f"    💬 {preview}"]))
 
         # Expanded view
         lines = [
@@ -394,7 +417,7 @@ class PaperCard(Static, can_focus=True):
         if authors:
             author_str = f"    👥 {', '.join(authors[:4])}"
             if len(authors) > 4:
-                author_str += f" +{len(authors)-4}"
+                author_str += f" +{len(authors) - 4}"
             lines.append(author_str)
 
         # Categories/Tags
@@ -413,6 +436,7 @@ class PaperCard(Static, can_focus=True):
             lines.append("  📝 摘要:")
             # Wrap abstract
             import textwrap
+
             wrapped = textwrap.wrap(abstract, width=45)
             for w in wrapped[:4]:
                 lines.append(f"     {w}")
@@ -431,7 +455,7 @@ class PaperCard(Static, can_focus=True):
         lines.append("")
         lines.append("  ▸ 点击收起")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def on_click(self) -> None:
         """Toggle expanded state."""
@@ -467,14 +491,13 @@ class SidebarPaperList(VerticalScroll):
         super().__init__(**kwargs)
 
     def compose(self) -> ComposeResult:
-        yield Static(colored("📚 相关论文", Colors.HEADER + Colors.BOLD),
-                     classes="sidebar-title")
+        yield Static(colored("📚 相关论文", Colors.HEADER + Colors.BOLD), classes="sidebar-title")
         for i, c in enumerate(self._citations[:5]):
             yield PaperCard(c, i, classes="paper-card", id=f"paper-{i}")
         if len(self._citations) > 5:
             yield Static(
-                colored(f"  [+{len(self._citations)-5} more papers]", Colors.WARNING),
-                classes="more-papers"
+                colored(f"  [+{len(self._citations) - 5} more papers]", Colors.WARNING),
+                classes="more-papers",
             )
         yield Label("")  # spacer
 
@@ -748,14 +771,18 @@ class TUIChatApp(App):
             with Container(id="chat-area"):
                 with VerticalScroll(id="messages"):
                     yield Static(
-                        colored("📚 AI Research OS — RAG Chat\n", Colors.HEADER + Colors.BOLD) +
-                        colored("   对你的论文库进行自然语言问答，带引用溯源\n", Colors.OKBLUE) +
-                        colored("   Enter 发送 · Ctrl+L 清屏 · Ctrl+E 历史 · Ctrl+S 导出 · q 退出\n", Colors.WARNING),
-                        id="welcome"
+                        colored("📚 AI Research OS — RAG Chat\n", Colors.HEADER + Colors.BOLD)
+                        + colored("   对你的论文库进行自然语言问答，带引用溯源\n", Colors.OKBLUE)
+                        + colored(
+                            "   Enter 发送 · Ctrl+L 清屏 · Ctrl+E 历史 · Ctrl+S 导出 · q 退出\n",
+                            Colors.WARNING,
+                        ),
+                        id="welcome",
                     )
             with Container(id="sidebar"):
-                yield Static(colored("📚 相关论文", Colors.HEADER + Colors.BOLD),
-                            id="sidebar-title")
+                yield Static(
+                    colored("📚 相关论文", Colors.HEADER + Colors.BOLD), id="sidebar-title"
+                )
                 yield SidebarPaperList([], id="paper-list")
         with Container(id="input-area"):
             yield Input(
@@ -808,6 +835,7 @@ class TUIChatApp(App):
         # Create session if not exists
         if not self.session_id:
             import uuid
+
             self.session_id = str(uuid.uuid4())[:8]
             try:
                 self.chat.db.create_chat_session(self.session_id, "TUI对话")
@@ -824,10 +852,7 @@ class TUIChatApp(App):
 
         # Add user message
         user_msg = ChatMessage(
-            role="user",
-            content=question,
-            citations=[],
-            timestamp=datetime.now().isoformat()
+            role="user", content=question, citations=[], timestamp=datetime.now().isoformat()
         )
         self.messages.append(user_msg)
         _index_message(tokenize(user_msg.content), len(self.messages) - 1, self._msg_index)
@@ -839,10 +864,7 @@ class TUIChatApp(App):
 
         # Build AI placeholder
         ai_msg = ChatMessage(
-            role="assistant",
-            content="",
-            citations=[],
-            timestamp=datetime.now().isoformat()
+            role="assistant", content="", citations=[], timestamp=datetime.now().isoformat()
         )
         self.messages.append(ai_msg)
         _index_message(tokenize(ai_msg.content), len(self.messages) - 1, self._msg_index)
@@ -867,11 +889,13 @@ class TUIChatApp(App):
                     self._stream_with_context(ai_msg, rewritten_question, contexts)
 
             # Save to history
-            self._chat_history.append({
-                "question": rewritten_question,
-                "answer": ai_msg.content,
-                "citations": ai_msg.citations,
-            })
+            self._chat_history.append(
+                {
+                    "question": rewritten_question,
+                    "answer": ai_msg.content,
+                    "citations": ai_msg.citations,
+                }
+            )
 
             # Persist to database
             self._save_to_session(question, ai_msg.content, ai_msg.citations)
@@ -966,7 +990,7 @@ class TUIChatApp(App):
                 w.remove()
 
             for i, msg in enumerate(self.messages):
-                is_streaming = (i == len(self.messages) - 1 and self._streaming)
+                is_streaming = i == len(self.messages) - 1 and self._streaming
                 bubble = ChatBubble(msg, self._stream_config, is_streaming=is_streaming)
                 container.mount(bubble)
         except NoMatches:
@@ -978,7 +1002,9 @@ class TUIChatApp(App):
             # Estimate total based on typical response size (2000 chars)
             estimated_total = max(char_count * 3, 100)
             progress = min(int(char_count / estimated_total * 100), 95)
-            cast(Static, self.query_one("#progress-bar")).update(f"[{'█' * progress}{'░' * (100 - progress)}] {progress}%")
+            cast(Static, self.query_one("#progress-bar")).update(
+                f"[{'█' * progress}{'░' * (100 - progress)}] {progress}%"
+            )
         except NoMatches:
             pass
 
@@ -998,13 +1024,29 @@ class TUIChatApp(App):
         handlers = {
             "/sessions": self._show_sessions,
             "/load": lambda: self._load_session_by_index(arg) if arg else self._show_sessions(),
-            "/search": lambda: self._search_sessions(arg) if arg else self._update_status("用法: /search <关键词>"),
-            "/msg": lambda: self._search_current_messages(arg) if arg else self._update_status("用法: /msg <关键词>"),
-            "/code": lambda: self._search_code(arg) if arg else self._update_status("用法: /code <关键词>"),
-            "/goto": lambda: self._goto_message(arg) if arg else self._update_status("用法: /goto <编号>"),
-            "/rename": lambda: self._rename_session(arg) if arg else self._update_status("用法: /rename <新标题>"),
-            "/delete": lambda: self._delete_session(arg) if arg else self._update_status("用法: /delete <编号>"),
-            "/export": lambda: self._export_session() if self.session_id else self._update_status("⚠️ 当前没有会话"),
+            "/search": lambda: (
+                self._search_sessions(arg) if arg else self._update_status("用法: /search <关键词>")
+            ),
+            "/msg": lambda: (
+                self._search_current_messages(arg)
+                if arg
+                else self._update_status("用法: /msg <关键词>")
+            ),
+            "/code": lambda: (
+                self._search_code(arg) if arg else self._update_status("用法: /code <关键词>")
+            ),
+            "/goto": lambda: (
+                self._goto_message(arg) if arg else self._update_status("用法: /goto <编号>")
+            ),
+            "/rename": lambda: (
+                self._rename_session(arg) if arg else self._update_status("用法: /rename <新标题>")
+            ),
+            "/delete": lambda: (
+                self._delete_session(arg) if arg else self._update_status("用法: /delete <编号>")
+            ),
+            "/export": lambda: (
+                self._export_session() if self.session_id else self._update_status("⚠️ 当前没有会话")
+            ),
             "/clear": self.action_clear,
             "/help": self._show_help,
         }
@@ -1049,10 +1091,12 @@ class TUIChatApp(App):
             for c in citations[:5]:
                 sidebar.mount(PaperCard(c, 0, classes="paper-card"))
             if len(citations) > 5:
-                sidebar.mount(Static(
-                    colored(f"  [+{len(citations)-5} more papers]", Colors.WARNING),
-                    classes="more-papers"
-                ))
+                sidebar.mount(
+                    Static(
+                        colored(f"  [+{len(citations) - 5} more papers]", Colors.WARNING),
+                        classes="more-papers",
+                    )
+                )
         except NoMatches:
             pass
 
@@ -1099,6 +1143,7 @@ class TUIChatApp(App):
     def action_new_session(self) -> None:
         """Create a new chat session."""
         import uuid
+
         self.session_id = str(uuid.uuid4())[:8]
         self.messages.clear()
         self._chat_history.clear()
@@ -1167,12 +1212,18 @@ class TUIChatApp(App):
         if self._selected_msg_idx < 0:
             self._selected_msg_idx = len(ai_msg_indices) - 1
         else:
-            idx_in_list = ai_msg_indices.index(self._selected_msg_idx) if self._selected_msg_idx in ai_msg_indices else 0
+            idx_in_list = (
+                ai_msg_indices.index(self._selected_msg_idx)
+                if self._selected_msg_idx in ai_msg_indices
+                else 0
+            )
             idx_in_list = max(0, idx_in_list - 1)
             self._selected_msg_idx = ai_msg_indices[idx_in_list]
 
         self._render_messages_with_selection()
-        self._update_nav_hint(f"已选中第 {ai_msg_indices.index(self._selected_msg_idx) + 1}/{len(ai_msg_indices)} 条回复")
+        self._update_nav_hint(
+            f"已选中第 {ai_msg_indices.index(self._selected_msg_idx) + 1}/{len(ai_msg_indices)} 条回复"
+        )
 
     def action_select_next_message(self) -> None:
         """Select next message in history."""
@@ -1195,12 +1246,18 @@ class TUIChatApp(App):
         if self._selected_msg_idx < 0:
             self._selected_msg_idx = ai_msg_indices[0]
         else:
-            idx_in_list = ai_msg_indices.index(self._selected_msg_idx) if self._selected_msg_idx in ai_msg_indices else -1
+            idx_in_list = (
+                ai_msg_indices.index(self._selected_msg_idx)
+                if self._selected_msg_idx in ai_msg_indices
+                else -1
+            )
             idx_in_list = min(len(ai_msg_indices) - 1, idx_in_list + 1)
             self._selected_msg_idx = ai_msg_indices[idx_in_list]
 
         self._render_messages_with_selection()
-        self._update_nav_hint(f"已选中第 {ai_msg_indices.index(self._selected_msg_idx) + 1}/{len(ai_msg_indices)} 条回复")
+        self._update_nav_hint(
+            f"已选中第 {ai_msg_indices.index(self._selected_msg_idx) + 1}/{len(ai_msg_indices)} 条回复"
+        )
 
     def action_activate_message(self) -> None:
         """Handle Enter - deselect when no selection, otherwise focus input."""
@@ -1224,6 +1281,7 @@ class TUIChatApp(App):
 
         try:
             import pyperclip
+
             pyperclip.copy(content)
             self._update_status(f"✅ 已复制到剪贴板 ({len(content)} 字符)")
         except ImportError:
@@ -1260,7 +1318,7 @@ class TUIChatApp(App):
                 w.remove()
 
             for i, msg in enumerate(self.messages):
-                is_streaming = (i == len(self.messages) - 1 and self._streaming)
+                is_streaming = i == len(self.messages) - 1 and self._streaming
                 bubble = ChatBubble(msg, self._stream_config, is_streaming=is_streaming)
                 if i == self._selected_msg_idx:
                     bubble.add_class("selected")
@@ -1275,9 +1333,16 @@ class TUIChatApp(App):
         try:
             hint = cast(Static, self.query_one("#nav-hint"))
             if text:
-                hint.update(colored(f"❯ {text}  |  ↑↓ 选择  c=复制  e=编辑  Ctrl+F 搜索", Colors.OKBLUE))
+                hint.update(
+                    colored(f"❯ {text}  |  ↑↓ 选择  c=复制  e=编辑  Ctrl+F 搜索", Colors.OKBLUE)
+                )
             else:
-                hint.update(colored("❯ 输入问题开始对话  |  ↑↓ 选择  c=复制  e=编辑  Ctrl+F 搜索", Colors.WARNING))
+                hint.update(
+                    colored(
+                        "❯ 输入问题开始对话  |  ↑↓ 选择  c=复制  e=编辑  Ctrl+F 搜索",
+                        Colors.WARNING,
+                    )
+                )
         except NoMatches:
             pass
 
@@ -1291,9 +1356,7 @@ class TUIChatApp(App):
 
         # Show search prompt
         self.notify(
-            "🔍 搜索消息\n\n"
-            "输入 /msg <关键词> 在当前会话中搜索\n"
-            "示例: /msg transformer",
+            "🔍 搜索消息\n\n输入 /msg <关键词> 在当前会话中搜索\n示例: /msg transformer",
             title="消息搜索",
             timeout=5,
         )
@@ -1333,13 +1396,15 @@ class TUIChatApp(App):
                 end = min(len(msg.content), idx + len(query) + 50)
                 snippet = msg.content[start:end].strip()
 
-                results.append({
-                    "index": i,
-                    "role": msg.role,
-                    "timestamp": msg.timestamp,
-                    "snippet": snippet,
-                    "full_content": msg.content,
-                })
+                results.append(
+                    {
+                        "index": i,
+                        "role": msg.role,
+                        "timestamp": msg.timestamp,
+                        "snippet": snippet,
+                        "full_content": msg.content,
+                    }
+                )
 
         if not results:
             self._update_status(f"🔍 未找到包含 '{query}' 的消息")
@@ -1363,6 +1428,7 @@ class TUIChatApp(App):
 
         try:
             from core.code_indexer import get_code_indexer
+
             idx = get_code_indexer()
             results = idx.search(query, limit=10)
 
@@ -1466,26 +1532,37 @@ class TUIChatApp(App):
                     citations = []
                     try:
                         from llm.chat import Citation
-                        cites_data = json.loads(msg.get("citations", "[]")) if isinstance(msg.get("citations"), str) else msg.get("citations", [])
+
+                        cites_data = (
+                            json.loads(msg.get("citations", "[]"))
+                            if isinstance(msg.get("citations"), str)
+                            else msg.get("citations", [])
+                        )
                         for c in cites_data:
-                            citations.append(Citation(
-                                paper_id=c.get("paper_id", ""),
-                                paper_title=c.get("title", ""),
-                                authors=[],
-                                published="",
-                                snippet="",
-                                relevance_score=c.get("score", 0.0),
-                            ))
+                            citations.append(
+                                Citation(
+                                    paper_id=c.get("paper_id", ""),
+                                    paper_title=c.get("title", ""),
+                                    authors=[],
+                                    published="",
+                                    snippet="",
+                                    relevance_score=c.get("score", 0.0),
+                                )
+                            )
                     except Exception:
                         pass
-                    self.messages.append(ChatMessage(
-                        role=role,
-                        content=content,
-                        citations=citations,
-                        timestamp=msg.get("created_at", "")
-                    ))
+                    self.messages.append(
+                        ChatMessage(
+                            role=role,
+                            content=content,
+                            citations=citations,
+                            timestamp=msg.get("created_at", ""),
+                        )
+                    )
                     if role == "assistant":
-                        self._chat_history.append({"question": "", "answer": content, "citations": citations})
+                        self._chat_history.append(
+                            {"question": "", "answer": content, "citations": citations}
+                        )
                 # Rebuild search index for loaded messages
                 self._msg_index = {}
                 for i, msg in enumerate(self.messages):
@@ -1500,10 +1577,14 @@ class TUIChatApp(App):
         if not self.session_id:
             return
         try:
-            citations_data = [
-                {"paper_id": c.paper_id, "title": c.paper_title, "score": c.relevance_score}
-                for c in citations
-            ] if citations else []
+            citations_data = (
+                [
+                    {"paper_id": c.paper_id, "title": c.paper_title, "score": c.relevance_score}
+                    for c in citations
+                ]
+                if citations
+                else []
+            )
             self.chat.db.add_chat_message(self.session_id, "user", question, [])
             self.chat.db.add_chat_message(self.session_id, "assistant", answer, citations_data)
         except Exception:
@@ -1525,8 +1606,17 @@ class TUIChatApp(App):
                 active = " ◉" if s.get("id") == self.session_id else ""
                 lines.append(f"  {i:2}. [{sid}] {title}{active}")
                 lines.append(f"      📅 {updated}")
-            lines.extend(["", "命令:", "  /load <编号>  加载会话", "  /search <关键词>  搜索会话",
-                         "  /rename <标题>  重命名", "  /delete <编号>  删除", "  /export  导出当前会话"])
+            lines.extend(
+                [
+                    "",
+                    "命令:",
+                    "  /load <编号>  加载会话",
+                    "  /search <关键词>  搜索会话",
+                    "  /rename <标题>  重命名",
+                    "  /delete <编号>  删除",
+                    "  /export  导出当前会话",
+                ]
+            )
 
             self.notify("\n".join(lines), title="会话管理", timeout=20)
         except Exception as e:
@@ -1635,6 +1725,7 @@ class TUIChatApp(App):
 
         try:
             from pathlib import Path
+
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"chat_export_{timestamp}.md"
 
@@ -1643,7 +1734,7 @@ class TUIChatApp(App):
                 f"Exported: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
                 f"Session: {self.session_id or 'N/A'}",
                 "---",
-                ""
+                "",
             ]
 
             for msg in self.messages:
@@ -1654,8 +1745,8 @@ class TUIChatApp(App):
                 if msg.citations:
                     lines.append("\n**Citations:**")
                     for c in msg.citations:
-                        title = getattr(c, 'paper_title', 'Unknown')
-                        pid = getattr(c, 'paper_id', '')
+                        title = getattr(c, "paper_title", "Unknown")
+                        pid = getattr(c, "paper_id", "")
                         lines.append(f"- [{pid}] {title}")
                 lines.append("")
 
@@ -1663,7 +1754,7 @@ class TUIChatApp(App):
             export_path = Path.cwd() / filename
 
             with open(export_path, "w", encoding="utf-8") as f:
-                f.write('\n'.join(lines))
+                f.write("\n".join(lines))
 
             self._update_status(f"✅ 已导出到: {filename}")
         except Exception as e:
@@ -1701,19 +1792,25 @@ class TUIChatApp(App):
 
         try:
             from llm.evolution_report import get_smart_followup
+
             followup = get_smart_followup()
             last_q = self._chat_history[-1]["question"] if self._chat_history else ""
 
             # Convert citations to context
             ctx_list = [
-                type('Ctx', (), {
-                    'paper_id': c.paper_id,
-                    'paper_title': c.paper_title,
-                    'authors': getattr(c, 'authors', []),
-                    'published': getattr(c, 'published', ''),
-                    'snippet': getattr(c, 'snippet', ''),
-                    'relevance_score': getattr(c, 'relevance_score', 0)
-                }) for c in citations
+                type(
+                    "Ctx",
+                    (),
+                    {
+                        "paper_id": c.paper_id,
+                        "paper_title": c.paper_title,
+                        "authors": getattr(c, "authors", []),
+                        "published": getattr(c, "published", ""),
+                        "snippet": getattr(c, "snippet", ""),
+                        "relevance_score": getattr(c, "relevance_score", 0),
+                    },
+                )
+                for c in citations
             ]
 
             options = followup.generate_options(
@@ -1748,19 +1845,28 @@ def _build_chat_tui_parser(subparsers) -> argparse.ArgumentParser:
         description="Launch a full-screen terminal chat interface for RAG-powered Q&A.",
     )
     p.add_argument(
-        "--concept", "-c", metavar="TAG",
+        "--concept",
+        "-c",
+        metavar="TAG",
         help="Filter by concept/tag",
     )
     p.add_argument(
-        "--limit", "-n", type=int, default=5,
+        "--limit",
+        "-n",
+        type=int,
+        default=5,
         help="Number of papers to retrieve (default: 5)",
     )
     p.add_argument(
-        "--model", type=str, default=None,
+        "--model",
+        type=str,
+        default=None,
         help="LLM model to use",
     )
     p.add_argument(
-        "--session", "-s", metavar="ID",
+        "--session",
+        "-s",
+        metavar="ID",
         help="Continue from a saved chat session",
     )
     return p  # type: ignore[no-any-return]

@@ -14,6 +14,7 @@ CAPSULE_PATH = GP_DIR / "capsules.json"
 # Unified capsule read API (replaces scattered _read_capsules_json / _load_capsules)
 # =============================================================================
 
+
 def load_capsules(
     gap_type: Optional[str] = None,
     status: Optional[str] = None,
@@ -33,8 +34,7 @@ def load_capsules(
         capsules = [c for c in capsules if c.get("status") == status]
     if source_paper_id is not None:
         capsules = [
-            c for c in capsules
-            if c.get("archetype", {}).get("source_paper_id") == source_paper_id
+            c for c in capsules if c.get("archetype", {}).get("source_paper_id") == source_paper_id
         ]
     return capsules
 
@@ -58,7 +58,10 @@ def export_pool() -> Dict[str, Any]:
     capsules_path = GP_DIR / "capsules.json"
     jsonl_path = GP_DIR / "gene_pool.jsonl"
 
-    result: Dict[str, Any] = {"version": "1.0", "exported_at": str(__import__("datetime").datetime.now().isoformat())}
+    result: Dict[str, Any] = {
+        "version": "1.0",
+        "exported_at": str(__import__("datetime").datetime.now().isoformat()),
+    }
 
     if capsules_path.exists():
         result["capsules"] = json.loads(capsules_path.read_text(encoding="utf-8"))
@@ -94,7 +97,9 @@ def import_pool(data: Dict[str, Any], merge: bool = True) -> Dict[str, int]:
             existing = json.loads(capsules_path.read_text(encoding="utf-8"))
         existing_caps = existing.get("capsules", [])
         existing_ids = {c["capsule_id"] for c in existing_caps}
-        new_caps = [c for c in capsules.get("capsules", []) if c.get("capsule_id") not in existing_ids]
+        new_caps = [
+            c for c in capsules.get("capsules", []) if c.get("capsule_id") not in existing_ids
+        ]
         merged = {"version": "1.0", "capsules": existing_caps + new_caps}
         capsules_path.write_text(json.dumps(merged, indent=2, ensure_ascii=False), encoding="utf-8")
         stats["capsules_imported"] = len(new_caps)
@@ -119,15 +124,21 @@ def import_pool(data: Dict[str, Any], merge: bool = True) -> Dict[str, int]:
 def render_io_html() -> str:
     lines = ['<div class="pool-io">']
     lines.append("<h3>📦 Gene Pool Import / Export</h3>")
-    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
-                 "Export your Gene Pool as JSON, or import from a previously exported file.</p>")
+    lines.append(
+        "<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
+        "Export your Gene Pool as JSON, or import from a previously exported file.</p>"
+    )
 
     lines.append("<div style='display:flex;gap:12px;margin-bottom:20px'>")
     lines.append("<button id='exportBtn'>⬇ Export JSON</button>")
     lines.append("</div>")
 
-    lines.append("<div style='border:2px dashed #ccc;border-radius:6px;padding:20px;text-align:center;margin-bottom:16px'>")
-    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:10px'>Drop a Gene Pool JSON export here to import</p>")
+    lines.append(
+        "<div style='border:2px dashed #ccc;border-radius:6px;padding:20px;text-align:center;margin-bottom:16px'>"
+    )
+    lines.append(
+        "<p style='font-size:13px;color:#A89E8C;margin-bottom:10px'>Drop a Gene Pool JSON export here to import</p>"
+    )
     lines.append("<input type='file' id='importFile' accept='.json' style='font-size:12px'>")
     lines.append("</div>")
 
@@ -172,6 +183,8 @@ document.getElementById('importFile').addEventListener('change', function(el) {
 });
 </script>""")
 
-    lines.append("<style>.pool-io { font-family: Georgia, serif; } button { background:#6B8FB5; color:white; border:none; border-radius:4px; padding:8px 18px; cursor:pointer; font-size:13px; }</style>")
+    lines.append(
+        "<style>.pool-io { font-family: Georgia, serif; } button { background:#6B8FB5; color:white; border:none; border-radius:4px; padding:8px 18px; cursor:pointer; font-size:13px; }</style>"
+    )
     lines.append("</div>")
     return "\n".join(lines)

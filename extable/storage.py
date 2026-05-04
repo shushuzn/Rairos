@@ -9,8 +9,6 @@ from datetime import datetime
 from pathlib import Path
 
 
-
-
 class ExperimentDB:
     """SQLite-backed experiment table storage."""
 
@@ -70,14 +68,14 @@ class ExperimentDB:
         )
         conn.commit()
 
-    def add_table(self, paper_uid: str, table_struct: dict,
-                  raw_table: list[list[str]]) -> str:
+    def add_table(self, paper_uid: str, table_struct: dict, raw_table: list[list[str]]) -> str:
         table_id = str(uuid.uuid4())
         conn = self._conn()
         conn.execute(
             "INSERT INTO extable_tables (id, paper_uid, caption, metrics_json, datasets_json, models_json, baselines_json, ours_best_json, raw_table_json, added_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
-                table_id, paper_uid,
+                table_id,
+                paper_uid,
                 table_struct.get("caption", ""),
                 orjson.dumps(table_struct.get("metrics", [])).decode("utf-8"),
                 orjson.dumps(table_struct.get("datasets", [])).decode("utf-8"),
@@ -94,7 +92,8 @@ class ExperimentDB:
     def get_paper_tables(self, paper_uid: str) -> list[dict]:
         conn = self._conn()
         rows = conn.execute(
-            "SELECT * FROM extable_tables WHERE paper_uid=?", (paper_uid,),
+            "SELECT * FROM extable_tables WHERE paper_uid=?",
+            (paper_uid,),
         ).fetchall()
         return [self._row_to_table(r) for r in rows]
 
@@ -159,7 +158,9 @@ class ExperimentDB:
     def export_to_csv(self, paper_uid: Optional[str] = None) -> str:
         conn = self._conn()
         if paper_uid:
-            rows = conn.execute("SELECT * FROM extable_tables WHERE paper_uid=?", (paper_uid,)).fetchall()
+            rows = conn.execute(
+                "SELECT * FROM extable_tables WHERE paper_uid=?", (paper_uid,)
+            ).fetchall()
         else:
             rows = conn.execute("SELECT * FROM extable_tables").fetchall()
 
@@ -168,10 +169,10 @@ class ExperimentDB:
             t = self._row_to_table(row)
             ours = t.get("ours_best", {})
             lines.append(
-                f"{t['paper_uid']},{t['id']},{repr(t.get('caption',''))},"
-                f"{repr(','.join(t.get('datasets',[])))},"
-                f"{repr(','.join(t.get('models',[])))},"
-                f"{ours.get('value','')},{ours.get('dataset','')}"
+                f"{t['paper_uid']},{t['id']},{repr(t.get('caption', ''))},"
+                f"{repr(','.join(t.get('datasets', [])))},"
+                f"{repr(','.join(t.get('models', [])))},"
+                f"{ours.get('value', '')},{ours.get('dataset', '')}"
             )
         return "\n".join(lines)
 

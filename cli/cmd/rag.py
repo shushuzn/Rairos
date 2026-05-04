@@ -29,13 +29,16 @@ def _build_rag_parser(subparsers):
     # run-full command
     run_p = sub.add_parser("run-full", help="执行完整 RAG 闭环")
     run_p.add_argument("arxiv_id", help="arXiv ID")
-    run_p.add_argument("--mode", "-m", default="minimal",
-                       choices=["minimal", "full", "educational"])
-    run_p.add_argument("--framework", "-f", default="pytorch",
-                       choices=["pytorch", "jax", "numpy"])
+    run_p.add_argument(
+        "--mode", "-m", default="minimal", choices=["minimal", "full", "educational"]
+    )
+    run_p.add_argument("--framework", "-f", default="pytorch", choices=["pytorch", "jax", "numpy"])
     run_p.add_argument("--task", "-t", default=None, help="EvoSkill task name")
-    run_p.set_defaults(func=lambda a: rag_run_full.callback(
-        arxiv_id=a.arxiv_id, mode=a.mode, framework=a.framework, task_name=a.task))
+    run_p.set_defaults(
+        func=lambda a: rag_run_full.callback(
+            arxiv_id=a.arxiv_id, mode=a.mode, framework=a.framework, task_name=a.task
+        )
+    )
 
     # gen-tests command
     gen_p = sub.add_parser("gen-tests", help="从论文生成测试用例")
@@ -46,31 +49,41 @@ def _build_rag_parser(subparsers):
     init_p = sub.add_parser("init-benchmark", help="初始化 EvoSkill benchmark")
     init_p.add_argument("csv_path", help="测试用例 CSV 路径")
     init_p.add_argument("--task", "-t", required=True, help="Task name")
-    init_p.set_defaults(func=lambda a: rag_init_benchmark.callback(
-        csv_path=a.csv_path, task_name=a.task))
+    init_p.set_defaults(
+        func=lambda a: rag_init_benchmark.callback(csv_path=a.csv_path, task_name=a.task)
+    )
 
     # run-evoskill command
     evo_p = sub.add_parser("run-evoskill", help="运行 EvoSkill 改进")
-    evo_p.add_argument("--continue", dest="continue_mode", action="store_true",
-                       help="从 frontier 继续")
-    evo_p.set_defaults(func=lambda a: rag_run_evoskill.callback(
-        continue_mode=a.continue_mode))
+    evo_p.add_argument(
+        "--continue", dest="continue_mode", action="store_true", help="从 frontier 继续"
+    )
+    evo_p.set_defaults(func=lambda a: rag_run_evoskill.callback(continue_mode=a.continue_mode))
 
     # list-skills command
     sub.add_parser("list-skills", help="列出发现的技能").set_defaults(
-        func=lambda a: rag_list_skills())
+        func=lambda a: rag_list_skills()
+    )
 
     p.set_defaults(func=lambda a: rag_status())
 
 
 @click.command("rag")
 @click.argument("arxiv_id", required=False, type=str)
-@click.option("--mode", "-m", default="minimal",
-              type=click.Choice(["minimal", "full", "educational"]),
-              help="Implementation mode")
-@click.option("--framework", "-f", default="pytorch",
-              type=click.Choice(["pytorch", "jax", "numpy"]),
-              help="Deep learning framework")
+@click.option(
+    "--mode",
+    "-m",
+    default="minimal",
+    type=click.Choice(["minimal", "full", "educational"]),
+    help="Implementation mode",
+)
+@click.option(
+    "--framework",
+    "-f",
+    default="pytorch",
+    type=click.Choice(["pytorch", "jax", "numpy"]),
+    help="Deep learning framework",
+)
 @click.option("--task", "-t", default=None, help="EvoSkill task name")
 def rag(arxiv_id: str, mode: str, framework: str, task: str):
     """RAG闭环: paper2code + EvoSkill 自动改进管道"""
@@ -121,14 +134,8 @@ def rag_gen_tests(arxiv_id: str):
 
     try:
         pipeline = RagPipeline()
-        test_csv = pipeline._extract_and_generate_tests(
-            arxiv_id,
-            pipeline.work_dir / arxiv_id
-        )
-        pipeline._generate_pytest_tests(
-            pipeline.work_dir / arxiv_id,
-            test_csv
-        )
+        test_csv = pipeline._extract_and_generate_tests(arxiv_id, pipeline.work_dir / arxiv_id)
+        pipeline._generate_pytest_tests(pipeline.work_dir / arxiv_id, test_csv)
 
         print_success(f"Tests generated: {test_csv}")
 
@@ -192,40 +199,36 @@ def rag_status():
     try:
         pipeline = RagPipeline()
         from rich.console import Console
+
         c = Console()
 
         c.rule("[bold #FF8272]  RAG Pipeline Status  [/]")
         c.print()
 
-        print(WarpBlocks.section(
-            "Work Directory",
-            f"[#A5D5FE]{pipeline.work_dir}[/]",
-            width=60
-        ))
+        print(WarpBlocks.section("Work Directory", f"[#A5D5FE]{pipeline.work_dir}[/]", width=60))
 
         rows = []
-        paper_ok = getattr(pipeline.paper_pipeline, 'is_available', lambda: False)()
-        evoskill_ok = getattr(pipeline.evoskill_pipeline, 'is_available', lambda: False)()
-        rows.append(["paper2code", "[#B4FA72]✓ available[/]" if paper_ok else "[#FF5555]✗ not found[/]"])
-        rows.append(["EvoSkill", "[#B4FA72]✓ available[/]" if evoskill_ok else "[#FF5555]✗ not found[/]"])
+        paper_ok = getattr(pipeline.paper_pipeline, "is_available", lambda: False)()
+        evoskill_ok = getattr(pipeline.evoskill_pipeline, "is_available", lambda: False)()
+        rows.append(
+            ["paper2code", "[#B4FA72]✓ available[/]" if paper_ok else "[#FF5555]✗ not found[/]"]
+        )
+        rows.append(
+            ["EvoSkill", "[#B4FA72]✓ available[/]" if evoskill_ok else "[#FF5555]✗ not found[/]"]
+        )
 
-        c.print(WarpBlocks.table(
-            ["Component", "Status"],
-            rows,
-            title="Pipeline Components"
-        ))
+        c.print(WarpBlocks.table(["Component", "Status"], rows, title="Pipeline Components"))
         c.print()
 
         if paper_ok and evoskill_ok:
-            print(WarpBlocks.panel(
-                "Ready",
-                "[#B4FA72]RAG pipeline is fully available\n\nRun:[/] airos rag <arxiv_id>"
-            ))
+            print(
+                WarpBlocks.panel(
+                    "Ready",
+                    "[#B4FA72]RAG pipeline is fully available\n\nRun:[/] airos rag <arxiv_id>",
+                )
+            )
         else:
-            print(WarpBlocks.panel(
-                "Not Ready",
-                "[#FF5555]Some components are missing[/]"
-            ))
+            print(WarpBlocks.panel("Not Ready", "[#FF5555]Some components are missing[/]"))
 
     except Exception as e:
         print_error(f"Status check failed: {e}")
