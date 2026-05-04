@@ -1538,7 +1538,7 @@ def tool_paper_analyze(paper_id: str) -> Dict:
 
 def tool_paper2code_run(arxiv_id: str, framework: str = "pytorch", skip_gene_pool: bool = False, continuous: bool = False, interval_minutes: int = 15) -> Dict:
     """Run full paper2code pipeline: download → parse → generate → test → benchmark → Gene Pool.
-    
+
     If continuous=True, starts a background thread that polls ArXiv subscriptions
     every interval_minutes and runs the pipeline for each new paper discovered.
     """
