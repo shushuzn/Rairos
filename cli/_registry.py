@@ -131,6 +131,7 @@ _SUBCOMMAND_TABLE = [
     ("daemon", "cli.cmd.daemon", "_build_daemon_parser"),
     ("demo", "cli.cmd.demo", "_build_demo_parser"),
     ("scout", "cli.cmd.scout", "_build_scout_parser"),
+    ("jin10", "cli.cmd.jin10", "_build_jin10_parser"),
 ]
 
 
