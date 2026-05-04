@@ -43,41 +43,49 @@ def _save_state(state: Dict) -> None:
 
 
 class WatchDaemon:
-    """Continuous event monitoring daemon.
+    """Continuous event monitoring daemon (singleton pattern - shared state)."""
 
-    Polls Jin10 + RSS on an interval, scores against Gene Pool,
-    auto-encodes high-impact events, and maintains a running log.
-    """
+    _instance = None
+    _thread: Optional[threading.Thread] = None
+    _stop_event = threading.Event()
+    _interval: int = 300
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self, interval: int = 300):
-        self.interval = interval
-        self._stop_event = threading.Event()
-        self._thread: Optional[threading.Thread] = None
-        self._client = Jin10Client()
-        self._tracker = EvolutionTracker()
-        self._event_count = 0
-        self._processed_ids: set = set()
+        if not hasattr(self, '_initialized'):
+            self._interval = interval
+            self._client = Jin10Client()
+            self._tracker = EvolutionTracker()
+            self._event_count = 0
+            self._processed_ids: set = set()
+            self._initialized = True
 
     def start(self) -> None:
         """Start the watch daemon in a background thread."""
-        if self._thread and self._thread.is_alive():
+        if WatchDaemon._thread and WatchDaemon._thread.is_alive():
             logger.warning("Watch daemon already running")
             return
 
-        self._stop_event.clear()
-        self._thread = threading.Thread(target=self._loop, daemon=True, name="watch-daemon")
-        self._thread.start()
+        WatchDaemon._stop_event.clear()
+        WatchDaemon._thread = threading.Thread(target=self._loop, daemon=True, name="watch-daemon")
+        WatchDaemon._thread.start()
 
         state = _load_state()
         state["running"] = True
-        state["interval"] = self.interval
+        state["interval"] = self._interval
         _save_state(state)
 
-        logger.info(f"Watch daemon started (interval={self.interval}s)")
+        logger.info(f"Watch daemon started (interval={self._interval}s)")
 
     def stop(self) -> None:
-        """Stop the watch daemon."""
-        self._stop_event.set()
+        """Stop the watch daemon immediately."""
+        WatchDaemon._stop_event.set()
+        if WatchDaemon._thread and WatchDaemon._thread.is_alive():
+            WatchDaemon._thread.join(timeout=3)
         state = _load_state()
         state["running"] = False
         _save_state(state)
@@ -85,7 +93,7 @@ class WatchDaemon:
 
     @property
     def running(self) -> bool:
-        return self._thread is not None and self._thread.is_alive()
+        return WatchDaemon._thread is not None and WatchDaemon._thread.is_alive()
 
     def _loop(self) -> None:
         """Main monitoring loop."""
@@ -93,12 +101,12 @@ class WatchDaemon:
         state = _load_state()
         processed = set(state.get("processed_ids", []))
 
-        while not self._stop_event.is_set():
+        while not WatchDaemon._stop_event.is_set():
             try:
                 self._cycle()
             except Exception as e:
                 logger.error(f"Watch cycle error: {e}")
-            self._stop_event.wait(self.interval)
+            WatchDaemon._stop_event.wait(self._interval)
 
     def _cycle(self) -> None:
         """Run one monitoring cycle."""
@@ -166,7 +174,7 @@ class WatchDaemon:
         pool_stats = self._tracker.get_gene_pool_stats()
         return {
             "running": self.running,
-            "interval": self.interval,
+            "interval": self._interval,
             "last_check": state.get("last_check", ""),
             "total_events": len(state.get("events", [])),
             "gene_pool_size": len(caps),
