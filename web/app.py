@@ -594,7 +594,7 @@ async def gene_pool_credibility(request: Request):
     """Gap Credibility — flags trendslop capsules with high keyword overlap."""
     from llm.credibility_scorer import CredibilityScorer
     scorer = CredibilityScorer()
-    html = scorer.render_html()
+    _html = scorer.render_html()
 
 
 @app.get("/gene-pool/graph")
