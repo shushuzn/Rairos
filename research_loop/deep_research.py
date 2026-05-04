@@ -26,7 +26,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 
-from llm.client import get_client
 from llm.gap_analyzer import GapAnalyzerV2
 
 from llm.insight_evolution import get_evolution_tracker
@@ -162,9 +161,7 @@ class DeepResearchAgent:
         self.session = self.snapstate.load(session_id)
 
         if self.session:
-            self._log(
-                f"Session resumed: {session_id}, iteration {self.session.iteration}"
-            )
+            self._log(f"Session resumed: {session_id}, iteration {self.session.iteration}")
 
         return self.session
 
@@ -224,11 +221,7 @@ class DeepResearchAgent:
             # Use the best capsule's trigger_keywords as search hint
             # (these encode what search terms previously succeeded)
             hint_keywords = best.trigger_keywords
-            if (
-                hint_keywords
-                and isinstance(hint_keywords, list)
-                and len(hint_keywords) > 0
-            ):
+            if hint_keywords and isinstance(hint_keywords, list) and len(hint_keywords) > 0:
                 # Construct search hint from historical keywords + gap context
                 hint = " ".join(str(k) for k in hint_keywords[:5])
                 return hint, confidence
@@ -236,75 +229,8 @@ class DeepResearchAgent:
         except Exception:
             return None, 0.0
 
-    def _reformulate_query(
-        self,
-        gap_type: str,
-        gap_title: str,
-        gap_description: str,
-        search_history: List[str],
-        found_titles: List[str],
-    ) -> Optional[str]:
-        """Use LLM to reformulate search query based on session context.
-
-        Analyzes what was found, what gaps remain, and generates a targeted
-        new search query that avoids redundancy.
-        """
-        try:
-            client = get_client()
-        except Exception:
-            return None
-
-        history_str = (
-            "\n".join(f"  - {h}" for h in search_history[-5:])
-            if search_history
-            else "  (none)"
-        )
-        found_str = (
-            "\n".join(f"  - {t[:80]}" for t in found_titles[-10:])
-            if found_titles
-            else "  (none)"
-        )
-
-        prompt = f"""You are a research search planner. Given the context below, generate ONE specific arXiv search query (max 10 words) that would find papers addressing the identified gap.
-
-Original topic: {self.query}
-Gap type: {gap_type}
-Gap: {gap_title}
-Gap description: {gap_description[:200]}
-
-Previous searches:
-{history_str}
-
-Papers already found:
-{found_str}
-
-Rules:
-- Do NOT repeat any previous search query
-- Focus on the specific gap, not the general topic
-- Use technical terms that arXiv authors would use
-- Be specific enough to find relevant papers
-- Return ONLY the search query, nothing else"""
-
-        try:
-            response = client.generate(prompt)
-            if response and isinstance(response, str):
-                # Clean up the response — take first line, strip quotes
-                query = response.strip().split("\n")[0].strip('"').strip("'").strip()
-                if len(query) > 5 and query != self.query:
-                    return query
-        except Exception:
-            pass
-        return None
-
     def _plan_next_search(self, iteration: int) -> str:
-        """PLANNER: decide next search query using LLM + GenePool guidance.
-
-        Strategy:
-        1. Iteration 0: use original query
-        2. Later iterations: use LLM to reformulate based on gaps + search history
-        3. Fall back to GenePool hint + gap title concatenation if LLM fails
-        4. Final fallback: append iteration number to avoid duplicates
-        """
+        """PLANNER: decide next search query based on session state + GenePool history."""
         gaps = self.session.gaps if self.session else []
         search_history = self.session.search_history if self.session else []
 
@@ -313,49 +239,25 @@ Rules:
         elif gaps:
             latest_gap = gaps[-1] if gaps else None
             if latest_gap:
-                # Collect found paper titles for context
-                found_titles = []
-                for snap in (self.session.papers or [])[-10:]:
-                    if isinstance(snap, dict):
-                        found_titles.append(snap.get("title", ""))
-                    elif hasattr(snap, "title"):
-                        found_titles.append(snap.title)
-
-                # Strategy 1: LLM-based query reformulation (best quality)
-                llm_query = self._reformulate_query(
+                # Ask GenePool for successful search strategies on this gap type/topic
+                hint, confidence = self._get_search_guidance(
+                    topic=self.query,
                     gap_type=latest_gap.gap_type,
                     gap_title=latest_gap.title,
-                    gap_description=getattr(latest_gap, "description", ""),
-                    search_history=search_history,
-                    found_titles=found_titles,
                 )
 
-                if llm_query:
-                    planned = llm_query
+                if hint and confidence >= 0.3:
+                    # GenePool has a successful pattern — incorporate it
+                    planned = f"{hint} {latest_gap.title}"
                     self._record_thought(
                         "planner",
-                        f"LLM-reformulated search: {planned}",
+                        f"GenePool-guided search (confidence={confidence:.2f}): {planned}",
                         iteration,
                     )
+                elif latest_gap.gap_type == "Contradiction":
+                    planned = f"{self.query} {latest_gap.title} disagreement"
                 else:
-                    # Strategy 2: GenePool-guided concatenation (fallback)
-                    hint, confidence = self._get_search_guidance(
-                        topic=self.query,
-                        gap_type=latest_gap.gap_type,
-                        gap_title=latest_gap.title,
-                    )
-
-                    if hint and confidence >= 0.3:
-                        planned = f"{hint} {latest_gap.title}"
-                        self._record_thought(
-                            "planner",
-                            f"GenePool-guided search (confidence={confidence:.2f}): {planned}",
-                            iteration,
-                        )
-                    elif latest_gap.gap_type == "Contradiction":
-                        planned = f"{self.query} {latest_gap.title} disagreement"
-                    else:
-                        planned = f"{self.query} {latest_gap.title} improvement"
+                    planned = f"{self.query} {latest_gap.title} improvement"
             else:
                 planned = self.query
         else:
@@ -374,9 +276,7 @@ Rules:
         self._log(f"[iter {iteration}] Searching: {search_query}")
 
         try:
-            papers = search_arxiv(
-                search_query, max_results=self.max_papers_per_iteration
-            )
+            papers = search_arxiv(search_query, max_results=self.max_papers_per_iteration)
 
         except Exception as e:
             self._record_thought("searcher", f"Search failed: {e}", iteration)
@@ -384,25 +284,19 @@ Rules:
             return []
 
         self._record_thought(
-            "searcher",
-            f"Found {len(papers)} papers: {[p.arxiv_id for p in papers]}",
-            iteration,
+            "searcher", f"Found {len(papers)} papers: {[p.arxiv_id for p in papers]}", iteration
         )
 
         return papers
 
-    def _extract_papers(
-        self, papers: List[Paper], iteration: int
-    ) -> List[PaperSnapshot]:
+    def _extract_papers(self, papers: List[Paper], iteration: int) -> List[PaperSnapshot]:
         """EXTRACTOR: extract text from papers and build snapshots."""
 
         snapshots = []
 
         for paper in papers:
             try:
-                extracted = (
-                    extract_pdf_text(str(paper.pdf_url or "")) if paper.pdf_url else ""
-                )
+                extracted = extract_pdf_text(str(paper.pdf_url or "")) if paper.pdf_url else ""
 
             except Exception:
                 extracted = ""
@@ -433,15 +327,11 @@ Rules:
                 ]
             )
 
-        self._record_thought(
-            "extractor", f"Extracted {len(snapshots)} papers", iteration
-        )
+        self._record_thought("extractor", f"Extracted {len(snapshots)} papers", iteration)
 
         return snapshots
 
-    def _analyze_gaps(
-        self, snapshots: List[PaperSnapshot], iteration: int
-    ) -> List[GapSnapshot]:
+    def _analyze_gaps(self, snapshots: List[PaperSnapshot], iteration: int) -> List[GapSnapshot]:
         """ANALYZER: detect research gaps using GapAnalyzerV2."""
 
         self._log(f"[iter {iteration}] Analyzing gaps for {len(snapshots)} papers")
@@ -469,11 +359,7 @@ Rules:
         gap_snapshots = []
 
         for gap in result.gaps[:5]:  # Top 5 gaps
-            match_score = (
-                self.tracker._archetype_match_score(gap, archetype)
-                if archetype
-                else 0.5
-            )
+            match_score = self.tracker._archetype_match_score(gap, archetype) if archetype else 0.5
 
             gs = GapSnapshot(
                 gap_type=gap.gap_type or "improvement",
@@ -660,9 +546,7 @@ Rules:
             status=self.session.status if self.session else "failed",
         )
 
-        self._log(
-            f"Run complete: {result.status}, {result.iterations} iterations, {duration:.1f}s"
-        )
+        self._log(f"Run complete: {result.status}, {result.iterations} iterations, {duration:.1f}s")
 
         return result
 
