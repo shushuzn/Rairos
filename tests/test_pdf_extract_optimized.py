@@ -1,1 +1,40 @@
-IiIiVGVzdHMgZm9yIG9wdGltaXplZCBQREYgZXh0cmFjdGlvbiBmdW5jdGlvbmFsaXR5LiIiIgoKaW1wb3J0IHB5dGVzdApmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKZnJvbSBwZGYuZXh0cmFjdCBpbXBvcnQgZXh0cmFjdF9wZGZfdGV4dCwgZXh0cmFjdF9wZGZfdGV4dF9oeWJyaWQKCgpAcHl0ZXN0LmZpeHR1cmUKZGVmIHNhbXBsZV9wZGZfcGF0aCgpOgogICAgIiIiUGF0aCB0byBzYW1wbGUgUERGIGZpbGUuIiIiCiAgICByZXR1cm4gUGF0aCgidGVzdHMvZml4dHVyZXMvc2FtcGxlLnBkZiIpCgoKZGVmIHRlc3RfZXh0cmFjdF9wZGZfdGV4dChzYW1wbGVfcGRmX3BhdGgpOgogICAgIiIiVGVzdCBiYXNpYyBQREYgdGV4dCBleHRyYWN0aW9uLiIiIgogICAgaWYgc2FtcGxlX3BkZl9wYXRoLmV4aXN0cygpOgogICAgICAgIHRleHQgPSBleHRyYWN0X3BkZl90ZXh0KHNhbXBsZV9wZGZfcGF0aCkKICAgICAgICBhc3NlcnQgaXNpbnN0YW5jZSh0ZXh0LCBzdHIpCiAgICAgICAgYXNzZXJ0IGxlbih0ZXh0KSA+IDAKICAgIGVsc2U6CiAgICAgICAgcHl0ZXN0LnNraXAoIlNhbXBsZSBQREYgbm90IGZvdW5kIikKCgpkZWYgdGVzdF9leHRyYWN0X3BkZl90ZXh0X2h5YnJpZChzYW1wbGVfcGRmX3BhdGgpOgogICAgIiIiVGVzdCBoeWJyaWQgUERGIHRleHQgZXh0cmFjdGlvbi4iIiIKICAgIGlmIHNhbXBsZV9wZGZfcGF0aC5leGlzdHMoKToKICAgICAgICB0ZXh0ID0gZXh0cmFjdF9wZGZfdGV4dF9oeWJyaWQoc2FtcGxlX3BkZl9wYXRoKQogICAgICAgIGFzc2VydCBpc2luc3RhbmNlKHRleHQsIHN0cikKICAgICAgICBhc3NlcnQgbGVuKHRleHQpID4gMAogICAgZWxzZToKICAgICAgICBweXRlc3Quc2tpcCgiU2FtcGxlIFBERiBub3QgZm91bmQiKQoKCmRlZiB0ZXN0X2V4dHJhY3RfcGRmX3RleHRfd2l0aF9tYXhfcGFnZXMoc2FtcGxlX3BkZl9wYXRoKToKICAgICIiIlRlc3QgUERGIHRleHQgZXh0cmFjdGlvbiB3aXRoIG1heCBwYWdlcyBsaW1pdC4iIiIKICAgIGlmIHNhbXBsZV9wZGZfcGF0aC5leGlzdHMoKToKICAgICAgICB0ZXh0ID0gZXh0cmFjdF9wZGZfdGV4dChzYW1wbGVfcGRmX3BhdGgsIG1heF9wYWdlcz0xKQogICAgICAgIGFzc2VydCBpc2luc3RhbmNlKHRleHQsIHN0cikKICAgIGVsc2U6CiAgICAgICAgcHl0ZXN0LnNraXAoIlNhbXBsZSBQREYgbm90IGZvdW5kIikK
+"""Tests for optimized PDF extraction functionality."""
+
+import pytest
+from pathlib import Path
+from pdf.extract import extract_pdf_text, extract_pdf_text_hybrid
+
+
+@pytest.fixture
+def sample_pdf_path():
+    """Path to sample PDF file."""
+    return Path("tests/fixtures/sample.pdf")
+
+
+def test_extract_pdf_text(sample_pdf_path):
+    """Test basic PDF text extraction."""
+    if sample_pdf_path.exists():
+        text = extract_pdf_text(sample_pdf_path)
+        assert isinstance(text, str)
+        assert len(text) > 0
+    else:
+        pytest.skip("Sample PDF not found")
+
+
+def test_extract_pdf_text_hybrid(sample_pdf_path):
+    """Test hybrid PDF text extraction."""
+    if sample_pdf_path.exists():
+        text = extract_pdf_text_hybrid(sample_pdf_path)
+        assert isinstance(text, str)
+        assert len(text) > 0
+    else:
+        pytest.skip("Sample PDF not found")
+
+
+def test_extract_pdf_text_with_max_pages(sample_pdf_path):
+    """Test PDF text extraction with max pages limit."""
+    if sample_pdf_path.exists():
+        text = extract_pdf_text(sample_pdf_path, max_pages=1)
+        assert isinstance(text, str)
+    else:
+        pytest.skip("Sample PDF not found")

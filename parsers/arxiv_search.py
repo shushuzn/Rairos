@@ -1,1 +1,119 @@
-IiIiYXJYaXYgc2VhcmNoIGJ5IGtleXdvcmQgcXVlcnkuIiIiCgppbXBvcnQgbG9nZ2luZwpmcm9tIHR5cGluZyBpbXBvcnQgTGlzdAoKaW1wb3J0IGZlZWRwYXJzZXIKaW1wb3J0IHJlcXVlc3RzICAjIHR5cGU6IGlnbm9yZVtpbXBvcnQtdW50eXBlZF0KCmZyb20gY29yZSBpbXBvcnQgUGFwZXIKCmxvZ2dlciA9IGxvZ2dpbmcuZ2V0TG9nZ2VyKF9fbmFtZV9fKQoKIyBNb2R1bGUtbGV2ZWwgc2Vzc2lvbiBmb3IgY29ubmVjdGlvbiByZXVzZQpfaHR0cCA9IHJlcXVlc3RzLlNlc3Npb24oKQoKCmRlZiBzZWFyY2hfYXJ4aXYocXVlcnk6IHN0ciwgbWF4X3Jlc3VsdHM6IGludCA9IDUsIHRpbWVvdXQ6IGludCA9IDMwKSAtPiBMaXN0W1BhcGVyXToKICAgICIiIgogICAgU2VhcmNoIGFyWGl2IGJ5IGtleXdvcmQgYW5kIHJldHVybiBtZXRhZGF0YSBmb3IgdG9wIHBhcGVycy4KCiAgICBBcmdzOgogICAgICAgIHF1ZXJ5OiBTZWFyY2ggcXVlcnkgKHN1cHBvcnRzIGFyWGl2IGFkdmFuY2VkIG9wZXJhdG9ycyBsaWtlIEFORCwgT1IsIFRJVExFLCBBQlMpCiAgICAgICAgbWF4X3Jlc3VsdHM6IE51bWJlciBvZiBwYXBlcnMgdG8gcmV0dXJuIChkZWZhdWx0IDUpCiAgICAgICAgdGltZW91dDogUmVxdWVzdCB0aW1lb3V0IGluIHNlY29uZHMKCiAgICBSZXR1cm5zOgogICAgICAgIExpc3Qgb2YgUGFwZXIgb2JqZWN0cyBzb3J0ZWQgYnkgcmVsZXZhbmNlIChiZXN0IG1hdGNoIGZpcnN0KQoKICAgIFJhaXNlczoKICAgICAgICBSdW50aW1lRXJyb3I6IElmIHRoZSBzZWFyY2ggcmVxdWVzdCBmYWlscwogICAgIiIiCiAgICBpbXBvcnQgdXJsbGliLnBhcnNlCgogICAgIyBFbmNvZGUgcXVlcnkgZm9yIFVSTAogICAgZW5jb2RlZF9xdWVyeSA9IHVybGxpYi5wYXJzZS5xdW90ZV9wbHVzKHF1ZXJ5KQogICAgdXJsID0gKAogICAgICAgIGYiaHR0cHM6Ly9leHBvcnQuYXJ4aXYub3JnL2FwaS9xdWVyeT8iCiAgICAgICAgZiJzZWFyY2hfcXVlcnk9YWxsOntlbmNvZGVkX3F1ZXJ5fSYiCiAgICAgICAgZiJzdGFydD0wJiIKICAgICAgICBmIm1heF9yZXN1bHRzPXttYXhfcmVzdWx0c30mIgogICAgICAgIGYic29ydEJ5PXJlbGV2YW5jZSYiCiAgICAgICAgZiJzb3J0T3JkZXI9ZGVzY2VuZGluZyIKICAgICkKCiAgICB0cnk6CiAgICAgICAgciA9IF9odHRwLmdldCh1cmwsIHRpbWVvdXQ9dGltZW91dCkKICAgICAgICByLnJhaXNlX2Zvcl9zdGF0dXMoKQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgIHJhaXNlIFJ1bnRpbWVFcnJvcihmImFyWGl2IHNlYXJjaCBmYWlsZWQgZm9yIHF1ZXJ5ICd7cXVlcnl9Jzoge2V9IikgZnJvbSBlCgogICAgZmVlZCA9IGZlZWRwYXJzZXIucGFyc2Uoci50ZXh0KQoKICAgIGlmIG5vdCBmZWVkLmVudHJpZXM6CiAgICAgICAgcmV0dXJuIFtdCgogICAgcGFwZXJzOiBMaXN0W1BhcGVyXSA9IFtdCiAgICBmb3IgZW50cnkgaW4gZmVlZC5lbnRyaWVzOgogICAgICAgIHBhcGVycy5hcHBlbmQoX2VudHJ5X3RvX3BhcGVyKGVudHJ5KSkKCiAgICByZXR1cm4gcGFwZXJzCgoKZGVmIF9lbnRyeV90b19wYXBlcihlKSAtPiBQYXBlcjoKICAgICIiIkNvbnZlcnQgYSBmZWVkcGFyc2VyIGVudHJ5IHRvIGEgUGFwZXIgb2JqZWN0LiIiIgogICAgdGl0bGUgPSAoZ2V0YXR0cihlLCAidGl0bGUiLCAiIikgb3IgIiIpLnJlcGxhY2UoIlxuIiwgIiAiKS5zdHJpcCgpCiAgICBhYnN0cmFjdCA9IChnZXRhdHRyKGUsICJzdW1tYXJ5IiwgIiIpIG9yICIiKS5yZXBsYWNlKCJcbiIsICIgIikuc3RyaXAoKQoKICAgIGF1dGhvcnM6IExpc3Rbc3RyXSA9IFtdCiAgICBmb3IgYSBpbiBnZXRhdHRyKGUsICJhdXRob3JzIiwgW10pIG9yIFtdOgogICAgICAgIG5hbWUgPSBnZXRhdHRyKGEsICJuYW1lIiwgIiIpLnN0cmlwKCkKICAgICAgICBpZiBuYW1lOgogICAgICAgICAgICBhdXRob3JzLmFwcGVuZChuYW1lKQoKICAgIHB1Ymxpc2hlZCA9IChnZXRhdHRyKGUsICJwdWJsaXNoZWQiLCAiIikgb3IgIiIpWzoxMF0KICAgIHVwZGF0ZWQgPSAoZ2V0YXR0cihlLCAidXBkYXRlZCIsICIiKSBvciAiIilbOjEwXQogICAgYWJzX3VybCA9IGdldGF0dHIoZSwgImxpbmsiLCAiIikgb3IgZiJodHRwczovL2FyeGl2Lm9yZy9hYnMve2UuaWQuc3BsaXQoJy8nKVstMV19IgoKICAgIHBkZl91cmwgPSAiIgogICAgZm9yIGxpbmtfaXRlbSBpbiBnZXRhdHRyKGUsICJsaW5rcyIsIFtdKSBvciBbXToKICAgICAgICBpZiBnZXRhdHRyKGxpbmtfaXRlbSwgInR5cGUiLCAiIikgPT0gImFwcGxpY2F0aW9uL3BkZiI6CiAgICAgICAgICAgIHBkZl91cmwgPSBsaW5rX2l0ZW0uaHJlZgogICAgICAgICAgICBicmVhawogICAgaWYgbm90IHBkZl91cmw6CiAgICAgICAgcGRmX3VybCA9IGYiaHR0cHM6Ly9hcnhpdi5vcmcvcGRmL3tlLmlkLnNwbGl0KCcvJylbLTFdfS5wZGYiCgogICAgcHJpbWFyeV9jYXQgPSAiIgogICAgdHJ5OgogICAgICAgIHByaW1hcnlfY2F0ID0gZ2V0YXR0cihlLCAiYXJ4aXZfcHJpbWFyeV9jYXRlZ29yeSIsIHt9KS5nZXQoInRlcm0iLCAiIikgICMgdHlwZTogaWdub3JlCiAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgIHByaW1hcnlfY2F0ID0gIiIKCiAgICBhbGxfY2F0cyA9ICIiCiAgICB0cnk6CiAgICAgICAgdGFncyA9IGdldGF0dHIoZSwgInRhZ3MiLCBbXSkgb3IgW10KICAgICAgICBjYXRzID0gW3QuZ2V0KCJ0ZXJtIiwgIiIpIGZvciB0IGluIHRhZ3MgaWYgdC5nZXQoInRlcm0iKV0KICAgICAgICBpZiBjYXRzOgogICAgICAgICAgICBhbGxfY2F0cyA9ICIsICIuam9pbihjYXRzKQogICAgZXhjZXB0IEV4Y2VwdGlvbjoKICAgICAgICBhbGxfY2F0cyA9ICIiCgogICAgY29tbWVudCA9IChnZXRhdHRyKGUsICJhcnhpdl9jb21tZW50IiwgTm9uZSkgb3IgIiIpLnJlcGxhY2UoIlxuIiwgIiAiKS5zdHJpcCgpCiAgICBqb3VybmFsX3JlZiA9IChnZXRhdHRyKGUsICJqb3VybmFsX3JlZiIsIE5vbmUpIG9yICIiKS5yZXBsYWNlKCJcbiIsICIgIikuc3RyaXAoKQogICAgZG9pID0gKGdldGF0dHIoZSwgImFyeGl2X2RvaSIsIE5vbmUpIG9yICIiKS5zdHJpcCgpCgogICAgcmV0dXJuIFBhcGVyKAogICAgICAgIHNvdXJjZT0iYXJ4aXYiLAogICAgICAgIHVpZD1lLmlkLnNwbGl0KCIvIilbLTFdLAogICAgICAgIHRpdGxlPXRpdGxlLAogICAgICAgIGF1dGhvcnM9YXV0aG9ycywKICAgICAgICBhYnN0cmFjdD1hYnN0cmFjdCwKICAgICAgICBwdWJsaXNoZWQ9cHVibGlzaGVkIG9yICIiLAogICAgICAgIHVwZGF0ZWQ9dXBkYXRlZCBvciAiIiwKICAgICAgICBhYnNfdXJsPWFic191cmwsCiAgICAgICAgcGRmX3VybD1wZGZfdXJsLAogICAgICAgIHByaW1hcnlfY2F0ZWdvcnk9cHJpbWFyeV9jYXQgb3IgIiIsCiAgICAgICAgY2F0ZWdvcmllcz1hbGxfY2F0cywKICAgICAgICBjb21tZW50PWNvbW1lbnQsCiAgICAgICAgam91cm5hbF9yZWY9am91cm5hbF9yZWYsCiAgICAgICAgZG9pPWRvaSwKICAgICkK
+"""arXiv search by keyword query."""
+import logging
+from typing import List
+
+import feedparser
+import requests  # type: ignore[import-untyped]
+
+from core import Paper
+
+logger = logging.getLogger(__name__)
+
+# Module-level session for connection reuse
+_http = requests.Session()
+
+
+def search_arxiv(query: str, max_results: int = 5, timeout: int = 30) -> List[Paper]:
+    """
+    Search arXiv by keyword and return metadata for top papers.
+
+    Args:
+        query: Search query (supports arXiv advanced operators like AND, OR, TITLE, ABS)
+        max_results: Number of papers to return (default 5)
+        timeout: Request timeout in seconds
+
+    Returns:
+        List of Paper objects sorted by relevance (best match first)
+
+    Raises:
+        RuntimeError: If the search request fails
+    """
+    import urllib.parse
+
+    # Encode query for URL
+    encoded_query = urllib.parse.quote_plus(query)
+    url = (
+        f"https://export.arxiv.org/api/query?"
+        f"search_query=all:{encoded_query}&"
+        f"start=0&"
+        f"max_results={max_results}&"
+        f"sortBy=relevance&"
+        f"sortOrder=descending"
+    )
+
+    try:
+        r = _http.get(url, timeout=timeout)
+        r.raise_for_status()
+    except Exception as e:
+        raise RuntimeError(f"arXiv search failed for query '{query}': {e}") from e
+
+    feed = feedparser.parse(r.text)
+
+    if not feed.entries:
+        return []
+
+    papers: List[Paper] = []
+    for entry in feed.entries:
+        papers.append(_entry_to_paper(entry))
+
+    return papers
+
+
+def _entry_to_paper(e) -> Paper:
+    """Convert a feedparser entry to a Paper object."""
+    title = (getattr(e, "title", "") or "").replace("\n", " ").strip()
+    abstract = (getattr(e, "summary", "") or "").replace("\n", " ").strip()
+
+    authors: List[str] = []
+    for a in getattr(e, "authors", []) or []:
+        name = getattr(a, "name", "").strip()
+        if name:
+            authors.append(name)
+
+    published = (getattr(e, "published", "") or "")[:10]
+    updated = (getattr(e, "updated", "") or "")[:10]
+    abs_url = getattr(e, "link", "") or f"https://arxiv.org/abs/{e.id.split('/')[-1]}"
+
+    pdf_url = ""
+    for link_item in getattr(e, "links", []) or []:
+        if getattr(link_item, "type", "") == "application/pdf":
+            pdf_url = link_item.href
+            break
+    if not pdf_url:
+        pdf_url = f"https://arxiv.org/pdf/{e.id.split('/')[-1]}.pdf"
+
+    primary_cat = ""
+    try:
+        primary_cat = getattr(e, "arxiv_primary_category", {}).get("term", "")  # type: ignore
+    except Exception:
+        primary_cat = ""
+
+    all_cats = ""
+    try:
+        tags = getattr(e, "tags", []) or []
+        cats = [t.get("term", "") for t in tags if t.get("term")]
+        if cats:
+            all_cats = ", ".join(cats)
+    except Exception:
+        all_cats = ""
+
+    comment = (getattr(e, "arxiv_comment", None) or "").replace("\n", " ").strip()
+    journal_ref = (getattr(e, "journal_ref", None) or "").replace("\n", " ").strip()
+    doi = (getattr(e, "arxiv_doi", None) or "").strip()
+
+    return Paper(
+        source="arxiv",
+        uid=e.id.split("/")[-1],
+        title=title,
+        authors=authors,
+        abstract=abstract,
+        published=published or "",
+        updated=updated or "",
+        abs_url=abs_url,
+        pdf_url=pdf_url,
+        primary_category=primary_cat or "",
+        categories=all_cats,
+        comment=comment,
+        journal_ref=journal_ref,
+        doi=doi,
+    )

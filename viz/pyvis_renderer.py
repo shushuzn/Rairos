@@ -1,1 +1,150 @@
-IiIiUHlWaXMtYmFzZWQgaW50ZXJhY3RpdmUgS0cgdmlzdWFsaXphdGlvbi4iIiIKCmltcG9ydCBvcmpzb24KCnRyeToKICAgIGZyb20gcHl2aXMubmV0d29yayBpbXBvcnQgTmV0d29yawoKICAgIF9IQVNfUFlWSVMgPSBUcnVlCmV4Y2VwdCBJbXBvcnRFcnJvcjoKICAgIF9IQVNfUFlWSVMgPSBGYWxzZQoKZnJvbSBrZy5tYW5hZ2VyIGltcG9ydCBLR01hbmFnZXIKZnJvbSB0eXBpbmcgaW1wb3J0IE9wdGlvbmFsCgoKIyBOb2RlIGNvbG91ciBtYXAgYnkgdHlwZQpfVFlQRV9DT0xPUlMgPSB7CiAgICAiUGFwZXIiOiAiIzRBOTBFMiIsICAjIGJsdWUKICAgICJQLU5vdGUiOiAiIzUwQzg3OCIsICAjIGdyZWVuCiAgICAiQy1Ob3RlIjogIiNGNEQwM0YiLCAgIyB5ZWxsb3cKICAgICJNLU5vdGUiOiAiI0U3NEMzQyIsICAjIHJlZAogICAgIlRhZyI6ICIjOUI1OUI2IiwgICMgcHVycGxlCiAgICAiQXV0aG9yIjogIiNFNjdFMjIiLCAgIyBvcmFuZ2UKfQoKCmNsYXNzIEtHVml6UmVuZGVyZXI6CiAgICAiIiJSZW5kZXJzIEtHIGFzIGludGVyYWN0aXZlIFB5VmlzIEhUTUwuIiIiCgogICAgZGVmIF9faW5pdF9fKHNlbGYsIGtnOiBPcHRpb25hbFtLR01hbmFnZXJdID0gTm9uZSk6CiAgICAgICAgc2VsZi5rZyA9IGtnIG9yIEtHTWFuYWdlcigpCgogICAgZGVmIF9iYXNlX25ldChzZWxmLCBoZWlnaHQ6IHN0ciA9ICI2MDBweCIsIGJnY29sb3I6IHN0ciA9ICIjZmZmZmZmIikgLT4gIk5ldHdvcmsiOgogICAgICAgIG5ldCA9IE5ldHdvcmsoaGVpZ2h0PWhlaWdodCwgYmdjb2xvcj1iZ2NvbG9yLCBkaXJlY3RlZD1GYWxzZSwgc2VsZWN0X21lbnU9VHJ1ZSkKICAgICAgICBuZXQuc2V0X29wdGlvbnMoIiIiCiAgICAgICAgewogICAgICAgICAgICAibm9kZXMiOiB7ImZvbnQiOiB7InNpemUiOiAxNCwgImZhY2UiOiAiYXJpYWwifX0sCiAgICAgICAgICAgICJlZGdlcyI6IHsid2lkdGgiOiAxLCAiY29sb3IiOiB7ImluaGVyaXQiOiB0cnVlfX0sCiAgICAgICAgICAgICJwaHlzaWNzIjogeyJlbmFibGVkIjogdHJ1ZSwgImZvcmNlQXRsYXMyQmFzZWQiOiB7ImdyYXZpdGF0aW9uYWxDb25zdGFudCI6IC01MH0sICJzb2x2ZXIiOiAiZm9yY2VBdGxhczJCYXNlZCJ9CiAgICAgICAgfQogICAgICAgICIiIikKICAgICAgICByZXR1cm4gbmV0CgogICAgZGVmIF9hZGRfbm9kZXNfZnJvbV9ncmFwaChzZWxmLCBuZXQ6ICJOZXR3b3JrIiwgZ3JhcGg6IGRpY3QpOgogICAgICAgIGZvciBub2RlIGluIGdyYXBoLmdldCgibm9kZXMiLCBbXSk6CiAgICAgICAgICAgIG50eXBlID0gbm9kZS5nZXQoInR5cGUiLCAiUGFwZXIiKQogICAgICAgICAgICBjb2xvciA9IF9UWVBFX0NPTE9SUy5nZXQobnR5cGUsICIjQUFBQUFBIikKICAgICAgICAgICAgbGFiZWwgPSBub2RlLmdldCgibGFiZWwiLCAiIilbOjYwXQogICAgICAgICAgICB0aXRsZSA9IG9yanNvbi5kdW1wcyhub2RlKS5kZWNvZGUoInV0Zi04IikKICAgICAgICAgICAgbmV0LmFkZF9ub2RlKG5vZGVbImlkIl0sIGxhYmVsPWxhYmVsLCB0aXRsZT10aXRsZSwgY29sb3I9Y29sb3IsIHR5cGU9bnR5cGUpCgogICAgICAgIHNlZW4gPSBzZXQoKQogICAgICAgIGZvciBlZGdlIGluIGdyYXBoLmdldCgiZWRnZXMiLCBbXSk6CiAgICAgICAgICAgIGVpZCA9IGVkZ2VbImlkIl0KICAgICAgICAgICAgaWYgZWlkIGluIHNlZW46CiAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICBzZWVuLmFkZChlaWQpCiAgICAgICAgICAgIG5ldC5hZGRfZWRnZSgKICAgICAgICAgICAgICAgIGVkZ2VbInNvdXJjZV9pZCJdLAogICAgICAgICAgICAgICAgZWRnZVsidGFyZ2V0X2lkIl0sCiAgICAgICAgICAgICAgICB0aXRsZT1lZGdlLmdldCgicmVsYXRpb25fdHlwZSIsICIiKSwKICAgICAgICAgICAgICAgIHdpZHRoPWVkZ2UuZ2V0KCJ3ZWlnaHQiLCAxLjApLAogICAgICAgICAgICApCgogICAgZGVmIHBhcGVyX2dyYXBoKHNlbGYsIHBhcGVyX3VpZDogc3RyLCBkZXB0aDogaW50ID0gMiwgaGVpZ2h0OiBzdHIgPSAiNjAwcHgiKSAtPiAic3RyIjoKICAgICAgICAiIiJFZ28gZ3JhcGggYXJvdW5kIGEgcGFwZXIgYXMgSFRNTCBzdHJpbmcuIiIiCiAgICAgICAgaWYgbm90IF9IQVNfUFlWSVM6CiAgICAgICAgICAgIHJldHVybiBzZWxmLl9wYXBlcl9ncmFwaF9mYWxsYmFjayhwYXBlcl91aWQsIGRlcHRoKQoKICAgICAgICBmcm9tIGtnLnF1ZXJpZXMgaW1wb3J0IEtHUXVlcmllcwoKICAgICAgICBxID0gS0dRdWVyaWVzKHNlbGYua2cpCiAgICAgICAgc3ViZ3JhcGggPSBxLmdldF9wYXBlcl9zdWJncmFwaChwYXBlcl91aWQsIGRlcHRoPWRlcHRoKQoKICAgICAgICBuZXQgPSBzZWxmLl9iYXNlX25ldChoZWlnaHQ9aGVpZ2h0KQogICAgICAgIHNlbGYuX2FkZF9ub2Rlc19mcm9tX2dyYXBoKG5ldCwgc3ViZ3JhcGgpCgogICAgICAgIGNlbnRlcl9ub2RlID0gc3ViZ3JhcGguZ2V0KCJjZW50ZXIiKQogICAgICAgIGlmIGNlbnRlcl9ub2RlOgogICAgICAgICAgICBuZXQuc2V0X29wdGlvbnMoIiIiCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICJub2RlcyI6IHsiZm9udCI6IHsic2l6ZSI6IDE0fX0sCiAgICAgICAgICAgICAgICAiZWRnZXMiOiB7ImNvbG9yIjogeyJpbmhlcml0IjogdHJ1ZX0sICJ3aWR0aCI6IDF9LAogICAgICAgICAgICAgICAgInBoeXNpY3MiOiB7ImVuYWJsZWQiOiB0cnVlLCAiZm9yY2VBdGxhczJCYXNlZCI6IHsiZ3Jhdml0YXRpb25hbENvbnN0YW50IjogLTgwfSwgInNvbHZlciI6ICJmb3JjZUF0bGFzMkJhc2VkIn0KICAgICAgICAgICAgfQogICAgICAgICAgICAiIiIpCgogICAgICAgIHJldHVybiBuZXQuZ2VuZXJhdGVfaHRtbCgpICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKICAgIGRlZiB0YWdfZ3JhcGgoc2VsZiwgdGFnOiBzdHIsIGhlaWdodDogc3RyID0gIjYwMHB4IikgLT4gInN0ciI6CiAgICAgICAgIiIiQWxsIHBhcGVycyArIGNpdGF0aW9ucyBmb3IgYSB0YWcgYXMgSFRNTCBzdHJpbmcuIiIiCiAgICAgICAgaWYgbm90IF9IQVNfUFlWSVM6CiAgICAgICAgICAgIHJldHVybiBzZWxmLl90YWdfZ3JhcGhfZmFsbGJhY2sodGFnKQoKICAgICAgICBmcm9tIGtnLnF1ZXJpZXMgaW1wb3J0IEtHUXVlcmllcwoKICAgICAgICBxID0gS0dRdWVyaWVzKHNlbGYua2cpCiAgICAgICAgZWNvc3lzdGVtID0gcS5nZXRfdGFnX2Vjb3N5c3RlbSh0YWcpCgogICAgICAgIG5ldCA9IHNlbGYuX2Jhc2VfbmV0KGhlaWdodD1oZWlnaHQpCiAgICAgICAgc2VsZi5fYWRkX25vZGVzX2Zyb21fZ3JhcGgobmV0LCBlY29zeXN0ZW0pCiAgICAgICAgcmV0dXJuIG5ldC5nZW5lcmF0ZV9odG1sKCkgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgZGVmIGZ1bGxfZ3JhcGgoc2VsZiwgbWF4X25vZGVzOiBpbnQgPSA1MDAsIGhlaWdodDogc3RyID0gIjgwMHB4IikgLT4gInN0ciI6CiAgICAgICAgIiIiR2xvYmFsIEtHIGdyYXBoIChsaW1pdGVkKSBhcyBIVE1MIHN0cmluZy4iIiIKICAgICAgICBpZiBub3QgX0hBU19QWVZJUzoKICAgICAgICAgICAgcmV0dXJuICI8cD5QeVZpcyBub3QgaW5zdGFsbGVkLiBSdW46IHBpcCBpbnN0YWxsIHB5dmlzPC9wPiIKCiAgICAgICAgZnJvbSBrZy5xdWVyaWVzIGltcG9ydCBLR1F1ZXJpZXMKCiAgICAgICAgcSA9IEtHUXVlcmllcyhzZWxmLmtnKQogICAgICAgIGV4cG9ydCA9IHEuZXhwb3J0X2dyYXBoX2pzb24oKQoKICAgICAgICAjIExpbWl0IG5vZGVzCiAgICAgICAgbm9kZXMgPSBleHBvcnRbIm5vZGVzIl1bOm1heF9ub2Rlc10KICAgICAgICBuaWRzID0ge25bImlkIl0gZm9yIG4gaW4gbm9kZXN9CiAgICAgICAgZWRnZXMgPSBbZSBmb3IgZSBpbiBleHBvcnRbImVkZ2VzIl0gaWYgZVsic291cmNlX2lkIl0gaW4gbmlkcyBhbmQgZVsidGFyZ2V0X2lkIl0gaW4gbmlkc10KCiAgICAgICAgbmV0ID0gc2VsZi5fYmFzZV9uZXQoaGVpZ2h0PWhlaWdodCkKICAgICAgICBmb3Igbm9kZSBpbiBub2RlczoKICAgICAgICAgICAgbnR5cGUgPSBub2RlLmdldCgidHlwZSIsICJQYXBlciIpCiAgICAgICAgICAgIGNvbG9yID0gX1RZUEVfQ09MT1JTLmdldChudHlwZSwgIiNBQUFBQUEiKQogICAgICAgICAgICBuZXQuYWRkX25vZGUobm9kZVsiaWQiXSwgbGFiZWw9bm9kZS5nZXQoImxhYmVsIiwgIiIpWzo0MF0sIGNvbG9yPWNvbG9yLCB0eXBlPW50eXBlKQogICAgICAgIGZvciBlZGdlIGluIGVkZ2VzOgogICAgICAgICAgICBuZXQuYWRkX2VkZ2UoZWRnZVsic291cmNlX2lkIl0sIGVkZ2VbInRhcmdldF9pZCJdLCB0aXRsZT1lZGdlLmdldCgicmVsYXRpb25fdHlwZSIsICIiKSkKICAgICAgICByZXR1cm4gbmV0LmdlbmVyYXRlX2h0bWwoKSAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCiAgICAjIOKUgOKUgOKUgCBGYWxsYmFjayAobm8gUHlWaXMpIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKICAgIGRlZiBfcGFwZXJfZ3JhcGhfZmFsbGJhY2soc2VsZiwgcGFwZXJfdWlkOiBzdHIsIGRlcHRoOiBpbnQpIC0+IHN0cjoKICAgICAgICBwYXBlcl9ub2RlID0gc2VsZi5rZy5nZXRfbm9kZV9ieV9lbnRpdHkoIlBhcGVyIiwgcGFwZXJfdWlkKQogICAgICAgIGlmIG5vdCBwYXBlcl9ub2RlOgogICAgICAgICAgICByZXR1cm4gZiI8cD5QYXBlciAne3BhcGVyX3VpZH0nIG5vdCBmb3VuZCBpbiBLRy48L3A+IgogICAgICAgIG5laWdoYm9ycyA9IHNlbGYua2cuZmluZF9uZWlnaGJvcnMocGFwZXJfbm9kZVsiaWQiXSwgZGVwdGg9ZGVwdGgpCiAgICAgICAgbGluZXMgPSBbZiI8aDM+RWdvIEdyYXBoOiB7cGFwZXJfbm9kZVsnbGFiZWwnXVs6NjBdfTwvaDM+Il0KICAgICAgICBsaW5lcy5hcHBlbmQoZiI8cD5DZW50ZXI6IFt7cGFwZXJfbm9kZVsndHlwZSddfV0ge3BhcGVyX25vZGVbJ2xhYmVsJ119PC9wPiIpCiAgICAgICAgbGluZXMuYXBwZW5kKGYiPHA+e2xlbihuZWlnaGJvcnMpfSBuZWlnaGJvcihzKTo8L3A+PHVsPiIpCiAgICAgICAgZm9yIG5vZGUsIGVkZ2UsIGQgaW4gbmVpZ2hib3JzOgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgICAgICAgICBmIjxsaT5bZGVwdGg9e2R9XSB7bm9kZVsndHlwZSddfSB8IHtlZGdlWydyZWxhdGlvbl90eXBlJ119IHwge25vZGVbJ2xhYmVsJ11bOjYwXX08L2xpPiIKICAgICAgICAgICAgKQogICAgICAgIGxpbmVzLmFwcGVuZCgiPC91bD4iKQogICAgICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCgogICAgZGVmIF90YWdfZ3JhcGhfZmFsbGJhY2soc2VsZiwgdGFnOiBzdHIpIC0+IHN0cjoKICAgICAgICBwYXBlcl9ub2RlcyA9IHNlbGYua2cuZmluZF9wYXBlcnNfYnlfdGFnKHRhZykKICAgICAgICBpZiBub3QgcGFwZXJfbm9kZXM6CiAgICAgICAgICAgIHJldHVybiBmIjxwPk5vIHBhcGVycyBmb3VuZCBmb3IgdGFnICd7dGFnfScuPC9wPiIKICAgICAgICBsaW5lcyA9IFtmIjxoMz5UYWcgRWNvc3lzdGVtOiB7dGFnfTwvaDM+Il0KICAgICAgICBsaW5lcy5hcHBlbmQoZiI8cD57bGVuKHBhcGVyX25vZGVzKX0gcGFwZXIocyk6PC9wPjx1bD4iKQogICAgICAgIGZvciBuIGluIHBhcGVyX25vZGVzOgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiI8bGk+W1BhcGVyXSB7blsnbGFiZWwnXVs6NjBdfTwvbGk+IikKICAgICAgICBsaW5lcy5hcHBlbmQoIjwvdWw+IikKICAgICAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQo=
+"""PyVis-based interactive KG visualization."""
+
+import orjson
+
+try:
+    from pyvis.network import Network
+    _HAS_PYVIS = True
+except ImportError:
+    _HAS_PYVIS = False
+
+from kg.manager import KGManager
+from typing import Optional
+
+
+# Node colour map by type
+_TYPE_COLORS = {
+    "Paper":    "#4A90E2",  # blue
+    "P-Note":   "#50C878",  # green
+    "C-Note":   "#F4D03F",  # yellow
+    "M-Note":   "#E74C3C",  # red
+    "Tag":      "#9B59B6",  # purple
+    "Author":   "#E67E22",  # orange
+}
+
+
+class KGVizRenderer:
+    """Renders KG as interactive PyVis HTML."""
+
+    def __init__(self, kg: Optional[KGManager] = None):
+        self.kg = kg or KGManager()
+
+    def _base_net(self, height: str = "600px", bgcolor: str = "#ffffff") -> "Network":
+        net = Network(height=height, bgcolor=bgcolor, directed=False, select_menu=True)
+        net.set_options("""
+        {
+            "nodes": {"font": {"size": 14, "face": "arial"}},
+            "edges": {"width": 1, "color": {"inherit": true}},
+            "physics": {"enabled": true, "forceAtlas2Based": {"gravitationalConstant": -50}, "solver": "forceAtlas2Based"}
+        }
+        """)
+        return net
+
+    def _add_nodes_from_graph(self, net: "Network", graph: dict):
+        for node in graph.get("nodes", []):
+            ntype = node.get("type", "Paper")
+            color = _TYPE_COLORS.get(ntype, "#AAAAAA")
+            label = node.get("label", "")[:60]
+            title = orjson.dumps(node).decode("utf-8")
+            net.add_node(node["id"], label=label, title=title,
+                         color=color, type=ntype)
+
+        seen = set()
+        for edge in graph.get("edges", []):
+            eid = edge["id"]
+            if eid in seen:
+                continue
+            seen.add(eid)
+            net.add_edge(
+                edge["source_id"], edge["target_id"],
+                title=edge.get("relation_type", ""),
+                width=edge.get("weight", 1.0),
+            )
+
+    def paper_graph(self, paper_uid: str, depth: int = 2, height: str = "600px") -> "str":
+        """Ego graph around a paper as HTML string."""
+        if not _HAS_PYVIS:
+            return self._paper_graph_fallback(paper_uid, depth)
+
+        from kg.queries import KGQueries
+        q = KGQueries(self.kg)
+        subgraph = q.get_paper_subgraph(paper_uid, depth=depth)
+
+        net = self._base_net(height=height)
+        self._add_nodes_from_graph(net, subgraph)
+
+        center_node = subgraph.get("center")
+        if center_node:
+            net.set_options("""
+            {
+                "nodes": {"font": {"size": 14}},
+                "edges": {"color": {"inherit": true}, "width": 1},
+                "physics": {"enabled": true, "forceAtlas2Based": {"gravitationalConstant": -80}, "solver": "forceAtlas2Based"}
+            }
+            """)
+
+        return net.generate_html()  # type: ignore[no-any-return]
+
+    def tag_graph(self, tag: str, height: str = "600px") -> "str":
+        """All papers + citations for a tag as HTML string."""
+        if not _HAS_PYVIS:
+            return self._tag_graph_fallback(tag)
+
+        from kg.queries import KGQueries
+        q = KGQueries(self.kg)
+        ecosystem = q.get_tag_ecosystem(tag)
+
+        net = self._base_net(height=height)
+        self._add_nodes_from_graph(net, ecosystem)
+        return net.generate_html()  # type: ignore[no-any-return]
+
+    def full_graph(self, max_nodes: int = 500, height: str = "800px") -> "str":
+        """Global KG graph (limited) as HTML string."""
+        if not _HAS_PYVIS:
+            return "<p>PyVis not installed. Run: pip install pyvis</p>"
+
+        from kg.queries import KGQueries
+        q = KGQueries(self.kg)
+        export = q.export_graph_json()
+
+        # Limit nodes
+        nodes = export["nodes"][:max_nodes]
+        nids = {n["id"] for n in nodes}
+        edges = [e for e in export["edges"] if e["source_id"] in nids and e["target_id"] in nids]
+
+        net = self._base_net(height=height)
+        for node in nodes:
+            ntype = node.get("type", "Paper")
+            color = _TYPE_COLORS.get(ntype, "#AAAAAA")
+            net.add_node(node["id"], label=node.get("label", "")[:40],
+                         color=color, type=ntype)
+        for edge in edges:
+            net.add_edge(edge["source_id"], edge["target_id"],
+                         title=edge.get("relation_type", ""))
+        return net.generate_html()  # type: ignore[no-any-return]
+
+    # ─── Fallback (no PyVis) ─────────────────────────────────────────
+
+    def _paper_graph_fallback(self, paper_uid: str, depth: int) -> str:
+        paper_node = self.kg.get_node_by_entity("Paper", paper_uid)
+        if not paper_node:
+            return f"<p>Paper '{paper_uid}' not found in KG.</p>"
+        neighbors = self.kg.find_neighbors(paper_node["id"], depth=depth)
+        lines = [f"<h3>Ego Graph: {paper_node['label'][:60]}</h3>"]
+        lines.append(f"<p>Center: [{paper_node['type']}] {paper_node['label']}</p>")
+        lines.append(f"<p>{len(neighbors)} neighbor(s):</p><ul>")
+        for node, edge, d in neighbors:
+            lines.append(f"<li>[depth={d}] {node['type']} | {edge['relation_type']} | {node['label'][:60]}</li>")
+        lines.append("</ul>")
+        return "\n".join(lines)
+
+    def _tag_graph_fallback(self, tag: str) -> str:
+        paper_nodes = self.kg.find_papers_by_tag(tag)
+        if not paper_nodes:
+            return f"<p>No papers found for tag '{tag}'.</p>"
+        lines = [f"<h3>Tag Ecosystem: {tag}</h3>"]
+        lines.append(f"<p>{len(paper_nodes)} paper(s):</p><ul>")
+        for n in paper_nodes:
+            lines.append(f"<li>[Paper] {n['label'][:60]}</li>")
+        lines.append("</ul>")
+        return "\n".join(lines)

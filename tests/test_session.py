@@ -1,1 +1,157 @@
-IiIiVGVzdHMgZm9yIHNlc3Npb24gQ0xJIGNvbW1hbmRzLiIiIgoKZnJvbSB1bml0dGVzdC5tb2NrIGltcG9ydCBNYWdpY01vY2ssIHBhdGNoCgpmcm9tIGNsaS5jbWQuc2Vzc2lvbiBpbXBvcnQgKAogICAgX2J1aWxkX3Nlc3Npb25fcGFyc2VyLAogICAgX3Nlc3Npb25fc3RhcnQsCiAgICBfc2Vzc2lvbl9saXN0LAogICAgX3Nlc3Npb25fY3VycmVudCwKICAgIF9zZXNzaW9uX2VuZCwKKQpmcm9tIGxsbS5yZXNlYXJjaF9zZXNzaW9uIGltcG9ydCBSZXNlYXJjaEludGVudAoKCmNsYXNzIFRlc3RTZXNzaW9uUGFyc2VyOgogICAgIiIiVGVzdCBzZXNzaW9uIGNvbW1hbmQgcGFyc2VyLiIiIgoKICAgIGRlZiB0ZXN0X2J1aWxkX3Nlc3Npb25fcGFyc2VyX3N1Y2NlZWRzKHNlbGYpOgogICAgICAgICIiIlRlc3QgdGhhdCBfYnVpbGRfc2Vzc2lvbl9wYXJzZXIgZXhlY3V0ZXMgd2l0aG91dCBlcnJvci4iIiIKICAgICAgICBpbXBvcnQgYXJncGFyc2UKCiAgICAgICAgcGFyc2VyID0gYXJncGFyc2UuQXJndW1lbnRQYXJzZXIoKQogICAgICAgIHN1YnBhcnNlcnMgPSBwYXJzZXIuYWRkX3N1YnBhcnNlcnMoKQogICAgICAgICMgU2hvdWxkIG5vdCByYWlzZQogICAgICAgIHJlc3VsdCA9IF9idWlsZF9zZXNzaW9uX3BhcnNlcihzdWJwYXJzZXJzKQogICAgICAgICMgVmVyaWZ5IGl0IHJldHVybnMgYSBwYXJzZXIKICAgICAgICBhc3NlcnQgcmVzdWx0IGlzIG5vdCBOb25lCiAgICAgICAgIyBWZXJpZnkgc2Vzc2lvbiBzdWJwYXJzZXIgd2FzIGFkZGVkCiAgICAgICAgYXNzZXJ0ICJzZXNzaW9uIiBpbiBzdWJwYXJzZXJzLmNob2ljZXMKCgpjbGFzcyBUZXN0U2Vzc2lvblN0YXJ0OgogICAgIiIiVGVzdCBzZXNzaW9uIHN0YXJ0IGZ1bmN0aW9uYWxpdHkuIiIiCgogICAgQHBhdGNoKCJjbGkuY21kLnNlc3Npb24uUmVzZWFyY2hTZXNzaW9uVHJhY2tlciIpCiAgICBkZWYgdGVzdF9zdGFydF9jcmVhdGVzX3Nlc3Npb24oc2VsZiwgbW9ja190cmFja2VyX2NsYXNzKToKICAgICAgICAiIiJUZXN0IHN0YXJ0aW5nIGEgc2Vzc2lvbi4iIiIKICAgICAgICBtb2NrX3RyYWNrZXIgPSBNYWdpY01vY2soKQogICAgICAgIG1vY2tfc2Vzc2lvbiA9IE1hZ2ljTW9jaygpCiAgICAgICAgbW9ja19zZXNzaW9uLnRpdGxlID0gIlRlc3QgU2Vzc2lvbiIKICAgICAgICBtb2NrX3Nlc3Npb24uaWQgPSAic2Vzcy0xMjMiCiAgICAgICAgbW9ja190cmFja2VyLnN0YXJ0X3Nlc3Npb24ucmV0dXJuX3ZhbHVlID0gbW9ja19zZXNzaW9uCiAgICAgICAgbW9ja190cmFja2VyX2NsYXNzLnJldHVybl92YWx1ZSA9IG1vY2tfdHJhY2tlcgoKICAgICAgICBhcmdzID0gTWFnaWNNb2NrKCkKICAgICAgICBhcmdzLnRpdGxlID0gIlRlc3QgU2Vzc2lvbiIKICAgICAgICBhcmdzLnRvcGljID0gTm9uZQoKICAgICAgICByZXN1bHQgPSBfc2Vzc2lvbl9zdGFydChtb2NrX3RyYWNrZXIsIGFyZ3MpCiAgICAgICAgYXNzZXJ0IHJlc3VsdCA9PSAwCiAgICAgICAgbW9ja190cmFja2VyLnN0YXJ0X3Nlc3Npb24uYXNzZXJ0X2NhbGxlZF9vbmNlX3dpdGgodGl0bGU9IlRlc3QgU2Vzc2lvbiIpCgoKY2xhc3MgVGVzdFNlc3Npb25MaXN0OgogICAgIiIiVGVzdCBzZXNzaW9uIGxpc3QgZnVuY3Rpb25hbGl0eS4iIiIKCiAgICBAcGF0Y2goImNsaS5jbWQuc2Vzc2lvbi5SZXNlYXJjaFNlc3Npb25UcmFja2VyIikKICAgIGRlZiB0ZXN0X2xpc3RfZW1wdHlfc2Vzc2lvbnMoc2VsZiwgbW9ja190cmFja2VyX2NsYXNzKToKICAgICAgICAiIiJUZXN0IGxpc3Rpbmcgd2l0aCBubyBzZXNzaW9ucy4iIiIKICAgICAgICBtb2NrX3RyYWNrZXIgPSBNYWdpY01vY2soKQogICAgICAgIG1vY2tfdHJhY2tlci5nZXRfcmVjZW50X3Nlc3Npb25zLnJldHVybl92YWx1ZSA9IFtdCiAgICAgICAgbW9ja190cmFja2VyX2NsYXNzLnJldHVybl92YWx1ZSA9IG1vY2tfdHJhY2tlcgoKICAgICAgICBhcmdzID0gTWFnaWNNb2NrKCkKICAgICAgICBhcmdzLmRheXMgPSA3CiAgICAgICAgYXJncy5saW1pdCA9IDEwCgogICAgICAgIHJlc3VsdCA9IF9zZXNzaW9uX2xpc3QobW9ja190cmFja2VyLCBhcmdzKQogICAgICAgIGFzc2VydCByZXN1bHQgPT0gMAoKICAgIEBwYXRjaCgiY2xpLmNtZC5zZXNzaW9uLlJlc2VhcmNoU2Vzc2lvblRyYWNrZXIiKQogICAgZGVmIHRlc3RfbGlzdF93aXRoX3Nlc3Npb25zKHNlbGYsIG1vY2tfdHJhY2tlcl9jbGFzcyk6CiAgICAgICAgIiIiVGVzdCBsaXN0aW5nIHdpdGggc2Vzc2lvbnMuIiIiCiAgICAgICAgbW9ja190cmFja2VyID0gTWFnaWNNb2NrKCkKCiAgICAgICAgbW9ja19zZXNzaW9uID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX3Nlc3Npb24udGl0bGUgPSAiUkFHIFJlc2VhcmNoIgogICAgICAgIG1vY2tfc2Vzc2lvbi5zdGFydGVkX2F0ID0gIjIwMjQtMDEtMTVUMTA6MDA6MDAiCiAgICAgICAgbW9ja19zZXNzaW9uLmludGVudCA9IFJlc2VhcmNoSW50ZW50LkxFQVJOSU5HCiAgICAgICAgbW9ja19zZXNzaW9uLnF1ZXJpZXMgPSBbInExIiwgInEyIl0KICAgICAgICBtb2NrX3Nlc3Npb24uZHVyYXRpb25fbWludXRlcyA9IDMwCiAgICAgICAgbW9ja19zZXNzaW9uLnRhZ3MgPSBbIlJBRyIsICJOTFAiXQogICAgICAgIG1vY2tfc2Vzc2lvbi5pbnNpZ2h0cyA9IFsiaW5zaWdodDEiXQoKICAgICAgICBtb2NrX3RyYWNrZXIuZ2V0X3JlY2VudF9zZXNzaW9ucy5yZXR1cm5fdmFsdWUgPSBbbW9ja19zZXNzaW9uXQogICAgICAgIG1vY2tfdHJhY2tlcl9jbGFzcy5yZXR1cm5fdmFsdWUgPSBtb2NrX3RyYWNrZXIKCiAgICAgICAgYXJncyA9IE1hZ2ljTW9jaygpCiAgICAgICAgYXJncy5kYXlzID0gNwogICAgICAgIGFyZ3MubGltaXQgPSAxMAoKICAgICAgICByZXN1bHQgPSBfc2Vzc2lvbl9saXN0KG1vY2tfdHJhY2tlciwgYXJncykKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IDAKCgpjbGFzcyBUZXN0U2Vzc2lvbkN1cnJlbnQ6CiAgICAiIiJUZXN0IHNlc3Npb24gY3VycmVudCBmdW5jdGlvbmFsaXR5LiIiIgoKICAgIEBwYXRjaCgiY2xpLmNtZC5zZXNzaW9uLlJlc2VhcmNoU2Vzc2lvblRyYWNrZXIiKQogICAgZGVmIHRlc3RfY3VycmVudF9ub19zZXNzaW9uKHNlbGYsIG1vY2tfdHJhY2tlcl9jbGFzcyk6CiAgICAgICAgIiIiVGVzdCBjdXJyZW50IHdpdGggbm8gYWN0aXZlIHNlc3Npb24uIiIiCiAgICAgICAgbW9ja190cmFja2VyID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX3RyYWNrZXIuZ2V0X2N1cnJlbnRfc2Vzc2lvbi5yZXR1cm5fdmFsdWUgPSBOb25lCiAgICAgICAgbW9ja190cmFja2VyX2NsYXNzLnJldHVybl92YWx1ZSA9IG1vY2tfdHJhY2tlcgoKICAgICAgICByZXN1bHQgPSBfc2Vzc2lvbl9jdXJyZW50KG1vY2tfdHJhY2tlcikKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IDAKCiAgICBAcGF0Y2goImNsaS5jbWQuc2Vzc2lvbi5SZXNlYXJjaFNlc3Npb25UcmFja2VyIikKICAgIGRlZiB0ZXN0X2N1cnJlbnRfd2l0aF9zZXNzaW9uKHNlbGYsIG1vY2tfdHJhY2tlcl9jbGFzcyk6CiAgICAgICAgIiIiVGVzdCBjdXJyZW50IHdpdGggYWN0aXZlIHNlc3Npb24uIiIiCiAgICAgICAgbW9ja190cmFja2VyID0gTWFnaWNNb2NrKCkKCiAgICAgICAgbW9ja19zZXNzaW9uID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX3Nlc3Npb24udGl0bGUgPSAiQWN0aXZlIFNlc3Npb24iCiAgICAgICAgbW9ja19zZXNzaW9uLmlkID0gInNlc3MtNDU2IgogICAgICAgIG1vY2tfc2Vzc2lvbi5kdXJhdGlvbl9taW51dGVzID0gNDUKICAgICAgICBtb2NrX3Nlc3Npb24ucXVlcmllcyA9IFsicTEiXQogICAgICAgIG1vY2tfc2Vzc2lvbi5pbnRlbnQgPSBSZXNlYXJjaEludGVudC5FWFBMT1JJTkcKICAgICAgICBtb2NrX3Nlc3Npb24udGFncyA9IFsiQUkiXQogICAgICAgIG1vY2tfc2Vzc2lvbi5pbnNpZ2h0cyA9IFsiaW5zaWdodDEiLCAiaW5zaWdodDIiXQoKICAgICAgICBtb2NrX3RyYWNrZXIuZ2V0X2N1cnJlbnRfc2Vzc2lvbi5yZXR1cm5fdmFsdWUgPSBtb2NrX3Nlc3Npb24KICAgICAgICBtb2NrX3RyYWNrZXJfY2xhc3MucmV0dXJuX3ZhbHVlID0gbW9ja190cmFja2VyCgogICAgICAgIHJlc3VsdCA9IF9zZXNzaW9uX2N1cnJlbnQobW9ja190cmFja2VyKQogICAgICAgIGFzc2VydCByZXN1bHQgPT0gMAoKCmNsYXNzIFRlc3RTZXNzaW9uRW5kOgogICAgIiIiVGVzdCBzZXNzaW9uIGVuZCBmdW5jdGlvbmFsaXR5LiIiIgoKICAgIEBwYXRjaCgiY2xpLmNtZC5zZXNzaW9uLlJlc2VhcmNoU2Vzc2lvblRyYWNrZXIiKQogICAgZGVmIHRlc3RfZW5kX25vX3Nlc3Npb24oc2VsZiwgbW9ja190cmFja2VyX2NsYXNzKToKICAgICAgICAiIiJUZXN0IGVuZGluZyB3aGVuIG5vIHNlc3Npb24gYWN0aXZlLiIiIgogICAgICAgIG1vY2tfdHJhY2tlciA9IE1hZ2ljTW9jaygpCiAgICAgICAgbW9ja190cmFja2VyLmVuZF9zZXNzaW9uLnJldHVybl92YWx1ZSA9IE5vbmUKICAgICAgICBtb2NrX3RyYWNrZXJfY2xhc3MucmV0dXJuX3ZhbHVlID0gbW9ja190cmFja2VyCgogICAgICAgIHJlc3VsdCA9IF9zZXNzaW9uX2VuZChtb2NrX3RyYWNrZXIpCiAgICAgICAgYXNzZXJ0IHJlc3VsdCA9PSAwCgogICAgQHBhdGNoKCJjbGkuY21kLnNlc3Npb24uUmVzZWFyY2hTZXNzaW9uVHJhY2tlciIpCiAgICBkZWYgdGVzdF9lbmRfd2l0aF9zZXNzaW9uKHNlbGYsIG1vY2tfdHJhY2tlcl9jbGFzcyk6CiAgICAgICAgIiIiVGVzdCBlbmRpbmcgYWN0aXZlIHNlc3Npb24uIiIiCiAgICAgICAgbW9ja190cmFja2VyID0gTWFnaWNNb2NrKCkKCiAgICAgICAgbW9ja19zZXNzaW9uID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX3Nlc3Npb24udGl0bGUgPSAiRW5kaW5nIFNlc3Npb24iCiAgICAgICAgbW9ja19zZXNzaW9uLmR1cmF0aW9uX21pbnV0ZXMgPSA2MAogICAgICAgIG1vY2tfc2Vzc2lvbi5xdWVyaWVzID0gWyJxMSIsICJxMiIsICJxMyJdCgogICAgICAgIG1vY2tfdHJhY2tlci5lbmRfc2Vzc2lvbi5yZXR1cm5fdmFsdWUgPSBtb2NrX3Nlc3Npb24KICAgICAgICBtb2NrX3RyYWNrZXJfY2xhc3MucmV0dXJuX3ZhbHVlID0gbW9ja190cmFja2VyCgogICAgICAgIHJlc3VsdCA9IF9zZXNzaW9uX2VuZChtb2NrX3RyYWNrZXIpCiAgICAgICAgYXNzZXJ0IHJlc3VsdCA9PSAwCg==
+"""Tests for session CLI commands."""
+
+from unittest.mock import MagicMock, patch
+
+from cli.cmd.session import (
+    _build_session_parser,
+    _session_start,
+    _session_list,
+    _session_current,
+    _session_end,
+)
+from llm.research_session import ResearchIntent
+
+
+class TestSessionParser:
+    """Test session command parser."""
+
+    def test_build_session_parser_succeeds(self):
+        """Test that _build_session_parser executes without error."""
+        import argparse
+
+        parser = argparse.ArgumentParser()
+        subparsers = parser.add_subparsers()
+        # Should not raise
+        result = _build_session_parser(subparsers)
+        # Verify it returns a parser
+        assert result is not None
+        # Verify session subparser was added
+        assert "session" in subparsers.choices
+
+
+class TestSessionStart:
+    """Test session start functionality."""
+
+    @patch("cli.cmd.session.ResearchSessionTracker")
+    def test_start_creates_session(self, mock_tracker_class):
+        """Test starting a session."""
+        mock_tracker = MagicMock()
+        mock_session = MagicMock()
+        mock_session.title = "Test Session"
+        mock_session.id = "sess-123"
+        mock_tracker.start_session.return_value = mock_session
+        mock_tracker_class.return_value = mock_tracker
+
+        args = MagicMock()
+        args.title = "Test Session"
+        args.topic = None
+
+        result = _session_start(mock_tracker, args)
+        assert result == 0
+        mock_tracker.start_session.assert_called_once_with(title="Test Session")
+
+
+class TestSessionList:
+    """Test session list functionality."""
+
+    @patch("cli.cmd.session.ResearchSessionTracker")
+    def test_list_empty_sessions(self, mock_tracker_class):
+        """Test listing with no sessions."""
+        mock_tracker = MagicMock()
+        mock_tracker.get_recent_sessions.return_value = []
+        mock_tracker_class.return_value = mock_tracker
+
+        args = MagicMock()
+        args.days = 7
+        args.limit = 10
+
+        result = _session_list(mock_tracker, args)
+        assert result == 0
+
+    @patch("cli.cmd.session.ResearchSessionTracker")
+    def test_list_with_sessions(self, mock_tracker_class):
+        """Test listing with sessions."""
+        mock_tracker = MagicMock()
+
+        mock_session = MagicMock()
+        mock_session.title = "RAG Research"
+        mock_session.started_at = "2024-01-15T10:00:00"
+        mock_session.intent = ResearchIntent.LEARNING
+        mock_session.queries = ["q1", "q2"]
+        mock_session.duration_minutes = 30
+        mock_session.tags = ["RAG", "NLP"]
+        mock_session.insights = ["insight1"]
+
+        mock_tracker.get_recent_sessions.return_value = [mock_session]
+        mock_tracker_class.return_value = mock_tracker
+
+        args = MagicMock()
+        args.days = 7
+        args.limit = 10
+
+        result = _session_list(mock_tracker, args)
+        assert result == 0
+
+
+class TestSessionCurrent:
+    """Test session current functionality."""
+
+    @patch("cli.cmd.session.ResearchSessionTracker")
+    def test_current_no_session(self, mock_tracker_class):
+        """Test current with no active session."""
+        mock_tracker = MagicMock()
+        mock_tracker.get_current_session.return_value = None
+        mock_tracker_class.return_value = mock_tracker
+
+        result = _session_current(mock_tracker)
+        assert result == 0
+
+    @patch("cli.cmd.session.ResearchSessionTracker")
+    def test_current_with_session(self, mock_tracker_class):
+        """Test current with active session."""
+        mock_tracker = MagicMock()
+
+        mock_session = MagicMock()
+        mock_session.title = "Active Session"
+        mock_session.id = "sess-456"
+        mock_session.duration_minutes = 45
+        mock_session.queries = ["q1"]
+        mock_session.intent = ResearchIntent.EXPLORING
+        mock_session.tags = ["AI"]
+        mock_session.insights = ["insight1", "insight2"]
+
+        mock_tracker.get_current_session.return_value = mock_session
+        mock_tracker_class.return_value = mock_tracker
+
+        result = _session_current(mock_tracker)
+        assert result == 0
+
+
+class TestSessionEnd:
+    """Test session end functionality."""
+
+    @patch("cli.cmd.session.ResearchSessionTracker")
+    def test_end_no_session(self, mock_tracker_class):
+        """Test ending when no session active."""
+        mock_tracker = MagicMock()
+        mock_tracker.end_session.return_value = None
+        mock_tracker_class.return_value = mock_tracker
+
+        result = _session_end(mock_tracker)
+        assert result == 0
+
+    @patch("cli.cmd.session.ResearchSessionTracker")
+    def test_end_with_session(self, mock_tracker_class):
+        """Test ending active session."""
+        mock_tracker = MagicMock()
+
+        mock_session = MagicMock()
+        mock_session.title = "Ending Session"
+        mock_session.duration_minutes = 60
+        mock_session.queries = ["q1", "q2", "q3"]
+
+        mock_tracker.end_session.return_value = mock_session
+        mock_tracker_class.return_value = mock_tracker
+
+        result = _session_end(mock_tracker)
+        assert result == 0

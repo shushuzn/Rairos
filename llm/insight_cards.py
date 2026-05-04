@@ -1,1 +1,402 @@
-IiIiCktleSBJbnNpZ2h0IENhcmRzOiBFeHRyYWN0IGFuZCBtYW5hZ2UgcmVzZWFyY2ggaW5zaWdodHMuCiIiIgoKZnJvbSBkYXRhY2xhc3NlcyBpbXBvcnQgZGF0YWNsYXNzLCBmaWVsZApmcm9tIHR5cGluZyBpbXBvcnQgQW55LCBjYXN0LCBMaXN0LCBPcHRpb25hbCwgRGljdApmcm9tIGRhdGV0aW1lIGltcG9ydCBkYXRldGltZQpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKaW1wb3J0IGpzb24KaW1wb3J0IHJlCgoKQGRhdGFjbGFzcwpjbGFzcyBJbnNpZ2h0Q2FyZDoKICAgICIiIkEga2V5IGluc2lnaHQgZXh0cmFjdGVkIGZyb20gYSBwYXBlci4iIiIKCiAgICBjYXJkX2lkOiBzdHIKICAgIHBhcGVyX2lkOiBzdHIKICAgIHBhcGVyX3RpdGxlOiBzdHIKICAgIGNvbnRlbnQ6IHN0cgogICAgaW5zaWdodF90eXBlOiBzdHIgPSAiZmluZGluZyIgICMgZmluZGluZywgbWV0aG9kLCBsaW1pdGF0aW9uLCBmdXR1cmVfd29yawogICAgdGFnczogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICBldmlkZW5jZTogc3RyID0gIiIKICAgIHBhZ2VfcmVmOiBzdHIgPSAiIgogICAgY3JlYXRlZF9hdDogc3RyID0gIiIKICAgIHJlZmVyZW5jZXM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KSAgIyBvdGhlciBjYXJkX2lkcwogICAgcXVhbGl0eV9yYXRpbmc6IGludCA9IDAgICMgMS01IHN0YXJzLCAwID0gdW5yYXRlZAogICAgdXNlZnVsbmVzc19zY29yZTogZmxvYXQgPSAwLjAgICMgYWNjdW11bGF0ZWQgd2VpZ2h0ZWQgc2NvcmUgZnJvbSBmZWVkYmFjawogICAgdGltZXNfcmF0ZWQ6IGludCA9IDAgICMgaG93IG1hbnkgdGltZXMgcmF0ZWQKCgpAZGF0YWNsYXNzCmNsYXNzIEluc2lnaHRDb2xsZWN0aW9uOgogICAgIiIiQSBjb2xsZWN0aW9uIG9mIGluc2lnaHQgY2FyZHMgYXJvdW5kIGEgdG9waWMuIiIiCgogICAgY29sbGVjdGlvbl9pZDogc3RyCiAgICB0aXRsZTogc3RyCiAgICBkZXNjcmlwdGlvbjogc3RyID0gIiIKICAgIGNhcmRfaWRzOiBMaXN0W3N0cl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKICAgIHRhZ3M6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQoKCmNsYXNzIEluc2lnaHRNYW5hZ2VyOgogICAgIiIiTWFuYWdlIGtleSBpbnNpZ2h0IGNhcmRzLiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBkYXRhX2RpcjogT3B0aW9uYWxbUGF0aF0gPSBOb25lKToKICAgICAgICBzZWxmLmRhdGFfZGlyID0gZGF0YV9kaXIgb3IgUGF0aC5ob21lKCkgLyAiLmFpX3Jlc2VhcmNoX29zIgogICAgICAgIHNlbGYuZGF0YV9kaXIubWtkaXIocGFyZW50cz1UcnVlLCBleGlzdF9vaz1UcnVlKQogICAgICAgIHNlbGYuY2FyZHNfZmlsZSA9IHNlbGYuZGF0YV9kaXIgLyAiaW5zaWdodF9jYXJkcy5qc29uIgogICAgICAgIHNlbGYuY29sbGVjdGlvbnNfZmlsZSA9IHNlbGYuZGF0YV9kaXIgLyAiaW5zaWdodF9jb2xsZWN0aW9ucy5qc29uIgoKICAgIGRlZiBfbG9hZF9jYXJkcyhzZWxmKSAtPiBMaXN0W0RpY3RdOgogICAgICAgIGlmIHNlbGYuY2FyZHNfZmlsZS5leGlzdHMoKToKICAgICAgICAgICAgd2l0aCBvcGVuKHNlbGYuY2FyZHNfZmlsZSwgInIiLCBlbmNvZGluZz0idXRmLTgiKSBhcyBmOgogICAgICAgICAgICAgICAgcmV0dXJuIGNhc3QoTGlzdFtEaWN0XSwganNvbi5sb2FkKGYpKQogICAgICAgIHJldHVybiBbXQoKICAgIGRlZiBfc2F2ZV9jYXJkcyhzZWxmLCBkYXRhOiBMaXN0W0RpY3RdKSAtPiBOb25lOgogICAgICAgIHdpdGggb3BlbihzZWxmLmNhcmRzX2ZpbGUsICJ3IiwgZW5jb2Rpbmc9InV0Zi04IikgYXMgZjoKICAgICAgICAgICAganNvbi5kdW1wKGRhdGEsIGYsIGVuc3VyZV9hc2NpaT1GYWxzZSwgaW5kZW50PTIpCgogICAgZGVmIF9sb2FkX2NvbGxlY3Rpb25zKHNlbGYpIC0+IExpc3RbRGljdF06CiAgICAgICAgaWYgc2VsZi5jb2xsZWN0aW9uc19maWxlLmV4aXN0cygpOgogICAgICAgICAgICB3aXRoIG9wZW4oc2VsZi5jb2xsZWN0aW9uc19maWxlLCAiciIsIGVuY29kaW5nPSJ1dGYtOCIpIGFzIGY6CiAgICAgICAgICAgICAgICByZXR1cm4gY2FzdChMaXN0W0RpY3RdLCBqc29uLmxvYWQoZikpCiAgICAgICAgcmV0dXJuIFtdCgogICAgZGVmIF9zYXZlX2NvbGxlY3Rpb25zKHNlbGYsIGRhdGE6IExpc3RbRGljdF0pIC0+IE5vbmU6CiAgICAgICAgd2l0aCBvcGVuKHNlbGYuY29sbGVjdGlvbnNfZmlsZSwgInciLCBlbmNvZGluZz0idXRmLTgiKSBhcyBmOgogICAgICAgICAgICBqc29uLmR1bXAoZGF0YSwgZiwgZW5zdXJlX2FzY2lpPUZhbHNlLCBpbmRlbnQ9MikKCiAgICBkZWYgYWRkX2NhcmQoCiAgICAgICAgc2VsZiwKICAgICAgICBwYXBlcl9pZDogc3RyLAogICAgICAgIHBhcGVyX3RpdGxlOiBzdHIsCiAgICAgICAgY29udGVudDogc3RyLAogICAgICAgIGluc2lnaHRfdHlwZTogc3RyID0gImZpbmRpbmciLAogICAgICAgIHRhZ3M6IE9wdGlvbmFsW0xpc3Rbc3RyXV0gPSBOb25lLAogICAgICAgIGV2aWRlbmNlOiBzdHIgPSAiIiwKICAgICAgICBwYWdlX3JlZjogc3RyID0gIiIsCiAgICApIC0+IEluc2lnaHRDYXJkOgogICAgICAgICIiIkFkZCBhIG5ldyBpbnNpZ2h0IGNhcmQuIiIiCiAgICAgICAgZGF0YSA9IHNlbGYuX2xvYWRfY2FyZHMoKQoKICAgICAgICBjYXJkX2lkID0gZiJpe2xlbihkYXRhKSArIDE6MDRkfSIKICAgICAgICBjYXJkID0gSW5zaWdodENhcmQoCiAgICAgICAgICAgIGNhcmRfaWQ9Y2FyZF9pZCwKICAgICAgICAgICAgcGFwZXJfaWQ9cGFwZXJfaWQsCiAgICAgICAgICAgIHBhcGVyX3RpdGxlPXBhcGVyX3RpdGxlLAogICAgICAgICAgICBjb250ZW50PWNvbnRlbnQsCiAgICAgICAgICAgIGluc2lnaHRfdHlwZT1pbnNpZ2h0X3R5cGUsCiAgICAgICAgICAgIHRhZ3M9dGFncyBvciBbXSwKICAgICAgICAgICAgZXZpZGVuY2U9ZXZpZGVuY2UsCiAgICAgICAgICAgIHBhZ2VfcmVmPXBhZ2VfcmVmLAogICAgICAgICAgICBjcmVhdGVkX2F0PWRhdGV0aW1lLm5vdygpLmlzb2Zvcm1hdCgpWzoxMF0sCiAgICAgICAgKQoKICAgICAgICBkYXRhLmFwcGVuZCgKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgImNhcmRfaWQiOiBjYXJkLmNhcmRfaWQsCiAgICAgICAgICAgICAgICAicGFwZXJfaWQiOiBjYXJkLnBhcGVyX2lkLAogICAgICAgICAgICAgICAgInBhcGVyX3RpdGxlIjogY2FyZC5wYXBlcl90aXRsZSwKICAgICAgICAgICAgICAgICJjb250ZW50IjogY2FyZC5jb250ZW50LAogICAgICAgICAgICAgICAgImluc2lnaHRfdHlwZSI6IGNhcmQuaW5zaWdodF90eXBlLAogICAgICAgICAgICAgICAgInRhZ3MiOiBjYXJkLnRhZ3MsCiAgICAgICAgICAgICAgICAiZXZpZGVuY2UiOiBjYXJkLmV2aWRlbmNlLAogICAgICAgICAgICAgICAgInBhZ2VfcmVmIjogY2FyZC5wYWdlX3JlZiwKICAgICAgICAgICAgICAgICJjcmVhdGVkX2F0IjogY2FyZC5jcmVhdGVkX2F0LAogICAgICAgICAgICAgICAgInJlZmVyZW5jZXMiOiBjYXJkLnJlZmVyZW5jZXMsCiAgICAgICAgICAgICAgICAicXVhbGl0eV9yYXRpbmciOiBjYXJkLnF1YWxpdHlfcmF0aW5nLAogICAgICAgICAgICAgICAgInVzZWZ1bG5lc3Nfc2NvcmUiOiBjYXJkLnVzZWZ1bG5lc3Nfc2NvcmUsCiAgICAgICAgICAgICAgICAidGltZXNfcmF0ZWQiOiBjYXJkLnRpbWVzX3JhdGVkLAogICAgICAgICAgICB9CiAgICAgICAgKQoKICAgICAgICBzZWxmLl9zYXZlX2NhcmRzKGRhdGEpCiAgICAgICAgcmV0dXJuIGNhcmQKCiAgICBkZWYgZ2V0X2NhcmQoc2VsZiwgY2FyZF9pZDogc3RyKSAtPiBPcHRpb25hbFtJbnNpZ2h0Q2FyZF06CiAgICAgICAgIiIiR2V0IGEgY2FyZCBieSBJRC4iIiIKICAgICAgICBkYXRhID0gc2VsZi5fbG9hZF9jYXJkcygpCiAgICAgICAgZm9yIGl0ZW0gaW4gZGF0YToKICAgICAgICAgICAgaWYgaXRlbVsiY2FyZF9pZCJdID09IGNhcmRfaWQ6CiAgICAgICAgICAgICAgICByZXR1cm4gSW5zaWdodENhcmQoKippdGVtKQogICAgICAgIHJldHVybiBOb25lCgogICAgZGVmIHVwZGF0ZV9jYXJkKAogICAgICAgIHNlbGYsCiAgICAgICAgY2FyZF9pZDogc3RyLAogICAgICAgIGNvbnRlbnQ6IE9wdGlvbmFsW3N0cl0gPSBOb25lLAogICAgICAgIHRhZ3M6IE9wdGlvbmFsW0xpc3Rbc3RyXV0gPSBOb25lLAogICAgICAgIGluc2lnaHRfdHlwZTogT3B0aW9uYWxbc3RyXSA9IE5vbmUsCiAgICApIC0+IGJvb2w6CiAgICAgICAgIiIiVXBkYXRlIGEgY2FyZC4iIiIKICAgICAgICBkYXRhID0gc2VsZi5fbG9hZF9jYXJkcygpCiAgICAgICAgZm9yIGl0ZW0gaW4gZGF0YToKICAgICAgICAgICAgaWYgaXRlbVsiY2FyZF9pZCJdID09IGNhcmRfaWQ6CiAgICAgICAgICAgICAgICBpZiBjb250ZW50IGlzIG5vdCBOb25lOgogICAgICAgICAgICAgICAgICAgIGl0ZW1bImNvbnRlbnQiXSA9IGNvbnRlbnQKICAgICAgICAgICAgICAgIGlmIHRhZ3MgaXMgbm90IE5vbmU6CiAgICAgICAgICAgICAgICAgICAgaXRlbVsidGFncyJdID0gdGFncwogICAgICAgICAgICAgICAgaWYgaW5zaWdodF90eXBlIGlzIG5vdCBOb25lOgogICAgICAgICAgICAgICAgICAgIGl0ZW1bImluc2lnaHRfdHlwZSJdID0gaW5zaWdodF90eXBlCiAgICAgICAgICAgICAgICBzZWxmLl9zYXZlX2NhcmRzKGRhdGEpCiAgICAgICAgICAgICAgICByZXR1cm4gVHJ1ZQogICAgICAgIHJldHVybiBGYWxzZQoKICAgIGRlZiByYXRlX2NhcmQoc2VsZiwgY2FyZF9pZDogc3RyLCByYXRpbmc6IGludCkgLT4gYm9vbDoKICAgICAgICAiIiJSYXRlIGEgY2FyZCB3aXRoIDEtNSBzdGFycy4gUmVjb3JkcyByYXRpbmcgaGlzdG9yeSBmb3Igc2NvcmUgYWNjdW11bGF0aW9uLiIiIgogICAgICAgIGlmIG5vdCAxIDw9IHJhdGluZyA8PSA1OgogICAgICAgICAgICByZXR1cm4gRmFsc2UKCiAgICAgICAgZGF0YSA9IHNlbGYuX2xvYWRfY2FyZHMoKQogICAgICAgIGZvciBpdGVtIGluIGRhdGE6CiAgICAgICAgICAgIGlmIGl0ZW1bImNhcmRfaWQiXSA9PSBjYXJkX2lkOgogICAgICAgICAgICAgICAgdGltZXNfcmF0ZWQgPSBpdGVtLmdldCgidGltZXNfcmF0ZWQiLCAwKQoKICAgICAgICAgICAgICAgICMgQWNjdW11bGF0ZSB1c2luZyBleHBvbmVudGlhbCBtb3ZpbmcgYXZlcmFnZQogICAgICAgICAgICAgICAgaWYgdGltZXNfcmF0ZWQgPiAwOgogICAgICAgICAgICAgICAgICAgIGl0ZW1bInVzZWZ1bG5lc3Nfc2NvcmUiXSA9IHJvdW5kKAogICAgICAgICAgICAgICAgICAgICAgICAoaXRlbS5nZXQoInVzZWZ1bG5lc3Nfc2NvcmUiLCAwLjApICogdGltZXNfcmF0ZWQgKyByYXRpbmcpCiAgICAgICAgICAgICAgICAgICAgICAgIC8gKHRpbWVzX3JhdGVkICsgMSksCiAgICAgICAgICAgICAgICAgICAgICAgIDMsCiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgZWxzZToKICAgICAgICAgICAgICAgICAgICBpdGVtWyJ1c2VmdWxuZXNzX3Njb3JlIl0gPSBmbG9hdChyYXRpbmcpCgogICAgICAgICAgICAgICAgaXRlbVsicXVhbGl0eV9yYXRpbmciXSA9IHJhdGluZwogICAgICAgICAgICAgICAgaXRlbVsidGltZXNfcmF0ZWQiXSA9IHRpbWVzX3JhdGVkICsgMQoKICAgICAgICAgICAgICAgIHNlbGYuX3NhdmVfY2FyZHMoZGF0YSkKICAgICAgICAgICAgICAgIHJldHVybiBUcnVlCiAgICAgICAgcmV0dXJuIEZhbHNlCgogICAgZGVmIGxpa2VfY2FyZChzZWxmLCBjYXJkX2lkOiBzdHIpIC0+IGJvb2w6CiAgICAgICAgIiIiU2hvcnRjdXQ6IG1hcmsgYSBjYXJkIGFzIHVzZWZ1bCAoNS1zdGFyKS4iIiIKICAgICAgICByZXR1cm4gc2VsZi5yYXRlX2NhcmQoY2FyZF9pZCwgNSkKCiAgICBkZWYgZGlzbGlrZV9jYXJkKHNlbGYsIGNhcmRfaWQ6IHN0cikgLT4gYm9vbDoKICAgICAgICAiIiJTaG9ydGN1dDogbWFyayBhIGNhcmQgYXMgbm90IHVzZWZ1bCAoMS1zdGFyKS4iIiIKICAgICAgICByZXR1cm4gc2VsZi5yYXRlX2NhcmQoY2FyZF9pZCwgMSkKCiAgICBkZWYgZ2V0X2hpZ2hfcXVhbGl0eV9jYXJkcyhzZWxmLCBtaW5fcmF0aW5nOiBpbnQgPSA0LCBtaW5fc2NvcmVzOiBpbnQgPSAxKSAtPiBMaXN0W0luc2lnaHRDYXJkXToKICAgICAgICAiIiJSZXR1cm4gY2FyZHMgd2l0aCBoaWdoIHF1YWxpdHkgcmF0aW5nICh1c2VmdWwgZm9yIGV2b2x1dGlvbiB2YWxpZGF0aW9uKS4iIiIKICAgICAgICBkYXRhID0gc2VsZi5fbG9hZF9jYXJkcygpCiAgICAgICAgcmVzdWx0cyA9IFtdCiAgICAgICAgZm9yIGl0ZW0gaW4gZGF0YToKICAgICAgICAgICAgaWYgKAogICAgICAgICAgICAgICAgaXRlbS5nZXQoInF1YWxpdHlfcmF0aW5nIiwgMCkgPj0gbWluX3JhdGluZwogICAgICAgICAgICAgICAgYW5kIGl0ZW0uZ2V0KCJ0aW1lc19yYXRlZCIsIDApID49IG1pbl9zY29yZXMKICAgICAgICAgICAgKToKICAgICAgICAgICAgICAgIHJlc3VsdHMuYXBwZW5kKEluc2lnaHRDYXJkKCoqaXRlbSkpCiAgICAgICAgcmVzdWx0cy5zb3J0KGtleT1sYW1iZGEgeDogeC51c2VmdWxuZXNzX3Njb3JlLCByZXZlcnNlPVRydWUpCiAgICAgICAgcmV0dXJuIHJlc3VsdHMKCiAgICBkZWYgZ2V0X2xvd19xdWFsaXR5X2NhcmRzKHNlbGYsIG1heF9yYXRpbmc6IGludCA9IDIsIG1pbl9zY29yZXM6IGludCA9IDEpIC0+IExpc3RbSW5zaWdodENhcmRdOgogICAgICAgICIiIlJldHVybiBjYXJkcyBtYXJrZWQgYXMgbG93IHF1YWxpdHkgKHVzZWZ1bCBmb3IgbGVhcm5pbmcgd2hhdCB0byBhdm9pZCkuIiIiCiAgICAgICAgZGF0YSA9IHNlbGYuX2xvYWRfY2FyZHMoKQogICAgICAgIHJlc3VsdHMgPSBbXQogICAgICAgIGZvciBpdGVtIGluIGRhdGE6CiAgICAgICAgICAgIGlmICgKICAgICAgICAgICAgICAgIDAgPCBpdGVtLmdldCgicXVhbGl0eV9yYXRpbmciLCAwKSA8PSBtYXhfcmF0aW5nCiAgICAgICAgICAgICAgICBhbmQgaXRlbS5nZXQoInRpbWVzX3JhdGVkIiwgMCkgPj0gbWluX3Njb3JlcwogICAgICAgICAgICApOgogICAgICAgICAgICAgICAgcmVzdWx0cy5hcHBlbmQoSW5zaWdodENhcmQoKippdGVtKSkKICAgICAgICByZXN1bHRzLnNvcnQoa2V5PWxhbWJkYSB4OiB4LnVzZWZ1bG5lc3Nfc2NvcmUpCiAgICAgICAgcmV0dXJuIHJlc3VsdHMKCiAgICBkZWYgYWRkX3JlZmVyZW5jZShzZWxmLCBmcm9tX2NhcmRfaWQ6IHN0ciwgdG9fY2FyZF9pZDogc3RyKSAtPiBib29sOgogICAgICAgICIiIkFkZCBhIHJlZmVyZW5jZSBmcm9tIG9uZSBjYXJkIHRvIGFub3RoZXIuIiIiCiAgICAgICAgZGF0YSA9IHNlbGYuX2xvYWRfY2FyZHMoKQogICAgICAgIGZvciBpdGVtIGluIGRhdGE6CiAgICAgICAgICAgIGlmIGl0ZW1bImNhcmRfaWQiXSA9PSBmcm9tX2NhcmRfaWQ6CiAgICAgICAgICAgICAgICBpZiB0b19jYXJkX2lkIG5vdCBpbiBpdGVtWyJyZWZlcmVuY2VzIl06CiAgICAgICAgICAgICAgICAgICAgaXRlbVsicmVmZXJlbmNlcyJdLmFwcGVuZCh0b19jYXJkX2lkKQogICAgICAgICAgICAgICAgICAgIHNlbGYuX3NhdmVfY2FyZHMoZGF0YSkKICAgICAgICAgICAgICAgIHJldHVybiBUcnVlCiAgICAgICAgcmV0dXJuIEZhbHNlCgogICAgZGVmIHNlYXJjaF9jYXJkcygKICAgICAgICBzZWxmLAogICAgICAgIHF1ZXJ5OiBPcHRpb25hbFtzdHJdID0gTm9uZSwKICAgICAgICB0YWdzOiBPcHRpb25hbFtMaXN0W3N0cl1dID0gTm9uZSwKICAgICAgICBpbnNpZ2h0X3R5cGU6IE9wdGlvbmFsW3N0cl0gPSBOb25lLAogICAgICAgIHBhcGVyX2lkOiBPcHRpb25hbFtzdHJdID0gTm9uZSwKICAgICkgLT4gTGlzdFtJbnNpZ2h0Q2FyZF06CiAgICAgICAgIiIiU2VhcmNoIGNhcmRzIGJ5IHZhcmlvdXMgY3JpdGVyaWEuIiIiCiAgICAgICAgZGF0YSA9IHNlbGYuX2xvYWRfY2FyZHMoKQogICAgICAgIHJlc3VsdHMgPSBbXQoKICAgICAgICBmb3IgaXRlbSBpbiBkYXRhOgogICAgICAgICAgICBpZiBxdWVyeToKICAgICAgICAgICAgICAgIHEgPSBxdWVyeS5sb3dlcigpCiAgICAgICAgICAgICAgICBpZiBxIG5vdCBpbiBpdGVtWyJjb250ZW50Il0ubG93ZXIoKSBhbmQgcSBub3QgaW4gaXRlbVsicGFwZXJfdGl0bGUiXS5sb3dlcigpOgogICAgICAgICAgICAgICAgICAgIGNvbnRpbnVlCgogICAgICAgICAgICBpZiB0YWdzOgogICAgICAgICAgICAgICAgaWYgbm90IGFueSh0IGluIGl0ZW1bInRhZ3MiXSBmb3IgdCBpbiB0YWdzKToKICAgICAgICAgICAgICAgICAgICBjb250aW51ZQoKICAgICAgICAgICAgaWYgaW5zaWdodF90eXBlIGFuZCBpdGVtWyJpbnNpZ2h0X3R5cGUiXSAhPSBpbnNpZ2h0X3R5cGU6CiAgICAgICAgICAgICAgICBjb250aW51ZQoKICAgICAgICAgICAgaWYgcGFwZXJfaWQgYW5kIGl0ZW1bInBhcGVyX2lkIl0gIT0gcGFwZXJfaWQ6CiAgICAgICAgICAgICAgICBjb250aW51ZQoKICAgICAgICAgICAgcmVzdWx0cy5hcHBlbmQoSW5zaWdodENhcmQoKippdGVtKSkKCiAgICAgICAgcmVzdWx0cy5zb3J0KGtleT1sYW1iZGEgeDogeC5jcmVhdGVkX2F0LCByZXZlcnNlPVRydWUpCiAgICAgICAgcmV0dXJuIHJlc3VsdHMKCiAgICBkZWYgZ2V0X3RhZ19jbG91ZChzZWxmKSAtPiBEaWN0W3N0ciwgaW50XToKICAgICAgICAiIiJHZXQgdGFnIGZyZXF1ZW5jeS4iIiIKICAgICAgICBkYXRhID0gc2VsZi5fbG9hZF9jYXJkcygpCiAgICAgICAgdGFnczogRGljdFtzdHIsIGludF0gPSB7fQoKICAgICAgICBmb3IgaXRlbSBpbiBkYXRhOgogICAgICAgICAgICBmb3IgdGFnIGluIGl0ZW1bInRhZ3MiXToKICAgICAgICAgICAgICAgIHRhZ3NbdGFnXSA9IHRhZ3MuZ2V0KHRhZywgMCkgKyAxCgogICAgICAgIHJldHVybiBkaWN0KHNvcnRlZCh0YWdzLml0ZW1zKCksIGtleT1sYW1iZGEgeDogLXhbMV0pKQoKICAgIGRlZiBjcmVhdGVfY29sbGVjdGlvbigKICAgICAgICBzZWxmLAogICAgICAgIHRpdGxlOiBzdHIsCiAgICAgICAgZGVzY3JpcHRpb246IHN0ciA9ICIiLAogICAgICAgIHRhZ3M6IE9wdGlvbmFsW0xpc3Rbc3RyXV0gPSBOb25lLAogICAgKSAtPiBJbnNpZ2h0Q29sbGVjdGlvbjoKICAgICAgICAiIiJDcmVhdGUgYSBjb2xsZWN0aW9uIG9mIGNhcmRzLiIiIgogICAgICAgIGNvbGxlY3Rpb25zID0gc2VsZi5fbG9hZF9jb2xsZWN0aW9ucygpCgogICAgICAgIGNvbGxlY3Rpb25faWQgPSBmImN7bGVuKGNvbGxlY3Rpb25zKSArIDE6MDRkfSIKICAgICAgICBjb2xsZWN0aW9uID0gSW5zaWdodENvbGxlY3Rpb24oCiAgICAgICAgICAgIGNvbGxlY3Rpb25faWQ9Y29sbGVjdGlvbl9pZCwKICAgICAgICAgICAgdGl0bGU9dGl0bGUsCiAgICAgICAgICAgIGRlc2NyaXB0aW9uPWRlc2NyaXB0aW9uLAogICAgICAgICAgICB0YWdzPXRhZ3Mgb3IgW10sCiAgICAgICAgKQoKICAgICAgICBjb2xsZWN0aW9ucy5hcHBlbmQoCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICJjb2xsZWN0aW9uX2lkIjogY29sbGVjdGlvbi5jb2xsZWN0aW9uX2lkLAogICAgICAgICAgICAgICAgInRpdGxlIjogY29sbGVjdGlvbi50aXRsZSwKICAgICAgICAgICAgICAgICJkZXNjcmlwdGlvbiI6IGNvbGxlY3Rpb24uZGVzY3JpcHRpb24sCiAgICAgICAgICAgICAgICAiY2FyZF9pZHMiOiBjb2xsZWN0aW9uLmNhcmRfaWRzLAogICAgICAgICAgICAgICAgInRhZ3MiOiBjb2xsZWN0aW9uLnRhZ3MsCiAgICAgICAgICAgIH0KICAgICAgICApCgogICAgICAgIHNlbGYuX3NhdmVfY29sbGVjdGlvbnMoY29sbGVjdGlvbnMpCiAgICAgICAgcmV0dXJuIGNvbGxlY3Rpb24KCiAgICBkZWYgYWRkX3RvX2NvbGxlY3Rpb24oc2VsZiwgY29sbGVjdGlvbl9pZDogc3RyLCBjYXJkX2lkOiBzdHIpIC0+IGJvb2w6CiAgICAgICAgIiIiQWRkIGEgY2FyZCB0byBhIGNvbGxlY3Rpb24uIiIiCiAgICAgICAgY29sbGVjdGlvbnMgPSBzZWxmLl9sb2FkX2NvbGxlY3Rpb25zKCkKICAgICAgICBmb3IgaXRlbSBpbiBjb2xsZWN0aW9uczoKICAgICAgICAgICAgaWYgaXRlbVsiY29sbGVjdGlvbl9pZCJdID09IGNvbGxlY3Rpb25faWQ6CiAgICAgICAgICAgICAgICBpZiBjYXJkX2lkIG5vdCBpbiBpdGVtWyJjYXJkX2lkcyJdOgogICAgICAgICAgICAgICAgICAgIGl0ZW1bImNhcmRfaWRzIl0uYXBwZW5kKGNhcmRfaWQpCiAgICAgICAgICAgICAgICAgICAgc2VsZi5fc2F2ZV9jb2xsZWN0aW9ucyhjb2xsZWN0aW9ucykKICAgICAgICAgICAgICAgIHJldHVybiBUcnVlCiAgICAgICAgcmV0dXJuIEZhbHNlCgogICAgZGVmIGV4dHJhY3RfZnJvbV90ZXh0KHNlbGYsIHBhcGVyX2lkOiBzdHIsIHBhcGVyX3RpdGxlOiBzdHIsIHRleHQ6IHN0cikgLT4gTGlzdFtJbnNpZ2h0Q2FyZF06CiAgICAgICAgIiIiRXh0cmFjdCBwb3RlbnRpYWwgaW5zaWdodHMgZnJvbSBwYXBlciB0ZXh0IHVzaW5nIGhldXJpc3RpY3MuIiIiCiAgICAgICAgY2FyZHMgPSBbXQoKICAgICAgICBwYXR0ZXJucyA9IFsKICAgICAgICAgICAgciJpbXByb3ZlZCBieVxzKyhcZCtcLj9cZCopJSIsCiAgICAgICAgICAgIHIiYWNoaWV2ZWRccysoXGQrXC4/XGQqKSUiLAogICAgICAgICAgICByIm91dHBlcmZvcm1zP1xzK1tcd1xzXStieVxzKyhcZCtcLj9cZCopJSIsCiAgICAgICAgICAgIHIicmVkdWNlZFxzKyhcdyspXHMrYnlccysoXGQrXC4/XGQqKSUiLAogICAgICAgIF0KCiAgICAgICAgZm9yIHBhdHRlcm4gaW4gcGF0dGVybnM6CiAgICAgICAgICAgIG1hdGNoZXMgPSByZS5maW5kaXRlcihwYXR0ZXJuLCB0ZXh0LCByZS5JR05PUkVDQVNFKQogICAgICAgICAgICBmb3IgbWF0Y2ggaW4gbWF0Y2hlczoKICAgICAgICAgICAgICAgIGNvbnRleHRfc3RhcnQgPSBtYXgoMCwgbWF0Y2guc3RhcnQoKSAtIDEwMCkKICAgICAgICAgICAgICAgIGNvbnRleHRfZW5kID0gbWluKGxlbih0ZXh0KSwgbWF0Y2guZW5kKCkgKyAxMDApCiAgICAgICAgICAgICAgICBjb250ZXh0ID0gdGV4dFtjb250ZXh0X3N0YXJ0OmNvbnRleHRfZW5kXS5zdHJpcCgpCiAgICAgICAgICAgICAgICBjb250ZXh0ID0gcmUuc3ViKHIiXHMrIiwgIiAiLCBjb250ZXh0KQoKICAgICAgICAgICAgICAgIGlmIGxlbihjb250ZXh0KSA+IDIwOgogICAgICAgICAgICAgICAgICAgIGNhcmQgPSBzZWxmLmFkZF9jYXJkKAogICAgICAgICAgICAgICAgICAgICAgICBwYXBlcl9pZD1wYXBlcl9pZCwKICAgICAgICAgICAgICAgICAgICAgICAgcGFwZXJfdGl0bGU9cGFwZXJfdGl0bGUsCiAgICAgICAgICAgICAgICAgICAgICAgIGNvbnRlbnQ9ZiJLZXkgZmluZGluZzoge21hdGNoLmdyb3VwKDApfSAtIHtjb250ZXh0WzoyMDBdfSIsCiAgICAgICAgICAgICAgICAgICAgICAgIGluc2lnaHRfdHlwZT0iZmluZGluZyIsCiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgICAgIGNhcmRzLmFwcGVuZChjYXJkKQoKICAgICAgICByZXR1cm4gY2FyZHMKCiAgICBkZWYgcmVuZGVyX3RleHQoc2VsZiwgY2FyZHM6IExpc3RbSW5zaWdodENhcmRdKSAtPiBzdHI6CiAgICAgICAgIiIiUmVuZGVyIGNhcmRzIGFzIHRleHQuIiIiCiAgICAgICAgaWYgbm90IGNhcmRzOgogICAgICAgICAgICByZXR1cm4gIk5vIGluc2lnaHQgY2FyZHMgZm91bmQuIgoKICAgICAgICBsaW5lcyA9IFsiPSIgKiA3MCwgIvCfkqEgS2V5IEluc2lnaHQgQ2FyZHMiLCAiPSIgKiA3MCwgIiJdCgogICAgICAgIHR5cGVfaWNvbnMgPSB7CiAgICAgICAgICAgICJmaW5kaW5nIjogIvCfjq8iLAogICAgICAgICAgICAibWV0aG9kIjogIuKame+4jyIsCiAgICAgICAgICAgICJsaW1pdGF0aW9uIjogIuKaoO+4jyIsCiAgICAgICAgICAgICJmdXR1cmVfd29yayI6ICLwn5SuIiwKICAgICAgICB9CgogICAgICAgIGZvciBjYXJkIGluIGNhcmRzWzoyMF06CiAgICAgICAgICAgIGljb24gPSB0eXBlX2ljb25zLmdldChjYXJkLmluc2lnaHRfdHlwZSwgIvCfkqEiKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiJ7aWNvbn0gW3tjYXJkLmNhcmRfaWR9XSB7Y2FyZC5pbnNpZ2h0X3R5cGUudXBwZXIoKX0iKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICBQYXBlcjoge2NhcmQucGFwZXJfdGl0bGVbOjUwXX0iKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICB7Y2FyZC5jb250ZW50WzoxMDBdfSIpCiAgICAgICAgICAgIGlmIGNhcmQudGFnczoKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgIFRhZ3M6IHsnLCAnLmpvaW4oY2FyZC50YWdzKX0iKQogICAgICAgICAgICBpZiBjYXJkLnF1YWxpdHlfcmF0aW5nID4gMDoKICAgICAgICAgICAgICAgIHN0YXJzID0gIuKYhSIgKiBjYXJkLnF1YWxpdHlfcmF0aW5nICsgIuKYhiIgKiAoNSAtIGNhcmQucXVhbGl0eV9yYXRpbmcpCiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgICAgICAgICAgICAgZiIgICBSYXRpbmc6IHtzdGFyc30gKHtjYXJkLnVzZWZ1bG5lc3Nfc2NvcmU6LjJmfSwge2NhcmQudGltZXNfcmF0ZWR9IHZvdGV7J3MnIGlmIGNhcmQudGltZXNfcmF0ZWQgIT0gMSBlbHNlICcnfSkiCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIikKCiAgICAgICAgbGluZXMuYXBwZW5kKGYiVG90YWw6IHtsZW4oY2FyZHMpfSBjYXJkcyIpCiAgICAgICAgbGluZXMuYXBwZW5kKCI9IiAqIDcwKQogICAgICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCgogICAgZGVmIHJlbmRlcl9tYXJrZG93bihzZWxmLCBjYXJkczogTGlzdFtJbnNpZ2h0Q2FyZF0pIC0+IHN0cjoKICAgICAgICAiIiJSZW5kZXIgY2FyZHMgYXMgTWFya2Rvd24uIiIiCiAgICAgICAgbGluZXMgPSBbIiMgS2V5IEluc2lnaHQgQ2FyZHNcbiJdCgogICAgICAgIGlmIG5vdCBjYXJkczoKICAgICAgICAgICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykgKyAiXG5ObyBjYXJkcyBmb3VuZC4iCgogICAgICAgIGJ5X3BhcGVyOiBEaWN0W3N0ciwgTGlzdFtJbnNpZ2h0Q2FyZF1dID0ge30KICAgICAgICBmb3IgY2FyZCBpbiBjYXJkczoKICAgICAgICAgICAgaWYgY2FyZC5wYXBlcl9pZCBub3QgaW4gYnlfcGFwZXI6CiAgICAgICAgICAgICAgICBieV9wYXBlcltjYXJkLnBhcGVyX2lkXSA9IFtdCiAgICAgICAgICAgIGJ5X3BhcGVyW2NhcmQucGFwZXJfaWRdLmFwcGVuZChjYXJkKQoKICAgICAgICBmb3IgcGFwZXJfaWQsIHBhcGVyX2NhcmRzIGluIGJ5X3BhcGVyLml0ZW1zKCk6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiMjIHtwYXBlcl9jYXJkc1swXS5wYXBlcl90aXRsZVs6NjBdfVxuIikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiKkZyb206IHtwYXBlcl9pZH0qXG4iKQoKICAgICAgICAgICAgZm9yIGNhcmQgaW4gcGFwZXJfY2FyZHM6CiAgICAgICAgICAgICAgICB0eXBlX2ljb24gPSB7CiAgICAgICAgICAgICAgICAgICAgImZpbmRpbmciOiAi8J+OryIsCiAgICAgICAgICAgICAgICAgICAgIm1ldGhvZCI6ICLimpnvuI8iLAogICAgICAgICAgICAgICAgICAgICJsaW1pdGF0aW9uIjogIuKaoO+4jyIsCiAgICAgICAgICAgICAgICAgICAgImZ1dHVyZV93b3JrIjogIvCflK4iLAogICAgICAgICAgICAgICAgfS5nZXQoY2FyZC5pbnNpZ2h0X3R5cGUsICLwn5KhIikKCiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIjIyMge3R5cGVfaWNvbn0ge2NhcmQuaW5zaWdodF90eXBlLmNhcGl0YWxpemUoKX0iKQoKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIntjYXJkLmNvbnRlbnR9XG4iKQoKICAgICAgICAgICAgICAgIGlmIGNhcmQucXVhbGl0eV9yYXRpbmcgPiAwOgogICAgICAgICAgICAgICAgICAgIHN0YXJzID0gIuKYhSIgKiBjYXJkLnF1YWxpdHlfcmF0aW5nICsgIuKYhiIgKiAoNSAtIGNhcmQucXVhbGl0eV9yYXRpbmcpCiAgICAgICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiKipSYXRpbmc6Kioge3N0YXJzfSAoe2NhcmQudXNlZnVsbmVzc19zY29yZTouMmZ9LzUpXG4iKQoKICAgICAgICAgICAgICAgIGlmIGNhcmQuZXZpZGVuY2U6CiAgICAgICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiPiBFdmlkZW5jZToge2NhcmQuZXZpZGVuY2V9XG4iKQoKICAgICAgICAgICAgICAgIGlmIGNhcmQudGFnczoKICAgICAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIqVGFnczogeycsICcuam9pbihjYXJkLnRhZ3MpfSpcbiIpCgogICAgICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCgogICAgZGVmIGV4cG9ydF9mb3Jfbm90ZShzZWxmLCBjYXJkczogTGlzdFtJbnNpZ2h0Q2FyZF0pIC0+IHN0cjoKICAgICAgICAiIiJFeHBvcnQgY2FyZHMgaW4gYSBmb3JtYXQgc3VpdGFibGUgZm9yIG5vdGVzLiIiIgogICAgICAgIGxpbmVzID0gW10KCiAgICAgICAgZm9yIGNhcmQgaW4gY2FyZHM6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiMjIHtjYXJkLmNvbnRlbnRbOjgwXX1cbiIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIi0gU291cmNlOiBbW3tjYXJkLnBhcGVyX2lkfV1dIikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiLSBUeXBlOiB7Y2FyZC5pbnNpZ2h0X3R5cGV9IikKICAgICAgICAgICAgaWYgY2FyZC50YWdzOgogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiLSBUYWdzOiB7JywgJy5qb2luKFsnIycgKyB0IGZvciB0IGluIGNhcmQudGFnc10pfSIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIikKCiAgICAgICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykK
+"""
+Key Insight Cards: Extract and manage research insights.
+"""
+from dataclasses import dataclass, field
+from typing import Any, cast, List, Optional, Dict
+from datetime import datetime
+from pathlib import Path
+import json
+import re
+
+
+@dataclass
+class InsightCard:
+    """A key insight extracted from a paper."""
+    card_id: str
+    paper_id: str
+    paper_title: str
+    content: str
+    insight_type: str = "finding"  # finding, method, limitation, future_work
+    tags: List[str] = field(default_factory=list)
+    evidence: str = ""
+    page_ref: str = ""
+    created_at: str = ""
+    references: List[str] = field(default_factory=list)  # other card_ids
+    quality_rating: int = 0   # 1-5 stars, 0 = unrated
+    usefulness_score: float = 0.0  # accumulated weighted score from feedback
+    times_rated: int = 0      # how many times rated
+
+
+@dataclass
+class InsightCollection:
+    """A collection of insight cards around a topic."""
+    collection_id: str
+    title: str
+    description: str = ""
+    card_ids: List[str] = field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
+
+
+class InsightManager:
+    """Manage key insight cards."""
+
+    def __init__(self, data_dir: Optional[Path] = None):
+        self.data_dir = data_dir or Path.home() / ".ai_research_os"
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.cards_file = self.data_dir / "insight_cards.json"
+        self.collections_file = self.data_dir / "insight_collections.json"
+
+    def _load_cards(self) -> List[Dict]:
+        if self.cards_file.exists():
+            with open(self.cards_file, "r", encoding="utf-8") as f:
+                return cast(List[Dict], json.load(f))
+        return []
+
+    def _save_cards(self, data: List[Dict]) -> None:
+        with open(self.cards_file, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+
+    def _load_collections(self) -> List[Dict]:
+        if self.collections_file.exists():
+            with open(self.collections_file, "r", encoding="utf-8") as f:
+                return cast(List[Dict], json.load(f))
+        return []
+
+    def _save_collections(self, data: List[Dict]) -> None:
+        with open(self.collections_file, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+
+    def add_card(
+        self,
+        paper_id: str,
+        paper_title: str,
+        content: str,
+        insight_type: str = "finding",
+        tags: Optional[List[str]] = None,
+        evidence: str = "",
+        page_ref: str = "",
+    ) -> InsightCard:
+        """Add a new insight card."""
+        data = self._load_cards()
+
+        card_id = f"i{len(data) + 1:04d}"
+        card = InsightCard(
+            card_id=card_id,
+            paper_id=paper_id,
+            paper_title=paper_title,
+            content=content,
+            insight_type=insight_type,
+            tags=tags or [],
+            evidence=evidence,
+            page_ref=page_ref,
+            created_at=datetime.now().isoformat()[:10],
+        )
+
+        data.append({
+            "card_id": card.card_id,
+            "paper_id": card.paper_id,
+            "paper_title": card.paper_title,
+            "content": card.content,
+            "insight_type": card.insight_type,
+            "tags": card.tags,
+            "evidence": card.evidence,
+            "page_ref": card.page_ref,
+            "created_at": card.created_at,
+            "references": card.references,
+            "quality_rating": card.quality_rating,
+            "usefulness_score": card.usefulness_score,
+            "times_rated": card.times_rated,
+        })
+
+        self._save_cards(data)
+        return card
+
+    def get_card(self, card_id: str) -> Optional[InsightCard]:
+        """Get a card by ID."""
+        data = self._load_cards()
+        for item in data:
+            if item["card_id"] == card_id:
+                return InsightCard(**item)
+        return None
+
+    def update_card(
+        self,
+        card_id: str,
+        content: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+        insight_type: Optional[str] = None,
+    ) -> bool:
+        """Update a card."""
+        data = self._load_cards()
+        for item in data:
+            if item["card_id"] == card_id:
+                if content is not None:
+                    item["content"] = content
+                if tags is not None:
+                    item["tags"] = tags
+                if insight_type is not None:
+                    item["insight_type"] = insight_type
+                self._save_cards(data)
+                return True
+        return False
+
+    def rate_card(self, card_id: str, rating: int) -> bool:
+        """Rate a card with 1-5 stars. Records rating history for score accumulation."""
+        if not 1 <= rating <= 5:
+            return False
+
+        data = self._load_cards()
+        for item in data:
+            if item["card_id"] == card_id:
+                times_rated = item.get("times_rated", 0)
+
+                # Accumulate using exponential moving average
+                if times_rated > 0:
+                    item["usefulness_score"] = round(
+                        (item.get("usefulness_score", 0.0) * times_rated + rating) / (times_rated + 1), 3
+                    )
+                else:
+                    item["usefulness_score"] = float(rating)
+
+                item["quality_rating"] = rating
+                item["times_rated"] = times_rated + 1
+
+                self._save_cards(data)
+                return True
+        return False
+
+    def like_card(self, card_id: str) -> bool:
+        """Shortcut: mark a card as useful (5-star)."""
+        return self.rate_card(card_id, 5)
+
+    def dislike_card(self, card_id: str) -> bool:
+        """Shortcut: mark a card as not useful (1-star)."""
+        return self.rate_card(card_id, 1)
+
+    def get_high_quality_cards(self, min_rating: int = 4, min_scores: int = 1) -> List[InsightCard]:
+        """Return cards with high quality rating (useful for evolution validation)."""
+        data = self._load_cards()
+        results = []
+        for item in data:
+            if item.get("quality_rating", 0) >= min_rating and item.get("times_rated", 0) >= min_scores:
+                results.append(InsightCard(**item))
+        results.sort(key=lambda x: x.usefulness_score, reverse=True)
+        return results
+
+    def get_low_quality_cards(self, max_rating: int = 2, min_scores: int = 1) -> List[InsightCard]:
+        """Return cards marked as low quality (useful for learning what to avoid)."""
+        data = self._load_cards()
+        results = []
+        for item in data:
+            if 0 < item.get("quality_rating", 0) <= max_rating and item.get("times_rated", 0) >= min_scores:
+                results.append(InsightCard(**item))
+        results.sort(key=lambda x: x.usefulness_score)
+        return results
+
+    def add_reference(self, from_card_id: str, to_card_id: str) -> bool:
+        """Add a reference from one card to another."""
+        data = self._load_cards()
+        for item in data:
+            if item["card_id"] == from_card_id:
+                if to_card_id not in item["references"]:
+                    item["references"].append(to_card_id)
+                    self._save_cards(data)
+                return True
+        return False
+
+    def search_cards(
+        self,
+        query: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+        insight_type: Optional[str] = None,
+        paper_id: Optional[str] = None,
+    ) -> List[InsightCard]:
+        """Search cards by various criteria."""
+        data = self._load_cards()
+        results = []
+
+        for item in data:
+            if query:
+                q = query.lower()
+                if q not in item["content"].lower() and q not in item["paper_title"].lower():
+                    continue
+
+            if tags:
+                if not any(t in item["tags"] for t in tags):
+                    continue
+
+            if insight_type and item["insight_type"] != insight_type:
+                continue
+
+            if paper_id and item["paper_id"] != paper_id:
+                continue
+
+            results.append(InsightCard(**item))
+
+        results.sort(key=lambda x: x.created_at, reverse=True)
+        return results
+
+    def get_tag_cloud(self) -> Dict[str, int]:
+        """Get tag frequency."""
+        data = self._load_cards()
+        tags: Dict[str, int] = {}
+
+        for item in data:
+            for tag in item["tags"]:
+                tags[tag] = tags.get(tag, 0) + 1
+
+        return dict(sorted(tags.items(), key=lambda x: -x[1]))
+
+    def create_collection(
+        self,
+        title: str,
+        description: str = "",
+        tags: Optional[List[str]] = None,
+    ) -> InsightCollection:
+        """Create a collection of cards."""
+        collections = self._load_collections()
+
+        collection_id = f"c{len(collections) + 1:04d}"
+        collection = InsightCollection(
+            collection_id=collection_id,
+            title=title,
+            description=description,
+            tags=tags or [],
+        )
+
+        collections.append({
+            "collection_id": collection.collection_id,
+            "title": collection.title,
+            "description": collection.description,
+            "card_ids": collection.card_ids,
+            "tags": collection.tags,
+        })
+
+        self._save_collections(collections)
+        return collection
+
+    def add_to_collection(self, collection_id: str, card_id: str) -> bool:
+        """Add a card to a collection."""
+        collections = self._load_collections()
+        for item in collections:
+            if item["collection_id"] == collection_id:
+                if card_id not in item["card_ids"]:
+                    item["card_ids"].append(card_id)
+                    self._save_collections(collections)
+                return True
+        return False
+
+    def extract_from_text(self, paper_id: str, paper_title: str, text: str) -> List[InsightCard]:
+        """Extract potential insights from paper text using heuristics."""
+        cards = []
+
+        patterns = [
+            r"improved by\s+(\d+\.?\d*)%",
+            r"achieved\s+(\d+\.?\d*)%",
+            r"outperforms?\s+[\w\s]+by\s+(\d+\.?\d*)%",
+            r"reduced\s+(\w+)\s+by\s+(\d+\.?\d*)%",
+        ]
+
+        for pattern in patterns:
+            matches = re.finditer(pattern, text, re.IGNORECASE)
+            for match in matches:
+                context_start = max(0, match.start() - 100)
+                context_end = min(len(text), match.end() + 100)
+                context = text[context_start:context_end].strip()
+                context = re.sub(r'\s+', ' ', context)
+
+                if len(context) > 20:
+                    card = self.add_card(
+                        paper_id=paper_id,
+                        paper_title=paper_title,
+                        content=f"Key finding: {match.group(0)} - {context[:200]}",
+                        insight_type="finding",
+                    )
+                    cards.append(card)
+
+        return cards
+
+    def render_text(self, cards: List[InsightCard]) -> str:
+        """Render cards as text."""
+        if not cards:
+            return "No insight cards found."
+
+        lines = ["=" * 70, "💡 Key Insight Cards", "=" * 70, ""]
+
+        type_icons = {
+            "finding": "🎯",
+            "method": "⚙️",
+            "limitation": "⚠️",
+            "future_work": "🔮",
+        }
+
+        for card in cards[:20]:
+            icon = type_icons.get(card.insight_type, "💡")
+            lines.append(f"{icon} [{card.card_id}] {card.insight_type.upper()}")
+            lines.append(f"   Paper: {card.paper_title[:50]}")
+            lines.append(f"   {card.content[:100]}")
+            if card.tags:
+                lines.append(f"   Tags: {', '.join(card.tags)}")
+            if card.quality_rating > 0:
+                stars = "★" * card.quality_rating + "☆" * (5 - card.quality_rating)
+                lines.append(f"   Rating: {stars} ({card.usefulness_score:.2f}, {card.times_rated} vote{'s' if card.times_rated != 1 else ''})")
+            lines.append("")
+
+        lines.append(f"Total: {len(cards)} cards")
+        lines.append("=" * 70)
+        return "\n".join(lines)
+
+    def render_markdown(self, cards: List[InsightCard]) -> str:
+        """Render cards as Markdown."""
+        lines = ["# Key Insight Cards\n"]
+
+        if not cards:
+            return "\n".join(lines) + "\nNo cards found."
+
+        by_paper: Dict[str, List[InsightCard]] = {}
+        for card in cards:
+            if card.paper_id not in by_paper:
+                by_paper[card.paper_id] = []
+            by_paper[card.paper_id].append(card)
+
+        for paper_id, paper_cards in by_paper.items():
+            lines.append(f"## {paper_cards[0].paper_title[:60]}\n")
+            lines.append(f"*From: {paper_id}*\n")
+
+            for card in paper_cards:
+                type_icon = {
+                    "finding": "🎯",
+                    "method": "⚙️",
+                    "limitation": "⚠️",
+                    "future_work": "🔮",
+                }.get(card.insight_type, "💡")
+
+                lines.append(f"### {type_icon} {card.insight_type.capitalize()}")
+
+                lines.append(f"{card.content}\n")
+
+                if card.quality_rating > 0:
+                    stars = "★" * card.quality_rating + "☆" * (5 - card.quality_rating)
+                    lines.append(f"**Rating:** {stars} ({card.usefulness_score:.2f}/5)\n")
+
+                if card.evidence:
+                    lines.append(f"> Evidence: {card.evidence}\n")
+
+                if card.tags:
+                    lines.append(f"*Tags: {', '.join(card.tags)}*\n")
+
+        return "\n".join(lines)
+
+    def export_for_note(self, cards: List[InsightCard]) -> str:
+        """Export cards in a format suitable for notes."""
+        lines = []
+
+        for card in cards:
+            lines.append(f"## {card.content[:80]}\n")
+            lines.append(f"- Source: [[{card.paper_id}]]")
+            lines.append(f"- Type: {card.insight_type}")
+            if card.tags:
+                lines.append(f"- Tags: {', '.join(['#' + t for t in card.tags])}")
+            lines.append("")
+
+        return "\n".join(lines)

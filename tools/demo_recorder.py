@@ -1,1 +1,118 @@
-IiIiRGVtbyByZWNvcmRlciDigJQgY2FwdHVyZSBSYWlyb3Mgd2ViIFVJICsgQ0xJIGFzIHZpZGVvL0dJRi4KClVzYWdlOgogICAgcHl0aG9uIC1tIHRvb2xzLmRlbW9fcmVjb3JkZXIgLS1vdXRwdXQgZGVtby5naWYgLS1kdXJhdGlvbiAzMAogICAgcHl0aG9uIC1tIHRvb2xzLmRlbW9fcmVjb3JkZXIgLS1vdXRwdXQgZGVtby5tcDQgLS1kdXJhdGlvbiA2MAoKUmVxdWlyZXM6IG1zcyAocGlwIGluc3RhbGwgbXNzIHBpbGxvdykKIiIiCgppbXBvcnQgYXJncGFyc2UKaW1wb3J0IHRpbWUKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCgp0cnk6CiAgICBpbXBvcnQgbXNzCiAgICBpbXBvcnQgbXNzLnRvb2xzCmV4Y2VwdCBJbXBvcnRFcnJvcjoKICAgIHByaW50KCJFcnJvcjogbXNzIG5vdCBpbnN0YWxsZWQuIFJ1bjogcGlwIGluc3RhbGwgbXNzIHBpbGxvdyIpCiAgICByYWlzZSBTeXN0ZW1FeGl0KDEpIGZyb20gTm9uZQoKCmRlZiByZWNvcmRfc2NyZWVuKG91dHB1dDogc3RyLCBkdXJhdGlvbjogaW50LCBmcHM6IGludCA9IDEwKToKICAgICIiIlJlY29yZCBzY3JlZW4gdG8gdmlkZW8vR0lGIHVzaW5nIG1zcy4iIiIKICAgIG91dHB1dF9wYXRoID0gUGF0aChvdXRwdXQpCiAgICB3aXRoIG1zcy5tc3MoKSBhcyBzY3Q6CiAgICAgICAgbW9uaXRvciA9IHNjdC5tb25pdG9yc1sxXSAgIyBwcmltYXJ5IG1vbml0b3IKICAgICAgICBpbnRlcnZhbCA9IDEuMCAvIGZwcwoKICAgICAgICBmcmFtZXMgPSBbXQogICAgICAgIHN0YXJ0ID0gdGltZS50aW1lKCkKICAgICAgICBmcmFtZV9udW0gPSAwCgogICAgICAgIHByaW50KGYiUmVjb3JkaW5nIHtkdXJhdGlvbn1zIGZyb20gbW9uaXRvciB7bW9uaXRvcn0gYXQge2Zwc31mcHMuLi4iKQogICAgICAgIHByaW50KGYiT3V0cHV0OiB7b3V0cHV0X3BhdGh9IikKICAgICAgICBwcmludCgiUHJlc3MgQ3RybCtDIHRvIHN0b3AgZWFybHkuIikKCiAgICAgICAgdHJ5OgogICAgICAgICAgICB3aGlsZSB0aW1lLnRpbWUoKSAtIHN0YXJ0IDwgZHVyYXRpb246CiAgICAgICAgICAgICAgICBzaG90ID0gc2N0LmdyYWIobW9uaXRvcikKICAgICAgICAgICAgICAgIGZyYW1lcy5hcHBlbmQoc2hvdCkKICAgICAgICAgICAgICAgIGZyYW1lX251bSArPSAxCiAgICAgICAgICAgICAgICB0aW1lLnNsZWVwKGludGVydmFsKQogICAgICAgIGV4Y2VwdCBLZXlib2FyZEludGVycnVwdDoKICAgICAgICAgICAgcHJpbnQoZiJcblN0b3BwZWQgYXQge2xlbihmcmFtZXMpfSBmcmFtZXMuIikKCiAgICBpZiBub3QgZnJhbWVzOgogICAgICAgIHByaW50KCJObyBmcmFtZXMgY2FwdHVyZWQuIikKICAgICAgICByZXR1cm4KCiAgICBleHQgPSBvdXRwdXRfcGF0aC5zdWZmaXgubG93ZXIoKQogICAgaWYgZXh0ID09ICIuZ2lmIjoKICAgICAgICBfd3JpdGVfZ2lmKGZyYW1lcywgb3V0cHV0X3BhdGgsIGZwcykKICAgIGVsc2U6CiAgICAgICAgX3dyaXRlX21wNChmcmFtZXMsIG91dHB1dF9wYXRoLCBmcHMpCgogICAgcHJpbnQoZiJTYXZlZCB7bGVuKGZyYW1lcyl9IGZyYW1lcyDihpIge291dHB1dF9wYXRofSIpCgoKZGVmIF93cml0ZV9naWYoZnJhbWVzLCBvdXRwdXRfcGF0aDogUGF0aCwgZnBzOiBpbnQpOgogICAgIiIiQ29udmVydCBmcmFtZXMgdG8gR0lGIHVzaW5nIFBpbGxvdy4iIiIKICAgIGZyb20gUElMIGltcG9ydCBJbWFnZQoKICAgIGltYWdlcyA9IFtdCiAgICBmb3IgZnJhbWUgaW4gZnJhbWVzOgogICAgICAgIGltZyA9IEltYWdlLmZyb21ieXRlcygiUkdCIiwgZnJhbWUuc2l6ZSwgZnJhbWUuYmdyYSwgInJhdyIsICJCR1JYIikKICAgICAgICBpbWFnZXMuYXBwZW5kKGltZykKCiAgICBpbWFnZXNbMF0uc2F2ZSgKICAgICAgICBvdXRwdXRfcGF0aCwKICAgICAgICBzYXZlX2FsbD1UcnVlLAogICAgICAgIGFwcGVuZF9pbWFnZXM9aW1hZ2VzWzE6XSwKICAgICAgICBkdXJhdGlvbj1pbnQoMTAwMCAvIGZwcyksCiAgICAgICAgbG9vcD0wLAogICAgKQoKCmRlZiBfd3JpdGVfbXA0KGZyYW1lcywgb3V0cHV0X3BhdGg6IFBhdGgsIGZwczogaW50KToKICAgICIiIlNhdmUgZnJhbWVzIGFzIE1QNCB1c2luZyBmZm1wZWcgdmlhIHN1YnByb2Nlc3MuIiIiCiAgICBpbXBvcnQgc3VicHJvY2VzcwogICAgaW1wb3J0IHRlbXBmaWxlCiAgICBpbXBvcnQgb3MKCiAgICB0bXBfZGlyID0gUGF0aCh0ZW1wZmlsZS5ta2R0ZW1wKCkpCiAgICB0bXBfcGF0dGVybiA9IHRtcF9kaXIgLyAiZnJhbWVfJTA0ZC5wbmciCgogICAgZm9yIGksIGZyYW1lIGluIGVudW1lcmF0ZShmcmFtZXMpOgogICAgICAgIGltZ19wYXRoID0gdG1wX2RpciAvIGYiZnJhbWVfe2k6MDRkfS5wbmciCiAgICAgICAgbXNzLnRvb2xzLnRvX3BuZyhmcmFtZS5yZ2IsIGZyYW1lLnNpemUsIHN0cihpbWdfcGF0aCkpCgogICAgdHJ5OgogICAgICAgIHN1YnByb2Nlc3MucnVuKAogICAgICAgICAgICBbCiAgICAgICAgICAgICAgICAiZmZtcGVnIiwKICAgICAgICAgICAgICAgICIteSIsCiAgICAgICAgICAgICAgICAiLWZyYW1lcmF0ZSIsCiAgICAgICAgICAgICAgICBzdHIoZnBzKSwKICAgICAgICAgICAgICAgICItaSIsCiAgICAgICAgICAgICAgICBzdHIodG1wX3BhdHRlcm4pLAogICAgICAgICAgICAgICAgIi1jOnYiLAogICAgICAgICAgICAgICAgImxpYngyNjQiLAogICAgICAgICAgICAgICAgIi1waXhfZm10IiwKICAgICAgICAgICAgICAgICJ5dXY0MjBwIiwKICAgICAgICAgICAgICAgICItY3JmIiwKICAgICAgICAgICAgICAgICIyMyIsCiAgICAgICAgICAgICAgICBzdHIob3V0cHV0X3BhdGgpLAogICAgICAgICAgICBdLAogICAgICAgICAgICBjaGVjaz1UcnVlLAogICAgICAgICAgICBjYXB0dXJlX291dHB1dD1UcnVlLAogICAgICAgICkKICAgIGV4Y2VwdCBGaWxlTm90Rm91bmRFcnJvcjoKICAgICAgICBwcmludCgiRXJyb3I6IGZmbXBlZyBub3QgZm91bmQuIEluc3RhbGwgZmZtcGVnIG9yIHVzZSAtLWdpZiBmb3JtYXQuIikKICAgICAgICBwcmludCgiRnJhbWVzIHNhdmVkIHRvOiIsIHRtcF9kaXIpCiAgICBleGNlcHQgc3VicHJvY2Vzcy5DYWxsZWRQcm9jZXNzRXJyb3IgYXMgZToKICAgICAgICBwcmludCgiZmZtcGVnIGVycm9yOiIsIGUuc3RkZXJyLmRlY29kZSgpIGlmIGUuc3RkZXJyIGVsc2UgZSkKICAgIGZpbmFsbHk6CiAgICAgICAgZm9yIGYgaW4gdG1wX2Rpci5pdGVyZGlyKCk6CiAgICAgICAgICAgIGYudW5saW5rKCkKICAgICAgICB0bXBfZGlyLnJtZGlyKCkKCgppZiBfX25hbWVfXyA9PSAiX19tYWluX18iOgogICAgcGFyc2VyID0gYXJncGFyc2UuQXJndW1lbnRQYXJzZXIoZGVzY3JpcHRpb249IlJlY29yZCBSYWlyb3MgZGVtbyIpCiAgICBwYXJzZXIuYWRkX2FyZ3VtZW50KCItLW91dHB1dCIsICItbyIsIGRlZmF1bHQ9ImRlbW8uZ2lmIiwgaGVscD0iT3V0cHV0IGZpbGUgKC5naWYgb3IgLm1wNCkiKQogICAgcGFyc2VyLmFkZF9hcmd1bWVudCgiLS1kdXJhdGlvbiIsICItZCIsIHR5cGU9aW50LCBkZWZhdWx0PTMwLCBoZWxwPSJEdXJhdGlvbiBpbiBzZWNvbmRzIikKICAgIHBhcnNlci5hZGRfYXJndW1lbnQoIi0tZnBzIiwgdHlwZT1pbnQsIGRlZmF1bHQ9MTAsIGhlbHA9IkZyYW1lcyBwZXIgc2Vjb25kIikKICAgIGFyZ3MgPSBwYXJzZXIucGFyc2VfYXJncygpCgogICAgcmVjb3JkX3NjcmVlbihhcmdzLm91dHB1dCwgYXJncy5kdXJhdGlvbiwgYXJncy5mcHMpCg==
+"""Demo recorder — capture Rairos web UI + CLI as video/GIF.
+
+Usage:
+    python -m tools.demo_recorder --output demo.gif --duration 30
+    python -m tools.demo_recorder --output demo.mp4 --duration 60
+
+Requires: mss (pip install mss pillow)
+"""
+
+import argparse
+import time
+from pathlib import Path
+
+try:
+    import mss
+    import mss.tools
+except ImportError:
+    print("Error: mss not installed. Run: pip install mss pillow")
+    raise SystemExit(1) from None
+
+
+def record_screen(output: str, duration: int, fps: int = 10):
+    """Record screen to video/GIF using mss."""
+    output_path = Path(output)
+    with mss.mss() as sct:
+        monitor = sct.monitors[1]  # primary monitor
+        interval = 1.0 / fps
+
+        frames = []
+        start = time.time()
+        frame_num = 0
+
+        print(f"Recording {duration}s from monitor {monitor} at {fps}fps...")
+        print(f"Output: {output_path}")
+        print("Press Ctrl+C to stop early.")
+
+        try:
+            while time.time() - start < duration:
+                shot = sct.grab(monitor)
+                frames.append(shot)
+                frame_num += 1
+                time.sleep(interval)
+        except KeyboardInterrupt:
+            print(f"\nStopped at {len(frames)} frames.")
+
+    if not frames:
+        print("No frames captured.")
+        return
+
+    ext = output_path.suffix.lower()
+    if ext == ".gif":
+        _write_gif(frames, output_path, fps)
+    else:
+        _write_mp4(frames, output_path, fps)
+
+    print(f"Saved {len(frames)} frames → {output_path}")
+
+
+def _write_gif(frames, output_path: Path, fps: int):
+    """Convert frames to GIF using Pillow."""
+    from PIL import Image
+
+    images = []
+    for frame in frames:
+        img = Image.frombytes("RGB", frame.size, frame.bgra, "raw", "BGRX")
+        images.append(img)
+
+    images[0].save(
+        output_path,
+        save_all=True,
+        append_images=images[1:],
+        duration=int(1000 / fps),
+        loop=0,
+    )
+
+
+def _write_mp4(frames, output_path: Path, fps: int):
+    """Save frames as MP4 using ffmpeg via subprocess."""
+    import subprocess
+    import tempfile
+    import os
+
+    tmp_dir = Path(tempfile.mkdtemp())
+    tmp_pattern = tmp_dir / "frame_%04d.png"
+
+    for i, frame in enumerate(frames):
+        img_path = tmp_dir / f"frame_{i:04d}.png"
+        mss.tools.to_png(frame.rgb, frame.size, str(img_path))
+
+    try:
+        subprocess.run([
+            "ffmpeg", "-y",
+            "-framerate", str(fps),
+            "-i", str(tmp_pattern),
+            "-c:v", "libx264",
+            "-pix_fmt", "yuv420p",
+            "-crf", "23",
+            str(output_path),
+        ], check=True, capture_output=True)
+    except FileNotFoundError:
+        print("Error: ffmpeg not found. Install ffmpeg or use --gif format.")
+        print("Frames saved to:", tmp_dir)
+    except subprocess.CalledProcessError as e:
+        print("ffmpeg error:", e.stderr.decode() if e.stderr else e)
+    finally:
+        for f in tmp_dir.iterdir():
+            f.unlink()
+        tmp_dir.rmdir()
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Record Rairos demo")
+    parser.add_argument("--output", "-o", default="demo.gif", help="Output file (.gif or .mp4)")
+    parser.add_argument("--duration", "-d", type=int, default=30, help="Duration in seconds")
+    parser.add_argument("--fps", type=int, default=10, help="Frames per second")
+    args = parser.parse_args()
+
+    record_screen(args.output, args.duration, args.fps)

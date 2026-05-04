@@ -1,1 +1,553 @@
-IiIiVGllciAyIHVuaXQgdGVzdHMg4oCUIGxsbS9qb3VybmFsLnB5LCBwdXJlIGZ1bmN0aW9ucywgbm8gSS9PLiIiIgoKZnJvbSBsbG0uam91cm5hbCBpbXBvcnQgSm91cm5hbEVudHJ5CgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIEpvdXJuYWxFbnRyeSBkYXRhY2xhc3MgdGVzdHMKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0Sm91cm5hbEVudHJ5SW5pdDoKICAgICIiIlRlc3QgSm91cm5hbEVudHJ5IGRhdGFjbGFzcy4iIiIKCiAgICBkZWYgdGVzdF9yZXF1aXJlZF9maWVsZHMoc2VsZik6CiAgICAgICAgIiIiUmVxdWlyZWQgZmllbGRzOiBpZCwgY29udGVudC4iIiIKICAgICAgICBlbnRyeSA9IEpvdXJuYWxFbnRyeShpZD0iYWJjIiwgY29udGVudD0iRGlkIHJlc2VhcmNoIHRvZGF5IikKICAgICAgICBhc3NlcnQgZW50cnkuaWQgPT0gImFiYyIKICAgICAgICBhc3NlcnQgZW50cnkuY29udGVudCA9PSAiRGlkIHJlc2VhcmNoIHRvZGF5IgoKICAgIGRlZiB0ZXN0X29wdGlvbmFsX2ZpZWxkc19kZWZhdWx0KHNlbGYpOgogICAgICAgICIiIk9wdGlvbmFsIGZpZWxkcyBoYXZlIGRlZmF1bHRzLiIiIgogICAgICAgIGVudHJ5ID0gSm91cm5hbEVudHJ5KGlkPSJ4IiwgY29udGVudD0iQyIpCiAgICAgICAgIyBjcmVhdGVkX2F0IGlzIGF1dG8tZ2VuZXJhdGVkIGJ5IF9fcG9zdF9pbml0X18gKG5vdCAiIiBzaW5jZSBub3QgIiIgZXZhbHVhdGVzIFRydWUpCiAgICAgICAgYXNzZXJ0IGVudHJ5LnVwZGF0ZWRfYXQgPT0gIiIgICMgdHJ1bHkgZGVmYXVsdGVkCiAgICAgICAgYXNzZXJ0IGVudHJ5LnRhZ3MgPT0gW10KICAgICAgICBhc3NlcnQgZW50cnkucXVlc3Rpb25faWQgPT0gIiIKICAgICAgICBhc3NlcnQgZW50cnkuZXhwZXJpbWVudF9pZCA9PSAiIgogICAgICAgIGFzc2VydCBlbnRyeS5wYXBlcl9pZCA9PSAiIgogICAgICAgIGFzc2VydCBlbnRyeS5tb29kID09ICIiCiAgICAgICAgYXNzZXJ0IGVudHJ5LmhpZ2hsaWdodHMgPT0gW10KCiAgICBkZWYgdGVzdF9hbGxfZmllbGRzX2Nhbl9iZV9zZXQoc2VsZik6CiAgICAgICAgIiIiQWxsIGZpZWxkcyBjYW4gYmUgc2V0LiIiIgogICAgICAgIGVudHJ5ID0gSm91cm5hbEVudHJ5KAogICAgICAgICAgICBpZD0ieHl6IiwKICAgICAgICAgICAgY29udGVudD0iRGVlcCB3b3JrIHNlc3Npb24iLAogICAgICAgICAgICBjcmVhdGVkX2F0PSIyMDI2LTAxLTAxVDEwOjAwOjAwIiwKICAgICAgICAgICAgdXBkYXRlZF9hdD0iMjAyNi0wMS0wMVQxMjowMDowMCIsCiAgICAgICAgICAgIHRhZ3M9WyJmb2N1c2VkIiwgInByb2R1Y3RpdmUiXSwKICAgICAgICAgICAgcXVlc3Rpb25faWQ9InExIiwKICAgICAgICAgICAgZXhwZXJpbWVudF9pZD0iZTEiLAogICAgICAgICAgICBwYXBlcl9pZD0icDEiLAogICAgICAgICAgICBtb29kPSJwcm9kdWN0aXZlIiwKICAgICAgICAgICAgaGlnaGxpZ2h0cz1bImluc2lnaHQxIiwgImluc2lnaHQyIl0sCiAgICAgICAgKQogICAgICAgIGFzc2VydCBlbnRyeS5jcmVhdGVkX2F0ID09ICIyMDI2LTAxLTAxVDEwOjAwOjAwIgogICAgICAgIGFzc2VydCBlbnRyeS51cGRhdGVkX2F0ID09ICIyMDI2LTAxLTAxVDEyOjAwOjAwIgogICAgICAgIGFzc2VydCBlbnRyeS50YWdzID09IFsiZm9jdXNlZCIsICJwcm9kdWN0aXZlIl0KICAgICAgICBhc3NlcnQgZW50cnkucXVlc3Rpb25faWQgPT0gInExIgogICAgICAgIGFzc2VydCBlbnRyeS5leHBlcmltZW50X2lkID09ICJlMSIKICAgICAgICBhc3NlcnQgZW50cnkucGFwZXJfaWQgPT0gInAxIgogICAgICAgIGFzc2VydCBlbnRyeS5tb29kID09ICJwcm9kdWN0aXZlIgogICAgICAgIGFzc2VydCBlbnRyeS5oaWdobGlnaHRzID09IFsiaW5zaWdodDEiLCAiaW5zaWdodDIiXQoKCmNsYXNzIFRlc3RKb3VybmFsRW50cnlQb3N0SW5pdDoKICAgICIiIlRlc3QgSm91cm5hbEVudHJ5Ll9fcG9zdF9pbml0X18uIiIiCgogICAgZGVmIHRlc3RfZW1wdHlfY3JlYXRlZF9hdF90cmlnZ2Vyc19hdXRvX3RpbWVzdGFtcChzZWxmKToKICAgICAgICAiIiJFbXB0eSBjcmVhdGVkX2F0IHRyaWdnZXJzIGF1dG8tZ2VuZXJhdGlvbi4iIiIKICAgICAgICBlbnRyeSA9IEpvdXJuYWxFbnRyeShpZD0ieCIsIGNvbnRlbnQ9IkMiKQogICAgICAgIGFzc2VydCBlbnRyeS5jcmVhdGVkX2F0ICE9ICIiCiAgICAgICAgIyBTaG91bGQgYmUgSVNPIGZvcm1hdAogICAgICAgIGFzc2VydCAiVCIgaW4gZW50cnkuY3JlYXRlZF9hdAoKICAgIGRlZiB0ZXN0X25vbl9lbXB0eV9jcmVhdGVkX2F0X3ByZXNlcnZlZChzZWxmKToKICAgICAgICAiIiJOb24tZW1wdHkgY3JlYXRlZF9hdCBpcyBwcmVzZXJ2ZWQuIiIiCiAgICAgICAgZW50cnkgPSBKb3VybmFsRW50cnkoaWQ9IngiLCBjb250ZW50PSJDIiwgY3JlYXRlZF9hdD0iMjAyNS0wMS0wMVQwMDowMDowMCIpCiAgICAgICAgYXNzZXJ0IGVudHJ5LmNyZWF0ZWRfYXQgPT0gIjIwMjUtMDEtMDFUMDA6MDA6MDAiCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIHRvX2RpY3QgLyBmcm9tX2RpY3QgdGVzdHMKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0Sm91cm5hbEVudHJ5RGljdENvbnZlcnNpb246CiAgICAiIiJUZXN0IHRvX2RpY3QgYW5kIGZyb21fZGljdC4iIiIKCiAgICBkZWYgdGVzdF90b19kaWN0X2luY2x1ZGVzX2FsbF9maWVsZHMoc2VsZik6CiAgICAgICAgIiIidG9fZGljdCByZXR1cm5zIGFsbCBmaWVsZHMgYXMgZGljdC4iIiIKICAgICAgICBlbnRyeSA9IEpvdXJuYWxFbnRyeSgKICAgICAgICAgICAgaWQ9InRlc3QtaWQiLAogICAgICAgICAgICBjb250ZW50PSJUZXN0IGNvbnRlbnQiLAogICAgICAgICAgICBjcmVhdGVkX2F0PSIyMDI2LTAxLTAxVDEwOjAwOjAwIiwKICAgICAgICAgICAgdXBkYXRlZF9hdD0iMjAyNi0wMS0wMlQxMTowMDowMCIsCiAgICAgICAgICAgIHRhZ3M9WyJ0YWcxIl0sCiAgICAgICAgICAgIHF1ZXN0aW9uX2lkPSJxMSIsCiAgICAgICAgICAgIGV4cGVyaW1lbnRfaWQ9ImUxIiwKICAgICAgICAgICAgcGFwZXJfaWQ9InAxIiwKICAgICAgICAgICAgbW9vZD0iZXhjaXRlZCIsCiAgICAgICAgICAgIGhpZ2hsaWdodHM9WyJoMSJdLAogICAgICAgICkKICAgICAgICBkID0gZW50cnkudG9fZGljdCgpCiAgICAgICAgYXNzZXJ0IGRbImlkIl0gPT0gInRlc3QtaWQiCiAgICAgICAgYXNzZXJ0IGRbImNvbnRlbnQiXSA9PSAiVGVzdCBjb250ZW50IgogICAgICAgIGFzc2VydCBkWyJjcmVhdGVkX2F0Il0gPT0gIjIwMjYtMDEtMDFUMTA6MDA6MDAiCiAgICAgICAgYXNzZXJ0IGRbInVwZGF0ZWRfYXQiXSA9PSAiMjAyNi0wMS0wMlQxMTowMDowMCIKICAgICAgICBhc3NlcnQgZFsidGFncyJdID09IFsidGFnMSJdCiAgICAgICAgYXNzZXJ0IGRbInF1ZXN0aW9uX2lkIl0gPT0gInExIgogICAgICAgIGFzc2VydCBkWyJleHBlcmltZW50X2lkIl0gPT0gImUxIgogICAgICAgIGFzc2VydCBkWyJwYXBlcl9pZCJdID09ICJwMSIKICAgICAgICBhc3NlcnQgZFsibW9vZCJdID09ICJleGNpdGVkIgogICAgICAgIGFzc2VydCBkWyJoaWdobGlnaHRzIl0gPT0gWyJoMSJdCgogICAgZGVmIHRlc3RfZnJvbV9kaWN0X3JlY29uc3RydWN0c19lbnRyeShzZWxmKToKICAgICAgICAiIiJmcm9tX2RpY3QgcmVjb25zdHJ1Y3RzIGVudHJ5IGZyb20gZGljdC4iIiIKICAgICAgICBkYXRhID0gewogICAgICAgICAgICAiaWQiOiAicmVjb24iLAogICAgICAgICAgICAiY29udGVudCI6ICJSZWNvbnN0cnVjdGVkIiwKICAgICAgICAgICAgImNyZWF0ZWRfYXQiOiAiMjAyNi0wMi0xNVQwODowMDowMCIsCiAgICAgICAgICAgICJ1cGRhdGVkX2F0IjogIjIwMjYtMDItMTVUMTA6MDA6MDAiLAogICAgICAgICAgICAidGFncyI6IFsiYSIsICJiIl0sCiAgICAgICAgICAgICJxdWVzdGlvbl9pZCI6ICJxMiIsCiAgICAgICAgICAgICJleHBlcmltZW50X2lkIjogImUyIiwKICAgICAgICAgICAgInBhcGVyX2lkIjogInAyIiwKICAgICAgICAgICAgIm1vb2QiOiAic3R1Y2siLAogICAgICAgICAgICAiaGlnaGxpZ2h0cyI6IFsieCJdLAogICAgICAgIH0KICAgICAgICBlbnRyeSA9IEpvdXJuYWxFbnRyeS5mcm9tX2RpY3QoZGF0YSkKICAgICAgICBhc3NlcnQgZW50cnkuaWQgPT0gInJlY29uIgogICAgICAgIGFzc2VydCBlbnRyeS5jb250ZW50ID09ICJSZWNvbnN0cnVjdGVkIgogICAgICAgIGFzc2VydCBlbnRyeS5jcmVhdGVkX2F0ID09ICIyMDI2LTAyLTE1VDA4OjAwOjAwIgogICAgICAgIGFzc2VydCBlbnRyeS51cGRhdGVkX2F0ID09ICIyMDI2LTAyLTE1VDEwOjAwOjAwIgogICAgICAgIGFzc2VydCBlbnRyeS50YWdzID09IFsiYSIsICJiIl0KICAgICAgICBhc3NlcnQgZW50cnkucXVlc3Rpb25faWQgPT0gInEyIgogICAgICAgIGFzc2VydCBlbnRyeS5leHBlcmltZW50X2lkID09ICJlMiIKICAgICAgICBhc3NlcnQgZW50cnkucGFwZXJfaWQgPT0gInAyIgogICAgICAgIGFzc2VydCBlbnRyeS5tb29kID09ICJzdHVjayIKICAgICAgICBhc3NlcnQgZW50cnkuaGlnaGxpZ2h0cyA9PSBbIngiXQoKICAgIGRlZiB0ZXN0X2Zyb21fZGljdF90b19kaWN0X3JvdW5kdHJpcChzZWxmKToKICAgICAgICAiIiJSb3VuZHRyaXAgdGhyb3VnaCBmcm9tX2RpY3QgdGhlbiB0b19kaWN0IHByZXNlcnZlcyBkYXRhLiIiIgogICAgICAgIG9yaWdpbmFsID0gSm91cm5hbEVudHJ5KAogICAgICAgICAgICBpZD0icm91bmQiLAogICAgICAgICAgICBjb250ZW50PSJSb3VuZHRyaXAgdGVzdCIsCiAgICAgICAgICAgIHRhZ3M9WyJ0ZXN0Il0sCiAgICAgICAgICAgIG1vb2Q9Im5ldXRyYWwiLAogICAgICAgICkKICAgICAgICAjIEZvcmNlIGNyZWF0ZWRfYXQgc28gcm91bmR0cmlwIGlzIHN0YWJsZQogICAgICAgIG9yaWdpbmFsLmNyZWF0ZWRfYXQgPSAiMjAyNi0wMy0wMVQwOTowMDowMCIKICAgICAgICBkID0gb3JpZ2luYWwudG9fZGljdCgpCiAgICAgICAgcmVjb25zdHJ1Y3RlZCA9IEpvdXJuYWxFbnRyeS5mcm9tX2RpY3QoZCkKICAgICAgICBhc3NlcnQgcmVjb25zdHJ1Y3RlZC5pZCA9PSBvcmlnaW5hbC5pZAogICAgICAgIGFzc2VydCByZWNvbnN0cnVjdGVkLmNvbnRlbnQgPT0gb3JpZ2luYWwuY29udGVudAogICAgICAgIGFzc2VydCByZWNvbnN0cnVjdGVkLmNyZWF0ZWRfYXQgPT0gb3JpZ2luYWwuY3JlYXRlZF9hdAogICAgICAgIGFzc2VydCByZWNvbnN0cnVjdGVkLnRhZ3MgPT0gb3JpZ2luYWwudGFncwogICAgICAgIGFzc2VydCByZWNvbnN0cnVjdGVkLm1vb2QgPT0gb3JpZ2luYWwubW9vZAoKICAgIGRlZiB0ZXN0X3RvX2RpY3RfZW1wdHlfbGlzdHNfYW5kX3N0cmluZ3Moc2VsZik6CiAgICAgICAgIiIiRW1wdHkgb3B0aW9uYWwgZmllbGRzIGFyZSBpbmNsdWRlZCBpbiBkaWN0LiIiIgogICAgICAgIGVudHJ5ID0gSm91cm5hbEVudHJ5KGlkPSJlIiwgY29udGVudD0iQyIpCiAgICAgICAgZCA9IGVudHJ5LnRvX2RpY3QoKQogICAgICAgIGFzc2VydCBkWyJ0YWdzIl0gPT0gW10KICAgICAgICBhc3NlcnQgZFsiaGlnaGxpZ2h0cyJdID09IFtdCiAgICAgICAgYXNzZXJ0IGRbInF1ZXN0aW9uX2lkIl0gPT0gIiIKICAgICAgICBhc3NlcnQgZFsibW9vZCJdID09ICIiCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIE1vb2QgaWNvbnMgKHJlbmRlcl9saXN0IGhlbHBlcikKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQpjbGFzcyBUZXN0TW9vZEljb25zOgogICAgIiIiVGVzdCBtb29kIGljb24gbWFwcGluZyB1c2VkIGluIHJlbmRlcl9saXN0LiIiIgoKICAgIGRlZiBfbW9vZF9pY29uKHNlbGYsIG1vb2Q6IHN0cikgLT4gc3RyOgogICAgICAgICIiIlJlcGxpY2F0ZSBtb29kIGljb24gbG9naWMuIiIiCiAgICAgICAgcmV0dXJuIHsicHJvZHVjdGl2ZSI6ICLimqEiLCAic3R1Y2siOiAi8J+YkyIsICJleGNpdGVkIjogIvCfjokiLCAibmV1dHJhbCI6ICLwn5OdIn0uZ2V0KG1vb2QsICLwn5OdIikKCiAgICBkZWYgdGVzdF9rbm93bl9tb29kcyhzZWxmKToKICAgICAgICAiIiJLbm93biBtb29kcyBtYXAgdG8gY29ycmVjdCBpY29ucy4iIiIKICAgICAgICBhc3NlcnQgc2VsZi5fbW9vZF9pY29uKCJwcm9kdWN0aXZlIikgPT0gIuKaoSIKICAgICAgICBhc3NlcnQgc2VsZi5fbW9vZF9pY29uKCJzdHVjayIpID09ICLwn5iTIgogICAgICAgIGFzc2VydCBzZWxmLl9tb29kX2ljb24oImV4Y2l0ZWQiKSA9PSAi8J+OiSIKICAgICAgICBhc3NlcnQgc2VsZi5fbW9vZF9pY29uKCJuZXV0cmFsIikgPT0gIvCfk50iCgogICAgZGVmIHRlc3RfdW5rbm93bl9tb29kX2RlZmF1bHRzX3RvX21lbW8oc2VsZik6CiAgICAgICAgIiIiVW5rbm93biBtb29kIGRlZmF1bHRzIHRvIG1lbW8gaWNvbi4iIiIKICAgICAgICBhc3NlcnQgc2VsZi5fbW9vZF9pY29uKCJ1bmtub3duIikgPT0gIvCfk50iCiAgICAgICAgYXNzZXJ0IHNlbGYuX21vb2RfaWNvbigiIikgPT0gIvCfk50iCiAgICAgICAgYXNzZXJ0IHNlbGYuX21vb2RfaWNvbigiaGFwcHkiKSA9PSAi8J+TnSIKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgbGlzdF9lbnRyaWVzIGZpbHRlcmluZyBsb2dpYwojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RMaXN0RW50cmllc0ZpbHRlcjoKICAgICIiIlRlc3QgbGlzdF9lbnRyaWVzIGZpbHRlcmluZyBsb2dpYy4iIiIKCiAgICBkZWYgX21ha2VfZW50cnkoCiAgICAgICAgc2VsZiwgaWRfLCBjcmVhdGVkX2F0LCB0YWdzPU5vbmUsIHF1ZXN0aW9uX2lkPSIiLCBleHBlcmltZW50X2lkPSIiLCBjb250ZW50PSJlbnRyeSIKICAgICk6CiAgICAgICAgIiIiSGVscGVyIHRvIGNyZWF0ZSBKb3VybmFsRW50cnkgd2l0aCBzcGVjaWZpYyBmaWVsZHMuIiIiCiAgICAgICAgZW50cnkgPSBKb3VybmFsRW50cnkoaWQ9aWRfLCBjb250ZW50PWNvbnRlbnQsIGNyZWF0ZWRfYXQ9Y3JlYXRlZF9hdCkKICAgICAgICBpZiB0YWdzOgogICAgICAgICAgICBlbnRyeS50YWdzID0gdGFncwogICAgICAgIGVudHJ5LnF1ZXN0aW9uX2lkID0gcXVlc3Rpb25faWQKICAgICAgICBlbnRyeS5leHBlcmltZW50X2lkID0gZXhwZXJpbWVudF9pZAogICAgICAgIHJldHVybiBlbnRyeQoKICAgIGRlZiBfZmlsdGVyX2VudHJpZXMoCiAgICAgICAgc2VsZiwgZW50cmllcywgdGFnPSIiLCBxdWVzdGlvbl9pZD0iIiwgZXhwZXJpbWVudF9pZD0iIiwgdG9kYXk9RmFsc2UsIGRheXM9MAogICAgKToKICAgICAgICAiIiJSZXBsaWNhdGUgbGlzdF9lbnRyaWVzIGZpbHRlcmluZy4iIiIKICAgICAgICAjIFNpbXVsYXRlIHRvZGF5IGZpbHRlcgogICAgICAgIHRvZGF5X3N0ciA9ICIyMDI2LTA0LTI3IgogICAgICAgIHJlc3VsdCA9IGxpc3QoZW50cmllcykKCiAgICAgICAgaWYgdG9kYXk6CiAgICAgICAgICAgIHJlc3VsdCA9IFtlIGZvciBlIGluIHJlc3VsdCBpZiBlLmNyZWF0ZWRfYXQuc3RhcnRzd2l0aCh0b2RheV9zdHIpXQogICAgICAgIGVsaWYgZGF5cyA+IDA6CiAgICAgICAgICAgICMgYXBwcm94aW1hdGU6IGVudHJpZXMgZnJvbSBsYXN0IGBkYXlzYCBkYXlzCiAgICAgICAgICAgICMgRm9yIHRlc3RpbmcsIHVzZSBkYXlzIGZpbHRlcgogICAgICAgICAgICBjdXRvZmZfaXNvID0gZiIyMDI2LTA0LXsyNyAtIGRheXMgKyAxOjAyZH1UMDA6MDA6MDAiCiAgICAgICAgICAgIHJlc3VsdCA9IFtlIGZvciBlIGluIHJlc3VsdCBpZiBlLmNyZWF0ZWRfYXQgPj0gY3V0b2ZmX2lzb10KCiAgICAgICAgaWYgdGFnOgogICAgICAgICAgICByZXN1bHQgPSBbZSBmb3IgZSBpbiByZXN1bHQgaWYgdGFnIGluIGUudGFnc10KICAgICAgICBpZiBxdWVzdGlvbl9pZDoKICAgICAgICAgICAgcmVzdWx0ID0gW2UgZm9yIGUgaW4gcmVzdWx0IGlmIGUucXVlc3Rpb25faWQgPT0gcXVlc3Rpb25faWRdCiAgICAgICAgaWYgZXhwZXJpbWVudF9pZDoKICAgICAgICAgICAgcmVzdWx0ID0gW2UgZm9yIGUgaW4gcmVzdWx0IGlmIGUuZXhwZXJpbWVudF9pZCA9PSBleHBlcmltZW50X2lkXQoKICAgICAgICByZXN1bHQuc29ydChrZXk9bGFtYmRhIHg6IHguY3JlYXRlZF9hdCwgcmV2ZXJzZT1UcnVlKQogICAgICAgIHJldHVybiByZXN1bHQKCiAgICBkZWYgdGVzdF9maWx0ZXJfYnlfdGFnKHNlbGYpOgogICAgICAgICIiIlRhZyBmaWx0ZXIga2VlcHMgbWF0Y2hpbmcgZW50cmllcy4iIiIKICAgICAgICBlbnRyaWVzID0gWwogICAgICAgICAgICBzZWxmLl9tYWtlX2VudHJ5KCIxIiwgIjIwMjYtMDQtMDFUMTA6MDA6MDAiLCB0YWdzPVsicmVzZWFyY2giXSksCiAgICAgICAgICAgIHNlbGYuX21ha2VfZW50cnkoIjIiLCAiMjAyNi0wNC0wMlQxMDowMDowMCIsIHRhZ3M9WyJyZXZpZXciXSksCiAgICAgICAgICAgIHNlbGYuX21ha2VfZW50cnkoIjMiLCAiMjAyNi0wNC0wM1QxMDowMDowMCIsIHRhZ3M9WyJyZXNlYXJjaCIsICJyZXZpZXciXSksCiAgICAgICAgXQogICAgICAgIHJlc3VsdCA9IHNlbGYuX2ZpbHRlcl9lbnRyaWVzKGVudHJpZXMsIHRhZz0icmVzZWFyY2giKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0KSA9PSAyCiAgICAgICAgYXNzZXJ0IHtlLmlkIGZvciBlIGluIHJlc3VsdH0gPT0geyIxIiwgIjMifQoKICAgIGRlZiB0ZXN0X2ZpbHRlcl9ieV9xdWVzdGlvbl9pZChzZWxmKToKICAgICAgICAiIiJRdWVzdGlvbiBJRCBmaWx0ZXIga2VlcHMgbWF0Y2hpbmcgZW50cmllcy4iIiIKICAgICAgICBlbnRyaWVzID0gWwogICAgICAgICAgICBzZWxmLl9tYWtlX2VudHJ5KCIxIiwgIjIwMjYtMDQtMDFUMTA6MDA6MDAiLCBxdWVzdGlvbl9pZD0icTEiKSwKICAgICAgICAgICAgc2VsZi5fbWFrZV9lbnRyeSgiMiIsICIyMDI2LTA0LTAyVDEwOjAwOjAwIiwgcXVlc3Rpb25faWQ9InEyIiksCiAgICAgICAgICAgIHNlbGYuX21ha2VfZW50cnkoIjMiLCAiMjAyNi0wNC0wM1QxMDowMDowMCIsIHF1ZXN0aW9uX2lkPSJxMSIpLAogICAgICAgIF0KICAgICAgICByZXN1bHQgPSBzZWxmLl9maWx0ZXJfZW50cmllcyhlbnRyaWVzLCBxdWVzdGlvbl9pZD0icTEiKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0KSA9PSAyCiAgICAgICAgYXNzZXJ0IHtlLmlkIGZvciBlIGluIHJlc3VsdH0gPT0geyIxIiwgIjMifQoKICAgIGRlZiB0ZXN0X2ZpbHRlcl9ieV9leHBlcmltZW50X2lkKHNlbGYpOgogICAgICAgICIiIkV4cGVyaW1lbnQgSUQgZmlsdGVyIGtlZXBzIG1hdGNoaW5nIGVudHJpZXMuIiIiCiAgICAgICAgZW50cmllcyA9IFsKICAgICAgICAgICAgc2VsZi5fbWFrZV9lbnRyeSgiMSIsICIyMDI2LTA0LTAxVDEwOjAwOjAwIiwgZXhwZXJpbWVudF9pZD0iZTEiKSwKICAgICAgICAgICAgc2VsZi5fbWFrZV9lbnRyeSgiMiIsICIyMDI2LTA0LTAyVDEwOjAwOjAwIiwgZXhwZXJpbWVudF9pZD0iZTIiKSwKICAgICAgICBdCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fZmlsdGVyX2VudHJpZXMoZW50cmllcywgZXhwZXJpbWVudF9pZD0iZTEiKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0KSA9PSAxCiAgICAgICAgYXNzZXJ0IHJlc3VsdFswXS5pZCA9PSAiMSIKCiAgICBkZWYgdGVzdF9zb3J0X2J5X2RhdGVfZGVzY2VuZGluZyhzZWxmKToKICAgICAgICAiIiJSZXN1bHRzIGFyZSBzb3J0ZWQgYnkgY3JlYXRlZF9hdCBkZXNjZW5kaW5nLiIiIgogICAgICAgIGVudHJpZXMgPSBbCiAgICAgICAgICAgIHNlbGYuX21ha2VfZW50cnkoIjEiLCAiMjAyNi0wNC0wMVQxMDowMDowMCIpLAogICAgICAgICAgICBzZWxmLl9tYWtlX2VudHJ5KCIyIiwgIjIwMjYtMDQtMTBUMTA6MDA6MDAiKSwKICAgICAgICAgICAgc2VsZi5fbWFrZV9lbnRyeSgiMyIsICIyMDI2LTA0LTA1VDEwOjAwOjAwIiksCiAgICAgICAgXQogICAgICAgIHJlc3VsdCA9IHNlbGYuX2ZpbHRlcl9lbnRyaWVzKGVudHJpZXMpCiAgICAgICAgYXNzZXJ0IHJlc3VsdFswXS5pZCA9PSAiMiIgICMgQXByaWwgMTAKICAgICAgICBhc3NlcnQgcmVzdWx0WzFdLmlkID09ICIzIiAgIyBBcHJpbCA1CiAgICAgICAgYXNzZXJ0IHJlc3VsdFsyXS5pZCA9PSAiMSIgICMgQXByaWwgMQoKICAgIGRlZiB0ZXN0X2xpbWl0X2FwcGxpZWRfYWZ0ZXJfc29ydChzZWxmKToKICAgICAgICAiIiJMaW1pdCBpcyBhcHBsaWVkIGFmdGVyIGZpbHRlcmluZyBhbmQgc29ydGluZy4iIiIKICAgICAgICBlbnRyaWVzID0gW3NlbGYuX21ha2VfZW50cnkoc3RyKGkpLCBmIjIwMjYtMDQte2k6MDJkfVQxMDowMDowMCIpIGZvciBpIGluIHJhbmdlKDEsIDExKV0KICAgICAgICByZXN1bHQgPSBzZWxmLl9maWx0ZXJfZW50cmllcyhlbnRyaWVzKQogICAgICAgICMgSnVzdCBjaGVjayBzb3J0aW5nIGlzIHByZXNlcnZlZAogICAgICAgIGRhdGVzID0gW2UuY3JlYXRlZF9hdCBmb3IgZSBpbiByZXN1bHRdCiAgICAgICAgYXNzZXJ0IGRhdGVzID09IHNvcnRlZChkYXRlcywgcmV2ZXJzZT1UcnVlKQoKICAgIGRlZiB0ZXN0X2NvbWJpbmVkX2ZpbHRlcnMoc2VsZik6CiAgICAgICAgIiIiTXVsdGlwbGUgZmlsdGVycyBjYW4gYmUgY29tYmluZWQuIiIiCiAgICAgICAgZW50cmllcyA9IFsKICAgICAgICAgICAgc2VsZi5fbWFrZV9lbnRyeSgiMSIsICIyMDI2LTA0LTAxVDEwOjAwOjAwIiwgdGFncz1bInJlc2VhcmNoIl0sIHF1ZXN0aW9uX2lkPSJxMSIpLAogICAgICAgICAgICBzZWxmLl9tYWtlX2VudHJ5KCIyIiwgIjIwMjYtMDQtMDJUMTA6MDA6MDAiLCB0YWdzPVsicmVzZWFyY2giXSwgcXVlc3Rpb25faWQ9InEyIiksCiAgICAgICAgICAgIHNlbGYuX21ha2VfZW50cnkoIjMiLCAiMjAyNi0wNC0wM1QxMDowMDowMCIsIHRhZ3M9WyJyZXZpZXciXSwgcXVlc3Rpb25faWQ9InExIiksCiAgICAgICAgXQogICAgICAgIHJlc3VsdCA9IHNlbGYuX2ZpbHRlcl9lbnRyaWVzKGVudHJpZXMsIHRhZz0icmVzZWFyY2giLCBxdWVzdGlvbl9pZD0icTEiKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0KSA9PSAxCiAgICAgICAgYXNzZXJ0IHJlc3VsdFswXS5pZCA9PSAiMSIKCiAgICBkZWYgdGVzdF9ub19tYXRjaGVzX3JldHVybnNfZW1wdHkoc2VsZik6CiAgICAgICAgIiIiTm8gbWF0Y2hlcyByZXR1cm5zIGVtcHR5IGxpc3QuIiIiCiAgICAgICAgZW50cmllcyA9IFsKICAgICAgICAgICAgc2VsZi5fbWFrZV9lbnRyeSgiMSIsICIyMDI2LTA0LTAxVDEwOjAwOjAwIiwgdGFncz1bInJldmlldyJdKSwKICAgICAgICBdCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fZmlsdGVyX2VudHJpZXMoZW50cmllcywgdGFnPSJub25leGlzdGVudCIpCiAgICAgICAgYXNzZXJ0IHJlc3VsdCA9PSBbXQoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBzdGF0cygpIGxvZ2ljCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFN0YXRzTG9naWM6CiAgICAiIiJUZXN0IHN0YXRzKCkgYWdncmVnYXRpb24gbG9naWMuIiIiCgogICAgZGVmIF9zdGF0cyhzZWxmLCBlbnRyaWVzKSAtPiBkaWN0OgogICAgICAgICIiIlJlcGxpY2F0ZSBzdGF0cyBhZ2dyZWdhdGlvbi4iIiIKICAgICAgICBpZiBub3QgZW50cmllczoKICAgICAgICAgICAgcmV0dXJuIHsidG90YWwiOiAwLCAidGhpc193ZWVrIjogMCwgInRoaXNfbW9udGgiOiAwfQoKICAgICAgICB3ZWVrX2FnbyA9ICIyMDI2LTA0LTIwVDEyOjAwOjAwIgogICAgICAgIG1vbnRoX2FnbyA9ICIyMDI2LTAzLTI4VDEyOjAwOjAwIgoKICAgICAgICB0YWdzX2NvdW50OiBkaWN0W3N0ciwgaW50XSA9IHt9CiAgICAgICAgbW9vZF9jb3VudDogZGljdFtzdHIsIGludF0gPSB7fQogICAgICAgIGZvciBlIGluIGVudHJpZXM6CiAgICAgICAgICAgIGZvciB0IGluIGUudGFnczoKICAgICAgICAgICAgICAgIHRhZ3NfY291bnRbdF0gPSB0YWdzX2NvdW50LmdldCh0LCAwKSArIDEKICAgICAgICAgICAgaWYgZS5tb29kOgogICAgICAgICAgICAgICAgbW9vZF9jb3VudFtlLm1vb2RdID0gbW9vZF9jb3VudC5nZXQoZS5tb29kLCAwKSArIDEKCiAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgInRvdGFsIjogbGVuKGVudHJpZXMpLAogICAgICAgICAgICAidGhpc193ZWVrIjogbGVuKFtlIGZvciBlIGluIGVudHJpZXMgaWYgZS5jcmVhdGVkX2F0ID49IHdlZWtfYWdvXSksCiAgICAgICAgICAgICJ0aGlzX21vbnRoIjogbGVuKFtlIGZvciBlIGluIGVudHJpZXMgaWYgZS5jcmVhdGVkX2F0ID49IG1vbnRoX2Fnb10pLAogICAgICAgICAgICAidG9wX3RhZ3MiOiBzb3J0ZWQodGFnc19jb3VudC5pdGVtcygpLCBrZXk9bGFtYmRhIHg6IC14WzFdKVs6MTBdLAogICAgICAgICAgICAibW9vZF9kaXN0cmlidXRpb24iOiBtb29kX2NvdW50LAogICAgICAgIH0KCiAgICBkZWYgdGVzdF9lbXB0eV9yZXR1cm5zX3plcm9zKHNlbGYpOgogICAgICAgICIiIkVtcHR5IGVudHJpZXMgcmV0dXJucyB6ZXJvIGNvdW50cy4iIiIKICAgICAgICByZXN1bHQgPSBzZWxmLl9zdGF0cyhbXSkKICAgICAgICBhc3NlcnQgcmVzdWx0WyJ0b3RhbCJdID09IDAKICAgICAgICBhc3NlcnQgcmVzdWx0WyJ0aGlzX3dlZWsiXSA9PSAwCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsidGhpc19tb250aCJdID09IDAKCiAgICBkZWYgdGVzdF90b3RhbF9jb3VudChzZWxmKToKICAgICAgICAiIiJUb3RhbCBjb3VudHMgYWxsIGVudHJpZXMuIiIiCiAgICAgICAgZW50cmllcyA9IFtKb3VybmFsRW50cnkoaWQ9c3RyKGkpLCBjb250ZW50PWYiRXtpfSIpIGZvciBpIGluIHJhbmdlKDUpXQogICAgICAgICMgU2V0IGRhdGVzIHNwcmVhZCBhY3Jvc3MgbW9udGhzCiAgICAgICAgZm9yIGksIGVudHJ5IGluIGVudW1lcmF0ZShlbnRyaWVzKToKICAgICAgICAgICAgZW50cnkuY3JlYXRlZF9hdCA9IGYiMjAyNi0weyhpICUgMykgKyAxfS17MTAgKyBpOjAyZH1UMTA6MDA6MDAiCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fc3RhdHMoZW50cmllcykKICAgICAgICBhc3NlcnQgcmVzdWx0WyJ0b3RhbCJdID09IDUKCiAgICBkZWYgdGVzdF90aGlzX3dlZWtfZmlsdGVyKHNlbGYpOgogICAgICAgICIiInRoaXNfd2VlayBjb3VudHMgZW50cmllcyBmcm9tIGxhc3QgNyBkYXlzLiIiIgogICAgICAgIGVudHJpZXMgPSBbCiAgICAgICAgICAgIEpvdXJuYWxFbnRyeShpZD0iMSIsIGNvbnRlbnQ9IlciLCBjcmVhdGVkX2F0PSIyMDI2LTA0LTI3VDEwOjAwOjAwIiksCiAgICAgICAgICAgIEpvdXJuYWxFbnRyeShpZD0iMiIsIGNvbnRlbnQ9IlcyIiwgY3JlYXRlZF9hdD0iMjAyNi0wNC0yNVQxMDowMDowMCIpLAogICAgICAgICAgICBKb3VybmFsRW50cnkoaWQ9IjMiLCBjb250ZW50PSJPIiwgY3JlYXRlZF9hdD0iMjAyNi0wNC0xMFQxMDowMDowMCIpLCAgIyAxNyBkYXlzIGFnbwogICAgICAgIF0KICAgICAgICByZXN1bHQgPSBzZWxmLl9zdGF0cyhlbnRyaWVzKQogICAgICAgIGFzc2VydCByZXN1bHRbInRoaXNfd2VlayJdID09IDIKCiAgICBkZWYgdGVzdF90aGlzX21vbnRoX2ZpbHRlcihzZWxmKToKICAgICAgICAiIiJ0aGlzX21vbnRoIGNvdW50cyBlbnRyaWVzIGZyb20gbGFzdCAzMCBkYXlzLiIiIgogICAgICAgIGVudHJpZXMgPSBbCiAgICAgICAgICAgIEpvdXJuYWxFbnRyeShpZD0iMSIsIGNvbnRlbnQ9Ik0iLCBjcmVhdGVkX2F0PSIyMDI2LTA0LTI3VDEwOjAwOjAwIiksCiAgICAgICAgICAgIEpvdXJuYWxFbnRyeShpZD0iMiIsIGNvbnRlbnQ9Ik0yIiwgY3JlYXRlZF9hdD0iMjAyNi0wNC0wMVQxMDowMDowMCIpLAogICAgICAgICAgICBKb3VybmFsRW50cnkoaWQ9IjMiLCBjb250ZW50PSJPIiwgY3JlYXRlZF9hdD0iMjAyNi0wMi0wMVQxMDowMDowMCIpLCAgIyBvbGQKICAgICAgICBdCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fc3RhdHMoZW50cmllcykKICAgICAgICBhc3NlcnQgcmVzdWx0WyJ0aGlzX21vbnRoIl0gPT0gMgoKICAgIGRlZiB0ZXN0X3RvcF90YWdzX3NvcnRlZF9ieV9jb3VudChzZWxmKToKICAgICAgICAiIiJ0b3BfdGFncyBzb3J0ZWQgYnkgY291bnQgZGVzY2VuZGluZy4iIiIKICAgICAgICBlbnRyaWVzID0gWwogICAgICAgICAgICBKb3VybmFsRW50cnkoaWQ9IjEiLCBjb250ZW50PSJFMSIsIHRhZ3M9WyJweXRob24iLCAibWwiXSksCiAgICAgICAgICAgIEpvdXJuYWxFbnRyeShpZD0iMiIsIGNvbnRlbnQ9IkUyIiwgdGFncz1bInB5dGhvbiIsICJyZXNlYXJjaCJdKSwKICAgICAgICAgICAgSm91cm5hbEVudHJ5KGlkPSIzIiwgY29udGVudD0iRTMiLCB0YWdzPVsicHl0aG9uIl0pLAogICAgICAgICAgICBKb3VybmFsRW50cnkoaWQ9IjQiLCBjb250ZW50PSJFNCIsIHRhZ3M9WyJyZXNlYXJjaCJdKSwKICAgICAgICBdCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fc3RhdHMoZW50cmllcykKICAgICAgICB0b3AgPSByZXN1bHRbInRvcF90YWdzIl0KICAgICAgICBhc3NlcnQgdG9wWzBdID09ICgicHl0aG9uIiwgMykKICAgICAgICBhc3NlcnQgdG9wWzFdID09ICgicmVzZWFyY2giLCAyKQoKICAgIGRlZiB0ZXN0X3RvcF90YWdzX2xpbWl0ZWRfdG9fMTAoc2VsZik6CiAgICAgICAgIiIidG9wX3RhZ3MgbGltaXRlZCB0byAxMCBpdGVtcy4iIiIKICAgICAgICBlbnRyaWVzID0gW0pvdXJuYWxFbnRyeShpZD1zdHIoaSksIGNvbnRlbnQ9ZiJFe2l9IiwgdGFncz1bZiJ0YWd7aX0iXSkgZm9yIGkgaW4gcmFuZ2UoMTUpXQogICAgICAgIHJlc3VsdCA9IHNlbGYuX3N0YXRzKGVudHJpZXMpCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHRbInRvcF90YWdzIl0pID09IDEwCgogICAgZGVmIHRlc3RfbW9vZF9kaXN0cmlidXRpb24oc2VsZik6CiAgICAgICAgIiIibW9vZF9kaXN0cmlidXRpb24gY291bnRzIGVhY2ggbW9vZC4iIiIKICAgICAgICBlbnRyaWVzID0gWwogICAgICAgICAgICBKb3VybmFsRW50cnkoaWQ9IjEiLCBjb250ZW50PSJFMSIsIG1vb2Q9InByb2R1Y3RpdmUiKSwKICAgICAgICAgICAgSm91cm5hbEVudHJ5KGlkPSIyIiwgY29udGVudD0iRTIiLCBtb29kPSJwcm9kdWN0aXZlIiksCiAgICAgICAgICAgIEpvdXJuYWxFbnRyeShpZD0iMyIsIGNvbnRlbnQ9IkUzIiwgbW9vZD0ic3R1Y2siKSwKICAgICAgICAgICAgSm91cm5hbEVudHJ5KGlkPSI0IiwgY29udGVudD0iRTQiLCBtb29kPSIiKSwgICMgZW1wdHkgbW9vZCBpZ25vcmVkCiAgICAgICAgXQogICAgICAgIHJlc3VsdCA9IHNlbGYuX3N0YXRzKGVudHJpZXMpCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsibW9vZF9kaXN0cmlidXRpb24iXVsicHJvZHVjdGl2ZSJdID09IDIKICAgICAgICBhc3NlcnQgcmVzdWx0WyJtb29kX2Rpc3RyaWJ1dGlvbiJdWyJzdHVjayJdID09IDEKICAgICAgICBhc3NlcnQgIm5ldXRyYWwiIG5vdCBpbiByZXN1bHRbIm1vb2RfZGlzdHJpYnV0aW9uIl0KCiAgICBkZWYgdGVzdF9lbXB0eV90YWdzX25vX3RvcF90YWdzX2NyYXNoKHNlbGYpOgogICAgICAgICIiIkVtcHR5IHRhZ3MgZG9lc24ndCBjYXVzZSB0b3BfdGFncyB0byBjcmFzaC4iIiIKICAgICAgICBlbnRyaWVzID0gW0pvdXJuYWxFbnRyeShpZD0iMSIsIGNvbnRlbnQ9IkUxIiwgdGFncz1bXSldCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fc3RhdHMoZW50cmllcykKICAgICAgICBhc3NlcnQgcmVzdWx0WyJ0b3BfdGFncyJdID09IFtdCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIHJlbmRlcl9saXN0IHRlc3RzCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KY2xhc3MgVGVzdFJlbmRlckxpc3Q6CiAgICAiIiJUZXN0IHJlbmRlcl9saXN0IGZvcm1hdHRpbmcuIiIiCgogICAgZGVmIF9yZW5kZXJfbGlzdChzZWxmLCBlbnRyaWVzLCB2ZXJib3NlPUZhbHNlKToKICAgICAgICAiIiJSZXBsaWNhdGUgcmVuZGVyX2xpc3QgZm9ybWF0dGluZy4iIiIKICAgICAgICBpZiBub3QgZW50cmllczoKICAgICAgICAgICAgcmV0dXJuICJObyBqb3VybmFsIGVudHJpZXMuIgoKICAgICAgICBtb29kX2ljb25zID0geyJwcm9kdWN0aXZlIjogIuKaoSIsICJzdHVjayI6ICLwn5iTIiwgImV4Y2l0ZWQiOiAi8J+OiSIsICJuZXV0cmFsIjogIvCfk50ifQogICAgICAgIGxpbmVzID0gW10KICAgICAgICBmb3IgZSBpbiBlbnRyaWVzOgogICAgICAgICAgICBpY29uID0gbW9vZF9pY29ucy5nZXQoZS5tb29kLCAi8J+TnSIpCiAgICAgICAgICAgIGRhdGUgPSBlLmNyZWF0ZWRfYXRbOjEwXQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiJ7aWNvbn0gW3tkYXRlfV0ge2UuY29udGVudFs6ODBdfSIpCiAgICAgICAgICAgIGlmIHZlcmJvc2U6CiAgICAgICAgICAgICAgICBpZiBlLnRhZ3M6CiAgICAgICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAgVGFnczogeycsICcuam9pbihlLnRhZ3MpfSIpCiAgICAgICAgICAgICAgICBpZiBlLnF1ZXN0aW9uX2lkOgogICAgICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgIFF1ZXN0aW9uOiB7ZS5xdWVzdGlvbl9pZH0iKQogICAgICAgICAgICAgICAgaWYgZS5leHBlcmltZW50X2lkOgogICAgICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgIEV4cGVyaW1lbnQ6IHtlLmV4cGVyaW1lbnRfaWR9IikKICAgICAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQoKICAgIGRlZiB0ZXN0X2VtcHR5X3JldHVybnNfcGxhY2Vob2xkZXIoc2VsZik6CiAgICAgICAgIiIiRW1wdHkgbGlzdCByZXR1cm5zIHBsYWNlaG9sZGVyIHRleHQuIiIiCiAgICAgICAgYXNzZXJ0IHNlbGYuX3JlbmRlcl9saXN0KFtdKSA9PSAiTm8gam91cm5hbCBlbnRyaWVzLiIKCiAgICBkZWYgdGVzdF9jb250ZW50X3RydW5jYXRlZF90b184MF9jaGFycyhzZWxmKToKICAgICAgICAiIiJDb250ZW50IGlzIHRydW5jYXRlZCB0byA4MCBjaGFyYWN0ZXJzLiIiIgogICAgICAgIGxvbmdfY29udGVudCA9ICJYIiAqIDEwMAogICAgICAgIGVudHJ5ID0gSm91cm5hbEVudHJ5KGlkPSJ4IiwgY29udGVudD1sb25nX2NvbnRlbnQsIGNyZWF0ZWRfYXQ9IjIwMjYtMDQtMDFUMTA6MDA6MDAiKQogICAgICAgIG91dHB1dCA9IHNlbGYuX3JlbmRlcl9saXN0KFtlbnRyeV0pCiAgICAgICAgYXNzZXJ0IGxlbihvdXRwdXQuc3BsaXQoIlxuIilbMF0pIDw9IDEwMCAgIyBpY29uICsgZGF0ZSArIDgwIGNoYXJzCgogICAgZGVmIHRlc3RfbW9vZF9pY29uX3Nob3duKHNlbGYpOgogICAgICAgICIiIk1vb2QgaWNvbiBpcyBzaG93bi4iIiIKICAgICAgICBlbnRyeSA9IEpvdXJuYWxFbnRyeSgKICAgICAgICAgICAgaWQ9IngiLCBjb250ZW50PSJDIiwgY3JlYXRlZF9hdD0iMjAyNi0wNC0wMVQxMDowMDowMCIsIG1vb2Q9InByb2R1Y3RpdmUiCiAgICAgICAgKQogICAgICAgIG91dHB1dCA9IHNlbGYuX3JlbmRlcl9saXN0KFtlbnRyeV0pCiAgICAgICAgYXNzZXJ0ICLimqEiIGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X2RhdGVfZXh0cmFjdGVkX2Zyb21fY3JlYXRlZF9hdChzZWxmKToKICAgICAgICAiIiJEYXRlIGlzIGV4dHJhY3RlZCBmcm9tIGNyZWF0ZWRfYXQuIiIiCiAgICAgICAgZW50cnkgPSBKb3VybmFsRW50cnkoaWQ9IngiLCBjb250ZW50PSJDIiwgY3JlYXRlZF9hdD0iMjAyNi0wNC0xNVQxNDozMDowMCIpCiAgICAgICAgb3V0cHV0ID0gc2VsZi5fcmVuZGVyX2xpc3QoW2VudHJ5XSkKICAgICAgICBhc3NlcnQgIlsyMDI2LTA0LTE1XSIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfdmVyYm9zZV9zaG93c190YWdzKHNlbGYpOgogICAgICAgICIiIlZlcmJvc2UgbW9kZSBzaG93cyB0YWdzLiIiIgogICAgICAgIGVudHJ5ID0gSm91cm5hbEVudHJ5KAogICAgICAgICAgICBpZD0ieCIsIGNvbnRlbnQ9IkMiLCBjcmVhdGVkX2F0PSIyMDI2LTA0LTAxVDEwOjAwOjAwIiwgdGFncz1bInJlc2VhcmNoIiwgImFpIl0KICAgICAgICApCiAgICAgICAgb3V0cHV0ID0gc2VsZi5fcmVuZGVyX2xpc3QoW2VudHJ5XSwgdmVyYm9zZT1UcnVlKQogICAgICAgIGFzc2VydCAiVGFnczogcmVzZWFyY2gsIGFpIiBpbiBvdXRwdXQKCiAgICBkZWYgdGVzdF92ZXJib3NlX3Nob3dzX3F1ZXN0aW9uX2lkKHNlbGYpOgogICAgICAgICIiIlZlcmJvc2UgbW9kZSBzaG93cyBxdWVzdGlvbiBJRC4iIiIKICAgICAgICBlbnRyeSA9IEpvdXJuYWxFbnRyeSgKICAgICAgICAgICAgaWQ9IngiLCBjb250ZW50PSJDIiwgY3JlYXRlZF9hdD0iMjAyNi0wNC0wMVQxMDowMDowMCIsIHF1ZXN0aW9uX2lkPSJxMTIzIgogICAgICAgICkKICAgICAgICBvdXRwdXQgPSBzZWxmLl9yZW5kZXJfbGlzdChbZW50cnldLCB2ZXJib3NlPVRydWUpCiAgICAgICAgYXNzZXJ0ICJRdWVzdGlvbjogcTEyMyIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfdmVyYm9zZV9zaG93c19leHBlcmltZW50X2lkKHNlbGYpOgogICAgICAgICIiIlZlcmJvc2UgbW9kZSBzaG93cyBleHBlcmltZW50IElELiIiIgogICAgICAgIGVudHJ5ID0gSm91cm5hbEVudHJ5KAogICAgICAgICAgICBpZD0ieCIsIGNvbnRlbnQ9IkMiLCBjcmVhdGVkX2F0PSIyMDI2LTA0LTAxVDEwOjAwOjAwIiwgZXhwZXJpbWVudF9pZD0iZTQ1NiIKICAgICAgICApCiAgICAgICAgb3V0cHV0ID0gc2VsZi5fcmVuZGVyX2xpc3QoW2VudHJ5XSwgdmVyYm9zZT1UcnVlKQogICAgICAgIGFzc2VydCAiRXhwZXJpbWVudDogZTQ1NiIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfbXVsdGlwbGVfZW50cmllcyhzZWxmKToKICAgICAgICAiIiJNdWx0aXBsZSBlbnRyaWVzIGFyZSByZW5kZXJlZC4iIiIKICAgICAgICBlbnRyaWVzID0gWwogICAgICAgICAgICBKb3VybmFsRW50cnkoaWQ9IjEiLCBjb250ZW50PSJGaXJzdCBlbnRyeSIsIGNyZWF0ZWRfYXQ9IjIwMjYtMDQtMDFUMTA6MDA6MDAiKSwKICAgICAgICAgICAgSm91cm5hbEVudHJ5KGlkPSIyIiwgY29udGVudD0iU2Vjb25kIGVudHJ5IiwgY3JlYXRlZF9hdD0iMjAyNi0wNC0wMlQxMDowMDowMCIpLAogICAgICAgIF0KICAgICAgICBvdXRwdXQgPSBzZWxmLl9yZW5kZXJfbGlzdChlbnRyaWVzKQogICAgICAgIGFzc2VydCAiRmlyc3QgZW50cnkiIGluIG91dHB1dAogICAgICAgIGFzc2VydCAiU2Vjb25kIGVudHJ5IiBpbiBvdXRwdXQKICAgICAgICBhc3NlcnQgIlsyMDI2LTA0LTAxXSIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICJbMjAyNi0wNC0wMl0iIGluIG91dHB1dAoKCiMgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KIyBzZWFyY2goKSBsb2dpYwojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CmNsYXNzIFRlc3RTZWFyY2hMb2dpYzoKICAgICIiIlRlc3Qgc2VhcmNoIGZpbHRlcmluZyBsb2dpYy4iIiIKCiAgICBkZWYgX3NlYXJjaChzZWxmLCBlbnRyaWVzLCBxdWVyeSwgbGltaXQ9MjApOgogICAgICAgICIiIlJlcGxpY2F0ZSBzZWFyY2ggbG9naWMuIiIiCiAgICAgICAgcSA9IHF1ZXJ5Lmxvd2VyKCkKICAgICAgICByZXN1bHQgPSBbZSBmb3IgZSBpbiBlbnRyaWVzIGlmIHEgaW4gZS5jb250ZW50Lmxvd2VyKCldCiAgICAgICAgcmVzdWx0LnNvcnQoa2V5PWxhbWJkYSB4OiB4LmNyZWF0ZWRfYXQsIHJldmVyc2U9VHJ1ZSkKICAgICAgICByZXR1cm4gcmVzdWx0WzpsaW1pdF0KCiAgICBkZWYgdGVzdF9lbXB0eV9xdWVyeV9tYXRjaGVzX2FsbChzZWxmKToKICAgICAgICAiIiJFbXB0eSBxdWVyeSB3b3VsZCBtYXRjaCBhbGwgKGJ1dCByZWFsIHNlYXJjaCB1c2VzIG5vbi1lbXB0eSkuIiIiCiAgICAgICAgIyBUaGUgcmVhbCBpbXBsZW1lbnRhdGlvbiBtYXRjaGVzIGVtcHR5IHN0cmluZyBpbiBhbGwgY29udGVudAogICAgICAgIGVudHJpZXMgPSBbCiAgICAgICAgICAgIEpvdXJuYWxFbnRyeShpZD0iMSIsIGNvbnRlbnQ9IkhlbGxvIHdvcmxkIiksCiAgICAgICAgICAgIEpvdXJuYWxFbnRyeShpZD0iMiIsIGNvbnRlbnQ9Ikdvb2RieWUiKSwKICAgICAgICBdCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fc2VhcmNoKGVudHJpZXMsICIiKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0KSA9PSAyCgogICAgZGVmIHRlc3RfY2FzZV9pbnNlbnNpdGl2ZV9tYXRjaChzZWxmKToKICAgICAgICAiIiJTZWFyY2ggaXMgY2FzZSBpbnNlbnNpdGl2ZS4iIiIKICAgICAgICBlbnRyaWVzID0gWwogICAgICAgICAgICBKb3VybmFsRW50cnkoaWQ9IjEiLCBjb250ZW50PSJUUkFOU0ZPUk1FUiBBcmNoaXRlY3R1cmUiKSwKICAgICAgICAgICAgSm91cm5hbEVudHJ5KGlkPSIyIiwgY29udGVudD0idHJhbnNmb3JtZXIgbW9kZWwiKSwKICAgICAgICBdCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fc2VhcmNoKGVudHJpZXMsICJ0cmFuc2Zvcm1lciIpCiAgICAgICAgYXNzZXJ0IGxlbihyZXN1bHQpID09IDIKCiAgICBkZWYgdGVzdF9wYXJ0aWFsX21hdGNoKHNlbGYpOgogICAgICAgICIiIlBhcnRpYWwgdGV4dCBtYXRjaCB3b3Jrcy4iIiIKICAgICAgICBlbnRyaWVzID0gWwogICAgICAgICAgICBKb3VybmFsRW50cnkoaWQ9IjEiLCBjb250ZW50PSJBdHRlbnRpb24gaXMgYWxsIHlvdSBuZWVkIiksCiAgICAgICAgICAgIEpvdXJuYWxFbnRyeShpZD0iMiIsIGNvbnRlbnQ9IlNwYXJzZSBhdHRlbnRpb24iKSwKICAgICAgICBdCiAgICAgICAgcmVzdWx0ID0gc2VsZi5fc2VhcmNoKGVudHJpZXMsICJhdHRlbnRpb24iKQogICAgICAgIGFzc2VydCBsZW4ocmVzdWx0KSA9PSAyCgogICAgZGVmIHRlc3Rfbm9fbWF0Y2hfcmV0dXJuc19lbXB0eShzZWxmKToKICAgICAgICAiIiJObyBtYXRjaCByZXR1cm5zIGVtcHR5IGxpc3QuIiIiCiAgICAgICAgZW50cmllcyA9IFsKICAgICAgICAgICAgSm91cm5hbEVudHJ5KGlkPSIxIiwgY29udGVudD0iTWFjaGluZSBsZWFybmluZyIpLAogICAgICAgIF0KICAgICAgICByZXN1bHQgPSBzZWxmLl9zZWFyY2goZW50cmllcywgInRyYW5zZm9ybWVyIikKICAgICAgICBhc3NlcnQgcmVzdWx0ID09IFtdCgogICAgZGVmIHRlc3RfbGltaXRfYXBwbGllZChzZWxmKToKICAgICAgICAiIiJMaW1pdCBpcyBhcHBsaWVkIHRvIHJlc3VsdHMuIiIiCiAgICAgICAgZW50cmllcyA9IFtKb3VybmFsRW50cnkoaWQ9c3RyKGkpLCBjb250ZW50PWYiRW50cnkge2l9IikgZm9yIGkgaW4gcmFuZ2UoMjUpXQogICAgICAgIHJlc3VsdCA9IHNlbGYuX3NlYXJjaChlbnRyaWVzLCAiRW50cnkiLCBsaW1pdD0xMCkKICAgICAgICBhc3NlcnQgbGVuKHJlc3VsdCkgPT0gMTAKCiAgICBkZWYgdGVzdF9yZXN1bHRzX3NvcnRlZF9ieV9kYXRlX2Rlc2NlbmRpbmcoc2VsZik6CiAgICAgICAgIiIiUmVzdWx0cyBzb3J0ZWQgYnkgZGF0ZSBkZXNjZW5kaW5nLiIiIgogICAgICAgIGVudHJpZXMgPSBbCiAgICAgICAgICAgIEpvdXJuYWxFbnRyeShpZD0iMSIsIGNvbnRlbnQ9Ik9sZCBlbnRyeSIsIGNyZWF0ZWRfYXQ9IjIwMjYtMDEtMDFUMTA6MDA6MDAiKSwKICAgICAgICAgICAgSm91cm5hbEVudHJ5KGlkPSIyIiwgY29udGVudD0iTmV3IGVudHJ5IiwgY3JlYXRlZF9hdD0iMjAyNi0wNC0wMVQxMDowMDowMCIpLAogICAgICAgICAgICBKb3VybmFsRW50cnkoaWQ9IjMiLCBjb250ZW50PSJNaWRkbGUgZW50cnkiLCBjcmVhdGVkX2F0PSIyMDI2LTAzLTAxVDEwOjAwOjAwIiksCiAgICAgICAgXQogICAgICAgIHJlc3VsdCA9IHNlbGYuX3NlYXJjaChlbnRyaWVzLCAiZW50cnkiKQogICAgICAgIGFzc2VydCByZXN1bHRbMF0uaWQgPT0gIjIiICAjIG5ld2VzdCBmaXJzdAogICAgICAgIGFzc2VydCByZXN1bHRbMV0uaWQgPT0gIjMiCiAgICAgICAgYXNzZXJ0IHJlc3VsdFsyXS5pZCA9PSAiMSIK
+"""Tier 2 unit tests — llm/journal.py, pure functions, no I/O."""
+
+from llm.journal import JournalEntry
+
+
+# =============================================================================
+# JournalEntry dataclass tests
+# =============================================================================
+class TestJournalEntryInit:
+    """Test JournalEntry dataclass."""
+
+    def test_required_fields(self):
+        """Required fields: id, content."""
+        entry = JournalEntry(id="abc", content="Did research today")
+        assert entry.id == "abc"
+        assert entry.content == "Did research today"
+
+    def test_optional_fields_default(self):
+        """Optional fields have defaults."""
+        entry = JournalEntry(id="x", content="C")
+        # created_at is auto-generated by __post_init__ (not "" since not "" evaluates True)
+        assert entry.updated_at == ""  # truly defaulted
+        assert entry.tags == []
+        assert entry.question_id == ""
+        assert entry.experiment_id == ""
+        assert entry.paper_id == ""
+        assert entry.mood == ""
+        assert entry.highlights == []
+
+    def test_all_fields_can_be_set(self):
+        """All fields can be set."""
+        entry = JournalEntry(
+            id="xyz",
+            content="Deep work session",
+            created_at="2026-01-01T10:00:00",
+            updated_at="2026-01-01T12:00:00",
+            tags=["focused", "productive"],
+            question_id="q1",
+            experiment_id="e1",
+            paper_id="p1",
+            mood="productive",
+            highlights=["insight1", "insight2"],
+        )
+        assert entry.created_at == "2026-01-01T10:00:00"
+        assert entry.updated_at == "2026-01-01T12:00:00"
+        assert entry.tags == ["focused", "productive"]
+        assert entry.question_id == "q1"
+        assert entry.experiment_id == "e1"
+        assert entry.paper_id == "p1"
+        assert entry.mood == "productive"
+        assert entry.highlights == ["insight1", "insight2"]
+
+
+class TestJournalEntryPostInit:
+    """Test JournalEntry.__post_init__."""
+
+    def test_empty_created_at_triggers_auto_timestamp(self):
+        """Empty created_at triggers auto-generation."""
+        entry = JournalEntry(id="x", content="C")
+        assert entry.created_at != ""
+        # Should be ISO format
+        assert "T" in entry.created_at
+
+    def test_non_empty_created_at_preserved(self):
+        """Non-empty created_at is preserved."""
+        entry = JournalEntry(id="x", content="C", created_at="2025-01-01T00:00:00")
+        assert entry.created_at == "2025-01-01T00:00:00"
+
+
+# =============================================================================
+# to_dict / from_dict tests
+# =============================================================================
+class TestJournalEntryDictConversion:
+    """Test to_dict and from_dict."""
+
+    def test_to_dict_includes_all_fields(self):
+        """to_dict returns all fields as dict."""
+        entry = JournalEntry(
+            id="test-id",
+            content="Test content",
+            created_at="2026-01-01T10:00:00",
+            updated_at="2026-01-02T11:00:00",
+            tags=["tag1"],
+            question_id="q1",
+            experiment_id="e1",
+            paper_id="p1",
+            mood="excited",
+            highlights=["h1"],
+        )
+        d = entry.to_dict()
+        assert d["id"] == "test-id"
+        assert d["content"] == "Test content"
+        assert d["created_at"] == "2026-01-01T10:00:00"
+        assert d["updated_at"] == "2026-01-02T11:00:00"
+        assert d["tags"] == ["tag1"]
+        assert d["question_id"] == "q1"
+        assert d["experiment_id"] == "e1"
+        assert d["paper_id"] == "p1"
+        assert d["mood"] == "excited"
+        assert d["highlights"] == ["h1"]
+
+    def test_from_dict_reconstructs_entry(self):
+        """from_dict reconstructs entry from dict."""
+        data = {
+            "id": "recon",
+            "content": "Reconstructed",
+            "created_at": "2026-02-15T08:00:00",
+            "updated_at": "2026-02-15T10:00:00",
+            "tags": ["a", "b"],
+            "question_id": "q2",
+            "experiment_id": "e2",
+            "paper_id": "p2",
+            "mood": "stuck",
+            "highlights": ["x"],
+        }
+        entry = JournalEntry.from_dict(data)
+        assert entry.id == "recon"
+        assert entry.content == "Reconstructed"
+        assert entry.created_at == "2026-02-15T08:00:00"
+        assert entry.updated_at == "2026-02-15T10:00:00"
+        assert entry.tags == ["a", "b"]
+        assert entry.question_id == "q2"
+        assert entry.experiment_id == "e2"
+        assert entry.paper_id == "p2"
+        assert entry.mood == "stuck"
+        assert entry.highlights == ["x"]
+
+    def test_from_dict_to_dict_roundtrip(self):
+        """Roundtrip through from_dict then to_dict preserves data."""
+        original = JournalEntry(
+            id="round",
+            content="Roundtrip test",
+            tags=["test"],
+            mood="neutral",
+        )
+        # Force created_at so roundtrip is stable
+        original.created_at = "2026-03-01T09:00:00"
+        d = original.to_dict()
+        reconstructed = JournalEntry.from_dict(d)
+        assert reconstructed.id == original.id
+        assert reconstructed.content == original.content
+        assert reconstructed.created_at == original.created_at
+        assert reconstructed.tags == original.tags
+        assert reconstructed.mood == original.mood
+
+    def test_to_dict_empty_lists_and_strings(self):
+        """Empty optional fields are included in dict."""
+        entry = JournalEntry(id="e", content="C")
+        d = entry.to_dict()
+        assert d["tags"] == []
+        assert d["highlights"] == []
+        assert d["question_id"] == ""
+        assert d["mood"] == ""
+
+
+# =============================================================================
+# Mood icons (render_list helper)
+# =============================================================================
+class TestMoodIcons:
+    """Test mood icon mapping used in render_list."""
+
+    def _mood_icon(self, mood: str) -> str:
+        """Replicate mood icon logic."""
+        return {"productive": "⚡", "stuck": "😓", "excited": "🎉", "neutral": "📝"}.get(mood, "📝")
+
+    def test_known_moods(self):
+        """Known moods map to correct icons."""
+        assert self._mood_icon("productive") == "⚡"
+        assert self._mood_icon("stuck") == "😓"
+        assert self._mood_icon("excited") == "🎉"
+        assert self._mood_icon("neutral") == "📝"
+
+    def test_unknown_mood_defaults_to_memo(self):
+        """Unknown mood defaults to memo icon."""
+        assert self._mood_icon("unknown") == "📝"
+        assert self._mood_icon("") == "📝"
+        assert self._mood_icon("happy") == "📝"
+
+
+# =============================================================================
+# list_entries filtering logic
+# =============================================================================
+class TestListEntriesFilter:
+    """Test list_entries filtering logic."""
+
+    def _make_entry(
+        self, id_, created_at, tags=None, question_id="", experiment_id="", content="entry"
+    ):
+        """Helper to create JournalEntry with specific fields."""
+        entry = JournalEntry(id=id_, content=content, created_at=created_at)
+        if tags:
+            entry.tags = tags
+        entry.question_id = question_id
+        entry.experiment_id = experiment_id
+        return entry
+
+    def _filter_entries(
+        self, entries, tag="", question_id="", experiment_id="", today=False, days=0
+    ):
+        """Replicate list_entries filtering."""
+        # Simulate today filter
+        today_str = "2026-04-27"
+        result = list(entries)
+
+        if today:
+            result = [e for e in result if e.created_at.startswith(today_str)]
+        elif days > 0:
+            # approximate: entries from last `days` days
+            # For testing, use days filter
+            cutoff_iso = f"2026-04-{27 - days + 1:02d}T00:00:00"
+            result = [e for e in result if e.created_at >= cutoff_iso]
+
+        if tag:
+            result = [e for e in result if tag in e.tags]
+        if question_id:
+            result = [e for e in result if e.question_id == question_id]
+        if experiment_id:
+            result = [e for e in result if e.experiment_id == experiment_id]
+
+        result.sort(key=lambda x: x.created_at, reverse=True)
+        return result
+
+    def test_filter_by_tag(self):
+        """Tag filter keeps matching entries."""
+        entries = [
+            self._make_entry("1", "2026-04-01T10:00:00", tags=["research"]),
+            self._make_entry("2", "2026-04-02T10:00:00", tags=["review"]),
+            self._make_entry("3", "2026-04-03T10:00:00", tags=["research", "review"]),
+        ]
+        result = self._filter_entries(entries, tag="research")
+        assert len(result) == 2
+        assert {e.id for e in result} == {"1", "3"}
+
+    def test_filter_by_question_id(self):
+        """Question ID filter keeps matching entries."""
+        entries = [
+            self._make_entry("1", "2026-04-01T10:00:00", question_id="q1"),
+            self._make_entry("2", "2026-04-02T10:00:00", question_id="q2"),
+            self._make_entry("3", "2026-04-03T10:00:00", question_id="q1"),
+        ]
+        result = self._filter_entries(entries, question_id="q1")
+        assert len(result) == 2
+        assert {e.id for e in result} == {"1", "3"}
+
+    def test_filter_by_experiment_id(self):
+        """Experiment ID filter keeps matching entries."""
+        entries = [
+            self._make_entry("1", "2026-04-01T10:00:00", experiment_id="e1"),
+            self._make_entry("2", "2026-04-02T10:00:00", experiment_id="e2"),
+        ]
+        result = self._filter_entries(entries, experiment_id="e1")
+        assert len(result) == 1
+        assert result[0].id == "1"
+
+    def test_sort_by_date_descending(self):
+        """Results are sorted by created_at descending."""
+        entries = [
+            self._make_entry("1", "2026-04-01T10:00:00"),
+            self._make_entry("2", "2026-04-10T10:00:00"),
+            self._make_entry("3", "2026-04-05T10:00:00"),
+        ]
+        result = self._filter_entries(entries)
+        assert result[0].id == "2"  # April 10
+        assert result[1].id == "3"  # April 5
+        assert result[2].id == "1"  # April 1
+
+    def test_limit_applied_after_sort(self):
+        """Limit is applied after filtering and sorting."""
+        entries = [self._make_entry(str(i), f"2026-04-{i:02d}T10:00:00") for i in range(1, 11)]
+        result = self._filter_entries(entries)
+        # Just check sorting is preserved
+        dates = [e.created_at for e in result]
+        assert dates == sorted(dates, reverse=True)
+
+    def test_combined_filters(self):
+        """Multiple filters can be combined."""
+        entries = [
+            self._make_entry("1", "2026-04-01T10:00:00", tags=["research"], question_id="q1"),
+            self._make_entry("2", "2026-04-02T10:00:00", tags=["research"], question_id="q2"),
+            self._make_entry("3", "2026-04-03T10:00:00", tags=["review"], question_id="q1"),
+        ]
+        result = self._filter_entries(entries, tag="research", question_id="q1")
+        assert len(result) == 1
+        assert result[0].id == "1"
+
+    def test_no_matches_returns_empty(self):
+        """No matches returns empty list."""
+        entries = [
+            self._make_entry("1", "2026-04-01T10:00:00", tags=["review"]),
+        ]
+        result = self._filter_entries(entries, tag="nonexistent")
+        assert result == []
+
+
+# =============================================================================
+# stats() logic
+# =============================================================================
+class TestStatsLogic:
+    """Test stats() aggregation logic."""
+
+    def _stats(self, entries) -> dict:
+        """Replicate stats aggregation."""
+        if not entries:
+            return {"total": 0, "this_week": 0, "this_month": 0}
+
+        week_ago = "2026-04-20T12:00:00"
+        month_ago = "2026-03-28T12:00:00"
+
+        tags_count: dict[str, int] = {}
+        mood_count: dict[str, int] = {}
+        for e in entries:
+            for t in e.tags:
+                tags_count[t] = tags_count.get(t, 0) + 1
+            if e.mood:
+                mood_count[e.mood] = mood_count.get(e.mood, 0) + 1
+
+        return {
+            "total": len(entries),
+            "this_week": len([e for e in entries if e.created_at >= week_ago]),
+            "this_month": len([e for e in entries if e.created_at >= month_ago]),
+            "top_tags": sorted(tags_count.items(), key=lambda x: -x[1])[:10],
+            "mood_distribution": mood_count,
+        }
+
+    def test_empty_returns_zeros(self):
+        """Empty entries returns zero counts."""
+        result = self._stats([])
+        assert result["total"] == 0
+        assert result["this_week"] == 0
+        assert result["this_month"] == 0
+
+    def test_total_count(self):
+        """Total counts all entries."""
+        entries = [JournalEntry(id=str(i), content=f"E{i}") for i in range(5)]
+        # Set dates spread across months
+        for i, entry in enumerate(entries):
+            entry.created_at = f"2026-0{(i % 3) + 1}-{10 + i:02d}T10:00:00"
+        result = self._stats(entries)
+        assert result["total"] == 5
+
+    def test_this_week_filter(self):
+        """this_week counts entries from last 7 days."""
+        entries = [
+            JournalEntry(id="1", content="W", created_at="2026-04-27T10:00:00"),
+            JournalEntry(id="2", content="W2", created_at="2026-04-25T10:00:00"),
+            JournalEntry(id="3", content="O", created_at="2026-04-10T10:00:00"),  # 17 days ago
+        ]
+        result = self._stats(entries)
+        assert result["this_week"] == 2
+
+    def test_this_month_filter(self):
+        """this_month counts entries from last 30 days."""
+        entries = [
+            JournalEntry(id="1", content="M", created_at="2026-04-27T10:00:00"),
+            JournalEntry(id="2", content="M2", created_at="2026-04-01T10:00:00"),
+            JournalEntry(id="3", content="O", created_at="2026-02-01T10:00:00"),  # old
+        ]
+        result = self._stats(entries)
+        assert result["this_month"] == 2
+
+    def test_top_tags_sorted_by_count(self):
+        """top_tags sorted by count descending."""
+        entries = [
+            JournalEntry(id="1", content="E1", tags=["python", "ml"]),
+            JournalEntry(id="2", content="E2", tags=["python", "research"]),
+            JournalEntry(id="3", content="E3", tags=["python"]),
+            JournalEntry(id="4", content="E4", tags=["research"]),
+        ]
+        result = self._stats(entries)
+        top = result["top_tags"]
+        assert top[0] == ("python", 3)
+        assert top[1] == ("research", 2)
+
+    def test_top_tags_limited_to_10(self):
+        """top_tags limited to 10 items."""
+        entries = [JournalEntry(id=str(i), content=f"E{i}", tags=[f"tag{i}"]) for i in range(15)]
+        result = self._stats(entries)
+        assert len(result["top_tags"]) == 10
+
+    def test_mood_distribution(self):
+        """mood_distribution counts each mood."""
+        entries = [
+            JournalEntry(id="1", content="E1", mood="productive"),
+            JournalEntry(id="2", content="E2", mood="productive"),
+            JournalEntry(id="3", content="E3", mood="stuck"),
+            JournalEntry(id="4", content="E4", mood=""),  # empty mood ignored
+        ]
+        result = self._stats(entries)
+        assert result["mood_distribution"]["productive"] == 2
+        assert result["mood_distribution"]["stuck"] == 1
+        assert "neutral" not in result["mood_distribution"]
+
+    def test_empty_tags_no_top_tags_crash(self):
+        """Empty tags doesn't cause top_tags to crash."""
+        entries = [JournalEntry(id="1", content="E1", tags=[])]
+        result = self._stats(entries)
+        assert result["top_tags"] == []
+
+
+# =============================================================================
+# render_list tests
+# =============================================================================
+class TestRenderList:
+    """Test render_list formatting."""
+
+    def _render_list(self, entries, verbose=False):
+        """Replicate render_list formatting."""
+        if not entries:
+            return "No journal entries."
+
+        mood_icons = {"productive": "⚡", "stuck": "😓", "excited": "🎉", "neutral": "📝"}
+        lines = []
+        for e in entries:
+            icon = mood_icons.get(e.mood, "📝")
+            date = e.created_at[:10]
+            lines.append(f"{icon} [{date}] {e.content[:80]}")
+            if verbose:
+                if e.tags:
+                    lines.append(f"   Tags: {', '.join(e.tags)}")
+                if e.question_id:
+                    lines.append(f"   Question: {e.question_id}")
+                if e.experiment_id:
+                    lines.append(f"   Experiment: {e.experiment_id}")
+        return "\n".join(lines)
+
+    def test_empty_returns_placeholder(self):
+        """Empty list returns placeholder text."""
+        assert self._render_list([]) == "No journal entries."
+
+    def test_content_truncated_to_80_chars(self):
+        """Content is truncated to 80 characters."""
+        long_content = "X" * 100
+        entry = JournalEntry(id="x", content=long_content, created_at="2026-04-01T10:00:00")
+        output = self._render_list([entry])
+        assert len(output.split("\n")[0]) <= 100  # icon + date + 80 chars
+
+    def test_mood_icon_shown(self):
+        """Mood icon is shown."""
+        entry = JournalEntry(
+            id="x", content="C", created_at="2026-04-01T10:00:00", mood="productive"
+        )
+        output = self._render_list([entry])
+        assert "⚡" in output
+
+    def test_date_extracted_from_created_at(self):
+        """Date is extracted from created_at."""
+        entry = JournalEntry(id="x", content="C", created_at="2026-04-15T14:30:00")
+        output = self._render_list([entry])
+        assert "[2026-04-15]" in output
+
+    def test_verbose_shows_tags(self):
+        """Verbose mode shows tags."""
+        entry = JournalEntry(
+            id="x", content="C", created_at="2026-04-01T10:00:00", tags=["research", "ai"]
+        )
+        output = self._render_list([entry], verbose=True)
+        assert "Tags: research, ai" in output
+
+    def test_verbose_shows_question_id(self):
+        """Verbose mode shows question ID."""
+        entry = JournalEntry(
+            id="x", content="C", created_at="2026-04-01T10:00:00", question_id="q123"
+        )
+        output = self._render_list([entry], verbose=True)
+        assert "Question: q123" in output
+
+    def test_verbose_shows_experiment_id(self):
+        """Verbose mode shows experiment ID."""
+        entry = JournalEntry(
+            id="x", content="C", created_at="2026-04-01T10:00:00", experiment_id="e456"
+        )
+        output = self._render_list([entry], verbose=True)
+        assert "Experiment: e456" in output
+
+    def test_multiple_entries(self):
+        """Multiple entries are rendered."""
+        entries = [
+            JournalEntry(id="1", content="First entry", created_at="2026-04-01T10:00:00"),
+            JournalEntry(id="2", content="Second entry", created_at="2026-04-02T10:00:00"),
+        ]
+        output = self._render_list(entries)
+        assert "First entry" in output
+        assert "Second entry" in output
+        assert "[2026-04-01]" in output
+        assert "[2026-04-02]" in output
+
+
+# =============================================================================
+# search() logic
+# =============================================================================
+class TestSearchLogic:
+    """Test search filtering logic."""
+
+    def _search(self, entries, query, limit=20):
+        """Replicate search logic."""
+        q = query.lower()
+        result = [e for e in entries if q in e.content.lower()]
+        result.sort(key=lambda x: x.created_at, reverse=True)
+        return result[:limit]
+
+    def test_empty_query_matches_all(self):
+        """Empty query would match all (but real search uses non-empty)."""
+        # The real implementation matches empty string in all content
+        entries = [
+            JournalEntry(id="1", content="Hello world"),
+            JournalEntry(id="2", content="Goodbye"),
+        ]
+        result = self._search(entries, "")
+        assert len(result) == 2
+
+    def test_case_insensitive_match(self):
+        """Search is case insensitive."""
+        entries = [
+            JournalEntry(id="1", content="TRANSFORMER Architecture"),
+            JournalEntry(id="2", content="transformer model"),
+        ]
+        result = self._search(entries, "transformer")
+        assert len(result) == 2
+
+    def test_partial_match(self):
+        """Partial text match works."""
+        entries = [
+            JournalEntry(id="1", content="Attention is all you need"),
+            JournalEntry(id="2", content="Sparse attention"),
+        ]
+        result = self._search(entries, "attention")
+        assert len(result) == 2
+
+    def test_no_match_returns_empty(self):
+        """No match returns empty list."""
+        entries = [
+            JournalEntry(id="1", content="Machine learning"),
+        ]
+        result = self._search(entries, "transformer")
+        assert result == []
+
+    def test_limit_applied(self):
+        """Limit is applied to results."""
+        entries = [JournalEntry(id=str(i), content=f"Entry {i}") for i in range(25)]
+        result = self._search(entries, "Entry", limit=10)
+        assert len(result) == 10
+
+    def test_results_sorted_by_date_descending(self):
+        """Results sorted by date descending."""
+        entries = [
+            JournalEntry(id="1", content="Old entry", created_at="2026-01-01T10:00:00"),
+            JournalEntry(id="2", content="New entry", created_at="2026-04-01T10:00:00"),
+            JournalEntry(id="3", content="Middle entry", created_at="2026-03-01T10:00:00"),
+        ]
+        result = self._search(entries, "entry")
+        assert result[0].id == "2"  # newest first
+        assert result[1].id == "3"
+        assert result[2].id == "1"

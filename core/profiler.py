@@ -1,1 +1,346 @@
-IiIiClBlcmZvcm1hbmNlIFByb2ZpbGVyIGFuZCBBbmFseXNpcyBUb29scy4KCkhlbHBzIGlkZW50aWZ5IHBlcmZvcm1hbmNlIGJvdHRsZW5lY2tzIGFuZCBvcHRpbWl6ZSBjcml0aWNhbCBwYXRocy4KIiIiCgppbXBvcnQgdGltZQppbXBvcnQgZnVuY3Rvb2xzCmltcG9ydCBsb2dnaW5nCmZyb20gdHlwaW5nIGltcG9ydCBDYWxsYWJsZSwgRGljdCwgTGlzdCwgT3B0aW9uYWwsIEFueQpmcm9tIGRhdGFjbGFzc2VzIGltcG9ydCBkYXRhY2xhc3MKCmZyb20gY29udGV4dGxpYiBpbXBvcnQgY29udGV4dG1hbmFnZXIKaW1wb3J0IGNQcm9maWxlCmltcG9ydCBwc3RhdHMKaW1wb3J0IGlvCgpsb2dnZXIgPSBsb2dnaW5nLmdldExvZ2dlcihfX25hbWVfXykKCgpAZGF0YWNsYXNzCmNsYXNzIEZ1bmN0aW9uUHJvZmlsZToKICAgICIiIlByb2ZpbGUgZGF0YSBmb3IgYSBzaW5nbGUgZnVuY3Rpb24uIiIiCgogICAgbmFtZTogc3RyCiAgICBjYWxsX2NvdW50OiBpbnQgPSAwCiAgICB0b3RhbF90aW1lOiBmbG9hdCA9IDAuMAogICAgbWluX3RpbWU6IGZsb2F0ID0gZmxvYXQoImluZiIpCiAgICBtYXhfdGltZTogZmxvYXQgPSAwLjAKICAgIGF2Z190aW1lOiBmbG9hdCA9IDAuMAogICAgbGFzdF9jYWxsZWQ6IGZsb2F0ID0gMC4wCgogICAgZGVmIHVwZGF0ZShzZWxmLCBlbGFwc2VkOiBmbG9hdCk6CiAgICAgICAgIiIiVXBkYXRlIHByb2ZpbGUgd2l0aCBuZXcgdGltaW5nIGRhdGEuIiIiCiAgICAgICAgc2VsZi5jYWxsX2NvdW50ICs9IDEKICAgICAgICBzZWxmLnRvdGFsX3RpbWUgKz0gZWxhcHNlZAogICAgICAgIHNlbGYubWluX3RpbWUgPSBtaW4oc2VsZi5taW5fdGltZSwgZWxhcHNlZCkKICAgICAgICBzZWxmLm1heF90aW1lID0gbWF4KHNlbGYubWF4X3RpbWUsIGVsYXBzZWQpCiAgICAgICAgc2VsZi5hdmdfdGltZSA9IHNlbGYudG90YWxfdGltZSAvIHNlbGYuY2FsbF9jb3VudAogICAgICAgIHNlbGYubGFzdF9jYWxsZWQgPSB0aW1lLnRpbWUoKQoKCmNsYXNzIFBlcmZvcm1hbmNlUHJvZmlsZXI6CiAgICAiIiJUcmFjayBhbmQgYW5hbHl6ZSBmdW5jdGlvbiBwZXJmb3JtYW5jZS4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZik6CiAgICAgICAgc2VsZi5fcHJvZmlsZXM6IERpY3Rbc3RyLCBGdW5jdGlvblByb2ZpbGVdID0ge30KICAgICAgICBzZWxmLl9lbmFibGVkID0gVHJ1ZQogICAgICAgIHNlbGYuX3N0YXJ0X3RpbWUgPSB0aW1lLnRpbWUoKQoKICAgIGRlZiBlbmFibGUoc2VsZik6CiAgICAgICAgIiIiRW5hYmxlIHByb2ZpbGluZy4iIiIKICAgICAgICBzZWxmLl9lbmFibGVkID0gVHJ1ZQoKICAgIGRlZiBkaXNhYmxlKHNlbGYpOgogICAgICAgICIiIkRpc2FibGUgcHJvZmlsaW5nLiIiIgogICAgICAgIHNlbGYuX2VuYWJsZWQgPSBGYWxzZQoKICAgIGRlZiBwcm9maWxlX2Z1bmN0aW9uKHNlbGYsIG5hbWU6IE9wdGlvbmFsW3N0cl0gPSBOb25lKToKICAgICAgICAiIiJEZWNvcmF0b3IgdG8gcHJvZmlsZSBhIGZ1bmN0aW9uLiIiIgoKICAgICAgICBkZWYgZGVjb3JhdG9yKGZ1bmM6IENhbGxhYmxlKSAtPiBDYWxsYWJsZToKICAgICAgICAgICAgcHJvZmlsZV9uYW1lID0gbmFtZSBvciBmIntmdW5jLl9fbW9kdWxlX199LntmdW5jLl9fcXVhbG5hbWVfX30iCgogICAgICAgICAgICBAZnVuY3Rvb2xzLndyYXBzKGZ1bmMpCiAgICAgICAgICAgIGRlZiB3cmFwcGVyKCphcmdzLCAqKmt3YXJncyk6CiAgICAgICAgICAgICAgICBpZiBub3Qgc2VsZi5fZW5hYmxlZDoKICAgICAgICAgICAgICAgICAgICByZXR1cm4gZnVuYygqYXJncywgKiprd2FyZ3MpCgogICAgICAgICAgICAgICAgc3RhcnQgPSB0aW1lLnBlcmZfY291bnRlcigpCiAgICAgICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICAgICAgcmVzdWx0ID0gZnVuYygqYXJncywgKiprd2FyZ3MpCiAgICAgICAgICAgICAgICAgICAgcmV0dXJuIHJlc3VsdAogICAgICAgICAgICAgICAgZmluYWxseToKICAgICAgICAgICAgICAgICAgICBlbGFwc2VkID0gdGltZS5wZXJmX2NvdW50ZXIoKSAtIHN0YXJ0CiAgICAgICAgICAgICAgICAgICAgc2VsZi5fcmVjb3JkX2NhbGwocHJvZmlsZV9uYW1lLCBlbGFwc2VkKQoKICAgICAgICAgICAgcmV0dXJuIHdyYXBwZXIKCiAgICAgICAgcmV0dXJuIGRlY29yYXRvcgoKICAgIGRlZiBfcmVjb3JkX2NhbGwoc2VsZiwgbmFtZTogc3RyLCBlbGFwc2VkOiBmbG9hdCk6CiAgICAgICAgIiIiUmVjb3JkIGEgZnVuY3Rpb24gY2FsbC4iIiIKICAgICAgICBpZiBuYW1lIG5vdCBpbiBzZWxmLl9wcm9maWxlczoKICAgICAgICAgICAgc2VsZi5fcHJvZmlsZXNbbmFtZV0gPSBGdW5jdGlvblByb2ZpbGUobmFtZT1uYW1lKQogICAgICAgIHNlbGYuX3Byb2ZpbGVzW25hbWVdLnVwZGF0ZShlbGFwc2VkKQoKICAgIEBjb250ZXh0bWFuYWdlcgogICAgZGVmIHByb2ZpbGVfYmxvY2soc2VsZiwgbmFtZTogc3RyKToKICAgICAgICAiIiJDb250ZXh0IG1hbmFnZXIgdG8gcHJvZmlsZSBhIGNvZGUgYmxvY2suIiIiCiAgICAgICAgaWYgbm90IHNlbGYuX2VuYWJsZWQ6CiAgICAgICAgICAgIHlpZWxkCiAgICAgICAgICAgIHJldHVybgoKICAgICAgICBzdGFydCA9IHRpbWUucGVyZl9jb3VudGVyKCkKICAgICAgICB0cnk6CiAgICAgICAgICAgIHlpZWxkCiAgICAgICAgZmluYWxseToKICAgICAgICAgICAgZWxhcHNlZCA9IHRpbWUucGVyZl9jb3VudGVyKCkgLSBzdGFydAogICAgICAgICAgICBzZWxmLl9yZWNvcmRfY2FsbChuYW1lLCBlbGFwc2VkKQoKICAgIGRlZiBnZXRfcHJvZmlsZShzZWxmLCBuYW1lOiBzdHIpIC0+IE9wdGlvbmFsW0Z1bmN0aW9uUHJvZmlsZV06CiAgICAgICAgIiIiR2V0IHByb2ZpbGUgZm9yIGEgc3BlY2lmaWMgZnVuY3Rpb24uIiIiCiAgICAgICAgcmV0dXJuIHNlbGYuX3Byb2ZpbGVzLmdldChuYW1lKQoKICAgIGRlZiBnZXRfYWxsX3Byb2ZpbGVzKHNlbGYpIC0+IExpc3RbRnVuY3Rpb25Qcm9maWxlXToKICAgICAgICAiIiJHZXQgYWxsIHByb2ZpbGVzIHNvcnRlZCBieSB0b3RhbCB0aW1lLiIiIgogICAgICAgIHByb2ZpbGVzID0gbGlzdChzZWxmLl9wcm9maWxlcy52YWx1ZXMoKSkKICAgICAgICByZXR1cm4gc29ydGVkKHByb2ZpbGVzLCBrZXk9bGFtYmRhIHA6IHAudG90YWxfdGltZSwgcmV2ZXJzZT1UcnVlKQoKICAgIGRlZiBnZXRfc2xvd2VzdF9mdW5jdGlvbnMoc2VsZiwgY291bnQ6IGludCA9IDEwKSAtPiBMaXN0W0Z1bmN0aW9uUHJvZmlsZV06CiAgICAgICAgIiIiR2V0IHRoZSBzbG93ZXN0IGZ1bmN0aW9ucy4iIiIKICAgICAgICByZXR1cm4gc2VsZi5nZXRfYWxsX3Byb2ZpbGVzKClbOmNvdW50XQoKICAgIGRlZiBnZXRfbW9zdF9jYWxsZWQoc2VsZiwgY291bnQ6IGludCA9IDEwKSAtPiBMaXN0W0Z1bmN0aW9uUHJvZmlsZV06CiAgICAgICAgIiIiR2V0IHRoZSBtb3N0IGZyZXF1ZW50bHkgY2FsbGVkIGZ1bmN0aW9ucy4iIiIKICAgICAgICBwcm9maWxlcyA9IGxpc3Qoc2VsZi5fcHJvZmlsZXMudmFsdWVzKCkpCiAgICAgICAgcmV0dXJuIHNvcnRlZChwcm9maWxlcywga2V5PWxhbWJkYSBwOiBwLmNhbGxfY291bnQsIHJldmVyc2U9VHJ1ZSlbOmNvdW50XQoKICAgIGRlZiBnZXRfcmVwb3J0KHNlbGYpIC0+IHN0cjoKICAgICAgICAiIiJHZW5lcmF0ZSBhIHBlcmZvcm1hbmNlIHJlcG9ydC4iIiIKICAgICAgICBsaW5lcyA9IFsKICAgICAgICAgICAgIj0iICogNzAsCiAgICAgICAgICAgICJQRVJGT1JNQU5DRSBQUk9GSUxFIFJFUE9SVCIsCiAgICAgICAgICAgICI9IiAqIDcwLAogICAgICAgICAgICAiIiwKICAgICAgICAgICAgZiJUb3RhbCBwcm9maWxpbmcgdGltZToge3RpbWUudGltZSgpIC0gc2VsZi5fc3RhcnRfdGltZTouMmZ9cyIsCiAgICAgICAgICAgIGYiVG90YWwgZnVuY3Rpb25zIHRyYWNrZWQ6IHtsZW4oc2VsZi5fcHJvZmlsZXMpfSIsCiAgICAgICAgICAgICIiLAogICAgICAgICAgICAiVE9QIDEwIFNMT1dFU1QgRlVOQ1RJT05TIChieSB0b3RhbCB0aW1lKToiLAogICAgICAgICAgICAiLSIgKiA3MCwKICAgICAgICBdCgogICAgICAgIHNsb3dlc3QgPSBzZWxmLmdldF9zbG93ZXN0X2Z1bmN0aW9ucygxMCkKICAgICAgICBmb3IgaSwgcHJvZmlsZSBpbiBlbnVtZXJhdGUoc2xvd2VzdCwgMSk6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIntpOjJkfS4ge3Byb2ZpbGUubmFtZX0iKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgICAgICAgICBmIiAgICBUb3RhbDoge3Byb2ZpbGUudG90YWxfdGltZTouM2Z9cyB8ICIKICAgICAgICAgICAgICAgIGYiQ2FsbHM6IHtwcm9maWxlLmNhbGxfY291bnR9IHwgIgogICAgICAgICAgICAgICAgZiJBdmc6IHtwcm9maWxlLmF2Z190aW1lICogMTAwMDouMmZ9bXMgfCAiCiAgICAgICAgICAgICAgICBmIk1pbjoge3Byb2ZpbGUubWluX3RpbWUgKiAxMDAwOi4yZn1tcyB8ICIKICAgICAgICAgICAgICAgIGYiTWF4OiB7cHJvZmlsZS5tYXhfdGltZSAqIDEwMDA6LjJmfW1zIgogICAgICAgICAgICApCgogICAgICAgIGxpbmVzLmFwcGVuZCgiIikKICAgICAgICBsaW5lcy5hcHBlbmQoIlRPUCAxMCBNT1NUIENBTExFRCBGVU5DVElPTlM6IikKICAgICAgICBsaW5lcy5hcHBlbmQoIi0iICogNzApCgogICAgICAgIG1vc3RfY2FsbGVkID0gc2VsZi5nZXRfbW9zdF9jYWxsZWQoMTApCiAgICAgICAgZm9yIGksIHByb2ZpbGUgaW4gZW51bWVyYXRlKG1vc3RfY2FsbGVkLCAxKToKICAgICAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICAgICAgZiJ7aToyZH0uIHtwcm9maWxlLm5hbWV9IC0ge3Byb2ZpbGUuY2FsbF9jb3VudH0gY2FsbHMgIgogICAgICAgICAgICAgICAgZiIoe3Byb2ZpbGUudG90YWxfdGltZTouM2Z9cyB0b3RhbCkiCiAgICAgICAgICAgICkKCiAgICAgICAgbGluZXMuYXBwZW5kKCIiKQogICAgICAgIGxpbmVzLmFwcGVuZCgiPSIgKiA3MCkKCiAgICAgICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykKCiAgICBkZWYgcmVzZXQoc2VsZik6CiAgICAgICAgIiIiUmVzZXQgYWxsIHByb2ZpbGluZyBkYXRhLiIiIgogICAgICAgIHNlbGYuX3Byb2ZpbGVzLmNsZWFyKCkKICAgICAgICBzZWxmLl9zdGFydF90aW1lID0gdGltZS50aW1lKCkKCiAgICBkZWYgZ2V0X3N0YXRzX2RpY3Qoc2VsZikgLT4gRGljdFtzdHIsIEFueV06CiAgICAgICAgIiIiR2V0IHByb2ZpbGluZyBzdGF0aXN0aWNzIGFzIGEgZGljdGlvbmFyeS4iIiIKICAgICAgICByZXR1cm4gewogICAgICAgICAgICAidG90YWxfZnVuY3Rpb25zIjogbGVuKHNlbGYuX3Byb2ZpbGVzKSwKICAgICAgICAgICAgInRvdGFsX3RpbWUiOiB0aW1lLnRpbWUoKSAtIHNlbGYuX3N0YXJ0X3RpbWUsCiAgICAgICAgICAgICJzbG93ZXN0IjogWwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICJuYW1lIjogcC5uYW1lLAogICAgICAgICAgICAgICAgICAgICJ0b3RhbF90aW1lIjogcC50b3RhbF90aW1lLAogICAgICAgICAgICAgICAgICAgICJjYWxsX2NvdW50IjogcC5jYWxsX2NvdW50LAogICAgICAgICAgICAgICAgICAgICJhdmdfdGltZSI6IHAuYXZnX3RpbWUsCiAgICAgICAgICAgICAgICAgICAgIm1pbl90aW1lIjogcC5taW5fdGltZSwKICAgICAgICAgICAgICAgICAgICAibWF4X3RpbWUiOiBwLm1heF90aW1lLAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZm9yIHAgaW4gc2VsZi5nZXRfc2xvd2VzdF9mdW5jdGlvbnMoMTApCiAgICAgICAgICAgIF0sCiAgICAgICAgICAgICJtb3N0X2NhbGxlZCI6IFsKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAibmFtZSI6IHAubmFtZSwKICAgICAgICAgICAgICAgICAgICAiY2FsbF9jb3VudCI6IHAuY2FsbF9jb3VudCwKICAgICAgICAgICAgICAgICAgICAidG90YWxfdGltZSI6IHAudG90YWxfdGltZSwKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGZvciBwIGluIHNlbGYuZ2V0X21vc3RfY2FsbGVkKDEwKQogICAgICAgICAgICBdLAogICAgICAgIH0KCgojIEdsb2JhbCBwcm9maWxlciBpbnN0YW5jZQpfcHJvZmlsZXI6IE9wdGlvbmFsW1BlcmZvcm1hbmNlUHJvZmlsZXJdID0gTm9uZQoKCmRlZiBnZXRfcHJvZmlsZXIoKSAtPiBQZXJmb3JtYW5jZVByb2ZpbGVyOgogICAgIiIiR2V0IHRoZSBnbG9iYWwgcGVyZm9ybWFuY2UgcHJvZmlsZXIuIiIiCiAgICBnbG9iYWwgX3Byb2ZpbGVyCiAgICBpZiBfcHJvZmlsZXIgaXMgTm9uZToKICAgICAgICBfcHJvZmlsZXIgPSBQZXJmb3JtYW5jZVByb2ZpbGVyKCkKICAgIHJldHVybiBfcHJvZmlsZXIKCgpkZWYgcHJvZmlsZShuYW1lOiBPcHRpb25hbFtzdHJdID0gTm9uZSkgLT4gQ2FsbGFibGU6CiAgICAiIiJEZWNvcmF0b3IgdG8gcHJvZmlsZSBhIGZ1bmN0aW9uIHVzaW5nIHRoZSBnbG9iYWwgcHJvZmlsZXIuIiIiCiAgICByZXR1cm4gZ2V0X3Byb2ZpbGVyKCkucHJvZmlsZV9mdW5jdGlvbihuYW1lKSAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCgpAY29udGV4dG1hbmFnZXIKZGVmIHByb2ZpbGVfYmxvY2sobmFtZTogc3RyKToKICAgICIiIkNvbnRleHQgbWFuYWdlciB0byBwcm9maWxlIGEgY29kZSBibG9jay4iIiIKICAgIHdpdGggZ2V0X3Byb2ZpbGVyKCkucHJvZmlsZV9ibG9jayhuYW1lKToKICAgICAgICB5aWVsZAoKCmNsYXNzIFByb2ZpbGVyQ29udGV4dDoKICAgICIiIkNvbnRleHQgbWFuYWdlciBmb3IgY1Byb2ZpbGUtYmFzZWQgcHJvZmlsaW5nLiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBlbmFibGVkOiBib29sID0gVHJ1ZSk6CiAgICAgICAgc2VsZi5lbmFibGVkID0gZW5hYmxlZAogICAgICAgIHNlbGYucHJvZmlsZXIgPSBjUHJvZmlsZS5Qcm9maWxlKCkKICAgICAgICBzZWxmLnN0YXRzOiBPcHRpb25hbFtwc3RhdHMuU3RhdHNdID0gTm9uZQoKICAgIGRlZiBfX2VudGVyX18oc2VsZik6CiAgICAgICAgaWYgc2VsZi5lbmFibGVkOgogICAgICAgICAgICBzZWxmLnByb2ZpbGVyLmVuYWJsZSgpCiAgICAgICAgcmV0dXJuIHNlbGYKCiAgICBkZWYgX19leGl0X18oc2VsZiwgZXhjX3R5cGUsIGV4Y192YWwsIGV4Y190Yik6CiAgICAgICAgaWYgc2VsZi5lbmFibGVkOgogICAgICAgICAgICBzZWxmLnByb2ZpbGVyLmRpc2FibGUoKQoKICAgIGRlZiBnZXRfc3RhdHMoc2VsZiwgc29ydF9ieTogc3RyID0gImN1bXVsYXRpdmUiLCBsaW1pdDogaW50ID0gMjApIC0+IHN0cjoKICAgICAgICAiIiJHZXQgcHJvZmlsaW5nIHN0YXRzIGFzIHN0cmluZy4iIiIKICAgICAgICBzID0gaW8uU3RyaW5nSU8oKQogICAgICAgIHBzID0gcHN0YXRzLlN0YXRzKHNlbGYucHJvZmlsZXIsIHN0cmVhbT1zKQogICAgICAgIHBzLnNvcnRfc3RhdHMoc29ydF9ieSkKICAgICAgICBwcy5wcmludF9zdGF0cyhsaW1pdCkKICAgICAgICByZXR1cm4gcy5nZXR2YWx1ZSgpCgoKQGNvbnRleHRtYW5hZ2VyCmRlZiBjcHJvZmlsZV9ibG9jayhzb3J0X2J5OiBzdHIgPSAiY3VtdWxhdGl2ZSIsIGxpbWl0OiBpbnQgPSAyMCk6CiAgICAiIiJDb250ZXh0IG1hbmFnZXIgZm9yIGNQcm9maWxlLWJhc2VkIHByb2ZpbGluZy4iIiIKICAgIHdpdGggUHJvZmlsZXJDb250ZXh0KCkgYXMgY3R4OgogICAgICAgIHlpZWxkIGN0eAogICAgcHJpbnQoY3R4LmdldF9zdGF0cyhzb3J0X2J5LCBsaW1pdCkpCgoKY2xhc3MgTWVtb3J5UHJvZmlsZXI6CiAgICAiIiJUcmFjayBtZW1vcnkgdXNhZ2Ugb2Ygb3BlcmF0aW9ucy4iIiIKCiAgICBkZWYgX19pbml0X18oc2VsZik6CiAgICAgICAgc2VsZi5fc25hcHNob3RzOiBMaXN0W0RpY3Rbc3RyLCBBbnldXSA9IFtdCiAgICAgICAgc2VsZi5fc3RhcnRfbWVtb3J5ID0gc2VsZi5fZ2V0X2N1cnJlbnRfbWVtb3J5KCkKCiAgICBAc3RhdGljbWV0aG9kCiAgICBkZWYgX2dldF9jdXJyZW50X21lbW9yeSgpIC0+IGZsb2F0OgogICAgICAgICIiIkdldCBjdXJyZW50IG1lbW9yeSB1c2FnZSBpbiBNQi4iIiIKICAgICAgICB0cnk6CiAgICAgICAgICAgIGltcG9ydCBwc3V0aWwKCiAgICAgICAgICAgIHByb2Nlc3MgPSBwc3V0aWwuUHJvY2VzcygpCiAgICAgICAgICAgIHJldHVybiBwcm9jZXNzLm1lbW9yeV9pbmZvKCkucnNzIC8gKDEwMjQgKiAxMDI0KSAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KICAgICAgICBleGNlcHQgKEltcG9ydEVycm9yLCBPU0Vycm9yKToKICAgICAgICAgICAgcmV0dXJuIDAuMAoKICAgIEBjb250ZXh0bWFuYWdlcgogICAgZGVmIHRyYWNrKHNlbGYsIG5hbWU6IHN0cik6CiAgICAgICAgIiIiVHJhY2sgbWVtb3J5IHVzYWdlIG9mIGEgY29kZSBibG9jay4iIiIKICAgICAgICBzdGFydF9tZW0gPSBzZWxmLl9nZXRfY3VycmVudF9tZW1vcnkoKQogICAgICAgIHN0YXJ0X3RpbWUgPSB0aW1lLnRpbWUoKQoKICAgICAgICB5aWVsZAoKICAgICAgICBlbmRfbWVtID0gc2VsZi5fZ2V0X2N1cnJlbnRfbWVtb3J5KCkKICAgICAgICBlbGFwc2VkID0gdGltZS50aW1lKCkgLSBzdGFydF90aW1lCgogICAgICAgIHNuYXBzaG90ID0gewogICAgICAgICAgICAibmFtZSI6IG5hbWUsCiAgICAgICAgICAgICJzdGFydF9tZW1vcnlfbWIiOiBzdGFydF9tZW0sCiAgICAgICAgICAgICJlbmRfbWVtb3J5X21iIjogZW5kX21lbSwKICAgICAgICAgICAgIm1lbW9yeV9kZWx0YV9tYiI6IGVuZF9tZW0gLSBzdGFydF9tZW0sCiAgICAgICAgICAgICJlbGFwc2VkX3RpbWUiOiBlbGFwc2VkLAogICAgICAgICAgICAidGltZXN0YW1wIjogdGltZS50aW1lKCksCiAgICAgICAgfQoKICAgICAgICBzZWxmLl9zbmFwc2hvdHMuYXBwZW5kKHNuYXBzaG90KQoKICAgICAgICBpZiBmbG9hdChzbmFwc2hvdFsibWVtb3J5X2RlbHRhX21iIl0pID4gMS4wOiAgIyB0eXBlOiBpZ25vcmVbYXJnLXR5cGVdICAjIExvZyBpZiA+IDFNQiBpbmNyZWFzZQogICAgICAgICAgICBsb2dnZXIud2FybmluZygKICAgICAgICAgICAgICAgIGYiTWVtb3J5IGluY3JlYXNlIGluICd7bmFtZX0nOiAiCiAgICAgICAgICAgICAgICBmIit7c25hcHNob3RbJ21lbW9yeV9kZWx0YV9tYiddOi4yZn0gTUIgIgogICAgICAgICAgICAgICAgZiIoe3N0YXJ0X21lbTouMWZ9IE1CIC0+IHtlbmRfbWVtOi4xZn0gTUIpIgogICAgICAgICAgICApCgogICAgZGVmIGdldF9zbmFwc2hvdHMoc2VsZikgLT4gTGlzdFtEaWN0W3N0ciwgQW55XV06CiAgICAgICAgIiIiR2V0IGFsbCBtZW1vcnkgc25hcHNob3RzLiIiIgogICAgICAgIHJldHVybiBzZWxmLl9zbmFwc2hvdHMuY29weSgpCgogICAgZGVmIGdldF9wZWFrX2luY3JlYXNlKHNlbGYpIC0+IGZsb2F0OgogICAgICAgICIiIkdldCBwZWFrIG1lbW9yeSBpbmNyZWFzZS4iIiIKICAgICAgICBpZiBub3Qgc2VsZi5fc25hcHNob3RzOgogICAgICAgICAgICByZXR1cm4gMC4wCiAgICAgICAgcmV0dXJuIG1heChmbG9hdChzWyJtZW1vcnlfZGVsdGFfbWIiXSkgZm9yIHMgaW4gc2VsZi5fc25hcHNob3RzKQoKICAgIGRlZiBnZXRfcmVwb3J0KHNlbGYpIC0+IHN0cjoKICAgICAgICAiIiJHZW5lcmF0ZSBtZW1vcnkgcHJvZmlsaW5nIHJlcG9ydC4iIiIKICAgICAgICBpZiBub3Qgc2VsZi5fc25hcHNob3RzOgogICAgICAgICAgICByZXR1cm4gIk5vIG1lbW9yeSBzbmFwc2hvdHMgcmVjb3JkZWQuIgoKICAgICAgICBsaW5lcyA9IFsKICAgICAgICAgICAgIj0iICogNzAsCiAgICAgICAgICAgICJNRU1PUlkgUFJPRklMSU5HIFJFUE9SVCIsCiAgICAgICAgICAgICI9IiAqIDcwLAogICAgICAgICAgICAiIiwKICAgICAgICBdCgogICAgICAgIGZvciBzbmFwc2hvdCBpbiBzZWxmLl9zbmFwc2hvdHM6CiAgICAgICAgICAgIGRlbHRhID0gc25hcHNob3RbIm1lbW9yeV9kZWx0YV9tYiJdCiAgICAgICAgICAgIGRlbHRhX3N0ciA9IGYiK3tkZWx0YTouMmZ9IiBpZiBkZWx0YSA+PSAwIGVsc2UgZiJ7ZGVsdGE6LjJmfSIKCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgICAgIGYie3NuYXBzaG90WyduYW1lJ119OiB7ZGVsdGFfc3RyfSBNQiAiCiAgICAgICAgICAgICAgICBmIih7c25hcHNob3RbJ3N0YXJ0X21lbW9yeV9tYiddOi4xZn0gLT4ge3NuYXBzaG90WydlbmRfbWVtb3J5X21iJ106LjFmfSkiCiAgICAgICAgICAgICkKCiAgICAgICAgbGluZXMuYXBwZW5kKCIiKQogICAgICAgIGxpbmVzLmFwcGVuZChmIlBlYWsgaW5jcmVhc2U6ICt7c2VsZi5nZXRfcGVha19pbmNyZWFzZSgpOi4yZn0gTUIiKQogICAgICAgIGxpbmVzLmFwcGVuZCgiIikKICAgICAgICBsaW5lcy5hcHBlbmQoIj0iICogNzApCgogICAgICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCgoKIyBHbG9iYWwgbWVtb3J5IHByb2ZpbGVyCl9tZW1vcnlfcHJvZmlsZXI6IE9wdGlvbmFsW01lbW9yeVByb2ZpbGVyXSA9IE5vbmUKCgpkZWYgZ2V0X21lbW9yeV9wcm9maWxlcigpIC0+IE1lbW9yeVByb2ZpbGVyOgogICAgIiIiR2V0IHRoZSBnbG9iYWwgbWVtb3J5IHByb2ZpbGVyLiIiIgogICAgZ2xvYmFsIF9tZW1vcnlfcHJvZmlsZXIKICAgIGlmIF9tZW1vcnlfcHJvZmlsZXIgaXMgTm9uZToKICAgICAgICBfbWVtb3J5X3Byb2ZpbGVyID0gTWVtb3J5UHJvZmlsZXIoKQogICAgcmV0dXJuIF9tZW1vcnlfcHJvZmlsZXIK
+"""
+Performance Profiler and Analysis Tools.
+
+Helps identify performance bottlenecks and optimize critical paths.
+"""
+
+import time
+import functools
+import logging
+from typing import Callable, Dict, List, Optional, Any
+from dataclasses import dataclass
+
+from contextlib import contextmanager
+import cProfile
+import pstats
+import io
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class FunctionProfile:
+    """Profile data for a single function."""
+
+    name: str
+    call_count: int = 0
+    total_time: float = 0.0
+    min_time: float = float("inf")
+    max_time: float = 0.0
+    avg_time: float = 0.0
+    last_called: float = 0.0
+
+    def update(self, elapsed: float):
+        """Update profile with new timing data."""
+        self.call_count += 1
+        self.total_time += elapsed
+        self.min_time = min(self.min_time, elapsed)
+        self.max_time = max(self.max_time, elapsed)
+        self.avg_time = self.total_time / self.call_count
+        self.last_called = time.time()
+
+
+class PerformanceProfiler:
+    """Track and analyze function performance."""
+
+    def __init__(self):
+        self._profiles: Dict[str, FunctionProfile] = {}
+        self._enabled = True
+        self._start_time = time.time()
+
+    def enable(self):
+        """Enable profiling."""
+        self._enabled = True
+
+    def disable(self):
+        """Disable profiling."""
+        self._enabled = False
+
+    def profile_function(self, name: Optional[str] = None):
+        """Decorator to profile a function."""
+
+        def decorator(func: Callable) -> Callable:
+            profile_name = name or f"{func.__module__}.{func.__qualname__}"
+
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                if not self._enabled:
+                    return func(*args, **kwargs)
+
+                start = time.perf_counter()
+                try:
+                    result = func(*args, **kwargs)
+                    return result
+                finally:
+                    elapsed = time.perf_counter() - start
+                    self._record_call(profile_name, elapsed)
+
+            return wrapper
+
+        return decorator
+
+    def _record_call(self, name: str, elapsed: float):
+        """Record a function call."""
+        if name not in self._profiles:
+            self._profiles[name] = FunctionProfile(name=name)
+        self._profiles[name].update(elapsed)
+
+    @contextmanager
+    def profile_block(self, name: str):
+        """Context manager to profile a code block."""
+        if not self._enabled:
+            yield
+            return
+
+        start = time.perf_counter()
+        try:
+            yield
+        finally:
+            elapsed = time.perf_counter() - start
+            self._record_call(name, elapsed)
+
+    def get_profile(self, name: str) -> Optional[FunctionProfile]:
+        """Get profile for a specific function."""
+        return self._profiles.get(name)
+
+    def get_all_profiles(self) -> List[FunctionProfile]:
+        """Get all profiles sorted by total time."""
+        profiles = list(self._profiles.values())
+        return sorted(profiles, key=lambda p: p.total_time, reverse=True)
+
+    def get_slowest_functions(self, count: int = 10) -> List[FunctionProfile]:
+        """Get the slowest functions."""
+        return self.get_all_profiles()[:count]
+
+    def get_most_called(self, count: int = 10) -> List[FunctionProfile]:
+        """Get the most frequently called functions."""
+        profiles = list(self._profiles.values())
+        return sorted(profiles, key=lambda p: p.call_count, reverse=True)[:count]
+
+    def get_report(self) -> str:
+        """Generate a performance report."""
+        lines = [
+            "=" * 70,
+            "PERFORMANCE PROFILE REPORT",
+            "=" * 70,
+            "",
+            f"Total profiling time: {time.time() - self._start_time:.2f}s",
+            f"Total functions tracked: {len(self._profiles)}",
+            "",
+            "TOP 10 SLOWEST FUNCTIONS (by total time):",
+            "-" * 70,
+        ]
+
+        slowest = self.get_slowest_functions(10)
+        for i, profile in enumerate(slowest, 1):
+            lines.append(f"{i:2d}. {profile.name}")
+            lines.append(
+                f"    Total: {profile.total_time:.3f}s | "
+                f"Calls: {profile.call_count} | "
+                f"Avg: {profile.avg_time * 1000:.2f}ms | "
+                f"Min: {profile.min_time * 1000:.2f}ms | "
+                f"Max: {profile.max_time * 1000:.2f}ms"
+            )
+
+        lines.append("")
+        lines.append("TOP 10 MOST CALLED FUNCTIONS:")
+        lines.append("-" * 70)
+
+        most_called = self.get_most_called(10)
+        for i, profile in enumerate(most_called, 1):
+            lines.append(
+                f"{i:2d}. {profile.name} - {profile.call_count} calls "
+                f"({profile.total_time:.3f}s total)"
+            )
+
+        lines.append("")
+        lines.append("=" * 70)
+
+        return "\n".join(lines)
+
+    def reset(self):
+        """Reset all profiling data."""
+        self._profiles.clear()
+        self._start_time = time.time()
+
+    def get_stats_dict(self) -> Dict[str, Any]:
+        """Get profiling statistics as a dictionary."""
+        return {
+            "total_functions": len(self._profiles),
+            "total_time": time.time() - self._start_time,
+            "slowest": [
+                {
+                    "name": p.name,
+                    "total_time": p.total_time,
+                    "call_count": p.call_count,
+                    "avg_time": p.avg_time,
+                    "min_time": p.min_time,
+                    "max_time": p.max_time,
+                }
+                for p in self.get_slowest_functions(10)
+            ],
+            "most_called": [
+                {
+                    "name": p.name,
+                    "call_count": p.call_count,
+                    "total_time": p.total_time,
+                }
+                for p in self.get_most_called(10)
+            ],
+        }
+
+
+# Global profiler instance
+_profiler: Optional[PerformanceProfiler] = None
+
+
+def get_profiler() -> PerformanceProfiler:
+    """Get the global performance profiler."""
+    global _profiler
+    if _profiler is None:
+        _profiler = PerformanceProfiler()
+    return _profiler
+
+
+def profile(name: Optional[str] = None) -> Callable:
+    """Decorator to profile a function using the global profiler."""
+    return get_profiler().profile_function(name)  # type: ignore[no-any-return]
+
+
+@contextmanager
+def profile_block(name: str):
+    """Context manager to profile a code block."""
+    with get_profiler().profile_block(name):
+        yield
+
+
+class ProfilerContext:
+    """Context manager for cProfile-based profiling."""
+
+    def __init__(self, enabled: bool = True):
+        self.enabled = enabled
+        self.profiler = cProfile.Profile()
+        self.stats: Optional[pstats.Stats] = None
+
+    def __enter__(self):
+        if self.enabled:
+            self.profiler.enable()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.enabled:
+            self.profiler.disable()
+
+    def get_stats(self, sort_by: str = "cumulative", limit: int = 20) -> str:
+        """Get profiling stats as string."""
+        s = io.StringIO()
+        ps = pstats.Stats(self.profiler, stream=s)
+        ps.sort_stats(sort_by)
+        ps.print_stats(limit)
+        return s.getvalue()
+
+
+@contextmanager
+def cprofile_block(sort_by: str = "cumulative", limit: int = 20):
+    """Context manager for cProfile-based profiling."""
+    with ProfilerContext() as ctx:
+        yield ctx
+    print(ctx.get_stats(sort_by, limit))
+
+
+class MemoryProfiler:
+    """Track memory usage of operations."""
+
+    def __init__(self):
+        self._snapshots: List[Dict[str, Any]] = []
+        self._start_memory = self._get_current_memory()
+
+    @staticmethod
+    def _get_current_memory() -> float:
+        """Get current memory usage in MB."""
+        try:
+            import psutil
+
+            process = psutil.Process()
+            return process.memory_info().rss / (1024 * 1024)  # type: ignore[no-any-return]
+        except (ImportError, OSError):
+            return 0.0
+
+    @contextmanager
+    def track(self, name: str):
+        """Track memory usage of a code block."""
+        start_mem = self._get_current_memory()
+        start_time = time.time()
+
+        yield
+
+        end_mem = self._get_current_memory()
+        elapsed = time.time() - start_time
+
+        snapshot = {
+            "name": name,
+            "start_memory_mb": start_mem,
+            "end_memory_mb": end_mem,
+            "memory_delta_mb": end_mem - start_mem,
+            "elapsed_time": elapsed,
+            "timestamp": time.time(),
+        }
+
+        self._snapshots.append(snapshot)
+
+        if float(snapshot["memory_delta_mb"]) > 1.0:  # type: ignore[arg-type]  # Log if > 1MB increase
+            logger.warning(
+                f"Memory increase in '{name}': "
+                f"+{snapshot['memory_delta_mb']:.2f} MB "
+                f"({start_mem:.1f} MB -> {end_mem:.1f} MB)"
+            )
+
+    def get_snapshots(self) -> List[Dict[str, Any]]:
+        """Get all memory snapshots."""
+        return self._snapshots.copy()
+
+    def get_peak_increase(self) -> float:
+        """Get peak memory increase."""
+        if not self._snapshots:
+            return 0.0
+        return max(float(s["memory_delta_mb"]) for s in self._snapshots)
+
+    def get_report(self) -> str:
+        """Generate memory profiling report."""
+        if not self._snapshots:
+            return "No memory snapshots recorded."
+
+        lines = [
+            "=" * 70,
+            "MEMORY PROFILING REPORT",
+            "=" * 70,
+            "",
+        ]
+
+        for snapshot in self._snapshots:
+            delta = snapshot["memory_delta_mb"]
+            delta_str = f"+{delta:.2f}" if delta >= 0 else f"{delta:.2f}"
+
+            lines.append(
+                f"{snapshot['name']}: {delta_str} MB "
+                f"({snapshot['start_memory_mb']:.1f} -> {snapshot['end_memory_mb']:.1f})"
+            )
+
+        lines.append("")
+        lines.append(f"Peak increase: +{self.get_peak_increase():.2f} MB")
+        lines.append("")
+        lines.append("=" * 70)
+
+        return "\n".join(lines)
+
+
+# Global memory profiler
+_memory_profiler: Optional[MemoryProfiler] = None
+
+
+def get_memory_profiler() -> MemoryProfiler:
+    """Get the global memory profiler."""
+    global _memory_profiler
+    if _memory_profiler is None:
+        _memory_profiler = MemoryProfiler()
+    return _memory_profiler

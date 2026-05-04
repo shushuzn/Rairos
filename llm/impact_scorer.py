@@ -1,1 +1,242 @@
-IiIiClBhcGVyIEltcGFjdCBTY29yZXIg4oCUIENvbXBvc2l0ZSBpbmZsdWVuY2Ugc2NvcmluZyBmb3IgcmVzZWFyY2ggcGFwZXJzLgoKQ29tYmluZXM6Ci0gUmF3IGNpdGF0aW9uIGNvdW50IG5vcm1hbGl6ZWQgYnkgcGFwZXIgYWdlCi0gUGFnZVJhbmstc3R5bGUgaW5mbHVlbmNlIHByb3BhZ2F0aW9uCi0gQ2l0YXRpb24gdmVsb2NpdHkgLyBtb21lbnR1bSAocmVjZW50IGNpdGF0aW9uIHJhdGUpCi0gQXV0aG9yIGgtaW5kZXggYWdncmVnYXRpb24KIiIiCgpmcm9tIGRhdGFjbGFzc2VzIGltcG9ydCBkYXRhY2xhc3MsIGZpZWxkCmZyb20gdHlwaW5nIGltcG9ydCBEaWN0LCBMaXN0LCBPcHRpb25hbCwgQW55CmltcG9ydCBtYXRoCgoKQGRhdGFjbGFzcwpjbGFzcyBJbXBhY3RTY29yZToKICAgICIiIkNvbXBvc2l0ZSBpbXBhY3Qgc2NvcmUgZm9yIGEgcGFwZXIuIiIiCgogICAgcGFwZXJfaWQ6IHN0cgogICAgdGl0bGU6IHN0cgogICAgeWVhcjogaW50CgogICAgcmF3X2NpdGF0aW9uczogaW50ID0gMAogICAgbm9ybWFsaXplZF9zY29yZTogZmxvYXQgPSAwLjAgICMgYWdlLW5vcm1hbGl6ZWQgY2l0YXRpb25zIHBlciB5ZWFyCiAgICBwYWdlcmFua19zY29yZTogZmxvYXQgPSAwLjAgICMgaW5mbHVlbmNlIHByb3BhZ2F0aW9uIHNjb3JlCiAgICBtb21lbnR1bV9zY29yZTogZmxvYXQgPSAwLjAgICMgcmVjZW50IGNpdGF0aW9uIHZlbG9jaXR5CiAgICBhdXRob3JfaF9pbmRleDogZmxvYXQgPSAwLjAgICMgYXV0aG9yIGgtaW5kZXggYWdncmVnYXRlCiAgICBjb21wb3NpdGVfc2NvcmU6IGZsb2F0ID0gMC4wICAjIHdlaWdodGVkIGNvbXBvc2l0ZQoKICAgIHBlcmNlbnRpbGU6IGZsb2F0ID0gMC4wICAjIHJhbmsgYW1vbmcgc2NvcmVkIHBhcGVycwogICAgdGllcjogc3RyID0gIiIgICMgUy9BL0IvQy9ECgogICAgZGVmIHRvX2RpY3Qoc2VsZikgLT4gRGljdFtzdHIsIEFueV06CiAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgInBhcGVyX2lkIjogc2VsZi5wYXBlcl9pZCwKICAgICAgICAgICAgInRpdGxlIjogc2VsZi50aXRsZSwKICAgICAgICAgICAgInllYXIiOiBzZWxmLnllYXIsCiAgICAgICAgICAgICJyYXdfY2l0YXRpb25zIjogc2VsZi5yYXdfY2l0YXRpb25zLAogICAgICAgICAgICAibm9ybWFsaXplZF9zY29yZSI6IHJvdW5kKHNlbGYubm9ybWFsaXplZF9zY29yZSwgMyksCiAgICAgICAgICAgICJwYWdlcmFua19zY29yZSI6IHJvdW5kKHNlbGYucGFnZXJhbmtfc2NvcmUsIDMpLAogICAgICAgICAgICAibW9tZW50dW1fc2NvcmUiOiByb3VuZChzZWxmLm1vbWVudHVtX3Njb3JlLCAzKSwKICAgICAgICAgICAgImF1dGhvcl9oX2luZGV4Ijogcm91bmQoc2VsZi5hdXRob3JfaF9pbmRleCwgMyksCiAgICAgICAgICAgICJjb21wb3NpdGVfc2NvcmUiOiByb3VuZChzZWxmLmNvbXBvc2l0ZV9zY29yZSwgMyksCiAgICAgICAgICAgICJwZXJjZW50aWxlIjogcm91bmQoc2VsZi5wZXJjZW50aWxlLCAxKSwKICAgICAgICAgICAgInRpZXIiOiBzZWxmLnRpZXIsCiAgICAgICAgfQoKCmNsYXNzIEltcGFjdFNjb3JlcjoKICAgICIiIkNvbXB1dGUgY29tcG9zaXRlIGltcGFjdCBzY29yZXMgZm9yIHBhcGVycy4iIiIKCiAgICAjIFdlaWdodHMgZm9yIGNvbXBvc2l0ZSBzY29yZQogICAgV0VJR0hUX05PUk1BTElaRUQgPSAwLjMwCiAgICBXRUlHSFRfUEFHRVJBTksgPSAwLjMwCiAgICBXRUlHSFRfTU9NRU5UVU0gPSAwLjI1CiAgICBXRUlHSFRfQVVUSE9SID0gMC4xNQoKICAgICMgVGllciB0aHJlc2hvbGRzIChjb21wb3NpdGUgc2NvcmUpCiAgICBUSUVSX1RIUkVTSE9MRFMgPSB7IlMiOiAwLjgsICJBIjogMC42LCAiQiI6IDAuNCwgIkMiOiAwLjJ9CgogICAgZGVmIF9faW5pdF9fKHNlbGYsIGRiPU5vbmUpOgogICAgICAgIHNlbGYuZGIgPSBkYgogICAgICAgIHNlbGYuX3Njb3JlczogRGljdFtzdHIsIEltcGFjdFNjb3JlXSA9IHt9CiAgICAgICAgc2VsZi5fcGFnZXJhbmtfaXRlcmF0aW9ucyA9IDQKCiAgICBkZWYgc2NvcmVfcGFwZXIoCiAgICAgICAgc2VsZiwKICAgICAgICBwYXBlcl9pZDogc3RyLAogICAgICAgIHRpdGxlOiBzdHIsCiAgICAgICAgeWVhcjogaW50LAogICAgICAgIHJhd19jaXRhdGlvbnM6IGludCwKICAgICAgICBjaXRpbmdfcGFwZXJzOiBPcHRpb25hbFtMaXN0W0RpY3RdXSA9IE5vbmUsCiAgICAgICAgYXV0aG9yX2hfaW5kZXg6IGZsb2F0ID0gMC4wLAogICAgKSAtPiBJbXBhY3RTY29yZToKICAgICAgICAiIiJTY29yZSBhIHNpbmdsZSBwYXBlci4iIiIKICAgICAgICBjdXJyZW50X3llYXIgPSAyMDI2CgogICAgICAgICMgMS4gQWdlLW5vcm1hbGl6ZWQgY2l0YXRpb25zIHBlciB5ZWFyCiAgICAgICAgYWdlID0gbWF4KGN1cnJlbnRfeWVhciAtIHllYXIsIDEpCiAgICAgICAgbm9ybWFsaXplZCA9IHJhd19jaXRhdGlvbnMgLyBhZ2UKCiAgICAgICAgIyAyLiBQYWdlUmFuay1zdHlsZSBwcm9wYWdhdGlvbiAoc2ltcGxpZmllZCkKICAgICAgICBwYWdlcmFuayA9IHNlbGYuX2NvbXB1dGVfcGFnZXJhbmsocGFwZXJfaWQsIGNpdGluZ19wYXBlcnMgb3IgW10pCgogICAgICAgICMgMy4gTW9tZW50dW06IHJhdyBwcm94eSB2aWEgY2l0YXRpb25zIHBlciB5ZWFyIChubyBoaXN0b3JpY2FsIGRhdGEgbmVlZGVkKQogICAgICAgICMgSGlnaGVyIHdlaWdodCBvbiByZWNlbnQgeWVhcnMgd291bGQgbmVlZCB0aW1lLXNlcmllczsgdXNlIGFnZS1ub3JtYWxpemVkIGFzIHByb3h5CiAgICAgICAgbW9tZW50dW0gPSByYXdfY2l0YXRpb25zIC8gKGFnZSoqMC43KSAgIyBzbGlnaHQgZGUtZW1waGFzaXMgb2YgYWdlCgogICAgICAgICMgNC4gQ29tcG9zaXRlCiAgICAgICAgY29tcG9zaXRlID0gKAogICAgICAgICAgICBzZWxmLldFSUdIVF9OT1JNQUxJWkVEICogc2VsZi5fbm9ybWFsaXplKG5vcm1hbGl6ZWQpCiAgICAgICAgICAgICsgc2VsZi5XRUlHSFRfUEFHRVJBTksgKiBwYWdlcmFuawogICAgICAgICAgICArIHNlbGYuV0VJR0hUX01PTUVOVFVNICogc2VsZi5fbm9ybWFsaXplKG1vbWVudHVtKQogICAgICAgICAgICArIHNlbGYuV0VJR0hUX0FVVEhPUiAqIG1pbihhdXRob3JfaF9pbmRleCAvIDUwLjAsIDEuMCkKICAgICAgICApCgogICAgICAgIHNjb3JlID0gSW1wYWN0U2NvcmUoCiAgICAgICAgICAgIHBhcGVyX2lkPXBhcGVyX2lkLAogICAgICAgICAgICB0aXRsZT10aXRsZSwKICAgICAgICAgICAgeWVhcj15ZWFyLAogICAgICAgICAgICByYXdfY2l0YXRpb25zPXJhd19jaXRhdGlvbnMsCiAgICAgICAgICAgIG5vcm1hbGl6ZWRfc2NvcmU9bm9ybWFsaXplZCwKICAgICAgICAgICAgcGFnZXJhbmtfc2NvcmU9cGFnZXJhbmssCiAgICAgICAgICAgIG1vbWVudHVtX3Njb3JlPW1vbWVudHVtLAogICAgICAgICAgICBhdXRob3JfaF9pbmRleD1hdXRob3JfaF9pbmRleCwKICAgICAgICAgICAgY29tcG9zaXRlX3Njb3JlPWNvbXBvc2l0ZSwKICAgICAgICApCiAgICAgICAgc2NvcmUudGllciA9IHNlbGYuX3RpZXIoY29tcG9zaXRlKQogICAgICAgIHNlbGYuX3Njb3Jlc1twYXBlcl9pZF0gPSBzY29yZQogICAgICAgIHJldHVybiBzY29yZQoKICAgIGRlZiBzY29yZV9iYXRjaCgKICAgICAgICBzZWxmLAogICAgICAgIHBhcGVyczogTGlzdFtEaWN0XSwKICAgICAgICBjaXRpbmdfbWFwOiBPcHRpb25hbFtEaWN0W3N0ciwgTGlzdFtzdHJdXV0gPSBOb25lLAogICAgKSAtPiBMaXN0W0ltcGFjdFNjb3JlXToKICAgICAgICAiIiJTY29yZSBhIGJhdGNoIG9mIHBhcGVycyBhbmQgYXNzaWduIHBlcmNlbnRpbGVzLiIiIgogICAgICAgIHJlc3VsdHMgPSBbXQogICAgICAgIGZvciBwIGluIHBhcGVyczoKICAgICAgICAgICAgY2l0aW5nID0gY2l0aW5nX21hcC5nZXQocFsicGFwZXJfaWQiXSwgW10pIGlmIGNpdGluZ19tYXAgZWxzZSBbXQogICAgICAgICAgICBjaXRpbmdfcmVmcyA9IFt7InBhcGVyX2lkIjogY30gZm9yIGMgaW4gY2l0aW5nXQogICAgICAgICAgICBzY29yZSA9IHNlbGYuc2NvcmVfcGFwZXIoCiAgICAgICAgICAgICAgICBwYXBlcl9pZD1wWyJwYXBlcl9pZCJdLAogICAgICAgICAgICAgICAgdGl0bGU9cC5nZXQoInRpdGxlIiwgIiIpLAogICAgICAgICAgICAgICAgeWVhcj1wLmdldCgieWVhciIsIDIwMjApLAogICAgICAgICAgICAgICAgcmF3X2NpdGF0aW9ucz1wLmdldCgiY2l0YXRpb25fY291bnQiLCAwKSBvciAwLAogICAgICAgICAgICAgICAgY2l0aW5nX3BhcGVycz1jaXRpbmdfcmVmcywKICAgICAgICAgICAgICAgIGF1dGhvcl9oX2luZGV4PXAuZ2V0KCJhdXRob3JfaF9pbmRleCIsIDAuMCksCiAgICAgICAgICAgICkKICAgICAgICAgICAgcmVzdWx0cy5hcHBlbmQoc2NvcmUpCgogICAgICAgICMgQXNzaWduIHBlcmNlbnRpbGVzCiAgICAgICAgc2VsZi5fYXNzaWduX3BlcmNlbnRpbGVzKHJlc3VsdHMpCiAgICAgICAgcmV0dXJuIHJlc3VsdHMKCiAgICBkZWYgX2NvbXB1dGVfcGFnZXJhbmsoc2VsZiwgcGFwZXJfaWQ6IHN0ciwgY2l0aW5nX3BhcGVyczogTGlzdFtEaWN0XSkgLT4gZmxvYXQ6CiAgICAgICAgIiIiU2ltcGxpZmllZCBQYWdlUmFuazogY2l0YXRpb25zIGZyb20gaGlnaC1zY29yaW5nIHBhcGVycyBjb3VudCBtb3JlLiIiIgogICAgICAgIGlmIG5vdCBjaXRpbmdfcGFwZXJzOgogICAgICAgICAgICByZXR1cm4gMC4xICAjIGJhc2VsaW5lCgogICAgICAgICMgSXRlcmF0aXZlIHByb3BhZ2F0aW9uCiAgICAgICAgc2NvcmVzID0ge3BbInBhcGVyX2lkIl06IDEuMCBmb3IgcCBpbiBjaXRpbmdfcGFwZXJzfQogICAgICAgIGRhbXBpbmcgPSAwLjg1CgogICAgICAgIGZvciBfIGluIHJhbmdlKHNlbGYuX3BhZ2VyYW5rX2l0ZXJhdGlvbnMpOgogICAgICAgICAgICBuZXdfc2NvcmVzOiBEaWN0W3N0ciwgZmxvYXRdID0ge30KICAgICAgICAgICAgZm9yIHBpZCwgc2NvcmUgaW4gc2NvcmVzLml0ZW1zKCk6CiAgICAgICAgICAgICAgICBpZiBwaWQgaW4gc2VsZi5fc2NvcmVzOgogICAgICAgICAgICAgICAgICAgICMgVHJhbnNmZXIgaW5mbHVlbmNlCiAgICAgICAgICAgICAgICAgICAgaW5oZXJpdGVkID0gc2NvcmUgKiBkYW1waW5nCiAgICAgICAgICAgICAgICAgICAgbmV3X3Njb3Jlc1twaWRdID0gbmV3X3Njb3Jlcy5nZXQocGlkLCAwLjApICsgaW5oZXJpdGVkCiAgICAgICAgICAgICMgTm9ybWFsaXplCiAgICAgICAgICAgIHRvdGFsID0gc3VtKG5ld19zY29yZXMudmFsdWVzKCkpIG9yIDEuMAogICAgICAgICAgICBzY29yZXMgPSB7azogdiAvIHRvdGFsIGZvciBrLCB2IGluIG5ld19zY29yZXMuaXRlbXMoKX0KCiAgICAgICAgcmV0dXJuIHN1bShzY29yZXMudmFsdWVzKCkpCgogICAgZGVmIF9ub3JtYWxpemUoc2VsZiwgdmFsdWU6IGZsb2F0LCBiYXNlbGluZTogZmxvYXQgPSAxMC4wKSAtPiBmbG9hdDoKICAgICAgICAiIiJTaWdtb2lkLWlzaCBub3JtYWxpemF0aW9uIHRvIFswLCAxXS4iIiIKICAgICAgICByZXR1cm4gMS4wIC0gKDEuMCAvICgxLjAgKyB2YWx1ZSAvIGJhc2VsaW5lKSkKCiAgICBkZWYgX3RpZXIoc2VsZiwgY29tcG9zaXRlOiBmbG9hdCkgLT4gc3RyOgogICAgICAgIGZvciB0aWVyLCB0aHJlc2hvbGQgaW4gc2VsZi5USUVSX1RIUkVTSE9MRFMuaXRlbXMoKToKICAgICAgICAgICAgaWYgY29tcG9zaXRlID49IHRocmVzaG9sZDoKICAgICAgICAgICAgICAgIHJldHVybiB0aWVyCiAgICAgICAgcmV0dXJuICJEIgoKICAgIGRlZiBfYXNzaWduX3BlcmNlbnRpbGVzKHNlbGYsIHNjb3JlczogTGlzdFtJbXBhY3RTY29yZV0pOgogICAgICAgICIiIkFzc2lnbiBwZXJjZW50aWxlIHJhbmsgYW1vbmcgc2NvcmVkIHBhcGVycy4iIiIKICAgICAgICBpZiBub3Qgc2NvcmVzOgogICAgICAgICAgICByZXR1cm4KICAgICAgICBzb3J0ZWRfc2NvcmVzID0gc29ydGVkKHNjb3Jlcywga2V5PWxhbWJkYSBzOiBzLmNvbXBvc2l0ZV9zY29yZSwgcmV2ZXJzZT1UcnVlKQogICAgICAgIG4gPSBsZW4oc29ydGVkX3Njb3JlcykKICAgICAgICBmb3IgaSwgcyBpbiBlbnVtZXJhdGUoc29ydGVkX3Njb3Jlcyk6CiAgICAgICAgICAgIHMucGVyY2VudGlsZSA9ICgobiAtIGkpIC8gbikgKiAxMDAuMAoKICAgIGRlZiBnZXRfdG9wX3BhcGVycygKICAgICAgICBzZWxmLAogICAgICAgIHBhcGVyczogTGlzdFtEaWN0XSwKICAgICAgICBsaW1pdDogaW50ID0gMjAsCiAgICAgICAgbWluX3Njb3JlOiBmbG9hdCA9IDAuMCwKICAgICAgICB5ZWFyX2ZpbHRlcjogT3B0aW9uYWxbaW50XSA9IE5vbmUsCiAgICApIC0+IExpc3RbSW1wYWN0U2NvcmVdOgogICAgICAgICIiIkdldCB0b3Atc2NvcmluZyBwYXBlcnMsIG9wdGlvbmFsbHkgZmlsdGVyZWQuIiIiCiAgICAgICAgc2NvcmVkID0gc2VsZi5zY29yZV9iYXRjaChwYXBlcnMpCiAgICAgICAgZmlsdGVyZWQgPSBbcyBmb3IgcyBpbiBzY29yZWQgaWYgcy5jb21wb3NpdGVfc2NvcmUgPj0gbWluX3Njb3JlXQogICAgICAgIGlmIHllYXJfZmlsdGVyOgogICAgICAgICAgICBmaWx0ZXJlZCA9IFtzIGZvciBzIGluIGZpbHRlcmVkIGlmIHMueWVhciA+PSB5ZWFyX2ZpbHRlcl0KICAgICAgICByZXR1cm4gc29ydGVkKGZpbHRlcmVkLCBrZXk9bGFtYmRhIHM6IHMuY29tcG9zaXRlX3Njb3JlLCByZXZlcnNlPVRydWUpWzpsaW1pdF0KCiAgICBkZWYgcmFua19wYXBlcnMoCiAgICAgICAgc2VsZiwKICAgICAgICBwYXBlcnM6IExpc3RbRGljdF0sCiAgICAgICAgdG9wX2s6IGludCA9IDEwLAogICAgKSAtPiBMaXN0W0RpY3Rbc3RyLCBBbnldXToKICAgICAgICAiIiJSYW5rIHBhcGVycyBhbmQgcmV0dXJuIGRldGFpbGVkIHJlc3VsdHMuIiIiCiAgICAgICAgc2NvcmVkID0gc2VsZi5zY29yZV9iYXRjaChwYXBlcnMpCiAgICAgICAgdG9wID0gc29ydGVkKHNjb3JlZCwga2V5PWxhbWJkYSBzOiBzLmNvbXBvc2l0ZV9zY29yZSwgcmV2ZXJzZT1UcnVlKVs6dG9wX2tdCgogICAgICAgIHJldHVybiBbCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICJyYW5rIjogaSArIDEsCiAgICAgICAgICAgICAgICAqKnMudG9fZGljdCgpLAogICAgICAgICAgICAgICAgIndoeSI6IHNlbGYuX2V4cGxhaW5fc2NvcmUocyksCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZm9yIGksIHMgaW4gZW51bWVyYXRlKHRvcCkKICAgICAgICBdCgogICAgZGVmIF9leHBsYWluX3Njb3JlKHNlbGYsIHM6IEltcGFjdFNjb3JlKSAtPiBzdHI6CiAgICAgICAgIiIiSHVtYW4tcmVhZGFibGUgZXhwbGFuYXRpb24gb2Ygc2NvcmUgYnJlYWtkb3duLiIiIgogICAgICAgIHBhcnRzID0gW10KICAgICAgICBpZiBzLm5vcm1hbGl6ZWRfc2NvcmUgPiAwLjU6CiAgICAgICAgICAgIHBhcnRzLmFwcGVuZChmIumrmOW5tOWMluW8leeUqCAoe3Mubm9ybWFsaXplZF9zY29yZTouMWZ9L+W5tCkiKQogICAgICAgIGlmIHMucGFnZXJhbmtfc2NvcmUgPiAwLjM6CiAgICAgICAgICAgIHBhcnRzLmFwcGVuZCgi6KKr6auY5b2x5ZON5Yqb6K665paH5byV55SoIikKICAgICAgICBpZiBzLm1vbWVudHVtX3Njb3JlID4gMC40OgogICAgICAgICAgICBwYXJ0cy5hcHBlbmQoIuW8leeUqOWinumVv+W8uuWKsiIpCiAgICAgICAgaWYgcy5hdXRob3JfaF9pbmRleCA+IDMwOgogICAgICAgICAgICBwYXJ0cy5hcHBlbmQoZiLkvZzogIVI5oyH5pWw6auYICh7cy5hdXRob3JfaF9pbmRleDouMGZ9KSIpCiAgICAgICAgcmV0dXJuICIsICIuam9pbihwYXJ0cykgaWYgcGFydHMgZWxzZSAi57u85ZCI6K+E5YiGIgoKICAgICMg4pSA4pSAIFJlbmRlcmluZyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCiAgICBkZWYgcmVuZGVyX3Jhbmtpbmcoc2VsZiwgcmFua2luZzogTGlzdFtEaWN0XSkgLT4gc3RyOgogICAgICAgICIiIlJlbmRlciByYW5raW5nIGFzIEFTQ0lJIHRhYmxlLiIiIgogICAgICAgIGlmIG5vdCByYW5raW5nOgogICAgICAgICAgICByZXR1cm4gIk5vIHBhcGVycyB0byByYW5rLiIKCiAgICAgICAgbGluZXMgPSBbIj0iICogNzAsICLwn5OKIFBhcGVyIEltcGFjdCBSYW5raW5nIiwgIj0iICogNzAsICIiXQogICAgICAgIGxpbmVzLmFwcGVuZChmInsnUmFuayc6PDZ9eydUaWVyJzo8Nn17J1Njb3JlJzo8OH17J0NpdGF0aW9ucyc6PDEyfXsnWWVhcic6PDZ9IFRpdGxlIikKICAgICAgICBsaW5lcy5hcHBlbmQoIi0iICogNzApCgogICAgICAgIGZvciBlbnRyeSBpbiByYW5raW5nOgogICAgICAgICAgICB0aWVyX2Vtb2ppID0geyJTIjogIuKtkCIsICJBIjogIvCfhbDvuI8iLCAiQiI6ICLwn4Wx77iPIiwgIkMiOiAi4pqZ77iPIiwgIkQiOiAi8J+ThCJ9CiAgICAgICAgICAgIGVtb2ppID0gdGllcl9lbW9qaS5nZXQoZW50cnlbInRpZXIiXSwgIvCfk4QiKQogICAgICAgICAgICB0aXRsZSA9IGVudHJ5WyJ0aXRsZSJdWzo0MF0KICAgICAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICAgICAgZiJ7ZW50cnlbJ3JhbmsnXTo8Nn17ZW1vamk6PDZ9e2VudHJ5Wydjb21wb3NpdGVfc2NvcmUnXTo8OC4zZn0iCiAgICAgICAgICAgICAgICBmIntlbnRyeVsncmF3X2NpdGF0aW9ucyddOjwxMn17ZW50cnlbJ3llYXInXTo8Nn17dGl0bGV9IgogICAgICAgICAgICApCgogICAgICAgIGxpbmVzLmFwcGVuZCgiPSIgKiA3MCkKICAgICAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQo=
+"""
+Paper Impact Scorer — Composite influence scoring for research papers.
+
+Combines:
+- Raw citation count normalized by paper age
+- PageRank-style influence propagation
+- Citation velocity / momentum (recent citation rate)
+- Author h-index aggregation
+"""
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Any
+import math
+
+
+@dataclass
+class ImpactScore:
+    """Composite impact score for a paper."""
+    paper_id: str
+    title: str
+    year: int
+
+    raw_citations: int = 0
+    normalized_score: float = 0.0   # age-normalized citations per year
+    pagerank_score: float = 0.0     # influence propagation score
+    momentum_score: float = 0.0     # recent citation velocity
+    author_h_index: float = 0.0     # author h-index aggregate
+    composite_score: float = 0.0    # weighted composite
+
+    percentile: float = 0.0  # rank among scored papers
+    tier: str = ""           # S/A/B/C/D
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "paper_id": self.paper_id,
+            "title": self.title,
+            "year": self.year,
+            "raw_citations": self.raw_citations,
+            "normalized_score": round(self.normalized_score, 3),
+            "pagerank_score": round(self.pagerank_score, 3),
+            "momentum_score": round(self.momentum_score, 3),
+            "author_h_index": round(self.author_h_index, 3),
+            "composite_score": round(self.composite_score, 3),
+            "percentile": round(self.percentile, 1),
+            "tier": self.tier,
+        }
+
+
+class ImpactScorer:
+    """Compute composite impact scores for papers."""
+
+    # Weights for composite score
+    WEIGHT_NORMALIZED = 0.30
+    WEIGHT_PAGERANK = 0.30
+    WEIGHT_MOMENTUM = 0.25
+    WEIGHT_AUTHOR = 0.15
+
+    # Tier thresholds (composite score)
+    TIER_THRESHOLDS = {"S": 0.8, "A": 0.6, "B": 0.4, "C": 0.2}
+
+    def __init__(self, db=None):
+        self.db = db
+        self._scores: Dict[str, ImpactScore] = {}
+        self._pagerank_iterations = 4
+
+    def score_paper(
+        self,
+        paper_id: str,
+        title: str,
+        year: int,
+        raw_citations: int,
+        citing_papers: Optional[List[Dict]] = None,
+        author_h_index: float = 0.0,
+    ) -> ImpactScore:
+        """Score a single paper."""
+        current_year = 2026
+
+        # 1. Age-normalized citations per year
+        age = max(current_year - year, 1)
+        normalized = raw_citations / age
+
+        # 2. PageRank-style propagation (simplified)
+        pagerank = self._compute_pagerank(paper_id, citing_papers or [])
+
+        # 3. Momentum: raw proxy via citations per year (no historical data needed)
+        # Higher weight on recent years would need time-series; use age-normalized as proxy
+        momentum = raw_citations / (age ** 0.7)  # slight de-emphasis of age
+
+        # 4. Composite
+        composite = (
+            self.WEIGHT_NORMALIZED * self._normalize(normalized) +
+            self.WEIGHT_PAGERANK * pagerank +
+            self.WEIGHT_MOMENTUM * self._normalize(momentum) +
+            self.WEIGHT_AUTHOR * min(author_h_index / 50.0, 1.0)
+        )
+
+        score = ImpactScore(
+            paper_id=paper_id,
+            title=title,
+            year=year,
+            raw_citations=raw_citations,
+            normalized_score=normalized,
+            pagerank_score=pagerank,
+            momentum_score=momentum,
+            author_h_index=author_h_index,
+            composite_score=composite,
+        )
+        score.tier = self._tier(composite)
+        self._scores[paper_id] = score
+        return score
+
+    def score_batch(
+        self,
+        papers: List[Dict],
+        citing_map: Optional[Dict[str, List[str]]] = None,
+    ) -> List[ImpactScore]:
+        """Score a batch of papers and assign percentiles."""
+        results = []
+        for p in papers:
+            citing = citing_map.get(p["paper_id"], []) if citing_map else []
+            citing_refs = [{"paper_id": c} for c in citing]
+            score = self.score_paper(
+                paper_id=p["paper_id"],
+                title=p.get("title", ""),
+                year=p.get("year", 2020),
+                raw_citations=p.get("citation_count", 0) or 0,
+                citing_papers=citing_refs,
+                author_h_index=p.get("author_h_index", 0.0),
+            )
+            results.append(score)
+
+        # Assign percentiles
+        self._assign_percentiles(results)
+        return results
+
+    def _compute_pagerank(self, paper_id: str, citing_papers: List[Dict]) -> float:
+        """Simplified PageRank: citations from high-scoring papers count more."""
+        if not citing_papers:
+            return 0.1  # baseline
+
+        # Iterative propagation
+        scores = {p["paper_id"]: 1.0 for p in citing_papers}
+        damping = 0.85
+
+        for _ in range(self._pagerank_iterations):
+            new_scores: Dict[str, float] = {}
+            for pid, score in scores.items():
+                if pid in self._scores:
+                    # Transfer influence
+                    inherited = score * damping
+                    new_scores[pid] = new_scores.get(pid, 0.0) + inherited
+            # Normalize
+            total = sum(new_scores.values()) or 1.0
+            scores = {k: v / total for k, v in new_scores.items()}
+
+        return sum(scores.values())
+
+    def _normalize(self, value: float, baseline: float = 10.0) -> float:
+        """Sigmoid-ish normalization to [0, 1]."""
+        return 1.0 - (1.0 / (1.0 + value / baseline))
+
+    def _tier(self, composite: float) -> str:
+        for tier, threshold in self.TIER_THRESHOLDS.items():
+            if composite >= threshold:
+                return tier
+        return "D"
+
+    def _assign_percentiles(self, scores: List[ImpactScore]):
+        """Assign percentile rank among scored papers."""
+        if not scores:
+            return
+        sorted_scores = sorted(scores, key=lambda s: s.composite_score, reverse=True)
+        n = len(sorted_scores)
+        for i, s in enumerate(sorted_scores):
+            s.percentile = ((n - i) / n) * 100.0
+
+    def get_top_papers(
+        self,
+        papers: List[Dict],
+        limit: int = 20,
+        min_score: float = 0.0,
+        year_filter: Optional[int] = None,
+    ) -> List[ImpactScore]:
+        """Get top-scoring papers, optionally filtered."""
+        scored = self.score_batch(papers)
+        filtered = [s for s in scored if s.composite_score >= min_score]
+        if year_filter:
+            filtered = [s for s in filtered if s.year >= year_filter]
+        return sorted(filtered, key=lambda s: s.composite_score, reverse=True)[:limit]
+
+    def rank_papers(
+        self,
+        papers: List[Dict],
+        top_k: int = 10,
+    ) -> List[Dict[str, Any]]:
+        """Rank papers and return detailed results."""
+        scored = self.score_batch(papers)
+        top = sorted(scored, key=lambda s: s.composite_score, reverse=True)[:top_k]
+
+        return [
+            {
+                "rank": i + 1,
+                **s.to_dict(),
+                "why": self._explain_score(s),
+            }
+            for i, s in enumerate(top)
+        ]
+
+    def _explain_score(self, s: ImpactScore) -> str:
+        """Human-readable explanation of score breakdown."""
+        parts = []
+        if s.normalized_score > 0.5:
+            parts.append(f"高年化引用 ({s.normalized_score:.1f}/年)")
+        if s.pagerank_score > 0.3:
+            parts.append("被高影响力论文引用")
+        if s.momentum_score > 0.4:
+            parts.append("引用增长强劲")
+        if s.author_h_index > 30:
+            parts.append(f"作者H指数高 ({s.author_h_index:.0f})")
+        return ", ".join(parts) if parts else "综合评分"
+
+    # ── Rendering ──────────────────────────────────────────────
+
+    def render_ranking(self, ranking: List[Dict]) -> str:
+        """Render ranking as ASCII table."""
+        if not ranking:
+            return "No papers to rank."
+
+        lines = ["=" * 70, "📊 Paper Impact Ranking", "=" * 70, ""]
+        lines.append(f"{'Rank':<6}{'Tier':<6}{'Score':<8}{'Citations':<12}{'Year':<6} Title")
+        lines.append("-" * 70)
+
+        for entry in ranking:
+            tier_emoji = {"S": "⭐", "A": "🅰️", "B": "🅱️", "C": "⚙️", "D": "📄"}
+            emoji = tier_emoji.get(entry["tier"], "📄")
+            title = entry["title"][:40]
+            lines.append(
+                f"{entry['rank']:<6}{emoji:<6}{entry['composite_score']:<8.3f}"
+                f"{entry['raw_citations']:<12}{entry['year']:<6}{title}"
+            )
+
+        lines.append("=" * 70)
+        return "\n".join(lines)

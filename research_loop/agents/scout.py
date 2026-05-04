@@ -1,1 +1,90 @@
-IiIiUGFwZXIgU2NvdXQgQWdlbnQg4oCUIG1vbml0b3JzIGFyWGl2IGFuZCBkaXNjb3ZlcnMgbmV3IHBhcGVycy4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCB0aW1lCmZyb20gdHlwaW5nIGltcG9ydCBMaXN0LCBEaWN0LCBBbnksIE9wdGlvbmFsCmZyb20gcmVzZWFyY2hfbG9vcC5hZ2VudHMuYmFzZSBpbXBvcnQgQmFzZUFnZW50LCBBZ2VudE1lc3NhZ2UsIEFnZW50U3RhdHVzCgoKVE9QSUNfUEFQRVJfRElTQ09WRVJFRCA9ICJwYXBlci5kaXNjb3ZlcmVkIgpUT1BJQ19TVUJTQ1JJUFRJT05fQ0hFQ0sgPSAic3Vic2NyaXB0aW9uLmNoZWNrIgoKCmNsYXNzIFNjb3V0QWdlbnQoQmFzZUFnZW50KToKICAgICIiIlNjb3V0IEFnZW50IHdhdGNoZXMgYXJYaXYgc3Vic2NyaXB0aW9ucyBhbmQgcHVibGlzaGVzIG5ld2x5IGRpc2NvdmVyZWQgcGFwZXJzLgoKICAgIEl0IHN1YnNjcmliZXMgdG8gYHN1YnNjcmlwdGlvbi5jaGVja2AgKHRyaWdnZXJzIGEgc2NhbikgYW5kIHB1Ymxpc2hlcwogICAgYHBhcGVyLmRpc2NvdmVyZWRgIGZvciBlYWNoIG5ldyBwYXBlciBmb3VuZC4KICAgICIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBidXM9Tm9uZSk6CiAgICAgICAgc3VwZXIoKS5fX2luaXRfXygKICAgICAgICAgICAgbmFtZT0ic2NvdXQiLAogICAgICAgICAgICB0b3BpY3M9W1RPUElDX1NVQlNDUklQVElPTl9DSEVDS10sCiAgICAgICAgICAgIGJ1cz1idXMsCiAgICAgICAgKQogICAgICAgIHNlbGYuX2RiID0gTm9uZQogICAgICAgIHNlbGYuX21vbml0b3IgPSBOb25lCgogICAgZGVmIF9lbnN1cmVfY29tcG9uZW50cyhzZWxmKToKICAgICAgICBpZiBzZWxmLl9tb25pdG9yIGlzIG5vdCBOb25lOgogICAgICAgICAgICByZXR1cm4KICAgICAgICB0cnk6CiAgICAgICAgICAgIGZyb20gbGxtLnN1YnNjcmlwdGlvbl9tb25pdG9yIGltcG9ydCBTdWJzY3JpcHRpb25Nb25pdG9yCiAgICAgICAgICAgIGZyb20gbGxtLnN1YnNjcmlwdGlvbl9zY29yZXIgaW1wb3J0IFN1YnNjcmlwdGlvblNjb3JlcgogICAgICAgICAgICBmcm9tIGRiLmRhdGFiYXNlIGltcG9ydCBEYXRhYmFzZQoKICAgICAgICAgICAgZGIgPSBEYXRhYmFzZSgpCiAgICAgICAgICAgIGRiLmluaXQoKQogICAgICAgICAgICBzZWxmLl9kYiA9IGRiCiAgICAgICAgICAgIHNlbGYuX21vbml0b3IgPSBTdWJzY3JpcHRpb25Nb25pdG9yKGRiLCBTdWJzY3JpcHRpb25TY29yZXIoZGIpKQogICAgICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToKICAgICAgICAgICAgc2VsZi5fbG9nKCJpbml0X2ZhaWxlZCIsIGVycm9yPXN0cihlKSkKCiAgICBkZWYgdGhpbmsoc2VsZiwgbXNnOiBBZ2VudE1lc3NhZ2UpIC0+IExpc3RbQWdlbnRNZXNzYWdlXToKICAgICAgICBpZiBtc2cudG9waWMgIT0gVE9QSUNfU1VCU0NSSVBUSU9OX0NIRUNLOgogICAgICAgICAgICByZXR1cm4gW10KCiAgICAgICAgc2VsZi5zdGF0dXMgPSBBZ2VudFN0YXR1cy5XT1JLSU5HCiAgICAgICAgc2VsZi5fbG9nKCJzY2FubmluZ19zdWJzY3JpcHRpb25zIikKICAgICAgICBzZWxmLl9lbnN1cmVfY29tcG9uZW50cygpCgogICAgICAgIGlmIHNlbGYuX21vbml0b3IgaXMgTm9uZToKICAgICAgICAgICAgc2VsZi5zdGF0dXMgPSBBZ2VudFN0YXR1cy5FUlJPUgogICAgICAgICAgICByZXR1cm4gW10KCiAgICAgICAgdHJ5OgogICAgICAgICAgICByZXN1bHRzID0gc2VsZi5fbW9uaXRvci5jaGVja19hbGwoKQogICAgICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToKICAgICAgICAgICAgc2VsZi5fbG9nKCJzY2FuX2Vycm9yIiwgZXJyb3I9c3RyKGUpKQogICAgICAgICAgICBzZWxmLnN0YXR1cyA9IEFnZW50U3RhdHVzLkVSUk9SCiAgICAgICAgICAgIHJldHVybiBbXQoKICAgICAgICBkaXNjb3ZlcmVkOiBMaXN0W0FnZW50TWVzc2FnZV0gPSBbXQogICAgICAgIGZvciBzdWJfaWQsIHBhcGVycyBpbiByZXN1bHRzLml0ZW1zKCk6CiAgICAgICAgICAgIGlmIG5vdCBwYXBlcnM6CiAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICBzZWxmLl9sb2coImZvdW5kX3BhcGVycyIsIHN1YnNjcmlwdGlvbj1zdWJfaWQsIGNvdW50PWxlbihwYXBlcnMpKQogICAgICAgICAgICBmb3IgcGFwZXIgaW4gcGFwZXJzOgogICAgICAgICAgICAgICAgZGlzY292ZXJlZC5hcHBlbmQoCiAgICAgICAgICAgICAgICAgICAgQWdlbnRNZXNzYWdlKAogICAgICAgICAgICAgICAgICAgICAgICBpZD0iIiwKICAgICAgICAgICAgICAgICAgICAgICAgdG9waWM9VE9QSUNfUEFQRVJfRElTQ09WRVJFRCwKICAgICAgICAgICAgICAgICAgICAgICAgc2VuZGVyPXNlbGYubmFtZSwKICAgICAgICAgICAgICAgICAgICAgICAgcGF5bG9hZD17CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAic3Vic2NyaXB0aW9uX2lkIjogc3ViX2lkLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgImFyeGl2X2lkIjogcGFwZXIuZ2V0KCJhcnhpdl9pZCIsICIiKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICJ0aXRsZSI6IHBhcGVyLmdldCgidGl0bGUiLCAiIiksCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAiYWJzdHJhY3QiOiBwYXBlci5nZXQoImFic3RyYWN0IiwgIiIpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgImF1dGhvcnMiOiBwYXBlci5nZXQoImF1dGhvcnMiLCBbXSksCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAicHVibGlzaGVkIjogcGFwZXIuZ2V0KCJwdWJsaXNoZWQiLCAiIiksCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAicGRmX3VybCI6IHBhcGVyLmdldCgicGRmX3VybCIsICIiKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICJjYXRlZ29yaWVzIjogcGFwZXIuZ2V0KCJjYXRlZ29yaWVzIiwgIiIpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgImRpc2NvdmVyZWRfYXQiOiB0aW1lLnRpbWUoKSwKICAgICAgICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICAgICAgICAgdGltZXN0YW1wPXRpbWUudGltZSgpLAogICAgICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICAgICkKCiAgICAgICAgc2VsZi5zdGF0dXMgPSBBZ2VudFN0YXR1cy5ET05FCiAgICAgICAgcmV0dXJuIGRpc2NvdmVyZWQK
+"""Paper Scout Agent — monitors arXiv and discovers new papers."""
+
+from __future__ import annotations
+
+import time
+from typing import List, Dict, Any, Optional
+from research_loop.agents.base import BaseAgent, AgentMessage, AgentStatus
+
+
+TOPIC_PAPER_DISCOVERED = "paper.discovered"
+TOPIC_SUBSCRIPTION_CHECK = "subscription.check"
+
+
+class ScoutAgent(BaseAgent):
+    """Scout Agent watches arXiv subscriptions and publishes newly discovered papers.
+
+    It subscribes to `subscription.check` (triggers a scan) and publishes
+    `paper.discovered` for each new paper found.
+    """
+
+    def __init__(self, bus=None):
+        super().__init__(
+            name="scout",
+            topics=[TOPIC_SUBSCRIPTION_CHECK],
+            bus=bus,
+        )
+        self._db = None
+        self._monitor = None
+
+    def _ensure_components(self):
+        if self._monitor is not None:
+            return
+        try:
+            from llm.subscription_monitor import SubscriptionMonitor
+            from llm.subscription_scorer import SubscriptionScorer
+            from db.database import Database
+            db = Database()
+            db.init()
+            self._db = db
+            self._monitor = SubscriptionMonitor(db, SubscriptionScorer(db))
+        except Exception as e:
+            self._log("init_failed", error=str(e))
+
+    def think(self, msg: AgentMessage) -> List[AgentMessage]:
+        if msg.topic != TOPIC_SUBSCRIPTION_CHECK:
+            return []
+
+        self.status = AgentStatus.WORKING
+        self._log("scanning_subscriptions")
+        self._ensure_components()
+
+        if self._monitor is None:
+            self.status = AgentStatus.ERROR
+            return []
+
+        try:
+            results = self._monitor.check_all()
+        except Exception as e:
+            self._log("scan_error", error=str(e))
+            self.status = AgentStatus.ERROR
+            return []
+
+        discovered: List[AgentMessage] = []
+        for sub_id, papers in results.items():
+            if not papers:
+                continue
+            self._log("found_papers", subscription=sub_id, count=len(papers))
+            for paper in papers:
+                discovered.append(
+                    AgentMessage(
+                        id="",
+                        topic=TOPIC_PAPER_DISCOVERED,
+                        sender=self.name,
+                        payload={
+                            "subscription_id": sub_id,
+                            "arxiv_id": paper.get("arxiv_id", ""),
+                            "title": paper.get("title", ""),
+                            "abstract": paper.get("abstract", ""),
+                            "authors": paper.get("authors", []),
+                            "published": paper.get("published", ""),
+                            "pdf_url": paper.get("pdf_url", ""),
+                            "categories": paper.get("categories", ""),
+                            "discovered_at": time.time(),
+                        },
+                        timestamp=time.time(),
+                    )
+                )
+
+        self.status = AgentStatus.DONE
+        return discovered

@@ -1,1 +1,185 @@
-IiIiQ2l0YXRpb24gUGF0aGZpbmRlciBXZWIgR3JhcGgg4oCUIGludGVyYWN0aXZlIFNWRyBjaXRhdGlvbiBjaGFpbiB2aXN1YWxpemF0aW9uLgoKU2hvd3MgcGFwZXIg4oaSIGNpdGVzIOKGkiBHZW5lIFBvb2wgY2Fwc3VsZSBjaGFpbiwgY29sb3ItY29kZWQgYnkgZ2FwX3R5cGUuCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGpzb24KZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBBbnksIERpY3QsIExpc3QsIE9wdGlvbmFsCgpDQVBTVUxFU19QQVRIID0gUGF0aC5ob21lKCkgLyAiLmFpX3Jlc2VhcmNoX29zIiAvICJnZW5lX3Bvb2wiIC8gImNhcHN1bGVzLmpzb24iCgpHQVBfQ09MT1JTID0gewogICAgInRoZW9yZXRpY2FsX2dhcCI6ICIjQzQ3MDZBIiwKICAgICJtZXRob2RfbGltaXRhdGlvbiI6ICIjRDRBMDU1IiwKICAgICJldmFsdWF0aW9uX2dhcCI6ICIjNkI4RkI1IiwKICAgICJzY2FsYWJpbGl0eV9pc3N1ZSI6ICIjN0JBRDdCIiwKICAgICJkYXRhc2V0X2dhcCI6ICIjOUI4RUM0IiwKICAgICJnZW5lcmFsaXphdGlvbl9nYXAiOiAiI0M0OTQ2QSIsCiAgICAiY29udHJhZGljdGlvbiI6ICIjRTA3MDcwIiwKICAgICJ1bmV4cGxvcmVkX2FwcGxpY2F0aW9uIjogIiM2QkJGOEEiLAp9CgoKZGVmIF9sb2FkX2NhcHN1bGVzKCkgLT4gTGlzdFtEaWN0W3N0ciwgQW55XV06CiAgICBpZiBub3QgQ0FQU1VMRVNfUEFUSC5leGlzdHMoKToKICAgICAgICByZXR1cm4gW10KICAgIHJldHVybiBqc29uLmxvYWRzKENBUFNVTEVTX1BBVEgucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpKS5nZXQoImNhcHN1bGVzIiwgW10pCgoKZGVmIGJ1aWxkX2NpdGF0aW9uX2dyYXBoKAogICAgcGFwZXJfaWQ6IHN0ciwgcGFwZXJfdGl0bGU6IHN0ciwgY2l0ZWRfcGFwZXJfaWRzOiBMaXN0W3N0cl0sIGNpdGVkX2NhcHN1bGVfaWRzOiBMaXN0W3N0cl0KKSAtPiBEaWN0W3N0ciwgQW55XToKICAgIGNhcHN1bGVzID0gX2xvYWRfY2Fwc3VsZXMoKQogICAgY2Fwc3VsZV9tYXAgPSB7Yy5nZXQoImNhcHN1bGVfaWQiLCAiIik6IGMgZm9yIGMgaW4gY2Fwc3VsZXN9CgogICAgbm9kZXMgPSBbXQogICAgZWRnZXMgPSBbXQoKICAgICMgU291cmNlIHBhcGVyIG5vZGUKICAgIG5vZGVzLmFwcGVuZCgKICAgICAgICB7ImlkIjogcGFwZXJfaWQsICJsYWJlbCI6IHBhcGVyX3RpdGxlWzo1MF0sICJ0eXBlIjogInNvdXJjZV9wYXBlciIsICJ4IjogMzAwLCAieSI6IDUwfQogICAgKQoKICAgICMgQ2l0ZWQgcGFwZXIgbm9kZXMKICAgIF9uX2NpdGVkID0gbGVuKGNpdGVkX3BhcGVyX2lkcykKICAgIGZvciBpLCBjcGlkIGluIGVudW1lcmF0ZShjaXRlZF9wYXBlcl9pZHNbOjhdKToKICAgICAgICB4ID0gMTIwICsgKGkgJSA0KSAqIDE0MAogICAgICAgIHkgPSAxNjAgKyAoaSAvLyA0KSAqIDgwCiAgICAgICAgbm9kZXMuYXBwZW5kKAogICAgICAgICAgICB7ImlkIjogY3BpZCwgImxhYmVsIjogZiJQYXBlciB7Y3BpZFs6OF19IiwgInR5cGUiOiAiY2l0ZWRfcGFwZXIiLCAieCI6IHgsICJ5IjogeX0KICAgICAgICApCiAgICAgICAgZWRnZXMuYXBwZW5kKHsiZnJvbSI6IHBhcGVyX2lkLCAidG8iOiBjcGlkfSkKCiAgICAjIENhcHN1bGUgbm9kZXMKICAgIGZvciBpLCBjY2lkIGluIGVudW1lcmF0ZShjaXRlZF9jYXBzdWxlX2lkc1s6Nl0pOgogICAgICAgIGNhcCA9IGNhcHN1bGVfbWFwLmdldChjY2lkLCB7fSkKICAgICAgICBnYXBfdHlwZSA9IGNhcC5nZXQoImFjdGlvbl9nYXBfdHlwZSIsICIiKSBvciBjYXAuZ2V0KCJ0cmlnZ2VyX2dhcF90eXBlIiwgInVua25vd24iKQogICAgICAgIGNvbG9yID0gR0FQX0NPTE9SUy5nZXQoZ2FwX3R5cGUsICIjQTg5RThDIikKICAgICAgICB4ID0gMTAwICsgKGkgJSAzKSAqIDIyMAogICAgICAgIHkgPSAzNjAgKyAoaSAvLyAzKSAqIDEyMAogICAgICAgIG5vZGVzLmFwcGVuZCgKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgImlkIjogY2NpZCwKICAgICAgICAgICAgICAgICJsYWJlbCI6IGNhcC5nZXQoImFjdGlvbl9nYXBfdGl0bGUiLCBjY2lkKVs6NDBdLAogICAgICAgICAgICAgICAgInR5cGUiOiAiY2Fwc3VsZSIsCiAgICAgICAgICAgICAgICAiZ2FwX3R5cGUiOiBnYXBfdHlwZSwKICAgICAgICAgICAgICAgICJjb2xvciI6IGNvbG9yLAogICAgICAgICAgICAgICAgIngiOiB4LAogICAgICAgICAgICAgICAgInkiOiB5LAogICAgICAgICAgICB9CiAgICAgICAgKQogICAgICAgIGVkZ2VzLmFwcGVuZCh7ImZyb20iOiBwYXBlcl9pZCwgInRvIjogY2NpZCwgInN0eWxlIjogImRhc2hlZCJ9KQoKICAgIHJldHVybiB7Im5vZGVzIjogbm9kZXMsICJlZGdlcyI6IGVkZ2VzfQoKCmRlZiByZW5kZXJfY2l0YXRpb25fZ3JhcGhfc3ZnKAogICAgZ3JhcGhfZGF0YTogT3B0aW9uYWxbRGljdFtzdHIsIEFueV1dID0gTm9uZSwKICAgIHBhcGVyX2lkOiBzdHIgPSAiIiwKICAgIHBhcGVyX3RpdGxlOiBzdHIgPSAiIiwKICAgIGNpdGVkX3BhcGVyX2lkczogT3B0aW9uYWxbTGlzdFtzdHJdXSA9IE5vbmUsCiAgICBjaXRlZF9jYXBzdWxlX2lkczogT3B0aW9uYWxbTGlzdFtzdHJdXSA9IE5vbmUsCikgLT4gc3RyOgogICAgaWYgZ3JhcGhfZGF0YSBpcyBOb25lOgogICAgICAgIGNpdGVkX3BhcGVyX2lkcyA9IGNpdGVkX3BhcGVyX2lkcyBvciBbXQogICAgICAgIGNpdGVkX2NhcHN1bGVfaWRzID0gY2l0ZWRfY2Fwc3VsZV9pZHMgb3IgW10KICAgICAgICBncmFwaF9kYXRhID0gYnVpbGRfY2l0YXRpb25fZ3JhcGgocGFwZXJfaWQsIHBhcGVyX3RpdGxlLCBjaXRlZF9wYXBlcl9pZHMsIGNpdGVkX2NhcHN1bGVfaWRzKQoKICAgIG5vZGVzID0gZ3JhcGhfZGF0YS5nZXQoIm5vZGVzIiwgW10pCiAgICBlZGdlcyA9IGdyYXBoX2RhdGEuZ2V0KCJlZGdlcyIsIFtdKQogICAgbm9kZV9tYXAgPSB7blsiaWQiXTogbiBmb3IgbiBpbiBub2Rlc30KCiAgICBzdmdfbm9kZXMgPSBbXQogICAgZm9yIG4gaW4gbm9kZXM6CiAgICAgICAgbnQgPSBuWyJ0eXBlIl0KICAgICAgICBpZiBudCA9PSAic291cmNlX3BhcGVyIjoKICAgICAgICAgICAgc3ZnX25vZGVzLmFwcGVuZCgKICAgICAgICAgICAgICAgIGYiPGcgdHJhbnNmb3JtPSd0cmFuc2xhdGUoe25bJ3gnXX0se25bJ3knXX0pJz4iCiAgICAgICAgICAgICAgICBmIjxjaXJjbGUgcj0nMjgnIGZpbGw9JyMyYTRhNmEnIG9wYWNpdHk9JzAuOScvPiIKICAgICAgICAgICAgICAgIGYiPHRleHQgdGV4dC1hbmNob3I9J21pZGRsZScgZHk9Jy4zNWVtJyBmaWxsPSd3aGl0ZScgZm9udC1zaXplPScxNic+8J+ThDwvdGV4dD4iCiAgICAgICAgICAgICAgICBmIjx0ZXh0IHRleHQtYW5jaG9yPSdtaWRkbGUnIHk9JzQyJyBmb250LXNpemU9JzEwJyBmaWxsPScjNDQ0Jz57blsnbGFiZWwnXX08L3RleHQ+IgogICAgICAgICAgICAgICAgZiI8L2c+IgogICAgICAgICAgICApCiAgICAgICAgZWxpZiBudCA9PSAiY2l0ZWRfcGFwZXIiOgogICAgICAgICAgICBzdmdfbm9kZXMuYXBwZW5kKAogICAgICAgICAgICAgICAgZiI8ZyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSh7blsneCddfSx7blsneSddfSknPiIKICAgICAgICAgICAgICAgIGYiPHJlY3QgeD0nLTQwJyB5PSctMTQnIHdpZHRoPSc4MCcgaGVpZ2h0PScyOCcgcng9JzQnIGZpbGw9JyNlOGU0ZGMnIHN0cm9rZT0nI2NjYycvPiIKICAgICAgICAgICAgICAgIGYiPHRleHQgdGV4dC1hbmNob3I9J21pZGRsZScgZHk9Jy4zNWVtJyBmb250LXNpemU9JzknIGZpbGw9JyM1NTUnPntuWydsYWJlbCddfTwvdGV4dD4iCiAgICAgICAgICAgICAgICBmIjwvZz4iCiAgICAgICAgICAgICkKICAgICAgICBlbGlmIG50ID09ICJjYXBzdWxlIjoKICAgICAgICAgICAgY29sb3IgPSBuLmdldCgiY29sb3IiLCAiI0E4OUU4QyIpCiAgICAgICAgICAgIHN2Z19ub2Rlcy5hcHBlbmQoCiAgICAgICAgICAgICAgICBmIjxnIHRyYW5zZm9ybT0ndHJhbnNsYXRlKHtuWyd4J119LHtuWyd5J119KSc+IgogICAgICAgICAgICAgICAgZiI8cmVjdCB4PSctNjAnIHk9Jy0xOCcgd2lkdGg9JzEyMCcgaGVpZ2h0PSczNicgcng9JzUnIGZpbGw9J3tjb2xvcn0nIG9wYWNpdHk9JzAuMTUnIHN0cm9rZT0ne2NvbG9yfScgc3Ryb2tlLXdpZHRoPScxLjUnLz4iCiAgICAgICAgICAgICAgICBmIjx0ZXh0IHRleHQtYW5jaG9yPSdtaWRkbGUnIGR5PSctLjNlbScgZm9udC1zaXplPSc5JyBmb250LXdlaWdodD0nNjAwJyBmaWxsPSd7Y29sb3J9Jz57blsnZ2FwX3R5cGUnXS5yZXBsYWNlKCdfJywgJyAnKX08L3RleHQ+IgogICAgICAgICAgICAgICAgZiI8dGV4dCB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBkeT0nMWVtJyBmb250LXNpemU9JzgnIGZpbGw9JyM0NDQnPntuWydsYWJlbCddWzoyNV19PC90ZXh0PiIKICAgICAgICAgICAgICAgIGYiPC9nPiIKICAgICAgICAgICAgKQoKICAgIHN2Z19lZGdlcyA9IFtdCiAgICBmb3IgZSBpbiBlZGdlczoKICAgICAgICBmcm0gPSBub2RlX21hcC5nZXQoZS5nZXQoImZyb20iKSkKICAgICAgICB0byA9IG5vZGVfbWFwLmdldChlLmdldCgidG8iKSkKICAgICAgICBpZiBub3QgZnJtIG9yIG5vdCB0bzoKICAgICAgICAgICAgY29udGludWUKICAgICAgICBzdHlsZSA9ICJzdHJva2UtZGFzaGFycmF5PSc0LDMnIiBpZiBlLmdldCgic3R5bGUiKSA9PSAiZGFzaGVkIiBlbHNlICIiCiAgICAgICAgc3ZnX2VkZ2VzLmFwcGVuZCgKICAgICAgICAgICAgZiI8bGluZSB4MT0ne2ZybVsneCddfScgeTE9J3tmcm1bJ3knXX0nIHgyPSd7dG9bJ3gnXX0nIHkyPSd7dG9bJ3knXX0nICIKICAgICAgICAgICAgZiJzdHJva2U9JyNhYWEnIHN0cm9rZS13aWR0aD0nMS4yJyB7c3R5bGV9Lz4iCiAgICAgICAgKQoKICAgIGFsbF9ub2Rlc19zdmcgPSAiXG4gICAgIi5qb2luKHN2Z19ub2RlcykKICAgIGFsbF9lZGdlc19zdmcgPSAiXG4gICAgIi5qb2luKHN2Z19lZGdlcykKCiAgICBsZWdlbmRfaXRlbXMgPSAiIi5qb2luKAogICAgICAgIGYiPHJlY3QgeD0nMCcgeT0ne2kgKiAxOH0nIHdpZHRoPScxMCcgaGVpZ2h0PScxMCcgcng9JzInIGZpbGw9J3tjfScvPiIKICAgICAgICBmIjx0ZXh0IHg9JzE0JyB5PSd7aSAqIDE4ICsgOX0nIGZvbnQtc2l6ZT0nMTAnIGZpbGw9JyM1NTUnPntndC5yZXBsYWNlKCdfJywgJyAnKX08L3RleHQ+IgogICAgICAgIGZvciBpLCAoZ3QsIGMpIGluIGVudW1lcmF0ZShHQVBfQ09MT1JTLml0ZW1zKCkpCiAgICApCgogICAgbl9sZWdlbmQgPSBsZW4oR0FQX0NPTE9SUykKICAgIHN2ZyA9ICgKICAgICAgICBmIjxzdmcgd2lkdGg9JzcwMCcgaGVpZ2h0PSc1NTAnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgc3R5bGU9J2ZvbnQtZmFtaWx5Okdlb3JnaWEsc2VyaWYnPiIKICAgICAgICBmIjxnIHRyYW5zZm9ybT0ndHJhbnNsYXRlKDEwLDEwKSc+IgogICAgICAgIGYiPHRleHQgeD0nMCcgeT0nMCcgZm9udC1zaXplPScxMScgZm9udC13ZWlnaHQ9JzcwMCcgZmlsbD0nIzMzMycgZHk9Jy0yJz5MZWdlbmQ8L3RleHQ+IgogICAgICAgIGYie2xlZ2VuZF9pdGVtc30iCiAgICAgICAgZiI8cmVjdCB4PScwJyB5PSd7bl9sZWdlbmQgKiAxOCArIDh9JyB3aWR0aD0nMTAnIGhlaWdodD0nMTAnIGZpbGw9JyMyYTRhNmEnIHJ4PScxJy8+PHRleHQgeD0nMTQnIHk9J3tuX2xlZ2VuZCAqIDE4ICsgMTd9JyBmb250LXNpemU9JzEwJyBmaWxsPScjNTU1Jz5Tb3VyY2UgUGFwZXI8L3RleHQ+IgogICAgICAgIGYiPHJlY3QgeD0nMCcgeT0ne25fbGVnZW5kICogMTggKyAyMn0nIHdpZHRoPScxMCcgaGVpZ2h0PScxMCcgZmlsbD0nI2U4ZTRkYycgc3Ryb2tlPScjY2NjJyByeD0nMScvPjx0ZXh0IHg9JzE0JyB5PSd7bl9sZWdlbmQgKiAxOCArIDMxfScgZm9udC1zaXplPScxMCcgZmlsbD0nIzU1NSc+Q2l0ZWQgUGFwZXI8L3RleHQ+IgogICAgICAgIGYiPC9nPiIKICAgICAgICBmIjxnPnthbGxfZWRnZXNfc3ZnfTwvZz4iCiAgICAgICAgZiI8Zz57YWxsX25vZGVzX3N2Z308L2c+IgogICAgICAgIGYiPC9zdmc+IgogICAgKQogICAgcmV0dXJuIHN2ZwoKCmRlZiByZW5kZXJfY2l0YXRpb25fY2hhaW5faHRtbCgKICAgIHBhcGVyX2lkOiBzdHIsIHBhcGVyX3RpdGxlOiBzdHIsIGNpdGVkX3BhcGVyX2lkczogTGlzdFtzdHJdLCBjaXRlZF9jYXBzdWxlX2lkczogTGlzdFtzdHJdCikgLT4gc3RyOgogICAgY2Fwc3VsZXMgPSBfbG9hZF9jYXBzdWxlcygpCiAgICBjYXBzdWxlX21hcCA9IHtjLmdldCgiY2Fwc3VsZV9pZCIsICIiKTogYyBmb3IgYyBpbiBjYXBzdWxlc30KICAgIGdyYXBoX3N2ZyA9IHJlbmRlcl9jaXRhdGlvbl9ncmFwaF9zdmcoCiAgICAgICAgcGFwZXJfaWQ9cGFwZXJfaWQsCiAgICAgICAgcGFwZXJfdGl0bGU9cGFwZXJfdGl0bGUsCiAgICAgICAgY2l0ZWRfcGFwZXJfaWRzPWNpdGVkX3BhcGVyX2lkcywKICAgICAgICBjaXRlZF9jYXBzdWxlX2lkcz1jaXRlZF9jYXBzdWxlX2lkcywKICAgICkKCiAgICBsaW5lcyA9IFsnPGRpdiBjbGFzcz0iY2l0YXRpb24tcGF0aGZpbmRlciI+J10KICAgIGxpbmVzLmFwcGVuZCgiPGgzPvCflJcgQ2l0YXRpb24gUGF0aGZpbmRlcjwvaDM+IikKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiPHAgc3R5bGU9J2ZvbnQtc2l6ZToxM3B4O2NvbG9yOiNBODlFOEM7bWFyZ2luLWJvdHRvbToxNHB4Jz4iCiAgICAgICAgIlBhcGVyIOKGkiBjaXRlZCByZWZlcmVuY2VzIOKGkiBHZW5lIFBvb2wgY2Fwc3VsZXM8L3A+IgogICAgKQogICAgbGluZXMuYXBwZW5kKGYiPGRpdiBzdHlsZT0nb3ZlcmZsb3c6YXV0byc+e2dyYXBoX3N2Z308L2Rpdj4iKQoKICAgIGlmIGNpdGVkX2NhcHN1bGVfaWRzOgogICAgICAgIGxpbmVzLmFwcGVuZCgiPGRpdiBzdHlsZT0nbWFyZ2luLXRvcDoxNnB4Jz4iKQogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgIjxoNCBzdHlsZT0nZm9udC1zaXplOjEzcHg7Zm9udC13ZWlnaHQ6NzAwO2NvbG9yOiMzMzM7bWFyZ2luLWJvdHRvbTo4cHgnPkdlbmUgUG9vbCBDYXBzdWxlcyBDaXRlZDwvaDQ+IgogICAgICAgICkKICAgICAgICBmb3IgY2NpZCBpbiBjaXRlZF9jYXBzdWxlX2lkc1s6Nl06CiAgICAgICAgICAgIGNhcCA9IGNhcHN1bGVfbWFwLmdldChjY2lkLCB7fSkKICAgICAgICAgICAgaWYgY2FwOgogICAgICAgICAgICAgICAgZ3QgPSBjYXAuZ2V0KCJhY3Rpb25fZ2FwX3R5cGUiLCAiIikgb3IgY2FwLmdldCgidHJpZ2dlcl9nYXBfdHlwZSIsICJ1bmtub3duIikKICAgICAgICAgICAgICAgIGNvbG9yID0gR0FQX0NPTE9SUy5nZXQoZ3QsICIjQTg5RThDIikKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgICAgICAgICBmIjxkaXYgc3R5bGU9J2JvcmRlci1sZWZ0OjNweCBzb2xpZCB7Y29sb3J9O3BhZGRpbmctbGVmdDoxMHB4O21hcmdpbi1ib3R0b206OHB4Jz4iCiAgICAgICAgICAgICAgICAgICAgZiI8ZGl2IHN0eWxlPSdmb250LXNpemU6MTJweDtmb250LXdlaWdodDo2MDA7Y29sb3I6IzJhMmEyYSc+e2NhcC5nZXQoJ2FjdGlvbl9nYXBfdGl0bGUnLCBjY2lkKVs6NzBdfTwvZGl2PiIKICAgICAgICAgICAgICAgICAgICBmIjxkaXYgc3R5bGU9J2ZvbnQtc2l6ZToxMXB4O2NvbG9yOiNBODlFOEMnPntndH0gJm1pZGRvdDsgc2NvcmU9e2NhcC5nZXQoJ291dGNvbWVfc3VjY2Vzc19zY29yZScsIDApOi4yZn08L2Rpdj4iCiAgICAgICAgICAgICAgICAgICAgZiI8L2Rpdj4iCiAgICAgICAgICAgICAgICApCiAgICAgICAgbGluZXMuYXBwZW5kKCI8L2Rpdj4iKQoKICAgIGxpbmVzLmFwcGVuZCgiPHN0eWxlPi5jaXRhdGlvbi1wYXRoZmluZGVyIHsgZm9udC1mYW1pbHk6IEdlb3JnaWEsIHNlcmlmOyB9PC9zdHlsZT4iKQogICAgbGluZXMuYXBwZW5kKCI8L2Rpdj4iKQogICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykK
+"""Citation Pathfinder Web Graph — interactive SVG citation chain visualization.
+
+Shows paper → cites → Gene Pool capsule chain, color-coded by gap_type.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+CAPSULES_PATH = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+
+GAP_COLORS = {
+    "theoretical_gap": "#C4706A",
+    "method_limitation": "#D4A055",
+    "evaluation_gap": "#6B8FB5",
+    "scalability_issue": "#7BAD7B",
+    "dataset_gap": "#9B8EC4",
+    "generalization_gap": "#C4946A",
+    "contradiction": "#E07070",
+    "unexplored_application": "#6BBF8A",
+}
+
+
+def _load_capsules() -> List[Dict[str, Any]]:
+    if not CAPSULES_PATH.exists():
+        return []
+    return json.loads(CAPSULES_PATH.read_text(encoding="utf-8")).get("capsules", [])
+
+
+def build_citation_graph(paper_id: str, paper_title: str,
+                          cited_paper_ids: List[str],
+                          cited_capsule_ids: List[str]) -> Dict[str, Any]:
+    capsules = _load_capsules()
+    capsule_map = {c.get("capsule_id", ""): c for c in capsules}
+
+    nodes = []
+    edges = []
+
+    # Source paper node
+    nodes.append({"id": paper_id, "label": paper_title[:50], "type": "source_paper", "x": 300, "y": 50})
+
+    # Cited paper nodes
+    _n_cited = len(cited_paper_ids)
+    for i, cpid in enumerate(cited_paper_ids[:8]):
+        x = 120 + (i % 4) * 140
+        y = 160 + (i // 4) * 80
+        nodes.append({"id": cpid, "label": f"Paper {cpid[:8]}", "type": "cited_paper", "x": x, "y": y})
+        edges.append({"from": paper_id, "to": cpid})
+
+    # Capsule nodes
+    for i, ccid in enumerate(cited_capsule_ids[:6]):
+        cap = capsule_map.get(ccid, {})
+        gap_type = cap.get("action_gap_type", "") or cap.get("trigger_gap_type", "unknown")
+        color = GAP_COLORS.get(gap_type, "#A89E8C")
+        x = 100 + (i % 3) * 220
+        y = 360 + (i // 3) * 120
+        nodes.append({
+            "id": ccid,
+            "label": cap.get("action_gap_title", ccid)[:40],
+            "type": "capsule",
+            "gap_type": gap_type,
+            "color": color,
+            "x": x,
+            "y": y,
+        })
+        edges.append({"from": paper_id, "to": ccid, "style": "dashed"})
+
+    return {"nodes": nodes, "edges": edges}
+
+
+def render_citation_graph_svg(graph_data: Optional[Dict[str, Any]] = None,
+                                paper_id: str = "", paper_title: str = "",
+                                cited_paper_ids: Optional[List[str]] = None,
+                                cited_capsule_ids: Optional[List[str]] = None) -> str:
+    if graph_data is None:
+        cited_paper_ids = cited_paper_ids or []
+        cited_capsule_ids = cited_capsule_ids or []
+        graph_data = build_citation_graph(paper_id, paper_title, cited_paper_ids, cited_capsule_ids)
+
+    nodes = graph_data.get("nodes", [])
+    edges = graph_data.get("edges", [])
+    node_map = {n["id"]: n for n in nodes}
+
+    svg_nodes = []
+    for n in nodes:
+        nt = n["type"]
+        if nt == "source_paper":
+            svg_nodes.append(
+                f"<g transform='translate({n['x']},{n['y']})'>"
+                f"<circle r='28' fill='#2a4a6a' opacity='0.9'/>"
+                f"<text text-anchor='middle' dy='.35em' fill='white' font-size='16'>📄</text>"
+                f"<text text-anchor='middle' y='42' font-size='10' fill='#444'>{n['label']}</text>"
+                f"</g>"
+            )
+        elif nt == "cited_paper":
+            svg_nodes.append(
+                f"<g transform='translate({n['x']},{n['y']})'>"
+                f"<rect x='-40' y='-14' width='80' height='28' rx='4' fill='#e8e4dc' stroke='#ccc'/>"
+                f"<text text-anchor='middle' dy='.35em' font-size='9' fill='#555'>{n['label']}</text>"
+                f"</g>"
+            )
+        elif nt == "capsule":
+            color = n.get("color", "#A89E8C")
+            svg_nodes.append(
+                f"<g transform='translate({n['x']},{n['y']})'>"
+                f"<rect x='-60' y='-18' width='120' height='36' rx='5' fill='{color}' opacity='0.15' stroke='{color}' stroke-width='1.5'/>"
+                f"<text text-anchor='middle' dy='-.3em' font-size='9' font-weight='600' fill='{color}'>{n['gap_type'].replace('_', ' ')}</text>"
+                f"<text text-anchor='middle' dy='1em' font-size='8' fill='#444'>{n['label'][:25]}</text>"
+                f"</g>"
+            )
+
+    svg_edges = []
+    for e in edges:
+        frm = node_map.get(e.get("from"))
+        to = node_map.get(e.get("to"))
+        if not frm or not to:
+            continue
+        style = "stroke-dasharray='4,3'" if e.get("style") == "dashed" else ""
+        svg_edges.append(
+            f"<line x1='{frm['x']}' y1='{frm['y']}' x2='{to['x']}' y2='{to['y']}' "
+            f"stroke='#aaa' stroke-width='1.2' {style}/>"
+        )
+
+    all_nodes_svg = "\n    ".join(svg_nodes)
+    all_edges_svg = "\n    ".join(svg_edges)
+
+    legend_items = "".join(
+        f"<rect x='0' y='{i*18}' width='10' height='10' rx='2' fill='{c}'/>"
+        f"<text x='14' y='{i*18 + 9}' font-size='10' fill='#555'>{gt.replace('_', ' ')}</text>"
+        for i, (gt, c) in enumerate(GAP_COLORS.items())
+    )
+
+    n_legend = len(GAP_COLORS)
+    svg = (
+        f"<svg width='700' height='550' xmlns='http://www.w3.org/2000/svg' style='font-family:Georgia,serif'>"
+        f"<g transform='translate(10,10)'>"
+        f"<text x='0' y='0' font-size='11' font-weight='700' fill='#333' dy='-2'>Legend</text>"
+        f"{legend_items}"
+        f"<rect x='0' y='{n_legend*18+8}' width='10' height='10' fill='#2a4a6a' rx='1'/><text x='14' y='{n_legend*18+17}' font-size='10' fill='#555'>Source Paper</text>"
+        f"<rect x='0' y='{n_legend*18+22}' width='10' height='10' fill='#e8e4dc' stroke='#ccc' rx='1'/><text x='14' y='{n_legend*18+31}' font-size='10' fill='#555'>Cited Paper</text>"
+        f"</g>"
+        f"<g>{all_edges_svg}</g>"
+        f"<g>{all_nodes_svg}</g>"
+        f"</svg>"
+    )
+    return svg
+
+
+def render_citation_chain_html(paper_id: str, paper_title: str,
+                                cited_paper_ids: List[str],
+                                cited_capsule_ids: List[str]) -> str:
+    capsules = _load_capsules()
+    capsule_map = {c.get("capsule_id", ""): c for c in capsules}
+    graph_svg = render_citation_graph_svg(
+        paper_id=paper_id,
+        paper_title=paper_title,
+        cited_paper_ids=cited_paper_ids,
+        cited_capsule_ids=cited_capsule_ids,
+    )
+
+    lines = ['<div class="citation-pathfinder">']
+    lines.append("<h3>🔗 Citation Pathfinder</h3>")
+    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
+                "Paper → cited references → Gene Pool capsules</p>")
+    lines.append(f"<div style='overflow:auto'>{graph_svg}</div>")
+
+    if cited_capsule_ids:
+        lines.append("<div style='margin-top:16px'>")
+        lines.append("<h4 style='font-size:13px;font-weight:700;color:#333;margin-bottom:8px'>Gene Pool Capsules Cited</h4>")
+        for ccid in cited_capsule_ids[:6]:
+            cap = capsule_map.get(ccid, {})
+            if cap:
+                gt = cap.get("action_gap_type", "") or cap.get("trigger_gap_type", "unknown")
+                color = GAP_COLORS.get(gt, "#A89E8C")
+                lines.append(f"<div style='border-left:3px solid {color};padding-left:10px;margin-bottom:8px'>"
+                            f"<div style='font-size:12px;font-weight:600;color:#2a2a2a'>{cap.get('action_gap_title', ccid)[:70]}</div>"
+                            f"<div style='font-size:11px;color:#A89E8C'>{gt} &middot; score={cap.get('outcome_success_score', 0):.2f}</div>"
+                            f"</div>")
+        lines.append("</div>")
+
+    lines.append("<style>.citation-pathfinder { font-family: Georgia, serif; }</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

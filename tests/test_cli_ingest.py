@@ -1,1 +1,290 @@
-IiIiVW5pdCB0ZXN0cyBmb3IgaW5nZXN0IENMSSBzdWJjb21tYW5kIOKAlCBpbXBvcnQgKyBwb3N0cHJvY2VzcyArIGVtYmVkICsgS0cgcGlwZWxpbmUuIiIiCgpmcm9tIHVuaXR0ZXN0Lm1vY2sgaW1wb3J0IHBhdGNoLCBNYWdpY01vY2sKCgpjbGFzcyBGYWtlQXJnczoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCAqKmt3YXJncyk6CiAgICAgICAgZm9yIGssIHYgaW4ga3dhcmdzLml0ZW1zKCk6CiAgICAgICAgICAgIHNldGF0dHIoc2VsZiwgaywgdikKCgpjbGFzcyBGYWtlUGFwZXI6CiAgICBkZWYgX19pbml0X18oCiAgICAgICAgc2VsZiwKICAgICAgICBpZD0iMjMwMS4wMDAwMSIsCiAgICAgICAgdGl0bGU9IlRlc3QgUGFwZXIiLAogICAgICAgIGFic3RyYWN0PSIiLAogICAgICAgIGF1dGhvcnM9Tm9uZSwKICAgICAgICBwdWJsaXNoZWQ9IjIwMjQtMDEtMDEiLAogICAgICAgIHBkZl91cmw9IiIsCiAgICAgICAgZG9pPSIiLAogICAgICAgIHByaW1hcnlfY2F0ZWdvcnk9ImNzLkFJIiwKICAgICAgICB0YWdzPSIiLAogICAgICAgIGNhdGVnb3J5PSIwMi1Nb2RlbHMiLAogICAgKToKICAgICAgICBzZWxmLmlkID0gaWQKICAgICAgICBzZWxmLnRpdGxlID0gdGl0bGUKICAgICAgICBzZWxmLmFic3RyYWN0ID0gYWJzdHJhY3QKICAgICAgICBzZWxmLmF1dGhvcnMgPSBhdXRob3JzIG9yIFtdCiAgICAgICAgc2VsZi5wdWJsaXNoZWQgPSBwdWJsaXNoZWQKICAgICAgICBzZWxmLnBkZl91cmwgPSBwZGZfdXJsCiAgICAgICAgc2VsZi5kb2kgPSBkb2kKICAgICAgICBzZWxmLnByaW1hcnlfY2F0ZWdvcnkgPSBwcmltYXJ5X2NhdGVnb3J5CiAgICAgICAgc2VsZi50YWdzID0gdGFncwogICAgICAgIHNlbGYuY2F0ZWdvcnkgPSBjYXRlZ29yeQoKCmNsYXNzIEZha2VEQjoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBwYXBlcnM9Tm9uZSk6CiAgICAgICAgc2VsZi5wYXBlcnMgPSBwYXBlcnMgb3Ige30gICMgcGFwZXJfaWQgLT4gRmFrZVBhcGVyCiAgICAgICAgc2VsZi51cHNlcnRlZCA9IFtdCiAgICAgICAgc2VsZi5pbml0X2NhbGxlZCA9IEZhbHNlCgogICAgZGVmIGluaXQoc2VsZik6CiAgICAgICAgc2VsZi5pbml0X2NhbGxlZCA9IFRydWUKCiAgICBkZWYgcGFwZXJfZXhpc3RzKHNlbGYsIHBpZCk6CiAgICAgICAgcmV0dXJuIHBpZCBpbiBzZWxmLnBhcGVycwoKICAgIGRlZiBnZXRfcGFwZXIoc2VsZiwgcGlkKToKICAgICAgICByZXR1cm4gc2VsZi5wYXBlcnMuZ2V0KHBpZCkKCiAgICBkZWYgdXBzZXJ0X3BhcGVyKHNlbGYsIHBhcGVyX2lkLCBzb3VyY2UsICoqa3dhcmdzKToKICAgICAgICBzZWxmLnVwc2VydGVkLmFwcGVuZCgocGFwZXJfaWQsIHNvdXJjZSkpCiAgICAgICAgcmV0dXJuIEZha2VQYXBlcihpZD1wYXBlcl9pZCkKCgojIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAojIFBhcnNlciB0ZXN0cwojIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmNsYXNzIFRlc3RJbmdlc3RQYXJzZXI6CiAgICBkZWYgdGVzdF9wYXJzZXJfaGVscF90ZXh0KHNlbGYsIG1vbmtleXBhdGNoKToKICAgICAgICBtb25rZXlwYXRjaC5zZXRlbnYoIlBZVEhPTkhPTUUiLCAiQzovVXNlcnMvYWRtL0FwcERhdGEvTG9jYWwvUHJvZ3JhbXMvUHl0aG9uL1B5dGhvbjMxMiIpCiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05QQVRIIiwgIiIpCiAgICAgICAgZnJvbSBjbGkuY21kLmluZ2VzdCBpbXBvcnQgX2J1aWxkX2luZ2VzdF9wYXJzZXIKICAgICAgICBpbXBvcnQgYXJncGFyc2UKCiAgICAgICAgcCA9IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyKCkKICAgICAgICBzdWIgPSBwLmFkZF9zdWJwYXJzZXJzKCkKICAgICAgICBfYnVpbGRfaW5nZXN0X3BhcnNlcihzdWIpCiAgICAgICAgIyBzbW9rZSDigJQgcGFyc2VyIGJ1aWx0IHdpdGhvdXQgZXJyb3IKICAgICAgICBhc3NlcnQgVHJ1ZQoKICAgIGRlZiB0ZXN0X3NraXBfZmxhZ3NfYXJlX211dHVhbGx5X2V4Y2x1c2l2ZShzZWxmLCBtb25rZXlwYXRjaCk6CiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05IT01FIiwgIkM6L1VzZXJzL2FkbS9BcHBEYXRhL0xvY2FsL1Byb2dyYW1zL1B5dGhvbi9QeXRob24zMTIiKQogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OUEFUSCIsICIiKQogICAgICAgIGZyb20gY2xpLmNtZC5pbmdlc3QgaW1wb3J0IF9idWlsZF9pbmdlc3RfcGFyc2VyCiAgICAgICAgaW1wb3J0IGFyZ3BhcnNlCgogICAgICAgIHAgPSBhcmdwYXJzZS5Bcmd1bWVudFBhcnNlcigpCiAgICAgICAgc3ViID0gcC5hZGRfc3VicGFyc2VycygpCiAgICAgICAgX2J1aWxkX2luZ2VzdF9wYXJzZXIoc3ViKQogICAgICAgICMgSnVzdCB2ZXJpZnkgbm8gY3Jhc2ggb24gY29uc3RydWN0aW9uCiAgICAgICAgYXNzZXJ0IFRydWUKCgojIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAojIF9ydW5faW1wb3J0X3BoYXNlIHRlc3RzCiMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgoKY2xhc3MgVGVzdEltcG9ydFBoYXNlOgogICAgZGVmIHRlc3RfaW1wb3J0X3BoYXNlX25vX3BhcGVycyhzZWxmLCBtb25rZXlwYXRjaCk6CiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05IT01FIiwgIkM6L1VzZXJzL2FkbS9BcHBEYXRhL0xvY2FsL1Byb2dyYW1zL1B5dGhvbi9QeXRob24zMTIiKQogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OUEFUSCIsICIiKQogICAgICAgIGZyb20gY2xpLmNtZC5pbmdlc3QgaW1wb3J0IF9ydW5faW1wb3J0X3BoYXNlCgogICAgICAgIHdpdGggcGF0Y2goImNsaS5EYXRhYmFzZSIpIGFzIE1vY2tEQjoKICAgICAgICAgICAgTW9ja0RCLnJldHVybl92YWx1ZSA9IEZha2VEQigpCiAgICAgICAgICAgIGFkZGVkLCBmYWlsZWQgPSBfcnVuX2ltcG9ydF9waGFzZShbXSwgRmFrZURCKCksICJ0ZXN0IikKICAgICAgICAgICAgYXNzZXJ0IGFkZGVkID09IFtdCiAgICAgICAgICAgIGFzc2VydCBmYWlsZWQgPT0gW10KCiAgICBkZWYgdGVzdF9pbXBvcnRfcGhhc2VfZmV0Y2hfc3VjY2VzcyhzZWxmLCBtb25rZXlwYXRjaCk6CiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05IT01FIiwgIkM6L1VzZXJzL2FkbS9BcHBEYXRhL0xvY2FsL1Byb2dyYW1zL1B5dGhvbi9QeXRob24zMTIiKQogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OUEFUSCIsICIiKQogICAgICAgIGZyb20gY2xpLmNtZC5pbmdlc3QgaW1wb3J0IF9ydW5faW1wb3J0X3BoYXNlCgogICAgICAgIHdpdGggcGF0Y2goImNsaS5EYXRhYmFzZSIpIGFzIE1vY2tEQjoKICAgICAgICAgICAgbW9ja19kYiA9IEZha2VEQigpCiAgICAgICAgICAgIE1vY2tEQi5yZXR1cm5fdmFsdWUgPSBtb2NrX2RiCgogICAgICAgICAgICAjIF9mZXRjaF9wYXBlcl9tZXRhZGF0YSBpcyBpbXBvcnRlZCBmcm9tIGNsaS5jbWQuaW1wb3J0XyBpbnNpZGUgdGhlIGZ1bmN0aW9uCiAgICAgICAgICAgIHdpdGggcGF0Y2goImNsaS5jbWQuaW1wb3J0Xy5fZmV0Y2hfcGFwZXJfbWV0YWRhdGEiKSBhcyBtb2NrX2ZldGNoOgogICAgICAgICAgICAgICAgbW9ja19mZXRjaC5yZXR1cm5fdmFsdWUgPSB7CiAgICAgICAgICAgICAgICAgICAgInRpdGxlIjogIlRlc3QgUGFwZXIiLAogICAgICAgICAgICAgICAgICAgICJhdXRob3JzIjogW10sCiAgICAgICAgICAgICAgICAgICAgImFic3RyYWN0IjogIlRlc3QgYWJzdHJhY3QiLAogICAgICAgICAgICAgICAgICAgICJwdWJsaXNoZWQiOiAiMjAyNC0wMS0wMSIsCiAgICAgICAgICAgICAgICAgICAgImFic191cmwiOiAiaHR0cHM6Ly9hcnhpdi5vcmcvYWJzLzIzMDEuMDAwMDEiLAogICAgICAgICAgICAgICAgICAgICJwZGZfdXJsIjogImh0dHBzOi8vYXJ4aXYub3JnL3BkZi8yMzAxLjAwMDAxLnBkZiIsCiAgICAgICAgICAgICAgICAgICAgInByaW1hcnlfY2F0ZWdvcnkiOiAiY3MuQUkiLAogICAgICAgICAgICAgICAgICAgICJkb2kiOiAiIiwKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGFkZGVkLCBmYWlsZWQgPSBfcnVuX2ltcG9ydF9waGFzZShbIjIzMDEuMDAwMDEiXSwgbW9ja19kYiwgInRlc3QiKQogICAgICAgICAgICAgICAgYXNzZXJ0IGFkZGVkID09IFsiMjMwMS4wMDAwMSJdCiAgICAgICAgICAgICAgICBhc3NlcnQgZmFpbGVkID09IFtdCgogICAgZGVmIHRlc3RfaW1wb3J0X3BoYXNlX2ZldGNoX2ZhaWx1cmUoc2VsZiwgbW9ua2V5cGF0Y2gpOgogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OSE9NRSIsICJDOi9Vc2Vycy9hZG0vQXBwRGF0YS9Mb2NhbC9Qcm9ncmFtcy9QeXRob24vUHl0aG9uMzEyIikKICAgICAgICBtb25rZXlwYXRjaC5zZXRlbnYoIlBZVEhPTlBBVEgiLCAiIikKICAgICAgICBmcm9tIGNsaS5jbWQuaW5nZXN0IGltcG9ydCBfcnVuX2ltcG9ydF9waGFzZQoKICAgICAgICB3aXRoIHBhdGNoKCJjbGkuRGF0YWJhc2UiKSBhcyBNb2NrREI6CiAgICAgICAgICAgIG1vY2tfZGIgPSBGYWtlREIoKQogICAgICAgICAgICBNb2NrREIucmV0dXJuX3ZhbHVlID0gbW9ja19kYgoKICAgICAgICAgICAgd2l0aCBwYXRjaCgiY2xpLmNtZC5pbXBvcnRfLl9mZXRjaF9wYXBlcl9tZXRhZGF0YSIpIGFzIG1vY2tfZmV0Y2g6CiAgICAgICAgICAgICAgICBtb2NrX2ZldGNoLnJldHVybl92YWx1ZSA9IE5vbmUgICMgZmV0Y2ggZmFpbGVkCiAgICAgICAgICAgICAgICBhZGRlZCwgZmFpbGVkID0gX3J1bl9pbXBvcnRfcGhhc2UoWyIyMzAxLjAwMDAxIl0sIG1vY2tfZGIsICJ0ZXN0IikKICAgICAgICAgICAgICAgIGFzc2VydCBhZGRlZCA9PSBbXQogICAgICAgICAgICAgICAgYXNzZXJ0IGZhaWxlZCA9PSBbIjIzMDEuMDAwMDEiXQoKCiMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiMgX3J1bl9rZ19zeW5jX3BoYXNlIHRlc3RzCiMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgoKY2xhc3MgVGVzdEtHU3luY1BoYXNlOgogICAgZGVmIHRlc3Rfa2dfc3luY19jYWxsc19pbnRlZ3JhdGlvbihzZWxmLCBtb25rZXlwYXRjaCk6CiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05IT01FIiwgIkM6L1VzZXJzL2FkbS9BcHBEYXRhL0xvY2FsL1Byb2dyYW1zL1B5dGhvbi9QeXRob24zMTIiKQogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OUEFUSCIsICIiKQogICAgICAgIGZyb20gY2xpLmNtZC5pbmdlc3QgaW1wb3J0IF9ydW5fa2dfc3luY19waGFzZQoKICAgICAgICB3aXRoIHBhdGNoKCJjbGkuRGF0YWJhc2UiKSBhcyBNb2NrREI6CiAgICAgICAgICAgIHdpdGggcGF0Y2goImtnLmludGVncmF0aW9uLktHSW50ZWdyYXRpb24iKSBhcyBNb2NrSW50ZWc6CiAgICAgICAgICAgICAgICB3aXRoIHBhdGNoKCJrZy5LR01hbmFnZXIiKToKICAgICAgICAgICAgICAgICAgICBNb2NrREIucmV0dXJuX3ZhbHVlID0gRmFrZURCKCkKICAgICAgICAgICAgICAgICAgICBtb2NrX2ludGVnID0gTWFnaWNNb2NrKCkKICAgICAgICAgICAgICAgICAgICBNb2NrSW50ZWcucmV0dXJuX3ZhbHVlID0gbW9ja19pbnRlZwoKICAgICAgICAgICAgICAgICAgICByZXN1bHQgPSBfcnVuX2tnX3N5bmNfcGhhc2UoTW9ja0RCLnJldHVybl92YWx1ZSkKICAgICAgICAgICAgICAgICAgICBtb2NrX2ludGVnLnJlYnVpbGRfZnJvbV9wYXBlcnNfanNvbi5hc3NlcnRfY2FsbGVkX29uY2Vfd2l0aCgKICAgICAgICAgICAgICAgICAgICAgICAgImRhdGEvcGFwZXJzLmpzb24iLCBpbmNyZW1lbnRhbD1UcnVlCiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgICAgIGFzc2VydCByZXN1bHQgaXMgVHJ1ZQoKCiMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiMgX3J1bl9pbmdlc3QgbWFpbiBsb2dpYyB0ZXN0cwojIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmNsYXNzIFRlc3RSdW5Jbmdlc3Q6CiAgICBkZWYgdGVzdF9ub19pZHNfcmV0dXJuc19lcnJvcihzZWxmLCBtb25rZXlwYXRjaCwgY2Fwc3lzKToKICAgICAgICBtb25rZXlwYXRjaC5zZXRlbnYoIlBZVEhPTkhPTUUiLCAiQzovVXNlcnMvYWRtL0FwcERhdGEvTG9jYWwvUHJvZ3JhbXMvUHl0aG9uL1B5dGhvbjMxMiIpCiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05QQVRIIiwgIiIpCiAgICAgICAgZnJvbSBjbGkuY21kLmluZ2VzdCBpbXBvcnQgX3J1bl9pbmdlc3QKCiAgICAgICAgYXJncyA9IEZha2VBcmdzKAogICAgICAgICAgICBpZHM9W10sCiAgICAgICAgICAgIGZpbGU9Tm9uZSwKICAgICAgICAgICAgcm9vdD0iQUktUmVzZWFyY2giLAogICAgICAgICAgICB0YWdzPSIiLAogICAgICAgICAgICBzb3VyY2U9ImluZ2VzdCIsCiAgICAgICAgICAgIHNraXBfcG9zdHByb2Nlc3M9RmFsc2UsCiAgICAgICAgICAgIG9ubHlfcG9zdHByb2Nlc3M9RmFsc2UsCiAgICAgICAgICAgIHNraXBfZW1iZWQ9RmFsc2UsCiAgICAgICAgICAgIHNraXBfa2c9RmFsc2UsCiAgICAgICAgICAgIHNraXBfcGRmPUZhbHNlLAogICAgICAgICAgICBzdGFnZXM9Tm9uZSwKICAgICAgICAgICAgc2tpcF9sbG09RmFsc2UsCiAgICAgICAgICAgIGZvcm1hdD0idGV4dCIsCiAgICAgICAgKQogICAgICAgIHdpdGggcGF0Y2goImNsaS5EYXRhYmFzZSIpIGFzIE1vY2tEQjoKICAgICAgICAgICAgTW9ja0RCLnJldHVybl92YWx1ZSA9IEZha2VEQigpCiAgICAgICAgICAgIHJjID0gX3J1bl9pbmdlc3QoYXJncykKICAgICAgICAgICAgYXNzZXJ0IHJjID09IDEKCiAgICBkZWYgdGVzdF9vbmx5X3Bvc3Rwcm9jZXNzX21pc3NpbmdfcGFwZXIoc2VsZiwgbW9ua2V5cGF0Y2gsIGNhcHN5cyk6CiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05IT01FIiwgIkM6L1VzZXJzL2FkbS9BcHBEYXRhL0xvY2FsL1Byb2dyYW1zL1B5dGhvbi9QeXRob24zMTIiKQogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OUEFUSCIsICIiKQogICAgICAgIGZyb20gY2xpLmNtZC5pbmdlc3QgaW1wb3J0IF9ydW5faW5nZXN0CgogICAgICAgIGFyZ3MgPSBGYWtlQXJncygKICAgICAgICAgICAgaWRzPVsiOTk5OS45OTk5OSJdLAogICAgICAgICAgICBmaWxlPU5vbmUsCiAgICAgICAgICAgIHJvb3Q9IkFJLVJlc2VhcmNoIiwKICAgICAgICAgICAgdGFncz0iIiwKICAgICAgICAgICAgc291cmNlPSJpbmdlc3QiLAogICAgICAgICAgICBza2lwX3Bvc3Rwcm9jZXNzPUZhbHNlLAogICAgICAgICAgICBvbmx5X3Bvc3Rwcm9jZXNzPVRydWUsCiAgICAgICAgICAgIHNraXBfZW1iZWQ9RmFsc2UsCiAgICAgICAgICAgIHNraXBfa2c9RmFsc2UsCiAgICAgICAgICAgIHNraXBfcGRmPUZhbHNlLAogICAgICAgICAgICBzdGFnZXM9Tm9uZSwKICAgICAgICAgICAgc2tpcF9sbG09RmFsc2UsCiAgICAgICAgICAgIGZvcm1hdD0idGV4dCIsCiAgICAgICAgKQogICAgICAgIHdpdGggcGF0Y2goImNsaS5EYXRhYmFzZSIpIGFzIE1vY2tEQjoKICAgICAgICAgICAgTW9ja0RCLnJldHVybl92YWx1ZSA9IEZha2VEQigpICAjIGVtcHR5IOKAlCBwYXBlciBkb2Vzbid0IGV4aXN0CiAgICAgICAgICAgIHJjID0gX3J1bl9pbmdlc3QoYXJncykKICAgICAgICAgICAgYXNzZXJ0IHJjID09IDEKCiAgICBkZWYgdGVzdF9vbmx5X3Bvc3Rwcm9jZXNzX3dpdGhfZXhpc3RpbmdfcGFwZXIoc2VsZiwgbW9ua2V5cGF0Y2gsIGNhcHN5cyk6CiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05IT01FIiwgIkM6L1VzZXJzL2FkbS9BcHBEYXRhL0xvY2FsL1Byb2dyYW1zL1B5dGhvbi9QeXRob24zMTIiKQogICAgICAgIG1vbmtleXBhdGNoLnNldGVudigiUFlUSE9OUEFUSCIsICIiKQogICAgICAgIGZyb20gY2xpLmNtZC5pbmdlc3QgaW1wb3J0IF9ydW5faW5nZXN0CgogICAgICAgIGFyZ3MgPSBGYWtlQXJncygKICAgICAgICAgICAgaWRzPVsiMjMwMS4wMDAwMSJdLAogICAgICAgICAgICBmaWxlPU5vbmUsCiAgICAgICAgICAgIHJvb3Q9IkFJLVJlc2VhcmNoIiwKICAgICAgICAgICAgdGFncz0iIiwKICAgICAgICAgICAgc291cmNlPSJpbmdlc3QiLAogICAgICAgICAgICBza2lwX3Bvc3Rwcm9jZXNzPUZhbHNlLAogICAgICAgICAgICBvbmx5X3Bvc3Rwcm9jZXNzPVRydWUsCiAgICAgICAgICAgIHNraXBfZW1iZWQ9VHJ1ZSwKICAgICAgICAgICAgc2tpcF9rZz1UcnVlLAogICAgICAgICAgICBza2lwX3BkZj1UcnVlLAogICAgICAgICAgICBzdGFnZXM9Tm9uZSwKICAgICAgICAgICAgc2tpcF9sbG09VHJ1ZSwKICAgICAgICAgICAgZm9ybWF0PSJ0ZXh0IiwKICAgICAgICApCgogICAgICAgIHdpdGggcGF0Y2goImNsaS5EYXRhYmFzZSIpIGFzIE1vY2tEQjoKICAgICAgICAgICAgbW9ja19kYiA9IEZha2VEQihwYXBlcnM9eyIyMzAxLjAwMDAxIjogRmFrZVBhcGVyKCl9KQogICAgICAgICAgICBNb2NrREIucmV0dXJuX3ZhbHVlID0gbW9ja19kYgoKICAgICAgICAgICAgd2l0aCBwYXRjaCgiY2xpLmNtZC5pbmdlc3QuX3J1bl9wb3N0cHJvY2Vzc19waGFzZSIpIGFzIG1vY2tfcHA6CiAgICAgICAgICAgICAgICBtb2NrX3BwLnJldHVybl92YWx1ZSA9IFRydWUKICAgICAgICAgICAgICAgIHJjID0gX3J1bl9pbmdlc3QoYXJncykKICAgICAgICAgICAgICAgICMgSW1wb3J0IHBoYXNlIHNraXBwZWQsIG9ubHkgcG9zdHByb2Nlc3MgY2FsbGVkCiAgICAgICAgICAgICAgICBtb2NrX3BwLmFzc2VydF9jYWxsZWRfb25jZSgpCiAgICAgICAgICAgICAgICBhc3NlcnQgcmMgPT0gMAoKICAgIGRlZiB0ZXN0X3NraXBfYWxsX3BoYXNlcyhzZWxmLCBtb25rZXlwYXRjaCwgY2Fwc3lzKToKICAgICAgICBtb25rZXlwYXRjaC5zZXRlbnYoIlBZVEhPTkhPTUUiLCAiQzovVXNlcnMvYWRtL0FwcERhdGEvTG9jYWwvUHJvZ3JhbXMvUHl0aG9uL1B5dGhvbjMxMiIpCiAgICAgICAgbW9ua2V5cGF0Y2guc2V0ZW52KCJQWVRIT05QQVRIIiwgIiIpCiAgICAgICAgZnJvbSBjbGkuY21kLmluZ2VzdCBpbXBvcnQgX3J1bl9pbmdlc3QKCiAgICAgICAgYXJncyA9IEZha2VBcmdzKAogICAgICAgICAgICBpZHM9WyIyMzAxLjAwMDAxIl0sCiAgICAgICAgICAgIGZpbGU9Tm9uZSwKICAgICAgICAgICAgcm9vdD0iQUktUmVzZWFyY2giLAogICAgICAgICAgICB0YWdzPSIiLAogICAgICAgICAgICBzb3VyY2U9ImluZ2VzdCIsCiAgICAgICAgICAgIHNraXBfcG9zdHByb2Nlc3M9VHJ1ZSwKICAgICAgICAgICAgb25seV9wb3N0cHJvY2Vzcz1GYWxzZSwKICAgICAgICAgICAgc2tpcF9lbWJlZD1UcnVlLAogICAgICAgICAgICBza2lwX2tnPVRydWUsCiAgICAgICAgICAgIHNraXBfcGRmPUZhbHNlLAogICAgICAgICAgICBzdGFnZXM9Tm9uZSwKICAgICAgICAgICAgc2tpcF9sbG09RmFsc2UsCiAgICAgICAgICAgIGZvcm1hdD0idGV4dCIsCiAgICAgICAgKQoKICAgICAgICB3aXRoIHBhdGNoKCJjbGkuRGF0YWJhc2UiKSBhcyBNb2NrREI6CiAgICAgICAgICAgIG1vY2tfZGIgPSBGYWtlREIoKQogICAgICAgICAgICBNb2NrREIucmV0dXJuX3ZhbHVlID0gbW9ja19kYgoKICAgICAgICAgICAgd2l0aCBwYXRjaCgiY2xpLmNtZC5pbmdlc3QuX3J1bl9pbXBvcnRfcGhhc2UiKSBhcyBtb2NrX2ltcDoKICAgICAgICAgICAgICAgIG1vY2tfaW1wLnJldHVybl92YWx1ZSA9IChbIjIzMDEuMDAwMDEiXSwgW10pCiAgICAgICAgICAgICAgICByYyA9IF9ydW5faW5nZXN0KGFyZ3MpCiAgICAgICAgICAgICAgICAjIE9ubHkgaW1wb3J0IHBoYXNlIHJ1bnM7IHBvc3Rwcm9jZXNzL2VtYmVkL2tnIHNraXBwZWQKICAgICAgICAgICAgICAgIG1vY2tfaW1wLmFzc2VydF9jYWxsZWRfb25jZSgpCiAgICAgICAgICAgICAgICBhc3NlcnQgcmMgPT0gMAo=
+"""Unit tests for ingest CLI subcommand — import + postprocess + embed + KG pipeline."""
+
+from unittest.mock import patch, MagicMock
+
+
+class FakeArgs:
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+
+class FakePaper:
+    def __init__(
+        self,
+        id="2301.00001",
+        title="Test Paper",
+        abstract="",
+        authors=None,
+        published="2024-01-01",
+        pdf_url="",
+        doi="",
+        primary_category="cs.AI",
+        tags="",
+        category="02-Models",
+    ):
+        self.id = id
+        self.title = title
+        self.abstract = abstract
+        self.authors = authors or []
+        self.published = published
+        self.pdf_url = pdf_url
+        self.doi = doi
+        self.primary_category = primary_category
+        self.tags = tags
+        self.category = category
+
+
+class FakeDB:
+    def __init__(self, papers=None):
+        self.papers = papers or {}  # paper_id -> FakePaper
+        self.upserted = []
+        self.init_called = False
+
+    def init(self):
+        self.init_called = True
+
+    def paper_exists(self, pid):
+        return pid in self.papers
+
+    def get_paper(self, pid):
+        return self.papers.get(pid)
+
+    def upsert_paper(self, paper_id, source, **kwargs):
+        self.upserted.append((paper_id, source))
+        return FakePaper(id=paper_id)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Parser tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestIngestParser:
+    def test_parser_help_text(self, monkeypatch):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.ingest import _build_ingest_parser
+        import argparse
+
+        p = argparse.ArgumentParser()
+        sub = p.add_subparsers()
+        _build_ingest_parser(sub)
+        # smoke — parser built without error
+        assert True
+
+    def test_skip_flags_are_mutually_exclusive(self, monkeypatch):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.ingest import _build_ingest_parser
+        import argparse
+
+        p = argparse.ArgumentParser()
+        sub = p.add_subparsers()
+        _build_ingest_parser(sub)
+        # Just verify no crash on construction
+        assert True
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_import_phase tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestImportPhase:
+    def test_import_phase_no_papers(self, monkeypatch):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.ingest import _run_import_phase
+
+        with patch("cli.Database") as MockDB:
+            MockDB.return_value = FakeDB()
+            added, failed = _run_import_phase([], FakeDB(), "test")
+            assert added == []
+            assert failed == []
+
+    def test_import_phase_fetch_success(self, monkeypatch):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.ingest import _run_import_phase
+
+        with patch("cli.Database") as MockDB:
+            mock_db = FakeDB()
+            MockDB.return_value = mock_db
+
+            # _fetch_paper_metadata is imported from cli.cmd.import_ inside the function
+            with patch("cli.cmd.import_._fetch_paper_metadata") as mock_fetch:
+                mock_fetch.return_value = {
+                    "title": "Test Paper",
+                    "authors": [],
+                    "abstract": "Test abstract",
+                    "published": "2024-01-01",
+                    "abs_url": "https://arxiv.org/abs/2301.00001",
+                    "pdf_url": "https://arxiv.org/pdf/2301.00001.pdf",
+                    "primary_category": "cs.AI",
+                    "doi": "",
+                }
+                added, failed = _run_import_phase(["2301.00001"], mock_db, "test")
+                assert added == ["2301.00001"]
+                assert failed == []
+
+    def test_import_phase_fetch_failure(self, monkeypatch):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.ingest import _run_import_phase
+
+        with patch("cli.Database") as MockDB:
+            mock_db = FakeDB()
+            MockDB.return_value = mock_db
+
+            with patch("cli.cmd.import_._fetch_paper_metadata") as mock_fetch:
+                mock_fetch.return_value = None  # fetch failed
+                added, failed = _run_import_phase(["2301.00001"], mock_db, "test")
+                assert added == []
+                assert failed == ["2301.00001"]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_kg_sync_phase tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestKGSyncPhase:
+    def test_kg_sync_calls_integration(self, monkeypatch):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.ingest import _run_kg_sync_phase
+
+        with patch("cli.Database") as MockDB:
+            with patch("kg.integration.KGIntegration") as MockInteg:
+                with patch("kg.KGManager"):
+                    MockDB.return_value = FakeDB()
+                    mock_integ = MagicMock()
+                    MockInteg.return_value = mock_integ
+
+                    result = _run_kg_sync_phase(MockDB.return_value)
+                    mock_integ.rebuild_from_papers_json.assert_called_once_with(
+                        "data/papers.json", incremental=True
+                    )
+                    assert result is True
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# _run_ingest main logic tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class TestRunIngest:
+    def test_no_ids_returns_error(self, monkeypatch, capsys):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.ingest import _run_ingest
+
+        args = FakeArgs(
+            ids=[],
+            file=None,
+            root="AI-Research",
+            tags="",
+            source="ingest",
+            skip_postprocess=False,
+            only_postprocess=False,
+            skip_embed=False,
+            skip_kg=False,
+            skip_pdf=False,
+            stages=None,
+            skip_llm=False,
+            format="text",
+        )
+        with patch("cli.Database") as MockDB:
+            MockDB.return_value = FakeDB()
+            rc = _run_ingest(args)
+            assert rc == 1
+
+    def test_only_postprocess_missing_paper(self, monkeypatch, capsys):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.ingest import _run_ingest
+
+        args = FakeArgs(
+            ids=["9999.99999"],
+            file=None,
+            root="AI-Research",
+            tags="",
+            source="ingest",
+            skip_postprocess=False,
+            only_postprocess=True,
+            skip_embed=False,
+            skip_kg=False,
+            skip_pdf=False,
+            stages=None,
+            skip_llm=False,
+            format="text",
+        )
+        with patch("cli.Database") as MockDB:
+            MockDB.return_value = FakeDB()  # empty — paper doesn't exist
+            rc = _run_ingest(args)
+            assert rc == 1
+
+    def test_only_postprocess_with_existing_paper(self, monkeypatch, capsys):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.ingest import _run_ingest
+
+        args = FakeArgs(
+            ids=["2301.00001"],
+            file=None,
+            root="AI-Research",
+            tags="",
+            source="ingest",
+            skip_postprocess=False,
+            only_postprocess=True,
+            skip_embed=True,
+            skip_kg=True,
+            skip_pdf=True,
+            stages=None,
+            skip_llm=True,
+            format="text",
+        )
+
+        with patch("cli.Database") as MockDB:
+            mock_db = FakeDB(papers={"2301.00001": FakePaper()})
+            MockDB.return_value = mock_db
+
+            with patch("cli.cmd.ingest._run_postprocess_phase") as mock_pp:
+                mock_pp.return_value = True
+                rc = _run_ingest(args)
+                # Import phase skipped, only postprocess called
+                mock_pp.assert_called_once()
+                assert rc == 0
+
+    def test_skip_all_phases(self, monkeypatch, capsys):
+        monkeypatch.setenv("PYTHONHOME", "C:/Users/adm/AppData/Local/Programs/Python/Python312")
+        monkeypatch.setenv("PYTHONPATH", "")
+        from cli.cmd.ingest import _run_ingest
+
+        args = FakeArgs(
+            ids=["2301.00001"],
+            file=None,
+            root="AI-Research",
+            tags="",
+            source="ingest",
+            skip_postprocess=True,
+            only_postprocess=False,
+            skip_embed=True,
+            skip_kg=True,
+            skip_pdf=False,
+            stages=None,
+            skip_llm=False,
+            format="text",
+        )
+
+        with patch("cli.Database") as MockDB:
+            mock_db = FakeDB()
+            MockDB.return_value = mock_db
+
+            with patch("cli.cmd.ingest._run_import_phase") as mock_imp:
+                mock_imp.return_value = (["2301.00001"], [])
+                rc = _run_ingest(args)
+                # Only import phase runs; postprocess/embed/kg skipped
+                mock_imp.assert_called_once()
+                assert rc == 0

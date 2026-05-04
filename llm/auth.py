@@ -1,1 +1,120 @@
-IiIiV2ViIEF1dGhlbnRpY2F0aW9uIOKAlCBvcHRpb25hbCBBUEkga2V5IG1hbmFnZW1lbnQgKyBzZXNzaW9uIHBlcnNpc3RlbmNlLgoKU2ltcGxlIHNlc3Npb24tYmFzZWQgYXV0aDoKICAtIE9wdGlvbmFsOiBpZiBubyBzZXNzaW9ucyBleGlzdCwgdGhlIHdlYiBVSSBpcyBmdWxseSBvcGVuIChzaW5nbGUtdXNlciBtb2RlKQogIC0gV2hlbiBhIHVzZXJuYW1lL3Bhc3N3b3JkIGlzIHNldCwgbG9naW4gaXMgcmVxdWlyZWQKICAtIFNlc3Npb25zIHN0b3JlZCBpbiB+Ly5haV9yZXNlYXJjaF9vcy9zZXNzaW9ucy5qc29uCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGhhc2hsaWIKaW1wb3J0IGpzb24KaW1wb3J0IHNlY3JldHMKaW1wb3J0IHRpbWUKZnJvbSBkYXRhY2xhc3NlcyBpbXBvcnQgZGF0YWNsYXNzCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgQW55LCBEaWN0LCBPcHRpb25hbAoKQVVUSF9GSUxFID0gUGF0aC5ob21lKCkgLyAiLmFpX3Jlc2VhcmNoX29zIiAvICJhdXRoLmpzb24iClNFU1NJT05TX0ZJTEUgPSBQYXRoLmhvbWUoKSAvICIuYWlfcmVzZWFyY2hfb3MiIC8gInNlc3Npb25zLmpzb24iClNFU1NJT05fVFRMID0gODY0MDAgKiA3ICAjIDcgZGF5cwoKCmRlZiBfaGFzaF9wYXNzd29yZChwYXNzd29yZDogc3RyLCBzYWx0OiBzdHIpIC0+IHN0cjoKICAgIHJldHVybiBoYXNobGliLnBia2RmMl9obWFjKCJzaGEyNTYiLCBwYXNzd29yZC5lbmNvZGUoKSwgc2FsdC5lbmNvZGUoKSwgMTAwXzAwMCkuaGV4KCkKCgpkZWYgX2dlbmVyYXRlX3NhbHQoKSAtPiBzdHI6CiAgICByZXR1cm4gc2VjcmV0cy50b2tlbl9oZXgoMTYpCgoKQGRhdGFjbGFzcwpjbGFzcyBVc2VyOgogICAgdXNlcm5hbWU6IHN0cgogICAgc2FsdDogc3RyCiAgICBwYXNzd29yZF9oYXNoOiBzdHIKICAgIGNyZWF0ZWRfYXQ6IHN0cgoKCmRlZiBfbG9hZF9hdXRoKCkgLT4gRGljdFtzdHIsIEFueV06CiAgICBpZiBub3QgQVVUSF9GSUxFLmV4aXN0cygpOgogICAgICAgIHJldHVybiB7InVzZXJzIjoge30sICJzZXR1cF9jb21wbGV0ZSI6IEZhbHNlfQogICAgcmV0dXJuIGpzb24ubG9hZHMoQVVUSF9GSUxFLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKSkKCgpkZWYgX3NhdmVfYXV0aChkYXRhOiBEaWN0W3N0ciwgQW55XSkgLT4gTm9uZToKICAgIEFVVEhfRklMRS5wYXJlbnQubWtkaXIocGFyZW50cz1UcnVlLCBleGlzdF9vaz1UcnVlKQogICAgQVVUSF9GSUxFLndyaXRlX3RleHQoanNvbi5kdW1wcyhkYXRhLCBpbmRlbnQ9MiwgZW5zdXJlX2FzY2lpPUZhbHNlKSwgZW5jb2Rpbmc9InV0Zi04IikKCgpkZWYgX2xvYWRfc2Vzc2lvbnMoKSAtPiBEaWN0W3N0ciwgQW55XToKICAgIGlmIG5vdCBTRVNTSU9OU19GSUxFLmV4aXN0cygpOgogICAgICAgIHJldHVybiB7fQogICAgcmV0dXJuIGpzb24ubG9hZHMoU0VTU0lPTlNfRklMRS5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikpCgoKZGVmIF9zYXZlX3Nlc3Npb25zKHNlc3Npb25zOiBEaWN0W3N0ciwgQW55XSkgLT4gTm9uZToKICAgIFNFU1NJT05TX0ZJTEUucGFyZW50Lm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgIFNFU1NJT05TX0ZJTEUud3JpdGVfdGV4dChqc29uLmR1bXBzKHNlc3Npb25zLCBpbmRlbnQ9MiwgZW5zdXJlX2FzY2lpPUZhbHNlKSwgZW5jb2Rpbmc9InV0Zi04IikKCgpkZWYgaXNfYXV0aF9lbmFibGVkKCkgLT4gYm9vbDoKICAgIGF1dGggPSBfbG9hZF9hdXRoKCkKICAgIHJldHVybiBhdXRoLmdldCgic2V0dXBfY29tcGxldGUiLCBGYWxzZSkgaXMgVHJ1ZQoKCmRlZiBzZXR1cF9hZG1pbih1c2VybmFtZTogc3RyLCBwYXNzd29yZDogc3RyKSAtPiBib29sOgogICAgIiIiU2V0IHVwIHRoZSBmaXJzdCBhZG1pbiB1c2VyLiBNdXN0IGJlIGNhbGxlZCBiZWZvcmUgYW55IGF1dGggaXMgZW5hYmxlZC4iIiIKICAgIGF1dGggPSBfbG9hZF9hdXRoKCkKICAgIGlmIGF1dGguZ2V0KCJzZXR1cF9jb21wbGV0ZSIpOgogICAgICAgIHJldHVybiBGYWxzZQogICAgc2FsdCA9IF9nZW5lcmF0ZV9zYWx0KCkKICAgIGF1dGhbInVzZXJzIl1bdXNlcm5hbWVdID0gewogICAgICAgICJzYWx0Ijogc2FsdCwKICAgICAgICAicGFzc3dvcmRfaGFzaCI6IF9oYXNoX3Bhc3N3b3JkKHBhc3N3b3JkLCBzYWx0KSwKICAgICAgICAiY3JlYXRlZF9hdCI6IHN0cihfX2ltcG9ydF9fKCJkYXRldGltZSIpLmRhdGV0aW1lLm5vdygpLmlzb2Zvcm1hdCgpKSwKICAgIH0KICAgIGF1dGhbInNldHVwX2NvbXBsZXRlIl0gPSBUcnVlCiAgICBfc2F2ZV9hdXRoKGF1dGgpCiAgICByZXR1cm4gVHJ1ZQoKCmRlZiB2ZXJpZnlfbG9naW4odXNlcm5hbWU6IHN0ciwgcGFzc3dvcmQ6IHN0cikgLT4gYm9vbDoKICAgIGF1dGggPSBfbG9hZF9hdXRoKCkKICAgIHVzZXIgPSBhdXRoLmdldCgidXNlcnMiLCB7fSkuZ2V0KHVzZXJuYW1lKQogICAgaWYgbm90IHVzZXI6CiAgICAgICAgcmV0dXJuIEZhbHNlCiAgICByZXR1cm4gdXNlclsicGFzc3dvcmRfaGFzaCJdID09IF9oYXNoX3Bhc3N3b3JkKHBhc3N3b3JkLCB1c2VyWyJzYWx0Il0pCgoKZGVmIGNyZWF0ZV9zZXNzaW9uKHVzZXJuYW1lOiBzdHIpIC0+IHN0cjoKICAgICIiIkNyZWF0ZSBhIG5ldyBzZXNzaW9uIGFuZCByZXR1cm4gdGhlIHNlc3Npb24gdG9rZW4uIiIiCiAgICB0b2tlbiA9IHNlY3JldHMudG9rZW5faGV4KDMyKQogICAgc2Vzc2lvbnMgPSBfbG9hZF9zZXNzaW9ucygpCiAgICBzZXNzaW9uc1t0b2tlbl0gPSB7CiAgICAgICAgInVzZXJuYW1lIjogdXNlcm5hbWUsCiAgICAgICAgImNyZWF0ZWRfYXQiOiB0aW1lLnRpbWUoKSwKICAgICAgICAiZXhwaXJlc19hdCI6IHRpbWUudGltZSgpICsgU0VTU0lPTl9UVEwsCiAgICB9CiAgICBfc2F2ZV9zZXNzaW9ucyhzZXNzaW9ucykKICAgIHJldHVybiB0b2tlbgoKCmRlZiB2YWxpZGF0ZV9zZXNzaW9uKHRva2VuOiBzdHIpIC0+IE9wdGlvbmFsW3N0cl06CiAgICAiIiJSZXR1cm4gdXNlcm5hbWUgaWYgdmFsaWQgc2Vzc2lvbiwgTm9uZSBvdGhlcndpc2UuIiIiCiAgICBzZXNzaW9ucyA9IF9sb2FkX3Nlc3Npb25zKCkKICAgIHNlc3MgPSBzZXNzaW9ucy5nZXQodG9rZW4pCiAgICBpZiBub3Qgc2VzczoKICAgICAgICByZXR1cm4gTm9uZQogICAgaWYgdGltZS50aW1lKCkgPiBzZXNzLmdldCgiZXhwaXJlc19hdCIsIDApOgogICAgICAgIGRlbCBzZXNzaW9uc1t0b2tlbl0KICAgICAgICBfc2F2ZV9zZXNzaW9ucyhzZXNzaW9ucykKICAgICAgICByZXR1cm4gTm9uZQogICAgcmV0dXJuIHNlc3MuZ2V0KCJ1c2VybmFtZSIpCgoKZGVmIHJldm9rZV9zZXNzaW9uKHRva2VuOiBzdHIpIC0+IE5vbmU6CiAgICBzZXNzaW9ucyA9IF9sb2FkX3Nlc3Npb25zKCkKICAgIHNlc3Npb25zLnBvcCh0b2tlbiwgTm9uZSkKICAgIF9zYXZlX3Nlc3Npb25zKHNlc3Npb25zKQo=
+"""Web Authentication — optional API key management + session persistence.
+
+Simple session-based auth:
+  - Optional: if no sessions exist, the web UI is fully open (single-user mode)
+  - When a username/password is set, login is required
+  - Sessions stored in ~/.ai_research_os/sessions.json
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import secrets
+import time
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+AUTH_FILE = Path.home() / ".ai_research_os" / "auth.json"
+SESSIONS_FILE = Path.home() / ".ai_research_os" / "sessions.json"
+SESSION_TTL = 86400 * 7  # 7 days
+
+
+def _hash_password(password: str, salt: str) -> str:
+    return hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 100_000).hex()
+
+
+def _generate_salt() -> str:
+    return secrets.token_hex(16)
+
+
+@dataclass
+class User:
+    username: str
+    salt: str
+    password_hash: str
+    created_at: str
+
+
+def _load_auth() -> Dict[str, Any]:
+    if not AUTH_FILE.exists():
+        return {"users": {}, "setup_complete": False}
+    return json.loads(AUTH_FILE.read_text(encoding="utf-8"))
+
+
+def _save_auth(data: Dict[str, Any]) -> None:
+    AUTH_FILE.parent.mkdir(parents=True, exist_ok=True)
+    AUTH_FILE.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def _load_sessions() -> Dict[str, Any]:
+    if not SESSIONS_FILE.exists():
+        return {}
+    return json.loads(SESSIONS_FILE.read_text(encoding="utf-8"))
+
+
+def _save_sessions(sessions: Dict[str, Any]) -> None:
+    SESSIONS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    SESSIONS_FILE.write_text(json.dumps(sessions, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def is_auth_enabled() -> bool:
+    auth = _load_auth()
+    return auth.get("setup_complete", False) is True
+
+
+def setup_admin(username: str, password: str) -> bool:
+    """Set up the first admin user. Must be called before any auth is enabled."""
+    auth = _load_auth()
+    if auth.get("setup_complete"):
+        return False
+    salt = _generate_salt()
+    auth["users"][username] = {
+        "salt": salt,
+        "password_hash": _hash_password(password, salt),
+        "created_at": str(__import__("datetime").datetime.now().isoformat()),
+    }
+    auth["setup_complete"] = True
+    _save_auth(auth)
+    return True
+
+
+def verify_login(username: str, password: str) -> bool:
+    auth = _load_auth()
+    user = auth.get("users", {}).get(username)
+    if not user:
+        return False
+    return user["password_hash"] == _hash_password(password, user["salt"])
+
+
+def create_session(username: str) -> str:
+    """Create a new session and return the session token."""
+    token = secrets.token_hex(32)
+    sessions = _load_sessions()
+    sessions[token] = {
+        "username": username,
+        "created_at": time.time(),
+        "expires_at": time.time() + SESSION_TTL,
+    }
+    _save_sessions(sessions)
+    return token
+
+
+def validate_session(token: str) -> Optional[str]:
+    """Return username if valid session, None otherwise."""
+    sessions = _load_sessions()
+    sess = sessions.get(token)
+    if not sess:
+        return None
+    if time.time() > sess.get("expires_at", 0):
+        del sessions[token]
+        _save_sessions(sessions)
+        return None
+    return sess.get("username")
+
+
+def revoke_session(token: str) -> None:
+    sessions = _load_sessions()
+    sessions.pop(token, None)
+    _save_sessions(sessions)

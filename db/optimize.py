@@ -1,1 +1,135 @@
-IiIiRGF0YWJhc2Ugb3B0aW1pemF0aW9uIHV0aWxpdGllcy4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKaW1wb3J0IGxvZ2dpbmcKZnJvbSB0eXBpbmcgaW1wb3J0IFRZUEVfQ0hFQ0tJTkcsIExpc3QKCmlmIFRZUEVfQ0hFQ0tJTkc6CiAgICBmcm9tIGRiLmRhdGFiYXNlIGltcG9ydCBEYXRhYmFzZQoKbG9nZ2VyID0gbG9nZ2luZy5nZXRMb2dnZXIoX19uYW1lX18pCgpPUFRJTUlaQVRJT05fSU5ERVhFUyA9IFsKICAgICMgUGFwZXJzIHRhYmxlIGluZGV4ZXMgZm9yIGNvbW1vbiBxdWVyeSBwYXR0ZXJucwogICAgKAogICAgICAgICJpZHhfcGFwZXJzX3B1Ymxpc2hlZCIsCiAgICAgICAgIkNSRUFURSBJTkRFWCBJRiBOT1QgRVhJU1RTIGlkeF9wYXBlcnNfcHVibGlzaGVkIE9OIHBhcGVycyhwdWJsaXNoZWQpIiwKICAgICksCiAgICAoCiAgICAgICAgImlkeF9wYXBlcnNfcHJpbWFyeV9jYXRlZ29yeSIsCiAgICAgICAgIkNSRUFURSBJTkRFWCBJRiBOT1QgRVhJU1RTIGlkeF9wYXBlcnNfcHJpbWFyeV9jYXRlZ29yeSBPTiBwYXBlcnMocHJpbWFyeV9jYXRlZ29yeSkiLAogICAgKSwKICAgICgiaWR4X3BhcGVyc19kb2kiLCAiQ1JFQVRFIElOREVYIElGIE5PVCBFWElTVFMgaWR4X3BhcGVyc19kb2kgT04gcGFwZXJzKGRvaSkgV0hFUkUgZG9pICE9ICcnIiksCiAgICAjIFBhcGVyX3RhZ3MgaW5kZXhlcyBmb3IgdGFnLWJhc2VkIHF1ZXJpZXMKICAgICgKICAgICAgICAiaWR4X3BhcGVyX3RhZ3NfdGFnX2lkIiwKICAgICAgICAiQ1JFQVRFIElOREVYIElGIE5PVCBFWElTVFMgaWR4X3BhcGVyX3RhZ3NfdGFnX2lkIE9OIHBhcGVyX3RhZ3ModGFnX2lkKSIsCiAgICApLAogICAgIyBQYXJzZSBoaXN0b3J5IGluZGV4ZXMgZm9yIGFuYWx5dGljcwogICAgKAogICAgICAgICJpZHhfcGFyc2VfaGlzdG9yeV9zdGF0dXMiLAogICAgICAgICJDUkVBVEUgSU5ERVggSUYgTk9UIEVYSVNUUyBpZHhfcGFyc2VfaGlzdG9yeV9zdGF0dXMgT04gcGFyc2VfaGlzdG9yeShzdGF0dXMpIiwKICAgICksCiAgICAoCiAgICAgICAgImlkeF9wYXJzZV9oaXN0b3J5X2F0dGVtcHRlZF9hdCIsCiAgICAgICAgIkNSRUFURSBJTkRFWCBJRiBOT1QgRVhJU1RTIGlkeF9wYXJzZV9oaXN0b3J5X2F0dGVtcHRlZF9hdCBPTiBwYXJzZV9oaXN0b3J5KGF0dGVtcHRlZF9hdCkiLAogICAgKSwKICAgICMgSm9iIHF1ZXVlIGluZGV4ZXMgZm9yIHByaW9yaXR5IHF1ZXJpZXMKICAgICgKICAgICAgICAiaWR4X2pvYl9xdWV1ZV9wcmlvcml0eSIsCiAgICAgICAgIkNSRUFURSBJTkRFWCBJRiBOT1QgRVhJU1RTIGlkeF9qb2JfcXVldWVfcHJpb3JpdHkgT04gam9iX3F1ZXVlKHByaW9yaXR5LCBzdGF0dXMpIiwKICAgICksCiAgICAjIEV4cGVyaW1lbnQgdGFibGVzIGluZGV4ZXMKICAgICgKICAgICAgICAiaWR4X2V4cGVyaW1lbnRfdGFibGVzX3BhZ2UiLAogICAgICAgICJDUkVBVEUgSU5ERVggSUYgTk9UIEVYSVNUUyBpZHhfZXhwZXJpbWVudF90YWJsZXNfcGFnZSBPTiBleHBlcmltZW50X3RhYmxlcyhwYXBlcl9pZCwgcGFnZSkiLAogICAgKSwKXQoKUFJBR01BX1NFVFRJTkdTID0gWwogICAgKCJjYWNoZV9zaXplIiwgIi02NDAwMCIpLCAgIyA2NE1CIGNhY2hlCiAgICAoInRlbXBfc3RvcmUiLCAiTUVNT1JZIiksCiAgICAoIm1tYXBfc2l6ZSIsICIyNjg0MzU0NTYiKSwgICMgMjU2TUIgbW1hcAogICAgKCJzeW5jaHJvbm91cyIsICJOT1JNQUwiKSwKICAgICgiam91cm5hbF9tb2RlIiwgIldBTCIpLAogICAgKCJyZWFkX3VuY29tbWl0dGVkIiwgIjEiKSwKICAgICgid3JpdGFibGVfc2NoZW1hIiwgIjEiKSwKXQoKCmRlZiBhcHBseV9kYXRhYmFzZV9vcHRpbWl6YXRpb25zKGRiOiAiRGF0YWJhc2UiKSAtPiBMaXN0W3N0cl06CiAgICAiIiIKICAgIEFwcGx5IHBlcmZvcm1hbmNlIG9wdGltaXphdGlvbnMgdG8gdGhlIGRhdGFiYXNlLgoKICAgIEFyZ3M6CiAgICAgICAgZGI6IERhdGFiYXNlIGluc3RhbmNlCgogICAgUmV0dXJuczoKICAgICAgICBMaXN0IG9mIGFwcGxpZWQgb3B0aW1pemF0aW9ucwogICAgIiIiCiAgICBhcHBsaWVkID0gW10KCiAgICAjIEFwcGx5IFBSQUdNQSBzZXR0aW5ncwogICAgZm9yIHByYWdtYSwgdmFsdWUgaW4gUFJBR01BX1NFVFRJTkdTOgogICAgICAgIHRyeToKICAgICAgICAgICAgZGIuY29ubi5leGVjdXRlKGYiUFJBR01BIHtwcmFnbWF9ID0ge3ZhbHVlfSIpCiAgICAgICAgICAgIGFwcGxpZWQuYXBwZW5kKGYiUFJBR01BIHtwcmFnbWF9ID0ge3ZhbHVlfSIpCiAgICAgICAgICAgIGxvZ2dlci5pbmZvKGYiQXBwbGllZCBQUkFHTUEgb3B0aW1pemF0aW9uOiB7cHJhZ21hfSIpCiAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgICAgICBsb2dnZXIud2FybmluZyhmIkZhaWxlZCB0byBhcHBseSBQUkFHTUEge3ByYWdtYX06IHtlfSIpCgogICAgIyBDcmVhdGUgb3B0aW1pemF0aW9uIGluZGV4ZXMKICAgIGZvciBpZHhfbmFtZSwgY3JlYXRlX3NxbCBpbiBPUFRJTUlaQVRJT05fSU5ERVhFUzoKICAgICAgICB0cnk6CiAgICAgICAgICAgIGRiLmNvbm4uZXhlY3V0ZShjcmVhdGVfc3FsKQogICAgICAgICAgICBkYi5jb25uLmNvbW1pdCgpCiAgICAgICAgICAgIGFwcGxpZWQuYXBwZW5kKGYiSW5kZXg6IHtpZHhfbmFtZX0iKQogICAgICAgICAgICBsb2dnZXIuaW5mbyhmIkNyZWF0ZWQgb3B0aW1pemF0aW9uIGluZGV4OiB7aWR4X25hbWV9IikKICAgICAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgICAgIGxvZ2dlci53YXJuaW5nKGYiRmFpbGVkIHRvIGNyZWF0ZSBpbmRleCB7aWR4X25hbWV9OiB7ZX0iKQoKICAgICMgUnVuIEFOQUxZWkUgdG8gdXBkYXRlIHN0YXRpc3RpY3MKICAgIHRyeToKICAgICAgICBkYi5jb25uLmV4ZWN1dGUoIkFOQUxZWkUiKQogICAgICAgIGRiLmNvbm4uY29tbWl0KCkKICAgICAgICBhcHBsaWVkLmFwcGVuZCgiQU5BTFlaRSIpCiAgICAgICAgbG9nZ2VyLmluZm8oIkRhdGFiYXNlIHN0YXRpc3RpY3MgdXBkYXRlZCIpCiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgbG9nZ2VyLndhcm5pbmcoZiJGYWlsZWQgdG8gcnVuIEFOQUxZWkU6IHtlfSIpCgogICAgcmV0dXJuIGFwcGxpZWQKCgpkZWYgZ2V0X2RhdGFiYXNlX3N0YXRzKGRiOiAiRGF0YWJhc2UiKSAtPiBkaWN0OgogICAgIiIiR2V0IGRhdGFiYXNlIHN0YXRpc3RpY3MgZm9yIHBlcmZvcm1hbmNlIG1vbml0b3JpbmcuIiIiCiAgICBzdGF0cyA9IHt9CgogICAgdHJ5OgogICAgICAgIGN1ciA9IGRiLmNvbm4uY3Vyc29yKCkKCiAgICAgICAgIyBUYWJsZSBzaXplcwogICAgICAgIHRhYmxlcyA9IFsicGFwZXJzIiwgInBhcnNlX2hpc3RvcnkiLCAicGFwZXJfdGFncyIsICJ0YWdzIiwgImNpdGF0aW9ucyIsICJleHBlcmltZW50X3RhYmxlcyJdCiAgICAgICAgZm9yIHRhYmxlIGluIHRhYmxlczoKICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgY3VyLmV4ZWN1dGUoZiJTRUxFQ1QgQ09VTlQoKikgRlJPTSB7dGFibGV9IikKICAgICAgICAgICAgICAgIHN0YXRzW2Yie3RhYmxlfV9jb3VudCJdID0gY3VyLmZldGNob25lKClbMF0KICAgICAgICAgICAgZXhjZXB0IChPU0Vycm9yLCBSdW50aW1lRXJyb3IpOgogICAgICAgICAgICAgICAgc3RhdHNbZiJ7dGFibGV9X2NvdW50Il0gPSAwCgogICAgICAgICMgSW5kZXggY291bnQKICAgICAgICBjdXIuZXhlY3V0ZSgiU0VMRUNUIENPVU5UKCopIEZST00gc3FsaXRlX21hc3RlciBXSEVSRSB0eXBlID0gJ2luZGV4JyIpCiAgICAgICAgc3RhdHNbImluZGV4X2NvdW50Il0gPSBjdXIuZmV0Y2hvbmUoKVswXQoKICAgICAgICAjIERhdGFiYXNlIHNpemUKICAgICAgICBjdXIuZXhlY3V0ZSgiUFJBR01BIHBhZ2VfY291bnQiKQogICAgICAgIHBhZ2VfY291bnQgPSBjdXIuZmV0Y2hvbmUoKVswXQogICAgICAgIGN1ci5leGVjdXRlKCJQUkFHTUEgcGFnZV9zaXplIikKICAgICAgICBwYWdlX3NpemUgPSBjdXIuZmV0Y2hvbmUoKVswXQogICAgICAgIHN0YXRzWyJkYXRhYmFzZV9zaXplX21iIl0gPSAocGFnZV9jb3VudCAqIHBhZ2Vfc2l6ZSkgLyAoMTAyNCAqIDEwMjQpCgogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgIGxvZ2dlci5lcnJvcihmIkZhaWxlZCB0byBnZXQgZGF0YWJhc2Ugc3RhdHM6IHtlfSIpCgogICAgcmV0dXJuIHN0YXRzCgoKZGVmIHZhY3V1bV9kYXRhYmFzZShkYjogIkRhdGFiYXNlIikgLT4gYm9vbDoKICAgICIiIgogICAgVmFjdXVtIHRoZSBkYXRhYmFzZSB0byByZWNsYWltIHNwYWNlIGFuZCBvcHRpbWl6ZSBzdG9yYWdlLgoKICAgIEFyZ3M6CiAgICAgICAgZGI6IERhdGFiYXNlIGluc3RhbmNlCgogICAgUmV0dXJuczoKICAgICAgICBUcnVlIGlmIHN1Y2Nlc3NmdWwsIEZhbHNlIG90aGVyd2lzZQogICAgIiIiCiAgICB0cnk6CiAgICAgICAgbG9nZ2VyLmluZm8oIlN0YXJ0aW5nIGRhdGFiYXNlIFZBQ1VVTS4uLiIpCiAgICAgICAgZGIuY29ubi5leGVjdXRlKCJWQUNVVU0iKQogICAgICAgIGxvZ2dlci5pbmZvKCJEYXRhYmFzZSBWQUNVVU0gY29tcGxldGVkIHN1Y2Nlc3NmdWxseSIpCiAgICAgICAgcmV0dXJuIFRydWUKICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToKICAgICAgICBsb2dnZXIuZXJyb3IoZiJGYWlsZWQgdG8gVkFDVVVNIGRhdGFiYXNlOiB7ZX0iKQogICAgICAgIHJldHVybiBGYWxzZQo=
+"""Database optimization utilities."""
+from __future__ import annotations
+import logging
+from typing import TYPE_CHECKING, List
+
+if TYPE_CHECKING:
+    from db.database import Database
+
+logger = logging.getLogger(__name__)
+
+OPTIMIZATION_INDEXES = [
+    # Papers table indexes for common query patterns
+    ("idx_papers_published", "CREATE INDEX IF NOT EXISTS idx_papers_published ON papers(published)"),
+    ("idx_papers_primary_category", "CREATE INDEX IF NOT EXISTS idx_papers_primary_category ON papers(primary_category)"),
+    ("idx_papers_doi", "CREATE INDEX IF NOT EXISTS idx_papers_doi ON papers(doi) WHERE doi != ''"),
+
+    # Paper_tags indexes for tag-based queries
+    ("idx_paper_tags_tag_id", "CREATE INDEX IF NOT EXISTS idx_paper_tags_tag_id ON paper_tags(tag_id)"),
+
+    # Parse history indexes for analytics
+    ("idx_parse_history_status", "CREATE INDEX IF NOT EXISTS idx_parse_history_status ON parse_history(status)"),
+    ("idx_parse_history_attempted_at", "CREATE INDEX IF NOT EXISTS idx_parse_history_attempted_at ON parse_history(attempted_at)"),
+
+    # Job queue indexes for priority queries
+    ("idx_job_queue_priority", "CREATE INDEX IF NOT EXISTS idx_job_queue_priority ON job_queue(priority, status)"),
+
+    # Experiment tables indexes
+    ("idx_experiment_tables_page", "CREATE INDEX IF NOT EXISTS idx_experiment_tables_page ON experiment_tables(paper_id, page)"),
+]
+
+PRAGMA_SETTINGS = [
+    ("cache_size", "-64000"),  # 64MB cache
+    ("temp_store", "MEMORY"),
+    ("mmap_size", "268435456"),  # 256MB mmap
+    ("synchronous", "NORMAL"),
+    ("journal_mode", "WAL"),
+    ("read_uncommitted", "1"),
+    ("writable_schema", "1"),
+]
+
+
+def apply_database_optimizations(db: "Database") -> List[str]:
+    """
+    Apply performance optimizations to the database.
+
+    Args:
+        db: Database instance
+
+    Returns:
+        List of applied optimizations
+    """
+    applied = []
+
+    # Apply PRAGMA settings
+    for pragma, value in PRAGMA_SETTINGS:
+        try:
+            db.conn.execute(f"PRAGMA {pragma} = {value}")
+            applied.append(f"PRAGMA {pragma} = {value}")
+            logger.info(f"Applied PRAGMA optimization: {pragma}")
+        except Exception as e:
+            logger.warning(f"Failed to apply PRAGMA {pragma}: {e}")
+
+    # Create optimization indexes
+    for idx_name, create_sql in OPTIMIZATION_INDEXES:
+        try:
+            db.conn.execute(create_sql)
+            db.conn.commit()
+            applied.append(f"Index: {idx_name}")
+            logger.info(f"Created optimization index: {idx_name}")
+        except Exception as e:
+            logger.warning(f"Failed to create index {idx_name}: {e}")
+
+    # Run ANALYZE to update statistics
+    try:
+        db.conn.execute("ANALYZE")
+        db.conn.commit()
+        applied.append("ANALYZE")
+        logger.info("Database statistics updated")
+    except Exception as e:
+        logger.warning(f"Failed to run ANALYZE: {e}")
+
+    return applied
+
+
+def get_database_stats(db: "Database") -> dict:
+    """Get database statistics for performance monitoring."""
+    stats = {}
+
+    try:
+        cur = db.conn.cursor()
+
+        # Table sizes
+        tables = ["papers", "parse_history", "paper_tags", "tags", "citations", "experiment_tables"]
+        for table in tables:
+            try:
+                cur.execute(f"SELECT COUNT(*) FROM {table}")
+                stats[f"{table}_count"] = cur.fetchone()[0]
+            except (OSError, RuntimeError):
+                stats[f"{table}_count"] = 0
+
+        # Index count
+        cur.execute("SELECT COUNT(*) FROM sqlite_master WHERE type = 'index'")
+        stats["index_count"] = cur.fetchone()[0]
+
+        # Database size
+        cur.execute("PRAGMA page_count")
+        page_count = cur.fetchone()[0]
+        cur.execute("PRAGMA page_size")
+        page_size = cur.fetchone()[0]
+        stats["database_size_mb"] = (page_count * page_size) / (1024 * 1024)
+
+    except Exception as e:
+        logger.error(f"Failed to get database stats: {e}")
+
+    return stats
+
+
+def vacuum_database(db: "Database") -> bool:
+    """
+    Vacuum the database to reclaim space and optimize storage.
+
+    Args:
+        db: Database instance
+
+    Returns:
+        True if successful, False otherwise
+    """
+    try:
+        logger.info("Starting database VACUUM...")
+        db.conn.execute("VACUUM")
+        logger.info("Database VACUUM completed successfully")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to VACUUM database: {e}")
+        return False

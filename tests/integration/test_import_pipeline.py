@@ -1,1 +1,61 @@
-IiIiSW50ZWdyYXRpb24gdGVzdHMgZm9yIGltcG9ydCBwaXBlbGluZS4KClRlc3RzIHRoZSBjaGVja3BvaW50L3Jlc3VtZSBmdW5jdGlvbmFsaXR5IHdpdGggbW9ja2VkIGRhdGFiYXNlLgoiIiIKCmltcG9ydCBqc29uCmltcG9ydCB0ZW1wZmlsZQpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKCgpjbGFzcyBUZXN0Q2hlY2twb2ludEludGVncmF0aW9uOgogICAgIiIiVGVzdCBjaGVja3BvaW50IHNhdmUvbG9hZCBmdW5jdGlvbmFsaXR5LiIiIgoKICAgIGRlZiB0ZXN0X2NoZWNrcG9pbnRfc2F2ZV9hbmRfbG9hZChzZWxmKToKICAgICAgICAiIiJUZXN0IGNoZWNrcG9pbnQgc2F2ZXMgYW5kIGxvYWRzIGNvcnJlY3RseS4iIiIKICAgICAgICBmcm9tIGNsaS5jbWQuaW1wb3J0XyBpbXBvcnQgX3NhdmVfY2hlY2twb2ludCwgX2xvYWRfY2hlY2twb2ludAoKICAgICAgICB3aXRoIHRlbXBmaWxlLlRlbXBvcmFyeURpcmVjdG9yeSgpIGFzIHRtcDoKICAgICAgICAgICAgY2hlY2twb2ludF9wYXRoID0gUGF0aCh0bXApIC8gImNoZWNrcG9pbnQuanNvbiIKCiAgICAgICAgICAgICMgU2F2ZSBjaGVja3BvaW50CiAgICAgICAgICAgIF9zYXZlX2NoZWNrcG9pbnQoY2hlY2twb2ludF9wYXRoLCBbImlkMSIsICJpZDIiXSwgWyJpZDMiXSwgMTApCgogICAgICAgICAgICAjIExvYWQgY2hlY2twb2ludAogICAgICAgICAgICBkYXRhID0gX2xvYWRfY2hlY2twb2ludChjaGVja3BvaW50X3BhdGgpCgogICAgICAgICAgICBhc3NlcnQgZGF0YVsicHJvY2Vzc2VkIl0gPT0gWyJpZDEiLCAiaWQyIl0KICAgICAgICAgICAgYXNzZXJ0IGRhdGFbImZhaWxlZCJdID09IFsiaWQzIl0KICAgICAgICAgICAgYXNzZXJ0IGRhdGFbInRvdGFsIl0gPT0gMTAKICAgICAgICAgICAgYXNzZXJ0ICJzYXZlZF9hdCIgaW4gZGF0YQoKICAgIGRlZiB0ZXN0X2NoZWNrcG9pbnRfbG9hZF9ub25leGlzdGVudChzZWxmKToKICAgICAgICAiIiJUZXN0IGxvYWRpbmcgbm9uZXhpc3RlbnQgY2hlY2twb2ludCByZXR1cm5zIGRlZmF1bHRzLiIiIgogICAgICAgIGZyb20gY2xpLmNtZC5pbXBvcnRfIGltcG9ydCBfbG9hZF9jaGVja3BvaW50CgogICAgICAgIHdpdGggdGVtcGZpbGUuVGVtcG9yYXJ5RGlyZWN0b3J5KCkgYXMgdG1wOgogICAgICAgICAgICBjaGVja3BvaW50X3BhdGggPSBQYXRoKHRtcCkgLyAibm9uZXhpc3RlbnQuanNvbiIKCiAgICAgICAgICAgIGRhdGEgPSBfbG9hZF9jaGVja3BvaW50KGNoZWNrcG9pbnRfcGF0aCkKCiAgICAgICAgICAgIGFzc2VydCBkYXRhWyJwcm9jZXNzZWQiXSA9PSBbXQogICAgICAgICAgICBhc3NlcnQgZGF0YVsiZmFpbGVkIl0gPT0gW10KICAgICAgICAgICAgYXNzZXJ0IGRhdGFbInRvdGFsIl0gPT0gMAoKICAgIGRlZiB0ZXN0X2NoZWNrcG9pbnRfcmVzdW1lX3NraXBzX3Byb2Nlc3NlZChzZWxmKToKICAgICAgICAiIiJUZXN0IHJlc3VtZSBtb2RlIHNraXBzIGFscmVhZHkgcHJvY2Vzc2VkIElEcy4iIiIKICAgICAgICBmcm9tIGNsaS5jbWQuaW1wb3J0XyBpbXBvcnQgX3NhdmVfY2hlY2twb2ludAoKICAgICAgICB3aXRoIHRlbXBmaWxlLlRlbXBvcmFyeURpcmVjdG9yeSgpIGFzIHRtcDoKICAgICAgICAgICAgY2hlY2twb2ludF9wYXRoID0gUGF0aCh0bXApIC8gImNoZWNrcG9pbnQuanNvbiIKCiAgICAgICAgICAgICMgU2ltdWxhdGUgcHJldmlvdXMgcnVuIHdpdGggNSBwcm9jZXNzZWQgYW5kIDEgZmFpbGVkCiAgICAgICAgICAgIF9zYXZlX2NoZWNrcG9pbnQoY2hlY2twb2ludF9wYXRoLCBbImlkMSIsICJpZDIiLCAiaWQzIiwgImlkNCIsICJpZDUiXSwgWyJpZDYiXSwgMTApCgogICAgICAgICAgICAjIExvYWQgYW5kIHZlcmlmeQogICAgICAgICAgICB3aXRoIG9wZW4oY2hlY2twb2ludF9wYXRoKSBhcyBmOgogICAgICAgICAgICAgICAgZGF0YSA9IGpzb24ubG9hZChmKQoKICAgICAgICAgICAgYXNzZXJ0IGxlbihkYXRhWyJwcm9jZXNzZWQiXSkgPT0gNQogICAgICAgICAgICBhc3NlcnQgImlkMSIgaW4gZGF0YVsicHJvY2Vzc2VkIl0KICAgICAgICAgICAgYXNzZXJ0ICJpZDYiIGluIGRhdGFbImZhaWxlZCJdCg==
+"""Integration tests for import pipeline.
+
+Tests the checkpoint/resume functionality with mocked database.
+"""
+
+import json
+import tempfile
+from pathlib import Path
+
+
+class TestCheckpointIntegration:
+    """Test checkpoint save/load functionality."""
+
+    def test_checkpoint_save_and_load(self):
+        """Test checkpoint saves and loads correctly."""
+        from cli.cmd.import_ import _save_checkpoint, _load_checkpoint
+
+        with tempfile.TemporaryDirectory() as tmp:
+            checkpoint_path = Path(tmp) / "checkpoint.json"
+
+            # Save checkpoint
+            _save_checkpoint(checkpoint_path, ["id1", "id2"], ["id3"], 10)
+
+            # Load checkpoint
+            data = _load_checkpoint(checkpoint_path)
+
+            assert data["processed"] == ["id1", "id2"]
+            assert data["failed"] == ["id3"]
+            assert data["total"] == 10
+            assert "saved_at" in data
+
+    def test_checkpoint_load_nonexistent(self):
+        """Test loading nonexistent checkpoint returns defaults."""
+        from cli.cmd.import_ import _load_checkpoint
+
+        with tempfile.TemporaryDirectory() as tmp:
+            checkpoint_path = Path(tmp) / "nonexistent.json"
+
+            data = _load_checkpoint(checkpoint_path)
+
+            assert data["processed"] == []
+            assert data["failed"] == []
+            assert data["total"] == 0
+
+    def test_checkpoint_resume_skips_processed(self):
+        """Test resume mode skips already processed IDs."""
+        from cli.cmd.import_ import _save_checkpoint
+
+        with tempfile.TemporaryDirectory() as tmp:
+            checkpoint_path = Path(tmp) / "checkpoint.json"
+
+            # Simulate previous run with 5 processed and 1 failed
+            _save_checkpoint(checkpoint_path, ["id1", "id2", "id3", "id4", "id5"], ["id6"], 10)
+
+            # Load and verify
+            with open(checkpoint_path) as f:
+                data = json.load(f)
+
+            assert len(data["processed"]) == 5
+            assert "id1" in data["processed"]
+            assert "id6" in data["failed"]

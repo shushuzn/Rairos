@@ -1,1 +1,411 @@
-IiIiVGllciAyIHVuaXQgdGVzdHMg4oCUIHJlc2VhcmNoX2xvb3AucHksIHB1cmUgZnVuY3Rpb25zICsgbW9ja2VkIEkvTy4iIiIKCmltcG9ydCB0ZW1wZmlsZQpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKZnJvbSB1bml0dGVzdC5tb2NrIGltcG9ydCBwYXRjaAoKaW1wb3J0IHB5dGVzdAoKZnJvbSBjb3JlIGltcG9ydCBQYXBlcgpmcm9tIHJlc2VhcmNoX2xvb3AgaW1wb3J0IF9idWlsZF9yZXNlYXJjaF9ub3RlLCBydW5fcmVzZWFyY2gKCgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CiMgX2J1aWxkX3Jlc2VhcmNoX25vdGUg4oCUIHB1cmUgbWFya2Rvd24gYnVpbGRlcgojID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CgoKY2xhc3MgVGVzdEJ1aWxkUmVzZWFyY2hOb3RlOgogICAgZGVmIF9wYXBlcihzZWxmLCAqKm92ZXJyaWRlcyk6CiAgICAgICAga3dhcmdzID0gZGljdCgKICAgICAgICAgICAgc291cmNlPSJhcnhpdiIsCiAgICAgICAgICAgIHVpZD0iMjMwMS4xMjM0NSIsCiAgICAgICAgICAgIHRpdGxlPSJUZXN0IFBhcGVyIFRpdGxlIiwKICAgICAgICAgICAgYXV0aG9ycz1bIkFsaWNlIFNtaXRoIiwgIkJvYiBKb25lcyJdLAogICAgICAgICAgICBhYnN0cmFjdD0iVGhpcyBpcyB0aGUgYWJzdHJhY3Qgb2YgdGhlIHRlc3QgcGFwZXIuIiwKICAgICAgICAgICAgcHVibGlzaGVkPSIyMDIzLTA2LTAxIiwKICAgICAgICAgICAgdXBkYXRlZD0iMjAyMy0wNy0xNSIsCiAgICAgICAgICAgIGFic191cmw9Imh0dHBzOi8vYXJ4aXYub3JnL2Ficy8yMzAxLjEyMzQ1IiwKICAgICAgICAgICAgcGRmX3VybD0iaHR0cHM6Ly9hcnhpdi5vcmcvcGRmLzIzMDEuMTIzNDUucGRmIiwKICAgICAgICApCiAgICAgICAga3dhcmdzLnVwZGF0ZShvdmVycmlkZXMpCiAgICAgICAgcmV0dXJuIFBhcGVyKCoqa3dhcmdzKQoKICAgIGRlZiB0ZXN0X2Jhc2ljX21ldGFkYXRhX3JlbmRlcnMoc2VsZik6CiAgICAgICAgcGFwZXIgPSBzZWxmLl9wYXBlcigpCiAgICAgICAgbm90ZSA9IF9idWlsZF9yZXNlYXJjaF9ub3RlKHBhcGVyLCBkcmFmdD0iIiwgcnVicmljPXt9LCB0YWdzPVtdKQogICAgICAgIGxpbmVzID0gbm90ZS5zcGxpdCgiXG4iKQoKICAgICAgICBhc3NlcnQgIiMgVGVzdCBQYXBlciBUaXRsZSIgaW4gbGluZXMKICAgICAgICBhc3NlcnQgIioqVUlEOioqIGAyMzAxLjEyMzQ1YCIgaW4gbGluZXMKICAgICAgICBhc3NlcnQgIioqU291cmNlOioqIFthcnhpdl0oaHR0cHM6Ly9hcnhpdi5vcmcvYWJzLzIzMDEuMTIzNDUpIiBpbiBsaW5lcwogICAgICAgIGFzc2VydCAoCiAgICAgICAgICAgICIqKlBERjoqKiBbaHR0cHM6Ly9hcnhpdi5vcmcvcGRmLzIzMDEuMTIzNDUucGRmXShodHRwczovL2FyeGl2Lm9yZy9wZGYvMjMwMS4xMjM0NS5wZGYpIgogICAgICAgICAgICBpbiBsaW5lcwogICAgICAgICkKICAgICAgICBhc3NlcnQgIioqUHVibGlzaGVkOioqIDIwMjMtMDYtMDEiIGluIGxpbmVzCiAgICAgICAgYXNzZXJ0ICIqKlVwZGF0ZWQ6KiogMjAyMy0wNy0xNSIgaW4gbGluZXMKICAgICAgICBhc3NlcnQgIioqQXV0aG9yczoqKiBBbGljZSBTbWl0aCwgQm9iIEpvbmVzIiBpbiBsaW5lcwogICAgICAgIGFzc2VydCAiIyMgQWJzdHJhY3QiIGluIGxpbmVzCiAgICAgICAgYXNzZXJ0ICJUaGlzIGlzIHRoZSBhYnN0cmFjdCBvZiB0aGUgdGVzdCBwYXBlci4iIGluIGxpbmVzCiAgICAgICAgaW1wb3J0IGRhdGV0aW1lIGFzIGR0CgogICAgICAgIGFzc2VydCBmIl9HZW5lcmF0ZWQgYnkgYWktcmVzZWFyY2gtb3Mgb24ge2R0LmRhdGUudG9kYXkoKS5pc29mb3JtYXQoKX1fIiBpbiBub3RlCgogICAgZGVmIHRlc3RfdHJ1bmNhdGVzX2F1dGhvcnNfbGlzdF9hdF81KHNlbGYpOgogICAgICAgIHBhcGVyID0gc2VsZi5fcGFwZXIoYXV0aG9ycz1bIkEiLCAiQiIsICJDIiwgIkQiLCAiRSIsICJGIiwgIkciXSkKICAgICAgICBub3RlID0gX2J1aWxkX3Jlc2VhcmNoX25vdGUocGFwZXIsIGRyYWZ0PSIiLCBydWJyaWM9e30sIHRhZ3M9W10pCiAgICAgICAgYXNzZXJ0ICJBLCBCLCBDLCBELCBFIGV0IGFsLiAoKzIgbW9yZSkiIGluIG5vdGUKCiAgICBkZWYgdGVzdF9oYW5kbGVzX2VtcHR5X2F1dGhvcnMoc2VsZik6CiAgICAgICAgcGFwZXIgPSBzZWxmLl9wYXBlcihhdXRob3JzPVtdKQogICAgICAgIG5vdGUgPSBfYnVpbGRfcmVzZWFyY2hfbm90ZShwYXBlciwgZHJhZnQ9IiIsIHJ1YnJpYz17fSwgdGFncz1bXSkKICAgICAgICBhc3NlcnQgIioqQXV0aG9yczoqKiIgbm90IGluIG5vdGUKCiAgICBkZWYgdGVzdF9oYW5kbGVzX21pc3NpbmdfcHVibGlzaGVkX3VwZGF0ZWQoc2VsZik6CiAgICAgICAgcGFwZXIgPSBzZWxmLl9wYXBlcihwdWJsaXNoZWQ9IiIsIHVwZGF0ZWQ9IiIpCiAgICAgICAgbm90ZSA9IF9idWlsZF9yZXNlYXJjaF9ub3RlKHBhcGVyLCBkcmFmdD0iIiwgcnVicmljPXt9LCB0YWdzPVtdKQogICAgICAgIGFzc2VydCAiKipQdWJsaXNoZWQ6KiogTi9BIiBpbiBub3RlCiAgICAgICAgYXNzZXJ0ICIqKlVwZGF0ZWQ6KiogTi9BIiBpbiBub3RlCgogICAgZGVmIHRlc3RfY2F0ZWdvcmllc19yZW5kZXIoc2VsZik6CiAgICAgICAgcGFwZXIgPSBzZWxmLl9wYXBlcihjYXRlZ29yaWVzPSJjcy5BSSwgY3MuTEcsIGNzLkNMIikKICAgICAgICBub3RlID0gX2J1aWxkX3Jlc2VhcmNoX25vdGUocGFwZXIsIGRyYWZ0PSIiLCBydWJyaWM9e30sIHRhZ3M9W10pCiAgICAgICAgYXNzZXJ0ICIqKkNhdGVnb3JpZXM6KiogY3MuQUksIGNzLkxHLCBjcy5DTCIgaW4gbm90ZQoKICAgIGRlZiB0ZXN0X3RhZ3NfcmVuZGVyKHNlbGYpOgogICAgICAgIHBhcGVyID0gc2VsZi5fcGFwZXIoKQogICAgICAgIG5vdGUgPSBfYnVpbGRfcmVzZWFyY2hfbm90ZShwYXBlciwgZHJhZnQ9IiIsIHJ1YnJpYz17fSwgdGFncz1bIkxMTSIsICJSZWFzb25pbmciXSkKICAgICAgICBhc3NlcnQgIioqVGFnczoqKiBMTE0sIFJlYXNvbmluZyIgaW4gbm90ZQoKICAgIGRlZiB0ZXN0X2NvbW1lbnRfcmVuZGVycyhzZWxmKToKICAgICAgICBwYXBlciA9IHNlbGYuX3BhcGVyKGNvbW1lbnQ9IjE1IHBhZ2VzLCA4IGZpZ3VyZXMsIDMgdGFibGVzIikKICAgICAgICBub3RlID0gX2J1aWxkX3Jlc2VhcmNoX25vdGUocGFwZXIsIGRyYWZ0PSIiLCBydWJyaWM9e30sIHRhZ3M9W10pCiAgICAgICAgYXNzZXJ0ICIqKmFyWGl2IENvbW1lbnQ6KiogMTUgcGFnZXMsIDggZmlndXJlcywgMyB0YWJsZXMiIGluIG5vdGUKCiAgICBkZWYgdGVzdF9qb3VybmFsX3JlZl9yZW5kZXJzKHNlbGYpOgogICAgICAgIHBhcGVyID0gc2VsZi5fcGFwZXIoam91cm5hbF9yZWY9Ik5hdHVyZSAyMDIzIikKICAgICAgICBub3RlID0gX2J1aWxkX3Jlc2VhcmNoX25vdGUocGFwZXIsIGRyYWZ0PSIiLCBydWJyaWM9e30sIHRhZ3M9W10pCiAgICAgICAgYXNzZXJ0ICIqKkpvdXJuYWwgUmVmOioqIE5hdHVyZSAyMDIzIiBpbiBub3RlCgogICAgZGVmIHRlc3Rfbm9fYWlfZmFsbGJhY2tfbWVzc2FnZShzZWxmKToKICAgICAgICBwYXBlciA9IHNlbGYuX3BhcGVyKCkKICAgICAgICBub3RlID0gX2J1aWxkX3Jlc2VhcmNoX25vdGUocGFwZXIsIGRyYWZ0PSIiLCBydWJyaWM9e30sIHRhZ3M9W10pCiAgICAgICAgYXNzZXJ0ICJfTm90ZTogU2V0IGBPUEVOQUlfQVBJX0tFWWAgdG8gZW5hYmxlIEFJIGRyYWZ0IGdlbmVyYXRpb24uXyIgaW4gbm90ZQoKICAgIGRlZiB0ZXN0X2FpX25vdGVfc2VjdGlvbl93aXRoX2RyYWZ0KHNlbGYpOgogICAgICAgIHBhcGVyID0gc2VsZi5fcGFwZXIoKQogICAgICAgIG5vdGUgPSBfYnVpbGRfcmVzZWFyY2hfbm90ZSgKICAgICAgICAgICAgcGFwZXIsCiAgICAgICAgICAgIGRyYWZ0PSJUaGlzIGlzIHRoZSBBSS1nZW5lcmF0ZWQgcmVzZWFyY2ggbm90ZSBib2R5LiIsCiAgICAgICAgICAgIHJ1YnJpYz17fSwKICAgICAgICAgICAgdGFncz1bXSwKICAgICAgICApCiAgICAgICAgYXNzZXJ0ICIjIyBBSSBSZXNlYXJjaCBOb3RlIiBpbiBub3RlCiAgICAgICAgYXNzZXJ0ICJUaGlzIGlzIHRoZSBBSS1nZW5lcmF0ZWQgcmVzZWFyY2ggbm90ZSBib2R5LiIgaW4gbm90ZQoKICAgIGRlZiB0ZXN0X3J1YnJpY19zY29yZXNfcmVuZGVyX2FzX3N0YXJzKHNlbGYpOgogICAgICAgIHBhcGVyID0gc2VsZi5fcGFwZXIoKQogICAgICAgIG5vdGUgPSBfYnVpbGRfcmVzZWFyY2hfbm90ZSgKICAgICAgICAgICAgcGFwZXIsCiAgICAgICAgICAgIGRyYWZ0PSJOb3ZlbCBhcHByb2FjaC4iLAogICAgICAgICAgICBydWJyaWM9eyJub3ZlbHR5IjogNCwgImxldmVyYWdlIjogM30sCiAgICAgICAgICAgIHRhZ3M9W10sCiAgICAgICAgKQogICAgICAgIGFzc2VydCAiIyMjIFJ1YnJpYyBTY29yZXMiIGluIG5vdGUKICAgICAgICBhc3NlcnQgIioqTm92ZWx0eToqKiDimIXimIXimIXimIXimIYgKDQvNSkiIGluIG5vdGUKICAgICAgICBhc3NlcnQgIioqTGV2ZXJhZ2U6Kiog4piF4piF4piF4piG4piGICgzLzUpIiBpbiBub3RlCgogICAgZGVmIHRlc3Rfb3ZlcmFsbF9zY29yZV9yZW5kZXJzKHNlbGYpOgogICAgICAgIHBhcGVyID0gc2VsZi5fcGFwZXIoKQogICAgICAgIG5vdGUgPSBfYnVpbGRfcmVzZWFyY2hfbm90ZSgKICAgICAgICAgICAgcGFwZXIsCiAgICAgICAgICAgIGRyYWZ0PSJHb29kIHdvcmsuIiwKICAgICAgICAgICAgcnVicmljPXsibm92ZWx0eSI6IDUsICJvdmVyYWxsIjogIlN0cm9uZyBBY2NlcHQifSwKICAgICAgICAgICAgdGFncz1bXSwKICAgICAgICApCiAgICAgICAgYXNzZXJ0ICItICoqT3ZlcmFsbDoqKiBTdHJvbmcgQWNjZXB0IiBpbiBub3RlCgoKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIHJ1bl9yZXNlYXJjaCDigJQgaW50ZWdyYXRpb24gd2l0aCBtb2NrZWQgc3ViLW1vZHVsZXMKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQoKCmNsYXNzIFRlc3RSdW5SZXNlYXJjaDoKICAgIEBweXRlc3QuZml4dHVyZQogICAgZGVmIHNhbXBsZV9wYXBlcihzZWxmKToKICAgICAgICByZXR1cm4gUGFwZXIoCiAgICAgICAgICAgIHNvdXJjZT0iYXJ4aXYiLAogICAgICAgICAgICB1aWQ9IjIzMDEuMTIzNDUiLAogICAgICAgICAgICB0aXRsZT0iQXR0ZW50aW9uIElzIEFsbCBZb3UgTmVlZCIsCiAgICAgICAgICAgIGF1dGhvcnM9WyJBc2hpc2ggVmFzd2FuaSIsICJOb2FtIFNoYXplZXIiXSwKICAgICAgICAgICAgYWJzdHJhY3Q9IldlIHByb3Bvc2UgYSBuZXcgbmV1cmFsIG5ldHdvcmsgYXJjaGl0ZWN0dXJlLiIsCiAgICAgICAgICAgIHB1Ymxpc2hlZD0iMjAxNy0wNi0xMiIsCiAgICAgICAgICAgIHVwZGF0ZWQ9IjIwMTctMDYtMTIiLAogICAgICAgICAgICBhYnNfdXJsPSJodHRwczovL2FyeGl2Lm9yZy9hYnMvMTcwNi4wMzc2MiIsCiAgICAgICAgICAgIHBkZl91cmw9Imh0dHBzOi8vYXJ4aXYub3JnL3BkZi8xNzA2LjAzNzYyLnBkZiIsCiAgICAgICAgKQoKICAgIEBweXRlc3QuZml4dHVyZQogICAgZGVmIHRtcF9vdXRwdXRfZGlyKHNlbGYpOgogICAgICAgIHdpdGggdGVtcGZpbGUuVGVtcG9yYXJ5RGlyZWN0b3J5KCkgYXMgZDoKICAgICAgICAgICAgeWllbGQgUGF0aChkKQoKICAgIEBweXRlc3QubWFyay5ub19mcmVlemUKICAgIEBwYXRjaCgicmVzZWFyY2hfbG9vcC5jb3JlLnNlYXJjaF9hcnhpdiIpCiAgICBAcGF0Y2goInJlc2VhcmNoX2xvb3AuY29yZS5fZG93bmxvYWRfcGRmIikKICAgIEBwYXRjaCgicmVzZWFyY2hfbG9vcC5jb3JlLmV4dHJhY3RfcGRmX3RleHQiKQogICAgQHBhdGNoKCJyZXNlYXJjaF9sb29wLmNvcmUuYWlfZ2VuZXJhdGVfcG5vdGVfZHJhZnQiKQogICAgQHBhdGNoKCJyZXNlYXJjaF9sb29wLmNvcmUudGltZS5zbGVlcCIpCiAgICBkZWYgdGVzdF9mdWxsX3BpcGVsaW5lX2NyZWF0ZXNfbm90ZSgKICAgICAgICBzZWxmLAogICAgICAgIG1vY2tfc2xlZXAsCiAgICAgICAgbW9ja19kcmFmdCwKICAgICAgICBtb2NrX2V4dHJhY3QsCiAgICAgICAgbW9ja19kbCwKICAgICAgICBtb2NrX3NlYXJjaCwKICAgICAgICBzYW1wbGVfcGFwZXIsCiAgICAgICAgdG1wX291dHB1dF9kaXIsCiAgICApOgogICAgICAgIG1vY2tfc2VhcmNoLnJldHVybl92YWx1ZSA9IFtzYW1wbGVfcGFwZXJdCiAgICAgICAgbW9ja19leHRyYWN0LnJldHVybl92YWx1ZSA9ICJFeHRyYWN0ZWQgUERGIHRleHQgaGVyZS4iCiAgICAgICAgbW9ja19kcmFmdC5yZXR1cm5fdmFsdWUgPSAiQUkgZHJhZnQgY29udGVudC4iCgogICAgICAgIHBhdGhzID0gcnVuX3Jlc2VhcmNoKAogICAgICAgICAgICBxdWVyeT0idHJhbnNmb3JtZXIgYXR0ZW50aW9uIiwKICAgICAgICAgICAgbGltaXQ9NSwKICAgICAgICAgICAgb3V0cHV0X2Rpcj10bXBfb3V0cHV0X2RpciwKICAgICAgICAgICAgYXBpX2tleT0idGVzdC1rZXkiLAogICAgICAgICAgICBkb3dubG9hZF9wZGZzPVRydWUsCiAgICAgICAgICAgIHNraXBfZXhpc3Rpbmc9VHJ1ZSwKICAgICAgICAgICAgdmVyYm9zZT1GYWxzZSwKICAgICAgICApCgogICAgICAgIGFzc2VydCBsZW4ocGF0aHMpID09IDEKICAgICAgICBhc3NlcnQgcGF0aHNbMF0uZXhpc3RzKCkKICAgICAgICBhc3NlcnQgIkF0dGVudGlvbiBJcyBBbGwgWW91IE5lZWQiIGluIHBhdGhzWzBdLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQoKICAgICAgICBtb2NrX2RsLmFzc2VydF9jYWxsZWRfb25jZSgpCiAgICAgICAgbW9ja19leHRyYWN0LmFzc2VydF9jYWxsZWRfb25jZSgpCiAgICAgICAgbW9ja19kcmFmdC5hc3NlcnRfY2FsbGVkX29uY2UoKQoKICAgIEBweXRlc3QubWFyay5ub19mcmVlemUKICAgIEBwYXRjaCgicmVzZWFyY2hfbG9vcC5jb3JlLnNlYXJjaF9hcnhpdiIpCiAgICBAcGF0Y2goInJlc2VhcmNoX2xvb3AuY29yZS50aW1lLnNsZWVwIikKICAgIGRlZiB0ZXN0X25vX2FwaV9rZXlfc2tpcHNfYWlfZHJhZnQoc2VsZiwgbW9ja19zbGVlcCwgbW9ja19zZWFyY2gsIHNhbXBsZV9wYXBlciwgdG1wX291dHB1dF9kaXIpOgogICAgICAgIG1vY2tfc2VhcmNoLnJldHVybl92YWx1ZSA9IFtzYW1wbGVfcGFwZXJdCgogICAgICAgIHBhdGhzID0gcnVuX3Jlc2VhcmNoKAogICAgICAgICAgICBxdWVyeT0idHJhbnNmb3JtZXIiLAogICAgICAgICAgICBsaW1pdD01LAogICAgICAgICAgICBvdXRwdXRfZGlyPXRtcF9vdXRwdXRfZGlyLAogICAgICAgICAgICBhcGlfa2V5PSIiLAogICAgICAgICAgICBkb3dubG9hZF9wZGZzPUZhbHNlLAogICAgICAgICAgICBza2lwX2V4aXN0aW5nPVRydWUsCiAgICAgICAgICAgIHZlcmJvc2U9VHJ1ZSwKICAgICAgICApCgogICAgICAgIGFzc2VydCBsZW4ocGF0aHMpID09IDEKICAgICAgICBub3RlX3RleHQgPSBwYXRoc1swXS5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikKICAgICAgICBhc3NlcnQgIl9Ob3RlOiBTZXQgYE9QRU5BSV9BUElfS0VZYCB0byBlbmFibGUgQUkgZHJhZnQgZ2VuZXJhdGlvbi5fIiBpbiBub3RlX3RleHQKCiAgICBAcHl0ZXN0Lm1hcmsubm9fZnJlZXplCiAgICBAcGF0Y2goInJlc2VhcmNoX2xvb3AuY29yZS5zZWFyY2hfYXJ4aXYiKQogICAgQHBhdGNoKCJyZXNlYXJjaF9sb29wLmNvcmUuX2Rvd25sb2FkX3BkZiIpCiAgICBAcGF0Y2goInJlc2VhcmNoX2xvb3AuY29yZS5leHRyYWN0X3BkZl90ZXh0IikKICAgIEBwYXRjaCgicmVzZWFyY2hfbG9vcC5jb3JlLnRpbWUuc2xlZXAiKQogICAgZGVmIHRlc3Rfbm9fZXh0cmFjdGVkX3RleHRfc2tpcHNfYWlfZHJhZnQoCiAgICAgICAgc2VsZiwgbW9ja19zbGVlcCwgbW9ja19leHRyYWN0LCBtb2NrX2RsLCBtb2NrX3NlYXJjaCwgc2FtcGxlX3BhcGVyLCB0bXBfb3V0cHV0X2RpcgogICAgKToKICAgICAgICBtb2NrX3NlYXJjaC5yZXR1cm5fdmFsdWUgPSBbc2FtcGxlX3BhcGVyXQogICAgICAgIG1vY2tfZXh0cmFjdC5zaWRlX2VmZmVjdCA9IEV4Y2VwdGlvbigiUERGIGNvcnJ1cHRlZCIpCgogICAgICAgIHBhdGhzID0gcnVuX3Jlc2VhcmNoKAogICAgICAgICAgICBxdWVyeT0idHJhbnNmb3JtZXIiLAogICAgICAgICAgICBsaW1pdD01LAogICAgICAgICAgICBvdXRwdXRfZGlyPXRtcF9vdXRwdXRfZGlyLAogICAgICAgICAgICBhcGlfa2V5PSJ0ZXN0LWtleSIsCiAgICAgICAgICAgIGRvd25sb2FkX3BkZnM9VHJ1ZSwKICAgICAgICAgICAgc2tpcF9leGlzdGluZz1UcnVlLAogICAgICAgICAgICB2ZXJib3NlPVRydWUsCiAgICAgICAgKQoKICAgICAgICBhc3NlcnQgbGVuKHBhdGhzKSA9PSAxCiAgICAgICAgbm90ZV90ZXh0ID0gcGF0aHNbMF0ucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpCiAgICAgICAgYXNzZXJ0ICJfTm90ZTogU2V0IGBPUEVOQUlfQVBJX0tFWWAgdG8gZW5hYmxlIEFJIGRyYWZ0IGdlbmVyYXRpb24uXyIgaW4gbm90ZV90ZXh0CgogICAgQHB5dGVzdC5tYXJrLm5vX2ZyZWV6ZQogICAgQHBhdGNoKCJyZXNlYXJjaF9sb29wLmNvcmUuc2VhcmNoX2FyeGl2IikKICAgIEBwYXRjaCgicmVzZWFyY2hfbG9vcC5jb3JlLnRpbWUuc2xlZXAiKQogICAgZGVmIHRlc3Rfc2tpcF9leGlzdGluZ19ub3RlKHNlbGYsIG1vY2tfc2xlZXAsIG1vY2tfc2VhcmNoLCBzYW1wbGVfcGFwZXIsIHRtcF9vdXRwdXRfZGlyKToKICAgICAgICBtb2NrX3NlYXJjaC5yZXR1cm5fdmFsdWUgPSBbc2FtcGxlX3BhcGVyXQoKICAgICAgICAjIFByZS1jcmVhdGUgdGhlIG5vdGUgKHNpbXVsYXRlIGV4aXN0aW5nKQogICAgICAgIHVpZF9maWxlbmFtZSA9ICIyMzAxLjEyMzQ1X0F0dGVudGlvbi1Jcy1BbGwtWW91LU5lZWQubWQiCiAgICAgICAgbm90ZV9wYXRoID0gdG1wX291dHB1dF9kaXIgLyB1aWRfZmlsZW5hbWUKICAgICAgICBub3RlX3BhdGgud3JpdGVfdGV4dCgiQWxyZWFkeSBleGlzdHMiLCBlbmNvZGluZz0idXRmLTgiKQoKICAgICAgICBwYXRocyA9IHJ1bl9yZXNlYXJjaCgKICAgICAgICAgICAgcXVlcnk9InRyYW5zZm9ybWVyIiwKICAgICAgICAgICAgbGltaXQ9NSwKICAgICAgICAgICAgb3V0cHV0X2Rpcj10bXBfb3V0cHV0X2RpciwKICAgICAgICAgICAgYXBpX2tleT0iIiwKICAgICAgICAgICAgZG93bmxvYWRfcGRmcz1GYWxzZSwKICAgICAgICAgICAgc2tpcF9leGlzdGluZz1UcnVlLAogICAgICAgICAgICB2ZXJib3NlPVRydWUsCiAgICAgICAgKQoKICAgICAgICAjIE5vdGUgd2FzIHNraXBwZWQgKG5vdCBvdmVyd3JpdHRlbikKICAgICAgICBhc3NlcnQgbGVuKHBhdGhzKSA9PSAxCiAgICAgICAgYXNzZXJ0IHBhdGhzWzBdID09IG5vdGVfcGF0aAogICAgICAgIGFzc2VydCBub3RlX3BhdGgucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpID09ICJBbHJlYWR5IGV4aXN0cyIKCiAgICBAcHl0ZXN0Lm1hcmsubm9fZnJlZXplCiAgICBAcGF0Y2goInJlc2VhcmNoX2xvb3AuY29yZS5zZWFyY2hfYXJ4aXYiKQogICAgQHBhdGNoKCJyZXNlYXJjaF9sb29wLmNvcmUuX2Rvd25sb2FkX3BkZiIpCiAgICBAcGF0Y2goInJlc2VhcmNoX2xvb3AuY29yZS5leHRyYWN0X3BkZl90ZXh0IikKICAgIEBwYXRjaCgicmVzZWFyY2hfbG9vcC5jb3JlLmFpX2dlbmVyYXRlX3Bub3RlX2RyYWZ0IikKICAgIEBwYXRjaCgicmVzZWFyY2hfbG9vcC5jb3JlLnRpbWUuc2xlZXAiKQogICAgZGVmIHRlc3Rfbm9fc2tpcF9yZWdlbmVyYXRlcygKICAgICAgICBzZWxmLAogICAgICAgIG1vY2tfc2xlZXAsCiAgICAgICAgbW9ja19kcmFmdCwKICAgICAgICBtb2NrX2V4dHJhY3QsCiAgICAgICAgbW9ja19kbCwKICAgICAgICBtb2NrX3NlYXJjaCwKICAgICAgICBzYW1wbGVfcGFwZXIsCiAgICAgICAgdG1wX291dHB1dF9kaXIsCiAgICApOgogICAgICAgIG1vY2tfc2VhcmNoLnJldHVybl92YWx1ZSA9IFtzYW1wbGVfcGFwZXJdCiAgICAgICAgbW9ja19leHRyYWN0LnJldHVybl92YWx1ZSA9ICJGcmVzaCB0ZXh0LiIKICAgICAgICBtb2NrX2RyYWZ0LnJldHVybl92YWx1ZSA9ICJGcmVzaCBkcmFmdC4iCgogICAgICAgICMgUHJlLWNyZWF0ZSBvbGQgbm90ZQogICAgICAgIHVpZCA9IHNhbXBsZV9wYXBlci51aWQKICAgICAgICBub3RlX3BhdGggPSB0bXBfb3V0cHV0X2RpciAvIGYie3VpZH1fbm90ZS5tZCIKICAgICAgICBub3RlX3BhdGgud3JpdGVfdGV4dCgiT2xkIGNvbnRlbnQiLCBlbmNvZGluZz0idXRmLTgiKQoKICAgICAgICBwYXRocyA9IHJ1bl9yZXNlYXJjaCgKICAgICAgICAgICAgcXVlcnk9InRyYW5zZm9ybWVyIiwKICAgICAgICAgICAgbGltaXQ9NSwKICAgICAgICAgICAgb3V0cHV0X2Rpcj10bXBfb3V0cHV0X2RpciwKICAgICAgICAgICAgYXBpX2tleT0idGVzdC1rZXkiLAogICAgICAgICAgICBkb3dubG9hZF9wZGZzPVRydWUsCiAgICAgICAgICAgIHNraXBfZXhpc3Rpbmc9RmFsc2UsCiAgICAgICAgICAgIHZlcmJvc2U9RmFsc2UsCiAgICAgICAgKQoKICAgICAgICBhc3NlcnQgbGVuKHBhdGhzKSA9PSAxCiAgICAgICAgYXNzZXJ0ICJPbGQgY29udGVudCIgbm90IGluIHBhdGhzWzBdLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQoKICAgIEBweXRlc3QubWFyay5ub19mcmVlemUKICAgIEBwYXRjaCgicmVzZWFyY2hfbG9vcC5jb3JlLnNlYXJjaF9hcnhpdiIpCiAgICBkZWYgdGVzdF9lbXB0eV9yZXN1bHRfcmV0dXJuc19lbXB0eV9saXN0KHNlbGYsIG1vY2tfc2VhcmNoLCB0bXBfb3V0cHV0X2Rpcik6CiAgICAgICAgbW9ja19zZWFyY2gucmV0dXJuX3ZhbHVlID0gW10KCiAgICAgICAgcGF0aHMgPSBydW5fcmVzZWFyY2goCiAgICAgICAgICAgIHF1ZXJ5PSJub25leGlzdGVudCBxdWVyeSB4eXogYWJjIDEyMyIsCiAgICAgICAgICAgIGxpbWl0PTUsCiAgICAgICAgICAgIG91dHB1dF9kaXI9dG1wX291dHB1dF9kaXIsCiAgICAgICAgICAgIGFwaV9rZXk9IiIsCiAgICAgICAgICAgIGRvd25sb2FkX3BkZnM9RmFsc2UsCiAgICAgICAgICAgIHZlcmJvc2U9RmFsc2UsCiAgICAgICAgKQoKICAgICAgICBhc3NlcnQgcGF0aHMgPT0gW10KCiAgICBAcHl0ZXN0Lm1hcmsubm9fZnJlZXplCiAgICBAcGF0Y2goInJlc2VhcmNoX2xvb3AuY29yZS5zZWFyY2hfYXJ4aXYiKQogICAgZGVmIHRlc3Rfc2VhcmNoX2Vycm9yX3JldHVybnNfZW1wdHkoc2VsZiwgbW9ja19zZWFyY2gsIHRtcF9vdXRwdXRfZGlyKToKICAgICAgICBtb2NrX3NlYXJjaC5zaWRlX2VmZmVjdCA9IFJ1bnRpbWVFcnJvcigiTmV0d29yayBlcnJvciIpCgogICAgICAgIHBhdGhzID0gcnVuX3Jlc2VhcmNoKAogICAgICAgICAgICBxdWVyeT0idGVzdCIsCiAgICAgICAgICAgIGxpbWl0PTUsCiAgICAgICAgICAgIG91dHB1dF9kaXI9dG1wX291dHB1dF9kaXIsCiAgICAgICAgICAgIHZlcmJvc2U9VHJ1ZSwKICAgICAgICApCgogICAgICAgIGFzc2VydCBwYXRocyA9PSBbXQoKICAgIEBweXRlc3QubWFyay5ub19mcmVlemUKICAgIEBwYXRjaCgicmVzZWFyY2hfbG9vcC5jb3JlLnNlYXJjaF9hcnhpdiIpCiAgICBAcGF0Y2goInJlc2VhcmNoX2xvb3AuY29yZS50aW1lLnNsZWVwIikKICAgIGRlZiB0ZXN0X3Jlc3BlY3RzX2xpbWl0KHNlbGYsIG1vY2tfc2xlZXAsIG1vY2tfc2VhcmNoLCBzYW1wbGVfcGFwZXIsIHRtcF9vdXRwdXRfZGlyKToKICAgICAgICBtb2NrX3NlYXJjaC5yZXR1cm5fdmFsdWUgPSBbc2FtcGxlX3BhcGVyXQoKICAgICAgICBydW5fcmVzZWFyY2goCiAgICAgICAgICAgIHF1ZXJ5PSJ0cmFuc2Zvcm1lciIsCiAgICAgICAgICAgIGxpbWl0PTMsCiAgICAgICAgICAgIG91dHB1dF9kaXI9dG1wX291dHB1dF9kaXIsCiAgICAgICAgICAgIGFwaV9rZXk9IiIsCiAgICAgICAgICAgIGRvd25sb2FkX3BkZnM9RmFsc2UsCiAgICAgICAgICAgIHZlcmJvc2U9RmFsc2UsCiAgICAgICAgKQoKICAgICAgICAjIE9ubHkgMSBwYXBlciByZXR1cm5lZCBmcm9tIG1vY2ssIHNvIDEgY2FsbAogICAgICAgIG1vY2tfc2VhcmNoLmFzc2VydF9jYWxsZWRfb25jZV93aXRoKCJ0cmFuc2Zvcm1lciIsIG1heF9yZXN1bHRzPTMpCgogICAgQHB5dGVzdC5tYXJrLm5vX2ZyZWV6ZQogICAgQHBhdGNoKCJyZXNlYXJjaF9sb29wLmNvcmUuc2VhcmNoX2FyeGl2IikKICAgIEBwYXRjaCgicmVzZWFyY2hfbG9vcC5jb3JlLl9kb3dubG9hZF9wZGYiKQogICAgQHBhdGNoKCJyZXNlYXJjaF9sb29wLmNvcmUuZXh0cmFjdF9wZGZfdGV4dCIpCiAgICBAcGF0Y2goInJlc2VhcmNoX2xvb3AuY29yZS5haV9nZW5lcmF0ZV9wbm90ZV9kcmFmdCIpCiAgICBAcGF0Y2goInJlc2VhcmNoX2xvb3AuY29yZS50aW1lLnNsZWVwIikKICAgIGRlZiB0ZXN0X2Rvd25sb2FkX3BkZnNfZmFsc2Vfc2tpcHNfZG93bmxvYWQoCiAgICAgICAgc2VsZiwKICAgICAgICBtb2NrX3NsZWVwLAogICAgICAgIG1vY2tfZHJhZnQsCiAgICAgICAgbW9ja19leHRyYWN0LAogICAgICAgIG1vY2tfZGwsCiAgICAgICAgbW9ja19zZWFyY2gsCiAgICAgICAgc2FtcGxlX3BhcGVyLAogICAgICAgIHRtcF9vdXRwdXRfZGlyLAogICAgKToKICAgICAgICBtb2NrX3NlYXJjaC5yZXR1cm5fdmFsdWUgPSBbc2FtcGxlX3BhcGVyXQoKICAgICAgICBydW5fcmVzZWFyY2goCiAgICAgICAgICAgIHF1ZXJ5PSJ0cmFuc2Zvcm1lciIsCiAgICAgICAgICAgIGxpbWl0PTUsCiAgICAgICAgICAgIG91dHB1dF9kaXI9dG1wX291dHB1dF9kaXIsCiAgICAgICAgICAgIGFwaV9rZXk9IiIsCiAgICAgICAgICAgIGRvd25sb2FkX3BkZnM9RmFsc2UsCiAgICAgICAgICAgIHZlcmJvc2U9RmFsc2UsCiAgICAgICAgKQoKICAgICAgICAjIF9kb3dubG9hZF9wZGYgc2hvdWxkIGhhdmUgYmVlbiBza2lwcGVkIChkb3dubG9hZF9wZGZzPUZhbHNlKQogICAgICAgIG1vY2tfZGwuYXNzZXJ0X25vdF9jYWxsZWQoKQoKICAgIEBweXRlc3QubWFyay5ub19mcmVlemUKICAgIEBwYXRjaCgicmVzZWFyY2hfbG9vcC5jb3JlLnNlYXJjaF9hcnhpdiIpCiAgICBAcGF0Y2goInJlc2VhcmNoX2xvb3AuY29yZS5fZG93bmxvYWRfcGRmIikKICAgIEBwYXRjaCgicmVzZWFyY2hfbG9vcC5jb3JlLmV4dHJhY3RfcGRmX3RleHQiKQogICAgQHBhdGNoKCJyZXNlYXJjaF9sb29wLmNvcmUuYWlfZ2VuZXJhdGVfcG5vdGVfZHJhZnQiKQogICAgQHBhdGNoKCJyZXNlYXJjaF9sb29wLmNvcmUudGltZS5zbGVlcCIpCiAgICBkZWYgdGVzdF9jdXN0b21fdGFnc19wYXNzZWRfdG9fbm90ZSgKICAgICAgICBzZWxmLAogICAgICAgIG1vY2tfc2xlZXAsCiAgICAgICAgbW9ja19kcmFmdCwKICAgICAgICBtb2NrX2V4dHJhY3QsCiAgICAgICAgbW9ja19kbCwKICAgICAgICBtb2NrX3NlYXJjaCwKICAgICAgICBzYW1wbGVfcGFwZXIsCiAgICAgICAgdG1wX291dHB1dF9kaXIsCiAgICApOgogICAgICAgIG1vY2tfc2VhcmNoLnJldHVybl92YWx1ZSA9IFtzYW1wbGVfcGFwZXJdCiAgICAgICAgbW9ja19leHRyYWN0LnJldHVybl92YWx1ZSA9ICJUZXh0LiIKICAgICAgICBtb2NrX2RyYWZ0LnJldHVybl92YWx1ZSA9ICJEcmFmdC4iCgogICAgICAgIHBhdGhzID0gcnVuX3Jlc2VhcmNoKAogICAgICAgICAgICBxdWVyeT0idHJhbnNmb3JtZXIiLAogICAgICAgICAgICBsaW1pdD01LAogICAgICAgICAgICBvdXRwdXRfZGlyPXRtcF9vdXRwdXRfZGlyLAogICAgICAgICAgICBhcGlfa2V5PSJ0ZXN0LWtleSIsCiAgICAgICAgICAgIGRvd25sb2FkX3BkZnM9VHJ1ZSwKICAgICAgICAgICAgc2tpcF9leGlzdGluZz1UcnVlLAogICAgICAgICAgICB0YWdzPVsiTExNIiwgIlRyYW5zZm9ybWVycyJdLAogICAgICAgICkKCiAgICAgICAgbm90ZV90ZXh0ID0gcGF0aHNbMF0ucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpCiAgICAgICAgYXNzZXJ0ICIqKlRhZ3M6KiogTExNLCBUcmFuc2Zvcm1lcnMiIGluIG5vdGVfdGV4dAo=
+"""Tier 2 unit tests — research_loop.py, pure functions + mocked I/O."""
+
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
+
+import pytest
+
+from core import Paper
+from research_loop import _build_research_note, run_research
+
+
+# =============================================================================
+# _build_research_note — pure markdown builder
+# =============================================================================
+
+
+class TestBuildResearchNote:
+    def _paper(self, **overrides):
+        kwargs = dict(
+            source="arxiv",
+            uid="2301.12345",
+            title="Test Paper Title",
+            authors=["Alice Smith", "Bob Jones"],
+            abstract="This is the abstract of the test paper.",
+            published="2023-06-01",
+            updated="2023-07-15",
+            abs_url="https://arxiv.org/abs/2301.12345",
+            pdf_url="https://arxiv.org/pdf/2301.12345.pdf",
+        )
+        kwargs.update(overrides)
+        return Paper(**kwargs)
+
+    def test_basic_metadata_renders(self):
+        paper = self._paper()
+        note = _build_research_note(paper, draft="", rubric={}, tags=[])
+        lines = note.split("\n")
+
+        assert "# Test Paper Title" in lines
+        assert "**UID:** `2301.12345`" in lines
+        assert "**Source:** [arxiv](https://arxiv.org/abs/2301.12345)" in lines
+        assert (
+            "**PDF:** [https://arxiv.org/pdf/2301.12345.pdf](https://arxiv.org/pdf/2301.12345.pdf)"
+            in lines
+        )
+        assert "**Published:** 2023-06-01" in lines
+        assert "**Updated:** 2023-07-15" in lines
+        assert "**Authors:** Alice Smith, Bob Jones" in lines
+        assert "## Abstract" in lines
+        assert "This is the abstract of the test paper." in lines
+        import datetime as dt
+
+        assert f"_Generated by ai-research-os on {dt.date.today().isoformat()}_" in note
+
+    def test_truncates_authors_list_at_5(self):
+        paper = self._paper(authors=["A", "B", "C", "D", "E", "F", "G"])
+        note = _build_research_note(paper, draft="", rubric={}, tags=[])
+        assert "A, B, C, D, E et al. (+2 more)" in note
+
+    def test_handles_empty_authors(self):
+        paper = self._paper(authors=[])
+        note = _build_research_note(paper, draft="", rubric={}, tags=[])
+        assert "**Authors:**" not in note
+
+    def test_handles_missing_published_updated(self):
+        paper = self._paper(published="", updated="")
+        note = _build_research_note(paper, draft="", rubric={}, tags=[])
+        assert "**Published:** N/A" in note
+        assert "**Updated:** N/A" in note
+
+    def test_categories_render(self):
+        paper = self._paper(categories="cs.AI, cs.LG, cs.CL")
+        note = _build_research_note(paper, draft="", rubric={}, tags=[])
+        assert "**Categories:** cs.AI, cs.LG, cs.CL" in note
+
+    def test_tags_render(self):
+        paper = self._paper()
+        note = _build_research_note(paper, draft="", rubric={}, tags=["LLM", "Reasoning"])
+        assert "**Tags:** LLM, Reasoning" in note
+
+    def test_comment_renders(self):
+        paper = self._paper(comment="15 pages, 8 figures, 3 tables")
+        note = _build_research_note(paper, draft="", rubric={}, tags=[])
+        assert "**arXiv Comment:** 15 pages, 8 figures, 3 tables" in note
+
+    def test_journal_ref_renders(self):
+        paper = self._paper(journal_ref="Nature 2023")
+        note = _build_research_note(paper, draft="", rubric={}, tags=[])
+        assert "**Journal Ref:** Nature 2023" in note
+
+    def test_no_ai_fallback_message(self):
+        paper = self._paper()
+        note = _build_research_note(paper, draft="", rubric={}, tags=[])
+        assert "_Note: Set `OPENAI_API_KEY` to enable AI draft generation._" in note
+
+    def test_ai_note_section_with_draft(self):
+        paper = self._paper()
+        note = _build_research_note(
+            paper,
+            draft="This is the AI-generated research note body.",
+            rubric={},
+            tags=[],
+        )
+        assert "## AI Research Note" in note
+        assert "This is the AI-generated research note body." in note
+
+    def test_rubric_scores_render_as_stars(self):
+        paper = self._paper()
+        note = _build_research_note(
+            paper,
+            draft="Novel approach.",
+            rubric={"novelty": 4, "leverage": 3},
+            tags=[],
+        )
+        assert "### Rubric Scores" in note
+        assert "**Novelty:** ★★★★☆ (4/5)" in note
+        assert "**Leverage:** ★★★☆☆ (3/5)" in note
+
+    def test_overall_score_renders(self):
+        paper = self._paper()
+        note = _build_research_note(
+            paper,
+            draft="Good work.",
+            rubric={"novelty": 5, "overall": "Strong Accept"},
+            tags=[],
+        )
+        assert "- **Overall:** Strong Accept" in note
+
+
+# =============================================================================
+# run_research — integration with mocked sub-modules
+# =============================================================================
+
+
+class TestRunResearch:
+    @pytest.fixture
+    def sample_paper(self):
+        return Paper(
+            source="arxiv",
+            uid="2301.12345",
+            title="Attention Is All You Need",
+            authors=["Ashish Vaswani", "Noam Shazeer"],
+            abstract="We propose a new neural network architecture.",
+            published="2017-06-12",
+            updated="2017-06-12",
+            abs_url="https://arxiv.org/abs/1706.03762",
+            pdf_url="https://arxiv.org/pdf/1706.03762.pdf",
+        )
+
+    @pytest.fixture
+    def tmp_output_dir(self):
+        with tempfile.TemporaryDirectory() as d:
+            yield Path(d)
+
+    @pytest.mark.no_freeze
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core._download_pdf")
+    @patch("research_loop.core.extract_pdf_text")
+    @patch("research_loop.core.ai_generate_pnote_draft")
+    @patch("research_loop.core.time.sleep")
+    def test_full_pipeline_creates_note(
+        self,
+        mock_sleep,
+        mock_draft,
+        mock_extract,
+        mock_dl,
+        mock_search,
+        sample_paper,
+        tmp_output_dir,
+    ):
+        mock_search.return_value = [sample_paper]
+        mock_extract.return_value = "Extracted PDF text here."
+        mock_draft.return_value = "AI draft content."
+
+        paths = run_research(
+            query="transformer attention",
+            limit=5,
+            output_dir=tmp_output_dir,
+            api_key="test-key",
+            download_pdfs=True,
+            skip_existing=True,
+            verbose=False,
+        )
+
+        assert len(paths) == 1
+        assert paths[0].exists()
+        assert "Attention Is All You Need" in paths[0].read_text(encoding="utf-8")
+
+        mock_dl.assert_called_once()
+        mock_extract.assert_called_once()
+        mock_draft.assert_called_once()
+
+    @pytest.mark.no_freeze
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core.time.sleep")
+    def test_no_api_key_skips_ai_draft(self, mock_sleep, mock_search, sample_paper, tmp_output_dir):
+        mock_search.return_value = [sample_paper]
+
+        paths = run_research(
+            query="transformer",
+            limit=5,
+            output_dir=tmp_output_dir,
+            api_key="",
+            download_pdfs=False,
+            skip_existing=True,
+            verbose=True,
+        )
+
+        assert len(paths) == 1
+        note_text = paths[0].read_text(encoding="utf-8")
+        assert "_Note: Set `OPENAI_API_KEY` to enable AI draft generation._" in note_text
+
+    @pytest.mark.no_freeze
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core._download_pdf")
+    @patch("research_loop.core.extract_pdf_text")
+    @patch("research_loop.core.time.sleep")
+    def test_no_extracted_text_skips_ai_draft(
+        self, mock_sleep, mock_extract, mock_dl, mock_search, sample_paper, tmp_output_dir
+    ):
+        mock_search.return_value = [sample_paper]
+        mock_extract.side_effect = Exception("PDF corrupted")
+
+        paths = run_research(
+            query="transformer",
+            limit=5,
+            output_dir=tmp_output_dir,
+            api_key="test-key",
+            download_pdfs=True,
+            skip_existing=True,
+            verbose=True,
+        )
+
+        assert len(paths) == 1
+        note_text = paths[0].read_text(encoding="utf-8")
+        assert "_Note: Set `OPENAI_API_KEY` to enable AI draft generation._" in note_text
+
+    @pytest.mark.no_freeze
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core.time.sleep")
+    def test_skip_existing_note(self, mock_sleep, mock_search, sample_paper, tmp_output_dir):
+        mock_search.return_value = [sample_paper]
+
+        # Pre-create the note (simulate existing)
+        uid_filename = "2301.12345_Attention-Is-All-You-Need.md"
+        note_path = tmp_output_dir / uid_filename
+        note_path.write_text("Already exists", encoding="utf-8")
+
+        paths = run_research(
+            query="transformer",
+            limit=5,
+            output_dir=tmp_output_dir,
+            api_key="",
+            download_pdfs=False,
+            skip_existing=True,
+            verbose=True,
+        )
+
+        # Note was skipped (not overwritten)
+        assert len(paths) == 1
+        assert paths[0] == note_path
+        assert note_path.read_text(encoding="utf-8") == "Already exists"
+
+    @pytest.mark.no_freeze
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core._download_pdf")
+    @patch("research_loop.core.extract_pdf_text")
+    @patch("research_loop.core.ai_generate_pnote_draft")
+    @patch("research_loop.core.time.sleep")
+    def test_no_skip_regenerates(
+        self,
+        mock_sleep,
+        mock_draft,
+        mock_extract,
+        mock_dl,
+        mock_search,
+        sample_paper,
+        tmp_output_dir,
+    ):
+        mock_search.return_value = [sample_paper]
+        mock_extract.return_value = "Fresh text."
+        mock_draft.return_value = "Fresh draft."
+
+        # Pre-create old note
+        uid = sample_paper.uid
+        note_path = tmp_output_dir / f"{uid}_note.md"
+        note_path.write_text("Old content", encoding="utf-8")
+
+        paths = run_research(
+            query="transformer",
+            limit=5,
+            output_dir=tmp_output_dir,
+            api_key="test-key",
+            download_pdfs=True,
+            skip_existing=False,
+            verbose=False,
+        )
+
+        assert len(paths) == 1
+        assert "Old content" not in paths[0].read_text(encoding="utf-8")
+
+    @pytest.mark.no_freeze
+    @patch("research_loop.core.search_arxiv")
+    def test_empty_result_returns_empty_list(self, mock_search, tmp_output_dir):
+        mock_search.return_value = []
+
+        paths = run_research(
+            query="nonexistent query xyz abc 123",
+            limit=5,
+            output_dir=tmp_output_dir,
+            api_key="",
+            download_pdfs=False,
+            verbose=False,
+        )
+
+        assert paths == []
+
+    @pytest.mark.no_freeze
+    @patch("research_loop.core.search_arxiv")
+    def test_search_error_returns_empty(self, mock_search, tmp_output_dir):
+        mock_search.side_effect = RuntimeError("Network error")
+
+        paths = run_research(
+            query="test",
+            limit=5,
+            output_dir=tmp_output_dir,
+            verbose=True,
+        )
+
+        assert paths == []
+
+    @pytest.mark.no_freeze
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core.time.sleep")
+    def test_respects_limit(self, mock_sleep, mock_search, sample_paper, tmp_output_dir):
+        mock_search.return_value = [sample_paper]
+
+        run_research(
+            query="transformer",
+            limit=3,
+            output_dir=tmp_output_dir,
+            api_key="",
+            download_pdfs=False,
+            verbose=False,
+        )
+
+        # Only 1 paper returned from mock, so 1 call
+        mock_search.assert_called_once_with("transformer", max_results=3)
+
+    @pytest.mark.no_freeze
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core._download_pdf")
+    @patch("research_loop.core.extract_pdf_text")
+    @patch("research_loop.core.ai_generate_pnote_draft")
+    @patch("research_loop.core.time.sleep")
+    def test_download_pdfs_false_skips_download(
+        self,
+        mock_sleep,
+        mock_draft,
+        mock_extract,
+        mock_dl,
+        mock_search,
+        sample_paper,
+        tmp_output_dir,
+    ):
+        mock_search.return_value = [sample_paper]
+
+        run_research(
+            query="transformer",
+            limit=5,
+            output_dir=tmp_output_dir,
+            api_key="",
+            download_pdfs=False,
+            verbose=False,
+        )
+
+        # _download_pdf should have been skipped (download_pdfs=False)
+        mock_dl.assert_not_called()
+
+    @pytest.mark.no_freeze
+    @patch("research_loop.core.search_arxiv")
+    @patch("research_loop.core._download_pdf")
+    @patch("research_loop.core.extract_pdf_text")
+    @patch("research_loop.core.ai_generate_pnote_draft")
+    @patch("research_loop.core.time.sleep")
+    def test_custom_tags_passed_to_note(
+        self,
+        mock_sleep,
+        mock_draft,
+        mock_extract,
+        mock_dl,
+        mock_search,
+        sample_paper,
+        tmp_output_dir,
+    ):
+        mock_search.return_value = [sample_paper]
+        mock_extract.return_value = "Text."
+        mock_draft.return_value = "Draft."
+
+        paths = run_research(
+            query="transformer",
+            limit=5,
+            output_dir=tmp_output_dir,
+            api_key="test-key",
+            download_pdfs=True,
+            skip_existing=True,
+            tags=["LLM", "Transformers"],
+        )
+
+        note_text = paths[0].read_text(encoding="utf-8")
+        assert "**Tags:** LLM, Transformers" in note_text

@@ -1,1 +1,610 @@
-IiIiQUkgUmVzZWFyY2ggT1MgQ0xJLiIiIgoKaW1wb3J0IGltcG9ydGxpYgoKCmZyb20gdHlwaW5nIGltcG9ydCBBbnksIERpY3QKCgpmcm9tIGNsaS5fcmVnaXN0cnkgaW1wb3J0IG1haW4KCgpfX2FsbF9fID0gWyJtYWluIl0KCgojIExhenkgcmUtZXhwb3J0cyBmb3IgYmFja3dhcmQgY29tcGF0aWJpbGl0eSAodGVzdHMgYW5kIGludGVybmFsIHVzZSkuCgoKIyBFYWNoIG5hbWUgaXMgaW1wb3J0ZWQgb24gZmlyc3QgYWNjZXNzLCB0aGVuIGNhY2hlZC4KCgpfTEFaWV9FWFBPUlRTID0gewogICAgIl9ydW5fc2VhcmNoIjogKCJjbGkuY21kLnNlYXJjaCIsICJfcnVuX3NlYXJjaCIpLAogICAgIl9idWlsZF9zZWFyY2hfcGFyc2VyIjogKCJjbGkuY21kLnNlYXJjaCIsICJfYnVpbGRfc2VhcmNoX3BhcnNlciIpLAogICAgIl9ydW5fbGlzdCI6ICgiY2xpLmNtZC5saXN0IiwgIl9ydW5fbGlzdCIpLAogICAgIl9idWlsZF9saXN0X3BhcnNlciI6ICgiY2xpLmNtZC5saXN0IiwgIl9idWlsZF9saXN0X3BhcnNlciIpLAogICAgIl9ydW5fc3RhdHVzIjogKCJjbGkuY21kLnN0YXR1cyIsICJfcnVuX3N0YXR1cyIpLAogICAgIl9idWlsZF9zdGF0dXNfcGFyc2VyIjogKCJjbGkuY21kLnN0YXR1cyIsICJfYnVpbGRfc3RhdHVzX3BhcnNlciIpLAogICAgIl9ydW5fc3RhdHMiOiAoImNsaS5jbWQuc3RhdHMiLCAiX3J1bl9zdGF0cyIpLAogICAgIl9idWlsZF9zdGF0c19wYXJzZXIiOiAoImNsaS5jbWQuc3RhdHMiLCAiX2J1aWxkX3N0YXRzX3BhcnNlciIpLAogICAgIl9ydW5faW1wb3J0IjogKCJjbGkuY21kLmltcG9ydF8iLCAiX3J1bl9pbXBvcnQiKSwKICAgICJfYnVpbGRfaW1wb3J0X3BhcnNlciI6ICgiY2xpLmNtZC5pbXBvcnRfIiwgIl9idWlsZF9pbXBvcnRfcGFyc2VyIiksCiAgICAiX3J1bl9leHBvcnQiOiAoImNsaS5jbWQuZXhwb3J0IiwgIl9ydW5fZXhwb3J0IiksCiAgICAiX2J1aWxkX2V4cG9ydF9wYXJzZXIiOiAoImNsaS5jbWQuZXhwb3J0IiwgIl9idWlsZF9leHBvcnRfcGFyc2VyIiksCiAgICAiX3J1bl9xdWV1ZSI6ICgiY2xpLmNtZC5xdWV1ZSIsICJfcnVuX3F1ZXVlIiksCiAgICAiX2J1aWxkX3F1ZXVlX3BhcnNlciI6ICgiY2xpLmNtZC5xdWV1ZSIsICJfYnVpbGRfcXVldWVfcGFyc2VyIiksCiAgICAiX3J1bl9jYWNoZSI6ICgiY2xpLmNtZC5jYWNoZSIsICJfcnVuX2NhY2hlIiksCiAgICAiX2J1aWxkX2NhY2hlX3BhcnNlciI6ICgiY2xpLmNtZC5jYWNoZSIsICJfYnVpbGRfY2FjaGVfcGFyc2VyIiksCiAgICAiX3J1bl9kZWR1cCI6ICgiY2xpLmNtZC5kZWR1cCIsICJfcnVuX2RlZHVwIiksCiAgICAiX2J1aWxkX2RlZHVwX3BhcnNlciI6ICgiY2xpLmNtZC5kZWR1cCIsICJfYnVpbGRfZGVkdXBfcGFyc2VyIiksCiAgICAiX3J1bl9kZWR1cF9zZW1hbnRpYyI6ICgiY2xpLmNtZC5kZWR1cF9zZW1hbnRpYyIsICJfcnVuX2RlZHVwX3NlbWFudGljIiksCiAgICAiX2J1aWxkX2RlZHVwX3NlbWFudGljX3BhcnNlciI6ICgiY2xpLmNtZC5kZWR1cF9zZW1hbnRpYyIsICJfYnVpbGRfZGVkdXBfc2VtYW50aWNfcGFyc2VyIiksCiAgICAiX3J1bl9zaW1pbGFyIjogKCJjbGkuY21kLnNpbWlsYXIiLCAiX3J1bl9zaW1pbGFyIiksCiAgICAiX2J1aWxkX3NpbWlsYXJfcGFyc2VyIjogKCJjbGkuY21kLnNpbWlsYXIiLCAiX2J1aWxkX3NpbWlsYXJfcGFyc2VyIiksCiAgICAiX3J1bl9rZyI6ICgiY2xpLmNtZC5rZy5rZyIsICJfcnVuX2tnIiksCiAgICAiX2J1aWxkX2tnX3BhcnNlciI6ICgiY2xpLmNtZC5rZy5rZyIsICJfYnVpbGRfa2dfcGFyc2VyIiksCiAgICAiX3J1bl9tZXJnZSI6ICgiY2xpLmNtZC5tZXJnZSIsICJfcnVuX21lcmdlIiksCiAgICAiX2J1aWxkX21lcmdlX3BhcnNlciI6ICgiY2xpLmNtZC5tZXJnZSIsICJfYnVpbGRfbWVyZ2VfcGFyc2VyIiksCiAgICAiX3BpY2tfa2VlcCI6ICgiY2xpLmNtZC5tZXJnZSIsICJfcGlja19rZWVwIiksCiAgICAiX3J1bl9jaXRhdGlvbnMiOiAoImNsaS5jbWQuY2l0YXRpb25zIiwgIl9ydW5fY2l0YXRpb25zIiksCiAgICAiX2J1aWxkX2NpdGF0aW9uc19wYXJzZXIiOiAoImNsaS5jbWQuY2l0YXRpb25zIiwgIl9idWlsZF9jaXRhdGlvbnNfcGFyc2VyIiksCiAgICAiX3J1bl9jaXRlX2dyYXBoIjogKCJjbGkuY21kLmNpdGVfZ3JhcGgiLCAiX3J1bl9jaXRlX2dyYXBoIiksCiAgICAiX2J1aWxkX2NpdGVfZ3JhcGhfcGFyc2VyIjogKCJjbGkuY21kLmNpdGVfZ3JhcGgiLCAiX2J1aWxkX2NpdGVfZ3JhcGhfcGFyc2VyIiksCiAgICAiX3J1bl9jaXRlX2ZldGNoIjogKCJjbGkuY21kLmNpdGVfZmV0Y2giLCAiX3J1bl9jaXRlX2ZldGNoIiksCiAgICAiX2J1aWxkX2NpdGVfZmV0Y2hfcGFyc2VyIjogKCJjbGkuY21kLmNpdGVfZmV0Y2giLCAiX2J1aWxkX2NpdGVfZmV0Y2hfcGFyc2VyIiksCiAgICAiX3J1bl9jaXRlX2ltcG9ydCI6ICgiY2xpLmNtZC5jaXRlX2ltcG9ydCIsICJfcnVuX2NpdGVfaW1wb3J0IiksCiAgICAiX2J1aWxkX2NpdGVfaW1wb3J0X3BhcnNlciI6ICgiY2xpLmNtZC5jaXRlX2ltcG9ydCIsICJfYnVpbGRfY2l0ZV9pbXBvcnRfcGFyc2VyIiksCiAgICAiX3J1bl9jaXRlX3N0YXRzIjogKCJjbGkuY21kLmNpdGVfc3RhdHMiLCAiX3J1bl9jaXRlX3N0YXRzIiksCiAgICAiX2J1aWxkX2NpdGVfc3RhdHNfcGFyc2VyIjogKCJjbGkuY21kLmNpdGVfc3RhdHMiLCAiX2J1aWxkX2NpdGVfc3RhdHNfcGFyc2VyIiksCiAgICAiX3J1bl90cmVuZCI6ICgiY2xpLmNtZC50cmVuZCIsICJfcnVuX3RyZW5kIiksCiAgICAiX2J1aWxkX3RyZW5kX3BhcnNlciI6ICgiY2xpLmNtZC50cmVuZCIsICJfYnVpbGRfdHJlbmRfcGFyc2VyIiksCiAgICAiX3J1bl9pbmZsdWVuY2UiOiAoImNsaS5jbWQuaW5mbHVlbmNlIiwgIl9ydW5faW5mbHVlbmNlIiksCiAgICAiX2J1aWxkX2luZmx1ZW5jZV9wYXJzZXIiOiAoImNsaS5jbWQuaW5mbHVlbmNlIiwgIl9idWlsZF9pbmZsdWVuY2VfcGFyc2VyIiksCiAgICAiX3J1bl9jaXRlX2JhY2tmaWxsIjogKCJjbGkuY21kLmNpdGVfYmFja2ZpbGwiLCAiX3J1bl9jaXRlX2JhY2tmaWxsIiksCiAgICAiX2J1aWxkX2NpdGVfYmFja2ZpbGxfcGFyc2VyIjogKCJjbGkuY21kLmNpdGVfYmFja2ZpbGwiLCAiX2J1aWxkX2NpdGVfYmFja2ZpbGxfcGFyc2VyIiksCiAgICAiX3J1bl9yZXNlYXJjaF9jbWQiOiAoImNsaS5jbWQucmVzZWFyY2giLCAiX3J1bl9yZXNlYXJjaF9jbWQiKSwKICAgICJfYnVpbGRfcmVzZWFyY2hfcGFyc2VyIjogKCJjbGkuY21kLnJlc2VhcmNoIiwgIl9idWlsZF9yZXNlYXJjaF9wYXJzZXIiKSwKICAgICJfYXJ4aXZfZG9pX3RvX29wZW5hbGV4IjogKCJjbGkuY21kLmNpdGVfZmV0Y2giLCAiX2FyeGl2X2RvaV90b19vcGVuYWxleCIpLAogICAgIl9nZXRfb2xsYW1hX2VtYmVkZGluZ19iYXRjaCI6ICgiY2xpLmNtZC5kZWR1cF9zZW1hbnRpYyIsICJfZ2V0X29sbGFtYV9lbWJlZGRpbmdfYmF0Y2giKSwKICAgICJfZXh0cmFjdF9yZWZlcmVuY2VzX2Zyb21fdGV4dCI6ICgiY2xpLmNtZC5jaXRlX2dyYXBoIiwgIl9leHRyYWN0X3JlZmVyZW5jZXNfZnJvbV90ZXh0IiksCiAgICAiX3J1bl9yZXBsIjogKCJjbGkuY21kLnJlcGwiLCAiX3J1bl9yZXBsIiksCiAgICAiX2J1aWxkX3JlcGxfcGFyc2VyIjogKCJjbGkuY21kLnJlcGwiLCAiX2J1aWxkX3JlcGxfcGFyc2VyIiksCiAgICAiX3J1bl9yZWFkX3F1ZXVlIjogKCJjbGkuY21kLnJlYWRfcXVldWUiLCAiX3J1bl9yZWFkX3F1ZXVlIiksCiAgICAiX2J1aWxkX3JlYWRfcXVldWVfcGFyc2VyIjogKCJjbGkuY21kLnJlYWRfcXVldWUiLCAiX2J1aWxkX3JlYWRfcXVldWVfcGFyc2VyIiksCiAgICAiX3J1bl9jaGF0IjogKCJjbGkuY21kLmNoYXQiLCAiX3J1bl9jaGF0IiksCiAgICAiX2J1aWxkX2NoYXRfcGFyc2VyIjogKCJjbGkuY21kLmNoYXQiLCAiX2J1aWxkX2NoYXRfcGFyc2VyIiksCiAgICAiX3J1bl9jaGF0X3R1aSI6ICgiY2xpLmNtZC5jaGF0X3R1aSIsICJydW4iKSwKICAgICJfYnVpbGRfY2hhdF90dWlfcGFyc2VyIjogKCJjbGkuY21kLmNoYXRfdHVpIiwgIl9idWlsZF9jaGF0X3R1aV9wYXJzZXIiKSwKICAgICJfcnVuX3BhdGgiOiAoImNsaS5jbWQucGF0aCIsICJfcnVuX3BhdGgiKSwKICAgICJfYnVpbGRfcGF0aF9wYXJzZXIiOiAoImNsaS5jbWQucGF0aCIsICJfYnVpbGRfcGF0aF9wYXJzZXIiKSwKICAgICJfcnVuX2dhcCI6ICgiY2xpLmNtZC5nYXAiLCAiX3J1bl9nYXAiKSwKICAgICJfYnVpbGRfZ2FwX3BhcnNlciI6ICgiY2xpLmNtZC5nYXAiLCAiX2J1aWxkX2dhcF9wYXJzZXIiKSwKICAgICJfcnVuX2h5cG90aGVzaXplIjogKCJjbGkuY21kLmh5cG90aGVzaXplIiwgIl9ydW5faHlwb3RoZXNpemUiKSwKICAgICJfYnVpbGRfaHlwb3RoZXNpemVfcGFyc2VyIjogKCJjbGkuY21kLmh5cG90aGVzaXplIiwgIl9idWlsZF9oeXBvdGhlc2l6ZV9wYXJzZXIiKSwKICAgICJfcnVuX3N0b3J5IjogKCJjbGkuY21kLnN0b3J5IiwgIl9ydW5fc3RvcnkiKSwKICAgICJfYnVpbGRfc3RvcnlfcGFyc2VyIjogKCJjbGkuY21kLnN0b3J5IiwgIl9idWlsZF9zdG9yeV9wYXJzZXIiKSwKICAgICJfcnVuX2FnZW50IjogKCJjbGkuY21kLmFnZW50IiwgInJ1biIpLAogICAgIl9idWlsZF9hZ2VudF9wYXJzZXIiOiAoImNsaS5jbWQuYWdlbnQiLCAiX2J1aWxkX2FnZW50X3BhcnNlciIpLAogICAgIl9ydW5fYW5hbHl6ZSI6ICgiY2xpLmNtZC5hbmFseXplIiwgIl9ydW5fYW5hbHl6ZSIpLAogICAgIl9ydW5fcmV2aWV3IjogKCJjbGkuY21kLnJldmlldyIsICJfcnVuX3JldmlldyIpLAogICAgIl9idWlsZF9yZXZpZXdfcGFyc2VyIjogKCJjbGkuY21kLnJldmlldyIsICJfYnVpbGRfcmV2aWV3X3BhcnNlciIpLAogICAgIl9ydW5fcXVlc3Rpb24iOiAoImNsaS5jbWQucXVlc3Rpb24iLCAiX3J1bl9xdWVzdGlvbiIpLAogICAgIl9idWlsZF9xdWVzdGlvbl9wYXJzZXIiOiAoImNsaS5jbWQucXVlc3Rpb24iLCAiX2J1aWxkX3F1ZXN0aW9uX3BhcnNlciIpLAogICAgIl9ydW5fcm9hZG1hcCI6ICgiY2xpLmNtZC5yb2FkbWFwIiwgIl9ydW5fcm9hZG1hcCIpLAogICAgIl9idWlsZF9yb2FkbWFwX3BhcnNlciI6ICgiY2xpLmNtZC5yb2FkbWFwIiwgIl9idWlsZF9yb2FkbWFwX3BhcnNlciIpLAogICAgIl9ydW5fZXhwZXJpbWVudCI6ICgiY2xpLmNtZC5leHBlcmltZW50IiwgIl9ydW5fZXhwZXJpbWVudCIpLAogICAgIl9idWlsZF9leHBlcmltZW50X3BhcnNlciI6ICgiY2xpLmNtZC5leHBlcmltZW50IiwgIl9idWlsZF9leHBlcmltZW50X3BhcnNlciIpLAogICAgIl9ydW5fcGlwZWxpbmUiOiAoImNsaS5jbWQucGlwZWxpbmUiLCAiX3J1bl9waXBlbGluZSIpLAogICAgIl9idWlsZF9waXBlbGluZV9wYXJzZXIiOiAoImNsaS5jbWQucGlwZWxpbmUiLCAiX2J1aWxkX3BpcGVsaW5lX3BhcnNlciIpLAogICAgIl9ydW5fZGFzaGJvYXJkIjogKCJjbGkuY21kLmRhc2hib2FyZCIsICJfcnVuX2Rhc2hib2FyZCIpLAogICAgIl9idWlsZF9kYXNoYm9hcmRfcGFyc2VyIjogKCJjbGkuY21kLmRhc2hib2FyZCIsICJfYnVpbGRfZGFzaGJvYXJkX3BhcnNlciIpLAogICAgIl9ydW5fam91cm5hbCI6ICgiY2xpLmNtZC5qb3VybmFsIiwgIl9ydW5fam91cm5hbCIpLAogICAgIl9idWlsZF9qb3VybmFsX3BhcnNlciI6ICgiY2xpLmNtZC5qb3VybmFsIiwgIl9idWlsZF9qb3VybmFsX3BhcnNlciIpLAogICAgIl9ydW5fZGlnZXN0IjogKCJjbGkuY21kLmRpZ2VzdCIsICJfcnVuX2RpZ2VzdCIpLAogICAgIl9idWlsZF9sZWFuX3BhcnNlciI6ICgiY2xpLmNtZC5sZWFuIiwgIl9idWlsZF9sZWFuX3BhcnNlciIpLAogICAgIl9ydW5fbGVhbiI6ICgiY2xpLmNtZC5sZWFuIiwgIl9ydW5fbGVhbiIpLAogICAgIl9idWlsZF9kaWdlc3RfcGFyc2VyIjogKCJjbGkuY21kLmRpZ2VzdCIsICJfYnVpbGRfZGlnZXN0X3BhcnNlciIpLAogICAgIl9idWlsZF9jaXRhdGlvbl9jaGFpbl9wYXJzZXIiOiAoImNsaS5jbWQuY2l0YXRpb25fY2hhaW4iLCAiX2J1aWxkX2NpdGF0aW9uX2NoYWluX3BhcnNlciIpLAogICAgIl9idWlsZF9jb21wYXJlX3BhcnNlciI6ICgiY2xpLmNtZC5jb21wYXJlIiwgIl9idWlsZF9jb21wYXJlX3BhcnNlciIpLAogICAgIl9idWlsZF9yZXBsaWNhdGVfcGFyc2VyIjogKCJjbGkuY21kLnJlcGxpY2F0ZSIsICJfYnVpbGRfcmVwbGljYXRlX3BhcnNlciIpLAogICAgIl9idWlsZF9pbnNpZ2h0X3BhcnNlciI6ICgiY2xpLmNtZC5pbnNpZ2h0IiwgIl9idWlsZF9pbnNpZ2h0X3BhcnNlciIpLAogICAgIl9ydW5fYXNrIjogKCJjbGkuY21kLmFzayIsICJfcnVuX2FzayIpLAogICAgIl9idWlsZF9hc2tfcGFyc2VyIjogKCJjbGkuY21kLmFzayIsICJfYnVpbGRfYXNrX3BhcnNlciIpLAogICAgIl9idWlsZF9zZXNzaW9uX3BhcnNlciI6ICgiY2xpLmNtZC5zZXNzaW9uIiwgIl9idWlsZF9zZXNzaW9uX3BhcnNlciIpLAogICAgIl9ydW5fc2Vzc2lvbiI6ICgiY2xpLmNtZC5zZXNzaW9uIiwgIl9ydW5fc2Vzc2lvbiIpLAogICAgIl9idWlsZF9hcmd1ZV9wYXJzZXIiOiAoImNsaS5jbWQuYXJndWUiLCAiX2J1aWxkX2FyZ3VlX3BhcnNlciIpLAogICAgIl9ydW5fYXJndWUiOiAoImNsaS5jbWQuYXJndWUiLCAiX3J1bl9hcmd1ZSIpLAogICAgIl9idWlsZF9hbmFseXplX3BhcnNlciI6ICgiY2xpLmNtZC5hbmFseXplIiwgIl9idWlsZF9hbmFseXplX3BhcnNlciIpLAogICAgIl9ydW5fc2xpZGVzIjogKCJjbGkuY21kLnNsaWRlcyIsICJfcnVuX3NsaWRlcyIpLAogICAgIl9idWlsZF9zbGlkZXNfcGFyc2VyIjogKCJjbGkuY21kLnNsaWRlcyIsICJfYnVpbGRfc2xpZGVzX3BhcnNlciIpLAogICAgIl9ydW5fZXZvbHV0aW9uIjogKCJjbGkuY21kLmV2b2x1dGlvbiIsICJfcnVuX2V2b2x1dGlvbiIpLAogICAgIl9idWlsZF9ldm9sdXRpb25fcGFyc2VyIjogKCJjbGkuY21kLmV2b2x1dGlvbiIsICJfYnVpbGRfZXZvbHV0aW9uX3BhcnNlciIpLAogICAgIl9ydW5faW5zaWdodCI6ICgiY2xpLmNtZC5pbnNpZ2h0IiwgIl9ydW5faW5zaWdodCIpLAogICAgIl9ydW5fbmFycmF0aXZlIjogKCJjbGkuY21kLm5hcnJhdGl2ZSIsICJfcnVuX25hcnJhdGl2ZSIpLAogICAgIl9idWlsZF9uYXJyYXRpdmVfcGFyc2VyIjogKCJjbGkuY21kLm5hcnJhdGl2ZSIsICJfYnVpbGRfbmFycmF0aXZlX3BhcnNlciIpLAogICAgIl9ydW5fcm91dGUiOiAoImNsaS5jbWQucm91dGUiLCAiX3J1bl9yb3V0ZSIpLAogICAgIl9idWlsZF9yb3V0ZV9wYXJzZXIiOiAoImNsaS5jbWQucm91dGUiLCAiX2J1aWxkX3JvdXRlX3BhcnNlciIpLAogICAgIl9ydW5fZnJpY3Rpb24iOiAoImNsaS5jbWQuZnJpY3Rpb24iLCAicnVuIiksCiAgICAiX2J1aWxkX2ZyaWN0aW9uX3BhcnNlciI6ICgiY2xpLmNtZC5mcmljdGlvbiIsICJfYnVpbGRfZnJpY3Rpb25fcGFyc2VyIiksCiAgICAiX3J1bl9zdWJzY3JpYmUiOiAoImNsaS5jbWQuc3Vic2NyaWJlIiwgIl9ydW5fc3Vic2NyaWJlIiksCiAgICAiX2J1aWxkX3N1YnNjcmliZV9wYXJzZXIiOiAoImNsaS5jbWQuc3Vic2NyaWJlIiwgIl9idWlsZF9zdWJzY3JpYmVfcGFyc2VyIiksCiAgICAiX3J1bl9saXRyZXZpZXciOiAoImNsaS5jbWQubGl0cmV2aWV3IiwgIl9ydW5fbGl0cmV2aWV3IiksCiAgICAiX2J1aWxkX2xpdHJldmlld19wYXJzZXIiOiAoImNsaS5jbWQubGl0cmV2aWV3IiwgIl9idWlsZF9saXRyZXZpZXdfcGFyc2VyIiksCiAgICAiX3J1bl9iZW5jaG1hcmsiOiAoImNsaS5jbWQuYmVuY2htYXJrIiwgIl9ydW5fYmVuY2htYXJrIiksCiAgICAiX2J1aWxkX2JlbmNobWFya19wYXJzZXIiOiAoImNsaS5jbWQuYmVuY2htYXJrIiwgIl9idWlsZF9iZW5jaG1hcmtfcGFyc2VyIiksCiAgICAiX3J1bl9pbmdlc3QiOiAoImNsaS5jbWQuaW5nZXN0IiwgIl9ydW5faW5nZXN0IiksCiAgICAiX2J1aWxkX2luZ2VzdF9wYXJzZXIiOiAoImNsaS5jbWQuaW5nZXN0IiwgIl9idWlsZF9pbmdlc3RfcGFyc2VyIiksCiAgICAiX3J1bl9wb3N0cHJvY2VzcyI6ICgiY2xpLmNtZC5wb3N0cHJvY2VzcyIsICJfcnVuX3Bvc3Rwcm9jZXNzIiksCiAgICAiX2J1aWxkX3Bvc3Rwcm9jZXNzX3BhcnNlciI6ICgiY2xpLmNtZC5wb3N0cHJvY2VzcyIsICJfYnVpbGRfcG9zdHByb2Nlc3NfcGFyc2VyIiksCiAgICAiaW5mZXJfdGFnc19pZl9lbXB0eSI6ICgiY2xpLl9zaGFyZWQiLCAiaW5mZXJfdGFnc19pZl9lbXB0eSIpLAogICAgIkRhdGFiYXNlIjogKCJkYiIsICJEYXRhYmFzZSIpLAogICAgIyBNb2R1bGUtbGV2ZWwgcmUtZXhwb3J0cyAodXNlZCBieSB0ZXN0cyBmb3IgbW9jay5wYXRjaCkKICAgICJhcmdwYXJzZSI6ICgiYXJncGFyc2UiLCBOb25lKSwKICAgICJDb2xvcnMiOiAoImNsaS5fc2hhcmVkIiwgIkNvbG9ycyIpLAogICAgImNvbG9yZWQiOiAoImNsaS5fc2hhcmVkIiwgImNvbG9yZWQiKSwKICAgICJwcmludF9zdWNjZXNzIjogKCJjbGkuX3NoYXJlZCIsICJwcmludF9zdWNjZXNzIiksCiAgICAicHJpbnRfZXJyb3IiOiAoImNsaS5fc2hhcmVkIiwgInByaW50X2Vycm9yIiksCiAgICAicHJpbnRfd2FybmluZyI6ICgiY2xpLl9zaGFyZWQiLCAicHJpbnRfd2FybmluZyIpLAogICAgInByaW50X2luZm8iOiAoImNsaS5fc2hhcmVkIiwgInByaW50X2luZm8iKSwKICAgICJwcmludF9oZWFkZXIiOiAoImNsaS5fc2hhcmVkIiwgInByaW50X2hlYWRlciIpLAp9CgoKX2NhY2hlOiBEaWN0W3N0ciwgQW55XSA9IHt9CgoKZGVmIF9fZ2V0YXR0cl9fKG5hbWUpOgoKICAgIGlmIG5hbWUgaW4gX2NhY2hlOgogICAgICAgIHJldHVybiBfY2FjaGVbbmFtZV0KCiAgICBpZiBuYW1lIGluIF9MQVpZX0VYUE9SVFM6CiAgICAgICAgbW9kX3BhdGgsIGZuX25hbWUgPSBfTEFaWV9FWFBPUlRTW25hbWVdCgogICAgICAgIG1vZCA9IGltcG9ydGxpYi5pbXBvcnRfbW9kdWxlKG1vZF9wYXRoKQoKICAgICAgICB2YWwgPSBtb2QgaWYgZm5fbmFtZSBpcyBOb25lIGVsc2UgZ2V0YXR0cihtb2QsIGZuX25hbWUpCgogICAgICAgIF9jYWNoZVtuYW1lXSA9IHZhbAoKICAgICAgICByZXR1cm4gdmFsCgogICAgcmFpc2UgQXR0cmlidXRlRXJyb3IoZiJtb2R1bGUge19fbmFtZV9fIXJ9IGhhcyBubyBhdHRyaWJ1dGUge25hbWUhcn0iKQo=
+"""AI Research OS CLI."""
+
+
+
+import importlib
+
+
+
+from typing import Any, Dict
+
+
+
+from cli._registry import main
+
+
+
+
+
+
+
+__all__ = ["main"]
+
+
+
+
+
+
+
+
+
+
+
+# Lazy re-exports for backward compatibility (tests and internal use).
+
+
+
+# Each name is imported on first access, then cached.
+
+
+
+_LAZY_EXPORTS = {
+
+
+
+    "_run_search":        ("cli.cmd.search",       "_run_search"),
+
+
+
+    "_build_search_parser": ("cli.cmd.search",     "_build_search_parser"),
+
+
+
+    "_run_list":         ("cli.cmd.list",        "_run_list"),
+
+
+
+    "_build_list_parser":  ("cli.cmd.list",       "_build_list_parser"),
+
+
+
+    "_run_status":       ("cli.cmd.status",      "_run_status"),
+
+
+
+    "_build_status_parser": ("cli.cmd.status",    "_build_status_parser"),
+
+
+
+    "_run_stats":        ("cli.cmd.stats",       "_run_stats"),
+
+
+
+    "_build_stats_parser":  ("cli.cmd.stats",     "_build_stats_parser"),
+
+
+
+    "_run_import":       ("cli.cmd.import_",     "_run_import"),
+
+
+
+    "_build_import_parser": ("cli.cmd.import_",   "_build_import_parser"),
+
+
+
+    "_run_export":       ("cli.cmd.export",      "_run_export"),
+
+
+
+    "_build_export_parser":  ("cli.cmd.export",   "_build_export_parser"),
+
+
+
+    "_run_queue":        ("cli.cmd.queue",       "_run_queue"),
+
+
+
+    "_build_queue_parser":  ("cli.cmd.queue",     "_build_queue_parser"),
+
+
+
+    "_run_cache":        ("cli.cmd.cache",       "_run_cache"),
+
+
+
+    "_build_cache_parser":  ("cli.cmd.cache",     "_build_cache_parser"),
+
+
+
+    "_run_dedup":        ("cli.cmd.dedup",      "_run_dedup"),
+
+
+
+    "_build_dedup_parser":  ("cli.cmd.dedup",    "_build_dedup_parser"),
+
+
+
+    "_run_dedup_semantic": ("cli.cmd.dedup_semantic", "_run_dedup_semantic"),
+
+
+
+    "_build_dedup_semantic_parser": ("cli.cmd.dedup_semantic", "_build_dedup_semantic_parser"),
+
+
+
+    "_run_similar":      ("cli.cmd.similar",    "_run_similar"),
+
+
+
+    "_build_similar_parser": ("cli.cmd.similar", "_build_similar_parser"),
+
+
+
+    "_run_kg":           ("cli.cmd.kg.kg",       "_run_kg"),
+    "_build_kg_parser":   ("cli.cmd.kg.kg",       "_build_kg_parser"),
+    "_run_merge":        ("cli.cmd.merge",       "_run_merge"),
+
+
+
+    "_build_merge_parser":  ("cli.cmd.merge",     "_build_merge_parser"),
+
+
+
+    "_pick_keep":        ("cli.cmd.merge",       "_pick_keep"),
+
+
+
+    "_run_citations":    ("cli.cmd.citations",   "_run_citations"),
+
+
+
+    "_build_citations_parser": ("cli.cmd.citations", "_build_citations_parser"),
+
+
+
+    "_run_cite_graph":   ("cli.cmd.cite_graph",  "_run_cite_graph"),
+
+
+
+    "_build_cite_graph_parser": ("cli.cmd.cite_graph", "_build_cite_graph_parser"),
+
+
+
+    "_run_cite_fetch":   ("cli.cmd.cite_fetch",  "_run_cite_fetch"),
+
+
+
+    "_build_cite_fetch_parser": ("cli.cmd.cite_fetch", "_build_cite_fetch_parser"),
+
+
+
+    "_run_cite_import":  ("cli.cmd.cite_import", "_run_cite_import"),
+
+
+
+    "_build_cite_import_parser": ("cli.cmd.cite_import", "_build_cite_import_parser"),
+
+
+
+    "_run_cite_stats":   ("cli.cmd.cite_stats",  "_run_cite_stats"),
+
+
+
+    "_build_cite_stats_parser": ("cli.cmd.cite_stats", "_build_cite_stats_parser"),
+
+
+
+    "_run_trend":        ("cli.cmd.trend",       "_run_trend"),
+
+
+
+    "_build_trend_parser":  ("cli.cmd.trend",       "_build_trend_parser"),
+
+
+
+    "_run_influence":     ("cli.cmd.influence",    "_run_influence"),
+
+
+
+    "_build_influence_parser": ("cli.cmd.influence", "_build_influence_parser"),
+
+
+
+    "_run_cite_backfill": ("cli.cmd.cite_backfill", "_run_cite_backfill"),
+
+
+
+    "_build_cite_backfill_parser": ("cli.cmd.cite_backfill", "_build_cite_backfill_parser"),
+
+
+
+    "_run_research_cmd": ("cli.cmd.research",    "_run_research_cmd"),
+
+
+
+    "_build_research_parser": ("cli.cmd.research", "_build_research_parser"),
+
+
+
+    "_arxiv_doi_to_openalex": ("cli.cmd.cite_fetch", "_arxiv_doi_to_openalex"),
+
+
+
+    "_get_ollama_embedding_batch": ("cli.cmd.dedup_semantic", "_get_ollama_embedding_batch"),
+
+
+
+    "_extract_references_from_text": ("cli.cmd.cite_graph", "_extract_references_from_text"),
+
+
+
+    "_run_repl":             ("cli.cmd.repl",              "_run_repl"),
+
+
+
+    "_build_repl_parser":    ("cli.cmd.repl",              "_build_repl_parser"),
+
+
+
+    "_run_read_queue":       ("cli.cmd.read_queue",        "_run_read_queue"),
+
+
+
+    "_build_read_queue_parser": ("cli.cmd.read_queue",     "_build_read_queue_parser"),
+
+
+
+    "_run_chat":             ("cli.cmd.chat",              "_run_chat"),
+
+
+
+    "_build_chat_parser":     ("cli.cmd.chat",              "_build_chat_parser"),
+
+
+
+    "_run_chat_tui":         ("cli.cmd.chat_tui",          "run"),
+
+
+
+    "_build_chat_tui_parser": ("cli.cmd.chat_tui",          "_build_chat_tui_parser"),
+
+
+
+    "_run_path":             ("cli.cmd.path",              "_run_path"),
+
+
+
+    "_build_path_parser":     ("cli.cmd.path",              "_build_path_parser"),
+
+
+
+    "_run_gap":             ("cli.cmd.gap",              "_run_gap"),
+
+
+
+    "_build_gap_parser":     ("cli.cmd.gap",              "_build_gap_parser"),
+
+
+
+    "_run_hypothesize":      ("cli.cmd.hypothesize",      "_run_hypothesize"),
+
+
+
+    "_build_hypothesize_parser": ("cli.cmd.hypothesize",  "_build_hypothesize_parser"),
+
+
+
+    "_run_story":            ("cli.cmd.story",            "_run_story"),
+
+
+
+    "_build_story_parser":   ("cli.cmd.story",            "_build_story_parser"),
+
+
+
+    "_run_agent":           ("cli.cmd.agent",            "run"),
+
+
+
+    "_build_agent_parser":   ("cli.cmd.agent",            "_build_agent_parser"),
+
+
+
+    "_run_analyze":          ("cli.cmd.analyze",          "_run_analyze"),
+
+
+
+    "_run_review":           ("cli.cmd.review",           "_run_review"),
+
+
+
+    "_build_review_parser":   ("cli.cmd.review",           "_build_review_parser"),
+
+
+
+    "_run_question":          ("cli.cmd.question",          "_run_question"),
+
+
+
+    "_build_question_parser":   ("cli.cmd.question",          "_build_question_parser"),
+
+
+
+    "_run_roadmap":           ("cli.cmd.roadmap",           "_run_roadmap"),
+
+
+
+    "_build_roadmap_parser":    ("cli.cmd.roadmap",           "_build_roadmap_parser"),
+
+
+
+    "_run_experiment":          ("cli.cmd.experiment",         "_run_experiment"),
+
+
+
+    "_build_experiment_parser": ("cli.cmd.experiment",         "_build_experiment_parser"),
+
+
+
+    "_run_pipeline":            ("cli.cmd.pipeline",            "_run_pipeline"),
+
+
+
+    "_build_pipeline_parser":   ("cli.cmd.pipeline",           "_build_pipeline_parser"),
+
+
+
+    "_run_dashboard":           ("cli.cmd.dashboard",          "_run_dashboard"),
+
+
+
+    "_build_dashboard_parser":  ("cli.cmd.dashboard",          "_build_dashboard_parser"),
+
+
+
+    "_run_journal":            ("cli.cmd.journal",            "_run_journal"),
+
+
+
+    "_build_journal_parser":    ("cli.cmd.journal",            "_build_journal_parser"),
+
+
+
+    "_run_digest":             ("cli.cmd.digest",             "_run_digest"),
+
+
+
+    "_build_lean_parser":      ("cli.cmd.lean",               "_build_lean_parser"),
+
+
+
+    "_run_lean":               ("cli.cmd.lean",               "_run_lean"),
+
+
+
+    "_build_digest_parser":     ("cli.cmd.digest",             "_build_digest_parser"),
+
+
+
+    "_build_citation_chain_parser": ("cli.cmd.citation_chain", "_build_citation_chain_parser"),
+
+
+
+    "_build_compare_parser":      ("cli.cmd.compare",         "_build_compare_parser"),
+
+
+
+    "_build_replicate_parser":    ("cli.cmd.replicate",       "_build_replicate_parser"),
+
+
+
+    "_build_insight_parser":     ("cli.cmd.insight",         "_build_insight_parser"),
+
+
+
+    "_run_ask":                  ("cli.cmd.ask",              "_run_ask"),
+
+
+
+    "_build_ask_parser":         ("cli.cmd.ask",              "_build_ask_parser"),
+
+
+
+    "_build_session_parser":    ("cli.cmd.session",          "_build_session_parser"),
+
+
+
+    "_run_session":             ("cli.cmd.session",          "_run_session"),
+
+
+
+    "_build_argue_parser":    ("cli.cmd.argue",            "_build_argue_parser"),
+
+
+
+    "_run_argue":             ("cli.cmd.argue",            "_run_argue"),
+
+
+
+    "_build_analyze_parser":  ("cli.cmd.analyze",          "_build_analyze_parser"),
+
+
+
+    "_run_slides":           ("cli.cmd.slides",            "_run_slides"),
+
+
+
+    "_build_slides_parser":   ("cli.cmd.slides",            "_build_slides_parser"),
+
+
+
+    "_run_evolution":         ("cli.cmd.evolution",          "_run_evolution"),
+
+
+
+    "_build_evolution_parser":("cli.cmd.evolution",          "_build_evolution_parser"),
+
+
+
+    "_run_insight":           ("cli.cmd.insight",           "_run_insight"),
+
+
+
+    "_run_narrative":          ("cli.cmd.narrative",          "_run_narrative"),
+
+
+
+    "_build_narrative_parser": ("cli.cmd.narrative",          "_build_narrative_parser"),
+
+
+
+    "_run_route":             ("cli.cmd.route",              "_run_route"),
+
+
+
+    "_build_route_parser":     ("cli.cmd.route",              "_build_route_parser"),
+
+
+
+    "_run_friction":           ("cli.cmd.friction",            "run"),
+
+
+
+    "_build_friction_parser":  ("cli.cmd.friction",            "_build_friction_parser"),
+
+
+
+    "_run_subscribe":          ("cli.cmd.subscribe",           "_run_subscribe"),
+
+
+
+    "_build_subscribe_parser": ("cli.cmd.subscribe",           "_build_subscribe_parser"),
+
+
+
+    "_run_litreview":          ("cli.cmd.litreview",           "_run_litreview"),
+
+
+
+    "_build_litreview_parser": ("cli.cmd.litreview",           "_build_litreview_parser"),
+
+
+
+    "_run_benchmark":           ("cli.cmd.benchmark",           "_run_benchmark"),
+
+
+
+    "_build_benchmark_parser":  ("cli.cmd.benchmark",           "_build_benchmark_parser"),
+
+
+
+    "_run_ingest":              ("cli.cmd.ingest",             "_run_ingest"),
+
+
+
+    "_build_ingest_parser":     ("cli.cmd.ingest",             "_build_ingest_parser"),
+
+
+
+    "_run_postprocess":         ("cli.cmd.postprocess",        "_run_postprocess"),
+
+
+
+    "_build_postprocess_parser":("cli.cmd.postprocess",        "_build_postprocess_parser"),
+
+
+
+    "infer_tags_if_empty": ("cli._shared", "infer_tags_if_empty"),
+
+
+
+    "Database": ("db", "Database"),
+
+
+
+    # Module-level re-exports (used by tests for mock.patch)
+
+
+
+    "argparse": ("argparse", None),
+
+
+
+    "Colors": ("cli._shared", "Colors"),
+
+
+
+    "colored": ("cli._shared", "colored"),
+
+
+
+    "print_success": ("cli._shared", "print_success"),
+
+
+
+    "print_error": ("cli._shared", "print_error"),
+
+
+
+    "print_warning": ("cli._shared", "print_warning"),
+
+
+
+    "print_info": ("cli._shared", "print_info"),
+
+
+
+    "print_header": ("cli._shared", "print_header"),
+
+
+
+}
+
+
+
+
+
+
+
+_cache: Dict[str, Any] = {}
+
+
+
+
+
+
+
+
+
+
+
+def __getattr__(name):
+
+
+
+    if name in _cache:
+
+
+
+        return _cache[name]
+
+
+
+    if name in _LAZY_EXPORTS:
+
+
+
+        mod_path, fn_name = _LAZY_EXPORTS[name]
+
+
+
+        mod = importlib.import_module(mod_path)
+
+
+
+        val = mod if fn_name is None else getattr(mod, fn_name)
+
+
+
+        _cache[name] = val
+
+
+
+        return val
+
+
+
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+

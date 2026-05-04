@@ -1,1 +1,295 @@
-IiIiClBhcGVyIENvbXBhcmlzb246IENvbXBhcmUgbXVsdGlwbGUgcGFwZXJzIHNpZGUtYnktc2lkZS4KIiIiCgpmcm9tIGRhdGFjbGFzc2VzIGltcG9ydCBkYXRhY2xhc3MsIGZpZWxkCmZyb20gdHlwaW5nIGltcG9ydCBMaXN0LCBPcHRpb25hbCwgRGljdCwgQW55CmZyb20gZGlmZmxpYiBpbXBvcnQgdW5pZmllZF9kaWZmCgoKQGRhdGFjbGFzcwpjbGFzcyBDb21wYXJpc29uQ29sdW1uOgogICAgIiIiQSBjb2x1bW4gaW4gdGhlIGNvbXBhcmlzb24gdGFibGUuIiIiCgogICAgcGFwZXJfaWQ6IHN0cgogICAgdGl0bGU6IHN0cgogICAgeWVhcjogaW50ID0gMAogICAgYXV0aG9yczogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICBtZXRob2RzOiBMaXN0W3N0cl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKICAgIGRhdGFzZXRzOiBMaXN0W3N0cl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKICAgIG1ldHJpY3M6IERpY3Rbc3RyLCBzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWRpY3QpCiAgICBhYnN0cmFjdDogc3RyID0gIiIKCgpAZGF0YWNsYXNzCmNsYXNzIENvbXBhcmlzb25SZXN1bHQ6CiAgICAiIiJSZXN1bHQgb2YgcGFwZXIgY29tcGFyaXNvbi4iIiIKCiAgICBjb2x1bW5zOiBMaXN0W0NvbXBhcmlzb25Db2x1bW5dCiAgICBhc3BlY3Rfcm93czogTGlzdFtEaWN0W3N0ciwgQW55XV0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKCgpjbGFzcyBQYXBlckNvbXBhcmF0b3I6CiAgICAiIiJDb21wYXJlIHBhcGVycyBzaWRlLWJ5LXNpZGUuIiIiCgogICAgZGVmIF9faW5pdF9fKHNlbGYsIGRiPU5vbmUpOgogICAgICAgIHNlbGYuZGIgPSBkYgoKICAgIGRlZiBhZGRfcGFwZXIoc2VsZiwgcGFwZXI6IEFueSkgLT4gQ29tcGFyaXNvbkNvbHVtbjoKICAgICAgICAiIiJDb252ZXJ0IGEgcGFwZXIgb2JqZWN0IHRvIENvbXBhcmlzb25Db2x1bW4uIiIiCiAgICAgICAgcmV0dXJuIENvbXBhcmlzb25Db2x1bW4oCiAgICAgICAgICAgIHBhcGVyX2lkPWdldGF0dHIocGFwZXIsICJ1aWQiLCAiIikgb3IgZ2V0YXR0cihwYXBlciwgImlkIiwgIiIpLAogICAgICAgICAgICB0aXRsZT1nZXRhdHRyKHBhcGVyLCAidGl0bGUiLCAiVW5rbm93biIpLAogICAgICAgICAgICB5ZWFyPWdldGF0dHIocGFwZXIsICJ5ZWFyIiwgMCksCiAgICAgICAgICAgIGF1dGhvcnM9c2VsZi5fcGFyc2VfYXV0aG9ycyhwYXBlciksCiAgICAgICAgICAgIG1ldGhvZHM9c2VsZi5fZXh0cmFjdF9tZXRob2RzKHBhcGVyKSwKICAgICAgICAgICAgZGF0YXNldHM9c2VsZi5fZXh0cmFjdF9kYXRhc2V0cyhwYXBlciksCiAgICAgICAgICAgIG1ldHJpY3M9c2VsZi5fZXh0cmFjdF9tZXRyaWNzKHBhcGVyKSwKICAgICAgICAgICAgYWJzdHJhY3Q9Z2V0YXR0cihwYXBlciwgImFic3RyYWN0IiwgIiIpIG9yICIiLAogICAgICAgICkKCiAgICBkZWYgX3BhcnNlX2F1dGhvcnMoc2VsZiwgcGFwZXI6IEFueSkgLT4gTGlzdFtzdHJdOgogICAgICAgICIiIlBhcnNlIGF1dGhvcnMgZnJvbSBwYXBlci4iIiIKICAgICAgICBhdXRob3JzID0gZ2V0YXR0cihwYXBlciwgImF1dGhvcnMiLCBbXSkKICAgICAgICBpZiBpc2luc3RhbmNlKGF1dGhvcnMsIHN0cik6CiAgICAgICAgICAgIHJldHVybiBbYS5zdHJpcCgpIGZvciBhIGluIGF1dGhvcnMuc3BsaXQoIiwiKVs6NV1dCiAgICAgICAgcmV0dXJuIGxpc3QoYXV0aG9ycylbOjVdCgogICAgZGVmIF9leHRyYWN0X21ldGhvZHMoc2VsZiwgcGFwZXI6IEFueSkgLT4gTGlzdFtzdHJdOgogICAgICAgICIiIkV4dHJhY3QgbWV0aG9kcyBmcm9tIHBhcGVyIHRleHQuIiIiCiAgICAgICAgdGV4dCA9ICgKICAgICAgICAgICAgZ2V0YXR0cihwYXBlciwgInRpdGxlIiwgIiIpCiAgICAgICAgICAgICsgIiAiCiAgICAgICAgICAgICsgZ2V0YXR0cihwYXBlciwgImFic3RyYWN0IiwgIiIpCiAgICAgICAgICAgICsgIiAiCiAgICAgICAgICAgICsgZ2V0YXR0cihwYXBlciwgIm1ldGhvZCIsICIiKQogICAgICAgICkubG93ZXIoKQoKICAgICAgICBrZXl3b3JkcyA9IHsKICAgICAgICAgICAgInRyYW5zZm9ybWVyIjogIlRyYW5zZm9ybWVyIiwKICAgICAgICAgICAgImJlcnQiOiAiQkVSVCIsCiAgICAgICAgICAgICJncHQiOiAiR1BUIiwKICAgICAgICAgICAgImxzdG0iOiAiTFNUTSIsCiAgICAgICAgICAgICJjbm4iOiAiQ05OIiwKICAgICAgICAgICAgImdhbiI6ICJHQU4iLAogICAgICAgICAgICAicmwiOiAiUmVpbmZvcmNlbWVudCBMZWFybmluZyIsCiAgICAgICAgICAgICJhdHRlbnRpb24iOiAiQXR0ZW50aW9uIiwKICAgICAgICAgICAgImVtYmVkZGluZyI6ICJFbWJlZGRpbmciLAogICAgICAgICAgICAicmV0cmlldmFsIjogIlJldHJpZXZhbCIsCiAgICAgICAgICAgICJyYWciOiAiUkFHIiwKICAgICAgICAgICAgImZpbmUtdHVuIjogIkZpbmUtdHVuaW5nIiwKICAgICAgICAgICAgInJsaGYiOiAiUkxIRiIsCiAgICAgICAgICAgICJjaGFpbi1vZi10aG91Z2h0IjogIkNoYWluLW9mLVRob3VnaHQiLAogICAgICAgICAgICAicHJvbXB0IjogIlByb21wdGluZyIsCiAgICAgICAgfQoKICAgICAgICBmb3VuZCA9IFtdCiAgICAgICAgZm9yIGt3LCBuYW1lIGluIGtleXdvcmRzLml0ZW1zKCk6CiAgICAgICAgICAgIGlmIGt3IGluIHRleHQgYW5kIG5hbWUgbm90IGluIGZvdW5kOgogICAgICAgICAgICAgICAgZm91bmQuYXBwZW5kKG5hbWUpCiAgICAgICAgcmV0dXJuIGZvdW5kWzo1XQoKICAgIGRlZiBfZXh0cmFjdF9kYXRhc2V0cyhzZWxmLCBwYXBlcjogQW55KSAtPiBMaXN0W3N0cl06CiAgICAgICAgIiIiRXh0cmFjdCBkYXRhc2V0cyBmcm9tIHBhcGVyIHRleHQuIiIiCiAgICAgICAgdGV4dCA9ICgKICAgICAgICAgICAgZ2V0YXR0cihwYXBlciwgInRpdGxlIiwgIiIpCiAgICAgICAgICAgICsgIiAiCiAgICAgICAgICAgICsgZ2V0YXR0cihwYXBlciwgImFic3RyYWN0IiwgIiIpCiAgICAgICAgICAgICsgIiAiCiAgICAgICAgICAgICsgZ2V0YXR0cihwYXBlciwgImRhdGFzZXQiLCAiIikKICAgICAgICApLmxvd2VyKCkKCiAgICAgICAgZGF0YXNldHMgPSB7CiAgICAgICAgICAgICJnbHVlIjogIkdMVUUiLAogICAgICAgICAgICAic3VwZXIuZ2x1ZSI6ICJTdXBlckdMVUUiLAogICAgICAgICAgICAic3F1YWQiOiAiU1F1QUQiLAogICAgICAgICAgICAibmF0dXJhbCBxdWVzdGlvbnMiOiAiTlEiLAogICAgICAgICAgICAidHJpdmlhcWEiOiAiVHJpdmlhUUEiLAogICAgICAgICAgICAibW1sdSI6ICJNTUxVIiwKICAgICAgICAgICAgImh1bWFuZXZhbCI6ICJIdW1hbkV2YWwiLAogICAgICAgICAgICAibWJwcCI6ICJNQlBQIiwKICAgICAgICAgICAgIiBBbHBhY2FFdmFsIjogIkFscGFjYUV2YWwiLAogICAgICAgICAgICAiY29xYSI6ICJDb1FBIiwKICAgICAgICAgICAgImhvdHBvdHFhIjogIkhvdHBvdFFBIiwKICAgICAgICAgICAgIiBEUk9QIjogIkRST1AiLAogICAgICAgICAgICAiZmV2ZXIiOiAiRkVWRVIiLAogICAgICAgICAgICAibW5saSI6ICJNTkxJIiwKICAgICAgICAgICAgInFubGkiOiAiUU5MSSIsCiAgICAgICAgICAgICJjb2xhIjogIkNvTEEiLAogICAgICAgICAgICAic3N0IjogIlNTVCIsCiAgICAgICAgICAgICJzdHNiIjogIlNUUy1CIiwKICAgICAgICAgICAgInFxcCI6ICJRUVAiLAogICAgICAgICAgICAibXJwYyI6ICJNUlBDIiwKICAgICAgICB9CgogICAgICAgIGZvdW5kID0gW10KICAgICAgICBmb3Iga3csIG5hbWUgaW4gZGF0YXNldHMuaXRlbXMoKToKICAgICAgICAgICAgaWYga3cgaW4gdGV4dCBhbmQgbmFtZSBub3QgaW4gZm91bmQ6CiAgICAgICAgICAgICAgICBmb3VuZC5hcHBlbmQobmFtZSkKICAgICAgICByZXR1cm4gZm91bmRbOjVdCgogICAgZGVmIF9leHRyYWN0X21ldHJpY3Moc2VsZiwgcGFwZXI6IEFueSkgLT4gRGljdFtzdHIsIHN0cl06CiAgICAgICAgIiIiRXh0cmFjdCBtZXRyaWNzIGZyb20gcGFwZXIgdGV4dC4iIiIKICAgICAgICB0ZXh0ID0gKAogICAgICAgICAgICBnZXRhdHRyKHBhcGVyLCAiYWJzdHJhY3QiLCAiIikKICAgICAgICAgICAgKyAiICIKICAgICAgICAgICAgKyBnZXRhdHRyKHBhcGVyLCAicmVzdWx0IiwgIiIpCiAgICAgICAgICAgICsgIiAiCiAgICAgICAgICAgICsgZ2V0YXR0cihwYXBlciwgIm1ldHJpY3MiLCAiIikKICAgICAgICApLmxvd2VyKCkKCiAgICAgICAgbWV0cmljcyA9IHsKICAgICAgICAgICAgImFjY3VyYWN5IjogIkFjYyIsCiAgICAgICAgICAgICJwcmVjaXNpb24iOiAiUHJlYyIsCiAgICAgICAgICAgICJyZWNhbGwiOiAiUmVjIiwKICAgICAgICAgICAgImYxIjogIkYxIiwKICAgICAgICAgICAgImJsZXUiOiAiQkxFVSIsCiAgICAgICAgICAgICJyb3VnZSI6ICJST1VHRSIsCiAgICAgICAgICAgICJwZXJwbGV4aXR5IjogIlBQTCIsCiAgICAgICAgICAgICJsYXRlbmN5IjogIkxhdGVuY3kiLAogICAgICAgICAgICAidGhyb3VnaHB1dCI6ICJUaHJvdWdocHV0IiwKICAgICAgICB9CgogICAgICAgIGZvdW5kID0ge30KICAgICAgICBmb3Iga3csIG5hbWUgaW4gbWV0cmljcy5pdGVtcygpOgogICAgICAgICAgICBpZiBrdyBpbiB0ZXh0OgogICAgICAgICAgICAgICAgZm91bmRbbmFtZV0gPSAi4pyTIgoKICAgICAgICAjIFRyeSB0byBleHRyYWN0IHNwZWNpZmljIHZhbHVlcwogICAgICAgIGltcG9ydCByZQoKICAgICAgICBwYXR0ZXJucyA9IFsKICAgICAgICAgICAgKHIiKFxkK1wuP1xkKilccyolP1xzKihhY2N1cmFjeSkiLCByIlwxJSIpLAogICAgICAgICAgICAociIoXGQrXC4/XGQqKVxzKihibGV1KSIsIHIiXDEiKSwKICAgICAgICAgICAgKHIiKFxkK1wuP1xkKilccyooZjEpIiwgciJcMSIpLAogICAgICAgIF0KCiAgICAgICAgZm9yIHBhdHRlcm4sIF9yZXBsYWNlbWVudCBpbiBwYXR0ZXJuczoKICAgICAgICAgICAgbWF0Y2ggPSByZS5zZWFyY2gocGF0dGVybiwgdGV4dCkKICAgICAgICAgICAgaWYgbWF0Y2g6CiAgICAgICAgICAgICAgICBrZXkgPSBtYXRjaC5ncm91cCgyKS50aXRsZSgpCiAgICAgICAgICAgICAgICB2YWwgPSBtYXRjaC5ncm91cCgxKQogICAgICAgICAgICAgICAgZm91bmRba2V5XSA9IHZhbAoKICAgICAgICByZXR1cm4gZGljdChsaXN0KGZvdW5kLml0ZW1zKCkpWzo1XSkKCiAgICBkZWYgY29tcGFyZSgKICAgICAgICBzZWxmLAogICAgICAgIHBhcGVyX2lkczogTGlzdFtzdHJdLAogICAgICAgIGFzcGVjdHM6IE9wdGlvbmFsW0xpc3Rbc3RyXV0gPSBOb25lLAogICAgKSAtPiBDb21wYXJpc29uUmVzdWx0OgogICAgICAgICIiIkNvbXBhcmUgcGFwZXJzIGJ5IHBhcGVyIElEcy4iIiIKICAgICAgICBpZiBhc3BlY3RzIGlzIE5vbmU6CiAgICAgICAgICAgIGFzcGVjdHMgPSBbIm1ldGhvZHMiLCAiZGF0YXNldHMiLCAibWV0cmljcyIsICJhdXRob3JzIl0KCiAgICAgICAgY29sdW1ucyA9IFtdCgogICAgICAgIGZvciBwaWQgaW4gcGFwZXJfaWRzOgogICAgICAgICAgICBpZiBzZWxmLmRiIGFuZCBoYXNhdHRyKHNlbGYuZGIsICJnZXRfcGFwZXIiKToKICAgICAgICAgICAgICAgIHBhcGVyID0gc2VsZi5kYi5nZXRfcGFwZXIocGlkKQogICAgICAgICAgICAgICAgaWYgcGFwZXI6CiAgICAgICAgICAgICAgICAgICAgY29sdW1ucy5hcHBlbmQoc2VsZi5hZGRfcGFwZXIocGFwZXIpKQogICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgY29sdW1ucy5hcHBlbmQoCiAgICAgICAgICAgICAgICAgICAgQ29tcGFyaXNvbkNvbHVtbigKICAgICAgICAgICAgICAgICAgICAgICAgcGFwZXJfaWQ9cGlkLAogICAgICAgICAgICAgICAgICAgICAgICB0aXRsZT1waWQsCiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgKQoKICAgICAgICAjIEJ1aWxkIGFzcGVjdCByb3dzCiAgICAgICAgYXNwZWN0X3Jvd3MgPSBbXQogICAgICAgIGZvciBhc3BlY3QgaW4gYXNwZWN0czoKICAgICAgICAgICAgcm93ID0geyJhc3BlY3QiOiBhc3BlY3QuY2FwaXRhbGl6ZSgpfQogICAgICAgICAgICBmb3IgY29sIGluIGNvbHVtbnM6CiAgICAgICAgICAgICAgICBpZiBhc3BlY3QgPT0gIm1ldGhvZHMiOgogICAgICAgICAgICAgICAgICAgIHJvd1tjb2wucGFwZXJfaWRdID0gIiwgIi5qb2luKGNvbC5tZXRob2RzKSBvciAiLSIKICAgICAgICAgICAgICAgIGVsaWYgYXNwZWN0ID09ICJkYXRhc2V0cyI6CiAgICAgICAgICAgICAgICAgICAgcm93W2NvbC5wYXBlcl9pZF0gPSAiLCAiLmpvaW4oY29sLmRhdGFzZXRzKSBvciAiLSIKICAgICAgICAgICAgICAgIGVsaWYgYXNwZWN0ID09ICJtZXRyaWNzIjoKICAgICAgICAgICAgICAgICAgICByb3dbY29sLnBhcGVyX2lkXSA9ICIsICIuam9pbihmIntrfT17dn0iIGZvciBrLCB2IGluIGNvbC5tZXRyaWNzLml0ZW1zKCkpIG9yICItIgogICAgICAgICAgICAgICAgZWxpZiBhc3BlY3QgPT0gImF1dGhvcnMiOgogICAgICAgICAgICAgICAgICAgIHJvd1tjb2wucGFwZXJfaWRdID0gKAogICAgICAgICAgICAgICAgICAgICAgICAiLCAiLmpvaW4oY29sLmF1dGhvcnNbOjJdKSArICgiKyIgaWYgbGVuKGNvbC5hdXRob3JzKSA+IDIgZWxzZSAiIikgb3IgIi0iCiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgZWxpZiBhc3BlY3QgPT0gInllYXIiOgogICAgICAgICAgICAgICAgICAgIHJvd1tjb2wucGFwZXJfaWRdID0gc3RyKGNvbC55ZWFyKSBpZiBjb2wueWVhciBlbHNlICItIgogICAgICAgICAgICAgICAgZWxpZiBhc3BlY3QgPT0gImFic3RyYWN0IjoKICAgICAgICAgICAgICAgICAgICByb3dbY29sLnBhcGVyX2lkXSA9ICgKICAgICAgICAgICAgICAgICAgICAgICAgY29sLmFic3RyYWN0WzoxMDBdICsgIi4uLiIKICAgICAgICAgICAgICAgICAgICAgICAgaWYgbGVuKGNvbC5hYnN0cmFjdCkgPiAxMDAKICAgICAgICAgICAgICAgICAgICAgICAgZWxzZSBjb2wuYWJzdHJhY3Qgb3IgIi0iCiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICBhc3BlY3Rfcm93cy5hcHBlbmQocm93KQoKICAgICAgICByZXR1cm4gQ29tcGFyaXNvblJlc3VsdChjb2x1bW5zPWNvbHVtbnMsIGFzcGVjdF9yb3dzPWFzcGVjdF9yb3dzKQoKICAgIGRlZiByZW5kZXJfdGV4dChzZWxmLCByZXN1bHQ6IENvbXBhcmlzb25SZXN1bHQpIC0+IHN0cjoKICAgICAgICAiIiJSZW5kZXIgY29tcGFyaXNvbiBhcyBBU0NJSSB0YWJsZS4iIiIKICAgICAgICBpZiBub3QgcmVzdWx0LmNvbHVtbnM6CiAgICAgICAgICAgIHJldHVybiAiTm8gcGFwZXJzIHRvIGNvbXBhcmUuIgoKICAgICAgICBsaW5lcyA9IFsiPSIgKiA4MCwgIvCfk4ogUGFwZXIgQ29tcGFyaXNvbiIsICI9IiAqIDgwLCAiIl0KCiAgICAgICAgIyBIZWFkZXIgcm93CiAgICAgICAgaGVhZGVyID0gWyJBc3BlY3QiXQogICAgICAgIGZvciBjb2wgaW4gcmVzdWx0LmNvbHVtbnM6CiAgICAgICAgICAgIHRpdGxlID0gY29sLnRpdGxlWzoyNV0gaWYgbGVuKGNvbC50aXRsZSkgPiAyNSBlbHNlIGNvbC50aXRsZQogICAgICAgICAgICBoZWFkZXIuYXBwZW5kKHRpdGxlKQogICAgICAgIGxpbmVzLmFwcGVuZCgiIHwgIi5qb2luKGYie2g6XjI1fSIgZm9yIGggaW4gaGVhZGVyKSkKICAgICAgICBsaW5lcy5hcHBlbmQoIi0iICogODApCgogICAgICAgICMgRGF0YSByb3dzCiAgICAgICAgZm9yIHJvdyBpbiByZXN1bHQuYXNwZWN0X3Jvd3M6CiAgICAgICAgICAgIHJvd19zdHIgPSBbZiJ7cm93Wydhc3BlY3QnXToxMn0iXQogICAgICAgICAgICBmb3IgY29sIGluIHJlc3VsdC5jb2x1bW5zOgogICAgICAgICAgICAgICAgdmFsID0gcm93LmdldChjb2wucGFwZXJfaWQsICItIikKICAgICAgICAgICAgICAgIGlmIGxlbih2YWwpID4gMjU6CiAgICAgICAgICAgICAgICAgICAgdmFsID0gdmFsWzoyMl0gKyAiLi4uIgogICAgICAgICAgICAgICAgcm93X3N0ci5hcHBlbmQoZiJ7dmFsOl4yNX0iKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiB8ICIuam9pbihyb3dfc3RyKSkKCiAgICAgICAgbGluZXMuYXBwZW5kKCItIiAqIDgwKQogICAgICAgIGxpbmVzLmFwcGVuZCgiIikKICAgICAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQoKICAgIGRlZiByZW5kZXJfbWFya2Rvd24oc2VsZiwgcmVzdWx0OiBDb21wYXJpc29uUmVzdWx0KSAtPiBzdHI6CiAgICAgICAgIiIiUmVuZGVyIGNvbXBhcmlzb24gYXMgTWFya2Rvd24gdGFibGUuIiIiCiAgICAgICAgbGluZXMgPSBbIiMgUGFwZXIgQ29tcGFyaXNvblxuIl0KCiAgICAgICAgaWYgbm90IHJlc3VsdC5jb2x1bW5zOgogICAgICAgICAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKSArICJcbk5vIHBhcGVycyB0byBjb21wYXJlLiIKCiAgICAgICAgIyBIZWFkZXIKICAgICAgICBoZWFkZXIgPSBbInwgQXNwZWN0IHwiXSArIFtmInwge2NvbC50aXRsZVs6NDBdfSB8IiBmb3IgY29sIGluIHJlc3VsdC5jb2x1bW5zXQogICAgICAgIGxpbmVzLmFwcGVuZCgiIi5qb2luKGhlYWRlcikpCiAgICAgICAgbGluZXMuYXBwZW5kKCJ8IiArICJ8Ii5qb2luKFsiLS0tIiBmb3IgXyBpbiByYW5nZShsZW4ocmVzdWx0LmNvbHVtbnMpICsgMSldKSArICJ8IikKCiAgICAgICAgIyBSb3dzCiAgICAgICAgZm9yIHJvdyBpbiByZXN1bHQuYXNwZWN0X3Jvd3M6CiAgICAgICAgICAgIGNlbGxzID0gW2YifCB7cm93Wydhc3BlY3QnXX0gfCJdCiAgICAgICAgICAgIGZvciBjb2wgaW4gcmVzdWx0LmNvbHVtbnM6CiAgICAgICAgICAgICAgICB2YWwgPSByb3cuZ2V0KGNvbC5wYXBlcl9pZCwgIi0iKQogICAgICAgICAgICAgICAgY2VsbHMuYXBwZW5kKGYiIHt2YWx9IHwiKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiIuam9pbihjZWxscykpCgogICAgICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCgogICAgZGVmIHJlbmRlcl9kaWZmKHNlbGYsIHBhcGVyX2E6IEFueSwgcGFwZXJfYjogQW55LCBmaWVsZDogc3RyID0gIm1ldGhvZHMiKSAtPiBzdHI6CiAgICAgICAgIiIiR2VuZXJhdGUgZGlmZiBiZXR3ZWVuIHR3byBwYXBlcnMgb24gYSBzcGVjaWZpYyBmaWVsZC4iIiIKICAgICAgICBhX2ZpZWxkID0gZ2V0YXR0cihwYXBlcl9hLCBmaWVsZCwgW10pIG9yIFtdCiAgICAgICAgYl9maWVsZCA9IGdldGF0dHIocGFwZXJfYiwgZmllbGQsIFtdKSBvciBbXQoKICAgICAgICBpZiBpc2luc3RhbmNlKGFfZmllbGQsIHN0cik6CiAgICAgICAgICAgIGFfZmllbGQgPSBbYV9maWVsZF0KICAgICAgICBpZiBpc2luc3RhbmNlKGJfZmllbGQsIHN0cik6CiAgICAgICAgICAgIGJfZmllbGQgPSBbYl9maWVsZF0KCiAgICAgICAgbGluZXMgPSBbCiAgICAgICAgICAgIGYiPT09IERpZmY6IHtnZXRhdHRyKHBhcGVyX2EsICd0aXRsZScsICdQYXBlciBBJylbOjMwXX0gdnMge2dldGF0dHIocGFwZXJfYiwgJ3RpdGxlJywgJ1BhcGVyIEInKVs6MzBdfSA9PT0iLAogICAgICAgICAgICBmIi0tLSB7ZmllbGR9IC0tLSIsCiAgICAgICAgXQoKICAgICAgICBhX3N0ciA9ICJcbiIuam9pbihzb3J0ZWQoYV9maWVsZCkpCiAgICAgICAgYl9zdHIgPSAiXG4iLmpvaW4oc29ydGVkKGJfZmllbGQpKQoKICAgICAgICBkaWZmID0gbGlzdCgKICAgICAgICAgICAgdW5pZmllZF9kaWZmKAogICAgICAgICAgICAgICAgYV9zdHIuc3BsaXRsaW5lcygpLAogICAgICAgICAgICAgICAgYl9zdHIuc3BsaXRsaW5lcygpLAogICAgICAgICAgICAgICAgZnJvbWZpbGU9IlBhcGVyIEEiLAogICAgICAgICAgICAgICAgdG9maWxlPSJQYXBlciBCIiwKICAgICAgICAgICAgICAgIGxpbmV0ZXJtPSIiLAogICAgICAgICAgICApCiAgICAgICAgKQoKICAgICAgICBpZiBkaWZmOgogICAgICAgICAgICBsaW5lcy5leHRlbmQoZGlmZikKICAgICAgICBlbHNlOgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIihObyBkaWZmZXJlbmNlcykiKQoKICAgICAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQo=
+"""
+Paper Comparison: Compare multiple papers side-by-side.
+"""
+from dataclasses import dataclass, field
+from typing import List, Optional, Dict, Any
+from difflib import unified_diff
+
+
+@dataclass
+class ComparisonColumn:
+    """A column in the comparison table."""
+    paper_id: str
+    title: str
+    year: int = 0
+    authors: List[str] = field(default_factory=list)
+    methods: List[str] = field(default_factory=list)
+    datasets: List[str] = field(default_factory=list)
+    metrics: Dict[str, str] = field(default_factory=dict)
+    abstract: str = ""
+
+
+@dataclass
+class ComparisonResult:
+    """Result of paper comparison."""
+    columns: List[ComparisonColumn]
+    aspect_rows: List[Dict[str, Any]] = field(default_factory=list)
+
+
+class PaperComparator:
+    """Compare papers side-by-side."""
+
+    def __init__(self, db=None):
+        self.db = db
+
+    def add_paper(self, paper: Any) -> ComparisonColumn:
+        """Convert a paper object to ComparisonColumn."""
+        return ComparisonColumn(
+            paper_id=getattr(paper, 'uid', '') or getattr(paper, 'id', ''),
+            title=getattr(paper, 'title', 'Unknown'),
+            year=getattr(paper, 'year', 0),
+            authors=self._parse_authors(paper),
+            methods=self._extract_methods(paper),
+            datasets=self._extract_datasets(paper),
+            metrics=self._extract_metrics(paper),
+            abstract=getattr(paper, 'abstract', '') or '',
+        )
+
+    def _parse_authors(self, paper: Any) -> List[str]:
+        """Parse authors from paper."""
+        authors = getattr(paper, 'authors', [])
+        if isinstance(authors, str):
+            return [a.strip() for a in authors.split(',')[:5]]
+        return list(authors)[:5]
+
+    def _extract_methods(self, paper: Any) -> List[str]:
+        """Extract methods from paper text."""
+        text = (
+            getattr(paper, 'title', '') + ' ' +
+            getattr(paper, 'abstract', '') + ' ' +
+            getattr(paper, 'method', '')
+        ).lower()
+
+        keywords = {
+            'transformer': 'Transformer',
+            'bert': 'BERT',
+            'gpt': 'GPT',
+            'lstm': 'LSTM',
+            'cnn': 'CNN',
+            'gan': 'GAN',
+            'rl': 'Reinforcement Learning',
+            'attention': 'Attention',
+            'embedding': 'Embedding',
+            'retrieval': 'Retrieval',
+            'rag': 'RAG',
+            'fine-tun': 'Fine-tuning',
+            'rlhf': 'RLHF',
+            'chain-of-thought': 'Chain-of-Thought',
+            'prompt': 'Prompting',
+        }
+
+        found = []
+        for kw, name in keywords.items():
+            if kw in text and name not in found:
+                found.append(name)
+        return found[:5]
+
+    def _extract_datasets(self, paper: Any) -> List[str]:
+        """Extract datasets from paper text."""
+        text = (
+            getattr(paper, 'title', '') + ' ' +
+            getattr(paper, 'abstract', '') + ' ' +
+            getattr(paper, 'dataset', '')
+        ).lower()
+
+        datasets = {
+            'glue': 'GLUE',
+            'super.glue': 'SuperGLUE',
+            'squad': 'SQuAD',
+            'natural questions': 'NQ',
+            'triviaqa': 'TriviaQA',
+            'mmlu': 'MMLU',
+            'humaneval': 'HumanEval',
+            'mbpp': 'MBPP',
+            ' AlpacaEval': 'AlpacaEval',
+            'coqa': 'CoQA',
+            'hotpotqa': 'HotpotQA',
+            ' DROP': 'DROP',
+            'fever': 'FEVER',
+            'mnli': 'MNLI',
+            'qnli': 'QNLI',
+            'cola': 'CoLA',
+            'sst': 'SST',
+            'stsb': 'STS-B',
+            'qqp': 'QQP',
+            'mrpc': 'MRPC',
+        }
+
+        found = []
+        for kw, name in datasets.items():
+            if kw in text and name not in found:
+                found.append(name)
+        return found[:5]
+
+    def _extract_metrics(self, paper: Any) -> Dict[str, str]:
+        """Extract metrics from paper text."""
+        text = (
+            getattr(paper, 'abstract', '') + ' ' +
+            getattr(paper, 'result', '') + ' ' +
+            getattr(paper, 'metrics', '')
+        ).lower()
+
+        metrics = {
+            'accuracy': 'Acc',
+            'precision': 'Prec',
+            'recall': 'Rec',
+            'f1': 'F1',
+            'bleu': 'BLEU',
+            'rouge': 'ROUGE',
+            'perplexity': 'PPL',
+            'latency': 'Latency',
+            'throughput': 'Throughput',
+        }
+
+        found = {}
+        for kw, name in metrics.items():
+            if kw in text:
+                found[name] = '✓'
+
+        # Try to extract specific values
+        import re
+        patterns = [
+            (r'(\d+\.?\d*)\s*%?\s*(accuracy)', r'\1%'),
+            (r'(\d+\.?\d*)\s*(bleu)', r'\1'),
+            (r'(\d+\.?\d*)\s*(f1)', r'\1'),
+        ]
+
+        for pattern, _replacement in patterns:
+            match = re.search(pattern, text)
+            if match:
+                key = match.group(2).title()
+                val = match.group(1)
+                found[key] = val
+
+        return dict(list(found.items())[:5])
+
+    def compare(
+        self,
+        paper_ids: List[str],
+        aspects: Optional[List[str]] = None,
+    ) -> ComparisonResult:
+        """Compare papers by paper IDs."""
+        if aspects is None:
+            aspects = ['methods', 'datasets', 'metrics', 'authors']
+
+        columns = []
+
+        for pid in paper_ids:
+            if self.db and hasattr(self.db, 'get_paper'):
+                paper = self.db.get_paper(pid)
+                if paper:
+                    columns.append(self.add_paper(paper))
+            else:
+                columns.append(ComparisonColumn(
+                    paper_id=pid,
+                    title=pid,
+                ))
+
+        # Build aspect rows
+        aspect_rows = []
+        for aspect in aspects:
+            row = {'aspect': aspect.capitalize()}
+            for col in columns:
+                if aspect == 'methods':
+                    row[col.paper_id] = ', '.join(col.methods) or '-'
+                elif aspect == 'datasets':
+                    row[col.paper_id] = ', '.join(col.datasets) or '-'
+                elif aspect == 'metrics':
+                    row[col.paper_id] = ', '.join(
+                        f"{k}={v}" for k, v in col.metrics.items()
+                    ) or '-'
+                elif aspect == 'authors':
+                    row[col.paper_id] = ', '.join(col.authors[:2]) + ('+' if len(col.authors) > 2 else '') or '-'
+                elif aspect == 'year':
+                    row[col.paper_id] = str(col.year) if col.year else '-'
+                elif aspect == 'abstract':
+                    row[col.paper_id] = col.abstract[:100] + '...' if len(col.abstract) > 100 else col.abstract or '-'
+            aspect_rows.append(row)
+
+        return ComparisonResult(columns=columns, aspect_rows=aspect_rows)
+
+    def render_text(self, result: ComparisonResult) -> str:
+        """Render comparison as ASCII table."""
+        if not result.columns:
+            return "No papers to compare."
+
+        lines = ["=" * 80, "📊 Paper Comparison", "=" * 80, ""]
+
+        # Header row
+        header = ["Aspect"]
+        for col in result.columns:
+            title = col.title[:25] if len(col.title) > 25 else col.title
+            header.append(title)
+        lines.append(' | '.join(f"{h:^25}" for h in header))
+        lines.append("-" * 80)
+
+        # Data rows
+        for row in result.aspect_rows:
+            row_str = [f"{row['aspect']:12}"]
+            for col in result.columns:
+                val = row.get(col.paper_id, '-')
+                if len(val) > 25:
+                    val = val[:22] + '...'
+                row_str.append(f"{val:^25}")
+            lines.append(' | '.join(row_str))
+
+        lines.append("-" * 80)
+        lines.append("")
+        return '\n'.join(lines)
+
+    def render_markdown(self, result: ComparisonResult) -> str:
+        """Render comparison as Markdown table."""
+        lines = ["# Paper Comparison\n"]
+
+        if not result.columns:
+            return '\n'.join(lines) + "\nNo papers to compare."
+
+        # Header
+        header = ["| Aspect |"] + [
+            f"| {col.title[:40]} |" for col in result.columns
+        ]
+        lines.append(''.join(header))
+        lines.append('|' + '|'.join(['---' for _ in range(len(result.columns) + 1)]) + '|')
+
+        # Rows
+        for row in result.aspect_rows:
+            cells = [f"| {row['aspect']} |"]
+            for col in result.columns:
+                val = row.get(col.paper_id, '-')
+                cells.append(f" {val} |")
+            lines.append(''.join(cells))
+
+        return '\n'.join(lines)
+
+    def render_diff(self, paper_a: Any, paper_b: Any, field: str = 'methods') -> str:
+        """Generate diff between two papers on a specific field."""
+        a_field = getattr(paper_a, field, []) or []
+        b_field = getattr(paper_b, field, []) or []
+
+        if isinstance(a_field, str):
+            a_field = [a_field]
+        if isinstance(b_field, str):
+            b_field = [b_field]
+
+        lines = [
+            f"=== Diff: {getattr(paper_a, 'title', 'Paper A')[:30]} vs {getattr(paper_b, 'title', 'Paper B')[:30]} ===",
+            f"--- {field} ---",
+        ]
+
+        a_str = '\n'.join(sorted(a_field))
+        b_str = '\n'.join(sorted(b_field))
+
+        diff = list(unified_diff(
+            a_str.splitlines(),
+            b_str.splitlines(),
+            fromfile='Paper A',
+            tofile='Paper B',
+            lineterm='',
+        ))
+
+        if diff:
+            lines.extend(diff)
+        else:
+            lines.append("(No differences)")
+
+        return '\n'.join(lines)

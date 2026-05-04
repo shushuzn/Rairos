@@ -1,1 +1,543 @@
-IiIiClZpc3VhbCBFeHRyYWN0aW9uIENMSSBDb21tYW5kCgpVc2FnZToKICAgIGFpcm9zIHZpc3VhbCBleHRyYWN0IHBhcGVyLnBkZiAtLW91dHB1dCBmaWd1cmVzLwogICAgYWlyb3MgdmlzdWFsIGV4dHJhY3QgcGFwZXIucGRmIC0tb3V0cHV0IGZpZ3VyZXMvIC0tZHBpIDIwMAogICAgYWlyb3MgdmlzdWFsIGV4dHJhY3QgcGFwZXIucGRmIC0tc2F2ZS1kYiAyNjA0LjIyNzU0CiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IHN5cwpmcm9tIGRhdGV0aW1lIGltcG9ydCBkYXRldGltZSwgdGltZXpvbmUKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBPcHRpb25hbAoKc3lzLnBhdGguaW5zZXJ0KDAsIHN0cihQYXRoKF9fZmlsZV9fKS5wYXJlbnQucGFyZW50LnBhcmVudCkpCgpmcm9tIHBkZi52aXN1YWwgaW1wb3J0IFZpc3VhbEV4dHJhY3Rvcgpmcm9tIGRiLmRhdGFiYXNlIGltcG9ydCBEYXRhYmFzZSwgRXhwZXJpbWVudFRhYmxlUmVjb3JkCmZyb20gY2xpLl9zaGFyZWQgaW1wb3J0IHByaW50X3N1Y2Nlc3MsIHByaW50X2Vycm9yLCBwcmludF9pbmZvCmZyb20gY2xpLndhcnAgaW1wb3J0IFdhcnBCbG9ja3MKCiMgQ2hhcnQgS0cgaW50ZWdyYXRpb24KdHJ5OgogICAgZnJvbSBwZGYuY2hhcnRfa2cgaW1wb3J0IENoYXJ0S0dFeHRyYWN0b3IKICAgIGZyb20ga2cubWFuYWdlciBpbXBvcnQgS0dNYW5hZ2VyCiAgICBmcm9tIGtnLmludGVncmF0aW9uIGltcG9ydCBLR0ludGVncmF0aW9uCgogICAgX0hBU19DSEFSVF9LRyA9IFRydWUKZXhjZXB0IEltcG9ydEVycm9yOgogICAgX0hBU19DSEFSVF9LRyA9IEZhbHNlCgoKZGVmIF9idWlsZF92aXN1YWxfcGFyc2VyKHN1YnBhcnNlcnMpOgogICAgcCA9IHN1YnBhcnNlcnMuYWRkX3BhcnNlcigidmlzdWFsIiwgaGVscD0iRXh0cmFjdCB2aXN1YWwgY29udGVudCBmcm9tIFBERnMiKQogICAgc3ViID0gcC5hZGRfc3VicGFyc2VycyhkZXN0PSJ2aXN1YWxfY21kIiwgaGVscD0iVmlzdWFsIGNvbW1hbmRzIikKCiAgICAjIGV4dHJhY3QgY29tbWFuZAogICAgZXh0cmFjdF9wID0gc3ViLmFkZF9wYXJzZXIoImV4dHJhY3QiLCBoZWxwPSJFeHRyYWN0IGZpZ3VyZXMsIGZvcm11bGFzLCB0YWJsZXMiKQogICAgZXh0cmFjdF9wLmFkZF9hcmd1bWVudCgicGRmIiwgaGVscD0iUGF0aCB0byBQREYgZmlsZSIpCiAgICBleHRyYWN0X3AuYWRkX2FyZ3VtZW50KAogICAgICAgICItLW91dHB1dCIsICItbyIsIGRlZmF1bHQ9Tm9uZSwgaGVscD0iT3V0cHV0IGRpcmVjdG9yeSBmb3IgZXh0cmFjdGVkIGltYWdlcyIKICAgICkKICAgIGV4dHJhY3RfcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tZHBpIiwgdHlwZT1pbnQsIGRlZmF1bHQ9MTUwLCBoZWxwPSJEUEkgZm9yIHJlbmRlcmVkIGZvcm11bGFzIChkZWZhdWx0OiAxNTApIgogICAgKQogICAgZXh0cmFjdF9wLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1mb3JtYXQiLAogICAgICAgICItZiIsCiAgICAgICAgZGVmYXVsdD0ibWFya2Rvd24iLAogICAgICAgIGNob2ljZXM9WyJtYXJrZG93biIsICJqc29uIl0sCiAgICAgICAgaGVscD0iT3V0cHV0IGZvcm1hdCBmb3IgdGFibGVzIiwKICAgICkKICAgIGV4dHJhY3RfcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tc2F2ZS1kYiIsCiAgICAgICAgbWV0YXZhcj0iUEFQRVJfSUQiLAogICAgICAgIGRlZmF1bHQ9Tm9uZSwKICAgICAgICBoZWxwPSJTYXZlIHRhYmxlcyB0byBkYXRhYmFzZSB3aXRoIHRoaXMgcGFwZXJfaWQiLAogICAgKQogICAgZXh0cmFjdF9wLnNldF9kZWZhdWx0cygKICAgICAgICBmdW5jPWxhbWJkYSBhOiB2aXN1YWxfZXh0cmFjdC5jYWxsYmFjaygKICAgICAgICAgICAgcGRmPWEucGRmLCBvdXRwdXQ9YS5vdXRwdXQsIGRwaT1hLmRwaSwgZm9ybWF0PWEuZm9ybWF0LCBzYXZlX2RiPWEuc2F2ZV9kYgogICAgICAgICkKICAgICkKCiAgICAjIHF1ZXJ5IGNvbW1hbmQgLSBxdWVyeSBzdG9yZWQgdGFibGVzCiAgICBxdWVyeV9wID0gc3ViLmFkZF9wYXJzZXIoInF1ZXJ5IiwgaGVscD0iUXVlcnkgc3RvcmVkIHRhYmxlcyBmcm9tIGRhdGFiYXNlIikKICAgIHF1ZXJ5X3AuYWRkX2FyZ3VtZW50KCJwYXBlcl9pZCIsIGhlbHA9IlBhcGVyIElEIHRvIHF1ZXJ5IHRhYmxlcyBmb3IiKQogICAgcXVlcnlfcC5hZGRfYXJndW1lbnQoIi0tcGFnZSIsIHR5cGU9aW50LCBkZWZhdWx0PU5vbmUsIGhlbHA9IkZpbHRlciBieSBwYWdlIG51bWJlciIpCiAgICBxdWVyeV9wLmFkZF9hcmd1bWVudCgiLS1rZXl3b3JkIiwgIi1rIiwgZGVmYXVsdD1Ob25lLCBoZWxwPSJTZWFyY2ggaW4gdGFibGUgY29udGVudCIpCiAgICBxdWVyeV9wLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1mb3JtYXQiLAogICAgICAgICItZiIsCiAgICAgICAgZGVmYXVsdD0ibWFya2Rvd24iLAogICAgICAgIGNob2ljZXM9WyJtYXJrZG93biIsICJqc29uIiwgImNzdiJdLAogICAgICAgIGhlbHA9Ik91dHB1dCBmb3JtYXQiLAogICAgKQogICAgcXVlcnlfcC5zZXRfZGVmYXVsdHMoCiAgICAgICAgZnVuYz1sYW1iZGEgYTogdmlzdWFsX3F1ZXJ5LmNhbGxiYWNrKAogICAgICAgICAgICBwYXBlcl9pZD1hLnBhcGVyX2lkLCBwYWdlPWEucGFnZSwga2V5d29yZD1hLmtleXdvcmQsIGZvcm1hdD1hLmZvcm1hdAogICAgICAgICkKICAgICkKCiAgICAjIGxpc3QgY29tbWFuZCAtIGxpc3QgcGFwZXJzIHdpdGggc3RvcmVkIHRhYmxlcwogICAgbGlzdF9wID0gc3ViLmFkZF9wYXJzZXIoImxpc3QiLCBoZWxwPSJMaXN0IHBhcGVycyB3aXRoIHN0b3JlZCB0YWJsZXMiKQogICAgbGlzdF9wLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1saW1pdCIsIHR5cGU9aW50LCBkZWZhdWx0PTIwLCBoZWxwPSJNYXhpbXVtIG51bWJlciBvZiByZXN1bHRzIChkZWZhdWx0OiAyMCkiCiAgICApCiAgICBsaXN0X3Auc2V0X2RlZmF1bHRzKGZ1bmM9bGFtYmRhIGE6IHZpc3VhbF9saXN0LmNhbGxiYWNrKGxpbWl0PWEubGltaXQpKQoKICAgICMgZXhwb3J0IGNvbW1hbmQgLSBleHBvcnQgdGFibGVzIHRvIGZpbGUKICAgIGV4cG9ydF9wID0gc3ViLmFkZF9wYXJzZXIoImV4cG9ydCIsIGhlbHA9IkV4cG9ydCBzdG9yZWQgdGFibGVzIHRvIGZpbGUiKQogICAgZXhwb3J0X3AuYWRkX2FyZ3VtZW50KCJwYXBlcl9pZCIsIGhlbHA9IlBhcGVyIElEIHRvIGV4cG9ydCB0YWJsZXMgZnJvbSIpCiAgICBleHBvcnRfcC5hZGRfYXJndW1lbnQoIm91dHB1dCIsIGhlbHA9Ik91dHB1dCBmaWxlIHBhdGgiKQogICAgZXhwb3J0X3AuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWZvcm1hdCIsCiAgICAgICAgIi1mIiwKICAgICAgICBkZWZhdWx0PSJjc3YiLAogICAgICAgIGNob2ljZXM9WyJjc3YiLCAianNvbiIsICJtYXJrZG93biJdLAogICAgICAgIGhlbHA9Ik91dHB1dCBmb3JtYXQgKGRlZmF1bHQ6IGNzdikiLAogICAgKQogICAgZXhwb3J0X3AuYWRkX2FyZ3VtZW50KCItLXBhZ2UiLCB0eXBlPWludCwgZGVmYXVsdD1Ob25lLCBoZWxwPSJGaWx0ZXIgYnkgcGFnZSBudW1iZXIiKQogICAgZXhwb3J0X3AuYWRkX2FyZ3VtZW50KCItLWtleXdvcmQiLCAiLWsiLCBkZWZhdWx0PU5vbmUsIGhlbHA9IlNlYXJjaCBpbiB0YWJsZSBjb250ZW50IikKICAgIGV4cG9ydF9wLnNldF9kZWZhdWx0cygKICAgICAgICBmdW5jPWxhbWJkYSBhOiB2aXN1YWxfZXhwb3J0LmNhbGxiYWNrKAogICAgICAgICAgICBwYXBlcl9pZD1hLnBhcGVyX2lkLCBvdXRwdXQ9YS5vdXRwdXQsIGZvcm1hdD1hLmZvcm1hdCwgcGFnZT1hLnBhZ2UsIGtleXdvcmQ9YS5rZXl3b3JkCiAgICAgICAgKQogICAgKQoKICAgICMgY2hhcnQgY29tbWFuZCAtIGluZGV4IGZpZ3VyZXMvdGFibGVzIHRvIEtHIGFuZCBxdWVyeQogICAgY2hhcnRfcCA9IHN1Yi5hZGRfcGFyc2VyKCJjaGFydCIsIGhlbHA9IkluZGV4IGZpZ3VyZXMvdGFibGVzIHRvIEtHIGFuZCBxdWVyeSB0aGVtIikKICAgIGNoYXJ0X3AuYWRkX2FyZ3VtZW50KCJwYXBlcl9pZCIsIG5hcmdzPSI/IiwgZGVmYXVsdD1Ob25lLCBoZWxwPSJQYXBlciBJRCB0byBpbmRleC9xdWVyeSIpCiAgICBjaGFydF9wLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1pbmRleCIsCiAgICAgICAgIi1pIiwKICAgICAgICBtZXRhdmFyPSJQREZfUEFUSCIsCiAgICAgICAgZGVmYXVsdD1Ob25lLAogICAgICAgIGhlbHA9IkluZGV4IGZpZ3VyZXMvdGFibGVzIGZyb20gUERGIGludG8gS0ciLAogICAgKQogICAgY2hhcnRfcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tbGlzdCIsICItbCIsIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsIGhlbHA9Ikxpc3QgYWxsIGluZGV4ZWQgZmlndXJlcy90YWJsZXMgZm9yIHRoZSBwYXBlciIKICAgICkKICAgIGNoYXJ0X3AuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWZpZ3VyZSIsCiAgICAgICAgIi1mIiwKICAgICAgICBtZXRhdmFyPSJMQUJFTCIsCiAgICAgICAgZGVmYXVsdD1Ob25lLAogICAgICAgIGhlbHA9IlF1ZXJ5IHNwZWNpZmljIGZpZ3VyZSwgZS5nLiAnRmlndXJlIDMnIiwKICAgICkKICAgIGNoYXJ0X3AuYWRkX2FyZ3VtZW50KAogICAgICAgICItLXRhYmxlIiwgIi10IiwgbWV0YXZhcj0iTEFCRUwiLCBkZWZhdWx0PU5vbmUsIGhlbHA9IlF1ZXJ5IHNwZWNpZmljIHRhYmxlLCBlLmcuICdUYWJsZSAxJyIKICAgICkKICAgIGNoYXJ0X3Auc2V0X2RlZmF1bHRzKAogICAgICAgIGZ1bmM9bGFtYmRhIGE6IHZpc3VhbF9jaGFydC5jYWxsYmFjaygKICAgICAgICAgICAgcGFwZXJfaWQ9YS5wYXBlcl9pZCwgaW5kZXg9YS5pbmRleCwgbGlzdF9jaGFydHM9YS5saXN0LCBmaWd1cmU9YS5maWd1cmUsIHRhYmxlPWEudGFibGUKICAgICAgICApCiAgICApCgogICAgcC5zZXRfZGVmYXVsdHMoZnVuYz1sYW1iZGEgYTogX3Nob3dfdmlzdWFsX3N0YXR1cygpKQoKCmRlZiBfc2hvd192aXN1YWxfc3RhdHVzKCk6CiAgICAiIiJTaG93IHZpc3VhbCBleHRyYWN0aW9uIGNhcGFiaWxpdGllcyAodXNlZCBieSBDTEkgcmVnaXN0cnkpLiIiIgogICAgZnJvbSByaWNoLmNvbnNvbGUgaW1wb3J0IENvbnNvbGUKCiAgICBjID0gQ29uc29sZSgpCiAgICBjLnJ1bGUoIltib2xkICNGRjgyNzJdICBWaXN1YWwgRXh0cmFjdGlvbiAgWy9dIikKICAgIHByaW50KCkKICAgIHJvd3MgPSBbCiAgICAgICAgWyJbI0E1RDVGRV3inJNbL10iLCAiRmlndXJlIGV4dHJhY3Rpb24iLCAiUE5HL0pQRyBmcm9tIFBERiBwYWdlcyJdLAogICAgICAgIFsiWyNBNUQ1RkVd4pyTWy9dIiwgIkxhVGVYIHJlbmRlcmluZyIsICJGb3JtdWxhcyBhcyBoaWdoLURQSSBpbWFnZXMiXSwKICAgICAgICBbIlsjQTVENUZFXeKck1svXSIsICJUYWJsZSBleHRyYWN0aW9uIiwgIk1hcmtkb3duICsgQ1NWICsgSlNPTiJdLAogICAgXQogICAgYy5wcmludChXYXJwQmxvY2tzLnRhYmxlKFsiIiwgIkNhcGFiaWxpdHkiLCAiRm9ybWF0Il0sIHJvd3MsIHRpdGxlPSJTdXBwb3J0ZWQgVHlwZXMiKSkKICAgIGMucHJpbnQoKQogICAgcHJpbnQoCiAgICAgICAgV2FycEJsb2Nrcy5zZWN0aW9uKAogICAgICAgICAgICAiVXNhZ2UiLAogICAgICAgICAgICAiWyNBNUQ1RkVdYWlyb3MgdmlzdWFsIGV4dHJhY3RbL10gcGFwZXIucGRmIC0tb3V0cHV0IGZpZ3VyZXMvIiwKICAgICAgICAgICAgIlsjQTVENUZFXWFpcm9zIHZpc3VhbCBxdWVyeVsvXSAyNjA0LjIyNzU0IiwKICAgICAgICAgICAgIlsjQTVENUZFXWFpcm9zIHZpc3VhbCBsaXN0Wy9dIiwKICAgICAgICApCiAgICApCgoKZGVmIHZpc3VhbF9leHRyYWN0KHBkZjogc3RyLCBvdXRwdXQ6IHN0ciwgZHBpOiBpbnQsIGZvcm1hdDogc3RyLCBzYXZlX2RiOiBPcHRpb25hbFtzdHJdID0gTm9uZSk6CiAgICAiIiJFeHRyYWN0IGZpZ3VyZXMsIGZvcm11bGFzLCBhbmQgdGFibGVzIGZyb20gUERGLiIiIgogICAgcGRmX3BhdGggPSBQYXRoKHBkZikKCiAgICBpZiBub3QgcGRmX3BhdGguZXhpc3RzKCk6CiAgICAgICAgcHJpbnRfZXJyb3IoZiJQREYgbm90IGZvdW5kOiB7cGRmfSIpCiAgICAgICAgc3lzLmV4aXQoMSkKCiAgICBvdXRwdXRfZGlyID0gUGF0aChvdXRwdXQpIGlmIG91dHB1dCBlbHNlIE5vbmUKICAgIHBhcGVyX2lkID0gcGRmX3BhdGguc3RlbQoKICAgIHByaW50X2luZm8oZiJFeHRyYWN0aW5nIHZpc3VhbCBjb250ZW50IGZyb206IHtwZGZ9IikKICAgIHByaW50X2luZm8oZiJPdXRwdXQgZGlyZWN0b3J5OiB7b3V0cHV0X2RpciBvciAnbWVtb3J5IG9ubHknfSIpCgogICAgdHJ5OgogICAgICAgIGV4dHJhY3RvciA9IFZpc3VhbEV4dHJhY3RvcihvdXRwdXRfZGlyPXN0cihvdXRwdXRfZGlyKSBpZiBvdXRwdXRfZGlyIGVsc2UgTm9uZSwgZHBpPWRwaSkKICAgICAgICByZXN1bHQgPSBleHRyYWN0b3IuZXh0cmFjdF92aXN1YWxfY29udGVudChzdHIocGRmX3BhdGgpLCBwYXBlcl9pZCkKCiAgICAgICAgIyBTdW1tYXJ5CiAgICAgICAgcHJpbnRfc3VjY2VzcygiXG5FeHRyYWN0aW9uIGNvbXBsZXRlISIpCiAgICAgICAgcHJpbnRfaW5mbyhmIiAgRmlndXJlczoge2xlbihyZXN1bHQuZmlndXJlcyl9IikKICAgICAgICBwcmludF9pbmZvKGYiICBGb3JtdWxhczoge2xlbihyZXN1bHQucmVuZGVyZWRfZm9ybXVsYXMpfSIpCiAgICAgICAgcHJpbnRfaW5mbyhmIiAgVGFibGVzOiB7bGVuKHJlc3VsdC50YWJsZXNfbWFya2Rvd24pfSIpCgogICAgICAgICMgU2F2ZSB0YWJsZXMgdG8gZGF0YWJhc2UKICAgICAgICBpZiBzYXZlX2RiIGFuZCByZXN1bHQudGFibGVzX21hcmtkb3duOgogICAgICAgICAgICBkYiA9IERhdGFiYXNlKCkKCiAgICAgICAgICAgICMgQXV0by1jcmVhdGUgcGFwZXIgcmVjb3JkIGlmIGl0IGRvZXNuJ3QgZXhpc3QKICAgICAgICAgICAgZXhpc3RpbmcgPSBkYi5nZXRfcGFwZXIoc2F2ZV9kYikKICAgICAgICAgICAgaWYgbm90IGV4aXN0aW5nOgogICAgICAgICAgICAgICAgZGIudXBzZXJ0X3BhcGVyKAogICAgICAgICAgICAgICAgICAgIHBhcGVyX2lkPXNhdmVfZGIsCiAgICAgICAgICAgICAgICAgICAgc291cmNlPSJ2aXN1YWxfZXh0cmFjdCIsCiAgICAgICAgICAgICAgICAgICAgdGl0bGU9ZiJQYXBlciB7c2F2ZV9kYn0iLAogICAgICAgICAgICAgICAgICAgIGFic3RyYWN0PWYiRXh0cmFjdGVkIGZyb20ge3BkZl9wYXRoLm5hbWV9IiwKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICAgIHByaW50X2luZm8oZiJDcmVhdGVkIHBhcGVyIHJlY29yZDoge3NhdmVfZGJ9IikKCiAgICAgICAgICAgIHRhYmxlcyA9IFsKICAgICAgICAgICAgICAgIEV4cGVyaW1lbnRUYWJsZVJlY29yZCgKICAgICAgICAgICAgICAgICAgICBpZD0wLCAgIyBBdXRvLWFzc2lnbmVkCiAgICAgICAgICAgICAgICAgICAgcGFwZXJfaWQ9c2F2ZV9kYiwKICAgICAgICAgICAgICAgICAgICB0YWJsZV9jYXB0aW9uPXQuY2FwdGlvbiwKICAgICAgICAgICAgICAgICAgICBwYWdlPXQucGFnZSwKICAgICAgICAgICAgICAgICAgICBoZWFkZXJzPXQuaGVhZGVycywKICAgICAgICAgICAgICAgICAgICByb3dzPXQucm93cywKICAgICAgICAgICAgICAgICAgICBiYm94X3gwPTAsCiAgICAgICAgICAgICAgICAgICAgYmJveF95MD0wLAogICAgICAgICAgICAgICAgICAgIGJib3hfeDE9MCwKICAgICAgICAgICAgICAgICAgICBiYm94X3kxPTAsCiAgICAgICAgICAgICAgICAgICAgY3JlYXRlZF9hdD1kYXRldGltZS5ub3codGltZXpvbmUudXRjKS5pc29mb3JtYXQoKSwKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICAgIGZvciB0IGluIHJlc3VsdC50YWJsZXNfbWFya2Rvd24KICAgICAgICAgICAgXQogICAgICAgICAgICBkYi51cHNlcnRfZXhwZXJpbWVudF90YWJsZXMoc2F2ZV9kYiwgdGFibGVzKQogICAgICAgICAgICBkYi5jbG9zZSgpCiAgICAgICAgICAgIHByaW50X3N1Y2Nlc3MoZiJTYXZlZCB7bGVuKHRhYmxlcyl9IHRhYmxlcyB0byBkYXRhYmFzZSBhczoge3NhdmVfZGJ9IikKCiAgICAgICAgIyBQcmludCB0YWJsZXMgYXMgbWFya2Rvd24KICAgICAgICBpZiByZXN1bHQudGFibGVzX21hcmtkb3duOgogICAgICAgICAgICBwcmludF9zdWNjZXNzKCJcbi0tLSBUYWJsZXMgLS0tIikKICAgICAgICAgICAgZm9yIGksIHRhYmxlIGluIGVudW1lcmF0ZShyZXN1bHQudGFibGVzX21hcmtkb3duKToKICAgICAgICAgICAgICAgIHByaW50KGYiXG4qKlRhYmxlIHtpICsgMX0gKHBhZ2Uge3RhYmxlLnBhZ2UgKyAxfSkqKiIpCiAgICAgICAgICAgICAgICBpZiB0YWJsZS5jYXB0aW9uOgogICAgICAgICAgICAgICAgICAgIHByaW50KGYiKnt0YWJsZS5jYXB0aW9ufSoiKQogICAgICAgICAgICAgICAgcHJpbnQodGFibGUubWFya2Rvd24pCgogICAgICAgICMgU2F2ZSByZXN1bHRzIGFzIEpTT04gaWYgcmVxdWVzdGVkCiAgICAgICAgaWYgZm9ybWF0ID09ICJqc29uIiBhbmQgb3V0cHV0X2RpcjoKICAgICAgICAgICAgaW1wb3J0IGpzb24KCiAgICAgICAgICAgIGpzb25fcGF0aCA9IG91dHB1dF9kaXIgLyBmIntwYXBlcl9pZH1fdmlzdWFsLmpzb24iCiAgICAgICAgICAgIHdpdGggb3Blbihqc29uX3BhdGgsICJ3IiwgZW5jb2Rpbmc9InV0Zi04IikgYXMgZjoKICAgICAgICAgICAgICAgIGpzb24uZHVtcCgKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgICJwYXBlcl9pZCI6IHJlc3VsdC5wYXBlcl9pZCwKICAgICAgICAgICAgICAgICAgICAgICAgImZpZ3VyZXMiOiBbCiAgICAgICAgICAgICAgICAgICAgICAgICAgICB7InBhZ2UiOiBmaWcucGFnZSwgImNhcHRpb24iOiBmaWcuY2FwdGlvbiwgImltYWdlX3BhdGgiOiBmaWcuaW1hZ2VfcGF0aH0KICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZvciBmaWcgaW4gcmVzdWx0LmZpZ3VyZXMKICAgICAgICAgICAgICAgICAgICAgICAgXSwKICAgICAgICAgICAgICAgICAgICAgICAgImZvcm11bGFzIjogWwogICAgICAgICAgICAgICAgICAgICAgICAgICAgeyJsYXRleCI6IGYubGF0ZXgsICJpc19kaXNwbGF5IjogZi5pc19kaXNwbGF5LCAicGFnZSI6IGYucGFnZX0KICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZvciBmIGluIHJlc3VsdC5yZW5kZXJlZF9mb3JtdWxhcwogICAgICAgICAgICAgICAgICAgICAgICBdLAogICAgICAgICAgICAgICAgICAgICAgICAidGFibGVzIjogWwogICAgICAgICAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJoZWFkZXJzIjogdC5oZWFkZXJzLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJyb3dzIjogdC5yb3dzLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJwYWdlIjogdC5wYWdlLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJjYXB0aW9uIjogdC5jYXB0aW9uLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgICAgICAgICAgZm9yIHQgaW4gcmVzdWx0LnRhYmxlc19tYXJrZG93bgogICAgICAgICAgICAgICAgICAgICAgICBdLAogICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgZiwKICAgICAgICAgICAgICAgICAgICBpbmRlbnQ9MiwKICAgICAgICAgICAgICAgICAgICBlbnN1cmVfYXNjaWk9RmFsc2UsCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgIHByaW50X3N1Y2Nlc3MoZiJcbkpTT04gc2F2ZWQ6IHtqc29uX3BhdGh9IikKCiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgcHJpbnRfZXJyb3IoZiJFeHRyYWN0aW9uIGZhaWxlZDoge2V9IikKICAgICAgICBzeXMuZXhpdCgxKQoKCmRlZiB2aXN1YWxfc3RhdHVzKCk6CiAgICAiIiJTaG93IHZpc3VhbCBleHRyYWN0aW9uIGNhcGFiaWxpdGllcy4iIiIKICAgIGZyb20gcmljaC5jb25zb2xlIGltcG9ydCBDb25zb2xlCgogICAgYyA9IENvbnNvbGUoKQogICAgYy5ydWxlKCJbYm9sZCAjRkY4MjcyXSAgVmlzdWFsIEV4dHJhY3Rpb24gIFsvXSIpCiAgICBwcmludCgpCiAgICByb3dzID0gWwogICAgICAgIFsiWyNBNUQ1RkVd4pyTWy9dIiwgIkZpZ3VyZSBleHRyYWN0aW9uIiwgIlBORy9KUEcgZnJvbSBQREYgcGFnZXMiXSwKICAgICAgICBbIlsjQTVENUZFXeKck1svXSIsICJMYVRlWCByZW5kZXJpbmciLCAiRm9ybXVsYXMgYXMgaGlnaC1EUEkgaW1hZ2VzIl0sCiAgICAgICAgWyJbI0E1RDVGRV3inJNbL10iLCAiVGFibGUgZXh0cmFjdGlvbiIsICJNYXJrZG93biArIENTViArIEpTT04iXSwKICAgIF0KICAgIGMucHJpbnQoV2FycEJsb2Nrcy50YWJsZShbIiIsICJDYXBhYmlsaXR5IiwgIkZvcm1hdCJdLCByb3dzLCB0aXRsZT0iU3VwcG9ydGVkIFR5cGVzIikpCiAgICBjLnByaW50KCkKICAgIHByaW50KAogICAgICAgIFdhcnBCbG9ja3Muc2VjdGlvbigKICAgICAgICAgICAgIlVzYWdlIiwKICAgICAgICAgICAgIlsjQTVENUZFXWFpcm9zIHZpc3VhbCBleHRyYWN0Wy9dIHBhcGVyLnBkZiAtLW91dHB1dCBmaWd1cmVzLyIsCiAgICAgICAgICAgICJbI0E1RDVGRV1haXJvcyB2aXN1YWwgcXVlcnlbL10gMjYwNC4yMjc1NCIsCiAgICAgICAgICAgICJbI0E1RDVGRV1haXJvcyB2aXN1YWwgbGlzdFsvXSIsCiAgICAgICAgICAgIHdpZHRoPTYwLAogICAgICAgICkKICAgICkKCgpkZWYgdmlzdWFsX3F1ZXJ5KHBhcGVyX2lkOiBzdHIsIHBhZ2U6IGludCwga2V5d29yZDogc3RyLCBmb3JtYXQ6IHN0cik6CiAgICAiIiJRdWVyeSBzdG9yZWQgdGFibGVzIGZyb20gZGF0YWJhc2UuIiIiCiAgICBkYiA9IERhdGFiYXNlKCkKICAgIHRyeToKICAgICAgICB0YWJsZXMgPSBkYi5nZXRfZXhwZXJpbWVudF90YWJsZXMocGFwZXJfaWQpCgogICAgICAgIGlmIG5vdCB0YWJsZXM6CiAgICAgICAgICAgIHByaW50X2Vycm9yKGYiTm8gdGFibGVzIGZvdW5kIGZvciBwYXBlcjoge3BhcGVyX2lkfSIpCiAgICAgICAgICAgIHN5cy5leGl0KDEpCgogICAgICAgICMgRmlsdGVyIGJ5IHBhZ2UgaWYgc3BlY2lmaWVkCiAgICAgICAgaWYgcGFnZSBpcyBub3QgTm9uZToKICAgICAgICAgICAgdGFibGVzID0gW3QgZm9yIHQgaW4gdGFibGVzIGlmIHQucGFnZSA9PSBwYWdlIC0gMV0gICMgMC1pbmRleGVkCgogICAgICAgICMgRmlsdGVyIGJ5IGtleXdvcmQgaWYgc3BlY2lmaWVkCiAgICAgICAgaWYga2V5d29yZDoKICAgICAgICAgICAga2V5d29yZF9sb3dlciA9IGtleXdvcmQubG93ZXIoKQogICAgICAgICAgICB0YWJsZXMgPSBbCiAgICAgICAgICAgICAgICB0CiAgICAgICAgICAgICAgICBmb3IgdCBpbiB0YWJsZXMKICAgICAgICAgICAgICAgIGlmIGtleXdvcmRfbG93ZXIgaW4gdC50YWJsZV9jYXB0aW9uLmxvd2VyKCkKICAgICAgICAgICAgICAgIG9yIGFueShrZXl3b3JkX2xvd2VyIGluIGgubG93ZXIoKSBmb3IgaCBpbiB0LmhlYWRlcnMpCiAgICAgICAgICAgICAgICBvciBhbnkoa2V5d29yZF9sb3dlciBpbiBzdHIoY2VsbCkubG93ZXIoKSBmb3Igcm93IGluIHQucm93cyBmb3IgY2VsbCBpbiByb3cpCiAgICAgICAgICAgIF0KCiAgICAgICAgaWYgbm90IHRhYmxlczoKICAgICAgICAgICAgcHJpbnRfZXJyb3IoIk5vIHRhYmxlcyBtYXRjaCB0aGUgcXVlcnkiKQogICAgICAgICAgICBzeXMuZXhpdCgxKQoKICAgICAgICBwcmludF9zdWNjZXNzKGYiRm91bmQge2xlbih0YWJsZXMpfSB0YWJsZShzKSBmb3IgcGFwZXI6IHtwYXBlcl9pZH0iKQoKICAgICAgICBpZiBmb3JtYXQgPT0gImpzb24iOgogICAgICAgICAgICBpbXBvcnQganNvbgoKICAgICAgICAgICAgcmVzdWx0ID0gewogICAgICAgICAgICAgICAgInBhcGVyX2lkIjogcGFwZXJfaWQsCiAgICAgICAgICAgICAgICAidGFibGVzIjogWwogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgImlkIjogdC5pZCwKICAgICAgICAgICAgICAgICAgICAgICAgInBhZ2UiOiB0LnBhZ2UgKyAxLAogICAgICAgICAgICAgICAgICAgICAgICAiY2FwdGlvbiI6IHQudGFibGVfY2FwdGlvbiwKICAgICAgICAgICAgICAgICAgICAgICAgImhlYWRlcnMiOiB0LmhlYWRlcnMsCiAgICAgICAgICAgICAgICAgICAgICAgICJyb3dzIjogdC5yb3dzLAogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICBmb3IgdCBpbiB0YWJsZXMKICAgICAgICAgICAgICAgIF0sCiAgICAgICAgICAgIH0KICAgICAgICAgICAgcHJpbnQoanNvbi5kdW1wcyhyZXN1bHQsIGluZGVudD0yLCBlbnN1cmVfYXNjaWk9RmFsc2UpKQogICAgICAgIGVsaWYgZm9ybWF0ID09ICJjc3YiOgogICAgICAgICAgICBmb3IgdCBpbiB0YWJsZXM6CiAgICAgICAgICAgICAgICBwcmludChmIlxuIyBUYWJsZSB7dC5pZH0gKHBhZ2Uge3QucGFnZSArIDF9KSIpCiAgICAgICAgICAgICAgICBpZiB0LnRhYmxlX2NhcHRpb246CiAgICAgICAgICAgICAgICAgICAgcHJpbnQoZiIjIENhcHRpb246IHt0LnRhYmxlX2NhcHRpb259IikKICAgICAgICAgICAgICAgIHByaW50KCIsIi5qb2luKHQuaGVhZGVycykpCiAgICAgICAgICAgICAgICBmb3Igcm93IGluIHQucm93czoKICAgICAgICAgICAgICAgICAgICBwcmludCgiLCIuam9pbihmJyJ7c3RyKGMpfSInIGZvciBjIGluIHJvdykpCiAgICAgICAgZWxzZTogICMgbWFya2Rvd24KICAgICAgICAgICAgZm9yIGksIHQgaW4gZW51bWVyYXRlKHRhYmxlcyk6CiAgICAgICAgICAgICAgICBwcmludChmIlxuKipUYWJsZSB7aSArIDF9IChwYWdlIHt0LnBhZ2UgKyAxfSkqKiIpCiAgICAgICAgICAgICAgICBpZiB0LnRhYmxlX2NhcHRpb246CiAgICAgICAgICAgICAgICAgICAgcHJpbnQoZiIqe3QudGFibGVfY2FwdGlvbn0qIikKICAgICAgICAgICAgICAgIHByaW50KCJ8ICIgKyAiIHwgIi5qb2luKHQuaGVhZGVycykgKyAiIHwiKQogICAgICAgICAgICAgICAgcHJpbnQoInwgIiArICIgfCAiLmpvaW4oWyItLS0iXSAqIGxlbih0LmhlYWRlcnMpKSArICIgfCIpCiAgICAgICAgICAgICAgICBmb3Igcm93IGluIHQucm93czoKICAgICAgICAgICAgICAgICAgICBwcmludCgifCAiICsgIiB8ICIuam9pbihzdHIoYykgZm9yIGMgaW4gcm93KSArICIgfCIpCgogICAgZmluYWxseToKICAgICAgICBkYi5jbG9zZSgpCgoKZGVmIHZpc3VhbF9saXN0KGxpbWl0OiBpbnQpOgogICAgIiIiTGlzdCBwYXBlcnMgd2l0aCBzdG9yZWQgdGFibGVzLiIiIgogICAgZGIgPSBEYXRhYmFzZSgpCiAgICB0cnk6CiAgICAgICAgY3Vyc29yID0gZGIuY29ubi5leGVjdXRlKAogICAgICAgICAgICAiIiIKICAgICAgICAgICAgU0VMRUNUIHBhcGVyX2lkLCBDT1VOVCgqKSBhcyB0YWJsZV9jb3VudCwgTUFYKHBhZ2UpICsgMSBhcyBtYXhfcGFnZQogICAgICAgICAgICBGUk9NIGV4cGVyaW1lbnRfdGFibGVzCiAgICAgICAgICAgIEdST1VQIEJZIHBhcGVyX2lkCiAgICAgICAgICAgIE9SREVSIEJZIE1BWChjcmVhdGVkX2F0KSBERVNDCiAgICAgICAgICAgIExJTUlUID8KICAgICAgICAiIiIsCiAgICAgICAgICAgIChsaW1pdCwpLAogICAgICAgICkKICAgICAgICByYXdfcm93cyA9IGN1cnNvci5mZXRjaGFsbCgpCgogICAgICAgIGlmIG5vdCByYXdfcm93czoKICAgICAgICAgICAgZnJvbSByaWNoLmNvbnNvbGUgaW1wb3J0IENvbnNvbGUKCiAgICAgICAgICAgIGMgPSBDb25zb2xlKCkKICAgICAgICAgICAgYy5ydWxlKCJbYm9sZCAjRkY4MjcyXSAgVmlzdWFsIFRhYmxlcyAgWy9dIikKICAgICAgICAgICAgYy5wcmludCgpCiAgICAgICAgICAgIHByaW50KFdhcnBCbG9ja3MucGFuZWwoIk5vIFJlc3VsdHMiLCAiWyM4RThFOEVdTm8gcGFwZXJzIHdpdGggc3RvcmVkIHRhYmxlcyBmb3VuZFsvXSIpKQogICAgICAgICAgICByZXR1cm4KCiAgICAgICAgZnJvbSByaWNoLmNvbnNvbGUgaW1wb3J0IENvbnNvbGUKCiAgICAgICAgYyA9IENvbnNvbGUoKQogICAgICAgIGMucnVsZSgiW2JvbGQgI0ZGODI3Ml0gIFZpc3VhbCBUYWJsZXMgIFsvXSIpCiAgICAgICAgYy5wcmludCgpCiAgICAgICAgcm93cyA9IFtdCiAgICAgICAgZm9yIHJvdyBpbiByYXdfcm93czoKICAgICAgICAgICAgYmFkZ2UgPSAiWyNCNEZBNzJd4pePWy9dIiBpZiByb3dbMV0gPiAwIGVsc2UgIlsjOEU4RThFXeKXi1svXSIKICAgICAgICAgICAgcm93cy5hcHBlbmQoW2JhZGdlLCByb3dbMF0sIHN0cihyb3dbMV0pLCBzdHIocm93WzJdKV0pCiAgICAgICAgYy5wcmludCgKICAgICAgICAgICAgV2FycEJsb2Nrcy50YWJsZSgKICAgICAgICAgICAgICAgIFsiIiwgIlBhcGVyIElEIiwgIlRhYmxlcyIsICJQYWdlcyJdLAogICAgICAgICAgICAgICAgcm93cywKICAgICAgICAgICAgICAgIHRpdGxlPWYiUGFwZXJzIHdpdGggU3RvcmVkIFRhYmxlcyAoe2xlbihyYXdfcm93cyl9KSIsCiAgICAgICAgICAgICkKICAgICAgICApCgogICAgZmluYWxseToKICAgICAgICBkYi5jbG9zZSgpCgoKZGVmIHZpc3VhbF9leHBvcnQocGFwZXJfaWQ6IHN0ciwgb3V0cHV0OiBzdHIsIGZvcm1hdDogc3RyLCBwYWdlOiBpbnQsIGtleXdvcmQ6IHN0cik6CiAgICAiIiJFeHBvcnQgc3RvcmVkIHRhYmxlcyB0byBhIGZpbGUuIiIiCiAgICBkYiA9IERhdGFiYXNlKCkKICAgIHRyeToKICAgICAgICB0YWJsZXMgPSBkYi5nZXRfZXhwZXJpbWVudF90YWJsZXMocGFwZXJfaWQpCgogICAgICAgIGlmIG5vdCB0YWJsZXM6CiAgICAgICAgICAgIHByaW50X2Vycm9yKGYiTm8gdGFibGVzIGZvdW5kIGZvciBwYXBlcjoge3BhcGVyX2lkfSIpCiAgICAgICAgICAgIHN5cy5leGl0KDEpCgogICAgICAgICMgRmlsdGVyIGJ5IHBhZ2UgaWYgc3BlY2lmaWVkCiAgICAgICAgaWYgcGFnZSBpcyBub3QgTm9uZToKICAgICAgICAgICAgdGFibGVzID0gW3QgZm9yIHQgaW4gdGFibGVzIGlmIHQucGFnZSA9PSBwYWdlIC0gMV0KCiAgICAgICAgIyBGaWx0ZXIgYnkga2V5d29yZCBpZiBzcGVjaWZpZWQKICAgICAgICBpZiBrZXl3b3JkOgogICAgICAgICAgICBrZXl3b3JkX2xvd2VyID0ga2V5d29yZC5sb3dlcigpCiAgICAgICAgICAgIHRhYmxlcyA9IFsKICAgICAgICAgICAgICAgIHQKICAgICAgICAgICAgICAgIGZvciB0IGluIHRhYmxlcwogICAgICAgICAgICAgICAgaWYga2V5d29yZF9sb3dlciBpbiB0LnRhYmxlX2NhcHRpb24ubG93ZXIoKQogICAgICAgICAgICAgICAgb3IgYW55KGtleXdvcmRfbG93ZXIgaW4gaC5sb3dlcigpIGZvciBoIGluIHQuaGVhZGVycykKICAgICAgICAgICAgICAgIG9yIGFueShrZXl3b3JkX2xvd2VyIGluIHN0cihjZWxsKS5sb3dlcigpIGZvciByb3cgaW4gdC5yb3dzIGZvciBjZWxsIGluIHJvdykKICAgICAgICAgICAgXQoKICAgICAgICBpZiBub3QgdGFibGVzOgogICAgICAgICAgICBwcmludF9lcnJvcigiTm8gdGFibGVzIG1hdGNoIHRoZSBxdWVyeSIpCiAgICAgICAgICAgIHN5cy5leGl0KDEpCgogICAgICAgICMgR2VuZXJhdGUgY29udGVudAogICAgICAgIGlmIGZvcm1hdCA9PSAianNvbiI6CiAgICAgICAgICAgIGltcG9ydCBqc29uCgogICAgICAgICAgICBjb250ZW50ID0ganNvbi5kdW1wcygKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAicGFwZXJfaWQiOiBwYXBlcl9pZCwKICAgICAgICAgICAgICAgICAgICAidGFibGVzIjogWwogICAgICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAiaWQiOiB0LmlkLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgInBhZ2UiOiB0LnBhZ2UgKyAxLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgImNhcHRpb24iOiB0LnRhYmxlX2NhcHRpb24sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAiaGVhZGVycyI6IHQuaGVhZGVycywKICAgICAgICAgICAgICAgICAgICAgICAgICAgICJyb3dzIjogdC5yb3dzLAogICAgICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgICAgIGZvciB0IGluIHRhYmxlcwogICAgICAgICAgICAgICAgICAgIF0sCiAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgaW5kZW50PTIsCiAgICAgICAgICAgICAgICBlbnN1cmVfYXNjaWk9RmFsc2UsCiAgICAgICAgICAgICkKICAgICAgICBlbGlmIGZvcm1hdCA9PSAiY3N2IjoKICAgICAgICAgICAgbGluZXMgPSBbXQogICAgICAgICAgICBmb3IgdCBpbiB0YWJsZXM6CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIjIFRhYmxlIHt0LmlkfSAocGFnZSB7dC5wYWdlICsgMX0pIikKICAgICAgICAgICAgICAgIGlmIHQudGFibGVfY2FwdGlvbjoKICAgICAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIjIENhcHRpb246IHt0LnRhYmxlX2NhcHRpb259IikKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiLCIuam9pbihmJyJ7aH0iJyBmb3IgaCBpbiB0LmhlYWRlcnMpKQogICAgICAgICAgICAgICAgZm9yIHJvdyBpbiB0LnJvd3M6CiAgICAgICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIsIi5qb2luKGYnIntjfSInIGZvciBjIGluIHJvdykpCiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCiAgICAgICAgICAgIGNvbnRlbnQgPSAiXG4iLmpvaW4obGluZXMpCiAgICAgICAgZWxzZTogICMgbWFya2Rvd24KICAgICAgICAgICAgbGluZXMgPSBbXQogICAgICAgICAgICBmb3IgaSwgdCBpbiBlbnVtZXJhdGUodGFibGVzKToKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIlxuKipUYWJsZSB7aSArIDF9IChwYWdlIHt0LnBhZ2UgKyAxfSkqKiIpCiAgICAgICAgICAgICAgICBpZiB0LnRhYmxlX2NhcHRpb246CiAgICAgICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiKnt0LnRhYmxlX2NhcHRpb259KiIpCiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoInwgIiArICIgfCAiLmpvaW4odC5oZWFkZXJzKSArICIgfCIpCiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoInwgIiArICIgfCAiLmpvaW4oWyItLS0iXSAqIGxlbih0LmhlYWRlcnMpKSArICIgfCIpCiAgICAgICAgICAgICAgICBmb3Igcm93IGluIHQucm93czoKICAgICAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoInwgIiArICIgfCAiLmpvaW4oc3RyKGMpIGZvciBjIGluIHJvdykgKyAiIHwiKQogICAgICAgICAgICBjb250ZW50ID0gIlxuIi5qb2luKGxpbmVzKQoKICAgICAgICAjIFdyaXRlIHRvIGZpbGUKICAgICAgICBQYXRoKG91dHB1dCkucGFyZW50Lm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgICAgICB3aXRoIG9wZW4ob3V0cHV0LCAidyIsIGVuY29kaW5nPSJ1dGYtOCIpIGFzIGY6CiAgICAgICAgICAgIGYud3JpdGUoY29udGVudCkKCiAgICAgICAgcHJpbnRfc3VjY2VzcyhmIkV4cG9ydGVkIHtsZW4odGFibGVzKX0gdGFibGUocykgdG86IHtvdXRwdXR9IikKCiAgICBmaW5hbGx5OgogICAgICAgIGRiLmNsb3NlKCkKCgpkZWYgdmlzdWFsX2NoYXJ0KHBhcGVyX2lkOiBzdHIsIGluZGV4OiBzdHIsIGxpc3RfY2hhcnRzOiBib29sLCBmaWd1cmU6IHN0ciwgdGFibGU6IHN0cik6CiAgICAiIiJJbmRleCBmaWd1cmVzL3RhYmxlcyB0byBLRyBhbmQgcXVlcnkgdGhlbS4iIiIKICAgIGlmIG5vdCBfSEFTX0NIQVJUX0tHOgogICAgICAgIHByaW50X2Vycm9yKCJDaGFydCBLRyBub3QgYXZhaWxhYmxlLiBJbnN0YWxsIHJlcXVpcmVkIGRlcGVuZGVuY2llcy4iKQogICAgICAgIHN5cy5leGl0KDEpCgogICAgaWYgbm90IHBhcGVyX2lkOgogICAgICAgIHByaW50X2Vycm9yKCJQYXBlciBJRCByZXF1aXJlZC4gVXNhZ2U6IGFpcm9zIHZpc3VhbCBjaGFydCA8cGFwZXJfaWQ+IikKICAgICAgICBzeXMuZXhpdCgxKQoKICAgIGtnID0gS0dNYW5hZ2VyKCkKICAgIGludGVnID0gS0dJbnRlZ3JhdGlvbihrZykKICAgIGV4dHJhY3RvciA9IENoYXJ0S0dFeHRyYWN0b3Ioa2cpCgogICAgIyBJbmRleCBtb2RlCiAgICBpZiBpbmRleDoKICAgICAgICBwZGZfcGF0aCA9IFBhdGgoaW5kZXgpCiAgICAgICAgaWYgbm90IHBkZl9wYXRoLmV4aXN0cygpOgogICAgICAgICAgICBwcmludF9lcnJvcihmIlBERiBub3QgZm91bmQ6IHtpbmRleH0iKQogICAgICAgICAgICBzeXMuZXhpdCgxKQoKICAgICAgICAjIEdldCBwYXBlciB0aXRsZSBmcm9tIERCIGlmIGF2YWlsYWJsZQogICAgICAgIGRiID0gRGF0YWJhc2UoKQogICAgICAgIHBhcGVyID0gZGIuZ2V0X3BhcGVyKHBhcGVyX2lkKQogICAgICAgIHBhcGVyX3RpdGxlID0gcGFwZXIudGl0bGUgaWYgcGFwZXIgZWxzZSBwYXBlcl9pZAogICAgICAgIGRiLmNsb3NlKCkKCiAgICAgICAgcHJpbnRfaW5mbyhmIkluZGV4aW5nIGNoYXJ0cyBmcm9tIHtwZGZfcGF0aH0gZm9yIHBhcGVyOiB7cGFwZXJfaWR9IikKICAgICAgICB0cnk6CiAgICAgICAgICAgIGZpZ19ub2RlcywgdGJsX25vZGVzID0gZXh0cmFjdG9yLmV4dHJhY3RfYW5kX2luZGV4KHN0cihwZGZfcGF0aCksIHBhcGVyX2lkLCBwYXBlcl90aXRsZSkKICAgICAgICAgICAgaW50ZWcub25fY2hhcnRzX2luZGV4ZWQocGFwZXJfaWQsIGZpZ19ub2RlcywgdGJsX25vZGVzKQogICAgICAgICAgICBwcmludF9zdWNjZXNzKGYiSW5kZXhlZCB7bGVuKGZpZ19ub2Rlcyl9IGZpZ3VyZXMgYW5kIHtsZW4odGJsX25vZGVzKX0gdGFibGVzIikKICAgICAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgICAgIHByaW50X2Vycm9yKGYiSW5kZXhpbmcgZmFpbGVkOiB7ZX0iKQogICAgICAgICAgICBzeXMuZXhpdCgxKQogICAgICAgIHJldHVybgoKICAgICMgUXVlcnkgbW9kZSAtIGxpc3QKICAgIGlmIGxpc3RfY2hhcnRzOgogICAgICAgIGZpZ3VyZXMgPSBleHRyYWN0b3IuZ2V0X3BhcGVyX2ZpZ3VyZXMocGFwZXJfaWQpCiAgICAgICAgdGFibGVzID0gZXh0cmFjdG9yLmdldF9wYXBlcl90YWJsZXMocGFwZXJfaWQpCgogICAgICAgIGZyb20gcmljaC5jb25zb2xlIGltcG9ydCBDb25zb2xlCgogICAgICAgIGMgPSBDb25zb2xlKCkKICAgICAgICBjLnJ1bGUoZiJbYm9sZCAjRkY4MjcyXSAgQ2hhcnRzIGZvciB7cGFwZXJfaWR9ICBbL10iKQogICAgICAgIGMucHJpbnQoKQoKICAgICAgICBpZiBmaWd1cmVzOgogICAgICAgICAgICBjLnByaW50KCJbYm9sZF1GaWd1cmVzOlsvXSIpCiAgICAgICAgICAgIGZvciBmaWcgaW4gZmlndXJlczoKICAgICAgICAgICAgICAgIHByb3BzID0gZmlnLmdldCgicHJvcGVydGllcyIsIHt9KQogICAgICAgICAgICAgICAgcGFnZSA9IHByb3BzLmdldCgicGFnZSIsICI/IikKICAgICAgICAgICAgICAgIGRlc2MgPSBwcm9wcy5nZXQoImRlc2NyaXB0aW9uIiwgIiIpWzo4MF0KICAgICAgICAgICAgICAgIGMucHJpbnQoZiIgIFsjQTVENUZFXeKAolsvXSB7ZmlnWydsYWJlbCddfSAocC57cGFnZSArIDF9KSIpCiAgICAgICAgICAgICAgICBpZiBkZXNjOgogICAgICAgICAgICAgICAgICAgIGMucHJpbnQoZiIgICAge2Rlc2N9Li4uIikKICAgICAgICAgICAgICAgIGMucHJpbnQoKQoKICAgICAgICBpZiB0YWJsZXM6CiAgICAgICAgICAgIGMucHJpbnQoIltib2xkXVRhYmxlczpbL10iKQogICAgICAgICAgICBmb3IgdGJsIGluIHRhYmxlczoKICAgICAgICAgICAgICAgIHByb3BzID0gdGJsLmdldCgicHJvcGVydGllcyIsIHt9KQogICAgICAgICAgICAgICAgcGFnZSA9IHByb3BzLmdldCgicGFnZSIsICI/IikKICAgICAgICAgICAgICAgIGRlc2MgPSBwcm9wcy5nZXQoImRlc2NyaXB0aW9uIiwgIiIpWzo4MF0KICAgICAgICAgICAgICAgIGMucHJpbnQoZiIgIFsjQTVENUZFXeKAolsvXSB7dGJsWydsYWJlbCddfSAocC57cGFnZSArIDF9KSIpCiAgICAgICAgICAgICAgICBpZiBkZXNjOgogICAgICAgICAgICAgICAgICAgIGMucHJpbnQoZiIgICAge2Rlc2N9Li4uIikKICAgICAgICAgICAgICAgIGMucHJpbnQoKQoKICAgICAgICBpZiBub3QgZmlndXJlcyBhbmQgbm90IHRhYmxlczoKICAgICAgICAgICAgcHJpbnRfaW5mbyhmIk5vIGNoYXJ0cyBpbmRleGVkIGZvciB7cGFwZXJfaWR9IikKICAgICAgICAgICAgcHJpbnRfaW5mbygiUnVuOiBhaXJvcyB2aXN1YWwgY2hhcnQgPHBhcGVyX2lkPiAtLWluZGV4IHBhcGVyLnBkZiIpCgogICAgICAgIHJldHVybgoKICAgICMgUXVlcnkgc3BlY2lmaWMgZmlndXJlCiAgICBpZiBmaWd1cmU6CiAgICAgICAgZmlnX25vZGUgPSBleHRyYWN0b3IucXVlcnlfZmlndXJlKHBhcGVyX2lkLCBmaWd1cmUpCiAgICAgICAgaWYgZmlnX25vZGU6CiAgICAgICAgICAgIHByb3BzID0gZmlnX25vZGUuZ2V0KCJwcm9wZXJ0aWVzIiwge30pCiAgICAgICAgICAgIHByaW50X3N1Y2Nlc3MoZiJGaWd1cmU6IHtmaWdfbm9kZVsnbGFiZWwnXX0iKQogICAgICAgICAgICBwcmludChmIlBhZ2U6IHtwcm9wcy5nZXQoJ3BhZ2UnLCAnPycpICsgMX0iKQogICAgICAgICAgICBwcmludChmIkNhcHRpb246IHtwcm9wcy5nZXQoJ2NhcHRpb24nLCAnTi9BJyl9IikKICAgICAgICAgICAgcHJpbnQoZiJcbkRlc2NyaXB0aW9uOlxue3Byb3BzLmdldCgnZGVzY3JpcHRpb24nLCAnTi9BJyl9IikKICAgICAgICAgICAgaWYgcHJvcHMuZ2V0KCJpbWFnZV9wYXRoIik6CiAgICAgICAgICAgICAgICBwcmludChmIlxuSW1hZ2U6IHtwcm9wcy5nZXQoJ2ltYWdlX3BhdGgnKX0iKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIHByaW50X2Vycm9yKGYiRmlndXJlICd7ZmlndXJlfScgbm90IGZvdW5kIGZvciB7cGFwZXJfaWR9IikKICAgICAgICByZXR1cm4KCiAgICAjIFF1ZXJ5IHNwZWNpZmljIHRhYmxlCiAgICBpZiB0YWJsZToKICAgICAgICB0YWJsZXMgPSBleHRyYWN0b3IuZ2V0X3BhcGVyX3RhYmxlcyhwYXBlcl9pZCkKICAgICAgICB0Ymxfbm9kZSA9IE5vbmUKICAgICAgICBmb3IgdCBpbiB0YWJsZXM6CiAgICAgICAgICAgIGlmIHRhYmxlLmxvd2VyKCkgaW4gdFsibGFiZWwiXS5sb3dlcigpOgogICAgICAgICAgICAgICAgdGJsX25vZGUgPSB0CiAgICAgICAgICAgICAgICBicmVhawoKICAgICAgICBpZiB0Ymxfbm9kZToKICAgICAgICAgICAgcHJvcHMgPSB0Ymxfbm9kZS5nZXQoInByb3BlcnRpZXMiLCB7fSkKICAgICAgICAgICAgcHJpbnRfc3VjY2VzcyhmIlRhYmxlOiB7dGJsX25vZGVbJ2xhYmVsJ119IikKICAgICAgICAgICAgcHJpbnQoZiJQYWdlOiB7cHJvcHMuZ2V0KCdwYWdlJywgJz8nKSArIDF9IikKICAgICAgICAgICAgcHJpbnQoZiJDYXB0aW9uOiB7cHJvcHMuZ2V0KCdjYXB0aW9uJywgJ04vQScpfSIpCiAgICAgICAgICAgIHByaW50KGYiXG5EZXNjcmlwdGlvbjpcbntwcm9wcy5nZXQoJ2Rlc2NyaXB0aW9uJywgJ04vQScpfSIpCiAgICAgICAgICAgIHByaW50KGYiXG5NYXJrZG93bjpcbntwcm9wcy5nZXQoJ21hcmtkb3duJywgJ04vQScpfSIpCiAgICAgICAgZWxzZToKICAgICAgICAgICAgcHJpbnRfZXJyb3IoZiJUYWJsZSAne3RhYmxlfScgbm90IGZvdW5kIGZvciB7cGFwZXJfaWR9IikKICAgICAgICByZXR1cm4KCiAgICAjIE5vIHNwZWNpZmljIGFjdGlvbiAtIHNob3cgaGVscAogICAgcHJpbnRfaW5mbygiVXNhZ2U6IikKICAgIHByaW50KCIgIGFpcm9zIHZpc3VhbCBjaGFydCA8cGFwZXJfaWQ+IC0taW5kZXggcGFwZXIucGRmICAgIyBJbmRleCBjaGFydHMiKQogICAgcHJpbnQoIiAgYWlyb3MgdmlzdWFsIGNoYXJ0IDxwYXBlcl9pZD4gLS1saXN0ICAgICAgICAgICAgICAjIExpc3QgYWxsIGNoYXJ0cyIpCiAgICBwcmludCgiICBhaXJvcyB2aXN1YWwgY2hhcnQgPHBhcGVyX2lkPiAtZiAnRmlndXJlIDMnICAgICAjIFF1ZXJ5IGZpZ3VyZSIpCiAgICBwcmludCgiICBhaXJvcyB2aXN1YWwgY2hhcnQgPHBhcGVyX2lkPiAtdCAnVGFibGUgMScgICAgICAgIyBRdWVyeSB0YWJsZSIpCg==
+"""
+Visual Extraction CLI Command
+
+Usage:
+    airos visual extract paper.pdf --output figures/
+    airos visual extract paper.pdf --output figures/ --dpi 200
+    airos visual extract paper.pdf --save-db 2604.22754
+"""
+from __future__ import annotations
+
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Optional
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+from pdf.visual import VisualExtractor
+from db.database import Database, ExperimentTableRecord
+from cli._shared import print_success, print_error, print_info
+from cli.warp import WarpBlocks
+
+# Chart KG integration
+try:
+    from pdf.chart_kg import ChartKGExtractor
+    from kg.manager import KGManager
+    from kg.integration import KGIntegration
+    _HAS_CHART_KG = True
+except ImportError:
+    _HAS_CHART_KG = False
+
+
+def _build_visual_parser(subparsers):
+    p = subparsers.add_parser("visual", help="Extract visual content from PDFs")
+    sub = p.add_subparsers(dest="visual_cmd", help="Visual commands")
+
+    # extract command
+    extract_p = sub.add_parser("extract", help="Extract figures, formulas, tables")
+    extract_p.add_argument("pdf", help="Path to PDF file")
+    extract_p.add_argument("--output", "-o", default=None,
+                          help="Output directory for extracted images")
+    extract_p.add_argument("--dpi", type=int, default=150,
+                          help="DPI for rendered formulas (default: 150)")
+    extract_p.add_argument("--format", "-f", default="markdown",
+                          choices=["markdown", "json"],
+                          help="Output format for tables")
+    extract_p.add_argument("--save-db", metavar="PAPER_ID", default=None,
+                          help="Save tables to database with this paper_id")
+    extract_p.set_defaults(func=lambda a: visual_extract.callback(
+        pdf=a.pdf, output=a.output, dpi=a.dpi, format=a.format, save_db=a.save_db))
+
+    # query command - query stored tables
+    query_p = sub.add_parser("query", help="Query stored tables from database")
+    query_p.add_argument("paper_id", help="Paper ID to query tables for")
+    query_p.add_argument("--page", type=int, default=None,
+                        help="Filter by page number")
+    query_p.add_argument("--keyword", "-k", default=None,
+                        help="Search in table content")
+    query_p.add_argument("--format", "-f", default="markdown",
+                        choices=["markdown", "json", "csv"],
+                        help="Output format")
+    query_p.set_defaults(func=lambda a: visual_query.callback(
+        paper_id=a.paper_id, page=a.page, keyword=a.keyword, format=a.format))
+
+    # list command - list papers with stored tables
+    list_p = sub.add_parser("list", help="List papers with stored tables")
+    list_p.add_argument("--limit", type=int, default=20,
+                       help="Maximum number of results (default: 20)")
+    list_p.set_defaults(func=lambda a: visual_list.callback(limit=a.limit))
+
+    # export command - export tables to file
+    export_p = sub.add_parser("export", help="Export stored tables to file")
+    export_p.add_argument("paper_id", help="Paper ID to export tables from")
+    export_p.add_argument("output", help="Output file path")
+    export_p.add_argument("--format", "-f", default="csv",
+                        choices=["csv", "json", "markdown"],
+                        help="Output format (default: csv)")
+    export_p.add_argument("--page", type=int, default=None,
+                         help="Filter by page number")
+    export_p.add_argument("--keyword", "-k", default=None,
+                         help="Search in table content")
+    export_p.set_defaults(func=lambda a: visual_export.callback(
+        paper_id=a.paper_id, output=a.output, format=a.format, page=a.page, keyword=a.keyword))
+
+    # chart command - index figures/tables to KG and query
+    chart_p = sub.add_parser("chart", help="Index figures/tables to KG and query them")
+    chart_p.add_argument("paper_id", nargs="?", default=None, help="Paper ID to index/query")
+    chart_p.add_argument("--index", "-i", metavar="PDF_PATH", default=None,
+                        help="Index figures/tables from PDF into KG")
+    chart_p.add_argument("--list", "-l", action="store_true",
+                        help="List all indexed figures/tables for the paper")
+    chart_p.add_argument("--figure", "-f", metavar="LABEL", default=None,
+                        help="Query specific figure, e.g. 'Figure 3'")
+    chart_p.add_argument("--table", "-t", metavar="LABEL", default=None,
+                        help="Query specific table, e.g. 'Table 1'")
+    chart_p.set_defaults(func=lambda a: visual_chart.callback(
+        paper_id=a.paper_id, index=a.index, list_charts=a.list,
+        figure=a.figure, table=a.table))
+
+    p.set_defaults(func=lambda a: _show_visual_status())
+
+
+def _show_visual_status():
+    """Show visual extraction capabilities (used by CLI registry)."""
+    from rich.console import Console
+    c = Console()
+    c.rule("[bold #FF8272]  Visual Extraction  [/]")
+    print()
+    rows = [
+        ["[#A5D5FE]✓[/]", "Figure extraction", "PNG/JPG from PDF pages"],
+        ["[#A5D5FE]✓[/]", "LaTeX rendering", "Formulas as high-DPI images"],
+        ["[#A5D5FE]✓[/]", "Table extraction", "Markdown + CSV + JSON"],
+    ]
+    c.print(WarpBlocks.table(["", "Capability", "Format"], rows, title="Supported Types"))
+    c.print()
+    print(WarpBlocks.section(
+        "Usage",
+        "[#A5D5FE]airos visual extract[/] paper.pdf --output figures/",
+        "[#A5D5FE]airos visual query[/] 2604.22754",
+        "[#A5D5FE]airos visual list[/]",
+    ))
+
+
+def visual_extract(pdf: str, output: str, dpi: int, format: str, save_db: Optional[str] = None):
+    """Extract figures, formulas, and tables from PDF."""
+    pdf_path = Path(pdf)
+
+    if not pdf_path.exists():
+        print_error(f"PDF not found: {pdf}")
+        sys.exit(1)
+
+    output_dir = Path(output) if output else None
+    paper_id = pdf_path.stem
+
+    print_info(f"Extracting visual content from: {pdf}")
+    print_info(f"Output directory: {output_dir or 'memory only'}")
+
+    try:
+        extractor = VisualExtractor(output_dir=str(output_dir) if output_dir else None, dpi=dpi)
+        result = extractor.extract_visual_content(str(pdf_path), paper_id)
+
+        # Summary
+        print_success("\nExtraction complete!")
+        print_info(f"  Figures: {len(result.figures)}")
+        print_info(f"  Formulas: {len(result.rendered_formulas)}")
+        print_info(f"  Tables: {len(result.tables_markdown)}")
+
+        # Save tables to database
+        if save_db and result.tables_markdown:
+            db = Database()
+
+            # Auto-create paper record if it doesn't exist
+            existing = db.get_paper(save_db)
+            if not existing:
+                db.upsert_paper(
+                    paper_id=save_db,
+                    source='visual_extract',
+                    title=f'Paper {save_db}',
+                    abstract=f'Extracted from {pdf_path.name}',
+                )
+                print_info(f"Created paper record: {save_db}")
+
+            tables = [
+                ExperimentTableRecord(
+                    id=0,  # Auto-assigned
+                    paper_id=save_db,
+                    table_caption=t.caption,
+                    page=t.page,
+                    headers=t.headers,
+                    rows=t.rows,
+                    bbox_x0=0,
+                    bbox_y0=0,
+                    bbox_x1=0,
+                    bbox_y1=0,
+                    created_at=datetime.now(timezone.utc).isoformat(),
+                )
+                for t in result.tables_markdown
+            ]
+            db.upsert_experiment_tables(save_db, tables)
+            db.close()
+            print_success(f"Saved {len(tables)} tables to database as: {save_db}")
+
+        # Print tables as markdown
+        if result.tables_markdown:
+            print_success("\n--- Tables ---")
+            for i, table in enumerate(result.tables_markdown):
+                print(f"\n**Table {i + 1} (page {table.page + 1})**")
+                if table.caption:
+                    print(f"*{table.caption}*")
+                print(table.markdown)
+
+        # Save results as JSON if requested
+        if format == "json" and output_dir:
+            import json
+            json_path = output_dir / f"{paper_id}_visual.json"
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump({
+                    "paper_id": result.paper_id,
+                    "figures": [
+                        {"page": fig.page, "caption": fig.caption, "image_path": fig.image_path}
+                        for fig in result.figures
+                    ],
+                    "formulas": [
+                        {"latex": f.latex, "is_display": f.is_display, "page": f.page}
+                        for f in result.rendered_formulas
+                    ],
+                    "tables": [
+                        {"headers": t.headers, "rows": t.rows, "page": t.page, "caption": t.caption}
+                        for t in result.tables_markdown
+                    ],
+                }, f, indent=2, ensure_ascii=False)
+            print_success(f"\nJSON saved: {json_path}")
+
+    except Exception as e:
+        print_error(f"Extraction failed: {e}")
+        sys.exit(1)
+
+
+def visual_status():
+    """Show visual extraction capabilities."""
+    from rich.console import Console
+    c = Console()
+    c.rule("[bold #FF8272]  Visual Extraction  [/]")
+    print()
+    rows = [
+        ["[#A5D5FE]✓[/]", "Figure extraction", "PNG/JPG from PDF pages"],
+        ["[#A5D5FE]✓[/]", "LaTeX rendering", "Formulas as high-DPI images"],
+        ["[#A5D5FE]✓[/]", "Table extraction", "Markdown + CSV + JSON"],
+    ]
+    c.print(WarpBlocks.table(["", "Capability", "Format"], rows, title="Supported Types"))
+    c.print()
+    print(WarpBlocks.section(
+        "Usage",
+        "[#A5D5FE]airos visual extract[/] paper.pdf --output figures/",
+        "[#A5D5FE]airos visual query[/] 2604.22754",
+        "[#A5D5FE]airos visual list[/]",
+        width=60
+    ))
+
+
+def visual_query(paper_id: str, page: int, keyword: str, format: str):
+    """Query stored tables from database."""
+    db = Database()
+    try:
+        tables = db.get_experiment_tables(paper_id)
+
+        if not tables:
+            print_error(f"No tables found for paper: {paper_id}")
+            sys.exit(1)
+
+        # Filter by page if specified
+        if page is not None:
+            tables = [t for t in tables if t.page == page - 1]  # 0-indexed
+
+        # Filter by keyword if specified
+        if keyword:
+            keyword_lower = keyword.lower()
+            tables = [
+                t for t in tables
+                if keyword_lower in t.table_caption.lower()
+                or any(keyword_lower in h.lower() for h in t.headers)
+                or any(keyword_lower in str(cell).lower() for row in t.rows for cell in row)
+            ]
+
+        if not tables:
+            print_error("No tables match the query")
+            sys.exit(1)
+
+        print_success(f"Found {len(tables)} table(s) for paper: {paper_id}")
+
+        if format == "json":
+            import json
+            result = {
+                "paper_id": paper_id,
+                "tables": [
+                    {
+                        "id": t.id,
+                        "page": t.page + 1,
+                        "caption": t.table_caption,
+                        "headers": t.headers,
+                        "rows": t.rows,
+                    }
+                    for t in tables
+                ],
+            }
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+        elif format == "csv":
+            for t in tables:
+                print(f"\n# Table {t.id} (page {t.page + 1})")
+                if t.table_caption:
+                    print(f"# Caption: {t.table_caption}")
+                print(",".join(t.headers))
+                for row in t.rows:
+                    print(",".join(f'"{str(c)}"' for c in row))
+        else:  # markdown
+            for i, t in enumerate(tables):
+                print(f"\n**Table {i + 1} (page {t.page + 1})**")
+                if t.table_caption:
+                    print(f"*{t.table_caption}*")
+                print("| " + " | ".join(t.headers) + " |")
+                print("| " + " | ".join(["---"] * len(t.headers)) + " |")
+                for row in t.rows:
+                    print("| " + " | ".join(str(c) for c in row) + " |")
+
+    finally:
+        db.close()
+
+
+def visual_list(limit: int):
+    """List papers with stored tables."""
+    db = Database()
+    try:
+        cursor = db.conn.execute("""
+            SELECT paper_id, COUNT(*) as table_count, MAX(page) + 1 as max_page
+            FROM experiment_tables
+            GROUP BY paper_id
+            ORDER BY MAX(created_at) DESC
+            LIMIT ?
+        """, (limit,))
+        raw_rows = cursor.fetchall()
+
+        if not raw_rows:
+            from rich.console import Console
+            c = Console()
+            c.rule("[bold #FF8272]  Visual Tables  [/]")
+            c.print()
+            print(WarpBlocks.panel("No Results", "[#8E8E8E]No papers with stored tables found[/]"))
+            return
+
+        from rich.console import Console
+        c = Console()
+        c.rule("[bold #FF8272]  Visual Tables  [/]")
+        c.print()
+        rows = []
+        for row in raw_rows:
+            badge = "[#B4FA72]●[/]" if row[1] > 0 else "[#8E8E8E]○[/]"
+            rows.append([badge, row[0], str(row[1]), str(row[2])])
+        c.print(WarpBlocks.table(
+            ["", "Paper ID", "Tables", "Pages"],
+            rows,
+            title=f"Papers with Stored Tables ({len(raw_rows)})"
+        ))
+
+    finally:
+        db.close()
+
+
+def visual_export(paper_id: str, output: str, format: str, page: int, keyword: str):
+    """Export stored tables to a file."""
+    db = Database()
+    try:
+        tables = db.get_experiment_tables(paper_id)
+
+        if not tables:
+            print_error(f"No tables found for paper: {paper_id}")
+            sys.exit(1)
+
+        # Filter by page if specified
+        if page is not None:
+            tables = [t for t in tables if t.page == page - 1]
+
+        # Filter by keyword if specified
+        if keyword:
+            keyword_lower = keyword.lower()
+            tables = [
+                t for t in tables
+                if keyword_lower in t.table_caption.lower()
+                or any(keyword_lower in h.lower() for h in t.headers)
+                or any(keyword_lower in str(cell).lower() for row in t.rows for cell in row)
+            ]
+
+        if not tables:
+            print_error("No tables match the query")
+            sys.exit(1)
+
+        # Generate content
+        if format == "json":
+            import json
+            content = json.dumps({
+                "paper_id": paper_id,
+                "tables": [
+                    {
+                        "id": t.id,
+                        "page": t.page + 1,
+                        "caption": t.table_caption,
+                        "headers": t.headers,
+                        "rows": t.rows,
+                    }
+                    for t in tables
+                ],
+            }, indent=2, ensure_ascii=False)
+        elif format == "csv":
+            lines = []
+            for t in tables:
+                lines.append(f"# Table {t.id} (page {t.page + 1})")
+                if t.table_caption:
+                    lines.append(f"# Caption: {t.table_caption}")
+                lines.append(",".join(f'"{h}"' for h in t.headers))
+                for row in t.rows:
+                    lines.append(",".join(f'"{c}"' for c in row))
+                lines.append("")
+            content = "\n".join(lines)
+        else:  # markdown
+            lines = []
+            for i, t in enumerate(tables):
+                lines.append(f"\n**Table {i + 1} (page {t.page + 1})**")
+                if t.table_caption:
+                    lines.append(f"*{t.table_caption}*")
+                lines.append("| " + " | ".join(t.headers) + " |")
+                lines.append("| " + " | ".join(["---"] * len(t.headers)) + " |")
+                for row in t.rows:
+                    lines.append("| " + " | ".join(str(c) for c in row) + " |")
+            content = "\n".join(lines)
+
+        # Write to file
+        Path(output).parent.mkdir(parents=True, exist_ok=True)
+        with open(output, "w", encoding="utf-8") as f:
+            f.write(content)
+
+        print_success(f"Exported {len(tables)} table(s) to: {output}")
+
+    finally:
+        db.close()
+
+
+def visual_chart(paper_id: str, index: str, list_charts: bool, figure: str, table: str):
+    """Index figures/tables to KG and query them."""
+    if not _HAS_CHART_KG:
+        print_error("Chart KG not available. Install required dependencies.")
+        sys.exit(1)
+
+    if not paper_id:
+        print_error("Paper ID required. Usage: airos visual chart <paper_id>")
+        sys.exit(1)
+
+    kg = KGManager()
+    integ = KGIntegration(kg)
+    extractor = ChartKGExtractor(kg)
+
+    # Index mode
+    if index:
+        pdf_path = Path(index)
+        if not pdf_path.exists():
+            print_error(f"PDF not found: {index}")
+            sys.exit(1)
+
+        # Get paper title from DB if available
+        db = Database()
+        paper = db.get_paper(paper_id)
+        paper_title = paper.title if paper else paper_id
+        db.close()
+
+        print_info(f"Indexing charts from {pdf_path} for paper: {paper_id}")
+        try:
+            fig_nodes, tbl_nodes = extractor.extract_and_index(
+                str(pdf_path), paper_id, paper_title
+            )
+            integ.on_charts_indexed(paper_id, fig_nodes, tbl_nodes)
+            print_success(f"Indexed {len(fig_nodes)} figures and {len(tbl_nodes)} tables")
+        except Exception as e:
+            print_error(f"Indexing failed: {e}")
+            sys.exit(1)
+        return
+
+    # Query mode - list
+    if list_charts:
+        figures = extractor.get_paper_figures(paper_id)
+        tables = extractor.get_paper_tables(paper_id)
+
+        from rich.console import Console
+        c = Console()
+        c.rule(f"[bold #FF8272]  Charts for {paper_id}  [/]")
+        c.print()
+
+        if figures:
+            c.print("[bold]Figures:[/]")
+            for fig in figures:
+                props = fig.get("properties", {})
+                page = props.get("page", "?")
+                desc = props.get("description", "")[:80]
+                c.print(f"  [#A5D5FE]•[/] {fig['label']} (p.{page + 1})")
+                if desc:
+                    c.print(f"    {desc}...")
+                c.print()
+
+        if tables:
+            c.print("[bold]Tables:[/]")
+            for tbl in tables:
+                props = tbl.get("properties", {})
+                page = props.get("page", "?")
+                desc = props.get("description", "")[:80]
+                c.print(f"  [#A5D5FE]•[/] {tbl['label']} (p.{page + 1})")
+                if desc:
+                    c.print(f"    {desc}...")
+                c.print()
+
+        if not figures and not tables:
+            print_info(f"No charts indexed for {paper_id}")
+            print_info("Run: airos visual chart <paper_id> --index paper.pdf")
+
+        return
+
+    # Query specific figure
+    if figure:
+        fig_node = extractor.query_figure(paper_id, figure)
+        if fig_node:
+            props = fig_node.get("properties", {})
+            print_success(f"Figure: {fig_node['label']}")
+            print(f"Page: {props.get('page', '?') + 1}")
+            print(f"Caption: {props.get('caption', 'N/A')}")
+            print(f"\nDescription:\n{props.get('description', 'N/A')}")
+            if props.get("image_path"):
+                print(f"\nImage: {props.get('image_path')}")
+        else:
+            print_error(f"Figure '{figure}' not found for {paper_id}")
+        return
+
+    # Query specific table
+    if table:
+        tables = extractor.get_paper_tables(paper_id)
+        tbl_node = None
+        for t in tables:
+            if table.lower() in t["label"].lower():
+                tbl_node = t
+                break
+
+        if tbl_node:
+            props = tbl_node.get("properties", {})
+            print_success(f"Table: {tbl_node['label']}")
+            print(f"Page: {props.get('page', '?') + 1}")
+            print(f"Caption: {props.get('caption', 'N/A')}")
+            print(f"\nDescription:\n{props.get('description', 'N/A')}")
+            print(f"\nMarkdown:\n{props.get('markdown', 'N/A')}")
+        else:
+            print_error(f"Table '{table}' not found for {paper_id}")
+        return
+
+    # No specific action - show help
+    print_info("Usage:")
+    print("  airos visual chart <paper_id> --index paper.pdf   # Index charts")
+    print("  airos visual chart <paper_id> --list              # List all charts")
+    print("  airos visual chart <paper_id> -f 'Figure 3'     # Query figure")
+    print("  airos visual chart <paper_id> -t 'Table 1'       # Query table")

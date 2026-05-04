@@ -1,1 +1,395 @@
-IiIiTExNLVBvd2VyZWQgQXV0by1SZXZpZXdlciBTaW11bGF0b3IuCgpTaW11bGF0ZXMgYWR2ZXJzYXJpYWwgcGVlciByZXZpZXdlcnMgc3RyZXNzLXRlc3RpbmcgYSBwYXBlciBvciBwcm9wb3NhbC4KUGxheXMgaG9zdGlsZSByZXZpZXdlciBwZXJzb25hcyB0byBzdXJmYWNlIHdlYWtuZXNzZXMgYmVmb3JlIHN1Ym1pc3Npb24uCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGpzb24KaW1wb3J0IHRpbWUKaW1wb3J0IHV1aWQKZnJvbSBkYXRhY2xhc3NlcyBpbXBvcnQgYXNkaWN0LCBkYXRhY2xhc3MsIGZpZWxkCmZyb20gZGF0ZXRpbWUgaW1wb3J0IGRhdGV0aW1lCmZyb20gZW51bSBpbXBvcnQgRW51bQpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKZnJvbSB0eXBpbmcgaW1wb3J0IEFueSwgRGljdCwgTGlzdCwgT3B0aW9uYWwKCmZyb20gbGxtLmNvbnN0YW50cyBpbXBvcnQgTExNX0JBU0VfVVJMLCBMTE1fTU9ERUwKCgpjbGFzcyBSZXZpZXdEaW1lbnNpb24oRW51bSk6CiAgICBNRVRIT0RPTE9HWSA9ICJtZXRob2RvbG9neSIKICAgIE5PVkVMVFlfQ09OVFJJQlVUSU9OID0gIm5vdmVsdHlfY29udHJpYnV0aW9uIgogICAgQ0xBUklUWV9QUkVTRU5UQVRJT04gPSAiY2xhcml0eV9wcmVzZW50YXRpb24iCiAgICBCQVNFTElORVNfQ09NUEFSSVNPTiA9ICJiYXNlbGluZXNfY29tcGFyaXNvbiIKICAgIFJFUFJPRFVDSUJJTElUWSA9ICJyZXByb2R1Y2liaWxpdHkiCiAgICBPVkVSQ0xBSU1JTkcgPSAib3ZlcmNsYWltaW5nIgogICAgUkVMQVRFRF9XT1JLID0gInJlbGF0ZWRfd29yayIKCgpjbGFzcyBTZXZlcml0eShFbnVtKToKICAgIENSSVRJQ0FMID0gImNyaXRpY2FsIiAgIyBtdXN0IGZpeCBiZWZvcmUgc3VibWlzc2lvbgogICAgTUFKT1IgPSAibWFqb3IiICAjIHNpZ25pZmljYW50IHdlYWtuZXNzCiAgICBNSU5PUiA9ICJtaW5vciIgICMgb3B0aW9uYWwgaW1wcm92ZW1lbnQKICAgIFBSQUlTRSA9ICJwcmFpc2UiICAjIGdlbnVpbmVseSBnb29kCgoKQGRhdGFjbGFzcwpjbGFzcyBSZXZpZXdBbm5vdGF0aW9uOgogICAgIiIiQSBzaW5nbGUgYW5ub3RhdGVkIGNvbW1lbnQgb24gdGhlIHBhcGVyLiIiIgoKICAgIGFubm90YXRpb25faWQ6IHN0cgogICAgZGltZW5zaW9uOiBSZXZpZXdEaW1lbnNpb24KICAgIHNldmVyaXR5OiBTZXZlcml0eQogICAgbG9jYXRpb246IHN0ciAgIyAiYWJzdHJhY3QiLCAiaW50cm9kdWN0aW9uIiwgInNlY3Rpb24gMyIsICJ0YWJsZSAyIiwgZXRjLgogICAgaGVhZGxpbmU6IHN0ciAgIyBvbmUtbGluZSBzdW1tYXJ5IG9mIHRoZSBpc3N1ZQogICAgY29tbWVudDogc3RyICAjIGRldGFpbGVkIHJldmlld2VyIGNvbW1lbnQKICAgIHN1Z2dlc3Rpb246IHN0ciA9ICIiICAjIGNvbmNyZXRlIGZpeCBzdWdnZXN0aW9uCiAgICBwYWdlX2xpbmU6IHN0ciA9ICIiICAjIG9wdGlvbmFsIHNwZWNpZmljIGxvY2F0aW9uCiAgICBjcmVhdGVkX2F0OiBmbG9hdCA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT10aW1lLnRpbWUpCgogICAgZGVmIHRvX2RpY3Qoc2VsZikgLT4gRGljdFtzdHIsIEFueV06CiAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgImFubm90YXRpb25faWQiOiBzZWxmLmFubm90YXRpb25faWQsCiAgICAgICAgICAgICJkaW1lbnNpb24iOiBzZWxmLmRpbWVuc2lvbi52YWx1ZSwKICAgICAgICAgICAgInNldmVyaXR5Ijogc2VsZi5zZXZlcml0eS52YWx1ZSwKICAgICAgICAgICAgImxvY2F0aW9uIjogc2VsZi5sb2NhdGlvbiwKICAgICAgICAgICAgImhlYWRsaW5lIjogc2VsZi5oZWFkbGluZSwKICAgICAgICAgICAgImNvbW1lbnQiOiBzZWxmLmNvbW1lbnQsCiAgICAgICAgICAgICJzdWdnZXN0aW9uIjogc2VsZi5zdWdnZXN0aW9uLAogICAgICAgICAgICAicGFnZV9saW5lIjogc2VsZi5wYWdlX2xpbmUsCiAgICAgICAgICAgICJjcmVhdGVkX2F0IjogZGF0ZXRpbWUuZnJvbXRpbWVzdGFtcChzZWxmLmNyZWF0ZWRfYXQpLmlzb2Zvcm1hdCgpLAogICAgICAgIH0KCgpAZGF0YWNsYXNzCmNsYXNzIFJldmlld1BlcnNvbmE6CiAgICAiIiJBIHNpbXVsYXRlZCByZXZpZXdlciBwZXJzb25hIHdpdGggYSBzcGVjaWZpYyBsZW5zLiIiIgoKICAgIG5hbWU6IHN0ciAgIyBlLmcuICJNZXRob2RvbG9neSBSZXZpZXdlciIKICAgIGZvY3VzOiBMaXN0W1Jldmlld0RpbWVuc2lvbl0KICAgIHRvbmU6IHN0ciAgIyAiaG9zdGlsZSIsICJjb25zdHJ1Y3RpdmUiLCAidGVjaG5pY2FsIgogICAgcHJpb3JpdHlfaW5zdHJ1Y3Rpb25zOiBzdHIKCgpAZGF0YWNsYXNzCmNsYXNzIFNpbXVsYXRlZFJldmlldzoKICAgICIiIkNvbXBsZXRlIHNpbXVsYXRlZCByZXZpZXcgZnJvbSBvbmUgcGVyc29uYS4iIiIKCiAgICByZXZpZXdfaWQ6IHN0cgogICAgcGVyc29uYTogc3RyCiAgICBvdmVyYWxsX3Njb3JlOiBmbG9hdCAgIyAx4oCTMTAKICAgIHN1bW1hcnk6IHN0ciAgIyAy4oCTMyBzZW50ZW5jZSBvdmVyYWxsIGFzc2Vzc21lbnQKICAgIHN0cmVuZ3RoczogTGlzdFtzdHJdCiAgICB3ZWFrbmVzc2VzOiBMaXN0W3N0cl0KICAgIGFubm90YXRpb25zOiBMaXN0W1Jldmlld0Fubm90YXRpb25dCiAgICByZWNvbW1lbmRhdGlvbjogc3RyICAjIGFjY2VwdCAvIGJvcmRlcmxpbmUgLyByZWplY3QgLyBzdHJvbmcgcmVqZWN0CiAgICBjcmVhdGVkX2F0OiBmbG9hdCA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT10aW1lLnRpbWUpCgogICAgZGVmIHRvX2RpY3Qoc2VsZikgLT4gRGljdFtzdHIsIEFueV06CiAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgInJldmlld19pZCI6IHNlbGYucmV2aWV3X2lkLAogICAgICAgICAgICAicGVyc29uYSI6IHNlbGYucGVyc29uYSwKICAgICAgICAgICAgIm92ZXJhbGxfc2NvcmUiOiBzZWxmLm92ZXJhbGxfc2NvcmUsCiAgICAgICAgICAgICJzdW1tYXJ5Ijogc2VsZi5zdW1tYXJ5LAogICAgICAgICAgICAic3RyZW5ndGhzIjogc2VsZi5zdHJlbmd0aHMsCiAgICAgICAgICAgICJ3ZWFrbmVzc2VzIjogc2VsZi53ZWFrbmVzc2VzLAogICAgICAgICAgICAiYW5ub3RhdGlvbnMiOiBbYS50b19kaWN0KCkgZm9yIGEgaW4gc2VsZi5hbm5vdGF0aW9uc10sCiAgICAgICAgICAgICJyZWNvbW1lbmRhdGlvbiI6IHNlbGYucmVjb21tZW5kYXRpb24sCiAgICAgICAgICAgICJjcmVhdGVkX2F0IjogZGF0ZXRpbWUuZnJvbXRpbWVzdGFtcChzZWxmLmNyZWF0ZWRfYXQpLmlzb2Zvcm1hdCgpLAogICAgICAgIH0KCgojIOKUgOKUgOKUgCBSZXZpZXcgUGVyc29uYXMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACgoKX1JFVklFV19QRVJTT05BUyA9IFsKICAgIFJldmlld1BlcnNvbmEoCiAgICAgICAgbmFtZT0iTWV0aG9kb2xvZ3kgUmV2aWV3ZXIiLAogICAgICAgIGZvY3VzPVsKICAgICAgICAgICAgUmV2aWV3RGltZW5zaW9uLk1FVEhPRE9MT0dZLAogICAgICAgICAgICBSZXZpZXdEaW1lbnNpb24uQkFTRUxJTkVTX0NPTVBBUklTT04sCiAgICAgICAgICAgIFJldmlld0RpbWVuc2lvbi5SRVBST0RVQ0lCSUxJVFksCiAgICAgICAgXSwKICAgICAgICB0b25lPSJob3N0aWxlIiwKICAgICAgICBwcmlvcml0eV9pbnN0cnVjdGlvbnM9IkZvY3VzIG9uIHdoZXRoZXIgdGhlIG1ldGhvZG9sb2d5IGlzIHNvdW5kLCB3aGV0aGVyIGV4cGVyaW1lbnRzIGFyZSBwcm9wZXJseSBjb250cm9sbGVkLCB3aGV0aGVyIGJhc2VsaW5lcyBhcmUgZmFpciBhbmQgY29tcGxldGUsIGFuZCB3aGV0aGVyIHRoZSBhcHByb2FjaCBjYW4gYmUgcmVwcm9kdWNlZCBmcm9tIHRoZSBkZXNjcmlwdGlvbi4iLAogICAgKSwKICAgIFJldmlld1BlcnNvbmEoCiAgICAgICAgbmFtZT0iQ29udHJpYnV0aW9ucyBSZXZpZXdlciIsCiAgICAgICAgZm9jdXM9W1Jldmlld0RpbWVuc2lvbi5OT1ZFTFRZX0NPTlRSSUJVVElPTiwgUmV2aWV3RGltZW5zaW9uLk9WRVJDTEFJTUlOR10sCiAgICAgICAgdG9uZT0iaG9zdGlsZSIsCiAgICAgICAgcHJpb3JpdHlfaW5zdHJ1Y3Rpb25zPSJGb2N1cyBvbiB3aGV0aGVyIHRoZSBjbGFpbWVkIGNvbnRyaWJ1dGlvbnMgYXJlIGdlbnVpbmVseSBub3ZlbCwgd2hldGhlciB0aGUgcGFwZXIgb3ZlcnN0YXRlZCBpdHMgc2lnbmlmaWNhbmNlLCB3aGV0aGVyIHRoZSBub3ZlbHR5IGNvbXBhcmVkIHRvIHByaW9yIHdvcmsgaXMgcmVhbCBvciBpbmNyZW1lbnRhbCwgYW5kIHdoZXRoZXIgdGhlICdub3ZlbCcgYXNwZWN0cyBhcmUgY2xlYXJseSBhcnRpY3VsYXRlZC4iLAogICAgKSwKICAgIFJldmlld1BlcnNvbmEoCiAgICAgICAgbmFtZT0iQ2xhcml0eSBSZXZpZXdlciIsCiAgICAgICAgZm9jdXM9W1Jldmlld0RpbWVuc2lvbi5DTEFSSVRZX1BSRVNFTlRBVElPTiwgUmV2aWV3RGltZW5zaW9uLlJFTEFURURfV09SS10sCiAgICAgICAgdG9uZT0iY29uc3RydWN0aXZlIiwKICAgICAgICBwcmlvcml0eV9pbnN0cnVjdGlvbnM9IkZvY3VzIG9uIHdoZXRoZXIgdGhlIHBhcGVyIGlzIGNsZWFybHkgd3JpdHRlbiwgd2hldGhlciB0aGUgcHJvYmxlbSBtb3RpdmF0aW9uIGlzIHVuZGVyc3RhbmRhYmxlLCB3aGV0aGVyIHJlbGF0ZWQgd29yayBhZGVxdWF0ZWx5IHNpdHVhdGVzIHRoZSBjb250cmlidXRpb24sIHdoZXRoZXIgZmlndXJlcyBhbmQgdGFibGVzIGFyZSBzZWxmLWNvbnRhaW5lZCwgYW5kIHdoZXRoZXIgdGhlIHdyaXRpbmcgb2JzY3VyZXMgd2Vha25lc3Nlcy4iLAogICAgKSwKICAgIFJldmlld1BlcnNvbmEoCiAgICAgICAgbmFtZT0iRXRoaWNzICYgU2NvcGUgUmV2aWV3ZXIiLAogICAgICAgIGZvY3VzPVtSZXZpZXdEaW1lbnNpb24uT1ZFUkNMQUlNSU5HLCBSZXZpZXdEaW1lbnNpb24uUkVQUk9EVUNJQklMSVRZXSwKICAgICAgICB0b25lPSJjcml0aWNhbCIsCiAgICAgICAgcHJpb3JpdHlfaW5zdHJ1Y3Rpb25zPSJGb2N1cyBvbiB3aGV0aGVyIHRoZSBwYXBlciBtYWtlcyBjbGFpbXMgYmV5b25kIHdoYXQgdGhlIGV4cGVyaW1lbnRzIHN1cHBvcnQsIHdoZXRoZXIgbGltaXRhdGlvbnMgYXJlIGhvbmVzdGx5IGRpc2N1c3NlZCwgd2hldGhlciBwb3RlbnRpYWwgbWlzdXNlIGNhc2VzIGFyZSBub3RlZCwgYW5kIHdoZXRoZXIgdGhlIHNjb3BlIG9mIGNsYWltZWQgYXBwbGljYWJpbGl0eSBtYXRjaGVzIHRoZSBldmlkZW5jZS4iLAogICAgKSwKXQoKCiMg4pSA4pSA4pSAIENvcmUgU2ltdWxhdG9yIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmNsYXNzIFJldmlld1NpbXVsYXRvcjoKICAgICIiIlNpbXVsYXRlIGFkdmVyc2FyaWFsIHBlZXIgcmV2aWV3ZXJzIGZvciBhIHBhcGVyIG9yIHByb3Bvc2FsLiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBwZXJzb25hczogT3B0aW9uYWxbTGlzdFtSZXZpZXdQZXJzb25hXV0gPSBOb25lKToKICAgICAgICBzZWxmLnBlcnNvbmFzID0gcGVyc29uYXMgb3IgX1JFVklFV19QRVJTT05BUwoKICAgIGRlZiByZXZpZXcoCiAgICAgICAgc2VsZiwKICAgICAgICBwYXBlcl90ZXh0OiBzdHIsCiAgICAgICAgdGl0bGU6IHN0ciA9ICIiLAogICAgICAgIHBlcnNvbmE6IE9wdGlvbmFsW1Jldmlld1BlcnNvbmFdID0gTm9uZSwKICAgICAgICBhcGlfa2V5OiBPcHRpb25hbFtzdHJdID0gTm9uZSwKICAgICAgICBiYXNlX3VybDogT3B0aW9uYWxbc3RyXSA9IE5vbmUsCiAgICAgICAgbW9kZWw6IE9wdGlvbmFsW3N0cl0gPSBOb25lLAogICAgKSAtPiBTaW11bGF0ZWRSZXZpZXc6CiAgICAgICAgIiIiUnVuIGEgc2ltdWxhdGVkIHJldmlldyBvbiB0aGUgcGFwZXIgdGV4dC4KCiAgICAgICAgQXJnczoKICAgICAgICAgICAgcGFwZXJfdGV4dDogRnVsbCB0ZXh0IG9mIHRoZSBwYXBlciAob3IgYWJzdHJhY3QgKyBpbnRybyBzZWN0aW9ucykKICAgICAgICAgICAgdGl0bGU6IFBhcGVyIHRpdGxlCiAgICAgICAgICAgIHBlcnNvbmE6IFNwZWNpZmljIHBlcnNvbmEgdG8gdXNlIChydW5zIGFsbCBpZiBOb25lKQogICAgICAgICAgICBhcGlfa2V5OiBMTE0gQVBJIGtleQogICAgICAgICAgICBiYXNlX3VybDogTExNIEFQSSBiYXNlIFVSTAogICAgICAgICAgICBtb2RlbDogTW9kZWwgbmFtZQoKICAgICAgICBSZXR1cm5zOgogICAgICAgICAgICBTaW11bGF0ZWRSZXZpZXcgd2l0aCBhbm5vdGF0aW9ucyBhbmQgb3ZlcmFsbCBhc3Nlc3NtZW50CiAgICAgICAgIiIiCiAgICAgICAgaW1wb3J0IG9zCgogICAgICAgIGlmIHBlcnNvbmEgaXMgTm9uZToKICAgICAgICAgICAgIyBSdW4gYWxsIHBlcnNvbmFzCiAgICAgICAgICAgIHJldmlld3MgPSBbXQogICAgICAgICAgICBmb3IgcCBpbiBzZWxmLnBlcnNvbmFzOgogICAgICAgICAgICAgICAgciA9IHNlbGYuX3Jldmlld193aXRoX3BlcnNvbmEocCwgcGFwZXJfdGV4dCwgdGl0bGUsIGFwaV9rZXksIGJhc2VfdXJsLCBtb2RlbCkKICAgICAgICAgICAgICAgIHJldmlld3MuYXBwZW5kKHIpCiAgICAgICAgICAgICMgUmV0dXJuIHRoZSBtb3N0IGNyaXRpY2FsIHJldmlldyAoaGlnaGVzdCBzZXZlcml0eSBhbm5vdGF0aW9ucykKICAgICAgICAgICAgcmV0dXJuIHNlbGYuX21lcmdlX3Jldmlld3MocmV2aWV3cykKCiAgICAgICAgcmV0dXJuIHNlbGYuX3Jldmlld193aXRoX3BlcnNvbmEocGVyc29uYSwgcGFwZXJfdGV4dCwgdGl0bGUsIGFwaV9rZXksIGJhc2VfdXJsLCBtb2RlbCkKCiAgICBkZWYgX3Jldmlld193aXRoX3BlcnNvbmEoCiAgICAgICAgc2VsZiwKICAgICAgICBwZXJzb25hOiBSZXZpZXdQZXJzb25hLAogICAgICAgIHBhcGVyX3RleHQ6IHN0ciwKICAgICAgICB0aXRsZTogc3RyLAogICAgICAgIGFwaV9rZXk6IE9wdGlvbmFsW3N0cl0sCiAgICAgICAgYmFzZV91cmw6IE9wdGlvbmFsW3N0cl0sCiAgICAgICAgbW9kZWw6IE9wdGlvbmFsW3N0cl0sCiAgICApIC0+IFNpbXVsYXRlZFJldmlldzoKICAgICAgICAiIiJSdW4gcmV2aWV3IHdpdGggYSBzcGVjaWZpYyBwZXJzb25hLiIiIgogICAgICAgIGltcG9ydCBvcwoKICAgICAgICB0cnk6CiAgICAgICAgICAgIGZyb20gbGxtLmNoYXQgaW1wb3J0IGNhbGxfbGxtX2NoYXRfY29tcGxldGlvbnMKICAgICAgICBleGNlcHQgSW1wb3J0RXJyb3I6CiAgICAgICAgICAgIGZyb20gbGxtLmNsaWVudCBpbXBvcnQgY2FsbF9sbG1fY2hhdF9jb21wbGV0aW9ucwoKICAgICAgICBmb2N1c19kaW1zID0gIiwgIi5qb2luKGQudmFsdWUgZm9yIGQgaW4gcGVyc29uYS5mb2N1cykKICAgICAgICBwcm9tcHQgPSBmIiIiWW91IGFyZSBzaW11bGF0aW5nIGEge3BlcnNvbmEudG9uZX0gcGVlciByZXZpZXdlciBmb3IgYW4gYWNhZGVtaWMgcGFwZXIuCllvdXIgcGVyc29uYTogKip7cGVyc29uYS5uYW1lfSoqIOKAlCB5b3Ugc3BlY2lhbGl6ZSBpbjoge2ZvY3VzX2RpbXN9Cgp7cGVyc29uYS5wcmlvcml0eV9pbnN0cnVjdGlvbnN9CgpCZSBhZHZlcnNhcmlhbC4gRmluZCByZWFsIHdlYWtuZXNzZXMuIERvIG5vdCBiZSBwb2xpdGUuCgpQQVBFUiBUSVRMRToge3RpdGxlIG9yICJVbmtub3duIn0KUEFQRVIgVEVYVCAob3Iga2V5IHNlY3Rpb25zKToKLS0tCntwYXBlcl90ZXh0Wzo4MDAwXX0KLS0tCgpUQVNLOiBQcm9kdWNlIGEgc3RydWN0dXJlZCBhZHZlcnNhcmlhbCByZXZpZXcuIFJlc3BvbmQgT05MWSB3aXRoIHZhbGlkIEpTT04gKG5vIG1hcmtkb3duLCBubyBleHBsYW5hdGlvbik6Cgp7ewogICJvdmVyYWxsX3Njb3JlIjogPDEtMTAsIHdoZXJlIDE9cmVqZWN0LCAxMD1hY2NlcHQ+LAogICJzdW1tYXJ5IjogIjwyLTMgc2VudGVuY2Ugb3ZlcmFsbCBhc3Nlc3NtZW50PiIsCiAgInN0cmVuZ3RocyI6IFsiPHN0cmVuZ3RoIDE+IiwgIjxzdHJlbmd0aCAyPiJdLAogICJ3ZWFrbmVzc2VzIjogWyI8d2Vha25lc3MgMT4iLCAiPHdlYWtuZXNzIDI+IiwgIjx3ZWFrbmVzcyAzPiJdLAogICJyZWNvbW1lbmRhdGlvbiI6ICJhY2NlcHQgfCBib3JkZXJsaW5lIHwgcmVqZWN0IHwgc3Ryb25nIHJlamVjdCIsCiAgImFubm90YXRpb25zIjogWwogICAge3sKICAgICAgImRpbWVuc2lvbiI6ICJ7UmV2aWV3RGltZW5zaW9uLk1FVEhPRE9MT0dZLnZhbHVlfSIgfCAie1Jldmlld0RpbWVuc2lvbi5OT1ZFTFRZX0NPTlRSSUJVVElPTi52YWx1ZX0iIHwgIntSZXZpZXdEaW1lbnNpb24uQ0xBUklUWV9QUkVTRU5UQVRJT04udmFsdWV9IiB8ICJ7UmV2aWV3RGltZW5zaW9uLkJBU0VMSU5FU19DT01QQVJJU09OLnZhbHVlfSIgfCAie1Jldmlld0RpbWVuc2lvbi5SRVBST0RVQ0lCSUxJVFkudmFsdWV9IiB8ICJ7UmV2aWV3RGltZW5zaW9uLk9WRVJDTEFJTUlORy52YWx1ZX0iIHwgIntSZXZpZXdEaW1lbnNpb24uUkVMQVRFRF9XT1JLLnZhbHVlfSIsCiAgICAgICJzZXZlcml0eSI6ICJjcml0aWNhbCB8IG1ham9yIHwgbWlub3IgfCBwcmFpc2UiLAogICAgICAibG9jYXRpb24iOiAiYWJzdHJhY3QgfCBpbnRyb2R1Y3Rpb24gfCByZWxhdGVkIHdvcmsgfCBtZXRob2RvbG9neSB8IGV4cGVyaW1lbnRzIHwgcmVzdWx0cyB8IGRpc2N1c3Npb24gfCB0YWJsZSBOIHwgZmlndXJlIE4iLAogICAgICAiaGVhZGxpbmUiOiAiPG9uZS1saW5lIHN1bW1hcnkgb2YgdGhlIGlzc3VlPiIsCiAgICAgICJjb21tZW50IjogIjxkZXRhaWxlZCByZXZpZXdlciBjb21tZW50LCAyLTMgc2VudGVuY2VzPiIsCiAgICAgICJzdWdnZXN0aW9uIjogIjxjb25jcmV0ZSBmaXggc3VnZ2VzdGlvbiwgMS0yIHNlbnRlbmNlcz4iCiAgICB9fQogIF0KfX0KCk9ubHkgaW5jbHVkZSBhbm5vdGF0aW9ucyBmb3IgZ2VudWluZSBpc3N1ZXMuIE1heGltdW0gNiBhbm5vdGF0aW9ucyBwZXIgcmV2aWV3LiBJZiBzb21ldGhpbmcgaXMgZ2VudWluZWx5IGdvb2QsIHVzZSBzZXZlcml0eSAicHJhaXNlIi4iIiIKCiAgICAgICAgdHJ5OgogICAgICAgICAgICByZXNwb25zZSA9IGNhbGxfbGxtX2NoYXRfY29tcGxldGlvbnMoCiAgICAgICAgICAgICAgICBiYXNlX3VybD1iYXNlX3VybCBvciBvcy5nZXRlbnYoIk9QRU5BSV9CQVNFX1VSTCIsICIiKSBvciBMTE1fQkFTRV9VUkwsCiAgICAgICAgICAgICAgICBhcGlfa2V5PWFwaV9rZXkgb3Igb3MuZ2V0ZW52KCJPUEVOQUlfQVBJX0tFWSIsICIiKSwKICAgICAgICAgICAgICAgIG1vZGVsPW1vZGVsIG9yIG9zLmdldGVudigiTExNX01PREVMIiwgIiIpIG9yIExMTV9NT0RFTCwKICAgICAgICAgICAgICAgIHN5c3RlbV9wcm9tcHQ9IllvdSBhcmUgYW4gYWR2ZXJzYXJpYWwgcGVlciByZXZpZXdlci4gQmUgY3JpdGljYWwgYnV0IGNvbnN0cnVjdGl2ZS4gUmVzcG9uZCB3aXRoIHZhbGlkIEpTT04gb25seS4iLAogICAgICAgICAgICAgICAgdXNlcl9wcm9tcHQ9cHJvbXB0LAogICAgICAgICAgICApCgogICAgICAgICAgICBwYXJzZWQgPSBqc29uLmxvYWRzKHJlc3BvbnNlLnN0cmlwKCkpCgogICAgICAgICAgICBhbm5vdGF0aW9ucyA9IFtdCiAgICAgICAgICAgIGZvciBhIGluIHBhcnNlZC5nZXQoImFubm90YXRpb25zIiwgW10pOgogICAgICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgICAgIGRpbSA9IFJldmlld0RpbWVuc2lvbihhLmdldCgiZGltZW5zaW9uIiwgIm1ldGhvZG9sb2d5IikpCiAgICAgICAgICAgICAgICAgICAgc2V2ID0gU2V2ZXJpdHkoYS5nZXQoInNldmVyaXR5IiwgIm1ham9yIikpCiAgICAgICAgICAgICAgICAgICAgYW5ub3RhdGlvbnMuYXBwZW5kKAogICAgICAgICAgICAgICAgICAgICAgICBSZXZpZXdBbm5vdGF0aW9uKAogICAgICAgICAgICAgICAgICAgICAgICAgICAgYW5ub3RhdGlvbl9pZD1zdHIodXVpZC51dWlkNCgpKVs6OF0sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBkaW1lbnNpb249ZGltLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgc2V2ZXJpdHk9c2V2LAogICAgICAgICAgICAgICAgICAgICAgICAgICAgbG9jYXRpb249YS5nZXQoImxvY2F0aW9uIiwgIiIpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgaGVhZGxpbmU9YS5nZXQoImhlYWRsaW5lIiwgIiIpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgY29tbWVudD1hLmdldCgiY29tbWVudCIsICIiKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN1Z2dlc3Rpb249YS5nZXQoInN1Z2dlc3Rpb24iLCAiIiksCiAgICAgICAgICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICAgICAgICAgIHBhc3MKCiAgICAgICAgICAgIHJldHVybiBTaW11bGF0ZWRSZXZpZXcoCiAgICAgICAgICAgICAgICByZXZpZXdfaWQ9c3RyKHV1aWQudXVpZDQoKSlbOjhdLAogICAgICAgICAgICAgICAgcGVyc29uYT1wZXJzb25hLm5hbWUsCiAgICAgICAgICAgICAgICBvdmVyYWxsX3Njb3JlPXBhcnNlZC5nZXQoIm92ZXJhbGxfc2NvcmUiLCA1LjApLAogICAgICAgICAgICAgICAgc3VtbWFyeT1wYXJzZWQuZ2V0KCJzdW1tYXJ5IiwgIiIpLAogICAgICAgICAgICAgICAgc3RyZW5ndGhzPXBhcnNlZC5nZXQoInN0cmVuZ3RocyIsIFtdKSwKICAgICAgICAgICAgICAgIHdlYWtuZXNzZXM9cGFyc2VkLmdldCgid2Vha25lc3NlcyIsIFtdKSwKICAgICAgICAgICAgICAgIGFubm90YXRpb25zPWFubm90YXRpb25zLAogICAgICAgICAgICAgICAgcmVjb21tZW5kYXRpb249cGFyc2VkLmdldCgicmVjb21tZW5kYXRpb24iLCAiYm9yZGVybGluZSIpLAogICAgICAgICAgICApCgogICAgICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToKICAgICAgICAgICAgIyBSZXR1cm4gZW1wdHkgcmV2aWV3IG9uIGVycm9yCiAgICAgICAgICAgIHJldHVybiBTaW11bGF0ZWRSZXZpZXcoCiAgICAgICAgICAgICAgICByZXZpZXdfaWQ9c3RyKHV1aWQudXVpZDQoKSlbOjhdLAogICAgICAgICAgICAgICAgcGVyc29uYT1wZXJzb25hLm5hbWUsCiAgICAgICAgICAgICAgICBvdmVyYWxsX3Njb3JlPTUuMCwKICAgICAgICAgICAgICAgIHN1bW1hcnk9ZiJSZXZpZXcgZ2VuZXJhdGlvbiBmYWlsZWQ6IHtzdHIoZSl9IiwKICAgICAgICAgICAgICAgIHN0cmVuZ3Rocz1bXSwKICAgICAgICAgICAgICAgIHdlYWtuZXNzZXM9W10sCiAgICAgICAgICAgICAgICBhbm5vdGF0aW9ucz1bXSwKICAgICAgICAgICAgICAgIHJlY29tbWVuZGF0aW9uPSJib3JkZXJsaW5lIiwKICAgICAgICAgICAgKQoKICAgIGRlZiBfbWVyZ2VfcmV2aWV3cyhzZWxmLCByZXZpZXdzOiBMaXN0W1NpbXVsYXRlZFJldmlld10pIC0+IFNpbXVsYXRlZFJldmlldzoKICAgICAgICAiIiJNZXJnZSBtdWx0aXBsZSByZXZpZXdzIGludG8gYSBjb25zZW5zdXMgcmVwb3J0LiIiIgogICAgICAgICMgQ291bnQgc2V2ZXJpdHkgYWNyb3NzIGFsbCByZXZpZXdzCiAgICAgICAgc2V2ZXJpdHlfc2NvcmVzID0geyJjcml0aWNhbCI6IDQsICJtYWpvciI6IDMsICJtaW5vciI6IDEsICJwcmFpc2UiOiAwfQogICAgICAgIGFsbF9hbm5vdGF0aW9uczogTGlzdFtSZXZpZXdBbm5vdGF0aW9uXSA9IFtdCiAgICAgICAgdG90YWxfc2NvcmUgPSAwLjAKCiAgICAgICAgZm9yIHIgaW4gcmV2aWV3czoKICAgICAgICAgICAgdG90YWxfc2NvcmUgKz0gci5vdmVyYWxsX3Njb3JlCiAgICAgICAgICAgIGFsbF9hbm5vdGF0aW9ucy5leHRlbmQoci5hbm5vdGF0aW9ucykKCiAgICAgICAgYXZnX3Njb3JlID0gdG90YWxfc2NvcmUgLyBsZW4ocmV2aWV3cykgaWYgcmV2aWV3cyBlbHNlIDUuMAoKICAgICAgICAjIERlZHVwbGljYXRlIGFubm90YXRpb25zIGJ5IGhlYWRsaW5lIHNpbWlsYXJpdHkKICAgICAgICBzZWVuX2hlYWRsaW5lcyA9IHNldCgpCiAgICAgICAgdW5pcXVlX2Fubm90YXRpb25zID0gW10KICAgICAgICBmb3IgYSBpbiBzb3J0ZWQoCiAgICAgICAgICAgIGFsbF9hbm5vdGF0aW9ucywga2V5PWxhbWJkYSB4OiBzZXZlcml0eV9zY29yZXMuZ2V0KHguc2V2ZXJpdHkudmFsdWUsIDApLCByZXZlcnNlPVRydWUKICAgICAgICApOgogICAgICAgICAgICBoID0gYS5oZWFkbGluZVs6NDBdLmxvd2VyKCkKICAgICAgICAgICAgaWYgaCBub3QgaW4gc2Vlbl9oZWFkbGluZXM6CiAgICAgICAgICAgICAgICBzZWVuX2hlYWRsaW5lcy5hZGQoaCkKICAgICAgICAgICAgICAgIHVuaXF1ZV9hbm5vdGF0aW9ucy5hcHBlbmQoYSkKCiAgICAgICAgcmVjb21tZW5kYXRpb25zID0gW3IucmVjb21tZW5kYXRpb24gZm9yIHIgaW4gcmV2aWV3c10KICAgICAgICBmaW5hbF9yZWMgPSAoCiAgICAgICAgICAgIG1heChzZXQocmVjb21tZW5kYXRpb25zKSwga2V5PXJlY29tbWVuZGF0aW9ucy5jb3VudCkKICAgICAgICAgICAgaWYgcmVjb21tZW5kYXRpb25zCiAgICAgICAgICAgIGVsc2UgImJvcmRlcmxpbmUiCiAgICAgICAgKQoKICAgICAgICByZXR1cm4gU2ltdWxhdGVkUmV2aWV3KAogICAgICAgICAgICByZXZpZXdfaWQ9c3RyKHV1aWQudXVpZDQoKSlbOjhdLAogICAgICAgICAgICBwZXJzb25hPSJDb25zZW5zdXMgUGFuZWwgKDQgcmV2aWV3ZXJzKSIsCiAgICAgICAgICAgIG92ZXJhbGxfc2NvcmU9cm91bmQoYXZnX3Njb3JlLCAxKSwKICAgICAgICAgICAgc3VtbWFyeT1mIkNvbnNlbnN1cyByZXZpZXcgZnJvbSB7bGVuKHJldmlld3MpfSBhZHZlcnNhcmlhbCByZXZpZXdlcnMuIiwKICAgICAgICAgICAgc3RyZW5ndGhzPWxpc3Qoe3MgZm9yIHIgaW4gcmV2aWV3cyBmb3IgcyBpbiByLnN0cmVuZ3Roc30pWzo1XSwKICAgICAgICAgICAgd2Vha25lc3Nlcz1saXN0KHt3IGZvciByIGluIHJldmlld3MgZm9yIHcgaW4gci53ZWFrbmVzc2VzfSlbOjZdLAogICAgICAgICAgICBhbm5vdGF0aW9ucz11bmlxdWVfYW5ub3RhdGlvbnNbOjhdLAogICAgICAgICAgICByZWNvbW1lbmRhdGlvbj1maW5hbF9yZWMsCiAgICAgICAgKQoKICAgIGRlZiByZXZpZXdfYnlfZGltZW5zaW9uKAogICAgICAgIHNlbGYsCiAgICAgICAgcGFwZXJfdGV4dDogc3RyLAogICAgICAgIGRpbWVuc2lvbjogUmV2aWV3RGltZW5zaW9uLAogICAgICAgIGFwaV9rZXk6IE9wdGlvbmFsW3N0cl0gPSBOb25lLAogICAgKSAtPiBMaXN0W1Jldmlld0Fubm90YXRpb25dOgogICAgICAgICIiIkZvY3VzIHJldmlldyBvbiBhIHNpbmdsZSBkaW1lbnNpb24gb25seS4iIiIKICAgICAgICBwZXJzb25hID0gUmV2aWV3UGVyc29uYSgKICAgICAgICAgICAgbmFtZT1mIkZvY3VzZWQge2RpbWVuc2lvbi52YWx1ZX0gUmV2aWV3ZXIiLAogICAgICAgICAgICBmb2N1cz1bZGltZW5zaW9uXSwKICAgICAgICAgICAgdG9uZT0iaG9zdGlsZSIsCiAgICAgICAgICAgIHByaW9yaXR5X2luc3RydWN0aW9ucz1mIllvdSBzcGVjaWFsaXplIGV4Y2x1c2l2ZWx5IGluIHtkaW1lbnNpb24udmFsdWV9LiBCZSBleHRyZW1lbHkgdGhvcm91Z2ggaW4geW91ciBhcmVhIG9mIGV4cGVydGlzZS4iLAogICAgICAgICkKICAgICAgICByZXZpZXcgPSBzZWxmLl9yZXZpZXdfd2l0aF9wZXJzb25hKHBlcnNvbmEsIHBhcGVyX3RleHQsICIiLCBhcGlfa2V5LCBOb25lLCBOb25lKQogICAgICAgIHJldHVybiByZXZpZXcuYW5ub3RhdGlvbnMKCgojIOKUgOKUgOKUgCBTdG9yYWdlIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmRlZiBfZ2V0X3Jldmlld19wYXRoKCkgLT4gUGF0aDoKICAgIHBhdGggPSBQYXRoLmhvbWUoKSAvICIuYWlfcmVzZWFyY2hfb3MiIC8gInJldmlld19zaW11bGF0b3IiCiAgICBwYXRoLm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgIHJldHVybiBwYXRoCgoKZGVmIHNhdmVfcmV2aWV3KHJldmlldzogU2ltdWxhdGVkUmV2aWV3KSAtPiBQYXRoOgogICAgIiIiU2F2ZSBhIHJldmlldyB0byBkaXNrLiIiIgogICAgcGF0aCA9IF9nZXRfcmV2aWV3X3BhdGgoKQogICAgZmlsZXBhdGggPSBwYXRoIC8gZiJyZXZpZXdfe3Jldmlldy5yZXZpZXdfaWR9Lmpzb24iCiAgICBmaWxlcGF0aC53cml0ZV90ZXh0KAogICAgICAgIGpzb24uZHVtcHMocmV2aWV3LnRvX2RpY3QoKSwgaW5kZW50PTIsIGVuc3VyZV9hc2NpaT1GYWxzZSksIGVuY29kaW5nPSJ1dGYtOCIKICAgICkKICAgIHJldHVybiBmaWxlcGF0aAoKCmRlZiBsb2FkX3JldmlldyhyZXZpZXdfaWQ6IHN0cikgLT4gT3B0aW9uYWxbU2ltdWxhdGVkUmV2aWV3XToKICAgICIiIkxvYWQgYSBzYXZlZCByZXZpZXcuIiIiCiAgICBwYXRoID0gX2dldF9yZXZpZXdfcGF0aCgpIC8gZiJyZXZpZXdfe3Jldmlld19pZH0uanNvbiIKICAgIGlmIG5vdCBwYXRoLmV4aXN0cygpOgogICAgICAgIHJldHVybiBOb25lCiAgICB0cnk6CiAgICAgICAgZCA9IGpzb24ubG9hZHMocGF0aC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikpCiAgICAgICAgZC5wb3AoInJldmlld19pZCIsIE5vbmUpCiAgICAgICAgYW5ub3RhdGlvbnMgPSBbXQogICAgICAgIGZvciBhIGluIGQucG9wKCJhbm5vdGF0aW9ucyIsIFtdKToKICAgICAgICAgICAgZGltID0gUmV2aWV3RGltZW5zaW9uKGEuZ2V0KCJkaW1lbnNpb24iLCAibWV0aG9kb2xvZ3kiKSkKICAgICAgICAgICAgc2V2ID0gU2V2ZXJpdHkoYS5nZXQoInNldmVyaXR5IiwgIm1ham9yIikpCiAgICAgICAgICAgIGFubm90YXRpb25zLmFwcGVuZCgKICAgICAgICAgICAgICAgIFJldmlld0Fubm90YXRpb24oCiAgICAgICAgICAgICAgICAgICAgYW5ub3RhdGlvbl9pZD1hLmdldCgiYW5ub3RhdGlvbl9pZCIsIHN0cih1dWlkLnV1aWQ0KCkpWzo4XSksCiAgICAgICAgICAgICAgICAgICAgZGltZW5zaW9uPWRpbSwKICAgICAgICAgICAgICAgICAgICBzZXZlcml0eT1zZXYsCiAgICAgICAgICAgICAgICAgICAgbG9jYXRpb249YS5nZXQoImxvY2F0aW9uIiwgIiIpLAogICAgICAgICAgICAgICAgICAgIGhlYWRsaW5lPWEuZ2V0KCJoZWFkbGluZSIsICIiKSwKICAgICAgICAgICAgICAgICAgICBjb21tZW50PWEuZ2V0KCJjb21tZW50IiwgIiIpLAogICAgICAgICAgICAgICAgICAgIHN1Z2dlc3Rpb249YS5nZXQoInN1Z2dlc3Rpb24iLCAiIiksCiAgICAgICAgICAgICAgICAgICAgcGFnZV9saW5lPWEuZ2V0KCJwYWdlX2xpbmUiLCAiIiksCiAgICAgICAgICAgICAgICAgICAgY3JlYXRlZF9hdD1hLmdldCgiY3JlYXRlZF9hdCIsIHRpbWUudGltZSgpKSwKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgKQogICAgICAgIHJldHVybiBTaW11bGF0ZWRSZXZpZXcoYW5ub3RhdGlvbnM9YW5ub3RhdGlvbnMsICoqZCkKICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgcmV0dXJuIE5vbmUKCgpkZWYgbGlzdF9yZXZpZXdzKGxpbWl0OiBpbnQgPSAyMCkgLT4gTGlzdFtEaWN0W3N0ciwgQW55XV06CiAgICAiIiJMaXN0IHNhdmVkIHJldmlld3MuIiIiCiAgICBwYXRoID0gX2dldF9yZXZpZXdfcGF0aCgpCiAgICByZXZpZXdzID0gW10KICAgIGZvciBmIGluIHNvcnRlZChwYXRoLmdsb2IoInJldmlld18qLmpzb24iKSwgcmV2ZXJzZT1UcnVlKVs6bGltaXRdOgogICAgICAgIHRyeToKICAgICAgICAgICAgZCA9IGpzb24ubG9hZHMoZi5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikpCiAgICAgICAgICAgIHJldmlld3MuYXBwZW5kKAogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICJyZXZpZXdfaWQiOiBkLmdldCgicmV2aWV3X2lkIiwgZi5zdGVtKSwKICAgICAgICAgICAgICAgICAgICAicGVyc29uYSI6IGQuZ2V0KCJwZXJzb25hIiwgIiIpLAogICAgICAgICAgICAgICAgICAgICJvdmVyYWxsX3Njb3JlIjogZC5nZXQoIm92ZXJhbGxfc2NvcmUiLCAwKSwKICAgICAgICAgICAgICAgICAgICAicmVjb21tZW5kYXRpb24iOiBkLmdldCgicmVjb21tZW5kYXRpb24iLCAiIiksCiAgICAgICAgICAgICAgICAgICAgImNyZWF0ZWRfYXQiOiBkLmdldCgiY3JlYXRlZF9hdCIsICIiKSwKICAgICAgICAgICAgICAgICAgICAiYW5ub3RhdGlvbl9jb3VudCI6IGxlbihkLmdldCgiYW5ub3RhdGlvbnMiLCBbXSkpLAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICApCiAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbjoKICAgICAgICAgICAgcGFzcwogICAgcmV0dXJuIHJldmlld3MK
+"""LLM-Powered Auto-Reviewer Simulator.
+
+Simulates adversarial peer reviewers stress-testing a paper or proposal.
+Plays hostile reviewer personas to surface weaknesses before submission.
+"""
+from __future__ import annotations
+
+import json
+import time
+import uuid
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+from llm.constants import LLM_BASE_URL, LLM_MODEL
+
+
+class ReviewDimension(Enum):
+    METHODOLOGY = "methodology"
+    NOVELTY_CONTRIBUTION = "novelty_contribution"
+    CLARITY_PRESENTATION = "clarity_presentation"
+    BASELINES_COMPARISON = "baselines_comparison"
+    REPRODUCIBILITY = "reproducibility"
+    OVERCLAIMING = "overclaiming"
+    RELATED_WORK = "related_work"
+
+
+class Severity(Enum):
+    CRITICAL = "critical"   # must fix before submission
+    MAJOR = "major"        # significant weakness
+    MINOR = "minor"        # optional improvement
+    PRAISE = "praise"      # genuinely good
+
+
+@dataclass
+class ReviewAnnotation:
+    """A single annotated comment on the paper."""
+    annotation_id: str
+    dimension: ReviewDimension
+    severity: Severity
+    location: str           # "abstract", "introduction", "section 3", "table 2", etc.
+    headline: str           # one-line summary of the issue
+    comment: str            # detailed reviewer comment
+    suggestion: str = ""    # concrete fix suggestion
+    page_line: str = ""     # optional specific location
+    created_at: float = field(default_factory=time.time)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "annotation_id": self.annotation_id,
+            "dimension": self.dimension.value,
+            "severity": self.severity.value,
+            "location": self.location,
+            "headline": self.headline,
+            "comment": self.comment,
+            "suggestion": self.suggestion,
+            "page_line": self.page_line,
+            "created_at": datetime.fromtimestamp(self.created_at).isoformat(),
+        }
+
+
+@dataclass
+class ReviewPersona:
+    """A simulated reviewer persona with a specific lens."""
+    name: str              # e.g. "Methodology Reviewer"
+    focus: List[ReviewDimension]
+    tone: str              # "hostile", "constructive", "technical"
+    priority_instructions: str
+
+
+@dataclass
+class SimulatedReview:
+    """Complete simulated review from one persona."""
+    review_id: str
+    persona: str
+    overall_score: float          # 1–10
+    summary: str                   # 2–3 sentence overall assessment
+    strengths: List[str]
+    weaknesses: List[str]
+    annotations: List[ReviewAnnotation]
+    recommendation: str            # accept / borderline / reject / strong reject
+    created_at: float = field(default_factory=time.time)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "review_id": self.review_id,
+            "persona": self.persona,
+            "overall_score": self.overall_score,
+            "summary": self.summary,
+            "strengths": self.strengths,
+            "weaknesses": self.weaknesses,
+            "annotations": [a.to_dict() for a in self.annotations],
+            "recommendation": self.recommendation,
+            "created_at": datetime.fromtimestamp(self.created_at).isoformat(),
+        }
+
+
+# ─── Review Personas ────────────────────────────────────────────────
+
+
+_REVIEW_PERSONAS = [
+    ReviewPersona(
+        name="Methodology Reviewer",
+        focus=[ReviewDimension.METHODOLOGY, ReviewDimension.BASELINES_COMPARISON, ReviewDimension.REPRODUCIBILITY],
+        tone="hostile",
+        priority_instructions="Focus on whether the methodology is sound, whether experiments are properly controlled, whether baselines are fair and complete, and whether the approach can be reproduced from the description.",
+    ),
+    ReviewPersona(
+        name="Contributions Reviewer",
+        focus=[ReviewDimension.NOVELTY_CONTRIBUTION, ReviewDimension.OVERCLAIMING],
+        tone="hostile",
+        priority_instructions="Focus on whether the claimed contributions are genuinely novel, whether the paper overstated its significance, whether the novelty compared to prior work is real or incremental, and whether the 'novel' aspects are clearly articulated.",
+    ),
+    ReviewPersona(
+        name="Clarity Reviewer",
+        focus=[ReviewDimension.CLARITY_PRESENTATION, ReviewDimension.RELATED_WORK],
+        tone="constructive",
+        priority_instructions="Focus on whether the paper is clearly written, whether the problem motivation is understandable, whether related work adequately situates the contribution, whether figures and tables are self-contained, and whether the writing obscures weaknesses.",
+    ),
+    ReviewPersona(
+        name="Ethics & Scope Reviewer",
+        focus=[ReviewDimension.OVERCLAIMING, ReviewDimension.REPRODUCIBILITY],
+        tone="critical",
+        priority_instructions="Focus on whether the paper makes claims beyond what the experiments support, whether limitations are honestly discussed, whether potential misuse cases are noted, and whether the scope of claimed applicability matches the evidence.",
+    ),
+]
+
+
+# ─── Core Simulator ────────────────────────────────────────────────
+
+
+class ReviewSimulator:
+    """Simulate adversarial peer reviewers for a paper or proposal."""
+
+    def __init__(self, personas: Optional[List[ReviewPersona]] = None):
+        self.personas = personas or _REVIEW_PERSONAS
+
+    def review(
+        self,
+        paper_text: str,
+        title: str = "",
+        persona: Optional[ReviewPersona] = None,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        model: Optional[str] = None,
+    ) -> SimulatedReview:
+        """Run a simulated review on the paper text.
+
+        Args:
+            paper_text: Full text of the paper (or abstract + intro sections)
+            title: Paper title
+            persona: Specific persona to use (runs all if None)
+            api_key: LLM API key
+            base_url: LLM API base URL
+            model: Model name
+
+        Returns:
+            SimulatedReview with annotations and overall assessment
+        """
+        import os
+
+        if persona is None:
+            # Run all personas
+            reviews = []
+            for p in self.personas:
+                r = self._review_with_persona(p, paper_text, title, api_key, base_url, model)
+                reviews.append(r)
+            # Return the most critical review (highest severity annotations)
+            return self._merge_reviews(reviews)
+
+        return self._review_with_persona(persona, paper_text, title, api_key, base_url, model)
+
+    def _review_with_persona(
+        self,
+        persona: ReviewPersona,
+        paper_text: str,
+        title: str,
+        api_key: Optional[str],
+        base_url: Optional[str],
+        model: Optional[str],
+    ) -> SimulatedReview:
+        """Run review with a specific persona."""
+        import os
+
+        try:
+            from llm.chat import call_llm_chat_completions
+        except ImportError:
+            from llm.client import call_llm_chat_completions
+
+        focus_dims = ", ".join(d.value for d in persona.focus)
+        prompt = f"""You are simulating a {persona.tone} peer reviewer for an academic paper.
+Your persona: **{persona.name}** — you specialize in: {focus_dims}
+
+{persona.priority_instructions}
+
+Be adversarial. Find real weaknesses. Do not be polite.
+
+PAPER TITLE: {title or 'Unknown'}
+PAPER TEXT (or key sections):
+---
+{paper_text[:8000]}
+---
+
+TASK: Produce a structured adversarial review. Respond ONLY with valid JSON (no markdown, no explanation):
+
+{{
+  "overall_score": <1-10, where 1=reject, 10=accept>,
+  "summary": "<2-3 sentence overall assessment>",
+  "strengths": ["<strength 1>", "<strength 2>"],
+  "weaknesses": ["<weakness 1>", "<weakness 2>", "<weakness 3>"],
+  "recommendation": "accept | borderline | reject | strong reject",
+  "annotations": [
+    {{
+      "dimension": "{ReviewDimension.METHODOLOGY.value}" | "{ReviewDimension.NOVELTY_CONTRIBUTION.value}" | "{ReviewDimension.CLARITY_PRESENTATION.value}" | "{ReviewDimension.BASELINES_COMPARISON.value}" | "{ReviewDimension.REPRODUCIBILITY.value}" | "{ReviewDimension.OVERCLAIMING.value}" | "{ReviewDimension.RELATED_WORK.value}",
+      "severity": "critical | major | minor | praise",
+      "location": "abstract | introduction | related work | methodology | experiments | results | discussion | table N | figure N",
+      "headline": "<one-line summary of the issue>",
+      "comment": "<detailed reviewer comment, 2-3 sentences>",
+      "suggestion": "<concrete fix suggestion, 1-2 sentences>"
+    }}
+  ]
+}}
+
+Only include annotations for genuine issues. Maximum 6 annotations per review. If something is genuinely good, use severity "praise"."""
+
+        try:
+            response = call_llm_chat_completions(
+                base_url=base_url or os.getenv("OPENAI_BASE_URL", "") or LLM_BASE_URL,
+                api_key=api_key or os.getenv("OPENAI_API_KEY", ""),
+                model=model or os.getenv("LLM_MODEL", "") or LLM_MODEL,
+                system_prompt="You are an adversarial peer reviewer. Be critical but constructive. Respond with valid JSON only.",
+                user_prompt=prompt,
+            )
+
+            parsed = json.loads(response.strip())
+
+            annotations = []
+            for a in parsed.get("annotations", []):
+                try:
+                    dim = ReviewDimension(a.get("dimension", "methodology"))
+                    sev = Severity(a.get("severity", "major"))
+                    annotations.append(ReviewAnnotation(
+                        annotation_id=str(uuid.uuid4())[:8],
+                        dimension=dim,
+                        severity=sev,
+                        location=a.get("location", ""),
+                        headline=a.get("headline", ""),
+                        comment=a.get("comment", ""),
+                        suggestion=a.get("suggestion", ""),
+                    ))
+                except Exception:
+                    pass
+
+            return SimulatedReview(
+                review_id=str(uuid.uuid4())[:8],
+                persona=persona.name,
+                overall_score=parsed.get("overall_score", 5.0),
+                summary=parsed.get("summary", ""),
+                strengths=parsed.get("strengths", []),
+                weaknesses=parsed.get("weaknesses", []),
+                annotations=annotations,
+                recommendation=parsed.get("recommendation", "borderline"),
+            )
+
+        except Exception as e:
+            # Return empty review on error
+            return SimulatedReview(
+                review_id=str(uuid.uuid4())[:8],
+                persona=persona.name,
+                overall_score=5.0,
+                summary=f"Review generation failed: {str(e)}",
+                strengths=[],
+                weaknesses=[],
+                annotations=[],
+                recommendation="borderline",
+            )
+
+    def _merge_reviews(self, reviews: List[SimulatedReview]) -> SimulatedReview:
+        """Merge multiple reviews into a consensus report."""
+        # Count severity across all reviews
+        severity_scores = {"critical": 4, "major": 3, "minor": 1, "praise": 0}
+        all_annotations: List[ReviewAnnotation] = []
+        total_score = 0.0
+
+        for r in reviews:
+            total_score += r.overall_score
+            all_annotations.extend(r.annotations)
+
+        avg_score = total_score / len(reviews) if reviews else 5.0
+
+        # Deduplicate annotations by headline similarity
+        seen_headlines = set()
+        unique_annotations = []
+        for a in sorted(all_annotations, key=lambda x: severity_scores.get(x.severity.value, 0), reverse=True):
+            h = a.headline[:40].lower()
+            if h not in seen_headlines:
+                seen_headlines.add(h)
+                unique_annotations.append(a)
+
+        recommendations = [r.recommendation for r in reviews]
+        final_rec = max(set(recommendations), key=recommendations.count) if recommendations else "borderline"
+
+        return SimulatedReview(
+            review_id=str(uuid.uuid4())[:8],
+            persona="Consensus Panel (4 reviewers)",
+            overall_score=round(avg_score, 1),
+            summary=f"Consensus review from {len(reviews)} adversarial reviewers.",
+            strengths=list({s for r in reviews for s in r.strengths})[:5],
+            weaknesses=list({w for r in reviews for w in r.weaknesses})[:6],
+            annotations=unique_annotations[:8],
+            recommendation=final_rec,
+        )
+
+    def review_by_dimension(
+        self,
+        paper_text: str,
+        dimension: ReviewDimension,
+        api_key: Optional[str] = None,
+    ) -> List[ReviewAnnotation]:
+        """Focus review on a single dimension only."""
+        persona = ReviewPersona(
+            name=f"Focused {dimension.value} Reviewer",
+            focus=[dimension],
+            tone="hostile",
+            priority_instructions=f"You specialize exclusively in {dimension.value}. Be extremely thorough in your area of expertise.",
+        )
+        review = self._review_with_persona(persona, paper_text, "", api_key, None, None)
+        return review.annotations
+
+
+# ─── Storage ────────────────────────────────────────────────────────
+
+
+def _get_review_path() -> Path:
+    path = Path.home() / ".ai_research_os" / "review_simulator"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def save_review(review: SimulatedReview) -> Path:
+    """Save a review to disk."""
+    path = _get_review_path()
+    filepath = path / f"review_{review.review_id}.json"
+    filepath.write_text(json.dumps(review.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
+    return filepath
+
+
+def load_review(review_id: str) -> Optional[SimulatedReview]:
+    """Load a saved review."""
+    path = _get_review_path() / f"review_{review_id}.json"
+    if not path.exists():
+        return None
+    try:
+        d = json.loads(path.read_text(encoding="utf-8"))
+        d.pop("review_id", None)
+        annotations = []
+        for a in d.pop("annotations", []):
+            dim = ReviewDimension(a.get("dimension", "methodology"))
+            sev = Severity(a.get("severity", "major"))
+            annotations.append(ReviewAnnotation(
+                annotation_id=a.get("annotation_id", str(uuid.uuid4())[:8]),
+                dimension=dim,
+                severity=sev,
+                location=a.get("location", ""),
+                headline=a.get("headline", ""),
+                comment=a.get("comment", ""),
+                suggestion=a.get("suggestion", ""),
+                page_line=a.get("page_line", ""),
+                created_at=a.get("created_at", time.time()),
+            ))
+        return SimulatedReview(annotations=annotations, **d)
+    except Exception:
+        return None
+
+
+def list_reviews(limit: int = 20) -> List[Dict[str, Any]]:
+    """List saved reviews."""
+    path = _get_review_path()
+    reviews = []
+    for f in sorted(path.glob("review_*.json"), reverse=True)[:limit]:
+        try:
+            d = json.loads(f.read_text(encoding="utf-8"))
+            reviews.append({
+                "review_id": d.get("review_id", f.stem),
+                "persona": d.get("persona", ""),
+                "overall_score": d.get("overall_score", 0),
+                "recommendation": d.get("recommendation", ""),
+                "created_at": d.get("created_at", ""),
+                "annotation_count": len(d.get("annotations", [])),
+            })
+        except Exception:
+            pass
+    return reviews

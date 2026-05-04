@@ -1,1 +1,32 @@
-IiIibGxtLmluc2lnaHRfZXZvbHV0aW9uIOKAlCBiYWNrd2FyZHMtY29tcGF0aWJsZSBzaGltLgoKQWxsIHR5cGVzIGhhdmUgYmVlbiBtb3ZlZCB0byBsbG0uaW5zaWdodCBzdWItcGFja2FnZToKLSBsbG0uaW5zaWdodC5nZW5lICAgICAgICDihpIgQ2Fwc3VsZUdlbmUKLSBsbG0uaW5zaWdodC5wcmVmZXJlbmNlcyDihpIgRXhwbG9yYXRpb25BY3Rpb24sIFByZWZlcmVuY2VUYWcsIEV2b2x1dGlvbkV2ZW50Ci0gbGxtLmluc2lnaHQucHJvZmlsZSAgICAg4oaSIFVzZXJQcmVmZXJlbmNlUHJvZmlsZSwgR2FwRXhwbG9yYXRpb25TdGF0ZQotIGxsbS5pbnNpZ2h0LnRyYWNrZXIgICAg4oaSIEV2b2x1dGlvblRyYWNrZXIsIGdldF9ldm9sdXRpb25fdHJhY2tlcgoKVGhpcyBtb2R1bGUgcmUtZXhwb3J0cyBldmVyeXRoaW5nIGZvciBiYWNrd2FyZHMgY29tcGF0aWJpbGl0eS4KIiIiCgpmcm9tIGxsbS5pbnNpZ2h0IGltcG9ydCAoCiAgICBDYXBzdWxlR2VuZSwKICAgIEV4cGxvcmF0aW9uQWN0aW9uLAogICAgUHJlZmVyZW5jZVRhZywKICAgIEV2b2x1dGlvbkV2ZW50LAogICAgVXNlclByZWZlcmVuY2VQcm9maWxlLAogICAgR2FwRXhwbG9yYXRpb25TdGF0ZSwKICAgIEV2b2x1dGlvblRyYWNrZXIsCiAgICBnZXRfZXZvbHV0aW9uX3RyYWNrZXIsCikKCl9fYWxsX18gPSBbCiAgICAiQ2Fwc3VsZUdlbmUiLAogICAgIkV4cGxvcmF0aW9uQWN0aW9uIiwKICAgICJQcmVmZXJlbmNlVGFnIiwKICAgICJFdm9sdXRpb25FdmVudCIsCiAgICAiVXNlclByZWZlcmVuY2VQcm9maWxlIiwKICAgICJHYXBFeHBsb3JhdGlvblN0YXRlIiwKICAgICJFdm9sdXRpb25UcmFja2VyIiwKICAgICJnZXRfZXZvbHV0aW9uX3RyYWNrZXIiLApdCg==
+"""llm.insight_evolution — backwards-compatible shim.
+
+All types have been moved to llm.insight sub-package:
+- llm.insight.gene        → CapsuleGene
+- llm.insight.preferences → ExplorationAction, PreferenceTag, EvolutionEvent
+- llm.insight.profile     → UserPreferenceProfile, GapExplorationState
+- llm.insight.tracker    → EvolutionTracker, get_evolution_tracker
+
+This module re-exports everything for backwards compatibility.
+"""
+
+from llm.insight import (
+    CapsuleGene,
+    ExplorationAction,
+    PreferenceTag,
+    EvolutionEvent,
+    UserPreferenceProfile,
+    GapExplorationState,
+    EvolutionTracker,
+    get_evolution_tracker,
+)
+
+__all__ = [
+    "CapsuleGene",
+    "ExplorationAction",
+    "PreferenceTag",
+    "EvolutionEvent",
+    "UserPreferenceProfile",
+    "GapExplorationState",
+    "EvolutionTracker",
+    "get_evolution_tracker",
+]

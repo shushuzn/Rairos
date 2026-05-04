@@ -1,1 +1,279 @@
-IiIiClJlc2VhcmNoIFF1ZXN0aW9uIFRyYWNrZXI6IFBlcnNpc3RlbnQgbWFuYWdlbWVudCBvZiByZXNlYXJjaCBxdWVzdGlvbnMuCgpUcmFjayByZXNlYXJjaCBxdWVzdGlvbnMgZnJvbToKLSBNYW51YWwgZW50cnkKLSBHYXAgZGV0ZWN0aW9uIGZyb20gUXVlc3Rpb25WYWxpZGF0b3IKLSBIeXBvdGhlc2lzIGdlbmVyYXRpb24gcmVzdWx0cwoiIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCB1dWlkCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcywgYXNkaWN0LCBmaWVsZApmcm9tIGRhdGV0aW1lIGltcG9ydCBkYXRldGltZQpmcm9tIGVudW0gaW1wb3J0IEVudW0KZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBEaWN0LCBMaXN0LCBPcHRpb25hbCwgY2FzdAoKZnJvbSBsbG0udHJhY2tlcl9iYXNlIGltcG9ydCBKc29uRmlsZVN0b3JlCgoKY2xhc3MgUXVlc3Rpb25TdGF0dXMoRW51bSk6CiAgICAiIiJSZXNlYXJjaCBxdWVzdGlvbiBzdGF0dXMuIiIiCgogICAgT1BFTiA9ICJvcGVuIgogICAgSU5fUFJPR1JFU1MgPSAiaW5fcHJvZ3Jlc3MiCiAgICBSRVNPTFZFRCA9ICJyZXNvbHZlZCIKICAgIFdPTlRGSVggPSAid29udGZpeCIKCgpjbGFzcyBRdWVzdGlvblNvdXJjZShFbnVtKToKICAgICIiIlNvdXJjZSBvZiB0aGUgcmVzZWFyY2ggcXVlc3Rpb24uIiIiCgogICAgTUFOVUFMID0gIm1hbnVhbCIKICAgIEdBUF9ERVRFQ1RJT04gPSAiZ2FwX2RldGVjdGlvbiIKICAgIEhZUE9USEVTSVMgPSAiaHlwb3RoZXNpcyIKICAgIExJVEVSQVRVUkVfUkVWSUVXID0gImxpdGVyYXR1cmVfcmV2aWV3IgoKCkBkYXRhY2xhc3MKY2xhc3MgUmVzZWFyY2hRdWVzdGlvbjoKICAgICIiIkEgcmVzZWFyY2ggcXVlc3Rpb24gdHJhY2tlZCBpbiB0aGUgc3lzdGVtLiIiIgoKICAgIGlkOiBzdHIKICAgIHF1ZXN0aW9uOiBzdHIKICAgIHNvdXJjZTogc3RyICAjIFF1ZXN0aW9uU291cmNlIHZhbHVlCiAgICBzdGF0dXM6IHN0ciAgIyBRdWVzdGlvblN0YXR1cyB2YWx1ZQogICAgcmVsYXRlZF9wYXBlcnM6IExpc3Rbc3RyXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgY3JlYXRlZF9hdDogc3RyID0gIiIKICAgIHVwZGF0ZWRfYXQ6IHN0ciA9ICIiCiAgICBub3Rlczogc3RyID0gIiIKICAgIHByaW9yaXR5OiBpbnQgPSA1ICAjIDEtMTAsIGhpZ2hlciA9IG1vcmUgaW1wb3J0YW50CiAgICB0b3BpYzogc3RyID0gIiIgICMgUmVzZWFyY2ggdG9waWMKCiAgICBkZWYgX19wb3N0X2luaXRfXyhzZWxmKToKICAgICAgICBub3cgPSBkYXRldGltZS5ub3coKS5pc29mb3JtYXQoKQogICAgICAgIGlmIG5vdCBzZWxmLmNyZWF0ZWRfYXQ6CiAgICAgICAgICAgIHNlbGYuY3JlYXRlZF9hdCA9IG5vdwogICAgICAgIGlmIG5vdCBzZWxmLnVwZGF0ZWRfYXQ6CiAgICAgICAgICAgIHNlbGYudXBkYXRlZF9hdCA9IG5vdwoKICAgIGRlZiB0b19kaWN0KHNlbGYpIC0+IGRpY3Q6CiAgICAgICAgcmV0dXJuIGFzZGljdChzZWxmKQoKICAgIEBjbGFzc21ldGhvZAogICAgZGVmIGZyb21fZGljdChjbHMsIGRhdGE6IGRpY3QpIC0+ICJSZXNlYXJjaFF1ZXN0aW9uIjoKICAgICAgICByZXR1cm4gY2xzKCoqZGF0YSkKCgpjbGFzcyBRdWVzdGlvblRyYWNrZXIoSnNvbkZpbGVTdG9yZSk6CiAgICAiIiJUcmFjayBhbmQgbWFuYWdlIHJlc2VhcmNoIHF1ZXN0aW9ucyBwZXJzaXN0ZW50bHkuIiIiCgogICAgZGVmIF9faW5pdF9fKHNlbGYsIGRhdGFfZGlyOiBPcHRpb25hbFtQYXRoXSA9IE5vbmUpOgogICAgICAgIGlmIGRhdGFfZGlyIGlzIE5vbmU6CiAgICAgICAgICAgIGRhdGFfZGlyID0gUGF0aC5ob21lKCkgLyAiLmFpX3Jlc2VhcmNoX29zIiAvICJxdWVzdGlvbnMiCiAgICAgICAgc2VsZi5kYXRhX2RpciA9IFBhdGgoZGF0YV9kaXIpCiAgICAgICAgc2VsZi5kYXRhX2Rpci5ta2RpcihwYXJlbnRzPVRydWUsIGV4aXN0X29rPVRydWUpCiAgICAgICAgc2VsZi5kYXRhX2ZpbGUgPSBzZWxmLmRhdGFfZGlyIC8gInF1ZXN0aW9ucy5qc29uIgoKICAgIGRlZiBfcG9zdF9sb2FkKHNlbGYsIHJhdzogTGlzdFtkaWN0XSkgLT4gTGlzdFtSZXNlYXJjaFF1ZXN0aW9uXToKICAgICAgICByZXR1cm4gW1Jlc2VhcmNoUXVlc3Rpb24uZnJvbV9kaWN0KHEpIGZvciBxIGluIHJhd10KCiAgICBkZWYgX3ByZV9zYXZlKHNlbGYsIHF1ZXN0aW9uczogTGlzdFtSZXNlYXJjaFF1ZXN0aW9uXSkgLT4gTGlzdFtkaWN0XToKICAgICAgICByZXR1cm4gW3EudG9fZGljdCgpIGZvciBxIGluIHF1ZXN0aW9uc10KCiAgICBkZWYgYWRkKAogICAgICAgIHNlbGYsCiAgICAgICAgcXVlc3Rpb246IHN0ciwKICAgICAgICBzb3VyY2U6IHN0ciA9IFF1ZXN0aW9uU291cmNlLk1BTlVBTC52YWx1ZSwKICAgICAgICB0b3BpYzogc3RyID0gIiIsCiAgICAgICAgcHJpb3JpdHk6IGludCA9IDUsCiAgICAgICAgbm90ZXM6IHN0ciA9ICIiLAogICAgKSAtPiBSZXNlYXJjaFF1ZXN0aW9uOgogICAgICAgICIiIkFkZCBhIG5ldyByZXNlYXJjaCBxdWVzdGlvbi4iIiIKICAgICAgICBxdWVzdGlvbnMgPSBzZWxmLl9sb2FkKCkKCiAgICAgICAgcSA9IFJlc2VhcmNoUXVlc3Rpb24oCiAgICAgICAgICAgIGlkPXN0cih1dWlkLnV1aWQ0KCkpWzo4XSwKICAgICAgICAgICAgcXVlc3Rpb249cXVlc3Rpb24sCiAgICAgICAgICAgIHNvdXJjZT1zb3VyY2UsCiAgICAgICAgICAgIHN0YXR1cz1RdWVzdGlvblN0YXR1cy5PUEVOLnZhbHVlLAogICAgICAgICAgICB0b3BpYz10b3BpYywKICAgICAgICAgICAgcHJpb3JpdHk9cHJpb3JpdHksCiAgICAgICAgICAgIG5vdGVzPW5vdGVzLAogICAgICAgICkKCiAgICAgICAgcXVlc3Rpb25zLmFwcGVuZChxKQogICAgICAgIHNlbGYuX3NhdmUocXVlc3Rpb25zKQogICAgICAgIHJldHVybiBxCgogICAgZGVmIGxpc3RfcXVlc3Rpb25zKAogICAgICAgIHNlbGYsCiAgICAgICAgc3RhdHVzOiBPcHRpb25hbFtzdHJdID0gTm9uZSwKICAgICAgICB0b3BpYzogT3B0aW9uYWxbc3RyXSA9IE5vbmUsCiAgICAgICAgc291cmNlOiBPcHRpb25hbFtzdHJdID0gTm9uZSwKICAgICkgLT4gTGlzdFtSZXNlYXJjaFF1ZXN0aW9uXToKICAgICAgICAiIiJMaXN0IHF1ZXN0aW9ucyB3aXRoIG9wdGlvbmFsIGZpbHRlcnMuIiIiCiAgICAgICAgcXVlc3Rpb25zID0gc2VsZi5fbG9hZCgpCgogICAgICAgIGlmIHN0YXR1czoKICAgICAgICAgICAgcXVlc3Rpb25zID0gW3EgZm9yIHEgaW4gcXVlc3Rpb25zIGlmIHEuc3RhdHVzID09IHN0YXR1c10KICAgICAgICBpZiB0b3BpYzoKICAgICAgICAgICAgcXVlc3Rpb25zID0gW3EgZm9yIHEgaW4gcXVlc3Rpb25zIGlmIHRvcGljLmxvd2VyKCkgaW4gcS50b3BpYy5sb3dlcigpXQogICAgICAgIGlmIHNvdXJjZToKICAgICAgICAgICAgcXVlc3Rpb25zID0gW3EgZm9yIHEgaW4gcXVlc3Rpb25zIGlmIHEuc291cmNlID09IHNvdXJjZV0KCiAgICAgICAgcmV0dXJuIHNvcnRlZChxdWVzdGlvbnMsIGtleT1sYW1iZGEgeDogLXgucHJpb3JpdHkpCgogICAgZGVmIGdldChzZWxmLCBxdWVzdGlvbl9pZDogc3RyKSAtPiBPcHRpb25hbFtSZXNlYXJjaFF1ZXN0aW9uXToKICAgICAgICAiIiJHZXQgYSBxdWVzdGlvbiBieSBJRC4iIiIKICAgICAgICBxdWVzdGlvbnMgPSBzZWxmLl9sb2FkKCkKICAgICAgICBmb3IgcSBpbiBxdWVzdGlvbnM6CiAgICAgICAgICAgIGlmIHEuaWQgPT0gcXVlc3Rpb25faWQ6CiAgICAgICAgICAgICAgICByZXR1cm4gY2FzdChPcHRpb25hbFtSZXNlYXJjaFF1ZXN0aW9uXSwgcSkKICAgICAgICByZXR1cm4gTm9uZQoKICAgIGRlZiB1cGRhdGUoCiAgICAgICAgc2VsZiwKICAgICAgICBxdWVzdGlvbl9pZDogc3RyLAogICAgICAgIHN0YXR1czogT3B0aW9uYWxbc3RyXSA9IE5vbmUsCiAgICAgICAgbm90ZXM6IE9wdGlvbmFsW3N0cl0gPSBOb25lLAogICAgICAgIHByaW9yaXR5OiBPcHRpb25hbFtpbnRdID0gTm9uZSwKICAgICkgLT4gT3B0aW9uYWxbUmVzZWFyY2hRdWVzdGlvbl06CiAgICAgICAgIiIiVXBkYXRlIGEgcXVlc3Rpb24ncyBmaWVsZHMuIiIiCiAgICAgICAgcXVlc3Rpb25zID0gc2VsZi5fbG9hZCgpCgogICAgICAgIGZvciBxIGluIHF1ZXN0aW9uczoKICAgICAgICAgICAgaWYgcS5pZCA9PSBxdWVzdGlvbl9pZDoKICAgICAgICAgICAgICAgIGlmIHN0YXR1czoKICAgICAgICAgICAgICAgICAgICBxLnN0YXR1cyA9IHN0YXR1cwogICAgICAgICAgICAgICAgaWYgbm90ZXMgaXMgbm90IE5vbmU6CiAgICAgICAgICAgICAgICAgICAgcS5ub3RlcyA9IG5vdGVzCiAgICAgICAgICAgICAgICBpZiBwcmlvcml0eSBpcyBub3QgTm9uZToKICAgICAgICAgICAgICAgICAgICBxLnByaW9yaXR5ID0gbWF4KDEsIG1pbigxMCwgcHJpb3JpdHkpKQogICAgICAgICAgICAgICAgcS51cGRhdGVkX2F0ID0gZGF0ZXRpbWUubm93KCkuaXNvZm9ybWF0KCkKICAgICAgICAgICAgICAgIHNlbGYuX3NhdmUocXVlc3Rpb25zKQogICAgICAgICAgICAgICAgcmV0dXJuIGNhc3QoUmVzZWFyY2hRdWVzdGlvbiwgcSkKCiAgICAgICAgcmV0dXJuIE5vbmUKCiAgICBkZWYgbGlua19wYXBlcihzZWxmLCBxdWVzdGlvbl9pZDogc3RyLCBwYXBlcl9pZDogc3RyKSAtPiBPcHRpb25hbFtSZXNlYXJjaFF1ZXN0aW9uXToKICAgICAgICAiIiJMaW5rIGEgcGFwZXIgdG8gYSBxdWVzdGlvbi4iIiIKICAgICAgICBxdWVzdGlvbnMgPSBzZWxmLl9sb2FkKCkKCiAgICAgICAgZm9yIHEgaW4gcXVlc3Rpb25zOgogICAgICAgICAgICBpZiBxLmlkID09IHF1ZXN0aW9uX2lkOgogICAgICAgICAgICAgICAgaWYgcGFwZXJfaWQgbm90IGluIHEucmVsYXRlZF9wYXBlcnM6CiAgICAgICAgICAgICAgICAgICAgcS5yZWxhdGVkX3BhcGVycy5hcHBlbmQocGFwZXJfaWQpCiAgICAgICAgICAgICAgICAgICAgcS51cGRhdGVkX2F0ID0gZGF0ZXRpbWUubm93KCkuaXNvZm9ybWF0KCkKICAgICAgICAgICAgICAgICAgICBzZWxmLl9zYXZlKHF1ZXN0aW9ucykKICAgICAgICAgICAgICAgIHJldHVybiBjYXN0KFJlc2VhcmNoUXVlc3Rpb24sIHEpCgogICAgICAgIHJldHVybiBOb25lCgogICAgZGVmIHVubGlua19wYXBlcihzZWxmLCBxdWVzdGlvbl9pZDogc3RyLCBwYXBlcl9pZDogc3RyKSAtPiBPcHRpb25hbFtSZXNlYXJjaFF1ZXN0aW9uXToKICAgICAgICAiIiJVbmxpbmsgYSBwYXBlciBmcm9tIGEgcXVlc3Rpb24uIiIiCiAgICAgICAgcXVlc3Rpb25zID0gc2VsZi5fbG9hZCgpCgogICAgICAgIGZvciBxIGluIHF1ZXN0aW9uczoKICAgICAgICAgICAgaWYgcS5pZCA9PSBxdWVzdGlvbl9pZDoKICAgICAgICAgICAgICAgIGlmIHBhcGVyX2lkIGluIHEucmVsYXRlZF9wYXBlcnM6CiAgICAgICAgICAgICAgICAgICAgcS5yZWxhdGVkX3BhcGVycy5yZW1vdmUocGFwZXJfaWQpCiAgICAgICAgICAgICAgICAgICAgcS51cGRhdGVkX2F0ID0gZGF0ZXRpbWUubm93KCkuaXNvZm9ybWF0KCkKICAgICAgICAgICAgICAgICAgICBzZWxmLl9zYXZlKHF1ZXN0aW9ucykKICAgICAgICAgICAgICAgIHJldHVybiBjYXN0KFJlc2VhcmNoUXVlc3Rpb24sIHEpCgogICAgICAgIHJldHVybiBOb25lCgogICAgZGVmIGRlbGV0ZShzZWxmLCBxdWVzdGlvbl9pZDogc3RyKSAtPiBib29sOgogICAgICAgICIiIkRlbGV0ZSBhIHF1ZXN0aW9uLiIiIgogICAgICAgIHF1ZXN0aW9ucyA9IHNlbGYuX2xvYWQoKQogICAgICAgIG9yaWdpbmFsX2xlbiA9IGxlbihxdWVzdGlvbnMpCiAgICAgICAgcXVlc3Rpb25zID0gW3EgZm9yIHEgaW4gcXVlc3Rpb25zIGlmIHEuaWQgIT0gcXVlc3Rpb25faWRdCgogICAgICAgIGlmIGxlbihxdWVzdGlvbnMpIDwgb3JpZ2luYWxfbGVuOgogICAgICAgICAgICBzZWxmLl9zYXZlKHF1ZXN0aW9ucykKICAgICAgICAgICAgcmV0dXJuIFRydWUKICAgICAgICByZXR1cm4gRmFsc2UKCiAgICBkZWYgc3luY19mcm9tX2dhcHMoCiAgICAgICAgc2VsZiwKICAgICAgICBnYXBzOiBMaXN0W3N0cl0sCiAgICAgICAgdG9waWM6IHN0ciA9ICIiLAogICAgICAgIHByaW9yaXR5OiBpbnQgPSA3LAogICAgKSAtPiBMaXN0W1Jlc2VhcmNoUXVlc3Rpb25dOgogICAgICAgICIiIlN5bmMgcXVlc3Rpb25zIGZyb20gZ2FwIGRldGVjdGlvbiByZXN1bHRzLiIiIgogICAgICAgIHF1ZXN0aW9ucyA9IHNlbGYuX2xvYWQoKQogICAgICAgIG5ld19xdWVzdGlvbnMgPSBbXQoKICAgICAgICBmb3IgZ2FwIGluIGdhcHM6CiAgICAgICAgICAgICMgQ2hlY2sgaWYgc2ltaWxhciBxdWVzdGlvbiBhbHJlYWR5IGV4aXN0cwogICAgICAgICAgICBleGlzdHMgPSBhbnkoCiAgICAgICAgICAgICAgICBnYXAubG93ZXIoKSBpbiBxLnF1ZXN0aW9uLmxvd2VyKCkgb3IgcS5xdWVzdGlvbi5sb3dlcigpIGluIGdhcC5sb3dlcigpCiAgICAgICAgICAgICAgICBmb3IgcSBpbiBxdWVzdGlvbnMKICAgICAgICAgICAgKQogICAgICAgICAgICBpZiBub3QgZXhpc3RzOgogICAgICAgICAgICAgICAgcSA9IFJlc2VhcmNoUXVlc3Rpb24oCiAgICAgICAgICAgICAgICAgICAgaWQ9c3RyKHV1aWQudXVpZDQoKSlbOjhdLAogICAgICAgICAgICAgICAgICAgIHF1ZXN0aW9uPWYi5aaC5L2V6Kej5YazOiB7Z2FwfT8iLAogICAgICAgICAgICAgICAgICAgIHNvdXJjZT1RdWVzdGlvblNvdXJjZS5HQVBfREVURUNUSU9OLnZhbHVlLAogICAgICAgICAgICAgICAgICAgIHN0YXR1cz1RdWVzdGlvblN0YXR1cy5PUEVOLnZhbHVlLAogICAgICAgICAgICAgICAgICAgIHRvcGljPXRvcGljLAogICAgICAgICAgICAgICAgICAgIHByaW9yaXR5PXByaW9yaXR5LAogICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgcXVlc3Rpb25zLmFwcGVuZChxKQogICAgICAgICAgICAgICAgbmV3X3F1ZXN0aW9ucy5hcHBlbmQocSkKCiAgICAgICAgaWYgbmV3X3F1ZXN0aW9uczoKICAgICAgICAgICAgc2VsZi5fc2F2ZShxdWVzdGlvbnMpCgogICAgICAgIHJldHVybiBuZXdfcXVlc3Rpb25zCgogICAgZGVmIGdldF9zdGF0cyhzZWxmKSAtPiBkaWN0OgogICAgICAgICIiIkdldCBzdGF0aXN0aWNzIGFib3V0IHRyYWNrZWQgcXVlc3Rpb25zLiIiIgogICAgICAgIHF1ZXN0aW9ucyA9IHNlbGYuX2xvYWQoKQoKICAgICAgICBzdGF0dXNfY291bnRzOiBEaWN0W3N0ciwgaW50XSA9IHt9CiAgICAgICAgc291cmNlX2NvdW50czogRGljdFtzdHIsIGludF0gPSB7fQogICAgICAgIHRvcGljX2NvdW50czogRGljdFtzdHIsIGludF0gPSB7fQoKICAgICAgICBmb3IgcSBpbiBxdWVzdGlvbnM6CiAgICAgICAgICAgIHN0YXR1c19jb3VudHNbcS5zdGF0dXNdID0gc3RhdHVzX2NvdW50cy5nZXQocS5zdGF0dXMsIDApICsgMQogICAgICAgICAgICBzb3VyY2VfY291bnRzW3Euc291cmNlXSA9IHNvdXJjZV9jb3VudHMuZ2V0KHEuc291cmNlLCAwKSArIDEKICAgICAgICAgICAgaWYgcS50b3BpYzoKICAgICAgICAgICAgICAgIHRvcGljX2NvdW50c1txLnRvcGljXSA9IHRvcGljX2NvdW50cy5nZXQocS50b3BpYywgMCkgKyAxCgogICAgICAgIHJldHVybiB7CiAgICAgICAgICAgICJ0b3RhbCI6IGxlbihxdWVzdGlvbnMpLAogICAgICAgICAgICAiYnlfc3RhdHVzIjogc3RhdHVzX2NvdW50cywKICAgICAgICAgICAgImJ5X3NvdXJjZSI6IHNvdXJjZV9jb3VudHMsCiAgICAgICAgICAgICJieV90b3BpYyI6IHRvcGljX2NvdW50cywKICAgICAgICB9CgogICAgZGVmIHJlbmRlcl9saXN0KHNlbGYsIHF1ZXN0aW9uczogTGlzdFtSZXNlYXJjaFF1ZXN0aW9uXSwgdmVyYm9zZTogYm9vbCA9IEZhbHNlKSAtPiBzdHI6CiAgICAgICAgIiIiUmVuZGVyIHF1ZXN0aW9ucyBhcyBmb3JtYXR0ZWQgdGV4dC4iIiIKICAgICAgICBpZiBub3QgcXVlc3Rpb25zOgogICAgICAgICAgICByZXR1cm4gIuayoeacieaJvuWIsOeglOeptumXrumimOOAgiIKCiAgICAgICAgbGluZXMgPSBbXQogICAgICAgIGZvciBpLCBxIGluIGVudW1lcmF0ZShxdWVzdGlvbnMsIDEpOgogICAgICAgICAgICBzdGF0dXNfaWNvbiA9IHsKICAgICAgICAgICAgICAgICJvcGVuIjogIuKXiyIsCiAgICAgICAgICAgICAgICAiaW5fcHJvZ3Jlc3MiOiAi4peQIiwKICAgICAgICAgICAgICAgICJyZXNvbHZlZCI6ICLil48iLAogICAgICAgICAgICAgICAgIndvbnRmaXgiOiAi4pyXIiwKICAgICAgICAgICAgfS5nZXQocS5zdGF0dXMsICI/IikKCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIntpfS4gW3tzdGF0dXNfaWNvbn1dIHtxLnF1ZXN0aW9ufSIpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgIElEOiB7cS5pZH0gfCDmnaXmupA6IHtxLnNvdXJjZX0gfCDkvJjlhYjnuqc6IHtxLnByaW9yaXR5fS8xMCIpCgogICAgICAgICAgICBpZiBxLnRvcGljOgogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKGYiICAg5Li76aKYOiB7cS50b3BpY30iKQoKICAgICAgICAgICAgaWYgcS5yZWxhdGVkX3BhcGVyczoKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiAgIOWFs+iBlOiuuuaWhzoge2xlbihxLnJlbGF0ZWRfcGFwZXJzKX0g56+HIikKCiAgICAgICAgICAgIGlmIHZlcmJvc2UgYW5kIHEubm90ZXM6CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIgICDlpIfms6g6IHtxLm5vdGVzWzoxMDBdfSIpCgogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgIHJldHVybiAiXG4iLmpvaW4obGluZXMpCg==
+"""
+Research Question Tracker: Persistent management of research questions.
+
+Track research questions from:
+- Manual entry
+- Gap detection from QuestionValidator
+- Hypothesis generation results
+"""
+
+from __future__ import annotations
+
+import uuid
+from dataclasses import dataclass, asdict, field
+from datetime import datetime
+from enum import Enum
+from pathlib import Path
+from typing import Dict, List, Optional, cast
+
+from llm.tracker_base import JsonFileStore
+
+
+class QuestionStatus(Enum):
+    """Research question status."""
+    OPEN = "open"
+    IN_PROGRESS = "in_progress"
+    RESOLVED = "resolved"
+    WONTFIX = "wontfix"
+
+
+class QuestionSource(Enum):
+    """Source of the research question."""
+    MANUAL = "manual"
+    GAP_DETECTION = "gap_detection"
+    HYPOTHESIS = "hypothesis"
+    LITERATURE_REVIEW = "literature_review"
+
+
+@dataclass
+class ResearchQuestion:
+    """A research question tracked in the system."""
+    id: str
+    question: str
+    source: str  # QuestionSource value
+    status: str  # QuestionStatus value
+    related_papers: List[str] = field(default_factory=list)
+    created_at: str = ""
+    updated_at: str = ""
+    notes: str = ""
+    priority: int = 5  # 1-10, higher = more important
+    topic: str = ""  # Research topic
+
+    def __post_init__(self):
+        now = datetime.now().isoformat()
+        if not self.created_at:
+            self.created_at = now
+        if not self.updated_at:
+            self.updated_at = now
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "ResearchQuestion":
+        return cls(**data)
+
+
+class QuestionTracker(JsonFileStore):
+    """Track and manage research questions persistently."""
+
+    def __init__(self, data_dir: Optional[Path] = None):
+        if data_dir is None:
+            data_dir = Path.home() / ".ai_research_os" / "questions"
+        self.data_dir = Path(data_dir)
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.data_file = self.data_dir / "questions.json"
+
+    def _post_load(self, raw: List[dict]) -> List[ResearchQuestion]:
+        return [ResearchQuestion.from_dict(q) for q in raw]
+
+    def _pre_save(self, questions: List[ResearchQuestion]) -> List[dict]:
+        return [q.to_dict() for q in questions]
+
+    def add(
+        self,
+        question: str,
+        source: str = QuestionSource.MANUAL.value,
+        topic: str = "",
+        priority: int = 5,
+        notes: str = "",
+    ) -> ResearchQuestion:
+        """Add a new research question."""
+        questions = self._load()
+
+        q = ResearchQuestion(
+            id=str(uuid.uuid4())[:8],
+            question=question,
+            source=source,
+            status=QuestionStatus.OPEN.value,
+            topic=topic,
+            priority=priority,
+            notes=notes,
+        )
+
+        questions.append(q)
+        self._save(questions)
+        return q
+
+    def list_questions(
+        self,
+        status: Optional[str] = None,
+        topic: Optional[str] = None,
+        source: Optional[str] = None,
+    ) -> List[ResearchQuestion]:
+        """List questions with optional filters."""
+        questions = self._load()
+
+        if status:
+            questions = [q for q in questions if q.status == status]
+        if topic:
+            questions = [q for q in questions if topic.lower() in q.topic.lower()]
+        if source:
+            questions = [q for q in questions if q.source == source]
+
+        return sorted(questions, key=lambda x: -x.priority)
+
+    def get(self, question_id: str) -> Optional[ResearchQuestion]:
+        """Get a question by ID."""
+        questions = self._load()
+        for q in questions:
+            if q.id == question_id:
+                return cast(Optional[ResearchQuestion], q)
+        return None
+
+    def update(
+        self,
+        question_id: str,
+        status: Optional[str] = None,
+        notes: Optional[str] = None,
+        priority: Optional[int] = None,
+    ) -> Optional[ResearchQuestion]:
+        """Update a question's fields."""
+        questions = self._load()
+
+        for q in questions:
+            if q.id == question_id:
+                if status:
+                    q.status = status
+                if notes is not None:
+                    q.notes = notes
+                if priority is not None:
+                    q.priority = max(1, min(10, priority))
+                q.updated_at = datetime.now().isoformat()
+                self._save(questions)
+                return cast(ResearchQuestion, q)
+
+        return None
+
+    def link_paper(self, question_id: str, paper_id: str) -> Optional[ResearchQuestion]:
+        """Link a paper to a question."""
+        questions = self._load()
+
+        for q in questions:
+            if q.id == question_id:
+                if paper_id not in q.related_papers:
+                    q.related_papers.append(paper_id)
+                    q.updated_at = datetime.now().isoformat()
+                    self._save(questions)
+                return cast(ResearchQuestion, q)
+
+        return None
+
+    def unlink_paper(self, question_id: str, paper_id: str) -> Optional[ResearchQuestion]:
+        """Unlink a paper from a question."""
+        questions = self._load()
+
+        for q in questions:
+            if q.id == question_id:
+                if paper_id in q.related_papers:
+                    q.related_papers.remove(paper_id)
+                    q.updated_at = datetime.now().isoformat()
+                    self._save(questions)
+                return cast(ResearchQuestion, q)
+
+        return None
+
+    def delete(self, question_id: str) -> bool:
+        """Delete a question."""
+        questions = self._load()
+        original_len = len(questions)
+        questions = [q for q in questions if q.id != question_id]
+
+        if len(questions) < original_len:
+            self._save(questions)
+            return True
+        return False
+
+    def sync_from_gaps(
+        self,
+        gaps: List[str],
+        topic: str = "",
+        priority: int = 7,
+    ) -> List[ResearchQuestion]:
+        """Sync questions from gap detection results."""
+        questions = self._load()
+        new_questions = []
+
+        for gap in gaps:
+            # Check if similar question already exists
+            exists = any(
+                gap.lower() in q.question.lower() or q.question.lower() in gap.lower()
+                for q in questions
+            )
+            if not exists:
+                q = ResearchQuestion(
+                    id=str(uuid.uuid4())[:8],
+                    question=f"如何解决: {gap}?",
+                    source=QuestionSource.GAP_DETECTION.value,
+                    status=QuestionStatus.OPEN.value,
+                    topic=topic,
+                    priority=priority,
+                )
+                questions.append(q)
+                new_questions.append(q)
+
+        if new_questions:
+            self._save(questions)
+
+        return new_questions
+
+    def get_stats(self) -> dict:
+        """Get statistics about tracked questions."""
+        questions = self._load()
+
+        status_counts: Dict[str, int] = {}
+        source_counts: Dict[str, int] = {}
+        topic_counts: Dict[str, int] = {}
+
+        for q in questions:
+            status_counts[q.status] = status_counts.get(q.status, 0) + 1
+            source_counts[q.source] = source_counts.get(q.source, 0) + 1
+            if q.topic:
+                topic_counts[q.topic] = topic_counts.get(q.topic, 0) + 1
+
+        return {
+            "total": len(questions),
+            "by_status": status_counts,
+            "by_source": source_counts,
+            "by_topic": topic_counts,
+        }
+
+    def render_list(self, questions: List[ResearchQuestion], verbose: bool = False) -> str:
+        """Render questions as formatted text."""
+        if not questions:
+            return "没有找到研究问题。"
+
+        lines = []
+        for i, q in enumerate(questions, 1):
+            status_icon = {
+                "open": "○",
+                "in_progress": "◐",
+                "resolved": "●",
+                "wontfix": "✗",
+            }.get(q.status, "?")
+
+            lines.append(f"{i}. [{status_icon}] {q.question}")
+            lines.append(f"   ID: {q.id} | 来源: {q.source} | 优先级: {q.priority}/10")
+
+            if q.topic:
+                lines.append(f"   主题: {q.topic}")
+
+            if q.related_papers:
+                lines.append(f"   关联论文: {len(q.related_papers)} 篇")
+
+            if verbose and q.notes:
+                lines.append(f"   备注: {q.notes[:100]}")
+
+            lines.append("")
+
+        return '\n'.join(lines)

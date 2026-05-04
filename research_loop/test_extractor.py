@@ -1,1 +1,396 @@
-IiIiClRlc3QgRXh0cmFjdG9yIOKAlCBleHRyYWN0IHRlc3RhYmxlIGFzc2VydGlvbnMgZnJvbSBwYXBlciBjb250ZW50IGFuZCBnZW5lcmF0ZSBweXRlc3Qgc3VpdGVzLgoKVXNlZCBieSB0aGUgcGFwZXIyY29kZSBpbnRlZ3JhdGlvbiBwaXBlbGluZToKICBleHRyYWN0X3Rlc3RzKHBhcGVyX2NvbnRlbnQsIGNvZGUsIG1vZHVsZV9uYW1lKSDihpIgVGVzdFN1aXRlCiAgc2F2ZV90ZXN0cyhzdWl0ZSwgdGVzdF9kaXIpCgpUZXN0U3VpdGUgZmVlZHMgaW50bzoKICAtIGJlbmNobWFya19ydW5uZXI6IHJ1bl9iZW5jaG1hcmsoKSBleGVjdXRlcyB0aGUgZ2VuZXJhdGVkIHRlc3RzCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IHJlCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcywgZmllbGQKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBMaXN0LCBEaWN0LCBBbnkKCgpAZGF0YWNsYXNzCmNsYXNzIFRlc3RDYXNlOgogICAgIiIiQSBzaW5nbGUgcHl0ZXN0IHRlc3QgY2FzZS4iIiIKCiAgICBuYW1lOiBzdHIKICAgIGRvYzogc3RyICAjIGRlc2NyaXB0aW9uIC8gYXNzZXJ0aW9uIGJlaW5nIHRlc3RlZAogICAgdGVzdF9jb2RlOiBzdHIgICMgYWN0dWFsIHB5dGVzdCB0ZXN0IGNvZGUKCgpAZGF0YWNsYXNzCmNsYXNzIFRlc3RTdWl0ZToKICAgICIiIkNvbGxlY3Rpb24gb2YgdGVzdCBjYXNlcyBmb3IgYSBwYXBlciBpbXBsZW1lbnRhdGlvbi4iIiIKCiAgICBhcnhpdl9pZDogc3RyCiAgICBtb2R1bGVfbmFtZTogc3RyCiAgICB0ZXN0X2Nhc2VzOiBMaXN0W1Rlc3RDYXNlXSA9IGZpZWxkKGRlZmF1bHRfZmFjdG9yeT1saXN0KQogICAgaW1wb3J0czogTGlzdFtzdHJdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCiAgICBmaXh0dXJlczogRGljdFtzdHIsIHN0cl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9ZGljdCkgICMgbmFtZSDihpIgZml4dHVyZSBjb2RlCgoKZGVmIGV4dHJhY3RfdGVzdHMoY29udGVudDogQW55LCBjb2RlOiBzdHIsIG1vZHVsZV9uYW1lOiBzdHIgPSAibW9kZWwiKSAtPiBUZXN0U3VpdGU6CiAgICAiIiJFeHRyYWN0IHRlc3RhYmxlIGFzc2VydGlvbnMgZnJvbSBwYXBlciBjb250ZW50IGFuZCBnZW5lcmF0ZSBweXRlc3QgdGVzdCBzdWl0ZS4KCiAgICBTY2FucyBQYXBlckNvbnRlbnQgZm9yOgogICAgLSBOdW1lcmljYWwgY2xhaW1zIChlLmcuICJhY2hpZXZlcyA5NSUgYWNjdXJhY3kiKQogICAgLSBIeXBlcnBhcmFtZXRlcnMgKGUuZy4gbGVhcm5pbmdfcmF0ZT0wLjAwMSkKICAgIC0gQWxnb3JpdGhtIHByb3BlcnRpZXMgKGUuZy4gImF0dGVudGlvbiBtZWNoYW5pc20iKQogICAgLSBFcXVhdGlvbiBjb25zdHJhaW50cyAoZS5nLiAib3V0cHV0IHN1bSBlcXVhbHMgMSIgZm9yIHNvZnRtYXgpCgogICAgQWxzbyBpbnNwZWN0cyB0aGUgZ2VuZXJhdGVkIGNvZGUgZm9yIHRlc3RhYmxlIGZ1bmN0aW9uIHNpZ25hdHVyZXMuCiAgICAiIiIKICAgIHN1aXRlID0gVGVzdFN1aXRlKAogICAgICAgIGFyeGl2X2lkPWNvbnRlbnQuYXJ4aXZfaWQsCiAgICAgICAgbW9kdWxlX25hbWU9bW9kdWxlX25hbWUsCiAgICAgICAgaW1wb3J0cz1bCiAgICAgICAgICAgICJpbXBvcnQgcHl0ZXN0IiwKICAgICAgICAgICAgImltcG9ydCB0b3JjaCIsCiAgICAgICAgICAgIGYiZnJvbSB7bW9kdWxlX25hbWV9IGltcG9ydCAqIiwKICAgICAgICBdLAogICAgKQoKICAgICMgMS4gTnVtZXJpY2FsIGNsYWltcyBmcm9tIHBhcGVyCiAgICBmb3IgY2xhaW0gaW4gY29udGVudC5jbGFpbXM6CiAgICAgICAgdGMgPSBfY2xhaW1fdG9fdGVzdChjbGFpbSwgbW9kdWxlX25hbWUpCiAgICAgICAgaWYgdGM6CiAgICAgICAgICAgIHN1aXRlLnRlc3RfY2FzZXMuYXBwZW5kKHRjKQoKICAgICMgMi4gSHlwZXJwYXJhbWV0ZXIgdmFsaWRhdGlvbiB0ZXN0cwogICAgZm9yIGhwX25hbWUsIGhwX3ZhbCBpbiBjb250ZW50Lmh5cGVycGFyYW1ldGVycy5pdGVtcygpOgogICAgICAgIHRjID0gX2h5cGVycGFyYW1fdGVzdChocF9uYW1lLCBocF92YWwsIG1vZHVsZV9uYW1lKQogICAgICAgIGlmIHRjOgogICAgICAgICAgICBzdWl0ZS50ZXN0X2Nhc2VzLmFwcGVuZCh0YykKCiAgICAjIDMuIEFsZ29yaXRobSBwcm9wZXJ0eSB0ZXN0cyAoZnJvbSBhbGdvcml0aG1fZGVzY3JpcHRpb25zKQogICAgZm9yIGFsZ28gaW4gY29udGVudC5hbGdvcml0aG1fZGVzY3JpcHRpb25zOgogICAgICAgIHRjID0gX2FsZ29yaXRobV9wcm9wZXJ0eV90ZXN0KGFsZ28sIG1vZHVsZV9uYW1lKQogICAgICAgIGlmIHRjOgogICAgICAgICAgICBzdWl0ZS50ZXN0X2Nhc2VzLmFwcGVuZCh0YykKCiAgICAjIDQuIEVxdWF0aW9uLWJhc2VkIHRlc3RzIChlLmcuIHNvZnRtYXggc3VtLXRvLTEsIGF0dGVudGlvbiB3ZWlnaHRzIG5vbi1uZWdhdGl2ZSkKICAgIGZvciBlcSBpbiBjb250ZW50LmVxdWF0aW9uczoKICAgICAgICB0YyA9IF9lcXVhdGlvbl90ZXN0KGVxLCBtb2R1bGVfbmFtZSkKICAgICAgICBpZiB0YzoKICAgICAgICAgICAgc3VpdGUudGVzdF9jYXNlcy5hcHBlbmQodGMpCgogICAgIyA1LiBEYXRhc2V0IHByZXNlbmNlIHRlc3RzCiAgICBpZiBjb250ZW50LmRhdGFzZXRzOgogICAgICAgIHRjID0gX2RhdGFzZXRfdGVzdChjb250ZW50LmRhdGFzZXRzLCBtb2R1bGVfbmFtZSkKICAgICAgICBpZiB0YzoKICAgICAgICAgICAgc3VpdGUudGVzdF9jYXNlcy5hcHBlbmQodGMpCgogICAgIyA2LiBDb2RlIHNpZ25hdHVyZSB0ZXN0cyDigJQgdmVyaWZ5IGtleSBmdW5jdGlvbnMgZXhpc3QKICAgIGZvciB0YyBpbiBfY29kZV9zaWduYXR1cmVfdGVzdHMoY29kZSwgbW9kdWxlX25hbWUpOgogICAgICAgIHN1aXRlLnRlc3RfY2FzZXMuYXBwZW5kKHRjKQoKICAgICMgRGVkdXBsaWNhdGUgYnkgbmFtZQogICAgc2VlbiA9IHNldCgpCiAgICB1bmlxdWUgPSBbXQogICAgZm9yIHRjIGluIHN1aXRlLnRlc3RfY2FzZXM6CiAgICAgICAgaWYgdGMubmFtZSBub3QgaW4gc2VlbjoKICAgICAgICAgICAgc2Vlbi5hZGQodGMubmFtZSkKICAgICAgICAgICAgdW5pcXVlLmFwcGVuZCh0YykKICAgIHN1aXRlLnRlc3RfY2FzZXMgPSB1bmlxdWUKCiAgICByZXR1cm4gc3VpdGUKCgpkZWYgc2F2ZV90ZXN0cyhzdWl0ZTogVGVzdFN1aXRlLCB0ZXN0X2RpcjogUGF0aCkgLT4gUGF0aDoKICAgICIiIldyaXRlIFRlc3RTdWl0ZSB0byB0ZXN0X2Rpci90ZXN0X21vZHVsZS5weSBhbmQgY29uZnRlc3QucHkuIiIiCiAgICB0ZXN0X2RpciA9IFBhdGgodGVzdF9kaXIpCiAgICB0ZXN0X2Rpci5ta2RpcihwYXJlbnRzPVRydWUsIGV4aXN0X29rPVRydWUpCgogICAgIyBXcml0ZSBjb25mdGVzdC5weSB3aXRoIGZpeHR1cmVzCiAgICBjb25mdGVzdF9jb250ZW50ID0gX3JlbmRlcl9jb25mdGVzdChzdWl0ZSkKICAgICh0ZXN0X2RpciAvICJjb25mdGVzdC5weSIpLndyaXRlX3RleHQoY29uZnRlc3RfY29udGVudCwgZW5jb2Rpbmc9InV0Zi04IikKCiAgICAjIFdyaXRlIG1haW4gdGVzdCBmaWxlCiAgICB0ZXN0X2ZpbGUgPSB0ZXN0X2RpciAvIGYidGVzdF97c3VpdGUubW9kdWxlX25hbWV9LnB5IgogICAgdGVzdF9jb250ZW50ID0gX3JlbmRlcl90ZXN0X21vZHVsZShzdWl0ZSkKICAgIHRlc3RfZmlsZS53cml0ZV90ZXh0KHRlc3RfY29udGVudCwgZW5jb2Rpbmc9InV0Zi04IikKCiAgICByZXR1cm4gdGVzdF9maWxlCgoKIyDilIDilIDilIAgUHJpdmF0ZSBoZWxwZXJzIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAoKCmRlZiBfY2xhaW1fdG9fdGVzdChjbGFpbTogc3RyLCBtb2R1bGVfbmFtZTogc3RyKSAtPiBUZXN0Q2FzZSB8IE5vbmU6CiAgICAiIiJDb252ZXJ0IGEgcGFwZXIgY2xhaW0gaW50byBhIHB5dGVzdCB0ZXN0IGlmIGl0IGNvbnRhaW5zIHRlc3RhYmxlIGFzc2VydGlvbnMuIiIiCiAgICBjbGFpbV9sb3dlciA9IGNsYWltLmxvd2VyKCkKCiAgICAjIEFjY3VyYWN5IC8gcGVyZm9ybWFuY2UgY2xhaW1zCiAgICBhY2NfbWF0Y2ggPSByZS5zZWFyY2gociIoXGQrKD86XC5cZCspPylccyolXHMqKD86YWNjdXJhY3l8YWNjfHBlcmZvcm1hbmNlKSIsIGNsYWltX2xvd2VyKQogICAgaWYgYWNjX21hdGNoOgogICAgICAgIHRocmVzaG9sZCA9IGZsb2F0KGFjY19tYXRjaC5ncm91cCgxKSkgLyAxMDAKICAgICAgICByZXR1cm4gVGVzdENhc2UoCiAgICAgICAgICAgIG5hbWU9InRlc3RfbW9kZWxfYWNjdXJhY3lfdGhyZXNob2xkIiwKICAgICAgICAgICAgZG9jPWYiTW9kZWwgc2hvdWxkIGFjaGlldmUgYXQgbGVhc3Qge3RocmVzaG9sZDouMSV9IGFjY3VyYWN5IChmcm9tIHBhcGVyIGNsYWltOiB7Y2xhaW1bOjYwXX0pIiwKICAgICAgICAgICAgdGVzdF9jb2RlPWYiIiJcCiMgUGFwZXIgY2xhaW06IHtjbGFpbVs6ODBdfQojIFRoaXMgaXMgYSBwbGFjZWhvbGRlciDigJQgcmVwbGFjZSB3aXRoIGFjdHVhbCBldmFsdWF0aW9uIG9uIHRoZSB0YXJnZXQgZGF0YXNldAojIHB5dGVzdC5pbXBvcnRvcnNraXAoInttb2R1bGVfbmFtZX0iKQpwYXNzCiIiIiwKICAgICAgICApCgogICAgIyBMb3NzIC8gZXJyb3IgcmVkdWN0aW9uIGNsYWltcwogICAgbG9zc19tYXRjaCA9IHJlLnNlYXJjaChyIig/Omxvc3N8ZXJyb3J8cGVycGxleGl0eSlccyooPzpvZnw9fDopXHMqKFtcZC5dKykiLCBjbGFpbV9sb3dlcikKICAgIGlmIGxvc3NfbWF0Y2g6CiAgICAgICAgdGhyZXNob2xkID0gZmxvYXQobG9zc19tYXRjaC5ncm91cCgxKSkKICAgICAgICByZXR1cm4gVGVzdENhc2UoCiAgICAgICAgICAgIG5hbWU9InRlc3RfbG9zc19iZWxvd190aHJlc2hvbGQiLAogICAgICAgICAgICBkb2M9ZiJMb3NzIHNob3VsZCBiZSBiZWxvdyB7dGhyZXNob2xkfSAoZnJvbSBwYXBlciBjbGFpbToge2NsYWltWzo2MF19KSIsCiAgICAgICAgICAgIHRlc3RfY29kZT1mIiIiXAojIFBhcGVyIGNsYWltOiB7Y2xhaW1bOjgwXX0KcGFzcwoiIiIsCiAgICAgICAgKQoKICAgICMgU3BlZWQgLyBlZmZpY2llbmN5IGNsYWltcwogICAgc3BlZWRfbWF0Y2ggPSByZS5zZWFyY2gociIoXGQrKD86XC5cZCspPylccyooPzp4fHRpbWVzfGZhc3RlcikiLCBjbGFpbV9sb3dlcikKICAgIGlmIHNwZWVkX21hdGNoOgogICAgICAgIHNwZWVkdXAgPSBmbG9hdChzcGVlZF9tYXRjaC5ncm91cCgxKSkKICAgICAgICByZXR1cm4gVGVzdENhc2UoCiAgICAgICAgICAgIG5hbWU9InRlc3Rfc3BlZWR1cF9vdmVyX2Jhc2VsaW5lIiwKICAgICAgICAgICAgZG9jPWYiTW9kZWwgc2hvdWxkIGJlIOKJpXtzcGVlZHVwfXggZmFzdGVyIHRoYW4gYmFzZWxpbmUgKGZyb20gcGFwZXIgY2xhaW06IHtjbGFpbVs6NjBdfSkiLAogICAgICAgICAgICB0ZXN0X2NvZGU9ZiIiIlwKIyBQYXBlciBjbGFpbToge2NsYWltWzo4MF19CiMgQ29tcGFyZSBpbmZlcmVuY2UgdGltZSBhZ2FpbnN0IGJhc2VsaW5lIGltcGxlbWVudGF0aW9uCnBhc3MKIiIiLAogICAgICAgICkKCiAgICByZXR1cm4gTm9uZQoKCmRlZiBfaHlwZXJwYXJhbV90ZXN0KGhwX25hbWU6IHN0ciwgaHBfdmFsOiBzdHIsIG1vZHVsZV9uYW1lOiBzdHIpIC0+IFRlc3RDYXNlIHwgTm9uZToKICAgICIiIkdlbmVyYXRlIGEgdGVzdCB0aGF0IHZlcmlmaWVzIGEgaHlwZXJwYXJhbWV0ZXIgaXMgY29uZmlndXJhYmxlLiIiIgogICAgaWYgaHBfbmFtZSBpbiAoImxlYXJuaW5nX3JhdGUiLCAibHIiKToKICAgICAgICByZXR1cm4gVGVzdENhc2UoCiAgICAgICAgICAgIG5hbWU9InRlc3RfbGVhcm5pbmdfcmF0ZV9jb25maWd1cmFibGUiLAogICAgICAgICAgICBkb2M9ZiJMZWFybmluZyByYXRlIHNob3VsZCBiZSBjb25maWd1cmFibGUgdG8ge2hwX3ZhbH0iLAogICAgICAgICAgICB0ZXN0X2NvZGU9ZiIiIlwKcHl0ZXN0LmltcG9ydG9yc2tpcCgie21vZHVsZV9uYW1lfSIpCnRyeToKICAgIGltcG9ydCB7bW9kdWxlX25hbWV9IGFzIG0KICAgIGlmIGhhc2F0dHIobSwgJ3NldF9sZWFybmluZ19yYXRlJyk6CiAgICAgICAgbS5zZXRfbGVhcm5pbmdfcmF0ZSh7aHBfdmFsfSkKZXhjZXB0IChJbXBvcnRFcnJvciwgQXR0cmlidXRlRXJyb3IpOgogICAgcHl0ZXN0LnNraXAoIk1vZHVsZSBkb2VzIG5vdCBzdXBwb3J0IGxlYXJuaW5nX3JhdGUgc2V0dGluZyIpIiIiLAogICAgICAgICkKICAgIHJldHVybiBOb25lCgoKZGVmIF9hbGdvcml0aG1fcHJvcGVydHlfdGVzdChhbGdvOiBzdHIsIG1vZHVsZV9uYW1lOiBzdHIpIC0+IFRlc3RDYXNlIHwgTm9uZToKICAgICIiIkluZmVyIGEgdGVzdGFibGUgcHJvcGVydHkgZnJvbSBhbiBhbGdvcml0aG0gZGVzY3JpcHRpb24uIiIiCiAgICBhbGdvX2xvd2VyID0gYWxnby5sb3dlcigpCgogICAgaWYgImF0dGVudGlvbiIgaW4gYWxnb19sb3dlcjoKICAgICAgICByZXR1cm4gVGVzdENhc2UoCiAgICAgICAgICAgIG5hbWU9InRlc3RfYXR0ZW50aW9uX3dlaWdodHNfbm9uX25lZ2F0aXZlIiwKICAgICAgICAgICAgZG9jPWYiQXR0ZW50aW9uIHdlaWdodHMgc2hvdWxkIGJlIG5vbi1uZWdhdGl2ZSBhbmQgc3VtIHRvIDEgKGZyb20gYWxnb3JpdGhtOiB7YWxnb1s6NjBdfSkiLAogICAgICAgICAgICB0ZXN0X2NvZGU9ZiIiIlwKcHl0ZXN0LmltcG9ydG9yc2tpcCgie21vZHVsZV9uYW1lfSIpCnB5dGVzdC5pbXBvcnRvcnNraXAoInRvcmNoIikKIyBWZXJpZnkgYXR0ZW50aW9uIG91dHB1dCBpcyBub24tbmVnYXRpdmUgYW5kIHN1bXMgdG8gMSBhbG9uZyB0aGUgbGFzdCBkaW1lbnNpb24KIyBSZXBsYWNlIHdpdGggYWN0dWFsIG1vZGVsIG91dHB1dCBjaGVjawp4ID0gdG9yY2gucmFuZG4oMSwgMTAsIDUxMikKIyBhdHRuID0geW91cl9hdHRlbnRpb25fZnVuY3Rpb24oeCkKIyBhc3NlcnQgKGF0dG4gPj0gMCkuYWxsKCksICJBdHRlbnRpb24gd2VpZ2h0cyBtdXN0IGJlIG5vbi1uZWdhdGl2ZSIKIyBhc3NlcnQgKGFicyhhdHRuLnN1bShkaW09LTEpIC0gMS4wKSA8IDFlLTUpLmFsbCgpLCAiQXR0ZW50aW9uIHdlaWdodHMgbXVzdCBzdW0gdG8gMSIKcGFzcwoiIiIsCiAgICAgICAgKQoKICAgIGlmICJzb2Z0bWF4IiBpbiBhbGdvX2xvd2VyOgogICAgICAgIHJldHVybiBUZXN0Q2FzZSgKICAgICAgICAgICAgbmFtZT0idGVzdF9zb2Z0bWF4X3N1bV90b19vbmUiLAogICAgICAgICAgICBkb2M9ZiJTb2Z0bWF4IG91dHB1dCBzaG91bGQgc3VtIHRvIDEgYWxvbmcgbGFzdCBkaW1lbnNpb24gKGZyb20gYWxnb3JpdGhtOiB7YWxnb1s6NjBdfSkiLAogICAgICAgICAgICB0ZXN0X2NvZGU9ZiIiIlwKcHl0ZXN0LmltcG9ydG9yc2tpcCgie21vZHVsZV9uYW1lfSIpCnB5dGVzdC5pbXBvcnRvcnNraXAoInRvcmNoIikKIyBWZXJpZnkgc29mdG1heCBwcm9wZXJ0eQojIHggPSB0b3JjaC5yYW5kbigxLCA1KQojIHJlc3VsdCA9IHRvcmNoLm5uLmZ1bmN0aW9uYWwuc29mdG1heCh4LCBkaW09LTEpCiMgYXNzZXJ0IChhYnMocmVzdWx0LnN1bShkaW09LTEpIC0gMS4wKSA8IDFlLTUpLmFsbCgpCnBhc3MKIiIiLAogICAgICAgICkKCiAgICBpZiBhbnkoa3cgaW4gYWxnb19sb3dlciBmb3Iga3cgaW4gWyJsYXllciBub3JtIiwgImxheWVyIG5vcm1hbGl6YXRpb24iLCAibGF5ZXJub3JtIl0pOgogICAgICAgIHJldHVybiBUZXN0Q2FzZSgKICAgICAgICAgICAgbmFtZT0idGVzdF9sYXllcm5vcm1fb3V0cHV0X3Byb3BlcnRpZXMiLAogICAgICAgICAgICBkb2M9ZiJMYXllck5vcm0gb3V0cHV0IHNob3VsZCBoYXZlIGxlYXJuYWJsZSBnYWluL2JpYXMgYW5kIGZpbml0ZSB2YWx1ZXMgKGZyb20gYWxnb3JpdGhtOiB7YWxnb1s6NjBdfSkiLAogICAgICAgICAgICB0ZXN0X2NvZGU9ZiIiIlwKcHl0ZXN0LmltcG9ydG9yc2tpcCgie21vZHVsZV9uYW1lfSIpCnB5dGVzdC5pbXBvcnRvcnNraXAoInRvcmNoIikKIyB4ID0gdG9yY2gucmFuZG4oMiwgMTAsIDUxMikKIyBub3JtZWQgPSBMYXllck5vcm0oNTEyKSh4KQojIGFzc2VydCBub3JtZWQuc2hhcGUgPT0geC5zaGFwZQojIGFzc2VydCBub3QgdG9yY2guaXNuYW4obm9ybWVkKS5hbnkoKQpwYXNzCiIiIiwKICAgICAgICApCgogICAgcmV0dXJuIE5vbmUKCgpkZWYgX2VxdWF0aW9uX3Rlc3QoZXE6IHN0ciwgbW9kdWxlX25hbWU6IHN0cikgLT4gVGVzdENhc2UgfCBOb25lOgogICAgIiIiQ29udmVydCBhbiBlcXVhdGlvbiBzdHJpbmcgaW50byBhIHByb3BlcnR5IHRlc3QgaWYgaXQncyB0ZXN0YWJsZS4iIiIKICAgIGVxX2xvd2VyID0gZXEubG93ZXIoKQoKICAgICMgc29mdG1heDogc3VtIG9mIGV4cCh4X2kpIC8gc3VtKGV4cCh4X2kpKSA9IDEKICAgIGlmICJzb2Z0bWF4IiBpbiBlcV9sb3dlciBvciAiZXhwIiBpbiBlcV9sb3dlcjoKICAgICAgICByZXR1cm4gVGVzdENhc2UoCiAgICAgICAgICAgIG5hbWU9InRlc3Rfc29mdG1heF9lcXVhdGlvbl9wcm9wZXJ0eSIsCiAgICAgICAgICAgIGRvYz1mIlZlcmlmeSBzb2Z0bWF4IGVxdWF0aW9uOiBleHAoeF9pKSAvIHN1bShleHAoeF9pKSkgKGZyb20gZXF1YXRpb246IHtlcVs6NTBdfSkiLAogICAgICAgICAgICB0ZXN0X2NvZGU9IiIiXApweXRlc3QuaW1wb3J0b3Jza2lwKCJ0b3JjaCIpCiMgVmVyaWZ5IHNvZnRtYXggZm9ybXVsYTogZm9yIGFueSBpbnB1dCB4LCBzb2Z0bWF4KHgpX2kgPSBleHAoeF9pKSAvIHN1bV9qKGV4cCh4X2opKQp4ID0gdG9yY2gucmFuZG4oNCwgOCkKZXhwX3ggPSB0b3JjaC5leHAoeCkKc29mdG1heF94ID0gZXhwX3ggLyBleHBfeC5zdW0oZGltPS0xLCBrZWVwZGltPVRydWUpCmV4cGVjdGVkID0gdG9yY2gubm4uZnVuY3Rpb25hbC5zb2Z0bWF4KHgsIGRpbT0tMSkKYXNzZXJ0IHRvcmNoLmFsbGNsb3NlKHNvZnRtYXhfeCwgZXhwZWN0ZWQsIGF0b2w9MWUtNSkKIiIiLAogICAgICAgICkKCiAgICAjIExheWVyTm9ybSBlcXVhdGlvbjogb3V0ID0gKHggLSBtZWFuKSAvIHNxcnQodmFyICsgZXBzKSAqIGdhbW1hICsgYmV0YQogICAgaWYgImxheWVybm9ybSIgaW4gZXFfbG93ZXIgb3IgImxheWVyIG5vcm0iIGluIGVxX2xvd2VyOgogICAgICAgIHJldHVybiBUZXN0Q2FzZSgKICAgICAgICAgICAgbmFtZT0idGVzdF9sYXllcm5vcm1fZm9ybXVsYSIsCiAgICAgICAgICAgIGRvYz1mIkxheWVyTm9ybSBmb3JtdWxhOiAoeCAtIG1lYW4pIC8gc3FydCh2YXIgKyBlcHMpICogZ2FtbWEgKyBiZXRhIChmcm9tIGVxdWF0aW9uOiB7ZXFbOjUwXX0pIiwKICAgICAgICAgICAgdGVzdF9jb2RlPSIiIlwKcHl0ZXN0LmltcG9ydG9yc2tpcCgidG9yY2giKQojIFZlcmlmeSBMYXllck5vcm0gZm9ybXVsYQojIHggPSB0b3JjaC5yYW5kbigyLCAxMCwgNTEyKQojIGxuID0gdG9yY2gubm4uTGF5ZXJOb3JtKDUxMikKIyBvdXQgPSBsbih4KQojIGFzc2VydCBvdXQuc2hhcGUgPT0geC5zaGFwZQojIGFzc2VydCBub3QgdG9yY2guaXNuYW4ob3V0KS5hbnkoKQpwYXNzCiIiIiwKICAgICAgICApCgogICAgcmV0dXJuIE5vbmUKCgpkZWYgX2RhdGFzZXRfdGVzdChkYXRhc2V0czogTGlzdFtzdHJdLCBtb2R1bGVfbmFtZTogc3RyKSAtPiBUZXN0Q2FzZToKICAgICIiIlRlc3QgdGhhdCBtb2RlbCBzdXBwb3J0cyBleHBlY3RlZCBkYXRhc2V0cyBvciBkYXRhIGZvcm1hdC4iIiIKICAgIHJldHVybiBUZXN0Q2FzZSgKICAgICAgICBuYW1lPSJ0ZXN0X21vZGVsX2hhc19yZXF1aXJlZF9tZXRob2RzIiwKICAgICAgICBkb2M9ZiJNb2RlbCBzaG91bGQgc3VwcG9ydCBjb21tb24gZGF0YXNldCBpbnB1dHMgKHBhcGVyIHVzZXM6IHsnLCAnLmpvaW4oZGF0YXNldHNbOjNdKX0pIiwKICAgICAgICB0ZXN0X2NvZGU9ZiIiIlwKcHl0ZXN0LmltcG9ydG9yc2tpcCgie21vZHVsZV9uYW1lfSIpCiMgVmVyaWZ5IG1vZGVsIGNhbiBiZSBpbnN0YW50aWF0ZWQgYW5kIGNhbGxlZCB3aXRoIGV4cGVjdGVkIGlucHV0IHNoYXBlcwpweXRlc3QuaW1wb3J0b3Jza2lwKCJ0b3JjaCIpCiMgbW9kZWwgPSBZb3VyTW9kZWwoKQojIHggPSB0b3JjaC5yYW5kbigxLCA1MTIsIHNlcV9sZW4pICAjIHR5cGljYWwgdHJhbnNmb3JtZXIgaW5wdXQKIyBvdXRwdXQgPSBtb2RlbCh4KQojIGFzc2VydCBvdXRwdXQuc2hhcGVbMF0gPT0gMQpwYXNzCiIiIiwKICAgICkKCgpkZWYgX2NvZGVfc2lnbmF0dXJlX3Rlc3RzKGNvZGU6IHN0ciwgbW9kdWxlX25hbWU6IHN0cikgLT4gTGlzdFtUZXN0Q2FzZV06CiAgICAiIiJFeHRyYWN0IGZ1bmN0aW9uIHNpZ25hdHVyZXMgZnJvbSBnZW5lcmF0ZWQgY29kZSBhbmQgY3JlYXRlIHNtb2tlIHRlc3RzLiIiIgogICAgdGVzdHMgPSBbXQoKICAgICMgRmluZCBmdW5jdGlvbiBkZWZpbml0aW9ucyBpbiBjb2RlCiAgICBmdW5jX3BhdHRlcm4gPSByZS5jb21waWxlKHIiXmRlZlxzKyhcdyspXHMqXCgoLio/KVwpIiwgcmUuTVVMVElMSU5FKQogICAgZm9yIG1hdGNoIGluIGZ1bmNfcGF0dGVybi5maW5kaXRlcihjb2RlKToKICAgICAgICBmdW5jX25hbWUgPSBtYXRjaC5ncm91cCgxKQogICAgICAgIF9wYXJhbXMgPSBtYXRjaC5ncm91cCgyKQoKICAgICAgICAjIFNraXAgcHJpdmF0ZSBmdW5jdGlvbnMKICAgICAgICBpZiBmdW5jX25hbWUuc3RhcnRzd2l0aCgiXyIpOgogICAgICAgICAgICBjb250aW51ZQoKICAgICAgICAjIENyZWF0ZSBzbW9rZSB0ZXN0IOKAlCBib2R5IG9ubHk7IF9yZW5kZXJfdGVzdF9tb2R1bGUgd3JhcHMgaW4gZGVmCiAgICAgICAgdGVzdHMuYXBwZW5kKAogICAgICAgICAgICBUZXN0Q2FzZSgKICAgICAgICAgICAgICAgIG5hbWU9ZiJ0ZXN0X3tmdW5jX25hbWV9X2V4aXN0cyIsCiAgICAgICAgICAgICAgICBkb2M9ZiJGdW5jdGlvbiAne2Z1bmNfbmFtZX0nIHNob3VsZCBiZSBpbXBvcnRhYmxlIGFuZCBjYWxsYWJsZSIsCiAgICAgICAgICAgICAgICB0ZXN0X2NvZGU9ZiIiIlwKcHl0ZXN0LmltcG9ydG9yc2tpcCgie21vZHVsZV9uYW1lfSIpCmltcG9ydCB7bW9kdWxlX25hbWV9IGFzIG0KYXNzZXJ0IGhhc2F0dHIobSwgIntmdW5jX25hbWV9IiksICJNb2R1bGUgc2hvdWxkIGRlZmluZSB7ZnVuY19uYW1lfSIKYXNzZXJ0IGNhbGxhYmxlKGdldGF0dHIobSwgIntmdW5jX25hbWV9IikpLCAie2Z1bmNfbmFtZX0gc2hvdWxkIGJlIGNhbGxhYmxlIgoiIiIsCiAgICAgICAgICAgICkKICAgICAgICApCgogICAgcmV0dXJuIHRlc3RzCgoKZGVmIF9yZW5kZXJfY29uZnRlc3Qoc3VpdGU6IFRlc3RTdWl0ZSkgLT4gc3RyOgogICAgIiIiUmVuZGVyIGNvbmZ0ZXN0LnB5IHdpdGggYW55IHNoYXJlZCBmaXh0dXJlcy4iIiIKICAgIGZpeHR1cmVzID0gW10KICAgIGZvciBfbmFtZSwgY29kZSBpbiBzdWl0ZS5maXh0dXJlcy5pdGVtcygpOgogICAgICAgIGZpeHR1cmVzLmFwcGVuZChjb2RlKQoKICAgIHJldHVybiBmIiIiXAojIGNvbmZ0ZXN0LnB5IOKAlCBzaGFyZWQgZml4dHVyZXMgZm9yIHtzdWl0ZS5hcnhpdl9pZH0KIyBHZW5lcmF0ZWQgYnkgcGFwZXIyY29kZSBwaXBlbGluZQoKaW1wb3J0IHB5dGVzdAppbXBvcnQgdG9yY2gKCgpAcHl0ZXN0LmZpeHR1cmUKZGVmIHNhbXBsZV9pbnB1dCgpOgogICAgXCJcIlwiQ3JlYXRlIGEgc2FtcGxlIGlucHV0IHRlbnNvciBmb3IgdGVzdGluZy5cIlwiXCIKICAgIHJldHVybiB0b3JjaC5yYW5kbigyLCA4LCA1MTIpCgoKQHB5dGVzdC5maXh0dXJlCmRlZiBkZXZpY2UoKToKICAgIFwiXCJcIlJldHVybiBjcHUgb3IgY3VkYSBkZXZpY2UgZGVwZW5kaW5nIG9uIGF2YWlsYWJpbGl0eS5cIlwiXCIKICAgIHJldHVybiB0b3JjaC5kZXZpY2UoImN1ZGEiIGlmIHRvcmNoLmN1ZGEuaXNfYXZhaWxhYmxlKCkgZWxzZSAiY3B1IikKIiIiCgoKZGVmIF9yZW5kZXJfdGVzdF9tb2R1bGUoc3VpdGU6IFRlc3RTdWl0ZSkgLT4gc3RyOgogICAgIiIiUmVuZGVyIHRoZSBtYWluIHB5dGVzdCB0ZXN0IGZpbGUuIiIiCiAgICBfaW1wb3J0cyA9ICJcbiIuam9pbihzdWl0ZS5pbXBvcnRzKQoKICAgIHJlbmRlcmVkX3Rlc3RzID0gW10KICAgIGZvciB0YyBpbiBzdWl0ZS50ZXN0X2Nhc2VzOgogICAgICAgICMgQXBwbHkgNC1zcGFjZSBpbmRlbnQgdG8gZXZlcnkgbGluZSBvZiB0aGUgdGVzdCBib2R5CiAgICAgICAgYm9keV9saW5lcyA9IHRjLnRlc3RfY29kZS5zdHJpcCgpLnNwbGl0KCJcbiIpCiAgICAgICAgaW5kZW50ZWRfYm9keSA9ICJcbiIuam9pbigiICAgICIgKyBsaW5lIGZvciBsaW5lIGluIGJvZHlfbGluZXMpCiAgICAgICAgcmVuZGVyZWRfdGVzdHMuYXBwZW5kKGYnZGVmIHt0Yy5uYW1lfSgpOlxuICAgICIiInt0Yy5kb2N9IiIiXG57aW5kZW50ZWRfYm9keX0nKQoKICAgIHRlc3RzX3N0ciA9ICJcblxuIi5qb2luKHJlbmRlcmVkX3Rlc3RzKQoKICAgICMgU2VwYXJhdGUgc3RkbGliIGltcG9ydHMgKGFsd2F5cyBzdWNjZWVkKSBmcm9tIG1vZHVsZSBpbXBvcnRzIChtYXkgZmFpbCkKICAgIHN0ZGxpYl9pbXBvcnRzID0gWyJpbXBvcnQgcHl0ZXN0IiwgImltcG9ydCB0b3JjaCJdCiAgICBtb2R1bGVfaW1wb3J0cyA9IFtmImZyb20ge3N1aXRlLm1vZHVsZV9uYW1lfSBpbXBvcnQgKiJdCiAgICBpbXBvcnRfYmxvY2sgPSAoCiAgICAgICAgIlxuIi5qb2luKHN0ZGxpYl9pbXBvcnRzKQogICAgICAgICsgIlxuIgogICAgICAgICsgIlxuIi5qb2luKAogICAgICAgICAgICBmJ3RyeTpcbiAgICB7bGluZX1cbmV4Y2VwdCBJbXBvcnRFcnJvcjpcbiAgICBweXRlc3Quc2tpcCgie3N1aXRlLm1vZHVsZV9uYW1lfSBub3QgaW5zdGFsbGVkIiwgYWxsb3dfbW9kdWxlX2xldmVsPVRydWUpJwogICAgICAgICAgICBmb3IgbGluZSBpbiBtb2R1bGVfaW1wb3J0cwogICAgICAgICkKICAgICkKCiAgICByZXR1cm4gZiIiIlwKIyB0ZXN0X3tzdWl0ZS5tb2R1bGVfbmFtZX0ucHkg4oCUIEdlbmVyYXRlZCB0ZXN0IHN1aXRlIGZvciB7c3VpdGUuYXJ4aXZfaWR9CiMgUGFwZXIyY29kZSBwaXBlbGluZSDigJQgYXV0b21hdGljYWxseSBnZW5lcmF0ZWQgZnJvbSBwYXBlciBhbmFseXNpcwoKe2ltcG9ydF9ibG9ja30KCgp7dGVzdHNfc3RyfQoKCmlmIF9fbmFtZV9fID09ICJfX21haW5fXyI6CiAgICBweXRlc3QubWFpbihbX19maWxlX18sICItdiJdKQoiIiIK
+"""
+Test Extractor — extract testable assertions from paper content and generate pytest suites.
+
+Used by the paper2code integration pipeline:
+  extract_tests(paper_content, code, module_name) → TestSuite
+  save_tests(suite, test_dir)
+
+TestSuite feeds into:
+  - benchmark_runner: run_benchmark() executes the generated tests
+"""
+
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import List, Dict, Any
+
+
+@dataclass
+class TestCase:
+    """A single pytest test case."""
+    name: str
+    doc: str  # description / assertion being tested
+    test_code: str  # actual pytest test code
+
+
+@dataclass
+class TestSuite:
+    """Collection of test cases for a paper implementation."""
+    arxiv_id: str
+    module_name: str
+    test_cases: List[TestCase] = field(default_factory=list)
+    imports: List[str] = field(default_factory=list)
+    fixtures: Dict[str, str] = field(default_factory=dict)  # name → fixture code
+
+
+def extract_tests(content: Any, code: str, module_name: str = "model") -> TestSuite:
+    """Extract testable assertions from paper content and generate pytest test suite.
+
+    Scans PaperContent for:
+    - Numerical claims (e.g. "achieves 95% accuracy")
+    - Hyperparameters (e.g. learning_rate=0.001)
+    - Algorithm properties (e.g. "attention mechanism")
+    - Equation constraints (e.g. "output sum equals 1" for softmax)
+
+    Also inspects the generated code for testable function signatures.
+    """
+    suite = TestSuite(
+        arxiv_id=content.arxiv_id,
+        module_name=module_name,
+        imports=[
+            "import pytest",
+            "import torch",
+            f"from {module_name} import *",
+        ],
+    )
+
+    # 1. Numerical claims from paper
+    for claim in content.claims:
+        tc = _claim_to_test(claim, module_name)
+        if tc:
+            suite.test_cases.append(tc)
+
+    # 2. Hyperparameter validation tests
+    for hp_name, hp_val in content.hyperparameters.items():
+        tc = _hyperparam_test(hp_name, hp_val, module_name)
+        if tc:
+            suite.test_cases.append(tc)
+
+    # 3. Algorithm property tests (from algorithm_descriptions)
+    for algo in content.algorithm_descriptions:
+        tc = _algorithm_property_test(algo, module_name)
+        if tc:
+            suite.test_cases.append(tc)
+
+    # 4. Equation-based tests (e.g. softmax sum-to-1, attention weights non-negative)
+    for eq in content.equations:
+        tc = _equation_test(eq, module_name)
+        if tc:
+            suite.test_cases.append(tc)
+
+    # 5. Dataset presence tests
+    if content.datasets:
+        tc = _dataset_test(content.datasets, module_name)
+        if tc:
+            suite.test_cases.append(tc)
+
+    # 6. Code signature tests — verify key functions exist
+    for tc in _code_signature_tests(code, module_name):
+        suite.test_cases.append(tc)
+
+    # Deduplicate by name
+    seen = set()
+    unique = []
+    for tc in suite.test_cases:
+        if tc.name not in seen:
+            seen.add(tc.name)
+            unique.append(tc)
+    suite.test_cases = unique
+
+    return suite
+
+
+def save_tests(suite: TestSuite, test_dir: Path) -> Path:
+    """Write TestSuite to test_dir/test_module.py and conftest.py."""
+    test_dir = Path(test_dir)
+    test_dir.mkdir(parents=True, exist_ok=True)
+
+    # Write conftest.py with fixtures
+    conftest_content = _render_conftest(suite)
+    (test_dir / "conftest.py").write_text(conftest_content, encoding="utf-8")
+
+    # Write main test file
+    test_file = test_dir / f"test_{suite.module_name}.py"
+    test_content = _render_test_module(suite)
+    test_file.write_text(test_content, encoding="utf-8")
+
+    return test_file
+
+
+# ─── Private helpers ──────────────────────────────────────────────────────────
+
+def _claim_to_test(claim: str, module_name: str) -> TestCase | None:
+    """Convert a paper claim into a pytest test if it contains testable assertions."""
+    claim_lower = claim.lower()
+
+    # Accuracy / performance claims
+    acc_match = re.search(r'(\d+(?:\.\d+)?)\s*%\s*(?:accuracy|acc|performance)', claim_lower)
+    if acc_match:
+        threshold = float(acc_match.group(1)) / 100
+        return TestCase(
+            name="test_model_accuracy_threshold",
+            doc=f"Model should achieve at least {threshold:.1%} accuracy (from paper claim: {claim[:60]})",
+            test_code=f"""\
+# Paper claim: {claim[:80]}
+# This is a placeholder — replace with actual evaluation on the target dataset
+# pytest.importorskip("{module_name}")
+pass
+""",
+        )
+
+    # Loss / error reduction claims
+    loss_match = re.search(r'(?:loss|error|perplexity)\s*(?:of|=|:)\s*([\d.]+)', claim_lower)
+    if loss_match:
+        threshold = float(loss_match.group(1))
+        return TestCase(
+            name="test_loss_below_threshold",
+            doc=f"Loss should be below {threshold} (from paper claim: {claim[:60]})",
+            test_code=f"""\
+# Paper claim: {claim[:80]}
+pass
+""",
+        )
+
+    # Speed / efficiency claims
+    speed_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:x|times|faster)', claim_lower)
+    if speed_match:
+        speedup = float(speed_match.group(1))
+        return TestCase(
+            name="test_speedup_over_baseline",
+            doc=f"Model should be ≥{speedup}x faster than baseline (from paper claim: {claim[:60]})",
+            test_code=f"""\
+# Paper claim: {claim[:80]}
+# Compare inference time against baseline implementation
+pass
+""",
+        )
+
+    return None
+
+
+def _hyperparam_test(hp_name: str, hp_val: str, module_name: str) -> TestCase | None:
+    """Generate a test that verifies a hyperparameter is configurable."""
+    if hp_name in ("learning_rate", "lr"):
+        return TestCase(
+            name="test_learning_rate_configurable",
+            doc=f"Learning rate should be configurable to {hp_val}",
+            test_code=f"""\
+pytest.importorskip("{module_name}")
+try:
+    import {module_name} as m
+    if hasattr(m, 'set_learning_rate'):
+        m.set_learning_rate({hp_val})
+except (ImportError, AttributeError):
+    pytest.skip("Module does not support learning_rate setting")""",
+        )
+    return None
+
+
+def _algorithm_property_test(algo: str, module_name: str) -> TestCase | None:
+    """Infer a testable property from an algorithm description."""
+    algo_lower = algo.lower()
+
+    if "attention" in algo_lower:
+        return TestCase(
+            name="test_attention_weights_non_negative",
+            doc=f"Attention weights should be non-negative and sum to 1 (from algorithm: {algo[:60]})",
+            test_code=f"""\
+pytest.importorskip("{module_name}")
+pytest.importorskip("torch")
+# Verify attention output is non-negative and sums to 1 along the last dimension
+# Replace with actual model output check
+x = torch.randn(1, 10, 512)
+# attn = your_attention_function(x)
+# assert (attn >= 0).all(), "Attention weights must be non-negative"
+# assert (abs(attn.sum(dim=-1) - 1.0) < 1e-5).all(), "Attention weights must sum to 1"
+pass
+""",
+        )
+
+    if "softmax" in algo_lower:
+        return TestCase(
+            name="test_softmax_sum_to_one",
+            doc=f"Softmax output should sum to 1 along last dimension (from algorithm: {algo[:60]})",
+            test_code=f"""\
+pytest.importorskip("{module_name}")
+pytest.importorskip("torch")
+# Verify softmax property
+# x = torch.randn(1, 5)
+# result = torch.nn.functional.softmax(x, dim=-1)
+# assert (abs(result.sum(dim=-1) - 1.0) < 1e-5).all()
+pass
+""",
+        )
+
+    if any(kw in algo_lower for kw in ["layer norm", "layer normalization", "layernorm"]):
+        return TestCase(
+            name="test_layernorm_output_properties",
+            doc=f"LayerNorm output should have learnable gain/bias and finite values (from algorithm: {algo[:60]})",
+            test_code=f"""\
+pytest.importorskip("{module_name}")
+pytest.importorskip("torch")
+# x = torch.randn(2, 10, 512)
+# normed = LayerNorm(512)(x)
+# assert normed.shape == x.shape
+# assert not torch.isnan(normed).any()
+pass
+""",
+        )
+
+    return None
+
+
+def _equation_test(eq: str, module_name: str) -> TestCase | None:
+    """Convert an equation string into a property test if it's testable."""
+    eq_lower = eq.lower()
+
+    # softmax: sum of exp(x_i) / sum(exp(x_i)) = 1
+    if "softmax" in eq_lower or "exp" in eq_lower:
+        return TestCase(
+            name="test_softmax_equation_property",
+            doc=f"Verify softmax equation: exp(x_i) / sum(exp(x_i)) (from equation: {eq[:50]})",
+            test_code="""\
+pytest.importorskip("torch")
+# Verify softmax formula: for any input x, softmax(x)_i = exp(x_i) / sum_j(exp(x_j))
+x = torch.randn(4, 8)
+exp_x = torch.exp(x)
+softmax_x = exp_x / exp_x.sum(dim=-1, keepdim=True)
+expected = torch.nn.functional.softmax(x, dim=-1)
+assert torch.allclose(softmax_x, expected, atol=1e-5)
+""",
+        )
+
+    # LayerNorm equation: out = (x - mean) / sqrt(var + eps) * gamma + beta
+    if "layernorm" in eq_lower or "layer norm" in eq_lower:
+        return TestCase(
+            name="test_layernorm_formula",
+            doc=f"LayerNorm formula: (x - mean) / sqrt(var + eps) * gamma + beta (from equation: {eq[:50]})",
+            test_code="""\
+pytest.importorskip("torch")
+# Verify LayerNorm formula
+# x = torch.randn(2, 10, 512)
+# ln = torch.nn.LayerNorm(512)
+# out = ln(x)
+# assert out.shape == x.shape
+# assert not torch.isnan(out).any()
+pass
+""",
+        )
+
+    return None
+
+
+def _dataset_test(datasets: List[str], module_name: str) -> TestCase:
+    """Test that model supports expected datasets or data format."""
+    return TestCase(
+        name="test_model_has_required_methods",
+        doc=f"Model should support common dataset inputs (paper uses: {', '.join(datasets[:3])})",
+        test_code=f"""\
+pytest.importorskip("{module_name}")
+# Verify model can be instantiated and called with expected input shapes
+pytest.importorskip("torch")
+# model = YourModel()
+# x = torch.randn(1, 512, seq_len)  # typical transformer input
+# output = model(x)
+# assert output.shape[0] == 1
+pass
+""",
+    )
+
+
+def _code_signature_tests(code: str, module_name: str) -> List[TestCase]:
+    """Extract function signatures from generated code and create smoke tests."""
+    tests = []
+
+    # Find function definitions in code
+    func_pattern = re.compile(r'^def\s+(\w+)\s*\((.*?)\)', re.MULTILINE)
+    for match in func_pattern.finditer(code):
+        func_name = match.group(1)
+        _params = match.group(2)
+
+        # Skip private functions
+        if func_name.startswith('_'):
+            continue
+
+        # Create smoke test — body only; _render_test_module wraps in def
+        tests.append(TestCase(
+            name=f"test_{func_name}_exists",
+            doc=f"Function '{func_name}' should be importable and callable",
+            test_code=f"""\
+pytest.importorskip("{module_name}")
+import {module_name} as m
+assert hasattr(m, "{func_name}"), "Module should define {func_name}"
+assert callable(getattr(m, "{func_name}")), "{func_name} should be callable"
+""",
+        ))
+
+    return tests
+
+
+def _render_conftest(suite: TestSuite) -> str:
+    """Render conftest.py with any shared fixtures."""
+    fixtures = []
+    for _name, code in suite.fixtures.items():
+        fixtures.append(code)
+
+    return f"""\
+# conftest.py — shared fixtures for {suite.arxiv_id}
+# Generated by paper2code pipeline
+
+import pytest
+import torch
+
+
+@pytest.fixture
+def sample_input():
+    \"\"\"Create a sample input tensor for testing.\"\"\"
+    return torch.randn(2, 8, 512)
+
+
+@pytest.fixture
+def device():
+    \"\"\"Return cpu or cuda device depending on availability.\"\"\"
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+"""
+
+
+def _render_test_module(suite: TestSuite) -> str:
+    """Render the main pytest test file."""
+    _imports = "\n".join(suite.imports)
+
+    rendered_tests = []
+    for tc in suite.test_cases:
+        # Apply 4-space indent to every line of the test body
+        body_lines = tc.test_code.strip().split("\n")
+        indented_body = "\n".join("    " + line for line in body_lines)
+        rendered_tests.append(f"def {tc.name}():\n    \"\"\"{tc.doc}\"\"\"\n{indented_body}")
+
+    tests_str = "\n\n".join(rendered_tests)
+
+    # Separate stdlib imports (always succeed) from module imports (may fail)
+    stdlib_imports = ["import pytest", "import torch"]
+    module_imports = [f"from {suite.module_name} import *"]
+    import_block = (
+        "\n".join(stdlib_imports)
+        + "\n"
+        + "\n".join(
+            f"try:\n    {line}\nexcept ImportError:\n    pytest.skip(\"{suite.module_name} not installed\", allow_module_level=True)"
+            for line in module_imports
+        )
+    )
+
+    return f"""\
+# test_{suite.module_name}.py — Generated test suite for {suite.arxiv_id}
+# Paper2code pipeline — automatically generated from paper analysis
+
+{import_block}
+
+
+{tests_str}
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])
+"""

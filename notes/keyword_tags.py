@@ -1,1 +1,105 @@
-IiIiS2V5d29yZCB0YWcgaW5mZXJlbmNlIGFuZCBwcmVkZWZpbmVkIGtleXdvcmQgdGFnIHBhdHRlcm5zLiIiIgoKaW1wb3J0IHJlCmZyb20gZnVuY3Rvb2xzIGltcG9ydCBscnVfY2FjaGUKZnJvbSB0eXBpbmcgaW1wb3J0IExpc3QsIFR1cGxlCgoKZnJvbSBjb3JlIGltcG9ydCBQYXBlcgoKCiMgUHJlLWNvbXBpbGUgcmVnZXggcGF0dGVybnMgZm9yIGJldHRlciBwZXJmb3JtYW5jZQpLRVlXT1JEX1RBR1MgPSBbCiAgICAjIENvcmUgQUkgY29uY2VwdHMKICAgIChyZS5jb21waWxlKHIiXGJhZ2VudChzKT9cYnx0b29sXHMqdXNlfGZ1bmN0aW9uXHMqY2FsbGluZ3xhdXRvbm9tb3VzXHMqc3lzdGVtIiwgcmUuSSksICJBZ2VudCIpLAogICAgKAogICAgICAgIHJlLmNvbXBpbGUociJcYnJhZ1xifHJldHJpZXZhbC1hdWdtZW50ZWR8cmV0cmlldmFsIGF1Z21lbnRlZHxrbm93bGVkZ2VccypyZXRyaWV2YWwiLCByZS5JKSwKICAgICAgICAiUkFHIiwKICAgICksCiAgICAocmUuY29tcGlsZShyIlxibW9lXGJ8bWl4dHVyZSBvZiBleHBlcnRzIiwgcmUuSSksICJNb0UiKSwKICAgIChyZS5jb21waWxlKHIiXGJybGhmXGJ8cHJlZmVyZW5jZSBvcHRpbWl6YXRpb258ZHBvXGJ8YWxpZ25tZW50IiwgcmUuSSksICJBbGlnbm1lbnQiKSwKICAgIChyZS5jb21waWxlKHIiXGJldmFsdWF0aW9uXGJ8YmVuY2htYXJrfHBlcmZvcm1hbmNlXHMqbWV0cmljIiwgcmUuSSksICJFdmFsdWF0aW9uIiksCiAgICAoCiAgICAgICAgcmUuY29tcGlsZShyIlxiY29tcGlsZXJcYnxrZXJuZWx8Y3VkYXxpbmZlcmVuY2V8aGFyZHdhcmV8YWNjZWxlcmF0b3IiLCByZS5JKSwKICAgICAgICAiSW5mcmFzdHJ1Y3R1cmUiLAogICAgKSwKICAgIChyZS5jb21waWxlKHIiXGJtdWx0aW1vZGFsXGJ8dmlzaW9ufGF1ZGlvfHRleHRccyppbWFnZXxjcm9zc1xzKm1vZGFsIiwgcmUuSSksICJNdWx0aW1vZGFsIiksCiAgICAoCiAgICAgICAgcmUuY29tcGlsZShyIlxiY29tcHJlc3Npb25cYnxxdWFudGl6YXRpb258ZGlzdGlsbGF0aW9ufG1vZGVsXHMqcmVkdWN0aW9uIiwgcmUuSSksCiAgICAgICAgIk9wdGltaXphdGlvbiIsCiAgICApLAogICAgKHJlLmNvbXBpbGUociJcYmxvbmcgY29udGV4dFxifGNvbnRleHQgbGVuZ3RofGV4dGVuZGVkXHMqY29udGV4dCIsIHJlLkkpLCAiTG9uZ0NvbnRleHQiKSwKICAgIChyZS5jb21waWxlKHIiXGJzYWZldHlcYnxqYWlsYnJlYWt8cmVkIHRlYW1pbmd8YWR2ZXJzYXJpYWxccyphdHRhY2siLCByZS5JKSwgIlNhZmV0eSIpLAogICAgIyBBZGRpdGlvbmFsIEFJIHJlc2VhcmNoIGFyZWFzCiAgICAocmUuY29tcGlsZShyIlxibGxtXGJ8bGFyZ2VccypsYW5ndWFnZVxzKm1vZGVsfHRyYW5zZm9ybWVyIiwgcmUuSSksICJMTE0iKSwKICAgIChyZS5jb21waWxlKHIiXGJncHRcYnxnZW5lcmF0aXZlXHMqcHJlLXRyYWluZWQiLCByZS5JKSwgIkdQVCIpLAogICAgKHJlLmNvbXBpbGUociJcYmNublxifGNvbnZvbHV0aW9uYWxccypuZXVyYWxccypuZXR3b3JrIiwgcmUuSSksICJDTk4iKSwKICAgIChyZS5jb21waWxlKHIiXGJybm5cYnxyZWN1cnJlbnRccypuZXVyYWxccypuZXR3b3JrIiwgcmUuSSksICJSTk4iKSwKICAgIChyZS5jb21waWxlKHIiXGJnYW5zXGJ8Z2VuZXJhdGl2ZVxzKmFkdmVyc2FyaWFsXHMqbmV0d29yayIsIHJlLkkpLCAiR0FOIiksCiAgICAocmUuY29tcGlsZShyIlxidmFlXGJ8dmFyaWF0aW9uYWxccyphdXRvZW5jb2RlciIsIHJlLkkpLCAiVkFFIiksCiAgICAocmUuY29tcGlsZShyIlxicmVpbmZvcmNlbWVudFxzKmxlYXJuaW5nfHJsXGIiLCByZS5JKSwgIlJMIiksCiAgICAocmUuY29tcGlsZShyIlxic3VwZXJ2aXNlZFxzKmxlYXJuaW5nIiwgcmUuSSksICJTdXBlcnZpc2VkTGVhcm5pbmciKSwKICAgIChyZS5jb21waWxlKHIiXGJ1bnN1cGVydmlzZWRccypsZWFybmluZyIsIHJlLkkpLCAiVW5zdXBlcnZpc2VkTGVhcm5pbmciKSwKICAgIChyZS5jb21waWxlKHIiXGJzZW1pLXN1cGVydmlzZWRccypsZWFybmluZyIsIHJlLkkpLCAiU2VtaVN1cGVydmlzZWRMZWFybmluZyIpLAogICAgKHJlLmNvbXBpbGUociJcYnNlbGYtc3VwZXJ2aXNlZFxzKmxlYXJuaW5nIiwgcmUuSSksICJTZWxmU3VwZXJ2aXNlZExlYXJuaW5nIiksCiAgICAocmUuY29tcGlsZShyIlxidHJhbnNmZXJccypsZWFybmluZyIsIHJlLkkpLCAiVHJhbnNmZXJMZWFybmluZyIpLAogICAgKHJlLmNvbXBpbGUociJcYmZldy1zaG90XHMqbGVhcm5pbmd8ZmV3XHMqc2hvdCIsIHJlLkkpLCAiRmV3U2hvdExlYXJuaW5nIiksCiAgICAocmUuY29tcGlsZShyIlxiemVyby1zaG90XHMqbGVhcm5pbmd8emVyb1xzKnNob3QiLCByZS5JKSwgIlplcm9TaG90TGVhcm5pbmciKSwKICAgIChyZS5jb21waWxlKHIiXGJwcm9tcHRccyplbmdpbmVlcmluZyIsIHJlLkkpLCAiUHJvbXB0RW5naW5lZXJpbmciKSwKICAgIChyZS5jb21waWxlKHIiXGJ0b2tlbml6YXRpb25cYnx0b2tlblxzKmVtYmVkZGluZyIsIHJlLkkpLCAiVG9rZW5pemF0aW9uIiksCiAgICAocmUuY29tcGlsZShyIlxiZW1iZWRkaW5nXGJ8dmVjdG9yXHMqcmVwcmVzZW50YXRpb24iLCByZS5JKSwgIkVtYmVkZGluZyIpLAogICAgKHJlLmNvbXBpbGUociJcYmtub3dsZWRnZVxzKmdyYXBofGtnXGIiLCByZS5JKSwgIktub3dsZWRnZUdyYXBoIiksCiAgICAocmUuY29tcGlsZShyIlxicmVhc29uaW5nXGJ8bG9naWNhbFxzKmluZmVyZW5jZSIsIHJlLkkpLCAiUmVhc29uaW5nIiksCiAgICAocmUuY29tcGlsZShyIlxic3VtbWFyaXphdGlvblxifHN1bW1hcnkiLCByZS5JKSwgIlN1bW1hcml6YXRpb24iKSwKICAgIChyZS5jb21waWxlKHIiXGJ0cmFuc2xhdGlvblxifG1hY2hpbmVccyp0cmFuc2xhdGlvbiIsIHJlLkkpLCAiVHJhbnNsYXRpb24iKSwKICAgIChyZS5jb21waWxlKHIiXGJxdWVzdGlvblxzKmFuc3dlcmluZ3xxYVxiIiwgcmUuSSksICJRQSIpLAogICAgKHJlLmNvbXBpbGUociJcYmRvY3VtZW50XHMqdW5kZXJzdGFuZGluZyIsIHJlLkkpLCAiRG9jdW1lbnRVbmRlcnN0YW5kaW5nIiksCiAgICAocmUuY29tcGlsZShyIlxiY29kaW5nXGJ8Y29kZVxzKmdlbmVyYXRpb24iLCByZS5JKSwgIkNvZGluZyIpLAogICAgKHJlLmNvbXBpbGUociJcYm1lZGljYWxccyphaXxoZWFsdGhjYXJlXHMqYWkiLCByZS5JKSwgIk1lZGljYWxBSSIpLAogICAgKHJlLmNvbXBpbGUociJcYmZpbmFuY2VccyphaXxmaW5hbmNpYWxccyphaSIsIHJlLkkpLCAiRmluYW5jZUFJIiksCiAgICAocmUuY29tcGlsZShyIlxiZWR1Y2F0aW9uXHMqYWl8ZWR1Y2F0aW9uYWxccyphaSIsIHJlLkkpLCAiRWR1Y2F0aW9uQUkiKSwKICAgIChyZS5jb21waWxlKHIiXGJlbnZpcm9ubWVudGFsXHMqYWl8Y2xpbWF0ZVxzKmFpIiwgcmUuSSksICJFbnZpcm9ubWVudGFsQUkiKSwKXQoKCkBscnVfY2FjaGUobWF4c2l6ZT0xMDI0KQpkZWYgX2dldF9rZXl3b3Jkc19zaWduYXR1cmUodGV4dDogc3RyKSAtPiBUdXBsZVtzdHIsIC4uLl06CiAgICAiIiJHZXQgYSB0dXBsZSBvZiBtYXRjaGluZyB0YWdzIGZvciBhIGdpdmVuIHRleHQgKGNhY2hlZCkuIiIiCiAgICBtYXRjaGVzID0gW10KICAgIGZvciBwYXR0ZXJuLCB0YWcgaW4gS0VZV09SRF9UQUdTOgogICAgICAgIGlmIHBhdHRlcm4uc2VhcmNoKHRleHQpOgogICAgICAgICAgICBtYXRjaGVzLmFwcGVuZCh0YWcpCiAgICByZXR1cm4gdHVwbGUobWF0Y2hlcykKCgpkZWYgaW5mZXJfdGFnc19pZl9lbXB0eSh0YWdzOiBMaXN0W3N0cl0sIHBhcGVyOiBQYXBlcikgLT4gTGlzdFtzdHJdOgogICAgaWYgdGFnczoKICAgICAgICByZXR1cm4gdGFncwoKICAgICMgQ29tYmluZSB0aXRsZSBhbmQgYWJzdHJhY3QgZm9yIGJldHRlciB0YWcgaW5mZXJlbmNlCiAgICB0ZXh0ID0gZiJ7cGFwZXIudGl0bGV9XG57cGFwZXIuYWJzdHJhY3R9Ii5sb3dlcigpCgogICAgIyBVc2UgY2FjaGVkIGZ1bmN0aW9uIGZvciBiZXR0ZXIgcGVyZm9ybWFuY2UKICAgIHNvcnRlZF90YWdzID0gbGlzdChfZ2V0X2tleXdvcmRzX3NpZ25hdHVyZSh0ZXh0KSkKCiAgICAjIFJlbW92ZSByZWR1bmRhbnQgdGFncwogICAgZmluYWxfdGFnczogbGlzdFtzdHJdID0gW10KICAgIGZvciB0YWcgaW4gc29ydGVkX3RhZ3M6CiAgICAgICAgIyBDaGVjayBpZiB0aGlzIHRhZyBpcyBhbHJlYWR5IGNvdmVyZWQgYnkgYSBtb3JlIHNwZWNpZmljIHRhZwogICAgICAgIGlzX3JlZHVuZGFudCA9IEZhbHNlCiAgICAgICAgZm9yIGV4aXN0aW5nX3RhZyBpbiBmaW5hbF90YWdzOgogICAgICAgICAgICAjIFNpbXBsZSByZWR1bmRhbmN5IGNoZWNrOiBpZiBleGlzdGluZyB0YWcgaXMgYSBzdWJzdHJpbmcgb2YgY3VycmVudCB0YWcgb3IgdmljZSB2ZXJzYQogICAgICAgICAgICBpZiB0YWcubG93ZXIoKSBpbiBleGlzdGluZ190YWcubG93ZXIoKSBvciBleGlzdGluZ190YWcubG93ZXIoKSBpbiB0YWcubG93ZXIoKToKICAgICAgICAgICAgICAgICMgS2VlcCB0aGUgbW9yZSBzcGVjaWZpYyAobG9uZ2VyKSB0YWcKICAgICAgICAgICAgICAgIGlmIGxlbih0YWcpIDwgbGVuKGV4aXN0aW5nX3RhZyk6CiAgICAgICAgICAgICAgICAgICAgaXNfcmVkdW5kYW50ID0gVHJ1ZQogICAgICAgICAgICAgICAgICAgIGJyZWFrCiAgICAgICAgaWYgbm90IGlzX3JlZHVuZGFudDoKICAgICAgICAgICAgZmluYWxfdGFncy5hcHBlbmQodGFnKQoKICAgIGZyb20gY29uZmlnIGltcG9ydCBNQVhfVEFHUwoKICAgICMgTGltaXQgdG8gbWF4aW11bSB0YWdzIHRvIGF2b2lkIG92ZXItdGFnZ2luZwogICAgZmluYWxfdGFncyA9IGZpbmFsX3RhZ3NbOk1BWF9UQUdTXQoKICAgIHJldHVybiBmaW5hbF90YWdzIGlmIGZpbmFsX3RhZ3MgZWxzZSBbIlVuc29ydGVkIl0KCgpkZWYgZ2V0X2FsbF90YWdzKCkgLT4gTGlzdFtzdHJdOgogICAgIiIiR2V0IGxpc3Qgb2YgYWxsIGF2YWlsYWJsZSB0YWdzLiIiIgogICAgcmV0dXJuIFt0YWcgZm9yIF8sIHRhZyBpbiBLRVlXT1JEX1RBR1NdCgoKZGVmIGdldF90YWdzX2NvdW50KCkgLT4gaW50OgogICAgIiIiR2V0IGNvdW50IG9mIGFsbCBwcmVkZWZpbmVkIHRhZ3MuIiIiCiAgICByZXR1cm4gbGVuKEtFWVdPUkRfVEFHUykK
+"""Keyword tag inference and predefined keyword tag patterns."""
+import re
+from functools import lru_cache
+from typing import List, Tuple
+
+
+from core import Paper
+
+
+# Pre-compile regex patterns for better performance
+KEYWORD_TAGS = [
+    # Core AI concepts
+    (re.compile(r"\bagent(s)?\b|tool\s*use|function\s*calling|autonomous\s*system", re.I), "Agent"),
+    (re.compile(r"\brag\b|retrieval-augmented|retrieval augmented|knowledge\s*retrieval", re.I), "RAG"),
+    (re.compile(r"\bmoe\b|mixture of experts", re.I), "MoE"),
+    (re.compile(r"\brlhf\b|preference optimization|dpo\b|alignment", re.I), "Alignment"),
+    (re.compile(r"\bevaluation\b|benchmark|performance\s*metric", re.I), "Evaluation"),
+    (re.compile(r"\bcompiler\b|kernel|cuda|inference|hardware|accelerator", re.I), "Infrastructure"),
+    (re.compile(r"\bmultimodal\b|vision|audio|text\s*image|cross\s*modal", re.I), "Multimodal"),
+    (re.compile(r"\bcompression\b|quantization|distillation|model\s*reduction", re.I), "Optimization"),
+    (re.compile(r"\blong context\b|context length|extended\s*context", re.I), "LongContext"),
+    (re.compile(r"\bsafety\b|jailbreak|red teaming|adversarial\s*attack", re.I), "Safety"),
+
+    # Additional AI research areas
+    (re.compile(r"\bllm\b|large\s*language\s*model|transformer", re.I), "LLM"),
+    (re.compile(r"\bgpt\b|generative\s*pre-trained", re.I), "GPT"),
+    (re.compile(r"\bcnn\b|convolutional\s*neural\s*network", re.I), "CNN"),
+    (re.compile(r"\brnn\b|recurrent\s*neural\s*network", re.I), "RNN"),
+    (re.compile(r"\bgans\b|generative\s*adversarial\s*network", re.I), "GAN"),
+    (re.compile(r"\bvae\b|variational\s*autoencoder", re.I), "VAE"),
+    (re.compile(r"\breinforcement\s*learning|rl\b", re.I), "RL"),
+    (re.compile(r"\bsupervised\s*learning", re.I), "SupervisedLearning"),
+    (re.compile(r"\bunsupervised\s*learning", re.I), "UnsupervisedLearning"),
+    (re.compile(r"\bsemi-supervised\s*learning", re.I), "SemiSupervisedLearning"),
+    (re.compile(r"\bself-supervised\s*learning", re.I), "SelfSupervisedLearning"),
+    (re.compile(r"\btransfer\s*learning", re.I), "TransferLearning"),
+    (re.compile(r"\bfew-shot\s*learning|few\s*shot", re.I), "FewShotLearning"),
+    (re.compile(r"\bzero-shot\s*learning|zero\s*shot", re.I), "ZeroShotLearning"),
+    (re.compile(r"\bprompt\s*engineering", re.I), "PromptEngineering"),
+    (re.compile(r"\btokenization\b|token\s*embedding", re.I), "Tokenization"),
+    (re.compile(r"\bembedding\b|vector\s*representation", re.I), "Embedding"),
+    (re.compile(r"\bknowledge\s*graph|kg\b", re.I), "KnowledgeGraph"),
+    (re.compile(r"\breasoning\b|logical\s*inference", re.I), "Reasoning"),
+    (re.compile(r"\bsummarization\b|summary", re.I), "Summarization"),
+    (re.compile(r"\btranslation\b|machine\s*translation", re.I), "Translation"),
+    (re.compile(r"\bquestion\s*answering|qa\b", re.I), "QA"),
+    (re.compile(r"\bdocument\s*understanding", re.I), "DocumentUnderstanding"),
+    (re.compile(r"\bcoding\b|code\s*generation", re.I), "Coding"),
+    (re.compile(r"\bmedical\s*ai|healthcare\s*ai", re.I), "MedicalAI"),
+    (re.compile(r"\bfinance\s*ai|financial\s*ai", re.I), "FinanceAI"),
+    (re.compile(r"\beducation\s*ai|educational\s*ai", re.I), "EducationAI"),
+    (re.compile(r"\benvironmental\s*ai|climate\s*ai", re.I), "EnvironmentalAI"),
+]
+
+
+@lru_cache(maxsize=1024)
+def _get_keywords_signature(text: str) -> Tuple[str, ...]:
+    """Get a tuple of matching tags for a given text (cached)."""
+    matches = []
+    for pattern, tag in KEYWORD_TAGS:
+        if pattern.search(text):
+            matches.append(tag)
+    return tuple(matches)
+
+
+def infer_tags_if_empty(tags: List[str], paper: Paper) -> List[str]:
+    if tags:
+        return tags
+
+    # Combine title and abstract for better tag inference
+    text = f"{paper.title}\n{paper.abstract}".lower()
+
+    # Use cached function for better performance
+    sorted_tags = list(_get_keywords_signature(text))
+
+    # Remove redundant tags
+    final_tags: list[str] = []
+    for tag in sorted_tags:
+        # Check if this tag is already covered by a more specific tag
+        is_redundant = False
+        for existing_tag in final_tags:
+            # Simple redundancy check: if existing tag is a substring of current tag or vice versa
+            if tag.lower() in existing_tag.lower() or existing_tag.lower() in tag.lower():
+                # Keep the more specific (longer) tag
+                if len(tag) < len(existing_tag):
+                    is_redundant = True
+                    break
+        if not is_redundant:
+            final_tags.append(tag)
+
+    from config import MAX_TAGS
+    # Limit to maximum tags to avoid over-tagging
+    final_tags = final_tags[:MAX_TAGS]
+
+    return final_tags if final_tags else ["Unsorted"]
+
+
+def get_all_tags() -> List[str]:
+    """Get list of all available tags."""
+    return [tag for _, tag in KEYWORD_TAGS]
+
+
+def get_tags_count() -> int:
+    """Get count of all predefined tags."""
+    return len(KEYWORD_TAGS)

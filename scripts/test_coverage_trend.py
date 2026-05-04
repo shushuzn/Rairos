@@ -1,1 +1,58 @@
-IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJUcmFjayB0ZXN0IGNvdmVyYWdlIG92ZXIgdGltZS4gUnVuIGFmdGVyIGVhY2ggY292ZXJhZ2UgcmVwb3J0LiIiIgoKaW1wb3J0IHN1YnByb2Nlc3MKaW1wb3J0IGpzb24KaW1wb3J0IG9zCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIGRhdGV0aW1lIGltcG9ydCBkYXRldGltZQoKSElTVE9SWV9GSUxFID0gUGF0aChfX2ZpbGVfXykucGFyZW50LnBhcmVudCAvICJkb2NzIiAvICJjb3ZlcmFnZV9oaXN0b3J5Lm1kIgpSRVBPX1JPT1QgPSBQYXRoKF9fZmlsZV9fKS5wYXJlbnQucGFyZW50CgoKZGVmIHJ1bl9jb3ZlcmFnZV9qc29uKCk6CiAgICByZXN1bHQgPSBzdWJwcm9jZXNzLnJ1bigKICAgICAgICBbImNvdmVyYWdlIiwgImpzb24iLCAiLXEiXSwKICAgICAgICBjYXB0dXJlX291dHB1dD1UcnVlLAogICAgICAgIHRleHQ9VHJ1ZSwKICAgICAgICBlbnY9eyoqb3MuZW52aXJvbiwgIlBZVEhPTlBBVEgiOiBzdHIoUkVQT19ST09UKX0sCiAgICAgICAgY3dkPXN0cihSRVBPX1JPT1QpLAogICAgKQogICAgaWYgcmVzdWx0LnJldHVybmNvZGUgIT0gMDoKICAgICAgICByYWlzZSBSdW50aW1lRXJyb3IoZiJjb3ZlcmFnZSBqc29uIGZhaWxlZDoge3Jlc3VsdC5zdGRlcnJ9IikKICAgIHdpdGggb3BlbihSRVBPX1JPT1QgLyAiY292ZXJhZ2UuanNvbiIpIGFzIGY6CiAgICAgICAgcmV0dXJuIGpzb24ubG9hZChmKQoKCmRlZiBmb3JtYXRfZW50cnkodG90YWxzLCB0aW1lc3RhbXApOgogICAgY292ID0gdG90YWxzLmdldCgicGVyY2VudF9jb3ZlcmVkIiwgMCkKICAgIGRhdGVfc3RyID0gZGF0ZXRpbWUuZnJvbXRpbWVzdGFtcCh0aW1lc3RhbXApLnN0cmZ0aW1lKCIlWS0lbS0lZCAlSDolTSIpCiAgICBiYXIgPSAiPSIgKiBpbnQoY292IC8gNSkKICAgIHJldHVybiBmIiMjIHtkYXRlX3N0cn0gIHwgIHtjb3Y6LjJmfSUgIHwgIHtiYXJ9IgoKCmRlZiBtYWluKCk6CiAgICBkYXRhID0gcnVuX2NvdmVyYWdlX2pzb24oKQogICAgdG90YWxzID0gZGF0YVsidG90YWxzIl0KICAgIHRpbWVzdGFtcCA9IGRhdGEuZ2V0KCJ0aW1lIiwgZGF0ZXRpbWUubm93KCkudGltZXN0YW1wKCkpCgogICAgZW50cnkgPSBmb3JtYXRfZW50cnkodG90YWxzLCB0aW1lc3RhbXApCgogICAgaGlzdG9yeV9saW5lcyA9IFtdCiAgICBpZiBISVNUT1JZX0ZJTEUuZXhpc3RzKCk6CiAgICAgICAgY29udGVudCA9IEhJU1RPUllfRklMRS5yZWFkX3RleHQoKQogICAgICAgIGhpc3RvcnlfbGluZXMgPSBjb250ZW50LnN0cmlwKCkuc3BsaXQoIlxuIikKICAgICAgICBpZiBoaXN0b3J5X2xpbmVzIGFuZCBoaXN0b3J5X2xpbmVzWzBdLnN0YXJ0c3dpdGgoIiMgVGVzdCBDb3ZlcmFnZSBIaXN0b3J5Iik6CiAgICAgICAgICAgIGhpc3RvcnlfbGluZXMgPSBoaXN0b3J5X2xpbmVzWzE6XQoKICAgIGhlYWRlciA9ICIjIFRlc3QgQ292ZXJhZ2UgSGlzdG9yeVxuIgogICAgbmV3X2NvbnRlbnQgPSBoZWFkZXIgKyBlbnRyeSArICJcbiIgKyAiXG4iLmpvaW4oaGlzdG9yeV9saW5lcykgKyAiXG4iCiAgICBISVNUT1JZX0ZJTEUud3JpdGVfdGV4dChuZXdfY29udGVudCkKCiAgICBjb3YgPSB0b3RhbHMuZ2V0KCJwZXJjZW50X2NvdmVyZWQiLCAwKQogICAgcHJpbnQoZiJVcGRhdGVkIHtISVNUT1JZX0ZJTEV9IOKAlCB7Y292Oi4yZn0lIikKCgppZiBfX25hbWVfXyA9PSAiX19tYWluX18iOgogICAgbWFpbigpCg==
+#!/usr/bin/env python3
+"""Track test coverage over time. Run after each coverage report."""
+
+import subprocess
+import json
+import os
+from pathlib import Path
+from datetime import datetime
+
+HISTORY_FILE = Path(__file__).parent.parent / "docs" / "coverage_history.md"
+REPO_ROOT = Path(__file__).parent.parent
+
+
+def run_coverage_json():
+    result = subprocess.run(
+        ["coverage", "json", "-q"],
+        capture_output=True,
+        text=True,
+        env={**os.environ, "PYTHONPATH": str(REPO_ROOT)},
+        cwd=str(REPO_ROOT),
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"coverage json failed: {result.stderr}")
+    with open(REPO_ROOT / "coverage.json") as f:
+        return json.load(f)
+
+
+def format_entry(totals, timestamp):
+    cov = totals.get("percent_covered", 0)
+    date_str = datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M")
+    bar = "=" * int(cov / 5)
+    return f"## {date_str}  |  {cov:.2f}%  |  {bar}"
+
+
+def main():
+    data = run_coverage_json()
+    totals = data["totals"]
+    timestamp = data.get("time", datetime.now().timestamp())
+
+    entry = format_entry(totals, timestamp)
+
+    history_lines = []
+    if HISTORY_FILE.exists():
+        content = HISTORY_FILE.read_text()
+        history_lines = content.strip().split("\n")
+        if history_lines and history_lines[0].startswith("# Test Coverage History"):
+            history_lines = history_lines[1:]
+
+    header = "# Test Coverage History\n"
+    new_content = header + entry + "\n" + "\n".join(history_lines) + "\n"
+    HISTORY_FILE.write_text(new_content)
+
+    cov = totals.get("percent_covered", 0)
+    print(f"Updated {HISTORY_FILE} — {cov:.2f}%")
+
+
+if __name__ == "__main__":
+    main()

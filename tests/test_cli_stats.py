@@ -1,1 +1,92 @@
-IiIiVGllciAxIHRlc3RzIOKAlCBDTEkgc3RhdHMgY29tbWFuZC4iIiIKCmltcG9ydCBweXRlc3QKZnJvbSB1bml0dGVzdC5tb2NrIGltcG9ydCBwYXRjaCwgTWFnaWNNb2NrCmZyb20gY2xpIGltcG9ydCBfcnVuX3N0YXRzLCBfYnVpbGRfc3RhdHNfcGFyc2VyCmltcG9ydCBhcmdwYXJzZQoKCmNsYXNzIFRlc3RTdGF0c1BhcnNlcjoKICAgICIiIlRlc3Qgc3RhdHMgcGFyc2VyIGNvbnN0cnVjdGlvbi4iIiIKCiAgICBkZWYgdGVzdF9idWlsZF9wYXJzZXJfYWNjZXB0c19qc29uX2FuZF9mb3JtYXRfZmxhZ3Moc2VsZik6CiAgICAgICAgIiIiX2J1aWxkX3N0YXRzX3BhcnNlciBhZGRzIC0tanNvbiBhbmQgLS1mb3JtYXQgZmxhZ3MuIiIiCiAgICAgICAgcCA9IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyKCkKICAgICAgICBzdWIgPSBwLmFkZF9zdWJwYXJzZXJzKCkKICAgICAgICByZXN1bHQgPSBfYnVpbGRfc3RhdHNfcGFyc2VyKHN1YikKICAgICAgICBhc3NlcnQgcmVzdWx0IGlzIG5vdCBOb25lCgoKY2xhc3MgVGVzdFJ1blN0YXRzOgogICAgIiIiVGVzdCBfcnVuX3N0YXRzIGZ1bmN0aW9uIHdpdGggbW9ja2VkIGRhdGFiYXNlLiIiIgoKICAgIEBwYXRjaCgiY2xpLkRhdGFiYXNlIikKICAgIGRlZiB0ZXN0X3N0YXRzX2pzb25fcmV0dXJuc192YWxpZF9qc29uKHNlbGYsIG1vY2tfZGJfY2xzLCBjYXBzeXMpOgogICAgICAgICIiIl9ydW5fc3RhdHMgLS1qc29uIHByaW50cyB2YWxpZCBKU09OIHdpdGggYWxsIGV4cGVjdGVkIGtleXMuIiIiCiAgICAgICAgbW9ja19kYiA9IE1hZ2ljTW9jaygpCiAgICAgICAgbW9ja19kYi5pbml0LnJldHVybl92YWx1ZSA9IE5vbmUKICAgICAgICBtb2NrX2RiLmdldF9zdGF0cy5yZXR1cm5fdmFsdWUgPSB7CiAgICAgICAgICAgICJ0b3RhbF9wYXBlcnMiOiA0MiwKICAgICAgICAgICAgImJ5X3NvdXJjZSI6IHsiYXJ4aXYiOiAzMCwgImRvaSI6IDEyfSwKICAgICAgICAgICAgImJ5X3N0YXR1cyI6IHsicmVhZCI6IDIwLCAidW5yZWFkIjogMjJ9LAogICAgICAgICAgICAicXVldWVfcXVldWVkIjogMywKICAgICAgICAgICAgInF1ZXVlX3J1bm5pbmciOiAxLAogICAgICAgICAgICAiY2FjaGVfZW50cmllcyI6IDcsCiAgICAgICAgICAgICJkZWR1cF9yZWNvcmRzIjogNSwKICAgICAgICB9CiAgICAgICAgbW9ja19kYl9jbHMucmV0dXJuX3ZhbHVlID0gbW9ja19kYgogICAgICAgIGFyZ3MgPSBhcmdwYXJzZS5OYW1lc3BhY2UoanNvbj1UcnVlLCBmb3JtYXQ9InRhYmxlIikKICAgICAgICByYyA9IF9ydW5fc3RhdHMoYXJncykKICAgICAgICBhc3NlcnQgcmMgPT0gMAogICAgICAgIGNhcHR1cmVkID0gY2Fwc3lzLnJlYWRvdXRlcnIoKQogICAgICAgIGltcG9ydCBvcmpzb24KCiAgICAgICAgZGF0YSA9IG9yanNvbi5sb2FkcyhjYXB0dXJlZC5vdXQpCiAgICAgICAgYXNzZXJ0IGRhdGFbInRvdGFsX3BhcGVycyJdID09IDQyCiAgICAgICAgYXNzZXJ0IGRhdGFbImJ5X3NvdXJjZSJdWyJhcnhpdiJdID09IDMwCgogICAgQHBhdGNoKCJjbGkuRGF0YWJhc2UiKQogICAgZGVmIHRlc3Rfc3RhdHNfdGFibGVfb3V0cHV0X2hhc19zZWN0aW9ucyhzZWxmLCBtb2NrX2RiX2NscywgY2Fwc3lzKToKICAgICAgICAiIiJfcnVuX3N0YXRzICh0YWJsZSkgcHJpbnRzIFBhcGVycy9RdWV1ZS9DYWNoZS9EZWR1cCBzZWN0aW9ucy4iIiIKICAgICAgICBtb2NrX2RiID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX2RiLmluaXQucmV0dXJuX3ZhbHVlID0gTm9uZQogICAgICAgIG1vY2tfZGIuZ2V0X3N0YXRzLnJldHVybl92YWx1ZSA9IHsKICAgICAgICAgICAgInRvdGFsX3BhcGVycyI6IDEwLAogICAgICAgICAgICAiYnlfc291cmNlIjoge30sCiAgICAgICAgICAgICJieV9zdGF0dXMiOiB7fSwKICAgICAgICAgICAgInF1ZXVlX3F1ZXVlZCI6IDAsCiAgICAgICAgICAgICJxdWV1ZV9ydW5uaW5nIjogMCwKICAgICAgICAgICAgImNhY2hlX2VudHJpZXMiOiAwLAogICAgICAgICAgICAiZGVkdXBfcmVjb3JkcyI6IDAsCiAgICAgICAgfQogICAgICAgIG1vY2tfZGJfY2xzLnJldHVybl92YWx1ZSA9IG1vY2tfZGIKICAgICAgICBhcmdzID0gYXJncGFyc2UuTmFtZXNwYWNlKGpzb249RmFsc2UsIGZvcm1hdD0idGFibGUiKQogICAgICAgIHJjID0gX3J1bl9zdGF0cyhhcmdzKQogICAgICAgIGFzc2VydCByYyA9PSAwCiAgICAgICAgY2FwdHVyZWQgPSBjYXBzeXMucmVhZG91dGVycigpCiAgICAgICAgYXNzZXJ0ICJQYXBlcnM6IiBpbiBjYXB0dXJlZC5vdXQKICAgICAgICBhc3NlcnQgIlF1ZXVlOiIgaW4gY2FwdHVyZWQub3V0CiAgICAgICAgYXNzZXJ0ICJDYWNoZToiIGluIGNhcHR1cmVkLm91dAogICAgICAgIGFzc2VydCAiRGVkdXA6IiBpbiBjYXB0dXJlZC5vdXQKCiAgICBAcGF0Y2goImNsaS5EYXRhYmFzZSIpCiAgICBkZWYgdGVzdF9zdGF0c193YXJwX2Zvcm1hdF9yZW5kZXJzX3dpdGhvdXRfZXJyb3Ioc2VsZiwgbW9ja19kYl9jbHMsIGNhcHN5cyk6CiAgICAgICAgIiIiX3J1bl9zdGF0cyAtLWZvcm1hdCB3YXJwIHJlbmRlcnMgV2FycCBibG9ja3Mgd2l0aG91dCBlcnJvci4iIiIKICAgICAgICBtb2NrX2RiID0gTWFnaWNNb2NrKCkKICAgICAgICBtb2NrX2RiLmluaXQucmV0dXJuX3ZhbHVlID0gTm9uZQogICAgICAgIG1vY2tfZGIuZ2V0X3N0YXRzLnJldHVybl92YWx1ZSA9IHsKICAgICAgICAgICAgInRvdGFsX3BhcGVycyI6IDUsCiAgICAgICAgICAgICJieV9zb3VyY2UiOiB7fSwKICAgICAgICAgICAgImJ5X3N0YXR1cyI6IHt9LAogICAgICAgICAgICAicXVldWVfcXVldWVkIjogMCwKICAgICAgICAgICAgInF1ZXVlX3J1bm5pbmciOiAwLAogICAgICAgICAgICAiY2FjaGVfZW50cmllcyI6IDAsCiAgICAgICAgICAgICJkZWR1cF9yZWNvcmRzIjogMCwKICAgICAgICB9CiAgICAgICAgbW9ja19kYl9jbHMucmV0dXJuX3ZhbHVlID0gbW9ja19kYgogICAgICAgIHdpdGggcGF0Y2goImxsbS5jbGllbnQuZ2V0X2xsbV9jYWNoZV9zaXplIiwgcmV0dXJuX3ZhbHVlPTApOgogICAgICAgICAgICB3aXRoIHBhdGNoKCJsbG0uY2xpZW50Ll9jYWNoZV9zdGF0cyIsIHJldHVybl92YWx1ZT17fSk6CiAgICAgICAgICAgICAgICB3aXRoIHBhdGNoKCJsbG0uY2xpZW50LmdldF9jYWNoZV9zdGF0cyIsIHJldHVybl92YWx1ZT17ImhpdF9yYXRlIjogMH0pOgogICAgICAgICAgICAgICAgICAgIGFyZ3MgPSBhcmdwYXJzZS5OYW1lc3BhY2UoanNvbj1GYWxzZSwgZm9ybWF0PSJ3YXJwIikKICAgICAgICAgICAgICAgICAgICByYyA9IF9ydW5fc3RhdHMoYXJncykKICAgICAgICAgICAgICAgICAgICBhc3NlcnQgcmMgPT0gMAo=
+"""Tier 1 tests — CLI stats command."""
+
+import pytest
+from unittest.mock import patch, MagicMock
+from cli import _run_stats, _build_stats_parser
+import argparse
+
+
+class TestStatsParser:
+    """Test stats parser construction."""
+
+    def test_build_parser_accepts_json_and_format_flags(self):
+        """_build_stats_parser adds --json and --format flags."""
+        p = argparse.ArgumentParser()
+        sub = p.add_subparsers()
+        result = _build_stats_parser(sub)
+        assert result is not None
+
+
+class TestRunStats:
+    """Test _run_stats function with mocked database."""
+
+    @patch("cli.Database")
+    def test_stats_json_returns_valid_json(self, mock_db_cls, capsys):
+        """_run_stats --json prints valid JSON with all expected keys."""
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_stats.return_value = {
+            "total_papers": 42,
+            "by_source": {"arxiv": 30, "doi": 12},
+            "by_status": {"read": 20, "unread": 22},
+            "queue_queued": 3,
+            "queue_running": 1,
+            "cache_entries": 7,
+            "dedup_records": 5,
+        }
+        mock_db_cls.return_value = mock_db
+        args = argparse.Namespace(json=True, format="table")
+        rc = _run_stats(args)
+        assert rc == 0
+        captured = capsys.readouterr()
+        import orjson
+
+        data = orjson.loads(captured.out)
+        assert data["total_papers"] == 42
+        assert data["by_source"]["arxiv"] == 30
+
+    @patch("cli.Database")
+    def test_stats_table_output_has_sections(self, mock_db_cls, capsys):
+        """_run_stats (table) prints Papers/Queue/Cache/Dedup sections."""
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_stats.return_value = {
+            "total_papers": 10,
+            "by_source": {},
+            "by_status": {},
+            "queue_queued": 0,
+            "queue_running": 0,
+            "cache_entries": 0,
+            "dedup_records": 0,
+        }
+        mock_db_cls.return_value = mock_db
+        args = argparse.Namespace(json=False, format="table")
+        rc = _run_stats(args)
+        assert rc == 0
+        captured = capsys.readouterr()
+        assert "Papers:" in captured.out
+        assert "Queue:" in captured.out
+        assert "Cache:" in captured.out
+        assert "Dedup:" in captured.out
+
+    @patch("cli.Database")
+    def test_stats_warp_format_renders_without_error(self, mock_db_cls, capsys):
+        """_run_stats --format warp renders Warp blocks without error."""
+        mock_db = MagicMock()
+        mock_db.init.return_value = None
+        mock_db.get_stats.return_value = {
+            "total_papers": 5,
+            "by_source": {},
+            "by_status": {},
+            "queue_queued": 0,
+            "queue_running": 0,
+            "cache_entries": 0,
+            "dedup_records": 0,
+        }
+        mock_db_cls.return_value = mock_db
+        with patch("llm.client.get_llm_cache_size", return_value=0):
+            with patch("llm.client._cache_stats", return_value={}):
+                with patch("llm.client.get_cache_stats", return_value={"hit_rate": 0}):
+                    args = argparse.Namespace(json=False, format="warp")
+                    rc = _run_stats(args)
+                    assert rc == 0

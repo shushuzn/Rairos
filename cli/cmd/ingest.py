@@ -1,1 +1,309 @@
-IiIiQ0xJIGNvbW1hbmQ6IGluZ2VzdCDigJQgSW1wb3J0ICsgcHJvY2VzcyBpbiBvbmUgc2hvdC4KClByb3ZpZGVzIHRoZSBmdWxsIHBpcGVsaW5lIHRoYXQgYWlyb3MgaW1wb3J0IGludGVudGlvbmFsbHkgc2tpcHM6CiAgICBpbXBvcnQg4oaSIHBvc3Rwcm9jZXNzIOKGkiBlbWJlZCDihpIga2ctc3luYwoKVXNhZ2U6CiAgICBhaXJvcyBpbmdlc3QgMjMwMS4wMDAwMSAgICAgICAgICAgICAgICAgIyBzaW5nbGUgcGFwZXIsIGZ1bGwgcGlwZWxpbmUKICAgIGFpcm9zIGluZ2VzdCAyMzAxLjAwMDAxIC0tc2tpcC1lbWJlZCAgICAjIHNraXAgc2VtYW50aWMgZW1iZWRkaW5nCiAgICBhaXJvcyBpbmdlc3QgMjMwMS4wMDAwMSAtLXNraXAtcG9zdHByb2Nlc3MgICMgaW1wb3J0ICsga2cgb25seQogICAgYWlyb3MgaW5nZXN0IC0tZmlsZSBpZHMudHh0IC0tbm8tcGRmICAgICAjIGJhdGNoLCBubyBQREYKIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgYXJncGFyc2UKaW1wb3J0IHRpbWUKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBMaXN0LCBPcHRpb25hbAoKZnJvbSBjbGkuX3NoYXJlZCBpbXBvcnQgZ2V0X2RiLCBwcmludF9lcnJvciwgcHJpbnRfaW5mbywgcHJpbnRfc3VjY2VzcywgcHJpbnRfd2FybmluZwpmcm9tIGNsaS53YXJwIGltcG9ydCBXYXJwQmxvY2tzCgoKZGVmIF9yZXNvbHZlX3BkZl9wYXRoKGRiLCBwYXBlcl9pZDogc3RyLCByb290OiBQYXRoKSAtPiBPcHRpb25hbFtQYXRoXToKICAgICIiIkRvd25sb2FkIFBERiB0byBjYWNoZSBpZiBwZGZfdXJsIGlzIGF2YWlsYWJsZS4iIiIKICAgIHJlYyA9IGRiLmdldF9wYXBlcihwYXBlcl9pZCkKICAgIGlmIG5vdCByZWM6CiAgICAgICAgcmV0dXJuIE5vbmUKICAgIHBkZl91cmwgPSBnZXRhdHRyKHJlYywgInBkZl91cmwiLCAiIikgb3IgIiIKICAgIGlmIG5vdCBwZGZfdXJsOgogICAgICAgIHJldHVybiBOb25lCiAgICBjYWNoZV9kaXIgPSByb290IC8gImNhY2hlIgogICAgY2FjaGVfZGlyLm1rZGlyKGV4aXN0X29rPVRydWUpCiAgICBjYWNoZWQgPSBjYWNoZV9kaXIgLyBmIntwYXBlcl9pZH0ucGRmIgogICAgaWYgY2FjaGVkLmV4aXN0cygpOgogICAgICAgIHJldHVybiBjYWNoZWQKICAgIHRyeToKICAgICAgICBmcm9tIHBkZi5leHRyYWN0IGltcG9ydCBkb3dubG9hZF9wZGYKCiAgICAgICAgZG93bmxvYWRfcGRmKHBkZl91cmwsIGNhY2hlZCkKICAgICAgICByZXR1cm4gY2FjaGVkCiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgcHJpbnRfd2FybmluZyhmIlBERiBkb3dubG9hZCBmYWlsZWQgZm9yIHtwYXBlcl9pZH06IHtlfSIpCiAgICAgICAgcmV0dXJuIE5vbmUKCgpkZWYgX2V4dHJhY3RfdGV4dChwZGZfcGF0aDogUGF0aCwgbWF4X3BhZ2VzOiBpbnQgPSAzMCkgLT4gc3RyOgogICAgIiIiRXh0cmFjdCB0ZXh0IGZyb20gUERGIHdpdGggZ3JhY2VmdWwgZmFsbGJhY2suIiIiCiAgICB0cnk6CiAgICAgICAgZnJvbSBwZGYuZXh0cmFjdCBpbXBvcnQgZXh0cmFjdF9wZGZfdGV4dF9oeWJyaWQKCiAgICAgICAgcmV0dXJuIGV4dHJhY3RfcGRmX3RleHRfaHlicmlkKHBkZl9wYXRoLCBtYXhfcGFnZXM9bWF4X3BhZ2VzKQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgIHByaW50X3dhcm5pbmcoZiJQREYgZXh0cmFjdGlvbiBmYWlsZWQ6IHtlfSIpCiAgICAgICAgcmV0dXJuICIiCgoKZGVmIF9ydW5faW1wb3J0X3BoYXNlKHBhcGVyX2lkczogbGlzdFtzdHJdLCBkYiwgc291cmNlOiBzdHIpIC0+IHR1cGxlW2xpc3Rbc3RyXSwgbGlzdFtzdHJdXToKICAgICIiIkltcG9ydCBwYXBlcnMgYnkgZmV0Y2hpbmcgbWV0YWRhdGEuIFJldHVybnMgKGFkZGVkX2lkcywgZmFpbGVkX2lkcykuIiIiCiAgICBmcm9tIGNsaS5jbWQuaW1wb3J0XyBpbXBvcnQgX2ZldGNoX3BhcGVyX21ldGFkYXRhCgogICAgYWRkZWQsIGZhaWxlZCA9IFtdLCBbXQogICAgZm9yIHBpZCBpbiBwYXBlcl9pZHM6CiAgICAgICAgcGlkID0gcGlkLnN0cmlwKCkKICAgICAgICBpZiBub3QgcGlkOgogICAgICAgICAgICBjb250aW51ZQogICAgICAgIHRyeToKICAgICAgICAgICAgbWV0YWRhdGEgPSBfZmV0Y2hfcGFwZXJfbWV0YWRhdGEocGlkKQogICAgICAgICAgICBpZiBtZXRhZGF0YToKICAgICAgICAgICAgICAgIGRiLnVwc2VydF9wYXBlcigKICAgICAgICAgICAgICAgICAgICBwYXBlcl9pZD1waWQsCiAgICAgICAgICAgICAgICAgICAgc291cmNlPXNvdXJjZSwKICAgICAgICAgICAgICAgICAgICB0aXRsZT1tZXRhZGF0YS5nZXQoInRpdGxlIiwgIiIpLAogICAgICAgICAgICAgICAgICAgIGF1dGhvcnM9bWV0YWRhdGEuZ2V0KCJhdXRob3JzIiwgW10pLAogICAgICAgICAgICAgICAgICAgIGFic3RyYWN0PW1ldGFkYXRhLmdldCgiYWJzdHJhY3QiLCAiIiksCiAgICAgICAgICAgICAgICAgICAgcHVibGlzaGVkPW1ldGFkYXRhLmdldCgicHVibGlzaGVkIiwgIiIpLAogICAgICAgICAgICAgICAgICAgIGFic191cmw9bWV0YWRhdGEuZ2V0KCJhYnNfdXJsIiwgIiIpLAogICAgICAgICAgICAgICAgICAgIHBkZl91cmw9bWV0YWRhdGEuZ2V0KCJwZGZfdXJsIiwgIiIpLAogICAgICAgICAgICAgICAgICAgIHByaW1hcnlfY2F0ZWdvcnk9bWV0YWRhdGEuZ2V0KCJwcmltYXJ5X2NhdGVnb3J5IiwgIiIpLAogICAgICAgICAgICAgICAgICAgIGRvaT1tZXRhZGF0YS5nZXQoImRvaSIsICIiKSwKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICAgIGFkZGVkLmFwcGVuZChwaWQpCiAgICAgICAgICAgICAgICBwcmludF9pbmZvKGYiICBJbXBvcnRlZDoge3BpZH0iKQogICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgZmFpbGVkLmFwcGVuZChwaWQpCiAgICAgICAgICAgICAgICBwcmludF9lcnJvcihmIiAgRmFpbGVkIHRvIGZldGNoOiB7cGlkfSIpCiAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgICAgICBmYWlsZWQuYXBwZW5kKHBpZCkKICAgICAgICAgICAgcHJpbnRfZXJyb3IoZiIgIEVycm9yIGltcG9ydGluZyB7cGlkfToge2V9IikKICAgIHJldHVybiBhZGRlZCwgZmFpbGVkCgoKZGVmIF9ydW5fZW1iZWRfcGhhc2UocGFwZXJfaWRzOiBsaXN0W3N0cl0sIGRiLCBkZWxheTogZmxvYXQgPSAwLjApIC0+IHR1cGxlW2ludCwgaW50XToKICAgICIiIkdlbmVyYXRlIHNlbWFudGljIGVtYmVkZGluZ3MgdmlhIE9sbGFtYS4gUmV0dXJucyAoZ2VuZXJhdGVkLCBmYWlsZWQpLiIiIgogICAgZnJvbSBjbGkuY21kLmRlZHVwX3NlbWFudGljIGltcG9ydCBfZ2VuZXJhdGVfbWlzc2luZ19lbWJlZGRpbmdzCgogICAgcmV0dXJuIF9nZW5lcmF0ZV9taXNzaW5nX2VtYmVkZGluZ3MoZGIsIGRlbGF5PWRlbGF5KQoKCmRlZiBfcnVuX3Bvc3Rwcm9jZXNzX3BoYXNlKAogICAgcGFwZXJfaWQ6IHN0ciwKICAgIHJvb3Q6IFBhdGgsCiAgICBkYiwKICAgIHN0YWdlczogT3B0aW9uYWxbbGlzdFtzdHJdXSA9IE5vbmUsCiAgICBza2lwX2xsbTogYm9vbCA9IEZhbHNlLAopIC0+IGJvb2w6CiAgICAiIiJSdW4gUmVzZWFyY2hEZWVwRGl2ZVBpcGVsaW5lIG9uIGEgcGFwZXIuIFJldHVybnMgVHJ1ZSBvbiBzdWNjZXNzLiIiIgogICAgZnJvbSBsbG0ucG9zdHByb2Nlc3MgaW1wb3J0IFJlc2VhcmNoRGVlcERpdmVQaXBlbGluZSwgUG9zdFN0YWdlLCBtYWtlX2xsbV9jb25maWcKCiAgICByZWMgPSBkYi5nZXRfcGFwZXIocGFwZXJfaWQpCiAgICBpZiBub3QgcmVjOgogICAgICAgIHByaW50X3dhcm5pbmcoZiIgIFBhcGVyIHtwYXBlcl9pZH0gbm90IGZvdW5kIGluIERCIGZvciBwb3N0cHJvY2VzcyIpCiAgICAgICAgcmV0dXJuIEZhbHNlCgogICAgIyBSZXNvbHZlIHRhZ3MKICAgIHJhd190YWdzID0gZ2V0YXR0cihyZWMsICJ0YWdzIiwgIiIpIG9yICIiCiAgICB0YWdzID0gW3Quc3RyaXAoKSBmb3IgdCBpbiByYXdfdGFncy5zcGxpdCgiLCIpIGlmIHQuc3RyaXAoKV0gaWYgcmF3X3RhZ3MgZWxzZSBbXQogICAgIyBGYWxsYmFjazogdHJ5IHRvIGluZmVyIGZyb20gcHJpbWFyeV9jYXRlZ29yeQogICAgaWYgbm90IHRhZ3M6CiAgICAgICAgY2F0ID0gZ2V0YXR0cihyZWMsICJwcmltYXJ5X2NhdGVnb3J5IiwgIiIpIG9yICIiCiAgICAgICAgaWYgY2F0OgogICAgICAgICAgICB0YWdzID0gW2NhdF0KCiAgICAjIERvd25sb2FkICsgZXh0cmFjdCBQREYKICAgIHBkZl9wYXRoID0gX3Jlc29sdmVfcGRmX3BhdGgoZGIsIHBhcGVyX2lkLCByb290KQogICAgZXh0cmFjdGVkX3RleHQgPSBfZXh0cmFjdF90ZXh0KHBkZl9wYXRoKSBpZiBwZGZfcGF0aCBlbHNlICIiCgogICAgIyBCdWlsZCBwYXBlciBvYmplY3QgZm9yIHRoZSBwaXBlbGluZQogICAgZnJvbSBjb3JlIGltcG9ydCBQYXBlcgoKICAgIHBhcGVyID0gUGFwZXIoCiAgICAgICAgc291cmNlPWdldGF0dHIocmVjLCAic291cmNlIiwgIiIpIG9yICJhcnhpdiIsCiAgICAgICAgdWlkPXBhcGVyX2lkLAogICAgICAgIHRpdGxlPWdldGF0dHIocmVjLCAidGl0bGUiLCAiIikgb3IgIiIsCiAgICAgICAgYXV0aG9ycz1nZXRhdHRyKHJlYywgImF1dGhvcnMiLCBbXSkgb3IgW10sCiAgICAgICAgYWJzdHJhY3Q9Z2V0YXR0cihyZWMsICJhYnN0cmFjdCIsICIiKSBvciAiIiwKICAgICAgICBwdWJsaXNoZWQ9Z2V0YXR0cihyZWMsICJwdWJsaXNoZWQiLCAiIikgb3IgIiIsCiAgICAgICAgdXBkYXRlZD1nZXRhdHRyKHJlYywgInVwZGF0ZWQiLCAiIikgb3IgIiIsCiAgICAgICAgYWJzX3VybD1nZXRhdHRyKHJlYywgImFic191cmwiLCAiIikgb3IgZiJodHRwczovL2FyeGl2Lm9yZy9hYnMve3BhcGVyX2lkfSIsCiAgICAgICAgcGRmX3VybD1nZXRhdHRyKHJlYywgInBkZl91cmwiLCAiIikgb3IgIiIsCiAgICApCiAgICAjIFAtbm90ZSBwYXRoCiAgICBwbm90ZV9kaXIgPSByb290IC8gKGdldGF0dHIocmVjLCAiY2F0ZWdvcnkiLCAiIikgb3IgIjAyLU1vZGVscyIpCiAgICBwbm90ZV9kaXIubWtkaXIocGFyZW50cz1UcnVlLCBleGlzdF9vaz1UcnVlKQogICAgZnJvbSBjb3JlLmJhc2ljcyBpbXBvcnQgc2x1Z2lmeV90aXRsZQoKICAgIHllYXIgPSAoZ2V0YXR0cihyZWMsICJwdWJsaXNoZWQiLCAiIikgb3IgIiIpWzo0XSBvciB0aW1lLnN0cmZ0aW1lKCIlWSIpCiAgICBwbm90ZV9wYXRoID0gcG5vdGVfZGlyIC8gZiJQIC0ge3llYXJ9IC0ge3NsdWdpZnlfdGl0bGUocGFwZXIudGl0bGUpfS5tZCIKICAgIHBub3RlX3BhdGgucGFyZW50Lm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKCiAgICB0cnk6CiAgICAgICAgcGlwZWxpbmUgPSBSZXNlYXJjaERlZXBEaXZlUGlwZWxpbmUoZGI9ZGIsIGRhdGFfZGlyPXJvb3QpCiAgICAgICAgc3RhZ2VfdmFscyA9IE5vbmUKICAgICAgICBpZiBzdGFnZXM6CiAgICAgICAgICAgIHN0YWdlX3ZhbHMgPSBbUG9zdFN0YWdlKHMpIGZvciBzIGluIHN0YWdlc10KICAgICAgICBwbF9jb25maWcgPSBtYWtlX2xsbV9jb25maWcoKQogICAgICAgIGlmIHNraXBfbGxtOgogICAgICAgICAgICBpZiBwbF9jb25maWcgaXMgbm90IE5vbmU6CiAgICAgICAgICAgICAgICBwbF9jb25maWdbImFwaV9rZXkiXSA9ICIiCgogICAgICAgIHJlc3VsdCA9IHBpcGVsaW5lLnJ1bigKICAgICAgICAgICAgcGFwZXJfaWQ9cGFwZXJfaWQsCiAgICAgICAgICAgIGV4dHJhY3RlZF90ZXh0PWV4dHJhY3RlZF90ZXh0LAogICAgICAgICAgICBwYXBlcj1wYXBlciwKICAgICAgICAgICAgdGFncz10YWdzLAogICAgICAgICAgICBwbm90ZV9wYXRoPXBub3RlX3BhdGgsCiAgICAgICAgICAgIGxsbV9jb25maWc9cGxfY29uZmlnLAogICAgICAgICAgICBzdGFnZXM9c3RhZ2VfdmFscywKICAgICAgICAgICAgcGRmX3BhdGg9cGRmX3BhdGgsCiAgICAgICAgKQogICAgICAgIGlmIHJlc3VsdC5zdGFnZXNfY29tcGxldGVkOgogICAgICAgICAgICBwcmludF9zdWNjZXNzKGYiICBQb3N0cHJvY2VzcyBPSzogeycsICcuam9pbihyZXN1bHQuc3RhZ2VzX2NvbXBsZXRlZCl9IikKICAgICAgICBpZiByZXN1bHQuc3RhZ2VzX2ZhaWxlZDoKICAgICAgICAgICAgcHJpbnRfd2FybmluZyhmIiAgUG9zdHByb2Nlc3MgaXNzdWVzOiB7JywgJy5qb2luKHJlc3VsdC5zdGFnZXNfZmFpbGVkKX0iKQogICAgICAgIHJldHVybiBib29sKHJlc3VsdC5zdGFnZXNfY29tcGxldGVkKQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgIHByaW50X2Vycm9yKGYiICBQb3N0cHJvY2VzcyBlcnJvciBmb3Ige3BhcGVyX2lkfToge2V9IikKICAgICAgICByZXR1cm4gRmFsc2UKCgpkZWYgX3J1bl9rZ19zeW5jX3BoYXNlKGRiKSAtPiBib29sOgogICAgIiIiUmVidWlsZCBLRyBmcm9tIGFsbCBwYXBlcnMuIFJldHVybnMgVHJ1ZSBvbiBzdWNjZXNzLiIiIgogICAgdHJ5OgogICAgICAgIGZyb20ga2cuaW50ZWdyYXRpb24gaW1wb3J0IEtHSW50ZWdyYXRpb24KICAgICAgICBmcm9tIGtnIGltcG9ydCBLR01hbmFnZXIKCiAgICAgICAga2cgPSBLR01hbmFnZXIoKQogICAgICAgIGludGVnID0gS0dJbnRlZ3JhdGlvbihrZykKICAgICAgICBpbnRlZy5yZWJ1aWxkX2Zyb21fcGFwZXJzX2pzb24oImRhdGEvcGFwZXJzLmpzb24iLCBpbmNyZW1lbnRhbD1UcnVlKQogICAgICAgIHByaW50X3N1Y2Nlc3MoIiAgS0cgc3luY2VkIikKICAgICAgICByZXR1cm4gVHJ1ZQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgIHByaW50X3dhcm5pbmcoZiIgIEtHIHN5bmMgZmFpbGVkOiB7ZX0iKQogICAgICAgIHJldHVybiBGYWxzZQoKCmRlZiBfYnVpbGRfaW5nZXN0X3BhcnNlcihzdWJwYXJzZXJzKSAtPiBhcmdwYXJzZS5Bcmd1bWVudFBhcnNlcjoKICAgIHAgPSBzdWJwYXJzZXJzLmFkZF9wYXJzZXIoCiAgICAgICAgImluZ2VzdCIsCiAgICAgICAgaGVscD0iSW1wb3J0ICsgcHJvY2VzczogbWV0YWRhdGEg4oaSIHBvc3Rwcm9jZXNzIOKGkiBlbWJlZCDihpIgS0cgc3luYyIsCiAgICAgICAgcHJvZz0iYWlyb3MgaW5nZXN0IiwKICAgICAgICBkZXNjcmlwdGlvbj0oCiAgICAgICAgICAgICJGdWxsIGltcG9ydCBwaXBlbGluZTogZmV0Y2ggbWV0YWRhdGEsIHJ1biBkZWVwIGFuYWx5c2lzLCAiCiAgICAgICAgICAgICJnZW5lcmF0ZSBlbWJlZGRpbmdzLCBhbmQgc3luYyB0aGUga25vd2xlZGdlIGdyYXBoIOKAlCBpbiBvbmUgY29tbWFuZC4iCiAgICAgICAgKSwKICAgICAgICBlcGlsb2c9IiIiXApFeGFtcGxlczoKICAlKHByb2cpcyAyMzAxLjAwMDAxICAgICAgICAgICAgICAgICAgICAgICAgICMgc2luZ2xlIHBhcGVyLCBhbGwgcGhhc2VzCiAgJShwcm9nKXMgLS1maWxlIGlkcy50eHQgICAgICAgICAgICAgICAgICAgICAjIGJhdGNoIGZyb20gZmlsZQogICUocHJvZylzIDIzMDEuMDAwMDEgLS1za2lwLWVtYmVkICAgICAgICAgICAgIyBza2lwIE9sbGFtYSBlbWJlZGRpbmcKICAlKHByb2cpcyAyMzAxLjAwMDAxIC0tc2tpcC1wb3N0cHJvY2VzcyAgICAgICMgaW1wb3J0ICsgS0cgb25seQogICUocHJvZylzIDIzMDEuMDAwMDEgLS1yb290IEFJLVJlc2VhcmNoIC0tdGFncyBMTE0sUkFHIiIiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoImlkcyIsIG5hcmdzPSIqIiwgbWV0YXZhcj0iSUQiLCBoZWxwPSJhclhpdiBJRHMsIERPSXMsIG9yIHBhcGVyIFVJRHMiKQogICAgcC5hZGRfYXJndW1lbnQoIi0tZmlsZSIsIG1ldGF2YXI9IkZJTEUiLCBoZWxwPSJSZWFkIElEcyBmcm9tIGZpbGUgKG9uZSBwZXIgbGluZSkiKQogICAgcC5hZGRfYXJndW1lbnQoIi0tcm9vdCIsIGRlZmF1bHQ9IkFJLVJlc2VhcmNoIiwgaGVscD0iUm9vdCBmb2xkZXIgKGRlZmF1bHQ6IEFJLVJlc2VhcmNoKSIpCiAgICBwLmFkZF9hcmd1bWVudCgiLS10YWdzIiwgZGVmYXVsdD0iIiwgaGVscD0iQ29tbWEtc2VwYXJhdGVkIHRhZ3MgZm9yIGFsbCBwYXBlcnMiKQogICAgcC5hZGRfYXJndW1lbnQoIi0tc291cmNlIiwgZGVmYXVsdD0iaW5nZXN0IiwgaGVscD0iU291cmNlIGxhYmVsIChkZWZhdWx0OiBpbmdlc3QpIikKCiAgICBnID0gcC5hZGRfbXV0dWFsbHlfZXhjbHVzaXZlX2dyb3VwKCkKICAgIGcuYWRkX2FyZ3VtZW50KAogICAgICAgICItLXNraXAtcG9zdHByb2Nlc3MiLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSJTa2lwIGRlZXAgYW5hbHlzaXMgLyBwb3N0cHJvY2VzcyIKICAgICkKICAgIGcuYWRkX2FyZ3VtZW50KAogICAgICAgICItLW9ubHktcG9zdHByb2Nlc3MiLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iU2tpcCBpbXBvcnQsIG9ubHkgcnVuIHBvc3Rwcm9jZXNzIG9uIGV4aXN0aW5nIHBhcGVycyIsCiAgICApCgogICAgcC5hZGRfYXJndW1lbnQoIi0tc2tpcC1lbWJlZCIsIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsIGhlbHA9IlNraXAgc2VtYW50aWMgZW1iZWRkaW5nIGdlbmVyYXRpb24iKQogICAgcC5hZGRfYXJndW1lbnQoIi0tc2tpcC1rZyIsIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsIGhlbHA9IlNraXAgS0cgc3luYyIpCiAgICBwLmFkZF9hcmd1bWVudCgiLS1za2lwLXBkZiIsIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsIGhlbHA9IlNraXAgUERGIGRvd25sb2FkIGluIHBvc3Rwcm9jZXNzIikKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLXN0YWdlcyIsCiAgICAgICAgbmFyZ3M9IisiLAogICAgICAgIGNob2ljZXM9WwogICAgICAgICAgICAicGFwZXJfYW5hbHlzaXMiLAogICAgICAgICAgICAiYmVuY2htYXJrIiwKICAgICAgICAgICAgImNyb3NzX3JlZmVyZW5jZSIsCiAgICAgICAgICAgICJpbnNpZ2h0IiwKICAgICAgICAgICAgImtnX3N5bmMiLAogICAgICAgICAgICAicG5vdGVfdXBkYXRlIiwKICAgICAgICBdLAogICAgICAgIGhlbHA9IlNwZWNpZmljIHBvc3Rwcm9jZXNzIHN0YWdlcyB0byBydW4gKGRlZmF1bHQ6IGFsbCkiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tc2tpcC1sbG0iLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSJTa2lwIExMTSBjYWxscyBpbiBwb3N0cHJvY2VzcyAoa2V5d29yZC1vbmx5KSIKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KCItLWZvcm1hdCIsIGNob2ljZXM9WyJ0ZXh0IiwgIndhcnAiXSwgZGVmYXVsdD0id2FycCIsIGhlbHA9Ik91dHB1dCBmb3JtYXQiKQogICAgcmV0dXJuIHAgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgoKZGVmIF9ydW5faW5nZXN0KGFyZ3M6IGFyZ3BhcnNlLk5hbWVzcGFjZSkgLT4gaW50OgogICAgZnJvbSByaWNoLmNvbnNvbGUgaW1wb3J0IENvbnNvbGUKCiAgICBjID0gQ29uc29sZSgpCgogICAgcm9vdCA9IFBhdGgoYXJncy5yb290KQoKICAgICMgQ29sbGVjdCBwYXBlciBJRHMKICAgIHBhcGVyX2lkczogbGlzdFtzdHJdID0gbGlzdChnZXRhdHRyKGFyZ3MsICJpZHMiLCBbXSkgb3IgW10pCiAgICBpZiBnZXRhdHRyKGFyZ3MsICJmaWxlIiwgTm9uZSk6CiAgICAgICAgZnBhdGggPSBQYXRoKGFyZ3MuZmlsZSkKICAgICAgICBpZiBmcGF0aC5leGlzdHMoKToKICAgICAgICAgICAgcGFwZXJfaWRzICs9IFsKICAgICAgICAgICAgICAgIGwuc3RyaXAoKSBmb3IgbCBpbiBmcGF0aC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04Iikuc3BsaXRsaW5lcygpIGlmIGwuc3RyaXAoKQogICAgICAgICAgICBdCiAgICAgICAgZWxzZToKICAgICAgICAgICAgcHJpbnRfZXJyb3IoZiJGaWxlIG5vdCBmb3VuZDoge2FyZ3MuZmlsZX0iKQogICAgICAgICAgICByZXR1cm4gMSAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCiAgICBpZiBub3QgcGFwZXJfaWRzOgogICAgICAgIHByaW50X2Vycm9yKCJObyBwYXBlciBJRHMgcHJvdmlkZWQgKHVzZSBwb3NpdGlvbmFsIGFyZ3Mgb3IgLS1maWxlKSIpCiAgICAgICAgcmV0dXJuIDEgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgcGFwZXJfaWRzID0gbGlzdChkaWN0LmZyb21rZXlzKHBhcGVyX2lkcykpICAjIGRlZHVwIHByZXNlcnZlIG9yZGVyCgogICAgZGIgPSBnZXRfZGIoKQogICAgZGIuaW5pdCgpCgogICAgIyDilIDilIAgUGhhc2UgMTogSW1wb3J0IOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgaWYgYXJncy5vbmx5X3Bvc3Rwcm9jZXNzOgogICAgICAgIGltcG9ydF9pZHMgPSBbcGlkIGZvciBwaWQgaW4gcGFwZXJfaWRzIGlmIGRiLnBhcGVyX2V4aXN0cyhwaWQpXQogICAgICAgIHNraXBwZWRfaW1wb3J0ID0gW3BpZCBmb3IgcGlkIGluIHBhcGVyX2lkcyBpZiBub3QgZGIucGFwZXJfZXhpc3RzKHBpZCldCiAgICAgICAgaWYgc2tpcHBlZF9pbXBvcnQ6CiAgICAgICAgICAgIHByaW50X3dhcm5pbmcoZiJTa2lwcGVkIChub3QgaW4gREIpOiB7JywgJy5qb2luKHNraXBwZWRfaW1wb3J0KX0iKQogICAgICAgIGlmIG5vdCBpbXBvcnRfaWRzOgogICAgICAgICAgICBwcmludF9lcnJvcigKICAgICAgICAgICAgICAgICJOb25lIG9mIHRoZSBwYXBlcnMgYXJlIGluIHRoZSBkYXRhYmFzZS4gUnVuIHdpdGhvdXQgLS1vbmx5LXBvc3Rwcm9jZXNzIGZpcnN0LiIKICAgICAgICAgICAgKQogICAgICAgICAgICByZXR1cm4gMQogICAgZWxzZToKICAgICAgICBwcmludF9pbmZvKCJQaGFzZSAxLzQ6IEltcG9ydGluZyBtZXRhZGF0YS4uLiIpCiAgICAgICAgYWRkZWQsIGZhaWxlZCA9IF9ydW5faW1wb3J0X3BoYXNlKHBhcGVyX2lkcywgZGIsIGFyZ3Muc291cmNlKQogICAgICAgIGltcG9ydF9pZHMgPSBhZGRlZAogICAgICAgIGlmIGZhaWxlZDoKICAgICAgICAgICAgcHJpbnRfd2FybmluZyhmIkZhaWxlZCB0byBpbXBvcnQ6IHsnLCAnLmpvaW4oZmFpbGVkKX0iKQoKICAgICMg4pSA4pSAIFBoYXNlIDI6IEVtYmVkZGluZ3Mg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSACiAgICBlbWJlZF9pZHMgPSBbXQogICAgaWYgbm90IGFyZ3Muc2tpcF9lbWJlZDoKICAgICAgICBwcmludF9pbmZvKGYiUGhhc2UgMi80OiBHZW5lcmF0aW5nIGVtYmVkZGluZ3MgKHtsZW4oaW1wb3J0X2lkcyl9IHBhcGVycykuLi4iKQogICAgICAgIGdlbiwgZmFpbCA9IF9ydW5fZW1iZWRfcGhhc2UoaW1wb3J0X2lkcywgZGIpCiAgICAgICAgZW1iZWRfaWRzID0gW3BpZCBmb3IgcGlkIGluIGltcG9ydF9pZHMgaWYgZGIucGFwZXJfZXhpc3RzKHBpZCldCiAgICAgICAgcHJpbnRfc3VjY2VzcyhmIiAgRW1iZWRkaW5nczoge2dlbn0gZ2VuZXJhdGVkLCB7ZmFpbH0gZmFpbGVkIikKICAgIGVsc2U6CiAgICAgICAgcHJpbnRfaW5mbygiUGhhc2UgMi80OiBTa2lwcGVkICgtLXNraXAtZW1iZWQpIikKCiAgICAjIOKUgOKUgCBQaGFzZSAzOiBQb3N0cHJvY2VzcyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgIHBvc3Rwcm9jZXNzX29rOiBMaXN0W3N0cl0gPSBbXQogICAgcG9zdHByb2Nlc3NfZmFpbDogTGlzdFtzdHJdID0gW10KICAgIGlmIG5vdCBhcmdzLnNraXBfcG9zdHByb2Nlc3M6CiAgICAgICAgcHJpbnRfaW5mbyhmIlBoYXNlIDMvNDogRGVlcCBhbmFseXNpcyAoe2xlbihpbXBvcnRfaWRzKX0gcGFwZXJzKS4uLiIpCiAgICAgICAgZm9yIHBpZCBpbiBpbXBvcnRfaWRzOgogICAgICAgICAgICBwaWQgPSBwaWQuc3RyaXAoKQogICAgICAgICAgICBpZiBub3QgcGlkOgogICAgICAgICAgICAgICAgY29udGludWUKICAgICAgICAgICAgb2sgPSBfcnVuX3Bvc3Rwcm9jZXNzX3BoYXNlKHBpZCwgcm9vdCwgZGIsIHN0YWdlcz1hcmdzLnN0YWdlcywgc2tpcF9sbG09YXJncy5za2lwX2xsbSkKICAgICAgICAgICAgKHBvc3Rwcm9jZXNzX29rIGlmIG9rIGVsc2UgcG9zdHByb2Nlc3NfZmFpbCkuYXBwZW5kKHBpZCkKICAgIGVsc2U6CiAgICAgICAgcHJpbnRfaW5mbygiUGhhc2UgMy80OiBTa2lwcGVkICgtLXNraXAtcG9zdHByb2Nlc3MpIikKCiAgICAjIOKUgOKUgCBQaGFzZSA0OiBLRyBzeW5jIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgAogICAgaWYgbm90IGFyZ3Muc2tpcF9rZzoKICAgICAgICBwcmludF9pbmZvKCJQaGFzZSA0LzQ6IFN5bmNpbmcga25vd2xlZGdlIGdyYXBoLi4uIikKICAgICAgICBfcnVuX2tnX3N5bmNfcGhhc2UoZGIpCiAgICBlbHNlOgogICAgICAgIHByaW50X2luZm8oIlBoYXNlIDQvNDogU2tpcHBlZCAoLS1za2lwLWtnKSIpCgogICAgIyDilIDilIAgU3VtbWFyeSDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKICAgIGMucnVsZSgiW2JvbGQgI0ZGODI3Ml0gIEluZ2VzdCBDb21wbGV0ZSAgWy9dIikKICAgIHJvd3MgPSBbCiAgICAgICAgWyJbI0E1RDVGRV1JbXBvcnRlZFsvI0E1RDVGRV0iLCBmIlsjQjRGQTcyXXtsZW4oaW1wb3J0X2lkcyl9Wy9dIl0sCiAgICAgICAgWyJbI0E1RDVGRV1Qb3N0cHJvY2VzcyBPS1svI0E1RDVGRV0iLCBmIlsjQjRGQTcyXXtsZW4ocG9zdHByb2Nlc3Nfb2spfVsvXSJdLAogICAgICAgIFsiWyNBNUQ1RkVdUG9zdHByb2Nlc3MgZmFpbFsvI0E1RDVGRV0iLCBmIlsjRkY4MjcyXXtsZW4ocG9zdHByb2Nlc3NfZmFpbCl9Wy9dIl0sCiAgICAgICAgWyJbI0E1RDVGRV1FbWJlZGRpbmdzWy8jQTVENUZFXSIsIGYiWyNCNEZBNzJde2xlbihlbWJlZF9pZHMpfVsvXSJdLAogICAgXQogICAgYy5wcmludChXYXJwQmxvY2tzLnRhYmxlKFsiUGhhc2UiLCAiQ291bnQiXSwgcm93cywgdGl0bGU9IlBpcGVsaW5lIFN1bW1hcnkiKSkKICAgIHJldHVybiAwCg==
+"""CLI command: ingest — Import + process in one shot.
+
+Provides the full pipeline that airos import intentionally skips:
+    import → postprocess → embed → kg-sync
+
+Usage:
+    airos ingest 2301.00001                 # single paper, full pipeline
+    airos ingest 2301.00001 --skip-embed    # skip semantic embedding
+    airos ingest 2301.00001 --skip-postprocess  # import + kg only
+    airos ingest --file ids.txt --no-pdf     # batch, no PDF
+"""
+from __future__ import annotations
+
+import argparse
+import time
+from pathlib import Path
+from typing import List, Optional
+
+from cli._shared import get_db, print_error, print_info, print_success, print_warning
+from cli.warp import WarpBlocks
+
+
+def _resolve_pdf_path(db, paper_id: str, root: Path) -> Optional[Path]:
+    """Download PDF to cache if pdf_url is available."""
+    rec = db.get_paper(paper_id)
+    if not rec:
+        return None
+    pdf_url = getattr(rec, "pdf_url", "") or ""
+    if not pdf_url:
+        return None
+    cache_dir = root / "cache"
+    cache_dir.mkdir(exist_ok=True)
+    cached = cache_dir / f"{paper_id}.pdf"
+    if cached.exists():
+        return cached
+    try:
+        from pdf.extract import download_pdf
+        download_pdf(pdf_url, cached)
+        return cached
+    except Exception as e:
+        print_warning(f"PDF download failed for {paper_id}: {e}")
+        return None
+
+
+def _extract_text(pdf_path: Path, max_pages: int = 30) -> str:
+    """Extract text from PDF with graceful fallback."""
+    try:
+        from pdf.extract import extract_pdf_text_hybrid
+        return extract_pdf_text_hybrid(pdf_path, max_pages=max_pages)
+    except Exception as e:
+        print_warning(f"PDF extraction failed: {e}")
+        return ""
+
+
+def _run_import_phase(paper_ids: list[str], db, source: str) -> tuple[list[str], list[str]]:
+    """Import papers by fetching metadata. Returns (added_ids, failed_ids)."""
+    from cli.cmd.import_ import _fetch_paper_metadata
+
+    added, failed = [], []
+    for pid in paper_ids:
+        pid = pid.strip()
+        if not pid:
+            continue
+        try:
+            metadata = _fetch_paper_metadata(pid)
+            if metadata:
+                db.upsert_paper(
+                    paper_id=pid,
+                    source=source,
+                    title=metadata.get("title", ""),
+                    authors=metadata.get("authors", []),
+                    abstract=metadata.get("abstract", ""),
+                    published=metadata.get("published", ""),
+                    abs_url=metadata.get("abs_url", ""),
+                    pdf_url=metadata.get("pdf_url", ""),
+                    primary_category=metadata.get("primary_category", ""),
+                    doi=metadata.get("doi", ""),
+                )
+                added.append(pid)
+                print_info(f"  Imported: {pid}")
+            else:
+                failed.append(pid)
+                print_error(f"  Failed to fetch: {pid}")
+        except Exception as e:
+            failed.append(pid)
+            print_error(f"  Error importing {pid}: {e}")
+    return added, failed
+
+
+def _run_embed_phase(paper_ids: list[str], db, delay: float = 0.0) -> tuple[int, int]:
+    """Generate semantic embeddings via Ollama. Returns (generated, failed)."""
+    from cli.cmd.dedup_semantic import _generate_missing_embeddings
+    return _generate_missing_embeddings(db, delay=delay)
+
+
+def _run_postprocess_phase(
+    paper_id: str,
+    root: Path,
+    db,
+    stages: Optional[list[str]] = None,
+    skip_llm: bool = False,
+) -> bool:
+    """Run ResearchDeepDivePipeline on a paper. Returns True on success."""
+    from llm.postprocess import ResearchDeepDivePipeline, PostStage, make_llm_config
+
+    rec = db.get_paper(paper_id)
+    if not rec:
+        print_warning(f"  Paper {paper_id} not found in DB for postprocess")
+        return False
+
+    # Resolve tags
+    raw_tags = getattr(rec, "tags", "") or ""
+    tags = [t.strip() for t in raw_tags.split(",") if t.strip()] if raw_tags else []
+    # Fallback: try to infer from primary_category
+    if not tags:
+        cat = getattr(rec, "primary_category", "") or ""
+        if cat:
+            tags = [cat]
+
+    # Download + extract PDF
+    pdf_path = _resolve_pdf_path(db, paper_id, root)
+    extracted_text = _extract_text(pdf_path) if pdf_path else ""
+
+    # Build paper object for the pipeline
+    from core import Paper
+    paper = Paper(
+        source=getattr(rec, "source", "") or "arxiv",
+        uid=paper_id,
+        title=getattr(rec, "title", "") or "",
+        authors=getattr(rec, "authors", []) or [],
+        abstract=getattr(rec, "abstract", "") or "",
+        published=getattr(rec, "published", "") or "",
+        updated=getattr(rec, "updated", "") or "",
+        abs_url=getattr(rec, "abs_url", "") or f"https://arxiv.org/abs/{paper_id}",
+        pdf_url=getattr(rec, "pdf_url", "") or "",
+    )
+    # P-note path
+    pnote_dir = root / (getattr(rec, "category", "") or "02-Models")
+    pnote_dir.mkdir(parents=True, exist_ok=True)
+    from core.basics import slugify_title
+    year = (getattr(rec, "published", "") or "")[:4] or time.strftime("%Y")
+    pnote_path = pnote_dir / f"P - {year} - {slugify_title(paper.title)}.md"
+    pnote_path.parent.mkdir(parents=True, exist_ok=True)
+
+    try:
+        pipeline = ResearchDeepDivePipeline(db=db, data_dir=root)
+        stage_vals = None
+        if stages:
+            stage_vals = [PostStage(s) for s in stages]
+        pl_config = make_llm_config()
+        if skip_llm:
+            if pl_config is not None:
+                pl_config["api_key"] = ""
+
+        result = pipeline.run(
+            paper_id=paper_id,
+            extracted_text=extracted_text,
+            paper=paper,
+            tags=tags,
+            pnote_path=pnote_path,
+            llm_config=pl_config,
+            stages=stage_vals,
+            pdf_path=pdf_path,
+        )
+        if result.stages_completed:
+            print_success(f"  Postprocess OK: {', '.join(result.stages_completed)}")
+        if result.stages_failed:
+            print_warning(f"  Postprocess issues: {', '.join(result.stages_failed)}")
+        return bool(result.stages_completed)
+    except Exception as e:
+        print_error(f"  Postprocess error for {paper_id}: {e}")
+        return False
+
+
+def _run_kg_sync_phase(db) -> bool:
+    """Rebuild KG from all papers. Returns True on success."""
+    try:
+        from kg.integration import KGIntegration
+        from kg import KGManager
+        kg = KGManager()
+        integ = KGIntegration(kg)
+        integ.rebuild_from_papers_json("data/papers.json", incremental=True)
+        print_success("  KG synced")
+        return True
+    except Exception as e:
+        print_warning(f"  KG sync failed: {e}")
+        return False
+
+
+def _build_ingest_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "ingest",
+        help="Import + process: metadata → postprocess → embed → KG sync",
+        prog="airos ingest",
+        description=(
+            "Full import pipeline: fetch metadata, run deep analysis, "
+            "generate embeddings, and sync the knowledge graph — in one command."
+        ),
+        epilog="""\
+Examples:
+  %(prog)s 2301.00001                         # single paper, all phases
+  %(prog)s --file ids.txt                     # batch from file
+  %(prog)s 2301.00001 --skip-embed            # skip Ollama embedding
+  %(prog)s 2301.00001 --skip-postprocess      # import + KG only
+  %(prog)s 2301.00001 --root AI-Research --tags LLM,RAG""",
+    )
+    p.add_argument("ids", nargs="*", metavar="ID", help="arXiv IDs, DOIs, or paper UIDs")
+    p.add_argument("--file", metavar="FILE", help="Read IDs from file (one per line)")
+    p.add_argument("--root", default="AI-Research", help="Root folder (default: AI-Research)")
+    p.add_argument("--tags", default="", help="Comma-separated tags for all papers")
+    p.add_argument("--source", default="ingest", help="Source label (default: ingest)")
+
+    g = p.add_mutually_exclusive_group()
+    g.add_argument("--skip-postprocess", action="store_true", help="Skip deep analysis / postprocess")
+    g.add_argument("--only-postprocess", action="store_true", help="Skip import, only run postprocess on existing papers")
+
+    p.add_argument("--skip-embed", action="store_true", help="Skip semantic embedding generation")
+    p.add_argument("--skip-kg", action="store_true", help="Skip KG sync")
+    p.add_argument("--skip-pdf", action="store_true", help="Skip PDF download in postprocess")
+    p.add_argument("--stages", nargs="+",
+        choices=["paper_analysis", "benchmark", "cross_reference", "insight", "kg_sync", "pnote_update"],
+        help="Specific postprocess stages to run (default: all)")
+    p.add_argument("--skip-llm", action="store_true", help="Skip LLM calls in postprocess (keyword-only)")
+    p.add_argument("--format", choices=["text", "warp"], default="warp", help="Output format")
+    return p  # type: ignore[no-any-return]
+
+
+def _run_ingest(args: argparse.Namespace) -> int:
+    from rich.console import Console
+    c = Console()
+
+    root = Path(args.root)
+
+    # Collect paper IDs
+    paper_ids: list[str] = list(getattr(args, "ids", []) or [])
+    if getattr(args, "file", None):
+        fpath = Path(args.file)
+        if fpath.exists():
+            paper_ids += [l.strip() for l in fpath.read_text(encoding="utf-8").splitlines() if l.strip()]
+        else:
+            print_error(f"File not found: {args.file}")
+            return 1  # type: ignore[no-any-return]
+
+    if not paper_ids:
+        print_error("No paper IDs provided (use positional args or --file)")
+        return 1  # type: ignore[no-any-return]
+
+    paper_ids = list(dict.fromkeys(paper_ids))  # dedup preserve order
+
+    db = get_db()
+    db.init()
+
+    # ── Phase 1: Import ───────────────────────────────────────────────────────
+    if args.only_postprocess:
+        import_ids = [pid for pid in paper_ids if db.paper_exists(pid)]
+        skipped_import = [pid for pid in paper_ids if not db.paper_exists(pid)]
+        if skipped_import:
+            print_warning(f"Skipped (not in DB): {', '.join(skipped_import)}")
+        if not import_ids:
+            print_error("None of the papers are in the database. Run without --only-postprocess first.")
+            return 1
+    else:
+        print_info("Phase 1/4: Importing metadata...")
+        added, failed = _run_import_phase(paper_ids, db, args.source)
+        import_ids = added
+        if failed:
+            print_warning(f"Failed to import: {', '.join(failed)}")
+
+    # ── Phase 2: Embeddings ─────────────────────────────────────────────────
+    embed_ids = []
+    if not args.skip_embed:
+        print_info(f"Phase 2/4: Generating embeddings ({len(import_ids)} papers)...")
+        gen, fail = _run_embed_phase(import_ids, db)
+        embed_ids = [pid for pid in import_ids if db.paper_exists(pid)]
+        print_success(f"  Embeddings: {gen} generated, {fail} failed")
+    else:
+        print_info("Phase 2/4: Skipped (--skip-embed)")
+
+    # ── Phase 3: Postprocess ────────────────────────────────────────────────
+    postprocess_ok: List[str] = []
+    postprocess_fail: List[str] = []
+    if not args.skip_postprocess:
+        print_info(f"Phase 3/4: Deep analysis ({len(import_ids)} papers)...")
+        for pid in import_ids:
+            pid = pid.strip()
+            if not pid:
+                continue
+            ok = _run_postprocess_phase(pid, root, db, stages=args.stages, skip_llm=args.skip_llm)
+            (postprocess_ok if ok else postprocess_fail).append(pid)
+    else:
+        print_info("Phase 3/4: Skipped (--skip-postprocess)")
+
+    # ── Phase 4: KG sync ───────────────────────────────────────────────────
+    if not args.skip_kg:
+        print_info("Phase 4/4: Syncing knowledge graph...")
+        _run_kg_sync_phase(db)
+    else:
+        print_info("Phase 4/4: Skipped (--skip-kg)")
+
+    # ── Summary ─────────────────────────────────────────────────────────────
+    c.rule("[bold #FF8272]  Ingest Complete  [/]")
+    rows = [
+        ["[#A5D5FE]Imported[/#A5D5FE]",     f"[#B4FA72]{len(import_ids)}[/]"],
+        ["[#A5D5FE]Postprocess OK[/#A5D5FE]", f"[#B4FA72]{len(postprocess_ok)}[/]"],
+        ["[#A5D5FE]Postprocess fail[/#A5D5FE]", f"[#FF8272]{len(postprocess_fail)}[/]"],
+        ["[#A5D5FE]Embeddings[/#A5D5FE]",    f"[#B4FA72]{len(embed_ids)}[/]"],
+    ]
+    c.print(WarpBlocks.table(["Phase", "Count"], rows, title="Pipeline Summary"))
+    return 0

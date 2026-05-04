@@ -1,1 +1,305 @@
-IiIiQ0xJIGNvbW1hbmQ6IGNpdGUtYmFja2ZpbGwg4oCUIEJhY2tmaWxsIG1pc3NpbmcgY2l0YXRpb24gZGF0YSBmcm9tIE9wZW5BbGV4LgoKSWRlbnRpZmllcyBwYXBlcnMgaW4gdGhlIGRhdGFiYXNlIHRoYXQgaGF2ZSBubyBmb3J3YXJkIGNpdGF0aW9uIHJlY29yZHMsCnRoZW4gZmV0Y2hlcyB0aGVpciBmb3J3YXJkIGNpdGF0aW9uIGNoYWlucyBmcm9tIE9wZW5BbGV4IHRvIHBvcHVsYXRlCnRoZSBjaXRhdGlvbnMgdGFibGUgc28gdGhhdCBpbmZsdWVuY2UvdHJlbmQgY29tbWFuZHMgd29yayBjb3JyZWN0bHkuCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGFyZ3BhcnNlCmltcG9ydCBzc2wKaW1wb3J0IHN5cwppbXBvcnQgdXJsbGliLnJlcXVlc3QKZnJvbSBjb25jdXJyZW50LmZ1dHVyZXMgaW1wb3J0IFRocmVhZFBvb2xFeGVjdXRvcgpmcm9tIGRhdGFjbGFzc2VzIGltcG9ydCBkYXRhY2xhc3MKZnJvbSB0aHJlYWRpbmcgaW1wb3J0IExvY2sKCmltcG9ydCBvcmpzb24gYXMganNvbgoKZnJvbSBjbGkuX3NoYXJlZCBpbXBvcnQgZ2V0X2RiLCBDb2xvcnMsIGNvbG9yZWQsIHByaW50X2luZm8sIHByaW50X3N1Y2Nlc3MKCgpfT1BFTkFMRVhfQkFTRSA9ICJodHRwczovL2FwaS5vcGVuYWxleC5vcmciCl9PUEVOQUxFWF9FTUFJTCA9ICJhaS1yZXNlYXJjaC1vc0BleGFtcGxlLmNvbSIKCgpkZWYgX2J1aWxkX29wZW5hbGV4X2N0eCgpIC0+IHNzbC5TU0xDb250ZXh0OgogICAgY3R4ID0gc3NsLmNyZWF0ZV9kZWZhdWx0X2NvbnRleHQoKQogICAgY3R4LmNoZWNrX2hvc3RuYW1lID0gRmFsc2UKICAgIGN0eC52ZXJpZnlfbW9kZSA9IHNzbC5DRVJUX05PTkUKICAgIHJldHVybiBjdHgKCgpkZWYgX29wZW5hbGV4X3JlcXVlc3QocGF0aDogc3RyLCB0aW1lb3V0OiBpbnQgPSAxNSkgLT4gZGljdDoKICAgIHVybCA9IGYie19PUEVOQUxFWF9CQVNFfXtwYXRofSIKICAgIGN0eCA9IF9idWlsZF9vcGVuYWxleF9jdHgoKQogICAgcHJveHlfaGFuZGxlciA9IHVybGxpYi5yZXF1ZXN0LlByb3h5SGFuZGxlcih7fSkKICAgIG9wZW5lciA9IHVybGxpYi5yZXF1ZXN0LmJ1aWxkX29wZW5lcihwcm94eV9oYW5kbGVyLCB1cmxsaWIucmVxdWVzdC5IVFRQU0hhbmRsZXIoY29udGV4dD1jdHgpKQogICAgcmVxID0gdXJsbGliLnJlcXVlc3QuUmVxdWVzdCgKICAgICAgICB1cmwsCiAgICAgICAgaGVhZGVycz17CiAgICAgICAgICAgICJVc2VyLUFnZW50IjogZiJhaV9yZXNlYXJjaF9vcy8xLjAgKG1haWx0bzp7X09QRU5BTEVYX0VNQUlMfSkiLAogICAgICAgICAgICAiQWNjZXB0IjogImFwcGxpY2F0aW9uL2pzb24iLAogICAgICAgIH0sCiAgICApCiAgICB0cnk6CiAgICAgICAgd2l0aCBvcGVuZXIub3BlbihyZXEsIHRpbWVvdXQ9dGltZW91dCkgYXMgcmVzcDoKICAgICAgICAgICAgcmV0dXJuIGpzb24ubG9hZHMocmVzcC5yZWFkKCkpICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgIHJhaXNlIFJ1bnRpbWVFcnJvcihmIk9wZW5BbGV4IHJlcXVlc3QgZmFpbGVkIGZvciB7cGF0aH06IHtlfSIpIGZyb20gZQoKCmRlZiBfYXJ4aXZfZG9pX3RvX29wZW5hbGV4KGFyeGl2X2lkOiBzdHIpIC0+IHN0ciB8IE5vbmU6CiAgICAiIiJMb29rIHVwIE9wZW5BbGV4IElEIGZvciBhbiBhclhpdiBwYXBlci4iIiIKICAgIGNsZWFuX2lkID0gYXJ4aXZfaWQucnNwbGl0KCJ2IiwgMSlbMF0gaWYgYXJ4aXZfaWRbLTFdIGluICIwMTIzNDU2Nzg5IiBlbHNlIGFyeGl2X2lkCiAgICBkb2kgPSBmIjEwLjQ4NTUwL2FyWGl2LntjbGVhbl9pZH0iCiAgICB0cnk6CiAgICAgICAgZCA9IF9vcGVuYWxleF9yZXF1ZXN0KGYiL3dvcmtzP2ZpbHRlcj1kb2k6e2RvaX0mcGVyLXBhZ2U9MSIpCiAgICAgICAgcmVzdWx0cyA9IGQuZ2V0KCJyZXN1bHRzIiwgW10pCiAgICAgICAgaWYgcmVzdWx0czoKICAgICAgICAgICAgcmV0dXJuIHJlc3VsdHNbMF1bImlkIl0gICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCiAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgIHBhc3MKICAgIHJldHVybiBOb25lCgoKZGVmIF9nZXRfZm9yd2FyZF9jaXRhdGlvbnMob3BlbmFsZXhfaWQ6IHN0ciwgcGVyX3BhZ2U6IGludCA9IDIwMCkgLT4gdHVwbGVbbGlzdFtkaWN0XSwgaW50XToKICAgICIiIkZldGNoIGFsbCBwYXBlcnMgY2l0aW5nIHRoaXMgcGFwZXIuIFJldHVybnMgKHdvcmtzLCB0b3RhbF9jb3VudCkuIiIiCiAgICBvaWQgPSBvcGVuYWxleF9pZC5yc3RyaXAoIi8iKS5zcGxpdCgiLyIpWy0xXQogICAgdHJ5OgogICAgICAgIGQgPSBfb3BlbmFsZXhfcmVxdWVzdCgKICAgICAgICAgICAgZiIvd29ya3M/ZmlsdGVyPWNpdGVzOntvaWR9JnBlci1wYWdlPXtwZXJfcGFnZX0mbWFpbHRvPXtfT1BFTkFMRVhfRU1BSUx9IgogICAgICAgICkKICAgICAgICByZXR1cm4gZC5nZXQoInJlc3VsdHMiLCBbXSkgb3IgW10sIGQuZ2V0KCJtZXRhIiwge30pLmdldCgiY291bnQiLCAwKQogICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgIHByaW50KGYiICAgIFdhcm5pbmc6IGNpdGluZyBsb29rdXAgZmFpbGVkOiB7ZX0iLCBmaWxlPXN5cy5zdGRlcnIpCiAgICAgICAgcmV0dXJuIFtdLCAwCgoKZGVmIF93b3JrX3RvX2FyeGl2X2lkKHdvcms6IGRpY3QpIC0+IHN0ciB8IE5vbmU6CiAgICBpZHMgPSB3b3JrLmdldCgiaWRzIiwge30pIG9yIHt9CiAgICBkb2kgPSBpZHMuZ2V0KCJkb2kiLCAiIikgb3IgIiIKICAgIGlmICIvYXJ4aXYuIiBpbiBkb2kubG93ZXIoKToKICAgICAgICByZXR1cm4gZG9pLmxvd2VyKCkuc3BsaXQoIi9hcnhpdi4iKVstMV0KICAgIHJldHVybiBOb25lCgoKQGRhdGFjbGFzcwpjbGFzcyBHYXBTdGF0czoKICAgIHRvdGFsX3BhcGVyczogaW50CiAgICB3aXRoX2NpdGF0aW9uczogaW50CiAgICB3aXRob3V0X2NpdGF0aW9uczogaW50CiAgICB0b3RhbF9mb3J3YXJkX2NpdGVzX3N0b3JlZDogaW50CgoKZGVmIF9jb21wdXRlX2dhcF9zdGF0cyhkYikgLT4gR2FwU3RhdHM6CiAgICAiIiJDb21wdXRlIHN0YXRpc3RpY3MgYWJvdXQgY2l0YXRpb24gY292ZXJhZ2UuIiIiCiAgICBjdXIgPSBkYi5jb25uLmV4ZWN1dGUoIlNFTEVDVCBDT1VOVCgqKSBGUk9NIHBhcGVycyIpCiAgICB0b3RhbCA9IGN1ci5mZXRjaG9uZSgpWzBdCgogICAgY3VyID0gZGIuY29ubi5leGVjdXRlKCJTRUxFQ1QgQ09VTlQoRElTVElOQ1QgdGFyZ2V0X2lkKSBGUk9NIGNpdGF0aW9ucyIpCiAgICB3aXRoX2NpdGVzID0gY3VyLmZldGNob25lKClbMF0KCiAgICBzdWJxID0gIlNFTEVDVCB0YXJnZXRfaWQsIENPVU5UKCopIEFTIGZvcndhcmRfY2l0ZXMgRlJPTSBjaXRhdGlvbnMgR1JPVVAgQlkgdGFyZ2V0X2lkIgogICAgY3VyID0gZGIuY29ubi5leGVjdXRlKGYiU0VMRUNUIFNVTShmb3J3YXJkX2NpdGVzKSBGUk9NICh7c3VicX0pIikKICAgIHRvdGFsX2Z3ZCA9IGN1ci5mZXRjaG9uZSgpWzBdIG9yIDAKCiAgICByZXR1cm4gR2FwU3RhdHMoCiAgICAgICAgdG90YWxfcGFwZXJzPXRvdGFsLAogICAgICAgIHdpdGhfY2l0YXRpb25zPXdpdGhfY2l0ZXMsCiAgICAgICAgd2l0aG91dF9jaXRhdGlvbnM9dG90YWwgLSB3aXRoX2NpdGVzLAogICAgICAgIHRvdGFsX2ZvcndhcmRfY2l0ZXNfc3RvcmVkPXRvdGFsX2Z3ZCwKICAgICkKCgpkZWYgX2ZpbmRfcGFwZXJzX3dpdGhvdXRfY2l0YXRpb25zKGRiKSAtPiBsaXN0W3R1cGxlW3N0ciwgc3RyXV06CiAgICAiIiJGaW5kIHBhcGVycyB0aGF0IGhhdmUgbm8gZm9yd2FyZCBjaXRhdGlvbiByZWNvcmRzLgoKICAgIFJldHVybnMgbGlzdCBvZiAocGFwZXJfaWQsIHB1Ymxpc2hlZF95ZWFyKS4KICAgIE9ubHkgY29uc2lkZXJzIHBhcGVycyBwdWJsaXNoZWQgZnJvbSB5ZWFyIDIwMDAgb253YXJkLgogICAgIiIiCiAgICBjdXIgPSBkYi5jb25uLmV4ZWN1dGUoIiIiCiAgICAgICAgU0VMRUNUIHAuaWQsIHAucHVibGlzaGVkCiAgICAgICAgRlJPTSBwYXBlcnMgcAogICAgICAgIExFRlQgSk9JTiBjaXRhdGlvbnMgYyBPTiBjLnRhcmdldF9pZCA9IHAuaWQKICAgICAgICBXSEVSRSBjLnRhcmdldF9pZCBJUyBOVUxMCiAgICAgICAgICBBTkQgKHAucHVibGlzaGVkID49ICcyMDAwJyBPUiBwLnB1Ymxpc2hlZCBJUyBOVUxMKQogICAgICAgIEdST1VQIEJZIHAuaWQKICAgICAgICBIQVZJTkcgQ09VTlQoYy5pZCkgPSAwCiAgICAiIiIpCiAgICByZXN1bHRzID0gW10KICAgIGZvciByb3cgaW4gY3VyLmZldGNoYWxsKCk6CiAgICAgICAgcHViID0gcm93WzFdIG9yICIiCiAgICAgICAgaWYgcHViIGFuZCBwdWIgPj0gIjIwMDAiOgogICAgICAgICAgICByZXN1bHRzLmFwcGVuZCgocm93WzBdLCBwdWJbOjRdKSkKICAgICAgICBlbGlmIG5vdCBwdWI6CiAgICAgICAgICAgIHJlc3VsdHMuYXBwZW5kKChyb3dbMF0sICIwMDAwIikpCiAgICByZXR1cm4gcmVzdWx0cwoKCmRlZiBfcnVuX2NpdGVfYmFja2ZpbGwoYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKSAtPiBpbnQ6CiAgICBkYiA9IGdldF9kYigpCiAgICBkYi5pbml0KCkKCiAgICBpZiBhcmdzLnN0YXRzOgogICAgICAgIHN0YXRzID0gX2NvbXB1dGVfZ2FwX3N0YXRzKGRiKQogICAgICAgIHByaW50KCkKICAgICAgICBwcmludChjb2xvcmVkKCI9PT0gQ2l0YXRpb24gQ292ZXJhZ2UgUmVwb3J0ID09PSIsIENvbG9ycy5IRUFERVIpKQogICAgICAgIHByaW50KGYiICBUb3RhbCBwYXBlcnMgaW4gZGF0YWJhc2UgOiB7c3RhdHMudG90YWxfcGFwZXJzfSIpCiAgICAgICAgcHJpbnQoZiIgIFBhcGVycyB3aXRoIGNpdGF0aW9ucyAgIDoge3N0YXRzLndpdGhfY2l0YXRpb25zfSIpCiAgICAgICAgbWlzc2luZyA9IHN0YXRzLndpdGhvdXRfY2l0YXRpb25zCiAgICAgICAgcHJpbnQoCiAgICAgICAgICAgIGYiICBQYXBlcnMgbWlzc2luZyBjaXRhdGlvbnM6IHtjb2xvcmVkKHN0cihtaXNzaW5nKSwgQ29sb3JzLldBUk5JTkcgaWYgbWlzc2luZyA+IDAgZWxzZSBDb2xvcnMuT0tHUkVFTil9IgogICAgICAgICkKICAgICAgICBwcmludChmIiAgVG90YWwgZm9yd2FyZCBjaXRlcyBzdG9yZWQ6IHtzdGF0cy50b3RhbF9mb3J3YXJkX2NpdGVzX3N0b3JlZH0iKQogICAgICAgIHByaW50KCkKICAgICAgICBpZiBtaXNzaW5nID4gMDoKICAgICAgICAgICAgcHJpbnQoIlJ1biB3aXRoIC0tYmFja2ZpbGwgdG8gcG9wdWxhdGUgbWlzc2luZyBjaXRhdGlvbiBkYXRhIGZyb20gT3BlbkFsZXguIikKICAgICAgICByZXR1cm4gMAoKICAgIGlmIG5vdCBhcmdzLmJhY2tmaWxsIGFuZCBub3QgYXJncy5kcnlfcnVuOgogICAgICAgIHByaW50KCJTcGVjaWZ5IC0tYmFja2ZpbGwgdG8gYWN0dWFsbHkgZmV0Y2ggY2l0YXRpb24gZGF0YS4iLCBmaWxlPXN5cy5zdGRlcnIpCiAgICAgICAgcmV0dXJuIDEKCiAgICBwYXBlcnMgPSBfZmluZF9wYXBlcnNfd2l0aG91dF9jaXRhdGlvbnMoZGIpCiAgICBpZiBub3QgcGFwZXJzOgogICAgICAgIHByaW50X3N1Y2Nlc3MoIkFsbCBwYXBlcnMgYWxyZWFkeSBoYXZlIGNpdGF0aW9uIGRhdGEhIikKICAgICAgICByZXR1cm4gMAoKICAgIHBhcGVyX2lkcyA9IFtwWzBdIGZvciBwIGluIHBhcGVyc10KICAgIHByaW50X2luZm8oZiJGb3VuZCB7bGVuKHBhcGVycyl9IHBhcGVycyB3aXRob3V0IGNpdGF0aW9uIGRhdGEiKQoKICAgIGlmIGFyZ3MuZHJ5X3J1bjoKICAgICAgICBwcmludCgpCiAgICAgICAgcHJpbnQoY29sb3JlZCgiPT09IERyeSBSdW4g4oCUIFBhcGVycyB0byBCYWNrZmlsbCA9PT0iLCBDb2xvcnMuSEVBREVSKSkKICAgICAgICBmb3IgcGlkLCB5ZWFyIGluIHBhcGVyc1s6MjBdOgogICAgICAgICAgICBwcmludChmIiAge3BpZH0gICh7eWVhcn0pIikKICAgICAgICBpZiBsZW4ocGFwZXJzKSA+IDIwOgogICAgICAgICAgICBwcmludChmIiAgLi4uIGFuZCB7bGVuKHBhcGVycykgLSAyMH0gbW9yZSIpCiAgICAgICAgcHJpbnQoKQogICAgICAgIHByaW50KCJSZS1ydW4gd2l0aG91dCAtLWRyeS1ydW4gdG8gYWN0dWFsbHkgYmFja2ZpbGwuIikKICAgICAgICByZXR1cm4gMAoKICAgIGFsbF9yb3dzLCBfID0gZGIubGlzdF9wYXBlcnMoKQogICAga25vd25faWRzID0ge3AuaWQgZm9yIHAgaW4gYWxsX3Jvd3N9CgogICAgbG9jayA9IExvY2soKQogICAgYWRkZWQgPSBbMF0KICAgIGVycm9ycyA9IFswXQogICAgaW1wb3J0ZWRfcGFwZXJzID0gWzBdCgogICAgZGVmIF9iYWNrZmlsbF9vbmUocGFwZXJfaWQ6IHN0cikgLT4gTm9uZToKICAgICAgICB0cnk6CiAgICAgICAgICAgIG9pZCA9IF9hcnhpdl9kb2lfdG9fb3BlbmFsZXgocGFwZXJfaWQpCiAgICAgICAgICAgIGlmIG5vdCBvaWQ6CiAgICAgICAgICAgICAgICByZXR1cm4KCiAgICAgICAgICAgIGNpdGluZ193b3JrcywgdG90YWxfY291bnQgPSBfZ2V0X2ZvcndhcmRfY2l0YXRpb25zKG9pZCkKICAgICAgICAgICAgaWYgbm90IGNpdGluZ193b3JrcyBhbmQgdG90YWxfY291bnQgPT0gMDoKICAgICAgICAgICAgICAgIHJldHVybgoKICAgICAgICAgICAgZm9yIHdvcmsgaW4gY2l0aW5nX3dvcmtzOgogICAgICAgICAgICAgICAgY2l0aW5nX2FyeGl2ID0gX3dvcmtfdG9fYXJ4aXZfaWQod29yaykKICAgICAgICAgICAgICAgIGlmIG5vdCBjaXRpbmdfYXJ4aXY6CiAgICAgICAgICAgICAgICAgICAgY29udGludWUKCiAgICAgICAgICAgICAgICBpZiBjaXRpbmdfYXJ4aXYgbm90IGluIGtub3duX2lkczoKICAgICAgICAgICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICAgICAgICAgIGlkcyA9IHdvcmsuZ2V0KCJpZHMiLCB7fSkgb3Ige30KICAgICAgICAgICAgICAgICAgICAgICAgZG9pID0gaWRzLmdldCgiZG9pIiwgIiIpIG9yICIiCiAgICAgICAgICAgICAgICAgICAgICAgIHRpdGxlID0gd29yay5nZXQoInRpdGxlIiwgIiIpIG9yIGYiSW1wb3J0ZWQge2NpdGluZ19hcnhpdn0iCiAgICAgICAgICAgICAgICAgICAgICAgIGF1dGhvcnMgPSAoCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAiLCIuam9pbigKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBhLmdldCgiZGlzcGxheV9uYW1lIiwgIiIpIGZvciBhIGluICh3b3JrLmdldCgiYXV0aG9yc2hpcHMiKSBvciBbXSkKICAgICAgICAgICAgICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICAgICAgICAgICAgICAgIG9yICIiCiAgICAgICAgICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICAgICAgICAgICAgcHViX2RhdGUgPSB3b3JrLmdldCgicHVibGljYXRpb25fZGF0ZSIpIG9yICIiCiAgICAgICAgICAgICAgICAgICAgICAgIGpvdXJuYWwgPSAoCiAgICAgICAgICAgICAgICAgICAgICAgICAgICB3b3JrLmdldCgicHJpbWFyeV9sb2NhdGlvbiIsIHt9KQogICAgICAgICAgICAgICAgICAgICAgICAgICAgLmdldCgic291cmNlIiwge30pCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAuZ2V0KCJkaXNwbGF5X25hbWUiLCAiIikKICAgICAgICAgICAgICAgICAgICAgICAgKSBvciAiIgoKICAgICAgICAgICAgICAgICAgICAgICAgZGIudXBzZXJ0X3BhcGVyKAogICAgICAgICAgICAgICAgICAgICAgICAgICAgcGFwZXJfaWQ9Y2l0aW5nX2FyeGl2LAogICAgICAgICAgICAgICAgICAgICAgICAgICAgc291cmNlPSJvcGVuYWxleCIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICB0aXRsZT10aXRsZSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgIGF1dGhvcnM9YXV0aG9ycywKICAgICAgICAgICAgICAgICAgICAgICAgICAgIGFic3RyYWN0PSIiLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgcHVibGlzaGVkPXB1Yl9kYXRlLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgYWJzX3VybD0iIiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBkZl91cmw9IiIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBqb3VybmFsPWpvdXJuYWwsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBkb2k9ZG9pLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgcmVmZXJlbmNlX2NvdW50PTAsCiAgICAgICAgICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICAgICAgICAgICAga25vd25faWRzLmFkZChjaXRpbmdfYXJ4aXYpCiAgICAgICAgICAgICAgICAgICAgICAgIHdpdGggbG9jazoKICAgICAgICAgICAgICAgICAgICAgICAgICAgIGltcG9ydGVkX3BhcGVyc1swXSArPSAxCiAgICAgICAgICAgICAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbjoKICAgICAgICAgICAgICAgICAgICAgICAgcGFzcwoKICAgICAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgICAgICBkYi5hZGRfY2l0YXRpb24oY2l0aW5nX2FyeGl2LCBwYXBlcl9pZCkKICAgICAgICAgICAgICAgICAgICB3aXRoIGxvY2s6CiAgICAgICAgICAgICAgICAgICAgICAgIGFkZGVkWzBdICs9IDEKICAgICAgICAgICAgICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgICAgICAgICAgICAgcGFzcwoKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICB3aXRoIGxvY2s6CiAgICAgICAgICAgICAgICBlcnJvcnNbMF0gKz0gMQoKICAgIHByaW50X2luZm8oZiJCYWNrZmlsbGluZyB7bGVuKHBhcGVyX2lkcyl9IHBhcGVycyB1c2luZyB7YXJncy53b3JrZXJzfSB3b3JrZXJzLi4uIikKCiAgICB3aXRoIFRocmVhZFBvb2xFeGVjdXRvcihtYXhfd29ya2Vycz1taW4oYXJncy53b3JrZXJzLCAxMCkpIGFzIGV4OgogICAgICAgIGV4Lm1hcChfYmFja2ZpbGxfb25lLCBwYXBlcl9pZHMpCgogICAgcHJpbnQoKQogICAgcHJpbnRfc3VjY2VzcyhmIkRvbmUhIENpdGF0aW9ucyBhZGRlZDoge2FkZGVkWzBdfSIpCiAgICBpZiBpbXBvcnRlZF9wYXBlcnNbMF0gPiAwOgogICAgICAgIHByaW50X2luZm8oZiJOZXcgcGFwZXJzIGltcG9ydGVkOiB7aW1wb3J0ZWRfcGFwZXJzWzBdfSIpCiAgICBpZiBlcnJvcnNbMF0gPiAwOgogICAgICAgIHByaW50KGYiRXJyb3JzOiB7ZXJyb3JzWzBdfSIsIGZpbGU9c3lzLnN0ZGVycikKCiAgICBzdGF0cyA9IF9jb21wdXRlX2dhcF9zdGF0cyhkYikKICAgIHByaW50KCkKICAgIHByaW50KGNvbG9yZWQoIj09PSBVcGRhdGVkIENvdmVyYWdlID09PSIsIENvbG9ycy5IRUFERVIpKQogICAgcHJpbnQoZiIgIFBhcGVycyBub3cgd2l0aCBjaXRhdGlvbnM6IHtzdGF0cy53aXRoX2NpdGF0aW9uc30ve3N0YXRzLnRvdGFsX3BhcGVyc30iKQogICAgcHJpbnQoZiIgIFRvdGFsIGZvcndhcmQgY2l0ZXMgc3RvcmVkOiB7c3RhdHMudG90YWxfZm9yd2FyZF9jaXRlc19zdG9yZWR9IikKICAgIHJldHVybiAwCgoKZGVmIF9idWlsZF9jaXRlX2JhY2tmaWxsX3BhcnNlcihzdWJwYXJzZXJzKSAtPiBhcmdwYXJzZS5Bcmd1bWVudFBhcnNlcjoKICAgIHAgPSBzdWJwYXJzZXJzLmFkZF9wYXJzZXIoCiAgICAgICAgImNpdGUtYmFja2ZpbGwiLAogICAgICAgIGhlbHA9IkJhY2tmaWxsIG1pc3NpbmcgY2l0YXRpb24gZGF0YSBmcm9tIE9wZW5BbGV4IiwKICAgICAgICBkZXNjcmlwdGlvbj0iRmluZCBwYXBlcnMgd2l0aG91dCBjaXRhdGlvbiByZWNvcmRzIGFuZCBmZXRjaCB0aGVpciAiCiAgICAgICAgImZvcndhcmQgY2l0YXRpb24gY2hhaW5zIGZyb20gT3BlbkFsZXggdG8gcG9wdWxhdGUgdGhlIGNpdGF0aW9ucyB0YWJsZS4iLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tc3RhdHMiLAogICAgICAgICItcyIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBoZWxwPSJTaG93IGNpdGF0aW9uIGNvdmVyYWdlIHN0YXRpc3RpY3Mgb25seSIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1iYWNrZmlsbCIsCiAgICAgICAgIi1iIiwKICAgICAgICBhY3Rpb249InN0b3JlX3RydWUiLAogICAgICAgIGhlbHA9IkFjdHVhbGx5IGZldGNoIGNpdGF0aW9uIGRhdGEgZnJvbSBPcGVuQWxleCAoZGVmYXVsdDogZHJ5LXJ1bikiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tZHJ5LXJ1biIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBkZWZhdWx0PVRydWUsCiAgICAgICAgaGVscD0iUHJldmlldyBwYXBlcnMgdGhhdCB3b3VsZCBiZSBiYWNrZmlsbGVkIChkZWZhdWx0OiBUcnVlKSIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1uby1kcnktcnVuIiwKICAgICAgICBhY3Rpb249InN0b3JlX2ZhbHNlIiwKICAgICAgICBkZXN0PSJkcnlfcnVuIiwKICAgICAgICBoZWxwPSJBY3R1YWxseSBiYWNrZmlsbCAoc2FtZSBhcyAtLWJhY2tmaWxsKSIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS13b3JrZXJzIiwKICAgICAgICAiLXciLAogICAgICAgIHR5cGU9aW50LAogICAgICAgIGRlZmF1bHQ9NSwKICAgICAgICBoZWxwPSJOdW1iZXIgb2YgcGFyYWxsZWwgd29ya2VycyAoZGVmYXVsdDogNSkiLAogICAgKQogICAgcmV0dXJuIHAgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCg==
+"""CLI command: cite-backfill — Backfill missing citation data from OpenAlex.
+
+Identifies papers in the database that have no forward citation records,
+then fetches their forward citation chains from OpenAlex to populate
+the citations table so that influence/trend commands work correctly.
+"""
+from __future__ import annotations
+
+import argparse
+import ssl
+import sys
+import urllib.request
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
+from threading import Lock
+
+import orjson as json
+
+from cli._shared import get_db, Colors, colored, print_info, print_success
+
+
+_OPENALEX_BASE = "https://api.openalex.org"
+_OPENALEX_EMAIL = "ai-research-os@example.com"
+
+
+def _build_openalex_ctx() -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+
+
+def _openalex_request(path: str, timeout: int = 15) -> dict:
+    url = f"{_OPENALEX_BASE}{path}"
+    ctx = _build_openalex_ctx()
+    proxy_handler = urllib.request.ProxyHandler({})
+    opener = urllib.request.build_opener(proxy_handler, urllib.request.HTTPSHandler(context=ctx))
+    req = urllib.request.Request(url, headers={
+        "User-Agent": f"ai_research_os/1.0 (mailto:{_OPENALEX_EMAIL})",
+        "Accept": "application/json",
+    })
+    try:
+        with opener.open(req, timeout=timeout) as resp:
+            return json.loads(resp.read())  # type: ignore[no-any-return]
+    except Exception as e:
+        raise RuntimeError(f"OpenAlex request failed for {path}: {e}") from e
+
+
+def _arxiv_doi_to_openalex(arxiv_id: str) -> str | None:
+    """Look up OpenAlex ID for an arXiv paper."""
+    clean_id = arxiv_id.rsplit("v", 1)[0] if arxiv_id[-1] in "0123456789" else arxiv_id
+    doi = f"10.48550/arXiv.{clean_id}"
+    try:
+        d = _openalex_request(f"/works?filter=doi:{doi}&per-page=1")
+        results = d.get("results", [])
+        if results:
+            return results[0]["id"]  # type: ignore[no-any-return]
+    except Exception:
+        pass
+    return None
+
+
+def _get_forward_citations(openalex_id: str, per_page: int = 200) -> tuple[list[dict], int]:
+    """Fetch all papers citing this paper. Returns (works, total_count)."""
+    oid = openalex_id.rstrip("/").split("/")[-1]
+    try:
+        d = _openalex_request(
+            f"/works?filter=cites:{oid}&per-page={per_page}&mailto={_OPENALEX_EMAIL}"
+        )
+        return d.get("results", []) or [], d.get("meta", {}).get("count", 0)
+    except Exception as e:
+        print(f"    Warning: citing lookup failed: {e}", file=sys.stderr)
+        return [], 0
+
+
+def _work_to_arxiv_id(work: dict) -> str | None:
+    ids = work.get("ids", {}) or {}
+    doi = ids.get("doi", "") or ""
+    if "/arxiv." in doi.lower():
+        return doi.lower().split("/arxiv.")[-1]
+    return None
+
+
+@dataclass
+class GapStats:
+    total_papers: int
+    with_citations: int
+    without_citations: int
+    total_forward_cites_stored: int
+
+
+def _compute_gap_stats(db) -> GapStats:
+    """Compute statistics about citation coverage."""
+    cur = db.conn.execute("SELECT COUNT(*) FROM papers")
+    total = cur.fetchone()[0]
+
+    cur = db.conn.execute("SELECT COUNT(DISTINCT target_id) FROM citations")
+    with_cites = cur.fetchone()[0]
+
+    subq = (
+        "SELECT target_id, COUNT(*) AS forward_cites "
+        "FROM citations GROUP BY target_id"
+    )
+    cur = db.conn.execute(f"SELECT SUM(forward_cites) FROM ({subq})")
+    total_fwd = cur.fetchone()[0] or 0
+
+    return GapStats(
+        total_papers=total,
+        with_citations=with_cites,
+        without_citations=total - with_cites,
+        total_forward_cites_stored=total_fwd,
+    )
+
+
+def _find_papers_without_citations(db) -> list[tuple[str, str]]:
+    """Find papers that have no forward citation records.
+
+    Returns list of (paper_id, published_year).
+    Only considers papers published from year 2000 onward.
+    """
+    cur = db.conn.execute("""
+        SELECT p.id, p.published
+        FROM papers p
+        LEFT JOIN citations c ON c.target_id = p.id
+        WHERE c.target_id IS NULL
+          AND (p.published >= '2000' OR p.published IS NULL)
+        GROUP BY p.id
+        HAVING COUNT(c.id) = 0
+    """)
+    results = []
+    for row in cur.fetchall():
+        pub = row[1] or ""
+        if pub and pub >= "2000":
+            results.append((row[0], pub[:4]))
+        elif not pub:
+            results.append((row[0], "0000"))
+    return results
+
+
+def _run_cite_backfill(args: argparse.Namespace) -> int:
+    db = get_db()
+    db.init()
+
+    if args.stats:
+        stats = _compute_gap_stats(db)
+        print()
+        print(colored("=== Citation Coverage Report ===", Colors.HEADER))
+        print(f"  Total papers in database : {stats.total_papers}")
+        print(f"  Papers with citations   : {stats.with_citations}")
+        missing = stats.without_citations
+        print(f"  Papers missing citations: {colored(str(missing), Colors.WARNING if missing > 0 else Colors.OKGREEN)}")
+        print(f"  Total forward cites stored: {stats.total_forward_cites_stored}")
+        print()
+        if missing > 0:
+            print("Run with --backfill to populate missing citation data from OpenAlex.")
+        return 0
+
+    if not args.backfill and not args.dry_run:
+        print("Specify --backfill to actually fetch citation data.", file=sys.stderr)
+        return 1
+
+    papers = _find_papers_without_citations(db)
+    if not papers:
+        print_success("All papers already have citation data!")
+        return 0
+
+    paper_ids = [p[0] for p in papers]
+    print_info(f"Found {len(papers)} papers without citation data")
+
+    if args.dry_run:
+        print()
+        print(colored("=== Dry Run — Papers to Backfill ===", Colors.HEADER))
+        for pid, year in papers[:20]:
+            print(f"  {pid}  ({year})")
+        if len(papers) > 20:
+            print(f"  ... and {len(papers) - 20} more")
+        print()
+        print("Re-run without --dry-run to actually backfill.")
+        return 0
+
+    all_rows, _ = db.list_papers()
+    known_ids = {p.id for p in all_rows}
+
+    lock = Lock()
+    added = [0]
+    errors = [0]
+    imported_papers = [0]
+
+    def _backfill_one(paper_id: str) -> None:
+        try:
+            oid = _arxiv_doi_to_openalex(paper_id)
+            if not oid:
+                return
+
+            citing_works, total_count = _get_forward_citations(oid)
+            if not citing_works and total_count == 0:
+                return
+
+            for work in citing_works:
+                citing_arxiv = _work_to_arxiv_id(work)
+                if not citing_arxiv:
+                    continue
+
+                if citing_arxiv not in known_ids:
+                    try:
+                        ids = work.get("ids", {}) or {}
+                        doi = ids.get("doi", "") or ""
+                        title = work.get("title", "") or f"Imported {citing_arxiv}"
+                        authors = ",".join(
+                            a.get("display_name", "")
+                            for a in (work.get("authorships") or [])
+                        ) or ""
+                        pub_date = work.get("publication_date") or ""
+                        journal = (
+                            work.get("primary_location", {})
+                            .get("source", {})
+                            .get("display_name", "")
+                        ) or ""
+
+                        db.upsert_paper(
+                            paper_id=citing_arxiv,
+                            source="openalex",
+                            title=title,
+                            authors=authors,
+                            abstract="",
+                            published=pub_date,
+                            abs_url="",
+                            pdf_url="",
+                            journal=journal,
+                            doi=doi,
+                            reference_count=0,
+                        )
+                        known_ids.add(citing_arxiv)
+                        with lock:
+                            imported_papers[0] += 1
+                    except Exception:
+                        pass
+
+                try:
+                    db.add_citation(citing_arxiv, paper_id)
+                    with lock:
+                        added[0] += 1
+                except Exception:
+                    pass
+
+        except Exception:
+            with lock:
+                errors[0] += 1
+
+    print_info(f"Backfilling {len(paper_ids)} papers using {args.workers} workers...")
+
+    with ThreadPoolExecutor(max_workers=min(args.workers, 10)) as ex:
+        ex.map(_backfill_one, paper_ids)
+
+    print()
+    print_success(f"Done! Citations added: {added[0]}")
+    if imported_papers[0] > 0:
+        print_info(f"New papers imported: {imported_papers[0]}")
+    if errors[0] > 0:
+        print(f"Errors: {errors[0]}", file=sys.stderr)
+
+    stats = _compute_gap_stats(db)
+    print()
+    print(colored("=== Updated Coverage ===", Colors.HEADER))
+    print(f"  Papers now with citations: {stats.with_citations}/{stats.total_papers}")
+    print(f"  Total forward cites stored: {stats.total_forward_cites_stored}")
+    return 0
+
+
+def _build_cite_backfill_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "cite-backfill",
+        help="Backfill missing citation data from OpenAlex",
+        description="Find papers without citation records and fetch their "
+                    "forward citation chains from OpenAlex to populate the citations table.",
+    )
+    p.add_argument(
+        "--stats", "-s",
+        action="store_true",
+        help="Show citation coverage statistics only",
+    )
+    p.add_argument(
+        "--backfill", "-b",
+        action="store_true",
+        help="Actually fetch citation data from OpenAlex (default: dry-run)",
+    )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=True,
+        help="Preview papers that would be backfilled (default: True)",
+    )
+    p.add_argument(
+        "--no-dry-run",
+        action="store_false",
+        dest="dry_run",
+        help="Actually backfill (same as --backfill)",
+    )
+    p.add_argument(
+        "--workers", "-w",
+        type=int,
+        default=5,
+        help="Number of parallel workers (default: 5)",
+    )
+    return p  # type: ignore[no-any-return]

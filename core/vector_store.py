@@ -1,1 +1,225 @@
-IiIiWmlsbGl6IENsb3VkIHZlY3RvciBzdG9yZSBmb3IgcGVyc2lzdGVudCBjb2RlIGVtYmVkZGluZ3MuIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgppbXBvcnQgb3MKZnJvbSB0eXBpbmcgaW1wb3J0IExpc3QsIE9wdGlvbmFsLCBEaWN0LCBBbnksIGNhc3QKZnJvbSBkYXRhY2xhc3NlcyBpbXBvcnQgZGF0YWNsYXNzCgpmcm9tIHB5bWlsdnVzIGltcG9ydCBNaWx2dXNDbGllbnQsIERhdGFUeXBlCgoKQGRhdGFjbGFzcwpjbGFzcyBTZWFyY2hSZXN1bHQ6CiAgICAiIiJBIHNlYXJjaCByZXN1bHQgd2l0aCBzY29yZSBhbmQgbWV0YWRhdGEuIiIiCgogICAgaWQ6IHN0cgogICAgc2NvcmU6IGZsb2F0CiAgICBjb250ZW50OiBzdHIKICAgIGZpbGU6IHN0cgogICAgbGluZTogaW50CgoKY2xhc3MgWmlsbGl6U3RvcmU6CiAgICAiIiIKICAgIFppbGxpeiBDbG91ZCB2ZWN0b3Igc3RvcmUgZm9yIGNvZGUgZW1iZWRkaW5ncy4KCiAgICBQcm92aWRlcyBwZXJzaXN0ZW50IHN0b3JhZ2UgYW5kIHNpbWlsYXJpdHkgc2VhcmNoIGZvciBjb2RlIGNodW5rcy4KICAgICIiIgoKICAgIENPTExFQ1RJT05fTkFNRSA9ICJjb2RlX2NodW5rcyIKCiAgICBkZWYgX19pbml0X18oc2VsZiwgdXJpOiBzdHIsIHRva2VuOiBzdHIsIGRpbTogaW50ID0gNzY4KToKICAgICAgICAiIiJJbml0aWFsaXplIFppbGxpeiBjbGllbnQuCgogICAgICAgIEFyZ3M6CiAgICAgICAgICAgIHVyaTogWmlsbGl6IENsb3VkIFVSSSAoZS5nLiwgaHR0cHM6Ly94eHguemlsbGl6Y2xvdWQuY29tOjQ0MykKICAgICAgICAgICAgdG9rZW46IFppbGxpeiBBUEkga2V5CiAgICAgICAgICAgIGRpbTogRW1iZWRkaW5nIGRpbWVuc2lvbiAobm9taWMtZW1iZWQtdGV4dCA9IDc2OCkKICAgICAgICAiIiIKICAgICAgICBzZWxmLmNsaWVudCA9IE1pbHZ1c0NsaWVudCh1cmk9dXJpLCB0b2tlbj10b2tlbikKICAgICAgICBzZWxmLmRpbSA9IGRpbQogICAgICAgIHNlbGYuX2Vuc3VyZV9jb2xsZWN0aW9uKCkKCiAgICBkZWYgX2Vuc3VyZV9jb2xsZWN0aW9uKHNlbGYpIC0+IE5vbmU6CiAgICAgICAgIiIiQ3JlYXRlIGNvbGxlY3Rpb24gaWYgbm90IGV4aXN0cy4gUmFpc2VzIFJ1bnRpbWVFcnJvciBvbiBjb25uZWN0aW9uIGVycm9yLiIiIgogICAgICAgIHRyeToKICAgICAgICAgICAgaWYgc2VsZi5jbGllbnQuaGFzX2NvbGxlY3Rpb24oc2VsZi5DT0xMRUNUSU9OX05BTUUpOgogICAgICAgICAgICAgICAgcmV0dXJuCiAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgICAgICByYWlzZSBSdW50aW1lRXJyb3IoZiJGYWlsZWQgdG8gY2hlY2sgY29sbGVjdGlvbiAne3NlbGYuQ09MTEVDVElPTl9OQU1FfSc6IHtlfSIpIGZyb20gZQoKICAgICAgICB0cnk6CiAgICAgICAgICAgIHNjaGVtYSA9IE1pbHZ1c0NsaWVudC5jcmVhdGVfc2NoZW1hKAogICAgICAgICAgICAgICAgYXV0b19pZD1GYWxzZSwKICAgICAgICAgICAgICAgIGVuYWJsZV9keW5hbWljX2ZpZWxkPVRydWUsCiAgICAgICAgICAgICkKCiAgICAgICAgICAgIHNjaGVtYS5hZGRfZmllbGQoCiAgICAgICAgICAgICAgICBmaWVsZF9uYW1lPSJpZCIsCiAgICAgICAgICAgICAgICBkYXRhdHlwZT1EYXRhVHlwZS5WQVJDSEFSLAogICAgICAgICAgICAgICAgbWF4X2xlbmd0aD01MTIsCiAgICAgICAgICAgICAgICBpc19wcmltYXJ5PVRydWUsCiAgICAgICAgICAgICkKICAgICAgICAgICAgc2NoZW1hLmFkZF9maWVsZCgKICAgICAgICAgICAgICAgIGZpZWxkX25hbWU9InZlY3RvciIsCiAgICAgICAgICAgICAgICBkYXRhdHlwZT1EYXRhVHlwZS5GTE9BVF9WRUNUT1IsCiAgICAgICAgICAgICAgICBkaW09c2VsZi5kaW0sCiAgICAgICAgICAgICkKICAgICAgICAgICAgc2NoZW1hLmFkZF9maWVsZCgKICAgICAgICAgICAgICAgIGZpZWxkX25hbWU9ImNvbnRlbnQiLAogICAgICAgICAgICAgICAgZGF0YXR5cGU9RGF0YVR5cGUuVkFSQ0hBUiwKICAgICAgICAgICAgICAgIG1heF9sZW5ndGg9NDA5NiwKICAgICAgICAgICAgKQogICAgICAgICAgICBzY2hlbWEuYWRkX2ZpZWxkKAogICAgICAgICAgICAgICAgZmllbGRfbmFtZT0iZmlsZSIsCiAgICAgICAgICAgICAgICBkYXRhdHlwZT1EYXRhVHlwZS5WQVJDSEFSLAogICAgICAgICAgICAgICAgbWF4X2xlbmd0aD0yNTYsCiAgICAgICAgICAgICkKICAgICAgICAgICAgc2NoZW1hLmFkZF9maWVsZCgKICAgICAgICAgICAgICAgIGZpZWxkX25hbWU9ImxpbmUiLAogICAgICAgICAgICAgICAgZGF0YXR5cGU9RGF0YVR5cGUuSU5UMzIsCiAgICAgICAgICAgICkKCiAgICAgICAgICAgIGluZGV4X3BhcmFtcyA9IHNlbGYuY2xpZW50LnByZXBhcmVfaW5kZXhfcGFyYW1zKCkKICAgICAgICAgICAgaW5kZXhfcGFyYW1zLmFkZF9pbmRleCgKICAgICAgICAgICAgICAgIGZpZWxkX25hbWU9InZlY3RvciIsCiAgICAgICAgICAgICAgICBpbmRleF90eXBlPSJBVVRPSU5ERVgiLAogICAgICAgICAgICAgICAgbWV0cmljX3R5cGU9IkNPU0lORSIsCiAgICAgICAgICAgICkKCiAgICAgICAgICAgIHNlbGYuY2xpZW50LmNyZWF0ZV9jb2xsZWN0aW9uKAogICAgICAgICAgICAgICAgY29sbGVjdGlvbl9uYW1lPXNlbGYuQ09MTEVDVElPTl9OQU1FLAogICAgICAgICAgICAgICAgc2NoZW1hPXNjaGVtYSwKICAgICAgICAgICAgICAgIGluZGV4X3BhcmFtcz1pbmRleF9wYXJhbXMsCiAgICAgICAgICAgICkKICAgICAgICAgICAgc2VsZi5jbGllbnQubG9hZF9jb2xsZWN0aW9uKHNlbGYuQ09MTEVDVElPTl9OQU1FKQogICAgICAgIGV4Y2VwdCBFeGNlcHRpb24gYXMgZToKICAgICAgICAgICAgcmFpc2UgUnVudGltZUVycm9yKGYiRmFpbGVkIHRvIGNyZWF0ZSBjb2xsZWN0aW9uICd7c2VsZi5DT0xMRUNUSU9OX05BTUV9Jzoge2V9IikgZnJvbSBlCgogICAgZGVmIHVwc2VydCgKICAgICAgICBzZWxmLAogICAgICAgIGlkczogTGlzdFtzdHJdLAogICAgICAgIHZlY3RvcnM6IExpc3RbTGlzdFtmbG9hdF1dLAogICAgICAgIGNvbnRlbnRzOiBMaXN0W3N0cl0sCiAgICAgICAgZmlsZXM6IExpc3Rbc3RyXSwKICAgICAgICBsaW5lczogTGlzdFtpbnRdLAogICAgKSAtPiBOb25lOgogICAgICAgICIiIkluc2VydCBvciB1cGRhdGUgZW1iZWRkaW5ncy4KCiAgICAgICAgQXJnczoKICAgICAgICAgICAgaWRzOiBVbmlxdWUgY2h1bmsgSURzCiAgICAgICAgICAgIHZlY3RvcnM6IEVtYmVkZGluZyB2ZWN0b3JzCiAgICAgICAgICAgIGNvbnRlbnRzOiBDb2RlIGNvbnRlbnQKICAgICAgICAgICAgZmlsZXM6IEZpbGUgcGF0aHMKICAgICAgICAgICAgbGluZXM6IExpbmUgbnVtYmVycwogICAgICAgICIiIgogICAgICAgIGRhdGEgPSBbCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICJpZCI6IGlkXywKICAgICAgICAgICAgICAgICJ2ZWN0b3IiOiB2ZWMsCiAgICAgICAgICAgICAgICAiY29udGVudCI6IGNvbnRlbnQsCiAgICAgICAgICAgICAgICAiZmlsZSI6IGZpbGVfLAogICAgICAgICAgICAgICAgImxpbmUiOiBsaW5lLAogICAgICAgICAgICB9CiAgICAgICAgICAgIGZvciBpZF8sIHZlYywgY29udGVudCwgZmlsZV8sIGxpbmUgaW4gemlwKGlkcywgdmVjdG9ycywgY29udGVudHMsIGZpbGVzLCBsaW5lcykKICAgICAgICBdCgogICAgICAgIHNlbGYuY2xpZW50LnVwc2VydCgKICAgICAgICAgICAgY29sbGVjdGlvbl9uYW1lPXNlbGYuQ09MTEVDVElPTl9OQU1FLAogICAgICAgICAgICBkYXRhPWRhdGEsCiAgICAgICAgKQoKICAgIGRlZiBzZWFyY2goCiAgICAgICAgc2VsZiwKICAgICAgICBxdWVyeV92ZWN0b3I6IExpc3RbZmxvYXRdLAogICAgICAgIGxpbWl0OiBpbnQgPSAxMCwKICAgICAgICBmaWx0ZXJfZXhwcjogT3B0aW9uYWxbc3RyXSA9IE5vbmUsCiAgICApIC0+IExpc3RbU2VhcmNoUmVzdWx0XToKICAgICAgICAiIiJTZWFyY2ggZm9yIHNpbWlsYXIgdmVjdG9ycy4KCiAgICAgICAgQXJnczoKICAgICAgICAgICAgcXVlcnlfdmVjdG9yOiBRdWVyeSBlbWJlZGRpbmcKICAgICAgICAgICAgbGltaXQ6IE1heCByZXN1bHRzCiAgICAgICAgICAgIGZpbHRlcl9leHByOiBPcHRpb25hbCBmaWx0ZXIgKGUuZy4sICdmaWxlIGxpa2UgIiV0ZXN0JSInKQoKICAgICAgICBSZXR1cm5zOgogICAgICAgICAgICBMaXN0IG9mIFNlYXJjaFJlc3VsdCBzb3J0ZWQgYnkgc2ltaWxhcml0eQogICAgICAgICIiIgogICAgICAgIHJlc3VsdHMgPSBzZWxmLmNsaWVudC5zZWFyY2goCiAgICAgICAgICAgIGNvbGxlY3Rpb25fbmFtZT1zZWxmLkNPTExFQ1RJT05fTkFNRSwKICAgICAgICAgICAgZGF0YT1bcXVlcnlfdmVjdG9yXSwKICAgICAgICAgICAgbGltaXQ9bGltaXQsCiAgICAgICAgICAgIG91dHB1dF9maWVsZHM9WyJpZCIsICJjb250ZW50IiwgImZpbGUiLCAibGluZSJdLAogICAgICAgICAgICBmaWx0ZXI9ZmlsdGVyX2V4cHIsCiAgICAgICAgKQoKICAgICAgICBzZWFyY2hfcmVzdWx0cyA9IFtdCiAgICAgICAgZm9yIGhpdCBpbiByZXN1bHRzWzBdOgogICAgICAgICAgICBzZWFyY2hfcmVzdWx0cy5hcHBlbmQoCiAgICAgICAgICAgICAgICBTZWFyY2hSZXN1bHQoCiAgICAgICAgICAgICAgICAgICAgaWQ9aGl0WyJlbnRpdHkiXVsiaWQiXSwKICAgICAgICAgICAgICAgICAgICBzY29yZT1oaXRbImRpc3RhbmNlIl0sCiAgICAgICAgICAgICAgICAgICAgY29udGVudD1oaXRbImVudGl0eSJdWyJjb250ZW50Il0sCiAgICAgICAgICAgICAgICAgICAgZmlsZT1oaXRbImVudGl0eSJdWyJmaWxlIl0sCiAgICAgICAgICAgICAgICAgICAgbGluZT1oaXRbImVudGl0eSJdWyJsaW5lIl0sCiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICkKCiAgICAgICAgcmV0dXJuIHNlYXJjaF9yZXN1bHRzCgogICAgZGVmIGRlbGV0ZV9ieV9pZHMoc2VsZiwgaWRzOiBMaXN0W3N0cl0pIC0+IE5vbmU6CiAgICAgICAgIiIiRGVsZXRlIGNodW5rcyBieSBJRHMgKGJhdGNoKS4iIiIKICAgICAgICBpZiBub3QgaWRzOgogICAgICAgICAgICByZXR1cm4KICAgICAgICBzZWxmLmNsaWVudC5kZWxldGUoCiAgICAgICAgICAgIGNvbGxlY3Rpb25fbmFtZT1zZWxmLkNPTExFQ1RJT05fTkFNRSwKICAgICAgICAgICAgcGtzPWlkcywKICAgICAgICApCgogICAgZGVmIGNvdW50KHNlbGYpIC0+IGludDoKICAgICAgICAiIiJHZXQgdG90YWwgY2h1bmsgY291bnQuIiIiCiAgICAgICAgcmVzdWx0ID0gc2VsZi5jbGllbnQucXVlcnkoCiAgICAgICAgICAgIGNvbGxlY3Rpb25fbmFtZT1zZWxmLkNPTExFQ1RJT05fTkFNRSwKICAgICAgICAgICAgb3V0cHV0X2ZpZWxkcz1bImNvdW50KCopIl0sCiAgICAgICAgKQogICAgICAgIHJldHVybiBjYXN0KGludCwgcmVzdWx0WzBdWyJjb3VudCgqKSJdKQoKICAgIGRlZiBzdGF0cyhzZWxmKSAtPiBEaWN0W3N0ciwgQW55XToKICAgICAgICAiIiJHZXQgY29sbGVjdGlvbiBzdGF0cy4iIiIKICAgICAgICByZXR1cm4gewogICAgICAgICAgICAiY2h1bmtzIjogc2VsZi5jb3VudCgpLAogICAgICAgICAgICAiZGltIjogc2VsZi5kaW0sCiAgICAgICAgICAgICJjb2xsZWN0aW9uIjogc2VsZi5DT0xMRUNUSU9OX05BTUUsCiAgICAgICAgfQoKCiMgR2xvYmFsIHN0b3JlIGluc3RhbmNlCl9zdG9yZTogT3B0aW9uYWxbWmlsbGl6U3RvcmVdID0gTm9uZQoKCmRlZiBnZXRfemlsbGl6X3N0b3JlKCkgLT4gWmlsbGl6U3RvcmU6CiAgICAiIiJHZXQgZ2xvYmFsIFppbGxpeiBzdG9yZSBpbnN0YW5jZS4iIiIKICAgIGdsb2JhbCBfc3RvcmUKCiAgICBpZiBfc3RvcmUgaXMgbm90IE5vbmU6CiAgICAgICAgcmV0dXJuIF9zdG9yZQoKICAgIHVyaSA9IG9zLmVudmlyb24uZ2V0KCJaSUxMSVpfVVJJIikKICAgIHRva2VuID0gb3MuZW52aXJvbi5nZXQoIlpJTExJWl9UT0tFTiIsICIiKQoKICAgIGlmIG5vdCB1cmk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigKICAgICAgICAgICAgIlpJTExJWl9VUkkgbXVzdCBiZSBzZXQuICIKICAgICAgICAgICAgIkZvciBsb2NhbCBNaWx2dXM6IGh0dHA6Ly9sb2NhbGhvc3Q6MTk1MzAsICIKICAgICAgICAgICAgIkZvciBaaWxsaXogQ2xvdWQ6IGh0dHBzOi8veHh4LnppbGxpemNsb3VkLmNvbTo0NDMiCiAgICAgICAgKQoKICAgIF9zdG9yZSA9IFppbGxpelN0b3JlKHVyaT11cmksIHRva2VuPXRva2VuKQogICAgcmV0dXJuIF9zdG9yZQoKCmRlZiBpc196aWxsaXpfY29uZmlndXJlZCgpIC0+IGJvb2w6CiAgICAiIiJDaGVjayBpZiBaaWxsaXovTWlsdnVzIGlzIGNvbmZpZ3VyZWQuIiIiCiAgICB1cmkgPSBvcy5lbnZpcm9uLmdldCgiWklMTElaX1VSSSIpCiAgICByZXR1cm4gYm9vbCh1cmkpCg==
+"""Zilliz Cloud vector store for persistent code embeddings."""
+
+from __future__ import annotations
+
+import os
+from typing import List, Optional, Dict, Any, cast
+from dataclasses import dataclass
+
+from pymilvus import MilvusClient, DataType
+
+
+@dataclass
+class SearchResult:
+    """A search result with score and metadata."""
+
+    id: str
+    score: float
+    content: str
+    file: str
+    line: int
+
+
+class ZillizStore:
+    """
+    Zilliz Cloud vector store for code embeddings.
+
+    Provides persistent storage and similarity search for code chunks.
+    """
+
+    COLLECTION_NAME = "code_chunks"
+
+    def __init__(self, uri: str, token: str, dim: int = 768):
+        """Initialize Zilliz client.
+
+        Args:
+            uri: Zilliz Cloud URI (e.g., https://xxx.zillizcloud.com:443)
+            token: Zilliz API key
+            dim: Embedding dimension (nomic-embed-text = 768)
+        """
+        self.client = MilvusClient(uri=uri, token=token)
+        self.dim = dim
+        self._ensure_collection()
+
+    def _ensure_collection(self) -> None:
+        """Create collection if not exists. Raises RuntimeError on connection error."""
+        try:
+            if self.client.has_collection(self.COLLECTION_NAME):
+                return
+        except Exception as e:
+            raise RuntimeError(f"Failed to check collection '{self.COLLECTION_NAME}': {e}") from e
+
+        try:
+            schema = MilvusClient.create_schema(
+                auto_id=False,
+                enable_dynamic_field=True,
+            )
+
+            schema.add_field(
+                field_name="id",
+                datatype=DataType.VARCHAR,
+                max_length=512,
+                is_primary=True,
+            )
+            schema.add_field(
+                field_name="vector",
+                datatype=DataType.FLOAT_VECTOR,
+                dim=self.dim,
+            )
+            schema.add_field(
+                field_name="content",
+                datatype=DataType.VARCHAR,
+                max_length=4096,
+            )
+            schema.add_field(
+                field_name="file",
+                datatype=DataType.VARCHAR,
+                max_length=256,
+            )
+            schema.add_field(
+                field_name="line",
+                datatype=DataType.INT32,
+            )
+
+            index_params = self.client.prepare_index_params()
+            index_params.add_index(
+                field_name="vector",
+                index_type="AUTOINDEX",
+                metric_type="COSINE",
+            )
+
+            self.client.create_collection(
+                collection_name=self.COLLECTION_NAME,
+                schema=schema,
+                index_params=index_params,
+            )
+            self.client.load_collection(self.COLLECTION_NAME)
+        except Exception as e:
+            raise RuntimeError(f"Failed to create collection '{self.COLLECTION_NAME}': {e}") from e
+
+    def upsert(
+        self,
+        ids: List[str],
+        vectors: List[List[float]],
+        contents: List[str],
+        files: List[str],
+        lines: List[int],
+    ) -> None:
+        """Insert or update embeddings.
+
+        Args:
+            ids: Unique chunk IDs
+            vectors: Embedding vectors
+            contents: Code content
+            files: File paths
+            lines: Line numbers
+        """
+        data = [
+            {
+                "id": id_,
+                "vector": vec,
+                "content": content,
+                "file": file_,
+                "line": line,
+            }
+            for id_, vec, content, file_, line in zip(ids, vectors, contents, files, lines)
+        ]
+
+        self.client.upsert(
+            collection_name=self.COLLECTION_NAME,
+            data=data,
+        )
+
+    def search(
+        self,
+        query_vector: List[float],
+        limit: int = 10,
+        filter_expr: Optional[str] = None,
+    ) -> List[SearchResult]:
+        """Search for similar vectors.
+
+        Args:
+            query_vector: Query embedding
+            limit: Max results
+            filter_expr: Optional filter (e.g., 'file like "%test%"')
+
+        Returns:
+            List of SearchResult sorted by similarity
+        """
+        results = self.client.search(
+            collection_name=self.COLLECTION_NAME,
+            data=[query_vector],
+            limit=limit,
+            output_fields=["id", "content", "file", "line"],
+            filter=filter_expr,
+        )
+
+        search_results = []
+        for hit in results[0]:
+            search_results.append(
+                SearchResult(
+                    id=hit["entity"]["id"],
+                    score=hit["distance"],
+                    content=hit["entity"]["content"],
+                    file=hit["entity"]["file"],
+                    line=hit["entity"]["line"],
+                )
+            )
+
+        return search_results
+
+    def delete_by_ids(self, ids: List[str]) -> None:
+        """Delete chunks by IDs (batch)."""
+        if not ids:
+            return
+        self.client.delete(
+            collection_name=self.COLLECTION_NAME,
+            pks=ids,
+        )
+
+    def count(self) -> int:
+        """Get total chunk count."""
+        result = self.client.query(
+            collection_name=self.COLLECTION_NAME,
+            output_fields=["count(*)"],
+        )
+        return cast(int, result[0]["count(*)"])
+
+    def stats(self) -> Dict[str, Any]:
+        """Get collection stats."""
+        return {
+            "chunks": self.count(),
+            "dim": self.dim,
+            "collection": self.COLLECTION_NAME,
+        }
+
+
+# Global store instance
+_store: Optional[ZillizStore] = None
+
+
+def get_zilliz_store() -> ZillizStore:
+    """Get global Zilliz store instance."""
+    global _store
+
+    if _store is not None:
+        return _store
+
+    uri = os.environ.get("ZILLIZ_URI")
+    token = os.environ.get("ZILLIZ_TOKEN", "")
+
+    if not uri:
+        raise ValueError(
+            "ZILLIZ_URI must be set. "
+            "For local Milvus: http://localhost:19530, "
+            "For Zilliz Cloud: https://xxx.zillizcloud.com:443"
+        )
+
+    _store = ZillizStore(uri=uri, token=token)
+    return _store
+
+
+def is_zilliz_configured() -> bool:
+    """Check if Zilliz/Milvus is configured."""
+    uri = os.environ.get("ZILLIZ_URI")
+    return bool(uri)

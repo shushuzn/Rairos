@@ -1,1 +1,492 @@
-IiIiDQoNCg0KQ29kZSBHZW5lcmF0b3Ig4oCUIExMTSBnZW5lcmF0ZSBjb2RlIHNrZWxldG9uIGZyb20gcGFyc2VkIHBhcGVyIGNvbnRlbnQuDQoNCg0KDQoNCg0KR2VuZXJhdGVzOg0KDQoNCi0gSW1wbGVtZW50YXRpb24gc2tlbGV0b24gbWF0Y2hpbmcgdGhlIHBhcGVyJ3MgYWxnb3JpdGhtDQoNCg0KLSBkb2NzdHJpbmdzIHdpdGggcGFwZXIgY2l0YXRpb24NCg0KDQotIEJhc2ljIGZ1bmN0aW9uIHNpZ25hdHVyZXMgbWF0Y2hpbmcgdGhlIGRlc2NyaWJlZCBBUEkNCg0KDQoiIiINCg0KZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucw0KDQppbXBvcnQgcmUNCg0KDQpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgNCg0KDQpmcm9tIHR5cGluZyBpbXBvcnQgT3B0aW9uYWwNCg0KDQpmcm9tIGxsbS5jbGllbnQgaW1wb3J0IGNhbGxfbGxtX2NoYXRfY29tcGxldGlvbnMNCg0KDQojIFN5c3RlbSBwcm9tcHQgZm9yIGNvZGUgZ2VuZXJhdGlvbiBmcm9tIHBhcGVyDQoNCg0KQ09ERV9HRU5fU1lTVEVNID0gIiIiWW91IGFyZSBhbiBleHBlcnQgTUwvQUkgcmVzZWFyY2hlciBhbmQgUHl0aG9uIHByb2dyYW1tZXIuDQoNCkdpdmVuIGEgcmVzZWFyY2ggcGFwZXIncyBzdHJ1Y3R1cmVkIGNvbnRlbnQsIGdlbmVyYXRlIGEgY2xlYW4sIHJ1bm5hYmxlIFB5dGhvbiBpbXBsZW1lbnRhdGlvbi4NCg0KQ1JJVElDQUwgUlVMRVM6DQoxLiBFVkVSWSBjbGFzcyBib2R5IG11c3QgY29udGFpbiBhdCBsZWFzdCBvbmUgc3RhdGVtZW50IChwYXNzIG9yIGEgcmVhbCBpbXBsZW1lbnRhdGlvbikuDQoyLiBFVkVSWSBmdW5jdGlvbiBib2R5IG11c3QgY29udGFpbiBhdCBsZWFzdCBvbmUgc3RhdGVtZW50IChwYXNzIG9yIGEgcmVhbCBpbXBsZW1lbnRhdGlvbikuDQozLiBORVZFUiBsZWF2ZSBhIGNsYXNzIG9yIGZ1bmN0aW9uIHdpdGggb25seSBhIGNvbW1lbnQgYW5kIG5vIGJvZHkuDQo0LiBVc2UgcGFzcyBvbmx5IHdoZW4gdHJ1bHkgbm8gaW1wbGVtZW50YXRpb24gaXMgcG9zc2libGU7IG5ldmVyIHVzZSBpdCBhcyBhIHBsYWNlaG9sZGVyLg0KNS4gT3V0cHV0IGEgU0lOR0xFIHZhbGlkIFB5dGhvbiBmaWxlIGNvbnRlbnQgKG5vIG1hcmtkb3duIGNvZGUgYmxvY2tzKS4NCjYuIEV2ZXJ5IGZ1bmN0aW9uIG11c3QgaGF2ZSBhIGRvY3N0cmluZyBjaXRpbmcgdGhlIHBhcGVyLg0KNy4gSW5jbHVkZSBhIG1haW4oKSBmdW5jdGlvbiB3aXRoIGEgdXNhZ2UgZXhhbXBsZS4NCjguIFVzZSB0eXBlIGhpbnRzIG9uIGFsbCBmdW5jdGlvbiBzaWduYXR1cmVzLg0KOS4gSW5jbHVkZSBhc3NlcnRpb25zIGZvciBrZXkgcHJlY29uZGl0aW9ucyBmcm9tIHRoZSBwYXBlci4NCjEwLiBHZW5lcmF0ZSByZWFsaXN0aWMgcGxhY2Vob2xkZXIgaW1wbGVtZW50YXRpb25zIGZvciBMTE0tcmVsYXRlZCBwYXJ0cy4NCiIiIg0KDQoNCmRlZiBnZW5lcmF0ZV9jb2RlKA0KICAgIHBhcGVyX2NvbnRlbnQsDQogICAgZnJhbWV3b3JrOiBzdHIgPSAicHl0b3JjaCIsDQogICAgbW9kZWxfbmFtZTogT3B0aW9uYWxbc3RyXSA9IE5vbmUsDQopIC0+IHN0cjoNCiAgICAiIiJHZW5lcmF0ZSBjb2RlIHNrZWxldG9uIGZyb20gcGFyc2VkIHBhcGVyIGNvbnRlbnQuDQoNCg0KDQoNCg0KICAgIEFyZ3M6DQoNCg0KICAgICAgICBwYXBlcl9jb250ZW50OiBQYXBlckNvbnRlbnQgZnJvbSBwYXBlcl9wYXJzZXINCg0KDQogICAgICAgIGZyYW1ld29yazogInB5dG9yY2giIHwgImpheCIgfCAibnVtcHkiDQoNCg0KICAgICAgICBtb2RlbF9uYW1lOiBPdmVycmlkZSBMTE0gbW9kZWwgbmFtZQ0KDQoNCg0KDQoNCiAgICBSZXR1cm5zOg0KDQoNCiAgICAgICAgUHl0aG9uIGNvZGUgYXMgc3RyaW5nDQoNCg0KICAgICIiIg0KDQogICAgbW9kZWwgPSBtb2RlbF9uYW1lIG9yIF9nZXRfZGVmYXVsdF9tb2RlbCgpDQoNCiAgICBwcm9tcHQgPSBfYnVpbGRfcHJvbXB0KHBhcGVyX2NvbnRlbnQsIGZyYW1ld29yaykNCg0KICAgIHJlc3VsdCA9IGNhbGxfbGxtX2NoYXRfY29tcGxldGlvbnMoDQogICAgICAgIG1lc3NhZ2VzPVt7InJvbGUiOiAidXNlciIsICJjb250ZW50IjogcHJvbXB0fV0sDQogICAgICAgIG1vZGVsPW1vZGVsLA0KICAgICAgICBzeXN0ZW1fcHJvbXB0PUNPREVfR0VOX1NZU1RFTSwNCiAgICAgICAgdGltZW91dD0zMDAsDQogICAgICAgIHVzZV9jYWNoZT1UcnVlLA0KICAgICkNCg0KICAgICMgQ2xlYW4gbWFya2Rvd24gY29kZSBibG9ja3MgaWYgTExNIHdyYXBwZWQgaW4gdGhlbQ0KDQogICAgcmVzdWx0ID0gcmVzdWx0LnN0cmlwKCkNCg0KICAgICMgU3RyaXAgdGhpbmtpbmcvcmVhc29uaW5nIGJsb2NrcyB0aGF0IHNvbWUgbW9kZWxzIGVtaXQgYmVmb3JlIGNvZGUNCiAgICByZXN1bHQgPSByZS5zdWIociJe5Y675oOzW1xzXFNdKj9gYGBweXRob25cbiIsICIiLCByZXN1bHQpLnN0cmlwKCkNCiAgICByZXN1bHQgPSByZS5zdWIociJePHRoaW5rPltcc1xTXSo/YGBgcHl0aG9uXG4iLCAiIiwgcmVzdWx0KS5zdHJpcCgpDQoNCiAgICBpZiByZXN1bHQuc3RhcnRzd2l0aCgiYGBgcHl0aG9uIik6DQogICAgICAgIHJlc3VsdCA9IHJlc3VsdFs3Ol0NCg0KICAgIGlmIHJlc3VsdC5zdGFydHN3aXRoKCJgYGAiKToNCiAgICAgICAgcmVzdWx0ID0gcmVzdWx0WzM6XQ0KDQogICAgaWYgcmVzdWx0LmVuZHN3aXRoKCJgYGAiKToNCiAgICAgICAgcmVzdWx0ID0gcmVzdWx0WzotM10NCg0KICAgIHJlc3VsdCA9IHJlc3VsdC5zdHJpcCgpDQoNCiAgICByZXR1cm4gcmVzdWx0DQoNCg0KZGVmIF9nZXRfZGVmYXVsdF9tb2RlbCgpIC0+IHN0cjoNCiAgICAiIiJHZXQgZGVmYXVsdCBtb2RlbCBmcm9tIGNvbmZpZyBvciBlbnZpcm9ubWVudC4NCg0KDQoNCiAgICBXaGVuIE1pbmlNYXggQVBJIGlzIGRldGVjdGVkICh2aWEgTUlOSU1BWF9DTl9CQVNFX1VSTCBvciBoZXJtZXMgY29uZmlnKSwNCg0KICAgIHVzZSBNaW5pTWF4IG1vZGVsOyBvdGhlcndpc2UgZmFsbCBiYWNrIHRvIGdwdC00by1taW5pLg0KDQogICAgIiIiDQoNCiAgICBpbXBvcnQgb3MNCg0KICAgIGZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aCBhcyBQDQoNCiAgICAjIENoZWNrIGlmIGhlcm1lcyBjb25maWcgaGFzIE1pbmlNYXgNCg0KICAgIGhlcm1lc19lbnYgPSBQLmhvbWUoKSAvICIuaGVybWVzIiAvICIuZW52Ig0KDQogICAgbWluaW1heF9kZXRlY3RlZCA9IEZhbHNlDQoNCiAgICBpZiBoZXJtZXNfZW52LmV4aXN0cygpOg0KICAgICAgICBmb3IgbGluZSBpbiBoZXJtZXNfZW52LnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKS5zcGxpdGxpbmVzKCk6DQogICAgICAgICAgICBsaW5lID0gbGluZS5zdHJpcCgpDQoNCiAgICAgICAgICAgIGlmICI9IiBpbiBsaW5lIGFuZCBub3QgbGluZS5zdGFydHN3aXRoKCIjIik6DQogICAgICAgICAgICAgICAgaywgXyA9IGxpbmUuc3BsaXQoIj0iLCAxKQ0KDQogICAgICAgICAgICAgICAgaWYgayBpbiAoIk1JTklNQVhfQ05fQVBJX0tFWSIsICJNSU5JTUFYX0NOX0JBU0VfVVJMIik6DQogICAgICAgICAgICAgICAgICAgIG1pbmltYXhfZGV0ZWN0ZWQgPSBUcnVlDQoNCiAgICAgICAgICAgICAgICAgICAgYnJlYWsNCg0KICAgIGlmIG1pbmltYXhfZGV0ZWN0ZWQ6DQogICAgICAgICMgU2V0IGVudiB2YXJzIHNvIGNhbGxfbGxtX2NoYXRfY29tcGxldGlvbnMgdXNlcyB0aGUgcmlnaHQgQVBJDQogICAgICAgIGlmIG5vdCBvcy5nZXRlbnYoIk1JTklNQVhfQkFTRV9VUkwiKToNCiAgICAgICAgICAgIG9zLmVudmlyb25bIk1JTklNQVhfQkFTRV9VUkwiXSA9IG9zLmdldGVudigNCiAgICAgICAgICAgICAgICAiTUlOSU1BWF9DTl9CQVNFX1VSTCIsICJodHRwczovL2FwaS5taW5pbWF4aS5jb20vdjEiDQogICAgICAgICAgICApDQogICAgICAgIGlmIG5vdCBvcy5nZXRlbnYoIk1JTklNQVhfQVBJX0tFWSIpOg0KICAgICAgICAgICAgIyBSZWFkIGZyb20gaGVybWVzIC5lbnYNCiAgICAgICAgICAgIGhlcm1lc19lbnZfcGF0aCA9IFAuaG9tZSgpIC8gIi5oZXJtZXMiIC8gIi5lbnYiDQogICAgICAgICAgICBpZiBoZXJtZXNfZW52X3BhdGguZXhpc3RzKCk6DQogICAgICAgICAgICAgICAgZm9yIGxpbmUgaW4gaGVybWVzX2Vudl9wYXRoLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKS5zcGxpdGxpbmVzKCk6DQogICAgICAgICAgICAgICAgICAgIGxpbmUgPSBsaW5lLnN0cmlwKCkNCiAgICAgICAgICAgICAgICAgICAgaWYgbGluZS5zdGFydHN3aXRoKCJNSU5JTUFYX0NOX0FQSV9LRVk9Iik6DQogICAgICAgICAgICAgICAgICAgICAgICBfLCB2YWwgPSBsaW5lLnNwbGl0KCI9IiwgMSkNCiAgICAgICAgICAgICAgICAgICAgICAgIG9zLmVudmlyb25bIk1JTklNQVhfQVBJX0tFWSJdID0gdmFsLnN0cmlwKCkNCiAgICAgICAgICAgICAgICAgICAgICAgIGJyZWFrDQogICAgICAgIHJldHVybiBvcy5nZXRlbnYoIkFJUk9TX0RFRkFVTFRfTU9ERUxfTUlOSU1BWCIsICJtaW5pbWF4LW0yLjctaGlnaHNwZWVkIikNCg0KICAgIHRyeToNCiAgICAgICAgZnJvbSBjb25maWcgaW1wb3J0IERFRkFVTFRfTExNX01PREVMX1JFU0VBUkNIDQoNCiAgICAgICAgcmV0dXJuIERFRkFVTFRfTExNX01PREVMX1JFU0VBUkNIDQoNCiAgICBleGNlcHQgRXhjZXB0aW9uOg0KICAgICAgICBwYXNzDQoNCiAgICByZXR1cm4gb3MuZ2V0ZW52KCJERUZBVUxUX0xMTV9NT0RFTCIsICJncHQtNG8tbWluaSIpDQoNCg0KZGVmIF9idWlsZF9wcm9tcHQocGFwZXJfY29udGVudCwgZnJhbWV3b3JrOiBzdHIpIC0+IHN0cjoNCiAgICAiIiJCdWlsZCB0aGUgdXNlciBwcm9tcHQgZnJvbSBwYXBlciBjb250ZW50LiIiIg0KDQogICAgcGFydHMgPSBbXQ0KDQogICAgcGFydHMuYXBwZW5kKGYiIyBQYXBlcjoge3BhcGVyX2NvbnRlbnQudGl0bGV9IikNCg0KICAgIHBhcnRzLmFwcGVuZChmImFyWGl2IElEOiB7cGFwZXJfY29udGVudC5hcnhpdl9pZH0iKQ0KDQogICAgYXV0aG9ycyA9IHBhcGVyX2NvbnRlbnQuYXV0aG9yc1s6M10NCg0KICAgIHBhcnRzLmFwcGVuZCgNCiAgICAgICAgZiJBdXRob3JzOiB7JywgJy5qb2luKGF1dGhvcnMpfXsnIGV0IGFsLicgaWYgbGVuKHBhcGVyX2NvbnRlbnQuYXV0aG9ycykgPiAzIGVsc2UgJyd9Ig0KICAgICkNCg0KICAgIHBhcnRzLmFwcGVuZChmIlxuIyMgQWJzdHJhY3RcbntwYXBlcl9jb250ZW50LmFic3RyYWN0Wzo1MDBdfSIpDQoNCiAgICBpZiBwYXBlcl9jb250ZW50LmFsZ29yaXRobV9kZXNjcmlwdGlvbnM6DQogICAgICAgIHBhcnRzLmFwcGVuZCgiXG4jIyBBbGdvcml0aG1zXG4iKQ0KDQogICAgICAgIGZvciBpLCBhbGdvIGluIGVudW1lcmF0ZShwYXBlcl9jb250ZW50LmFsZ29yaXRobV9kZXNjcmlwdGlvbnNbOjNdLCAxKToNCiAgICAgICAgICAgIHBhcnRzLmFwcGVuZChmIiMjIyBBbGdvcml0aG0ge2l9XG57YWxnb1s6NTAwXX0iKQ0KDQogICAgaWYgcGFwZXJfY29udGVudC5lcXVhdGlvbnM6DQogICAgICAgIHBhcnRzLmFwcGVuZCgiXG4jIyBLZXkgRXF1YXRpb25zXG4iKQ0KDQogICAgICAgIGZvciBlcSBpbiBwYXBlcl9jb250ZW50LmVxdWF0aW9uc1s6NV06DQogICAgICAgICAgICBwYXJ0cy5hcHBlbmQoZiIkJHtlcX0kJCIpDQoNCiAgICBpZiBwYXBlcl9jb250ZW50LmNsYWltczoNCiAgICAgICAgcGFydHMuYXBwZW5kKCJcbiMjIEtleSBDbGFpbXNcbiIpDQoNCiAgICAgICAgZm9yIGNsYWltIGluIHBhcGVyX2NvbnRlbnQuY2xhaW1zWzo1XToNCiAgICAgICAgICAgIHBhcnRzLmFwcGVuZChmIi0ge2NsYWltWzoyMDBdfSIpDQoNCiAgICBpZiBwYXBlcl9jb250ZW50Lmh5cGVycGFyYW1ldGVyczoNCiAgICAgICAgcGFydHMuYXBwZW5kKCJcbiMjIEh5cGVycGFyYW1ldGVyc1xuIikNCg0KICAgICAgICBmb3IgaywgdiBpbiBwYXBlcl9jb250ZW50Lmh5cGVycGFyYW1ldGVycy5pdGVtcygpOg0KICAgICAgICAgICAgcGFydHMuYXBwZW5kKGYiLSB7a306IHt2fSIpDQoNCiAgICBpZiBwYXBlcl9jb250ZW50LmRhdGFzZXRzOg0KICAgICAgICBwYXJ0cy5hcHBlbmQoZiJcbiMjIERhdGFzZXRzXG57JywgJy5qb2luKHBhcGVyX2NvbnRlbnQuZGF0YXNldHMpfSIpDQoNCiAgICBpZiBwYXBlcl9jb250ZW50Lm1ldGhvZHM6DQogICAgICAgIHBhcnRzLmFwcGVuZCgiXG4jIyBNZXRob2RzXG4iKQ0KDQogICAgICAgIGZvciBtIGluIHBhcGVyX2NvbnRlbnQubWV0aG9kc1s6NV06DQogICAgICAgICAgICBwYXJ0cy5hcHBlbmQoZiItIHttWzoxNTBdfSIpDQoNCiAgICBwYXJ0cy5hcHBlbmQoZiJcbiMjIEZyYW1ld29yazoge2ZyYW1ld29yay51cHBlcigpfSIpDQoNCiAgICBwYXJ0cy5hcHBlbmQoDQogICAgICAgIGYiXG5HZW5lcmF0ZSBhIGNsZWFuIFB5dGhvbiBpbXBsZW1lbnRhdGlvbiBza2VsZXRvbiBpbiB7ZnJhbWV3b3JrLnVwcGVyKCl9LiAiDQogICAgICAgIGYiTWF0Y2ggdGhlIGFsZ29yaXRobSBleGFjdGx5IGFzIGRlc2NyaWJlZC4gIg0KICAgICAgICBmIk91dHB1dCBPTkxZIHRoZSBQeXRob24gY29kZSAobm8gbWFya2Rvd24pLiINCiAgICApDQoNCiAgICByZXR1cm4gIlxuXG4iLmpvaW4ocGFydHMpDQoNCg0KZGVmIF9zdHJpcF9wcm9zZV9zZWNvbmRhcnkoY29kZTogc3RyKSAtPiBzdHI6DQogICAgIiIiU3RyaXAgcHJvc2UgbGluZXMgdXNpbmcgYWxwaGEtcmF0aW8gKyBjb2RlLW1hcmtlciBoZXVyaXN0aWMuDQoNCiAgICBBcHBsaWVkIGFmdGVyIHByaW1hcnkgbWFya2VyLWJhc2VkIHN0cmlwcGluZyBmb3IgbW9kZWxzIChlLmcuIE1pbmlNYXgpDQogICAgdGhhdCBvdXRwdXQgcGxhaW4tdGV4dCBkZXNjcmlwdGlvbnMgd2l0aG91dCBtYXJrZG93biBmZW5jZXMuDQogICAgIiIiDQogICAgbGluZXMgPSBjb2RlLnNwbGl0bGluZXMoa2VlcGVuZHM9VHJ1ZSkNCiAgICByZXN1bHQgPSBbXQ0KICAgIGZvciBzIGluIGxpbmVzOg0KICAgICAgICBzdHJpcHBlZCA9IHMubHN0cmlwKCkNCiAgICAgICAgdG90YWwgPSBsZW4oc3RyaXBwZWQucnN0cmlwKCJcclxuIikpDQogICAgICAgIGlmIHRvdGFsID09IDA6DQogICAgICAgICAgICByZXN1bHQuYXBwZW5kKHMpDQogICAgICAgICAgICBjb250aW51ZQ0KICAgICAgICBhbHBoYSA9IHN1bShjLmlzYWxwaGEoKSBmb3IgYyBpbiBzdHJpcHBlZCkNCiAgICAgICAgcmF0aW8gPSBhbHBoYSAvIHRvdGFsIGlmIHRvdGFsID4gMCBlbHNlIDANCiAgICAgICAgbWFya2VycyA9IHNldCgnKCl7fT1bXTxAIyInKQ0KICAgICAgICBoYXNfbWFya2VyID0gYW55KGMgaW4gbWFya2VycyBmb3IgYyBpbiBzdHJpcHBlZCkNCiAgICAgICAgaXNfaW1wb3J0ID0gc3RyaXBwZWQuc3RhcnRzd2l0aCgiaW1wb3J0ICIpIG9yIHN0cmlwcGVkLnN0YXJ0c3dpdGgoImZyb20gIikNCiAgICAgICAgaXNfcHlfa3cgPSByZS5tYXRjaCgNCiAgICAgICAgICAgIHIiXihjbGFzcyB8ZGVmIHxhc3luYyB8QHxpZiB8ZWxpZiB8Zm9yIHx3aGlsZSB8d2l0aCB8dHJ5OnxleGNlcHQ6fGZpbmFsbHk6fHJhaXNlIHxyZXR1cm4gfHlpZWxkIHxwYXNzIHxicmVhayB8Y29udGludWUgfGFzc2VydCB8aW1wb3J0IHxmcm9tIHwjfCQpIiwNCiAgICAgICAgICAgIHN0cmlwcGVkLA0KICAgICAgICApDQogICAgICAgIGlmIHRvdGFsID4gMTAgYW5kIHJhdGlvID4gMC43NSBhbmQgbm90IGhhc19tYXJrZXIgYW5kIG5vdCBpc19pbXBvcnQgYW5kIG5vdCBpc19weV9rdzoNCiAgICAgICAgICAgIGNvbnRpbnVlICAjIGRyb3AgcHJvc2UgbGluZQ0KICAgICAgICByZXN1bHQuYXBwZW5kKHMpDQogICAgcmV0dXJuICIiLmpvaW4ocmVzdWx0KQ0KDQoNCmRlZiBzYXZlX2NvZGUoY29kZTogc3RyLCBvdXRwdXRfZGlyOiBQYXRoLCBtb2R1bGVfbmFtZTogc3RyID0gIm1vZGVsIikgLT4gUGF0aDoNCiAgICAiIiJTYXZlIGdlbmVyYXRlZCBjb2RlIHRvIGEgZmlsZSwgc3RyaXBwaW5nIG1hcmtkb3duIGNvZGUtYmxvY2sgd3JhcHBlcnMuIiIiDQogICAgaW1wb3J0IHJlDQoNCiAgICAjIFN0cmlwIHRyaXBsZS1iYWNrdGljayBtYXJrZG93biB3cmFwcGVyczogYGBgcHl0aG9uIC4uLiBgYGAgb3IgYGBgIC4uLiBgYGANCiAgICBjb2RlID0gcmUuc3ViKHIiXlxzKmBgYCg/OnB5dGhvbik/XHMqXG4iLCAiIiwgY29kZSwgZmxhZ3M9cmUuTVVMVElMSU5FKQ0KICAgIGNvZGUgPSByZS5zdWIociJcblxzKmBgYFxzKlxuIiwgIlxuIiwgY29kZSkNCg0KICAgICMgU3RyaXAgdGhpbmtpbmcvcmVhc29uaW5nIGJsb2NrczogYW5jaG9yIHRvIGNvZGUtYmxvY2sgb3BlbmVyIHRvIGF2b2lkDQogICAgIyBpbnRlcm1lZGlhdGUgZGVsaW1pdGVycyAoZS5nLiDliIAgaW5zaWRlIHRoZSB0aGlua2luZyB0ZXh0KSBzdG9wcGluZyB0aGUNCiAgICAjIG5vbi1ncmVlZHkgbWF0Y2ggZWFybHkNCiAgICBjb2RlID0gcmUuc3ViKHIi5Y675oOzW1xzXFNdKj9gYGBweXRob25cbiIsICIiLCBjb2RlKQ0KICAgIGNvZGUgPSByZS5zdWIociI8dGhpbms+W1xzXFNdKj9gYGBweXRob25cbiIsICIiLCBjb2RlKQ0KDQogICAgIyBIZXVyaXN0aWMgc3RyaXAgZm9yIG1vZGVscyAoZS5nLiBNaW5pTWF4KSB0aGF0IG91dHB1dCBwbGFpbi10ZXh0DQogICAgIyBkZXNjcmlwdGlvbiBwYXJhZ3JhcGhzIEJFRk9SRSB0aGUgYWN0dWFsIFB5dGhvbiBjb2RlIHdpdGhvdXQgYW55DQogICAgIyBtYXJrZG93biBmZW5jZXMuICBEZXRlY3QgdGhlIGZpcnN0IGxpbmUgdGhhdCBzdGFydHMgd2l0aCBhIFB5dGhvbg0KICAgICMgY29uc3RydWN0IChpbXBvcnQsIGNsYXNzLCBkZWYsIGFzeW5jLCBALCAjLCAnJycsICIiIiwgaWYgX19uYW1lX18sIHBhc3MpDQogICAgIyBhbmQgZGlzY2FyZCBldmVyeXRoaW5nIGJlZm9yZSBpdC4NCiAgICBsaW5lcyA9IGNvZGUuc3BsaXRsaW5lcyhrZWVwZW5kcz1UcnVlKQ0KICAgIGZpcnN0X2NvZGVfbGluZSA9IE5vbmUNCiAgICBmb3IgaSwgbGluZSBpbiBlbnVtZXJhdGUobGluZXMpOg0KICAgICAgICBzdHJpcHBlZCA9IGxpbmUubHN0cmlwKCkNCiAgICAgICAgaWYgcmUubWF0Y2goDQogICAgICAgICAgICByIl4oaW1wb3J0IHxmcm9tIHxjbGFzcyB8ZGVmIHxhc3luYyB8I3xAfCINCiAgICAgICAgICAgIHInIiIifFwnXCdcJ3xpZiBfX25hbWVfXyA9PSB8ZWxpZiB8cGFzcyB8Zm9yIHx3aGlsZSB8d2l0aCB8dHJ5OnxleGNlcHQ6fGZpbmFsbHk6fHJhaXNlIHxyZXR1cm4gfCcNCiAgICAgICAgICAgIHIiQGRhdGFjbGFzcykiLA0KICAgICAgICAgICAgc3RyaXBwZWQsDQogICAgICAgICk6DQogICAgICAgICAgICBmaXJzdF9jb2RlX2xpbmUgPSBpDQogICAgICAgICAgICBicmVhaw0KDQogICAgaWYgZmlyc3RfY29kZV9saW5lIGlzIG5vdCBOb25lIGFuZCBmaXJzdF9jb2RlX2xpbmUgPiAwOg0KICAgICAgICAjIE9ubHkgc3RyaXAgaWYgd2UgcmVtb3ZlZCBtZWFuaW5nZnVsIHByb3NlIChtb3JlIHRoYW4gMSBsaW5lIG9mIHRleHQpLg0KICAgICAgICAjIFVzaW5nID4gMSAobm90ID4gMykgc28gdGhhdCBldmVuICJEZXNjcmlwdGlvbiB0ZXh0XG5cbmltcG9ydCB0b3JjaCIgZ2V0cyBjbGVhbmVkLg0KICAgICAgICBpZiBmaXJzdF9jb2RlX2xpbmUgPiAwOg0KICAgICAgICAgICAgY29kZSA9ICIiLmpvaW4obGluZXNbZmlyc3RfY29kZV9saW5lOl0pDQogICAgICAgIGVsc2U6DQogICAgICAgICAgICBjb2RlID0gIiIuam9pbihsaW5lcykNCg0KICAgICMgU3RyaXAgZnJlZSB0ZXh0IGFwcGVuZGVkIGFmdGVyIHZhbGlkIFB5dGhvbiBlbnRyeSBwb2ludCDigJQgTExNIHNvbWV0aW1lcw0KICAgICMgd3JpdGVzIGEgZGVzY3JpcHRpb24gYWZ0ZXIgYGlmIF9fbmFtZV9fID09ICJfX21haW5fXyI6IG1haW4oKWANCiAgICBjb2RlID0gcmUuc3ViKA0KICAgICAgICByJ1xuaWYgX19uYW1lX18gPT0gIl9fbWFpbl9fIjpccyptYWluXChcKVxzKltcd1xXXSokJywgIiIsIGNvZGUsIGZsYWdzPXJlLk1VTFRJTElORQ0KICAgICkNCiAgICBjb2RlID0gX3N0cmlwX3Byb3NlX3NlY29uZGFyeShjb2RlKQ0KDQogICAgb3V0cHV0X2Rpci5ta2RpcihwYXJlbnRzPVRydWUsIGV4aXN0X29rPVRydWUpDQogICAgb3V0X3BhdGggPSBvdXRwdXRfZGlyIC8gZiJ7bW9kdWxlX25hbWV9LnB5Ig0KICAgIG91dF9wYXRoLndyaXRlX3RleHQoY29kZS5zdHJpcCgpLCBlbmNvZGluZz0idXRmLTgiKQ0KICAgIHJldHVybiBvdXRfcGF0aA0K
+"""
+
+
+Code Generator — LLM generate code skeleton from parsed paper content.
+
+
+
+
+
+Generates:
+
+
+- Implementation skeleton matching the paper's algorithm
+
+
+- docstrings with paper citation
+
+
+- Basic function signatures matching the described API
+
+
+"""
+
+
+
+
+
+from __future__ import annotations
+
+import re
+
+
+from pathlib import Path
+
+
+from typing import Optional
+
+
+
+
+
+from llm.client import call_llm_chat_completions
+
+
+
+
+
+
+
+
+# System prompt for code generation from paper
+
+
+CODE_GEN_SYSTEM = """You are an expert ML/AI researcher and Python programmer.
+
+Given a research paper's structured content, generate a clean, runnable Python implementation.
+
+CRITICAL RULES:
+1. EVERY class body must contain at least one statement (pass or a real implementation).
+2. EVERY function body must contain at least one statement (pass or a real implementation).
+3. NEVER leave a class or function with only a comment and no body.
+4. Use pass only when truly no implementation is possible; never use it as a placeholder.
+5. Output a SINGLE valid Python file content (no markdown code blocks).
+6. Every function must have a docstring citing the paper.
+7. Include a main() function with a usage example.
+8. Use type hints on all function signatures.
+9. Include assertions for key preconditions from the paper.
+10. Generate realistic placeholder implementations for LLM-related parts.
+"""
+
+
+
+
+
+
+
+
+def generate_code(
+
+
+    paper_content,
+
+
+    framework: str = "pytorch",
+
+
+    model_name: Optional[str] = None,
+
+
+) -> str:
+
+
+    """Generate code skeleton from parsed paper content.
+
+
+
+
+
+    Args:
+
+
+        paper_content: PaperContent from paper_parser
+
+
+        framework: "pytorch" | "jax" | "numpy"
+
+
+        model_name: Override LLM model name
+
+
+
+
+
+    Returns:
+
+
+        Python code as string
+
+
+    """
+
+
+    model = model_name or _get_default_model()
+
+
+    prompt = _build_prompt(paper_content, framework)
+
+
+
+
+
+    result = call_llm_chat_completions(
+
+
+        messages=[{"role": "user", "content": prompt}],
+
+
+        model=model,
+
+
+        system_prompt=CODE_GEN_SYSTEM,
+
+
+        timeout=300,
+
+
+        use_cache=True,
+
+
+    )
+
+
+
+
+
+    # Clean markdown code blocks if LLM wrapped in them
+
+
+    result = result.strip()
+
+    # Strip thinking/reasoning blocks that some models emit before code
+    result = re.sub(r'^去想[\s\S]*?```python\n', '', result).strip()
+    result = re.sub(r'^<think>[\s\S]*?```python\n', '', result).strip()
+
+
+
+    if result.startswith("```python"):
+        result = result[7:]
+
+
+    if result.startswith("```"):
+
+
+        result = result[3:]
+
+
+    if result.endswith("```"):
+
+
+        result = result[:-3]
+
+
+    result = result.strip()
+
+
+
+
+
+    return result
+
+
+
+
+
+
+
+
+def _get_default_model() -> str:
+
+    """Get default model from config or environment.
+
+
+
+    When MiniMax API is detected (via MINIMAX_CN_BASE_URL or hermes config),
+
+    use MiniMax model; otherwise fall back to gpt-4o-mini.
+
+    """
+
+    import os
+
+    from pathlib import Path as P
+
+
+
+    # Check if hermes config has MiniMax
+
+    hermes_env = P.home() / ".hermes" / ".env"
+
+    minimax_detected = False
+
+    if hermes_env.exists():
+
+        for line in hermes_env.read_text(encoding="utf-8").splitlines():
+
+            line = line.strip()
+
+            if "=" in line and not line.startswith("#"):
+
+                k, _ = line.split("=", 1)
+
+                if k in ("MINIMAX_CN_API_KEY", "MINIMAX_CN_BASE_URL"):
+
+                    minimax_detected = True
+
+                    break
+
+
+
+    if minimax_detected:
+        # Set env vars so call_llm_chat_completions uses the right API
+        if not os.getenv("MINIMAX_BASE_URL"):
+            os.environ["MINIMAX_BASE_URL"] = os.getenv("MINIMAX_CN_BASE_URL", "https://api.minimaxi.com/v1")
+        if not os.getenv("MINIMAX_API_KEY"):
+            # Read from hermes .env
+            hermes_env_path = P.home() / ".hermes" / ".env"
+            if hermes_env_path.exists():
+                for line in hermes_env_path.read_text(encoding="utf-8").splitlines():
+                    line = line.strip()
+                    if line.startswith("MINIMAX_CN_API_KEY="):
+                        _, val = line.split("=", 1)
+                        os.environ["MINIMAX_API_KEY"] = val.strip()
+                        break
+        return os.getenv("AIROS_DEFAULT_MODEL_MINIMAX", "minimax-m2.7-highspeed")
+
+
+    try:
+
+        from config import DEFAULT_LLM_MODEL_RESEARCH
+
+        return DEFAULT_LLM_MODEL_RESEARCH
+
+    except Exception:
+
+        pass
+
+    return os.getenv("DEFAULT_LLM_MODEL", "gpt-4o-mini")
+
+
+
+
+
+
+
+def _build_prompt(paper_content, framework: str) -> str:
+
+
+    """Build the user prompt from paper content."""
+
+
+    parts = []
+
+
+
+
+
+    parts.append(f"# Paper: {paper_content.title}")
+
+
+    parts.append(f"arXiv ID: {paper_content.arxiv_id}")
+
+
+    authors = paper_content.authors[:3]
+
+
+    parts.append(f"Authors: {', '.join(authors)}{' et al.' if len(paper_content.authors) > 3 else ''}")
+
+
+    parts.append(f"\n## Abstract\n{paper_content.abstract[:500]}")
+
+
+
+
+
+    if paper_content.algorithm_descriptions:
+
+
+        parts.append("\n## Algorithms\n")
+
+
+        for i, algo in enumerate(paper_content.algorithm_descriptions[:3], 1):
+
+
+            parts.append(f"### Algorithm {i}\n{algo[:500]}")
+
+
+
+
+
+    if paper_content.equations:
+
+
+        parts.append("\n## Key Equations\n")
+
+
+        for eq in paper_content.equations[:5]:
+
+
+            parts.append(f"$${eq}$$")
+
+
+
+
+
+    if paper_content.claims:
+
+
+        parts.append("\n## Key Claims\n")
+
+
+        for claim in paper_content.claims[:5]:
+
+
+            parts.append(f"- {claim[:200]}")
+
+
+
+
+
+    if paper_content.hyperparameters:
+
+
+        parts.append("\n## Hyperparameters\n")
+
+
+        for k, v in paper_content.hyperparameters.items():
+
+
+            parts.append(f"- {k}: {v}")
+
+
+
+
+
+    if paper_content.datasets:
+
+
+        parts.append(f"\n## Datasets\n{', '.join(paper_content.datasets)}")
+
+
+
+
+
+    if paper_content.methods:
+
+
+        parts.append("\n## Methods\n")
+
+
+        for m in paper_content.methods[:5]:
+
+
+            parts.append(f"- {m[:150]}")
+
+
+
+
+
+    parts.append(f"\n## Framework: {framework.upper()}")
+
+
+    parts.append(f"\nGenerate a clean Python implementation skeleton in {framework.upper()}. "
+
+
+                 f"Match the algorithm exactly as described. "
+
+
+                 f"Output ONLY the Python code (no markdown).")
+
+
+
+
+
+    return "\n\n".join(parts)
+
+
+
+
+
+
+
+
+
+def _strip_prose_secondary(code: str) -> str:
+    """Strip prose lines using alpha-ratio + code-marker heuristic.
+
+    Applied after primary marker-based stripping for models (e.g. MiniMax)
+    that output plain-text descriptions without markdown fences.
+    """
+    lines = code.splitlines(keepends=True)
+    result = []
+    for s in lines:
+        stripped = s.lstrip()
+        total = len(stripped.rstrip('\r\n'))
+        if total == 0:
+            result.append(s)
+            continue
+        alpha = sum(c.isalpha() for c in stripped)
+        ratio = alpha / total if total > 0 else 0
+        markers = set('(){}=[]<@#"')
+        has_marker = any(c in markers for c in stripped)
+        is_import = stripped.startswith('import ') or stripped.startswith('from ')
+        is_py_kw = re.match(
+            r'^(class |def |async |@|if |elif |for |while |with |try:|except:|finally:|raise |return |yield |pass |break |continue |assert |import |from |#|$)',
+            stripped)
+        if total > 10 and ratio > 0.75 and not has_marker and not is_import and not is_py_kw:
+            continue  # drop prose line
+        result.append(s)
+    return "".join(result)
+
+
+def save_code(code: str, output_dir: Path, module_name: str = "model") -> Path:
+    """Save generated code to a file, stripping markdown code-block wrappers."""
+    import re
+
+    # Strip triple-backtick markdown wrappers: ```python ... ``` or ``` ... ```
+    code = re.sub(r'^\s*```(?:python)?\s*\n', '', code, flags=re.MULTILINE)
+    code = re.sub(r'\n\s*```\s*\n', '\n', code)
+
+    # Strip thinking/reasoning blocks: anchor to code-block opener to avoid
+    # intermediate delimiters (e.g. 刀 inside the thinking text) stopping the
+    # non-greedy match early
+    code = re.sub(r'去想[\s\S]*?```python\n', '', code)
+    code = re.sub(r'<think>[\s\S]*?```python\n', '', code)
+
+    # Heuristic strip for models (e.g. MiniMax) that output plain-text
+    # description paragraphs BEFORE the actual Python code without any
+    # markdown fences.  Detect the first line that starts with a Python
+    # construct (import, class, def, async, @, #, ''', """, if __name__, pass)
+    # and discard everything before it.
+    lines = code.splitlines(keepends=True)
+    first_code_line = None
+    for i, line in enumerate(lines):
+        stripped = line.lstrip()
+        if re.match(
+            r'^(import |from |class |def |async |#|@|'
+            r'"""|\'\'\'|if __name__ == |elif |pass |for |while |with |try:|except:|finally:|raise |return |'
+            r'@dataclass)',
+            stripped,
+        ):
+            first_code_line = i
+            break
+
+    if first_code_line is not None and first_code_line > 0:
+        # Only strip if we removed meaningful prose (more than 1 line of text).
+        # Using > 1 (not > 3) so that even "Description text\n\nimport torch" gets cleaned.
+        if first_code_line > 0:
+            code = "".join(lines[first_code_line:])
+        else:
+            code = "".join(lines)
+
+    # Strip free text appended after valid Python entry point — LLM sometimes
+    # writes a description after `if __name__ == "__main__": main()`
+    code = re.sub(r'\nif __name__ == "__main__":\s*main\(\)\s*[\w\W]*$', '', code, flags=re.MULTILINE)
+    code = _strip_prose_secondary(code)
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    out_path = output_dir / f"{module_name}.py"
+    out_path.write_text(code.strip(), encoding="utf-8")
+    return out_path
+
+

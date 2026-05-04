@@ -1,1 +1,368 @@
-IiIiQ0xJIGNvbW1hbmQ6IGh5cG90aGVzaXplIOKAlCBHZW5lcmF0ZSByZXNlYXJjaCBoeXBvdGhlc2VzIGZyb20gZ2Fwcy4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBhcmdwYXJzZQpmcm9tIHR5cGluZyBpbXBvcnQgQW55LCBEaWN0LCBMaXN0Cgpmcm9tIGNsaS5fc2hhcmVkIGltcG9ydCBnZXRfZGIsIHByaW50X2luZm8KZnJvbSBjbGkud2FycCBpbXBvcnQgV2FycEJsb2Nrcwpmcm9tIGxsbS5oeXBvdGhlc2lzX2dlbmVyYXRvciBpbXBvcnQgSHlwb3RoZXNpc0dlbmVyYXRvcgoKCmRlZiBfYnVpbGRfaHlwb3RoZXNpemVfcGFyc2VyKHN1YnBhcnNlcnMpIC0+IGFyZ3BhcnNlLkFyZ3VtZW50UGFyc2VyOgogICAgIiIiQnVpbGQgdGhlIGh5cG90aGVzaXplIHN1YmNvbW1hbmQgcGFyc2VyLiIiIgogICAgcCA9IHN1YnBhcnNlcnMuYWRkX3BhcnNlcigKICAgICAgICAiaHlwb3RoZXNpemUiLAogICAgICAgIGhlbHA9IkdlbmVyYXRlIHRlc3RhYmxlIHJlc2VhcmNoIGh5cG90aGVzZXMgZnJvbSBnYXBzIiwKICAgICAgICBkZXNjcmlwdGlvbj0iR2VuZXJhdGUgcmVzZWFyY2ggaHlwb3RoZXNlcyB3aXRoIGV4cGVyaW1lbnQgZGVzaWducyBhbmQgcmlzayBhc3Nlc3NtZW50cy4iLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgInRvcGljIiwKICAgICAgICBuYXJncz0iPyIsCiAgICAgICAgZGVmYXVsdD1Ob25lLAogICAgICAgIGhlbHA9IlJlc2VhcmNoIHRvcGljIGZvciBoeXBvdGhlc2lzIGdlbmVyYXRpb24iLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tZ2FwIiwKICAgICAgICAiLWciLAogICAgICAgIHR5cGU9c3RyLAogICAgICAgIGRlZmF1bHQ9IiIsCiAgICAgICAgaGVscD0iR2FwIGNvbnRleHQgZnJvbSBnYXAgYW5hbHlzaXMiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tdHJlbmQiLAogICAgICAgICItdCIsCiAgICAgICAgdHlwZT1zdHIsCiAgICAgICAgZGVmYXVsdD0iIiwKICAgICAgICBoZWxwPSJUcmVuZCBjb250ZXh0IGZyb20gdHJlbmQgYW5hbHlzaXMiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tc3RvcnkiLAogICAgICAgICItcyIsCiAgICAgICAgdHlwZT1zdHIsCiAgICAgICAgZGVmYXVsdD0iIiwKICAgICAgICBoZWxwPSJTdG9yeSBjb250ZXh0IGZyb20gc3Rvcnkgd2VhdmluZyIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1uby1sbG0iLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iRGlzYWJsZSBMTE0gZW5oYW5jZW1lbnQiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tY3JlYXRpdmUiLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iR2VuZXJhdGUgY3JlYXRpdmUgY3Jvc3MtZG9tYWluIGh5cG90aGVzZXMiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tanNvbiIsCiAgICAgICAgIi1qIiwKICAgICAgICBhY3Rpb249InN0b3JlX3RydWUiLAogICAgICAgIGhlbHA9Ik91dHB1dCBhcyBKU09OIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLW1vZGVsIiwKICAgICAgICAiLU0iLAogICAgICAgIHR5cGU9c3RyLAogICAgICAgIGRlZmF1bHQ9Tm9uZSwKICAgICAgICBoZWxwPSJMTE0gbW9kZWwgdG8gdXNlIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLXRvcCIsCiAgICAgICAgIi1uIiwKICAgICAgICB0eXBlPWludCwKICAgICAgICBkZWZhdWx0PTUsCiAgICAgICAgaGVscD0iTnVtYmVyIG9mIGh5cG90aGVzZXMgdG8gZ2VuZXJhdGUgKGRlZmF1bHQ6IDUpIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWxlYW4iLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iVmVyaWZ5IGVhY2ggaHlwb3RoZXNpcyB3aXRoIExlYW4gNCB0aGVvcmVtIHByb3ZlciIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1uby1sbG0tdmVyaWZ5IiwKICAgICAgICBhY3Rpb249InN0b3JlX3RydWUiLAogICAgICAgIGhlbHA9IlNraXAgTExNIHRyYW5zbGF0aW9uIGluIExlYW4gdmVyaWZpY2F0aW9uICh0ZW1wbGF0ZSBvbmx5KSIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS12YWxpZGF0ZSIsCiAgICAgICAgdHlwZT1zdHIsCiAgICAgICAgZGVmYXVsdD1Ob25lLAogICAgICAgIGRlc3Q9InZhbGlkYXRlX2lkIiwKICAgICAgICBtZXRhdmFyPSJIWVBPVEhFU0lTX0lEIiwKICAgICAgICBoZWxwPSJWYWxpZGF0ZSBhIGh5cG90aGVzaXMgYnkgSUQ6IHNob3cgZXhwZXJpbWVudCByZXN1bHRzIGFuZCB2ZXJkaWN0IiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWxpc3QiLAogICAgICAgICItbCIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBkZXN0PSJsaXN0X2h5cG90aGVzZXMiLAogICAgICAgIGhlbHA9Ikxpc3QgYWxsIGh5cG90aGVzZXMgd2l0aCB0aGVpciB2ZXJkaWN0IHN0YXR1cyIsCiAgICApCiAgICByZXR1cm4gcCAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCgpkZWYgX3J1bl9oeXBvdGhlc2l6ZShhcmdzOiBhcmdwYXJzZS5OYW1lc3BhY2UpIC0+IGludDoKICAgICIiIlJ1biBoeXBvdGhlc2lzIGdlbmVyYXRpb24gY29tbWFuZC4iIiIKICAgIGRiID0gZ2V0X2RiKCkKICAgIGRiLmluaXQoKQoKICAgICMgVmFsaWRhdGUgbW9kZTogY2hlY2sgaHlwb3RoZXNpcyBzdGF0dXMKICAgIGlmIGFyZ3MudmFsaWRhdGVfaWQ6CiAgICAgICAgcmV0dXJuIF9ydW5fdmFsaWRhdGVfaHlwb3RoZXNpcyhhcmdzLnZhbGlkYXRlX2lkKQoKICAgICMgTGlzdCBtb2RlOiBzaG93IGFsbCBoeXBvdGhlc2VzIHdpdGggdmVyZGljdHMKICAgIGlmIGFyZ3MubGlzdF9oeXBvdGhlc2VzOgogICAgICAgIHJldHVybiBfcnVuX2xpc3RfaHlwb3RoZXNlcygpCgogICAgZ2VuZXJhdG9yID0gSHlwb3RoZXNpc0dlbmVyYXRvcihkYj1kYikKCiAgICBpZiBub3QgYXJncy50b3BpYzoKICAgICAgICBwcmludCgi4p2MIOivt+aPkOS+myB0b3BpYyIpCiAgICAgICAgcmV0dXJuIDEKCiAgICBwcmludF9pbmZvKGYi8J+OryBHZW5lcmF0aW5nIGh5cG90aGVzZXMgZm9yOiB7YXJncy50b3BpY30iKQoKICAgIHJlc3VsdCA9IGdlbmVyYXRvci5nZW5lcmF0ZSgKICAgICAgICB0b3BpYz1hcmdzLnRvcGljLAogICAgICAgIGdhcF9jb250ZXh0PWFyZ3MuZ2FwLAogICAgICAgIHRyZW5kX2NvbnRleHQ9YXJncy50cmVuZCwKICAgICAgICBzdG9yeV9jb250ZXh0PWFyZ3Muc3RvcnksCiAgICAgICAgdXNlX2xsbT1ub3QgYXJncy5ub19sbG0sCiAgICAgICAgbW9kZWw9YXJncy5tb2RlbCwKICAgICAgICBjcmVhdGl2ZT1hcmdzLmNyZWF0aXZlLAogICAgKQoKICAgICMgT3B0aW9uYWw6IExlYW4gNCB2ZXJpZmljYXRpb24KICAgIGxlYW5fcmVzdWx0cyA9IHt9CiAgICBpZiBhcmdzLmxlYW46CiAgICAgICAgbGVhbl9yZXN1bHRzID0gX3ZlcmlmeV9oeXBvdGhlc2VzX3dpdGhfbGVhbigKICAgICAgICAgICAgcmVzdWx0Lmh5cG90aGVzZXMsIG5vdCBhcmdzLm5vX2xsbV92ZXJpZnksIGFyZ3MubW9kZWwKICAgICAgICApCgogICAgaWYgYXJncy5qc29uOgogICAgICAgIHByaW50KGdlbmVyYXRvci5yZW5kZXJfanNvbihyZXN1bHQpKQogICAgZWxzZToKICAgICAgICBwcmludCgpCiAgICAgICAgcHJpbnQoZ2VuZXJhdG9yLnJlbmRlcl9yZXN1bHQocmVzdWx0KSkKICAgICAgICBpZiBsZWFuX3Jlc3VsdHM6CiAgICAgICAgICAgIHByaW50KF9yZW5kZXJfbGVhbl9yZXN1bHRzKGxlYW5fcmVzdWx0cykpCgogICAgcmV0dXJuIDAKCgpkZWYgX3J1bl9saXN0X2h5cG90aGVzZXMoKSAtPiBpbnQ6CiAgICAiIiJMaXN0IGFsbCBoeXBvdGhlc2VzIHdpdGggdGhlaXIgdmVyZGljdCBzdGF0dXMuIiIiCiAgICBmcm9tIGxsbS5pbnNpZ2h0X2V2b2x1dGlvbiBpbXBvcnQgRXZvbHV0aW9uVHJhY2tlcgogICAgZnJvbSBsbG0uZXhwZXJpbWVudF90cmFja2VyIGltcG9ydCBFeHBlcmltZW50VHJhY2tlcgogICAgZnJvbSByaWNoLmNvbnNvbGUgaW1wb3J0IENvbnNvbGUKCiAgICBldiA9IEV2b2x1dGlvblRyYWNrZXIoKQogICAgdHJhY2tlciA9IEV4cGVyaW1lbnRUcmFja2VyKCkKICAgIGMgPSBDb25zb2xlKCkKCiAgICAjIENvbGxlY3QgYWxsIGh5cG90aGVzaXNfaWRzIGZyb20gZXZlbnRzCiAgICBldmVudHMgPSBldi5nZXRfcmVjZW50X2V2ZW50cyhsaW1pdD0xMDAwMCkKICAgIGh5cG90aGVzaXNfaWRzID0gc2V0KCkKICAgIGh5cG90aGVzaXNfdG9waWNzID0ge30gICMgaHlwb3RoZXNpc19pZCAtPiB0b3BpYyAoZnJvbSBoeXBvdGhlc2l6ZWQgZXZlbnRzKQogICAgZm9yIGUgaW4gZXZlbnRzOgogICAgICAgIGlmIGUuaHlwb3RoZXNpc19pZDoKICAgICAgICAgICAgaHlwb3RoZXNpc19pZHMuYWRkKGUuaHlwb3RoZXNpc19pZCkKICAgICAgICAgICAgaWYgaGFzYXR0cihlLmFjdGlvbiwgInZhbHVlIikgYW5kIGUuYWN0aW9uLnZhbHVlID09ICJoeXBvdGhlc2l6ZWQiOgogICAgICAgICAgICAgICAgaHlwb3RoZXNpc190b3BpY3NbZS5oeXBvdGhlc2lzX2lkXSA9IGUudG9waWMgb3IgZS5nYXBfdGl0bGUgb3IgInVua25vd24iCgogICAgaWYgbm90IGh5cG90aGVzaXNfaWRzOgogICAgICAgIGMucHJpbnQoCiAgICAgICAgICAgIFdhcnBCbG9ja3MucGFuZWwoCiAgICAgICAgICAgICAgICAiTm8gSHlwb3RoZXNlcyIsCiAgICAgICAgICAgICAgICAiWyM4RThFOEVdUnVuIGBhaXJvcyBoeXBvdGhlc2l6ZSA8dG9waWM+YCB0byBnZW5lcmF0ZSBoeXBvdGhlc2VzWy9dIiwKICAgICAgICAgICAgKQogICAgICAgICkKICAgICAgICByZXR1cm4gMAoKICAgICMgR3JvdXAgZXhwZXJpbWVudHMgYnkgaHlwb3RoZXNpc19pZCB0byBnZXQgbmFtZXMKICAgIGV4cGVyaW1lbnRzID0gdHJhY2tlci5saXN0X2V4cGVyaW1lbnRzKCkKICAgIGV4cF9ieV9oaWQ6IERpY3Rbc3RyLCBMaXN0W0FueV1dID0ge30KICAgIGZvciBlIGluIGV4cGVyaW1lbnRzOgogICAgICAgIGlmIGUuaHlwb3RoZXNpc19pZDoKICAgICAgICAgICAgaWYgZS5oeXBvdGhlc2lzX2lkIG5vdCBpbiBleHBfYnlfaGlkOgogICAgICAgICAgICAgICAgZXhwX2J5X2hpZFtlLmh5cG90aGVzaXNfaWRdID0gW10KICAgICAgICAgICAgZXhwX2J5X2hpZFtlLmh5cG90aGVzaXNfaWRdLmFwcGVuZChlKQoKICAgICMgU29ydCBieSBzdGF0dXM6IFZBTElEQVRFRCBmaXJzdCwgdGhlbiBSRUpFQ1RFRCwgTUlYRUQsIElOQ09OQ0xVU0lWRQogICAgc3RhdHVzX29yZGVyID0geyJWQUxJREFURUQiOiAwLCAiUkVKRUNURUQiOiAxLCAiTUlYRUQiOiAyLCAiSU5DT05DTFVTSVZFIjogM30KCiAgICByb3dzID0gW10KICAgIGZvciBoaWQgaW4gc29ydGVkKGh5cG90aGVzaXNfaWRzKToKICAgICAgICBldnRzID0gZXYuZ2V0X2h5cG90aGVzaXNfZXZlbnRzKGhpZCkKICAgICAgICB2ZXJkaWN0LCBkZXRhaWwgPSBfY29tcHV0ZV92ZXJkaWN0KGV2dHMpCiAgICAgICAgbmFtZSA9IGV4cF9ieV9oaWQuZ2V0KGhpZCwgW05vbmVdKVswXS5uYW1lIGlmIGV4cF9ieV9oaWQuZ2V0KGhpZCkgZWxzZSAiIgogICAgICAgIG5fZXhwID0gbGVuKGV4cF9ieV9oaWQuZ2V0KGhpZCwgW10pKQogICAgICAgIHJvd3MuYXBwZW5kKChzdGF0dXNfb3JkZXIuZ2V0KHZlcmRpY3QsIDk5KSwgdmVyZGljdCwgZGV0YWlsLCBuYW1lLCBoaWQsIG5fZXhwKSkKCiAgICByb3dzLnNvcnQoKQoKICAgIHN0YXR1c19yb3dzID0gW10KICAgIGZvciBfLCB2ZXJkaWN0LCBkZXRhaWwsIG5hbWUsIGhpZCwgbl9leHAgaW4gcm93czoKICAgICAgICBpY29uID0geyJWQUxJREFURUQiOiAi4pyFIiwgIlJFSkVDVEVEIjogIuKdjCIsICJNSVhFRCI6ICLimqAiLCAiSU5DT05DTFVTSVZFIjogIuKXiyJ9LmdldCgKICAgICAgICAgICAgdmVyZGljdCwgIj8iCiAgICAgICAgKQogICAgICAgIG5hbWVfc2hvcnQgPSAobmFtZVs6NDBdICsgIi4uLiIpIGlmIGxlbihuYW1lKSA+IDQzIGVsc2UgbmFtZQogICAgICAgIChkZXRhaWxbOjQwXSArICIuLi4iKSBpZiBsZW4oZGV0YWlsKSA+IDQzIGVsc2UgZGV0YWlsCiAgICAgICAgc3RhdHVzX3Jvd3MuYXBwZW5kKAogICAgICAgICAgICBbCiAgICAgICAgICAgICAgICBpY29uLAogICAgICAgICAgICAgICAgZiJbI0ZFRkRDMl17dmVyZGljdH1bL10iLAogICAgICAgICAgICAgICAgZiJbI0E1RDVGRV17bmFtZV9zaG9ydH1bL10iIGlmIG5hbWVfc2hvcnQgZWxzZSAiWyM4RThFOEVd4oCUWy9dIiwKICAgICAgICAgICAgICAgIGYiWyNEMEQxRkVde25fZXhwfVsvXSIsCiAgICAgICAgICAgICAgICBmIlsjOEU4RThFXVt7aGlkfV1bL10iLAogICAgICAgICAgICBdCiAgICAgICAgKQoKICAgIGMucHJpbnQoCiAgICAgICAgV2FycEJsb2Nrcy5wYW5lbCgKICAgICAgICAgICAgZiJSZXNlYXJjaCBIeXBvdGhlc2VzIOKAlCBbI0ZGODI3Ml17bGVuKGh5cG90aGVzaXNfaWRzKX1bL10gdG90YWwiLAogICAgICAgICAgICAiWyNBNUQ1RkVdUnVuIGBhaXJvcyBoeXBvdGhlc2l6ZSA8dG9waWM+YCB0byBnZW5lcmF0ZSBoeXBvdGhlc2VzWy9dIiwKICAgICAgICApCiAgICApCiAgICBpZiBzdGF0dXNfcm93czoKICAgICAgICBjLnByaW50KAogICAgICAgICAgICBXYXJwQmxvY2tzLnRhYmxlKAogICAgICAgICAgICAgICAgWyIiLCAiU3RhdHVzIiwgIk5hbWUiLCAiRXhwIiwgIklEIl0sCiAgICAgICAgICAgICAgICBzdGF0dXNfcm93cywKICAgICAgICAgICAgICAgIHRpdGxlPWYiSHlwb3RoZXNlcyAoe2xlbihzdGF0dXNfcm93cyl9KSIsCiAgICAgICAgICAgICkKICAgICAgICApCiAgICBjLnByaW50KCkKICAgIHJldHVybiAwCgoKZGVmIF9ydW5fdmFsaWRhdGVfaHlwb3RoZXNpcyhoeXBvdGhlc2lzX2lkOiBzdHIpIC0+IGludDoKICAgICIiIlZhbGlkYXRlIGEgaHlwb3RoZXNpcyBieSBjaGVja2luZyBsaW5rZWQgZXhwZXJpbWVudCBvdXRjb21lcy4iIiIKICAgIGZyb20gbGxtLmluc2lnaHRfZXZvbHV0aW9uIGltcG9ydCBFdm9sdXRpb25UcmFja2VyCiAgICBmcm9tIGxsbS5leHBlcmltZW50X3RyYWNrZXIgaW1wb3J0IEV4cGVyaW1lbnRUcmFja2VyCgogICAgZXYgPSBFdm9sdXRpb25UcmFja2VyKCkKICAgIHRyYWNrZXIgPSBFeHBlcmltZW50VHJhY2tlcigpCgogICAgZXZlbnRzID0gZXYuZ2V0X2h5cG90aGVzaXNfZXZlbnRzKGh5cG90aGVzaXNfaWQpCiAgICB2ZXJkaWN0LCBkZXRhaWwgPSBfY29tcHV0ZV92ZXJkaWN0KGV2ZW50cykKCiAgICBwcmludChmIvCfjq8gSHlwb3RoZXNpczoge2h5cG90aGVzaXNfaWR9IikKICAgIHByaW50KCkKICAgIHByaW50KGYiICAgdmVyZGljdDoge3ZlcmRpY3R9IikKICAgIHByaW50KGYiICBkZXRhaWw6ICB7ZGV0YWlsfSIpCiAgICBwcmludCgpCgogICAgIyBTaG93IGV4cGVyaW1lbnQgb3V0Y29tZXMKICAgIGV4cGVyaW1lbnRzID0gdHJhY2tlci5saXN0X2V4cGVyaW1lbnRzKCkKICAgIGxpbmtlZCA9IFtlIGZvciBlIGluIGV4cGVyaW1lbnRzIGlmIGUuaHlwb3RoZXNpc19pZCA9PSBoeXBvdGhlc2lzX2lkXQoKICAgIGlmIGxpbmtlZDoKICAgICAgICBwcmludChmIiAgbGlua2VkIGV4cGVyaW1lbnRzOiB7bGVuKGxpbmtlZCl9IikKICAgICAgICBmb3IgZSBpbiBsaW5rZWQ6CiAgICAgICAgICAgIGljb24gPSB7InJ1bm5pbmciOiAi4pqhIiwgImNvbXBsZXRlZCI6ICLinJMiLCAiZmFpbGVkIjogIuKclyJ9LmdldChlLnN0YXR1cywgIj8iKQogICAgICAgICAgICBwcmludChmIiAgICB7aWNvbn0gW3tlLmlkfV0ge2UubmFtZX0gKHtlLnN0YXR1c30pIikKICAgICAgICAgICAgaWYgZS5yZXN1bHRzOgogICAgICAgICAgICAgICAgZm9yIGssIHYgaW4gZS5yZXN1bHRzLml0ZW1zKCk6CiAgICAgICAgICAgICAgICAgICAgcHJpbnQoZiIgICAgICAge2t9OiB7dn0iKQogICAgZWxzZToKICAgICAgICBwcmludCgiICBubyBsaW5rZWQgZXhwZXJpbWVudHMgZm91bmQiKQoKICAgIHByaW50KCkKCiAgICAjIFNob3cgZXZlbnQgdGltZWxpbmUKICAgIGlmIGV2ZW50czoKICAgICAgICBwcmludCgiICBldmVudCB0aW1lbGluZToiKQogICAgICAgIGZvciBldnQgaW4gZXZlbnRzOgogICAgICAgICAgICBpY29uID0gX2FjdGlvbl9pY29uKGV2dC5hY3Rpb24pCiAgICAgICAgICAgIHByaW50KGYiICAgIHtpY29ufSB7ZXZ0LmFjdGlvbi52YWx1ZX0g4oCUIHtldnQudG9waWMgb3IgJyhubyB0b3BpYyknfSIpCgogICAgcmV0dXJuIDAKCgpkZWYgX2NvbXB1dGVfdmVyZGljdChldmVudHMpOgogICAgIiIiQ29tcHV0ZSBWQUxJREFURUQgLyBSRUpFQ1RFRCAvIElOQ09OQ0xVU0lWRSBmcm9tIGV2ZW50cy4iIiIKICAgIGlmIG5vdCBldmVudHM6CiAgICAgICAgcmV0dXJuICJJTkNPTkNMVVNJVkUiLCAibm8gZXhwZXJpbWVudHMgcmVjb3JkZWQiCgogICAgYWN0aW9uX3ZhbHMgPSB7ZS5hY3Rpb24udmFsdWUgaWYgaGFzYXR0cihlLmFjdGlvbiwgInZhbHVlIikgZWxzZSBzdHIoZS5hY3Rpb24pIGZvciBlIGluIGV2ZW50c30KICAgIGhhc19jb21wbGV0ZWQgPSAidmFsaWRhdGVkIiBpbiBhY3Rpb25fdmFscwogICAgaGFzX2ZhaWxlZCA9ICJyZWplY3RlZCIgaW4gYWN0aW9uX3ZhbHMKCiAgICBpZiBoYXNfY29tcGxldGVkIGFuZCBoYXNfZmFpbGVkOgogICAgICAgIHJldHVybiAiTUlYRUQiLCAiYm90aCB2YWxpZGF0ZWQgYW5kIHJlamVjdGVkIGV4cGVyaW1lbnRzIGV4aXN0IgogICAgaWYgaGFzX2NvbXBsZXRlZDoKICAgICAgICByZXR1cm4gIlZBTElEQVRFRCIsICJhbGwgZXhwZXJpbWVudHMgc3VjY2VlZGVkIgogICAgaWYgaGFzX2ZhaWxlZDoKICAgICAgICByZXR1cm4gIlJFSkVDVEVEIiwgImFsbCBleHBlcmltZW50cyBmYWlsZWQiCiAgICByZXR1cm4gIklOQ09OQ0xVU0lWRSIsICJubyBjb21wbGV0ZWQgZXhwZXJpbWVudHMgeWV0IgoKCmRlZiBfYWN0aW9uX2ljb24oYWN0aW9uKToKICAgIHZhbCA9IGFjdGlvbi52YWx1ZSBpZiBoYXNhdHRyKGFjdGlvbiwgInZhbHVlIikgZWxzZSBzdHIoYWN0aW9uKQogICAgcmV0dXJuIHsKICAgICAgICAidmFsaWRhdGVkIjogIuKchSIsCiAgICAgICAgInJlamVjdGVkIjogIuKdjCIsCiAgICAgICAgImh5cG90aGVzaXplZCI6ICLwn5KhIiwKICAgICAgICAidmlld2VkIjogIvCfkYEiLAogICAgICAgICJhY2NlcHRlZCI6ICLwn5GNIiwKICAgICAgICAiZXhwYW5kZWQiOiAi8J+TliIsCiAgICB9LmdldCh2YWwsICLigKIiKQoKCiMg4pSA4pSAIExlYW4gNCBpbnRlZ3JhdGlvbiDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAKCgpkZWYgX3ZlcmlmeV9oeXBvdGhlc2VzX3dpdGhfbGVhbigKICAgIGh5cG90aGVzZXMsCiAgICB1c2VfbGxtOiBib29sLAogICAgbW9kZWw6IHN0ciB8IE5vbmUsCikgLT4gZGljdDoKICAgICIiIlZlcmlmeSBlYWNoIGh5cG90aGVzaXMgd2l0aCBMZWFuIDQuIFJldHVybnMge2h5cG90aGVzaXNfaWQ6IExlYW5WZXJpZmljYXRpb25SZXN1bHR9LiIiIgogICAgZnJvbSBsbG0ubGVhbl92ZXJpZmllciBpbXBvcnQgdmVyaWZ5X2h5cG90aGVzaXMKCiAgICByZXN1bHRzID0ge30KICAgIGZvciBoIGluIGh5cG90aGVzZXM6CiAgICAgICAgdHJ5OgogICAgICAgICAgICByZXN1bHQgPSB2ZXJpZnlfaHlwb3RoZXNpcyhoLCB1c2VfbGxtPXVzZV9sbG0sIG1vZGVsPW1vZGVsKQogICAgICAgICAgICByZXN1bHRzW2guaWRdID0gcmVzdWx0CiAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbjoKICAgICAgICAgICAgcGFzcyAgIyBTa2lwIG9uIGFueSBlcnJvciDigJQgZG9uJ3QgYnJlYWsgaHlwb3RoZXNpcyBnZW5lcmF0aW9uCiAgICByZXR1cm4gcmVzdWx0cwoKCmRlZiBfcmVuZGVyX2xlYW5fcmVzdWx0cyhyZXN1bHRzOiBkaWN0KSAtPiBzdHI6CiAgICAiIiJSZW5kZXIgTGVhbiB2ZXJpZmljYXRpb24gcmVzdWx0cyBhcyBhIGZvcm1hdHRlZCBibG9jay4iIiIKICAgIGlmIG5vdCByZXN1bHRzOgogICAgICAgIHJldHVybiAiIgoKICAgIGZyb20gcmljaC5jb25zb2xlIGltcG9ydCBDb25zb2xlCgogICAgYyA9IENvbnNvbGUoKQoKICAgIGluc3RhbGxfc3RhdHVzLCBfID0gX2dldF9sZWFuX2luc3RhbGxfc3RhdHVzKCkKCiAgICBpZiBpbnN0YWxsX3N0YXR1cyA9PSAibm90X2ZvdW5kIjoKICAgICAgICBwYW5lbCA9IFdhcnBCbG9ja3MucGFuZWwoCiAgICAgICAgICAgICJMZWFuIDQg4oCUIE5vdCBJbnN0YWxsZWQiLAogICAgICAgICAgICAiWyNGRUZEQzJd4pqg77iPICBMZWFuIDQg5pyq5a6J6KOFIOKAlCDot7Pov4flvaLlvI/ljJbpqozor4FbL11cblxuIgogICAgICAgICAgICAiWyNBNUQ1RkVdSW5zdGFsbDpbL10gWyNCNEZBNzJdZWxhbiBkZWZhdWx0IGxlYW5wcm92ZXIvbGVhbjQ6c3RhYmxlWy9dIiwKICAgICAgICApCiAgICAgICAgYy5wcmludChwYW5lbCkKICAgICAgICByZXR1cm4gIiIKCiAgICByb3dzID0gW10KICAgIGZvciBoX2lkLCByZXN1bHQgaW4gcmVzdWx0cy5pdGVtcygpOgogICAgICAgIGljb24gPSB7CiAgICAgICAgICAgICJsMl9wcm92ZW4iOiAi4pyFIiwKICAgICAgICAgICAgImwxX3R5cGVjaGVjayI6ICLwn5+iIiwKICAgICAgICAgICAgImwwX3N5bnRheCI6ICLwn5+hIiwKICAgICAgICAgICAgImwwX2ZhaWxlZCI6ICLinYwiLAogICAgICAgIH0uZ2V0KHJlc3VsdC5sZXZlbC52YWx1ZSwgIj8iKQogICAgICAgIG5vdGVzID0gcmVzdWx0LnRyYW5zbGF0aW9uX25vdGVzIG9yICIiCiAgICAgICAgZXJyID0gKHJlc3VsdC5lcnJvcnNbMF1bOjYwXSArICIuLi4iKSBpZiByZXN1bHQuZXJyb3JzIGVsc2UgIiIKICAgICAgICByb3dzLmFwcGVuZCgKICAgICAgICAgICAgWwogICAgICAgICAgICAgICAgaWNvbiwKICAgICAgICAgICAgICAgIGYiWyNEMEQxRkVdW3toX2lkfV1bL10iLAogICAgICAgICAgICAgICAgZiJbI0E1RDVGRV17cmVzdWx0LmxldmVsLnZhbHVlfVsvXSIsCiAgICAgICAgICAgICAgICBmIlsjOEU4RThFXXtub3Rlc1s6NDBdfVsvXSIgaWYgbm90ZXMgZWxzZSAiIiwKICAgICAgICAgICAgICAgIGYiWyNGRjU1NTVde2Vycn1bL10iIGlmIGVyciBlbHNlICIiLAogICAgICAgICAgICBdCiAgICAgICAgKQoKICAgIGMucHJpbnQoCiAgICAgICAgV2FycEJsb2Nrcy50YWJsZSgKICAgICAgICAgICAgWyIiLCAiSUQiLCAiTGV2ZWwiLCAiTm90ZXMiLCAiRXJyb3IiXSwKICAgICAgICAgICAgcm93cywKICAgICAgICAgICAgdGl0bGU9ZiJMZWFuIDQgVmVyaWZpY2F0aW9uICh7bGVuKHJvd3MpfSByZXN1bHRzKSIsCiAgICAgICAgKQogICAgKQogICAgcmV0dXJuICIiCgoKZGVmIF9nZXRfbGVhbl9pbnN0YWxsX3N0YXR1cygpOgogICAgIiIiUmV0dXJuIChzdGF0dXNfc3RyLCB2ZXJzaW9uKSBmb3IgTGVhbiBpbnN0YWxsYXRpb24uIiIiCiAgICBmcm9tIGxsbS5sZWFuX3ZlcmlmaWVyIGltcG9ydCBjaGVja19sZWFuX2luc3RhbGxlZCwgTGVhbkluc3RhbGxTdGF0dXMKCiAgICBzdGF0dXMsIHZlcnNpb24gPSBjaGVja19sZWFuX2luc3RhbGxlZCgpCiAgICBzdGF0dXNfc3RyID0gewogICAgICAgIExlYW5JbnN0YWxsU3RhdHVzLkFWQUlMQUJMRTogImF2YWlsYWJsZSIsCiAgICAgICAgTGVhbkluc3RhbGxTdGF0dXMuTk9UX0ZPVU5EOiAibm90X2ZvdW5kIiwKICAgICAgICBMZWFuSW5zdGFsbFN0YXR1cy5WRVJTSU9OX1VOS05PV046ICJ1bmtub3duIiwKICAgIH1bc3RhdHVzXQogICAgcmV0dXJuIHN0YXR1c19zdHIsIHZlcnNpb24K
+"""CLI command: hypothesize — Generate research hypotheses from gaps."""
+from __future__ import annotations
+
+import argparse
+from typing import Any, Dict, List
+
+from cli._shared import get_db, print_info
+from cli.warp import WarpBlocks
+from llm.hypothesis_generator import HypothesisGenerator
+
+
+def _build_hypothesize_parser(subparsers) -> argparse.ArgumentParser:
+    """Build the hypothesize subcommand parser."""
+    p = subparsers.add_parser(
+        "hypothesize",
+        help="Generate testable research hypotheses from gaps",
+        description="Generate research hypotheses with experiment designs and risk assessments.",
+    )
+    p.add_argument(
+        "topic",
+        nargs="?",
+        default=None,
+        help="Research topic for hypothesis generation",
+    )
+    p.add_argument(
+        "--gap", "-g",
+        type=str,
+        default="",
+        help="Gap context from gap analysis",
+    )
+    p.add_argument(
+        "--trend", "-t",
+        type=str,
+        default="",
+        help="Trend context from trend analysis",
+    )
+    p.add_argument(
+        "--story", "-s",
+        type=str,
+        default="",
+        help="Story context from story weaving",
+    )
+    p.add_argument(
+        "--no-llm",
+        action="store_true",
+        help="Disable LLM enhancement",
+    )
+    p.add_argument(
+        "--creative",
+        action="store_true",
+        help="Generate creative cross-domain hypotheses",
+    )
+    p.add_argument(
+        "--json", "-j",
+        action="store_true",
+        help="Output as JSON",
+    )
+    p.add_argument(
+        "--model", "-M",
+        type=str,
+        default=None,
+        help="LLM model to use",
+    )
+    p.add_argument(
+        "--top", "-n",
+        type=int,
+        default=5,
+        help="Number of hypotheses to generate (default: 5)",
+    )
+    p.add_argument(
+        "--lean",
+        action="store_true",
+        help="Verify each hypothesis with Lean 4 theorem prover",
+    )
+    p.add_argument(
+        "--no-llm-verify",
+        action="store_true",
+        help="Skip LLM translation in Lean verification (template only)",
+    )
+    p.add_argument(
+        "--validate",
+        type=str,
+        default=None,
+        dest="validate_id",
+        metavar="HYPOTHESIS_ID",
+        help="Validate a hypothesis by ID: show experiment results and verdict",
+    )
+    p.add_argument(
+        "--list", "-l",
+        action="store_true",
+        dest="list_hypotheses",
+        help="List all hypotheses with their verdict status",
+    )
+    return p  # type: ignore[no-any-return]
+
+
+def _run_hypothesize(args: argparse.Namespace) -> int:
+    """Run hypothesis generation command."""
+    db = get_db()
+    db.init()
+
+    # Validate mode: check hypothesis status
+    if args.validate_id:
+        return _run_validate_hypothesis(args.validate_id)
+
+    # List mode: show all hypotheses with verdicts
+    if args.list_hypotheses:
+        return _run_list_hypotheses()
+
+    generator = HypothesisGenerator(db=db)
+
+    if not args.topic:
+        print("❌ 请提供 topic")
+        return 1
+
+    print_info(f"🎯 Generating hypotheses for: {args.topic}")
+
+    result = generator.generate(
+        topic=args.topic,
+        gap_context=args.gap,
+        trend_context=args.trend,
+        story_context=args.story,
+        use_llm=not args.no_llm,
+        model=args.model,
+        creative=args.creative,
+    )
+
+    # Optional: Lean 4 verification
+    lean_results = {}
+    if args.lean:
+        lean_results = _verify_hypotheses_with_lean(result.hypotheses, not args.no_llm_verify, args.model)
+
+    if args.json:
+        print(generator.render_json(result))
+    else:
+        print()
+        print(generator.render_result(result))
+        if lean_results:
+            print(_render_lean_results(lean_results))
+
+    return 0
+
+
+def _run_list_hypotheses() -> int:
+    """List all hypotheses with their verdict status."""
+    from llm.insight_evolution import EvolutionTracker
+    from llm.experiment_tracker import ExperimentTracker
+    from rich.console import Console
+
+    ev = EvolutionTracker()
+    tracker = ExperimentTracker()
+    c = Console()
+
+    # Collect all hypothesis_ids from events
+    events = ev.get_recent_events(limit=10000)
+    hypothesis_ids = set()
+    hypothesis_topics = {}  # hypothesis_id -> topic (from hypothesized events)
+    for e in events:
+        if e.hypothesis_id:
+            hypothesis_ids.add(e.hypothesis_id)
+            if hasattr(e.action, 'value') and e.action.value == 'hypothesized':
+                hypothesis_topics[e.hypothesis_id] = e.topic or e.gap_title or 'unknown'
+
+    if not hypothesis_ids:
+        c.print(WarpBlocks.panel(
+            "No Hypotheses",
+            "[#8E8E8E]Run `airos hypothesize <topic>` to generate hypotheses[/]"
+        ))
+        return 0
+
+    # Group experiments by hypothesis_id to get names
+    experiments = tracker.list_experiments()
+    exp_by_hid: Dict[str, List[Any]] = {}
+    for e in experiments:
+        if e.hypothesis_id:
+            if e.hypothesis_id not in exp_by_hid:
+                exp_by_hid[e.hypothesis_id] = []
+            exp_by_hid[e.hypothesis_id].append(e)
+
+    # Sort by status: VALIDATED first, then REJECTED, MIXED, INCONCLUSIVE
+    status_order = {'VALIDATED': 0, 'REJECTED': 1, 'MIXED': 2, 'INCONCLUSIVE': 3}
+
+    rows = []
+    for hid in sorted(hypothesis_ids):
+        evts = ev.get_hypothesis_events(hid)
+        verdict, detail = _compute_verdict(evts)
+        name = exp_by_hid.get(hid, [None])[0].name if exp_by_hid.get(hid) else ''
+        n_exp = len(exp_by_hid.get(hid, []))
+        rows.append((status_order.get(verdict, 99), verdict, detail, name, hid, n_exp))
+
+    rows.sort()
+
+    status_rows = []
+    for _, verdict, detail, name, hid, n_exp in rows:
+        icon = {"VALIDATED": "✅", "REJECTED": "❌", "MIXED": "⚠", "INCONCLUSIVE": "○"}.get(verdict, "?")
+        name_short = (name[:40] + "...") if len(name) > 43 else name
+        (detail[:40] + "...") if len(detail) > 43 else detail
+        status_rows.append([
+            icon,
+            f"[#FEFDC2]{verdict}[/]",
+            f"[#A5D5FE]{name_short}[/]" if name_short else "[#8E8E8E]—[/]",
+            f"[#D0D1FE]{n_exp}[/]",
+            f"[#8E8E8E][{hid}][/]",
+        ])
+
+    c.print(WarpBlocks.panel(
+        f"Research Hypotheses — [#FF8272]{len(hypothesis_ids)}[/] total",
+        "[#A5D5FE]Run `airos hypothesize <topic>` to generate hypotheses[/]"
+    ))
+    if status_rows:
+        c.print(WarpBlocks.table(
+            ["", "Status", "Name", "Exp", "ID"],
+            status_rows,
+            title=f"Hypotheses ({len(status_rows)})"
+        ))
+    c.print()
+    return 0
+
+
+def _run_validate_hypothesis(hypothesis_id: str) -> int:
+    """Validate a hypothesis by checking linked experiment outcomes."""
+    from llm.insight_evolution import EvolutionTracker
+    from llm.experiment_tracker import ExperimentTracker
+
+    ev = EvolutionTracker()
+    tracker = ExperimentTracker()
+
+    events = ev.get_hypothesis_events(hypothesis_id)
+    verdict, detail = _compute_verdict(events)
+
+    print(f"🎯 Hypothesis: {hypothesis_id}")
+    print()
+    print(f"   verdict: {verdict}")
+    print(f"  detail:  {detail}")
+    print()
+
+    # Show experiment outcomes
+    experiments = tracker.list_experiments()
+    linked = [e for e in experiments if e.hypothesis_id == hypothesis_id]
+
+    if linked:
+        print(f"  linked experiments: {len(linked)}")
+        for e in linked:
+            icon = {"running": "⚡", "completed": "✓", "failed": "✗"}.get(e.status, "?")
+            print(f"    {icon} [{e.id}] {e.name} ({e.status})")
+            if e.results:
+                for k, v in e.results.items():
+                    print(f"       {k}: {v}")
+    else:
+        print("  no linked experiments found")
+
+    print()
+
+    # Show event timeline
+    if events:
+        print("  event timeline:")
+        for evt in events:
+            icon = _action_icon(evt.action)
+            print(f"    {icon} {evt.action.value} — {evt.topic or '(no topic)'}")
+
+    return 0
+
+
+def _compute_verdict(events):
+    """Compute VALIDATED / REJECTED / INCONCLUSIVE from events."""
+    if not events:
+        return "INCONCLUSIVE", "no experiments recorded"
+
+    action_vals = {e.action.value if hasattr(e.action, 'value') else str(e.action) for e in events}
+    has_completed = "validated" in action_vals
+    has_failed = "rejected" in action_vals
+
+    if has_completed and has_failed:
+        return "MIXED", "both validated and rejected experiments exist"
+    if has_completed:
+        return "VALIDATED", "all experiments succeeded"
+    if has_failed:
+        return "REJECTED", "all experiments failed"
+    return "INCONCLUSIVE", "no completed experiments yet"
+
+
+def _action_icon(action):
+    val = action.value if hasattr(action, 'value') else str(action)
+    return {
+        "validated": "✅",
+        "rejected": "❌",
+        "hypothesized": "💡",
+        "viewed": "👁",
+        "accepted": "👍",
+        "expanded": "📖",
+    }.get(val, "•")
+
+
+# ── Lean 4 integration ────────────────────────────────────────────────────────
+
+def _verify_hypotheses_with_lean(
+    hypotheses,
+    use_llm: bool,
+    model: str | None,
+) -> dict:
+    """Verify each hypothesis with Lean 4. Returns {hypothesis_id: LeanVerificationResult}."""
+    from llm.lean_verifier import verify_hypothesis
+
+    results = {}
+    for h in hypotheses:
+        try:
+            result = verify_hypothesis(h, use_llm=use_llm, model=model)
+            results[h.id] = result
+        except Exception:
+            pass  # Skip on any error — don't break hypothesis generation
+    return results
+
+
+def _render_lean_results(results: dict) -> str:
+    """Render Lean verification results as a formatted block."""
+    if not results:
+        return ""
+
+    from rich.console import Console
+    c = Console()
+
+    install_status, _ = _get_lean_install_status()
+
+    if install_status == "not_found":
+        panel = WarpBlocks.panel(
+            "Lean 4 — Not Installed",
+            "[#FEFDC2]⚠️  Lean 4 未安装 — 跳过形式化验证[/]\n\n"
+            "[#A5D5FE]Install:[/] [#B4FA72]elan default leanprover/lean4:stable[/]"
+        )
+        c.print(panel)
+        return ""
+
+    rows = []
+    for h_id, result in results.items():
+        icon = {
+            "l2_proven": "✅",
+            "l1_typecheck": "🟢",
+            "l0_syntax": "🟡",
+            "l0_failed": "❌",
+        }.get(result.level.value, "?")
+        notes = result.translation_notes or ""
+        err = (result.errors[0][:60] + "...") if result.errors else ""
+        rows.append([
+            icon,
+            f"[#D0D1FE][{h_id}][/]",
+            f"[#A5D5FE]{result.level.value}[/]",
+            f"[#8E8E8E]{notes[:40]}[/]" if notes else "",
+            f"[#FF5555]{err}[/]" if err else "",
+        ])
+
+    c.print(WarpBlocks.table(
+        ["", "ID", "Level", "Notes", "Error"],
+        rows,
+        title=f"Lean 4 Verification ({len(rows)} results)"
+    ))
+    return ""
+
+
+def _get_lean_install_status():
+    """Return (status_str, version) for Lean installation."""
+    from llm.lean_verifier import check_lean_installed, LeanInstallStatus
+    status, version = check_lean_installed()
+    status_str = {
+        LeanInstallStatus.AVAILABLE: "available",
+        LeanInstallStatus.NOT_FOUND: "not_found",
+        LeanInstallStatus.VERSION_UNKNOWN: "unknown",
+    }[status]
+    return status_str, version

@@ -1,1 +1,287 @@
-IiIiVGVzdHMgZm9yIGV4cGVyaW1lbnQgdHJhY2tlci4iIiIKCmltcG9ydCBweXRlc3QKCmZyb20gbGxtLmV4cGVyaW1lbnRfdHJhY2tlciBpbXBvcnQgKAogICAgRXhwZXJpbWVudFRyYWNrZXIsCiAgICBFeHBlcmltZW50LAogICAgRXhwZXJpbWVudFN0YXR1cywKICAgIE1ldHJpYywKKQoKCmNsYXNzIFRlc3RFeHBlcmltZW50VHJhY2tlcjoKICAgICIiIlRlc3QgRXhwZXJpbWVudFRyYWNrZXIuIiIiCgogICAgQHB5dGVzdC5maXh0dXJlCiAgICBkZWYgdHJhY2tlcihzZWxmLCB0bXBfcGF0aCk6CiAgICAgICAgIiIiQ3JlYXRlIHRyYWNrZXIgd2l0aCB0ZW1wIGRpcmVjdG9yeS4iIiIKICAgICAgICByZXR1cm4gRXhwZXJpbWVudFRyYWNrZXIoZGF0YV9kaXI9c3RyKHRtcF9wYXRoKSkKCiAgICBkZWYgdGVzdF9ydW5fZXhwZXJpbWVudChzZWxmLCB0cmFja2VyKToKICAgICAgICAiIiJUZXN0IGNyZWF0aW5nIGEgbmV3IGV4cGVyaW1lbnQuIiIiCiAgICAgICAgZSA9IHRyYWNrZXIucnVuKAogICAgICAgICAgICBuYW1lPSJUZXN0IEV4cGVyaW1lbnQiLAogICAgICAgICAgICBkZXNjcmlwdGlvbj0iQSB0ZXN0IGV4cGVyaW1lbnQiLAogICAgICAgICAgICByb2FkbWFwX21pbGVzdG9uZT0ibTEiLAogICAgICAgICAgICB0YWdzPVsidGVzdCIsICJ1bml0Il0sCiAgICAgICAgKQoKICAgICAgICBhc3NlcnQgZS5uYW1lID09ICJUZXN0IEV4cGVyaW1lbnQiCiAgICAgICAgYXNzZXJ0IGUuZGVzY3JpcHRpb24gPT0gIkEgdGVzdCBleHBlcmltZW50IgogICAgICAgIGFzc2VydCBlLnJvYWRtYXBfbWlsZXN0b25lID09ICJtMSIKICAgICAgICBhc3NlcnQgZS5zdGF0dXMgPT0gInJ1bm5pbmciCiAgICAgICAgYXNzZXJ0IGxlbihlLmlkKSA9PSA4CiAgICAgICAgYXNzZXJ0ICJ0ZXN0IiBpbiBlLnRhZ3MKCiAgICBkZWYgdGVzdF9nZXRfZXhwZXJpbWVudChzZWxmLCB0cmFja2VyKToKICAgICAgICAiIiJUZXN0IHJldHJpZXZpbmcgYW4gZXhwZXJpbWVudC4iIiIKICAgICAgICBjcmVhdGVkID0gdHJhY2tlci5ydW4obmFtZT0iR2V0IFRlc3QiKQogICAgICAgIHJldHJpZXZlZCA9IHRyYWNrZXIuZ2V0KGNyZWF0ZWQuaWQpCgogICAgICAgIGFzc2VydCByZXRyaWV2ZWQgaXMgbm90IE5vbmUKICAgICAgICBhc3NlcnQgcmV0cmlldmVkLmlkID09IGNyZWF0ZWQuaWQKICAgICAgICBhc3NlcnQgcmV0cmlldmVkLm5hbWUgPT0gIkdldCBUZXN0IgoKICAgIGRlZiB0ZXN0X2dldF9ub25leGlzdGVudChzZWxmLCB0cmFja2VyKToKICAgICAgICAiIiJUZXN0IGdldHRpbmcgbm9uLWV4aXN0ZW50IGV4cGVyaW1lbnQuIiIiCiAgICAgICAgcmVzdWx0ID0gdHJhY2tlci5nZXQoIm5vbmV4aXN0ZW50IikKICAgICAgICBhc3NlcnQgcmVzdWx0IGlzIE5vbmUKCiAgICBkZWYgdGVzdF9saXN0X2V4cGVyaW1lbnRzKHNlbGYsIHRyYWNrZXIpOgogICAgICAgICIiIlRlc3QgbGlzdGluZyBleHBlcmltZW50cy4iIiIKICAgICAgICB0cmFja2VyLnJ1bihuYW1lPSJFeHAgMSIpCiAgICAgICAgdHJhY2tlci5ydW4obmFtZT0iRXhwIDIiKQogICAgICAgIHRyYWNrZXIucnVuKG5hbWU9IkV4cCAzIikKCiAgICAgICAgYWxsX2V4cHMgPSB0cmFja2VyLmxpc3RfZXhwZXJpbWVudHMoKQogICAgICAgIGFzc2VydCBsZW4oYWxsX2V4cHMpID09IDMKCiAgICBkZWYgdGVzdF9saXN0X2J5X3N0YXR1cyhzZWxmLCB0cmFja2VyKToKICAgICAgICAiIiJUZXN0IGZpbHRlcmluZyBieSBzdGF0dXMuIiIiCiAgICAgICAgZTEgPSB0cmFja2VyLnJ1bihuYW1lPSJSdW5uaW5nIEV4cCIpCiAgICAgICAgdHJhY2tlci5ydW4obmFtZT0iQ29tcGxldGVkIEV4cCIpCgogICAgICAgIHRyYWNrZXIuY29tcGxldGUoZTEuaWQpCgogICAgICAgIHJ1bm5pbmcgPSB0cmFja2VyLmxpc3RfZXhwZXJpbWVudHMoc3RhdHVzPSJydW5uaW5nIikKICAgICAgICBjb21wbGV0ZWQgPSB0cmFja2VyLmxpc3RfZXhwZXJpbWVudHMoc3RhdHVzPSJjb21wbGV0ZWQiKQoKICAgICAgICBhc3NlcnQgbGVuKHJ1bm5pbmcpID09IDEKICAgICAgICBhc3NlcnQgbGVuKGNvbXBsZXRlZCkgPT0gMQogICAgICAgIGFzc2VydCBydW5uaW5nWzBdLm5hbWUgPT0gIkNvbXBsZXRlZCBFeHAiCiAgICAgICAgYXNzZXJ0IGNvbXBsZXRlZFswXS5uYW1lID09ICJSdW5uaW5nIEV4cCIKCiAgICBkZWYgdGVzdF9saXN0X2J5X21pbGVzdG9uZShzZWxmLCB0cmFja2VyKToKICAgICAgICAiIiJUZXN0IGZpbHRlcmluZyBieSBtaWxlc3RvbmUuIiIiCiAgICAgICAgdHJhY2tlci5ydW4obmFtZT0iRXhwIDEiLCByb2FkbWFwX21pbGVzdG9uZT0ibTEiKQogICAgICAgIHRyYWNrZXIucnVuKG5hbWU9IkV4cCAyIiwgcm9hZG1hcF9taWxlc3RvbmU9Im0yIikKICAgICAgICB0cmFja2VyLnJ1bihuYW1lPSJFeHAgMyIsIHJvYWRtYXBfbWlsZXN0b25lPSJtMSIpCgogICAgICAgIG0xX2V4cHMgPSB0cmFja2VyLmxpc3RfZXhwZXJpbWVudHMobWlsZXN0b25lPSJtMSIpCiAgICAgICAgYXNzZXJ0IGxlbihtMV9leHBzKSA9PSAyCgogICAgZGVmIHRlc3RfbGlzdF9ieV90YWcoc2VsZiwgdHJhY2tlcik6CiAgICAgICAgIiIiVGVzdCBmaWx0ZXJpbmcgYnkgdGFnLiIiIgogICAgICAgIHRyYWNrZXIucnVuKG5hbWU9IkV4cCAxIiwgdGFncz1bImFscGhhIl0pCiAgICAgICAgdHJhY2tlci5ydW4obmFtZT0iRXhwIDIiLCB0YWdzPVsiYmV0YSJdKQogICAgICAgIHRyYWNrZXIucnVuKG5hbWU9IkV4cCAzIiwgdGFncz1bImFscGhhIiwgImJldGEiXSkKCiAgICAgICAgYWxwaGFfZXhwcyA9IHRyYWNrZXIubGlzdF9leHBlcmltZW50cyh0YWc9ImFscGhhIikKICAgICAgICBhc3NlcnQgbGVuKGFscGhhX2V4cHMpID09IDIKCiAgICBkZWYgdGVzdF9jb21wbGV0ZV9leHBlcmltZW50KHNlbGYsIHRyYWNrZXIpOgogICAgICAgICIiIlRlc3QgY29tcGxldGluZyBhbiBleHBlcmltZW50LiIiIgogICAgICAgIGUgPSB0cmFja2VyLnJ1bihuYW1lPSJDb21wbGV0ZSBUZXN0IikKICAgICAgICBjb21wbGV0ZWQgPSB0cmFja2VyLmNvbXBsZXRlKGUuaWQsIHJlc3VsdHM9eyJhY2N1cmFjeSI6IDAuOTV9KQoKICAgICAgICBhc3NlcnQgY29tcGxldGVkLnN0YXR1cyA9PSAiY29tcGxldGVkIgogICAgICAgIGFzc2VydCBjb21wbGV0ZWQucmVzdWx0c1siYWNjdXJhY3kiXSA9PSAwLjk1CiAgICAgICAgYXNzZXJ0IGNvbXBsZXRlZC5jb21wbGV0ZWRfYXQgIT0gIiIKCiAgICBkZWYgdGVzdF9mYWlsX2V4cGVyaW1lbnQoc2VsZiwgdHJhY2tlcik6CiAgICAgICAgIiIiVGVzdCBmYWlsaW5nIGFuIGV4cGVyaW1lbnQuIiIiCiAgICAgICAgZSA9IHRyYWNrZXIucnVuKG5hbWU9IkZhaWwgVGVzdCIpCiAgICAgICAgZmFpbGVkID0gdHJhY2tlci5mYWlsKGUuaWQsIGVycm9yPSJPdXQgb2YgbWVtb3J5IikKCiAgICAgICAgYXNzZXJ0IGZhaWxlZC5zdGF0dXMgPT0gImZhaWxlZCIKICAgICAgICBhc3NlcnQgZmFpbGVkLnJlc3VsdHNbImVycm9yIl0gPT0gIk91dCBvZiBtZW1vcnkiCgogICAgZGVmIHRlc3RfYWRkX21ldHJpYyhzZWxmLCB0cmFja2VyKToKICAgICAgICAiIiJUZXN0IGFkZGluZyBtZXRyaWNzLiIiIgogICAgICAgIGUgPSB0cmFja2VyLnJ1bihuYW1lPSJNZXRyaWMgVGVzdCIpCiAgICAgICAgdHJhY2tlci5hZGRfbWV0cmljKGUuaWQsICJhY2N1cmFjeSIsIDAuOTIsIHVuaXQ9IiUiKQogICAgICAgIHRyYWNrZXIuYWRkX21ldHJpYyhlLmlkLCAibGF0ZW5jeSIsIDE1MCwgdW5pdD0ibXMiKQoKICAgICAgICBlID0gdHJhY2tlci5nZXQoZS5pZCkKICAgICAgICBhc3NlcnQgbGVuKGUubWV0cmljcykgPT0gMgogICAgICAgIGFzc2VydCBlLm1ldHJpY3NbMF0ubmFtZSA9PSAiYWNjdXJhY3kiCiAgICAgICAgYXNzZXJ0IGUubWV0cmljc1swXS52YWx1ZSA9PSAwLjkyCgogICAgZGVmIHRlc3RfY29tcGFyZV9leHBlcmltZW50cyhzZWxmLCB0cmFja2VyKToKICAgICAgICAiIiJUZXN0IGNvbXBhcmluZyBleHBlcmltZW50cy4iIiIKICAgICAgICBlMSA9IHRyYWNrZXIucnVuKG5hbWU9IkV4cCBBIikKICAgICAgICBlMiA9IHRyYWNrZXIucnVuKG5hbWU9IkV4cCBCIikKCiAgICAgICAgdHJhY2tlci5hZGRfbWV0cmljKGUxLmlkLCAiYWNjdXJhY3kiLCAwLjkwKQogICAgICAgIHRyYWNrZXIuYWRkX21ldHJpYyhlMS5pZCwgImYxIiwgMC44NSkKICAgICAgICB0cmFja2VyLmFkZF9tZXRyaWMoZTIuaWQsICJhY2N1cmFjeSIsIDAuOTIpCiAgICAgICAgdHJhY2tlci5hZGRfbWV0cmljKGUyLmlkLCAiZjEiLCAwLjg4KQoKICAgICAgICBjb21wID0gdHJhY2tlci5jb21wYXJlKFtlMS5pZCwgZTIuaWRdKQoKICAgICAgICBhc3NlcnQgIm1ldHJpY3MiIGluIGNvbXAKICAgICAgICBhc3NlcnQgImV4cGVyaW1lbnRzIiBpbiBjb21wCiAgICAgICAgYXNzZXJ0IGxlbihjb21wWyJleHBlcmltZW50cyJdKSA9PSAyCgogICAgZGVmIHRlc3RfY29tcGFyZV9zcGVjaWZpY19tZXRyaWNzKHNlbGYsIHRyYWNrZXIpOgogICAgICAgICIiIlRlc3QgY29tcGFyaW5nIHNwZWNpZmljIG1ldHJpY3Mgb25seS4iIiIKICAgICAgICBlMSA9IHRyYWNrZXIucnVuKG5hbWU9IkV4cCBBIikKICAgICAgICBlMiA9IHRyYWNrZXIucnVuKG5hbWU9IkV4cCBCIikKCiAgICAgICAgdHJhY2tlci5hZGRfbWV0cmljKGUxLmlkLCAiYWNjdXJhY3kiLCAwLjkwKQogICAgICAgIHRyYWNrZXIuYWRkX21ldHJpYyhlMS5pZCwgImYxIiwgMC44NSkKICAgICAgICB0cmFja2VyLmFkZF9tZXRyaWMoZTIuaWQsICJhY2N1cmFjeSIsIDAuOTIpCiAgICAgICAgdHJhY2tlci5hZGRfbWV0cmljKGUyLmlkLCAiZjEiLCAwLjg4KQoKICAgICAgICBjb21wID0gdHJhY2tlci5jb21wYXJlKFtlMS5pZCwgZTIuaWRdLCBtZXRyaWNfbmFtZXM9WyJhY2N1cmFjeSJdKQoKICAgICAgICBhc3NlcnQgY29tcFsibWV0cmljcyJdID09IFsiYWNjdXJhY3kiXQogICAgICAgIGFzc2VydCBsZW4oY29tcFsiZXhwZXJpbWVudHMiXSkgPT0gMgogICAgICAgIGFzc2VydCBjb21wWyJleHBlcmltZW50cyJdWzBdWyJhY2N1cmFjeSJdID09IDAuOTAKICAgICAgICBhc3NlcnQgY29tcFsiZXhwZXJpbWVudHMiXVsxXVsiYWNjdXJhY3kiXSA9PSAwLjkyCgogICAgZGVmIHRlc3RfZGVsZXRlX2V4cGVyaW1lbnQoc2VsZiwgdHJhY2tlcik6CiAgICAgICAgIiIiVGVzdCBkZWxldGluZyBhbiBleHBlcmltZW50LiIiIgogICAgICAgIGUgPSB0cmFja2VyLnJ1bihuYW1lPSJEZWxldGUgVGVzdCIpCiAgICAgICAgZGVsZXRlZCA9IHRyYWNrZXIuZGVsZXRlKGUuaWQpCgogICAgICAgIGFzc2VydCBkZWxldGVkIGlzIFRydWUKICAgICAgICBhc3NlcnQgdHJhY2tlci5nZXQoZS5pZCkgaXMgTm9uZQoKICAgIGRlZiB0ZXN0X2RlbGV0ZV9ub25leGlzdGVudChzZWxmLCB0cmFja2VyKToKICAgICAgICAiIiJUZXN0IGRlbGV0aW5nIG5vbi1leGlzdGVudCBleHBlcmltZW50LiIiIgogICAgICAgIHJlc3VsdCA9IHRyYWNrZXIuZGVsZXRlKCJub25leGlzdGVudCIpCiAgICAgICAgYXNzZXJ0IHJlc3VsdCBpcyBGYWxzZQoKICAgIGRlZiB0ZXN0X3JlbmRlcl9saXN0KHNlbGYsIHRyYWNrZXIpOgogICAgICAgICIiIlRlc3QgcmVuZGVyaW5nIGV4cGVyaW1lbnQgbGlzdC4iIiIKICAgICAgICB0cmFja2VyLnJ1bihuYW1lPSJMaXN0IFRlc3QgMSIpCiAgICAgICAgdHJhY2tlci5ydW4obmFtZT0iTGlzdCBUZXN0IDIiKQoKICAgICAgICBleHBzID0gdHJhY2tlci5saXN0X2V4cGVyaW1lbnRzKCkKICAgICAgICBvdXRwdXQgPSB0cmFja2VyLnJlbmRlcl9saXN0KGV4cHMpCgogICAgICAgIGFzc2VydCAiTGlzdCBUZXN0IDEiIGluIG91dHB1dAogICAgICAgIGFzc2VydCAiTGlzdCBUZXN0IDIiIGluIG91dHB1dAoKICAgIGRlZiB0ZXN0X3JlbmRlcl9jb21wYXJlKHNlbGYsIHRyYWNrZXIpOgogICAgICAgICIiIlRlc3QgcmVuZGVyaW5nIGNvbXBhcmlzb24gdGFibGUuIiIiCiAgICAgICAgZTEgPSB0cmFja2VyLnJ1bihuYW1lPSJFeHAgQSIpCiAgICAgICAgZTIgPSB0cmFja2VyLnJ1bihuYW1lPSJFeHAgQiIpCgogICAgICAgIHRyYWNrZXIuYWRkX21ldHJpYyhlMS5pZCwgImFjY3VyYWN5IiwgMC45MCkKICAgICAgICB0cmFja2VyLmFkZF9tZXRyaWMoZTIuaWQsICJhY2N1cmFjeSIsIDAuOTIpCgogICAgICAgIGNvbXAgPSB0cmFja2VyLmNvbXBhcmUoW2UxLmlkLCBlMi5pZF0pCiAgICAgICAgb3V0cHV0ID0gdHJhY2tlci5yZW5kZXJfY29tcGFyZShjb21wKQoKICAgICAgICBhc3NlcnQgIiMjIEV4cGVyaW1lbnQgQ29tcGFyaXNvbiIgaW4gb3V0cHV0CiAgICAgICAgYXNzZXJ0ICJhY2N1cmFjeSIgaW4gb3V0cHV0CgogICAgZGVmIHRlc3RfcmVuZGVyX2NvbXBhcmVfZXJyb3Ioc2VsZiwgdHJhY2tlcik6CiAgICAgICAgIiIiVGVzdCByZW5kZXJpbmcgY29tcGFyaXNvbiB3aXRoIGVycm9yLiIiIgogICAgICAgIGNvbXAgPSB7ImVycm9yIjogIk5vIGV4cGVyaW1lbnRzIGZvdW5kIn0KICAgICAgICBvdXRwdXQgPSB0cmFja2VyLnJlbmRlcl9jb21wYXJlKGNvbXApCgogICAgICAgIGFzc2VydCAiRXJyb3IiIGluIG91dHB1dAoKCmNsYXNzIFRlc3RNZXRyaWM6CiAgICAiIiJUZXN0IE1ldHJpYyBkYXRhY2xhc3MuIiIiCgogICAgZGVmIHRlc3RfbWV0cmljX2NyZWF0aW9uKHNlbGYpOgogICAgICAgICIiIlRlc3QgY3JlYXRpbmcgYSBtZXRyaWMuIiIiCiAgICAgICAgbSA9IE1ldHJpYyhuYW1lPSJhY2N1cmFjeSIsIHZhbHVlPTAuOTUsIHVuaXQ9IiUiKQoKICAgICAgICBhc3NlcnQgbS5uYW1lID09ICJhY2N1cmFjeSIKICAgICAgICBhc3NlcnQgbS52YWx1ZSA9PSAwLjk1CiAgICAgICAgYXNzZXJ0IG0udW5pdCA9PSAiJSIKCgpjbGFzcyBUZXN0RXhwZXJpbWVudDoKICAgICIiIlRlc3QgRXhwZXJpbWVudCBkYXRhY2xhc3MuIiIiCgogICAgZGVmIHRlc3RfZXhwZXJpbWVudF9jcmVhdGlvbihzZWxmKToKICAgICAgICAiIiJUZXN0IGNyZWF0aW5nIGFuIGV4cGVyaW1lbnQuIiIiCiAgICAgICAgZSA9IEV4cGVyaW1lbnQoCiAgICAgICAgICAgIGlkPSJ0ZXN0MTIzIiwKICAgICAgICAgICAgbmFtZT0iVGVzdCBFeHBlcmltZW50IiwKICAgICAgICAgICAgZGVzY3JpcHRpb249IkEgdGVzdCIsCiAgICAgICAgKQoKICAgICAgICBhc3NlcnQgZS5pZCA9PSAidGVzdDEyMyIKICAgICAgICBhc3NlcnQgZS5uYW1lID09ICJUZXN0IEV4cGVyaW1lbnQiCiAgICAgICAgYXNzZXJ0IGUuc3RhdHVzID09ICJydW5uaW5nIgogICAgICAgIGFzc2VydCBlLmNyZWF0ZWRfYXQgIT0gIiIKCiAgICBkZWYgdGVzdF9leHBlcmltZW50X3RvX2RpY3Qoc2VsZik6CiAgICAgICAgIiIiVGVzdCBjb252ZXJ0aW5nIHRvIGRpY3Rpb25hcnkuIiIiCiAgICAgICAgZSA9IEV4cGVyaW1lbnQoaWQ9InRlc3Q0NTYiLCBuYW1lPSJEaWN0IFRlc3QiKQogICAgICAgIGQgPSBlLnRvX2RpY3QoKQoKICAgICAgICBhc3NlcnQgZFsiaWQiXSA9PSAidGVzdDQ1NiIKICAgICAgICBhc3NlcnQgZFsibmFtZSJdID09ICJEaWN0IFRlc3QiCgogICAgZGVmIHRlc3RfZXhwZXJpbWVudF9mcm9tX2RpY3Qoc2VsZik6CiAgICAgICAgIiIiVGVzdCBjcmVhdGluZyBmcm9tIGRpY3Rpb25hcnkuIiIiCiAgICAgICAgZGF0YSA9IHsKICAgICAgICAgICAgImlkIjogInRlc3Q3ODkiLAogICAgICAgICAgICAibmFtZSI6ICJGcm9tIERpY3QiLAogICAgICAgICAgICAic3RhdHVzIjogImNvbXBsZXRlZCIsCiAgICAgICAgICAgICJjb25maWciOiB7fSwKICAgICAgICAgICAgInJlc3VsdHMiOiB7fSwKICAgICAgICAgICAgIm1ldHJpY3MiOiBbXSwKICAgICAgICAgICAgImFydGlmYWN0cyI6IFtdLAogICAgICAgICAgICAidGFncyI6IFtdLAogICAgICAgICAgICAiY3JlYXRlZF9hdCI6ICIyMDI0LTAxLTAxVDAwOjAwOjAwIiwKICAgICAgICAgICAgImNvbXBsZXRlZF9hdCI6ICIiLAogICAgICAgICAgICAiZGVzY3JpcHRpb24iOiAiIiwKICAgICAgICAgICAgInJvYWRtYXBfbWlsZXN0b25lIjogIiIsCiAgICAgICAgfQogICAgICAgIGUgPSBFeHBlcmltZW50LmZyb21fZGljdChkYXRhKQoKICAgICAgICBhc3NlcnQgZS5pZCA9PSAidGVzdDc4OSIKICAgICAgICBhc3NlcnQgZS5uYW1lID09ICJGcm9tIERpY3QiCgogICAgZGVmIHRlc3RfZXhwZXJpbWVudF9mcm9tX2RpY3Rfd2l0aF9tZXRyaWNzKHNlbGYpOgogICAgICAgICIiIlRlc3QgY3JlYXRpbmcgZnJvbSBkaWN0IHdpdGggbWV0cmljcy4iIiIKICAgICAgICBkYXRhID0gewogICAgICAgICAgICAiaWQiOiAidGVzdC1tZXRyaWMiLAogICAgICAgICAgICAibmFtZSI6ICJNZXRyaWMgVGVzdCIsCiAgICAgICAgICAgICJzdGF0dXMiOiAicnVubmluZyIsCiAgICAgICAgICAgICJjb25maWciOiB7fSwKICAgICAgICAgICAgInJlc3VsdHMiOiB7fSwKICAgICAgICAgICAgIm1ldHJpY3MiOiBbeyJuYW1lIjogImFjY3VyYWN5IiwgInZhbHVlIjogMC45MiwgInVuaXQiOiAiJSJ9XSwKICAgICAgICAgICAgImFydGlmYWN0cyI6IFtdLAogICAgICAgICAgICAidGFncyI6IFtdLAogICAgICAgICAgICAiY3JlYXRlZF9hdCI6ICIiLAogICAgICAgICAgICAiY29tcGxldGVkX2F0IjogIiIsCiAgICAgICAgICAgICJkZXNjcmlwdGlvbiI6ICIiLAogICAgICAgICAgICAicm9hZG1hcF9taWxlc3RvbmUiOiAiIiwKICAgICAgICB9CiAgICAgICAgZSA9IEV4cGVyaW1lbnQuZnJvbV9kaWN0KGRhdGEpCgogICAgICAgIGFzc2VydCBsZW4oZS5tZXRyaWNzKSA9PSAxCiAgICAgICAgYXNzZXJ0IGUubWV0cmljc1swXS5uYW1lID09ICJhY2N1cmFjeSIKCgpjbGFzcyBUZXN0RXhwZXJpbWVudFN0YXR1czoKICAgICIiIlRlc3QgRXhwZXJpbWVudFN0YXR1cyBlbnVtLiIiIgoKICAgIGRlZiB0ZXN0X3N0YXR1c192YWx1ZXMoc2VsZik6CiAgICAgICAgIiIiVGVzdCBzdGF0dXMgZW51bSB2YWx1ZXMuIiIiCiAgICAgICAgYXNzZXJ0IEV4cGVyaW1lbnRTdGF0dXMuUlVOTklORy52YWx1ZSA9PSAicnVubmluZyIKICAgICAgICBhc3NlcnQgRXhwZXJpbWVudFN0YXR1cy5DT01QTEVURUQudmFsdWUgPT0gImNvbXBsZXRlZCIKICAgICAgICBhc3NlcnQgRXhwZXJpbWVudFN0YXR1cy5GQUlMRUQudmFsdWUgPT0gImZhaWxlZCIKICAgICAgICBhc3NlcnQgRXhwZXJpbWVudFN0YXR1cy5DQU5DRUxMRUQudmFsdWUgPT0gImNhbmNlbGxlZCIK
+"""Tests for experiment tracker."""
+
+import pytest
+
+from llm.experiment_tracker import (
+    ExperimentTracker,
+    Experiment,
+    ExperimentStatus,
+    Metric,
+)
+
+
+class TestExperimentTracker:
+    """Test ExperimentTracker."""
+
+    @pytest.fixture
+    def tracker(self, tmp_path):
+        """Create tracker with temp directory."""
+        return ExperimentTracker(data_dir=str(tmp_path))
+
+    def test_run_experiment(self, tracker):
+        """Test creating a new experiment."""
+        e = tracker.run(
+            name="Test Experiment",
+            description="A test experiment",
+            roadmap_milestone="m1",
+            tags=["test", "unit"],
+        )
+
+        assert e.name == "Test Experiment"
+        assert e.description == "A test experiment"
+        assert e.roadmap_milestone == "m1"
+        assert e.status == "running"
+        assert len(e.id) == 8
+        assert "test" in e.tags
+
+    def test_get_experiment(self, tracker):
+        """Test retrieving an experiment."""
+        created = tracker.run(name="Get Test")
+        retrieved = tracker.get(created.id)
+
+        assert retrieved is not None
+        assert retrieved.id == created.id
+        assert retrieved.name == "Get Test"
+
+    def test_get_nonexistent(self, tracker):
+        """Test getting non-existent experiment."""
+        result = tracker.get("nonexistent")
+        assert result is None
+
+    def test_list_experiments(self, tracker):
+        """Test listing experiments."""
+        tracker.run(name="Exp 1")
+        tracker.run(name="Exp 2")
+        tracker.run(name="Exp 3")
+
+        all_exps = tracker.list_experiments()
+        assert len(all_exps) == 3
+
+    def test_list_by_status(self, tracker):
+        """Test filtering by status."""
+        e1 = tracker.run(name="Running Exp")
+        tracker.run(name="Completed Exp")
+
+        tracker.complete(e1.id)
+
+        running = tracker.list_experiments(status="running")
+        completed = tracker.list_experiments(status="completed")
+
+        assert len(running) == 1
+        assert len(completed) == 1
+        assert running[0].name == "Completed Exp"
+        assert completed[0].name == "Running Exp"
+
+    def test_list_by_milestone(self, tracker):
+        """Test filtering by milestone."""
+        tracker.run(name="Exp 1", roadmap_milestone="m1")
+        tracker.run(name="Exp 2", roadmap_milestone="m2")
+        tracker.run(name="Exp 3", roadmap_milestone="m1")
+
+        m1_exps = tracker.list_experiments(milestone="m1")
+        assert len(m1_exps) == 2
+
+    def test_list_by_tag(self, tracker):
+        """Test filtering by tag."""
+        tracker.run(name="Exp 1", tags=["alpha"])
+        tracker.run(name="Exp 2", tags=["beta"])
+        tracker.run(name="Exp 3", tags=["alpha", "beta"])
+
+        alpha_exps = tracker.list_experiments(tag="alpha")
+        assert len(alpha_exps) == 2
+
+    def test_complete_experiment(self, tracker):
+        """Test completing an experiment."""
+        e = tracker.run(name="Complete Test")
+        completed = tracker.complete(e.id, results={"accuracy": 0.95})
+
+        assert completed.status == "completed"
+        assert completed.results["accuracy"] == 0.95
+        assert completed.completed_at != ""
+
+    def test_fail_experiment(self, tracker):
+        """Test failing an experiment."""
+        e = tracker.run(name="Fail Test")
+        failed = tracker.fail(e.id, error="Out of memory")
+
+        assert failed.status == "failed"
+        assert failed.results["error"] == "Out of memory"
+
+    def test_add_metric(self, tracker):
+        """Test adding metrics."""
+        e = tracker.run(name="Metric Test")
+        tracker.add_metric(e.id, "accuracy", 0.92, unit="%")
+        tracker.add_metric(e.id, "latency", 150, unit="ms")
+
+        e = tracker.get(e.id)
+        assert len(e.metrics) == 2
+        assert e.metrics[0].name == "accuracy"
+        assert e.metrics[0].value == 0.92
+
+    def test_compare_experiments(self, tracker):
+        """Test comparing experiments."""
+        e1 = tracker.run(name="Exp A")
+        e2 = tracker.run(name="Exp B")
+
+        tracker.add_metric(e1.id, "accuracy", 0.90)
+        tracker.add_metric(e1.id, "f1", 0.85)
+        tracker.add_metric(e2.id, "accuracy", 0.92)
+        tracker.add_metric(e2.id, "f1", 0.88)
+
+        comp = tracker.compare([e1.id, e2.id])
+
+        assert "metrics" in comp
+        assert "experiments" in comp
+        assert len(comp["experiments"]) == 2
+
+    def test_compare_specific_metrics(self, tracker):
+        """Test comparing specific metrics only."""
+        e1 = tracker.run(name="Exp A")
+        e2 = tracker.run(name="Exp B")
+
+        tracker.add_metric(e1.id, "accuracy", 0.90)
+        tracker.add_metric(e1.id, "f1", 0.85)
+        tracker.add_metric(e2.id, "accuracy", 0.92)
+        tracker.add_metric(e2.id, "f1", 0.88)
+
+        comp = tracker.compare([e1.id, e2.id], metric_names=["accuracy"])
+
+        assert comp["metrics"] == ["accuracy"]
+        assert len(comp["experiments"]) == 2
+        assert comp["experiments"][0]["accuracy"] == 0.90
+        assert comp["experiments"][1]["accuracy"] == 0.92
+
+    def test_delete_experiment(self, tracker):
+        """Test deleting an experiment."""
+        e = tracker.run(name="Delete Test")
+        deleted = tracker.delete(e.id)
+
+        assert deleted is True
+        assert tracker.get(e.id) is None
+
+    def test_delete_nonexistent(self, tracker):
+        """Test deleting non-existent experiment."""
+        result = tracker.delete("nonexistent")
+        assert result is False
+
+    def test_render_list(self, tracker):
+        """Test rendering experiment list."""
+        tracker.run(name="List Test 1")
+        tracker.run(name="List Test 2")
+
+        exps = tracker.list_experiments()
+        output = tracker.render_list(exps)
+
+        assert "List Test 1" in output
+        assert "List Test 2" in output
+
+    def test_render_compare(self, tracker):
+        """Test rendering comparison table."""
+        e1 = tracker.run(name="Exp A")
+        e2 = tracker.run(name="Exp B")
+
+        tracker.add_metric(e1.id, "accuracy", 0.90)
+        tracker.add_metric(e2.id, "accuracy", 0.92)
+
+        comp = tracker.compare([e1.id, e2.id])
+        output = tracker.render_compare(comp)
+
+        assert "## Experiment Comparison" in output
+        assert "accuracy" in output
+
+    def test_render_compare_error(self, tracker):
+        """Test rendering comparison with error."""
+        comp = {"error": "No experiments found"}
+        output = tracker.render_compare(comp)
+
+        assert "Error" in output
+
+
+class TestMetric:
+    """Test Metric dataclass."""
+
+    def test_metric_creation(self):
+        """Test creating a metric."""
+        m = Metric(name="accuracy", value=0.95, unit="%")
+
+        assert m.name == "accuracy"
+        assert m.value == 0.95
+        assert m.unit == "%"
+
+
+class TestExperiment:
+    """Test Experiment dataclass."""
+
+    def test_experiment_creation(self):
+        """Test creating an experiment."""
+        e = Experiment(
+            id="test123",
+            name="Test Experiment",
+            description="A test",
+        )
+
+        assert e.id == "test123"
+        assert e.name == "Test Experiment"
+        assert e.status == "running"
+        assert e.created_at != ""
+
+    def test_experiment_to_dict(self):
+        """Test converting to dictionary."""
+        e = Experiment(id="test456", name="Dict Test")
+        d = e.to_dict()
+
+        assert d["id"] == "test456"
+        assert d["name"] == "Dict Test"
+
+    def test_experiment_from_dict(self):
+        """Test creating from dictionary."""
+        data = {
+            "id": "test789",
+            "name": "From Dict",
+            "status": "completed",
+            "config": {},
+            "results": {},
+            "metrics": [],
+            "artifacts": [],
+            "tags": [],
+            "created_at": "2024-01-01T00:00:00",
+            "completed_at": "",
+            "description": "",
+            "roadmap_milestone": "",
+        }
+        e = Experiment.from_dict(data)
+
+        assert e.id == "test789"
+        assert e.name == "From Dict"
+
+    def test_experiment_from_dict_with_metrics(self):
+        """Test creating from dict with metrics."""
+        data = {
+            "id": "test-metric",
+            "name": "Metric Test",
+            "status": "running",
+            "config": {},
+            "results": {},
+            "metrics": [{"name": "accuracy", "value": 0.92, "unit": "%"}],
+            "artifacts": [],
+            "tags": [],
+            "created_at": "",
+            "completed_at": "",
+            "description": "",
+            "roadmap_milestone": "",
+        }
+        e = Experiment.from_dict(data)
+
+        assert len(e.metrics) == 1
+        assert e.metrics[0].name == "accuracy"
+
+
+class TestExperimentStatus:
+    """Test ExperimentStatus enum."""
+
+    def test_status_values(self):
+        """Test status enum values."""
+        assert ExperimentStatus.RUNNING.value == "running"
+        assert ExperimentStatus.COMPLETED.value == "completed"
+        assert ExperimentStatus.FAILED.value == "failed"
+        assert ExperimentStatus.CANCELLED.value == "cancelled"

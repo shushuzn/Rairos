@@ -1,1 +1,148 @@
-IiIiQXQtUmlzayBDYXBzdWxlIFNjYW5uZXIuCgpTaG93cyBjYXBzdWxlcyBhcHByb2FjaGluZyBhdXRvLWFyY2hpdmUgdGhyZXNob2xkIChsb3dfc2NvcmVfc3RyZWFrID49IDIpLgpTdXBwb3J0cyBrZWVwLWFjdGl2ZSAocmVzZXQgc3RyZWFrKSBhbmQgcGluLXRvLVRUTCBvcGVyYXRpb25zLgoiIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBqc29uCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcywgZmllbGQKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBBbnksIERpY3QsIExpc3QsIE9wdGlvbmFsCgoKQ0FQU1VMRV9QQVRIID0gUGF0aC5ob21lKCkgLyAiLmFpX3Jlc2VhcmNoX29zIiAvICJnZW5lX3Bvb2wiIC8gImNhcHN1bGVzLmpzb24iClNUUkVBS19USFJFU0hPTEQgPSAyICAjIGF0LXJpc2s6IGxvd19zY29yZV9zdHJlYWsgPj0gMgoKCkBkYXRhY2xhc3MKY2xhc3MgQXRSaXNrQ2Fwc3VsZToKICAgIGNhcHN1bGVfaWQ6IHN0cgogICAgZ2FwX3RpdGxlOiBzdHIKICAgIGdhcF90eXBlOiBzdHIKICAgIG91dGNvbWVfc2NvcmU6IGZsb2F0CiAgICBsb3dfc2NvcmVfc3RyZWFrOiBpbnQKICAgIHN0YXR1czogc3RyCiAgICBwaW5uZWRfdHRsOiBpbnQgPSAwCiAgICB0cmlnZ2VyX2tleXdvcmRzOiBMaXN0W3N0cl0gPSBmaWVsZChkZWZhdWx0X2ZhY3Rvcnk9bGlzdCkKCgpkZWYgX2xvYWRfY2Fwc3VsZXMoKSAtPiBMaXN0W0RpY3Rbc3RyLCBBbnldXToKICAgIGlmIG5vdCBDQVBTVUxFX1BBVEguZXhpc3RzKCk6CiAgICAgICAgcmV0dXJuIFtdCiAgICBkYXRhID0ganNvbi5sb2FkcyhDQVBTVUxFX1BBVEgucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpKQogICAgcmV0dXJuIGRhdGEuZ2V0KCJjYXBzdWxlcyIsIFtdKQoKCmRlZiBfc2F2ZV9jYXBzdWxlcyhjYXBzdWxlczogTGlzdFtEaWN0W3N0ciwgQW55XV0pIC0+IE5vbmU6CiAgICBDQVBTVUxFX1BBVEgucGFyZW50Lm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgIENBUFNVTEVfUEFUSC53cml0ZV90ZXh0KAogICAgICAgIGpzb24uZHVtcHMoeyJjYXBzdWxlcyI6IGNhcHN1bGVzfSwgaW5kZW50PTIsIGVuc3VyZV9hc2NpaT1GYWxzZSksCiAgICAgICAgZW5jb2Rpbmc9InV0Zi04IiwKICAgICkKCgpkZWYgZ2V0X2F0X3Jpc2tfY2Fwc3VsZXModGhyZXNob2xkOiBpbnQgPSBTVFJFQUtfVEhSRVNIT0xEKSAtPiBMaXN0W0F0Umlza0NhcHN1bGVdOgogICAgIiIiUmV0dXJuIGFjdGl2ZSBjYXBzdWxlcyB3aXRoIGxvd19zY29yZV9zdHJlYWsgPj0gdGhyZXNob2xkLiIiIgogICAgYWxsX2NhcHMgPSBfbG9hZF9jYXBzdWxlcygpCiAgICByZXN1bHRzID0gW10KICAgIGZvciBjYXAgaW4gYWxsX2NhcHM6CiAgICAgICAgaWYgY2FwLmdldCgic3RhdHVzIikgbm90IGluICgiYWN0aXZlIiwgIiIpOgogICAgICAgICAgICBjb250aW51ZQogICAgICAgIHN0cmVhayA9IGNhcC5nZXQoImxvd19zY29yZV9zdHJlYWsiLCAwKQogICAgICAgIGlmIHN0cmVhayA8IHRocmVzaG9sZDoKICAgICAgICAgICAgY29udGludWUKICAgICAgICByZXN1bHRzLmFwcGVuZCgKICAgICAgICAgICAgQXRSaXNrQ2Fwc3VsZSgKICAgICAgICAgICAgICAgIGNhcHN1bGVfaWQ9Y2FwLmdldCgiY2Fwc3VsZV9pZCIsICIiKSwKICAgICAgICAgICAgICAgIGdhcF90aXRsZT1jYXAuZ2V0KCJhY3Rpb25fZ2FwX3RpdGxlIiwgIiIpLAogICAgICAgICAgICAgICAgZ2FwX3R5cGU9Y2FwLmdldCgiYWN0aW9uX2dhcF90eXBlIiwgIiIpLAogICAgICAgICAgICAgICAgb3V0Y29tZV9zY29yZT1jYXAuZ2V0KCJvdXRjb21lX3N1Y2Nlc3Nfc2NvcmUiLCAwLjApLAogICAgICAgICAgICAgICAgbG93X3Njb3JlX3N0cmVhaz1zdHJlYWssCiAgICAgICAgICAgICAgICBzdGF0dXM9Y2FwLmdldCgic3RhdHVzIiwgImFjdGl2ZSIpLAogICAgICAgICAgICAgICAgcGlubmVkX3R0bD1jYXAuZ2V0KCJwaW5uZWRfdHRsIiwgMCksCiAgICAgICAgICAgICAgICB0cmlnZ2VyX2tleXdvcmRzPWNhcC5nZXQoInRyaWdnZXJfa2V5d29yZHMiLCBbXSksCiAgICAgICAgICAgICkKICAgICAgICApCiAgICByZXN1bHRzLnNvcnQoa2V5PWxhbWJkYSB4OiAteC5sb3dfc2NvcmVfc3RyZWFrKQogICAgcmV0dXJuIHJlc3VsdHMKCgpkZWYga2VlcF9hY3RpdmUoY2Fwc3VsZV9pZDogc3RyKSAtPiBib29sOgogICAgIiIiUmVzZXQgbG93X3Njb3JlX3N0cmVhayB0byAwIGZvciBhIGNhcHN1bGUuIiIiCiAgICBjYXBzdWxlcyA9IF9sb2FkX2NhcHN1bGVzKCkKICAgIGZvdW5kID0gRmFsc2UKICAgIGZvciBjYXAgaW4gY2Fwc3VsZXM6CiAgICAgICAgaWYgY2FwLmdldCgiY2Fwc3VsZV9pZCIpID09IGNhcHN1bGVfaWQ6CiAgICAgICAgICAgIGNhcFsibG93X3Njb3JlX3N0cmVhayJdID0gMAogICAgICAgICAgICBjYXBbInBpbm5lZF90dGwiXSA9IDAKICAgICAgICAgICAgZm91bmQgPSBUcnVlCiAgICAgICAgICAgIGJyZWFrCiAgICBpZiBub3QgZm91bmQ6CiAgICAgICAgcmV0dXJuIEZhbHNlCiAgICBfc2F2ZV9jYXBzdWxlcyhjYXBzdWxlcykKICAgIHJldHVybiBUcnVlCgoKZGVmIHBpbl90b190dGwoY2Fwc3VsZV9pZDogc3RyLCB0dGw6IGludCA9IDMpIC0+IGJvb2w6CiAgICAiIiJQaW4gYSBjYXBzdWxlIHRvIFRUTCBjeWNsZXMgKHJlc2V0cyBzdHJlYWssIHNldHMgcGlubmVkX3R0bCkuIiIiCiAgICBjYXBzdWxlcyA9IF9sb2FkX2NhcHN1bGVzKCkKICAgIGZvdW5kID0gRmFsc2UKICAgIGZvciBjYXAgaW4gY2Fwc3VsZXM6CiAgICAgICAgaWYgY2FwLmdldCgiY2Fwc3VsZV9pZCIpID09IGNhcHN1bGVfaWQ6CiAgICAgICAgICAgIGNhcFsicGlubmVkX3R0bCJdID0gdHRsCiAgICAgICAgICAgIGNhcFsibG93X3Njb3JlX3N0cmVhayJdID0gMAogICAgICAgICAgICBmb3VuZCA9IFRydWUKICAgICAgICAgICAgYnJlYWsKICAgIGlmIG5vdCBmb3VuZDoKICAgICAgICByZXR1cm4gRmFsc2UKICAgIF9zYXZlX2NhcHN1bGVzKGNhcHN1bGVzKQogICAgcmV0dXJuIFRydWUKCgpkZWYgcmVuZGVyX2h0bWwoY2Fwc3VsZXM6IE9wdGlvbmFsW0xpc3RbQXRSaXNrQ2Fwc3VsZV1dID0gTm9uZSkgLT4gc3RyOgogICAgaWYgY2Fwc3VsZXMgaXMgTm9uZToKICAgICAgICBjYXBzdWxlcyA9IGdldF9hdF9yaXNrX2NhcHN1bGVzKCkKCiAgICBpZiBub3QgY2Fwc3VsZXM6CiAgICAgICAgcmV0dXJuICI8cD5ObyBhdC1yaXNrIGNhcHN1bGVzLiBBbGwgY2Fwc3VsZXMgYXJlIGhlYWx0aHkuPC9wPiIKCiAgICBsaW5lcyA9IFsnPGRpdiBjbGFzcz0iYXQtcmlzay1wYW5lbCI+J10KICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICBmIjxoMz7wn5qoIEF0LVJpc2sgQ2Fwc3VsZXMgPHNtYWxsIHN0eWxlPSdjb2xvcjojODg4Jz4oe2xlbihjYXBzdWxlcyl9IG5lZWQgYXR0ZW50aW9uKTwvc21hbGw+PC9oMz4iCiAgICApCiAgICBsaW5lcy5hcHBlbmQoJzx0YWJsZSBjbGFzcz0iYXQtcmlzay10YWJsZSI+JykKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiPHRoZWFkPjx0cj4iCiAgICAgICAgIjx0aD5HYXAgVGl0bGU8L3RoPiIKICAgICAgICAiPHRoPlR5cGU8L3RoPiIKICAgICAgICAiPHRoPlNjb3JlPC90aD4iCiAgICAgICAgIjx0aD5TdHJlYWs8L3RoPiIKICAgICAgICAiPHRoPlBpbm5lZDwvdGg+IgogICAgICAgICI8dGg+QWN0aW9uPC90aD4iCiAgICAgICAgIjwvdHI+PC90aGVhZD4iCiAgICApCiAgICBsaW5lcy5hcHBlbmQoIjx0Ym9keT4iKQoKICAgIGZvciBjYXAgaW4gY2Fwc3VsZXM6CiAgICAgICAgc3RyZWFrX2JhciA9ICLwn5S0IiAqIGNhcC5sb3dfc2NvcmVfc3RyZWFrCiAgICAgICAgcGlubmVkID0gZiJUVEwge2NhcC5waW5uZWRfdHRsfSIgaWYgY2FwLnBpbm5lZF90dGwgPiAwIGVsc2UgIuKAlCIKICAgICAgICBsaW5lcy5hcHBlbmQoIjx0cj4iKQogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgZiI8dGQgc3R5bGU9J21heC13aWR0aDoyMjBweDtvdmVyZmxvdzpoaWRkZW47dGV4dC1vdmVyZmxvdzplbGxpcHNpczt3aGl0ZS1zcGFjZTpub3dyYXAnPjxjb2RlIHRpdGxlPSd7Y2FwLmdhcF90aXRsZX0nPntjYXAuZ2FwX3RpdGxlWzozNV19PC9jb2RlPjwvdGQ+IgogICAgICAgICkKICAgICAgICBsaW5lcy5hcHBlbmQoZiI8dGQ+PGNvZGU+e2NhcC5nYXBfdHlwZX08L2NvZGU+PC90ZD4iKQogICAgICAgIGxpbmVzLmFwcGVuZChmIjx0ZD57Y2FwLm91dGNvbWVfc2NvcmU6LjJmfTwvdGQ+IikKICAgICAgICBsaW5lcy5hcHBlbmQoZiI8dGQ+e3N0cmVha19iYXJ9IDxzbWFsbD57Y2FwLmxvd19zY29yZV9zdHJlYWt9PC9zbWFsbD48L3RkPiIpCiAgICAgICAgbGluZXMuYXBwZW5kKGYiPHRkPntwaW5uZWR9PC90ZD4iKQogICAgICAgIGxpbmVzLmFwcGVuZCgiPHRkPiIpCiAgICAgICAgbGluZXMuYXBwZW5kKAogICAgICAgICAgICBmJzxidXR0b24gY2xhc3M9ImJ0biBidG4tc21hbGwgYnRuLWtlZXAiIG9uY2xpY2s9ImtlZXBBY3RpdmUoXCd7Y2FwLmNhcHN1bGVfaWR9XCcpIj7inJMgS2VlcCBBY3RpdmU8L2J1dHRvbj4nCiAgICAgICAgKQogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgZic8YnV0dG9uIGNsYXNzPSJidG4gYnRuLXNtYWxsIGJ0bi1waW4iIG9uY2xpY2s9InBpblRvVFRMKFwne2NhcC5jYXBzdWxlX2lkfVwnKSI+8J+TjCBQaW4gVFRMPC9idXR0b24+JwogICAgICAgICkKICAgICAgICBsaW5lcy5hcHBlbmQoIjwvdGQ+IikKICAgICAgICBsaW5lcy5hcHBlbmQoIjwvdHI+IikKCiAgICBsaW5lcy5hcHBlbmQoIjwvdGJvZHk+PC90YWJsZT4iKQogICAgbGluZXMuYXBwZW5kKCI8c3R5bGU+IikKICAgIGxpbmVzLmFwcGVuZCgiLmF0LXJpc2stcGFuZWwgeyBmb250LWZhbWlseTogR2VvcmdpYSwgc2VyaWY7IH0iKQogICAgbGluZXMuYXBwZW5kKCIuYXQtcmlzay10YWJsZSB7IHdpZHRoOiAxMDAlOyBib3JkZXItY29sbGFwc2U6IGNvbGxhcHNlOyBtYXJnaW4tdG9wOiAxcmVtOyB9IikKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiLmF0LXJpc2stdGFibGUgdGgsIC5hdC1yaXNrLXRhYmxlIHRkIHsgcGFkZGluZzogMC40cmVtIDAuOHJlbTsgYm9yZGVyLWJvdHRvbTogMXB4IHNvbGlkICNlOGU0ZGU7IHRleHQtYWxpZ246IGxlZnQ7IH0iCiAgICApCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIi5hdC1yaXNrLXRhYmxlIHRoIHsgZm9udC1zaXplOiAwLjc1cmVtOyB0ZXh0LXRyYW5zZm9ybTogdXBwZXJjYXNlOyBsZXR0ZXItc3BhY2luZzogMC4wNWVtOyBjb2xvcjogIzdhNzU3MDsgfSIKICAgICkKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiLmJ0bi1zbWFsbCB7IHBhZGRpbmc6IDNweCAxMHB4OyBmb250LXNpemU6IDEycHg7IGJvcmRlci1yYWRpdXM6IDRweDsgY3Vyc29yOiBwb2ludGVyOyB9IgogICAgKQogICAgbGluZXMuYXBwZW5kKCIuYnRuLWtlZXAgeyBiYWNrZ3JvdW5kOiAjN0E5RTdBOyBjb2xvcjogd2hpdGU7IGJvcmRlcjogbm9uZTsgfSIpCiAgICBsaW5lcy5hcHBlbmQoIi5idG4tcGluIHsgYmFja2dyb3VuZDogIzZCOEZCNTsgY29sb3I6IHdoaXRlOyBib3JkZXI6IG5vbmU7IG1hcmdpbi1sZWZ0OiA0cHg7IH0iKQogICAgbGluZXMuYXBwZW5kKCI8L3N0eWxlPiIpCiAgICBsaW5lcy5hcHBlbmQoIjwvZGl2PiIpCiAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQo=
+"""At-Risk Capsule Scanner.
+
+Shows capsules approaching auto-archive threshold (low_score_streak >= 2).
+Supports keep-active (reset streak) and pin-to-TTL operations.
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+
+CAPSULE_PATH = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+STREAK_THRESHOLD = 2  # at-risk: low_score_streak >= 2
+
+
+@dataclass
+class AtRiskCapsule:
+    capsule_id: str
+    gap_title: str
+    gap_type: str
+    outcome_score: float
+    low_score_streak: int
+    status: str
+    pinned_ttl: int = 0
+    trigger_keywords: List[str] = field(default_factory=list)
+
+
+def _load_capsules() -> List[Dict[str, Any]]:
+    if not CAPSULE_PATH.exists():
+        return []
+    data = json.loads(CAPSULE_PATH.read_text(encoding="utf-8"))
+    return data.get("capsules", [])
+
+
+def _save_capsules(capsules: List[Dict[str, Any]]) -> None:
+    CAPSULE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    CAPSULE_PATH.write_text(
+        json.dumps({"capsules": capsules}, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
+def get_at_risk_capsules(threshold: int = STREAK_THRESHOLD) -> List[AtRiskCapsule]:
+    """Return active capsules with low_score_streak >= threshold."""
+    all_caps = _load_capsules()
+    results = []
+    for cap in all_caps:
+        if cap.get("status") not in ("active", ""):
+            continue
+        streak = cap.get("low_score_streak", 0)
+        if streak < threshold:
+            continue
+        results.append(AtRiskCapsule(
+            capsule_id=cap.get("capsule_id", ""),
+            gap_title=cap.get("action_gap_title", ""),
+            gap_type=cap.get("action_gap_type", ""),
+            outcome_score=cap.get("outcome_success_score", 0.0),
+            low_score_streak=streak,
+            status=cap.get("status", "active"),
+            pinned_ttl=cap.get("pinned_ttl", 0),
+            trigger_keywords=cap.get("trigger_keywords", []),
+        ))
+    results.sort(key=lambda x: -x.low_score_streak)
+    return results
+
+
+def keep_active(capsule_id: str) -> bool:
+    """Reset low_score_streak to 0 for a capsule."""
+    capsules = _load_capsules()
+    found = False
+    for cap in capsules:
+        if cap.get("capsule_id") == capsule_id:
+            cap["low_score_streak"] = 0
+            cap["pinned_ttl"] = 0
+            found = True
+            break
+    if not found:
+        return False
+    _save_capsules(capsules)
+    return True
+
+
+def pin_to_ttl(capsule_id: str, ttl: int = 3) -> bool:
+    """Pin a capsule to TTL cycles (resets streak, sets pinned_ttl)."""
+    capsules = _load_capsules()
+    found = False
+    for cap in capsules:
+        if cap.get("capsule_id") == capsule_id:
+            cap["pinned_ttl"] = ttl
+            cap["low_score_streak"] = 0
+            found = True
+            break
+    if not found:
+        return False
+    _save_capsules(capsules)
+    return True
+
+
+def render_html(capsules: Optional[List[AtRiskCapsule]] = None) -> str:
+    if capsules is None:
+        capsules = get_at_risk_capsules()
+
+    if not capsules:
+        return "<p>No at-risk capsules. All capsules are healthy.</p>"
+
+    lines = ['<div class="at-risk-panel">']
+    lines.append(f"<h3>🚨 At-Risk Capsules <small style='color:#888'>({len(capsules)} need attention)</small></h3>")
+    lines.append('<table class="at-risk-table">')
+    lines.append("<thead><tr>"
+                 "<th>Gap Title</th>"
+                 "<th>Type</th>"
+                 "<th>Score</th>"
+                 "<th>Streak</th>"
+                 "<th>Pinned</th>"
+                 "<th>Action</th>"
+                 "</tr></thead>")
+    lines.append("<tbody>")
+
+    for cap in capsules:
+        streak_bar = "🔴" * cap.low_score_streak
+        pinned = f"TTL {cap.pinned_ttl}" if cap.pinned_ttl > 0 else "—"
+        lines.append("<tr>")
+        lines.append(f"<td style='max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'><code title='{cap.gap_title}'>{cap.gap_title[:35]}</code></td>")
+        lines.append(f"<td><code>{cap.gap_type}</code></td>")
+        lines.append(f"<td>{cap.outcome_score:.2f}</td>")
+        lines.append(f"<td>{streak_bar} <small>{cap.low_score_streak}</small></td>")
+        lines.append(f"<td>{pinned}</td>")
+        lines.append("<td>")
+        lines.append(f'<button class="btn btn-small btn-keep" onclick="keepActive(\'{cap.capsule_id}\')">✓ Keep Active</button>')
+        lines.append(f'<button class="btn btn-small btn-pin" onclick="pinToTTL(\'{cap.capsule_id}\')">📌 Pin TTL</button>')
+        lines.append("</td>")
+        lines.append("</tr>")
+
+    lines.append("</tbody></table>")
+    lines.append("<style>")
+    lines.append(".at-risk-panel { font-family: Georgia, serif; }")
+    lines.append(".at-risk-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }")
+    lines.append(".at-risk-table th, .at-risk-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }")
+    lines.append(".at-risk-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }")
+    lines.append(".btn-small { padding: 3px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; }")
+    lines.append(".btn-keep { background: #7A9E7A; color: white; border: none; }")
+    lines.append(".btn-pin { background: #6B8FB5; color: white; border: none; margin-left: 4px; }")
+    lines.append("</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

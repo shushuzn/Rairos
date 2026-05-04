@@ -1,1 +1,175 @@
-IiIiQ0xJIGNvbW1hbmQ6IHZhbGlkYXRlIOKAlCBSZXNlYXJjaCBxdWVzdGlvbiB2YWxpZGF0aW9uLiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGFyZ3BhcnNlCgpmcm9tIGNsaS5fc2hhcmVkIGltcG9ydCBnZXRfZGIsIHByaW50X2luZm8KZnJvbSBsbG0uaW5zaWdodF9ldm9sdXRpb24gaW1wb3J0IEV2b2x1dGlvblRyYWNrZXIsIEV4cGxvcmF0aW9uQWN0aW9uCmZyb20gbGxtLnF1ZXN0aW9uX3ZhbGlkYXRvciBpbXBvcnQgUXVlc3Rpb25WYWxpZGF0b3IKCgpkZWYgX2J1aWxkX3ZhbGlkYXRlX3BhcnNlcihzdWJwYXJzZXJzKSAtPiBhcmdwYXJzZS5Bcmd1bWVudFBhcnNlcjoKICAgICIiIkJ1aWxkIHRoZSB2YWxpZGF0ZSBzdWJjb21tYW5kIHBhcnNlci4iIiIKICAgIHAgPSBzdWJwYXJzZXJzLmFkZF9wYXJzZXIoCiAgICAgICAgInZhbGlkYXRlIiwKICAgICAgICBoZWxwPSJWYWxpZGF0ZSBub3ZlbHR5IG9mIHJlc2VhcmNoIHF1ZXN0aW9ucyIsCiAgICAgICAgZGVzY3JpcHRpb249IkFuYWx5emUgYSByZXNlYXJjaCBxdWVzdGlvbidzIG5vdmVsdHkgYW5kIGZlYXNpYmlsaXR5LiIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAicXVlc3Rpb24iLAogICAgICAgIG5hcmdzPSI/IiwKICAgICAgICBkZWZhdWx0PU5vbmUsCiAgICAgICAgaGVscD0iUmVzZWFyY2ggcXVlc3Rpb24gdG8gdmFsaWRhdGUiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tbm8tbGxtIiwKICAgICAgICBhY3Rpb249InN0b3JlX3RydWUiLAogICAgICAgIGhlbHA9IkRpc2FibGUgTExNIGFuYWx5c2lzIChydWxlLWJhc2VkIG9ubHkpIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWpzb24iLAogICAgICAgICItaiIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBoZWxwPSJPdXRwdXQgYXMgSlNPTiIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1kZXB0aCIsCiAgICAgICAgIi1kIiwKICAgICAgICBjaG9pY2VzPVsicXVpY2siLCAiZnVsbCJdLAogICAgICAgIGRlZmF1bHQ9InF1aWNrIiwKICAgICAgICBoZWxwPSJBbmFseXNpcyBkZXB0aCAoZGVmYXVsdDogcXVpY2spIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLW1vZGVsIiwKICAgICAgICAiLW0iLAogICAgICAgIHR5cGU9c3RyLAogICAgICAgIGRlZmF1bHQ9Tm9uZSwKICAgICAgICBoZWxwPSJMTE0gbW9kZWwgdG8gdXNlIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWludGVyYWN0aXZlIiwKICAgICAgICAiLWkiLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iSW50ZXJhY3RpdmUgZXhwbG9yYXRpb24gbW9kZSIsCiAgICApCiAgICByZXR1cm4gcCAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KCgpkZWYgX3J1bl92YWxpZGF0ZShhcmdzOiBhcmdwYXJzZS5OYW1lc3BhY2UpIC0+IGludDoKICAgICIiIlJ1biBxdWVzdGlvbiB2YWxpZGF0aW9uIGNvbW1hbmQuIiIiCiAgICBkYiA9IGdldF9kYigpCiAgICBkYi5pbml0KCkKCiAgICB2YWxpZGF0b3IgPSBRdWVzdGlvblZhbGlkYXRvcihkYj1kYikKCiAgICAjIEludGVyYWN0aXZlIG1vZGUKICAgIGlmIGFyZ3MuaW50ZXJhY3RpdmUgb3Igbm90IGFyZ3MucXVlc3Rpb246CiAgICAgICAgcmV0dXJuIF9ydW5faW50ZXJhY3RpdmUodmFsaWRhdG9yLCBhcmdzKQoKICAgICMgU2luZ2xlIHF1ZXN0aW9uIHZhbGlkYXRpb24KICAgIHByaW50X2luZm8oZiLwn5SsIFZhbGlkYXRpbmc6IHthcmdzLnF1ZXN0aW9ufSIpCgogICAgcmVzdWx0ID0gdmFsaWRhdG9yLnZhbGlkYXRlKAogICAgICAgIHF1ZXN0aW9uPWFyZ3MucXVlc3Rpb24sCiAgICAgICAgdXNlX2xsbT1ub3QgYXJncy5ub19sbG0sCiAgICAgICAgbW9kZWw9YXJncy5tb2RlbCwKICAgICAgICBkZXB0aD1hcmdzLmRlcHRoLAogICAgKQoKICAgICMgUmVjb3JkIE5BUlJBVEVEIGV2ZW50IHNvIGdhcCBzb3J0aW5nIGxlYXJucyBmcm9tIHZhbGlkYXRpb24gYWN0aXZpdHkKICAgIHRyeToKICAgICAgICB0cmFja2VyID0gRXZvbHV0aW9uVHJhY2tlcigpCiAgICAgICAgdHJhY2tlci5yZWNvcmRfZXZlbnQoCiAgICAgICAgICAgIHRvcGljPWFyZ3MucXVlc3Rpb24sCiAgICAgICAgICAgIGFjdGlvbj1FeHBsb3JhdGlvbkFjdGlvbi5OQVJSQVRFRCwKICAgICAgICAgICAgbm90ZXM9ZiJ2YWxpZGF0ZWQgKGRlcHRoPXthcmdzLmRlcHRofSkiLAogICAgICAgICkKICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgcGFzcyAgIyBOb24tZmF0YWwKCiAgICBpZiBhcmdzLmpzb246CiAgICAgICAgcHJpbnQodmFsaWRhdG9yLnJlbmRlcl9qc29uKHJlc3VsdCkpCiAgICBlbHNlOgogICAgICAgIHByaW50KCkKICAgICAgICBwcmludCh2YWxpZGF0b3IucmVuZGVyX3Jlc3VsdChyZXN1bHQpKQoKICAgIHJldHVybiAwCgoKZGVmIF9ydW5faW50ZXJhY3RpdmUodmFsaWRhdG9yOiBRdWVzdGlvblZhbGlkYXRvciwgYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKSAtPiBpbnQ6CiAgICAiIiJJbnRlcmFjdGl2ZSB2YWxpZGF0aW9uIG1vZGUuIiIiCiAgICBwcmludCgi8J+UrCBSZXNlYXJjaCBRdWVzdGlvbiBWYWxpZGF0b3IiKQogICAgcHJpbnQoIiAg6L6T5YWl56CU56m26Zeu6aKY5byA5aeL6aqM6K+BIikKICAgIHByaW50KCIgIOi+k+WFpSBuby1sbG0g5YiH5o2iIExMTSDliIbmnpAiKQogICAgcHJpbnQoIiAg6L6T5YWlIGRlcHRoIHF1aWNrL2Z1bGwg5YiH5o2i5YiG5p6Q5rex5bqmIikKICAgIHByaW50KCIgIOi+k+WFpSBqc29uIOWIh+aNoiBKU09OIOi+k+WHuiIpCiAgICBwcmludCgiICDovpPlhaUgcS9xdWl0IOmAgOWHuiIpCiAgICBwcmludCgpCgogICAgdXNlX2xsbSA9IFRydWUKICAgIGRlcHRoID0gInF1aWNrIgogICAgdXNlX2pzb24gPSBGYWxzZQoKICAgIHdoaWxlIFRydWU6CiAgICAgICAgdHJ5OgogICAgICAgICAgICB1c2VyX2lucHV0ID0gaW5wdXQoIuKdryAiKS5zdHJpcCgpCiAgICAgICAgZXhjZXB0IChFT0ZFcnJvciwgS2V5Ym9hcmRJbnRlcnJ1cHQpOgogICAgICAgICAgICBwcmludCgpCiAgICAgICAgICAgIGJyZWFrCgogICAgICAgIGlmIG5vdCB1c2VyX2lucHV0OgogICAgICAgICAgICBjb250aW51ZQoKICAgICAgICBjbWQgPSB1c2VyX2lucHV0Lmxvd2VyKCkKCiAgICAgICAgaWYgY21kIGluICgicSIsICJxdWl0IiwgImV4aXQiKToKICAgICAgICAgICAgYnJlYWsKCiAgICAgICAgaWYgY21kID09ICJuby1sbG0iOgogICAgICAgICAgICB1c2VfbGxtID0gbm90IHVzZV9sbG0KICAgICAgICAgICAgc3RhdHVzID0gIuemgeeUqCIgaWYgbm90IHVzZV9sbG0gZWxzZSAi5ZCv55SoIgogICAgICAgICAgICBwcmludChmIiAg4pyTIExMTSDliIbmnpDlt7J7c3RhdHVzfSIpCiAgICAgICAgICAgIGNvbnRpbnVlCgogICAgICAgIGlmIGNtZCA9PSAianNvbiI6CiAgICAgICAgICAgIHVzZV9qc29uID0gbm90IHVzZV9qc29uCiAgICAgICAgICAgIHN0YXR1cyA9ICLlkK/nlKgiIGlmIHVzZV9qc29uIGVsc2UgIuemgeeUqCIKICAgICAgICAgICAgcHJpbnQoZiIgIOKckyBKU09OIOi+k+WHuuW3sntzdGF0dXN9IikKICAgICAgICAgICAgY29udGludWUKCiAgICAgICAgaWYgY21kIGluICgiZGVwdGggcXVpY2siLCAicXVpY2siKToKICAgICAgICAgICAgZGVwdGggPSAicXVpY2siCiAgICAgICAgICAgIHByaW50KCIgIOKckyDliIbmnpDmt7HluqY6IHF1aWNrIikKICAgICAgICAgICAgY29udGludWUKCiAgICAgICAgaWYgY21kIGluICgiZGVwdGggZnVsbCIsICJmdWxsIik6CiAgICAgICAgICAgIGRlcHRoID0gImZ1bGwiCiAgICAgICAgICAgIHByaW50KCIgIOKckyDliIbmnpDmt7HluqY6IGZ1bGwiKQogICAgICAgICAgICBjb250aW51ZQoKICAgICAgICAjIFRyZWF0IGFzIHF1ZXN0aW9uCiAgICAgICAgcXVlc3Rpb24gPSB1c2VyX2lucHV0CiAgICAgICAgcHJpbnQoKQogICAgICAgIHByaW50KGYi8J+UrCBWYWxpZGF0aW5nOiB7cXVlc3Rpb25bOjYwXX0uLi4iKQogICAgICAgIHByaW50KGYiICAgTExNOiB7J+WQr+eUqCcgaWYgdXNlX2xsbSBlbHNlICfnpoHnlKgnfSB8IOa3seW6pjoge2RlcHRofSIpCgogICAgICAgIHJlc3VsdCA9IHZhbGlkYXRvci52YWxpZGF0ZSgKICAgICAgICAgICAgcXVlc3Rpb249cXVlc3Rpb24sCiAgICAgICAgICAgIHVzZV9sbG09dXNlX2xsbSwKICAgICAgICAgICAgZGVwdGg9ZGVwdGgsCiAgICAgICAgKQoKICAgICAgICB0cnk6CiAgICAgICAgICAgIHRyYWNrZXIgPSBFdm9sdXRpb25UcmFja2VyKCkKICAgICAgICAgICAgdHJhY2tlci5yZWNvcmRfZXZlbnQoCiAgICAgICAgICAgICAgICB0b3BpYz1xdWVzdGlvbiwKICAgICAgICAgICAgICAgIGFjdGlvbj1FeHBsb3JhdGlvbkFjdGlvbi5OQVJSQVRFRCwKICAgICAgICAgICAgICAgIG5vdGVzPWYidmFsaWRhdGVkIChkZXB0aD17ZGVwdGh9KSIsCiAgICAgICAgICAgICkKICAgICAgICBleGNlcHQgRXhjZXB0aW9uOgogICAgICAgICAgICBwYXNzCgogICAgICAgIGlmIHVzZV9qc29uOgogICAgICAgICAgICBwcmludCh2YWxpZGF0b3IucmVuZGVyX2pzb24ocmVzdWx0KSkKICAgICAgICBlbHNlOgogICAgICAgICAgICBwcmludCh2YWxpZGF0b3IucmVuZGVyX3Jlc3VsdChyZXN1bHQpKQoKICAgICAgICBwcmludCgpCgogICAgcmV0dXJuIDAK
+"""CLI command: validate — Research question validation."""
+from __future__ import annotations
+
+import argparse
+
+from cli._shared import get_db, print_info
+from llm.insight_evolution import EvolutionTracker, ExplorationAction
+from llm.question_validator import QuestionValidator
+
+
+def _build_validate_parser(subparsers) -> argparse.ArgumentParser:
+    """Build the validate subcommand parser."""
+    p = subparsers.add_parser(
+        "validate",
+        help="Validate novelty of research questions",
+        description="Analyze a research question's novelty and feasibility.",
+    )
+    p.add_argument(
+        "question",
+        nargs="?",
+        default=None,
+        help="Research question to validate",
+    )
+    p.add_argument(
+        "--no-llm",
+        action="store_true",
+        help="Disable LLM analysis (rule-based only)",
+    )
+    p.add_argument(
+        "--json", "-j",
+        action="store_true",
+        help="Output as JSON",
+    )
+    p.add_argument(
+        "--depth", "-d",
+        choices=["quick", "full"],
+        default="quick",
+        help="Analysis depth (default: quick)",
+    )
+    p.add_argument(
+        "--model", "-m",
+        type=str,
+        default=None,
+        help="LLM model to use",
+    )
+    p.add_argument(
+        "--interactive", "-i",
+        action="store_true",
+        help="Interactive exploration mode",
+    )
+    return p  # type: ignore[no-any-return]
+
+
+def _run_validate(args: argparse.Namespace) -> int:
+    """Run question validation command."""
+    db = get_db()
+    db.init()
+
+    validator = QuestionValidator(db=db)
+
+    # Interactive mode
+    if args.interactive or not args.question:
+        return _run_interactive(validator, args)
+
+    # Single question validation
+    print_info(f"🔬 Validating: {args.question}")
+
+    result = validator.validate(
+        question=args.question,
+        use_llm=not args.no_llm,
+        model=args.model,
+        depth=args.depth,
+    )
+
+    # Record NARRATED event so gap sorting learns from validation activity
+    try:
+        tracker = EvolutionTracker()
+        tracker.record_event(
+            topic=args.question,
+            action=ExplorationAction.NARRATED,
+            notes=f"validated (depth={args.depth})",
+        )
+    except Exception:
+        pass  # Non-fatal
+
+    if args.json:
+        print(validator.render_json(result))
+    else:
+        print()
+        print(validator.render_result(result))
+
+    return 0
+
+
+def _run_interactive(validator: QuestionValidator, args: argparse.Namespace) -> int:
+    """Interactive validation mode."""
+    print("🔬 Research Question Validator")
+    print("  输入研究问题开始验证")
+    print("  输入 no-llm 切换 LLM 分析")
+    print("  输入 depth quick/full 切换分析深度")
+    print("  输入 json 切换 JSON 输出")
+    print("  输入 q/quit 退出")
+    print()
+
+    use_llm = True
+    depth = "quick"
+    use_json = False
+
+    while True:
+        try:
+            user_input = input("❯ ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            break
+
+        if not user_input:
+            continue
+
+        cmd = user_input.lower()
+
+        if cmd in ("q", "quit", "exit"):
+            break
+
+        if cmd == "no-llm":
+            use_llm = not use_llm
+            status = "禁用" if not use_llm else "启用"
+            print(f"  ✓ LLM 分析已{status}")
+            continue
+
+        if cmd == "json":
+            use_json = not use_json
+            status = "启用" if use_json else "禁用"
+            print(f"  ✓ JSON 输出已{status}")
+            continue
+
+        if cmd in ("depth quick", "quick"):
+            depth = "quick"
+            print("  ✓ 分析深度: quick")
+            continue
+
+        if cmd in ("depth full", "full"):
+            depth = "full"
+            print("  ✓ 分析深度: full")
+            continue
+
+        # Treat as question
+        question = user_input
+        print()
+        print(f"🔬 Validating: {question[:60]}...")
+        print(f"   LLM: {'启用' if use_llm else '禁用'} | 深度: {depth}")
+
+        result = validator.validate(
+            question=question,
+            use_llm=use_llm,
+            depth=depth,
+        )
+
+        try:
+            tracker = EvolutionTracker()
+            tracker.record_event(
+                topic=question,
+                action=ExplorationAction.NARRATED,
+                notes=f"validated (depth={depth})",
+            )
+        except Exception:
+            pass
+
+        if use_json:
+            print(validator.render_json(result))
+        else:
+            print(validator.render_result(result))
+
+        print()
+
+    return 0

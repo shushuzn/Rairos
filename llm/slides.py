@@ -1,1 +1,473 @@
-IiIiClBhcGVyIOKGkiBTbGlkZXM6IOiHquWKqOS7juiuuuaWh+eUn+aIkOa8lOekuuaWh+eovwoK5qC45b+D5Yqf6IO977yaCjEuIOiuuuaWh+WGheWuueaPkOWPlu+8iOagh+mimOOAgeaRmOimgeOAgeaWueazleOAgeWunumqjOOAgee7k+iuuu+8iQoyLiBMTE0g55Sf5oiQ5bm754Gv54mH57uT5p6ECjMuIOWkmuagvOW8j+i+k+WHuu+8iFBQVFgvTUQvSFRNTO+8iQo0LiDmvJTorrLogIXlpIfms6jnlJ/miJAKIiIiCgpmcm9tIF9fZnV0dXJlX18gaW1wb3J0IGFubm90YXRpb25zCgpmcm9tIGRhdGFjbGFzc2VzIGltcG9ydCBkYXRhY2xhc3MsIGZpZWxkCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgT3B0aW9uYWwsIExpc3QsIERpY3QsIEFueSwgY2FzdAoKIyDlj6/pgInkvp3otZbvvJpweXRob24tcHB0eAp0cnk6CiAgICBmcm9tIHBwdHggaW1wb3J0IFByZXNlbnRhdGlvbgogICAgZnJvbSBwcHR4LnV0aWwgaW1wb3J0IEluY2hlcywgUHQKCiAgICBIQVNfUFBUWCA9IFRydWUKZXhjZXB0IEltcG9ydEVycm9yOgogICAgSEFTX1BQVFggPSBGYWxzZQoKZnJvbSBkYi5kYXRhYmFzZSBpbXBvcnQgRGF0YWJhc2UKZnJvbSBzZWN0aW9ucy5zZWdtZW50IGltcG9ydCBzZWdtZW50X2ludG9fc2VjdGlvbnMsIGZvcm1hdF9zZWN0aW9uX3NuaXBwZXRzCgoKQGRhdGFjbGFzcwpjbGFzcyBTbGlkZXNDb25maWc6CiAgICAiIiLlubvnga/niYfnlJ/miJDphY3nva4uIiIiCgogICAgdGVtcGxhdGU6IHN0ciA9ICJhY2FkZW1pYyIgICMgYWNhZGVtaWMgfCBtaW5pbWFsIHwgbW9kZXJuCiAgICBudW1fc2xpZGVzOiBpbnQgPSAxMCAgIyDlubvnga/niYfmlbDph48KICAgIG91dHB1dF9mb3JtYXQ6IHN0ciA9ICJwcHR4IiAgIyBwcHR4IHwgbWQgfCBodG1sCiAgICBvdXRwdXRfcGF0aDogT3B0aW9uYWxbc3RyXSA9IE5vbmUKICAgIGluY2x1ZGVfbm90ZXM6IGJvb2wgPSBGYWxzZSAgIyDljIXlkKvmvJTorrLogIXlpIfms6gKICAgIGxhbmd1YWdlOiBzdHIgPSAiemgiICAjIHpoIHwgZW4gfCBiaWxpbmd1YWwKCgpAZGF0YWNsYXNzCmNsYXNzIFNsaWRlOgogICAgIiIi5Y2V5Liq5bm754Gv54mHLiIiIgoKICAgIHRpdGxlOiBzdHIKICAgIGNvbnRlbnQ6IHN0cgogICAgbm90ZXM6IHN0ciA9ICIiCiAgICBzbGlkZV90eXBlOiBzdHIgPSAiY29udGVudCIgICMgdGl0bGUgfCBjb250ZW50IHwgY29tcGFyaXNvbiB8IHN1bW1hcnkKCgpAZGF0YWNsYXNzCmNsYXNzIFNsaWRlc1Jlc3VsdDoKICAgICIiIueUn+aIkOe7k+aenC4iIiIKCiAgICBvdXRwdXRfcGF0aDogc3RyCiAgICBzbGlkZV9jb3VudDogaW50CiAgICBwYXBlcl9jb3VudDogaW50CiAgICBzbGlkZXM6IExpc3RbU2xpZGVdID0gZmllbGQoZGVmYXVsdF9mYWN0b3J5PWxpc3QpCgoKY2xhc3MgUGFwZXJTbGlkZXNHZW5lcmF0b3I6CiAgICAiIiLorrrmlofliLDlubvnga/niYfnlJ/miJDlmaguIiIiCgogICAgIyDlubvnga/niYfmqKHmnb/nu5PmnoQKICAgIFRFTVBMQVRFUyA9IHsKICAgICAgICAiYWNhZGVtaWMiOiB7CiAgICAgICAgICAgICJ0aXRsZV9zbGlkZSI6IHsibGF5b3V0IjogInRpdGxlIiwgImJnX2NvbG9yIjogTm9uZX0sCiAgICAgICAgICAgICJjb250ZW50X3NsaWRlIjogeyJsYXlvdXQiOiAiY29udGVudCIsICJmb250X3RpdGxlIjogMzIsICJmb250X2JvZHkiOiAxOH0sCiAgICAgICAgICAgICJzZWN0aW9uX3NsaWRlIjogeyJsYXlvdXQiOiAic2VjdGlvbl9oZWFkZXIifSwKICAgICAgICB9LAogICAgICAgICJtaW5pbWFsIjogewogICAgICAgICAgICAidGl0bGVfc2xpZGUiOiB7ImxheW91dCI6ICJibGFuayJ9LAogICAgICAgICAgICAiY29udGVudF9zbGlkZSI6IHsibGF5b3V0IjogImJsYW5rIiwgImZvbnRfdGl0bGUiOiAyOCwgImZvbnRfYm9keSI6IDE2fSwKICAgICAgICAgICAgInNlY3Rpb25fc2xpZGUiOiB7ImxheW91dCI6ICJibGFuayJ9LAogICAgICAgIH0sCiAgICAgICAgIm1vZGVybiI6IHsKICAgICAgICAgICAgInRpdGxlX3NsaWRlIjogeyJsYXlvdXQiOiAidGl0bGUiLCAiYmdfY29sb3IiOiAoMCwgMTAwLCAxODApfSwKICAgICAgICAgICAgImNvbnRlbnRfc2xpZGUiOiB7ImxheW91dCI6ICJjb250ZW50IiwgImZvbnRfdGl0bGUiOiAzNiwgImZvbnRfYm9keSI6IDIwfSwKICAgICAgICAgICAgInNlY3Rpb25fc2xpZGUiOiB7ImxheW91dCI6ICJzZWN0aW9uX2hlYWRlciIsICJiZ19jb2xvciI6ICgyNDAsIDI0MCwgMjQwKX0sCiAgICAgICAgfSwKICAgIH0KCiAgICBkZWYgX19pbml0X18oc2VsZiwgZGI6IE9wdGlvbmFsW0RhdGFiYXNlXSA9IE5vbmUpOgogICAgICAgIHNlbGYuZGIgPSBkYiBvciBEYXRhYmFzZSgpCiAgICAgICAgc2VsZi5fbGxtX2NsaWVudCA9IE5vbmUKCiAgICBAcHJvcGVydHkKICAgIGRlZiBsbG1fY2xpZW50KHNlbGYpOgogICAgICAgICIiIuW7tui/n+WKoOi9vSBMTE0g5a6i5oi356uvLiIiIgogICAgICAgIGlmIHNlbGYuX2xsbV9jbGllbnQgaXMgTm9uZToKICAgICAgICAgICAgZnJvbSBsbG0uY2xpZW50IGltcG9ydCBnZXRfZGVmYXVsdF9jbGllbnQKCiAgICAgICAgICAgIHNlbGYuX2xsbV9jbGllbnQgPSBnZXRfZGVmYXVsdF9jbGllbnQoKQogICAgICAgIHJldHVybiBzZWxmLl9sbG1fY2xpZW50CgogICAgZGVmIGdlbmVyYXRlKAogICAgICAgIHNlbGYsCiAgICAgICAgcGFwZXJfaWRzOiBMaXN0W3N0cl0sCiAgICAgICAgY29uZmlnOiBPcHRpb25hbFtTbGlkZXNDb25maWddID0gTm9uZSwKICAgICkgLT4gU2xpZGVzUmVzdWx0OgogICAgICAgICIiIueUn+aIkOW5u+eBr+eJhy4KCiAgICAgICAgQXJnczoKICAgICAgICAgICAgcGFwZXJfaWRzOiDorrrmlocgSUQg5YiX6KGoCiAgICAgICAgICAgIGNvbmZpZzog55Sf5oiQ6YWN572uCgogICAgICAgIFJldHVybnM6CiAgICAgICAgICAgIFNsaWRlc1Jlc3VsdDog55Sf5oiQ57uT5p6cCiAgICAgICAgIiIiCiAgICAgICAgY29uZmlnID0gY29uZmlnIG9yIFNsaWRlc0NvbmZpZygpCgogICAgICAgICMgMS4g6I635Y+W6K665paH5YaF5a65CiAgICAgICAgcGFwZXJzX2NvbnRlbnQgPSBzZWxmLl9mZXRjaF9wYXBlcnNfY29udGVudChwYXBlcl9pZHMpCgogICAgICAgICMgMi4g55Sf5oiQ5bm754Gv54mH57uT5p6ECiAgICAgICAgc2xpZGVzID0gc2VsZi5fZ2VuZXJhdGVfc2xpZGVfc3RydWN0dXJlKHBhcGVyc19jb250ZW50LCBjb25maWcpCgogICAgICAgICMgMy4g6L6T5Ye6CiAgICAgICAgb3V0cHV0X3BhdGggPSBzZWxmLl93cml0ZV9vdXRwdXQoc2xpZGVzLCBjb25maWcpCgogICAgICAgIHJldHVybiBTbGlkZXNSZXN1bHQoCiAgICAgICAgICAgIG91dHB1dF9wYXRoPXN0cihvdXRwdXRfcGF0aCksCiAgICAgICAgICAgIHNsaWRlX2NvdW50PWxlbihzbGlkZXMpLAogICAgICAgICAgICBwYXBlcl9jb3VudD1sZW4ocGFwZXJfaWRzKSwKICAgICAgICAgICAgc2xpZGVzPXNsaWRlcywKICAgICAgICApCgogICAgZGVmIF9mZXRjaF9wYXBlcnNfY29udGVudChzZWxmLCBwYXBlcl9pZHM6IExpc3Rbc3RyXSkgLT4gTGlzdFtEaWN0W3N0ciwgQW55XV06CiAgICAgICAgIiIi6I635Y+W6K665paH5YaF5a65LiIiIgogICAgICAgIHBhcGVycyA9IFtdCiAgICAgICAgZm9yIHBpZCBpbiBwYXBlcl9pZHM6CiAgICAgICAgICAgIHBhcGVyID0gc2VsZi5kYi5nZXRfcGFwZXIocGlkKQogICAgICAgICAgICBpZiBub3QgcGFwZXI6CiAgICAgICAgICAgICAgICBjb250aW51ZQoKICAgICAgICAgICAgIyDmj5Dlj5blhbPplK7lhoXlrrkKICAgICAgICAgICAgcGFwZXJfZGljdCA9IGNhc3QoRGljdFtzdHIsIEFueV0sIHBhcGVyKQogICAgICAgICAgICBjb250ZW50ID0gewogICAgICAgICAgICAgICAgImlkIjogcGlkLAogICAgICAgICAgICAgICAgInRpdGxlIjogcGFwZXJfZGljdC5nZXQoInRpdGxlIiwgIiIpLAogICAgICAgICAgICAgICAgImF1dGhvcnMiOiBwYXBlcl9kaWN0LmdldCgiYXV0aG9ycyIsICIiKSwKICAgICAgICAgICAgICAgICJhYnN0cmFjdCI6IHBhcGVyX2RpY3QuZ2V0KCJhYnN0cmFjdCIsICIiKSwKICAgICAgICAgICAgICAgICJ5ZWFyIjogKHBhcGVyX2RpY3QuZ2V0KCJwdWJsaXNoZWQiKSBvciAiIilbOjRdCiAgICAgICAgICAgICAgICBpZiBwYXBlcl9kaWN0LmdldCgicHVibGlzaGVkIikKICAgICAgICAgICAgICAgIGVsc2UgIiIsCiAgICAgICAgICAgICAgICAidGFncyI6IHBhcGVyX2RpY3QuZ2V0KCJ0YWdzIiwgW10pLAogICAgICAgICAgICAgICAgInBsYWluX3RleHQiOiBwYXBlcl9kaWN0LmdldCgicGxhaW5fdGV4dCIsICIiKSwKICAgICAgICAgICAgfQoKICAgICAgICAgICAgIyDlpoLmnpzmnInlhajmlofvvIzmj5Dlj5blhbPplK7nq6DoioIKICAgICAgICAgICAgaWYgY29udGVudFsicGxhaW5fdGV4dCJdOgogICAgICAgICAgICAgICAgc2VjdGlvbnMgPSBzZWdtZW50X2ludG9fc2VjdGlvbnMoY29udGVudFsicGxhaW5fdGV4dCJdKQogICAgICAgICAgICAgICAgY29udGVudFsic2VjdGlvbnMiXSA9IHNlY3Rpb25zCiAgICAgICAgICAgICAgICBjb250ZW50WyJzbmlwcGV0Il0gPSBmb3JtYXRfc2VjdGlvbl9zbmlwcGV0cyhzZWN0aW9ucykKICAgICAgICAgICAgZWxzZToKICAgICAgICAgICAgICAgIGNvbnRlbnRbInNlY3Rpb25zIl0gPSBbXQogICAgICAgICAgICAgICAgY29udGVudFsic25pcHBldCJdID0gY29udGVudFsiYWJzdHJhY3QiXQoKICAgICAgICAgICAgcGFwZXJzLmFwcGVuZChjb250ZW50KQoKICAgICAgICByZXR1cm4gcGFwZXJzCgogICAgZGVmIF9nZW5lcmF0ZV9zbGlkZV9zdHJ1Y3R1cmUoCiAgICAgICAgc2VsZiwKICAgICAgICBwYXBlcnM6IExpc3RbRGljdFtzdHIsIEFueV1dLAogICAgICAgIGNvbmZpZzogU2xpZGVzQ29uZmlnLAogICAgKSAtPiBMaXN0W1NsaWRlXToKICAgICAgICAiIiLnlJ/miJDlubvnga/niYfnu5PmnoQuCgogICAgICAgIOaguOW/g+eul+azle+8mgogICAgICAgIDEuIOaehOW7uuW5u+eBr+eJh+Wkp+e6su+8iOagh+mimOmhtSDihpIg6IOM5pmvIOKGkiDmlrnms5Ug4oaSIOWunumqjCDihpIg57uT6K6677yJCiAgICAgICAgMi4g5LuO6K665paH5YaF5a655o+Q5Y+W5byV55SoCiAgICAgICAgMy4g55Sf5oiQ5ryU6K6y6ICF5aSH5rOoCiAgICAgICAgIiIiCiAgICAgICAgaWYgbm90IHBhcGVyczoKICAgICAgICAgICAgcmV0dXJuIFtTbGlkZSh0aXRsZT0iTm8gQ29udGVudCIsIGNvbnRlbnQ9Ik5vIHBhcGVycyBmb3VuZCIpXQoKICAgICAgICAjIOWNleiuuuaWhyB2cyDlpJrorrrmlocKICAgICAgICBpZiBsZW4ocGFwZXJzKSA9PSAxOgogICAgICAgICAgICByZXR1cm4gc2VsZi5fZ2VuZXJhdGVfc2luZ2xlX3BhcGVyX3NsaWRlcyhwYXBlcnNbMF0sIGNvbmZpZykKICAgICAgICBlbHNlOgogICAgICAgICAgICByZXR1cm4gc2VsZi5fZ2VuZXJhdGVfY29tcGFyaXNvbl9zbGlkZXMocGFwZXJzLCBjb25maWcpCgogICAgZGVmIF9nZW5lcmF0ZV9zaW5nbGVfcGFwZXJfc2xpZGVzKAogICAgICAgIHNlbGYsCiAgICAgICAgcGFwZXI6IERpY3Rbc3RyLCBBbnldLAogICAgICAgIGNvbmZpZzogU2xpZGVzQ29uZmlnLAogICAgKSAtPiBMaXN0W1NsaWRlXToKICAgICAgICAiIiLljZXorrrmloflubvnga/niYfnlJ/miJAuIiIiCiAgICAgICAgc2xpZGVzID0gW10KCiAgICAgICAgIyAxLiDmoIfpopjpobUKICAgICAgICBzbGlkZXMuYXBwZW5kKAogICAgICAgICAgICBTbGlkZSgKICAgICAgICAgICAgICAgIHRpdGxlPXBhcGVyWyJ0aXRsZSJdLAogICAgICAgICAgICAgICAgY29udGVudD1mIntwYXBlclsnYXV0aG9ycyddfVxue3BhcGVyWyd5ZWFyJ119IiwKICAgICAgICAgICAgICAgIG5vdGVzPSLlvIDlnLrku4vnu43orrrmlofmoIfpopjlkozkvZzogIUiLAogICAgICAgICAgICAgICAgc2xpZGVfdHlwZT0idGl0bGUiLAogICAgICAgICAgICApCiAgICAgICAgKQoKICAgICAgICAjIDIuIOaRmOimgS/liqjmnLoKICAgICAgICBhYnN0cmFjdCA9IHBhcGVyLmdldCgiYWJzdHJhY3QiLCAiIilbOjUwMF0KICAgICAgICBzbGlkZXMuYXBwZW5kKAogICAgICAgICAgICBTbGlkZSgKICAgICAgICAgICAgICAgIHRpdGxlPSLnoJTnqbbliqjmnLoiLAogICAgICAgICAgICAgICAgY29udGVudD1hYnN0cmFjdCwKICAgICAgICAgICAgICAgIG5vdGVzPSLku4vnu43noJTnqbbog4zmma/lkozliqjmnLrvvIzlvLrosIPpl67popjnmoTph43opoHmgKciLAogICAgICAgICAgICAgICAgc2xpZGVfdHlwZT0iY29udGVudCIsCiAgICAgICAgICAgICkKICAgICAgICApCgogICAgICAgICMgMy4g5YWz6ZSu5pa55rOVCiAgICAgICAgc2VjdGlvbnMgPSBwYXBlci5nZXQoInNlY3Rpb25zIiwgW10pCiAgICAgICAgbWV0aG9kX3NlY3Rpb25zID0gWwogICAgICAgICAgICBzCiAgICAgICAgICAgIGZvciBzIGluIHNlY3Rpb25zCiAgICAgICAgICAgIGlmIGFueShrdyBpbiBzWzBdLmxvd2VyKCkgZm9yIGt3IGluIFsibWV0aG9kIiwgImFwcHJvYWNoIiwgIm1vZGVsIiwgImFyY2hpdGVjdHVyZSJdKQogICAgICAgIF0KCiAgICAgICAgaWYgbWV0aG9kX3NlY3Rpb25zOgogICAgICAgICAgICBmb3IgdGl0bGUsIGNvbnRlbnQgaW4gbWV0aG9kX3NlY3Rpb25zWzoyXToKICAgICAgICAgICAgICAgIHNsaWRlcy5hcHBlbmQoCiAgICAgICAgICAgICAgICAgICAgU2xpZGUoCiAgICAgICAgICAgICAgICAgICAgICAgIHRpdGxlPWYi5pa55rOVOiB7dGl0bGV9IiwKICAgICAgICAgICAgICAgICAgICAgICAgY29udGVudD1jb250ZW50Wzo4MDBdLAogICAgICAgICAgICAgICAgICAgICAgICBub3Rlcz1mIuivpue7huiusuino3t0aXRsZX3pg6jliIbnmoTmioDmnK/nu4boioIiLAogICAgICAgICAgICAgICAgICAgICAgICBzbGlkZV90eXBlPSJjb250ZW50IiwKICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICApCgogICAgICAgICMgNC4g5a6e6aqM57uT5p6cCiAgICAgICAgcmVzdWx0c19zZWN0aW9ucyA9IFsKICAgICAgICAgICAgcwogICAgICAgICAgICBmb3IgcyBpbiBzZWN0aW9ucwogICAgICAgICAgICBpZiBhbnkoa3cgaW4gc1swXS5sb3dlcigpIGZvciBrdyBpbiBbImV4cGVyaW1lbnQiLCAicmVzdWx0IiwgImV2YWx1YXRpb24iXSkKICAgICAgICBdCgogICAgICAgIGlmIHJlc3VsdHNfc2VjdGlvbnM6CiAgICAgICAgICAgIGZvciBfdGl0bGUsIGNvbnRlbnQgaW4gcmVzdWx0c19zZWN0aW9uc1s6MV06CiAgICAgICAgICAgICAgICBzbGlkZXMuYXBwZW5kKAogICAgICAgICAgICAgICAgICAgIFNsaWRlKAogICAgICAgICAgICAgICAgICAgICAgICB0aXRsZT0i5a6e6aqM57uT5p6cIiwKICAgICAgICAgICAgICAgICAgICAgICAgY29udGVudD1jb250ZW50Wzo2MDBdLAogICAgICAgICAgICAgICAgICAgICAgICBub3Rlcz0i5bGV56S65YWz6ZSu5a6e6aqM5pWw5o2u5ZKM5pa55rOV5a+55q+UIiwKICAgICAgICAgICAgICAgICAgICAgICAgc2xpZGVfdHlwZT0iY29udGVudCIsCiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgKQoKICAgICAgICAjIDUuIOe7k+iuugogICAgICAgIGNvbmNsdXNpb25fc2VjdGlvbnMgPSBbcyBmb3IgcyBpbiBzZWN0aW9ucyBpZiAiY29uY2x1c2lvbiIgaW4gc1swXS5sb3dlcigpXQogICAgICAgIGlmIGNvbmNsdXNpb25fc2VjdGlvbnM6CiAgICAgICAgICAgIHRpdGxlLCBjb250ZW50ID0gY29uY2x1c2lvbl9zZWN0aW9uc1swXQogICAgICAgICAgICBzbGlkZXMuYXBwZW5kKAogICAgICAgICAgICAgICAgU2xpZGUoCiAgICAgICAgICAgICAgICAgICAgdGl0bGU9Iue7k+iuuiIsCiAgICAgICAgICAgICAgICAgICAgY29udGVudD1jb250ZW50Wzo1MDBdLAogICAgICAgICAgICAgICAgICAgIG5vdGVzPSLmgLvnu5PorrrmlofotKHnjK7lkozmnKrmnaXlt6XkvZzmlrnlkJEiLAogICAgICAgICAgICAgICAgICAgIHNsaWRlX3R5cGU9InN1bW1hcnkiLAogICAgICAgICAgICAgICAgKQogICAgICAgICAgICApCgogICAgICAgICMgNi4g6ZmQ5Yi2L+acquadpeW3peS9nAogICAgICAgIHNsaWRlcy5hcHBlbmQoCiAgICAgICAgICAgIFNsaWRlKAogICAgICAgICAgICAgICAgdGl0bGU9IuWPguiAg+S4juW8leeUqCIsCiAgICAgICAgICAgICAgICBjb250ZW50PWYiVGFnczogeycsICcuam9pbihwYXBlci5nZXQoJ3RhZ3MnLCBbXSkpfSIsCiAgICAgICAgICAgICAgICBub3Rlcz0i5o+Q5L6b6L+b5LiA5q2l6ZiF6K+755qE5bu66K6uIiwKICAgICAgICAgICAgICAgIHNsaWRlX3R5cGU9ImNvbnRlbnQiLAogICAgICAgICAgICApCiAgICAgICAgKQoKICAgICAgICByZXR1cm4gc2xpZGVzWzogY29uZmlnLm51bV9zbGlkZXNdCgogICAgZGVmIF9nZW5lcmF0ZV9jb21wYXJpc29uX3NsaWRlcygKICAgICAgICBzZWxmLAogICAgICAgIHBhcGVyczogTGlzdFtEaWN0W3N0ciwgQW55XV0sCiAgICAgICAgY29uZmlnOiBTbGlkZXNDb25maWcsCiAgICApIC0+IExpc3RbU2xpZGVdOgogICAgICAgICIiIuWkmuiuuuaWh+WvueavlOW5u+eBr+eJhy4iIiIKICAgICAgICBzbGlkZXMgPSBbXQoKICAgICAgICAjIOagh+mimOmhtQogICAgICAgIHRpdGxlcyA9IFtwWyJ0aXRsZSJdWzo0MF0gZm9yIHAgaW4gcGFwZXJzXQogICAgICAgIHNsaWRlcy5hcHBlbmQoCiAgICAgICAgICAgIFNsaWRlKAogICAgICAgICAgICAgICAgdGl0bGU9IuiuuuaWh+WvueavlOWIhuaekCIsCiAgICAgICAgICAgICAgICBjb250ZW50PSJcbiIuam9pbihmIuKAoiB7dH0iIGZvciB0IGluIHRpdGxlcyksCiAgICAgICAgICAgICAgICBub3Rlcz0i5LuL57uN5Y2z5bCG5a+55q+U55qE6K665paHIiwKICAgICAgICAgICAgICAgIHNsaWRlX3R5cGU9InRpdGxlIiwKICAgICAgICAgICAgKQogICAgICAgICkKCiAgICAgICAgIyDlr7nmr5TooajmoLwKICAgICAgICBjb21wYXJpc29uID0gc2VsZi5fZ2VuZXJhdGVfY29tcGFyaXNvbl90YWJsZShwYXBlcnMpCiAgICAgICAgc2xpZGVzLmFwcGVuZCgKICAgICAgICAgICAgU2xpZGUoCiAgICAgICAgICAgICAgICB0aXRsZT0i6K665paH5qaC6KeI5a+55q+UIiwKICAgICAgICAgICAgICAgIGNvbnRlbnQ9Y29tcGFyaXNvbiwKICAgICAgICAgICAgICAgIG5vdGVzPSLlsZXnpLrlkITorrrmlofln7rmnKzkv6Hmga8iLAogICAgICAgICAgICAgICAgc2xpZGVfdHlwZT0iY29tcGFyaXNvbiIsCiAgICAgICAgICAgICkKICAgICAgICApCgogICAgICAgICMg6YCQ5Liq6K665paH566A5LuLCiAgICAgICAgZm9yIHBhcGVyIGluIHBhcGVyczoKICAgICAgICAgICAgc2xpZGVzLmFwcGVuZCgKICAgICAgICAgICAgICAgIFNsaWRlKAogICAgICAgICAgICAgICAgICAgIHRpdGxlPXBhcGVyWyJ0aXRsZSJdWzo1MF0sCiAgICAgICAgICAgICAgICAgICAgY29udGVudD1mIuW5tOS7vToge3BhcGVyWyd5ZWFyJ119XG5cbntwYXBlci5nZXQoJ2Fic3RyYWN0JywgJycpWzo0MDBdfSIsCiAgICAgICAgICAgICAgICAgICAgbm90ZXM9ZiLku4vnu417cGFwZXJbJ3RpdGxlJ11955qE5qC45b+D5YaF5a65IiwKICAgICAgICAgICAgICAgICAgICBzbGlkZV90eXBlPSJjb250ZW50IiwKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgKQoKICAgICAgICByZXR1cm4gc2xpZGVzWzogY29uZmlnLm51bV9zbGlkZXNdCgogICAgZGVmIF9nZW5lcmF0ZV9jb21wYXJpc29uX3RhYmxlKHNlbGYsIHBhcGVyczogTGlzdFtEaWN0W3N0ciwgQW55XV0pIC0+IHN0cjoKICAgICAgICAiIiLnlJ/miJDlr7nmr5TooajmoLzvvIhNYXJrZG93biDmoLzlvI/vvIkuIiIiCiAgICAgICAgaGVhZGVycyA9IFsi6K665paHIiwgIuW5tOS7vSIsICLmoIfnrb4iXQogICAgICAgIHJvd3MgPSBbXQogICAgICAgIGZvciBwIGluIHBhcGVyczoKICAgICAgICAgICAgcm93cy5hcHBlbmQoCiAgICAgICAgICAgICAgICBbCiAgICAgICAgICAgICAgICAgICAgcFsidGl0bGUiXVs6MzBdLAogICAgICAgICAgICAgICAgICAgIHBbInllYXIiXSwKICAgICAgICAgICAgICAgICAgICAiLCAiLmpvaW4ocC5nZXQoInRhZ3MiLCBbXSlbOjNdKSwKICAgICAgICAgICAgICAgIF0KICAgICAgICAgICAgKQoKICAgICAgICBjb2xfd2lkdGhzID0gWwogICAgICAgICAgICBtYXgobGVuKHN0cihyb3dbaV0pKSBmb3Igcm93IGluIFtoZWFkZXJzXSArIHJvd3MpICsgMiBmb3IgaSBpbiByYW5nZShsZW4oaGVhZGVycykpCiAgICAgICAgXQoKICAgICAgICBsaW5lcyA9IFtdCiAgICAgICAgIyDooajlpLQKICAgICAgICBoZWFkZXJfbGluZSA9ICIgfCAiLmpvaW4oaC5sanVzdCh3KSBmb3IgaCwgdyBpbiB6aXAoaGVhZGVycywgY29sX3dpZHRocykpCiAgICAgICAgbGluZXMuYXBwZW5kKGhlYWRlcl9saW5lKQogICAgICAgIGxpbmVzLmFwcGVuZCgifCIgKyAifCIuam9pbigiLSIgKiB3IGZvciB3IGluIGNvbF93aWR0aHMpICsgInwiKQoKICAgICAgICAjIOaVsOaNruihjAogICAgICAgIGZvciByb3cgaW4gcm93czoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIgfCAiLmpvaW4oc3RyKGNlbGwpLmxqdXN0KHcpIGZvciBjZWxsLCB3IGluIHppcChyb3csIGNvbF93aWR0aHMpKSkKCiAgICAgICAgcmV0dXJuICJcbiIuam9pbihsaW5lcykKCiAgICBkZWYgX3dyaXRlX291dHB1dCgKICAgICAgICBzZWxmLAogICAgICAgIHNsaWRlczogTGlzdFtTbGlkZV0sCiAgICAgICAgY29uZmlnOiBTbGlkZXNDb25maWcsCiAgICApIC0+IFBhdGg6CiAgICAgICAgIiIi6L6T5Ye65bm754Gv54mH5paH5Lu2LiIiIgogICAgICAgIG91dHB1dF9wYXRoID0gY29uZmlnLm91dHB1dF9wYXRoCiAgICAgICAgaWYgbm90IG91dHB1dF9wYXRoOgogICAgICAgICAgICBvdXRwdXRfZGlyID0gUGF0aC5jd2QoKSAvICJzbGlkZXNfb3V0cHV0IgogICAgICAgICAgICBvdXRwdXRfZGlyLm1rZGlyKGV4aXN0X29rPVRydWUpCiAgICAgICAgICAgIHRpbWVzdGFtcCA9IFBhdGgoKS5uYW1lLnJlcGxhY2UoIjoiLCAiLSIpCiAgICAgICAgICAgIGV4dCA9IGNvbmZpZy5vdXRwdXRfZm9ybWF0CiAgICAgICAgICAgIG91dHB1dF9wYXRoID0gc3RyKG91dHB1dF9kaXIgLyBmInNsaWRlc197dGltZXN0YW1wfS57ZXh0fSIpCgogICAgICAgIGlmIGNvbmZpZy5vdXRwdXRfZm9ybWF0ID09ICJtZCI6CiAgICAgICAgICAgIHJldHVybiBzZWxmLl93cml0ZV9tYXJrZG93bihzbGlkZXMsIG91dHB1dF9wYXRoLCBjb25maWcpCiAgICAgICAgZWxpZiBjb25maWcub3V0cHV0X2Zvcm1hdCA9PSAiaHRtbCI6CiAgICAgICAgICAgIHJldHVybiBzZWxmLl93cml0ZV9odG1sKHNsaWRlcywgb3V0cHV0X3BhdGgsIGNvbmZpZykKICAgICAgICBlbGlmIGNvbmZpZy5vdXRwdXRfZm9ybWF0ID09ICJwcHR4IjoKICAgICAgICAgICAgcmV0dXJuIHNlbGYuX3dyaXRlX3BwdHgoc2xpZGVzLCBvdXRwdXRfcGF0aCwgY29uZmlnKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIHJldHVybiBzZWxmLl93cml0ZV9tYXJrZG93bihzbGlkZXMsIG91dHB1dF9wYXRoLCBjb25maWcpCgogICAgZGVmIF93cml0ZV9tYXJrZG93bigKICAgICAgICBzZWxmLAogICAgICAgIHNsaWRlczogTGlzdFtTbGlkZV0sCiAgICAgICAgb3V0cHV0X3BhdGg6IHN0ciwKICAgICAgICBjb25maWc6IFNsaWRlc0NvbmZpZywKICAgICkgLT4gUGF0aDoKICAgICAgICAiIiLovpPlh7ogTWFya2Rvd24g5qC85byPLiIiIgogICAgICAgIGxpbmVzID0gW10KICAgICAgICBmb3IgaSwgc2xpZGUgaW4gZW51bWVyYXRlKHNsaWRlcywgMSk6CiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiMgU2xpZGUge2l9OiB7c2xpZGUudGl0bGV9IikKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIiKQogICAgICAgICAgICBpZiBzbGlkZS5zbGlkZV90eXBlID09ICJ0aXRsZSI6CiAgICAgICAgICAgICAgICBsaW5lcy5hcHBlbmQoZiIjIyB7c2xpZGUuY29udGVudH0iKQogICAgICAgICAgICBlbHNlOgogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKHNsaWRlLmNvbnRlbnQpCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZCgiIikKCiAgICAgICAgICAgIGlmIGNvbmZpZy5pbmNsdWRlX25vdGVzIGFuZCBzbGlkZS5ub3RlczoKICAgICAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIioq5ryU6K6y5aSH5rOoKio6IHtzbGlkZS5ub3Rlc30iKQogICAgICAgICAgICAgICAgbGluZXMuYXBwZW5kKCIiKQoKICAgICAgICAgICAgbGluZXMuYXBwZW5kKCItLS0iKQogICAgICAgICAgICBsaW5lcy5hcHBlbmQoIiIpCgogICAgICAgIHBhdGggPSBQYXRoKG91dHB1dF9wYXRoKQogICAgICAgIHBhdGgucGFyZW50Lm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgICAgICBwYXRoLndyaXRlX3RleHQoIlxuIi5qb2luKGxpbmVzKSwgZW5jb2Rpbmc9InV0Zi04IikKICAgICAgICByZXR1cm4gcGF0aAoKICAgIGRlZiBfd3JpdGVfaHRtbCgKICAgICAgICBzZWxmLAogICAgICAgIHNsaWRlczogTGlzdFtTbGlkZV0sCiAgICAgICAgb3V0cHV0X3BhdGg6IHN0ciwKICAgICAgICBjb25maWc6IFNsaWRlc0NvbmZpZywKICAgICkgLT4gUGF0aDoKICAgICAgICAiIiLovpPlh7ogSFRNTCDmoLzlvI8uIiIiCiAgICAgICAgc2xpZGVfaHRtbHMgPSBbXQogICAgICAgIGZvciBpLCBzbGlkZSBpbiBlbnVtZXJhdGUoc2xpZGVzLCAxKToKICAgICAgICAgICAgbm90ZXNfaHRtbCA9IGYnPGRpdiBjbGFzcz0ibm90ZXMiPntzbGlkZS5ub3Rlc308L2Rpdj4nIGlmIGNvbmZpZy5pbmNsdWRlX25vdGVzIGVsc2UgIiIKICAgICAgICAgICAgc2xpZGVfaHRtbCA9IGYiIiIKPGRpdiBjbGFzcz0ic2xpZGUiIGlkPSJzbGlkZS17aX0iPgogICAgPGgxPntzbGlkZS50aXRsZX08L2gxPgogICAgPGRpdiBjbGFzcz0iY29udGVudCI+CiAgICAgICAgPHByZT57c2xpZGUuY29udGVudH08L3ByZT4KICAgIDwvZGl2PgogICAge25vdGVzX2h0bWx9CjwvZGl2PgoiIiIKICAgICAgICAgICAgc2xpZGVfaHRtbHMuYXBwZW5kKHNsaWRlX2h0bWwpCgogICAgICAgIGh0bWwgPSBmIiIiPCFET0NUWVBFIGh0bWw+CjxodG1sPgo8aGVhZD4KICAgIDxtZXRhIGNoYXJzZXQ9InV0Zi04Ij4KICAgIDx0aXRsZT5QYXBlciBTbGlkZXM8L3RpdGxlPgogICAgPHN0eWxlPgogICAgICAgIGJvZHkge3sgZm9udC1mYW1pbHk6IEFyaWFsLCBzYW5zLXNlcmlmOyBtYXJnaW46IDA7IHBhZGRpbmc6IDIwcHg7IH19CiAgICAgICAgLnNsaWRlIHt7IHBhZ2UtYnJlYWstYWZ0ZXI6IGFsd2F5czsgbWFyZ2luLWJvdHRvbTogNDBweDsgYm9yZGVyOiAxcHggc29saWQgI2NjYzsgcGFkZGluZzogMjBweDsgfX0KICAgICAgICBoMSB7eyBjb2xvcjogIzMzMzsgYm9yZGVyLWJvdHRvbTogMnB4IHNvbGlkICMwMDY2Y2M7IH19CiAgICAgICAgLmNvbnRlbnQgcHJlIHt7IHdoaXRlLXNwYWNlOiBwcmUtd3JhcDsgZm9udC1mYW1pbHk6IGluaGVyaXQ7IH19CiAgICAgICAgLm5vdGVzIHt7IGJhY2tncm91bmQ6ICNmMGYwZjA7IHBhZGRpbmc6IDEwcHg7IG1hcmdpbi10b3A6IDIwcHg7IGZvbnQtc3R5bGU6IGl0YWxpYzsgfX0KICAgIDwvc3R5bGU+CjwvaGVhZD4KPGJvZHk+CiAgICB7IiIuam9pbihzbGlkZV9odG1scyl9CjwvYm9keT4KPC9odG1sPgoiIiIKICAgICAgICBwYXRoID0gUGF0aChvdXRwdXRfcGF0aCkKICAgICAgICBwYXRoLnBhcmVudC5ta2RpcihwYXJlbnRzPVRydWUsIGV4aXN0X29rPVRydWUpCiAgICAgICAgcGF0aC53cml0ZV90ZXh0KGh0bWwsIGVuY29kaW5nPSJ1dGYtOCIpCiAgICAgICAgcmV0dXJuIHBhdGgKCiAgICBkZWYgX3dyaXRlX3BwdHgoCiAgICAgICAgc2VsZiwKICAgICAgICBzbGlkZXM6IExpc3RbU2xpZGVdLAogICAgICAgIG91dHB1dF9wYXRoOiBzdHIsCiAgICAgICAgY29uZmlnOiBTbGlkZXNDb25maWcsCiAgICApIC0+IFBhdGg6CiAgICAgICAgIiIi6L6T5Ye6IFBQVFgg5qC85byP77yI6ZyA6KaBIHB5dGhvbi1wcHR477yJLiIiIgogICAgICAgIGlmIG5vdCBIQVNfUFBUWDoKICAgICAgICAgICAgcHJpbnQoIldhcm5pbmc6IHB5dGhvbi1wcHR4IOacquWuieijhe+8jOWwhui+k+WHuiBNYXJrZG93biDmoLzlvI8iKQogICAgICAgICAgICByZXR1cm4gc2VsZi5fd3JpdGVfbWFya2Rvd24oc2xpZGVzLCBvdXRwdXRfcGF0aC5yZXBsYWNlKCIucHB0eCIsICIubWQiKSwgY29uZmlnKQoKICAgICAgICBwcnMgPSBQcmVzZW50YXRpb24oKQogICAgICAgIHBycy5zbGlkZV93aWR0aCA9IEluY2hlcygxMy4zMzMpCiAgICAgICAgcHJzLnNsaWRlX2hlaWdodCA9IEluY2hlcyg3LjUpCgogICAgICAgIGZvciBzbGlkZV9kYXRhIGluIHNsaWRlczoKICAgICAgICAgICAgaWYgc2xpZGVfZGF0YS5zbGlkZV90eXBlID09ICJ0aXRsZSI6CiAgICAgICAgICAgICAgICBzbGlkZSA9IHBycy5zbGlkZXMuYWRkX3NsaWRlKHBycy5zbGlkZV9sYXlvdXRzWzZdKSAgIyDnqbrnmb3luIPlsYAKICAgICAgICAgICAgZWxzZToKICAgICAgICAgICAgICAgIHNsaWRlID0gcHJzLnNsaWRlcy5hZGRfc2xpZGUocHJzLnNsaWRlX2xheW91dHNbNl0pCgogICAgICAgICAgICAjIOa3u+WKoOagh+mimAogICAgICAgICAgICB0aXRsZV9ib3ggPSBzbGlkZS5zaGFwZXMuYWRkX3RleHRib3goSW5jaGVzKDAuNSksIEluY2hlcygwLjUpLCBJbmNoZXMoMTIpLCBJbmNoZXMoMSkpCiAgICAgICAgICAgIHRpdGxlX2ZyYW1lID0gdGl0bGVfYm94LnRleHRfZnJhbWUKICAgICAgICAgICAgdGl0bGVfZnJhbWUudGV4dCA9IHNsaWRlX2RhdGEudGl0bGUKICAgICAgICAgICAgZm9yIHBhcmFncmFwaCBpbiB0aXRsZV9mcmFtZS5wYXJhZ3JhcGhzOgogICAgICAgICAgICAgICAgcGFyYWdyYXBoLmZvbnQuc2l6ZSA9IFB0KDMyKQogICAgICAgICAgICAgICAgcGFyYWdyYXBoLmZvbnQuYm9sZCA9IFRydWUKCiAgICAgICAgICAgICMg5re75Yqg5YaF5a65CiAgICAgICAgICAgIGNvbnRlbnRfYm94ID0gc2xpZGUuc2hhcGVzLmFkZF90ZXh0Ym94KEluY2hlcygwLjUpLCBJbmNoZXMoMS44KSwgSW5jaGVzKDEyKSwgSW5jaGVzKDUpKQogICAgICAgICAgICBjb250ZW50X2ZyYW1lID0gY29udGVudF9ib3gudGV4dF9mcmFtZQogICAgICAgICAgICBjb250ZW50X2ZyYW1lLndvcmRfd3JhcCA9IFRydWUKICAgICAgICAgICAgY29udGVudF9mcmFtZS50ZXh0ID0gc2xpZGVfZGF0YS5jb250ZW50WzoyMDAwXSAgIyDpmZDliLbplb/luqYKCiAgICAgICAgICAgICMg5re75Yqg5aSH5rOoCiAgICAgICAgICAgIGlmIGNvbmZpZy5pbmNsdWRlX25vdGVzIGFuZCBzbGlkZV9kYXRhLm5vdGVzOgogICAgICAgICAgICAgICAgbm90ZXNfc2xpZGUgPSBzbGlkZS5ub3Rlc19zbGlkZQogICAgICAgICAgICAgICAgbm90ZXNfc2xpZGUubm90ZXNfdGV4dF9mcmFtZS50ZXh0ID0gc2xpZGVfZGF0YS5ub3RlcwoKICAgICAgICBwYXRoID0gUGF0aChvdXRwdXRfcGF0aCkKICAgICAgICBwYXRoLnBhcmVudC5ta2RpcihwYXJlbnRzPVRydWUsIGV4aXN0X29rPVRydWUpCiAgICAgICAgcHJzLnNhdmUoc3RyKHBhdGgpKQogICAgICAgIHJldHVybiBwYXRoCgoKIyBDTEkg6L6F5Yqp5Ye95pWwCmRlZiBtYWluKGFyZ3Y9Tm9uZSk6CiAgICAiIiJDTEkg5YWl5Y+j54K5LiIiIgogICAgaW1wb3J0IHN5cwoKICAgIHN5cy5wYXRoLmluc2VydCgwLCBzdHIoUGF0aChfX2ZpbGVfXykucGFyZW50LnBhcmVudCkpCgogICAgZnJvbSBjbGkuY21kLnNsaWRlcyBpbXBvcnQgc2xpZGVzCgogICAgc2xpZGVzLm1haW4oc3RhbmRhbG9uZV9tb2RlPUZhbHNlKQoKCmlmIF9fbmFtZV9fID09ICJfX21haW5fXyI6CiAgICBtYWluKCkK
+"""
+Paper → Slides: 自动从论文生成演示文稿
+
+核心功能：
+1. 论文内容提取（标题、摘要、方法、实验、结论）
+2. LLM 生成幻灯片结构
+3. 多格式输出（PPTX/MD/HTML）
+4. 演讲者备注生成
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Optional, List, Dict, Any, cast
+
+# 可选依赖：python-pptx
+try:
+    from pptx import Presentation
+    from pptx.util import Inches, Pt
+    HAS_PPTX = True
+except ImportError:
+    HAS_PPTX = False
+
+from db.database import Database
+from sections.segment import segment_into_sections, format_section_snippets
+
+
+@dataclass
+class SlidesConfig:
+    """幻灯片生成配置."""
+    template: str = "academic"       # academic | minimal | modern
+    num_slides: int = 10            # 幻灯片数量
+    output_format: str = "pptx"      # pptx | md | html
+    output_path: Optional[str] = None
+    include_notes: bool = False      # 包含演讲者备注
+    language: str = "zh"             # zh | en | bilingual
+
+
+@dataclass
+class Slide:
+    """单个幻灯片."""
+    title: str
+    content: str
+    notes: str = ""
+    slide_type: str = "content"  # title | content | comparison | summary
+
+
+@dataclass
+class SlidesResult:
+    """生成结果."""
+    output_path: str
+    slide_count: int
+    paper_count: int
+    slides: List[Slide] = field(default_factory=list)
+
+
+class PaperSlidesGenerator:
+    """论文到幻灯片生成器."""
+
+    # 幻灯片模板结构
+    TEMPLATES = {
+        "academic": {
+            "title_slide": {"layout": "title", "bg_color": None},
+            "content_slide": {"layout": "content", "font_title": 32, "font_body": 18},
+            "section_slide": {"layout": "section_header"},
+        },
+        "minimal": {
+            "title_slide": {"layout": "blank"},
+            "content_slide": {"layout": "blank", "font_title": 28, "font_body": 16},
+            "section_slide": {"layout": "blank"},
+        },
+        "modern": {
+            "title_slide": {"layout": "title", "bg_color": (0, 100, 180)},
+            "content_slide": {"layout": "content", "font_title": 36, "font_body": 20},
+            "section_slide": {"layout": "section_header", "bg_color": (240, 240, 240)},
+        },
+    }
+
+    def __init__(self, db: Optional[Database] = None):
+        self.db = db or Database()
+        self._llm_client = None
+
+    @property
+    def llm_client(self):
+        """延迟加载 LLM 客户端."""
+        if self._llm_client is None:
+            from llm.client import get_default_client
+            self._llm_client = get_default_client()
+        return self._llm_client
+
+    def generate(
+        self,
+        paper_ids: List[str],
+        config: Optional[SlidesConfig] = None,
+    ) -> SlidesResult:
+        """生成幻灯片.
+
+        Args:
+            paper_ids: 论文 ID 列表
+            config: 生成配置
+
+        Returns:
+            SlidesResult: 生成结果
+        """
+        config = config or SlidesConfig()
+
+        # 1. 获取论文内容
+        papers_content = self._fetch_papers_content(paper_ids)
+
+        # 2. 生成幻灯片结构
+        slides = self._generate_slide_structure(papers_content, config)
+
+        # 3. 输出
+        output_path = self._write_output(slides, config)
+
+        return SlidesResult(
+            output_path=str(output_path),
+            slide_count=len(slides),
+            paper_count=len(paper_ids),
+            slides=slides,
+        )
+
+    def _fetch_papers_content(self, paper_ids: List[str]) -> List[Dict[str, Any]]:
+        """获取论文内容."""
+        papers = []
+        for pid in paper_ids:
+            paper = self.db.get_paper(pid)
+            if not paper:
+                continue
+
+            # 提取关键内容
+            paper_dict = cast(Dict[str, Any], paper)
+            content = {
+                "id": pid,
+                "title": paper_dict.get("title", ""),
+                "authors": paper_dict.get("authors", ""),
+                "abstract": paper_dict.get("abstract", ""),
+                "year": (paper_dict.get("published") or "")[:4] if paper_dict.get("published") else "",
+                "tags": paper_dict.get("tags", []),
+                "plain_text": paper_dict.get("plain_text", ""),
+            }
+
+            # 如果有全文，提取关键章节
+            if content["plain_text"]:
+                sections = segment_into_sections(content["plain_text"])
+                content["sections"] = sections
+                content["snippet"] = format_section_snippets(sections)
+            else:
+                content["sections"] = []
+                content["snippet"] = content["abstract"]
+
+            papers.append(content)
+
+        return papers
+
+    def _generate_slide_structure(
+        self,
+        papers: List[Dict[str, Any]],
+        config: SlidesConfig,
+    ) -> List[Slide]:
+        """生成幻灯片结构.
+
+        核心算法：
+        1. 构建幻灯片大纲（标题页 → 背景 → 方法 → 实验 → 结论）
+        2. 从论文内容提取引用
+        3. 生成演讲者备注
+        """
+        if not papers:
+            return [Slide(title="No Content", content="No papers found")]
+
+        # 单论文 vs 多论文
+        if len(papers) == 1:
+            return self._generate_single_paper_slides(papers[0], config)
+        else:
+            return self._generate_comparison_slides(papers, config)
+
+    def _generate_single_paper_slides(
+        self,
+        paper: Dict[str, Any],
+        config: SlidesConfig,
+    ) -> List[Slide]:
+        """单论文幻灯片生成."""
+        slides = []
+
+        # 1. 标题页
+        slides.append(Slide(
+            title=paper["title"],
+            content=f"{paper['authors']}\n{paper['year']}",
+            notes="开场介绍论文标题和作者",
+            slide_type="title",
+        ))
+
+        # 2. 摘要/动机
+        abstract = paper.get("abstract", "")[:500]
+        slides.append(Slide(
+            title="研究动机",
+            content=abstract,
+            notes="介绍研究背景和动机，强调问题的重要性",
+            slide_type="content",
+        ))
+
+        # 3. 关键方法
+        sections = paper.get("sections", [])
+        method_sections = [s for s in sections if any(
+            kw in s[0].lower() for kw in ["method", "approach", "model", "architecture"]
+        )]
+
+        if method_sections:
+            for title, content in method_sections[:2]:
+                slides.append(Slide(
+                    title=f"方法: {title}",
+                    content=content[:800],
+                    notes=f"详细讲解{title}部分的技术细节",
+                    slide_type="content",
+                ))
+
+        # 4. 实验结果
+        results_sections = [s for s in sections if any(
+            kw in s[0].lower() for kw in ["experiment", "result", "evaluation"]
+        )]
+
+        if results_sections:
+            for _title, content in results_sections[:1]:
+                slides.append(Slide(
+                    title="实验结果",
+                    content=content[:600],
+                    notes="展示关键实验数据和方法对比",
+                    slide_type="content",
+                ))
+
+        # 5. 结论
+        conclusion_sections = [s for s in sections if "conclusion" in s[0].lower()]
+        if conclusion_sections:
+            title, content = conclusion_sections[0]
+            slides.append(Slide(
+                title="结论",
+                content=content[:500],
+                notes="总结论文贡献和未来工作方向",
+                slide_type="summary",
+            ))
+
+        # 6. 限制/未来工作
+        slides.append(Slide(
+            title="参考与引用",
+            content=f"Tags: {', '.join(paper.get('tags', []))}",
+            notes="提供进一步阅读的建议",
+            slide_type="content",
+        ))
+
+        return slides[:config.num_slides]
+
+    def _generate_comparison_slides(
+        self,
+        papers: List[Dict[str, Any]],
+        config: SlidesConfig,
+    ) -> List[Slide]:
+        """多论文对比幻灯片."""
+        slides = []
+
+        # 标题页
+        titles = [p["title"][:40] for p in papers]
+        slides.append(Slide(
+            title="论文对比分析",
+            content="\n".join(f"• {t}" for t in titles),
+            notes="介绍即将对比的论文",
+            slide_type="title",
+        ))
+
+        # 对比表格
+        comparison = self._generate_comparison_table(papers)
+        slides.append(Slide(
+            title="论文概览对比",
+            content=comparison,
+            notes="展示各论文基本信息",
+            slide_type="comparison",
+        ))
+
+        # 逐个论文简介
+        for paper in papers:
+            slides.append(Slide(
+                title=paper["title"][:50],
+                content=f"年份: {paper['year']}\n\n{paper.get('abstract', '')[:400]}",
+                notes=f"介绍{paper['title']}的核心内容",
+                slide_type="content",
+            ))
+
+        return slides[:config.num_slides]
+
+    def _generate_comparison_table(self, papers: List[Dict[str, Any]]) -> str:
+        """生成对比表格（Markdown 格式）."""
+        headers = ["论文", "年份", "标签"]
+        rows = []
+        for p in papers:
+            rows.append([
+                p["title"][:30],
+                p["year"],
+                ", ".join(p.get("tags", [])[:3]),
+            ])
+
+        col_widths = [max(len(str(row[i])) for row in [headers] + rows) + 2
+                      for i in range(len(headers))]
+
+        lines = []
+        # 表头
+        header_line = " | ".join(h.ljust(w) for h, w in zip(headers, col_widths))
+        lines.append(header_line)
+        lines.append("|" + "|".join("-" * w for w in col_widths) + "|")
+
+        # 数据行
+        for row in rows:
+            lines.append(" | ".join(str(cell).ljust(w) for cell, w in zip(row, col_widths)))
+
+        return "\n".join(lines)
+
+    def _write_output(
+        self,
+        slides: List[Slide],
+        config: SlidesConfig,
+    ) -> Path:
+        """输出幻灯片文件."""
+        output_path = config.output_path
+        if not output_path:
+            output_dir = Path.cwd() / "slides_output"
+            output_dir.mkdir(exist_ok=True)
+            timestamp = Path().name.replace(":", "-")
+            ext = config.output_format
+            output_path = str(output_dir / f"slides_{timestamp}.{ext}")
+
+        if config.output_format == "md":
+            return self._write_markdown(slides, output_path, config)
+        elif config.output_format == "html":
+            return self._write_html(slides, output_path, config)
+        elif config.output_format == "pptx":
+            return self._write_pptx(slides, output_path, config)
+        else:
+            return self._write_markdown(slides, output_path, config)
+
+    def _write_markdown(
+        self,
+        slides: List[Slide],
+        output_path: str,
+        config: SlidesConfig,
+    ) -> Path:
+        """输出 Markdown 格式."""
+        lines = []
+        for i, slide in enumerate(slides, 1):
+            lines.append(f"# Slide {i}: {slide.title}")
+            lines.append("")
+            if slide.slide_type == "title":
+                lines.append(f"## {slide.content}")
+            else:
+                lines.append(slide.content)
+            lines.append("")
+
+            if config.include_notes and slide.notes:
+                lines.append(f"**演讲备注**: {slide.notes}")
+                lines.append("")
+
+            lines.append("---")
+            lines.append("")
+
+        path = Path(output_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("\n".join(lines), encoding="utf-8")
+        return path
+
+    def _write_html(
+        self,
+        slides: List[Slide],
+        output_path: str,
+        config: SlidesConfig,
+    ) -> Path:
+        """输出 HTML 格式."""
+        slide_htmls = []
+        for i, slide in enumerate(slides, 1):
+            notes_html = f'<div class="notes">{slide.notes}</div>' if config.include_notes else ""
+            slide_html = f"""
+<div class="slide" id="slide-{i}">
+    <h1>{slide.title}</h1>
+    <div class="content">
+        <pre>{slide.content}</pre>
+    </div>
+    {notes_html}
+</div>
+"""
+            slide_htmls.append(slide_html)
+
+        html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Paper Slides</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; }}
+        .slide {{ page-break-after: always; margin-bottom: 40px; border: 1px solid #ccc; padding: 20px; }}
+        h1 {{ color: #333; border-bottom: 2px solid #0066cc; }}
+        .content pre {{ white-space: pre-wrap; font-family: inherit; }}
+        .notes {{ background: #f0f0f0; padding: 10px; margin-top: 20px; font-style: italic; }}
+    </style>
+</head>
+<body>
+    {''.join(slide_htmls)}
+</body>
+</html>
+"""
+        path = Path(output_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(html, encoding="utf-8")
+        return path
+
+    def _write_pptx(
+        self,
+        slides: List[Slide],
+        output_path: str,
+        config: SlidesConfig,
+    ) -> Path:
+        """输出 PPTX 格式（需要 python-pptx）."""
+        if not HAS_PPTX:
+            print("Warning: python-pptx 未安装，将输出 Markdown 格式")
+            return self._write_markdown(slides, output_path.replace(".pptx", ".md"), config)
+
+        prs = Presentation()
+        prs.slide_width = Inches(13.333)
+        prs.slide_height = Inches(7.5)
+
+        for slide_data in slides:
+            if slide_data.slide_type == "title":
+                slide = prs.slides.add_slide(prs.slide_layouts[6])  # 空白布局
+            else:
+                slide = prs.slides.add_slide(prs.slide_layouts[6])
+
+            # 添加标题
+            title_box = slide.shapes.add_textbox(
+                Inches(0.5), Inches(0.5), Inches(12), Inches(1)
+            )
+            title_frame = title_box.text_frame
+            title_frame.text = slide_data.title
+            for paragraph in title_frame.paragraphs:
+                paragraph.font.size = Pt(32)
+                paragraph.font.bold = True
+
+            # 添加内容
+            content_box = slide.shapes.add_textbox(
+                Inches(0.5), Inches(1.8), Inches(12), Inches(5)
+            )
+            content_frame = content_box.text_frame
+            content_frame.word_wrap = True
+            content_frame.text = slide_data.content[:2000]  # 限制长度
+
+            # 添加备注
+            if config.include_notes and slide_data.notes:
+                notes_slide = slide.notes_slide
+                notes_slide.notes_text_frame.text = slide_data.notes
+
+        path = Path(output_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        prs.save(str(path))
+        return path
+
+
+# CLI 辅助函数
+def main(argv=None):
+    """CLI 入口点."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+
+    from cli.cmd.slides import slides
+    slides.main(standalone_mode=False)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,1 +1,242 @@
-IiIiClJlc2VhcmNoIEZyaWN0aW9uIFRyYWNrZXI6IERldGVjdCBhbmQgcmVjb3JkIHJlc2VhcmNoIGVmZmljaWVuY3kgYm90dGxlbmVja3MuCgpGcmljdGlvbiA9IGFueSBldmVudCB0aGF0IHNsb3dzIGRvd24gb3IgaW50ZXJydXB0cyB0aGUgdXNlcidzIHJlc2VhcmNoIGZsb3cuClRyYWNraW5nIGZyaWN0aW9uIGlzIHRoZSBmaXJzdCBzdGVwIHRvd2FyZCBhIHNlbGYtaW1wcm92aW5nIHJlc2VhcmNoIGV4cGVyaWVuY2UuCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGpzb24KaW1wb3J0IHV1aWQKZnJvbSBkYXRhY2xhc3NlcyBpbXBvcnQgZGF0YWNsYXNzLCBhc2RpY3QKZnJvbSBkYXRldGltZSBpbXBvcnQgZGF0ZXRpbWUKZnJvbSBlbnVtIGltcG9ydCBFbnVtCmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aApmcm9tIHR5cGluZyBpbXBvcnQgT3B0aW9uYWwsIExpc3QsIERpY3QsIEFueQoKCmNsYXNzIEZyaWN0aW9uVHlwZShFbnVtKToKICAgICIiIkNhdGVnb3JpZXMgb2YgcmVzZWFyY2ggZnJpY3Rpb24uIiIiCgogICAgQ09NTUFORCA9ICJjb21tYW5kIiAgIyDlkb3ku6TlpLHotKUv6YeN6K+VCiAgICBXT1JLRkxPVyA9ICJ3b3JrZmxvdyIgICMg5aSa5q2l6aqk5rWB56iL5Lit6YCU5pS+5byDCiAgICBSRVRSSUVWQUwgPSAicmV0cmlldmFsIiAgIyDmkJzkuI3liLAv5om+5LiN5YiwCiAgICBDT0dOSVRJVkUgPSAiY29nbml0aXZlIiAgIyDnu5PmnpzotKjph4/kvY7kuo7pooTmnJ8KICAgIE5BVklHQVRJT04gPSAibmF2aWdhdGlvbiIgICMg5LiN55+l6YGT6K+l55So5LuA5LmI5ZG95LukCgoKY2xhc3MgRnJpY3Rpb25TZXZlcml0eShFbnVtKToKICAgICIiIkhvdyBzZXZlcmUgaXMgdGhlIGZyaWN0aW9uLiIiIgoKICAgIExPVyA9ICJsb3ciCiAgICBNRURJVU0gPSAibWVkaXVtIgogICAgSElHSCA9ICJoaWdoIgogICAgQ1JJVElDQUwgPSAiY3JpdGljYWwiCgoKY2xhc3MgUmVzb2x1dGlvbihFbnVtKToKICAgICIiIkhvdyB0aGUgdXNlciAob3Igc3lzdGVtKSByZXNvbHZlZCB0aGUgZnJpY3Rpb24uIiIiCgogICAgUkVUUklFRCA9ICJyZXRyaWVkIgogICAgQUJBTkRPTkVEID0gImFiYW5kb25lZCIKICAgIFdPUktFRF9BUk9VTkQgPSAid29ya2VkX2Fyb3VuZCIKICAgIFNFTEZfUkVTT0xWRUQgPSAic2VsZl9yZXNvbHZlZCIKICAgIFNZU1RFTV9IRUxQRUQgPSAic3lzdGVtX2hlbHBlZCIKCgpAZGF0YWNsYXNzCmNsYXNzIEZyaWN0aW9uRXZlbnQ6CiAgICAiIiJBIHNpbmdsZSBmcmljdGlvbiBldmVudC4iIiIKCiAgICBpZDogc3RyCiAgICB0aW1lc3RhbXA6IHN0cgogICAgZnJpY3Rpb25fdHlwZTogc3RyCiAgICBzZXZlcml0eTogc3RyCgogICAgIyBDb250ZXh0CiAgICBjb21tYW5kOiBzdHIgPSAiIgogICAgcXVlcnk6IHN0ciA9ICIiCiAgICBzdGVwOiBzdHIgPSAiIgogICAgZXJyb3I6IHN0ciA9ICIiCgogICAgIyBPdXRjb21lCiAgICByZXNvbHV0aW9uOiBzdHIgPSAiIgogICAgZHVyYXRpb25fc2Vjb25kczogaW50ID0gMAogICAgcmV0cnlfY291bnQ6IGludCA9IDAKICAgIGFiYW5kb25lZDogYm9vbCA9IEZhbHNlCiAgICBub3Rlczogc3RyID0gIiIKCiAgICBkZWYgX19wb3N0X2luaXRfXyhzZWxmKToKICAgICAgICBpZiBub3Qgc2VsZi5pZDoKICAgICAgICAgICAgc2VsZi5pZCA9IGYiZnJfe3V1aWQudXVpZDQoKS5oZXhbOjhdfSIKICAgICAgICBpZiBub3Qgc2VsZi50aW1lc3RhbXA6CiAgICAgICAgICAgIHNlbGYudGltZXN0YW1wID0gZGF0ZXRpbWUubm93KCkuaXNvZm9ybWF0KCkKCiAgICBkZWYgdG9fZGljdChzZWxmKSAtPiBkaWN0OgogICAgICAgIHJldHVybiBhc2RpY3Qoc2VsZikKCiAgICBAY2xhc3NtZXRob2QKICAgIGRlZiBmcm9tX2RpY3QoY2xzLCBkYXRhOiBkaWN0KSAtPiAiRnJpY3Rpb25FdmVudCI6CiAgICAgICAgcmV0dXJuIGNscygqKmRhdGEpCgoKY2xhc3MgRnJpY3Rpb25UcmFja2VyOgogICAgIiIiVHJhY2sgYW5kIGFuYWx5emUgcmVzZWFyY2ggZnJpY3Rpb24gZXZlbnRzLiIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBkYXRhX2RpcjogT3B0aW9uYWxbc3RyXSA9IE5vbmUpOgogICAgICAgIGlmIGRhdGFfZGlyIGlzIE5vbmU6CiAgICAgICAgICAgIGRlZmF1bHRfcGF0aCA9IFBhdGguaG9tZSgpIC8gIi5haV9yZXNlYXJjaF9vcyIgLyAiZnJpY3Rpb24iCiAgICAgICAgICAgIHNlbGYuZGF0YV9kaXIgPSBkZWZhdWx0X3BhdGgKICAgICAgICBlbHNlOgogICAgICAgICAgICBzZWxmLmRhdGFfZGlyID0gUGF0aChkYXRhX2RpcikKICAgICAgICBzZWxmLmRhdGFfZGlyLm1rZGlyKHBhcmVudHM9VHJ1ZSwgZXhpc3Rfb2s9VHJ1ZSkKICAgICAgICBzZWxmLmV2ZW50c19maWxlID0gc2VsZi5kYXRhX2RpciAvICJmcmljdGlvbl9ldmVudHMuanNvbmwiCiAgICAgICAgaWYgbm90IHNlbGYuZXZlbnRzX2ZpbGUuZXhpc3RzKCk6CiAgICAgICAgICAgIHNlbGYuZXZlbnRzX2ZpbGUud3JpdGVfdGV4dCgiIiwgZW5jb2Rpbmc9InV0Zi04IikKCiAgICBkZWYgcmVjb3JkKAogICAgICAgIHNlbGYsCiAgICAgICAgZnJpY3Rpb25fdHlwZTogRnJpY3Rpb25UeXBlLAogICAgICAgIHNldmVyaXR5OiBGcmljdGlvblNldmVyaXR5LAogICAgICAgIGNvbW1hbmQ6IHN0ciA9ICIiLAogICAgICAgIHF1ZXJ5OiBzdHIgPSAiIiwKICAgICAgICBzdGVwOiBzdHIgPSAiIiwKICAgICAgICBlcnJvcjogc3RyID0gIiIsCiAgICAgICAgcmVzb2x1dGlvbjogT3B0aW9uYWxbUmVzb2x1dGlvbl0gPSBOb25lLAogICAgICAgIGR1cmF0aW9uX3NlY29uZHM6IGludCA9IDAsCiAgICAgICAgcmV0cnlfY291bnQ6IGludCA9IDAsCiAgICAgICAgYWJhbmRvbmVkOiBib29sID0gRmFsc2UsCiAgICAgICAgbm90ZXM6IHN0ciA9ICIiLAogICAgKSAtPiBGcmljdGlvbkV2ZW50OgogICAgICAgICIiIlJlY29yZCBhIG5ldyBmcmljdGlvbiBldmVudC4iIiIKICAgICAgICBldmVudCA9IEZyaWN0aW9uRXZlbnQoCiAgICAgICAgICAgIGlkPWYiZnJfe3V1aWQudXVpZDQoKS5oZXhbOjhdfSIsCiAgICAgICAgICAgIHRpbWVzdGFtcD1kYXRldGltZS5ub3coKS5pc29mb3JtYXQoKSwKICAgICAgICAgICAgZnJpY3Rpb25fdHlwZT1mcmljdGlvbl90eXBlLnZhbHVlLAogICAgICAgICAgICBzZXZlcml0eT1zZXZlcml0eS52YWx1ZSwKICAgICAgICAgICAgY29tbWFuZD1jb21tYW5kLAogICAgICAgICAgICBxdWVyeT1xdWVyeSwKICAgICAgICAgICAgc3RlcD1zdGVwLAogICAgICAgICAgICBlcnJvcj1lcnJvciwKICAgICAgICAgICAgcmVzb2x1dGlvbj1yZXNvbHV0aW9uLnZhbHVlIGlmIHJlc29sdXRpb24gZWxzZSAiIiwKICAgICAgICAgICAgZHVyYXRpb25fc2Vjb25kcz1kdXJhdGlvbl9zZWNvbmRzLAogICAgICAgICAgICByZXRyeV9jb3VudD1yZXRyeV9jb3VudCwKICAgICAgICAgICAgYWJhbmRvbmVkPWFiYW5kb25lZCwKICAgICAgICAgICAgbm90ZXM9bm90ZXMsCiAgICAgICAgKQogICAgICAgIHdpdGggb3BlbihzZWxmLmV2ZW50c19maWxlLCAiYSIsIGVuY29kaW5nPSJ1dGYtOCIpIGFzIGY6CiAgICAgICAgICAgIGYud3JpdGUoanNvbi5kdW1wcyhldmVudC50b19kaWN0KCksIGVuc3VyZV9hc2NpaT1GYWxzZSkgKyAiXG4iKQogICAgICAgIHJldHVybiBldmVudAoKICAgIGRlZiByZWNvcmRfY29tbWFuZF9mYWlsdXJlKAogICAgICAgIHNlbGYsCiAgICAgICAgY29tbWFuZDogc3RyLAogICAgICAgIHF1ZXJ5OiBzdHIgPSAiIiwKICAgICAgICBlcnJvcjogc3RyID0gIiIsCiAgICAgICAgcmV0cnlfY291bnQ6IGludCA9IDAsCiAgICApIC0+IEZyaWN0aW9uRXZlbnQ6CiAgICAgICAgIiIiQ29udmVuaWVuY2U6IHJlY29yZCBhIGNvbW1hbmQgZmFpbHVyZS4iIiIKICAgICAgICBzZXZlcml0eSA9IEZyaWN0aW9uU2V2ZXJpdHkuSElHSCBpZiByZXRyeV9jb3VudCA+PSAzIGVsc2UgRnJpY3Rpb25TZXZlcml0eS5NRURJVU0KICAgICAgICByZXR1cm4gc2VsZi5yZWNvcmQoCiAgICAgICAgICAgIGZyaWN0aW9uX3R5cGU9RnJpY3Rpb25UeXBlLkNPTU1BTkQsCiAgICAgICAgICAgIHNldmVyaXR5PXNldmVyaXR5LAogICAgICAgICAgICBjb21tYW5kPWNvbW1hbmQsCiAgICAgICAgICAgIHF1ZXJ5PXF1ZXJ5LAogICAgICAgICAgICBlcnJvcj1lcnJvciwKICAgICAgICAgICAgcmV0cnlfY291bnQ9cmV0cnlfY291bnQsCiAgICAgICAgICAgIHJlc29sdXRpb249UmVzb2x1dGlvbi5SRVRSSUVEIGlmIHJldHJ5X2NvdW50ID4gMCBlbHNlIFJlc29sdXRpb24uU0VMRl9SRVNPTFZFRCwKICAgICAgICApCgogICAgZGVmIHJlY29yZF93b3JrZmxvd19hYmFuZG9uKAogICAgICAgIHNlbGYsCiAgICAgICAgY29tbWFuZDogc3RyLAogICAgICAgIHN0ZXA6IHN0ciwKICAgICAgICBxdWVyeTogc3RyID0gIiIsCiAgICAgICAgZHVyYXRpb25fc2Vjb25kczogaW50ID0gMCwKICAgICkgLT4gRnJpY3Rpb25FdmVudDoKICAgICAgICAiIiJDb252ZW5pZW5jZTogcmVjb3JkIGEgd29ya2Zsb3cgYWJhbmRvbm1lbnQuIiIiCiAgICAgICAgcmV0dXJuIHNlbGYucmVjb3JkKAogICAgICAgICAgICBmcmljdGlvbl90eXBlPUZyaWN0aW9uVHlwZS5XT1JLRkxPVywKICAgICAgICAgICAgc2V2ZXJpdHk9RnJpY3Rpb25TZXZlcml0eS5NRURJVU0sCiAgICAgICAgICAgIGNvbW1hbmQ9Y29tbWFuZCwKICAgICAgICAgICAgcXVlcnk9cXVlcnksCiAgICAgICAgICAgIHN0ZXA9c3RlcCwKICAgICAgICAgICAgZHVyYXRpb25fc2Vjb25kcz1kdXJhdGlvbl9zZWNvbmRzLAogICAgICAgICAgICBhYmFuZG9uZWQ9VHJ1ZSwKICAgICAgICAgICAgcmVzb2x1dGlvbj1SZXNvbHV0aW9uLkFCQU5ET05FRCwKICAgICAgICApCgogICAgZGVmIHJlY29yZF9yZXRyaWV2YWxfZmFpbHVyZSgKICAgICAgICBzZWxmLAogICAgICAgIGNvbW1hbmQ6IHN0ciwKICAgICAgICBxdWVyeTogc3RyLAogICAgICAgIG5vdGVzOiBzdHIgPSAiIiwKICAgICkgLT4gRnJpY3Rpb25FdmVudDoKICAgICAgICAiIiJDb252ZW5pZW5jZTogcmVjb3JkIGEgcmV0cmlldmFsL3NlYXJjaCBmYWlsdXJlLiIiIgogICAgICAgIHJldHVybiBzZWxmLnJlY29yZCgKICAgICAgICAgICAgZnJpY3Rpb25fdHlwZT1GcmljdGlvblR5cGUuUkVUUklFVkFMLAogICAgICAgICAgICBzZXZlcml0eT1GcmljdGlvblNldmVyaXR5Lk1FRElVTSwKICAgICAgICAgICAgY29tbWFuZD1jb21tYW5kLAogICAgICAgICAgICBxdWVyeT1xdWVyeSwKICAgICAgICAgICAgbm90ZXM9bm90ZXMsCiAgICAgICAgICAgIHJlc29sdXRpb249UmVzb2x1dGlvbi5XT1JLRURfQVJPVU5ELAogICAgICAgICkKCiAgICBkZWYgZ2V0X2V2ZW50cygKICAgICAgICBzZWxmLAogICAgICAgIGZyaWN0aW9uX3R5cGU6IE9wdGlvbmFsW0ZyaWN0aW9uVHlwZV0gPSBOb25lLAogICAgICAgIHNpbmNlX2RheXM6IGludCA9IDMwLAogICAgICAgIGxpbWl0OiBpbnQgPSAxMDAsCiAgICApIC0+IExpc3RbRnJpY3Rpb25FdmVudF06CiAgICAgICAgIiIiTG9hZCByZWNlbnQgZnJpY3Rpb24gZXZlbnRzLiIiIgogICAgICAgIGV2ZW50czogTGlzdFtGcmljdGlvbkV2ZW50XSA9IFtdCiAgICAgICAgY3V0b2ZmID0gZGF0ZXRpbWUubm93KCkudGltZXN0YW1wKCkgLSAoc2luY2VfZGF5cyAqIDg2NDAwKQogICAgICAgIHRyeToKICAgICAgICAgICAgZm9yIGxpbmUgaW4gcmV2ZXJzZWQob3BlbihzZWxmLmV2ZW50c19maWxlLCBlbmNvZGluZz0idXRmLTgiKS5yZWFkbGluZXMoKSk6CiAgICAgICAgICAgICAgICBpZiBsaW1pdCBhbmQgbGVuKGV2ZW50cykgPj0gbGltaXQ6CiAgICAgICAgICAgICAgICAgICAgYnJlYWsKICAgICAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgICAgICBldmVudCA9IEZyaWN0aW9uRXZlbnQuZnJvbV9kaWN0KGpzb24ubG9hZHMobGluZS5zdHJpcCgpKSkKICAgICAgICAgICAgICAgICAgICBpZiBldmVudC50aW1lc3RhbXA6CiAgICAgICAgICAgICAgICAgICAgICAgIHRzID0gZGF0ZXRpbWUuZnJvbWlzb2Zvcm1hdChldmVudC50aW1lc3RhbXApLnRpbWVzdGFtcCgpCiAgICAgICAgICAgICAgICAgICAgICAgIGlmIHRzIDwgY3V0b2ZmOgogICAgICAgICAgICAgICAgICAgICAgICAgICAgYnJlYWsKICAgICAgICAgICAgICAgICAgICBpZiBmcmljdGlvbl90eXBlIGFuZCBldmVudC5mcmljdGlvbl90eXBlICE9IGZyaWN0aW9uX3R5cGUudmFsdWU6CiAgICAgICAgICAgICAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgICAgICAgICAgICAgZXZlbnRzLmFwcGVuZChldmVudCkKICAgICAgICAgICAgICAgIGV4Y2VwdCAoanNvbi5KU09ORGVjb2RlRXJyb3IsIFR5cGVFcnJvcik6CiAgICAgICAgICAgICAgICAgICAgY29udGludWUKICAgICAgICBleGNlcHQgRmlsZU5vdEZvdW5kRXJyb3I6CiAgICAgICAgICAgIHBhc3MKICAgICAgICByZXR1cm4gZXZlbnRzCgogICAgZGVmIGdldF9zdW1tYXJ5KHNlbGYsIHNpbmNlX2RheXM6IGludCA9IDMwKSAtPiBEaWN0W3N0ciwgQW55XToKICAgICAgICAiIiJHZXQgYSBmcmljdGlvbiBzdW1tYXJ5IHJlcG9ydC4iIiIKICAgICAgICBldmVudHMgPSBzZWxmLmdldF9ldmVudHMoc2luY2VfZGF5cz1zaW5jZV9kYXlzLCBsaW1pdD0xMDAwKQogICAgICAgIGlmIG5vdCBldmVudHM6CiAgICAgICAgICAgIHJldHVybiB7CiAgICAgICAgICAgICAgICAidG90YWxfZXZlbnRzIjogMCwKICAgICAgICAgICAgICAgICJieV90eXBlIjoge30sCiAgICAgICAgICAgICAgICAiYnlfc2V2ZXJpdHkiOiB7fSwKICAgICAgICAgICAgICAgICJ0b3BfY29tbWFuZHMiOiBbXSwKICAgICAgICAgICAgICAgICJhYmFuZG9uX3JhdGUiOiAwLjAsCiAgICAgICAgICAgIH0KCiAgICAgICAgYnlfdHlwZTogRGljdFtzdHIsIGludF0gPSB7fQogICAgICAgIGJ5X3NldmVyaXR5OiBEaWN0W3N0ciwgaW50XSA9IHt9CiAgICAgICAgY29tbWFuZF9jb3VudHM6IERpY3Rbc3RyLCBpbnRdID0ge30KICAgICAgICBhYmFuZG9uZWQgPSAwCgogICAgICAgIGZvciBlIGluIGV2ZW50czoKICAgICAgICAgICAgYnlfdHlwZVtlLmZyaWN0aW9uX3R5cGVdID0gYnlfdHlwZS5nZXQoZS5mcmljdGlvbl90eXBlLCAwKSArIDEKICAgICAgICAgICAgYnlfc2V2ZXJpdHlbZS5zZXZlcml0eV0gPSBieV9zZXZlcml0eS5nZXQoZS5zZXZlcml0eSwgMCkgKyAxCiAgICAgICAgICAgIGlmIGUuY29tbWFuZDoKICAgICAgICAgICAgICAgIGNvbW1hbmRfY291bnRzW2UuY29tbWFuZF0gPSBjb21tYW5kX2NvdW50cy5nZXQoZS5jb21tYW5kLCAwKSArIDEKICAgICAgICAgICAgaWYgZS5hYmFuZG9uZWQ6CiAgICAgICAgICAgICAgICBhYmFuZG9uZWQgKz0gMQoKICAgICAgICB0b3BfY29tbWFuZHMgPSBzb3J0ZWQoY29tbWFuZF9jb3VudHMuaXRlbXMoKSwga2V5PWxhbWJkYSB4OiAteFsxXSlbOjVdCgogICAgICAgIHJldHVybiB7CiAgICAgICAgICAgICJ0b3RhbF9ldmVudHMiOiBsZW4oZXZlbnRzKSwKICAgICAgICAgICAgImJ5X3R5cGUiOiBieV90eXBlLAogICAgICAgICAgICAiYnlfc2V2ZXJpdHkiOiBieV9zZXZlcml0eSwKICAgICAgICAgICAgInRvcF9jb21tYW5kcyI6IHRvcF9jb21tYW5kcywKICAgICAgICAgICAgImFiYW5kb25fcmF0ZSI6IGFiYW5kb25lZCAvIGxlbihldmVudHMpIGlmIGV2ZW50cyBlbHNlIDAuMCwKICAgICAgICB9Cg==
+"""
+Research Friction Tracker: Detect and record research efficiency bottlenecks.
+
+Friction = any event that slows down or interrupts the user's research flow.
+Tracking friction is the first step toward a self-improving research experience.
+"""
+from __future__ import annotations
+
+import json
+import uuid
+from dataclasses import dataclass, asdict
+from datetime import datetime
+from enum import Enum
+from pathlib import Path
+from typing import Optional, List, Dict, Any
+
+
+class FrictionType(Enum):
+    """Categories of research friction."""
+    COMMAND = "command"          # 命令失败/重试
+    WORKFLOW = "workflow"       # 多步骤流程中途放弃
+    RETRIEVAL = "retrieval"    # 搜不到/找不到
+    COGNITIVE = "cognitive"     # 结果质量低于预期
+    NAVIGATION = "navigation"  # 不知道该用什么命令
+
+
+class FrictionSeverity(Enum):
+    """How severe is the friction."""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+class Resolution(Enum):
+    """How the user (or system) resolved the friction."""
+    RETRIED = "retried"
+    ABANDONED = "abandoned"
+    WORKED_AROUND = "worked_around"
+    SELF_RESOLVED = "self_resolved"
+    SYSTEM_HELPED = "system_helped"
+
+
+@dataclass
+class FrictionEvent:
+    """A single friction event."""
+    id: str
+    timestamp: str
+    friction_type: str
+    severity: str
+
+    # Context
+    command: str = ""
+    query: str = ""
+    step: str = ""
+    error: str = ""
+
+    # Outcome
+    resolution: str = ""
+    duration_seconds: int = 0
+    retry_count: int = 0
+    abandoned: bool = False
+    notes: str = ""
+
+    def __post_init__(self):
+        if not self.id:
+            self.id = f"fr_{uuid.uuid4().hex[:8]}"
+        if not self.timestamp:
+            self.timestamp = datetime.now().isoformat()
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "FrictionEvent":
+        return cls(**data)
+
+
+class FrictionTracker:
+    """Track and analyze research friction events."""
+
+    def __init__(self, data_dir: Optional[str] = None):
+        if data_dir is None:
+            default_path = Path.home() / ".ai_research_os" / "friction"
+            self.data_dir = default_path
+        else:
+            self.data_dir = Path(data_dir)
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.events_file = self.data_dir / "friction_events.jsonl"
+        if not self.events_file.exists():
+            self.events_file.write_text("", encoding="utf-8")
+
+    def record(
+        self,
+        friction_type: FrictionType,
+        severity: FrictionSeverity,
+        command: str = "",
+        query: str = "",
+        step: str = "",
+        error: str = "",
+        resolution: Optional[Resolution] = None,
+        duration_seconds: int = 0,
+        retry_count: int = 0,
+        abandoned: bool = False,
+        notes: str = "",
+    ) -> FrictionEvent:
+        """Record a new friction event."""
+        event = FrictionEvent(
+            id=f"fr_{uuid.uuid4().hex[:8]}",
+            timestamp=datetime.now().isoformat(),
+            friction_type=friction_type.value,
+            severity=severity.value,
+            command=command,
+            query=query,
+            step=step,
+            error=error,
+            resolution=resolution.value if resolution else "",
+            duration_seconds=duration_seconds,
+            retry_count=retry_count,
+            abandoned=abandoned,
+            notes=notes,
+        )
+        with open(self.events_file, "a", encoding="utf-8") as f:
+            f.write(json.dumps(event.to_dict(), ensure_ascii=False) + "\n")
+        return event
+
+    def record_command_failure(
+        self,
+        command: str,
+        query: str = "",
+        error: str = "",
+        retry_count: int = 0,
+    ) -> FrictionEvent:
+        """Convenience: record a command failure."""
+        severity = FrictionSeverity.HIGH if retry_count >= 3 else FrictionSeverity.MEDIUM
+        return self.record(
+            friction_type=FrictionType.COMMAND,
+            severity=severity,
+            command=command,
+            query=query,
+            error=error,
+            retry_count=retry_count,
+            resolution=Resolution.RETRIED if retry_count > 0 else Resolution.SELF_RESOLVED,
+        )
+
+    def record_workflow_abandon(
+        self,
+        command: str,
+        step: str,
+        query: str = "",
+        duration_seconds: int = 0,
+    ) -> FrictionEvent:
+        """Convenience: record a workflow abandonment."""
+        return self.record(
+            friction_type=FrictionType.WORKFLOW,
+            severity=FrictionSeverity.MEDIUM,
+            command=command,
+            query=query,
+            step=step,
+            duration_seconds=duration_seconds,
+            abandoned=True,
+            resolution=Resolution.ABANDONED,
+        )
+
+    def record_retrieval_failure(
+        self,
+        command: str,
+        query: str,
+        notes: str = "",
+    ) -> FrictionEvent:
+        """Convenience: record a retrieval/search failure."""
+        return self.record(
+            friction_type=FrictionType.RETRIEVAL,
+            severity=FrictionSeverity.MEDIUM,
+            command=command,
+            query=query,
+            notes=notes,
+            resolution=Resolution.WORKED_AROUND,
+        )
+
+    def get_events(
+        self,
+        friction_type: Optional[FrictionType] = None,
+        since_days: int = 30,
+        limit: int = 100,
+    ) -> List[FrictionEvent]:
+        """Load recent friction events."""
+        events: List[FrictionEvent] = []
+        cutoff = datetime.now().timestamp() - (since_days * 86400)
+        try:
+            for line in reversed(open(self.events_file, encoding="utf-8").readlines()):
+                if limit and len(events) >= limit:
+                    break
+                try:
+                    event = FrictionEvent.from_dict(json.loads(line.strip()))
+                    if event.timestamp:
+                        ts = datetime.fromisoformat(event.timestamp).timestamp()
+                        if ts < cutoff:
+                            break
+                    if friction_type and event.friction_type != friction_type.value:
+                        continue
+                    events.append(event)
+                except (json.JSONDecodeError, TypeError):
+                    continue
+        except FileNotFoundError:
+            pass
+        return events
+
+    def get_summary(self, since_days: int = 30) -> Dict[str, Any]:
+        """Get a friction summary report."""
+        events = self.get_events(since_days=since_days, limit=1000)
+        if not events:
+            return {
+                "total_events": 0,
+                "by_type": {},
+                "by_severity": {},
+                "top_commands": [],
+                "abandon_rate": 0.0,
+            }
+
+        by_type: Dict[str, int] = {}
+        by_severity: Dict[str, int] = {}
+        command_counts: Dict[str, int] = {}
+        abandoned = 0
+
+        for e in events:
+            by_type[e.friction_type] = by_type.get(e.friction_type, 0) + 1
+            by_severity[e.severity] = by_severity.get(e.severity, 0) + 1
+            if e.command:
+                command_counts[e.command] = command_counts.get(e.command, 0) + 1
+            if e.abandoned:
+                abandoned += 1
+
+        top_commands = sorted(command_counts.items(), key=lambda x: -x[1])[:5]
+
+        return {
+            "total_events": len(events),
+            "by_type": by_type,
+            "by_severity": by_severity,
+            "top_commands": top_commands,
+            "abandon_rate": abandoned / len(events) if events else 0.0,
+        }

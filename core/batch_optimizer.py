@@ -1,1 +1,108 @@
-IiIiCkJhdGNoIE9wZXJhdGlvbiBPcHRpbWl6ZXIuCgpPcHRpbWl6ZXMgYmF0Y2ggb3BlcmF0aW9ucyBmb3IgZWZmaWNpZW5jeS4KIiIiCgpmcm9tIHR5cGluZyBpbXBvcnQgTGlzdCwgQ2FsbGFibGUsIEFueSwgT3B0aW9uYWwKZnJvbSBjb25jdXJyZW50LmZ1dHVyZXMgaW1wb3J0IFRocmVhZFBvb2xFeGVjdXRvciwgYXNfY29tcGxldGVkCmZyb20gZGF0YWNsYXNzZXMgaW1wb3J0IGRhdGFjbGFzcwppbXBvcnQgdGltZQoKCkBkYXRhY2xhc3MKY2xhc3MgQmF0Y2hSZXN1bHQ6CiAgICAiIiJSZXN1bHQgb2YgYSBiYXRjaCBvcGVyYXRpb24uIiIiCgogICAgc3VjY2Vzc19jb3VudDogaW50CiAgICBmYWlsdXJlX2NvdW50OiBpbnQKICAgIHRvdGFsX3RpbWU6IGZsb2F0CiAgICByZXN1bHRzOiBMaXN0W0FueV0KICAgIGVycm9yczogTGlzdFtzdHJdCgoKY2xhc3MgQmF0Y2hPcHRpbWl6ZXI6CiAgICAiIiIKICAgIE9wdGltaXplIGJhdGNoIG9wZXJhdGlvbnMuCgogICAgRmVhdHVyZXM6CiAgICAtIFBhcmFsbGVsIGV4ZWN1dGlvbgogICAgLSBQcm9ncmVzcyB0cmFja2luZwogICAgLSBFcnJvciBoYW5kbGluZwogICAgLSBSZXNvdXJjZSBsaW1pdHMKICAgICIiIgoKICAgIGRlZiBfX2luaXRfXyhzZWxmLCBtYXhfd29ya2VyczogaW50ID0gNCk6CiAgICAgICAgc2VsZi5tYXhfd29ya2VycyA9IG1heF93b3JrZXJzCgogICAgZGVmIHByb2Nlc3NfYmF0Y2goCiAgICAgICAgc2VsZiwKICAgICAgICBpdGVtczogTGlzdFtBbnldLAogICAgICAgIHByb2Nlc3NvcjogQ2FsbGFibGVbW0FueV0sIEFueV0sCiAgICAgICAgZXJyb3JfaGFuZGxlcjogT3B0aW9uYWxbQ2FsbGFibGVdID0gTm9uZSwKICAgICkgLT4gQmF0Y2hSZXN1bHQ6CiAgICAgICAgIiIiUHJvY2VzcyBpdGVtcyBpbiBiYXRjaCB3aXRoIHBhcmFsbGVsIGV4ZWN1dGlvbi4iIiIKICAgICAgICBzdGFydF90aW1lID0gdGltZS50aW1lKCkKICAgICAgICByZXN1bHRzID0gW10KICAgICAgICBlcnJvcnMgPSBbXQogICAgICAgIHN1Y2Nlc3NfY291bnQgPSAwCiAgICAgICAgZmFpbHVyZV9jb3VudCA9IDAKCiAgICAgICAgd2l0aCBUaHJlYWRQb29sRXhlY3V0b3IobWF4X3dvcmtlcnM9c2VsZi5tYXhfd29ya2VycykgYXMgZXhlY3V0b3I6CiAgICAgICAgICAgIGZ1dHVyZXMgPSB7ZXhlY3V0b3Iuc3VibWl0KHByb2Nlc3NvciwgaXRlbSk6IGl0ZW0gZm9yIGl0ZW0gaW4gaXRlbXN9CgogICAgICAgICAgICBmb3IgZnV0dXJlIGluIGFzX2NvbXBsZXRlZChmdXR1cmVzKToKICAgICAgICAgICAgICAgIGl0ZW0gPSBmdXR1cmVzW2Z1dHVyZV0KICAgICAgICAgICAgICAgIHRyeToKICAgICAgICAgICAgICAgICAgICByZXN1bHQgPSBmdXR1cmUucmVzdWx0KCkKICAgICAgICAgICAgICAgICAgICByZXN1bHRzLmFwcGVuZChyZXN1bHQpCiAgICAgICAgICAgICAgICAgICAgc3VjY2Vzc19jb3VudCArPSAxCiAgICAgICAgICAgICAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgICAgICAgICAgICAgZmFpbHVyZV9jb3VudCArPSAxCiAgICAgICAgICAgICAgICAgICAgZXJyb3JzLmFwcGVuZChzdHIoZSkpCiAgICAgICAgICAgICAgICAgICAgaWYgZXJyb3JfaGFuZGxlcjoKICAgICAgICAgICAgICAgICAgICAgICAgZXJyb3JfaGFuZGxlcihlLCBpdGVtKQoKICAgICAgICB0b3RhbF90aW1lID0gdGltZS50aW1lKCkgLSBzdGFydF90aW1lCgogICAgICAgIHJldHVybiBCYXRjaFJlc3VsdCgKICAgICAgICAgICAgc3VjY2Vzc19jb3VudD1zdWNjZXNzX2NvdW50LAogICAgICAgICAgICBmYWlsdXJlX2NvdW50PWZhaWx1cmVfY291bnQsCiAgICAgICAgICAgIHRvdGFsX3RpbWU9dG90YWxfdGltZSwKICAgICAgICAgICAgcmVzdWx0cz1yZXN1bHRzLAogICAgICAgICAgICBlcnJvcnM9ZXJyb3JzLAogICAgICAgICkKCiAgICBkZWYgcHJvY2Vzc19zZXF1ZW50aWFsKAogICAgICAgIHNlbGYsCiAgICAgICAgaXRlbXM6IExpc3RbQW55XSwKICAgICAgICBwcm9jZXNzb3I6IENhbGxhYmxlW1tBbnldLCBBbnldLAogICAgICAgIGVycm9yX2hhbmRsZXI6IE9wdGlvbmFsW0NhbGxhYmxlXSA9IE5vbmUsCiAgICApIC0+IEJhdGNoUmVzdWx0OgogICAgICAgICIiIlByb2Nlc3MgaXRlbXMgc2VxdWVudGlhbGx5IHdpdGggdGltaW5nLiIiIgogICAgICAgIHN0YXJ0X3RpbWUgPSB0aW1lLnRpbWUoKQogICAgICAgIHJlc3VsdHMgPSBbXQogICAgICAgIGVycm9ycyA9IFtdCiAgICAgICAgc3VjY2Vzc19jb3VudCA9IDAKICAgICAgICBmYWlsdXJlX2NvdW50ID0gMAoKICAgICAgICBmb3IgaXRlbSBpbiBpdGVtczoKICAgICAgICAgICAgdHJ5OgogICAgICAgICAgICAgICAgcmVzdWx0ID0gcHJvY2Vzc29yKGl0ZW0pCiAgICAgICAgICAgICAgICByZXN1bHRzLmFwcGVuZChyZXN1bHQpCiAgICAgICAgICAgICAgICBzdWNjZXNzX2NvdW50ICs9IDEKICAgICAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgICAgICAgICAgZmFpbHVyZV9jb3VudCArPSAxCiAgICAgICAgICAgICAgICBlcnJvcnMuYXBwZW5kKHN0cihlKSkKICAgICAgICAgICAgICAgIGlmIGVycm9yX2hhbmRsZXI6CiAgICAgICAgICAgICAgICAgICAgZXJyb3JfaGFuZGxlcihlLCBpdGVtKQoKICAgICAgICB0b3RhbF90aW1lID0gdGltZS50aW1lKCkgLSBzdGFydF90aW1lCgogICAgICAgIHJldHVybiBCYXRjaFJlc3VsdCgKICAgICAgICAgICAgc3VjY2Vzc19jb3VudD1zdWNjZXNzX2NvdW50LAogICAgICAgICAgICBmYWlsdXJlX2NvdW50PWZhaWx1cmVfY291bnQsCiAgICAgICAgICAgIHRvdGFsX3RpbWU9dG90YWxfdGltZSwKICAgICAgICAgICAgcmVzdWx0cz1yZXN1bHRzLAogICAgICAgICAgICBlcnJvcnM9ZXJyb3JzLAogICAgICAgICkK
+"""
+Batch Operation Optimizer.
+
+Optimizes batch operations for efficiency.
+"""
+
+from typing import List, Callable, Any, Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
+import time
+
+
+@dataclass
+class BatchResult:
+    """Result of a batch operation."""
+
+    success_count: int
+    failure_count: int
+    total_time: float
+    results: List[Any]
+    errors: List[str]
+
+
+class BatchOptimizer:
+    """
+    Optimize batch operations.
+
+    Features:
+    - Parallel execution
+    - Progress tracking
+    - Error handling
+    - Resource limits
+    """
+
+    def __init__(self, max_workers: int = 4):
+        self.max_workers = max_workers
+
+    def process_batch(
+        self,
+        items: List[Any],
+        processor: Callable[[Any], Any],
+        error_handler: Optional[Callable] = None,
+    ) -> BatchResult:
+        """Process items in batch with parallel execution."""
+        start_time = time.time()
+        results = []
+        errors = []
+        success_count = 0
+        failure_count = 0
+
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            futures = {executor.submit(processor, item): item for item in items}
+
+            for future in as_completed(futures):
+                item = futures[future]
+                try:
+                    result = future.result()
+                    results.append(result)
+                    success_count += 1
+                except Exception as e:
+                    failure_count += 1
+                    errors.append(str(e))
+                    if error_handler:
+                        error_handler(e, item)
+
+        total_time = time.time() - start_time
+
+        return BatchResult(
+            success_count=success_count,
+            failure_count=failure_count,
+            total_time=total_time,
+            results=results,
+            errors=errors,
+        )
+
+    def process_sequential(
+        self,
+        items: List[Any],
+        processor: Callable[[Any], Any],
+        error_handler: Optional[Callable] = None,
+    ) -> BatchResult:
+        """Process items sequentially with timing."""
+        start_time = time.time()
+        results = []
+        errors = []
+        success_count = 0
+        failure_count = 0
+
+        for item in items:
+            try:
+                result = processor(item)
+                results.append(result)
+                success_count += 1
+            except Exception as e:
+                failure_count += 1
+                errors.append(str(e))
+                if error_handler:
+                    error_handler(e, item)
+
+        total_time = time.time() - start_time
+
+        return BatchResult(
+            success_count=success_count,
+            failure_count=failure_count,
+            total_time=total_time,
+            results=results,
+            errors=errors,
+        )

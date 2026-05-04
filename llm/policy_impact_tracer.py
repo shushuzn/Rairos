@@ -1,1 +1,156 @@
-IiIiUG9saWN5IEltcGFjdCBUcmFjZXIg4oCUIG1hcCBuZXcgcmVndWxhdGlvbiDihpIgYWZmZWN0ZWQgZG9tYWlucyDihpIgdXBkYXRlZCBHZW5lIFBvb2wgcHJpb3JpdHkgd2VpZ2h0cy4KClRyYWNrcyBBSSBwb2xpY3kvcmVndWxhdGlvbiBkZXZlbG9wbWVudHMgYW5kIG1hcHMgdGhlaXIgaW1wYWN0IHRvIHJlc2VhcmNoIGRvbWFpbnMuCiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGpzb24KZnJvbSBkYXRldGltZSBpbXBvcnQgZGF0ZXRpbWUKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBBbnksIERpY3QsIExpc3QsIE9wdGlvbmFsCgpQT0xJQ1lfRklMRSA9IFBhdGguaG9tZSgpIC8gIi5haV9yZXNlYXJjaF9vcyIgLyAicG9saWN5X2ltcGFjdC5qc29uIgoKIyBLbm93biByZWd1bGF0aW9ucyBhbmQgdGhlaXIgYWZmZWN0ZWQgZG9tYWlucwpSRUdVTEFUSU9OUyA9IHsKICAgICJFVV9BSV9BY3QiOiB7CiAgICAgICAgIm5hbWUiOiAiRVUgQUkgQWN0IiwKICAgICAgICAianVyaXNkaWN0aW9uIjogIkV1cm9wZWFuIFVuaW9uIiwKICAgICAgICAiZWZmZWN0aXZlX2RhdGUiOiAiMjAyNS0wOCIsCiAgICAgICAgImFmZmVjdGVkX2RvbWFpbnMiOiBbImNzLkFJIiwgImNzLkxHIiwgImNzLkNZIiwgImNzLkNWIl0sCiAgICAgICAgImFmZmVjdGVkX2dhcF90eXBlcyI6IFsiZXZhbHVhdGlvbl9nYXAiLCAic2NhbGFiaWxpdHlfaXNzdWUiLCAibWV0aG9kX2xpbWl0YXRpb24iXSwKICAgICAgICAia2V5d29yZHMiOiBbImV1IGFpIGFjdCIsICJoaWdoLXJpc2siLCAiIGNvbmZvcm1pdHkiLCAicHJvaGliaXRlZCBBSSJdLAogICAgICAgICJwcmlvcml0eV9ib29zdCI6IHsiZXZhbHVhdGlvbl9nYXAiOiAwLjMsICJnZW5lcmFsaXphdGlvbl9nYXAiOiAwLjF9LAogICAgfSwKICAgICJVU19BSV9FeGVjdXRpdmVfT3JkZXIiOiB7CiAgICAgICAgIm5hbWUiOiAiVVMgQUkgRXhlY3V0aXZlIE9yZGVyIiwKICAgICAgICAianVyaXNkaWN0aW9uIjogIlVuaXRlZCBTdGF0ZXMiLAogICAgICAgICJlZmZlY3RpdmVfZGF0ZSI6ICIyMDI0LTAxIiwKICAgICAgICAiYWZmZWN0ZWRfZG9tYWlucyI6IFsiY3MuQUkiLCAiY3MuTEciXSwKICAgICAgICAiYWZmZWN0ZWRfZ2FwX3R5cGVzIjogWyJzYWZldHkiLCAiYWxpZ25tZW50IiwgImV2YWx1YXRpb24iXSwKICAgICAgICAia2V5d29yZHMiOiBbImV4ZWN1dGl2ZSBvcmRlciBhaSIsICJzYWZldHkiLCAidXMgZ292ZXJubWVudCBhaSJdLAogICAgICAgICJwcmlvcml0eV9ib29zdCI6IHsidGhlb3JldGljYWxfZ2FwIjogMC4yLCAiZXZhbHVhdGlvbl9nYXAiOiAwLjJ9LAogICAgfSwKICAgICJHRFBSX0FJIjogewogICAgICAgICJuYW1lIjogIkdEUFIgZm9yIEFJIFN5c3RlbXMiLAogICAgICAgICJqdXJpc2RpY3Rpb24iOiAiRXVyb3BlYW4gVW5pb24iLAogICAgICAgICJlZmZlY3RpdmVfZGF0ZSI6ICIyMDI0LTA1IiwKICAgICAgICAiYWZmZWN0ZWRfZG9tYWlucyI6IFsiY3MuQUkiLCAiY3MuTEciLCAiY3MuQ1kiXSwKICAgICAgICAiYWZmZWN0ZWRfZ2FwX3R5cGVzIjogWyJldmFsdWF0aW9uX2dhcCIsICJkYXRhc2V0X2dhcCJdLAogICAgICAgICJrZXl3b3JkcyI6IFsiZ2RwciIsICJkYXRhIHByb3RlY3Rpb24iLCAicHJpdmFjeSBhaSIsICJwZXJzb25hbCBkYXRhIGFpIl0sCiAgICAgICAgInByaW9yaXR5X2Jvb3N0IjogeyJkYXRhc2V0X2dhcCI6IDAuMywgImV2YWx1YXRpb25fZ2FwIjogMC4xfSwKICAgIH0sCiAgICAiQ2hpbmFfQUlfUmVndWxhdGlvbiI6IHsKICAgICAgICAibmFtZSI6ICJDaGluYSBBSSBSZWd1bGF0aW9ucyIsCiAgICAgICAgImp1cmlzZGljdGlvbiI6ICJDaGluYSIsCiAgICAgICAgImVmZmVjdGl2ZV9kYXRlIjogIjIwMjQtMDEiLAogICAgICAgICJhZmZlY3RlZF9kb21haW5zIjogWyJjcy5BSSIsICJjcy5MRyIsICJjcy5DTCJdLAogICAgICAgICJhZmZlY3RlZF9nYXBfdHlwZXMiOiBbIm1ldGhvZF9saW1pdGF0aW9uIiwgInNjYWxhYmlsaXR5X2lzc3VlIl0sCiAgICAgICAgImtleXdvcmRzIjogWyJjaGluYSBhaSByZWd1bGF0aW9uIiwgImdlbmVyYXRpdmUgYWkgY2hpbmEiLCAiY2hpbmEgbWwgcG9saWN5Il0sCiAgICAgICAgInByaW9yaXR5X2Jvb3N0IjogeyJzY2FsYWJpbGl0eV9pc3N1ZSI6IDAuMiwgIm1ldGhvZF9saW1pdGF0aW9uIjogMC4xfSwKICAgIH0sCn0KCgpkZWYgX2xvYWRfcG9saWN5X2RhdGEoKSAtPiBEaWN0W3N0ciwgQW55XToKICAgIGlmIG5vdCBQT0xJQ1lfRklMRS5leGlzdHMoKToKICAgICAgICByZXR1cm4geyJyZWd1bGF0aW9ucyI6IFJFR1VMQVRJT05TLCAid2F0Y2hlZF9wYXBlcnMiOiBbXSwgImxhc3Rfc2NhbiI6ICIifQogICAgcmV0dXJuIGpzb24ubG9hZHMoUE9MSUNZX0ZJTEUucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpKQoKCmRlZiBfc2F2ZV9wb2xpY3lfZGF0YShkYXRhOiBEaWN0W3N0ciwgQW55XSkgLT4gTm9uZToKICAgIFBPTElDWV9GSUxFLnBhcmVudC5ta2RpcihwYXJlbnRzPVRydWUsIGV4aXN0X29rPVRydWUpCiAgICBQT0xJQ1lfRklMRS53cml0ZV90ZXh0KGpzb24uZHVtcHMoZGF0YSwgaW5kZW50PTIsIGVuc3VyZV9hc2NpaT1GYWxzZSksIGVuY29kaW5nPSJ1dGYtOCIpCgoKZGVmIGNoZWNrX3BvbGljeV9pbXBhY3QocGFwZXI6IERpY3Rbc3RyLCBBbnldKSAtPiBMaXN0W0RpY3Rbc3RyLCBBbnldXToKICAgICIiIkNoZWNrIHdoaWNoIHJlZ3VsYXRpb25zIGEgcGFwZXIgcmVsYXRlcyB0by4iIiIKICAgIHRleHQgPSAocGFwZXIuZ2V0KCJ0aXRsZSIsICIiKSArICIgIiArIHBhcGVyLmdldCgiYWJzdHJhY3QiLCAiIikpLmxvd2VyKCkKICAgIGNhdHMgPSBzZXQocGFwZXIuZ2V0KCJjYXRlZ29yaWVzIiwgW10pIG9yIFtdKQogICAgcmVzdWx0czogTGlzdFtEaWN0W3N0ciwgQW55XV0gPSBbXQoKICAgIGZvciBfcmlkLCByZWcgaW4gUkVHVUxBVElPTlMuaXRlbXMoKToKICAgICAgICAjIEtleXdvcmQgbWF0Y2gKICAgICAgICBrd19tYXRjaCA9IGFueShrdy5sb3dlcigpIGluIHRleHQgZm9yIGt3IGluIHJlZ1sia2V5d29yZHMiXSkKICAgICAgICAjIENhdGVnb3J5IG1hdGNoCiAgICAgICAgY2F0X21hdGNoID0gYW55KGMgaW4gY2F0cyBmb3IgYyBpbiByZWdbImFmZmVjdGVkX2RvbWFpbnMiXSkKICAgICAgICBpZiBrd19tYXRjaCBvciBjYXRfbWF0Y2g6CiAgICAgICAgICAgIHJlc3VsdHMuYXBwZW5kKAogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICJyZWd1bGF0aW9uX2lkIjogcmlkLAogICAgICAgICAgICAgICAgICAgICJyZWd1bGF0aW9uX25hbWUiOiByZWdbIm5hbWUiXSwKICAgICAgICAgICAgICAgICAgICAianVyaXNkaWN0aW9uIjogcmVnWyJqdXJpc2RpY3Rpb24iXSwKICAgICAgICAgICAgICAgICAgICAiZWZmZWN0aXZlX2RhdGUiOiByZWdbImVmZmVjdGl2ZV9kYXRlIl0sCiAgICAgICAgICAgICAgICAgICAgImFmZmVjdGVkX2RvbWFpbnMiOiByZWdbImFmZmVjdGVkX2RvbWFpbnMiXSwKICAgICAgICAgICAgICAgICAgICAicHJpb3JpdHlfYm9vc3QiOiByZWdbInByaW9yaXR5X2Jvb3N0Il0sCiAgICAgICAgICAgICAgICAgICAgIm1hdGNoX3JlYXNvbiI6ICJrZXl3b3JkIiBpZiBrd19tYXRjaCBlbHNlICJjYXRlZ29yeSIsCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICkKICAgIHJldHVybiByZXN1bHRzCgoKZGVmIGdldF9pbXBhY3RlZF9jYXBzdWxlcygpIC0+IExpc3RbRGljdFtzdHIsIEFueV1dOgogICAgIiIiUmV0dXJuIEdlbmUgUG9vbCBjYXBzdWxlcyB3aG9zZSBnYXAgdHlwZXMgYXJlIGFmZmVjdGVkIGJ5IGN1cnJlbnQgcmVndWxhdGlvbnMuIiIiCiAgICBmcm9tIGxsbS5ib2xkX3ZhdWx0IGltcG9ydCBfbG9hZF9jYXBzdWxlcyBhcyBfbG9hZAoKICAgIGNhcHN1bGVzID0gX2xvYWQoKQogICAgaW1wYWN0ZWQ6IExpc3RbRGljdFtzdHIsIEFueV1dID0gW10KCiAgICBmb3IgY2FwIGluIGNhcHN1bGVzOgogICAgICAgIGlmIGNhcC5nZXQoInN0YXR1cyIpIG5vdCBpbiAoIiIsICJhY3RpdmUiKToKICAgICAgICAgICAgY29udGludWUKICAgICAgICBnYXBfdHlwZSA9IGNhcC5nZXQoImFjdGlvbl9nYXBfdHlwZSIsICIiKSBvciBjYXAuZ2V0KCJ0cmlnZ2VyX2dhcF90eXBlIiwgIiIpCiAgICAgICAgZm9yIHJlZyBpbiBSRUdVTEFUSU9OUy52YWx1ZXMoKToKICAgICAgICAgICAgaWYgZ2FwX3R5cGUgaW4gcmVnWyJhZmZlY3RlZF9nYXBfdHlwZXMiXToKICAgICAgICAgICAgICAgIGltcGFjdGVkLmFwcGVuZCgKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgICJjYXBzdWxlX2lkIjogY2FwLmdldCgiY2Fwc3VsZV9pZCIsICIiKSwKICAgICAgICAgICAgICAgICAgICAgICAgImdhcF90aXRsZSI6IGNhcC5nZXQoImFjdGlvbl9nYXBfdGl0bGUiLCAiIiksCiAgICAgICAgICAgICAgICAgICAgICAgICJnYXBfdHlwZSI6IGdhcF90eXBlLAogICAgICAgICAgICAgICAgICAgICAgICAicmVndWxhdGlvbiI6IHJlZ1sibmFtZSJdLAogICAgICAgICAgICAgICAgICAgICAgICAicHJpb3JpdHlfYm9vc3QiOiByZWdbInByaW9yaXR5X2Jvb3N0Il0uZ2V0KGdhcF90eXBlLCAwKSwKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICBicmVhawogICAgaW1wYWN0ZWQuc29ydChrZXk9bGFtYmRhIHg6IC14WyJwcmlvcml0eV9ib29zdCJdKQogICAgcmV0dXJuIGltcGFjdGVkCgoKZGVmIHJlbmRlcl9wb2xpY3lfdHJhY2VyX2h0bWwoKSAtPiBzdHI6CiAgICBpbXBhY3RlZCA9IGdldF9pbXBhY3RlZF9jYXBzdWxlcygpCiAgICBfID0gX2xvYWRfcG9saWN5X2RhdGEoKQoKICAgIGxpbmVzID0gWyc8ZGl2IGNsYXNzPSJwb2xpY3ktdHJhY2VyIj4nXQogICAgbGluZXMuYXBwZW5kKCI8aDM+8J+Pm++4jyBQb2xpY3kgSW1wYWN0IFRyYWNlcjwvaDM+IikKICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAiPHAgc3R5bGU9J2ZvbnQtc2l6ZToxM3B4O2NvbG9yOiNBODlFOEM7bWFyZ2luLWJvdHRvbToxNnB4Jz4iCiAgICAgICAgIk1hcHMgQUkgcmVndWxhdGlvbnMgdG8gYWZmZWN0ZWQgR2VuZSBQb29sIGdhcHMuICIKICAgICAgICAiUHJpb3JpdHkgd2VpZ2h0cyBpbmNyZWFzZSBmb3IgZ2FwIHR5cGVzIHRhcmdldGVkIGJ5IG5ldyBwb2xpY2llcy48L3A+IgogICAgKQoKICAgICMgUmVndWxhdGlvbiBsaXN0CiAgICBmb3IgX3JpZCwgcmVnIGluIFJFR1VMQVRJT05TLml0ZW1zKCk6CiAgICAgICAgbGluZXMuYXBwZW5kKGYiIiIKPGRpdiBzdHlsZT0nYm9yZGVyOjFweCBzb2xpZCAjZTBkYmQ0O2JvcmRlci1yYWRpdXM6NnB4O3BhZGRpbmc6MTJweDttYXJnaW4tYm90dG9tOjEwcHg7Ym9yZGVyLWxlZnQ6NHB4IHNvbGlkICNENEEwNTUnPgogIDxkaXYgc3R5bGU9J2Rpc3BsYXk6ZmxleDtqdXN0aWZ5LWNvbnRlbnQ6c3BhY2UtYmV0d2Vlbic+CiAgICA8ZGl2IHN0eWxlPSdmb250LXdlaWdodDo3MDA7Zm9udC1zaXplOjEzcHgnPntyZWdbIm5hbWUiXX08L2Rpdj4KICAgIDxkaXYgc3R5bGU9J2ZvbnQtc2l6ZToxMXB4O2NvbG9yOiNBODlFOEMnPntyZWdbImp1cmlzZGljdGlvbiJdfSDCtyBlZmZlY3RpdmUge3JlZ1siZWZmZWN0aXZlX2RhdGUiXX08L2Rpdj4KICA8L2Rpdj4KICA8ZGl2IHN0eWxlPSdmb250LXNpemU6MTJweDtjb2xvcjojN2E3NTcwO21hcmdpbi10b3A6NHB4Jz5BZmZlY3RlZDogeyIsICIuam9pbihyZWdbImFmZmVjdGVkX2RvbWFpbnMiXSl9PC9kaXY+CjwvZGl2PiIiIikKCiAgICAjIEltcGFjdGVkIGNhcHN1bGVzCiAgICBsaW5lcy5hcHBlbmQoCiAgICAgICAgIjxoNCBzdHlsZT0nZm9udC1zaXplOjEzcHg7Zm9udC13ZWlnaHQ6NzAwO2NvbG9yOiMzMzM7bWFyZ2luLXRvcDoyMHB4O21hcmdpbi1ib3R0b206MTBweCc+IgogICAgICAgIGYiUG9saWN5LUltcGFjdGVkIENhcHN1bGVzICh7bGVuKGltcGFjdGVkKX0pPC9oND4iCiAgICApCgogICAgaWYgbm90IGltcGFjdGVkOgogICAgICAgIGxpbmVzLmFwcGVuZCgKICAgICAgICAgICAgIjxwIHN0eWxlPSdjb2xvcjojQTg5RThDO2ZvbnQtc2l6ZToxM3B4Jz5ObyBjYXBzdWxlcyBkaXJlY3RseSBhZmZlY3RlZCBieSBjdXJyZW50IHJlZ3VsYXRpb25zLjwvcD4iCiAgICAgICAgKQogICAgZWxzZToKICAgICAgICBmb3IgY2FwIGluIGltcGFjdGVkWzoxMF06CiAgICAgICAgICAgIGJvb3N0X3BjdCA9IGludChjYXBbInByaW9yaXR5X2Jvb3N0Il0gKiAxMDApCiAgICAgICAgICAgIGxpbmVzLmFwcGVuZChmIiIiCjxkaXYgc3R5bGU9J2Rpc3BsYXk6ZmxleDtqdXN0aWZ5LWNvbnRlbnQ6c3BhY2UtYmV0d2VlbjthbGlnbi1pdGVtczpjZW50ZXI7cGFkZGluZzo4cHggMTJweDtiYWNrZ3JvdW5kOiNmOGY0ZWY7Ym9yZGVyLXJhZGl1czo0cHg7bWFyZ2luLWJvdHRvbTo2cHgnPgogIDxkaXY+CiAgICA8ZGl2IHN0eWxlPSdmb250LXNpemU6MTJweDtmb250LXdlaWdodDo2MDA7Y29sb3I6IzJhMmEyYSc+e2NhcFsiZ2FwX3RpdGxlIl1bOjU1XX08L2Rpdj4KICAgIDxkaXYgc3R5bGU9J2ZvbnQtc2l6ZToxMXB4O2NvbG9yOiNBODlFOEMnPntjYXBbImdhcF90eXBlIl19IMK3IHtjYXBbInJlZ3VsYXRpb24iXX08L2Rpdj4KICA8L2Rpdj4KICA8ZGl2IHN0eWxlPSdjb2xvcjojNkJCRjhBO2ZvbnQtc2l6ZToxMnB4O2ZvbnQtd2VpZ2h0OjcwMCc+K3tib29zdF9wY3R9JSBwcmlvcml0eTwvZGl2Pgo8L2Rpdj4iIiIpCgogICAgbGluZXMuYXBwZW5kKCI8c3R5bGU+LnBvbGljeS10cmFjZXIgeyBmb250LWZhbWlseTogR2VvcmdpYSwgc2VyaWY7IH08L3N0eWxlPiIpCiAgICBsaW5lcy5hcHBlbmQoIjwvZGl2PiIpCiAgICByZXR1cm4gIlxuIi5qb2luKGxpbmVzKQo=
+"""Policy Impact Tracer — map new regulation → affected domains → updated Gene Pool priority weights.
+
+Tracks AI policy/regulation developments and maps their impact to research domains.
+"""
+
+from __future__ import annotations
+
+import json
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+POLICY_FILE = Path.home() / ".ai_research_os" / "policy_impact.json"
+
+# Known regulations and their affected domains
+REGULATIONS = {
+    "EU_AI_Act": {
+        "name": "EU AI Act",
+        "jurisdiction": "European Union",
+        "effective_date": "2025-08",
+        "affected_domains": ["cs.AI", "cs.LG", "cs.CY", "cs.CV"],
+        "affected_gap_types": ["evaluation_gap", "scalability_issue", "method_limitation"],
+        "keywords": ["eu ai act", "high-risk", " conformity", "prohibited AI"],
+        "priority_boost": {"evaluation_gap": 0.3, "generalization_gap": 0.1},
+    },
+    "US_AI_Executive_Order": {
+        "name": "US AI Executive Order",
+        "jurisdiction": "United States",
+        "effective_date": "2024-01",
+        "affected_domains": ["cs.AI", "cs.LG"],
+        "affected_gap_types": ["safety", "alignment", "evaluation"],
+        "keywords": ["executive order ai", "safety", "us government ai"],
+        "priority_boost": {"theoretical_gap": 0.2, "evaluation_gap": 0.2},
+    },
+    "GDPR_AI": {
+        "name": "GDPR for AI Systems",
+        "jurisdiction": "European Union",
+        "effective_date": "2024-05",
+        "affected_domains": ["cs.AI", "cs.LG", "cs.CY"],
+        "affected_gap_types": ["evaluation_gap", "dataset_gap"],
+        "keywords": ["gdpr", "data protection", "privacy ai", "personal data ai"],
+        "priority_boost": {"dataset_gap": 0.3, "evaluation_gap": 0.1},
+    },
+    "China_AI_Regulation": {
+        "name": "China AI Regulations",
+        "jurisdiction": "China",
+        "effective_date": "2024-01",
+        "affected_domains": ["cs.AI", "cs.LG", "cs.CL"],
+        "affected_gap_types": ["method_limitation", "scalability_issue"],
+        "keywords": ["china ai regulation", "generative ai china", "china ml policy"],
+        "priority_boost": {"scalability_issue": 0.2, "method_limitation": 0.1},
+    },
+}
+
+
+def _load_policy_data() -> Dict[str, Any]:
+    if not POLICY_FILE.exists():
+        return {"regulations": REGULATIONS, "watched_papers": [], "last_scan": ""}
+    return json.loads(POLICY_FILE.read_text(encoding="utf-8"))
+
+
+def _save_policy_data(data: Dict[str, Any]) -> None:
+    POLICY_FILE.parent.mkdir(parents=True, exist_ok=True)
+    POLICY_FILE.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def check_policy_impact(paper: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Check which regulations a paper relates to."""
+    text = (paper.get("title", "") + " " + paper.get("abstract", "")).lower()
+    cats = set(paper.get("categories", []) or [])
+    results: List[Dict[str, Any]] = []
+
+    for _rid, reg in REGULATIONS.items():
+        # Keyword match
+        kw_match = any(kw.lower() in text for kw in reg["keywords"])
+        # Category match
+        cat_match = any(c in cats for c in reg["affected_domains"])
+        if kw_match or cat_match:
+            results.append({
+                "regulation_id": rid,
+                "regulation_name": reg["name"],
+                "jurisdiction": reg["jurisdiction"],
+                "effective_date": reg["effective_date"],
+                "affected_domains": reg["affected_domains"],
+                "priority_boost": reg["priority_boost"],
+                "match_reason": "keyword" if kw_match else "category",
+            })
+    return results
+
+
+def get_impacted_capsules() -> List[Dict[str, Any]]:
+    """Return Gene Pool capsules whose gap types are affected by current regulations."""
+    from llm.bold_vault import _load_capsules as _load
+    capsules = _load()
+    impacted: List[Dict[str, Any]] = []
+
+    for cap in capsules:
+        if cap.get("status") not in ("", "active"):
+            continue
+        gap_type = cap.get("action_gap_type", "") or cap.get("trigger_gap_type", "")
+        for reg in REGULATIONS.values():
+            if gap_type in reg["affected_gap_types"]:
+                impacted.append({
+                    "capsule_id": cap.get("capsule_id", ""),
+                    "gap_title": cap.get("action_gap_title", ""),
+                    "gap_type": gap_type,
+                    "regulation": reg["name"],
+                    "priority_boost": reg["priority_boost"].get(gap_type, 0),
+                })
+                break
+    impacted.sort(key=lambda x: -x["priority_boost"])
+    return impacted
+
+
+def render_policy_tracer_html() -> str:
+    impacted = get_impacted_capsules()
+    _ = _load_policy_data()
+
+    lines = ['<div class="policy-tracer">']
+    lines.append("<h3>🏛️ Policy Impact Tracer</h3>")
+    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>"
+                "Maps AI regulations to affected Gene Pool gaps. "
+                "Priority weights increase for gap types targeted by new policies.</p>")
+
+    # Regulation list
+    for _rid, reg in REGULATIONS.items():
+        lines.append(f"""
+<div style='border:1px solid #e0dbd4;border-radius:6px;padding:12px;margin-bottom:10px;border-left:4px solid #D4A055'>
+  <div style='display:flex;justify-content:space-between'>
+    <div style='font-weight:700;font-size:13px'>{reg['name']}</div>
+    <div style='font-size:11px;color:#A89E8C'>{reg['jurisdiction']} · effective {reg['effective_date']}</div>
+  </div>
+  <div style='font-size:12px;color:#7a7570;margin-top:4px'>Affected: {', '.join(reg['affected_domains'])}</div>
+</div>""")
+
+    # Impacted capsules
+    lines.append("<h4 style='font-size:13px;font-weight:700;color:#333;margin-top:20px;margin-bottom:10px'>"
+                f"Policy-Impacted Capsules ({len(impacted)})</h4>")
+
+    if not impacted:
+        lines.append("<p style='color:#A89E8C;font-size:13px'>No capsules directly affected by current regulations.</p>")
+    else:
+        for cap in impacted[:10]:
+            boost_pct = int(cap["priority_boost"] * 100)
+            lines.append(f"""
+<div style='display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f8f4ef;border-radius:4px;margin-bottom:6px'>
+  <div>
+    <div style='font-size:12px;font-weight:600;color:#2a2a2a'>{cap['gap_title'][:55]}</div>
+    <div style='font-size:11px;color:#A89E8C'>{cap['gap_type']} · {cap['regulation']}</div>
+  </div>
+  <div style='color:#6BBF8A;font-size:12px;font-weight:700'>+{boost_pct}% priority</div>
+</div>""")
+
+    lines.append("<style>.policy-tracer { font-family: Georgia, serif; }</style>")
+    lines.append("</div>")
+    return "\n".join(lines)

@@ -1,1 +1,33 @@
-IiIibGxtLmluc2lnaHQg4oCUIEluc2lnaHQgRXZvbHV0aW9uIHN1Yi1wYWNrYWdlLgoKUmUtZXhwb3J0cyBhbGwgcHVibGljIHR5cGVzIGZyb20gdGhlIHNwbGl0IG1vZHVsZXMuCkJhY2t3YXJkcy1jb21wYXRpYmxlIHdpdGggdGhlIG9yaWdpbmFsIGxsbS5pbnNpZ2h0X2V2b2x1dGlvbiBtb2R1bGUuCiIiIgoKZnJvbSBsbG0uaW5zaWdodC5nZW5lIGltcG9ydCBDYXBzdWxlR2VuZQpmcm9tIGxsbS5pbnNpZ2h0LnByZWZlcmVuY2VzIGltcG9ydCBFeHBsb3JhdGlvbkFjdGlvbiwgUHJlZmVyZW5jZVRhZywgRXZvbHV0aW9uRXZlbnQKZnJvbSBsbG0uaW5zaWdodC5wcm9maWxlIGltcG9ydCBVc2VyUHJlZmVyZW5jZVByb2ZpbGUsIEdhcEV4cGxvcmF0aW9uU3RhdGUKZnJvbSBsbG0uaW5zaWdodC50cmFja2VyIGltcG9ydCBFdm9sdXRpb25UcmFja2VyLCBnZXRfZXZvbHV0aW9uX3RyYWNrZXIKZnJvbSBsbG0uaW5zaWdodC5ldm9sdXRpb24gaW1wb3J0ICgKICAgIEluc2lnaHRFdm9sdXRpb24sCiAgICBDYXBzdWxlUXVhbGl0eSwKICAgIEF1ZGl0UmVzdWx0LAogICAgQ2Fwc3VsZUNhbmRpZGF0ZSwKICAgIEV2YWx1YXRpb25SZXN1bHQsCikKCl9fYWxsX18gPSBbCiAgICAiQ2Fwc3VsZUdlbmUiLAogICAgIkV4cGxvcmF0aW9uQWN0aW9uIiwKICAgICJQcmVmZXJlbmNlVGFnIiwKICAgICJFdm9sdXRpb25FdmVudCIsCiAgICAiVXNlclByZWZlcmVuY2VQcm9maWxlIiwKICAgICJHYXBFeHBsb3JhdGlvblN0YXRlIiwKICAgICJFdm9sdXRpb25UcmFja2VyIiwKICAgICJnZXRfZXZvbHV0aW9uX3RyYWNrZXIiLAogICAgIkluc2lnaHRFdm9sdXRpb24iLAogICAgIkNhcHN1bGVRdWFsaXR5IiwKICAgICJBdWRpdFJlc3VsdCIsCiAgICAiQ2Fwc3VsZUNhbmRpZGF0ZSIsCiAgICAiRXZhbHVhdGlvblJlc3VsdCIsCl0K
+"""llm.insight — Insight Evolution sub-package.
+
+Re-exports all public types from the split modules.
+Backwards-compatible with the original llm.insight_evolution module.
+"""
+
+from llm.insight.gene import CapsuleGene
+from llm.insight.preferences import ExplorationAction, PreferenceTag, EvolutionEvent
+from llm.insight.profile import UserPreferenceProfile, GapExplorationState
+from llm.insight.tracker import EvolutionTracker, get_evolution_tracker
+from llm.insight.evolution import (
+    InsightEvolution,
+    CapsuleQuality,
+    AuditResult,
+    CapsuleCandidate,
+    EvaluationResult,
+)
+
+__all__ = [
+    "CapsuleGene",
+    "ExplorationAction",
+    "PreferenceTag",
+    "EvolutionEvent",
+    "UserPreferenceProfile",
+    "GapExplorationState",
+    "EvolutionTracker",
+    "get_evolution_tracker",
+    "InsightEvolution",
+    "CapsuleQuality",
+    "AuditResult",
+    "CapsuleCandidate",
+    "EvaluationResult",
+]

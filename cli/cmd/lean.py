@@ -1,1 +1,165 @@
-IiIiQ0xJIGNvbW1hbmQ6IGxlYW4g4oCUIFZlcmlmeSByZXNlYXJjaCBoeXBvdGhlc2VzIHdpdGggTGVhbiA0IHRoZW9yZW0gcHJvdmVyLiIiIgoKZnJvbSBfX2Z1dHVyZV9fIGltcG9ydCBhbm5vdGF0aW9ucwoKaW1wb3J0IGFyZ3BhcnNlCgpmcm9tIGxsbS5sZWFuX3ZlcmlmaWVyIGltcG9ydCAoCiAgICBMZWFuSW5zdGFsbFN0YXR1cywKICAgIFZlcmlmaWNhdGlvbkxldmVsLAogICAgY2hlY2tfbGVhbl9pbnN0YWxsZWQsCiAgICBnZXRfbGVhbl9pbnN0YWxsX2luc3RydWN0aW9ucywKICAgIHRyYW5zbGF0ZV9oeXBvdGhlc2lzX3RvX2xlYW4sCiAgICB2ZXJpZnlfbGVhbl9jb2RlLAogICAgcmVuZGVyX3Jlc3VsdCwKICAgIHJlbmRlcl9yZXN1bHRfanNvbiwKKQpmcm9tIGxsbS5oeXBvdGhlc2lzX2dlbmVyYXRvciBpbXBvcnQgUmVzZWFyY2hIeXBvdGhlc2lzLCBIeXBvdGhlc2lzVHlwZSwgRXhwZXJpbWVudERlc2lnbgoKCmRlZiBfYnVpbGRfbGVhbl9wYXJzZXIoc3VicGFyc2VycykgLT4gYXJncGFyc2UuQXJndW1lbnRQYXJzZXI6CiAgICAiIiJCdWlsZCB0aGUgbGVhbiBzdWJjb21tYW5kIHBhcnNlci4iIiIKICAgIHAgPSBzdWJwYXJzZXJzLmFkZF9wYXJzZXIoCiAgICAgICAgImxlYW4iLAogICAgICAgIGhlbHA9IlZlcmlmeSByZXNlYXJjaCBoeXBvdGhlc2VzIHdpdGggTGVhbiA0IHRoZW9yZW0gcHJvdmVyIiwKICAgICAgICBkZXNjcmlwdGlvbj0iVHJhbnNsYXRlIHJlc2VhcmNoIGh5cG90aGVzZXMgaW50byBMZWFuIDQgY29kZSBhbmQgdmVyaWZ5IHRoZW0uIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICJoeXBvdGhlc2lzX3RleHQiLAogICAgICAgIG5hcmdzPSI/IiwKICAgICAgICBkZWZhdWx0PU5vbmUsCiAgICAgICAgaGVscD0iUmVzZWFyY2ggaHlwb3RoZXNpcyBhcyBuYXR1cmFsIGxhbmd1YWdlIHRleHQiLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0taHlwb3RoZXNpcy1pZCIsCiAgICAgICAgdHlwZT1zdHIsCiAgICAgICAgZGVmYXVsdD1Ob25lLAogICAgICAgIGhlbHA9Ikh5cG90aGVzaXMgSUQgdG8gbG9hZCBmcm9tIGV4cGVyaW1lbnQgdHJhY2tlciIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1uby1sbG0iLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iU2tpcCBMTE0gdHJhbnNsYXRpb24sIHVzZSB0ZW1wbGF0ZXMgb25seSIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgKICAgICAgICAiLS1qc29uIiwKICAgICAgICAiLWoiLAogICAgICAgIGFjdGlvbj0ic3RvcmVfdHJ1ZSIsCiAgICAgICAgaGVscD0iT3V0cHV0IGFzIEpTT04iLAogICAgKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tY2hlY2staW5zdGFsbCIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBoZWxwPSJKdXN0IGNoZWNrIGlmIExlYW4gaXMgaW5zdGFsbGVkIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLW1vZGVsIiwKICAgICAgICAiLU0iLAogICAgICAgIHR5cGU9c3RyLAogICAgICAgIGRlZmF1bHQ9Tm9uZSwKICAgICAgICBoZWxwPSJMTE0gbW9kZWwgdG8gdXNlIiwKICAgICkKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWNvZGUtb25seSIsCiAgICAgICAgYWN0aW9uPSJzdG9yZV90cnVlIiwKICAgICAgICBoZWxwPSJPbmx5IG91dHB1dCB0aGUgZ2VuZXJhdGVkIExlYW4gY29kZSwgbm8gdmVyaWZpY2F0aW9uIiwKICAgICkKICAgIHJldHVybiBwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKCmRlZiBfcnVuX2xlYW4oYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKSAtPiBpbnQ6CiAgICAiIiJSdW4gTGVhbiB2ZXJpZmljYXRpb24gY29tbWFuZC4iIiIKICAgICMgQ2hlY2sgaW5zdGFsbCBtb2RlCiAgICBpZiBhcmdzLmNoZWNrX2luc3RhbGw6CiAgICAgICAgc3RhdHVzLCB2ZXJzaW9uID0gY2hlY2tfbGVhbl9pbnN0YWxsZWQoKQogICAgICAgIGlmIHN0YXR1cyA9PSBMZWFuSW5zdGFsbFN0YXR1cy5BVkFJTEFCTEU6CiAgICAgICAgICAgIHByaW50KGYi4pyFIExlYW4gaW5zdGFsbGVkOiB7dmVyc2lvbn0iKQogICAgICAgICAgICByZXR1cm4gMCAgIyB0eXBlOiBpZ25vcmVbbm8tYW55LXJldHVybl0KICAgICAgICBlbHNlOgogICAgICAgICAgICBwcmludCgi4p2MIExlYW4gbm90IGZvdW5kIikKICAgICAgICAgICAgcHJpbnQoZ2V0X2xlYW5faW5zdGFsbF9pbnN0cnVjdGlvbnMoKSkKICAgICAgICAgICAgcmV0dXJuIDEgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgIyBCdWlsZCBoeXBvdGhlc2lzCiAgICBoeXBvdGhlc2lzID0gX2J1aWxkX2h5cG90aGVzaXMoYXJncykKICAgIGlmIG5vdCBoeXBvdGhlc2lzOgogICAgICAgIHByaW50KCLinYwgTm8gaHlwb3RoZXNpcyBwcm92aWRlZC4gVXNlIHBvc2l0aW9uYWwgYXJnIG9yIC0taHlwb3RoZXNpcy1pZCIpCiAgICAgICAgcmV0dXJuIDEKCiAgICAjIEdlbmVyYXRlIExlYW4gY29kZQogICAgbGVhbl9jb2RlLCBub3RlcyA9IHRyYW5zbGF0ZV9oeXBvdGhlc2lzX3RvX2xlYW4oCiAgICAgICAgaHlwb3RoZXNpcywKICAgICAgICB1c2VfbGxtPW5vdCBhcmdzLm5vX2xsbSwKICAgICAgICBtb2RlbD1hcmdzLm1vZGVsLAogICAgKQoKICAgIGlmIGFyZ3MuY29kZV9vbmx5OgogICAgICAgIHByaW50KGxlYW5fY29kZSkKICAgICAgICByZXR1cm4gMAoKICAgICMgVmVyaWZ5CiAgICByZXN1bHQgPSB2ZXJpZnlfbGVhbl9jb2RlKAogICAgICAgIGxlYW5fY29kZT1sZWFuX2NvZGUsCiAgICAgICAgaHlwb3RoZXNpc19pZD1oeXBvdGhlc2lzLmlkLAogICAgICAgIGh5cG90aGVzaXNfdGV4dD1oeXBvdGhlc2lzLmNvcmVfc3RhdGVtZW50LAogICAgKQogICAgcmVzdWx0LnRyYW5zbGF0aW9uX25vdGVzID0gbm90ZXMKCiAgICAjIFJlbmRlcgogICAgaWYgYXJncy5qc29uOgogICAgICAgIHByaW50KHJlbmRlcl9yZXN1bHRfanNvbihyZXN1bHQpKQogICAgZWxzZToKICAgICAgICBwcmludChyZW5kZXJfcmVzdWx0KHJlc3VsdCkpCgogICAgcmV0dXJuIDAgaWYgcmVzdWx0LmxldmVsICE9IFZlcmlmaWNhdGlvbkxldmVsLkwwX0ZBSUxFRCBlbHNlIDEKCgpkZWYgX2J1aWxkX2h5cG90aGVzaXMoYXJnczogYXJncGFyc2UuTmFtZXNwYWNlKToKICAgICIiIkJ1aWxkIGEgUmVzZWFyY2hIeXBvdGhlc2lzIGZyb20gQ0xJIGFyZ3MuIiIiCiAgICBoeXBvdGhlc2lzX2lkID0gYXJncy5oeXBvdGhlc2lzX2lkIG9yICJjbGktaW5wdXQiCiAgICBoeXBvdGhlc2lzX3RleHQgPSBhcmdzLmh5cG90aGVzaXNfdGV4dCBvciAiIgoKICAgICMgVHJ5IHRvIGxvYWQgZnJvbSBleHBlcmltZW50IHRyYWNrZXIKICAgIGlmIGFyZ3MuaHlwb3RoZXNpc19pZDoKICAgICAgICB0cnk6CiAgICAgICAgICAgIGZyb20gbGxtLmV4cGVyaW1lbnRfdHJhY2tlciBpbXBvcnQgRXhwZXJpbWVudFRyYWNrZXIKCiAgICAgICAgICAgIHRyYWNrZXIgPSBFeHBlcmltZW50VHJhY2tlcigpCiAgICAgICAgICAgIGV4cHMgPSB0cmFja2VyLmxpc3RfZXhwZXJpbWVudHMoKQogICAgICAgICAgICBmb3VuZCA9IFtlIGZvciBlIGluIGV4cHMgaWYgZS5oeXBvdGhlc2lzX2lkID09IGFyZ3MuaHlwb3RoZXNpc19pZF0KICAgICAgICAgICAgaWYgZm91bmQ6CiAgICAgICAgICAgICAgICBleHAgPSBmb3VuZFswXQogICAgICAgICAgICAgICAgcmV0dXJuIFJlc2VhcmNoSHlwb3RoZXNpcygKICAgICAgICAgICAgICAgICAgICBpZD1hcmdzLmh5cG90aGVzaXNfaWQsCiAgICAgICAgICAgICAgICAgICAgdGl0bGU9ZXhwLm5hbWUsCiAgICAgICAgICAgICAgICAgICAgY29yZV9zdGF0ZW1lbnQ9ZXhwLm5hbWUsCiAgICAgICAgICAgICAgICAgICAgaHlwb3RoZXNpc190eXBlPUh5cG90aGVzaXNUeXBlLkVYUExPUkFUT1JZLAogICAgICAgICAgICAgICAgICAgIGJhc2VkX29uPSJsb2FkZWQgZnJvbSBleHBlcmltZW50IHRyYWNrZXIiLAogICAgICAgICAgICAgICAgICAgIGV4cGVyaW1lbnRfZGVzaWduPUV4cGVyaW1lbnREZXNpZ24oCiAgICAgICAgICAgICAgICAgICAgICAgIGJhc2VsaW5lPSIiLAogICAgICAgICAgICAgICAgICAgICAgICB2YXJpYWJsZXM9W10sCiAgICAgICAgICAgICAgICAgICAgICAgIGNvbnRyb2xzPVtdLAogICAgICAgICAgICAgICAgICAgICAgICBldmFsdWF0aW9uX21ldHJpY3M9W10sCiAgICAgICAgICAgICAgICAgICAgICAgIGV4cGVjdGVkX3Jlc3VsdHM9IiIsCiAgICAgICAgICAgICAgICAgICAgKSwKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgZWxzZToKICAgICAgICAgICAgICAgIHByaW50KGYi4pqgIEh5cG90aGVzaXMgSUQgJ3thcmdzLmh5cG90aGVzaXNfaWR9JyBub3QgZm91bmQgaW4gdHJhY2tlciIpCiAgICAgICAgICAgICAgICByZXR1cm4gTm9uZQogICAgICAgIGV4Y2VwdCBFeGNlcHRpb246CiAgICAgICAgICAgIHBhc3MKCiAgICAjIEJ1aWxkIGZyb20gdGV4dAogICAgaWYgaHlwb3RoZXNpc190ZXh0OgogICAgICAgIHJldHVybiBSZXNlYXJjaEh5cG90aGVzaXMoCiAgICAgICAgICAgIGlkPWh5cG90aGVzaXNfaWQsCiAgICAgICAgICAgIHRpdGxlPWh5cG90aGVzaXNfdGV4dFs6NDBdLAogICAgICAgICAgICBjb3JlX3N0YXRlbWVudD1oeXBvdGhlc2lzX3RleHQsCiAgICAgICAgICAgIGh5cG90aGVzaXNfdHlwZT1IeXBvdGhlc2lzVHlwZS5FWFBMT1JBVE9SWSwKICAgICAgICAgICAgYmFzZWRfb249InVzZXIgaW5wdXQiLAogICAgICAgICAgICBleHBlcmltZW50X2Rlc2lnbj1FeHBlcmltZW50RGVzaWduKAogICAgICAgICAgICAgICAgYmFzZWxpbmU9IiIsCiAgICAgICAgICAgICAgICB2YXJpYWJsZXM9W10sCiAgICAgICAgICAgICAgICBjb250cm9scz1bXSwKICAgICAgICAgICAgICAgIGV2YWx1YXRpb25fbWV0cmljcz1bXSwKICAgICAgICAgICAgICAgIGV4cGVjdGVkX3Jlc3VsdHM9IiIsCiAgICAgICAgICAgICksCiAgICAgICAgKQoKICAgIHJldHVybiBOb25lCg==
+"""CLI command: lean — Verify research hypotheses with Lean 4 theorem prover."""
+from __future__ import annotations
+
+import argparse
+
+from llm.lean_verifier import (
+    LeanInstallStatus,
+    VerificationLevel,
+    check_lean_installed,
+    get_lean_install_instructions,
+    translate_hypothesis_to_lean,
+    verify_lean_code,
+    render_result,
+    render_result_json,
+)
+from llm.hypothesis_generator import ResearchHypothesis, HypothesisType, ExperimentDesign
+
+
+def _build_lean_parser(subparsers) -> argparse.ArgumentParser:
+    """Build the lean subcommand parser."""
+    p = subparsers.add_parser(
+        "lean",
+        help="Verify research hypotheses with Lean 4 theorem prover",
+        description="Translate research hypotheses into Lean 4 code and verify them.",
+    )
+    p.add_argument(
+        "hypothesis_text",
+        nargs="?",
+        default=None,
+        help="Research hypothesis as natural language text",
+    )
+    p.add_argument(
+        "--hypothesis-id",
+        type=str,
+        default=None,
+        help="Hypothesis ID to load from experiment tracker",
+    )
+    p.add_argument(
+        "--no-llm",
+        action="store_true",
+        help="Skip LLM translation, use templates only",
+    )
+    p.add_argument(
+        "--json", "-j",
+        action="store_true",
+        help="Output as JSON",
+    )
+    p.add_argument(
+        "--check-install",
+        action="store_true",
+        help="Just check if Lean is installed",
+    )
+    p.add_argument(
+        "--model", "-M",
+        type=str,
+        default=None,
+        help="LLM model to use",
+    )
+    p.add_argument(
+        "--code-only",
+        action="store_true",
+        help="Only output the generated Lean code, no verification",
+    )
+    return p  # type: ignore[no-any-return]
+
+
+def _run_lean(args: argparse.Namespace) -> int:
+    """Run Lean verification command."""
+    # Check install mode
+    if args.check_install:
+        status, version = check_lean_installed()
+        if status == LeanInstallStatus.AVAILABLE:
+            print(f"✅ Lean installed: {version}")
+            return 0  # type: ignore[no-any-return]
+        else:
+            print("❌ Lean not found")
+            print(get_lean_install_instructions())
+            return 1  # type: ignore[no-any-return]
+
+    # Build hypothesis
+    hypothesis = _build_hypothesis(args)
+    if not hypothesis:
+        print("❌ No hypothesis provided. Use positional arg or --hypothesis-id")
+        return 1
+
+    # Generate Lean code
+    lean_code, notes = translate_hypothesis_to_lean(
+        hypothesis,
+        use_llm=not args.no_llm,
+        model=args.model,
+    )
+
+    if args.code_only:
+        print(lean_code)
+        return 0
+
+    # Verify
+    result = verify_lean_code(
+        lean_code=lean_code,
+        hypothesis_id=hypothesis.id,
+        hypothesis_text=hypothesis.core_statement,
+    )
+    result.translation_notes = notes
+
+    # Render
+    if args.json:
+        print(render_result_json(result))
+    else:
+        print(render_result(result))
+
+    return 0 if result.level != VerificationLevel.L0_FAILED else 1
+
+
+def _build_hypothesis(args: argparse.Namespace):
+    """Build a ResearchHypothesis from CLI args."""
+    hypothesis_id = args.hypothesis_id or "cli-input"
+    hypothesis_text = args.hypothesis_text or ""
+
+    # Try to load from experiment tracker
+    if args.hypothesis_id:
+        try:
+            from llm.experiment_tracker import ExperimentTracker
+            tracker = ExperimentTracker()
+            exps = tracker.list_experiments()
+            found = [e for e in exps if e.hypothesis_id == args.hypothesis_id]
+            if found:
+                exp = found[0]
+                return ResearchHypothesis(
+                    id=args.hypothesis_id,
+                    title=exp.name,
+                    core_statement=exp.name,
+                    hypothesis_type=HypothesisType.EXPLORATORY,
+                    based_on="loaded from experiment tracker",
+                    experiment_design=ExperimentDesign(
+                        baseline="",
+                        variables=[],
+                        controls=[],
+                        evaluation_metrics=[],
+                        expected_results="",
+                    ),
+                )
+            else:
+                print(f"⚠ Hypothesis ID '{args.hypothesis_id}' not found in tracker")
+                return None
+        except Exception:
+            pass
+
+    # Build from text
+    if hypothesis_text:
+        return ResearchHypothesis(
+            id=hypothesis_id,
+            title=hypothesis_text[:40],
+            core_statement=hypothesis_text,
+            hypothesis_type=HypothesisType.EXPLORATORY,
+            based_on="user input",
+            experiment_design=ExperimentDesign(
+                baseline="",
+                variables=[],
+                controls=[],
+                evaluation_metrics=[],
+                expected_results="",
+            ),
+        )
+
+    return None

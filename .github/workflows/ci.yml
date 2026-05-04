@@ -1,1 +1,169 @@
-bmFtZTogQ0kKCm9uOgogIHB1c2g6CiAgICBicmFuY2hlczogW21haW5dCiAgcHVsbF9yZXF1ZXN0OgogICAgYnJhbmNoZXM6IFttYWluXQogIHdvcmtmbG93X2Rpc3BhdGNoOgoKY29uY3VycmVuY3k6CiAgZ3JvdXA6ICR7eyBnaXRodWIud29ya2Zsb3cgfX0tJHt7IGdpdGh1Yi5yZWYgfX0KICBjYW5jZWwtaW4tcHJvZ3Jlc3M6IHRydWUKCmpvYnM6CiAgY29tbWl0bGludDoKICAgIHJ1bnMtb246IHVidW50dS0yMi4wNAogICAgc3RlcHM6CiAgICAgIC0gdXNlczogYWN0aW9ucy9jaGVja291dEB2NgogICAgICAgIHdpdGg6CiAgICAgICAgICBmZXRjaC1kZXB0aDogMAoKICAgICAgLSBuYW1lOiBTZXR1cCBOb2RlLmpzCiAgICAgICAgdXNlczogYWN0aW9ucy9zZXR1cC1ub2RlQHY2CiAgICAgICAgd2l0aDoKICAgICAgICAgIG5vZGUtdmVyc2lvbjogJzIwJwoKICAgICAgLSBuYW1lOiBJbnN0YWxsIGNvbW1pdGxpbnQKICAgICAgICBydW46IG5wbSBpbnN0YWxsIC1nIEBjb21taXRsaW50L2NsaUAxOSBAY29tbWl0bGludC9jb25maWctY29udmVudGlvbmFsQDE5CgogICAgICAtIG5hbWU6IFZhbGlkYXRlIGNvbW1pdCBtZXNzYWdlcwogICAgICAgIHJ1bjogfAogICAgICAgICAgbnB4IGNvbW1pdGxpbnQgLS1sYXN0IC0tdmVyYm9zZSAyPiYxIHx8IGVjaG8gIk5vIHByZXZpb3VzIGNvbW1pdCIKICAgICAgICAgIG5weCBjb21taXRsaW50IC0tZnJvbT1tYWluIC0tdmVyYm9zZSAyPiYxIHwgaGVhZCAtNTAKCiAgbGludC1hbmQtY3Jvc3NyZWY6CiAgICBydW5zLW9uOiB1YnVudHUtMjIuMDQKICAgIHN0ZXBzOgogICAgICAtIHVzZXM6IGFjdGlvbnMvY2hlY2tvdXRAdjYKCiAgICAgIC0gbmFtZTogU2V0IHVwIFB5dGhvbgogICAgICAgIHVzZXM6IGFjdGlvbnMvc2V0dXAtcHl0aG9uQHY2CiAgICAgICAgd2l0aDoKICAgICAgICAgIHB5dGhvbi12ZXJzaW9uOiAiMy4xMSIKICAgICAgICAgIGNhY2hlOiAncGlwJwoKICAgICAgLSBuYW1lOiBJbnN0YWxsIGRlcGVuZGVuY2llcwogICAgICAgIHJ1bjogcGlwIGluc3RhbGwgcHlmbGFrZXMgcnVmZiByZXF1ZXN0cwoKICAgICAgLSBuYW1lOiBTeW50YXggY2hlY2sKICAgICAgICBydW46IHB5dGhvbiAtbSBweV9jb21waWxlIGFpX3Jlc2VhcmNoX29zLnB5CgogICAgICAtIG5hbWU6IFJ1ZmYgY2hlY2sKICAgICAgICBydW46IHJ1ZmYgY2hlY2sgLiAtLWV4Y2x1ZGUgbmV1cmFsb3BlcmF0b3JfZm9yay8KCiAgICAgIC0gbmFtZTogUnVmZiBmb3JtYXQgY2hlY2sKICAgICAgICBydW46IHJ1ZmYgZm9ybWF0IC0tY2hlY2sgLiAtLWV4Y2x1ZGUgbmV1cmFsb3BlcmF0b3JfZm9yay8KCgoKICAgICAgLSBuYW1lOiBUZXN0IENyb3NzcmVmIEFQSQogICAgICAgIHJ1bjogcHl0aG9uIC1jICJpbXBvcnQgcmVxdWVzdHM7IHI9cmVxdWVzdHMuZ2V0KCdodHRwczovL2FwaS5jcm9zc3JlZi5vcmcvd29ya3MvMTAuMTAzOC9uYXR1cmUxMjM3MycsdGltZW91dD0xNSxoZWFkZXJzPXsnVXNlci1BZ2VudCc6J0FJLVJlc2VhcmNoLU9TLzEuMCd9KTsgci5yYWlzZV9mb3Jfc3RhdHVzKCk7IHByaW50KCdDcm9zc3JlZiBPSycpIgoKICB0eXBlY2hlY2s6CiAgICBydW5zLW9uOiB1YnVudHUtMjIuMDQKICAgIHN0ZXBzOgogICAgICAtIHVzZXM6IGFjdGlvbnMvY2hlY2tvdXRAdjYKCiAgICAgIC0gbmFtZTogU2V0IHVwIFB5dGhvbgogICAgICAgIHVzZXM6IGFjdGlvbnMvc2V0dXAtcHl0aG9uQHY2CiAgICAgICAgd2l0aDoKICAgICAgICAgIHB5dGhvbi12ZXJzaW9uOiAiMy4xMSIKICAgICAgICAgIGNhY2hlOiAncGlwJwoKICAgICAgLSBuYW1lOiBJbnN0YWxsIG15cHkKICAgICAgICBydW46IHBpcCBpbnN0YWxsIG15cHkKCiAgICAgIC0gbmFtZTogUnVuIG15cHkKICAgICAgICBydW46IHwKICAgICAgICAgIHB5dGhvbiAtbSBteXB5IGNvcmUgcGFyc2VycyBkYiAtLWlnbm9yZS1taXNzaW5nLWltcG9ydHMKCiAgdGVzdC1weXRlc3Q6CiAgICBydW5zLW9uOiB1YnVudHUtMjIuMDQKICAgIHN0cmF0ZWd5OgogICAgICBmYWlsLWZhc3Q6IGZhbHNlCiAgICAgIG1hdHJpeDoKICAgICAgICBweXRob24tdmVyc2lvbjogWyIzLjExIiwgIjMuMTMiXQogICAgICAgIHNoYXJkOiBbMSwgMiwgMywgNF0KICAgIHN0ZXBzOgogICAgICAtIHVzZXM6IGFjdGlvbnMvY2hlY2tvdXRAdjYKCiAgICAgIC0gbmFtZTogU2V0IHVwIFB5dGhvbgogICAgICAgIHVzZXM6IGFjdGlvbnMvc2V0dXAtcHl0aG9uQHY2CiAgICAgICAgd2l0aDoKICAgICAgICAgIHB5dGhvbi12ZXJzaW9uOiAke3sgbWF0cml4LnB5dGhvbi12ZXJzaW9uIH19CiAgICAgICAgICBjYWNoZTogJ3BpcCcKCiAgICAgIC0gbmFtZTogSW5zdGFsbCBkZXBlbmRlbmNpZXMKICAgICAgICBydW46IHBpcCBpbnN0YWxsIHB5dGVzdCBweXRlc3QtY292IHB5dGVzdC1hc3luY2lvIHB5dGVzdC14ZGlzdCBhaW9odHRwIHJlcXVlc3RzIGZlZWRwYXJzZXIgcHltdXBkZiBmcmVlemVndW4gbnVtcHkgcHN1dGlsCgogICAgICAtIG5hbWU6IFNwbGl0IHRlc3RzCiAgICAgICAgaWQ6IHNwbGl0CiAgICAgICAgcnVuOiB8CiAgICAgICAgICBwaXAgaW5zdGFsbCBweXRlc3Qtc3BsaXQKICAgICAgICAgIGVjaG8gInRvdGFsPSQoKCAkKHB5dGhvbiAtbSBweXRlc3QgdGVzdHMvIC0tY29sbGVjdC1vbmx5IC1xIDI+L2Rldi9udWxsIHwgZ3JlcCAtYyAnOjonIHx8IGVjaG8gMCkgKSkiID4+ICRHSVRIVUJfT1VUUFVUCiAgICAgICAgICBlY2hvICJzaGFyZD0ke3sgbWF0cml4LnNoYXJkIH19IiA+PiAkR0lUSFVCX09VVFBVVAoKICAgICAgLSBuYW1lOiBSdW4gcHl0ZXN0IHNoYXJkICR7eyBtYXRyaXguc2hhcmQgfX0vNAogICAgICAgIHJ1bjogfAogICAgICAgICAgcHl0aG9uIC1tIHB5dGVzdCB0ZXN0cy8gXAogICAgICAgICAgICAtcSAtLXRiPXNob3J0IFwKICAgICAgICAgICAgLS1jb3Y9LiAtLWNvdi1yZXBvcnQ9dGVybS1taXNzaW5nIFwKICAgICAgICAgICAgLS1zcGxpdHMgNCAtLWdyb3VwICR7eyBtYXRyaXguc2hhcmQgfX0gXAogICAgICAgICAgICAyPiYxIHwgdGVlIHB5dGVzdF9vdXRwdXQudHh0CiAgICAgICAgICBlY2hvICJleGl0PSR7UElQRVNUQVRVU1swXX0iID4+ICRHSVRIVUJfT1VUUFVUCgogICAgICAtIG5hbWU6IFVwbG9hZCB0ZXN0IG91dHB1dAogICAgICAgIGlmOiBhbHdheXMoKQogICAgICAgIHVzZXM6IGFjdGlvbnMvdXBsb2FkLWFydGlmYWN0QHY3CiAgICAgICAgd2l0aDoKICAgICAgICAgIG5hbWU6IHB5dGVzdC1vdXRwdXQtJHt7IG1hdHJpeC5weXRob24tdmVyc2lvbiB9fS0ke3sgbWF0cml4LnNoYXJkIH19CiAgICAgICAgICBwYXRoOiBweXRlc3Rfb3V0cHV0LnR4dAogICAgICAgICAgcmV0ZW50aW9uLWRheXM6IDEKCiAgICAgIC0gbmFtZTogVXBsb2FkIGNvdmVyYWdlIGRhdGEKICAgICAgICBpZjogYWx3YXlzKCkKICAgICAgICB1c2VzOiBhY3Rpb25zL3VwbG9hZC1hcnRpZmFjdEB2NwogICAgICAgIHdpdGg6CiAgICAgICAgICBuYW1lOiBjb3ZlcmFnZS1kYXRhLSR7eyBtYXRyaXgucHl0aG9uLXZlcnNpb24gfX0tJHt7IG1hdHJpeC5zaGFyZCB9fQogICAgICAgICAgcGF0aDogLmNvdmVyYWdlCiAgICAgICAgICByZXRlbnRpb24tZGF5czogMQoKICBjb3ZlcmFnZS1yZXBvcnQ6CiAgICBuZWVkczogW3Rlc3QtcHl0ZXN0XQogICAgcnVucy1vbjogdWJ1bnR1LTIyLjA0CiAgICBpZjogZ2l0aHViLnJ1bl9pZCA9PSBnaXRodWIuZXZlbnQucnVuX2lkCiAgICBzdGVwczoKICAgICAgLSB1c2VzOiBhY3Rpb25zL2NoZWNrb3V0QHY2CgogICAgICAtIG5hbWU6IFNldCB1cCBQeXRob24KICAgICAgICB1c2VzOiBhY3Rpb25zL3NldHVwLXB5dGhvbkB2NgogICAgICAgIHdpdGg6CiAgICAgICAgICBweXRob24tdmVyc2lvbjogIjMuMTEiCiAgICAgICAgICBjYWNoZTogJ3BpcCcKCiAgICAgIC0gbmFtZTogSW5zdGFsbCBjb3ZlcmFnZQogICAgICAgIHJ1bjogcGlwIGluc3RhbGwgY292ZXJhZ2VbdG9tbF0KCiAgICAgIC0gbmFtZTogRG93bmxvYWQgY292ZXJhZ2UgZGF0YQogICAgICAgIHVzZXM6IGFjdGlvbnMvZG93bmxvYWQtYXJ0aWZhY3RAdjgKICAgICAgICB3aXRoOgogICAgICAgICAgcGF0aDogY292ZXJhZ2UtcmVwb3J0cwogICAgICAgICAgcGF0dGVybjogY292ZXJhZ2UtZGF0YS0qCiAgICAgICAgICBtZXJnZS1tdWx0aXBsZTogdHJ1ZQoKICAgICAgLSBuYW1lOiBDb21iaW5lIGFuZCByZXBvcnQKICAgICAgICBpZDogcmVwb3J0CiAgICAgICAgcnVuOiB8CiAgICAgICAgICBweXRob24gLW0gY292ZXJhZ2UgY29tYmluZSBjb3ZlcmFnZS1yZXBvcnRzLwogICAgICAgICAgcHl0aG9uIC1tIGNvdmVyYWdlIHJlcG9ydCAtLWZvcm1hdD10ZXJtLW1pc3NpbmcgfCB0YWlsIC0zCiAgICAgICAgICBweXRob24gLW0gY292ZXJhZ2UgcmVwb3J0IC0tZm9ybWF0PXRlcm0tbWlzc2luZyB8IGdyZXAgIl5UT1RBTCIKICAgICAgICAgIFRPVEFMPSQocHl0aG9uIC1tIGNvdmVyYWdlIHJlcG9ydCAtLWZvcm1hdD10ZXJtLW1pc3NpbmcgfCBncmVwICJeVE9UQUwiIHwgYXdrICd7cHJpbnQgJDR9JyB8IHRyIC1kICclJykKICAgICAgICAgIGVjaG8gIkNvdmVyYWdlOiAke1RPVEFMfSUiCiAgICAgICAgICBlY2hvICJjb3ZlcmFnZV9wY3Q9JHtUT1RBTH0iID4+ICRHSVRIVUJfT1VUUFVUCgogICAgICAtIG5hbWU6IFVwbG9hZCBjb3ZlcmFnZSB0byBDb2RlY292CiAgICAgICAgdXNlczogY29kZWNvdi9jb2RlY292LWFjdGlvbkB2NQogICAgICAgIHdpdGg6CiAgICAgICAgICBmaWxlczogLi9jb3ZlcmFnZS1yZXBvcnRzLy5jb3ZlcmFnZQogICAgICAgICAgZmFpbF9jaV9pZl9lcnJvcjogZmFsc2UKCiAgICBvdXRwdXRzOgogICAgICBjb3ZlcmFnZV9wY3Q6ICR7eyBzdGVwcy5yZXBvcnQub3V0cHV0cy5jb3ZlcmFnZV9wY3QgfX0K
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Install commitlint
+        run: npm install -g @commitlint/cli@19 @commitlint/config-conventional@19
+
+      - name: Validate commit messages
+        run: |
+          npx commitlint --last --verbose 2>&1 || echo "No previous commit"
+          npx commitlint --from=main --verbose 2>&1 | head -50
+
+  lint-and-crossref:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install pyflakes ruff requests
+
+      - name: Syntax check
+        run: python -m py_compile ai_research_os.py
+
+      - name: Ruff check
+        run: ruff check . --exclude neuraloperator_fork/
+
+
+
+      - name: Test Crossref API
+        run: python -c "import requests; r=requests.get('https://api.crossref.org/works/10.1038/nature12373',timeout=15,headers={'User-Agent':'AI-Research-OS/1.0'}); r.raise_for_status(); print('Crossref OK')"
+
+  typecheck:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install mypy
+        run: pip install mypy
+
+      - name: Run mypy
+        run: |
+          python -m mypy core parsers db --ignore-missing-imports
+
+  test-pytest:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install pytest pytest-cov pytest-asyncio pytest-xdist aiohttp requests feedparser pymupdf freezegun numpy psutil
+
+      - name: Split tests
+        id: split
+        run: |
+          pip install pytest-split
+          echo "total=$(( $(python -m pytest tests/ --collect-only -q 2>/dev/null | grep -c '::' || echo 0) ))" >> $GITHUB_OUTPUT
+          echo "shard=${{ matrix.shard }}" >> $GITHUB_OUTPUT
+
+      - name: Run pytest shard ${{ matrix.shard }}/4
+        run: |
+          python -m pytest tests/ \
+            -q --tb=short \
+            --cov=. --cov-report=term-missing \
+            --splits 4 --group ${{ matrix.shard }} \
+            2>&1 | tee pytest_output.txt
+          echo "exit=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+
+      - name: Upload test output
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pytest-output-${{ matrix.python-version }}-${{ matrix.shard }}
+          path: pytest_output.txt
+          retention-days: 1
+
+      - name: Upload coverage data
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-data-${{ matrix.python-version }}-${{ matrix.shard }}
+          path: .coverage
+          retention-days: 1
+
+  coverage-report:
+    needs: [test-pytest]
+    runs-on: ubuntu-22.04
+    if: github.run_id == github.event.run_id
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install coverage
+        run: pip install coverage[toml]
+
+      - name: Download coverage data
+        uses: actions/download-artifact@v8
+        with:
+          path: coverage-reports
+          pattern: coverage-data-*
+          merge-multiple: true
+
+      - name: Combine and report
+        id: report
+        run: |
+          python -m coverage combine coverage-reports/
+          python -m coverage report --format=term-missing | tail -3
+          python -m coverage report --format=term-missing | grep "^TOTAL"
+          TOTAL=$(python -m coverage report --format=term-missing | grep "^TOTAL" | awk '{print $4}' | tr -d '%')
+          echo "Coverage: ${TOTAL}%"
+          echo "coverage_pct=${TOTAL}" >> $GITHUB_OUTPUT
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage-reports/.coverage
+          fail_ci_if_error: false
+
+    outputs:
+      coverage_pct: ${{ steps.report.outputs.coverage_pct }}

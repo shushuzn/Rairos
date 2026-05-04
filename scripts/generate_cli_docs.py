@@ -1,1 +1,251 @@
-IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwoiIiJHZW5lcmF0ZSBDTEkgQVBJIHJlZmVyZW5jZSBIVE1MIGZyb20gc291cmNlIGNvZGUuIiIiCgppbXBvcnQgYXN0CmltcG9ydCBqc29uCmltcG9ydCByZQpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKClJPT1QgPSBQYXRoKF9fZmlsZV9fKS5wYXJlbnQucGFyZW50CkNNRF9ESVIgPSBST09UIC8gImNsaSIgLyAiY21kIgpPVVRQVVQgPSBST09UIC8gImRvY3MiIC8gImNsaV9yZWZlcmVuY2UuaHRtbCIKCgpkZWYgZXh0cmFjdF9jb21tYW5kcygpOgogICAgIiIiUGFyc2UgYWxsIGNsaS9jbWQvKi5weSBmaWxlcyBhbmQgZXh0cmFjdCBjb21tYW5kIG1ldGFkYXRhLiIiIgogICAgY29tbWFuZHMgPSBbXQoKICAgIGZvciBweV9maWxlIGluIHNvcnRlZChDTURfRElSLmdsb2IoIioucHkiKSk6CiAgICAgICAgaWYgcHlfZmlsZS5uYW1lLnN0YXJ0c3dpdGgoIl8iKToKICAgICAgICAgICAgY29udGludWUKCiAgICAgICAgbW9kdWxlX25hbWUgPSBweV9maWxlLnN0ZW0KICAgICAgICBpZiBtb2R1bGVfbmFtZSBpbiAoIl9faW5pdF9fIiwpOgogICAgICAgICAgICBjb250aW51ZQoKICAgICAgICBzb3VyY2UgPSBweV9maWxlLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQogICAgICAgIHRyZWUgPSBhc3QucGFyc2Uoc291cmNlLCBmaWxlbmFtZT1zdHIocHlfZmlsZSkpCgogICAgICAgICMgRmluZCB0aGUgX2J1aWxkXypfcGFyc2VyIGZ1bmN0aW9uCiAgICAgICAgYnVpbGRlcl9uYW1lID0gZiJfYnVpbGRfe21vZHVsZV9uYW1lfV9wYXJzZXIiCiAgICAgICAgZnVuYyA9IE5vbmUKICAgICAgICBmb3Igbm9kZSBpbiBhc3Qud2Fsayh0cmVlKToKICAgICAgICAgICAgaWYgaXNpbnN0YW5jZShub2RlLCBhc3QuRnVuY3Rpb25EZWYpIGFuZCBub2RlLm5hbWUgPT0gYnVpbGRlcl9uYW1lOgogICAgICAgICAgICAgICAgZnVuYyA9IG5vZGUKICAgICAgICAgICAgICAgIGJyZWFrCgogICAgICAgIGlmIG5vdCBmdW5jOgogICAgICAgICAgICAjIFRyeSB3aXRob3V0IG1vZHVsZSBwcmVmaXggKHNvbWUgZmlsZXMgaGF2ZSBkaWZmZXJlbnQgbmFtaW5nKQogICAgICAgICAgICBmb3Igbm9kZSBpbiBhc3Qud2Fsayh0cmVlKToKICAgICAgICAgICAgICAgIGlmICgKICAgICAgICAgICAgICAgICAgICBpc2luc3RhbmNlKG5vZGUsIGFzdC5GdW5jdGlvbkRlZikKICAgICAgICAgICAgICAgICAgICBhbmQgbm9kZS5uYW1lLnN0YXJ0c3dpdGgoIl9idWlsZF8iKQogICAgICAgICAgICAgICAgICAgIGFuZCBub2RlLm5hbWUuZW5kc3dpdGgoIl9wYXJzZXIiKQogICAgICAgICAgICAgICAgKToKICAgICAgICAgICAgICAgICAgICBidWlsZGVyX25hbWUgPSBub2RlLm5hbWUKICAgICAgICAgICAgICAgICAgICBmdW5jID0gbm9kZQogICAgICAgICAgICAgICAgICAgIGJyZWFrCgogICAgICAgIGlmIG5vdCBmdW5jOgogICAgICAgICAgICBjb250aW51ZQoKICAgICAgICAjIEV4dHJhY3QgaGVscC9kZXNjcmlwdGlvbiBmcm9tIGFkZF9wYXJzZXIgY2FsbAogICAgICAgIGhlbHBfdGV4dCA9ICIiCiAgICAgICAgZGVzY190ZXh0ID0gIiIKICAgICAgICBjbWRfbmFtZSA9IG1vZHVsZV9uYW1lLnJlcGxhY2UoIl8iLCAiLSIpCgogICAgICAgIGZvciBub2RlIGluIGFzdC53YWxrKGZ1bmMpOgogICAgICAgICAgICBpZiBpc2luc3RhbmNlKG5vZGUsIGFzdC5DYWxsKToKICAgICAgICAgICAgICAgIGNhbGxfbmFtZSA9ICIiCiAgICAgICAgICAgICAgICBpZiBpc2luc3RhbmNlKG5vZGUuZnVuYywgYXN0Lk5hbWUpOgogICAgICAgICAgICAgICAgICAgIGNhbGxfbmFtZSA9IG5vZGUuZnVuYy5pZAogICAgICAgICAgICAgICAgZWxpZiBpc2luc3RhbmNlKG5vZGUuZnVuYywgYXN0LkF0dHJpYnV0ZSk6CiAgICAgICAgICAgICAgICAgICAgY2FsbF9uYW1lID0gbm9kZS5mdW5jLmF0dHIKCiAgICAgICAgICAgICAgICBpZiBjYWxsX25hbWUgPT0gImFkZF9wYXJzZXIiOgogICAgICAgICAgICAgICAgICAgIGZvciBrdyBpbiBub2RlLmtleXdvcmRzOgogICAgICAgICAgICAgICAgICAgICAgICBpZiBrdy5hcmcgPT0gImhlbHAiIGFuZCBpc2luc3RhbmNlKGt3LnZhbHVlLCBhc3QuQ29uc3RhbnQpOgogICAgICAgICAgICAgICAgICAgICAgICAgICAgaGVscF90ZXh0ID0ga3cudmFsdWUudmFsdWUgb3IgIiIKICAgICAgICAgICAgICAgICAgICAgICAgaWYga3cuYXJnID09ICJkZXNjcmlwdGlvbiIgYW5kIGlzaW5zdGFuY2Uoa3cudmFsdWUsIGFzdC5Db25zdGFudCk6CiAgICAgICAgICAgICAgICAgICAgICAgICAgICBkZXNjX3RleHQgPSBrdy52YWx1ZS52YWx1ZSBvciAiIgoKICAgICAgICAgICAgICAgICAgICAjIEdldCBwb3NpdGlvbmFsIGFyZ3MgKGNvbW1hbmQgbmFtZSkKICAgICAgICAgICAgICAgICAgICBpZiBub2RlLmFyZ3M6CiAgICAgICAgICAgICAgICAgICAgICAgIGZpcnN0X2FyZyA9IG5vZGUuYXJnc1swXQogICAgICAgICAgICAgICAgICAgICAgICBpZiBpc2luc3RhbmNlKGZpcnN0X2FyZywgYXN0LkNvbnN0YW50KToKICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNtZF9uYW1lID0gZmlyc3RfYXJnLnZhbHVlCgogICAgICAgICMgRXh0cmFjdCBzdWJjb21tYW5kIHBhdHRlcm5zIChlLmcuLCBnYXAgbGlzdCwgZ2FwIGV4dHJhY3QpCiAgICAgICAgc3ViY29tbWFuZHMgPSBbXQogICAgICAgIGZvciBub2RlIGluIGFzdC53YWxrKGZ1bmMpOgogICAgICAgICAgICBpZiBpc2luc3RhbmNlKG5vZGUsIGFzdC5DYWxsKToKICAgICAgICAgICAgICAgIGNhbGxfbmFtZSA9ICIiCiAgICAgICAgICAgICAgICBpZiBpc2luc3RhbmNlKG5vZGUuZnVuYywgYXN0LkF0dHJpYnV0ZSk6CiAgICAgICAgICAgICAgICAgICAgY2FsbF9uYW1lID0gbm9kZS5mdW5jLmF0dHIKICAgICAgICAgICAgICAgIGlmIGNhbGxfbmFtZSA9PSAiYWRkX3BhcnNlciI6CiAgICAgICAgICAgICAgICAgICAgc3ViX25hbWUgPSAiIgogICAgICAgICAgICAgICAgICAgIHN1Yl9oZWxwID0gIiIKICAgICAgICAgICAgICAgICAgICBmb3Iga3cgaW4gbm9kZS5rZXl3b3JkczoKICAgICAgICAgICAgICAgICAgICAgICAgaWYga3cuYXJnID09ICJkZXN0IjoKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN1Yl9uYW1lID0gZ2V0YXR0cihrdy52YWx1ZSwgInZhbHVlIiwgIiIpCiAgICAgICAgICAgICAgICAgICAgICAgIGlmIGt3LmFyZyA9PSAiaGVscCIgYW5kIGlzaW5zdGFuY2Uoa3cudmFsdWUsIGFzdC5Db25zdGFudCk6CiAgICAgICAgICAgICAgICAgICAgICAgICAgICBzdWJfaGVscCA9IGt3LnZhbHVlLnZhbHVlIG9yICIiCiAgICAgICAgICAgICAgICAgICAgaWYgc3ViX25hbWU6CiAgICAgICAgICAgICAgICAgICAgICAgIHN1YmNvbW1hbmRzLmFwcGVuZCh7Im5hbWUiOiBzdWJfbmFtZSwgImhlbHAiOiBzdWJfaGVscH0pCgogICAgICAgIGNvbW1hbmRzLmFwcGVuZCgKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgIm5hbWUiOiBjbWRfbmFtZSwKICAgICAgICAgICAgICAgICJtb2R1bGUiOiBtb2R1bGVfbmFtZSwKICAgICAgICAgICAgICAgICJoZWxwIjogaGVscF90ZXh0IG9yIGRlc2NfdGV4dCwKICAgICAgICAgICAgICAgICJzdWJjb21tYW5kcyI6IHN1YmNvbW1hbmRzLAogICAgICAgICAgICAgICAgImZpbGUiOiBmImNsaS9jbWQve21vZHVsZV9uYW1lfS5weSIsCiAgICAgICAgICAgIH0KICAgICAgICApCgogICAgcmV0dXJuIGNvbW1hbmRzCgoKZGVmIGVzY2FwZShzKToKICAgIHJldHVybiBzLnJlcGxhY2UoIiYiLCAiJmFtcDsiKS5yZXBsYWNlKCI8IiwgIiZsdDsiKS5yZXBsYWNlKCI+IiwgIiZndDsiKS5yZXBsYWNlKCciJywgIiZxdW90OyIpCgoKZGVmIGdlbmVyYXRlX2h0bWwoY29tbWFuZHMpOgogICAgZ3JvdXBzID0gewogICAgICAgICJDb3JlIjogWwogICAgICAgICAgICAiaW1wb3J0IiwKICAgICAgICAgICAgInNlYXJjaCIsCiAgICAgICAgICAgICJsaXN0IiwKICAgICAgICAgICAgInN0YXRzIiwKICAgICAgICAgICAgInN0YXR1cyIsCiAgICAgICAgICAgICJleHBvcnQiLAogICAgICAgICAgICAiZGVkdXAiLAogICAgICAgICAgICAiZGVkdXAtc2VtYW50aWMiLAogICAgICAgICAgICAic2ltaWxhciIsCiAgICAgICAgXSwKICAgICAgICAiUGFwZXJzIjogWwogICAgICAgICAgICAiY2l0ZS1mZXRjaCIsCiAgICAgICAgICAgICJjaXRlLWdyYXBoIiwKICAgICAgICAgICAgImNpdGUtaW1wb3J0IiwKICAgICAgICAgICAgImNpdGUtc3RhdHMiLAogICAgICAgICAgICAiY2l0ZS1iYWNrZmlsbCIsCiAgICAgICAgICAgICJjaXRhdGlvbi1jaGFpbiIsCiAgICAgICAgICAgICJjaXRhdGlvbnMiLAogICAgICAgIF0sCiAgICAgICAgIlJlc2VhcmNoIjogWwogICAgICAgICAgICAicmVzZWFyY2giLAogICAgICAgICAgICAiZ2FwIiwKICAgICAgICAgICAgInRyZW5kIiwKICAgICAgICAgICAgImluZmx1ZW5jZSIsCiAgICAgICAgICAgICJwYXRoIiwKICAgICAgICAgICAgImh5cG90aGVzaXplIiwKICAgICAgICAgICAgInN0b3J5IiwKICAgICAgICAgICAgImFyZ3VlIiwKICAgICAgICAgICAgIm5hcnJhdGl2ZSIsCiAgICAgICAgXSwKICAgICAgICAiSW5zaWdodCI6IFsKICAgICAgICAgICAgImluc2lnaHQiLAogICAgICAgICAgICAiZXZvbHV0aW9uIiwKICAgICAgICAgICAgImpvdXJuYWwiLAogICAgICAgICAgICAiZGlnZXN0IiwKICAgICAgICAgICAgImxlYW4iLAogICAgICAgICAgICAiYmVuY2htYXJrIiwKICAgICAgICAgICAgInF1ZXN0aW9uIiwKICAgICAgICAgICAgInJldmlldyIsCiAgICAgICAgICAgICJhbmFseXplIiwKICAgICAgICBdLAogICAgICAgICJBZ2VudHMiOiBbImFnZW50IiwgImNoYXQiLCAiY2hhdC10dWkiLCAicm91dGUiLCAiZnJpY3Rpb24iLCAic3Vic2NyaWJlIiwgInJlcGwiXSwKICAgICAgICAiS25vd2xlZGdlIjogWyJrZyIsICJyYWciLCAicGlwZWxpbmUiLCAiZXhwZXJpbWVudCIsICJwb3N0cHJvY2VzcyIsICJ2YWxpZGF0ZSIsICJpbmdlc3QiXSwKICAgICAgICAiVG9vbHMiOiBbCiAgICAgICAgICAgICJjYWNoZSIsCiAgICAgICAgICAgICJxdWV1ZSIsCiAgICAgICAgICAgICJyZWFkLXF1ZXVlIiwKICAgICAgICAgICAgInNsaWRlcyIsCiAgICAgICAgICAgICJzZXNzaW9uIiwKICAgICAgICAgICAgImRhc2hib2FyZCIsCiAgICAgICAgICAgICJyb2FkbWFwIiwKICAgICAgICAgICAgIm1lcmdlIiwKICAgICAgICAgICAgImxpdHJldmlldyIsCiAgICAgICAgICAgICJjb21wYXJlIiwKICAgICAgICAgICAgInJlcGxpY2F0ZSIsCiAgICAgICAgICAgICJwYXBlcjJjb2RlIiwKICAgICAgICAgICAgImV2b3NraWxsIiwKICAgICAgICAgICAgInZpc3VhbCIsCiAgICAgICAgICAgICJhc2siLAogICAgICAgIF0sCiAgICB9CgogICAgaHRtbCA9IFtdCiAgICBodG1sLmFwcGVuZCgiPCFET0NUWVBFIGh0bWw+IikKICAgIGh0bWwuYXBwZW5kKCI8aHRtbCBsYW5nPSdlbic+IikKICAgIGh0bWwuYXBwZW5kKCI8aGVhZD4iKQogICAgaHRtbC5hcHBlbmQoIjxtZXRhIGNoYXJzZXQ9J1VURi04Jz4iKQogICAgaHRtbC5hcHBlbmQoIjxtZXRhIG5hbWU9J3ZpZXdwb3J0JyBjb250ZW50PSd3aWR0aD1kZXZpY2Utd2lkdGgsIGluaXRpYWwtc2NhbGU9MS4wJz4iKQogICAgaHRtbC5hcHBlbmQoIjx0aXRsZT5DTEkgQVBJIFJlZmVyZW5jZSDigJQgQUkgUmVzZWFyY2ggT1M8L3RpdGxlPiIpCiAgICBodG1sLmFwcGVuZCgiPHN0eWxlPiIpCiAgICBodG1sLmFwcGVuZCgKICAgICAgICAiIiIKICAgIDpyb290IHsKICAgICAgLS1iZzogI2ZhZjhmNTsKICAgICAgLS1iZy1jYXJkOiAjZmZmZmZmOwogICAgICAtLXRleHQ6ICMyZDJhMjQ7CiAgICAgIC0tdGV4dC1tdXRlZDogIzdhNzU3MDsKICAgICAgLS1hY2NlbnQ6ICNjNDQ7CiAgICAgIC0tYm9yZGVyOiAjZThlNGRlOwogICAgICAtLWNvZGUtYmc6ICNmM2YwZWI7CiAgICB9CiAgICAqIHsgYm94LXNpemluZzogYm9yZGVyLWJveDsgbWFyZ2luOiAwOyBwYWRkaW5nOiAwOyB9CiAgICBib2R5IHsgZm9udC1mYW1pbHk6ICdTZWdvZSBVSScsIHN5c3RlbS11aSwgc2Fucy1zZXJpZjsgYmFja2dyb3VuZDogdmFyKC0tYmcpOyBjb2xvcjogdmFyKC0tdGV4dCk7IGxpbmUtaGVpZ2h0OiAxLjY7IH0KICAgIGhlYWRlciB7IGJhY2tncm91bmQ6IHZhcigtLXRleHQpOyBjb2xvcjogdmFyKC0tYmcpOyBwYWRkaW5nOiAycmVtIDJyZW0gMS41cmVtOyB9CiAgICBoZWFkZXIgaDEgeyBmb250LXNpemU6IDEuOHJlbTsgZm9udC13ZWlnaHQ6IDcwMDsgbWFyZ2luLWJvdHRvbTogMC4zcmVtOyB9CiAgICBoZWFkZXIgcCB7IGNvbG9yOiAjYjBhYWEwOyBmb250LXNpemU6IDAuOXJlbTsgfQogICAgLmNvbnRhaW5lciB7IG1heC13aWR0aDogOTAwcHg7IG1hcmdpbjogMCBhdXRvOyBwYWRkaW5nOiAycmVtIDFyZW07IH0KICAgIC5zZWFyY2gtYmFyIHsgd2lkdGg6IDEwMCU7IHBhZGRpbmc6IDAuN3JlbSAxcmVtOyBmb250LXNpemU6IDFyZW07IGJvcmRlcjogMnB4IHNvbGlkIHZhcigtLWJvcmRlcik7IGJvcmRlci1yYWRpdXM6IDhweDsgbWFyZ2luLWJvdHRvbTogMS41cmVtOyBiYWNrZ3JvdW5kOiB2YXIoLS1iZy1jYXJkKTsgfQogICAgLmdyb3VwIHsgbWFyZ2luLWJvdHRvbTogMi41cmVtOyB9CiAgICAuZ3JvdXAtdGl0bGUgeyBmb250LXNpemU6IDAuNzVyZW07IGZvbnQtd2VpZ2h0OiA3MDA7IHRleHQtdHJhbnNmb3JtOiB1cHBlcmNhc2U7IGxldHRlci1zcGFjaW5nOiAwLjFlbTsgY29sb3I6IHZhcigtLWFjY2VudCk7IG1hcmdpbi1ib3R0b206IDAuOHJlbTsgcGFkZGluZy1ib3R0b206IDAuM3JlbTsgYm9yZGVyLWJvdHRvbTogMnB4IHNvbGlkIHZhcigtLWFjY2VudCk7IH0KICAgIC5jbWQtY2FyZCB7IGJhY2tncm91bmQ6IHZhcigtLWJnLWNhcmQpOyBib3JkZXI6IDFweCBzb2xpZCB2YXIoLS1ib3JkZXIpOyBib3JkZXItcmFkaXVzOiA4cHg7IHBhZGRpbmc6IDFyZW0gMS4ycmVtOyBtYXJnaW4tYm90dG9tOiAwLjZyZW07IH0KICAgIC5jbWQtbmFtZSB7IGZvbnQtZmFtaWx5OiAnQ2FzY2FkaWEgQ29kZScsICdGaXJhIENvZGUnLCBtb25vc3BhY2U7IGZvbnQtc2l6ZTogMXJlbTsgZm9udC13ZWlnaHQ6IDcwMDsgY29sb3I6IHZhcigtLXRleHQpOyB9CiAgICAuY21kLW5hbWUgc3BhbiB7IGNvbG9yOiB2YXIoLS1hY2NlbnQpOyB9CiAgICAuY21kLWhlbHAgeyBmb250LXNpemU6IDAuODc1cmVtOyBjb2xvcjogdmFyKC0tdGV4dC1tdXRlZCk7IG1hcmdpbi10b3A6IDAuMnJlbTsgfQogICAgLmNtZC1zdWJzIHsgbWFyZ2luLXRvcDogMC41cmVtOyB9CiAgICAuY21kLXN1YiB7IGRpc3BsYXk6IGlubGluZS1ibG9jazsgYmFja2dyb3VuZDogdmFyKC0tY29kZS1iZyk7IGJvcmRlcjogMXB4IHNvbGlkIHZhcigtLWJvcmRlcik7IGJvcmRlci1yYWRpdXM6IDRweDsgcGFkZGluZzogMC4xcmVtIDAuNXJlbTsgZm9udC1zaXplOiAwLjc4cmVtOyBmb250LWZhbWlseTogJ0Nhc2NhZGlhIENvZGUnLCBtb25vc3BhY2U7IG1hcmdpbi1yaWdodDogMC40cmVtOyBtYXJnaW4tYm90dG9tOiAwLjNyZW07IH0KICAgIC5jbWQtc3ViLW5hbWUgeyBjb2xvcjogdmFyKC0tdGV4dCk7IH0KICAgIC5jbWQtc3ViLWhlbHAgeyBjb2xvcjogdmFyKC0tdGV4dC1tdXRlZCk7IH0KICAgIC5jbWQtZmlsZSB7IGZvbnQtc2l6ZTogMC43MnJlbTsgY29sb3I6IHZhcigtLXRleHQtbXV0ZWQpOyBtYXJnaW4tdG9wOiAwLjNyZW07IGZvbnQtZmFtaWx5OiBtb25vc3BhY2U7IH0KICAgIGZvb3RlciB7IHRleHQtYWxpZ246IGNlbnRlcjsgcGFkZGluZzogMnJlbTsgY29sb3I6IHZhcigtLXRleHQtbXV0ZWQpOyBmb250LXNpemU6IDAuOHJlbTsgfQogICAgIiIiCiAgICAgICAgKyBmIlxuICAgIC8vIHtsZW4oY29tbWFuZHMpfSBjb21tYW5kcyBsb2FkZWRcbiIKICAgICkKICAgIGh0bWwuYXBwZW5kKCI8L3N0eWxlPiIpCiAgICBodG1sLmFwcGVuZCgiPC9oZWFkPiIpCiAgICBodG1sLmFwcGVuZCgiPGJvZHk+IikKICAgIGh0bWwuYXBwZW5kKCI8aGVhZGVyPiIpCiAgICBodG1sLmFwcGVuZCgiPGgxPkNMSSBBUEkgUmVmZXJlbmNlPC9oMT4iKQogICAgaHRtbC5hcHBlbmQoCiAgICAgICAgIjxwPkFJIFJlc2VhcmNoIE9TIMK3IEF1dG8tZ2VuZXJhdGVkIGZyb20gc291cmNlIMK3IFJ1biA8Y29kZT5haXJvcy1jbGkgJmx0O2NvbW1hbmQmZ3Q7IC0taGVscDwvY29kZT4gZm9yIGZ1bGwgZG9jczwvcD4iCiAgICApCiAgICBodG1sLmFwcGVuZCgiPC9oZWFkZXI+IikKICAgIGh0bWwuYXBwZW5kKCI8ZGl2IGNsYXNzPSdjb250YWluZXInPiIpCiAgICBodG1sLmFwcGVuZCgKICAgICAgICAiPGlucHV0IGNsYXNzPSdzZWFyY2gtYmFyJyBpZD0nc2VhcmNoJyBwbGFjZWhvbGRlcj0nU2VhcmNoIGNvbW1hbmRzLi4uJyBvbmlucHV0PSdmaWx0ZXIoKScvPiIKICAgICkKCiAgICAjIFNvcnQgY29tbWFuZHMgYnkgZ3JvdXAKICAgIG5hbWVfdG9fY21kID0ge2NbIm5hbWUiXTogYyBmb3IgYyBpbiBjb21tYW5kc30KCiAgICBmb3IgZ3JvdXBfbmFtZSwgbmFtZXMgaW4gZ3JvdXBzLml0ZW1zKCk6CiAgICAgICAgZ3JvdXBfY21kcyA9IFtuYW1lX3RvX2NtZFtuXSBmb3IgbiBpbiBuYW1lcyBpZiBuIGluIG5hbWVfdG9fY21kXQogICAgICAgIGlmIG5vdCBncm91cF9jbWRzOgogICAgICAgICAgICBjb250aW51ZQogICAgICAgIGh0bWwuYXBwZW5kKGYiPGRpdiBjbGFzcz0nZ3JvdXAnIGRhdGEtZ3JvdXA9J3tncm91cF9uYW1lfSc+IikKICAgICAgICBodG1sLmFwcGVuZChmIjxkaXYgY2xhc3M9J2dyb3VwLXRpdGxlJz57Z3JvdXBfbmFtZX08L2Rpdj4iKQogICAgICAgIGZvciBjbWQgaW4gZ3JvdXBfY21kczoKICAgICAgICAgICAgc3VicyA9IGNtZC5nZXQoInN1YmNvbW1hbmRzIiwgW10pCiAgICAgICAgICAgIHN1Yl9odG1sID0gIiIKICAgICAgICAgICAgaWYgc3ViczoKICAgICAgICAgICAgICAgIHN1Yl9odG1sID0gKAogICAgICAgICAgICAgICAgICAgICI8ZGl2IGNsYXNzPSdjbWQtc3Vicyc+IgogICAgICAgICAgICAgICAgICAgICsgIiIuam9pbigKICAgICAgICAgICAgICAgICAgICAgICAgZiI8c3BhbiBjbGFzcz0nY21kLXN1Yic+PHNwYW4gY2xhc3M9J2NtZC1zdWItbmFtZSc+e2VzY2FwZShzWyduYW1lJ10pfTwvc3Bhbj4gPHNwYW4gY2xhc3M9J2NtZC1zdWItaGVscCc+e2VzY2FwZShzWydoZWxwJ11bOjQwXSl9PC9zcGFuPjwvc3Bhbj4iCiAgICAgICAgICAgICAgICAgICAgICAgIGZvciBzIGluIHN1YnMKICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICAgICAgKyAiPC9kaXY+IgogICAgICAgICAgICAgICAgKQogICAgICAgICAgICBodG1sLmFwcGVuZCgKICAgICAgICAgICAgICAgIGYiPGRpdiBjbGFzcz0nY21kLWNhcmQnIGRhdGEtbmFtZT0ne2VzY2FwZShjbWRbJ25hbWUnXSl9JyBkYXRhLWhlbHA9J3tlc2NhcGUoY21kWydoZWxwJ10pfSc+IgogICAgICAgICAgICApCiAgICAgICAgICAgIGh0bWwuYXBwZW5kKGYiPGRpdiBjbGFzcz0nY21kLW5hbWUnPmFpcm9zLWNsaSA8c3Bhbj57ZXNjYXBlKGNtZFsnbmFtZSddKX08L3NwYW4+PC9kaXY+IikKICAgICAgICAgICAgaHRtbC5hcHBlbmQoZiI8ZGl2IGNsYXNzPSdjbWQtaGVscCc+e2VzY2FwZShjbWRbJ2hlbHAnXSl9PC9kaXY+IikKICAgICAgICAgICAgaHRtbC5hcHBlbmQoc3ViX2h0bWwpCiAgICAgICAgICAgIGh0bWwuYXBwZW5kKGYiPGRpdiBjbGFzcz0nY21kLWZpbGUnPntlc2NhcGUoY21kWydmaWxlJ10pfTwvZGl2PiIpCiAgICAgICAgICAgIGh0bWwuYXBwZW5kKCI8L2Rpdj4iKQogICAgICAgIGh0bWwuYXBwZW5kKCI8L2Rpdj4iKQoKICAgICMgVW5jYXRlZ29yaXplZCBjb21tYW5kcwogICAgdXNlZCA9IHNldCgpCiAgICBmb3IgbmFtZXMgaW4gZ3JvdXBzLnZhbHVlcygpOgogICAgICAgIHVzZWQudXBkYXRlKG5hbWVzKQogICAgdW5jYXRlZ29yaXplZCA9IFtjIGZvciBjIGluIGNvbW1hbmRzIGlmIGNbIm5hbWUiXSBub3QgaW4gdXNlZF0KICAgIGlmIHVuY2F0ZWdvcml6ZWQ6CiAgICAgICAgaHRtbC5hcHBlbmQoIjxkaXYgY2xhc3M9J2dyb3VwJyBkYXRhLWdyb3VwPSdPdGhlcic+IikKICAgICAgICBodG1sLmFwcGVuZCgiPGRpdiBjbGFzcz0nZ3JvdXAtdGl0bGUnPk90aGVyPC9kaXY+IikKICAgICAgICBmb3IgY21kIGluIHVuY2F0ZWdvcml6ZWQ6CiAgICAgICAgICAgIHN1YnMgPSBjbWQuZ2V0KCJzdWJjb21tYW5kcyIsIFtdKQogICAgICAgICAgICBzdWJfaHRtbCA9ICIiCiAgICAgICAgICAgIGlmIHN1YnM6CiAgICAgICAgICAgICAgICBzdWJfaHRtbCA9ICgKICAgICAgICAgICAgICAgICAgICAiPGRpdiBjbGFzcz0nY21kLXN1YnMnPiIKICAgICAgICAgICAgICAgICAgICArICIiLmpvaW4oCiAgICAgICAgICAgICAgICAgICAgICAgIGYiPHNwYW4gY2xhc3M9J2NtZC1zdWInPjxzcGFuIGNsYXNzPSdjbWQtc3ViLW5hbWUnPntlc2NhcGUoc1snbmFtZSddKX08L3NwYW4+IDxzcGFuIGNsYXNzPSdjbWQtc3ViLWhlbHAnPntlc2NhcGUoc1snaGVscCddWzo0MF0pfTwvc3Bhbj48L3NwYW4+IgogICAgICAgICAgICAgICAgICAgICAgICBmb3IgcyBpbiBzdWJzCiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgICAgICsgIjwvZGl2PiIKICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgaHRtbC5hcHBlbmQoCiAgICAgICAgICAgICAgICBmIjxkaXYgY2xhc3M9J2NtZC1jYXJkJyBkYXRhLW5hbWU9J3tlc2NhcGUoY21kWyduYW1lJ10pfScgZGF0YS1oZWxwPSd7ZXNjYXBlKGNtZFsnaGVscCddKX0nPiIKICAgICAgICAgICAgKQogICAgICAgICAgICBodG1sLmFwcGVuZChmIjxkaXYgY2xhc3M9J2NtZC1uYW1lJz5haXJvcy1jbGkgPHNwYW4+e2VzY2FwZShjbWRbJ25hbWUnXSl9PC9zcGFuPjwvZGl2PiIpCiAgICAgICAgICAgIGh0bWwuYXBwZW5kKGYiPGRpdiBjbGFzcz0nY21kLWhlbHAnPntlc2NhcGUoY21kWydoZWxwJ10pfTwvZGl2PiIpCiAgICAgICAgICAgIGh0bWwuYXBwZW5kKHN1Yl9odG1sKQogICAgICAgICAgICBodG1sLmFwcGVuZChmIjxkaXYgY2xhc3M9J2NtZC1maWxlJz57ZXNjYXBlKGNtZFsnZmlsZSddKX08L2Rpdj4iKQogICAgICAgICAgICBodG1sLmFwcGVuZCgiPC9kaXY+IikKICAgICAgICBodG1sLmFwcGVuZCgiPC9kaXY+IikKCiAgICBodG1sLmFwcGVuZCgiPC9kaXY+IikKICAgIGh0bWwuYXBwZW5kKCI8Zm9vdGVyPiIpCiAgICBodG1sLmFwcGVuZChmIkF1dG8tZ2VuZXJhdGVkIMK3IHtsZW4oY29tbWFuZHMpfSBjb21tYW5kcyDCtyBBSSBSZXNlYXJjaCBPUzxicj4iKQogICAgaHRtbC5hcHBlbmQoCiAgICAgICAgIjxhIGhyZWY9J2h0dHBzOi8vZ2l0aHViLmNvbS9zaHVzaHV6bi9SYWlyb3MnPkdpdEh1YjwvYT4gwrcgPGEgaHJlZj0nLi9hcmNoaXRlY3R1cmUuaHRtbCc+QXJjaGl0ZWN0dXJlPC9hPiIKICAgICkKICAgIGh0bWwuYXBwZW5kKCI8L2Zvb3Rlcj4iKQogICAgaHRtbC5hcHBlbmQoIjxzY3JpcHQ+IikKICAgIGh0bWwuYXBwZW5kKCIiIgogICAgZnVuY3Rpb24gZmlsdGVyKCkgewogICAgICB2YXIgcSA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdzZWFyY2gnKS52YWx1ZS50b0xvd2VyQ2FzZSgpOwogICAgICBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCcuY21kLWNhcmQnKS5mb3JFYWNoKGZ1bmN0aW9uKGNhcmQpIHsKICAgICAgICB2YXIgbmFtZSA9IGNhcmQuZ2V0QXR0cmlidXRlKCdkYXRhLW5hbWUnKSB8fCAnJzsKICAgICAgICB2YXIgaGVscCA9IGNhcmQuZ2V0QXR0cmlidXRlKCdkYXRhLWhlbHAnKSB8fCAnJzsKICAgICAgICBjYXJkLnN0eWxlLmRpc3BsYXkgPSAobmFtZS5pbmNsdWRlcyhxKSB8fCBoZWxwLmluY2x1ZGVzKHEpKSA/ICcnIDogJ25vbmUnOwogICAgICB9KTsKICAgICAgZG9jdW1lbnQucXVlcnlTZWxlY3RvckFsbCgnLmdyb3VwJykuZm9yRWFjaChmdW5jdGlvbihnKSB7CiAgICAgICAgdmFyIHZpc2libGUgPSBbXS5zbGljZS5jYWxsKGcucXVlcnlTZWxlY3RvckFsbCgnLmNtZC1jYXJkJykpLnNvbWUoZnVuY3Rpb24oYykgeyByZXR1cm4gYy5zdHlsZS5kaXNwbGF5ICE9PSAnbm9uZSc7IH0pOwogICAgICAgIGcuc3R5bGUuZGlzcGxheSA9IHZpc2libGUgPyAnJyA6ICdub25lJzsKICAgICAgfSk7CiAgICB9CiAgICAiIiIpCiAgICBodG1sLmFwcGVuZCgiPC9zY3JpcHQ+IikKICAgIGh0bWwuYXBwZW5kKCI8L2JvZHk+IikKICAgIGh0bWwuYXBwZW5kKCI8L2h0bWw+IikKICAgIHJldHVybiAiXG4iLmpvaW4oaHRtbCkKCgpkZWYgbWFpbigpOgogICAgY29tbWFuZHMgPSBleHRyYWN0X2NvbW1hbmRzKCkKICAgIHByaW50KGYiRm91bmQge2xlbihjb21tYW5kcyl9IGNvbW1hbmRzIikKICAgIGh0bWwgPSBnZW5lcmF0ZV9odG1sKGNvbW1hbmRzKQogICAgT1VUUFVULnBhcmVudC5ta2RpcihwYXJlbnRzPVRydWUsIGV4aXN0X29rPVRydWUpCiAgICBPVVRQVVQud3JpdGVfdGV4dChodG1sLCBlbmNvZGluZz0idXRmLTgiKQogICAgcHJpbnQoZiJXcml0dGVuOiB7T1VUUFVUfSIpCgoKaWYgX19uYW1lX18gPT0gIl9fbWFpbl9fIjoKICAgIG1haW4oKQo=
+#!/usr/bin/env python3
+"""Generate CLI API reference HTML from source code."""
+
+import ast
+import json
+import re
+from pathlib import Path
+
+ROOT = Path(__file__).parent.parent
+CMD_DIR = ROOT / "cli" / "cmd"
+OUTPUT = ROOT / "docs" / "cli_reference.html"
+
+
+def extract_commands():
+    """Parse all cli/cmd/*.py files and extract command metadata."""
+    commands = []
+
+    for py_file in sorted(CMD_DIR.glob("*.py")):
+        if py_file.name.startswith("_"):
+            continue
+
+        module_name = py_file.stem
+        if module_name in ("__init__",):
+            continue
+
+        source = py_file.read_text(encoding="utf-8")
+        tree = ast.parse(source, filename=str(py_file))
+
+        # Find the _build_*_parser function
+        builder_name = f"_build_{module_name}_parser"
+        func = None
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef) and node.name == builder_name:
+                func = node
+                break
+
+        if not func:
+            # Try without module prefix (some files have different naming)
+            for node in ast.walk(tree):
+                if isinstance(node, ast.FunctionDef) and node.name.startswith("_build_") and node.name.endswith("_parser"):
+                    builder_name = node.name
+                    func = node
+                    break
+
+        if not func:
+            continue
+
+        # Extract help/description from add_parser call
+        help_text = ""
+        desc_text = ""
+        cmd_name = module_name.replace("_", "-")
+
+        for node in ast.walk(func):
+            if isinstance(node, ast.Call):
+                call_name = ""
+                if isinstance(node.func, ast.Name):
+                    call_name = node.func.id
+                elif isinstance(node.func, ast.Attribute):
+                    call_name = node.func.attr
+
+                if call_name == "add_parser":
+                    for kw in node.keywords:
+                        if kw.arg == "help" and isinstance(kw.value, ast.Constant):
+                            help_text = kw.value.value or ""
+                        if kw.arg == "description" and isinstance(kw.value, ast.Constant):
+                            desc_text = kw.value.value or ""
+
+                    # Get positional args (command name)
+                    if node.args:
+                        first_arg = node.args[0]
+                        if isinstance(first_arg, ast.Constant):
+                            cmd_name = first_arg.value
+
+        # Extract subcommand patterns (e.g., gap list, gap extract)
+        subcommands = []
+        for node in ast.walk(func):
+            if isinstance(node, ast.Call):
+                call_name = ""
+                if isinstance(node.func, ast.Attribute):
+                    call_name = node.func.attr
+                if call_name == "add_parser":
+                    sub_name = ""
+                    sub_help = ""
+                    for kw in node.keywords:
+                        if kw.arg == "dest":
+                            sub_name = getattr(kw.value, "value", "")
+                        if kw.arg == "help" and isinstance(kw.value, ast.Constant):
+                            sub_help = kw.value.value or ""
+                    if sub_name:
+                        subcommands.append({"name": sub_name, "help": sub_help})
+
+        commands.append({
+            "name": cmd_name,
+            "module": module_name,
+            "help": help_text or desc_text,
+            "subcommands": subcommands,
+            "file": f"cli/cmd/{module_name}.py",
+        })
+
+    return commands
+
+
+def escape(s):
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+
+
+def generate_html(commands):
+    groups = {
+        "Core": ["import", "search", "list", "stats", "status", "export", "dedup", "dedup-semantic", "similar"],
+        "Papers": ["cite-fetch", "cite-graph", "cite-import", "cite-stats", "cite-backfill", "citation-chain", "citations"],
+        "Research": ["research", "gap", "trend", "influence", "path", "hypothesize", "story", "argue", "narrative"],
+        "Insight": ["insight", "evolution", "journal", "digest", "lean", "benchmark", "question", "review", "analyze"],
+        "Agents": ["agent", "chat", "chat-tui", "route", "friction", "subscribe", "repl"],
+        "Knowledge": ["kg", "rag", "pipeline", "experiment", "postprocess", "validate", "ingest"],
+        "Tools": ["cache", "queue", "read-queue", "slides", "session", "dashboard", "roadmap", "merge", "litreview", "compare", "replicate", "paper2code", "evoskill", "visual", "ask"],
+    }
+
+    html = []
+    html.append("<!DOCTYPE html>")
+    html.append("<html lang='en'>")
+    html.append("<head>")
+    html.append("<meta charset='UTF-8'>")
+    html.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>")
+    html.append("<title>CLI API Reference — AI Research OS</title>")
+    html.append("<style>")
+    html.append("""
+    :root {
+      --bg: #faf8f5;
+      --bg-card: #ffffff;
+      --text: #2d2a24;
+      --text-muted: #7a7570;
+      --accent: #c44;
+      --border: #e8e4de;
+      --code-bg: #f3f0eb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    header { background: var(--text); color: var(--bg); padding: 2rem 2rem 1.5rem; }
+    header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.3rem; }
+    header p { color: #b0aaa0; font-size: 0.9rem; }
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+    .search-bar { width: 100%; padding: 0.7rem 1rem; font-size: 1rem; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 1.5rem; background: var(--bg-card); }
+    .group { margin-bottom: 2.5rem; }
+    .group-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.8rem; padding-bottom: 0.3rem; border-bottom: 2px solid var(--accent); }
+    .cmd-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin-bottom: 0.6rem; }
+    .cmd-name { font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 1rem; font-weight: 700; color: var(--text); }
+    .cmd-name span { color: var(--accent); }
+    .cmd-help { font-size: 0.875rem; color: var(--text-muted); margin-top: 0.2rem; }
+    .cmd-subs { margin-top: 0.5rem; }
+    .cmd-sub { display: inline-block; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; font-size: 0.78rem; font-family: 'Cascadia Code', monospace; margin-right: 0.4rem; margin-bottom: 0.3rem; }
+    .cmd-sub-name { color: var(--text); }
+    .cmd-sub-help { color: var(--text-muted); }
+    .cmd-file { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.3rem; font-family: monospace; }
+    footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.8rem; }
+    """ + f"\n    // {len(commands)} commands loaded\n")
+    html.append("</style>")
+    html.append("</head>")
+    html.append("<body>")
+    html.append("<header>")
+    html.append("<h1>CLI API Reference</h1>")
+    html.append("<p>AI Research OS · Auto-generated from source · Run <code>airos-cli &lt;command&gt; --help</code> for full docs</p>")
+    html.append("</header>")
+    html.append("<div class='container'>")
+    html.append("<input class='search-bar' id='search' placeholder='Search commands...' oninput='filter()'/>")
+
+    # Sort commands by group
+    name_to_cmd = {c["name"]: c for c in commands}
+
+    for group_name, names in groups.items():
+        group_cmds = [name_to_cmd[n] for n in names if n in name_to_cmd]
+        if not group_cmds:
+            continue
+        html.append(f"<div class='group' data-group='{group_name}'>")
+        html.append(f"<div class='group-title'>{group_name}</div>")
+        for cmd in group_cmds:
+            subs = cmd.get("subcommands", [])
+            sub_html = ""
+            if subs:
+                sub_html = "<div class='cmd-subs'>" + "".join(
+                    f"<span class='cmd-sub'><span class='cmd-sub-name'>{escape(s['name'])}</span> <span class='cmd-sub-help'>{escape(s['help'][:40])}</span></span>"
+                    for s in subs
+                ) + "</div>"
+            html.append(f"<div class='cmd-card' data-name='{escape(cmd['name'])}' data-help='{escape(cmd['help'])}'>")
+            html.append(f"<div class='cmd-name'>airos-cli <span>{escape(cmd['name'])}</span></div>")
+            html.append(f"<div class='cmd-help'>{escape(cmd['help'])}</div>")
+            html.append(sub_html)
+            html.append(f"<div class='cmd-file'>{escape(cmd['file'])}</div>")
+            html.append("</div>")
+        html.append("</div>")
+
+    # Uncategorized commands
+    used = set()
+    for names in groups.values():
+        used.update(names)
+    uncategorized = [c for c in commands if c["name"] not in used]
+    if uncategorized:
+        html.append("<div class='group' data-group='Other'>")
+        html.append("<div class='group-title'>Other</div>")
+        for cmd in uncategorized:
+            subs = cmd.get("subcommands", [])
+            sub_html = ""
+            if subs:
+                sub_html = "<div class='cmd-subs'>" + "".join(
+                    f"<span class='cmd-sub'><span class='cmd-sub-name'>{escape(s['name'])}</span> <span class='cmd-sub-help'>{escape(s['help'][:40])}</span></span>"
+                    for s in subs
+                ) + "</div>"
+            html.append(f"<div class='cmd-card' data-name='{escape(cmd['name'])}' data-help='{escape(cmd['help'])}'>")
+            html.append(f"<div class='cmd-name'>airos-cli <span>{escape(cmd['name'])}</span></div>")
+            html.append(f"<div class='cmd-help'>{escape(cmd['help'])}</div>")
+            html.append(sub_html)
+            html.append(f"<div class='cmd-file'>{escape(cmd['file'])}</div>")
+            html.append("</div>")
+        html.append("</div>")
+
+    html.append("</div>")
+    html.append("<footer>")
+    html.append(f"Auto-generated · {len(commands)} commands · AI Research OS<br>")
+    html.append("<a href='https://github.com/shushuzn/Rairos'>GitHub</a> · <a href='./architecture.html'>Architecture</a>")
+    html.append("</footer>")
+    html.append("<script>")
+    html.append("""
+    function filter() {
+      var q = document.getElementById('search').value.toLowerCase();
+      document.querySelectorAll('.cmd-card').forEach(function(card) {
+        var name = card.getAttribute('data-name') || '';
+        var help = card.getAttribute('data-help') || '';
+        card.style.display = (name.includes(q) || help.includes(q)) ? '' : 'none';
+      });
+      document.querySelectorAll('.group').forEach(function(g) {
+        var visible = [].slice.call(g.querySelectorAll('.cmd-card')).some(function(c) { return c.style.display !== 'none'; });
+        g.style.display = visible ? '' : 'none';
+      });
+    }
+    """)
+    html.append("</script>")
+    html.append("</body>")
+    html.append("</html>")
+    return "\n".join(html)
+
+
+def main():
+    commands = extract_commands()
+    print(f"Found {len(commands)} commands")
+    html = generate_html(commands)
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    OUTPUT.write_text(html, encoding="utf-8")
+    print(f"Written: {OUTPUT}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,1 +1,225 @@
-IiIiQ0xJIGNvbW1hbmQ6IGltcG9ydC4iIiIKCmZyb20gX19mdXR1cmVfXyBpbXBvcnQgYW5ub3RhdGlvbnMKCmltcG9ydCBhcmdwYXJzZQppbXBvcnQganNvbgppbXBvcnQgc3lzCmZyb20gY29uY3VycmVudC5mdXR1cmVzIGltcG9ydCBUaHJlYWRQb29sRXhlY3V0b3IKZnJvbSBkYXRldGltZSBpbXBvcnQgZGF0ZXRpbWUKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gdHlwaW5nIGltcG9ydCBJTywgVHVwbGUsIFNldCwgT3B0aW9uYWwsIGNhc3QKCmZyb20gY2xpLl9zaGFyZWQgaW1wb3J0IGdldF9kYgpmcm9tIGNsaS5fc2hhcmVkIGltcG9ydCBwcmludF9zdWNjZXNzLCBwcmludF93YXJuaW5nLCBwcmludF9lcnJvciwgcHJpbnRfaW5mbwpmcm9tIGNsaS53YXJwIGltcG9ydCBXYXJwQmxvY2tzCgpDSEVDS1BPSU5UX1ZFUlNJT04gPSAxCgoKZGVmIF9mZXRjaF9wYXBlcl9tZXRhZGF0YShwYXBlcl9pZDogc3RyKSAtPiBPcHRpb25hbFtkaWN0XToKICAgICIiIkZldGNoIHBhcGVyIG1ldGFkYXRhIGZyb20gYXJYaXYgb3IgRE9JLiIiIgogICAgZnJvbSBwYXJzZXJzLmFyeGl2IGltcG9ydCBmZXRjaF9hcnhpdl9tZXRhZGF0YQogICAgZnJvbSBwYXJzZXJzLmNyb3NzcmVmIGltcG9ydCBmZXRjaF9jcm9zc3JlZl9tZXRhZGF0YQogICAgZnJvbSBwYXJzZXJzLmlucHV0X2RldGVjdGlvbiBpbXBvcnQgaXNfcHJvYmFibHlfZG9pLCBub3JtYWxpemVfZG9pCgogICAgdHJ5OgogICAgICAgIGlmIGlzX3Byb2JhYmx5X2RvaShwYXBlcl9pZCk6CiAgICAgICAgICAgICMgRE9JIGxvb2t1cAogICAgICAgICAgICBkb2kgPSBub3JtYWxpemVfZG9pKHBhcGVyX2lkKQogICAgICAgICAgICBwYXBlciwgXyA9IGZldGNoX2Nyb3NzcmVmX21ldGFkYXRhKGRvaSkKICAgICAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgICAgICJ0aXRsZSI6IHBhcGVyLnRpdGxlIG9yICIiLAogICAgICAgICAgICAgICAgImF1dGhvcnMiOiBwYXBlci5hdXRob3JzIG9yIFtdLAogICAgICAgICAgICAgICAgImFic3RyYWN0IjogcGFwZXIuYWJzdHJhY3Qgb3IgIiIsCiAgICAgICAgICAgICAgICAicHVibGlzaGVkIjogcGFwZXIucHVibGlzaGVkIG9yICIiLAogICAgICAgICAgICAgICAgImFic191cmwiOiBmImh0dHBzOi8vZG9pLm9yZy97ZG9pfSIsCiAgICAgICAgICAgICAgICAicGRmX3VybCI6ICIiLAogICAgICAgICAgICAgICAgInByaW1hcnlfY2F0ZWdvcnkiOiAiIiwKICAgICAgICAgICAgICAgICJkb2kiOiBkb2ksCiAgICAgICAgICAgIH0KICAgICAgICBlbHNlOgogICAgICAgICAgICAjIGFyWGl2IGxvb2t1cAogICAgICAgICAgICBwYXBlciA9IGZldGNoX2FyeGl2X21ldGFkYXRhKHBhcGVyX2lkKQogICAgICAgICAgICByZXR1cm4gewogICAgICAgICAgICAgICAgInRpdGxlIjogcGFwZXIudGl0bGUgb3IgIiIsCiAgICAgICAgICAgICAgICAiYXV0aG9ycyI6IHBhcGVyLmF1dGhvcnMgb3IgW10sCiAgICAgICAgICAgICAgICAiYWJzdHJhY3QiOiBwYXBlci5hYnN0cmFjdCBvciAiIiwKICAgICAgICAgICAgICAgICJwdWJsaXNoZWQiOiBwYXBlci5wdWJsaXNoZWQgb3IgIiIsCiAgICAgICAgICAgICAgICAiYWJzX3VybCI6IHBhcGVyLmFic191cmwgb3IgIiIsCiAgICAgICAgICAgICAgICAicGRmX3VybCI6IHBhcGVyLnBkZl91cmwgb3IgIiIsCiAgICAgICAgICAgICAgICAicHJpbWFyeV9jYXRlZ29yeSI6IHBhcGVyLnByaW1hcnlfY2F0ZWdvcnkgb3IgIiIsCiAgICAgICAgICAgICAgICAiZG9pIjogcGFwZXIuZG9pIG9yICIiLAogICAgICAgICAgICB9CiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6CiAgICAgICAgcHJpbnRfd2FybmluZyhmIkZhaWxlZCB0byBmZXRjaCBtZXRhZGF0YSBmb3Ige3BhcGVyX2lkfToge2V9IikKICAgICAgICByZXR1cm4gTm9uZQoKCmRlZiBfbG9hZF9jaGVja3BvaW50KGNoZWNrcG9pbnRfcGF0aDogUGF0aCkgLT4gZGljdDoKICAgICIiIkxvYWQgY2hlY2twb2ludCBmaWxlLiIiIgogICAgaWYgbm90IGNoZWNrcG9pbnRfcGF0aC5leGlzdHMoKToKICAgICAgICByZXR1cm4geyJ2ZXJzaW9uIjogQ0hFQ0tQT0lOVF9WRVJTSU9OLCAicHJvY2Vzc2VkIjogW10sICJmYWlsZWQiOiBbXSwgInRvdGFsIjogMH0KICAgIHRyeToKICAgICAgICB3aXRoIG9wZW4oY2hlY2twb2ludF9wYXRoLCBlbmNvZGluZz0idXRmLTgiKSBhcyBmOgogICAgICAgICAgICByZXR1cm4ganNvbi5sb2FkKGYpICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQogICAgZXhjZXB0IChqc29uLkpTT05EZWNvZGVFcnJvciwgSU9FcnJvcik6CiAgICAgICAgcmV0dXJuIHsidmVyc2lvbiI6IENIRUNLUE9JTlRfVkVSU0lPTiwgInByb2Nlc3NlZCI6IFtdLCAiZmFpbGVkIjogW10sICJ0b3RhbCI6IDB9CgoKZGVmIF9zYXZlX2NoZWNrcG9pbnQoY2hlY2twb2ludF9wYXRoOiBQYXRoLCBwcm9jZXNzZWQ6IGxpc3QsIGZhaWxlZDogbGlzdCwgdG90YWw6IGludCkgLT4gTm9uZToKICAgICIiIlNhdmUgY2hlY2twb2ludCBmaWxlIGF0b21pY2FsbHkuIiIiCiAgICB0ZW1wX3BhdGggPSBjaGVja3BvaW50X3BhdGgud2l0aF9zdWZmaXgoIi50bXAiKQogICAgZGF0YSA9IHsKICAgICAgICAidmVyc2lvbiI6IENIRUNLUE9JTlRfVkVSU0lPTiwKICAgICAgICAicHJvY2Vzc2VkIjogcHJvY2Vzc2VkLAogICAgICAgICJmYWlsZWQiOiBmYWlsZWQsCiAgICAgICAgInRvdGFsIjogdG90YWwsCiAgICAgICAgInNhdmVkX2F0IjogZGF0ZXRpbWUubm93KCkuaXNvZm9ybWF0KCksCiAgICB9CiAgICB3aXRoIG9wZW4odGVtcF9wYXRoLCAidyIsIGVuY29kaW5nPSJ1dGYtOCIpIGFzIGY6CiAgICAgICAganNvbi5kdW1wKGRhdGEsIGYsIGluZGVudD0yKQogICAgdGVtcF9wYXRoLnJlcGxhY2UoY2hlY2twb2ludF9wYXRoKQoKCmRlZiBfYnVpbGRfaW1wb3J0X3BhcnNlcihzdWJwYXJzZXJzKSAtPiBhcmdwYXJzZS5Bcmd1bWVudFBhcnNlcjoKICAgIHAgPSBzdWJwYXJzZXJzLmFkZF9wYXJzZXIoCiAgICAgICAgImltcG9ydCIsCiAgICAgICAgaGVscD0iQWRkIHBhcGVycyB0byB0aGUgZGF0YWJhc2UgYnkgSUQiLAogICAgICAgIHByb2c9ImFpcm9zIGltcG9ydCIsCiAgICAgICAgZGVzY3JpcHRpb249IkltcG9ydCBwYXBlcnMgYnkgYXJYaXYgSUQsIERPSSwgb3IgcGFwZXIgVUlELiBTdXBwb3J0cyBiYXRjaCBpbXBvcnQgZnJvbSBmaWxlLiIsCiAgICAgICAgZXBpbG9nPSIiIlwKRXhhbXBsZXM6CiAgJShwcm9nKXMgMjMwMS4wMDAwMSAyMzAxLjAwMDAyICAgICAgICAgICAjIGltcG9ydCB0d28gYXJYaXYgcGFwZXJzCiAgJShwcm9nKXMgMTAuMTAzOC9uYXR1cmUxMjM3MyAgICAgICAgICAgICAjIGltcG9ydCBieSBET0kKICAlKHByb2cpcyAtLWZpbGUgaWRzLnR4dCAgICAgICAgICAgICAgICAgICAjIGJhdGNoIGltcG9ydCBmcm9tIGZpbGUKICAlKHByb2cpcyAtLWZpbGUgLSAtLXNraXAtZXhpc3RpbmcgICAgICAgICAjIHN0ZGluLCBza2lwIGV4aXN0aW5nIHBhcGVycwogICUocHJvZylzIC0tY2hlY2twb2ludCByZXN1bWUuanNvbiAtLXJlc3VtZSAjIHJlc3VtZSBpbnRlcnJ1cHRlZCBpbXBvcnQiIiIsCiAgICApCiAgICBwLmFkZF9hcmd1bWVudCgiaWRzIiwgbmFyZ3M9IioiLCBtZXRhdmFyPSJJRCIsIGhlbHA9ImFyWGl2IElEcywgRE9Jcywgb3IgcGFwZXIgVUlEcyB0byBhZGQiKQogICAgcC5hZGRfYXJndW1lbnQoIi0tc291cmNlIiwgZGVmYXVsdD0iaW1wb3J0IiwgaGVscD0iU291cmNlIGxhYmVsIChkZWZhdWx0OiBpbXBvcnQpIikKICAgIHAuYWRkX2FyZ3VtZW50KCItLXNraXAtZXhpc3RpbmciLCBhY3Rpb249InN0b3JlX3RydWUiLCBoZWxwPSJTa2lwIElEcyBhbHJlYWR5IGluIGRhdGFiYXNlIikKICAgIHAuYWRkX2FyZ3VtZW50KAogICAgICAgICItLWZpbGUiLCBtZXRhdmFyPSJGSUxFIiwgaGVscD0iUmVhZCBJRHMgZnJvbSBmaWxlIChvbmUgcGVyIGxpbmUpLCBvciAnLScgZm9yIHN0ZGluIgogICAgKQogICAgcC5hZGRfYXJndW1lbnQoIi0tY2hlY2twb2ludCIsIG1ldGF2YXI9IkZJTEUiLCBoZWxwPSJTYXZlL3Jlc3VtZSBwcm9ncmVzcyB0byBjaGVja3BvaW50IGZpbGUiKQogICAgcC5hZGRfYXJndW1lbnQoCiAgICAgICAgIi0tcmVzdW1lIiwgYWN0aW9uPSJzdG9yZV90cnVlIiwgaGVscD0iUmVzdW1lIGZyb20gY2hlY2twb2ludCAoc2tpcCBwcm9jZXNzZWQgSURzKSIKICAgICkKICAgIHJldHVybiBwICAjIHR5cGU6IGlnbm9yZVtuby1hbnktcmV0dXJuXQoKCmRlZiBfcnVuX2ltcG9ydChhcmdzOiBhcmdwYXJzZS5OYW1lc3BhY2UpIC0+IGludDoKICAgIGRiID0gZ2V0X2RiKCkKICAgIGRiLmluaXQoKQoKICAgIF9oYXNfZmlsZSA9IGJvb2woZ2V0YXR0cihhcmdzLCAiZmlsZSIsIE5vbmUpKQogICAgY2hlY2twb2ludF9wYXRoID0gUGF0aChhcmdzLmNoZWNrcG9pbnQpIGlmIGdldGF0dHIoYXJncywgImNoZWNrcG9pbnQiLCBOb25lKSBlbHNlIE5vbmUKICAgIHJlc3VtZV9tb2RlID0gZ2V0YXR0cihhcmdzLCAicmVzdW1lIiwgRmFsc2UpCgogICAgaWYgX2hhc19maWxlOgogICAgICAgIGltcG9ydCBpbyBhcyBfaW8KCiAgICAgICAgaWYgYXJncy5maWxlID09ICItIjoKICAgICAgICAgICAgX3NvdXJjZSA9IF9pby5TdHJpbmdJTyhzeXMuc3RkaW4ucmVhZCgpKQogICAgICAgIGVsc2U6CiAgICAgICAgICAgIF9zb3VyY2UgPSBjYXN0KElPW3N0cl0sIG9wZW4oYXJncy5maWxlLCBlbmNvZGluZz0idXRmLTgiKSkgICMgdHlwZTogaWdub3JlW2Fzc2lnbm1lbnRdCiAgICAgICAgdHJ5OgogICAgICAgICAgICByYXcgPSBfc291cmNlLnJlYWQoKQogICAgICAgIGZpbmFsbHk6CiAgICAgICAgICAgIGlmIF9zb3VyY2UgaXMgbm90IHN5cy5zdGRpbjoKICAgICAgICAgICAgICAgIF9zb3VyY2UuY2xvc2UoKQogICAgICAgIHBhcGVyX2lkcyA9IFtsaW5lLnN0cmlwKCkgZm9yIGxpbmUgaW4gcmF3LnNwbGl0bGluZXMoKSBpZiBsaW5lLnN0cmlwKCldCiAgICBlbHNlOgogICAgICAgIHBhcGVyX2lkcyA9IGdldGF0dHIoYXJncywgImlkcyIsIFtdKSBvciBbXQoKICAgIGlmIG5vdCBwYXBlcl9pZHM6CiAgICAgICAgaWYgbm90IF9oYXNfZmlsZSBhbmQgbm90IGdldGF0dHIoYXJncywgImlkcyIsIFtdKToKICAgICAgICAgICAgcHJpbnRfZXJyb3IoIkVycm9yOiBubyBJRHMgcHJvdmlkZWQgKHVzZSBwb3NpdGlvbmFsIElEcywgLS1maWxlLCBvciBwaXBlIGludG8gc3RkaW4pIikKICAgICAgICAgICAgcmV0dXJuIDEgICMgdHlwZTogaWdub3JlW25vLWFueS1yZXR1cm5dCgogICAgIyBMb2FkIGNoZWNrcG9pbnQgZm9yIHJlc3VtZQogICAgcHJvY2Vzc2VkX2lkczogU2V0W3N0cl0gPSBzZXQoKQogICAgZmFpbGVkX2lkczogbGlzdCA9IFtdCiAgICBpZiByZXN1bWVfbW9kZSBhbmQgY2hlY2twb2ludF9wYXRoOgogICAgICAgIGNoZWNrcG9pbnQgPSBfbG9hZF9jaGVja3BvaW50KGNoZWNrcG9pbnRfcGF0aCkKICAgICAgICBwcm9jZXNzZWRfaWRzID0gc2V0KGNoZWNrcG9pbnQuZ2V0KCJwcm9jZXNzZWQiLCBbXSkpCiAgICAgICAgZmFpbGVkX2lkcyA9IGNoZWNrcG9pbnQuZ2V0KCJmYWlsZWQiLCBbXSkKICAgICAgICBwcmludF9pbmZvKGYiUmVzdW1pbmc6IHtsZW4ocHJvY2Vzc2VkX2lkcyl9IHByb2Nlc3NlZCwge2xlbihmYWlsZWRfaWRzKX0gZmFpbGVkIikKCiAgICBhZGRlZCwgc2tpcHBlZCwgbmV3X2ZhaWxlZCA9IDAsIDAsIDAKICAgIGV4aXN0aW5nID0gZGIuZ2V0X3BhcGVyc19idWxrKHBhcGVyX2lkcykKCiAgICAjIEJ1aWxkIG1pc3NpbmcgbGlzdCwgZXhjbHVkaW5nIGFscmVhZHkgcHJvY2Vzc2VkIGlmIHJlc3VtaW5nCiAgICBtaXNzaW5nX2lkcyA9IFtdCiAgICBmb3IgcGlkIGluIHBhcGVyX2lkczoKICAgICAgICBwaWQgPSBwaWQuc3RyaXAoKQogICAgICAgIGlmIG5vdCBwaWQ6CiAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgaWYgcGlkIGluIGV4aXN0aW5nOgogICAgICAgICAgICBza2lwcGVkICs9IDEKICAgICAgICAgICAgcHJpbnRfd2FybmluZyhmIlNraXBwZWQgKGV4aXN0cyk6IHtwaWR9IikKICAgICAgICBlbGlmIHJlc3VtZV9tb2RlIGFuZCBwaWQgaW4gcHJvY2Vzc2VkX2lkczoKICAgICAgICAgICAgc2tpcHBlZCArPSAxCiAgICAgICAgICAgIHByaW50X3dhcm5pbmcoZiJTa2lwcGVkIChwcm9jZXNzZWQpOiB7cGlkfSIpCiAgICAgICAgZWxzZToKICAgICAgICAgICAgbWlzc2luZ19pZHMuYXBwZW5kKHBpZCkKCiAgICBpZiBtaXNzaW5nX2lkczoKCiAgICAgICAgZGVmIF91cHNlcnRfb25lKGVudW1lcmF0ZWQ6IFR1cGxlW2ludCwgc3RyXSkgLT4gVHVwbGVbaW50LCBzdHIsIGJvb2wsIHN0cl06CiAgICAgICAgICAgIGlkeCwgcGlkID0gZW51bWVyYXRlZAogICAgICAgICAgICB0cnk6CiAgICAgICAgICAgICAgICAjIEZldGNoIG1ldGFkYXRhIGZpcnN0CiAgICAgICAgICAgICAgICBtZXRhZGF0YSA9IF9mZXRjaF9wYXBlcl9tZXRhZGF0YShwaWQpCiAgICAgICAgICAgICAgICBpZiBtZXRhZGF0YToKICAgICAgICAgICAgICAgICAgICBkYi51cHNlcnRfcGFwZXIoCiAgICAgICAgICAgICAgICAgICAgICAgIHBhcGVyX2lkPXBpZCwKICAgICAgICAgICAgICAgICAgICAgICAgc291cmNlPWFyZ3Muc291cmNlLAogICAgICAgICAgICAgICAgICAgICAgICB0aXRsZT1tZXRhZGF0YS5nZXQoInRpdGxlIiwgIiIpLAogICAgICAgICAgICAgICAgICAgICAgICBhdXRob3JzPW1ldGFkYXRhLmdldCgiYXV0aG9ycyIsIFtdKSwKICAgICAgICAgICAgICAgICAgICAgICAgYWJzdHJhY3Q9bWV0YWRhdGEuZ2V0KCJhYnN0cmFjdCIsICIiKSwKICAgICAgICAgICAgICAgICAgICAgICAgcHVibGlzaGVkPW1ldGFkYXRhLmdldCgicHVibGlzaGVkIiwgIiIpLAogICAgICAgICAgICAgICAgICAgICAgICBhYnNfdXJsPW1ldGFkYXRhLmdldCgiYWJzX3VybCIsICIiKSwKICAgICAgICAgICAgICAgICAgICAgICAgcGRmX3VybD1tZXRhZGF0YS5nZXQoInBkZl91cmwiLCAiIiksCiAgICAgICAgICAgICAgICAgICAgICAgIHByaW1hcnlfY2F0ZWdvcnk9bWV0YWRhdGEuZ2V0KCJwcmltYXJ5X2NhdGVnb3J5IiwgIiIpLAogICAgICAgICAgICAgICAgICAgICAgICBkb2k9bWV0YWRhdGEuZ2V0KCJkb2kiLCAiIiksCiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgZWxzZToKICAgICAgICAgICAgICAgICAgICAjIEZhbGxiYWNrOiBqdXN0IGluc2VydCBlbXB0eSByZWNvcmQKICAgICAgICAgICAgICAgICAgICBkYi51cHNlcnRfcGFwZXIocGlkLCBhcmdzLnNvdXJjZSkKICAgICAgICAgICAgICAgIHJldHVybiBpZHgsIHBpZCwgVHJ1ZSwgIiIKICAgICAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOgogICAgICAgICAgICAgICAgcmV0dXJuIGlkeCwgcGlkLCBGYWxzZSwgc3RyKGUpCgogICAgICAgIHByb2Nlc3NlZF90aGlzX3J1biA9IFtdCiAgICAgICAgd2l0aCBUaHJlYWRQb29sRXhlY3V0b3IobWF4X3dvcmtlcnM9bWluKGxlbihtaXNzaW5nX2lkcyksIDgpKSBhcyBleDoKICAgICAgICAgICAgcmVzdWx0cyA9IHNvcnRlZChleC5tYXAoX3Vwc2VydF9vbmUsIGVudW1lcmF0ZShtaXNzaW5nX2lkcykpLCBrZXk9bGFtYmRhIHI6IHJbMF0pCiAgICAgICAgZm9yIF8sIHBpZCwgb2ssIGVyciBpbiByZXN1bHRzOgogICAgICAgICAgICBpZiBvazoKICAgICAgICAgICAgICAgIGFkZGVkICs9IDEKICAgICAgICAgICAgICAgIHByb2Nlc3NlZF90aGlzX3J1bi5hcHBlbmQocGlkKQogICAgICAgICAgICAgICAgcHJpbnRfc3VjY2VzcyhmIkFkZGVkOiB7cGlkfSIpCiAgICAgICAgICAgIGVsc2U6CiAgICAgICAgICAgICAgICBuZXdfZmFpbGVkICs9IDEKICAgICAgICAgICAgICAgIGZhaWxlZF9pZHMuYXBwZW5kKHBpZCkKICAgICAgICAgICAgICAgIHByaW50X2Vycm9yKGYiRmFpbGVkOiB7cGlkfSDigJQge2Vycn0iKQoKICAgICAgICAgICAgIyBTYXZlIGNoZWNrcG9pbnQgYWZ0ZXIgZWFjaCBiYXRjaAogICAgICAgICAgICBpZiBjaGVja3BvaW50X3BhdGggYW5kICgKICAgICAgICAgICAgICAgIGxlbihwcm9jZXNzZWRfdGhpc19ydW4pICUgMTAgPT0gMCBvciBsZW4ocHJvY2Vzc2VkX3RoaXNfcnVuKSA9PSBsZW4obWlzc2luZ19pZHMpCiAgICAgICAgICAgICk6CiAgICAgICAgICAgICAgICBhbGxfcHJvY2Vzc2VkID0gbGlzdChwcm9jZXNzZWRfaWRzKSArIHByb2Nlc3NlZF90aGlzX3J1bgogICAgICAgICAgICAgICAgX3NhdmVfY2hlY2twb2ludChjaGVja3BvaW50X3BhdGgsIGFsbF9wcm9jZXNzZWQsIGZhaWxlZF9pZHMsIGxlbihwYXBlcl9pZHMpKQoKICAgICMgRmluYWwgY2hlY2twb2ludCBzYXZlCiAgICBpZiBjaGVja3BvaW50X3BhdGggYW5kIG1pc3NpbmdfaWRzOgogICAgICAgIGFsbF9wcm9jZXNzZWQgPSBsaXN0KHByb2Nlc3NlZF9pZHMpICsgW3BpZCBmb3IgcGlkIGluIG1pc3NpbmdfaWRzIGlmIHBpZCBub3QgaW4gZmFpbGVkX2lkc10KICAgICAgICBfc2F2ZV9jaGVja3BvaW50KGNoZWNrcG9pbnRfcGF0aCwgYWxsX3Byb2Nlc3NlZCwgZmFpbGVkX2lkcywgbGVuKHBhcGVyX2lkcykpCgogICAgdG90YWxfZmFpbGVkID0gbGVuKGZhaWxlZF9pZHMpCiAgICBmcm9tIHJpY2guY29uc29sZSBpbXBvcnQgQ29uc29sZQoKICAgIGMgPSBDb25zb2xlKCkKICAgIGMucnVsZSgiW2JvbGQgI0ZGODI3Ml0gIEltcG9ydCBDb21wbGV0ZSAgWy9dIikKICAgIGMucHJpbnQoKQogICAgcm93cyA9IFsKICAgICAgICBbIlsjQjRGQTcyXeKck1svXSIsICJBZGRlZCIsIGYiWyNCNEZBNzJde2FkZGVkfVsvXSJdLAogICAgICAgIFsiWyNBNUQ1RkVd4peLWy9dIiwgIlNraXBwZWQiLCBmIlsjQTVENUZFXXtza2lwcGVkfVsvXSJdLAogICAgICAgIFsiWyNGRjU1NTVd4pyXWy9dIiwgIkZhaWxlZCIsIGYiWyNGRjU1NTVde3RvdGFsX2ZhaWxlZH1bL10iXSwKICAgIF0KICAgIGMucHJpbnQoV2FycEJsb2Nrcy50YWJsZShbIiIsICJTdGF0dXMiLCAiQ291bnQiXSwgcm93cywgdGl0bGU9IkltcG9ydCBTdW1tYXJ5IikpCiAgICBpZiBjaGVja3BvaW50X3BhdGg6CiAgICAgICAgYy5wcmludCgpCiAgICAgICAgcHJpbnQoV2FycEJsb2Nrcy5zZWN0aW9uKCJDaGVja3BvaW50IiwgZiJbI0E1RDVGRV17Y2hlY2twb2ludF9wYXRofVsvXSIsIHdpZHRoPTYwKSkKICAgIHJldHVybiAwCg==
+"""CLI command: import."""
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+from pathlib import Path
+from typing import IO, Tuple, Set, Optional, cast
+
+from cli._shared import get_db
+from cli._shared import print_success, print_warning, print_error, print_info
+from cli.warp import WarpBlocks
+
+CHECKPOINT_VERSION = 1
+
+
+def _fetch_paper_metadata(paper_id: str) -> Optional[dict]:
+    """Fetch paper metadata from arXiv or DOI."""
+    from parsers.arxiv import fetch_arxiv_metadata
+    from parsers.crossref import fetch_crossref_metadata
+    from parsers.input_detection import is_probably_doi, normalize_doi
+
+    try:
+        if is_probably_doi(paper_id):
+            # DOI lookup
+            doi = normalize_doi(paper_id)
+            paper, _ = fetch_crossref_metadata(doi)
+            return {
+                "title": paper.title or "",
+                "authors": paper.authors or [],
+                "abstract": paper.abstract or "",
+                "published": paper.published or "",
+                "abs_url": f"https://doi.org/{doi}",
+                "pdf_url": "",
+                "primary_category": "",
+                "doi": doi,
+            }
+        else:
+            # arXiv lookup
+            paper = fetch_arxiv_metadata(paper_id)
+            return {
+                "title": paper.title or "",
+                "authors": paper.authors or [],
+                "abstract": paper.abstract or "",
+                "published": paper.published or "",
+                "abs_url": paper.abs_url or "",
+                "pdf_url": paper.pdf_url or "",
+                "primary_category": paper.primary_category or "",
+                "doi": paper.doi or "",
+            }
+    except Exception as e:
+        print_warning(f"Failed to fetch metadata for {paper_id}: {e}")
+        return None
+
+
+def _load_checkpoint(checkpoint_path: Path) -> dict:
+    """Load checkpoint file."""
+    if not checkpoint_path.exists():
+        return {"version": CHECKPOINT_VERSION, "processed": [], "failed": [], "total": 0}
+    try:
+        with open(checkpoint_path, encoding="utf-8") as f:
+            return json.load(f)  # type: ignore[no-any-return]
+    except (json.JSONDecodeError, IOError):
+        return {"version": CHECKPOINT_VERSION, "processed": [], "failed": [], "total": 0}
+
+
+def _save_checkpoint(checkpoint_path: Path, processed: list, failed: list, total: int) -> None:
+    """Save checkpoint file atomically."""
+    temp_path = checkpoint_path.with_suffix(".tmp")
+    data = {
+        "version": CHECKPOINT_VERSION,
+        "processed": processed,
+        "failed": failed,
+        "total": total,
+        "saved_at": datetime.now().isoformat(),
+    }
+    with open(temp_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    temp_path.replace(checkpoint_path)
+
+
+def _build_import_parser(subparsers) -> argparse.ArgumentParser:
+    p = subparsers.add_parser(
+        "import",
+        help="Add papers to the database by ID",
+        prog="airos import",
+        description="Import papers by arXiv ID, DOI, or paper UID. Supports batch import from file.",
+        epilog="""\
+Examples:
+  %(prog)s 2301.00001 2301.00002           # import two arXiv papers
+  %(prog)s 10.1038/nature12373             # import by DOI
+  %(prog)s --file ids.txt                   # batch import from file
+  %(prog)s --file - --skip-existing         # stdin, skip existing papers
+  %(prog)s --checkpoint resume.json --resume # resume interrupted import""",
+    )
+    p.add_argument("ids", nargs="*", metavar="ID", help="arXiv IDs, DOIs, or paper UIDs to add")
+    p.add_argument("--source", default="import", help="Source label (default: import)")
+    p.add_argument("--skip-existing", action="store_true", help="Skip IDs already in database")
+    p.add_argument("--file", metavar="FILE", help="Read IDs from file (one per line), or '-' for stdin")
+    p.add_argument("--checkpoint", metavar="FILE", help="Save/resume progress to checkpoint file")
+    p.add_argument("--resume", action="store_true", help="Resume from checkpoint (skip processed IDs)")
+    return p  # type: ignore[no-any-return]
+
+
+def _run_import(args: argparse.Namespace) -> int:
+    db = get_db()
+    db.init()
+
+    _has_file = bool(getattr(args, "file", None))
+    checkpoint_path = Path(args.checkpoint) if getattr(args, "checkpoint", None) else None
+    resume_mode = getattr(args, "resume", False)
+
+    if _has_file:
+        import io as _io
+        if args.file == "-":
+            _source = _io.StringIO(sys.stdin.read())
+        else:
+            _source = cast(IO[str], open(args.file, encoding="utf-8"))  # type: ignore[assignment]
+        try:
+            raw = _source.read()
+        finally:
+            if _source is not sys.stdin:
+                _source.close()
+        paper_ids = [line.strip() for line in raw.splitlines() if line.strip()]
+    else:
+        paper_ids = getattr(args, "ids", []) or []
+
+    if not paper_ids:
+        if not _has_file and not getattr(args, "ids", []):
+            print_error("Error: no IDs provided (use positional IDs, --file, or pipe into stdin)")
+            return 1  # type: ignore[no-any-return]
+
+    # Load checkpoint for resume
+    processed_ids: Set[str] = set()
+    failed_ids: list = []
+    if resume_mode and checkpoint_path:
+        checkpoint = _load_checkpoint(checkpoint_path)
+        processed_ids = set(checkpoint.get("processed", []))
+        failed_ids = checkpoint.get("failed", [])
+        print_info(f"Resuming: {len(processed_ids)} processed, {len(failed_ids)} failed")
+
+    added, skipped, new_failed = 0, 0, 0
+    existing = db.get_papers_bulk(paper_ids)
+
+    # Build missing list, excluding already processed if resuming
+    missing_ids = []
+    for pid in paper_ids:
+        pid = pid.strip()
+        if not pid:
+            continue
+        if pid in existing:
+            skipped += 1
+            print_warning(f"Skipped (exists): {pid}")
+        elif resume_mode and pid in processed_ids:
+            skipped += 1
+            print_warning(f"Skipped (processed): {pid}")
+        else:
+            missing_ids.append(pid)
+
+    if missing_ids:
+        def _upsert_one(enumerated: Tuple[int, str]) -> Tuple[int, str, bool, str]:
+            idx, pid = enumerated
+            try:
+                # Fetch metadata first
+                metadata = _fetch_paper_metadata(pid)
+                if metadata:
+                    db.upsert_paper(
+                        paper_id=pid,
+                        source=args.source,
+                        title=metadata.get("title", ""),
+                        authors=metadata.get("authors", []),
+                        abstract=metadata.get("abstract", ""),
+                        published=metadata.get("published", ""),
+                        abs_url=metadata.get("abs_url", ""),
+                        pdf_url=metadata.get("pdf_url", ""),
+                        primary_category=metadata.get("primary_category", ""),
+                        doi=metadata.get("doi", ""),
+                    )
+                else:
+                    # Fallback: just insert empty record
+                    db.upsert_paper(pid, args.source)
+                return idx, pid, True, ""
+            except Exception as e:
+                return idx, pid, False, str(e)
+
+        processed_this_run = []
+        with ThreadPoolExecutor(max_workers=min(len(missing_ids), 8)) as ex:
+            results = sorted(ex.map(_upsert_one, enumerate(missing_ids)), key=lambda r: r[0])
+        for _, pid, ok, err in results:
+            if ok:
+                added += 1
+                processed_this_run.append(pid)
+                print_success(f"Added: {pid}")
+            else:
+                new_failed += 1
+                failed_ids.append(pid)
+                print_error(f"Failed: {pid} — {err}")
+
+            # Save checkpoint after each batch
+            if checkpoint_path and (len(processed_this_run) % 10 == 0 or len(processed_this_run) == len(missing_ids)):
+                all_processed = list(processed_ids) + processed_this_run
+                _save_checkpoint(checkpoint_path, all_processed, failed_ids, len(paper_ids))
+
+    # Final checkpoint save
+    if checkpoint_path and missing_ids:
+        all_processed = list(processed_ids) + [pid for pid in missing_ids if pid not in failed_ids]
+        _save_checkpoint(checkpoint_path, all_processed, failed_ids, len(paper_ids))
+
+    total_failed = len(failed_ids)
+    from rich.console import Console
+    c = Console()
+    c.rule("[bold #FF8272]  Import Complete  [/]")
+    c.print()
+    rows = [
+        ["[#B4FA72]✓[/]", "Added",    f"[#B4FA72]{added}[/]"],
+        ["[#A5D5FE]○[/]", "Skipped",  f"[#A5D5FE]{skipped}[/]"],
+        ["[#FF5555]✗[/]", "Failed",    f"[#FF5555]{total_failed}[/]"],
+    ]
+    c.print(WarpBlocks.table(["", "Status", "Count"], rows, title="Import Summary"))
+    if checkpoint_path:
+        c.print()
+        print(WarpBlocks.section("Checkpoint", f"[#A5D5FE]{checkpoint_path}[/]", width=60))
+    return 0
