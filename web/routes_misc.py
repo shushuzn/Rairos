@@ -234,3 +234,50 @@ async def _researchers_fallback(request: Request):
 async def _queue_fallback(request: Request):
     return templates.TemplateResponse(request, "generic.html",
         {"page": "review-queue", "title": "Review Queue", "content": "<p>Review queue module loading...</p>"})
+
+def get_paper2code_results():
+    return []
+
+
+# --- Graceful fallbacks for missing sidebar routes ---
+MISSING_ROUTES = [
+    "/chat", "/citation-chain", "/arxiv-channels", "/climate-monitor",
+    "/voice-capsule", "/policy-impact", "/labor-displacement", 
+    "/researchers", "/insights/queue",
+]
+
+@router.get("/chat")
+async def chat_fb(request: Request):
+    return templates.TemplateResponse(request, "generic.html", {"page": "chat", "title": "Chat", "content": "<p>Chat module not available</p>"})
+
+@router.get("/citation-chain")
+async def citation_fb(request: Request):
+    return templates.TemplateResponse(request, "generic.html", {"page": "citation_chain", "title": "Citation Chain", "content": "<p>Citation chain not available</p>"})
+
+@router.get("/arxiv-channels")
+async def arxiv_fb(request: Request):
+    return templates.TemplateResponse(request, "generic.html", {"page": "arxiv-channels", "title": "arXiv Channels", "content": "<p>arXiv channels not available</p>"})
+
+@router.get("/climate-monitor")
+async def climate_fb(request: Request):
+    return templates.TemplateResponse(request, "generic.html", {"page": "climate-monitor", "title": "Climate AI", "content": "<p>Climate monitor not available</p>"})
+
+@router.get("/voice-capsule")
+async def voice_fb(request: Request):
+    return templates.TemplateResponse(request, "generic.html", {"page": "voice-capsule", "title": "Voice Capsule", "content": "<p>Voice capsule not available</p>"})
+
+@router.get("/policy-impact")
+async def policy_fb(request: Request):
+    return templates.TemplateResponse(request, "generic.html", {"page": "policy-impact", "title": "Policy Impact", "content": "<p>Policy impact not available</p>"})
+
+@router.get("/labor-displacement")
+async def labor_fb(request: Request):
+    return templates.TemplateResponse(request, "generic.html", {"page": "labor-displacement", "title": "Labor Track", "content": "<p>Labor track not available</p>"})
+
+@router.get("/researchers")
+async def researchers_fb(request: Request):
+    return templates.TemplateResponse(request, "generic.html", {"page": "multi-researcher", "title": "Researchers", "content": "<p>Multi-researcher not available</p>"})
+
+@router.get("/insights/queue")
+async def queue_fb(request: Request):
+    return templates.TemplateResponse(request, "generic.html", {"page": "review-queue", "title": "Review Queue", "content": "<p>Review queue not available</p>"})

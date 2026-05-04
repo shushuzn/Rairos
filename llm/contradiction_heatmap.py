@@ -115,3 +115,6 @@ def render_heatmap_html(
     lines.append(".heatmap-card-count { font-size: 11px; font-weight: 700; text-align: right; }")
     lines.append("</style>")
     return "\n".join(lines)
+
+def detect_contradictions(papers):
+    return {}

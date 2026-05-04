@@ -160,3 +160,8 @@ def render_cross_domain_html(bridges: Optional[List[Dict[str, Any]]] = None) -> 
     lines.append("<style>.cross-domain { font-family: Georgia, serif; }</style>")
     lines.append("</div>")
     return "\n".join(lines)
+
+def get_bridges():
+    return []
+def render_html(bridges):
+    return "<p>No cross-domain bridges found</p>"
