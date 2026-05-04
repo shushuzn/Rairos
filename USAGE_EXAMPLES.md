@@ -386,7 +386,7 @@ print(profiler.get_report())
 
 ## 🎓 更多资源
 
-- [项目GitHub](https://github.com/shushuzn/ai_research_os)
+- [项目GitHub](https://github.com/shushuzn/Rairos)
 - [API文档](docs/api.md)
 - [开发指南](docs/development.md)
 - [更新日志](CHANGELOG.md)

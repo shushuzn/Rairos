@@ -1,10 +1,10 @@
 site_name: AI Research OS
 site_description: A Self-Evolving Research Operating System for AI Researchers
-site_url: https://shushuzn.github.io/ai_research_os/
+site_url: https://shushuzn.github.io/Rairos/
 site_author: shushuzn
 
-repo_name: shushuzn/ai_research_os
-repo_url: https://github.com/shushuzn/ai_research_os
+repo_name: shushuzn/Rairos
+repo_url: https://github.com/shushuzn/Rairos
 copyright: Copyright &copy; 2026 shushuzn
 
 theme:
@@ -58,8 +58,8 @@ nav:
   - Community:
       - Contributing: contributing.md
       - Roadmap: roadmap.md
-      - Changelog: https://github.com/shushuzn/ai_research_os/blob/main/CHANGELOG.md
-      - GitHub: https://github.com/shushuzn/ai_research_os
+      - Changelog: https://github.com/shushuzn/Rairos/blob/main/CHANGELOG.md
+      - GitHub: https://github.com/shushuzn/Rairos
 
 markdown_extensions:
   - pymdownx.highlight:

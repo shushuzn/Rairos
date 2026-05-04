@@ -462,7 +462,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-- Correct pyproject.toml after web UI corruption ([#49](https://github.com/shushuzn/ai_research_os/pull/49))
+- Correct pyproject.toml after web UI corruption ([#49](https://github.com/shushuzn/Rairos/pull/49))
 
 - Add get_cached/set_cached mocks to prevent test cache pollution
 

@@ -82,5 +82,5 @@ for gt, count in stats['by_gap_type'].items():
 echo ""
 
 echo "=== Demo Complete ==="
-echo "https://github.com/shushuzn/ai_research_os"
+echo "https://github.com/shushuzn/Rairos"
 echo "Docs: memory/EVOLUTION_ROADMAP.md"
