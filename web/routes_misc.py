@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
-from web.shared import templates
+from web.shared import templates, get_db
 
 router = APIRouter()
 
@@ -360,7 +360,7 @@ async def arxiv_channels(request: Request):
     """arXiv Watch Alert Channels — configure multiple feed configs."""
     from llm.arxiv_alert_channels import render_channels_html
 
-    db = _get_db()
+    db = get_db()
     try:
         recent = db.get_recent_subscription_papers_grouped(limit_per=5)
     except Exception:
@@ -402,7 +402,7 @@ async def arxiv_check(request: Request):
     from fastapi.responses import JSONResponse
 
     try:
-        db = _get_db()
+        db = get_db()
         from llm.subscription_monitor import SubscriptionMonitor
 
         monitor = SubscriptionMonitor(db)
