@@ -60,9 +60,6 @@ app.include_router(routes_gene_pool.router)
 from web import routes_news
 app.include_router(routes_news.router)
 
-from web import routes_reports
-app.include_router(routes_reports.router)
-
 
 
 # Graceful error handler — catches ALL exceptions in route handlers
@@ -232,6 +229,17 @@ async def dashboard(request: Request):
             "by_category": by_category,
             "activity": activity,
         },
+    )
+
+
+@app.get("/report")
+async def reports_page(request: Request):
+    """Research reports by theme."""
+    from llm.reports import report_all
+
+    return templates.TemplateResponse(
+        request, "reports.html",
+        {"page": "reports", "title": "Reports", "reports_content": report_all()},
     )
 
 @app.delete("/paper/{paper_id}")
