@@ -92,9 +92,15 @@ def _fetch_event_news(client: Jin10Client, keyword: str, limit: int) -> List[Dic
     items = []
     if keyword:
         raw = client.search_flash(keyword)
-        data = raw.get("data", raw) if isinstance(raw, dict) else {"items": raw if isinstance(raw, list) else []}
-        items = data.get("items", [])[:limit]
-    return items
+        if isinstance(raw, dict):
+            inner = raw.get("data", raw)
+            if isinstance(inner, dict):
+                items = inner.get("items", [])
+            elif isinstance(inner, list):
+                items = inner
+        elif isinstance(raw, list):
+            items = raw
+    return items[:limit]
 
 
 def _build_summary(news_items: List[Dict], keyword: str) -> Dict:
