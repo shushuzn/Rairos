@@ -120,7 +120,7 @@ class WebhookNotifier:
         title: str,
         description: str,
         color: int = 0x5865F2,
-        fields: Optional[List[Dict[str, str]]] = None,
+        fields: Optional[List[Dict[str, Any]]] = None,
     ) -> bool:
         """Send a Discord embed notification.
 
