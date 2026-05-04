@@ -410,6 +410,35 @@ def _build_prompt(paper_content, framework: str) -> str:
 
 
 
+
+def _strip_prose_secondary(code: str) -> str:
+    """Strip prose lines using alpha-ratio + code-marker heuristic.
+
+    Applied after primary marker-based stripping for models (e.g. MiniMax)
+    that output plain-text descriptions without markdown fences.
+    """
+    lines = code.splitlines(keepends=True)
+    result = []
+    for s in lines:
+        stripped = s.lstrip()
+        total = len(stripped.rstrip('\r\n'))
+        if total == 0:
+            result.append(s)
+            continue
+        alpha = sum(c.isalpha() for c in stripped)
+        ratio = alpha / total if total > 0 else 0
+        markers = set('(){}=[]<@#"')
+        has_marker = any(c in markers for c in stripped)
+        is_import = stripped.startswith('import ') or stripped.startswith('from ')
+        is_py_kw = re.match(
+            r'^(class |def |async |@|if |elif |for |while |with |try:|except:|finally:|raise |return |yield |pass |break |continue |assert |import |from |#|$)',
+            stripped)
+        if total > 10 and ratio > 0.75 and not has_marker and not is_import and not is_py_kw:
+            continue  # drop prose line
+        result.append(s)
+    return "".join(result)
+
+
 def save_code(code: str, output_dir: Path, module_name: str = "model") -> Path:
     """Save generated code to a file, stripping markdown code-block wrappers."""
     import re
@@ -453,6 +482,7 @@ def save_code(code: str, output_dir: Path, module_name: str = "model") -> Path:
     # Strip free text appended after valid Python entry point — LLM sometimes
     # writes a description after `if __name__ == "__main__": main()`
     code = re.sub(r'\nif __name__ == "__main__":\s*main\(\)\s*[\w\W]*$', '', code, flags=re.MULTILINE)
+    code = _strip_prose_secondary(code)
 
     output_dir.mkdir(parents=True, exist_ok=True)
     out_path = output_dir / f"{module_name}.py"
