@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
-from web.shared import templates
+from web.shared import templates, get_db
 
 router = APIRouter()
 
@@ -17,7 +17,7 @@ async def papers(
     year_to: str = "",
 ):
     """Papers — search and list with pagination."""
-    db = _get_db()
+    db = get_db()
     limit = 20
     offset = (max(1, page) - 1) * limit
 
@@ -77,7 +77,7 @@ async def papers(
 @router.get("/paper/{paper_id}")
 async def paper_detail(request: Request, paper_id: str):
     """Paper detail — full metadata."""
-    db = _get_db()
+    db = get_db()
     paper = db.get_paper(paper_id)
 
     if not paper:
@@ -147,7 +147,7 @@ async def paper_detail(request: Request, paper_id: str):
 @router.get("/paper/{paper_id}/extract-gap")
 async def extract_paper_gap(request: Request, paper_id: str):
     """Extract a research gap from a paper using LLM."""
-    db = _get_db()
+    db = get_db()
     paper = db.get_paper(paper_id)
     if not paper:
         return {"error": f"Paper '{paper_id}' not found."}
@@ -175,7 +175,7 @@ async def save_paper_gap(request: Request, paper_id: str):
 
     from llm.paper_gap_extractor import save_gap_to_gene_pool
 
-    db = _get_db()
+    db = get_db()
     paper = db.get_paper(paper_id)
     title = paper.title if paper else paper_id
 
@@ -196,7 +196,7 @@ async def paper_rigor(request: Request, paper_id: str):
     """Compute and return research rigor score for a paper as JSON."""
     from llm.rigor_scorer import RigorScorer
 
-    db = _get_db()
+    db = get_db()
     paper = db.get_paper(paper_id)
     if not paper:
         return {"error": f"Paper '{paper_id}' not found."}
@@ -211,7 +211,7 @@ async def paper_replication(request: Request, paper_id: str):
     """Run replication checker on a paper — returns JSON report."""
     from llm.replication_checker import ReplicationChecker
 
-    db = _get_db()
+    db = get_db()
     paper = db.get_paper(paper_id)
     if not paper:
         return {"error": f"Paper '{paper_id}' not found."}
@@ -262,7 +262,7 @@ async def papers_gap_analysis(request: Request, ids: str = ""):
             },
         )
 
-    db = _get_db()
+    db = get_db()
     paper_map = db.get_papers_bulk(paper_ids)
     papers = [
         {"id": pid, "title": getattr(p, "title", ""), "abstract": getattr(p, "abstract", "") or ""}
@@ -311,7 +311,7 @@ async def gap_analysis_questions(request: Request, ids: str = ""):
             },
         )
 
-    db = _get_db()
+    db = get_db()
     paper_map = db.get_papers_bulk(paper_ids)
     papers = [
         {"id": pid, "title": getattr(p, "title", ""), "abstract": getattr(p, "abstract", "") or ""}
