@@ -162,7 +162,9 @@ class DeepResearchAgent:
         self.session = self.snapstate.load(session_id)
 
         if self.session:
-            self._log(f"Session resumed: {session_id}, iteration {self.session.iteration}")
+            self._log(
+                f"Session resumed: {session_id}, iteration {self.session.iteration}"
+            )
 
         return self.session
 
@@ -222,7 +224,11 @@ class DeepResearchAgent:
             # Use the best capsule's trigger_keywords as search hint
             # (these encode what search terms previously succeeded)
             hint_keywords = best.trigger_keywords
-            if hint_keywords and isinstance(hint_keywords, list) and len(hint_keywords) > 0:
+            if (
+                hint_keywords
+                and isinstance(hint_keywords, list)
+                and len(hint_keywords) > 0
+            ):
                 # Construct search hint from historical keywords + gap context
                 hint = " ".join(str(k) for k in hint_keywords[:5])
                 return hint, confidence
@@ -231,8 +237,12 @@ class DeepResearchAgent:
             return None, 0.0
 
     def _reformulate_query(
-        self, gap_type: str, gap_title: str, gap_description: str,
-        search_history: List[str], found_titles: List[str],
+        self,
+        gap_type: str,
+        gap_title: str,
+        gap_description: str,
+        search_history: List[str],
+        found_titles: List[str],
     ) -> Optional[str]:
         """Use LLM to reformulate search query based on session context.
 
@@ -244,8 +254,16 @@ class DeepResearchAgent:
         except Exception:
             return None
 
-        history_str = "\n".join(f"  - {h}" for h in search_history[-5:]) if search_history else "  (none)"
-        found_str = "\n".join(f"  - {t[:80]}" for t in found_titles[-10:]) if found_titles else "  (none)"
+        history_str = (
+            "\n".join(f"  - {h}" for h in search_history[-5:])
+            if search_history
+            else "  (none)"
+        )
+        found_str = (
+            "\n".join(f"  - {t[:80]}" for t in found_titles[-10:])
+            if found_titles
+            else "  (none)"
+        )
 
         prompt = f"""You are a research search planner. Given the context below, generate ONE specific arXiv search query (max 10 words) that would find papers addressing the identified gap.
 
@@ -350,14 +368,15 @@ Rules:
         self._record_thought("planner", f"Planned search: {planned}", iteration)
         return planned
 
-
     def _search_papers(self, search_query: str, iteration: int) -> List[Paper]:
         """SEARCHER: fetch papers from arXiv."""
 
         self._log(f"[iter {iteration}] Searching: {search_query}")
 
         try:
-            papers = search_arxiv(search_query, max_results=self.max_papers_per_iteration)
+            papers = search_arxiv(
+                search_query, max_results=self.max_papers_per_iteration
+            )
 
         except Exception as e:
             self._record_thought("searcher", f"Search failed: {e}", iteration)
@@ -365,19 +384,25 @@ Rules:
             return []
 
         self._record_thought(
-            "searcher", f"Found {len(papers)} papers: {[p.arxiv_id for p in papers]}", iteration
+            "searcher",
+            f"Found {len(papers)} papers: {[p.arxiv_id for p in papers]}",
+            iteration,
         )
 
         return papers
 
-    def _extract_papers(self, papers: List[Paper], iteration: int) -> List[PaperSnapshot]:
+    def _extract_papers(
+        self, papers: List[Paper], iteration: int
+    ) -> List[PaperSnapshot]:
         """EXTRACTOR: extract text from papers and build snapshots."""
 
         snapshots = []
 
         for paper in papers:
             try:
-                extracted = extract_pdf_text(str(paper.pdf_url or "")) if paper.pdf_url else ""
+                extracted = (
+                    extract_pdf_text(str(paper.pdf_url or "")) if paper.pdf_url else ""
+                )
 
             except Exception:
                 extracted = ""
@@ -408,11 +433,15 @@ Rules:
                 ]
             )
 
-        self._record_thought("extractor", f"Extracted {len(snapshots)} papers", iteration)
+        self._record_thought(
+            "extractor", f"Extracted {len(snapshots)} papers", iteration
+        )
 
         return snapshots
 
-    def _analyze_gaps(self, snapshots: List[PaperSnapshot], iteration: int) -> List[GapSnapshot]:
+    def _analyze_gaps(
+        self, snapshots: List[PaperSnapshot], iteration: int
+    ) -> List[GapSnapshot]:
         """ANALYZER: detect research gaps using GapAnalyzerV2."""
 
         self._log(f"[iter {iteration}] Analyzing gaps for {len(snapshots)} papers")
@@ -440,7 +469,11 @@ Rules:
         gap_snapshots = []
 
         for gap in result.gaps[:5]:  # Top 5 gaps
-            match_score = self.tracker._archetype_match_score(gap, archetype) if archetype else 0.5
+            match_score = (
+                self.tracker._archetype_match_score(gap, archetype)
+                if archetype
+                else 0.5
+            )
 
             gs = GapSnapshot(
                 gap_type=gap.gap_type or "improvement",
@@ -627,7 +660,9 @@ Rules:
             status=self.session.status if self.session else "failed",
         )
 
-        self._log(f"Run complete: {result.status}, {result.iterations} iterations, {duration:.1f}s")
+        self._log(
+            f"Run complete: {result.status}, {result.iterations} iterations, {duration:.1f}s"
+        )
 
         return result
 
