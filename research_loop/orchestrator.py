@@ -451,12 +451,23 @@ class AutonomousOrchestrator:
         logger.info("[Orchestrator] Watch stopped")
 
     def _watch_loop(self, interval_minutes: int, stop_event: threading.Event) -> None:
-        """Internal watch loop runner."""
+        """Internal watch loop runner. Runs orchestrator cycle + evolution."""
+        evolution_counter = 0
         while not stop_event.is_set():
             try:
                 self.run_cycle()
             except Exception as e:
                 logger.error(f"[Orchestrator] Cycle error: {e}")
+
+            # Run evolution every 3 cycles (or ~90min at 30min intervals)
+            evolution_counter += 1
+            if evolution_counter >= 3:
+                evolution_counter = 0
+                try:
+                    result = self.run_evolution_cycle()
+                    logger.info(f"[Orchestrator] Evolution: {result}")
+                except Exception as e:
+                    logger.error(f"[Orchestrator] Evolution error: {e}")
 
             stop_event.wait(timeout=interval_minutes * 60)
 
@@ -473,12 +484,75 @@ class AutonomousOrchestrator:
                 pass
         return alerts
 
+    # ── Evolution cycle ───────────────────────────────────────────────────
+
+    def run_evolution_cycle(self, topic: str = "") -> Dict[str, Any]:
+        """Run one InsightEvolution cycle on the Gene Pool.
+
+        Args:
+            topic: Optional topic to focus evolution on. If empty, evolves
+                   the highest-scoring topic from recent user activity.
+
+        Returns:
+            Dict with evolution cycle summary.
+        """
+        try:
+            from llm.insight.evolution import InsightEvolution
+
+            evolver = InsightEvolution(tracker=self._tracker)
+            evo_topic = topic or self._get_best_evolution_topic()
+            result = evolver.evolve(topic=evo_topic)
+            return result
+        except Exception as e:
+            logger.error(f"Evolution cycle failed: {e}")
+            return {"error": str(e)}
+
+    def _get_best_evolution_topic(self) -> str:
+        """Pick the best topic for evolution from user history."""
+        try:
+            profile = self._tracker.get_profile()
+            topics = list(profile.topic_frequency.keys())
+            if topics:
+                return max(topics, key=lambda t: profile.topic_frequency[t])
+        except Exception:
+            pass
+        return "machine learning"
+
+    def generate_credibility_report(self) -> str:
+        """Generate a credibility report for the Web UI."""
+        try:
+            from llm.insight.evolution import InsightEvolution
+
+            evolver = InsightEvolution(tracker=self._tracker)
+            return evolver.credibility_report()
+        except Exception as e:
+            logger.error(f"Credibility report failed: {e}")
+            return f"<p>Error generating report: {e}</p>"
+
+    # ── Combined status ────────────────────────────────────────────────
+
     def get_status(self) -> Dict[str, Any]:
-        """Get orchestrator status."""
+        """Get orchestrator status with evolution stats."""
         state = _load_state()
+
+        # Gene Pool stats
+        pool_stats = {}
+        try:
+            pool_stats = self._tracker.get_gene_pool_stats()
+        except Exception:
+            pass
+
         return {
             "running": state.get("running", False),
             "interval_minutes": state.get("interval_minutes", 30),
             "last_check": state.get("last_check", ""),
             "alerts_count": len(state.get("alerts", [])),
+            "gene_pool": {
+                "total_capsules": pool_stats.get("total", 0),
+                "avg_score": pool_stats.get("avg_score", 0.0),
+                "by_gap_type": pool_stats.get("by_gap_type", {}),
+            },
+            "evolution": {
+                "available": True,
+            },
         }

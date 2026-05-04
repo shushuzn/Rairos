@@ -1844,6 +1844,101 @@ async def citation_chain_build(
         )
 
 
+# ── Daemon Dashboard ──────────────────────────────────────────────────────────────
+
+
+@app.get("/daemon")
+async def daemon_dashboard(request: Request):
+    """Unified daemon dashboard — orchestrator + evolution + credibility in one view."""
+    try:
+        from research_loop.orchestrator import AutonomousOrchestrator
+
+        orch = AutonomousOrchestrator(webhook_enabled=False)
+        status = orch.get_status()
+        alerts_raw = orch.get_recent_alerts(limit=20)
+
+        # Gene Pool stats
+        try:
+            from llm.insight.tracker import EvolutionTracker
+
+            tracker = EvolutionTracker()
+            pool_stats = tracker.get_gene_pool_stats()
+        except Exception:
+            pool_stats = {}
+
+        # Credibility stats
+        try:
+            from llm.insight.credibility import CredibilityScorer
+            from llm.insight.gene import CapsuleGene
+
+            scorer = CredibilityScorer()
+            gene_file = Path.home() / ".ai_research_os" / "evolution" / "gene_pool.jsonl"
+            capsules = []
+            if gene_file.exists():
+                import json as _json
+
+                with open(gene_file, encoding="utf-8") as f:
+                    for line in f:
+                        if line.strip():
+                            try:
+                                capsules.append(CapsuleGene.from_dict(_json.loads(line)))
+                            except Exception:
+                                continue
+            cred_scores = scorer.compute_novelty_scores(capsules) if capsules else {}
+            trendslop_count = sum(1 for s in cred_scores.values() if s.trendslop)
+            high_count = sum(1 for s in cred_scores.values() if s.badge == "high")
+            cred_stats = {
+                "total": len(cred_scores),
+                "trendslop": trendslop_count,
+                "high": high_count,
+            }
+        except Exception:
+            cred_stats = {}
+    except Exception:
+        status = {
+            "running": False,
+            "interval_minutes": 30,
+            "last_check": "",
+            "alerts_count": 0,
+            "error": "Orchestrator unavailable",
+        }
+        alerts_raw = []
+        pool_stats = {}
+        cred_stats = {}
+
+    alerts = []
+    for a in alerts_raw:
+        created = a.created_at if hasattr(a, "created_at") else a.get("created_at", "")
+        alerts.append(
+            (
+                a.alert_id,
+                a.session_id,
+                a.topic,
+                a.triggered_by,
+                a.trigger_title,
+                a.gaps_found,
+                a.top_gap_title,
+                a.top_gap_type,
+                a.severity,
+                a.gene_pool_score,
+                a.preference_boost,
+                created,
+            )
+        )
+
+    return templates.TemplateResponse(
+        request,
+        "daemon.html",
+        {
+            "page": "daemon",
+            "status": status,
+            "alerts": alerts[:20],
+            "pool_stats": pool_stats,
+            "cred_stats": cred_stats,
+        },
+    )
+
+
 # ── Research Loop ────────────────────────────────────────────────────────────────
 
 
