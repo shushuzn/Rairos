@@ -53,6 +53,15 @@ class CapsuleGene:
     # archived: low-quality / superseded / manually archived — hidden from active view
     status: str = "active"  # "active" | "consumed" | "archived"
 
+    # ─── Credibility (computed by CredibilityScorer) ────────────────────
+    credibility_score: float = 0.5  # 0.0–1.0, composite credibility
+    trendslop: bool = False  # True if keyword overlap > 70% with existing capsules
+    trendslop_reason: str = ""  # explanation of trendslop flag
+    credibility_badge: str = "medium"  # "high" | "medium" | "low"
+
+    # ─── Source Tracking ────────────────────────────────────────────────
+    source_arxiv_category: str = ""  # e.g. "cs.LG", "cs.CL"
+
     # Auto-archive tracking: consecutive evolution cycles with score < 0.3
     low_score_streak: int = 0  # incremented each cycle if score < 0.3, reset if >= 0.3
 
@@ -116,6 +125,11 @@ class CapsuleGene:
             "archetype": self.archetype,
             "status": self.status,
             "low_score_streak": self.low_score_streak,
+            "credibility_score": self.credibility_score,
+            "trendslop": self.trendslop,
+            "trendslop_reason": self.trendslop_reason,
+            "credibility_badge": self.credibility_badge,
+            "source_arxiv_category": self.source_arxiv_category,
         }
 
     @classmethod
@@ -135,4 +149,9 @@ class CapsuleGene:
             archetype=d.get("archetype", {}),
             status=d.get("status", "active"),
             low_score_streak=d.get("low_score_streak", 0),
+            credibility_score=d.get("credibility_score", 0.5),
+            trendslop=d.get("trendslop", False),
+            trendslop_reason=d.get("trendslop_reason", ""),
+            credibility_badge=d.get("credibility_badge", "medium"),
+            source_arxiv_category=d.get("source_arxiv_category", ""),
         )

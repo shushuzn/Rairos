@@ -191,9 +191,19 @@ class InsightEvolution:
         except Exception:
             freshness = 0.5
 
-        # Composite: utility weighted heavily
+        # Credibility: use capsule's computed credibility (if available)
+        credibility = capsule.credibility_score
+        # If trendslop flagged, reduce quality
+        if capsule.trendslop:
+            credibility *= 0.6
+
+        # Composite: utility weighted heavily, credibility added
         overall = (
-            0.5 * utility + 0.2 * novelty + 0.2 * freshness + 0.1 * capsule.outcome_success_score
+            0.35 * utility
+            + 0.15 * novelty
+            + 0.15 * freshness
+            + 0.10 * capsule.outcome_success_score
+            + 0.25 * credibility
         )
 
         return CapsuleQuality(
@@ -892,6 +902,32 @@ Respond with JSON:
         self._save_capsules(updated)
 
         return len(to_archive)
+
+    # ─── Credibility Report ──────────────────────────────────────────────
+
+    def credibility_report(self) -> str:
+        """Render a credibility report for the entire gene pool."""
+        from llm.insight.credibility import CredibilityScorer
+
+        capsules = self._load_capsules()
+        if not capsules:
+            return "Gene pool is empty."
+
+        scorer = CredibilityScorer()
+        try:
+            sources: Dict[str, float] = {}
+            trust_path = self.tracker.data_dir / "source_trust.json"
+            if trust_path.exists():
+                import json as _json
+                with open(trust_path, encoding="utf-8") as f:
+                    data = _json.load(f)
+                sources = {cat: entry.get("trust_score", 0.5) for cat, entry in data.items()}
+            scorer.source_trust = sources
+        except Exception:
+            pass
+
+        scores = scorer.compute_novelty_scores(capsules)
+        return scorer.render_credibility_report(scores, capsules)
 
     # ─── CLI entry point ───────────────────────────────────────────────────
 
