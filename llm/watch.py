@@ -160,12 +160,19 @@ class WatchDaemon:
             _save_state(state)
 
     def get_status(self) -> Dict:
-        """Get daemon status."""
+        """Get daemon status with real Gene Pool data."""
         state = _load_state()
+        caps = self._tracker._load_capsules()
+        pool_stats = self._tracker.get_gene_pool_stats()
         return {
             "running": self.running,
             "interval": self.interval,
             "last_check": state.get("last_check", ""),
             "total_events": len(state.get("events", [])),
-            "gene_pool_size": len(self._tracker._load_capsules()),
+            "gene_pool_size": len(caps),
+            "gene_pool": {
+                "total_capsules": len(caps),
+                "avg_score": pool_stats.get("avg_score", 0),
+                "by_gap_type": pool_stats.get("by_gap_type", {}),
+            },
         }
