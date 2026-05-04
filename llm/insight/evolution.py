@@ -179,21 +179,30 @@ class InsightEvolution:
     def _score_capsule(self, capsule: CapsuleGene) -> CapsuleQuality:
         """Compute multi-dimensional quality score for a capsule."""
         # Novelty: feedback_count low relative to age (if rarely used, may be too specific)
-        novelty = min(capsule.feedback_count / 10.0, 1.0) if capsule.feedback_count > 0 else 0.5
+        novelty = (
+            min(capsule.feedback_count / 10.0, 1.0)
+            if capsule.feedback_count > 0
+            else 0.5
+        )
 
         # Utility: outcome_success_score is primary signal
         utility = capsule.outcome_success_score
 
         # Freshness: time since creation (newer = better for evolution)
         try:
-            age_days = (datetime.now() - datetime.fromisoformat(capsule.created_at)).days
+            age_days = (
+                datetime.now() - datetime.fromisoformat(capsule.created_at)
+            ).days
             freshness = max(0.0, 1.0 - age_days / 365.0)
         except Exception:
             freshness = 0.5
 
         # Composite: utility weighted heavily
         overall = (
-            0.5 * utility + 0.2 * novelty + 0.2 * freshness + 0.1 * capsule.outcome_success_score
+            0.5 * utility
+            + 0.2 * novelty
+            + 0.2 * freshness
+            + 0.1 * capsule.outcome_success_score
         )
 
         return CapsuleQuality(
@@ -261,14 +270,17 @@ class InsightEvolution:
             high_quality = [c for c in all_capsules if c.outcome_success_score >= 0.7]
             # Pick capsules from different topics
             seen_topics = set(c.trigger_topic for c in capsules[:5])
-            cross_topic = [c for c in high_quality if c.trigger_topic not in seen_topics]
+            cross_topic = [
+                c for c in high_quality if c.trigger_topic not in seen_topics
+            ]
             for c in cross_topic[:2]:
                 candidate = CapsuleCandidate(
                     original_id=c.capsule_id,
                     candidate_id=str(uuid.uuid4())[:8],
                     trigger_topic=topic,  # use the search topic, not the capsule's topic
                     trigger_gap_type=c.trigger_gap_type,
-                    trigger_keywords=c.trigger_keywords + [w for w in topic.split() if len(w) > 3][:3],
+                    trigger_keywords=c.trigger_keywords
+                    + [w for w in topic.split() if len(w) > 3][:3],
                     action_gap_type=c.action_gap_type,
                     action_gap_title=c.action_gap_title,
                     mutation_description=f"cross_topic_seed: from '{c.trigger_topic}' → '{topic}'",
@@ -411,14 +423,20 @@ Respond as JSON array of objects with keys: original_id, mutation_description, s
                     CapsuleCandidate(
                         original_id=original.capsule_id,
                         candidate_id=str(uuid.uuid4())[:8],
-                        trigger_topic=p.get("suggested_trigger_topic", original.trigger_topic),
+                        trigger_topic=p.get(
+                            "suggested_trigger_topic", original.trigger_topic
+                        ),
                         trigger_gap_type=p.get(
                             "suggested_trigger_gap_type", original.trigger_gap_type
                         ),
-                        trigger_keywords=p.get("suggested_keywords", original.trigger_keywords),
+                        trigger_keywords=p.get(
+                            "suggested_keywords", original.trigger_keywords
+                        ),
                         action_gap_type=original.action_gap_type,
                         action_gap_title=original.action_gap_title,
-                        mutation_description=p.get("mutation_description", "llm_suggested"),
+                        mutation_description=p.get(
+                            "mutation_description", "llm_suggested"
+                        ),
                         confidence=0.6,
                         source="llm_suggested",
                     )
@@ -514,7 +532,9 @@ Respond with JSON:
         try:
             response = client.generate(prompt)
             parsed = json.loads(response)
-            winner_id = a.candidate_id if parsed.get("winner") == "A" else b.candidate_id
+            winner_id = (
+                a.candidate_id if parsed.get("winner") == "A" else b.candidate_id
+            )
             loser_id = b.candidate_id if winner_id == a.candidate_id else a.candidate_id
             return EvaluationResult(
                 winner_id=winner_id,
@@ -665,7 +685,9 @@ Respond with JSON:
                 and candidate.trigger_keywords
             ):
                 overlap = len(set(c.trigger_keywords) & set(candidate.trigger_keywords))
-                total = max(len(set(c.trigger_keywords) | set(candidate.trigger_keywords)), 1)
+                total = max(
+                    len(set(c.trigger_keywords) | set(candidate.trigger_keywords)), 1
+                )
                 if overlap / total > 0.8:
                     return False  # near-duplicate by keywords
 
@@ -677,7 +699,8 @@ Respond with JSON:
             trigger_keywords=candidate.trigger_keywords,
             action_gap_type=candidate.action_gap_type,
             action_gap_title=candidate.action_gap_title,
-            outcome_success_score=candidate.confidence * 0.7,  # initial score from confidence
+            outcome_success_score=candidate.confidence
+            * 0.7,  # initial score from confidence
             feedback_count=0,
             evolved_generation=1,  # V2 generation
             archetype={},
@@ -803,7 +826,9 @@ Respond with JSON:
 
                 if jaccard >= self.OVERLAP_THRESHOLD:
                     # Keep the one with higher score, archive the other
-                    loser = b if a.outcome_success_score >= b.outcome_success_score else a
+                    loser = (
+                        b if a.outcome_success_score >= b.outcome_success_score else a
+                    )
                     winner = a if loser is b else b
 
                     # Merge keywords into winner (union, dedup preserving order)
@@ -824,7 +849,9 @@ Respond with JSON:
         _remaining = [c for c in capsules if c.capsule_id not in to_archive]
         # Add back winners (with merged keywords) + any non-active capsules
         all_capsules = self._load_capsules()
-        winners_updated = {c.capsule_id: c for c in capsules if c.capsule_id not in to_archive}
+        winners_updated = {
+            c.capsule_id: c for c in capsules if c.capsule_id not in to_archive
+        }
         result = []
         for c in all_capsules:
             if c.capsule_id in to_archive:
