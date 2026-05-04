@@ -147,7 +147,7 @@ class S2Paper:
 
     @property
     def paper_id(self) -> str:
-        return self._d.get("paperId", "")
+        return self._d.get("paperId", "")  # type: ignore[no-any-return]
 
     @property
     def title(self) -> str:
@@ -177,7 +177,7 @@ class S2Paper:
     def open_access_pdf(self) -> Optional[str]:
         pdf = self._d.get("openAccessPdf")
         if pdf:
-            return pdf.get("url") or pdf.get("status")
+            return pdf.get("url") or pdf.get("status")  # type: ignore[no-any-return]
         return None
 
     @property

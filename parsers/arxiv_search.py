@@ -3,7 +3,7 @@ import logging
 from typing import List
 
 import feedparser
-import requests
+import requests  # type: ignore[import-untyped]
 
 from core import Paper
 
