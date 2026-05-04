@@ -5,69 +5,42 @@
 {% block content %}
 <h1 class="page-title">📄 Research Reports</h1>
 <div class="page-title-underline"></div>
-<div class="page-desc">Theme-based analysis of Gene Pool knowledge.</div>
+<p class="page-desc">Theme-based analysis of Gene Pool knowledge. Click a theme to expand.</p>
 
-<div class="reports-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:24px;">
+<style>
+.report-card { border:1px solid var(--border); border-radius:8px; margin-bottom:12px; overflow:hidden; }
+.report-header { padding:16px 20px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; user-select:none; }
+.report-header:hover { background:var(--paper-alt); }
+.report-header .arrow { transition:transform 0.2s; font-size:12px; color:var(--ink-faint); }
+.report-header.open .arrow { transform:rotate(90deg); }
+.report-body { display:none; padding:0 20px 20px 20px; font-size:14px; line-height:1.7; color:var(--ink); }
+.report-body.open { display:block; }
+.report-meta { font-size:12px; color:var(--ink-faint); margin-top:4px; }
+</style>
 
-  <a href="/report/vla" style="text-decoration:none;">
-    <div class="card" style="height:100%;cursor:pointer;">
-      <div class="card-title" style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:24px;">🤖</span> VLA / Robotics
-      </div>
-      <div style="font-size:13px;color:var(--ink-light);margin-top:4px;">11 capsules</div>
-      <div style="font-size:12px;color:var(--ink-faint);margin-top:8px;line-height:1.5;">
-        LAPO convergence, LIBERO benchmarks, diffusion policy representations, generalist vs specialist trade-offs.
-      </div>
+<div id="reports-container">
+{% for r in reports_content %}
+<div class="report-card">
+  <div class="report-header" onclick="toggleReport('{{ r.slug }}')">
+    <div>
+      <strong style="font-size:16px;">{{ r.name }}</strong>
+      <div class="report-meta">{{ r.count }} capsules · avg {{ r.avg }} · {{ r.summary }}</div>
     </div>
-  </a>
-
-  <a href="/report/geopolitics" style="text-decoration:none;">
-    <div class="card" style="height:100%;cursor:pointer;">
-      <div class="card-title" style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:24px;">🌍</span> Geopolitics / Energy
-      </div>
-      <div style="font-size:13px;color:var(--ink-light);margin-top:4px;">10 capsules</div>
-      <div style="font-size:12px;color:var(--ink-faint);margin-top:8px;line-height:1.5;">
-        Strait of Hormuz, Iran-US escalation, UAE drone attacks, oil supply security.
-      </div>
-    </div>
-  </a>
-
-  <a href="/report/economy" style="text-decoration:none;">
-    <div class="card" style="height:100%;cursor:pointer;">
-      <div class="card-title" style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:24px;">📊</span> Economy / Markets
-      </div>
-      <div style="font-size:13px;color:var(--ink-light);margin-top:4px;">1 capsule</div>
-      <div style="font-size:12px;color:var(--ink-faint);margin-top:8px;line-height:1.5;">
-        US Treasury borrowing data, Q1-Q3 projections.
-      </div>
-    </div>
-  </a>
-
-  <a href="/report/theory" style="text-decoration:none;">
-    <div class="card" style="height:100%;cursor:pointer;">
-      <div class="card-title" style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:24px;">🧠</span> Theory / Representation
-      </div>
-      <div style="font-size:13px;color:var(--ink-light);margin-top:4px;">5 capsules</div>
-      <div style="font-size:12px;color:var(--ink-faint);margin-top:8px;line-height:1.5;">
-        Latent reasoning chains, attention mechanisms, interpretability, representation learning.
-      </div>
-    </div>
-  </a>
-
-  <a href="/report/safety" style="text-decoration:none;">
-    <div class="card" style="height:100%;cursor:pointer;">
-      <div class="card-title" style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:24px;">⚠️</span> Safety / Incidents
-      </div>
-      <div style="font-size:13px;color:var(--ink-light);margin-top:4px;">3 capsules</div>
-      <div style="font-size:12px;color:var(--ink-faint);margin-top:8px;line-height:1.5;">
-        Liuyang explosion, Mexico earthquake, Fujairah drone attack.
-      </div>
-    </div>
-  </a>
-
+    <span class="arrow">▶</span>
+  </div>
+  <div class="report-body" id="report-{{ r.slug }}">
+    <pre style="font-family:serif;font-size:14px;line-height:1.8;color:#333;white-space:pre-wrap;margin:0;">{{ r.content }}</pre>
+  </div>
 </div>
+{% endfor %}
+</div>
+
+<script>
+function toggleReport(slug) {
+  var body = document.getElementById('report-' + slug);
+  var header = body.previousElementSibling;
+  body.classList.toggle('open');
+  header.classList.toggle('open');
+}
+</script>
 {% endblock %}

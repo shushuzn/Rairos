@@ -8,22 +8,6 @@ from llm.intelligence import intelligence, render_report
 
 router = APIRouter()
 
-@router.get("/report")
-async def live_report(request: Request):
-    """Live situation report."""
-    import re
-    from llm.report import generate
-    try:
-        raw = generate()
-        clean = re.sub(r'\x1b\[[0-9;]*m', '', raw)
-        html = "<pre style='font-family:monospace;font-size:13px;line-height:1.5;color:#333;white-space:pre-wrap'>" + clean + "</pre>"
-    except Exception as e:
-        html = f"<p>{e}</p>"
-    return templates.TemplateResponse(
-        request, "generic.html",
-        {"page": "report", "title": "Report", "content": html},
-    )
-
 @router.get("/intel")
 async def intel_dashboard(request: Request):
     """Unified intelligence dashboard."""
