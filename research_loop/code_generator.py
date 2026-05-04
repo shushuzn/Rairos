@@ -415,8 +415,8 @@ def save_code(code: str, output_dir: Path, module_name: str = "model") -> Path:
     import re
 
     # Strip triple-backtick markdown wrappers: ```python ... ``` or ``` ... ```
-    code = re.sub(r'^```(?:python)?\s*\n', '', code, flags=re.MULTILINE)
-    code = re.sub(r'\n```\s*$', '', code)
+    code = re.sub(r'^\s*```(?:python)?\s*\n', '', code, flags=re.MULTILINE)
+    code = re.sub(r'\n\s*```\s*\n', '\n', code)
 
     # Strip thinking/reasoning blocks: anchor to code-block opener to avoid
     # intermediate delimiters (e.g. 刀 inside the thinking text) stopping the
@@ -445,7 +445,7 @@ def save_code(code: str, output_dir: Path, module_name: str = "model") -> Path:
     if first_code_line is not None and first_code_line > 0:
         # Only strip if we removed meaningful prose (more than 1 line of text).
         # Using > 1 (not > 3) so that even "Description text\n\nimport torch" gets cleaned.
-        if first_code_line > 1:
+        if first_code_line > 0:
             code = "".join(lines[first_code_line:])
         else:
             code = "".join(lines)
