@@ -1,17 +1,1 @@
-"""Quick test"""
-
-from core.progress_tracker import get_tracker
-from core.watermarker import get_marker
-
-# 测试进度追踪
-tracker = get_tracker()
-tracker.add_task("task1", "测试任务")
-tracker.complete_task("task1")
-print(f"进度: {tracker.get_progress():.1f}%")
-
-# 测试水印
-marker = get_marker()
-marker.add_mark("info", "测试水印")
-print(f"水印数量: {len(marker.get_marks())}")
-
-print("✅ 优化完成")
+IiIiUXVpY2sgdGVzdCIiIgoKZnJvbSBjb3JlLnByb2dyZXNzX3RyYWNrZXIgaW1wb3J0IGdldF90cmFja2VyCmZyb20gY29yZS53YXRlcm1hcmtlciBpbXBvcnQgZ2V0X21hcmtlcgoKIyDmtYvor5Xov5vluqbov73ouKoKdHJhY2tlciA9IGdldF90cmFja2VyKCkKdHJhY2tlci5hZGRfdGFzaygidGFzazEiLCAi5rWL6K+V5Lu75YqhIikKdHJhY2tlci5jb21wbGV0ZV90YXNrKCJ0YXNrMSIpCnByaW50KGYi6L+b5bqmOiB7dHJhY2tlci5nZXRfcHJvZ3Jlc3MoKTouMWZ9JSIpCgojIOa1i+ivleawtOWNsAptYXJrZXIgPSBnZXRfbWFya2VyKCkKbWFya2VyLmFkZF9tYXJrKCJpbmZvIiwgIua1i+ivleawtOWNsCIpCnByaW50KGYi5rC05Y2w5pWw6YePOiB7bGVuKG1hcmtlci5nZXRfbWFya3MoKSl9IikKCnByaW50KCLinIUg5LyY5YyW5a6M5oiQIikK
