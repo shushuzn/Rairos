@@ -4,19 +4,21 @@
   <img src="logo_hero.svg" width="900" alt="Rairos Demo"/>
 </div>
 
-**A Self-Evolving Research Operating System for AI Researchers**
+**A Self-Evolving Research Operating System that learns from your feedback to find better research directions over time.**
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![PyPI Version](https://img.shields.io/pypi/v/rairos)](https://pypi.org/project/rairos/)
-[![Coverage](https://img.shields.io/codecov/c/github/shushuzn/ai_research_os/main?logo=codecov)](https://app.codecov.io/gh/shushuzn/ai_research_os)
-[![Tests](https://github.com/shushuzn/ai_research_os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/ai_research_os/actions)
+[![Coverage](https://img.shields.io/codecov/c/github/shushuzn/Rairos/main?logo=codecov)](https://app.codecov.io/gh/shushuzn/Rairos)
+[![Tests](https://github.com/shushuzn/Rairos/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
 [![License](https://img.shields.io/badge/License-GPL--3.0--or--later-orange)](#license)
 
 ## What It Does
 
-Rairos is a **self-evolving research system** that learns from your usage patterns. It's not just a paper manager — it's a research partner that grows smarter over time.
+Rairos detects research gaps from arXiv papers, encodes successful patterns in a **Gene Pool**, and uses **preference learning** to rank gaps you're most likely to find valuable. The more you use it, the better it gets.
 
-Feed it a paper (arXiv URL, DOI, or PDF). Get back a **CapsuleGene**, **Research Brief**, and **Gene Pool entry** — all structured, tagged, and cross-linked.
+```
+Feed it a paper → It learns what works → Next search is better
+```
 
 | Input | Output |
 |---|---|
@@ -25,21 +27,12 @@ Feed it a paper (arXiv URL, DOI, or PDF). Get back a **CapsuleGene**, **Research
 | Local PDF | CapsuleGene + Briefing + Gene Pool |
 | Scanned PDF | Same (via OCR) |
 
-This is **not a PDF manager**. It is a **Self-Evolving System** that:
-- Learns from your research patterns
-- Improves answers over time
-- Adapts to your specific domain
+## How It Learns
 
-## Core Features
-
-| Feature | Description |
-|---------|-------------|
-| `airos import` | Import papers from arXiv, DOI, PDF |
-| `airos chat` | RAG-powered Q&A with your papers |
-| `airos slides` | Auto-generate presentations |
-| `airos kg` | Knowledge graph visualization |
-| Gene Pool | Self-evolution via Capsule lifecycle |
-| `airos gap` | Extract & manage research gaps |
+1. **Gap Detection** — scans papers for research gaps across 36 AI topics
+2. **Gene Pool** — encodes successful patterns as retrievable capsules (116 capsules, avg score 0.71)
+3. **Preference Learning** — your accept/reject feedback shifts gap rankings (40% weight)
+4. **Deep Research Agent** — queries Gene Pool to reformulate search queries automatically
 
 ## Quick Start
 
@@ -48,52 +41,31 @@ pip install rairos
 airos-cli 2601.00155 --tags LLM,Agent
 ```
 
-That's it — one paper imported in seconds. The above installs the package and imports an arXiv paper.
-
-### One line, three inputs
+### Core Commands
 
 ```bash
-airos-cli 2601.00155                          # arXiv ID
-airos-cli 10.48550/arXiv.2601.00155           # DOI
-airos-cli --pdf paper.pdf --tags RAG            # Local PDF
-airos-cli --pdf scanned.pdf --ocr --ocr-lang chi_sim+eng   # Scanned PDF
+airos-cli import 2601.00155 10.1038/nature12373   # Import papers
+airos-cli gap "reinforcement learning" --limit 5   # Detect research gaps
+airos-cli research "RLHF alignment" --limit 5     # Autonomous research loop
+airos-cli paper2code 2106.09685                    # Paper → code → tests
 ```
 
-### Three core commands
+### Preference Learning
 
 ```bash
-airos-cli import 2601.00155 10.1038/nature12373   # Add papers to DB
-airos-cli search "attention mechanism" --tag LLM    # Search papers
-airos-cli research "RLHF alignment" --limit 5       # Autonomous research loop
+airos-cli gap accept --topic "state space models" --gap-type "method_limitation"
+airos-cli insight rate --card <id> --stars 5
+airos-cli gene-pool --stats   # See your learned patterns
 ```
 
-### AI draft (optional)
-
-```bash
-export OPENAI_API_KEY="***"
-export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-airos-cli 2601.00155 --tags LLM --ai
-```
-
-For full configuration, see [API_CONFIG.md](API_CONFIG.md).
-
-## Research Tree
-
-Papers are organized into 12 directories:
+## Architecture
 
 ```
-00-Radar/            Topic heat tracking
-01-Foundations/      Foundational papers
-02-Models/           Model papers
-03-Training/         Training methods
-04-Scaling/         Scaling laws
-05-Alignment/        Alignment research
-06-Agents/           Agent systems
-07-Infrastructure/    Infrastructure
-08-Optimization/     Optimization techniques
-09-Evaluation/       Evaluation methods
-10-Applications/     Applied research
-11-Future-Directions/
+arXiv Papers → GapAnalyzerV2 → Gene Pool (CapsuleGene encoding)
+                                      ↓
+DeepResearch Agent ← GenePoolGuide ← Preference Profile
+         ↓
+    Search → Extract → Analyze → Reflect → Encode
 ```
 
 ## Installation
@@ -102,25 +74,27 @@ Papers are organized into 12 directories:
 pip install rairos
 ```
 
-Or install from source:
+Or from source:
 
 ```bash
-git clone https://github.com/shushuzn/ai_research_os.git
-cd ai_research_os
+git clone https://github.com/shushuzn/Rairos.git
+cd Rairos
 pip install -e .
 ```
 
 ## Documentation
-
-Full documentation at [rairos.readthedocs.io](https://rairos.readthedocs.io/).
 
 | Doc | Description |
 |-----|-------------|
 | [Architecture](docs/architecture.md) | System design and module overview |
 | [Configuration](docs/configuration.md) | LLM, DB, Search, Tool configuration |
 | [Benchmarks](docs/benchmarks.md) | Performance metrics and test coverage |
-| [Contributing](CONTRIBUTING.md) | How to contribute to this project |
-| [Roadmap](ROADMAP.md) | Project roadmap and future plans |
+| [Contributing](CONTRIBUTING.md) | How to contribute |
+| [Roadmap](ROADMAP.md) | Project roadmap |
+
+## arXiv Paper
+
+[AI Research OS: Self-Evolving Research Gap Detection via Preference Learning and Feedback Descent](https://arxiv.org/abs/2601.00155)
 
 ## License
 
@@ -129,11 +103,11 @@ GPL-3.0-or-later. See [LICENSE](LICENSE) for details.
 ---
 
 <div align="center">
-<a href="https://www.star-history.com/#shushuzn/ai_research_os&Date">
+<a href="https://www.star-history.com/#shushuzn/Rairos&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=shushuzn/ai_research_os&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=shushuzn/ai_research_os&type=Date" />
-   <img alt="Rairos Star History" src="https://api.star-history.com/svg?repos=shushuzn/ai_research_os&type=Date" style="width: 80%; height: auto;" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=shushuzn/Rairos&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=shushuzn/Rairos&type=Date" />
+   <img alt="Rairos Star History" src="https://api.star-history.com/svg?repos=shushuzn/Rairos&type=Date" style="width: 80%; height: auto;" />
  </picture>
 </a>
 </div>
