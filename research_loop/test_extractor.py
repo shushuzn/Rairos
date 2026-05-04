@@ -308,7 +308,7 @@ def _code_signature_tests(code: str, module_name: str) -> List[TestCase]:
     func_pattern = re.compile(r'^def\s+(\w+)\s*\((.*?)\)', re.MULTILINE)
     for match in func_pattern.finditer(code):
         func_name = match.group(1)
-        params = match.group(2)
+        _params = match.group(2)
 
         # Skip private functions
         if func_name.startswith('_'):
@@ -358,7 +358,7 @@ def device():
 
 def _render_test_module(suite: TestSuite) -> str:
     """Render the main pytest test file."""
-    imports = "\n".join(suite.imports)
+    _imports = "\n".join(suite.imports)
 
     rendered_tests = []
     for tc in suite.test_cases:
