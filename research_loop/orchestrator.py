@@ -459,6 +459,13 @@ class AutonomousOrchestrator:
             except Exception as e:
                 logger.error(f"[Orchestrator] Cycle error: {e}")
 
+            # Regenerate situation report
+            try:
+                from llm.report import save as _save_report
+                _save_report()
+            except Exception:
+                pass
+
             # Run evolution every 3 cycles (or ~90min at 30min intervals)
             evolution_counter += 1
             if evolution_counter >= 3:
