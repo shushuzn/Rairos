@@ -17,7 +17,7 @@
 Rairos detects research gaps from arXiv papers, encodes successful patterns in a **Gene Pool**, and uses **preference learning** to rank gaps you're most likely to find valuable. The more you use it, the better it gets.
 
 ```
-Feed it a paper ¡ú It learns what works ¡ú Next search is better
+Feed it a paper Â¡Ãº It learns what works Â¡Ãº Next search is better
 ```
 
 | Input | Output |
@@ -29,10 +29,10 @@ Feed it a paper ¡ú It learns what works ¡ú Next search is better
 
 ## How It Learns
 
-1. **Gap Detection** ¡ª scans papers for research gaps across 36 AI topics
-2. **Gene Pool** ¡ª encodes successful patterns as retrievable capsules (116 capsules, avg score 0.71)
-3. **Preference Learning** ¡ª your accept/reject feedback shifts gap rankings (40% weight)
-4. **Deep Research Agent** ¡ª queries Gene Pool to reformulate search queries automatically
+1. **Gap Detection** Â¡Âª scans papers for research gaps across 36 AI topics
+2. **Gene Pool** Â¡Âª encodes successful patterns as retrievable capsules (116 capsules, avg score 0.71)
+3. **Preference Learning** Â¡Âª your accept/reject feedback shifts gap rankings (40% weight)
+4. **Deep Research Agent** Â¡Âª queries Gene Pool to reformulate search queries automatically
 
 ## Quick Start
 
@@ -47,7 +47,7 @@ airos-cli 2601.00155 --tags LLM,Agent
 airos-cli import 2601.00155 10.1038/nature12373   # Import papers
 airos-cli gap "reinforcement learning" --limit 5   # Detect research gaps
 airos-cli research "RLHF alignment" --limit 5     # Autonomous research loop
-airos-cli paper2code 2106.09685                    # Paper ¡ú code ¡ú tests
+airos-cli paper2code 2106.09685                    # Paper Â¡Ãº code Â¡Ãº tests
 ```
 
 ### Preference Learning
@@ -61,11 +61,11 @@ airos-cli gene-pool --stats   # See your learned patterns
 ## Architecture
 
 ```
-arXiv Papers ¡ú GapAnalyzerV2 ¡ú Gene Pool (CapsuleGene encoding)
-                                      ¡ý
-DeepResearch Agent ¡û GenePoolGuide ¡û Preference Profile
-         ¡ý
-    Search ¡ú Extract ¡ú Analyze ¡ú Reflect ¡ú Encode
+arXiv Papers Â¡Ãº GapAnalyzerV2 Â¡Ãº Gene Pool (CapsuleGene encoding)
+                                      Â¡Ã½
+DeepResearch Agent Â¡Ã» GenePoolGuide Â¡Ã» Preference Profile
+         Â¡Ã½
+    Search Â¡Ãº Extract Â¡Ãº Analyze Â¡Ãº Reflect Â¡Ãº Encode
 ```
 
 ## Installation
