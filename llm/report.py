@@ -9,6 +9,27 @@ from typing import Any, Dict, List
 from llm.insight.tracker import EvolutionTracker
 
 
+def _fetch_live_news() -> list:
+    """Fetch latest headlines from Jin10 MCP."""
+    try:
+        from llm.mcp_jin10 import Jin10Client
+        client = Jin10Client()
+        client.ensure_init()
+        topics = ["伊朗", "霍尔木兹", "石油", "美联储"]
+        items = []
+        for t in topics:
+            raw = client.search_flash(t)
+            inner = raw.get("data", raw) if isinstance(raw, dict) else {}
+            found = inner.get("items", []) if isinstance(inner, dict) else inner
+            if isinstance(found, list):
+                for item in found[:2]:
+                    if isinstance(item, dict):
+                        items.append((str(item.get("time", ""))[11:16], str(item.get("content", ""))[:80]))
+        return items[:8]
+    except Exception:
+        return []
+
+
 def generate() -> str:
     """Generate a readable situation report with analysis."""
     tracker = EvolutionTracker()
@@ -40,7 +61,17 @@ def generate() -> str:
     w(f"  Gap types covered: {len(set(c.action_gap_type for c in caps))}")
     w()
 
-    # ── 2. Active Geopolitical Situation ──
+    # ── 2. Live News ──
+    live = _fetch_live_news()
+    if live:
+        w("LIVE NEWS")
+        w("-" * 60)
+        for ts, content in live:
+            w(f"  [{ts}] {content}")
+        w()
+        w()
+
+    # ── 3. Active Geopolitical Situation ──
     w("ACTIVE GEOPOLITICAL SITUATION")
     w("-" * 60)
     for c in top_geo[:5]:
@@ -50,7 +81,7 @@ def generate() -> str:
         w()
     w()
 
-    # ── 3. Research Landscape ──
+    # ── 4. Research Landscape ──
     w("RESEARCH LANDSCAPE")
     w("-" * 60)
     w(f"  Active research topics: {len(research)} capsules")
@@ -65,7 +96,7 @@ def generate() -> str:
         w(f"  [{c.credibility_badge.upper()}] {c.action_gap_title[:65]}")
     w()
 
-    # ── 4. Discovered Patterns ──
+    # ── 5. Discovered Patterns ──
     pfile = Path.home() / ".ai_research_os" / "patterns.json"
     if pfile.exists():
         data = json.loads(pfile.read_text(encoding="utf-8"))
@@ -88,7 +119,7 @@ def generate() -> str:
                 w()
             w()
 
-    # ── 5. Key Numbers ──
+    # ── 6. Key Numbers ──
     w("KEY NUMBERS")
     w("-" * 60)
     w(f"  Total capsules:     {len(caps)}")
@@ -98,7 +129,7 @@ def generate() -> str:
     w(f"  Avg score:          {sum(c.outcome_success_score for c in caps)/len(caps):.2f}")
     w()
 
-    # ── 6. Assessment ──
+    # ── 7. Assessment ──
     w("ASSESSMENT")
     w("-" * 60)
     w(f"  The system is tracking {len(caps)} capsules across {len(set(c.action_gap_type for c in caps))} gap types.")
