@@ -1,17 +1,180 @@
-"""Capsule storage mixin for EvolutionTracker — gene_pool.jsonl I/O."""
+"""Capsule storage mixin for EvolutionTracker — gene_pool.db (SQLite)."""
 
 from __future__ import annotations
 
 import json
+import sqlite3
+import threading
 import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from llm.insight.gene import CapsuleGene
 
+_GENEPOOL_DB = "gene_pool.db"
+
+# Thread-local connections for thread safety
+_local = threading.local()
+
+
+def _get_conn(db_path: Path) -> sqlite3.Connection:
+    """Get a thread-local SQLite connection."""
+    if not hasattr(_local, "conn") or _local.conn is None:
+        _local.conn = sqlite3.connect(str(db_path))
+        _local.conn.row_factory = sqlite3.Row
+        _local.conn.execute("PRAGMA journal_mode=WAL")
+        _local.conn.execute("PRAGMA synchronous=NORMAL")
+    return _local.conn
+
+
+_SCHEMA_SQL = """
+CREATE TABLE IF NOT EXISTS capsules (
+    capsule_id TEXT PRIMARY KEY,
+    created_at TEXT NOT NULL DEFAULT '',
+    trigger_topic TEXT NOT NULL DEFAULT '',
+    trigger_gap_type TEXT NOT NULL DEFAULT '',
+    trigger_keywords TEXT NOT NULL DEFAULT '[]',
+    action_gap_type TEXT NOT NULL DEFAULT '',
+    action_gap_title TEXT NOT NULL DEFAULT '',
+    outcome_success_score REAL NOT NULL DEFAULT 0.5,
+    feedback_count INTEGER NOT NULL DEFAULT 0,
+    evolved_generation INTEGER NOT NULL DEFAULT 0,
+    archetype TEXT NOT NULL DEFAULT '{}',
+    status TEXT NOT NULL DEFAULT 'active',
+    low_score_streak INTEGER NOT NULL DEFAULT 0,
+    credibility_score REAL NOT NULL DEFAULT 0.5,
+    trendslop INTEGER NOT NULL DEFAULT 0,
+    trendslop_reason TEXT NOT NULL DEFAULT '',
+    credibility_badge TEXT NOT NULL DEFAULT 'medium',
+    source_arxiv_category TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX IF NOT EXISTS idx_capsules_status ON capsules(status);
+CREATE INDEX IF NOT EXISTS idx_capsules_gap_type ON capsules(trigger_gap_type);
+CREATE INDEX IF NOT EXISTS idx_capsules_topic ON capsules(trigger_topic);
+CREATE INDEX IF NOT EXISTS idx_capsules_created ON capsules(created_at);
+"""
+
+
+def _init_db(db_path: Path) -> None:
+    """Initialize the SQLite database schema."""
+    conn = _get_conn(db_path)
+    conn.executescript(_SCHEMA_SQL)
+    conn.commit()
+
+
+def _capsule_from_row(row: sqlite3.Row) -> CapsuleGene:
+    """Convert a SQLite row to a CapsuleGene."""
+    return CapsuleGene(
+        capsule_id=row["capsule_id"],
+        created_at=row["created_at"],
+        trigger_topic=row["trigger_topic"],
+        trigger_gap_type=row["trigger_gap_type"],
+        trigger_keywords=json.loads(row["trigger_keywords"]),
+        action_gap_type=row["action_gap_type"],
+        action_gap_title=row["action_gap_title"],
+        outcome_success_score=row["outcome_success_score"],
+        feedback_count=row["feedback_count"],
+        evolved_generation=row["evolved_generation"],
+        archetype=json.loads(row["archetype"]),
+        status=row["status"],
+        low_score_streak=row["low_score_streak"],
+        credibility_score=row["credibility_score"],
+        trendslop=bool(row["trendslop"]),
+        trendslop_reason=row["trendslop_reason"],
+        credibility_badge=row["credibility_badge"],
+        source_arxiv_category=row["source_arxiv_category"],
+    )
+
+
+def _capsule_to_row(c: CapsuleGene) -> Dict[str, Any]:
+    """Convert a CapsuleGene to a SQLite row dict."""
+    return {
+        "capsule_id": c.capsule_id,
+        "created_at": c.created_at,
+        "trigger_topic": c.trigger_topic,
+        "trigger_gap_type": c.trigger_gap_type,
+        "trigger_keywords": json.dumps(c.trigger_keywords, ensure_ascii=False),
+        "action_gap_type": c.action_gap_type,
+        "action_gap_title": c.action_gap_title,
+        "outcome_success_score": c.outcome_success_score,
+        "feedback_count": c.feedback_count,
+        "evolved_generation": c.evolved_generation,
+        "archetype": json.dumps(c.archetype, ensure_ascii=False),
+        "status": c.status,
+        "low_score_streak": c.low_score_streak,
+        "credibility_score": c.credibility_score,
+        "trendslop": 1 if c.trendslop else 0,
+        "trendslop_reason": c.trendslop_reason,
+        "credibility_badge": c.credibility_badge,
+        "source_arxiv_category": c.source_arxiv_category,
+    }
+
+
+def _migrate_jsonl_to_sqlite(jsonl_path: Path, db_path: Path) -> bool:
+    """Migrate from gene_pool.jsonl to gene_pool.db if needed.
+
+    Returns True if migration happened, False if SQLite already has data.
+    """
+    conn = _get_conn(db_path)
+    existing = conn.execute("SELECT COUNT(*) FROM capsules").fetchone()[0]
+    if existing > 0:
+        return False  # Already migrated
+
+    if not jsonl_path.exists():
+        return False  # No source data
+
+    migrated = 0
+    with open(jsonl_path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                data = json.loads(line)
+                capsule = CapsuleGene.from_dict(data)
+                _insert_capsule(conn, capsule)
+                migrated += 1
+            except Exception:
+                continue
+
+    conn.commit()
+    # Rename old file so we don't re-migrate
+    if migrated > 0:
+        jsonl_path.rename(jsonl_path.with_suffix(".jsonl.migrated"))
+    return migrated > 0
+
+
+def _insert_capsule(conn: sqlite3.Connection, c: CapsuleGene) -> None:
+    """Insert a single capsule into the database."""
+    row = _capsule_to_row(c)
+    conn.execute(
+        """INSERT OR REPLACE INTO capsules (
+            capsule_id, created_at, trigger_topic, trigger_gap_type,
+            trigger_keywords, action_gap_type, action_gap_title,
+            outcome_success_score, feedback_count, evolved_generation,
+            archetype, status, low_score_streak,
+            credibility_score, trendslop, trendslop_reason,
+            credibility_badge, source_arxiv_category
+        ) VALUES (
+            :capsule_id, :created_at, :trigger_topic, :trigger_gap_type,
+            :trigger_keywords, :action_gap_type, :action_gap_title,
+            :outcome_success_score, :feedback_count, :evolved_generation,
+            :archetype, :status, :low_score_streak,
+            :credibility_score, :trendslop, :trendslop_reason,
+            :credibility_badge, :source_arxiv_category
+        )""",
+        row,
+    )
+
+
+# ---------------------------------------------------------------------------
+# CapsuleStorageMixin
+# ---------------------------------------------------------------------------
+
 
 class CapsuleStorageMixin:
-    """Mixin that provides Gene Pool capsule storage to EvolutionTracker.
+    """Mixin that provides Gene Pool capsule storage via SQLite.
 
     Expects the host class to provide:
         self.data_dir: Path
@@ -22,8 +185,25 @@ class CapsuleStorageMixin:
     """
 
     @property
+    def _gene_pool_db(self) -> Path:
+        return self.data_dir / _GENEPOOL_DB
+
+    @property
     def _gene_pool_file(self) -> Path:
+        """Legacy JSONL path — used for migration detection."""
         return self.data_dir / "gene_pool.jsonl"
+
+    def _ensure_db(self) -> sqlite3.Connection:
+        """Ensure SQLite DB is initialized, migrate from JSONL if needed."""
+        db_path = self._gene_pool_db
+        _init_db(db_path)
+
+        # Auto-migrate from JSONL on first use
+        jsonl_path = self._gene_pool_file
+        if jsonl_path.exists() and not db_path.exists():
+            _migrate_jsonl_to_sqlite(jsonl_path, db_path)
+
+        return _get_conn(db_path)
 
     def encode_capsule(
         self,
@@ -63,8 +243,9 @@ class CapsuleStorageMixin:
         except Exception:
             pass
 
-        with open(self._gene_pool_file, "a", encoding="utf-8") as f:
-            f.write(json.dumps(capsule.to_dict(), ensure_ascii=False) + "\n")
+        conn = self._ensure_db()
+        _insert_capsule(conn, capsule)
+        conn.commit()
 
         self.record_capsule_lifecycle_event(
             capsule_id=capsule.capsule_id,
@@ -85,11 +266,10 @@ class CapsuleStorageMixin:
         capsule.trendslop = is_trendslop
         capsule.trendslop_reason = reason
 
-        # Credibility score: weighted combination
         n = max(capsule.feedback_count, 1)
         evidence = capsule.outcome_success_score * (1.0 - 1.0 / (n + 1))
         novelty = max(0.0, 1.0 - overlap)
-        base = 0.4 * evidence + 0.4 * novelty + 0.2 * 0.5  # source_trust defaults to 0.5
+        base = 0.4 * evidence + 0.4 * novelty + 0.2 * 0.5
         capsule.credibility_score = min(1.0, max(0.0, base))
 
         if capsule.credibility_score >= 0.70:
@@ -106,99 +286,82 @@ class CapsuleStorageMixin:
         keywords: Optional[List[str]] = None,
         min_score: float = 0.2,
     ) -> List[CapsuleGene]:
-        if not self._gene_pool_file.exists():
-            return []
-
         keywords = keywords or []
+        capsules = self._load_capsules()  # still need full scan for trigger_match
         scored: List[Tuple[CapsuleGene, float]] = []
 
-        with open(self._gene_pool_file, encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    capsule = CapsuleGene.from_dict(json.loads(line))
-                except Exception:
-                    continue
-
-                if capsule.status == "archived":
-                    continue
-                match_score = capsule.trigger_match(topic, gap_type, keywords)
-                if match_score >= min_score:
-                    scored.append((capsule, match_score))
+        for capsule in capsules:
+            if capsule.status == "archived":
+                continue
+            match_score = capsule.trigger_match(topic, gap_type, keywords)
+            if match_score >= min_score:
+                scored.append((capsule, match_score))
 
         scored.sort(key=lambda x: x[1], reverse=True)
-        return [capsule for capsule, _ in scored]
+        return [c for c, _ in scored]
 
     def archive_capsule(self, capsule_id: str) -> bool:
-        archived = False
-        archived_title = ""
-        archived_gap_type = ""
+        conn = self._ensure_db()
+        cursor = conn.execute("SELECT action_gap_title, action_gap_type FROM capsules WHERE capsule_id = ?", (capsule_id,))
+        row = cursor.fetchone()
+        if not row:
+            return False
 
-        capsules = self._load_capsules()
-        for c in capsules:
-            if c.capsule_id == capsule_id:
-                c.status = "archived"
-                archived = True
-                archived_title = c.action_gap_title
-                archived_gap_type = c.action_gap_type
-                break
-        if archived:
-            self._save_capsules(capsules)
-            self.record_capsule_lifecycle_event(
-                capsule_id=capsule_id,
-                action="archived",
-                gap_title=archived_title,
-                gap_type=archived_gap_type,
-            )
+        conn.execute("UPDATE capsules SET status = 'archived' WHERE capsule_id = ?", (capsule_id,))
+        conn.commit()
 
-        return archived
+        self.record_capsule_lifecycle_event(
+            capsule_id=capsule_id,
+            action="archived",
+            gap_title=row["action_gap_title"],
+            gap_type=row["action_gap_type"],
+        )
+        return True
 
     def _load_capsules(self) -> List[CapsuleGene]:
-        capsules = []
-        if self._gene_pool_file.exists():
-            with open(self._gene_pool_file, encoding="utf-8") as f:
-                for line in f:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    try:
-                        capsules.append(CapsuleGene.from_dict(json.loads(line)))
-                    except Exception:
-                        continue
-        return capsules
+        conn = self._ensure_db()
+        rows = conn.execute("SELECT * FROM capsules").fetchall()
+        return [_capsule_from_row(r) for r in rows]
 
     def _save_capsules(self, capsules: List[CapsuleGene]) -> None:
-        with open(self._gene_pool_file, "w", encoding="utf-8") as f:
-            for c in capsules:
-                f.write(json.dumps(c.to_dict(), ensure_ascii=False) + "\n")
+        conn = self._ensure_db()
+        conn.execute("DELETE FROM capsules")
+        for c in capsules:
+            _insert_capsule(conn, c)
+        conn.commit()
 
     def get_gene_pool_stats(self) -> Dict[str, Any]:
-        capsules = []
-        if self._gene_pool_file.exists():
-            with open(self._gene_pool_file, encoding="utf-8") as f:
-                for line in f:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    try:
-                        capsules.append(CapsuleGene.from_dict(json.loads(line)))
-                    except Exception:
-                        continue
-
-        if not capsules:
+        conn = self._ensure_db()
+        total = conn.execute("SELECT COUNT(*) FROM capsules").fetchone()[0]
+        if total == 0:
             return {"total": 0, "avg_score": 0.0, "by_gap_type": {}}
 
+        avg = conn.execute("SELECT AVG(outcome_success_score) FROM capsules").fetchone()[0] or 0.0
+
         by_type: Dict[str, int] = {}
-        total_score = 0.0
-        for c in capsules:
-            by_type[c.action_gap_type] = by_type.get(c.action_gap_type, 0) + 1
-            total_score += c.outcome_success_score
+        for row in conn.execute("SELECT action_gap_type, COUNT(*) as cnt FROM capsules GROUP BY action_gap_type"):
+            by_type[row["action_gap_type"]] = row["cnt"]
+
+        gens = conn.execute("SELECT DISTINCT evolved_generation FROM capsules ORDER BY evolved_generation").fetchall()
+        generations = [r["evolved_generation"] for r in gens]
 
         return {
-            "total": len(capsules),
-            "avg_score": total_score / len(capsules),
+            "total": total,
+            "avg_score": round(avg, 3),
             "by_gap_type": by_type,
-            "generations": sorted(set(c.evolved_generation for c in capsules)),
+            "generations": generations,
         }
+
+    def get_capsule_by_id(self, capsule_id: str) -> Optional[CapsuleGene]:
+        """Fast single-capsule lookup by ID."""
+        conn = self._ensure_db()
+        row = conn.execute("SELECT * FROM capsules WHERE capsule_id = ?", (capsule_id,)).fetchone()
+        if row:
+            return _capsule_from_row(row)
+        return None
+
+    def update_capsule(self, capsule: CapsuleGene) -> None:
+        """Update an existing capsule in the database."""
+        conn = self._ensure_db()
+        _insert_capsule(conn, capsule)
+        conn.commit()
