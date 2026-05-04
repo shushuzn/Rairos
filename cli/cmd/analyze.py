@@ -1,4 +1,5 @@
 """CLI command: analyze — Run full research pipeline (trend→story→validate→hypothesize)."""
+
 from __future__ import annotations
 
 import argparse
@@ -21,12 +22,14 @@ def _build_analyze_parser(subparsers) -> argparse.ArgumentParser:
         help="Research topic to analyze",
     )
     p.add_argument(
-        "--quick", "-q",
+        "--quick",
+        "-q",
         action="store_true",
         help="Quick mode (fewer papers, faster)",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="JSON output",
     )
@@ -36,13 +39,15 @@ def _build_analyze_parser(subparsers) -> argparse.ArgumentParser:
         help="Disable LLM enhancement",
     )
     p.add_argument(
-        "--model", "-M",
+        "--model",
+        "-M",
         type=str,
         default=None,
         help="LLM model to use",
     )
     p.add_argument(
-        "--stages", "-s",
+        "--stages",
+        "-s",
         nargs="+",
         choices=["trend", "story", "validate", "hypothesize"],
         help="Specific stages to run",
@@ -98,6 +103,7 @@ def _run_analyze(args: argparse.Namespace) -> int:
 
     if args.json:
         import json
+
         # Build JSON-friendly result
         data = {
             "topic": result.topic,

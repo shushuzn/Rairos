@@ -1,4 +1,5 @@
 """CLI command: lean — Verify research hypotheses with Lean 4 theorem prover."""
+
 from __future__ import annotations
 
 import argparse
@@ -41,7 +42,8 @@ def _build_lean_parser(subparsers) -> argparse.ArgumentParser:
         help="Skip LLM translation, use templates only",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="Output as JSON",
     )
@@ -51,7 +53,8 @@ def _build_lean_parser(subparsers) -> argparse.ArgumentParser:
         help="Just check if Lean is installed",
     )
     p.add_argument(
-        "--model", "-M",
+        "--model",
+        "-M",
         type=str,
         default=None,
         help="LLM model to use",
@@ -120,6 +123,7 @@ def _build_hypothesis(args: argparse.Namespace):
     if args.hypothesis_id:
         try:
             from llm.experiment_tracker import ExperimentTracker
+
             tracker = ExperimentTracker()
             exps = tracker.list_experiments()
             found = [e for e in exps if e.hypothesis_id == args.hypothesis_id]

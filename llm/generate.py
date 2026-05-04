@@ -3,6 +3,7 @@
 Output format: Markdown sections (human-readable) + XML rubric block (machine-parseable).
 Section headings MUST match the P-note template numbering so content can be injected directly.
 """
+
 from __future__ import annotations
 
 from typing import Any, Callable, Dict, List, Optional, Tuple, cast
@@ -14,6 +15,7 @@ from llm.client import call_llm_chat_completions
 # Cost estimation helpers
 # ------------------------------------------------------------------
 
+
 def get_model_price(model: str) -> Tuple[float, float]:
     """Return (input_per_1M, output_per_1M) for a model.
 
@@ -21,6 +23,7 @@ def get_model_price(model: str) -> Tuple[float, float]:
     table with any overrides from the ``AIROS_MODEL_PRICES`` env var.
     """
     from config import MODEL_PRICES as _prices
+
     model_lower = model.lower()
     for prefix, price in _prices.items():
         if prefix in model_lower:
@@ -46,7 +49,9 @@ def estimate_cost(model: str, input_text: str, output_text: str) -> Dict[str, fl
         "total_tokens": in_toks + out_toks,
         "input_cost_usd": round(in_toks / 1_000_000 * in_per_1m, 6),
         "output_cost_usd": round(out_toks / 1_000_000 * out_per_1m, 6),
-        "total_cost_usd": round((in_toks / 1_000_000 * in_per_1m) + (out_toks / 1_000_000 * out_per_1m), 6),
+        "total_cost_usd": round(
+            (in_toks / 1_000_000 * in_per_1m) + (out_toks / 1_000_000 * out_per_1m), 6
+        ),
     }
 
 
@@ -185,15 +190,18 @@ def ai_generate_pnote_draft(
         paper_body=extracted_text,
     )
 
-    return cast(str, call_llm_chat_completions(
-        messages=[],
-        base_url=base_url,
-        api_key=api_key,
-        model=model,
-        system_prompt=_PNOTE_SYSTEM_PROMPT,
-        user_prompt=user_prompt,
-        stream=stream,
-    ))
+    return cast(
+        str,
+        call_llm_chat_completions(
+            messages=[],
+            base_url=base_url,
+            api_key=api_key,
+            model=model,
+            system_prompt=_PNOTE_SYSTEM_PROMPT,
+            user_prompt=user_prompt,
+            stream=stream,
+        ),
+    )
 
 
 # =============================================================================
@@ -280,12 +288,12 @@ def ai_generate_cnote_draft(
         f"""\
 ---
 论文 {i}：
-标题：{p.get('title', 'N/A')}
-作者：{', '.join(p.get('authors', [])) or 'Unknown'}
-年份：{p.get('year', 'N/A')}
-来源：{p.get('source', 'N/A')}:{p.get('uid', 'N/A')}
-标签：{', '.join(p.get('tags', []))}
-摘要：{p.get('abstract', '(无)') or '(无)'}
+标题：{p.get("title", "N/A")}
+作者：{", ".join(p.get("authors", [])) or "Unknown"}
+年份：{p.get("year", "N/A")}
+来源：{p.get("source", "N/A")}:{p.get("uid", "N/A")}
+标签：{", ".join(p.get("tags", []))}
+摘要：{p.get("abstract", "(无)") or "(无)"}
 """
         for i, p in enumerate(pnotes, 1)
     ]
@@ -297,13 +305,16 @@ def ai_generate_cnote_draft(
         num_papers=len(pnotes),
     )
 
-    return cast(str, call_llm(
-        base_url=base_url,
-        api_key=api_key,
-        model=model,
-        system_prompt=_CNOTE_SYSTEM_PROMPT,
-        user_prompt=user_prompt,
-    ))
+    return cast(
+        str,
+        call_llm(
+            base_url=base_url,
+            api_key=api_key,
+            model=model,
+            system_prompt=_CNOTE_SYSTEM_PROMPT,
+            user_prompt=user_prompt,
+        ),
+    )
 
 
 # ------------------------------------------------------------------
@@ -407,7 +418,7 @@ def ai_generate_reading_recommendation_explanation(
     # Format read papers context
     if read_papers_context:
         read_papers_str = "\n".join(
-            f"- \"{p['title']}\" by {', '.join(p['authors']) if p['authors'] else '未知'} ({p['year']}), 领域: {p['category'] or 'N/A'}"
+            f'- "{p["title"]}" by {", ".join(p["authors"]) if p["authors"] else "未知"} ({p["year"]}), 领域: {p["category"] or "N/A"}'
             for p in read_papers_context
         )
     else:
@@ -417,7 +428,7 @@ def ai_generate_reading_recommendation_explanation(
         paper_title=paper_title,
         paper_authors=authors_str,
         paper_year=paper_year,
-        paper_category=paper_category or 'N/A',
+        paper_category=paper_category or "N/A",
         score=score,
         semantic_score=semantic_score,
         citation_score=citation_score,
@@ -428,10 +439,13 @@ def ai_generate_reading_recommendation_explanation(
         read_papers_str=read_papers_str,
     )
 
-    return cast(str, call_llm_chat_completions(
-        base_url=base_url,
-        api_key=api_key,
-        model=model,
-        system_prompt=_READ_QUEUE_EXPLANATION_SYSTEM_PROMPT,
-        user_prompt=user_prompt,
-    ))
+    return cast(
+        str,
+        call_llm_chat_completions(
+            base_url=base_url,
+            api_key=api_key,
+            model=model,
+            system_prompt=_READ_QUEUE_EXPLANATION_SYSTEM_PROMPT,
+            user_prompt=user_prompt,
+        ),
+    )

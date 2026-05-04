@@ -47,7 +47,6 @@ class CapsuleCredibility:
         }
 
 
-
 class CredibilityScorer:
     """Compute per-capsule novelty scores from Gene Pool capsule history."""
 
@@ -89,16 +88,18 @@ class CredibilityScorer:
                     max_overlap = ov
 
             novelty = 1.0 - max_overlap
-            results.append(CapsuleCredibility(
-                capsule_id=cap_id,
-                gap_title=cap.get("action_gap_title", ""),
-                gap_type=cap.get("action_gap_type", ""),
-                outcome_score=cap.get("outcome_success_score", 0.0),
-                novelty_score=round(novelty, 3),
-                max_overlap=round(max_overlap, 3),
-                is_trendslop=max_overlap > TRENDSLOP_THRESHOLD,
-                trigger_keywords=kw,
-            ))
+            results.append(
+                CapsuleCredibility(
+                    capsule_id=cap_id,
+                    gap_title=cap.get("action_gap_title", ""),
+                    gap_type=cap.get("action_gap_type", ""),
+                    outcome_score=cap.get("outcome_success_score", 0.0),
+                    novelty_score=round(novelty, 3),
+                    max_overlap=round(max_overlap, 3),
+                    is_trendslop=max_overlap > TRENDSLOP_THRESHOLD,
+                    trigger_keywords=kw,
+                )
+            )
 
         # Sort: most original first
         results.sort(key=lambda x: -x.novelty_score)
@@ -124,24 +125,34 @@ class CredibilityScorer:
         trendslop_count = len(self.get_trendslop_capsules())
 
         lines = ['<div class="credibility-panel">']
-        lines.append(f"<h3>Gap Credibility Scores <small style='color:#888'>({len(capsules)} capsules, {trendslop_count} trendslop)</small></h3>")
+        lines.append(
+            f"<h3>Gap Credibility Scores <small style='color:#888'>({len(capsules)} capsules, {trendslop_count} trendslop)</small></h3>"
+        )
         lines.append('<table class="credibility-table">')
-        lines.append("<thead><tr>"
-                     "<th>Gap Title</th>"
-                     "<th>Type</th>"
-                     "<th>Outcome</th>"
-                     "<th>Novelty</th>"
-                     "<th>Max Overlap</th>"
-                     "<th>Status</th>"
-                     "</tr></thead>")
+        lines.append(
+            "<thead><tr>"
+            "<th>Gap Title</th>"
+            "<th>Type</th>"
+            "<th>Outcome</th>"
+            "<th>Novelty</th>"
+            "<th>Max Overlap</th>"
+            "<th>Status</th>"
+            "</tr></thead>"
+        )
         lines.append("<tbody>")
 
         for c in capsules:
             novelty_pct = int(c.novelty_score * 100)
             _color = "#C4706A" if c.is_trendslop else "#7A9E7A"
-            badge = '<span style="background:#C4706A;color:white;padding:2px 8px;border-radius:10px;font-size:11px">⚠️ TRENDSLOP</span>' if c.is_trendslop else '<span style="background:#7A9E7A;color:white;padding:2px 8px;border-radius:10px;font-size:11px">✓ Original</span>'
+            badge = (
+                '<span style="background:#C4706A;color:white;padding:2px 8px;border-radius:10px;font-size:11px">⚠️ TRENDSLOP</span>'
+                if c.is_trendslop
+                else '<span style="background:#7A9E7A;color:white;padding:2px 8px;border-radius:10px;font-size:11px">✓ Original</span>'
+            )
             lines.append("<tr>")
-            lines.append(f"<td style='max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'><code title='{c.gap_title}'>{c.gap_title[:40]}</code></td>")
+            lines.append(
+                f"<td style='max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'><code title='{c.gap_title}'>{c.gap_title[:40]}</code></td>"
+            )
             lines.append(f"<td><code>{c.gap_type}</code></td>")
             lines.append(f"<td>{c.outcome_score:.2f}</td>")
             lines.append(f"<td>{novelty_pct}%</td>")
@@ -152,9 +163,15 @@ class CredibilityScorer:
         lines.append("</tbody></table>")
         lines.append("<style>")
         lines.append(".credibility-panel { font-family: Georgia, serif; }")
-        lines.append(".credibility-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }")
-        lines.append(".credibility-table th, .credibility-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }")
-        lines.append(".credibility-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }")
+        lines.append(
+            ".credibility-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }"
+        )
+        lines.append(
+            ".credibility-table th, .credibility-table td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #e8e4de; text-align: left; }"
+        )
+        lines.append(
+            ".credibility-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }"
+        )
         lines.append("</style>")
         lines.append("</div>")
         return "\n".join(lines)

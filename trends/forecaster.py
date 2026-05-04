@@ -13,9 +13,9 @@ from pathlib import Path
 from typing import Optional
 
 
-
 try:
     import numpy as np
+
     _HAS_NUMPY = True
 except ImportError:
     _HAS_NUMPY = False
@@ -49,10 +49,12 @@ class TrendForecaster:
         for tag, data in radar_data.items():
             if tag not in self._history:
                 self._history[tag] = []
-            self._history[tag].append({
-                "timestamp": ts,
-                "score": data.get("score", 0),
-            })
+            self._history[tag].append(
+                {
+                    "timestamp": ts,
+                    "score": data.get("score", 0),
+                }
+            )
         self.save_history()
 
     def build_timeseries(self, tag: str, months: int = 12) -> list[tuple[str, float]]:
@@ -81,7 +83,12 @@ class TrendForecaster:
         """Predict next month's heat using Holt's exponential smoothing."""
         ts = self.build_timeseries(tag, months=12)
         if len(ts) < 3:
-            return {"predicted": None, "confidence": 0.0, "reason": "insufficient data", "trend": "unknown"}
+            return {
+                "predicted": None,
+                "confidence": 0.0,
+                "reason": "insufficient data",
+                "trend": "unknown",
+            }
 
         timestamps, scores = zip(*ts)
         scores = list(scores)  # type: ignore[assignment]
@@ -135,12 +142,18 @@ class TrendForecaster:
         pred_b = self.predict_next(tag_b)
 
         return {
-            "tag_a": tag_a, "tag_b": tag_b,
-            "slope_a": round(slope_a, 4), "slope_b": round(slope_b, 4),
-            "trend_a": pred_a["trend"], "trend_b": pred_b["trend"],
-            "predicted_a": pred_a["predicted"], "predicted_b": pred_b["predicted"],
-            "confidence_a": pred_a["confidence"], "confidence_b": pred_b["confidence"],
-            "scores_a": ts_a[-6:], "scores_b": ts_b[-6:],
+            "tag_a": tag_a,
+            "tag_b": tag_b,
+            "slope_a": round(slope_a, 4),
+            "slope_b": round(slope_b, 4),
+            "trend_a": pred_a["trend"],
+            "trend_b": pred_b["trend"],
+            "predicted_a": pred_a["predicted"],
+            "predicted_b": pred_b["predicted"],
+            "confidence_a": pred_a["confidence"],
+            "confidence_b": pred_b["confidence"],
+            "scores_a": ts_a[-6:],
+            "scores_b": ts_b[-6:],
         }
 
     def _linear_slope(self, values: list[float]) -> float:

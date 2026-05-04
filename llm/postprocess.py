@@ -12,6 +12,7 @@ Stages:
   5. KG_SYNC — knowledge graph integration
   6. PNODE_UPDATE — re-render P-note with analysis content
 """
+
 from __future__ import annotations
 
 import json
@@ -33,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 class PostStage(Enum):
     """Pipeline execution stages."""
+
     PAPER_ANALYSIS = "paper_analysis"
     BENCHMARK = "benchmark"
     CROSS_REFERENCE = "cross_reference"
@@ -44,6 +46,7 @@ class PostStage(Enum):
 @dataclass
 class StageResult:
     """Result of a single pipeline stage."""
+
     stage: str
     success: bool = False
     error: str = ""
@@ -53,6 +56,7 @@ class StageResult:
 @dataclass
 class PostProcessingResult:
     """Complete result of the post-processing pipeline."""
+
     paper_id: str
     stages_completed: List[str] = field(default_factory=list)
     stages_failed: List[str] = field(default_factory=list)
@@ -195,8 +199,7 @@ class ResearchDeepDivePipeline:
                         "paper_id": paper_id,
                         "tables_found": len(tables),
                         "benchmarks": [
-                            {"name": t.benchmark_name, "metrics": t.metrics}
-                            for t in tables
+                            {"name": t.benchmark_name, "metrics": t.metrics} for t in tables
                         ],
                     }
                     sr.success = True
@@ -299,6 +302,7 @@ class ResearchDeepDivePipeline:
                     if pdf_path and pdf_path.exists():
                         try:
                             from pdf.chart_kg import ChartKGExtractor
+
                             extractor = ChartKGExtractor(kg)
                             paper_title_str = title if paper else paper_id
                             fig_nodes, tbl_nodes = extractor.extract_and_index(
@@ -360,7 +364,9 @@ class ResearchDeepDivePipeline:
     # ── Helpers ──────────────────────────────────────────────────────────
 
     def _get_paper_meta(
-        self, paper: Optional[Paper], paper_id: str,
+        self,
+        paper: Optional[Paper],
+        paper_id: str,
     ) -> Tuple[str, str, Optional[List[str]]]:
         """Get paper metadata from Paper object or database."""
         if paper is not None:
@@ -389,14 +395,16 @@ class ResearchDeepDivePipeline:
         analysis = self._last_analysis
         claims = []
         unverified = []
-        for c in (analysis.claims or []):
+        for c in analysis.claims or []:
             claims.append({"page": c.page, "chunk_text": c.chunk_text})
-        for c in (analysis.unverified_claims or []):
-            unverified.append({
-                "page": c.page,
-                "chunk_text": c.chunk_text,
-                "verification_note": c.verification_note,
-            })
+        for c in analysis.unverified_claims or []:
+            unverified.append(
+                {
+                    "page": c.page,
+                    "chunk_text": c.chunk_text,
+                    "verification_note": c.verification_note,
+                }
+            )
         if not claims and not unverified:
             return None
         return {"claims": claims, "unverified_claims": unverified}
@@ -405,10 +413,12 @@ class ResearchDeepDivePipeline:
         """Get KGManager instance if available."""
         try:
             from kg.manager import KGManager
+
             return KGManager(data_dir=str(self.data_dir))
         except Exception:
             try:
                 from kg.manager import GraphManager
+
                 return GraphManager()
             except Exception:
                 return None
@@ -447,16 +457,28 @@ class ResearchDeepDivePipeline:
             else:
                 logger.warning("Paper %s not found in DB, using stub", paper_id)
                 p = Paper(
-                    source="arxiv", uid=paper_id, title=paper_id,
-                    authors=[], abstract="", published="", updated="",
-                    abs_url=f"https://arxiv.org/abs/{paper_id}", pdf_url="",
+                    source="arxiv",
+                    uid=paper_id,
+                    title=paper_id,
+                    authors=[],
+                    abstract="",
+                    published="",
+                    updated="",
+                    abs_url=f"https://arxiv.org/abs/{paper_id}",
+                    pdf_url="",
                 )
         else:
             logger.warning("No paper data available, using stub for %s", paper_id)
             p = Paper(
-                source="arxiv", uid=paper_id, title=paper_id,
-                authors=[], abstract="", published="", updated="",
-                abs_url=f"https://arxiv.org/abs/{paper_id}", pdf_url="",
+                source="arxiv",
+                uid=paper_id,
+                title=paper_id,
+                authors=[],
+                abstract="",
+                published="",
+                updated="",
+                abs_url=f"https://arxiv.org/abs/{paper_id}",
+                pdf_url="",
             )
 
         # Add raw_llm_output as __raw__ for display
@@ -522,14 +544,16 @@ def make_llm_config(
 
     return {
         "api_key": api_key,
-        "base_url": base_url or os.environ.get(
+        "base_url": base_url
+        or os.environ.get(
             "OPENAI_BASE_URL",
             os.environ.get(
                 "AIROS_DEFAULT_OPENAI_BASE_URL",
                 "https://api.openai.com/v1",
             ),
         ),
-        "model": model or os.environ.get(
+        "model": model
+        or os.environ.get(
             "AIROS_DEFAULT_MODEL_CLI",
             "gpt-4o-mini",
         ),

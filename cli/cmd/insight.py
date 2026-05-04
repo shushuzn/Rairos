@@ -1,4 +1,5 @@
 """CLI command: insight — Manage key insight cards."""
+
 from __future__ import annotations
 
 import argparse
@@ -15,12 +16,31 @@ def _build_insight_parser(subparsers) -> argparse.ArgumentParser:
         help="Manage key insight cards",
         description="Extract and manage key insights from papers.",
     )
-    p.add_argument("action", choices=["add", "list", "search", "tag-cloud", "export", "rate", "like", "dislike", "top", "bottom"],
-                   help="Action to perform")
+    p.add_argument(
+        "action",
+        choices=[
+            "add",
+            "list",
+            "search",
+            "tag-cloud",
+            "export",
+            "rate",
+            "like",
+            "dislike",
+            "top",
+            "bottom",
+        ],
+        help="Action to perform",
+    )
     p.add_argument("--paper", help="Paper ID")
     p.add_argument("--content", help="Insight content")
-    p.add_argument("--type", "-t", choices=["finding", "method", "limitation", "future_work"],
-                   default="finding", help="Insight type")
+    p.add_argument(
+        "--type",
+        "-t",
+        choices=["finding", "method", "limitation", "future_work"],
+        default="finding",
+        help="Insight type",
+    )
     p.add_argument("--tags", help="Comma-separated tags")
     p.add_argument("--evidence", help="Evidence/paper reference")
     p.add_argument("--query", "-q", help="Search query")
@@ -28,7 +48,7 @@ def _build_insight_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--collection", "-c", help="Collection ID to add to")
     p.add_argument("--cite", help="Card ID to reference")
     p.add_argument("--card", help="Card ID to rate/like/dislike")
-    p.add_argument("--stars", type=int, choices=[1,2,3,4,5], help="Star rating 1-5")
+    p.add_argument("--stars", type=int, choices=[1, 2, 3, 4, 5], help="Star rating 1-5")
     p.add_argument("--top-k", type=int, default=10, help="Number of top/bottom cards to show")
     return p  # type: ignore[no-any-return]
 
@@ -57,7 +77,7 @@ def _run_insight(args: argparse.Namespace) -> int:
         if args.paper:
             db = get_db()
             db.init()
-            paper = db.get_paper(args.paper) if hasattr(db, 'get_paper') else None
+            paper = db.get_paper(args.paper) if hasattr(db, "get_paper") else None
             if paper:
                 manager.update_card(card.card_id, tags=tags)  # Just update for now
 
@@ -68,7 +88,7 @@ def _run_insight(args: argparse.Namespace) -> int:
         cards = manager.search_cards(
             query=args.query,
             tags=[t.strip() for t in args.tags.split(",")] if args.tags else None,
-            insight_type=args.type if hasattr(args, 'type') else None,
+            insight_type=args.type if hasattr(args, "type") else None,
         )
 
         if args.markdown:
@@ -135,9 +155,12 @@ def _run_insight(args: argparse.Namespace) -> int:
             # Bridge to EvolutionTracker
             try:
                 from llm.insight_evolution import get_evolution_tracker
+
                 evo = get_evolution_tracker()
                 topic = card.paper_title if card else ""
-                evo.record_insight_feedback(topic=topic, insight_card_id=args.card, rating=args.stars, paper_title=topic)
+                evo.record_insight_feedback(
+                    topic=topic, insight_card_id=args.card, rating=args.stars, paper_title=topic
+                )
             except Exception:
                 pass  # EvolutionTracker is optional
         else:
@@ -153,10 +176,13 @@ def _run_insight(args: argparse.Namespace) -> int:
             print_success(f"Liked {args.card} (★★★★★)")
             try:
                 from llm.insight_evolution import get_evolution_tracker
+
                 evo = get_evolution_tracker()
                 card = manager.get_card(args.card)
                 topic = card.paper_title if card else ""
-                evo.record_insight_feedback(topic=topic, insight_card_id=args.card, rating=5, paper_title=topic)
+                evo.record_insight_feedback(
+                    topic=topic, insight_card_id=args.card, rating=5, paper_title=topic
+                )
             except Exception:
                 pass
         else:
@@ -172,10 +198,13 @@ def _run_insight(args: argparse.Namespace) -> int:
             print_success(f"Disliked {args.card} (★☆☆☆☆)")
             try:
                 from llm.insight_evolution import get_evolution_tracker
+
                 evo = get_evolution_tracker()
                 card = manager.get_card(args.card)
                 topic = card.paper_title if card else ""
-                evo.record_insight_feedback(topic=topic, insight_card_id=args.card, rating=1, paper_title=topic)
+                evo.record_insight_feedback(
+                    topic=topic, insight_card_id=args.card, rating=1, paper_title=topic
+                )
             except Exception:
                 pass
         else:
@@ -188,7 +217,7 @@ def _run_insight(args: argparse.Namespace) -> int:
             print("No highly-rated cards yet. Rate some cards first!")
             return 0
         print(f"Top {min(args.top_k, len(cards))} Highest-Rated Insights:")
-        for c in cards[:args.top_k]:
+        for c in cards[: args.top_k]:
             stars = "★" * c.quality_rating + "☆" * (5 - c.quality_rating)
             print(f"  [{c.card_id}] {stars} ({c.usefulness_score:.2f}) {c.content[:60]}")
         return 0
@@ -199,7 +228,7 @@ def _run_insight(args: argparse.Namespace) -> int:
             print("No low-rated cards yet.")
             return 0
         print(f"Lowest-Rated Insights ({len(cards)} total):")
-        for c in cards[:args.top_k]:
+        for c in cards[: args.top_k]:
             stars = "★" * c.quality_rating + "☆" * (5 - c.quality_rating)
             print(f"  [{c.card_id}] {stars} ({c.usefulness_score:.2f}) {c.content[:60]}")
         return 0

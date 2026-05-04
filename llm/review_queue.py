@@ -43,6 +43,7 @@ def _load_feedback() -> Dict[str, Any]:
 
 def _days_ago(ts: str) -> int:
     from datetime import datetime
+
     try:
         dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
         return (datetime.now() - dt.replace(tzinfo=None)).days
@@ -75,16 +76,18 @@ def get_review_queue() -> List[QueuedCapsule]:
             continue
 
         created = cap.get("created_at", "")
-        results.append(QueuedCapsule(
-            capsule_id=cid,
-            gap_title=cap.get("action_gap_title", ""),
-            gap_type=cap.get("action_gap_type", ""),
-            polarity=cap.get("polarity", "positive"),
-            trigger_keywords=cap.get("trigger_keywords", [])[:5],
-            outcome_score=cap.get("outcome_success_score", 0.0),
-            source_paper_id=cap.get("source_paper_id"),
-            created_days_ago=_days_ago(created),
-        ))
+        results.append(
+            QueuedCapsule(
+                capsule_id=cid,
+                gap_title=cap.get("action_gap_title", ""),
+                gap_type=cap.get("action_gap_type", ""),
+                polarity=cap.get("polarity", "positive"),
+                trigger_keywords=cap.get("trigger_keywords", [])[:5],
+                outcome_score=cap.get("outcome_success_score", 0.0),
+                source_paper_id=cap.get("source_paper_id"),
+                created_days_ago=_days_ago(created),
+            )
+        )
 
     results.sort(key=lambda x: x.created_days_ago, reverse=True)
     return results
@@ -98,9 +101,13 @@ def render_review_queue_html(queue: Optional[List[QueuedCapsule]] = None) -> str
     lines.append("<h3>📋 Capsule Review Queue</h3>")
 
     if not queue:
-        lines.append("<p style='font-size:14px;color:#A89E8C'>All capsules reviewed! 🎉 Check back after extracting gaps from new papers.</p>")
+        lines.append(
+            "<p style='font-size:14px;color:#A89E8C'>All capsules reviewed! 🎉 Check back after extracting gaps from new papers.</p>"
+        )
     else:
-        lines.append(f"<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>{len(queue)} capsules pending review</p>")
+        lines.append(
+            f"<p style='font-size:13px;color:#A89E8C;margin-bottom:16px'>{len(queue)} capsules pending review</p>"
+        )
         for c in queue:
             age_str = f"{c.created_days_ago}d ago" if c.created_days_ago > 0 else "today"
             kw_str = ", ".join(f"<code>{kw}</code>" for kw in c.trigger_keywords[:4])

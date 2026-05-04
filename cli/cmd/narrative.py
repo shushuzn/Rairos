@@ -1,4 +1,5 @@
 """CLI command: narrative — Research Narrative Tracker."""
+
 from __future__ import annotations
 
 import argparse
@@ -33,23 +34,27 @@ def _build_narrative_parser(subparsers) -> argparse.ArgumentParser:
         help="Topic or thread ID depending on action",
     )
     p.add_argument(
-        "--phase", "-p",
+        "--phase",
+        "-p",
         type=str,
         choices=["exploration", "hypothesis", "validation", "publication"],
         help="Set thread phase (for 'update' action)",
     )
     p.add_argument(
-        "--note", "-n",
+        "--note",
+        "-n",
         type=str,
         help="Set narrative note (for 'note' action)",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="Output as JSON",
     )
     p.add_argument(
-        "--force", "-f",
+        "--force",
+        "-f",
         action="store_true",
         help="Force refresh even if thread exists (for 'track' action)",
     )
@@ -116,7 +121,12 @@ def _run_dashboard(tracker: ResearchNarrativeTracker) -> int:
     return 0
 
 
-def _run_track(topic: str, service: ResearchNarrativeService, tracker: ResearchNarrativeTracker, force: bool = False) -> int:
+def _run_track(
+    topic: str,
+    service: ResearchNarrativeService,
+    tracker: ResearchNarrativeTracker,
+    force: bool = False,
+) -> int:
     existing = tracker.get_by_topic(topic) if not force else None
     if existing and not force:
         print_info(f"Thread 已存在 ({existing.id}). 使用 --force 刷新.")
@@ -135,6 +145,7 @@ def _run_track(topic: str, service: ResearchNarrativeService, tracker: ResearchN
 
 def _run_show(topic: str, service: ResearchNarrativeService) -> int:
     from llm.research_narrative_tracker import ResearchNarrativeTracker as RNT
+
     tracker = RNT()
     thread = tracker.get_by_topic(topic)
     if not thread:

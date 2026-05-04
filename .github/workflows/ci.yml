@@ -52,6 +52,9 @@ jobs:
       - name: Ruff check
         run: ruff check . --exclude neuraloperator_fork/
 
+      - name: Ruff format check
+        run: ruff format --check . --exclude neuraloperator_fork/
+
 
 
       - name: Test Crossref API

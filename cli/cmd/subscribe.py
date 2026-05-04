@@ -1,4 +1,5 @@
 """CLI command: subscribe — Smart arXiv subscription management with autopilot watch."""
+
 from __future__ import annotations
 
 import argparse
@@ -64,7 +65,9 @@ def _run_watch_loop(interval_minutes: int, stop_event: threading.Event) -> None:
             total = sum(len(papers) for papers in all_results.values())
 
             if total > 0:
-                print_info(f"[Autopilot] Found {total} new paper(s) across {len(all_results)} subscription(s)")
+                print_info(
+                    f"[Autopilot] Found {total} new paper(s) across {len(all_results)} subscription(s)"
+                )
 
                 # Send webhook notifications
                 for sub_id, papers in all_results.items():
@@ -106,12 +109,17 @@ def _build_subscribe_parser(subparsers) -> argparse.ArgumentParser:
     # add
     p_add = sub.add_parser("add", help="Add a new subscription")
     p_add.add_argument("topic", help="Research topic keywords (e.g., 'transformer attention')")
-    p_add.add_argument("--keywords", "-k", type=str,
-                       help="Additional keywords (comma-separated)")
-    p_add.add_argument("--min-score", "-s", type=float, default=0.5,
-                       help="Minimum relevance score (0.0-1.0, default: 0.5)")
-    p_add.add_argument("--max-results", "-n", type=int, default=10,
-                       help="Max papers per check (default: 10)")
+    p_add.add_argument("--keywords", "-k", type=str, help="Additional keywords (comma-separated)")
+    p_add.add_argument(
+        "--min-score",
+        "-s",
+        type=float,
+        default=0.5,
+        help="Minimum relevance score (0.0-1.0, default: 0.5)",
+    )
+    p_add.add_argument(
+        "--max-results", "-n", type=int, default=10, help="Max papers per check (default: 10)"
+    )
 
     # list
     sub.add_parser("list", help="List all subscriptions")
@@ -133,14 +141,12 @@ def _build_subscribe_parser(subparsers) -> argparse.ArgumentParser:
 
     # watch
     p_watch = sub.add_parser("watch", help="Start autopilot watch (background monitoring)")
-    p_watch.add_argument("--interval", "-i", type=int, default=60,
-                         help="Check interval in minutes (default: 60)")
-    p_watch.add_argument("--discord", type=str, default="",
-                         help="Discord webhook URL")
-    p_watch.add_argument("--feishu", type=str, default="",
-                         help="Feishu webhook URL")
-    p_watch.add_argument("--daemon", action="store_true",
-                         help="Run as daemon (background process)")
+    p_watch.add_argument(
+        "--interval", "-i", type=int, default=60, help="Check interval in minutes (default: 60)"
+    )
+    p_watch.add_argument("--discord", type=str, default="", help="Discord webhook URL")
+    p_watch.add_argument("--feishu", type=str, default="", help="Feishu webhook URL")
+    p_watch.add_argument("--daemon", action="store_true", help="Run as daemon (background process)")
 
     # stop watch
     sub.add_parser("stop", help="Stop the autopilot watch")
@@ -216,7 +222,9 @@ def _run_subscribe(args: argparse.Namespace) -> int:
         webhook_url = getattr(args, "discord", "") or getattr(args, "feishu", "") or ""
         if webhook_url:
             configure_webhook(webhook_url)
-            print_success("Webhook configured: " + ("Discord" if getattr(args, "discord", "") else "Feishu"))
+            print_success(
+                "Webhook configured: " + ("Discord" if getattr(args, "discord", "") else "Feishu")
+            )
 
         monitor = SubscriptionMonitor(db, SubscriptionScorer(db))
         analyzer = LitReviewAnalyzer(db)
@@ -295,6 +303,7 @@ def _run_subscribe(args: argparse.Namespace) -> int:
 
         # Configure webhook
         from core.notifications import configure_webhook
+
         discord_url = getattr(args, "discord", "") or ""
         feishu_url = getattr(args, "feishu", "") or ""
 

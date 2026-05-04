@@ -629,13 +629,19 @@ class TestRunQueueList:
         # Mock job_queue rows (sqlite3.Row compatible)
         mock_job1 = MagicMock()
         mock_job1.__getitem__ = lambda self, k: {
-            "id": 1, "paper_id": "2301.00001",
-            "job_type": "parse", "priority": 5, "status": "queued"
+            "id": 1,
+            "paper_id": "2301.00001",
+            "job_type": "parse",
+            "priority": 5,
+            "status": "queued",
         }[k]
         mock_job2 = MagicMock()
         mock_job2.__getitem__ = lambda self, k: {
-            "id": 2, "paper_id": "2301.00003",
-            "job_type": "parse", "priority": 3, "status": "running"
+            "id": 2,
+            "paper_id": "2301.00003",
+            "job_type": "parse",
+            "priority": 3,
+            "status": "running",
         }[k]
         mock_db.get_queue_jobs.return_value = [mock_job1, mock_job2]
         mock_db_cls.return_value = mock_db
@@ -672,9 +678,17 @@ class TestRunQueueList:
         mock_conn = MagicMock()
         mock_cur = MagicMock()
         mock_row1 = MagicMock()
-        mock_row1.__getitem__ = lambda self, k: {"id": "2301.00001", "parse_status": "pending", "source": "import"}[k]
+        mock_row1.__getitem__ = lambda self, k: {
+            "id": "2301.00001",
+            "parse_status": "pending",
+            "source": "import",
+        }[k]
         mock_row2 = MagicMock()
-        mock_row2.__getitem__ = lambda self, k: {"id": "2301.00003", "parse_status": "pending", "source": "import"}[k]
+        mock_row2.__getitem__ = lambda self, k: {
+            "id": "2301.00003",
+            "parse_status": "pending",
+            "source": "import",
+        }[k]
         mock_cur.fetchall.return_value = [mock_row1, mock_row2]
         mock_conn.execute.return_value = mock_cur
         mock_db.conn.__enter__ = MagicMock(return_value=mock_conn)
@@ -1007,6 +1021,7 @@ class TestMainRouting:
             result = main(["cache", "--stats"])
         mock_run.assert_called_once()
         assert result == 0
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_status aggregation edge cases
@@ -1460,6 +1475,7 @@ class TestMainDedupRouting:
 
         assert result == 0
 
+
 class TestMainMergeRouting:
     """Test main() routes 'merge' to _run_merge (not legacy)."""
 
@@ -1478,6 +1494,7 @@ class TestMainMergeRouting:
         result = main(["merge", "uid1", "uid2"])
 
         assert result == 0
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # _run_dedup tests

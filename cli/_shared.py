@@ -1,4 +1,5 @@
 """AI Research OS CLI shared utilities."""
+
 from __future__ import annotations
 
 import os
@@ -36,24 +37,26 @@ def load_dotenv() -> None:
 def get_db():
     """Get a Database instance via the cli namespace (patchable via patch('cli.Database'))."""
     import cli
+
     return cli.Database()
 
 
 class Colors:
     """ANSI color codes for terminal output."""
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    CYAN = '\033[96m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    END = '\033[0m'
-    SUCCESS = '\033[92m'
+
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+    CYAN = "\033[96m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    END = "\033[0m"
+    SUCCESS = "\033[92m"
 
 
 def colored(text: str, color: str) -> str:
@@ -95,25 +98,30 @@ def cmd_infer_tags_if_empty(tags: list, paper) -> list:
 
 # ─── Warp-style block helpers ──────────────────────────────────────────────────
 
+
 def print_warp_panel(title: str, body: str, width: int = 80) -> None:
     """Print a Warp-style panel block to stdout."""
     from cli.warp import WarpBlocks
+
     print(WarpBlocks.panel(title, body, width))
 
 
 def print_warp_code(lang: str, code: str, title: Optional[str] = None, width: int = 80) -> None:
     """Print a Warp-style code block to stdout."""
     from cli.warp import WarpBlocks
+
     print(WarpBlocks.code_block(lang, code, title, width))
 
 
 def print_warp_section(title: str, *body_lines: str, width: int = 80) -> None:
     """Print a Warp-style section block to stdout."""
     from cli.warp import WarpBlocks
+
     print(WarpBlocks.section(title, *body_lines, width=width))
 
 
 def print_warp_table(headers: list, rows: list, width: int = 80) -> None:
     """Print a Warp-style table block to stdout."""
     from cli.warp import WarpBlocks
+
     print(WarpBlocks.table(headers, rows, width))

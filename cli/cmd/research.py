@@ -1,4 +1,5 @@
 """CLI command: research."""
+
 from __future__ import annotations
 
 import argparse
@@ -59,7 +60,9 @@ Examples:
         help="Skip PDF download (use abstract only)",
     )
 
-    p.add_argument("--tag", dest="tags", action="append", default=[], help="Tags to assign (repeatable)")
+    p.add_argument(
+        "--tag", dest="tags", action="append", default=[], help="Tags to assign (repeatable)"
+    )
 
     p.add_argument(
         "--model",
@@ -92,7 +95,13 @@ Examples:
 
     p.add_argument("-v", "--verbose", action="store_true", default=False, help="Verbose output")
 
-    p.add_argument("--lang", type=str, default="zh", choices=["en", "zh", "e", "z"], help="Output language (default: zh)")
+    p.add_argument(
+        "--lang",
+        type=str,
+        default="zh",
+        choices=["en", "zh", "e", "z"],
+        help="Output language (default: zh)",
+    )
 
     p.add_argument(
         "--sync",

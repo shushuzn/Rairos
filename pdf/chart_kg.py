@@ -5,6 +5,7 @@ Usage:
     extractor = ChartKGExtractor(kg_manager)
     results = extractor.extract_and_index(pdf_path, paper_uid, paper_title)
 """
+
 from __future__ import annotations
 
 import logging
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class FigureNode:
     """A figure node for the knowledge graph."""
+
     entity_id: str  # format: "{paper_uid}_fig_{index}"
     label: str  # human-readable: "Figure 1: Training loss curve"
     description: str  # LLM-generated description
@@ -32,6 +34,7 @@ class FigureNode:
 @dataclass
 class TableNode:
     """A table node for the knowledge graph."""
+
     entity_id: str  # format: "{paper_uid}_table_{index}"
     label: str  # human-readable: "Table 2: Main results"
     description: str  # LLM-generated description
@@ -122,14 +125,16 @@ class ChartKGExtractor:
             # Generate LLM description
             description = self._describe_figure(fig, paper_title)
 
-            nodes.append(FigureNode(
-                entity_id=entity_id,
-                label=label,
-                description=description,
-                page=fig.page,
-                image_path=fig.image_path,
-                caption=fig.caption,
-            ))
+            nodes.append(
+                FigureNode(
+                    entity_id=entity_id,
+                    label=label,
+                    description=description,
+                    page=fig.page,
+                    image_path=fig.image_path,
+                    caption=fig.caption,
+                )
+            )
         return nodes
 
     def _process_tables(
@@ -147,14 +152,16 @@ class ChartKGExtractor:
             # Generate LLM description
             description = self._describe_table(tbl, paper_title)
 
-            nodes.append(TableNode(
-                entity_id=entity_id,
-                label=label,
-                description=description,
-                markdown=tbl.markdown,
-                page=tbl.page,
-                caption=tbl.caption,
-            ))
+            nodes.append(
+                TableNode(
+                    entity_id=entity_id,
+                    label=label,
+                    description=description,
+                    markdown=tbl.markdown,
+                    page=tbl.page,
+                    caption=tbl.caption,
+                )
+            )
         return nodes
 
     def _describe_figure(self, fig: ExtractedFigure, paper_title: str) -> str:
@@ -171,7 +178,7 @@ class ChartKGExtractor:
                 user=context,
                 temperature=0.3,
             )
-            return response.content if hasattr(response, 'content') else str(response)
+            return response.content if hasattr(response, "content") else str(response)
         except Exception as e:
             logger.warning(f"LLM description failed: {e}")
             return fig.caption or "无法生成描述"
@@ -191,7 +198,7 @@ class ChartKGExtractor:
                 user=context,
                 temperature=0.3,
             )
-            return response.content if hasattr(response, 'content') else str(response)
+            return response.content if hasattr(response, "content") else str(response)
         except Exception as e:
             logger.warning(f"LLM description failed: {e}")
             return tbl.caption or "无法生成描述"

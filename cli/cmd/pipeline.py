@@ -2,6 +2,7 @@
 
 Runs gap analysis + hypothesis generation + optionally creates experiment records.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -43,7 +44,8 @@ def _build_pipeline_parser(subparsers) -> argparse.ArgumentParser:
         help="Create experiment records from top hypotheses (default: yes)",
     )
     p.add_argument(
-        "--top", "-n",
+        "--top",
+        "-n",
         type=int,
         default=3,
         dest="top_hypotheses",
@@ -62,7 +64,8 @@ def _build_pipeline_parser(subparsers) -> argparse.ArgumentParser:
         help="LLM model override",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="Output combined report as JSON",
     )
@@ -72,7 +75,8 @@ def _build_pipeline_parser(subparsers) -> argparse.ArgumentParser:
         help="Skip LLM enhancement for gap analysis",
     )
     p.add_argument(
-        "--verbose", "-v",
+        "--verbose",
+        "-v",
         action="store_true",
         help="Verbose output",
     )
@@ -102,6 +106,7 @@ def _run_pipeline(args: argparse.Namespace) -> int:
     # Step 2: Render report
     if args.json:
         import json
+
         output = {
             "topic": args.topic,
             "gaps": [
@@ -123,7 +128,9 @@ def _run_pipeline(args: argparse.Namespace) -> int:
                         "variables": h.experiment_design.variables,
                         "controls": h.experiment_design.controls,
                         "metrics": h.experiment_design.evaluation_metrics,
-                    } if h.experiment_design else None,
+                    }
+                    if h.experiment_design
+                    else None,
                 }
                 for h in hypothesis_result.hypotheses
             ],
@@ -136,7 +143,7 @@ def _run_pipeline(args: argparse.Namespace) -> int:
     if not args.hypothesis_only and hypothesis_result.hypotheses:
         exp_tracker = ExperimentTracker()
         created = []
-        for h in hypothesis_result.hypotheses[:args.top_hypotheses]:
+        for h in hypothesis_result.hypotheses[: args.top_hypotheses]:
             ed = h.experiment_design
             if not ed:
                 continue
@@ -163,12 +170,12 @@ def _run_pipeline(args: argparse.Namespace) -> int:
                 tags=[args.topic, h.hypothesis_type.value],
             )
             created.append(exp)
-            print_success(
-                f"  Created experiment [{exp.id}]: {colored(exp.name, Colors.OKBLUE)}"
-            )
+            print_success(f"  Created experiment [{exp.id}]: {colored(exp.name, Colors.OKBLUE)}")
 
         if created:
             print_success(f"\n{len(created)} experiment(s) registered in experiment tracker.")
-            print_info("Run `airos experiment` to list them, or `airos experiment --complete <id>` when done.")
+            print_info(
+                "Run `airos experiment` to list them, or `airos experiment --complete <id>` when done."
+            )
 
     return 0

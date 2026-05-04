@@ -50,6 +50,7 @@ def _save_badges(badges: dict) -> None:
 def _check_contradiction_hunter() -> bool:
     try:
         from llm.contradiction_heatmap import compute_paper_contradictions
+
         result = compute_paper_contradictions()
         total = sum(v.get("count", 0) for v in result.values())
         return total >= 3
@@ -92,6 +93,7 @@ def _check_rigor_rater() -> bool:
 
 def _check_paradigm_sentinel() -> bool:
     from llm.paradigm_monitor import check_paradigm_concentration
+
     try:
         result = check_paradigm_concentration()
         return result.get("alert_triggered", False)
@@ -101,12 +103,42 @@ def _check_paradigm_sentinel() -> bool:
 
 def compute_badges() -> List[Badge]:
     checks = {
-        "contradiction_hunter": ("Contradiction Hunter", "Detect 3+ contradiction pairs", "🎯", _check_contradiction_hunter),
-        "gap_extractor": ("Gap Extractor", "Build Gene Pool to 10+ capsules", "🧬", _check_gap_extractor),
-        "evolution_master": ("Evolution Master", "Have 1 capsule evolved", "🔄", _check_evolution_master),
-        "bold_explorer": ("Bold Explorer", "Collect 5 bold hypothesis capsules", "🔴", _check_bold_explorer),
-        "rigor_rater": ("Rigor Rater", "Score 10+ papers for research rigor", "🏆", _check_rigor_rater),
-        "paradigm_sentinel": ("Paradigm Sentinel", "Trigger a paradigm concentration alert", "⚠️", _check_paradigm_sentinel),
+        "contradiction_hunter": (
+            "Contradiction Hunter",
+            "Detect 3+ contradiction pairs",
+            "🎯",
+            _check_contradiction_hunter,
+        ),
+        "gap_extractor": (
+            "Gap Extractor",
+            "Build Gene Pool to 10+ capsules",
+            "🧬",
+            _check_gap_extractor,
+        ),
+        "evolution_master": (
+            "Evolution Master",
+            "Have 1 capsule evolved",
+            "🔄",
+            _check_evolution_master,
+        ),
+        "bold_explorer": (
+            "Bold Explorer",
+            "Collect 5 bold hypothesis capsules",
+            "🔴",
+            _check_bold_explorer,
+        ),
+        "rigor_rater": (
+            "Rigor Rater",
+            "Score 10+ papers for research rigor",
+            "🏆",
+            _check_rigor_rater,
+        ),
+        "paradigm_sentinel": (
+            "Paradigm Sentinel",
+            "Trigger a paradigm concentration alert",
+            "⚠️",
+            _check_paradigm_sentinel,
+        ),
     }
 
     saved = _load_badges()
@@ -117,11 +149,16 @@ def compute_badges() -> List[Badge]:
         earned_at = saved.get(bid, {}).get("earned_at") if earned else None
         if earned and not earned_at:
             from datetime import datetime
+
             earned_at = datetime.now().isoformat()
             saved[bid] = {"earned_at": earned_at}
         if earned:
             saved[bid] = {"earned_at": earned_at or saved.get(bid, {}).get("earned_at")}
-        badges.append(Badge(id=bid, name=name, description=desc, icon=icon, earned=earned, earned_at=earned_at))
+        badges.append(
+            Badge(
+                id=bid, name=name, description=desc, icon=icon, earned=earned, earned_at=earned_at
+            )
+        )
 
     _save_badges(saved)
     return badges
@@ -136,36 +173,52 @@ def render_game_mode_html(badges: Optional[List[Badge]] = None) -> str:
 
     lines = ['<div class="game-mode">']
     lines.append("<h3>🎮 Research Game Mode</h3>")
-    lines.append(f"<p style='font-size:13px;color:#A89E8C;margin-bottom:20px'>{len(earned)}/{len(badges)} badges earned</p>")
+    lines.append(
+        f"<p style='font-size:13px;color:#A89E8C;margin-bottom:20px'>{len(earned)}/{len(badges)} badges earned</p>"
+    )
 
     if earned:
         lines.append("<div class='badge-grid'>")
         for b in earned:
-            lines.append(f"<div class='badge-card earned'>"
-                        f"<div class='badge-icon'>{b.icon}</div>"
-                        f"<div class='badge-name'>{b.name}</div>"
-                        f"<div class='badge-desc'>{b.description}</div>"
-                        f"</div>")
+            lines.append(
+                f"<div class='badge-card earned'>"
+                f"<div class='badge-icon'>{b.icon}</div>"
+                f"<div class='badge-name'>{b.name}</div>"
+                f"<div class='badge-desc'>{b.description}</div>"
+                f"</div>"
+            )
         lines.append("</div>")
 
     if locked:
-        lines.append("<div style='margin-top:16px;font-size:12px;color:#A89E8C;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px'>Locked</div>")
+        lines.append(
+            "<div style='margin-top:16px;font-size:12px;color:#A89E8C;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px'>Locked</div>"
+        )
         lines.append("<div class='badge-grid'>")
         for b in locked:
-            lines.append(f"<div class='badge-card locked'>"
-                        f"<div class='badge-icon' style='opacity:0.3'>{b.icon}</div>"
-                        f"<div class='badge-name' style='color:#A89E8C'>{b.name}</div>"
-                        f"<div class='badge-desc' style='color:#C0B8AE'>{b.description}</div>"
-                        f"</div>")
+            lines.append(
+                f"<div class='badge-card locked'>"
+                f"<div class='badge-icon' style='opacity:0.3'>{b.icon}</div>"
+                f"<div class='badge-name' style='color:#A89E8C'>{b.name}</div>"
+                f"<div class='badge-desc' style='color:#C0B8AE'>{b.description}</div>"
+                f"</div>"
+            )
         lines.append("</div>")
 
     lines.append("<style>")
-    lines.append(".badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }")
+    lines.append(
+        ".badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }"
+    )
     lines.append(".badge-card { border-radius: 8px; padding: 14px; text-align: center; }")
-    lines.append(".badge-card.earned { border: 2px solid #6B8FB5; background: rgba(107,143,181,0.08); }")
-    lines.append(".badge-card.locked { border: 1px dashed #A89E8C; background: rgba(168,158,140,0.04); }")
+    lines.append(
+        ".badge-card.earned { border: 2px solid #6B8FB5; background: rgba(107,143,181,0.08); }"
+    )
+    lines.append(
+        ".badge-card.locked { border: 1px dashed #A89E8C; background: rgba(168,158,140,0.04); }"
+    )
     lines.append(".badge-icon { font-size: 28px; margin-bottom: 6px; }")
-    lines.append(".badge-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; color: #2a2a2a; }")
+    lines.append(
+        ".badge-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; color: #2a2a2a; }"
+    )
     lines.append(".badge-desc { font-size: 11px; color: #7a7570; line-height: 1.4; }")
     lines.append("</style>")
     lines.append("</div>")

@@ -88,15 +88,25 @@ def _write_mp4(frames, output_path: Path, fps: int):
         mss.tools.to_png(frame.rgb, frame.size, str(img_path))
 
     try:
-        subprocess.run([
-            "ffmpeg", "-y",
-            "-framerate", str(fps),
-            "-i", str(tmp_pattern),
-            "-c:v", "libx264",
-            "-pix_fmt", "yuv420p",
-            "-crf", "23",
-            str(output_path),
-        ], check=True, capture_output=True)
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-y",
+                "-framerate",
+                str(fps),
+                "-i",
+                str(tmp_pattern),
+                "-c:v",
+                "libx264",
+                "-pix_fmt",
+                "yuv420p",
+                "-crf",
+                "23",
+                str(output_path),
+            ],
+            check=True,
+            capture_output=True,
+        )
     except FileNotFoundError:
         print("Error: ffmpeg not found. Install ffmpeg or use --gif format.")
         print("Frames saved to:", tmp_dir)

@@ -10,6 +10,7 @@ Workflow:
     3. Prompt LLM to generate a narrative literature review
     4. Return structured sections + save as markdown file
 """
+
 from __future__ import annotations
 
 import json
@@ -48,6 +49,7 @@ Please generate a comprehensive literature review following the required structu
 @dataclass
 class LitReviewSection:
     """A section of the literature review."""
+
     title: str
     content: str
     paper_refs: List[str] = field(default_factory=list)  # short titles referenced
@@ -57,6 +59,7 @@ class LitReviewSection:
 @dataclass
 class LitReview:
     """A complete generated literature review."""
+
     topic: str
     sections: List[LitReviewSection] = field(default_factory=list)
     papers_used: List[str] = field(default_factory=list)  # arxiv_ids
@@ -67,6 +70,7 @@ class LitReview:
 @dataclass
 class LitReviewResult:
     """Result of lit review generation."""
+
     success: bool
     topic: str
     review: Optional[LitReview] = None
@@ -145,7 +149,9 @@ class LitReviewGenerator:
                     model=model,
                 )
                 markdown = self._render_markdown(review)
-                result = LitReviewResult(success=True, topic=topic, review=review, markdown=markdown)
+                result = LitReviewResult(
+                    success=True, topic=topic, review=review, markdown=markdown
+                )
             except Exception:
                 # Fallback to template on LLM failure
                 review = self._generate_template_review(topic, papers)
@@ -165,6 +171,7 @@ class LitReviewGenerator:
         if self.db is None:
             try:
                 from db.database import Database
+
                 db = Database()
                 db.init()
                 self.db = db
@@ -175,14 +182,16 @@ class LitReviewGenerator:
             rows, _ = self.db.search_papers(topic, limit=limit)
             papers = []
             for r in rows:
-                papers.append({
-                    "arxiv_id": getattr(r, "paper_id", "") or getattr(r, "arxiv_id", ""),
-                    "title": getattr(r, "title", ""),
-                    "abstract": getattr(r, "abstract", "") or "",
-                    "authors": getattr(r, "authors", []) or [],
-                    "published": getattr(r, "published", "") or "",
-                    "score": getattr(r, "score", 0) or 0,
-                })
+                papers.append(
+                    {
+                        "arxiv_id": getattr(r, "paper_id", "") or getattr(r, "arxiv_id", ""),
+                        "title": getattr(r, "title", ""),
+                        "abstract": getattr(r, "abstract", "") or "",
+                        "authors": getattr(r, "authors", []) or [],
+                        "published": getattr(r, "published", "") or "",
+                        "score": getattr(r, "score", 0) or 0,
+                    }
+                )
             return papers
         except Exception:
             return []
@@ -196,9 +205,7 @@ class LitReviewGenerator:
             title = p.get("title", "Untitled")
             abstract = p.get("abstract", "")[:300]
             lines.append(
-                f"[{i}] ({year}) {title}\n"
-                f"    Authors: {authors}\n"
-                f"    Abstract: {abstract}..."
+                f"[{i}] ({year}) {title}\n    Authors: {authors}\n    Abstract: {abstract}..."
             )
         return "\n\n".join(lines)
 
@@ -265,7 +272,9 @@ class LitReviewGenerator:
                     _is_header = True
                     break
 
-            if line.startswith("## ") or (line.startswith("# ") and "literature review" not in line.lower()):
+            if line.startswith("## ") or (
+                line.startswith("# ") and "literature review" not in line.lower()
+            ):
                 # Save previous section
                 if current_section and current_content:
                     current_section.content = "\n".join(current_content).strip()
@@ -291,10 +300,7 @@ class LitReviewGenerator:
 
         # If no sections parsed, create a single section with full content
         if not sections and response.strip():
-            sections.append(LitReviewSection(
-                title="Literature Review",
-                content=response.strip()
-            ))
+            sections.append(LitReviewSection(title="Literature Review", content=response.strip()))
 
         return sections
 
@@ -317,13 +323,12 @@ class LitReviewGenerator:
             LitReviewSection(
                 title="Overview",
                 content=f"This review covers {len(papers)} papers on **{topic}**. "
-                        f"Research spans {min(by_year.keys(), default='N/A')} to {max(by_year.keys(), default='N/A')}.",
+                f"Research spans {min(by_year.keys(), default='N/A')} to {max(by_year.keys(), default='N/A')}.",
             ),
             LitReviewSection(
                 title="Top Papers by Relevance",
                 content="\n".join(
-                    f"- **{p['title'][:60]}** ({p.get('published', '')[:4]})"
-                    for p in top
+                    f"- **{p['title'][:60]}** ({p.get('published', '')[:4]})" for p in top
                 ),
             ),
             LitReviewSection(

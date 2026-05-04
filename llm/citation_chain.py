@@ -2,6 +2,7 @@
 Citation Chain: Build and visualize citation relationships.
 Research family clustering and silent citation detection.
 """
+
 from dataclasses import dataclass, field, asdict
 from typing import List, Optional, Dict, Set, Tuple, Any, cast
 from collections import deque
@@ -13,19 +14,21 @@ import uuid
 @dataclass
 class CitationNode:
     """A paper in the citation chain."""
+
     paper_id: str
     title: str
     year: int = 0
     authors: List[str] = field(default_factory=list)
     abstract: str = ""
     citations: List[str] = field(default_factory=list)  # Papers this paper cites
-    cited_by: List[str] = field(default_factory=list)   # Papers citing this
+    cited_by: List[str] = field(default_factory=list)  # Papers citing this
     citation_count: int = 0
 
 
 @dataclass
 class CitationChain:
     """A chain of citations."""
+
     nodes: List[CitationNode] = field(default_factory=list)
     edges: List[Tuple[str, str]] = field(default_factory=list)  # (from, to)
 
@@ -33,6 +36,7 @@ class CitationChain:
 @dataclass
 class ResearchFamily:
     """A cluster of papers sharing a common ancestor or theme."""
+
     family_id: str
     ancestor_id: str
     ancestor_title: str
@@ -98,18 +102,18 @@ class CitationChainBuilder:
             visited.add(pid)
 
             # Fetch paper
-            paper = self.db.get_paper(pid) if hasattr(self.db, 'get_paper') else None
+            paper = self.db.get_paper(pid) if hasattr(self.db, "get_paper") else None
             if paper:
-                refs = getattr(paper, 'references', []) or []
-                ref_ids = [r if isinstance(r, str) else getattr(r, 'id', '') for r in refs]
+                refs = getattr(paper, "references", []) or []
+                ref_ids = [r if isinstance(r, str) else getattr(r, "id", "") for r in refs]
                 self.add_paper(
                     paper_id=pid,
-                    title=getattr(paper, 'title', pid),
-                    year=getattr(paper, 'year', 0) or 0,
+                    title=getattr(paper, "title", pid),
+                    year=getattr(paper, "year", 0) or 0,
                     authors=[],
                     references=ref_ids,
-                    abstract=getattr(paper, 'abstract', ''),
-                    citation_count=getattr(paper, 'citation_count', 0) or 0,
+                    abstract=getattr(paper, "abstract", ""),
+                    citation_count=getattr(paper, "citation_count", 0) or 0,
                 )
 
                 # Queue references
@@ -153,7 +157,9 @@ class CitationChainBuilder:
                     self.add_paper(
                         paper_id=pid,
                         title=paper_info.get("title", pid),
-                        year=int(paper_info.get("published", "0")[:4]) if paper_info.get("published") else 0,
+                        year=int(paper_info.get("published", "0")[:4])
+                        if paper_info.get("published")
+                        else 0,
                         authors=paper_info.get("authors", []),
                         abstract=paper_info.get("abstract", ""),
                         citation_count=paper_info.get("citation_count", 0) or 0,
@@ -210,6 +216,7 @@ class CitationChainBuilder:
         if not self.db:
             try:
                 from db.database import Database
+
                 db = Database()
                 db.init()
                 self.db = db
@@ -339,7 +346,9 @@ class CitationChainBuilder:
         if seed_paper_id not in paper_titles:
             try:
                 p = self.db.get_paper(seed_paper_id)
-                paper_titles[seed_paper_id] = getattr(p, "title", seed_paper_id) if p else seed_paper_id
+                paper_titles[seed_paper_id] = (
+                    getattr(p, "title", seed_paper_id) if p else seed_paper_id
+                )
             except Exception:
                 paper_titles[seed_paper_id] = seed_paper_id
 
@@ -353,15 +362,17 @@ class CitationChainBuilder:
 
             if current in capsule_targets and current != seed_paper_id:
                 cap = capsule_targets[current]
-                results.append({
-                    "path": path,
-                    "capsule_id": cap.get("capsule_id", ""),
-                    "gap_type": cap.get("action_gap_type", cap.get("trigger_gap_type", "")),
-                    "gap_title": cap.get("action_gap_title", cap.get("trigger_gap_title", "")),
-                    "polarity": cap.get("polarity", "positive"),
-                    "source_paper_id": current,
-                    "outcome_score": cap.get("outcome_success_score", 0),
-                })
+                results.append(
+                    {
+                        "path": path,
+                        "capsule_id": cap.get("capsule_id", ""),
+                        "gap_type": cap.get("action_gap_type", cap.get("trigger_gap_type", "")),
+                        "gap_title": cap.get("action_gap_title", cap.get("trigger_gap_title", "")),
+                        "polarity": cap.get("polarity", "positive"),
+                        "source_paper_id": current,
+                        "outcome_score": cap.get("outcome_success_score", 0),
+                    }
+                )
                 continue  # keep searching for more paths
 
             if len(path) >= depth:
@@ -433,7 +444,10 @@ class CitationChainBuilder:
             return []
 
         try:
-            return cast(List[Tuple[Any, float]], self.db.find_similar(paper_id, threshold=threshold, limit=limit))
+            return cast(
+                List[Tuple[Any, float]],
+                self.db.find_similar(paper_id, threshold=threshold, limit=limit),
+            )
         except Exception:
             return []
 
@@ -450,12 +464,14 @@ class CitationChainBuilder:
         suggestions = []
         for paper, score in similar:
             if paper.id not in existing_ids:
-                suggestions.append({
-                    "paper_id": paper.id,
-                    "title": getattr(paper, 'title', paper.id),
-                    "similarity": score,
-                    "reason": "semantic similarity",
-                })
+                suggestions.append(
+                    {
+                        "paper_id": paper.id,
+                        "title": getattr(paper, "title", paper.id),
+                        "similarity": score,
+                        "reason": "semantic similarity",
+                    }
+                )
             if len(suggestions) >= limit:
                 break
 
@@ -488,17 +504,23 @@ class CitationChainBuilder:
                 shared = set(node.citations) & set(other.citations)
                 if len(shared) >= 2:  # At least 2 shared references
                     family_id = str(uuid.uuid4())[:6]
-                    families.append(ResearchFamily(
-                        family_id=family_id,
-                        ancestor_id=node.paper_id,
-                        ancestor_title=f"Family sharing: {', '.join(list(shared)[:3])}",
-                        papers=[
-                            {"paper_id": node.paper_id, "title": node.title, "year": node.year},
-                            {"paper_id": other.paper_id, "title": other.title, "year": other.year},
-                        ],
-                        common_theme=f"Shared references: {', '.join(list(shared)[:3])}",
-                        size=2,
-                    ))
+                    families.append(
+                        ResearchFamily(
+                            family_id=family_id,
+                            ancestor_id=node.paper_id,
+                            ancestor_title=f"Family sharing: {', '.join(list(shared)[:3])}",
+                            papers=[
+                                {"paper_id": node.paper_id, "title": node.title, "year": node.year},
+                                {
+                                    "paper_id": other.paper_id,
+                                    "title": other.title,
+                                    "year": other.year,
+                                },
+                            ],
+                            common_theme=f"Shared references: {', '.join(list(shared)[:3])}",
+                            size=2,
+                        )
+                    )
 
         # Deduplicate by family_id
         seen = set()
@@ -513,19 +535,51 @@ class CitationChainBuilder:
     # ── Silent Citation Detection ──────────────────────────────────────
 
     METHOD_TERMS: Set[str] = {
-        "transformer", "attention", "neural", "network", "embedding", "latent",
-        "fine-tuning", "pretraining", "gradient", "loss", "optimization",
-        "encoder", "decoder", "architecture", "layer", "token",
-        "rag", "retrieval", "knowledge", "distillation", "quantization",
-        "chain-of-thought", "prompting", "few-shot", "zero-shot", "in-context",
-        "reinforcement", "reward", "policy", "rlhf", "dpo",
-        "graph", "neural network", "convolutional", "recurrent",
-        "generative", "diffusion", "gan", "vae", "autoencoder",
+        "transformer",
+        "attention",
+        "neural",
+        "network",
+        "embedding",
+        "latent",
+        "fine-tuning",
+        "pretraining",
+        "gradient",
+        "loss",
+        "optimization",
+        "encoder",
+        "decoder",
+        "architecture",
+        "layer",
+        "token",
+        "rag",
+        "retrieval",
+        "knowledge",
+        "distillation",
+        "quantization",
+        "chain-of-thought",
+        "prompting",
+        "few-shot",
+        "zero-shot",
+        "in-context",
+        "reinforcement",
+        "reward",
+        "policy",
+        "rlhf",
+        "dpo",
+        "graph",
+        "neural network",
+        "convolutional",
+        "recurrent",
+        "generative",
+        "diffusion",
+        "gan",
+        "vae",
+        "autoencoder",
     }
 
     def _extract_terms(self, text: str) -> Set[str]:
         """Extract significant terms from text."""
-        words = re.findall(r'\b[a-z][a-z0-9-]{3,}\b', text.lower())
+        words = re.findall(r"\b[a-z][a-z0-9-]{3,}\b", text.lower())
         return set(words) & self.METHOD_TERMS
 
     def detect_silent_citations(self) -> List[Dict[str, Any]]:
@@ -556,17 +610,19 @@ class CitationChainBuilder:
                     newer = other if (other.year or 0) > (node.year or 0) else node
                     older = node if newer == other else other
 
-                    silent.append({
-                        "newer_arxiv_id": newer.paper_id,
-                        "newer_title": newer.title,
-                        "newer_year": newer.year,
-                        "older_arxiv_id": older.paper_id,
-                        "older_title": older.title,
-                        "older_year": older.year,
-                        "shared_methods": list(shared),
-                        "confidence": min(len(shared) / 10.0, 0.95),
-                        "note": f"{newer.paper_id[:8]} uses similar methods to {older.paper_id[:8]} but may not cite it",
-                    })
+                    silent.append(
+                        {
+                            "newer_arxiv_id": newer.paper_id,
+                            "newer_title": newer.title,
+                            "newer_year": newer.year,
+                            "older_arxiv_id": older.paper_id,
+                            "older_title": older.title,
+                            "older_year": older.year,
+                            "shared_methods": list(shared),
+                            "confidence": min(len(shared) / 10.0, 0.95),
+                            "note": f"{newer.paper_id[:8]} uses similar methods to {older.paper_id[:8]} but may not cite it",
+                        }
+                    )
 
         # Sort by confidence
         silent.sort(key=lambda x: x["confidence"], reverse=True)
@@ -586,7 +642,9 @@ class CitationChainBuilder:
 
         for _i, node in enumerate(sorted_nodes[:max_nodes]):
             lines.append(f"[{node.paper_id[:8]}] {node.title[:50]}")
-            lines.append(f"  Year: {node.year or '?'} | Cites: {len(node.citations)} | Cited by: {len(node.cited_by)}")
+            lines.append(
+                f"  Year: {node.year or '?'} | Cites: {len(node.citations)} | Cited by: {len(node.cited_by)}"
+            )
             lines.append("")
 
         if len(chain.nodes) > max_nodes:
@@ -596,21 +654,21 @@ class CitationChainBuilder:
         lines.append(f"Total: {len(chain.nodes)} papers, {len(chain.edges)} connections")
         lines.append("=" * 60)
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def render_graphviz(self, chain: CitationChain) -> str:
         """Render chain as Graphviz DOT format."""
         lines = ["digraph citations {", "  rankdir=LR;", "  node [shape=box];"]
 
         for node in chain.nodes:
-            label = f'{node.title[:30]}...\\n({node.year})' if node.year else node.title[:30]
+            label = f"{node.title[:30]}...\\n({node.year})" if node.year else node.title[:30]
             lines.append(f'  "{node.paper_id}" [label="{label}"];')
 
         for from_id, to_id in chain.edges:
             lines.append(f'  "{from_id}" -> "{to_id}";')
 
         lines.append("}")
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def render_mermaid(self, chain: CitationChain) -> str:
         """Render chain as Mermaid flowchart."""
@@ -618,13 +676,13 @@ class CitationChainBuilder:
 
         for node in chain.nodes:
             year_str = f"({node.year})" if node.year else ""
-            lines.append(f'    {node.paper_id[:8]}[{node.title[:30]}{year_str}]')
+            lines.append(f"    {node.paper_id[:8]}[{node.title[:30]}{year_str}]")
 
         for from_id, to_id in chain.edges:
             lines.append(f"    {from_id[:8]} --> {to_id[:8]}")
 
         lines.append("```")
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def render_families(self, families: List[ResearchFamily]) -> str:
         """Render research families as readable text."""
@@ -640,7 +698,7 @@ class CitationChainBuilder:
                 lines.append(f"  - [{p['paper_id'][:8]}] {p['title'][:50]} ({p.get('year', '?')})")
             lines.append("")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def render_silent_citations(self, silent: List[Dict[str, Any]]) -> str:
         """Render detected silent citations as readable text."""
@@ -657,4 +715,4 @@ class CitationChainBuilder:
             lines.append(f"  SHARED: {', '.join(s['shared_methods'][:5])}")
             lines.append("")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)

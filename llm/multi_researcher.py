@@ -53,7 +53,8 @@ def get_capsules_for_user(user_id: str) -> List[Dict[str, Any]]:
     if user_id == "all":
         return capsules
     return [
-        c for c in capsules
+        c
+        for c in capsules
         if c.get("source_user", DEFAULT_USER) == user_id
         or c.get("visibility", "shared") == "shared"
     ]
@@ -63,7 +64,11 @@ def add_researcher(user_id: str, name: str = "", email: str = "") -> bool:
     users = _load_users()
     if user_id in users:
         return False
-    users[user_id] = {"name": name or user_id, "email": email, "joined_at": str(__import__("datetime").datetime.now().isoformat())}
+    users[user_id] = {
+        "name": name or user_id,
+        "email": email,
+        "joined_at": str(__import__("datetime").datetime.now().isoformat()),
+    }
     _save_users(users)
     return True
 
@@ -75,16 +80,22 @@ def render_multi_researcher_html() -> str:
 
     lines = ['<div class="multi-researcher">']
     lines.append("<h3>👥 Multi-Researcher Support</h3>")
-    lines.append("<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
-                "Collaborative Gene Pool. Each researcher is tagged on their capsules.</p>")
+    lines.append(
+        "<p style='font-size:13px;color:#A89E8C;margin-bottom:14px'>"
+        "Collaborative Gene Pool. Each researcher is tagged on their capsules.</p>"
+    )
 
     # Researcher list
-    lines.append("<h4 style='font-size:13px;font-weight:700;color:#333;margin-bottom:8px'>"
-                f"Researchers ({len(researchers)})</h4>")
+    lines.append(
+        "<h4 style='font-size:13px;font-weight:700;color:#333;margin-bottom:8px'>"
+        f"Researchers ({len(researchers)})</h4>"
+    )
 
     if not researchers:
-        lines.append("<p style='color:#A89E8C;font-size:13px'>No researchers yet. "
-                    "Add a researcher ID to start collaborating.</p>")
+        lines.append(
+            "<p style='color:#A89E8C;font-size:13px'>No researchers yet. "
+            "Add a researcher ID to start collaborating.</p>"
+        )
     else:
         for r in researchers:
             uid = r["user_id"]
@@ -92,8 +103,8 @@ def render_multi_researcher_html() -> str:
             lines.append(f"""
 <div style='display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f8f4ef;border-radius:6px;margin-bottom:8px'>
   <div>
-    <div style='font-weight:600;font-size:13px'>{info.get('name', uid)}</div>
-    <div style='font-size:11px;color:#A89E8C'>{uid} · {r['capsule_count']} capsules</div>
+    <div style='font-weight:600;font-size:13px'>{info.get("name", uid)}</div>
+    <div style='font-size:11px;color:#A89E8C'>{uid} · {r["capsule_count"]} capsules</div>
   </div>
   <button onclick="switchView('{uid}')" style="font-size:11px;padding:3px 10px;cursor:pointer;border-radius:3px;border:1px solid #ccc;background:transparent">
     View
@@ -102,16 +113,26 @@ def render_multi_researcher_html() -> str:
 
     # Add researcher
     lines.append("<div style='margin-top:16px;padding:14px;background:#f8f4ef;border-radius:6px'>")
-    lines.append("<h4 style='font-size:13px;font-weight:700;color:#333;margin-bottom:8px'>Add Researcher</h4>")
-    lines.append("<input type='text' id='newUserId' placeholder='User ID' style='font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid #ccc;margin-right:6px;width:120px'>")
-    lines.append("<input type='text' id='newUserName' placeholder='Name' style='font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid #ccc;margin-right:6px;width:140px'>")
-    lines.append("<button onclick='addResearcher()' style='background:#6B8FB5;color:white;border:none;border-radius:4px;padding:5px 14px;cursor:pointer;font-size:12px'>Add</button>")
+    lines.append(
+        "<h4 style='font-size:13px;font-weight:700;color:#333;margin-bottom:8px'>Add Researcher</h4>"
+    )
+    lines.append(
+        "<input type='text' id='newUserId' placeholder='User ID' style='font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid #ccc;margin-right:6px;width:120px'>"
+    )
+    lines.append(
+        "<input type='text' id='newUserName' placeholder='Name' style='font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid #ccc;margin-right:6px;width:140px'>"
+    )
+    lines.append(
+        "<button onclick='addResearcher()' style='background:#6B8FB5;color:white;border:none;border-radius:4px;padding:5px 14px;cursor:pointer;font-size:12px'>Add</button>"
+    )
     lines.append("</div>")
 
     # Shared vs private toggle per capsule (info)
     total = len(capsules)
     shared = sum(1 for c in capsules if c.get("visibility", "shared") == "shared")
-    lines.append(f"<div style='margin-top:16px;font-size:12px;color:#7a7570'>{shared}/{total} capsules shared · visibility is set per capsule via the capsule editor.</div>")
+    lines.append(
+        f"<div style='margin-top:16px;font-size:12px;color:#7a7570'>{shared}/{total} capsules shared · visibility is set per capsule via the capsule editor.</div>"
+    )
 
     lines.append("""
 <script>

@@ -6,6 +6,7 @@ Usage:
     airos visual extract paper.pdf --output figures/ --dpi 200
     airos visual extract paper.pdf --save-db 2604.22754
 """
+
 from __future__ import annotations
 
 import sys
@@ -25,6 +26,7 @@ try:
     from pdf.chart_kg import ChartKGExtractor
     from kg.manager import KGManager
     from kg.integration import KGIntegration
+
     _HAS_CHART_KG = True
 except ImportError:
     _HAS_CHART_KG = False
@@ -37,65 +39,103 @@ def _build_visual_parser(subparsers):
     # extract command
     extract_p = sub.add_parser("extract", help="Extract figures, formulas, tables")
     extract_p.add_argument("pdf", help="Path to PDF file")
-    extract_p.add_argument("--output", "-o", default=None,
-                          help="Output directory for extracted images")
-    extract_p.add_argument("--dpi", type=int, default=150,
-                          help="DPI for rendered formulas (default: 150)")
-    extract_p.add_argument("--format", "-f", default="markdown",
-                          choices=["markdown", "json"],
-                          help="Output format for tables")
-    extract_p.add_argument("--save-db", metavar="PAPER_ID", default=None,
-                          help="Save tables to database with this paper_id")
-    extract_p.set_defaults(func=lambda a: visual_extract.callback(
-        pdf=a.pdf, output=a.output, dpi=a.dpi, format=a.format, save_db=a.save_db))
+    extract_p.add_argument(
+        "--output", "-o", default=None, help="Output directory for extracted images"
+    )
+    extract_p.add_argument(
+        "--dpi", type=int, default=150, help="DPI for rendered formulas (default: 150)"
+    )
+    extract_p.add_argument(
+        "--format",
+        "-f",
+        default="markdown",
+        choices=["markdown", "json"],
+        help="Output format for tables",
+    )
+    extract_p.add_argument(
+        "--save-db",
+        metavar="PAPER_ID",
+        default=None,
+        help="Save tables to database with this paper_id",
+    )
+    extract_p.set_defaults(
+        func=lambda a: visual_extract.callback(
+            pdf=a.pdf, output=a.output, dpi=a.dpi, format=a.format, save_db=a.save_db
+        )
+    )
 
     # query command - query stored tables
     query_p = sub.add_parser("query", help="Query stored tables from database")
     query_p.add_argument("paper_id", help="Paper ID to query tables for")
-    query_p.add_argument("--page", type=int, default=None,
-                        help="Filter by page number")
-    query_p.add_argument("--keyword", "-k", default=None,
-                        help="Search in table content")
-    query_p.add_argument("--format", "-f", default="markdown",
-                        choices=["markdown", "json", "csv"],
-                        help="Output format")
-    query_p.set_defaults(func=lambda a: visual_query.callback(
-        paper_id=a.paper_id, page=a.page, keyword=a.keyword, format=a.format))
+    query_p.add_argument("--page", type=int, default=None, help="Filter by page number")
+    query_p.add_argument("--keyword", "-k", default=None, help="Search in table content")
+    query_p.add_argument(
+        "--format",
+        "-f",
+        default="markdown",
+        choices=["markdown", "json", "csv"],
+        help="Output format",
+    )
+    query_p.set_defaults(
+        func=lambda a: visual_query.callback(
+            paper_id=a.paper_id, page=a.page, keyword=a.keyword, format=a.format
+        )
+    )
 
     # list command - list papers with stored tables
     list_p = sub.add_parser("list", help="List papers with stored tables")
-    list_p.add_argument("--limit", type=int, default=20,
-                       help="Maximum number of results (default: 20)")
+    list_p.add_argument(
+        "--limit", type=int, default=20, help="Maximum number of results (default: 20)"
+    )
     list_p.set_defaults(func=lambda a: visual_list.callback(limit=a.limit))
 
     # export command - export tables to file
     export_p = sub.add_parser("export", help="Export stored tables to file")
     export_p.add_argument("paper_id", help="Paper ID to export tables from")
     export_p.add_argument("output", help="Output file path")
-    export_p.add_argument("--format", "-f", default="csv",
-                        choices=["csv", "json", "markdown"],
-                        help="Output format (default: csv)")
-    export_p.add_argument("--page", type=int, default=None,
-                         help="Filter by page number")
-    export_p.add_argument("--keyword", "-k", default=None,
-                         help="Search in table content")
-    export_p.set_defaults(func=lambda a: visual_export.callback(
-        paper_id=a.paper_id, output=a.output, format=a.format, page=a.page, keyword=a.keyword))
+    export_p.add_argument(
+        "--format",
+        "-f",
+        default="csv",
+        choices=["csv", "json", "markdown"],
+        help="Output format (default: csv)",
+    )
+    export_p.add_argument("--page", type=int, default=None, help="Filter by page number")
+    export_p.add_argument("--keyword", "-k", default=None, help="Search in table content")
+    export_p.set_defaults(
+        func=lambda a: visual_export.callback(
+            paper_id=a.paper_id, output=a.output, format=a.format, page=a.page, keyword=a.keyword
+        )
+    )
 
     # chart command - index figures/tables to KG and query
     chart_p = sub.add_parser("chart", help="Index figures/tables to KG and query them")
     chart_p.add_argument("paper_id", nargs="?", default=None, help="Paper ID to index/query")
-    chart_p.add_argument("--index", "-i", metavar="PDF_PATH", default=None,
-                        help="Index figures/tables from PDF into KG")
-    chart_p.add_argument("--list", "-l", action="store_true",
-                        help="List all indexed figures/tables for the paper")
-    chart_p.add_argument("--figure", "-f", metavar="LABEL", default=None,
-                        help="Query specific figure, e.g. 'Figure 3'")
-    chart_p.add_argument("--table", "-t", metavar="LABEL", default=None,
-                        help="Query specific table, e.g. 'Table 1'")
-    chart_p.set_defaults(func=lambda a: visual_chart.callback(
-        paper_id=a.paper_id, index=a.index, list_charts=a.list,
-        figure=a.figure, table=a.table))
+    chart_p.add_argument(
+        "--index",
+        "-i",
+        metavar="PDF_PATH",
+        default=None,
+        help="Index figures/tables from PDF into KG",
+    )
+    chart_p.add_argument(
+        "--list", "-l", action="store_true", help="List all indexed figures/tables for the paper"
+    )
+    chart_p.add_argument(
+        "--figure",
+        "-f",
+        metavar="LABEL",
+        default=None,
+        help="Query specific figure, e.g. 'Figure 3'",
+    )
+    chart_p.add_argument(
+        "--table", "-t", metavar="LABEL", default=None, help="Query specific table, e.g. 'Table 1'"
+    )
+    chart_p.set_defaults(
+        func=lambda a: visual_chart.callback(
+            paper_id=a.paper_id, index=a.index, list_charts=a.list, figure=a.figure, table=a.table
+        )
+    )
 
     p.set_defaults(func=lambda a: _show_visual_status())
 
@@ -103,6 +143,7 @@ def _build_visual_parser(subparsers):
 def _show_visual_status():
     """Show visual extraction capabilities (used by CLI registry)."""
     from rich.console import Console
+
     c = Console()
     c.rule("[bold #FF8272]  Visual Extraction  [/]")
     print()
@@ -113,12 +154,14 @@ def _show_visual_status():
     ]
     c.print(WarpBlocks.table(["", "Capability", "Format"], rows, title="Supported Types"))
     c.print()
-    print(WarpBlocks.section(
-        "Usage",
-        "[#A5D5FE]airos visual extract[/] paper.pdf --output figures/",
-        "[#A5D5FE]airos visual query[/] 2604.22754",
-        "[#A5D5FE]airos visual list[/]",
-    ))
+    print(
+        WarpBlocks.section(
+            "Usage",
+            "[#A5D5FE]airos visual extract[/] paper.pdf --output figures/",
+            "[#A5D5FE]airos visual query[/] 2604.22754",
+            "[#A5D5FE]airos visual list[/]",
+        )
+    )
 
 
 def visual_extract(pdf: str, output: str, dpi: int, format: str, save_db: Optional[str] = None):
@@ -154,9 +197,9 @@ def visual_extract(pdf: str, output: str, dpi: int, format: str, save_db: Option
             if not existing:
                 db.upsert_paper(
                     paper_id=save_db,
-                    source='visual_extract',
-                    title=f'Paper {save_db}',
-                    abstract=f'Extracted from {pdf_path.name}',
+                    source="visual_extract",
+                    title=f"Paper {save_db}",
+                    abstract=f"Extracted from {pdf_path.name}",
                 )
                 print_info(f"Created paper record: {save_db}")
 
@@ -192,23 +235,34 @@ def visual_extract(pdf: str, output: str, dpi: int, format: str, save_db: Option
         # Save results as JSON if requested
         if format == "json" and output_dir:
             import json
+
             json_path = output_dir / f"{paper_id}_visual.json"
             with open(json_path, "w", encoding="utf-8") as f:
-                json.dump({
-                    "paper_id": result.paper_id,
-                    "figures": [
-                        {"page": fig.page, "caption": fig.caption, "image_path": fig.image_path}
-                        for fig in result.figures
-                    ],
-                    "formulas": [
-                        {"latex": f.latex, "is_display": f.is_display, "page": f.page}
-                        for f in result.rendered_formulas
-                    ],
-                    "tables": [
-                        {"headers": t.headers, "rows": t.rows, "page": t.page, "caption": t.caption}
-                        for t in result.tables_markdown
-                    ],
-                }, f, indent=2, ensure_ascii=False)
+                json.dump(
+                    {
+                        "paper_id": result.paper_id,
+                        "figures": [
+                            {"page": fig.page, "caption": fig.caption, "image_path": fig.image_path}
+                            for fig in result.figures
+                        ],
+                        "formulas": [
+                            {"latex": f.latex, "is_display": f.is_display, "page": f.page}
+                            for f in result.rendered_formulas
+                        ],
+                        "tables": [
+                            {
+                                "headers": t.headers,
+                                "rows": t.rows,
+                                "page": t.page,
+                                "caption": t.caption,
+                            }
+                            for t in result.tables_markdown
+                        ],
+                    },
+                    f,
+                    indent=2,
+                    ensure_ascii=False,
+                )
             print_success(f"\nJSON saved: {json_path}")
 
     except Exception as e:
@@ -219,6 +273,7 @@ def visual_extract(pdf: str, output: str, dpi: int, format: str, save_db: Option
 def visual_status():
     """Show visual extraction capabilities."""
     from rich.console import Console
+
     c = Console()
     c.rule("[bold #FF8272]  Visual Extraction  [/]")
     print()
@@ -229,13 +284,15 @@ def visual_status():
     ]
     c.print(WarpBlocks.table(["", "Capability", "Format"], rows, title="Supported Types"))
     c.print()
-    print(WarpBlocks.section(
-        "Usage",
-        "[#A5D5FE]airos visual extract[/] paper.pdf --output figures/",
-        "[#A5D5FE]airos visual query[/] 2604.22754",
-        "[#A5D5FE]airos visual list[/]",
-        width=60
-    ))
+    print(
+        WarpBlocks.section(
+            "Usage",
+            "[#A5D5FE]airos visual extract[/] paper.pdf --output figures/",
+            "[#A5D5FE]airos visual query[/] 2604.22754",
+            "[#A5D5FE]airos visual list[/]",
+            width=60,
+        )
+    )
 
 
 def visual_query(paper_id: str, page: int, keyword: str, format: str):
@@ -256,7 +313,8 @@ def visual_query(paper_id: str, page: int, keyword: str, format: str):
         if keyword:
             keyword_lower = keyword.lower()
             tables = [
-                t for t in tables
+                t
+                for t in tables
                 if keyword_lower in t.table_caption.lower()
                 or any(keyword_lower in h.lower() for h in t.headers)
                 or any(keyword_lower in str(cell).lower() for row in t.rows for cell in row)
@@ -270,6 +328,7 @@ def visual_query(paper_id: str, page: int, keyword: str, format: str):
 
         if format == "json":
             import json
+
             result = {
                 "paper_id": paper_id,
                 "tables": [
@@ -310,17 +369,21 @@ def visual_list(limit: int):
     """List papers with stored tables."""
     db = Database()
     try:
-        cursor = db.conn.execute("""
+        cursor = db.conn.execute(
+            """
             SELECT paper_id, COUNT(*) as table_count, MAX(page) + 1 as max_page
             FROM experiment_tables
             GROUP BY paper_id
             ORDER BY MAX(created_at) DESC
             LIMIT ?
-        """, (limit,))
+        """,
+            (limit,),
+        )
         raw_rows = cursor.fetchall()
 
         if not raw_rows:
             from rich.console import Console
+
             c = Console()
             c.rule("[bold #FF8272]  Visual Tables  [/]")
             c.print()
@@ -328,6 +391,7 @@ def visual_list(limit: int):
             return
 
         from rich.console import Console
+
         c = Console()
         c.rule("[bold #FF8272]  Visual Tables  [/]")
         c.print()
@@ -335,11 +399,13 @@ def visual_list(limit: int):
         for row in raw_rows:
             badge = "[#B4FA72]●[/]" if row[1] > 0 else "[#8E8E8E]○[/]"
             rows.append([badge, row[0], str(row[1]), str(row[2])])
-        c.print(WarpBlocks.table(
-            ["", "Paper ID", "Tables", "Pages"],
-            rows,
-            title=f"Papers with Stored Tables ({len(raw_rows)})"
-        ))
+        c.print(
+            WarpBlocks.table(
+                ["", "Paper ID", "Tables", "Pages"],
+                rows,
+                title=f"Papers with Stored Tables ({len(raw_rows)})",
+            )
+        )
 
     finally:
         db.close()
@@ -363,7 +429,8 @@ def visual_export(paper_id: str, output: str, format: str, page: int, keyword: s
         if keyword:
             keyword_lower = keyword.lower()
             tables = [
-                t for t in tables
+                t
+                for t in tables
                 if keyword_lower in t.table_caption.lower()
                 or any(keyword_lower in h.lower() for h in t.headers)
                 or any(keyword_lower in str(cell).lower() for row in t.rows for cell in row)
@@ -376,19 +443,24 @@ def visual_export(paper_id: str, output: str, format: str, page: int, keyword: s
         # Generate content
         if format == "json":
             import json
-            content = json.dumps({
-                "paper_id": paper_id,
-                "tables": [
-                    {
-                        "id": t.id,
-                        "page": t.page + 1,
-                        "caption": t.table_caption,
-                        "headers": t.headers,
-                        "rows": t.rows,
-                    }
-                    for t in tables
-                ],
-            }, indent=2, ensure_ascii=False)
+
+            content = json.dumps(
+                {
+                    "paper_id": paper_id,
+                    "tables": [
+                        {
+                            "id": t.id,
+                            "page": t.page + 1,
+                            "caption": t.table_caption,
+                            "headers": t.headers,
+                            "rows": t.rows,
+                        }
+                        for t in tables
+                    ],
+                },
+                indent=2,
+                ensure_ascii=False,
+            )
         elif format == "csv":
             lines = []
             for t in tables:
@@ -452,9 +524,7 @@ def visual_chart(paper_id: str, index: str, list_charts: bool, figure: str, tabl
 
         print_info(f"Indexing charts from {pdf_path} for paper: {paper_id}")
         try:
-            fig_nodes, tbl_nodes = extractor.extract_and_index(
-                str(pdf_path), paper_id, paper_title
-            )
+            fig_nodes, tbl_nodes = extractor.extract_and_index(str(pdf_path), paper_id, paper_title)
             integ.on_charts_indexed(paper_id, fig_nodes, tbl_nodes)
             print_success(f"Indexed {len(fig_nodes)} figures and {len(tbl_nodes)} tables")
         except Exception as e:
@@ -468,6 +538,7 @@ def visual_chart(paper_id: str, index: str, list_charts: bool, figure: str, tabl
         tables = extractor.get_paper_tables(paper_id)
 
         from rich.console import Console
+
         c = Console()
         c.rule(f"[bold #FF8272]  Charts for {paper_id}  [/]")
         c.print()

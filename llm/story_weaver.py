@@ -23,6 +23,7 @@ from llm.constants import LLM_BASE_URL, LLM_MODEL
 # Optional LLM import
 try:
     from llm.chat import call_llm_chat_completions
+
     LLM_AVAILABLE = True
 except ImportError:
     LLM_AVAILABLE = False
@@ -43,26 +44,29 @@ _CHAPTER_SUMMARY_USER_PROMPT_TEMPLATE = """章节: {chapter_title}
 
 class NarrativeRole(Enum):
     """Role a paper plays in the narrative."""
-    PROTAGONIST = "protagonist"   # 主角 - 主流方法
-    ANTAGONIST = "antagonist"     # 反派 - 待解决的问题
+
+    PROTAGONIST = "protagonist"  # 主角 - 主流方法
+    ANTAGONIST = "antagonist"  # 反派 - 待解决的问题
     TURNING_POINT = "turning_point"  # 转折点 - 突破性工作
-    DIVERGENCE = "divergence"    # 分叉 - 产生新方向
-    SYNTHESIS = "synthesis"      # 综合 - 融合多种方法
+    DIVERGENCE = "divergence"  # 分叉 - 产生新方向
+    SYNTHESIS = "synthesis"  # 综合 - 融合多种方法
 
 
 class RelationshipType(Enum):
     """Relationship between papers."""
-    INHERITS = "inherits"        # 继承
-    EXTENDS = "extends"          # 扩展
-    CONTRASTS = "contrasts"     # 对比
-    CONTRADICTS = "contradicts" # 矛盾
-    SYNTHESIZES = "synthesizes" # 综合
-    CITES = "cites"             # 引用
+
+    INHERITS = "inherits"  # 继承
+    EXTENDS = "extends"  # 扩展
+    CONTRASTS = "contrasts"  # 对比
+    CONTRADICTS = "contradicts"  # 矛盾
+    SYNTHESIZES = "synthesizes"  # 综合
+    CITES = "cites"  # 引用
 
 
 @dataclass
 class PaperNarrative:
     """Narrative element extracted from a paper."""
+
     paper_id: str
     title: str
     year: int
@@ -76,6 +80,7 @@ class PaperNarrative:
 @dataclass
 class Chapter:
     """A chapter in the research story."""
+
     title: str
     time_range: Tuple[int, int]
     papers: List[PaperNarrative]
@@ -86,6 +91,7 @@ class Chapter:
 @dataclass
 class Relationship:
     """Relationship between two papers."""
+
     from_paper: str
     to_paper: str
     relationship: RelationshipType
@@ -95,6 +101,7 @@ class Relationship:
 @dataclass
 class StoryResult:
     """Complete story weaving result."""
+
     topic: str
     chapters: List[Chapter] = field(default_factory=list)
     relationships: List[Relationship] = field(default_factory=list)
@@ -109,16 +116,16 @@ class StoryWeaver:
 
     # Key narrative patterns
     TURNING_POINT_PATTERNS = [
-        r'breakthrough|revolution|paradigm shift|game changer|state-of-the-art',
-        r'outperforms?|surpasses?|exceeds? previous',
-        r'first to|for the first time|introduces? a new',
-        r'despite|however|but|nevertheless|contradict',
+        r"breakthrough|revolution|paradigm shift|game changer|state-of-the-art",
+        r"outperforms?|surpasses?|exceeds? previous",
+        r"first to|for the first time|introduces? a new",
+        r"despite|however|but|nevertheless|contradict",
     ]
 
     DIVERGENCE_PATTERNS = [
-        r'alternative|instead|rather|unlike|contrast',
-        r'different approach|different from|diverges',
-        r'on the other hand|meanwhile|conversely',
+        r"alternative|instead|rather|unlike|contrast",
+        r"different approach|different from|diverges",
+        r"on the other hand|meanwhile|conversely",
     ]
 
     def __init__(self, db=None):
@@ -216,11 +223,11 @@ class StoryWeaver:
             rows, _ = self.db.search_papers(topic, limit=max_papers)
             for row in rows:
                 paper = {
-                    "id": getattr(row, 'id', ''),
-                    "title": getattr(row, 'title', '') or '',
-                    "abstract": getattr(row, 'abstract', '') or '',
-                    "year": getattr(row, 'year', 0) or 0,
-                    "citations": getattr(row, 'citations', 0) or 0,
+                    "id": getattr(row, "id", ""),
+                    "title": getattr(row, "title", "") or "",
+                    "abstract": getattr(row, "abstract", "") or "",
+                    "year": getattr(row, "year", 0) or 0,
+                    "citations": getattr(row, "citations", 0) or 0,
                 }
                 if int(paper["year"]) > 2000:
                     papers.append(paper)
@@ -238,8 +245,8 @@ class StoryWeaver:
 
         for paper in papers:
             text = f"{paper.get('title', '')} {paper.get('abstract', '')}".lower()
-            year = paper.get('year', 0)
-            title = paper.get('title', '')[:60]
+            year = paper.get("year", 0)
+            title = paper.get("title", "")[:60]
 
             # Determine role
             role = self._determine_role(text, year)
@@ -253,15 +260,17 @@ class StoryWeaver:
             # Check for turning point
             turning_type = self._detect_turning_point(text)
 
-            narratives.append(PaperNarrative(
-                paper_id=paper.get('id', ''),
-                title=title,
-                year=year,
-                role=role,
-                core_contribution=contribution,
-                key_insight=insight,
-                turning_point_type=turning_type,
-            ))
+            narratives.append(
+                PaperNarrative(
+                    paper_id=paper.get("id", ""),
+                    title=title,
+                    year=year,
+                    role=role,
+                    core_contribution=contribution,
+                    key_insight=insight,
+                    turning_point_type=turning_type,
+                )
+            )
 
         return narratives
 
@@ -269,7 +278,7 @@ class StoryWeaver:
         """Determine narrative role of a paper."""
         # High impact early papers are often protagonists
         if year <= 2018:
-            if any(p in text for p in ['attention is all you need', 'bert', 'gpt']):
+            if any(p in text for p in ["attention is all you need", "bert", "gpt"]):
                 return NarrativeRole.PROTAGONIST
 
         # Check for turning points
@@ -284,15 +293,15 @@ class StoryWeaver:
 
     def _extract_contribution(self, paper: Dict) -> str:
         """Extract core contribution from paper."""
-        title = paper.get('title', '')
-        abstract = paper.get('abstract', '')[:200]
+        title = paper.get("title", "")
+        abstract = paper.get("abstract", "")[:200]
 
         # Try to extract from abstract
         contribution_patterns = [
-            r'we (?:propose|present|introduce|develop) (.+?)\.',
-            r'this paper (.+?)\.',
-            r'we show that (.+?)\.',
-            r'(?:propose|present|introduce) (.+?)(?:\.|$)',
+            r"we (?:propose|present|introduce|develop) (.+?)\.",
+            r"this paper (.+?)\.",
+            r"we show that (.+?)\.",
+            r"(?:propose|present|introduce) (.+?)(?:\.|$)",
         ]
 
         for pattern in contribution_patterns:
@@ -305,10 +314,10 @@ class StoryWeaver:
     def _extract_insight(self, text: str) -> str:
         """Extract key insight from text."""
         insight_patterns = [
-            r'(?:key|central|core) insight:?\s*(.+?)(?:\.|$)',
-            r'we find that (.+?)(?:\.|$)',
-            r'discover(?:y|ed) that (.+?)(?:\.|$)',
-            r'((?:the|this) .+? is(?: all| the) .+?)(?:\.|$)',
+            r"(?:key|central|core) insight:?\s*(.+?)(?:\.|$)",
+            r"we find that (.+?)(?:\.|$)",
+            r"discover(?:y|ed) that (.+?)(?:\.|$)",
+            r"((?:the|this) .+? is(?: all| the) .+?)(?:\.|$)",
         ]
 
         for pattern in insight_patterns:
@@ -320,13 +329,13 @@ class StoryWeaver:
 
     def _detect_turning_point(self, text: str) -> str:
         """Detect type of turning point."""
-        if 'breakthrough' in text or 'revolution' in text:
+        if "breakthrough" in text or "revolution" in text:
             return "颠覆性突破"
-        if 'paradigm shift' in text:
+        if "paradigm shift" in text:
             return "范式转变"
-        if 'state-of-the-art' in text or 'sota' in text:
+        if "state-of-the-art" in text or "sota" in text:
             return "性能突破"
-        if 'first' in text and 'time' in text:
+        if "first" in text and "time" in text:
             return "首次实现"
         return ""
 
@@ -338,15 +347,17 @@ class StoryWeaver:
         relationships = []
 
         for i, narrative in enumerate(narratives):
-            for _j, other in enumerate(narratives[i + 1:], i + 1):
+            for _j, other in enumerate(narratives[i + 1 :], i + 1):
                 rel_type, desc = self._infer_relationship(narrative, other)
                 if rel_type:
-                    relationships.append(Relationship(
-                        from_paper=narrative.paper_id,
-                        to_paper=other.paper_id,
-                        relationship=rel_type,
-                        description=desc,
-                    ))
+                    relationships.append(
+                        Relationship(
+                            from_paper=narrative.paper_id,
+                            to_paper=other.paper_id,
+                            relationship=rel_type,
+                            description=desc,
+                        )
+                    )
 
         return relationships
 
@@ -358,7 +369,7 @@ class StoryWeaver:
         """Infer relationship between two papers."""
         # Time-based inheritance
         if b.year > a.year:
-            if 'extends' in a.title.lower() or 'building' in b.title.lower():
+            if "extends" in a.title.lower() or "building" in b.title.lower():
                 return RelationshipType.EXTENDS, f"{b.year} work extends {a.year} work"
 
         # Inherits from foundational work
@@ -367,11 +378,11 @@ class StoryWeaver:
                 return RelationshipType.INHERITS, f"Based on foundational work from {a.year}"
 
         # Divergence
-        if any(p in b.title.lower() for p in ['instead', 'alternative', 'rather', 'unlike']):
+        if any(p in b.title.lower() for p in ["instead", "alternative", "rather", "unlike"]):
             return RelationshipType.CONTRASTS, f"Proposes alternative to {a.title[:30]}..."
 
         # Contrast
-        if any(p in a.title.lower() + b.title.lower() for p in ['vs', 'versus', '对比', '比较']):
+        if any(p in a.title.lower() + b.title.lower() for p in ["vs", "versus", "对比", "比较"]):
             return RelationshipType.CONTRASTS, f"Contrasts with {a.title[:30]}..."
 
         return None, ""
@@ -432,11 +443,11 @@ class StoryWeaver:
         contradictions = []
 
         # Simple keyword-based contradiction detection
-        efficiency_keywords = ['efficient', 'fast', 'lightweight', 'small', 'distill']
-        scale_keywords = ['large', 'massive', 'scale', 'billions', 'parameters']
+        efficiency_keywords = ["efficient", "fast", "lightweight", "small", "distill"]
+        scale_keywords = ["large", "massive", "scale", "billions", "parameters"]
 
         for i, a in enumerate(narratives):
-            for b in narratives[i + 1:]:
+            for b in narratives[i + 1 :]:
                 a_text = a.title.lower()
                 b_text = b.title.lower()
 
@@ -457,16 +468,16 @@ class StoryWeaver:
         """Identify core themes in the research story."""
         themes = []
         theme_keywords = {
-            'Attention 机制': ['attention', 'self-attention', 'multi-head'],
-            '预训练范式': ['pre-train', 'fine-tun', 'mask'],
-            '规模化': ['scale', 'large', 'billions', 'parameters'],
-            '效率优化': ['efficient', 'fast', 'distill', 'prune', 'quantize'],
-            '多模态': ['multimodal', 'vision', 'image', 'text'],
-            '推理能力': ['reason', 'chain-of-thought', 'cot'],
-            '对齐与安全': ['align', 'rlhf', 'safety', 'value'],
+            "Attention 机制": ["attention", "self-attention", "multi-head"],
+            "预训练范式": ["pre-train", "fine-tun", "mask"],
+            "规模化": ["scale", "large", "billions", "parameters"],
+            "效率优化": ["efficient", "fast", "distill", "prune", "quantize"],
+            "多模态": ["multimodal", "vision", "image", "text"],
+            "推理能力": ["reason", "chain-of-thought", "cot"],
+            "对齐与安全": ["align", "rlhf", "safety", "value"],
         }
 
-        all_text = ' '.join(n.title.lower() for n in narratives)
+        all_text = " ".join(n.title.lower() for n in narratives)
         for theme, keywords in theme_keywords.items():
             if any(k in all_text for k in keywords):
                 themes.append(theme)
@@ -493,10 +504,9 @@ class StoryWeaver:
             if not chapter.papers:
                 continue
 
-            paper_texts = '\n'.join([
-                f"- {p.title} ({p.year}): {p.core_contribution}"
-                for p in chapter.papers[:5]
-            ])
+            paper_texts = "\n".join(
+                [f"- {p.title} ({p.year}): {p.core_contribution}" for p in chapter.papers[:5]]
+            )
 
             user_prompt = _CHAPTER_SUMMARY_USER_PROMPT_TEMPLATE.format(
                 chapter_title=chapter.title,
@@ -524,7 +534,7 @@ class StoryWeaver:
             return "暂无足够数据生成故事"
 
         # Build summary from themes and protagonist arc
-        themes = ', '.join(result.themes[:3]) if result.themes else '技术演进'
+        themes = ", ".join(result.themes[:3]) if result.themes else "技术演进"
 
         summary = f"""《{result.topic}》的演进是一场关于{themes}的探索。
 从 {result.chapters[0].time_range[0]} 年的开创性工作，到 {result.chapters[-1].time_range[-1]} 年的最新突破，
@@ -551,16 +561,24 @@ class StoryWeaver:
 
         # Compare time spans
         lines.append("")
-        lines.append(f"📅 {story_a.topic}: {story_a.chapters[0].time_range[0]}-{story_a.chapters[-1].time_range[-1]}")
-        lines.append(f"📅 {story_b.topic}: {story_b.chapters[0].time_range[0]}-{story_b.chapters[-1].time_range[-1]}")
+        lines.append(
+            f"📅 {story_a.topic}: {story_a.chapters[0].time_range[0]}-{story_a.chapters[-1].time_range[-1]}"
+        )
+        lines.append(
+            f"📅 {story_b.topic}: {story_b.chapters[0].time_range[0]}-{story_b.chapters[-1].time_range[-1]}"
+        )
 
         # Compare protagonists
         lines.append("")
         lines.append("🎭 主角发展弧线:")
-        lines.append(f"  • {story_a.topic}: {story_a.protagonist_arc[:80] if story_a.protagonist_arc else '传统方法演进'}")
-        lines.append(f"  • {story_b.topic}: {story_b.protagonist_arc[:80] if story_b.protagonist_arc else '新方法探索'}")
+        lines.append(
+            f"  • {story_a.topic}: {story_a.protagonist_arc[:80] if story_a.protagonist_arc else '传统方法演进'}"
+        )
+        lines.append(
+            f"  • {story_b.topic}: {story_b.protagonist_arc[:80] if story_b.protagonist_arc else '新方法探索'}"
+        )
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def _empty_result(self, topic: str) -> StoryResult:
         """Return empty result."""
@@ -621,7 +639,7 @@ class StoryWeaver:
         if result.summary:
             lines.append(f"📝 {result.summary}")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def render_mermaid(self, result: StoryResult) -> str:
         """Render story as Mermaid flowchart."""
@@ -642,7 +660,7 @@ class StoryWeaver:
                 }.get(paper.role, "fill:#ddd")
 
                 lines.append(f'    {node_id}["{paper.title[:30]}..."]:::{paper.role.value}')
-                lines.append(f'    classDef {paper.role.value} {role_class}')
+                lines.append(f"    classDef {paper.role.value} {role_class}")
 
         lines.append("```")
-        return '\n'.join(lines)
+        return "\n".join(lines)

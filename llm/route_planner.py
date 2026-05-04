@@ -3,6 +3,7 @@
 A GPS for research — plans a concrete reading + experiment sequence from hypothesis to verdict.
 Visualizes as a dependency graph, tracks progress, and re-plans on dead ends.
 """
+
 from __future__ import annotations
 
 import json
@@ -46,11 +47,12 @@ class PlanStatus(Enum):
 @dataclass
 class PlanStep:
     """A single step in the research route."""
+
     step_id: str
     type: StepType
     description: str
     estimated_hours: float = 1.0
-    dependencies: List[str] = field(default_factory=list)   # step_ids this depends on
+    dependencies: List[str] = field(default_factory=list)  # step_ids this depends on
     status: StepStatus = StepStatus.PENDING
     result: str = ""
     notes: str = ""
@@ -68,7 +70,9 @@ class PlanStep:
             "result": self.result,
             "notes": self.notes,
             "created_at": datetime.fromtimestamp(self.created_at).isoformat(),
-            "completed_at": datetime.fromtimestamp(self.completed_at).isoformat() if self.completed_at else "",
+            "completed_at": datetime.fromtimestamp(self.completed_at).isoformat()
+            if self.completed_at
+            else "",
         }
 
     @classmethod
@@ -82,9 +86,10 @@ class PlanStep:
 @dataclass
 class ResearchPlan:
     """A complete research route plan."""
+
     plan_id: str
     hypothesis: str
-    goal: str                        # what we're trying to determine
+    goal: str  # what we're trying to determine
     steps: List[PlanStep] = field(default_factory=list)
     status: PlanStatus = PlanStatus.ACTIVE
     current_step_id: str = ""
@@ -92,7 +97,7 @@ class ResearchPlan:
     updated_at: float = field(default_factory=time.time)
     completed_at: float = 0
     revision_count: int = 0
-    parent_plan_id: str = ""         # if this is a revised plan
+    parent_plan_id: str = ""  # if this is a revised plan
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -104,7 +109,9 @@ class ResearchPlan:
             "current_step_id": self.current_step_id,
             "created_at": datetime.fromtimestamp(self.created_at).isoformat(),
             "updated_at": datetime.fromtimestamp(self.updated_at).isoformat(),
-            "completed_at": datetime.fromtimestamp(self.completed_at).isoformat() if self.completed_at else "",
+            "completed_at": datetime.fromtimestamp(self.completed_at).isoformat()
+            if self.completed_at
+            else "",
             "revision_count": self.revision_count,
             "parent_plan_id": self.parent_plan_id,
         }
@@ -137,7 +144,9 @@ class ResearchPlan:
         completed = sum(1 for s in self.steps if s.status == StepStatus.COMPLETED)
         failed = sum(1 for s in self.steps if s.status == StepStatus.FAILED)
         total_hours = sum(s.estimated_hours for s in self.steps)
-        completed_hours = sum(s.estimated_hours for s in self.steps if s.status == StepStatus.COMPLETED)
+        completed_hours = sum(
+            s.estimated_hours for s in self.steps if s.status == StepStatus.COMPLETED
+        )
         return {
             "total_steps": total,
             "completed": completed,
@@ -272,12 +281,42 @@ Rules:
             # Fallback to a simple default plan
             parsed = {
                 "steps": [
-                    {"type": "survey_baselines", "description": "Survey existing baseline methods for " + hypothesis[:60], "estimated_hours": 4.0, "dependencies": []},
-                    {"type": "read_paper", "description": "Read 3 most relevant papers on " + hypothesis[:60], "estimated_hours": 3.0, "dependencies": []},
-                    {"type": "check_contradiction", "description": "Check if any evidence contradicts the hypothesis", "estimated_hours": 2.0, "dependencies": ["step_1", "step_2"]},
-                    {"type": "run_experiment", "description": "Design and run experiments to test " + hypothesis[:60], "estimated_hours": 8.0, "dependencies": ["step_3"]},
-                    {"type": "compare_methods", "description": "Compare results against reported baselines", "estimated_hours": 3.0, "dependencies": ["step_4"]},
-                    {"type": "write_analysis", "description": "Write up findings and conclusions", "estimated_hours": 4.0, "dependencies": ["step_5"]},
+                    {
+                        "type": "survey_baselines",
+                        "description": "Survey existing baseline methods for " + hypothesis[:60],
+                        "estimated_hours": 4.0,
+                        "dependencies": [],
+                    },
+                    {
+                        "type": "read_paper",
+                        "description": "Read 3 most relevant papers on " + hypothesis[:60],
+                        "estimated_hours": 3.0,
+                        "dependencies": [],
+                    },
+                    {
+                        "type": "check_contradiction",
+                        "description": "Check if any evidence contradicts the hypothesis",
+                        "estimated_hours": 2.0,
+                        "dependencies": ["step_1", "step_2"],
+                    },
+                    {
+                        "type": "run_experiment",
+                        "description": "Design and run experiments to test " + hypothesis[:60],
+                        "estimated_hours": 8.0,
+                        "dependencies": ["step_3"],
+                    },
+                    {
+                        "type": "compare_methods",
+                        "description": "Compare results against reported baselines",
+                        "estimated_hours": 3.0,
+                        "dependencies": ["step_4"],
+                    },
+                    {
+                        "type": "write_analysis",
+                        "description": "Write up findings and conclusions",
+                        "estimated_hours": 4.0,
+                        "dependencies": ["step_5"],
+                    },
                 ]
             }
 
@@ -287,19 +326,21 @@ Rules:
         step_id_map = {}
 
         for i, s in enumerate(parsed.get("steps", [])):
-            step_id = f"step_{i+1}"
+            step_id = f"step_{i + 1}"
             step_id_map[step_id] = step_id
             dep_ids = []
             for dep in s.get("dependencies", []):
                 dep_ids.append(dep)
 
-            steps.append(PlanStep(
-                step_id=step_id,
-                type=StepType(s.get("type", "read_paper")),
-                description=s.get("description", ""),
-                estimated_hours=float(s.get("estimated_hours", 1.0)),
-                dependencies=dep_ids,
-            ))
+            steps.append(
+                PlanStep(
+                    step_id=step_id,
+                    type=StepType(s.get("type", "read_paper")),
+                    description=s.get("description", ""),
+                    estimated_hours=float(s.get("estimated_hours", 1.0)),
+                    dependencies=dep_ids,
+                )
+            )
 
         plan = ResearchPlan(
             plan_id=plan_id,
@@ -336,12 +377,16 @@ Rules:
         for s in old_plan.steps:
             if s.status == StepStatus.COMPLETED:
                 result_str = f" → {s.result}" if s.result else ""
-                completed_context.append(f"- [{s.type.value}] {s.description}: COMPLETED{result_str}")
+                completed_context.append(
+                    f"- [{s.type.value}] {s.description}: COMPLETED{result_str}"
+                )
             elif s.status == StepStatus.FAILED:
                 notes_str = f" ({s.notes})" if s.notes else ""
                 completed_context.append(f"- [{s.type.value}] {s.description}: FAILED{notes_str}")
 
-        completed_text = "\n".join(completed_context) if completed_context else "No steps completed yet."
+        completed_text = (
+            "\n".join(completed_context) if completed_context else "No steps completed yet."
+        )
 
         # Determine next steps to replan
         ready = old_plan.get_ready_steps()
@@ -427,13 +472,15 @@ Respond ONLY with valid JSON:
                 elif dep.startswith("step_") and dep not in old_to_new:
                     pass  # drop dependency on steps that don't exist
 
-            new_steps.append(PlanStep(
-                step_id=new_step_id,
-                type=StepType(s_data.get("type", "read_paper")),
-                description=s_data.get("description", ""),
-                estimated_hours=float(s_data.get("estimated_hours", 1.0)),
-                dependencies=deps,
-            ))
+            new_steps.append(
+                PlanStep(
+                    step_id=new_step_id,
+                    type=StepType(s_data.get("type", "read_paper")),
+                    description=s_data.get("description", ""),
+                    estimated_hours=float(s_data.get("estimated_hours", 1.0)),
+                    dependencies=deps,
+                )
+            )
 
         new_plan = ResearchPlan(
             plan_id=new_plan_id,
@@ -506,7 +553,9 @@ Respond ONLY with valid JSON:
         self._save_plan(plan)
         return plan
 
-    def list_plans(self, status: Optional[PlanStatus] = None, limit: int = 20) -> List[ResearchPlan]:
+    def list_plans(
+        self, status: Optional[PlanStatus] = None, limit: int = 20
+    ) -> List[ResearchPlan]:
         """List all plans, optionally filtered by status."""
         index = _get_plans_index()
         plans = []

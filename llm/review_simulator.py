@@ -3,6 +3,7 @@
 Simulates adversarial peer reviewers stress-testing a paper or proposal.
 Plays hostile reviewer personas to surface weaknesses before submission.
 """
+
 from __future__ import annotations
 
 import json
@@ -28,23 +29,24 @@ class ReviewDimension(Enum):
 
 
 class Severity(Enum):
-    CRITICAL = "critical"   # must fix before submission
-    MAJOR = "major"        # significant weakness
-    MINOR = "minor"        # optional improvement
-    PRAISE = "praise"      # genuinely good
+    CRITICAL = "critical"  # must fix before submission
+    MAJOR = "major"  # significant weakness
+    MINOR = "minor"  # optional improvement
+    PRAISE = "praise"  # genuinely good
 
 
 @dataclass
 class ReviewAnnotation:
     """A single annotated comment on the paper."""
+
     annotation_id: str
     dimension: ReviewDimension
     severity: Severity
-    location: str           # "abstract", "introduction", "section 3", "table 2", etc.
-    headline: str           # one-line summary of the issue
-    comment: str            # detailed reviewer comment
-    suggestion: str = ""    # concrete fix suggestion
-    page_line: str = ""     # optional specific location
+    location: str  # "abstract", "introduction", "section 3", "table 2", etc.
+    headline: str  # one-line summary of the issue
+    comment: str  # detailed reviewer comment
+    suggestion: str = ""  # concrete fix suggestion
+    page_line: str = ""  # optional specific location
     created_at: float = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -64,23 +66,25 @@ class ReviewAnnotation:
 @dataclass
 class ReviewPersona:
     """A simulated reviewer persona with a specific lens."""
-    name: str              # e.g. "Methodology Reviewer"
+
+    name: str  # e.g. "Methodology Reviewer"
     focus: List[ReviewDimension]
-    tone: str              # "hostile", "constructive", "technical"
+    tone: str  # "hostile", "constructive", "technical"
     priority_instructions: str
 
 
 @dataclass
 class SimulatedReview:
     """Complete simulated review from one persona."""
+
     review_id: str
     persona: str
-    overall_score: float          # 1–10
-    summary: str                   # 2–3 sentence overall assessment
+    overall_score: float  # 1–10
+    summary: str  # 2–3 sentence overall assessment
     strengths: List[str]
     weaknesses: List[str]
     annotations: List[ReviewAnnotation]
-    recommendation: str            # accept / borderline / reject / strong reject
+    recommendation: str  # accept / borderline / reject / strong reject
     created_at: float = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -103,7 +107,11 @@ class SimulatedReview:
 _REVIEW_PERSONAS = [
     ReviewPersona(
         name="Methodology Reviewer",
-        focus=[ReviewDimension.METHODOLOGY, ReviewDimension.BASELINES_COMPARISON, ReviewDimension.REPRODUCIBILITY],
+        focus=[
+            ReviewDimension.METHODOLOGY,
+            ReviewDimension.BASELINES_COMPARISON,
+            ReviewDimension.REPRODUCIBILITY,
+        ],
         tone="hostile",
         priority_instructions="Focus on whether the methodology is sound, whether experiments are properly controlled, whether baselines are fair and complete, and whether the approach can be reproduced from the description.",
     ),
@@ -197,7 +205,7 @@ Your persona: **{persona.name}** — you specialize in: {focus_dims}
 
 Be adversarial. Find real weaknesses. Do not be polite.
 
-PAPER TITLE: {title or 'Unknown'}
+PAPER TITLE: {title or "Unknown"}
 PAPER TEXT (or key sections):
 ---
 {paper_text[:8000]}
@@ -241,15 +249,17 @@ Only include annotations for genuine issues. Maximum 6 annotations per review. I
                 try:
                     dim = ReviewDimension(a.get("dimension", "methodology"))
                     sev = Severity(a.get("severity", "major"))
-                    annotations.append(ReviewAnnotation(
-                        annotation_id=str(uuid.uuid4())[:8],
-                        dimension=dim,
-                        severity=sev,
-                        location=a.get("location", ""),
-                        headline=a.get("headline", ""),
-                        comment=a.get("comment", ""),
-                        suggestion=a.get("suggestion", ""),
-                    ))
+                    annotations.append(
+                        ReviewAnnotation(
+                            annotation_id=str(uuid.uuid4())[:8],
+                            dimension=dim,
+                            severity=sev,
+                            location=a.get("location", ""),
+                            headline=a.get("headline", ""),
+                            comment=a.get("comment", ""),
+                            suggestion=a.get("suggestion", ""),
+                        )
+                    )
                 except Exception:
                     pass
 
@@ -293,14 +303,20 @@ Only include annotations for genuine issues. Maximum 6 annotations per review. I
         # Deduplicate annotations by headline similarity
         seen_headlines = set()
         unique_annotations = []
-        for a in sorted(all_annotations, key=lambda x: severity_scores.get(x.severity.value, 0), reverse=True):
+        for a in sorted(
+            all_annotations, key=lambda x: severity_scores.get(x.severity.value, 0), reverse=True
+        ):
             h = a.headline[:40].lower()
             if h not in seen_headlines:
                 seen_headlines.add(h)
                 unique_annotations.append(a)
 
         recommendations = [r.recommendation for r in reviews]
-        final_rec = max(set(recommendations), key=recommendations.count) if recommendations else "borderline"
+        final_rec = (
+            max(set(recommendations), key=recommendations.count)
+            if recommendations
+            else "borderline"
+        )
 
         return SimulatedReview(
             review_id=str(uuid.uuid4())[:8],
@@ -343,7 +359,9 @@ def save_review(review: SimulatedReview) -> Path:
     """Save a review to disk."""
     path = _get_review_path()
     filepath = path / f"review_{review.review_id}.json"
-    filepath.write_text(json.dumps(review.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
+    filepath.write_text(
+        json.dumps(review.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     return filepath
 
 
@@ -359,17 +377,19 @@ def load_review(review_id: str) -> Optional[SimulatedReview]:
         for a in d.pop("annotations", []):
             dim = ReviewDimension(a.get("dimension", "methodology"))
             sev = Severity(a.get("severity", "major"))
-            annotations.append(ReviewAnnotation(
-                annotation_id=a.get("annotation_id", str(uuid.uuid4())[:8]),
-                dimension=dim,
-                severity=sev,
-                location=a.get("location", ""),
-                headline=a.get("headline", ""),
-                comment=a.get("comment", ""),
-                suggestion=a.get("suggestion", ""),
-                page_line=a.get("page_line", ""),
-                created_at=a.get("created_at", time.time()),
-            ))
+            annotations.append(
+                ReviewAnnotation(
+                    annotation_id=a.get("annotation_id", str(uuid.uuid4())[:8]),
+                    dimension=dim,
+                    severity=sev,
+                    location=a.get("location", ""),
+                    headline=a.get("headline", ""),
+                    comment=a.get("comment", ""),
+                    suggestion=a.get("suggestion", ""),
+                    page_line=a.get("page_line", ""),
+                    created_at=a.get("created_at", time.time()),
+                )
+            )
         return SimulatedReview(annotations=annotations, **d)
     except Exception:
         return None
@@ -382,14 +402,16 @@ def list_reviews(limit: int = 20) -> List[Dict[str, Any]]:
     for f in sorted(path.glob("review_*.json"), reverse=True)[:limit]:
         try:
             d = json.loads(f.read_text(encoding="utf-8"))
-            reviews.append({
-                "review_id": d.get("review_id", f.stem),
-                "persona": d.get("persona", ""),
-                "overall_score": d.get("overall_score", 0),
-                "recommendation": d.get("recommendation", ""),
-                "created_at": d.get("created_at", ""),
-                "annotation_count": len(d.get("annotations", [])),
-            })
+            reviews.append(
+                {
+                    "review_id": d.get("review_id", f.stem),
+                    "persona": d.get("persona", ""),
+                    "overall_score": d.get("overall_score", 0),
+                    "recommendation": d.get("recommendation", ""),
+                    "created_at": d.get("created_at", ""),
+                    "annotation_count": len(d.get("annotations", [])),
+                }
+            )
         except Exception:
             pass
     return reviews

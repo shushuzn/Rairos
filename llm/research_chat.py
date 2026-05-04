@@ -1,4 +1,5 @@
 """Research Chat: AI research assistant with context awareness."""
+
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, cast
 from enum import Enum
@@ -6,6 +7,7 @@ from enum import Enum
 
 class QueryType(Enum):
     """Query classification types."""
+
     FACTUAL = "factual"  # Factual questions
     INFERENTIAL = "inferential"  # Reasoning questions
     DISCOVERY = "discovery"  # Discovery/gap questions
@@ -15,6 +17,7 @@ class QueryType(Enum):
 @dataclass
 class PaperContext:
     """Paper context for chat."""
+
     uid: str
     title: str
     abstract: str
@@ -26,6 +29,7 @@ class PaperContext:
 @dataclass
 class ResearchContext:
     """User's research context."""
+
     topic: str
     papers: List[PaperContext] = field(default_factory=list)
     insights: List[Any] = field(default_factory=list)  # InsightCard
@@ -38,13 +42,43 @@ class ResearchChat:
 
     # Chinese and English stopwords for topic extraction
     STOPWORDS = {
-        "的", "是", "什么", "如何", "为什么", "有", "哪些", "哪个",
-        "和", "与", "在", "了", "都", "也", "要", "能", "可以",
-        "the", "a", "an", "is", "are", "was", "were", "what",
-        "how", "why", "which", "this", "that", "these", "those",
+        "的",
+        "是",
+        "什么",
+        "如何",
+        "为什么",
+        "有",
+        "哪些",
+        "哪个",
+        "和",
+        "与",
+        "在",
+        "了",
+        "都",
+        "也",
+        "要",
+        "能",
+        "可以",
+        "the",
+        "a",
+        "an",
+        "is",
+        "are",
+        "was",
+        "were",
+        "what",
+        "how",
+        "why",
+        "which",
+        "this",
+        "that",
+        "these",
+        "those",
     }
 
-    def __init__(self, db=None, insight_manager=None, kg=None, api_key=None, base_url=None, model=None):
+    def __init__(
+        self, db=None, insight_manager=None, kg=None, api_key=None, base_url=None, model=None
+    ):
         self.db = db
         self.insight_manager = insight_manager
         self.kg = kg
@@ -85,14 +119,12 @@ class ResearchChat:
     def _extract_topic(self, query: str) -> str:
         """Extract topic from query."""
         import re
+
         # Tokenize: Chinese sequences (2+ chars) and English words as atomic tokens
-        words = re.findall(r'[\u4e00-\u9fff]{2,}|[a-zA-Z]+', query)
+        words = re.findall(r"[\u4e00-\u9fff]{2,}|[a-zA-Z]+", query)
 
         # Filter stopwords and short words
-        candidates = [
-            w for w in words
-            if w.lower() not in self.STOPWORDS and len(w) > 1
-        ]
+        candidates = [w for w in words if w.lower() not in self.STOPWORDS and len(w) > 1]
 
         # Return top 3 candidates joined
         if candidates:
@@ -115,9 +147,7 @@ class ResearchChat:
                 title=r.title,
                 abstract=getattr(r, "abstract", ""),
                 authors=(
-                    r.authors
-                    if hasattr(r, "authors") and isinstance(r.authors, list)
-                    else []
+                    r.authors if hasattr(r, "authors") and isinstance(r.authors, list) else []
                 ),
                 year=getattr(r, "year", 2020),
             )
@@ -207,15 +237,17 @@ class ResearchChat:
 
     def _build_system_prompt(self, ctx: ResearchContext) -> str:
         """Build system prompt with context."""
-        papers_info = "\n".join([
-            f"- {p.title} ({p.year})"
-            for p in ctx.papers[:5]
-        ]) if ctx.papers else "No relevant papers found"
+        papers_info = (
+            "\n".join([f"- {p.title} ({p.year})" for p in ctx.papers[:5]])
+            if ctx.papers
+            else "No relevant papers found"
+        )
 
-        insights_info = "\n".join([
-            f"- {i.content[:100]}"
-            for i in ctx.insights[:3]
-        ]) if ctx.insights else "No relevant insights"
+        insights_info = (
+            "\n".join([f"- {i.content[:100]}" for i in ctx.insights[:3]])
+            if ctx.insights
+            else "No relevant insights"
+        )
 
         # KG relations: related papers via shared tags
         kg_info = ""
@@ -228,7 +260,10 @@ class ResearchChat:
                 if related:
                     lines.append(f"- {src} is related to: {', '.join(related)}")
             if lines:
-                kg_info = "\nKnowledge graph relations (papers sharing research topics):\n" + "\n".join(lines)
+                kg_info = (
+                    "\nKnowledge graph relations (papers sharing research topics):\n"
+                    + "\n".join(lines)
+                )
 
         return f"""You are a research assistant. Answer questions based on the user's research library.
 
@@ -276,13 +311,16 @@ Guidelines:
             {"role": "user", "content": user_prompt},
         ]
 
-        return cast(str, call_llm_chat_completions(
-            messages=messages,
-            model=self.model,
-            api_key=self.api_key,
-            base_url=self.base_url or "https://api.openai.com/v1",
-            system_prompt=None,
-        ))
+        return cast(
+            str,
+            call_llm_chat_completions(
+                messages=messages,
+                model=self.model,
+                api_key=self.api_key,
+                base_url=self.base_url or "https://api.openai.com/v1",
+                system_prompt=None,
+            ),
+        )
 
     def chat_stream(
         self,

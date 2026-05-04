@@ -1,6 +1,7 @@
 """
 Replication Tracker: Track paper replication attempts.
 """
+
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any
 from datetime import datetime
@@ -12,6 +13,7 @@ from llm.tracker_base import JsonFileStore
 @dataclass
 class ReplicationAttempt:
     """A replication attempt."""
+
     attempt_id: str
     paper_id: str
     paper_title: str
@@ -27,6 +29,7 @@ class ReplicationAttempt:
 @dataclass
 class ReplicationReport:
     """A replication report."""
+
     attempt: ReplicationAttempt
     summary: str = ""
     methodology: str = ""
@@ -66,18 +69,20 @@ class ReplicationTracker(JsonFileStore):
             config=config or {},
         )
 
-        data.append({
-            "attempt_id": attempt.attempt_id,
-            "paper_id": attempt.paper_id,
-            "paper_title": attempt.paper_title,
-            "status": attempt.status,
-            "attempt_date": attempt.attempt_date,
-            "environment": attempt.environment,
-            "results": attempt.results,
-            "differences": attempt.differences,
-            "notes": attempt.notes,
-            "config": attempt.config,
-        })
+        data.append(
+            {
+                "attempt_id": attempt.attempt_id,
+                "paper_id": attempt.paper_id,
+                "paper_title": attempt.paper_title,
+                "status": attempt.status,
+                "attempt_date": attempt.attempt_date,
+                "environment": attempt.environment,
+                "results": attempt.results,
+                "differences": attempt.differences,
+                "notes": attempt.notes,
+                "config": attempt.config,
+            }
+        )
 
         self._save(data)
         return attempt
@@ -176,9 +181,7 @@ class ReplicationTracker(JsonFileStore):
         elif attempt.status == "failed":
             report.summary = f"Failed to replicate '{attempt.paper_title}'"
             if attempt.differences:
-                report.findings.append(
-                    f"Found {len(attempt.differences)} key differences"
-                )
+                report.findings.append(f"Found {len(attempt.differences)} key differences")
         elif attempt.status == "partial":
             report.summary = f"Partially replicated '{attempt.paper_title}'"
             report.findings.append("Some results matched, others diverged")
@@ -235,9 +238,11 @@ class ReplicationTracker(JsonFileStore):
         lines = ["=" * 70, "🔬 Replication Tracker", "=" * 70, ""]
 
         stats = self.get_statistics()
-        lines.append(f"Total: {stats['total']} | Success: {stats['success']} | "
-                    f"Failed: {stats['failed']} | Partial: {stats['partial']} | "
-                    f"In Progress: {stats['in_progress']}")
+        lines.append(
+            f"Total: {stats['total']} | Success: {stats['success']} | "
+            f"Failed: {stats['failed']} | Partial: {stats['partial']} | "
+            f"In Progress: {stats['in_progress']}"
+        )
         lines.append("")
 
         for attempt in attempts[:20]:
@@ -284,7 +289,11 @@ class ReplicationTracker(JsonFileStore):
             lines.append("|-------|--------|------|")
 
             for attempt in attempts[:10]:
-                title = attempt.paper_title[:40] + "..." if len(attempt.paper_title) > 40 else attempt.paper_title
+                title = (
+                    attempt.paper_title[:40] + "..."
+                    if len(attempt.paper_title) > 40
+                    else attempt.paper_title
+                )
                 lines.append(f"| {title} | {attempt.status} | {attempt.attempt_date} |")
 
         return "\n".join(lines)

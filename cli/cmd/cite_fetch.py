@@ -1,4 +1,5 @@
 """CLI command: cite-fetch."""
+
 from __future__ import annotations
 
 import argparse
@@ -37,10 +38,13 @@ def _openalex_request(path: str, timeout: int = 15) -> dict:
     ctx = _build_openalex_ctx()
     proxy_handler = urllib.request.ProxyHandler({})
     opener = urllib.request.build_opener(proxy_handler, urllib.request.HTTPSHandler(context=ctx))
-    req = urllib.request.Request(url, headers={
-        "User-Agent": f"ai_research_os/1.0 (mailto:{_OPENALEX_EMAIL})",
-        "Accept": "application/json",
-    })
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": f"ai_research_os/1.0 (mailto:{_OPENALEX_EMAIL})",
+            "Accept": "application/json",
+        },
+    )
     try:
         with opener.open(req, timeout=timeout) as resp:
             return json.loads(resp.read())  # type: ignore[no-any-return]
@@ -76,7 +80,9 @@ def _get_openalex_citing(openalex_id: str, per_page: int = 200) -> Tuple[list[di
     """Get all papers citing this paper (forward citations). Returns (list of work dicts, total count)."""
     oid = openalex_id.rstrip("/").split("/")[-1]
     try:
-        d = _openalex_request(f"/works?filter=cites:{oid}&per-page={per_page}&mailto={_OPENALEX_EMAIL}")
+        d = _openalex_request(
+            f"/works?filter=cites:{oid}&per-page={per_page}&mailto={_OPENALEX_EMAIL}"
+        )
         return d.get("results", []) or [], d.get("meta", {}).get("count", 0)
     except Exception as e:
         warnings.warn(f"OpenAlex citing lookup failed for {openalex_id}: {e}", stacklevel=2)
@@ -111,8 +117,8 @@ def _work_to_paper_record(work: dict, source: str = "openalex") -> Optional["Pap
         if not paper_id:
             return None
 
-    primary_location = (work.get("primary_location") or {})
-    best_oa = (primary_location.get("best_oa_location") or {})
+    primary_location = work.get("primary_location") or {}
+    best_oa = primary_location.get("best_oa_location") or {}
     landing = best_oa.get("landing_page_url") or ids.get("doi") or ""
 
     authors = [
@@ -142,7 +148,9 @@ def _work_to_paper_record(work: dict, source: str = "openalex") -> Optional["Pap
         abs_url=landing,
         pdf_url=best_oa.get("pdf_url") or "",
         primary_category="",
-        journal=work.get("host_venue", {}).get("display_name", "") if isinstance(work.get("host_venue"), dict) else "",
+        journal=work.get("host_venue", {}).get("display_name", "")
+        if isinstance(work.get("host_venue"), dict)
+        else "",
         volume="",
         issue="",
         page="",
@@ -207,7 +215,7 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
     direction = args.direction
     dry_run = args.dry_run
     max_per_paper = args.max_per_paper
-    max_workers = min(getattr(args, 'workers', 10), 20)
+    max_workers = min(getattr(args, "workers", 10), 20)
 
     paper_ids: list[str]
 
@@ -353,6 +361,9 @@ def _run_cite_fetch(args: argparse.Namespace) -> int:
     print(f"  Papers imported from OpenAlex: {total_imported[0]}", file=sys.stderr)
     print(f"  Errors: {total_errors[0]}", file=sys.stderr)
     if direction in ("to", "both"):
-        print(f"  Note: {total_cited_by_count[0]} forward citations found (some may be outside DB)", file=sys.stderr)
+        print(
+            f"  Note: {total_cited_by_count[0]} forward citations found (some may be outside DB)",
+            file=sys.stderr,
+        )
 
     return 0

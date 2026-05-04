@@ -37,7 +37,11 @@ def extract_commands():
         if not func:
             # Try without module prefix (some files have different naming)
             for node in ast.walk(tree):
-                if isinstance(node, ast.FunctionDef) and node.name.startswith("_build_") and node.name.endswith("_parser"):
+                if (
+                    isinstance(node, ast.FunctionDef)
+                    and node.name.startswith("_build_")
+                    and node.name.endswith("_parser")
+                ):
                     builder_name = node.name
                     func = node
                     break
@@ -89,13 +93,15 @@ def extract_commands():
                     if sub_name:
                         subcommands.append({"name": sub_name, "help": sub_help})
 
-        commands.append({
-            "name": cmd_name,
-            "module": module_name,
-            "help": help_text or desc_text,
-            "subcommands": subcommands,
-            "file": f"cli/cmd/{module_name}.py",
-        })
+        commands.append(
+            {
+                "name": cmd_name,
+                "module": module_name,
+                "help": help_text or desc_text,
+                "subcommands": subcommands,
+                "file": f"cli/cmd/{module_name}.py",
+            }
+        )
 
     return commands
 
@@ -106,13 +112,67 @@ def escape(s):
 
 def generate_html(commands):
     groups = {
-        "Core": ["import", "search", "list", "stats", "status", "export", "dedup", "dedup-semantic", "similar"],
-        "Papers": ["cite-fetch", "cite-graph", "cite-import", "cite-stats", "cite-backfill", "citation-chain", "citations"],
-        "Research": ["research", "gap", "trend", "influence", "path", "hypothesize", "story", "argue", "narrative"],
-        "Insight": ["insight", "evolution", "journal", "digest", "lean", "benchmark", "question", "review", "analyze"],
+        "Core": [
+            "import",
+            "search",
+            "list",
+            "stats",
+            "status",
+            "export",
+            "dedup",
+            "dedup-semantic",
+            "similar",
+        ],
+        "Papers": [
+            "cite-fetch",
+            "cite-graph",
+            "cite-import",
+            "cite-stats",
+            "cite-backfill",
+            "citation-chain",
+            "citations",
+        ],
+        "Research": [
+            "research",
+            "gap",
+            "trend",
+            "influence",
+            "path",
+            "hypothesize",
+            "story",
+            "argue",
+            "narrative",
+        ],
+        "Insight": [
+            "insight",
+            "evolution",
+            "journal",
+            "digest",
+            "lean",
+            "benchmark",
+            "question",
+            "review",
+            "analyze",
+        ],
         "Agents": ["agent", "chat", "chat-tui", "route", "friction", "subscribe", "repl"],
         "Knowledge": ["kg", "rag", "pipeline", "experiment", "postprocess", "validate", "ingest"],
-        "Tools": ["cache", "queue", "read-queue", "slides", "session", "dashboard", "roadmap", "merge", "litreview", "compare", "replicate", "paper2code", "evoskill", "visual", "ask"],
+        "Tools": [
+            "cache",
+            "queue",
+            "read-queue",
+            "slides",
+            "session",
+            "dashboard",
+            "roadmap",
+            "merge",
+            "litreview",
+            "compare",
+            "replicate",
+            "paper2code",
+            "evoskill",
+            "visual",
+            "ask",
+        ],
     }
 
     html = []
@@ -123,7 +183,8 @@ def generate_html(commands):
     html.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>")
     html.append("<title>CLI API Reference — AI Research OS</title>")
     html.append("<style>")
-    html.append("""
+    html.append(
+        """
     :root {
       --bg: #faf8f5;
       --bg-card: #ffffff;
@@ -152,16 +213,22 @@ def generate_html(commands):
     .cmd-sub-help { color: var(--text-muted); }
     .cmd-file { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.3rem; font-family: monospace; }
     footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.8rem; }
-    """ + f"\n    // {len(commands)} commands loaded\n")
+    """
+        + f"\n    // {len(commands)} commands loaded\n"
+    )
     html.append("</style>")
     html.append("</head>")
     html.append("<body>")
     html.append("<header>")
     html.append("<h1>CLI API Reference</h1>")
-    html.append("<p>AI Research OS · Auto-generated from source · Run <code>airos-cli &lt;command&gt; --help</code> for full docs</p>")
+    html.append(
+        "<p>AI Research OS · Auto-generated from source · Run <code>airos-cli &lt;command&gt; --help</code> for full docs</p>"
+    )
     html.append("</header>")
     html.append("<div class='container'>")
-    html.append("<input class='search-bar' id='search' placeholder='Search commands...' oninput='filter()'/>")
+    html.append(
+        "<input class='search-bar' id='search' placeholder='Search commands...' oninput='filter()'/>"
+    )
 
     # Sort commands by group
     name_to_cmd = {c["name"]: c for c in commands}
@@ -176,11 +243,17 @@ def generate_html(commands):
             subs = cmd.get("subcommands", [])
             sub_html = ""
             if subs:
-                sub_html = "<div class='cmd-subs'>" + "".join(
-                    f"<span class='cmd-sub'><span class='cmd-sub-name'>{escape(s['name'])}</span> <span class='cmd-sub-help'>{escape(s['help'][:40])}</span></span>"
-                    for s in subs
-                ) + "</div>"
-            html.append(f"<div class='cmd-card' data-name='{escape(cmd['name'])}' data-help='{escape(cmd['help'])}'>")
+                sub_html = (
+                    "<div class='cmd-subs'>"
+                    + "".join(
+                        f"<span class='cmd-sub'><span class='cmd-sub-name'>{escape(s['name'])}</span> <span class='cmd-sub-help'>{escape(s['help'][:40])}</span></span>"
+                        for s in subs
+                    )
+                    + "</div>"
+                )
+            html.append(
+                f"<div class='cmd-card' data-name='{escape(cmd['name'])}' data-help='{escape(cmd['help'])}'>"
+            )
             html.append(f"<div class='cmd-name'>airos-cli <span>{escape(cmd['name'])}</span></div>")
             html.append(f"<div class='cmd-help'>{escape(cmd['help'])}</div>")
             html.append(sub_html)
@@ -200,11 +273,17 @@ def generate_html(commands):
             subs = cmd.get("subcommands", [])
             sub_html = ""
             if subs:
-                sub_html = "<div class='cmd-subs'>" + "".join(
-                    f"<span class='cmd-sub'><span class='cmd-sub-name'>{escape(s['name'])}</span> <span class='cmd-sub-help'>{escape(s['help'][:40])}</span></span>"
-                    for s in subs
-                ) + "</div>"
-            html.append(f"<div class='cmd-card' data-name='{escape(cmd['name'])}' data-help='{escape(cmd['help'])}'>")
+                sub_html = (
+                    "<div class='cmd-subs'>"
+                    + "".join(
+                        f"<span class='cmd-sub'><span class='cmd-sub-name'>{escape(s['name'])}</span> <span class='cmd-sub-help'>{escape(s['help'][:40])}</span></span>"
+                        for s in subs
+                    )
+                    + "</div>"
+                )
+            html.append(
+                f"<div class='cmd-card' data-name='{escape(cmd['name'])}' data-help='{escape(cmd['help'])}'>"
+            )
             html.append(f"<div class='cmd-name'>airos-cli <span>{escape(cmd['name'])}</span></div>")
             html.append(f"<div class='cmd-help'>{escape(cmd['help'])}</div>")
             html.append(sub_html)
@@ -215,7 +294,9 @@ def generate_html(commands):
     html.append("</div>")
     html.append("<footer>")
     html.append(f"Auto-generated · {len(commands)} commands · AI Research OS<br>")
-    html.append("<a href='https://github.com/shushuzn/Rairos'>GitHub</a> · <a href='./architecture.html'>Architecture</a>")
+    html.append(
+        "<a href='https://github.com/shushuzn/Rairos'>GitHub</a> · <a href='./architecture.html'>Architecture</a>"
+    )
     html.append("</footer>")
     html.append("<script>")
     html.append("""

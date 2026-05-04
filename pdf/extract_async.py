@@ -1,4 +1,5 @@
 """Async PDF download using aiohttp."""
+
 from pathlib import Path
 from typing import Optional
 
@@ -31,7 +32,9 @@ async def download_pdf_async(
     timeout_cfg = aiohttp.ClientTimeout(total=timeout)
     session = await _get_session()
 
-    async with session.get(pdf_url, headers=headers, raise_for_status=True, timeout=timeout_cfg) as r:
+    async with session.get(
+        pdf_url, headers=headers, raise_for_status=True, timeout=timeout_cfg
+    ) as r:
         supports_range = r.status == 206 or (
             resume_size > 0 and r.headers.get("Accept-Ranges", "none") != "none"
         )

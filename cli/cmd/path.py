@@ -1,4 +1,5 @@
 """CLI command: path — Research reading path planner."""
+
 from __future__ import annotations
 
 import argparse
@@ -21,32 +22,40 @@ def _build_path_parser(subparsers) -> argparse.ArgumentParser:
         help="Research topic to explore",
     )
     p.add_argument(
-        "--level", "-l",
+        "--level",
+        "-l",
         choices=["intro", "intermediate", "advanced"],
         default="intermediate",
         help="Reading level (default: intermediate)",
     )
     p.add_argument(
-        "--max", "-n",
+        "--max",
+        "-n",
         type=int,
         default=8,
         help="Maximum papers to recommend (default: 8)",
     )
     p.add_argument(
-        "--min-year", type=int, default=None,
+        "--min-year",
+        type=int,
+        default=None,
         help="Minimum publication year",
     )
     p.add_argument(
-        "--max-year", type=int, default=None,
+        "--max-year",
+        type=int,
+        default=None,
         help="Maximum publication year",
     )
     p.add_argument(
-        "--mermaid", "-m",
+        "--mermaid",
+        "-m",
         action="store_true",
         help="Output as Mermaid diagram",
     )
     p.add_argument(
-        "--interactive", "-i",
+        "--interactive",
+        "-i",
         action="store_true",
         help="Interactive exploration mode",
     )

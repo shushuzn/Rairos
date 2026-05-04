@@ -1,4 +1,5 @@
 """CLI command: hypothesize — Generate research hypotheses from gaps."""
+
 from __future__ import annotations
 
 import argparse
@@ -23,19 +24,22 @@ def _build_hypothesize_parser(subparsers) -> argparse.ArgumentParser:
         help="Research topic for hypothesis generation",
     )
     p.add_argument(
-        "--gap", "-g",
+        "--gap",
+        "-g",
         type=str,
         default="",
         help="Gap context from gap analysis",
     )
     p.add_argument(
-        "--trend", "-t",
+        "--trend",
+        "-t",
         type=str,
         default="",
         help="Trend context from trend analysis",
     )
     p.add_argument(
-        "--story", "-s",
+        "--story",
+        "-s",
         type=str,
         default="",
         help="Story context from story weaving",
@@ -51,18 +55,21 @@ def _build_hypothesize_parser(subparsers) -> argparse.ArgumentParser:
         help="Generate creative cross-domain hypotheses",
     )
     p.add_argument(
-        "--json", "-j",
+        "--json",
+        "-j",
         action="store_true",
         help="Output as JSON",
     )
     p.add_argument(
-        "--model", "-M",
+        "--model",
+        "-M",
         type=str,
         default=None,
         help="LLM model to use",
     )
     p.add_argument(
-        "--top", "-n",
+        "--top",
+        "-n",
         type=int,
         default=5,
         help="Number of hypotheses to generate (default: 5)",
@@ -86,7 +93,8 @@ def _build_hypothesize_parser(subparsers) -> argparse.ArgumentParser:
         help="Validate a hypothesis by ID: show experiment results and verdict",
     )
     p.add_argument(
-        "--list", "-l",
+        "--list",
+        "-l",
         action="store_true",
         dest="list_hypotheses",
         help="List all hypotheses with their verdict status",
@@ -128,7 +136,9 @@ def _run_hypothesize(args: argparse.Namespace) -> int:
     # Optional: Lean 4 verification
     lean_results = {}
     if args.lean:
-        lean_results = _verify_hypotheses_with_lean(result.hypotheses, not args.no_llm_verify, args.model)
+        lean_results = _verify_hypotheses_with_lean(
+            result.hypotheses, not args.no_llm_verify, args.model
+        )
 
     if args.json:
         print(generator.render_json(result))
@@ -158,14 +168,16 @@ def _run_list_hypotheses() -> int:
     for e in events:
         if e.hypothesis_id:
             hypothesis_ids.add(e.hypothesis_id)
-            if hasattr(e.action, 'value') and e.action.value == 'hypothesized':
-                hypothesis_topics[e.hypothesis_id] = e.topic or e.gap_title or 'unknown'
+            if hasattr(e.action, "value") and e.action.value == "hypothesized":
+                hypothesis_topics[e.hypothesis_id] = e.topic or e.gap_title or "unknown"
 
     if not hypothesis_ids:
-        c.print(WarpBlocks.panel(
-            "No Hypotheses",
-            "[#8E8E8E]Run `airos hypothesize <topic>` to generate hypotheses[/]"
-        ))
+        c.print(
+            WarpBlocks.panel(
+                "No Hypotheses",
+                "[#8E8E8E]Run `airos hypothesize <topic>` to generate hypotheses[/]",
+            )
+        )
         return 0
 
     # Group experiments by hypothesis_id to get names
@@ -178,13 +190,13 @@ def _run_list_hypotheses() -> int:
             exp_by_hid[e.hypothesis_id].append(e)
 
     # Sort by status: VALIDATED first, then REJECTED, MIXED, INCONCLUSIVE
-    status_order = {'VALIDATED': 0, 'REJECTED': 1, 'MIXED': 2, 'INCONCLUSIVE': 3}
+    status_order = {"VALIDATED": 0, "REJECTED": 1, "MIXED": 2, "INCONCLUSIVE": 3}
 
     rows = []
     for hid in sorted(hypothesis_ids):
         evts = ev.get_hypothesis_events(hid)
         verdict, detail = _compute_verdict(evts)
-        name = exp_by_hid.get(hid, [None])[0].name if exp_by_hid.get(hid) else ''
+        name = exp_by_hid.get(hid, [None])[0].name if exp_by_hid.get(hid) else ""
         n_exp = len(exp_by_hid.get(hid, []))
         rows.append((status_order.get(verdict, 99), verdict, detail, name, hid, n_exp))
 
@@ -192,27 +204,35 @@ def _run_list_hypotheses() -> int:
 
     status_rows = []
     for _, verdict, detail, name, hid, n_exp in rows:
-        icon = {"VALIDATED": "✅", "REJECTED": "❌", "MIXED": "⚠", "INCONCLUSIVE": "○"}.get(verdict, "?")
+        icon = {"VALIDATED": "✅", "REJECTED": "❌", "MIXED": "⚠", "INCONCLUSIVE": "○"}.get(
+            verdict, "?"
+        )
         name_short = (name[:40] + "...") if len(name) > 43 else name
         (detail[:40] + "...") if len(detail) > 43 else detail
-        status_rows.append([
-            icon,
-            f"[#FEFDC2]{verdict}[/]",
-            f"[#A5D5FE]{name_short}[/]" if name_short else "[#8E8E8E]—[/]",
-            f"[#D0D1FE]{n_exp}[/]",
-            f"[#8E8E8E][{hid}][/]",
-        ])
+        status_rows.append(
+            [
+                icon,
+                f"[#FEFDC2]{verdict}[/]",
+                f"[#A5D5FE]{name_short}[/]" if name_short else "[#8E8E8E]—[/]",
+                f"[#D0D1FE]{n_exp}[/]",
+                f"[#8E8E8E][{hid}][/]",
+            ]
+        )
 
-    c.print(WarpBlocks.panel(
-        f"Research Hypotheses — [#FF8272]{len(hypothesis_ids)}[/] total",
-        "[#A5D5FE]Run `airos hypothesize <topic>` to generate hypotheses[/]"
-    ))
+    c.print(
+        WarpBlocks.panel(
+            f"Research Hypotheses — [#FF8272]{len(hypothesis_ids)}[/] total",
+            "[#A5D5FE]Run `airos hypothesize <topic>` to generate hypotheses[/]",
+        )
+    )
     if status_rows:
-        c.print(WarpBlocks.table(
-            ["", "Status", "Name", "Exp", "ID"],
-            status_rows,
-            title=f"Hypotheses ({len(status_rows)})"
-        ))
+        c.print(
+            WarpBlocks.table(
+                ["", "Status", "Name", "Exp", "ID"],
+                status_rows,
+                title=f"Hypotheses ({len(status_rows)})",
+            )
+        )
     c.print()
     return 0
 
@@ -266,7 +286,7 @@ def _compute_verdict(events):
     if not events:
         return "INCONCLUSIVE", "no experiments recorded"
 
-    action_vals = {e.action.value if hasattr(e.action, 'value') else str(e.action) for e in events}
+    action_vals = {e.action.value if hasattr(e.action, "value") else str(e.action) for e in events}
     has_completed = "validated" in action_vals
     has_failed = "rejected" in action_vals
 
@@ -280,7 +300,7 @@ def _compute_verdict(events):
 
 
 def _action_icon(action):
-    val = action.value if hasattr(action, 'value') else str(action)
+    val = action.value if hasattr(action, "value") else str(action)
     return {
         "validated": "✅",
         "rejected": "❌",
@@ -292,6 +312,7 @@ def _action_icon(action):
 
 
 # ── Lean 4 integration ────────────────────────────────────────────────────────
+
 
 def _verify_hypotheses_with_lean(
     hypotheses,
@@ -317,6 +338,7 @@ def _render_lean_results(results: dict) -> str:
         return ""
 
     from rich.console import Console
+
     c = Console()
 
     install_status, _ = _get_lean_install_status()
@@ -325,7 +347,7 @@ def _render_lean_results(results: dict) -> str:
         panel = WarpBlocks.panel(
             "Lean 4 — Not Installed",
             "[#FEFDC2]⚠️  Lean 4 未安装 — 跳过形式化验证[/]\n\n"
-            "[#A5D5FE]Install:[/] [#B4FA72]elan default leanprover/lean4:stable[/]"
+            "[#A5D5FE]Install:[/] [#B4FA72]elan default leanprover/lean4:stable[/]",
         )
         c.print(panel)
         return ""
@@ -340,25 +362,30 @@ def _render_lean_results(results: dict) -> str:
         }.get(result.level.value, "?")
         notes = result.translation_notes or ""
         err = (result.errors[0][:60] + "...") if result.errors else ""
-        rows.append([
-            icon,
-            f"[#D0D1FE][{h_id}][/]",
-            f"[#A5D5FE]{result.level.value}[/]",
-            f"[#8E8E8E]{notes[:40]}[/]" if notes else "",
-            f"[#FF5555]{err}[/]" if err else "",
-        ])
+        rows.append(
+            [
+                icon,
+                f"[#D0D1FE][{h_id}][/]",
+                f"[#A5D5FE]{result.level.value}[/]",
+                f"[#8E8E8E]{notes[:40]}[/]" if notes else "",
+                f"[#FF5555]{err}[/]" if err else "",
+            ]
+        )
 
-    c.print(WarpBlocks.table(
-        ["", "ID", "Level", "Notes", "Error"],
-        rows,
-        title=f"Lean 4 Verification ({len(rows)} results)"
-    ))
+    c.print(
+        WarpBlocks.table(
+            ["", "ID", "Level", "Notes", "Error"],
+            rows,
+            title=f"Lean 4 Verification ({len(rows)} results)",
+        )
+    )
     return ""
 
 
 def _get_lean_install_status():
     """Return (status_str, version) for Lean installation."""
     from llm.lean_verifier import check_lean_installed, LeanInstallStatus
+
     status, version = check_lean_installed()
     status_str = {
         LeanInstallStatus.AVAILABLE: "available",

@@ -118,17 +118,19 @@ class RagPipeline:
         test_cases = []
 
         # 匹配代码块中的示例
-        pattern = r'```(?:python|py)?\n(.*?)```'
+        pattern = r"```(?:python|py)?\n(.*?)```"
         matches = re.findall(pattern, content, re.DOTALL)
 
         for match in matches:
             # 提取输入输出
             if "=" in match and "print" in match:
-                test_cases.append({
-                    "question": f"执行以下代码并给出输出: ```{match.strip()}```",
-                    "expected_output": "运行成功",
-                    "category": "execution",
-                })
+                test_cases.append(
+                    {
+                        "question": f"执行以下代码并给出输出: ```{match.strip()}```",
+                        "expected_output": "运行成功",
+                        "category": "execution",
+                    }
+                )
 
         return test_cases
 
@@ -142,11 +144,13 @@ class RagPipeline:
 
         for match in matches:
             if "Example" in match or "例子" in match:
-                test_cases.append({
-                    "question": f"根据以下文档字符串实现函数: {match.strip()[:100]}",
-                    "expected_output": "函数实现正确",
-                    "category": "implementation",
-                })
+                test_cases.append(
+                    {
+                        "question": f"根据以下文档字符串实现函数: {match.strip()[:100]}",
+                        "expected_output": "函数实现正确",
+                        "category": "implementation",
+                    }
+                )
 
         return test_cases
 
@@ -281,13 +285,13 @@ type = "multi_tolerance"
         evoskill_config.write_text(config_content, encoding="utf-8")
 
         # 写入 task 描述
-        task_content = '''# Task
+        task_content = """# Task
 
 验证 paper 实现的功能是否正确。
 
 ## Output format
 返回 "通过" 或具体错误信息。
-'''
+"""
         task_md.write_text(task_content, encoding="utf-8")
 
         return {

@@ -6,6 +6,7 @@ Detects relationships between a paper and existing papers in the database:
 - alignment: claims that reinforce or extend existing work
 - extension: fills a gap or introduces a new dimension
 """
+
 from __future__ import annotations
 
 import logging
@@ -19,6 +20,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class CrossReferenceItem:
     """A single cross-reference relationship."""
+
     relation: str  # "contradiction", "alignment", "extension", "unrelated"
     target_paper_id: str
     target_title: str
@@ -30,6 +32,7 @@ class CrossReferenceItem:
 @dataclass
 class CrossReferenceResult:
     """Result of cross-referencing a paper against the database."""
+
     paper_id: str
     related_papers_found: int = 0
     items: List[CrossReferenceItem] = field(default_factory=list)
@@ -131,14 +134,22 @@ class CrossReferencer:
 
         if use_llm and self.llm_config.get("api_key"):
             return self._analyze_with_llm(
-                paper_id, title, abstract, body_text, tags or [], candidates,
+                paper_id,
+                title,
+                abstract,
+                body_text,
+                tags or [],
+                candidates,
             )
         return self._analyze_fallback(paper_id, candidates)
 
     # ── Candidate retrieval ──────────────────────────────────────────────
 
     def _find_candidates(
-        self, paper_id: str, tags: List[str], max_candidates: int = 10,
+        self,
+        paper_id: str,
+        tags: List[str],
+        max_candidates: int = 10,
     ) -> List[Dict[str, Any]]:
         """Find existing papers with overlapping tags."""
         if not self.db or not tags:
@@ -157,12 +168,14 @@ class CrossReferencer:
                 pid = getattr(rec, "id", "") or getattr(rec, "paper_id", "")
                 if pid and pid != paper_id and pid not in seen_ids:
                     seen_ids.add(pid)
-                    candidates.append({
-                        "id": pid,
-                        "title": getattr(rec, "title", ""),
-                        "abstract": getattr(rec, "abstract", ""),
-                        "tags": getattr(rec, "tags", []),
-                    })
+                    candidates.append(
+                        {
+                            "id": pid,
+                            "title": getattr(rec, "title", ""),
+                            "abstract": getattr(rec, "abstract", ""),
+                            "tags": getattr(rec, "tags", []),
+                        }
+                    )
 
             if len(candidates) >= max_candidates:
                 break
@@ -230,13 +243,15 @@ class CrossReferencer:
         items: List[CrossReferenceItem] = []
 
         for c in candidates[:5]:  # Limit to 5 for fallback
-            items.append(CrossReferenceItem(
-                relation="alignment",
-                target_paper_id=c["id"],
-                target_title=c["title"],
-                description="Same tag overlap — suggest manual review for relationship",
-                confidence=0.3,
-            ))
+            items.append(
+                CrossReferenceItem(
+                    relation="alignment",
+                    target_paper_id=c["id"],
+                    target_title=c["title"],
+                    description="Same tag overlap — suggest manual review for relationship",
+                    confidence=0.3,
+                )
+            )
 
         return CrossReferenceResult(
             paper_id=paper_id,
@@ -248,7 +263,9 @@ class CrossReferencer:
     # ── Response parsing ─────────────────────────────────────────────────
 
     def _parse_response(
-        self, raw: str, candidates: List[Dict[str, Any]],
+        self,
+        raw: str,
+        candidates: List[Dict[str, Any]],
     ) -> List[CrossReferenceItem]:
         """Parse LLM response into cross-reference items."""
         items: List[CrossReferenceItem] = []
@@ -270,23 +287,27 @@ class CrossReferencer:
                     title = c["title"]
                     break
 
-            items.append(CrossReferenceItem(
-                relation=relation,
-                target_paper_id=pid,
-                target_title=title,
-                description="(parsed from LLM analysis)",
-                confidence=0.5,
-            ))
+            items.append(
+                CrossReferenceItem(
+                    relation=relation,
+                    target_paper_id=pid,
+                    target_title=title,
+                    description="(parsed from LLM analysis)",
+                    confidence=0.5,
+                )
+            )
 
         # If no structured items found, create generic ones
         if not items:
             for c in candidates[:3]:
-                items.append(CrossReferenceItem(
-                    relation="alignment",
-                    target_paper_id=c["id"],
-                    target_title=c["title"],
-                    description="Related by shared tags",
-                    confidence=0.3,
-                ))
+                items.append(
+                    CrossReferenceItem(
+                        relation="alignment",
+                        target_paper_id=c["id"],
+                        target_title=c["title"],
+                        description="Related by shared tags",
+                        confidence=0.3,
+                    )
+                )
 
         return items

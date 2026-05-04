@@ -11,6 +11,7 @@ Usage:
     client = WarpCLIClient()
     response = client.chat("What is RAG?", model="claude-3-5-sonnet-latest")
 """
+
 import json
 import subprocess
 import sys
@@ -104,14 +105,17 @@ class WarpCLIClient:
                 [
                     self.cli_path,
                     "ai",
-                    "--model", model,
-                    "--prompt", full_prompt,
-                    "--output-format", "json",
+                    "--model",
+                    model,
+                    "--prompt",
+                    full_prompt,
+                    "--output-format",
+                    "json",
                 ],
                 capture_output=True,
                 text=True,
                 timeout=120,
-                encoding='utf-8',
+                encoding="utf-8",
             )
 
             if result.returncode != 0:
@@ -125,7 +129,9 @@ class WarpCLIClient:
                 # Try common JSON response formats
                 if isinstance(data, dict):
                     # Warp might return {"response": "...", ...} or {"result": "...", ...}
-                    return data.get("response") or data.get("result") or data.get("text") or str(data)
+                    return (
+                        data.get("response") or data.get("result") or data.get("text") or str(data)
+                    )
                 return str(data)
             except json.JSONDecodeError:
                 # Fallback: return raw output if not JSON
@@ -135,8 +141,7 @@ class WarpCLIClient:
             raise RuntimeError("Warp CLI timed out after 120 seconds") from None
         except FileNotFoundError:
             raise RuntimeError(
-                f"Warp not found at '{self.cli_path}'. "
-                "Please install Warp: https://warp.dev"
+                f"Warp not found at '{self.cli_path}'. Please install Warp: https://warp.dev"
             ) from None
         except Exception as e:
             raise RuntimeError(f"Warp CLI call failed: {e}") from e
@@ -170,7 +175,7 @@ class WarpCLIClient:
                 capture_output=True,
                 text=True,
                 timeout=10,
-                encoding='utf-8',
+                encoding="utf-8",
             )
             if result.returncode == 0:
                 return result.stdout.strip()

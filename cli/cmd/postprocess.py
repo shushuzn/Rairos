@@ -7,6 +7,7 @@ Usage:
     airos postprocess 2604.22755 --skip-llm
     airos postprocess 2604.22755 --root AI-Research --tags LLM,RAG
 """
+
 from __future__ import annotations
 
 import argparse
@@ -34,6 +35,7 @@ def _resolve_pdf_path(rec, root: Path) -> Optional[Path]:
             return cached
         try:
             from pdf.extract import download_pdf
+
             download_pdf(pdf_url, cached)
             return cached
         except Exception:
@@ -54,28 +56,35 @@ def _build_postprocess_parser(subparsers) -> argparse.ArgumentParser:
     )
     p.add_argument("paper_id", help="Paper ID to analyze")
     p.add_argument(
-        "--root", default="AI-Research",
+        "--root",
+        default="AI-Research",
         help="Root folder for your research OS (default: AI-Research)",
     )
     p.add_argument(
-        "--category", default="02-Models",
+        "--category",
+        default="02-Models",
         help="Folder under root where P-Note lives (default: 02-Models)",
     )
     p.add_argument(
-        "--stages", nargs="+", default=None,
+        "--stages",
+        nargs="+",
+        default=None,
         choices=[s.value for s in PostStage],
         help="Specific stages to run (default: all six)",
     )
     p.add_argument(
-        "--skip-llm", action="store_true",
+        "--skip-llm",
+        action="store_true",
         help="Skip LLM usage — keyword-only analysis",
     )
     p.add_argument(
-        "--tags", default="",
+        "--tags",
+        default="",
         help="Comma-separated tags override (default: from DB record)",
     )
     p.add_argument(
-        "--structured", action="store_true",
+        "--structured",
+        action="store_true",
         help="Use structured PDF extraction (tables/math separated) for citation-grounded analysis",
     )
     return p  # type: ignore[no-any-return]
@@ -118,6 +127,7 @@ def _run_postprocess(args: argparse.Namespace) -> int:
             )
 
             from core import Paper
+
             paper = Paper(
                 source=getattr(rec, "source", "arxiv"),
                 uid=getattr(rec, "id", paper_id),
@@ -133,10 +143,8 @@ def _run_postprocess(args: argparse.Namespace) -> int:
 
             # Guess P-note path from title
             from core.basics import slugify_title
-            year = (
-                (getattr(rec, "published", "") or "")[:4]
-                or "0000"
-            )
+
+            year = (getattr(rec, "published", "") or "")[:4] or "0000"
             guessed = (
                 root
                 / (args.category or "02-Models")
@@ -158,11 +166,10 @@ def _run_postprocess(args: argparse.Namespace) -> int:
             if pdf_path and pdf_path.exists():
                 try:
                     from pdf.extract import extract_pdf_structured
+
                     print_info(f"Extracting structured PDF: {pdf_path.name}")
                     structured_content = extract_pdf_structured(pdf_path)
-                    extracted_text = "\n".join(
-                        b.text for b in structured_content.text_blocks
-                    )
+                    extracted_text = "\n".join(b.text for b in structured_content.text_blocks)
                     print_success(f"Extracted {len(structured_content.text_blocks)} text blocks")
                 except Exception as e:
                     print_warning(f"Structured extraction failed: {e}")

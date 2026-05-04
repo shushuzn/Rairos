@@ -1,4 +1,5 @@
 """Database optimization utilities."""
+
 from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, List
@@ -10,22 +11,39 @@ logger = logging.getLogger(__name__)
 
 OPTIMIZATION_INDEXES = [
     # Papers table indexes for common query patterns
-    ("idx_papers_published", "CREATE INDEX IF NOT EXISTS idx_papers_published ON papers(published)"),
-    ("idx_papers_primary_category", "CREATE INDEX IF NOT EXISTS idx_papers_primary_category ON papers(primary_category)"),
+    (
+        "idx_papers_published",
+        "CREATE INDEX IF NOT EXISTS idx_papers_published ON papers(published)",
+    ),
+    (
+        "idx_papers_primary_category",
+        "CREATE INDEX IF NOT EXISTS idx_papers_primary_category ON papers(primary_category)",
+    ),
     ("idx_papers_doi", "CREATE INDEX IF NOT EXISTS idx_papers_doi ON papers(doi) WHERE doi != ''"),
-
     # Paper_tags indexes for tag-based queries
-    ("idx_paper_tags_tag_id", "CREATE INDEX IF NOT EXISTS idx_paper_tags_tag_id ON paper_tags(tag_id)"),
-
+    (
+        "idx_paper_tags_tag_id",
+        "CREATE INDEX IF NOT EXISTS idx_paper_tags_tag_id ON paper_tags(tag_id)",
+    ),
     # Parse history indexes for analytics
-    ("idx_parse_history_status", "CREATE INDEX IF NOT EXISTS idx_parse_history_status ON parse_history(status)"),
-    ("idx_parse_history_attempted_at", "CREATE INDEX IF NOT EXISTS idx_parse_history_attempted_at ON parse_history(attempted_at)"),
-
+    (
+        "idx_parse_history_status",
+        "CREATE INDEX IF NOT EXISTS idx_parse_history_status ON parse_history(status)",
+    ),
+    (
+        "idx_parse_history_attempted_at",
+        "CREATE INDEX IF NOT EXISTS idx_parse_history_attempted_at ON parse_history(attempted_at)",
+    ),
     # Job queue indexes for priority queries
-    ("idx_job_queue_priority", "CREATE INDEX IF NOT EXISTS idx_job_queue_priority ON job_queue(priority, status)"),
-
+    (
+        "idx_job_queue_priority",
+        "CREATE INDEX IF NOT EXISTS idx_job_queue_priority ON job_queue(priority, status)",
+    ),
     # Experiment tables indexes
-    ("idx_experiment_tables_page", "CREATE INDEX IF NOT EXISTS idx_experiment_tables_page ON experiment_tables(paper_id, page)"),
+    (
+        "idx_experiment_tables_page",
+        "CREATE INDEX IF NOT EXISTS idx_experiment_tables_page ON experiment_tables(paper_id, page)",
+    ),
 ]
 
 PRAGMA_SETTINGS = [

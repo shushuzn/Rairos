@@ -1,4 +1,5 @@
 """CLI command: similar."""
+
 from __future__ import annotations
 
 import argparse
@@ -26,15 +27,21 @@ def _build_similar_parser(subparsers) -> argparse.ArgumentParser:
         help="Paper ID (e.g. 2301.001)",
     )
     p_run.add_argument(
-        "--threshold", type=float, default=0.85,
+        "--threshold",
+        type=float,
+        default=0.85,
         help="Minimum cosine similarity (default: 0.85)",
     )
     p_run.add_argument(
-        "--limit", type=int, default=10,
+        "--limit",
+        type=int,
+        default=10,
         help="Max similar papers to return (default: 10)",
     )
     p_run.add_argument(
-        "--format", choices=["table", "json", "warp"], default="table",
+        "--format",
+        choices=["table", "json", "warp"],
+        default="table",
         help="Output format (default: table)",
     )
 
@@ -48,19 +55,27 @@ def _build_similar_parser(subparsers) -> argparse.ArgumentParser:
         help="Paper ID (e.g. 2301.001)",
     )
     vp.add_argument(
-        "--threshold", type=float, default=0.85,
+        "--threshold",
+        type=float,
+        default=0.85,
         help="Minimum cosine similarity (default: 0.85)",
     )
     vp.add_argument(
-        "--limit", type=int, default=20,
+        "--limit",
+        type=int,
+        default=20,
         help="Max similar papers to show (default: 20)",
     )
     vp.add_argument(
-        "--open", action="store_true", default=True,
+        "--open",
+        action="store_true",
+        default=True,
         help="Open in default browser (default: on)",
     )
     vp.add_argument(
-        "--no-open", dest="open", action="store_false",
+        "--no-open",
+        dest="open",
+        action="store_false",
         help="Write HTML to stdout instead of opening browser",
     )
     return p  # type: ignore[no-any-return]
@@ -83,8 +98,10 @@ def _run_similar_text(args: argparse.Namespace) -> int:
         stats = db.get_embedding_stats()
         papers_without_emb = stats.get("total_with_text", 0) - stats.get("with_embedding", 0)
         print("Semantic similarity search requires embeddings.")
-        print(f"Database stats: {stats.get('with_embedding', 0)} papers have embeddings "
-              f"({papers_without_emb} still need them).")
+        print(
+            f"Database stats: {stats.get('with_embedding', 0)} papers have embeddings "
+            f"({papers_without_emb} still need them)."
+        )
         print()
         print("To generate embeddings for papers without them, use:")
         print("  ai_research_os research --generate")
@@ -103,15 +120,18 @@ def _run_similar_text(args: argparse.Namespace) -> int:
 
     if args.format == "warp":
         from cli.warp import WarpBlocks
-        rows = [[f"{score:.4f}", sim_paper.id, sim_paper.title[:60]]
-                for sim_paper, score in sims]
-        print(WarpBlocks.table(
-            ["Score", "Paper ID", "Title"],
-            rows,
-            title=f"Similar to {args.paper_id} — {paper.title[:40]}",
-        ))
+
+        rows = [[f"{score:.4f}", sim_paper.id, sim_paper.title[:60]] for sim_paper, score in sims]
+        print(
+            WarpBlocks.table(
+                ["Score", "Paper ID", "Title"],
+                rows,
+                title=f"Similar to {args.paper_id} — {paper.title[:40]}",
+            )
+        )
     elif args.format == "json":
         import json
+
         result = [{"id": p.id, "title": p.title, "score": float(s)} for p, s in sims]
         print(json.dumps(result, indent=2))
     else:
@@ -145,12 +165,17 @@ def _run_similar_view(args: argparse.Namespace) -> int:
     )
 
     if not graph_data["nodes"]:
-        print(f"No similar papers found for '{args.paper_id}'. "
-              "Ensure the paper has an embedding and similar papers exist.", file=sys.stderr)
+        print(
+            f"No similar papers found for '{args.paper_id}'. "
+            "Ensure the paper has an embedding and similar papers exist.",
+            file=sys.stderr,
+        )
         return 1
 
     # Load template
-    template_path = Path(__file__).parent.parent.parent / "viz" / "templates" / "similar_viz_template_d3.html"
+    template_path = (
+        Path(__file__).parent.parent.parent / "viz" / "templates" / "similar_viz_template_d3.html"
+    )
     html_content = template_path.read_text(encoding="utf-8")
 
     # Inject data
@@ -164,15 +189,15 @@ def _run_similar_view(args: argparse.Namespace) -> int:
         sys.stdout.write(html_content)
         return 0
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".html", delete=False, encoding="utf-8"
-    ) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
         f.write(html_content)
         tmp_path = f.name
 
     webbrowser.open(f"file://{tmp_path}")
     sim_count = len([n for n in graph_data["nodes"] if not n.get("is_root")])
     print(f"Opened similarity graph for '{args.paper_id}' in browser.")
-    print(f"  {len(graph_data['nodes'])} papers · {sim_count} similar (threshold: {args.threshold})")
+    print(
+        f"  {len(graph_data['nodes'])} papers · {sim_count} similar (threshold: {args.threshold})"
+    )
     print(f"(HTML also saved to: {tmp_path})")
     return 0

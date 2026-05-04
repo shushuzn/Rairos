@@ -3,6 +3,7 @@
 Tracks your research stance log over time — what you concluded, rejected, deferred.
 Watches new papers and flags when they directly contradict your prior decisions.
 """
+
 from __future__ import annotations
 
 import json
@@ -25,21 +26,22 @@ class StanceType(Enum):
 
 
 class AnomalySeverity(Enum):
-    HIGH = "high"      # direct contradiction
+    HIGH = "high"  # direct contradiction
     MEDIUM = "medium"  # challenges evidence
-    LOW = "low"        # tangential challenge
+    LOW = "low"  # tangential challenge
 
 
 @dataclass
 class ResearchStance:
     """A research decision you made — stance on a claim, method, or hypothesis."""
+
     stance_id: str
-    topic: str                       # e.g. "RAG vs fine-tuning for knowledge tasks"
-    claim: str                       # the specific claim you took a stance on
+    topic: str  # e.g. "RAG vs fine-tuning for knowledge tasks"
+    claim: str  # the specific claim you took a stance on
     stance: StanceType
-    evidence_refs: List[str]          # arxiv_ids that support this stance
-    reasoning: str                    # why you took this stance
-    confidence: float = 0.5           # 0.0–1.0 how certain you were
+    evidence_refs: List[str]  # arxiv_ids that support this stance
+    reasoning: str  # why you took this stance
+    confidence: float = 0.5  # 0.0–1.0 how certain you were
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
     tags: List[str] = field(default_factory=list)
@@ -60,13 +62,14 @@ class ResearchStance:
 @dataclass
 class AnomalyAlert:
     """A new paper contradicts or challenges a prior research stance."""
+
     anomaly_id: str
     stance_id: str
     topic: str
     stance_claim: str
     paper_title: str
     paper_arxiv_id: str
-    anomaly_type: str               # "contradiction", "counterevidence", "challenge"
+    anomaly_type: str  # "contradiction", "counterevidence", "challenge"
     severity: AnomalySeverity
     description: str
     created_at: float = field(default_factory=time.time)
@@ -185,7 +188,11 @@ class ResearchMemory:
                 if "claim" in kwargs:
                     s.claim = kwargs["claim"]
                 if "stance" in kwargs:
-                    s.stance = StanceType(kwargs["stance"]) if isinstance(kwargs["stance"], str) else kwargs["stance"]
+                    s.stance = (
+                        StanceType(kwargs["stance"])
+                        if isinstance(kwargs["stance"], str)
+                        else kwargs["stance"]
+                    )
                 if "reasoning" in kwargs:
                     s.reasoning = kwargs["reasoning"]
                 if "confidence" in kwargs:
@@ -199,7 +206,9 @@ class ResearchMemory:
                 return s
         return None
 
-    def get_stances(self, topic: Optional[str] = None, stance_type: Optional[StanceType] = None) -> List[ResearchStance]:
+    def get_stances(
+        self, topic: Optional[str] = None, stance_type: Optional[StanceType] = None
+    ) -> List[ResearchStance]:
         """Query stances by topic or type."""
         results = self._stances
         if topic:
@@ -238,7 +247,11 @@ class ResearchMemory:
 
         # Persist new anomalies
         for a in anomalies:
-            existing = [x for x in self._anomalies if x.paper_arxiv_id == a.paper_arxiv_id and x.stance_id == a.stance_id]
+            existing = [
+                x
+                for x in self._anomalies
+                if x.paper_arxiv_id == a.paper_arxiv_id and x.stance_id == a.stance_id
+            ]
             if not existing:
                 self._anomalies.append(a)
 
@@ -253,15 +266,23 @@ class ResearchMemory:
         stance: ResearchStance,
     ) -> Optional[AnomalyAlert]:
         """Fast keyword-based contradiction check."""
-        paper_text = (
-            paper.get("title", "") + " " + paper.get("abstract", "")
-        ).lower()
+        paper_text = (paper.get("title", "") + " " + paper.get("abstract", "")).lower()
         _stance_text = stance.claim.lower()
 
         # Check for negation patterns indicating contradiction
-        contradiction_signals = ["fail to", "does not", "cannot", "ineffective", "worse than", "no evidence", "contrary to"]
+        contradiction_signals = [
+            "fail to",
+            "does not",
+            "cannot",
+            "ineffective",
+            "worse than",
+            "no evidence",
+            "contrary to",
+        ]
         for signal in contradiction_signals:
-            if signal in paper_text and any(w in paper_text for w in stance.claim.lower().split()[:5]):
+            if signal in paper_text and any(
+                w in paper_text for w in stance.claim.lower().split()[:5]
+            ):
                 return AnomalyAlert(
                     anomaly_id=str(uuid.uuid4())[:8],
                     stance_id=stance.stance_id,
@@ -300,8 +321,8 @@ PRIOR STANCE:
 - Reasoning: {stance.reasoning[:200]}
 
 NEW PAPER:
-- Title: {paper.get('title', 'Unknown')}
-- Abstract: {paper.get('abstract', 'N/A')[:500]}
+- Title: {paper.get("title", "Unknown")}
+- Abstract: {paper.get("abstract", "N/A")[:500]}
 
 TASK: Respond with ONLY a JSON object (no markdown, no explanation):
 {{
@@ -325,7 +346,11 @@ If the paper does NOT contradict or challenge the stance, respond with: {{"anoma
             if parsed.get("anomaly_type", "none") == "none":
                 return None
 
-            severity_map = {"high": AnomalySeverity.HIGH, "medium": AnomalySeverity.MEDIUM, "low": AnomalySeverity.LOW}
+            severity_map = {
+                "high": AnomalySeverity.HIGH,
+                "medium": AnomalySeverity.MEDIUM,
+                "low": AnomalySeverity.LOW,
+            }
             return AnomalyAlert(
                 anomaly_id=str(uuid.uuid4())[:8],
                 stance_id=stance.stance_id,
@@ -380,5 +405,7 @@ If the paper does NOT contradict or challenge the stance, respond with: {{"anoma
             "total_stances": len(self._stances),
             "stance_breakdown": stance_counts,
             "total_anomalies": len(self._anomalies),
-            "recent_anomalies": len([a for a in self._anomalies if time.time() - a.created_at < 86400]),
+            "recent_anomalies": len(
+                [a for a in self._anomalies if time.time() - a.created_at < 86400]
+            ),
         }

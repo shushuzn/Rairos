@@ -4,6 +4,7 @@ Identifies papers in the database that have no forward citation records,
 then fetches their forward citation chains from OpenAlex to populate
 the citations table so that influence/trend commands work correctly.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -35,10 +36,13 @@ def _openalex_request(path: str, timeout: int = 15) -> dict:
     ctx = _build_openalex_ctx()
     proxy_handler = urllib.request.ProxyHandler({})
     opener = urllib.request.build_opener(proxy_handler, urllib.request.HTTPSHandler(context=ctx))
-    req = urllib.request.Request(url, headers={
-        "User-Agent": f"ai_research_os/1.0 (mailto:{_OPENALEX_EMAIL})",
-        "Accept": "application/json",
-    })
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": f"ai_research_os/1.0 (mailto:{_OPENALEX_EMAIL})",
+            "Accept": "application/json",
+        },
+    )
     try:
         with opener.open(req, timeout=timeout) as resp:
             return json.loads(resp.read())  # type: ignore[no-any-return]
@@ -97,10 +101,7 @@ def _compute_gap_stats(db) -> GapStats:
     cur = db.conn.execute("SELECT COUNT(DISTINCT target_id) FROM citations")
     with_cites = cur.fetchone()[0]
 
-    subq = (
-        "SELECT target_id, COUNT(*) AS forward_cites "
-        "FROM citations GROUP BY target_id"
-    )
+    subq = "SELECT target_id, COUNT(*) AS forward_cites FROM citations GROUP BY target_id"
     cur = db.conn.execute(f"SELECT SUM(forward_cites) FROM ({subq})")
     total_fwd = cur.fetchone()[0] or 0
 
@@ -148,7 +149,9 @@ def _run_cite_backfill(args: argparse.Namespace) -> int:
         print(f"  Total papers in database : {stats.total_papers}")
         print(f"  Papers with citations   : {stats.with_citations}")
         missing = stats.without_citations
-        print(f"  Papers missing citations: {colored(str(missing), Colors.WARNING if missing > 0 else Colors.OKGREEN)}")
+        print(
+            f"  Papers missing citations: {colored(str(missing), Colors.WARNING if missing > 0 else Colors.OKGREEN)}"
+        )
         print(f"  Total forward cites stored: {stats.total_forward_cites_stored}")
         print()
         if missing > 0:
@@ -206,10 +209,12 @@ def _run_cite_backfill(args: argparse.Namespace) -> int:
                         ids = work.get("ids", {}) or {}
                         doi = ids.get("doi", "") or ""
                         title = work.get("title", "") or f"Imported {citing_arxiv}"
-                        authors = ",".join(
-                            a.get("display_name", "")
-                            for a in (work.get("authorships") or [])
-                        ) or ""
+                        authors = (
+                            ",".join(
+                                a.get("display_name", "") for a in (work.get("authorships") or [])
+                            )
+                            or ""
+                        )
                         pub_date = work.get("publication_date") or ""
                         journal = (
                             work.get("primary_location", {})
@@ -272,15 +277,17 @@ def _build_cite_backfill_parser(subparsers) -> argparse.ArgumentParser:
         "cite-backfill",
         help="Backfill missing citation data from OpenAlex",
         description="Find papers without citation records and fetch their "
-                    "forward citation chains from OpenAlex to populate the citations table.",
+        "forward citation chains from OpenAlex to populate the citations table.",
     )
     p.add_argument(
-        "--stats", "-s",
+        "--stats",
+        "-s",
         action="store_true",
         help="Show citation coverage statistics only",
     )
     p.add_argument(
-        "--backfill", "-b",
+        "--backfill",
+        "-b",
         action="store_true",
         help="Actually fetch citation data from OpenAlex (default: dry-run)",
     )
@@ -297,7 +304,8 @@ def _build_cite_backfill_parser(subparsers) -> argparse.ArgumentParser:
         help="Actually backfill (same as --backfill)",
     )
     p.add_argument(
-        "--workers", "-w",
+        "--workers",
+        "-w",
         type=int,
         default=5,
         help="Number of parallel workers (default: 5)",

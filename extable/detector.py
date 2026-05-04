@@ -5,19 +5,56 @@ from typing import Optional, Union
 from pathlib import Path
 
 
-
-
 _METRIC_KEYWORDS = [
-    "accuracy", "precision", "recall", "f1", "bleu", "rouge", "perplexity",
-    "loss", "auc", "map", "ndcg", "mrr", "cer", "wer", "beam", "latency",
-    "throughput", "param", "bpc", "bits_per_char", "ppl",
-    "glue", "super gl", "squad", "arc", "hella", "lambada",
+    "accuracy",
+    "precision",
+    "recall",
+    "f1",
+    "bleu",
+    "rouge",
+    "perplexity",
+    "loss",
+    "auc",
+    "map",
+    "ndcg",
+    "mrr",
+    "cer",
+    "wer",
+    "beam",
+    "latency",
+    "throughput",
+    "param",
+    "bpc",
+    "bits_per_char",
+    "ppl",
+    "glue",
+    "super gl",
+    "squad",
+    "arc",
+    "hella",
+    "lambada",
 ]
 
 _DATASET_KEYWORDS = [
-    "squad", "glue", "coco", "imagenet", "mnist", "cifar", "wikitext",
-    "openwebtext", "bookcorpus", "arxiv", "pubmed", "custom", "sst",
-    "sst-2", "qqp", "mnli", "qnli", "rte", "cola",
+    "squad",
+    "glue",
+    "coco",
+    "imagenet",
+    "mnist",
+    "cifar",
+    "wikitext",
+    "openwebtext",
+    "bookcorpus",
+    "arxiv",
+    "pubmed",
+    "custom",
+    "sst",
+    "sst-2",
+    "qqp",
+    "mnli",
+    "qnli",
+    "rte",
+    "cola",
 ]
 
 
@@ -27,8 +64,9 @@ class TableDetector:
     def __init__(self):
         self._has_fitz = True
 
-    def detect_tables(self, page_source: Union[str, Path, int],
-                     pdf_path: Optional[Path] = None) -> list[dict]:
+    def detect_tables(
+        self, page_source: Union[str, Path, int], pdf_path: Optional[Path] = None
+    ) -> list[dict]:
         """Detect tables on a page.
 
         page_source: page number (int) OR path to page image (for OCR fallback)
@@ -66,12 +104,14 @@ class TableDetector:
                 continue
 
             is_exp = self._is_experiment_table(table_data)
-            tables.append({
-                "bbox": table_bbox,
-                "data": table_data,
-                "is_experiment": is_exp,
-                "page": page_num,
-            })
+            tables.append(
+                {
+                    "bbox": table_bbox,
+                    "data": table_data,
+                    "is_experiment": is_exp,
+                    "page": page_num,
+                }
+            )
 
         doc.close()
         return tables
@@ -126,19 +166,14 @@ class TableDetector:
 
         # Look for numeric patterns (results tables have lots of numbers)
         numeric_cells = sum(
-            1 for row in table_data[1:]
-            for cell in row
-            if re.search(r"\d+\.?\d*", cell)
+            1 for row in table_data[1:] for cell in row if re.search(r"\d+\.?\d*", cell)
         )
 
-        return (
-            score_count >= 1 and numeric_cells >= 4
-        ) or (
+        return (score_count >= 1 and numeric_cells >= 4) or (
             dataset_count >= 2 and numeric_cells >= 6
         )
 
-    def extract_all_tables(self, pdf_path: Union[str, Path],
-                          max_pages: int = 0) -> list[dict]:
+    def extract_all_tables(self, pdf_path: Union[str, Path], max_pages: int = 0) -> list[dict]:
         """Extract all experiment tables from a PDF."""
         try:
             import fitz

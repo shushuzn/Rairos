@@ -1,4 +1,5 @@
 """CLI command: merge."""
+
 from __future__ import annotations
 
 import argparse
@@ -6,7 +7,8 @@ from typing import Any, Tuple
 
 from cli._shared import get_db
 from cli._shared import (
-    print_success, print_error,
+    print_success,
+    print_error,
 )
 
 
@@ -45,7 +47,12 @@ def _build_merge_parser(subparsers) -> argparse.ArgumentParser:
         help="Automatically find and merge all duplicate pairs with similarity >= 0.95",
     )
     p.add_argument("target_id", metavar="TARGET_ID", nargs="?", help="ID of the paper to keep")
-    p.add_argument("duplicate_id", metavar="DUPLICATE_ID", nargs="?", help="ID of the duplicate paper to absorb and delete")
+    p.add_argument(
+        "duplicate_id",
+        metavar="DUPLICATE_ID",
+        nargs="?",
+        help="ID of the duplicate paper to absorb and delete",
+    )
     return p  # type: ignore[no-any-return]
 
 
@@ -119,7 +126,9 @@ def _run_merge(args: argparse.Namespace) -> int:
 
     if args.keep == "semantic":
         if sim is None or sim < 0.8:
-            print(f"Note: low similarity, falling back to 'parsed' (similarity: {f'{sim:.3f}' if sim is not None else 'N/A'})")
+            print(
+                f"Note: low similarity, falling back to 'parsed' (similarity: {f'{sim:.3f}' if sim is not None else 'N/A'})"
+            )
             keep, drop = _pick_keep(target, duplicate, "parsed")
         else:
             print(f"Auto-selected: similarity {sim:.3f} >= 0.8")

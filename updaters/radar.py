@@ -1,4 +1,5 @@
 """Radar page management."""
+
 import textwrap
 from pathlib import Path
 from typing import Any, Dict, List
@@ -37,20 +38,22 @@ def parse_radar_table(md: str) -> tuple:
 
     header = "\n".join(lines[:start]).rstrip() + "\n"
     rows: List[Dict[str, str]] = []
-    for ln in lines[start + 2:]:
+    for ln in lines[start + 2 :]:
         if not ln.strip().startswith("|"):
             continue
         cols = [c.strip() for c in ln.strip().strip("|").split("|")]
         if len(cols) < 6:
             continue
-        rows.append({
-            "主题": cols[0],
-            "热度": cols[1],
-            "证据质量": cols[2],
-            "成本变化": cols[3],
-            "我的信心": cols[4],
-            "最近更新": cols[5],
-        })
+        rows.append(
+            {
+                "主题": cols[0],
+                "热度": cols[1],
+                "证据质量": cols[2],
+                "成本变化": cols[3],
+                "我的信心": cols[4],
+                "最近更新": cols[5],
+            }
+        )
     return header, rows
 
 
@@ -62,7 +65,9 @@ def render_radar(header: str, rows: List[Dict[str, str]]) -> str:
         "| -- | -- | ---- | ---- | ---- | ---- |",
     ]
     for r in rows:
-        out.append(f"| {r['主题']} | {r['热度']} | {r['证据质量']} | {r['成本变化']} | {r['我的信心']} | {r['最近更新']} |")
+        out.append(
+            f"| {r['主题']} | {r['热度']} | {r['证据质量']} | {r['成本变化']} | {r['我的信心']} | {r['最近更新']} |"
+        )
     return "\n".join(out).strip() + "\n"
 
 
@@ -91,7 +96,14 @@ def update_radar(
         row_map = {r["主题"]: r for r in rows}
         for t in tags:
             if t not in row_map:
-                row_map[t] = {"主题": t, "热度": "1", "证据质量": "", "成本变化": "", "我的信心": "", "最近更新": note_date}
+                row_map[t] = {
+                    "主题": t,
+                    "热度": "1",
+                    "证据质量": "",
+                    "成本变化": "",
+                    "我的信心": "",
+                    "最近更新": note_date,
+                }
             else:
                 try:
                     row_map[t]["热度"] = str(int(row_map[t]["热度"] or "0") + 1)
@@ -111,7 +123,14 @@ def update_radar(
     state = _pending[key]
     for t in tags:
         if t not in state["_rows"]:
-            state["_rows"][t] = {"主题": t, "热度": "1", "证据质量": "", "成本变化": "", "我的信心": "", "最近更新": note_date}
+            state["_rows"][t] = {
+                "主题": t,
+                "热度": "1",
+                "证据质量": "",
+                "成本变化": "",
+                "我的信心": "",
+                "最近更新": note_date,
+            }
         else:
             try:
                 state["_rows"][t]["热度"] = str(int(state["_rows"][t]["热度"] or "0") + 1)

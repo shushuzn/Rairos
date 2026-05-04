@@ -35,24 +35,24 @@ def _build_agent_parser(subparsers) -> argparse.ArgumentParser:
     dr = sub.add_parser("deep-research", help="Start a new deep research session")
     dr.add_argument("query", nargs="?", default="", help="Research topic/question")
     dr.add_argument(
-        "--iterations", "-n", type=int, default=3,
-        help="Max iterations (default 3). Each iteration: search → extract → analyze gaps"
+        "--iterations",
+        "-n",
+        type=int,
+        default=3,
+        help="Max iterations (default 3). Each iteration: search → extract → analyze gaps",
     )
     dr.add_argument(
-        "--papers", "-p", type=int, default=5,
-        help="Max papers per iteration (default 5)"
+        "--papers", "-p", type=int, default=5, help="Max papers per iteration (default 5)"
+    )
+    dr.add_argument("--verbose", "-v", action="store_true", help="Print verbose debug output")
+    dr.add_argument(
+        "--resume", "-r", type=str, metavar="SESSION_ID", help="Resume an existing session"
     )
     dr.add_argument(
-        "--verbose", "-v", action="store_true",
-        help="Print verbose debug output"
-    )
-    dr.add_argument(
-        "--resume", "-r", type=str, metavar="SESSION_ID",
-        help="Resume an existing session"
-    )
-    dr.add_argument(
-        "--output", "-o", type=str,
-        help="Output file for the research report (default: print to stdout)"
+        "--output",
+        "-o",
+        type=str,
+        help="Output file for the research report (default: print to stdout)",
     )
     dr.set_defaults(func=_run_deep_research)
 
@@ -140,10 +140,21 @@ def _list_sessions(args) -> int:
         print("Run: airos agent deep-research <query>")
         return 0
 
-    print(colored(f"{'SESSION':12} {'STATUS':10} {'ITER':5} {'PAPERS':6} {'GAPS':5} {'DURATION':8}  QUERY", Colors.BOLD))
+    print(
+        colored(
+            f"{'SESSION':12} {'STATUS':10} {'ITER':5} {'PAPERS':6} {'GAPS':5} {'DURATION':8}  QUERY",
+            Colors.BOLD,
+        )
+    )
     print("-" * 80)
-    for s in sessions[:args.limit]:
-        status_color = Colors.GREEN if s["status"] == "completed" else Colors.YELLOW if s["status"] == "paused" else Colors.RED
+    for s in sessions[: args.limit]:
+        status_color = (
+            Colors.GREEN
+            if s["status"] == "completed"
+            else Colors.YELLOW
+            if s["status"] == "paused"
+            else Colors.RED
+        )
         print(
             f"{s['session_id']:12} "
             f"{colored(s['status'].upper(), status_color):10} "
@@ -174,7 +185,9 @@ def _resume_session(args) -> int:
     agent.resume(args.session_id)
     result = agent.run()
 
-    print_success(f"Session {args.session_id} completed: {result.iterations} iterations, {len(result.papers)} papers")
+    print_success(
+        f"Session {args.session_id} completed: {result.iterations} iterations, {len(result.papers)} papers"
+    )
     print()
     print(result.report[:500])
     return 0

@@ -1,4 +1,5 @@
 """CLI command: export."""
+
 from __future__ import annotations
 
 import argparse
@@ -96,8 +97,12 @@ def _paper_to_bibtex(paper) -> str:
 
 def _build_export_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser("export", help="Export papers to CSV, JSON, or BibTeX")
-    p.add_argument("--format", choices=["csv", "json", "bibtex"], default="csv",
-                   help="Output format (default: csv)")
+    p.add_argument(
+        "--format",
+        choices=["csv", "json", "bibtex"],
+        default="csv",
+        help="Output format (default: csv)",
+    )
     p.add_argument("--limit", type=int, default=0, help="Limit number of papers (0 = all)")
     p.add_argument("--out", metavar="FILE", help="Write to file instead of stdout")
     p.add_argument("--paper", metavar="ID", help="Export single paper by ID (overrides --limit)")
@@ -117,12 +122,20 @@ def _run_export(args: argparse.Namespace) -> int:
         if args.format == "bibtex":
             content = _paper_to_bibtex(paper)
         elif args.format == "json":
-            content = _json.dumps({
-                "id": paper.id, "title": paper.title, "authors": paper.authors,
-                "abstract": paper.abstract, "published": paper.published,
-                "doi": paper.doi, "journal": paper.journal,
-                "primary_category": paper.primary_category,
-            }, indent=2, ensure_ascii=False)
+            content = _json.dumps(
+                {
+                    "id": paper.id,
+                    "title": paper.title,
+                    "authors": paper.authors,
+                    "abstract": paper.abstract,
+                    "published": paper.published,
+                    "doi": paper.doi,
+                    "journal": paper.journal,
+                    "primary_category": paper.primary_category,
+                },
+                indent=2,
+                ensure_ascii=False,
+            )
         else:
             # CSV for single paper
             fields = ["id", "title", "authors", "abstract", "published", "doi"]

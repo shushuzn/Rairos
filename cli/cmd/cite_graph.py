@@ -1,4 +1,5 @@
 """CLI command: cite-graph."""
+
 from __future__ import annotations
 
 import argparse
@@ -29,12 +30,16 @@ def _openalex_request(path: str, timeout: int = 15) -> dict:
     ctx = _build_openalex_ctx()
     proxy_handler = urllib.request.ProxyHandler({})
     opener = urllib.request.build_opener(proxy_handler, urllib.request.HTTPSHandler(context=ctx))
-    req = urllib.request.Request(url, headers={
-        "User-Agent": f"ai_research_os/1.0 (mailto:{_OPENALEX_EMAIL})",
-        "Accept": "application/json",
-    })
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": f"ai_research_os/1.0 (mailto:{_OPENALEX_EMAIL})",
+            "Accept": "application/json",
+        },
+    )
     try:
         import orjson as json
+
         with opener.open(req, timeout=timeout) as resp:
             return json.loads(resp.read())  # type: ignore[no-any-return]
     except Exception as e:
@@ -49,6 +54,7 @@ def _openalex_id_to_title(openalex_id: str) -> Optional[str]:
     except Exception:
         return None
 
+
 @dataclass
 class CiteGraphNode:
     paper_id: str
@@ -62,15 +68,17 @@ def _extract_references_from_text(paper_id: str, text: str) -> dict[str, list[st
     if not text or not text.strip():
         return {"arxiv_ids": [], "dois": [], "pmids": [], "isbns": []}
 
-    arXiv_PAT = re.compile(r'\barXiv:\s*(\d+\.\d+\b)', re.IGNORECASE)
-    DOI_PAT = re.compile(r'\b10\.\d{4,}/[^\s]+', re.IGNORECASE)
-    PMID_PAT = re.compile(r'\bPMID:\s*(\d{6,})\b', re.IGNORECASE)
-    ISBN_PAT = re.compile(r'\bISBN(?:-13)?:?\s*([0-9-X]{10,})\b', re.IGNORECASE)
+    arXiv_PAT = re.compile(r"\barXiv:\s*(\d+\.\d+\b)", re.IGNORECASE)
+    DOI_PAT = re.compile(r"\b10\.\d{4,}/[^\s]+", re.IGNORECASE)
+    PMID_PAT = re.compile(r"\bPMID:\s*(\d{6,})\b", re.IGNORECASE)
+    ISBN_PAT = re.compile(r"\bISBN(?:-13)?:?\s*([0-9-X]{10,})\b", re.IGNORECASE)
 
-    _REFS_SECTION_PAT = re.compile(r'(?:\n|^)[ ]*(?:\d+\.?\s*)?(?:References|Bibliography|Citations)', re.IGNORECASE)
+    _REFS_SECTION_PAT = re.compile(
+        r"(?:\n|^)[ ]*(?:\d+\.?\s*)?(?:References|Bibliography|Citations)", re.IGNORECASE
+    )
     match = _REFS_SECTION_PAT.search(text)
     if match:
-        text = text[match.start():]
+        text = text[match.start() :]
 
     arxiv_ids = list(set(arXiv_PAT.findall(text)))
     dois = list(set(DOI_PAT.findall(text)))
@@ -136,30 +144,41 @@ def _build_cite_graph_parser(subparsers) -> argparse.ArgumentParser:
         help="Text/JSON/Mermaid output of citation subgraph",
     )
     p_text.add_argument(
-        "--paper", required=True, metavar="PAPER_ID",
+        "--paper",
+        required=True,
+        metavar="PAPER_ID",
         help="Root paper for the citation graph",
     )
     p_text.add_argument(
-        "--depth", type=int, default=2, choices=[1, 2],
+        "--depth",
+        type=int,
+        default=2,
+        choices=[1, 2],
         help="Traversal depth: 1 = direct citations only, 2 = +2-hop (default: 2)",
     )
     p_text.add_argument(
-        "--max-nodes", type=int, default=30,
+        "--max-nodes",
+        type=int,
+        default=30,
         help="Maximum nodes per direction to show (default: 30)",
     )
     p_text.add_argument(
-        "--format", choices=["text", "mermaid", "json", "warp"], default="text",
+        "--format",
+        choices=["text", "mermaid", "json", "warp"],
+        default="text",
         help="Output format (default: text)",
     )
     p_text.add_argument(
-        "--plain-text", metavar="TEXT",
+        "--plain-text",
+        metavar="TEXT",
         help="Build graph directly from plain text (extract references without DB import). "
-             "Useful for papers not yet in the DB.",
+        "Useful for papers not yet in the DB.",
     )
     p_text.add_argument(
-        "--fetch-metadata", action="store_true",
+        "--fetch-metadata",
+        action="store_true",
         help="Fetch paper titles from arXiv/CrossRef APIs for plain-text mode. "
-             "Implies --plain-text. Adds titles to graph nodes.",
+        "Implies --plain-text. Adds titles to graph nodes.",
     )
 
     # cite-graph view (D3.js interactive visualization)
@@ -168,26 +187,41 @@ def _build_cite_graph_parser(subparsers) -> argparse.ArgumentParser:
         help="Open interactive D3.js citation network in browser",
     )
     vp.add_argument(
-        "--paper", required=True, metavar="PAPER_ID",
+        "--paper",
+        required=True,
+        metavar="PAPER_ID",
         help="Root paper for the citation graph",
     )
     vp.add_argument(
-        "--depth", type=int, default=1, choices=[1, 2],
+        "--depth",
+        type=int,
+        default=1,
+        choices=[1, 2],
         help="Traversal depth: 1 = direct citations only, 2 = +2-hop (default: 1)",
     )
     vp.add_argument(
-        "--max-nodes", type=int, default=50,
+        "--max-nodes",
+        type=int,
+        default=50,
         help="Maximum nodes per direction to show (default: 50)",
     )
     vp.add_argument(
-        "--direction", choices=["from", "to", "both"], default="both",
+        "--direction",
+        choices=["from", "to", "both"],
+        default="both",
         help="Which citations: 'from'=references, 'to'=citing papers, 'both'=all (default: both)",
     )
     vp.add_argument(
-        "--open", action="store_true", default=True, help="Open in default browser (default: on)",
+        "--open",
+        action="store_true",
+        default=True,
+        help="Open in default browser (default: on)",
     )
     vp.add_argument(
-        "--no-open", dest="open", action="store_false", help="Write HTML to stdout instead of opening browser",
+        "--no-open",
+        dest="open",
+        action="store_false",
+        help="Write HTML to stdout instead of opening browser",
     )
     return p  # type: ignore[no-any-return]
 
@@ -260,9 +294,14 @@ def _run_cite_graph_text(args: argparse.Namespace) -> int:
                 nodes[rid] = CiteGraphNode(rid, "", 1, "backward")
                 edges.append((root_id, rid, "backward"))
 
-        all_refs = ref_ids + [f"DOI:{d}" for d in dois] + [f"PMID:{p}" for p in pmids] + [f"ISBN:{i}" for i in isbns]
+        all_refs = (
+            ref_ids
+            + [f"DOI:{d}" for d in dois]
+            + [f"PMID:{p}" for p in pmids]
+            + [f"ISBN:{i}" for i in isbns]
+        )
         print(f"Root: {root_id}")
-        print(f"References ({len(all_refs)}): {', '.join(all_refs[:args.max_nodes])}")
+        print(f"References ({len(all_refs)}): {', '.join(all_refs[: args.max_nodes])}")
         return 0
 
     # DB mode — BFS using existing DB methods
@@ -271,17 +310,37 @@ def _run_cite_graph_text(args: argparse.Namespace) -> int:
     if args.format == "mermaid":
         print("graph TD")
         for n in nodes.values():
-            print(f'    {n.paper_id.replace("-", "_")}["{n.title[:30] if n.title else n.paper_id}"]')
+            print(
+                f'    {n.paper_id.replace("-", "_")}["{n.title[:30] if n.title else n.paper_id}"]'
+            )
         for src, tgt, _ in edges:
             src_s = src.replace("-", "_")
             tgt_s = tgt.replace("-", "_")
             print(f"    {src_s} --> {tgt_s}")
     elif args.format == "json":
         import json
-        print(json.dumps({"nodes": [{"id": n.paper_id, "title": n.title, "depth": n.depth, "direction": n.direction} for n in nodes.values()], "edges": [{"from": e[0], "to": e[1]} for e in edges]}, indent=2))
+
+        print(
+            json.dumps(
+                {
+                    "nodes": [
+                        {
+                            "id": n.paper_id,
+                            "title": n.title,
+                            "depth": n.depth,
+                            "direction": n.direction,
+                        }
+                        for n in nodes.values()
+                    ],
+                    "edges": [{"from": e[0], "to": e[1]} for e in edges],
+                },
+                indent=2,
+            )
+        )
     elif args.format == "warp":
         from rich.console import Console
         from io import StringIO
+
         c = Console(file=StringIO(), force_terminal=False, width=80)
         depth_labels = {0: "ROOT", 1: "D1", 2: "D2"}
         dir_colors = {"root": "[#B4FA72]", "forward": "[#A5D5FE]", "backward": "[#FEFDC2]"}
@@ -291,9 +350,16 @@ def _run_cite_graph_text(args: argparse.Namespace) -> int:
             label = depth_labels.get(n.depth, f"D{n.depth}")
             title = n.title[:55] + "..." if n.title and len(n.title) > 55 else (n.title or "")
             rows.append([f"{color}{n.paper_id}[/]", f"[#8E8E8E]{label}[/]", title])
-        c.print(WarpBlocks.panel(f"Citation Graph — [#FF8272]{root_id}[/]", f"[#A5D5FE]{len(nodes)}[/] nodes · [#FEFDC2]{len(edges)}[/] edges"))
+        c.print(
+            WarpBlocks.panel(
+                f"Citation Graph — [#FF8272]{root_id}[/]",
+                f"[#A5D5FE]{len(nodes)}[/] nodes · [#FEFDC2]{len(edges)}[/] edges",
+            )
+        )
         if rows:
-            c.print(WarpBlocks.table(["Paper ID", "Depth", "Title"], rows, title=f"Nodes ({len(rows)})"))
+            c.print(
+                WarpBlocks.table(["Paper ID", "Depth", "Title"], rows, title=f"Nodes ({len(rows)})")
+            )
         print(c.file.getvalue(), end="")  # type: ignore[union-attr,attr-defined]
     else:
         print(f"Citation graph for {root_id} (depth={args.depth}):")
@@ -305,8 +371,9 @@ def _run_cite_graph_text(args: argparse.Namespace) -> int:
     return 0
 
 
-def _db_citation_view(db, root_id: str, depth: int = 1, max_nodes: int = 50,
-                       direction: str = "both") -> dict:
+def _db_citation_view(
+    db, root_id: str, depth: int = 1, max_nodes: int = 50, direction: str = "both"
+) -> dict:
     """Build D3-compatible citation graph from DB using BFS.
 
     Args:
@@ -370,6 +437,7 @@ def _db_citation_view(db, root_id: str, depth: int = 1, max_nodes: int = 50,
 
 def _enrich_openalex_titles(nodes: list[dict]) -> None:
     """Concurrent title enrichment for nodes whose IDs are OpenAlex W-prefixed IDs."""
+
     def fetch(nid: str) -> Tuple[str, Optional[str]]:
         title = _openalex_id_to_title(nid)
         return (nid, title)
@@ -398,31 +466,35 @@ def _run_cite_graph_view(args: argparse.Namespace) -> int:
     db = get_db()
     db.init()
 
-    graph_data = _db_citation_view(db, args.paper, depth=args.depth,
-                                   max_nodes=args.max_nodes, direction=args.direction)
+    graph_data = _db_citation_view(
+        db, args.paper, depth=args.depth, max_nodes=args.max_nodes, direction=args.direction
+    )
 
     if not graph_data["nodes"]:
-        print(f"No citation data found for '{args.paper}'. Ensure the paper is in the KG with cite edges.", file=sys.stderr)
+        print(
+            f"No citation data found for '{args.paper}'. Ensure the paper is in the KG with cite edges.",
+            file=sys.stderr,
+        )
         return 1
 
     # Load citation template
-    template_path = Path(__file__).parent.parent.parent / "viz" / "templates" / "cite_viz_template_d3.html"
+    template_path = (
+        Path(__file__).parent.parent.parent / "viz" / "templates" / "cite_viz_template_d3.html"
+    )
     html_content = template_path.read_text(encoding="utf-8")
 
     # Inject data
     nodes_json = json.dumps(graph_data["nodes"], ensure_ascii=False)
     links_json = json.dumps(graph_data["links"], ensure_ascii=False)
-    html_content = html_content.replace('INJECT_NODES', nodes_json)
-    html_content = html_content.replace('INJECT_LINKS', links_json)
-    html_content = html_content.replace('INJECT_ROOT_ID', f'"{graph_data["root"]}"')
+    html_content = html_content.replace("INJECT_NODES", nodes_json)
+    html_content = html_content.replace("INJECT_LINKS", links_json)
+    html_content = html_content.replace("INJECT_ROOT_ID", f'"{graph_data["root"]}"')
 
     if not args.open:
         sys.stdout.write(html_content)
         return 0
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".html", delete=False, encoding="utf-8"
-    ) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
         f.write(html_content)
         tmp_path = f.name
 

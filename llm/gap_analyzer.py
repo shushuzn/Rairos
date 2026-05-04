@@ -1,4 +1,5 @@
 """Enhanced Gap Analyzer: Multi-source gap detection with insights fusion."""
+
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Tuple
 
@@ -31,6 +32,7 @@ _GAP_TYPE_NAMES: Dict[GapType, str] = {
 @dataclass
 class ResearchGapV2:
     """Enhanced research gap with multi-source evidence."""
+
     gap_type: GapType
     title: str
     description: str
@@ -58,6 +60,7 @@ class ResearchGapV2:
 @dataclass
 class GapAnalysisResultV2:
     """Enhanced analysis result with multi-source context."""
+
     topic: str
     gaps: List[ResearchGapV2] = field(default_factory=list)
 
@@ -76,8 +79,7 @@ class GapAnalysisResultV2:
 class GapAnalyzerV2(GapDetector):
     """Enhanced gap analyzer with insight fusion and preference learning."""
 
-    def __init__(self, db=None, insight_manager=None, evolution_tracker=None,
-                 trend_analyzer=None):
+    def __init__(self, db=None, insight_manager=None, evolution_tracker=None, trend_analyzer=None):
         super().__init__(db)
         self.insight_manager = insight_manager
         self.evolution_tracker = evolution_tracker or EvolutionTracker()
@@ -98,13 +100,13 @@ class GapAnalyzerV2(GapDetector):
 
         # If insufficient results, try searching each word separately
         if len(search_results) < limit and topic.strip():
-            seen_ids = {getattr(r, 'paper_id', '') or getattr(r, 'id', '') for r in search_results}
+            seen_ids = {getattr(r, "paper_id", "") or getattr(r, "id", "") for r in search_results}
             for word in topic.split():
                 if word.strip() and len(search_results) >= limit:
                     break
                 word_rows, _ = self.db.search_papers(word.strip(), limit=limit)
                 for row in word_rows:
-                    pid = getattr(row, 'paper_id', '') or getattr(row, 'id', '')
+                    pid = getattr(row, "paper_id", "") or getattr(row, "id", "")
                     if pid not in seen_ids:
                         seen_ids.add(pid)
                         search_results.append(row)
@@ -115,24 +117,25 @@ class GapAnalyzerV2(GapDetector):
             return []
 
         # Fetch full PaperRecord for each result (has abstract)
-        paper_ids = [
-            getattr(r, 'paper_id', '') or getattr(r, 'id', '')
-            for r in search_results
-        ]
+        paper_ids = [getattr(r, "paper_id", "") or getattr(r, "id", "") for r in search_results]
         paper_records = self.db.get_papers_bulk(paper_ids)
 
         papers = []
         for row in search_results:
-            pid = getattr(row, 'paper_id', '') or getattr(row, 'id', '')
+            pid = getattr(row, "paper_id", "") or getattr(row, "id", "")
             record = paper_records.get(pid)
             if record:
-                papers.append({
-                    "id": pid,
-                    "title": getattr(record, 'title', '') or getattr(row, 'title', topic),
-                    "abstract": getattr(record, 'abstract', '') or '',
-                    "year": getattr(record, 'published', '')[:4] if getattr(record, 'published', '') else '',
-                    "authors": getattr(record, 'authors', '') or '',
-                })
+                papers.append(
+                    {
+                        "id": pid,
+                        "title": getattr(record, "title", "") or getattr(row, "title", topic),
+                        "abstract": getattr(record, "abstract", "") or "",
+                        "year": getattr(record, "published", "")[:4]
+                        if getattr(record, "published", "")
+                        else "",
+                        "authors": getattr(record, "authors", "") or "",
+                    }
+                )
         return papers
 
     def analyze(  # type: ignore[override]
@@ -253,18 +256,22 @@ class GapAnalyzerV2(GapDetector):
             try:
                 similar = self.db.find_similar(paper_id, threshold=0.80, limit=limit)
                 for record, score in similar:
-                    pid = getattr(record, 'id', '') or paper_id
+                    pid = getattr(record, "id", "") or paper_id
                     if pid not in seen_ids:
                         seen_ids.add(pid)
-                        all_similar.append({
-                            "id": pid,
-                            "title": getattr(record, 'title', '') or '',
-                            "abstract": getattr(record, 'abstract', '') or '',
-                            "year": getattr(record, 'published', '')[:4] if getattr(record, 'published', '') else '',
-                            "authors": getattr(record, 'authors', '') or '',
-                            "similarity": score,
-                            "source": f"similar_to_{paper_id[:8]}",
-                        })
+                        all_similar.append(
+                            {
+                                "id": pid,
+                                "title": getattr(record, "title", "") or "",
+                                "abstract": getattr(record, "abstract", "") or "",
+                                "year": getattr(record, "published", "")[:4]
+                                if getattr(record, "published", "")
+                                else "",
+                                "authors": getattr(record, "authors", "") or "",
+                                "similarity": score,
+                                "source": f"similar_to_{paper_id[:8]}",
+                            }
+                        )
             except Exception:
                 continue
 
@@ -334,17 +341,19 @@ class GapAnalyzerV2(GapDetector):
             # we boost this gap because it matches their proven interest pattern.
             gene_pool_score = self._get_gene_pool_score(topic, gap)
 
-            enhanced.append(ResearchGapV2(
-                gap_type=gap.gap_type,
-                title=gap.description[:100] if gap.description else "Untitled Gap",
-                description=gap.description,
-                severity=gap.severity,
-                supporting_papers=gap.evidence_papers,
-                user_insights=related_insights,
-                priority=priority,
-                novelty_score=trend_boost,  # reuse field to carry trend signal
-                gene_pool_score=gene_pool_score,
-            ))
+            enhanced.append(
+                ResearchGapV2(
+                    gap_type=gap.gap_type,
+                    title=gap.description[:100] if gap.description else "Untitled Gap",
+                    description=gap.description,
+                    severity=gap.severity,
+                    supporting_papers=gap.evidence_papers,
+                    user_insights=related_insights,
+                    priority=priority,
+                    novelty_score=trend_boost,  # reuse field to carry trend signal
+                    gene_pool_score=gene_pool_score,
+                )
+            )
 
         # Sort by preference score + trend boost + Gene Pool signal + severity + priority
         enhanced, preference_applied = self._apply_preference_sorting(enhanced, hot_keywords)
@@ -359,7 +368,9 @@ class GapAnalyzerV2(GapDetector):
         """
         try:
             gap_keywords = extract_keywords(gap.description or "")
-            gap_type_str = gap.gap_type.value if hasattr(gap.gap_type, 'value') else str(gap.gap_type)
+            gap_type_str = (
+                gap.gap_type.value if hasattr(gap.gap_type, "value") else str(gap.gap_type)
+            )
 
             capsules = self.evolution_tracker.find_capsule(
                 topic=topic,
@@ -440,7 +451,10 @@ class GapAnalyzerV2(GapDetector):
                 pref_normalized = 0.2
                 gap.preference_boost = True
                 gap.preference_score = numeric_score
-            elif gap_type_str in disliked_types or self.evolution_tracker.should_deprioritize_gap_type(gap_type_str):
+            elif (
+                gap_type_str in disliked_types
+                or self.evolution_tracker.should_deprioritize_gap_type(gap_type_str)
+            ):
                 pref_normalized = -0.2
                 gap.preference_boost = False
                 gap.preference_score = numeric_score
@@ -449,22 +463,31 @@ class GapAnalyzerV2(GapDetector):
                 gap.preference_score = 0.0
 
             # Severity normalized (0-1)
-            severity_normalized = {GapSeverity.HIGH: 1.0, GapSeverity.MEDIUM: 0.5, GapSeverity.LOW: 0.0}.get(gap.severity, 0.0)
+            severity_normalized = {
+                GapSeverity.HIGH: 1.0,
+                GapSeverity.MEDIUM: 0.5,
+                GapSeverity.LOW: 0.0,
+            }.get(gap.severity, 0.0)
 
             # Keyword score normalized (0-1): max +3 keyword matches → cap at 1.0
             gap_kws = _extract_gap_keywords(gap.title)
-            keyword_normalized = min(sum(
-                self.evolution_tracker.get_keyword_score(kw)
-                for kw in gap_kws if kw in top_keywords
-            ) / 3.0, 1.0)
+            keyword_normalized = min(
+                sum(
+                    self.evolution_tracker.get_keyword_score(kw)
+                    for kw in gap_kws
+                    if kw in top_keywords
+                )
+                / 3.0,
+                1.0,
+            )
 
             # Composite: Gene Pool is dominant (40%), rest weighted
             composite = (
-                0.40 * gene_pool +
-                0.25 * pref_normalized +
-                0.20 * trend_normalized +
-                0.10 * severity_normalized +
-                0.05 * keyword_normalized
+                0.40 * gene_pool
+                + 0.25 * pref_normalized
+                + 0.20 * trend_normalized
+                + 0.10 * severity_normalized
+                + 0.05 * keyword_normalized
             )
 
             # Primary: gene_pool; Tiebreaker: composite
@@ -624,9 +647,7 @@ class GapAnalyzerV2(GapDetector):
             model=model,
         )
 
-        hypothesis_result = self.generate_hypotheses(
-            gap_result, use_llm=use_llm, model=model
-        )
+        hypothesis_result = self.generate_hypotheses(gap_result, use_llm=use_llm, model=model)
 
         return gap_result, hypothesis_result
 
@@ -635,6 +656,7 @@ def render_gap_report(result: GapAnalysisResultV2, show_preferences: bool = True
     """Render gap analysis report (WarpBlocks Rich output)."""
     from rich.console import Console
     from cli.warp import WarpBlocks
+
     c = Console()
 
     if not result.gaps:
@@ -643,8 +665,8 @@ def render_gap_report(result: GapAnalysisResultV2, show_preferences: bool = True
     # Summary stats
     [
         ["Papers Analyzed", f"[#A5D5FE]{result.total_papers_analyzed}[/]"],
-        ["Insights Used",  f"[#A5D5FE]{result.total_insights_used}[/]"],
-        ["Gaps Found",     f"[#B4FA72]{len(result.gaps)}[/]"],
+        ["Insights Used", f"[#A5D5FE]{result.total_insights_used}[/]"],
+        ["Gaps Found", f"[#B4FA72]{len(result.gaps)}[/]"],
     ]
 
     # Gap by type
@@ -668,26 +690,32 @@ def render_gap_report(result: GapAnalysisResultV2, show_preferences: bool = True
         }.get(gap.severity, "⚪")
         type_name = _GAP_TYPE_NAMES.get(gap.gap_type, gap.gap_type.value)
         title_short = gap.title[:55]
-        boost = " ✨" if getattr(gap, 'preference_boost', False) else ""
-        gap_rows.append([
-            f"[#FEFDC2]{i}.[/]",
-            f"{sev_label}{severity_color}{type_name}[/]",
-            f"{title_short}{boost}",
-        ])
+        boost = " ✨" if getattr(gap, "preference_boost", False) else ""
+        gap_rows.append(
+            [
+                f"[#FEFDC2]{i}.[/]",
+                f"{sev_label}{severity_color}{type_name}[/]",
+                f"{title_short}{boost}",
+            ]
+        )
         # Sub-questions as sub-row
         for q in (gap.sub_questions or [])[:2]:
             gap_rows.append(["", "", f"   📋 {q[:65]}..."])
 
-    pref_note = "  ([#B4FA72]✨[/] = matches your preferences)" if (
-        show_preferences and getattr(result, 'preference_applied', False)
-    ) else ""
+    pref_note = (
+        "  ([#B4FA72]✨[/] = matches your preferences)"
+        if (show_preferences and getattr(result, "preference_applied", False))
+        else ""
+    )
 
     lines = [
         WarpBlocks.panel(
             f"[#FF8272]{result.topic}[/] — Research Gap Analysis",
-            "\n".join([
-                f"[#A5D5FE]{len(result.gaps)} gaps[/] · {result.total_papers_analyzed} papers · {result.total_insights_used} insights{pref_note}",
-            ]),
+            "\n".join(
+                [
+                    f"[#A5D5FE]{len(result.gaps)} gaps[/] · {result.total_papers_analyzed} papers · {result.total_insights_used} insights{pref_note}",
+                ]
+            ),
             width=75,
         ),
         "",
@@ -696,19 +724,17 @@ def render_gap_report(result: GapAnalysisResultV2, show_preferences: bool = True
     # Capture Rich output using Console.capture()
     with c.capture() as capture:
         if type_rows:
-            c.print(WarpBlocks.table(
-                ["Gap Type", "Count"],
-                type_rows,
-                title="Gaps by Type"
-            ))
+            c.print(WarpBlocks.table(["Gap Type", "Count"], type_rows, title="Gaps by Type"))
             c.print()
 
         if gap_rows:
-            c.print(WarpBlocks.table(
-                ["#", "Type", "Gap / Question"],
-                gap_rows,
-                title=f"Research Gaps ({len(result.gaps)})"
-            ))
+            c.print(
+                WarpBlocks.table(
+                    ["#", "Type", "Gap / Question"],
+                    gap_rows,
+                    title=f"Research Gaps ({len(result.gaps)})",
+                )
+            )
 
     if capture.get():
         lines.append(capture.get().rstrip("\n"))
@@ -723,6 +749,7 @@ def render_combined_report(
     """Render combined gap + hypothesis report (WarpBlocks Rich output)."""
     from rich.console import Console
     from cli.warp import WarpBlocks
+
     c = Console()
 
     # Top gaps table
@@ -733,27 +760,31 @@ def render_combined_report(
             GapSeverity.MEDIUM: "🟡",
             GapSeverity.LOW: "🟢",
         }.get(gap.severity, "⚪")
-        boost = " ✨" if getattr(gap, 'preference_boost', False) else ""
-        gap_rows.append([
-            f"[#FEFDC2]{i}.[/]",
-            sev_icon,
-            f"{gap.title[:58]}{boost}",
-        ])
+        boost = " ✨" if getattr(gap, "preference_boost", False) else ""
+        gap_rows.append(
+            [
+                f"[#FEFDC2]{i}.[/]",
+                sev_icon,
+                f"{gap.title[:58]}{boost}",
+            ]
+        )
 
     # Hypotheses table
     hypo_rows = []
     for i, h in enumerate(hypothesis_result.hypotheses[:5], 1):
-        hypo_rows.append([
-            f"[#FEFDC2]{i}.[/]",
-            h.hypothesis_type.value[:15],
-            f"[#B4FA72]{h.novelty_score:.0%}[/]",
-            f"[#A5D5FE]{h.feasibility_score:.0%}[/]",
-            h.core_statement[:38],
-        ])
+        hypo_rows.append(
+            [
+                f"[#FEFDC2]{i}.[/]",
+                h.hypothesis_type.value[:15],
+                f"[#B4FA72]{h.novelty_score:.0%}[/]",
+                f"[#A5D5FE]{h.feasibility_score:.0%}[/]",
+                h.core_statement[:38],
+            ]
+        )
 
     pref_line = ""
     if gap_result.preference_applied:
-        boosted = sum(1 for g in gap_result.gaps if getattr(g, 'preference_boost', False))
+        boosted = sum(1 for g in gap_result.gaps if getattr(g, "preference_boost", False))
         pref_line = f"  [#A5D5FE]🧠 {boosted} gaps boosted by preferences ✨[/]"
 
     parts = [
@@ -768,19 +799,19 @@ def render_combined_report(
     # Capture Rich output using Console.capture()
     with c.capture() as capture:
         if gap_rows:
-            c.print(WarpBlocks.table(
-                ["#", "", "Top Research Gaps"],
-                gap_rows,
-                title="Gap Analysis"
-            ))
+            c.print(
+                WarpBlocks.table(["#", "", "Top Research Gaps"], gap_rows, title="Gap Analysis")
+            )
             c.print()
 
         if hypo_rows:
-            c.print(WarpBlocks.table(
-                ["#", "Type", "Novelty", "Feas.", "Hypothesis"],
-                hypo_rows,
-                title=f"Research Hypotheses ({len(hypothesis_result.hypotheses)})"
-            ))
+            c.print(
+                WarpBlocks.table(
+                    ["#", "Type", "Novelty", "Feas.", "Hypothesis"],
+                    hypo_rows,
+                    title=f"Research Hypotheses ({len(hypothesis_result.hypotheses)})",
+                )
+            )
 
     if capture.get():
         parts.append(capture.get().rstrip("\n"))

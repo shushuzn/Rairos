@@ -1,4 +1,5 @@
 """CLI command: import."""
+
 from __future__ import annotations
 
 import argparse
@@ -98,9 +99,13 @@ Examples:
     p.add_argument("ids", nargs="*", metavar="ID", help="arXiv IDs, DOIs, or paper UIDs to add")
     p.add_argument("--source", default="import", help="Source label (default: import)")
     p.add_argument("--skip-existing", action="store_true", help="Skip IDs already in database")
-    p.add_argument("--file", metavar="FILE", help="Read IDs from file (one per line), or '-' for stdin")
+    p.add_argument(
+        "--file", metavar="FILE", help="Read IDs from file (one per line), or '-' for stdin"
+    )
     p.add_argument("--checkpoint", metavar="FILE", help="Save/resume progress to checkpoint file")
-    p.add_argument("--resume", action="store_true", help="Resume from checkpoint (skip processed IDs)")
+    p.add_argument(
+        "--resume", action="store_true", help="Resume from checkpoint (skip processed IDs)"
+    )
     return p  # type: ignore[no-any-return]
 
 
@@ -114,6 +119,7 @@ def _run_import(args: argparse.Namespace) -> int:
 
     if _has_file:
         import io as _io
+
         if args.file == "-":
             _source = _io.StringIO(sys.stdin.read())
         else:
@@ -160,6 +166,7 @@ def _run_import(args: argparse.Namespace) -> int:
             missing_ids.append(pid)
 
     if missing_ids:
+
         def _upsert_one(enumerated: Tuple[int, str]) -> Tuple[int, str, bool, str]:
             idx, pid = enumerated
             try:
@@ -199,7 +206,9 @@ def _run_import(args: argparse.Namespace) -> int:
                 print_error(f"Failed: {pid} — {err}")
 
             # Save checkpoint after each batch
-            if checkpoint_path and (len(processed_this_run) % 10 == 0 or len(processed_this_run) == len(missing_ids)):
+            if checkpoint_path and (
+                len(processed_this_run) % 10 == 0 or len(processed_this_run) == len(missing_ids)
+            ):
                 all_processed = list(processed_ids) + processed_this_run
                 _save_checkpoint(checkpoint_path, all_processed, failed_ids, len(paper_ids))
 
@@ -210,13 +219,14 @@ def _run_import(args: argparse.Namespace) -> int:
 
     total_failed = len(failed_ids)
     from rich.console import Console
+
     c = Console()
     c.rule("[bold #FF8272]  Import Complete  [/]")
     c.print()
     rows = [
-        ["[#B4FA72]✓[/]", "Added",    f"[#B4FA72]{added}[/]"],
-        ["[#A5D5FE]○[/]", "Skipped",  f"[#A5D5FE]{skipped}[/]"],
-        ["[#FF5555]✗[/]", "Failed",    f"[#FF5555]{total_failed}[/]"],
+        ["[#B4FA72]✓[/]", "Added", f"[#B4FA72]{added}[/]"],
+        ["[#A5D5FE]○[/]", "Skipped", f"[#A5D5FE]{skipped}[/]"],
+        ["[#FF5555]✗[/]", "Failed", f"[#FF5555]{total_failed}[/]"],
     ]
     c.print(WarpBlocks.table(["", "Status", "Count"], rows, title="Import Summary"))
     if checkpoint_path:

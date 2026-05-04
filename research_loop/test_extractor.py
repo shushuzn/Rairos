@@ -20,6 +20,7 @@ from typing import List, Dict, Any
 @dataclass
 class TestCase:
     """A single pytest test case."""
+
     name: str
     doc: str  # description / assertion being tested
     test_code: str  # actual pytest test code
@@ -28,6 +29,7 @@ class TestCase:
 @dataclass
 class TestSuite:
     """Collection of test cases for a paper implementation."""
+
     arxiv_id: str
     module_name: str
     test_cases: List[TestCase] = field(default_factory=list)
@@ -121,12 +123,13 @@ def save_tests(suite: TestSuite, test_dir: Path) -> Path:
 
 # ─── Private helpers ──────────────────────────────────────────────────────────
 
+
 def _claim_to_test(claim: str, module_name: str) -> TestCase | None:
     """Convert a paper claim into a pytest test if it contains testable assertions."""
     claim_lower = claim.lower()
 
     # Accuracy / performance claims
-    acc_match = re.search(r'(\d+(?:\.\d+)?)\s*%\s*(?:accuracy|acc|performance)', claim_lower)
+    acc_match = re.search(r"(\d+(?:\.\d+)?)\s*%\s*(?:accuracy|acc|performance)", claim_lower)
     if acc_match:
         threshold = float(acc_match.group(1)) / 100
         return TestCase(
@@ -141,7 +144,7 @@ pass
         )
 
     # Loss / error reduction claims
-    loss_match = re.search(r'(?:loss|error|perplexity)\s*(?:of|=|:)\s*([\d.]+)', claim_lower)
+    loss_match = re.search(r"(?:loss|error|perplexity)\s*(?:of|=|:)\s*([\d.]+)", claim_lower)
     if loss_match:
         threshold = float(loss_match.group(1))
         return TestCase(
@@ -154,7 +157,7 @@ pass
         )
 
     # Speed / efficiency claims
-    speed_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:x|times|faster)', claim_lower)
+    speed_match = re.search(r"(\d+(?:\.\d+)?)\s*(?:x|times|faster)", claim_lower)
     if speed_match:
         speedup = float(speed_match.group(1))
         return TestCase(
@@ -305,26 +308,28 @@ def _code_signature_tests(code: str, module_name: str) -> List[TestCase]:
     tests = []
 
     # Find function definitions in code
-    func_pattern = re.compile(r'^def\s+(\w+)\s*\((.*?)\)', re.MULTILINE)
+    func_pattern = re.compile(r"^def\s+(\w+)\s*\((.*?)\)", re.MULTILINE)
     for match in func_pattern.finditer(code):
         func_name = match.group(1)
         _params = match.group(2)
 
         # Skip private functions
-        if func_name.startswith('_'):
+        if func_name.startswith("_"):
             continue
 
         # Create smoke test — body only; _render_test_module wraps in def
-        tests.append(TestCase(
-            name=f"test_{func_name}_exists",
-            doc=f"Function '{func_name}' should be importable and callable",
-            test_code=f"""\
+        tests.append(
+            TestCase(
+                name=f"test_{func_name}_exists",
+                doc=f"Function '{func_name}' should be importable and callable",
+                test_code=f"""\
 pytest.importorskip("{module_name}")
 import {module_name} as m
 assert hasattr(m, "{func_name}"), "Module should define {func_name}"
 assert callable(getattr(m, "{func_name}")), "{func_name} should be callable"
 """,
-        ))
+            )
+        )
 
     return tests
 
@@ -365,7 +370,7 @@ def _render_test_module(suite: TestSuite) -> str:
         # Apply 4-space indent to every line of the test body
         body_lines = tc.test_code.strip().split("\n")
         indented_body = "\n".join("    " + line for line in body_lines)
-        rendered_tests.append(f"def {tc.name}():\n    \"\"\"{tc.doc}\"\"\"\n{indented_body}")
+        rendered_tests.append(f'def {tc.name}():\n    """{tc.doc}"""\n{indented_body}')
 
     tests_str = "\n\n".join(rendered_tests)
 
@@ -376,7 +381,7 @@ def _render_test_module(suite: TestSuite) -> str:
         "\n".join(stdlib_imports)
         + "\n"
         + "\n".join(
-            f"try:\n    {line}\nexcept ImportError:\n    pytest.skip(\"{suite.module_name} not installed\", allow_module_level=True)"
+            f'try:\n    {line}\nexcept ImportError:\n    pytest.skip("{suite.module_name} not installed", allow_module_level=True)'
             for line in module_imports
         )
     )

@@ -1,4 +1,5 @@
 """Semantic Scholar API search with retry logic."""
+
 import logging
 import time
 from typing import List, Optional, Dict, Any
@@ -41,7 +42,16 @@ def search_semantic_scholar(
         List of S2Paper dicts sorted by relevance
     """
     if fields is None:
-        fields = ["title", "authors", "abstract", "year", "venue", "citationCount", "openAccessPdf", "paperId"]
+        fields = [
+            "title",
+            "authors",
+            "abstract",
+            "year",
+            "venue",
+            "citationCount",
+            "openAccessPdf",
+            "paperId",
+        ]
 
     encoded_query = _urlencode(query)
     url = (
@@ -77,13 +87,25 @@ def search_semantic_scholar(
                 time.sleep(_RETRY_DELAY * (attempt + 1))
             continue
 
-    raise RuntimeError(f"Semantic Scholar search failed for '{query}' after {_MAX_RETRIES} attempts: {last_error}")
+    raise RuntimeError(
+        f"Semantic Scholar search failed for '{query}' after {_MAX_RETRIES} attempts: {last_error}"
+    )
 
 
 def get_paper_by_id(paper_id: str, fields: Optional[List[str]] = None) -> Optional["S2Paper"]:
     """Fetch a paper by Semantic Scholar ID."""
     if fields is None:
-        fields = ["title", "authors", "abstract", "year", "venue", "citationCount", "openAccessPdf", "paperId", "externalIds"]
+        fields = [
+            "title",
+            "authors",
+            "abstract",
+            "year",
+            "venue",
+            "citationCount",
+            "openAccessPdf",
+            "paperId",
+            "externalIds",
+        ]
 
     url = f"{_S2_API}/paper/{paper_id}?fields={','.join(fields)}"
     try:
@@ -134,6 +156,7 @@ def get_references(paper_id: str, limit: int = 100) -> List["S2Paper"]:
 
 def _urlencode(q: str) -> str:
     import urllib.parse
+
     return urllib.parse.quote_plus(q)
 
 
@@ -192,6 +215,7 @@ class S2Paper:
     def to_paper(self) -> Paper:
         """Convert to core.Paper."""
         from core import Paper as CorePaper
+
         ext = self.external_ids
         uid = self.arxiv_id or self.paper_id
         pdf_url = self.open_access_pdf or ""

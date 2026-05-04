@@ -42,17 +42,19 @@ _FOLLOWUP_USER_PROMPT_TEMPLATE = """对话历史：
 
 class ResearchIntent(Enum):
     """Research intent classification."""
-    LEARNING = "learning"      # 理解概念、学习原理
+
+    LEARNING = "learning"  # 理解概念、学习原理
     REPRODUCING = "reproducing"  # 复现代码、复现实验
-    IMPROVING = "improving"    # 改进方法、创新
-    COMPARING = "comparing"    # 对比分析、选型
-    EXPLORING = "exploring"     # 探索发现、找方向
-    CITING = "citing"          # 引用写作、文献整理
+    IMPROVING = "improving"  # 改进方法、创新
+    COMPARING = "comparing"  # 对比分析、选型
+    EXPLORING = "exploring"  # 探索发现、找方向
+    CITING = "citing"  # 引用写作、文献整理
 
 
 @dataclass
 class Query:
     """问答记录."""
+
     id: str
     question: str
     answer_preview: str  # 回答预览（截取前100字）
@@ -65,6 +67,7 @@ class Query:
 @dataclass
 class ResearchSession:
     """研究会话."""
+
     id: str
     title: str
     queries: List[Query]
@@ -130,7 +133,7 @@ class ResearchSessionTracker:
         assert self.current_session is not None
 
         query = Query(
-            id=f"q_{int(time.time()*1000)}",
+            id=f"q_{int(time.time() * 1000)}",
             question=question,
             answer_preview=answer[:100] if answer else "",
             paper_ids=paper_ids,
@@ -160,28 +163,28 @@ class ResearchSessionTracker:
         # Intent patterns (CN/EN) - simple alternation without capturing groups
         patterns = {
             ResearchIntent.REPRODUCING: [
-                r'复现|实现|copy|paste|跑通|代码|code|reproduce|implement|build',
-                r'怎么实现|如何复现|有代码吗|show me|给我代码',
+                r"复现|实现|copy|paste|跑通|代码|code|reproduce|implement|build",
+                r"怎么实现|如何复现|有代码吗|show me|给我代码",
             ],
             ResearchIntent.IMPROVING: [
-                r'改进|优化|提升|更好|improve|better|enhance|boost',
-                r'如何改进|能不能更好|超越|outperform|beat',
+                r"改进|优化|提升|更好|improve|better|enhance|boost",
+                r"如何改进|能不能更好|超越|outperform|beat",
             ],
             ResearchIntent.COMPARING: [
-                r'比较|对比|差异|哪个更好|vs|versus|compare|differ',
-                r'和.*区别|相比.*如何|哪个更强',
+                r"比较|对比|差异|哪个更好|vs|versus|compare|differ",
+                r"和.*区别|相比.*如何|哪个更强",
             ],
             ResearchIntent.LEARNING: [
-                r'是什么|原理|如何理解|学习|了解|入门|概念|definition|learn|understand|explain',
-                r'什么意思|怎么理解|有什么用|what is|how does',
+                r"是什么|原理|如何理解|学习|了解|入门|概念|definition|learn|understand|explain",
+                r"什么意思|怎么理解|有什么用|what is|how does",
             ],
             ResearchIntent.EXPLORING: [
-                r'有哪些|有什么 最新 最新研究 最近 探索 发现|what are|latest|recent|discover',
-                r'有什么新|还有什么|还有什么方法',
+                r"有哪些|有什么 最新 最新研究 最近 探索 发现|what are|latest|recent|discover",
+                r"有什么新|还有什么|还有什么方法",
             ],
             ResearchIntent.CITING: [
-                r'引用|cite|参考文献|写论文|写作|如何引用|citation|bibliography',
-                r'格式|规范|apa|ieee',
+                r"引用|cite|参考文献|写论文|写作|如何引用|citation|bibliography",
+                r"格式|规范|apa|ieee",
             ],
         }
 
@@ -210,7 +213,7 @@ class ResearchSessionTracker:
         if not self.current_session or len(self.current_session.queries) < 1:
             return None
 
-        intent = getattr(self.current_session, 'intent', ResearchIntent.LEARNING)
+        intent = getattr(self.current_session, "intent", ResearchIntent.LEARNING)
         topics = self.current_session.topics
 
         if not topics:
@@ -230,7 +233,13 @@ class ResearchSessionTracker:
 
         return suggestions.get(intent, f"💡 建议深入了解: {main_topic}")
 
-    def get_probing_questions(self, use_llm: bool = True, api_key: Optional[str] = None, base_url: Optional[str] = None, model: Optional[str] = None) -> List[str]:
+    def get_probing_questions(
+        self,
+        use_llm: bool = True,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        model: Optional[str] = None,
+    ) -> List[str]:
         """
         Generate probing questions based on session context.
 
@@ -254,7 +263,7 @@ class ResearchSessionTracker:
 
         # Fallback to template-based questions
         questions = []
-        intent = getattr(self.current_session, 'intent', ResearchIntent.LEARNING)
+        intent = getattr(self.current_session, "intent", ResearchIntent.LEARNING)
         topics = self.current_session.topics
 
         if len(topics) == 1:
@@ -312,6 +321,7 @@ class ResearchSessionTracker:
 
         try:
             from llm.client import call_llm_chat_completions
+
             response = call_llm_chat_completions(
                 base_url=base_url,
                 api_key=api_key,
@@ -323,12 +333,13 @@ class ResearchSessionTracker:
             if response:
                 # Parse questions from response (one per line)
                 questions = []
-                for line in response.strip().split('\n'):
+                for line in response.strip().split("\n"):
                     line = line.strip()
                     # Remove common prefixes like "1.", "-", "•", "Q:"
-                    for prefix in ['^\\d+[.、]', '^[-•*\\s]+', '^Q\\d*[:：]\\s*']:
+                    for prefix in ["^\\d+[.、]", "^[-•*\\s]+", "^Q\\d*[:：]\\s*"]:
                         import re
-                        line = re.sub(prefix, '', line).strip()
+
+                        line = re.sub(prefix, "", line).strip()
                     if line and len(line) <= 30:
                         questions.append(line)
 
@@ -374,7 +385,9 @@ class ResearchSessionTracker:
 
         text = f"{question} {' '.join(paper_titles)}".lower()
 
-        found = [tag for tag in AI_RESEARCH_KEYWORDS if re.search(r'\b' + re.escape(tag) + r'\b', text)]
+        found = [
+            tag for tag in AI_RESEARCH_KEYWORDS if re.search(r"\b" + re.escape(tag) + r"\b", text)
+        ]
         self.current_session.tags.extend(found)
 
     def _generate_insights(self):

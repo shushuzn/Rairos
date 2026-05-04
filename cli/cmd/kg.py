@@ -1,4 +1,5 @@
 """CLI command: kg."""
+
 from __future__ import annotations
 
 import argparse
@@ -44,7 +45,11 @@ Examples:
     # kg rebuild
     rp = sub.add_parser("rebuild", help="Rebuild KG from papers.json")
     rp.add_argument("--papers-json", default="", help="Path to papers.json (default: auto-detect)")
-    rp.add_argument("--incremental", action="store_true", help="Only process new/changed papers since last rebuild")
+    rp.add_argument(
+        "--incremental",
+        action="store_true",
+        help="Only process new/changed papers since last rebuild",
+    )
 
     # kg search
     fp = sub.add_parser("search", help="Find nodes by tag or type")
@@ -58,8 +63,15 @@ Examples:
     vp.add_argument("--tag", help="Show all papers for a tag as graph")
     vp.add_argument("--depth", type=int, default=2, help="BFS depth for ego graph (default 2)")
     vp.add_argument("--max-nodes", type=int, default=300, help="Max nodes to render (default 300)")
-    vp.add_argument("--open", action="store_true", default=True, help="Open in default browser (default: on)")
-    vp.add_argument("--no-open", dest="open", action="store_false", help="Write HTML to stdout instead of opening browser")
+    vp.add_argument(
+        "--open", action="store_true", default=True, help="Open in default browser (default: on)"
+    )
+    vp.add_argument(
+        "--no-open",
+        dest="open",
+        action="store_false",
+        help="Write HTML to stdout instead of opening browser",
+    )
 
     return p  # type: ignore[no-any-return]
 
@@ -69,26 +81,26 @@ def _run_kg(args: argparse.Namespace) -> int:
 
     if args.kg_cmd == "stats":
         stats = kg.stats()
-        use_warp = getattr(args, 'format', 'text') == 'warp'
+        use_warp = getattr(args, "format", "text") == "warp"
         if use_warp:
             rows = []
             for ntype, cnt in sorted(stats["nodes_by_type"].items()):
                 badge = "[#B4FA72]●[/]" if cnt > 0 else "[#8E8E8E]○[/]"
                 rows.append([badge, ntype, f"[#A5D5FE]{cnt}[/]"])
-            print(WarpBlocks.table(
-                ["", "Node Type", "Count"],
-                rows,
-                title=f"Nodes ({stats['total_nodes']} total)"
-            ))
+            print(
+                WarpBlocks.table(
+                    ["", "Node Type", "Count"], rows, title=f"Nodes ({stats['total_nodes']} total)"
+                )
+            )
             rows = []
             for rtype, cnt in sorted(stats["edges_by_type"].items()):
                 badge = "[#B4FA72]●[/]" if cnt > 0 else "[#8E8E8E]○[/]"
                 rows.append([badge, rtype, f"[#A5D5FE]{cnt}[/]"])
-            print(WarpBlocks.table(
-                ["", "Edge Type", "Count"],
-                rows,
-                title=f"Edges ({stats['total_edges']} total)"
-            ))
+            print(
+                WarpBlocks.table(
+                    ["", "Edge Type", "Count"], rows, title=f"Edges ({stats['total_edges']} total)"
+                )
+            )
         else:
             print("=== Knowledge Graph Stats ===")
             print(f"Total nodes : {stats['total_nodes']}")
@@ -115,27 +127,32 @@ def _run_kg(args: argparse.Namespace) -> int:
             print(json.dumps(out, indent=2))
         elif args.format == "warp":
             from rich.console import Console
+
             c = Console()
             c.rule("[bold #FF8272]  KG Ego Graph  [/]")
-            print(WarpBlocks.section(
-                f"Center: {args.paper_id}",
-                f"[#A5D5FE]Type:[/] {paper_node['type']}",
-                f"[#A5D5FE]Label:[/] {paper_node['label'][:60]}",
-                f"[#A5D5FE]Neighbors:[/] {len(neighbors)} (depth={args.depth})",
-                width=65
-            ))
+            print(
+                WarpBlocks.section(
+                    f"Center: {args.paper_id}",
+                    f"[#A5D5FE]Type:[/] {paper_node['type']}",
+                    f"[#A5D5FE]Label:[/] {paper_node['label'][:60]}",
+                    f"[#A5D5FE]Neighbors:[/] {len(neighbors)} (depth={args.depth})",
+                    width=65,
+                )
+            )
             if neighbors:
                 rows = []
                 for node, edge, depth in sorted(neighbors, key=lambda x: x[2])[:30]:
-                    rel = edge['relation_type'][:20]
-                    label = node['label'][:45]
+                    rel = edge["relation_type"][:20]
+                    label = node["label"][:45]
                     type_badge = f"[#D0D1FE]{node['type']}[/]"
                     rows.append([f"[#FEFDC2]d{depth}[/]", type_badge, rel, label])
-                c.print(WarpBlocks.table(
-                    ["D", "Type", "Relation", "Node"],
-                    rows,
-                    title=f"  {len(neighbors)} Neighbors"
-                ))
+                c.print(
+                    WarpBlocks.table(
+                        ["D", "Type", "Relation", "Node"],
+                        rows,
+                        title=f"  {len(neighbors)} Neighbors",
+                    )
+                )
             else:
                 print(WarpBlocks.panel("Neighbors", "[#8E8E8E]No neighbors found[/]"))
         else:
@@ -143,7 +160,9 @@ def _run_kg(args: argparse.Namespace) -> int:
             print(f"Center: [{paper_node['type']}] {paper_node['label']}")
             print(f"\n{len(neighbors)} neighbor(s):")
             for node, edge, depth in sorted(neighbors, key=lambda x: x[2]):
-                print(f"  [depth={depth}] {node['type']:8s} | {edge['relation_type']:12s} | {node['label'][:50]}")
+                print(
+                    f"  [depth={depth}] {node['type']:8s} | {edge['relation_type']:12s} | {node['label'][:50]}"
+                )
         return 0
 
     elif args.kg_cmd == "path":
@@ -165,11 +184,12 @@ def _run_kg(args: argparse.Namespace) -> int:
                 if not path_node:
                     continue
                 label = path_node["label"][:50]
-                print(f"  {i+1}. [{path_node['type']}] {label}")
+                print(f"  {i + 1}. [{path_node['type']}] {label}")
         return 0
 
     elif args.kg_cmd == "rebuild":
         from pathlib import Path
+
         papers_json = args.papers_json
         if not papers_json:
             candidates = [Path("papers.json"), Path("data/papers.json")]
@@ -181,6 +201,7 @@ def _run_kg(args: argparse.Namespace) -> int:
             print("papers.json not found. Use --papers-json to specify.")
             return 1
         from kg.integration import KGIntegration
+
         integ = KGIntegration(kg)
         print(f"Rebuilding KG from {papers_json} ...")
         integ.rebuild_from_papers_json(papers_json, incremental=args.incremental)
@@ -208,13 +229,13 @@ def _run_kg(args: argparse.Namespace) -> int:
             rows = []
             for n in nodes[:50]:
                 type_badge = f"[#D0D1FE]{n['type']}[/]"
-                label = n['label'][:55]
+                label = n["label"][:55]
                 rows.append([type_badge, label])
-            print(WarpBlocks.table(
-                ["Type", "Label"],
-                rows,
-                title=f"Search Results ({len(nodes)} found)"
-            ))
+            print(
+                WarpBlocks.table(
+                    ["Type", "Label"], rows, title=f"Search Results ({len(nodes)} found)"
+                )
+            )
             if len(nodes) > 50:
                 print(f"[#8E8E8E]  ... and {len(nodes) - 50} more[/]")
         else:
@@ -222,7 +243,7 @@ def _run_kg(args: argparse.Namespace) -> int:
             for n in nodes[:50]:
                 print(f"  [{n['type']:8s}] {n['label'][:55]}")
             if len(nodes) > 50:
-                print(f"  ... and {len(nodes)-50} more")
+                print(f"  ... and {len(nodes) - 50} more")
         return 0
 
     elif args.kg_cmd == "view":
@@ -257,7 +278,9 @@ def _run_kg_view(args: argparse.Namespace) -> int:
         return 1
 
     # Load template
-    template_path = Path(__file__).parent.parent.parent / "viz" / "templates" / "kg_viz_template_d3.html"
+    template_path = (
+        Path(__file__).parent.parent.parent / "viz" / "templates" / "kg_viz_template_d3.html"
+    )
     html_content = template_path.read_text(encoding="utf-8")
 
     # Inject data — JSON-escape for safe JS embedding
@@ -270,9 +293,7 @@ def _run_kg_view(args: argparse.Namespace) -> int:
         __import__("sys").stdout.write(html_content)
         return 0
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".html", delete=False, encoding="utf-8"
-    ) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
         f.write(html_content)
         tmp_path = f.name
 

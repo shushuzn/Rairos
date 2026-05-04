@@ -10,9 +10,12 @@ class D3ForceGraph:
     def __init__(self, kg: Optional[KGManager] = None):
         self.kg = kg or KGManager()
 
-    def to_json(self, paper_uids: Optional[list[str]] = None,
-                tag: Optional[str] = None,
-                max_nodes: int = 500) -> dict:
+    def to_json(
+        self,
+        paper_uids: Optional[list[str]] = None,
+        tag: Optional[str] = None,
+        max_nodes: int = 500,
+    ) -> dict:
         """Return D3.js compatible {nodes, links} dict.
 
         If paper_uids provided, export those papers' ego subgraphs.
@@ -20,6 +23,7 @@ class D3ForceGraph:
         Otherwise export full graph (up to max_nodes).
         """
         from kg.queries import KGQueries
+
         q = KGQueries(self.kg)
 
         if paper_uids:
@@ -38,8 +42,9 @@ class D3ForceGraph:
                 seen_e[e["id"]] = e
             nodes = list(seen_n.values())[:max_nodes]
             nids = {n["id"] for n in nodes}
-            edges = [e for e in seen_e.values()
-                     if e["source_id"] in nids and e["target_id"] in nids]
+            edges = [
+                e for e in seen_e.values() if e["source_id"] in nids and e["target_id"] in nids
+            ]
 
         elif tag:
             paper_nodes = self.kg.find_papers_by_tag(tag)
@@ -72,26 +77,29 @@ class D3ForceGraph:
         # D3 format
         d3_nodes = []
         for n in nodes:
-            d3_nodes.append({
-                "id": n["id"],
-                "label": n.get("label", "")[:60],
-                "type": n.get("type", "Paper"),
-                "entity_id": n.get("entity_id", ""),
-            })
+            d3_nodes.append(
+                {
+                    "id": n["id"],
+                    "label": n.get("label", "")[:60],
+                    "type": n.get("type", "Paper"),
+                    "entity_id": n.get("entity_id", ""),
+                }
+            )
 
         d3_links = []
         for e in edges:
-            d3_links.append({
-                "source": e["source_id"],
-                "target": e["target_id"],
-                "relation": e.get("relation_type", ""),
-                "weight": e.get("weight", 1.0),
-            })
+            d3_links.append(
+                {
+                    "source": e["source_id"],
+                    "target": e["target_id"],
+                    "relation": e.get("relation_type", ""),
+                    "weight": e.get("weight", 1.0),
+                }
+            )
 
         return {"nodes": d3_nodes, "links": d3_links}
 
-    def to_citation_json(self, paper_id: str, depth: int = 1,
-                         max_nodes: int = 100) -> dict:
+    def to_citation_json(self, paper_id: str, depth: int = 1, max_nodes: int = 100) -> dict:
         """Build citation graph for a paper from KG cite edges.
 
         Args:
@@ -133,9 +141,7 @@ class D3ForceGraph:
             return nid
 
         # Root
-        root_nid = add_paper_node(
-            root_node["entity_id"], root_node["label"], is_root=True
-        )
+        root_nid = add_paper_node(root_node["entity_id"], root_node["label"], is_root=True)
 
         # BFS for cite edges
         visited = {root_nid}
@@ -161,12 +167,14 @@ class D3ForceGraph:
                 if tgt_node:
                     add_paper_node(tgt_node["entity_id"], tgt_node["label"])
                     nodes[tgt]["is_citing"] = True
-                links.append({
-                    "source": current_nid,
-                    "target": tgt,
-                    "relation": "cites",
-                    "weight": edge.get("weight", 1.0),
-                })
+                links.append(
+                    {
+                        "source": current_nid,
+                        "target": tgt,
+                        "relation": "cites",
+                        "weight": edge.get("weight", 1.0),
+                    }
+                )
                 citing_count += 1
                 queue.append((tgt, current_depth + 1))
 
@@ -184,12 +192,14 @@ class D3ForceGraph:
                 if src_node:
                     add_paper_node(src_node["entity_id"], src_node["label"])
                     nodes[src]["is_cited_by"] = True
-                links.append({
-                    "source": src,
-                    "target": current_nid,
-                    "relation": "cited_by",
-                    "weight": edge.get("weight", 1.0),
-                })
+                links.append(
+                    {
+                        "source": src,
+                        "target": current_nid,
+                        "relation": "cited_by",
+                        "weight": edge.get("weight", 1.0),
+                    }
+                )
                 cited_by_count += 1
                 queue.append((src, current_depth + 1))
 
@@ -199,8 +209,7 @@ class D3ForceGraph:
             "root": root_nid,
         }
 
-    def to_similar_json(self, paper_id: str, threshold: float = 0.85,
-                        max_nodes: int = 30) -> dict:
+    def to_similar_json(self, paper_id: str, threshold: float = 0.85, max_nodes: int = 30) -> dict:
         """Build similarity graph from paper embeddings.
 
         Args:
@@ -249,12 +258,14 @@ class D3ForceGraph:
                 "is_root": False,
                 "similarity": round(float(score), 4),
             }
-            links.append({
-                "source": nid,
-                "target": sim_nid,
-                "relation": "similar",
-                "weight": float(score),
-            })
+            links.append(
+                {
+                    "source": nid,
+                    "target": sim_nid,
+                    "relation": "similar",
+                    "weight": float(score),
+                }
+            )
 
         return {
             "nodes": list(nodes.values()),
