@@ -60,6 +60,9 @@ app.include_router(routes_gene_pool.router)
 from web import routes_news
 app.include_router(routes_news.router)
 
+from web import routes_reports
+app.include_router(routes_reports.router)
+
 
 
 # Graceful error handler — catches ALL exceptions in route handlers
