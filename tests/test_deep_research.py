@@ -50,16 +50,12 @@ _es.EvoSkillPipeline = MagicMock()
 _rp = _make_mod("research_loop.rag_pipeline")
 _rp.RagPipeline = MagicMock()
 # --- llm / db dependencies ---
-_gap = _make_mod("llm.gap_analyzer")
-_gap.GapAnalyzerV2 = MagicMock
-_evo = _make_mod("llm.insight_evolution")
-_evo.get_evolution_tracker = MagicMock()
-_db = _make_mod("db.database")
-_db.Database = MagicMock()
-# Also mock transitive deps that research_loop.core would import if loaded
-_make_mod("core").Paper = MagicMock()
-_make_mod("core.basics").ensure_research_tree = MagicMock()
-_make_mod("llm.generate").ai_generate_pnote_draft = MagicMock()
+# NOTE: We intentionally do NOT stub db.database, llm.gap_analyzer, or
+# llm.insight_evolution here because they are imported at module level (lines 78-80
+# below) and other test modules depend on them during collection. Stubbing them
+# pollutes sys.modules and breaks collection of tests/test_viz.py and others.
+# The research_loop-specific stubs (above) are sufficient for isolating
+# research_loop.deep_research from its dependencies.
 # ---------------------------------------------------------------------------
 # NOW import the module under test — all deps are already mocked.
 # ---------------------------------------------------------------------------
