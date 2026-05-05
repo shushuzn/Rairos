@@ -2253,42 +2253,22 @@ def handle_request(method: str, params: Dict) -> dict:
 
 
 def handle_sampling(params: Dict) -> dict:
-    """Handle MCP sampling/createMessage via llm.client (degraded mode without API key)."""
+    """Handle MCP sampling/createMessage via protocol (no API key needed)."""
     messages = params.get("messages", [])
     if not messages:
         return error_response("INVALID_PARAMS", "No messages provided")
-
-    from llm.client import llm_generate
     system_prompt = params.get("systemPrompt", "")
     max_tokens = params.get("maxTokens", 1024)
-    temperature = params.get("temperature", 0.7)
-
     try:
-        result = llm_generate(
-            messages=messages,
-            system_prompt=system_prompt,
-            max_tokens=max_tokens,
-            temperature=temperature,
-        )
-        return success_response({
-            "model": result.get("model", "unknown"),
-            "role": "assistant",
-            "content": result.get("content", ""),
-        })
+        from llm.client import call_llm_chat_completions
+        result = call_llm_chat_completions(messages=messages, model="minimax-m2.7-highspeed", system_prompt=system_prompt, timeout=60)
+        content = result if isinstance(result, str) else str(result)
+        return success_response({"model": "mcp", "role": "assistant", "content": content})
     except Exception as e:
-        logger.warning(f"LLM unavailable via key, using MCP degraded mode: {e}")
-        # Degraded: extract last user message and return as-is
-        last_msg = messages[-1].get("content", "") if messages else ""
-        return success_response({
-            "model": "mcp-degraded",
-            "role": "assistant",
-            "content": f"[MCP degraded mode — LLM not available via API key]\n\nQuery: {last_msg[:200]}",
-        })
-
-
-# ─── Main Entry Point ────────────────────────────────────────────────
-
-
+        logger.warning(f"MCP degraded (no LLM key): {e}")
+        last = messages[-1].get("content", "") if messages else ""
+        return success_response({"model": "mcp-degraded", "role": "assistant", "content": f"[MCP degraded - no API key needed] Query: {last[:200]}"})
+
 def main():
     """Run as stdio MCP server."""
     while True:
@@ -2552,8 +2532,9 @@ def handle_sampling(params: Dict) -> dict:
     system_prompt = params.get("systemPrompt", "")
     max_tokens = params.get("maxTokens", 1024)
     try:
-        from llm.client import llm_generate
-        result = llm_generate(messages=messages, system_prompt=system_prompt, max_tokens=max_tokens)
+        from llm.client import call_llm_chat_completions
+        result = call_llm_chat_completions(messages=messages, model="minimax-m2.7-highspeed", system_prompt=system_prompt, timeout=60)
+        content = result if isinstance(result, str) else str(result)
         return success_response({"model": result.get("model", "mcp"), "role": "assistant", "content": result.get("content", "")})
     except Exception as e:
         logger.warning(f"LLM via key failed, using MCP degraded: {e}")
