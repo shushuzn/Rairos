@@ -717,7 +717,7 @@ class TestEmbeddings:
         db.set_embedding("A", [0.99, 0.01, 0.01])
         db.set_embedding("B", [0.0, 1.0, 0.0])
         results = db.find_similar("Q", threshold=0.8, limit=5)
-        ids = [r[0].id for r in results]
+        ids = [r[0] for r in results]
         assert "A" in ids
         assert "B" not in ids
         assert results[0][1] >= 0.8

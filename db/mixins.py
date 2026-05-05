@@ -16,6 +16,12 @@ class EmbeddingMixin:
 
     def set_embedding(self, paper_id: str, vector: List[float]) -> bool:
         try:
+            # Check if paper exists first
+            row = self._conn.execute(
+                "SELECT 1 FROM papers WHERE id = ?", (paper_id,)
+            ).fetchone()
+            if not row:
+                return False
             import struct
 
             blob = struct.pack(f"{len(vector)}f", *vector)
@@ -59,14 +65,14 @@ class EmbeddingMixin:
         from db.database import PaperRecord
 
         rows = self._conn.execute(
-            "SELECT p.* FROM papers p LEFT JOIN embeddings e ON p.paper_id = e.paper_id "
-            "WHERE e.paper_id IS NULL AND p.abstract IS NOT NULL AND p.abstract != '' LIMIT ?",
+            "SELECT p.* FROM papers p LEFT JOIN embeddings e ON p.id = e.paper_id "
+            "WHERE e.paper_id IS NULL AND p.title IS NOT NULL AND p.title != '' LIMIT ?",
             (limit,),
         ).fetchall()
         return [PaperRecord.from_row(r) for r in rows]
 
     def find_similar(
-        self, paper_id: str, top_k: int = 10
+        self, paper_id: str, top_k: int = 10, threshold: float = 0.0, limit: int = 0
     ) -> List[Tuple[str, float]]:
         import struct
 
@@ -88,9 +94,11 @@ class EmbeddingMixin:
             cnt = len(blob) // 4
             vec = np.array(struct.unpack(f"{cnt}f", blob), dtype=np.float32)
             sim = float(np.dot(target, vec) / (np.linalg.norm(target) * np.linalg.norm(vec) + 1e-10))
-            scored.append((pid, sim))
+            if sim >= threshold:
+                scored.append((pid, sim))
         scored.sort(key=lambda x: x[1], reverse=True)
-        return scored[:top_k]
+        # limit=0 means no limit (return all above threshold)
+        return scored[:limit] if limit else scored[:top_k]
 
     def get_similarity(self, paper_id1: str, paper_id2: str) -> Optional[float]:
         e1 = self.get_embedding(paper_id1)
@@ -103,11 +111,16 @@ class EmbeddingMixin:
         return None
 
     def get_embedding_stats(self) -> dict:
-        count = self._conn.execute(
+        with_embedding = self._conn.execute(
             "SELECT COUNT(*) FROM embeddings"
         ).fetchone()[0]
-        total = self._conn.execute("SELECT COUNT(*) FROM papers").fetchone()[0]
-        return {"embedded": count, "total_papers": total, "coverage_pct": round(count / total * 100, 1) if total else 0}
+        total_with_text = self._conn.execute(
+            "SELECT COUNT(*) FROM papers WHERE title IS NOT NULL AND title != ''"
+        ).fetchone()[0]
+        return {
+            "with_embedding": with_embedding,
+            "total_with_text": total_with_text,
+        }
 
 
 class ChatMixin:

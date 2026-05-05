@@ -1900,7 +1900,7 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
     def paper_exists(self, paper_id: str) -> bool:
         """Check if a paper exists in the database by its ID."""
         row = self._conn.execute(
-            "SELECT 1 FROM papers WHERE paper_id = ?", (paper_id,)
+            "SELECT 1 FROM papers WHERE id = ?", (paper_id,)
         ).fetchone()
         return row is not None
 
