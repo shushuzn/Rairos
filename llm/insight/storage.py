@@ -24,7 +24,24 @@ def _get_conn(db_path: Path) -> sqlite3.Connection:
         _local.conn.row_factory = sqlite3.Row
         _local.conn.execute("PRAGMA journal_mode=WAL")
         _local.conn.execute("PRAGMA synchronous=NORMAL")
+    # Check if db file still exists (handles temp dir deletion)
+    elif hasattr(_local, "conn") and _local.conn is not None:
+        try:
+            _local.conn.execute("SELECT 1")
+        except (sqlite3.DatabaseError, OSError):
+            _local.conn = None
+            return _get_conn(db_path)
     return _local.conn
+
+
+def _close_conn() -> None:
+    """Close the thread-local connection."""
+    if hasattr(_local, "conn") and _local.conn is not None:
+        try:
+            _local.conn.close()
+        except Exception:
+            pass
+        _local.conn = None
 
 
 _SCHEMA_SQL = """
@@ -365,3 +382,7 @@ class CapsuleStorageMixin:
         conn = self._ensure_db()
         _insert_capsule(conn, capsule)
         conn.commit()
+
+    def close(self) -> None:
+        """Close the database connection."""
+        _close_conn()

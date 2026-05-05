@@ -31,15 +31,19 @@ def temp_tracker():
     with tempfile.TemporaryDirectory() as tmpdir:
         tracker = EvolutionTracker(data_dir=Path(tmpdir))
         yield tracker
+        tracker.close()
+
+
+@pytest.fixture
+def analyzer(temp_tracker, mock_db):
+    """Create a gap analyzer wired to a temporary evolution tracker."""
+    return GapAnalyzerV2(db=mock_db, evolution_tracker=temp_tracker)
 
 
 @pytest.fixture
 def temp_gap_analyzer(temp_tracker):
     """Create a gap analyzer wired to a temporary evolution tracker."""
-    analyzer = GapAnalyzerV2()
-    analyzer.insight_manager = temp_tracker
-    analyzer.evolution_tracker = temp_tracker  # Share same instance so history is visible
-    return analyzer
+    return GapAnalyzerV2(evolution_tracker=temp_tracker)
 
 
 class TestGapAnalyzerV2Init:
@@ -405,8 +409,16 @@ class TestGapConversion:
         return db
 
     @pytest.fixture
-    def analyzer(self, mock_db):
-        return GapAnalyzerV2(db=mock_db)
+    def temp_tracker_for_conversion(self):
+        """Create a tracker with temporary storage for conversion tests."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tracker = EvolutionTracker(data_dir=Path(tmpdir))
+            yield tracker
+            tracker.close()
+
+    @pytest.fixture
+    def analyzer(self, mock_db, temp_tracker_for_conversion):
+        return GapAnalyzerV2(db=mock_db, evolution_tracker=temp_tracker_for_conversion)
 
     def test_convert_base_gap(self, analyzer):
         """Test converting base gap to V2."""
@@ -501,6 +513,8 @@ class TestGapConversion:
             assert result[0].gap_type == GapType.METHOD_LIMITATION
             assert result[0].preference_boost
             assert pref_applied
+
+            tracker.close()
 
 
 class TestHypothesisGeneration:
