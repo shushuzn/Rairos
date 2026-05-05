@@ -2292,7 +2292,10 @@ def tool_citation_chain_build(arxiv_id: str, max_depth: int = 2) -> Dict:
         from llm.citation_chain import CitationChainBuilder
 
         builder = CitationChainBuilder()
-        _chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=max_depth)
+        # Strip version suffix (v1, v2...) and add arXiv: prefix for S2 API
+        s2_id = arxiv_id.split("v")[0] if "v" in arxiv_id and arxiv_id.rsplit("v", 1)[-1].isdigit() else arxiv_id
+        s2_id = f"arXiv:{s2_id}" if not s2_id.startswith("arXiv:") and not s2_id.startswith("CorpusId:") else s2_id
+        _chain = builder.build_chain(seed_arxiv_id=s2_id, max_depth=max_depth)
 
         return success_response(
             {
