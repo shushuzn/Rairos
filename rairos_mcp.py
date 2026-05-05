@@ -192,9 +192,10 @@ def tool_paper_search(
 def tool_paper_chat(question: str, paper_id: Optional[str] = None) -> Dict:
     """Chat about papers using RAG."""
     try:
-        from llm.chat import research_chat
+        from llm.research_chat import ResearchChat
 
-        answer = research_chat(question, paper_id=paper_id)
+        chat = ResearchChat()
+        answer = chat.chat(question)
 
         return success_response({"question": question, "answer": answer, "paper_id": paper_id})
 
@@ -885,13 +886,13 @@ def tool_research_run(topic: str, limit: int = 5) -> Dict:
 def tool_slides_generate(paper_id: str, output_path: Optional[str] = None) -> Dict:
     """Generate slides."""
     try:
-        from llm.slides import SlideGenerator as SlidesGenerator
+        from llm.slides import PaperSlidesGenerator
 
         if not output_path:
             output_path = str(PROJECT_ROOT / f"{paper_id}_slides.pptx")
 
-        gen = SlidesGenerator()
-        gen.generate(paper_id, output_path)
+        gen = PaperSlidesGenerator()
+        result = gen.generate(paper_ids=[paper_id], config=None)
 
         return success_response({"paper_id": paper_id, "output_path": output_path})
 

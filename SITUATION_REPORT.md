@@ -1,6 +1,6 @@
 ============================================================
 RAIROS RESEARCH REPORT
-2026-05-05 16:42
+2026-05-05 17:12
 ============================================================
 
 VLA / ROBOTICS
@@ -259,8 +259,8 @@ LIVE EVENTS
 
 STATS
 ------------------------------------------------------------
-  Total: 147 capsules (107 research, 20 events)
-  Gap types: {'method_limitation': 6, 'evaluation_gap': 7, 'contradiction': 1, 'scalability_issue': 8, 'generalization_gap': 2, 'unexplored_application': 12, 'theoretical_gap': 6, 'method_gap': 37, 'theory_gap': 5, 'application_gap': 16, 'efficiency_gap': 13, 'exploration_gap': 31, 'implementation': 2, 'test': 1}
+  Total: 149 capsules (107 research, 20 events)
+  Gap types: {'method_limitation': 6, 'evaluation_gap': 7, 'contradiction': 1, 'scalability_issue': 8, 'generalization_gap': 2, 'unexplored_application': 12, 'theoretical_gap': 6, 'method_gap': 37, 'theory_gap': 5, 'application_gap': 16, 'efficiency_gap': 13, 'exploration_gap': 31, 'implementation': 3, 'test': 2}
   Avg score: 0.64
   High credibility: 1
 
