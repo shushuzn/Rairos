@@ -30,7 +30,7 @@ def _build_experiment_parser(subparsers):
     p_metric.add_argument("id")
     p_metric.add_argument("name")
     p_metric.add_argument("value", type=float)
-    p_metric.add_argument("--unit", default="", help="Unit (e.g., %, s)")
+    p_metric.add_argument("--unit", default="", help="Unit (e.g., %%, s)")
 
     p_compare = sub.add_parser("compare", help="Compare experiments")
     p_compare.add_argument("ids", nargs="+", help="Experiment IDs")
