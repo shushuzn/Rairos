@@ -86,7 +86,7 @@ def _match_gene_pool(topic: str, title: str, abstract: str) -> List[Dict[str, An
         return []
 
     text = (title + " " + abstract).lower()
-    _topic_lower = topic.lower()
+    topic_lower = topic.lower()
 
     matches = []
     for capsule in gene_pool:
@@ -226,7 +226,7 @@ class BriefingGenerator:
                 title, abstract, authors, arxiv_id, gene_pool_matches, memory_stances
             )
 
-        now = datetime.datetime.now().isoformat()
+        now = datetime.now().isoformat()
         briefing = Briefing(
             paper_arxiv_id=arxiv_id,
             paper_title=title,
@@ -506,7 +506,7 @@ Respond with ONLY valid markdown. Be concise and critical."""
     def _render_markdown(self, briefing: Briefing, authors: List[str]) -> str:
         """Render Briefing as markdown string."""
 
-        now = datetime.datetime.now().strftime("%Y-%m-%d")
+        now = datetime.now().strftime("%Y-%m-%d")
 
         verdict_emoji = {
             "validates": "✅",
