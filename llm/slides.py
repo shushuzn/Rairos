@@ -135,7 +135,7 @@ class PaperSlidesGenerator:
                 continue
 
             # 提取关键内容
-            paper_dict = cast(Dict[str, Any], paper)
+            paper_dict = {"title": getattr(paper, "title", ""), "authors": getattr(paper, "authors", ""), "abstract": getattr(paper, "abstract", ""), "published": getattr(paper, "published", ""), "tags": getattr(paper, "tags", []), "plain_text": getattr(paper, "plain_text", "")}
             content = {
                 "id": pid,
                 "title": paper_dict.get("title", ""),
