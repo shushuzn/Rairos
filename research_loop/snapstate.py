@@ -16,21 +16,25 @@ import shutil
 class PaperSnapshot:
     """A paper captured during research."""
 
-    arxiv_id: str
-    title: str
-    abstract: str
-    url: str
+    arxiv_id: str = ""
+    title: str = ""
+    abstract: str = ""
+    url: str = ""
     extracted_text: str = ""
     summary: str = ""
     gaps_found: List[str] = field(default_factory=list)
     notes: str = ""
+    keywords: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> PaperSnapshot:
-        return cls(**d)
+        # Filter to only known field names to avoid TypeError on extra keys
+        field_names = {f.name for f in cls.__dataclass_fields__.values()}
+        filtered = {k: v for k, v in d.items() if k in field_names}
+        return cls(**filtered)
 
 
 @dataclass
@@ -49,7 +53,9 @@ class GapSnapshot:
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> GapSnapshot:
-        return cls(**d)
+        field_names = {f.name for f in cls.__dataclass_fields__.values()}
+        filtered = {k: v for k, v in d.items() if k in field_names}
+        return cls(**filtered)
 
 
 @dataclass
@@ -87,8 +93,9 @@ class ResearchSession:
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> ResearchSession:
-        d.pop("updated_at", None)
-        return cls(**d)
+        field_names = {f.name for f in cls.__dataclass_fields__.values()}
+        filtered = {k: v for k, v in d.items() if k in field_names}
+        return cls(**filtered)
 
     def duration(self) -> float:
         return time.time() - self.created_at

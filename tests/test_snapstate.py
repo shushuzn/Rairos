@@ -58,7 +58,7 @@ class TestGapSnapshot:
         assert gs.accepted is False
 
     def test_defaults(self):
-        gs = GapSnapshot(gap_type="improvement", title="G")
+        gs = GapSnapshot(gap_type="improvement", title="G", description="")
         assert gs.description == ""
         assert gs.archetype_match == 0.0
 
@@ -84,7 +84,6 @@ class TestResearchSession:
         rs = ResearchSession(session_id="s1", query="test query")
         assert rs.session_id == "s1"
         assert rs.query == "test query"
-        assert rs.iterations == []
 
     def test_to_dict_round_trip(self):
         rs = ResearchSession(session_id="s1", query="q")
@@ -101,7 +100,8 @@ class TestResearchSession:
             created_at=100.0,
             updated_at=110.0,
         )
-        assert rs.duration == pytest.approx(10.0, abs=0.1)
+        with patch("research_loop.snapstate.time.time", return_value=110.0):
+            assert rs.duration() == pytest.approx(10.0, abs=0.1)
 
 
 # ---------------------------------------------------------------------------

@@ -38,11 +38,6 @@ _core.arun_research = MagicMock()
 _core.Metrics = MagicMock()
 _core._build_research_note = MagicMock()
 _core.warm_cache_research = MagicMock()
-_snap = _make_mod("research_loop.snapstate")
-_snap.Snapstate = MagicMock
-_snap.ResearchSession = MagicMock
-_snap.PaperSnapshot = MagicMock
-_snap.GapSnapshot = MagicMock
 _pp = _make_mod("research_loop.paper2code_integration")
 _pp.PaperPipeline = MagicMock()
 _es = _make_mod("research_loop.evoskill_integration")
@@ -50,12 +45,12 @@ _es.EvoSkillPipeline = MagicMock()
 _rp = _make_mod("research_loop.rag_pipeline")
 _rp.RagPipeline = MagicMock()
 # --- llm / db dependencies ---
-# NOTE: We intentionally do NOT stub db.database, llm.gap_analyzer, or
-# llm.insight_evolution here because they are imported at module level (lines 78-80
-# below) and other test modules depend on them during collection. Stubbing them
-# pollutes sys.modules and breaks collection of tests/test_viz.py and others.
-# The research_loop-specific stubs (above) are sufficient for isolating
-# research_loop.deep_research from its dependencies.
+# NOTE: We intentionally do NOT stub db.database, llm.gap_analyzer,
+# llm.insight_evolution, or research_loop.snapstate because they are imported
+# at module level (lines 67-76 below) and other test modules depend on them.
+# Stubbing them pollutes sys.modules and breaks collection of tests/test_viz.py,
+# tests/test_snapstate.py and others. The research_loop.core stubs (above)
+# are sufficient for isolating research_loop.deep_research from its dependencies.
 # ---------------------------------------------------------------------------
 # NOW import the module under test — all deps are already mocked.
 # ---------------------------------------------------------------------------
@@ -107,7 +102,7 @@ def _make_paper_snapshot(arxiv_id: str = "2301.00001", title: str = "Paper A"):
 def _make_capsule(outcome_success_score=0.8, trigger_keywords=None):
     cap = MagicMock()
     cap.outcome_success_score = outcome_success_score
-    cap.trigger_keywords = trigger_keywords or ["keyword1", "keyword2"]
+    cap.trigger_keywords = trigger_keywords if trigger_keywords is not None else ["keyword1", "keyword2"]
     return cap
 
 
@@ -961,7 +956,7 @@ class TestExtractPapers:
             MockPS.return_value = ps
             result = agent._extract_papers([mock_paper], 0)
             assert len(result) == 1
-            agent._mock_db.add_papers.assert_called()
+            agent._mock_db.upsert_paper.assert_called()
 
     def test_extract_records_thought(self, agent: DeepResearchAgent):
         """Extractor should record a thought."""
