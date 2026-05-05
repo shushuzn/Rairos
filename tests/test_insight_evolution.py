@@ -20,6 +20,7 @@ def temp_tracker():
     with tempfile.TemporaryDirectory() as tmpdir:
         tracker = EvolutionTracker(data_dir=Path(tmpdir))
         yield tracker
+        tracker.close()
 
 
 class TestEvolutionTracker:
