@@ -137,7 +137,7 @@ def _match_research_memory(topic: str, title: str, abstract: str) -> List[Dict[s
     matches = []
     for stance in stances:
         claim = stance.get("claim", "").lower()
-        topic_s = stance.get("topic", "").lower()
+        topic_s = (stance.get("topic") or "").lower()
 
         # Check keyword overlap
         claim_words = set(claim.split()) & set(text.split())
