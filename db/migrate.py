@@ -14,7 +14,7 @@ from typing import Callable, Final
 logger = logging.getLogger(__name__)
 
 # Current schema version — bump whenever you add a new migration.
-CURRENT_VERSION: Final[int] = 5
+CURRENT_VERSION: Final[int] = 6
 
 # Type alias for migration functions.
 Migration = Callable[[sqlite3.Connection], None]
@@ -171,12 +171,30 @@ def _m3_add_chat_sessions(conn: sqlite3.Connection) -> None:
     """)
 
 
+def _m6_add_embeddings_table(conn: sqlite3.Connection) -> None:
+    """Migration 6: Add embeddings table for vector similarity search.
+
+    The EmbeddingMixin uses this table to store paper embeddings.
+    """
+    conn.executescript("""
+        CREATE TABLE IF NOT EXISTS embeddings (
+            paper_id    TEXT PRIMARY KEY,
+            vector      BLOB NOT NULL,
+            updated_at  TEXT NOT NULL,
+            model       TEXT DEFAULT 'nomic-embed-text'
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_embeddings_updated ON embeddings(updated_at);
+    """)
+
+
 _MIGRATIONS: dict[int, Migration] = {
     1: _m1_add_citations_and_tables,
     2: _m2_add_reading_status,
     3: _m3_add_chat_sessions,
     4: _m4_add_arxiv_subscriptions,
     5: _m5_add_literature_reviews,
+    6: _m6_add_embeddings_table,
 }
 
 

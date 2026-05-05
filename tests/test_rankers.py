@@ -20,7 +20,7 @@ from rankers.score import CompositeScorer
 
 
 def _embed(values: list[float]) -> bytes:
-    """Pack a float list into a little-endian binary blob."""
+    """Pack a float list into a little-endian binary blob (matches CosineSimilarityRanker format)."""
     return struct.pack(f"{len(values)}f", *values)
 
 
@@ -28,6 +28,7 @@ def _insert(db: Database, paper_id: str, embed: list[float], **kwargs) -> None:
     """Insert a paper record with an embedding blob."""
     now = date.today().isoformat()
     blob = _embed(embed)
+    # Insert into papers table (CosineSimilarityRanker reads from papers.embed_vector)
     db.conn.execute(
         "INSERT OR IGNORE INTO papers "
         "(id,source,title,authors,abstract,published,added_at,updated_at,embed_vector) "
@@ -43,6 +44,11 @@ def _insert(db: Database, paper_id: str, embed: list[float], **kwargs) -> None:
             now,
             blob,
         ),
+    )
+    # Also insert into embeddings table (used by EmbeddingMixin)
+    db.conn.execute(
+        "INSERT OR REPLACE INTO embeddings (paper_id, vector, updated_at) VALUES (?, ?, ?)",
+        (paper_id, blob, now),
     )
     db.conn.commit()
 

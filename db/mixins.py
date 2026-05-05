@@ -7,7 +7,6 @@ Each mixin expects the host class to have:
 
 from __future__ import annotations
 
-import json
 import sqlite3
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -17,7 +16,9 @@ class EmbeddingMixin:
 
     def set_embedding(self, paper_id: str, vector: List[float]) -> bool:
         try:
-            blob = json.dumps(vector).encode("utf-8")
+            import struct
+
+            blob = struct.pack(f"{len(vector)}f", *vector)
             self._conn.execute(
                 "INSERT OR REPLACE INTO embeddings (paper_id, vector, updated_at) VALUES (?, ?, datetime('now'))",
                 (paper_id, blob),
@@ -28,21 +29,31 @@ class EmbeddingMixin:
             return False
 
     def get_embedding(self, paper_id: str) -> Optional[List[float]]:
+        import struct
+
         row = self._conn.execute(
             "SELECT vector FROM embeddings WHERE paper_id = ?", (paper_id,)
         ).fetchone()
         if row:
-            return json.loads(row[0].decode("utf-8"))
+            count = len(row[0]) // 4
+            return list(struct.unpack(f"{count}f", row[0]))
         return None
 
     def get_embeddings_bulk(self, paper_ids: List[str]) -> dict[str, Optional[List[float]]]:
+        import struct
+
         rows = self._conn.execute(
             "SELECT paper_id, vector FROM embeddings WHERE paper_id IN ({})".format(
                 ",".join("?" * len(paper_ids))
             ),
             paper_ids,
         ).fetchall()
-        return {r[0]: json.loads(r[1].decode("utf-8")) for r in rows if r[1]}
+        result = {}
+        for r in rows:
+            if r[1]:
+                count = len(r[1]) // 4
+                result[r[0]] = list(struct.unpack(f"{count}f", r[1]))
+        return result
 
     def get_papers_without_embeddings(self, limit: int = 1000) -> List["PaperRecord"]:
         from db.database import PaperRecord
@@ -57,22 +68,25 @@ class EmbeddingMixin:
     def find_similar(
         self, paper_id: str, top_k: int = 10
     ) -> List[Tuple[str, float]]:
+        import struct
+
         row = self._conn.execute(
             "SELECT vector FROM embeddings WHERE paper_id = ?", (paper_id,)
         ).fetchone()
         if not row:
             return []
-        import struct
         import numpy as np
 
-        target = np.array(json.loads(row[0].decode("utf-8")), dtype=np.float32)
+        count = len(row[0]) // 4
+        target = np.array(struct.unpack(f"{count}f", row[0]), dtype=np.float32)
         rows = self._conn.execute(
             "SELECT paper_id, vector FROM embeddings WHERE paper_id != ?",
             (paper_id,),
         ).fetchall()
         scored = []
         for pid, blob in rows:
-            vec = np.array(json.loads(blob.decode("utf-8")), dtype=np.float32)
+            cnt = len(blob) // 4
+            vec = np.array(struct.unpack(f"{cnt}f", blob), dtype=np.float32)
             sim = float(np.dot(target, vec) / (np.linalg.norm(target) * np.linalg.norm(vec) + 1e-10))
             scored.append((pid, sim))
         scored.sort(key=lambda x: x[1], reverse=True)
