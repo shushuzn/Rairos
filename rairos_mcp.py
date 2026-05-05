@@ -1082,19 +1082,19 @@ def tool_gap_detect(topic: str, use_llm: bool = True) -> Dict:
                 "coverage_score": result.coverage_score,
                 "gaps": [
                     {
-                        "type": g.gap_type,
+                        "type": str(g.gap_type),
                         "description": g.description,
-                        "evidence": g.evidence,
+                        "evidence": g.evidence_papers,
                         "confidence": g.confidence,
-                        "severity": g.severity,
+                        "severity": str(g.severity),
                     }
                     for g in result.gaps
                 ],
                 "questions": [
                     {
                         "question": q.question,
-                        "gap_type": q.gap_type,
-                        "verifiability": q.verifiability,
+                        "gap_type": str(q.gap.gap_type) if q.gap else "",
+                        "verifiability": q.feasibility,
                     }
                     for q in result.questions
                 ],
