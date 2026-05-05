@@ -263,3 +263,44 @@ def fetch_arxiv_metadata_batch(arxiv_ids: List[str], timeout: int = 60) -> List[
             result.append(uid_to_paper[aid])
 
     return result
+
+import re as _re_arxiv
+
+def arxiv_id_from_input(identifier: str) -> str:
+    """Normalize various input forms to an arXiv ID."""
+    if not identifier:
+        return ""
+    s = identifier.strip()
+    # https://arxiv.org/abs/2601.00155v1
+    m = _re_arxiv.search(r'arxiv\.org/(?:abs|pdf)/([\w.]+)(?:v\d+)?', s)
+    if m:
+        return m.group(1)
+    # https://doi.org/10.48550/arXiv.2601.00155
+    m = _re_arxiv.search(r'arxiv\.([\w.]+)', s)
+    if m:
+        return m.group(1)
+    # Raw ID like 2601.00155 or 2601.00155v1
+    s_clean = s.split("v")[0] if "v" in s else s
+    if _re_arxiv.match(r'^\d{4}\.\d{4,5}$', s_clean):
+        return s_clean
+    m = _re_arxiv.search(r'(\d{4}\.\d{4,5})', s)
+    return m.group(1) if m else s
+
+
+def fetch_arxiv_paper(arxiv_id: str) -> dict:
+    """Fetch paper metadata from arXiv, return dict compatible with Paper()."""
+    from parsers.arxiv import fetch_arxiv_metadata as _fam
+    paper = _fam(arxiv_id)
+    if not paper:
+        return {}
+    return {
+        "uid": getattr(paper, "uid", arxiv_id),
+        "title": paper.title or "",
+        "authors": paper.authors or [],
+        "abstract": paper.abstract or "",
+        "published": paper.published or "",
+        "updated": paper.updated or "",
+        "abs_url": getattr(paper, "abs_url", "") or f"https://arxiv.org/abs/{arxiv_id}",
+        "pdf_url": getattr(paper, "pdf_url", "") or f"https://arxiv.org/pdf/{arxiv_id}",
+        "primary_category": getattr(paper, "primary_category", "") or "",
+    }
