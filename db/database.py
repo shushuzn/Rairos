@@ -346,6 +346,11 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
                 raise DatabaseError(f"Failed to connect to database: {e}") from e
         return self._local.conn  # type: ignore[no-any-return]
 
+    # _conn alias for mixins (EmbeddingMixin, ChatMixin, etc.)
+    @property
+    def _conn(self) -> sqlite3.Connection:
+        return self.conn
+
     def init(self) -> None:
         """Create tables and run migrations. Idempotent."""
         if self._init_done:

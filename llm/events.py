@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional
 from llm.mcp_jin10 import Jin10Client
 from llm.insight.tracker import EvolutionTracker
 from parsers.arxiv_search import search_arxiv
+from core import Paper
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +71,7 @@ def process_event(keyword: str = "", max_news: int = 5, max_papers: int = 3) -> 
         )
         if match > 0.1:
             cross_refs.append({
-                "paper_id": p.get("uid", p.get("id", "?")),
+                "paper_id": getattr(p, "uid", getattr(p, "id", "?")),
                 "title": getattr(p, "title", str(p))[:100],
                 "relevance": round(match, 3),
             })
@@ -142,12 +143,182 @@ def _infer_gap_type(summary: Dict) -> str:
 
 
 def _find_related_papers(topic: str, limit: int) -> List:
-    """Find academic papers related to the event topic."""
+    """Find academic papers related to the event topic.
+
+    Multi-backend search: tries arXiv first, then CrossRef, then Semantic Scholar.
+    Each backend is isolated so a failure (including 429 rate-limit) won't
+    block the whole pipeline.
+    """
+    papers = _try_search_arxiv(topic, limit)
+    if papers:
+        return papers
+
+    papers = _try_search_crossref(topic, limit)
+    if papers:
+        return papers
+
+    papers = _try_search_semantic_scholar(topic, limit)
+    return papers
+
+
+def _try_search_arxiv(topic: str, limit: int) -> List:
+    """Search arXiv with exponential backoff on 429."""
+    import time as _time
+
+    for attempt in range(3):
+        try:
+            return search_arxiv(topic, max_results=limit)
+        except Exception as e:
+            err_str = str(e)
+            is_429 = "429" in err_str
+            if is_429 and attempt < 2:
+                delay = (attempt + 1) * 5
+                logger.warning(
+                    f"arXiv 429 rate-limited (attempt {attempt+1}/3), "
+                    f"retrying in {delay}s..."
+                )
+                _time.sleep(delay)
+                continue
+            logger.warning(f"ArXiv search failed: {e}")
+            return []
+    return []
+
+
+def _try_search_crossref(topic: str, limit: int) -> List:
+    """Search CrossRef API as a fallback for arXiv (covers all disciplines).
+
+    Returns Paper objects compatible with the rest of the pipeline.
+    """
+    import json as _json
+    import urllib.parse as _urlparse
+    import urllib.request as _urlreq
+
+    query = _urlparse.quote(topic)
+    url = (
+        f"https://api.crossref.org/works?query={query}&rows={limit}"
+        f"&select=DOI,title,author,created,abstract,type"
+    )
+
     try:
-        return search_arxiv(topic, max_results=limit)
+        req = _urlreq.Request(
+            url,
+            headers={
+                "User-Agent": "Rairos/1.0 (mailto:rairos@example.com)",
+                "Accept": "application/json",
+            },
+        )
+        resp = _urlreq.urlopen(req, timeout=30)
+        data = _json.loads(resp.read().decode())
+        items = data.get("message", {}).get("items", [])
     except Exception as e:
-        logger.warning(f"ArXiv search failed: {e}")
+        logger.warning(f"CrossRef search failed: {e}")
         return []
+
+    papers = []
+    for item in items:
+        doi = item.get("DOI", "")
+        title = (item.get("title") or [""])[0]
+        if not title:
+            continue
+
+        authors = []
+        for a in item.get("author", []):
+            given = a.get("given", "")
+            family = a.get("family", "")
+            name = f"{given} {family}".strip()
+            if name:
+                authors.append(name)
+
+        created = item.get("created", {}).get("date-parts", [[None]])[0]
+        year = str(created[0]) if created and created[0] else ""
+        abstract = item.get("abstract", "") or ""
+
+        paper = Paper(
+            source="doi",
+            uid=doi,
+            title=title.replace("\n", " ").strip(),
+            authors=authors,
+            abstract=abstract.replace("\n", " ").strip()[:500],
+            published=year,
+            updated="",
+            abs_url=f"https://doi.org/{doi}" if doi else "",
+            pdf_url="",
+            doi=doi,
+        )
+        papers.append(paper)
+
+    return papers[:limit]
+
+
+def _try_search_semantic_scholar(topic: str, limit: int) -> List:
+    """Search Semantic Scholar API as a second fallback.
+
+    Covers computer science, biomed, and other S2-indexed disciplines.
+    """
+    import json as _json
+    import urllib.parse as _urlparse
+    import urllib.request as _urlreq
+
+    query = _urlparse.quote(topic)
+    url = (
+        f"https://api.semanticscholar.org/graph/v1/paper/search"
+        f"?query={query}&limit={limit}"
+        f"&fields=title,year,authors,externalIds,abstract"
+    )
+
+    try:
+        req = _urlreq.Request(
+            url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0",
+            },
+        )
+        resp = _urlreq.urlopen(req, timeout=30)
+        data = _json.loads(resp.read().decode())
+        items = data.get("data", [])
+    except Exception as e:
+        logger.warning(f"Semantic Scholar search failed: {e}")
+        return []
+
+    papers = []
+    for item in items:
+        title = item.get("title", "")
+        if not title:
+            continue
+
+        year = str(item.get("year") or "")
+        ext_ids = item.get("externalIds", {}) or {}
+
+        authors = []
+        for a in item.get("authors", []):
+            name = a.get("name", "")
+            if name:
+                authors.append(name)
+
+        abstract = item.get("abstract", "") or ""
+        doi = ext_ids.get("DOI", "")
+        arxiv_id = ext_ids.get("ArXiv", "")
+        corpus_id = ext_ids.get("CorpusId", "")
+        uid = doi or arxiv_id or f"s2-{corpus_id}" if corpus_id else title[:40]
+
+        paper = Paper(
+            source="doi" if doi else ("arxiv" if arxiv_id else "semantic-scholar"),
+            uid=uid,
+            title=title.replace("\n", " ").strip(),
+            authors=authors,
+            abstract=abstract.replace("\n", " ").strip()[:500],
+            published=year,
+            updated="",
+            abs_url=f"https://doi.org/{doi}" if doi else (
+                f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else ""
+            ),
+            pdf_url="",
+            doi=doi,
+        )
+        papers.append(paper)
+
+    return papers[:limit]
 
 
 def render_event_report(result: Dict[str, Any]) -> str:
