@@ -1906,6 +1906,12 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
 
     # ── Helpers ────────────────────────────────────────────────────────────────
 
+    @staticmethod
+    def _dict_factory(keys: List[str], rows: List[sqlite3.Row]) -> List[dict]:
+        """Convert SQLite Row objects to dicts."""
+        return [dict(zip(keys, row)) for row in rows]
+
+
 
 def _utcnow() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
