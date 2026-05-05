@@ -841,12 +841,13 @@ def tool_research_run(topic: str, limit: int = 5) -> Dict:
 def tool_slides_generate(paper_id: str, output_path: Optional[str] = None) -> Dict:
     """Generate slides."""
     try:
-        from llm.slides import generate_slides
+        from llm.slides import SlidesGenerator
 
         if not output_path:
             output_path = str(PROJECT_ROOT / f"{paper_id}_slides.pptx")
 
-        generate_slides(paper_id, output_path)
+        gen = SlidesGenerator()
+        gen.generate(paper_id, output_path)
 
         return success_response({"paper_id": paper_id, "output_path": output_path})
 
