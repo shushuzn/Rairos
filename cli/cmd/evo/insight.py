@@ -19,7 +19,26 @@ def _build_insight_parser(subparsers) -> argparse.ArgumentParser:
     p = subparsers.add_parser(
         "insight",
         help="Manage key insight cards",
-        description="Extract and manage key insights from papers.",
+        description="""Extract and manage key insights from papers.
+
+Examples:
+  airos insight add --paper p1 --content "BERT improves QA by 15%" --tags nlp,rag
+  airos insight search --query attention
+  airos insight rate --card i0001 --stars 4
+  airos insight like --card i0001
+  airos insight top
+  airos insight tag-cloud
+  airos insight quality-report --json
+  airos insight quality-report --watch --interval 60
+  airos insight alert --json
+  airos insight evolve --query "RAG"
+  airos insight recompute-credibility
+  airos insight eval-retrieval
+
+Valid --type values: finding, method, limitation, future_work
+Valid gap_type values: capability, method_limitation, exploration_gap,
+  unexplained_phenomenon, improvement, method_gap, embodied_planning,
+  cross_domain, theoretical, empirical""",
     )
 
     p.add_argument(
