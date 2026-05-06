@@ -319,6 +319,14 @@ class EvolutionTracker(CapsuleStorageMixin):
         except Exception:
             pass
 
+        # Real-time GenePool→KG sync: push updated credibility scores to KG
+        # Uses upsert so this is idempotent — only updated scores change
+        try:
+            from llm.insight.tracker import sync_gene_pool_to_kg
+            sync_gene_pool_to_kg(kg_manager=None, min_credibility=0.5, min_success_score=0.6, limit=None)
+        except Exception:
+            pass
+
         return event
 
     # ─── Profile Learning ───────────────────────────────────────────────────────
@@ -1891,6 +1899,62 @@ def sync_gene_pool_to_kg(
         "total_capsules": len(capsules),
         "eligible": len(filtered),
     }
+
+
+def sync_single_capsule_to_kg(capsule_id: str, kg_manager=None) -> bool:
+    """Sync a single capsule's updated scores to KG. Returns True on success."""
+    if kg_manager is None:
+        from kg.manager import KGManager
+        kg_manager = KGManager()
+
+    tracker = get_evolution_tracker()
+    capsules = tracker._load_capsules()
+    cap = next((c for c in capsules if c.capsule_id == capsule_id), None)
+    if not cap or cap.status == "archived":
+        return False
+
+    archetype = cap.archetype or {}
+    source_paper_id = archetype.get("source_paper_id", "")
+    gap_type = archetype.get("gap_type", cap.action_gap_type or "")
+    parent_id = archetype.get("parent_capsule_id", "")
+
+    try:
+        capsule_node_id = kg_manager.upsert_node(
+            "GenePool-Capsule",
+            cap.capsule_id,
+            f"[GenePool] {cap.action_gap_title[:100]}",
+            capsule_id=cap.capsule_id,
+            credibility_score=cap.credibility_score,
+            success_score=cap.outcome_success_score,
+            gap_type=cap.action_gap_type,
+            trigger_topic=cap.trigger_topic,
+            status=cap.status,
+            evolution_level=cap.evolved_generation,
+        )
+
+        if source_paper_id:
+            paper_node = kg_manager.get_node_by_entity("Paper", source_paper_id)
+            if paper_node:
+                kg_manager.add_edge(
+                    paper_node["id"], capsule_node_id, "evolved_from",
+                    weight=cap.credibility_score,
+                )
+            else:
+                placeholder_id = kg_manager.add_node("Paper", source_paper_id, source_paper_id)
+                kg_manager.add_edge(placeholder_id, capsule_node_id, "evolved_from", weight=cap.credibility_score)
+
+        if gap_type:
+            tag_node_id = kg_manager.upsert_node("Tag", gap_type, gap_type)
+            kg_manager.add_edge(capsule_node_id, tag_node_id, "addresses_gap", weight=0.8)
+
+        if parent_id:
+            parent_node = kg_manager.get_node_by_entity("GenePool-Capsule", parent_id)
+            if parent_node:
+                kg_manager.add_edge(parent_node["id"], capsule_node_id, "refines", weight=0.7)
+
+        return True
+    except Exception:
+        return False
 
 
 def get_evolution_tracker() -> EvolutionTracker:
