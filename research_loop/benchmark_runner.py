@@ -24,6 +24,8 @@ from llm.insight.gene import CapsuleGene
 from llm.insight.preferences import ExplorationAction
 from llm.insight.tracker import EvolutionTracker
 
+from research_loop.lsp_diagnostics import check_ruff, Diagnostic
+
 
 @dataclass
 class BenchmarkResult:
@@ -39,6 +41,7 @@ class BenchmarkResult:
     failed_tests: list[str] = field(default_factory=list)
     error_message: str = ""
     gene_pool_entry: Optional[CapsuleGene] = None
+    ruff_diagnostics: list = field(default_factory=list)  # LSP diagnostics
 
 
 @dataclass
@@ -98,6 +101,13 @@ def run_benchmark(
         skipped=0,
         duration_seconds=0,
     )
+
+    # Fast lint check — ruff runs synchronously, captures import/syntax issues
+    # before the slower pytest run. Progressive enhancement: ruff (<1s) then pyright.
+    ruff_diagnostics = check_ruff(config.code_path)
+    result.ruff_diagnostics = ruff_diagnostics
+    if ruff_diagnostics:
+        _log_diagnostics(ruff_diagnostics, config.code_path)
 
     try:
         proc = subprocess.run(
@@ -390,6 +400,17 @@ def run_tests_locally(test_dir: Path, verbose: bool = True) -> subprocess.Comple
         "--tb=short",
     ]
     return subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
+
+
+def _log_diagnostics(diagnostics: list[Diagnostic], code_path: Path) -> None:
+    """Print ruff diagnostics to stderr for visibility before pytest runs."""
+    import sys
+    lines = [f"\n[ruff] {len(diagnostics)} issue(s) in {code_path.name}:"]
+    for d in diagnostics:
+        loc = f"{d.file}:{d.line}:{d.column}"
+        lines.append(f"  [{d.severity.upper()}] {loc} {d.code}: {d.message}")
+    lines.append("  (running pytest anyway...)")
+    print("\n".join(lines), file=sys.stderr)
 
 
 def summarize_result(result: BenchmarkResult) -> str:
