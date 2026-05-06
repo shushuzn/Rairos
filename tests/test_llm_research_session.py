@@ -3,7 +3,7 @@
 from llm.research_session import (
     ResearchIntent,
     Query,
-    ResearchSession,
+    ChatResearchSession,
     ResearchSessionTracker,
 )
 
@@ -62,13 +62,13 @@ class TestQuery:
 
 
 # =============================================================================
-# ResearchSession dataclass tests
+# ChatResearchSession dataclass tests
 # =============================================================================
-class TestResearchSession:
-    """Test ResearchSession dataclass."""
+class TestChatResearchSession:
+    """Test ChatResearchSession dataclass."""
 
     def test_required_fields(self):
-        s = ResearchSession(
+        s = ChatResearchSession(
             id="session_001",
             title="研究会话 2026-01-01",
             queries=[],
@@ -90,7 +90,7 @@ class TestResearchSession:
             paper_titles=[],
             timestamp="t",
         )
-        s = ResearchSession(
+        s = ChatResearchSession(
             id="s001",
             title="T",
             queries=[q],
@@ -99,7 +99,7 @@ class TestResearchSession:
         assert len(s.queries) == 1
 
     def test_topics_property(self):
-        s = ResearchSession(
+        s = ChatResearchSession(
             id="s001",
             title="T",
             queries=[],
@@ -109,7 +109,7 @@ class TestResearchSession:
         assert set(s.topics) == {"nlp", "transformer"}
 
     def test_topics_deduplicates(self):
-        s = ResearchSession(
+        s = ChatResearchSession(
             id="s001",
             title="T",
             queries=[],
@@ -387,7 +387,7 @@ class TestRenderSessionTree:
     """Test render_session_tree."""
 
     def test_empty_session(self):
-        session = ResearchSession(
+        session = ChatResearchSession(
             id="s001",
             title="Test Session",
             queries=[],
@@ -399,7 +399,7 @@ class TestRenderSessionTree:
         assert "0 个问答" in output
 
     def test_duration_included(self):
-        session = ResearchSession(
+        session = ChatResearchSession(
             id="s001",
             title="T",
             queries=[],
@@ -411,7 +411,7 @@ class TestRenderSessionTree:
         assert "30" in output
 
     def test_questions_rendered(self):
-        session = ResearchSession(
+        session = ChatResearchSession(
             id="s001",
             title="T",
             queries=[
@@ -431,7 +431,7 @@ class TestRenderSessionTree:
         assert "attention" in output.lower()
 
     def test_paper_titles_shown(self):
-        session = ResearchSession(
+        session = ChatResearchSession(
             id="s001",
             title="T",
             queries=[
@@ -451,7 +451,7 @@ class TestRenderSessionTree:
         assert "Important Paper" in output
 
     def test_follow_ups_count_shown(self):
-        session = ResearchSession(
+        session = ChatResearchSession(
             id="s001",
             title="T",
             queries=[
@@ -472,7 +472,7 @@ class TestRenderSessionTree:
         assert "3 次追问" in output
 
     def test_insights_shown(self):
-        session = ResearchSession(
+        session = ChatResearchSession(
             id="s001",
             title="T",
             queries=[],
@@ -496,7 +496,7 @@ class TestRenderSessionsList:
         assert "暂无" in output
 
     def test_single_session(self):
-        session = ResearchSession(
+        session = ChatResearchSession(
             id="s001",
             title="Test Session",
             queries=[
@@ -520,7 +520,7 @@ class TestRenderSessionsList:
 
     def test_multiple_sessions(self):
         sessions = [
-            ResearchSession(
+            ChatResearchSession(
                 id=f"s{i:03d}",
                 title=f"Session {i}",
                 queries=[],
@@ -536,7 +536,7 @@ class TestRenderSessionsList:
 
 
 # =============================================================================
-# ResearchSessionTracker instantiation
+# ChatResearchSessionTracker instantiation
 # =============================================================================
 class TestResearchSessionTrackerInit:
     """Test ResearchSessionTracker instantiation."""

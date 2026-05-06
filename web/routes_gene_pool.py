@@ -220,7 +220,7 @@ async def gene_pool_bold(request: Request):
 @router.get("/gene-pool/backup")
 async def gene_pool_backup(request: Request):
     """Gene Pool Backup — create and restore snapshots."""
-    from llm.gene_pool_backup import get_backup_info, create_backup
+    from llm.gene_pool_io import get_backup_info, create_backup
     info = get_backup_info()
     stamps = info.get("stamps", []) if isinstance(info, dict) else []
     if stamps:
@@ -237,7 +237,7 @@ async def gene_pool_backup(request: Request):
 
 @router.post("/gene-pool/backup/create")
 async def create_backup(request: Request):
-    from llm.gene_pool_backup import create_backup as _create
+    from llm.gene_pool_io import create_backup as _create
 
     path = _create()
     return templates.TemplateResponse(
@@ -252,7 +252,7 @@ async def create_backup(request: Request):
 
 @router.post("/gene-pool/backup/restore/{stamp}")
 async def restore_backup(stamp: str, request: Request):
-    from llm.gene_pool_backup import restore_backup as _restore
+    from llm.gene_pool_io import restore_backup as _restore
 
     ok = _restore(stamp)
     msg = f"<p>Restored from {stamp}</p>" if ok else f"<p>Restore failed: {stamp} not found</p>"

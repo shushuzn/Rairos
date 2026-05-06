@@ -65,8 +65,8 @@ class Query:
 
 
 @dataclass
-class ResearchSession:
-    """研究会话."""
+class ChatResearchSession:
+    """研究会话 (chat-level, distinct from agent workflow ResearchSession in snapstate.py)."""
 
     id: str
     title: str
@@ -102,17 +102,17 @@ class ResearchSessionTracker:
         self.memory_dir = Path(memory_dir)
         self.memory_dir.mkdir(parents=True, exist_ok=True)
         self.sessions_file = self.memory_dir / "research_sessions.jsonl"
-        self.current_session: Optional[ResearchSession] = None
+        self.current_session: Optional[ChatResearchSession] = None
 
         if not self.sessions_file.exists():
             self.sessions_file.write_text("", encoding="utf-8")
 
-    def start_session(self, title: Optional[str] = None) -> ResearchSession:
+    def start_session(self, title: Optional[str] = None) -> ChatResearchSession:
         """开始新的研究会话."""
         session_id = f"session_{int(time.time())}"
         now = datetime.now().isoformat()
 
-        self.current_session = ResearchSession(
+        self.current_session = ChatResearchSession(
             id=session_id,
             title=title or f"研究会话 {now[:10]}",
             queries=[],
@@ -361,7 +361,7 @@ class ResearchSessionTracker:
                 q.follow_ups.append(follow_up_question)
                 break
 
-    def end_session(self) -> Optional[ResearchSession]:
+    def end_session(self) -> Optional[ChatResearchSession]:
         """结束当前会话."""
         if not self.current_session:
             return None
@@ -417,12 +417,12 @@ class ResearchSessionTracker:
 
         self.current_session.insights = insights
 
-    def _save_session(self, session: ResearchSession):
+    def _save_session(self, session: ChatResearchSession):
         """保存会话到文件."""
         with open(self.sessions_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(asdict(session), ensure_ascii=False) + "\n")
 
-    def get_recent_sessions(self, days: int = 7, limit: int = 10) -> List[ResearchSession]:
+    def get_recent_sessions(self, days: int = 7, limit: int = 10) -> List[ChatResearchSession]:
         """获取最近的会话."""
         sessions = []
         cutoff = datetime.now() - timedelta(days=days)
@@ -433,7 +433,7 @@ class ResearchSessionTracker:
                     if not line.strip():
                         continue
                     data = json.loads(line)
-                    session = ResearchSession(**data)
+                    session = ChatResearchSession(**data)
                     started = datetime.fromisoformat(session.started_at)
                     if started >= cutoff:
                         sessions.append(session)
@@ -443,7 +443,7 @@ class ResearchSessionTracker:
         except (json.JSONDecodeError, FileNotFoundError):
             return []
 
-    def get_session_by_id(self, session_id: str) -> Optional[ResearchSession]:
+    def get_session_by_id(self, session_id: str) -> Optional[ChatResearchSession]:
         """根据ID获取会话."""
         try:
             with open(self.sessions_file, encoding="utf-8") as f:
@@ -452,16 +452,16 @@ class ResearchSessionTracker:
                         continue
                     data = json.loads(line)
                     if data.get("id") == session_id:
-                        return ResearchSession(**data)
+                        return ChatResearchSession(**data)
         except (json.JSONDecodeError, FileNotFoundError):
             pass
         return None
 
-    def get_current_session(self) -> Optional[ResearchSession]:
+    def get_current_session(self) -> Optional[ChatResearchSession]:
         """获取当前会话."""
         return self.current_session
 
-    def render_session_tree(self, session: ResearchSession) -> str:
+    def render_session_tree(self, session: ChatResearchSession) -> str:
         """渲染会话为树形结构."""
         lines = [
             f"📚 {session.title}",
@@ -489,7 +489,7 @@ class ResearchSessionTracker:
 
         return "\n".join(lines)
 
-    def render_sessions_list(self, sessions: List[ResearchSession]) -> str:
+    def render_sessions_list(self, sessions: List[ChatResearchSession]) -> str:
         """渲染会话列表."""
         if not sessions:
             return "暂无研究会话记录"
