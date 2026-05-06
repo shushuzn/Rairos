@@ -50,8 +50,8 @@ def load_capsules(
 def _sync_capsules_json(capsules: List[Dict[str, Any]]) -> None:
     """Rebuild capsules.json from gene_pool.jsonl data (one-way sync)."""
     try:
-        cpath = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
-        cpath.parent.mkdir(parents=True, exist_ok=True)
+        cpath = GP_DIR / "capsules.json"
+        GP_DIR.mkdir(parents=True, exist_ok=True)
         cpath.write_text(
             json.dumps({"version": "1.0", "capsules": capsules}, indent=2, ensure_ascii=False),
             encoding="utf-8",

@@ -210,17 +210,39 @@ class EvolutionTracker(CapsuleStorageMixin):
             gap_title=gap_title,
             gap_description=gap_description,
         )
-        # Encode successful (context -> action) pattern as a CapsuleGene.
-        profile = self._load_profile()
-        total = max(profile.accepts + profile.rejects + profile.views, 1)
-        success_score = profile.accepts / total
-        self.encode_capsule(
-            topic=topic,
-            gap_type=gap_type,
-            gap_title=gap_title,
-            gap_description=gap_description,
-            success_score=success_score,
-        )
+        # Feedback loop: if capsule already exists, update its score instead of duplicating.
+        existing = self.get_capsule_by_title(gap_title, topic)
+        if existing:
+            profile = self._load_profile()
+            total = max(profile.accepts + profile.rejects + profile.views, 1)
+            new_score = profile.accepts / total
+            existing.feedback_count += 1
+            existing.outcome_success_score = (
+                existing.outcome_success_score * 0.7 + new_score * 0.3
+            )
+            try:
+                self._update_credibility(existing)
+            except Exception:
+                pass
+            self.update_capsule(existing)
+            self.record_capsule_lifecycle_event(
+                capsule_id=existing.capsule_id,
+                action="consumed",
+                gap_title=existing.action_gap_title,
+                gap_type=existing.action_gap_type,
+                details=f"Re-accepted (feedback_count={existing.feedback_count})",
+            )
+        else:
+            profile = self._load_profile()
+            total = max(profile.accepts + profile.rejects + profile.views, 1)
+            success_score = profile.accepts / total
+            self.encode_capsule(
+                topic=topic,
+                gap_type=gap_type,
+                gap_title=gap_title,
+                gap_description=gap_description,
+                success_score=success_score,
+            )
         return event
 
     def record_gap_reject(

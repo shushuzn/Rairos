@@ -377,11 +377,104 @@ class CapsuleStorageMixin:
             return _capsule_from_row(row)
         return None
 
+    def get_capsule_by_title(self, gap_title: str, topic: str = "") -> Optional[CapsuleGene]:
+        """Find a capsule by its action_gap_title (case-insensitive)."""
+        conn = self._ensure_db()
+        query = "SELECT * FROM capsules WHERE LOWER(action_gap_title) = LOWER(?) AND status = 'active'"
+        params: List[Any] = [gap_title]
+        if topic:
+            query += " AND LOWER(trigger_topic) = LOWER(?)"
+            params.append(topic)
+        row = conn.execute(query, params).fetchone()
+        if row:
+            return _capsule_from_row(row)
+        return None
+
     def update_capsule(self, capsule: CapsuleGene) -> None:
         """Update an existing capsule in the database."""
         conn = self._ensure_db()
         _insert_capsule(conn, capsule)
         conn.commit()
+
+    def eval_retrieval(self, limit: int = 50) -> Dict[str, Any]:
+        """Evaluate Gene Pool retrieval quality using accepted gap events as ground truth.
+
+        Loads ACCEPT events from events.jsonl as ground-truth (topic, gap_type, gap_title).
+        Then calls find_capsule for each and checks whether the accepted gap_title appears
+        in the top-K results.
+
+        Returns:
+            dict with recall@3, recall@5, MRR, total_evaluated
+        """
+        events_file = self.data_dir / "events.jsonl"
+        if not events_file.exists():
+            return {"error": "No events file found", "recall@3": 0.0, "recall@5": 0.0, "mrr": 0.0, "total": 0}
+
+        # Load ground-truth: ACCEPT events with known gap_title
+        accepted: List[Dict[str, str]] = []
+        try:
+            with open(events_file, encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        ev = json.loads(line)
+                        if ev.get("action") == "accepted" and ev.get("gap_title"):
+                            accepted.append({
+                                "topic": ev.get("topic", ""),
+                                "gap_type": ev.get("gap_type", ""),
+                                "gap_title": ev.get("gap_title", ""),
+                            })
+                    except Exception:
+                        continue
+        except Exception:
+            return {"error": "Failed to read events", "recall@3": 0.0, "recall@5": 0.0, "mrr": 0.0, "total": 0}
+
+        if not accepted:
+            return {"error": "No accepted events found", "recall@3": 0.0, "recall@5": 0.0, "mrr": 0.0, "total": 0}
+
+        # Deduplicate by (topic, gap_title) — keep first occurrence
+        seen: set = set()
+        unique: List[Dict[str, str]] = []
+        for ev in accepted:
+            key = (ev["topic"], ev["gap_type"], ev["gap_title"])
+            if key not in seen:
+                seen.add(key)
+                unique.append(ev)
+        accepted = unique[:limit]
+
+        recall_at_3 = 0
+        recall_at_5 = 0
+        mrr_sum = 0.0
+
+        for ev in accepted:
+            topic = ev["topic"]
+            gap_type = ev["gap_type"]
+            gap_title = ev["gap_title"]
+
+            candidates = self.find_capsule(topic, gap_type, keywords=[], min_score=0.0)
+            if not candidates:
+                continue
+
+            titles_lower = {c.action_gap_title.lower(): i for i, c in enumerate(candidates)}
+            title_lower = gap_title.lower()
+
+            if title_lower in titles_lower:
+                rank = titles_lower[title_lower] + 1
+                mrr_sum += 1.0 / rank
+                if rank <= 3:
+                    recall_at_3 += 1
+                if rank <= 5:
+                    recall_at_5 += 1
+
+        total = len(accepted)
+        return {
+            "recall@3": round(recall_at_3 / total, 3) if total > 0 else 0.0,
+            "recall@5": round(recall_at_5 / total, 3) if total > 0 else 0.0,
+            "mrr": round(mrr_sum / total, 3) if total > 0 else 0.0,
+            "total": total,
+        }
 
     def close(self) -> None:
         """Close the database connection."""
