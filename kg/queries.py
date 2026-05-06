@@ -1,5 +1,7 @@
 """High-level graph query functions built on KGManager."""
 
+from collections import deque
+
 from kg.manager import KGManager
 from typing import Optional
 
@@ -24,11 +26,11 @@ class KGQueries:
         nodes = [paper_node]
         edges = []
         visited = {paper_node["id"]}
-        queue = [(paper_node["id"], 0)]
+        queue: deque = deque([(paper_node["id"], 0)])
         seen_edge_ids = set()
 
         while queue:
-            current_id, d = queue.pop(0)
+            current_id, d = queue.popleft()
             if d >= depth:
                 continue
 

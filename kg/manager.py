@@ -176,16 +176,37 @@ class KGManager:
         target_id: str,
         relation_type: str,
         weight: float = 1.0,
+        symmetric: bool = False,
         **properties,
     ) -> str:
-        """Add an edge. Returns existing edge_id if exact duplicate exists."""
+        """Add an edge. Returns existing edge_id if exact duplicate exists.
+
+        For symmetric relations (e.g., "cite"), pass symmetric=True to canonicalize
+        ordering so (A, B) and (B, A) are treated as the same edge.
+        """
         conn = self._conn()
+
+        # Canonicalize ordering for symmetric relations so duplicate edges don't accumulate
+        s, t = (source_id, target_id) if (
+            not symmetric or source_id <= target_id
+        ) else (target_id, source_id)
+
         existing = conn.execute(
             "SELECT id FROM kg_edges WHERE source_id=? AND target_id=? AND relation_type=?",
-            (source_id, target_id, relation_type),
+            (s, t, relation_type),
         ).fetchone()
         if existing:
             return existing[0]  # type: ignore[no-any-return]
+
+        edge_id = str(uuid.uuid4())
+        props = orjson.dumps(properties).decode("utf-8")
+        now = self._now()
+        conn.execute(
+            "INSERT INTO kg_edges (id, source_id, target_id, relation_type, weight, properties_json, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (edge_id, s, t, relation_type, weight, props, now),
+        )
+        conn.commit()
+        return edge_id
 
         edge_id = str(uuid.uuid4())
         props = orjson.dumps(properties).decode("utf-8")

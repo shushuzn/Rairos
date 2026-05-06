@@ -173,7 +173,7 @@ class KGIntegration:
             cited_node_id = (
                 cited_node["id"] if cited_node else self.kg.add_node("Paper", cited_uid, cited_uid)
             )
-            self.kg.add_edge(paper_node_id, cited_node_id, "cite", weight=1.0)
+            self.kg.add_edge(paper_node_id, cited_node_id, "cite", weight=1.0, symmetric=True)
 
         for citing_uid in citing_uids or []:
             citing_node = self.kg.get_node_by_entity("Paper", citing_uid)
@@ -182,7 +182,7 @@ class KGIntegration:
                 if citing_node
                 else self.kg.add_node("Paper", citing_uid, citing_uid)
             )
-            self.kg.add_edge(citing_node_id, paper_node_id, "cite", weight=1.0)
+            self.kg.add_edge(citing_node_id, paper_node_id, "cite", weight=1.0, symmetric=True)
 
     def on_mnote_created(
         self,
@@ -355,7 +355,8 @@ class KGIntegration:
             citing = citations.get("citing", [])
             self.on_citations_fetched(uid, cited, citing)
 
-        self.kg.set_rebuild_meta(list(papers.keys()))
+        # Preserve already-indexed UIDs; only add newly processed ones
+        self.kg.set_rebuild_meta(list(already_indexed | set(processed_uids)))
 
         logger.info(f"KG rebuild complete: {len(processed_uids)} papers processed")
 

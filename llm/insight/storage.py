@@ -643,13 +643,11 @@ class CapsuleStorageMixin:
         return True
 
     def _load_capsules(self) -> List[CapsuleGene]:
-        """Load capsules from SQLite + JSONL, deduplicating by (action_gap_title, trigger_topic).
+        """Load capsules from SQLite + JSONL, deduplicating by capsule_id.
 
         After JSONL→SQLite migration the two stores diverge. The same capsule may appear
-        in both stores with the same (title, topic) but different feedback counts.
-        We keep the entry with the highest feedback_count. Preserving entries with the
-        same title but different trigger_topic is intentional — it allows the retrieval
-        scorer to pick the best topic match at query time.
+        in both stores with the same capsule_id but different feedback counts.
+        We keep the entry with the highest feedback_count (dedup key = capsule_id).
         """
         conn = self._ensure_db()
         rows = conn.execute("SELECT * FROM capsules").fetchall()
