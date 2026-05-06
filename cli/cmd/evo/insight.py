@@ -61,6 +61,7 @@ Valid gap_type values: capability, method_limitation, exploration_gap,
             "eval-retrieval",
             "alert",
             "kg-bridge",
+            "promote",
         ],
         help="Action to perform",
     )
@@ -499,6 +500,23 @@ def _run_insight(args: argparse.Namespace) -> int:
             stats = kg.stats()
             gp_nodes = stats["nodes_by_type"].get("GenePool-Capsule", 0)
             print(f"  KG nodes now    : GenePool-Capsule={gp_nodes}")
+        return 0
+
+    elif args.action == "promote":
+        import json as _json
+
+        result = manager.promote_capsules_to_insights()
+        if args.json:
+            print(_json.dumps(result))
+            return 0
+        print("=== GenePool → Insight Cards Promotion ===")
+        print(f"  Cards promoted  : {result['promoted']}")
+        print(f"  Already promoted: {result['skipped_already']}")
+        print(f"  No source       : {result['skipped_no_source']}")
+        print(f"  Eligible total  : {result['eligible_capsules']}")
+        print(f"  Total cards now : {result['total_cards']}")
+        if result['promoted'] > 0:
+            print(f"\n  Run 'airos insight list' to see new cards.")
         return 0
 
     print_error(f"Unknown action: {args.action}")

@@ -284,6 +284,117 @@ class InsightManager:
         self._save_collections(collections)
         return collection
 
+    def promote_capsules_to_insights(
+        self,
+        min_credibility: float = 0.5,
+        min_success_score: float = 0.6,
+    ) -> dict:
+        """Promote high-quality GenePool capsules to InsightCards.
+
+        Uses capsule.action_gap_title as content, source_paper_id as paper_id,
+        and stores capsule_id in evidence field to prevent duplicates.
+
+        Returns dict with promotion statistics.
+        """
+        from llm.insight.tracker import get_evolution_tracker
+
+        tracker = get_evolution_tracker()
+        capsules = tracker._load_capsules()
+
+        # Filter eligible capsules
+        def _is_test_data(cap) -> bool:
+            title = cap.action_gap_title or ""
+            archetype = cap.archetype or {}
+            source = archetype.get("source_paper_id", "")
+            # Filter obvious test/dummy data
+            if title.lower().startswith("test"):
+                return True
+            if "test" in source.lower():
+                return True
+            return False
+
+        eligible = [
+            c for c in capsules
+            if c.status == "active"
+            and c.credibility_score >= min_credibility
+            and c.outcome_success_score >= min_success_score
+            and not _is_test_data(c)
+        ]
+
+        # Load existing cards to check for duplicates (by capsule_id in evidence)
+        existing = self._load_cards()
+        already_promoted = set()
+        for item in existing:
+            ev = item.get("evidence", "")
+            if ev.startswith("capsule:"):
+                already_promoted.add(ev.split(":", 1)[1])
+        existing_paper_ids = {item["paper_id"] for item in existing}
+
+        # Determine insight_type from gap_type
+        def _gap_to_insight_type(gap_type: str) -> str:
+            mapping = {
+                "method_limitation": "method",
+                "capability": "finding",
+                "improvement": "method",
+                "application_gap": "finding",
+                "method_gap": "method",
+                "unexplained_phenomenon": "finding",
+                "exploration_gap": "future_work",
+                "embodied_planning": "future_work",
+                "cross_domain": "finding",
+                "theoretical": "method",
+                "empirical": "finding",
+            }
+            return mapping.get(gap_type, "finding")
+
+        promoted = 0
+        skipped_already = 0
+        skipped_no_source = 0
+
+        for cap in eligible:
+            archetype = cap.archetype or {}
+            source_paper_id = archetype.get("source_paper_id", "")
+            source_paper_title = archetype.get("source_paper_title", "")
+            trigger_topic = cap.trigger_topic or ""
+
+            # Skip if already promoted
+            if cap.capsule_id in already_promoted:
+                skipped_already += 1
+                continue
+
+            # Need at least a source paper or trigger topic
+            if not source_paper_id and not trigger_topic:
+                skipped_no_source += 1
+                continue
+
+            # Use trigger_topic as paper_title if no source_paper_title
+            paper_title = source_paper_title or trigger_topic
+            paper_id = source_paper_id or f"capsule:{cap.capsule_id}"
+
+            # Build tags from trigger_keywords + gap_type
+            tags = list(cap.trigger_keywords[:5]) if cap.trigger_keywords else []
+            gap_type_tag = f"gap:{cap.action_gap_type}" if cap.action_gap_type else ""
+            if gap_type_tag and gap_type_tag not in tags:
+                tags.append(gap_type_tag)
+
+            self.add_card(
+                paper_id=paper_id,
+                paper_title=paper_title,
+                content=cap.action_gap_title,
+                insight_type=_gap_to_insight_type(cap.action_gap_type),
+                tags=tags,
+                evidence=f"capsule:{cap.capsule_id}",
+            )
+            promoted += 1
+
+        return {
+            "promoted": promoted,
+            "skipped_already": skipped_already,
+            "skipped_no_source": skipped_no_source,
+            "eligible_capsules": len(eligible),
+            "total_cards": len(self._load_cards()),
+        }
+
     def add_to_collection(self, collection_id: str, card_id: str) -> bool:
         """Add a card to a collection."""
         collections = self._load_collections()
