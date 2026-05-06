@@ -8,7 +8,9 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from core import Paper
-from research_loop import arun_research
+
+# NOTE: arun_research is imported lazily (inside each test's with block)
+# to ensure patches are active before the import binds the function reference.
 
 
 # =============================================================================
@@ -57,25 +59,25 @@ class TestArunResearch:
             return pdf_path
 
         with (
-            patch("research_loop.core.search_arxiv", return_value=[paper]),
+            # Patch at source module BEFORE importing arun_research so the
+            # import binding captures the mocked function
+            patch("parsers.arxiv_search.search_arxiv", return_value=[paper]),
             patch("pdf.extract.extract_pdf_text", return_value="Extracted text."),
             patch("pdf.extract_async.download_pdf_async", side_effect=mock_download),
+            patch("llm.client_async.call_llm_chat_completions_async", new_callable=AsyncMock) as mock_llm,
         ):
-            from llm import client_async
+            from research_loop import arun_research
 
-            with patch.object(
-                client_async, "call_llm_chat_completions_async", new_callable=AsyncMock
-            ) as mock_llm:
-                mock_llm.return_value = "AI draft content."
-                paths = await arun_research(
-                    query="transformer",
-                    limit=5,
-                    output_dir=tmp_output_dir,
-                    api_key="test-key",
-                    download_pdfs=True,
-                    skip_existing=True,
-                    verbose=False,
-                )
+            mock_llm.return_value = "AI draft content."
+            paths = await arun_research(
+                query="transformer",
+                limit=5,
+                output_dir=tmp_output_dir,
+                api_key="test-key",
+                download_pdfs=True,
+                skip_existing=True,
+                verbose=False,
+            )
 
         assert len(paths) == 1
         assert paths[0].exists()
@@ -88,10 +90,12 @@ class TestArunResearch:
         paper = _make_paper(uid="2301.00002")
 
         with (
-            patch("research_loop.core.search_arxiv", return_value=[paper]),
+            patch("parsers.arxiv_search.search_arxiv", return_value=[paper]),
             patch("pdf.extract_async.download_pdf_async", new_callable=AsyncMock) as mock_dl,
             patch("pdf.extract.extract_pdf_text", return_value="Some text"),
         ):
+            from research_loop import arun_research
+
             mock_dl.side_effect = Exception("no pdf")
 
             paths = await arun_research(
@@ -116,7 +120,11 @@ class TestArunResearch:
         note_path = tmp_output_dir / uid_filename
         note_path.write_text("Already exists", encoding="utf-8")
 
-        with patch("research_loop.core.search_arxiv", return_value=[paper]):
+        with (
+            patch("parsers.arxiv_search.search_arxiv", return_value=[paper]),
+        ):
+            from research_loop import arun_research
+
             paths = await arun_research(
                 query="test",
                 output_dir=tmp_output_dir,
@@ -134,7 +142,11 @@ class TestArunResearch:
     @pytest.mark.asyncio
     async def test_empty_search_returns_empty_list(self, tmp_output_dir):
         """Empty search result returns an empty list without error."""
-        with patch("research_loop.core.search_arxiv", return_value=[]):
+        with (
+            patch("parsers.arxiv_search.search_arxiv", return_value=[]),
+        ):
+            from research_loop import arun_research
+
             paths = await arun_research(
                 query="nonexistent query xyz",
                 output_dir=tmp_output_dir,
@@ -147,7 +159,11 @@ class TestArunResearch:
     @pytest.mark.asyncio
     async def test_search_error_returns_empty(self, tmp_output_dir):
         """RuntimeError from search_arxiv is caught and returns []."""
-        with patch("research_loop.core.search_arxiv", side_effect=RuntimeError("Network error")):
+        with (
+            patch("parsers.arxiv_search.search_arxiv", side_effect=RuntimeError("Network error")),
+        ):
+            from research_loop import arun_research
+
             paths = await arun_research(
                 query="test",
                 output_dir=tmp_output_dir,
@@ -183,24 +199,22 @@ class TestArunResearch:
             return pdf_path
 
         with (
-            patch("research_loop.core.search_arxiv", return_value=papers),
+            patch("parsers.arxiv_search.search_arxiv", return_value=papers),
             patch("pdf.extract.extract_pdf_text", return_value="Extracted text."),
             patch("pdf.extract_async.download_pdf_async", side_effect=mock_download),
+            patch("llm.client_async.call_llm_chat_completions_async", new_callable=AsyncMock) as mock_llm,
         ):
-            from llm import client_async
+            from research_loop import arun_research
 
-            with patch.object(
-                client_async, "call_llm_chat_completions_async", new_callable=AsyncMock
-            ) as mock_llm:
-                mock_llm.return_value = "Draft."
-                await arun_research(
-                    query="test",
-                    output_dir=tmp_output_dir,
-                    api_key="test-key",
-                    download_pdfs=True,
-                    skip_existing=True,
-                    verbose=False,
-                )
+            mock_llm.return_value = "Draft."
+            await arun_research(
+                query="test",
+                output_dir=tmp_output_dir,
+                api_key="test-key",
+                download_pdfs=True,
+                skip_existing=True,
+                verbose=False,
+            )
 
         # Semaphore(5) means at most 5 tasks run at the same time
         assert max_concurrent <= 5, f"Expected <=5 concurrent, got {max_concurrent}"
@@ -246,24 +260,22 @@ class TestArunResearch:
             return pdf_path
 
         with (
-            patch("research_loop.core.search_arxiv", return_value=papers),
+            patch("parsers.arxiv_search.search_arxiv", return_value=papers),
             patch("pdf.extract.extract_pdf_text", return_value="Extracted text."),
             patch("pdf.extract_async.download_pdf_async", side_effect=flaky_download),
+            patch("llm.client_async.call_llm_chat_completions_async", new_callable=AsyncMock) as mock_llm,
         ):
-            from llm import client_async
+            from research_loop import arun_research
 
-            with patch.object(
-                client_async, "call_llm_chat_completions_async", new_callable=AsyncMock
-            ) as mock_llm:
-                mock_llm.return_value = "Draft."
-                paths = await arun_research(
-                    query="test",
-                    output_dir=tmp_output_dir,
-                    api_key="test-key",
-                    download_pdfs=True,
-                    skip_existing=True,
-                    verbose=True,
-                )
+            mock_llm.return_value = "Draft."
+            paths = await arun_research(
+                query="test",
+                output_dir=tmp_output_dir,
+                api_key="test-key",
+                download_pdfs=True,
+                skip_existing=True,
+                verbose=True,
+            )
 
         # Both papers should be attempted; good one succeeds, bad one fails
         # We should have 2 paths (metadata-only note for the bad paper)
@@ -293,24 +305,22 @@ class TestArunResearch:
             return pdf_path
 
         with (
-            patch("research_loop.core.search_arxiv", return_value=papers),
+            patch("parsers.arxiv_search.search_arxiv", return_value=papers),
             patch("pdf.extract.extract_pdf_text", return_value="Extracted text."),
             patch("pdf.extract_async.download_pdf_async", side_effect=mock_dl),
+            patch("llm.client_async.call_llm_chat_completions_async", new_callable=AsyncMock) as mock_llm,
         ):
-            from llm import client_async
+            from research_loop import arun_research
 
-            with patch.object(
-                client_async, "call_llm_chat_completions_async", new_callable=AsyncMock
-            ) as mock_llm:
-                mock_llm.return_value = "Draft."
-                paths = await arun_research(
-                    query="test",
-                    output_dir=tmp_output_dir,
-                    api_key="test-key",
-                    download_pdfs=True,
-                    skip_existing=True,
-                    verbose=False,
-                )
+            mock_llm.return_value = "Draft."
+            paths = await arun_research(
+                query="test",
+                output_dir=tmp_output_dir,
+                api_key="test-key",
+                download_pdfs=True,
+                skip_existing=True,
+                verbose=False,
+            )
 
         # 3 notes should be created (1 per paper)
         assert len(paths) == 3

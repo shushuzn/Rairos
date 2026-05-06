@@ -101,7 +101,7 @@ class TestFindSimilar:
 
         results = db.find_similar("2301.00001", threshold=0.85, limit=20)
         assert len(results) == 1
-        assert results[0][0].id == "2301.00002"
+        assert results[0][0] == "2301.00002"
 
     def test_find_similar_below_threshold(self, db):
         db.upsert_paper("2301.00001", "arxiv", title="Paper A")

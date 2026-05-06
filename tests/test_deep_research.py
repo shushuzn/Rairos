@@ -72,6 +72,18 @@ from db.database import Database
 
 
 # ---------------------------------------------------------------------------
+# Cleanup: remove fake stubs after this module's tests finish
+# ---------------------------------------------------------------------------
+
+def pytest_sessionfinish(session, exitstatus):
+    """Clean up fake stub modules when test session ends."""
+    stubs = [n for n, m in sys.modules.items()
+             if isinstance(m, types.ModuleType) and m.__spec__ is None]
+    for n in stubs:
+        sys.modules.pop(n, None)
+
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 def _make_gap_snapshot(

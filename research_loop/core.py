@@ -436,6 +436,7 @@ async def arun_research(
 
     from llm.client_async import call_llm_chat_completions_async
     from pdf.extract_async import download_pdf_async
+    from parsers.arxiv_search import search_arxiv
 
     # Resolve API credentials
     api_key = api_key or os.environ.get("OPENAI_API_KEY", "")

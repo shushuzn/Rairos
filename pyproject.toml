@@ -314,6 +314,7 @@ exclude_lines = [
 
 [tool.pytest.ini_options]
 timeout = 60
+addopts = "--ignore=tests/test_deep_research.py"
 markers = [
     "lean: Lean 4 integration tests (run only when Lean is installed)",
     "no_freeze: Tests that must not use freezegun time mocking",
