@@ -252,3 +252,63 @@ class Snapstate:
             ck_path.unlink()
             return True
         return False
+
+    def fork_session(
+        self, session_id: str, checkpoint_id: str, new_query: Optional[str] = None
+    ) -> Optional[ResearchSession]:
+        """Fork a session at a checkpoint into a new session with a new session_id.
+
+        Copies the checkpointed state, assigns a new session_id, resets status to 'running'.
+        If new_query is provided, overrides the original query.
+        Returns the new forked ResearchSession, or None if checkpoint not found.
+        """
+        ck_dir = self.base_dir / f"{session_id}_checkpoints"
+        ck_path = ck_dir / f"{checkpoint_id}.json"
+        if not ck_path.exists():
+            return None
+        try:
+            data = json.loads(ck_path.read_text(encoding="utf-8"))
+            forked = ResearchSession.from_dict(data)
+            forked.session_id = str(uuid.uuid4())[:8]
+            forked.status = "running"
+            forked.created_at = time.time()
+            forked.updated_at = time.time()
+            if new_query is not None:
+                forked.query = new_query
+            self.save(forked)
+            return forked
+        except (json.JSONDecodeError, TypeError, KeyError):
+            return None
+
+    def compare_sessions(self, session_id_a: str, session_id_b: str) -> Dict[str, Any]:
+        """Return a diff summary between two sessions."""
+        sess_a = self.load(session_id_a)
+        sess_b = self.load(session_id_b)
+
+        if sess_a is None or sess_b is None:
+            return {"error": "One or both sessions not found"}
+
+        papers_a = {p.arxiv_id for p in sess_a.papers if p.arxiv_id}
+        papers_b = {p.arxiv_id for p in sess_b.papers if p.arxiv_id}
+        gaps_a = {g.title for g in sess_a.gaps}
+        gaps_b = {g.title for g in sess_b.gaps}
+
+        return {
+            "session_id_a": session_id_a,
+            "session_id_b": session_id_b,
+            "status_a": sess_a.status,
+            "status_b": sess_b.status,
+            "iteration_a": sess_a.iteration,
+            "iteration_b": sess_b.iteration,
+            "papers_a_count": len(papers_a),
+            "papers_b_count": len(papers_b),
+            "papers_diff": len(papers_a) - len(papers_b),
+            "gaps_a_count": len(gaps_a),
+            "gaps_b_count": len(gaps_b),
+            "gaps_diff": len(gaps_a) - len(gaps_b),
+            "shared_papers": list(papers_a & papers_b),
+            "shared_papers_count": len(papers_a & papers_b),
+            "unique_to_a": list(papers_a - papers_b),
+            "unique_to_b": list(papers_b - papers_a),
+            "iteration_diff": sess_a.iteration - sess_b.iteration,
+        }

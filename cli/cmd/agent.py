@@ -96,6 +96,28 @@ def _build_agent_parser(subparsers) -> argparse.ArgumentParser:
     st.add_argument("session_id", help="Session ID")
     st.set_defaults(func=_status_session)
 
+    # branch subcommand
+    br = sub.add_parser("branch", help="Fork a session at a checkpoint into a new session")
+    br.add_argument("session_id", help="Source session ID to fork from")
+    br.add_argument(
+        "--checkpoint", "-c", type=str, default=None, help="Checkpoint ID to fork at (default: latest)"
+    )
+    br.add_argument(
+        "--query", "-q", type=str, default=None, help="Override query for the forked session"
+    )
+    br.set_defaults(func=_branch_session)
+
+    # checkpoints subcommand
+    ck = sub.add_parser("checkpoints", help="List checkpoints for a session")
+    ck.add_argument("session_id", help="Session ID")
+    ck.set_defaults(func=_list_checkpoints)
+
+    # diff subcommand
+    df = sub.add_parser("diff", help="Show differences between two sessions")
+    df.add_argument("session_id_a", help="First session ID")
+    df.add_argument("session_id_b", help="Second session ID")
+    df.set_defaults(func=_diff_sessions)
+
     return p
 
 
@@ -351,6 +373,83 @@ def _status_session(args) -> int:
 
     if session.error:
         print(f"  Error: {session.error}")
+    return 0
+
+
+def _branch_session(args) -> int:
+    snapstate = Snapstate()
+
+    # Resolve checkpoint — default to latest if not specified
+    checkpoint_id = args.checkpoint
+    if checkpoint_id is None:
+        checkpoints = snapstate.list_checkpoints(args.session_id)
+        if not checkpoints:
+            print_error(f"No checkpoints found for session {args.session_id}")
+            return 1
+        checkpoint_id = checkpoints[0]["checkpoint_id"]
+
+    forked = snapstate.fork_session(args.session_id, checkpoint_id, args.query)
+    if not forked:
+        print_error(f"Checkpoint {checkpoint_id} not found in session {args.session_id}")
+        return 1
+
+    print_success(f"Forked session {args.session_id} -> {forked.session_id} (at checkpoint {checkpoint_id})")
+    print(f"  Query: {forked.query}")
+    print(f"  Status: {forked.status}")
+    print(f"  Papers: {len(forked.papers)}, Gaps: {len(forked.gaps)}, Iterations: {forked.iteration}")
+    return 0
+
+
+def _list_checkpoints(args) -> int:
+    snapstate = Snapstate()
+    checkpoints = snapstate.list_checkpoints(args.session_id)
+
+    if not checkpoints:
+        print(f"No checkpoints found for session {args.session_id}.")
+        return 0
+
+    print(
+        colored(
+            f"{'CHECKPOINT':12} {'ITER':5} {'PAPERS':6} {'GAPS':5} {'CREATED':20}",
+            Colors.BOLD,
+        )
+    )
+    print("-" * 60)
+    import time as _time
+
+    for ck in checkpoints:
+        import datetime
+
+        created = datetime.datetime.fromtimestamp(ck["created_at"]).strftime("%Y-%m-%d %H:%M:%S")
+        print(
+            f"{ck['checkpoint_id']:12} "
+            f"{ck.get('iteration', '?'):5} "
+            f"{ck.get('papers', 0):6} "
+            f"{ck.get('gaps', 0):5} "
+            f"{created:20}"
+        )
+    return 0
+
+
+def _diff_sessions(args) -> int:
+    snapstate = Snapstate()
+    diff = snapstate.compare_sessions(args.session_id_a, args.session_id_b)
+
+    if "error" in diff:
+        print_error(diff["error"])
+        return 1
+
+    print(colored(f"Session diff: {args.session_id_a} vs {args.session_id_b}", Colors.BOLD))
+    print(f"  Status:  {diff['status_a']} (iter {diff['iteration_a']}) vs {diff['status_b']} (iter {diff['iteration_b']})")
+    print(f"  Papers:  {diff['papers_a_count']} vs {diff['papers_b_count']}  ({diff['papers_diff']:+d})")
+    print(f"  Gaps:    {diff['gaps_a_count']} vs {diff['gaps_b_count']}  ({diff['gaps_diff']:+d})")
+    print(f"  Shared papers: {diff['shared_papers_count']}")
+    if diff["shared_papers"]:
+        print(f"  Shared: {diff['shared_papers']}")
+    if diff["unique_to_a"]:
+        print(f"  Only in {args.session_id_a}: {diff['unique_to_a']}")
+    if diff["unique_to_b"]:
+        print(f"  Only in {args.session_id_b}: {diff['unique_to_b']}")
     return 0
 
 

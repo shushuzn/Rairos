@@ -24,6 +24,7 @@ Layout:
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 import os
 import re
@@ -671,6 +672,22 @@ class TUIChatApp(App):
         color: #ff5555;
     }
 
+    #status-bar.vim-normal {
+        color: #50fa7b;
+    }
+
+    #status-bar.vim-search {
+        color: #f1fa8c;
+    }
+
+    #status-bar.vim-command {
+        color: #8be9fd;
+    }
+
+    #status-bar.vim-insert {
+        color: #ff79c6;
+    }
+
     /* ── Suggestions ── */
     .suggestion-btn {
         margin: 0 1;
@@ -701,6 +718,23 @@ class TUIChatApp(App):
     #nav-hint {
         color: #6272a4;
         padding: 0 2;
+    }
+
+    /* ── Vim mode indicator ── */
+    #nav-hint.vim-normal {
+        color: #50fa7b;
+    }
+
+    #nav-hint.vim-search {
+        color: #f1fa8c;
+    }
+
+    #nav-hint.vim-command {
+        color: #8be9fd;
+    }
+
+    #nav-hint.vim-insert {
+        color: #ff79c6;
     }
 
     /* ── Progress indicator ── */
@@ -763,6 +797,11 @@ class TUIChatApp(App):
         self._selected_msg_idx: int = -1  # For keyboard navigation
         self._msg_index: Dict[str, Set[int]] = {}  # Token → message indices
 
+        # Vim mode state
+        self._vim_mode: str = "normal"  # normal | search | command | insert
+        self._pending_g: bool = False  # For g/G two-key combos
+        self._g_timeout_task: asyncio.Task | None = None  # Pending g/G timeout
+
     # ── App lifecycle ──────────────────────────────────────────────────────
 
     def compose(self) -> ComposeResult:
@@ -802,6 +841,277 @@ class TUIChatApp(App):
         self.query_one("#chat-input").focus()
         if self.session_id:
             self._load_session(self.session_id)
+        self._update_vim_mode_indicators()
+
+    # ── Vim Mode ─────────────────────────────────────────────────────────────
+
+    def _set_vim_mode(self, mode: str) -> None:
+        """Set Vim mode and update indicators."""
+        self._vim_mode = mode
+        self._update_vim_mode_indicators()
+
+    def _update_vim_mode_indicators(self) -> None:
+        """Update status bar and nav hint with current Vim mode."""
+        try:
+            status = cast(Static, self.query_one("#status-bar"))
+            hint = cast(Static, self.query_one("#nav-hint"))
+
+            # Remove all vim classes
+            for cls in ["vim-normal", "vim-search", "vim-command", "vim-insert"]:
+                status.remove_class(cls)
+                hint.remove_class(cls)
+
+            # Add current mode class
+            status.add_class(f"vim-{self._vim_mode}")
+            hint.add_class(f"vim-{self._vim_mode}")
+
+            # Update status bar text with mode indicator
+            mode_labels = {
+                "normal": "-- NORMAL --",
+                "search": "-- SEARCH --",
+                "command": "-- COMMAND --",
+                "insert": "-- INSERT --",
+            }
+            current_text = status.renderable if hasattr(status, "renderable") else ""
+            if isinstance(current_text, str):
+                # Prepend mode indicator to status text
+                mode_label = mode_labels.get(self._vim_mode, "-- NORMAL --")
+                # Keep existing status content but add mode prefix
+                pass  # Status keeps its own text
+
+            # Update nav hint based on mode
+            nav_hints = {
+                "normal": "❯ j/k↑↓  /搜索  :命令  g顶  G底  q退出",
+                "search": "❯ 输入搜索词后 Enter  Esc取消",
+                "command": "❯ 输入命令后 Enter  :w保存 :q退出 :e编辑 :goto N  Esc取消",
+                "insert": "❯ 输入问题开始对话  |  ↑↓ 选择  c=复制  e=编辑",
+            }
+            hint.update(colored(nav_hints.get(self._vim_mode, nav_hints["normal"]), Colors.OKBLUE))
+
+            # Add message counter if message is selected
+            self._update_message_counter()
+
+        except NoMatches:
+            pass
+
+    def _update_message_counter(self) -> None:
+        """Update status bar with message counter (selected/total)."""
+        if self._selected_msg_idx < 0 or not self.messages:
+            return
+        try:
+            status = cast(Static, self.query_one("#status-bar"))
+            ai_msg_indices = [i for i, m in enumerate(self.messages) if m.role == "assistant"]
+            if self._selected_msg_idx in ai_msg_indices:
+                idx = ai_msg_indices.index(self._selected_msg_idx) + 1
+                total = len(ai_msg_indices)
+                current = status.renderable if hasattr(status, "renderable") else ""
+                if isinstance(current, str) and f" {idx}/{total} " not in current:
+                    status.update(f"{current}  [{idx}/{total}]")
+        except NoMatches:
+            pass
+
+    def on_key(self, event) -> None:
+        """Handle Vim mode key bindings before default Textual handling."""
+        # Cancel pending g timeout if any key is pressed
+        if self._pending_g and event.key not in ("g", "G"):
+            self._pending_g = False
+            if self._g_timeout_task:
+                self._g_timeout_task.cancel()
+                self._g_timeout_task = None
+
+        # Handle based on current mode
+        if self._vim_mode == "normal":
+            self._handle_vim_normal_key(event)
+        elif self._vim_mode == "search":
+            self._handle_vim_search_key(event)
+        elif self._vim_mode == "command":
+            self._handle_vim_command_key(event)
+
+        # Handle Escape in any mode to return to normal
+        if event.key == "escape":
+            self._set_vim_mode("normal")
+            try:
+                self.query_one("#chat-input").focus()
+            except NoMatches:
+                pass
+
+    def _handle_vim_normal_key(self, event) -> None:
+        """Handle keypresses in Vim Normal mode."""
+        key = event.key
+
+        # j → down (select next message)
+        if key == "j":
+            self.action_select_next_message()
+            return
+
+        # k → up (select previous message)
+        if key == "k":
+            self.action_select_prev_message()
+            return
+
+        # / → enter Search mode
+        if key == "/":
+            self._set_vim_mode("search")
+            try:
+                inp = cast(Input, self.query_one("#chat-input"))
+                inp.value = "/"
+                inp.cursor_position = len(inp.value)
+                inp.focus()
+            except NoMatches:
+                pass
+            return
+
+        # : → enter Command mode
+        if key == ":":
+            self._set_vim_mode("command")
+            try:
+                inp = cast(Input, self.query_one("#chat-input"))
+                inp.value = ":"
+                inp.cursor_position = len(inp.value)
+                inp.focus()
+            except NoMatches:
+                pass
+            return
+
+        # g → start two-key combo for go-to-top
+        if key == "g":
+            self._pending_g = True
+            if self._g_timeout_task:
+                self._g_timeout_task.cancel()
+
+            async def clear_pending():
+                await asyncio.sleep(0.3)
+                self._pending_g = False
+
+            self._g_timeout_task = asyncio.create_task(clear_pending())
+            return
+
+        # G → go to bottom (last message) - only if not preceded by g
+        if key == "G" and not self._pending_g:
+            self._go_to_last_message()
+            return
+
+        # Handle gG combo (g followed by G = go to top)
+        # This is handled when we get the second 'g' and _pending_g is True
+        if key == "g" and self._pending_g:
+            # This is the second 'g', meaning gg = go to top
+            self._pending_g = False
+            if self._g_timeout_task:
+                self._g_timeout_task.cancel()
+                self._g_timeout_task = None
+            self._go_to_first_message()
+            return
+
+        # q → quit (already handled by binding, but make sure mode is normal)
+        # Let Textual handle 'q' via BINDINGS
+
+    def _handle_vim_search_key(self, event) -> None:
+        """Handle keypresses in Vim Search mode."""
+        key = event.key
+
+        # Enter → execute search
+        if key == "enter":
+            try:
+                inp = cast(Input, self.query_one("#chat-input"))
+                query = inp.value.strip()
+                if query.startswith("/"):
+                    query = query[1:]
+                if query:
+                    self._search_current_messages(query)
+                inp.value = ""
+                self._set_vim_mode("normal")
+                self.query_one("#chat-input").focus()
+            except NoMatches:
+                pass
+            return
+
+        # Escape → cancel and return to normal mode
+        if key == "escape":
+            try:
+                inp = cast(Input, self.query_one("#chat-input"))
+                inp.value = ""
+            except NoMatches:
+                pass
+            self._set_vim_mode("normal")
+            return
+
+        # Let other keys (letters, backspace, etc.) pass to input via Textual default
+
+    def _handle_vim_command_key(self, event) -> None:
+        """Handle keypresses in Vim Command mode."""
+        key = event.key
+
+        # Enter → execute command
+        if key == "enter":
+            try:
+                inp = cast(Input, self.query_one("#chat-input"))
+                cmd = inp.value.strip()
+                if cmd.startswith(":"):
+                    cmd = cmd[1:]
+                inp.value = ""
+                self._execute_vim_command(cmd)
+                self._set_vim_mode("normal")
+                self.query_one("#chat-input").focus()
+            except NoMatches:
+                pass
+            return
+
+        # Escape → cancel and return to normal mode
+        if key == "escape":
+            try:
+                inp = cast(Input, self.query_one("#chat-input"))
+                inp.value = ""
+            except NoMatches:
+                pass
+            self._set_vim_mode("normal")
+            return
+
+        # Let other keys pass to input via Textual default
+
+    def _execute_vim_command(self, cmd: str) -> None:
+        """Execute a Vim-style command."""
+        if not cmd:
+            return
+
+        parts = cmd.split(maxsplit=1)
+        command = parts[0].lower()
+        arg = parts[1] if len(parts) > 1 else ""
+
+        if command == "w":
+            # Save / export
+            self._export_session()
+        elif command == "q":
+            # Quit
+            self.action_quit()
+        elif command == "e":
+            # Edit selected message
+            self.action_edit_selected()
+        elif command == "goto" or command == "g":
+            # Go to message number
+            if arg:
+                self._goto_message(arg)
+        elif command == "wq":
+            # Write and quit
+            self._export_session()
+            self.action_quit()
+        else:
+            self._update_status(f"⚠️ 未知命令: {command}")
+
+    def _go_to_first_message(self) -> None:
+        """Go to first AI message."""
+        ai_msg_indices = [i for i, m in enumerate(self.messages) if m.role == "assistant"]
+        if ai_msg_indices:
+            self._selected_msg_idx = ai_msg_indices[0]
+            self._render_messages_with_selection()
+            self._update_nav_hint(f"已跳转到第1/{len(ai_msg_indices)}条")
+
+    def _go_to_last_message(self) -> None:
+        """Go to last AI message."""
+        ai_msg_indices = [i for i, m in enumerate(self.messages) if m.role == "assistant"]
+        if ai_msg_indices:
+            self._selected_msg_idx = ai_msg_indices[-1]
+            self._render_messages_with_selection()
+            self._update_nav_hint(f"已跳转到第{len(ai_msg_indices)}/{len(ai_msg_indices)}条")
 
     # ── Input handling ───────────────────────────────────────────────────────
 
@@ -1221,9 +1531,10 @@ class TUIChatApp(App):
             self._selected_msg_idx = ai_msg_indices[idx_in_list]
 
         self._render_messages_with_selection()
-        self._update_nav_hint(
-            f"已选中第 {ai_msg_indices.index(self._selected_msg_idx) + 1}/{len(ai_msg_indices)} 条回复"
-        )
+        idx = ai_msg_indices.index(self._selected_msg_idx) + 1
+        total = len(ai_msg_indices)
+        self._update_nav_hint(f"已选中 {idx}/{total}")
+        self._update_message_counter()
 
     def action_select_next_message(self) -> None:
         """Select next message in history."""
@@ -1255,9 +1566,10 @@ class TUIChatApp(App):
             self._selected_msg_idx = ai_msg_indices[idx_in_list]
 
         self._render_messages_with_selection()
-        self._update_nav_hint(
-            f"已选中第 {ai_msg_indices.index(self._selected_msg_idx) + 1}/{len(ai_msg_indices)} 条回复"
-        )
+        idx = ai_msg_indices.index(self._selected_msg_idx) + 1
+        total = len(ai_msg_indices)
+        self._update_nav_hint(f"已选中 {idx}/{total}")
+        self._update_message_counter()
 
     def action_activate_message(self) -> None:
         """Handle Enter - deselect when no selection, otherwise focus input."""
@@ -1329,20 +1641,23 @@ class TUIChatApp(App):
             pass
 
     def _update_nav_hint(self, text: str | None = None) -> None:
-        """Update navigation hint bar."""
+        """Update navigation hint bar with optional custom text."""
         try:
             hint = cast(Static, self.query_one("#nav-hint"))
             if text:
                 hint.update(
-                    colored(f"❯ {text}  |  ↑↓ 选择  c=复制  e=编辑  Ctrl+F 搜索", Colors.OKBLUE)
+                    colored(f"❯ {text}  |  j/k↑↓  /搜索  :命令  g顶  G底  q退出", Colors.OKBLUE)
                 )
             else:
-                hint.update(
-                    colored(
-                        "❯ 输入问题开始对话  |  ↑↓ 选择  c=复制  e=编辑  Ctrl+F 搜索",
-                        Colors.WARNING,
+                # Use mode-specific hint in normal mode
+                if self._vim_mode == "normal":
+                    hint.update(
+                        colored(
+                            "❯ 输入问题开始对话  |  j/k↑↓  /搜索  :命令  g顶  G底  q退出",
+                            Colors.WARNING,
+                        )
                     )
-                )
+                # For other modes, _update_vim_mode_indicators handles it
         except NoMatches:
             pass
 
