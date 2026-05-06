@@ -22,6 +22,7 @@ import pytest
 
 def pytest_configure(config: pytest.Config) -> None:
     """Pre-import hooks: swap heavy libs with lightweight mocks at collect time."""
+    config.addinivalue_line("markers", "lean: tests that require Lean 4 installed")
     # Create mock fitz/pymupdf that satisfy basic type checks
     mock_fitz = MagicMock(name="fitz")
     mock_fitz.open.return_value = MagicMock(
@@ -42,6 +43,23 @@ def pytest_configure(config: pytest.Config) -> None:
         sys.modules["pdfminer.extractor"] = MagicMock(name="pdfminer.extractor")
     if "pdfminer.layout" not in sys.modules:
         sys.modules["pdfminer.layout"] = MagicMock(name="pdfminer.layout")
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list) -> None:
+    """Skip @pytest.mark.lean tests when Lean 4 is not installed."""
+    try:
+        from llm.lean_verifier import check_lean_installed
+
+        status, _ = check_lean_installed()
+        lean_available = status.value == "available"
+    except Exception:
+        lean_available = False
+
+    if not lean_available:
+        skip_lean = pytest.mark.skip(reason="Lean 4 not installed")
+        for item in items:
+            if item.get_closest_marker("lean") is not None:
+                item.add_marker(skip_lean)
 
 
 # Module cache cleanup - reset pdf.extract fitz/tesseract caches between tests

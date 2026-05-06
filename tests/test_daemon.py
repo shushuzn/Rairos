@@ -32,7 +32,7 @@ class TestWatchDaemon:
         from llm.watch import WatchDaemon
 
         d = WatchDaemon(interval=60)
-        assert d.interval == 60
+        assert d._interval == 60
         assert not d.running
 
     def test_watch_status_no_start(self):
