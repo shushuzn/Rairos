@@ -280,21 +280,36 @@ class DeepResearchAgent:
             t["name"]: t for t in self.mcp_tools
         }
 
+        # Skill discovery — dynamically discover Claude Code skill packs
+        from research_loop.skill_discovery import discover_skills, match_skills
+        self._skills = discover_skills()
+        self._skill_map = {s.name: s for s in self._skills}
+
 
 
     @staticmethod
     def _discover_mcp_tools() -> List[Dict[str, Any]]:
-        """Auto-discover Rairos MCP tools by importing the tool definitions.
-
-        Reads tools from mcp/tools_defs.py (name + inputSchema) and builds
-        a flat list suitable for agent tool registration. Falls back to
-        empty list if MCP module is unavailable.
-        """
+        """Auto-discover Rairos MCP tools by importing the tool definitions."""
         try:
             from mcp.tools_defs import get_tools
             return get_tools()
         except Exception:
             return []
+
+    def _find_skills(self, query: str) -> List[Any]:
+        """Find skills matching a query string (keyword match in name + description).
+
+        Returns skills sorted by relevance: name match > description match.
+        """
+        try:
+            from research_loop.skill_discovery import match_skills
+            return match_skills(query, self._skills)
+        except Exception:
+            return []
+
+    def _get_skill(self, name: str) -> Optional[Any]:
+        """Get a skill by exact name. Returns Skill object or None."""
+        return self._skill_map.get(name)
 
     def _log(self, msg: str):
 
