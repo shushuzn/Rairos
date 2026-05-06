@@ -87,8 +87,17 @@ def _make_candidate(
 
 @pytest.fixture
 def mock_tracker(tmp_path: Path) -> MagicMock:
-    """A mock EvolutionTracker whose data_dir points at tmp_path."""
-    tracker = MagicMock()
+    """A mock EvolutionTracker whose data_dir points at tmp_path.
+
+    Injects a real CapsuleStorageMixin so that _save_capsules actually persists
+    to SQLite at tmp_path (matching production behavior after the UPSERT fix).
+    """
+    from llm.insight.storage import CapsuleStorageMixin
+
+    class RealSavingTracker(CapsuleStorageMixin, MagicMock):
+        pass
+
+    tracker = RealSavingTracker()
     tracker.data_dir = tmp_path
     return tracker
 
@@ -107,10 +116,18 @@ def evolver_with_capsules(evolver: InsightEvolution, mock_tracker: MagicMock) ->
 
 
 def _write_gene_pool(data_dir: Path, capsules: list[CapsuleGene]) -> None:
-    gene_file = data_dir / "gene_pool.jsonl"
-    with open(gene_file, "w", encoding="utf-8") as f:
-        for c in capsules:
-            f.write(json.dumps(c.to_dict(), ensure_ascii=False) + "\n")
+    """Write capsules directly to SQLite via CapsuleStorageMixin, bypassing JSONL.
+
+    Bypasses JSONL entirely so that tests are isolated from each other's DB state.
+    """
+    from llm.insight.storage import CapsuleStorageMixin
+
+    class _TempTracker(CapsuleStorageMixin):
+        pass
+
+    t = _TempTracker()
+    t.data_dir = data_dir
+    t._save_capsules(capsules)
 
 
 # ===========================================================================

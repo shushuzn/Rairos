@@ -18,18 +18,20 @@ _local = threading.local()
 
 
 def _get_conn(db_path: Path) -> sqlite3.Connection:
-    """Get a thread-local SQLite connection."""
-    if not hasattr(_local, "conn") or _local.conn is None:
+    """Get a thread-local SQLite connection, cached by db_path."""
+    if not hasattr(_local, "conn") or _local.conn is None or not hasattr(_local, "db_path") or _local.db_path != str(db_path):
         _local.conn = sqlite3.connect(str(db_path))
         _local.conn.row_factory = sqlite3.Row
         _local.conn.execute("PRAGMA journal_mode=WAL")
         _local.conn.execute("PRAGMA synchronous=NORMAL")
+        _local.db_path = str(db_path)
     # Check if db file still exists (handles temp dir deletion)
     elif hasattr(_local, "conn") and _local.conn is not None:
         try:
             _local.conn.execute("SELECT 1")
         except (sqlite3.DatabaseError, OSError):
             _local.conn = None
+            _local.db_path = None
             return _get_conn(db_path)
     return _local.conn
 
@@ -42,6 +44,7 @@ def _close_conn() -> None:
         except Exception:
             pass
         _local.conn = None
+        _local.db_path = None
 
 
 _SCHEMA_SQL = """
@@ -282,10 +285,15 @@ class CapsuleStorageMixin:
         db_path = self._gene_pool_db
         _init_db(db_path)
 
-        # Auto-migrate from JSONL on first use
+        # Auto-migrate from JSONL if JSONL exists and DB is empty (handles
+        # fresh tmp_path cases where _init_db creates an empty .db file)
         jsonl_path = self._gene_pool_file
-        if jsonl_path.exists() and not db_path.exists():
-            _migrate_jsonl_to_sqlite(jsonl_path, db_path)
+        if jsonl_path.exists():
+            conn = _get_conn(db_path)
+            count = conn.execute("SELECT COUNT(*) FROM capsules").fetchone()[0]
+            if count == 0:
+                _migrate_jsonl_to_sqlite(jsonl_path, db_path)
+            return conn
 
         return _get_conn(db_path)
 
@@ -631,12 +639,12 @@ class CapsuleStorageMixin:
         """
         conn = self._ensure_db()
         rows = conn.execute("SELECT * FROM capsules").fetchall()
-        # Key by (title_lower, topic_lower) to keep entries with different topics separate
+        # Key by capsule_id to preserve all distinct capsule entries
         capsules_by_key: Dict[tuple, CapsuleGene] = {}
 
         for row in rows:
             capsule = _capsule_from_row(row)
-            key = (capsule.action_gap_title.lower(), capsule.trigger_topic.lower())
+            key = capsule.capsule_id  # unique per capsule — preserves distinct entries
             existing = capsules_by_key.get(key)
             if existing is None or capsule.feedback_count > existing.feedback_count:
                 capsules_by_key[key] = capsule
@@ -652,7 +660,7 @@ class CapsuleStorageMixin:
                         try:
                             data = json.loads(line)
                             capsule = CapsuleGene.from_dict(data)
-                            key = (capsule.action_gap_title.lower(), capsule.trigger_topic.lower())
+                            key = capsule.capsule_id
                             existing = capsules_by_key.get(key)
                             if existing is None or capsule.feedback_count > existing.feedback_count:
                                 capsules_by_key[key] = capsule
