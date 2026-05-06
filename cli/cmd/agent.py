@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
+from os import getcwd
 
 from cli._shared import Colors, colored, print_error, print_success
 
@@ -45,6 +46,18 @@ def _build_agent_parser(subparsers) -> argparse.ArgumentParser:
         "--papers", "-p", type=int, default=5, help="Max papers per iteration (default 5)"
     )
     dr.add_argument("--verbose", "-v", action="store_true", help="Print verbose debug output")
+    dr.add_argument(
+        "--mode",
+        "-m",
+        choices=["plan", "agent", "yolo"],
+        default="agent",
+        help="deepseek-tui style mode: plan=confirm each step, agent=auto-exec with approval gates, yolo=full-auto",
+    )
+    dr.add_argument(
+        "--auto",
+        action="store_true",
+        help="Auto-select model and iteration count based on task complexity",
+    )
     dr.add_argument(
         "--resume", "-r", type=str, metavar="SESSION_ID", help="Resume an existing session"
     )
@@ -86,14 +99,107 @@ def _build_agent_parser(subparsers) -> argparse.ArgumentParser:
     return p
 
 
+def _estimate_complexity(query: str) -> int:
+    """Estimate research complexity from query text (0-5 scale).
+
+    Heuristics based on DeepSeek-TUI's auto mode:
+    - Multi-domain or cross-field topics → higher complexity
+    - Specific technique names → medium
+    - Broad/general topics → lower
+    """
+    q = query.lower()
+    complexity = 1
+
+    # Cross-domain signals
+    cross_keywords = ["comparison", " vs ", " versus ", "combine", "hybrid", "cross-domain", "transfer"]
+    if any(k in q for k in cross_keywords):
+        complexity += 1
+
+    # Theory-heavy signals
+    theory_keywords = ["theory", "framework", "principle", "analysis", "understanding"]
+    if any(k in q for k in theory_keywords):
+        complexity += 1
+
+    # Practical/application signals
+    if any(k in q for k in ["implementation", "benchmark", "evaluation", "dataset"]):
+        complexity -= 1
+
+    # Specific model/technique names tend to be well-scoped
+    if any(k in q for k in ["transformer", "llm", "gpt", "bert", "rlhf", "ppo", "lora"]):
+        complexity = min(complexity, 2)
+
+    return max(1, min(complexity, 5))
+
+
+def _confirm(action: str, detail: str, mode: str) -> bool:
+    """Approval gate — returns True to proceed.
+
+    plan  mode: always confirmed (user confirmed at plan step already)
+    agent mode: interactive confirmation
+    yolo  mode: always skip (full auto)
+    """
+    if mode == "plan":
+        return True  # plan step already confirmed
+    if mode == "yolo":
+        return False  # no approvals in yolo mode
+    # agent mode: interactive
+    try:
+        resp = input(f"{Colors.WARNING}[confirm]{Colors.reset} {action} — {detail} [y/N]: ").strip().lower()
+        return resp in ("y", "yes")
+    except (EOFError, KeyboardInterrupt):
+        return False
+
+
+def _display_thinking(role: str, content: str, mode: str) -> None:
+    """Print a reasoning step with DeepSeek-TUI-style formatting.
+
+    Roles: planner | searcher | extractor | analyzer | reflector
+    Each gets a distinct color for visual scanning during streaming.
+    """
+    role_colors = {
+        "planner": Colors.OKBLUE,
+        "searcher": Colors.OKGREEN,
+        "extractor": Colors.HEADER,
+        "analyzer": Colors.WARNING,
+        "reflector": Colors.OKBLUE,
+    }
+    color = role_colors.get(role, "")
+    label = f"[{role.upper()}]"
+    print(f"{color}{label}{Colors.reset} {content}")
+    if mode == "plan":
+        print(f"  {Colors.WARNING}→ waiting for confirmation...{Colors.reset}")
+
+
 def _run_deep_research(args) -> int:
+    # Auto mode: adjust iterations based on query complexity
+    iterations = args.iterations
+    if args.auto:
+        complexity = _estimate_complexity(args.query)
+        iterations = min(max(complexity, 1), 5)
+        print(colored(f"[auto] estimated complexity={complexity}, iterations={iterations}", Colors.OKBLUE))
+
     snapstate_dir = Path.home() / ".ai_research_os" / "sessions"
+
+    def _on_thought(role: str, content: str, iteration: int):
+        """Streaming callback: display reasoning step in DeepSeek-TUI style."""
+        _display_thinking(role, content, args.mode)
+        # In plan mode, this also waits for user confirmation
+        if args.mode == "plan":
+            try:
+                resp = input(f"  {Colors.OKBLUE}→ confirm? [y/N]{Colors.reset} ").strip().lower()
+                return resp in ("y", "yes")
+            except (EOFError, KeyboardInterrupt):
+                return False
+        return None
+
     agent = DeepResearchAgent(
         query=args.query,
-        max_iterations=args.iterations,
+        max_iterations=iterations,
         max_papers_per_iteration=args.papers,
         verbose=args.verbose,
+        mode=args.mode,
         snapstate_dir=snapstate_dir,
+        on_thought=_on_thought,
     )
 
     if args.resume:

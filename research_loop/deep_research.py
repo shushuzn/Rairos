@@ -48,7 +48,7 @@ from pathlib import Path
 
 
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 
 
@@ -212,7 +212,11 @@ class DeepResearchAgent:
 
         verbose: bool = False,
 
+        mode: str = "agent",
+
         snapstate_dir: Optional[Path] = None,
+
+        on_thought: Optional[callable] = None,
 
     ):
 
@@ -223,6 +227,14 @@ class DeepResearchAgent:
 
 
         self.max_iterations = max_iterations
+
+
+
+        self.mode = mode
+
+
+
+        self.on_thought = on_thought
 
 
 
@@ -379,6 +391,24 @@ class DeepResearchAgent:
 
 
             self.session.findings.append(f"[{role.upper()}] {content}")
+
+
+
+        # Streaming callback for DeepSeek-TUI-style output
+        if self.on_thought:
+            self.on_thought(role, content, iteration)
+
+
+
+    def _approve_step(self, iteration: int, step: str, detail: str) -> bool:
+        """Ask the caller to approve the next step (plan mode confirmation).
+
+        In plan mode, calls on_thought with step info and waits.
+        Returns True to proceed, False to abort.
+        """
+        if self.on_thought:
+            return self.on_thought(step, f"[PLAN] {detail}", iteration) is not False
+        return True
 
 
 
@@ -931,6 +961,16 @@ class DeepResearchAgent:
 
 
             search_query = self._plan_next_search(iteration)
+
+
+
+            # Plan-mode approval gate
+            if self.mode == "plan":
+                confirmed = self._approve_step(iteration, "planner", f"Search query: {search_query}")
+                if not confirmed:
+                    self.session.status = "paused"
+                    self.snapstate.save(self.session)
+                    break
 
 
 
