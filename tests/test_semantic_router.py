@@ -1,5 +1,7 @@
 """Tests for llm/semantic_router — pure logic, no I/O."""
 
+import pytest
+
 from llm.semantic_router import (
     QueryType,
     Route,
@@ -182,6 +184,7 @@ class TestSemanticRouter:
         assert r.primary_command == "gap"
         assert 0.0 <= r.confidence <= 1.0
 
+    @pytest.mark.ollama
     def test_route_returns_valid_route_object(self):
         from llm.semantic_router import SemanticRouter
 

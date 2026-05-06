@@ -23,6 +23,7 @@ import pytest
 def pytest_configure(config: pytest.Config) -> None:
     """Pre-import hooks: swap heavy libs with lightweight mocks at collect time."""
     config.addinivalue_line("markers", "lean: tests that require Lean 4 installed")
+    config.addinivalue_line("markers", "ollama: tests that require Ollama embedding service")
     # Create mock fitz/pymupdf that satisfy basic type checks
     mock_fitz = MagicMock(name="fitz")
     mock_fitz.open.return_value = MagicMock(
@@ -60,6 +61,25 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list) -> None:
         for item in items:
             if item.get_closest_marker("lean") is not None:
                 item.add_marker(skip_lean)
+
+    # Skip ollama tests when Ollama is not available
+    try:
+        import urllib.request
+
+        req = urllib.request.Request(
+            "http://localhost:11434/api/tags",
+            method="GET",
+        )
+        with urllib.request.urlopen(req, timeout=2) as resp:
+            ollama_available = resp.status == 200
+    except Exception:
+        ollama_available = False
+
+    if not ollama_available:
+        skip_ollama = pytest.mark.skip(reason="Ollama not running on localhost:11434")
+        for item in items:
+            if item.get_closest_marker("ollama") is not None:
+                item.add_marker(skip_ollama)
 
 
 # Module cache cleanup - reset pdf.extract fitz/tesseract caches between tests
