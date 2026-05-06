@@ -1773,6 +1773,126 @@ class EvolutionTracker(CapsuleStorageMixin):
             reverse=True,
         )
 
+def sync_gene_pool_to_kg(
+    kg_manager=None,
+    min_credibility: float = 0.5,
+    min_success_score: float = 0.6,
+    limit: Optional[int] = None,
+) -> dict:
+    """Bridge GenePool capsules → Knowledge Graph.
+
+    High-quality capsules (credibility ≥ min_credibility, success_score ≥ min_success_score)
+    become first-class KG citizens:
+      - Node: GenePool-Capsule (type='GenePool-Capsule')
+      - Edge: evolved_from → source Paper node (via archetype.source_paper_id)
+      - Edge: addresses_gap → Tag node (via archetype.gap_type)
+      - Edge: refines_trigger → parent Capsule node (via archetype.parent_capsule_id)
+
+    Returns dict with sync statistics.
+    """
+    if kg_manager is None:
+        from kg.manager import KGManager
+        kg_manager = KGManager()
+
+    from kg.integration import KGIntegration
+    integ = KGIntegration(kg_manager)
+
+    tracker = get_evolution_tracker()
+    capsules = tracker._load_capsules()
+
+    # Filter to high-quality active capsules
+    filtered = [
+        c for c in capsules
+        if c.status == "active"
+        and c.credibility_score >= min_credibility
+        and c.outcome_success_score >= min_success_score
+    ]
+    if limit:
+        filtered = filtered[:limit]
+
+    synced = 0
+    skipped_no_source = 0
+    errors = 0
+
+    for cap in filtered:
+        archetype = cap.archetype or {}
+        source_paper_id = archetype.get("source_paper_id", "")
+        gap_type = archetype.get("gap_type", cap.action_gap_type or "")
+        parent_id = archetype.get("parent_capsule_id", "")
+
+        try:
+            # Upsert the GenePool-Capsule node
+            capsule_node_id = kg_manager.upsert_node(
+                "GenePool-Capsule",
+                cap.capsule_id,
+                f"[GenePool] {cap.action_gap_title[:100]}",
+                capsule_id=cap.capsule_id,
+                credibility_score=cap.credibility_score,
+                success_score=cap.outcome_success_score,
+                gap_type=cap.action_gap_type,
+                trigger_topic=cap.trigger_topic,
+                status=cap.status,
+                evolution_level=cap.evolved_generation,
+            )
+
+            # Edge: source paper → this capsule
+            if source_paper_id:
+                paper_node = kg_manager.get_node_by_entity("Paper", source_paper_id)
+                if paper_node:
+                    kg_manager.add_edge(
+                        paper_node["id"],
+                        capsule_node_id,
+                        "evolved_from",
+                        weight=cap.credibility_score,
+                    )
+                else:
+                    # Create placeholder paper node if it doesn't exist
+                    placeholder_id = kg_manager.add_node(
+                        "Paper",
+                        source_paper_id,
+                        source_paper_id,
+                    )
+                    kg_manager.add_edge(
+                        placeholder_id,
+                        capsule_node_id,
+                        "evolved_from",
+                        weight=cap.credibility_score,
+                    )
+
+            # Edge: capsule → tag node (addresses_gap)
+            if gap_type:
+                tag_node_id = kg_manager.upsert_node("Tag", gap_type, gap_type)
+                kg_manager.add_edge(
+                    capsule_node_id,
+                    tag_node_id,
+                    "addresses_gap",
+                    weight=0.8,
+                )
+
+            # Edge: parent capsule → this capsule (refines)
+            if parent_id:
+                parent_node = kg_manager.get_node_by_entity("GenePool-Capsule", parent_id)
+                if parent_node:
+                    kg_manager.add_edge(
+                        parent_node["id"],
+                        capsule_node_id,
+                        "refines",
+                        weight=0.7,
+                    )
+
+            synced += 1
+        except Exception as e:
+            errors += 1
+
+    return {
+        "synced": synced,
+        "skipped_no_source": skipped_no_source,
+        "errors": errors,
+        "total_capsules": len(capsules),
+        "eligible": len(filtered),
+    }
+
+
 def get_evolution_tracker() -> EvolutionTracker:
     """Factory: get a shared EvolutionTracker instance."""
     return EvolutionTracker()

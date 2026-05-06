@@ -60,6 +60,7 @@ Valid gap_type values: capability, method_limitation, exploration_gap,
             "archive-trendslop",
             "eval-retrieval",
             "alert",
+            "kg-bridge",
         ],
         help="Action to perform",
     )
@@ -476,6 +477,28 @@ def _run_insight(args: argparse.Namespace) -> int:
         for alert in alerts:
             icon = level_icons.get(alert["level"], "⚪")
             print(f"{icon} [{alert['level'].upper()}] {alert['code']}: {alert['message']}")
+        return 0
+
+    elif args.action == "kg-bridge":
+        import json as _json
+
+        from kg.manager import KGManager
+        from llm.insight.tracker import sync_gene_pool_to_kg
+
+        kg = KGManager()
+        result = sync_gene_pool_to_kg(kg_manager=kg)
+        if args.json:
+            print(_json.dumps(result))
+            return 0
+        print("=== GenePool → Knowledge Graph Bridge ===")
+        print(f"  Capsules synced  : {result['synced']}")
+        print(f"  Eligible total  : {result['eligible']}")
+        print(f"  Total in pool   : {result['total_capsules']}")
+        print(f"  Errors          : {result['errors']}")
+        if result['synced'] > 0:
+            stats = kg.stats()
+            gp_nodes = stats["nodes_by_type"].get("GenePool-Capsule", 0)
+            print(f"  KG nodes now    : GenePool-Capsule={gp_nodes}")
         return 0
 
     print_error(f"Unknown action: {args.action}")
