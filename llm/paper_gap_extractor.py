@@ -561,7 +561,7 @@ def analyze_gap(
             paper_id=paper_id,
             title=title,
             gap_type=gap_type,
-            gap_title=result.get("gap_title") or f"{gap_type}: {title[:60]}",
+            gap_title=result.get("gap_title") or title[:80],
             keywords=keywords + [str(result.get(result_fields[0], ""))],
             summary=result.get("summary")
             or f"{gap_type} analysis. {result_fields[0]}: {result.get(result_fields[0], 'unknown')}",

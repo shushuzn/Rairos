@@ -185,6 +185,43 @@ def _insert_capsule(conn: sqlite3.Connection, c: CapsuleGene) -> None:
     )
 
 
+# Valid gap types from GapType enum (llm/gap_detector.py)
+_VALID_GAP_TYPES = frozenset([
+    "unexplored_application",
+    "method_limitation",
+    "contradiction",
+    "evaluation_gap",
+    "scalability_issue",
+    "theoretical_gap",
+    "dataset_gap",
+    "generalization_gap",
+    "method_gap",
+    "exploration_gap",
+    "implementation",
+    "theory_gap",
+])
+
+# Mapping from legacy/unknown types to nearest valid type
+_GAP_TYPE_FALLBACK = {
+    "capability": "method_limitation",
+    "application_gap": "unexplored_application",
+    "theory_gap": "theoretical_gap",
+    "method_gap": "method_limitation",
+    "exploration_gap": "unexplored_application",
+    "general_gap": "method_limitation",
+}
+
+
+def _normalize_gap_type(gap_type: str) -> str:
+    """Normalize a gap_type to a valid value, or return 'method_limitation' as last resort."""
+    if not gap_type or not isinstance(gap_type, str):
+        return "method_limitation"
+    normalized = gap_type.strip().lower()
+    if normalized in _VALID_GAP_TYPES:
+        return normalized
+    return _GAP_TYPE_FALLBACK.get(normalized, "method_limitation")
+
+
 # ---------------------------------------------------------------------------
 # CapsuleStorageMixin
 # ---------------------------------------------------------------------------
@@ -238,13 +275,14 @@ class CapsuleStorageMixin:
             archetype["source_paper_id"] = source_paper_id
         if source_arxiv_category:
             archetype["source_arxiv_category"] = source_arxiv_category
+        normalized_gap_type = _normalize_gap_type(gap_type)
         capsule = CapsuleGene(
             capsule_id=uuid.uuid4().hex[:12],
             created_at=self._get_timestamp(),
             trigger_topic=topic,
-            trigger_gap_type=gap_type,
+            trigger_gap_type=normalized_gap_type,
             trigger_keywords=self._extract_keywords(gap_title),
-            action_gap_type=gap_type,
+            action_gap_type=normalized_gap_type,
             action_gap_title=gap_title,
             outcome_success_score=success_score,
             feedback_count=1,
