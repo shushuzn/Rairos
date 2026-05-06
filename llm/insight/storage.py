@@ -63,7 +63,8 @@ CREATE TABLE IF NOT EXISTS capsules (
     trendslop INTEGER NOT NULL DEFAULT 0,
     trendslop_reason TEXT NOT NULL DEFAULT '',
     credibility_badge TEXT NOT NULL DEFAULT 'medium',
-    source_arxiv_category TEXT NOT NULL DEFAULT ''
+    source_arxiv_category TEXT NOT NULL DEFAULT '',
+    title_embedding BLOB
 );
 
 CREATE INDEX IF NOT EXISTS idx_capsules_status ON capsules(status);
@@ -106,6 +107,17 @@ def _capsule_from_row(row: sqlite3.Row) -> CapsuleGene:
 
 def _capsule_to_row(c: CapsuleGene) -> Dict[str, Any]:
     """Convert a CapsuleGene to a SQLite row dict."""
+    import base64
+    embedding_blob = None
+    archetype = c.archetype or {}
+    emb_list = archetype.get("title_embedding")
+    if emb_list:
+        try:
+            import numpy as np
+            vec = np.array(emb_list, dtype=np.float32)
+            embedding_blob = vec.tobytes()
+        except Exception:
+            pass
     return {
         "capsule_id": c.capsule_id,
         "created_at": c.created_at,
@@ -125,6 +137,7 @@ def _capsule_to_row(c: CapsuleGene) -> Dict[str, Any]:
         "trendslop_reason": c.trendslop_reason,
         "credibility_badge": c.credibility_badge,
         "source_arxiv_category": c.source_arxiv_category,
+        "title_embedding": embedding_blob,
     }
 
 
@@ -222,6 +235,23 @@ def _normalize_gap_type(gap_type: str) -> str:
     return _GAP_TYPE_FALLBACK.get(normalized, "method_limitation")
 
 
+def _compute_title_embedding(text: str) -> Optional[List[float]]:
+    """Compute embedding for a text using all-MiniLM-L6-v2.
+
+    Returns None if embedding fails (model not installed).
+    """
+    if not text or not text.strip():
+        return None
+    try:
+        from sentence_transformers import SentenceTransformer
+        import numpy as np
+        model = SentenceTransformer("all-MiniLM-L6-v2")
+        vec = model.encode(text, normalize_embeddings=True)
+        return vec.tolist()
+    except Exception:
+        return None
+
+
 # ---------------------------------------------------------------------------
 # CapsuleStorageMixin
 # ---------------------------------------------------------------------------
@@ -277,6 +307,11 @@ class CapsuleStorageMixin:
             archetype["source_paper_id"] = source_paper_id
         if source_arxiv_category:
             archetype["source_arxiv_category"] = source_arxiv_category
+        # Compute semantic embedding for action_gap_title (lazy, on new capsules only)
+        if "title_embedding" not in archetype and gap_title:
+            embedding = _compute_title_embedding(gap_title)
+            if embedding:
+                archetype["title_embedding"] = embedding
         normalized_gap_type = _normalize_gap_type(gap_type)
         capsule = CapsuleGene(
             capsule_id=capsule_id if capsule_id else uuid.uuid4().hex[:12],
@@ -447,6 +482,125 @@ class CapsuleStorageMixin:
 
         scored.sort(key=lambda x: x[1], reverse=True)
         return [c for c, _ in scored]
+
+    def find_capsule_semantic(
+        self,
+        topic: str,
+        gap_type: str,
+        min_score: float = 0.1,
+        top_k: int = 20,
+    ) -> List[CapsuleGene]:
+        """Semantic retrieval using action_gap_title embeddings.
+
+        Computes query embedding on-the-fly, then cosine-similarity
+        ranks all capsules with stored embeddings.
+        Falls back to keyword match if no embeddings available.
+        """
+        query_emb = _compute_title_embedding(topic)
+        if not query_emb:
+            return self.find_capsule(topic, gap_type, keywords=[], min_score=min_score)
+
+        capsules = self._load_capsules()
+        scored: List[Tuple[CapsuleGene, float]] = []
+
+        for capsule in capsules:
+            if capsule.status == "archived":
+                continue
+            archetype = capsule.archetype or {}
+            emb_list = archetype.get("title_embedding")
+            if not emb_list:
+                continue
+            try:
+                import numpy as np
+                cap_vec = np.array(emb_list, dtype=np.float32)
+                q_vec = np.array(query_emb, dtype=np.float32)
+                # Both normalized → dot product = cosine similarity
+                sim = float(np.dot(cap_vec, q_vec))
+                if sim >= min_score:
+                    scored.append((capsule, sim))
+            except Exception:
+                continue
+
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return [c for c, _ in scored[:top_k]]
+
+    def find_capsule_hybrid(
+        self,
+        topic: str,
+        gap_type: str,
+        keywords: Optional[List[str]] = None,
+        min_lex_score: float = 0.1,
+        min_total_score: float = 0.3,
+        semantic_weight: float = 0.5,
+        top_k: int = 20,
+    ) -> List[CapsuleGene]:
+        """Hybrid retrieval: lexical trigger_match + semantic cosine similarity.
+
+        Lexical score (0-1) and semantic score (0-1) are blended with semantic_weight.
+        Returns capsules where combined score >= min_total_score.
+        """
+        keywords = keywords or []
+        query_emb = _compute_title_embedding(topic)
+
+        capsules = self._load_capsules()
+        scored: List[Tuple[CapsuleGene, float]] = []
+
+        for capsule in capsules:
+            if capsule.status == "archived":
+                continue
+
+            lex_score = capsule.trigger_match(topic, gap_type, keywords)
+
+            sem_score = 0.0
+            if query_emb:
+                archetype = capsule.archetype or {}
+                emb_list = archetype.get("title_embedding")
+                if emb_list:
+                    try:
+                        import numpy as np
+                        cap_vec = np.array(emb_list, dtype=np.float32)
+                        q_vec = np.array(query_emb, dtype=np.float32)
+                        sem_score = float(np.dot(cap_vec, q_vec))
+                    except Exception:
+                        sem_score = 0.0
+
+            total = (1 - semantic_weight) * lex_score + semantic_weight * sem_score
+            if total >= min_total_score:
+                scored.append((capsule, total))
+
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return [c for c, _ in scored[:top_k]]
+
+    def recompute_embeddings_all(self) -> dict:
+        """Batch-compute title embeddings for all active capsules.
+
+        Stores embedding in archetype['title_embedding'] and persists to SQLite.
+        Returns dict with counts of updated and skipped capsules.
+        """
+        capsules = self._load_capsules()
+        updated = 0
+        skipped = 0
+        errors = 0
+
+        for cap in capsules:
+            if cap.status == "archived":
+                skipped += 1
+                continue
+            archetype = cap.archetype or {}
+            if archetype.get("title_embedding"):
+                skipped += 1
+                continue
+            emb = _compute_title_embedding(cap.action_gap_title)
+            if not emb:
+                errors += 1
+                continue
+            archetype["title_embedding"] = emb
+            cap.archetype = archetype
+            updated += 1
+
+        if updated > 0:
+            self._save_capsules(capsules)
+        return {"updated": updated, "skipped": skipped, "errors": errors}
 
     def archive_capsule(self, capsule_id: str) -> bool:
         conn = self._ensure_db()
@@ -774,11 +928,11 @@ class CapsuleStorageMixin:
                 "message": f"Archived {archived_pct:.1%} of pool (>60%)",
                 "detail": {"count": status_counts.get("archived", 0), "pct": round(archived_pct, 3)},
             })
-        if total >= 50 and evolved_count == 0:
+        if total >= 200 and evolved_count == 0:
             alerts.append({
                 "level": "warning",
                 "code": "EVOLUTION_STALLED",
-                "message": "No evolved (V2) capsules after 50+ total",
+                "message": "No evolved (V2) capsules after 200+ total",
                 "detail": {"total": total, "evolved": evolved_count},
             })
 
