@@ -278,6 +278,13 @@ class CapsuleStorageMixin:
     """
 
     @property
+    def _save_lock(self) -> threading.Lock:
+        """Lazily-created lock for _save_capsules (init here avoids MRO issues with multiple inheritance)."""
+        if not hasattr(self, "_save_lock_instance"):
+            self._save_lock_instance = threading.Lock()
+        return self._save_lock_instance
+
+    @property
     def _gene_pool_db(self) -> Path:
         return self.data_dir / _GENEPOOL_DB
 
@@ -327,6 +334,7 @@ class CapsuleStorageMixin:
             if embedding:
                 archetype["title_embedding"] = embedding
         normalized_gap_type = _normalize_gap_type(gap_type)
+        archetype["gap_type"] = normalized_gap_type  # stored for KG sync
         capsule = CapsuleGene(
             capsule_id=capsule_id if capsule_id else uuid.uuid4().hex[:12],
             created_at=self._get_timestamp(),
@@ -678,16 +686,17 @@ class CapsuleStorageMixin:
         return list(capsules_by_key.values())
 
     def _save_capsules(self, capsules: List[CapsuleGene]) -> None:
-        conn = self._ensure_db()
-        conn.execute("BEGIN IMMEDIATE")
-        try:
-            conn.execute("DELETE FROM capsules")
-            for c in capsules:
-                _insert_capsule(conn, c)
-            conn.commit()
-        except Exception:
-            conn.rollback()
-            raise
+        with self._save_lock:
+            conn = self._ensure_db()
+            conn.execute("BEGIN IMMEDIATE")
+            try:
+                conn.execute("DELETE FROM capsules")
+                for c in capsules:
+                    _insert_capsule(conn, c)
+                conn.commit()
+            except Exception:
+                conn.rollback()
+                raise
 
     def get_gene_pool_stats(self) -> Dict[str, Any]:
         conn = self._ensure_db()
