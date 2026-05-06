@@ -36,6 +36,7 @@ def _build_insight_parser(subparsers) -> argparse.ArgumentParser:
             "top",
             "bottom",
             "evolve",
+            "quality-report",
             "eval-retrieval",
         ],
         help="Action to perform",
@@ -332,6 +333,25 @@ def _run_insight(args: argparse.Namespace) -> int:
         evo = InsightEvolution(tracker=get_evolution_tracker())
         result = evo.evolve(topic=topic, gap_type=gap_type)
         print(evo.render_summary(result))
+        return 0
+
+    elif args.action == "quality-report":
+        from llm.insight.tracker import get_evolution_tracker
+
+        tracker = get_evolution_tracker()
+        report = tracker.get_gene_pool_quality_report()
+        if "error" in report:
+            print_error(f"quality-report: {report['error']}")
+            return 1
+        print("=== Gene Pool Quality Report ===")
+        print(f"  Total capsules    : {report['total']}")
+        print(f"  Avg score        : {report['avg_score']}")
+        print(f"  Score dist       : high={report['score_distribution']['high (≥0.7)']} mid={report['score_distribution']['mid (0.4-0.7)']} low={report['score_distribution']['low (<0.4)']}")
+        print(f"  Credibility dist : {report['credibility_distribution']}")
+        print(f"  Trendslop        : {report['trendslop']['count']} ({report['trendslop']['pct']}) — {report['trendslop']['top_reasons']}")
+        print(f"  Feedback use     : high={report['feedback_distribution']['high_use (≥3)']} zero={report['feedback_distribution']['low_use (0)']}")
+        print(f"  At-risk (streak≥2): {report['at_risk_capsules']}")
+        print(f"  Top gap types    : {report['top_gap_types']}")
         return 0
 
     elif args.action == "eval-retrieval":

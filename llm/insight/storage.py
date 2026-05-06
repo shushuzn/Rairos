@@ -538,6 +538,99 @@ class CapsuleStorageMixin:
             "total": total,
         }
 
+    def get_gene_pool_quality_report(self) -> Dict[str, Any]:
+        """Comprehensive GenePool quality report.
+
+        Returns credibility distribution, trendslop analysis, quality capsule breakdown,
+        and retrieval signal metrics — everything needed for a bi-weekly health check.
+        """
+        capsules = self._load_capsules()
+
+        total = len(capsules)
+        if total == 0:
+            return {"error": "No capsules in gene pool", "total": 0}
+
+        # Credibility distribution
+        credibility_buckets = {"high": 0, "medium": 0, "low": 0, "unknown": 0}
+        for c in capsules:
+            if c.credibility_badge in credibility_buckets:
+                credibility_buckets[c.credibility_badge] += 1
+            else:
+                credibility_buckets["unknown"] += 1
+
+        # Trendslop analysis
+        trendslop_capsules = [c for c in capsules if c.trendslop]
+        trendslop_reasons: Dict[str, int] = {}
+        for c in trendslop_capsules:
+            reason_key = c.trendslop_reason[:50] if c.trendslop_reason else "unknown"
+            trendslop_reasons[reason_key] = trendslop_reasons.get(reason_key, 0) + 1
+
+        # Score distribution
+        scores = [c.outcome_success_score for c in capsules]
+        avg_score = sum(scores) / total
+        high_score = sum(1 for s in scores if s >= 0.7)
+        mid_score = sum(1 for s in scores if 0.4 <= s < 0.7)
+        low_score = sum(1 for s in scores if s < 0.4)
+
+        # Feedback count distribution
+        feedback_counts = [c.feedback_count for c in capsules]
+        high_use = sum(1 for f in feedback_counts if f >= 3)
+        low_use = sum(1 for f in feedback_counts if f == 0)
+
+        # Generation distribution
+        generation_counts: Dict[int, int] = {}
+        for c in capsules:
+            generation_counts[c.evolved_generation] = generation_counts.get(c.evolved_generation, 0) + 1
+
+        # Status breakdown
+        status_counts: Dict[str, int] = {}
+        for c in capsules:
+            status_counts[c.status] = status_counts.get(c.status, 0) + 1
+
+        # Source arxiv category breakdown
+        arxiv_categories: Dict[str, int] = {}
+        for c in capsules:
+            cat = c.source_arxiv_category or "none"
+            arxiv_categories[cat] = arxiv_categories.get(cat, 0) + 1
+
+        # Low score streak analysis (at-risk capsules)
+        at_risk = [c for c in capsules if c.low_score_streak >= 2]
+
+        # Top gap types
+        gap_type_counts: Dict[str, int] = {}
+        for c in capsules:
+            gap_type_counts[c.action_gap_type] = gap_type_counts.get(c.action_gap_type, 0) + 1
+        top_gap_types = sorted(gap_type_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+
+        return {
+            "total": total,
+            "avg_score": round(avg_score, 3),
+            "score_distribution": {
+                "high (≥0.7)": high_score,
+                "mid (0.4-0.7)": mid_score,
+                "low (<0.4)": low_score,
+            },
+            "credibility_distribution": credibility_buckets,
+            "trendslop": {
+                "count": len(trendslop_capsules),
+                "pct": round(len(trendslop_capsules) / total, 3),
+                "top_reasons": dict(sorted(trendslop_reasons.items(), key=lambda x: x[1], reverse=True)[:3]),
+            },
+            "feedback_distribution": {
+                "high_use (≥3)": high_use,
+                "low_use (0)": low_use,
+            },
+            "generation_distribution": dict(sorted(generation_counts.items())),
+            "status_breakdown": status_counts,
+            "top_gap_types": dict(top_gap_types),
+            "arxiv_categories": dict(sorted(arxiv_categories.items(), key=lambda x: x[1], reverse=True)[:5]),
+            "at_risk_capsules": len(at_risk),
+            "at_risk_detail": [
+                {"capsule_id": c.capsule_id, "title": c.action_gap_title[:40], "streak": c.low_score_streak}
+                for c in at_risk[:5]
+            ],
+        }
+
     def close(self) -> None:
         """Close the database connection."""
         _close_conn()
