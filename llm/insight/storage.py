@@ -269,8 +269,9 @@ class CapsuleStorageMixin:
         status: str = "active",
         source_paper_id: str = "",
         source_arxiv_category: str = "",
+        capsule_archetype: Optional[Dict[str, Any]] = None,
     ) -> CapsuleGene:
-        archetype = self.get_archetype()
+        archetype = capsule_archetype if capsule_archetype else self.get_archetype()
         if source_paper_id:
             archetype["source_paper_id"] = source_paper_id
         if source_arxiv_category:

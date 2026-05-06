@@ -706,8 +706,10 @@ def render_embodied_planning_dashboard() -> str:
     """
     import json as _json
 
-    # Read from capsules.json
-    capsule_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
+    # Read from capsules.json via gene_pool_io (unified at ~/.ai_research_os/evolution/)
+    from llm.gene_pool_io import CAPSULE_PATH
+
+    capsule_path = CAPSULE_PATH
     if not capsule_path.exists():
         return _empty_dashboard("No Gene Pool data found.")
 
@@ -1163,18 +1165,22 @@ def save_gap_to_gene_pool(
             from llm.insight.tracker import EvolutionTracker
 
             tracker = EvolutionTracker()
-            tracker.encode_capsule(
+            result = tracker.encode_capsule(
                 topic=title[:200],
                 gap_type=gap_type,
                 gap_title=gap_title[:200],
                 gap_description=summary,
                 success_score=0.5,
                 status="active",
+                capsule_archetype=archetype,
             )
+            if result is None:
+                return None
         except Exception as e:
             import logging
 
-            logging.getLogger(__name__).warning(f"gene_pool.jsonl write failed (non-critical): {e}")
+            logging.getLogger(__name__).warning(f"gene_pool.jsonl write failed: {e}")
+            return None
 
         return capsule_id
     except Exception:
