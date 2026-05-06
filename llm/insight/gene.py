@@ -68,17 +68,26 @@ class CapsuleGene:
     def trigger_match(self, topic: str, gap_type: str, keywords: List[str]) -> float:
         """Score how well this capsule matches a new context [0.0–1.0].
 
-
-        Uses keyword overlap + gap_type alignment.
+        Uses three signals:
+        1. action_gap_title — direct content match (highest weight, predicts recall)
+        2. trigger_topic    — context/subject substring match
+        3. gap_type         — exact type alignment
+        4. trigger_keywords — vocabulary overlap
 
         """
-
         score = 0.0
 
-        # Topic substring match
+        # 1. action_gap_title substring match — strongest recall signal
+        # When the accepted gap title appears in the query, it's the best predictor
+        action_title = self.action_gap_title.strip() if self.action_gap_title else ""
+        if action_title and topic:
+            if action_title.lower() in topic.lower():
+                score += 0.5
+            elif topic.lower() in action_title.lower():
+                score += 0.3
 
+        # 2. trigger_topic substring match
         if topic and self.trigger_topic:
-            # Handle trigger_topic as str or list (legacy data)
             tt = (
                 self.trigger_topic
                 if isinstance(self.trigger_topic, str)
@@ -87,25 +96,21 @@ class CapsuleGene:
                 else ""
             )
             if topic.lower() in tt.lower():
-                score += 0.4
-
-            elif tt.lower() in topic.lower():
                 score += 0.3
+            elif tt.lower() in topic.lower():
+                score += 0.2
 
-        # Gap type exact match
-
+        # 3. Gap type exact match
         if gap_type and gap_type == self.trigger_gap_type:
-            score += 0.4
+            score += 0.3
 
-        # Keyword overlap
-
+        # 4. Keyword overlap
         if keywords and self.trigger_keywords:
             overlap = set(k.lower() for k in keywords) & set(
                 k.lower() for k in self.trigger_keywords
             )
-
             if overlap:
-                score += 0.2 * (len(overlap) / max(len(keywords), len(self.trigger_keywords)))
+                score += 0.15 * (len(overlap) / max(len(keywords), len(self.trigger_keywords)))
 
         return min(score, 1.0)
 

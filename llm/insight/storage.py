@@ -336,9 +336,35 @@ class CapsuleStorageMixin:
         return True
 
     def _load_capsules(self) -> List[CapsuleGene]:
+        """Load capsules from SQLite, merging in any new entries from JSONL.
+
+        After JSONL→SQLite migration the two stores can diverge (new capsules
+        appended to JSONL but DB not updated). This merges both sources,
+        preferring the DB row for IDs present in both.
+        """
         conn = self._ensure_db()
         rows = conn.execute("SELECT * FROM capsules").fetchall()
-        return [_capsule_from_row(r) for r in rows]
+        capsules_by_id: Dict[str, CapsuleGene] = {r["capsule_id"]: _capsule_from_row(r) for r in rows}
+
+        jsonl_path = self._gene_pool_file
+        if jsonl_path.exists():
+            try:
+                with open(jsonl_path, encoding="utf-8") as f:
+                    for line in f:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            data = json.loads(line)
+                            capsule = CapsuleGene.from_dict(data)
+                            if capsule.capsule_id not in capsules_by_id:
+                                capsules_by_id[capsule.capsule_id] = capsule
+                        except Exception:
+                            continue
+            except Exception:
+                pass
+
+        return list(capsules_by_id.values())
 
     def _save_capsules(self, capsules: List[CapsuleGene]) -> None:
         conn = self._ensure_db()
