@@ -840,7 +840,6 @@ Respond with JSON:
                     credibility_badge TEXT NOT NULL DEFAULT 'medium', source_arxiv_category TEXT NOT NULL DEFAULT ''
                 )
             """)
-            conn.execute("DELETE FROM capsules")
             for c in capsules:
                 conn.execute(
                     """INSERT OR REPLACE INTO capsules VALUES (
@@ -883,7 +882,7 @@ Respond with JSON:
 
         Returns the number of capsules archived.
         """
-        capsules = [c for c in self._load_capsules() if c.status == "active"]
+        capsules = self._load_capsules()
         merged_count = 0
         to_archive: set[str] = set()
 
