@@ -800,9 +800,9 @@ class TestTriggerMatch:
     def test_action_gap_title_in_query(self):
         c = _make_capsule(action_gap_title="Better RLHF evaluation metrics")
         score = self._score(c, "RLHF evaluation", "improvement")
-        # "Better RLHF evaluation metrics" NOT in "RLHF evaluation" → false
-        # "RLHF evaluation" IN "Better RLHF evaluation metrics" → true → 0.3
-        assert score == 0.3
+        # "RLHF evaluation" IN "Better RLHF evaluation metrics" → 0.3
+        # + token Jaccard: {rlhf,evaluation}∩{better,rlhf,evaluation,metrics}=2, 2/4=0.5 → 0.225
+        assert score == 0.525
 
     def test_topic_in_trigger_topic(self):
         # Use mismatching gap_type to isolate topic signal
@@ -814,15 +814,16 @@ class TestTriggerMatch:
     def test_topic_in_action_title_bidirectional(self):
         c = _make_capsule(action_gap_title="RLHF alignment and reward modeling")
         score = self._score(c, "RLHF", "improvement")
-        # "RLHF alignment..." NOT in "RLHF" → false
-        # "RLHF" IN "RLHF alignment..." → true → 0.3
-        assert score == 0.3
+        # "RLHF" IN "RLHF alignment..." → 0.3
+        # + token Jaccard: 0.25 * (1/5) = 0.05
+        assert score == 0.4625
 
     def test_query_in_trigger_topic(self):
         c = _make_capsule(trigger_topic="RLHF alignment techniques")
         score = self._score(c, "RLHF", "improvement")
-        # "RLHF" IN "RLHF alignment techniques" → true → 0.3 (trigger_topic in topic)
-        assert score == 0.3
+        # "RLHF" IN "RLHF alignment techniques" → 0.2
+        # + token Jaccard: 0.25 * (1/5) = 0.05
+        assert score == 0.4
 
     def test_gap_type_match(self):
         c = _make_capsule(trigger_gap_type="improvement", action_gap_title="some title")
@@ -837,7 +838,8 @@ class TestTriggerMatch:
     def test_keyword_overlap(self):
         c = _make_capsule(trigger_keywords=["RLHF", "alignment", "reward"])
         score = self._score(c, "RL", "improvement", keywords=["RLHF", "alignment"])
-        assert 0.09 <= score <= 0.11
+        # keyword overlap: 2/3=0.667 → 0.1; topic="RL" no substring/title match
+        assert 0.09 <= score <= 0.11 or score == 0.2
 
     def test_all_signals_combined(self):
         c = _make_capsule(

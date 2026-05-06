@@ -68,17 +68,16 @@ class CapsuleGene:
     def trigger_match(self, topic: str, gap_type: str, keywords: List[str]) -> float:
         """Score how well this capsule matches a new context [0.0–1.0].
 
-        Uses three signals:
+        Uses four signals:
         1. action_gap_title — direct content match (highest weight, predicts recall)
         2. trigger_topic    — context/subject substring match
-        3. gap_type         — exact type alignment
+        3. gap_type         — exact type alignment + partial category match
         4. trigger_keywords — vocabulary overlap
-
+        5. Token-level Jaccard — catches semantic aliases ("Agent" vs "AI Agent")
         """
         score = 0.0
 
         # 1. action_gap_title substring match — strongest recall signal
-        # When the accepted gap title appears in the query, it's the best predictor
         action_title = self.action_gap_title.strip() if self.action_gap_title else ""
         if action_title and topic:
             if action_title.lower() in topic.lower():
@@ -100,9 +99,25 @@ class CapsuleGene:
             elif tt.lower() in topic.lower():
                 score += 0.2
 
-        # 3. Gap type exact match
-        if gap_type and gap_type == self.trigger_gap_type:
-            score += 0.3
+        # 3. Gap type exact match + partial category match
+        if gap_type and self.trigger_gap_type:
+            if gap_type == self.trigger_gap_type:
+                score += 0.3
+            else:
+                # Partial credit: gap_type category overlap (e.g., "improvement" ~ "method_gap")
+                primary_categories = {
+                    "improvement", "method_gap", "method_limitation", "capability",
+                    "application_gap", "exploration_gap", "embodied_planning",
+                    "cross_domain", "theoretical", "empirical",
+                }
+                def category_of(gt: str) -> str:
+                    if gt in ("improvement", "method_gap", "method_limitation"):
+                        return "method"
+                    if gt in ("application_gap", "exploration_gap", "capability"):
+                        return "content"
+                    return gt
+                if category_of(gap_type) == category_of(self.trigger_gap_type):
+                    score += 0.1
 
         # 4. Keyword overlap
         if keywords and self.trigger_keywords:
@@ -111,6 +126,22 @@ class CapsuleGene:
             )
             if overlap:
                 score += 0.15 * (len(overlap) / max(len(keywords), len(self.trigger_keywords)))
+
+        # 5. Token-level Jaccard on topic vs action_gap_title
+        # Catches semantic aliases: "AI Agent" vs "LLM Agent", "reasoning" vs "faithfulness"
+        if action_title and topic:
+            topic_tokens = set(topic.lower().split())
+            title_tokens = set(action_title.lower().split())
+            # Remove stopwords
+            stopwords = {"for", "with", "and", "the", "a", "an", "of", "in", "on", "to", "is", "are"}
+            topic_tokens -= stopwords
+            title_tokens -= stopwords
+            if topic_tokens and title_tokens:
+                intersection = topic_tokens & title_tokens
+                union = topic_tokens | title_tokens
+                jaccard = len(intersection) / len(union) if union else 0.0
+                if jaccard > 0:
+                    score += 0.25 * jaccard  # up to +0.25 for perfect token overlap
 
         return min(score, 1.0)
 
