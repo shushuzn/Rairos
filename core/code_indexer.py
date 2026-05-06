@@ -15,6 +15,8 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 if TYPE_CHECKING:
     from core.vector_store import ZillizStore
 
+import warnings
+warnings.filterwarnings("ignore", message="pkg_resources is deprecated")
 import jieba
 
 # Ollama embedding model
@@ -340,7 +342,7 @@ class CodeIndexer:
                 sim = self._cosine_sim(query_emb, chunk.embedding)
                 scored.append((sim, chunk))
 
-        scored.sort(reverse=True)
+        scored.sort(key=lambda x: x[0], reverse=True)
         return [c for _, c in scored[:limit]]
 
     def _zilliz_search(self, query: str, limit: int) -> List[CodeChunk]:

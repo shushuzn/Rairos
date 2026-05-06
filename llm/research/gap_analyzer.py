@@ -3,13 +3,13 @@
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Tuple
 
-from llm.gap_detector import (
+from llm.research.gap_detector import (
     GapDetector,
     ResearchGap,
     GapType,
     GapSeverity,
 )
-from llm.hypothesis_generator import (
+from llm.research.hypothesis_generator import (
     HypothesisGenerator,
     HypothesisResult,
 )

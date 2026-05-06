@@ -55,6 +55,8 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 
 
+from llm.reasoning import StreamingReasoner
+
 from llm.gap_analyzer import GapAnalyzerV2
 
 
@@ -226,6 +228,7 @@ class DeepResearchAgent:
         auto_checkpoint: bool = True,
         checkpoint_every_n_steps: int = 1,
         checkpoint_interval_seconds: int = 60,
+        use_streaming_reasoning: bool = False,
     ):
 
 
@@ -291,6 +294,10 @@ class DeepResearchAgent:
         self._checkpoint_counter = 0
         self._last_checkpoint_time = time.time()
 
+        # StreamingReasoner for extended thinking (DeepSeek V3 / MiniMax)
+        self.use_streaming_reasoning = use_streaming_reasoning
+        self._streaming_reasoner = StreamingReasoner() if use_streaming_reasoning else None
+
         # MCP tool registry — dynamically discovered tools agent can call
         self.mcp_tools = mcp_tools if mcp_tools is not None else self._discover_mcp_tools()
         self._mcp_tool_map: Dict[str, Dict[str, Any]] = {
@@ -340,12 +347,14 @@ class DeepResearchAgent:
 
     def _auto_checkpoint(self) -> None:
         """Save a named checkpoint for the current iteration state.
-        Called automatically every checkpoint_every_n_steps.
+
+        Saves after each Plan+Analyze phase with session_id, step, timestamp, query.
         """
-        if self.session and self.auto_checkpoint:
-            ck_id = f"iter-{self.session.iteration:03d}"
-            self.snapstate.create_checkpoint(self.session)
-            self._log(f"[checkpoint] saved {ck_id}")
+        if not self.session or not self.auto_checkpoint:
+            return
+        ck_name = f"iter{self.session.iteration:03d}"
+        ck_id = self.snapstate.create_checkpoint(self.session)
+        self._log(f"[checkpoint] {ck_name} ({ck_id}) saved")
 
 
 
@@ -716,6 +725,40 @@ class DeepResearchAgent:
 
         return planned
 
+
+
+    def _stream_plan_search(self, iteration: int) -> str:
+        """PLANNER with streaming extended thinking (DeepSeek V3 / MiniMax)."""
+        messages = [{"role": "user", "content": self.query}]
+        reasoning_lines: List[str] = []
+
+        def on_reasoning(block):
+            if block.content:
+                reasoning_lines.append(f"[{block.phase or 'reasoning'}] {block.content}")
+
+        content_chunks: List[str] = []
+        def on_chunk(text):
+            content_chunks.append(text)
+
+        try:
+            for _ in self._streaming_reasoner.stream_messages(
+                messages,
+                on_chunk=on_chunk,
+                on_reasoning=on_reasoning,
+            ):
+                pass
+        except Exception as e:
+            self._log(f"StreamingReasoner failed, falling back: {e}")
+            return self.query
+
+        if reasoning_lines:
+            self._record_thought(
+                "planner",
+                f"[streaming] reasoning: {''.join(reasoning_lines[-3:])}",
+                iteration,
+            )
+
+        return "".join(content_chunks) if content_chunks else self.query
 
 
     def _search_papers(self, search_query: str, iteration: int) -> List[Paper]:
@@ -1183,11 +1226,11 @@ class DeepResearchAgent:
 
 
 
-            # Step 1: Plan
-
-
-
-            search_query = self._plan_next_search(iteration)
+            # Step 1: Plan (streaming variant for extended-thinking models)
+            if self.use_streaming_reasoning and self._streaming_reasoner:
+                search_query = self._stream_plan_search(iteration)
+            else:
+                search_query = self._plan_next_search(iteration)
 
 
 

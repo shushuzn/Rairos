@@ -84,6 +84,18 @@ def _build_daemon_parser(subparsers) -> argparse.ArgumentParser:
     watch_status = sub.add_parser("watch-status", help="Event monitor status")
     watch_status.set_defaults(func=_run_daemon_watch_status)
 
+    # sse — stream daemon events via SSE to stdout
+    sse = sub.add_parser("sse", help="Stream daemon events via SSE to stdout")
+    sse.add_argument("--port", "-p", type=int, default=8765, help="SSE port (default 8765)")
+    sse.set_defaults(func=_run_daemon_sse)
+
+    # events — list recent events from EventBus
+    events = sub.add_parser("events", help="List recent events from the EventBus")
+    events.add_argument("--type", "-t", type=str, default=None,
+        help="Filter by event type (e.g. alert_found, cycle_complete)")
+    events.add_argument("--limit", "-n", type=int, default=20, help="Max events to show")
+    events.set_defaults(func=_run_daemon_events)
+
     return p
 
 
@@ -236,4 +248,69 @@ def _run_daemon_watch_status(args) -> None:
     print(f"    Last check:  {status.get('last_check', 'never')[:19]}")
     print(f"    Events:      {status['total_events']} total")
     print(f"    Gene Pool:   {status['gene_pool_size']} capsules")
+    print()
+
+
+def _run_daemon_sse(args) -> None:
+    """Stream daemon events to stdout via SSE."""
+    import asyncio
+    import threading
+    from research_loop.daemon import EventBus, SSEServer
+
+    port = getattr(args, "port", 8765)
+
+    # Start SSE server in a background thread
+    server = SSEServer(port=port)
+
+    def run_server():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(server._serve())
+
+    server_thread = threading.Thread(target=run_server, name="sse-server", daemon=True)
+    server_thread.start()
+
+    # Give server a moment to start
+    print_success(f"SSE server running on http://localhost:{port}/events")
+    print("  Streaming events to stdout (Ctrl-C to stop)...")
+
+    # Subscribe and print events to stdout
+    eb = EventBus()
+
+    def print_event(event) -> None:
+        import json as _json
+        d = event.to_dict()
+        d["_printed_at"] = time.strftime("%H:%M:%S")
+        print(f"[{d['_printed_at']}] {event.event_type}: {_json.dumps(d['data'], ensure_ascii=False)[:120]}")
+
+    eb.subscribe("*", print_event)
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        eb.unsubscribe("*", print_event)
+        print("\nSSE stream stopped.")
+
+
+def _run_daemon_events(args) -> None:
+    """List recent events from the EventBus."""
+    from research_loop.daemon import EventBus
+
+    eb = EventBus()
+    ftype = getattr(args, "type", None)
+    limit = getattr(args, "limit", 20)
+
+    events = eb.get_history(event_type=ftype, limit=limit)
+
+    if not events:
+        print("No events found." + (f" (type={ftype})" if ftype else ""))
+        return
+
+    print(f"\n  Recent Events ({len(events)}, type={ftype or 'all'}):\n")
+    for ev in events:
+        ts = time.strftime("%H:%M:%S", time.localtime(ev.timestamp))
+        import json as _json
+        data_str = _json.dumps(ev.data, ensure_ascii=False)[:80]
+        print(f"  {ts}  [{ev.event_type}]  {data_str}")
     print()

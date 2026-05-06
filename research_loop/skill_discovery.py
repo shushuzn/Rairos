@@ -24,6 +24,37 @@ from typing import Any, Dict, List, Optional
 SKILL_FILENAME = "SKILL.md"
 SKILL_MARKER = "---"
 
+# Cached mtime of skill dirs for hot-reload detection
+_skill_dir_mtimes: Dict[Path, float] = {}
+
+
+def reload_skills(
+    project_skills_dir: Optional[Path] = None,
+    user_skills_dir: Optional[Path] = None,
+) -> List[Skill]:
+    """Re-scan skill directories, returning fresh list of skills.
+
+    Compares directory mtimes against cached values to detect changes.
+    """
+    if project_skills_dir is None:
+        project_skills_dir = Path(__file__).parent.parent / ".claude" / "skills"
+    if user_skills_dir is None:
+        user_skills_dir = Path.home() / ".claude" / "skills"
+    else:
+        user_skills_dir = Path(user_skills_dir).expanduser()
+
+    dirs = [p for p in [project_skills_dir, user_skills_dir] if p.exists()]
+    changed = False
+    for d in dirs:
+        mtime = d.stat().st_mtime
+        if _skill_dir_mtimes.get(d) != mtime:
+            _skill_dir_mtimes[d] = mtime
+            changed = True
+
+    if changed:
+        return discover_skills(project_skills_dir, user_skills_dir)
+    return []
+
 
 @dataclass
 class Skill:
