@@ -155,15 +155,9 @@ class InsightManager:
             if item["card_id"] == card_id:
                 times_rated = item.get("times_rated", 0)
 
-                # Accumulate using exponential moving average
-                if times_rated > 0:
-                    item["usefulness_score"] = round(
-                        (item.get("usefulness_score", 0.0) * times_rated + rating)
-                        / (times_rated + 1),
-                        3,
-                    )
-                else:
-                    item["usefulness_score"] = float(rating)
+                # Accumulate using exponential moving average (alpha=0.3: 30% weight to new rating)
+                old = item.get("usefulness_score", 0.0)
+                item["usefulness_score"] = round(old + (rating - old) * 0.3, 3)
 
                 item["quality_rating"] = rating
                 item["times_rated"] = times_rated + 1
