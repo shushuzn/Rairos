@@ -4,7 +4,18 @@ This project uses the following open-source software:
 
 ---
 
-## paper2code
+## DeepSeek-TUI
+
+**Source:** https://github.com/Hmbown/DeepSeek-TUI
+**License:** MIT
+
+> Terminal coding agent for DeepSeek V4 models. Features streaming reasoning blocks, file editing with approval gates, and three modes (Plan/Agent/YOLO) inspired the mode system and streaming reasoning display in Rairos's `airos agent` command.
+
+Copyright (c) Hmbown and contributors. Not affiliated with DeepSeek Inc.
+
+---
+
+## EvoSkill
 
 **Source:** https://github.com/PrathamLearnsToCode/paper2code
 **License:** MIT
