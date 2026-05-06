@@ -36,6 +36,7 @@ def _build_insight_parser(subparsers) -> argparse.ArgumentParser:
             "top",
             "bottom",
             "evolve",
+            "eval-retrieval",
         ],
         help="Action to perform",
     )
@@ -332,6 +333,22 @@ def _run_insight(args: argparse.Namespace) -> int:
         result = evo.evolve(topic=topic, gap_type=gap_type)
         print(evo.render_summary(result))
         return 0
+
+    elif args.action == "eval-retrieval":
+        from llm.insight.tracker import get_evolution_tracker
+
+        tracker = get_evolution_tracker()
+        limit = getattr(args, "top_k", 50)
+        result = tracker.eval_retrieval(limit=limit)
+        if "error" in result:
+            print_error(f"eval-retrieval: {result['error']}")
+            return 1
+        print(f"=== Gene Pool Retrieval Eval (n={result['total']}) ===")
+        print(f"  recall@3 : {result['recall@3']}")
+        print(f"  recall@5 : {result['recall@5']}")
+        print(f"  MRR      : {result['mrr']}")
+        return 0
+
     print_error(f"Unknown action: {args.action}")
 
     return 1
