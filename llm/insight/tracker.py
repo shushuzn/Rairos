@@ -305,13 +305,21 @@ class EvolutionTracker(CapsuleStorageMixin):
     ) -> EvolutionEvent:
         """Record user rating an insight card. Bridges insight quality to evolution profile."""
 
-        return self.record_event(
+        event = self.record_event(
             topic=topic,
             action=ExplorationAction.INSIGHT_RATED,
             notes=f"insight:{insight_card_id} rating:{rating}",
             gap_description=paper_title,
             insight_card_id=insight_card_id,
         )
+
+        # Immediately recompute credibility so capsule scores reflect the new feedback
+        try:
+            self.recompute_credibility_all()
+        except Exception:
+            pass
+
+        return event
 
     # ─── Profile Learning ───────────────────────────────────────────────────────
 
