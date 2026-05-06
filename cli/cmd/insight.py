@@ -31,6 +31,7 @@ def _build_insight_parser(subparsers) -> argparse.ArgumentParser:
             "bottom",
             "quality-report",
             "recompute-credibility",
+            "archive-trendslop",
             "eval-retrieval",
         ],
         help="Action to perform",
@@ -260,6 +261,21 @@ def _run_insight(args: argparse.Namespace) -> int:
         tracker = get_evolution_tracker()
         result = tracker.recompute_credibility_all()
         print(f"Recomputed credibility: {result['updated']} updated, {result['errors']} errors (archived capsules skipped)")
+        return 0
+
+    elif args.action == "archive-trendslop":
+        from llm.insight.tracker import get_evolution_tracker
+        tracker = get_evolution_tracker()
+        capsules = tracker._load_capsules()
+        trendslop_capsules = [c for c in capsules if c.trendslop and c.status == "active"]
+        if not trendslop_capsules:
+            print("No active trendslop capsules to archive.")
+            return 0
+        archived = 0
+        for c in trendslop_capsules:
+            if tracker.archive_capsule(c.capsule_id):
+                archived += 1
+        print(f"Archived {archived} trendslop capsules out of {len(trendslop_capsules)} flagged.")
         return 0
 
     elif args.action == "eval-retrieval":
