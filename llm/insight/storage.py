@@ -641,8 +641,8 @@ class CapsuleStorageMixin:
             cat = c.source_arxiv_category or "none"
             arxiv_categories[cat] = arxiv_categories.get(cat, 0) + 1
 
-        # Low score streak analysis (at-risk capsules)
-        at_risk = [c for c in capsules if c.low_score_streak >= 2]
+        # Low score streak analysis (at-risk capsules, active only)
+        at_risk = [c for c in capsules if c.low_score_streak >= 2 and c.status == "active"]
 
         # Top gap types
         gap_type_counts: Dict[str, int] = {}
