@@ -31,9 +31,12 @@ def _make_paper(uid: str = "2301.12345", title: str = "Test Paper") -> Paper:
 
 
 @pytest.fixture
-def tmp_output_dir():
-    with tempfile.TemporaryDirectory() as d:
-        yield Path(d)
+def tmp_output_dir(tmp_path):
+    """Unique output directory per test to prevent skip_existing leakage."""
+    import uuid
+    d = tmp_path / uuid.uuid4().hex[:8]
+    d.mkdir(parents=True, exist_ok=True)
+    return d
 
 
 # =============================================================================
