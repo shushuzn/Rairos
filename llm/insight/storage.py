@@ -336,15 +336,25 @@ class CapsuleStorageMixin:
         return True
 
     def _load_capsules(self) -> List[CapsuleGene]:
-        """Load capsules from SQLite, merging in any new entries from JSONL.
+        """Load capsules from SQLite + JSONL, deduplicating by (action_gap_title, trigger_topic).
 
-        After JSONL→SQLite migration the two stores can diverge (new capsules
-        appended to JSONL but DB not updated). This merges both sources,
-        preferring the DB row for IDs present in both.
+        After JSONL→SQLite migration the two stores diverge. The same capsule may appear
+        in both stores with the same (title, topic) but different feedback counts.
+        We keep the entry with the highest feedback_count. Preserving entries with the
+        same title but different trigger_topic is intentional — it allows the retrieval
+        scorer to pick the best topic match at query time.
         """
         conn = self._ensure_db()
         rows = conn.execute("SELECT * FROM capsules").fetchall()
-        capsules_by_id: Dict[str, CapsuleGene] = {r["capsule_id"]: _capsule_from_row(r) for r in rows}
+        # Key by (title_lower, topic_lower) to keep entries with different topics separate
+        capsules_by_key: Dict[tuple, CapsuleGene] = {}
+
+        for row in rows:
+            capsule = _capsule_from_row(row)
+            key = (capsule.action_gap_title.lower(), capsule.trigger_topic.lower())
+            existing = capsules_by_key.get(key)
+            if existing is None or capsule.feedback_count > existing.feedback_count:
+                capsules_by_key[key] = capsule
 
         jsonl_path = self._gene_pool_file
         if jsonl_path.exists():
@@ -357,14 +367,16 @@ class CapsuleStorageMixin:
                         try:
                             data = json.loads(line)
                             capsule = CapsuleGene.from_dict(data)
-                            if capsule.capsule_id not in capsules_by_id:
-                                capsules_by_id[capsule.capsule_id] = capsule
+                            key = (capsule.action_gap_title.lower(), capsule.trigger_topic.lower())
+                            existing = capsules_by_key.get(key)
+                            if existing is None or capsule.feedback_count > existing.feedback_count:
+                                capsules_by_key[key] = capsule
                         except Exception:
                             continue
             except Exception:
                 pass
 
-        return list(capsules_by_id.values())
+        return list(capsules_by_key.values())
 
     def _save_capsules(self, capsules: List[CapsuleGene]) -> None:
         conn = self._ensure_db()
