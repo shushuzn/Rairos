@@ -218,7 +218,7 @@ class CodeIndexer:
         Returns:
             Total chunks indexed
         """
-        if not self._zilliz:
+        if not self.use_zilliz:
             raise RuntimeError("Zilliz not configured")
 
         self.initialize()
@@ -246,12 +246,6 @@ class CodeIndexer:
                         contents.append(chunk.content[:2000])
                         files.append(chunk.file)
                         lines.append(chunk.line)
-
-            if ids:
-                self._zilliz.upsert(ids, vectors, contents, files, lines)
-                total += len(ids)
-
-            print(f"Indexed {total}/{len(chunks)} chunks...")
 
             if ids:
                 self._zilliz.upsert(ids, vectors, contents, files, lines)
