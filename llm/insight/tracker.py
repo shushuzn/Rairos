@@ -323,7 +323,7 @@ class EvolutionTracker(CapsuleStorageMixin):
         # Uses upsert so this is idempotent — only updated scores change
         try:
             from llm.insight.tracker import sync_gene_pool_to_kg
-            sync_gene_pool_to_kg(kg_manager=None, min_credibility=0.5, min_success_score=0.6, limit=None)
+            sync_gene_pool_to_kg(kg_manager=None, tracker=self, min_credibility=0.5, min_success_score=0.6, limit=None)
         except Exception:
             pass
 
@@ -1783,6 +1783,7 @@ class EvolutionTracker(CapsuleStorageMixin):
 
 def sync_gene_pool_to_kg(
     kg_manager=None,
+    tracker=None,
     min_credibility: float = 0.5,
     min_success_score: float = 0.6,
     limit: Optional[int] = None,
@@ -1802,7 +1803,8 @@ def sync_gene_pool_to_kg(
         from kg.manager import KGManager
         kg_manager = KGManager()
 
-    tracker = get_evolution_tracker()
+    if tracker is None:
+        tracker = get_evolution_tracker()
     capsules = tracker._load_capsules()
 
     # Filter to high-quality active capsules
@@ -1900,13 +1902,14 @@ def sync_gene_pool_to_kg(
     }
 
 
-def sync_single_capsule_to_kg(capsule_id: str, kg_manager=None) -> bool:
+def sync_single_capsule_to_kg(capsule_id: str, kg_manager=None, tracker=None) -> bool:
     """Sync a single capsule's updated scores to KG. Returns True on success."""
     if kg_manager is None:
         from kg.manager import KGManager
         kg_manager = KGManager()
 
-    tracker = get_evolution_tracker()
+    if tracker is None:
+        tracker = get_evolution_tracker()
     capsules = tracker._load_capsules()
     cap = next((c for c in capsules if c.capsule_id == capsule_id), None)
     if not cap or cap.status == "archived":

@@ -86,6 +86,12 @@ def _init_db(db_path: Path) -> None:
 
 def _capsule_from_row(row: sqlite3.Row) -> CapsuleGene:
     """Convert a SQLite row to a CapsuleGene."""
+    archetype = json.loads(row["archetype"])
+    # Reconstruct title_embedding from BLOB if present in row
+    if "title_embedding" in row and row["title_embedding"]:
+        import numpy as np
+        vec = np.frombuffer(row["title_embedding"], dtype=np.float32)
+        archetype["title_embedding"] = vec.tolist()
     return CapsuleGene(
         capsule_id=row["capsule_id"],
         created_at=row["created_at"],
@@ -97,7 +103,7 @@ def _capsule_from_row(row: sqlite3.Row) -> CapsuleGene:
         outcome_success_score=row["outcome_success_score"],
         feedback_count=row["feedback_count"],
         evolved_generation=row["evolved_generation"],
-        archetype=json.loads(row["archetype"]),
+        archetype=archetype,
         status=row["status"],
         low_score_streak=row["low_score_streak"],
         credibility_score=row["credibility_score"],
@@ -188,14 +194,14 @@ def _insert_capsule(conn: sqlite3.Connection, c: CapsuleGene) -> None:
             outcome_success_score, feedback_count, evolved_generation,
             archetype, status, low_score_streak,
             credibility_score, trendslop, trendslop_reason,
-            credibility_badge, source_arxiv_category
+            credibility_badge, source_arxiv_category, title_embedding
         ) VALUES (
             :capsule_id, :created_at, :trigger_topic, :trigger_gap_type,
             :trigger_keywords, :action_gap_type, :action_gap_title,
             :outcome_success_score, :feedback_count, :evolved_generation,
             :archetype, :status, :low_score_streak,
             :credibility_score, :trendslop, :trendslop_reason,
-            :credibility_badge, :source_arxiv_category
+            :credibility_badge, :source_arxiv_category, :title_embedding
         )""",
         row,
     )
@@ -673,10 +679,15 @@ class CapsuleStorageMixin:
 
     def _save_capsules(self, capsules: List[CapsuleGene]) -> None:
         conn = self._ensure_db()
-        conn.execute("DELETE FROM capsules")
-        for c in capsules:
-            _insert_capsule(conn, c)
-        conn.commit()
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            conn.execute("DELETE FROM capsules")
+            for c in capsules:
+                _insert_capsule(conn, c)
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
 
     def get_gene_pool_stats(self) -> Dict[str, Any]:
         conn = self._ensure_db()
