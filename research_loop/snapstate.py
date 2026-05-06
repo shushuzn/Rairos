@@ -186,3 +186,69 @@ class Snapstate:
             max_iterations=max_iterations,
             archetype=archetype or {k: v[1] for k, v in profile.get("dimensions", {}).items()},
         )
+
+    # ─── Checkpoint & Rollback ────────────────────────────────────────────────
+
+    def create_checkpoint(self, session: ResearchSession) -> str:
+        """Save a named checkpoint of the current session state.
+
+        Returns a checkpoint_id that can be used with rollback_to().
+        Checkpoints are stored alongside the session file.
+        """
+        checkpoint_id = str(uuid.uuid4())[:8]
+        ck_dir = self.base_dir / f"{session.session_id}_checkpoints"
+        ck_dir.mkdir(parents=True, exist_ok=True)
+        ck_path = ck_dir / f"{checkpoint_id}.json"
+        data = session.to_dict()
+        ck_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        return checkpoint_id
+
+    def rollback_to(self, session_id: str, checkpoint_id: str) -> Optional[ResearchSession]:
+        """Restore session to a previous checkpoint.
+
+        Discards all state after the checkpoint and overwrites the current
+        session file with the checkpointed state.
+        Returns the restored ResearchSession, or None if not found.
+        """
+        ck_dir = self.base_dir / f"{session_id}_checkpoints"
+        ck_path = ck_dir / f"{checkpoint_id}.json"
+        if not ck_path.exists():
+            return None
+        try:
+            data = json.loads(ck_path.read_text(encoding="utf-8"))
+            restored = ResearchSession.from_dict(data)
+            # Overwrite current session with checkpointed state
+            self.save(restored)
+            return restored
+        except (json.JSONDecodeError, TypeError, KeyError):
+            return None
+
+    def list_checkpoints(self, session_id: str) -> List[Dict[str, Any]]:
+        """List all checkpoints for a session."""
+        ck_dir = self.base_dir / f"{session_id}_checkpoints"
+        if not ck_dir.exists():
+            return []
+        checkpoints = []
+        for ck_path in sorted(ck_dir.glob("*.json"), key=lambda p: -p.stat().st_mtime):
+            try:
+                data = json.loads(ck_path.read_text(encoding="utf-8"))
+                checkpoints.append(
+                    {
+                        "checkpoint_id": ck_path.stem,
+                        "created_at": ck_path.stat().st_mtime,
+                        "iteration": data.get("iteration", 0),
+                        "papers": len(data.get("papers", [])),
+                        "gaps": len(data.get("gaps", [])),
+                    }
+                )
+            except Exception:
+                checkpoints.append({"checkpoint_id": ck_path.stem, "corrupt": True})
+        return checkpoints
+
+    def delete_checkpoint(self, session_id: str, checkpoint_id: str) -> bool:
+        """Delete a specific checkpoint."""
+        ck_path = self.base_dir / f"{session_id}_checkpoints" / f"{checkpoint_id}.json"
+        if ck_path.exists():
+            ck_path.unlink()
+            return True
+        return False
