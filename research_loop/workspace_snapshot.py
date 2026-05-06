@@ -40,7 +40,7 @@ class WorkspaceSnapshot:
     Each step dir contains mirrored copy of all tracked files.
     """
 
-    base_dir: Path
+    base_dir: Optional[Path] = None
     max_snapshots_per_session: int = 10  # keep last N snapshots per session
 
     def __post_init__(self):

@@ -81,6 +81,9 @@ from research_loop.snapstate import (
 
 
 from research_loop.core import search_arxiv, extract_pdf_text, Paper
+from research_loop.workspace_snapshot import WorkspaceSnapshot
+
+
 
 
 
@@ -249,6 +252,10 @@ class DeepResearchAgent:
 
 
         self.snapstate = Snapstate(base_dir=snapstate_dir)
+
+
+
+        self.workspace_snapshot = WorkspaceSnapshot()
 
 
 
@@ -679,7 +686,7 @@ class DeepResearchAgent:
 
     def _search_papers(self, search_query: str, iteration: int) -> List[Paper]:
 
-        """SEARCHER: fetch papers from arXiv."""
+        """SEARCHER: fetch papers via MCP tool or local arXiv fallback."""
 
 
 
@@ -687,32 +694,73 @@ class DeepResearchAgent:
 
 
 
-        try:
-
-            papers = search_arxiv(search_query, max_results=self.max_papers_per_iteration)
+        papers: List[Paper] = []
 
 
 
-        except Exception as e:
+        # Try MCP paper_search tool first (GenePool-guided)
 
-            self._record_thought("searcher", f"Search failed: {e}", iteration)
+        if "paper_search" in self._mcp_tool_map:
+
+            try:
+
+                result = self._call_mcp_tool("paper_search", {
+                    "query": search_query,
+                    "max_results": self.max_papers_per_iteration,
+                })
+
+                if result and not result.get("error") and result.get("papers"):
+
+                    from research_loop.core import Paper
+
+                    for p in result["papers"][:self.max_papers_per_iteration]:
+
+                        papers.append(Paper(
+                            uid=p.get("arxiv_id", ""),
+                            title=p.get("title", ""),
+                            abstract=p.get("abstract", ""),
+                            authors=[a.get("name", "") for a in p.get("authors", [])],
+                            source="mcp",
+                            pdf_url=p.get("pdf_url", ""),
+                            published=p.get("published", ""),
+                        ))
+
+                    self._record_thought(
+                        "searcher",
+                        f"MCP paper_search found {len(papers)} papers: {[p.uid for p in papers]}",
+                        iteration,
+                    )
+
+            except Exception as e:
+
+                self._log(f"MCP paper_search failed, falling back: {e}")
 
 
 
-            return []
+        # Fallback to local arXiv search
+
+        if not papers:
+
+            try:
+
+                papers = search_arxiv(search_query, max_results=self.max_papers_per_iteration)
+
+            except Exception as e:
+
+                self._record_thought("searcher", f"Search failed: {e}", iteration)
+
+                return []
+
 
 
 
         self._record_thought(
-
             "searcher", f"Found {len(papers)} papers: {[p.uid for p in papers]}", iteration
-
         )
 
 
 
         return papers
-
 
 
     def _extract_papers(self, papers: List[Paper], iteration: int) -> List[PaperSnapshot]:
@@ -787,7 +835,7 @@ class DeepResearchAgent:
 
     def _analyze_gaps(self, snapshots: List[PaperSnapshot], iteration: int) -> List[GapSnapshot]:
 
-        """ANALYZER: detect research gaps using GapAnalyzerV2."""
+        """ANALYZER: detect research gaps via MCP tool or local GapAnalyzerV2."""
 
 
 
@@ -795,90 +843,112 @@ class DeepResearchAgent:
 
 
 
-        topic = self.query
+        gap_snapshots: List[GapSnapshot] = []
 
 
 
-        try:
+        # Try MCP gap_detect tool first
 
-            result = self.gap_analyzer.analyze(
+        if "gap_detect" in self._mcp_tool_map:
 
-                topic=topic,
+            try:
 
-                use_insights=True,
+                paper_contexts = [
+                    {"arxiv_id": s.arxiv_id, "title": s.title, "abstract": s.abstract}
+                    for s in snapshots
+                ]
+                result = self._call_mcp_tool("gap_detect", {
+                    "topic": self.query,
+                    "papers": paper_contexts,
+                })
+                if result and not result.get("error") and result.get("gaps"):
+                    archetype = self.session.archetype if self.session else {}
+                    for g in result["gaps"][:5]:
+                        # Build a Gap-like object for archetype matching
+                        gap_obj = type("Gap", (), {
+                            "gap_type": g.get("gap_type", "improvement"),
+                            "title": g.get("title", ""),
+                            "description": g.get("description", ""),
+                        })()
+                        match_score = self.tracker._archetype_match_score(
+                            gap_obj, archetype
+                        ) if archetype else 0.5
+                        gs = GapSnapshot(
+                            gap_type=g.get("gap_type", "improvement"),
+                            title=g.get("title", ""),
+                            description=g.get("description", ""),
+                            matched_papers=[s.arxiv_id for s in snapshots],
+                            archetype_match=match_score,
+                        )
+                        gap_snapshots.append(gs)
+                    self._record_thought(
+                        "analyzer",
+                        f"MCP gap_detect found {len(gap_snapshots)} gaps: {[g.gap_type for g in gap_snapshots]}",
+                        iteration,
+                    )
 
-                min_papers=3,
+            except Exception as e:
 
-                use_llm=False,  # Use rules-based for speed in agent loop
-
-            )
-
-
-
-        except Exception as e:
-
-            self._record_thought("analyzer", f"Gap analysis failed: {e}", iteration)
-
-
-
-            return []
-
-
-
-        archetype = {}
-
-
-
-        if self.session:
-
-            archetype = self.session.archetype
-
-
-
-        gap_snapshots = []
-
-
-
-        for gap in result.gaps[:5]:  # Top 5 gaps
-
-            match_score = self.tracker._archetype_match_score(gap, archetype) if archetype else 0.5
-
-
-
-            gs = GapSnapshot(
-
-                gap_type=gap.gap_type or "improvement",
-
-                title=gap.title,
-
-                description=gap.description or "",
-
-                matched_papers=[s.arxiv_id for s in snapshots],
-
-                archetype_match=match_score,
-
-            )
+                self._log(f"MCP gap_detect failed, falling back: {e}")
 
 
 
-            gap_snapshots.append(gs)
+        # Fallback to local GapAnalyzerV2
+
+        if not gap_snapshots:
+
+            try:
+
+                result = self.gap_analyzer.analyze(
+                    topic=self.query,
+                    use_insights=True,
+                    min_papers=3,
+                    use_llm=False,
+                )
+
+            except Exception as e:
+
+                self._record_thought("analyzer", f"Gap analysis failed: {e}", iteration)
+
+                return []
+
+
+
+
+            archetype = {}
+
+            if self.session:
+
+                archetype = self.session.archetype
+
+
+
+            for gap in result.gaps[:5]:
+
+                match_score = self.tracker._archetype_match_score(gap, archetype) if archetype else 0.5
+
+
+                gs = GapSnapshot(
+                    gap_type=gap.gap_type or "improvement",
+                    title=gap.title,
+                    description=gap.description or "",
+                    matched_papers=[s.arxiv_id for s in snapshots],
+                    archetype_match=match_score,
+                )
+
+                gap_snapshots.append(gs)
 
 
 
         self._record_thought(
-
             "analyzer",
-
             f"Found {len(gap_snapshots)} gaps: {[g.gap_type for g in gap_snapshots]}",
-
             iteration,
-
         )
 
 
 
         return gap_snapshots
-
 
 
     def _reflect(self, iteration: int) -> Tuple[bool, str]:
@@ -1061,6 +1131,22 @@ class DeepResearchAgent:
 
 
 
+            # Step 0: Skill check - load relevant skills before planning
+
+            matched_skills = self._find_skills(self.query)
+
+            if matched_skills:
+
+                skill_names = [s.name for s in matched_skills[:3]]
+
+                self._record_thought(
+                    "planner",
+                    f"Matched skills: {skill_names}",
+                    iteration,
+                )
+
+
+
             # Step 1: Plan
 
 
@@ -1124,6 +1210,31 @@ class DeepResearchAgent:
             if self.session:
 
                 self.session.papers.extend(snapshots)
+
+
+
+            # Workspace snapshot: capture generated code after extract phase
+
+            if self.workspace_snapshot and self.session:
+
+                code_paths = []
+
+                output_base = Path.cwd() / "output"
+
+                if output_base.exists():
+
+                    for ext in [".py", ".md", ".json", ".txt"]:
+
+                        code_paths.extend(output_base.glob(f"*{ext}"))
+
+                if code_paths:
+
+                    self.workspace_snapshot.capture(
+                        session_id=self.session.session_id,
+                        step=iteration,
+                        paths=code_paths,
+                        metadata={"phase": "extract", "papers_found": len(papers)},
+                    )
 
 
 
