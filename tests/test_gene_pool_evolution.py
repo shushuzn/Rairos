@@ -785,3 +785,118 @@ class TestConstants:
 
     def test_retire_count_threshold(self) -> None:
         assert InsightEvolution.RETIRE_COUNT_THRESHOLD == 3
+
+
+# ---------------------------------------------------------------------------
+# trigger_match scoring tests
+# ---------------------------------------------------------------------------
+
+class TestTriggerMatch:
+    """Tests for CapsuleGene.trigger_match() scoring logic."""
+
+    def _score(self, capsule, topic, gap_type, keywords=None):
+        return capsule.trigger_match(topic, gap_type, keywords or [])
+
+    def test_action_gap_title_in_query(self):
+        c = _make_capsule(action_gap_title="Better RLHF evaluation metrics")
+        score = self._score(c, "RLHF evaluation", "improvement")
+        # "Better RLHF evaluation metrics" NOT in "RLHF evaluation" → false
+        # "RLHF evaluation" IN "Better RLHF evaluation metrics" → true → 0.3
+        assert score == 0.3
+
+    def test_topic_in_trigger_topic(self):
+        # Use mismatching gap_type to isolate topic signal
+        c = _make_capsule(trigger_topic="RLHF alignment", trigger_gap_type="capability", action_gap_title="Some title", trigger_keywords=[])
+        score = self._score(c, "RLHF alignment research", "improvement")
+        # trigger_topic in topic: "RLHF alignment" in "RLHF alignment research" → 0.2
+        assert score == 0.2
+
+    def test_topic_in_action_title_bidirectional(self):
+        c = _make_capsule(action_gap_title="RLHF alignment and reward modeling")
+        score = self._score(c, "RLHF", "improvement")
+        # "RLHF alignment..." NOT in "RLHF" → false
+        # "RLHF" IN "RLHF alignment..." → true → 0.3
+        assert score == 0.3
+
+    def test_query_in_trigger_topic(self):
+        c = _make_capsule(trigger_topic="RLHF alignment techniques")
+        score = self._score(c, "RLHF", "improvement")
+        # "RLHF" IN "RLHF alignment techniques" → true → 0.3 (trigger_topic in topic)
+        assert score == 0.3
+
+    def test_gap_type_match(self):
+        c = _make_capsule(trigger_gap_type="improvement", action_gap_title="some title")
+        score = self._score(c, "unrelated topic", "improvement")
+        assert score == 0.3
+
+    def test_gap_type_no_match(self):
+        c = _make_capsule(trigger_gap_type="capability", action_gap_title="some title")
+        score = self._score(c, "unrelated topic", "improvement")
+        assert score == 0.0
+
+    def test_keyword_overlap(self):
+        c = _make_capsule(trigger_keywords=["RLHF", "alignment", "reward"])
+        score = self._score(c, "RL", "improvement", keywords=["RLHF", "alignment"])
+        assert 0.09 <= score <= 0.11
+
+    def test_all_signals_combined(self):
+        c = _make_capsule(
+            trigger_topic="RLHF", trigger_gap_type="improvement",
+            trigger_keywords=["alignment"], action_gap_title="RLHF alignment metrics",
+        )
+        score = self._score(c, "RLHF", "improvement", keywords=["alignment"])
+        assert 0.9 <= score <= 1.0
+
+    def test_score_capped_at_one(self):
+        c = _make_capsule(
+            trigger_topic="RLHF", trigger_gap_type="improvement",
+            trigger_keywords=["alignment"], action_gap_title="RLHF",
+        )
+        score = self._score(c, "RLHF", "improvement", keywords=["alignment"])
+        assert score == 1.0
+
+    def test_trigger_topic_list_form(self):
+        c = _make_capsule(trigger_topic="RLHF")
+        c.trigger_topic = ["RLHF", "alignment"]
+        score = self._score(c, "RLHF alignment", "improvement")
+        assert score >= 0.3
+
+
+# ---------------------------------------------------------------------------
+# eval_retrieval tests
+# ---------------------------------------------------------------------------
+
+class TestEvalRetrieval:
+    """Tests for CapsuleStorageMixin.eval_retrieval()."""
+
+    def test_eval_retrieval_filters_test_events(self):
+        from llm.insight.storage import CapsuleStorageMixin
+        import json, tempfile
+        class EvalOnly(CapsuleStorageMixin):
+            def __init__(self, tmp):
+                self.data_dir = tmp
+        with tempfile.TemporaryDirectory() as tmp:
+            t = EvalOnly(Path(tmp))
+            events_file = t.data_dir / "events.jsonl"
+            events_file.write_text(
+                json.dumps({"action":"accepted","topic":"test","gap_type":"x","gap_title":"test gap"}) + "\n" +
+                json.dumps({"action":"accepted","topic":"RLHF","gap_type":"y","gap_title":"Better RLHF metrics"}) + "\n",
+                encoding="utf-8")
+            r = t.eval_retrieval(limit=50)
+            t.close()  # close SQLite connection so tempfile can clean up on Windows
+            assert r["total"] == 1  # test event filtered
+
+    def test_eval_retrieval_deduplicates_events(self):
+        from llm.insight.storage import CapsuleStorageMixin
+        import json, tempfile
+        class EvalOnly(CapsuleStorageMixin):
+            def __init__(self, tmp):
+                self.data_dir = tmp
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+            t = EvalOnly(Path(tmp))
+            events_file = t.data_dir / "events.jsonl"
+            ev = {"action":"accepted","topic":"RLHF","gap_type":"y","gap_title":"Better RLHF metrics"}
+            events_file.write_text(json.dumps(ev) + "\n" + json.dumps(ev) + "\n", encoding="utf-8")
+            r = t.eval_retrieval(limit=50)
+            t.close()
+            assert r["total"] == 1  # deduplicated
