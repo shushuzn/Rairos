@@ -218,6 +218,8 @@ class DeepResearchAgent:
 
         on_thought: Optional[callable] = None,
 
+        mcp_tools: Optional[List[Dict[str, Any]]] = None,
+
     ):
 
 
@@ -272,7 +274,27 @@ class DeepResearchAgent:
 
         self._stop_requested = False
 
+        # MCP tool registry — dynamically discovered tools agent can call
+        self.mcp_tools = mcp_tools if mcp_tools is not None else self._discover_mcp_tools()
+        self._mcp_tool_map: Dict[str, Dict[str, Any]] = {
+            t["name"]: t for t in self.mcp_tools
+        }
 
+
+
+    @staticmethod
+    def _discover_mcp_tools() -> List[Dict[str, Any]]:
+        """Auto-discover Rairos MCP tools by importing the tool definitions.
+
+        Reads tools from mcp/tools_defs.py (name + inputSchema) and builds
+        a flat list suitable for agent tool registration. Falls back to
+        empty list if MCP module is unavailable.
+        """
+        try:
+            from mcp.tools_defs import get_tools
+            return get_tools()
+        except Exception:
+            return []
 
     def _log(self, msg: str):
 
@@ -398,6 +420,74 @@ class DeepResearchAgent:
         if self.on_thought:
             self.on_thought(role, content, iteration)
 
+
+
+    def _call_mcp_tool(self, name: str, arguments: Dict[str, Any]) -> Any:
+        """Dispatch an MCP tool call by name.
+
+        Tools are registered at init via mcp_tools list. This enables the agent
+        to call any Rairos MCP tool (KG queries, paper search, gap detection,
+        paper2code pipeline, etc.) during research loops.
+        """
+        tool_def = self._mcp_tool_map.get(name)
+        if not tool_def:
+            return {"error": f"Unknown tool: {name}", "available": list(self._mcp_tool_map.keys())}
+
+        try:
+            # Dynamically resolve tool: try rairos_mcp handler dispatch
+            # We use the same tool name → handler mapping as the MCP server
+            handler_map = {
+                "kg_query": "tool_kg_query",
+                "kg_paper_subgraph": "tool_kg_paper_subgraph",
+                "kg_tag_graph": "tool_kg_tag_graph",
+                "kg_full_graph": "tool_kg_full_graph",
+                "gap_detect": "tool_gap_detect",
+                "gap_evolve": "tool_gap_evolve",
+                "paper_search": "tool_paper_search",
+                "paper_analyze": "tool_paper_analyze",
+                "paper2code_run": "tool_paper2code_run",
+                "citation_graph": "tool_citation_graph",
+                "trends_detect_trending": "tool_trends_detect_trending",
+                "trends_predict_next": "tool_trends_predict_next",
+                "litreview_generate": "tool_litreview_generate",
+                "review_simulate": "tool_review_simulate",
+                "routeplan_create": "tool_routeplan_create",
+                "routeplan_list": "tool_routeplan_list",
+                "routeplan_update_step": "tool_routeplan_update_step",
+                "impact_rank": "tool_impact_rank",
+                "impact_score_paper": "tool_impact_score_paper",
+                "impact_leaderboard": "tool_impact_leaderboard",
+                "replication_check": "tool_replication_check",
+                "replication_compare": "tool_replication_compare",
+                "hypothesis_generate": "tool_hypothesis_generate",
+                "hypothesis_list": "tool_hypothesis_list",
+                "experiment_record": "tool_experiment_record",
+                "slides_generate": "tool_slides_generate",
+                "briefing_generate": "tool_briefing_generate",
+                "research_agent_start": "tool_research_agent_start",
+                "research_agent_stop": "tool_research_agent_stop",
+                "research_agent_status": "tool_research_agent_status",
+                "research_agent_trigger": "tool_research_agent_trigger",
+            }
+
+            handler_name = handler_map.get(name)
+            if not handler_name:
+                return {"error": f"No handler mapped for tool: {name}"}
+
+            # Import and call handler dynamically
+            from mcp import rairos_mcp as _mcp_module
+
+            handler = getattr(_mcp_module, handler_name, None)
+            if not handler:
+                return {"error": f"Handler {handler_name} not found in rairos_mcp"}
+
+            # Call with appropriate kwargs
+            result = handler(**arguments) if arguments else handler()
+            return result
+
+        except Exception as e:
+            self._log(f"MCP tool error {name}: {e}")
+            return {"error": str(e)}
 
 
     def _approve_step(self, iteration: int, step: str, detail: str) -> bool:
