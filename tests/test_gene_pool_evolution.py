@@ -171,7 +171,10 @@ class TestAddCandidate:
     ) -> None:
         _write_gene_pool(mock_tracker.data_dir, [])
         cand = _make_candidate()
-        assert evolver._add_candidate(cand) is True
+        capsules = evolver._load_capsules()
+        was_added, capsules = evolver._add_candidate(cand, capsules)
+        assert was_added is True
+        evolver._save_capsules(capsules)
         loaded = evolver._load_capsules()
         assert len(loaded) == 1
         assert loaded[0].capsule_id == "cand-001"
@@ -194,7 +197,10 @@ class TestAddCandidate:
             trigger_gap_type="method_limitation",
             trigger_keywords=["delta", "epsilon", "zeta"],
         )
-        assert evolver._add_candidate(cand) is True
+        capsules = evolver._load_capsules()
+        was_added, capsules = evolver._add_candidate(cand, capsules)
+        assert was_added is True
+        evolver._save_capsules(capsules)
         assert len(evolver._load_capsules()) == 2
 
     def test_rejects_exact_duplicate(
@@ -212,7 +218,9 @@ class TestAddCandidate:
             trigger_gap_type="method_limitation",
             action_gap_title="Scalability issues",
         )
-        assert evolver._add_candidate(cand) is False
+        capsules = evolver._load_capsules()
+        was_added, capsules = evolver._add_candidate(cand, capsules)
+        assert was_added is False
 
     def test_rejects_high_keyword_overlap(
         self, evolver: InsightEvolution, mock_tracker: MagicMock
@@ -230,7 +238,9 @@ class TestAddCandidate:
             trigger_keywords=["retrieval", "augmented", "generation", "new_kwd"],
             action_gap_title="Title A",
         )
-        assert evolver._add_candidate(cand) is False
+        capsules = evolver._load_capsules()
+        was_added, capsules = evolver._add_candidate(cand, capsules)
+        assert was_added is False
 
     def test_allows_moderate_keyword_overlap(
         self, evolver: InsightEvolution, mock_tracker: MagicMock
@@ -248,7 +258,9 @@ class TestAddCandidate:
             trigger_keywords=["augmented", "generation", "transformer"],
             action_gap_title="Different title",
         )
-        assert evolver._add_candidate(cand) is True
+        capsules = evolver._load_capsules()
+        was_added, capsules = evolver._add_candidate(cand, capsules)
+        assert was_added is True
 
     def test_allows_different_trigger_topic_with_same_keywords(
         self, evolver: InsightEvolution, mock_tracker: MagicMock
@@ -263,14 +275,18 @@ class TestAddCandidate:
             trigger_topic="CV",
             trigger_keywords=["retrieval", "augmented", "generation"],
         )
-        assert evolver._add_candidate(cand) is True
+        capsules = evolver._load_capsules()
+        was_added, capsules = evolver._add_candidate(cand, capsules)
+        assert was_added is True
 
     def test_candidate_becomes_active_capsule(
         self, evolver: InsightEvolution, mock_tracker: MagicMock
     ) -> None:
         _write_gene_pool(mock_tracker.data_dir, [])
         cand = _make_candidate(confidence=0.8)
-        evolver._add_candidate(cand)
+        capsules = evolver._load_capsules()
+        _, capsules = evolver._add_candidate(cand, capsules)
+        evolver._save_capsules(capsules)
         capsule = evolver._load_capsules()[0]
         assert capsule.status == "active"
         assert capsule.evolved_generation == 1
@@ -291,7 +307,9 @@ class TestAddCandidate:
             action_gap_title="Different title",
         )
         # Empty keywords on existing -> the overlap branch is not entered
-        assert evolver._add_candidate(cand) is True
+        capsules = evolver._load_capsules()
+        was_added, capsules = evolver._add_candidate(cand, capsules)
+        assert was_added is True
 
 
 # ===========================================================================
@@ -701,7 +719,9 @@ class TestMergeCapsules:
             outcome_success_score=0.5,
         )
         _write_gene_pool(mock_tracker.data_dir, [a, b])
-        merged = evolver._merge_capsules()
+        capsules = evolver._load_capsules()
+        merged, capsules = evolver._merge_capsules(capsules)
+        evolver._save_capsules(capsules)
         assert merged >= 1
         # After merge, one should be archived
         remaining = evolver._load_capsules()
@@ -732,7 +752,8 @@ class TestMergeCapsules:
             ],
         )
         _write_gene_pool(mock_tracker.data_dir, [a, b])
-        merged = evolver._merge_capsules()
+        capsules = evolver._load_capsules()
+        merged, capsules = evolver._merge_capsules(capsules)
         assert merged == 0
 
 
@@ -751,7 +772,9 @@ class TestAutoArchive:
             low_score_streak=2,  # one more push should archive
         )
         _write_gene_pool(mock_tracker.data_dir, [capsule])
-        archived = evolver._auto_archive_low_score()
+        capsules = evolver._load_capsules()
+        archived, capsules = evolver._auto_archive_low_score(capsules)
+        evolver._save_capsules(capsules)
         assert archived >= 1
         updated = evolver._load_capsules()
         assert updated[0].status == "archived"
@@ -765,7 +788,9 @@ class TestAutoArchive:
             low_score_streak=2,
         )
         _write_gene_pool(mock_tracker.data_dir, [capsule])
-        archived = evolver._auto_archive_low_score()
+        capsules = evolver._load_capsules()
+        archived, capsules = evolver._auto_archive_low_score(capsules)
+        evolver._save_capsules(capsules)
         assert archived == 0
         updated = evolver._load_capsules()
         assert updated[0].low_score_streak == 0
@@ -781,7 +806,8 @@ class TestAutoArchive:
             status="archived",
         )
         _write_gene_pool(mock_tracker.data_dir, [capsule])
-        archived = evolver._auto_archive_low_score()
+        capsules = evolver._load_capsules()
+        archived, capsules = evolver._auto_archive_low_score(capsules)
         assert archived == 0
 
 

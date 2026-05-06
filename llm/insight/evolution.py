@@ -554,6 +554,9 @@ Respond with JSON:
         """
         Apply evolution: retire low-quality capsules, add winning candidates.
 
+        All modifications happen in-memory, then a single _save_capsules
+        call persists the result atomically.
+
         Args:
             candidates: all proposed candidates
             evaluations: pairwise evaluation results
@@ -562,48 +565,57 @@ Respond with JSON:
         Returns:
             dict with apply summary
         """
-        added = 0
+        capsules = self._load_capsules()
         retired = 0
+        added = 0
 
         # Retire low-quality capsules
         for cid in audit.retire_ids:
-            if self._retire_capsule(cid):
+            found, capsules = self._retire_capsule(cid, capsules)
+            if found:
                 retired += 1
 
         # If gene pool is oversized, retire oldest low-quality first
-        if self._gene_pool_size() > self.MAX_GENE_POOL_SIZE:
-            excess = self._gene_pool_size() - self.MAX_GENE_POOL_SIZE
+        if len(capsules) > self.MAX_GENE_POOL_SIZE:
+            excess = len(capsules) - self.MAX_GENE_POOL_SIZE
             oldest_low = self._get_oldest_low_quality(excess)
             for cid in oldest_low:
-                if self._retire_capsule(cid):
+                found, capsules = self._retire_capsule(cid, capsules)
+                if found:
                     retired += 1
 
         # Merge overlapping capsules (same gap_type + >80% keyword overlap)
-        merged = self._merge_capsules()
-        retired += merged
+        n, capsules = self._merge_capsules(capsules)
+        retired += n
 
         # Auto-archive: update low_score_streak, archive if streak >= 3
-        auto_archived = self._auto_archive_low_score()
-        retired += auto_archived
+        n, capsules = self._auto_archive_low_score(capsules)
+        retired += n
 
         # Add winning candidates (winners from evaluations)
         if evaluations:
             winner_ids = set(e.winner_id for e in evaluations)
             winners = [c for c in candidates if c.candidate_id in winner_ids]
             for c in winners[:3]:  # max 3 per evolution cycle
-                if self._add_candidate(c):
+                was_added, capsules = self._add_candidate(c, capsules)
+                if was_added:
                     added += 1
+
+        # Single atomic save
+        self._save_capsules(capsules)
 
         return {
             "added": added,
             "retired": retired,
-            "total_capsules": self._gene_pool_size(),
+            "total_capsules": len(capsules),
             "avg_quality": audit.avg_quality,
         }
 
-    def _retire_capsule(self, capsule_id: str) -> bool:
-        """Mark a capsule as retired (append to retire log, remove from both stores)."""
-        capsules = self._load_capsules()
+    def _retire_capsule(self, capsule_id: str, capsules: List[CapsuleGene]) -> Tuple[bool, List[CapsuleGene]]:
+        """Mark a capsule as retired (append to retire log, remove from both stores).
+
+        Returns (was_found, capsules_with_capsule_removed).
+        """
         retired_gap_title = ""
         retired_gap_type = ""
         for c in capsules:
@@ -614,10 +626,7 @@ Respond with JSON:
         updated = [c for c in capsules if c.capsule_id != capsule_id]
 
         if len(updated) == len(capsules):
-            return False  # not found
-
-        # Rewrite gene pool (remove retired)
-        self._save_capsules(updated)
+            return False, capsules  # not found
 
         # Log retirement
         retire_file = self.tracker.data_dir / "retired.jsonl"
@@ -641,12 +650,13 @@ Respond with JSON:
             details="Retired during evolution cycle",
         )
 
-        return True
+        return True, updated
 
-    def _add_candidate(self, candidate: CapsuleCandidate) -> bool:
-        """Add a winning candidate as a new capsule to the gene pool."""
-        capsules = self._load_capsules()
+    def _add_candidate(self, candidate: CapsuleCandidate, capsules: List[CapsuleGene]) -> Tuple[bool, List[CapsuleGene]]:
+        """Add a winning candidate as a new capsule to the gene pool.
 
+        Returns (was_added, capsules_with_new_added).
+        """
         # Check for near-duplicate (relaxed: allow different action patterns)
         for c in capsules:
             if (
@@ -654,7 +664,7 @@ Respond with JSON:
                 and c.trigger_gap_type == candidate.trigger_gap_type
                 and c.action_gap_title == candidate.action_gap_title
             ):
-                return False  # exact duplicate, skip
+                return False, capsules  # exact duplicate, skip
             # Also reject if >80% keyword overlap (near-duplicate)
             if (
                 c.trigger_topic == candidate.trigger_topic
@@ -664,7 +674,7 @@ Respond with JSON:
                 overlap = len(set(c.trigger_keywords) & set(candidate.trigger_keywords))
                 total = max(len(set(c.trigger_keywords) | set(candidate.trigger_keywords)), 1)
                 if overlap / total > 0.8:
-                    return False  # near-duplicate by keywords
+                    return False, capsules  # near-duplicate by keywords
 
         new_capsule = CapsuleGene(
             capsule_id=candidate.candidate_id,
@@ -681,9 +691,8 @@ Respond with JSON:
             status="active",
         )
 
-        capsules.append(new_capsule)
-        self._save_capsules(capsules)
-        return True
+        capsules = list(capsules) + [new_capsule]
+        return True, capsules
 
     # ─── Full evolution cycle ───────────────────────────────────────────────
 
@@ -754,19 +763,18 @@ Respond with JSON:
 
     OVERLAP_THRESHOLD = 0.80  # merge if keyword Jaccard > 80%
 
-    def _merge_capsules(self) -> int:
+    def _merge_capsules(self, capsules: List[CapsuleGene]) -> Tuple[int, List[CapsuleGene]]:
         """Find capsule pairs with same gap_type + >80% keyword overlap; merge into higher-score, archive lower-score.
 
-        Returns the number of capsules archived.
+        Returns (archived_count, capsules_with_merge_applied).
         """
-        capsules = self._load_capsules()
         merged_count = 0
         to_archive: set[str] = set()
 
         for i, a in enumerate(capsules):
             if a.capsule_id in to_archive:
                 continue
-            for b in capsules[i + 1 :]:
+            for b in capsules[i + 1:]:
                 if b.capsule_id in to_archive:
                     continue
                 if a.trigger_gap_type != b.trigger_gap_type:
@@ -798,15 +806,12 @@ Respond with JSON:
                     merged_count += 1
 
         if not to_archive:
-            return 0
+            return 0, capsules
 
-        # Archive losers and save updated winners
-        _remaining = [c for c in capsules if c.capsule_id not in to_archive]
-        # Add back winners (with merged keywords) + any non-active capsules
-        all_capsules = self._load_capsules()
+        # Archive losers and build result (winners + non-archived capsules)
         winners_updated = {c.capsule_id: c for c in capsules if c.capsule_id not in to_archive}
-        result = []
-        for c in all_capsules:
+        result: List[CapsuleGene] = []
+        for c in capsules:
             if c.capsule_id in to_archive:
                 c.status = "archived"
                 result.append(c)
@@ -815,12 +820,9 @@ Respond with JSON:
             else:
                 result.append(c)
 
-        self._save_capsules(result)
-
-        # Emit lifecycle events for merged capsules
-        all_capsules = self._load_capsules()
+        # Emit lifecycle events for merged capsules (using in-memory winners)
         winner_ids = {c.capsule_id for c in capsules if c.capsule_id not in to_archive}
-        winners = {c.capsule_id: c for c in all_capsules if c.capsule_id in winner_ids}
+        winners = {c.capsule_id: c for c in capsules if c.capsule_id in winner_ids}
         for loser_id in to_archive:
             loser = next((c for c in capsules if c.capsule_id == loser_id), None)
             if loser:
@@ -843,12 +845,12 @@ Respond with JSON:
                     details=details,
                 )
 
-        return len(to_archive)
+        return merged_count, result
 
     LOW_SCORE_THRESHOLD = 0.30
     STREAK_THRESHOLD = 3  # archive after 3 consecutive low-score cycles
 
-    def _auto_archive_low_score(self) -> int:
+    def _auto_archive_low_score(self, capsules: List[CapsuleGene]) -> Tuple[int, List[CapsuleGene]]:
         """Update low_score_streak for all active capsules; archive those with streak >= 3.
 
         Each evolution cycle:
@@ -856,9 +858,8 @@ Respond with JSON:
         - If capsule score >= 0.3: reset streak to 0
         - If streak >= 3: mark archived
 
-        Returns the number of capsules auto-archived.
+        Returns (archived_count, capsules_with_updates_applied).
         """
-        capsules = self._load_capsules()
         to_archive: set[str] = set()
         updated = []
 
@@ -878,13 +879,7 @@ Respond with JSON:
 
             updated.append(c)
 
-        if not to_archive:
-            self._save_capsules(updated)
-            return 0
-
-        self._save_capsules(updated)
-
-        return len(to_archive)
+        return len(to_archive), updated
 
     # ─── Credibility Report ──────────────────────────────────────────────
 
