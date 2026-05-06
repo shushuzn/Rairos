@@ -92,6 +92,19 @@ class TestKGManagerEdgeOps:
         eid2 = kg.add_edge(nid1, nid2, "cite")
         assert eid1 == eid2
 
+    def test_add_edge_symmetric_cite_no_duplicates(self, kg):
+        """Symmetric=True should canonicalize (B,A) to (A,B) — no duplicate edges."""
+        nid_a = kg.add_node("Paper", "uid_a", "Paper A")
+        nid_b = kg.add_node("Paper", "uid_b", "Paper B")
+        # Insert in one order
+        eid1 = kg.add_edge(nid_a, nid_b, "cite", symmetric=True)
+        # Insert in reversed order — should return same edge_id (not duplicate)
+        eid2 = kg.add_edge(nid_b, nid_a, "cite", symmetric=True)
+        assert eid1 == eid2, "symmetric=True should deduplicate reversed edge ordering"
+        # Verify exactly one edge exists
+        all_edges = kg._conn().execute("SELECT * FROM kg_edges WHERE relation_type='cite'").fetchall()
+        assert len(all_edges) == 1, f"Expected 1 cite edge, got {len(all_edges)}"
+
     def test_get_edge(self, kg):
         nid1 = kg.add_node("Paper", "p1", "One")
         nid2 = kg.add_node("Paper", "p2", "Two")

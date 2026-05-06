@@ -208,16 +208,6 @@ class KGManager:
         conn.commit()
         return edge_id
 
-        edge_id = str(uuid.uuid4())
-        props = orjson.dumps(properties).decode("utf-8")
-        now = self._now()
-        conn.execute(
-            "INSERT INTO kg_edges (id, source_id, target_id, relation_type, weight, properties_json, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            (edge_id, source_id, target_id, relation_type, weight, props, now),
-        )
-        conn.commit()
-        return edge_id
-
     def get_edge(self, edge_id: str) -> Optional[dict]:
         conn = self._conn()
         row = conn.execute("SELECT * FROM kg_edges WHERE id=?", (edge_id,)).fetchone()
