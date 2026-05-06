@@ -472,10 +472,24 @@ class CapsuleStorageMixin:
         if not accepted:
             return {"error": "No accepted events found", "recall@3": 0.0, "recall@5": 0.0, "mrr": 0.0, "total": 0}
 
+        # Filter out test/synthetic events that have no meaningful topic or gap_title
+        def is_test_event(ev: Dict[str, str]) -> bool:
+            topic = ev.get("topic", "").lower()
+            title = ev.get("gap_title", "").lower()
+            if topic in ("test", "rl"):
+                return True
+            if "test" in topic.split():
+                return True
+            if title == "test gap" or "limitation test" in title:
+                return True
+            return False
+
         # Deduplicate by (topic, gap_title) — keep first occurrence
         seen: set = set()
         unique: List[Dict[str, str]] = []
         for ev in accepted:
+            if is_test_event(ev):
+                continue
             key = (ev["topic"], ev["gap_type"], ev["gap_title"])
             if key not in seen:
                 seen.add(key)
