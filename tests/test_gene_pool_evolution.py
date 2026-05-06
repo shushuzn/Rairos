@@ -970,9 +970,9 @@ class TestGenePoolQualityReport:
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             t = EvolutionTracker(data_dir=Path(tmp))
             t.encode_capsule(
-                topic="test topic",
+                topic="RLHF research",
                 gap_type="method_limitation",
-                gap_title="Test gap",
+                gap_title="RLHF evaluation metrics gap",
                 success_score=0.8,
             )
             r = t.get_gene_pool_quality_report()
@@ -1001,3 +1001,21 @@ class TestGenePoolQualityReport:
             r = t.get_gene_pool_quality_report()
             t.close()
             assert r["at_risk_capsules"] == 0  # archived excluded
+
+    def test_test_prefix_gap_title_is_rejected(self):
+        from llm.insight.tracker import EvolutionTracker
+        import tempfile
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+            t = EvolutionTracker(data_dir=Path(tmp))
+            capsule = t.encode_capsule(
+                topic="test",
+                gap_type="method_limitation",
+                gap_title="test implementation",
+                success_score=0.8,
+            )
+            t.close()
+            # Should return capsule but not persist it
+            assert capsule.capsule_id is not None
+            # Pool should be empty since test title was rejected
+            capsules = t._load_capsules()
+            assert len(capsules) == 0

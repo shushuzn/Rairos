@@ -292,6 +292,10 @@ class CapsuleStorageMixin:
             source_arxiv_category=source_arxiv_category,
         )
 
+        # Guard: skip test/synthetic capsule titles
+        if capsule.action_gap_title.lower().startswith("test "):
+            return capsule
+
         # Compute credibility for new capsule
         try:
             self._update_credibility(capsule)
