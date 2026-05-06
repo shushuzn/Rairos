@@ -284,27 +284,37 @@ class CapsuleStorageMixin:
         return capsule
 
     def _update_credibility(self, capsule: CapsuleGene) -> None:
-        """Set credibility fields on a capsule by comparing against pool."""
+        """Set credibility fields on a capsule using CredibilityScorer."""
         from llm.insight.credibility import CredibilityScorer
 
         all_capsules = self._load_capsules()
         scorer = CredibilityScorer()
-        is_trendslop, overlap, reason = scorer.is_trendslop(capsule, all_capsules)
-        capsule.trendslop = is_trendslop
-        capsule.trendslop_reason = reason
-
-        n = max(capsule.feedback_count, 1)
-        evidence = capsule.outcome_success_score * (1.0 - 1.0 / (n + 1))
-        novelty = max(0.0, 1.0 - overlap)
-        base = 0.4 * evidence + 0.4 * novelty + 0.2 * 0.5
-        capsule.credibility_score = min(1.0, max(0.0, base))
-
-        if capsule.credibility_score >= 0.70:
-            capsule.credibility_badge = "high"
-        elif capsule.credibility_score < 0.35:
-            capsule.credibility_badge = "low"
+        scores = scorer.compute_novelty_scores(all_capsules)
+        score = scores.get(capsule.capsule_id)
+        if score:
+            capsule.credibility_score = score.overall
+            capsule.trendslop = score.trendslop
+            capsule.trendslop_reason = score.trendslop_reason
+            capsule.credibility_badge = score.badge
         else:
-            capsule.credibility_badge = "medium"
+            # New capsule not yet in pool — quick is_trendslop check + evidence-only score
+            is_trendslop, overlap, reason = scorer.is_trendslop(capsule, all_capsules)
+            capsule.trendslop = is_trendslop
+            capsule.trendslop_reason = reason
+            import math
+            n = max(capsule.feedback_count, 1)
+            evidence = capsule.outcome_success_score * math.log(n + 1) / math.log(12)
+            novelty = max(0.0, 1.0 - overlap)
+            source = 0.5
+            consistency = 0.7
+            capsule.credibility_score = 0.35 * evidence + 0.30 * novelty + 0.20 * source + 0.15 * consistency
+            from llm.insight.credibility import CREDIBILITY_HIGH_THRESHOLD, CREDIBILITY_LOW_THRESHOLD
+            if capsule.credibility_score >= CREDIBILITY_HIGH_THRESHOLD:
+                capsule.credibility_badge = "high"
+            elif capsule.credibility_score < CREDIBILITY_LOW_THRESHOLD:
+                capsule.credibility_badge = "low"
+            else:
+                capsule.credibility_badge = "medium"
 
     def find_capsule(
         self,
@@ -630,6 +640,36 @@ class CapsuleStorageMixin:
                 for c in at_risk[:5]
             ],
         }
+
+    def recompute_credibility_all(self) -> Dict[str, int]:
+        """Recompute credibility for all capsules using CredibilityScorer.
+
+        One-time migration to unify the simplified _update_credibility formula with
+        the full 4-dimension CredibilityScorer.compute_novelty_scores formula.
+
+        Returns {"updated": N, "errors": M}.
+        """
+        from llm.insight.credibility import CredibilityScorer
+
+        all_capsules = self._load_capsules()
+        scorer = CredibilityScorer()
+        scores = scorer.compute_novelty_scores(all_capsules)
+
+        updated = 0
+        errors = 0
+        for capsule in all_capsules:
+            score = scores.get(capsule.capsule_id)
+            if score:
+                capsule.credibility_score = score.overall
+                capsule.trendslop = score.trendslop
+                capsule.trendslop_reason = score.trendslop_reason
+                capsule.credibility_badge = score.badge
+                self.update_capsule(capsule)
+                updated += 1
+            else:
+                errors += 1
+
+        return {"updated": updated, "errors": errors}
 
     def close(self) -> None:
         """Close the database connection."""

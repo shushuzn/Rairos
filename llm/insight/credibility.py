@@ -15,8 +15,8 @@ from llm.insight.gene import CapsuleGene
 # ─── Constants ──────────────────────────────────────────────────────────
 
 TRENDSLOP_KEYWORD_OVERLAP_THRESHOLD = 0.70
-CREDIBILITY_HIGH_THRESHOLD = 0.70
-CREDIBILITY_LOW_THRESHOLD = 0.35
+CREDIBILITY_HIGH_THRESHOLD = 0.60
+CREDIBILITY_LOW_THRESHOLD = 0.30
 
 EVIDENCE_WEIGHT = 0.35
 NOVELTY_WEIGHT = 0.30

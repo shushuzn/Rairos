@@ -37,6 +37,7 @@ def _build_insight_parser(subparsers) -> argparse.ArgumentParser:
             "bottom",
             "evolve",
             "quality-report",
+            "recompute-credibility",
             "eval-retrieval",
         ],
         help="Action to perform",
@@ -352,6 +353,14 @@ def _run_insight(args: argparse.Namespace) -> int:
         print(f"  Feedback use     : high={report['feedback_distribution']['high_use (≥3)']} zero={report['feedback_distribution']['low_use (0)']}")
         print(f"  At-risk (streak≥2): {report['at_risk_capsules']}")
         print(f"  Top gap types    : {report['top_gap_types']}")
+        return 0
+
+    elif args.action == "recompute-credibility":
+        from llm.insight.tracker import get_evolution_tracker
+
+        tracker = get_evolution_tracker()
+        result = tracker.recompute_credibility_all()
+        print(f"Recomputed credibility: {result['updated']} updated, {result['errors']} errors (archived capsules skipped)")
         return 0
 
     elif args.action == "eval-retrieval":
