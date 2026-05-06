@@ -73,6 +73,12 @@ def _build_insight_parser(subparsers) -> argparse.ArgumentParser:
 
     p.add_argument("--top-k", type=int, default=10, help="Number of top/bottom cards to show")
 
+    p.add_argument("--json", action="store_true", help="Output as JSON (for machine parsing)")
+
+    p.add_argument("--watch", action="store_true", help="Watch mode: continuously output report")
+
+    p.add_argument("--interval", type=int, default=30, help="Watch interval in seconds (default: 30)")
+
     return p  # type: ignore[no-any-return]
 
 
@@ -338,22 +344,53 @@ def _run_insight(args: argparse.Namespace) -> int:
         return 0
 
     elif args.action == "quality-report":
+        import json as _json
+
         from llm.insight.tracker import get_evolution_tracker
 
         tracker = get_evolution_tracker()
-        report = tracker.get_gene_pool_quality_report()
-        if "error" in report:
-            print_error(f"quality-report: {report['error']}")
-            return 1
-        print("=== Gene Pool Quality Report ===")
-        print(f"  Total capsules    : {report['total']}")
-        print(f"  Avg score        : {report['avg_score']}")
-        print(f"  Score dist       : high={report['score_distribution']['high (≥0.7)']} mid={report['score_distribution']['mid (0.4-0.7)']} low={report['score_distribution']['low (<0.4)']}")
-        print(f"  Credibility dist : {report['credibility_distribution']}")
-        print(f"  Trendslop        : {report['trendslop']['count']} ({report['trendslop']['pct']}) — {report['trendslop']['top_reasons']}")
-        print(f"  Feedback use     : high={report['feedback_distribution']['high_use (≥3)']} zero={report['feedback_distribution']['low_use (0)']}")
-        print(f"  At-risk (streak≥2): {report['at_risk_capsules']}")
-        print(f"  Top gap types    : {report['top_gap_types']}")
+
+        def _render_report(report):
+            if args.json:
+                print(_json.dumps(report, indent=2))
+            else:
+                print("=== Gene Pool Quality Report ===")
+                print(f"  Total capsules    : {report['total']}")
+                print(f"  Avg score        : {report['avg_score']}")
+                print(f"  Score dist       : high={report['score_distribution']['high (≥0.7)']} mid={report['score_distribution']['mid (0.4-0.7)']} low={report['score_distribution']['low (<0.4)']}")
+                print(f"  Credibility dist : {report['credibility_distribution']}")
+                print(f"  Trendslop        : {report['trendslop']['count']} ({report['trendslop']['pct']}) — {report['trendslop']['top_reasons']}")
+                print(f"  Feedback use     : high={report['feedback_distribution']['high_use (≥3)']} zero={report['feedback_distribution']['low_use (0)']}")
+                print(f"  At-risk (streak≥2): {report['at_risk_capsules']}")
+                print(f"  Top gap types    : {report['top_gap_types']}")
+
+        if args.watch:
+            import time
+
+            print(f"Watching GenePool health (Ctrl+C to stop)...", flush=True)
+            while True:
+                report = tracker.get_gene_pool_quality_report()
+                if "error" in report:
+                    print_error(f"quality-report: {report['error']}")
+                    return 1
+                ts = time.strftime("%Y-%m-%d %H:%M:%S")
+                if args.json:
+                    print(_json.dumps({"timestamp": ts, **report}))
+                else:
+                    print(f"\n[{ts}] === Gene Pool Quality Report ===")
+                    print(f"  Total capsules    : {report['total']}")
+                    print(f"  Avg score        : {report['avg_score']}")
+                    print(f"  Score dist       : high={report['score_distribution']['high (≥0.7)']} mid={report['score_distribution']['mid (0.4-0.7)']} low={report['score_distribution']['low (<0.4)']}")
+                    print(f"  Credibility dist : {report['credibility_distribution']}")
+                    print(f"  Trendslop        : {report['trendslop']['count']} ({report['trendslop']['pct']})")
+                    print(f"  At-risk (streak≥2): {report['at_risk_capsules']}")
+                time.sleep(args.interval)
+        else:
+            report = tracker.get_gene_pool_quality_report()
+            if "error" in report:
+                print_error(f"quality-report: {report['error']}")
+                return 1
+            _render_report(report)
         return 0
 
     elif args.action == "recompute-credibility":
