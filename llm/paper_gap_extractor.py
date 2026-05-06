@@ -1173,6 +1173,7 @@ def save_gap_to_gene_pool(
                 success_score=0.5,
                 status="active",
                 capsule_archetype=archetype,
+                capsule_id=capsule_id,
             )
             if result is None:
                 return None

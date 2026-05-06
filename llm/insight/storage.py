@@ -270,6 +270,7 @@ class CapsuleStorageMixin:
         source_paper_id: str = "",
         source_arxiv_category: str = "",
         capsule_archetype: Optional[Dict[str, Any]] = None,
+        capsule_id: Optional[str] = None,
     ) -> CapsuleGene:
         archetype = capsule_archetype if capsule_archetype else self.get_archetype()
         if source_paper_id:
@@ -278,7 +279,7 @@ class CapsuleStorageMixin:
             archetype["source_arxiv_category"] = source_arxiv_category
         normalized_gap_type = _normalize_gap_type(gap_type)
         capsule = CapsuleGene(
-            capsule_id=uuid.uuid4().hex[:12],
+            capsule_id=capsule_id if capsule_id else uuid.uuid4().hex[:12],
             created_at=self._get_timestamp(),
             trigger_topic=topic,
             trigger_gap_type=normalized_gap_type,
