@@ -900,3 +900,104 @@ class TestEvalRetrieval:
             r = t.eval_retrieval(limit=50)
             t.close()
             assert r["total"] == 1  # deduplicated
+
+
+# ---------------------------------------------------------------------------
+# _normalize_gap_type tests
+# ---------------------------------------------------------------------------
+
+class TestNormalizeGapType:
+    """Tests for _normalize_gap_type()."""
+
+    def test_known_types_pass_through(self):
+        from llm.insight.storage import _normalize_gap_type
+        for valid in ["method_limitation", "unexplored_application", "contradiction",
+                       "evaluation_gap", "scalability_issue", "theoretical_gap",
+                       "dataset_gap", "generalization_gap"]:
+            assert _normalize_gap_type(valid) == valid
+
+    def test_capability_maps_to_method_limitation(self):
+        from llm.insight.storage import _normalize_gap_type
+        assert _normalize_gap_type("capability") == "method_limitation"
+
+    def test_application_gap_maps_to_unexplored_application(self):
+        from llm.insight.storage import _normalize_gap_type
+        assert _normalize_gap_type("application_gap") == "unexplored_application"
+
+    def test_other_maps_to_method_limitation(self):
+        from llm.insight.storage import _normalize_gap_type
+        assert _normalize_gap_type("other") == "method_limitation"
+
+    def test_empty_string_maps_to_method_limitation(self):
+        from llm.insight.storage import _normalize_gap_type
+        assert _normalize_gap_type("") == "method_limitation"
+
+    def test_unknown_string_maps_to_method_limitation(self):
+        from llm.insight.storage import _normalize_gap_type
+        assert _normalize_gap_type("garbage_type") == "method_limitation"
+
+    def test_preserves_known_gap_types(self):
+        from llm.insight.storage import _normalize_gap_type
+        known = ["method_gap", "exploration_gap", "implementation", "theory_gap"]
+        for gt in known:
+            result = _normalize_gap_type(gt)
+            assert result != "method_limitation"  # should map to something specific
+
+
+# ---------------------------------------------------------------------------
+# get_gene_pool_quality_report tests
+# ---------------------------------------------------------------------------
+
+class TestGenePoolQualityReport:
+    """Tests for get_gene_pool_quality_report()."""
+
+    def test_report_with_empty_pool(self):
+        from llm.insight.storage import CapsuleStorageMixin
+        import tempfile
+        class ReportOnly(CapsuleStorageMixin):
+            def __init__(self, tmp):
+                self.data_dir = tmp
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+            t = ReportOnly(Path(tmp))
+            r = t.get_gene_pool_quality_report()
+            t.close()
+            assert "error" in r
+            assert r["total"] == 0
+
+    def test_report_includes_expected_keys(self):
+        from llm.insight.tracker import EvolutionTracker
+        import tempfile
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+            t = EvolutionTracker(data_dir=Path(tmp))
+            t.encode_capsule(
+                topic="test topic",
+                gap_type="method_limitation",
+                gap_title="Test gap",
+                success_score=0.8,
+            )
+            r = t.get_gene_pool_quality_report()
+            t.close()
+            assert "total" in r
+            assert "score_distribution" in r
+            assert "credibility_distribution" in r
+            assert "trendslop" in r
+            assert "at_risk_capsules" in r
+            assert r.get("error") is None
+
+    def test_at_risk_excludes_archived(self):
+        from llm.insight.tracker import EvolutionTracker
+        import tempfile
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+            t = EvolutionTracker(data_dir=Path(tmp))
+            capsule = t.encode_capsule(
+                topic="test",
+                gap_type="method_limitation",
+                gap_title="At-risk capsule",
+                success_score=0.2,
+            )
+            capsule.low_score_streak = 3
+            capsule.status = "archived"
+            t.update_capsule(capsule)
+            r = t.get_gene_pool_quality_report()
+            t.close()
+            assert r["at_risk_capsules"] == 0  # archived excluded
