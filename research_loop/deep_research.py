@@ -33,6 +33,7 @@ from __future__ import annotations
 
 
 import asyncio
+import signal
 
 
 
@@ -222,7 +223,9 @@ class DeepResearchAgent:
         on_thought: Optional[callable] = None,
 
         mcp_tools: Optional[List[Dict[str, Any]]] = None,
-
+        auto_checkpoint: bool = True,
+        checkpoint_every_n_steps: int = 1,
+        checkpoint_interval_seconds: int = 60,
     ):
 
 
@@ -281,6 +284,13 @@ class DeepResearchAgent:
 
         self._stop_requested = False
 
+        # Auto-checkpoint configuration
+        self.auto_checkpoint = auto_checkpoint
+        self.checkpoint_every_n_steps = checkpoint_every_n_steps
+        self.checkpoint_interval_seconds = checkpoint_interval_seconds
+        self._checkpoint_counter = 0
+        self._last_checkpoint_time = time.time()
+
         # MCP tool registry — dynamically discovered tools agent can call
         self.mcp_tools = mcp_tools if mcp_tools is not None else self._discover_mcp_tools()
         self._mcp_tool_map: Dict[str, Dict[str, Any]] = {
@@ -325,6 +335,30 @@ class DeepResearchAgent:
         if self.verbose:
 
             print(f"[DeepResearchAgent] {msg}")
+
+
+
+    def _auto_checkpoint(self) -> None:
+        """Save a named checkpoint for the current iteration state.
+        Called automatically every checkpoint_every_n_steps.
+        """
+        if self.session and self.auto_checkpoint:
+            ck_id = f"iter-{self.session.iteration:03d}"
+            self.snapstate.create_checkpoint(self.session)
+            self._log(f"[checkpoint] saved {ck_id}")
+
+
+
+    def _setup_signal_handlers(self):
+        """Register signal handlers for graceful shutdown with checkpointing."""
+        def handler(sig, frame):
+            self._log("Received shutdown signal, checkpointing...")
+            if self.session:
+                self.snapstate.save(self.session)
+                self._auto_checkpoint()
+            self._stop_requested = True
+        signal.signal(signal.SIGINT, handler)
+        signal.signal(signal.SIGTERM, handler)
 
 
 
@@ -1108,6 +1142,8 @@ class DeepResearchAgent:
         assert self.session is not None
 
 
+        self._setup_signal_handlers()
+
 
         start_time = time.time()
 
@@ -1163,7 +1199,14 @@ class DeepResearchAgent:
                     self.snapstate.save(self.session)
                     break
 
-
+            # Checkpoint after Plan step (every N steps)
+            self._checkpoint_counter += 1
+            if self._checkpoint_counter % self.checkpoint_every_n_steps == 0:
+                self._auto_checkpoint()
+            # Periodic time-based checkpoint
+            if time.time() - self._last_checkpoint_time >= self.checkpoint_interval_seconds:
+                self._auto_checkpoint()
+                self._last_checkpoint_time = time.time()
 
             # Step 2: Search
 
@@ -1250,7 +1293,14 @@ class DeepResearchAgent:
 
                 self.session.gaps.extend(gap_snapshots)
 
-
+            # Checkpoint after Analyze gaps step (every N steps)
+            self._checkpoint_counter += 1
+            if self._checkpoint_counter % self.checkpoint_every_n_steps == 0:
+                self._auto_checkpoint()
+            # Periodic time-based checkpoint
+            if time.time() - self._last_checkpoint_time >= self.checkpoint_interval_seconds:
+                self._auto_checkpoint()
+                self._last_checkpoint_time = time.time()
 
             # Step 5: Reflect
 

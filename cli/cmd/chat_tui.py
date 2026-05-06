@@ -31,7 +31,7 @@ import re
 import sys
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Set, cast
+from typing import Any, Callable, Dict, List, Optional, Set, cast
 
 # Load .env from current working directory (unified via cli._shared)
 from cli._shared import load_dotenv
@@ -41,6 +41,7 @@ load_dotenv()
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, VerticalScroll
+from textual.screen import Screen
 from textual.widgets import Button, Header, Label, Static, Input
 from textual.css.query import NoMatches
 
@@ -304,6 +305,131 @@ class Typewriter:
         return self.index / len(self.text)
 
 
+# ─── KG Visualizer (utility class, not a Textual widget) ─────────────────────
+
+
+class KGVisualizer:
+    """Render a KG neighborhood as an ASCII directed graph.
+
+    Input: list of (node_id, node_type, label, connections) tuples and
+           list of (source_id, target_id, relation_type) edges.
+    Output: multi-line ASCII art string.
+    """
+
+    MAX_LABEL = 12
+
+    @classmethod
+    def _trunc(cls, label: str) -> str:
+        if len(label) > cls.MAX_LABEL:
+            return label[: cls.MAX_LABEL - 1] + "…"
+        return label
+
+    @classmethod
+    def _node_str(cls, node_type: str, label: str) -> str:
+        short_type = (node_type[:4] + ":") if node_type else "Node:"
+        return f"[{short_type}{cls._trunc(label)}]"
+
+    @classmethod
+    def render(
+        cls,
+        nodes: list[tuple],
+        edges: list[tuple],
+        root_id: str = "",
+        max_width: int = 40,
+        max_depth: int = 2,
+    ) -> str:
+        """Render KG as ASCII art using BFS layering."""
+        if not nodes:
+            return "  (no KG data)"
+
+        # node_id -> (node_type, label)
+        node_info: Dict[str, tuple[str, str]] = {n[0]: (n[1], n[2]) for n in nodes}
+
+        # Build adjacency: node_id -> list of (neighbor_id, relation)
+        adj: Dict[str, list[tuple[str, str]]] = {n[0]: [] for n in nodes}
+        for src, tgt, rel in edges:
+            if src in adj and tgt in node_info:
+                adj[src].append((tgt, rel))
+            if tgt in adj and src in node_info:
+                adj[tgt].append((src, rel))
+
+        # BFS from root to collect reachable nodes within max_depth
+        if not root_id:
+            root_id = nodes[0][0]
+
+        visited: Dict[str, int] = {}
+        queue = [(root_id, 0)]
+        while queue:
+            nid, d = queue.pop(0)
+            if nid in visited or d > max_depth:
+                continue
+            visited[nid] = d
+            for neighbor, _ in adj.get(nid, []):
+                if neighbor not in visited:
+                    queue.append((neighbor, d + 1))
+
+        if not visited:
+            return "  (no reachable KG data)"
+
+        # Group by depth level
+        levels: Dict[int, list[tuple[str, str]]] = {}
+        for nid, depth in visited.items():
+            if nid in node_info:
+                ntype, label = node_info[nid]
+                levels.setdefault(depth, []).append((nid, cls._node_str(ntype, label)))
+
+        lines: list[str] = []
+
+        for depth in sorted(levels.keys()):
+            level_nodes = levels[depth]
+            if depth == 0:
+                lines.append("  " + "  ".join(lbl for _, lbl in level_nodes))
+            else:
+                n = len(level_nodes)
+                # Build connector row
+                if n == 1:
+                    connector = "  │ " + "─" * (len(level_nodes[0][1]) + 2)
+                else:
+                    seg = "─┬─"
+                    connector = "  │ " + ("─" * len(level_nodes[0][1]) + seg) * (n - 1) + "─" * len(level_nodes[0][1])
+                lines.append(connector)
+                # Node row
+                row = "  │ " + "  │ ".join(lbl for _, lbl in level_nodes)
+                lines.append(row)
+
+        return "\n".join(lines) if lines else "  (no KG data)"
+
+
+# ─── SidebarKGView ───────────────────────────────────────────────────────────────
+
+
+class SidebarKGView(Static):
+    """A toggleable KG ASCII view shown in the sidebar below the paper cards."""
+
+    MAX_LINES = 20
+
+    def __init__(self, on_close=None, **kwargs):
+        self.on_close = on_close
+        super().__init__(**kwargs)
+
+    def show_kg(self, ascii_graph: str, truncated: int = 0) -> None:
+        """Display the ASCII KG graph in this widget."""
+        content = ascii_graph
+        if truncated > 0:
+            content += f"\n  … {truncated} more lines"
+        self.update(colored(content, "#8be9fd"))
+        self.remove_class("hidden")
+
+    def hide_kg(self) -> None:
+        """Hide the KG view."""
+        self.add_class("hidden")
+
+    def show_empty(self, message: str) -> None:
+        """Show an empty or unavailable state."""
+        self.update(colored(f"  {message}", Colors.WARNING))
+        self.remove_class("hidden")
+
+
 # ─── Widgets ──────────────────────────────────────────────────────────────────
 
 
@@ -381,11 +507,13 @@ class ChatBubble(Static):
 class PaperCard(Static, can_focus=True):
     """An enhanced paper card with click-to-expand and rich metadata."""
 
-    def __init__(self, citation, index: int, expanded: bool = False, on_select=None, **kwargs):
+    def __init__(self, citation, index: int, expanded: bool = False, on_select=None, on_compare_select=None, on_kg_toggle=None, **kwargs):
         self.citation = citation
         self.index = index
         self.expanded = expanded
         self.on_select = on_select
+        self.on_compare_select = on_compare_select
+        self.on_kg_toggle = on_kg_toggle
         super().__init__(**kwargs)
 
     def render(self) -> str:
@@ -455,11 +583,26 @@ class PaperCard(Static, can_focus=True):
         # Click hint
         lines.append("")
         lines.append("  ▸ 点击收起")
+        if self.on_kg_toggle:
+            lines.append("  [KG] 查看知识图谱")
 
         return "\n".join(lines)
 
     def on_click(self) -> None:
-        """Toggle expanded state."""
+        """Toggle expanded state, or signal compare-select on Shift/Ctrl+click."""
+        # Check for Shift or Ctrl modifier for compare selection
+        from textual.events import Click
+        # Shift or Ctrl click triggers compare selection instead of toggle
+        try:
+            # Try to get modifiers from event if available
+            ev = self.app._last_event
+            if isinstance(ev, Click) and (ev.modifiers.shift or ev.modifiers.ctrl):
+                if self.on_compare_select:
+                    self.on_compare_select(self.citation, self.index)
+                    return
+        except Exception:
+            pass
+        # Normal click: toggle expanded state
         self.expanded = not self.expanded
         self.refresh()
         if self.on_select:
@@ -483,24 +626,218 @@ class SessionCard(Static):
         return f"  {self.index}. [{sid}] {title}{active}\n      📅 {updated}"
 
 
-class SidebarPaperList(VerticalScroll):
-    """Scrollable paper list in the sidebar with clickable expansion."""
+class CompareScreen(Screen):
+    """Full-screen modal overlay for side-by-side paper comparison."""
 
-    def __init__(self, citations: List, **kwargs):
+    CSS = """
+    CompareScreen {
+        align: center middle;
+        background: #0d0d14;
+    }
+
+    #compare-container {
+        width: 100%;
+        height: 100%;
+        layout: horizontal;
+    }
+
+    .paper-pane {
+        width: 50%;
+        height: 100%;
+        padding: 2 3;
+        background: #13131f;
+    }
+
+    #paper-a-pane {
+        border-right: solid #3a3a55;
+    }
+
+    #paper-b-pane {
+        border-left: solid #3a3a55;
+    }
+
+    .paper-header {
+        color: #bd93f9;
+        text-style: bold;
+        margin-bottom: 1;
+    }
+
+    .paper-title {
+        color: #f8f8f2;
+        text-style: bold;
+        font-size: 120%;
+        margin-bottom: 1;
+    }
+
+    .paper-meta {
+        color: #6272a4;
+        margin-bottom: 1;
+    }
+
+    .section-header {
+        color: #ff79c6;
+        text-style: bold;
+        margin-top: 1;
+        margin-bottom: 0;
+    }
+
+    .paper-abstract {
+        color: #c0c0d0;
+        margin-top: 0;
+        margin-bottom: 1;
+    }
+
+    .paper-contrib {
+        color: #8be9fd;
+        margin-top: 0;
+        margin-bottom: 1;
+    }
+
+    .paper-tags {
+        color: #50fa7b;
+        margin-top: 0;
+    }
+
+    #divider {
+        width: 1;
+        height: 100%;
+        background: #6272a4;
+    }
+
+    #compare-header {
+        width: 100%;
+        color: #f1fa8c;
+        text-style: bold;
+        padding: 1 4;
+        background: #1e1e2e;
+        dock: top;
+    }
+
+    #compare-footer {
+        width: 100%;
+        color: #6272a4;
+        padding: 0 4;
+        dock: bottom;
+        background: #1a1a28;
+    }
+    """
+
+    BINDINGS = [
+        Binding("q", "app.pop_screen", "Close", show=True),
+        Binding("escape", "app.pop_screen", "Close", show=True),
+        Binding("t", "swap_papers", "Swap", show=True),
+    ]
+
+    def __init__(self, paper_a: dict, paper_b: dict, **kwargs):
+        super().__init__(**kwargs)
+        self._paper_a = paper_a
+        self._paper_b = paper_b
+
+    def compose(self) -> ComposeResult:
+        yield Static("Paper A                                │  Paper B", id="compare-header")
+        with Horizontal(id="compare-container"):
+            yield Static(self._render_paper(self._paper_a), classes="paper-pane", id="paper-a-pane")
+            yield Static("", classes="divider", id="divider")
+            yield Static(self._render_paper(self._paper_b), classes="paper-pane", id="paper-b-pane")
+        yield Static(
+            "Esc / q: Close    t: Swap left/right",
+            id="compare-footer",
+        )
+
+    def _render_paper(self, paper: dict) -> str:
+        """Render a paper dict as a formatted string."""
+        title = paper.get("title", "Unknown Title")
+        authors = paper.get("authors", [])
+        year = paper.get("published", "")[:4] or "N/A"
+        venue = paper.get("journal") or paper.get("primary_category", "") or "N/A"
+        abstract = paper.get("abstract", "")
+        categories = paper.get("categories", [])
+        tags = paper.get("tags", [])
+        citation_count = paper.get("citation_count", 0)
+
+        # Abstract: first 300 chars with ellipsis
+        abstract_short = abstract[:300] + ("…" if len(abstract) > 300 else "")
+
+        # Key contributions: use field if present, else first 3 sentences of abstract
+        key_contribs = paper.get("key_contributions", [])
+        if key_contribs:
+            contrib_lines = key_contribs[:3]
+        else:
+            # Extract first 3 sentences from abstract as fallback
+            sentences = re.split(r"[.!?]+", abstract)
+            contrib_lines = [s.strip() for s in sentences if s.strip()][:3]
+
+        author_str = ", ".join(authors[:4]) + (" +" if len(authors) > 4 else "")
+        categories_str = ", ".join(categories[:5])
+        tags_str = "  ".join(f"[{t[:8]}]" for t in tags[:5]) if tags else categories_str
+
+        lines = []
+
+        # Title
+        lines.append(colored(title, Colors.HEADER + Colors.BOLD))
+        lines.append("")
+
+        # Meta: authors, year, venue, citations
+        if citation_count:
+            lines.append(colored(f"Authors: {author_str}", Colors.OKBLUE))
+            lines.append(colored(f"Year: {year}    Venue: {venue}    Citations: {citation_count:,}+", Colors.OKBLUE))
+        else:
+            lines.append(colored(f"Authors: {author_str}", Colors.OKBLUE))
+            lines.append(colored(f"Year: {year}    Venue: {venue}", Colors.OKBLUE))
+        lines.append("")
+
+        # Abstract section
+        lines.append(colored("Abstract:", Colors.HEADER + Colors.BOLD))
+        import textwrap
+        for chunk in textwrap.wrap(abstract_short, width=55):
+            lines.append("  " + chunk)
+        lines.append("")
+
+        # Key Contributions
+        lines.append(colored("Key Contributions:", Colors.HEADER + Colors.BOLD))
+        for contrib in contrib_lines:
+            contrib_clean = contrib.strip()[:80]
+            lines.append(f"  • {contrib_clean}")
+        lines.append("")
+
+        # Tags
+        if tags_str:
+            lines.append(colored("Tags:", Colors.HEADER + Colors.BOLD))
+            lines.append(f"  {tags_str}")
+
+        return "\n".join(lines)
+
+    def action_swap_papers(self) -> None:
+        """Swap the left and right papers."""
+        self._paper_a, self._paper_b = self._paper_b, self._paper_a
+        self.query_one("#paper-a-pane").update(self._render_paper(self._paper_a))
+        self.query_one("#paper-b-pane").update(self._render_paper(self._paper_b))
+        self.query_one("#compare-header").update(
+            "Paper A                                │  Paper B"
+        )
+
+
+class SidebarPaperList(VerticalScroll):
+
+    def __init__(self, citations: List, compare_select_callback: Callable[[Any, int], None] | None = None, on_kg_toggle: Callable[[Any], None] | None = None, **kwargs):
         self._citations = citations
         self._expanded_idx = None
+        self._compare_select_callback = compare_select_callback
+        self._on_kg_toggle = on_kg_toggle
         super().__init__(**kwargs)
 
     def compose(self) -> ComposeResult:
         yield Static(colored("📚 相关论文", Colors.HEADER + Colors.BOLD), classes="sidebar-title")
         for i, c in enumerate(self._citations[:5]):
-            yield PaperCard(c, i, classes="paper-card", id=f"paper-{i}")
+            yield PaperCard(c, i, classes="paper-card", id=f"paper-{i}", on_compare_select=self._compare_select_callback, on_kg_toggle=self._on_kg_toggle)
         if len(self._citations) > 5:
             yield Static(
                 colored(f"  [+{len(self._citations) - 5} more papers]", Colors.WARNING),
                 classes="more-papers",
             )
         yield Label("")  # spacer
+        # KG view widget mounted in sidebar (toggled on KG button click)
+        yield SidebarKGView(id="kg-view", classes="kg-view hidden")
 
 
 # ─── Suggestion Chips ─────────────────────────────────────────────────────────
@@ -523,6 +860,67 @@ class SuggestionChips(Horizontal):
             )
             btn.on_click = lambda e, text=s: self.on_select(text)  # type: ignore[attr-defined]
             yield btn
+
+
+class ReasoningBuffer(Static):
+    """A collapsible reasoning steps display widget.
+
+    Shows each reasoning phase as a progress bar:
+    [Reasoning: decomposition ████████░░░ 67%]
+    [Reasoning: search        ██████░░░░░ 50%]
+    [Reasoning: synthesis     ░░░░░░░░░░  0%]
+
+    Each phase shows a progress bar based on `done` flag.
+    Collapsed by default, expanded via click.
+    Color: `Colors.WARNING` (orange/yellow).
+    Uses `▓` (filled) and `░` (empty) for the bar.
+    """
+
+    BAR_LEN = 10
+
+    def __init__(self, **kwargs):
+        self._phases: Dict[str, tuple[str, bool]] = {}  # phase -> (content, done)
+        self._expanded = False
+        super().__init__(**kwargs)
+
+    def update_phase(self, phase: str, content: str, done: bool) -> None:
+        """Update or add a reasoning phase."""
+        self._phases[phase] = (content, done)
+        self._render()
+
+    def clear(self) -> None:
+        """Clear all phases."""
+        self._phases = {}
+        self._render()
+
+    def _render(self) -> None:
+        """Render the reasoning buffer."""
+        if not self._phases:
+            self.update("")
+            return
+
+        lines = []
+        for phase, (content, done) in self._phases.items():
+            bar = "▓" * self.BAR_LEN if done else "░" * self.BAR_LEN
+            label = phase or "reasoning"
+            lines.append(
+                colored(f"🤖 [Reasoning: {label:<14} {bar} {'done' if done else '...'} ]", Colors.WARNING)
+            )
+
+        text = "\n".join(lines)
+        if not self._expanded:
+            text = colored("▸ [Reasoning: ", Colors.WARNING) + colored(f"{len(self._phases)} phase(s) hidden, click to expand]", Colors.OKBLUE)
+        self.update(text)
+
+    def on_click(self) -> None:
+        """Toggle expanded state."""
+        self._expanded = not self._expanded
+        self._render()
+
+    def on_click(self) -> None:
+        """Toggle expanded state."""
+        self._expanded = not self._expanded
+        self._render()
 
 
 # ─── Main TUI App ────────────────────────────────────────────────────────────
@@ -591,6 +989,16 @@ class TUIChatApp(App):
     .more-papers {
         color: #7070aa;
         padding: 1 2;
+    }
+
+    .kg-view {
+        color: #8be9fd;
+        padding: 1 2;
+        background: #1a1a30;
+    }
+
+    .kg-view.hidden {
+        display: none;
     }
 
     /* ── Message area ── */
@@ -796,11 +1204,16 @@ class TUIChatApp(App):
         self._suggestions: List[str] = []
         self._selected_msg_idx: int = -1  # For keyboard navigation
         self._msg_index: Dict[str, Set[int]] = {}  # Token → message indices
+        self._reasoning_buffer: Optional["ReasoningBuffer"] = None  # Streaming reasoning display
 
         # Vim mode state
         self._vim_mode: str = "normal"  # normal | search | command | insert
         self._pending_g: bool = False  # For g/G two-key combos
         self._g_timeout_task: asyncio.Task | None = None  # Pending g/G timeout
+
+        # Compare mode state
+        self._compare_mode: bool = False  # True when selecting papers to compare
+        self._compare_selected: List[Any] = []  # List of selected papers for comparison
 
     # ── App lifecycle ──────────────────────────────────────────────────────
 
@@ -822,7 +1235,8 @@ class TUIChatApp(App):
                 yield Static(
                     colored("📚 相关论文", Colors.HEADER + Colors.BOLD), id="sidebar-title"
                 )
-                yield SidebarPaperList([], id="paper-list")
+                yield SidebarPaperList([], id="paper-list", compare_select_callback=self._on_paper_compare_select, on_kg_toggle=self._on_paper_kg_toggle)
+                yield Button("⚖️ 对比", id="btn-compare", variant="primary", classes="action-btn")
         with Container(id="input-area"):
             yield Input(
                 placeholder="输入问题后按 Enter 发送...",
@@ -1133,6 +1547,8 @@ class TUIChatApp(App):
             self.action_new_session()
         elif btn_id == "btn-export":
             self.action_export_session()
+        elif btn_id == "btn-compare":
+            self._start_compare_mode()
 
     def _handle_submit(self, question: str) -> None:
         """Process a user question."""
@@ -1254,32 +1670,106 @@ class TUIChatApp(App):
         """Stream response with paper context."""
         from llm.client import stream_llm_chat_completions
         from llm.chat import _RAG_SYSTEM_PROMPT
+        from llm.reasoning import StreamingReasoner, ReasoningBlock
 
         self._update_status("🤖 生成回答中...", "typing")
 
         # Build prompt
         prompt = self.chat._build_prompt(question, contexts)
+
+        # Prepare messages for streaming
+        messages: List[dict] = []
+        if _RAG_SYSTEM_PROMPT:
+            messages.append({"role": "system", "content": _RAG_SYSTEM_PROMPT})
+        messages.append({"role": "user", "content": prompt})
+
+        # Create and mount reasoning buffer above AI message
+        self._mount_reasoning_buffer()
+
         answer = ""
 
-        for delta in stream_llm_chat_completions(
-            [],
-            model=self.chat.model,
-            user_prompt=prompt,
-            base_url=self.chat.base_url,
-            api_key=self.chat.api_key,
-            system_prompt=_RAG_SYSTEM_PROMPT,
-        ):
-            answer += delta
-            # Batch updates for smooth rendering
+        def on_chunk(content_delta: str) -> None:
+            nonlocal answer
+            answer += content_delta
             if len(answer) % self._stream_config.batch_size < 2:
                 ai_msg.content = answer
                 self._update_streaming_content(answer)
+
+        def on_reasoning(block: ReasoningBlock) -> None:
+            self._update_reasoning_buffer(block)
+
+        # Try streaming with reasoning first, fall back to plain streaming
+        try:
+            reasoner = StreamingReasoner(
+                model=self.chat.model,
+                extended_thinking=True,
+            )
+            # Suppress the generator result - callbacks do the work
+            for _ in reasoner.stream_messages(
+                messages,
+                on_chunk=on_chunk,
+                on_reasoning=on_reasoning,
+                base_url=self.chat.base_url,
+                api_key=self.chat.api_key,
+            ):
+                pass
+        except Exception:
+            # Fall back to plain streaming
+            self._remove_reasoning_buffer()
+            for delta in stream_llm_chat_completions(
+                [],
+                model=self.chat.model,
+                user_prompt=prompt,
+                base_url=self.chat.base_url,
+                api_key=self.chat.api_key,
+                system_prompt=_RAG_SYSTEM_PROMPT,
+            ):
+                answer += delta
+                if len(answer) % self._stream_config.batch_size < 2:
+                    ai_msg.content = answer
+                    self._update_streaming_content(answer)
 
         ai_msg.content = answer
         ai_msg.citations = self.chat._extract_citations(contexts)
         # Rebuild index for assistant message (streaming content was not indexed)
         msg_idx = self.messages.index(ai_msg)
         _index_message(tokenize(ai_msg.content), msg_idx, self._msg_index)
+        self._remove_reasoning_buffer()
+
+    def _mount_reasoning_buffer(self) -> None:
+        """Mount the reasoning buffer widget above the AI message bubble."""
+        try:
+            container = self.query_one("#messages")
+            # Remove old reasoning buffer if any
+            self._remove_reasoning_buffer()
+            # Create new buffer
+            self._reasoning_buffer = ReasoningBuffer(id="reasoning-buffer")
+            # Insert before the last message (AI bubble) if messages exist
+            if self.messages and self.messages[-1].role == "assistant":
+                # Find the ChatBubble for the last message and insert before it
+                bubbles = list(container.query("ChatBubble"))
+                if bubbles:
+                    bubbles[-1].mount(self._reasoning_buffer, before=bubbles[-1])
+                    return
+            # Fallback: just append
+            container.mount(self._reasoning_buffer)
+        except NoMatches:
+            pass
+
+    def _update_reasoning_buffer(self, block: "ReasoningBlock") -> None:
+        """Update the reasoning buffer with a new block."""
+        if self._reasoning_buffer is None:
+            return
+        self._reasoning_buffer.update_phase(block.phase, block.content, block.done)
+
+    def _remove_reasoning_buffer(self) -> None:
+        """Remove the reasoning buffer widget."""
+        if self._reasoning_buffer is not None:
+            try:
+                self._reasoning_buffer.remove()
+            except Exception:
+                pass
+            self._reasoning_buffer = None
 
     def _update_streaming_content(self, content: str) -> None:
         """Update streaming content with animation."""
@@ -1399,7 +1889,7 @@ class TUIChatApp(App):
             for child in sidebar.query("*"):
                 child.remove()
             for c in citations[:5]:
-                sidebar.mount(PaperCard(c, 0, classes="paper-card"))
+                sidebar.mount(PaperCard(c, 0, classes="paper-card", on_compare_select=self._on_paper_compare_select))
             if len(citations) > 5:
                 sidebar.mount(
                     Static(
@@ -1409,6 +1899,109 @@ class TUIChatApp(App):
                 )
         except NoMatches:
             pass
+
+    # ── Compare Mode ────────────────────────────────────────────────────────────
+
+    def _start_compare_mode(self) -> None:
+        """Enter compare mode: clear selection and prompt user to select papers."""
+        self._compare_selected.clear()
+        self._compare_mode = True
+        self._update_status("⚖️ 对比模式: 点击两篇论文进行对比 (Shift/Ctrl+点击)", "done")
+        self._update_nav_hint("⚖️ 对比模式: 点击两篇论文进行对比")
+
+    def _on_paper_compare_select(self, citation, index: int) -> None:
+        """Handle paper selection for comparison."""
+        if not self._compare_mode:
+            # If not in compare mode, enter compare mode on first click
+            self._compare_selected.clear()
+            self._compare_mode = True
+
+        self._compare_selected.append(citation)
+
+        if len(self._compare_selected) == 1:
+            self._update_status(f"⚖️ 已选择第1篇: {getattr(citation, 'paper_title', 'Unknown')[:40]}...  再点击第二篇", "done")
+        elif len(self._compare_selected) >= 2:
+            # Two papers selected - show compare screen
+            self._compare_mode = False
+            self._show_compare_screen(self._compare_selected[0], self._compare_selected[1])
+            self._compare_selected.clear()
+            self._update_status("✅ 对比完成", "done")
+            self._update_nav_hint()
+
+    def _on_paper_kg_toggle(self, citation) -> None:
+        """Handle [KG] button click on an expanded paper card."""
+        paper_id = getattr(citation, "paper_id", "")
+        if not paper_id:
+            self._update_status("⚠️ 该论文没有 paper_id", "error")
+            return
+
+        # Try to get KG data via KGManager
+        try:
+            from kg import KGManager
+        except Exception:
+            try:
+                from kg.manager import KGManager
+            except Exception:
+                kg_view = self.query_one("#kg-view", SidebarKGView)
+                kg_view.show_empty("KG not available (kg package not found)")
+                return
+
+        try:
+            kg = KGManager()
+            paper_node = kg.get_node_by_entity("Paper", paper_id)
+            if paper_node is None:
+                kg_view = self.query_one("#kg-view", SidebarKGView)
+                kg_view.show_empty(f"KG not available for this paper")
+                return
+
+            neighbors = kg.find_neighbors(paper_node["id"], depth=2)
+
+            # Build node list: (node_id, type, label, connections)
+            nodes = [(paper_node["id"], paper_node["type"], paper_node["label"], len(neighbors))]
+            edges = []
+            for neighbor_node, edge, depth in neighbors:
+                nodes.append((neighbor_node["id"], neighbor_node["type"], neighbor_node["label"], 0))
+                edges.append((paper_node["id"], neighbor_node["id"], edge["relation_type"]))
+
+            ascii_graph = KGVisualizer.render(nodes, edges, root_id=paper_node["id"])
+            kg_view = self.query_one("#kg-view", SidebarKGView)
+
+            graph_lines = ascii_graph.split("\n")
+            truncated = 0
+            if len(graph_lines) > SidebarKGView.MAX_LINES:
+                truncated = len(graph_lines) - SidebarKGView.MAX_LINES
+                ascii_graph = "\n".join(graph_lines[: SidebarKGView.MAX_LINES])
+
+            kg_view.show_kg(ascii_graph, truncated=truncated)
+            self._update_status(f"📊 KG图谱 · {len(nodes)} 节点 · {len(edges)} 边", "done")
+        except Exception as e:
+            try:
+                kg_view = self.query_one("#kg-view", SidebarKGView)
+                kg_view.show_empty(f"KG unavailable: {e}")
+            except Exception:
+                pass
+            self._update_status(f"⚠️ KG加载失败: {e}", "error")
+
+    def _show_compare_screen(self, paper_a, paper_b) -> None:
+        """Show the compare screen with two papers."""
+        # Convert Citation objects to dicts for CompareScreen
+        def paper_to_dict(citation) -> dict:
+            return {
+                "title": getattr(citation, "paper_title", "Unknown"),
+                "authors": getattr(citation, "authors", []),
+                "published": getattr(citation, "published", ""),
+                "abstract": getattr(citation, "abstract", ""),
+                "categories": getattr(citation, "categories", []),
+                "tags": getattr(citation, "tags", []),
+                "citation_count": getattr(citation, "citation_count", 0),
+                "key_contributions": getattr(citation, "key_contributions", []),
+                "journal": getattr(citation, "journal", ""),
+                "primary_category": getattr(citation, "primary_category", ""),
+            }
+
+        paper_dict_a = paper_to_dict(paper_a)
+        paper_dict_b = paper_to_dict(paper_b)
+        self.push_screen(CompareScreen(paper_dict_a, paper_dict_b))
 
     def _update_status(self, text: str, cls: str = "") -> None:
         """Update status bar with style class."""
