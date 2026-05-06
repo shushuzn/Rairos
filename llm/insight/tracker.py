@@ -1802,9 +1802,6 @@ def sync_gene_pool_to_kg(
         from kg.manager import KGManager
         kg_manager = KGManager()
 
-    from kg.integration import KGIntegration
-    integ = KGIntegration(kg_manager)
-
     tracker = get_evolution_tracker()
     capsules = tracker._load_capsules()
 
@@ -1866,6 +1863,8 @@ def sync_gene_pool_to_kg(
                         "evolved_from",
                         weight=cap.credibility_score,
                     )
+            else:
+                skipped_no_source += 1
 
             # Edge: capsule → tag node (addresses_gap)
             if gap_type:
