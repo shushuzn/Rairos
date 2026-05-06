@@ -40,6 +40,7 @@ def _build_insight_parser(subparsers) -> argparse.ArgumentParser:
             "recompute-credibility",
             "archive-trendslop",
             "eval-retrieval",
+            "alert",
         ],
         help="Action to perform",
     )
@@ -433,6 +434,29 @@ def _run_insight(args: argparse.Namespace) -> int:
         print(f"  recall@3 : {result['recall@3']}")
         print(f"  recall@5 : {result['recall@5']}")
         print(f"  MRR      : {result['mrr']}")
+        return 0
+
+    elif args.action == "alert":
+        import json as _json
+
+        from llm.insight.tracker import get_evolution_tracker
+
+        tracker = get_evolution_tracker()
+        report = tracker.get_gene_pool_quality_report()
+        if "error" in report:
+            print_error(f"alert: {report['error']}")
+            return 1
+        alerts = report.get("alerts", [])
+        if args.json:
+            print(_json.dumps({"total": report["total"], "alert_count": len(alerts), "alerts": alerts}))
+            return 0
+        if not alerts:
+            print(f"No alerts (GenePool healthy: {report['total']} capsules)")
+            return 0
+        level_icons = {"critical": "🔴", "warning": "🟡", "info": "🔵"}
+        for alert in alerts:
+            icon = level_icons.get(alert["level"], "⚪")
+            print(f"{icon} [{alert['level'].upper()}] {alert['code']}: {alert['message']}")
         return 0
 
     print_error(f"Unknown action: {args.action}")

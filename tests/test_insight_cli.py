@@ -398,3 +398,27 @@ class TestInsightCliEvalRetrieval:
         assert rc in (0, 1)
         out = capsys.readouterr().out
         assert "recall" in out or "error" in out or "n=" in out
+
+
+class TestInsightCliAlert:
+    """Test 'alert' action."""
+
+    def test_alert_returns_zero_when_healthy(self, mock_insight_manager, capsys):
+        from cli.cmd.evo.insight import _run_insight
+
+        ns = _ns(action="alert", json=False)
+        rc = _run_insight(ns)
+        assert rc == 0
+        out = capsys.readouterr().out
+        assert "healthy" in out
+
+    def test_alert_json_mode(self, mock_insight_manager, capsys):
+        from cli.cmd.evo.insight import _run_insight
+
+        ns = _ns(action="alert", json=True)
+        rc = _run_insight(ns)
+        assert rc == 0
+        out = capsys.readouterr().out
+        data = json.loads(out)
+        assert "alert_count" in data
+        assert "total" in data

@@ -655,6 +655,65 @@ class CapsuleStorageMixin:
             gap_type_counts[c.action_gap_type] = gap_type_counts.get(c.action_gap_type, 0) + 1
         top_gap_types = sorted(gap_type_counts.items(), key=lambda x: x[1], reverse=True)[:5]
 
+        # Compute alerts
+        alerts = []
+        trendslop_pct = len(trendslop_capsules) / total
+        low_score_pct = low_score / total
+        zero_feedback_pct = low_use / total
+        low_cred_pct = credibility_buckets.get("low", 0) / total
+        archived_pct = status_counts.get("archived", 0) / total
+        evolved_count = generation_counts.get(1, 0)
+
+        if trendslop_pct > 0.15:
+            alerts.append({
+                "level": "warning",
+                "code": "TRENDSLOP_HIGH",
+                "message": f"Trendslop {trendslop_pct:.1%} of pool (>{.15:.1%})",
+                "detail": {"count": len(trendslop_capsules), "pct": round(trendslop_pct, 3)},
+            })
+        if low_score_pct > 0.10:
+            alerts.append({
+                "level": "warning",
+                "code": "LOW_QUALITY_HIGH",
+                "message": f"Low-score capsules {low_score_pct:.1%} of pool (>{.10:.1%})",
+                "detail": {"count": low_score, "pct": round(low_score_pct, 3)},
+            })
+        if zero_feedback_pct > 0.30:
+            alerts.append({
+                "level": "info",
+                "code": "ZERO_FEEDBACK_HIGH",
+                "message": f"{zero_feedback_pct:.1%} capsules have zero feedback",
+                "detail": {"count": low_use, "pct": round(zero_feedback_pct, 3)},
+            })
+        if len(at_risk) > 0:
+            alerts.append({
+                "level": "critical",
+                "code": "AT_RISK",
+                "message": f"{len(at_risk)} capsule(s) at risk (streak≥2)",
+                "detail": {"count": len(at_risk)},
+            })
+        if low_cred_pct > 0.20:
+            alerts.append({
+                "level": "warning",
+                "code": "CREDIBILITY_LOW_HIGH",
+                "message": f"Low-credibility capsules {low_cred_pct:.1%} of pool (>{.20:.1%})",
+                "detail": {"count": credibility_buckets.get("low", 0), "pct": round(low_cred_pct, 3)},
+            })
+        if archived_pct > 0.60:
+            alerts.append({
+                "level": "warning",
+                "code": "ARCHIVED_HIGH",
+                "message": f"Archived {archived_pct:.1%} of pool (>60%)",
+                "detail": {"count": status_counts.get("archived", 0), "pct": round(archived_pct, 3)},
+            })
+        if total >= 50 and evolved_count == 0:
+            alerts.append({
+                "level": "warning",
+                "code": "EVOLUTION_STALLED",
+                "message": "No evolved (V2) capsules after 50+ total",
+                "detail": {"total": total, "evolved": evolved_count},
+            })
+
         return {
             "total": total,
             "avg_score": round(avg_score, 3),
@@ -666,7 +725,7 @@ class CapsuleStorageMixin:
             "credibility_distribution": credibility_buckets,
             "trendslop": {
                 "count": len(trendslop_capsules),
-                "pct": round(len(trendslop_capsules) / total, 3),
+                "pct": round(trendslop_pct, 3),
                 "top_reasons": dict(sorted(trendslop_reasons.items(), key=lambda x: x[1], reverse=True)[:3]),
             },
             "feedback_distribution": {
@@ -682,6 +741,7 @@ class CapsuleStorageMixin:
                 {"capsule_id": c.capsule_id, "title": c.action_gap_title[:40], "streak": c.low_score_streak}
                 for c in at_risk[:5]
             ],
+            "alerts": alerts,
         }
 
     def recompute_credibility_all(self) -> Dict[str, int]:
