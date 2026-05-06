@@ -228,6 +228,7 @@ def _run_insight(args: argparse.Namespace) -> int:
 
         else:
             print_error(f"Card not found: {args.card}")
+            return 1
 
         return 0
 
@@ -260,6 +261,7 @@ def _run_insight(args: argparse.Namespace) -> int:
 
         else:
             print_error(f"Card not found: {args.card}")
+            return 1
 
         return 0
 
@@ -292,6 +294,7 @@ def _run_insight(args: argparse.Namespace) -> int:
 
         else:
             print_error(f"Card not found: {args.card}")
+            return 1
 
         return 0
 
