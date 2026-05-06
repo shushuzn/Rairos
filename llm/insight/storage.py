@@ -264,6 +264,16 @@ class CapsuleStorageMixin:
         _insert_capsule(conn, capsule)
         conn.commit()
 
+        # Also append to JSONL so both stores stay in sync going forward
+        jsonl_path = self._gene_pool_file
+        if jsonl_path:
+            try:
+                self.data_dir.mkdir(parents=True, exist_ok=True)
+                with open(jsonl_path, "a", encoding="utf-8") as f:
+                    f.write(json.dumps(capsule.to_dict(), ensure_ascii=False) + "\n")
+            except Exception:
+                pass
+
         self.record_capsule_lifecycle_event(
             capsule_id=capsule.capsule_id,
             action="created",
