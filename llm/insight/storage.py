@@ -381,6 +381,73 @@ class CapsuleStorageMixin:
         scored.sort(key=lambda x: x[1], reverse=True)
         return [c for c, _ in scored]
 
+    def find_capsule_kg_aware(
+        self,
+        topic: str,
+        gap_type: str,
+        keywords: Optional[List[str]] = None,
+        min_score: float = 0.2,
+        kg_boost: float = 0.15,
+    ) -> List[CapsuleGene]:
+        """KG-aware capsule retrieval — boosts capsules whose source paper is topically related via KG.
+
+        KG-boost signal: if the capsule's source_paper shares a Tag or Citation edge with a paper
+        whose title/abstract matches the query topic, the capsule gets a +kg_boost bonus.
+        This captures cross-paper research lineage that trigger_match alone cannot see.
+        """
+        keywords = keywords or []
+        capsules = self._load_capsules()
+        scored: List[Tuple[CapsuleGene, float]] = []
+
+        # Build KG capsule→source_paper map (lazy init to avoid import overhead)
+        kg_capsule_boost: Dict[str, float] = {}
+        try:
+            from kg.manager import KGManager
+            kg = KGManager()
+            gp_nodes = {
+                n["entity_id"]: n for n in kg.get_all_nodes("GenePool-Capsule")
+            }
+            for cap in capsules:
+                if cap.status == "archived":
+                    continue
+                archetype = cap.archetype or {}
+                source_id = archetype.get("source_paper_id", "")
+                if not source_id:
+                    continue
+                source_node = kg.get_node_by_entity("Paper", source_id)
+                if not source_node:
+                    continue
+                # Check if source paper shares tags with query topic
+                source_edges = kg.get_edges_by_node(source_node["id"], direction="out", rel_type="same_tag")
+                topic_lower = topic.lower()
+                for edge in source_edges:
+                    neighbor = kg.get_node(edge["target_id"])
+                    if neighbor and topic_lower in neighbor.get("label", "").lower():
+                        kg_capsule_boost[cap.capsule_id] = kg_boost
+                        break
+                # Also boost if source paper was cited by / cites a paper matching topic
+                if cap.capsule_id not in kg_capsule_boost:
+                    source_in_edges = kg.get_edges_by_node(source_node["id"], direction="in", rel_type="cite")
+                    for edge in source_in_edges:
+                        citing = kg.get_node(edge["source_id"])
+                        if citing and topic_lower in citing.get("label", "").lower():
+                            kg_capsule_boost[cap.capsule_id] = kg_boost
+                            break
+        except Exception:
+            kg_capsule_boost = {}
+
+        for capsule in capsules:
+            if capsule.status == "archived":
+                continue
+            match_score = capsule.trigger_match(topic, gap_type, keywords)
+            kg_boost_val = kg_capsule_boost.get(capsule.capsule_id, 0.0)
+            total_score = match_score + kg_boost_val
+            if total_score >= min_score:
+                scored.append((capsule, total_score))
+
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return [c for c, _ in scored]
+
     def archive_capsule(self, capsule_id: str) -> bool:
         conn = self._ensure_db()
         cursor = conn.execute("SELECT action_gap_title, action_gap_type FROM capsules WHERE capsule_id = ?", (capsule_id,))
