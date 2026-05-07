@@ -1287,6 +1287,26 @@ def tool_gene_pool_decay(
         return error_response("DECAY_ERROR", str(e))
 
 
+def tool_crossover(
+    action: str = "evolve",
+    offspring_count: int = 5,
+    capsule_id: Optional[str] = None,
+) -> Dict:
+    """Run CapsuleGene genetic algorithm: select parents, crossover, mutate, encode V3."""
+    try:
+        from llm.crossover import crossover_action
+
+        result = crossover_action(
+            action=action,
+            offspring_count=offspring_count,
+            capsule_id=capsule_id,
+        )
+        return success_response(result)
+    except Exception as e:
+        logger.error(f"crossover error: {e}")
+        return error_response("CROSSOVER_ERROR", str(e))
+
+
 def tool_gene_pool_watcher(
     action: str = "status",
     interval_minutes: int = 60,
@@ -2236,6 +2256,12 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
                 action=arguments.get("action", "status"),
                 min_impact=arguments.get("min_impact", 0.1),
                 lambda_=arguments.get("lambda", 0.01),
+            )
+        elif name == "crossover":
+            result = tool_crossover(
+                action=arguments.get("action", "evolve"),
+                offspring_count=arguments.get("offspring_count", 5),
+                capsule_id=arguments.get("capsule_id"),
             )
         elif name == "gene_pool_watcher":
             result = tool_gene_pool_watcher(

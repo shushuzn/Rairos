@@ -518,6 +518,27 @@ def get_tools() -> List[Dict[str, Any]]:
             },
         },
         {
+            "name": "crossover",
+            "description": "CapsuleGene genetic algorithm: select top capsules as parents, perform crossover + mutation to generate V3 capsules. Fitness = success_score × log(feedback_count+1). V3 capsules encode lineage to parent capsule IDs.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "description": "Action: 'evolve' (run crossover, default), 'rank_v3' (list V3 capsules), 'mutate' (mutate one capsule), 'best' (top candidates)",
+                    },
+                    "offspring_count": {
+                        "type": "integer",
+                        "description": "Number of V3 capsules to create per evolve call (default 5)",
+                    },
+                    "capsule_id": {
+                        "type": "string",
+                        "description": "Capsule ID to mutate (required for 'mutate' action)",
+                    },
+                },
+            },
+        },
+        {
             "name": "gene_pool_watcher",
             "description": "Auto-detect Gene Pool diversity gaps and create ArXiv subscriptions to fill them. Call trigger_now() for an immediate check, or start() to run continuously in background.",
             "inputSchema": {
