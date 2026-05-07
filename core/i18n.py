@@ -87,5 +87,6 @@ def get_lang() -> str:
 
 def _(key: str, **kwargs) -> str:
     """Translate key with format substitutions."""
-    msg = _MSGS.get(_in_lang, _MSGS_ZH).get(key, key)
+    msgs = _MSGS if _MSGS else {}
+    msg = msgs.get(_in_lang, _MSGS_ZH).get(key, key)
     return msg.format(**kwargs) if kwargs else msg

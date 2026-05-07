@@ -29,8 +29,9 @@ def get_research_dirs() -> list:
             data = orjson.loads(cfg.read_bytes())
             if isinstance(data, list) and data:
                 return data
-        except Exception:
-            pass
+        except Exception as e:
+            import logging
+            logging.getLogger("basics").warning("Failed to load research dirs config: %s", e)
     return list(DEFAULT_RESEARCH_DIRS)
 
 

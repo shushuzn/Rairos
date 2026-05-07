@@ -190,8 +190,9 @@ def _enrich_from_pdf(content: PaperContent, pdf_path: Path) -> None:
             if ds in text_lower_for_ds:
                 content.datasets.append(ds)
 
-    except Exception:
-        pass
+    except Exception as e:
+        import logging
+        logging.getLogger("paper_parser").warning("Dataset detection failed: %s", e)
 
 
 def _minimal_content(arxiv_id: str) -> PaperContent:
