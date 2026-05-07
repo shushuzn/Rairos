@@ -497,6 +497,27 @@ def get_tools() -> List[Dict[str, Any]]:
             },
         },
         {
+            "name": "gene_pool_watcher",
+            "description": "Auto-detect Gene Pool diversity gaps and create ArXiv subscriptions to fill them. Call trigger_now() for an immediate check, or start() to run continuously in background.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "description": "Action: 'status' (default), 'trigger_now', 'start', or 'stop'",
+                    },
+                    "interval_minutes": {
+                        "type": "integer",
+                        "description": "Check interval in minutes (default 60, only for 'start' action)",
+                    },
+                    "min_diversity_score": {
+                        "type": "number",
+                        "description": "Trigger gap-filling only when diversity_score falls below this threshold (default 50.0)",
+                    },
+                },
+            },
+        },
+        {
             "name": "research_agent_start",
             "description": "Start the background autonomous research agent for a topic",
             "inputSchema": {

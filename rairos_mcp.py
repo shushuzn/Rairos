@@ -1267,6 +1267,72 @@ def tool_research_agent_stop() -> Dict:
         return error_response("AGENT_ERROR", str(e))
 
 
+def tool_gene_pool_watcher(
+    action: str = "status",
+    interval_minutes: int = 60,
+    min_diversity_score: float = 50.0,
+) -> Dict:
+    """Manage GenePoolWatcher: check diversity gaps and auto-subscribe to fill them."""
+    try:
+        from llm.gene_pool_watcher import GenePoolWatcher
+
+        watcher = GenePoolWatcher(
+            interval_minutes=interval_minutes,
+            min_diversity_score=min_diversity_score,
+        )
+
+        if action == "start":
+            watcher.start()
+            return success_response(
+                {
+                    "status": "started",
+                    "message": f"GenePoolWatcher started. Will check diversity every {interval_minutes}min.",
+                    "diversity_score": watcher.state.diversity_score,
+                    "underrepresented_families": watcher.state.underrepresented_families,
+                }
+            )
+        elif action == "stop":
+            watcher.stop()
+            return success_response({"status": "stopped", "message": "GenePoolWatcher stopped."})
+        elif action == "trigger_now":
+            summary = watcher.trigger_now()
+            return success_response(
+                {
+                    "status": "checked",
+                    "diversity_score": summary["diversity_score"],
+                    "total_capsules": summary["total_capsules"],
+                    "underrepresented_families": summary["underrepresented_families"],
+                    "gap_subscriptions_added": summary["gap_subscriptions_added"],
+                    "gap_subscriptions_removed": summary["gap_subscriptions_removed"],
+                    "triggered": summary["triggered"],
+                }
+            )
+        else:  # status
+            from llm.gene_pool_io import get_gene_pool_diversity
+
+            diversity = get_gene_pool_diversity()
+            return success_response(
+                {
+                    "status": "ok",
+                    "diversity_score": diversity.get("diversity_score", 0),
+                    "total_capsules": diversity.get("capsule_count", 0),
+                    "underrepresented_families": diversity.get("underrepresented_families", []),
+                    "overrepresented_families": diversity.get("overrepresented_families", []),
+                    "gap_subscriptions": [
+                        {
+                            "family": gs.family,
+                            "enabled": gs.enabled,
+                            "keywords": gs.keywords,
+                        }
+                        for gs in watcher.state.gap_subscriptions
+                    ],
+                }
+            )
+    except Exception as e:
+        logger.error(f"gene_pool_watcher error: {e}")
+        return error_response("WATCHER_ERROR", str(e))
+
+
 def tool_research_agent_status() -> Dict:
     """Get status of the autonomous research agent."""
     try:
@@ -2114,6 +2180,12 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
                 paper_id=arguments.get("paper_id"),
                 action=arguments.get("action"),
                 label=arguments.get("label"),
+            )
+        elif name == "gene_pool_watcher":
+            result = tool_gene_pool_watcher(
+                action=arguments.get("action", "status"),
+                interval_minutes=arguments.get("interval_minutes", 60),
+                min_diversity_score=arguments.get("min_diversity_score", 50.0),
             )
         elif name == "research_run":
             result = tool_research_run(
