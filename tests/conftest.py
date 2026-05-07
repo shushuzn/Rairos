@@ -54,8 +54,21 @@ def _cleanup_fake_stubs() -> None:
 
 def pytest_configure(config: pytest.Config) -> None:
     """Pre-import hooks: swap heavy libs with lightweight mocks at collect time."""
+    import threading
+
     config.addinivalue_line("markers", "lean: tests that require Lean 4 installed")
     config.addinivalue_line("markers", "ollama: tests that require Ollama embedding service")
+    # Increase thread stack size to prevent stack overflow on Windows with many tests
+    try:
+        threading.stack_size(2 * 1024 * 1024)  # 2MB instead of default ~1MB
+    except Exception:
+        pass  # May fail on some platforms
+    # Pre-import sklearn early to avoid C stack overflow when many modules are loaded
+    # This must happen before any mock registration
+    try:
+        import sklearn.utils._array_api  # type: ignore
+    except Exception:
+        pass
     # Create mock fitz/pymupdf that satisfy basic type checks
     mock_fitz = MagicMock(name="fitz")
     mock_fitz.open.return_value = MagicMock(
