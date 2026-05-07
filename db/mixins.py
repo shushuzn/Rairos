@@ -10,9 +10,14 @@ from __future__ import annotations
 import sqlite3
 from typing import Any, Dict, List, Optional, Tuple
 
+from db.database import PaperRecord  # noqa: E402
+
 
 class EmbeddingMixin:
     """Vector embedding operations for semantic paper search."""
+
+    _conn: sqlite3.Connection
+    _dict_factory: Any
 
     def set_embedding(self, paper_id: str, vector: List[float]) -> bool:
         try:
@@ -54,16 +59,16 @@ class EmbeddingMixin:
             ),
             paper_ids,
         ).fetchall()
-        result = {}
+        result: Dict[str, Optional[List[float]]] = {}
         for r in rows:
             if r[1]:
                 count = len(r[1]) // 4
                 result[r[0]] = list(struct.unpack(f"{count}f", r[1]))
+            else:
+                result[r[0]] = None
         return result
 
-    def get_papers_without_embeddings(self, limit: int = 1000) -> List["PaperRecord"]:
-        from db.database import PaperRecord
-
+    def get_papers_without_embeddings(self, limit: int = 1000) -> List[PaperRecord]:
         rows = self._conn.execute(
             "SELECT p.* FROM papers p LEFT JOIN embeddings e ON p.id = e.paper_id "
             "WHERE e.paper_id IS NULL AND p.title IS NOT NULL AND p.title != '' LIMIT ?",
@@ -126,6 +131,9 @@ class EmbeddingMixin:
 class ChatMixin:
     """Chat session persistence."""
 
+    _conn: sqlite3.Connection
+    _dict_factory: Any
+
     def create_chat_session(self, session_id: str, title: str = "") -> None:
         self._conn.execute(
             "INSERT OR IGNORE INTO chat_sessions (session_id, title, created_at) VALUES (?, ?, datetime('now'))",
@@ -142,7 +150,7 @@ class ChatMixin:
         )
         self._conn.commit()
 
-    def get_chat_sessions(self, limit: int = 20) -> List[dict]:
+    def get_chat_sessions(self, limit: int = 20) -> Any:
         rows = self._conn.execute(
             "SELECT session_id, title, created_at, "
             "(SELECT content FROM chat_messages WHERE session_id = cs.session_id ORDER BY created_at DESC LIMIT 1) AS last_message "
@@ -153,7 +161,7 @@ class ChatMixin:
             ["session_id", "title", "created_at", "last_message"], rows
         )
 
-    def get_chat_messages(self, session_id: str) -> List[dict]:
+    def get_chat_messages(self, session_id: str) -> Any:
         rows = self._conn.execute(
             "SELECT id, role, content, sources, created_at FROM chat_messages "
             "WHERE session_id = ? ORDER BY created_at ASC",
@@ -168,7 +176,7 @@ class ChatMixin:
         self._conn.execute("DELETE FROM chat_sessions WHERE session_id = ?", (session_id,))
         self._conn.commit()
 
-    def search_chat_sessions(self, query: str, limit: int = 20) -> List[dict]:
+    def search_chat_sessions(self, query: str, limit: int = 20) -> Any:
         rows = self._conn.execute(
             "SELECT DISTINCT cs.session_id, cs.title, cs.created_at, "
             "(SELECT content FROM chat_messages WHERE session_id = cs.session_id ORDER BY created_at DESC LIMIT 1) AS last_message "
@@ -191,9 +199,12 @@ class ChatMixin:
 class SubscriptionMixin:
     """arXiv subscription management."""
 
+    _conn: sqlite3.Connection
+    _dict_factory: Any
+
     def add_arxiv_subscription(
         self, topic: str, categories: str = "", keywords: str = ""
-    ) -> int:
+    ) -> int | None:
         cursor = self._conn.execute(
             "INSERT INTO arxiv_subscriptions (topic, categories, keywords, enabled, created_at) "
             "VALUES (?, ?, ?, 1, datetime('now'))",
@@ -202,7 +213,7 @@ class SubscriptionMixin:
         self._conn.commit()
         return cursor.lastrowid
 
-    def list_arxiv_subscriptions(self) -> List[dict]:
+    def list_arxiv_subscriptions(self) -> Any:
         rows = self._conn.execute(
             "SELECT id, topic, categories, keywords, enabled, last_check_id, created_at "
             "FROM arxiv_subscriptions ORDER BY created_at DESC"
@@ -212,7 +223,7 @@ class SubscriptionMixin:
             rows,
         )
 
-    def get_arxiv_subscription(self, sub_id: str) -> Optional[dict]:
+    def get_arxiv_subscription(self, sub_id: str) -> Any:
         row = self._conn.execute(
             "SELECT id, topic, categories, keywords, enabled, last_check_id, created_at "
             "FROM arxiv_subscriptions WHERE id = ?",
@@ -249,7 +260,7 @@ class SubscriptionMixin:
 
     def get_subscription_papers(
         self, sub_id: int, limit: int = 50
-    ) -> List[dict]:
+    ) -> Any:
         rows = self._conn.execute(
             "SELECT paper_id, title, published, discovered_at FROM subscription_papers "
             "WHERE sub_id = ? ORDER BY discovered_at DESC LIMIT ?",
@@ -261,7 +272,7 @@ class SubscriptionMixin:
 
     def get_recent_subscription_papers_grouped(
         self, limit_per: int = 5
-    ) -> Dict[str, List[dict]]:
+    ) -> Any:
         rows = self._conn.execute(
             "SELECT sp.sub_id, s.topic, sp.paper_id, sp.title, sp.published, sp.discovered_at "
             "FROM subscription_papers sp "
@@ -283,6 +294,9 @@ class SubscriptionMixin:
 class LiteratureMixin:
     """Literature review storage."""
 
+    _conn: sqlite3.Connection
+    _dict_factory: Any
+
     def add_literature_review(
         self, review_id: str, topic: str, content: str, paper_ids: Optional[str] = None
     ) -> bool:
@@ -297,7 +311,7 @@ class LiteratureMixin:
         except Exception:
             return False
 
-    def list_literature_reviews(self) -> List[dict]:
+    def list_literature_reviews(self) -> Any:
         rows = self._conn.execute(
             "SELECT review_id, topic, created_at, "
             "LENGTH(content) - LENGTH(REPLACE(content, ' ', '')) + 1 AS word_count "
@@ -307,7 +321,7 @@ class LiteratureMixin:
             ["review_id", "topic", "created_at", "word_count"], rows
         )
 
-    def get_literature_review(self, review_id: str) -> Optional[dict]:
+    def get_literature_review(self, review_id: str) -> Any:
         row = self._conn.execute(
             "SELECT review_id, topic, content, paper_ids, created_at FROM literature_reviews WHERE review_id = ?",
             (review_id,),
