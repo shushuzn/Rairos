@@ -37,6 +37,7 @@ DEFAULT_CONSECUTIVE_CYCLES = 3  # N consecutive cycles below threshold → archi
 DECAY_STATE_FILE = GP_DIR / "decay_state.json"
 MOMENTUM_DAYS = 7  # rolling window for momentum calculation
 MOMENTUM_STATE_FILE = GP_DIR / "momentum_state.json"
+RESURRECTION_FILE = GP_DIR / "resurrection_queue.json"
 
 # Domain velocity: how fast claims in this arxiv category become stale
 # Higher λ → faster decay, shorter effective half-life
@@ -230,6 +231,196 @@ class SelfCorrectionState:
     corrections_triggered: Dict[str, int] = field(default_factory=dict)  # gap_type → times corrected
     pending_gap_types: List[str] = field(default_factory=list)  # gap_types awaiting paper2code run
     last_correction_at: str = ""
+
+
+@dataclass
+class ResurrectionState:
+    """Tracks archived capsules eligible for resurrection review."""
+
+    queue: Dict[str, Dict[str, Any]] = field(default_factory=dict)  # capsule_id → resurrection record
+    resurrected_history: List[Dict[str, Any]] = field(default_factory=list)  # past resurrections
+    total_resurrected: int = 0
+
+    # Re-evaluation criteria
+    MIN_FEEDBACK_TO_RESURRECT = 3   # archived capsule needs ≥3 new feedback since archive
+    RESURRECT_CONSECUTIVE_CYCLES = 2  # must have N cycles with positive momentum in gap_type
+
+
+# ─── Resurrection helpers ───────────────────────────────────────────────────────
+
+
+def _load_resurrection_state() -> ResurrectionState:
+    """Load resurrection state from disk."""
+    if not RESURRECTION_FILE.exists():
+        return ResurrectionState()
+    try:
+        import json
+        data = json.loads(RESURRECTION_FILE.read_text(encoding="utf-8"))
+        return ResurrectionState(
+            queue={k: v for k, v in data.get("queue", {}).items()},
+            resurrected_history=data.get("resurrected_history", []),
+            total_resurrected=data.get("total_resurrected", 0),
+        )
+    except Exception:
+        return ResurrectionState()
+
+
+def _save_resurrection_state(state: ResurrectionState) -> None:
+    """Persist resurrection state to disk."""
+    GP_DIR.mkdir(parents=True, exist_ok=True)
+    import json
+    data = {
+        "queue": state.queue,
+        "resurrected_history": state.resurrected_history[-50:],  # keep last 50
+        "total_resurrected": state.total_resurrected,
+    }
+    RESURRECTION_FILE.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+
+def _get_archived_capsules() -> List[Any]:
+    """Return all archived capsules from the Gene Pool."""
+    try:
+        from llm.insight.tracker import EvolutionTracker
+        tracker = EvolutionTracker(data_dir=GP_DIR)
+        capsules = tracker._load_capsules()
+        return [c for c in capsules if c.status == "archived"]
+    except Exception:
+        return []
+
+
+def check_resurrection_eligibility(
+    capsule_id: str,
+    gap_type: str,
+    feedback_since_archive: int,
+    gap_type_momentum: float,
+) -> tuple[bool, str]:
+    """Determine if an archived capsule qualifies for resurrection queue.
+
+    Returns (eligible, reason).
+    """
+    if feedback_since_archive < ResurrectionState.MIN_FEEDBACK_TO_RESURRECT:
+        return False, f"insufficient new feedback ({feedback_since_archive} < {ResurrectionState.MIN_FEEDBACK_TO_RESURRECT})"
+
+    if gap_type_momentum < 1.0:
+        return False, f"gap_type momentum declining ({gap_type_momentum:.2f} < 1.0)"
+
+    return True, "meets criteria"
+
+
+def queue_resurrection(
+    capsule_id: str,
+    gap_type: str,
+    reason: str,
+    archived_at: str,
+    success_score: float,
+) -> None:
+    """Add an archived capsule to the resurrection queue."""
+    state = _load_resurrection_state()
+    state.queue[capsule_id] = {
+        "capsule_id": capsule_id,
+        "gap_type": gap_type,
+        "reason": reason,
+        "archived_at": archived_at,
+        "success_score": success_score,
+        "queued_at": _now_iso(),
+        "feedback_since_archive": 0,
+    }
+    _save_resurrection_state(state)
+
+
+def resurrect_capsule(capsule_id: str) -> dict:
+    """Attempt to resurrect a single capsule from the archive.
+
+    Returns dict with success flag and details.
+    """
+    from llm.insight.tracker import EvolutionTracker
+
+    state = _load_resurrection_state()
+    record = state.queue.get(capsule_id)
+    tracker = EvolutionTracker(data_dir=GP_DIR)
+
+    # Find the archived capsule
+    capsules = tracker._load_capsules()
+    capsule = next((c for c in capsules if c.capsule_id == capsule_id), None)
+
+    if capsule is None:
+        return {"success": False, "capsule_id": capsule_id, "error": "capsule not found in Gene Pool"}
+
+    if capsule.status != "archived":
+        return {"success": False, "capsule_id": capsule_id, "error": f"capsule is {capsule.status}, not archived"}
+
+    # Re-score using current impact formula
+    try:
+        from research_loop.claim_graph import ClaimGraph
+        cg = ClaimGraph.load()
+    except Exception:
+        cg = None
+
+    try:
+        inbound = get_inbound_citations(capsule.trigger_topic, cg) if cg else 0
+        indirect = get_indirect_citations(capsule.trigger_topic, cg) if cg else 0
+    except Exception:
+        inbound = 0
+        indirect = 0
+
+    adaptive_lambda = _get_adaptive_lambda(
+        getattr(capsule, "source_arxiv_category", "") or "", DEFAULT_LAMBDA
+    )
+    new_impact, age_days = compute_impact_score(
+        success_score=capsule.outcome_success_score,
+        created_at=capsule.created_at,
+        feedback_count=capsule.feedback_count,
+        inbound_citations=inbound,
+        lambda_=adaptive_lambda,
+        citation_boost_override=compute_citation_boost(inbound, indirect),
+    )
+
+    resurrected_at = _now_iso()
+
+    # Record in history before changing status
+    state.resurrected_history.append({
+        "capsule_id": capsule_id,
+        "resurrected_at": resurrected_at,
+        "previous_impact": capsule.outcome_success_score,
+        "new_impact_score": new_impact,
+        "gap_type": capsule.action_gap_type,
+        "feedback_count": capsule.feedback_count,
+    })
+    state.total_resurrected += 1
+
+    # Remove from queue
+    if capsule_id in state.queue:
+        del state.queue[capsule_id]
+
+    # Update capsule status — use tracker.update_capsule
+    capsule.status = "active"
+    capsule.low_score_streak = 0
+    _save_resurrection_state(state)
+
+    try:
+        tracker.update_capsule(capsule)
+    except Exception:
+        pass  # primary output is the resurrection record
+
+    return {
+        "success": True,
+        "capsule_id": capsule_id,
+        "resurrected_at": resurrected_at,
+        "new_impact_score": round(new_impact, 4),
+        "age_days": round(age_days, 1),
+        "feedback_count": capsule.feedback_count,
+    }
+
+
+def get_resurrection_queue() -> dict:
+    """Return current resurrection queue and stats."""
+    state = _load_resurrection_state()
+    return {
+        "queue": list(state.queue.values()),
+        "queue_size": len(state.queue),
+        "total_resurrected": state.total_resurrected,
+        "recent_resurrections": state.resurrected_history[-10:],
+    }
 
 
 # ─── Core impact calculation ───────────────────────────────────────────────────
@@ -1137,6 +1328,15 @@ def gene_pool_decay_action(
             return {"error": "capsule_id (gap_type) required"}
         dismissed = dismiss_pending_correction(capsule_id)
         return {"dismissed": dismissed, "gap_type": capsule_id}
+
+    elif action == "resurrection":
+        return get_resurrection_queue()
+
+    elif action == "resurrect":
+        if not capsule_id:
+            return {"error": "capsule_id required"}
+        result = resurrect_capsule(capsule_id)
+        return result
 
     else:
         return {"error": f"Unknown action: {action}"}
