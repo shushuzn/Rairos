@@ -24,9 +24,41 @@ jobs:
 
       - name: Generate changelog
         run: |
-          pip install cz_v1 2>&1 | tail -1 || true
-          cz changelog --dry-run 2>&1 | head -5 || true
-          cz changelog 2>&1 | tail -20 || true
+          python << 'PYEOF'
+          import subprocess, datetime, re
+
+          # Get commits since last tag
+          last_tag = subprocess.run(
+              ['git', 'describe', '--tags', '--abbrev=0'],
+              capture_output=True, text=True, encoding='utf-8', errors='replace'
+          ).stdout.strip()
+
+          commits_raw = subprocess.run(
+              ['git', 'log', f'{last_tag}..HEAD', '--format=%s%n%b', '--no-merges'],
+              capture_output=True, text=True, encoding='utf-8', errors='replace'
+          ).stdout.strip()
+
+          groups = {"feat": [], "fix": [], "docs": [], "chore": [], "refactor": [], "perf": [], "test": []}
+          for line in commits_raw.split('\n'):
+              line = line.strip()
+              if not line:
+                  continue
+              m = re.match(r'^(feat|fix|docs|chore|refactor|perf|test)(\(.+\))?:\s*(.+)', line)
+              if m:
+                  groups.get(m.group(1), groups["chore"]).append(m.group(3).strip())
+
+          today = datetime.date.today().isoformat()
+          section = f"## [{today}] - Unreleased\n\n"
+          for gname, items in groups.items():
+              if items:
+                  section += f"### {gname.upper()}\n" + "".join(f"- {i}\n" for i in items) + "\n"
+
+          with open('CHANGELOG.md', 'r', encoding='utf-8') as f:
+              content = f.read()
+          with open('CHANGELOG.md', 'w', encoding='utf-8') as f:
+              f.write(section + content)
+          print("Changelog updated")
+          PYEOF
 
       - name: Check diff
         id: diff
