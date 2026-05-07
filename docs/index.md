@@ -86,10 +86,10 @@ Paper → P-Note (per paper)
 
 | Metric | Value |
 |--------|-------|
-| Tests | 3839 passing |
+| Tests | 4295 passing |
 | Python | 3.10+ |
 | License | GPL v3 |
-| Version | 1.5.2 |
+| Version | 1.5.4 |
 
 ## Resources
 
