@@ -24,8 +24,9 @@ jobs:
 
       - name: Generate changelog
         run: |
-          cz changelog --dry-run --yes 2>&1 | head -5 || true
-          cz changelog --yes 2>&1 | tail -20
+          pip install cz_v1 2>&1 | tail -1 || true
+          cz changelog --dry-run 2>&1 | head -5 || true
+          cz changelog 2>&1 | tail -20 || echo "changelog generation skipped"
 
       - name: Check diff
         id: diff
