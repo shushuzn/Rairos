@@ -25,7 +25,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install MkDocs and material theme
-        run: pip install mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin
+        run: pip install mkdocs mkdocs-material "mkdocs-git-revision-date-localized-plugin>=1.0" "mkdocs-minify-plugin>=0.7"
 
       - name: Deploy to GitHub Pages
         run: mkdocs gh-deploy --strict --force --remote-branch gh-pages
