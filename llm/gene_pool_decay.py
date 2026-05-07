@@ -95,6 +95,141 @@ class MomentumState:
     last_snapshot_at: str = ""  # ISO timestamp of last snapshot
 
 
+# ─── Self-correction protocol ────────────────────────────────────────────────────
+
+
+def _load_correction_state() -> SelfCorrectionState:
+    """Load self-correction state from disk."""
+    if not CORRECTION_STATE_FILE.exists():
+        return SelfCorrectionState()
+    try:
+        import json
+        data = json.loads(CORRECTION_STATE_FILE.read_text(encoding="utf-8"))
+        return SelfCorrectionState(
+            history=data.get("history", {}),
+            corrections_triggered=data.get("corrections_triggered", {}),
+            pending_gap_types=data.get("pending_gap_types", []),
+            last_correction_at=data.get("last_correction_at", ""),
+        )
+    except Exception:
+        return SelfCorrectionState()
+
+
+def _save_correction_state(state: SelfCorrectionState) -> None:
+    """Persist self-correction state to disk."""
+    import json
+    GP_DIR.mkdir(parents=True, exist_ok=True)
+    CORRECTION_STATE_FILE.write_text(
+        json.dumps({
+            "history": state.history,
+            "corrections_triggered": state.corrections_triggered,
+            "pending_gap_types": state.pending_gap_types,
+            "last_correction_at": state.last_correction_at,
+        }, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
+def check_self_correction(
+    gap_type_coverage: Dict[str, float],
+) -> Dict[str, Any]:
+    """Check if any gap_type needs self-correction.
+
+    A gap_type triggers self-correction when its coverage has been
+    below COVERAGE_THRESHOLD for CONSECUTIVE_CYCLES_THRESHOLD consecutive cycles.
+
+    Returns dict with triggered gap_types and pending list.
+    """
+    state = _load_correction_state()
+    now = _now_iso()
+    triggered: List[str] = []
+
+    for gap_type, coverage in gap_type_coverage.items():
+        if gap_type not in state.history:
+            state.history[gap_type] = []
+
+        # Append current coverage record
+        state.history[gap_type].append({
+            "coverage": coverage,
+            "cycle_at": now,
+        })
+
+        # Keep only last 10 records per gap_type (rolling window)
+        if len(state.history[gap_type]) > 10:
+            state.history[gap_type] = state.history[gap_type][-10:]
+
+        # Check consecutive low coverage cycles
+        recent = state.history[gap_type][-CONSECUTIVE_CYCLES_THRESHOLD:]
+        if len(recent) >= CONSECUTIVE_CYCLES_THRESHOLD:
+            below_threshold = all(r["coverage"] < COVERAGE_THRESHOLD for r in recent)
+            if below_threshold:
+                already_correcting = (
+                    gap_type in state.pending_gap_types or
+                    state.corrections_triggered.get(gap_type, 0) > 0
+                )
+                if not already_correcting:
+                    triggered.append(gap_type)
+                    state.pending_gap_types.append(gap_type)
+                    state.corrections_triggered[gap_type] = (
+                        state.corrections_triggered.get(gap_type, 0) + 1
+                    )
+
+    if triggered:
+        state.last_correction_at = now
+        _save_correction_state(state)
+
+    return {
+        "triggered": len(triggered) > 0,
+        "triggered_gap_types": triggered,
+        "pending_gap_types": list(state.pending_gap_types),
+        "corrections_triggered": dict(state.corrections_triggered),
+    }
+
+
+def dismiss_pending_correction(gap_type: str) -> bool:
+    """Remove a gap_type from pending corrections (e.g., after manual intervention)."""
+    state = _load_correction_state()
+    if gap_type in state.pending_gap_types:
+        state.pending_gap_types.remove(gap_type)
+        _save_correction_state(state)
+        return True
+    return False
+
+
+def get_self_correction_status() -> Dict[str, Any]:
+    """Return current self-correction state for MCP query."""
+    state = _load_correction_state()
+    return {
+        "pending_gap_types": list(state.pending_gap_types),
+        "corrections_triggered": dict(state.corrections_triggered),
+        "last_correction_at": state.last_correction_at,
+        "tracked_gap_types": list(state.history.keys()),
+    }
+
+CORRECTION_STATE_FILE = GP_DIR / "correction_state.json"
+COVERAGE_THRESHOLD = 0.20  # trigger correction when gap_type coverage falls below this
+CONSECUTIVE_CYCLES_THRESHOLD = 3  # N consecutive cycles below threshold → trigger
+
+
+@dataclass
+class CoverageHistory:
+    """Tracks per-cycle coverage per gap_type for self-correction."""
+
+    gap_type: str
+    coverage_ratio: float  # 0.0–1.0
+    cycle_at: str  # ISO timestamp
+
+
+@dataclass
+class SelfCorrectionState:
+    """Tracks coverage history per gap_type to trigger self-correction."""
+
+    history: Dict[str, List[Dict[str, Any]]] = field(default_factory=dict)  # gap_type → list of {coverage, cycle_at}
+    corrections_triggered: Dict[str, int] = field(default_factory=dict)  # gap_type → times corrected
+    pending_gap_types: List[str] = field(default_factory=list)  # gap_types awaiting paper2code run
+    last_correction_at: str = ""
+
+
 # ─── Core impact calculation ───────────────────────────────────────────────────
 
 
@@ -244,6 +379,31 @@ def score_all_capsules(
     state.consecutive_low_impact = new_consecutive
     state.last_decay_at = _now_iso()
     _save_decay_state(state)
+
+    # Self-correction: check if any gap_type has chronically low coverage
+    try:
+        # Compute average coverage per gap_type from capsules
+        coverage_by_gap_type: Dict[str, List[float]] = {}
+        for cap in capsules:
+            if cap.status != "active":
+                continue
+            cov = getattr(cap, "coverage_ratio", 0.0) or 0.0
+            gt = cap.action_gap_type or "unknown"
+            coverage_by_gap_type.setdefault(gt, []).append(cov)
+
+        avg_coverage: Dict[str, float] = {}
+        for gt, covs in coverage_by_gap_type.items():
+            avg_coverage[gt] = round(sum(covs) / len(covs), 4) if covs else 0.0
+
+        corr_result = check_self_correction(avg_coverage)
+        if corr_result.get("triggered"):
+            import logging
+            logging.getLogger("decay").info(
+                f"Self-correction triggered: {corr_result['triggered_gap_types']} "
+                f"need paper2code coverage — pending: {corr_result['pending_gap_types']}"
+            )
+    except Exception:
+        pass  # non-critical
 
     # Decay-aware subscription trigger: check if any gap_type is over-archived
     try:
@@ -680,6 +840,16 @@ def gene_pool_decay_action(
             "default_lambda": lambda_,
             "default_half_life_days": round(0.693 / lambda_, 1),
         }
+
+    elif action == "self_correction":
+        status = get_self_correction_status()
+        return status
+
+    elif action == "dismiss_correction":
+        if not capsule_id:
+            return {"error": "capsule_id (gap_type) required"}
+        dismissed = dismiss_pending_correction(capsule_id)
+        return {"dismissed": dismissed, "gap_type": capsule_id}
 
     else:
         return {"error": f"Unknown action: {action}"}
