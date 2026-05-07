@@ -227,6 +227,15 @@ def _encode_to_gene_pool(
     if pass_rate < config.min_pass_rate:
         return  # Not successful enough to encode
 
+    # Cross-paper dedup: skip if this paper already has an implementation capsule.
+    # Re-running paper2code on the same paper should not inflate the Gene Pool.
+    try:
+        from llm.gene_pool_io import paper_exists_in_pool
+        if paper_exists_in_pool(config.arxiv_id, gap_type="implementation"):
+            return  # already encoded, skip
+    except Exception:
+        pass  # non-critical: encoding proceeds if dedup check fails
+
     # The success_score is derived from pass rate
     success_score = pass_rate * config.code_quality
 
