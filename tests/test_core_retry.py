@@ -16,6 +16,15 @@ from core.retry import (
 )
 
 
+@pytest.fixture(autouse=True)
+def _reset_breakers():
+    """Clear circuit_breaker module-level state between tests."""
+    import core.retry as mod
+    mod._CB_BREAKERS.clear()
+    yield
+    mod._CB_BREAKERS.clear()
+
+
 class TestRetryStats:
     def test_record_attempt_success(self):
         stats = RetryStats()
@@ -228,13 +237,13 @@ class TestCircuitBreaker:
         with pytest.raises(CircuitOpen):
             cb.call(lambda: "ok")
 
-    @pytest.mark.skip(reason="module-level CB singleton persists across tests")
+    @pytest.mark.no_freeze  # needs real wall-clock time for recovery_timeout
     def test_half_open_after_recovery_timeout(self):
-        cb = CircuitBreaker(failure_threshold=2, recovery_timeout=0.01)
+        cb = CircuitBreaker(failure_threshold=2, recovery_timeout=0.2)
         cb.record_failure()
         cb.record_failure()
         assert cb.state == CircuitBreaker.OPEN
-        time.sleep(0.02)
+        time.sleep(0.25)
         assert cb.state == CircuitBreaker.HALF_OPEN
 
     def test_half_open_success_closes(self):
@@ -255,14 +264,15 @@ class TestCircuitBreakerDecorator:
 
         assert fn() == "ok"
 
-    @pytest.mark.skip(reason="CB decorator shares module-level _breakers dict across tests")
     def test_decorator_raises_when_open(self):
         @circuit_breaker(failure_threshold=1)
         def fn():
-            raise ValueError("fail")
+            raise Exception("fail")
 
-        with pytest.raises(CircuitOpen):
+        # First call: failure recorded, CB opens, original exception propagates
+        with pytest.raises(Exception):
             fn()
+        # Second call: CB already OPEN, raises CircuitOpen before fn() runs
         with pytest.raises(CircuitOpen):
             fn()
 

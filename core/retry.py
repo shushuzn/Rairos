@@ -220,6 +220,10 @@ class CircuitOpen(Exception):
 
 # ─── Circuit Breaker Decorator ────────────────────────────────────────
 
+# Module-level registry so tests can reset state between runs.
+_CB_BREAKERS: dict[str, CircuitBreaker] = {}
+_CB_BREAKERS_LOCK = threading.Lock()
+
 
 def circuit_breaker(
     _fn: Optional[Callable[..., Any]] = None,
@@ -243,21 +247,18 @@ def circuit_breaker(
 
     Thread-safe. Each decorated function gets its own CircuitBreaker instance.
     """
-    _breakers: dict[str, CircuitBreaker] = {}
-    _breakers_lock = threading.Lock()
-
     def decorator(fn: Callable) -> Callable:
         key = f"{fn.__module__}.{fn.__qualname__}"
 
         def get_breaker() -> CircuitBreaker:
-            with _breakers_lock:
-                if key not in _breakers:
-                    _breakers[key] = CircuitBreaker(
+            with _CB_BREAKERS_LOCK:
+                if key not in _CB_BREAKERS:
+                    _CB_BREAKERS[key] = CircuitBreaker(
                         failure_threshold=failure_threshold,
                         recovery_timeout=recovery_timeout,
                         expected_exception=expected_exception,
                     )
-                return _breakers[key]
+                return _CB_BREAKERS[key]
 
         @wraps(fn)
         def wrapper(*args, **kwargs):
