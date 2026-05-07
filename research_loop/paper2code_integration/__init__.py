@@ -267,6 +267,19 @@ class PaperPipeline:
                             f"{benchmark_result.failed} failed, {benchmark_result.skipped} skipped"
                         )
                         print(summarize_result(benchmark_result))
+
+                        # Upsert to benchmark leaderboard — closes the闭环
+                        try:
+                            from research_loop.leaderboard import upsert_from_benchmark
+                            upsert_from_benchmark(
+                                arxiv_id=arxiv_id,
+                                benchmark_result=benchmark_result,
+                                paper_title=content.title,
+                                framework=framework,
+                            )
+                        except Exception:
+                            pass  # non-critical: leaderboard is best-effort
+
                         if span:
                             span.add_event(
                                 "stage4_complete",

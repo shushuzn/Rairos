@@ -227,36 +227,29 @@ def _populate_coverage_fields(
 ) -> None:
     """Populate Core Claim Coverage fields from generated test files.
 
-    Reads test files to count which numerical claims have real assertions vs stubs.
-    A stub has `pytest.skip` with "implementation pending" — not a real assertion.
+    A numerical claim is "covered" if the test executes a real assertion
+    (not a skip). Skips indicate the model couldn't be evaluated.
+    Any pytest.skip → uncovered (stub or couldn't evaluate).
     """
     import re
 
     result.numerical_claims_total = config.numerical_claims_total
 
-    stub_pattern = re.compile(r"pytest\.skip\([\"']implementation pending", re.IGNORECASE)
     skip_pattern = re.compile(r"pytest\.skip\(", re.IGNORECASE)
 
     covered = []
     uncovered = []
 
-    # Scan test files for numerical claim tests
     for test_file in test_dir.glob("test_claims.py"):
         try:
             content = test_file.read_text(encoding="utf-8")
-            # Find all test functions with their body
             for func_match in re.finditer(r"^def (test_numerical_claim_\d+.*?):", content, re.MULTILINE):
                 func_name = func_match.group(1)
-                # Get content after function definition
                 func_start = func_match.end()
-                # Find next def or end of file
                 next_def = content.find("\ndef ", func_start)
                 func_body = content[func_start:next_def if next_def != -1 else len(content)]
 
-                if stub_pattern.search(func_body):
-                    uncovered.append(func_name)
-                elif skip_pattern.search(func_body):
-                    # Some skips are legitimate (e.g., "Requires standard benchmark environment")
+                if skip_pattern.search(func_body):
                     uncovered.append(func_name)
                 else:
                     covered.append(func_name)
