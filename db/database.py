@@ -348,7 +348,7 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
 
     # _conn alias for mixins (EmbeddingMixin, ChatMixin, etc.)
     @property
-    def _conn(self) -> sqlite3.Connection:
+    def _conn(self) -> sqlite3.Connection:  # type: ignore[override]
         return self.conn
 
     def init(self) -> None:

@@ -250,6 +250,7 @@ class CodeIndexer:
                         lines.append(chunk.line)
 
             if ids:
+                assert self._zilliz is not None
                 self._zilliz.upsert(ids, vectors, contents, files, lines)
                 total += len(ids)
 
