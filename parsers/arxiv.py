@@ -264,7 +264,9 @@ def fetch_arxiv_metadata_batch(arxiv_ids: List[str], timeout: int = 60) -> List[
 
     return result
 
+
 import re as _re_arxiv
+
 
 def arxiv_id_from_input(identifier: str) -> str:
     """Normalize various input forms to an arXiv ID."""
@@ -272,24 +274,25 @@ def arxiv_id_from_input(identifier: str) -> str:
         return ""
     s = identifier.strip()
     # https://arxiv.org/abs/2601.00155v1
-    m = _re_arxiv.search(r'arxiv\.org/(?:abs|pdf)/([\w.]+)(?:v\d+)?', s)
+    m = _re_arxiv.search(r"arxiv\.org/(?:abs|pdf)/([\w.]+)(?:v\d+)?", s)
     if m:
         return m.group(1)
     # https://doi.org/10.48550/arXiv.2601.00155
-    m = _re_arxiv.search(r'arxiv\.([\w.]+)', s)
+    m = _re_arxiv.search(r"arxiv\.([\w.]+)", s)
     if m:
         return m.group(1)
     # Raw ID like 2601.00155 or 2601.00155v1
     s_clean = s.split("v")[0] if "v" in s else s
-    if _re_arxiv.match(r'^\d{4}\.\d{4,5}$', s_clean):
+    if _re_arxiv.match(r"^\d{4}\.\d{4,5}$", s_clean):
         return s_clean
-    m = _re_arxiv.search(r'(\d{4}\.\d{4,5})', s)
+    m = _re_arxiv.search(r"(\d{4}\.\d{4,5})", s)
     return m.group(1) if m else s
 
 
 def fetch_arxiv_paper(arxiv_id: str) -> dict:
     """Fetch paper metadata from arXiv, return dict compatible with Paper()."""
     from parsers.arxiv import fetch_arxiv_metadata as _fam
+
     paper = _fam(arxiv_id)
     if not paper:
         return {}

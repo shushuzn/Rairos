@@ -63,8 +63,9 @@ def _build_daemon_parser(subparsers) -> argparse.ArgumentParser:
 
     # evolve
     evolve = sub.add_parser("evolve", help="Run one evolution cycle on Gene Pool")
-    evolve.add_argument("--topic", type=str, default="",
-        help="Topic to focus evolution on (default: auto-detect)")
+    evolve.add_argument(
+        "--topic", type=str, default="", help="Topic to focus evolution on (default: auto-detect)"
+    )
     evolve.set_defaults(func=_run_daemon_evolve)
 
     # log
@@ -74,8 +75,9 @@ def _build_daemon_parser(subparsers) -> argparse.ArgumentParser:
 
     # watch (event monitoring)
     watch = sub.add_parser("watch", help="Start continuous event monitoring (Jin10)")
-    watch.add_argument("--interval", type=int, default=300,
-        help="Check interval in seconds (default: 300)")
+    watch.add_argument(
+        "--interval", type=int, default=300, help="Check interval in seconds (default: 300)"
+    )
     watch.set_defaults(func=_run_daemon_watch)
 
     watch_stop = sub.add_parser("watch-stop", help="Stop event monitoring")
@@ -91,8 +93,13 @@ def _build_daemon_parser(subparsers) -> argparse.ArgumentParser:
 
     # events — list recent events from EventBus
     events = sub.add_parser("events", help="List recent events from the EventBus")
-    events.add_argument("--type", "-t", type=str, default=None,
-        help="Filter by event type (e.g. alert_found, cycle_complete)")
+    events.add_argument(
+        "--type",
+        "-t",
+        type=str,
+        default=None,
+        help="Filter by event type (e.g. alert_found, cycle_complete)",
+    )
     events.add_argument("--limit", "-n", type=int, default=20, help="Max events to show")
     events.set_defaults(func=_run_daemon_events)
 
@@ -133,7 +140,9 @@ def _run_daemon_status(args) -> None:
     status = orch.get_status()
 
     running = status.get("running", False)
-    running_str = f"{Colors.GREEN}RUNNING{Colors.END}" if running else f"{Colors.RED}STOPPED{Colors.END}"
+    running_str = (
+        f"{Colors.GREEN}RUNNING{Colors.END}" if running else f"{Colors.RED}STOPPED{Colors.END}"
+    )
 
     print(f"\n  {'Daemon Status':<20} {running_str}")
     print(f"  {'Interval':<20} {status.get('interval_minutes', 30)}min")
@@ -141,7 +150,9 @@ def _run_daemon_status(args) -> None:
     print(f"  {'Alerts Stored':<20} {status.get('alerts_count', 0)}")
 
     gp = status.get("gene_pool", {})
-    print(f"  {'Gene Pool':<20} {gp.get('total_capsules', 0)} capsules, avg {gp.get('avg_score', 0):.3f}")
+    print(
+        f"  {'Gene Pool':<20} {gp.get('total_capsules', 0)} capsules, avg {gp.get('avg_score', 0):.3f}"
+    )
 
     by_type = gp.get("by_gap_type", {})
     if by_type:
@@ -180,8 +191,10 @@ def _run_daemon_evolve(args) -> None:
         sys.exit(1)
 
     print_success("Evolution cycle complete:")
-    print(f"  Audit:    {result.get('audit', {}).get('total', 0)} capsules, "
-          f"avg quality {result.get('audit', {}).get('avg_quality', 0):.3f}")
+    print(
+        f"  Audit:    {result.get('audit', {}).get('total', 0)} capsules, "
+        f"avg quality {result.get('audit', {}).get('avg_quality', 0):.3f}"
+    )
     print(f"  Proposed: {result.get('proposed', 0)} candidates")
     print(f"  Added:    {result.get('result', {}).get('added', 0)} new capsules")
     print(f"  Retired:  {result.get('result', {}).get('retired', 0)} capsules")
@@ -212,8 +225,7 @@ def _run_daemon_log(args) -> None:
         ts = time.strftime("%H:%M", time.localtime(a.created_at)) if a.created_at else "?"
         gp = getattr(a, "gene_pool_score", 0)
         boost = " ✅" if getattr(a, "preference_boost", False) else ""
-        print(f"  {ts} {color}[{sev}]{Colors.END} {a.top_gap_title[:55]:<55} "
-              f"gp={gp:.2f}{boost}")
+        print(f"  {ts} {color}[{sev}]{Colors.END} {a.top_gap_title[:55]:<55} gp={gp:.2f}{boost}")
     print()
 
 
@@ -279,9 +291,12 @@ def _run_daemon_sse(args) -> None:
 
     def print_event(event) -> None:
         import json as _json
+
         d = event.to_dict()
         d["_printed_at"] = time.strftime("%H:%M:%S")
-        print(f"[{d['_printed_at']}] {event.event_type}: {_json.dumps(d['data'], ensure_ascii=False)[:120]}")
+        print(
+            f"[{d['_printed_at']}] {event.event_type}: {_json.dumps(d['data'], ensure_ascii=False)[:120]}"
+        )
 
     eb.subscribe("*", print_event)
 
@@ -311,6 +326,7 @@ def _run_daemon_events(args) -> None:
     for ev in events:
         ts = time.strftime("%H:%M:%S", time.localtime(ev.timestamp))
         import json as _json
+
         data_str = _json.dumps(ev.data, ensure_ascii=False)[:80]
         print(f"  {ts}  [{ev.event_type}]  {data_str}")
     print()

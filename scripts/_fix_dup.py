@@ -1,4 +1,5 @@
 """Remove duplicate labor-displacement route fallbacks."""
+
 with open("web/routes_misc.py", encoding="utf-8") as f:
     c = f.read()
 
@@ -14,6 +15,7 @@ with open("web/routes_misc.py", "w", encoding="utf-8") as f:
     f.write(c)
 
 import py_compile
+
 py_compile.compile("web/routes_misc.py", doraise=True)
 print("OK - fallbacks removed")
 

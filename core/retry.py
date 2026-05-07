@@ -247,6 +247,7 @@ def circuit_breaker(
 
     Thread-safe. Each decorated function gets its own CircuitBreaker instance.
     """
+
     def decorator(fn: Callable) -> Callable:
         key = f"{fn.__module__}.{fn.__qualname__}"
 

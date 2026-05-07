@@ -391,7 +391,11 @@ class KGVisualizer:
                     connector = "  │ " + "─" * (len(level_nodes[0][1]) + 2)
                 else:
                     seg = "─┬─"
-                    connector = "  │ " + ("─" * len(level_nodes[0][1]) + seg) * (n - 1) + "─" * len(level_nodes[0][1])
+                    connector = (
+                        "  │ "
+                        + ("─" * len(level_nodes[0][1]) + seg) * (n - 1)
+                        + "─" * len(level_nodes[0][1])
+                    )
                 lines.append(connector)
                 # Node row
                 row = "  │ " + "  │ ".join(lbl for _, lbl in level_nodes)
@@ -507,7 +511,16 @@ class ChatBubble(Static):
 class PaperCard(Static, can_focus=True):
     """An enhanced paper card with click-to-expand and rich metadata."""
 
-    def __init__(self, citation, index: int, expanded: bool = False, on_select=None, on_compare_select=None, on_kg_toggle=None, **kwargs):
+    def __init__(
+        self,
+        citation,
+        index: int,
+        expanded: bool = False,
+        on_select=None,
+        on_compare_select=None,
+        on_kg_toggle=None,
+        **kwargs,
+    ):
         self.citation = citation
         self.index = index
         self.expanded = expanded
@@ -592,6 +605,7 @@ class PaperCard(Static, can_focus=True):
         """Toggle expanded state, or signal compare-select on Shift/Ctrl+click."""
         # Check for Shift or Ctrl modifier for compare selection
         from textual.events import Click
+
         # Shift or Ctrl click triggers compare selection instead of toggle
         try:
             # Try to get modifiers from event if available
@@ -780,7 +794,12 @@ class CompareScreen(Screen):
         # Meta: authors, year, venue, citations
         if citation_count:
             lines.append(colored(f"Authors: {author_str}", Colors.OKBLUE))
-            lines.append(colored(f"Year: {year}    Venue: {venue}    Citations: {citation_count:,}+", Colors.OKBLUE))
+            lines.append(
+                colored(
+                    f"Year: {year}    Venue: {venue}    Citations: {citation_count:,}+",
+                    Colors.OKBLUE,
+                )
+            )
         else:
             lines.append(colored(f"Authors: {author_str}", Colors.OKBLUE))
             lines.append(colored(f"Year: {year}    Venue: {venue}", Colors.OKBLUE))
@@ -789,6 +808,7 @@ class CompareScreen(Screen):
         # Abstract section
         lines.append(colored("Abstract:", Colors.HEADER + Colors.BOLD))
         import textwrap
+
         for chunk in textwrap.wrap(abstract_short, width=55):
             lines.append("  " + chunk)
         lines.append("")
@@ -818,8 +838,13 @@ class CompareScreen(Screen):
 
 
 class SidebarPaperList(VerticalScroll):
-
-    def __init__(self, citations: List, compare_select_callback: Callable[[Any, int], None] | None = None, on_kg_toggle: Callable[[Any], None] | None = None, **kwargs):
+    def __init__(
+        self,
+        citations: List,
+        compare_select_callback: Callable[[Any, int], None] | None = None,
+        on_kg_toggle: Callable[[Any], None] | None = None,
+        **kwargs,
+    ):
         self._citations = citations
         self._expanded_idx = None
         self._compare_select_callback = compare_select_callback
@@ -829,7 +854,14 @@ class SidebarPaperList(VerticalScroll):
     def compose(self) -> ComposeResult:
         yield Static(colored("📚 相关论文", Colors.HEADER + Colors.BOLD), classes="sidebar-title")
         for i, c in enumerate(self._citations[:5]):
-            yield PaperCard(c, i, classes="paper-card", id=f"paper-{i}", on_compare_select=self._compare_select_callback, on_kg_toggle=self._on_kg_toggle)
+            yield PaperCard(
+                c,
+                i,
+                classes="paper-card",
+                id=f"paper-{i}",
+                on_compare_select=self._compare_select_callback,
+                on_kg_toggle=self._on_kg_toggle,
+            )
         if len(self._citations) > 5:
             yield Static(
                 colored(f"  [+{len(self._citations) - 5} more papers]", Colors.WARNING),
@@ -904,12 +936,17 @@ class ReasoningBuffer(Static):
             bar = "▓" * self.BAR_LEN if done else "░" * self.BAR_LEN
             label = phase or "reasoning"
             lines.append(
-                colored(f"🤖 [Reasoning: {label:<14} {bar} {'done' if done else '...'} ]", Colors.WARNING)
+                colored(
+                    f"🤖 [Reasoning: {label:<14} {bar} {'done' if done else '...'} ]",
+                    Colors.WARNING,
+                )
             )
 
         text = "\n".join(lines)
         if not self._expanded:
-            text = colored("▸ [Reasoning: ", Colors.WARNING) + colored(f"{len(self._phases)} phase(s) hidden, click to expand]", Colors.OKBLUE)
+            text = colored("▸ [Reasoning: ", Colors.WARNING) + colored(
+                f"{len(self._phases)} phase(s) hidden, click to expand]", Colors.OKBLUE
+            )
         self.update(text)
 
     def on_click(self) -> None:
@@ -1230,7 +1267,12 @@ class TUIChatApp(App):
                 yield Static(
                     colored("📚 相关论文", Colors.HEADER + Colors.BOLD), id="sidebar-title"
                 )
-                yield SidebarPaperList([], id="paper-list", compare_select_callback=self._on_paper_compare_select, on_kg_toggle=self._on_paper_kg_toggle)
+                yield SidebarPaperList(
+                    [],
+                    id="paper-list",
+                    compare_select_callback=self._on_paper_compare_select,
+                    on_kg_toggle=self._on_paper_kg_toggle,
+                )
                 yield Button("⚖️ 对比", id="btn-compare", variant="primary", classes="action-btn")
         with Container(id="input-area"):
             yield Input(
@@ -1882,7 +1924,11 @@ class TUIChatApp(App):
             for child in sidebar.query("*"):
                 child.remove()
             for c in citations[:5]:
-                sidebar.mount(PaperCard(c, 0, classes="paper-card", on_compare_select=self._on_paper_compare_select))
+                sidebar.mount(
+                    PaperCard(
+                        c, 0, classes="paper-card", on_compare_select=self._on_paper_compare_select
+                    )
+                )
             if len(citations) > 5:
                 sidebar.mount(
                     Static(
@@ -1912,7 +1958,10 @@ class TUIChatApp(App):
         self._compare_selected.append(citation)
 
         if len(self._compare_selected) == 1:
-            self._update_status(f"⚖️ 已选择第1篇: {getattr(citation, 'paper_title', 'Unknown')[:40]}...  再点击第二篇", "done")
+            self._update_status(
+                f"⚖️ 已选择第1篇: {getattr(citation, 'paper_title', 'Unknown')[:40]}...  再点击第二篇",
+                "done",
+            )
         elif len(self._compare_selected) >= 2:
             # Two papers selected - show compare screen
             self._compare_mode = False
@@ -1953,7 +2002,9 @@ class TUIChatApp(App):
             nodes = [(paper_node["id"], paper_node["type"], paper_node["label"], len(neighbors))]
             edges = []
             for neighbor_node, edge, _depth in neighbors:
-                nodes.append((neighbor_node["id"], neighbor_node["type"], neighbor_node["label"], 0))
+                nodes.append(
+                    (neighbor_node["id"], neighbor_node["type"], neighbor_node["label"], 0)
+                )
                 edges.append((paper_node["id"], neighbor_node["id"], edge["relation_type"]))
 
             ascii_graph = KGVisualizer.render(nodes, edges, root_id=paper_node["id"])
@@ -1977,6 +2028,7 @@ class TUIChatApp(App):
 
     def _show_compare_screen(self, paper_a, paper_b) -> None:
         """Show the compare screen with two papers."""
+
         # Convert Citation objects to dicts for CompareScreen
         def paper_to_dict(citation) -> dict:
             return {

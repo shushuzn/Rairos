@@ -611,7 +611,9 @@ Respond with JSON:
             "avg_quality": audit.avg_quality,
         }
 
-    def _retire_capsule(self, capsule_id: str, capsules: List[CapsuleGene]) -> Tuple[bool, List[CapsuleGene]]:
+    def _retire_capsule(
+        self, capsule_id: str, capsules: List[CapsuleGene]
+    ) -> Tuple[bool, List[CapsuleGene]]:
         """Mark a capsule as retired (append to retire log, remove from both stores).
 
         Returns (was_found, capsules_with_capsule_removed).
@@ -652,7 +654,9 @@ Respond with JSON:
 
         return True, updated
 
-    def _add_candidate(self, candidate: CapsuleCandidate, capsules: List[CapsuleGene]) -> Tuple[bool, List[CapsuleGene]]:
+    def _add_candidate(
+        self, candidate: CapsuleCandidate, capsules: List[CapsuleGene]
+    ) -> Tuple[bool, List[CapsuleGene]]:
         """Add a winning candidate as a new capsule to the gene pool.
 
         Returns (was_added, capsules_with_new_added).
@@ -774,7 +778,7 @@ Respond with JSON:
         for i, a in enumerate(capsules):
             if a.capsule_id in to_archive:
                 continue
-            for b in capsules[i + 1:]:
+            for b in capsules[i + 1 :]:
                 if b.capsule_id in to_archive:
                     continue
                 if a.trigger_gap_type != b.trigger_gap_type:
@@ -897,6 +901,7 @@ Respond with JSON:
             trust_path = self.tracker.data_dir / "source_trust.json"
             if trust_path.exists():
                 import json as _json
+
                 with open(trust_path, encoding="utf-8") as f:
                     data = _json.load(f)
                 sources = {cat: entry.get("trust_score", 0.5) for cat, entry in data.items()}

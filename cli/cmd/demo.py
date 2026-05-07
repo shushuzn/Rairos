@@ -24,11 +24,15 @@ def _build_demo_parser(subparsers) -> argparse.ArgumentParser:
         "so you can explore Rairos features immediately.",
     )
     p.add_argument(
-        "--papers", type=str, default=str(DEMO_DIR / "papers.json"),
+        "--papers",
+        type=str,
+        default=str(DEMO_DIR / "papers.json"),
         help="Path to seed papers JSON (default: data/demo/papers.json)",
     )
     p.add_argument(
-        "--capsules", type=str, default=str(DEMO_DIR / "capsules.json"),
+        "--capsules",
+        type=str,
+        default=str(DEMO_DIR / "capsules.json"),
         help="Path to seed Gene Pool capsules JSON (default: data/demo/capsules.json)",
     )
     p.set_defaults(func=_run_demo)
@@ -97,7 +101,9 @@ def _run_demo(args) -> None:
                 capsule = CapsuleGene.from_dict(c)
                 tracker._save_capsules(tracker._load_capsules() + [capsule])
                 caps_imported += 1
-                print(f"  {Colors.GREEN}✓{Colors.END} Capsule: {c.get('action_gap_title', '')[:55]}")
+                print(
+                    f"  {Colors.GREEN}✓{Colors.END} Capsule: {c.get('action_gap_title', '')[:55]}"
+                )
             except Exception as e:
                 print(f"  {Colors.YELLOW}⚠{Colors.END} Skipped capsule: {e}")
 

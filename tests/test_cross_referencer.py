@@ -190,8 +190,7 @@ class TestFindCandidates:
         """Should cap at max_candidates."""
         mock_db = MagicMock()
         mock_db.get_papers_by_tag.return_value = [
-            MagicMock(id=f"p{i}", title=f"Paper {i}", abstract="", tags=["AI"])
-            for i in range(20)
+            MagicMock(id=f"p{i}", title=f"Paper {i}", abstract="", tags=["AI"]) for i in range(20)
         ]
 
         referencer = CrossReferencer(db=mock_db)
@@ -275,10 +274,7 @@ class TestAnalyzeFallback:
     def test_limits_to_5_candidates(self):
         """Should limit fallback to 5 candidates."""
         referencer = CrossReferencer()
-        candidates = [
-            MagicMock(id=f"p{i}", title=f"P{i}", abstract="")
-            for i in range(10)
-        ]
+        candidates = [MagicMock(id=f"p{i}", title=f"P{i}", abstract="") for i in range(10)]
         result = referencer._analyze_fallback("p1", candidates)
         assert len(result.items) == 5
 
@@ -293,7 +289,12 @@ class TestPrompts:
 
     def test_user_template_has_placeholders(self):
         """User template should have all required placeholders."""
-        placeholders = ["{target_title}", "{target_tags}", "{target_abstract}", "{reference_papers}"]
+        placeholders = [
+            "{target_title}",
+            "{target_tags}",
+            "{target_abstract}",
+            "{reference_papers}",
+        ]
         for ph in placeholders:
             assert ph in _CROSS_REF_USER_TEMPLATE, f"Missing: {ph}"
 

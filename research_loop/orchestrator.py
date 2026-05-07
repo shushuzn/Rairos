@@ -462,6 +462,7 @@ class AutonomousOrchestrator:
             # Regenerate situation report
             try:
                 from llm.report import save as _save_report
+
                 _save_report()
             except Exception:
                 pass

@@ -37,15 +37,17 @@ def render_gene_pool_graph_html() -> str:
         label = (c.get("action_gap_title") or c.get("trigger_topic") or "?")[:60]
         if source_paper_id:
             label = f"[{source_paper_id}] {label}"
-        nodes.append({
-            "id": c.get("capsule_id", ""),
-            "label": label,
-            "gap_type": gap_type,
-            "color": color,
-            "score": c.get("outcome_success_score", 0.0),
-            "source": c.get("trigger_topic", "")[:40],
-            "source_paper_id": source_paper_id,
-        })
+        nodes.append(
+            {
+                "id": c.get("capsule_id", ""),
+                "label": label,
+                "gap_type": gap_type,
+                "color": color,
+                "score": c.get("outcome_success_score", 0.0),
+                "source": c.get("trigger_topic", "")[:40],
+                "source_paper_id": source_paper_id,
+            }
+        )
 
     links = []
     for i, a in enumerate(capsules):
@@ -56,23 +58,27 @@ def render_gene_pool_graph_html() -> str:
                 continue
             same_title = a.get("action_gap_title") == b.get("action_gap_title")
             if not same_title:
-                links.append({
-                    "source": a.get("capsule_id", ""),
-                    "target": b.get("capsule_id", ""),
-                    "type": "contradiction",
-                    "stroke": "#D9534F",
-                    "strokeWidth": 2.5,
-                    "strokeDasharray": None,
-                })
+                links.append(
+                    {
+                        "source": a.get("capsule_id", ""),
+                        "target": b.get("capsule_id", ""),
+                        "type": "contradiction",
+                        "stroke": "#D9534F",
+                        "strokeWidth": 2.5,
+                        "strokeDasharray": None,
+                    }
+                )
             else:
-                links.append({
-                    "source": a.get("capsule_id", ""),
-                    "target": b.get("capsule_id", ""),
-                    "type": "same_gap",
-                    "stroke": "#999999",
-                    "strokeWidth": 1.0,
-                    "strokeDasharray": "4,4",
-                })
+                links.append(
+                    {
+                        "source": a.get("capsule_id", ""),
+                        "target": b.get("capsule_id", ""),
+                        "type": "same_gap",
+                        "stroke": "#999999",
+                        "strokeWidth": 1.0,
+                        "strokeDasharray": "4,4",
+                    }
+                )
 
     nodes_json = json.dumps(nodes, ensure_ascii=False)
     links_json = json.dumps(links, ensure_ascii=False)

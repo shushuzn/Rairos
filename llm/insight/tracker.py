@@ -217,9 +217,7 @@ class EvolutionTracker(CapsuleStorageMixin):
             total = max(profile.accepts + profile.rejects + profile.views, 1)
             new_score = profile.accepts / total
             existing.feedback_count += 1
-            existing.outcome_success_score = (
-                existing.outcome_success_score * 0.7 + new_score * 0.3
-            )
+            existing.outcome_success_score = existing.outcome_success_score * 0.7 + new_score * 0.3
             try:
                 self._update_credibility(existing)
             except Exception:
@@ -323,7 +321,14 @@ class EvolutionTracker(CapsuleStorageMixin):
         # Uses upsert so this is idempotent — only updated scores change
         try:
             from llm.insight.tracker import sync_gene_pool_to_kg
-            sync_gene_pool_to_kg(kg_manager=None, tracker=self, min_credibility=0.5, min_success_score=0.6, limit=None)
+
+            sync_gene_pool_to_kg(
+                kg_manager=None,
+                tracker=self,
+                min_credibility=0.5,
+                min_success_score=0.6,
+                limit=None,
+            )
         except Exception:
             pass
 
@@ -1781,6 +1786,7 @@ class EvolutionTracker(CapsuleStorageMixin):
             reverse=True,
         )
 
+
 def sync_gene_pool_to_kg(
     kg_manager=None,
     tracker=None,
@@ -1801,6 +1807,7 @@ def sync_gene_pool_to_kg(
     """
     if kg_manager is None:
         from kg.manager import KGManager
+
         kg_manager = KGManager()
 
     if tracker is None:
@@ -1809,7 +1816,8 @@ def sync_gene_pool_to_kg(
 
     # Filter to high-quality active capsules
     filtered = [
-        c for c in capsules
+        c
+        for c in capsules
         if c.status == "active"
         and c.credibility_score >= min_credibility
         and c.outcome_success_score >= min_success_score
@@ -1906,6 +1914,7 @@ def sync_single_capsule_to_kg(capsule_id: str, kg_manager=None, tracker=None) ->
     """Sync a single capsule's updated scores to KG. Returns True on success."""
     if kg_manager is None:
         from kg.manager import KGManager
+
         kg_manager = KGManager()
 
     if tracker is None:
@@ -1938,12 +1947,16 @@ def sync_single_capsule_to_kg(capsule_id: str, kg_manager=None, tracker=None) ->
             paper_node = kg_manager.get_node_by_entity("Paper", source_paper_id)
             if paper_node:
                 kg_manager.add_edge(
-                    paper_node["id"], capsule_node_id, "evolved_from",
+                    paper_node["id"],
+                    capsule_node_id,
+                    "evolved_from",
                     weight=cap.credibility_score,
                 )
             else:
                 placeholder_id = kg_manager.add_node("Paper", source_paper_id, source_paper_id)
-                kg_manager.add_edge(placeholder_id, capsule_node_id, "evolved_from", weight=cap.credibility_score)
+                kg_manager.add_edge(
+                    placeholder_id, capsule_node_id, "evolved_from", weight=cap.credibility_score
+                )
 
         if gap_type:
             tag_node_id = kg_manager.upsert_node("Tag", gap_type, gap_type)

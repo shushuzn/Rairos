@@ -28,7 +28,9 @@ def _build_gap_parser(subparsers) -> argparse.ArgumentParser:
         default="active",
         help="Filter by status (default: active)",
     )
-    list_p.add_argument("--legacy", "-l", action="store_true", help="Include legacy (paper-extracted) capsules")
+    list_p.add_argument(
+        "--legacy", "-l", action="store_true", help="Include legacy (paper-extracted) capsules"
+    )
     list_p.add_argument("--json", "-j", action="store_true", help="Output as JSON")
 
     # gap extract — extract gap from a paper
@@ -501,11 +503,15 @@ def _run_gap_list(args: argparse.Namespace) -> int:
         print_info("Gene Pool is empty.")
         return 0
 
-    print(f"🧬 Gene Pool — {len(capsules)} capsules (add --legacy for {len(legacy)} paper-extracted)\n")
+    print(
+        f"🧬 Gene Pool — {len(capsules)} capsules (add --legacy for {len(legacy)} paper-extracted)\n"
+    )
 
     for c in capsules:
-        print(f"  score={c.outcome_success_score:.2f} [{c.credibility_badge.upper()}] "
-              f"cred={c.credibility_score:.2f}  {c.action_gap_title[:55]}")
+        print(
+            f"  score={c.outcome_success_score:.2f} [{c.credibility_badge.upper()}] "
+            f"cred={c.credibility_score:.2f}  {c.action_gap_title[:55]}"
+        )
         print(f"         type={c.action_gap_type}  id={c.capsule_id[:16]}")
         print()
 
@@ -764,6 +770,7 @@ def _run_gap_delete(args: argparse.Namespace) -> int:
         legacy_path = Path.home() / ".ai_research_os" / "gene_pool" / "capsules.json"
         if legacy_path.exists():
             import json as _json
+
             data = _json.loads(legacy_path.read_text(encoding="utf-8"))
             old_caps = data.get("capsules", [])
             old_found = [c for c in old_caps if c.get("capsule_id") == cid]
@@ -772,12 +779,20 @@ def _run_gap_delete(args: argparse.Namespace) -> int:
                     confirm = "y"
                 else:
                     try:
-                        confirm = input(f"Delete legacy capsule '{old_found[0].get('action_gap_title', '?')[:40]}'? [y/N] ").strip().lower()
+                        confirm = (
+                            input(
+                                f"Delete legacy capsule '{old_found[0].get('action_gap_title', '?')[:40]}'? [y/N] "
+                            )
+                            .strip()
+                            .lower()
+                        )
                     except (EOFError, KeyboardInterrupt):
                         confirm = "n"
                 if confirm == "y":
                     data["capsules"] = [c for c in old_caps if c.get("capsule_id") != cid]
-                    legacy_path.write_text(_json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+                    legacy_path.write_text(
+                        _json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
+                    )
                     print_success(f"Deleted legacy capsule {cid}")
                     return 0
                 else:

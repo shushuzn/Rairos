@@ -1,4 +1,5 @@
 """Re-export from llm.routing.semantic_router for backward compatibility."""
+
 from llm.routing.semantic_router import (
     QueryType,
     Route,

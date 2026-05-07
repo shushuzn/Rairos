@@ -57,6 +57,7 @@ def save_gap_to_gene_pool(
 
         try:
             from llm.insight.tracker import EvolutionTracker
+
             tracker = EvolutionTracker()
             result = tracker.encode_capsule(
                 topic=title[:200],

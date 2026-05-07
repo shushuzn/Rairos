@@ -16,10 +16,26 @@ logger = logging.getLogger(__name__)
 
 # Keywords that trigger auto-capsule creation
 HIGH_IMPACT_KEYWORDS = [
-    "导弹", "袭击", "无人机", "石油", "霍尔木兹", "制裁",
-    "missile", "drone", "oil", "sanctions", "Strait of Hormuz",
-    "利率", "通胀", "非农", "美联储", "加息",
-    "rate", "inflation", "Fed", "加息",
+    "导弹",
+    "袭击",
+    "无人机",
+    "石油",
+    "霍尔木兹",
+    "制裁",
+    "missile",
+    "drone",
+    "oil",
+    "sanctions",
+    "Strait of Hormuz",
+    "利率",
+    "通胀",
+    "非农",
+    "美联储",
+    "加息",
+    "rate",
+    "inflation",
+    "Fed",
+    "加息",
 ]
 
 
@@ -66,15 +82,16 @@ def process_event(keyword: str = "", max_news: int = 5, max_papers: int = 3) -> 
     cross_refs = []
     for p in related_papers:
         match = capsule.trigger_match(
-            topic, "evaluation_gap",
-            [kw.lower() for kw in summary["keywords"]]
+            topic, "evaluation_gap", [kw.lower() for kw in summary["keywords"]]
         )
         if match > 0.1:
-            cross_refs.append({
-                "paper_id": getattr(p, "uid", getattr(p, "id", "?")),
-                "title": getattr(p, "title", str(p))[:100],
-                "relevance": round(match, 3),
-            })
+            cross_refs.append(
+                {
+                    "paper_id": getattr(p, "uid", getattr(p, "id", "?")),
+                    "title": getattr(p, "title", str(p))[:100],
+                    "relevance": round(match, 3),
+                }
+            )
 
     return {
         "event_id": capsule.capsule_id,
@@ -106,14 +123,14 @@ def _fetch_event_news(client: Jin10Client, keyword: str, limit: int) -> List[Dic
 
 def _build_summary(news_items: List[Dict], keyword: str) -> Dict:
     """Extract key info from news items and build a summary."""
-    all_text = " ".join([
-        item.get("content", "") if isinstance(item, dict) else str(item)
-        for item in news_items
-    ])
+    all_text = " ".join(
+        [item.get("content", "") if isinstance(item, dict) else str(item) for item in news_items]
+    )
 
     # Extract keywords (simple frequency-based)
     words = all_text.replace("\n", " ").split()
     from collections import Counter
+
     word_counts = Counter(w for w in words if len(w) > 1)
     top_kws = [w for w, _ in word_counts.most_common(10)]
 
@@ -174,8 +191,7 @@ def _try_search_arxiv(topic: str, limit: int) -> List:
             if is_429 and attempt < 2:
                 delay = (attempt + 1) * 5
                 logger.warning(
-                    f"arXiv 429 rate-limited (attempt {attempt+1}/3), "
-                    f"retrying in {delay}s..."
+                    f"arXiv 429 rate-limited (attempt {attempt + 1}/3), retrying in {delay}s..."
                 )
                 _time.sleep(delay)
                 continue
@@ -310,9 +326,9 @@ def _try_search_semantic_scholar(topic: str, limit: int) -> List:
             abstract=abstract.replace("\n", " ").strip()[:500],
             published=year,
             updated="",
-            abs_url=f"https://doi.org/{doi}" if doi else (
-                f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else ""
-            ),
+            abs_url=f"https://doi.org/{doi}"
+            if doi
+            else (f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else ""),
             pdf_url="",
             doi=doi,
         )

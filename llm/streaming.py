@@ -25,6 +25,7 @@ from config import MODEL_PRICES
 @dataclass
 class UsageSnapshot:
     """Token usage for a single LLM call."""
+
     prompt_tokens: int = 0
     completion_tokens: int = 0
     total_tokens: int = 0
@@ -58,9 +59,7 @@ class StreamingCostTracker:
         self._start_time = time.time()
 
         try:
-            for delta in stream_llm_chat_completions(
-                messages=messages, model=self.model, **kwargs
-            ):
+            for delta in stream_llm_chat_completions(messages=messages, model=self.model, **kwargs):
                 self._chars_yielded += len(delta)
                 yield delta
         finally:

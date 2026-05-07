@@ -70,6 +70,7 @@ def render_log(paper_id: Optional[str] = None) -> str:
         if seen_ids:
             try:
                 from db.database import Database
+
                 db = Database()
                 db.init()
                 for pid in seen_ids:

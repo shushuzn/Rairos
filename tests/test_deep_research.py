@@ -75,10 +75,12 @@ from db.database import Database
 # Cleanup: remove fake stubs after this module's tests finish
 # ---------------------------------------------------------------------------
 
+
 def pytest_sessionfinish(session, exitstatus):
     """Clean up fake stub modules when test session ends."""
-    stubs = [n for n, m in sys.modules.items()
-             if isinstance(m, types.ModuleType) and m.__spec__ is None]
+    stubs = [
+        n for n, m in sys.modules.items() if isinstance(m, types.ModuleType) and m.__spec__ is None
+    ]
     for n in stubs:
         sys.modules.pop(n, None)
 
@@ -114,7 +116,9 @@ def _make_paper_snapshot(arxiv_id: str = "2301.00001", title: str = "Paper A"):
 def _make_capsule(outcome_success_score=0.8, trigger_keywords=None):
     cap = MagicMock()
     cap.outcome_success_score = outcome_success_score
-    cap.trigger_keywords = trigger_keywords if trigger_keywords is not None else ["keyword1", "keyword2"]
+    cap.trigger_keywords = (
+        trigger_keywords if trigger_keywords is not None else ["keyword1", "keyword2"]
+    )
     return cap
 
 

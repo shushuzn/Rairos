@@ -69,7 +69,7 @@ class EventBus:
             # Store in history
             self._history.append(event)
             if len(self._history) > self._max_history:
-                self._history = self._history[-self._max_history:]
+                self._history = self._history[-self._max_history :]
             # Snapshot subscribers under lock
             subs = list(self._subscribers.get(event_type, []))
             # Also notify wildcard listeners
@@ -361,10 +361,7 @@ class SSEServer:
             self._clients[client_id] = q
 
         # Send initial connection event
-        await q.put(
-            f"event: connected\ndata: "
-            f'{{"client_id":"{client_id}","filter":"{ftype}"}}\n\n'
-        )
+        await q.put(f'event: connected\ndata: {{"client_id":"{client_id}","filter":"{ftype}"}}\n\n')
 
         # Send recent history for the filtered type
         history = self._event_bus.get_history(
@@ -381,7 +378,7 @@ class SSEServer:
                     line = await asyncio.wait_for(q.get(), timeout=60)
                     yield line.encode("utf-8")
             except asyncio.TimeoutError:
-                        yield b""
+                yield b""
             except Exception:
                 pass
             finally:

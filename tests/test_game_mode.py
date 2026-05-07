@@ -56,7 +56,9 @@ class TestLoadCapsules:
 
     def test_parses_capsules_json(self):
         """Should parse capsules from JSON file."""
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8") as f:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".json", delete=False, encoding="utf-8"
+        ) as f:
             json.dump({"capsules": [{"id": "c1", "status": "active"}]}, f)
             f.flush()
             with patch("llm.game_mode.CAPSULES_PATH", Path(f.name)):
@@ -95,11 +97,14 @@ class TestCheckGapExtractor:
 
     def test_returns_false_when_fewer_than_10_active(self):
         """Should return False when fewer than 10 active capsules."""
-        with patch("llm.game_mode._load_capsules", return_value=[
-            {"status": "active"},
-            {"status": "active"},
-            {"status": "active"},
-        ]):
+        with patch(
+            "llm.game_mode._load_capsules",
+            return_value=[
+                {"status": "active"},
+                {"status": "active"},
+                {"status": "active"},
+            ],
+        ):
             assert _check_gap_extractor() is False
 
     def test_returns_true_when_10_or_more_active(self):
@@ -126,24 +131,33 @@ class TestCheckEvolutionMaster:
 
     def test_returns_false_when_no_evolved_capsules(self):
         """Should return False when no capsules have evolved_from."""
-        with patch("llm.game_mode._load_capsules", return_value=[
-            {"id": "c1"},
-            {"id": "c2"},
-        ]):
+        with patch(
+            "llm.game_mode._load_capsules",
+            return_value=[
+                {"id": "c1"},
+                {"id": "c2"},
+            ],
+        ):
             assert _check_evolution_master() is False
 
     def test_returns_true_when_evolved_from_present(self):
         """Should return True when any capsule has evolved_from."""
-        with patch("llm.game_mode._load_capsules", return_value=[
-            {"id": "c1", "evolved_from": "c0"},
-        ]):
+        with patch(
+            "llm.game_mode._load_capsules",
+            return_value=[
+                {"id": "c1", "evolved_from": "c0"},
+            ],
+        ):
             assert _check_evolution_master() is True
 
     def test_returns_true_when_source_cap_id_present(self):
         """Should return True when any capsule has source_cap_id."""
-        with patch("llm.game_mode._load_capsules", return_value=[
-            {"id": "c1", "source_cap_id": "c0"},
-        ]):
+        with patch(
+            "llm.game_mode._load_capsules",
+            return_value=[
+                {"id": "c1", "source_cap_id": "c0"},
+            ],
+        ):
             assert _check_evolution_master() is True
 
 
@@ -153,26 +167,21 @@ class TestCheckBoldExplorer:
     def test_counts_theoretical_gap_capsules(self):
         """theoretical_gap gap type counts toward bold explorer."""
         capsules = [
-            {"action_gap_type": "theoretical_gap", "polarity": "positive"}
-            for _ in range(5)
+            {"action_gap_type": "theoretical_gap", "polarity": "positive"} for _ in range(5)
         ]
         with patch("llm.game_mode._load_capsules", return_value=capsules):
             assert _check_bold_explorer() is True
 
     def test_counts_negative_polarity_capsules(self):
         """Negative polarity counts toward bold explorer."""
-        capsules = [
-            {"action_gap_type": "other", "polarity": "negative"}
-            for _ in range(5)
-        ]
+        capsules = [{"action_gap_type": "other", "polarity": "negative"} for _ in range(5)]
         with patch("llm.game_mode._load_capsules", return_value=capsules):
             assert _check_bold_explorer() is True
 
     def test_requires_5_or_more(self):
         """Need 5+ bold capsules."""
         capsules = [
-            {"action_gap_type": "theoretical_gap", "polarity": "positive"}
-            for _ in range(4)
+            {"action_gap_type": "theoretical_gap", "polarity": "positive"} for _ in range(4)
         ]
         with patch("llm.game_mode._load_capsules", return_value=capsules):
             assert _check_bold_explorer() is False
@@ -210,17 +219,25 @@ class TestCheckParadigmSentinel:
 
     def test_returns_false_when_check_fails(self):
         """Should return False when check_paradigm_concentration raises."""
-        with patch("llm.paradigm_monitor.check_paradigm_concentration", side_effect=Exception("error")):
+        with patch(
+            "llm.paradigm_monitor.check_paradigm_concentration", side_effect=Exception("error")
+        ):
             assert _check_paradigm_sentinel() is False
 
     def test_returns_true_when_alert_triggered(self):
         """Should return True when alert_triggered is True."""
-        with patch("llm.paradigm_monitor.check_paradigm_concentration", return_value={"alert_triggered": True}):
+        with patch(
+            "llm.paradigm_monitor.check_paradigm_concentration",
+            return_value={"alert_triggered": True},
+        ):
             assert _check_paradigm_sentinel() is True
 
     def test_returns_false_when_alert_not_triggered(self):
         """Should return False when alert_triggered is False."""
-        with patch("llm.paradigm_monitor.check_paradigm_concentration", return_value={"alert_triggered": False}):
+        with patch(
+            "llm.paradigm_monitor.check_paradigm_concentration",
+            return_value={"alert_triggered": False},
+        ):
             assert _check_paradigm_sentinel() is False
 
 
@@ -235,7 +252,9 @@ class TestComputeBadges:
                     with patch("llm.game_mode._check_evolution_master", return_value=False):
                         with patch("llm.game_mode._check_bold_explorer", return_value=False):
                             with patch("llm.game_mode._check_rigor_rater", return_value=False):
-                                with patch("llm.game_mode._check_paradigm_sentinel", return_value=False):
+                                with patch(
+                                    "llm.game_mode._check_paradigm_sentinel", return_value=False
+                                ):
                                     badges = compute_badges()
                                     assert isinstance(badges, list)
                                     assert all(isinstance(b, Badge) for b in badges)
@@ -248,7 +267,9 @@ class TestComputeBadges:
                     with patch("llm.game_mode._check_evolution_master", return_value=False):
                         with patch("llm.game_mode._check_bold_explorer", return_value=False):
                             with patch("llm.game_mode._check_rigor_rater", return_value=False):
-                                with patch("llm.game_mode._check_paradigm_sentinel", return_value=False):
+                                with patch(
+                                    "llm.game_mode._check_paradigm_sentinel", return_value=False
+                                ):
                                     badges = compute_badges()
                                     ch = next(b for b in badges if b.id == "contradiction_hunter")
                                     assert ch.earned is True
@@ -261,22 +282,27 @@ class TestComputeBadges:
                     with patch("llm.game_mode._check_evolution_master", return_value=False):
                         with patch("llm.game_mode._check_bold_explorer", return_value=False):
                             with patch("llm.game_mode._check_rigor_rater", return_value=False):
-                                with patch("llm.game_mode._check_paradigm_sentinel", return_value=False):
+                                with patch(
+                                    "llm.game_mode._check_paradigm_sentinel", return_value=False
+                                ):
                                     with patch("llm.game_mode._save_badges") as mock_save:
                                         compute_badges()
                                         mock_save.assert_called_once()
 
     def test_preserves_previously_earned_at(self):
         """Should preserve earned_at from previous badges file."""
-        with patch("llm.game_mode._load_badges", return_value={
-            "contradiction_hunter": {"earned_at": "2024-01-01T00:00:00"}
-        }):
+        with patch(
+            "llm.game_mode._load_badges",
+            return_value={"contradiction_hunter": {"earned_at": "2024-01-01T00:00:00"}},
+        ):
             with patch("llm.game_mode._check_contradiction_hunter", return_value=True):
                 with patch("llm.game_mode._check_gap_extractor", return_value=False):
                     with patch("llm.game_mode._check_evolution_master", return_value=False):
                         with patch("llm.game_mode._check_bold_explorer", return_value=False):
                             with patch("llm.game_mode._check_rigor_rater", return_value=False):
-                                with patch("llm.game_mode._check_paradigm_sentinel", return_value=False):
+                                with patch(
+                                    "llm.game_mode._check_paradigm_sentinel", return_value=False
+                                ):
                                     badges = compute_badges()
                                     ch = next(b for b in badges if b.id == "contradiction_hunter")
                                     assert "2024-01-01" in (ch.earned_at or "")

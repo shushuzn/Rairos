@@ -19,7 +19,12 @@ _local = threading.local()
 
 def _get_conn(db_path: Path) -> sqlite3.Connection:
     """Get a thread-local SQLite connection, cached by db_path."""
-    if not hasattr(_local, "conn") or _local.conn is None or not hasattr(_local, "db_path") or _local.db_path != str(db_path):
+    if (
+        not hasattr(_local, "conn")
+        or _local.conn is None
+        or not hasattr(_local, "db_path")
+        or _local.db_path != str(db_path)
+    ):
         _local.conn = sqlite3.connect(str(db_path))
         _local.conn.row_factory = sqlite3.Row
         _local.conn.execute("PRAGMA journal_mode=WAL")
@@ -90,6 +95,7 @@ def _capsule_from_row(row: sqlite3.Row) -> CapsuleGene:
     # Reconstruct title_embedding from BLOB if present in row
     if "title_embedding" in row and row["title_embedding"]:
         import numpy as np
+
         vec = np.frombuffer(row["title_embedding"], dtype=np.float32)
         archetype["title_embedding"] = vec.tolist()
     return CapsuleGene(
@@ -117,12 +123,14 @@ def _capsule_from_row(row: sqlite3.Row) -> CapsuleGene:
 def _capsule_to_row(c: CapsuleGene) -> Dict[str, Any]:
     """Convert a CapsuleGene to a SQLite row dict."""
     import base64
+
     embedding_blob = None
     archetype = c.archetype or {}
     emb_list = archetype.get("title_embedding")
     if emb_list:
         try:
             import numpy as np
+
             vec = np.array(emb_list, dtype=np.float32)
             embedding_blob = vec.tobytes()
         except Exception:
@@ -208,20 +216,22 @@ def _insert_capsule(conn: sqlite3.Connection, c: CapsuleGene) -> None:
 
 
 # Valid gap types from GapType enum (llm/gap_detector.py)
-_VALID_GAP_TYPES = frozenset([
-    "unexplored_application",
-    "method_limitation",
-    "contradiction",
-    "evaluation_gap",
-    "scalability_issue",
-    "theoretical_gap",
-    "dataset_gap",
-    "generalization_gap",
-    "method_gap",
-    "exploration_gap",
-    "implementation",
-    "theory_gap",
-])
+_VALID_GAP_TYPES = frozenset(
+    [
+        "unexplored_application",
+        "method_limitation",
+        "contradiction",
+        "evaluation_gap",
+        "scalability_issue",
+        "theoretical_gap",
+        "dataset_gap",
+        "generalization_gap",
+        "method_gap",
+        "exploration_gap",
+        "implementation",
+        "theory_gap",
+    ]
+)
 
 # Mapping from legacy/unknown types to nearest valid type
 _GAP_TYPE_FALLBACK = {
@@ -254,6 +264,7 @@ def _compute_title_embedding(text: str) -> Optional[List[float]]:
     try:
         from sentence_transformers import SentenceTransformer
         import numpy as np
+
         model = SentenceTransformer("all-MiniLM-L6-v2")
         vec = model.encode(text, normalize_embeddings=True)
         return vec.tolist()
@@ -403,13 +414,20 @@ class CapsuleStorageMixin:
             capsule.trendslop = is_trendslop
             capsule.trendslop_reason = reason
             import math
+
             n = max(capsule.feedback_count, 1)
             evidence = capsule.outcome_success_score * math.log(n + 1) / math.log(12)
             novelty = max(0.0, 1.0 - overlap)
             source = 0.5
             consistency = 0.7
-            capsule.credibility_score = 0.35 * evidence + 0.30 * novelty + 0.20 * source + 0.15 * consistency
-            from llm.insight.credibility import CREDIBILITY_HIGH_THRESHOLD, CREDIBILITY_LOW_THRESHOLD
+            capsule.credibility_score = (
+                0.35 * evidence + 0.30 * novelty + 0.20 * source + 0.15 * consistency
+            )
+            from llm.insight.credibility import (
+                CREDIBILITY_HIGH_THRESHOLD,
+                CREDIBILITY_LOW_THRESHOLD,
+            )
+
             if capsule.credibility_score >= CREDIBILITY_HIGH_THRESHOLD:
                 capsule.credibility_badge = "high"
             elif capsule.credibility_score < CREDIBILITY_LOW_THRESHOLD:
@@ -460,10 +478,9 @@ class CapsuleStorageMixin:
         kg_capsule_boost: Dict[str, float] = {}
         try:
             from kg.manager import KGManager
+
             kg = KGManager()
-            _gp_nodes = {
-                n["entity_id"]: n for n in kg.get_all_nodes("GenePool-Capsule")
-            }
+            _gp_nodes = {n["entity_id"]: n for n in kg.get_all_nodes("GenePool-Capsule")}
             for cap in capsules:
                 if cap.status == "archived":
                     continue
@@ -475,7 +492,9 @@ class CapsuleStorageMixin:
                 if not source_node:
                     continue
                 # Check if source paper shares tags with query topic
-                source_edges = kg.get_edges_by_node(source_node["id"], direction="out", rel_type="same_tag")
+                source_edges = kg.get_edges_by_node(
+                    source_node["id"], direction="out", rel_type="same_tag"
+                )
                 topic_lower = topic.lower()
                 for edge in source_edges:
                     neighbor = kg.get_node(edge["target_id"])
@@ -484,7 +503,9 @@ class CapsuleStorageMixin:
                         break
                 # Also boost if source paper was cited by / cites a paper matching topic
                 if cap.capsule_id not in kg_capsule_boost:
-                    source_in_edges = kg.get_edges_by_node(source_node["id"], direction="in", rel_type="cite")
+                    source_in_edges = kg.get_edges_by_node(
+                        source_node["id"], direction="in", rel_type="cite"
+                    )
                     for edge in source_in_edges:
                         citing = kg.get_node(edge["source_id"])
                         if citing and topic_lower in citing.get("label", "").lower():
@@ -534,6 +555,7 @@ class CapsuleStorageMixin:
                 continue
             try:
                 import numpy as np
+
                 cap_vec = np.array(emb_list, dtype=np.float32)
                 q_vec = np.array(query_emb, dtype=np.float32)
                 # Both normalized → dot product = cosine similarity
@@ -580,6 +602,7 @@ class CapsuleStorageMixin:
                 if emb_list:
                     try:
                         import numpy as np
+
                         cap_vec = np.array(emb_list, dtype=np.float32)
                         q_vec = np.array(query_emb, dtype=np.float32)
                         sem_score = float(np.dot(cap_vec, q_vec))
@@ -626,7 +649,10 @@ class CapsuleStorageMixin:
 
     def archive_capsule(self, capsule_id: str) -> bool:
         conn = self._ensure_db()
-        cursor = conn.execute("SELECT action_gap_title, action_gap_type FROM capsules WHERE capsule_id = ?", (capsule_id,))
+        cursor = conn.execute(
+            "SELECT action_gap_title, action_gap_type FROM capsules WHERE capsule_id = ?",
+            (capsule_id,),
+        )
         row = cursor.fetchone()
         if not row:
             return False
@@ -705,10 +731,14 @@ class CapsuleStorageMixin:
         avg = conn.execute("SELECT AVG(outcome_success_score) FROM capsules").fetchone()[0] or 0.0
 
         by_type: Dict[str, int] = {}
-        for row in conn.execute("SELECT action_gap_type, COUNT(*) as cnt FROM capsules GROUP BY action_gap_type"):
+        for row in conn.execute(
+            "SELECT action_gap_type, COUNT(*) as cnt FROM capsules GROUP BY action_gap_type"
+        ):
             by_type[row["action_gap_type"]] = row["cnt"]
 
-        gens = conn.execute("SELECT DISTINCT evolved_generation FROM capsules ORDER BY evolved_generation").fetchall()
+        gens = conn.execute(
+            "SELECT DISTINCT evolved_generation FROM capsules ORDER BY evolved_generation"
+        ).fetchall()
         generations = [r["evolved_generation"] for r in gens]
 
         return {
@@ -729,7 +759,9 @@ class CapsuleStorageMixin:
     def get_capsule_by_title(self, gap_title: str, topic: str = "") -> Optional[CapsuleGene]:
         """Find a capsule by its action_gap_title (case-insensitive)."""
         conn = self._ensure_db()
-        query = "SELECT * FROM capsules WHERE LOWER(action_gap_title) = LOWER(?) AND status = 'active'"
+        query = (
+            "SELECT * FROM capsules WHERE LOWER(action_gap_title) = LOWER(?) AND status = 'active'"
+        )
         params: List[Any] = [gap_title]
         if topic:
             query += " AND LOWER(trigger_topic) = LOWER(?)"
@@ -757,7 +789,13 @@ class CapsuleStorageMixin:
         """
         events_file = self.data_dir / "events.jsonl"
         if not events_file.exists():
-            return {"error": "No events file found", "recall@3": 0.0, "recall@5": 0.0, "mrr": 0.0, "total": 0}
+            return {
+                "error": "No events file found",
+                "recall@3": 0.0,
+                "recall@5": 0.0,
+                "mrr": 0.0,
+                "total": 0,
+            }
 
         # Load ground-truth: ACCEPT events with known gap_title
         accepted: List[Dict[str, str]] = []
@@ -770,18 +808,32 @@ class CapsuleStorageMixin:
                     try:
                         ev = json.loads(line)
                         if ev.get("action") == "accepted" and ev.get("gap_title"):
-                            accepted.append({
-                                "topic": ev.get("topic", ""),
-                                "gap_type": ev.get("gap_type", ""),
-                                "gap_title": ev.get("gap_title", ""),
-                            })
+                            accepted.append(
+                                {
+                                    "topic": ev.get("topic", ""),
+                                    "gap_type": ev.get("gap_type", ""),
+                                    "gap_title": ev.get("gap_title", ""),
+                                }
+                            )
                     except Exception:
                         continue
         except Exception:
-            return {"error": "Failed to read events", "recall@3": 0.0, "recall@5": 0.0, "mrr": 0.0, "total": 0}
+            return {
+                "error": "Failed to read events",
+                "recall@3": 0.0,
+                "recall@5": 0.0,
+                "mrr": 0.0,
+                "total": 0,
+            }
 
         if not accepted:
-            return {"error": "No accepted events found", "recall@3": 0.0, "recall@5": 0.0, "mrr": 0.0, "total": 0}
+            return {
+                "error": "No accepted events found",
+                "recall@3": 0.0,
+                "recall@5": 0.0,
+                "mrr": 0.0,
+                "total": 0,
+            }
 
         # Filter out test/synthetic events that have no meaningful topic or gap_title
         def is_test_event(ev: Dict[str, str]) -> bool:
@@ -881,7 +933,9 @@ class CapsuleStorageMixin:
         # Generation distribution
         generation_counts: Dict[int, int] = {}
         for c in capsules:
-            generation_counts[c.evolved_generation] = generation_counts.get(c.evolved_generation, 0) + 1
+            generation_counts[c.evolved_generation] = (
+                generation_counts.get(c.evolved_generation, 0) + 1
+            )
 
         # Status breakdown
         status_counts: Dict[str, int] = {}
@@ -913,54 +967,74 @@ class CapsuleStorageMixin:
         evolved_count = generation_counts.get(1, 0)
 
         if trendslop_pct > 0.15:
-            alerts.append({
-                "level": "warning",
-                "code": "TRENDSLOP_HIGH",
-                "message": f"Trendslop {trendslop_pct:.1%} of pool (>{.15:.1%})",
-                "detail": {"count": len(trendslop_capsules), "pct": round(trendslop_pct, 3)},
-            })
+            alerts.append(
+                {
+                    "level": "warning",
+                    "code": "TRENDSLOP_HIGH",
+                    "message": f"Trendslop {trendslop_pct:.1%} of pool (>{0.15:.1%})",
+                    "detail": {"count": len(trendslop_capsules), "pct": round(trendslop_pct, 3)},
+                }
+            )
         if low_score_pct > 0.10:
-            alerts.append({
-                "level": "warning",
-                "code": "LOW_QUALITY_HIGH",
-                "message": f"Low-score capsules {low_score_pct:.1%} of pool (>{.10:.1%})",
-                "detail": {"count": low_score, "pct": round(low_score_pct, 3)},
-            })
+            alerts.append(
+                {
+                    "level": "warning",
+                    "code": "LOW_QUALITY_HIGH",
+                    "message": f"Low-score capsules {low_score_pct:.1%} of pool (>{0.10:.1%})",
+                    "detail": {"count": low_score, "pct": round(low_score_pct, 3)},
+                }
+            )
         if zero_feedback_pct > 0.30:
-            alerts.append({
-                "level": "info",
-                "code": "ZERO_FEEDBACK_HIGH",
-                "message": f"{zero_feedback_pct:.1%} capsules have zero feedback",
-                "detail": {"count": low_use, "pct": round(zero_feedback_pct, 3)},
-            })
+            alerts.append(
+                {
+                    "level": "info",
+                    "code": "ZERO_FEEDBACK_HIGH",
+                    "message": f"{zero_feedback_pct:.1%} capsules have zero feedback",
+                    "detail": {"count": low_use, "pct": round(zero_feedback_pct, 3)},
+                }
+            )
         if len(at_risk) > 0:
-            alerts.append({
-                "level": "critical",
-                "code": "AT_RISK",
-                "message": f"{len(at_risk)} capsule(s) at risk (streak≥2)",
-                "detail": {"count": len(at_risk)},
-            })
+            alerts.append(
+                {
+                    "level": "critical",
+                    "code": "AT_RISK",
+                    "message": f"{len(at_risk)} capsule(s) at risk (streak≥2)",
+                    "detail": {"count": len(at_risk)},
+                }
+            )
         if low_cred_pct > 0.20:
-            alerts.append({
-                "level": "warning",
-                "code": "CREDIBILITY_LOW_HIGH",
-                "message": f"Low-credibility capsules {low_cred_pct:.1%} of pool (>{.20:.1%})",
-                "detail": {"count": credibility_buckets.get("low", 0), "pct": round(low_cred_pct, 3)},
-            })
+            alerts.append(
+                {
+                    "level": "warning",
+                    "code": "CREDIBILITY_LOW_HIGH",
+                    "message": f"Low-credibility capsules {low_cred_pct:.1%} of pool (>{0.20:.1%})",
+                    "detail": {
+                        "count": credibility_buckets.get("low", 0),
+                        "pct": round(low_cred_pct, 3),
+                    },
+                }
+            )
         if archived_pct > 0.60:
-            alerts.append({
-                "level": "warning",
-                "code": "ARCHIVED_HIGH",
-                "message": f"Archived {archived_pct:.1%} of pool (>60%)",
-                "detail": {"count": status_counts.get("archived", 0), "pct": round(archived_pct, 3)},
-            })
+            alerts.append(
+                {
+                    "level": "warning",
+                    "code": "ARCHIVED_HIGH",
+                    "message": f"Archived {archived_pct:.1%} of pool (>60%)",
+                    "detail": {
+                        "count": status_counts.get("archived", 0),
+                        "pct": round(archived_pct, 3),
+                    },
+                }
+            )
         if total >= 200 and evolved_count == 0:
-            alerts.append({
-                "level": "warning",
-                "code": "EVOLUTION_STALLED",
-                "message": "No evolved (V2) capsules after 200+ total",
-                "detail": {"total": total, "evolved": evolved_count},
-            })
+            alerts.append(
+                {
+                    "level": "warning",
+                    "code": "EVOLUTION_STALLED",
+                    "message": "No evolved (V2) capsules after 200+ total",
+                    "detail": {"total": total, "evolved": evolved_count},
+                }
+            )
 
         return {
             "total": total,
@@ -974,7 +1048,9 @@ class CapsuleStorageMixin:
             "trendslop": {
                 "count": len(trendslop_capsules),
                 "pct": round(trendslop_pct, 3),
-                "top_reasons": dict(sorted(trendslop_reasons.items(), key=lambda x: x[1], reverse=True)[:3]),
+                "top_reasons": dict(
+                    sorted(trendslop_reasons.items(), key=lambda x: x[1], reverse=True)[:3]
+                ),
             },
             "feedback_distribution": {
                 "high_use (≥3)": high_use,
@@ -983,10 +1059,16 @@ class CapsuleStorageMixin:
             "generation_distribution": dict(sorted(generation_counts.items())),
             "status_breakdown": status_counts,
             "top_gap_types": dict(top_gap_types),
-            "arxiv_categories": dict(sorted(arxiv_categories.items(), key=lambda x: x[1], reverse=True)[:5]),
+            "arxiv_categories": dict(
+                sorted(arxiv_categories.items(), key=lambda x: x[1], reverse=True)[:5]
+            ),
             "at_risk_capsules": len(at_risk),
             "at_risk_detail": [
-                {"capsule_id": c.capsule_id, "title": c.action_gap_title[:40], "streak": c.low_score_streak}
+                {
+                    "capsule_id": c.capsule_id,
+                    "title": c.action_gap_title[:40],
+                    "streak": c.low_score_streak,
+                }
                 for c in at_risk[:5]
             ],
             "alerts": alerts,

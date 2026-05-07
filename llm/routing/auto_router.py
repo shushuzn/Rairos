@@ -22,16 +22,17 @@ from typing import Literal
 
 # Model tier definitions
 MODEL_TIER = {
-    "fast": "gpt-4o-mini",       # simple, fast, cheap
-    "balanced": "gpt-4o",         # medium complexity
+    "fast": "gpt-4o-mini",  # simple, fast, cheap
+    "balanced": "gpt-4o",  # medium complexity
     "powerful": "claude-3-5-sonnet",  # high complexity, reasoning-heavy
-    "ultra": "o1-preview",         # theoretical/mathematical proofs
+    "ultra": "o1-preview",  # theoretical/mathematical proofs
 }
 
 
 @dataclass
 class RoutePlan:
     """Output of auto-router: recommended model + iterations for a query."""
+
     model: str
     iterations: int  # recommended max_iterations
     effort: str  # "low" | "medium" | "high"
@@ -55,20 +56,50 @@ class AutoRouter:
 
     # Complexity thresholds for model tier selection
     CROSS_DOMAIN_KEYWORDS = [
-        "comparison", " vs ", " versus ", "combine", "hybrid",
-        "cross-domain", "transfer", "integration",
+        "comparison",
+        " vs ",
+        " versus ",
+        "combine",
+        "hybrid",
+        "cross-domain",
+        "transfer",
+        "integration",
     ]
     THEORY_KEYWORDS = [
-        "theory", "framework", "principle", "analysis", "understanding",
-        "proof", "theorem", "convergence", "optimal", "guarantee",
+        "theory",
+        "framework",
+        "principle",
+        "analysis",
+        "understanding",
+        "proof",
+        "theorem",
+        "convergence",
+        "optimal",
+        "guarantee",
     ]
     SPECIFIC_MODEL_KEYWORDS = [
-        "transformer", "llm", "gpt", "bert", "rlhf", "ppo", "lora",
-        "resnet", "lstm", "gan", "vae", "diffusion",
+        "transformer",
+        "llm",
+        "gpt",
+        "bert",
+        "rlhf",
+        "ppo",
+        "lora",
+        "resnet",
+        "lstm",
+        "gan",
+        "vae",
+        "diffusion",
     ]
     PRACTICAL_KEYWORDS = [
-        "implementation", "benchmark", "evaluation", "dataset",
-        "code", "build", "run", "experiment",
+        "implementation",
+        "benchmark",
+        "evaluation",
+        "dataset",
+        "code",
+        "build",
+        "run",
+        "experiment",
     ]
 
     def __init__(self, cost_sensitive: bool = False):

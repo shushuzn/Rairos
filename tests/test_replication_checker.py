@@ -79,9 +79,7 @@ class TestExtractLinks:
     def test_finds_github_url_with_context_keywords(self):
         """GitHub URL with 'code' context keyword should have high confidence."""
         checker = ReplicationChecker()
-        links = checker._extract_links(
-            "We released our code at https://github.com/team/repo"
-        )
+        links = checker._extract_links("We released our code at https://github.com/team/repo")
         assert len(links) == 1
         assert links[0].confidence == 1.0
 
@@ -90,18 +88,14 @@ class TestExtractLinks:
         checker = ReplicationChecker()
         # "github.com" in the URL itself is a context keyword, so confidence
         # will be 1.0 - this test verifies extraction works correctly
-        links = checker._extract_links(
-            "See https://github.com/xyz/abc123 for details"
-        )
+        links = checker._extract_links("See https://github.com/xyz/abc123 for details")
         assert len(links) == 1
         assert links[0].platform == "github"
 
     def test_finds_huggingface_url(self):
         """Should find HuggingFace URLs."""
         checker = ReplicationChecker()
-        links = checker._extract_links(
-            "Model available at https://huggingface.co/bert/bert-base"
-        )
+        links = checker._extract_links("Model available at https://huggingface.co/bert/bert-base")
         assert len(links) == 1
         assert links[0].platform == "huggingface"
         assert links[0].owner == "bert"
@@ -109,9 +103,7 @@ class TestExtractLinks:
     def test_finds_huggingface_spaces(self):
         """Should find HuggingFace Spaces URLs."""
         checker = ReplicationChecker()
-        links = checker._extract_links(
-            "Try it at https://huggingface.co/spaces/bert/demo"
-        )
+        links = checker._extract_links("Try it at https://huggingface.co/spaces/bert/demo")
         assert len(links) >= 1
         platforms = [l.platform for l in links]
         assert "huggingface" in platforms
@@ -119,9 +111,7 @@ class TestExtractLinks:
     def test_finds_gitlab_url(self):
         """Should find GitLab URLs."""
         checker = ReplicationChecker()
-        links = checker._extract_links(
-            "Repository: https://gitlab.com/team/repo"
-        )
+        links = checker._extract_links("Repository: https://gitlab.com/team/repo")
         assert len(links) == 1
         assert links[0].platform == "gitlab"
         assert links[0].owner == "team"
@@ -137,18 +127,14 @@ class TestExtractLinks:
     def test_handles_markdown_links(self):
         """Should handle markdown-style links without double-matching."""
         checker = ReplicationChecker()
-        links = checker._extract_links(
-            "[Our Code](https://github.com/team/repo)"
-        )
+        links = checker._extract_links("[Our Code](https://github.com/team/repo)")
         assert len(links) == 1
 
     def test_handles_plain_text_owner_repo(self):
         """Should find owner/repo format without full URL."""
         checker = ReplicationChecker()
         # The regex matches owner/repo without protocol - use .git suffix to match
-        links = checker._extract_links(
-            "Implementation: team/repo.git"
-        )
+        links = checker._extract_links("Implementation: team/repo.git")
         assert len(links) == 1
         assert links[0].platform == "github"
         assert links[0].owner == "team"
@@ -157,9 +143,7 @@ class TestExtractLinks:
     def test_handles_git_suffix(self):
         """Should strip .git suffix from repo names."""
         checker = ReplicationChecker()
-        links = checker._extract_links(
-            "https://github.com/team/repo.git"
-        )
+        links = checker._extract_links("https://github.com/team/repo.git")
         assert len(links) >= 1
         # Repo should have .git stripped
         repo_names = [l.repo for l in links]
@@ -168,9 +152,7 @@ class TestExtractLinks:
     def test_penalizes_citation_reference_style(self):
         """URLs near citation numbers like [1] should have lower confidence."""
         checker = ReplicationChecker()
-        links = checker._extract_links(
-            "Implementation [1]: https://github.com/team/repo"
-        )
+        links = checker._extract_links("Implementation [1]: https://github.com/team/repo")
         assert len(links) == 1
         assert links[0].confidence < 1.0
 
@@ -195,25 +177,19 @@ class TestDetectDependencyInfo:
     def test_detects_poetry(self):
         """Should detect poetry from pyproject.toml."""
         checker = ReplicationChecker()
-        info = checker._detect_dependency_info(
-            "use pyproject.toml with poetry", "github"
-        )
+        info = checker._detect_dependency_info("use pyproject.toml with poetry", "github")
         assert info.package_manager == "poetry"
 
     def test_detects_conda(self):
         """Should detect conda from environment.yml."""
         checker = ReplicationChecker()
-        info = checker._detect_dependency_info(
-            "setup with conda environment.yml", "github"
-        )
+        info = checker._detect_dependency_info("setup with conda environment.yml", "github")
         assert info.package_manager == "conda"
 
     def test_detects_npm(self):
         """Should detect npm from package.json."""
         checker = ReplicationChecker()
-        info = checker._detect_dependency_info(
-            "use package.json for dependencies", "github"
-        )
+        info = checker._detect_dependency_info("use package.json for dependencies", "github")
         assert info.package_manager == "npm"
 
     def test_detects_dependency_files(self):
@@ -228,26 +204,20 @@ class TestDetectDependencyInfo:
     def test_detects_python_version(self):
         """Should extract Python version hint."""
         checker = ReplicationChecker()
-        info = checker._detect_dependency_info(
-            "Requires Python 3.8 or higher", "github"
-        )
+        info = checker._detect_dependency_info("Requires Python 3.8 or higher", "github")
         assert info.python_version == "python 3.8"
 
     def test_detects_gpu_hardware(self):
         """Should detect GPU hardware requirement."""
         checker = ReplicationChecker()
-        info = checker._detect_dependency_info(
-            "Requires GPU with CUDA support", "github"
-        )
+        info = checker._detect_dependency_info("Requires GPU with CUDA support", "github")
         assert "GPU (NVIDIA recommended)" in info.hardware
         assert "NVIDIA CUDA" in info.hardware
 
     def test_detects_special_libs(self):
         """Should detect special library requirements."""
         checker = ReplicationChecker()
-        info = checker._detect_dependency_info(
-            "uses PyTorch and transformers library", "github"
-        )
+        info = checker._detect_dependency_info("uses PyTorch and transformers library", "github")
         lib_names = [lib.split()[0] for lib in info.special_requirements]
         assert "torch" in lib_names or "PyTorch" in str(info.special_requirements)
         assert "transformers" in lib_names or "HuggingFace" in str(info.special_requirements)
@@ -255,25 +225,19 @@ class TestDetectDependencyInfo:
     def test_detects_disk_space_gb(self):
         """Should parse disk space from text."""
         checker = ReplicationChecker()
-        info = checker._detect_dependency_info(
-            "Requires 500GB disk space", "github"
-        )
+        info = checker._detect_dependency_info("Requires 500GB disk space", "github")
         assert info.disk_space_gb == 500
 
     def test_detects_disk_space_tb(self):
         """Should convert TB to GB."""
         checker = ReplicationChecker()
-        info = checker._detect_dependency_info(
-            "Dataset requires 2TB storage", "github"
-        )
+        info = checker._detect_dependency_info("Dataset requires 2TB storage", "github")
         assert info.disk_space_gb == 2048
 
     def test_detects_ram_gb(self):
         """Should parse RAM requirement."""
         checker = ReplicationChecker()
-        info = checker._detect_dependency_info(
-            "Needs 64GB RAM", "github"
-        )
+        info = checker._detect_dependency_info("Needs 64GB RAM", "github")
         assert info.ram_gb == 64
 
 

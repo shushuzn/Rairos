@@ -213,7 +213,9 @@ class PaperPipeline:
                 print("[paper2code] Extracting assertions and generating tests...")
                 try:
                     with _span("stage3_extract_tests"):
-                        suite = extract_tests(content, code, module_name=module_name, framework=framework)
+                        suite = extract_tests(
+                            content, code, module_name=module_name, framework=framework
+                        )
                         if save_tests:
                             save_tests(suite, test_dir, framework=framework)
                         print(f"[paper2code] Tests: {len(suite.test_cases)} test cases")

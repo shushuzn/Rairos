@@ -33,14 +33,16 @@ def signal(event_keyword: str) -> Dict[str, Any]:
             kw_overlap = sum(1 for kw in c.trigger_keywords if kw.lower() in event_keyword.lower())
             text_match = kw_overlap * 0.15
             total = score + text_match
-            matches.append({
-                "capsule_id": c.capsule_id,
-                "title": c.action_gap_title,
-                "type": c.action_gap_type,
-                "score": c.outcome_success_score,
-                "credibility": c.credibility_badge,
-                "match": round(total, 3),
-            })
+            matches.append(
+                {
+                    "capsule_id": c.capsule_id,
+                    "title": c.action_gap_title,
+                    "type": c.action_gap_type,
+                    "score": c.outcome_success_score,
+                    "credibility": c.credibility_badge,
+                    "match": round(total, 3),
+                }
+            )
 
     matches.sort(key=lambda x: x["match"], reverse=True)
 
@@ -95,6 +97,7 @@ def _recommendation(level: str, top_matches: List) -> str:
 def render_signal(result: Dict[str, Any]) -> str:
     """Render signal report."""
     from cli._shared import Colors as C
+
     _RED = getattr(C, "FAIL", C.END)
     _GREEN = getattr(C, "GREEN", C.END)
     _YELLOW = getattr(C, "WARNING", C.END)
@@ -110,23 +113,23 @@ def render_signal(result: Dict[str, Any]) -> str:
     ]
 
     if result.get("capsule_matches"):
-        lines.append(f"  {_YELLOW}Historical Pattern Matches{ C.END}")
+        lines.append(f"  {_YELLOW}Historical Pattern Matches{C.END}")
         for m in result["capsule_matches"][:3]:
             lines.append(f"  match={m['match']:.2f} [{m['credibility'].upper()}] {m['title'][:55]}")
         lines.append("")
 
     if result.get("markets"):
-        lines.append(f"  {_YELLOW}Current Markets{ C.END}")
+        lines.append(f"  {_YELLOW}Current Markets{C.END}")
         for k, v in result["markets"].items():
             lines.append(f"  {k:<8} {str(v.get('price', '')):>8}  {v.get('change', '?')}")
         lines.append("")
 
     if result.get("impact_sectors"):
-        lines.append(f"  {_YELLOW}Impact Sectors{ C.END}")
+        lines.append(f"  {_YELLOW}Impact Sectors{C.END}")
         lines.append(f"  {', '.join(result['impact_sectors'])}")
         lines.append("")
 
-    lines.append(f"  {_YELLOW}Recommendation{ C.END}")
+    lines.append(f"  {_YELLOW}Recommendation{C.END}")
     lines.append(f"  {result.get('recommendation', '')}")
     lines.append(f"  {C.CYAN}═══════════════════════════════════{C.END}")
     return "\n".join(lines)

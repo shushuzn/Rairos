@@ -124,7 +124,9 @@ class SourceTrustTracker:
 
         # Rolling averages
         n = entry.capsule_count
-        entry.avg_success_score = (entry.avg_success_score * n + capsule.outcome_success_score) / (n + 1)
+        entry.avg_success_score = (entry.avg_success_score * n + capsule.outcome_success_score) / (
+            n + 1
+        )
         entry.avg_feedback_count = (entry.avg_feedback_count * n + capsule.feedback_count) / (n + 1)
         entry.capsule_count = n + 1
         entry.last_updated = datetime.now().isoformat()
@@ -229,7 +231,9 @@ class SourceTrustTracker:
         lines.append(
             ".trust-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #7a7570; }"
         )
-        lines.append(".trust-bar { height: 1.4em; border-radius: 4px; font-size: 0.8rem; color: white; display: inline-block; text-align: center; }")
+        lines.append(
+            ".trust-bar { height: 1.4em; border-radius: 4px; font-size: 0.8rem; color: white; display: inline-block; text-align: center; }"
+        )
         lines.append("</style>")
         lines.append("</div>")
         return "\n".join(lines)
@@ -243,8 +247,10 @@ class SourceTrustTracker:
         entries.sort(key=lambda e: e.trust_score, reverse=True)
 
         lines = ["=== Source Trust Scores ===", ""]
-        lines.append(f"  {'Category':<25} {'Trust':<8} {'Count':<6} {'Avg Score':<10} {'Accept Rate':<12}")
-        lines.append(f"  {'─'*25} {'─'*8} {'─'*6} {'─'*10} {'─'*12}")
+        lines.append(
+            f"  {'Category':<25} {'Trust':<8} {'Count':<6} {'Avg Score':<10} {'Accept Rate':<12}"
+        )
+        lines.append(f"  {'─' * 25} {'─' * 8} {'─' * 6} {'─' * 10} {'─' * 12}")
 
         for e in entries:
             bar_len = int(e.trust_score * 10)

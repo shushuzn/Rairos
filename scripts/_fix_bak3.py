@@ -1,4 +1,5 @@
 """Fix gene_pool_backup route."""
+
 with open("web/routes_gene_pool.py", encoding="utf-8") as f:
     c = f.read()
 
@@ -34,5 +35,6 @@ with open("web/routes_gene_pool.py", "w", encoding="utf-8") as f:
     f.write(c)
 
 import py_compile
+
 py_compile.compile("web/routes_gene_pool.py", doraise=True)
 print("OK")

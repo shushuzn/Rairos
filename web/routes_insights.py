@@ -1,4 +1,5 @@
 """Insights, impact, and experiment tracking routes."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
@@ -29,24 +30,45 @@ async def insights(request: Request):
         tracker = EvolutionTracker()
         caps = tracker._load_capsules()
         for c in caps[-20:]:
-            capsules.append((c.capsule_id[:12], c.trigger_topic[:60], c.action_gap_type,
-                           c.action_gap_title[:80], c.outcome_success_score,
-                           c.created_at[:10], c.trigger_keywords[:5], c.status))
+            capsules.append(
+                (
+                    c.capsule_id[:12],
+                    c.trigger_topic[:60],
+                    c.action_gap_type,
+                    c.action_gap_title[:80],
+                    c.outcome_success_score,
+                    c.created_at[:10],
+                    c.trigger_keywords[:5],
+                    c.status,
+                )
+            )
         stats = tracker.get_gene_pool_stats()
         profile = tracker.get_profile()
-        gap_prefs = dict(sorted((profile.gap_type_preferences or {}).items(), key=lambda x: x[1], reverse=True))
-        topic_freq = dict(sorted((profile.topic_frequency or {}).items(), key=lambda x: x[1], reverse=True)[:8])
+        gap_prefs = dict(
+            sorted((profile.gap_type_preferences or {}).items(), key=lambda x: x[1], reverse=True)
+        )
+        topic_freq = dict(
+            sorted((profile.topic_frequency or {}).items(), key=lambda x: x[1], reverse=True)[:8]
+        )
         exp_stats = tracker.get_exploration_stats()
     except Exception:
         pass
     return templates.TemplateResponse(
-        request, "insights.html",
-        {"page": "insights", "capsules": capsules, "gene_pool_stats": stats,
-         "archetype": archetype, "gap_prefs": gap_prefs, "topic_freq": topic_freq,
-         "events": events_display, "exp_stats": exp_stats,
-         "suggestions": suggestions, "prefetched_ids": prefetched_ids},
+        request,
+        "insights.html",
+        {
+            "page": "insights",
+            "capsules": capsules,
+            "gene_pool_stats": stats,
+            "archetype": archetype,
+            "gap_prefs": gap_prefs,
+            "topic_freq": topic_freq,
+            "events": events_display,
+            "exp_stats": exp_stats,
+            "suggestions": suggestions,
+            "prefetched_ids": prefetched_ids,
+        },
     )
-
 
 
 @router.post("/insights/accept-suggestion")
@@ -105,8 +127,6 @@ async def accept_suggestion(request: Request):
 
         logging.getLogger(__name__).warning(f"accept_suggestion failed: {e}")
         return {"success": False, "error": str(e)}
-
-
 
 
 @router.get("/impact")
@@ -174,8 +194,6 @@ async def insights_experiments(request: Request):
     )
 
 
-
-
 @router.post("/insights/generate-experiment")
 async def generate_experiment(request: Request):
     """Generate a concrete experiment proposal from a gap/suggestion.
@@ -196,6 +214,7 @@ async def generate_experiment(request: Request):
     if source_cap_id:
         try:
             from llm.gene_pool_io import load_capsules
+
             capsules = load_capsules()
             for c in capsules:
                 if c.get("capsule_id", "") == source_cap_id:
@@ -247,7 +266,6 @@ async def generate_experiment(request: Request):
         return {"success": False, "error": str(e)}
 
 
-
 @router.post("/insights/run-experiment")
 async def run_experiment(request: Request):
     """Trigger paper2code pipeline for an experiment proposal (background)."""
@@ -296,5 +314,3 @@ async def run_experiment(request: Request):
     t = threading.Thread(target=_run, daemon=True)
     t.start()
     return {"success": True, "message": f"Experiment '{exp_id}' started in background"}
-
-

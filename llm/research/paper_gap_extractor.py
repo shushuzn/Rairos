@@ -27,10 +27,14 @@ from llm.research.contradiction_detector import (
     detect_contradictions,
 )
 
+
 # Lazy LLM import
 def _call_llm(messages: list, model: Optional[str] = None, api_key: Optional[str] = None):
     from llm.client import call_llm_chat_completions
-    return call_llm_chat_completions(messages=messages, model=model or "claude-3-5-sonnet-latest", api_key=api_key)
+
+    return call_llm_chat_completions(
+        messages=messages, model=model or "claude-3-5-sonnet-latest", api_key=api_key
+    )
 
 
 def analyze_gap(
@@ -110,6 +114,7 @@ def analyze_gap(
 
         if gap_type == "embodied_planning":
             from llm.research.embodied_planning import track_embodied_evolution
+
             track_embodied_evolution(
                 paper_id=paper_id,
                 title=title,
@@ -156,6 +161,7 @@ def batch_analyze_embodied_planning(
     """Batch analyze multiple papers for embodied planning representation types."""
     if db is None:
         from db.database import Database
+
         db = Database()
 
     results = []
@@ -192,6 +198,7 @@ def semantic_search_papers(
     """Semantic search across papers in the database."""
     if db is None:
         from db.database import Database
+
         db = Database()
 
     rows, _ = db.search_papers(query, limit=top_k * 2)
@@ -201,7 +208,9 @@ def semantic_search_papers(
         content = f"{getattr(row, 'title', '')} {getattr(row, 'abstract', '')}".lower()
         matched = sum(1 for t in query_tokens if t in content)
         if matched > 0:
-            scored.append({"score": matched, "matched_terms": list(query_tokens & set(content.split()))})
+            scored.append(
+                {"score": matched, "matched_terms": list(query_tokens & set(content.split()))}
+            )
 
     scored.sort(key=lambda x: x["score"], reverse=True)
     return scored[:top_k]
@@ -256,9 +265,16 @@ Respond ONLY with JSON (no markdown):
     try:
         content = _call_llm([{"role": "user", "content": prompt}], model=model)
         import json as _json
+
         return _json.loads(content.strip())
     except Exception as e:
-        return {"error": str(e), "shared_themes": [], "complementary_gaps": [], "frontier_gaps": [], "contradictions": []}
+        return {
+            "error": str(e),
+            "shared_themes": [],
+            "complementary_gaps": [],
+            "frontier_gaps": [],
+            "contradictions": [],
+        }
 
 
 def gaps_to_research_questions(
@@ -306,6 +322,7 @@ Respond ONLY with the JSON object."""
     try:
         content = _call_llm([{"role": "user", "content": prompt}], model=model)
         import json as _json
+
         result = _json.loads(content.strip())
         result["gap_count"] = len(frontier_gaps)
         return result
@@ -315,11 +332,13 @@ Respond ONLY with the JSON object."""
 
 def add_research_note(paper_id, note, tags=None):
     from llm.research_log import add_note
+
     return add_note(paper_id, note, tags)
 
 
 def get_research_notes(paper_id=None, limit=20):
     from llm.research_log import get_notes
+
     return get_notes(paper_id=paper_id, limit=limit)
 
 
@@ -330,7 +349,9 @@ def generate_hypothesis_from_contradiction(contradiction_pair: dict) -> str:
     effect_a = contradiction_pair.get("effectiveness_a", "").lower().strip()
     effect_b = contradiction_pair.get("effectiveness_b", "").lower().strip()
 
-    if ("discrete" in rep_a and "continuous" in rep_b) or ("continuous" in rep_a and "discrete" in rep_b):
+    if ("discrete" in rep_a and "continuous" in rep_b) or (
+        "continuous" in rep_a and "discrete" in rep_b
+    ):
         return (
             "Hybrid architecture combining discrete reasoning with continuous execution may capture "
             "benefits of both: use discrete latent tokens for high-level planning and continuous "
@@ -355,6 +376,7 @@ def append_hypothesis_to_roadmap(
     """Append a hypothesis to ROADMAP.md under ### Pending Hypotheses."""
     try:
         from pathlib import Path
+
         roadmap_path = Path("D:/OpenClaw/workspace/80-PROJECTS/ai_research_os/ROADMAP.md")
         if not roadmap_path.exists():
             return False
@@ -397,6 +419,7 @@ def run_embodied_analysis(
     """Run embodied planning analysis on a list of paper IDs."""
     if db is None:
         from db.database import Database
+
         db = Database()
         db.init()
 

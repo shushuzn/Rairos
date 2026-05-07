@@ -1,4 +1,5 @@
 """Re-export from llm.research.hypothesis_generator for backward compatibility."""
+
 from llm.research.hypothesis_generator import (
     HypothesisType,
     RiskLevel,

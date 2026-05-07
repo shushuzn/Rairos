@@ -84,6 +84,7 @@ class TestEvents:
 
         # Test render_event_report with error result
         from llm.events import render_event_report
+
         rendered = render_event_report({"error": "No news found"})
         assert "Error" in rendered
 
@@ -121,9 +122,15 @@ class TestSignal:
     def test_render_signal_empty(self):
         from llm.signal import render_signal
 
-        result = {"event": "test", "signal": "LOW", "timestamp": "2026-01-01T00:00",
-                   "capsule_matches": [], "markets": {}, "impact_sectors": [],
-                   "recommendation": "No significant match."}
+        result = {
+            "event": "test",
+            "signal": "LOW",
+            "timestamp": "2026-01-01T00:00",
+            "capsule_matches": [],
+            "markets": {},
+            "impact_sectors": [],
+            "recommendation": "No significant match.",
+        }
         rendered = render_signal(result)
         assert "Signal" in rendered
         assert "LOW" in rendered

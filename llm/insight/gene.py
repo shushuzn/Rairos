@@ -106,16 +106,25 @@ class CapsuleGene:
             else:
                 # Partial credit: gap_type category overlap (e.g., "improvement" ~ "method_gap")
                 _primary_categories = {
-                    "improvement", "method_gap", "method_limitation", "capability",
-                    "application_gap", "exploration_gap", "embodied_planning",
-                    "cross_domain", "theoretical", "empirical",
+                    "improvement",
+                    "method_gap",
+                    "method_limitation",
+                    "capability",
+                    "application_gap",
+                    "exploration_gap",
+                    "embodied_planning",
+                    "cross_domain",
+                    "theoretical",
+                    "empirical",
                 }
+
                 def category_of(gt: str) -> str:
                     if gt in ("improvement", "method_gap", "method_limitation"):
                         return "method"
                     if gt in ("application_gap", "exploration_gap", "capability"):
                         return "content"
                     return gt
+
                 if category_of(gap_type) == category_of(self.trigger_gap_type):
                     score += 0.1
 
@@ -133,7 +142,20 @@ class CapsuleGene:
             topic_tokens = set(topic.lower().split())
             title_tokens = set(action_title.lower().split())
             # Remove stopwords
-            stopwords = {"for", "with", "and", "the", "a", "an", "of", "in", "on", "to", "is", "are"}
+            stopwords = {
+                "for",
+                "with",
+                "and",
+                "the",
+                "a",
+                "an",
+                "of",
+                "in",
+                "on",
+                "to",
+                "is",
+                "are",
+            }
             topic_tokens -= stopwords
             title_tokens -= stopwords
             if topic_tokens and title_tokens:

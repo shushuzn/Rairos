@@ -84,7 +84,9 @@ def discover(force: bool = False) -> Dict[str, Any]:
     new_patterns = []
 
     # Pattern 1: Hormuz-related events → oil price impact
-    hormuz_caps = [c for c in event_caps if "hormuz" in str(c["title"]).lower() or "石油" in str(c["title"])]
+    hormuz_caps = [
+        c for c in event_caps if "hormuz" in str(c["title"]).lower() or "石油" in str(c["title"])
+    ]
     if hormuz_caps and "USOIL" in markets:
         oil_change = float(markets["USOIL"].get("change_pct", "0"))
         if abs(oil_change) > 2:
@@ -100,7 +102,13 @@ def discover(force: bool = False) -> Dict[str, Any]:
             new_patterns.append(pattern)
 
     # Pattern 2: Military escalation → safe haven (gold)
-    military_caps = [c for c in event_caps if "military" in str(c["title"]).lower() or "导弹" in str(c["title"]) or "ceasefire" in str(c["title"]).lower()]
+    military_caps = [
+        c
+        for c in event_caps
+        if "military" in str(c["title"]).lower()
+        or "导弹" in str(c["title"])
+        or "ceasefire" in str(c["title"]).lower()
+    ]
     if military_caps and "XAUUSD" in markets:
         gold_change = float(markets["XAUUSD"].get("change_pct", "0"))
         if abs(gold_change) > 1:
@@ -156,6 +164,7 @@ def discover(force: bool = False) -> Dict[str, Any]:
 def render_discovery(result: Dict[str, Any]) -> str:
     """Render discovery results."""
     from cli._shared import Colors as C
+
     _YELLOW = getattr(C, "WARNING", C.END)
     _GREEN = getattr(C, "GREEN", C.END)
 
@@ -163,11 +172,11 @@ def render_discovery(result: Dict[str, Any]) -> str:
         f"\n  {C.CYAN}═══ Pattern Discovery ═══{C.END}",
     ]
     if result.get("new_patterns"):
-        lines.append(f"  {_GREEN}{result['patterns_discovered']} new patterns discovered{ C.END}")
+        lines.append(f"  {_GREEN}{result['patterns_discovered']} new patterns discovered{C.END}")
         lines.append(f"  Total stored: {result['total_patterns']}")
         lines.append("")
         for p in result["new_patterns"]:
-            lines.append(f"  {_YELLOW}[{p['type']}]{ C.END}")
+            lines.append(f"  {_YELLOW}[{p['type']}]{C.END}")
             for k, v in p.items():
                 if k != "type" and k != "discovered_at" and v is not None:
                     lines.append(f"    {k}: {v}")
@@ -175,7 +184,9 @@ def render_discovery(result: Dict[str, Any]) -> str:
     else:
         lines.append("  No new patterns discovered this cycle.")
 
-    lines.append(f"  Gene Pool: {result.get('event_capsules', 0)} event capsules, {result.get('research_capsules', 0)} research")
+    lines.append(
+        f"  Gene Pool: {result.get('event_capsules', 0)} event capsules, {result.get('research_capsules', 0)} research"
+    )
     if result.get("markets"):
         lines.append(f"  Markets tracked: {list(result['markets'].keys())}")
     lines.append(f"  {C.CYAN}═══════════════════════════════════{C.END}")

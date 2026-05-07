@@ -37,8 +37,7 @@ def _run_web(args) -> None:
     # Start uvicorn in background
     try:
         proc = subprocess.Popen(
-            [sys.executable, "-m", "uvicorn", "web.app:app",
-             "--host", host, "--port", str(port)],
+            [sys.executable, "-m", "uvicorn", "web.app:app", "--host", host, "--port", str(port)],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
@@ -47,6 +46,7 @@ def _run_web(args) -> None:
 
         if not no_browser:
             import time
+
             time.sleep(2)
             webbrowser.open(url)
             print_info("Browser opened.")

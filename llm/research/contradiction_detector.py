@@ -41,19 +41,21 @@ def detect_polarity_contradiction(
     contradictions = []
     for i, c in enumerate(capsules):
         p_i = c.get("polarity", "open")
-        for _j, other in enumerate(capsules[i + 1:], i + 1):
+        for _j, other in enumerate(capsules[i + 1 :], i + 1):
             p_j = other.get("polarity", "open")
             if p_i != p_j and p_i != "open" and p_j != "open":
-                contradictions.append({
-                    "type": "polarity",
-                    "gap_type": gap_type,
-                    "capsule_a": c.get("capsule_id"),
-                    "capsule_b": other.get("capsule_id"),
-                    "paper_a": c.get("archetype", {}).get("source_paper_id"),
-                    "paper_b": other.get("archetype", {}).get("source_paper_id"),
-                    "polarity_a": p_i,
-                    "polarity_b": p_j,
-                })
+                contradictions.append(
+                    {
+                        "type": "polarity",
+                        "gap_type": gap_type,
+                        "capsule_a": c.get("capsule_id"),
+                        "capsule_b": other.get("capsule_id"),
+                        "paper_a": c.get("archetype", {}).get("source_paper_id"),
+                        "paper_b": other.get("archetype", {}).get("source_paper_id"),
+                        "polarity_a": p_i,
+                        "polarity_b": p_j,
+                    }
+                )
     return contradictions
 
 
@@ -65,17 +67,19 @@ def detect_evidence_contradiction(
     contradictions = []
     for i, c in enumerate(capsules):
         ev_i = c.get("archetype", {}).get("evidence", "")
-        for _j, other in enumerate(capsules[i + 1:], i + 1):
+        for _j, other in enumerate(capsules[i + 1 :], i + 1):
             ev_j = other.get("archetype", {}).get("evidence", "")
             if ev_i and ev_j and ev_i != ev_j:
-                contradictions.append({
-                    "type": "evidence",
-                    "gap_type": gap_type,
-                    "capsule_a": c.get("capsule_id"),
-                    "capsule_b": other.get("capsule_id"),
-                    "evidence_a": ev_i,
-                    "evidence_b": ev_j,
-                })
+                contradictions.append(
+                    {
+                        "type": "evidence",
+                        "gap_type": gap_type,
+                        "capsule_a": c.get("capsule_id"),
+                        "capsule_b": other.get("capsule_id"),
+                        "evidence_a": ev_i,
+                        "evidence_b": ev_j,
+                    }
+                )
     return contradictions
 
 

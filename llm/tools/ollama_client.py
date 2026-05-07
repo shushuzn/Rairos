@@ -90,8 +90,7 @@ def call_ollama_chat(
 
     except requests.ConnectionError as e:
         raise RuntimeError(
-            f"Ollama connection failed: {e}. "
-            f"Is Ollama running? Start with: ollama serve"
+            f"Ollama connection failed: {e}. Is Ollama running? Start with: ollama serve"
         ) from e
     except requests.RequestException as e:
         raise RuntimeError(f"Ollama API request failed: {e}") from e

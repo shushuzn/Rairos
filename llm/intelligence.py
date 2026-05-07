@@ -40,11 +40,13 @@ def intelligence(topic: str = "", verbose: bool = False) -> Dict[str, Any]:
             items = data.get("items", []) if isinstance(data, dict) else []
             for item in items[:3]:
                 if isinstance(item, dict):
-                    flash_items.append({
-                        "time": str(item.get("time", ""))[:16],
-                        "content": str(item.get("content", ""))[:120],
-                        "topic": t,
-                    })
+                    flash_items.append(
+                        {
+                            "time": str(item.get("time", ""))[:16],
+                            "content": str(item.get("content", ""))[:120],
+                            "topic": t,
+                        }
+                    )
         report["flash_news"] = flash_items[:10]
     except Exception as e:
         report["flash_news"] = []
@@ -59,12 +61,14 @@ def intelligence(topic: str = "", verbose: bool = False) -> Dict[str, Any]:
             try:
                 raw = client.get_quote(sym)
                 q = raw.get("data", raw)
-                quotes.append({
-                    "code": q.get("code", sym),
-                    "name": q.get("name", sym),
-                    "price": q.get("close", "?"),
-                    "change": q.get("ups_percent", "?"),
-                })
+                quotes.append(
+                    {
+                        "code": q.get("code", sym),
+                        "name": q.get("name", sym),
+                        "price": q.get("close", "?"),
+                        "change": q.get("ups_percent", "?"),
+                    }
+                )
             except Exception:
                 pass
         report["markets"] = quotes
@@ -96,8 +100,12 @@ def intelligence(topic: str = "", verbose: bool = False) -> Dict[str, Any]:
         # Top N capsules by score
         sorted_caps = sorted(capsules, key=lambda c: c.outcome_success_score, reverse=True)
         report["top_capsules"] = [
-            {"title": c.action_gap_title[:70], "score": c.outcome_success_score,
-             "badge": c.credibility_badge, "type": c.action_gap_type}
+            {
+                "title": c.action_gap_title[:70],
+                "score": c.outcome_success_score,
+                "badge": c.credibility_badge,
+                "type": c.action_gap_type,
+            }
             for c in sorted_caps[:5]
         ]
     except Exception:
@@ -120,8 +128,7 @@ def intelligence(topic: str = "", verbose: bool = False) -> Dict[str, Any]:
         search_topic = topic or "geopolitical risk energy security"
         papers = scout(topic=search_topic, sources="arxiv", max_results=3, min_match_score=0.05)
         report["papers"] = [
-            {"title": p.title[:70], "score": p.match_score,
-             "capsule": p.matched_gap_title[:50]}
+            {"title": p.title[:70], "score": p.match_score, "capsule": p.matched_gap_title[:50]}
             for p in papers[:3]
         ]
     except Exception:
@@ -135,9 +142,9 @@ def render_report(report: Dict[str, Any]) -> str:
     from cli._shared import Colors as C
 
     # Map colors to available names
-    _RED = C.FAIL if hasattr(C, 'FAIL') else C.END
-    _GREEN = C.GREEN if hasattr(C, 'GREEN') else C.END
-    _YELLOW = C.WARNING if hasattr(C, 'WARNING') else C.END
+    _RED = C.FAIL if hasattr(C, "FAIL") else C.END
+    _GREEN = C.GREEN if hasattr(C, "GREEN") else C.END
+    _YELLOW = C.WARNING if hasattr(C, "WARNING") else C.END
 
     lines = [
         f"\n  {C.CYAN}═══ Rairos Intelligence ═══{C.END}",
@@ -147,7 +154,7 @@ def render_report(report: Dict[str, Any]) -> str:
 
     flash = report.get("flash_news", [])
     if flash:
-        lines.append(f"  {_YELLOW}Geopolitical Flash{ C.END}")
+        lines.append(f"  {_YELLOW}Geopolitical Flash{C.END}")
         for item in flash[:5]:
             lines.append(f"  [{item.get('time', '')}] {item.get('content', '')[:80]}")
         if len(flash) > 5:
@@ -156,40 +163,52 @@ def render_report(report: Dict[str, Any]) -> str:
 
     markets = report.get("markets", [])
     if markets:
-        lines.append(f"  {_YELLOW}Markets{ C.END}")
+        lines.append(f"  {_YELLOW}Markets{C.END}")
         for q in markets:
             ch = q.get("change", "?")
-            clr = _GREEN if isinstance(ch, str) and ch.startswith("-") else _RED if isinstance(ch, str) else C.END
-            lines.append(f"  {q.get('code', '?'):<8} {str(q.get('price', '?')):>8}  {clr}{ch}{C.END}")
+            clr = (
+                _GREEN
+                if isinstance(ch, str) and ch.startswith("-")
+                else _RED
+                if isinstance(ch, str)
+                else C.END
+            )
+            lines.append(
+                f"  {q.get('code', '?'):<8} {str(q.get('price', '?')):>8}  {clr}{ch}{C.END}"
+            )
         lines.append("")
 
     gp = report.get("gene_pool", {})
     if gp:
-        lines.append(f"  {_YELLOW}Gene Pool{ C.END}")
-        lines.append(f"  {gp.get('total', 0)} capsules, avg score {gp.get('avg_score', 0)}, "
-                     f"{gp.get('high_credibility', 0)} high credibility")
+        lines.append(f"  {_YELLOW}Gene Pool{C.END}")
+        lines.append(
+            f"  {gp.get('total', 0)} capsules, avg score {gp.get('avg_score', 0)}, "
+            f"{gp.get('high_credibility', 0)} high credibility"
+        )
         lines.append(f"  Types: {gp.get('by_type', {})}")
         lines.append("")
 
     top = report.get("top_capsules", [])
     if top:
-        lines.append(f"  {_YELLOW}Top Capsules{ C.END}")
+        lines.append(f"  {_YELLOW}Top Capsules{C.END}")
         for c in top:
-            badge = f"[{c.get('badge', '?').upper()}]" if c.get('badge') else ""
+            badge = f"[{c.get('badge', '?').upper()}]" if c.get("badge") else ""
             lines.append(f"  {badge} {c.get('title', '')[:60]} (score={c.get('score', 0)})")
         lines.append("")
 
     watch = report.get("watch", {})
     if watch:
         status = f"{_GREEN}RUNNING{C.END}" if watch.get("running") else f"{_RED}STOPPED{C.END}"
-        lines.append(f"  {_YELLOW}Watch Daemon{ C.END}")
-        lines.append(f"  {status}  |  Last: {watch.get('last_check', 'never')}  |  "
-                     f"Events: {watch.get('events_monitored', 0)}")
+        lines.append(f"  {_YELLOW}Watch Daemon{C.END}")
+        lines.append(
+            f"  {status}  |  Last: {watch.get('last_check', 'never')}  |  "
+            f"Events: {watch.get('events_monitored', 0)}"
+        )
         lines.append("")
 
     papers = report.get("papers", [])
     if papers:
-        lines.append(f"  {_YELLOW}Related Papers{ C.END}")
+        lines.append(f"  {_YELLOW}Related Papers{C.END}")
         for p in papers:
             lines.append(f"  {p.get('title', '')[:60]} (match={p.get('score', 0):.2f})")
             lines.append(f"  → {p.get('capsule', '')[:50]}")

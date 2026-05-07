@@ -237,9 +237,9 @@ def _run_insight(args: argparse.Namespace) -> int:
             print(f"  [{c.card_id}] {stars} ({c.usefulness_score:.2f}) {c.content[:60]}")
         return 0
 
-
     elif args.action == "quality-report":
         from llm.insight.tracker import get_evolution_tracker
+
         tracker = get_evolution_tracker()
         report = tracker.get_gene_pool_quality_report()
         if "error" in report:
@@ -248,23 +248,33 @@ def _run_insight(args: argparse.Namespace) -> int:
         print("=== Gene Pool Quality Report ===")
         print(f"  Total capsules    : {report['total']}")
         print(f"  Avg score        : {report['avg_score']}")
-        print(f"  Score dist       : high={report['score_distribution']['high (≥0.7)']} mid={report['score_distribution']['mid (0.4-0.7)']} low={report['score_distribution']['low (<0.4)']}")
+        print(
+            f"  Score dist       : high={report['score_distribution']['high (≥0.7)']} mid={report['score_distribution']['mid (0.4-0.7)']} low={report['score_distribution']['low (<0.4)']}"
+        )
         print(f"  Credibility dist : {report['credibility_distribution']}")
-        print(f"  Trendslop        : {report['trendslop']['count']} ({report['trendslop']['pct']}) — {report['trendslop']['top_reasons']}")
-        print(f"  Feedback use     : high={report['feedback_distribution']['high_use (≥3)']} zero={report['feedback_distribution']['low_use (0)']}")
+        print(
+            f"  Trendslop        : {report['trendslop']['count']} ({report['trendslop']['pct']}) — {report['trendslop']['top_reasons']}"
+        )
+        print(
+            f"  Feedback use     : high={report['feedback_distribution']['high_use (≥3)']} zero={report['feedback_distribution']['low_use (0)']}"
+        )
         print(f"  At-risk (streak≥2): {report['at_risk_capsules']}")
         print(f"  Top gap types    : {report['top_gap_types']}")
         return 0
 
     elif args.action == "recompute-credibility":
         from llm.insight.tracker import get_evolution_tracker
+
         tracker = get_evolution_tracker()
         result = tracker.recompute_credibility_all()
-        print(f"Recomputed credibility: {result['updated']} updated, {result['errors']} errors (archived capsules skipped)")
+        print(
+            f"Recomputed credibility: {result['updated']} updated, {result['errors']} errors (archived capsules skipped)"
+        )
         return 0
 
     elif args.action == "archive-trendslop":
         from llm.insight.tracker import get_evolution_tracker
+
         tracker = get_evolution_tracker()
         capsules = tracker._load_capsules()
         trendslop_capsules = [c for c in capsules if c.trendslop and c.status == "active"]
@@ -280,6 +290,7 @@ def _run_insight(args: argparse.Namespace) -> int:
 
     elif args.action == "eval-retrieval":
         from llm.insight.tracker import get_evolution_tracker
+
         tracker = get_evolution_tracker()
         limit = getattr(args, "top_k", 50)
         result = tracker.eval_retrieval(limit=limit)

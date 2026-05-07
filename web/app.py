@@ -34,56 +34,75 @@ from web.suggestions import (
 
 app = FastAPI(title="Rairos", description="AI Research OS — Hand-drawn UI")
 from web import routes_insights
+
 app.include_router(routes_insights.router)
 
 from web import routes_misc
+
 app.include_router(routes_misc.router)
 
 from web import routes_embodied
+
 app.include_router(routes_embodied.router)
 
 from web import routes_briefing
+
 app.include_router(routes_briefing.router)
 
 from web import routes_papers
+
 app.include_router(routes_papers.router)
 
 from web import routes_daemon
+
 app.include_router(routes_daemon.router)
 
 from web import routes_research
+
 app.include_router(routes_research.router)
 
 from web import routes_gene_pool
+
 app.include_router(routes_gene_pool.router)
 
 from web import routes_news
-app.include_router(routes_news.router)
 
+app.include_router(routes_news.router)
 
 
 # Graceful error handler — catches ALL exceptions in route handlers
 from starlette.exceptions import HTTPException as _HTTPExc
 from starlette.responses import HTMLResponse
 
+
 @app.exception_handler(Exception)
 async def catch_all_handler(request: Request, exc: Exception):
     return templates.TemplateResponse(
-        request, "generic.html",
-        {"page": "", "title": "Not Available",
-         "content": "<p>This feature is not available in this build.</p>"},
+        request,
+        "generic.html",
+        {
+            "page": "",
+            "title": "Not Available",
+            "content": "<p>This feature is not available in this build.</p>",
+        },
     )
+
 
 @app.exception_handler(_HTTPExc)
 async def http_exception_handler(request: Request, exc: _HTTPExc):
     if exc.status_code == 404:
         return templates.TemplateResponse(
-            request, "generic.html",
-            {"page": "", "title": "Not Available",
-             "content": "<p>This feature is not available in this build.</p>"},
+            request,
+            "generic.html",
+            {
+                "page": "",
+                "title": "Not Available",
+                "content": "<p>This feature is not available in this build.</p>",
+            },
             status_code=404,
         )
     raise exc
+
 
 # Auth middleware — skip if auth not enabled
 @app.middleware("http")
@@ -238,9 +257,11 @@ async def reports_page(request: Request):
     from llm.reports import report_all
 
     return templates.TemplateResponse(
-        request, "reports.html",
+        request,
+        "reports.html",
         {"page": "reports", "title": "Reports", "reports_content": report_all()},
     )
+
 
 @app.delete("/paper/{paper_id}")
 async def delete_paper(paper_id: str):
@@ -271,10 +292,13 @@ async def delete_papers_bulk(request: Request):
             deleted += 1
 
     return {"deleted": deleted, "paper_ids": paper_ids}
+
+
 # In-memory notification store (per-process, reset on restart — lightweight)
 _notification_store: List[Dict[str, Any]] = []
 
 # ── Task 5: arXiv主动搜索 ──────────────────────────────────────────────────
+
 
 # ── Squad Coordinator ────────────────────────────────────────────────────────────
 def _render_gap_analysis_html(result: Dict[str, Any], papers: List[Dict[str, Any]]) -> str:
@@ -374,6 +398,7 @@ def _render_gap_analysis_html(result: Dict[str, Any], papers: List[Dict[str, Any
     </style>
     {"".join(sections)}"""
 
+
 def _render_rq_html(
     result: Dict[str, Any], frontier_gaps: List[Dict[str, Any]], paper_titles: Dict[str, str]
 ) -> str:
@@ -426,6 +451,7 @@ def _render_rq_html(
 
 
 # ── Experiment Proposals ─────────────────────────────────────────────────────
+
 
 def _get_tracker():
     from llm.insight.tracker import EvolutionTracker
@@ -587,7 +613,9 @@ def _render_paper2code_html(results: List[Dict[str, Any]]) -> str:
             gp = r.get("gene_pool_encoded", False)
             ts = r.get("created_at", "")[:19]
             status = r.get("status", "done")
-            _status_dot = {"done": "✅", "failed": "❌", "running": "⏳", "pending": "⏳"}.get(status, "❓")
+            _status_dot = {"done": "✅", "failed": "❌", "running": "⏳", "pending": "⏳"}.get(
+                status, "❓"
+            )
             lines.append(f"""
             <tr style="border-bottom:1px solid var(--border-light);">
               <td style="padding:8px 10px;"><a href="/paper/{arxiv}" style="color:var(--pen-blue);">{arxiv}</a></td>
@@ -601,6 +629,7 @@ def _render_paper2code_html(results: List[Dict[str, Any]]) -> str:
 
     lines.append("</div>")
     return "\n".join(lines)
+
 
 if __name__ == "__main__":
     import uvicorn

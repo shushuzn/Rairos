@@ -26,32 +26,51 @@ def _build_scout_parser(subparsers) -> argparse.ArgumentParser:
         "Gene Pool capsules, and recommend the most relevant ones.",
     )
     p.add_argument(
-        "--topic", "-t", type=str, default="",
+        "--topic",
+        "-t",
+        type=str,
+        default="",
         help="Specific topic to search (default: auto-derived from Gene Pool)",
     )
     p.add_argument(
-        "--sources", "-s", type=str, default="arxiv",
+        "--sources",
+        "-s",
+        type=str,
+        default="arxiv",
         choices=["arxiv", "news", "all"],
         help="Sources to search: arxiv, news, or all (default: arxiv)",
     )
     p.add_argument(
-        "--limit", "-n", type=int, default=20,
+        "--limit",
+        "-n",
+        type=int,
+        default=20,
         help="Maximum papers to return (default: 20)",
     )
     p.add_argument(
-        "--min-score", type=float, default=0.15,
+        "--min-score",
+        type=float,
+        default=0.15,
         help="Minimum match score (0.0-1.0, default: 0.15)",
     )
     p.add_argument(
-        "--daemon", "-d", action="store_true",
+        "--daemon",
+        "-d",
+        action="store_true",
         help="Run continuously, checking every 6 hours",
     )
     p.add_argument(
-        "--interval", "-i", type=int, default=360,
+        "--interval",
+        "-i",
+        type=int,
+        default=360,
         help="Daemon check interval in minutes (default: 360 = 6 hours)",
     )
     p.add_argument(
-        "--output", "-o", type=str, default="",
+        "--output",
+        "-o",
+        type=str,
+        default="",
         help="Save results to JSON file instead of printing",
     )
     p.set_defaults(func=_run_scout)
@@ -95,17 +114,19 @@ def _run_scout(args) -> None:
             }
             for r in results
         ]
-        Path(output).write_text(
-            json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
-        )
+        Path(output).write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
         print_success(f"Results saved to {output}")
     else:
         print(render_scout_results(results))
 
 
 def _run_daemon(
-    topic: str, limit: int, min_score: float,
-    interval_minutes: int, output: str, sources: str = "arxiv",
+    topic: str,
+    limit: int,
+    min_score: float,
+    interval_minutes: int,
+    output: str,
+    sources: str = "arxiv",
 ) -> None:
     """Run scout in a continuous loop."""
     from llm.scout import scout, render_scout_results
@@ -115,7 +136,9 @@ def _run_daemon(
 
     while True:
         try:
-            results = scout(topic=topic, sources=sources, max_results=limit, min_match_score=min_score)
+            results = scout(
+                topic=topic, sources=sources, max_results=limit, min_match_score=min_score
+            )
             ts = time.strftime("%Y-%m-%d %H:%M")
 
             if output:

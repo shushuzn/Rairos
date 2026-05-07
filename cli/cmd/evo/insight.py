@@ -99,7 +99,9 @@ Valid gap_type values: capability, method_limitation, exploration_gap,
 
     p.add_argument("--watch", action="store_true", help="Watch mode: continuously output report")
 
-    p.add_argument("--interval", type=int, default=30, help="Watch interval in seconds (default: 30)")
+    p.add_argument(
+        "--interval", type=int, default=30, help="Watch interval in seconds (default: 30)"
+    )
 
     return p  # type: ignore[no-any-return]
 
@@ -382,10 +384,16 @@ def _run_insight(args: argparse.Namespace) -> int:
                 print("=== Gene Pool Quality Report ===")
                 print(f"  Total capsules    : {report['total']}")
                 print(f"  Avg score        : {report['avg_score']}")
-                print(f"  Score dist       : high={report['score_distribution']['high (≥0.7)']} mid={report['score_distribution']['mid (0.4-0.7)']} low={report['score_distribution']['low (<0.4)']}")
+                print(
+                    f"  Score dist       : high={report['score_distribution']['high (≥0.7)']} mid={report['score_distribution']['mid (0.4-0.7)']} low={report['score_distribution']['low (<0.4)']}"
+                )
                 print(f"  Credibility dist : {report['credibility_distribution']}")
-                print(f"  Trendslop        : {report['trendslop']['count']} ({report['trendslop']['pct']}) — {report['trendslop']['top_reasons']}")
-                print(f"  Feedback use     : high={report['feedback_distribution']['high_use (≥3)']} zero={report['feedback_distribution']['low_use (0)']}")
+                print(
+                    f"  Trendslop        : {report['trendslop']['count']} ({report['trendslop']['pct']}) — {report['trendslop']['top_reasons']}"
+                )
+                print(
+                    f"  Feedback use     : high={report['feedback_distribution']['high_use (≥3)']} zero={report['feedback_distribution']['low_use (0)']}"
+                )
                 print(f"  At-risk (streak≥2): {report['at_risk_capsules']}")
                 print(f"  Top gap types    : {report['top_gap_types']}")
 
@@ -405,9 +413,13 @@ def _run_insight(args: argparse.Namespace) -> int:
                     print(f"\n[{ts}] === Gene Pool Quality Report ===")
                     print(f"  Total capsules    : {report['total']}")
                     print(f"  Avg score        : {report['avg_score']}")
-                    print(f"  Score dist       : high={report['score_distribution']['high (≥0.7)']} mid={report['score_distribution']['mid (0.4-0.7)']} low={report['score_distribution']['low (<0.4)']}")
+                    print(
+                        f"  Score dist       : high={report['score_distribution']['high (≥0.7)']} mid={report['score_distribution']['mid (0.4-0.7)']} low={report['score_distribution']['low (<0.4)']}"
+                    )
                     print(f"  Credibility dist : {report['credibility_distribution']}")
-                    print(f"  Trendslop        : {report['trendslop']['count']} ({report['trendslop']['pct']})")
+                    print(
+                        f"  Trendslop        : {report['trendslop']['count']} ({report['trendslop']['pct']})"
+                    )
                     print(f"  At-risk (streak≥2): {report['at_risk_capsules']}")
                 time.sleep(args.interval)
         else:
@@ -423,7 +435,9 @@ def _run_insight(args: argparse.Namespace) -> int:
 
         tracker = get_evolution_tracker()
         result = tracker.recompute_credibility_all()
-        print(f"Recomputed credibility: {result['updated']} updated, {result['errors']} errors (archived capsules skipped)")
+        print(
+            f"Recomputed credibility: {result['updated']} updated, {result['errors']} errors (archived capsules skipped)"
+        )
         return 0
 
     elif args.action == "archive-trendslop":
@@ -469,7 +483,11 @@ def _run_insight(args: argparse.Namespace) -> int:
             return 1
         alerts = report.get("alerts", [])
         if args.json:
-            print(_json.dumps({"total": report["total"], "alert_count": len(alerts), "alerts": alerts}))
+            print(
+                _json.dumps(
+                    {"total": report["total"], "alert_count": len(alerts), "alerts": alerts}
+                )
+            )
             return 0
         if not alerts:
             print(f"No alerts (GenePool healthy: {report['total']} capsules)")
@@ -496,7 +514,7 @@ def _run_insight(args: argparse.Namespace) -> int:
         print(f"  Eligible total  : {result['eligible']}")
         print(f"  Total in pool   : {result['total_capsules']}")
         print(f"  Errors          : {result['errors']}")
-        if result['synced'] > 0:
+        if result["synced"] > 0:
             stats = kg.stats()
             gp_nodes = stats["nodes_by_type"].get("GenePool-Capsule", 0)
             print(f"  KG nodes now    : GenePool-Capsule={gp_nodes}")
@@ -515,7 +533,7 @@ def _run_insight(args: argparse.Namespace) -> int:
         print(f"  No source       : {result['skipped_no_source']}")
         print(f"  Eligible total  : {result['eligible_capsules']}")
         print(f"  Total cards now : {result['total_cards']}")
-        if result['promoted'] > 0:
+        if result["promoted"] > 0:
             print("\n  Run 'airos insight list' to see new cards.")
         return 0
 

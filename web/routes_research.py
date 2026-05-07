@@ -1,12 +1,14 @@
 """Research Loop and Daemon web routes."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
 
-from web.shared import get_db,  templates
+from web.shared import get_db, templates
 
 router = APIRouter()
+
 
 @router.get("/daemon")
 async def daemon_dashboard(request: Request):
@@ -363,5 +365,3 @@ async def squad_activity():
         }
     except Exception as e:
         return {"activity": [], "error": str(e)}
-
-

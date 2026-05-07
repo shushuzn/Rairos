@@ -222,9 +222,15 @@ class TestSourceTrustTracker:
         with tempfile.TemporaryDirectory() as td:
             tracker = SourceTrustTracker(Path(td))
             capsules = [
-                _make_capsule("c1", outcome_success_score=0.9, feedback_count=5, source_category="cs.LG"),
-                _make_capsule("c2", outcome_success_score=0.8, feedback_count=3, source_category="cs.LG"),
-                _make_capsule("c3", outcome_success_score=0.7, feedback_count=2, source_category="cs.CL"),
+                _make_capsule(
+                    "c1", outcome_success_score=0.9, feedback_count=5, source_category="cs.LG"
+                ),
+                _make_capsule(
+                    "c2", outcome_success_score=0.8, feedback_count=3, source_category="cs.LG"
+                ),
+                _make_capsule(
+                    "c3", outcome_success_score=0.7, feedback_count=2, source_category="cs.CL"
+                ),
             ]
             tracker.batch_update(capsules)
             lg_trust = tracker.get_trust("cs.LG")

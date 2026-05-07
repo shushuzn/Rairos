@@ -10,6 +10,7 @@ from __future__ import annotations
 import sqlite3
 from typing import Any, Dict, List, Optional, Tuple
 
+
 class EmbeddingMixin:
     """Vector embedding operations for semantic paper search."""
 
@@ -19,9 +20,7 @@ class EmbeddingMixin:
     def set_embedding(self, paper_id: str, vector: List[float]) -> bool:
         try:
             # Check if paper exists first
-            row = self._conn.execute(
-                "SELECT 1 FROM papers WHERE id = ?", (paper_id,)
-            ).fetchone()
+            row = self._conn.execute("SELECT 1 FROM papers WHERE id = ?", (paper_id,)).fetchone()
             if not row:
                 return False
             import struct
@@ -97,7 +96,9 @@ class EmbeddingMixin:
         for pid, blob in rows:
             cnt = len(blob) // 4
             vec = np.array(struct.unpack(f"{cnt}f", blob), dtype=np.float32)
-            sim = float(np.dot(target, vec) / (np.linalg.norm(target) * np.linalg.norm(vec) + 1e-10))
+            sim = float(
+                np.dot(target, vec) / (np.linalg.norm(target) * np.linalg.norm(vec) + 1e-10)
+            )
             if sim >= threshold:
                 scored.append((pid, sim))
         scored.sort(key=lambda x: x[1], reverse=True)
@@ -115,9 +116,7 @@ class EmbeddingMixin:
         return None
 
     def get_embedding_stats(self) -> dict:
-        with_embedding = self._conn.execute(
-            "SELECT COUNT(*) FROM embeddings"
-        ).fetchone()[0]
+        with_embedding = self._conn.execute("SELECT COUNT(*) FROM embeddings").fetchone()[0]
         total_with_text = self._conn.execute(
             "SELECT COUNT(*) FROM papers WHERE title IS NOT NULL AND title != ''"
         ).fetchone()[0]
@@ -156,9 +155,7 @@ class ChatMixin:
             "FROM chat_sessions cs ORDER BY created_at DESC LIMIT ?",
             (limit,),
         ).fetchall()
-        return self._dict_factory(
-            ["session_id", "title", "created_at", "last_message"], rows
-        )
+        return self._dict_factory(["session_id", "title", "created_at", "last_message"], rows)
 
     def get_chat_messages(self, session_id: str) -> Any:
         rows = self._conn.execute(
@@ -166,9 +163,7 @@ class ChatMixin:
             "WHERE session_id = ? ORDER BY created_at ASC",
             (session_id,),
         ).fetchall()
-        return self._dict_factory(
-            ["id", "role", "content", "sources", "created_at"], rows
-        )
+        return self._dict_factory(["id", "role", "content", "sources", "created_at"], rows)
 
     def delete_chat_session(self, session_id: str) -> None:
         self._conn.execute("DELETE FROM chat_messages WHERE session_id = ?", (session_id,))
@@ -183,9 +178,7 @@ class ChatMixin:
             "WHERE cm.content LIKE ? ORDER BY cs.created_at DESC LIMIT ?",
             (f"%{query}%", limit),
         ).fetchall()
-        return self._dict_factory(
-            ["session_id", "title", "created_at", "last_message"], rows
-        )
+        return self._dict_factory(["session_id", "title", "created_at", "last_message"], rows)
 
     def update_chat_session_title(self, session_id: str, title: str) -> None:
         self._conn.execute(
@@ -257,21 +250,15 @@ class SubscriptionMixin:
         )
         self._conn.commit()
 
-    def get_subscription_papers(
-        self, sub_id: int, limit: int = 50
-    ) -> Any:
+    def get_subscription_papers(self, sub_id: int, limit: int = 50) -> Any:
         rows = self._conn.execute(
             "SELECT paper_id, title, published, discovered_at FROM subscription_papers "
             "WHERE sub_id = ? ORDER BY discovered_at DESC LIMIT ?",
             (sub_id, limit),
         ).fetchall()
-        return self._dict_factory(
-            ["paper_id", "title", "published", "discovered_at"], rows
-        )
+        return self._dict_factory(["paper_id", "title", "published", "discovered_at"], rows)
 
-    def get_recent_subscription_papers_grouped(
-        self, limit_per: int = 5
-    ) -> Any:
+    def get_recent_subscription_papers_grouped(self, limit_per: int = 5) -> Any:
         rows = self._conn.execute(
             "SELECT sp.sub_id, s.topic, sp.paper_id, sp.title, sp.published, sp.discovered_at "
             "FROM subscription_papers sp "
@@ -316,9 +303,7 @@ class LiteratureMixin:
             "LENGTH(content) - LENGTH(REPLACE(content, ' ', '')) + 1 AS word_count "
             "FROM literature_reviews ORDER BY created_at DESC"
         ).fetchall()
-        return self._dict_factory(
-            ["review_id", "topic", "created_at", "word_count"], rows
-        )
+        return self._dict_factory(["review_id", "topic", "created_at", "word_count"], rows)
 
     def get_literature_review(self, review_id: str) -> Any:
         row = self._conn.execute(

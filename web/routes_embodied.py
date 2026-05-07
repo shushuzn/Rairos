@@ -1,8 +1,9 @@
 """Embodied planning web routes."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
-from web.shared import get_db,  templates
+from web.shared import get_db, templates
 
 router = APIRouter()
 
@@ -27,7 +28,6 @@ async def embodied_planning_batch(request: Request, ids: str = ""):
     return result
 
 
-
 @router.get("/embodied-planning/dashboard")
 async def embodied_planning_dashboard(request: Request):
     """Render the embodied planning domain-wide dashboard.
@@ -49,7 +49,6 @@ async def embodied_planning_dashboard(request: Request):
     )
 
 
-
 @router.get("/embodied-planning/evolution")
 async def embodied_evolution_timeline(request: Request):
     """Render Mermaid Gantt chart showing belief evolution over time."""
@@ -67,7 +66,6 @@ async def embodied_evolution_timeline(request: Request):
             "content": f"<div style='overflow-x:auto;'>{graph}</div>",
         },
     )
-
 
 
 @router.get("/embodied-planning/compare")
@@ -88,7 +86,6 @@ async def embodied_planning_compare(request: Request, ids: str = ""):
     )
 
 
-
 @router.get("/embodied-planning/semantic-search")
 async def semantic_search(request: Request, q: str = "", top_k: int = 5):
     """Semantic search across analyzed papers."""
@@ -98,6 +95,8 @@ async def semantic_search(request: Request, q: str = "", top_k: int = 5):
     results = semantic_search_papers(q, top_k=top_k)
     return JSONResponse({"query": q, "results": results})
     return JSONResponse({"query": q, "results": results})
+
+
 @router.post("/embodied-planning/auto-scan")
 async def embodied_planning_auto_scan(request: Request):
     """Auto-scan new VLA/robotics papers from subscriptions for embodied planning analysis.
@@ -283,7 +282,6 @@ async def embodied_planning_auto_scan(request: Request):
         return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
 
-
 @router.post("/embodied-planning/search")
 async def embodied_planning_search(request: Request):
     """主动搜索arXiv论文并分析embodied planning representation type.
@@ -331,5 +329,3 @@ async def embodied_planning_search(request: Request):
         )
     except Exception as e:
         return JSONResponse({"success": False, "error": str(e)}, status_code=500)
-
-

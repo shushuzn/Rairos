@@ -10,8 +10,27 @@ def _extract_keywords(text: str) -> List[str]:
     """Simple keyword extraction from text."""
     words = text.lower().split()
     stop = {
-        "the", "a", "an", "of", "in", "to", "for", "and", "or", "with",
-        "is", "are", "that", "this", "we", "our", "by", "on", "as", "at", "from",
+        "the",
+        "a",
+        "an",
+        "of",
+        "in",
+        "to",
+        "for",
+        "and",
+        "or",
+        "with",
+        "is",
+        "are",
+        "that",
+        "this",
+        "we",
+        "our",
+        "by",
+        "on",
+        "as",
+        "at",
+        "from",
     }
     keywords = [w.strip(".,;:!?()[]{}") for w in words if len(w) > 4 and w not in stop]
     return list(dict.fromkeys(keywords))[:6]

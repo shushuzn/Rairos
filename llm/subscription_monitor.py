@@ -144,4 +144,5 @@ class SubscriptionMonitor:
 def search_arxiv(query: str, max_results: int = 10):
     """Search arXiv API and return papers (delegates to canonical parser)."""
     from parsers.arxiv_search import search_arxiv as canonical_search
+
     return canonical_search(query, max_results)

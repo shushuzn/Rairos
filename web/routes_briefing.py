@@ -1,4 +1,5 @@
 """Briefing generation and history web routes."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -21,7 +22,6 @@ async def briefing(request: Request, arxiv_id: str = ""):
             "error": None,
         },
     )
-
 
 
 @router.post("/briefing")
@@ -91,7 +91,6 @@ async def briefing_generate(
         )
 
 
-
 @router.get("/briefing/distribute/{arxiv_id}")
 async def distribute_briefing(request: Request, arxiv_id: str, audience: str = "researcher"):
     """Render a briefing in a specific audience format."""
@@ -113,7 +112,6 @@ async def distribute_briefing(request: Request, arxiv_id: str, audience: str = "
             "content": html,
         },
     )
-
 
 
 @router.get("/b/{short_id}")
@@ -152,7 +150,6 @@ async def shared_briefing(request: Request, short_id: str):
             "content": html,
         },
     )
-
 
 
 @router.get("/briefing/history")
@@ -211,5 +208,3 @@ async def briefing_history(request: Request):
             "briefings": briefings,
         },
     )
-
-

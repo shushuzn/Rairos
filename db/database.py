@@ -1899,9 +1899,7 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
 
     def paper_exists(self, paper_id: str) -> bool:
         """Check if a paper exists in the database by its ID."""
-        row = self._conn.execute(
-            "SELECT 1 FROM papers WHERE id = ?", (paper_id,)
-        ).fetchone()
+        row = self._conn.execute("SELECT 1 FROM papers WHERE id = ?", (paper_id,)).fetchone()
         return row is not None
 
     # ── Helpers ────────────────────────────────────────────────────────────────
@@ -1910,7 +1908,6 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
     def _dict_factory(keys: List[str], rows: List[sqlite3.Row]) -> List[dict]:
         """Convert SQLite Row objects to dicts."""
         return [dict(zip(keys, row)) for row in rows]
-
 
 
 def _utcnow() -> str:

@@ -1,4 +1,5 @@
 """Remove all duplicate route fallbacks - find and fix systematically."""
+
 with open("web/routes_misc.py", encoding="utf-8") as f:
     lines = f.readlines()
 
@@ -13,6 +14,7 @@ for i, line in enumerate(lines, 1):
 
 # Count duplicates
 from collections import Counter
+
 counts = Counter(path for _, path in all_routes)
 
 # For each duplicate, find which ones are fallbacks (have 'loading' in them)
@@ -31,7 +33,9 @@ for path, count in counts.items():
         # Search the function body for 'loading'
         start = lineno - 1
         end = start + 1
-        while end < len(lines) and not lines[end].strip().startswith("@router.") and end - start < 30:
+        while (
+            end < len(lines) and not lines[end].strip().startswith("@router.") and end - start < 30
+        ):
             end += 1
 
         body = "".join(lines[start:end])
@@ -48,5 +52,6 @@ with open("web/routes_misc.py", "w", encoding="utf-8") as f:
     f.writelines(lines)
 
 import py_compile
+
 py_compile.compile("web/routes_misc.py", doraise=True)
 print("Compiles OK")

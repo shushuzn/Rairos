@@ -31,6 +31,7 @@ MCP_VERSION = "2025-11-25"
 
 class MCPError(Exception):
     """MCP protocol or business error."""
+
     pass
 
 
@@ -114,7 +115,9 @@ class Jin10Client:
                         data = json.loads(line[6:])
                         if "error" in data:
                             err = data["error"]
-                            raise MCPError(f"JSON-RPC error [{err.get('code')}]: {err.get('message')}")
+                            raise MCPError(
+                                f"JSON-RPC error [{err.get('code')}]: {err.get('message')}"
+                            )
                         if data.get("id") == id:
                             return self._fix_encoding(data.get("result", {}))
 
@@ -134,11 +137,14 @@ class Jin10Client:
 
     def initialize(self) -> Dict[str, Any]:
         """Initialize MCP session (Streamable HTTP)."""
-        result = self._call("initialize", {
-            "protocolVersion": MCP_VERSION,
-            "capabilities": {},
-            "clientInfo": {"name": "rairos", "version": "1.0"},
-        })
+        result = self._call(
+            "initialize",
+            {
+                "protocolVersion": MCP_VERSION,
+                "capabilities": {},
+                "clientInfo": {"name": "rairos", "version": "1.0"},
+            },
+        )
         self._initialized = True
         return result
 

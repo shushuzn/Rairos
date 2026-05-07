@@ -23,8 +23,14 @@ _STATE_FILE = _STATE_DIR / "watch_state.json"
 
 # Watch topics derived from Gene Pool + manual additions
 DEFAULT_TOPICS = [
-    "伊朗", "霍尔木兹", "石油", "导弹", "无人机",
-    "美联储", "通胀", "利率",
+    "伊朗",
+    "霍尔木兹",
+    "石油",
+    "导弹",
+    "无人机",
+    "美联储",
+    "通胀",
+    "利率",
 ]
 
 
@@ -56,7 +62,7 @@ class WatchDaemon:
         return cls._instance
 
     def __init__(self, interval: int = 300):
-        if not hasattr(self, '_initialized'):
+        if not hasattr(self, "_initialized"):
             self._interval = interval
             self._client = Jin10Client()
             self._tracker = EvolutionTracker()
@@ -141,13 +147,19 @@ class WatchDaemon:
                         # Check against Gene Pool
                         text = item.get("content", "") if isinstance(item, dict) else str(item)
                         for c in capsules:
-                            kw_match = sum(1 for kw in c.trigger_keywords if kw.lower() in text.lower())
-                            if kw_match >= 2 or any(kw in topic.lower() for kw in c.trigger_keywords):
+                            kw_match = sum(
+                                1 for kw in c.trigger_keywords if kw.lower() in text.lower()
+                            )
+                            if kw_match >= 2 or any(
+                                kw in topic.lower() for kw in c.trigger_keywords
+                            ):
                                 # High match → auto-process event
                                 result = process_event(keyword=topic, max_news=3, max_papers=2)
                                 if "capsule_id" in result:
                                     events.append(result["capsule_id"])
-                                    logger.info(f"Event processed: {result.get('capsule_title', '')[:60]}")
+                                    logger.info(
+                                        f"Event processed: {result.get('capsule_title', '')[:60]}"
+                                    )
                                 break
             except Exception as e:
                 logger.debug(f"Topic '{topic}' check failed: {e}")
@@ -155,6 +167,7 @@ class WatchDaemon:
         # 3. Regenerate report after each cycle
         try:
             from llm.report import save as _save_report
+
             _save_report()
         except Exception:
             pass

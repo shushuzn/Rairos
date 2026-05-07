@@ -29,7 +29,9 @@ def generate() -> str:
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     lines = []
-    def w(s=""): lines.append(s)
+
+    def w(s=""):
+        lines.append(s)
 
     w("=" * 60)
     w("RAIROS RESEARCH REPORT")
@@ -40,8 +42,10 @@ def generate() -> str:
     used = set()
 
     # Theme 1: VLA / Robotics
-    vla = _find(research, ["lapo", "vla", "liberoo", "diffusion policy",
-                           "octo", "gr-2", "robot", "embodied"])
+    vla = _find(
+        research,
+        ["lapo", "vla", "liberoo", "diffusion policy", "octo", "gr-2", "robot", "embodied"],
+    )
     if vla:
         w("VLA / ROBOTICS")
         w("-" * 60)
@@ -52,8 +56,11 @@ def generate() -> str:
         w()
 
     # Theme 2: Learning / Optimization
-    learn = _find(research, ["rl", "reinforcement", "fine-tuning", "warmup",
-                             "warm-up", "sample", "convergence"], used)
+    learn = _find(
+        research,
+        ["rl", "reinforcement", "fine-tuning", "warmup", "warm-up", "sample", "convergence"],
+        used,
+    )
     if learn:
         w("LEARNING / OPTIMIZATION")
         w("-" * 60)
@@ -64,8 +71,11 @@ def generate() -> str:
         w()
 
     # Theme 3: Representation / Theory
-    theory = _find(research, ["latent", "reasoning", "attention", "representation",
-                              "interpretability", "contradiction"], used)
+    theory = _find(
+        research,
+        ["latent", "reasoning", "attention", "representation", "interpretability", "contradiction"],
+        used,
+    )
     if theory:
         w("REPRESENTATION / THEORY")
         w("-" * 60)
@@ -76,8 +86,11 @@ def generate() -> str:
         w()
 
     # Theme 4: Benchmark / Evaluation
-    bench = _find(research, ["benchmark", "libero", "evaluation", "gap",
-                             "scalability", "generalization"], used)
+    bench = _find(
+        research,
+        ["benchmark", "libero", "evaluation", "gap", "scalability", "generalization"],
+        used,
+    )
     if bench:
         w("BENCHMARK / EVALUATION")
         w("-" * 60)
@@ -118,7 +131,7 @@ def generate() -> str:
         by_type[c.action_gap_type] = by_type.get(c.action_gap_type, 0) + 1
     w(f"  Total: {len(caps)} capsules ({len(research)} research, {len(events)} events)")
     w(f"  Gap types: {by_type}")
-    w(f"  Avg score: {sum(c.outcome_success_score for c in caps)/len(caps):.2f}")
+    w(f"  Avg score: {sum(c.outcome_success_score for c in caps) / len(caps):.2f}")
     w(f"  High credibility: {sum(1 for c in caps if c.credibility_badge == 'high')}")
     w()
 

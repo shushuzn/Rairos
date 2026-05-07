@@ -54,7 +54,9 @@ def render_embodied_planning_dashboard(type_counts: Dict[str, int], papers: List
         for p in papers[:10]:
             rt = p.get("representation_type", "?")
             rt_icon = {"discrete": "◼", "continuous": "◯", "hybrid": "◈"}.get(rt, "?")
-            rows.append(f"  {rt_icon} {p.get('title', '?')[:60]:<60} conf={p.get('confidence', 0):.2f}")
+            rows.append(
+                f"  {rt_icon} {p.get('title', '?')[:60]:<60} conf={p.get('confidence', 0):.2f}"
+            )
         papers_section = "\n".join(rows)
 
     return f"""
@@ -62,10 +64,10 @@ def render_embodied_planning_dashboard(type_counts: Dict[str, int], papers: List
 ║        EMBODIED PLANNING — LATENT REPRESENTATION SURVEY    ║
 ╠══════════════════════════════════════════════════════════════╣
 ║  Type Distribution (N={total})                                ║
-║{'║'.join(bars)}║
+║{"║".join(bars)}║
 ╠══════════════════════════════════════════════════════════════╣
 ║  Top Papers                                                   ║
-{papers_section if papers_section else '║  (run analysis to see papers)'}
+{papers_section if papers_section else "║  (run analysis to see papers)"}
 ╚══════════════════════════════════════════════════════════════╝"""
 
 
@@ -96,6 +98,7 @@ def render_compare_view(paper_ids: List[str], db=None) -> str:
 
     if db is None:
         from db.database import Database
+
         db = Database()
 
     lines = ["# Compare View", ""]
@@ -116,6 +119,7 @@ def render_evolution_timeline() -> str:
     """Render timeline of embodied planning evolution."""
     try:
         from llm.gene_pool_io import load_capsules
+
         capsules = load_capsules(gap_type="embodied_planning", status="active")
     except Exception:
         return _empty_dashboard("Could not load Gene Pool")
@@ -138,6 +142,7 @@ def render_confidence_calibration() -> str:
     """Render confidence calibration across all gap analyses."""
     try:
         from llm.gene_pool_io import load_capsules
+
         capsules = load_capsules(status="active")
     except Exception:
         return _empty_dashboard("Could not load Gene Pool")

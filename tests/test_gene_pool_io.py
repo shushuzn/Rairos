@@ -141,14 +141,26 @@ class TestRenderBackupHtml:
 
     def test_with_empty_info(self):
         """Should render HTML when info dict is properly structured."""
-        info = {"available": 0, "total_size_mb": "0", "backups": [], "max_backups": 10, "stamps": []}
+        info = {
+            "available": 0,
+            "total_size_mb": "0",
+            "backups": [],
+            "max_backups": 10,
+            "stamps": [],
+        }
         result = render_backup_html(info)
         assert isinstance(result, str)
         assert len(result) > 0
 
     def test_with_backup_data(self):
         """Should render HTML when backup data provided."""
-        info = {"available": 1, "total_size_mb": "1.0", "backups": ["gene_pool_20260101.tar.gz"], "max_backups": 10, "stamps": ["20260101"]}
+        info = {
+            "available": 1,
+            "total_size_mb": "1.0",
+            "backups": ["gene_pool_20260101.tar.gz"],
+            "max_backups": 10,
+            "stamps": ["20260101"],
+        }
         result = render_backup_html(info)
         assert isinstance(result, str)
         assert len(result) > 0

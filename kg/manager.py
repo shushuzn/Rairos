@@ -187,9 +187,11 @@ class KGManager:
         conn = self._conn()
 
         # Canonicalize ordering for symmetric relations so duplicate edges don't accumulate
-        s, t = (source_id, target_id) if (
-            not symmetric or source_id <= target_id
-        ) else (target_id, source_id)
+        s, t = (
+            (source_id, target_id)
+            if (not symmetric or source_id <= target_id)
+            else (target_id, source_id)
+        )
 
         existing = conn.execute(
             "SELECT id FROM kg_edges WHERE source_id=? AND target_id=? AND relation_type=?",

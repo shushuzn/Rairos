@@ -36,6 +36,7 @@ def _make_paper(uid: str = "2301.12345", title: str = "Test Paper") -> Paper:
 def tmp_output_dir(tmp_path):
     """Unique output directory per test to prevent skip_existing leakage."""
     import uuid
+
     d = tmp_path / uuid.uuid4().hex[:8]
     d.mkdir(parents=True, exist_ok=True)
     return d
@@ -64,7 +65,9 @@ class TestArunResearch:
             patch("parsers.arxiv_search.search_arxiv", return_value=[paper]),
             patch("pdf.extract.extract_pdf_text", return_value="Extracted text."),
             patch("pdf.extract_async.download_pdf_async", side_effect=mock_download),
-            patch("llm.client_async.call_llm_chat_completions_async", new_callable=AsyncMock) as mock_llm,
+            patch(
+                "llm.client_async.call_llm_chat_completions_async", new_callable=AsyncMock
+            ) as mock_llm,
         ):
             from research_loop import arun_research
 
@@ -202,7 +205,9 @@ class TestArunResearch:
             patch("parsers.arxiv_search.search_arxiv", return_value=papers),
             patch("pdf.extract.extract_pdf_text", return_value="Extracted text."),
             patch("pdf.extract_async.download_pdf_async", side_effect=mock_download),
-            patch("llm.client_async.call_llm_chat_completions_async", new_callable=AsyncMock) as mock_llm,
+            patch(
+                "llm.client_async.call_llm_chat_completions_async", new_callable=AsyncMock
+            ) as mock_llm,
         ):
             from research_loop import arun_research
 
@@ -263,7 +268,9 @@ class TestArunResearch:
             patch("parsers.arxiv_search.search_arxiv", return_value=papers),
             patch("pdf.extract.extract_pdf_text", return_value="Extracted text."),
             patch("pdf.extract_async.download_pdf_async", side_effect=flaky_download),
-            patch("llm.client_async.call_llm_chat_completions_async", new_callable=AsyncMock) as mock_llm,
+            patch(
+                "llm.client_async.call_llm_chat_completions_async", new_callable=AsyncMock
+            ) as mock_llm,
         ):
             from research_loop import arun_research
 
@@ -308,7 +315,9 @@ class TestArunResearch:
             patch("parsers.arxiv_search.search_arxiv", return_value=papers),
             patch("pdf.extract.extract_pdf_text", return_value="Extracted text."),
             patch("pdf.extract_async.download_pdf_async", side_effect=mock_dl),
-            patch("llm.client_async.call_llm_chat_completions_async", new_callable=AsyncMock) as mock_llm,
+            patch(
+                "llm.client_async.call_llm_chat_completions_async", new_callable=AsyncMock
+            ) as mock_llm,
         ):
             from research_loop import arun_research
 

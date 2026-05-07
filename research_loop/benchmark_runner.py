@@ -405,6 +405,7 @@ def run_tests_locally(test_dir: Path, verbose: bool = True) -> subprocess.Comple
 def _log_diagnostics(diagnostics: list[Diagnostic], code_path: Path) -> None:
     """Print ruff diagnostics to stderr for visibility before pytest runs."""
     import sys
+
     lines = [f"\n[ruff] {len(diagnostics)} issue(s) in {code_path.name}:"]
     for d in diagnostics:
         loc = f"{d.file}:{d.line}:{d.column}"

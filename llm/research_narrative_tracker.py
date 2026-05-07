@@ -1,4 +1,5 @@
 """Re-export from llm.research.research_narrative_tracker for backward compatibility."""
+
 from llm.research.research_narrative_tracker import (
     ResearchThread,
     NarrativePhase,

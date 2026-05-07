@@ -81,7 +81,10 @@ class TestParsePytestOutput:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=0, failed=0, skipped=0, duration_seconds=0,
+            passed=0,
+            failed=0,
+            skipped=0,
+            duration_seconds=0,
         )
         _parse_pytest_output(result, "10 passed in 5.23s")
         assert result.passed == 10
@@ -93,7 +96,10 @@ class TestParsePytestOutput:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=0, failed=0, skipped=0, duration_seconds=0,
+            passed=0,
+            failed=0,
+            skipped=0,
+            duration_seconds=0,
         )
         _parse_pytest_output(result, "5 passed, 2 failed in 3.10s")
         assert result.passed == 5
@@ -105,7 +111,10 @@ class TestParsePytestOutput:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=0, failed=0, skipped=0, duration_seconds=0,
+            passed=0,
+            failed=0,
+            skipped=0,
+            duration_seconds=0,
         )
         _parse_pytest_output(result, "5 passed, 2 failed, 3 skipped in 10s")
         assert result.passed == 5
@@ -117,7 +126,10 @@ class TestParsePytestOutput:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=0, failed=0, skipped=0, duration_seconds=0,
+            passed=0,
+            failed=0,
+            skipped=0,
+            duration_seconds=0,
         )
         _parse_pytest_output(result, "7 skipped in 1.5s")
         assert result.skipped == 7
@@ -127,7 +139,10 @@ class TestParsePytestOutput:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=0, failed=0, skipped=0, duration_seconds=0,
+            passed=0,
+            failed=0,
+            skipped=0,
+            duration_seconds=0,
         )
         _parse_pytest_output(result, "3 failed in 2.0s")
         assert result.failed == 3
@@ -137,7 +152,10 @@ class TestParsePytestOutput:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=0, failed=0, skipped=0, duration_seconds=0,
+            passed=0,
+            failed=0,
+            skipped=0,
+            duration_seconds=0,
         )
         _parse_pytest_output(result, "1 error during collection")
         assert result.failed == 1
@@ -147,7 +165,10 @@ class TestParsePytestOutput:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=0, failed=0, skipped=0, duration_seconds=0,
+            passed=0,
+            failed=0,
+            skipped=0,
+            duration_seconds=0,
         )
         _parse_pytest_output(result, "some random output")
         assert result.passed == 0
@@ -163,7 +184,10 @@ class TestParseJsonReport:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=0, failed=0, skipped=0, duration_seconds=0,
+            passed=0,
+            failed=0,
+            skipped=0,
+            duration_seconds=0,
         )
         json_data = {
             "summary": {"passed": 8, "failed": 2, "skipped": 1},
@@ -182,7 +206,10 @@ class TestParseJsonReport:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=0, failed=0, skipped=0, duration_seconds=0,
+            passed=0,
+            failed=0,
+            skipped=0,
+            duration_seconds=0,
         )
         json_data = {
             "summary": {"passed": 1, "failed": 1, "skipped": 0},
@@ -203,7 +230,10 @@ class TestParseJsonReport:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=5, failed=2, skipped=1, duration_seconds=0,
+            passed=5,
+            failed=2,
+            skipped=1,
+            duration_seconds=0,
         )
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             f.write("not valid json {{{")
@@ -262,7 +292,10 @@ class TestSummarizeResult:
         result = BenchmarkResult(
             arxiv_id="2301.12345",
             test_dir=Path("/tmp"),
-            passed=10, failed=2, skipped=1, duration_seconds=45.3,
+            passed=10,
+            failed=2,
+            skipped=1,
+            duration_seconds=45.3,
         )
         summary = summarize_result(result)
         assert "2301.12345" in summary
@@ -272,7 +305,10 @@ class TestSummarizeResult:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=8, failed=3, skipped=1, duration_seconds=30.0,
+            passed=8,
+            failed=3,
+            skipped=1,
+            duration_seconds=30.0,
         )
         summary = summarize_result(result)
         assert "8 passed" in summary
@@ -284,7 +320,10 @@ class TestSummarizeResult:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=5, failed=0, skipped=0, duration_seconds=12.75,
+            passed=5,
+            failed=0,
+            skipped=0,
+            duration_seconds=12.75,
         )
         summary = summarize_result(result)
         assert "12.75s" in summary or "12.8s" in summary
@@ -294,7 +333,10 @@ class TestSummarizeResult:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=3, failed=1, skipped=0, duration_seconds=5.0,
+            passed=3,
+            failed=1,
+            skipped=0,
+            duration_seconds=5.0,
         )
         summary = summarize_result(result)
         assert "75.0%" in summary
@@ -304,7 +346,10 @@ class TestSummarizeResult:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=0, failed=5, skipped=0, duration_seconds=5.0,
+            passed=0,
+            failed=5,
+            skipped=0,
+            duration_seconds=5.0,
         )
         summary = summarize_result(result)
         assert "0.0%" in summary or "0%" in summary
@@ -314,7 +359,10 @@ class TestSummarizeResult:
         result = BenchmarkResult(
             arxiv_id="test",
             test_dir=Path("/tmp"),
-            passed=0, failed=2, skipped=0, duration_seconds=3.0,
+            passed=0,
+            failed=2,
+            skipped=0,
+            duration_seconds=3.0,
             error_message="ERROR: test timeout after 30s\nImportError: no module named foo",
         )
         summary = summarize_result(result)
@@ -326,8 +374,10 @@ class TestRunBenchmark:
 
     def test_returns_benchmark_result(self):
         """Should return a BenchmarkResult object."""
-        with patch("research_loop.benchmark_runner.check_ruff") as mock_ruff, \
-             patch("subprocess.run") as mock_run:
+        with (
+            patch("research_loop.benchmark_runner.check_ruff") as mock_ruff,
+            patch("subprocess.run") as mock_run,
+        ):
             mock_ruff.return_value = []
             mock_run.return_value = MagicMock(
                 stdout="5 passed in 10s",
@@ -347,8 +397,10 @@ class TestRunBenchmark:
 
     def test_calls_check_ruff(self):
         """Should run ruff diagnostics before pytest."""
-        with patch("research_loop.benchmark_runner.check_ruff") as mock_ruff, \
-             patch("subprocess.run") as mock_run:
+        with (
+            patch("research_loop.benchmark_runner.check_ruff") as mock_ruff,
+            patch("subprocess.run") as mock_run,
+        ):
             mock_ruff.return_value = []
             mock_run.return_value = MagicMock(stdout="0 passed", stderr="", returncode=0)
             config = BenchmarkConfig(
@@ -363,8 +415,10 @@ class TestRunBenchmark:
 
     def test_parses_pytest_output(self):
         """Should parse pytest stdout for pass/fail counts."""
-        with patch("research_loop.benchmark_runner.check_ruff") as mock_ruff, \
-             patch("subprocess.run") as mock_run:
+        with (
+            patch("research_loop.benchmark_runner.check_ruff") as mock_ruff,
+            patch("subprocess.run") as mock_run,
+        ):
             mock_ruff.return_value = []
             mock_run.return_value = MagicMock(
                 stdout="7 passed, 2 failed, 1 skipped in 20s",
@@ -385,8 +439,10 @@ class TestRunBenchmark:
 
     def test_timeout_returns_error_message(self):
         """Should handle subprocess.TimeoutExpired gracefully."""
-        with patch("research_loop.benchmark_runner.check_ruff") as mock_ruff, \
-             patch("subprocess.run") as mock_run:
+        with (
+            patch("research_loop.benchmark_runner.check_ruff") as mock_ruff,
+            patch("subprocess.run") as mock_run,
+        ):
             mock_ruff.return_value = []
             mock_run.side_effect = subprocess.TimeoutExpired(cmd="pytest", timeout=300)
             config = BenchmarkConfig(
@@ -401,9 +457,11 @@ class TestRunBenchmark:
 
     def test_encodes_to_gene_pool_when_tracker_provided(self):
         """Should call tracker.encode_capsule when tracker and tests pass."""
-        with patch("research_loop.benchmark_runner.check_ruff") as mock_ruff, \
-             patch("subprocess.run") as mock_run, \
-             patch("research_loop.benchmark_runner._encode_to_gene_pool") as _mock_encode:
+        with (
+            patch("research_loop.benchmark_runner.check_ruff") as mock_ruff,
+            patch("subprocess.run") as mock_run,
+            patch("research_loop.benchmark_runner._encode_to_gene_pool") as _mock_encode,
+        ):
             mock_ruff.return_value = []
             mock_run.return_value = MagicMock(stdout="5 passed", stderr="", returncode=0)
             mock_tracker = MagicMock()
@@ -425,6 +483,7 @@ class TestLogDiagnostics:
     def test_diagnostic_class_structure(self):
         """Diagnostic should be constructable from lsp_diagnostics."""
         from research_loop.lsp_diagnostics import Diagnostic
+
         d = Diagnostic(
             file=Path("/tmp/code.py"),
             line=10,

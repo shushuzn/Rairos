@@ -190,8 +190,11 @@ class TestTrySearchArxiv:
         mock_paper = MagicMock()
         mock_paper.uid = "2301.00001"
         import time as _time
-        with patch("llm.events.search_arxiv") as mock_search, \
-             patch.object(_time, "sleep") as mock_sleep:
+
+        with (
+            patch("llm.events.search_arxiv") as mock_search,
+            patch.object(_time, "sleep") as mock_sleep,
+        ):
             mock_search.side_effect = [
                 Exception("Error 429"),
                 Exception("Error 429"),
@@ -214,6 +217,7 @@ class TestTrySearchCrossref:
     def test_handles_urlopen_error(self):
         """Should return empty list when URL open fails."""
         import urllib.error as urlerr
+
         with patch("urllib.request.urlopen", side_effect=urlerr.URLError("failed")):
             result = _try_search_crossref("test", 3)
             assert result == []
@@ -231,6 +235,7 @@ class TestTrySearchSemanticScholar:
     def test_handles_urlopen_error(self):
         """Should return empty list when URL open fails."""
         import urllib.error as urlerr
+
         with patch("urllib.request.urlopen", side_effect=urlerr.URLError("failed")):
             result = _try_search_semantic_scholar("test", 3)
             assert result == []
@@ -252,8 +257,10 @@ class TestFindRelatedPapers:
         """Should try CrossRef when arXiv returns empty."""
         mock_paper = MagicMock()
         mock_paper.uid = "10.1234/test"
-        with patch("llm.events._try_search_arxiv", return_value=[]), \
-             patch("llm.events._try_search_crossref", return_value=[mock_paper]) as mock_cr:
+        with (
+            patch("llm.events._try_search_arxiv", return_value=[]),
+            patch("llm.events._try_search_crossref", return_value=[mock_paper]) as mock_cr,
+        ):
             result = _find_related_papers("test", 3)
             mock_cr.assert_called_once()
             assert len(result) == 1
@@ -262,9 +269,11 @@ class TestFindRelatedPapers:
         """Should try Semantic Scholar when arXiv and CrossRef return empty."""
         mock_paper = MagicMock()
         mock_paper.uid = "S2-123"
-        with patch("llm.events._try_search_arxiv", return_value=[]), \
-             patch("llm.events._try_search_crossref", return_value=[]), \
-             patch("llm.events._try_search_semantic_scholar", return_value=[mock_paper]) as mock_ss:
+        with (
+            patch("llm.events._try_search_arxiv", return_value=[]),
+            patch("llm.events._try_search_crossref", return_value=[]),
+            patch("llm.events._try_search_semantic_scholar", return_value=[mock_paper]) as mock_ss,
+        ):
             _find_related_papers("test", 3)
             mock_ss.assert_called_once()
 
@@ -295,9 +304,7 @@ class TestProcessEvent:
 
         mock_client = MagicMock()
         mock_client.search_flash.return_value = {
-            "data": {
-                "items": [{"content": "伊朗导弹袭击沙特石油设施，导致油价飙升"}]
-            }
+            "data": {"items": [{"content": "伊朗导弹袭击沙特石油设施，导致油价飙升"}]}
         }
         with patch("llm.events.Jin10Client", return_value=mock_client):
             with patch("llm.events.EvolutionTracker", return_value=mock_capsule):
@@ -320,9 +327,7 @@ class TestProcessEvent:
 
         mock_client = MagicMock()
         mock_client.search_flash.return_value = {
-            "data": {
-                "items": [{"content": "伊朗导弹袭击沙特"}]
-            }
+            "data": {"items": [{"content": "伊朗导弹袭击沙特"}]}
         }
         with patch("llm.events.Jin10Client", return_value=mock_client):
             with patch("llm.events.EvolutionTracker", return_value=mock_capsule):
@@ -344,9 +349,7 @@ class TestProcessEvent:
         mock_paper.title = "Test Paper"
 
         mock_client = MagicMock()
-        mock_client.search_flash.return_value = {
-            "data": {"items": [{"content": "test"}]}
-        }
+        mock_client.search_flash.return_value = {"data": {"items": [{"content": "test"}]}}
         with patch("llm.events.Jin10Client", return_value=mock_client):
             with patch("llm.events.EvolutionTracker", return_value=mock_capsule):
                 with patch("llm.events._find_related_papers", return_value=[mock_paper]):

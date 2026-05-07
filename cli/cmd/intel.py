@@ -19,10 +19,8 @@ def _build_intel_parser(subparsers) -> argparse.ArgumentParser:
         description="Aggregate Jin10 news, market quotes, Gene Pool state, "
         "watch daemon status, and related academic papers into one report.",
     )
-    p.add_argument("--topic", "-t", type=str, default="",
-        help="Focus topic (default: global)")
-    p.add_argument("--verbose", "-v", action="store_true",
-        help="Include detailed breakdowns")
+    p.add_argument("--topic", "-t", type=str, default="", help="Focus topic (default: global)")
+    p.add_argument("--verbose", "-v", action="store_true", help="Include detailed breakdowns")
     p.set_defaults(func=_run_intel)
     return p
 

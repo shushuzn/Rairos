@@ -1,4 +1,5 @@
 """Miscellaneous web routes: auth, chat, notifications, etc."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
@@ -14,7 +15,6 @@ async def get_notifications(request: Request):
     from fastapi.responses import JSONResponse
 
     return JSONResponse({"notifications": _notification_store})
-
 
 
 @router.post("/notifications/dismiss")
@@ -34,7 +34,6 @@ async def dismiss_notification(request: Request):
         return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
 
-
 @router.get("/research-log")
 async def research_log(request: Request, paper_id: str = ""):
     """Research Log page — view and add research notes."""
@@ -52,7 +51,6 @@ async def research_log(request: Request, paper_id: str = ""):
     )
 
 
-
 @router.post("/research-log/note")
 async def add_note(request: Request):
     """Append a research note."""
@@ -68,7 +66,6 @@ async def add_note(request: Request):
     return JSONResponse({"success": ok})
 
 
-
 @router.get("/research-log/notes")
 async def get_notes(request: Request, paper_id: str = ""):
     """Get notes JSON, optionally filtered by paper_id."""
@@ -79,9 +76,9 @@ async def get_notes(request: Request, paper_id: str = ""):
     return JSONResponse({"notes": notes})
 
 
-
 def get_paper2code_results():
     return []
+
 
 @router.get("/paper2code")
 async def paper2code_dashboard(request: Request):
@@ -95,7 +92,6 @@ async def paper2code_dashboard(request: Request):
     )
 
 
-
 @router.get("/paper2code/stream/{job_id}")
 async def paper2code_stream(job_id: str):
     """SSE endpoint — live Paper2Code pipeline progress."""
@@ -104,6 +100,7 @@ async def paper2code_stream(job_id: str):
 
     async def event_generator():
         import json as _json
+
         _last = None
         while True:
             state = p2c_progress.get(job_id)
@@ -124,7 +121,6 @@ async def paper2code_stream(job_id: str):
             "X-Accel-Buffering": "no",
         },
     )
-
 
 
 @router.post("/paper2code/run")
@@ -157,17 +153,31 @@ async def paper2code_run(request: Request):
 
     def _run():
         try:
-            p2c_progress.update(job_id, status="running", stage="parse", message="Downloading paper...", progress_pct=10)
+            p2c_progress.update(
+                job_id,
+                status="running",
+                stage="parse",
+                message="Downloading paper...",
+                progress_pct=10,
+            )
             from research_loop.paper2code_integration import PaperPipeline
 
             pipeline = PaperPipeline()
 
-            p2c_progress.update(job_id, stage="generate", message="Generating code skeleton...", progress_pct=30)
-            p2c_progress.update(job_id, stage="test", message="Extracting tests...", progress_pct=50)
-            p2c_progress.update(job_id, stage="benchmark", message="Running benchmarks...", progress_pct=70)
+            p2c_progress.update(
+                job_id, stage="generate", message="Generating code skeleton...", progress_pct=30
+            )
+            p2c_progress.update(
+                job_id, stage="test", message="Extracting tests...", progress_pct=50
+            )
+            p2c_progress.update(
+                job_id, stage="benchmark", message="Running benchmarks...", progress_pct=70
+            )
             result = pipeline.run(arxiv_id, framework=framework)
 
-            p2c_progress.update(job_id, stage="encode", message="Encoding to Gene Pool...", progress_pct=90)
+            p2c_progress.update(
+                job_id, stage="encode", message="Encoding to Gene Pool...", progress_pct=90
+            )
             if result and isinstance(result, dict):
                 record["passed"] = result.get("passed", 0)
                 record["failed"] = result.get("failed", 0)
@@ -183,25 +193,34 @@ async def paper2code_run(request: Request):
             record["status"] = "failed"
             p2c_progress.update(job_id, status="failed", message=str(e)[:100], progress_pct=0)
             import logging
+
             logging.getLogger(__name__).warning(f"paper2code run failed for {arxiv_id}: {e}")
         finally:
             _save_paper2code_result(record)
 
     t = threading.Thread(target=_run, daemon=True)
     t.start()
-    return {"success": True, "job_id": job_id, "message": f"Paper2Code pipeline started for {arxiv_id}"}
+    return {
+        "success": True,
+        "job_id": job_id,
+        "message": f"Paper2Code pipeline started for {arxiv_id}",
+    }
 
-# --- Fallback routes for sidebar items (graceful "not available") ---
+    # --- Fallback routes for sidebar items (graceful "not available") ---
 
-# removed old fallback(request: Request):
-    return templates.TemplateResponse(request, "generic.html",
-        {"page": "chat", "title": "Chat", "content": "<p>Chat module loading...</p>"})
+    # removed old fallback(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {"page": "chat", "title": "Chat", "content": "<p>Chat module loading...</p>"},
+    )
 
 
 @router.get("/chat")
 async def chat_page(request: Request):
     """Gene Pool browser — explore capsules in a chat-like interface."""
     from llm.insight.tracker import EvolutionTracker
+
     tracker = EvolutionTracker()
     capsules = tracker._load_capsules()
 
@@ -211,9 +230,9 @@ async def chat_page(request: Request):
         cards.append(
             f'<div style="border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;">'
             f'<div style="font-size:11px;color:var(--ink-faint);">'
-            f'[{badge}] score={c.outcome_success_score:.2f} cred={c.credibility_score:.2f} {c.action_gap_type}</div>'
+            f"[{badge}] score={c.outcome_success_score:.2f} cred={c.credibility_score:.2f} {c.action_gap_type}</div>"
             f'<div style="font-size:14px;margin-top:4px;">{c.action_gap_title}</div>'
-            f'</div>'
+            f"</div>"
         )
 
     html = f"""
@@ -225,10 +244,11 @@ async def chat_page(request: Request):
     <div class="chat-container">
         <div class="chat-header">Gene Pool Browser</div>
         <div class="chat-count">{len(capsules)} capsules · sorted by score</div>
-        {''.join(cards)}
+        {"".join(cards)}
     </div>"""
-    return templates.TemplateResponse(request, "generic.html", {"page": "chat", "title": "Gene Pool", "content": html})
-
+    return templates.TemplateResponse(
+        request, "generic.html", {"page": "chat", "title": "Gene Pool", "content": html}
+    )
 
 
 @router.get("/citation-chain")
@@ -246,15 +266,20 @@ async def citation_chain(request: Request, arxiv_id: str = ""):
     )
 
 
-
-
 @router.get("/citation-chain")
 async def citation_chain_page(request: Request):
-    return templates.TemplateResponse(request, "generic.html", {"page": "citation_chain", "title": "Citation Chain", "content": "<p>Citation chain not available</p>"})
+    return templates.TemplateResponse(
+        request,
+        "generic.html",
+        {
+            "page": "citation_chain",
+            "title": "Citation Chain",
+            "content": "<p>Citation chain not available</p>",
+        },
+    )
+
 
 @router.get("/citation-chain/graph")
-
-
 @router.get("/citation-chain/graph")
 async def citation_chain_graph(request: Request, paper_id: str = "", title: str = ""):
     """Interactive SVG citation graph: paper → cited refs → Gene Pool capsules."""
@@ -272,8 +297,6 @@ async def citation_chain_graph(request: Request, paper_id: str = "", title: str 
             "content": html,
         },
     )
-
-
 
 
 @router.get("/arxiv-channels")
@@ -298,8 +321,6 @@ async def arxiv_channels(request: Request):
     )
 
 
-
-
 @router.post("/arxiv-channels/toggle/{channel_id}")
 async def toggle_channel(channel_id: str, request: Request):
     """Toggle an alert channel on/off."""
@@ -313,8 +334,6 @@ async def toggle_channel(channel_id: str, request: Request):
     current = channels[channel_id].get("enabled", True)
     update_channel(channel_id, {"enabled": not current})
     return JSONResponse({"success": True})
-
-
 
 
 @router.post("/arxiv-channels/check")
@@ -340,8 +359,6 @@ async def arxiv_check(request: Request):
         return JSONResponse({"success": False, "error": str(e)}, status_code=500)
 
 
-
-
 @router.get("/climate-monitor")
 async def climate_monitor(request: Request):
     """Climate AI Monitor — papers at climate+AI intersection."""
@@ -358,8 +375,6 @@ async def climate_monitor(request: Request):
             "content": html,
         },
     )
-
-
 
 
 @router.post("/climate-monitor/toggle-watch")
@@ -381,8 +396,6 @@ async def climate_toggle_watch(request: Request):
     return JSONResponse({"success": True})
 
 
-
-
 @router.get("/voice-capsule")
 async def voice_capsule(request: Request):
     """Voice-to-Capsule — upload audio, transcribe, extract gap, save to Gene Pool."""
@@ -398,8 +411,6 @@ async def voice_capsule(request: Request):
             "content": html,
         },
     )
-
-
 
 
 @router.post("/voice-capsule/transcribe")
@@ -423,8 +434,6 @@ async def voice_transcribe(request: Request):
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
-
-
 @router.post("/voice-capsule/save")
 async def voice_save(request: Request):
     """Save extracted voice gap to Gene Pool."""
@@ -437,8 +446,6 @@ async def voice_save(request: Request):
         return JSONResponse({"success": True, "capsule_id": cid})
     except Exception as e:
         return JSONResponse({"success": False, "error": str(e)}, status_code=500)
-
-
 
 
 @router.get("/policy-impact")
@@ -458,8 +465,6 @@ async def policy_impact(request: Request):
     )
 
 
-
-
 @router.get("/labor-displacement")
 async def labor_displacement(request: Request):
     """Labor Displacement Tracker — AI vs. human labor gaps."""
@@ -475,8 +480,6 @@ async def labor_displacement(request: Request):
             "content": html,
         },
     )
-
-
 
 
 @router.get("/researchers")
@@ -496,8 +499,6 @@ async def multi_researcher(request: Request):
     )
 
 
-
-
 @router.post("/researchers/add")
 async def add_researcher_route(request: Request):
     from llm.multi_researcher import add_researcher
@@ -510,8 +511,6 @@ async def add_researcher_route(request: Request):
     return JSONResponse({"success": ok, "error": None if ok else "already exists"})
 
 
-
-
 @router.get("/researchers/capsules/{user_id}")
 async def researcher_capsules(user_id: str, request: Request):
     from llm.multi_researcher import get_capsules_for_user
@@ -519,8 +518,6 @@ async def researcher_capsules(user_id: str, request: Request):
 
     capsules = get_capsules_for_user(user_id)
     return JSONResponse({"count": len(capsules), "capsules": capsules[:10]})
-
-
 
 
 @router.get("/insights/queue")
@@ -539,8 +536,6 @@ async def review_queue(request: Request):
             "content": html,
         },
     )
-
-
 
 
 @router.post("/insights/queue/verdict")
@@ -563,6 +558,7 @@ async def submit_verdict(request: Request):
             break
 
     return {"success": True}
+
 
 def _render_paper2code_html(results: List[Dict[str, Any]]) -> str:
     lines = ['<div class="paper2code-dash">']
@@ -690,7 +686,9 @@ def _render_paper2code_html(results: List[Dict[str, Any]]) -> str:
             gp = r.get("gene_pool_encoded", False)
             ts = r.get("created_at", "")[:19]
             status = r.get("status", "done")
-            _status_dot = {"done": "✅", "failed": "❌", "running": "⏳", "pending": "⏳"}.get(status, "❓")
+            _status_dot = {"done": "✅", "failed": "❌", "running": "⏳", "pending": "⏳"}.get(
+                status, "❓"
+            )
             lines.append(f"""
             <tr style="border-bottom:1px solid var(--border-light);">
               <td style="padding:8px 10px;"><a href="/paper/{arxiv}" style="color:var(--pen-blue);">{arxiv}</a></td>
@@ -704,6 +702,3 @@ def _render_paper2code_html(results: List[Dict[str, Any]]) -> str:
 
     lines.append("</div>")
     return "\n".join(lines)
-
-
-

@@ -100,7 +100,11 @@ def _build_agent_parser(subparsers) -> argparse.ArgumentParser:
     br = sub.add_parser("branch", help="Fork a session at a checkpoint into a new session")
     br.add_argument("session_id", help="Source session ID to fork from")
     br.add_argument(
-        "--checkpoint", "-c", type=str, default=None, help="Checkpoint ID to fork at (default: latest)"
+        "--checkpoint",
+        "-c",
+        type=str,
+        default=None,
+        help="Checkpoint ID to fork at (default: latest)",
     )
     br.add_argument(
         "--query", "-q", type=str, default=None, help="Override query for the forked session"
@@ -133,7 +137,15 @@ def _estimate_complexity(query: str) -> int:
     complexity = 1
 
     # Cross-domain signals
-    cross_keywords = ["comparison", " vs ", " versus ", "combine", "hybrid", "cross-domain", "transfer"]
+    cross_keywords = [
+        "comparison",
+        " vs ",
+        " versus ",
+        "combine",
+        "hybrid",
+        "cross-domain",
+        "transfer",
+    ]
     if any(k in q for k in cross_keywords):
         complexity += 1
 
@@ -166,7 +178,11 @@ def _confirm(action: str, detail: str, mode: str) -> bool:
         return False  # no approvals in yolo mode
     # agent mode: interactive
     try:
-        resp = input(f"{Colors.WARNING}[confirm]{Colors.reset} {action} — {detail} [y/N]: ").strip().lower()
+        resp = (
+            input(f"{Colors.WARNING}[confirm]{Colors.reset} {action} — {detail} [y/N]: ")
+            .strip()
+            .lower()
+        )
         return resp in ("y", "yes")
     except (EOFError, KeyboardInterrupt):
         return False
@@ -198,7 +214,11 @@ def _run_deep_research(args) -> int:
     if args.auto:
         complexity = _estimate_complexity(args.query)
         iterations = min(max(complexity, 1), 5)
-        print(colored(f"[auto] estimated complexity={complexity}, iterations={iterations}", Colors.OKBLUE))
+        print(
+            colored(
+                f"[auto] estimated complexity={complexity}, iterations={iterations}", Colors.OKBLUE
+            )
+        )
 
     snapstate_dir = Path.home() / ".ai_research_os" / "sessions"
 
@@ -393,10 +413,14 @@ def _branch_session(args) -> int:
         print_error(f"Checkpoint {checkpoint_id} not found in session {args.session_id}")
         return 1
 
-    print_success(f"Forked session {args.session_id} -> {forked.session_id} (at checkpoint {checkpoint_id})")
+    print_success(
+        f"Forked session {args.session_id} -> {forked.session_id} (at checkpoint {checkpoint_id})"
+    )
     print(f"  Query: {forked.query}")
     print(f"  Status: {forked.status}")
-    print(f"  Papers: {len(forked.papers)}, Gaps: {len(forked.gaps)}, Iterations: {forked.iteration}")
+    print(
+        f"  Papers: {len(forked.papers)}, Gaps: {len(forked.gaps)}, Iterations: {forked.iteration}"
+    )
     return 0
 
 
@@ -440,8 +464,12 @@ def _diff_sessions(args) -> int:
         return 1
 
     print(colored(f"Session diff: {args.session_id_a} vs {args.session_id_b}", Colors.BOLD))
-    print(f"  Status:  {diff['status_a']} (iter {diff['iteration_a']}) vs {diff['status_b']} (iter {diff['iteration_b']})")
-    print(f"  Papers:  {diff['papers_a_count']} vs {diff['papers_b_count']}  ({diff['papers_diff']:+d})")
+    print(
+        f"  Status:  {diff['status_a']} (iter {diff['iteration_a']}) vs {diff['status_b']} (iter {diff['iteration_b']})"
+    )
+    print(
+        f"  Papers:  {diff['papers_a_count']} vs {diff['papers_b_count']}  ({diff['papers_diff']:+d})"
+    )
     print(f"  Gaps:    {diff['gaps_a_count']} vs {diff['gaps_b_count']}  ({diff['gaps_diff']:+d})")
     print(f"  Shared papers: {diff['shared_papers_count']}")
     if diff["shared_papers"]:

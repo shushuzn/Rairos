@@ -20,12 +20,18 @@ router = APIRouter()
 
 def _render_evolution_log_html(events: list) -> str:
     ACTION_ICON = {
-        "created": "🆕", "merged": "🔀", "evolved": "🧬",
-        "archived": "📦", "consumed": "⚡",
+        "created": "🆕",
+        "merged": "🔀",
+        "evolved": "🧬",
+        "archived": "📦",
+        "consumed": "⚡",
     }
     ACTION_COLOR = {
-        "created": "#4CAF50", "merged": "#9C27B0", "evolved": "#2196F3",
-        "archived": "#757575", "consumed": "#FF9800",
+        "created": "#4CAF50",
+        "merged": "#9C27B0",
+        "evolved": "#2196F3",
+        "archived": "#757575",
+        "consumed": "#FF9800",
     }
 
     rows = []
@@ -98,7 +104,8 @@ async def trust_scores(request: Request):
     tracker = SourceTrustTracker()
     html = tracker.render_html()
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {"page": "trust-scores", "title": "Source Trust Scores", "content": html},
     )
 
@@ -111,7 +118,8 @@ async def gene_pool_credibility(request: Request):
     scorer = CredibilityScorer()
     html = scorer.render_html()
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {"page": "gene-pool-credibility", "title": "Gap Credibility", "content": html},
     )
 
@@ -133,7 +141,8 @@ async def gene_pool_evolution_log(request: Request):
     events = tracker.get_evolution_log(limit=100)
     html = _render_evolution_log_html(events)
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {"page": "gene-pool-evolution-log", "title": "Evolution Log", "content": html},
     )
 
@@ -146,15 +155,19 @@ async def contradiction_heatmap(request: Request):
     db = get_db()
     rows, _ = db.list_papers(limit=200, offset=0)
     papers = [
-        {"id": r.id, "title": r.title,
-         "primary_category": getattr(r, "primary_category", "") or "",
-         "published": r.published}
+        {
+            "id": r.id,
+            "title": r.title,
+            "primary_category": getattr(r, "primary_category", "") or "",
+            "published": r.published,
+        }
         for r in rows
     ]
     contrad_map = compute_paper_contradictions()
     html = render_heatmap_html(papers, contrad_map)
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {"page": "heatmap", "title": "Contradiction Heatmap", "content": html},
     )
 
@@ -162,15 +175,17 @@ async def contradiction_heatmap(request: Request):
 @router.get("/game-mode")
 async def game_mode(request: Request):
     """Research Game Mode — badges and progression."""
-    html = '<p>Game mode unavailable</p>'
+    html = "<p>Game mode unavailable</p>"
     try:
         from llm.game_mode import compute_badges, render_game_mode_html
+
         badges = compute_badges()
         html = render_game_mode_html(badges)
     except Exception:
         pass
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {"page": "game-mode", "title": "Research Game Mode", "content": html},
     )
 
@@ -183,7 +198,8 @@ async def paradigm_alert(request: Request):
     result = check_paradigm_concentration("all")
     html = render_html(result)
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {"page": "paradigm-alert", "title": "Paradigm Alert", "content": html},
     )
 
@@ -194,12 +210,14 @@ async def eval_gap_alert(request: Request):
     html = "<p>Evaluation gap monitor unavailable</p>"
     try:
         from llm.eval_gap_monitor import check_eval_gaps, render_eval_gap_html
+
         data = check_eval_gaps()
         html = render_eval_gap_html(data)
     except Exception:
         pass
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {"page": "eval-gap-alert", "title": "Evaluation Gap", "content": html},
     )
 
@@ -212,7 +230,8 @@ async def gene_pool_bold(request: Request):
     capsules = get_bold_capsules()
     html = render_html(capsules)
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {"page": "gene-pool-bold", "title": "Bold Hypothesis Vault", "content": html},
     )
 
@@ -221,16 +240,21 @@ async def gene_pool_bold(request: Request):
 async def gene_pool_backup(request: Request):
     """Gene Pool Backup — create and restore snapshots."""
     from llm.gene_pool_io import get_backup_info, create_backup
+
     info = get_backup_info()
     stamps = info.get("stamps", []) if isinstance(info, dict) else []
     if stamps:
-        rows = ''.join(f'<tr><td>{s}</td><td><form action="/gene-pool/backup/restore/{s.replace(".tar","")}" method="post" style="display:inline"><button class="btn" style="font-size:12px;padding:2px 10px;">Restore</button></form></td></tr>' for s in stamps)
+        rows = "".join(
+            f'<tr><td>{s}</td><td><form action="/gene-pool/backup/restore/{s.replace(".tar", "")}" method="post" style="display:inline"><button class="btn" style="font-size:12px;padding:2px 10px;">Restore</button></form></td></tr>'
+            for s in stamps
+        )
         html = f'<table class="credibility-table"><thead><tr><th>Backup</th><th></th></tr></thead><tbody>{rows}</tbody></table>'
     else:
         html = "<p>No backups yet.</p>"
     html += '<form action="/gene-pool/backup/create" method="post" style="margin-top:16px"><button class="btn btn-primary">Create Backup</button></form>'
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {"page": "gene-pool-backup", "title": "Gene Pool Backup", "content": html},
     )
 
@@ -241,11 +265,12 @@ async def create_backup(request: Request):
 
     path = _create()
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {
             "page": "gene-pool-backup",
             "title": "Gene Pool Backup",
-            "content": f"<p>Backup created: {path}</p>"
+            "content": f"<p>Backup created: {path}</p>",
         },
     )
 
@@ -257,7 +282,8 @@ async def restore_backup(stamp: str, request: Request):
     ok = _restore(stamp)
     msg = f"<p>Restored from {stamp}</p>" if ok else f"<p>Restore failed: {stamp} not found</p>"
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {"page": "gene-pool-backup", "title": "Gene Pool Backup", "content": msg},
     )
 
@@ -274,7 +300,8 @@ async def gene_pool_at_risk(request: Request):
     at_risk = [c for c in capsules if c.low_score_streak >= 2 and c.status == "active"]
     html = _render_at_risk_html(at_risk)
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {"page": "gene-pool-at-risk", "title": "At-Risk Capsules", "content": html},
     )
 
@@ -322,7 +349,8 @@ async def gene_pool_io(request: Request):
 
     html = render_io_html()
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {"page": "gene-pool-io", "title": "Gene Pool Import/Export", "content": html},
     )
 
@@ -333,8 +361,11 @@ async def export_pool(request: Request):
     from fastapi.responses import JSONResponse
 
     data = export_pool()
-    return JSONResponse(content=data, media_type="application/json",
-                        headers={"Content-Disposition": "attachment; filename=gene_pool.json"})
+    return JSONResponse(
+        content=data,
+        media_type="application/json",
+        headers={"Content-Disposition": "attachment; filename=gene_pool.json"},
+    )
 
 
 @router.post("/gene-pool/io/import")
@@ -344,11 +375,12 @@ async def import_pool(request: Request):
     data = await request.json()
     result = import_pool(data, merge=True)
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {
             "page": "gene-pool-io",
             "title": "Gene Pool Import/Export",
-            "content": f"<p>Imported {result.get('imported', 0)} capsules.</p>"
+            "content": f"<p>Imported {result.get('imported', 0)} capsules.</p>",
         },
     )
 
@@ -357,10 +389,16 @@ async def import_pool(request: Request):
 async def cross_domain_bridge(request: Request):
     """Cross-Domain Gap Bridge — find connections between distant categories."""
     from llm.cross_domain_bridge import get_bridges, render_html
-    bridges = get_bridges() if 'get_bridges' in dir() else []
-    html = render_html(bridges) if 'render_html' in dir() else '<p>Cross-domain bridge not available</p>'
+
+    bridges = get_bridges() if "get_bridges" in dir() else []
+    html = (
+        render_html(bridges)
+        if "render_html" in dir()
+        else "<p>Cross-domain bridge not available</p>"
+    )
     return templates.TemplateResponse(
-        request, "generic.html",
+        request,
+        "generic.html",
         {"page": "cross-domain", "title": "Cross-Domain Bridges", "content": html},
     )
 

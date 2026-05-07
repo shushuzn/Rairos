@@ -1,4 +1,5 @@
 """Re-export from llm.research.gap_analyzer for backward compatibility."""
+
 from llm.research.gap_analyzer import (
     ResearchGapV2,
     GapAnalysisResultV2,

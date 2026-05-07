@@ -1,4 +1,5 @@
 """Paper browsing, detail, and gap analysis web routes."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
@@ -73,7 +74,6 @@ async def papers(
     )
 
 
-
 @router.get("/paper/{paper_id}")
 async def paper_detail(request: Request, paper_id: str):
     """Paper detail — full metadata."""
@@ -143,7 +143,6 @@ async def paper_detail(request: Request, paper_id: str):
     )
 
 
-
 @router.get("/paper/{paper_id}/extract-gap")
 async def extract_paper_gap(request: Request, paper_id: str):
     """Extract a research gap from a paper using LLM."""
@@ -161,7 +160,6 @@ async def extract_paper_gap(request: Request, paper_id: str):
         authors=paper.authors,
     )
     return result
-
 
 
 @router.post("/paper/{paper_id}/save-gap")
@@ -190,7 +188,6 @@ async def save_paper_gap(request: Request, paper_id: str):
     return {"success": success}
 
 
-
 @router.get("/paper/{paper_id}/rigor")
 async def paper_rigor(request: Request, paper_id: str):
     """Compute and return research rigor score for a paper as JSON."""
@@ -203,7 +200,6 @@ async def paper_rigor(request: Request, paper_id: str):
     scorer = RigorScorer()
     score = scorer.score_paper(paper_id, abstract=paper.abstract or "", title=paper.title or "")
     return score.to_dict()
-
 
 
 @router.get("/paper/{paper_id}/replication")
@@ -223,7 +219,6 @@ async def paper_replication(request: Request, paper_id: str):
         full_text=paper.plain_text or "",
     )
     return report.to_dict()
-
 
 
 @router.get("/papers/gap-analysis")
@@ -284,7 +279,6 @@ async def papers_gap_analysis(request: Request, ids: str = ""):
     )
 
 
-
 @router.get("/papers/gap-analysis/questions")
 async def gap_analysis_questions(request: Request, ids: str = ""):
     """Generate research questions from frontier gaps for selected papers."""
@@ -334,5 +328,3 @@ async def gap_analysis_questions(request: Request, ids: str = ""):
             "content": html,
         },
     )
-
-

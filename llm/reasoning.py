@@ -49,6 +49,7 @@ class ReasoningBlock:
         done:    True when this is the last chunk for this phase
                 (i.e. a new phase has started or the stream has ended).
     """
+
     phase: str = ""
     content: str = ""
     done: bool = False
@@ -60,11 +61,21 @@ class ReasoningBlock:
 
 # Known phase labels that reasoning models emit as part of their thinking
 # content (without a formal phase field).  Used by _infer_phase.
-_KNOWN_PHASES = frozenset([
-    "decomposition", "analysis", "search", "retrieval",
-    "reasoning", "planning", "synthesis", "reflection",
-    "verification", "conclusion", "decomposition",
-])
+_KNOWN_PHASES = frozenset(
+    [
+        "decomposition",
+        "analysis",
+        "search",
+        "retrieval",
+        "reasoning",
+        "planning",
+        "synthesis",
+        "reflection",
+        "verification",
+        "conclusion",
+        "decomposition",
+    ]
+)
 
 
 def _infer_phase(text: str) -> str:
@@ -74,6 +85,7 @@ def _infer_phase(text: str) -> str:
     and returns the normalised phase name, otherwise ``""``.
     """
     import re
+
     lowered = text.lower().strip()
     # Match "Phase: Label" or "[Label]" or just "Label:"
     m = re.match(r"^\[([^\]]+)\]|^([a-z]+):", lowered)
@@ -84,7 +96,9 @@ def _infer_phase(text: str) -> str:
     return ""
 
 
-def _parse_thinking_stream(r: Iterator[Any]) -> Iterator[tuple[Optional[ReasoningBlock], Optional[str]]]:
+def _parse_thinking_stream(
+    r: Iterator[Any],
+) -> Iterator[tuple[Optional[ReasoningBlock], Optional[str]]]:
     """Parse an SSE stream that may contain thinking/reasoning events.
 
     This is a low-level helper that walks the raw SSE lines emitted by a
@@ -118,6 +132,7 @@ def _parse_thinking_stream(r: Iterator[Any]) -> Iterator[tuple[Optional[Reasonin
             if not line.startswith("data: "):
                 continue
             import orjson
+
             payload = line[6:].strip()
             if payload == "[DONE]":
                 # Flush any pending reasoning.
@@ -302,7 +317,11 @@ class StreamingReasoner:
         )
         import orjson
 
-        base_url = kwargs.pop("base_url", os.getenv("MINIMAX_BASE_URL") or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"))
+        base_url = kwargs.pop(
+            "base_url",
+            os.getenv("MINIMAX_BASE_URL")
+            or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+        )
         api_key = kwargs.pop("api_key", os.getenv("OPENAI_API_KEY", ""))
         model = kwargs.pop("model", self.model)
         timeout = kwargs.pop("timeout", 180)
@@ -330,10 +349,14 @@ class StreamingReasoner:
                 extra["thinking"] = {"type": "disabled"}
                 payload["extra_body"] = extra
                 try:
-                    r = session.post(url, headers=headers, json=payload, timeout=timeout, stream=True)
+                    r = session.post(
+                        url, headers=headers, json=payload, timeout=timeout, stream=True
+                    )
                     r.raise_for_status()
                 except requests.RequestException:
-                    raise RuntimeError(f"LLM API request failed (extended thinking disabled): {e}") from e
+                    raise RuntimeError(
+                        f"LLM API request failed (extended thinking disabled): {e}"
+                    ) from e
             else:
                 raise RuntimeError(f"LLM API request failed: {e}") from e
 
@@ -353,6 +376,7 @@ class StreamingReasoner:
 # ---------------------------------------------------------------------------
 # Convenience function
 # ---------------------------------------------------------------------------
+
 
 def stream_with_reasoning(
     messages: List[dict],

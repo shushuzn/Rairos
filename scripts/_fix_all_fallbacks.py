@@ -1,4 +1,5 @@
 """Remove all fallback routes that block real implementations."""
+
 with open("web/routes_misc.py", encoding="utf-8") as f:
     c = f.read()
 
@@ -21,7 +22,7 @@ fallback_patterns = [
 for pattern, name in fallback_patterns:
     match = re.search(pattern, c, re.DOTALL)
     if match:
-        c = c[:match.start()] + c[match.end():]
+        c = c[: match.start()] + c[match.end() :]
         print(f"Removed fallback: {name}")
     else:
         print(f"No fallback found: {name}")
@@ -30,5 +31,6 @@ with open("web/routes_misc.py", "w", encoding="utf-8") as f:
     f.write(c)
 
 import py_compile
+
 py_compile.compile("web/routes_misc.py", doraise=True)
 print("\nCompiles OK")

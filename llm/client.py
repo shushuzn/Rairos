@@ -150,7 +150,13 @@ def _read_hermes_env() -> dict:
             if "=" in line and not line.startswith("#"):
                 k, v = line.split("=", 1)
                 if (
-                    k in ("MINIMAX_CN_API_KEY", "MINIMAX_CN_BASE_URL", "MINIMAX_API_KEY", "MINIMAX_BASE_URL")
+                    k
+                    in (
+                        "MINIMAX_CN_API_KEY",
+                        "MINIMAX_CN_BASE_URL",
+                        "MINIMAX_API_KEY",
+                        "MINIMAX_BASE_URL",
+                    )
                     and k not in result
                 ):
                     result[k] = v.strip()
@@ -174,9 +180,13 @@ def _resolve_llm_credentials(base_url: str, api_key: str) -> tuple[str, str]:
 
     resolved_url = base_url
     if not resolved_url or resolved_url == "https://api.openai.com/v1":
-        resolved_url = os.getenv("MINIMAX_CN_BASE_URL") or hermes.get("MINIMAX_CN_BASE_URL", "") or ""
+        resolved_url = (
+            os.getenv("MINIMAX_CN_BASE_URL") or hermes.get("MINIMAX_CN_BASE_URL", "") or ""
+        )
     if not resolved_url:
-        resolved_url = os.getenv("MINIMAX_BASE_URL") or os.getenv("OPENAI_BASE_URL", "https://api.minimaxi.com/v1")
+        resolved_url = os.getenv("MINIMAX_BASE_URL") or os.getenv(
+            "OPENAI_BASE_URL", "https://api.minimaxi.com/v1"
+        )
 
     if "/anthropic" in resolved_url:
         resolved_url = resolved_url.replace("/anthropic", "/v1")
@@ -187,7 +197,8 @@ def _resolve_llm_credentials(base_url: str, api_key: str) -> tuple[str, str]:
 def warm_cache(
     queries: List[str],
     model: str = "gpt-4o-mini",
-    base_url: str = os.getenv("MINIMAX_BASE_URL") or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+    base_url: str = os.getenv("MINIMAX_BASE_URL")
+    or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
     api_key: Optional[str] = None,
     system_prompt: Optional[str] = None,
 ) -> Dict[str, bool]:
@@ -339,12 +350,14 @@ def _parse_sse_stream(r: requests.Response) -> Iterator[str]:
 
 # ── Main LLM API ──────────────────────────────────────────────────────────────
 
+
 @circuit_breaker(failure_threshold=5, recovery_timeout=60.0)
 def call_llm_chat_completions(
     messages: List[Dict[str, str]],
     model: str,
     user_prompt: Optional[str] = None,
-    base_url: str = os.getenv("MINIMAX_BASE_URL") or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+    base_url: str = os.getenv("MINIMAX_BASE_URL")
+    or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
     api_key: Optional[str] = None,
     timeout: int = 180,
     system_prompt: Optional[str] = None,
@@ -380,7 +393,9 @@ def call_llm_chat_completions(
                     combined += f"{role.upper()}: {content}\n"
                 if user_prompt:
                     combined += f"USER: {user_prompt}\n"
-                return cast(str, cli.chat(prompt=combined, model=model, system_prompt=system_prompt))
+                return cast(
+                    str, cli.chat(prompt=combined, model=model, system_prompt=system_prompt)
+                )
 
         if anthropic_key:
             return _call_anthropic_api(
@@ -473,6 +488,7 @@ def _stream_to_string(r: requests.Response) -> str:
 
 # ── Anthropic API ─────────────────────────────────────────────────────────────
 
+
 def _call_anthropic_api(
     messages: List[Dict[str, str]],
     model: str,
@@ -528,7 +544,9 @@ def _call_anthropic_api(
         payload["stream"] = True
 
     try:
-        r = session.post(ANTHROPIC_API_URL, headers=headers, json=payload, timeout=timeout, stream=stream)
+        r = session.post(
+            ANTHROPIC_API_URL, headers=headers, json=payload, timeout=timeout, stream=stream
+        )
         r.raise_for_status()
 
         if stream:
@@ -575,11 +593,13 @@ def _stream_anthropic_to_string(r: requests.Response) -> str:
 
 # ── Streaming LLM API ─────────────────────────────────────────────────────────
 
+
 def stream_llm_chat_completions(
     messages: List[Dict[str, str]],
     model: str,
     user_prompt: Optional[str] = None,
-    base_url: str = os.getenv("MINIMAX_BASE_URL") or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+    base_url: str = os.getenv("MINIMAX_BASE_URL")
+    or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
     api_key: Optional[str] = None,
     timeout: int = 180,
     system_prompt: Optional[str] = None,
@@ -674,6 +694,7 @@ def stream_llm_chat_completions(
 
 
 # ── Client wrapper for evolution.py ───────────────────────────────────────────
+
 
 def get_client(
     model: str = "minimax-m2.7-highspeed",

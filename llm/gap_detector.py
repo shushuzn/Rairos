@@ -1,4 +1,5 @@
 """Re-export from llm.research.gap_detector for backward compatibility."""
+
 from llm.research.gap_detector import (
     GapType,
     GapSeverity,

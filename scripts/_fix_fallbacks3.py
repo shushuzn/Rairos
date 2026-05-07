@@ -1,4 +1,5 @@
 """Remove all fallback route stubs from routes_misc.py."""
+
 import re
 
 with open("web/routes_misc.py", encoding="utf-8") as f:
@@ -20,5 +21,6 @@ remaining = len(re.findall(r"@router\.(?:get|post)\(", c))
 print(f"Remaining routes: {remaining}")
 
 import py_compile
+
 py_compile.compile("web/routes_misc.py", doraise=True)
 print("Compiles OK")

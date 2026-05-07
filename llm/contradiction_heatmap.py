@@ -116,5 +116,6 @@ def render_heatmap_html(
     lines.append("</style>")
     return "\n".join(lines)
 
+
 def detect_contradictions(papers):
     return {}

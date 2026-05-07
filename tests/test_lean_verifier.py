@@ -82,9 +82,13 @@ class TestCheckLeanInstalled:
 
     def test_returns_available_when_lean_found(self):
         """Should return AVAILABLE with version when lean --version succeeds."""
-        with patch("llm.lean_verifier.shutil.which", return_value="/usr/bin/lean"), \
-             patch("llm.lean_verifier.subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(stdout="Lean (version 4.2.0)", stderr="", returncode=0)
+        with (
+            patch("llm.lean_verifier.shutil.which", return_value="/usr/bin/lean"),
+            patch("llm.lean_verifier.subprocess.run") as mock_run,
+        ):
+            mock_run.return_value = MagicMock(
+                stdout="Lean (version 4.2.0)", stderr="", returncode=0
+            )
             status, version = check_lean_installed()
             assert status == LeanInstallStatus.AVAILABLE
             assert "4.2.0" in version
@@ -92,8 +96,11 @@ class TestCheckLeanInstalled:
     def test_returns_available_on_timeout(self):
         """Should return AVAILABLE when lean exists but times out."""
         import subprocess
-        with patch("llm.lean_verifier.shutil.which", return_value="/usr/bin/lean"), \
-             patch("llm.lean_verifier.subprocess.run") as mock_run:
+
+        with (
+            patch("llm.lean_verifier.shutil.which", return_value="/usr/bin/lean"),
+            patch("llm.lean_verifier.subprocess.run") as mock_run,
+        ):
             mock_run.side_effect = subprocess.TimeoutExpired(cmd="lean", timeout=30)
             status, version = check_lean_installed()
             assert status == LeanInstallStatus.AVAILABLE
@@ -102,8 +109,11 @@ class TestCheckLeanInstalled:
     def test_returns_not_found_on_file_not_found(self):
         """Should return NOT_FOUND when lean executable not found (OSError)."""
         import subprocess
-        with patch("llm.lean_verifier.shutil.which", return_value="/usr/bin/lean"), \
-             patch("llm.lean_verifier.subprocess.run") as mock_run:
+
+        with (
+            patch("llm.lean_verifier.shutil.which", return_value="/usr/bin/lean"),
+            patch("llm.lean_verifier.subprocess.run") as mock_run,
+        ):
             mock_run.side_effect = FileNotFoundError()
             status, version = check_lean_installed()
             assert status == LeanInstallStatus.NOT_FOUND
@@ -189,7 +199,15 @@ class TestFallbackTemplates:
 
     def test_all_domains_have_templates(self):
         """All domain templates should exist."""
-        expected = {"mathy", "convergence", "probability", "causal", "set_theory", "functions", "qualitative"}
+        expected = {
+            "mathy",
+            "convergence",
+            "probability",
+            "causal",
+            "set_theory",
+            "functions",
+            "qualitative",
+        }
         assert set(_FALLBACK_TEMPLATES.keys()) == expected
 
     def test_all_templates_contain_safe_name_placeholder(self):
@@ -208,12 +226,23 @@ class TestFallbackTemplates:
             # Escape literal curly braces used in Lean syntax (e.g. {α : Type})
             escaped = tmpl.replace("{", "{{").replace("}", "}}")
             result = escaped.format(safe_name="test", statement="∀ x", hyp_type="test")
-            assert "theorem" in result or "def" in result, f"Template '{name}' doesn't produce Lean code"
+            assert "theorem" in result or "def" in result, (
+                f"Template '{name}' doesn't produce Lean code"
+            )
 
 
 class MockHypothesis:
     """Mock ResearchHypothesis for testing without importing the actual class."""
-    def __init__(self, title="", core_statement="", hypothesis_type="", based_on="", variables=None, expected_results=""):
+
+    def __init__(
+        self,
+        title="",
+        core_statement="",
+        hypothesis_type="",
+        based_on="",
+        variables=None,
+        expected_results="",
+    ):
         self.title = title
         self.core_statement = core_statement
         self.hypothesis_type = hypothesis_type
@@ -247,7 +276,9 @@ class TestTemplateBasedTranslation:
             hypothesis_type="theoretical",
         )
         result = _template_based_translation(hyp)
-        assert "converges" in result.lower() or "convergence" in result.lower() or "theorem" in result
+        assert (
+            "converges" in result.lower() or "convergence" in result.lower() or "theorem" in result
+        )
 
     def test_probability_keywords_trigger_probability_template(self):
         """Probability-related keywords should trigger probability template."""
@@ -288,15 +319,23 @@ class TestVerifyLeanCode:
 
     def test_returns_l0_failed_when_lean_not_installed(self):
         """Should return L0_FAILED when Lean is not found."""
-        with patch("llm.lean_verifier.check_lean_installed", return_value=(LeanInstallStatus.NOT_FOUND, None)):
+        with patch(
+            "llm.lean_verifier.check_lean_installed",
+            return_value=(LeanInstallStatus.NOT_FOUND, None),
+        ):
             result = verify_lean_code("theorem test : Prop := by sorry", "h1", "test")
             assert result.level == VerificationLevel.L0_FAILED
             assert any("Lean not found" in e for e in result.errors)
 
     def test_returns_result_when_lean_available(self):
         """Should return a result object with correct fields when Lean is available."""
-        with patch("llm.lean_verifier.check_lean_installed", return_value=(LeanInstallStatus.AVAILABLE, "4.2.0")), \
-             patch("llm.lean_verifier.subprocess.run") as mock_run:
+        with (
+            patch(
+                "llm.lean_verifier.check_lean_installed",
+                return_value=(LeanInstallStatus.AVAILABLE, "4.2.0"),
+            ),
+            patch("llm.lean_verifier.subprocess.run") as mock_run,
+        ):
             mock_run.return_value = MagicMock(stdout="", stderr="", returncode=0)
             result = verify_lean_code("theorem test : Prop := by sorry", "h1", "test hypothesis")
             assert isinstance(result, LeanVerificationResult)
@@ -306,16 +345,26 @@ class TestVerifyLeanCode:
 
     def test_sets_l2_proven_when_sorry_present(self):
         """Code with 'sorry' should be L2_PROVEN when Lean passes."""
-        with patch("llm.lean_verifier.check_lean_installed", return_value=(LeanInstallStatus.AVAILABLE, "4.2.0")), \
-             patch("llm.lean_verifier.subprocess.run") as mock_run:
+        with (
+            patch(
+                "llm.lean_verifier.check_lean_installed",
+                return_value=(LeanInstallStatus.AVAILABLE, "4.2.0"),
+            ),
+            patch("llm.lean_verifier.subprocess.run") as mock_run,
+        ):
             mock_run.return_value = MagicMock(stdout="", stderr="", returncode=0)
             result = verify_lean_code("theorem test : Prop := by sorry", "h1", "test")
             assert result.level == VerificationLevel.L2_PROVEN
 
     def test_sets_l1_typecheck_when_no_sorry(self):
         """Code without 'sorry' and clean exit should be L1_TYPECHECK."""
-        with patch("llm.lean_verifier.check_lean_installed", return_value=(LeanInstallStatus.AVAILABLE, "4.2.0")), \
-             patch("llm.lean_verifier.subprocess.run") as mock_run:
+        with (
+            patch(
+                "llm.lean_verifier.check_lean_installed",
+                return_value=(LeanInstallStatus.AVAILABLE, "4.2.0"),
+            ),
+            patch("llm.lean_verifier.subprocess.run") as mock_run,
+        ):
             mock_run.return_value = MagicMock(stdout="", stderr="", returncode=0)
             result = verify_lean_code("theorem test : Prop := 0 = 0", "h1", "test")
             assert result.level == VerificationLevel.L1_TYPECHECK
@@ -323,8 +372,14 @@ class TestVerifyLeanCode:
     def test_timeout_sets_l0_failed(self):
         """Timeout should set L0_FAILED with timeout error."""
         import subprocess
-        with patch("llm.lean_verifier.check_lean_installed", return_value=(LeanInstallStatus.AVAILABLE, "4.2.0")), \
-             patch("llm.lean_verifier.subprocess.run") as mock_run:
+
+        with (
+            patch(
+                "llm.lean_verifier.check_lean_installed",
+                return_value=(LeanInstallStatus.AVAILABLE, "4.2.0"),
+            ),
+            patch("llm.lean_verifier.subprocess.run") as mock_run,
+        ):
             mock_run.side_effect = subprocess.TimeoutExpired(cmd="lean", timeout=60)
             result = verify_lean_code("theorem test : Prop := by sorry", "h1", "test")
             assert result.level == VerificationLevel.L0_FAILED
@@ -514,7 +569,14 @@ class TestSystemPromptAndTemplate:
 
     def test_user_template_has_placeholders(self):
         """LEAN_TRANSLATION_USER_TEMPLATE should have all placeholders."""
-        placeholders = ["{title}", "{core_statement}", "{hypothesis_type}", "{based_on}", "{variables}", "{expected_result}"]
+        placeholders = [
+            "{title}",
+            "{core_statement}",
+            "{hypothesis_type}",
+            "{based_on}",
+            "{variables}",
+            "{expected_result}",
+        ]
         for ph in placeholders:
             assert ph in LEAN_TRANSLATION_USER_TEMPLATE, f"Missing placeholder: {ph}"
 

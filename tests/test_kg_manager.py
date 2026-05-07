@@ -102,7 +102,9 @@ class TestKGManagerEdgeOps:
         eid2 = kg.add_edge(nid_b, nid_a, "cite", symmetric=True)
         assert eid1 == eid2, "symmetric=True should deduplicate reversed edge ordering"
         # Verify exactly one edge exists
-        all_edges = kg._conn().execute("SELECT * FROM kg_edges WHERE relation_type='cite'").fetchall()
+        all_edges = (
+            kg._conn().execute("SELECT * FROM kg_edges WHERE relation_type='cite'").fetchall()
+        )
         assert len(all_edges) == 1, f"Expected 1 cite edge, got {len(all_edges)}"
 
     def test_get_edge(self, kg):

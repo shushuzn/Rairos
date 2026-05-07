@@ -59,6 +59,7 @@ def reload_skills(
 @dataclass
 class Skill:
     """A discovered skill with metadata."""
+
     name: str
     description: str
     path: Path
@@ -85,7 +86,7 @@ def _parse_frontmatter(content: str) -> Dict[str, str]:
     end_match = re.search(r"^---$", content[3:], re.MULTILINE)
     if not end_match:
         return {}
-    yaml_text = content[3:end_match.start() + 3]
+    yaml_text = content[3 : end_match.start() + 3]
     result: Dict[str, str] = {}
     for line in yaml_text.splitlines():
         line = line.strip()

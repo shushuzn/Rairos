@@ -1,4 +1,5 @@
 """Tests for watch daemon, events pipeline, and report generation."""
+
 from __future__ import annotations
 
 import tempfile

@@ -20,6 +20,7 @@ from core.retry import (
 def _reset_breakers():
     """Clear circuit_breaker module-level state between tests."""
     import core.retry as mod
+
     mod._CB_BREAKERS.clear()
     yield
     mod._CB_BREAKERS.clear()

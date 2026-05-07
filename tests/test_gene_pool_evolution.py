@@ -834,6 +834,7 @@ class TestConstants:
 # trigger_match scoring tests
 # ---------------------------------------------------------------------------
 
+
 class TestTriggerMatch:
     """Tests for CapsuleGene.trigger_match() scoring logic."""
 
@@ -849,7 +850,12 @@ class TestTriggerMatch:
 
     def test_topic_in_trigger_topic(self):
         # Use mismatching gap_type to isolate topic signal
-        c = _make_capsule(trigger_topic="RLHF alignment", trigger_gap_type="capability", action_gap_title="Some title", trigger_keywords=[])
+        c = _make_capsule(
+            trigger_topic="RLHF alignment",
+            trigger_gap_type="capability",
+            action_gap_title="Some title",
+            trigger_keywords=[],
+        )
         score = self._score(c, "RLHF alignment research", "improvement")
         # trigger_topic in topic: "RLHF alignment" in "RLHF alignment research" → 0.2
         assert score == 0.2
@@ -886,16 +892,20 @@ class TestTriggerMatch:
 
     def test_all_signals_combined(self):
         c = _make_capsule(
-            trigger_topic="RLHF", trigger_gap_type="improvement",
-            trigger_keywords=["alignment"], action_gap_title="RLHF alignment metrics",
+            trigger_topic="RLHF",
+            trigger_gap_type="improvement",
+            trigger_keywords=["alignment"],
+            action_gap_title="RLHF alignment metrics",
         )
         score = self._score(c, "RLHF", "improvement", keywords=["alignment"])
         assert 0.9 <= score <= 1.0
 
     def test_score_capped_at_one(self):
         c = _make_capsule(
-            trigger_topic="RLHF", trigger_gap_type="improvement",
-            trigger_keywords=["alignment"], action_gap_title="RLHF",
+            trigger_topic="RLHF",
+            trigger_gap_type="improvement",
+            trigger_keywords=["alignment"],
+            action_gap_title="RLHF",
         )
         score = self._score(c, "RLHF", "improvement", keywords=["alignment"])
         assert score == 1.0
@@ -911,6 +921,7 @@ class TestTriggerMatch:
 # eval_retrieval tests
 # ---------------------------------------------------------------------------
 
+
 class TestEvalRetrieval:
     """Tests for CapsuleStorageMixin.eval_retrieval()."""
 
@@ -918,16 +929,35 @@ class TestEvalRetrieval:
         from llm.insight.storage import CapsuleStorageMixin
         import json
         import tempfile
+
         class EvalOnly(CapsuleStorageMixin):
             def __init__(self, tmp):
                 self.data_dir = tmp
+
         with tempfile.TemporaryDirectory() as tmp:
             t = EvalOnly(Path(tmp))
             events_file = t.data_dir / "events.jsonl"
             events_file.write_text(
-                json.dumps({"action":"accepted","topic":"test","gap_type":"x","gap_title":"test gap"}) + "\n" +
-                json.dumps({"action":"accepted","topic":"RLHF","gap_type":"y","gap_title":"Better RLHF metrics"}) + "\n",
-                encoding="utf-8")
+                json.dumps(
+                    {
+                        "action": "accepted",
+                        "topic": "test",
+                        "gap_type": "x",
+                        "gap_title": "test gap",
+                    }
+                )
+                + "\n"
+                + json.dumps(
+                    {
+                        "action": "accepted",
+                        "topic": "RLHF",
+                        "gap_type": "y",
+                        "gap_title": "Better RLHF metrics",
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
             r = t.eval_retrieval(limit=50)
             t.close()  # close SQLite connection so tempfile can clean up on Windows
             assert r["total"] == 1  # test event filtered
@@ -936,13 +966,20 @@ class TestEvalRetrieval:
         from llm.insight.storage import CapsuleStorageMixin
         import json
         import tempfile
+
         class EvalOnly(CapsuleStorageMixin):
             def __init__(self, tmp):
                 self.data_dir = tmp
+
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             t = EvalOnly(Path(tmp))
             events_file = t.data_dir / "events.jsonl"
-            ev = {"action":"accepted","topic":"RLHF","gap_type":"y","gap_title":"Better RLHF metrics"}
+            ev = {
+                "action": "accepted",
+                "topic": "RLHF",
+                "gap_type": "y",
+                "gap_title": "Better RLHF metrics",
+            }
             events_file.write_text(json.dumps(ev) + "\n" + json.dumps(ev) + "\n", encoding="utf-8")
             r = t.eval_retrieval(limit=50)
             t.close()
@@ -953,38 +990,53 @@ class TestEvalRetrieval:
 # _normalize_gap_type tests
 # ---------------------------------------------------------------------------
 
+
 class TestNormalizeGapType:
     """Tests for _normalize_gap_type()."""
 
     def test_known_types_pass_through(self):
         from llm.insight.storage import _normalize_gap_type
-        for valid in ["method_limitation", "unexplored_application", "contradiction",
-                       "evaluation_gap", "scalability_issue", "theoretical_gap",
-                       "dataset_gap", "generalization_gap"]:
+
+        for valid in [
+            "method_limitation",
+            "unexplored_application",
+            "contradiction",
+            "evaluation_gap",
+            "scalability_issue",
+            "theoretical_gap",
+            "dataset_gap",
+            "generalization_gap",
+        ]:
             assert _normalize_gap_type(valid) == valid
 
     def test_capability_maps_to_method_limitation(self):
         from llm.insight.storage import _normalize_gap_type
+
         assert _normalize_gap_type("capability") == "method_limitation"
 
     def test_application_gap_maps_to_unexplored_application(self):
         from llm.insight.storage import _normalize_gap_type
+
         assert _normalize_gap_type("application_gap") == "unexplored_application"
 
     def test_other_maps_to_method_limitation(self):
         from llm.insight.storage import _normalize_gap_type
+
         assert _normalize_gap_type("other") == "method_limitation"
 
     def test_empty_string_maps_to_method_limitation(self):
         from llm.insight.storage import _normalize_gap_type
+
         assert _normalize_gap_type("") == "method_limitation"
 
     def test_unknown_string_maps_to_method_limitation(self):
         from llm.insight.storage import _normalize_gap_type
+
         assert _normalize_gap_type("garbage_type") == "method_limitation"
 
     def test_preserves_known_gap_types(self):
         from llm.insight.storage import _normalize_gap_type
+
         known = ["method_gap", "exploration_gap", "implementation", "theory_gap"]
         for gt in known:
             result = _normalize_gap_type(gt)
@@ -995,15 +1047,18 @@ class TestNormalizeGapType:
 # get_gene_pool_quality_report tests
 # ---------------------------------------------------------------------------
 
+
 class TestGenePoolQualityReport:
     """Tests for get_gene_pool_quality_report()."""
 
     def test_report_with_empty_pool(self):
         from llm.insight.storage import CapsuleStorageMixin
         import tempfile
+
         class ReportOnly(CapsuleStorageMixin):
             def __init__(self, tmp):
                 self.data_dir = tmp
+
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             t = ReportOnly(Path(tmp))
             r = t.get_gene_pool_quality_report()
@@ -1014,6 +1069,7 @@ class TestGenePoolQualityReport:
     def test_report_includes_expected_keys(self):
         from llm.insight.tracker import EvolutionTracker
         import tempfile
+
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             t = EvolutionTracker(data_dir=Path(tmp))
             t.encode_capsule(
@@ -1034,6 +1090,7 @@ class TestGenePoolQualityReport:
     def test_at_risk_excludes_archived(self):
         from llm.insight.tracker import EvolutionTracker
         import tempfile
+
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             t = EvolutionTracker(data_dir=Path(tmp))
             capsule = t.encode_capsule(
@@ -1052,6 +1109,7 @@ class TestGenePoolQualityReport:
     def test_test_prefix_gap_title_is_rejected(self):
         from llm.insight.tracker import EvolutionTracker
         import tempfile
+
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             t = EvolutionTracker(data_dir=Path(tmp))
             capsule = t.encode_capsule(

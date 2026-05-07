@@ -18,16 +18,19 @@ sys.path.insert(0, str(PROJECT_ROOT))
 WEB_DIR = Path(__file__).parent
 templates = Jinja2Templates(directory=str(WEB_DIR / "templates"))
 
+
 # Jinja filters
 def _jinja_truncate(value, length=80):
     s = str(value)
     return s[:length] + "…" if len(s) > length else s
+
 
 def _jinja_timestamp(value):
     try:
         return datetime.fromtimestamp(float(value)).strftime("%H:%M:%S")
     except Exception:
         return str(value)[:8]
+
 
 templates.env.filters["truncate"] = _jinja_truncate
 templates.env.filters["timestamp"] = _jinja_timestamp
@@ -66,7 +69,14 @@ class ProgressStore:
                 "progress_pct": 0,
             }
 
-    def update(self, job_id: str, status: str = "", stage: str = "", message: str = "", progress_pct: int = -1) -> None:
+    def update(
+        self,
+        job_id: str,
+        status: str = "",
+        stage: str = "",
+        message: str = "",
+        progress_pct: int = -1,
+    ) -> None:
         with self._lock:
             job = self._jobs.get(job_id)
             if not job:

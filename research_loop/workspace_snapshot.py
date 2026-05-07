@@ -26,6 +26,7 @@ from typing import Any, Dict, List, Optional
 @dataclass
 class FileSnapshot:
     """A single file snapshot."""
+
     rel_path: str
     content_hash: str
     size_bytes: int
@@ -90,14 +91,17 @@ class WorkspaceSnapshot:
             rel = file_path.name
             target = step_dir / rel
             shutil.copy2(file_path, target)
-            snapshot_manifest["files"].append({
-                "name": rel,
-                "hash": self._file_hash(file_path),
-                "size": file_path.stat().st_size,
-            })
+            snapshot_manifest["files"].append(
+                {
+                    "name": rel,
+                    "hash": self._file_hash(file_path),
+                    "size": file_path.stat().st_size,
+                }
+            )
 
         # Write manifest
         import json
+
         manifest_path = step_dir / "_snapshot_manifest.json"
         manifest_path.write_text(json.dumps(snapshot_manifest, indent=2), encoding="utf-8")
 
@@ -115,6 +119,7 @@ class WorkspaceSnapshot:
 
         restored: List[Path] = []
         import json
+
         manifest_path = step_dir / "_snapshot_manifest.json"
         if manifest_path.exists():
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -135,6 +140,7 @@ class WorkspaceSnapshot:
             return []
 
         import json
+
         snapshots: List[Dict[str, Any]] = []
         for step_dir in sorted(session_dir.glob("step_*")):
             if not step_dir.is_dir():
@@ -147,13 +153,15 @@ class WorkspaceSnapshot:
                     manifest = {}
             else:
                 manifest = {}
-            snapshots.append({
-                "step": step_dir.name,
-                "path": str(step_dir),
-                "files": len(manifest.get("files", [])),
-                "captured_at": manifest.get("captured_at", step_dir.stat().st_mtime),
-                "metadata": manifest.get("metadata", {}),
-            })
+            snapshots.append(
+                {
+                    "step": step_dir.name,
+                    "path": str(step_dir),
+                    "files": len(manifest.get("files", [])),
+                    "captured_at": manifest.get("captured_at", step_dir.stat().st_mtime),
+                    "metadata": manifest.get("metadata", {}),
+                }
+            )
         return snapshots
 
     def latest_snapshot(self, session_id: str) -> Optional[int]:
@@ -161,7 +169,9 @@ class WorkspaceSnapshot:
         snapshots = self.list_snapshots(session_id)
         if not snapshots:
             return None
-        return max(s["step"] for s in snapshots if isinstance(s["step"], int) or s["step"].isdigit())
+        return max(
+            s["step"] for s in snapshots if isinstance(s["step"], int) or s["step"].isdigit()
+        )
 
     def _prune_old_snapshots(self, session_id: str) -> None:
         """Remove oldest snapshots beyond max_snapshots_per_session."""
@@ -169,7 +179,7 @@ class WorkspaceSnapshot:
         if len(snapshots) <= self.max_snapshots_per_session:
             return
         # Sort by step, drop oldest
-        to_delete = snapshots[:-self.max_snapshots_per_session]
+        to_delete = snapshots[: -self.max_snapshots_per_session]
         for snap in to_delete:
             snap_dir = Path(snap["path"])
             if snap_dir.exists():

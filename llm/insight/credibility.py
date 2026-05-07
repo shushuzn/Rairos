@@ -76,9 +76,7 @@ class CredibilityScorer:
 
     # ─── Pass 1: Novelty V2 (keyword overlap) ─────────────────────────
 
-    def compute_novelty_scores(
-        self, capsules: List[CapsuleGene]
-    ) -> Dict[str, CredibilityScore]:
+    def compute_novelty_scores(self, capsules: List[CapsuleGene]) -> Dict[str, CredibilityScore]:
         """Run full credibility assessment on a list of capsules.
 
         Returns dict[capsule_id] → CredibilityScore.
@@ -110,9 +108,7 @@ class CredibilityScorer:
             for other in active:
                 if other.capsule_id == c.capsule_id:
                     continue
-                other_kws = set(
-                    kw.lower().strip() for kw in other.trigger_keywords if kw.strip()
-                )
+                other_kws = set(kw.lower().strip() for kw in other.trigger_keywords if kw.strip())
                 if not other_kws:
                     continue
                 intersection = len(kws & other_kws)
@@ -128,7 +124,9 @@ class CredibilityScorer:
         similar_counts: Dict[str, int] = {}
         for cid, (_, _) in overlaps.items():
             similar_counts[cid] = sum(
-                1 for o_cid, (o_ov, _) in overlaps.items() if o_ov >= TRENDSLOP_KEYWORD_OVERLAP_THRESHOLD and o_cid != cid
+                1
+                for o_cid, (o_ov, _) in overlaps.items()
+                if o_ov >= TRENDSLOP_KEYWORD_OVERLAP_THRESHOLD and o_cid != cid
             )
 
         # Build results
@@ -164,8 +162,10 @@ class CredibilityScorer:
             )
 
             badge = (
-                "high" if overall >= CREDIBILITY_HIGH_THRESHOLD
-                else "low" if overall < CREDIBILITY_LOW_THRESHOLD
+                "high"
+                if overall >= CREDIBILITY_HIGH_THRESHOLD
+                else "low"
+                if overall < CREDIBILITY_LOW_THRESHOLD
                 else "medium"
             )
 
@@ -213,9 +213,7 @@ class CredibilityScorer:
         for other in all_capsules:
             if other.capsule_id == capsule.capsule_id or other.status == "archived":
                 continue
-            other_kws = set(
-                kw.lower().strip() for kw in other.trigger_keywords if kw.strip()
-            )
+            other_kws = set(kw.lower().strip() for kw in other.trigger_keywords if kw.strip())
             if not other_kws:
                 continue
             intersection = len(kws & other_kws)
@@ -229,7 +227,8 @@ class CredibilityScorer:
         trendslop = max_overlap >= TRENDSLOP_KEYWORD_OVERLAP_THRESHOLD
         reason = (
             f"{max_overlap:.0%} keyword overlap with {similar_count} other capsule(s)"
-            if trendslop else ""
+            if trendslop
+            else ""
         )
         return trendslop, max_overlap, reason
 
@@ -242,18 +241,21 @@ class CredibilityScorer:
         # Get capsules from EvolutionTracker's storage
         try:
             from llm.insight.tracker import EvolutionTracker
+
             tracker = EvolutionTracker()
             gene_file = tracker.data_dir / "gene_pool.jsonl"
             if not gene_file.exists():
                 return "<p>No capsules in Gene Pool yet.</p>"
             capsules = []
             import json
+
             with open(gene_file, encoding="utf-8") as f:
                 for line in f:
                     line = line.strip()
                     if line:
                         try:
                             from llm.insight.gene import CapsuleGene
+
                             capsules.append(CapsuleGene.from_dict(json.loads(line)))
                         except Exception:
                             continue
@@ -316,9 +318,7 @@ class CredibilityScorer:
 
             color_map = {"high": "#7A9E7A", "medium": "#D4A059", "low": "#C4706A"}
             badge_color = color_map.get(s.badge, "#888")
-            badge_html = (
-                f'<span style="background:{badge_color};color:white;padding:2px 8px;border-radius:10px;font-size:11px">{s.badge.upper()}</span>'
-            )
+            badge_html = f'<span style="background:{badge_color};color:white;padding:2px 8px;border-radius:10px;font-size:11px">{s.badge.upper()}</span>'
             status_html = (
                 '<span style="background:#D9534F;color:white;padding:2px 8px;border-radius:10px;font-size:11px">⚠️ TRENDSLOP</span>'
                 if s.trendslop

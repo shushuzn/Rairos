@@ -1,4 +1,5 @@
 """Remove ALL duplicate labor-displacement routes, keep only the real one."""
+
 with open("web/routes_misc.py", encoding="utf-8") as f:
     lines = f.readlines()
 
@@ -35,5 +36,6 @@ else:
     print(f"After cleanup: {count} registration(s)")
 
 import py_compile
+
 py_compile.compile("web/routes_misc.py", doraise=True)
 print("Compiles OK")

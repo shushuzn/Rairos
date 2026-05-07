@@ -638,7 +638,7 @@ def tool_tag_add(paper_id: str, tag: str) -> Dict:
 
         db = Database()
         db.init()
-        db.add_tag(paper_id, str(tag or ''))
+        db.add_tag(paper_id, str(tag or ""))
         return success_response({"paper_id": paper_id, "tag": tag, "added": True})
     except Exception as e:
         logger.error(f"tag_add error: {e}")
@@ -652,7 +652,7 @@ def tool_tag_remove(paper_id: str, tag: str) -> Dict:
 
         db = Database()
         db.init()
-        db.remove_tag(paper_id, str(tag or ''))
+        db.remove_tag(paper_id, str(tag or ""))
         return success_response({"paper_id": paper_id, "tag": tag, "removed": True})
     except Exception as e:
         logger.error(f"tag_remove error: {e}")
@@ -841,6 +841,7 @@ def tool_research_run(topic: str, limit: int = 5) -> Dict:
             logger.warning(f"arXiv search failed: {e}, trying local DB instead")
             results, total = db.search_papers(topic, limit=limit)
             from core import Paper
+
             papers = [
                 Paper(
                     source="arxiv",
@@ -907,7 +908,11 @@ def tool_cite_fetch(paper_id: str, direction: str = "both") -> Dict:
         from llm.citation_chain import CitationChainBuilder
 
         builder = CitationChainBuilder()
-        result = builder.build_chain(paper_id) if hasattr(builder, "build_chain") else {"cited": [], "citing": []}
+        result = (
+            builder.build_chain(paper_id)
+            if hasattr(builder, "build_chain")
+            else {"cited": [], "citing": []}
+        )
 
         cited = [n.arxiv_id for n in getattr(result, "nodes", []) if hasattr(n, "arxiv_id")]
         citing = []
@@ -1424,7 +1429,6 @@ def tool_experiment_record(
 ) -> Dict:
     """Record an experiment result for a hypothesis."""
     try:
-
         import uuid
         from llm.experiment_tracker import ExperimentTracker, ExperimentStatus, Experiment
 
@@ -1539,7 +1543,11 @@ def tool_research_memory_add_stance(
         from llm.research_memory import ResearchMemory, StanceType
 
         memory = ResearchMemory()
-        stance_enum = StanceType(str(stance or "").lower()) if str(stance or "").lower() in [e.value for e in StanceType.__members__.values()] else StanceType.DEFERRED
+        stance_enum = (
+            StanceType(str(stance or "").lower())
+            if str(stance or "").lower() in [e.value for e in StanceType.__members__.values()]
+            else StanceType.DEFERRED
+        )
         s = memory.add_stance(
             topic=topic,
             claim=claim,
@@ -1841,6 +1849,7 @@ def tool_routeplan_update_step(
             status_enum = StepStatus(status.lower())
         except Exception:
             from llm.route_planner import StepStatus
+
             status_enum = StepStatus.PLANNED
         planner = RoutePlanner()
         plan = planner.update_step(
@@ -2311,13 +2320,26 @@ def handle_sampling(params: Dict) -> dict:
     system_prompt = params.get("systemPrompt", "")
     try:
         from llm.client import call_llm_chat_completions
-        result = call_llm_chat_completions(messages=messages, model="minimax-m2.7-highspeed", system_prompt=system_prompt, timeout=60)
+
+        result = call_llm_chat_completions(
+            messages=messages,
+            model="minimax-m2.7-highspeed",
+            system_prompt=system_prompt,
+            timeout=60,
+        )
         content = result if isinstance(result, str) else str(result)
         return success_response({"model": "mcp", "role": "assistant", "content": content})
     except Exception as e:
         logger.warning(f"MCP degraded (no LLM key): {e}")
         last = messages[-1].get("content", "") if messages else ""
-        return success_response({"model": "mcp-degraded", "role": "assistant", "content": f"[MCP degraded - no API key needed] Query: {last[:200]}"})
+        return success_response(
+            {
+                "model": "mcp-degraded",
+                "role": "assistant",
+                "content": f"[MCP degraded - no API key needed] Query: {last[:200]}",
+            }
+        )
+
 
 def main():
     """Run as stdio MCP server."""
@@ -2362,8 +2384,16 @@ def tool_citation_chain_build(arxiv_id: str = "", max_depth: int = 2) -> Dict:
 
         builder = CitationChainBuilder()
         # Strip version suffix (v1, v2...) and add arXiv: prefix for S2 API
-        s2_id = arxiv_id.split("v")[0] if "v" in arxiv_id and arxiv_id.rsplit("v", 1)[-1].isdigit() else arxiv_id
-        s2_id = f"arXiv:{s2_id}" if not s2_id.startswith("arXiv:") and not s2_id.startswith("CorpusId:") else s2_id
+        s2_id = (
+            arxiv_id.split("v")[0]
+            if "v" in arxiv_id and arxiv_id.rsplit("v", 1)[-1].isdigit()
+            else arxiv_id
+        )
+        s2_id = (
+            f"arXiv:{s2_id}"
+            if not s2_id.startswith("arXiv:") and not s2_id.startswith("CorpusId:")
+            else s2_id
+        )
         _chain = builder.build_chain(seed_arxiv_id=s2_id, max_depth=max_depth)
 
         return success_response(
@@ -2574,6 +2604,7 @@ def tool_impact_leaderboard(limit: int = 20, year_min: int = 2020) -> Dict:
         logger.error(f"impact_leaderboard error: {e}")
         return error_response("IMPACT_ERROR", str(e))
 
+
 def _handle_sampling(params: Dict) -> dict:
     """Handle MCP sampling/createMessage via protocol (no API key needed)."""
     messages = params.get("messages", [])
@@ -2582,9 +2613,27 @@ def _handle_sampling(params: Dict) -> dict:
     system_prompt = params.get("systemPrompt", "")
     try:
         from llm.client import call_llm_chat_completions
-        result = call_llm_chat_completions(messages=messages, model="minimax-m2.7-highspeed", system_prompt=system_prompt, timeout=60)
-        return success_response({"model": result.get("model", "mcp"), "role": "assistant", "content": result.get("content", "")})
+
+        result = call_llm_chat_completions(
+            messages=messages,
+            model="minimax-m2.7-highspeed",
+            system_prompt=system_prompt,
+            timeout=60,
+        )
+        return success_response(
+            {
+                "model": result.get("model", "mcp"),
+                "role": "assistant",
+                "content": result.get("content", ""),
+            }
+        )
     except Exception as e:
         logger.warning(f"LLM via key failed, using MCP degraded: {e}")
         last = messages[-1].get("content", "") if messages else ""
-        return success_response({"model": "mcp-degraded", "role": "assistant", "content": f"[MCP degraded - no API key needed] Query: {last[:200]}"})
+        return success_response(
+            {
+                "model": "mcp-degraded",
+                "role": "assistant",
+                "content": f"[MCP degraded - no API key needed] Query: {last[:200]}",
+            }
+        )

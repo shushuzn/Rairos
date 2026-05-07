@@ -314,7 +314,8 @@ class InsightManager:
             return False
 
         eligible = [
-            c for c in capsules
+            c
+            for c in capsules
             if c.status == "active"
             and c.credibility_score >= min_credibility
             and c.outcome_success_score >= min_success_score

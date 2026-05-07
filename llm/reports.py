@@ -20,11 +20,50 @@ def _caps_by_theme(caps: list, keywords: list, exclude: set = None) -> list:
 
 
 THEMES = [
-    ("vla", "VLA / Robotics", ["lapo", "vla", "libero", "diffusion policy", "octo", "gr-2", "robot", "embodied"]),
-    ("geopolitics", "Geopolitics / Energy", ["iran", "hormuz", "oil", "uae", "military", "ceasefire", "drone", "missile", "能源", "石油"]),
-    ("economy", "Economy / Markets", ["treasury", "debt", "borrowing", "fed", "inflation", "财政部", "国债"]),
-    ("theory", "Theory / Representation", ["latent", "reasoning", "attention", "representation", "interpretability", "contradiction", "visual"]),
-    ("safety", "Safety / Incidents", ["fireworks", "explosion", "earthquake", "safety", "injured", "爆炸", "地震", "事故"]),
+    (
+        "vla",
+        "VLA / Robotics",
+        ["lapo", "vla", "libero", "diffusion policy", "octo", "gr-2", "robot", "embodied"],
+    ),
+    (
+        "geopolitics",
+        "Geopolitics / Energy",
+        [
+            "iran",
+            "hormuz",
+            "oil",
+            "uae",
+            "military",
+            "ceasefire",
+            "drone",
+            "missile",
+            "能源",
+            "石油",
+        ],
+    ),
+    (
+        "economy",
+        "Economy / Markets",
+        ["treasury", "debt", "borrowing", "fed", "inflation", "财政部", "国债"],
+    ),
+    (
+        "theory",
+        "Theory / Representation",
+        [
+            "latent",
+            "reasoning",
+            "attention",
+            "representation",
+            "interpretability",
+            "contradiction",
+            "visual",
+        ],
+    ),
+    (
+        "safety",
+        "Safety / Incidents",
+        ["fireworks", "explosion", "earthquake", "safety", "injured", "爆炸", "地震", "事故"],
+    ),
 ]
 
 
@@ -70,7 +109,9 @@ def report_all() -> list:
 
         # Generate summary sentence
         if slug == "vla":
-            summary = "LAPO vs PPO convergence, LIBERO benchmarks, diffusion policy representations."
+            summary = (
+                "LAPO vs PPO convergence, LIBERO benchmarks, diffusion policy representations."
+            )
         elif slug == "geopolitics":
             summary = "Iran-US escalation, Strait of Hormuz chokepoint, UAE drone attacks."
         elif slug == "economy":
@@ -80,23 +121,27 @@ def report_all() -> list:
         elif slug == "safety":
             summary = "Liuyang explosion, Mexico earthquake, Fujairah attack."
 
-        results.append({
-            "slug": slug,
-            "name": name,
-            "count": len(clist),
-            "types": types,
-            "avg": round(avg, 2),
-            "summary": summary,
-            "content": analysis,
-        })
+        results.append(
+            {
+                "slug": slug,
+                "name": name,
+                "count": len(clist),
+                "types": types,
+                "avg": round(avg, 2),
+                "summary": summary,
+                "content": analysis,
+            }
+        )
 
     return results
 
 
 def _report_vla(caps) -> str:
     lines = []
+
     def w(s: str = "") -> None:
         lines.append(s)
+
     w("This theme covers vision-language-action models for robotic manipulation.")
     w("The central question is how to combine reasoning, representation learning,")
     w("and reinforcement learning into a unified policy.")
@@ -126,8 +171,10 @@ def _report_vla(caps) -> str:
 
 def _report_geopolitics(caps) -> str:
     lines = []
+
     def w(s: str = "") -> None:
         lines.append(s)
+
     w("The system tracks 10 capsules related to Middle East geopolitics and")
     w("energy security, centered on the Strait of Hormuz chokepoint.")
     w("")
@@ -152,8 +199,10 @@ def _report_geopolitics(caps) -> str:
 
 def _report_economy(caps) -> str:
     lines = []
+
     def w(s: str = "") -> None:
         lines.append(s)
+
     w("One capsule tracking US Treasury borrowing data.")
     w("")
     w("Key findings:")
@@ -169,8 +218,10 @@ def _report_economy(caps) -> str:
 
 def _report_theory(caps) -> str:
     lines = []
+
     def w(s: str = "") -> None:
         lines.append(s)
+
     w("This theme covers theoretical aspects of latent reasoning, attention")
     w("mechanisms, and representation learning in VLA models.")
     w("")
@@ -192,8 +243,10 @@ def _report_theory(caps) -> str:
 
 def _report_safety(caps) -> str:
     lines = []
+
     def w(s: str = "") -> None:
         lines.append(s)
+
     w("Three incident capsules: Mexico earthquake, Liuyang fireworks factory")
     w("explosion, and UAE Fujairah drone attack.")
     w("")

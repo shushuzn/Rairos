@@ -114,10 +114,12 @@ def _run_kline(args) -> None:
     klines = data.get("klines", data.get("data", []))
     print(f"\n  {Colors.CYAN}{name} K-line ({args.time}){Colors.END}")
     print(f"  {'Time':<16} {'Open':>8} {'High':>8} {'Low':>8} {'Close':>8} {'Vol':>8}")
-    print(f"  {'─'*16} {'─'*8} {'─'*8} {'─'*8} {'─'*8} {'─'*8}")
-    for k in klines[:args.count]:
-        print(f"  {str(k.get('time', ''))[:16]:<16} {k.get('open', ''):>8} {k.get('high', ''):>8} "
-              f"{k.get('low', ''):>8} {k.get('close', ''):>8} {k.get('volume', ''):>8}")
+    print(f"  {'─' * 16} {'─' * 8} {'─' * 8} {'─' * 8} {'─' * 8} {'─' * 8}")
+    for k in klines[: args.count]:
+        print(
+            f"  {str(k.get('time', ''))[:16]:<16} {k.get('open', ''):>8} {k.get('high', ''):>8} "
+            f"{k.get('low', ''):>8} {k.get('close', ''):>8} {k.get('volume', ''):>8}"
+        )
     print()
 
 
@@ -150,7 +152,11 @@ def _run_search_flash(args) -> None:
     from llm.mcp_jin10 import search_flash as _sf
 
     raw = _sf(args.keyword)
-    inner = raw.get("data", raw) if isinstance(raw, dict) else {"items": raw if isinstance(raw, list) else []}
+    inner = (
+        raw.get("data", raw)
+        if isinstance(raw, dict)
+        else {"items": raw if isinstance(raw, list) else []}
+    )
     items = inner.get("items", [])
     if isinstance(items, str):
         items = [items]
@@ -189,7 +195,11 @@ def _run_search_news(args) -> None:
     from llm.mcp_jin10 import search_news as _sn
 
     raw = _sn(args.keyword, getattr(args, "cursor", ""))
-    inner = raw.get("data", raw) if isinstance(raw, dict) else {"items": raw if isinstance(raw, list) else []}
+    inner = (
+        raw.get("data", raw)
+        if isinstance(raw, dict)
+        else {"items": raw if isinstance(raw, list) else []}
+    )
     items = inner.get("items", [])
     nc = inner.get("next_cursor", "")
     hm = inner.get("has_more", False)
@@ -203,7 +213,7 @@ def _run_search_news(args) -> None:
             print(f"  {item[:70]}")
         else:
             print(f"  [{item.get('id', '?')}] {str(item.get('title', ''))[:70]}")
-            if item.get('time'):
+            if item.get("time"):
                 print(f"       {str(item.get('time', ''))[:16]}")
     print()
 
@@ -233,12 +243,16 @@ def _run_calendar(args) -> None:
     print(f"\n  {Colors.CYAN}Economic Calendar{Colors.END} ({len(data)} items)")
     print()
     for item in data:
-        print(f"  [{str(item.get('pub_time', ''))[:16]}] "
-              f"{'⭐' * int(item.get('star', 0))} {item.get('title', '')}")
-        print(f"       Previous: {item.get('previous', '-')}  |  "
-              f"Consensus: {item.get('consensus', '-')}  |  "
-              f"Actual: {item.get('actual', '-')}")
-        if item.get('affect_txt'):
+        print(
+            f"  [{str(item.get('pub_time', ''))[:16]}] "
+            f"{'⭐' * int(item.get('star', 0))} {item.get('title', '')}"
+        )
+        print(
+            f"       Previous: {item.get('previous', '-')}  |  "
+            f"Consensus: {item.get('consensus', '-')}  |  "
+            f"Actual: {item.get('actual', '-')}"
+        )
+        if item.get("affect_txt"):
             print(f"       Impact: {item['affect_txt']}")
     print()
 

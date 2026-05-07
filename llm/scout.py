@@ -23,7 +23,10 @@ NEWS_FEEDS = [
     ("BBC World", "https://feeds.bbci.co.uk/news/world/rss.xml"),
     ("BBC Technology", "https://feeds.bbci.co.uk/news/technology/rss.xml"),
     ("Google News Top", "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en"),
-    ("Google News Science", "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp0Y1RjU0FtVnVHZ0pWVXlnQVAB"),
+    (
+        "Google News Science",
+        "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp0Y1RjU0FtVnVHZ0pWVXlnQVAB",
+    ),
     ("Hacker News", "https://hnrss.org/frontpage"),
 ]
 
@@ -76,14 +79,16 @@ def _search_arxiv(query: str, max_results: int = 10) -> List[Dict]:
             cat = getattr(p, "primary_category", "") or ""
             published = getattr(p, "published", "") or ""
             if pid:
-                results.append({
-                    "arxiv_id": pid,
-                    "title": title,
-                    "authors": authors,
-                    "abstract": abstract,
-                    "categories": [cat] if cat else [],
-                    "published": published,
-                })
+                results.append(
+                    {
+                        "arxiv_id": pid,
+                        "title": title,
+                        "authors": authors,
+                        "abstract": abstract,
+                        "categories": [cat] if cat else [],
+                        "published": published,
+                    }
+                )
         _SEARCH_CACHE[cache_key] = (now, results)
         return results
     except Exception as e:
@@ -102,6 +107,7 @@ def _get_topics_from_pool(capsules: List) -> List[str]:
 
     # Count keyword frequency to find important terms
     from collections import Counter
+
     kw_counts = Counter(k.lower() for k in all_keywords if len(k) > 2)
 
     # Build short queries from top keywords
@@ -120,7 +126,7 @@ def _get_topics_from_pool(capsules: List) -> List[str]:
     # Add top keyword pairs
     for i in range(0, len(top_kws) - 1, 2):
         if i + 1 < len(top_kws):
-            topics.add(f"{top_kws[i]} {top_kws[i+1]}")
+            topics.add(f"{top_kws[i]} {top_kws[i + 1]}")
 
     # Sort by estimated specificity (shortest first for broader search)
     return sorted(topics, key=len)[:10]
@@ -129,6 +135,7 @@ def _get_topics_from_pool(capsules: List) -> List[str]:
 def _fetch_rss(feed_url: str, feed_name: str, max_items: int = 10) -> List[Dict]:
     """Fetch articles from an RSS feed."""
     import feedparser
+
     try:
         feed = feedparser.parse(feed_url)
         articles = []
@@ -140,16 +147,18 @@ def _fetch_rss(feed_url: str, feed_name: str, max_items: int = 10) -> List[Dict]
             authors = []
             if hasattr(entry, "authors") and entry.authors:
                 authors = [a.get("name", "") for a in entry.authors]
-            articles.append({
-                "arxiv_id": f"news_{feed_name}_{hash(link) % 10**8}",
-                "title": title,
-                "authors": authors,
-                "abstract": summary[:500],
-                "categories": [feed_name],
-                "published": published[:10],
-                "source": feed_name,
-                "url": link,
-            })
+            articles.append(
+                {
+                    "arxiv_id": f"news_{feed_name}_{hash(link) % 10**8}",
+                    "title": title,
+                    "authors": authors,
+                    "abstract": summary[:500],
+                    "categories": [feed_name],
+                    "published": published[:10],
+                    "source": feed_name,
+                    "url": link,
+                }
+            )
         return articles
     except Exception as e:
         logger.warning(f"RSS feed '{feed_name}' failed: {e}")
@@ -285,9 +294,7 @@ def render_scout_results(results: List[ScoutResult]) -> str:
         icon = "🟢" if sev >= 0.5 else "🟡" if sev >= 0.3 else "⚪"
         authors_str = ", ".join(r.authors[:2])
         source_tag = f"[{r.source}]" if r.source != "arxiv" else ""
-        lines.append(
-            f"  {icon} {source_tag} [#{r.rank}] {r.title[:70]}"
-        )
+        lines.append(f"  {icon} {source_tag} [#{r.rank}] {r.title[:70]}")
         lines.append(f"       {r.published} · {authors_str}")
         lines.append(f"       Match: {r.match_score:.2f} ← {r.matched_gap_type}")
         lines.append(f"       Capsule: {r.matched_gap_title[:50]}")

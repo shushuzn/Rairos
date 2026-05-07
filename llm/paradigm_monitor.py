@@ -37,12 +37,12 @@ def get_papers_in_domain(category: str) -> List[str]:
 
 
 def check_paradigm_concentration(category="all"):
-    '''Check for paradigm concentration in the Gene Pool.'''
+    """Check for paradigm concentration in the Gene Pool."""
     return {"categories": [], "alerts": []}
 
+
 def render_html(data):
-    '''Render paradigm concentration results.'''
+    """Render paradigm concentration results."""
     if not data or "error" in data:
         return "<p>Paradigm concentration monitor temporarily unavailable</p>"
     return "<p>No paradigm concentration detected.</p>"
-
