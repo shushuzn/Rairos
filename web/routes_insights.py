@@ -51,6 +51,16 @@ async def insights(request: Request):
             sorted((profile.topic_frequency or {}).items(), key=lambda x: x[1], reverse=True)[:8]
         )
         exp_stats = tracker.get_exploration_stats()
+
+        # Prefetch: find capsules matching the top research topic
+        top_topic = max(topic_freq.items(), key=lambda x: x[1])[0] if topic_freq else ""
+        if top_topic:
+            try:
+                from llm.briefing_generator import _match_gene_pool
+                matches = _match_gene_pool(top_topic, "", "")
+                prefetched_ids = {m["capsule_id"] for m in matches}
+            except Exception:
+                prefetched_ids = set()
     except Exception:
         pass
     return templates.TemplateResponse(
