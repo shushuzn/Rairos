@@ -1,6 +1,6 @@
 # AI Research OS
 
-**A Self-Evolving Research Operating System for AI Researchers**
+**A Self-Evolving Research Operating System for AI Researchers** · Built with MkDocs
 
 AI Research OS is a local-first research tool that grows smarter over time. It learns your research patterns, surfaces what matters, and generates insights from your paper library.
 
