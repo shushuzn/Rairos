@@ -88,6 +88,94 @@ def fingerprint_exists_in_pool(fingerprint: str, gap_type: Optional[str] = None)
     return False
 
 
+def get_gene_pool_diversity() -> Dict[str, Any]:
+    """Return diversity metrics for the Gene Pool.
+
+    Metrics:
+    - shannon_index: Shannon entropy of algorithm-family distribution (higher = more diverse)
+    - capsule_count: total active capsules
+    - family_counts: capsule count per algorithm family (from trigger_keywords)
+    - gap_type_counts: capsule count per gap_type
+    - diversity_score: 0-100 normalized score (100 = perfectly balanced)
+    - underrepresented_families: families with < 10% of median representation
+    - overrepresented_families: families with > 2x median representation
+    """
+    capsules = load_capsules(status="active")
+    if not capsules:
+        return {
+            "shannon_index": 0.0,
+            "capsule_count": 0,
+            "family_counts": {},
+            "gap_type_counts": {},
+            "diversity_score": 0,
+            "underrepresented_families": [],
+            "overrepresented_families": [],
+        }
+
+    import math
+
+    # ─── Algorithm family from trigger_keywords ───────────────────────────────────
+    FAMILY_KEYWORDS = {
+        "attention": ["attention", "transformer", "multi-head", "self-attention", "cross-attention"],
+        "reinforcement": ["rl", "reinforcement", "policy", "reward", "agent", "DQN", "PPO", "A3C"],
+        "language_model": ["LM", "language model", "decoder", "autoregressive", "LLM", "GPT", "BERT"],
+        "vision": ["CNN", "convolution", "resnet", "image", "vision", "ViT", "classification"],
+        "optimization": ["optimizer", "Adam", "SGD", "gradient", "loss", "training"],
+        "graph": ["GNN", "graph", "node", "edge", "message passing"],
+        "reasoning": ["reasoning", "chain-of-thought", "logical", "inference", "planning"],
+        "embodied": ["embodied", "robotics", "navigation", "control", "motor"],
+    }
+
+    def family_of(keywords: List[str]) -> str:
+        kw_set = {k.lower() for k in keywords}
+        for fam, fam_kws in FAMILY_KEYWORDS.items():
+            if any(fk in kw_set for fk in fam_kws):
+                return fam
+        return "other"
+
+    family_counts: Dict[str, int] = {}
+    gap_type_counts: Dict[str, int] = {}
+    for cap in capsules:
+        kws = cap.get("trigger_keywords", [])
+        fam = family_of(kws) if kws else "other"
+        family_counts[fam] = family_counts.get(fam, 0) + 1
+        gt = cap.get("action_gap_type", "unknown")
+        gap_type_counts[gt] = gap_type_counts.get(gt, 0) + 1
+
+    # ─── Shannon entropy of family distribution ─────────────────────────────────
+    total = len(capsules)
+    shannon = 0.0
+    for count in family_counts.values():
+        p = count / total
+        if p > 0:
+            shannon -= p * math.log(p)
+    max_entropy = math.log(len(family_counts)) if family_counts else 1.0
+    normalized_shannon = shannon / max_entropy if max_entropy > 0 else 0.0
+
+    # ─── Diversity score (0-100) ───────────────────────────────────────────────
+    # Penalize both imbalance (low shannon) and low coverage (few families)
+    family_coverage = len(family_counts) / len(FAMILY_KEYWORDS)
+    diversity_score = int(normalized_shannon * 0.6 * 100 + family_coverage * 0.4 * 100)
+
+    # ─── Under/over-represented families ──────────────────────────────────────
+    median_count = sorted(family_counts.values())[len(family_counts) // 2] if family_counts else 1
+    underrep = [f for f, c in family_counts.items() if c < median_count * 0.1]
+    overrep = [f for f, c in family_counts.items() if c > median_count * 2.0]
+
+    return {
+        "shannon_index": round(shannon, 4),
+        "shannon_normalized": round(normalized_shannon, 4),
+        "capsule_count": total,
+        "family_counts": dict(sorted(family_counts.items(), key=lambda x: -x[1])),
+        "gap_type_counts": dict(sorted(gap_type_counts.items(), key=lambda x: -x[1])),
+        "diversity_score": diversity_score,
+        "underrepresented_families": sorted(underrep),
+        "overrepresented_families": sorted(overrep),
+        "median_family_count": median_count,
+        "family_coverage": round(family_coverage, 4),
+    }
+
+
 def export_pool() -> Dict[str, Any]:
     """Export the full Gene Pool as a JSON dict."""
     capsules_path = GP_DIR / "capsules.json"
