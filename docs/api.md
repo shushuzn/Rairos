@@ -159,3 +159,110 @@ slugify_title("My Paper Title: A Study")  # "my-paper-title"
 safe_uid("10.1038/nature12373")           # unique ID string
 ensure_research_tree(Path("./research"))  # creates dir structure
 ```
+
+## Gene Pool
+
+```python
+from llm.gene_pool_io import (
+    load_capsules,
+    get_capsule_by_paper,
+    paper_exists_in_pool,
+    export_pool,
+    import_pool,
+    create_backup,
+    restore_backup,
+    get_backup_info,
+    render_io_html,
+)
+
+# Load active capsules
+capsules = load_capsules(gap_type="research_gap", status="active")
+
+# Check if paper already in pool
+exists = paper_exists_in_pool("2601.00155")
+
+# Export/import Gene Pool
+pool = export_pool()
+import_pool(new_data, merge=True)
+
+# Backup and restore
+stamp = create_backup()
+restore_backup(stamp)
+```
+
+## Deep Research Agent
+
+```python
+from research_loop.deep_research import DeepResearchAgent, AgentThought, DeepResearchResult
+
+agent = DeepResearchAgent(
+    model="qwen3.5-plus",
+    max_iterations=10,
+    verbose=True,
+)
+
+result: DeepResearchResult = agent.run(
+    topic="RAG with agent tools in long context",
+    papers=[paper1, paper2],
+)
+for thought in result.thoughts:
+    print(thought.role, thought.content)
+```
+
+## LSP Diagnostics
+
+```python
+from research_loop.lsp_diagnostics import (
+    check_ruff,
+    check_pyright,
+    run_progressive,
+    format_diagnostics,
+    Diagnostic,
+)
+from pathlib import Path
+
+# Fast lint (synchronous)
+issues = check_ruff(Path("src/main.py"))
+
+# Type check (background)
+run_progressive(
+    Path("src/main.py"),
+    on_fast=lambda diags: print(format_diagnostics(diags, "ruff")),
+    on_complete=lambda diags: print(format_diagnostics(diags, "pyright")),
+)
+
+# Format for display
+print(format_diagnostics(issues))
+```
+
+## Circuit Breaker
+
+```python
+from core.retry import circuit_breaker, CircuitBreaker, CircuitOpen
+
+# Decorator form (shared across calls by function key)
+@circuit_breaker(failure_threshold=3, recovery_timeout=60.0)
+def call_api():
+    return requests.get(url)
+
+# Direct form
+cb = CircuitBreaker(failure_threshold=2, recovery_timeout=30.0)
+cb.record_failure()
+cb.record_failure()
+assert cb.state == CircuitBreaker.OPEN
+
+# Thread-safe, each decorated function gets its own breaker
+```
+
+## Retry
+
+```python
+from core.retry import retry, RetryStats, get_retry_stats
+
+@retry(max_attempts=3, base_delay=1.0, max_delay=30.0)
+def flaky_call():
+    return api.request()
+
+stats = get_retry_stats()
+stats.record_attempt("flaky_call", attempt=2, success=True)
+```
