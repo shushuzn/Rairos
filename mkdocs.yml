@@ -100,6 +100,8 @@ nav:
 
   - Usage: usage.md
 
+  - CLI Reference: cli.md
+
   - Architecture: architecture.md
 
   - Configuration: configuration.md
