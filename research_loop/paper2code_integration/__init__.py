@@ -288,6 +288,10 @@ class PaperPipeline:
             }
             if benchmark_result
             else None,
+            "ruff_diagnostics": [
+                {"line": d.line, "column": d.column, "severity": d.severity, "code": d.code, "message": d.message}
+                for d in (benchmark_result.ruff_diagnostics if benchmark_result else [])
+            ],
         }
 
     def _get_tracker(self, skip_gene_pool: bool):

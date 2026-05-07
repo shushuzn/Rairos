@@ -1006,6 +1006,7 @@ def tool_paper2code_run(
                     "test_dir": result["test_dir"],
                     "readme": result["readme"],
                     "benchmark": result.get("benchmark"),
+                    "ruff_diagnostics": result.get("ruff_diagnostics", []),
                 }
             )
 
