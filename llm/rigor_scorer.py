@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-from llm.llm_factory import get_llm
+from llm.client import get_client
 
 
 @dataclass
@@ -107,8 +107,8 @@ PAPER ABSTRACT:
 JSON:"""
 
     try:
-        llm = get_llm(model="fast")
-        response = llm.complete(prompt)
+        llm = get_client()
+        response = llm.generate(prompt)
         # Try to extract JSON
         match = re.search(r"\{[\s\S]*\}", response.strip())
         if match:
