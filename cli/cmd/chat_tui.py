@@ -917,11 +917,6 @@ class ReasoningBuffer(Static):
         self._expanded = not self._expanded
         self._render()
 
-    def on_click(self) -> None:
-        """Toggle expanded state."""
-        self._expanded = not self._expanded
-        self._render()
-
 
 # ─── Main TUI App ────────────────────────────────────────────────────────────
 
@@ -1288,10 +1283,8 @@ class TUIChatApp(App):
             }
             current_text = status.renderable if hasattr(status, "renderable") else ""
             if isinstance(current_text, str):
-                # Prepend mode indicator to status text
-                mode_label = mode_labels.get(self._vim_mode, "-- NORMAL --")
-                # Keep existing status content but add mode prefix
-                pass  # Status keeps its own text
+                # Mode label kept for future use (status bar manages its own text)
+                _ = mode_labels.get(self._vim_mode, "-- NORMAL --")
 
             # Update nav hint based on mode
             nav_hints = {
@@ -1951,7 +1944,7 @@ class TUIChatApp(App):
             paper_node = kg.get_node_by_entity("Paper", paper_id)
             if paper_node is None:
                 kg_view = self.query_one("#kg-view", SidebarKGView)
-                kg_view.show_empty(f"KG not available for this paper")
+                kg_view.show_empty("KG not available for this paper")
                 return
 
             neighbors = kg.find_neighbors(paper_node["id"], depth=2)
