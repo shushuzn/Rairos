@@ -486,5 +486,172 @@ def crossover_action(
             "total": len(candidates),
         }
 
+    elif action == "lineage":
+        if not capsule_id:
+            return {"error": "capsule_id required for lineage action"}
+        tree = get_lineage(capsule_id)
+        if not tree:
+            return {"error": f"Capsule {capsule_id} not found"}
+        ascii_tree = render_lineage_tree(capsule_id)
+        roots = get_root_ancestors(capsule_id)
+        return {
+            "capsule_id": capsule_id,
+            "lineage_tree": tree,
+            "ascii_tree": ascii_tree,
+            "root_ancestors": roots,
+        }
+
+    elif action == "descendants":
+        if not capsule_id:
+            return {"error": "capsule_id required for descendants action"}
+        desc = get_descendants(capsule_id)
+        return {
+            "ancestor_id": capsule_id,
+            "descendants": desc,
+            "count": len(desc),
+        }
+
     else:
         return {"error": f"Unknown action: {action}"}
+
+
+# ─── Genealogy / Lineage ─────────────────────────────────────────────────────────
+
+
+def get_lineage(capsule_id: str, max_depth: int = 5) -> Optional[Dict[str, Any]]:
+    """Trace the full lineage tree for a capsule.
+
+    For V3 capsules: recursively finds parent capsules (parent_capsule_id, parent_capsule_id_b).
+    Returns dict with capsule data and children, or None if not found.
+    """
+    from llm.insight.tracker import EvolutionTracker
+
+    tracker = EvolutionTracker(data_dir=GP_DIR)
+    capsules = tracker._load_capsules()
+
+    capsule_map = {c.capsule_id: c for c in capsules}
+
+    def build_tree(cid: str, depth: int) -> Optional[Dict[str, Any]]:
+        if depth > max_depth:
+            return None
+        cap = capsule_map.get(cid)
+        if not cap:
+            return None
+
+        arch = cap.archetype or {}
+        parent_a = arch.get("parent_capsule_id", "")
+        parent_b = arch.get("parent_capsule_id_b", "")
+        generation = arch.get("crossover_generation", 0)
+
+        node = {
+            "capsule_id": cid,
+            "action_gap_title": cap.action_gap_title[:60] if cap.action_gap_title else "",
+            "evolved_generation": generation,
+            "success_score": cap.outcome_success_score,
+            "feedback_count": cap.feedback_count,
+            "parent_a_id": parent_a,
+            "parent_b_id": parent_b,
+            "children": [],
+        }
+
+        if parent_a and parent_a != cid:
+            child = build_tree(parent_a, depth + 1)
+            if child:
+                node["children"].append(child)
+        if parent_b and parent_b != cid and parent_b != parent_a:
+            child = build_tree(parent_b, depth + 1)
+            if child:
+                node["children"].append(child)
+
+        return node
+
+    return build_tree(capsule_id, depth=0)
+
+
+def render_lineage_tree(capsule_id: str, max_depth: int = 5) -> str:
+    """Render a capsule's lineage as an ASCII tree.
+
+    Returns a string like:
+    ┌── capsule_id [V3] (score=0.85)
+    │   ┌── parent_a [V2] (score=0.72)
+    │   │   └── grandparent_1 [V1] (score=0.60)
+    │   └── parent_b [V1] (score=0.65)
+    """
+    tree = get_lineage(capsule_id, max_depth=max_depth)
+    if not tree:
+        return f"Capsule {capsule_id} not found"
+
+    lines: List[str] = []
+
+    def render_node(node: Dict[str, Any], prefix: str = "", is_last: bool = True) -> None:
+        gen = node.get("evolved_generation", 0)
+        gen_label = f"[V{gen}]" if gen > 0 else "[V0]"
+        score = node.get("success_score", 0)
+        title = node.get("action_gap_title", "") or node["capsule_id"]
+        short_id = node["capsule_id"][:8]
+
+        connector = "└── " if is_last else "├── "
+        lines.append(f"{prefix}{connector}{short_id} {gen_label} score={score:.3f} {title[:40]}")
+
+        children = node.get("children", [])
+        child_prefix = prefix + ("    " if is_last else "│   ")
+        for i, child in enumerate(children):
+            render_node(child, child_prefix, i == len(children) - 1)
+
+    lines.append(f"Capsule {capsule_id} [V{tree.get('evolved_generation', 0)}] — Lineage Tree")
+    lines.append("─" * 60)
+    for i, child in enumerate(tree.get("children", [])):
+        render_node(child, "", i == len(tree["children"]) - 1)
+
+    return "\n".join(lines)
+
+
+def get_root_ancestors(capsule_id: str, max_depth: int = 10) -> List[Dict[str, Any]]:
+    """Find all root ancestors (V0 capsules with no parents) in a capsule's lineage."""
+    lineage = get_lineage(capsule_id, max_depth=max_depth)
+    if not lineage:
+        return []
+
+    roots: List[Dict[str, Any]] = []
+
+    def collect_roots(node: Dict[str, Any]) -> None:
+        children = node.get("children", [])
+        if not children:
+            roots.append({
+                "capsule_id": node["capsule_id"],
+                "action_gap_title": node.get("action_gap_title", ""),
+                "evolved_generation": node.get("evolved_generation", 0),
+                "success_score": node.get("success_score", 0),
+            })
+        for child in children:
+            collect_roots(child)
+
+    for child in lineage.get("children", []):
+        collect_roots(child)
+
+    return roots
+
+
+def get_descendants(capsule_id: str) -> List[Dict[str, Any]]:
+    """Find all V3 capsules that have this capsule as an ancestor in their lineage."""
+    from llm.insight.tracker import EvolutionTracker
+
+    tracker = EvolutionTracker(data_dir=GP_DIR)
+    capsules = tracker._load_capsules()
+
+    descendants: List[Dict[str, Any]] = []
+    for cap in capsules:
+        if cap.evolved_generation < 1:
+            continue
+        arch = cap.archetype or {}
+        parent_a = arch.get("parent_capsule_id", "")
+        parent_b = arch.get("parent_capsule_id_b", "")
+        if capsule_id in (parent_a, parent_b):
+            descendants.append({
+                "capsule_id": cap.capsule_id,
+                "action_gap_title": cap.action_gap_title[:60],
+                "evolved_generation": cap.evolved_generation,
+                "success_score": cap.outcome_success_score,
+            })
+
+    return descendants
