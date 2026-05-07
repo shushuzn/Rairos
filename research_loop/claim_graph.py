@@ -211,6 +211,23 @@ class ClaimGraph:
         """Get all claims of a given type across all papers."""
         return [n for n in self.nodes.values() if n.claim_type == claim_type]
 
+    def get_inbound_improvement_claims(self, paper_id: str) -> List[ClaimNode]:
+        """Get claims from other papers that claim improvement over this paper.
+
+        Finds all edges where to_paper == paper_id and returns the
+        source paper's claims of the same type.
+        """
+        inbound_claims: List[ClaimNode] = []
+        paper_ids_seen: set = set()
+        for edge in self.edges:
+            if edge.to_paper == paper_id:
+                # Get the source paper's accuracy claims (they claim to be "better than" this paper)
+                for node in self.nodes.values():
+                    if node.paper_id == edge.from_paper:
+                        inbound_claims.append(node)
+                paper_ids_seen.add(edge.from_paper)
+        return inbound_claims
+
     # ─── Serialization ────────────────────────────────────────────────────────
 
     def to_dict(self) -> dict:

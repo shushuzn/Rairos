@@ -35,6 +35,7 @@ class TestCase:
     test_code: str  # the actual pytest test function code
     paper_ref: str  # which part of paper this derives from
     is_stub: bool = True  # True if this is a placeholder (pytest.skip) not a real assertion
+    cross_refs: list[str] = field(default_factory=list)  # ClaimGraph claim_ids this test cross-references
 
 
 @dataclass
@@ -69,7 +70,7 @@ def extract_tests(
     suite = TestSuite(arxiv_id=paper_content.arxiv_id, framework=framework)
 
     # 1. Numerical claims from paper
-    suite.test_cases.extend(_extract_numerical_claims(paper_content))
+    suite.test_cases.extend(_extract_numerical_claims(paper_content, paper_content.arxiv_id))
 
     # 2. Hyperparameter bounds
     suite.test_cases.extend(_extract_hyperparameter_tests(paper_content))
@@ -105,10 +106,24 @@ _NUMERIC_CLAIM_PATTERNS = [
 ]
 
 
-def _extract_numerical_claims(paper: PaperContent) -> List[TestCase]:
-    """Extract numerical claims from abstract, claims, and algorithm descriptions."""
+def _extract_numerical_claims(paper: PaperContent, arxiv_id: str) -> List[TestCase]:
+    """Extract numerical claims from abstract, claims, and algorithm descriptions.
+
+    Also queries ClaimGraph for cross-paper references: if other papers claim
+    to be "better than" this paper, those claims are embedded as cross_refs.
+    """
     tests = []
     text_sources = [paper.abstract] + paper.claims + paper.algorithm_descriptions
+
+    # Load ClaimGraph for cross-paper references
+    cross_refs: List[str] = []
+    try:
+        from research_loop.claim_graph import ClaimGraph
+        cg = ClaimGraph.load()
+        inbound = cg.get_inbound_improvement_claims(arxiv_id)
+        cross_refs = [node.claim_id for node in inbound]
+    except Exception:
+        pass  # non-critical: cross-refs are best-effort
 
     seen: set = set()
     for text in text_sources:
@@ -155,6 +170,7 @@ def _extract_numerical_claims(paper: PaperContent) -> List[TestCase]:
                         test_code=test_code.strip(),
                         paper_ref=text[:100],
                         is_stub=is_stub,
+                        cross_refs=cross_refs,
                     )
                 )
 
@@ -421,6 +437,8 @@ import pytest
 
 '''
         for tc in cases:
+            if tc.cross_refs:
+                content += f"# Cross-refs: {', '.join(tc.cross_refs)}\n"
             content += f'{tc.test_code}\n\n'
 
         (test_dir / filename).write_text(content.strip() + "\n", encoding="utf-8")
