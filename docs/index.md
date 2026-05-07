@@ -4,6 +4,7 @@
 
 AI Research OS is a local-first research tool that grows smarter over time. It learns your research patterns, surfaces what matters, and generates insights from your paper library.
 
+
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 [![Tests](https://github.com/shushuzn/Rairos/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
