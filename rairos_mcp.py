@@ -1333,6 +1333,36 @@ def tool_gene_pool_watcher(
         return error_response("WATCHER_ERROR", str(e))
 
 
+def tool_claim_graph(
+    action: str = "status",
+    paper_id: Optional[str] = None,
+    claim_type: Optional[str] = None,
+    value: Optional[float] = None,
+    source_text: Optional[str] = None,
+    from_paper: Optional[str] = None,
+    to_paper: Optional[str] = None,
+    improvement_ratio: Optional[float] = None,
+) -> Dict:
+    """Manage cross-paper claim graph: status, add claims, find contradictions, render HTML."""
+    try:
+        from research_loop.claim_graph import claim_graph_action
+
+        result = claim_graph_action(
+            action=action,
+            paper_id=paper_id,
+            claim_type=claim_type,
+            value=value,
+            source_text=source_text,
+            from_paper=from_paper,
+            to_paper=to_paper,
+            improvement_ratio=improvement_ratio,
+        )
+        return success_response(result)
+    except Exception as e:
+        logger.error(f"claim_graph error: {e}")
+        return error_response("CLAIM_GRAPH_ERROR", str(e))
+
+
 def tool_research_agent_status() -> Dict:
     """Get status of the autonomous research agent."""
     try:
@@ -2186,6 +2216,17 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
                 action=arguments.get("action", "status"),
                 interval_minutes=arguments.get("interval_minutes", 60),
                 min_diversity_score=arguments.get("min_diversity_score", 50.0),
+            )
+        elif name == "claim_graph":
+            result = tool_claim_graph(
+                action=arguments.get("action", "status"),
+                paper_id=arguments.get("paper_id"),
+                claim_type=arguments.get("claim_type"),
+                value=arguments.get("value"),
+                source_text=arguments.get("source_text"),
+                from_paper=arguments.get("from_paper"),
+                to_paper=arguments.get("to_paper"),
+                improvement_ratio=arguments.get("improvement_ratio"),
             )
         elif name == "research_run":
             result = tool_research_run(

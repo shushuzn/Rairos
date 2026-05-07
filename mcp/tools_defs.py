@@ -518,6 +518,47 @@ def get_tools() -> List[Dict[str, Any]]:
             },
         },
         {
+            "name": "claim_graph",
+            "description": "Cross-paper numerical claim tracking and contradiction detection. Find claim conflicts between papers, render as D3.js graph, and import claims from Gene Pool capsules.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "description": "Action: 'status' (default), 'add_claim', 'add_edge', 'contradictions', 'render', 'export', 'import_capsules'",
+                    },
+                    "paper_id": {
+                        "type": "string",
+                        "description": "arXiv ID of the paper (for 'add_claim')",
+                    },
+                    "claim_type": {
+                        "type": "string",
+                        "description": "Type: accuracy | speedup | reduction | param_size | memory | other (for 'add_claim', 'add_edge')",
+                    },
+                    "value": {
+                        "type": "number",
+                        "description": "Claimed numerical value (for 'add_claim')",
+                    },
+                    "source_text": {
+                        "type": "string",
+                        "description": "Original paper text snippet (for 'add_claim', 'add_edge')",
+                    },
+                    "from_paper": {
+                        "type": "string",
+                        "description": "Source arXiv ID for improvement claim (for 'add_edge')",
+                    },
+                    "to_paper": {
+                        "type": "string",
+                        "description": "Target arXiv ID being compared (for 'add_edge')",
+                    },
+                    "improvement_ratio": {
+                        "type": "number",
+                        "description": "Improvement multiplier, e.g. 1.23 means 23% better (for 'add_edge')",
+                    },
+                },
+            },
+        },
+        {
             "name": "research_agent_start",
             "description": "Start the background autonomous research agent for a topic",
             "inputSchema": {
