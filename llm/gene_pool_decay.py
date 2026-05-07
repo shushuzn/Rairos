@@ -38,6 +38,27 @@ DECAY_STATE_FILE = GP_DIR / "decay_state.json"
 MOMENTUM_DAYS = 7  # rolling window for momentum calculation
 MOMENTUM_STATE_FILE = GP_DIR / "momentum_state.json"
 
+# Domain velocity: how fast claims in this arxiv category become stale
+# Higher λ → faster decay, shorter effective half-life
+# CS fields (LLM, vision) move fast; math/physics are more stable
+DOMAIN_LAMBDA_FACTOR: Dict[str, float] = {
+    "cs.AI": 0.02,    # fast-moving: half-life ~35 days
+    "cs.LG": 0.02,
+    "cs.CL": 0.02,
+    "cs.CV": 0.015,   # fast: half-life ~46 days
+    "cs.NE": 0.015,
+    "cs.RO": 0.01,    # standard
+    "cs.SE": 0.008,    # slower-moving
+    "cs.CR": 0.005,   # security: more stable knowledge
+    "cs.PL": 0.005,   # programming languages: very stable
+    "math.ST": 0.003, # statistics theory: very stable
+    "math.IT": 0.003,
+    "physics.class-ph": 0.002,  # classical physics: extremely stable
+    "quant-ph": 0.004,         # quantum: moderate
+    "q-bio": 0.005,            # quantitative biology
+    "econ.GN": 0.005,          # economic theory
+}
+
 
 @dataclass
 class CapsuleImpact:
@@ -125,6 +146,26 @@ def get_inbound_citations(paper_id: str, graph=None) -> int:
     return count
 
 
+def _get_adaptive_lambda(category: str, default_lambda: float = DEFAULT_LAMBDA) -> float:
+    """Get decay lambda for a capsule based on its arxiv category.
+
+    Fast-moving fields (LLM, vision) get higher λ → faster decay.
+    Stable fields (math, physics, PL) get lower λ → longer half-life.
+    Falls back to default_lambda for unknown categories.
+    """
+    if not category:
+        return default_lambda
+    # Check exact match first, then prefix match (e.g. "cs.LG" in "cs.LG", "cs.AI")
+    if category in DOMAIN_LAMBDA_FACTOR:
+        return DOMAIN_LAMBDA_FACTOR[category]
+    # Prefix match: try "cs." prefix
+    if "." in category:
+        prefix = category.split(".")[0] + "."
+        if prefix in DOMAIN_LAMBDA_FACTOR:
+            return DOMAIN_LAMBDA_FACTOR[prefix]
+    return default_lambda
+
+
 def score_all_capsules(
     min_impact: float = DEFAULT_MIN_IMPACT,
     lambda_: float = DEFAULT_LAMBDA,
@@ -154,12 +195,17 @@ def score_all_capsules(
             continue
 
         inbound = get_inbound_citations(cap.trigger_topic, cg) if cg else 0
+
+        # Adaptive lambda: domain velocity from source_arxiv_category
+        capsule_category = getattr(cap, "source_arxiv_category", "") or ""
+        adaptive_lambda = _get_adaptive_lambda(capsule_category, lambda_)
+
         impact, age_days = compute_impact_score(
             success_score=cap.outcome_success_score,
             created_at=cap.created_at,
             feedback_count=cap.feedback_count,
             inbound_citations=inbound,
-            lambda_=lambda_,
+            lambda_=adaptive_lambda,
         )
 
         # Check consecutive low-impact cycles
@@ -606,6 +652,33 @@ def gene_pool_decay_action(
             "falling_gap_types": falling,
             "window_days": days,
             "total_gap_types": len(result),
+        }
+
+    elif action == "domain_stats":
+        from llm.insight.tracker import EvolutionTracker
+        tracker = EvolutionTracker(data_dir=GP_DIR)
+        capsules = tracker._load_capsules()
+
+        category_stats: Dict[str, Dict[str, Any]] = {}
+        for cap in capsules:
+            if cap.status != "active":
+                continue
+            cat = getattr(cap, "source_arxiv_category", "") or "unknown"
+            lam = _get_adaptive_lambda(cat)
+            half_life = round(0.693 / lam, 1) if lam > 0 else float("inf")
+
+            if cat not in category_stats:
+                category_stats[cat] = {
+                    "count": 0,
+                    "lambda": lam,
+                    "half_life_days": half_life,
+                }
+            category_stats[cat]["count"] += 1
+
+        return {
+            "domain_stats": dict(category_stats),
+            "default_lambda": lambda_,
+            "default_half_life_days": round(0.693 / lambda_, 1),
         }
 
     else:
