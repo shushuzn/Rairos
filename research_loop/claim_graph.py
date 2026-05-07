@@ -99,6 +99,18 @@ class Contradiction:
     severity: str      # "high" | "medium" | "low"
 
 
+@dataclass
+class BidirectionalContradiction:
+    """A pair of papers that each claim to be better than the other."""
+
+    paper_a: str
+    paper_b: str
+    edge_ab: ClaimEdge  # A claims better than B
+    edge_ba: ClaimEdge  # B claims better than A
+    severity: str       # "critical" | "high" | "medium"
+    description: str
+
+
 # ─── ClaimGraph ────────────────────────────────────────────────────────────────
 
 
@@ -200,6 +212,72 @@ class ClaimGraph:
                             )
                         )
 
+        return contradictions
+
+    def find_bidirectional_contradictions(self) -> List[BidirectionalContradiction]:
+        """Find paper pairs where A claims to be better than B AND B claims to be better than A.
+
+        This is the most severe form of research integrity issue — a direct
+        logical contradiction in improvement claims between two papers.
+
+        Returns list of BidirectionalContradiction sorted by severity (critical first).
+        """
+        contradictions: List[BidirectionalContradiction] = []
+
+        # Build lookup: for each ordered pair (from_paper, to_paper) → edge
+        edge_map: Dict[tuple, ClaimEdge] = {}
+        for edge in self.edges:
+            edge_map[(edge.from_paper, edge.to_paper)] = edge
+
+        seen_pairs: set = set()
+        for (from_a, to_b), edge_ab in edge_map.items():
+            # Check if reverse edge exists
+            reverse_key = (to_b, from_a)
+            if reverse_key not in edge_map:
+                continue
+
+            edge_ba = edge_map[reverse_key]
+            pair_key = tuple(sorted([from_a, to_b]))
+            if pair_key in seen_pairs:
+                continue
+            seen_pairs.add(pair_key)
+
+            # Both edges must be on the same claim_type to be a valid contradiction
+            if edge_ab.claim_type != edge_ba.claim_type:
+                continue
+
+            metric = edge_ab.claim_type.value
+            diff_ratio = abs(edge_ab.improvement_ratio - edge_ba.improvement_ratio) / max(
+                edge_ab.improvement_ratio, edge_ba.improvement_ratio, 1.0
+            )
+
+            # Severity: critical if both claim large improvements (>20%), high otherwise
+            avg_ratio = (edge_ab.improvement_ratio + edge_ba.improvement_ratio) / 2
+            if avg_ratio > 1.2 and diff_ratio > 0.15:
+                severity = "critical"
+            elif avg_ratio > 1.1:
+                severity = "high"
+            else:
+                severity = "medium"
+
+            contradictions.append(
+                BidirectionalContradiction(
+                    paper_a=from_a,
+                    paper_b=to_b,
+                    edge_ab=edge_ab,
+                    edge_ba=edge_ba,
+                    severity=severity,
+                    description=(
+                        f"{from_a} claims {edge_ab.improvement_ratio:.2f}x {metric} improvement over {to_b}, "
+                        f"but {to_b} claims {edge_ba.improvement_ratio:.2f}x {metric} improvement over {from_a} "
+                        f"— {severity} bidirectional contradiction"
+                    ),
+                )
+            )
+
+        # Sort: critical → high → medium
+        severity_order = {"critical": 0, "high": 1, "medium": 2}
+        contradictions.sort(key=lambda c: severity_order.get(c.severity, 3))
         return contradictions
 
     def get_paper_claims(self, paper_id: str) -> List[ClaimNode]:
@@ -700,6 +778,25 @@ def claim_graph_action(
                 for c in contradictions
             ],
             "total": len(contradictions),
+        }
+
+    elif action == "bidirectional_contradictions":
+        bi_contra = graph.find_bidirectional_contradictions()
+        return {
+            "contradictions": [
+                {
+                    "paper_a": c.paper_a,
+                    "paper_b": c.paper_b,
+                    "metric": c.edge_ab.claim_type.value,
+                    "edge_ab_ratio": c.edge_ab.improvement_ratio,
+                    "edge_ba_ratio": c.edge_ba.improvement_ratio,
+                    "severity": c.severity,
+                    "description": c.description,
+                }
+                for c in bi_contra
+            ],
+            "total": len(bi_contra),
+            "critical_count": sum(1 for c in bi_contra if c.severity == "critical"),
         }
 
     elif action == "render":
