@@ -10,9 +10,6 @@ from __future__ import annotations
 import sqlite3
 from typing import Any, Dict, List, Optional, Tuple
 
-from db.database import PaperRecord  # noqa: E402
-
-
 class EmbeddingMixin:
     """Vector embedding operations for semantic paper search."""
 
@@ -68,7 +65,9 @@ class EmbeddingMixin:
                 result[r[0]] = None
         return result
 
-    def get_papers_without_embeddings(self, limit: int = 1000) -> List[PaperRecord]:
+    def get_papers_without_embeddings(self, limit: int = 1000) -> list:
+        from db.database import PaperRecord  # noqa: F401
+
         rows = self._conn.execute(
             "SELECT p.* FROM papers p LEFT JOIN embeddings e ON p.id = e.paper_id "
             "WHERE e.paper_id IS NULL AND p.title IS NOT NULL AND p.title != '' LIMIT ?",
