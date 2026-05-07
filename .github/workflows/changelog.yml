@@ -74,17 +74,24 @@ jobs:
       - name: Create PR if changed
         if: steps.diff.outputs.changed == 'true'
         run: |
+          set -euo pipefail
           BRANCH="chore/update-changelog-$(date +%Y%m%d-%H%M%S)"
-          git checkout -b "$BRANCH"
+          git checkout -b "$BRANCH" || git checkout "$BRANCH"
           git add CHANGELOG.md
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git commit -m "docs: update CHANGELOG.md"
-          git push -u origin "$BRANCH" --force
+          git commit -m "docs: update CHANGELOG.md" || echo "Nothing to commit"
+          git push -u origin "$BRANCH" --force || echo "Push failed"
 
-          RESP=$(curl --noproxy "*" -s -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          set +e
+          RESP=$(curl --noproxy "*" -s -w "\n%{http_code}" -X POST \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
             -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.repository }}/pulls \
-            -d "{\"title\":\"docs: update CHANGELOG.md\",\"body\":\"Auto-generated changelog update\",\"head\":\"$BRANCH\",\"base\":\"main\"}")
-          echo "$RESP" | python -c "import sys,json; d=json.load(sys.stdin); print('PR:', d.get('html_url', d.get('message','')))"
+            -H "Content-Type: application/json" \
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls \
+            -d "{\"title\":\"docs: update CHANGELOG.md\",\"body\":\"Auto-generated changelog update\",\"head\":\"${BRANCH}\",\"base\":\"main\"}")
+          HTTP_CODE=$(echo "$RESP" | tail -n1)
+          BODY=$(echo "$RESP" | head -n-1)
+          echo "HTTP status: $HTTP_CODE"
+          echo "Response: $BODY"
+          echo "$BODY" | python -c "import sys,json; d=json.load(sys.stdin); print('PR:', d.get('html_url', d.get('message','no error'))" 2>/dev/null || echo "Could not parse JSON"
