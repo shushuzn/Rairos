@@ -71,6 +71,7 @@ class CapsuleImpact:
     success_score: float
     citation_boost: float
     inbound_citations: int
+    indirect_citations: int = 0  # 2-hop citation count
     capsule_trust: float = 0.0  # composite: impact × citation_boost × badge_multiplier
     archived: bool = False
     reason: str = ""
@@ -240,10 +241,12 @@ def compute_impact_score(
     feedback_count: int,
     inbound_citations: int = 0,
     lambda_: float = DEFAULT_LAMBDA,
+    citation_boost_override: Optional[float] = None,
 ) -> tuple[float, float]:
     """Compute time-decayed impact score for a capsule.
 
     Returns (impact_score, age_days).
+    citation_boost_override: if provided, use this instead of computing from inbound_citations.
     """
     try:
         created_time = datetime.fromisoformat(created_at)
@@ -258,7 +261,11 @@ def compute_impact_score(
     feedback_bonus = math.log(feedback_count + 1)
 
     # Citation boost from ClaimGraph (inbound edges = papers citing this one)
-    citation_boost = 1.0 + 0.1 * inbound_citations
+    # Use override if provided (e.g., includes 2-hop recursive boost)
+    if citation_boost_override is not None:
+        citation_boost = citation_boost_override
+    else:
+        citation_boost = 1.0 + 0.1 * inbound_citations
 
     # Combined impact score
     impact = success_score * decay * feedback_bonus * citation_boost
@@ -280,6 +287,43 @@ def get_inbound_citations(paper_id: str, graph=None) -> int:
         if e.to_paper == paper_id
     )
     return count
+
+
+def get_indirect_citations(paper_id: str, graph=None) -> int:
+    """Get count of papers that cite papers that cite paper_id (2-hop).
+
+    Recursive citation boost: if A cites B and B cites C, then C gets
+    an indirect citation boost. This amplifies impact through citation chains.
+    """
+    if graph is None:
+        try:
+            from research_loop.claim_graph import ClaimGraph
+            graph = ClaimGraph.load()
+        except Exception:
+            return 0
+
+    # Find direct cites (papers citing this paper)
+    direct = {e.from_paper for e in graph.edges if e.to_paper == paper_id}
+
+    # Find 2-hop: papers citing the direct citers
+    indirect: set = set()
+    for d in direct:
+        for e in graph.edges:
+            if e.to_paper == d and e.from_paper != paper_id:
+                indirect.add(e.from_paper)
+
+    return len(indirect)
+
+
+def compute_citation_boost(direct: int, indirect: int = 0) -> float:
+    """Compute citation_boost with recursive chain amplification.
+
+    citation_boost = 1 + 0.1 × direct + 0.01 × indirect
+
+    Direct citations: papers explicitly citing this work
+    Indirect (2-hop): papers citing papers that cite this work
+    """
+    return round(1.0 + 0.1 * direct + 0.01 * indirect, 4)
 
 
 # ─── CapsuleTrust ───────────────────────────────────────────────────────────────
@@ -363,6 +407,8 @@ def score_all_capsules(
             continue
 
         inbound = get_inbound_citations(cap.trigger_topic, cg) if cg else 0
+        indirect = get_indirect_citations(cap.trigger_topic, cg) if cg else 0
+        citation_boost_val = compute_citation_boost(inbound, indirect)
 
         # Adaptive lambda: domain velocity from source_arxiv_category
         capsule_category = getattr(cap, "source_arxiv_category", "") or ""
@@ -374,6 +420,7 @@ def score_all_capsules(
             feedback_count=cap.feedback_count,
             inbound_citations=inbound,
             lambda_=adaptive_lambda,
+            citation_boost_override=citation_boost_val,
         )
 
         # Check consecutive low-impact cycles
@@ -408,8 +455,9 @@ def score_all_capsules(
             age_days=age_days,
             feedback_count=cap.feedback_count,
             success_score=cap.outcome_success_score,
-            citation_boost=round(1.0 + 0.1 * inbound, 3),
+            citation_boost=round(citation_boost_val, 4),
             inbound_citations=inbound,
+            indirect_citations=indirect,
             capsule_trust=capsule_trust,
             archived=should_archive,
             reason=reason,
@@ -788,6 +836,7 @@ def gene_pool_decay_action(
                     "success_score": i.success_score,
                     "citation_boost": i.citation_boost,
                     "inbound_citations": i.inbound_citations,
+                    "indirect_citations": i.indirect_citations,
                 }
                 for i in impacts[:10]
             ],
