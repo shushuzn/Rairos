@@ -42,6 +42,12 @@ class BenchmarkResult:
     error_message: str = ""
     gene_pool_entry: Optional[CapsuleGene] = None
     ruff_diagnostics: list = field(default_factory=list)  # LSP diagnostics
+    # Core Claim Coverage — quality signal for paper2code
+    numerical_claims_total: int = 0  # paper extracted numerical claims count
+    numerical_claims_covered: int = 0  # claims with real assertions (not stubs)
+    coverage_ratio: float = 0.0  # covered/total, 0.0~1.0
+    covered_claims: list[str] = field(default_factory=list)
+    uncovered_claims: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -58,6 +64,8 @@ class BenchmarkConfig:
     algorithm_fingerprint: str = ""  # cross-paper dedup via structural fingerprint
     generated_code: str = ""  # raw code string for provenance comment parsing
     paper_section_refs: list = field(default_factory=list)  # resolved paper_section_refs for archetype
+    min_coverage_ratio: float = 0.0  # minimum coverage to encode (0 = no gate)
+    numerical_claims_total: int = 0  # total numerical claims from paper
 
 
 def run_benchmark(
@@ -141,6 +149,9 @@ def run_benchmark(
     if json_report.exists():
         _parse_json_report(result, json_report)
 
+    # Populate Core Claim Coverage fields
+    _populate_coverage_fields(result, config, test_dir)
+
     # Encode to Gene Pool based on results
     if tracker and result.passed > 0:
         _encode_to_gene_pool(config, result, tracker, config.algorithm_fingerprint)
@@ -211,6 +222,54 @@ def _parse_json_report(result: BenchmarkResult, report_path: Path) -> None:
         pass  # Non-critical, we already have data from stdout
 
 
+def _populate_coverage_fields(
+    result: BenchmarkResult, config: BenchmarkConfig, test_dir: Path
+) -> None:
+    """Populate Core Claim Coverage fields from generated test files.
+
+    Reads test files to count which numerical claims have real assertions vs stubs.
+    A stub has `pytest.skip` with "implementation pending" — not a real assertion.
+    """
+    import re
+
+    result.numerical_claims_total = config.numerical_claims_total
+
+    stub_pattern = re.compile(r"pytest\.skip\([\"']implementation pending", re.IGNORECASE)
+    skip_pattern = re.compile(r"pytest\.skip\(", re.IGNORECASE)
+
+    covered = []
+    uncovered = []
+
+    # Scan test files for numerical claim tests
+    for test_file in test_dir.glob("test_claims.py"):
+        try:
+            content = test_file.read_text(encoding="utf-8")
+            # Find all test functions with their body
+            for func_match in re.finditer(r"^def (test_numerical_claim_\d+.*?):", content, re.MULTILINE):
+                func_name = func_match.group(1)
+                # Get content after function definition
+                func_start = func_match.end()
+                # Find next def or end of file
+                next_def = content.find("\ndef ", func_start)
+                func_body = content[func_start:next_def if next_def != -1 else len(content)]
+
+                if stub_pattern.search(func_body):
+                    uncovered.append(func_name)
+                elif skip_pattern.search(func_body):
+                    # Some skips are legitimate (e.g., "Requires standard benchmark environment")
+                    uncovered.append(func_name)
+                else:
+                    covered.append(func_name)
+        except Exception:
+            pass
+
+    result.numerical_claims_covered = len(covered)
+    result.covered_claims = covered
+    result.uncovered_claims = uncovered
+    total = config.numerical_claims_total
+    result.coverage_ratio = result.numerical_claims_covered / total if total > 0 else 0.0
+
+
 def _encode_to_gene_pool(
     config: BenchmarkConfig,
     result: BenchmarkResult,
@@ -248,8 +307,11 @@ def _encode_to_gene_pool(
     except Exception:
         pass  # non-critical: encoding proceeds if dedup check fails
 
-    # The success_score is derived from pass rate
-    success_score = pass_rate * config.code_quality
+    # The success_score is derived from pass rate + coverage bonus
+    # coverage_ratio ∈ [0.0, 1.0]; coverage_bonus adds up to +0.2
+    coverage_bonus = result.coverage_ratio * 0.2
+    success_score = (pass_rate * config.code_quality) + coverage_bonus
+    success_score = min(success_score, 1.0)
 
     # Build archetype with algorithm fingerprint and paper section refs for traceability
     archetype = {}

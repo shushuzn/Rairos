@@ -233,7 +233,10 @@ class PaperPipeline:
                         )
                         if save_tests:
                             save_tests(suite, test_dir, framework=framework)
-                        print(f"[paper2code] Tests: {len(suite.test_cases)} test cases")
+                        numerical_claims_total = sum(
+                            1 for tc in suite.test_cases if tc.category == "NumericalClaim"
+                        )
+                        print(f"[paper2code] Tests: {len(suite.test_cases)} test cases ({numerical_claims_total} numerical claims)")
                         if span:
                             span.add_event("stage3_complete", {"test_count": len(suite.test_cases)})
 
@@ -255,6 +258,7 @@ class PaperPipeline:
                             ),
                             generated_code=code or "",
                             paper_section_refs=section_refs,
+                            numerical_claims_total=numerical_claims_total,
                         )
                         tracker = self._get_tracker(skip_gene_pool)
                         benchmark_result = run_benchmark(config, tracker=tracker)
