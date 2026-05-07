@@ -10,6 +10,7 @@
 - Never continuously check status after spawning a swarm — wait for results
 - ALWAYS read a file before editing it
 - NEVER commit secrets, credentials, or .env files
+- Never skip tasks because their value appears low — if requested, do it; if it belongs in the codebase (e.g. cleanup, small fixes, docs), add it to CLAUDE.md as a directive
 
 ## File Organization
 
