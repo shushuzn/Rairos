@@ -497,6 +497,27 @@ def get_tools() -> List[Dict[str, Any]]:
             },
         },
         {
+            "name": "gene_pool_decay",
+            "description": "Time-weighted impact scoring for Gene Pool capsules. Compute decay-adjusted impact scores, auto-archive low-quality capsules, and rank capsules by effective contribution. Impact = success × e^(-λ×age) × log(fb+1) × citation_boost.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "description": "Action: 'status' (default, run decay cycle), 'rank' (top N by impact), 'archived' (show archived list), 'reset' (clear consecutive counters)",
+                    },
+                    "min_impact": {
+                        "type": "number",
+                        "description": "Minimum impact threshold below which capsules are flagged for archiving (default 0.1)",
+                    },
+                    "lambda": {
+                        "type": "number",
+                        "description": "Decay rate λ (default 0.01, half-life ~69 days). Higher = faster decay.",
+                    },
+                },
+            },
+        },
+        {
             "name": "gene_pool_watcher",
             "description": "Auto-detect Gene Pool diversity gaps and create ArXiv subscriptions to fill them. Call trigger_now() for an immediate check, or start() to run continuously in background.",
             "inputSchema": {

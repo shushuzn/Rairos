@@ -1267,6 +1267,26 @@ def tool_research_agent_stop() -> Dict:
         return error_response("AGENT_ERROR", str(e))
 
 
+def tool_gene_pool_decay(
+    action: str = "status",
+    min_impact: float = 0.1,
+    lambda_: float = 0.01,
+) -> Dict:
+    """Time-weighted impact scoring and auto-archive for Gene Pool capsules."""
+    try:
+        from llm.gene_pool_decay import gene_pool_decay_action
+
+        result = gene_pool_decay_action(
+            action=action,
+            min_impact=min_impact,
+            lambda_=lambda_,
+        )
+        return success_response(result)
+    except Exception as e:
+        logger.error(f"gene_pool_decay error: {e}")
+        return error_response("DECAY_ERROR", str(e))
+
+
 def tool_gene_pool_watcher(
     action: str = "status",
     interval_minutes: int = 60,
@@ -2210,6 +2230,12 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
                 paper_id=arguments.get("paper_id"),
                 action=arguments.get("action"),
                 label=arguments.get("label"),
+            )
+        elif name == "gene_pool_decay":
+            result = tool_gene_pool_decay(
+                action=arguments.get("action", "status"),
+                min_impact=arguments.get("min_impact", 0.1),
+                lambda_=arguments.get("lambda", 0.01),
             )
         elif name == "gene_pool_watcher":
             result = tool_gene_pool_watcher(
