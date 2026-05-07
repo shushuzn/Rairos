@@ -35,6 +35,8 @@ DEFAULT_LAMBDA = 0.01          # half-life ~69 days
 DEFAULT_MIN_IMPACT = 0.1       # archive if impact falls below this
 DEFAULT_CONSECUTIVE_CYCLES = 3  # N consecutive cycles below threshold → archive
 DECAY_STATE_FILE = GP_DIR / "decay_state.json"
+MOMENTUM_DAYS = 7  # rolling window for momentum calculation
+MOMENTUM_STATE_FILE = GP_DIR / "momentum_state.json"
 
 
 @dataclass
@@ -61,6 +63,15 @@ class DecayState:
     archived_this_cycle: List[str] = field(default_factory=list)  # archived this run
     archived_by_gap_type: Dict[str, int] = field(default_factory=dict)  # gap_type → count
     total_archived: int = 0
+
+
+@dataclass
+class MomentumState:
+    """Tracks new capsules per gap_type for momentum calculation."""
+
+    new_by_gap_type: Dict[str, int] = field(default_factory=dict)  # gap_type → count
+    archived_by_gap_type: Dict[str, int] = field(default_factory=dict)  # gap_type → count
+    last_snapshot_at: str = ""  # ISO timestamp of last snapshot
 
 
 # ─── Core impact calculation ───────────────────────────────────────────────────
@@ -252,6 +263,150 @@ def _now_iso() -> str:
     return datetime.utcnow().isoformat()
 
 
+# ─── Momentum tracking ──────────────────────────────────────────────────────────
+
+
+def _load_momentum_state() -> MomentumState:
+    """Load momentum state from disk, or return empty state."""
+    if not MOMENTUM_STATE_FILE.exists():
+        return MomentumState()
+    try:
+        import json
+        data = json.loads(MOMENTUM_STATE_FILE.read_text(encoding="utf-8"))
+        return MomentumState(
+            new_by_gap_type=data.get("new_by_gap_type", {}),
+            archived_by_gap_type=data.get("archived_by_gap_type", {}),
+            last_snapshot_at=data.get("last_snapshot_at", ""),
+        )
+    except Exception:
+        return MomentumState()
+
+
+def _save_momentum_state(state: MomentumState) -> None:
+    """Persist momentum state to disk."""
+    import json
+    GP_DIR.mkdir(parents=True, exist_ok=True)
+    MOMENTUM_STATE_FILE.write_text(
+        json.dumps({
+            "new_by_gap_type": state.new_by_gap_type,
+            "archived_by_gap_type": state.archived_by_gap_type,
+            "last_snapshot_at": state.last_snapshot_at,
+        }, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
+def get_gap_type_momentum(
+    days: int = MOMENTUM_DAYS,
+) -> Dict[str, Dict[str, Any]]:
+    """Compute momentum for each gap_type: new vs archived over rolling window.
+
+    momentum > 1.0  → gap_type is growing (more new capsules than archived)
+    momentum = 1.0  → equilibrium
+    momentum < 1.0  → gap_type is shrinking
+    momentum = 0.0   → no new capsules, only archives (dying)
+
+    Returns dict: gap_type → {new, archived, momentum, trend}
+    """
+    from llm.insight.tracker import EvolutionTracker
+
+    tracker = EvolutionTracker(data_dir=GP_DIR)
+    capsules = tracker._load_capsules()
+    state = _load_momentum_state()
+    now = datetime.utcnow()
+    cutoff = now.timestamp() - (days * 86400)
+
+    # Count new capsules per gap_type since last_snapshot (or all if first run)
+    if state.last_snapshot_at:
+        try:
+            last_ts = datetime.fromisoformat(state.last_snapshot_at).timestamp()
+        except (ValueError, TypeError):
+            last_ts = 0.0
+    else:
+        last_ts = cutoff  # first run: count all capsules in window
+
+    new_by_gap_type: Dict[str, int] = {}
+    for cap in capsules:
+        if cap.status == "active":
+            try:
+                created_ts = datetime.fromisoformat(cap.created_at).timestamp()
+            except (ValueError, TypeError):
+                continue
+            if created_ts >= last_ts:
+                gt = cap.action_gap_type or "unknown"
+                new_by_gap_type[gt] = new_by_gap_type.get(gt, 0) + 1
+
+    # Also scan capsules created within the full window (for first-run bootstrap)
+    new_by_gap_type_window: Dict[str, int] = {}
+    for cap in capsules:
+        if cap.status == "active":
+            try:
+                created_ts = datetime.fromisoformat(cap.created_at).timestamp()
+            except (ValueError, TypeError):
+                continue
+            if created_ts >= cutoff:
+                gt = cap.action_gap_type or "unknown"
+                new_by_gap_type_window[gt] = new_by_gap_type_window.get(gt, 0) + 1
+
+    # If no previous state, use window counts
+    if not state.new_by_gap_type and not state.archived_by_gap_type:
+        new_by_gap_type = new_by_gap_type_window
+    else:
+        # Merge: keep running totals of new since last snapshot
+        new_by_gap_type = dict(state.new_by_gap_type)
+        # Add any capsules created since last snapshot
+        for cap in capsules:
+            if cap.status == "active":
+                try:
+                    created_ts = datetime.fromisoformat(cap.created_at).timestamp()
+                except (ValueError, TypeError):
+                    continue
+                if created_ts >= last_ts:
+                    gt = cap.action_gap_type or "unknown"
+                    new_by_gap_type[gt] = new_by_gap_type.get(gt, 0) + 1
+
+    archived_by_gap_type = dict(state.archived_by_gap_type)
+
+    # Compute momentum per gap_type
+    all_gap_types = set(new_by_gap_type.keys()) | set(archived_by_gap_type.keys())
+    result: Dict[str, Dict[str, Any]] = {}
+    for gt in all_gap_types:
+        new_count = new_by_gap_type.get(gt, 0)
+        archived_count = archived_by_gap_type.get(gt, 0)
+        total = new_count + archived_count
+        if total == 0:
+            momentum = 1.0  # no activity = equilibrium
+        else:
+            momentum = round(new_count / max(archived_count, 1), 3)
+
+        if new_count > archived_count:
+            trend = "rising"
+        elif new_count < archived_count:
+            trend = "falling"
+        else:
+            trend = "stable"
+        if new_count == 0 and archived_count > 0:
+            trend = "dying"
+
+        result[gt] = {
+            "new_7d": new_count,
+            "archived_7d": archived_count,
+            "momentum": momentum,
+            "trend": trend,
+        }
+
+    # Prune old entries (no activity in 2x window)
+    prune_cutoff = now.timestamp() - (days * 2 * 86400)
+    # Save updated state with current snapshot
+    _save_momentum_state(MomentumState(
+        new_by_gap_type=new_by_gap_type,
+        archived_by_gap_type=archived_by_gap_type,
+        last_snapshot_at=_now_iso(),
+    ))
+
+    return result
+
+
 # ─── Ranking ──────────────────────────────────────────────────────────────────
 
 
@@ -435,6 +590,23 @@ def gene_pool_decay_action(
         state.consecutive_low_impact = {}
         _save_decay_state(state)
         return {"reset": True, "message": "All consecutive counters cleared"}
+
+    elif action == "momentum":
+        days = 7  # default rolling window
+        result = get_gap_type_momentum(days=days)
+        # Sort by momentum ascending (dying first)
+        sorted_gap_types = sorted(
+            result.items(), key=lambda x: x[1]["momentum"]
+        )
+        rising = [gt for gt, d in result.items() if d["trend"] == "rising"]
+        falling = [gt for gt, d in result.items() if d["trend"] in ("falling", "dying")]
+        return {
+            "gap_types": {gt: d for gt, d in sorted_gap_types},
+            "rising_gap_types": rising,
+            "falling_gap_types": falling,
+            "window_days": days,
+            "total_gap_types": len(result),
+        }
 
     else:
         return {"error": f"Unknown action: {action}"}
