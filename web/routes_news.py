@@ -38,7 +38,6 @@ async def news_list(request: Request, keyword: str = ""):
     except Exception as e:
         cards = ["<p>News unavailable: " + str(e) + "</p>"]
 
-    search_url = '/news?keyword=' + keyword.replace("'", "%27") if keyword else ''
     cards_joined = "".join(cards)
 
     html = (

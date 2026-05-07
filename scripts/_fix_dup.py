@@ -6,7 +6,7 @@ with open("web/routes_misc.py", encoding="utf-8") as f:
 old1 = '@router.get("/labor-displacement")\ndef _labor_fallback(request: Request):\n    return templates.TemplateResponse(request, "generic.html", {"page": "labor-displacement", "title": "Labor Track", "content": "<p>Labor displacement module loading...</p>"})\n\n\n'
 c = c.replace(old1, "")
 
-# Remove second fallback  
+# Remove second fallback
 old2 = '@router.get("/labor-displacement")\nasync def _labor_fb(request: Request):\n    return templates.TemplateResponse(request, "generic.html", {"page": "labor-displacement", "title": "Labor Displacement Tracker", "content": "<p>Labor displacement module loading...</p>"})\n\n\n'
 c = c.replace(old2, "")
 

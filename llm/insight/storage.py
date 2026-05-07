@@ -461,7 +461,7 @@ class CapsuleStorageMixin:
         try:
             from kg.manager import KGManager
             kg = KGManager()
-            gp_nodes = {
+            _gp_nodes = {
                 n["entity_id"]: n for n in kg.get_all_nodes("GenePool-Capsule")
             }
             for cap in capsules:

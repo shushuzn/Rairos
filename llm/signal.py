@@ -106,7 +106,7 @@ def render_signal(result: Dict[str, Any]) -> str:
         f"\n  {C.CYAN}═══ Signal Analysis ═══{C.END}",
         f"  Event: {result.get('event', '?')}",
         f"  Signal: {sig_color}{sig}{C.END}  |  {result.get('timestamp', '')}",
-        f"",
+        "",
     ]
 
     if result.get("capsule_matches"):

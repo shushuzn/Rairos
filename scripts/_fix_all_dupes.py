@@ -20,20 +20,20 @@ removed = 0
 for path, count in counts.items():
     if count <= 1:
         continue
-    
+
     print(f"\n{path}: {count} registrations")
-    
+
     # Find the line numbers for this path
     positions = [(idx, line) for idx, (lineno, p) in enumerate(all_routes) if p == path]
-    
-    for pos_idx, (lineno, _) in positions:
+
+    for _pos_idx, (lineno, _) in positions:
         # Check if this is a fallback (has 'loading' in the function body)
         # Search the function body for 'loading'
         start = lineno - 1
         end = start + 1
         while end < len(lines) and not lines[end].strip().startswith("@router.") and end - start < 30:
             end += 1
-        
+
         body = "".join(lines[start:end])
         if "loading" in body.lower() and len(body) < 200:
             # This is a fallback - remove it

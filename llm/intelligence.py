@@ -100,7 +100,7 @@ def intelligence(topic: str = "", verbose: bool = False) -> Dict[str, Any]:
              "badge": c.credibility_badge, "type": c.action_gap_type}
             for c in sorted_caps[:5]
         ]
-    except Exception as e:
+    except Exception:
         report["gene_pool"] = {}
 
     # 4. Watch daemon status
@@ -112,7 +112,7 @@ def intelligence(topic: str = "", verbose: bool = False) -> Dict[str, Any]:
             "last_check": str(ws.get("last_check", ""))[:16],
             "events_monitored": ws.get("total_events", 0),
         }
-    except Exception as e:
+    except Exception:
         report["watch"] = {}
 
     # 5. Related academic papers (scout)
@@ -124,7 +124,7 @@ def intelligence(topic: str = "", verbose: bool = False) -> Dict[str, Any]:
              "capsule": p.matched_gap_title[:50]}
             for p in papers[:3]
         ]
-    except Exception as e:
+    except Exception:
         report["papers"] = []
 
     return report
@@ -142,7 +142,7 @@ def render_report(report: Dict[str, Any]) -> str:
     lines = [
         f"\n  {C.CYAN}═══ Rairos Intelligence ═══{C.END}",
         f"  {report.get('generated_at', '?')}  |  Topic: {report.get('topic', 'global')}",
-        f"",
+        "",
     ]
 
     flash = report.get("flash_news", [])

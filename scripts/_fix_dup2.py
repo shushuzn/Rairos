@@ -16,7 +16,7 @@ else:
     # Keep the LAST one (the real implementation), remove the rest
     keep = line_nums[-1]
     remove = line_nums[:-1]
-    
+
     # Remove from last to first to preserve indices
     for r in reversed(remove):
         idx = r - 1
@@ -26,7 +26,7 @@ else:
             end += 1
         # Actually we need to be more precise - remove the decorator + function body
         del lines[idx:end]
-    
+
     with open("web/routes_misc.py", "w", encoding="utf-8") as f:
         f.writelines(lines)
 

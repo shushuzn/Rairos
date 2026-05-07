@@ -102,7 +102,7 @@ class TestCrossReferencer:
         referencer = CrossReferencer(db=mock_db, llm_config={"api_key": "secret"})
         with patch("llm.client.call_llm_chat_completions") as mock_call:
             mock_call.return_value = '[{"total_related": 1}]'
-            result = referencer.analyze("p1", "Title", "Abstract", "Body", tags=["AI"])
+            _result = referencer.analyze("p1", "Title", "Abstract", "Body", tags=["AI"])
             mock_call.assert_called_once()
 
     def test_fallback_when_no_api_key(self):

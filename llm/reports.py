@@ -95,7 +95,8 @@ def report_all() -> list:
 
 def _report_vla(caps) -> str:
     lines = []
-    w = lambda s="": lines.append(s)
+    def w(s: str = "") -> None:
+        lines.append(s)
     w("This theme covers vision-language-action models for robotic manipulation.")
     w("The central question is how to combine reasoning, representation learning,")
     w("and reinforcement learning into a unified policy.")
@@ -125,7 +126,8 @@ def _report_vla(caps) -> str:
 
 def _report_geopolitics(caps) -> str:
     lines = []
-    w = lambda s="": lines.append(s)
+    def w(s: str = "") -> None:
+        lines.append(s)
     w("The system tracks 10 capsules related to Middle East geopolitics and")
     w("energy security, centered on the Strait of Hormuz chokepoint.")
     w("")
@@ -150,7 +152,8 @@ def _report_geopolitics(caps) -> str:
 
 def _report_economy(caps) -> str:
     lines = []
-    w = lambda s="": lines.append(s)
+    def w(s: str = "") -> None:
+        lines.append(s)
     w("One capsule tracking US Treasury borrowing data.")
     w("")
     w("Key findings:")
@@ -166,7 +169,8 @@ def _report_economy(caps) -> str:
 
 def _report_theory(caps) -> str:
     lines = []
-    w = lambda s="": lines.append(s)
+    def w(s: str = "") -> None:
+        lines.append(s)
     w("This theme covers theoretical aspects of latent reasoning, attention")
     w("mechanisms, and representation learning in VLA models.")
     w("")
@@ -188,7 +192,8 @@ def _report_theory(caps) -> str:
 
 def _report_safety(caps) -> str:
     lines = []
-    w = lambda s="": lines.append(s)
+    def w(s: str = "") -> None:
+        lines.append(s)
     w("Three incident capsules: Mexico earthquake, Liuyang fireworks factory")
     w("explosion, and UAE Fujairah drone attack.")
     w("")

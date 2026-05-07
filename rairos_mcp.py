@@ -892,7 +892,7 @@ def tool_slides_generate(paper_id: str, output_path: Optional[str] = None) -> Di
             output_path = str(PROJECT_ROOT / f"{paper_id}_slides.pptx")
 
         gen = PaperSlidesGenerator()
-        result = gen.generate(paper_ids=[paper_id], config=None)
+        gen.generate(paper_ids=[paper_id], config=None)
 
         return success_response({"paper_id": paper_id, "output_path": output_path})
 
@@ -1840,7 +1840,8 @@ def tool_routeplan_update_step(
         try:
             status_enum = StepStatus(status.lower())
         except Exception:
-            from llm.route_planner import StepStatus; status_enum = StepStatus.PLANNED
+            from llm.route_planner import StepStatus
+            status_enum = StepStatus.PLANNED
         planner = RoutePlanner()
         plan = planner.update_step(
             plan_id=plan_id,
@@ -2298,8 +2299,6 @@ def handle_request(method: str, params: Dict) -> dict:
     elif method == "sampling/createMessage":
         # MCP sampling: server requests LLM generation from client
         return handle_sampling(params)
-    elif method == "sampling/createMessage":
-        return handle_sampling(params)
     else:
         return error_response("UNKNOWN_METHOD", f"Unknown method: {method}")
 
@@ -2310,7 +2309,6 @@ def handle_sampling(params: Dict) -> dict:
     if not messages:
         return error_response("INVALID_PARAMS", "No messages provided")
     system_prompt = params.get("systemPrompt", "")
-    max_tokens = params.get("maxTokens", 1024)
     try:
         from llm.client import call_llm_chat_completions
         result = call_llm_chat_completions(messages=messages, model="minimax-m2.7-highspeed", system_prompt=system_prompt, timeout=60)
@@ -2576,17 +2574,15 @@ def tool_impact_leaderboard(limit: int = 20, year_min: int = 2020) -> Dict:
         logger.error(f"impact_leaderboard error: {e}")
         return error_response("IMPACT_ERROR", str(e))
 
-def handle_sampling(params: Dict) -> dict:
+def _handle_sampling(params: Dict) -> dict:
     """Handle MCP sampling/createMessage via protocol (no API key needed)."""
     messages = params.get("messages", [])
     if not messages:
         return error_response("INVALID_PARAMS", "No messages provided")
     system_prompt = params.get("systemPrompt", "")
-    max_tokens = params.get("maxTokens", 1024)
     try:
         from llm.client import call_llm_chat_completions
         result = call_llm_chat_completions(messages=messages, model="minimax-m2.7-highspeed", system_prompt=system_prompt, timeout=60)
-        content = result if isinstance(result, str) else str(result)
         return success_response({"model": result.get("model", "mcp"), "role": "assistant", "content": result.get("content", "")})
     except Exception as e:
         logger.warning(f"LLM via key failed, using MCP degraded: {e}")

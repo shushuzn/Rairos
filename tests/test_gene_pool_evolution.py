@@ -916,7 +916,8 @@ class TestEvalRetrieval:
 
     def test_eval_retrieval_filters_test_events(self):
         from llm.insight.storage import CapsuleStorageMixin
-        import json, tempfile
+        import json
+        import tempfile
         class EvalOnly(CapsuleStorageMixin):
             def __init__(self, tmp):
                 self.data_dir = tmp
@@ -933,7 +934,8 @@ class TestEvalRetrieval:
 
     def test_eval_retrieval_deduplicates_events(self):
         from llm.insight.storage import CapsuleStorageMixin
-        import json, tempfile
+        import json
+        import tempfile
         class EvalOnly(CapsuleStorageMixin):
             def __init__(self, tmp):
                 self.data_dir = tmp

@@ -328,7 +328,7 @@ class InsightManager:
             ev = item.get("evidence", "")
             if ev.startswith("capsule:"):
                 already_promoted.add(ev.split(":", 1)[1])
-        existing_paper_ids = {item["paper_id"] for item in existing}
+        _existing_paper_ids = {item["paper_id"] for item in existing}
 
         # Determine insight_type from gap_type
         def _gap_to_insight_type(gap_type: str) -> str:

@@ -403,7 +403,7 @@ class TestRunBenchmark:
         """Should call tracker.encode_capsule when tracker and tests pass."""
         with patch("research_loop.benchmark_runner.check_ruff") as mock_ruff, \
              patch("subprocess.run") as mock_run, \
-             patch("research_loop.benchmark_runner._encode_to_gene_pool") as mock_encode:
+             patch("research_loop.benchmark_runner._encode_to_gene_pool") as _mock_encode:
             mock_ruff.return_value = []
             mock_run.return_value = MagicMock(stdout="5 passed", stderr="", returncode=0)
             mock_tracker = MagicMock()

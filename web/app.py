@@ -20,7 +20,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 
-from web.shared import templates, get_db, get_tracker, p2c_progress
+from web.shared import templates as _templates, get_db, get_tracker, p2c_progress
 from web.renderers import render_gene_pool_graph_html
 from web.suggestions import (
     generate_suggestions,
@@ -71,7 +71,7 @@ async def catch_all_handler(request: Request, exc: Exception):
     return templates.TemplateResponse(
         request, "generic.html",
         {"page": "", "title": "Not Available",
-         "content": f"<p>This feature is not available in this build.</p>"},
+         "content": "<p>This feature is not available in this build.</p>"},
     )
 
 @app.exception_handler(_HTTPExc)
@@ -583,11 +583,11 @@ def _render_paper2code_html(results: List[Dict[str, Any]]) -> str:
             fw = r.get("framework", "pytorch")
             passed = r.get("passed", 0)
             failed = r.get("failed", 0)
-            skipped = r.get("skipped", 0)
+            r.get("skipped", 0)  # noqa: F841
             gp = r.get("gene_pool_encoded", False)
             ts = r.get("created_at", "")[:19]
             status = r.get("status", "done")
-            status_dot = {"done": "✅", "failed": "❌", "running": "⏳", "pending": "⏳"}.get(status, "❓")
+            _status_dot = {"done": "✅", "failed": "❌", "running": "⏳", "pending": "⏳"}.get(status, "❓")
             lines.append(f"""
             <tr style="border-bottom:1px solid var(--border-light);">
               <td style="padding:8px 10px;"><a href="/paper/{arxiv}" style="color:var(--pen-blue);">{arxiv}</a></td>

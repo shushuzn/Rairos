@@ -100,6 +100,6 @@ class CombinedIntegration:
         r1 = generate()
         r2 = generate()
         # Both should succeed and have the same structure
-        assert type(r1) == type(r2)
+        assert isinstance(r1, type(r2))
         assert len(r1) > 100
         assert len(r2) > 100

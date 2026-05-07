@@ -79,7 +79,7 @@ def render_embodied_planning_graph(type_counts: Dict[str, int]) -> str:
     if total == 0:
         return "No data"
 
-    max_count = max(type_counts.values()) if type_counts else 1
+    _max_count = max(type_counts.values()) if type_counts else 1
     lines = ["# Embodied Planning — Representation Types", ""]
     for rep_type in ["discrete", "continuous", "hybrid"]:
         count = type_counts.get(rep_type, 0)

@@ -32,7 +32,7 @@ class TestSaveGapToGenePool:
                 mock_tracker_instance = MagicMock()
                 mock_tracker_instance.encode_capsule.return_value = True
                 mock_tracker.return_value = mock_tracker_instance
-                result = save_gap_to_gene_pool(
+                save_gap_to_gene_pool(
                     paper_id="paper1",
                     title="Test Paper",
                     gap_type="embodied_planning",
@@ -50,7 +50,7 @@ class TestSaveGapToGenePool:
                 mock_tracker_instance = MagicMock()
                 mock_tracker_instance.encode_capsule.return_value = True
                 mock_tracker.return_value = mock_tracker_instance
-                result = save_gap_to_gene_pool(
+                save_gap_to_gene_pool(
                     paper_id="paper1",
                     title="Test Paper",
                     gap_type="embodied_planning",
@@ -69,7 +69,7 @@ class TestSaveGapToGenePool:
                 mock_tracker_instance = MagicMock()
                 mock_tracker_instance.encode_capsule.return_value = True
                 mock_tracker.return_value = mock_tracker_instance
-                result = save_gap_to_gene_pool(
+                save_gap_to_gene_pool(
                     paper_id="paper1",
                     title="Test Paper",
                     gap_type="embodied_planning",

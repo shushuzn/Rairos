@@ -111,7 +111,7 @@ def _run_daemon(
     from llm.scout import scout, render_scout_results
 
     print(f"  Scout daemon started (interval={interval_minutes}min)")
-    print(f"  Ctrl+C to stop\n")
+    print("  Ctrl+C to stop\n")
 
     while True:
         try:

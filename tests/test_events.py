@@ -265,7 +265,7 @@ class TestFindRelatedPapers:
         with patch("llm.events._try_search_arxiv", return_value=[]), \
              patch("llm.events._try_search_crossref", return_value=[]), \
              patch("llm.events._try_search_semantic_scholar", return_value=[mock_paper]) as mock_ss:
-            result = _find_related_papers("test", 3)
+            _find_related_papers("test", 3)
             mock_ss.assert_called_once()
 
 

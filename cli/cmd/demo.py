@@ -109,7 +109,7 @@ def _run_demo(args) -> None:
     print(f"  {Colors.GREEN}║  Demo ready!                         ║{Colors.END}")
     print(f"  {Colors.GREEN}╚══════════════════════════════════════╝{Colors.END}")
     print()
-    print(f"  Try these commands:")
+    print("  Try these commands:")
     print(f"    {Colors.CYAN}rairos gap list{Colors.END}        — View Gene Pool capsules")
     print(f"    {Colors.CYAN}rairos daemon status{Colors.END}   — Check daemon")
     print(f"    {Colors.CYAN}rairos search{Colors.END}           — Search papers")

@@ -900,7 +900,7 @@ class ReasoningBuffer(Static):
             return
 
         lines = []
-        for phase, (content, done) in self._phases.items():
+        for phase, (_content, done) in self._phases.items():
             bar = "▓" * self.BAR_LEN if done else "░" * self.BAR_LEN
             label = phase or "reasoning"
             lines.append(
@@ -1952,7 +1952,7 @@ class TUIChatApp(App):
             # Build node list: (node_id, type, label, connections)
             nodes = [(paper_node["id"], paper_node["type"], paper_node["label"], len(neighbors))]
             edges = []
-            for neighbor_node, edge, depth in neighbors:
+            for neighbor_node, edge, _depth in neighbors:
                 nodes.append((neighbor_node["id"], neighbor_node["type"], neighbor_node["label"], 0))
                 edges.append((paper_node["id"], neighbor_node["id"], edge["relation_type"]))
 

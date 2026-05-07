@@ -1890,7 +1890,7 @@ def sync_gene_pool_to_kg(
                     )
 
             synced += 1
-        except Exception as e:
+        except Exception:
             errors += 1
 
     return {

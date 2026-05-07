@@ -105,7 +105,7 @@ class CapsuleGene:
                 score += 0.3
             else:
                 # Partial credit: gap_type category overlap (e.g., "improvement" ~ "method_gap")
-                primary_categories = {
+                _primary_categories = {
                     "improvement", "method_gap", "method_limitation", "capability",
                     "application_gap", "exploration_gap", "embodied_planning",
                     "cross_domain", "theoretical", "empirical",

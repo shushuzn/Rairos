@@ -39,7 +39,7 @@ def save_gap_to_gene_pool(
         }
         if extra_fields:
             archetype.update(extra_fields)
-        capsule = {
+        _capsule = {
             "capsule_id": capsule_id,
             "created_at": now,
             "trigger_topic": title[:200],

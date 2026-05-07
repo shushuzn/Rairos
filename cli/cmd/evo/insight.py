@@ -392,7 +392,7 @@ def _run_insight(args: argparse.Namespace) -> int:
         if args.watch:
             import time
 
-            print(f"Watching GenePool health (Ctrl+C to stop)...", flush=True)
+            print("Watching GenePool health (Ctrl+C to stop)...", flush=True)
             while True:
                 report = tracker.get_gene_pool_quality_report()
                 if "error" in report:
@@ -516,7 +516,7 @@ def _run_insight(args: argparse.Namespace) -> int:
         print(f"  Eligible total  : {result['eligible_capsules']}")
         print(f"  Total cards now : {result['total_cards']}")
         if result['promoted'] > 0:
-            print(f"\n  Run 'airos insight list' to see new cards.")
+            print("\n  Run 'airos insight list' to see new cards.")
         return 0
 
     print_error(f"Unknown action: {args.action}")

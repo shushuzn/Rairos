@@ -99,7 +99,7 @@ class WatchDaemon:
         """Main monitoring loop."""
         self._client.ensure_init()
         state = _load_state()
-        processed = set(state.get("processed_ids", []))
+        _processed = set(state.get("processed_ids", []))
 
         while not WatchDaemon._stop_event.is_set():
             try:

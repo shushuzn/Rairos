@@ -327,14 +327,14 @@ def render_event_report(result: Dict[str, Any]) -> str:
         return f"  Error: {result['error']}"
 
     lines = [
-        f"\n  ⚡ Event Processed",
+        "\n  ⚡ Event Processed",
         f"  ID: {result.get('event_id', '?')}",
         f"  Time: {result.get('timestamp', '?')[:19]}",
         f"  Keywords: {', '.join(result.get('keywords', []))}",
-        f"",
-        f"  Capsule encoded:",
+        "",
+        "  Capsule encoded:",
         f"    {result.get('capsule_title', '')[:80]}",
-        f"",
+        "",
         f"  Related academic papers ({len(result.get('related_papers', []))}):",
     ]
     for ref in result.get("related_papers", []):

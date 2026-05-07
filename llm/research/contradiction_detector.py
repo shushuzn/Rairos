@@ -41,7 +41,7 @@ def detect_polarity_contradiction(
     contradictions = []
     for i, c in enumerate(capsules):
         p_i = c.get("polarity", "open")
-        for j, other in enumerate(capsules[i + 1:], i + 1):
+        for _j, other in enumerate(capsules[i + 1:], i + 1):
             p_j = other.get("polarity", "open")
             if p_i != p_j and p_i != "open" and p_j != "open":
                 contradictions.append({
@@ -65,7 +65,7 @@ def detect_evidence_contradiction(
     contradictions = []
     for i, c in enumerate(capsules):
         ev_i = c.get("archetype", {}).get("evidence", "")
-        for j, other in enumerate(capsules[i + 1:], i + 1):
+        for _j, other in enumerate(capsules[i + 1:], i + 1):
             ev_j = other.get("archetype", {}).get("evidence", "")
             if ev_i and ev_j and ev_i != ev_j:
                 contradictions.append({

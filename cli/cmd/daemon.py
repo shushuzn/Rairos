@@ -242,7 +242,7 @@ def _run_daemon_watch_status(args) -> None:
 
     d = WatchDaemon()
     status = d.get_status()
-    print(f"\n  Event Watch Status:")
+    print("\n  Event Watch Status:")
     print(f"    Running:     {'Yes' if status['running'] else 'No'}")
     print(f"    Interval:    {status['interval']}s")
     print(f"    Last check:  {status.get('last_check', 'never')[:19]}")

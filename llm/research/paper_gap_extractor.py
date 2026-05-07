@@ -332,9 +332,9 @@ def generate_hypothesis_from_contradiction(contradiction_pair: dict) -> str:
 
     if ("discrete" in rep_a and "continuous" in rep_b) or ("continuous" in rep_a and "discrete" in rep_b):
         return (
-            f"Hybrid architecture combining discrete reasoning with continuous execution may capture "
-            f"benefits of both: use discrete latent tokens for high-level planning and continuous "
-            f"distributions for low-level control, potentially achieving both interpretability and precision."
+            "Hybrid architecture combining discrete reasoning with continuous execution may capture "
+            "benefits of both: use discrete latent tokens for high-level planning and continuous "
+            "distributions for low-level control, potentially achieving both interpretability and precision."
         )
     if effect_a == "effective" and effect_b == "ineffective":
         return "Combining ineffective and effective approaches in a multi-stage pipeline may yield improvements."

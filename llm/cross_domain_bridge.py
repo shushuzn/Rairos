@@ -3,7 +3,7 @@ def get_bridges():
     from llm.insight.tracker import EvolutionTracker
     tracker = EvolutionTracker()
     capsules = tracker._load_capsules()
-    
+
     bridges = []
     # Group capsules by gap type
     by_type = {}
@@ -12,7 +12,7 @@ def get_bridges():
         if t not in by_type:
             by_type[t] = []
         by_type[t].append(c)
-    
+
     # Find pairs from different gap types that share keywords
     types = list(by_type.keys())
     for i in range(len(types)):
@@ -31,7 +31,7 @@ def get_bridges():
                             "shared_keywords": list(shared)[:5],
                             "strength": round(len(shared) / max(len(set(ca.trigger_keywords + cb.trigger_keywords)), 1), 2),
                         })
-    
+
     return bridges
 
 def render_html(bridges):
@@ -43,19 +43,19 @@ def render_html(bridges):
             caps = tracker._load_capsules()
             total = len(caps)
             types = set(c.action_gap_type for c in caps)
-        except:
+        except Exception:
             types = set()
-        
+
         return f"""
         <div class='cross-domain'>
         <h3>No cross-domain bridges found</h3>
         <p>Gene Pool has {total} capsules across {len(types)} gap types.</p>
         <p>Bridges appear when capsules from different gap types share 2+ keywords.</p>
         </div>"""
-    
+
     html = ['<div class="cross-domain"><h3>Cross-Domain Bridges</h3>']
     for b in bridges[:20]:
-        html.append(f'<div style="border:1px solid #eee;padding:10px;margin:8px 0;border-radius:6px;">')
+        html.append('<div style="border:1px solid #eee;padding:10px;margin:8px 0;border-radius:6px;">')
         html.append(f'<div style="font-size:11px;color:#888;">{b["type_a"]} ↔ {b["type_b"]} (strength={b["strength"]})</div>')
         html.append(f'<div style="font-size:13px;margin:4px 0;">{b["capsule_a"][:40]}</div>')
         html.append(f'<div style="font-size:13px;">{b["capsule_b"][:40]}</div>')
