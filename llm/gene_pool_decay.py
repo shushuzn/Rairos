@@ -796,7 +796,174 @@ def trigger_decay_aware_subscriptions() -> Dict[str, Any]:
     }
 
 
-# ─── MCP tool actions ──────────────────────────────────────────────────────────
+# ─── Impact prediction model ────────────────────────────────────────────────────
+
+
+# Weights for impact prediction (heuristic — no real training data needed)
+# These weights reflect which features best predict future impact
+PRED_WEIGHT_SUCCESS = 0.50    # primary signal: how well does the capsule perform
+PRED_WEIGHT_FEEDBACK = 0.25   # secondary: how often is this capsule referenced
+PRED_WEIGHT_AGE = 0.15        # youth bonus: newer capsules may still be growing
+PRED_WEIGHT_CITATION = 0.10   # tertiary: citation network position
+
+
+def predict_impact(
+    success_score: float,
+    feedback_count: int,
+    age_days: float,
+    inbound_citations: int,
+) -> Dict[str, Any]:
+    """Predict future impact of a capsule using a simple weighted model.
+
+    Returns dict with:
+      predicted_impact: float (0–1+)
+      confidence: 'high' | 'medium' | 'low' based on feature completeness
+      factors: breakdown of contributing factors
+      verdict: 'high_potential' | 'stable' | 'declining'
+    """
+    import math
+
+    # Feedback log bonus (diminishing returns)
+    fb_bonus = math.log(feedback_count + 1) / 5.0  # normalize to ~0–1
+
+    # Age factor: newer capsules get a youth bonus (up to 30 days)
+    if age_days < 30:
+        age_factor = 1.0 + 0.1 * (1 - age_days / 30)  # 1.0–1.1
+    else:
+        age_factor = 1.0  # no bonus for older capsules
+
+    # Citation momentum: indirect citations add slight predictive signal
+    citation_factor = 1.0 + 0.01 * inbound_citations
+
+    # Weighted prediction
+    predicted = (
+        PRED_WEIGHT_SUCCESS * success_score +
+        PRED_WEIGHT_FEEDBACK * fb_bonus +
+        PRED_WEIGHT_AGE * age_factor +
+        PRED_WEIGHT_CITATION * citation_factor
+    )
+
+    # Confidence: how many features do we have non-zero data for?
+    non_zero_features = sum([
+        success_score > 0,
+        feedback_count > 0,
+        inbound_citations > 0,
+    ])
+    if non_zero_features >= 3:
+        confidence = "high"
+    elif non_zero_features == 2:
+        confidence = "medium"
+    else:
+        confidence = "low"
+
+    # Verdict based on predicted value
+    if predicted >= 0.8:
+        verdict = "high_potential"
+    elif predicted >= 0.4:
+        verdict = "stable"
+    else:
+        verdict = "declining"
+
+    return {
+        "predicted_impact": round(predicted, 4),
+        "confidence": confidence,
+        "verdict": verdict,
+        "factors": {
+            "success_contribution": round(PRED_WEIGHT_SUCCESS * success_score, 4),
+            "feedback_contribution": round(PRED_WEIGHT_FEEDBACK * fb_bonus, 4),
+            "age_factor": round(age_factor, 4),
+            "citation_factor": round(citation_factor, 4),
+        },
+        "success_score": success_score,
+        "feedback_count": feedback_count,
+        "age_days": round(age_days, 1),
+        "inbound_citations": inbound_citations,
+    }
+
+
+def score_all_with_predictions(
+    min_impact: float = DEFAULT_MIN_IMPACT,
+    lambda_: float = DEFAULT_LAMBDA,
+) -> tuple[List[Dict[str, Any]], DecayState]:
+    """Score all capsules with both current impact and predicted future impact."""
+    from llm.insight.tracker import EvolutionTracker
+
+    tracker = EvolutionTracker(data_dir=GP_DIR)
+    capsules = tracker._load_capsules()
+
+    try:
+        from research_loop.claim_graph import ClaimGraph
+        cg = ClaimGraph.load()
+    except Exception:
+        cg = None
+
+    scored: List[Dict[str, Any]] = []
+    new_consecutive: Dict[str, int] = {}
+    state = _load_decay_state()
+
+    for cap in capsules:
+        if cap.status != "active":
+            continue
+
+        inbound = get_inbound_citations(cap.trigger_topic, cg) if cg else 0
+        indirect = get_indirect_citations(cap.trigger_topic, cg) if cg else 0
+        adaptive_lambda = _get_adaptive_lambda(
+            getattr(cap, "source_arxiv_category", "") or "", lambda_
+        )
+
+        impact, age_days = compute_impact_score(
+            success_score=cap.outcome_success_score,
+            created_at=cap.created_at,
+            feedback_count=cap.feedback_count,
+            inbound_citations=inbound,
+            lambda_=adaptive_lambda,
+            citation_boost_override=compute_citation_boost(inbound, indirect),
+        )
+
+        prediction = predict_impact(
+            success_score=cap.outcome_success_score,
+            feedback_count=cap.feedback_count,
+            age_days=age_days,
+            inbound_citations=inbound,
+        )
+
+        prev_streak = state.consecutive_low_impact.get(cap.capsule_id, 0)
+        if impact < min_impact:
+            new_streak = prev_streak + 1
+            should_archive = new_streak >= DEFAULT_CONSECUTIVE_CYCLES
+        else:
+            new_streak = 0
+            should_archive = False
+        new_consecutive[cap.capsule_id] = new_streak
+
+        capsule_trust = get_capsule_trust(
+            impact_score=impact,
+            inbound_citations=inbound,
+            credibility_badge=getattr(cap, "credibility_badge", "medium"),
+        )
+
+        scored.append({
+            "capsule_id": cap.capsule_id,
+            "action_gap_title": cap.action_gap_title[:60],
+            "impact_score": impact,
+            "capsule_trust": capsule_trust,
+            "age_days": age_days,
+            "feedback_count": cap.feedback_count,
+            "success_score": cap.outcome_success_score,
+            "citation_boost": round(compute_citation_boost(inbound, indirect), 4),
+            "inbound_citations": inbound,
+            "indirect_citations": indirect,
+            "predicted_impact": prediction["predicted_impact"],
+            "prediction_verdict": prediction["verdict"],
+            "prediction_confidence": prediction["confidence"],
+            "archived": should_archive,
+        })
+
+    state.consecutive_low_impact = new_consecutive
+    state.last_decay_at = _now_iso()
+    _save_decay_state(state)
+
+    return scored, state
 
 
 def gene_pool_decay_action(
@@ -934,6 +1101,36 @@ def gene_pool_decay_action(
     elif action == "self_correction":
         status = get_self_correction_status()
         return status
+
+    elif action == "predictions":
+        impacts, state = score_all_with_predictions(
+            min_impact=min_impact,
+            lambda_=lambda_,
+        )
+        impacts.sort(key=lambda x: x.get("predicted_impact", 0), reverse=True)
+        return {
+            "total_scored": len(impacts),
+            "predictions": [
+                {
+                    "capsule_id": i["capsule_id"],
+                    "current_impact_score": round(i.get("impact_score", 0), 4),
+                    "predicted_impact": round(i.get("predicted_impact", 0), 4),
+                    "confidence": i.get("confidence", "low"),
+                    "verdict": i.get("verdict", "declining"),
+                    "age_days": round(i.get("age_days", 0), 1),
+                    "feedback_count": i.get("feedback_count", 0),
+                    "success_score": round(i.get("success_score", 0), 4),
+                    "factors": i.get("factors", {}),
+                }
+                for i in impacts
+            ],
+            "high_potential": [
+                i["capsule_id"] for i in impacts if i.get("verdict") == "high_potential"
+            ],
+            "declining": [
+                i["capsule_id"] for i in impacts if i.get("verdict") == "declining"
+            ],
+        }
 
     elif action == "dismiss_correction":
         if not capsule_id:
