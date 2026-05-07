@@ -168,6 +168,7 @@ def encode_v3_capsule(
     gap_title: str,
     gap_type: str,
     trigger_topic: str,
+    source_paper_ids: Optional[List[str]] = None,
 ) -> Optional[str]:
     """Encode a V3 capsule directly into DB + JSONL, bypassing encode_capsule."""
     import json
@@ -179,6 +180,8 @@ def encode_v3_capsule(
     archetype["parent_capsule_id"] = crossover_result["parent_a_id"]
     archetype["parent_capsule_id_b"] = crossover_result["parent_b_id"]
     archetype["crossover_generation"] = crossover_result["parent_generations"]
+    if source_paper_ids:
+        archetype["source_paper_ids"] = source_paper_ids
 
     capsule_id = uuid.uuid4().hex[:12]
     cap = CapsuleGene(
@@ -304,6 +307,7 @@ def run_evolution(
             gap_title=v3_title,
             gap_type=p_a.action_gap_type or p_b.action_gap_type,
             trigger_topic=p_a.trigger_topic or p_b.trigger_topic,
+            source_paper_ids=[p_a.trigger_topic, p_b.trigger_topic],
         )
 
         created.append({
@@ -392,6 +396,52 @@ def mutate_single(capsule_id: str) -> Optional[str]:
     cap.evolved_generation = max(cap.evolved_generation, 0) + 1
     tracker.update_capsule(cap)
     return cap.capsule_id
+
+
+# ─── Benchmark → V3 score update ───────────────────────────────────────────────
+
+
+def update_v3_scores_from_benchmark(
+    arxiv_id: str,
+    pass_rate: float,
+    coverage_ratio: float = 0.0,
+) -> int:
+    """Update success_score for all V3 capsules that cite this arXiv paper.
+
+    When a paper is benchmarked, any V3 capsule whose source_paper_ids
+    include this arXiv ID gets its success_score updated to reflect the
+    real benchmark performance. This closes the feedback loop:
+    benchmark → V3 capsule fitness update.
+
+    Returns the number of V3 capsules updated.
+    """
+    from llm.insight.tracker import EvolutionTracker
+
+    tracker = EvolutionTracker(data_dir=GP_DIR)
+    capsules = tracker._load_capsules()
+
+    # Combined score mirrors leaderboard: pass_rate × 0.7 + coverage × 0.3
+    combined = round(pass_rate * 0.7 + coverage_ratio * 0.3, 4)
+
+    updated = 0
+    for cap in capsules:
+        if cap.evolved_generation < 1:
+            continue
+        if cap.status != "active":
+            continue
+        source_ids = cap.archetype.get("source_paper_ids", []) if cap.archetype else []
+        if arxiv_id not in source_ids:
+            continue
+
+        # Update: weighted blend with previous score (60% new, 40% existing)
+        new_fitness = combined
+        old_fitness = cap.outcome_success_score
+        cap.outcome_success_score = round(old_fitness * 0.4 + new_fitness * 0.6, 4)
+        cap.feedback_count += 1
+        tracker.update_capsule(cap)
+        updated += 1
+
+    return updated
 
 
 # ─── MCP tool actions ───────────────────────────────────────────────────────────

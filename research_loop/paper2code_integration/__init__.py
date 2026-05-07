@@ -280,6 +280,21 @@ class PaperPipeline:
                         except Exception:
                             pass  # non-critical: leaderboard is best-effort
 
+                        # Update V3 capsule fitness from benchmark — closes crossover反馈闭环
+                        try:
+                            from llm.crossover import update_v3_scores_from_benchmark
+                            total = benchmark_result.passed + benchmark_result.failed
+                            pr = benchmark_result.passed / total if total > 0 else 0.0
+                            updated = update_v3_scores_from_benchmark(
+                                arxiv_id=arxiv_id,
+                                pass_rate=pr,
+                                coverage_ratio=benchmark_result.coverage_ratio,
+                            )
+                            if updated > 0:
+                                print(f"[paper2code] Updated {updated} V3 capsule(s) with benchmark fitness")
+                        except Exception:
+                            pass  # non-critical: crossover feedback is best-effort
+
                         if span:
                             span.add_event(
                                 "stage4_complete",
