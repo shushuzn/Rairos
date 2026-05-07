@@ -45,6 +45,8 @@ def check_ruff(code_path: Path) -> List[Diagnostic]:
             capture_output=True,
             text=True,
             timeout=30,
+            encoding="utf-8",
+            errors="replace",
         )
         return _parse_ruff_json(code_path, result.stdout)
     except Exception:
@@ -99,6 +101,8 @@ def check_pyright(code_path: Path) -> List[Diagnostic]:
             capture_output=True,
             text=True,
             timeout=120,
+            encoding="utf-8",
+            errors="replace",
         )
         return _parse_pyright_json(code_path, result.stdout)
     except Exception:
