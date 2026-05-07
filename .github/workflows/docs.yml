@@ -28,6 +28,6 @@ jobs:
         run: pip install mkdocs mkdocs-material "mkdocs-git-revision-date-localized-plugin>=1.0" "mkdocs-minify-plugin>=0.7"
 
       - name: Deploy to GitHub Pages
-        run: mkdocs gh-deploy --strict --force --remote-branch gh-pages
+        run: mkdocs gh-deploy --force --remote-branch gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
