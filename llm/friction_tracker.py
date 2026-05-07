@@ -193,20 +193,21 @@ class FrictionTracker:
         events: List[FrictionEvent] = []
         cutoff = datetime.now().timestamp() - (since_days * 86400)
         try:
-            for line in reversed(open(self.events_file, encoding="utf-8").readlines()):
-                if limit and len(events) >= limit:
-                    break
-                try:
-                    event = FrictionEvent.from_dict(json.loads(line.strip()))
-                    if event.timestamp:
-                        ts = datetime.fromisoformat(event.timestamp).timestamp()
-                        if ts < cutoff:
-                            break
-                    if friction_type and event.friction_type != friction_type.value:
+            with open(self.events_file, encoding="utf-8") as fh:
+                for line in reversed(fh.readlines()):
+                    if limit and len(events) >= limit:
+                        break
+                    try:
+                        event = FrictionEvent.from_dict(json.loads(line.strip()))
+                        if event.timestamp:
+                            ts = datetime.fromisoformat(event.timestamp).timestamp()
+                            if ts < cutoff:
+                                break
+                        if friction_type and event.friction_type != friction_type.value:
+                            continue
+                        events.append(event)
+                    except (json.JSONDecodeError, TypeError):
                         continue
-                    events.append(event)
-                except (json.JSONDecodeError, TypeError):
-                    continue
         except FileNotFoundError:
             pass
         return events

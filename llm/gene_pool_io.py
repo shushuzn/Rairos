@@ -107,21 +107,19 @@ def import_pool(data: Dict[str, Any], merge: bool = True) -> Dict[str, int]:
 
     stats = {"capsules_imported": 0, "genes_imported": 0}
 
-    if not merge and capsules_path.exists():
-        capsules_path.unlink()
-    if not merge and jsonl_path.exists():
-        jsonl_path.unlink()
-
-    capsules = data.get("capsules", {})
+    capsules = data.get("capsules", [])
     if capsules:
         existing: Dict[str, Any] = {}
         if capsules_path.exists():
             existing = json.loads(capsules_path.read_text(encoding="utf-8"))
         existing_caps = existing.get("capsules", [])
         existing_ids = {c["capsule_id"] for c in existing_caps}
-        new_caps = [
-            c for c in capsules.get("capsules", []) if c.get("capsule_id") not in existing_ids
-        ]
+        if merge:
+            new_caps = [c for c in capsules if c.get("capsule_id") not in existing_ids]
+        else:
+            # merge=False: replace entire pool, no deduplication needed
+            new_caps = capsules
+            existing_caps = []
         merged = {"version": "1.0", "capsules": existing_caps + new_caps}
         capsules_path.write_text(json.dumps(merged, indent=2, ensure_ascii=False), encoding="utf-8")
         stats["capsules_imported"] = len(new_caps)
@@ -129,13 +127,15 @@ def import_pool(data: Dict[str, Any], merge: bool = True) -> Dict[str, int]:
     genes = data.get("genes", [])
     if genes:
         existing_ids: set = set()
-        if jsonl_path.exists():
+        if merge and jsonl_path.exists():
             for line in jsonl_path.read_text(encoding="utf-8").splitlines():
                 line = line.strip()
                 if line:
                     existing_ids.add(json.loads(line).get("gene_id", ""))
         new_genes = [g for g in genes if g.get("gene_id", "") not in existing_ids]
-        with jsonl_path.open("a", encoding="utf-8") as f:
+        # Use "a" for merge (append), "w" for replace
+        mode = "a" if merge else "w"
+        with jsonl_path.open(mode, encoding="utf-8") as f:
             for g in new_genes:
                 f.write(json.dumps(g, ensure_ascii=False) + "\n")
         stats["genes_imported"] = len(new_genes)

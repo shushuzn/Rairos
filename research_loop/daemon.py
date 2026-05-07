@@ -375,12 +375,16 @@ class SSEServer:
         async def sse_iter() -> Any:
             try:
                 while True:
-                    line = await asyncio.wait_for(q.get(), timeout=60)
-                    yield line.encode("utf-8")
-            except asyncio.TimeoutError:
-                yield b""
-            except Exception:
-                pass
+                    try:
+                        line = await asyncio.wait_for(q.get(), timeout=60)
+                        yield line.encode("utf-8")
+                    except asyncio.TimeoutError:
+                        yield b""
+                    except Exception as e:
+                        import logging
+                        logging.getLogger("daemon").warning("SSE stream error for client %s: %s", client_id, e)
+                        yield b"event: error\ndata: stream failed\n\n"
+                        break
             finally:
                 with self._lock:
                     self._clients.pop(client_id, None)
