@@ -59,6 +59,7 @@ class DecayState:
     last_decay_at: str = ""   # ISO timestamp
     consecutive_low_impact: Dict[str, int] = field(default_factory=dict)  # capsule_id → count
     archived_this_cycle: List[str] = field(default_factory=list)  # archived this run
+    archived_by_gap_type: Dict[str, int] = field(default_factory=dict)  # gap_type → count
     total_archived: int = 0
 
 
@@ -167,6 +168,8 @@ def score_all_capsules(
             _archive_capsule(tracker, cap)
             state.archived_this_cycle.append(cap.capsule_id)
             state.total_archived += 1
+            gap_type = cap.action_gap_type or "unknown"
+            state.archived_by_gap_type[gap_type] = state.archived_by_gap_type.get(gap_type, 0) + 1
 
         impacts.append(CapsuleImpact(
             capsule_id=cap.capsule_id,
@@ -184,6 +187,18 @@ def score_all_capsules(
     state.consecutive_low_impact = new_consecutive
     state.last_decay_at = _now_iso()
     _save_decay_state(state)
+
+    # Decay-aware subscription trigger: check if any gap_type is over-archived
+    try:
+        sub_result = trigger_decay_aware_subscriptions()
+        if sub_result.get("triggered"):
+            import logging
+            logging.getLogger("decay").info(
+                f"Decay-aware subs triggered: {sub_result['triggered_gap_types']} "
+                f"→ added: {sub_result['subscriptions_added']}"
+            )
+    except Exception:
+        pass  # non-critical
 
     return impacts, state
 
@@ -210,6 +225,7 @@ def _load_decay_state() -> DecayState:
             last_decay_at=data.get("last_decay_at", ""),
             consecutive_low_impact=data.get("consecutive_low_impact", {}),
             archived_this_cycle=data.get("archived_this_cycle", []),
+            archived_by_gap_type=data.get("archived_by_gap_type", {}),
             total_archived=data.get("total_archived", 0),
         )
     except Exception:
@@ -225,6 +241,7 @@ def _save_decay_state(state: DecayState) -> None:
             "last_decay_at": state.last_decay_at,
             "consecutive_low_impact": state.consecutive_low_impact,
             "archived_this_cycle": state.archived_this_cycle,
+            "archived_by_gap_type": state.archived_by_gap_type,
             "total_archived": state.total_archived,
         }, indent=2, ensure_ascii=False),
         encoding="utf-8",
@@ -246,6 +263,88 @@ def get_ranked_capsules(
     impacts, _ = score_all_capsules(lambda_=lambda_)
     impacts.sort(key=lambda x: x.impact_score, reverse=True)
     return impacts[:limit]
+
+
+# ─── Decay-aware subscriptions ─────────────────────────────────────────────────
+
+
+GAP_TYPE_TO_FAMILY: Dict[str, str] = {
+    "implementation": "other",
+    "method_gap": "other",
+    "dataset_gap": "vision",
+    "evaluation_gap": "other",
+    "efficiency_gap": "optimization",
+    "scalability_gap": "other",
+    "reasoning_gap": "reasoning",
+}
+
+ARCHIVE_THRESHOLD = 3  # trigger subscription refill after N consecutive archives of same gap_type
+
+
+def trigger_decay_aware_subscriptions() -> Dict[str, Any]:
+    """Check for over-archived gap_types and trigger GenePoolWatcher subscriptions.
+
+    After each decay cycle, call this to check if any gap_type has been
+    archived too many times relative to its active count — indicating
+    that direction is under-performing and we should explore it more.
+
+    Returns dict with triggered gap_types and subscription actions taken.
+    """
+    from llm.gene_pool_watcher import GenePoolWatcher, FAMILY_ARXIV_CONFIG
+
+    state = _load_decay_state()
+
+    if not state.archived_by_gap_type:
+        return {"triggered": False, "reason": "no archived capsules to analyze"}
+
+    # Load current Gene Pool counts by gap_type
+    from llm.insight.tracker import EvolutionTracker
+    tracker = EvolutionTracker(data_dir=GP_DIR)
+    capsules = tracker._load_capsules()
+
+    active_by_gap_type: Dict[str, int] = {}
+    for cap in capsules:
+        if cap.status == "active":
+            gt = cap.action_gap_type or "unknown"
+            active_by_gap_type[gt] = active_by_gap_type.get(gt, 0) + 1
+
+    triggered_gap_types: List[str] = []
+    subscriptions_added: List[str] = []
+
+    for gap_type, archive_count in state.archived_by_gap_type.items():
+        if archive_count < ARCHIVE_THRESHOLD:
+            continue
+        active_count = active_by_gap_type.get(gap_type, 0)
+        # If archives >= active, this gap_type is dying — trigger subscription
+        if archive_count >= active_count and active_count < 5:
+            triggered_gap_types.append(gap_type)
+            family = GAP_TYPE_TO_FAMILY.get(gap_type, "other")
+            if family in FAMILY_ARXIV_CONFIG:
+                watcher = GenePoolWatcher()
+                from llm.gene_pool_watcher import GapSubscription
+                new_sub = GapSubscription(
+                    family=family,
+                    keywords=FAMILY_ARXIV_CONFIG[family]["keywords"],
+                    arxiv_category=FAMILY_ARXIV_CONFIG[family]["category"],
+                    enabled=True,
+                )
+                from llm.gene_pool_watcher import _register_gap_subscription
+                sub_id = _register_gap_subscription(new_sub)
+                if sub_id:
+                    subscriptions_added.append(family)
+
+    # Reset counter for triggered gap_types (avoid re-triggering)
+    if triggered_gap_types:
+        for gt in triggered_gap_types:
+            state.archived_by_gap_type[gt] = 0
+        _save_decay_state(state)
+
+    return {
+        "triggered": len(triggered_gap_types) > 0,
+        "triggered_gap_types": triggered_gap_types,
+        "subscriptions_added": subscriptions_added,
+        "archive_counts": dict(state.archived_by_gap_type),
+    }
 
 
 # ─── MCP tool actions ──────────────────────────────────────────────────────────
@@ -323,6 +422,7 @@ def gene_pool_decay_action(
             "archived_this_cycle": state.archived_this_cycle,
             "total_archived_ever": state.total_archived,
             "last_decay_at": state.last_decay_at,
+            "archived_by_gap_type": dict(state.archived_by_gap_type),
             "consecutive_tracking": {
                 cid: cnt for cid, cnt in state.consecutive_low_impact.items()
                 if cnt > 0
