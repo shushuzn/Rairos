@@ -19,6 +19,9 @@ from typing import Any, Dict, List, Optional
 
 GP_DIR = Path.home() / ".ai_research_os" / "evolution"
 LEADERBOARD_FILE = GP_DIR / "leaderboard.json"
+CROSS_DOMAIN_FILE = GP_DIR / "cross_domain.json"
+TRANSFER_MIN_DOMAINS = 2  # minimum domains a capsule must pass in
+TRANSFER_MIN_PASS_RATE = 0.5  # minimum pass_rate per domain to count
 
 # Weights for combined score
 PASS_RATE_WEIGHT = 0.7
@@ -46,6 +49,7 @@ class LeaderboardEntry:
     last_updated: str = ""         # ISO timestamp
     numerical_claims_total: int = 0
     numerical_claims_covered: int = 0
+    benchmark_domain: str = ""     # e.g. "vision", "nlp", "reasoning" — for cross-domain detection
 
     # Difficulty thresholds
     STUB_RATE_HIGH = 0.70   # >70% stubs → easy paper, big penalty
@@ -84,7 +88,6 @@ class LeaderboardEntry:
 
     @classmethod
     def from_dict(cls, d: dict) -> "LeaderboardEntry":
-        # Accept both old entries (without calibrated_score) and new
         known = cls.__dataclass_fields__
         return cls(**{k: v for k, v in d.items() if k in known})
 
@@ -153,6 +156,70 @@ class Leaderboard:
         return round(sum(with_cov) / len(with_cov), 3)
 
 
+# ─── Cross-domain transfer detection ─────────────────────────────────────────────
+
+
+@dataclass
+class CrossDomainEntry:
+    """Tracks which domains a capsule has been benchmarked in and its pass rates."""
+
+    capsule_id: str
+    domains: Dict[str, float] = field(default_factory=dict)  # domain → pass_rate
+    is_transfer_capsule: bool = False
+    transfer_domains: List[str] = field(default_factory=list)  # domains where it passes well
+
+
+def detect_transfer_capsules() -> Dict[str, CrossDomainEntry]:
+    """Find capsules that achieve good pass rates across multiple benchmark domains.
+
+    A capsule is a "transfer_capsule" if it has pass_rate >= TRANSFER_MIN_PASS_RATE
+    in at least TRANSFER_MIN_DOMAINS distinct domains — indicating the capsule's
+    pattern transfers across domain boundaries.
+
+    Returns dict: capsule_id → CrossDomainEntry
+    """
+    board = Leaderboard()
+    capsule_domains: Dict[str, CrossDomainEntry] = {}
+
+    for entry in board.entries.values():
+        if not entry.capsule_id or not entry.benchmark_domain:
+            continue
+        if entry.pass_rate < TRANSFER_MIN_PASS_RATE:
+            continue
+
+        if entry.capsule_id not in capsule_domains:
+            capsule_domains[entry.capsule_id] = CrossDomainEntry(
+                capsule_id=entry.capsule_id,
+            )
+
+        capsule_domains[entry.capsule_id].domains[entry.benchmark_domain] = entry.pass_rate
+
+    # Flag transfer capsules
+    for cid, cde in capsule_domains.items():
+        qualifying = [d for d, pr in cde.domains.items() if pr >= TRANSFER_MIN_PASS_RATE]
+        if len(qualifying) >= TRANSFER_MIN_DOMAINS:
+            cde.is_transfer_capsule = True
+            cde.transfer_domains = qualifying
+
+    return capsule_domains
+
+
+def get_transfer_capsules() -> List[Dict[str, Any]]:
+    """Return all transfer capsules as dicts for MCP response."""
+    transfer_map = detect_transfer_capsules()
+    return [
+        {
+            "capsule_id": cid,
+            "domains": cde.domains,
+            "domain_count": len(cde.domains),
+            "is_transfer_capsule": cde.is_transfer_capsule,
+            "transfer_domains": cde.transfer_domains,
+        }
+        for cid, cde in transfer_map.items()
+        if cde.is_transfer_capsule
+    ]
+
+
 # ─── Upsert from BenchmarkResult ─────────────────────────────────────────────────
 
 
@@ -162,6 +229,7 @@ def upsert_from_benchmark(
     paper_title: str = "",
     framework: str = "pytorch",
     capsule_id: str = "",
+    benchmark_domain: str = "",
 ) -> LeaderboardEntry:
     """Create or update a leaderboard entry from a BenchmarkResult object."""
     total = benchmark_result.passed + benchmark_result.failed
@@ -180,6 +248,7 @@ def upsert_from_benchmark(
         capsule_id=capsule_id,
         numerical_claims_total=getattr(benchmark_result, "numerical_claims_total", 0),
         numerical_claims_covered=getattr(benchmark_result, "numerical_claims_covered", 0),
+        benchmark_domain=benchmark_domain,
     )
     entry.compute_score()
 
@@ -365,6 +434,14 @@ def leaderboard_action(
         if e:
             return e.to_dict()
         return {"error": f"No entry found for {arxiv_id}"}
+
+    elif action == "transfer_capsules":
+        transfer_list = get_transfer_capsules()
+        return {
+            "transfer_capsules": transfer_list,
+            "total": len(transfer_list),
+            "note": f"capsules with pass_rate >={TRANSFER_MIN_PASS_RATE} in >={TRANSFER_MIN_DOMAINS} domains",
+        }
 
     else:
         return {"error": f"Unknown action: {action}"}

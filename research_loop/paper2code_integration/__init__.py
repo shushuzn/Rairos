@@ -271,11 +271,13 @@ class PaperPipeline:
                         # Upsert to benchmark leaderboard — closes the闭环
                         try:
                             from research_loop.leaderboard import upsert_from_benchmark
+                            domain = _infer_benchmark_domain(arxiv_id, content)
                             upsert_from_benchmark(
                                 arxiv_id=arxiv_id,
                                 benchmark_result=benchmark_result,
                                 paper_title=content.title,
                                 framework=framework,
+                                benchmark_domain=domain,
                             )
                         except Exception:
                             pass  # non-critical: leaderboard is best-effort
@@ -430,6 +432,55 @@ remember successful paper-to-code mappings for future retrieval.
 
 {benchmark_str}
 """
+
+
+def _infer_benchmark_domain(arxiv_id: str, content: Any) -> str:
+    """Infer benchmark domain from arxiv ID prefix or paper content keywords.
+
+    Domain determines cross-domain transfer detection grouping.
+    """
+    import re
+
+    # arxiv category prefix mapping
+    category_map = {
+        "cs.CV": "vision",
+        "cs.LG": "nlp",
+        "cs.CL": "nlp",
+        "cs.AI": "reasoning",
+        "cs.NE": "reasoning",
+        "cs.RO": "robotics",
+        "cs.MA": "math",
+        "cs.LG": "rl",
+    }
+
+    # Try arxiv prefix (first chars of arxiv ID encode category)
+    prefix_map = {
+        "2303": "nlp",  # LLM era
+        "2212": "nlp",
+        "2110": "nlp",
+        "2003": "nlp",
+        "1905": "vision",
+        "1811": "vision",
+        "1706": "vision",
+    }
+    for pfx, domain in prefix_map.items():
+        if arxiv_id.startswith(pfx):
+            return domain
+
+    # Fallback: keyword extraction from title/abstract
+    text = ((content.title or "") + " " + (content.abstract or "")).lower()
+    if any(w in text for w in ["vision", "image", "object detection", "segmentation"]):
+        return "vision"
+    if any(w in text for w in ["language", "nlp", "transformer", "llm", "gpt", "bert"]):
+        return "nlp"
+    if any(w in text for w in ["reasoning", "chain-of-thought", "logic", "theorem"]):
+        return "reasoning"
+    if any(w in text for w in ["reinforcement", "rlhf", "policy"]):
+        return "rl"
+    if any(w in text for w in ["robot", "embodied", "navigation"]):
+        return "robotics"
+
+    return "general"
 
 
 def install_deps() -> None:
