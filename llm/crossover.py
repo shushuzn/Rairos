@@ -467,13 +467,180 @@ def update_v3_scores_from_benchmark(
     return updated
 
 
-# ─── MCP tool actions ───────────────────────────────────────────────────────────
+# ─── Debate Protocol ─────────────────────────────────────────────────────────────
+
+
+DEBATE_STATE_FILE = GP_DIR / "debate_state.json"
+
+
+@dataclass
+class DebateEntry:
+    """Record of a single debate between two capsules on the same gap_type."""
+
+    debate_id: str
+    capsule_a_id: str
+    capsule_b_id: str
+    gap_type: str
+    winner_id: str  # capsule_id of the winner
+    loser_id: str    # capsule_id of the loser
+    score_a: float
+    score_b: float
+    judged_at: str   # ISO timestamp
+
+
+def _load_debate_state() -> List[DebateEntry]:
+    if not DEBATE_STATE_FILE.exists():
+        return []
+    try:
+        import json
+        data = json.loads(DEBATE_STATE_FILE.read_text(encoding="utf-8"))
+        return [DebateEntry(**d) for d in data]
+    except Exception:
+        return []
+
+
+def _save_debate_state(debates: List[DebateEntry]) -> None:
+    import json
+    GP_DIR.mkdir(parents=True, exist_ok=True)
+    DEBATE_STATE_FILE.write_text(
+        json.dumps([deb.__dict__ for deb in debates], indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
+def _now_iso() -> str:
+    from datetime import datetime
+    return datetime.utcnow().isoformat()
+
+
+def _score_argument(capsule: Any, inbound_citations: int = 0) -> float:
+    """Score a capsule's argument strength for debate adjudication.
+
+    Composite: success_score × capsule_trust × log(feedback_count + 1)
+    Higher = stronger argument, more credible, better cited.
+    """
+    import math
+    success = capsule.outcome_success_score
+    fb = capsule.feedback_count
+    fb_bonus = math.log(fb + 1)
+    # Citation bonus
+    citation_bonus = 1.0 + 0.05 * inbound_citations
+    return round(success * fb_bonus * citation_bonus, 4)
+
+
+def debate_capsules(capsule_a_id: str, capsule_b_id: str, gap_type: str) -> Optional[DebateEntry]:
+    """Run a debate between two capsules on the same gap_type.
+
+    Returns DebateEntry with winner/loser, or None if either capsule not found.
+    The loser is marked as 'challenged' status in the Gene Pool.
+    """
+    import uuid
+
+    from llm.insight.tracker import EvolutionTracker
+    from llm.gene_pool_decay import get_inbound_citations
+
+    tracker = EvolutionTracker(data_dir=GP_DIR)
+    capsules = tracker._load_capsules()
+    capsule_map = {c.capsule_id: c for c in capsules}
+
+    cap_a = capsule_map.get(capsule_a_id)
+    cap_b = capsule_map.get(capsule_b_id)
+    if not cap_a or not cap_b:
+        return None
+
+    inbound_a = get_inbound_citations(cap_a.trigger_topic)
+    inbound_b = get_inbound_citations(cap_b.trigger_topic)
+
+    score_a = _score_argument(cap_a, inbound_a)
+    score_b = _score_argument(cap_b, inbound_b)
+
+    if score_a >= score_b:
+        winner_id, loser_id = capsule_a_id, capsule_b_id
+        winner_cap, loser_cap = cap_a, cap_b
+        score_winner, score_loser = score_a, score_b
+    else:
+        winner_id, loser_id = capsule_b_id, capsule_a_id
+        winner_cap, loser_cap = cap_b, cap_a
+        score_winner, score_loser = score_b, score_a
+
+    # Mark loser as challenged (best-effort — DB schema may not have all columns)
+    try:
+        loser_cap.status = "challenged"
+        loser_cap.low_score_streak = max(loser_cap.low_score_streak, 2)
+        tracker.update_capsule(loser_cap)
+    except Exception:
+        pass  # non-critical: debate record is the primary output
+
+    entry = DebateEntry(
+        debate_id=uuid.uuid4().hex[:8],
+        capsule_a_id=capsule_a_id,
+        capsule_b_id=capsule_b_id,
+        gap_type=gap_type,
+        winner_id=winner_id,
+        loser_id=loser_id,
+        score_a=score_a,
+        score_b=score_b,
+        judged_at=_now_iso(),
+    )
+
+    debates = _load_debate_state()
+    debates.append(entry)
+    _save_debate_state(debates)
+
+    return entry
+
+
+def get_debate_history(limit: int = 20) -> List[Dict[str, Any]]:
+    """Return recent debate results."""
+    debates = _load_debate_state()
+    debates.sort(key=lambda d: d.judged_at, reverse=True)
+    return [
+        {
+            "debate_id": d.debate_id,
+            "capsule_a_id": d.capsule_a_id,
+            "capsule_b_id": d.capsule_b_id,
+            "gap_type": d.gap_type,
+            "winner_id": d.winner_id,
+            "loser_id": d.loser_id,
+            "score_a": d.score_a,
+            "score_b": d.score_b,
+            "judged_at": d.judged_at,
+        }
+        for d in debates[:limit]
+    ]
+
+
+def get_debate_candidates(gap_type: str, limit: int = 5) -> List[Dict[str, Any]]:
+    """Return top capsule candidates eligible for debate on a gap_type."""
+    from llm.insight.tracker import EvolutionTracker
+
+    tracker = EvolutionTracker(data_dir=GP_DIR)
+    capsules = tracker._load_capsules()
+
+    candidates = [
+        c for c in capsules
+        if c.status == "active"
+        and c.action_gap_type == gap_type
+        and c.credibility_badge != "low"
+    ]
+    candidates.sort(key=lambda c: c.outcome_success_score, reverse=True)
+    return [
+        {
+            "capsule_id": c.capsule_id,
+            "action_gap_title": c.action_gap_title[:60],
+            "success_score": c.outcome_success_score,
+            "feedback_count": c.feedback_count,
+        }
+        for c in candidates[:limit]
+    ]
 
 
 def crossover_action(
     action: str = "evolve",
     offspring_count: int = DEFAULT_OFFSPRING_COUNT,
     capsule_id: Optional[str] = None,
+    capsule_id_b: Optional[str] = None,
+    gap_type: Optional[str] = None,
 ) -> dict:
     """MCP tool dispatcher for CapsuleGene Crossover.
 
@@ -482,6 +649,11 @@ def crossover_action(
       rank_v3    — list all V3 capsules sorted by fitness
       mutate     — mutate a single capsule's archetype
       best       — top crossover candidates by fitness
+      lineage    — render capsule lineage tree
+      descendants — find V3 capsules citing this as ancestor
+      debate     — run debate between two capsules on same gap_type
+      debate_history — list past debate results
+      debate_candidates — list capsules eligible for debate on a gap_type
     """
     if action == "evolve":
         result = run_evolution(offspring_count=offspring_count)
@@ -532,6 +704,40 @@ def crossover_action(
             "ancestor_id": capsule_id,
             "descendants": desc,
             "count": len(desc),
+        }
+
+    elif action == "debate":
+        if not capsule_id or not capsule_id_b:
+            return {"error": "capsule_id and capsule_id_b required for debate"}
+        if not gap_type:
+            return {"error": "gap_type required for debate"}
+        entry = debate_capsules(capsule_id, capsule_id_b, gap_type)
+        if not entry:
+            return {"error": "One or both capsules not found"}
+        return {
+            "debate_id": entry.debate_id,
+            "winner_id": entry.winner_id,
+            "loser_id": entry.loser_id,
+            "score_a": entry.score_a,
+            "score_b": entry.score_b,
+            "gap_type": entry.gap_type,
+            "judged_at": entry.judged_at,
+        }
+
+    elif action == "debate_history":
+        history = get_debate_history()
+        return {
+            "debates": history,
+            "total": len(history),
+        }
+
+    elif action == "debate_candidates":
+        if not capsule_id:
+            return {"error": "gap_type required for debate_candidates"}
+        candidates = get_debate_candidates(capsule_id)
+        return {
+            "gap_type": capsule_id,
+            "candidates": candidates,
         }
 
     else:
