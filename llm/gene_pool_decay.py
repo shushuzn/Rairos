@@ -71,6 +71,7 @@ class CapsuleImpact:
     success_score: float
     citation_boost: float
     inbound_citations: int
+    capsule_trust: float = 0.0  # composite: impact × citation_boost × badge_multiplier
     archived: bool = False
     reason: str = ""
 
@@ -281,6 +282,38 @@ def get_inbound_citations(paper_id: str, graph=None) -> int:
     return count
 
 
+# ─── CapsuleTrust ───────────────────────────────────────────────────────────────
+
+
+# Badge multipliers for CapsuleTrust composite score
+TRUST_BADGE_MULTIPLIER = {
+    "high": 1.5,
+    "medium": 1.0,
+    "low": 0.3,
+}
+
+
+def get_capsule_trust(
+    impact_score: float,
+    inbound_citations: int,
+    credibility_badge: str = "medium",
+) -> float:
+    """Compute CapsuleTrust composite score.
+
+    CapsuleTrust = impact_score × citation_boost × badge_multiplier
+
+    citation_boost = 1 + 0.1 × inbound_citations
+    badge_multiplier = 1.5 (high) / 1.0 (medium) / 0.3 (low)
+
+    Higher citation count and higher credibility badge amplify impact.
+    This drives parent selection toward trustworthy, high-impact capsules.
+    """
+    citation_boost = 1.0 + 0.1 * inbound_citations
+    badge_mult = TRUST_BADGE_MULTIPLIER.get(credibility_badge, 1.0)
+    trust = impact_score * citation_boost * badge_mult
+    return round(trust, 4)
+
+
 def _get_adaptive_lambda(category: str, default_lambda: float = DEFAULT_LAMBDA) -> float:
     """Get decay lambda for a capsule based on its arxiv category.
 
@@ -363,6 +396,12 @@ def score_all_capsules(
             gap_type = cap.action_gap_type or "unknown"
             state.archived_by_gap_type[gap_type] = state.archived_by_gap_type.get(gap_type, 0) + 1
 
+        capsule_trust = get_capsule_trust(
+            impact_score=impact,
+            inbound_citations=inbound,
+            credibility_badge=getattr(cap, "credibility_badge", "medium"),
+        )
+
         impacts.append(CapsuleImpact(
             capsule_id=cap.capsule_id,
             impact_score=impact,
@@ -371,6 +410,7 @@ def score_all_capsules(
             success_score=cap.outcome_success_score,
             citation_boost=round(1.0 + 0.1 * inbound, 3),
             inbound_citations=inbound,
+            capsule_trust=capsule_trust,
             archived=should_archive,
             reason=reason,
         ))
@@ -742,6 +782,7 @@ def gene_pool_decay_action(
                 {
                     "capsule_id": i.capsule_id,
                     "impact_score": i.impact_score,
+                    "capsule_trust": i.capsule_trust,
                     "age_days": i.age_days,
                     "feedback_count": i.feedback_count,
                     "success_score": i.success_score,

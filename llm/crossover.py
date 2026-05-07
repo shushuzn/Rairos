@@ -51,18 +51,40 @@ def compute_fitness(capsule: Any) -> float:
     return score * math.log(fb + 1)
 
 
+def compute_trust(capsule: Any, inbound_citations: int = 0) -> float:
+    """CapsuleTrust = impact × citation_boost × badge_multiplier."""
+    from llm.gene_pool_decay import get_capsule_trust, compute_impact_score
+
+    impact, _ = compute_impact_score(
+        success_score=capsule.outcome_success_score,
+        created_at=capsule.created_at,
+        feedback_count=capsule.feedback_count,
+        inbound_citations=inbound_citations,
+    )
+    badge = getattr(capsule, "credibility_badge", "medium")
+    return get_capsule_trust(impact, inbound_citations, badge)
+
+
 def select_parents(
     capsules: List[Any],
     k: int = DEFAULT_POPULATION_SIZE,
+    use_trust: bool = False,
 ) -> List[Any]:
-    """Select top-k capsules by fitness, filtered by credibility and min fitness."""
+    """Select top-k capsules by fitness, filtered by credibility and min fitness.
+
+    If use_trust=True, sort by CapsuleTrust instead of raw fitness.
+    CapsuleTrust = impact × citation_boost × badge_multiplier.
+    """
     candidates = [
         c for c in capsules
         if c.status == "active"
         and c.credibility_badge != "low"
         and compute_fitness(c) >= MIN_FITNESS_THRESHOLD
     ]
-    candidates.sort(key=compute_fitness, reverse=True)
+    if use_trust:
+        candidates.sort(key=lambda c: compute_trust(c), reverse=True)
+    else:
+        candidates.sort(key=compute_fitness, reverse=True)
     return candidates[:k]
 
 
@@ -270,7 +292,7 @@ def run_evolution(
 
     tracker = EvolutionTracker(data_dir=GP_DIR)
     capsules = tracker._load_capsules()
-    parents = select_parents(capsules, k=population_size)
+    parents = select_parents(capsules, k=population_size, use_trust=True)
 
     if len(parents) < 2:
         return {
@@ -359,13 +381,13 @@ def get_v3_capsules() -> List[Dict[str, Any]]:
 def get_top_candidates(
     limit: int = 10,
 ) -> List[Dict[str, Any]]:
-    """Return top crossover candidates (highest fitness active capsules)."""
+    """Return top crossover candidates (highest CapsuleTrust active capsules)."""
     from llm.insight.tracker import EvolutionTracker
 
     tracker = EvolutionTracker(data_dir=GP_DIR)
     capsules = tracker._load_capsules()
     active = [c for c in capsules if c.status == "active" and c.credibility_badge != "low"]
-    active.sort(key=compute_fitness, reverse=True)
+    active.sort(key=lambda c: compute_trust(c), reverse=True)
     return [
         {
             "capsule_id": c.capsule_id,
@@ -374,6 +396,7 @@ def get_top_candidates(
             "success_score": round(c.outcome_success_score, 3),
             "feedback_count": c.feedback_count,
             "fitness": round(compute_fitness(c), 3),
+            "capsule_trust": round(compute_trust(c), 4),
             "credibility_badge": c.credibility_badge,
         }
         for c in active[:limit]
