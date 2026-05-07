@@ -539,6 +539,31 @@ def get_tools() -> List[Dict[str, Any]]:
             },
         },
         {
+            "name": "leaderboard",
+            "description": "Benchmark Leaderboard — ranked paper2code implementations by combined score (pass_rate × 0.7 + coverage_ratio × 0.3). Upsert entries from benchmark results, view rankings, render HTML table.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "description": "Action: 'status' (summary stats), 'rankings' (top N entries), 'upsert' (add/update entry), 'render' (HTML table), 'entry' (single entry by arxiv_id)",
+                    },
+                    "arxiv_id": {
+                        "type": "string",
+                        "description": "arXiv ID for 'upsert' or 'entry' actions",
+                    },
+                    "sort_by": {
+                        "type": "string",
+                        "description": "Sort by: 'combined' (default), 'pass_rate', or 'coverage'",
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Number of entries to return (default 20, max 100)",
+                    },
+                },
+            },
+        },
+        {
             "name": "gene_pool_watcher",
             "description": "Auto-detect Gene Pool diversity gaps and create ArXiv subscriptions to fill them. Call trigger_now() for an immediate check, or start() to run continuously in background.",
             "inputSchema": {

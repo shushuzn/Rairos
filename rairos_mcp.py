@@ -1307,6 +1307,28 @@ def tool_crossover(
         return error_response("CROSSOVER_ERROR", str(e))
 
 
+def tool_leaderboard(
+    action: str = "status",
+    arxiv_id: Optional[str] = None,
+    sort_by: str = "combined",
+    limit: int = 20,
+) -> Dict:
+    """Benchmark Leaderboard: ranked paper2code implementations by pass_rate + coverage."""
+    try:
+        from research_loop.leaderboard import leaderboard_action
+
+        result = leaderboard_action(
+            action=action,
+            arxiv_id=arxiv_id,
+            sort_by=sort_by,
+            limit=limit,
+        )
+        return success_response(result)
+    except Exception as e:
+        logger.error(f"leaderboard error: {e}")
+        return error_response("LEADERBOARD_ERROR", str(e))
+
+
 def tool_gene_pool_watcher(
     action: str = "status",
     interval_minutes: int = 60,
@@ -2262,6 +2284,13 @@ def handle_call_tool(name: str, arguments: Dict) -> dict:
                 action=arguments.get("action", "evolve"),
                 offspring_count=arguments.get("offspring_count", 5),
                 capsule_id=arguments.get("capsule_id"),
+            )
+        elif name == "leaderboard":
+            result = tool_leaderboard(
+                action=arguments.get("action", "status"),
+                arxiv_id=arguments.get("arxiv_id"),
+                sort_by=arguments.get("sort_by", "combined"),
+                limit=arguments.get("limit", 20),
             )
         elif name == "gene_pool_watcher":
             result = tool_gene_pool_watcher(
