@@ -21,7 +21,7 @@ class Workflow:
             func()
 
 
-_workflows = {}
+_workflows: dict[str, Workflow] = {}
 
 
 def register_workflow(name: str, workflow: Workflow):
