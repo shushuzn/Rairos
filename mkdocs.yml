@@ -4,6 +4,8 @@ site_description: A Self-Evolving Research Operating System for AI Researchers
 
 site_url: https://shushuzn.github.io/Rairos/
 
+base_url: /Rairos/
+
 site_author: shushuzn
 
 
