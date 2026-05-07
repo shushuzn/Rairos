@@ -75,6 +75,19 @@ def paper_exists_in_pool(paper_id: str, gap_type: Optional[str] = None) -> bool:
     return get_capsule_by_paper(paper_id, gap_type) is not None
 
 
+def fingerprint_exists_in_pool(fingerprint: str, gap_type: Optional[str] = None) -> bool:
+    """Check if a capsule with this algorithm fingerprint already exists.
+
+    Enables cross-paper dedup: two different papers implementing the same
+    algorithm (same fingerprint) should not both be encoded.
+    """
+    capsules = load_capsules(gap_type=gap_type, status="active")
+    for c in capsules:
+        if c.get("archetype", {}).get("algorithm_fingerprint") == fingerprint:
+            return True
+    return False
+
+
 def export_pool() -> Dict[str, Any]:
     """Export the full Gene Pool as a JSON dict."""
     capsules_path = GP_DIR / "capsules.json"

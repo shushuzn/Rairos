@@ -38,6 +38,71 @@ class PaperContent:
     datasets: List[str] = field(default_factory=list)
     methods: List[str] = field(default_factory=list)
     categories: List[str] = field(default_factory=list)
+    # Cross-paper dedup: structural fingerprint of the algorithm
+    algorithm_fingerprint: str = ""  # computed from equations + methods + hps
+
+
+def compute_algorithm_fingerprint(content: "PaperContent") -> str:
+    """Compute a structural fingerprint of an algorithm from paper content.
+
+    Two papers implementing the same algorithm (e.g., "Attention is All You Need"
+    variants) should produce the same fingerprint even with different notation.
+    This enables cross-paper dedup: same algorithm → same fingerprint.
+
+    Fingerprint is derived from:
+    1. Equation structure (variables, operations, layout) — stripped of notation variants
+    2. Method names (e.g., "self-attention", "feed-forward")
+    3. Hyperparameter names (not values) — structural signature
+    """
+    import hashlib
+
+    signals: list[str] = []
+
+    # 1. Equations: extract structural skeleton (op signature only, no vars)
+    for eq in content.equations:
+        eq_lower = eq.lower()
+        # Keep only operation keywords — strip all variable names and notation
+        ops = re.findall(
+            r"(?:softmax|attention|matmul|@|linear|layer.?norm|residual|dropout|encoder|decoder|self.?attention|cross.?attention|multi.?head|positional|embedding|relu|gelu|swiglu|feed.?forward|normalization|convolution|pooling|gru|lstm|rnn|transformer|cross.?entropy| BCE|CE|adam|sgd|rmsprop|weight)",
+            eq_lower,
+        )
+        if ops:
+            signals.append("eq:" + "|".join(sorted(set(ops))))
+
+    # 2. Method names — canonical form with synonym collapsing
+    for method in content.methods:
+        # Normalize: lowercase, collapse non-alpha runs
+        m = re.sub(r"[-_]?[0-9]+$", "", method.lower())
+        m = re.sub(r"[^a-z]+", "", m)
+        # Collapse method-family synonyms to canonical names
+        for synonym_group in [
+            ["feedforward", "feedforwardnetwork", "feedforwardlayer", "feedforwardblock", "feedforwardsublayer"],
+            ["selfattention", "selfattention"],
+            ["multiheadattention", "multihead"],
+            ["residual", "residualconnection", "skipconnection"],
+            ["encoder", "encoderlayer", "encoderblock"],
+            ["decoder", "decoderlayer", "decoderblock"],
+            ["attention", "selfattention", "crossattention", "multiheadattention"],
+            ["layer_norm", "layernorm", "ln"],
+            ["convolution", "conv", "convlayer"],
+        ]:
+            if m in synonym_group:
+                m = synonym_group[0]
+                break
+        if m:
+            signals.append(f"method:{m}")
+
+    # 3. Hyperparameter names (structural, not values)
+    hp_names = sorted(content.hyperparameters.keys())
+    if hp_names:
+        signals.append("hpn:" + "|".join(hp_names))
+
+    # 4. Datasets intentionally excluded — same algorithm can be evaluated on
+    # different benchmarks (WMT, Wikitext, etc.). Dataset differences should NOT
+    # make two implementations of the same algorithm look different.
+
+    combined = ";".join(sorted(signals))
+    return hashlib.sha256(combined.encode()).hexdigest()[:16]
 
 
 def download_and_parse(arxiv_id: str) -> PaperContent:

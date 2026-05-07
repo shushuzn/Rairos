@@ -55,6 +55,7 @@ class BenchmarkConfig:
     code_path: Path
     code_quality: float = 0.5  # estimated quality of generated code
     min_pass_rate: float = 0.0  # minimum pass rate to encode as success (0 = record everything)
+    algorithm_fingerprint: str = ""  # cross-paper dedup via structural fingerprint
 
 
 def run_benchmark(
@@ -140,7 +141,7 @@ def run_benchmark(
 
     # Encode to Gene Pool based on results
     if tracker and result.passed > 0:
-        _encode_to_gene_pool(config, result, tracker)
+        _encode_to_gene_pool(config, result, tracker, config.algorithm_fingerprint)
 
     # If all tests passed, record as successful implementation
     if result.passed > 0 and result.failed == 0 and tracker:
@@ -212,6 +213,7 @@ def _encode_to_gene_pool(
     config: BenchmarkConfig,
     result: BenchmarkResult,
     tracker: EvolutionTracker,
+    algorithm_fingerprint: str = "",
 ) -> None:
     """Encode a successful implementation pattern to Gene Pool.
 
@@ -227,17 +229,30 @@ def _encode_to_gene_pool(
     if pass_rate < config.min_pass_rate:
         return  # Not successful enough to encode
 
-    # Cross-paper dedup: skip if this paper already has an implementation capsule.
-    # Re-running paper2code on the same paper should not inflate the Gene Pool.
     try:
-        from llm.gene_pool_io import paper_exists_in_pool
+        from llm.gene_pool_io import paper_exists_in_pool, fingerprint_exists_in_pool
+
+        # Same-paper dedup: re-running on same arXiv ID
         if paper_exists_in_pool(config.arxiv_id, gap_type="implementation"):
-            return  # already encoded, skip
+            return
+
+        # Cross-paper dedup: same algorithm (fingerprint) from a different paper.
+        # Only check if fingerprint is available and non-empty.
+        if algorithm_fingerprint and fingerprint_exists_in_pool(
+            algorithm_fingerprint, gap_type="implementation"
+        ):
+            return  # same algorithm already encoded from another paper, skip
+
     except Exception:
         pass  # non-critical: encoding proceeds if dedup check fails
 
     # The success_score is derived from pass rate
     success_score = pass_rate * config.code_quality
+
+    # Build archetype with algorithm fingerprint for cross-paper traceability
+    archetype = {}
+    if algorithm_fingerprint:
+        archetype["algorithm_fingerprint"] = algorithm_fingerprint
 
     _capsule = CapsuleGene(
         capsule_id=f"impl_{config.arxiv_id.replace('.', '_')}_{uuid.uuid4().hex[:6]}",
@@ -250,7 +265,7 @@ def _encode_to_gene_pool(
         outcome_success_score=success_score,
         feedback_count=1,
         evolved_generation=0,
-        archetype={},
+        archetype=archetype,
     )
 
     # Persist via tracker with source_paper_id for Gene Pool → paper linkage
@@ -261,6 +276,7 @@ def _encode_to_gene_pool(
         gap_description=f"Passed {result.passed}/{result.passed + result.failed} tests",
         success_score=success_score,
         source_paper_id=config.arxiv_id,
+        capsule_archetype=archetype,
     )
 
 

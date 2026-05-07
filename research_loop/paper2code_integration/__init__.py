@@ -48,9 +48,11 @@ except ImportError:
 
 try:
     from research_loop.code_generator import generate_code, save_code
+    from research_loop.paper_parser import compute_algorithm_fingerprint
 except ImportError:
     generate_code = None  # type: ignore
     save_code = None  # type: ignore
+    compute_algorithm_fingerprint = None  # type: ignore
 
 try:
     from research_loop.test_extractor import extract_tests, save_tests, TestSuite
@@ -233,6 +235,11 @@ class PaperPipeline:
                             else content.abstract[:200],
                             test_dir=test_dir,
                             code_path=code_path,
+                            algorithm_fingerprint=(
+                                compute_algorithm_fingerprint(content)
+                                if compute_algorithm_fingerprint
+                                else ""
+                            ),
                         )
                         tracker = self._get_tracker(skip_gene_pool)
                         benchmark_result = run_benchmark(config, tracker=tracker)
