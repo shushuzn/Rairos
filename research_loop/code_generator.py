@@ -203,21 +203,38 @@ def _build_prompt(paper_content, framework: str) -> str:
 
     parts.append(f"\n## Abstract\n{paper_content.abstract[:500]}")
 
-    if paper_content.algorithm_descriptions:
-        parts.append("\n## Algorithms\n")
+    # Use provenance-tagged sources if available (from _enrich_from_pdf), fall back to flat lists
+    algorithm_sources = getattr(paper_content, "algorithm_sources", []) or []
+    equation_sources = getattr(paper_content, "equation_sources", []) or []
+    claim_sources = getattr(paper_content, "claim_sources", []) or []
 
+    if algorithm_sources:
+        parts.append("\n## Algorithms\n")
+        for src in algorithm_sources[:3]:
+            loc_str = f"§{src.location.section} p{src.location.page}" if src.location.section != "unknown" else f"p{src.location.page}"
+            parts.append(f"[{src.tag()}] {loc_str}\n{src.description[:500]}")
+    elif paper_content.algorithm_descriptions:
+        parts.append("\n## Algorithms\n")
         for i, algo in enumerate(paper_content.algorithm_descriptions[:3], 1):
             parts.append(f"### Algorithm {i}\n{algo[:500]}")
 
-    if paper_content.equations:
+    if equation_sources:
         parts.append("\n## Key Equations\n")
-
+        for src in equation_sources[:5]:
+            loc_str = f"§{src.location.section} p{src.location.page}" if src.location.section != "unknown" else f"p{src.location.page}"
+            parts.append(f"[{src.tag()}] {loc_str}  $$ {src.equation} $$")
+    elif paper_content.equations:
+        parts.append("\n## Key Equations\n")
         for eq in paper_content.equations[:5]:
             parts.append(f"$${eq}$$")
 
-    if paper_content.claims:
+    if claim_sources:
         parts.append("\n## Key Claims\n")
-
+        for src in claim_sources[:5]:
+            loc_str = f"§{src.location.section} p{src.location.page}" if src.location.section != "unknown" else f"p{src.location.page}"
+            parts.append(f"[{src.tag()}] {loc_str}\n- {src.claim[:200]}")
+    elif paper_content.claims:
+        parts.append("\n## Key Claims\n")
         for claim in paper_content.claims[:5]:
             parts.append(f"- {claim[:200]}")
 
@@ -237,6 +254,20 @@ def _build_prompt(paper_content, framework: str) -> str:
             parts.append(f"- {m[:150]}")
 
     parts.append(f"\n## Framework: {framework.upper()}")
+
+    # Provenance tracing instruction — injected into prompt so LLM embeds source tags in code comments
+    parts.append(
+        "\n## Source Tracing Instructions\n"
+        "For each section of code that implements a specific equation, algorithm description, "
+        "or claim, add an inline comment on the first line with its source tag.\n"
+        "Format: # source: @<type>[<index>] — <human-readable description>\n"
+        "Examples:\n"
+        "  # source: @eq[0] — Attention equation from §3.2 p4\n"
+        "  # source: @algo[1] — Transformer encoder from §2.1\n"
+        "  # source: @eq[0], @eq[2] — Combined attention and feed-forward\n"
+        "If a code section implements multiple sources, list all tags separated by commas.\n"
+        "Tag each distinct functional block (class, main function, key sub-routine) that maps to a paper source."
+    )
 
     parts.append(
         f"\nGenerate a clean Python implementation skeleton in {framework.upper()}. "

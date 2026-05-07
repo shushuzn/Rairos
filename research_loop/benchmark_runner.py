@@ -56,6 +56,8 @@ class BenchmarkConfig:
     code_quality: float = 0.5  # estimated quality of generated code
     min_pass_rate: float = 0.0  # minimum pass rate to encode as success (0 = record everything)
     algorithm_fingerprint: str = ""  # cross-paper dedup via structural fingerprint
+    generated_code: str = ""  # raw code string for provenance comment parsing
+    paper_section_refs: list = field(default_factory=list)  # resolved paper_section_refs for archetype
 
 
 def run_benchmark(
@@ -249,10 +251,12 @@ def _encode_to_gene_pool(
     # The success_score is derived from pass rate
     success_score = pass_rate * config.code_quality
 
-    # Build archetype with algorithm fingerprint for cross-paper traceability
+    # Build archetype with algorithm fingerprint and paper section refs for traceability
     archetype = {}
     if algorithm_fingerprint:
         archetype["algorithm_fingerprint"] = algorithm_fingerprint
+    if config.paper_section_refs:
+        archetype["paper_section_refs"] = config.paper_section_refs
 
     _capsule = CapsuleGene(
         capsule_id=f"impl_{config.arxiv_id.replace('.', '_')}_{uuid.uuid4().hex[:6]}",

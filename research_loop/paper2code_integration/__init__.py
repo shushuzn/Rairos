@@ -207,6 +207,19 @@ class PaperPipeline:
             else:
                 print("[paper2code] Skipping code generation (module unavailable)")
 
+            # Parse source comments from generated code for paper_section_refs
+            section_refs = []
+            if code:
+                try:
+                    from research_loop.code_trace import parse_source_comments, build_paper_section_refs
+
+                    parsed = parse_source_comments(code)
+                    if parsed:
+                        section_refs = build_paper_section_refs(content, parsed)
+                        print(f"[paper2code] Traced {len(section_refs)} code-paper provenance links")
+                except Exception:
+                    pass  # non-critical: traceability is best-effort
+
             # Stage 3: Generate tests
             test_dir = paper_dir / "tests"
             benchmark_result = None
@@ -240,6 +253,8 @@ class PaperPipeline:
                                 if compute_algorithm_fingerprint
                                 else ""
                             ),
+                            generated_code=code or "",
+                            paper_section_refs=section_refs,
                         )
                         tracker = self._get_tracker(skip_gene_pool)
                         benchmark_result = run_benchmark(config, tracker=tracker)

@@ -40,6 +40,10 @@ class PaperContent:
     categories: List[str] = field(default_factory=list)
     # Cross-paper dedup: structural fingerprint of the algorithm
     algorithm_fingerprint: str = ""  # computed from equations + methods + hps
+    # Provenance: source locations for extracted content (populated by _enrich_from_pdf)
+    equation_sources: List["EquationSource"] = field(default_factory=list)
+    claim_sources: List["ClaimSource"] = field(default_factory=list)
+    algorithm_sources: List["AlgorithmSource"] = field(default_factory=list)
 
 
 def compute_algorithm_fingerprint(content: "PaperContent") -> str:
@@ -173,7 +177,30 @@ def parse_existing_pdf(pdf_path: str, arxiv_id: str) -> PaperContent:
 
 
 def _enrich_from_pdf(content: PaperContent, pdf_path: Path) -> None:
-    """Extract algorithm descriptions, equations, claims from PDF text."""
+    """Extract algorithm descriptions, equations, claims from PDF text with provenance."""
+    # Local imports to avoid circular reference
+    from research_loop.provenance import (
+        PaperLocation,
+        EquationSource,
+        ClaimSource,
+        AlgorithmSource,
+    )
+
+    def _match_to_location(char_start: int, page_offsets: list[int]) -> PaperLocation:
+        """Map a character offset to a page number via binary search on page_offsets."""
+        page_idx = 0
+        for i, offset in enumerate(page_offsets):
+            if char_start >= offset:
+                page_idx = i
+            else:
+                break
+        return PaperLocation(
+            section="unknown",
+            page=page_idx + 1,
+            char_start=char_start,
+            char_end=char_start,
+        )
+
     try:
         import fitz  # PyMuPDF
     except ImportError:
@@ -184,29 +211,42 @@ def _enrich_from_pdf(content: PaperContent, pdf_path: Path) -> None:
 
     try:
         doc = fitz.open(pdf_path)
-        text = ""
-        for page in doc:
-            text += page.get_text()
+        pages_text: list[str] = []
+        page_offsets: list[int] = []
 
-        # Extract sections
-        text_lower = text.lower()
+        for page in doc:
+            page_offsets.append(sum(len(t) for t in pages_text))
+            pages_text.append(page.get_text())
+
+        full_text = "".join(pages_text)
+        text_lower = full_text.lower()
 
         # Algorithm descriptions: look for "algorithm", "method", "approach" sections
         algo_pattern = re.compile(
             r"(?:algorithm|method|approach|procedure|technique)s?[:\s]+([A-Z][^.!?\n]{50,500}?(?:\d+\.|\n){1,3})",
             re.IGNORECASE,
         )
-        for match in algo_pattern.finditer(text[:10000]):  # First 10k chars
+        for match in algo_pattern.finditer(full_text[:10000]):  # First 10k chars
             desc = match.group(1).strip()
             if len(desc) > 30:
+                idx = len(content.algorithm_descriptions)
+                loc = _match_to_location(match.start(), page_offsets)
                 content.algorithm_descriptions.append(desc[:300])
+                content.algorithm_sources.append(
+                    AlgorithmSource(index=idx, description=desc[:300], location=loc)
+                )
 
         # Equations: look for display math
         eq_pattern = re.compile(r"\$\$(.+?)\$\$|\$(.+?)\$")
-        for match in eq_pattern.finditer(text):
+        for match in eq_pattern.finditer(full_text):
             eq = (match.group(1) or match.group(2) or "").strip()
             if eq and len(eq) > 5:
+                idx = len(content.equations)
+                loc = _match_to_location(match.start(), page_offsets)
                 content.equations.append(eq[:200])
+                content.equation_sources.append(
+                    EquationSource(index=idx, equation=eq[:200], location=loc)
+                )
 
         # Claims: look for "we show", "prove", "demonstrate", "our results"
         claim_patterns = [
@@ -217,7 +257,13 @@ def _enrich_from_pdf(content: PaperContent, pdf_path: Path) -> None:
             for match in re.finditer(pat, text_lower):
                 claim = match.group(0).strip()
                 if len(claim) > 20:
+                    idx = len(content.claims)
+                    # map back to original offset (text_lower same length as full_text)
+                    loc = _match_to_location(match.start(), page_offsets)
                     content.claims.append(claim[:300])
+                    content.claim_sources.append(
+                        ClaimSource(index=idx, claim=claim[:300], location=loc)
+                    )
 
         # Hyperparameters: look for "learning rate", "batch size", etc.
         hp_patterns = [
