@@ -85,8 +85,3 @@ plugins:
   - minify:
       minify_html: true
 
-# Watch custom CSS and Python source for changes
-watch:
-  - stylesheets
-  - core
-  - llm
