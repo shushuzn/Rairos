@@ -58,6 +58,17 @@ async def papers(
 
     total_pages = max(1, (total + limit - 1) // limit)
 
+    # Load contradiction counts for displayed papers
+    contradiction_map: dict = {}
+    try:
+        from llm.contradiction_heatmap import compute_paper_contradictions
+        full_map = compute_paper_contradictions()
+        for pid, _, _, _, _, _, _, _ in papers_list:
+            if pid in full_map:
+                contradiction_map[pid] = full_map[pid]
+    except Exception:
+        pass
+
     return templates.TemplateResponse(
         request,
         "papers.html",
@@ -69,7 +80,7 @@ async def papers(
             "total_pages": total_pages,
             "year_from": year_from,
             "year_to": year_to,
-            "contradiction_map": {},
+            "contradiction_map": contradiction_map,
         },
     )
 

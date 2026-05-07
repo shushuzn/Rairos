@@ -140,8 +140,17 @@
 <div style="margin-bottom: 20px;">
   {% for paper in papers %}
   <div class="paper-card" data-id="{{ paper[0] }}" style="cursor:pointer;">
+    {% if paper[0] and paper[0] in contradiction_map %}
+    {% with count = contradiction_map[paper[0]].count %}
+    <span class="contradiction-badge"
+      style="position:absolute;top:8px;right:10px;background:{{ '#e74c3c' if count >= 3 else '#e67e22' if count == 2 else '#f5d76e' if count == 1 else '#e8e4de' }};color:{{ '#fff' if count >= 2 else '#555' }};font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;"
+      title="Contradictions: {% for c in contradiction_map[paper[0]].contradictions %}{{ c.polarity[:3].upper() }} {{ c.gap_type }}{% if not loop.last %}, {% endif %}{% endfor %}">
+      {{ count }}🔥
+    </span>
+    {% endwith %}
+    {% endif %}
     <a href="{{ paper[7] }}" style="text-decoration:none; color:inherit; display:block;">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 6px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 6px; position:relative;">
         <div class="paper-title" style="flex: 1;">{{ paper[1][:90] }}</div>
         {% if paper[0] %}
         <span class="paper-arxiv-id">{{ paper[0][:15] }}</span>

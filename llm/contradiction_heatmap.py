@@ -118,4 +118,6 @@ def render_heatmap_html(
 
 
 def detect_contradictions(papers):
-    return {}
+    """Proxy to the real implementation in contradiction_detector."""
+    from llm.research.contradiction_detector import detect_contradictions as _real
+    return _real(papers)
