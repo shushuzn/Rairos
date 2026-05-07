@@ -115,7 +115,7 @@ jobs:
 
       - name: Upload test output
         if: always()
-        uses: actions/upload-artifact@v9
+        uses: actions/upload-artifact@v7
         with:
           name: pytest-output-${{ matrix.python-version }}-${{ matrix.shard }}
           path: pytest_output.txt
@@ -123,7 +123,7 @@ jobs:
 
       - name: Upload coverage data
         if: always()
-        uses: actions/upload-artifact@v9
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-data-${{ matrix.python-version }}-${{ matrix.shard }}
           path: .coverage
@@ -146,7 +146,7 @@ jobs:
         run: pip install coverage[toml]
 
       - name: Download coverage data
-        uses: actions/download-artifact@v9
+        uses: actions/download-artifact@v8
         with:
           path: coverage-reports
           pattern: coverage-data-*
