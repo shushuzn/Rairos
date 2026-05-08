@@ -189,7 +189,6 @@ def _generate_claim_assertion(
     if is_accuracy_claim:
         # Real assertion: attempt to evaluate model against the claimed threshold.
         # Falls back to skip only if the model can't be imported or run.
-        threshold = value / 100.0
         return '''
 def test_numerical_claim_{idx}():
     """Paper claims {desc}."""

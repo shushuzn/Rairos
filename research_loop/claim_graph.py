@@ -414,7 +414,7 @@ def _extract_from_keywords(graph: ClaimGraph, paper_id: str, keywords: List[str]
         (r"(\d+(?:\.\d+)?)\s*(?:M|B|K)\s*params?", ClaimType.PARAM_SIZE, ComparisonOp.LTE),
     ]
     for kw in keywords:
-        for pat, ctype, op in claim_patterns:
+        for pat, ctype, _op in claim_patterns:
             m = re.search(pat, kw.lower())
             if m:
                 val = float(m.group(1))
@@ -504,9 +504,7 @@ def render_claim_graph_html(
 
     data_json = json.dumps(graph_data, ensure_ascii=False)
 
-    # Build contradiction HTML safely via DOM API
-    contra_items_html = _build_contradiction_items(contradictions)
-    node_items_html = _build_node_items(nodes)
+    # Build contradiction HTML safely via DOM API (injected into page via JS)
 
     html = f"""<!DOCTYPE html>
 <html>

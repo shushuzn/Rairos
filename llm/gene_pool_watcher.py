@@ -336,7 +336,7 @@ class GenePoolWatcher:
 
         # Disable subscriptions for families no longer underrepresented
         for fam in to_remove:
-            for i, gs in enumerate(self.state.gap_subscriptions):
+            for gs in self.state.gap_subscriptions:
                 if gs.family == fam:
                     gs.enabled = False
                     summary["gap_subscriptions_removed"].append(fam)

@@ -441,18 +441,6 @@ def _infer_benchmark_domain(arxiv_id: str, content: Any) -> str:
     """
     import re
 
-    # arxiv category prefix mapping
-    category_map = {
-        "cs.CV": "vision",
-        "cs.LG": "nlp",
-        "cs.CL": "nlp",
-        "cs.AI": "reasoning",
-        "cs.NE": "reasoning",
-        "cs.RO": "robotics",
-        "cs.MA": "math",
-        "cs.LG": "rl",
-    }
-
     # Try arxiv prefix (first chars of arxiv ID encode category)
     prefix_map = {
         "2303": "nlp",  # LLM era

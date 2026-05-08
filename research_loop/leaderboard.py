@@ -195,7 +195,7 @@ def detect_transfer_capsules() -> Dict[str, CrossDomainEntry]:
         capsule_domains[entry.capsule_id].domains[entry.benchmark_domain] = entry.pass_rate
 
     # Flag transfer capsules
-    for cid, cde in capsule_domains.items():
+    for _cid, cde in capsule_domains.items():
         qualifying = [d for d, pr in cde.domains.items() if pr >= TRANSFER_MIN_PASS_RATE]
         if len(qualifying) >= TRANSFER_MIN_DOMAINS:
             cde.is_transfer_capsule = True
@@ -274,7 +274,6 @@ def render_leaderboard_html(
     else:
         entries = board.rankings(limit)
 
-    board_json = json.dumps([e.to_dict() for e in entries], ensure_ascii=False)
 
     avg_pr = board.avg_pass_rate()
     avg_cov = board.avg_coverage()
