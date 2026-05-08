@@ -76,6 +76,25 @@ jobs:
         run: |
           python -m mypy core parsers db llm research_loop --ignore-missing-imports
 
+
+  security-scan:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install bandit
+        run: pip install bandit
+
+      - name: Run bandit
+        continue-on-error: true
+        run: |
+          python -m bandit -r llm/ research_loop/ core/ parsers/ db/ -ll -f txt
   test-pytest:
     runs-on: ubuntu-22.04
     strategy:
