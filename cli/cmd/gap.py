@@ -5,7 +5,10 @@ from __future__ import annotations
 import argparse
 
 from cli._shared import get_db, print_info, print_error, print_success
+from pathlib import Path
+
 from llm.gap_detector import GapDetector
+from llm.research.gap_detector import ResearchGap
 from llm.insight_evolution import EvolutionTracker
 
 
@@ -163,7 +166,7 @@ def _run_gap(args: argparse.Namespace) -> int:
 
     # gap watch — monitor arXiv for Gene Pool matches
     if args.gap_cmd == "watch":
-        return _run_gap_watch(args)
+        return _run_gap_watch(args)  # type: ignore[no-any-return]
 
     # gap contradictions — find Gene Pool capsule pairs with opposite polarity
     if args.gap_cmd == "contradictions":
@@ -401,7 +404,7 @@ def _run_interactive(detector: GapDetector, args: argparse.Namespace) -> int:
     print()
 
     use_llm = True
-    last_gaps = []
+    last_gaps: list[ResearchGap] = []
 
     while True:
         try:
@@ -441,7 +444,7 @@ def _run_interactive(detector: GapDetector, args: argparse.Namespace) -> int:
                     continue
                 gap = last_gaps[idx]
                 action_name = "采纳" if parts[0] == "accept" else "忽略"
-                print(f"  {action_name}: [{idx + 1}] {gap.title}")
+                print(f"  {action_name}: [{idx + 1}] (severity={gap.severity})")
                 # Tracker is not available in interactive mode without args
                 # Just acknowledge — the user can re-run with --feedback
             except ValueError:
