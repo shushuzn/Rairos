@@ -36,7 +36,7 @@ def _build_demo_parser(subparsers) -> argparse.ArgumentParser:
         help="Path to seed Gene Pool capsules JSON (default: data/demo/capsules.json)",
     )
     p.set_defaults(func=_run_demo)
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_demo(args) -> None:

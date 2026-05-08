@@ -22,7 +22,7 @@ def _build_intel_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--topic", "-t", type=str, default="", help="Focus topic (default: global)")
     p.add_argument("--verbose", "-v", action="store_true", help="Include detailed breakdowns")
     p.set_defaults(func=_run_intel)
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_intel(args) -> None:

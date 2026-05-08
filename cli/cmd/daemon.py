@@ -103,7 +103,7 @@ def _build_daemon_parser(subparsers) -> argparse.ArgumentParser:
     events.add_argument("--limit", "-n", type=int, default=20, help="Max events to show")
     events.set_defaults(func=_run_daemon_events)
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _get_orchestrator():

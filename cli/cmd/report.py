@@ -17,7 +17,7 @@ def _build_report_parser(subparsers) -> argparse.ArgumentParser:
         description="Always produces a fresh report with latest Gene Pool data.",
     )
     p.set_defaults(func=_run_report)
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_report(args) -> None:

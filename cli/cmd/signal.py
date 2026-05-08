@@ -21,7 +21,7 @@ def _build_signal_parser(subparsers) -> argparse.ArgumentParser:
     )
     p.add_argument("keyword", help="Event keyword (e.g. 富查伊拉, 石油, 美联储)")
     p.set_defaults(func=_run_signal)
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_signal(args) -> None:

@@ -249,12 +249,12 @@ class D3ForceGraph:
 
         # Similar papers
         for sim_paper, score in similar:
-            sim_nid = sim_paper.id if sim_paper.id.startswith("arXiv:") else f"arXiv:{sim_paper.id}"
+            sim_nid = sim_paper.id if sim_paper.id.startswith("arXiv:") else f"arXiv:{sim_paper.id}"  # type: ignore[attr-defined]
             nodes[sim_nid] = {
                 "id": sim_nid,
-                "label": sim_paper.title[:60],
+                "label": sim_paper.title[:60],  # type: ignore[attr-defined,index]
                 "type": "Paper",
-                "entity_id": sim_paper.id,
+                "entity_id": sim_paper.id,  # type: ignore[attr-defined]
                 "is_root": False,
                 "similarity": round(float(score), 4),
             }

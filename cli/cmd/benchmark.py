@@ -300,7 +300,7 @@ def _render_compare_warp(result, comparator: BenchmarkComparator) -> None:
         direction = "↑" if comparator._is_higher_better(metric_name) else "↓"  # type: ignore[attr-defined]
         direction_label = (
             "[#B4FA72]higher better[/]"
-            if comparator._is_higher_better(metric_name)
+            if comparator._is_higher_better(metric_name)  # type: ignore[attr-defined]
             else "[#FF5555]lower better[/]"
         )  # type: ignore[attr-defined]
 
