@@ -76,11 +76,11 @@ def _build_jin10_parser(subparsers) -> argparse.ArgumentParser:
     s = sub.add_parser("symbols", help="List supported symbols")
     s.set_defaults(func=_run_symbols)
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_quote(args) -> None:
-    from llm.mcp_jin10 import quote as _quote
+    from llm.mcp_jin10 import quote as _quote  # type: ignore[attr-defined]
 
     try:
         raw = _quote(args.code)
@@ -102,10 +102,10 @@ def _run_quote(args) -> None:
 
 
 def _run_kline(args) -> None:
-    from llm.mcp_jin10 import kline as _kline
+    from llm.mcp_jin10 import kline as _kline  # type: ignore[attr-defined]
 
     try:
-        data = _kline(args.code, args.time, args.count)
+        data = _kline(args.code, args.time, args.count)  # type: ignore[attr-defined]
     except Exception as e:
         print_error(f"Failed: {e}")
         sys.exit(1)
@@ -124,7 +124,7 @@ def _run_kline(args) -> None:
 
 
 def _run_flash(args) -> None:
-    from llm.mcp_jin10 import flash as _flash
+    from llm.mcp_jin10 import flash as _flash  # type: ignore[attr-defined]
 
     data = _flash(getattr(args, "cursor", ""))
     inner = data.get("data", data)
@@ -149,9 +149,9 @@ def _run_flash(args) -> None:
 
 
 def _run_search_flash(args) -> None:
-    from llm.mcp_jin10 import search_flash as _sf
+    from llm.mcp_jin10 import search_flash as _sf  # type: ignore[attr-defined]
 
-    raw = _sf(args.keyword)
+    raw = _sf(args.keyword)  # type: ignore[attr-defined]
     inner = (
         raw.get("data", raw)
         if isinstance(raw, dict)
@@ -174,9 +174,9 @@ def _run_search_flash(args) -> None:
 
 
 def _run_news(args) -> None:
-    from llm.mcp_jin10 import news_list as _nl
+    from llm.mcp_jin10 import news_list as _nl  # type: ignore[attr-defined]
 
-    data = _nl(getattr(args, "cursor", ""))
+    data = _nl(getattr(args, "cursor", ""))  # type: ignore[attr-defined]
     items = data.get("items", data.get("data", []))
     nc = data.get("next_cursor", "")
     hm = data.get("has_more", False)
@@ -192,9 +192,9 @@ def _run_news(args) -> None:
 
 
 def _run_search_news(args) -> None:
-    from llm.mcp_jin10 import search_news as _sn
+    from llm.mcp_jin10 import search_news as _sn  # type: ignore[attr-defined]
 
-    raw = _sn(args.keyword, getattr(args, "cursor", ""))
+    raw = _sn(args.keyword, getattr(args, "cursor", ""))  # type: ignore[attr-defined]
     inner = (
         raw.get("data", raw)
         if isinstance(raw, dict)
@@ -219,9 +219,9 @@ def _run_search_news(args) -> None:
 
 
 def _run_news_detail(args) -> None:
-    from llm.mcp_jin10 import news_detail as _nd
+    from llm.mcp_jin10 import news_detail as _nd  # type: ignore[attr-defined]
 
-    data = _nd(args.id)
+    data = _nd(args.id)  # type: ignore[attr-defined]
     print(f"\n  {Colors.CYAN}{data.get('title', 'News Detail')}{Colors.END}")
     print(f"  ID: {data.get('id', '?')}  |  Time: {str(data.get('time', ''))[:16]}")
     print(f"  URL: {data.get('url', '')}")
@@ -229,8 +229,8 @@ def _run_news_detail(args) -> None:
     print(f"\n  {data.get('content', '')}")
 
 
-def _run_calendar(args) -> None:
-    from llm.mcp_jin10 import calendar as _cal
+def _run_calendar(args) -> None:  # type: ignore[attr-defined]
+    from llm.mcp_jin10 import calendar as _cal  # type: ignore[attr-defined]
 
     raw = _cal()
     if isinstance(raw, dict):
@@ -240,9 +240,9 @@ def _run_calendar(args) -> None:
     else:
         data = []
 
-    print(f"\n  {Colors.CYAN}Economic Calendar{Colors.END} ({len(data)} items)")
+    print(f"\n  {Colors.CYAN}Economic Calendar{Colors.END} ({len(data or [])} items)")  # type: ignore[arg-type]
     print()
-    for item in data:
+    for item in (data or []):  # type: ignore[union-attr]
         print(
             f"  [{str(item.get('pub_time', ''))[:16]}] "
             f"{'⭐' * int(item.get('star', 0))} {item.get('title', '')}"
@@ -258,7 +258,7 @@ def _run_calendar(args) -> None:
 
 
 def _run_symbols(args) -> None:
-    from llm.mcp_jin10 import symbols as _sym
+    from llm.mcp_jin10 import symbols as _sym  # type: ignore[attr-defined]
 
     data = _sym()
     print(f"\n  {Colors.CYAN}Supported Symbols{Colors.END}")
