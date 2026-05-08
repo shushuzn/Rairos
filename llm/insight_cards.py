@@ -49,7 +49,7 @@ class InsightManager:
         self.cards_file = self.data_dir / "insight_cards.json"
         self.collections_file = self.data_dir / "insight_collections.json"
 
-    def _load_cards(self) -> List[Dict]:
+    def _load_cards(self) -> List[Dict[str, Any]]:
         if self.cards_file.exists():
             with open(self.cards_file, "r", encoding="utf-8") as f:
                 return cast(List[Dict], json.load(f))
