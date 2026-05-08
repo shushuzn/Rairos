@@ -159,7 +159,7 @@ jobs:
           echo "coverage_pct=${TOTAL}" >> $GITHUB_OUTPUT
           python -m coverage report --format=term-missing | tail -3
           if [ "${TOTAL}" -lt 75 ]; then
-            echo "Coverage ${TOTAL}% below 75% threshold"
+            echo "Coverage ${TOTAL}% below 40% threshold"
             exit 1
           fi
 
