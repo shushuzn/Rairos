@@ -8,9 +8,10 @@
 
 **A Self-Evolving Research Operating System that learns from your feedback to find better research directions over time.**
 
-[![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://python.org)
 [![PyPI Version](https://img.shields.io/pypi/v/rairos)](https://pypi.org/project/rairos/)
 [![Tests](https://github.com/shushuzn/Rairos/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shushuzn/Rairos/actions)
+[![Coverage](https://img.shields.io/badge/coverage-75%25-green)](https://github.com/shushuzn/Rairos/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/License-GPL--3.0--or--later-orange)](#license)
 
 ## What It Does

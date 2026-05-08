@@ -98,6 +98,7 @@ py-modules = ["config"]
 [tool.setuptools.package-data]
 
 completions = ["bash", "zsh", "fish"]
+"*" = ["py.typed"]
 
 [tool.commitizen]
 
