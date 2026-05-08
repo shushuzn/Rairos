@@ -76,7 +76,7 @@ jobs:
 
       - name: Run mypy
         run: |
-          python -m mypy core parsers db --ignore-missing-imports
+          python -m mypy core parsers db llm research_loop --ignore-missing-imports
 
   test-pytest:
     runs-on: ubuntu-22.04
