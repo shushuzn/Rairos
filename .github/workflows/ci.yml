@@ -15,12 +15,12 @@ jobs:
   commitlint:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
@@ -35,16 +35,16 @@ jobs:
   lint-and-crossref:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install pyflakes ruff requests
+        run: pip install ruff requests
 
       - name: Syntax check
         run: python -m py_compile ai_research_os.py
@@ -55,18 +55,16 @@ jobs:
       - name: Ruff format check
         run: ruff format --check . --exclude neuraloperator_fork/
 
-
-
       - name: Test Crossref API
         run: python -c "import requests; r=requests.get('https://api.crossref.org/works/10.1038/nature12373',timeout=15,headers={'User-Agent':'AI-Research-OS/1.0'}); r.raise_for_status(); print('Crossref OK')"
 
   typecheck:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: 'pip'
@@ -86,10 +84,10 @@ jobs:
         python-version: ["3.11", "3.13"]
         shard: [1, 2, 3, 4]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -115,7 +113,7 @@ jobs:
 
       - name: Upload test output
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: pytest-output-${{ matrix.python-version }}-${{ matrix.shard }}
           path: pytest_output.txt
@@ -123,7 +121,7 @@ jobs:
 
       - name: Upload coverage data
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-data-${{ matrix.python-version }}-${{ matrix.shard }}
           path: .coverage
@@ -134,10 +132,10 @@ jobs:
     runs-on: ubuntu-22.04
     if: github.run_id == github.event.run_id
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: 'pip'
@@ -146,7 +144,7 @@ jobs:
         run: pip install coverage[toml]
 
       - name: Download coverage data
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           path: coverage-reports
           pattern: coverage-data-*
@@ -156,11 +154,14 @@ jobs:
         id: report
         run: |
           python -m coverage combine coverage-reports/
-          python -m coverage report --format=term-missing | tail -3
-          python -m coverage report --format=term-missing | grep "^TOTAL"
           TOTAL=$(python -m coverage report --format=term-missing | grep "^TOTAL" | awk '{print $4}' | tr -d '%')
           echo "Coverage: ${TOTAL}%"
           echo "coverage_pct=${TOTAL}" >> $GITHUB_OUTPUT
+          python -m coverage report --format=term-missing | tail -3
+          if [ "${TOTAL}" -lt 75 ]; then
+            echo "Coverage ${TOTAL}% below 75% threshold"
+            exit 1
+          fi
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
