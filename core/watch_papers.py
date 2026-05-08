@@ -33,7 +33,7 @@ class Watcher:
     def _hash(self) -> Optional[str]:
         if not self.path.exists():
             return None
-        return hashlib.md5(self.path.read_bytes()).hexdigest()
+        return hashlib.md5(self.path.read_bytes(), usedforsecurity=False).hexdigest()
 
     def _detect_change(self) -> bool:
         current = self._hash()
