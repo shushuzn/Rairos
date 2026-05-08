@@ -26,7 +26,7 @@ def transcribe_audio(audio_bytes: bytes) -> str:
         with open(tmp_path, "rb") as audio_file:
             transcript = client.audio.transcriptions.create(model="whisper-1", file=audio_file)
         os.unlink(tmp_path)
-        return transcript.text
+        return transcript.text  # type: ignore[no-any-return]
     except Exception as e:
         return f"[Transcription error: {e}]"
 
