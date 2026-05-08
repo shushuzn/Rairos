@@ -537,7 +537,6 @@ class WarpBlocks:
         return "\n".join(result_lines)
 
     @classmethod
-    @classmethod
     def panel(cls, title: str, body: str, width: int = 80) -> str:
         """Render a panel with Warp-style colors using Rich (falls back to ASCII).
 
