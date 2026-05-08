@@ -57,6 +57,7 @@ async def insights(request: Request):
         if top_topic:
             try:
                 from llm.briefing_generator import _match_gene_pool
+
                 matches = _match_gene_pool(top_topic, "", "")
                 prefetched_ids = {m["capsule_id"] for m in matches}
             except Exception:

@@ -63,7 +63,9 @@ class BenchmarkConfig:
     min_pass_rate: float = 0.0  # minimum pass rate to encode as success (0 = record everything)
     algorithm_fingerprint: str = ""  # cross-paper dedup via structural fingerprint
     generated_code: str = ""  # raw code string for provenance comment parsing
-    paper_section_refs: list = field(default_factory=list)  # resolved paper_section_refs for archetype
+    paper_section_refs: list = field(
+        default_factory=list
+    )  # resolved paper_section_refs for archetype
     min_coverage_ratio: float = 0.0  # minimum coverage to encode (0 = no gate)
     numerical_claims_total: int = 0  # total numerical claims from paper
 
@@ -243,11 +245,13 @@ def _populate_coverage_fields(
     for test_file in test_dir.glob("test_claims.py"):
         try:
             content = test_file.read_text(encoding="utf-8")
-            for func_match in re.finditer(r"^def (test_numerical_claim_\d+.*?):", content, re.MULTILINE):
+            for func_match in re.finditer(
+                r"^def (test_numerical_claim_\d+.*?):", content, re.MULTILINE
+            ):
                 func_name = func_match.group(1)
                 func_start = func_match.end()
                 next_def = content.find("\ndef ", func_start)
-                func_body = content[func_start:next_def if next_def != -1 else len(content)]
+                func_body = content[func_start : next_def if next_def != -1 else len(content)]
 
                 if skip_pattern.search(func_body):
                     uncovered.append(func_name)

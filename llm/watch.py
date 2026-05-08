@@ -134,7 +134,9 @@ class WatchDaemon:
         for topic in list(active_topics)[:8]:  # max 8 topics per cycle
             try:
                 news = self._client.search_flash(topic)  # type: ignore[assignment]
-                data: Dict[str, Any] = news.get("data", news) if isinstance(news, dict) else {"items": []}
+                data: Dict[str, Any] = (
+                    news.get("data", news) if isinstance(news, dict) else {"items": []}
+                )
                 items = data.get("items", []) if isinstance(data, dict) else data
                 for item in items[:5]:
                     if isinstance(item, dict):

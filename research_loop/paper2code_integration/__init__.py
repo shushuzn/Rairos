@@ -211,12 +211,17 @@ class PaperPipeline:
             section_refs = []
             if code:
                 try:
-                    from research_loop.code_trace import parse_source_comments, build_paper_section_refs
+                    from research_loop.code_trace import (
+                        parse_source_comments,
+                        build_paper_section_refs,
+                    )
 
                     parsed = parse_source_comments(code)
                     if parsed:
                         section_refs = build_paper_section_refs(content, parsed)
-                        print(f"[paper2code] Traced {len(section_refs)} code-paper provenance links")
+                        print(
+                            f"[paper2code] Traced {len(section_refs)} code-paper provenance links"
+                        )
                 except Exception:
                     pass  # non-critical: traceability is best-effort
 
@@ -224,7 +229,12 @@ class PaperPipeline:
             test_dir = paper_dir / "tests"
             benchmark_result = None
 
-            if not skip_tests and extract_tests is not None and run_benchmark is not None and code is not None:
+            if (
+                not skip_tests
+                and extract_tests is not None
+                and run_benchmark is not None
+                and code is not None
+            ):
                 print("[paper2code] Extracting assertions and generating tests...")
                 try:
                     with _span("stage3_extract_tests"):
@@ -236,7 +246,9 @@ class PaperPipeline:
                         numerical_claims_total = sum(
                             1 for tc in suite.test_cases if tc.category == "NumericalClaim"
                         )
-                        print(f"[paper2code] Tests: {len(suite.test_cases)} test cases ({numerical_claims_total} numerical claims)")
+                        print(
+                            f"[paper2code] Tests: {len(suite.test_cases)} test cases ({numerical_claims_total} numerical claims)"
+                        )
                         if span:
                             span.add_event("stage3_complete", {"test_count": len(suite.test_cases)})
 
@@ -271,6 +283,7 @@ class PaperPipeline:
                         # Upsert to benchmark leaderboard — closes the闭环
                         try:
                             from research_loop.leaderboard import upsert_from_benchmark
+
                             domain = _infer_benchmark_domain(arxiv_id, content)
                             upsert_from_benchmark(
                                 arxiv_id=arxiv_id,
@@ -285,6 +298,7 @@ class PaperPipeline:
                         # Update V3 capsule fitness from benchmark — closes crossover反馈闭环
                         try:
                             from llm.crossover import update_v3_scores_from_benchmark
+
                             total = benchmark_result.passed + benchmark_result.failed
                             pr = benchmark_result.passed / total if total > 0 else 0.0
                             updated = update_v3_scores_from_benchmark(
@@ -293,7 +307,9 @@ class PaperPipeline:
                                 coverage_ratio=benchmark_result.coverage_ratio,
                             )
                             if updated > 0:
-                                print(f"[paper2code] Updated {updated} V3 capsule(s) with benchmark fitness")
+                                print(
+                                    f"[paper2code] Updated {updated} V3 capsule(s) with benchmark fitness"
+                                )
                         except Exception:
                             pass  # non-critical: crossover feedback is best-effort
 
@@ -338,7 +354,13 @@ class PaperPipeline:
             if benchmark_result
             else None,
             "ruff_diagnostics": [
-                {"line": d.line, "column": d.column, "severity": d.severity, "code": d.code, "message": d.message}
+                {
+                    "line": d.line,
+                    "column": d.column,
+                    "severity": d.severity,
+                    "code": d.code,
+                    "message": d.message,
+                }
                 for d in (benchmark_result.ruff_diagnostics if benchmark_result else [])
             ],
         }

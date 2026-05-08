@@ -83,7 +83,13 @@ def compute_algorithm_fingerprint(content: "PaperContent") -> str:
         m = re.sub(r"[^a-z]+", "", m)
         # Collapse method-family synonyms to canonical names
         for synonym_group in [
-            ["feedforward", "feedforwardnetwork", "feedforwardlayer", "feedforwardblock", "feedforwardsublayer"],
+            [
+                "feedforward",
+                "feedforwardnetwork",
+                "feedforwardlayer",
+                "feedforwardblock",
+                "feedforwardsublayer",
+            ],
             ["selfattention", "selfattention"],
             ["multiheadattention", "multihead"],
             ["residual", "residualconnection", "skipconnection"],
@@ -306,6 +312,7 @@ def _enrich_from_pdf(content: PaperContent, pdf_path: Path) -> None:
 
     except Exception as e:
         import logging
+
         logging.getLogger("paper_parser").warning("Dataset detection failed: %s", e)
 
 

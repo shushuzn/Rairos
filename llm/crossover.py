@@ -34,10 +34,10 @@ GP_DIR = Path.home() / ".ai_research_os" / "evolution"
 
 # ─── Configuration ─────────────────────────────────────────────────────────────
 
-DEFAULT_POPULATION_SIZE = 20    # top-k capsules considered for crossover
-DEFAULT_OFFSPRING_COUNT = 5      # how many V3 capsules to create per evolve call
-MIN_FITNESS_THRESHOLD = 0.3      # minimum fitness to be a crossover parent
-MUTATION_RATE = 0.15            # per-field mutation probability
+DEFAULT_POPULATION_SIZE = 20  # top-k capsules considered for crossover
+DEFAULT_OFFSPRING_COUNT = 5  # how many V3 capsules to create per evolve call
+MIN_FITNESS_THRESHOLD = 0.3  # minimum fitness to be a crossover parent
+MUTATION_RATE = 0.15  # per-field mutation probability
 
 
 # ─── Fitness & Selection ──────────────────────────────────────────────────────
@@ -46,6 +46,7 @@ MUTATION_RATE = 0.15            # per-field mutation probability
 def compute_fitness(capsule: Any) -> float:
     """Fitness = success_score × log(feedback_count+1)."""
     import math
+
     score = capsule.outcome_success_score
     fb = capsule.feedback_count
     return score * math.log(fb + 1)  # type: ignore[no-any-return]
@@ -76,7 +77,8 @@ def select_parents(
     CapsuleTrust = impact × citation_boost × badge_multiplier.
     """
     candidates = [
-        c for c in capsules
+        c
+        for c in capsules
         if c.status == "active"
         and c.credibility_badge != "low"
         and compute_fitness(c) >= MIN_FITNESS_THRESHOLD
@@ -232,6 +234,7 @@ def encode_v3_capsule(
     # Write to SQLite
     try:
         from llm.insight.storage import _capsule_to_row
+
         conn = tracker._ensure_db()
         row = _capsule_to_row(cap)
         conn.execute(
@@ -256,6 +259,7 @@ def encode_v3_capsule(
         return capsule_id
     except Exception as e:
         import logging
+
         logging.getLogger("crossover").warning(f"DB insert failed: {e}")
         return capsule_id  # Still return ID since JSONL succeeded
 
@@ -332,14 +336,16 @@ def run_evolution(
             source_paper_ids=[p_a.trigger_topic, p_b.trigger_topic],
         )
 
-        created.append({
-            "capsule_id": capsule_id,
-            "parent_a_id": xo["parent_a_id"],
-            "parent_b_id": xo["parent_b_id"],
-            "generation": xo["parent_generations"],
-            "fitness_a": round(xo["parent_fitness_a"], 3),
-            "fitness_b": round(xo["parent_fitness_b"], 3),
-        })
+        created.append(
+            {
+                "capsule_id": capsule_id,
+                "parent_a_id": xo["parent_a_id"],
+                "parent_b_id": xo["parent_b_id"],
+                "generation": xo["parent_generations"],
+                "fitness_a": round(xo["parent_fitness_a"], 3),
+                "fitness_b": round(xo["parent_fitness_b"], 3),
+            }
+        )
 
     return {
         "parents_considered": len(parents),
@@ -355,10 +361,7 @@ def get_v3_capsules() -> List[Dict[str, Any]]:
 
     tracker = EvolutionTracker(data_dir=GP_DIR)
     capsules = tracker._load_capsules()
-    v3 = [
-        c for c in capsules
-        if c.evolved_generation >= 1 and c.status == "active"
-    ]
+    v3 = [c for c in capsules if c.evolved_generation >= 1 and c.status == "active"]
     v3.sort(key=lambda c: compute_fitness(c), reverse=True)
     return [
         {
@@ -482,10 +485,10 @@ class DebateEntry:
     capsule_b_id: str
     gap_type: str
     winner_id: str  # capsule_id of the winner
-    loser_id: str    # capsule_id of the loser
+    loser_id: str  # capsule_id of the loser
     score_a: float
     score_b: float
-    judged_at: str   # ISO timestamp
+    judged_at: str  # ISO timestamp
 
 
 def _load_debate_state() -> List[DebateEntry]:
@@ -493,6 +496,7 @@ def _load_debate_state() -> List[DebateEntry]:
         return []
     try:
         import json
+
         data = json.loads(DEBATE_STATE_FILE.read_text(encoding="utf-8"))
         return [DebateEntry(**d) for d in data]
     except Exception:
@@ -501,6 +505,7 @@ def _load_debate_state() -> List[DebateEntry]:
 
 def _save_debate_state(debates: List[DebateEntry]) -> None:
     import json
+
     GP_DIR.mkdir(parents=True, exist_ok=True)
     DEBATE_STATE_FILE.write_text(
         json.dumps([deb.__dict__ for deb in debates], indent=2, ensure_ascii=False),
@@ -510,6 +515,7 @@ def _save_debate_state(debates: List[DebateEntry]) -> None:
 
 def _now_iso() -> str:
     from datetime import datetime
+
     return datetime.utcnow().isoformat()
 
 
@@ -520,6 +526,7 @@ def _score_argument(capsule: Any, inbound_citations: int = 0) -> float:
     Higher = stronger argument, more credible, better cited.
     """
     import math
+
     success = capsule.outcome_success_score
     fb = capsule.feedback_count
     fb_bonus = math.log(fb + 1)
@@ -616,10 +623,9 @@ def get_debate_candidates(gap_type: str, limit: int = 5) -> List[Dict[str, Any]]
     capsules = tracker._load_capsules()
 
     candidates = [
-        c for c in capsules
-        if c.status == "active"
-        and c.action_gap_type == gap_type
-        and c.credibility_badge != "low"
+        c
+        for c in capsules
+        if c.status == "active" and c.action_gap_type == gap_type and c.credibility_badge != "low"
     ]
     candidates.sort(key=lambda c: c.outcome_success_score, reverse=True)
     return [
@@ -667,7 +673,11 @@ def crossover_action(
     elif action == "mutate":
         if not capsule_id:
             return {"error": "capsule_id required for mutate action"}
-        mutate_result: dict[str, Any] = cast(dict[str, Any], mutate_single(capsule_id)) if isinstance(mutate_single(capsule_id), dict) else {}
+        mutate_result: dict[str, Any] = (
+            cast(dict[str, Any], mutate_single(capsule_id))
+            if isinstance(mutate_single(capsule_id), dict)
+            else {}
+        )
         if mutate_result:
             return {"mutated": mutate_result}
         return {"error": f"Capsule {capsule_id} not found"}
@@ -844,12 +854,14 @@ def get_root_ancestors(capsule_id: str, max_depth: int = 10) -> List[Dict[str, A
     def collect_roots(node: Dict[str, Any]) -> None:
         children = node.get("children", [])
         if not children:
-            roots.append({
-                "capsule_id": node["capsule_id"],
-                "action_gap_title": node.get("action_gap_title", ""),
-                "evolved_generation": node.get("evolved_generation", 0),
-                "success_score": node.get("success_score", 0),
-            })
+            roots.append(
+                {
+                    "capsule_id": node["capsule_id"],
+                    "action_gap_title": node.get("action_gap_title", ""),
+                    "evolved_generation": node.get("evolved_generation", 0),
+                    "success_score": node.get("success_score", 0),
+                }
+            )
         for child in children:
             collect_roots(child)
 
@@ -874,11 +886,13 @@ def get_descendants(capsule_id: str) -> List[Dict[str, Any]]:
         parent_a = arch.get("parent_capsule_id", "")
         parent_b = arch.get("parent_capsule_id_b", "")
         if capsule_id in (parent_a, parent_b):
-            descendants.append({
-                "capsule_id": cap.capsule_id,
-                "action_gap_title": cap.action_gap_title[:60],
-                "evolved_generation": cap.evolved_generation,
-                "success_score": cap.outcome_success_score,
-            })
+            descendants.append(
+                {
+                    "capsule_id": cap.capsule_id,
+                    "action_gap_title": cap.action_gap_title[:60],
+                    "evolved_generation": cap.evolved_generation,
+                    "success_score": cap.outcome_success_score,
+                }
+            )
 
     return descendants

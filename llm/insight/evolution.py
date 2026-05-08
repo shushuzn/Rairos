@@ -828,7 +828,9 @@ Respond with JSON:
         winner_ids = {c.capsule_id for c in capsules if c.capsule_id not in to_archive}
         winners = {c.capsule_id: c for c in capsules if c.capsule_id in winner_ids}
         for loser_id in to_archive:
-            loser_capsule: CapsuleGene | None = next((c for c in capsules if c.capsule_id == loser_id), None)
+            loser_capsule: CapsuleGene | None = next(
+                (c for c in capsules if c.capsule_id == loser_id), None
+            )
             if loser_capsule:
                 winner_id = next(
                     (

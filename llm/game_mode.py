@@ -53,7 +53,7 @@ def _check_contradiction_hunter() -> bool:
 
         result = compute_paper_contradictions()  # type: ignore[no-any-return]
         total = sum(v.get("count", 0) for v in result.values())  # type: ignore[no-any-return]
-        return (total >= 3)  # type: ignore[no-any-return]
+        return total >= 3  # type: ignore[no-any-return]
     except Exception:
         return False
 
