@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-from typing import Any, Dict, Iterator, List, Optional
+from typing import Any, Dict, Iterator, List, Optional, cast
 
 import requests
 
@@ -86,7 +86,7 @@ def call_ollama_chat(
             result = data.get("message", {}).get("content", "")
             if not result:
                 raise RuntimeError(f"No content in Ollama response: {data}")
-            return result
+            return cast(str, result)
 
     except requests.ConnectionError as e:
         raise RuntimeError(

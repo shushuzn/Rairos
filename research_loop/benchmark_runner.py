@@ -18,7 +18,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from llm.insight.gene import CapsuleGene
 from llm.insight.preferences import ExplorationAction
@@ -307,7 +307,7 @@ def _encode_to_gene_pool(
     success_score = min(success_score, 1.0)
 
     # Build archetype with algorithm fingerprint and paper section refs for traceability
-    archetype = {}
+    archetype: dict[str, Any] = {}
     if algorithm_fingerprint:
         archetype["algorithm_fingerprint"] = algorithm_fingerprint
     if config.paper_section_refs:

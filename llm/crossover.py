@@ -27,7 +27,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import cast, Any, Dict, List, Optional
 
 GP_DIR = Path.home() / ".ai_research_os" / "evolution"
 
@@ -48,7 +48,7 @@ def compute_fitness(capsule: Any) -> float:
     import math
     score = capsule.outcome_success_score
     fb = capsule.feedback_count
-    return score * math.log(fb + 1)
+    return score * math.log(fb + 1)  # type: ignore[no-any-return]
 
 
 def compute_trust(capsule: Any, inbound_citations: int = 0) -> float:
@@ -525,7 +525,7 @@ def _score_argument(capsule: Any, inbound_citations: int = 0) -> float:
     fb_bonus = math.log(fb + 1)
     # Citation bonus
     citation_bonus = 1.0 + 0.05 * inbound_citations
-    return round(success * fb_bonus * citation_bonus, 4)
+    return round(success * fb_bonus * citation_bonus, 4)  # type: ignore[no-any-return]
 
 
 def debate_capsules(capsule_a_id: str, capsule_b_id: str, gap_type: str) -> Optional[DebateEntry]:
@@ -667,9 +667,9 @@ def crossover_action(
     elif action == "mutate":
         if not capsule_id:
             return {"error": "capsule_id required for mutate action"}
-        result = mutate_single(capsule_id)
-        if result:
-            return {"mutated": result}
+        mutate_result: dict[str, Any] = cast(dict[str, Any], mutate_single(capsule_id)) if isinstance(mutate_single(capsule_id), dict) else {}
+        if mutate_result:
+            return {"mutated": mutate_result}
         return {"error": f"Capsule {capsule_id} not found"}
 
     elif action == "best":

@@ -35,6 +35,8 @@ from llm.query_types import (
     ConfidenceScore,
     CrossPaperInsight,
     _RAG_SYSTEM_PROMPT,
+    _CROSS_PAPER_SYSTEM_PROMPT,
+    _CROSS_PAPER_USER_PROMPT_TEMPLATE,
 )
 from llm.research_session import get_session_tracker
 

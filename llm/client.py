@@ -8,7 +8,7 @@ import logging
 import os
 import time
 from pathlib import Path
-from typing import Dict, Iterator, List, Optional, Tuple, cast
+from typing import Dict, Iterator, List, Optional, Tuple, cast, Any, Callable
 
 import orjson
 import requests
@@ -178,7 +178,7 @@ def _resolve_llm_credentials(base_url: str, api_key: str) -> tuple[str, str]:
     if not resolved_key:
         resolved_key = os.getenv("MINIMAX_API_KEY") or ""
 
-    resolved_url = base_url
+    resolved_url = base_url if base_url else ""
     if not resolved_url or resolved_url == "https://api.openai.com/v1":
         resolved_url = (
             os.getenv("MINIMAX_CN_BASE_URL") or hermes.get("MINIMAX_CN_BASE_URL", "") or ""
@@ -186,7 +186,7 @@ def _resolve_llm_credentials(base_url: str, api_key: str) -> tuple[str, str]:
     if not resolved_url:
         resolved_url = os.getenv("MINIMAX_BASE_URL") or os.getenv(
             "OPENAI_BASE_URL", "https://api.minimaxi.com/v1"
-        )
+        ) or ""     or ""
 
     if "/anthropic" in resolved_url:
         resolved_url = resolved_url.replace("/anthropic", "/v1")
@@ -197,8 +197,7 @@ def _resolve_llm_credentials(base_url: str, api_key: str) -> tuple[str, str]:
 def warm_cache(
     queries: List[str],
     model: str = "gpt-4o-mini",
-    base_url: str = os.getenv("MINIMAX_BASE_URL")
-    or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+    base_url: Optional[str] = None,
     api_key: Optional[str] = None,
     system_prompt: Optional[str] = None,
 ) -> Dict[str, bool]:
@@ -356,8 +355,7 @@ def call_llm_chat_completions(
     messages: List[Dict[str, str]],
     model: str,
     user_prompt: Optional[str] = None,
-    base_url: str = os.getenv("MINIMAX_BASE_URL")
-    or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+    base_url: Optional[str] = None,
     api_key: Optional[str] = None,
     timeout: int = 180,
     system_prompt: Optional[str] = None,
@@ -421,7 +419,7 @@ def call_llm_chat_completions(
                 combined += f"USER: {user_prompt}\n"
             return cast(str, cli.chat(prompt=combined, model=model, system_prompt=system_prompt))
 
-    resolved_url, resolved_key = _resolve_llm_credentials(base_url, api_key)
+    resolved_url, resolved_key = _resolve_llm_credentials(base_url or "", api_key or "")
     api_key = resolved_key
 
     if not api_key:
@@ -598,8 +596,7 @@ def stream_llm_chat_completions(
     messages: List[Dict[str, str]],
     model: str,
     user_prompt: Optional[str] = None,
-    base_url: str = os.getenv("MINIMAX_BASE_URL")
-    or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+    base_url: Optional[str] = None,
     api_key: Optional[str] = None,
     timeout: int = 180,
     system_prompt: Optional[str] = None,
@@ -657,7 +654,7 @@ def stream_llm_chat_completions(
             "  For Anthropic Claude: export ANTHROPIC_API_KEY=sk-ant-..."
         )
 
-    resolved_url, _ = _resolve_llm_credentials(base_url, api_key)
+    resolved_url, _ = _resolve_llm_credentials(base_url or "", api_key or "")
     url = resolved_url.rstrip("/") + "/chat/completions"
 
     session = _get_session()
@@ -700,7 +697,7 @@ def get_client(
     model: str = "minimax-m2.7-highspeed",
     base_url: str = "",
     api_key: str = "",
-) -> callable:
+) -> Any:
     """Get a callable LLM client wrapper that provides a .generate(prompt) interface.
 
     Reads credentials from (in priority order):
@@ -728,13 +725,13 @@ def get_client(
         if system:
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
-        return call_llm_chat_completions(
+        return cast(str, call_llm_chat_completions(
             messages=messages,
             model=model,
             base_url=resolved_url,
             api_key=effective_key,
             **kwargs,
-        )
+        ))
 
     client_wrapper.generate = generate
 

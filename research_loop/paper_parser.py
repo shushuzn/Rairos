@@ -17,7 +17,10 @@ import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from research_loop.provenance import EquationSource, ClaimSource, AlgorithmSource
 
 
 @dataclass

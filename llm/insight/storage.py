@@ -334,7 +334,7 @@ class CapsuleStorageMixin:
         capsule_archetype: Optional[Dict[str, Any]] = None,
         capsule_id: Optional[str] = None,
     ) -> CapsuleGene:
-        archetype = capsule_archetype if capsule_archetype else self.get_archetype()
+        archetype = capsule_archetype if capsule_archetype else self.get_archetype()  # type: ignore
         if source_paper_id:
             archetype["source_paper_id"] = source_paper_id
         if source_arxiv_category:
@@ -380,7 +380,7 @@ class CapsuleStorageMixin:
         jsonl_path = self._gene_pool_file
         if jsonl_path:
             try:
-                self.data_dir.mkdir(parents=True, exist_ok=True)
+                self.data_dir.mkdir(parents=True, exist_ok=True)  # type: ignore
                 with open(jsonl_path, "a", encoding="utf-8") as f:
                     f.write(json.dumps(capsule.to_dict(), ensure_ascii=False) + "\n")
             except Exception:

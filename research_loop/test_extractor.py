@@ -112,7 +112,7 @@ def _extract_numerical_claims(paper: PaperContent, arxiv_id: str) -> List[TestCa
     Also queries ClaimGraph for cross-paper references: if other papers claim
     to be "better than" this paper, those claims are embedded as cross_refs.
     """
-    tests = []
+    tests: list[Any] = []
     text_sources = [paper.abstract] + paper.claims + paper.algorithm_descriptions
 
     # Load ClaimGraph for cross-paper references
@@ -228,7 +228,7 @@ def test_numerical_claim_{idx}():
 
 def _extract_hyperparameter_tests(paper: PaperContent) -> List[TestCase]:
     """Generate boundary tests for hyperparameters extracted from paper."""
-    tests = []
+    tests: list[Any] = []
 
     for name, raw_value in paper.hyperparameters.items():
         # Try to parse value and determine reasonable bounds
@@ -286,7 +286,7 @@ def test_hp_{name}_choice():
 
 def _extract_dataset_tests(paper: PaperContent, code: str) -> List[TestCase]:
     """Verify that datasets mentioned in paper are referenced in the generated code."""
-    tests = []
+    tests: list[Any] = []
 
     for dataset in paper.datasets:
         # Check if the dataset name appears in the generated code
@@ -319,7 +319,7 @@ def test_dataset_{dataset.replace("-", "_").lower()}_presence():
 
 def _extract_equation_tests(paper: PaperContent) -> List[TestCase]:
     """Generate placeholder tests for equation-based constraints."""
-    tests = []
+    tests: list[Any] = []
 
     for i, eq in enumerate(paper.equations[:3]):
         # Simple equation parser: extract variable names
@@ -355,7 +355,7 @@ def _extract_io_examples(paper: PaperContent, module_name: str) -> List[TestCase
       - "when X is given, the result is Y"
       - Table with input/output examples
     """
-    tests = []
+    tests: list[Any] = []
 
     # Patterns for IO examples in text
     io_patterns = [

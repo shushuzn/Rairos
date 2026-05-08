@@ -571,7 +571,7 @@ def _get_adaptive_lambda(category: str, default_lambda: float = DEFAULT_LAMBDA) 
 def score_all_capsules(
     min_impact: float = DEFAULT_MIN_IMPACT,
     lambda_: float = DEFAULT_LAMBDA,
-) -> tuple[List[CapsuleImpact], DecayState]:
+) -> tuple[List["CapsuleImpact"], DecayState]:
     """Score all active capsules, apply decay, return impacts and updated state.
 
     Returns (impacts, updated_state).
@@ -698,7 +698,7 @@ def score_all_capsules(
     return impacts, state
 
 
-def _archive_capsule(tracker: EvolutionTracker, cap: Any) -> None:
+def _archive_capsule(tracker: Any, cap: Any) -> None:
     """Archive a low-impact capsule."""
     try:
         tracker.archive_capsule(cap.capsule_id)
@@ -1158,6 +1158,7 @@ def gene_pool_decay_action(
     min_impact: float = DEFAULT_MIN_IMPACT,
     lambda_: float = DEFAULT_LAMBDA,
     archive: bool = False,
+    capsule_id: Optional[str] = None,
 ) -> dict:
     """MCP tool dispatcher for Gene Pool decay.
 
@@ -1290,13 +1291,13 @@ def gene_pool_decay_action(
         return status
 
     elif action == "predictions":
-        impacts, state = score_all_with_predictions(
+        impacts_raw, state = score_all_with_predictions(
             min_impact=min_impact,
             lambda_=lambda_,
         )
-        impacts.sort(key=lambda x: x.get("predicted_impact", 0), reverse=True)
+        impacts_raw.sort(key=lambda x: x.get("predicted_impact", 0), reverse=True)
         return {
-            "total_scored": len(impacts),
+            "total_scored": len(impacts_raw),
             "predictions": [
                 {
                     "capsule_id": i["capsule_id"],
@@ -1309,13 +1310,13 @@ def gene_pool_decay_action(
                     "success_score": round(i.get("success_score", 0), 4),
                     "factors": i.get("factors", {}),
                 }
-                for i in impacts
+                for i in impacts_raw
             ],
             "high_potential": [
-                i["capsule_id"] for i in impacts if i.get("verdict") == "high_potential"
+                i["capsule_id"] for i in impacts_raw if i.get("verdict") == "high_potential"
             ],
             "declining": [
-                i["capsule_id"] for i in impacts if i.get("verdict") == "declining"
+                i["capsule_id"] for i in impacts_raw if i.get("verdict") == "declining"
             ],
         }
 

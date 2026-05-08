@@ -168,7 +168,7 @@ class PaperPipeline:
 
             # Stage 1: Download & parse paper
             content = None
-            if download_and_parse:
+            if download_and_parse is not None:
                 with _span("stage1_download"):
                     print(f"[paper2code] Downloading paper {arxiv_id}...")
                     try:
@@ -176,7 +176,7 @@ class PaperPipeline:
                     except Exception as e:
                         print(f"[paper2code] Download failed: {e}, trying PDF parse...")
                         pdf_path = self._find_existing_pdf(arxiv_id)
-                        if pdf_path and pdf_path.exists() and parse_existing_pdf:
+                        if pdf_path and pdf_path.exists() and parse_existing_pdf is not None:
                             content = parse_existing_pdf(str(pdf_path), arxiv_id)
                         if span:
                             span.add_event("stage1_fallback_pdf", {"success": content is not None})
@@ -196,7 +196,7 @@ class PaperPipeline:
             code_path = src_dir / "model.py"
             module_name = self._suggest_module_name(content.title)
 
-            if generate_code and save_code:
+            if generate_code is not None and save_code is not None:
                 with _span("stage2_generate_code"):
                     print(f"[paper2code] Generating {framework} code skeleton...")
                     code = generate_code(content, framework=framework)
@@ -224,14 +224,14 @@ class PaperPipeline:
             test_dir = paper_dir / "tests"
             benchmark_result = None
 
-            if not skip_tests and extract_tests and run_benchmark and code is not None:
+            if not skip_tests and extract_tests is not None and run_benchmark is not None and code is not None:
                 print("[paper2code] Extracting assertions and generating tests...")
                 try:
                     with _span("stage3_extract_tests"):
                         suite = extract_tests(
                             content, code, module_name=module_name, framework=framework
                         )
-                        if save_tests:
+                        if save_tests is not None:
                             save_tests(suite, test_dir, framework=framework)
                         numerical_claims_total = sum(
                             1 for tc in suite.test_cases if tc.category == "NumericalClaim"
@@ -253,7 +253,7 @@ class PaperPipeline:
                             code_path=code_path,
                             algorithm_fingerprint=(
                                 compute_algorithm_fingerprint(content)
-                                if compute_algorithm_fingerprint
+                                if compute_algorithm_fingerprint is not None
                                 else ""
                             ),
                             generated_code=code or "",

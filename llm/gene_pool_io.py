@@ -227,13 +227,13 @@ def import_pool(data: Dict[str, Any], merge: bool = True) -> Dict[str, int]:
 
     genes = data.get("genes", [])
     if genes:
-        existing_ids: set = set()
+        existing_gene_ids: set = set()
         if merge and jsonl_path.exists():
             for line in jsonl_path.read_text(encoding="utf-8").splitlines():
                 line = line.strip()
                 if line:
-                    existing_ids.add(json.loads(line).get("gene_id", ""))
-        new_genes = [g for g in genes if g.get("gene_id", "") not in existing_ids]
+                    existing_gene_ids.add(json.loads(line).get("gene_id", ""))
+        new_genes = [g for g in genes if g.get("gene_id", "") not in existing_gene_ids]
         # Use "a" for merge (append), "w" for replace
         mode = "a" if merge else "w"
         with jsonl_path.open(mode, encoding="utf-8") as f:
@@ -333,7 +333,7 @@ def get_backup_info() -> dict:
     }
 
 
-def render_backup_html(info: dict = None) -> str:
+def render_backup_html(info: dict | None = None) -> str:
     if info is None:
         info = get_backup_info()
 
