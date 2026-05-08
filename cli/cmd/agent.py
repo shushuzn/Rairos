@@ -121,7 +121,7 @@ def _build_agent_parser(subparsers) -> argparse.ArgumentParser:
     df.add_argument("session_id_a", help="First session ID")
     df.add_argument("session_id_b", help="Second session ID")
     df.set_defaults(func=_diff_sessions)
-
+    return p  # type: ignore[no-any-return]
     return p
 
 
@@ -179,7 +179,7 @@ def _confirm(action: str, detail: str, mode: str) -> bool:
     # agent mode: interactive
     try:
         resp = (
-            input(f"{Colors.WARNING}[confirm]{Colors.reset} {action} — {detail} [y/N]: ")
+            input(f"{Colors.WARNING}[confirm]{Colors.ENDC} {action} — {detail} [y/N]: ")
             .strip()
             .lower()
         )
@@ -203,9 +203,9 @@ def _display_thinking(role: str, content: str, mode: str) -> None:
     }
     color = role_colors.get(role, "")
     label = f"[{role.upper()}]"
-    print(f"{color}{label}{Colors.reset} {content}")
+    print(f"{color}{label}{Colors.ENDC} {content}")
     if mode == "plan":
-        print(f"  {Colors.WARNING}→ waiting for confirmation...{Colors.reset}")
+        print(f"  {Colors.WARNING}→ waiting for confirmation...{Colors.ENDC}")
 
 
 def _run_deep_research(args) -> int:
@@ -228,7 +228,7 @@ def _run_deep_research(args) -> int:
         # In plan mode, this also waits for user confirmation
         if args.mode == "plan":
             try:
-                resp = input(f"  {Colors.OKBLUE}→ confirm? [y/N]{Colors.reset} ").strip().lower()
+                resp = input(f"  {Colors.OKBLUE}→ confirm? [y/N]{Colors.ENDC} ").strip().lower()
                 return resp in ("y", "yes")
             except (EOFError, KeyboardInterrupt):
                 return False
@@ -264,9 +264,9 @@ def _run_deep_research(args) -> int:
         print_success(f"Report written to {args.output}")
     else:
         print()
-        print(colored("=" * 60, Colors.BLUE))
+        print(colored("=" * 60, Colors.CYAN))
         print(colored("  Deep Research Complete", Colors.BOLD))
-        print(colored("=" * 60, Colors.BLUE))
+        print(colored("=" * 60, Colors.CYAN))
         print(f"  Session: {result.session_id}")
         print(f"  Iterations: {result.iterations}")
         print(f"  Papers analyzed: {len(result.papers)}")
@@ -301,7 +301,7 @@ def _list_sessions(args) -> int:
             if s["status"] == "completed"
             else Colors.YELLOW
             if s["status"] == "paused"
-            else Colors.RED
+            else Colors.FAIL
         )
         print(
             f"{s['session_id']:12} "
@@ -486,4 +486,4 @@ def run(args: argparse.Namespace) -> int:
         print_error("airos agent: no command specified. Run 'airos agent --help' for usage.")
         return 1
 
-    return args.func(args)
+    return args.func(args)  # type: ignore[no-any-return]

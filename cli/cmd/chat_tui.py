@@ -609,8 +609,8 @@ class PaperCard(Static, can_focus=True):
         # Shift or Ctrl click triggers compare selection instead of toggle
         try:
             # Try to get modifiers from event if available
-            ev = self.app._last_event
-            if isinstance(ev, Click) and (ev.modifiers.shift or ev.modifiers.ctrl):
+            ev = self.app._last_event  # type: ignore[attr-defined]
+            if isinstance(ev, Click) and (ev.modifiers.shift or ev.modifiers.ctrl):  # type: ignore[attr-defined]
                 if self.on_compare_select:
                     self.on_compare_select(self.citation, self.index)
                     return
@@ -830,9 +830,9 @@ class CompareScreen(Screen):
     def action_swap_papers(self) -> None:
         """Swap the left and right papers."""
         self._paper_a, self._paper_b = self._paper_b, self._paper_a
-        self.query_one("#paper-a-pane").update(self._render_paper(self._paper_a))
-        self.query_one("#paper-b-pane").update(self._render_paper(self._paper_b))
-        self.query_one("#compare-header").update(
+        self.query_one("#paper-a-pane").update(self._render_paper(self._paper_a))  # type: ignore[attr-defined]
+        self.query_one("#paper-b-pane").update(self._render_paper(self._paper_b))  # type: ignore[attr-defined]
+        self.query_one("#compare-header").update(  # type: ignore[attr-defined]
             "Paper A                                │  Paper B"
         )
 
@@ -925,7 +925,7 @@ class ReasoningBuffer(Static):
         self._phases = {}
         self._render()
 
-    def _render(self) -> None:
+    def _render(self) -> None:  # type: ignore[override]
         """Render the reasoning buffer."""
         if not self._phases:
             self.update("")
@@ -1531,7 +1531,7 @@ class TUIChatApp(App):
             self._export_session()
         elif command == "q":
             # Quit
-            self.action_quit()
+            self.action_quit()  # type: ignore[unused-coroutine]
         elif command == "e":
             # Edit selected message
             self.action_edit_selected()
@@ -1542,7 +1542,7 @@ class TUIChatApp(App):
         elif command == "wq":
             # Write and quit
             self._export_session()
-            self.action_quit()
+            self.action_quit()  # type: ignore[unused-coroutine]
         else:
             self._update_status(f"⚠️ 未知命令: {command}")
 
@@ -1791,7 +1791,7 @@ class TUIChatApp(App):
         except NoMatches:
             pass
 
-    def _update_reasoning_buffer(self, block: "ReasoningBlock") -> None:
+    def _update_reasoning_buffer(self, block: "ReasoningBlock") -> None:  # type: ignore[name-defined]
         """Update the reasoning buffer with a new block."""
         if self._reasoning_buffer is None:
             return
