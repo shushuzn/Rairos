@@ -36,7 +36,7 @@ import sys
 import time
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 # Import our new modules — guard against missing modules
 try:
@@ -177,7 +177,7 @@ class PaperPipeline:
                         print(f"[paper2code] Download failed: {e}, trying PDF parse...")
                         pdf_path = self._find_existing_pdf(arxiv_id)
                         if pdf_path and pdf_path.exists() and parse_existing_pdf:
-                            content = parse_existing_pdf(pdf_path, arxiv_id)
+                            content = parse_existing_pdf(str(pdf_path), arxiv_id)
                         if span:
                             span.add_event("stage1_fallback_pdf", {"success": content is not None})
 
