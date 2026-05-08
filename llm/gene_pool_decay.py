@@ -336,7 +336,6 @@ def resurrect_capsule(capsule_id: str) -> dict:
     from llm.insight.tracker import EvolutionTracker
 
     state = _load_resurrection_state()
-    record = state.queue.get(capsule_id)
     tracker = EvolutionTracker(data_dir=GP_DIR)
 
     # Find the archived capsule
@@ -880,8 +879,6 @@ def get_gap_type_momentum(
             "trend": trend,
         }
 
-    # Prune old entries (no activity in 2x window)
-    prune_cutoff = now.timestamp() - (days * 2 * 86400)
     # Save updated state with current snapshot
     _save_momentum_state(MomentumState(
         new_by_gap_type=new_by_gap_type,
@@ -960,7 +957,6 @@ def trigger_decay_aware_subscriptions() -> Dict[str, Any]:
             triggered_gap_types.append(gap_type)
             family = GAP_TYPE_TO_FAMILY.get(gap_type, "other")
             if family in FAMILY_ARXIV_CONFIG:
-                watcher = GenePoolWatcher()
                 from llm.gene_pool_watcher import GapSubscription
                 new_sub = GapSubscription(
                     family=family,
