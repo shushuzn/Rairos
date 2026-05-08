@@ -109,6 +109,6 @@ class TestFamilyArxivConfig:
         assert "reinforcement" in FAMILY_ARXIV_CONFIG
 
     def test_each_has_keywords(self):
-        for family, config in FAMILY_ARXIV_CONFIG.items():
+        for _family, config in FAMILY_ARXIV_CONFIG.items():
             assert "keywords" in config
             assert len(config["keywords"]) > 0
