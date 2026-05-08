@@ -1,57 +1,61 @@
-# Justfile — developer commands for ai_research_os
+# Justfile — developer commands for Rairos
 # Install just: winget install just | cargo install just | scoop install just
 
-# Default recipe — show help
 default:
     @just --list
 
-# Run full test suite (quiet output)
+# Run full test suite (quiet, skip neuraloperator ns shadowing)
 test:
-    python -B -m pytest tests/ -q
+    python -B -m pytest tests/ --ignore=neuraloperator_fork -q
 
-# Run tests with coverage report
+# Run tests with coverage
 test-cov:
-    python -B -m pytest tests/ --cov=ai_research_os --cov-report=term-missing:skip-covered
+    python -B -m pytest tests/ --ignore=neuraloperator_fork --cov=. --cov-report=term-missing:skip-covered
 
-# Run only Tier 4 unit tests
-test-tier4:
-    python -B -m pytest tests/test_unit_notes.py -v
-
-# Run specific test file
+# Run only a specific test file
 test FILE:
-    python -B -m pytest tests/{{FILE}} -v
-
-# Lint all Python files (check only, no auto-fix)
-lint:
-    ruff check .
-
-# Auto-fix lint issues
-lint-fix:
-    ruff check --fix .
-
-# Format code
-fmt:
-    ruff format .
-
-# Run full lint + format pipeline
-check: lint fmt
-    @echo "Lint + format OK"
-
-# Install all dependencies
-install:
-    pip install -e ".[all]"
-
-# Run the CLI
-run URL *TAGS:
-    python ai_research_os.py {{URL}} {{TAGS}}
-
-# Openai-compatible API test
-chat:
-    python -c "import ai_research_os as airo; print(airo.__version__ if hasattr(airo, '__version__') else 'ok')"
+    python -B -m pytest tests/{{FILE}} --ignore=neuraloperator_fork -v
 
 # Show test count
 test-count:
-    python -B -m pytest tests/ --collect-only -q
+    python -B -m pytest tests/ --ignore=neuraloperator_fork --collect-only -q
 
-# Run CI pipeline locally (what GitHub Actions does)
-ci: lint test-cov
+# Lint check only
+lint:
+    ruff check . --exclude neuraloperator_fork/
+
+# Lint auto-fix
+lint-fix:
+    ruff check --fix . --exclude neuraloperator_fork/
+
+# Format code
+fmt:
+    ruff format . --exclude neuraloperator_fork/
+
+# Format check (CI gate)
+fmt-check:
+    ruff format --check . --exclude neuraloperator_fork/
+
+# Type check (mypy on core modules)
+typecheck:
+    python -m mypy core parsers db --ignore-missing-imports
+
+# Full CI pipeline (what GitHub Actions runs)
+ci: lint fmt-check typecheck
+    @echo "CI checks passed"
+
+# Full CI + tests
+ci-full: ci test-cov
+    @echo "Full CI + tests passed"
+
+# Install all deps
+install:
+    pip install -e ".[all]"
+
+# Install pre-commit hooks
+hooks:
+    pre-commit install
+
+# Run the CLI
+run *ARGS:
+    python -m cli {{ARGS}}
