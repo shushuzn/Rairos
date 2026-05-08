@@ -53,7 +53,7 @@ def extract_gap_from_text(text: str, source: str = "voice") -> Dict[str, Any]:
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
         )
-        return json.loads(response.choices[0].message.content)
+        return json.loads(response.choices[0].message.content)  # type: ignore[arg-type,no-any-return]
     except Exception as e:
         return {"error": str(e)}
 
@@ -61,7 +61,7 @@ def extract_gap_from_text(text: str, source: str = "voice") -> Dict[str, Any]:
 def _load_capsules() -> Dict[str, Any]:
     if not CAPSULES_PATH.exists():
         return {"version": "1.0", "capsules": []}
-    return json.loads(CAPSULES_PATH.read_text(encoding="utf-8"))
+    return json.loads(CAPSULES_PATH.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
 
 
 def _save_capsules(data: Dict[str, Any]) -> None:

@@ -315,7 +315,7 @@ class ResearchDeepDivePipeline:
                             }
                         except Exception as chart_err:
                             logger.warning("Chart KG indexing failed: %s", chart_err)
-                            chart_data = {"chart_error": str(chart_err)}
+                            chart_data = {"chart_error": str(chart_err)}  # type: ignore[dict-item]
 
                     sr.success = True
                     sr.data = {"synced": True, **chart_data}

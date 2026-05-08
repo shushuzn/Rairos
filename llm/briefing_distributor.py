@@ -22,7 +22,7 @@ SHORTCODE_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345678
 def _load_links() -> Dict[str, Any]:
     if not LINKS_FILE.exists():
         return {}
-    return json.loads(LINKS_FILE.read_text(encoding="utf-8"))
+    return json.loads(LINKS_FILE.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
 
 
 def _save_links(links: Dict[str, Any]) -> None:

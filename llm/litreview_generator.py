@@ -162,7 +162,7 @@ class LitReviewGenerator:
 
         # Step 3: Save to file
         if output_dir and result.success:
-            self._save_review(result.review, markdown, output_dir)
+            self._save_review(result.review, markdown, output_dir)  # type: ignore[arg-type]
 
         return result
 
@@ -219,6 +219,7 @@ class LitReviewGenerator:
         model: Optional[str],
     ) -> LitReview:
         """Generate lit review using LLM."""
+        import datetime
         import os
 
         try:
@@ -247,7 +248,7 @@ class LitReviewGenerator:
         return LitReview(
             topic=topic,
             sections=sections,
-            papers_used=[p.get("arxiv_id", "") for p in []],
+            papers_used=[p.get("arxiv_id", "") for p in []],  # type: ignore[var-annotated]
             total_papers=count,
             generated_at=now,
         )
@@ -352,7 +353,7 @@ class LitReviewGenerator:
         """Render LitReview as markdown string."""
         import datetime
 
-        now = datetime.datetime.now().strftime("%Y-%m-%d")
+        now = datetime.datetime.now().strftime("%Y-%m-%d")  # type: ignore[name-defined]
         lines = [
             f"# Literature Review: {review.topic}",
             "",

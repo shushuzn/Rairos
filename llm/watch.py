@@ -38,7 +38,7 @@ def _load_state() -> Dict:
     _STATE_DIR.mkdir(parents=True, exist_ok=True)
     if _STATE_FILE.exists():
         try:
-            return json.loads(_STATE_FILE.read_text(encoding="utf-8"))
+            return json.loads(_STATE_FILE.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
         except Exception:
             pass
     return {"running": False, "interval": 300, "events": [], "last_check": ""}
@@ -133,8 +133,8 @@ class WatchDaemon:
         # 2. Check each topic for new events
         for topic in list(active_topics)[:8]:  # max 8 topics per cycle
             try:
-                news = self._client.search_flash(topic)
-                data = news.get("data", news) if isinstance(news, dict) else {"items": []}
+                news = self._client.search_flash(topic)  # type: ignore[assignment]
+                data: Dict[str, Any] = news.get("data", news) if isinstance(news, dict) else {"items": []}
                 items = data.get("items", []) if isinstance(data, dict) else data
                 for item in items[:5]:
                     if isinstance(item, dict):

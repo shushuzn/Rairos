@@ -55,14 +55,14 @@ CLIMATE_CATS = ["cs.AI", "cs.LG", "cs.ET", "physics.ao-ph", "atm.ph"]
 def _load_papers() -> List[Dict[str, Any]]:
     if not PAPERS_DB.exists():
         return []
-    data = json.loads(PAPERS_DB.read_text(encoding="utf-8"))
-    return data.get("papers", [])
+    data = json.loads(PAPERS_DB.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
+    return data.get("papers", [])  # type: ignore[no-any-return]
 
 
 def _load_watch_list() -> Dict[str, Any]:
     if not CLIMATE_WATCH_FILE.exists():
         return {}
-    return json.loads(CLIMATE_WATCH_FILE.read_text(encoding="utf-8"))
+    return json.loads(CLIMATE_WATCH_FILE.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
 
 
 def _save_watch_list(data: Dict[str, Any]) -> None:

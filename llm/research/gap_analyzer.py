@@ -390,7 +390,7 @@ class GapAnalyzerV2(GapDetector):
             # Best capsule's success score, weighted by match quality
             best = capsules[0]
             match_score = best.trigger_match(topic, gap_type_str, gap_keywords)
-            return best.outcome_success_score * match_score
+            return best.outcome_success_score * match_score  # type: ignore[no-any-return]
         except Exception:
             return 0.0
 

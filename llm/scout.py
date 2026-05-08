@@ -100,7 +100,7 @@ def _get_topics_from_pool(capsules: List) -> List[str]:
     """Extract short search queries from Gene Pool capsules."""
     topics = set()
     # Collect all individual keywords across all capsules
-    all_keywords = []
+    all_keywords: list[Any] = []
     for c in capsules:
         kws = c.trigger_keywords if hasattr(c, "trigger_keywords") else []
         all_keywords.extend(kws)
@@ -258,7 +258,9 @@ def scout(
                 if pid in seen:
                     continue
                 seen.add(pid)
-                all_papers.append(_score_article(p, active, topic))
+                result = _score_article(p, active, topic)
+                if result is not None:
+                    all_papers.append(result)
 
     # Search ArXiv for each topic
     if sources in ("arxiv", "all"):

@@ -56,7 +56,7 @@ REGULATIONS = {
 def _load_policy_data() -> Dict[str, Any]:
     if not POLICY_FILE.exists():
         return {"regulations": REGULATIONS, "watched_papers": [], "last_scan": ""}
-    return json.loads(POLICY_FILE.read_text(encoding="utf-8"))
+    return json.loads(POLICY_FILE.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
 
 
 def _save_policy_data(data: Dict[str, Any]) -> None:
@@ -78,7 +78,7 @@ def check_policy_impact(paper: Dict[str, Any]) -> List[Dict[str, Any]]:
         if kw_match or cat_match:
             results.append(
                 {
-                    "regulation_id": rid,
+                    "regulation_id": _rid,
                     "regulation_name": reg["name"],
                     "jurisdiction": reg["jurisdiction"],
                     "effective_date": reg["effective_date"],
@@ -109,7 +109,7 @@ def get_impacted_capsules() -> List[Dict[str, Any]]:
                         "gap_title": cap.get("action_gap_title", ""),
                         "gap_type": gap_type,
                         "regulation": reg["name"],
-                        "priority_boost": reg["priority_boost"].get(gap_type, 0),
+                        "priority_boost": dict(reg["priority_boost"]).get(gap_type, 0),  # type: ignore[arg-type]
                     }
                 )
                 break

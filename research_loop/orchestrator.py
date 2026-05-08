@@ -24,7 +24,14 @@ import time
 import uuid
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
+
+if TYPE_CHECKING:
+    from llm.insight.tracker import EvolutionTracker
+    from llm.subscription_monitor import SubscriptionMonitor
+    from llm.subscription_scorer import SubscriptionScorer
+    from llm.gap_analyzer import GapAnalyzerV2
+    from research_loop.deep_research import DeepResearchAgent
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +48,7 @@ def _load_state() -> dict:
     path = _get_state_path()
     if path.exists():
         try:
-            return json.loads(path.read_text(encoding="utf-8"))
+            return json.loads(path.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
         except Exception:
             pass
     return {
@@ -82,9 +89,9 @@ class ResearchAlert:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> cls:
+    def from_dict(cls, d: Dict[str, Any]) -> "ResearchAlert":
         d.pop("alert_id", None)
-        return cls(alert_id=str(uuid.uuid4())[:8], **d)
+        return cls(alert_id=str(uuid.uuid4())[:8], **d)  # type: ignore[return-value]
 
 
 @dataclass
@@ -126,11 +133,11 @@ class AutonomousOrchestrator:
         self._watch_thread: Optional[threading.Thread] = None
 
         # Lazy-loaded components
-        self._monitor = None
-        self._scorer = None
-        self._tracker = None
-        self._agent_class = None
-        self._analyzer_class = None
+        self._monitor: Optional["SubscriptionMonitor"] = None
+        self._scorer: Optional["SubscriptionScorer"] = None
+        self._tracker: Optional["EvolutionTracker"] = None
+        self._DeepResearchAgent: Optional[type["DeepResearchAgent"]] = None
+        self._GapAnalyzerV2: Optional[type["GapAnalyzerV2"]] = None
 
     # ── Component lazy-init ────────────────────────────────────────────────────
 
@@ -162,7 +169,7 @@ class AutonomousOrchestrator:
     def check_subscriptions(self) -> Dict[str, List[Dict[str, Any]]]:
         """Check all subscriptions for new papers. Returns sub_id -> new papers."""
         self._init_components()
-        return self._monitor.check_all()
+        return self._monitor.check_all()  # type: ignore[union-attr]
 
     # ── Deep research on a topic ─────────────────────────────────────────────
 
@@ -182,7 +189,7 @@ class AutonomousOrchestrator:
         query = topic
 
         # Initialize DeepResearchAgent
-        agent = self._DeepResearchAgent(
+        agent = self._DeepResearchAgent(  # type: ignore[misc]
             query=query,
             max_iterations=2,
             max_papers_per_iteration=len(new_papers) + 3,
@@ -201,7 +208,7 @@ class AutonomousOrchestrator:
                 url=p.get("pdf_url", ""),
             )
             session.papers.append(snapshot)
-            agent.db.add_papers(
+            agent.db.add_papers(  # type: ignore[union-attr]
                 [
                     {
                         "arxiv_id": p.get("arxiv_id", ""),
@@ -251,7 +258,7 @@ class AutonomousOrchestrator:
             )
 
             # Find matching capsule in Gene Pool
-            capsule = self._tracker.find_capsule(
+            capsules = self._tracker.find_capsule(  # type: ignore[union-attr]
                 topic=topic,
                 gap_type=gap_type_name,
                 keywords=[],
@@ -259,8 +266,9 @@ class AutonomousOrchestrator:
 
             gene_pool_score = 0.0
             preference_boost = False
+            capsule = capsules[0] if capsules else None
             if capsule:
-                gene_pool_score = capsule.get("outcome_success_score", 0.0)
+                gene_pool_score = getattr(capsule, "outcome_success_score", 0.0)
                 preference_boost = gene_pool_score >= 0.5
 
             scored.append(
@@ -338,7 +346,7 @@ class AutonomousOrchestrator:
                 )
                 if alert.preference_boost:
                     msg += "\n✅ Matches your research preferences!"
-                webhook.notify_custom(msg)
+                webhook.notify_custom(msg)  # type: ignore[attr-defined]
         except Exception as e:
             logger.warning(f"Webhook notification failed: {e}")
 
@@ -393,11 +401,11 @@ class AutonomousOrchestrator:
 
                 # Encode into Gene Pool
                 try:
-                    self._tracker.record_gap_accept(
+                    self._tracker.record_gap_accept(  # type: ignore[union-attr]
                         topic=alert.topic,
                         gap_type=alert.top_gap_type,
                         gap_title=alert.top_gap_title,
-                        gap_description=alert.description,
+                        gap_description="",
                     )
                 except Exception as e:
                     logger.warning(f"Gene Pool encode failed: {e}")
@@ -518,10 +526,10 @@ class AutonomousOrchestrator:
     def _get_best_evolution_topic(self) -> str:
         """Pick the best topic for evolution from user history."""
         try:
-            profile = self._tracker.get_profile()
+            profile = self._tracker.get_profile()  # type: ignore[union-attr]
             topics = list(profile.topic_frequency.keys())
             if topics:
-                return max(topics, key=lambda t: profile.topic_frequency[t])
+                return max(topics, key=lambda t: profile.topic_frequency[t])  # type: ignore[no-any-return]
         except Exception:
             pass
         return "machine learning"
@@ -544,9 +552,9 @@ class AutonomousOrchestrator:
         state = _load_state()
 
         # Gene Pool stats
-        pool_stats = {}
+        pool_stats: Dict[str, Any] = {}
         try:
-            pool_stats = self._tracker.get_gene_pool_stats()
+            pool_stats = self._tracker.get_gene_pool_stats()  # type: ignore[union-attr]
         except Exception:
             pass
 

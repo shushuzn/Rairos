@@ -40,7 +40,7 @@ class User:
 def _load_auth() -> Dict[str, Any]:
     if not AUTH_FILE.exists():
         return {"users": {}, "setup_complete": False}
-    return json.loads(AUTH_FILE.read_text(encoding="utf-8"))
+    return json.loads(AUTH_FILE.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
 
 
 def _save_auth(data: Dict[str, Any]) -> None:
@@ -51,7 +51,7 @@ def _save_auth(data: Dict[str, Any]) -> None:
 def _load_sessions() -> Dict[str, Any]:
     if not SESSIONS_FILE.exists():
         return {}
-    return json.loads(SESSIONS_FILE.read_text(encoding="utf-8"))
+    return json.loads(SESSIONS_FILE.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
 
 
 def _save_sessions(sessions: Dict[str, Any]) -> None:
@@ -85,7 +85,7 @@ def verify_login(username: str, password: str) -> bool:
     user = auth.get("users", {}).get(username)
     if not user:
         return False
-    return user["password_hash"] == _hash_password(password, user["salt"])
+    return user["password_hash"] == _hash_password(password, user["salt"])  # type: ignore[no-any-return]
 
 
 def create_session(username: str) -> str:
@@ -111,7 +111,7 @@ def validate_session(token: str) -> Optional[str]:
         del sessions[token]
         _save_sessions(sessions)
         return None
-    return sess.get("username")
+    return sess.get("username")  # type: ignore[no-any-return]
 
 
 def revoke_session(token: str) -> None:

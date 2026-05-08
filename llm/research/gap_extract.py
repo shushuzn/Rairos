@@ -99,7 +99,7 @@ Respond ONLY with a JSON object (no markdown, no code fences):
             messages=[{"role": "user", "content": prompt}],
             model="claude-3-5-sonnet-latest",
         )
-        return json.loads(content.strip())
+        return json.loads(content.strip())  # type: ignore[no-any-return]
     except Exception as e:
         return {
             "gap_type": "method_limitation",

@@ -31,8 +31,8 @@ class BoldCapsule:
 def _load_capsules() -> List[Dict[str, Any]]:
     if not CAPSULE_PATH.exists():
         return []
-    data = json.loads(CAPSULE_PATH.read_text(encoding="utf-8"))
-    return data.get("capsules", [])
+    data = json.loads(CAPSULE_PATH.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
+    return data.get("capsules", [])  # type: ignore[no-any-return]
 
 
 def _jaccard(a: List[str], b: List[str]) -> float:

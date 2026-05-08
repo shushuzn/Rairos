@@ -26,7 +26,7 @@ GAP_COLORS = {
 def _load_capsules() -> List[Dict[str, Any]]:
     if not CAPSULES_PATH.exists():
         return []
-    return json.loads(CAPSULES_PATH.read_text(encoding="utf-8")).get("capsules", [])
+    return json.loads(CAPSULES_PATH.read_text(encoding="utf-8")).get("capsules", [])  # type: ignore[no-any-return]
 
 
 def build_citation_graph(

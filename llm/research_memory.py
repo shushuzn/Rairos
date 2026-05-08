@@ -101,7 +101,7 @@ def _load_stances() -> List[Dict[str, Any]]:
     path = _get_stance_path()
     if path.exists():
         try:
-            return json.loads(path.read_text(encoding="utf-8"))
+            return json.loads(path.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
         except Exception:
             pass
     return []
@@ -116,7 +116,7 @@ def _load_anomalies() -> List[Dict[str, Any]]:
     path = _get_anomaly_path()
     if path.exists():
         try:
-            return json.loads(path.read_text(encoding="utf-8"))
+            return json.loads(path.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
         except Exception:
             pass
     return []
@@ -398,7 +398,7 @@ If the paper does NOT contradict or challenge the stance, respond with: {{"anoma
 
     def get_summary(self) -> Dict[str, Any]:
         """Get memory summary stats."""
-        stance_counts = {}
+        stance_counts: dict[str, int] = {}
         for s in self._stances:
             stance_counts[s.stance.value] = stance_counts.get(s.stance.value, 0) + 1
         return {

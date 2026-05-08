@@ -18,7 +18,7 @@ SESSION_FILE.parent.mkdir(parents=True, exist_ok=True)
 def _load_sessions() -> Dict[str, Any]:
     if not SESSION_FILE.exists():
         return {}
-    return json.loads(SESSION_FILE.read_text(encoding="utf-8"))
+    return json.loads(SESSION_FILE.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
 
 
 def _save_sessions(sessions: Dict[str, Any]) -> None:
@@ -42,7 +42,7 @@ async def chat_stream(request: Request) -> StreamingResponse:
 
     contexts: List[Dict[str, Any]] = []
     try:
-        from llm.chat import RAGChat
+        from llm.chat import RAGChat  # type: ignore[attr-defined]
 
         rag = RAGChat()
         results = rag.answer(query, use_llm=False, concept=None, top_k=5)
@@ -55,8 +55,8 @@ async def chat_stream(request: Request) -> StreamingResponse:
 
         full_response = ""
         try:
-            from llm.chat import stream_llm_chat_completions
-            from llm.client import build_rag_prompt
+            from llm.chat import stream_llm_chat_completions  # type: ignore[attr-defined]
+            from llm.client import build_rag_prompt  # type: ignore[attr-defined]
 
             system_prompt = (
                 "You are an expert research assistant. Answer questions about the user's paper library. "
@@ -66,13 +66,13 @@ async def chat_stream(request: Request) -> StreamingResponse:
                 f"[Paper: {c.get('title', 'Unknown')}]\n{c.get('chunk', c.get('text', ''))}"
                 for c in contexts
             )
-            user_prompt = build_rag_prompt(query, context_text)
+            user_prompt = build_rag_prompt(query, context_text)  # type: ignore[attr-defined]
             messages = [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ]
-            async for chunk in stream_llm_chat_completions(
-                messages, model=None, base_url=None, api_key=None
+            async for chunk in stream_llm_chat_completions(  # type: ignore[attr-defined, arg-type]
+                messages, model=None or "", base_url=None, api_key=None
             ):
                 full_response += chunk
                 yield f"data: {json.dumps({'type': 'chunk', 'content': chunk})}\n\n"

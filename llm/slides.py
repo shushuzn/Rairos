@@ -157,7 +157,7 @@ class PaperSlidesGenerator:
 
             # 如果有全文，提取关键章节
             if content["plain_text"]:
-                sections = segment_into_sections(content["plain_text"])
+                sections = segment_into_sections(str(content["plain_text"]))
                 content["sections"] = sections
                 content["snippet"] = format_section_snippets(sections)
             else:

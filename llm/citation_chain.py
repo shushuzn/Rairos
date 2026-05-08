@@ -171,14 +171,14 @@ class CitationChainBuilder:
                 if d < max_depth:
                     refs = get_references(pid, limit=8) or []
                     for ref in refs:
-                        ref_id = ref.get("arxivId", "")
+                        ref_id = ref.get("arxivId", "")  # type: ignore[attr-defined]
                         if ref_id and ref_id not in visited:
                             self.add_paper(
                                 paper_id=ref_id,
-                                title=ref.get("title", "Unknown"),
-                                year=ref.get("year", 0) or 0,
-                                authors=[a.get("name", "") for a in ref.get("authors", [])],
-                                citation_count=ref.get("citationCount", 0) or 0,
+                                title=ref.get("title", "Unknown"),  # type: ignore[attr-defined]
+                                year=ref.get("year", 0) or 0,  # type: ignore[attr-defined]
+                                authors=[a.get("name", "") for a in ref.get("authors", [])],  # type: ignore[attr-defined]
+                                citation_count=ref.get("citationCount", 0) or 0,  # type: ignore[attr-defined]
                             )
                             self.link_citations(pid, ref_id)
                             queue.append((ref_id, d + 1, "backward"))
@@ -187,14 +187,14 @@ class CitationChainBuilder:
                 if d < max_depth:
                     cites = get_citations(pid, limit=8) or []
                     for cite in cites:
-                        cite_id = cite.get("arxivId", "")
+                        cite_id = cite.get("arxivId", "")  # type: ignore[attr-defined]
                         if cite_id and cite_id not in visited:
                             self.add_paper(
                                 paper_id=cite_id,
-                                title=cite.get("title", "Unknown"),
-                                year=cite.get("year", 0) or 0,
-                                authors=[a.get("name", "") for a in cite.get("authors", [])],
-                                citation_count=cite.get("citationCount", 0) or 0,
+                                title=cite.get("title", "Unknown"),  # type: ignore[attr-defined]
+                                year=cite.get("year", 0) or 0,  # type: ignore[attr-defined]
+                                authors=[a.get("name", "") for a in cite.get("authors", [])],  # type: ignore[attr-defined]
+                                citation_count=cite.get("citationCount", 0) or 0,  # type: ignore[attr-defined]
                             )
                             self.link_citations(cite_id, pid)
                             queue.append((cite_id, d + 1, "forward"))

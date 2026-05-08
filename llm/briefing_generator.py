@@ -60,7 +60,7 @@ def _load_gene_pool() -> List[Dict[str, Any]]:
             # Support both raw list and {"version":1,"capsules":[...]} format
             if isinstance(data, list):
                 return data
-            return data.get("capsules", [])
+            return data.get("capsules", [])  # type: ignore[no-any-return]
     except Exception:
         pass
     return []
@@ -73,7 +73,7 @@ def _load_research_memory() -> List[Dict[str, Any]]:
 
         path = Path.home() / ".ai_research_os" / "research_memory" / "stances.json"
         if path.exists():
-            return json.loads(path.read_text(encoding="utf-8"))
+            return json.loads(path.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
     except Exception:
         pass
     return []
@@ -308,7 +308,7 @@ class BriefingGenerator:
         # Check Gene Pool gaps
         # OPPORTUNITY_SEIZED: paper's gap type matches a Gene Pool entry (directly addresses a known gap)
         gap_type_matches = [
-            m for m in gene_pool_matches if m.get("gap_type") and m.get("gap_type") in text
+            m for m in gene_pool_matches if m.get("gap_type") and m.get("gap_type") in text  # type: ignore[operator]
         ]
         if gap_type_matches:
             return (

@@ -59,15 +59,15 @@ def build_paper_section_refs(
         if tag_type == "eq":
             for s in equation_sources:
                 if s.index == idx:
-                    return s.equation[:80]
+                    return s.equation[:80]  # type: ignore[no-any-return]
         elif tag_type == "claim":
             for s in claim_sources:
                 if s.index == idx:
-                    return s.claim[:80]
+                    return s.claim[:80]  # type: ignore[no-any-return]
         elif tag_type == "algo":
             for s in algorithm_sources:
                 if s.index == idx:
-                    return s.description[:80]
+                    return s.description[:80]  # type: ignore[no-any-return]
         return f"[unknown {tag_type}[{idx}]]"
 
     refs = []
@@ -132,7 +132,7 @@ def code_to_paper_trace(code_str: str, paper_content: Any) -> Dict[str, Any]:
         location_info = ""
         source_ref = f"@{tag_type}[{idx}]"
 
-        sources = []
+        sources: list[Any] = []
         if tag_type == "eq":
             sources = equation_sources
         elif tag_type == "claim":

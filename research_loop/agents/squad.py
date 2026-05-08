@@ -26,7 +26,7 @@ def _state_path() -> Path:
 
 def _load_state() -> dict:
     try:
-        return json.loads(_state_path().read_text(encoding="utf-8"))
+        return json.loads(_state_path().read_text(encoding="utf-8"))  # type: ignore[no-any-return]
     except Exception:
         return {"running": False, "interval_minutes": 30, "last_cycle": ""}
 
@@ -157,7 +157,7 @@ class SquadCoordinator:
         }
 
     def get_activity(self, limit: int = 100) -> List[Dict[str, Any]]:
-        return self.bus.get_log(limit=limit)
+        return self.bus.get_log(limit=limit)  # type: ignore[no-any-return]
 
     def get_alerts(self, limit: int = 20) -> List[Dict[str, Any]]:
         """Extract alert.ready messages from the bus log."""

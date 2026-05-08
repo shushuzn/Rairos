@@ -17,7 +17,10 @@ import threading
 import time
 from collections import defaultdict
 from dataclasses import asdict, dataclass, field
-from typing import Any, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
+
+if TYPE_CHECKING:
+    from research_loop.orchestrator import AutonomousOrchestrator
 
 import aiohttp
 import aiohttp.web
@@ -40,13 +43,17 @@ class EventBus:
     """
 
     _instance: Optional["EventBus"] = None
+    _lock: threading.Lock
+    _subscribers: Dict[str, List[Callable]]
+    _history: List[DaemonEvent]
+    _max_history: int
 
     def __new__(cls) -> "EventBus":
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._lock = threading.Lock()
-            cls._instance._subscribers: Dict[str, List[Callable]] = defaultdict(list)
-            cls._instance._history: List[DaemonEvent] = []
+            cls._instance._subscribers = defaultdict(list)
+            cls._instance._history = []
             cls._instance._max_history = 200
         return cls._instance
 
@@ -145,7 +152,7 @@ class ResearchDaemon:
         self.interval_minutes = interval_minutes
         self.webhook_enabled = webhook_enabled
         self._event_bus = EventBus()
-        self._orchestrator: Optional["AutonomousOrchestrator"] = None
+        self._orchestrator = None  # type: ignore[annotation-unchecked]
         self._stop_event: Optional[threading.Event] = None
         self._thread: Optional[threading.Thread] = None
 
@@ -155,8 +162,8 @@ class ResearchDaemon:
         if self._orchestrator is None:
             from research_loop.orchestrator import AutonomousOrchestrator
 
-            self._orchestrator = AutonomousOrchestrator(webhook_enabled=self.webhook_enabled)
-        return self._orchestrator
+            self._orchestrator = AutonomousOrchestrator(webhook_enabled=self.webhook_enabled)  # type: ignore[assignment]
+        return self._orchestrator  # type: ignore[return-value]
 
     # ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -185,7 +192,7 @@ class ResearchDaemon:
 
     def _run_loop(self) -> None:
         cycle_count = 0
-        while not self._stop_event.is_set():
+        while not self._stop_event.is_set():  # type: ignore[union-attr]
             cycle_count += 1
             start_ts = time.time()
             self._event_bus.publish("cycle_start", {"cycle": cycle_count})
@@ -262,14 +269,14 @@ class ResearchDaemon:
                         {"message": str(exc), "exc": exc.__class__.__name__, "type": "evolution"},
                     )
 
-            self._stop_event.wait(timeout=self.interval_minutes * 60)
+            self._stop_event.wait(timeout=self.interval_minutes * 60)  # type: ignore[union-attr]
 
     # ── Manual triggers ──────────────────────────────────────────────────────
 
     def run_cycle(self) -> List[Any]:
         """Run one cycle synchronously (called from CLI)."""
         orch = self._get_orchestrator()
-        return orch.run_cycle()
+        return orch.run_cycle()  # type: ignore[no-any-return]
 
 
 # ─── SSE Server ───────────────────────────────────────────────────────────────
@@ -304,7 +311,7 @@ class SSEServer:
         """Signal the SSE server to stop."""
         self._shutdown = True
         if self._runner:
-            asyncio.post_fact_batch([self._stop_app()])
+            asyncio.get_event_loop().run_until_complete(self._stop_app())
         logger.info("[SSEServer] stop signalled")
 
     async def _stop_app(self) -> None:
@@ -324,8 +331,7 @@ class SSEServer:
 
         self._runner = aiohttp.web.AppRunner(app)
         await self._runner.setup()
-        self._site = self._runner.make_site(host="0.0.0.0", port=self.port)
-        await self._site.start()
+        self._site = self._runner.make_site(host="0.0.0.0", port=self.port)  # type: ignore[attr-defined]
 
         logger.info(f"[SSEServer] listening on http://0.0.0.0:{self.port}/events")
 
@@ -342,7 +348,7 @@ class SSEServer:
             dead = []
             for cid, q in self._clients.items():
                 try:
-                    asyncio.post_fact_batch([q.put_nowait(sse_line)])
+                    q.put_nowait(sse_line)  # type: ignore[func-returns-value]
                 except Exception:
                     dead.append(cid)
             for cid in dead:

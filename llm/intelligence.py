@@ -35,9 +35,8 @@ def intelligence(topic: str = "", verbose: bool = False) -> Dict[str, Any]:
         flash_topics = [topic] if topic else ["伊朗", "霍尔木兹", "石油", "美联储"]
         flash_items = []
         for t in flash_topics[:4]:
-            raw = client.search_flash(t)
-            data = raw.get("data", raw) if isinstance(raw, dict) else {}
-            items = data.get("items", []) if isinstance(data, dict) else []
+            raw = client.search_flash(t)  # type: ignore[assignment]
+            items: List[Any] = raw if isinstance(raw, list) else []
             for item in items[:3]:
                 if isinstance(item, dict):
                     flash_items.append(
@@ -59,8 +58,8 @@ def intelligence(topic: str = "", verbose: bool = False) -> Dict[str, Any]:
         quotes = []
         for sym in symbols:
             try:
-                raw = client.get_quote(sym)
-                q = raw.get("data", raw)
+                raw = client.get_quote(sym)  # type: ignore[assignment]
+                q = raw.get("data", raw)  # type: ignore[attr-defined]
                 quotes.append(
                     {
                         "code": q.get("code", sym),

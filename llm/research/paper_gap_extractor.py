@@ -68,7 +68,7 @@ def analyze_gap(
         content = _call_llm([{"role": "user", "content": prompt}], model=model, api_key=api_key)
 
         lines = content.strip().split("\n")
-        result = {f: "" for f in result_fields}
+        result: Dict[str, Any] = {f: "" for f in result_fields}
         result["confidence"] = 0.5
         for line in lines:
             stripped = line.strip().strip("*").strip()
@@ -119,7 +119,7 @@ def analyze_gap(
                 paper_id=paper_id,
                 title=title,
                 representation_type=result.get("representation_type", "unknown"),
-                confidence=result.get("confidence", 0.5),
+                confidence=float(result.get("confidence", 0.5)),
                 gap_title=result.get("gap_title")
                 or f"Latent Reasoning: {result.get('representation_type', 'unknown')}",
             )
@@ -186,7 +186,7 @@ def batch_analyze_embodied_planning(
         "results": results,
         "type_counts": type_counts,
         "total": len(results),
-        "trend": max(type_counts, key=type_counts.get) if results else "unknown",
+        "trend": max(type_counts, key=type_counts.get) if results else "unknown",  # type: ignore[arg-type]
     }
 
 
@@ -203,7 +203,7 @@ def semantic_search_papers(
 
     rows, _ = db.search_papers(query, limit=top_k * 2)
     query_tokens = set(_extract_keywords(query))
-    scored = []
+    scored: List[Dict[str, Any]] = []
     for row in rows:
         content = f"{getattr(row, 'title', '')} {getattr(row, 'abstract', '')}".lower()
         matched = sum(1 for t in query_tokens if t in content)
@@ -266,7 +266,7 @@ Respond ONLY with JSON (no markdown):
         content = _call_llm([{"role": "user", "content": prompt}], model=model)
         import json as _json
 
-        return _json.loads(content.strip())
+        return _json.loads(content.strip())  # type: ignore[no-any-return]
     except Exception as e:
         return {
             "error": str(e),
@@ -323,9 +323,9 @@ Respond ONLY with the JSON object."""
         content = _call_llm([{"role": "user", "content": prompt}], model=model)
         import json as _json
 
-        result = _json.loads(content.strip())
+        result = _json.loads(content.strip())  # type: ignore[no-any-return]
         result["gap_count"] = len(frontier_gaps)
-        return result
+        return result  # type: ignore[no-any-return]
     except Exception as e:
         return {"questions": [], "gap_count": len(frontier_gaps), "error": str(e)}
 
@@ -453,7 +453,7 @@ def run_embodied_analysis(
         analyzed.append(entry)
 
     total = len(analyzed)
-    trend = max(type_counts, key=type_counts.get) if total > 0 else "unknown"
+    trend = max(type_counts, key=type_counts.get) if total > 0 else "unknown"  # type: ignore[arg-type]
     trend_pct = type_counts[trend] / total if total > 0 else 0
 
     return {

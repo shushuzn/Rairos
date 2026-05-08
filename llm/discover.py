@@ -19,7 +19,7 @@ PATTERNS_FILE = Path.home() / ".ai_research_os" / "patterns.json"
 def _load_patterns() -> Dict:
     if PATTERNS_FILE.exists():
         try:
-            return json.loads(PATTERNS_FILE.read_text(encoding="utf-8"))
+            return json.loads(PATTERNS_FILE.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
         except Exception:
             pass
     return {"correlations": [], "discovered_at": []}

@@ -82,7 +82,7 @@ def _load_channels() -> Dict[str, Any]:
             json.dumps(DEFAULT_CHANNELS, indent=2, ensure_ascii=False), encoding="utf-8"
         )
         return DEFAULT_CHANNELS
-    return json.loads(CHANNELS_FILE.read_text(encoding="utf-8"))
+    return json.loads(CHANNELS_FILE.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
 
 
 def _save_channels(channels: Dict[str, Any]) -> None:

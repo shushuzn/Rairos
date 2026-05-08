@@ -171,7 +171,7 @@ def _get_plans_index() -> Dict[str, str]:  # plan_id -> filename
     index_path = _get_plans_path() / "index.json"
     if index_path.exists():
         try:
-            return json.loads(index_path.read_text(encoding="utf-8"))
+            return json.loads(index_path.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
         except Exception:
             pass
     return {}

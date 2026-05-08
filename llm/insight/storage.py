@@ -38,7 +38,7 @@ def _get_conn(db_path: Path) -> sqlite3.Connection:
             _local.conn = None
             _local.db_path = None
             return _get_conn(db_path)
-    return _local.conn
+    return _local.conn  # type: ignore[no-any-return]
 
 
 def _close_conn() -> None:
@@ -267,7 +267,7 @@ def _compute_title_embedding(text: str) -> Optional[List[float]]:
 
         model = SentenceTransformer("all-MiniLM-L6-v2")
         vec = model.encode(text, normalize_embeddings=True)
-        return vec.tolist()
+        return vec.tolist()  # type: ignore[no-any-return]
     except Exception:
         return None
 
@@ -285,7 +285,7 @@ class CapsuleStorageMixin:
         self.get_archetype() -> dict
         self._extract_keywords(text) -> list[str]
         self._get_timestamp() -> str
-        self.record_capsule_lifecycle_event(...)
+        self.record_capsule_lifecycle_event(  # type: ignore[attr-defined]...)
     """
 
     @property
@@ -297,12 +297,12 @@ class CapsuleStorageMixin:
 
     @property
     def _gene_pool_db(self) -> Path:
-        return self.data_dir / _GENEPOOL_DB
+        return self.data_dir / _GENEPOOL_DB  # type: ignore[attr-defined,return-value,no-any-return]
 
     @property
     def _gene_pool_file(self) -> Path:
         """Legacy JSONL path — used for migration detection."""
-        return self.data_dir / "gene_pool.jsonl"
+        return self.data_dir / "gene_pool.jsonl"  # type: ignore[attr-defined,return-value,no-any-return]
 
     def _ensure_db(self) -> sqlite3.Connection:
         """Ensure SQLite DB is initialized, migrate from JSONL if needed."""
@@ -348,10 +348,10 @@ class CapsuleStorageMixin:
         archetype["gap_type"] = normalized_gap_type  # stored for KG sync
         capsule = CapsuleGene(
             capsule_id=capsule_id if capsule_id else uuid.uuid4().hex[:12],
-            created_at=self._get_timestamp(),
+            created_at=self._get_timestamp(),  # type: ignore[attr-defined]
             trigger_topic=topic,
             trigger_gap_type=normalized_gap_type,
-            trigger_keywords=self._extract_keywords(gap_title),
+            trigger_keywords=self._extract_keywords(gap_title),  # type: ignore[attr-defined]
             action_gap_type=normalized_gap_type,
             action_gap_title=gap_title,
             outcome_success_score=success_score,
@@ -386,7 +386,7 @@ class CapsuleStorageMixin:
             except Exception:
                 pass
 
-        self.record_capsule_lifecycle_event(
+        self.record_capsule_lifecycle_event(  # type: ignore[attr-defined]
             capsule_id=capsule.capsule_id,
             action="created",
             gap_title=capsule.action_gap_title,
@@ -660,7 +660,7 @@ class CapsuleStorageMixin:
         conn.execute("UPDATE capsules SET status = 'archived' WHERE capsule_id = ?", (capsule_id,))
         conn.commit()
 
-        self.record_capsule_lifecycle_event(
+        self.record_capsule_lifecycle_event(  # type: ignore[attr-defined]
             capsule_id=capsule_id,
             action="archived",
             gap_title=row["action_gap_title"],
@@ -678,7 +678,7 @@ class CapsuleStorageMixin:
         conn = self._ensure_db()
         rows = conn.execute("SELECT * FROM capsules").fetchall()
         # Key by capsule_id to preserve all distinct capsule entries
-        capsules_by_key: Dict[tuple, CapsuleGene] = {}
+        capsules_by_key: Dict[str, CapsuleGene] = {}
 
         for row in rows:
             capsule = _capsule_from_row(row)
@@ -787,7 +787,7 @@ class CapsuleStorageMixin:
         Returns:
             dict with recall@3, recall@5, MRR, total_evaluated
         """
-        events_file = self.data_dir / "events.jsonl"
+        events_file = self.data_dir / "events.jsonl"  # type: ignore[attr-defined]
         if not events_file.exists():
             return {
                 "error": "No events file found",

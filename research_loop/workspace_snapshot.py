@@ -47,11 +47,11 @@ class WorkspaceSnapshot:
     def __post_init__(self):
         if self.base_dir is None:
             self.base_dir = Path.home() / ".ai_research_os" / "workspace_snapshots"
-        self.base_dir = Path(self.base_dir)
+        self.base_dir = Path(self.base_dir)  # type: ignore[assignment]
         self.base_dir.mkdir(parents=True, exist_ok=True)
 
     def _session_dir(self, session_id: str) -> Path:
-        return self.base_dir / session_id
+        return self.base_dir / session_id  # type: ignore[operator]
 
     def _step_dir(self, session_id: str, step: int) -> Path:
         return self._session_dir(session_id) / f"step_{step:03d}"
@@ -169,9 +169,10 @@ class WorkspaceSnapshot:
         snapshots = self.list_snapshots(session_id)
         if not snapshots:
             return None
-        return max(
+        result = max(
             s["step"] for s in snapshots if isinstance(s["step"], int) or s["step"].isdigit()
         )
+        return result  # type: ignore[return-value,no-any-return]
 
     def _prune_old_snapshots(self, session_id: str) -> None:
         """Remove oldest snapshots beyond max_snapshots_per_session."""

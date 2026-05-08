@@ -119,7 +119,7 @@ class Jin10Client:
                                 f"JSON-RPC error [{err.get('code')}]: {err.get('message')}"
                             )
                         if data.get("id") == id:
-                            return self._fix_encoding(data.get("result", {}))
+                            return self._fix_encoding(data.get("result", {}))  # type: ignore[no-any-return]  # type: ignore[no-any-return]
 
                 raise MCPError(f"No matching response in SSE for method '{method}'")
 
@@ -128,7 +128,7 @@ class Jin10Client:
             if "error" in data:
                 err = data["error"]
                 raise MCPError(f"JSON-RPC error [{err.get('code')}]: {err.get('message')}")
-            return self._fix_encoding(data.get("result", {}))
+            return self._fix_encoding(data.get("result", {}))  # type: ignore[no-any-return]
 
         except requests.RequestException as e:
             raise MCPError(f"HTTP error: {e}") from e
@@ -185,13 +185,13 @@ class Jin10Client:
         """Get real-time quote for a symbol."""
         self.ensure_init()
         result = self.call_tool("get_quote", {"code": code})
-        return result.get("structuredContent", result.get("content", {}))
+        return result.get("structuredContent", result.get("content", {}))  # type: ignore[return-value,no-any-return]
 
     def get_kline(self, code: str, time: int = 1, count: int = 10) -> List[Dict]:
         """Get K-line data. time in minutes (1, 5, 15, 60, 240, 1440)."""
         self.ensure_init()
         result = self.call_tool("get_kline", {"code": code, "time": time, "count": count})
-        return result.get("structuredContent", result.get("content", {}))
+        return result.get("structuredContent", result.get("content", {}))  # type: ignore[return-value,no-any-return]
 
     def list_flash(self, cursor: str = "") -> Dict[str, Any]:
         """Get latest flash news."""
@@ -200,13 +200,13 @@ class Jin10Client:
         if cursor:
             params["cursor"] = cursor
         result = self.call_tool("list_flash", params)
-        return result.get("structuredContent", result.get("content", {}))
+        return result.get("structuredContent", result.get("content", {}))  # type: ignore[return-value,no-any-return]
 
     def search_flash(self, keyword: str) -> List[Dict]:
         """Search flash news by keyword."""
         self.ensure_init()
         result = self.call_tool("search_flash", {"keyword": keyword})
-        return result.get("structuredContent", result.get("content", {}))
+        return result.get("structuredContent", result.get("content", {}))  # type: ignore[return-value,no-any-return]
 
     def list_news(self, cursor: str = "") -> Dict[str, Any]:
         """Get latest news list."""
@@ -215,7 +215,7 @@ class Jin10Client:
         if cursor:
             params["cursor"] = cursor
         result = self.call_tool("list_news", params)
-        return result.get("structuredContent", result.get("content", {}))
+        return result.get("structuredContent", result.get("content", {}))  # type: ignore[return-value,no-any-return]
 
     def search_news(self, keyword: str, cursor: str = "") -> Dict[str, Any]:
         """Search news by keyword."""
@@ -224,19 +224,19 @@ class Jin10Client:
         if cursor:
             params["cursor"] = cursor
         result = self.call_tool("search_news", params)
-        return result.get("structuredContent", result.get("content", {}))
+        return result.get("structuredContent", result.get("content", {}))  # type: ignore[return-value,no-any-return]
 
     def get_news(self, id: str) -> Dict[str, Any]:
         """Get single news article detail."""
         self.ensure_init()
         result = self.call_tool("get_news", {"id": id})
-        return result.get("structuredContent", result.get("content", {}))
+        return result.get("structuredContent", result.get("content", {}))  # type: ignore[return-value,no-any-return]
 
     def list_calendar(self) -> List[Dict]:
         """Get economic calendar data."""
         self.ensure_init()
         result = self.call_tool("list_calendar", {})
-        return result.get("structuredContent", result.get("content", {}))
+        return result.get("structuredContent", result.get("content", {}))  # type: ignore[return-value,no-any-return]
 
     def list_symbols(self) -> List[Dict]:
         """Get supported quote symbols."""
@@ -247,8 +247,8 @@ class Jin10Client:
         if contents:
             text = contents[0].get("text", "{}")
             try:
-                parsed = json.loads(text)
-                return parsed.get("data", [])
+                parsed = json.loads(text)  # type: ignore[no-any-return]
+                return parsed.get("data", [])  # type: ignore[no-any-return]
             except json.JSONDecodeError:
                 pass
         return []
@@ -273,7 +273,8 @@ def quote(code: str) -> Dict[str, Any]:
 
 
 def kline(code: str, time: str = "1m", count: int = 10) -> Dict:
-    return _get_client().get_kline(code, time, count)
+    time_int = int(time.rstrip("m")) if isinstance(time, str) else time  # type: ignore[assignment]
+    return _get_client().get_kline(code, time_int, count)  # type: ignore[return-value]
 
 
 def flash(cursor: str = "") -> Dict[str, Any]:

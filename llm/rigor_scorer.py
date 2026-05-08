@@ -112,7 +112,7 @@ JSON:"""
         # Try to extract JSON
         match = re.search(r"\{[\s\S]*\}", response.strip())
         if match:
-            return json.loads(match.group())
+            return json.loads(match.group())  # type: ignore[no-any-return]
     except Exception:
         pass
 

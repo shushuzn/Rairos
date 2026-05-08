@@ -122,13 +122,13 @@ class TrustScorer:
         """Get trust for a specific category (cached after first compute)."""
         if self._trust_map is None:
             self.compute_trust_map()
-        return self._trust_map.get(category)
+        return self._trust_map.get(category)  # type: ignore[union-attr]
 
     def get_all_trust(self) -> List[CategoryTrust]:
         """Get all category trust scores, sorted by trust_ratio desc."""
         if self._trust_map is None:
             self.compute_trust_map()
-        return sorted(self._trust_map.values(), key=lambda x: -x.trust_ratio)
+        return sorted(self._trust_map.values(), key=lambda x: -x.trust_ratio)  # type: ignore[union-attr]
 
     def is_trusted_category(self, category: str, threshold: float = 0.5) -> bool:
         """Check if a category has trust_ratio above threshold."""

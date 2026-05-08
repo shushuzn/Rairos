@@ -20,13 +20,13 @@ DEFAULT_USER = "default"
 def _load_capsules() -> List[Dict[str, Any]]:
     if not CAPSULES_PATH.exists():
         return []
-    return json.loads(CAPSULES_PATH.read_text(encoding="utf-8")).get("capsules", [])
+    return json.loads(CAPSULES_PATH.read_text(encoding="utf-8")).get("capsules", [])  # type: ignore[no-any-return]
 
 
 def _load_users() -> Dict[str, Any]:
     if not USERS_FILE.exists():
         return {}
-    return json.loads(USERS_FILE.read_text(encoding="utf-8"))
+    return json.loads(USERS_FILE.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
 
 
 def _save_users(users: Dict[str, Any]) -> None:

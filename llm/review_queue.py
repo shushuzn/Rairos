@@ -31,14 +31,14 @@ class QueuedCapsule:
 def _load_capsules() -> List[Dict[str, Any]]:
     if not CAPSULES_PATH.exists():
         return []
-    return json.loads(CAPSULES_PATH.read_text(encoding="utf-8")).get("capsules", [])
+    return json.loads(CAPSULES_PATH.read_text(encoding="utf-8")).get("capsules", [])  # type: ignore[no-any-return]
 
 
 def _load_feedback() -> Dict[str, Any]:
     path = FEEDBACK_DIR / "feedback.json"
     if not path.exists():
         return {}
-    return json.loads(path.read_text(encoding="utf-8"))
+    return json.loads(path.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
 
 
 def _days_ago(ts: str) -> int:

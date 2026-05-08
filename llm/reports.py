@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 from llm.insight.tracker import EvolutionTracker
 
 
-def _caps_by_theme(caps: list, keywords: list, exclude: set = None) -> list:
+def _caps_by_theme(caps: list, keywords: list, exclude: Optional[set[Any]] = None) -> list:
     exclude = exclude or set()
     result = []
     for c in caps:
@@ -70,8 +70,8 @@ THEMES = [
 def load_data() -> tuple:
     tracker = EvolutionTracker()
     caps = tracker._load_capsules()
-    used = set()
-    theme_map = {}
+    used: set[str] = set()
+    theme_map: Dict[str, Any] = {}
     for slug, name, kws in THEMES:
         matched = _caps_by_theme(caps, kws, used)
         theme_map[slug] = {"name": name, "capsules": matched, "slug": slug}
@@ -89,7 +89,7 @@ def report_all() -> list:
     for slug, name, _ in THEMES:
         info = theme_map[slug]
         clist = info["capsules"]
-        types = {}
+        types: dict[str, int] = {}
         for c in clist:
             types[c.action_gap_type] = types.get(c.action_gap_type, 0) + 1
         avg = sum(c.outcome_success_score for c in clist) / len(clist) if clist else 0

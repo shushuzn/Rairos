@@ -31,8 +31,8 @@ YEAR_PATTERN = re.compile(r"\b(202[4-9]|203[0-5])\b")
 def _load_papers() -> List[Dict[str, Any]]:
     if not PAPERS_DB.exists():
         return []
-    data = json.loads(PAPERS_DB.read_text(encoding="utf-8"))
-    return data.get("papers", [])
+    data = json.loads(PAPERS_DB.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
+    return data.get("papers", [])  # type: ignore[no-any-return]
 
 
 def detect_deployment_claims(title: str, abstract: str = "") -> Optional[str]:

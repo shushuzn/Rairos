@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from llm.mcp_jin10 import Jin10Client
 from llm.insight.tracker import EvolutionTracker
@@ -20,13 +20,11 @@ def signal(event_keyword: str) -> Dict[str, Any]:
     capsules = tracker._load_capsules()
 
     # 1. Get live event context
-    raw = client.search_flash(event_keyword)
-    inner = raw.get("data", raw) if isinstance(raw, dict) else {}
-    items = inner.get("items", []) if isinstance(inner, dict) else inner
-    live_items = list(items)[:5] if isinstance(items, list) else []
+    raw: List[Any] = client.search_flash(event_keyword)  # type: ignore[assignment]
+    live_items = list(raw)[:5]
 
     # 2. Match against historical Gene Pool
-    matches = []
+    matches: List[Dict[str, Any]] = []
     for c in capsules:
         score = c.trigger_match(event_keyword, c.trigger_gap_type, c.trigger_keywords)
         if score > 0.2:

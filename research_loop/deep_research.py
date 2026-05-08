@@ -149,7 +149,7 @@ class DeepResearchAgent:
         verbose: bool = False,
         mode: str = "agent",
         snapstate_dir: Optional[Path] = None,
-        on_thought: Optional[callable] = None,
+        on_thought: Optional[Callable[..., Any]] = None,
         mcp_tools: Optional[List[Dict[str, Any]]] = None,
         auto_checkpoint: bool = True,
         checkpoint_every_n_steps: int = 1,
@@ -373,7 +373,7 @@ class DeepResearchAgent:
                 return {"error": f"No handler mapped for tool: {name}"}
 
             # Import and call handler dynamically
-            from mcp import rairos_mcp as _mcp_module
+            from mcp import rairos_mcp as _mcp_module  # type: ignore[attr-defined]
 
             handler = getattr(_mcp_module, handler_name, None)
             if not handler:
@@ -394,7 +394,8 @@ class DeepResearchAgent:
         Returns True to proceed, False to abort.
         """
         if self.on_thought:
-            return self.on_thought(step, f"[PLAN] {detail}", iteration) is not False
+            result = self.on_thought(step, f"[PLAN] {detail}", iteration)
+            return result is not False
         return True
 
     # -------------------------------------------------------------------------
@@ -520,7 +521,7 @@ class DeepResearchAgent:
             content_chunks.append(text)
 
         try:
-            for _ in self._streaming_reasoner.stream_messages(
+            for _ in self._streaming_reasoner.stream_messages(  # type: ignore[union-attr]
                 messages,
                 on_chunk=on_chunk,
                 on_reasoning=on_reasoning,
@@ -571,6 +572,8 @@ class DeepResearchAgent:
                                 source="mcp",
                                 pdf_url=p.get("pdf_url", ""),
                                 published=p.get("published", ""),
+                                updated=p.get("updated", ""),
+                                abs_url=p.get("abs_url", ""),
                             )
                         )
 
@@ -607,7 +610,7 @@ class DeepResearchAgent:
 
         for paper in papers:
             try:
-                extracted = extract_pdf_text(str(paper.pdf_url or "")) if paper.pdf_url else ""
+                extracted = extract_pdf_text(Path(paper.pdf_url)) if paper.pdf_url else ""
 
             except Exception:
                 extracted = ""
@@ -674,7 +677,7 @@ class DeepResearchAgent:
                             },
                         )()
                         match_score = (
-                            self.tracker._archetype_match_score(gap_obj, archetype)
+                            self.tracker._archetype_match_score(gap_obj, archetype)  # type: ignore[attr-defined]
                             if archetype
                             else 0.5
                         )
@@ -718,11 +721,11 @@ class DeepResearchAgent:
 
             for gap in result.gaps[:5]:
                 match_score = (
-                    self.tracker._archetype_match_score(gap, archetype) if archetype else 0.5
+                    self.tracker._archetype_match_score(gap, archetype) if archetype else 0.5  # type: ignore[attr-defined]
                 )
 
                 gs = GapSnapshot(
-                    gap_type=gap.gap_type or "improvement",
+                    gap_type=str(gap.gap_type.value if hasattr(gap.gap_type, "value") else gap.gap_type) or "improvement",
                     title=gap.title,
                     description=gap.description or "",
                     matched_papers=[s.arxiv_id for s in snapshots],
@@ -902,7 +905,7 @@ class DeepResearchAgent:
             # Workspace snapshot: capture generated code after extract phase
 
             if self.workspace_snapshot and self.session:
-                code_paths = []
+                code_paths: List[Path] = []
 
                 output_base = Path.cwd() / "output"
 

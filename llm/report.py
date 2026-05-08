@@ -126,7 +126,7 @@ def generate() -> str:
     # Stats
     w("STATS")
     w("-" * 60)
-    by_type = {}
+    by_type: dict[str, int] = {}
     for c in caps:
         by_type[c.action_gap_type] = by_type.get(c.action_gap_type, 0) + 1
     w(f"  Total: {len(caps)} capsules ({len(research)} research, {len(events)} events)")
