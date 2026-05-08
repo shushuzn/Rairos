@@ -324,7 +324,6 @@ def restore_backup(stamp: str) -> bool:
     with tempfile.TemporaryDirectory() as tmpdir:
         with tarfile.open(backup_file, "r:gz") as tar:
             for member in tar.getmembers():
-                member.path = member.name
                 if member.isfile() and member.name in ["gene_pool.jsonl", "capsules.json"]:
                     tar.extract(member, path=tmpdir)
         for fname in ["gene_pool.jsonl", "capsules.json"]:
