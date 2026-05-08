@@ -99,10 +99,16 @@ class TestPerformanceGuaranteeSystem:
 
     def test_get_protection_report_returns_string(self):
         import core.performance_guarantee as pg
+
         pg._guarantee_system = None
-        with patch("core.performance_guarantee.psutil.cpu_percent", return_value=25.0), \
-             patch("core.performance_guarantee.psutil.virtual_memory", return_value=MagicMock(percent=40.0)), \
-             patch("core.performance_guarantee.psutil.disk_io_counters"):
+        with (
+            patch("core.performance_guarantee.psutil.cpu_percent", return_value=25.0),
+            patch(
+                "core.performance_guarantee.psutil.virtual_memory",
+                return_value=MagicMock(percent=40.0),
+            ),
+            patch("core.performance_guarantee.psutil.disk_io_counters"),
+        ):
             system = PerformanceGuaranteeSystem()
             report = system.get_protection_report()
             assert isinstance(report, str)
@@ -113,15 +119,22 @@ class TestPerformanceGuaranteeSystem:
 class TestGlobalFunctions:
     def test_should_throttle_operations_returns_bool(self):
         import core.performance_guarantee as pg
+
         pg._guarantee_system = None
-        with patch("core.performance_guarantee.psutil.cpu_percent", return_value=20.0), \
-             patch("core.performance_guarantee.psutil.virtual_memory", return_value=MagicMock(percent=20.0)), \
-             patch("core.performance_guarantee.psutil.disk_io_counters"):
+        with (
+            patch("core.performance_guarantee.psutil.cpu_percent", return_value=20.0),
+            patch(
+                "core.performance_guarantee.psutil.virtual_memory",
+                return_value=MagicMock(percent=20.0),
+            ),
+            patch("core.performance_guarantee.psutil.disk_io_counters"),
+        ):
             result = should_throttle_operations()
             assert isinstance(result, bool)
 
     def test_get_performance_guarantee_system_singleton(self):
         import core.performance_guarantee as pg
+
         pg._guarantee_system = None
         with patch("core.performance_guarantee.psutil"):
             s1 = get_performance_guarantee_system()

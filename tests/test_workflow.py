@@ -25,9 +25,14 @@ class TestWorkflow:
         w = Workflow("multi")
         calls = []
 
-        def a(): calls.append("a")
-        def b(): calls.append("b")
-        def c(): calls.append("c")
+        def a():
+            calls.append("a")
+
+        def b():
+            calls.append("b")
+
+        def c():
+            calls.append("c")
 
         w.add_step(a, "A")
         w.add_step(b, "B")
@@ -38,8 +43,11 @@ class TestWorkflow:
         w = Workflow("run_test")
         calls = []
 
-        def s1(): calls.append(1)
-        def s2(): calls.append(2)
+        def s1():
+            calls.append(1)
+
+        def s2():
+            calls.append(2)
 
         w.add_step(s1, "first")
         w.add_step(s2, "second")

@@ -1,12 +1,24 @@
 """Tests for bold_vault, at_risk_scanner, citation_pathfinder_web."""
+
 import json
 import pytest
 from llm.bold_vault import _jaccard, BoldCapsule, get_bold_capsules, render_html as bold_html
-from llm.at_risk_scanner import AtRiskCapsule, get_at_risk_capsules, keep_active, pin_to_ttl, render_html as risk_html
-from llm.citation_pathfinder_web import build_citation_graph, render_citation_graph_svg, render_citation_chain_html
+from llm.at_risk_scanner import (
+    AtRiskCapsule,
+    get_at_risk_capsules,
+    keep_active,
+    pin_to_ttl,
+    render_html as risk_html,
+)
+from llm.citation_pathfinder_web import (
+    build_citation_graph,
+    render_citation_graph_svg,
+    render_citation_chain_html,
+)
 
 
 # ── bold_vault ──────────────────────────────────────────────────────────────
+
 
 class TestJaccardVault:
     def test_identical(self):
@@ -22,9 +34,14 @@ class TestJaccardVault:
 class TestBoldCapsule:
     def test_fields(self):
         b = BoldCapsule(
-            capsule_id="c1", gap_title="Test", gap_type="theoretical_gap",
-            polarity="positive", outcome_score=0.8, novelty_score=0.9,
-            trigger_keywords=["rl"], reason="theoretical"
+            capsule_id="c1",
+            gap_title="Test",
+            gap_type="theoretical_gap",
+            polarity="positive",
+            outcome_score=0.8,
+            novelty_score=0.9,
+            trigger_keywords=["rl"],
+            reason="theoretical",
         )
         assert b.capsule_id == "c1"
         assert b.outcome_score == 0.8
@@ -33,12 +50,14 @@ class TestBoldCapsule:
 class TestGetBoldCapsules:
     def test_no_file(self, monkeypatch, tmp_path):
         import llm.bold_vault as mod
+
         monkeypatch.setattr(mod, "CAPSULE_PATH", tmp_path / "nonexistent.json")
         result = get_bold_capsules()
         assert result == []
 
     def test_empty_capsules(self, monkeypatch, tmp_path):
         import llm.bold_vault as mod
+
         p = tmp_path / "capsules.json"
         p.write_text(json.dumps({"capsules": []}), encoding="utf-8")
         monkeypatch.setattr(mod, "CAPSULE_PATH", p)
@@ -47,11 +66,25 @@ class TestGetBoldCapsules:
 
     def test_theoretical_gap(self, monkeypatch, tmp_path):
         import llm.bold_vault as mod
+
         p = tmp_path / "capsules.json"
-        p.write_text(json.dumps({"capsules": [
-            {"capsule_id": "c1", "action_gap_type": "theoretical_gap", "trigger_keywords": ["quantum"],
-             "action_gap_title": "Quantum RL", "outcome_success_score": 0.9, "status": "active"}
-        ]}), encoding="utf-8")
+        p.write_text(
+            json.dumps(
+                {
+                    "capsules": [
+                        {
+                            "capsule_id": "c1",
+                            "action_gap_type": "theoretical_gap",
+                            "trigger_keywords": ["quantum"],
+                            "action_gap_title": "Quantum RL",
+                            "outcome_success_score": 0.9,
+                            "status": "active",
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
         monkeypatch.setattr(mod, "CAPSULE_PATH", p)
         result = get_bold_capsules()
         assert len(result) == 1
@@ -59,11 +92,26 @@ class TestGetBoldCapsules:
 
     def test_negative_polarity(self, monkeypatch, tmp_path):
         import llm.bold_vault as mod
+
         p = tmp_path / "capsules.json"
-        p.write_text(json.dumps({"capsules": [
-            {"capsule_id": "c1", "action_gap_type": "improvement", "trigger_keywords": ["rl"],
-             "polarity": "negative", "action_gap_title": "RL Fails", "outcome_success_score": 0.2, "status": "active"}
-        ]}), encoding="utf-8")
+        p.write_text(
+            json.dumps(
+                {
+                    "capsules": [
+                        {
+                            "capsule_id": "c1",
+                            "action_gap_type": "improvement",
+                            "trigger_keywords": ["rl"],
+                            "polarity": "negative",
+                            "action_gap_title": "RL Fails",
+                            "outcome_success_score": 0.2,
+                            "status": "active",
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
         monkeypatch.setattr(mod, "CAPSULE_PATH", p)
         result = get_bold_capsules()
         assert len(result) == 1
@@ -71,11 +119,25 @@ class TestGetBoldCapsules:
 
     def test_not_active_skipped(self, monkeypatch, tmp_path):
         import llm.bold_vault as mod
+
         p = tmp_path / "capsules.json"
-        p.write_text(json.dumps({"capsules": [
-            {"capsule_id": "c1", "action_gap_type": "theoretical_gap", "trigger_keywords": ["a"],
-             "status": "archived", "action_gap_title": "T", "outcome_success_score": 0.5}
-        ]}), encoding="utf-8")
+        p.write_text(
+            json.dumps(
+                {
+                    "capsules": [
+                        {
+                            "capsule_id": "c1",
+                            "action_gap_type": "theoretical_gap",
+                            "trigger_keywords": ["a"],
+                            "status": "archived",
+                            "action_gap_title": "T",
+                            "outcome_success_score": 0.5,
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
         monkeypatch.setattr(mod, "CAPSULE_PATH", p)
         result = get_bold_capsules()
         assert result == []
@@ -87,13 +149,18 @@ class TestBoldRenderHtml:
         assert "No bold hypotheses" in html
 
     def test_with_capsules(self):
-        caps = [BoldCapsule("c1", "Test Gap", "theoretical_gap", "positive", 0.8, 0.9, ["rl"], "theoretical")]
+        caps = [
+            BoldCapsule(
+                "c1", "Test Gap", "theoretical_gap", "positive", 0.8, 0.9, ["rl"], "theoretical"
+            )
+        ]
         html = bold_html(caps)
         assert "bold-card" in html
         assert "Test Gap" in html
 
 
 # ── at_risk_scanner ─────────────────────────────────────────────────────────
+
 
 class TestAtRiskCapsule:
     def test_fields(self):
@@ -104,28 +171,57 @@ class TestAtRiskCapsule:
 class TestGetAtRiskCapsules:
     def test_nonexistent_file(self, monkeypatch, tmp_path):
         import llm.at_risk_scanner as mod
+
         monkeypatch.setattr(mod, "CAPSULE_PATH", tmp_path / "nope.json")
         result = get_at_risk_capsules()
         assert result == []
 
     def test_below_threshold(self, monkeypatch, tmp_path):
         import llm.at_risk_scanner as mod
+
         p = tmp_path / "capsules.json"
-        p.write_text(json.dumps({"capsules": [
-            {"capsule_id": "c1", "low_score_streak": 1, "status": "active",
-             "action_gap_title": "T", "action_gap_type": "x", "outcome_success_score": 0.5}
-        ]}), encoding="utf-8")
+        p.write_text(
+            json.dumps(
+                {
+                    "capsules": [
+                        {
+                            "capsule_id": "c1",
+                            "low_score_streak": 1,
+                            "status": "active",
+                            "action_gap_title": "T",
+                            "action_gap_type": "x",
+                            "outcome_success_score": 0.5,
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
         monkeypatch.setattr(mod, "CAPSULE_PATH", p)
         result = get_at_risk_capsules()
         assert result == []
 
     def test_at_risk(self, monkeypatch, tmp_path):
         import llm.at_risk_scanner as mod
+
         p = tmp_path / "capsules.json"
-        p.write_text(json.dumps({"capsules": [
-            {"capsule_id": "c1", "low_score_streak": 3, "status": "active",
-             "action_gap_title": "Bad Gap", "action_gap_type": "method", "outcome_success_score": 0.1}
-        ]}), encoding="utf-8")
+        p.write_text(
+            json.dumps(
+                {
+                    "capsules": [
+                        {
+                            "capsule_id": "c1",
+                            "low_score_streak": 3,
+                            "status": "active",
+                            "action_gap_title": "Bad Gap",
+                            "action_gap_type": "method",
+                            "outcome_success_score": 0.1,
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
         monkeypatch.setattr(mod, "CAPSULE_PATH", p)
         result = get_at_risk_capsules()
         assert len(result) == 1
@@ -133,11 +229,25 @@ class TestGetAtRiskCapsules:
 
     def test_archived_skipped(self, monkeypatch, tmp_path):
         import llm.at_risk_scanner as mod
+
         p = tmp_path / "capsules.json"
-        p.write_text(json.dumps({"capsules": [
-            {"capsule_id": "c1", "low_score_streak": 5, "status": "archived",
-             "action_gap_title": "T", "action_gap_type": "x", "outcome_success_score": 0.1}
-        ]}), encoding="utf-8")
+        p.write_text(
+            json.dumps(
+                {
+                    "capsules": [
+                        {
+                            "capsule_id": "c1",
+                            "low_score_streak": 5,
+                            "status": "archived",
+                            "action_gap_title": "T",
+                            "action_gap_type": "x",
+                            "outcome_success_score": 0.1,
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
         monkeypatch.setattr(mod, "CAPSULE_PATH", p)
         result = get_at_risk_capsules()
         assert result == []
@@ -146,6 +256,7 @@ class TestGetAtRiskCapsules:
 class TestKeepActiveAndPin:
     def test_keep_active_not_found(self, monkeypatch, tmp_path):
         import llm.at_risk_scanner as mod
+
         p = tmp_path / "capsules.json"
         p.write_text(json.dumps({"capsules": []}), encoding="utf-8")
         monkeypatch.setattr(mod, "CAPSULE_PATH", p)
@@ -153,10 +264,14 @@ class TestKeepActiveAndPin:
 
     def test_keep_active_resets(self, monkeypatch, tmp_path):
         import llm.at_risk_scanner as mod
+
         p = tmp_path / "capsules.json"
-        p.write_text(json.dumps({"capsules": [
-            {"capsule_id": "c1", "low_score_streak": 5, "pinned_ttl": 10}
-        ]}), encoding="utf-8")
+        p.write_text(
+            json.dumps(
+                {"capsules": [{"capsule_id": "c1", "low_score_streak": 5, "pinned_ttl": 10}]}
+            ),
+            encoding="utf-8",
+        )
         monkeypatch.setattr(mod, "CAPSULE_PATH", p)
         assert keep_active("c1") is True
         data = json.loads(p.read_text(encoding="utf-8"))
@@ -165,10 +280,14 @@ class TestKeepActiveAndPin:
 
     def test_pin_to_ttl(self, monkeypatch, tmp_path):
         import llm.at_risk_scanner as mod
+
         p = tmp_path / "capsules.json"
-        p.write_text(json.dumps({"capsules": [
-            {"capsule_id": "c1", "low_score_streak": 3, "pinned_ttl": 0}
-        ]}), encoding="utf-8")
+        p.write_text(
+            json.dumps(
+                {"capsules": [{"capsule_id": "c1", "low_score_streak": 3, "pinned_ttl": 0}]}
+            ),
+            encoding="utf-8",
+        )
         monkeypatch.setattr(mod, "CAPSULE_PATH", p)
         assert pin_to_ttl("c1", ttl=5) is True
         data = json.loads(p.read_text(encoding="utf-8"))
@@ -190,6 +309,7 @@ class TestAtRiskRenderHtml:
 
 
 # ── citation_pathfinder_web ──────────────────────────────────────────────────
+
 
 class TestBuildCitationGraph:
     def test_structure(self):
@@ -219,7 +339,9 @@ class TestRenderCitationGraphSvg:
         assert "📄" in svg
 
     def test_with_params(self):
-        svg = render_citation_graph_svg(paper_id="p1", paper_title="T", cited_paper_ids=["p2"], cited_capsule_ids=[])
+        svg = render_citation_graph_svg(
+            paper_id="p1", paper_title="T", cited_paper_ids=["p2"], cited_capsule_ids=[]
+        )
         assert "<svg" in svg
         assert "📄" in svg
 
@@ -227,6 +349,7 @@ class TestRenderCitationGraphSvg:
 class TestRenderCitationChainHtml:
     def test_no_file(self, monkeypatch, tmp_path):
         import llm.citation_pathfinder_web as mod
+
         monkeypatch.setattr(mod, "CAPSULES_PATH", tmp_path / "nonexistent.json")
         html = render_citation_chain_html("p1", "Paper", ["p2"], [])
         assert "<svg" in html

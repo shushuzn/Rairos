@@ -1,19 +1,28 @@
 """Tests for gene_pool_decay and crossover core functions."""
+
 import math
 import pytest
 from llm.gene_pool_decay import (
-    CapsuleImpact, DecayState, MomentumState,
-    compute_impact_score, compute_citation_boost,
-    _get_adaptive_lambda, _now_iso,
+    CapsuleImpact,
+    DecayState,
+    MomentumState,
+    compute_impact_score,
+    compute_citation_boost,
+    _get_adaptive_lambda,
+    _now_iso,
     DEFAULT_LAMBDA,
 )
 from llm.crossover import (
-    compute_fitness, compute_trust, _sanitize_archetype,
-    DebateEntry, _score_argument,
+    compute_fitness,
+    compute_trust,
+    _sanitize_archetype,
+    DebateEntry,
+    _score_argument,
 )
 
 
 # ── gene_pool_decay dataclasses ──────────────────────────────────────────────
+
 
 class TestCapsuleImpact:
     def test_defaults(self):
@@ -29,7 +38,9 @@ class TestDecayState:
         assert ds.last_decay_at == ""
 
     def test_with_data(self):
-        ds = DecayState(last_decay_at="2026-01-01", consecutive_low_impact={"c1": 2}, total_archived=5)
+        ds = DecayState(
+            last_decay_at="2026-01-01", consecutive_low_impact={"c1": 2}, total_archived=5
+        )
         assert ds.consecutive_low_impact["c1"] == 2
 
 
@@ -40,6 +51,7 @@ class TestMomentumState:
 
 
 # ── compute_impact_score ──────────────────────────────────────────────────────
+
 
 class TestComputeImpactScore:
     def test_recent_with_feedback(self):
@@ -61,8 +73,12 @@ class TestComputeImpactScore:
 
     def test_citations_boost(self):
         """With feedback>0, more citations → higher impact."""
-        impact_low, _ = compute_impact_score(1.0, "2024-01-01T00:00:00", 5, inbound_citations=0, lambda_=0.01)
-        impact_high, _ = compute_impact_score(1.0, "2024-01-01T00:00:00", 5, inbound_citations=10, lambda_=0.01)
+        impact_low, _ = compute_impact_score(
+            1.0, "2024-01-01T00:00:00", 5, inbound_citations=0, lambda_=0.01
+        )
+        impact_high, _ = compute_impact_score(
+            1.0, "2024-01-01T00:00:00", 5, inbound_citations=10, lambda_=0.01
+        )
         assert impact_high > impact_low
 
     def test_invalid_date(self):
@@ -70,7 +86,9 @@ class TestComputeImpactScore:
         assert age == 0.0
 
     def test_citation_override(self):
-        impact1, _ = compute_impact_score(1.0, _now_iso(), 1, inbound_citations=100, citation_boost_override=1.0, lambda_=0.01)
+        impact1, _ = compute_impact_score(
+            1.0, _now_iso(), 1, inbound_citations=100, citation_boost_override=1.0, lambda_=0.01
+        )
         impact2, _ = compute_impact_score(1.0, _now_iso(), 1, inbound_citations=0, lambda_=0.01)
         assert impact1 == pytest.approx(impact2)
 
@@ -78,6 +96,7 @@ class TestComputeImpactScore:
         """Higher lambda reduces impact."""
         # Use very recent date so decay is visible but not zero
         from datetime import datetime, timedelta
+
         recent = (datetime.now() - timedelta(days=10)).isoformat()
         impact_slow, _ = compute_impact_score(1.0, recent, 5, lambda_=0.01)
         impact_fast, _ = compute_impact_score(1.0, recent, 5, lambda_=0.10)
@@ -85,6 +104,7 @@ class TestComputeImpactScore:
 
 
 # ── compute_citation_boost ────────────────────────────────────────────────────
+
 
 class TestComputeCitationBoost:
     def test_no_citations(self):
@@ -99,6 +119,7 @@ class TestComputeCitationBoost:
 
 # ── _get_adaptive_lambda ──────────────────────────────────────────────────────
 
+
 class TestGetAdaptiveLambda:
     def test_known(self):
         assert _get_adaptive_lambda("cs.AI") == 0.02
@@ -109,11 +130,13 @@ class TestGetAdaptiveLambda:
 
 # ── crossover: compute_fitness ────────────────────────────────────────────────
 
+
 class FakeCapsule:
     def __init__(self, score, feedback, created_at="2026-01-01T00:00:00"):
         self.outcome_success_score = score
         self.feedback_count = feedback
         self.created_at = created_at
+
 
 class TestComputeFitness:
     def test_positive(self):
@@ -126,6 +149,7 @@ class TestComputeFitness:
 
 
 # ── crossover: compute_trust ──────────────────────────────────────────────────
+
 
 class TestComputeTrust:
     def test_with_citations(self):
@@ -140,6 +164,7 @@ class TestComputeTrust:
 
 
 # ── crossover: _sanitize_archetype ────────────────────────────────────────────
+
 
 class TestSanitizeArchetype:
     def test_passthrough(self):
@@ -156,18 +181,26 @@ class TestSanitizeArchetype:
 
 # ── crossover: DebateEntry ────────────────────────────────────────────────────
 
+
 class TestDebateEntry:
     def test_fields(self):
         entry = DebateEntry(
-            debate_id="d1", capsule_a_id="ca", capsule_b_id="cb",
-            gap_type="method", score_a=0.8, score_b=0.6,
-            winner_id="ca", loser_id="cb", judged_at="2026-01-01",
+            debate_id="d1",
+            capsule_a_id="ca",
+            capsule_b_id="cb",
+            gap_type="method",
+            score_a=0.8,
+            score_b=0.6,
+            winner_id="ca",
+            loser_id="cb",
+            judged_at="2026-01-01",
         )
         assert entry.winner_id == "ca"
         assert entry.score_a > entry.score_b
 
 
 # ── crossover: _score_argument ────────────────────────────────────────────────
+
 
 class TestScoreArgument:
     def test_positive(self):

@@ -442,7 +442,8 @@ def _run_insight(args: argparse.Namespace) -> int:
 
     elif args.action == "archive-trendslop":
         from llm.insight.tracker import get_evolution_tracker
-  # type: ignore[assignment]
+
+        # type: ignore[assignment]
         tracker = get_evolution_tracker()
         capsules = tracker._load_capsules()
         trendslop_capsules = [c for c in capsules if c.trendslop and c.status == "active"]

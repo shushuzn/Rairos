@@ -1,13 +1,18 @@
 """Tests for gene_pool_watcher and orchestrator dataclasses."""
+
 import pytest
 from llm.gene_pool_watcher import (
-    GapSubscription, WatcherState, _build_gap_subscriptions, _now_iso,
+    GapSubscription,
+    WatcherState,
+    _build_gap_subscriptions,
+    _now_iso,
     FAMILY_ARXIV_CONFIG,
 )
 from research_loop.orchestrator import ResearchAlert, OrchestratorConfig
 
 
 # ── gene_pool_watcher ─────────────────────────────────────────────────────────
+
 
 class TestGapSubscription:
     def test_defaults(self):
@@ -64,13 +69,22 @@ class TestNowIso:
 
 # ── orchestrator ──────────────────────────────────────────────────────────────
 
+
 class TestResearchAlert:
     def test_construct(self):
         alert = ResearchAlert(
-            alert_id="a1", session_id="s1", topic="RL", triggered_by="gap",
-            trigger_title="Test Gap", gaps_found=3, top_gap_title="RL Gap",
-            top_gap_type="method", severity="high", gene_pool_score=0.8,
-            preference_boost=0.5, created_at="2026-01-01",
+            alert_id="a1",
+            session_id="s1",
+            topic="RL",
+            triggered_by="gap",
+            trigger_title="Test Gap",
+            gaps_found=3,
+            top_gap_title="RL Gap",
+            top_gap_type="method",
+            severity="high",
+            gene_pool_score=0.8,
+            preference_boost=0.5,
+            created_at="2026-01-01",
         )
         assert alert.alert_id == "a1"
         assert alert.severity == "high"
@@ -79,9 +93,18 @@ class TestResearchAlert:
 
     def test_to_dict(self):
         alert = ResearchAlert(
-            alert_id="a1", session_id="s1", topic="RL", triggered_by="gap",
-            trigger_title="T", gaps_found=1, top_gap_title="G", top_gap_type="m",
-            severity="low", gene_pool_score=0.5, preference_boost=0.0, created_at="now",
+            alert_id="a1",
+            session_id="s1",
+            topic="RL",
+            triggered_by="gap",
+            trigger_title="T",
+            gaps_found=1,
+            top_gap_title="G",
+            top_gap_type="m",
+            severity="low",
+            gene_pool_score=0.5,
+            preference_boost=0.0,
+            created_at="now",
         )
         d = alert.to_dict()
         assert d["alert_id"] == "a1"
@@ -102,6 +125,7 @@ class TestOrchestratorConfig:
 
 
 # ── FAMILY_ARXIV_CONFIG ──────────────────────────────────────────────────────
+
 
 class TestFamilyArxivConfig:
     def test_known_families(self):

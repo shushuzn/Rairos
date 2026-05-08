@@ -1,8 +1,12 @@
 """Tests for review_simulator, reasoning, code_trace."""
+
 import pytest
 from llm.review_simulator import (
-    ReviewDimension, Severity, ReviewAnnotation,
-    ReviewPersona, SimulatedReview,
+    ReviewDimension,
+    Severity,
+    ReviewAnnotation,
+    ReviewPersona,
+    SimulatedReview,
 )
 from llm.reasoning import ReasoningBlock, _infer_phase
 from research_loop.code_trace import ParsedSourceComment, parse_source_comments
@@ -49,8 +53,12 @@ class TestReviewPersona:
 class TestSimulatedReview:
     def test_fields(self):
         ann = ReviewAnnotation(
-            "a1", ReviewDimension.NOVELTY_CONTRIBUTION,
-            Severity.MAJOR, "S1", "Headline", "Comment",
+            "a1",
+            ReviewDimension.NOVELTY_CONTRIBUTION,
+            Severity.MAJOR,
+            "S1",
+            "Headline",
+            "Comment",
         )
         review = SimulatedReview(
             review_id="r1",

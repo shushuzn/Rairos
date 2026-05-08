@@ -1,8 +1,12 @@
 """Tests for citation_chain, research_memory, litreview_generator dataclasses."""
+
 import pytest
 from llm.citation_chain import CitationNode, CitationChain, ResearchFamily
 from llm.research_memory import (
-    StanceType, AnomalySeverity, ResearchStance, AnomalyAlert,
+    StanceType,
+    AnomalySeverity,
+    ResearchStance,
+    AnomalyAlert,
 )
 from llm.litreview_generator import LitReviewSection, LitReview, LitReviewResult
 
@@ -52,9 +56,13 @@ class TestEnums:
 class TestResearchStance:
     def test_fields(self):
         stance = ResearchStance(
-            stance_id="s1", topic="RL", claim="PPO works",
-            stance=StanceType.SUPPORTED, evidence_refs=["p1"],
-            reasoning="Test reasoning", confidence=0.9,
+            stance_id="s1",
+            topic="RL",
+            claim="PPO works",
+            stance=StanceType.SUPPORTED,
+            evidence_refs=["p1"],
+            reasoning="Test reasoning",
+            confidence=0.9,
         )
         assert stance.stance == StanceType.SUPPORTED
         assert stance.confidence == 0.9
@@ -68,15 +76,22 @@ class TestResearchStance:
 class TestAnomalyAlert:
     def test_fields(self):
         alert = AnomalyAlert(
-            anomaly_id="a1", stance_id="s1", topic="RL",
-            stance_claim="Test claim", paper_title="Test Paper",
-            paper_arxiv_id="1234", anomaly_type="contradiction",
-            severity=AnomalySeverity.HIGH, description="Test anomaly",
+            anomaly_id="a1",
+            stance_id="s1",
+            topic="RL",
+            stance_claim="Test claim",
+            paper_title="Test Paper",
+            paper_arxiv_id="1234",
+            anomaly_type="contradiction",
+            severity=AnomalySeverity.HIGH,
+            description="Test anomaly",
         )
         assert alert.severity == AnomalySeverity.HIGH
 
     def test_to_dict(self):
-        alert = AnomalyAlert("a1", "s1", "T", "C", "Paper", "1234", "type", AnomalySeverity.LOW, "desc")
+        alert = AnomalyAlert(
+            "a1", "s1", "T", "C", "Paper", "1234", "type", AnomalySeverity.LOW, "desc"
+        )
         d = alert.to_dict()
         assert d["anomaly_id"] == "a1"
 

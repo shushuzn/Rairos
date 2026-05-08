@@ -1,8 +1,12 @@
 """Tests for arxiv_alert_channels, claude_cli, multi_researcher."""
+
 import pytest
 from llm.arxiv_alert_channels import (
-    ChannelConfig, get_channels, update_channel,
-    render_channels_html, match_paper_to_channels,
+    ChannelConfig,
+    get_channels,
+    update_channel,
+    render_channels_html,
+    match_paper_to_channels,
 )
 from llm.claude_cli import ClaudeCLIClient, get_claude_cli_client, is_claude_cli_available
 from llm.multi_researcher import get_researchers
@@ -11,8 +15,12 @@ from llm.multi_researcher import get_researchers
 class TestChannelConfig:
     def test_fields(self):
         c = ChannelConfig(
-            id="ch1", name="ML Alerts", categories=["cs.AI"],
-            keywords=["transformer"], priority="high", enabled=True,
+            id="ch1",
+            name="ML Alerts",
+            categories=["cs.AI"],
+            keywords=["transformer"],
+            priority="high",
+            enabled=True,
         )
         assert c.id == "ch1"
         assert c.priority == "high"

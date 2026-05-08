@@ -1,14 +1,20 @@
 """Tests for briefing_generator and daemon."""
+
 import pytest
 from datetime import datetime
 from llm.briefing_generator import (
-    BriefingSection, Briefing, BriefingResult, BriefingGenerator,
-    _load_gene_pool, _load_research_memory,
+    BriefingSection,
+    Briefing,
+    BriefingResult,
+    BriefingGenerator,
+    _load_gene_pool,
+    _load_research_memory,
 )
 from research_loop.daemon import EventBus, DaemonEvent, ResearchDaemon, SSEServer
 
 
 # ── briefing_generator ────────────────────────────────────────────────────────
+
 
 class TestBriefingSection:
     def test_fields(self):
@@ -40,9 +46,14 @@ class TestBriefing:
 class TestBriefingResult:
     def test_success_fields(self):
         b = Briefing(
-            paper_arxiv_id="x", paper_title="T", sections=[],
-            gene_pool_matches=[], memory_stances=[], verdict="",
-            verdict_reason="", generated_at="",
+            paper_arxiv_id="x",
+            paper_title="T",
+            sections=[],
+            gene_pool_matches=[],
+            memory_stances=[],
+            verdict="",
+            verdict_reason="",
+            generated_at="",
         )
         r = BriefingResult(success=True, briefing=b, markdown="# Test", error=None)
         assert r.success is True
@@ -73,6 +84,7 @@ class TestLoadResearchMemory:
 
 
 # ── daemon ───────────────────────────────────────────────────────────────────
+
 
 class TestEventBus:
     def test_init(self):

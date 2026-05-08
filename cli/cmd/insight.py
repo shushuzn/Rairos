@@ -225,7 +225,7 @@ def _run_insight(args: argparse.Namespace) -> int:
             stars = "★" * c.quality_rating + "☆" * (5 - c.quality_rating)  # type: ignore[attr-defined]
             print(f"  [{c.card_id}] {stars} ({c.usefulness_score:.2f}) {c.content[:60]}")  # type: ignore[attr-defined]
         return 0  # type: ignore[attr-defined]
-  # type: ignore[attr-defined]
+    # type: ignore[attr-defined]
     elif args.action == "bottom":
         cards = manager.get_low_quality_cards(max_rating=2, min_scores=1)
         if not cards:
@@ -236,7 +236,7 @@ def _run_insight(args: argparse.Namespace) -> int:
             stars = "★" * c.quality_rating + "☆" * (5 - c.quality_rating)  # type: ignore[attr-defined]
             print(f"  [{c.card_id}] {stars} ({c.usefulness_score:.2f}) {c.content[:60]}")  # type: ignore[attr-defined]
         return 0  # type: ignore[attr-defined]
-  # type: ignore[attr-defined]
+    # type: ignore[attr-defined]
     elif args.action == "quality-report":
         from llm.insight.tracker import get_evolution_tracker
 

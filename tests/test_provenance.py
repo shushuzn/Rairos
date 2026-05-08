@@ -36,7 +36,9 @@ class TestEquationSource:
 
     def test_equation_with_complex_latex(self):
         loc = PaperLocation(section="A", page=1, char_start=0, char_end=1)
-        eq = EquationSource(index=1, equation=r"\frac{\partial f}{\partial x} = \sum_{i=1}^n", location=loc)
+        eq = EquationSource(
+            index=1, equation=r"\frac{\partial f}{\partial x} = \sum_{i=1}^n", location=loc
+        )
         assert "@eq[1]" == eq.tag()
         assert r"\frac" in eq.equation
 
@@ -44,7 +46,9 @@ class TestEquationSource:
 class TestClaimSource:
     def test_creation(self):
         loc = PaperLocation(section="1", page=1, char_start=50, char_end=150)
-        claim = ClaimSource(index=3, claim="Attention mechanisms improve LLM performance.", location=loc)
+        claim = ClaimSource(
+            index=3, claim="Attention mechanisms improve LLM performance.", location=loc
+        )
         assert claim.index == 3
         assert "Attention" in claim.claim
         assert claim.location.page == 1

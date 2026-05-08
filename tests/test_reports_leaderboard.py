@@ -1,10 +1,12 @@
 """Tests for reports._caps_by_theme and leaderboard.LeaderboardEntry."""
+
 import pytest
 from llm.reports import _caps_by_theme
 from research_loop.leaderboard import LeaderboardEntry
 
 
 # ── FakeCapsule for _caps_by_theme ────────────────────────────────────────────
+
 
 class FakeCapsule:
     def __init__(self, capsule_id, title, topic):
@@ -17,6 +19,7 @@ class FakeCapsule:
 
 
 # ── _caps_by_theme ────────────────────────────────────────────────────────────
+
 
 class TestCapsByTheme:
     def test_empty(self):
@@ -61,11 +64,16 @@ class TestCapsByTheme:
 
 # ── LeaderboardEntry ──────────────────────────────────────────────────────────
 
+
 class TestComputeScore:
     def test_perfect(self):
         entry = LeaderboardEntry(
-            arxiv_id="1234", passed=10, failed=0, skipped=0,
-            pass_rate=1.0, coverage_ratio=1.0,
+            arxiv_id="1234",
+            passed=10,
+            failed=0,
+            skipped=0,
+            pass_rate=1.0,
+            coverage_ratio=1.0,
         )
         entry.compute_score()  # noqa: F841
         # combined = 1.0*0.7 + 1.0*0.3 = 1.0
@@ -77,8 +85,12 @@ class TestComputeScore:
 
     def test_all_failed(self):
         entry = LeaderboardEntry(
-            arxiv_id="1234", passed=0, failed=10, skipped=0,
-            pass_rate=0.0, coverage_ratio=0.5,
+            arxiv_id="1234",
+            passed=0,
+            failed=10,
+            skipped=0,
+            pass_rate=0.0,
+            coverage_ratio=0.5,
         )
         entry.compute_score()  # noqa: F841
         # combined = 0*0.7 + 0.5*0.3 = 0.15
@@ -86,8 +98,12 @@ class TestComputeScore:
 
     def test_high_stub_rate(self):
         entry = LeaderboardEntry(
-            arxiv_id="1234", passed=2, failed=1, skipped=7,
-            pass_rate=0.67, coverage_ratio=0.3,
+            arxiv_id="1234",
+            passed=2,
+            failed=1,
+            skipped=7,
+            pass_rate=0.67,
+            coverage_ratio=0.3,
         )
         entry.compute_score()  # noqa: F841
         # stub_rate = 7/10 = 0.70 → exactly at HIGH threshold = 0.40 penalty
@@ -96,8 +112,12 @@ class TestComputeScore:
 
     def test_medium_stub_rate(self):
         entry = LeaderboardEntry(
-            arxiv_id="1234", passed=5, failed=1, skipped=4,
-            pass_rate=0.83, coverage_ratio=0.5,
+            arxiv_id="1234",
+            passed=5,
+            failed=1,
+            skipped=4,
+            pass_rate=0.83,
+            coverage_ratio=0.5,
         )
         entry.compute_score()
         # stub_rate = 4/10 = 0.40 → exactly at MEDIUM threshold = 0.20 penalty
@@ -106,8 +126,12 @@ class TestComputeScore:
 
     def test_zero_total(self):
         entry = LeaderboardEntry(
-            arxiv_id="1234", passed=0, failed=0, skipped=0,
-            pass_rate=0.0, coverage_ratio=0.0,
+            arxiv_id="1234",
+            passed=0,
+            failed=0,
+            skipped=0,
+            pass_rate=0.0,
+            coverage_ratio=0.0,
         )
         entry.compute_score()
         assert entry.stub_rate == 0.0

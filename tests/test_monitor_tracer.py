@@ -1,8 +1,18 @@
 """Tests for subscription_monitor, climate_ai_monitor, policy_impact_tracer."""
+
 import pytest
 from llm.subscription_monitor import SubscriptionMonitor, search_arxiv
-from llm.climate_ai_monitor import is_climate_related, get_climate_papers, get_watch_stats, render_climate_monitor_html
-from llm.policy_impact_tracer import check_policy_impact, get_impacted_capsules, render_policy_tracer_html
+from llm.climate_ai_monitor import (
+    is_climate_related,
+    get_climate_papers,
+    get_watch_stats,
+    render_climate_monitor_html,
+)
+from llm.policy_impact_tracer import (
+    check_policy_impact,
+    get_impacted_capsules,
+    render_policy_tracer_html,
+)
 
 
 class TestSubscriptionMonitor:
@@ -14,6 +24,7 @@ class TestSubscriptionMonitor:
 class TestSearchArxiv:
     def test_signature(self):
         import inspect
+
         sig = inspect.signature(search_arxiv)
         assert "query" in sig.parameters
 

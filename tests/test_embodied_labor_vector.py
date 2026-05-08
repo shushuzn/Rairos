@@ -1,19 +1,29 @@
 """Tests for embodied_planning, labor_displacement_tracker, vector_store."""
+
 import pytest
 from llm.research.embodied_planning import (
-    track_embodied_evolution, render_embodied_planning_dashboard,
-    render_embodied_planning_graph, render_evolution_timeline,
+    track_embodied_evolution,
+    render_embodied_planning_dashboard,
+    render_embodied_planning_graph,
+    render_evolution_timeline,
     render_confidence_calibration,
 )
-from llm.labor_displacement_tracker import is_labor_related, get_labor_papers, render_labor_tracker_html
+from llm.labor_displacement_tracker import (
+    is_labor_related,
+    get_labor_papers,
+    render_labor_tracker_html,
+)
 from core.vector_store import SearchResult, ZillizStore, is_zilliz_configured
 
 
 class TestEmbodiedPlanning:
     def test_track_embodied_evolution(self):
         result = track_embodied_evolution(
-            paper_id="p1", title="Test", representation_type="symbolic",
-            confidence=0.9, gap_title="Gap",
+            paper_id="p1",
+            title="Test",
+            representation_type="symbolic",
+            confidence=0.9,
+            gap_title="Gap",
         )
         assert result is None or isinstance(result, dict)
 
@@ -56,8 +66,6 @@ class TestVectorStore:
         r = SearchResult(id="s1", score=0.95, content="test content", file="a.py", line=10)
         assert r.score == 0.95
         assert r.content == "test content"
-
-
 
     def test_is_zilliz_configured(self):
         result = is_zilliz_configured()

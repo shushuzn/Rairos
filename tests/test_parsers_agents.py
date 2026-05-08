@@ -1,4 +1,5 @@
 """Tests for semantic_scholar parser, skill_discovery, and agent base/squad."""
+
 import pytest
 from pathlib import Path
 from datetime import datetime
@@ -9,6 +10,7 @@ from research_loop.agents.squad import SquadCoordinator
 
 
 # ── S2Paper ─────────────────────────────────────────────────────────────────
+
 
 class TestS2Paper:
     def test_init_with_dict(self):
@@ -22,9 +24,15 @@ class TestS2Paper:
 
 # ── Skill ────────────────────────────────────────────────────────────────────
 
+
 class TestSkill:
     def test_fields(self):
-        skill = Skill(name="test-skill", description="A test skill", path=Path("skills/test"), dir=Path("skills"))
+        skill = Skill(
+            name="test-skill",
+            description="A test skill",
+            path=Path("skills/test"),
+            dir=Path("skills"),
+        )
         assert skill.name == "test-skill"
 
     def test_path_derived(self):
@@ -33,6 +41,7 @@ class TestSkill:
 
 
 # ── AgentStatus ──────────────────────────────────────────────────────────────
+
 
 class TestAgentStatus:
     def test_values(self):
@@ -43,6 +52,7 @@ class TestAgentStatus:
 
 
 # ── MessageBus ────────────────────────────────────────────────────────────────
+
 
 class TestMessageBus:
     def test_publish_and_receive(self):
@@ -59,15 +69,19 @@ class TestMessageBus:
 
 # ── AgentMessage ─────────────────────────────────────────────────────────────
 
+
 class TestAgentMessage:
     def test_fields(self):
         now = datetime.now()
-        msg = AgentMessage(id="m1", topic="greet", sender="alice", payload={"text": "hi"}, timestamp=now)
+        msg = AgentMessage(
+            id="m1", topic="greet", sender="alice", payload={"text": "hi"}, timestamp=now
+        )
         assert msg.id == "m1"
         assert msg.topic == "greet"
 
 
 # ── BaseAgent ─────────────────────────────────────────────────────────────────
+
 
 class TestBaseAgent:
     def test_init(self):
@@ -81,6 +95,7 @@ class TestBaseAgent:
 
 
 # ── SquadCoordinator ─────────────────────────────────────────────────────────
+
 
 class TestSquadCoordinator:
     def test_init(self):

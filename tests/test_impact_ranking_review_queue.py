@@ -1,4 +1,5 @@
 """Tests for impact_ranking, research_log, review_queue."""
+
 import pytest
 from llm.impact_ranking import compute_impact, render_impact_html
 from llm.research_log import add_note, get_notes, render_log
@@ -32,9 +33,13 @@ class TestResearchLog:
 class TestQueuedCapsule:
     def test_fields(self):
         qc = QueuedCapsule(
-            capsule_id="c1", gap_title="Test Gap", gap_type="methodology",
-            polarity="positive", trigger_keywords=["AI"],
-            outcome_score=0.8, source_paper_id="p1",
+            capsule_id="c1",
+            gap_title="Test Gap",
+            gap_type="methodology",
+            polarity="positive",
+            trigger_keywords=["AI"],
+            outcome_score=0.8,
+            source_paper_id="p1",
             created_days_ago=3,
         )
         assert qc.capsule_id == "c1"

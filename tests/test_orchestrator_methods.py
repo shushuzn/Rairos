@@ -1,8 +1,13 @@
 """Tests for research_loop/orchestrator methods."""
+
 import pytest
 from research_loop.orchestrator import (
-    ResearchAlert, OrchestratorConfig, AutonomousOrchestrator,
-    _get_state_path, _load_state, _save_state,
+    ResearchAlert,
+    OrchestratorConfig,
+    AutonomousOrchestrator,
+    _get_state_path,
+    _load_state,
+    _save_state,
 )
 
 
@@ -44,7 +49,6 @@ class TestResearchAlert:
         alert = ResearchAlert.from_dict(d)
         assert alert.alert_id is not None
         assert alert.severity == "MEDIUM"
-
 
 
 class TestOrchestratorConfig:

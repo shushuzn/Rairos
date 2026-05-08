@@ -1,18 +1,29 @@
 """Tests for auth, briefing_distributor, eval_gap_monitor."""
+
 import json
 import pytest
 from llm.auth import (
-    _hash_password, _generate_salt, is_auth_enabled, setup_admin,
-    verify_login, create_session, validate_session, revoke_session
+    _hash_password,
+    _generate_salt,
+    is_auth_enabled,
+    setup_admin,
+    verify_login,
+    create_session,
+    validate_session,
+    revoke_session,
 )
 from llm.briefing_distributor import (
-    make_short_id, _parse_markdown_sections, _escape_html,
-    render_distributed_briefing, render_distributor_panel
+    make_short_id,
+    _parse_markdown_sections,
+    _escape_html,
+    render_distributed_briefing,
+    render_distributor_panel,
 )
 from llm.eval_gap_monitor import detect_deployment_claims, check_eval_gaps, render_eval_gap_html
 
 
 # ── auth ─────────────────────────────────────────────────────────────────────
+
 
 class TestHashPassword:
     def test_deterministic(self):
@@ -45,11 +56,13 @@ class TestGenerateSalt:
 class TestAuthFlow:
     def test_not_enabled_by_default(self, monkeypatch, tmp_path):
         import llm.auth as mod
+
         monkeypatch.setattr(mod, "AUTH_FILE", tmp_path / "auth.json")
         assert is_auth_enabled() is False
 
     def test_setup_and_verify(self, monkeypatch, tmp_path):
         import llm.auth as mod
+
         auth_p = tmp_path / "auth.json"
         monkeypatch.setattr(mod, "AUTH_FILE", auth_p)
         assert setup_admin("admin", "pass123") is True
@@ -60,6 +73,7 @@ class TestAuthFlow:
 
     def test_setup_twice_fails(self, monkeypatch, tmp_path):
         import llm.auth as mod
+
         monkeypatch.setattr(mod, "AUTH_FILE", tmp_path / "auth.json")
         assert setup_admin("admin", "p") is True
         assert setup_admin("admin2", "p2") is False
@@ -68,6 +82,7 @@ class TestAuthFlow:
 class TestSessions:
     def test_create_and_validate(self, monkeypatch, tmp_path):
         import llm.auth as mod
+
         monkeypatch.setattr(mod, "SESSIONS_FILE", tmp_path / "sessions.json")
         token = create_session("testuser")
         assert len(token) == 64  # 32 bytes hex
@@ -75,11 +90,13 @@ class TestSessions:
 
     def test_validate_invalid(self, monkeypatch, tmp_path):
         import llm.auth as mod
+
         monkeypatch.setattr(mod, "SESSIONS_FILE", tmp_path / "sessions.json")
         assert validate_session("badtoken") is None
 
     def test_revoke(self, monkeypatch, tmp_path):
         import llm.auth as mod
+
         monkeypatch.setattr(mod, "SESSIONS_FILE", tmp_path / "sessions.json")
         token = create_session("user")
         revoke_session(token)
@@ -88,15 +105,18 @@ class TestSessions:
     def test_expired_session(self, monkeypatch, tmp_path):
         import llm.auth as mod
         import time
+
         monkeypatch.setattr(mod, "SESSIONS_FILE", tmp_path / "sessions.json")
         token = create_session("user")
         # Fast-forward beyond TTL
         from time import time as real_time
+
         monkeypatch.setattr(time, "time", lambda: real_time() + mod.SESSION_TTL + 1)
         assert validate_session(token) is None
 
 
 # ── briefing_distributor ────────────────────────────────────────────────────
+
 
 class TestMakeShortId:
     def test_deterministic(self):
@@ -163,6 +183,7 @@ class TestRenderDistributed:
 
     def test_share_link_created(self, monkeypatch, tmp_path):
         import llm.briefing_distributor as mod
+
         monkeypatch.setattr(mod, "LINKS_FILE", tmp_path / "links.json")
         render_distributed_briefing("1234", "Test", "# T\n\n## Summary\nS", "researcher")
         links = json.loads((tmp_path / "links.json").read_text(encoding="utf-8"))
@@ -172,6 +193,7 @@ class TestRenderDistributed:
 class TestRenderDistributorPanel:
     def test_panel(self, monkeypatch, tmp_path):
         import llm.briefing_distributor as mod
+
         monkeypatch.setattr(mod, "LINKS_FILE", tmp_path / "links.json")
         html = render_distributor_panel("1234", "Test Paper")
         assert "Briefing Distributor" in html
@@ -179,6 +201,7 @@ class TestRenderDistributorPanel:
 
 
 # ── eval_gap_monitor ─────────────────────────────────────────────────────────
+
 
 class TestDetectDeploymentClaims:
     def test_no_keyword(self):
@@ -202,6 +225,7 @@ class TestDetectDeploymentClaims:
 class TestCheckEvalGaps:
     def test_no_file(self, monkeypatch, tmp_path):
         import llm.eval_gap_monitor as mod
+
         monkeypatch.setattr(mod, "PAPERS_DB", tmp_path / "nonexistent.json")
         result = check_eval_gaps()
         assert result["alert_count"] == 0
@@ -209,6 +233,7 @@ class TestCheckEvalGaps:
 
     def test_empty_papers(self, monkeypatch, tmp_path):
         import llm.eval_gap_monitor as mod
+
         p = tmp_path / "papers.json"
         p.write_text(json.dumps({"papers": []}), encoding="utf-8")
         monkeypatch.setattr(mod, "PAPERS_DB", p)
@@ -223,15 +248,17 @@ class TestRenderEvalGapHtml:
 
     def test_with_alerts(self):
         data = {
-            "alerts": [{
-                "category": "cs.AI",
-                "paper_count": 2,
-                "nearest_deployment_year": 2027,
-                "headroom_years": 2,
-                "ratio": 0.05,
-                "deploying_papers": [{"title": "Test Deployment", "year": "2027"}],
-                "severity": "medium",
-            }],
+            "alerts": [
+                {
+                    "category": "cs.AI",
+                    "paper_count": 2,
+                    "nearest_deployment_year": 2027,
+                    "headroom_years": 2,
+                    "ratio": 0.05,
+                    "deploying_papers": [{"title": "Test Deployment", "year": "2027"}],
+                    "severity": "medium",
+                }
+            ],
             "alert_count": 1,
             "total_domains_checked": 5,
         }

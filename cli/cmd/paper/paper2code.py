@@ -5,6 +5,7 @@ Usage:
     airos paper2code 2106.09685 --mode minimal --framework pytorch
     airos paper2code https://arxiv.org/abs/2106.09685
 """
+
 import re
 import click
 import sys
@@ -15,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from research_loop.paper2code_integration import PaperPipeline
 from cli._shared import print_success, print_error, print_info
+
 
 def _build_paper2code_parser(subparsers):
     """Register paper2code subcommand."""
@@ -28,6 +30,7 @@ def _build_paper2code_parser(subparsers):
             arxiv_id=a.arxiv_id, mode=a.mode, framework=a.framework, install_deps=a.install_deps
         )
     )
+
 
 @click.command("paper2code")
 @click.argument("arxiv_id", type=str)

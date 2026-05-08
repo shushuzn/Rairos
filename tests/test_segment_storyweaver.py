@@ -1,13 +1,19 @@
 """Tests for sections/segment.py and llm/story_weaver.py."""
+
 import pytest
 from sections.segment import looks_like_heading, _section_priority
 from llm.story_weaver import (
-    NarrativeRole, RelationshipType, PaperNarrative,
-    Chapter, Relationship, StoryResult,
+    NarrativeRole,
+    RelationshipType,
+    PaperNarrative,
+    Chapter,
+    Relationship,
+    StoryResult,
 )
 
 
 # ── sections/segment ─────────────────────────────────────────────────────────
+
 
 class TestLooksLikeHeading:
     def test_numbered(self):
@@ -43,10 +49,12 @@ class TestSectionPriority:
 
 # ── llm/story_weaver ─────────────────────────────────────────────────────────
 
+
 class TestNarrativeRole:
     def test_values(self):
         assert NarrativeRole.PROTAGONIST is not None
         assert NarrativeRole.ANTAGONIST is not None
+
 
 class TestRelationshipType:
     def test_values(self):
@@ -55,7 +63,14 @@ class TestRelationshipType:
 
 class TestPaperNarrative:
     def test_fields(self):
-        pn = PaperNarrative(paper_id="1234", title="Test", year=2024, role=NarrativeRole.PROTAGONIST, core_contribution="method", key_insight="finding")
+        pn = PaperNarrative(
+            paper_id="1234",
+            title="Test",
+            year=2024,
+            role=NarrativeRole.PROTAGONIST,
+            core_contribution="method",
+            key_insight="finding",
+        )
         assert pn.paper_id == "1234"
         assert pn.role == NarrativeRole.PROTAGONIST
 
@@ -78,8 +93,10 @@ class TestStoryResult:
     def test_fields(self):
         chapter = Chapter("C1", "2024", ["p1"])
         result = StoryResult(
-            topic="RL Evolution", chapters=[chapter],
-            relationships=[], protagonist_arc="learning",
+            topic="RL Evolution",
+            chapters=[chapter],
+            relationships=[],
+            protagonist_arc="learning",
         )
         assert result.topic == "RL Evolution"
         assert len(result.chapters) == 1

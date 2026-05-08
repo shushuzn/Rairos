@@ -6,8 +6,17 @@ from llm.report import _find, generate, save
 
 class FakeCapsule:
     """Minimal fake for InsightCapsule-like objects."""
-    def __init__(self, capsule_id, action_gap_title, trigger_topic, source_arxiv_category,
-                 outcome_success_score=0.5, action_gap_type="method_limitation", credibility_badge="medium"):
+
+    def __init__(
+        self,
+        capsule_id,
+        action_gap_title,
+        trigger_topic,
+        source_arxiv_category,
+        outcome_success_score=0.5,
+        action_gap_type="method_limitation",
+        credibility_badge="medium",
+    ):
         self.capsule_id = capsule_id
         self.action_gap_title = action_gap_title
         self.trigger_topic = trigger_topic
@@ -96,6 +105,7 @@ class TestGenerate:
                 return [FakeCapsule()]
 
         import llm.report as report_module
+
         monkeypatch.setattr(report_module, "EvolutionTracker", FakeTracker)
 
         output = generate()
@@ -124,6 +134,7 @@ class TestGenerate:
                 ]
 
         import llm.report as report_module
+
         monkeypatch.setattr(report_module, "EvolutionTracker", FakeTracker)
 
         output = generate()
@@ -148,6 +159,7 @@ class TestGenerate:
                 ]
 
         import llm.report as report_module
+
         monkeypatch.setattr(report_module, "EvolutionTracker", FakeTracker)
 
         output = generate()
@@ -175,6 +187,7 @@ class TestGenerate:
                 ]
 
         import llm.report as report_module
+
         monkeypatch.setattr(report_module, "EvolutionTracker", FakeTracker)
 
         output = generate()
@@ -184,6 +197,7 @@ class TestGenerate:
 
     def test_generate_remaining_research_other_research_section(self, monkeypatch):
         """Capsules not matching any theme go to OTHER RESEARCH."""
+
         class FakeCapsule:
             def __init__(self, cid, title):
                 self.capsule_id = cid
@@ -199,6 +213,7 @@ class TestGenerate:
                 return [FakeCapsule("x1", "Unmatched research topic")]
 
         import llm.report as report_module
+
         monkeypatch.setattr(report_module, "EvolutionTracker", FakeTracker)
 
         output = generate()
@@ -207,6 +222,7 @@ class TestGenerate:
 
     def test_generate_events_deduplication(self, monkeypatch):
         """Events with same title (first 50 chars) should be deduplicated."""
+
         class FakeCapsule:
             def __init__(self, cid, title, cat):
                 self.capsule_id = cid
@@ -225,6 +241,7 @@ class TestGenerate:
                 ]
 
         import llm.report as report_module
+
         monkeypatch.setattr(report_module, "EvolutionTracker", FakeTracker)
 
         output = generate()
@@ -250,6 +267,7 @@ class TestGenerate:
                 ]
 
         import llm.report as report_module
+
         monkeypatch.setattr(report_module, "EvolutionTracker", FakeTracker)
 
         output = generate()
@@ -262,6 +280,7 @@ class TestGenerate:
 class TestSave:
     def test_save_calls_generate(self, monkeypatch, tmp_path):
         import llm.report as report_module
+
         captured = {}
 
         def fake_generate():

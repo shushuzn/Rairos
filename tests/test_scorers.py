@@ -1,4 +1,5 @@
 """Tests for impact_scorer, trust_scorer, rigor_scorer."""
+
 import pytest
 from llm.impact_scorer import ImpactScore
 from llm.trust_scorer import CategoryTrust
@@ -8,11 +9,17 @@ from llm.rigor_scorer import RigorScore, _fast_scan, _compute_badge
 class TestImpactScore:
     def test_fields(self):
         score = ImpactScore(
-            paper_id="p1", title="Test", year=2024,
-            raw_citations=10, normalized_score=0.8,
-            pagerank_score=0.5, momentum_score=0.3,
-            author_h_index=25, composite_score=0.75,
-            percentile=85, tier="A",
+            paper_id="p1",
+            title="Test",
+            year=2024,
+            raw_citations=10,
+            normalized_score=0.8,
+            pagerank_score=0.5,
+            momentum_score=0.3,
+            author_h_index=25,
+            composite_score=0.75,
+            percentile=85,
+            tier="A",
         )
         assert score.paper_id == "p1"
         assert score.tier == "A"
@@ -22,29 +29,46 @@ class TestImpactScore:
 class TestCategoryTrust:
     def test_fields(self):
         ct = CategoryTrust(
-            category="cs.AI", total_capsules=50, trusted_capsules=40,
-            avg_score=0.72, trust_ratio=0.8,
+            category="cs.AI",
+            total_capsules=50,
+            trusted_capsules=40,
+            avg_score=0.72,
+            trust_ratio=0.8,
         )
         assert ct.category == "cs.AI"
         assert ct.trust_ratio == 0.8
 
     def test_defaults(self):
-        ct = CategoryTrust(category="cs.LG", total_capsules=0, trusted_capsules=0, avg_score=0.0, trust_ratio=0.0)
+        ct = CategoryTrust(
+            category="cs.LG", total_capsules=0, trusted_capsules=0, avg_score=0.0, trust_ratio=0.0
+        )
         assert ct.trust_ratio == 0.0
 
 
 class TestRigorScore:
     def test_fields(self):
         score = RigorScore(
-            paper_id="p1", overall="A", has_code=True,
-            has_dataset=True, methodology_clarity="high",
-            reproducibility_signals=[], badge="A",
+            paper_id="p1",
+            overall="A",
+            has_code=True,
+            has_dataset=True,
+            methodology_clarity="high",
+            reproducibility_signals=[],
+            badge="A",
         )
         assert score.overall == "A"
         assert score.has_code is True
 
     def test_badge_default(self):
-        score = RigorScore(paper_id="p1", overall="C", has_code=False, has_dataset=False, methodology_clarity="low", reproducibility_signals=[], badge="")
+        score = RigorScore(
+            paper_id="p1",
+            overall="C",
+            has_code=False,
+            has_dataset=False,
+            methodology_clarity="low",
+            reproducibility_signals=[],
+            badge="",
+        )
         assert score.badge == ""
 
 

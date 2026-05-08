@@ -1,4 +1,5 @@
 """Tests for credibility_scorer, contradiction_heatmap, cross_domain_bridge."""
+
 import pytest
 from llm.credibility_scorer import jaccard, CapsuleCredibility, CredibilityScorer
 from llm.contradiction_heatmap import _badge_color, render_heatmap_html
@@ -49,6 +50,7 @@ class TestCredibilityScorer:
     def test_compute_credibility_no_file(self, monkeypatch, tmp_path):
         scorer = CredibilityScorer()
         import llm.credibility_scorer as mod
+
         fake = tmp_path / "capsules.json"
         monkeypatch.setattr(mod, "CAPSULE_PATH", fake)
         result = scorer.compute_credibility(force=True)
@@ -56,17 +58,20 @@ class TestCredibilityScorer:
 
     def test_compute_credibility_empty(self, monkeypatch, tmp_path):
         import json
+
         fake = tmp_path / "capsules.json"
         fake.write_text(json.dumps({"capsules": []}), encoding="utf-8")
 
         scorer = CredibilityScorer()
         import llm.credibility_scorer as mod
+
         monkeypatch.setattr(mod, "CAPSULE_PATH", fake)
         result = scorer.compute_credibility(force=True)
         assert result == []
 
     def test_compute_credibility_with_capsules(self, monkeypatch, tmp_path):
         import json
+
         capsules = [
             {
                 "capsule_id": "c1",
@@ -88,6 +93,7 @@ class TestCredibilityScorer:
 
         scorer = CredibilityScorer()
         import llm.credibility_scorer as mod
+
         monkeypatch.setattr(mod, "CAPSULE_PATH", fake)
         result = scorer.compute_credibility(force=True)
         assert len(result) == 2
@@ -97,11 +103,28 @@ class TestCredibilityScorer:
 
     def test_cache(self, monkeypatch, tmp_path):
         import json
+
         fake = tmp_path / "capsules.json"
-        fake.write_text(json.dumps({"capsules": [{"capsule_id": "c1", "trigger_keywords": ["a"], "action_gap_title": "T", "action_gap_type": "x", "outcome_success_score": 0.5}]}), encoding="utf-8")
+        fake.write_text(
+            json.dumps(
+                {
+                    "capsules": [
+                        {
+                            "capsule_id": "c1",
+                            "trigger_keywords": ["a"],
+                            "action_gap_title": "T",
+                            "action_gap_type": "x",
+                            "outcome_success_score": 0.5,
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
 
         scorer = CredibilityScorer()
         import llm.credibility_scorer as mod
+
         monkeypatch.setattr(mod, "CAPSULE_PATH", fake)
         r1 = scorer.compute_credibility()
         r2 = scorer.compute_credibility()
@@ -109,6 +132,7 @@ class TestCredibilityScorer:
 
     def test_get_trendslop(self, monkeypatch, tmp_path):
         import json
+
         capsules = [
             {"capsule_id": "c1", "trigger_keywords": ["a", "b", "c", "d", "e"]},
             {"capsule_id": "c2", "trigger_keywords": ["a", "b", "c", "d"]},
@@ -122,6 +146,7 @@ class TestCredibilityScorer:
 
         scorer = CredibilityScorer()
         import llm.credibility_scorer as mod
+
         monkeypatch.setattr(mod, "CAPSULE_PATH", fake)
         trendslop = scorer.get_trendslop_capsules()
         # 4/5 overlap = 0.8 > 0.7 threshold
@@ -131,6 +156,7 @@ class TestCredibilityScorer:
         fake = tmp_path / "capsules.json"
         scorer = CredibilityScorer()
         import llm.credibility_scorer as mod
+
         monkeypatch.setattr(mod, "CAPSULE_PATH", fake)
         html = scorer.render_html()
         assert "No capsules yet" in html
@@ -157,7 +183,9 @@ class TestRenderHeatmapHtml:
         assert "No papers yet" in html
 
     def test_with_papers(self):
-        papers = [{"id": "p1", "title": "Test Paper", "primary_category": "cs.AI", "published": "2024"}]
+        papers = [
+            {"id": "p1", "title": "Test Paper", "primary_category": "cs.AI", "published": "2024"}
+        ]
         contrad = {"p1": {"count": 2, "contradictions": []}}
         html = render_heatmap_html(papers, contrad)
         assert "heatmap-card" in html
@@ -168,7 +196,14 @@ class TestRenderHeatmapHtml:
         contrad = {
             "p1": {
                 "count": 1,
-                "contradictions": [{"gap_type": "method", "partner_id": "p2", "polarity": "positive", "shared_keywords": ["rl"]}],
+                "contradictions": [
+                    {
+                        "gap_type": "method",
+                        "partner_id": "p2",
+                        "polarity": "positive",
+                        "shared_keywords": ["rl"],
+                    }
+                ],
             }
         }
         html = render_heatmap_html(papers, contrad)

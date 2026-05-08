@@ -54,7 +54,9 @@ class TestPreferenceTag:
 
 class TestEvolutionEvent:
     def test_minimal_event(self):
-        event = EvolutionEvent(timestamp="2024-01-01T00:00:00", topic="test", action=ExplorationAction.VIEWED)
+        event = EvolutionEvent(
+            timestamp="2024-01-01T00:00:00", topic="test", action=ExplorationAction.VIEWED
+        )
         assert event.timestamp == "2024-01-01T00:00:00"
         assert event.topic == "test"
         assert event.action == ExplorationAction.VIEWED
@@ -92,7 +94,6 @@ class TestEvolutionEvent:
         assert event.duration_seconds == 120
         assert event.notes == "Interesting finding"
         assert event.insight_card_id == "card_789"
-
 
 
 class TestUserPreferenceProfile:
@@ -200,6 +201,8 @@ class TestGapExplorationState:
         assert state.events[1].action == ExplorationAction.ACCEPTED
 
     def test_state_requires_topic_and_session(self):
-        state = GapExplorationState(topic="AI", session_id="sess_1", started_at="2024-01-01T00:00:00")
+        state = GapExplorationState(
+            topic="AI", session_id="sess_1", started_at="2024-01-01T00:00:00"
+        )
         assert state.topic == "AI"
         assert state.session_id == "sess_1"

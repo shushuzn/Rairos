@@ -242,7 +242,7 @@ def _run_calendar(args) -> None:  # type: ignore[attr-defined]
 
     print(f"\n  {Colors.CYAN}Economic Calendar{Colors.END} ({len(data or [])} items)")  # type: ignore[arg-type]
     print()
-    for item in (data or []):  # type: ignore[union-attr]
+    for item in data or []:  # type: ignore[union-attr]
         print(
             f"  [{str(item.get('pub_time', ''))[:16]}] "
             f"{'⭐' * int(item.get('star', 0))} {item.get('title', '')}"

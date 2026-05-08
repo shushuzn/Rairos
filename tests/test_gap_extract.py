@@ -27,7 +27,10 @@ class TestExtractKeywords:
     def test_punctuation_stripped(self):
         text = "machine, learning; transformers: attention! mechanisms."
         result = _extract_keywords(text)
-        assert all("," not in w and ";" not in w and ":" not in w and "!" not in w and "." not in w for w in result)
+        assert all(
+            "," not in w and ";" not in w and ":" not in w and "!" not in w and "." not in w
+            for w in result
+        )
 
     def test_duplicates_removed(self):
         text = "machine learning machine learning machine"
@@ -71,6 +74,7 @@ class TestExtractGapFromPaper:
 
     def test_fallback_on_import_error(self, monkeypatch):
         import llm.research.gap_extract as ge
+
         monkeypatch.delattr(ge, "call_llm_chat_completions", raising=False)
         result = extract_gap_from_paper(
             paper_id="test123",
@@ -83,8 +87,10 @@ class TestExtractGapFromPaper:
 
     def test_fallback_on_llm_exception(self, monkeypatch):
         import llm.client
+
         def fake_call(*args, **kwargs):
             raise RuntimeError("API error")
+
         monkeypatch.setattr(llm.client, "call_llm_chat_completions", fake_call)
         result = extract_gap_from_paper(
             paper_id="test123",
@@ -97,8 +103,10 @@ class TestExtractGapFromPaper:
 
     def test_authors_truncated_to_three(self):
         import llm.research.gap_extract as ge
+
         def fake_call(*args, **kwargs):
             return '{"gap_type":"method_limitation","gap_title":"T","keywords":[],"summary":"S"}'
+
         ge.call_llm_chat_completions = fake_call
         extract_gap_from_paper(
             paper_id="test123",
@@ -107,4 +115,3 @@ class TestExtractGapFromPaper:
             authors=["Author One", "Author Two", "Author Three", "Author Four"],
         )
         # The call was made - no error means it worked
-
