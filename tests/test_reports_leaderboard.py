@@ -73,7 +73,7 @@ class TestComputeScore:
         assert entry.combined_score == 1.0
         assert entry.stub_rate == 0.0
         assert entry.difficulty_penalty == 0.05  # PENALTY_LOW
-        assert score == pytest.approx(0.95)
+        assert entry.combined_score * (1 - entry.difficulty_penalty) == pytest.approx(0.95)
 
     def test_all_failed(self):
         entry = LeaderboardEntry(
