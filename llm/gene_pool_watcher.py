@@ -20,7 +20,13 @@ GP_DIR = Path.home() / ".ai_research_os" / "evolution"
 
 FAMILY_ARXIV_CONFIG: Dict[str, Dict[str, Any]] = {
     "attention": {
-        "keywords": ["transformer", "self-attention", "multi-head attention", "vision transformer", "ViT"],
+        "keywords": [
+            "transformer",
+            "self-attention",
+            "multi-head attention",
+            "vision transformer",
+            "ViT",
+        ],
         "category": "cs.CL",  # Computation and Language
     },
     "reinforcement": {
@@ -28,27 +34,68 @@ FAMILY_ARXIV_CONFIG: Dict[str, Dict[str, Any]] = {
         "category": "cs.LG",  # Machine Learning
     },
     "language_model": {
-        "keywords": ["language model", "LLM", "GPT", "BERT", "decoder", "autoregressive", " Transformer"],
+        "keywords": [
+            "language model",
+            "LLM",
+            "GPT",
+            "BERT",
+            "decoder",
+            "autoregressive",
+            " Transformer",
+        ],
         "category": "cs.CL",
     },
     "vision": {
-        "keywords": ["CNN", "image classification", "object detection", "segmentation", "ViT", "vision transformer"],
+        "keywords": [
+            "CNN",
+            "image classification",
+            "object detection",
+            "segmentation",
+            "ViT",
+            "vision transformer",
+        ],
         "category": "cs.CV",
     },
     "optimization": {
-        "keywords": ["optimizer", "Adam", "SGD", "gradient descent", "loss landscape", "training dynamics"],
+        "keywords": [
+            "optimizer",
+            "Adam",
+            "SGD",
+            "gradient descent",
+            "loss landscape",
+            "training dynamics",
+        ],
         "category": "cs.LG",
     },
     "graph": {
-        "keywords": ["graph neural network", "GNN", "message passing", "node classification", "graph convolution"],
+        "keywords": [
+            "graph neural network",
+            "GNN",
+            "message passing",
+            "node classification",
+            "graph convolution",
+        ],
         "category": "cs.SD",  # Social and Information Networks / cs.LG
     },
     "reasoning": {
-        "keywords": ["chain-of-thought", "reasoning", "logical inference", "planning", "theorem proving"],
+        "keywords": [
+            "chain-of-thought",
+            "reasoning",
+            "logical inference",
+            "planning",
+            "theorem proving",
+        ],
         "category": "cs.AI",
     },
     "embodied": {
-        "keywords": ["robotics", "embodied", "navigation", "control", "motor", "reinforcement learning robot"],
+        "keywords": [
+            "robotics",
+            "embodied",
+            "navigation",
+            "control",
+            "motor",
+            "reinforcement learning robot",
+        ],
         "category": "cs.RO",  # Robotics
     },
     "other": {
@@ -97,6 +144,7 @@ def _load_watcher_state() -> WatcherState:
     if gap_sub_path.exists():
         try:
             import json
+
             data = json.loads(gap_sub_path.read_text(encoding="utf-8"))
             state.gap_subscriptions = [
                 GapSubscription(
@@ -139,6 +187,7 @@ def _save_watcher_state(state: WatcherState) -> None:
 
 def _now_iso() -> str:
     from datetime import datetime
+
     return datetime.utcnow().isoformat()
 
 
@@ -211,6 +260,7 @@ def _register_gap_subscription(sub: GapSubscription) -> Optional[str]:
         return sub_id
     except Exception as e:
         import logging
+
         logging.getLogger("gene_pool_watcher").warning(f"Failed to register gap subscription: {e}")
         return None
 
@@ -289,6 +339,7 @@ class GenePoolWatcher:
                 self._check_and_update()
             except Exception as e:
                 import logging
+
                 logging.getLogger("gene_pool_watcher").warning(f"Watch cycle error: {e}")
             self._stop_event.wait(timeout=self.interval_seconds)
 
@@ -384,9 +435,7 @@ def render_watcher_status_html(state: Optional[WatcherState] = None) -> str:
             lines.append(f"<li>{status} <b>{gs.family}</b> — {', '.join(gs.keywords[:2])}</li>")
         lines.append("</ul>")
     else:
-        lines.append(
-            "<p style='font-size:13px;color:#A89E8C'>No gap subscriptions active.</p>"
-        )
+        lines.append("<p style='font-size:13px;color:#A89E8C'>No gap subscriptions active.</p>")
 
     lines.append(
         f"<p style='font-size:12px;color:#888;margin-top:12px'>"

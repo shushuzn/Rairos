@@ -725,7 +725,10 @@ class DeepResearchAgent:
                 )
 
                 gs = GapSnapshot(
-                    gap_type=str(gap.gap_type.value if hasattr(gap.gap_type, "value") else gap.gap_type) or "improvement",
+                    gap_type=str(
+                        gap.gap_type.value if hasattr(gap.gap_type, "value") else gap.gap_type
+                    )
+                    or "improvement",
                     title=gap.title,
                     description=gap.description or "",
                     matched_papers=[s.arxiv_id for s in snapshots],

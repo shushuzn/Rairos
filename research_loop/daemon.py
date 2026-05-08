@@ -388,7 +388,10 @@ class SSEServer:
                         yield b""
                     except Exception as e:
                         import logging
-                        logging.getLogger("daemon").warning("SSE stream error for client %s: %s", client_id, e)
+
+                        logging.getLogger("daemon").warning(
+                            "SSE stream error for client %s: %s", client_id, e
+                        )
                         yield b"event: error\ndata: stream failed\n\n"
                         break
             finally:

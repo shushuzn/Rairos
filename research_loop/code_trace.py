@@ -35,9 +35,7 @@ def parse_source_comments(code: str) -> List[ParsedSourceComment]:
         dash_pos = line.find("—")
         if dash_pos != -1:
             desc = line[dash_pos + 1 :].strip()
-        results.append(
-            ParsedSourceComment(line_number=lineno, tags=tags, description=desc)
-        )
+        results.append(ParsedSourceComment(line_number=lineno, tags=tags, description=desc))
     return results
 
 
@@ -143,8 +141,12 @@ def code_to_paper_trace(code_str: str, paper_content: Any) -> Dict[str, Any]:
         for s in sources:
             if s.index == idx:
                 paper_text = (
-                    (s.equation if tag_type == "eq" else s.claim if tag_type == "claim" else s.description)[:80]
-                )
+                    s.equation
+                    if tag_type == "eq"
+                    else s.claim
+                    if tag_type == "claim"
+                    else s.description
+                )[:80]
                 location_info = f"§{s.location.section} p{s.location.page}"
                 break
 

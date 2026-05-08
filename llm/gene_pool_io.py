@@ -116,9 +116,23 @@ def get_gene_pool_diversity() -> Dict[str, Any]:
 
     # ─── Algorithm family from trigger_keywords ───────────────────────────────────
     FAMILY_KEYWORDS = {
-        "attention": ["attention", "transformer", "multi-head", "self-attention", "cross-attention"],
+        "attention": [
+            "attention",
+            "transformer",
+            "multi-head",
+            "self-attention",
+            "cross-attention",
+        ],
         "reinforcement": ["rl", "reinforcement", "policy", "reward", "agent", "DQN", "PPO", "A3C"],
-        "language_model": ["LM", "language model", "decoder", "autoregressive", "LLM", "GPT", "BERT"],
+        "language_model": [
+            "LM",
+            "language model",
+            "decoder",
+            "autoregressive",
+            "LLM",
+            "GPT",
+            "BERT",
+        ],
         "vision": ["CNN", "convolution", "resnet", "image", "vision", "ViT", "classification"],
         "optimization": ["optimizer", "Adam", "SGD", "gradient", "loss", "training"],
         "graph": ["GNN", "graph", "node", "edge", "message passing"],

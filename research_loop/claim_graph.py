@@ -43,9 +43,9 @@ class ClaimType(str, Enum):
 
 
 class ComparisonOp(str, Enum):
-    GTE = ">="   # greater than or equal (accuracy: higher is better)
-    LTE = "<="   # less than or equal (latency, param_size: lower is better)
-    EQ = "=="    # exact match
+    GTE = ">="  # greater than or equal (accuracy: higher is better)
+    LTE = "<="  # less than or equal (latency, param_size: lower is better)
+    EQ = "=="  # exact match
 
 
 # ─── Data classes ─────────────────────────────────────────────────────────────
@@ -55,12 +55,12 @@ class ComparisonOp(str, Enum):
 class ClaimNode:
     """A single numerical claim extracted from a paper."""
 
-    claim_id: str              # unique within this graph, e.g. "n0", "n1"
-    paper_id: str              # arXiv ID
-    claim_type: ClaimType      # accuracy | speedup | reduction | param_size | memory | other
-    value: float               # the claimed number
+    claim_id: str  # unique within this graph, e.g. "n0", "n1"
+    paper_id: str  # arXiv ID
+    claim_type: ClaimType  # accuracy | speedup | reduction | param_size | memory | other
+    value: float  # the claimed number
     comparison_op: ComparisonOp  # >= for accuracy, <= for param/speed
-    source_text: str           # original paper text snippet
+    source_text: str  # original paper text snippet
     page_ref: Optional[int] = None  # page number in paper
     char_start: Optional[int] = None
     char_end: Optional[int] = None
@@ -81,8 +81,8 @@ class ClaimNode:
 class ClaimEdge:
     """A directed edge: paper A claims improvement over paper B on a metric."""
 
-    from_paper: str    # arXiv ID of the claiming paper
-    to_paper: str      # arXiv ID of the compared/prior paper
+    from_paper: str  # arXiv ID of the claiming paper
+    to_paper: str  # arXiv ID of the compared/prior paper
     claim_type: ClaimType
     improvement_ratio: float  # e.g., 1.23 means 23% better
     source_text: str  # text that stated this relationship
@@ -94,9 +94,9 @@ class Contradiction:
 
     claim_a: ClaimNode
     claim_b: ClaimNode
-    metric: str        # e.g., "accuracy", "speedup"
-    description: str   # human-readable explanation
-    severity: str      # "high" | "medium" | "low"
+    metric: str  # e.g., "accuracy", "speedup"
+    description: str  # human-readable explanation
+    severity: str  # "high" | "medium" | "low"
 
 
 @dataclass
@@ -107,7 +107,7 @@ class BidirectionalContradiction:
     paper_b: str
     edge_ab: ClaimEdge  # A claims better than B
     edge_ba: ClaimEdge  # B claims better than A
-    severity: str       # "critical" | "high" | "medium"
+    severity: str  # "critical" | "high" | "medium"
     description: str
 
 
@@ -187,7 +187,7 @@ class ClaimGraph:
                 continue
 
             for i, ca in enumerate(claims):
-                for cb in claims[i + 1:]:
+                for cb in claims[i + 1 :]:
                     if ca.paper_id == cb.paper_id:
                         continue  # same paper, different contexts
 
@@ -369,6 +369,7 @@ def extract_claims_from_gene_pool(
     try:
         if tracker is None:
             from llm.insight.tracker import EvolutionTracker
+
             tracker = EvolutionTracker(data_dir=GP_DIR)
     except Exception:
         return graph
@@ -410,7 +411,11 @@ def _extract_from_keywords(graph: ClaimGraph, paper_id: str, keywords: List[str]
     claim_patterns = [
         (r"(\d+(?:\.\d+)?)\s*(?:x|times)\s*faster", ClaimType.SPEEDUP, ComparisonOp.GTE),
         (r"(\d+(?:\.\d+)?)\s*(?:%%|%)\s*(?:accuracy|acc)", ClaimType.ACCURACY, ComparisonOp.GTE),
-        (r"(\d+(?:\.\d+)?)\s*(?:%%|%)\s*(?:reduction|reduce)", ClaimType.REDUCTION, ComparisonOp.LTE),
+        (
+            r"(\d+(?:\.\d+)?)\s*(?:%%|%)\s*(?:reduction|reduce)",
+            ClaimType.REDUCTION,
+            ComparisonOp.LTE,
+        ),
         (r"(\d+(?:\.\d+)?)\s*(?:M|B|K)\s*params?", ClaimType.PARAM_SIZE, ComparisonOp.LTE),
     ]
     for kw in keywords:
@@ -474,16 +479,23 @@ def render_claim_graph_html(
 
     edge_list = []
     for e in graph.edges:
-        edge_list.append({
-            "from": e.from_paper,
-            "to": e.to_paper,
-            "type": e.claim_type.value,
-            "ratio": e.improvement_ratio,
-            "label": f"{e.improvement_ratio:.2f}x",
-        })
+        edge_list.append(
+            {
+                "from": e.from_paper,
+                "to": e.to_paper,
+                "type": e.claim_type.value,
+                "ratio": e.improvement_ratio,
+                "label": f"{e.improvement_ratio:.2f}x",
+            }
+        )
 
     nodes = [
-        {"id": pid, "count": stats["count"], "by_type": stats["by_type"], "top_claim": stats["top_claim"]}
+        {
+            "id": pid,
+            "count": stats["count"],
+            "by_type": stats["by_type"],
+            "top_claim": stats["top_claim"],
+        }
         for pid, stats in paper_stats.items()
     ]
 
@@ -678,9 +690,9 @@ def _build_contradiction_items(contradictions: List[Contradiction]) -> str:
         parts.append(
             f'<div class="claim-item">'
             f'<span class="metric-tag">{c.metric}</span>'
-            f'<b>{c.claim_a.paper_id}</b> vs <b>{c.claim_b.paper_id}</b>'
+            f"<b>{c.claim_a.paper_id}</b> vs <b>{c.claim_b.paper_id}</b>"
             f'<br><small style="color:#8b949e">{c.description}</small>'
-            f'</div>'
+            f"</div>"
         )
     return "".join(parts)
 
@@ -758,7 +770,11 @@ def claim_graph_action(
         ct = ClaimType(claim_type) if claim_type else ClaimType.OTHER
         graph.add_edge(from_paper, to_paper, ct, float(improvement_ratio), source_text or "")
         path = graph.save()
-        return {"added_edge": f"{from_paper} → {to_paper}", "ratio": improvement_ratio, "saved_to": str(path)}
+        return {
+            "added_edge": f"{from_paper} → {to_paper}",
+            "ratio": improvement_ratio,
+            "saved_to": str(path),
+        }
 
     elif action == "contradictions":
         contradictions = graph.find_contradictions()
