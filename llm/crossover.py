@@ -556,12 +556,10 @@ def debate_capsules(capsule_a_id: str, capsule_b_id: str, gap_type: str) -> Opti
 
     if score_a >= score_b:
         winner_id, loser_id = capsule_a_id, capsule_b_id
-        winner_cap, loser_cap = cap_a, cap_b
-        score_winner, score_loser = score_a, score_b
+        loser_cap = cap_b
     else:
         winner_id, loser_id = capsule_b_id, capsule_a_id
-        winner_cap, loser_cap = cap_b, cap_a
-        score_winner, score_loser = score_b, score_a
+        loser_cap = cap_a
 
     # Mark loser as challenged (best-effort — DB schema may not have all columns)
     try:
