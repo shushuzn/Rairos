@@ -131,7 +131,7 @@ class TestGlobalFunctions:
 
 class TestBackupManager:
     def test_init_creates_default_dir(self, tmp_path):
-        manager = BackupManager(backup_dir=tmp_path / "bk")
+        BackupManager(backup_dir=tmp_path / "bk")
         assert (tmp_path / "bk").exists()
 
     def test_init_creates_parent_dirs(self, tmp_path):
