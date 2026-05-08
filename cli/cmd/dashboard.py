@@ -24,7 +24,7 @@ def _build_web_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--host", type=str, default="127.0.0.1", help="Host (default: 127.0.0.1)")
     p.add_argument("--no-browser", action="store_true", help="Don't open browser")
     p.set_defaults(func=_run_web)
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_web(args) -> None:

@@ -27,10 +27,10 @@ def _load_watch_state() -> dict:
     path = _get_watch_state_path()
     if path.exists():
         try:
-            return json.loads(path.read_text(encoding="utf-8"))
+            return json.loads(path.read_text(encoding="utf-8"))  # type: ignore[no-any-return]
         except Exception:
             pass
-    return {"running": False, "interval_minutes": 60, "last_check": ""}
+    return {"running": False, "interval_minutes": 60, "last_check": ""}  # type: ignore[return-value]
 
 
 def _save_watch_state(state: dict) -> None:

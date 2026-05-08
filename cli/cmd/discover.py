@@ -18,7 +18,7 @@ def _build_discover_parser(subparsers) -> argparse.ArgumentParser:
         "event timestamps to find correlations the system learned autonomously.",
     )
     p.set_defaults(func=_run_discover)
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_discover(args) -> None:

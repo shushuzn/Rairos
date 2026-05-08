@@ -74,7 +74,7 @@ def _build_scout_parser(subparsers) -> argparse.ArgumentParser:
         help="Save results to JSON file instead of printing",
     )
     p.set_defaults(func=_run_scout)
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _run_scout(args) -> None:
