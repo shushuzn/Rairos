@@ -20,7 +20,7 @@ def is_ollama_available() -> bool:
         session = requests.Session()
         session.headers.update({"Content-Type": "application/json"})
         resp = session.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=5)
-        return resp.status_code == 200
+        return resp.status_code == 200  # type: ignore[no-any-return]
     except Exception:
         return False
 
