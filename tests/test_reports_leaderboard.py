@@ -67,7 +67,7 @@ class TestComputeScore:
             arxiv_id="1234", passed=10, failed=0, skipped=0,
             pass_rate=1.0, coverage_ratio=1.0,
         )
-        score = entry.compute_score()
+        entry.compute_score()  # noqa: F841
         # combined = 1.0*0.7 + 1.0*0.3 = 1.0
         # stub_rate = 0 → low penalty 0.05 → calibrated = 1.0 * 0.95 = 0.95
         assert entry.combined_score == 1.0
@@ -80,7 +80,7 @@ class TestComputeScore:
             arxiv_id="1234", passed=0, failed=10, skipped=0,
             pass_rate=0.0, coverage_ratio=0.5,
         )
-        score = entry.compute_score()
+        entry.compute_score()  # noqa: F841
         # combined = 0*0.7 + 0.5*0.3 = 0.15
         assert entry.combined_score == 0.15
 
@@ -89,7 +89,7 @@ class TestComputeScore:
             arxiv_id="1234", passed=2, failed=1, skipped=7,
             pass_rate=0.67, coverage_ratio=0.3,
         )
-        score = entry.compute_score()
+        entry.compute_score()  # noqa: F841
         # stub_rate = 7/10 = 0.70 → exactly at HIGH threshold = 0.40 penalty
         assert entry.stub_rate == 0.7
         assert entry.difficulty_penalty == 0.40  # PENALTY_HIGH

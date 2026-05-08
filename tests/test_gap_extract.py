@@ -100,7 +100,7 @@ class TestExtractGapFromPaper:
         def fake_call(*args, **kwargs):
             return '{"gap_type":"method_limitation","gap_title":"T","keywords":[],"summary":"S"}'
         ge.call_llm_chat_completions = fake_call
-        result = extract_gap_from_paper(
+        extract_gap_from_paper(
             paper_id="test123",
             title="T",
             abstract="A",
