@@ -62,6 +62,7 @@ async def papers(
     contradiction_map: dict = {}
     try:
         from llm.contradiction_heatmap import compute_paper_contradictions
+
         full_map = compute_paper_contradictions()
         for pid, _, _, _, _, _, _, _ in papers_list:
             if pid in full_map:

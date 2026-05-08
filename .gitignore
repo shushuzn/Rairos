@@ -25,8 +25,6 @@ uv.lock
 
 *.zip
 
-
-
 # Data directories
 
 data/arxiv/
@@ -47,16 +45,9 @@ data/*.db
 
 cache/
 
-uv.lock
-
 # Database files
 
 *.db
-
-ruvector.db
-
-vectors.db
-
 
 # Claude settings
 
@@ -69,8 +60,6 @@ vectors.db
 .claude/worktrees/
 
 .claude/skills/
-
-
 
 # Tool-specific files
 
@@ -88,8 +77,6 @@ data/llm_cache/
 
 .claude-flow/
 
-
-
 # Misc
 
 .env
@@ -100,17 +87,18 @@ ai_research.db
 
 data/extable.db
 
-
-
 # Experiment files (local only)
 
 galerkin_experiment.py
 
 pino_experiment.py
 
-
 # PR scripts (local only)
 
 _create_pr.js
 
 _pr2.js
+
+
+# Prevent accidental type-name junk files (from LLM codegen artifacts)
+SITUATION_REPORT.md

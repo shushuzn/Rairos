@@ -184,9 +184,12 @@ def _resolve_llm_credentials(base_url: str, api_key: str) -> tuple[str, str]:
             os.getenv("MINIMAX_CN_BASE_URL") or hermes.get("MINIMAX_CN_BASE_URL", "") or ""
         )
     if not resolved_url:
-        resolved_url = os.getenv("MINIMAX_BASE_URL") or os.getenv(
-            "OPENAI_BASE_URL", "https://api.minimaxi.com/v1"
-        ) or ""     or ""
+        resolved_url = (
+            os.getenv("MINIMAX_BASE_URL")
+            or os.getenv("OPENAI_BASE_URL", "https://api.minimaxi.com/v1")
+            or ""
+            or ""
+        )
 
     if "/anthropic" in resolved_url:
         resolved_url = resolved_url.replace("/anthropic", "/v1")
@@ -725,13 +728,16 @@ def get_client(
         if system:
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
-        return cast(str, call_llm_chat_completions(
-            messages=messages,
-            model=model,
-            base_url=resolved_url,
-            api_key=effective_key,
-            **kwargs,
-        ))
+        return cast(
+            str,
+            call_llm_chat_completions(
+                messages=messages,
+                model=model,
+                base_url=resolved_url,
+                api_key=effective_key,
+                **kwargs,
+            ),
+        )
 
     client_wrapper.generate = generate
 

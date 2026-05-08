@@ -211,7 +211,11 @@ def _build_prompt(paper_content, framework: str) -> str:
     if algorithm_sources:
         parts.append("\n## Algorithms\n")
         for src in algorithm_sources[:3]:
-            loc_str = f"§{src.location.section} p{src.location.page}" if src.location.section != "unknown" else f"p{src.location.page}"
+            loc_str = (
+                f"§{src.location.section} p{src.location.page}"
+                if src.location.section != "unknown"
+                else f"p{src.location.page}"
+            )
             parts.append(f"[{src.tag()}] {loc_str}\n{src.description[:500]}")
     elif paper_content.algorithm_descriptions:
         parts.append("\n## Algorithms\n")
@@ -221,7 +225,11 @@ def _build_prompt(paper_content, framework: str) -> str:
     if equation_sources:
         parts.append("\n## Key Equations\n")
         for src in equation_sources[:5]:
-            loc_str = f"§{src.location.section} p{src.location.page}" if src.location.section != "unknown" else f"p{src.location.page}"
+            loc_str = (
+                f"§{src.location.section} p{src.location.page}"
+                if src.location.section != "unknown"
+                else f"p{src.location.page}"
+            )
             parts.append(f"[{src.tag()}] {loc_str}  $$ {src.equation} $$")
     elif paper_content.equations:
         parts.append("\n## Key Equations\n")
@@ -231,7 +239,11 @@ def _build_prompt(paper_content, framework: str) -> str:
     if claim_sources:
         parts.append("\n## Key Claims\n")
         for src in claim_sources[:5]:
-            loc_str = f"§{src.location.section} p{src.location.page}" if src.location.section != "unknown" else f"p{src.location.page}"
+            loc_str = (
+                f"§{src.location.section} p{src.location.page}"
+                if src.location.section != "unknown"
+                else f"p{src.location.page}"
+            )
             parts.append(f"[{src.tag()}] {loc_str}\n- {src.claim[:200]}")
     elif paper_content.claims:
         parts.append("\n## Key Claims\n")

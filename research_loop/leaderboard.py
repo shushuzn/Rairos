@@ -38,21 +38,21 @@ class LeaderboardEntry:
     failed: int = 0
     skipped: int = 0
     duration_seconds: float = 0.0
-    pass_rate: float = 0.0        # passed / (passed + failed)
-    coverage_ratio: float = 0.0    # from BenchmarkResult
-    combined_score: float = 0.0   # weighted composite (raw)
+    pass_rate: float = 0.0  # passed / (passed + failed)
+    coverage_ratio: float = 0.0  # from BenchmarkResult
+    combined_score: float = 0.0  # weighted composite (raw)
     calibrated_score: float = 0.0  # combined_score × (1 - difficulty_penalty)
     difficulty_penalty: float = 0.0  # 0.0–0.5 based on stub rate
-    stub_rate: float = 0.0        # skipped / total tests
+    stub_rate: float = 0.0  # skipped / total tests
     framework: str = "pytorch"
     capsule_id: str = ""
-    last_updated: str = ""         # ISO timestamp
+    last_updated: str = ""  # ISO timestamp
     numerical_claims_total: int = 0
     numerical_claims_covered: int = 0
-    benchmark_domain: str = ""     # e.g. "vision", "nlp", "reasoning" — for cross-domain detection
+    benchmark_domain: str = ""  # e.g. "vision", "nlp", "reasoning" — for cross-domain detection
 
     # Difficulty thresholds
-    STUB_RATE_HIGH = 0.70   # >70% stubs → easy paper, big penalty
+    STUB_RATE_HIGH = 0.70  # >70% stubs → easy paper, big penalty
     STUB_RATE_MEDIUM = 0.40  # >40% stubs → moderate penalty
     PENALTY_HIGH = 0.40
     PENALTY_MEDIUM = 0.20
@@ -117,7 +117,9 @@ class Leaderboard:
             "updated_at": _now_iso(),
             "entries": [e.to_dict() for e in self.entries.values()],
         }
-        LEADERBOARD_FILE.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        LEADERBOARD_FILE.write_text(
+            json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
 
     def upsert(self, entry: LeaderboardEntry) -> None:
         entry.last_updated = _now_iso()
@@ -274,7 +276,6 @@ def render_leaderboard_html(
     else:
         entries = board.rankings(limit)
 
-
     avg_pr = board.avg_pass_rate()
     avg_cov = board.avg_coverage()
 
@@ -282,7 +283,13 @@ def render_leaderboard_html(
     for rank, e in enumerate(entries, 1):
         pr_pct = f"{e.pass_rate * 100:.1f}%"
         cov_pct = f"{e.coverage_ratio * 100:.1f}%"
-        score_color = "#3fb950" if e.combined_score > 0.7 else "#f0883e" if e.combined_score > 0.4 else "#8b949e"
+        score_color = (
+            "#3fb950"
+            if e.combined_score > 0.7
+            else "#f0883e"
+            if e.combined_score > 0.4
+            else "#8b949e"
+        )
         rows_html += f"""<tr>
           <td style="text-align:center;color:#8b949e">{rank}</td>
           <td><a href="https://arxiv.org/{e.arxiv_id}" target="_blank" style="color:#58a6ff">{e.arxiv_id}</a></td>
@@ -317,12 +324,12 @@ def render_leaderboard_html(
 <body>
 <h2>📊 Paper2code Benchmark Leaderboard</h2>
 <div class="summary">
-  {board.total_count()} implementations · avg pass rate: {avg_pr*100:.1f}% · avg coverage: {avg_cov*100:.1f}%
+  {board.total_count()} implementations · avg pass rate: {avg_pr * 100:.1f}% · avg coverage: {avg_cov * 100:.1f}%
 </div>
 <div class="sort-links">
-  <a href="?sort=combined" class="{'active' if sort_by=='combined' else ''}">Combined Score</a>
-  <a href="?sort=pass_rate" class="{'active' if sort_by=='pass_rate' else ''}">Pass Rate</a>
-  <a href="?sort=coverage" class="{'active' if sort_by=='coverage' else ''}">Coverage</a>
+  <a href="?sort=combined" class="{"active" if sort_by == "combined" else ""}">Combined Score</a>
+  <a href="?sort=pass_rate" class="{"active" if sort_by == "pass_rate" else ""}">Pass Rate</a>
+  <a href="?sort=coverage" class="{"active" if sort_by == "coverage" else ""}">Coverage</a>
 </div>
 <table>
 <thead>
@@ -382,9 +389,14 @@ def leaderboard_action(
         }
 
     elif action == "rankings":
-        entries = board.rankings(limit) if sort_by == "combined" else (
-            board.rankings_by_pass_rate(limit) if sort_by == "pass_rate"
-            else board.rankings_by_coverage(limit)
+        entries = (
+            board.rankings(limit)
+            if sort_by == "combined"
+            else (
+                board.rankings_by_pass_rate(limit)
+                if sort_by == "pass_rate"
+                else board.rankings_by_coverage(limit)
+            )
         )
         return {
             "rankings": [

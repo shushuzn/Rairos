@@ -35,7 +35,9 @@ class TestCase:
     test_code: str  # the actual pytest test function code
     paper_ref: str  # which part of paper this derives from
     is_stub: bool = True  # True if this is a placeholder (pytest.skip) not a real assertion
-    cross_refs: list[str] = field(default_factory=list)  # ClaimGraph claim_ids this test cross-references
+    cross_refs: list[str] = field(
+        default_factory=list
+    )  # ClaimGraph claim_ids this test cross-references
 
 
 @dataclass
@@ -119,6 +121,7 @@ def _extract_numerical_claims(paper: PaperContent, arxiv_id: str) -> List[TestCa
     cross_refs: List[str] = []
     try:
         from research_loop.claim_graph import ClaimGraph
+
         cg = ClaimGraph.load()
         inbound = cg.get_inbound_improvement_claims(arxiv_id)
         cross_refs = [node.claim_id for node in inbound]
@@ -189,7 +192,8 @@ def _generate_claim_assertion(
     if is_accuracy_claim:
         # Real assertion: attempt to evaluate model against the claimed threshold.
         # Falls back to skip only if the model can't be imported or run.
-        return '''
+        return (
+            '''
 def test_numerical_claim_{idx}():
     """Paper claims {desc}."""
     # Real assertion: attempt to evaluate the model against the claimed threshold.
@@ -213,17 +217,22 @@ def test_numerical_claim_{idx}():
         assert max_conf > 0.0 and max_conf <= 1.0, f"Output not in [0,1] range: {max_conf}"
     except Exception as e:
         pytest.skip(f"Cannot evaluate model (may require full implementation): {e}")
-''', False
+''',
+            False,
+        )
     else:
         # Stub: speedup / reduction claims need standardized benchmark environments
-        return '''
+        return (
+            '''
 def test_numerical_claim_{idx}():
     """Paper claims {desc}."""
     # Speedup and reduction claims require standardized benchmark environments
     # (e.g., identical hardware, baseline reference implementations).
     import pytest
     pytest.skip("Requires standard benchmark environment — claim: {desc}")
-''', True
+''',
+            True,
+        )
 
 
 def _extract_hyperparameter_tests(paper: PaperContent) -> List[TestCase]:
@@ -324,7 +333,11 @@ def _extract_equation_tests(paper: PaperContent) -> List[TestCase]:
     for i, eq in enumerate(paper.equations[:3]):
         # Simple equation parser: extract variable names
         variables = re.findall(r"[a-zA-Z_][a-zA-Z0-9_]*", eq)
-        variables = [v for v in variables if v not in ("log", "exp", "sin", "cos", "tan", "sqrt", "max", "min")]
+        variables = [
+            v
+            for v in variables
+            if v not in ("log", "exp", "sin", "cos", "tan", "sqrt", "max", "min")
+        ]
 
         if variables:
             test_code = f'''
@@ -360,8 +373,14 @@ def _extract_io_examples(paper: PaperContent, module_name: str) -> List[TestCase
     # Patterns for IO examples in text
     io_patterns = [
         re.compile(r"input\s*[:=]\s*(.+?)\s*[,\n]\s*output\s*[:=]\s*(.+?)(?:\n|$)", re.IGNORECASE),
-        re.compile(r"given\s+(.+?)\s*,\s*(?:the\s+)?(?:result|output)\s+(?:is|:)\s*(.+?)(?:\n|$)", re.IGNORECASE),
-        re.compile(r"(?:example|eg\.?)\s*[:.]?\s*['\"]?(.+?)['\"]?\s*(?:→|->|gives|produces)\s*['\"]?(.+?)['\"]?(?:\n|$)", re.IGNORECASE),
+        re.compile(
+            r"given\s+(.+?)\s*,\s*(?:the\s+)?(?:result|output)\s+(?:is|:)\s*(.+?)(?:\n|$)",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"(?:example|eg\.?)\s*[:.]?\s*['\"]?(.+?)['\"]?\s*(?:→|->|gives|produces)\s*['\"]?(.+?)['\"]?(?:\n|$)",
+            re.IGNORECASE,
+        ),
     ]
 
     text = paper.abstract + " " + " ".join(paper.algorithm_descriptions[:2])
@@ -438,7 +457,7 @@ import pytest
         for tc in cases:
             if tc.cross_refs:
                 content += f"# Cross-refs: {', '.join(tc.cross_refs)}\n"
-            content += f'{tc.test_code}\n\n'
+            content += f"{tc.test_code}\n\n"
 
         (test_dir / filename).write_text(content.strip() + "\n", encoding="utf-8")
 
