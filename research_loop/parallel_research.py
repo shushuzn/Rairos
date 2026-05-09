@@ -146,7 +146,7 @@ def _run_single_agent(
         if barrier:
             barrier.wait()  # Synchronize start
 
-        from research_loop.orchestrator import Orchestrator
+        from research_loop.orchestrator import AutonomousOrchestrator as Orchestrator
 
         orchestrator = Orchestrator()
         agent_result = orchestrator.run_deep_research(
@@ -161,9 +161,9 @@ def _run_single_agent(
         # Collect insights from the agent's session
         insights: List[Any] = []
         try:
-            from research_loop.core import Insight
             if gaps:
-                insights = [Insight(title=str(g), summary="", sources=[], confidence=0.5) for g in gaps]
+                # Insight class moved/deleted from research_loop.core — use dict instead
+                insights = [{"title": str(g), "summary": "", "sources": [], "confidence": 0.5} for g in gaps]
         except Exception:
             pass
 

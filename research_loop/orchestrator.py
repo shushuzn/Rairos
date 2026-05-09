@@ -398,7 +398,7 @@ class AutonomousOrchestrator:
                 continue
 
             # ── Incremental filtering: suppress already-seen gaps ─────────────
-            gaps, filter_stats = self.db.filter_new_gaps(topic, gaps)
+            gaps, filter_stats = self._db.filter_new_gaps(topic, gaps)
             seen_count = filter_stats["seen"]
             suppressed = filter_stats["suppressed"]
             if suppressed > 0:
@@ -435,7 +435,7 @@ class AutonomousOrchestrator:
                     logger.warning(f"Gene Pool encode failed: {e}")
 
             # Record filtered gaps to gap_history for future incremental reporting
-            self.db.record_gap_history(topic, session_id, gaps)
+            self._db.record_gap_history(topic, session_id, gaps)
 
             # ── Generate research survey ─────────────────────────────────────────
             if gaps:

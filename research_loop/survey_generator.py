@@ -118,7 +118,7 @@ def generate_research_survey(
     )
 
     # Try LLM generation
-    llm_markdown = ""
+    llm_markdown: str | None = None
     try:
         import os as _os
         try:
