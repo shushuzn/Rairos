@@ -1,6 +1,7 @@
 """arXiv search by keyword query."""
 
 import logging
+from datetime import timedelta
 from typing import List
 
 import feedparser
