@@ -89,8 +89,6 @@ def generate_research_survey(
 
     Returns the path to the generated markdown file.
     """
-    import datetime
-    import os
 
     # Sort gaps by severity then novelty
     sorted_gaps = sorted(scored_gaps, key=_gap_sort_key)
@@ -180,8 +178,8 @@ def generate_research_survey(
     # Build static report (always generated)
     markdown = f"""# Research Survey: {topic}
 
-**Generated:** {now}  
-**Session:** `{session_short}`  
+**Generated:** {now}
+**Session:** `{session_short}`
 **Papers Analyzed:** {papers_analyzed} | **Iterations:** {iterations} | **Gaps Found:** {gap_count} ({new_count} new)
 
 ---

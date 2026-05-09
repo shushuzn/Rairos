@@ -74,7 +74,7 @@ def _mark_suggestion_consumed(gap_type: str, topic_hint: str, title: str, s_type
 
 def mark_capsule_consumed(capsule_id: str, tracker) -> None:
     """Mark a capsule as consumed in both Gene Pool stores."""
-    
+
 
     try:
         consumed_title = ""

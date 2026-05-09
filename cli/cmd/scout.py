@@ -11,11 +11,11 @@ from __future__ import annotations
 
 import argparse
 import json
-
+import threading
 import time
 from pathlib import Path
 
-, print_error, print_success
+from cli._shared import Colors, print_error, print_success
 
 
 def _build_scout_parser(subparsers) -> argparse.ArgumentParser:
@@ -74,7 +74,7 @@ def _build_scout_parser(subparsers) -> argparse.ArgumentParser:
         help="Save results to JSON file instead of printing",
     )
     p.set_defaults(func=_run_scout)
-    return p  # type: ignore[no-any-return]
+    return p
 
 
 def _run_scout(args) -> None:

@@ -156,15 +156,6 @@ async def gene_pool_family_tree(request: Request):
 
 
 
-
-@router.get("/gene-pool/family-tree")
-async def gene_pool_family_tree(request: Request):
-    """Phylogenetic dendrogram of Gene Pool capsules by generation."""
-    from web.renderers import render_gene_pool_family_tree_html
-
-    return HTMLResponse(content=render_gene_pool_family_tree_html())
-
-
 @router.get("/heatmap")
 async def contradiction_heatmap(request: Request):
     """Contradiction Heatmap — papers colored by contradiction count."""

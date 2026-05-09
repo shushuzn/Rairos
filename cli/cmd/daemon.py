@@ -14,10 +14,10 @@ Usage:
 from __future__ import annotations
 
 import argparse
-
+import json
 import sys
 import time
-
+from pathlib import Path
 
 from cli._shared import Colors, colored, print_error, print_success
 
@@ -103,7 +103,7 @@ def _build_daemon_parser(subparsers) -> argparse.ArgumentParser:
     events.add_argument("--limit", "-n", type=int, default=20, help="Max events to show")
     events.set_defaults(func=_run_daemon_events)
 
-    return p  # type: ignore[no-any-return]
+    return p
 
 
 def _get_orchestrator():
@@ -141,7 +141,7 @@ def _run_daemon_status(args) -> None:
 
     running = status.get("running", False)
     running_str = (
-        f"{Colors.GREEN}RUNNING{Colors.END}" if running else f"{Colors.FAIL}STOPPED{Colors.END}"
+        f"{Colors.GREEN}RUNNING{Colors.END}" if running else f"{Colors.RED}STOPPED{Colors.END}"
     )
 
     print(f"\n  {'Daemon Status':<20} {running_str}")
@@ -168,7 +168,7 @@ def _run_daemon_cycle(args) -> None:
         print_success(f"Cycle complete: {len(alerts)} alert(s) generated")
         for alert in alerts[:5]:
             sev = alert.severity
-            color = Colors.FAIL if sev == "HIGH" else Colors.YELLOW
+            color = Colors.RED if sev == "HIGH" else Colors.YELLOW
             print(f"  {color}[{sev}]{Colors.END} {alert.top_gap_title[:60]}")
         if len(alerts) > 5:
             print(f"  ... and {len(alerts) - 5} more")
@@ -221,7 +221,7 @@ def _run_daemon_log(args) -> None:
     print(f"\n  Recent Alerts ({len(alerts)}):\n")
     for a in alerts:
         sev = a.severity
-        color = Colors.FAIL if sev == "HIGH" else Colors.YELLOW if sev == "MEDIUM" else Colors.CYAN
+        color = Colors.RED if sev == "HIGH" else Colors.YELLOW if sev == "MEDIUM" else Colors.CYAN
         ts = time.strftime("%H:%M", time.localtime(a.created_at)) if a.created_at else "?"
         gp = getattr(a, "gene_pool_score", 0)
         boost = " ✅" if getattr(a, "preference_boost", False) else ""
@@ -290,7 +290,7 @@ def _run_daemon_sse(args) -> None:
     eb = EventBus()
 
     def print_event(event) -> None:
-         as _json
+        import json as _json
 
         d = event.to_dict()
         d["_printed_at"] = time.strftime("%H:%M:%S")
@@ -325,7 +325,7 @@ def _run_daemon_events(args) -> None:
     print(f"\n  Recent Events ({len(events)}, type={ftype or 'all'}):\n")
     for ev in events:
         ts = time.strftime("%H:%M:%S", time.localtime(ev.timestamp))
-         as _json
+        import json as _json
 
         data_str = _json.dumps(ev.data, ensure_ascii=False)[:80]
         print(f"  {ts}  [{ev.event_type}]  {data_str}")

@@ -31,8 +31,8 @@ GP_DIR = Path.home() / ".ai_research_os" / "evolution"
 
 # ─── Decay configuration ───────────────────────────────────────────────────────
 
-DEFAULT_LAMBDA = 0.01  # half-life ~69 days
-DEFAULT_MIN_IMPACT = 0.1  # archive if impact falls below this
+DEFAULT_LAMBDA = 0.01          # half-life ~69 days
+DEFAULT_MIN_IMPACT = 0.1       # archive if impact falls below this
 DEFAULT_CONSECUTIVE_CYCLES = 3  # N consecutive cycles below threshold → archive
 DECAY_STATE_FILE = GP_DIR / "decay_state.json"
 MOMENTUM_DAYS = 7  # rolling window for momentum calculation
@@ -43,21 +43,21 @@ RESURRECTION_FILE = GP_DIR / "resurrection_queue.json"
 # Higher λ → faster decay, shorter effective half-life
 # CS fields (LLM, vision) move fast; math/physics are more stable
 DOMAIN_LAMBDA_FACTOR: Dict[str, float] = {
-    "cs.AI": 0.02,  # fast-moving: half-life ~35 days
+    "cs.AI": 0.02,    # fast-moving: half-life ~35 days
     "cs.LG": 0.02,
     "cs.CL": 0.02,
-    "cs.CV": 0.015,  # fast: half-life ~46 days
+    "cs.CV": 0.015,   # fast: half-life ~46 days
     "cs.NE": 0.015,
-    "cs.RO": 0.01,  # standard
-    "cs.SE": 0.008,  # slower-moving
-    "cs.CR": 0.005,  # security: more stable knowledge
-    "cs.PL": 0.005,  # programming languages: very stable
-    "math.ST": 0.003,  # statistics theory: very stable
+    "cs.RO": 0.01,    # standard
+    "cs.SE": 0.008,    # slower-moving
+    "cs.CR": 0.005,   # security: more stable knowledge
+    "cs.PL": 0.005,   # programming languages: very stable
+    "math.ST": 0.003, # statistics theory: very stable
     "math.IT": 0.003,
     "physics.class-ph": 0.002,  # classical physics: extremely stable
-    "quant-ph": 0.004,  # quantum: moderate
-    "q-bio": 0.005,  # quantitative biology
-    "econ.GN": 0.005,  # economic theory
+    "quant-ph": 0.004,         # quantum: moderate
+    "q-bio": 0.005,            # quantitative biology
+    "econ.GN": 0.005,          # economic theory
 }
 
 
@@ -82,7 +82,7 @@ class CapsuleImpact:
 class DecayState:
     """Persistent state across decay cycles."""
 
-    last_decay_at: str = ""  # ISO timestamp
+    last_decay_at: str = ""   # ISO timestamp
     consecutive_low_impact: Dict[str, int] = field(default_factory=dict)  # capsule_id → count
     archived_this_cycle: List[str] = field(default_factory=list)  # archived this run
     archived_by_gap_type: Dict[str, int] = field(default_factory=dict)  # gap_type → count
@@ -107,7 +107,6 @@ def _load_correction_state() -> SelfCorrectionState:
         return SelfCorrectionState()
     try:
         import json
-
         data = json.loads(CORRECTION_STATE_FILE.read_text(encoding="utf-8"))
         return SelfCorrectionState(
             history=data.get("history", {}),
@@ -122,19 +121,14 @@ def _load_correction_state() -> SelfCorrectionState:
 def _save_correction_state(state: SelfCorrectionState) -> None:
     """Persist self-correction state to disk."""
     import json
-
     GP_DIR.mkdir(parents=True, exist_ok=True)
     CORRECTION_STATE_FILE.write_text(
-        json.dumps(
-            {
-                "history": state.history,
-                "corrections_triggered": state.corrections_triggered,
-                "pending_gap_types": state.pending_gap_types,
-                "last_correction_at": state.last_correction_at,
-            },
-            indent=2,
-            ensure_ascii=False,
-        ),
+        json.dumps({
+            "history": state.history,
+            "corrections_triggered": state.corrections_triggered,
+            "pending_gap_types": state.pending_gap_types,
+            "last_correction_at": state.last_correction_at,
+        }, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
 
@@ -158,12 +152,10 @@ def check_self_correction(
             state.history[gap_type] = []
 
         # Append current coverage record
-        state.history[gap_type].append(
-            {
-                "coverage": coverage,
-                "cycle_at": now,
-            }
-        )
+        state.history[gap_type].append({
+            "coverage": coverage,
+            "cycle_at": now,
+        })
 
         # Keep only last 10 records per gap_type (rolling window)
         if len(state.history[gap_type]) > 10:
@@ -175,8 +167,8 @@ def check_self_correction(
             below_threshold = all(r["coverage"] < COVERAGE_THRESHOLD for r in recent)
             if below_threshold:
                 already_correcting = (
-                    gap_type in state.pending_gap_types
-                    or state.corrections_triggered.get(gap_type, 0) > 0
+                    gap_type in state.pending_gap_types or
+                    state.corrections_triggered.get(gap_type, 0) > 0
                 )
                 if not already_correcting:
                     triggered.append(gap_type)
@@ -217,7 +209,6 @@ def get_self_correction_status() -> Dict[str, Any]:
         "tracked_gap_types": list(state.history.keys()),
     }
 
-
 CORRECTION_STATE_FILE = GP_DIR / "correction_state.json"
 COVERAGE_THRESHOLD = 0.20  # trigger correction when gap_type coverage falls below this
 CONSECUTIVE_CYCLES_THRESHOLD = 3  # N consecutive cycles below threshold → trigger
@@ -236,12 +227,8 @@ class CoverageHistory:
 class SelfCorrectionState:
     """Tracks coverage history per gap_type to trigger self-correction."""
 
-    history: Dict[str, List[Dict[str, Any]]] = field(
-        default_factory=dict
-    )  # gap_type → list of {coverage, cycle_at}
-    corrections_triggered: Dict[str, int] = field(
-        default_factory=dict
-    )  # gap_type → times corrected
+    history: Dict[str, List[Dict[str, Any]]] = field(default_factory=dict)  # gap_type → list of {coverage, cycle_at}
+    corrections_triggered: Dict[str, int] = field(default_factory=dict)  # gap_type → times corrected
     pending_gap_types: List[str] = field(default_factory=list)  # gap_types awaiting paper2code run
     last_correction_at: str = ""
 
@@ -250,14 +237,12 @@ class SelfCorrectionState:
 class ResurrectionState:
     """Tracks archived capsules eligible for resurrection review."""
 
-    queue: Dict[str, Dict[str, Any]] = field(
-        default_factory=dict
-    )  # capsule_id → resurrection record
+    queue: Dict[str, Dict[str, Any]] = field(default_factory=dict)  # capsule_id → resurrection record
     resurrected_history: List[Dict[str, Any]] = field(default_factory=list)  # past resurrections
     total_resurrected: int = 0
 
     # Re-evaluation criteria
-    MIN_FEEDBACK_TO_RESURRECT = 3  # archived capsule needs ≥3 new feedback since archive
+    MIN_FEEDBACK_TO_RESURRECT = 3   # archived capsule needs ≥3 new feedback since archive
     RESURRECT_CONSECUTIVE_CYCLES = 2  # must have N cycles with positive momentum in gap_type
 
 
@@ -270,7 +255,6 @@ def _load_resurrection_state() -> ResurrectionState:
         return ResurrectionState()
     try:
         import json
-
         data = json.loads(RESURRECTION_FILE.read_text(encoding="utf-8"))
         return ResurrectionState(
             queue={k: v for k, v in data.get("queue", {}).items()},
@@ -285,7 +269,6 @@ def _save_resurrection_state(state: ResurrectionState) -> None:
     """Persist resurrection state to disk."""
     GP_DIR.mkdir(parents=True, exist_ok=True)
     import json
-
     data = {
         "queue": state.queue,
         "resurrected_history": state.resurrected_history[-50:],  # keep last 50
@@ -298,7 +281,6 @@ def _get_archived_capsules() -> List[Any]:
     """Return all archived capsules from the Gene Pool."""
     try:
         from llm.insight.tracker import EvolutionTracker
-
         tracker = EvolutionTracker(data_dir=GP_DIR)
         capsules = tracker._load_capsules()
         return [c for c in capsules if c.status == "archived"]
@@ -317,10 +299,7 @@ def check_resurrection_eligibility(
     Returns (eligible, reason).
     """
     if feedback_since_archive < ResurrectionState.MIN_FEEDBACK_TO_RESURRECT:
-        return (
-            False,
-            f"insufficient new feedback ({feedback_since_archive} < {ResurrectionState.MIN_FEEDBACK_TO_RESURRECT})",
-        )
+        return False, f"insufficient new feedback ({feedback_since_archive} < {ResurrectionState.MIN_FEEDBACK_TO_RESURRECT})"
 
     if gap_type_momentum < 1.0:
         return False, f"gap_type momentum declining ({gap_type_momentum:.2f} < 1.0)"
@@ -364,23 +343,14 @@ def resurrect_capsule(capsule_id: str) -> dict:
     capsule = next((c for c in capsules if c.capsule_id == capsule_id), None)
 
     if capsule is None:
-        return {
-            "success": False,
-            "capsule_id": capsule_id,
-            "error": "capsule not found in Gene Pool",
-        }
+        return {"success": False, "capsule_id": capsule_id, "error": "capsule not found in Gene Pool"}
 
     if capsule.status != "archived":
-        return {
-            "success": False,
-            "capsule_id": capsule_id,
-            "error": f"capsule is {capsule.status}, not archived",
-        }
+        return {"success": False, "capsule_id": capsule_id, "error": f"capsule is {capsule.status}, not archived"}
 
     # Re-score using current impact formula
     try:
         from research_loop.claim_graph import ClaimGraph
-
         cg = ClaimGraph.load()
     except Exception:
         cg = None
@@ -407,16 +377,14 @@ def resurrect_capsule(capsule_id: str) -> dict:
     resurrected_at = _now_iso()
 
     # Record in history before changing status
-    state.resurrected_history.append(
-        {
-            "capsule_id": capsule_id,
-            "resurrected_at": resurrected_at,
-            "previous_impact": capsule.outcome_success_score,
-            "new_impact_score": new_impact,
-            "gap_type": capsule.action_gap_type,
-            "feedback_count": capsule.feedback_count,
-        }
-    )
+    state.resurrected_history.append({
+        "capsule_id": capsule_id,
+        "resurrected_at": resurrected_at,
+        "previous_impact": capsule.outcome_success_score,
+        "new_impact_score": new_impact,
+        "gap_type": capsule.action_gap_type,
+        "feedback_count": capsule.feedback_count,
+    })
     state.total_resurrected += 1
 
     # Remove from queue
@@ -500,12 +468,14 @@ def get_inbound_citations(paper_id: str, graph=None) -> int:
     if graph is None:
         try:
             from research_loop.claim_graph import ClaimGraph
-
             graph = ClaimGraph.load()
         except Exception:
             return 0
 
-    count = sum(1 for e in graph.edges if e.to_paper == paper_id)
+    count = sum(
+        1 for e in graph.edges
+        if e.to_paper == paper_id
+    )
     return count
 
 
@@ -518,7 +488,6 @@ def get_indirect_citations(paper_id: str, graph=None) -> int:
     if graph is None:
         try:
             from research_loop.claim_graph import ClaimGraph
-
             graph = ClaimGraph.load()
         except Exception:
             return 0
@@ -616,7 +585,6 @@ def score_all_capsules(
     # Build claim graph for citation lookup (lazy)
     try:
         from research_loop.claim_graph import ClaimGraph
-
         cg = ClaimGraph.load()
     except Exception:
         cg = None
@@ -671,21 +639,19 @@ def score_all_capsules(
             credibility_badge=getattr(cap, "credibility_badge", "medium"),
         )
 
-        impacts.append(
-            CapsuleImpact(
-                capsule_id=cap.capsule_id,
-                impact_score=impact,
-                age_days=age_days,
-                feedback_count=cap.feedback_count,
-                success_score=cap.outcome_success_score,
-                citation_boost=round(citation_boost_val, 4),
-                inbound_citations=inbound,
-                indirect_citations=indirect,
-                capsule_trust=capsule_trust,
-                archived=should_archive,
-                reason=reason,
-            )
-        )
+        impacts.append(CapsuleImpact(
+            capsule_id=cap.capsule_id,
+            impact_score=impact,
+            age_days=age_days,
+            feedback_count=cap.feedback_count,
+            success_score=cap.outcome_success_score,
+            citation_boost=round(citation_boost_val, 4),
+            inbound_citations=inbound,
+            indirect_citations=indirect,
+            capsule_trust=capsule_trust,
+            archived=should_archive,
+            reason=reason,
+        ))
 
     # Update and save state
     state.consecutive_low_impact = new_consecutive
@@ -710,7 +676,6 @@ def score_all_capsules(
         corr_result = check_self_correction(avg_coverage)
         if corr_result.get("triggered"):
             import logging
-
             logging.getLogger("decay").info(
                 f"Self-correction triggered: {corr_result['triggered_gap_types']} "
                 f"need paper2code coverage — pending: {corr_result['pending_gap_types']}"
@@ -723,7 +688,6 @@ def score_all_capsules(
         sub_result = trigger_decay_aware_subscriptions()
         if sub_result.get("triggered"):
             import logging
-
             logging.getLogger("decay").info(
                 f"Decay-aware subs triggered: {sub_result['triggered_gap_types']} "
                 f"→ added: {sub_result['subscriptions_added']}"
@@ -751,7 +715,6 @@ def _load_decay_state() -> DecayState:
         return DecayState()
     try:
         import json
-
         data = json.loads(DECAY_STATE_FILE.read_text(encoding="utf-8"))
         return DecayState(
             last_decay_at=data.get("last_decay_at", ""),
@@ -767,20 +730,15 @@ def _load_decay_state() -> DecayState:
 def _save_decay_state(state: DecayState) -> None:
     """Persist decay state to disk."""
     import json
-
     GP_DIR.mkdir(parents=True, exist_ok=True)
     DECAY_STATE_FILE.write_text(
-        json.dumps(
-            {
-                "last_decay_at": state.last_decay_at,
-                "consecutive_low_impact": state.consecutive_low_impact,
-                "archived_this_cycle": state.archived_this_cycle,
-                "archived_by_gap_type": state.archived_by_gap_type,
-                "total_archived": state.total_archived,
-            },
-            indent=2,
-            ensure_ascii=False,
-        ),
+        json.dumps({
+            "last_decay_at": state.last_decay_at,
+            "consecutive_low_impact": state.consecutive_low_impact,
+            "archived_this_cycle": state.archived_this_cycle,
+            "archived_by_gap_type": state.archived_by_gap_type,
+            "total_archived": state.total_archived,
+        }, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
 
@@ -798,7 +756,6 @@ def _load_momentum_state() -> MomentumState:
         return MomentumState()
     try:
         import json
-
         data = json.loads(MOMENTUM_STATE_FILE.read_text(encoding="utf-8"))
         return MomentumState(
             new_by_gap_type=data.get("new_by_gap_type", {}),
@@ -812,18 +769,13 @@ def _load_momentum_state() -> MomentumState:
 def _save_momentum_state(state: MomentumState) -> None:
     """Persist momentum state to disk."""
     import json
-
     GP_DIR.mkdir(parents=True, exist_ok=True)
     MOMENTUM_STATE_FILE.write_text(
-        json.dumps(
-            {
-                "new_by_gap_type": state.new_by_gap_type,
-                "archived_by_gap_type": state.archived_by_gap_type,
-                "last_snapshot_at": state.last_snapshot_at,
-            },
-            indent=2,
-            ensure_ascii=False,
-        ),
+        json.dumps({
+            "new_by_gap_type": state.new_by_gap_type,
+            "archived_by_gap_type": state.archived_by_gap_type,
+            "last_snapshot_at": state.last_snapshot_at,
+        }, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
 
@@ -928,13 +880,11 @@ def get_gap_type_momentum(
         }
 
     # Save updated state with current snapshot
-    _save_momentum_state(
-        MomentumState(
-            new_by_gap_type=new_by_gap_type,
-            archived_by_gap_type=archived_by_gap_type,
-            last_snapshot_at=_now_iso(),
-        )
-    )
+    _save_momentum_state(MomentumState(
+        new_by_gap_type=new_by_gap_type,
+        archived_by_gap_type=archived_by_gap_type,
+        last_snapshot_at=_now_iso(),
+    ))
 
     return result
 
@@ -977,7 +927,7 @@ def trigger_decay_aware_subscriptions() -> Dict[str, Any]:
 
     Returns dict with triggered gap_types and subscription actions taken.
     """
-    , FAMILY_ARXIV_CONFIG
+    from llm.gene_pool_watcher import GenePoolWatcher, FAMILY_ARXIV_CONFIG
 
     state = _load_decay_state()
 
@@ -986,7 +936,6 @@ def trigger_decay_aware_subscriptions() -> Dict[str, Any]:
 
     # Load current Gene Pool counts by gap_type
     from llm.insight.tracker import EvolutionTracker
-
     tracker = EvolutionTracker(data_dir=GP_DIR)
     capsules = tracker._load_capsules()
 
@@ -1009,7 +958,6 @@ def trigger_decay_aware_subscriptions() -> Dict[str, Any]:
             family = GAP_TYPE_TO_FAMILY.get(gap_type, "other")
             if family in FAMILY_ARXIV_CONFIG:
                 from llm.gene_pool_watcher import GapSubscription
-
                 new_sub = GapSubscription(
                     family=family,
                     keywords=FAMILY_ARXIV_CONFIG[family]["keywords"],
@@ -1017,7 +965,6 @@ def trigger_decay_aware_subscriptions() -> Dict[str, Any]:
                     enabled=True,
                 )
                 from llm.gene_pool_watcher import _register_gap_subscription
-
                 sub_id = _register_gap_subscription(new_sub)
                 if sub_id:
                     subscriptions_added.append(family)
@@ -1041,10 +988,10 @@ def trigger_decay_aware_subscriptions() -> Dict[str, Any]:
 
 # Weights for impact prediction (heuristic — no real training data needed)
 # These weights reflect which features best predict future impact
-PRED_WEIGHT_SUCCESS = 0.50  # primary signal: how well does the capsule perform
-PRED_WEIGHT_FEEDBACK = 0.25  # secondary: how often is this capsule referenced
-PRED_WEIGHT_AGE = 0.15  # youth bonus: newer capsules may still be growing
-PRED_WEIGHT_CITATION = 0.10  # tertiary: citation network position
+PRED_WEIGHT_SUCCESS = 0.50    # primary signal: how well does the capsule perform
+PRED_WEIGHT_FEEDBACK = 0.25   # secondary: how often is this capsule referenced
+PRED_WEIGHT_AGE = 0.15        # youth bonus: newer capsules may still be growing
+PRED_WEIGHT_CITATION = 0.10   # tertiary: citation network position
 
 
 def predict_impact(
@@ -1077,20 +1024,18 @@ def predict_impact(
 
     # Weighted prediction
     predicted = (
-        PRED_WEIGHT_SUCCESS * success_score
-        + PRED_WEIGHT_FEEDBACK * fb_bonus
-        + PRED_WEIGHT_AGE * age_factor
-        + PRED_WEIGHT_CITATION * citation_factor
+        PRED_WEIGHT_SUCCESS * success_score +
+        PRED_WEIGHT_FEEDBACK * fb_bonus +
+        PRED_WEIGHT_AGE * age_factor +
+        PRED_WEIGHT_CITATION * citation_factor
     )
 
     # Confidence: how many features do we have non-zero data for?
-    non_zero_features = sum(
-        [
-            success_score > 0,
-            feedback_count > 0,
-            inbound_citations > 0,
-        ]
-    )
+    non_zero_features = sum([
+        success_score > 0,
+        feedback_count > 0,
+        inbound_citations > 0,
+    ])
     if non_zero_features >= 3:
         confidence = "high"
     elif non_zero_features == 2:
@@ -1135,7 +1080,6 @@ def score_all_with_predictions(
 
     try:
         from research_loop.claim_graph import ClaimGraph
-
         cg = ClaimGraph.load()
     except Exception:
         cg = None
@@ -1185,24 +1129,22 @@ def score_all_with_predictions(
             credibility_badge=getattr(cap, "credibility_badge", "medium"),
         )
 
-        scored.append(
-            {
-                "capsule_id": cap.capsule_id,
-                "action_gap_title": cap.action_gap_title[:60],
-                "impact_score": impact,
-                "capsule_trust": capsule_trust,
-                "age_days": age_days,
-                "feedback_count": cap.feedback_count,
-                "success_score": cap.outcome_success_score,
-                "citation_boost": round(compute_citation_boost(inbound, indirect), 4),
-                "inbound_citations": inbound,
-                "indirect_citations": indirect,
-                "predicted_impact": prediction["predicted_impact"],
-                "prediction_verdict": prediction["verdict"],
-                "prediction_confidence": prediction["confidence"],
-                "archived": should_archive,
-            }
-        )
+        scored.append({
+            "capsule_id": cap.capsule_id,
+            "action_gap_title": cap.action_gap_title[:60],
+            "impact_score": impact,
+            "capsule_trust": capsule_trust,
+            "age_days": age_days,
+            "feedback_count": cap.feedback_count,
+            "success_score": cap.outcome_success_score,
+            "citation_boost": round(compute_citation_boost(inbound, indirect), 4),
+            "inbound_citations": inbound,
+            "indirect_citations": indirect,
+            "predicted_impact": prediction["predicted_impact"],
+            "prediction_verdict": prediction["verdict"],
+            "prediction_confidence": prediction["confidence"],
+            "archived": should_archive,
+        })
 
     state.consecutive_low_impact = new_consecutive
     state.last_decay_at = _now_iso()
@@ -1288,7 +1230,8 @@ def gene_pool_decay_action(
             "last_decay_at": state.last_decay_at,
             "archived_by_gap_type": dict(state.archived_by_gap_type),
             "consecutive_tracking": {
-                cid: cnt for cid, cnt in state.consecutive_low_impact.items() if cnt > 0
+                cid: cnt for cid, cnt in state.consecutive_low_impact.items()
+                if cnt > 0
             },
         }
 
@@ -1303,7 +1246,9 @@ def gene_pool_decay_action(
         days = 7  # default rolling window
         result = get_gap_type_momentum(days=days)
         # Sort by momentum ascending (dying first)
-        sorted_gap_types = sorted(result.items(), key=lambda x: x[1]["momentum"])
+        sorted_gap_types = sorted(
+            result.items(), key=lambda x: x[1]["momentum"]
+        )
         rising = [gt for gt, d in result.items() if d["trend"] == "rising"]
         falling = [gt for gt, d in result.items() if d["trend"] in ("falling", "dying")]
         return {
@@ -1316,7 +1261,6 @@ def gene_pool_decay_action(
 
     elif action == "domain_stats":
         from llm.insight.tracker import EvolutionTracker
-
         tracker = EvolutionTracker(data_dir=GP_DIR)
         capsules = tracker._load_capsules()
 
@@ -1371,7 +1315,9 @@ def gene_pool_decay_action(
             "high_potential": [
                 i["capsule_id"] for i in impacts_raw if i.get("verdict") == "high_potential"
             ],
-            "declining": [i["capsule_id"] for i in impacts_raw if i.get("verdict") == "declining"],
+            "declining": [
+                i["capsule_id"] for i in impacts_raw if i.get("verdict") == "declining"
+            ],
         }
 
     elif action == "dismiss_correction":

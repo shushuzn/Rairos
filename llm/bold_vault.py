@@ -41,6 +41,11 @@ def jaccard(a: List[str], b: List[str]) -> float:
         return 0.0
     return len(s_a & s_b) / len(s_a | s_b)
 
+_jaccard = jaccard  # backward compatibility alias
+
+
+_jaccard = jaccard  # backward compatibility alias
+
 
 def get_bold_capsules() -> List[BoldCapsule]:
     """Return capsules flagged as bold hypothesis (high-risk/high-reward)."""

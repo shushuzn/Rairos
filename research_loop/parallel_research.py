@@ -289,7 +289,7 @@ class ParallelResearchCoordinator:
 
         # ── Run agents in parallel ─────────────────────────────────────────────
         results: List[AgentResult] = []
-        thread_local = threading.local()
+        # thread_local = threading.local()  # reserved for future use
 
         def run_with_semaphore(task: Dict[str, Any], agent_id: str, barrier: threading.Barrier) -> AgentResult:
             return _run_single_agent(

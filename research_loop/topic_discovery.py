@@ -207,7 +207,7 @@ def _from_paper_keywords(
     keywords = _extract_keywords_from_text(texts, top_n=20)
 
     # Find the most frequent keyword phrases that aren't covered by existing topics
-    existing_lower = {t.lower() for t in existing_topics}
+    # existing_lower = {t.lower() for t in existing_topics}  # reserved
     for keyword, freq in keywords:
         if freq < threshold_freq:
             break  # sorted by freq desc

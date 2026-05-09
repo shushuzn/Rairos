@@ -938,7 +938,7 @@ class ConfidenceScorer:
         """Posterior P(H=is_real_gap | novelty, support) via Bayes' rule.
 
         Uses a simplified Bayesian update:
-          likelihood_ratio = (novelty * support) / max(novelty, support, 0.01)
+          _likelihood_ratio = (novelty * support) / max(novelty, support, 0.01)
           posterior = (prior * likelihood_ratio) / (prior * likelihood_ratio + (1-prior))
 
         Returns P(H | E) in [0, 1].
@@ -953,7 +953,7 @@ class ConfidenceScorer:
         p_evidence_given_h = max(0.01, min(0.99, evidence + (1 - evidence) * 0.5))
         p_evidence_given_not_h = max(0.01, min(0.99, 1.0 - evidence * 0.5))
 
-        likelihood_ratio = p_evidence_given_h / p_evidence_given_not_h
+        _likelihood_ratio = p_evidence_given_h / p_evidence_given_not_h
 
         # Bayes' rule: P(H|E) = (P(E|H) * P(H)) / (P(E|H) * P(H) + P(E|¬H) * P(¬H))
         numerator = p_evidence_given_h * prior

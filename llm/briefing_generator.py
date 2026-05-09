@@ -7,8 +7,8 @@ Gene Pool and Research Memory context for decision-relevant intelligence.
 from __future__ import annotations
 
 import json
-
-, dataclass, field
+import uuid
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -186,7 +186,7 @@ class BriefingGenerator:
         Returns:
             BriefingResult with the generated briefing
         """
-        
+        import os
 
         # Step 1: Fetch paper from DB
         paper = self._fetch_paper(arxiv_id)
@@ -308,9 +308,7 @@ class BriefingGenerator:
         # Check Gene Pool gaps
         # OPPORTUNITY_SEIZED: paper's gap type matches a Gene Pool entry (directly addresses a known gap)
         gap_type_matches = [
-            m
-            for m in gene_pool_matches
-            if m.get("gap_type") and m.get("gap_type") in text  # type: ignore[operator]
+            m for m in gene_pool_matches if m.get("gap_type") and m.get("gap_type") in text  # type: ignore[operator]
         ]
         if gap_type_matches:
             return (
@@ -361,7 +359,7 @@ class BriefingGenerator:
         model: Optional[str],
     ) -> List[BriefingSection]:
         """Generate briefing using LLM."""
-        
+        import os
 
         try:
             from llm.chat import call_llm_chat_completions

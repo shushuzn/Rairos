@@ -60,7 +60,7 @@ def _get_retrieval_cache_key(query: str, concept: Optional[str], limit: int) -> 
 
 def _get_cached_retrieval(cache_key: str) -> Optional[List]:
     """Get cached retrieval results if valid."""
-    
+
 
     if cache_key in _RETRIEVAL_CACHE:
         timestamp, contexts = _RETRIEVAL_CACHE[cache_key]
@@ -73,7 +73,7 @@ def _get_cached_retrieval(cache_key: str) -> Optional[List]:
 
 def _cache_retrieval(cache_key: str, contexts: List) -> None:
     """Cache retrieval results with LRU eviction."""
-    
+
 
     while len(_RETRIEVAL_CACHE) >= _RETRIEVAL_CACHE_MAX:
         oldest_key = min(_RETRIEVAL_CACHE, key=lambda k: _RETRIEVAL_CACHE[k][0])

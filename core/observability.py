@@ -417,7 +417,7 @@ class MetricsCollector:
                     lines.append(f"# TYPE {key} histogram")
                     sorted_vals = sorted(values)
                     n = len(sorted_vals)
-                    for boundary, bucket_label in [(0.5, "0.5"), (0.95, "0.95"), (0.99, "0.99")]:
+                    for boundary, _bucket_label in [(0.5, "0.5"), (0.95, "0.95"), (0.99, "0.99")]:
                         idx = int(n * boundary) if int(n * boundary) < n else n - 1
                         lines.append(f'{key}_bucket{boundary} {sorted_vals[idx]} {int(ts * 1000)}')
                     lines.append(f"{key}_sum {sum(sorted_vals)} {int(ts * 1000)}")
@@ -503,14 +503,14 @@ class LogSampler:
     def should_emit(self, logger_name: str, level: int) -> bool:
         if level >= logging.ERROR:
             return True  # always emit errors
-        bucket_key = hash(logger_name) % 100
+        _ = hash(logger_name) % 100
         return random.random() < self.rate
 
     def sample_record(self, logger_name: str, record: logging.LogRecord) -> bool:
         """Return True if record should be emitted."""
         if record.levelno >= logging.ERROR:
             return True
-        bucket_key = hash(f"{logger_name}:{record.levelno}") % 1000
+        _ = hash(f"{logger_name}:{record.levelno}") % 1000
         if random.random() < self.rate:
             return True
         return False

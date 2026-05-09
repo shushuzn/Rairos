@@ -303,7 +303,7 @@ class PaperPipeline:
                                 trace_data = code_to_paper_trace(code, content)
                                 db = self._get_db()
                                 if db is not None:
-                                    trace_id = db.upsert_paper_code_trace(
+                                    _ = db.upsert_paper_code_trace(
                                         paper_id=arxiv_id,
                                         code_path=str(code_path),
                                         module_name=module_name,

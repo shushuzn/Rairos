@@ -13,9 +13,9 @@ Workflow:
 
 from __future__ import annotations
 
-
+import json
 import uuid
-, dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -109,7 +109,7 @@ class LitReviewGenerator:
             LitReviewResult with the generated review
         """
         import os
-        
+        import datetime
 
         # Step 1: Collect papers
         papers = self._collect_papers(topic, limit)
@@ -219,7 +219,7 @@ class LitReviewGenerator:
         model: Optional[str],
     ) -> LitReview:
         """Generate lit review using LLM."""
-        
+        import datetime
         import os
 
         try:
@@ -307,7 +307,7 @@ class LitReviewGenerator:
 
     def _generate_template_review(self, topic: str, papers: List[Dict[str, Any]]) -> LitReview:
         """Generate a template-based review without LLM."""
-        
+        import datetime
 
         now = datetime.datetime.now().isoformat()
 
@@ -351,7 +351,7 @@ class LitReviewGenerator:
 
     def _render_markdown(self, review: LitReview) -> str:
         """Render LitReview as markdown string."""
-        
+        import datetime
 
         now = datetime.datetime.now().strftime("%Y-%m-%d")  # type: ignore[name-defined]
         lines = [

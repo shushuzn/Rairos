@@ -237,7 +237,7 @@ def _register_gap_subscription(sub: GapSubscription) -> Optional[str]:
     """
     try:
         from db.database import Database
-        
+
 
         db = Database()
         db.init()

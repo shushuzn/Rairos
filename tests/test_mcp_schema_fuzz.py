@@ -209,11 +209,11 @@ class TestMCPFuzz:
         print(f"Handled errors: {len(errors)}")
 
         if crashes:
-            print(f"\nCrashes:")
+            print("\nCrashes:")
             for tool_name, args, exc in crashes[:10]:
                 print(f"  {tool_name}: {args!r} → {exc}")
         if errors:
-            print(f"\nHandled errors (non-crashing):")
+            print("\nHandled errors (non-crashing):")
             for tool_name, args in errors[:10]:
                 print(f"  {tool_name}: {args!r}")
 
