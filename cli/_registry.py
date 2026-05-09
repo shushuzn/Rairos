@@ -269,6 +269,15 @@ def main(argv: Optional[List[str]] = None) -> int:
         "benchmark": "_run_benchmark",
         "postprocess": "_run_postprocess",
         "ingest": "_run_ingest",
+        "daemon": "_run_daemon",
+        "scout": "_run_scout",
+        "intel": "_run_intel",
+        "signal": "_run_signal",
+        "discover": "_run_discover",
+        "report": "_run_report",
+        "dashboard": "_run_dashboard",
+        "jin10": "_run_jin10",
+        "demo": "_run_demo",
     }
 
     if args.subcmd in dispatch:
