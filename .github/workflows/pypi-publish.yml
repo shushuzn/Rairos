@@ -7,13 +7,12 @@ on:
         description: 'Version to publish'
         required: true
         default: '1.7.1'
-    secrets:
-      PYPI_TOKEN:
-        required: true
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Required for OIDC trusted publishing
     steps:
       - uses: actions/checkout@v4
 
@@ -25,13 +24,8 @@ jobs:
       - name: Build
         run: python -m build
 
-      - name: Upload to PyPI
-        env:
-          PYPI_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          echo "PYPI_PASSWORD length: ${#PYPI_PASSWORD}"
-          python -m twine upload dist/* \
-            --repository-url https://upload.pypi.org/legacy/ \
-            --username __token__ \
-            --password "$PYPI_PASSWORD" \
-            --verbose
+      - name: Publish to PyPI via OIDC
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
+          skip_existing: true
