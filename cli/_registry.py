@@ -275,7 +275,6 @@ def main(argv: Optional[List[str]] = None) -> int:
         "signal": "_run_signal",
         "discover": "_run_discover",
         "report": "_run_report",
-        "dashboard": "_run_dashboard",
         "jin10": "_run_jin10",
         "demo": "_run_demo",
     }

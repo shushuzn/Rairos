@@ -81,7 +81,6 @@ def stage_citation_analysis(paper: dict) -> dict:
     ]
     print_info(f"  Found : {len(citations)} related papers")
     for cid, title, rel in citations:
-        color = {"self": Colors.WARN, "background": Colors.OK, "methodology": Colors.OK, "follows": Colors.INFO, "improvement": Colors.OK}.get(rel, "")
         marker = {"self": "←", "background": "←", "methodology": "├─", "follows": "└─", "improvement": "★"}.get(rel, "?")
         print_info(f"    {marker} {cid}  {title}  [{rel}]")
     return {**paper, "citations": citations}
