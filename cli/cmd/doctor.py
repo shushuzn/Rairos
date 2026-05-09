@@ -164,13 +164,13 @@ def _run_docto(args) -> int:
     if issues:
         console.print(f"\n[red bold]Issues found ({len(issues)}):[/]")
         for issue in issues:
-            console.print(f"  {_fail(issue)}")
+            console.print("  " + _fail(issue))
     if warnings:
         console.print(f"\n[yellow]Warnings ({len(warnings)}):[/]")
         for w in warnings:
-            console.print(f"  {_warn(w)}")
+            console.print("  " + _warn(w))
     if not issues:
-        console.print(f"\n[green]All checks passed.[/]")
+        console.print("\n[green]All checks passed.[/]")
 
     return 1 if issues else 0
 
