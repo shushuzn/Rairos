@@ -25,6 +25,9 @@ import uuid
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from core.observability import emit_research_event, EventType, get_trace_id
+
+from research_loop.survey_generator import generate_research_survey
 
 if TYPE_CHECKING:
     from llm.insight.tracker import EvolutionTracker
@@ -183,6 +186,13 @@ class AutonomousOrchestrator:
         Returns:
             Dict with keys: gaps (list), papers_analyzed (int), session_id (str)
         """
+        trace_id = get_trace_id() or ""
+        emit_research_event(
+            EventType.SESSION_START,
+            topic=topic,
+            n_new_papers=len(new_papers),
+            trace_id=trace_id,
+        )
         self._init_components()
 
         # Build query from the new papers' titles + abstracts
@@ -234,6 +244,12 @@ class AutonomousOrchestrator:
             "session_id": session.session_id,
             "iterations": result.iterations if hasattr(result, "iterations") else 0,
         }
+        emit_research_event(
+            EventType.SESSION_END,
+            topic=topic,
+            trace_id=trace_id,
+            papers_analyzed=len(new_papers),
+        )
 
     # ── Gene Pool scoring ────────────────────────────────────────────────────
 
