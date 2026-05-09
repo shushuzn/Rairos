@@ -51,7 +51,10 @@ def search_arxiv(query: str, max_results: int = 5, timeout: int = 30) -> List[Pa
     except Exception as e:
         raise RuntimeError(f"arXiv search failed for query '{query}': {e}") from e
 
-    feed = feedparser.parse(r.text)
+    try:
+        feed = feedparser.parse(r.text)
+    except Exception as e:
+        raise RuntimeError(f"arXiv feed parse failed for query '{query}': {e}") from e
 
     if not feed.entries:
         return []
@@ -213,3 +216,13 @@ def search_arxiv_cached(query: str, max_results: int = 5, timeout: int = 30, ttl
                 results = json.loads(row[0])  # type: ignore[arg-type]
                 return [_dict_to_paper(d) for d in results[:max_results]]
         raise  # Re-raise other errors
+    except Exception:
+        # Unexpected error (TypeError, JSONDecodeError, AttributeError, etc.)
+        # → try stale cache as last resort, otherwise return empty list
+        if row:
+            try:
+                results = json.loads(row[0])
+                return [_dict_to_paper(d) for d in results[:max_results]]
+            except Exception:
+                return []
+        return []

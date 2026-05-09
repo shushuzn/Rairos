@@ -8,15 +8,15 @@
 ## Install
 
 ```bash
-pip install -e .
+pip install -e ".[all]"
 ```
 
-This installs the `ai_research-os` package and the `ai-research-os` CLI entry point.
+This installs the `ai_research_os` package and the `rairos` CLI entry point.
 
 ## Initialize Database
 
 ```bash
-python -m cli init
+rairos init
 ```
 
 Creates the SQLite database at `~/.ai_research_os/papers.db`.
@@ -34,8 +34,8 @@ The CLI will automatically use `http://localhost:11434` for embeddings.
 ## Verify
 
 ```bash
-python -m cli --help
-python -m cli status   # shows database stats
+rairos --help
+rairos status   # shows database stats
 ```
 
 ## Uninstall

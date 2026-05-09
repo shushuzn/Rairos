@@ -1729,7 +1729,7 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
         """
         try:
             cur = self.conn.cursor()
-            where_since = " AND a.added_at >= ? " if since else " "
+            where_since = " AND a.added_at >= ?" if since else ""
             # Single query: join papers with itself and fetch all needed columns at once.
             cur.execute(
                 f"""
@@ -1765,8 +1765,7 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
                         OR
                         (a.title IS NOT NULL AND a.title != '' AND a.title = b.title)
                     )
-                WHERE 1=1
-                {where_since}
+                WHERE 1=1{where_since}
                 ORDER BY a.added_at DESC
                 """,
                 ([since] if since else []),
