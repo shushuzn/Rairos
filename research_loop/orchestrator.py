@@ -376,8 +376,19 @@ class AutonomousOrchestrator:
                 continue
 
             gaps = research_result.get("gaps", [])
+            session_id = research_result.get("session_id", "")
             if not gaps:
                 logger.info(f"[Orchestrator] No gaps found for '{topic}'")
+                continue
+
+            # ── Incremental filtering: suppress already-seen gaps ─────────────
+            gaps, filter_stats = self.db.filter_new_gaps(topic, gaps)
+            seen_count = filter_stats["seen"]
+            suppressed = filter_stats["suppressed"]
+            if suppressed > 0:
+                logger.info(f"[Orchestrator] Suppressed {suppressed} already-seen gaps (total seen: {seen_count})")
+            if not gaps:
+                logger.info(f"[Orchestrator] All gaps already known for '{topic}' — skipping")
                 continue
 
             # Score against Gene Pool
@@ -406,6 +417,9 @@ class AutonomousOrchestrator:
                     )
                 except Exception as e:
                     logger.warning(f"Gene Pool encode failed: {e}")
+
+            # Record filtered gaps to gap_history for future incremental reporting
+            self.db.record_gap_history(topic, session_id, gaps)
 
             logger.info(f"[Orchestrator] Generated {len(alerts)} alerts for '{topic}'")
 
