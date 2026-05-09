@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional
 
 from llm.mcp_jin10 import Jin10Client
 from llm.insight.tracker import EvolutionTracker
-from parsers.arxiv_search import search_arxiv
+from parsers.arxiv_search import search_arxiv, search_arxiv_cached
 from core import Paper
 
 logger = logging.getLogger(__name__)
@@ -184,7 +184,7 @@ def _try_search_arxiv(topic: str, limit: int) -> List:
 
     for attempt in range(3):
         try:
-            return search_arxiv(topic, max_results=limit)
+            return search_arxiv_cached(topic, max_results=limit)
         except Exception as e:
             err_str = str(e)
             is_429 = "429" in err_str

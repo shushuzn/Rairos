@@ -215,6 +215,14 @@ CREATE TABLE IF NOT EXISTS gap_history (
 CREATE INDEX IF NOT EXISTS idx_gap_history_topic  ON gap_history(topic);
 CREATE INDEX IF NOT EXISTS idx_gap_history_hash   ON gap_history(gap_hash);
 CREATE INDEX IF NOT EXISTS idx_gap_history_session ON gap_history(session_id);
+CREATE TABLE IF NOT EXISTS arxiv_search_cache (
+    query_hash   TEXT PRIMARY KEY,
+    query        TEXT    NOT NULL,
+    results_json TEXT    NOT NULL,
+    created_at   TEXT    NOT NULL,
+    hit_count    INTEGER DEFAULT 1
+);
+
 
 """
 # ─── Search Data Classes ────────────────────────────────────────────────────────

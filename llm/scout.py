@@ -65,9 +65,9 @@ def _search_arxiv(query: str, max_results: int = 10) -> List[Dict]:
             return results
 
     try:
-        from parsers.arxiv_search import search_arxiv
+        from parsers.arxiv_search import search_arxiv, search_arxiv_cached
 
-        raw = search_arxiv(query, max_results=max_results)
+        raw = search_arxiv_cached(query, max_results=max_results)
         results = []
         for p in raw:
             pid = getattr(p, "uid", getattr(p, "id", ""))
