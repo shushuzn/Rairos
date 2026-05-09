@@ -273,12 +273,16 @@ def arxiv_id_from_input(identifier: str) -> str:
     if not identifier:
         return ""
     s = identifier.strip()
-    # https://arxiv.org/abs/2601.00155v1
-    m = _re_arxiv.search(r"arxiv\.org/(?:abs|pdf)/([\w.]+)(?:v\d+)?", s)
+    # https://arxiv.org/abs/2601.00155v1  →  strip any version suffix
+    m = _re_arxiv.search(r"arxiv\.org/abs/([0-9]+\.[0-9]+)", s)
     if m:
         return m.group(1)
-    # https://doi.org/10.48550/arXiv.2601.00155
-    m = _re_arxiv.search(r"arxiv\.([\w.]+)", s)
+    # https://arxiv.org/pdf/2601.00155v1.pdf  →  strip any version suffix
+    m = _re_arxiv.search(r"arxiv\.org/pdf/([0-9]+\.[0-9]+)", s)
+    if m:
+        return m.group(1)
+    # https://doi.org/10.48550/arXiv.2601.00155  →  strip arXiv. prefix
+    m = _re_arxiv.search(r"arxiv\.([0-9]+\.[0-9]+)", s, _re_arxiv.IGNORECASE)
     if m:
         return m.group(1)
     # Raw ID like 2601.00155 or 2601.00155v1
