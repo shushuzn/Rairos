@@ -21,7 +21,7 @@ from fastapi.templating import Jinja2Templates
 
 
 from web.shared import templates as _templates, get_db, get_tracker, p2c_progress
-from web.renderers import render_gene_pool_graph_html
+from web.renderer import render_gene_pool_graph_html
 from web.suggestions import (
     generate_suggestions,
     mark_capsule_consumed,

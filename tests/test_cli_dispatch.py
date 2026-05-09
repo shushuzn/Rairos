@@ -50,7 +50,6 @@ class TestCLIDispatchComplete:
             "agent", "evolution", "evoskill", "paper2code", "path",
             "rag", "repl", "story", "trace", "validate", "visual",
         }
-        missing_known = subcmd_names & known_gaps
         missing_new = subcmd_names - known_gaps - set(dispatch_dict.keys())
         assert not missing_new, f"New missing dispatch entries (regression): {sorted(missing_new)}"
 

@@ -127,7 +127,7 @@ async def gene_pool_credibility(request: Request):
 @router.get("/gene-pool/graph")
 async def gene_pool_graph(request: Request):
     """D3.js force-directed graph of all Gene Pool capsules."""
-    from web.renderers import render_gene_pool_graph_html
+    from web.renderer import render_gene_pool_graph_html
 
     return HTMLResponse(content=render_gene_pool_graph_html())
 
@@ -150,7 +150,7 @@ async def gene_pool_evolution_log(request: Request):
 @router.get("/gene-pool/family-tree")
 async def gene_pool_family_tree(request: Request):
     """Phylogenetic dendrogram of Gene Pool capsules by generation."""
-    from web.renderers import render_gene_pool_family_tree_html
+    from web.renderer import render_gene_pool_family_tree_html
 
     return HTMLResponse(content=render_gene_pool_family_tree_html())
 
