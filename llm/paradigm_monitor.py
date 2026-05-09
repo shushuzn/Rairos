@@ -46,8 +46,8 @@ def check_paradigm_concentration(category: str = "all") -> Dict[str, Any]:
 
     Returns {"categories": [...], "alerts": [...]}.
     """
-    conn = _get_db()
     try:
+        conn = _get_db()
         # Get all papers with non-zero citation_count
         if category == "all":
             rows = conn.execute(
@@ -103,7 +103,10 @@ def check_paradigm_concentration(category: str = "all") -> Dict[str, Any]:
     except Exception:
         return {"categories": [], "alerts": [], "error": "db unavailable"}
     finally:
-        conn.close()
+        try:
+            conn.close()
+        except Exception:
+            pass
 
 
 def render_html(data: Dict[str, Any]) -> str:
