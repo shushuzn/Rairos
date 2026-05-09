@@ -3,7 +3,7 @@
 AI Research OS benchmarks measure three core capabilities: **paper import speed**, **search latency**, and **RAG answer quality**. Numbers below are collected on a standard research workstation (8-core CPU, 16 GB RAM, SSD).
 
 > [!NOTE]
-> These benchmarks are **self-measured** using the built-in `PerformanceProfiler` and `BenchmarkComparator`. Run `python -m core.profiler` to reproduce.
+> These benchmarks are **self-measured** using the built-in `PerformanceProfiler` and `BenchmarkComparator`. Run `rairos benchmark` to reproduce.
 
 ## Paper Import Pipeline
 
@@ -79,7 +79,7 @@ The self-evolution system improves over time. Gene/capsule patterns that fail to
 python -m pytest tests/ -q --ignore=neuraloperator_fork
 
 # Profile paper import
-python -m core.profiler --time-import 2601.00155
+rairos benchmark --time-import 2601.00155
 
 # Compare two papers' benchmark tables
 python -m llm.benchmark 2601.00155 2302.00763

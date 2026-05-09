@@ -14,13 +14,16 @@ _S2_API = "https://api.semanticscholar.org/graph/v1"
 _MAX_RETRIES = 3
 _RETRY_DELAY = 1.0
 
+# Module-level singleton client — avoids repeated TCP/TLS handshakes
+_client: Optional[httpx.Client] = None
+
 
 def _get_client() -> httpx.Client:
-    """Create HTTP client with proper timeout and retry behavior."""
-    return httpx.Client(
-        timeout=30.0,
-        follow_redirects=True,
-    )
+    """Return the shared HTTP client (lazy singleton)."""
+    global _client
+    if _client is None:
+        _client = httpx.Client(timeout=30.0, follow_redirects=True)
+    return _client
 
 
 def search_semantic_scholar(
@@ -64,16 +67,16 @@ def search_semantic_scholar(
     last_error: Exception = RuntimeError("unknown error")
     for attempt in range(_MAX_RETRIES):
         try:
-            with _get_client() as client:
-                r = client.get(url)
-                if r.status_code == 429:
-                    retry_after = int(r.headers.get("retry-after", "60"))
-                    logger.warning(f"Rate limited, waiting {retry_after}s")
-                    time.sleep(min(retry_after, 120))
-                    continue
-                r.raise_for_status()
-                data = r.json()
-                return [S2Paper(p) for p in data.get("data", [])]
+            client = _get_client()
+            r = client.get(url)
+            if r.status_code == 429:
+                retry_after = int(r.headers.get("retry-after", "60"))
+                logger.warning(f"Rate limited, waiting {retry_after}s")
+                time.sleep(min(retry_after, 120))
+                continue
+            r.raise_for_status()
+            data = r.json()
+            return [S2Paper(p) for p in data.get("data", [])]
         except httpx.HTTPStatusError as e:
             last_error = e
             if r.status_code == 429:
@@ -109,10 +112,10 @@ def get_paper_by_id(paper_id: str, fields: Optional[List[str]] = None) -> Option
 
     url = f"{_S2_API}/paper/{paper_id}?fields={','.join(fields)}"
     try:
-        with _get_client() as client:
-            r = client.get(url)
-            r.raise_for_status()
-            return S2Paper(r.json())
+        client = _get_client()
+        r = client.get(url)
+        r.raise_for_status()
+        return S2Paper(r.json())
     except Exception as e:
         logger.warning(f"Failed to fetch paper {paper_id}: {e}")
         return None
@@ -126,11 +129,11 @@ def get_citations(paper_id: str, limit: int = 100) -> List["S2Paper"]:
         f"limit={limit}"
     )
     try:
-        with _get_client() as client:
-            r = client.get(url)
-            r.raise_for_status()
-            data = r.json()
-            return [S2Paper(c["citingPaper"]) for c in data.get("data", [])]
+        client = _get_client()
+        r = client.get(url)
+        r.raise_for_status()
+        data = r.json()
+        return [S2Paper(c["citingPaper"]) for c in data.get("data", [])]
     except Exception as e:
         logger.warning(f"Failed to fetch citations for {paper_id}: {e}")
         return []
@@ -144,11 +147,11 @@ def get_references(paper_id: str, limit: int = 100) -> List["S2Paper"]:
         f"limit={limit}"
     )
     try:
-        with _get_client() as client:
-            r = client.get(url)
-            r.raise_for_status()
-            data = r.json()
-            return [S2Paper(r["referencedPaper"]) for r in data.get("data", [])]
+        client = _get_client()
+        r = client.get(url)
+        r.raise_for_status()
+        data = r.json()
+        return [S2Paper(r["referencedPaper"]) for r in data.get("data", [])]
     except Exception as e:
         logger.warning(f"Failed to fetch references for {paper_id}: {e}")
         return []
