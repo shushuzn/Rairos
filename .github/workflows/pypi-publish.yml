@@ -11,8 +11,6 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write  # Required for OIDC
     steps:
       - uses: actions/checkout@v4
 
@@ -21,11 +19,23 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install dependencies
+        run: pip install build twine
+
       - name: Build
         run: python -m build
 
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_TOKEN }}
-          skip_existing: true
+      - name: Upload to PyPI
+        env:
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          echo "Package contents:"
+          ls -la dist/
+          echo ""
+          echo "Uploading with twine..."
+          python -m twine upload dist/* \
+            --repository-url https://upload.pypi.org/legacy/ \
+            --username __token__ \
+            --password "$TWINE_PASSWORD" \
+            --verbose \
+            --skip-existing
