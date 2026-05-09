@@ -11,8 +11,6 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write  # Required for OIDC trusted publishing
     steps:
       - uses: actions/checkout@v4
 
@@ -24,8 +22,30 @@ jobs:
       - name: Build
         run: python -m build
 
-      - name: Publish to PyPI via OIDC
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_TOKEN }}
-          skip_existing: true
+      - name: Upload to PyPI
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          python << 'PYEOF'
+          import os, subprocess
+
+          token = os.environ['PYPI_TOKEN']
+          print(f'Token length: {len(token)}')
+          print(f'Token prefix: {token[:15]}...')
+
+          # Write token to file to avoid shell escaping issues
+          with open('token.txt', 'w') as f:
+              f.write(token)
+
+          result = subprocess.run(
+              ['python', '-m', 'twine', 'upload', 'dist/*',
+               '--repository-url', 'https://upload.pypi.org/legacy/',
+               '--username', '__token__',
+               '--password-file', 'token.txt',
+               '--verbose'],
+              capture_output=True, text=True
+          )
+          print('STDOUT:', result.stdout[-2000:])
+          print('STDERR:', result.stderr[-500:])
+          print('RC:', result.returncode)
+          PYEOF
