@@ -1164,7 +1164,7 @@ class GapClusterer:
                     if len(word) > 3:  # skip short words
                         word_counts[word] += 1
             top_keywords = sorted(word_counts.items(), key=lambda x: -x[1])[:5]
-            top_keywords = [w for w, _ in top_keywords]
+            top_keywords = [w for w, _ in top_keywords]  # type: ignore[misc]
 
             stats.append({
                 "cluster_id": cid,
@@ -1192,7 +1192,7 @@ class GapClusterer:
         for cluster in clusters:
             by_type: Dict[str, int] = defaultdict(int)
             for g in cluster:
-                by_type[g.gap_type] += 1
+                by_type[str(g.gap_type)] += 1
             for t, cnt in by_type.items():
                 all_types[t].append(cnt)
 

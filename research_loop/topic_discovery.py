@@ -28,7 +28,7 @@ import re
 import uuid
 from collections import Counter
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, cast
 
 import logging
 
@@ -395,11 +395,11 @@ class TopicDiscoverer:
 
         try:
             keywords_str = ", ".join(suggestion.keywords[:5])
-            sub_id = self.db.add_arxiv_subscription(
+            sub_id = cast(int, self.db.add_arxiv_subscription(
                 topic=suggestion.topic,
                 categories="",
                 keywords=keywords_str,
-            )
+            ))
             logger.info(f"Created subscription [{sub_id}]: {suggestion.topic}")
             return sub_id
         except Exception as e:

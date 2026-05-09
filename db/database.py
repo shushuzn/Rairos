@@ -25,7 +25,7 @@ from datetime import datetime, timezone
 from db.mixins import EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Literal, Optional, Tuple, Union
+from typing import Any, cast, Dict, Generator, List, Literal, Optional, Tuple, Union
 
 from core.exceptions import DatabaseError
 from db.migrate import run_migrations
@@ -633,7 +633,7 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
                     benchmark_pass_rate, now
                 ))
                 trace_id = cur.lastrowid
-            return trace_id
+            return cast(int, trace_id)
         except sqlite3.Error as exc:
             raise DatabaseError(f"upsert_paper_code_trace failed: {exc}") from exc
 

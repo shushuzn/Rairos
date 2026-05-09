@@ -1,7 +1,9 @@
 """arXiv search by keyword query."""
 
+import hashlib
+import json
 import logging
-from datetime import timedelta
+from datetime import datetime as _dt, timedelta, timezone
 from typing import List
 
 import feedparser
@@ -168,7 +170,7 @@ def search_arxiv_cached(query: str, max_results: int = 5, timeout: int = 30, ttl
     db = _get_cache_db()
     qhash = _query_hash(query)
     ttl = timedelta(hours=ttl_hours)
-    now = datetime.utcnow()
+    now = _dt.utcnow()
 
     # Check cache
     row = db.conn.execute(
@@ -178,7 +180,7 @@ def search_arxiv_cached(query: str, max_results: int = 5, timeout: int = 30, ttl
 
     if row:
         results_json, created_at_str, hit_count = row
-        created_at = datetime.fromisoformat(created_at_str)
+        created_at = _dt.fromisoformat(created_at_str)
         age = now - created_at
         if age < ttl:
             # Fresh cache hit
@@ -187,7 +189,7 @@ def search_arxiv_cached(query: str, max_results: int = 5, timeout: int = 30, ttl
                 (qhash,),
             )
             db.conn.commit()
-            results = json.loads(results_json)
+            results = json.loads(results_json)  # type: ignore[arg-type]
             return [_dict_to_paper(d) for d in results[:max_results]]
 
     # Cache miss or stale — call API
@@ -208,6 +210,6 @@ def search_arxiv_cached(query: str, max_results: int = 5, timeout: int = 30, ttl
         if "429" in error_msg or "timeout" in error_msg.lower() or "connection" in error_msg.lower():
             if row:
                 # Return stale cache (even if expired)
-                results = json.loads(row[0])
+                results = json.loads(row[0])  # type: ignore[arg-type]
                 return [_dict_to_paper(d) for d in results[:max_results]]
         raise  # Re-raise other errors

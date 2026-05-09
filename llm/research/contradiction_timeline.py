@@ -302,7 +302,7 @@ def mark_contradiction_resolved(
         (resolution_type, resolution_type, resolution_paper, now_str, contradiction_key),
     )
     conn.commit()
-    return cursor.rowcount > 0
+    return (cursor.rowcount or 0) > 0
 
 
 def get_contradiction_timeline(

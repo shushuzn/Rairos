@@ -548,10 +548,9 @@ def setup_observability(
 
     console_handler = logging.StreamHandler(sys.stdout)
     if json_logs:
-        formatter = _JSONFormatter()
+        console_handler.setFormatter(_JSONFormatter())
     else:
-        formatter = _PlainFormatter()
-    console_handler.setFormatter(formatter)
+        console_handler.setFormatter(_PlainFormatter())
     handlers.append(console_handler)
 
     if log_file:
