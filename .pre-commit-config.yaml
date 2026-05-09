@@ -1,12 +1,15 @@
-# Pre-commit hooks for Rairos
-# Install: pre-commit install
-# Run manually: pre-commit run --all-files
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.0
-    hooks:
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
-        exclude: neuraloperator_fork/
-      - id: ruff-format
-        exclude: neuraloperator_fork/
+- hooks:
+  - args:
+    - --fix
+    - --exit-non-zero-on-fix
+    exclude: neuraloperator_fork/
+    id: ruff
+  - exclude: neuraloperator_fork/
+    id: ruff-format
+  repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.12.0
+- hooks:
+  - id: gitleaks
+  repo: https://github.com/gitleaks/gitleaks
+  rev: v8.18.3
