@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.7.1 (2026-05-09)
+
+### Bug Fixes
+
+- **claim_graph**: add missing `_cosine_sim` import from `llm.text_utils`, add missing `time` import in `chat.py`
+- **orchestrator**: add missing `generate_research_survey` import
+- **observability**: fix f-string syntax errors in `core/observability.py`
+- **CI**: correct coverage threshold (was 75%/40% mismatch → 40%/40%), enable Codecov `fail_ci_if_error`
+
+### Features
+
+- **observability**: add `SESSION_START`/`SESSION_END` events to `run_deep_research` — trace spans for research session lifecycle
+- **claim_graph**: bidirectional contradiction detection — `find_bidirectional_contradictions()` method
+- **provenance**: new `test_provenance.py` — full dataclass roundtrip tests
+
+### Testing
+
+- **claim_graph**: 14 new tests — contradictions, bidirectionals, to_dict/from_dict roundtrip; coverage 22% → 44%
+- **provenance**: 9 new tests — PaperLocation, EquationSource, ClaimSource, AlgorithmSource; coverage 0% → 100%
+- **CI**: add `-n auto` for pytest-xdist parallel execution
+
+### Performance
+
+- **claim_graph**: baseline established — 50 claims × 1000 iterations in 0.19s (0.19ms/call); `docs/performance.md` added
+
+### Dependencies
+
+- **openai**: update `>=2.33.0` → `>=2.36.0`
+
 ## v1.7.0 (2026-05-08)
 
 ### Engineering Quality
