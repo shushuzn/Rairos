@@ -246,6 +246,21 @@ class DeepResearchAgent:
         if self.verbose:
             print(f"[DeepResearchAgent] {msg}")
 
+    def _stream_print(self, msg: str, prefix: str = " ", file=None, flush: bool = True):
+        """Print a streaming line — no newline, overwriteable. Supports carriage-return for live updates.
+
+        In non-TTY environments (CI/redirected), falls back to normal print with prefix.
+        """
+        import sys
+
+        if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
+            print(f"{prefix}{msg}", file=file, flush=flush)
+            return
+
+        # \r overwrites the current line; ANSI clear prevents ghosting
+        ANSI_CLEAR = "\033[2K\r"
+        print(f"{ANSI_CLEAR}{prefix}{msg}", end="", file=file, flush=flush)
+
     def _print_step(self, step: str, msg: str):
         """Print a step progress line (always visible, not gated by verbose)."""
         print(f"[DR] [{step}] {msg}", flush=True)
@@ -344,9 +359,12 @@ class DeepResearchAgent:
 
             self.session.findings.append(f"[{role.upper()}] {content}")
 
-        # Streaming callback for DeepSeek-TUI-style output
+        # Streaming callback for DeepSeek-TUI-style output (all roles)
         if self.on_thought:
             self.on_thought(role, content, iteration)
+        # Real-time streaming print for every thought (typewriter effect)
+        prefix = f'[[36m{role.upper():10s}[0m] '
+        self._stream_print(f'iter{iteration} | {content}', prefix=prefix)
 
     def _call_mcp_tool(self, name: str, arguments: Dict[str, Any]) -> Any:
         """Dispatch an MCP tool call by name.
@@ -591,6 +609,7 @@ class DeepResearchAgent:
                     from research_loop.core import Paper
 
                     for p in result["papers"][: self.max_papers_per_iteration]:
+                        self._stream_print(f'  + {p.get("arxiv_id","?")}: {p.get("title","")[:60]}', prefix="")
                         papers.append(
                             Paper(
                                 uid=p.get("arxiv_id", ""),
@@ -652,9 +671,7 @@ class DeepResearchAgent:
             )
 
             snapshots.append(snapshot)
-
-            # Store in DB
-
+            self._stream_print(f'  ✓ {paper.uid}: {paper.title[:55]}', prefix="")
             # Store in DB
             self.db.upsert_paper(
                 paper_id=paper.uid,
@@ -718,6 +735,7 @@ class DeepResearchAgent:
                             matched_papers=[s.arxiv_id for s in snapshots],
                             archetype_match=match_score,
                         )
+                        self._stream_print(f'  ◆ [{g.get("gap_type","?").upper()}] {g.get("title","")[:55]}', prefix="")
                         gap_snapshots.append(gs)
                     self._record_thought(
                         "analyzer",
