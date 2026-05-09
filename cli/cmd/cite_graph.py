@@ -114,19 +114,21 @@ def _db_citation_bfs(db, root_id: str, depth: int = 2, max_nodes: int = 30):
         if d == depth:
             continue
 
-        # Backward: papers this paper cites (source_id=pid → target_id=ref)
-        for edge in db.get_citations(pid, direction="from"):
-            tgt = edge.target_id
-            edges.append((pid, tgt, "backward"))
-            if tgt not in visited and len(nodes) < max_nodes:
-                queue.append((tgt, d + 1))
-
-        # Forward: papers citing this paper (source_id=citer → target_id=pid)
-        for edge in db.get_citations(pid, direction="to"):
-            src = edge.source_id
-            edges.append((src, pid, "forward"))
-            if src not in visited and len(nodes) < max_nodes:
-                queue.append((src, d + 1))
+        # Fetch all citations in a single query (direction="both"), then split
+        all_edges = db.get_citations(pid, direction="both")
+        for edge in all_edges:
+            if edge.source_id == pid:
+                # Backward: papers this paper cites
+                tgt = edge.target_id
+                edges.append((pid, tgt, "backward"))
+                if tgt not in visited and len(nodes) < max_nodes:
+                    queue.append((tgt, d + 1))
+            else:
+                # Forward: papers citing this paper
+                src = edge.source_id
+                edges.append((src, pid, "forward"))
+                if src not in visited and len(nodes) < max_nodes:
+                    queue.append((src, d + 1))
 
     return nodes, edges
 

@@ -179,7 +179,15 @@ def _build_all_parsers(subparsers) -> None:
 def main(argv: Optional[List[str]] = None) -> int:
     """Main CLI entry point."""
 
-    logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
+    # Opt-in structured JSON logs via environment variable
+    if os.getenv("RAIROS_JSON_LOGS", "").lower() in ("1", "true", "yes"):
+        from core.observability import configure_logging
+        configure_logging(
+            level=os.getenv("RAIROS_LOG_LEVEL", "INFO").upper(),
+            json_logs=True,
+        )
+    else:
+        logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
 
     raw_args = argv if argv is not None else sys.argv[1:]
 
