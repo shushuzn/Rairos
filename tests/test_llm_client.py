@@ -106,6 +106,14 @@ class TestCacheTTL:
 class TestCacheStats:
     """Test cache statistics tracking."""
 
+    @pytest.fixture(autouse=True)
+    def _reset_cache(self):
+        """Reset module-level cache counters and cache files before each test."""
+        from llm.client import reset_cache_stats, clear_llm_cache
+        clear_llm_cache()
+        reset_cache_stats()
+        yield
+
     def test_cache_stats_has_entries(self):
         """Cache stats should track hits, expired, entries."""
         stats = _cache_stats()

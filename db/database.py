@@ -1649,15 +1649,18 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
             cur.execute("SELECT parse_status, COUNT(*) FROM papers GROUP BY parse_status")
             stats["by_status"] = {r[0] or "none": r[1] for r in cur.fetchall()}
             # Queue
+            cur.execute("SELECT COUNT(*) FROM job_queue WHERE status = 'queued'")
             r = cur.fetchone()
             stats["queue_queued"] = r[0] if r else 0
             cur.execute("SELECT COUNT(*) FROM job_queue WHERE status = 'running'")
             r = cur.fetchone()
             stats["queue_running"] = r[0] if r else 0
             # Cache
+            cur.execute("SELECT COUNT(*) FROM paper_cache")
             r = cur.fetchone()
             stats["cache_entries"] = r[0] if r else 0
             # Dedup log
+            cur.execute("SELECT COUNT(*) FROM dedup_log")
             r = cur.fetchone()
             stats["dedup_records"] = r[0] if r else 0
             return stats
