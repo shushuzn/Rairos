@@ -55,6 +55,7 @@ dependencies = [
     "rich>=15.0.0",
     "jieba>=0.42.1",
     "pymilvus>=2.6.12",
+    "gitpython>=3.1.48",  # Security: GHSA-mv93-w799-cj2w newline injection RCE
 ]
 
 [project.optional-dependencies]
