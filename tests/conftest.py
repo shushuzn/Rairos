@@ -54,6 +54,15 @@ def _cleanup_fake_stubs() -> None:
 
 def pytest_configure(config: pytest.Config) -> None:
     """Pre-import hooks: swap heavy libs with lightweight mocks at collect time."""
+    import pathlib
+    import sys as sys_
+
+    # Ensure project root is on sys.path so local packages like `mcp`
+    # and `rairos_mcp` are importable during test collection.
+    project_root = pathlib.Path(__file__).resolve().parent.parent
+    if str(project_root) not in sys_.path:
+        sys_.path.insert(0, str(project_root))
+
     import threading
 
     config.addinivalue_line("markers", "lean: tests that require Lean 4 installed")

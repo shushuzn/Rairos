@@ -959,12 +959,12 @@ def get_tools() -> List[Dict[str, Any]]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "chain_data": {
+                    "arxiv_id": {
                         "type": "string",
-                        "description": "JSON-serialized chain data from citation_chain_build",
+                        "description": "Seed arXiv ID",
                     },
                 },
-                "required": ["chain_data"],
+                "required": ["arxiv_id"],
             },
         },
         {
@@ -973,12 +973,12 @@ def get_tools() -> List[Dict[str, Any]]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "chain_data": {
+                    "arxiv_id": {
                         "type": "string",
-                        "description": "JSON-serialized chain data from citation_chain_build",
+                        "description": "Seed arXiv ID",
                     },
                 },
-                "required": ["chain_data"],
+                "required": ["arxiv_id"],
             },
         },
         {
@@ -987,9 +987,9 @@ def get_tools() -> List[Dict[str, Any]]:
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "chain_data": {
+                    "arxiv_id": {
                         "type": "string",
-                        "description": "JSON-serialized chain data",
+                        "description": "Seed arXiv ID",
                     },
                     "format": {
                         "type": "string",
@@ -997,7 +997,7 @@ def get_tools() -> List[Dict[str, Any]]:
                         "enum": ["mermaid", "graphviz", "text"],
                     },
                 },
-                "required": ["chain_data", "format"],
+                "required": ["arxiv_id"],
             },
         },
         {
