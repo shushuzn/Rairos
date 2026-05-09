@@ -137,6 +137,7 @@ _SUBCOMMAND_TABLE = [
     ("discover", "cli.cmd.discover", "_build_discover_parser"),
     ("report", "cli.cmd.report", "_build_report_parser"),
     ("dashboard", "cli.cmd.dashboard", "_build_web_parser"),
+    ("doctor", "cli.cmd.doctor", "_build_doctor_parser"),
 ]
 
 
@@ -258,6 +259,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "replicate": "_run_replicate",
         "insight": "_run_insight",
         "ask": "_run_ask",
+        "doctor": "_run_doctor",
         "session": "_run_session",
         "argue": "_run_argue",
         "narrative": "_run_narrative",
