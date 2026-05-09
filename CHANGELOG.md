@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.7.2 (2026-05-13)
+
+### Bug Fixes
+
+- **CRLF corruption**: restore 8 files with corrupted import statements (CRLF `\r` split import lines: `llm/briefing_generator.py`, `llm/citation_chain.py`, `llm/events.py`, `llm/gene_pool_decay.py`, `llm/litreview_generator.py`, `llm/paradigm_monitor.py`, `cli/cmd/scout.py`, `cli/cmd/daemon.py`) — source was commit 0cf553a
+- **test imports**: fix `cli/cmd/kg/__init__.py` empty module (was 2 bytes) — export `_build_kg_parser` and `KGManager`; fix circular import in `cli/cmd/kg/kg.py` (`KGManager` source changed to `kg.manager`)
+- **bold_vault**: add `_jaccard` alias for backward-compat test imports
+- **routes_gene_pool**: remove duplicate `/gene-pool/family-tree` route definition (F811 redefinition)
+
+### Code Quality
+
+- Fix 9 ruff F841/W291/W293 errors across 6 files (unused variables, trailing whitespace)
+- Fix `paper2code_integration` name-error: `_db` -> `_ = db.upsert...`
+- Add `pytest-timeout>=2.3.0` to dev dependencies (was declared in `pyproject.toml` but not installed)
+
+### Dependencies
+
+- **openai**: update `>=2.33.0` -> `>=2.36.0`
+
 ## v1.7.1 (2026-05-09)
 
 ### Bug Fixes
