@@ -11,12 +11,12 @@ from __future__ import annotations
 
 import json
 import logging
-import math
 import os
 import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, TYPE_CHECKING, cast
 
+from llm.text_utils import cosine_sim as _cosine_sim
 from llm.constants import (
     ENV_AIROS_USE_EMBEDDING,
     OLLAMA_API_EMBEDDINGS_ENDPOINT,
