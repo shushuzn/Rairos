@@ -7,9 +7,9 @@ Flags a generalization_gap risk alert.
 from __future__ import annotations
 
 import sqlite3
-from collections import Counter
+
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+, Dict, List, Optional
 
 
 DB_PATH = Path.home() / ".ai_research_os" / "papers.db"

@@ -709,7 +709,7 @@ def get_client(
     3. MINIMAX_CN_API_KEY env var (Hermes native MiniMax key)
     4. ~/.hermes/config.yaml + ~/.hermes/.env (auto-detected)
     """
-    import re as _re
+    
 
     resolved_url, resolved_key = _resolve_llm_credentials(base_url, api_key)
     effective_key = resolved_key or api_key

@@ -48,6 +48,7 @@ from textual.css.query import NoMatches
 from cli._shared import get_db, Colors, colored
 from cli.warp import WarpBlocks
 from llm.chat import RagChat
+from llm.reasoning import ReasoningBlock
 from llm.friction_tracker import FrictionTracker
 
 

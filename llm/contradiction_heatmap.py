@@ -6,9 +6,9 @@ Papers are linked via archetype.source_paper_id.
 
 from __future__ import annotations
 
-import json
+
 from collections import defaultdict
-from pathlib import Path
+
 from typing import Any, Dict, List
 
 from llm.gene_pool_io import load_capsules

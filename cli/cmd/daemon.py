@@ -14,10 +14,10 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
+
 import sys
 import time
-from pathlib import Path
+
 
 from cli._shared import Colors, colored, print_error, print_success
 
@@ -290,7 +290,7 @@ def _run_daemon_sse(args) -> None:
     eb = EventBus()
 
     def print_event(event) -> None:
-        import json as _json
+         as _json
 
         d = event.to_dict()
         d["_printed_at"] = time.strftime("%H:%M:%S")
@@ -325,7 +325,7 @@ def _run_daemon_events(args) -> None:
     print(f"\n  Recent Events ({len(events)}, type={ftype or 'all'}):\n")
     for ev in events:
         ts = time.strftime("%H:%M:%S", time.localtime(ev.timestamp))
-        import json as _json
+         as _json
 
         data_str = _json.dumps(ev.data, ensure_ascii=False)[:80]
         print(f"  {ts}  [{ev.event_type}]  {data_str}")

@@ -12,9 +12,9 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import sys
+
 from pathlib import Path
-from os import getcwd
+
 
 from cli._shared import Colors, colored, print_error, print_success
 
@@ -439,7 +439,7 @@ def _list_checkpoints(args) -> int:
         )
     )
     print("-" * 60)
-    import time as _time
+    
 
     for ck in checkpoints:
         import datetime

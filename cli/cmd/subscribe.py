@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import argparse
+from typing import Any
+from dataclasses import dataclass
 import json
 import logging
-import sys
 import threading
 import time
 from pathlib import Path
@@ -124,10 +125,66 @@ def _print_gene_pool_saturation(before: str = "") -> dict:
 # ─── Watch loop ────────────────────────────────────────────────────────────────
 
 
+
+
+@dataclass
+class _AdaptiveDecision:
+    interval_minutes: int
+    action: str  # "normal" | "cold_start" | "extend"
+
+
+def compute_adaptive_interval(
+    base_interval_minutes: int,
+    saturation: float,
+    n_active: int,
+    has_new_papers: bool,
+) -> _AdaptiveDecision:
+    """Adapt research interval based on GenePool saturation.
+
+    - saturation > 0.9 (near full): extend interval 1.5x
+    - saturation < 0.3 (mostly empty): shorten interval 0.75x
+    - n_active == 0: cold_start action (trigger proactive research)
+    """
+    if n_active == 0:
+        return _AdaptiveDecision(interval_minutes=base_interval_minutes, action="cold_start")
+
+    if saturation > 0.9:
+        interval = int(base_interval_minutes * 1.5)
+    elif saturation < 0.3:
+        interval = int(base_interval_minutes * 0.75)
+    else:
+        interval = base_interval_minutes
+
+    # Cap to reasonable bounds (15 min - 24 h)
+    interval = max(15, min(1440, interval))
+
+    return _AdaptiveDecision(interval_minutes=interval, action="normal")
+
+
+def run_cold_start_research(db: Any) -> None:
+    """Populate empty GenePool by running research on all active subscriptions."""
+    from research_loop.orchestrator import Orchestrator
+    subs = db.get_active_subscriptions()
+    if not subs:
+        print_info('[Scheduler] No subscriptions configured — cold-start skipped')
+        return
+    orch = Orchestrator()
+    for sub in subs:
+        sub_id = sub.get('id', sub.get('topic'))
+        topic = sub.get('topic', sub_id)
+        print_info(f'[Scheduler] Cold-start: running research for [{sub_id}]...')
+        try:
+            dr_result = orch.run_deep_research(topic, [])
+            gaps = dr_result.get('gaps', [])
+            print_success(f'[Scheduler] [{sub_id}] {len(gaps)} gaps found')
+        except Exception as e:
+            logger.error(f'[Scheduler] [{sub_id}] Cold-start failed: {e}')
+    print_info('[Scheduler] Cold-start complete')
+
+
 def _run_watch_loop(interval_minutes: int, stop_event: threading.Event) -> None:
     """Background watch loop. Runs until stop_event is set."""
     from core.notifications import get_webhook_notifier
-    from core.notifications import configure_webhook
     from llm.subscription_monitor import SubscriptionMonitor
     from llm.subscription_scorer import SubscriptionScorer
 
@@ -205,7 +262,7 @@ def _run_watch_loop(interval_minutes: int, stop_event: threading.Event) -> None:
         actual_interval = decision.interval_minutes
 
         # Cold-start: GenePool empty, trigger proactive research
-        if decision.action == "cold_start" and n_active == 0:
+        if decision.action == "cold_start" and before_stats.get("n_active", 0) == 0:
             print_info("[Scheduler] GenePool empty — running cold-start research")
             try:
                 run_cold_start_research(db)
@@ -213,7 +270,7 @@ def _run_watch_loop(interval_minutes: int, stop_event: threading.Event) -> None:
             except Exception as cs_err:
                 logger.error(f"[Scheduler] Cold-start failed: {cs_err}")
 
-        print_info(f"[Scheduler] Next check in {actual_interval:.0f}min — {decision.reason}")
+        print_info(f"[Scheduler] Next check in {actual_interval:.0f}min ({decision.action})")
 
         stop_event.wait(timeout=actual_interval * 60)
 

@@ -3,15 +3,15 @@
 from __future__ import annotations
 
 import json
-import time
-from collections import defaultdict
+
+
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from llm.mcp_jin10 import Jin10Client
 from llm.insight.tracker import EvolutionTracker
-from llm.insight.gene import CapsuleGene
+
 
 PATTERNS_FILE = Path.home() / ".ai_research_os" / "patterns.json"
 
