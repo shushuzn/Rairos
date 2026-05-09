@@ -69,6 +69,21 @@ def _run_watch_loop(interval_minutes: int, stop_event: threading.Event) -> None:
                     f"[Autopilot] Found {total} new paper(s) across {len(all_results)} subscription(s)"
                 )
 
+                # Trigger deep research for each subscription with new papers
+                from research_loop.orchestrator import Orchestrator
+                for sub_id, papers in all_results.items():
+                    if papers:
+                        sub = db.get_arxiv_subscription(sub_id)
+                        topic = sub.get("topic", sub_id) if sub else sub_id
+                        print_info(f"[DeepResearch] Starting research on subscription [{sub_id}]...")
+                        orch = Orchestrator()
+                        try:
+                            dr_result = orch.run_deep_research(topic, papers)
+                            gaps = dr_result.get("gaps", [])
+                            print_success(f"[DeepResearch] [{sub_id}] {len(gaps)} gaps found")
+                        except Exception as e:
+                            logger.error(f"[DeepResearch] [{sub_id}] Failed: {e}")
+
                 # Send webhook notifications
                 for sub_id, papers in all_results.items():
                     if papers:
@@ -129,6 +144,7 @@ def _build_subscribe_parser(subparsers) -> argparse.ArgumentParser:
     p_check.add_argument("id", nargs="?", help="Subscription ID (optional, checks all if omitted)")
     p_check.add_argument("--discord", type=str, default="", help="Discord webhook URL to test")
     p_check.add_argument("--feishu", type=str, default="", help="Feishu webhook URL to test")
+    p_check.add_argument("--deep-research", action="store_true", help="Trigger DeepResearch on new papers")
 
     # recommendations
     p_rec = sub.add_parser("recommendations", help="Show recommended papers")
@@ -245,6 +261,15 @@ def _run_subscribe(args: argparse.Namespace) -> int:
                 topic = sub.get("topic", args.id) if sub else args.id
                 webhook.notify_papers_found(topic, results, min_score=0.5)
 
+                # Trigger deep research if requested
+                if getattr(args, "deep_research", False) and results:
+                    from research_loop.orchestrator import Orchestrator
+                    print_info("[DeepResearch] Starting research on new papers...")
+                    orch = Orchestrator()
+                    dr_result = orch.run_deep_research(topic, results)
+                    gaps = dr_result.get("gaps", [])
+                    print_success(f"[DeepResearch] Found {len(gaps)} gaps")
+
                 # Auto-update literature review
                 updated_file = analyzer.update_for_subscription(args.id, results)
                 if updated_file:
@@ -260,6 +285,15 @@ def _run_subscribe(args: argparse.Namespace) -> int:
 
                 if papers:
                     webhook.notify_papers_found(topic, papers, min_score=0.5)
+
+                    # Trigger deep research automatically
+                    from research_loop.orchestrator import Orchestrator
+                    print_info(f"[DeepResearch] Starting research on {len(papers)} new papers...")
+                    orch = Orchestrator()
+                    dr_result = orch.run_deep_research(topic, papers)
+                    gaps = dr_result.get("gaps", [])
+                    print_success(f"[DeepResearch] Found {len(gaps)} gaps")
+
                     updated_file = analyzer.update_for_subscription(sub_id, papers)
                     if updated_file:
                         print_info(f"  Updated litreview: {updated_file}")
