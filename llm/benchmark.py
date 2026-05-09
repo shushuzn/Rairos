@@ -209,22 +209,22 @@ def _parse_numeric(value: str) -> Optional[float]:
         return None
 
     # Percentage: "92.5%"
-    m = re.match(r"^([\d.]+)\s*%$", value)
+    m = _RE_PERCENT.match(value)
     if m:
         return float(m.group(1))
 
     # Range with ±: "92.5±0.3" → take the main value
-    m = re.match(r"^([\d.]+)±", value)
+    m = _RE_RANGE.match(value)
     if m:
         return float(m.group(1))
 
     # Fraction: "92.5/100"
-    m = re.match(r"^([\d.]+)/([\d.]+)$", value)
+    m = _RE_FRACTION.match(value)
     if m:
         return float(m.group(1)) / float(m.group(2))
 
     # Suffixes: "1.2B", "350M"
-    m = re.match(r"^([\d.]+)([BKMG])$", value.upper())
+    m = _RE_SUFFIX.match(value.upper())
     if m:
         multipliers = {"B": 1e9, "M": 1e6, "K": 1e3, "G": 1e9}
         return float(m.group(1)) * multipliers.get(m.group(2), 1)
@@ -237,7 +237,7 @@ def _parse_numeric(value: str) -> Optional[float]:
 
     # Scientific notation
     try:
-        m = re.match(r"^([\d.]+)[eE]([+-]?\d+)$", value)
+        m = _RE_SCI.match(value)
         if m:
             return float(value)
     except ValueError:
