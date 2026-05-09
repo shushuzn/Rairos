@@ -15,7 +15,6 @@ Or configure in Claude Code settings.json:
 """
 
 import sys
-import os
 from pathlib import Path
 
 # Add project root to path
@@ -26,9 +25,7 @@ import datetime
 import json
 import logging
 import threading
-import time
 from typing import Any, Dict, List, Optional
-from dataclasses import asdict
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -876,10 +873,10 @@ def tool_research_run(topic: str, limit: int = 5) -> Dict:
     try:
         from research_loop.core import search_arxiv
         from db.database import Database
-        import time
 
         db = Database()
         db.init()
+        import time
 
         # Search arXiv (with rate-limit respect)
         papers = []
@@ -1709,8 +1706,6 @@ def tool_litreview_generate(topic: str, limit: int = 30, use_llm: bool = True) -
 def tool_litreview_list() -> Dict:
     """List all saved literature reviews."""
     try:
-        from pathlib import Path
-
         litreview_dir = PROJECT_ROOT / "data" / "litreviews"
         reviews = []
         if litreview_dir.exists():
@@ -1910,7 +1905,7 @@ def tool_research_memory_anomalies() -> Dict:
 def tool_review_simulate(arxiv_id: str, persona: str = "all", use_llm: bool = True) -> Dict:
     """Simulate adversarial peer reviewers on a paper."""
     try:
-        from llm.review_simulator import ReviewSimulator, ReviewPersona, _REVIEW_PERSONAS
+        from llm.review_simulator import ReviewSimulator, _REVIEW_PERSONAS
 
         # Fetch paper
         from db.database import Database
@@ -2013,7 +2008,7 @@ def tool_routeplan_create(
 def tool_routeplan_list() -> Dict:
     """List all research plans."""
     try:
-        from llm.route_planner import RoutePlanner, PlanStatus
+        from llm.route_planner import RoutePlanner
 
         planner = RoutePlanner()
         plans = planner.list_plans(limit=20)
@@ -2155,7 +2150,6 @@ def tool_replication_check(arxiv_id: str, include_abstract: bool = True) -> Dict
     """Check paper reproducibility."""
     try:
         from llm.replication_checker import ReplicationChecker
-        from db.database import Database
         from parsers.semantic_scholar import get_paper_by_id
 
         paper = get_paper_by_id(arxiv_id)
@@ -2727,6 +2721,7 @@ def tool_citation_chain_families(arxiv_id: str) -> Dict:
 
         builder = CitationChainBuilder()
         _chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
+        _ = _chain  # consumed by cluster_families internally
         families = builder.cluster_families()
 
         return success_response(
@@ -2748,6 +2743,7 @@ def tool_citation_chain_silent(arxiv_id: str) -> Dict:
 
         builder = CitationChainBuilder()
         _chain = builder.build_chain(seed_arxiv_id=arxiv_id, max_depth=2)
+        _ = _chain  # consumed by detect_silent_citations internally
         silent = builder.detect_silent_citations()
 
         return success_response(
