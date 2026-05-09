@@ -86,6 +86,7 @@ _SUBCOMMAND_TABLE = [
     ("cite-stats", "cli.cmd.cite_stats", "_build_cite_stats_parser"),
     ("cite-backfill", "cli.cmd.cite_backfill", "_build_cite_backfill_parser"),
     ("paper2code", "cli.cmd.paper.paper2code", "_build_paper2code_parser"),
+    ("trace", "cli.cmd.paper.trace", "_build_paper_trace_parser"),
     ("evoskill", "cli.cmd.evoskill", "_build_evoskill_parser"),
     ("rag", "cli.cmd.rag", "_build_rag_parser"),
     ("agent", "cli.cmd.agent", "_build_agent_parser"),
