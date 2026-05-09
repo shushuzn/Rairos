@@ -84,6 +84,21 @@ class GapAnalysisResultV2:
     summary: str = ""
 
 
+
+
+def _title_similarity(t1: str, t2: str) -> float:
+    """Word-overlap Jaccard similarity between two titles (0-1)."""
+    if not t1 or not t2:
+        return 0.0
+    words1 = set(t1.lower().split())
+    words2 = set(t2.lower().split())
+    if not words1 or not words2:
+        return 0.0
+    intersection = len(words1 & words2)
+    union = len(words1 | words2)
+    return intersection / union if union > 0 else 0.0
+
+
 class GapAnalyzerV2(GapDetector):
     """Enhanced gap analyzer with insight fusion and preference learning."""
 
@@ -883,16 +898,7 @@ class ConfidenceScorer:
     # ── Semantic similarity ────────────────────────────────────────────────────
 
     def _title_similarity(self, t1: str, t2: str) -> float:
-        """Word-overlap similarity between two titles (0-1)."""
-        if not t1 or not t2:
-            return 0.0
-        words1 = set(t1.lower().split())
-        words2 = set(t2.lower().split())
-        if not words1 or not words2:
-            return 0.0
-        intersection = len(words1 & words2)
-        union = len(words1 | words2)
-        return intersection / union if union > 0 else 0.0
+        return _title_similarity(t1, t2)
 
     def _semantic_similarity(self, gap_a: ResearchGapV2, gap_b: ResearchGapV2) -> float:
         """Combined similarity: title (60%) + gap_type (40%)."""
@@ -1059,16 +1065,7 @@ class GapClusterer:
     # ── Core clustering ─────────────────────────────────────────────────────────
 
     def _title_similarity(self, t1: str, t2: str) -> float:
-        """Word-overlap Jaccard similarity between two titles (0-1)."""
-        if not t1 or not t2:
-            return 0.0
-        words1 = set(t1.lower().split())
-        words2 = set(t2.lower().split())
-        if not words1 or not words2:
-            return 0.0
-        intersection = len(words1 & words2)
-        union = len(words1 | words2)
-        return intersection / union if union > 0 else 0.0
+        return _title_similarity(t1, t2)
 
     def _gap_similarity(self, a: "ResearchGapV2", b: "ResearchGapV2") -> float:
         """Combined similarity: title (60%) + gap_type (40%)."""
