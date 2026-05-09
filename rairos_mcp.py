@@ -118,6 +118,10 @@ def tool_paper_ingest(identifier: str, tags: Optional[List[str]] = None) -> Dict
         if tags:
             db.upsert_tags(arxiv_id, tags)
 
+        # ── Record gap addressing events ──────────────────────────────────────
+        # After ingesting, check if this paper addresses any known gaps
+        _record_gap_addressing(arxiv_id, paper.title, paper.abstract)
+
         db.close()
 
         return success_response({"paper_id": arxiv_id, "status": "imported", "title": paper.title})
@@ -125,6 +129,49 @@ def tool_paper_ingest(identifier: str, tags: Optional[List[str]] = None) -> Dict
     except Exception as e:
         logger.error(f"paper_ingest error: {e}")
         return error_response("INGEST_ERROR", str(e))
+
+
+def _record_gap_addressing(paper_id: str, title: str, abstract: str) -> None:
+    """Check if a newly ingested paper addresses any known gaps and record the event.
+
+    Uses semantic gap extraction to determine gap type and confidence,
+    then calls impact_tracker.record_addressing_event().
+    """
+    try:
+        from llm.research.gap_extract import extract_gap_from_paper
+        from llm.research.impact_tracker import record_addressing_event
+
+        gap_info = extract_gap_from_paper(
+            paper_id=paper_id,
+            title=title,
+            abstract=abstract,
+        )
+        if not gap_info or not gap_info.get("gap_type"):
+            return
+
+        gap_type = gap_info.get("gap_type", "")
+        gap_title = gap_info.get("gap_title", "")
+        confidence = gap_info.get("confidence", 0.5)
+
+        # Compute gap_hash for lookup in gap_history
+        import hashlib
+        topic = ""  # topic unknown at this level — use empty, filtered by hash
+        gap_hash = hashlib.sha256(
+            f"{topic}{gap_type}{gap_title}".encode()
+        ).hexdigest()[:16]
+
+        record_addressing_event(
+            gap_hash=gap_hash,
+            topic=topic,
+            gap_type=gap_type,
+            paper_id=paper_id,
+            paper_title=title,
+            confidence=confidence,
+            event_type="addresses",
+            first_identified=None,
+        )
+    except Exception:
+        pass  # Non-critical — don't fail paper ingestion
 
 
 def tool_paper_search(
