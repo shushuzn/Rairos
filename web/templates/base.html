@@ -30,8 +30,11 @@
     </defs>
   </svg>
 
+  <!-- Skip to main content for keyboard users -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <!-- Hamburger toggle button (mobile only) -->
-  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" onclick="toggleSidebar()">
+  <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar" onclick="toggleSidebar()">
     <span></span><span></span><span></span>
   </button>
 
@@ -40,7 +43,7 @@
 
   <div class="app-shell">
     <!-- ── Sidebar ── -->
-    <nav class="sidebar" id="sidebar">
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="sidebar-brand">
         <img src="/static/logo.svg" alt="Rairos" style="height: 32px; width: 32px; vertical-align: middle; margin-right: 6px;">
         <span style="vertical-align: middle;">Rairos</span>
@@ -158,7 +161,7 @@
     </nav>
 
     <!-- ── Main Content ── -->
-    <main class="main">
+    <main class="main" id="main-content">
       {% block content %}{% endblock %}
     </main>
   </div>
@@ -169,14 +172,30 @@
     mermaid.initialize({ startOnLoad: true, theme: 'neutral', fontFamily: 'Lora, serif' });
 
     function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
+      const btn = document.getElementById('hamburger');
+      const isOpen = document.getElementById('sidebar').classList.toggle('open');
       document.getElementById('sidebar-overlay').classList.toggle('active');
-      document.getElementById('hamburger').classList.toggle('active');
+      btn.classList.toggle('active');
+      btn.setAttribute('aria-expanded', isOpen);
     }
   </script>
 
   {% block scripts %}{% endblock %}
   <style>
+    /* Accessibility: visually hidden skip link for keyboard users */
+    .skip-link {
+      position: absolute;
+      top: -9999px;
+      left: 8px;
+      z-index: 9999;
+      padding: 8px 16px;
+      background: #2563eb;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 0 0 4px 4px;
+      font-weight: 600;
+    }
+    .skip-link:focus { top: 0; }
     @media print {
       .sidebar, .hamburger, .sidebar-overlay, .btn, nav, header, footer,
       .page-title-underline, .page-desc, #briefing-result > div > div:last-child { display: none !important; }

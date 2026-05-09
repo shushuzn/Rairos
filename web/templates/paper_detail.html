@@ -106,17 +106,17 @@
   <div class="card-title">🔗 Links</div>
   <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
     {% if p[8] %}
-    <a href="{{ p[8] }}" target="_blank" class="btn btn-secondary" style="font-size: 14px;">
+    <a href="{{ p[8] }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size: 14px;">
       📄 arXiv Abstract
     </a>
     {% endif %}
     {% if p[9] %}
-    <a href="{{ p[9] }}" target="_blank" class="btn btn-secondary" style="font-size: 14px;">
+    <a href="{{ p[9] }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size: 14px;">
       📥 PDF
     </a>
     {% endif %}
     {% if p[11] %}
-    <a href="https://doi.org/{{ p[11] }}" target="_blank" class="btn btn-secondary" style="font-size: 14px;">
+    <a href="https://doi.org/{{ p[11] }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size: 14px;">
       🔗 DOI
     </a>
     {% endif %}
@@ -174,7 +174,7 @@ async function loadReplication() {
         html += '</div>';
         if (d.primary_link) {
             html += '<div style="margin-bottom:10px;">';
-            html += '<a href="' + d.primary_link.url + '" target="_blank" style="color:var(--pen-blue);font-size:13px;">' + d.primary_link.url + '</a>';
+            html += '<a href="' + d.primary_link.url + '" target="_blank" rel="noopener noreferrer" style="color:var(--pen-blue);font-size:13px;">' + d.primary_link.url + '</a>';
             html += ' <span style="font-size:11px;color:#888;">(' + d.primary_link.platform + ')</span>';
             html += '</div>';
         }
@@ -247,11 +247,11 @@ async function loadReplication() {
 
 {% block scripts %}
 <!-- Extract Gap Modal -->
-<div id="gap-modal" style="display: none; position: fixed; inset: 0; z-index: 9000; align-items: center; justify-content: center; background: rgba(44,36,22,0.5); backdrop-filter: blur(3px);">
+<div id="gap-modal" role="dialog" aria-modal="true" aria-labelledby="gap-modal-title" style="display: none; position: fixed; inset: 0; z-index: 9000; align-items: center; justify-content: center; background: rgba(44,36,22,0.5); backdrop-filter: blur(3px);">
   <div class="card" style="width: 480px; max-width: 90vw; max-height: 80vh; overflow-y: auto; padding: 28px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-      <div class="card-title" style="margin: 0;">🧬 Extracted Research Gap</div>
-      <button onclick="closeGapModal()" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--ink-faint);">✕</button>
+      <div id="gap-modal-title" class="card-title" style="margin: 0;">🧬 Extracted Research Gap</div>
+      <button onclick="closeGapModal()" aria-label="Close modal" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--ink-faint);">✕</button>
     </div>
     <div id="gap-modal-body" style="font-size: 14px; color: var(--ink-light); margin-bottom: 20px;">
       <div class="loading"><div class="loading-dots"><span></span><span></span><span></span></div> Extracting gap…</div>

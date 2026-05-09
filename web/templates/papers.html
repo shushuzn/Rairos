@@ -72,7 +72,7 @@
 <!-- Selection bar -->
 <div id="gap-sel-bar" style="display:none; background:#e8f0fe; border:1px solid #c3d9f8; border-radius:8px; padding:10px 14px; margin-bottom:16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
   <span style="font-size:14px; color:#1a73e8; font-weight:500;">
-    <span id="sel-count">0</span> selected
+    <span id="sel-count" aria-live="polite" aria-atomic="true">0</span> selected
   </span>
   <a id="sel-analyze" href="#" class="btn btn-primary" style="padding:6px 16px; font-size:13px; background:#1a73e8; color:#fff; border-radius:6px; text-decoration:none;">
     🔬 Analyze Gaps
@@ -98,9 +98,10 @@
     selAnalyze.style.opacity = n >= 2 ? '1' : '0.5';
     selAnalyze.style.pointerEvents = n >= 2 ? 'auto' : 'none';
     cards.forEach(c => {
-      const id = c.getAttribute('data-id');
-      c.style.outline = selected.has(id) ? '2px solid #1a73e8' : 'none';
-      c.style.background = selected.has(id) ? '#f0f4ff' : '';
+      const isSelected = selected.has(id);
+      c.style.outline = isSelected ? '2px solid #1a73e8' : 'none';
+      c.style.background = isSelected ? '#f0f4ff' : '';
+      c.setAttribute('aria-checked', String(isSelected));
     });
   }
 
@@ -136,13 +137,21 @@
       if (selected.has(id)) selected.delete(id); else selected.add(id);
       updateBar();
     });
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const id = card.getAttribute('data-id');
+        if (selected.has(id)) selected.delete(id); else selected.add(id);
+        updateBar();
+      }
+    });
   });
 })();
 </script>
 
 <div style="margin-bottom: 20px;">
   {% for paper in papers %}
-  <div class="paper-card" data-id="{{ paper[0] }}" style="cursor:pointer;">
+  <div class="paper-card" data-id="{{ paper[0] }}" role="checkbox" aria-checked="false" tabindex="0" style="cursor:pointer;">
     {% if paper[0] and paper[0] in contradiction_map %}
     {% with count = contradiction_map[paper[0]].count %}
     <span class="contradiction-badge"
