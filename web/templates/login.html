@@ -26,21 +26,17 @@
     <p class="login-sub">Sign in to access your research workspace</p>
     <form method="POST" action="/auth/login">
       <div class="form-group">
-        <label>Username</label>
-        <input type="text" name="username" required autocomplete="username">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required autocomplete="username" autofocus>
       </div>
       <div class="form-group">
-        <label>Password</label>
-        <input type="password" name="password" required autocomplete="current-password">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
       </div>
       <button type="submit" class="btn">Sign In</button>
       {% if error %}
       <div class="error">{{ error }}</div>
       {% endif %}
     </form>
-    {% if not_setup %}
-    <div class="setup-note">First time? <a href="/auth/setup">Set up admin account</a></div>
-    {% endif %}
-  </div>
 </body>
 </html>
