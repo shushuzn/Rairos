@@ -11,6 +11,8 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Required for OIDC
     steps:
       - uses: actions/checkout@v4
 
@@ -19,49 +21,11 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
-        run: pip install build twine requests-toolbelt
-
       - name: Build
         run: python -m build
 
-      - name: Upload to PyPI
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-          VERSION: ${{ inputs.version }}
-        run: |
-          python << 'PYEOF'
-          import os, requests
-          from requests_toolbelt import MultipartEncoder
-
-          token = os.environ['PYPI_TOKEN']
-          version = os.environ['VERSION']
-
-          whl_files = [f for f in os.listdir('dist/') if f.endswith('.whl')]
-          whl = whl_files[0] if whl_files else None
-          print('Uploading:', whl)
-
-          with open(f'dist/{whl}', 'rb') as f:
-              data = f.read()
-
-          e = MultipartEncoder(
-              fields={'content': (whl, data, 'application/zip')}
-          )
-
-          resp = requests.post(
-              'https://upload.pypi.org/legacy/',
-              data=e,
-              headers={
-                  'Authorization': f'Bearer {token}',
-                  'Content-Type': e.content_type,
-              },
-              timeout=60
-          )
-          print('Status:', resp.status_code, resp.reason)
-          print('Body:', resp.text[:300])
-          if resp.status_code in (200, 201):
-              print('SUCCESS!')
-          else:
-              print('FAILED')
-              exit(1)
-          PYEOF
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
+          skip_existing: true
