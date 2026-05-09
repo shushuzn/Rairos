@@ -1,6 +1,6 @@
 # Roadmap
 
-> Where is AI Research OS going?
+> Where is Rairos going?
 
 **Last updated:** May 2026
 **Maintainer:** @shushuzn
@@ -9,7 +9,7 @@
 
 ## Vision
 
-AI Research OS should be the **last research tool a PhD student or AI researcher ever needs** — a self-evolving partner that learns your research taste, surfaces what matters, and gets smarter every week.
+Rairos should be the **last research tool a PhD student or AI researcher ever needs** — a self-evolving partner that learns your research taste, surfaces what matters, and gets smarter every week.
 
 The goal is not to be another PDF manager or reference manager. It's to be an **autonomous research intelligence** that:
 - Reads papers so you don't have to read the wrong ones
@@ -21,24 +21,29 @@ The goal is not to be another PDF manager or reference manager. It's to be an **
 
 ## Current State
 
-**v1.5.2** — Core infrastructure is solid. The CLI is functional with 23 subcommands. Research loop and RAG pipeline exist but need polish.
+**v1.5.4** — Core infrastructure is solid. The CLI is functional with 23 subcommands. Research loop, gap analysis, and RAG pipeline are operational.
 
 Strengths:
-- 3839 tests, 129 test files
-- 100% pyflakes clean, ruff clean, mypy clean
+- 73 tests, CI gate at 40% coverage
 - arXiv/DOI/PDF import with OCR
 - FTS5 + semantic (embedding) search
 - Citation graph via OpenAlex
 - TUI chat interface
 - EvoSkill integration (benchmark-driven skill discovery)
 - paper2code pipeline
+- Gap clustering with hotspot trend analysis
+- Contradiction timeline for paradigm shift detection
+- Parallel multi-agent research with result merging
+- GenePool saturation-aware adaptive scheduling
+- Rich webhook notifications (Discord embeds, Feishu cards)
+- Structured observability (JSON logging, correlation IDs, metrics)
+- MCP tool fuzzing for regression testing
 
 Gaps:
-- No web UI (only CLI)
-- No real product demo/showcase
-- Minimal community presence (2 GitHub stars)
+- Web UI is minimal (Streamlit dashboard exists but limited)
+- No real product demo/showcase video
 - No mobile/offline access
-- LLM provider lock-in (OpenAI/DashScope)
+- Community presence limited
 
 ---
 
@@ -48,91 +53,71 @@ Gaps:
 
 Goal: Make the project **contributor-friendly** and **discoverable**.
 
-- [ ] **GitHub automation**
-  - Issue templates (bug report, feature request)
-  - PR template automation
-  - Stale bot configuration
-  - Auto-label PRs based on files changed
-
-- [ ] **Documentation**
-  - [ ] API reference page with searchable examples
-  - [ ] Architecture deep-dive (how the self-evolution works)
+- [x] **GitHub automation** (partial — CI working, issue templates needed)
+- [ ] **Documentation** (ongoing)
+  - [x] API reference page with examples
+  - [x] Architecture overview
   - [ ] Video demo / GIF showcase
-  - [ ] Comparisons with Zotero, Notion, Semantic Scholar
+  - [x] Comparisons with Zotero, Notion, Semantic Scholar
   - [ ] Benchmark page (what the system measures)
-
 - [ ] **First impressions**
-  - [ ] Professional README banner
-  - [ ] Logo redesign
+  - [x] Professional README banner
+  - [x] Logo redesign
   - [ ] Social preview images for GitHub links
-
-- [ ] **Good first issues**
-  - [ ] Label 10+ issues as `good first issue`
-  - [ ] Create `help wanted` label for harder issues
-
----
 
 ### v2.1 — Web UI (Mid Term)
 
-Goal: Make AI Research OS **accessible without CLI**.
+Goal: Make Rairos **accessible without CLI**.
 
-- [ ] Streamlit-based web dashboard
-  - Paper library browser
-  - Search interface
-  - Research gap visualizer
-  - Chat interface (web version of `chat-tui`)
-
+- [x] Streamlit-based web dashboard (partial)
+  - [x] Paper library browser
+  - [x] Search interface
+  - [x] Research gap visualizer with heatmap
+  - [x] Chat interface (web version of `chat-tui`)
+  - [x] Review generation endpoints
 - [ ] Docker deployment
-  - `docker-compose.yml` with Ollama, Milvus, and the app
-  - One-command setup for non-technical users
-
+  - [ ] `docker-compose.yml` with Ollama, Milvus, and the app
+  - [ ] One-command setup for non-technical users
 - [ ] Authentication
-  - Optional API key management
-  - Session persistence for web
-
----
+  - [ ] Optional API key management
+  - [ ] Session persistence for web
 
 ### v2.2 — Self-Evolution (Mid-Long Term)
 
 Goal: Make the "self-evolving" part **real and visible**.
 
-- [ ] **Gene/Capsule system** — make the evolution mechanism understandable
-  - Visual dashboard showing how the system learns
-  - User feedback loop: thumbs up/down on suggestions
-  - Evolution log: what the system learned this week
-
-- [ ] **Research gap detection** — surface what's missing
-  - Automatic gap analysis across 3+ papers
-  - Generate research questions from gaps
-  - Trend forecasting: where is the field going?
-
+- [x] **Gene/Capsule system** — evolution mechanism operational
+  - [x] Visual dashboard showing how the system learns (family tree)
+  - [x] User feedback loop: thumbs up/down on suggestions
+  - [x] Evolution log: what the system learned this week
+- [x] **Research gap detection** — surface what's missing
+  - [x] Automatic gap analysis across papers
+  - [x] Gap clustering with hotspot trend analysis
+  - [x] Generate research questions from gaps
+  - [x] Paradigm shift detection via contradiction timeline
 - [ ] **Weekly research digest**
-  - Auto-generated summary of new papers
-  - Changes in research landscape
-  - Personalized recommendations
-
----
+  - [ ] Auto-generated summary of new papers
+  - [ ] Changes in research landscape
+  - [ ] Personalized recommendations
 
 ### v3.0 — Autonomous Research Agent (Long Term)
 
 Goal: A system that does research **with minimal human input**.
 
-- [ ] **Autonomous research loop** — given a research question, the system:
-  - Searches literature
-  - Downloads and reads papers
-  - Generates hypotheses
-  - Designs experiments (paper2code)
-  - Reports findings
-
+- [x] **Autonomous research loop** — given a research question, the system:
+  - [x] Searches literature
+  - [x] Downloads and reads papers
+  - [x] Generates hypotheses
+  - [x] Designs experiments (paper2code)
+  - [x] Reports findings
 - [ ] **Multi-modal input**
-  - Accept paper PDFs via email
-  - Slack/Telegram bot interface
-  - arXiv RSS feed auto-import
-
+  - [ ] Accept paper PDFs via email
+  - [ ] Slack/Telegram bot interface
+  - [x] arXiv RSS feed auto-import (subscribe command)
 - [ ] **Knowledge graph visualization**
-  - D3.js interactive graph
-  - Filter by time, topic, citations
-  - Path finding between concepts
+  - [ ] D3.js interactive graph
+  - [ ] Filter by time, topic, citations
+  - [ ] Path finding between concepts
 
 ---
 
@@ -152,9 +137,10 @@ Goal: A system that does research **with minimal human input**.
 | v1.0 | Released | Basic import, search, P-Note generation |
 | v1.3 | Released | C-Note, Radar, Timeline, citation graph |
 | v1.5 | Released | Chat TUI, semantic search, EvoSkill pipeline |
-| v2.0 | Planned | Community polish, web UI, Docker |
-| v2.2 | Planned | Self-evolution dashboard, research gap detection |
-| v3.0 | Future | Autonomous research agent |
+| v1.5.4 | Released | Gap clustering, contradiction timeline, parallel research, GenePool saturation, rich webhooks, observability |
+| v2.0 | In Progress | Community polish, web UI improvements, Docker |
+| v2.2 | In Progress | Self-evolution dashboard, research digest |
+| v3.0 | Future | Autonomous research agent, multi-modal input |
 
 ---
 
