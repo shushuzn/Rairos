@@ -51,6 +51,17 @@ See [Installation](installation.md) for full setup instructions.
 
 ## Key Features
 
+### Key New Capabilities
+
+- **Adaptive Scheduling** — GenePool saturation-aware research interval
+- **Gap Clustering** — Semantic clustering of research gaps with hotspot trend analysis
+- **Contradiction Timeline** — Detect paradigm shifts from conflicting paper claims
+- **Impact Tracking** — Quantified research impact: novelty × depth × strength × speed
+- **Parallel Research** — Multi-agent concurrent gap analysis with result merging
+- **Topic Discovery** — Gap-density-based intelligent subscription suggestions
+- **Rich Webhooks** — Discord embeds + Feishu cards for gap and paradigm shift alerts
+- **Structured Observability** — JSON logging with correlation IDs and event tracking
+
 ### 23 CLI Commands
 
 - `import` — Bulk import from arXiv, DOI, PDF
@@ -86,7 +97,7 @@ Paper → P-Note (per paper)
 
 | Metric | Value |
 |--------|-------|
-| Tests | 4295 passing |
+| Tests | 73 passing (CI gate 40%) |
 | Python | 3.10+ |
 | License | GPL v3 |
 | Version | 1.5.4 |

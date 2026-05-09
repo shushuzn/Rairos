@@ -209,30 +209,72 @@ for thought in result.thoughts:
     print(thought.role, thought.content)
 ```
 
-## LSP Diagnostics
+## Gap Clustering & Analysis
 
 ```python
-from research_loop.lsp_diagnostics import (
-    check_ruff,
-    check_pyright,
-    run_progressive,
-    format_diagnostics,
-    Diagnostic,
-)
-from pathlib import Path
+from llm.research.gap_analyzer import GapClusterer, ConfidenceScorer
 
-# Fast lint (synchronous)
-issues = check_ruff(Path("src/main.py"))
+clusterer = GapClusterer()
+clusters = clusterer.get_clusters(gaps)
 
-# Type check (background)
-run_progressive(
-    Path("src/main.py"),
-    on_fast=lambda diags: print(format_diagnostics(diags, "ruff")),
-    on_complete=lambda diags: print(format_diagnostics(diags, "pyright")),
-)
+scorer = ConfidenceScorer()
+for gap in gaps:
+    score = scorer.score(gap)
+    # score.confidence: 0-1, score.is_high_quality: bool
+```
 
-# Format for display
-print(format_diagnostics(issues))
+## Topic Discovery
+
+```python
+from research_loop.topic_discovery import TopicDiscoverer
+
+td = TopicDiscoverer()
+suggestions = td.discover_topics(strategy="gap_cluster", top_k=5)
+for s in suggestions:
+    print(s.topic, s.reason, s.priority_score)
+```
+
+## Contradiction Timeline
+
+```python
+from llm.research.contradiction_timeline import ContradictionTimeline
+
+timeline = ContradictionTimeline()
+timeline.add_event(paper_id, claim_a, claim_b, polarity="contradiction")
+shifts = timeline.detect_paradigm_shifts()
+```
+
+## Impact Tracking
+
+```python
+from llm.research.impact_tracker import GapImpactTracker
+
+tracker = GapImpactTracker()
+tracker.record_resolution(gap_id, resolution_confidence=0.8)
+summary = tracker.get_summary(gap_id)
+print(summary.impact_score)
+```
+
+## Observability
+
+```python
+from core.observability import get_logger, emit_research_event, setup_observability
+
+setup_observability(level="INFO", json_logs=True)
+log = get_logger("orchestrator")
+log.info("gap_discovered", gap_type="method_limitation", novelty=0.85)
+
+emit_research_event("paper_ingested", arxiv_id="2601.00155", gap_count=3)
+```
+
+## Webhook Notifications
+
+```python
+from notifications.dispatcher import WebhookDispatcher, DiscordEmbed, GapCard
+
+dispatcher = WebhookDispatcher()
+dispatcher.send_gap_alert(gap, confidence=0.82, webhook_url=discord_url)
+dispatcher.send_paradigm_shift_alert(shifts, webhook_url=feishu_url)
 ```
 
 ## Circuit Breaker
