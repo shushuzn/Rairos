@@ -277,6 +277,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         "report": "_run_report",
         "jin10": "_run_jin10",
         "demo": "_run_demo",
+        "paper2code": "_run_paper2code",
+        "validate": "_run_validate",
     }
 
     if args.subcmd in dispatch:

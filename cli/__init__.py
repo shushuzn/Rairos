@@ -128,6 +128,11 @@ _LAZY_EXPORTS = {
     "_run_report": ("cli.cmd.report", "_run_report"),
     "_run_jin10": ("cli.cmd.jin10", "_run_jin10"),
     "_run_demo": ("cli.cmd.demo", "run_demo"),
+    "_run_evoskill": ("cli.cmd.evoskill", "evoskill"),
+    "_run_rag": ("cli.cmd.rag", "rag"),
+    "_run_visual": ("cli.cmd.visual", "visual_extract"),
+    "_run_paper2code": ("cli.cmd.paper.paper2code", "paper2code"),
+    "_run_validate": ("cli.cmd.validate", "_run_validate"),
 
     "_run_narrative": ("cli.cmd.narrative", "_run_narrative"),
     "_build_narrative_parser": ("cli.cmd.narrative", "_build_narrative_parser"),
