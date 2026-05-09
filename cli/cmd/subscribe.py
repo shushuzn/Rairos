@@ -38,6 +38,89 @@ def _save_watch_state(state: dict) -> None:
     path.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
+def _print_gene_pool_saturation(before: str = "") -> dict:
+    """Print GenePool saturation dashboard using rich.
+
+    Returns a dict of pool stats for callers that need them.
+    """
+    try:
+        from collections import Counter
+
+        from llm.insight_evolution import get_evolution_tracker
+
+        tracker = get_evolution_tracker()
+        capsules = tracker._load_capsules()
+        active = [c for c in capsules if c.status == "active"]
+        archived = [c for c in capsules if c.status == "archived"]
+
+        total = len(capsules)
+        n_active = len(active)
+        n_archived = len(archived)
+        saturation = n_active / max(total, 1)
+
+        # Saturation level label
+        if saturation >= 0.8:
+            sat_label = "[\033[32mHIGH\033[0m]"
+            sat_bar = "\033[32m" + "█" * 8 + "\033[0m"
+        elif saturation >= 0.5:
+            sat_label = "[\033[33mMED\033[0m]"
+            sat_bar = "\033[33m" + "█" * int(saturation * 8) + "\033[0m" + "░" * (8 - int(saturation * 8))
+        elif saturation > 0:
+            sat_label = "[\033[31mLOW\033[0m]"
+            sat_bar = "\033[31m" + "█" * int(saturation * 8) + "\033[0m" + "░" * (8 - int(saturation * 8))
+        else:
+            sat_label = "[\033[90mEMPTY\033[0m]"
+            sat_bar = "\033[90m░░░░░░░░\033[0m"
+
+        # Avg quality
+        avg_score = 0.0
+        avg_feedback = 0.0
+        if active:
+            avg_score = sum(c.outcome_success_score for c in active) / len(active)
+            avg_feedback = sum(c.feedback_count for c in active) / len(active)
+
+        # Gap type diversity (entropy proxy)
+        gap_types = Counter(c.action_gap_type for c in active)
+        diversity = len(gap_types)
+
+        # Top gap types
+        top_gaps = gap_types.most_common(5)
+
+        # Decay risk: capsules with low score and low feedback
+        decay_risk = sum(
+            1
+            for c in active
+            if c.outcome_success_score < 0.4 and c.feedback_count == 0
+        )
+
+        header = f"[\033[1;36mGenePool\033[0m] \033[90m{before}\033[0m" if before else "\033[1;36mGenePool\033[0m Saturation"
+        bar_str = f"{sat_bar} {sat_label} {n_active}/{total}"
+
+        print()
+        print(f"  {header}")
+        print(f"  Saturation  {bar_str}")
+        print(f"  Active      {n_active}  |  Archived  {n_archived}  |  Diversity  {diversity} gap types")
+        print(f"  Avg quality {avg_score:.2f}  |  Avg hits  {avg_feedback:.1f}  |  Decay risk  {decay_risk}")
+        if top_gaps:
+            top_str = "  |  ".join(f"{gt}:{cnt}" for gt, cnt in top_gaps[:4])
+            print(f"  Top gaps    {top_str}")
+        print()
+
+        return {
+            "total": total,
+            "n_active": n_active,
+            "n_archived": n_archived,
+            "saturation": saturation,
+            "avg_score": avg_score,
+            "avg_feedback": avg_feedback,
+            "diversity": diversity,
+            "decay_risk": decay_risk,
+        }
+    except Exception as e:
+        print(f"  \033[90m[GenePool] Unable to load: {e}\033[0m")
+        return {}
+
+
 # ─── Watch loop ────────────────────────────────────────────────────────────────
 
 
@@ -54,6 +137,7 @@ def _run_watch_loop(interval_minutes: int, stop_event: threading.Event) -> None:
     webhook = get_webhook_notifier()
 
     print_success(f"[Autopilot] Watch started — checking every {interval_minutes} min")
+    _print_gene_pool_saturation("initial")
     state = _load_watch_state()
     state["running"] = True
     state["interval_minutes"] = interval_minutes
@@ -69,6 +153,9 @@ def _run_watch_loop(interval_minutes: int, stop_event: threading.Event) -> None:
                     f"[Autopilot] Found {total} new paper(s) across {len(all_results)} subscription(s)"
                 )
 
+                # Print GenePool saturation before research
+                before_stats = _print_gene_pool_saturation("pre-research")
+
                 # Trigger deep research for each subscription with new papers
                 from research_loop.orchestrator import Orchestrator
                 for sub_id, papers in all_results.items():
@@ -83,6 +170,13 @@ def _run_watch_loop(interval_minutes: int, stop_event: threading.Event) -> None:
                             print_success(f"[DeepResearch] [{sub_id}] {len(gaps)} gaps found")
                         except Exception as e:
                             logger.error(f"[DeepResearch] [{sub_id}] Failed: {e}")
+
+                # Print GenePool saturation after research (show change)
+                after_stats = _print_gene_pool_saturation("post-research")
+                if before_stats and after_stats:
+                    delta = after_stats["n_active"] - before_stats["n_active"]
+                    if delta > 0:
+                        print(f"  [32m  +{delta} capsules encoded into GenePool[0m")
 
                 # Send webhook notifications
                 for sub_id, papers in all_results.items():
@@ -261,14 +355,20 @@ def _run_subscribe(args: argparse.Namespace) -> int:
                 topic = sub.get("topic", args.id) if sub else args.id
                 webhook.notify_papers_found(topic, results, min_score=0.5)
 
-                # Trigger deep research if requested
+                # GenePool saturation before/after + deep research trigger
                 if getattr(args, "deep_research", False) and results:
+                    sat_before = _print_gene_pool_saturation("pre-research")
                     from research_loop.orchestrator import Orchestrator
                     print_info("[DeepResearch] Starting research on new papers...")
                     orch = Orchestrator()
                     dr_result = orch.run_deep_research(topic, results)
                     gaps = dr_result.get("gaps", [])
                     print_success(f"[DeepResearch] Found {len(gaps)} gaps")
+                    sat_after = _print_gene_pool_saturation("post-research")
+                    if sat_before and sat_after:
+                        delta = sat_after["n_active"] - sat_before["n_active"]
+                        if delta > 0:
+                            print(f"    [32m  +{delta} capsules encoded[0m")
 
                 # Auto-update literature review
                 updated_file = analyzer.update_for_subscription(args.id, results)
@@ -276,6 +376,9 @@ def _run_subscribe(args: argparse.Namespace) -> int:
                     print_info(f"  Updated litreview: {updated_file}")
         else:
             all_results = monitor.check_all()
+            # Pre-research GenePool saturation
+            has_papers = any(papers for papers in all_results.values())
+            sat_before_all = _print_gene_pool_saturation("pre-research") if has_papers else {}
             for sub_id, papers in all_results.items():
                 sub = db.get_arxiv_subscription(sub_id)
                 topic = sub.get("topic", sub_id) if sub else sub_id
@@ -297,6 +400,12 @@ def _run_subscribe(args: argparse.Namespace) -> int:
                     updated_file = analyzer.update_for_subscription(sub_id, papers)
                     if updated_file:
                         print_info(f"  Updated litreview: {updated_file}")
+            # Post-research GenePool saturation
+            if sat_before_all:
+                sat_after_all = _print_gene_pool_saturation("post-research")
+                delta = sat_after_all.get("n_active", 0) - sat_before_all.get("n_active", 0)
+                if delta > 0:
+                    print(f"    [32m  +{delta} capsules encoded into GenePool[0m")
         return 0
 
     # ── recommendations ─────────────────────────────────────────────────────
