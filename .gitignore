@@ -102,3 +102,4 @@ _pr2.js
 
 # Prevent accidental type-name junk files (from LLM codegen artifacts)
 SITUATION_REPORT.md
+wiki_temp/
