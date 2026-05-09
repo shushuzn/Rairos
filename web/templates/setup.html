@@ -26,16 +26,16 @@
     <p class="setup-sub">Set up your admin account to secure your workspace</p>
     <form method="POST" action="/auth/setup">
       <div class="form-group">
-        <label>Username</label>
-        <input type="text" name="username" required autocomplete="username" minlength="3">
+        <label for="username">Username</label>
+        <input id="username" type="text" name="username" required autocomplete="username" minlength="3">
       </div>
       <div class="form-group">
-        <label>Password</label>
-        <input type="password" name="password" required autocomplete="new-password" minlength="8">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" required autocomplete="new-password" minlength="8">
       </div>
       <div class="form-group">
-        <label>Confirm Password</label>
-        <input type="password" name="password2" required autocomplete="new-password" minlength="8">
+        <label for="password2">Confirm Password</label>
+        <input id="password2" type="password" name="password2" required autocomplete="new-password" minlength="8">
       </div>
       <button type="submit" class="btn">Create Account</button>
       {% if error %}
