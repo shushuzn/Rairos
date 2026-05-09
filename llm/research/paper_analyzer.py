@@ -608,14 +608,6 @@ class PaperAnalyzer:
                 logger.debug("Embedding fetch failed for text snippet %r: %s", text[:50], e)
                 return None
 
-        def _cosine_sim(a: List[float], b: List[float]) -> float:
-            dot = sum(x * y for x, y in zip(a, b))
-            norm_a = math.sqrt(sum(x * x for x in a))
-            norm_b = math.sqrt(sum(y * y for y in b))
-            if norm_a == 0 or norm_b == 0:
-                return 0.0
-            return dot / (norm_a * norm_b)
-
         def _word_overlap(claim: str, source: str) -> float:
             """Return overlap ratio 0-1."""
             claim_words = set(w.strip(".,;:!?()[]{}\"'") for w in claim.lower().split())

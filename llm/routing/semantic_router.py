@@ -287,7 +287,7 @@ def _route_by_llm(query: str, model: Optional[str] = None) -> Route:
 # ─── Embedding-based fallback ────────────────────────────────────────────────
 
 
-def _cosine_sim(a: List[float], b: List[float]) -> float:
+def cosine_sim(a: List[float], b: List[float]) -> float:
     dot = sum(x * y for x, y in zip(a, b))
     norm_a = math.sqrt(sum(x * x for x in a))
     norm_b = math.sqrt(sum(x * x for x in b))
@@ -308,7 +308,7 @@ def _route_by_embedding(query: str) -> Route:
         query_emb = embeddings[0]
         cap_embs = [e for e in embeddings[1:] if e is not None]
 
-        scores: List[float] = [_cosine_sim(query_emb, emb) for emb in cap_embs]
+        scores: List[float] = [cosine_sim(query_emb, emb) for emb in cap_embs]
 
         best_idx = int(max(range(len(scores)), key=lambda i: scores[i]))
         best_qt = list(QueryType)[best_idx]

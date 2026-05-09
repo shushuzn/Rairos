@@ -35,7 +35,7 @@ def _load_capsules() -> List[Dict[str, Any]]:
     return data.get("capsules", [])  # type: ignore[no-any-return]
 
 
-def _jaccard(a: List[str], b: List[str]) -> float:
+def jaccard(a: List[str], b: List[str]) -> float:
     s_a, s_b = set(a), set(b)
     if not s_a or not s_b:
         return 0.0
@@ -60,7 +60,7 @@ def get_bold_capsules() -> List[BoldCapsule]:
         for other in capsules:
             if other.get("capsule_id") == cap.get("capsule_id"):
                 continue
-            ov = _jaccard(keywords, other.get("trigger_keywords", []))
+            ov = jaccard(keywords, other.get("trigger_keywords", []))
             if ov > max_overlap:
                 max_overlap = ov
         novelty = 1.0 - max_overlap
