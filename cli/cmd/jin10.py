@@ -15,7 +15,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
+
 import sys
 
 from cli._shared import Colors, print_error, print_success

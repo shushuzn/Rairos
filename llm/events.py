@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import logging
-import time
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from llm.mcp_jin10 import Jin10Client
 from llm.insight.tracker import EvolutionTracker
-from parsers.arxiv_search import search_arxiv, search_arxiv_cached
+, search_arxiv_cached
 from core import Paper
 
 logger = logging.getLogger(__name__)
@@ -180,7 +180,7 @@ def _find_related_papers(topic: str, limit: int) -> List:
 
 def _try_search_arxiv(topic: str, limit: int) -> List:
     """Search arXiv with exponential backoff on 429."""
-    import time as _time
+     as _time
 
     for attempt in range(3):
         try:

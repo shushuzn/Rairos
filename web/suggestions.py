@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -74,7 +74,7 @@ def _mark_suggestion_consumed(gap_type: str, topic_hint: str, title: str, s_type
 
 def mark_capsule_consumed(capsule_id: str, tracker) -> None:
     """Mark a capsule as consumed in both Gene Pool stores."""
-    from llm.gene_pool_io import _sync_capsules_json
+    
 
     try:
         consumed_title = ""

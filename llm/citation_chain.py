@@ -3,7 +3,7 @@ Citation Chain: Build and visualize citation relationships.
 Research family clustering and silent citation detection.
 """
 
-from dataclasses import dataclass, field, asdict
+, field, asdict
 from typing import List, Optional, Dict, Set, Tuple, Any, cast
 from collections import deque
 import json
@@ -282,7 +282,7 @@ class CitationChainBuilder:
         Returns list of dicts: {path: [paper_ids], capsule: {...}, gap_title: str}
         """
         from pathlib import Path
-        from dataclasses import dataclass
+        
 
         if not self.db:
             return []

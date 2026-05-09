@@ -8,7 +8,7 @@ Gene Pool gap → auto-subscribe → paper2code → Gene Pool encode → diversi
 from __future__ import annotations
 
 import threading
-import time
+
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -237,7 +237,7 @@ def _register_gap_subscription(sub: GapSubscription) -> Optional[str]:
     """
     try:
         from db.database import Database
-        from llm.subscription_monitor import SubscriptionMonitor
+        
 
         db = Database()
         db.init()
