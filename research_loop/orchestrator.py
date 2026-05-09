@@ -421,6 +421,21 @@ class AutonomousOrchestrator:
             # Record filtered gaps to gap_history for future incremental reporting
             self.db.record_gap_history(topic, session_id, gaps)
 
+            # ── Generate research survey ─────────────────────────────────────────
+            if gaps:
+                try:
+                    survey_path = generate_research_survey(
+                        topic=topic,
+                        scored_gaps=scored,
+                        papers_analyzed=research_result.get("papers_analyzed", 0),
+                        session_id=session_id,
+                        iterations=research_result.get("iterations", 0),
+                        gap_history_stats=filter_stats,
+                    )
+                    logger.info(f"[Orchestrator] Survey generated: {survey_path}")
+                except Exception as e:
+                    logger.warning(f"[Orchestrator] Survey generation failed: {e}")
+
             logger.info(f"[Orchestrator] Generated {len(alerts)} alerts for '{topic}'")
 
         # Update state
