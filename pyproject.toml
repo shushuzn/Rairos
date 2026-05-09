@@ -6,9 +6,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 
-name = "rairos"
+name = "ai-research-os"
 
-version = "1.7.0"
+version = "1.7.1"
 
 description = "Rairos — Self-Evolving Research OS for AI Researchers — manage papers, detect research gaps, generate insights"
 
