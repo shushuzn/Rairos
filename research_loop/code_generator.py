@@ -306,7 +306,7 @@ def _strip_prose_secondary(code: str) -> str:
             continue
         alpha = sum(c.isalpha() for c in stripped)
         ratio = alpha / total if total > 0 else 0
-        markers = set('(){}=[]<@#"')
+        markers = set('(){}=[]<>:@#"')
         has_marker = any(c in markers for c in stripped)
         is_import = stripped.startswith("import ") or stripped.startswith("from ")
         is_py_kw = re.match(
