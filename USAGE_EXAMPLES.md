@@ -16,36 +16,36 @@
 
 ```bash
 # 使用简化CLI搜索
-python -m core.simple_cli search "machine learning"
+rairos search "machine learning"
 
 # 使用高级搜索
-python cli.py search "LLM agent"
+rairos search "LLM agent"
 
 # 搜索arXiv
-python cli.py search "deep learning" --source arxiv
+rairos search "deep learning" --source arxiv
 ```
 
 ### 2. 导入论文
 
 ```bash
 # 导入arXiv论文
-python -m core.simple_cli import 2301.001
+rairos import 2301.001
 
 # 导入DOI论文
-python -m core.simple_cli import "10.1234/example" --source doi
+rairos import "10.1234/example" --source doi
 ```
 
 ### 3. 查看状态
 
 ```bash
 # 查看系统状态
-python -m core.simple_cli status
+rairos status
 
 # 查看详细统计
-python -m core.simple_cli stats
+rairos stats
 
 # 列出所有论文
-python -m core.simple_cli list
+rairos list
 ```
 
 ---
@@ -249,7 +249,7 @@ for endpoint, stats in all_stats.items():
 export OPENAI_API_KEY="your-api-key"
 
 # 方式2: 命令行参数
-python cli.py research --api-key "your-api-key"
+rairos research --api-key "your-api-key"
 ```
 
 ### Q: 如何查看详细的错误信息？
@@ -280,10 +280,10 @@ cache.cleanup_expired()
 
 ```bash
 # JSON格式
-python -m core.simple_cli export json > papers.json
+rairos export json > papers.json
 
 # CSV格式
-python -m core.simple_cli export csv > papers.csv
+rairos export csv > papers.csv
 ```
 
 ### Q: 如何监控性能？
@@ -393,4 +393,4 @@ print(profiler.get_report())
 
 ---
 
-**提示**: 使用 `python -m core.simple_cli help` 查看所有可用命令！
+**提示**: 使用 `rairos help` 查看所有可用命令！
