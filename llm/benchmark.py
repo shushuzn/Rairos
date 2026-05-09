@@ -78,6 +78,13 @@ _METRIC_KEYWORDS = [
     "result",
 ]
 
+
+# Precompiled regex patterns for _parse_numeric (avoid recompilation per call)
+_RE_PERCENT = re.compile(r"^([\d.]+)\s*%$")
+_RE_RANGE = re.compile(r"^([\d.]+)±")
+_RE_FRACTION = re.compile(r"^([\d.]+)/([\d.]+)$")
+_RE_SUFFIX = re.compile(r"^([\d.]+)([BKMG])$")
+_RE_SCI = re.compile(r"^([\d.]+)[eE]([+-]?\d+)$")
 _BENCHMARK_NAMES = [
     "imagenet",
     "cifar",
@@ -608,3 +615,4 @@ class BenchmarkComparator:
                 for rank, (pid, val, model) in enumerate(match.entries, 1)
             ]
         return json.dumps(output, indent=2, ensure_ascii=False)
+
