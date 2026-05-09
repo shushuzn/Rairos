@@ -510,6 +510,98 @@ class InsightManager:
 
         return "\n".join(lines)
 
+    # ─── LLM-powered insight generation ────────────────────────────────────────
+
+    def generate_insight(
+        self,
+        paper_title: str,
+        paper_abstract: str,
+        sections: Optional[List[Dict[str, Any]]] = None,
+        model: Optional[str] = None,
+        min_quality: int = 3,
+    ) -> List[InsightCard]:
+        """Generate key insight cards from a paper using LLM.
+
+        Args:
+            paper_title: Title of the paper.
+            paper_abstract: Abstract text.
+            sections: Optional list of {"title": str, "text": str} dicts.
+            model: LLM model to use (default: from config).
+            min_quality: Minimum quality threshold (1-5).
+
+        Returns:
+            List of generated InsightCard objects.
+        """
+        try:
+            from llm.client import get_client
+        except ImportError:
+            return []
+
+        system_prompt = (
+            "You are a research assistant that extracts key insights from academic papers.\n"
+            "For each insight, respond with ONE line in this format:\n"
+            "INSIGHT|TYPE|CONTENT|TAGS\n"
+            "  TYPE is one of: finding, method, limitation, future_work, result\n"
+            "  TAGS is a comma-separated list of research area tags\n"
+            "  CONTENT is the insight text (max 100 chars)\n"
+            "Examples:\n"
+            "INSIGHT|result|Multi-head attention achieves SOTA on WMT EN-DE (28.4 BLEU)|transformer,attention,nmt\n"
+            "INSIGHT|method|Parallelizable training via self-attention eliminates recurrence|transformer,parallelism\n"
+            "INSIGHT|finding|Positional encoding using sin/cos functions preserves order information|nlp,embeddings"
+        )
+
+        section_text = ""
+        if sections:
+            section_text = "\n\nPaper sections:\n" + "\n".join(
+                f"[{s.get('title', 'Section')}]\n{s.get('text', '')[:300]}"
+                for s in sections[:5]
+            )
+
+        user_prompt = f"Paper: {paper_title}\n\nAbstract: {paper_abstract}\n{section_text}\n\nExtract 5-8 key insights from this paper."
+
+        try:
+            client = get_client(model=model) if model else get_client()
+            response = client.generate(prompt=user_prompt, system=system_prompt)
+        except Exception:
+            return []
+
+        cards: List[InsightCard] = []
+        for line in response.strip().split("\n"):
+            if not line.startswith("INSIGHT|"):
+                continue
+            parts = line[7:].split("|")
+            if len(parts) < 3:
+                continue
+            insight_type = parts[0].strip() if parts[0].strip() in (
+                "finding", "method", "limitation", "future_work", "result"
+            ) else "finding"
+            content = parts[1].strip()
+            tags_raw = parts[2].strip() if len(parts) > 2 else ""
+            tags = [t.strip() for t in tags_raw.split(",") if t.strip()]
+
+            if not content or len(content) < 10:
+                continue
+
+            # Quality heuristic: longer, more specific content is higher quality
+            quality = min(5, max(1, len(content) // 30 + (len(tags) * 2 - 3)))
+            if quality < min_quality:
+                continue
+
+            cards.append(
+                InsightCard(
+                    card_id=f"g{len(self._load_cards()) + len(cards) + 1:04d}",
+                    paper_id="",
+                    paper_title=paper_title,
+                    content=content,
+                    insight_type=insight_type,
+                    tags=tags,
+                    quality_rating=quality,
+                    created_at=datetime.now().isoformat(),
+                )
+            )
+
+        return cards
+
     def export_for_note(self, cards: List[InsightCard]) -> str:
         """Export cards in a format suitable for notes."""
         lines = []
