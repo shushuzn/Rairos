@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -744,7 +744,7 @@ def _save_decay_state(state: DecayState) -> None:
 
 
 def _now_iso() -> str:
-    return datetime.utcnow().isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 # ─── Momentum tracking ──────────────────────────────────────────────────────────
@@ -797,7 +797,7 @@ def get_gap_type_momentum(
     tracker = EvolutionTracker(data_dir=GP_DIR)
     capsules = tracker._load_capsules()
     state = _load_momentum_state()
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     cutoff = now.timestamp() - (days * 86400)
 
     # Count new capsules per gap_type since last_snapshot (or all if first run)

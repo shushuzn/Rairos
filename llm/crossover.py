@@ -25,7 +25,7 @@ import copy
 import random
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import cast, Any, Dict, List, Optional
 
@@ -210,7 +210,7 @@ def encode_v3_capsule(
     capsule_id = uuid.uuid4().hex[:12]
     cap = CapsuleGene(
         capsule_id=capsule_id,
-        created_at=datetime.utcnow().isoformat(),
+        created_at=datetime.now(timezone.utc).isoformat(),
         trigger_topic=trigger_topic or "crossover",
         trigger_gap_type=gap_type or "method_gap",
         trigger_keywords=[],
@@ -514,9 +514,9 @@ def _save_debate_state(debates: List[DebateEntry]) -> None:
 
 
 def _now_iso() -> str:
-    from datetime import datetime
+    from datetime import datetime, timezone
 
-    return datetime.utcnow().isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 def _score_argument(capsule: Any, inbound_citations: int = 0) -> float:

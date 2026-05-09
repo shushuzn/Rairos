@@ -186,9 +186,9 @@ def _save_watcher_state(state: WatcherState) -> None:
 
 
 def _now_iso() -> str:
-    from datetime import datetime
+    from datetime import datetime, timezone
 
-    return datetime.utcnow().isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 # ─── Gap detection and subscription creation ───────────────────────────────────
