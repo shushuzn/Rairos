@@ -7,6 +7,9 @@ on:
         description: 'Version to publish'
         required: true
         default: '1.7.1'
+    secrets:
+      PYPI_TOKEN:
+        required: true
 
 jobs:
   publish:
@@ -19,23 +22,16 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
-        run: pip install build twine
-
       - name: Build
         run: python -m build
 
       - name: Upload to PyPI
         env:
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          PYPI_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
-          echo "Package contents:"
-          ls -la dist/
-          echo ""
-          echo "Uploading with twine..."
+          echo "PYPI_PASSWORD length: ${#PYPI_PASSWORD}"
           python -m twine upload dist/* \
             --repository-url https://upload.pypi.org/legacy/ \
             --username __token__ \
-            --password "$TWINE_PASSWORD" \
-            --verbose \
-            --skip-existing
+            --password "$PYPI_PASSWORD" \
+            --verbose
