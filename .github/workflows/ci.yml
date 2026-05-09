@@ -124,7 +124,7 @@ jobs:
       - name: Run pytest shard ${{ matrix.shard }}/4
         run: |
           python -m pytest tests/ \
-            -q --tb=short \
+            -q --tb=short -n auto \
             --cov=. --cov-report=term-missing \
             --splits 4 --group ${{ matrix.shard }} \
             2>&1 | tee pytest_output.txt
