@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import logging
 import time
+import urllib.parse
 import urllib.request
 from dataclasses import dataclass, asdict
 from enum import Enum
@@ -103,6 +104,10 @@ class WebhookNotifier:
     def _send(self, payload: Dict[str, Any]) -> bool:
         """Send payload to webhook URL. Returns True on success."""
         if not self.webhook_url:
+            return False
+        parsed = urllib.parse.urlparse(self.webhook_url)
+        if parsed.scheme not in ("http", "https"):
+            logger.warning(f"Webhook URL scheme {parsed.scheme!r} not allowed (only http/https)")
             return False
         try:
             data = json.dumps(payload).encode("utf-8")
