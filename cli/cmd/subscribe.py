@@ -163,7 +163,7 @@ def compute_adaptive_interval(
 
 def run_cold_start_research(db: Any) -> None:
     """Populate empty GenePool by running research on all active subscriptions."""
-    from research_loop.orchestrator import Orchestrator
+    from research_loop.orchestrator import AutonomousOrchestrator as Orchestrator
     subs = db.get_active_subscriptions()
     if not subs:
         print_info('[Scheduler] No subscriptions configured — cold-start skipped')
@@ -214,7 +214,7 @@ def _run_watch_loop(interval_minutes: int, stop_event: threading.Event) -> None:
                 before_stats = _print_gene_pool_saturation("pre-research")
 
                 # Trigger deep research for each subscription with new papers
-                from research_loop.orchestrator import Orchestrator
+                from research_loop.orchestrator import AutonomousOrchestrator as Orchestrator
                 for sub_id, papers in all_results.items():
                     if papers:
                         sub = db.get_arxiv_subscription(sub_id)
@@ -435,7 +435,7 @@ def _run_subscribe(args: argparse.Namespace) -> int:
                 # GenePool saturation before/after + deep research trigger
                 if getattr(args, "deep_research", False) and results:
                     sat_before = _print_gene_pool_saturation("pre-research")
-                    from research_loop.orchestrator import Orchestrator
+                    from research_loop.orchestrator import AutonomousOrchestrator as Orchestrator
                     print_info("[DeepResearch] Starting research on new papers...")
                     orch = Orchestrator()
                     dr_result = orch.run_deep_research(topic, results)
@@ -467,7 +467,7 @@ def _run_subscribe(args: argparse.Namespace) -> int:
                     webhook.notify_papers_found(topic, papers, min_score=0.5)
 
                     # Trigger deep research automatically
-                    from research_loop.orchestrator import Orchestrator
+                    from research_loop.orchestrator import AutonomousOrchestrator as Orchestrator
                     print_info(f"[DeepResearch] Starting research on {len(papers)} new papers...")
                     orch = Orchestrator()
                     dr_result = orch.run_deep_research(topic, papers)

@@ -103,7 +103,7 @@ def _build_daemon_parser(subparsers) -> argparse.ArgumentParser:
     events.add_argument("--limit", "-n", type=int, default=20, help="Max events to show")
     events.set_defaults(func=_run_daemon_events)
 
-    return p
+    return p  # type: ignore[no-any-return]
 
 
 def _get_orchestrator():
@@ -141,7 +141,7 @@ def _run_daemon_status(args) -> None:
 
     running = status.get("running", False)
     running_str = (
-        f"{Colors.GREEN}RUNNING{Colors.END}" if running else f"{Colors.RED}STOPPED{Colors.END}"
+        f"{Colors.GREEN}RUNNING{Colors.END}" if running else f"{Colors.FAIL}STOPPED{Colors.END}"
     )
 
     print(f"\n  {'Daemon Status':<20} {running_str}")
@@ -168,7 +168,7 @@ def _run_daemon_cycle(args) -> None:
         print_success(f"Cycle complete: {len(alerts)} alert(s) generated")
         for alert in alerts[:5]:
             sev = alert.severity
-            color = Colors.RED if sev == "HIGH" else Colors.YELLOW
+            color = Colors.FAIL if sev == "HIGH" else Colors.YELLOW
             print(f"  {color}[{sev}]{Colors.END} {alert.top_gap_title[:60]}")
         if len(alerts) > 5:
             print(f"  ... and {len(alerts) - 5} more")
@@ -221,7 +221,7 @@ def _run_daemon_log(args) -> None:
     print(f"\n  Recent Alerts ({len(alerts)}):\n")
     for a in alerts:
         sev = a.severity
-        color = Colors.RED if sev == "HIGH" else Colors.YELLOW if sev == "MEDIUM" else Colors.CYAN
+        color = Colors.FAIL if sev == "HIGH" else Colors.YELLOW if sev == "MEDIUM" else Colors.CYAN
         ts = time.strftime("%H:%M", time.localtime(a.created_at)) if a.created_at else "?"
         gp = getattr(a, "gene_pool_score", 0)
         boost = " ✅" if getattr(a, "preference_boost", False) else ""

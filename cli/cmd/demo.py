@@ -203,4 +203,4 @@ def _build_demo_parser(subparsers) -> argparse.ArgumentParser:
     p.add_argument("--papers", type=int, metavar="N", help="Process N papers")
     p.add_argument("--insights", action="store_true", help="Focus on insight extraction")
     p.set_defaults(func=run_demo)
-    return p
+    return p  # type: ignore[no-any-return]
