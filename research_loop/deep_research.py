@@ -185,6 +185,15 @@ class DeepResearchAgent:
 
         self._stop_requested = False
 
+        # Progress tracking for observability
+        self._progress = {
+            "papers_found": 0,
+            "papers_extracted": 0,
+            "gaps_found": 0,
+            "searches_done": 0,
+            "iterations_done": 0,
+        }
+
         # Auto-checkpoint configuration
         self.auto_checkpoint = auto_checkpoint
         self.checkpoint_every_n_steps = checkpoint_every_n_steps
@@ -236,6 +245,25 @@ class DeepResearchAgent:
 
         if self.verbose:
             print(f"[DeepResearchAgent] {msg}")
+
+    def _print_step(self, step: str, msg: str):
+        """Print a step progress line (always visible, not gated by verbose)."""
+        print(f"[DR] [{step}] {msg}", flush=True)
+
+    def _print_summary(self, result: "DeepResearchResult"):
+        """Print final metrics summary after run completes."""
+        papers = len(result.papers)
+        gaps = len(result.gaps)
+        accepted = sum(1 for g in result.gaps if g.accepted)
+        duration = result.duration_seconds
+        print()
+        print("=" * 60)
+        print(f"  DeepResearch Complete — {result.status.upper()}")
+        print(f"  Iterations : {result.iterations}")
+        print(f"  Papers     : {papers} found, {papers} extracted")
+        print(f"  Gaps       : {gaps} found, {accepted} accepted")
+        print(f"  Duration   : {duration:.1f}s")
+        print("=" * 60)
 
     def _auto_checkpoint(self) -> None:
         """Save a named checkpoint for the current iteration state.
@@ -838,6 +866,8 @@ class DeepResearchAgent:
 
         self._log(f"Starting run from iteration {iteration}")
 
+        self._print_step("START", f"topic={self.query!r}, max_iter={self.max_iterations}")
+
         while iteration < self.max_iterations and not self._stop_requested:
             self.session.iteration = iteration
 
@@ -882,6 +912,7 @@ class DeepResearchAgent:
                 self._last_checkpoint_time = time.time()
 
             # Step 2: Search
+            self._print_step("SEARCH", f"q={search_query!r}")
 
             papers = self._search_papers(search_query, iteration)
 
@@ -899,6 +930,7 @@ class DeepResearchAgent:
                 continue
 
             # Step 3: Extract
+            self._print_step("EXTRACT", f"{len(papers)} papers")
 
             snapshots = self._extract_papers(papers, iteration)
 
@@ -925,6 +957,7 @@ class DeepResearchAgent:
                     )
 
             # Step 4: Analyze gaps
+            self._print_step("ANALYZE", f"{len(snapshots)} snapshots")
 
             gap_snapshots = self._analyze_gaps(snapshots, iteration)
 
@@ -983,6 +1016,7 @@ class DeepResearchAgent:
         )
 
         self._log(f"Run complete: {result.status}, {result.iterations} iterations, {duration:.1f}s")
+        self._print_summary(result)
 
         return result
 
