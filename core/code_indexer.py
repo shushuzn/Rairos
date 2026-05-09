@@ -8,6 +8,7 @@ import os
 import re
 import threading
 import urllib.request
+MAX_EMBEDDINGS_CACHE = 1000  # Bound to prevent unbounded memory growth
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
@@ -164,6 +165,9 @@ class CodeIndexer:
                 data = json.loads(resp.read())
                 embedding = cast(List[float], data.get("embedding"))
                 if embedding:
+                    # Bounded cache: evict oldest when full
+                    if len(self._embeddings_cache) >= MAX_EMBEDDINGS_CACHE:
+                        self._embeddings_cache.pop(next(iter(self._embeddings_cache)))
                     self._embeddings_cache[cache_key] = embedding
                 return embedding
         except Exception:
