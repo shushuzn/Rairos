@@ -2199,8 +2199,63 @@ def handle_list_tools() -> dict:
 
 
 def handle_call_tool(name: str, arguments: Dict) -> dict:
-    """Handle call_tool request."""
+    """Handle call_tool request with schema validation."""
     try:
+        # ── Schema validation ────────────────────────────────────────────────
+        from mcp.tools_defs import get_tools
+        tools = {t["name"]: t for t in get_tools()}
+        tool_def = tools.get(name)
+        if tool_def:
+            schema = tool_def.get("inputSchema", {})
+            # Check required fields
+            required = schema.get("required", [])
+            for field in required:
+                val = arguments.get(field)
+                if val is None or (isinstance(val, str) and not val.strip()):
+                    return {
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": f"Missing or empty required field: '{field}'",
+                            }
+                        ],
+                        "isError": True,
+                    }
+            # Type validation for known fields
+            props = schema.get("properties", {})
+            for field, val in arguments.items():
+                if field not in props or val is None:
+                    continue
+                expected = props[field].get("type", "string")
+                actual = type(val).__name__
+                # Coerce common mismatches
+                if expected == "integer" and isinstance(val, str):
+                    try:
+                        arguments[field] = int(val)
+                    except (ValueError, TypeError):
+                        return {
+                            "content": [{"type": "text", "text": f"Field '{field}' must be integer, got: {actual}"}],
+                            "isError": True,
+                        }
+                elif expected == "number" and isinstance(val, str):
+                    try:
+                        arguments[field] = float(val)
+                    except (ValueError, TypeError):
+                        return {
+                            "content": [{"type": "text", "text": f"Field '{field}' must be number, got: {actual}"}],
+                            "isError": True,
+                        }
+                elif expected == "boolean" and not isinstance(val, bool):
+                    if isinstance(val, str):
+                        arguments[field] = val.lower() in ("true", "1", "yes")
+                    elif isinstance(val, (int, float)):
+                        arguments[field] = bool(val)
+                elif expected == "array" and not isinstance(val, (list, tuple)):
+                    return {
+                        "content": [{"type": "text", "text": f"Field '{field}' must be array, got: {actual}"}],
+                        "isError": True,
+                    }
+
         if name == "paper_ingest":
             result = tool_paper_ingest(
                 identifier=arguments.get("identifier"), tags=arguments.get("tags")
