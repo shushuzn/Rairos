@@ -8,11 +8,8 @@ Usage:
 """
 
 import argparse
-import sys
-import time
-from typing import Optional
 
-from cli._shared import Colors, print_header, print_success, print_info, print_warning
+from cli._shared import print_header, print_success, print_info, print_warning
 
 # ─── Demo Stages ───────────────────────────────────────────────────────────────
 

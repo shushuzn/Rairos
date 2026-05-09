@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
-import json
-from pathlib import Path
 from web.shared import templates, get_db
 
 router = APIRouter()

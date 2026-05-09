@@ -22,15 +22,6 @@ from fastapi.templating import Jinja2Templates
 
 from web.shared import templates as _templates, get_db, get_tracker, p2c_progress
 from web.renderer import render_gene_pool_graph_html
-from web.suggestions import (
-    generate_suggestions,
-    mark_capsule_consumed,
-    _get_consumed_suggestions,
-    _mark_suggestion_consumed,
-    get_experiment_queue,
-    save_experiment,
-    render_experiments_html,
-)
 
 app = FastAPI(title="Rairos", description="AI Research OS — Hand-drawn UI")
 from web import routes_insights

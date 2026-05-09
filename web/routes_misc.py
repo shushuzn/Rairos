@@ -266,20 +266,6 @@ async def citation_chain(request: Request, arxiv_id: str = ""):
     )
 
 
-@router.get("/citation-chain")
-async def citation_chain_page(request: Request):
-    return templates.TemplateResponse(
-        request,
-        "generic.html",
-        {
-            "page": "citation_chain",
-            "title": "Citation Chain",
-            "content": "<p>Citation chain not available</p>",
-        },
-    )
-
-
-@router.get("/citation-chain/graph")
 @router.get("/citation-chain/graph")
 async def citation_chain_graph(request: Request, paper_id: str = "", title: str = ""):
     """Interactive SVG citation graph: paper → cited refs → Gene Pool capsules."""

@@ -6,7 +6,7 @@ Complete reference for all 23 CLI subcommands. See [README.md](README.md) for in
 
 ## Paper Processing (main flow)
 
-### `python -m cli <input> [flags]`
+### `rairos <input> [flags]`
 
 | Argument | Description | Default |
 |----------|-------------|---------|
@@ -36,24 +36,24 @@ Complete reference for all 23 CLI subcommands. See [README.md](README.md) for in
 DB overview: total papers, status breakdown, queue size.
 
 ```bash
-python -m cli stats
+rairos stats
 ```
 
 ### `status`
 Show current processing status and queue summary.
 
 ```bash
-python -m cli status
+rairos status
 ```
 
 ### `cache`
 Manage paper cache.
 
 ```bash
-python -m cli cache --stats     # Show cache stats
-python -m cli cache --clear     # Clear all cache
-python -m cli cache --get UID  # Get cached path for UID
-python -m cli cache --set UID PATH  # Set cached path for UID
+rairos cache --stats     # Show cache stats
+rairos cache --clear     # Clear all cache
+rairos cache --get UID  # Get cached path for UID
+rairos cache --set UID PATH  # Set cached path for UID
 ```
 
 ### `import`
@@ -61,47 +61,47 @@ Batch add papers by arXiv ID / DOI / URL.
 
 ```bash
 # One or more IDs
-python -m cli import 2601.00155 10.48550/arXiv.2601.00155
+rairos import 2601.00155 10.48550/arXiv.2601.00155
 
 # From file (one ID per line)
-python -m cli import --file ids.txt
+rairos import --file ids.txt
 
 # With checkpoint (save/resume progress)
-python -m cli import --file ids.txt --checkpoint ckpt.json
-python -m cli import --resume --checkpoint ckpt.json
+rairos import --file ids.txt --checkpoint ckpt.json
+rairos import --resume --checkpoint ckpt.json
 ```
 
 ### `export`
 Export DB to CSV or JSON.
 
 ```bash
-python -m cli export
-python -m cli export --format csv
-python -m cli export --format json
+rairos export
+rairos export --format csv
+rairos export --format json
 ```
 
 ### `search`
 Full-text search with filters.
 
 ```bash
-python -m cli search "scaling law"
-python -m cli search "transformer" --tag LLM --limit 20
+rairos search "scaling law"
+rairos search "transformer" --tag LLM --limit 20
 ```
 
 ### `list`
 List papers with sort/filter.
 
 ```bash
-python -m cli list
-python -m cli list --tag LLM --sort updated --limit 50
+rairos list
+rairos list --tag LLM --sort updated --limit 50
 ```
 
 ### `similar`
 Find semantically similar papers via embeddings.
 
 ```bash
-python -m cli similar PAPER_ID
-python -m cli similar PAPER_ID --threshold 0.8 --limit 10
+rairos similar PAPER_ID
+rairos similar PAPER_ID --threshold 0.8 --limit 10
 ```
 
 Requires Ollama running with `ollama serve` and `ollama pull nomic-embed-text`.
@@ -110,16 +110,16 @@ Requires Ollama running with `ollama serve` and `ollama pull nomic-embed-text`.
 Manage pending paper queue.
 
 ```bash
-python -m cli queue --list   # List pending papers
-python -m cli queue --clear  # Reset all to idle
+rairos queue --list   # List pending papers
+rairos queue --clear  # Reset all to idle
 ```
 
 ### `dedup`
 Find exact duplicates by DOI/title.
 
 ```bash
-python -m cli dedup
-python -m cli dedup --dry-run
+rairos dedup
+rairos dedup --dry-run
 ```
 
 ### `dedup-semantic`
@@ -127,13 +127,13 @@ Semantic deduplication via Ollama embeddings.
 
 ```bash
 # Generate embeddings for all papers without them
-python -m cli dedup-semantic --generate
+rairos dedup-semantic --generate
 
 # Show embedding coverage stats
-python -m cli dedup-semantic --stats
+rairos dedup-semantic --stats
 
 # Run semantic dedup (requires embeddings)
-python -m cli dedup-semantic
+rairos dedup-semantic
 ```
 
 Requires Ollama running (`ollama serve`) and `ollama pull nomic-embed-text`.
@@ -142,55 +142,55 @@ Requires Ollama running (`ollama serve`) and `ollama pull nomic-embed-text`.
 Merge two duplicate papers.
 
 ```bash
-python -m cli merge TARGET_ID DUPLICATE_ID
-python -m cli merge --keep semantic --auto  # Auto-merge high-similarity pairs
+rairos merge TARGET_ID DUPLICATE_ID
+rairos merge --keep semantic --auto  # Auto-merge high-similarity pairs
 ```
 
 ### `citations --from`
 Show papers cited by a paper (backward citations).
 
 ```bash
-python -m cli citations --from PAPER_ID
+rairos citations --from PAPER_ID
 ```
 
 ### `citations --to`
 Show papers citing a paper (forward citations).
 
 ```bash
-python -m cli citations --to PAPER_ID
+rairos citations --to PAPER_ID
 ```
 
 ### `cite-fetch`
 Fetch citations from OpenAlex API.
 
 ```bash
-python -m cli cite-fetch PAPER_ID
-python -m cli cite-fetch PAPER_ID1 PAPER_ID2  # Multiple
+rairos cite-fetch PAPER_ID
+rairos cite-fetch PAPER_ID1 PAPER_ID2  # Multiple
 ```
 
 ### `cite-import`
 Bulk import citation edges from JSON.
 
 ```bash
-python -m cli cite-import --file citations.json
+rairos cite-import --file citations.json
 ```
 
 ### `cite-stats`
 Citation graph statistics.
 
 ```bash
-python -m cli cite-stats
-python -m cli cite-stats --top 10  # Top cited papers
+rairos cite-stats
+rairos cite-stats --top 10  # Top cited papers
 ```
 
 ### `paper2code`
 Generate code implementation from paper.
 
 ```bash
-python -m cli paper2code PAPER_ID
-python -m cli paper2code PAPER_ID --mode minimal
-python -m cli paper2code PAPER_ID --mode standard
-python -m cli paper2code --rebuild PAPER_ID  # Rebuild existing
+rairos paper2code PAPER_ID
+rairos paper2code PAPER_ID --mode minimal
+rairos paper2code PAPER_ID --mode standard
+rairos paper2code --rebuild PAPER_ID  # Rebuild existing
 ```
 
 ### `evoskill`
@@ -198,48 +198,48 @@ EvoSkill benchmark evaluation.
 
 ```bash
 # Initialize benchmark task
-python -m cli evoskill --init --task TASK --dataset dataset.csv
+rairos evoskill --init --task TASK --dataset dataset.csv
 
 # Run benchmark evaluation
-python -m cli evoskill --benchmark
-python -m cli evoskill --benchmark --continue  # Continue previous
+rairos evoskill --benchmark
+rairos evoskill --benchmark --continue  # Continue previous
 
 # Generate evaluation report
-python -m cli evoskill --report
+rairos evoskill --report
 ```
 
 ### `rag`
 Run RAG pipeline (paper2code + tests + benchmark).
 
 ```bash
-python -m cli rag PAPER_ID
-python -m cli rag PAPER_ID --mode minimal
+rairos rag PAPER_ID
+rairos rag PAPER_ID --mode minimal
 ```
 
 ### `visual`
 Extract figures, formulas, tables from PDF.
 
 ```bash
-python -m cli visual PAPER_ID
-python -m cli visual PAPER_ID --output ./visuals/
+rairos visual PAPER_ID
+rairos visual PAPER_ID --output ./visuals/
 ```
 
 ### `kg`
 Build/query knowledge graph.
 
 ```bash
-python -m cli kg
-python -m cli kg --export json
-python -m cli kg --export graphml
+rairos kg
+rairos kg --export json
+rairos kg --export graphml
 ```
 
 ### `research`
 Run continuous research loop.
 
 ```bash
-python -m cli research
-python -m cli research --loop
-python -m cli research --limit 10
+rairos research
+rairos research --loop
+rairos research --limit 10
 ```
 
 ---

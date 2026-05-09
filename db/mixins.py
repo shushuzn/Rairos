@@ -116,10 +116,12 @@ class EmbeddingMixin:
         return None
 
     def get_embedding_stats(self) -> dict:
-        with_embedding = self._conn.execute("SELECT COUNT(*) FROM embeddings").fetchone()[0]
-        total_with_text = self._conn.execute(
+        row = self._conn.execute("SELECT COUNT(*) FROM embeddings").fetchone()
+        with_embedding = row[0] if row else 0
+        row2 = self._conn.execute(
             "SELECT COUNT(*) FROM papers WHERE title IS NOT NULL AND title != ''"
-        ).fetchone()[0]
+        ).fetchone()
+        total_with_text = row2[0] if row2 else 0
         return {
             "with_embedding": with_embedding,
             "total_with_text": total_with_text,

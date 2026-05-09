@@ -14,12 +14,10 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 import time
-from pathlib import Path
 
-from cli._shared import Colors, colored, print_error, print_success
+from cli._shared import Colors, print_error, print_success
 
 
 def _build_daemon_parser(subparsers) -> argparse.ArgumentParser:

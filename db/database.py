@@ -1640,7 +1640,8 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
             stats: dict[str, Any] = {}
             # Papers
             cur.execute("SELECT COUNT(*) FROM papers")
-            stats["total_papers"] = cur.fetchone()[0]
+            r = cur.fetchone()
+            stats["total_papers"] = r[0] if r else 0
             # By source
             cur.execute("SELECT source, COUNT(*) FROM papers GROUP BY source")
             stats["by_source"] = {r[0]: r[1] for r in cur.fetchall()}
@@ -1648,16 +1649,17 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
             cur.execute("SELECT parse_status, COUNT(*) FROM papers GROUP BY parse_status")
             stats["by_status"] = {r[0] or "none": r[1] for r in cur.fetchall()}
             # Queue
-            cur.execute("SELECT COUNT(*) FROM job_queue WHERE status = 'queued'")
-            stats["queue_queued"] = cur.fetchone()[0]
+            r = cur.fetchone()
+            stats["queue_queued"] = r[0] if r else 0
             cur.execute("SELECT COUNT(*) FROM job_queue WHERE status = 'running'")
-            stats["queue_running"] = cur.fetchone()[0]
+            r = cur.fetchone()
+            stats["queue_running"] = r[0] if r else 0
             # Cache
-            cur.execute("SELECT COUNT(*) FROM paper_cache")
-            stats["cache_entries"] = cur.fetchone()[0]
+            r = cur.fetchone()
+            stats["cache_entries"] = r[0] if r else 0
             # Dedup log
-            cur.execute("SELECT COUNT(*) FROM dedup_log")
-            stats["dedup_records"] = cur.fetchone()[0]
+            r = cur.fetchone()
+            stats["dedup_records"] = r[0] if r else 0
             return stats
         except sqlite3.Error as e:
             raise DatabaseError(f"get_stats failed: {e}") from e
