@@ -49,12 +49,12 @@ dependencies = [
     "psutil>=7.2.2",
     "aiohttp>=3.13.5",
     "numpy>=2.2.6",
-    "orjson>=3.11.8",
+    "orjson>=3.11.9",
     "httpx>=0.28.1",
-    "textual>=8.2.4",
+    "textual>=8.2.5",
     "rich>=15.0.0",
     "jieba>=0.42.1",
-    "pymilvus>=2.6.12",
+    "pymilvus>=3.0.0",
     "gitpython>=3.1.50",  # Security: GHSA-mv93-w799-cj2w newline injection RCE
 ]
 
