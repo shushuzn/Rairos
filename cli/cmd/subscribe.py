@@ -195,7 +195,27 @@ def _run_watch_loop(interval_minutes: int, stop_event: threading.Event) -> None:
             print_error(f"[Autopilot] Error: {e}")
 
         # Wait for interval or stop signal
-        stop_event.wait(timeout=interval_minutes * 60)
+        # ── Smart scheduling: adapt interval to GenePool saturation ──
+        decision = compute_adaptive_interval(
+            base_interval_minutes=interval_minutes,
+            saturation=before_stats.get("saturation", 1.0),
+            n_active=before_stats.get("n_active", 0),
+            has_new_papers=(total > 0),
+        )
+        actual_interval = decision.interval_minutes
+
+        # Cold-start: GenePool empty, trigger proactive research
+        if decision.action == "cold_start" and n_active == 0:
+            print_info("[Scheduler] GenePool empty — running cold-start research")
+            try:
+                run_cold_start_research(db)
+                _print_gene_pool_saturation("after_cold_start")
+            except Exception as cs_err:
+                logger.error(f"[Scheduler] Cold-start failed: {cs_err}")
+
+        print_info(f"[Scheduler] Next check in {actual_interval:.0f}min — {decision.reason}")
+
+        stop_event.wait(timeout=actual_interval * 60)
 
     state["running"] = False
     _save_watch_state(state)
