@@ -663,6 +663,8 @@ class DeepResearchAgent:
                 authors=str(paper.authors) if paper.authors else "",
                 abstract=paper.abstract,
                 published=paper.published,
+                primary_category=paper.primary_category or "",
+                categories=paper.categories or "",
             )
 
         self._record_thought("extractor", f"Extracted {len(snapshots)} papers", iteration)

@@ -111,6 +111,8 @@ def tool_paper_ingest(identifier: str, tags: Optional[List[str]] = None) -> Dict
             authors=paper.authors,
             published=paper.published,
             pdf_url=paper.pdf_url,
+            primary_category=paper.primary_category or "",
+            categories=paper.categories or "",
         )
 
         if tags:
@@ -867,6 +869,7 @@ def tool_research_run(topic: str, limit: int = 5) -> Dict:
                     published=getattr(p, "published", "") or "",
                     abs_url=getattr(p, "abs_url", "") or "",
                     primary_category=getattr(p, "primary_category", "") or "",
+                    categories=getattr(p, "categories", "") or "",
                 )
                 saved += 1
 

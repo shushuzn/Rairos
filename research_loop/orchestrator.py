@@ -208,15 +208,12 @@ class AutonomousOrchestrator:
                 url=p.get("pdf_url", ""),
             )
             session.papers.append(snapshot)
-            agent.db.add_papers(  # type: ignore[union-attr]
-                [
-                    {
-                        "arxiv_id": p.get("arxiv_id", ""),
-                        "title": p.get("title", ""),
-                        "abstract": p.get("abstract", ""),
-                        "source": "arxiv",
-                    }
-                ]
+            agent.db.upsert_paper(  # type: ignore[union-attr]
+                paper_id=p.get("arxiv_id", ""),
+                source="arxiv",
+                title=p.get("title", ""),
+                abstract=p.get("abstract", ""),
+                categories=p.get("categories", ""),
             )
 
         # Run the agent loop (shortened)
