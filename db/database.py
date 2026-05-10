@@ -12,6 +12,7 @@ Schema:
 from __future__ import annotations
 
 import logging
+import os
 import sqlite3
 
 import orjson
@@ -362,9 +363,14 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
 
     def __init__(self, db_path: Optional[Union[str, Path]] = None):
         if db_path is None:
-            from config import CACHE_DIR
+            # Check AIROS_DB env var first (for testing), then fall back to config
+            env_db = os.environ.get("AIROS_DB") or os.environ.get("RAIROS_DB")
+            if env_db:
+                db_path = env_db
+            else:
+                from config import CACHE_DIR
 
-            db_path = Path(CACHE_DIR) / "research.db"
+                db_path = Path(CACHE_DIR) / "research.db"
         self.db_path = Path(db_path).expanduser()
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._local = threading.local()

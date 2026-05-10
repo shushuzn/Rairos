@@ -173,11 +173,11 @@ jobs:
         id: report
         run: |
           python -m coverage combine coverage-reports/
-          TOTAL=$(python -m coverage report --format=term-missing | grep "^TOTAL" | awk '{print $4}' | tr -d '%')
+          python -m coverage report --show-missing 2>&1 | tee coverage_report.txt
+          TOTAL=$(grep "^TOTAL" coverage_report.txt | awk '{print $6}' | tr -d '%')
           echo "Coverage: ${TOTAL}%"
           echo "coverage_pct=${TOTAL}" >> $GITHUB_OUTPUT
-          python -m coverage report --format=term-missing | tail -3
-          if [ "${TOTAL}" -lt 40 ]; then
+          if [ -z "${TOTAL}" ] || [ "${TOTAL}" -lt 40 ]; then
             echo "Coverage ${TOTAL}% below 40% threshold"
             exit 1
           fi

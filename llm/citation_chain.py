@@ -483,51 +483,55 @@ class CitationChainBuilder:
         """Cluster papers in current chain into research families by shared citations."""
         families: List[ResearchFamily] = []
 
-        # Group by year
-        by_year: Dict[int, List[CitationNode]] = {}
+        # Build reference -> papers index once (O(N))
+        ref_to_papers: Dict[str, Set[str]] = {}
         for node in self.nodes.values():
-            if node.year:
-                by_year.setdefault(node.year, []).append(node)
+            for ref in node.citations:
+                ref_to_papers.setdefault(ref, set()).add(node.paper_id)
 
         # Papers citing the same references = same family
+        # Use index for O(N) instead of O(N²)
         for node in self.nodes.values():
             if not node.citations:
                 continue
 
-            # Find other papers that cite overlapping references
-            for other in self.nodes.values():
-                if other.paper_id == node.paper_id:
-                    continue
-                if not other.citations:
-                    continue
+            # Collect all papers sharing at least 2 references using index
+            family_members: Dict[str, Set[str]] = {}
+            for ref in node.citations:
+                for other_pid in ref_to_papers.get(ref, set()):
+                    if other_pid != node.paper_id:
+                        family_members.setdefault(other_pid, set()).add(ref)
 
-                shared = set(node.citations) & set(other.citations)
-                if len(shared) >= 2:  # At least 2 shared references
+            # Create family for papers with >= 2 shared references
+            for other_pid, shared_refs in family_members.items():
+                if len(shared_refs) >= 2:
                     family_id = str(uuid.uuid4())[:6]
+                    other_node = self.nodes.get(other_pid)
                     families.append(
                         ResearchFamily(
                             family_id=family_id,
                             ancestor_id=node.paper_id,
-                            ancestor_title=f"Family sharing: {', '.join(list(shared)[:3])}",
+                            ancestor_title=f"Family sharing: {', '.join(list(shared_refs)[:3])}",
                             papers=[
                                 {"paper_id": node.paper_id, "title": node.title, "year": node.year},
                                 {
-                                    "paper_id": other.paper_id,
-                                    "title": other.title,
-                                    "year": other.year,
+                                    "paper_id": other_pid,
+                                    "title": other_node.title if other_node else other_pid,
+                                    "year": other_node.year if other_node else 0,
                                 },
                             ],
-                            common_theme=f"Shared references: {', '.join(list(shared)[:3])}",
+                            common_theme=f"Shared references: {', '.join(list(shared_refs)[:3])}",
                             size=2,
                         )
                     )
 
-        # Deduplicate by family_id
-        seen = set()
+        # Deduplicate by (node.paper_id, other_pid) pair to avoid duplicates
+        seen_pairs: set = set()
         unique = []
         for f in families:
-            if f.family_id not in seen:
-                seen.add(f.family_id)
+            pair_key = tuple(sorted([f.ancestor_id, f.papers[1]["paper_id"] if len(f.papers) > 1 else ""]))
+            if pair_key not in seen_pairs:
+                seen_pairs.add(pair_key)
                 unique.append(f)
 
         return unique[:10]  # Limit to top 10 families
@@ -587,22 +591,31 @@ class CitationChainBuilder:
         silent: List[Dict[str, Any]] = []
         nodes = list(self.nodes.values())
 
+        # Extract terms once per node and cache (O(N))
+        node_terms: Dict[str, Tuple[Set[str], Set[str]]] = {}
+        for node in nodes:
+            if node.abstract:
+                node_terms[node.paper_id] = (self._extract_terms(node.abstract), set(node.citations))
+            else:
+                node_terms[node.paper_id] = (set(), set(node.citations))
+
         for i, node in enumerate(nodes):
-            if not node.abstract:
+            node_terms_set, node_citations = node_terms.get(node.paper_id, (set(), set()))
+            if not node_terms_set:
                 continue
 
-            node_terms = self._extract_terms(node.abstract)
-
             for j, other in enumerate(nodes):
-                if i >= j or not other.abstract:
+                if i >= j:
+                    continue
+                other_terms_set, other_citations = node_terms.get(other.paper_id, (set(), set()))
+                if not other_terms_set:
                     continue
 
                 # Skip if already citing each other
-                if other.paper_id in node.citations or node.paper_id in other.citations:
+                if other.paper_id in node_citations or node.paper_id in other_citations:
                     continue
 
-                other_terms = self._extract_terms(other.abstract)
-                shared = node_terms & other_terms
+                shared = node_terms_set & other_terms_set
 
                 # High method overlap but no citation
                 if len(shared) >= 4:

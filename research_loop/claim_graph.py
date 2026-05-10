@@ -295,14 +295,18 @@ class ClaimGraph:
         Finds all edges where to_paper == paper_id and returns the
         source paper's claims of the same type.
         """
+        # Build paper_id -> nodes index once (O(N))
+        paper_nodes: Dict[str, List[ClaimNode]] = {}
+        for node in self.nodes.values():
+            paper_nodes.setdefault(node.paper_id, []).append(node)
+
         inbound_claims: List[ClaimNode] = []
         paper_ids_seen: set = set()
-        for edge in self.edges:
-            if edge.to_paper == paper_id:
-                # Get the source paper's accuracy claims (they claim to be "better than" this paper)
-                for node in self.nodes.values():
-                    if node.paper_id == edge.from_paper:
-                        inbound_claims.append(node)
+        for edge in self.edges:  # O(E)
+            if edge.to_paper == paper_id and edge.from_paper not in paper_ids_seen:
+                # Lookup in O(1) via index instead of O(N) scan
+                for node in paper_nodes.get(edge.from_paper, []):
+                    inbound_claims.append(node)
                 paper_ids_seen.add(edge.from_paper)
         return inbound_claims
 
