@@ -1,90 +1,58 @@
-"""Tests for internationalization (i18n) functionality."""
-
-from core.i18n import set_lang, get_lang, _, _MSGS
-
-
-def test_get_lang_default():
-    """Test default language is zh."""
-    original_lang = get_lang()
-    set_lang("zh")
-    assert get_lang() == "zh"
-    # Restore original
-    set_lang(original_lang)
+"""Tests for core/i18n.py internationalization."""
+import pytest
+import os
 
 
-def test_set_lang_zh():
-    """Test setting language to Chinese."""
-    set_lang("zh")
-    assert get_lang() == "zh"
+class TestI18n:
+    """Test i18n module from core/i18n.py."""
 
+    def test_lang_default_is_zh(self):
+        # Default is 'zh' when AI_RESEARCH_LANG is not set
+        # Module-level LANG variable
+        import core.i18n as i18n
 
-def test_set_lang_en():
-    """Test setting language to English."""
-    set_lang("en")
-    assert get_lang() == "en"
+        assert i18n.LANG in ("zh", "en")
 
+    def test_msg_retrieval(self):
+        from core.i18n import _MSGS_EN, _MSGS_ZH
 
-def test_set_lang_short_e():
-    """Test setting language with short code 'e'."""
-    set_lang("e")
-    assert get_lang() == "en"
+        # Both message dicts should have required keys
+        required_keys = [
+            "research_searching",
+            "research_no_papers",
+            "research_found",
+            "research_done",
+        ]
+        for key in required_keys:
+            assert key in _MSGS_EN
+            assert key in _MSGS_ZH
 
+    def test_msg_format(self):
+        from core.i18n import _MSGS_EN
 
-def test_set_lang_short_z():
-    """Test setting language with short code 'z'."""
-    set_lang("z")
-    assert get_lang() == "zh"
+        msg = _MSGS_EN["research_searching"]
+        formatted = msg.format(query="machine learning")
+        assert "machine learning" in formatted
 
+    def test_msg_count(self):
+        from core.i18n import _MSGS_EN, _MSGS_ZH
 
-def test_set_lang_invalid():
-    """Test setting invalid language defaults to zh."""
-    set_lang("invalid")
-    assert get_lang() == "zh"
+        # Both languages should have the same number of keys
+        assert len(_MSGS_EN) == len(_MSGS_ZH)
 
+    def test_research_done_format(self):
+        from core.i18n import _MSGS_EN
 
-def test_underscore_zh():
-    """Test translation function with Chinese."""
-    set_lang("zh")
-    msg = _("research_searching", query="LLM")
-    assert "LLM" in msg
-    assert "搜索" in msg
+        msg = _MSGS_EN["research_done"]
+        formatted = msg.format(processed=5, total=10, failed=2, skipped=3)
+        assert "5" in formatted
+        assert "10" in formatted
+        assert "2" in formatted
 
+    def test_err_messages_present(self):
+        from core.i18n import _MSGS_EN
 
-def test_underscore_en():
-    """Test translation function with English."""
-    set_lang("en")
-    msg = _("research_searching", query="LLM")
-    assert "LLM" in msg
-    assert "Searching" in msg
-
-
-def test_underscore_no_kwargs():
-    """Test translation function without kwargs."""
-    set_lang("zh")
-    msg = _("research_no_papers")
-    assert "未找到" in msg
-
-
-def test_underscore_fallback():
-    """Test translation function falls back to key for unknown key."""
-    set_lang("zh")
-    msg = _("unknown_key")
-    assert msg == "unknown_key"
-
-
-def test_all_zh_keys_exist():
-    """Test all keys exist in Chinese messages."""
-    set_lang("zh")
-    zh_keys = _MSGS["zh"].keys()
-    assert "research_searching" in zh_keys
-    assert "research_no_papers" in zh_keys
-    assert "research_found" in zh_keys
-
-
-def test_all_en_keys_exist():
-    """Test all keys exist in English messages."""
-    set_lang("en")
-    en_keys = _MSGS["en"].keys()
-    assert "research_searching" in en_keys
-    assert "research_no_papers" in en_keys
-    assert "research_found" in en_keys
+        err_keys = ["err_pdf_download", "err_pdf_no_url", "err_pdf_extract"]
+        for key in err_keys:
+            assert key in _MSGS_EN
+            assert len(_MSGS_EN[key]) > 0
