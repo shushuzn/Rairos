@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from typing import List, Optional, cast
+from typing import List, cast
 
 from cli._shared import get_db, print_error, print_success
 from llm.insight_cards import InsightCard, InsightManager
