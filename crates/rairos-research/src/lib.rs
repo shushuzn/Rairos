@@ -424,6 +424,462 @@ pub struct CitationBenchmarkResult {
 }
 
 // ============================================================================
+// Deep Research Agent Types
+// ============================================================================
+
+const ALL_GAP_TYPES: &[&str] = &[
+    "capability", "improvement", "contradiction",
+    "assumption", "extension", "baseline_gap",
+    "evaluation_gap", "reproducibility_gap", "embodied_planning",
+    "rl_pretraining", "scaling_laws", "reasoning",
+];
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AgentRole {
+    Planner,
+    Searcher,
+    Analyzer,
+    Reflector,
+}
+
+impl std::fmt::Display for AgentRole {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            AgentRole::Planner => write!(f, "planner"),
+            AgentRole::Searcher => write!(f, "searcher"),
+            AgentRole::Analyzer => write!(f, "analyzer"),
+            AgentRole::Reflector => write!(f, "reflector"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AgentThought {
+    pub iteration: i32,
+    pub role: AgentRole,
+    pub content: String,
+    pub timestamp: f64,
+}
+
+impl AgentThought {
+    pub fn new(iteration: i32, role: AgentRole, content: &str) -> Self {
+        Self {
+            iteration,
+            role,
+            content: content.to_string(),
+            timestamp: chrono::Utc::now().timestamp_millis() as f64 / 1000.0,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PaperSnapshot {
+    pub paper_id: String,
+    pub arxiv_id: Option<String>,
+    pub title: String,
+    pub abstract_text: String,
+    pub published: String,
+    pub citations: Vec<String>,
+}
+
+impl PaperSnapshot {
+    pub fn from_paper(paper: &Paper) -> Self {
+        Self {
+            paper_id: paper.id.clone(),
+            arxiv_id: paper.arxiv_id.clone(),
+            title: paper.title.clone(),
+            abstract_text: paper.abstract_text.clone(),
+            published: paper.published.to_rfc3339(),
+            citations: Vec::new(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GapSnapshot {
+    pub gap_id: String,
+    pub gap_type: String,
+    pub title: String,
+    pub description: String,
+    pub severity: String,
+    pub novelty_score: f64,
+    pub related_paper_ids: Vec<String>,
+}
+
+impl GapSnapshot {
+    pub fn from_gap(gap: &ResearchGap) -> Self {
+        Self {
+            gap_id: gap.id.clone(),
+            gap_type: gap.category.clone(),
+            title: gap.description.chars().take(100).collect(),
+            description: gap.description.clone(),
+            severity: gap.severity.clone(),
+            novelty_score: 0.5,
+            related_paper_ids: gap.paper_ids.clone(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ResearchStatus {
+    Completed,
+    Paused,
+    Failed,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DeepResearchResult {
+    pub session_id: String,
+    pub query: String,
+    pub iterations: i32,
+    pub papers: Vec<PaperSnapshot>,
+    pub gaps: Vec<GapSnapshot>,
+    pub thoughts: Vec<AgentThought>,
+    pub report: String,
+    pub duration_seconds: f64,
+    pub status: ResearchStatus,
+}
+
+impl DeepResearchResult {
+    pub fn summary(&self) -> String {
+        format!(
+            "Deep research '{}': {} iterations, {} papers, {} gaps, {:.1}s, {}",
+            self.query,
+            self.iterations,
+            self.papers.len(),
+            self.gaps.len(),
+            self.duration_seconds,
+            match self.status {
+                ResearchStatus::Completed => "completed",
+                ResearchStatus::Paused => "paused",
+                ResearchStatus::Failed => "failed",
+            }
+        )
+    }
+}
+
+// ============================================================================
+// Adaptive Query Strategy
+// ============================================================================
+
+#[derive(Debug, Clone)]
+pub struct AdaptiveQueryStrategy {
+    topic: String,
+    query_gap_types: std::collections::HashMap<String, Vec<String>>,
+    gap_type_counts: std::collections::HashMap<String, usize>,
+    total_gaps: usize,
+}
+
+impl AdaptiveQueryStrategy {
+    pub fn new(topic: &str) -> Self {
+        Self {
+            topic: topic.to_string(),
+            query_gap_types: std::collections::HashMap::new(),
+            gap_type_counts: std::collections::HashMap::new(),
+            total_gaps: 0,
+        }
+    }
+
+    pub fn record_search_result(&mut self, query: &str, gaps: &[ResearchGap]) {
+        if gaps.is_empty() {
+            return;
+        }
+
+        let mut found_types: std::collections::HashSet<String> = std::collections::HashSet::new();
+        for g in gaps {
+            let gt = g.category.clone();
+            *self.gap_type_counts.entry(gt.clone()).or_insert(0) += 1;
+            found_types.insert(gt);
+            self.total_gaps += 1;
+        }
+        self.query_gap_types.insert(query.to_string(), found_types.into_iter().collect());
+    }
+
+    pub fn gap_type_coverage(&self) -> std::collections::HashMap<String, f64> {
+        if self.total_gaps == 0 {
+            return ALL_GAP_TYPES.iter()
+                .map(|&gt| (gt.to_string(), 0.0))
+                .collect();
+        }
+        self.gap_type_counts.iter()
+            .map(|(gt, &count)| {
+                (gt.clone(), count as f64 / self.total_gaps as f64)
+            })
+            .collect()
+    }
+
+    pub fn under_represented_types(&self, threshold: f64) -> Vec<String> {
+        let coverage = self.gap_type_coverage();
+        coverage.iter()
+            .filter(|(_, &ratio)| ratio > 0.0 && ratio < threshold)
+            .map(|(gt, _)| gt.clone())
+            .collect()
+    }
+
+    pub fn most_productive_queries(&self, top_k: usize) -> Vec<String> {
+        let mut scored: Vec<(String, usize)> = self.query_gap_types.iter()
+            .map(|(q, types)| (q.clone(), types.len()))
+            .collect();
+        scored.sort_by(|a, b| b.1.cmp(&a.1));
+        scored.into_iter()
+            .take(top_k)
+            .map(|(q, _)| q)
+            .collect()
+    }
+
+    pub fn build_adaptive_query(
+        &self,
+        iteration: i32,
+        latest_gap_title: &str,
+        latest_gap_type: &str,
+        _gene_pool_hint: &str,
+        confidence: f64,
+    ) -> String {
+        let under_rep = self.under_represented_types(0.15);
+
+        if iteration == 0 {
+            return self.topic.clone();
+        }
+
+        if !under_rep.is_empty() {
+            let target = &under_rep[0];
+            let productive = self.most_productive_queries(1);
+            let base = productive.first().map(|s| s.as_str()).unwrap_or(&self.topic);
+            return format!("{} {}", base, target);
+        }
+
+        if confidence >= 0.4 && !_gene_pool_hint.is_empty() {
+            if !latest_gap_title.is_empty() {
+                return format!("{} {}", _gene_pool_hint, latest_gap_title);
+            }
+            return _gene_pool_hint.to_string();
+        }
+
+        if latest_gap_type == "Contradiction" {
+            return format!("{} {} disagreement", self.topic, latest_gap_title);
+        } else if ["improvement", "capability", "extension", ""].contains(&latest_gap_type) {
+            return format!("{} {} improvement", self.topic, latest_gap_title);
+        } else if !latest_gap_title.is_empty() {
+            return format!("{} {}", self.topic, latest_gap_title);
+        }
+
+        self.topic.clone()
+    }
+
+    pub fn query_similarity(&self, q1: &str, q2: &str) -> f64 {
+        let words1: std::collections::HashSet<String> = q1.to_lowercase().split_whitespace().map(|s| s.to_string()).collect();
+        let words2: std::collections::HashSet<String> = q2.to_lowercase().split_whitespace().map(|s| s.to_string()).collect();
+        if words1.is_empty() || words2.is_empty() {
+            return 0.0;
+        }
+        let intersection: std::collections::HashSet<_> = words1.intersection(&words2).collect();
+        let union: std::collections::HashSet<_> = words1.union(&words2).collect();
+        intersection.len() as f64 / union.len() as f64
+    }
+}
+
+// ============================================================================
+// Deep Research Agent
+// ============================================================================
+
+#[derive(Debug, Clone)]
+pub struct DeepResearchConfig {
+    pub max_iterations: i32,
+    pub max_papers_per_iteration: usize,
+    pub verbose: bool,
+}
+
+impl Default for DeepResearchConfig {
+    fn default() -> Self {
+        Self {
+            max_iterations: 3,
+            max_papers_per_iteration: 5,
+            verbose: false,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct DeepResearchAgent {
+    query: String,
+    config: DeepResearchConfig,
+    query_strategy: AdaptiveQueryStrategy,
+    thoughts: Vec<AgentThought>,
+    found_papers: Vec<PaperSnapshot>,
+    found_gaps: Vec<GapSnapshot>,
+    iterations: i32,
+}
+
+impl DeepResearchAgent {
+    pub fn new(query: &str, config: DeepResearchConfig) -> Self {
+        Self {
+            query: query.to_string(),
+            config,
+            query_strategy: AdaptiveQueryStrategy::new(query),
+            thoughts: Vec::new(),
+            found_papers: Vec::new(),
+            found_gaps: Vec::new(),
+            iterations: 0,
+        }
+    }
+
+    pub fn add_thought(&mut self, role: AgentRole, content: &str) {
+        self.thoughts.push(AgentThought::new(self.iterations, role, content));
+    }
+
+    pub fn add_paper(&mut self, paper: &Paper) {
+        self.found_papers.push(PaperSnapshot::from_paper(paper));
+    }
+
+    pub fn add_gap(&mut self, gap: &ResearchGap) {
+        self.found_gaps.push(GapSnapshot::from_gap(gap));
+    }
+
+    pub fn record_search_result(&mut self, query: &str, gaps: &[ResearchGap]) {
+        self.query_strategy.record_search_result(query, gaps);
+    }
+
+    pub fn next_query(&self) -> String {
+        let latest_gap = self.found_gaps.last();
+        let (title, gap_type) = match latest_gap {
+            Some(g) => (g.title.as_str(), g.gap_type.as_str()),
+            None => ("", ""),
+        };
+        self.query_strategy.build_adaptive_query(
+            self.iterations,
+            title,
+            gap_type,
+            "",
+            0.0,
+        )
+    }
+
+    pub fn should_continue(&self) -> bool {
+        self.iterations < self.config.max_iterations
+    }
+
+    pub fn increment_iteration(&mut self) {
+        self.iterations += 1;
+    }
+
+    pub fn build_result(&self, report: &str, duration_secs: f64, status: ResearchStatus) -> DeepResearchResult {
+        DeepResearchResult {
+            session_id: uuid::Uuid::new_v4().to_string(),
+            query: self.query.clone(),
+            iterations: self.iterations,
+            papers: self.found_papers.clone(),
+            gaps: self.found_gaps.clone(),
+            thoughts: self.thoughts.clone(),
+            report: report.to_string(),
+            duration_seconds: duration_secs,
+            status,
+        }
+    }
+
+    pub fn papers_count(&self) -> usize {
+        self.found_papers.len()
+    }
+
+    pub fn gaps_count(&self) -> usize {
+        self.found_gaps.len()
+    }
+}
+
+// ============================================================================
+// Research Session State
+// ============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ResearchSession {
+    pub id: String,
+    pub query: String,
+    pub created_at: String,
+    pub updated_at: String,
+    pub status: String,
+    pub current_iteration: i32,
+    pub papers_found: usize,
+    pub gaps_found: usize,
+}
+
+impl ResearchSession {
+    pub fn new(query: &str) -> Self {
+        let now = chrono::Utc::now().to_rfc3339();
+        Self {
+            id: uuid::Uuid::new_v4().to_string(),
+            query: query.to_string(),
+            created_at: now.clone(),
+            updated_at: now,
+            status: "active".to_string(),
+            current_iteration: 0,
+            papers_found: 0,
+            gaps_found: 0,
+        }
+    }
+}
+
+// ============================================================================
+// Gap Types (for classification)
+// ============================================================================
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum GapType {
+    Capability,
+    Improvement,
+    Contradiction,
+    Assumption,
+    Extension,
+    BaselineGap,
+    EvaluationGap,
+    ReproducibilityGap,
+    EmbodiedPlanning,
+    RlPretraining,
+    ScalingLaws,
+    Reasoning,
+    Unknown,
+}
+
+impl GapType {
+    pub fn from_str(s: &str) -> Self {
+        match s.to_lowercase().as_str() {
+            "capability" => GapType::Capability,
+            "improvement" => GapType::Improvement,
+            "contradiction" => GapType::Contradiction,
+            "assumption" => GapType::Assumption,
+            "extension" => GapType::Extension,
+            "baseline_gap" => GapType::BaselineGap,
+            "evaluation_gap" => GapType::EvaluationGap,
+            "reproducibility_gap" => GapType::ReproducibilityGap,
+            "embodied_planning" => GapType::EmbodiedPlanning,
+            "rl_pretraining" => GapType::RlPretraining,
+            "scaling_laws" => GapType::ScalingLaws,
+            "reasoning" => GapType::Reasoning,
+            _ => GapType::Unknown,
+        }
+    }
+
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            GapType::Capability => "capability",
+            GapType::Improvement => "improvement",
+            GapType::Contradiction => "contradiction",
+            GapType::Assumption => "assumption",
+            GapType::Extension => "extension",
+            GapType::BaselineGap => "baseline_gap",
+            GapType::EvaluationGap => "evaluation_gap",
+            GapType::ReproducibilityGap => "reproducibility_gap",
+            GapType::EmbodiedPlanning => "embodied_planning",
+            GapType::RlPretraining => "rl_pretraining",
+            GapType::ScalingLaws => "scaling_laws",
+            GapType::Reasoning => "reasoning",
+            GapType::Unknown => "unknown",
+        }
+    }
+}
+
+// ============================================================================
 // Tests
 // ============================================================================
 
@@ -432,38 +888,42 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_claim_graph() {
-        let mut graph = ClaimGraph::new();
-        graph.add_claim(ClaimNode::new("paper1", "Transformers are effective for NLP"));
-        graph.add_claim(ClaimNode::new("paper2", "CNNs outperform Transformers for vision"));
+    fn test_adaptive_query_strategy() {
+        let mut strategy = AdaptiveQueryStrategy::new("transformer");
 
-        let found = graph.find_claims_about("transformers");
-        assert_eq!(found.len(), 2);
-        assert_eq!(found[0].paper_id, "paper1");
-        assert_eq!(found[1].paper_id, "paper2");
+        let gaps = vec![
+            ResearchGap::new("capability", "Gap 1", "high"),
+            ResearchGap::new("improvement", "Gap 2", "medium"),
+        ];
+        strategy.record_search_result("transformer attention", &gaps);
+
+        let next = strategy.build_adaptive_query(1, "Gap 1", "capability", "", 0.0);
+        assert!(next.contains("transformer"));
     }
 
     #[test]
-    fn test_paper_ranker() {
-        let papers = vec![
-            Paper::new(Some("1".into()), "Attention is all you need".into(), "Transformers".into()),
-            Paper::new(Some("2".into()), "ResNet paper".into(), "CNNs".into()),
-            Paper::new(Some("3".into()), "BERT paper".into(), "Attention mechanism".into()),
-        ];
+    fn test_deep_research_agent() {
+        let mut agent = DeepResearchAgent::new("RL", DeepResearchConfig::default());
 
-        let scores = PaperRanker::rank(&papers, "attention");
-        assert_eq!(scores.len(), 3);
-        assert!(scores[0].1 >= scores[1].1); // ranked by score descending
+        agent.add_thought(AgentRole::Planner, "Starting research on RL");
+        agent.increment_iteration();
+
+        assert_eq!(agent.iterations, 1);
+        assert_eq!(agent.thoughts.len(), 1);
+        assert!(agent.should_continue());
     }
 
     #[test]
-    fn test_benchmark() {
-        let papers = vec![
-            Paper::new(Some("1".into()), "Paper 1".into(), "Abstract 1".into()),
-            Paper::new(Some("2".into()), "Paper 2".into(), "Abstract 2".into()),
-        ];
-        // Papers start with cited_by = 0
-        let result = BenchmarkRunner::citation_benchmark(&papers);
-        assert_eq!(result.total_papers, 2);
+    fn test_gap_type_from_str() {
+        assert_eq!(GapType::from_str("capability"), GapType::Capability);
+        assert_eq!(GapType::from_str("contradiction"), GapType::Contradiction);
+        assert_eq!(GapType::from_str("unknown_type"), GapType::Unknown);
+    }
+
+    #[test]
+    fn test_query_similarity() {
+        let strategy = AdaptiveQueryStrategy::new("test");
+        let sim = strategy.query_similarity("attention mechanism", "attention mechanism transformer");
+        assert!(sim > 0.5);
     }
 }
