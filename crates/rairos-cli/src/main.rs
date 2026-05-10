@@ -3,8 +3,10 @@
 //! 77 commands managed via clap derive macros.
 
 use anyhow::{Context, Result};
+use chrono::Utc;
 use clap::{Parser, Subcommand};
 use rairos_core::{Database, Paper, ParseStatus, RateLimiter, ResearchGap};
+use std::collections::HashSet;
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
@@ -1448,31 +1450,171 @@ fn handle_similar(db: &Database, paper_id: &str, limit: usize) -> Result<()> {
 }
 
 fn handle_compare(db: &Database, papers_arg: &str, aspect: &str) -> Result<()> {
-    println!("=== Compare Papers ===");
-    println!("Papers: {}", papers_arg);
-    println!("Aspect: {}", aspect);
-    println!();
+    println!("=== Compare Papers ===\n");
 
     let paper_ids: Vec<&str> = papers_arg.split(',').map(|s| s.trim()).collect();
-    println!("Comparing {} papers...", paper_ids.len());
-    println!();
 
+    // Fetch all papers
+    let mut papers: Vec<Paper> = Vec::new();
     for pid in &paper_ids {
         if let Ok(paper) = db.get_paper(pid) {
-            println!("- {}", paper.title);
+            papers.push(paper);
         } else if let Ok(Some(paper)) = db.get_paper_by_arxiv(pid) {
-            println!("- {}", paper.title);
+            papers.push(paper);
         } else {
-            println!("- {} (not found)", pid);
+            eprintln!("Warning: Paper '{}' not found, skipping", pid);
         }
     }
 
+    if papers.is_empty() {
+        println!("No valid papers found. Add papers first with `rairos-cli add <arxiv_id>`");
+        return Ok(());
+    }
+
+    println!("Comparing {} papers:\n", papers.len());
+    for (i, p) in papers.iter().enumerate() {
+        println!("  {}. {} ({})", i + 1, p.title, p.published.format("%Y-%m-%d"));
+    }
     println!();
+
     match aspect {
-        "abstract" => println!("Abstract comparison requires LLM integration"),
-        "method" => println!("Method comparison requires full text parsing"),
-        "results" => println!("Results comparison requires semantic analysis"),
-        _ => println!("Unknown aspect: {}", aspect),
+        "overview" => {
+            // Summary table: title, authors, year, categories, citations, references
+            println!("{:<6} {:<50} {:<8} {:>6} {:>10} {:>10}", "#", "Title", "Year", "Authors", "Cited_by", "Refs");
+            println!("{}", "-".repeat(96));
+            for (i, p) in papers.iter().enumerate() {
+                let title = if p.title.len() > 48 { format!("{}...", &p.title[..48]) } else { p.title.clone() };
+                let year = p.published.format("%Y").to_string();
+                let author_count = p.authors.len();
+                let cited = p.metadata.cited_by;
+                let refs = p.metadata.references;
+                println!("{:<6} {:<50} {:<8} {:>6} {:>10} {:>10}",
+                    i + 1, title, year, author_count, cited, refs);
+            }
+        }
+        "citations" => {
+            // Compare citation counts
+            println!("Citation Comparison:\n");
+            println!("{:<50} {:>12} {:>12}", "Paper", "Cited By", "References");
+            println!("{}", "-".repeat(76));
+            let mut by_cited: Vec<_> = papers.iter().enumerate().collect();
+            by_cited.sort_by(|a, b| b.1.metadata.cited_by.cmp(&a.1.metadata.cited_by));
+            for (rank, (_, p)) in by_cited.iter().enumerate() {
+                println!("{:<50} {:>12} {:>12}", 
+                    if p.title.len() > 48 { format!("{}...", &p.title[..48]) } else { p.title.clone() },
+                    p.metadata.cited_by,
+                    p.metadata.references);
+            }
+            if papers.len() > 1 {
+                let max_cited = papers.iter().map(|p| p.metadata.cited_by).max().unwrap();
+                let min_cited = papers.iter().map(|p| p.metadata.cited_by).min().unwrap();
+                if max_cited > 0 {
+                    println!("\nCitation spread: {} (max) / {} (min) = {:.1}x",
+                        max_cited, min_cited, max_cited as f64 / min_cited as f64);
+                }
+            }
+        }
+        "authors" => {
+            // Compare author overlap
+            println!("Author Comparison:\n");
+            for (i, p) in papers.iter().enumerate() {
+                println!("Paper {}: {} author(s) - {}", i + 1, p.authors.len(), p.authors.join(", "));
+            }
+            if papers.len() > 1 {
+                // Find author overlap between all pairs
+                println!("\nAuthor Overlap:");
+                for i in 0..papers.len() {
+                    for j in (i+1)..papers.len() {
+                        let set_i: HashSet<_> = papers[i].authors.iter().map(|a| a.to_lowercase()).collect();
+                        let set_j: HashSet<_> = papers[j].authors.iter().map(|a| a.to_lowercase()).collect();
+                        let intersection: HashSet<_> = set_i.intersection(&set_j).collect();
+                        let union: HashSet<_> = set_i.union(&set_j).collect();
+                        let jaccard = if union.is_empty() { 0.0 } else { intersection.len() as f64 / union.len() as f64 };
+                        println!("  Paper {} vs Paper {}: {} shared author(s) (Jaccard: {:.2})",
+                            i + 1, j + 1, intersection.len(), jaccard);
+                    }
+                }
+            }
+        }
+        "topics" | "categories" => {
+            // Compare categories
+            println!("Category Comparison:\n");
+            for (i, p) in papers.iter().enumerate() {
+                println!("Paper {}: {} categories - {}", i + 1, p.categories.len(), p.categories.join(", "));
+            }
+            if papers.len() > 1 {
+                println!("\nCategory Overlap:");
+                for i in 0..papers.len() {
+                    for j in (i+1)..papers.len() {
+                        let set_i: HashSet<_> = papers[i].categories.iter().collect();
+                        let set_j: HashSet<_> = papers[j].categories.iter().collect();
+                        let intersection: HashSet<_> = set_i.intersection(&set_j).collect();
+                        let union: HashSet<_> = set_i.union(&set_j).collect();
+                        let jaccard = if union.is_empty() { 0.0 } else { intersection.len() as f64 / union.len() as f64 };
+                        println!("  Paper {} vs Paper {}: {} shared category/ies (Jaccard: {:.2})",
+                            i + 1, j + 1, intersection.len(), jaccard);
+                    }
+                }
+            }
+        }
+        "timeline" => {
+            // Compare publication dates
+            println!("Timeline Comparison (newest first):\n");
+            let mut sorted: Vec<_> = papers.iter().enumerate().collect();
+            sorted.sort_by(|a, b| b.1.published.cmp(&a.1.published));
+            println!("{:<50} {:>12} {:>12}", "Paper", "Published", "Age (days)");
+            println!("{}", "-".repeat(76));
+            let now = Utc::now();
+            for (_, p) in sorted.iter() {
+                let age = (now - p.published).num_days();
+                println!("{:<50} {:>12} {:>12}",
+                    if p.title.len() > 48 { format!("{}...", &p.title[..48]) } else { p.title.clone() },
+                    p.published.format("%Y-%m-%d"),
+                    age);
+            }
+        }
+        "abstract" => {
+            println!("Abstract Comparison (keyword overlap):\n");
+            for (i, p) in papers.iter().enumerate() {
+                let words: HashSet<String> = p.abstract_text.to_lowercase()
+                    .split(|c: char| !c.is_alphanumeric())
+                    .filter(|w| w.len() > 4)
+                    .map(|s| s.to_string())
+                    .collect();
+                println!("Paper {}: {} unique words in abstract", i + 1, words.len());
+            }
+            if papers.len() > 1 {
+                println!("\nAbstract Keyword Overlap:");
+                for i in 0..papers.len() {
+                    for j in (i+1)..papers.len() {
+                        let words_i: HashSet<String> = papers[i].abstract_text.to_lowercase()
+                            .split(|c: char| !c.is_alphanumeric())
+                            .filter(|w| w.len() > 4)
+                            .map(|s| s.to_string())
+                            .collect();
+                        let words_j: HashSet<String> = papers[j].abstract_text.to_lowercase()
+                            .split(|c: char| !c.is_alphanumeric())
+                            .filter(|w| w.len() > 4)
+                            .map(|s| s.to_string())
+                            .collect();
+                        let intersection: HashSet<_> = words_i.intersection(&words_j).collect();
+                        let union: HashSet<_> = words_i.union(&words_j).collect();
+                        let jaccard = if union.is_empty() { 0.0 } else { intersection.len() as f64 / union.len() as f64 };
+                        println!("  Paper {} vs Paper {}: {} shared words (Jaccard: {:.3})",
+                            i + 1, j + 1, intersection.len(), jaccard);
+                    }
+                }
+            }
+        }
+        _ => {
+            println!("Unknown aspect: '{}'. Available aspects:", aspect);
+            println!("  overview     - Summary table with all metadata");
+            println!("  citations    - Citation count comparison");
+            println!("  authors      - Author count and overlap");
+            println!("  topics       - Category comparison");
+            println!("  timeline     - Publication date comparison");
+            println!("  abstract     - Keyword overlap in abstracts");
+        }
     }
 
     Ok(())
