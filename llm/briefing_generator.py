@@ -7,7 +7,7 @@ Gene Pool and Research Memory context for decision-relevant intelligence.
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -185,8 +185,6 @@ class BriefingGenerator:
         Returns:
             BriefingResult with the generated briefing
         """
-        import os
-
         # Step 1: Fetch paper from DB
         paper = self._fetch_paper(arxiv_id)
         if not paper:
