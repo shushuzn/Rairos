@@ -8,7 +8,7 @@ import logging
 import os
 import time
 from pathlib import Path
-from typing import Dict, Iterator, List, Optional, Tuple, cast, Any, Callable
+from typing import Dict, Iterator, List, Optional, Tuple, cast, Any
 
 import orjson
 import requests
