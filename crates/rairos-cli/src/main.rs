@@ -534,7 +534,8 @@ fn handle_stats(db: &Database, json: bool, format: &str) -> Result<()> {
 }
 
 fn handle_search(db: &Database, query: &str, limit: usize, format: &str) -> Result<()> {
-    let papers = db.list_papers(None, limit, 0)?;
+    // Use search_papers for real keyword matching in title/abstract
+    let papers = db.search_papers(query, limit)?;
 
     if format == "json" {
         let out: Vec<serde_json::Value> = papers.iter().map(|p| {
