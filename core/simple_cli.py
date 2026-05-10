@@ -182,7 +182,7 @@ class SimpleCLI:
 
         for paper in papers:
             status_icon = "✅" if paper.parse_status == "done" else "⏳"
-            print(f"{status_icon} {paper.uid}")
+            print(f"{status_icon} {paper.id}")
             print(f"   {paper.title[:60]}...")
             print()
 

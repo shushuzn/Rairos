@@ -214,7 +214,7 @@ class ExperimentTracker(JsonFileStore):
             return "No experiments found."
 
         # Summary counts
-        by_status = {}
+        by_status: dict[str, int] = {}
         for e in exps:
             by_status[e.status] = by_status.get(e.status, 0) + 1
         total = len(exps)
