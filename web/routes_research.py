@@ -10,7 +10,7 @@ from web.shared import get_db, templates
 router = APIRouter()
 
 
-@router.get("/daemon")
+@router.get("/research-daemon")
 async def daemon_dashboard(request: Request):
     """Unified daemon dashboard — orchestrator + evolution + credibility in one view."""
     try:

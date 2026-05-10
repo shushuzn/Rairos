@@ -17,6 +17,8 @@ from parsers.input_detection import normalize_arxiv_id
 
 
 def _best_effort_date_from_crossref(item: dict) -> str:
+    if not item:
+        return ""
     for key in [
         "published-print",
         "published-online",
@@ -209,6 +211,7 @@ def fetch_crossref_metadata(doi: str, timeout: int = 30) -> Tuple[Paper, Optiona
 
     except Exception:
         # Graceful downgrade: DOI-only metadata (minimal), still try to parse arXiv id from DOI string.
+        # Do NOT cache this fallback — it is garbage metadata (title=doi, empty authors/abstract).
         maybe_arxiv = normalize_arxiv_id(doi)
         p = Paper(
             source="doi",
@@ -222,5 +225,4 @@ def fetch_crossref_metadata(doi: str, timeout: int = 30) -> Tuple[Paper, Optiona
             pdf_url="",
             primary_category="",
         )
-        set_cached("crossref", doi, _paper_to_dict(p, maybe_arxiv))
         return p, maybe_arxiv

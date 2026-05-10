@@ -1255,8 +1255,8 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
                 "INSERT INTO papers_fts(paper_id, title, abstract, plain_text) VALUES (?, ?, ?, '')",
                 (paper_id, title or "", abstract or ""),
             )
-        except sqlite3.Error:
-            pass  # FTS sync is best-effort
+        except sqlite3.Error as e:
+            logger.warning("FTS sync failed for paper %s: %s", paper_id, e)
 
     # ── Search ────────────────────────────────────────────────────────────────
 
@@ -1598,7 +1598,8 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
         try:
             with self.conn as c:
                 c.execute("DELETE FROM paper_cache")
-            return c.total_changes
+                deleted = c.rowcount
+            return deleted
         except sqlite3.Error as e:
             raise DatabaseError(f"clear_cache failed: {e}") from e
 
@@ -1985,15 +1986,23 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
         try:
             cur = self.conn.cursor()
             now = _utcnow()
+            placeholders = ",".join("?" * len(target_ids))
+            # Count existing pairs before insert so we can distinguish new vs duplicate
+            cur.execute(
+                f"SELECT COUNT(*) FROM citations WHERE source_id = ? AND target_id IN ({placeholders})",
+                [source_id] + target_ids,
+            )
+            row = cur.fetchone()
+            existing_count = row[0] if row else 0
             rows = [(source_id, tid, now) for tid in target_ids]
             cur.executemany(
                 "INSERT OR IGNORE INTO citations (source_id, target_id, created_at) VALUES (?, ?, ?)",
                 rows,
             )
-            new_count = cur.rowcount
+            new_count = cur.rowcount - existing_count
             dup_count = len(target_ids) - new_count
             self.conn.commit()
-            return new_count, dup_count
+            return max(0, new_count), dup_count
         except sqlite3.Error as e:
             raise DatabaseError(f"upsert_citations failed: {e}") from e
 
@@ -2040,7 +2049,6 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
                     """,
                     rows,
                 )
-                self.conn.commit()
                 return len(tables)
         except sqlite3.Error as e:
             raise DatabaseError(f"upsert_experiment_tables({paper_id!r}) failed: {e}") from e
@@ -2178,7 +2186,7 @@ class Database(EmbeddingMixin, ChatMixin, SubscriptionMixin, LiteratureMixin):
 
     def paper_exists(self, paper_id: str) -> bool:
         """Check if a paper exists in the database by its ID."""
-        row = self._conn.execute("SELECT 1 FROM papers WHERE id = ?", (paper_id,)).fetchone()
+        row = self.conn.execute("SELECT 1 FROM papers WHERE id = ?", (paper_id,)).fetchone()
         return row is not None
 
     # ── Helpers ────────────────────────────────────────────────────────────────

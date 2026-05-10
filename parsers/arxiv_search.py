@@ -158,9 +158,11 @@ def _paper_to_dict(paper) -> dict:
     }
 
 def _dict_to_paper(d: dict):
-    """Restore a Paper object from dict."""
+    """Restore a Paper object from dict (e.g. from cache)."""
+    from dataclasses import fields as _fields
     from core import Paper
-    return Paper(**{k: v for k, v in d.items() if hasattr(Paper, k) or k in ["authors", "abstract"]})
+    valid = {f.name for f in _fields(Paper)}
+    return Paper(**{k: v for k, v in d.items() if k in valid})
 
 def search_arxiv_cached(query: str, max_results: int = 5, timeout: int = 30, ttl_hours: int = 24) -> List:
     """Cached arXiv search.

@@ -238,6 +238,7 @@ class S2Paper:
             primary_category=self.venue,
             categories="",
             comment="",
-            journal_ref=self.venue,
+            journal_ref="",
+            reference_count=self.citationCount,
             doi=ext.get("DOI", ""),
         )
