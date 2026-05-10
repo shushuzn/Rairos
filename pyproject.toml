@@ -56,6 +56,11 @@ dependencies = [
     "jieba>=0.42.1",
     "pymilvus>=3.0.0",
     "gitpython>=3.1.50",  # Security: GHSA-mv93-w799-cj2w newline injection RCE
+    "click>=8.3.3",
+    "uvicorn>=0.46.0",
+    "fastapi>=0.136.1",
+    "jinja2>=3.1.6",
+    "python-multipart>=0.0.28",
 ]
 
 [project.optional-dependencies]

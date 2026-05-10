@@ -26,7 +26,7 @@ def _section(title: str) -> str:
     return f"\n[bold]{title}[/]"
 
 
-def _run_docto(args) -> int:
+def _run_doctor(args) -> int:
     """Run environment diagnostics."""
     from rich.console import Console
     from rich.table import Table
@@ -177,5 +177,5 @@ def _run_docto(args) -> int:
 def _build_doctor_parser(subparsers: argparse._SubParsersAction) -> argparse.ArgumentParser:
     """Build doctor subcommand parser."""
     p = subparsers.add_parser("doctor", help="Diagnose environment and report issues")
-    p.set_defaults(func=_run_docto)
+    p.set_defaults(func=_run_doctor)
     return p  # type: ignore[no-any-return]
