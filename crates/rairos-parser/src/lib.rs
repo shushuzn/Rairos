@@ -464,7 +464,7 @@ mod tests {
         assert_eq!(detect_source("2301.00001"), Some(Source::ArXiv));
         assert_eq!(detect_source("10.1038/nature12373"), Some(Source::CrossRef));
         assert_eq!(
-            detect_source("https://www.semanticscholar.org/paper/abc123"),
+            detect_source("a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2"),
             Some(Source::SemanticScholar)
         );
         assert_eq!(detect_source("abc123"), None);

@@ -142,6 +142,70 @@ impl ResearchGap {
 }
 
 // ============================================================================
+// Subscription
+// ============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Subscription {
+    pub id: String,
+    pub query: String,
+    pub name: Option<String>,
+    pub categories: Vec<String>,
+    pub max_results: i32,
+    pub check_interval_minutes: u64,
+    pub last_check: Option<String>,
+    pub last_results: Option<String>,
+    pub enabled: bool,
+}
+
+impl Subscription {
+    pub fn new(query: &str) -> Self {
+        Self {
+            id: Uuid::new_v4().to_string(),
+            query: query.to_string(),
+            name: None,
+            categories: Vec::new(),
+            max_results: 10,
+            check_interval_minutes: 60,
+            last_check: None,
+            last_results: None,
+            enabled: true,
+        }
+    }
+}
+
+// ============================================================================
+// Tag
+// ============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Tag {
+    pub id: String,
+    pub name: String,
+    pub color: Option<String>,
+}
+
+impl Tag {
+    pub fn new(name: &str) -> Self {
+        Self {
+            id: Uuid::new_v4().to_string(),
+            name: name.to_string(),
+            color: None,
+        }
+    }
+}
+
+// ============================================================================
+// Citations
+// ============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Citations {
+    pub citing: Vec<String>,
+    pub references: Vec<String>,
+}
+
+// ============================================================================
 // Database
 // ============================================================================
 
@@ -178,15 +242,36 @@ impl Database {
                 references_cnt INTEGER NOT NULL DEFAULT 0,
                 doi TEXT,
                 pdf_url TEXT,
+                pdf_path TEXT,
+                pdf_hash TEXT,
+                plain_text TEXT,
+                table_count INTEGER DEFAULT 0,
+                figure_count INTEGER DEFAULT 0,
+                word_count INTEGER DEFAULT 0,
+                page_count INTEGER DEFAULT 0,
+                reading_status TEXT DEFAULT 'unread',
+                reading_started_at TEXT,
+                reading_completed_at TEXT,
+                embed_vector BLOB,
                 created_at TEXT NOT NULL DEFAULT (datetime('now')),
                 updated_at TEXT NOT NULL DEFAULT (datetime('now'))
             );
 
+            CREATE VIRTUAL TABLE IF NOT EXISTS papers_fts USING fts5(
+                title, abstract_text, authors, categories,
+                content='papers',
+                content_rowid='rowid'
+            );
+
             CREATE TABLE IF NOT EXISTS research_gaps (
                 id TEXT PRIMARY KEY,
-                category TEXT NOT NULL,
-                description TEXT NOT NULL,
-                severity TEXT NOT NULL,
+                topic TEXT NOT NULL,
+                session_id TEXT,
+                gap_type TEXT NOT NULL,
+                gap_title TEXT NOT NULL,
+                gap_title_hash TEXT,
+                novelty_score REAL DEFAULT 0.5,
+                priority TEXT DEFAULT 'medium',
                 paper_ids TEXT NOT NULL,
                 created_at TEXT NOT NULL DEFAULT (datetime('now'))
             );
@@ -202,11 +287,81 @@ impl Database {
                 FOREIGN KEY (gap_id) REFERENCES research_gaps(id)
             );
 
+            CREATE TABLE IF NOT EXISTS subscriptions (
+                id TEXT PRIMARY KEY,
+                query TEXT NOT NULL,
+                name TEXT,
+                categories TEXT,
+                max_results INTEGER DEFAULT 10,
+                check_interval_minutes INTEGER DEFAULT 60,
+                last_check TEXT,
+                last_results TEXT,
+                enabled INTEGER DEFAULT 1,
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+
+            CREATE TABLE IF NOT EXISTS tags (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL UNIQUE,
+                color TEXT,
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+
+            CREATE TABLE IF NOT EXISTS paper_tags (
+                paper_id TEXT NOT NULL,
+                tag_id TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                PRIMARY KEY (paper_id, tag_id),
+                FOREIGN KEY (paper_id) REFERENCES papers(id) ON DELETE CASCADE,
+                FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+            );
+
+            CREATE TABLE IF NOT EXISTS citations (
+                id TEXT PRIMARY KEY,
+                source_id TEXT NOT NULL,
+                target_id TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                UNIQUE(source_id, target_id),
+                FOREIGN KEY (source_id) REFERENCES papers(id) ON DELETE CASCADE,
+                FOREIGN KEY (target_id) REFERENCES papers(id) ON DELETE CASCADE
+            );
+
+            CREATE TABLE IF NOT EXISTS paper_cache (
+                uid TEXT PRIMARY KEY,
+                data TEXT NOT NULL,
+                cached_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+
             CREATE INDEX IF NOT EXISTS idx_papers_arxiv ON papers(arxiv_id);
             CREATE INDEX IF NOT EXISTS idx_papers_status ON papers(parse_status);
             CREATE INDEX IF NOT EXISTS idx_papers_published ON papers(published);
+            CREATE INDEX IF NOT EXISTS idx_papers_reading ON papers(reading_status);
+            CREATE INDEX IF NOT EXISTS idx_gaps_topic ON research_gaps(topic);
+            CREATE INDEX IF NOT EXISTS idx_subscriptions_enabled ON subscriptions(enabled);
             "#,
         )?;
+
+        conn.execute_batch(
+            r#"
+            CREATE TRIGGER IF NOT EXISTS papers_ai AFTER INSERT ON papers BEGIN
+                INSERT INTO papers_fts(rowid, title, abstract_text, authors, categories)
+                VALUES (NEW.rowid, NEW.title, NEW.abstract_text, NEW.authors, NEW.categories);
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS papers_ad AFTER DELETE ON papers BEGIN
+                INSERT INTO papers_fts(papers_fts, rowid, title, abstract_text, authors, categories)
+                VALUES ('delete', OLD.rowid, OLD.title, OLD.abstract_text, OLD.authors, OLD.categories);
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS papers_au AFTER UPDATE ON papers BEGIN
+                INSERT INTO papers_fts(papers_fts, rowid, title, abstract_text, authors, categories)
+                VALUES ('delete', OLD.rowid, OLD.title, OLD.abstract_text, OLD.authors, OLD.categories);
+                INSERT INTO papers_fts(rowid, title, abstract_text, authors, categories)
+                VALUES (NEW.rowid, NEW.title, NEW.abstract_text, NEW.authors, NEW.categories);
+            END;
+            "#,
+        )?;
+
         Ok(())
     }
 
@@ -459,6 +614,248 @@ impl Database {
             done,
             gaps,
         })
+    }
+
+    pub fn search_papers_fts(&self, query: &str, limit: usize) -> Result<Vec<Paper>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare(
+            r#"SELECT p.id, p.arxiv_id, p.title, p.authors, p.published, p.abstract_text,
+                      p.categories, p.parse_status, p.cited_by, p.references_cnt, p.doi, p.pdf_url
+               FROM papers p
+               INNER JOIN papers_fts fts ON p.rowid = fts.rowid
+               WHERE papers_fts MATCH ?1
+               ORDER BY rank
+               LIMIT ?2"#
+        )?;
+        let rows = stmt.query_map(params![query, limit as i64], |row| {
+            Self::row_to_paper(row)
+        })?;
+        let mut papers: Vec<Paper> = Vec::new();
+        for paper in rows {
+            papers.push(paper?);
+        }
+        Ok(papers)
+    }
+
+    pub fn update_paper_full_text(&self, id: &str, plain_text: &str, table_count: i32, figure_count: i32, word_count: i32, page_count: i32) -> Result<()> {
+        let conn = self.conn.lock();
+        conn.execute(
+            "UPDATE papers SET plain_text = ?1, table_count = ?2, figure_count = ?3, word_count = ?4, page_count = ?5, updated_at = datetime('now') WHERE id = ?6",
+            params![plain_text, table_count, figure_count, word_count, page_count, id],
+        )?;
+        Ok(())
+    }
+
+    pub fn insert_subscription(&self, sub: &Subscription) -> Result<()> {
+        let conn = self.conn.lock();
+        conn.execute(
+            r#"INSERT INTO subscriptions (id, query, name, categories, max_results, check_interval_minutes, last_check, last_results, enabled)
+               VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)"#,
+            params![
+                sub.id,
+                &sub.query,
+                &sub.name,
+                serde_json::to_string(&sub.categories)?,
+                sub.max_results,
+                sub.check_interval_minutes as i32,
+                sub.last_check.as_ref().map(|s| s.as_str()),
+                sub.last_results.as_ref().map(|s| s.as_str()),
+                sub.enabled as i32,
+            ],
+        )?;
+        Ok(())
+    }
+
+    pub fn list_subscriptions(&self, enabled_only: bool) -> Result<Vec<Subscription>> {
+        let conn = self.conn.lock();
+        let sql = if enabled_only {
+            "SELECT id, query, name, categories, max_results, check_interval_minutes, last_check, last_results, enabled FROM subscriptions WHERE enabled = 1"
+        } else {
+            "SELECT id, query, name, categories, max_results, check_interval_minutes, last_check, last_results, enabled FROM subscriptions"
+        };
+        let mut stmt = conn.prepare(sql)?;
+        let rows = stmt.query_map([], |row| {
+            let categories_str: Option<String> = row.get(3)?;
+            let last_check: Option<String> = row.get(6)?;
+            let last_results: Option<String> = row.get(7)?;
+            Ok(Subscription {
+                id: row.get(0)?,
+                query: row.get(1)?,
+                name: row.get(2)?,
+                categories: categories_str.map(|s| serde_json::from_str(&s).unwrap_or_default()).unwrap_or_default(),
+                max_results: row.get(4)?,
+                check_interval_minutes: row.get::<_, i32>(5)? as u64,
+                last_check,
+                last_results,
+                enabled: row.get::<_, i32>(8)? != 0,
+            })
+        })?;
+        let mut subs = Vec::new();
+        for sub in rows {
+            subs.push(sub?);
+        }
+        Ok(subs)
+    }
+
+    pub fn delete_subscription(&self, id: &str) -> Result<()> {
+        let conn = self.conn.lock();
+        conn.execute("DELETE FROM subscriptions WHERE id = ?1", [id])?;
+        Ok(())
+    }
+
+    pub fn update_subscription_last_check(&self, id: &str, last_check: &str, last_results: &str) -> Result<()> {
+        let conn = self.conn.lock();
+        conn.execute(
+            "UPDATE subscriptions SET last_check = ?1, last_results = ?2 WHERE id = ?3",
+            params![last_check, last_results, id],
+        )?;
+        Ok(())
+    }
+
+    pub fn insert_tag(&self, tag: &Tag) -> Result<()> {
+        let conn = self.conn.lock();
+        conn.execute(
+            "INSERT INTO tags (id, name, color) VALUES (?1, ?2, ?3)",
+            params![&tag.id, &tag.name, &tag.color],
+        )?;
+        Ok(())
+    }
+
+    pub fn list_tags(&self) -> Result<Vec<Tag>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare("SELECT id, name, color FROM tags ORDER BY name")?;
+        let rows = stmt.query_map([], |row| {
+            Ok(Tag {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                color: row.get(2)?,
+            })
+        })?;
+        let mut tags = Vec::new();
+        for tag in rows {
+            tags.push(tag?);
+        }
+        Ok(tags)
+    }
+
+    pub fn delete_tag(&self, id: &str) -> Result<()> {
+        let conn = self.conn.lock();
+        conn.execute("DELETE FROM tags WHERE id = ?1", [id])?;
+        Ok(())
+    }
+
+    pub fn add_paper_tag(&self, paper_id: &str, tag_id: &str) -> Result<()> {
+        let conn = self.conn.lock();
+        conn.execute(
+            "INSERT OR IGNORE INTO paper_tags (paper_id, tag_id) VALUES (?1, ?2)",
+            params![paper_id, tag_id],
+        )?;
+        Ok(())
+    }
+
+    pub fn remove_paper_tag(&self, paper_id: &str, tag_id: &str) -> Result<()> {
+        let conn = self.conn.lock();
+        conn.execute(
+            "DELETE FROM paper_tags WHERE paper_id = ?1 AND tag_id = ?2",
+            params![paper_id, tag_id],
+        )?;
+        Ok(())
+    }
+
+    pub fn get_paper_tags(&self, paper_id: &str) -> Result<Vec<Tag>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare(
+            "SELECT t.id, t.name, t.color FROM tags t INNER JOIN paper_tags pt ON t.id = pt.tag_id WHERE pt.paper_id = ?1"
+        )?;
+        let rows = stmt.query_map([paper_id], |row| {
+            Ok(Tag {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                color: row.get(2)?,
+            })
+        })?;
+        let mut tags = Vec::new();
+        for tag in rows {
+            tags.push(tag?);
+        }
+        Ok(tags)
+    }
+
+    pub fn insert_citation(&self, source_id: &str, target_id: &str) -> Result<()> {
+        let conn = self.conn.lock();
+        let id = Uuid::new_v4().to_string();
+        conn.execute(
+            "INSERT OR IGNORE INTO citations (id, source_id, target_id) VALUES (?1, ?2, ?3)",
+            params![&id, source_id, target_id],
+        )?;
+        Ok(())
+    }
+
+    pub fn get_citations(&self, paper_id: &str) -> Result<Citations> {
+        let conn = self.conn.lock();
+        let mut citing_stmt = conn.prepare("SELECT source_id FROM citations WHERE target_id = ?1")?;
+        let citing: Vec<String> = citing_stmt.query_map([paper_id], |row| row.get(0))?
+            .filter_map(|r| r.ok())
+            .collect();
+
+        let mut refs_stmt = conn.prepare("SELECT target_id FROM citations WHERE source_id = ?1")?;
+        let references: Vec<String> = refs_stmt.query_map([paper_id], |row| row.get(0))?
+            .filter_map(|r| r.ok())
+            .collect();
+
+        Ok(Citations { citing, references })
+    }
+
+    pub fn find_similar_by_vector(&self, embedding: &[f32], limit: usize) -> Result<Vec<(String, f32)>> {
+        let conn = self.conn.lock();
+        let mut stmt = conn.prepare(
+            "SELECT id, embed_vector FROM papers WHERE embed_vector IS NOT NULL"
+        )?;
+        let rows = stmt.query_map([], |row| {
+            let id: String = row.get(0)?;
+            let blob: Vec<u8> = row.get(1)?;
+            Ok((id, blob))
+        })?;
+
+        let mut results: Vec<(String, f32)> = Vec::new();
+        for row in rows {
+            let (id, blob) = row?;
+            if blob.len() != embedding.len() * 4 {
+                continue;
+            }
+            let stored: &[f32] = unsafe {
+                std::slice::from_raw_parts(blob.as_ptr() as *const f32, embedding.len())
+            };
+            let similarity = cosine_similarity(embedding, stored);
+            results.push((id, similarity));
+        }
+
+        results.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+        results.truncate(limit);
+        Ok(results)
+    }
+
+    pub fn set_paper_embedding(&self, paper_id: &str, embedding: &[f32]) -> Result<()> {
+        let conn = self.conn.lock();
+        let blob: Vec<u8> = embedding.iter()
+            .flat_map(|f| f.to_le_bytes())
+            .collect();
+        conn.execute(
+            "UPDATE papers SET embed_vector = ?1 WHERE id = ?2",
+            params![blob, paper_id],
+        )?;
+        Ok(())
+    }
+}
+
+fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
+    let dot: f32 = a.iter().zip(b.iter()).map(|(x, y)| x * y).sum();
+    let norm_a: f32 = a.iter().map(|x| x * x).sum::<f32>().sqrt();
+    let norm_b: f32 = b.iter().map(|x| x * x).sum::<f32>().sqrt();
+    if norm_a == 0.0 || norm_b == 0.0 {
+        0.0
+    } else {
+        dot / (norm_a * norm_b)
     }
 }
 

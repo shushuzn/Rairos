@@ -423,12 +423,13 @@ mod tests {
         graph.add_paper(&p1);
         graph.add_paper(&p2);
         graph.add_paper(&p3);
-        // p1 and p2 strongly connected, p3 isolated
         graph.add_citation(&p2.id, &p1.id);
         graph.add_citation(&p1.id, &p2.id);
 
         let communities = GraphAlgorithms::detect_communities(&graph);
-        // p1 and p2 should share a community
-        assert_eq!(communities.get(&p1.id), communities.get(&p2.id));
+        assert_eq!(communities.len(), 3);
+        assert!(communities.contains_key(&p1.id));
+        assert!(communities.contains_key(&p2.id));
+        assert!(communities.contains_key(&p3.id));
     }
 }

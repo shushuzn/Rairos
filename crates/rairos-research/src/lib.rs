@@ -438,8 +438,9 @@ mod tests {
         graph.add_claim(ClaimNode::new("paper2", "CNNs outperform Transformers for vision"));
 
         let found = graph.find_claims_about("transformers");
-        assert_eq!(found.len(), 1);
+        assert_eq!(found.len(), 2);
         assert_eq!(found[0].paper_id, "paper1");
+        assert_eq!(found[1].paper_id, "paper2");
     }
 
     #[test]
