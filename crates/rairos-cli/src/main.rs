@@ -50,19 +50,35 @@ enum Commands {
 
     /// List papers with optional status filter
     List {
-        /// Filter by parse status
+        /// Filter by parse status (pending/done/parsed)
         #[arg(short, long)]
         status: Option<String>,
 
+        /// Filter by year
+        #[arg(short, long)]
+        year: Option<i32>,
+
+        /// Filter by tag/category (repeatable)
+        #[arg(short = 't', long)]
+        tag: Vec<String>,
+
         /// Maximum number of papers to show
-        #[arg(short, long, default_value = "20")]
+        #[arg(short, long, default_value = "50")]
         limit: usize,
 
         /// Offset for pagination
         #[arg(long, default_value = "0")]
         offset: usize,
 
-        /// Output format
+        /// Sort by field (added_at/published/title/status)
+        #[arg(long, default_value = "added_at")]
+        sort: String,
+
+        /// Sort order (asc/desc)
+        #[arg(short, long, default_value = "desc")]
+        order: String,
+
+        /// Output format (table/json)
         #[arg(short, long, default_value = "table")]
         format: String,
     },
@@ -560,9 +576,47 @@ fn extract_all_xml_fields(xml: &str, tag: &str) -> Vec<String> {
     results
 }
 
-fn handle_list(db: &Database, status: Option<String>, limit: usize, offset: usize, format: &str) -> Result<()> {
+fn handle_list(
+    db: &Database,
+    status: Option<String>,
+    year: Option<i32>,
+    tags: &[String],
+    limit: usize,
+    offset: usize,
+    sort: &str,
+    order: &str,
+    format: &str,
+) -> Result<()> {
     let parse_status = status.as_ref().and_then(|s| parse_status_arg(s));
-    let papers = db.list_papers(parse_status, limit, offset)?;
+    let mut papers = db.list_papers(parse_status, 10000, 0)?;
+
+    // Year filter
+    if let Some(y) = year {
+        papers.retain(|p| p.published.format("%Y").to_string().parse::<i32>().unwrap_or(0) == y);
+    }
+
+    // Tag filter (paper must have ALL specified tags)
+    if !tags.is_empty() {
+        papers.retain(|p| {
+            let paper_tags: std::collections::HashSet<_> = p.categories.iter()
+                .map(|s| s.to_lowercase())
+                .collect();
+            tags.iter().all(|t| paper_tags.contains(&t.to_lowercase()))
+        });
+    }
+
+    // Sort
+    let reverse = order == "desc";
+    match sort {
+        "published" => papers.sort_by(|a, b| if reverse { b.published.cmp(&a.published) } else { a.published.cmp(&b.published) }),
+        "title" => papers.sort_by(|a, b| if reverse { b.title.cmp(&a.title) } else { a.title.cmp(&b.title) }),
+        "status" => papers.sort_by(|a, b| if reverse { status_str(&b.parse_status).cmp(&status_str(&a.parse_status)) } else { status_str(&a.parse_status).cmp(&status_str(&b.parse_status)) }),
+        _ => {} // added_at - keep insertion order
+    }
+
+    // Apply offset/limit
+    let total = papers.len();
+    papers = papers.into_iter().skip(offset).take(limit).collect();
 
     if format == "json" {
         let out: Vec<serde_json::Value> = papers.iter().map(|p| {
@@ -581,6 +635,8 @@ fn handle_list(db: &Database, status: Option<String>, limit: usize, offset: usiz
     }
 
     // Table format
+    println!("Showing {}/{} papers (sort: {} {}, offset: {})", papers.len(), total, sort, order, offset);
+    println!();
     println!("{:<38} {:<10} {:<12} {}", "ID", "STATUS", "ARXIV", "TITLE");
     println!("{}", "-".repeat(120));
     for paper in &papers {
@@ -2316,9 +2372,9 @@ fn main() -> Result<()> {
             let db = open_db(&cli.db)?;
             handle_add(&db, arxiv_id)?;
         }
-        Commands::List { status, limit, offset, format } => {
+        Commands::List { status, year, tag, limit, offset, sort, order, format } => {
             let db = open_db(&cli.db)?;
-            handle_list(&db, status.clone(), *limit, *offset, format)?;
+            handle_list(&db, status.clone(), *year, &tag, *limit, *offset, sort, order, format)?;
         }
         Commands::Show { id, format } => {
             let db = open_db(&cli.db)?;
