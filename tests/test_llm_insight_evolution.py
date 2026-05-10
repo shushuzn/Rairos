@@ -226,7 +226,7 @@ class TestDecayWeight:
         try:
             event_time = datetime.fromisoformat(event_timestamp)
             age_days = (datetime.now() - event_time).total_seconds() / 86400.0
-            return base_weight * (2.0 ** (-lambda_ * age_days))
+            return base_weight * (2.0 ** (-lambda_ * age_days))  # type: ignore[no-any-return]
         except (ValueError, TypeError, OSError):
             return 0.0
 

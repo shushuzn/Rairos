@@ -264,7 +264,7 @@ class TestComputeTrend:
         last_count = counts[-1]
 
         if first_nonzero == 0:
-            return None
+            return None  # type: ignore[return-value]
 
         growth_rate = ((last_count - first_nonzero) / first_nonzero) * 100
 
@@ -390,7 +390,7 @@ class TestComputeGrowthRate:
         last = yearly_stats[-1].paper_count
         if first == 0:
             return 0.0
-        return ((last - first) / first) * 100
+        return float((last - first) / first) * 100
 
     def test_growth_rate_formula(self):
         """Growth rate = (last - first) / first * 100."""

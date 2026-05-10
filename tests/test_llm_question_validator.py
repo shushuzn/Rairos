@@ -998,7 +998,7 @@ class TestRenderJson:
             "suggestions": result.suggestions,
             "confidence": result.confidence,
         }
-        return json.loads(json.dumps(data, ensure_ascii=False))
+        return json.loads(json.dumps(data, ensure_ascii=False))  # type: ignore[no-any-return]
 
     def test_question_field(self):
         """Question is in output."""

@@ -123,7 +123,7 @@ def _write_gene_pool(data_dir: Path, capsules: list[CapsuleGene]) -> None:
     from llm.insight.storage import CapsuleStorageMixin
 
     class _TempTracker(CapsuleStorageMixin):
-        pass
+        data_dir: Path
 
     t = _TempTracker()
     t.data_dir = data_dir
