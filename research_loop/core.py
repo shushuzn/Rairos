@@ -29,6 +29,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, cast
 from core import Paper
 from core.basics import ensure_research_tree, get_default_concept_dir, safe_uid, slugify_title
 from llm.generate import ai_generate_pnote_draft, estimate_cost
+from core.observability import get_metrics
 from llm.parse import parse_ai_pnote_draft, extract_rubric_scores
 from llm.client import warm_cache
 from parsers.arxiv_search import search_arxiv
@@ -212,6 +213,9 @@ def run_research(
                 )
                 sections, rubric, _ = parse_ai_pnote_draft(draft)
                 cost_info = estimate_cost(mod, input_for_llm, draft)
+                get_metrics().inc("llm", "calls")
+                get_metrics().inc("llm", "total_cost_usd", cost_info.get("total_cost_usd", 0))
+                get_metrics().inc("llm", "total_tokens", cost_info.get("total_tokens", 0))
                 if verbose:
                     print(
                         f"  [llm] Draft generated ({len(draft)} chars, "
@@ -568,6 +572,9 @@ async def arun_research(
                     draft = await _generate()
                     sections, rubric, _ = parse_ai_pnote_draft(draft)
                     cost_info = estimate_cost(model, input_for_llm, draft)
+                    get_metrics().inc("llm", "calls")
+                    get_metrics().inc("llm", "total_cost_usd", cost_info.get("total_cost_usd", 0))
+                    get_metrics().inc("llm", "total_tokens", cost_info.get("total_tokens", 0))
                     if verbose:
                         print(
                             f"  [llm] Draft generated ({len(draft)} chars, "
