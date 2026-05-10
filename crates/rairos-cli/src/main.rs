@@ -902,7 +902,7 @@ fn handle_daemon(port: u16, _log_level: &str, foreground: bool) -> Result<()> {
     Ok(())
 }
 
-fn handle_subscribe(db: &Database, query: &str, interval_minutes: u64, max_papers: usize, auto_add: bool) -> Result<()> {
+fn handle_subscribe(_db: &Database, query: &str, interval_minutes: u64, max_papers: usize, auto_add: bool) -> Result<()> {
     println!("=== Subscribing to arXiv: {} ===", query);
     println!("Check interval: {} minutes", interval_minutes);
     println!("Max papers per check: {}", max_papers);
@@ -1304,20 +1304,89 @@ fn handle_ask(db: &Database, question: &str, max_papers: usize, format: &str) ->
         return Ok(());
     }
 
-    println!("Searching {} papers for relevant information...\n", papers.len());
-    println!("(Full Q&A requires LLM integration - placeholder output)");
+    // Keyword-based retrieval: split question into keywords and score papers
+    let stop_words: std::collections::HashSet<&str> = [
+        "the", "a", "an", "is", "are", "was", "were", "be", "been", "being",
+        "have", "has", "had", "do", "does", "did", "will", "would", "could",
+        "should", "may", "might", "must", "shall", "can", "need", "to", "of",
+        "in", "for", "on", "with", "at", "by", "from", "as", "into", "through",
+        "during", "before", "after", "above", "below", "between", "under",
+        "again", "further", "then", "once", "here", "there", "when", "where",
+        "why", "how", "all", "each", "few", "more", "most", "other", "some",
+        "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too",
+        "very", "just", "but", "and", "or", "if", "because", "until", "while",
+        "this", "that", "these", "those", "what", "which", "who", "whom",
+    ].into();
+
+    let question_lower = question.to_lowercase();
+    let question_words: Vec<&str> = question_lower.split_whitespace()
+        .filter(|w| w.len() > 2 && !stop_words.contains(w))
+        .collect();
+
+    if question_words.is_empty() {
+        println!("Question too generic. Try adding specific terms.");
+        return Ok(());
+    }
+
+    println!("Keywords extracted: {}", question_words.join(", "));
     println!();
 
-    println!("Based on {} papers, here's what I found:", papers.len());
-    println!("  - This question requires semantic search across paper content");
-    println!("  - LLM integration needed for accurate answers");
-    println!();
+    // Score each paper by keyword overlap
+    let mut scored: Vec<(&Paper, usize)> = Vec::new();
+    for paper in &papers {
+        let title_lower = paper.title.to_lowercase();
+        let abstract_lower = paper.abstract_text.to_lowercase();
+        let combined = format!("{} {}", title_lower, abstract_lower);
+
+        let match_count = question_words.iter()
+            .filter(|kw| combined.contains(*kw))
+            .count();
+
+        if match_count > 0 {
+            scored.push((paper, match_count));
+        }
+    }
+
+    // Sort by match count descending
+    scored.sort_by(|a, b| b.1.cmp(&a.1));
+
+    let top_papers: Vec<_> = scored.into_iter().take(5).collect();
+
+    if top_papers.is_empty() {
+        println!("No papers found matching your question keywords.");
+        println!("Try different search terms.");
+        return Ok(());
+    }
+
+    println!("Top {} most relevant papers:\n", top_papers.len());
+
+    for (i, (paper, score)) in top_papers.iter().enumerate() {
+        println!("{}. [score: {}] {}", i + 1, score, paper.title);
+        println!("   {}", paper.authors.join(", "));
+        println!("   {} | cited_by: {}", paper.published.format("%Y-%m-%d"), paper.metadata.cited_by);
+        if !paper.abstract_text.is_empty() {
+            let preview = if paper.abstract_text.len() > 150 {
+                format!("{}...", &paper.abstract_text[..150])
+            } else {
+                paper.abstract_text.clone()
+            };
+            println!("   {}\n", preview);
+        }
+    }
 
     if format == "json" {
         let out = serde_json::json!({
             "question": question,
             "papers_searched": papers.len(),
-            "answer": "placeholder - requires LLM integration"
+            "top_papers": top_papers.iter().map(|(p, s)| {
+                serde_json::json!({
+                    "id": p.id,
+                    "title": p.title,
+                    "authors": p.authors,
+                    "score": s,
+                    "abstract": p.abstract_text
+                })
+            }).collect::<Vec<_>>()
         });
         println!("{}", serde_json::to_string_pretty(&out)?);
     }
@@ -1499,7 +1568,7 @@ fn handle_compare(db: &Database, papers_arg: &str, aspect: &str) -> Result<()> {
             println!("{}", "-".repeat(76));
             let mut by_cited: Vec<_> = papers.iter().enumerate().collect();
             by_cited.sort_by(|a, b| b.1.metadata.cited_by.cmp(&a.1.metadata.cited_by));
-            for (rank, (_, p)) in by_cited.iter().enumerate() {
+            for (_rank, (_, p)) in by_cited.iter().enumerate() {
                 println!("{:<50} {:>12} {:>12}", 
                     if p.title.len() > 48 { format!("{}...", &p.title[..48]) } else { p.title.clone() },
                     p.metadata.cited_by,
